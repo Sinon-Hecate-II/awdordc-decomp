@@ -15,8 +15,8 @@ void func_ov004_02215814(void *arg0) {
     extern void *gKeyState;
     extern void *gTouchState;
     s16 copy_y,copy_x;
-    s32 sp4;
-    s32 sp0;
+    s16 sp4;
+    s16 sp0;
     s16 temp_r3;
     s16 temp_r3_2;
     s16 temp_r3_3;
@@ -196,7 +196,7 @@ block_44:
         }
     }
     if (M2C_FIELD(gKeyState, u16 *, 2) & 0x10) {
-        temp_r10=M2C_FIELD(arg0,void **,0x5c);
+        void *rightGrid =M2C_FIELD(arg0,void **,0x5c);
         if (var_r4 != NULL) {
             temp_r3_2 = M2C_FIELD(var_r4, s16 *, 0);
             temp_r10_2 = (M2C_FIELD(var_r4, s16 *, 2) / 38);
@@ -218,7 +218,7 @@ loop_53:
                 } else if (temp_r0_3 >= 0x40) {
                     var_ip = NULL;
                 } else {
-                    var_ip = temp_r10 + (temp_r0_3 << 5);
+                    var_ip = rightGrid + (temp_r0_3 << 5);
                 }
             }
             if (var_ip != NULL) {
@@ -518,8 +518,7 @@ loop_195:
             }
             goto block_210;
         }
-        goto block_210;
-    }
+        }
 block_210:
     temp_r6 = M2C_FIELD(arg0, s16 *, 0x48);
     if (sp0 == temp_r6) {

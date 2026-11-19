@@ -76,14 +76,14 @@ gCur3DSpriteEngine=saved;
  * the 2x2 icon that marks a completed record. */
 void RecordsMenu_DrawRow(s32 row,s32 record) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK gRecordsMenuState;
-s32 func_ov005_022140f8(s32); void *func_020ad570(s32);
+s32 RecordsMenu_IsRecordAvailable(s32); void *func_020ad570(s32);
 void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
 void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
 void FillTileRect(void *,s32,s32,u16,s32);
 s32 mode; u32 color; s32 barTile; void *saved; u16 iconTile;
 barTile=(row+1)*50+0x134;saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(func_ov005_022140f8(record)) {
+if(RecordsMenu_IsRecordAvailable(record)) {
 color=M2C_FIELD(func_020ad570(record),u32 *,4);
 if(RECORDS_SCREEN->highlighted==record)mode=9;else mode=0;
 } else {color=0x43000000; mode=3;}
@@ -224,11 +224,11 @@ void func_ov005_02214cdc(void) {
    is not -1, moves that record to the front; then resets the list cursor. */
 void RecordsMenu_ShuffleList(s32 firstRecord) {
 extern M2C_UNK gRecordsMenuState;
-s32 func_ov005_022140f8(s32); s32 RandomIntRange(s32,s32);
+s32 RecordsMenu_IsRecordAvailable(s32); s32 RandomIntRange(s32,s32);
 s32 i; s16 slotA,slotB,tmp;
 RECORDS_SCREEN->listCount=0;
 for(i=0;i<RECORDS_SCREEN->count;i++){
-if(func_ov005_022140f8(i)&&RECORDS_SCREEN->enabled[i]==1){
+if(RecordsMenu_IsRecordAvailable(i)&&RECORDS_SCREEN->enabled[i]==1){
 RECORDS_SCREEN->list[RECORDS_SCREEN->listCount]=i;
 RECORDS_SCREEN->listCount++;
 }}
@@ -262,45 +262,49 @@ RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9
  * reshuffles the enabled-record list so the record comes first, and then starts the
  * pending action on it. */
 void RecordsMenu_HandlePick(s32 record) {
-s32 func_ov005_022140f8(s32);
-void func_ov005_022172d8(s32,s32);
+s32 RecordsMenu_IsRecordAvailable(s32);
+void RecordsMenu_BeginAction(s32,s32);
 extern M2C_UNK gRecordsMenuState;
 switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)) {
 case 0: case 1:
-if(func_ov005_022140f8(record))func_ov005_022172d8(record,1);
+if(RecordsMenu_IsRecordAvailable(record))RecordsMenu_BeginAction(record,1);
 break;
 case 2:
-if(func_ov005_022140f8(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==1) {
+if(RecordsMenu_IsRecordAvailable(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==1) {
 RecordsMenu_ShuffleList(record);
-func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
-} else if(func_ov005_022140f8(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==0) {
+RecordsMenu_BeginAction(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+} else if(RecordsMenu_IsRecordAvailable(record)&&M2C_FIELD((char *)M2C_FIELD(&gRecordsMenuState,void **,8)+record,u8 *,0xa2)==0) {
 RecordsMenu_ShuffleList(-1);
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=-1;
-func_ov005_022172d8(record,1);
+RecordsMenu_BeginAction(record,1);
 }
 break;
 }
 }
 
-void func_ov005_022150d8(s16 a) {
-s32 func_ov005_022140f8(s32);
-void func_ov005_022172d8(s32,s32);
-void func_ov005_02215200(s16);
-void func_ov005_022152ec(s16);
-extern M2C_UNK gRecordsMenuState;
-switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)){
-case 0:
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=a;
-do {
-a--;
-if(a==-1){
-a=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);
-break;
-}
-}while(!func_ov005_022140f8(a));
-func_ov005_022172d8(a,1);break;
-case 1:func_ov005_02215200(a);break;
-case 2:func_ov005_022152ec(a);break;
-}
+/* Records screen D-pad up.  On tab 0 (the full list) move the highlight one
+ * record up, skipping locked records and wrapping back to the current highlight
+ * at the top of the table; tabs 1 and 2 step their enabled-only and shuffled
+ * lists instead. */
+void RecordsMenu_SelectPrevious(s16 record) {
+ s32 RecordsMenu_IsRecordAvailable(s32);
+ void RecordsMenu_BeginAction(s32,s32);
+ void RecordsMenu_SelectPreviousEnabled(s16);
+ void RecordsMenu_SelectPreviousInList(s16);
+ extern M2C_UNK gRecordsMenuState;
+ switch (RECORDS_SCREEN->tab) {
+ case 0:
+ RECORDS_SCREEN->highlighted = record;
+ do {
+ record--;
+ if (record == -1) {
+ record = RECORDS_SCREEN->highlighted;
+ break;
+ }
+ } while (!RecordsMenu_IsRecordAvailable(record));
+ RecordsMenu_BeginAction(record, 1); break;
+ case 1: RecordsMenu_SelectPreviousEnabled(record); break;
+ case 2: RecordsMenu_SelectPreviousInList(record); break;
+ }
 }
 

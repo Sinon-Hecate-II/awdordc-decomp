@@ -1,5 +1,6 @@
 /* 37 functions from 0x0217EB6C to 0x0217FB68 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { u8 bytes[4]; } FourBytes;
 typedef struct { u8 bytes[14]; } FourteenBytes;
 typedef struct { u16 a,b,c,d; } FourShorts;
@@ -369,17 +370,32 @@ void SetMapListMode(s8 arg0) {
 }
 
 void func_ov001_0217f73c(void) {
-    M2C_UNK func_ov001_021722ac();
-    void func_ov001_0217f75c();
+    M2C_UNK Ov001_LoadSaveSlotObjLayout();
+    void MapList_LoadBackground();
     M2C_UNK CommitSaveSlot();
     extern M2C_UNK func_ov001_0217f7f0;
-    func_ov001_0217f75c();
-    func_ov001_021722ac();
+    MapList_LoadBackground();
+    Ov001_LoadSaveSlotObjLayout();
     CommitSaveSlot();
     Ov001_SetStepCallback(&func_ov001_0217f7f0);
 }
 
-void func_ov001_0217f75c(void){M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);extern M2C_UNK data_ov001_02190894,data_ov001_021908ac,data_ov001_021908c4;extern M2C_UNK GX_LoadBG2Char,GX_LoadBGPltt,GX_LoadBG2Scr;Ov001_LoadAsset(&data_ov001_02190894,&GX_LoadBG2Char);Ov001_LoadAsset(&data_ov001_021908ac,&GX_LoadBGPltt);Ov001_LoadAsset(&data_ov001_021908c4,&GX_LoadBG2Scr);M2C_FIELD((void *)0x04001008,u16 *,0)=(M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;M2C_FIELD((void *)0x04001008,u16 *,2)=(M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;M2C_FIELD((void *)0x0400000a,u16 *,0)=(M2C_FIELD((void *)0x0400000a,u16 *,0)&~3)|3;M2C_FIELD((void *)0x0400000a,u16 *,2)=(M2C_FIELD((void *)0x0400000a,u16 *,2)&~3)|3;}
+/* Reload what the map-list screen draws behind its list: the background's
+ * character, palette and screen files, then the two background layers of each
+ * engine are pushed to the lowest priority so the list's sprites stay in front. */
+void MapList_LoadBackground(void) {
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    extern M2C_UNK sMapListBgCharName, sMapListBgPaletteName, sMapListBgScreenName;
+    extern M2C_UNK GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
+
+    Ov001_LoadAsset(&sMapListBgCharName, &GX_LoadBG2Char);
+    Ov001_LoadAsset(&sMapListBgPaletteName, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&sMapListBgScreenName, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (REG_BG1CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
+}
 
 void func_ov001_0217f7f0(void) {
     extern M2C_UNK func_ov001_0217f844;
@@ -446,7 +462,7 @@ s32 func_ov001_0217f95c(void) {
     return 0;
 }
 
-void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK func_ov001_02171e58(M2C_UNK);M2C_UNK func_ov001_021722ac(void);extern M2C_UNK data_ov001_02193db8;M2C_FIELD(&data_ov001_02193db8,u8 *,0)=0;func_ov001_0217f9b8();func_ov001_021722ac();func_ov001_02171e58(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
+void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK data_ov001_02193db8;M2C_FIELD(&data_ov001_02193db8,u8 *,0)=0;func_ov001_0217f9b8();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
 
 void func_ov001_0217f9b8(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);

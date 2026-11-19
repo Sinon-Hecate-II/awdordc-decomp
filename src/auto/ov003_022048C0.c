@@ -61,7 +61,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
     s32 func_ov003_02200c64(u8, M2C_UNK, M2C_UNK);
-    s32 func_ov003_02200cec(u8, u8);
+    s32 Ov003_GetEntryValueIconTile(u8, u8);
     extern u16 **data_027e01d8;
     extern M2C_UNK data_ov003_02210484;
     s32 sp24;
@@ -183,7 +183,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
                 DrawTextSprite(M2C_FIELD(arg0, void **, 0x54));
             }
         } else {
-            AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (func_ov003_02200cec(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
+            AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (Ov003_GetEntryValueIconTile(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
         }
         var_r4 += 1;
     } while ((u32) var_r4 < 8U);
@@ -207,7 +207,7 @@ void func_ov003_02205420(void **arg0) {
  * the display is set up (bit 6 of the state byte) unless a link session owns it. */
 void SetupSceneObjectDisplay(void *entity) {
 M2C_UNK Show3DSprite(s32);
-M2C_UNK func_02088f1c(s32);
+M2C_UNK Show3DSpriteSlide(s32);
 s16 func_ov003_021f153c();
 s32 func_ov003_02200ca8();
 s16 offset;
@@ -241,14 +241,14 @@ M2C_FIELD(entity,u8 *,0x3a)|=0x40;
 if(func_ov003_02200ca8())return;
 Show3DSprite(M2C_FIELD(entity,s32 *,0x4c));
 parts=M2C_FIELD(entity,void **,0x40);
-func_02088f1c(((s32 *)parts)[0]);
-func_02088f1c(((s32 *)parts)[1]);
+Show3DSpriteSlide(((s32 *)parts)[0]);
+Show3DSpriteSlide(((s32 *)parts)[1]);
 for(j=0;j<8U;j++){
-func_02088f1c(((s32 *)parts)[j+2]);
-func_02088f1c(((s32 *)parts)[j+10]);
+Show3DSpriteSlide(((s32 *)parts)[j+2]);
+Show3DSpriteSlide(((s32 *)parts)[j+10]);
 }
 if((u8)(((u32)(M2C_FIELD(entity,u8 *,0x3a)<<26)>>26)==0))
-func_02088f1c(M2C_FIELD(entity,s32 *,0x58));
+Show3DSpriteSlide(M2C_FIELD(entity,s32 *,0x58));
 }
 
 void func_ov003_02205564(void) {

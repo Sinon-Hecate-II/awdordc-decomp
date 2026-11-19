@@ -5,7 +5,7 @@
 void func_ov011_022273c8(void *arg0) {
     M2C_UNK AddSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    u32 func_0209b5e4(s32, M2C_UNK *);
+    u32 RenderTextToTiles(s32, M2C_UNK *);
     M2C_UNK DrawTileRow(u16, s32, u16, u16, s32);
     extern M2C_UNK data_02101f78;
     extern u16 **g3DSpriteEngineSub;
@@ -94,10 +94,10 @@ void func_ov011_022273c8(void *arg0) {
         *sp84 = (u16) (*sp84 | 0x80);
         sp80 = *data_027e01d8;
         *sp80 = (u16) (*sp80 | 0x100);
-        temp_r11 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2000, &data_ov011_02228c38);
-        temp_r4 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800, &data_ov011_02228c50);
-        temp_r5 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3000, &data_ov011_02228c88);
-        temp_r6 = func_0209b5e4(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3800, &data_ov011_02228ca4);
+        temp_r11 = RenderTextToTiles(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2000, &data_ov011_02228c38);
+        temp_r4 = RenderTextToTiles(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800, &data_ov011_02228c50);
+        temp_r5 = RenderTextToTiles(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3000, &data_ov011_02228c88);
+        temp_r6 = RenderTextToTiles(M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3800, &data_ov011_02228ca4);
         temp_r7 = (u32) temp_r11 >> 1;
         DrawTileRow((u16) ((0x80 - temp_r7) & 0x1FF), 0x440, temp_r11, (u16) ((0x3FF & (0x100 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         temp_r8 = (u32) temp_r4 >> 1;

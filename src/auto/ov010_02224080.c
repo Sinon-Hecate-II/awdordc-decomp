@@ -314,10 +314,10 @@ if(i<0)return -1;
 t=M2C_FIELD(&gLinkConfig,s32 *,16)==1?data_ov010_0222bf22:data_ov010_0222be5c;
 v=*(i+(M2C_FIELD(a,u32 *,12)*11U+t));
 switch(v) {
+default: return v;
 case -2: VoiceLink_SendPacket(a,1); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
 case -3: VoiceLink_SendPacket(a,3); M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,s32 *,0)=0;return v;
 case -1: break;
-default: break;
 }
 return v;
 }

@@ -83,7 +83,7 @@ void func_02086370(void) {
 
 void func_0208639c(void) {
     void *FindObjectByClass(M2C_UNK *);
-    M2C_UNK func_02091cd0(void *);
+    M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *);
     extern M2C_UNK gVoiceChatWidgetClass;
     void *temp_r0;
     temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
@@ -92,7 +92,7 @@ void func_0208639c(void) {
     }
     M2C_FIELD(temp_r0, u8 *, 0x4C) = 1;
     M2C_FIELD(temp_r0, u8 *, 0x4D) = 0;
-    func_02091cd0(temp_r0);
+    LoadScenePanelGraphicsOnBothEngines(temp_r0);
 }
 
 void func_020863cc(void) {
@@ -323,24 +323,24 @@ void func_020868ac(u32 arg0, s32 arg1) {
  M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) = (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_020868e0(u32 arg0, s32 arg1) {
-    extern M2C_UNK data_0215d9a8;
+void SetEventFlagHigh(u32 arg0, s32 arg1) {
+    extern M2C_UNK gEventFlagsHigh;
     s32 shift;
     s32 mask;
     if (arg1 != 0) {
         shift = arg0 & 7;
         mask = 1 << shift;
-        M2C_FIELD(&data_0215d9a8,u8 *,arg0 >> 3) |= mask;
+        M2C_FIELD(&gEventFlagsHigh,u8 *,arg0 >> 3) |= mask;
     } else {
         shift = arg0 & 7;
         mask = -1 ^ (1 << shift);
-        M2C_FIELD(&data_0215d9a8,u8 *,arg0 >> 3) &= mask;
+        M2C_FIELD(&gEventFlagsHigh,u8 *,arg0 >> 3) &= mask;
     }
 }
 
 void func_02086930(s32 arg0, s8 arg1) {
-    extern M2C_UNK data_0215d9b0;
-    M2C_FIELD(&data_0215d9b0, s8 *, arg0) = arg1;
+    extern M2C_UNK gEventValues;
+    M2C_FIELD(&gEventValues, s8 *, arg0) = arg1;
 }
 
 u8 func_02086940(u32 arg0) {
@@ -358,9 +358,9 @@ u8 IsCampaignMapSaved(u32 arg0) {
     return (u8) (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
-s32 func_020869a0(s32 arg0) {
-    extern M2C_UNK data_0215d9a8;
-    return (u8)(M2C_FIELD(&data_0215d9a8,u8 *, (u32)arg0 >> 3) & (1 << (arg0 & 7)));
+s32 IsEventFlagHighSet(s32 arg0) {
+    extern M2C_UNK gEventFlagsHigh;
+    return (u8)(M2C_FIELD(&gEventFlagsHigh,u8 *, (u32)arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 func_020869c0(u32 arg0) {
@@ -379,8 +379,8 @@ u8 IsListRowFlagSet(u32 arg0) {
 }
 
 u8 func_02086a20(s32 arg0) {
-    extern M2C_UNK data_0215d9b0;
-    return M2C_FIELD(&data_0215d9b0, u8 *, arg0);
+    extern M2C_UNK gEventValues;
+    return M2C_FIELD(&gEventValues, u8 *, arg0);
 }
 
 s32 func_02086a30(s32 arg0) {
@@ -410,11 +410,11 @@ M2C_UNK func_02086ae4(s32 arg0,s32 arg1) {
  if(arg0>=0x20&&arg0<0x60){func_02086740(arg0-0x20,(u8)arg1);return;}
  if(arg0<0x60)return;
  if(arg0>=0xA0)return;
- func_020868e0(arg0-0x60,(u8)arg1);
+ SetEventFlagHigh(arg0-0x60,(u8)arg1);
 }
 
-s32 func_02086b40(s32 arg0) {
-    s32 func_020869a0(s32);
+s32 IsEventFlagSet(s32 arg0) {
+    s32 IsEventFlagHighSet(s32);
     s32 func_02086a30(s32);
     s32 func_02086aa0();
     if ((arg0 >= 0) && (arg0 < 0x20)) {
@@ -424,7 +424,7 @@ s32 func_02086b40(s32 arg0) {
         return func_02086a30(arg0 - 0x20);
     }
     if ((arg0 >= 0x60) && (arg0 < 0xA0)) {
-        return func_020869a0(arg0 - 0x60);
+        return IsEventFlagHighSet(arg0 - 0x60);
     }
     return 0;
 }
@@ -609,7 +609,7 @@ void SetGxPolygonAttr(s32 arg0, s32 arg1) {
     *(s32 *)0x040004A4 = (arg0 << 0x18) | 0x81 | (arg1 << 0x10);
 }
 
-void func_02087064(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
+void SetGxTextureParams(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
  s32 temp_r5; s32 var_r0;
  temp_r5=GetGxTextureSizeCode4(arg2);
  *(volatile u32 *)0x040004A8=((u32)(arg3<<5)>>3)|(arg0<<26)|0x40000000|(GetGxTextureSizeCode3(arg1)<<20)|(temp_r5<<23)|0x20000000;

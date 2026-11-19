@@ -141,7 +141,7 @@ double func_02070134(double a, double b) {
     return a + b;
 }
 
-s32 func_0207044c(u32 r0, u32 r1) {
+s32 _d2f(u32 r0, u32 r1) {
     u32 sign;
     u32 exp;
     u32 huge_mant;

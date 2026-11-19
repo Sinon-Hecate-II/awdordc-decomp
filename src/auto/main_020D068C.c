@@ -118,13 +118,13 @@ return var_r6!=0 || temp_r0!=0;
 }
 #pragma opt_common_subs reset
 s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
- s32 func_020a5ae0();
+ s32 GetDamageTargetIndex();
  s32 func_020a796c();
  s32 func_020a8204();
  s32 CalculateUnitDamage();
  u16 temp_r0,var_r4;
  var_r4=0;
- if(func_020a8204()!=0)var_r4=CalculateUnitDamage(arg0,func_020a5ae0(arg1),0,0);
+ if(func_020a8204()!=0)var_r4=CalculateUnitDamage(arg0,GetDamageTargetIndex(arg1),0,0);
  temp_r0=func_020a796c((u32)(*arg0<<26)>>26,arg1,1);
  return var_r4!=0 || temp_r0!=0;
 }

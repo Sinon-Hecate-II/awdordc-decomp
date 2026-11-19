@@ -263,7 +263,7 @@ M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void), LoadNarcFileDecompressed(
 s32 FindSpriteSlotById(s32); void *AddSpriteSlot(s32, s32, void *, s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32, s32, u16, u16);
 s32 GetActiveOverlay(void); void *GetLocalPlayerStatus(void);
-void PlaySoundEffect(s32); M2C_UNK SetSpriteSlotScroll(s32, s32), func_02088f1c(void *), SetTextById(void *, s32);
+void PlaySoundEffect(s32); M2C_UNK SetSpriteSlotScroll(s32, s32), Show3DSpriteSlide(void *), SetTextById(void *, s32);
 s32 row, rowX, bar;
 void *selectedRow;
 s32 barX, barEnd, barColor, hasRows, savedEngine, savedBarEngine, status;
@@ -321,19 +321,19 @@ if (selectedRow) {
     }
 }
 SetSpriteSlotScroll(0, 0);
-func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0));
+Show3DSpriteSlide(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0));
 sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0);
 if (func_020e_check(sprite)) M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)func_020e_low(sprite);
 else M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)(func_020e_low(sprite) + 2);
 M2C_FIELD(sprite, u8 *, 0x5a) = 0;
-func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE1));
+Show3DSpriteSlide(M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE1));
 sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE1);
 M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)(func_020e_low(sprite) + 2);
 M2C_FIELD(sprite, u8 *, 0x5a) = 0;
 sprite = M2C_FIELD(entity, void **, VCHT_MENU_TOGGLE0);
 if (!func_020e_check(sprite)) { M2C_FIELD(sprite, E0B04Bits *, 0x40).value = (u16)func_020e_low(sprite); M2C_FIELD(sprite, u8 *, 0x5a) = 0; }
 SetTextById(M2C_FIELD(entity, void **, VCHT_MENU_LABEL), 0x44000013);
-func_02088f1c(M2C_FIELD(entity, void **, VCHT_MENU_LABEL));
+Show3DSpriteSlide(M2C_FIELD(entity, void **, VCHT_MENU_LABEL));
 if (GetSpriteAnimValue(M2C_FIELD(entity, void **, VCHT_MENU_ANIM))) {
     s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, VCHT_MENU_ANIM));
     sprite = M2C_FIELD(entity, void **, VCHT_MENU_ANIM);

@@ -45,7 +45,7 @@ s32 func_ov010_02223114(void) {
 
 #pragma intrinsic on
 s32 func_ov010_022231d4(void) {
-M2C_UNK func_020444cc(u8,s32,s32);
+M2C_UNK SendDataToPlayer(u8,s32,s32);
 s32 Link_BuildNextPacket(void);
 extern M2C_UNK data_ov010_0222c960, gLinkConfig;
 extern u8 data_ov010_0222be36[];
@@ -65,7 +65,7 @@ loop: {
 u32 bits=M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C);
 k=__CLZ(bits);if(k==32)goto done;
 M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C)=bits&~(0x80000000U>>k);
-func_020444cc((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
+SendDataToPlayer((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
 if(!M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)){
 M2C_FIELD(&data_ov010_0222c960,s32*,0xF00)++;
 M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=0;
@@ -309,32 +309,37 @@ s32 Link_GetQueueCount(s32 arg0) {
     return gLinkQueueCount[arg0];
 }
 
-void func_ov010_0222393c(void *arg0, s32 arg1, s32 arg2) {
+/* Resets one of the LINK_CHANNEL_COUNT link voice-channel states
+ * (LinkChannelState, LINK_CHANNEL_STRIDE bytes) for channel `index` and
+ * `channelId`: clears its playback timing, backlog and packet fields, restores
+ * the two processing defaults at +4 and +0x8C and marks the channel ready at
+ * +0x5C. */
+void Link_InitChannelState(void *state, s32 index, s32 channelId) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x28);
-    M2C_FIELD(arg0, s32 *, 4) = 0x134DF;
-    M2C_FIELD(arg0, s32 *, 0x28) = 0;
-    M2C_FIELD(arg0, s32 *, 0x2C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x34) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x38) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x7C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x80) = 0;
-    M2C_FIELD(arg0, s32 *, 0x84) = 0;
-    M2C_FIELD(arg0, s32 *, 0x88) = 0;
-    M2C_FIELD(arg0, s32 *, 0x8C) = 0x134DF;
-    M2C_FIELD(arg0, s32 *, 0x90) = 0;
-    M2C_FIELD(arg0, s32 *, 0x4C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x44) = 0;
-    M2C_FIELD(arg0, s32 *, 0x48) = 0;
-    M2C_FIELD(arg0, s32 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x70) = 0;
-    M2C_FIELD(arg0, s32 *, 0x50) = 0;
-    M2C_FIELD(arg0, s32 *, 0x54) = 0;
-    M2C_FIELD(arg0, s32 *, 0x58) = 0;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 1;
-    M2C_FIELD(arg0, s32 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x40) = 0;
-    M2C_FIELD(arg0, s32 *, 0x30) = 0;
+    MI_CpuFill8(state, 0, 0x28);
+    M2C_FIELD(state, s32 *, 4) = 0x134DF;
+    M2C_FIELD(state, s32 *, 0x28) = 0;
+    M2C_FIELD(state, s32 *, 0x2C) = 0;
+    M2C_FIELD(state, s32 *, 0x34) = index;
+    M2C_FIELD(state, s32 *, 0x38) = channelId;
+    M2C_FIELD(state, s32 *, 0x7C) = 0;
+    M2C_FIELD(state, s32 *, 0x80) = 0;
+    M2C_FIELD(state, s32 *, 0x84) = 0;
+    M2C_FIELD(state, s32 *, 0x88) = 0;
+    M2C_FIELD(state, s32 *, 0x8C) = 0x134DF;
+    M2C_FIELD(state, s32 *, 0x90) = 0;
+    M2C_FIELD(state, s32 *, 0x4C) = 0;
+    M2C_FIELD(state, s32 *, 0x44) = 0;
+    M2C_FIELD(state, s32 *, 0x48) = 0;
+    M2C_FIELD(state, s32 *, 0x6C) = 0;
+    M2C_FIELD(state, s32 *, 0x70) = 0;
+    M2C_FIELD(state, s32 *, 0x50) = 0;
+    M2C_FIELD(state, s32 *, 0x54) = 0;
+    M2C_FIELD(state, s32 *, 0x58) = 0;
+    M2C_FIELD(state, s32 *, 0x5C) = 1;
+    M2C_FIELD(state, s32 *, 0x3C) = 0;
+    M2C_FIELD(state, s32 *, 0x40) = 0;
+    M2C_FIELD(state, s32 *, 0x30) = 0;
 }
 
 void func_ov010_022239c8(void *arg0) {

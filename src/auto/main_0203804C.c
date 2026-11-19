@@ -263,7 +263,28 @@ s32 func_020388d8(s32 playerList, s32 listLength, s32 matchType, s32 flag, s32 e
     return 1;
 }
 
-s32 func_02038a84(s32 a,s32 b,s32 c,s32 d,s32 e){s32 HasNetError(void);void ResetPlayerSlots(void);void SetNetState(s32);void StartServingMatch(s32,void *,s32,s32,s32);extern M2C_UNK DispatchMatchEvent;extern void *gNetSession;if(HasNetError() || M2C_FIELD(gNetSession,s32 *,36)!=3)return 0;ResetPlayerSlots();M2C_FIELD(gNetSession,s32 *,136)=b;M2C_FIELD(gNetSession,s32 *,140)=c;M2C_FIELD(gNetSession,u8 *,44)=0;SetNetState(5);StartServingMatch((u8)(a-1),&DispatchMatchEvent,0,d,e);return 1;}
+/* Serves a match to other consoles: from the idle lobby, clears the player
+ * slots, installs the wide (6-argument) match event callback and its data, makes
+ * this console player 0, moves the session to the starting state and hands the
+ * session to the connection layer with the peer callback and its data.
+ * Returns 0 when the session is in no state that allows it. */
+s32 StartServingMatchSession(s32 matchType, s32 eventCallback, s32 eventData, s32 peerCallback, s32 peerCallbackData) {
+    s32 HasNetError(void);
+    void ResetPlayerSlots(void);
+    void SetNetState(s32);
+    void StartServingMatch(s32, void *, s32, s32, s32);
+    extern M2C_UNK DispatchMatchEvent;
+    extern void *gNetSession;
+
+    if (HasNetError() || M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE) != NET_STATE_READY) return 0;
+    ResetPlayerSlots();
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_EVENT_CALLBACK5) = eventCallback;
+    M2C_FIELD(gNetSession, s32 *, NET_SESSION_EVENT_DATA5) = eventData;
+    M2C_FIELD(gNetSession, u8 *, NET_SESSION_LOCAL_PLAYER_ID) = 0;
+    SetNetState(NET_STATE_STARTING);
+    StartServingMatch((u8)(matchType - 1), &DispatchMatchEvent, 0, peerCallback, peerCallbackData);
+    return 1;
+}
 
 /* Looks up the local player's match record, verifies its SCM and SCN fields,
    then either starts the online match or reports the failure through the
@@ -273,11 +294,11 @@ s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 m
     void ResetPlayerSlots(void);
     void SetNetState(s32);
     s32 GetSessionPlayerId(s32);
-    s32 func_0204e364(void **, s32);
+    s32 HasBuddyProfile(void **, s32);
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 gpGetBuddyStatus(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
-    s32 func_0206abd8(s8 *, s32, s32);
+    s32 strtoul(s8 *, s32, s32);
     void StartMatchWithPlayer(s32, M2C_UNK, M2C_UNK, s32, s32);
     void SetNetError(s32, s32);
     void SetGpiStatus(s32, void *, s32);
@@ -303,7 +324,7 @@ s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 m
     SetNetState(NET_STATE_STARTING);
 
     playerId = GetSessionPlayerId(playerSlot);
-    if (playerId == 0 || func_0204e364((void **)((char *)gNetSession + 0x1C), playerId) == 0) {
+    if (playerId == 0 || HasBuddyProfile((void **)((char *)gNetSession + 0x1C), playerId) == 0) {
         status = 0x0B;
         goto tail;
     }
@@ -318,10 +339,10 @@ s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 m
 
     valueText = 0x30;
     ExtractKeyValue(&gKeySCM, (s8 *)&valueText, (s8 *)player.fields, 0x2F);
-    scmValue = (u8)func_0206abd8((s8 *)&valueText, 0, 10);
+    scmValue = (u8)strtoul((s8 *)&valueText, 0, 10);
 
     ExtractKeyValue(&gKeySCN, (s8 *)&valueText, (s8 *)player.fields, 0x2F);
-    scnValue = (u8)func_0206abd8((s8 *)&valueText, 0, 10);
+    scnValue = (u8)strtoul((s8 *)&valueText, 0, 10);
     if (scnValue == scmValue) {
         status = 0x0D;
         goto tail;

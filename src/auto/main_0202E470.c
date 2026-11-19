@@ -318,7 +318,7 @@ block_118:
 
 #pragma pop
 void Sound_SetPlayerCallbacks(void *arg0,s32 arg1) {
- if(func_0202c444(arg1)==0) {
+ if(GetLoadedArchiveFile(arg1)==0) {
  M2C_FIELD(arg0,void **,0x164)=func_0202ed18;
  M2C_FIELD(arg0,void **,0x168)=func_0202ed8c;
  M2C_FIELD(arg0,void **,0x16C)=func_0202ed9c;
@@ -362,10 +362,10 @@ void func_0202edd4(s32 arg0) {
 
 s32 func_0202ede4(void *arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
-    s32 func_0202c444(M2C_UNK);
+    s32 GetLoadedArchiveFile(M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_0202c444(arg1);
+    temp_r0 = GetLoadedArchiveFile(arg1);
     M2C_FIELD(arg0, s32 *, 0xA4) = temp_r0;
     MI_CpuCopy8(temp_r0, arg0 + 0xA8, 0x40);
     return 1;
@@ -411,14 +411,14 @@ void func_0202eec0(void *arg0) {
 }
 
 void func_0202eed8(void *arg0, s32 arg1, s32 arg2) {
-    s32 func_0202ef00();
-    M2C_FIELD(arg0, s32 *, 0) = func_0202ef00();
+    s32 GetFadeValue();
+    M2C_FIELD(arg0, s32 *, 0) = GetFadeValue();
     M2C_FIELD(arg0, s32 *, 4) = arg1;
     M2C_FIELD(arg0, s32 *, 0xC) = arg2;
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-s32 func_0202ef00(void *arg0) {
+s32 GetFadeValue(void *arg0) {
  s32 func_020720f0(s32,s32);
  s32 n=M2C_FIELD(arg0,s32 *,0xC);
  s32 t=M2C_FIELD(arg0,s32 *,8);
@@ -428,7 +428,7 @@ s32 func_0202ef00(void *arg0) {
  return start+func_020720f0(t*(M2C_FIELD(arg0,s32 *,4)-start),n);
 }
 
-void func_0202ef34(void *arg0) {
+void AdvanceFade(void *arg0) {
     s32 temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, s32 *, 8);
@@ -437,7 +437,7 @@ void func_0202ef34(void *arg0) {
     }
 }
 
-s32 func_0202ef4c(void *arg0) {
+s32 IsFadeDone(void *arg0) {
     if ((s32) M2C_FIELD(arg0, s32 *, 8) >= (s32) M2C_FIELD(arg0, s32 *, 0xC)) {
         return 1;
     }
@@ -529,7 +529,7 @@ u8 func_0202f248(void) {
     return var_r4;
 }
 
-s32 func_0202f28c(void) {
+s32 Wfc_EndSession(void) {
  u32 Wfc_GetSessionState();
  void Wfc_FreeWorkBlocks(void);
  void func_020301dc(u8 *);
@@ -541,7 +541,7 @@ s32 func_0202f28c(void) {
  func_020301dc(&n);Wfc_PublishState(n);return 0;
 }
 
-void func_0202f2c8(s32 arg0, M2C_UNK arg1) {
+void Wfc_SetSlotImage(s32 arg0, M2C_UNK arg1) {
     M2C_UNK func_02007e70(M2C_UNK, s32, M2C_UNK);
     s32 Wfc_GetWorkBlock(M2C_UNK);
     func_02007e70(arg1, Wfc_GetWorkBlock(0x10) + (arg0 << 8), 0xF0);

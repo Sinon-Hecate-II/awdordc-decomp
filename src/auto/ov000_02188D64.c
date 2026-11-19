@@ -120,7 +120,7 @@ s32 func_ov000_02189248(u8 *arg0,s16 *out) {
 extern void **gCurrentMap;
 extern u8 *gAiCommandState;
 extern u8 gUnitKindStats[];
-s32 func_020a33c4(s32); s32 ComputeUnitMoveRange(s32,s32,s32,s32);
+s32 GetPlayerArmyVariant(s32); s32 ComputeUnitMoveRange(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
 s32 func_ov000_021a9084(s32); s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
@@ -132,7 +132,7 @@ u8 *selp;
 void *map;
 bestScore=0x7fff;
 bestCost=bestScore;
-score=ComputeUnitMoveRange((u32)(arg0[0]<<26)>>26,M2C_FIELD(gAiCommandState,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),func_020a33c4(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
+score=ComputeUnitMoveRange((u32)(arg0[0]<<26)>>26,M2C_FIELD(gAiCommandState,u8*,0xc),M2C_FIELD(*gCurrentMap,u16*,0x52a4),GetPlayerArmyVariant(M2C_FIELD(*gCurrentMap,u16*,0x52a4)));
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
 BuildUnitMoveRange(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
@@ -198,7 +198,7 @@ return 1;
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *gAiCommandState;
- void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void func_ov000_02189a08();
+ void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void ChooseCaptureDestination();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
@@ -250,5 +250,5 @@ void func_ov000_021895bc(void){
  PlanMoveDestination(ux,uy);return;
  }
  }
- func_ov000_02189a08();
+ ChooseCaptureDestination();
 }

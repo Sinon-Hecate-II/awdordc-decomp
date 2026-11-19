@@ -16,8 +16,8 @@ void func_ov010_02229d20(void *arg0) {
 }
 
 void func_ov010_02229d34(s32 arg0) {
-    M2C_UNK func_ov010_02229c74(s32);
-    func_ov010_02229c74(arg0 + 0x38);
+    M2C_UNK Ov010Online_IsStartAcknowledged(s32);
+    Ov010Online_IsStartAcknowledged(arg0 + 0x38);
 }
 
 void func_ov010_02229d44(s32 arg0) {
@@ -50,11 +50,33 @@ M2C_UNK func_ov010_02229d9c(s32 arg0) {
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x24) = arg0;
 }
 
-s32 func_ov010_02229ddc(s32 arg0){s32 GetOnlinePeerMask();s32 GetNetErrorCode();extern M2C_UNK gOv010OnlineSession;s32 v,b,t;
-if(M2C_FIELD(&gOv010OnlineSession,void * volatile *,0x24)){v=GetOnlinePeerMask();t=GetOnlinePeerMask();if(v!=(M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u16 *,2)&t)){v=1;goto ready;}}v=0;ready:;
-if(!M2C_FIELD(M2C_FIELD(&gOv010OnlineSession,void **,0x24),u8 *,0))v=0;
-if(!IsOnlineSessionFlagSet(3))v=0;
-if(GetNetErrorCode())b=1;else b=0;if(b)v=0;if(!v)func_ov010_02229bdc();return v;}
+/* Check the online session's local-player join record: returns 1 when the
+ * record says the join succeeded, the session is running, there is no network
+ * error and the current peer mask holds more than the local player's own bit
+ * (another peer is present).  Returns 0 otherwise, after running the host
+ * check. */
+s32 Ov010Online_IsPlayerJoined(s32 self) {
+    s32 GetOnlinePeerMask();
+    s32 GetNetErrorCode();
+    extern M2C_UNK gOv010OnlineSession;
+    s32 v, b, t;
+    if (M2C_FIELD(&gOv010OnlineSession, void * volatile *, OV010_SESSION_PLAYER)) {
+        v = GetOnlinePeerMask();
+        t = GetOnlinePeerMask();
+        if (v != (M2C_FIELD(M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_PLAYER), u16 *, OV010_PLAYER_MASK) & t)) {
+            v = 1;
+            goto ready;
+        }
+    }
+    v = 0;
+ready:
+    if (!M2C_FIELD(M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_PLAYER), u8 *, OV010_PLAYER_JOINED)) v = 0;
+    if (!IsOnlineSessionFlagSet(OV010_FLAG_RUNNING)) v = 0;
+    if (GetNetErrorCode()) b = 1; else b = 0;
+    if (b) v = 0;
+    if (!v) IsOnlineSessionHost();
+    return v;
+}
 
 void func_ov010_02229e70(s32 arg0) {
 extern M2C_UNK gOv010OnlineSession;
@@ -67,8 +89,8 @@ void func_ov010_02229e84(s32 arg0) {
 }
 
 void func_ov010_02229e94(s32 arg0) {
-    M2C_UNK func_ov010_02229ddc(s32);
-    func_ov010_02229ddc(arg0 + 0x34);
+    M2C_UNK Ov010Online_IsPlayerJoined(s32);
+    Ov010Online_IsPlayerJoined(arg0 + 0x34);
 }
 
 void func_ov010_02229ea4(s32 arg0) {
@@ -130,7 +152,7 @@ void func_ov010_02229fcc(void) {
 
 }
 
-void *func_ov010_02229fd0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+void *CreateOnlineMatchRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern M2C_UNK data_ov010_0222c2c0;
     extern M2C_UNK data_ov010_0222c3e4;
     void *temp_r0;
@@ -180,16 +202,16 @@ void *func_ov010_0222a078(void *arg0) {
 }
 
 s32 func_ov010_0222a0a8(s32 arg0) {
-    M2C_UNK func_020741c4(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK func_ov010_02228a48;
-    func_020741c4(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
+    DestroyArray(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
     return arg0;
 }
 
 s32 func_ov010_0222a0d0(s32 arg0) {
-    M2C_UNK func_020741c4(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK func_ov010_02228a48;
-    func_020741c4(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
+    DestroyArray(arg0 + 0x34, 4, 8, &func_ov010_02228a48);
     MemFree(arg0);
     return arg0;
 }

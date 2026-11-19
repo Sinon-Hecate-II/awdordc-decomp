@@ -243,7 +243,7 @@ s32 GetBattleSlotSummary(s32 arg0) {
         return 0;
     }
     var_r4 = (arg0 * 0xC) + (temp_r0 + 4);
-    if (func_02032380(var_r4) == 0) {
+    if (IsPlayerRecordPresent(var_r4) == 0) {
         var_r4 = 0;
     }
     return var_r4;
@@ -253,7 +253,7 @@ s32 GetBattleSlotSummary(s32 arg0) {
 s32 func_020c5328(s32 arg0) {
 s32 p=GetBattleSaveBlock();
 if(p==0) return 0;
-if(!func_02032380(arg0*12+(p+4))) { p=0; return p; }
+if(!IsPlayerRecordPresent(arg0*12+(p+4))) { p=0; return p; }
 return arg0*40+(p+0x2d4);
 }
 #pragma optimize_for_size reset
@@ -294,10 +294,10 @@ void func_020c53e4(s32 arg0) {
 }
 
 void CopyLocalPlayerRecord(M2C_UNK arg0) {
-    M2C_UNK func_02032380(M2C_UNK);
+    M2C_UNK IsPlayerRecordPresent(M2C_UNK);
     M2C_UNK func_02032670(s32, M2C_UNK);
     func_02032670(func_020c4acc() + 4, arg0);
-    func_02032380(arg0);
+    IsPlayerRecordPresent(arg0);
 }
 
 void func_020c5424(void) {
@@ -355,20 +355,24 @@ s32 CanModifyBattleSave(void) {
     return func_0203a8dc();
 }
 
-s32 BattleSaveSlotInUse(s32 arg0) {
-s32 func_02032710(s32,s32);
-s32 p, result=0, i, id;
-p=GetBattleSaveBlock();
-if(p==0)return result;
-i=result;
-id=func_020c477c(arg0);
-p+=4;
-do {
-if(func_02032380(p)!=0 && (func_02032710(p,arg0)!=0 || (id>0 && id==func_020c477c(p)))) {result=1;break;}
-i++;
-p+=12;
-}while(i<60);
-return result;
+/* Whether the battle save block already holds a slot for this 12-byte NAS player
+ * record: a valid slot summary that equals the record, or carries the same
+ * profile id, means the player already has a battle save. */
+s32 BattleSaveSlotInUse(s32 playerRecord) {
+    s32 PlayerRecordsEqual(s32, s32);
+    s32 summary, result = 0, slot, profileId;
+
+    summary = GetBattleSaveBlock();
+    if (summary == 0) return result;
+    slot = result;
+    profileId = GetRecordProfileId(playerRecord);
+    summary += SAVE_SUMMARIES_OFFSET;
+    do {
+        if (IsPlayerRecordPresent(summary) != 0 && (PlayerRecordsEqual(summary, playerRecord) != 0 || (profileId > 0 && profileId == GetRecordProfileId(summary)))) { result = 1; break; }
+        slot++;
+        summary += SAVE_SLOT_SUMMARY_SIZE;
+    } while (slot < SAVE_SLOT_COUNT);
+    return result;
 }
 
 /* Registers a battle save in a slot: stores the 12-byte slot summary and
@@ -429,8 +433,8 @@ result=0;
 base=GetBattleSaveBlock();
 if(!base)return result;
 p=GetBattleSlotSummary(arg0);
-if(p && func_02032380(p)) {
-func_0203a910(p);
+if(p && IsPlayerRecordPresent(p)) {
+ReleasePlayerRecord(p);
 off=arg0*0x28;
 FillU16(result,base+0x2d4+off,0x1a);
 p=base+off;
@@ -446,7 +450,7 @@ return result;
 }
 #pragma opt_common_subs reset
 s32 func_020c5708(s32 arg0) {
-    s32 func_020c477c(s32);
+    s32 GetRecordProfileId(s32);
     s32 temp_r0;
     s32 var_r4;
     s32 var_r5;
@@ -463,7 +467,7 @@ s32 func_020c5708(s32 arg0) {
     var_r6 = temp_r0 + 4;
     var_r5 = 0;
 loop_5:
-    if ((func_02032380(var_r6) != 0) && (arg0 == func_020c477c(var_r6))) {
+    if ((IsPlayerRecordPresent(var_r6) != 0) && (arg0 == GetRecordProfileId(var_r6))) {
         var_r4 = var_r5;
     } else {
         var_r5 += 1;
@@ -475,118 +479,50 @@ loop_5:
     return var_r4;
 }
 
-void func_020c5770(s32 arg0, void *arg1, void *arg2) {
-    s32 FX_Div(s32, s32);
-    s32 func_020719d4(s32);
-    s32 func_02071564(s32, s32);
-    double func_0207191c(s32);
-    double func_0206e2d8(s32, s32, s32, s32);
-    s32 func_0207044c(u32, u32);
-    s32 func_02071438(s32, s32);
-    s32 func_02071a64(u32, u32);
-    s32 func_02071c50(s32, s32);
-    s32 func_02070f24(s32, s32);
-    u32 func_020719a0(s32);
-    s32 func_02001fc4(s32);
+double func_0206e2d8(double, double);
+s32 FX_Div(s32, s32);
+s32 func_02001fc4(s32);
+void ConvergeSyncedPositions(s32 mode, s32 *first, s32 *second)
+{
+    s32 start, end, forward, backward;
 
-    s32 mode = arg0;
-    void *p1 = arg1;
-    void *p2 = arg2;
-    s32 r9 = *(s32 *)p2;
-    s32 r8 = *(s32 *)p1;
-    s32 r7 = FX_Div(r9 - r8, 0x190000);
-    r8 = FX_Div(r8 - r9, 0x190000);
-
+    end = *second;
+    start = *first;
+    forward = FX_Div(end - start, POS_CONVERGE_SCALE);
+    backward = FX_Div(start - end, POS_CONVERGE_SCALE);
     {
-        s32 t;
-        double d, e;
-        u32 lo, hi;
-        s32 f;
-
-        t = func_020719d4(r7);
-        t = func_02071564(t, 0x45800000);
-        d = func_0207191c(t);
-        lo = ((u32 *)&d)[0];
-        hi = ((u32 *)&d)[1];
-        e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-        f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-        if (func_02071438(f, 0) > 0) {
-            t = func_020719d4(r7);
-            t = func_02071564(t, 0x45800000);
-            d = func_0207191c(t);
-            lo = ((u32 *)&d)[0];
-            hi = ((u32 *)&d)[1];
-            e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-            f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-            t = func_02071a64(0x45800000, f);
-            r7 = func_02070f24(t, 0x3f000000);
+        float rounded;
+        if ((float)func_0206e2d8(10.0, (double)((float)forward / 4096.0f)) > 0.0f) {
+            rounded = 0.5f + 4096.0f * (float)func_0206e2d8(10.0, (double)((float)forward / 4096.0f));
         } else {
-            t = func_020719d4(r7);
-            t = func_02071564(t, 0x45800000);
-            d = func_0207191c(t);
-            lo = ((u32 *)&d)[0];
-            hi = ((u32 *)&d)[1];
-            e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-            f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-            t = func_02071a64(0x45800000, f);
-            r7 = (s32)func_020719a0(func_02071c50(0x3f000000, t));
+            rounded = 4096.0f * (float)func_0206e2d8(10.0, (double)((float)forward / 4096.0f)) - 0.5f;
         }
+        forward = (s32)rounded;
     }
-
     {
-        s32 t;
-        double d, e;
-        u32 lo, hi;
-        s32 f;
-
-        t = func_020719d4(r8);
-        t = func_02071564(t, 0x45800000);
-        d = func_0207191c(t);
-        lo = ((u32 *)&d)[0];
-        hi = ((u32 *)&d)[1];
-        e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-        f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-        if (func_02071438(f, 0) > 0) {
-            t = func_020719d4(r8);
-            t = func_02071564(t, 0x45800000);
-            d = func_0207191c(t);
-            lo = ((u32 *)&d)[0];
-            hi = ((u32 *)&d)[1];
-            e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-            f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-            t = func_02071a64(0x45800000, f);
-            r8 = func_02070f24(t, 0x3f000000);
+        float rounded;
+        if ((float)func_0206e2d8(10.0, (double)((float)backward / 4096.0f)) > 0.0f) {
+            rounded = 0.5f + 4096.0f * (float)func_0206e2d8(10.0, (double)((float)backward / 4096.0f));
         } else {
-            t = func_020719d4(r8);
-            t = func_02071564(t, 0x45800000);
-            d = func_0207191c(t);
-            lo = ((u32 *)&d)[0];
-            hi = ((u32 *)&d)[1];
-            e = func_0206e2d8(0, 0x40240000, (s32)lo, (s32)hi);
-            f = func_0207044c(((u32 *)&e)[0], ((u32 *)&e)[1]);
-            t = func_02071a64(0x45800000, f);
-            r8 = (s32)func_020719a0(func_02071c50(0x3f000000, t));
+            rounded = 4096.0f * (float)func_0206e2d8(10.0, (double)((float)backward / 4096.0f)) - 0.5f;
         }
+        backward = (s32)rounded;
     }
-
-    r7 = func_02001fc4(r7 + 0x1000);
-    r8 = func_02001fc4(r8 + 0x1000);
-
-    if (mode == 0) {
-        unsigned long long p1 = (unsigned long long)((long long)(0x1000 - r7) * 0x18000LL) + 0x800ULL;
-        unsigned long long p2 = (unsigned long long)((long long)(0 - r8) * 0x18000LL) + 0x800ULL;
-        *(s32 *)p1 = *(s32 *)p1 + (s32)(p1 >> 12);
-        *(s32 *)p2 = *(s32 *)p2 + (s32)(p2 >> 12);
-    } else if (mode == 1) {
-        unsigned long long p1 = (unsigned long long)((long long)(0 - r7) * 0x18000LL) + 0x800ULL;
-        unsigned long long p2 = (unsigned long long)((long long)(0x1000 - r8) * 0x18000LL) + 0x800ULL;
-        *(s32 *)p1 = *(s32 *)p1 + (s32)(p1 >> 12);
-        *(s32 *)p2 = *(s32 *)p2 + (s32)(p2 >> 12);
-    } else if (mode == 2) {
-        unsigned long long p1 = (unsigned long long)((long long)(0x800 - r7) * 0x18000LL) + 0x800ULL;
-        unsigned long long p2 = (unsigned long long)((long long)(0x800 - r8) * 0x18000LL) + 0x800ULL;
-        *(s32 *)p1 = *(s32 *)p1 + (s32)(p1 >> 12);
-        *(s32 *)p2 = *(s32 *)p2 + (s32)(p2 >> 12);
+    forward = func_02001fc4(forward + POS_FX_ONE);
+    backward = func_02001fc4(backward + POS_FX_ONE);
+    switch (mode) {
+    case 0:
+        *first += (s32)(((long long)(POS_FX_ONE - forward) * POS_CONVERGE_CELL + 0x800) >> 12);
+        *second += (s32)(((long long)-backward * POS_CONVERGE_CELL + 0x800) >> 12);
+        break;
+    case 1:
+        *first += (s32)(((long long)-forward * POS_CONVERGE_CELL + 0x800) >> 12);
+        *second += (s32)(((long long)(POS_FX_ONE - backward) * POS_CONVERGE_CELL + 0x800) >> 12);
+        break;
+    case 2:
+        *first += (s32)(((long long)(POS_FX_HALF - forward) * POS_CONVERGE_CELL + 0x800) >> 12);
+        *second += (s32)(((long long)(POS_FX_HALF - backward) * POS_CONVERGE_CELL + 0x800) >> 12);
+        break;
     }
 }
 

@@ -17,7 +17,12 @@
 
 /* Socket object fields. */
 #define SOCK_RAW        0x64 /* void *raw connection holding the receive queue */
-#define SOCK_KIND       0x72 /* s8: SOCK_KIND_TCP (1) for TCP sockets */
+/* SOCK_BLOCKING is 1 while the socket may block: a receive waits for its data and
+ * a socket task waits for its result.  fcntl(F_SETFL) with O_NONBLOCK clears it,
+ * after which receives only try to lock the connection.  (The transport kind TCP /
+ * UDP / ICMP is SOCK_TRANSPORT in tcp_socket.h, a different field.) */
+#define SOCK_BLOCKING       0x72 /* s8: 1 = blocking I/O, 0 = non-blocking */
+#define SOCK_BLOCKING_ON    1    /* the blocking value of SOCK_BLOCKING */
 #define SOCK_FLAGS      0x70 /* s16: bit 0 set once the socket is initialised */
 #define SOCK_FLAG_READY 0x0001
 #define SOCK_FLAG_BUSY  0x0002 /* a task is running on the socket (or a read is in progress) */
@@ -62,6 +67,14 @@
 #define SOCK_TX_BUF   0x4c /* u8 *outgoing packet buffer */
 #define SOCK_TX_HDR_STREAM 0x36 /* link + IPv4 + TCP header in front of a stream payload */
 #define SOCK_TX_HDR_DGRAM  0x2a /* link + IPv4 + UDP header in front of a datagram payload */
+
+/* Receive flags handed to the socket's receive entry; bit 1 is looked at by
+ * SocketRecvLocked, bit 2 while the call is being set up. */
+#define SOCK_RECV_PEEK     0x02 /* report the record without dequeuing it */
+#define SOCK_RECV_NONBLOCK 0x04 /* try-lock the socket's mutex and do not wait for data */
+
+/* The mutex every receive and send of a connection runs under. */
+#define CONN_MUTEX         0xE0
 
 /* Send-side raw connection (socket + SOCK_TX_CONN): a single-producer ring the
  * send task drains.  It is empty when the write and read positions are equal. */#define SEND_RING_SIZE  0xf8 /* u32 ring capacity in bytes */
@@ -118,12 +131,15 @@ typedef struct SendRequest {
 #define TASK_FUNC   0x00 /* void *(*)(void *) the task's function */
 #define TASK_SOCKET 0x04 /* void *socket the task works on */
 #define TASK_NOTIFY 0x08 /* void *message queue the task's result is sent to, 0 when no caller waits */
+#define TASK_BYTES  0x2C /* bytes per queued socket task slot */
 
 /* Receive-side drop counters. */
 #define RECV_STAT_NO_MEMORY  0x00 /* s32 records dropped because the allocator failed */
 #define RECV_STAT_QUEUE_FULL 0x04 /* s32 records dropped because the queue was full */
 
-/* SocketRecv results. */
+/* Socket call results. */
+#define SOCK_ERROR       (-28) /* the socket is unregistered, not initialised or in the wrong state */
+#define SOCK_NOT_READY   (-39) /* the socket's ready flag is clear */
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
 
@@ -132,6 +148,12 @@ typedef struct SendRequest {
 #define DNS_LOOKUP_BLOCK_BYTES   0xFD0 /* bytes of the block LookupHostAddress allocates */
 #define DNS_LOOKUP_RX_BYTES      0xB68 /* CONN_IN_WINDOW of that connection */
 #define DNS_LOOKUP_PENDING_BYTES 0x466 /* CONN_RX_MAX (pending-datagram buffer) of it */
+
+/* gDnsQueryState (main_02047B84): the service-availability DNS lookup some callers
+ * address as an s32 array.  Its first word is the query state; network code only
+ * starts a connect while no lookup is in flight. */
+#define DNS_QUERY_STATE  0x00 /* s32 */
+#define DNS_QUERY_IDLE   1    /* no lookup in flight: its result is unknown or expired */
 
 /* The socket manager (gSocketManager): a list of socket objects; each object
  * links the socket the network stack sees at +0xA4. */
@@ -158,6 +180,8 @@ typedef struct SendRequest {
 #define CONN_RX_MAX        0x48 /* u32 receive buffer size */
 #define CONN_RX_PENDING    0x68 /* u32 bytes of the pending ICMP datagram, 0 when none */
 #define CONN_RX_PENDING_BUF 0x4C /* u8 *buffer the pending datagram is copied into */
+#define CONN_PENDING_TX_BUF 0x5C /* s32 address of the send data still queued for the connection */
+#define CONN_PENDING_TX_LEN 0x60 /* u32 bytes queued there, 0 when nothing is pending */
 
 /* CONN_STATE values. */
 #define CONN_STATE_CLOSED      0
@@ -166,6 +190,7 @@ typedef struct SendRequest {
 #define CONN_STATE_SYN_RCVD    3
 #define CONN_STATE_ESTABLISHED 4
 
+/* Transport kinds of a socket (the SOCK_TRANSPORT byte of tcp_socket.h). */
 enum {
     SOCK_KIND_TCP  = 1,
     SOCK_KIND_UDP  = 10,

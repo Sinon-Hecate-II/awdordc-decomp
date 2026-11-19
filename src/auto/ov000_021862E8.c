@@ -139,7 +139,7 @@ void func_ov000_02186a18(void) {
     void func_ov000_02186940(void *);
     void BuildUnitMoveRange(void *);
     u8 IsAllyUnitAtCell(u32, s32);
-    s32 func_020cf878(s32, s32);
+    s32 IsOwnedProductionSite(s32, s32);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s32 fy, i;
     register s32 y, x;
@@ -171,7 +171,7 @@ void func_ov000_02186a18(void) {
                 if (cell == 0) continue;
                 if (cell >= best) continue;
                 if (IsAllyUnitAtCell((s16)x, (s16)y)) continue;
-                if (func_020cf878(x, y)) continue;
+                if (IsOwnedProductionSite(x, y)) continue;
                 if ((gUnitKindStats[((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u8 *, 0) << 26) >> 26) * 0x70 + 0x13] & 7) == 0) {
                     if (M2C_FIELD((u8 *)*gCurrentMap + x + ((u16 *)*gCurrentMap)[y + 0x1bac], u8 *, 0x2840) >= gAiUnitTypeTuning[1]) continue;
                 }

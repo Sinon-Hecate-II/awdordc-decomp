@@ -14,4 +14,9 @@
 /* The same fill with the channel's end-of-transfer interrupt enabled. */
 #define DMA_FILL_CTRL_IRQ(size) (((size) >> 2) | 0xC5000000)
 
+/* Control word of a 32-bit memory copy: both addresses increment. */
+#define DMA_COPY_CTRL(size)     (((size) >> 2) | 0x84000000)
+/* The same copy with the channel's end-of-transfer interrupt enabled. */
+#define DMA_COPY_CTRL_IRQ(size) (((size) >> 2) | 0xC4000000)
+
 #endif

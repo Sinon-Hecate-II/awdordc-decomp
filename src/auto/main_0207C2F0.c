@@ -58,7 +58,7 @@ void func_0207c39c(void *arg0) {
 }
 
 void QueueMemoryCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    M2C_UNK func_01ffa8bc(void *, s32);
+    M2C_UNK SetSpriteZ(void *, s32);
     void *func_0209ccb8(M2C_UNK *, M2C_UNK);
     void func_0207c39c(void *);
     void *temp_r0;
@@ -70,7 +70,7 @@ void QueueMemoryCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(temp_r0, s32 *, 0x50) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    func_01ffa8bc(temp_r0, 0xFF02);
+    SetSpriteZ(temp_r0, 0xFF02);
 }
 
 void func_0207c42c(void *arg0) {
@@ -97,7 +97,7 @@ void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(temp_r0, s32 *, 0x50) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    func_01ffa8bc(temp_r0, 0xFF02);
+    SetSpriteZ(temp_r0, 0xFF02);
 }
 
 void func_0207c4b4(void *arg0) {
@@ -153,10 +153,10 @@ void QueueVramCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(var_r0, s32 *, 0x50) = arg3;
     M2C_FIELD(var_r0, s32 *, 0x48) = 0;
     M2C_FIELD(var_r0, s32 *, 0x4C) = 0;
-    func_01ffa8bc(var_r0, 0xFF02);
+    SetSpriteZ(var_r0, 0xFF02);
 }
 
-void func_0207c5d0(void *arg0) {
+void UploadBGExtPaletteTask(void *arg0) {
     M2C_UNK GX_BeginLoadBGExtPltt(void);
     M2C_UNK GX_LoadBGExtPltt(s32, s32, s32);
     M2C_UNK GX_EndLoadBGExtPltt(void);
@@ -178,21 +178,21 @@ void func_0207c5d0(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c650(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
-    void func_0207c5d0(void *);
+void QueueBGExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+    void UploadBGExtPaletteTask(void *);
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8(&func_0207c5d0, 0);
+    temp_r0 = func_0209ccb8(&UploadBGExtPaletteTask, 0);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x50) = (s32) arg4;
     M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    func_01ffa8bc(temp_r0, 0xFF02);
+    SetSpriteZ(temp_r0, 0xFF02);
 }
 
-void func_0207c6a8(void *arg0) {
+void UploadOBJExtPaletteTask(void *arg0) {
     M2C_UNK GX_BeginLoadOBJExtPltt(void);
     M2C_UNK GX_LoadOBJExtPltt(s32, s32, s32);
     M2C_UNK GX_EndLoadOBJExtPltt(void);
@@ -214,18 +214,18 @@ void func_0207c6a8(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c728(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
-    void func_0207c6a8(void *);
+void QueueOBJExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+    void UploadOBJExtPaletteTask(void *);
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8(&func_0207c6a8, 0);
+    temp_r0 = func_0209ccb8(&UploadOBJExtPaletteTask, 0);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
     M2C_FIELD(temp_r0, s32 *, 0x50) = (s32) arg4;
     M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    func_01ffa8bc(temp_r0, 0xFF02);
+    SetSpriteZ(temp_r0, 0xFF02);
 }
 
 void LoadGraphicsBlock(void *arg0, u32 arg1) {
@@ -246,57 +246,63 @@ u32 GetDecompressedSize(u32 *arg0) {
     return (u32) *arg0 >> 8;
 }
 
-u32 InitDecompress(void *arg0, u32 *arg1, u32 arg2) {
-    M2C_UNK func_020085ac(void *, u32, u32 *);
-    M2C_UNK func_020085d4(void *, u32, u32 *);
-    M2C_UNK func_02008604(void *, u32, u32 *);
-    s8 var_r1;
-    u8 temp_r1;
+/* Set up the chunked decompressor for a compressed block: record its type and
+ * whether the output lies outside main RAM (VRAM is written 16 bits at a time),
+ * initialise that type's decoder state and return the decompressed size. */
+u32 InitDecompress(DecompressState *state, u32 *header, u32 dest) {
+    M2C_UNK InitLz77Decompress(void *, u32, u32 *);
+    M2C_UNK InitHuffmanDecompress(void *, u32, u32 *);
+    M2C_UNK InitRleDecompress(void *, u32, u32 *);
+    s8 vramFlag;
+    u8 compType;
 
-    M2C_FIELD(arg0, u8 *, 0) = (u8) (*arg1 & 0xF0);
-    if (arg2 >= 0x04000000U) {
-        var_r1 = 1;
+    state->compType = (u8) (*header & 0xF0);
+    if (dest >= 0x04000000U) {
+        vramFlag = 1;
     } else {
-        var_r1 = 0;
+        vramFlag = 0;
     }
-    M2C_FIELD(arg0, s8 *, 1) = var_r1;
-    temp_r1 = M2C_FIELD(arg0, u8 *, 0);
-    switch (temp_r1) {                              /* irregular */
-    case 16:
-        func_020085d4(arg0 + 4, arg2, arg1);
+    state->vramFlag = vramFlag;
+    compType = state->compType;
+    switch (compType) {                             /* irregular */
+    case COMP_TYPE_LZ77:
+        InitLz77Decompress((u8 *)state + 4, dest, header);
         break;
-    case 32:
-        func_02008604(arg0 + 4, arg2, arg1);
+    case COMP_TYPE_HUFFMAN:
+        InitHuffmanDecompress((u8 *)state + 4, dest, header);
         break;
-    case 48:
-        func_020085ac(arg0 + 4, arg2, arg1);
+    case COMP_TYPE_RLE:
+        InitRleDecompress((u8 *)state + 4, dest, header);
         break;
     }
-    return (u32) *arg1 >> 8;
+    return (u32) *header >> 8;
 }
 
-s32 DecompressChunk(void *arg0, u32 arg1, u32 arg2) {
-    s32 func_0200864c(void *, u32, u32);
-    s32 func_02008700(void *, u32, u32);
-    s32 func_020087ec(void *, u32, u32);
-    s32 func_020088ec(void *, u32, u32);
-    s32 func_02008a60(void *, u32, u32);
-    s32 (*func)(void *, u32, u32);
-    s32 result = 0;
-    switch (M2C_FIELD(arg0, u8 *, 0)) {
-    case 16:
-        func = M2C_FIELD(arg0, u8 *, 1) == 0 ? func_020087ec : func_020088ec;
-        result = func(arg0 + 4, arg1, arg2);
+/* Run one chunk of a compressed block through the decoder its type byte selects:
+ * LZ77, Huffman or RLE, with the byte or 16-bit output variant the decoder's
+ * flags byte asks for.  Returns the output bytes still to produce. */
+s32 DecompressChunk(void *decoder, u32 src, u32 size) {
+    s32 RleDecompress8Bit(void *, u32, u32);
+    s32 RleDecompress16Bit(void *, u32, u32);
+    s32 Lz77Decompress8Bit(void *, u32, u32);
+    s32 Lz77Decompress16Bit(void *, u32, u32);
+    s32 HuffmanDecompress(void *, u32, u32);
+    s32 (*decompress)(void *, u32, u32);
+    s32 remaining = 0;
+    switch (M2C_FIELD(decoder, u8 *, 0)) {
+    case COMP_TYPE_LZ77:
+        decompress = M2C_FIELD(decoder, u8 *, 1) == 0 ? Lz77Decompress8Bit : Lz77Decompress16Bit;
+        remaining = decompress(decoder + 4, src, size);
         break;
-    case 32:
-        result = func_02008a60(arg0 + 4, arg1, arg2);
+    case COMP_TYPE_HUFFMAN:
+        remaining = HuffmanDecompress(decoder + 4, src, size);
         break;
-    case 48:
-        func = M2C_FIELD(arg0, u8 *, 1) == 0 ? func_0200864c : func_02008700;
-        result = func(arg0 + 4, arg1, arg2);
+    case COMP_TYPE_RLE:
+        decompress = M2C_FIELD(decoder, u8 *, 1) == 0 ? RleDecompress8Bit : RleDecompress16Bit;
+        remaining = decompress(decoder + 4, src, size);
         break;
     }
-    return result;
+    return remaining;
 }
 
 s32 Divide(s32 arg0, s32 arg1) {

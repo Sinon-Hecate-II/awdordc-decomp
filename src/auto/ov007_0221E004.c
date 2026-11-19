@@ -366,7 +366,7 @@ extern u16 **data_027e01d8;
 extern u16 **gCur3DSpriteEngine;
 void func_ov007_0221ec40(void *arg0) {
     M2C_UNK DrawFrameBorderPulse(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
-    u16 func_0209b5e4(s32, M2C_UNK *);
+    u16 RenderTextToTiles(s32, M2C_UNK *);
     M2C_UNK DrawTileRow(u16, M2C_UNK, u16, u16, s32);
     s32 MeasureStringWidth(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
@@ -389,7 +389,7 @@ void func_ov007_0221ec40(void *arg0) {
     if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
         var_r10 = &gMapEditObjectList;
         do {
-            temp_r5 = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
+            temp_r5 = RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
             DrawTileRow((u16) (var_r6 + ((u32) (8 - MeasureStringWidth(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
             var_r8 = (s32) (u16) (var_r8 + (((u32) (((u32) (temp_r5 + 7) >> 3) + 3) >> 2) << 8));
             var_r9 = var_r9 + 1;

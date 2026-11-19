@@ -42,7 +42,7 @@ void MarkUnitAttackRangeCells(u8 *arg0) {
  if(!(M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]&0x40)) M2C_FIELD(*gCurrentMap+y*4,s8 **,0x52e8)[x]=-1;
 }
 #pragma opt_strength_reduction on
-void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
+void FillMapGridDiamond(s16 x, s16 y, s16 radius, s32 value) {
     extern void **gCurrentMap;
     s16 dy, row, col;
     for (dy = -radius, row = y - radius; row <= y + radius; row++, dy++) {
@@ -56,13 +56,16 @@ void func_01ffc108(s16 x, s16 y, s16 radius, s32 value) {
     }
 }
 
-void func_01ffc204(s32 arg0,s32 arg1,u8 *arg2) {
-void func_01ffc108(s16,s16,s16,s32);
-s32 GetUnitAttackRangeMax(u8 *);
-extern u8 gUnitMinAttackRange;
-func_01ffc108((s16)arg0,(s16)arg1,(s16)GetUnitAttackRangeMax(arg2),0x40);
-if(GetUnitAttackRangeMax(arg2)==1) return;
-func_01ffc108((s16)arg0,(s16)arg1,(s16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
+/* Marks the cells a unit at (x,y) can attack: fill its maximum attack range in
+ * the map grid with the taken bit, then clear everything closer than its minimum
+ * range so only the ring between the two ranges stays marked. */
+void MarkUnitAttackRing(s32 x, s32 y, u8 *unit) {
+    void FillMapGridDiamond(s16, s16, s16, s32);
+    s32 GetUnitAttackRangeMax(u8 *);
+    extern u8 gUnitMinAttackRange;
+    FillMapGridDiamond((s16)x, (s16)y, (s16)GetUnitAttackRangeMax(unit), MAP_GRID_TAKEN);
+    if (GetUnitAttackRangeMax(unit) == 1) return;
+    FillMapGridDiamond((s16)x, (s16)y, (s16)(*(&gUnitMinAttackRange + (((u32)(*unit << 26) >> 26) * 0x70)) - 1), -1);
 }
 
 void func_01ffc294(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {

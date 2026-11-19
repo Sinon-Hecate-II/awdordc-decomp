@@ -45,12 +45,12 @@ M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = -1;
 
 void Ov001_RegionMenuEmptyTimeout(s32 arg0) {
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
-void func_ov001_02186c68(s32);
+void Ov001_RegionMenuCloseDelay(s32);
 M2C_FIELD(gOv001RegionMenu,s8 *,0x1b)=-1;
 M2C_FIELD(gOv001RegionMenu,u16 *,0x18)++;
 if(M2C_FIELD(gOv001RegionMenu,u16 *,0x18)<120U)return;
 Ov001_PostTaskMessage(0,arg0);
-M2C_FIELD(gOv001RegionMenu,s32 *,0x14)=Ov001_AddTask(1,func_ov001_02186c68,0,120);
+M2C_FIELD(gOv001RegionMenu,s32 *,0x14)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
 }
 
 /* Slide the selected region's menu column to vertical position topY: move the
@@ -91,16 +91,19 @@ void Ov001_SetRegionMenuY(s32 topY) {
     SetWindowRect(0, 0, rect);
 }
 
-void Ov001_ClipSpriteLayout(M2C_UNK arg0,s32 arg1) {
-s32 func_ov001_0218a258();
+/* Hide the entries of a sprite layout that are not on screen: each entry is shown
+ * when its y lies between topY and the bottom of the 192-pixel screen, and hidden
+ * with SPRITE_ENTRY_HIDDEN otherwise. */
+void Ov001_ClipSpriteLayout(M2C_UNK obj, s32 topY) {
+s32 Ov001_GetSpriteEntryCount();
 M2C_UNK Ov001_SetSpriteEntryFlags(M2C_UNK,s32,s32,M2C_UNK);
 M2C_UNK Ov001_GetSpritePosition(M2C_UNK,s32,M2C_UNK *,s32 *);
-M2C_UNK sp4; s32 sp0; s32 temp_r0; s32 var_r2; s32 var_r8;
-temp_r0=func_ov001_0218a258();var_r8=0;if(temp_r0<=0)return;
-do {Ov001_GetSpritePosition(arg0,var_r8,&sp4,&sp0);
-if(sp0>=arg1 && sp0<0xc0)var_r2=0;else var_r2=0x200;
-Ov001_SetSpriteEntryFlags(arg0,var_r8,var_r2,0);var_r8++;
-}while(var_r8<temp_r0);
+M2C_UNK x; s32 y; s32 count; s32 flags; s32 i;
+count=Ov001_GetSpriteEntryCount();i=0;if(count<=0)return;
+do {Ov001_GetSpritePosition(obj,i,&x,&y);
+if(y>=topY && y<SCREEN_HEIGHT)flags=0;else flags=SPRITE_ENTRY_HIDDEN;
+Ov001_SetSpriteEntryFlags(obj,i,flags,0);i++;
+}while(i<count);
 }
 
 /* Give the region menu item `item` its selected look: load its highlighted sprite
@@ -113,39 +116,42 @@ Ov001_MoveSpriteLayout(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM
 Ov001_SetSpritePalette(M2C_FIELD(gOv001RegionMenu+item*4,s32 *,OV001_REGION_ITEM_SPRITES),-1,0);
 }
 
-void func_ov001_02186c68(M2C_UNK arg0) {
+void Ov001_RegionMenuCloseDelay(M2C_UNK arg0) {
     M2C_UNK Ov001_SetSlideStep(M2C_UNK, M2C_UNK *);
     extern void *gOv001RegionMenu;
-    extern M2C_UNK func_ov001_02186ca4;
+    extern M2C_UNK Ov001_SlideRegionMenuOut;
     M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) = (u8) (M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) + 1);
     if ((u32) M2C_FIELD(gOv001RegionMenu, u8 *, 0x1D) < 8U) {
         return;
     }
-    Ov001_SetSlideStep(arg0, &func_ov001_02186ca4);
+    Ov001_SetSlideStep(arg0, &Ov001_SlideRegionMenuOut);
 }
 
-void func_ov001_02186ca4(s32 a) {
+/* One frame of the region column closing: slide it down by OV001_REGION_OPEN_STEP
+ * pixels and stop once it is below the 192-pixel screen, then hand the task to
+ * the fade-out step or straight to the close. */
+void Ov001_SlideRegionMenuOut(s32 task) {
 extern void *gOv001RegionMenu;
-void func_ov001_02186d34(); void func_ov001_02186d90();
+void Ov001_RegionMenuFadeOutStep(); void Ov001_RegionMenuCloseFinish();
 s32 pos[2];
-Ov001_GetSpritePosition(M2C_FIELD(gOv001RegionMenu,s32 *,0),0,&pos[1],&pos[0]);
-pos[0]+=12;
+Ov001_GetSpritePosition(M2C_FIELD(gOv001RegionMenu,s32 *,OV001_REGION_SPRITE_TOP),0,&pos[1],&pos[0]);
+pos[0]+=OV001_REGION_OPEN_STEP;
 Ov001_SetRegionMenuY(pos[0]);
 if(pos[0]<192)return;
-if(M2C_FIELD(gOv001RegionMenu,u8 *,30))Ov001_SetSlideStep(a,func_ov001_02186d34);
-else Ov001_SetSlideStep(a,func_ov001_02186d90);
+if(M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_FADE_OUT))Ov001_SetSlideStep(task,Ov001_RegionMenuFadeOutStep);
+else Ov001_SetSlideStep(task,Ov001_RegionMenuCloseFinish);
 }
 
-void func_ov001_02186d34(s32 a) {
+void Ov001_RegionMenuFadeOutStep(s32 a) {
 extern void *gOv001RegionMenu;
-void func_ov001_02186d90();
+void Ov001_RegionMenuCloseFinish();
 M2C_FIELD(gOv001RegionMenu,s8 *,26)++;
 GX_SetBlendY(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
-if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)Ov001_SetSlideStep(a,func_ov001_02186d90);
+if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)Ov001_SetSlideStep(a,Ov001_RegionMenuCloseFinish);
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02186d90(s32 a) {
+void Ov001_RegionMenuCloseFinish(s32 a) {
     extern void *data_ov001_02193e18; extern u8 data_ov001_0218fcfc[];
     s32 i;
     *(volatile u32 *)0x4000000 &= ~0xe000;
@@ -173,15 +179,15 @@ void func_ov001_02186e40(void *arg0) {
  * library - halting if it refuses - then set the library up and enter the link
  * state machine. */
 void Ov001_StartDownloadPlay(s32 param,s32 programId){
-void func_02007740(void *);
+void GetSystemUserProfile(void *);
 void MI_CpuCopy8(void *,void *,s32);
 s32 MultiBoot_StartParent(void *,void *,s32,s32,s32);
-void func_02017c40(s32,s32);
+void MultiBoot_SetParentParams(s32,s32);
 void func_02013e70(void (*)(void));
 void Ov001_HandleLinkEvent(void);
 MbParentInfo parentInfo;
 u8 ownerInfo[84];
-func_02007740(ownerInfo);
+GetSystemUserProfile(ownerInfo);
 parentInfo.low=ownerInfo[1];
 parentInfo.len=*(u16 *)(ownerInfo+26);
 MI_CpuCopy8(ownerInfo+4,parentInfo.name,*(u16 *)(ownerInfo+26)*2);
@@ -192,7 +198,7 @@ Ov001LinkHeader zero={0};
 }
 M2C_FIELD(gOv001LinkWork,void **,0x1b140)=(u8 *)gOv001LinkWork+0x10040;
 if(MultiBoot_StartParent(M2C_FIELD(gOv001LinkWork,void **,0x1b140),&parentInfo,param,programId,2))SystemHalt();
-func_02017c40(256,1);
+MultiBoot_SetParentParams(256,1);
 func_02013e70(Ov001_HandleLinkEvent);
 Ov001_SetLinkStatus(1);
 }

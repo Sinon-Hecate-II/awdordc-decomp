@@ -204,7 +204,12 @@ get(ctx,c,1);return value;
 
 #pragma opt_strength_reduction off
 #pragma opt_instruction_scheduling off
-s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
+/* strtoul: parse an unsigned 32-bit integer from the null-terminated string
+ * `text` through the ScanFloatStreamRead reader.  `endptr`, when non-null,
+ * receives the position just past the parsed text; a value too large for 32
+ * bits gives ULONG_MAX and sets errno to ERANGE (34), and a leading '-' negates
+ * the parsed magnitude. */
+u32 strtoul(s8 *text, s8 **endptr, s32 base) {
     u32 ScanUint();
     void ScanFloatStreamRead();
     extern s32 gErrno;
@@ -213,15 +218,15 @@ s32 func_0206abd8(s32 arg0, s32 *arg1, M2C_UNK arg2) {
     s32 overflow;
     M2C_UNK state[2];
     u32 value;
-    state[0] = arg0;
+    state[0] = (M2C_UNK)text;
     state[1] = 0;
-    value = ScanUint(arg2, 0x7fffffff, ScanFloatStreamRead, state, &count, &negative, &overflow);
-    if (arg1 != 0) {
-        *arg1 = arg0 + count;
+    value = ScanUint(base, 0x7fffffff, ScanFloatStreamRead, state, &count, &negative, &overflow);
+    if (endptr != 0) {
+        *endptr = text + count;
     }
     if (overflow != 0) {
         value = -1;
-        gErrno = 0x22;
+        gErrno = 34; /* ERANGE */
         goto done;
     }
     if (negative != 0) {

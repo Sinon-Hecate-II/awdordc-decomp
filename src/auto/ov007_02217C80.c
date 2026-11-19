@@ -142,7 +142,9 @@ s32 func_ov007_02217d30(void *arg0) {
     indices[mode] = candidate;
     return 1;
 }
-#pragma pop
+#pragma opt_propagation off
+#pragma scheduling off
+#pragma opt_strength_reduction off
 void func_ov007_02217f8c(void *arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
@@ -157,8 +159,8 @@ void func_ov007_02217f8c(void *arg0) {
     void *func_020896f0(void *);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    u16 GetUnitSpriteWidth(void *);
-    u16 GetUnitSpriteHeight(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -170,7 +172,7 @@ void func_ov007_02217f8c(void *arg0) {
     s8 func_ov007_02217b90(M2C_UNK, s32);
     s8 func_ov007_02217c1c();
     extern void *g3DSpriteEngineMain;
-    extern void *data_027e01d8;
+    extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_02220030;
     extern M2C_UNK data_ov007_0222003c;
     extern M2C_UNK data_ov007_0222004c;
@@ -181,32 +183,28 @@ void func_ov007_02217f8c(void *arg0) {
     extern M2C_UNK data_ov007_02220094;
     extern M2C_UNK data_ov007_022200a0;
 
-    u16 *sp2C;
-    u16 *sp28;
-    u16 *sp24;
-    u16 *sp20;
-    u16 *sp1C;
-    u16 *sp18;
-    u16 *sp14;
-    u16 *sp10;
-    u16 *spC;
-    u16 *sp8;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    register void *temp_r5;
+    register void *temp_r6;
     s16 temp_r7;
-    s16 temp_r7_2;
-    s16 temp_r7_3;
     s16 temp_r8;
-    s16 temp_r8_2;
-    s16 temp_r8_3;
     s32 temp_r1;
     s32 var_r0;
-    s32 var_r0_2;
-    s32 var_r0_3;
+    s16 initialScale;
     s32 var_r2;
-    u16 temp_r9;
-    u16 temp_r9_2;
-    u16 temp_r9_3;
+    s32 temp_r9;
+    s32 height;
     void *temp_r0;
-    void *temp_r0_2;
+        void *temp_r0_2;
     void *temp_r0_3;
     void *temp_r0_4;
     void *temp_r0_5;
@@ -218,16 +216,13 @@ void func_ov007_02217f8c(void *arg0) {
     void *temp_r2_4;
     void *temp_r2_5;
     void *temp_r2_6;
-    void *temp_r5;
-    void *temp_r6;
-    void *temp_r6_2;
-    void *temp_r6_3;
 
     var_r2 = 0;
+    initialScale = 0x100;
     do {
         temp_r0 = arg0 + (var_r2 * 2);
         var_r2 += 1;
-        M2C_FIELD(temp_r0, s16 *, 0x3C) = 0x100;
+        M2C_FIELD(temp_r0, s16 *, 0x3C) = initialScale;
     } while (var_r2 < 3);
     M2C_FIELD(arg0, s8 *, 0x34) = 1;
     M2C_FIELD(arg0, s8 *, 0x35) = 0;
@@ -243,9 +238,9 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
     M2C_FIELD(arg0, s16 *, 0x40) = 0;
     M2C_FIELD(arg0, s32 *, 0x58) = 0;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
-    temp_r5 = data_027e01d8;
-    data_027e01d8 = g3DSpriteEngineMain;
+    M2C_FIELD(arg0, volatile s32 *, 0x5C) = 0;
+    temp_r5 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020a9a30(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
     M2C_FIELD(arg0, void **, 0x44) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
@@ -260,52 +255,58 @@ void func_ov007_02217f8c(void *arg0) {
         temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
         temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
         temp_r9 = GetUnitSpriteWidth(temp_r6);
-        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (s32) temp_r9, (s32) GetUnitSpriteHeight(temp_r6));
+        height = GetUnitSpriteHeight(temp_r6);
+        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x44), 1);
     M2C_FIELD(arg0, void **, 0x48) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x48), 2, 0x36C, 3, 0);
-    temp_r6_2 = M2C_FIELD(arg0, void **, 0x48);
-    func_02088e84(temp_r6_2, 0xE0, 0xA0, 0x100, 0xA0);
-    if (M2C_FIELD(M2C_FIELD(temp_r6_2, void **, 0x64), u8 *, 0x12) != 0) {
-        var_r0_2 = 1;
+    temp_r6 = M2C_FIELD(arg0, void **, 0x48);
+    func_02088e84(temp_r6, 0xE0, 0xA0, 0x100, 0xA0);
+    if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
+        var_r0 = 1;
     } else {
-        var_r0_2 = 0;
+        var_r0 = 0;
     }
-    if (var_r0_2 & 0xFF) {
-        temp_r7_2 = M2C_FIELD(temp_r6_2, s16 *, 0x52);
-        temp_r8_2 = M2C_FIELD(temp_r6_2, s16 *, 0x50);
-        temp_r9_2 = GetUnitSpriteWidth(temp_r6_2);
-        func_02087d84(M2C_FIELD(temp_r6_2, void **, 0x64), 1, temp_r8_2, temp_r7_2, (s32) temp_r9_2, (s32) GetUnitSpriteHeight(temp_r6_2));
+    if (var_r0 & 0xFF) {
+        temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
+        temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
+        temp_r9 = GetUnitSpriteWidth(temp_r6);
+        height = GetUnitSpriteHeight(temp_r6);
+        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x48), 2);
     M2C_FIELD(arg0, void **, 0x4C) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x4C), 0x14, 0x37C, 3, 0);
-    temp_r6_3 = M2C_FIELD(arg0, void **, 0x4C);
-    func_02088e84(temp_r6_3, 0xA0, 0xA0, 0x100, 0xA0);
-    if (M2C_FIELD(M2C_FIELD(temp_r6_3, void **, 0x64), u8 *, 0x12) != 0) {
-        var_r0_3 = 1;
+    temp_r6 = M2C_FIELD(arg0, void **, 0x4C);
+    func_02088e84(temp_r6, 0xA0, 0xA0, 0x100, 0xA0);
+    if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
+        var_r0 = 1;
     } else {
-        var_r0_3 = 0;
+        var_r0 = 0;
     }
-    if (var_r0_3 & 0xFF) {
-        temp_r7_3 = M2C_FIELD(temp_r6_3, s16 *, 0x52);
-        temp_r8_3 = M2C_FIELD(temp_r6_3, s16 *, 0x50);
-        temp_r9_3 = GetUnitSpriteWidth(temp_r6_3);
-        func_02087d84(M2C_FIELD(temp_r6_3, void **, 0x64), 1, temp_r8_3, temp_r7_3, (s32) temp_r9_3, (s32) GetUnitSpriteHeight(temp_r6_3));
+    if (var_r0 & 0xFF) {
+        temp_r7 = M2C_FIELD(temp_r6, s16 *, 0x52);
+        temp_r8 = M2C_FIELD(temp_r6, s16 *, 0x50);
+        temp_r9 = GetUnitSpriteWidth(temp_r6);
+        height = GetUnitSpriteHeight(temp_r6);
+        func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x4C), 0x304);
     SetFileDirectory(&data_ov007_02220030);
-    GetLocalizedFileName(&data_ov007_0222003c);
-    OpenNarcArchive();
-    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(data_027e01d8, s32 *, 0x10));
-    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222005c), M2C_FIELD(data_027e01d8, s32 *, 0x24));
+    OpenNarcArchive(GetLocalizedFileName(&data_ov007_0222003c));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222005c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
     CloseNarcArchive();
     LoadFileToSpriteBuffer(&data_ov007_0222006c, 0, 0x20);
-    M2C_FIELD(data_027e01d8, s16 *, 0x3A) = 0;
-    M2C_FIELD(data_027e01d8, s16 *, 0x42) = 0;
-    M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
-    LoadDecompressedFileTo(GetLocalizedFileName(&data_ov007_0222007c), M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x7380);
+    {
+        void *bank = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+        M2C_FIELD(bank, s16 *, 0x3A) = 0;
+    }
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    temp_r1 = GetLocalizedFileName(&data_ov007_0222007c);
+    LoadDecompressedFileTo(temp_r1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x7380);
     LoadFileToSpriteBuffer(&data_ov007_02220088, 0x200, 0x20);
     SetFileDirectory(&data_ov007_02220094);
     LoadFileToSpriteBuffer(&data_ov007_022200a0, 0x240, 0x20);
@@ -313,48 +314,49 @@ void func_ov007_02217f8c(void *arg0) {
     func_02089424();
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x50));
     temp_r2 = M2C_FIELD(arg0, void **, 0x50);
-    M2C_FIELD(temp_r2, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x1FF) | 0x10) & 0xFFFC01FF) | 0x2000);
+    temp_r1 = (M2C_FIELD(temp_r2, s32 *, 0x40) & ~0x1FF) | 0x10;
+    M2C_FIELD(temp_r2, s32 *, 0x40) = temp_r1;
+    M2C_FIELD(temp_r2, s32 *, 0x40) = (temp_r1 & 0xFFFC01FF) | 0x2000;
     M2C_FIELD(arg0, void **, 0x54) = func_020896f0(arg0);
     func_02089424();
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x54));
     temp_r2_2 = M2C_FIELD(arg0, void **, 0x54);
     temp_r1 = (M2C_FIELD(temp_r2_2, s32 *, 0x40) & ~0x1FF) | 0x10;
-    M2C_FIELD(temp_r2_2, s32 *, 0x40) = temp_r1;
-    M2C_FIELD(temp_r2_2, s32 *, 0x40) = (s32) ((temp_r1 & 0xFFFC01FF) | 0x2000);
-    temp_r0_2 = M2C_FIELD(data_027e01d8, void **, 0);
+    M2C_FIELD(temp_r2_2, volatile s32 *, 0x40) = temp_r1;
+    M2C_FIELD(temp_r2_2, volatile s32 *, 0x40) = (s32) ((temp_r1 & 0xFFFC01FF) | 0x2000);
+    temp_r0_2 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp2C = temp_r0_2 + 0x12;
-    M2C_FIELD(temp_r0_2, s16 *, 0x12) = (s16) (*sp2C & ~1);
-    temp_r0_3 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp2C = (u16)(*sp2C & ~1);
+    temp_r0_3 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp28 = temp_r0_3 + 0x12;
-    M2C_FIELD(temp_r0_3, s16 *, 0x12) = (s16) (*sp28 | 2);
-    temp_r0_4 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp28 = (u16)(*sp28 | 2);
+    temp_r0_4 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp24 = temp_r0_4 + 0x12;
-    M2C_FIELD(temp_r0_4, s16 *, 0x12) = (s16) (*sp24 & ~4);
-    temp_r0_5 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp24 = (u16)(*sp24 & ~4);
+    temp_r0_5 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp20 = temp_r0_5 + 0x12;
-    M2C_FIELD(temp_r0_5, s16 *, 0x12) = (s16) (*sp20 & ~8);
-    temp_r0_6 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp20 = (u16)(*sp20 & ~8);
+    temp_r0_6 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp1C = temp_r0_6 + 0x12;
-    M2C_FIELD(temp_r0_6, s16 *, 0x12) = (s16) (*sp1C & ~0x10);
-    temp_r0_7 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp1C = (u16)(*sp1C & ~0x10);
+    temp_r0_7 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp18 = temp_r0_7 + 0x12;
-    M2C_FIELD(temp_r0_7, s16 *, 0x12) = (s16) (*sp18 | 0x100);
-    temp_r2_3 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp18 = (u16)(*sp18 | 0x100);
+    temp_r2_3 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp14 = temp_r2_3 + 0x12;
-    M2C_FIELD(temp_r2_3, s16 *, 0x12) = (s16) (*sp14 & ~0x200);
-    temp_r2_4 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp14 = (u16)(*sp14 & ~0x200);
+    temp_r2_4 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp10 = temp_r2_4 + 0x12;
-    M2C_FIELD(temp_r2_4, s16 *, 0x12) = (s16) (*sp10 & ~0x400);
-    temp_r2_5 = M2C_FIELD(data_027e01d8, void **, 0);
+    *sp10 = (u16)(*sp10 & ~0x400);
+    temp_r2_5 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     spC = temp_r2_5 + 0x12;
-    M2C_FIELD(temp_r2_5, s16 *, 0x12) = (s16) (*spC & ~0x800);
-    temp_r2_6 = M2C_FIELD(data_027e01d8, void **, 0);
+    *spC = (u16)(*spC & ~0x800);
+    temp_r2_6 = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
     sp8 = temp_r2_6 + 0x12;
-    M2C_FIELD(temp_r2_6, s16 *, 0x12) = (s16) (*sp8 & ~0x1000);
-    data_027e01d8 = temp_r5;
+    *sp8 = (u16)(*sp8 & ~0x1000);
+    gCur3DSpriteEngine = temp_r5;
     PlaySoundEffect(0x10017);
 }
-
 /* Apply the palette entry the cursor picked on the editor's palette page to the
  * active brush: set the terrain kind/owner (terrain page) or the unit kind/owner
  * (unit page) from that entry, reset the tool and refresh the map graphics, with

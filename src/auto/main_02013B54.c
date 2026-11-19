@@ -168,7 +168,7 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 gMbWork;
-void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void func_02016250(); void func_02015230(); void MI_CpuFill32();
+void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -207,7 +207,7 @@ if(M2C_FIELD(gMbWork+off,u8*,0x1d52) && M2C_FIELD(gMbWork+off,u16*,0x1d50)){
 func_02016124(gMbWork+0x186c+off,gMbWork+0x1340,M2C_FIELD(gMbWork+off,u16*,0x1d4e),M2C_FIELD(gMbWork+off,u16*,0x1d50));
 M2C_FIELD(gMbWork+off,u16*,0x1d50)=0;
 }}
-x=func_02018390(); y=func_020183a4(); z=func_020183b8(); func_02016250(x,y,z); break;
+x=func_02018390(); y=func_020183a4(); z=func_020183b8(); DownloadSendStep(x,y,z); break;
 case 255:
 switch(*(u16*)((u8*)b+2)){case 1:case 4:case 5:case 6:case 8:case 9:func_02015230(0,9);break;case 0:case 2:case 3:case 7:case 10:case 11:case 12:case 13:case 14:case 15:default:func_02015230(0,8);break;} break;
 case 256:

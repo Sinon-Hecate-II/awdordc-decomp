@@ -33,14 +33,14 @@ HeapFreeBlock(out);M2C_FIELD(a,u8 *,0x2051)=0;
 }
 #pragma pop
 void func_02075938(void *arg0,s32 arg1) {
-M2C_UNK func_02074aec(void *);
+M2C_UNK SaveList_Remove(void *);
 s32 var_r4,var_r5; u32 temp_r8; void *temp_r7; u8 *byte;
 var_r5=arg1;
 if(M2C_FIELD(arg0,volatile u8 *,0x2050)==0 || M2C_FIELD(arg0,volatile u8 *,0x2052)==1)return;
 if((((s32)M2C_FIELD(arg0+(var_r5>>2),u8 *,0xc0c)>>((u32)(var_r5<<30)>>29))&3)!=3)return;
 var_r4=var_r5*12+(s32)arg0;
 if(M2C_FIELD(var_r4,u8 *,6)==1)return;
-func_02074aec(arg0+0xc4c);
+SaveList_Remove(arg0+0xc4c);
 loop:
 temp_r8=(u32)(var_r5<<30)>>29;
 temp_r7=arg0+(var_r5>>2);
@@ -195,7 +195,7 @@ rootLock=OS_GetLockID();CARD_LockBackup(rootLock);
 SaveDevice_Transfer(0,&rootHeader,4,0,0,0,6,1,0);
 CARD_UnlockBackup(rootLock);OS_ReleaseLockID(rootLock);
 }}
-func_0209e044(SaveManager_InitTask,1,0x400,0x11,0);
+CreateTaskSprite(SaveManager_InitTask,1,0x400,0x11,0);
 }
 
 void func_02075fd8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
@@ -240,7 +240,7 @@ void DeleteSaveRecord(M2C_UNK arg0) {
     func_02075e84(&gSaveManager, arg0);
 }
 
-void func_02076198(void){func_0209e044(func_02075ee8,1,0x400,0x11,0);}
+void func_02076198(void){CreateTaskSprite(func_02075ee8,1,0x400,0x11,0);}
 
 void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK ReadSaveBlockChain(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -254,7 +254,7 @@ void GetSaveRecordSize(M2C_UNK arg0) {
 }
 
 void func_020761f8(void) {
-    func_0209e0dc(1);
+    IsTaskSpriteRunning(1);
 }
 
 u8 func_02076208(void) {
@@ -271,8 +271,10 @@ M2C_UNK *GetSaveRecordList(void) {
 
 s32 GetSaveRecordCount(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,s32*,0x4c);}
 
+#pragma push
+#pragma opt_common_subs off
 void func_02076244(M2C_UNK arg0) {
-    M2C_UNK func_01ff9b38();
+    M2C_UNK Apply3DSpriteBanks();
     M2C_UNK Update3DSpriteVram();
     M2C_UNK GX_TurnOnDisplay();
     M2C_UNK func_02008ef0(M2C_UNK);
@@ -284,45 +286,31 @@ void func_02076244(M2C_UNK arg0) {
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 MeasureMessageLinesWidth(M2C_UNK, M2C_UNK);
-    s32 func_0209c550(M2C_UNK);
+    s32 MeasureMessageHeight(M2C_UNK);
     extern void *g3DSpriteBankMain;
     extern void *g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
-    extern void *data_027e01d8;
-    u16 *sp3C;
-    u16 *sp38;
-    u16 *sp34;
-    u16 *sp30;
-    u16 *sp2C;
-    u16 *sp28;
-    u16 *sp24;
-    u16 *sp20;
-    u16 *sp1C;
-    u16 *sp18;
-    u16 *sp14;
-    u16 *sp10;
-    u16 *spC;
-    u16 *sp8;
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile sp3C;
+    u16 *volatile sp38;
+    u16 *volatile sp34;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
     s32 temp_r1_2;
     s32 temp_r4;
-    s32 var_r6;
-    u16 *temp_r0;
-    u16 *temp_r0_10;
-    u16 *temp_r0_11;
-    u16 *temp_r0_12;
-    u16 *temp_r0_13;
-    u16 *temp_r0_14;
-    u16 *temp_r0_2;
-    u16 *temp_r0_3;
-    u16 *temp_r0_4;
-    u16 *temp_r0_5;
-    u16 *temp_r0_6;
-    u16 *temp_r0_7;
-    u16 *temp_r0_8;
-    u16 *temp_r0_9;
-    u32 temp_r0_15;
-    u32 temp_r1;
     void *temp_r5;
+    s32 var_r6;
+    s32 temp_r0_15;
+    s32 temp_r1;
     void *var_r0;
 
     func_02090248(0);
@@ -332,96 +320,82 @@ void func_02076244(M2C_UNK arg0) {
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~2);
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~4);
-    func_01ff9b38();
+    Apply3DSpriteBanks();
     Set3DSpriteVramBanks();
-    *(u16 *)0x04000304 &= ~0x8000;
+    *(volatile u16 *)0x04000304 &= ~0x8000;
     GX_TurnOnDisplay();
     var_r6 = 0;
-    *(s32 *)0x04001000 |= 0x10000;
-    temp_r5 = data_027e01d8;
+    *(volatile s32 *)0x04001000 |= 0x10000;
+    temp_r5 = gCur3DSpriteEngine;
     do {
         if (var_r6 == 0) {
             var_r0 = g3DSpriteEngineMain;
         } else {
             var_r0 = g3DSpriteEngineSub;
         }
-        data_027e01d8 = var_r0;
+        gCur3DSpriteEngine = var_r0;
         Apply3DSpriteDisplayConfig();
-        temp_r0 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp3C = temp_r0;
-        *temp_r0 = *sp3C & ~0x10;
-        temp_r0_2 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp38 = temp_r0_2;
-        *temp_r0_2 = *sp38 & ~0x20;
-        temp_r0_3 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp34 = temp_r0_3;
-        *temp_r0_3 = *sp34 & ~0x40;
-        temp_r0_4 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp30 = temp_r0_4;
-        *temp_r0_4 = *sp30 & ~0x80;
-        temp_r0_5 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp2C = temp_r0_5;
-        *temp_r0_5 = *sp2C & ~0x100;
-        temp_r0_6 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp28 = temp_r0_6;
-        *temp_r0_6 = *sp28 & ~0x200;
-        temp_r0_7 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp24 = temp_r0_7;
-        *temp_r0_7 = *sp24 & ~0x400;
-        temp_r0_8 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp20 = temp_r0_8;
-        *temp_r0_8 = *sp20 & ~0x800;
-        temp_r0_9 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp1C = temp_r0_9 + 0x12;
-        M2C_FIELD(temp_r0_9, s16 *, 0x12) = (s16) (*sp1C & ~0xC0);
-        M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x51) = 0;
-        M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x52) = 0;
-        M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x53) = 0;
-        M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s8 *, 0x50) = 0;
-        M2C_FIELD(data_027e01d8, s16 *, 0x44) = 0;
+        sp3C = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp3C = *sp3C & ~0x10;
+        sp38 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp38 = *sp38 & ~0x20;
+        sp34 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp34 = *sp34 & ~0x40;
+        sp30 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp30 = *sp30 & ~0x80;
+        sp2C = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp2C = *sp2C & ~0x100;
+        sp28 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp28 = *sp28 & ~0x200;
+        sp24 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp24 = *sp24 & ~0x400;
+        sp20 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp20 = *sp20 & ~0x800;
+        sp1C = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) + 9;
+        *sp1C = (s16) (*sp1C & ~0xC0);
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x51) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x52) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x53) = 0;
+        M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x50) = 0;
+        M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
+        M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x47) = 0;
         var_r6 += 1;
-        M2C_FIELD(data_027e01d8, s8 *, 0x47) = 0;
-        temp_r0_10 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp18 = temp_r0_10;
-        *temp_r0_10 = *sp18 & ~0x10;
-        temp_r0_11 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp14 = temp_r0_11;
-        *temp_r0_11 = *sp14 | 0x20;
-        temp_r0_12 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp10 = temp_r0_12;
-        *temp_r0_12 = *sp10 & ~0x40;
-        temp_r0_13 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        spC = temp_r0_13;
-        *temp_r0_13 = *spC & ~0x80;
-        temp_r0_14 = M2C_FIELD(data_027e01d8, u16 **, 0);
-        sp8 = temp_r0_14;
-        *temp_r0_14 = *sp8 & ~0x100;
+        sp18 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp18 = *sp18 & ~0x10;
+        sp14 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp14 = *sp14 | 0x20;
+        sp10 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp10 = *sp10 & ~0x40;
+        spC = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *spC = *spC & ~0x80;
+        sp8 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+        *sp8 = *sp8 & ~0x100;
     } while (var_r6 < 2);
-    data_027e01d8 = g3DSpriteEngineMain;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
     temp_r4 = MeasureMessageLinesWidth(arg0, 1);
-    temp_r1 = 0xC0 - func_0209c550(arg0);
+    temp_r1 = 0xC0 - MeasureMessageHeight(arg0);
     temp_r0_15 = 0x100 - temp_r4;
-    temp_r1_2 = (s32) (temp_r1 + (temp_r1 >> 0x1F)) >> 1;
-    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x3A) = (s16) (0 - ((s32) (temp_r0_15 + (temp_r0_15 >> 0x1F)) >> 1));
-    M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), s16 *, 0x42) = (s16) (0 - temp_r1_2);
+    temp_r1_2 = temp_r1 / 2;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = (s16) (0 - (temp_r0_15 / 2));
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x42) = (s16) (0 - temp_r1_2);
     LoadScenePanelPalette(0);
     DrawTextLine(0, 0, 1, arg0, 0, 1);
-    M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 2);
-    data_027e01d8 = temp_r5;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineMain, u8 *, 0x46) | 1);
     M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 1);
-    func_01ff9b38();
+    Apply3DSpriteBanks();
     Update3DSpriteVram();
 loop_6:
-    if ((s32) *(u16 *)0x04000006 < 0xC0) {
+    if ((s32) *(volatile u16 *)0x04000006 < 0xC0) {
         goto loop_6;
     }
     do {
 
-    } while ((s32) *(u16 *)0x04000006 >= 0xC0);
+    } while ((s32) *(volatile u16 *)0x04000006 >= 0xC0);
     goto loop_6;
 }
-
+#pragma pop
 u8 CountBits(u32 arg0) {
     u32 temp_r0;
     u32 temp_r0_2;

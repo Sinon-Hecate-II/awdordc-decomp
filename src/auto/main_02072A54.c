@@ -52,40 +52,48 @@ s32 func_02072b04(void *buf) {
 }
 
 #pragma opt_common_subs off
-void *func_02072b20(void *arg0, s32 *arg1) {
-    s8 temp_r2;
-    u8 temp_r4;
-    u8 temp_lr;
-    temp_r2 = M2C_FIELD(arg0, s8 *, 0);
-    if (!(temp_r2 & 1)) {
-        *arg1 = temp_r2 >> 1;
-        return arg0 + 1;
+/* Decode one signed compact value of a CodeWarrior exception table: the same
+ * encoding as DecodeExceptionValue, but the first byte is signed, so the value
+ * is sign-extended and can be negative (it is used for offsets). Returns the
+ * cursor just past the value. */
+void *DecodeExceptionSignedValue(void *cursor, s32 *out) {
+    s8 first;
+    u8 second;
+    u8 third;
+    first = M2C_FIELD(cursor, s8 *, 0);
+    if (!(first & CPP_EXCEPTION_VALUE_LONG2)) {
+        *out = first >> 1;
+        return cursor + 1;
     }
-    temp_r4 = M2C_FIELD(arg0, u8 *, 1);
-    if (!(temp_r2 & 2)) {
-        *arg1 = temp_r4 | ((temp_r2 >> 2) << 8);
-        return arg0 + 2;
+    second = M2C_FIELD(cursor, u8 *, 1);
+    if (!(first & CPP_EXCEPTION_VALUE_LONG3)) {
+        *out = second | ((first >> 2) << 8);
+        return cursor + 2;
     }
-    temp_lr = M2C_FIELD(arg0, u8 *, 2);
-    if (!(temp_r2 & 4)) {
-        *arg1 = (temp_r2 >> 3) << 16 | temp_r4 << 8 | temp_lr;
-        return arg0 + 3;
+    third = M2C_FIELD(cursor, u8 *, 2);
+    if (!(first & CPP_EXCEPTION_VALUE_LONG4)) {
+        *out = (first >> 3) << 16 | second << 8 | third;
+        return cursor + 3;
     }
-    *arg1 = (temp_r2 >> 3) << 24 | temp_r4 << 16 | temp_lr << 8 | M2C_FIELD(arg0, u8 *, 3);
-    return arg0 + 4;
+    *out = (first >> 3) << 24 | second << 16 | third << 8 | M2C_FIELD(cursor, u8 *, 3);
+    return cursor + 4;
 }
 #pragma opt_common_subs off
-void *DecodeExceptionValue(u8 *p,u32 *out) {
-    u32 a;
-    u8 temp_r4;
-    u8 temp_lr;
-    a=*(u8 *)p;
-    if(!(a&1)) { *out=a>>1; return p+1; }
-    temp_r4=p[1];
-    if(!(a&2)) { *out=temp_r4|((a>>2)<<8); return p+2; }
-    temp_lr=p[2];
-    if(!(a&4)) { *out=(a>>3)<<16 | temp_r4<<8 | temp_lr; return p+3; }
-    *out=(a>>3)<<24 | temp_r4<<16 | temp_lr<<8 | p[3]; return p+4;
+/* Decode one compact value of a CodeWarrior exception table: bits 0..2 of the
+ * first byte say how many bytes follow (none, one, two or three), the first
+ * byte's other bits are the value's high bits and the following bytes are
+ * little-endian. Returns the cursor just past the value. */
+void *DecodeExceptionValue(u8 *cursor,u32 *out) {
+    u32 first;
+    u8 second;
+    u8 third;
+    first=*cursor;
+    if(!(first&CPP_EXCEPTION_VALUE_LONG2)) { *out=first>>1; return cursor+1; }
+    second=cursor[1];
+    if(!(first&CPP_EXCEPTION_VALUE_LONG3)) { *out=second|((first>>2)<<8); return cursor+2; }
+    third=cursor[2];
+    if(!(first&CPP_EXCEPTION_VALUE_LONG4)) { *out=(first>>3)<<16 | second<<8 | third; return cursor+3; }
+    *out=(first>>3)<<24 | second<<16 | third<<8 | cursor[3]; return cursor+4;
 }
 #pragma opt_common_subs reset
 void *FindExceptionTableEntry(u32 *p,s32 n,u32 addr) {
@@ -173,7 +181,7 @@ return (u8)result;
 }
 
 s32 func_02072dc0(void *arg0) {
-    void *func_02072b20(void *, s32 *);
+    void *DecodeExceptionSignedValue(void *, s32 *);
     void *DecodeExceptionValue(u8 *, u32 *);
     void FindExceptionTableHandler(s32, void *);
     s32 func_020744e0(void *, void *);
@@ -247,7 +255,7 @@ loop_1:
     case 14:
         return 0xFF;
     case 2:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(temp_r2 + 1, &sp9C) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp9C) + 4);
 block_48:
         var_r2 = M2C_FIELD(arg0, u8 **, 8);
         temp_r0_2 = *var_r2 & 0x1F;
@@ -255,61 +263,61 @@ block_48:
             return temp_r0_2;
         }
         do {
-            func_02072b20(var_r2 + 1, &sp0);
+            DecodeExceptionSignedValue(var_r2 + 1, &sp0);
             var_r2 = &M2C_FIELD(arg0, u8 **, 8)[sp0];
             M2C_FIELD(arg0, u8 **, 8) = var_r2;
             temp_r0 = *var_r2 & 0x1F;
         } while (temp_r0 == 1);
         return temp_r0;
     case 3:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(temp_r2 + 1, &sp94), &sp98) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp94), &sp98) + 4);
         goto block_48;
     case 4:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(temp_r2 + 1, &sp90) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp90) + 4);
         goto block_48;
     case 5:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(func_02072b20(temp_r2 + 1, &sp84), &sp88), &sp8C) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp84), &sp88), &sp8C) + 4);
         goto block_48;
     case 6:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(temp_r2 + 1, &sp7C), &sp80) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp7C), &sp80) + 4);
         goto block_48;
     case 7:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(temp_r2 + 1, &sp74), &sp78) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp74), &sp78) + 4);
         goto block_48;
     case 8:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(func_02072b20(temp_r2 + 1, &sp68), &sp6C), &sp70) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp68), &sp6C), &sp70) + 4);
         goto block_48;
     case 9:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(func_02072b20(func_02072b20(temp_r2 + 1, &sp58), &sp5C), &sp60), &sp64) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp58), &sp5C), &sp60), &sp64) + 4);
         goto block_48;
     case 10:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(temp_r2 + 1, &sp54) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp54) + 4);
         goto block_48;
     case 11:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(temp_r2 + 1, &sp4C), &sp50) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp4C), &sp50) + 4);
         goto block_48;
     case 12:
-        M2C_FIELD(arg0, u8 **, 8) = func_02072b20(DecodeExceptionValue(temp_r2 + 5, &sp44), &sp48);
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(DecodeExceptionValue(temp_r2 + 5, &sp44), &sp48);
         goto block_48;
     case 13:
-        M2C_FIELD(arg0, u8 **, 8) = func_02072b20(temp_r2 + 1, &sp40);
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &sp40);
         goto block_48;
     case 15:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(DecodeExceptionValue(DecodeExceptionValue(temp_r2 + 1, &sp34), &sp38), &sp3C) + (sp34 * 4));
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionValue(DecodeExceptionValue(temp_r2 + 1, &sp34), &sp38), &sp3C) + (sp34 * 4));
         goto block_48;
     case 16:
-        temp_r0_5 = func_02072b20(func_02072b20(temp_r2 + 1, &sp24), &sp28);
+        temp_r0_5 = DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp24), &sp28);
         sp30 = M2C_FIELD(temp_r0_5, u8 *, 0) | (M2C_FIELD(temp_r0_5, u8 *, 1) << 8) | (M2C_FIELD(temp_r0_5, u8 *, 2) << 0x10) | (M2C_FIELD(temp_r0_5, u8 *, 3) << 0x18);
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(temp_r0_5 + 4, &sp2C) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r0_5 + 4, &sp2C) + 4);
         goto block_48;
     case 17:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (func_02072b20(func_02072b20(func_02072b20(func_02072b20(temp_r2 + 1, &sp14), &sp1C) + 1, &sp18), &sp20) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp14), &sp1C) + 1, &sp18), &sp20) + 4);
         goto block_48;
     case 18:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(func_02072b20(func_02072b20(temp_r2 + 1, &sp8) + 1, &spC), &sp10) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp8) + 1, &spC), &sp10) + 4);
         goto block_48;
     case 19:
-        M2C_FIELD(arg0, u8 **, 8) = func_02072b20(temp_r2 + 1, &sp4);
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &sp4);
         goto block_48;
     }
 }
@@ -372,72 +380,72 @@ if(!p) goto loop;
 op=*p;
 switch(op&31) {
 case 1:
-q=func_02072b20(p+1,&spa0);
+q=DecodeExceptionSignedValue(p+1,&spa0);
 M2C_FIELD(arg1,u8 **,8)+=spa0;break;
 case 2:
-q=func_02072b20(p+1,&sp9c);
+q=DecodeExceptionSignedValue(p+1,&sp9c);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(void *,s32))f)(M2C_FIELD(arg0,u8 **,0x18)+sp9c,-1);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 3:
 flag=op&64;
-q=func_02072b20(p+1,&sp94);
-q=func_02072b20(q,&sp98);
+q=DecodeExceptionSignedValue(p+1,&sp94);
+q=DecodeExceptionSignedValue(q,&sp98);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 if((flag?(u8)M2C_FIELD(arg0+sp94*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),u8 *,sp94))) ((void (*)(void *,s32))f)(M2C_FIELD(arg0,u8 **,0x18)+sp98,-1);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 4:
 flag=op&32;
-q=func_02072b20(p+1,&sp90);
+q=DecodeExceptionSignedValue(p+1,&sp90);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(s32,s32))f)((flag?(s32)M2C_FIELD(arg0+sp90*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp90)),-1);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 5:
-q=func_02072b20(p+1,&sp84);
+q=DecodeExceptionSignedValue(p+1,&sp84);
 q=DecodeExceptionValue(q,&sp88);
 q=DecodeExceptionValue(q,&sp8c);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 v=(s32)(M2C_FIELD(arg0,u8 **,0x18)+sp84)+sp88*sp8c;n=sp88;while(n){v-=sp8c;((void (*)(s32,s32))f)(v,-1);--n;}M2C_FIELD(arg1,u8 **,8)=end;break;
 case 6:
 flag=op&32;
-q=func_02072b20(p+1,&sp7c);
-q=func_02072b20(q,&sp80);
+q=DecodeExceptionSignedValue(p+1,&sp7c);
+q=DecodeExceptionSignedValue(q,&sp80);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(s32,s32))f)((flag?(s32)M2C_FIELD(arg0+sp7c*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp7c))+sp80,0);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 7:
 flag=op&32;
-q=func_02072b20(p+1,&sp74);
-q=func_02072b20(q,&sp78);
+q=DecodeExceptionSignedValue(p+1,&sp74);
+q=DecodeExceptionSignedValue(q,&sp78);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(s32,s32))f)((flag?(s32)M2C_FIELD(arg0+sp74*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp74))+sp78,-1);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 8:
 flag=op&32;
-q=func_02072b20(p+1,&sp68);
-q=func_02072b20(q,&sp6c);
-q=func_02072b20(q,&sp70);
+q=DecodeExceptionSignedValue(p+1,&sp68);
+q=DecodeExceptionSignedValue(q,&sp6c);
+q=DecodeExceptionSignedValue(q,&sp70);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 if(((op&64)?(s16)M2C_FIELD(arg0+sp68*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s16 *,sp68))) ((void (*)(s32,s32))f)((flag?(s32)M2C_FIELD(arg0+sp6c*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp6c))+sp70,-1);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 9:
 flag=op&32;
-q=func_02072b20(p+1,&sp58);
-q=func_02072b20(q,&sp5c);
+q=DecodeExceptionSignedValue(p+1,&sp58);
+q=DecodeExceptionSignedValue(q,&sp5c);
 q=DecodeExceptionValue(q,&sp60);
 q=DecodeExceptionValue(q,&sp64);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 v=(flag?(s32)M2C_FIELD(arg0+sp58*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp58))+sp5c;n=sp60;v+=n*sp64;while(n){v-=sp64;((void (*)(s32,s32))f)(v,-1);--n;}M2C_FIELD(arg1,u8 **,8)=end;break;
 case 10:
 flag=op&32;
-q=func_02072b20(p+1,&sp54);
+q=DecodeExceptionSignedValue(p+1,&sp54);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(s32))f)((flag?(s32)M2C_FIELD(arg0+sp54*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp54)));M2C_FIELD(arg1,u8 **,8)=end;break;
 case 11:
 flag=op&32;
-q=func_02072b20(p+1,&sp4c);
-q=func_02072b20(q,&sp50);
+q=DecodeExceptionSignedValue(p+1,&sp4c);
+q=DecodeExceptionSignedValue(q,&sp50);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 if(((op&64)?(u8)M2C_FIELD(arg0+sp4c*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),u8 *,sp4c))) ((void (*)(s32))f)((flag?(s32)M2C_FIELD(arg0+sp50*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp50)));M2C_FIELD(arg1,u8 **,8)=end;break;
 case 12:
 if((s32)p==arg2) return;
-q=DecodeExceptionValue(p+5,&sp44);q=func_02072b20(q,&sp48);M2C_FIELD(arg1,u8 **,8)=q;break;
+q=DecodeExceptionValue(p+5,&sp44);q=DecodeExceptionSignedValue(q,&sp48);M2C_FIELD(arg1,u8 **,8)=q;break;
 case 13:
-q=func_02072b20(p+1,&sp40);
+q=DecodeExceptionSignedValue(p+1,&sp40);
 v=(s32)(M2C_FIELD(arg0,u8 **,0x18)+sp40); f=M2C_FIELD(v,u32 *,8); if(f) { w=M2C_FIELD(v,s32 *,0); if(M2C_FIELD(arg0,s32 *,4)==w) M2C_FIELD(arg0,u32 *,8)=f; else ((void (*)(s32,s32))f)(w,-1); } M2C_FIELD(arg1,u8 **,8)=q; break;
 case 14:
 goto bad;
@@ -445,30 +453,30 @@ case 15:
 if((s32)p==arg2) return;
 q=DecodeExceptionValue(p+1,&sp34);
 q=DecodeExceptionValue(q,&sp38);
-q=func_02072b20(q,&sp3c);
+q=DecodeExceptionSignedValue(q,&sp3c);
 M2C_FIELD(arg1,u8 **,8)=q+sp34*4;break;
 case 16:
 flag=op&32;
-q=func_02072b20(p+1,&sp24);
-q=func_02072b20(q,&sp28);
-sp30=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;q=func_02072b20(q+4,&sp2c);
+q=DecodeExceptionSignedValue(p+1,&sp24);
+q=DecodeExceptionSignedValue(q,&sp28);
+sp30=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;q=DecodeExceptionSignedValue(q+4,&sp2c);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 ((void (*)(s32,s32))f)((flag?(s32)M2C_FIELD(arg0+sp24*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp24))+sp28,sp30+sp2c);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 17:
 flag=op&32;
-q=func_02072b20(p+1,&sp14);
-q=func_02072b20(q,&sp1c);
-flag2=*q++ &32;q=func_02072b20(q,&sp18);q=func_02072b20(q,&sp20);
+q=DecodeExceptionSignedValue(p+1,&sp14);
+q=DecodeExceptionSignedValue(q,&sp1c);
+flag2=*q++ &32;q=DecodeExceptionSignedValue(q,&sp18);q=DecodeExceptionSignedValue(q,&sp20);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 v=(flag?(s32)M2C_FIELD(arg0+sp14*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp14));w=flag2?M2C_FIELD(arg0+sp18*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp18);((void (*)(s32,s32))f)(v+sp1c,w+sp20);M2C_FIELD(arg1,u8 **,8)=end;break;
 case 18:
 flag=op&32;
-q=func_02072b20(p+1,&sp8);
-flag2=*q++ &32;q=func_02072b20(q,&spc);q=DecodeExceptionValue(q,(u32 *)&sp10);
+q=DecodeExceptionSignedValue(p+1,&sp8);
+flag2=*q++ &32;q=DecodeExceptionSignedValue(q,&spc);q=DecodeExceptionValue(q,(u32 *)&sp10);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
 v=(flag?(s32)M2C_FIELD(arg0+sp8*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp8));w=flag2?M2C_FIELD(arg0+spc*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,spc);v+=w;n=func_020722fc(v,sp10);while(n){v-=sp10;((void (*)(s32,s32))f)(v,-1);--n;}M2C_FIELD(arg1,u8 **,8)=end;break;
 case 19:
-q=func_02072b20(p+1,&sp4);
+q=DecodeExceptionSignedValue(p+1,&sp4);
 M2C_FIELD(arg1,u8 **,8)=q;break;
 default: bad: func_020742e0();break;
 } if(op&128) M2C_FIELD(arg1,u8 **,8)=0;goto loop;

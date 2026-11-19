@@ -359,7 +359,10 @@ void func_0208c54c(M2C_UNK arg0) {
     Init3DSpriteObject();
 }
 
-s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Load a sprite's uncompressed graphics from the effect NARC: the asset's .tex
+ * goes into the texture bank at textureOffset, its .cl palette into palette
+ * slot paletteSlot.  Returns the texture size. */
+s32 LoadSpriteGraphics(M2C_UNK assetName, s32 textureOffset, s32 paletteSlot) {
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     s32 func_020813c4(M2C_UNK *, M2C_UNK);
@@ -367,19 +370,20 @@ s32 func_0208c570(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 BuildNarcPath();
     void OpenEffectNarcArchive(M2C_UNK);
     void CloseEffectNarcArchive(void);
-    extern M2C_UNK data_02102864, data_0210286c;
-    M2C_UNK sp20[8], sp0[8];
-    s32 temp_r0, temp_r4;
-    temp_r0 = BuildNarcPath();
-    StringCopy(sp20, temp_r0);
-    StringAppend(sp20, &data_02102864);
-    StringCopy(sp0, temp_r0);
-    StringAppend(sp0, &data_0210286c);
-    OpenEffectNarcArchive(arg0);
-    temp_r4 = func_020813c4(sp20, arg1);
-    func_0208143c((M2C_UNK)sp0, arg2 << 5, 0x20);
+    extern M2C_UNK sSpriteTextureExtension, sSpritePaletteExtension;
+    M2C_UNK texPath[8], palPath[8];
+    s32 narcPath, textureSize;
+
+    narcPath = BuildNarcPath();
+    StringCopy(texPath, narcPath);
+    StringAppend(texPath, &sSpriteTextureExtension);
+    StringCopy(palPath, narcPath);
+    StringAppend(palPath, &sSpritePaletteExtension);
+    OpenEffectNarcArchive(assetName);
+    textureSize = func_020813c4(texPath, textureOffset);
+    func_0208143c((M2C_UNK) palPath, paletteSlot << 5, 0x20);
     CloseEffectNarcArchive();
-    return temp_r4;
+    return textureSize;
 }
 
 /* Load a compressed sprite asset's graphics and palette from the effect NARC:

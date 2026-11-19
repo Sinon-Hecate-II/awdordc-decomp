@@ -256,16 +256,19 @@ s32 n=NextRandomValue()%100;
 if(n>80)return 1;if(n>60)return 2;if(n>40)return 3;return 0;
 }
 
-s32 WeatherForTileset(u32 a) {
+/* Pick the starting weather for a randomly generated map from its tileset:
+ * tileset 1 brings rain, 2 sandstorms and 3 snow 30% of the time, tileset 0
+ * brings snow 20% of the time, everything else stays clear. */
+s32 WeatherForTileset(u32 tileset) {
 s32 NextRandomValue(void);
-s32 n=NextRandomValue()%100;
-switch(a) {
-case 1:if(n>70)return 1;break;
-case 2:if(n>70)return 3;break;
-case 3:if(n>70)return 2;break;
-case 0:if(n>80)return 2;break;
+s32 roll=NextRandomValue()%100;
+switch(tileset) {
+case 1:if(roll>70)return WEATHER_RAIN;break;
+case 2:if(roll>70)return WEATHER_SANDSTORM;break;
+case 3:if(roll>70)return WEATHER_SNOW;break;
+case 0:if(roll>80)return WEATHER_SNOW;break;
 }
-return 0;
+return WEATHER_CLEAR;
 }
 
 /* Fill a map-settings record for a randomly generated map: a random selectable

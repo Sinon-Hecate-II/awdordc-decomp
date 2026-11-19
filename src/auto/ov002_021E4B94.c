@@ -2,10 +2,10 @@
 #include "common.h"
 extern u16 **gCur3DSpriteEngine;
 extern u8 gSpriteDesc32x32[],gSpriteDesc32x8[],gSpriteDesc16x8[],gSpriteDesc16x16[],data_ov002_021f30ff[],data_ov002_021f3101[],gPlayerSettings[];
-void func_02087064(s32,s32,s32,s32,s32);
+void SetGxTextureParams(s32,s32,s32,s32,s32);
 void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGaugeFillAnchoredRight(s32,s32,s32,s32);
-void func_ov002_021e48e8(s32,s32,s32,s32);
+void DrawGaugeFillAnchoredLeft(s32,s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 s32 GetLanguage(void);
 s32 RandomIntRange(s32,s32);
@@ -20,8 +20,8 @@ void func_ov002_021e5974(s32 *,s32 *);
 void DrawFlatQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawGradientQuad(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 s32 AreUnitViewGaugesDone(void);
-void func_ov002_021e4728(s32,s32,s32,s32,s32);
-void func_ov002_021e47b0(s32,s32,s32,s32,s32);
+void DrawVersusPanelArtSmallFlipped(s32,s32,s32,s32,s32);
+void DrawVersusPanelArtSmall(s32,s32,s32,s32,s32);
 void DrawVersusPanelArtFlipped(s32,s32,s32,s32,s32);
 void DrawVersusPanelArt(s32,s32,s32,s32,s32);
 
@@ -45,8 +45,8 @@ else DrawGradientQuad(256-a,y,256,y,256-b,y+14,256,y+14,8,color,1);
 if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
 y=167-(s8)p[2];
 tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
-if(((u32)(p[3]<<28)>>28)==0)func_ov002_021e4728(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
-else func_ov002_021e47b0(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
+if((u8)((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtSmallFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
+else DrawVersusPanelArtSmall(208,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
 }else{
 y=154-(s8)p[2];ResetGxTextureParams();a=97;b=80;
@@ -60,16 +60,16 @@ else DrawGradientQuad(256-a,y,256,y,256-b,y+28,256,y+28,8,color,1);
 if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
 y=119-(s8)p[2];
 tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
-if(((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
+if((u8)((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 else DrawVersusPanelArt(184,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
 }
 }
 }
-x=(((u32)(p[3]<<28)>>28)==0?100:28);y=170-(s8)p[2];
-func_02087064(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3018[202]);
-x=(s16)x;DrawTexturedQuadUV(x,y,1,128,16,0,0,128,16);
-func_02087064(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3042[((u32)(p[3]<<28)>>28)*100]);
-if(width){if(((u32)(p[3]<<28)>>28)==0)DrawGaugeFillAnchoredRight(x,y,0,width);else func_ov002_021e48e8(x,y,0,width);}
+offset=(((u32)(p[3]<<28)>>28)==0?100:28);y=170-(s8)p[2];
+SetGxTextureParams(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3018[202]);
+x=(s16)offset;DrawTexturedQuadUV(x,y,1,128,16,0,0,128,16);
+SetGxTextureParams(3,128,16,M2C_FIELD(data_ov002_021f3018,u16 *,200),data_ov002_021f3042[((u32)(p[3]<<28)>>28)*100]);
+if(width){if(((u32)(p[3]<<28)>>28)==0)DrawGaugeFillAnchoredRight(x,y,0,width);else DrawGaugeFillAnchoredLeft(x,y,0,width);}
 x=((u32)(p[3]<<28)>>28)==0?221:3;y=150-(s8)p[2];width=(width+9)/10;
 if(y<192){AddSprite((u16)((x)&511),(u16)((y)&255),(u16)((0x3ff&((64+(width<<4))>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc32x32,0);
 }
@@ -98,13 +98,13 @@ x=(s16)(((u32)(p[3]<<28)>>28)==0?4:192);yy=(s16)((s8)p[2]+4);
 if(yy-8 > -16){
 AddSprite((u16)((x)&511),(u16)((yy)&255),(u16)((0x3ff&((0x112)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc32x8,0);
 
-x=(s16)(x+20);
-for(i=0,xx=x;i<gPlayerSettings[((u32)(p[3]<<28)>>28)*24+17];i++,xx+=10){
-AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x116)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
+x=x+20;
+for(i=0;i<(gPlayerSettings+17)[((u32)(p[3]<<28)>>28)*24];i++){
+AddSprite((u16)((x+i*10)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x116)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
 
 }
-for(xx=x+i*10;i<4;i++,xx+=10){
-AddSprite((u16)((xx)&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x11a)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
+for(;i<4;i++){
+AddSprite((u16)(((x+i*10))&511),(u16)((yy-8)&255),(u16)((0x3ff&((0x11a)>>((u32)(**gCur3DSpriteEngine<<17)>>30))) | (u16)((((u32)(p[3]<<28)>>28)==0?1:2)<<12)),gSpriteDesc16x16,0);
 
 }}
 if(AreUnitViewGaugesDone() && (s8)p[4]!=-1){

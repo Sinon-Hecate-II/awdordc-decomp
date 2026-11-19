@@ -1,5 +1,19 @@
 /* 18 functions from 0x021724C0 to 0x0217332C (ov001), found by ds-decomp. */
 #include "common.h"
+
+#pragma cplusplus on
+class KeyboardLabelRect {
+public:
+    u16 x, y, w, h;
+
+    KeyboardLabelRect() {
+        w = 0;
+        h = 0;
+        x = 0;
+        y = 0;
+    }
+};
+#pragma cplusplus off
 void Ov001_HandleKeyboardKeyPress(void);
 typedef struct SpritePosition { s32 x, y; } SpritePosition;
 static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
@@ -8,128 +22,92 @@ static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
     pos->x = value & 255;
 }
 
-void func_ov001_021724c0(void) {
-    M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_CreateSpriteFromLayout(M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_SetSpriteEntryFlags(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_SetSpritePalette(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK CreatePooledTextPanel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK DrawPanelText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_0218a070(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_0217355c(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_021728b0(M2C_UNK);
+#pragma cplusplus on
+extern "C" void func_ov001_021724c0(void)
+{
+    extern const u8 data_ov001_0218f324[], data_ov001_0218f31c[];
+    extern const u16 *data_ov001_02190104[];
     extern void *gOv001MenuState;
-    extern u8 data_ov001_0218f31c[];
-    extern u8 data_ov001_0218f324[];
-    extern void *data_ov001_02190104[];
-    volatile u16 tmp[4];
-    void *q;
-    void *p;
-    void *ret;
-    s32 i, u, t;
-    u16 sp1c = 0, sp1e = 0, sp20 = 0x11, sp22 = 0x12, sp14 = 0;
-    volatile u16 sp16 = 0;
-    M2C_UNK sp18val = 0;
-    M2C_UNK *psp = &sp18val;
-    s32 sp10 = 0;
-    s32 r8 = 0, r9 = 0;
-    tmp[2] = 0; tmp[3] = 0; tmp[0] = 0; tmp[1] = 0;
-    tmp[2] = 0x11; tmp[3] = 0x12;
-    q = Ov001_Alloc(0x128, 4, 0x12, 0x11);
-    gOv001MenuState = q;
-    M2C_FIELD(gOv001MenuState, u8 *, 0x11c) = 0xff;
-    M2C_FIELD(gOv001MenuState, u8 *, 0x121) = 0;
-    M2C_FIELD(gOv001MenuState, u8 *, 0x123) = 1;
-    M2C_FIELD(gOv001MenuState, u8 *, 0x124) = 1;
-    for (i = 0; i < 0x2f; i++) {
-        p = Ov001_CreateSpriteFromLayout(0, 0x34);
-        ((void **)((u8 *)gOv001MenuState + 0x30))[i] = p;
-        p = ((void **)((u8 *)gOv001MenuState + 0x30))[i];
-        {
-            u32 val = *(u32 *)p;
-            val = (val & 0xc1fffcffU) | 0x200;
-            *(u32 *)p = val;
-        }
-        {
-            u16 hh = *(u16 *)((u8 *)p + 4);
-            hh = (hh & ~0xc00) | 0xc00;
-            *(u16 *)((u8 *)p + 4) = hh;
-        }
-    }
-    for (i = 0; i < 4; i++) {
-        u8 b = data_ov001_0218f324[i];
-        p = Ov001_CreateSpriteFromLayout(0, b);
-        ((void **)((u8 *)gOv001MenuState + 0xec))[i] = p;
-        p = ((void **)((u8 *)gOv001MenuState + 0xec))[i];
-        {
-            u32 val = *(u32 *)p;
-            val = (val & 0xc1fffcffU) | 0x200;
-            *(u32 *)p = val;
-        }
-        {
-            u16 hh = *(u16 *)((u8 *)p + 4);
-            hh = (hh & ~0xc00) | 0xc00;
-            *(u16 *)((u8 *)p + 4) = hh;
-        }
-    }
-    for (u = 0; u < 2; u++) {
-        u8 b = data_ov001_0218f31c[u];
-        p = Ov001_CreateSprite(0, b, 1);
-        ((void **)((u8 *)gOv001MenuState + 0xfc))[u] = p;
-        p = ((void **)((u8 *)gOv001MenuState + 0xfc))[u];
-        Ov001_SetSpriteEntryFlags(p, (M2C_UNK)-1, 0x200, 0);
-        Ov001_SetSpritePalette(p, (M2C_UNK)-1, 3);
-    }
-    sp18val = 0;
-    psp = &sp18val;
-    for (t = 0; t < 3; t++) {
-        void *obj;
-        sp1c = 0;
-        sp1e = 0;
-        sp20 = 0x11;
-        sp22 = 0x12;
-        sp14 = 0;
-        sp16 = t;
-        (void)sp16;
-        obj = (void *)CreatePooledTextPanel(0, 0x1c, 2, 0, (M2C_UNK)psp, 0);
-        ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0] = obj;
-        obj = ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0];
-        sp10 = 0;
-        r8 = 0;
-        while (r8 < 0xc) {
-            u16 ah = *(u16 *)((u8 *)data_ov001_02190104[t] + (sp10 * 2));
-            sp14 = ah;
-            sp22 = 0x12;
-            {
-                void *cur = ((void **)((u8 *)gOv001MenuState + 0))[t * 4 + 0];
-                DrawPanelText(cur, sp1c, sp1e, sp20, sp22, 2, 0x480, (M2C_UNK)&sp14);
-            }
-            sp1c = sp1c + 0x12;
-            sp10++;
-            r8++;
-        }
-        if (t == 0) {
-            r9 = 0;
-            while (r9 < 4) {
-                void *o2 = (void *)func_ov001_0218a070(0, sp18val, 1);
-                ((void **)((u8 *)gOv001MenuState + 0x104))[r9] = o2;
-                o2 = ((void **)((u8 *)gOv001MenuState + 0x104))[r9];
-                (void)o2;
-                r9++;
-            }
-        }
-    }
-    ret = Ov001_CreateSprite(0, 0x40, 1);
-    M2C_FIELD(gOv001MenuState, void **, 0x114) = ret;
-    Ov001_SetSpriteEntryFlags(ret, (M2C_UNK)-1, 0x200, 0);
-    Ov001_SetSpritePalette(ret, (M2C_UNK)-1, 2);
-    ret = (void *)Ov001_AddTask(0, (M2C_UNK)func_ov001_021728b0, 0, 0x78);
-    M2C_FIELD(gOv001MenuState, void **, 0x118) = ret;
-    func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11d), 0, 0xc0);
-}
+    void *Ov001_Alloc(s32, s32);
+    void *Ov001_CreateSpriteFromLayout(s32, s32);
+    void *Ov001_CreateSprite(s32, s32, s32);
+    void Ov001_SetSpriteEntryFlags(void *, s32, s32, s32);
+    void Ov001_SetSpritePalette(void *, s32, s32);
+    void *CreatePooledTextPanel(s32, s32, s32, s32, s32 *, s32);
+    void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
+    void *func_ov001_0218a070(s32, s32, s32);
+    s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
+    void Ov001_KeyboardSlideStep1(s32);
+    void Ov001_LayoutKeyboardRow(s32, s32, s32);
+    void *sprite;
+    s32 i;
+    const u8 *auxIds;
+    const u8 *actionIds;
+    s32 action, label, col, row, page;
+    struct {
+        s32 firstLabel;
+        u16 text[2];
+        s32 layout;
+        KeyboardLabelRect rect;
+    } work;
 
+    work.rect.w = 17;
+    work.rect.h = 18;
+
+    gOv001MenuState = Ov001_Alloc(0x128, 4);
+    ((Ov001KeyboardState *)gOv001MenuState)->key = 0xFF;
+    ((Ov001KeyboardState *)gOv001MenuState)->selectedKey = 0;
+    ((Ov001KeyboardState *)gOv001MenuState)->canDelete = 1;
+    ((Ov001KeyboardState *)gOv001MenuState)->canAdd = 1;
+
+    for (i = 0; i < 47; ++i) {
+        ((Ov001KeyboardState *)gOv001MenuState)->charKeys[i] = Ov001_CreateSpriteFromLayout(0, 0x34);
+        sprite = ((Ov001KeyboardState *)gOv001MenuState)->charKeys[i];
+        *(u32 *)sprite = (*(u32 *)sprite & 0xC1FFFCFF) | 0x200;
+        sprite = ((Ov001KeyboardState *)gOv001MenuState)->charKeys[i];
+        M2C_FIELD(sprite, u16 *, 4) = (M2C_FIELD(sprite, u16 *, 4) & ~0xC00) | 0xC00;
+    }
+    auxIds = data_ov001_0218f324;
+    for (i = 0; i < 4; ++i) {
+        ((Ov001KeyboardState *)gOv001MenuState)->auxKeys[i] = Ov001_CreateSpriteFromLayout(0, *auxIds++);
+        sprite = ((Ov001KeyboardState *)gOv001MenuState)->auxKeys[i];
+        *(u32 *)sprite = (*(u32 *)sprite & 0xC1FFFCFF) | 0x200;
+        sprite = ((Ov001KeyboardState *)gOv001MenuState)->auxKeys[i];
+        M2C_FIELD(sprite, u16 *, 4) = (M2C_FIELD(sprite, u16 *, 4) & ~0xC00) | 0xC00;
+    }
+    for (action = 0, actionIds = data_ov001_0218f31c; action < 2; ++action, ++actionIds) {
+        ((Ov001KeyboardState *)gOv001MenuState)->actionKeys[action] = Ov001_CreateSprite(0, *actionIds, 1);
+        Ov001_SetSpriteEntryFlags(((Ov001KeyboardState *)gOv001MenuState)->actionKeys[action], -1, 0x200, 0);
+        Ov001_SetSpritePalette(((Ov001KeyboardState *)gOv001MenuState)->actionKeys[action], -1, 3);
+    }
+
+    work.text[1] = 0;
+    for (page = 0; page < 3; ++page) {
+        for (row = 0, work.firstLabel = 0; row < 4; ++row) {
+            ((Ov001KeyboardState *)gOv001MenuState)->rowPanels[page][row] = CreatePooledTextPanel(0, 28, 2, 0, &work.layout, 0);
+            work.rect.x = 0;
+            label = work.firstLabel;
+            col = 0;
+            do {
+                work.text[0] = data_ov001_02190104[page][label];
+                DrawPanelText(((Ov001KeyboardState *)gOv001MenuState)->rowPanels[page][row], work.rect.x, work.rect.y, work.rect.w, work.rect.h, 2, 0x480, work.text);
+                ++col;
+                work.rect.x += 18;
+                ++label;
+            } while (col < 12);
+            if (page == 0) {
+                ((Ov001KeyboardState *)gOv001MenuState)->textSprites[row] = func_ov001_0218a070(0, work.layout, 1);
+            }
+            work.firstLabel += 12;
+        }
+    }
+    ((Ov001KeyboardState *)gOv001MenuState)->cursor = Ov001_CreateSprite(0, 0x40, 1);
+    Ov001_SetSpriteEntryFlags(((Ov001KeyboardState *)gOv001MenuState)->cursor, -1, 0x200, 0);
+    Ov001_SetSpritePalette(((Ov001KeyboardState *)gOv001MenuState)->cursor, -1, 2);
+    ((Ov001KeyboardState *)gOv001MenuState)->slideTask = Ov001_AddTask(0, Ov001_KeyboardSlideStep1, 0, 0x78);
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 0, KBD_ROW_HIDDEN_X);
+}
+#pragma cplusplus off
 void func_ov001_02172824(void) {
  extern void *gOv001MenuState;
  void func_ov001_02173e38(void);
@@ -159,78 +137,112 @@ s32 Ov001_IsMenuActive(void) {
 }
 
 #pragma opt_common_subs off
-void func_ov001_021728b0(s32 arg0){
+void Ov001_KeyboardSlideStep1(s32 task){
 extern void *gOv001MenuState;
-void func_ov001_02172944(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=*M2C_FIELD(gOv001MenuState,u32 **,0x30);
-y=v&0x1ff0000;
-x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-pos[0]=x;
-if(pos[0]>0x51){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,pos[0]);return;}
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),0,0x51);
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0xc0);
-Ov001_SetSlideStep(arg0,func_ov001_02172944);
+void Ov001_KeyboardSlideStep2(s32);
+u32 sprite; s32 keyX; u32 keyY; s32 pos[2];
+sprite=*(u32 *)((Ov001KeyboardState *)gOv001MenuState)->charKeys[0];
+keyY=sprite&0x1ff0000;
+keyX=(sprite&255)-12;
+((volatile s32 *)pos)[1]=keyY>>16;
+pos[0]=keyX;
+if(pos[0]>KBD_ROW_REST_X0){Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page,0,pos[0]);return;}
+Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page,0,KBD_ROW_REST_X0);
+Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page,1,KBD_ROW_HIDDEN_X);
+Ov001_SetSlideStep(task,Ov001_KeyboardSlideStep2);
 }
 #pragma optimization_level 2
-void func_ov001_02172944(s32 arg0){
-extern void *gOv001MenuState;
-void func_ov001_021729d8(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=*M2C_FIELD(gOv001MenuState,u32 **,0x60);
-y=v&0x1ff0000;
-x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-pos[0]=x;
-if(pos[0]>0x67){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,pos[0]);return;}
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),1,0x67);
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0xc0);
-Ov001_SetSlideStep(arg0,func_ov001_021729d8);
+/* Slide-in step for the second keyboard row: while its leftmost key is still to
+ * the right of where the row comes to rest, move the whole row along with it;
+ * once it has arrived, snap the row into place, park the third row just off the
+ * right edge and queue that row's step. */
+void Ov001_KeyboardSlideStep2(s32 task) {
+    extern void *gOv001MenuState;
+    void Ov001_KeyboardSlideStep3(s32);
+    u32 sprite;
+    s32 keyX;
+    u32 keyY;
+    s32 pos[2];
+    sprite = *(u32 *)((Ov001KeyboardState *)gOv001MenuState)->charKeys[12];
+    keyY = sprite & 0x1ff0000;
+    keyX = (sprite & 255) - 12;
+    ((volatile s32 *)pos)[1] = keyY >> 16;
+    pos[0] = keyX;
+    if (pos[0] > KBD_ROW_REST_X1) {
+        Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 1, pos[0]);
+        return;
+    }
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 1, KBD_ROW_REST_X1);
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 2, KBD_ROW_HIDDEN_X);
+    Ov001_SetSlideStep(task, Ov001_KeyboardSlideStep3);
 }
 #pragma optimization_level 3
-void func_ov001_021729d8(s32 arg0){
-extern void *gOv001MenuState;
-void func_ov001_02172a6c(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=*M2C_FIELD(gOv001MenuState,u32 **,0x90);
-y=v&0x1ff0000;
-x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-pos[0]=x;
-if(pos[0]>0x7d){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,pos[0]);return;}
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),2,0x7d);
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0xc0);
-Ov001_SetSlideStep(arg0,func_ov001_02172a6c);
+/* Slide-in step for the third keyboard row: while its leftmost key is still to
+ * the right of where the row comes to rest, move the whole row along with it;
+ * once it has arrived, snap the row into place, park the fourth row just off the
+ * right edge and queue that row's step. */
+void Ov001_KeyboardSlideStep3(s32 task) {
+    extern void *gOv001MenuState;
+    void Ov001_KeyboardSlideStep4(s32);
+    u32 sprite;
+    s32 keyX;
+    u32 keyY;
+    s32 pos[2];
+    sprite = *(u32 *)((Ov001KeyboardState *)gOv001MenuState)->charKeys[24];
+    keyY = sprite & 0x1ff0000;
+    keyX = (sprite & 255) - 12;
+    ((volatile s32 *)pos)[1] = keyY >> 16;
+    pos[0] = keyX;
+    if (pos[0] > KBD_ROW_REST_X2) {
+        Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 2, pos[0]);
+        return;
+    }
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 2, KBD_ROW_REST_X2);
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 3, KBD_ROW_HIDDEN_X);
+    Ov001_SetSlideStep(task, Ov001_KeyboardSlideStep4);
 }
 #pragma peephole off
-void func_ov001_02172a6c(s32 arg0){
-extern void *gOv001MenuState;
-void func_ov001_02172b00(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=*M2C_FIELD(gOv001MenuState,u32 **,0xc0);
-y=v&0x1ff0000;
-x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-pos[0]=x;
-if(pos[0]>0x93){func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,pos[0]);return;}
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),3,0x93);
-func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,0xc0);
-Ov001_SetSlideStep(arg0,func_ov001_02172b00);
+/* Slide-in step for the fourth keyboard row: while its leftmost key is still to
+ * the right of where the row comes to rest, move the whole row along with it;
+ * once it has arrived, snap the row into place, park the bottom action row just
+ * off the right edge and queue that row's step. */
+void Ov001_KeyboardSlideStep4(s32 task) {
+    extern void *gOv001MenuState;
+    void Ov001_KeyboardSlideStep5(s32);
+    u32 sprite;
+    s32 keyX;
+    u32 keyY;
+    s32 pos[2];
+    sprite = *(u32 *)((Ov001KeyboardState *)gOv001MenuState)->charKeys[36];
+    keyY = sprite & 0x1ff0000;
+    keyX = (sprite & 255) - 12;
+    ((volatile s32 *)pos)[1] = keyY >> 16;
+    pos[0] = keyX;
+    if (pos[0] > KBD_ROW_REST_X3) {
+        Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 3, pos[0]);
+        return;
+    }
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 3, KBD_ROW_REST_X3);
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 4, KBD_ROW_HIDDEN_X);
+    Ov001_SetSlideStep(task, Ov001_KeyboardSlideStep5);
 }
 #pragma peephole reset
-void func_ov001_02172b00(s32 arg0) {
+/* Slide-in step for the bottom action row: while its leftmost key is still to
+ * the right of where the row comes to rest, move the whole row along with it;
+ * once it has arrived, snap the row into place, update the cursor and finish
+ * the slide-in. */
+void Ov001_KeyboardSlideStep5(s32 task) {
  extern void *gOv001MenuState;
- void func_ov001_02172b8c(void);
+ void Ov001_KeyboardSlideDone(void);
  s32 pos[2];
  Ov001_GetSpritePosition(M2C_FIELD(gOv001MenuState,s32 *,0xfc),0,&pos[1],&pos[0]);
  pos[0]-=12;
- if(pos[0]>170) {func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,pos[0]);return;}
- func_ov001_0217355c(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,170);
- Ov001_UpdateKeyboardCursor(); Ov001_SetSlideStep(arg0,func_ov001_02172b8c);
+ if(pos[0]>KBD_ROW_REST_X4) {Ov001_LayoutKeyboardRow(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,pos[0]);return;}
+ Ov001_LayoutKeyboardRow(M2C_FIELD(gOv001MenuState,u8 *,0x11d),4,KBD_ROW_REST_X4);
+ Ov001_UpdateKeyboardCursor(); Ov001_SetSlideStep(task,Ov001_KeyboardSlideDone);
 }
 
-void func_ov001_02172b8c(void) {
+void Ov001_KeyboardSlideDone(void) {
     void Ov001_HandleKeyboardKeyRelease(void);
     M2C_UNK Ov001_KeyboardInput();
     Ov001_HandleKeyboardKeyPress();

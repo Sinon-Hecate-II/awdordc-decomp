@@ -112,21 +112,35 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     gCur3DSpriteEngine = (void *) savedSpriteEngine;
 }
 
-void func_ov003_022020e0(void *p,u8 v){
-s32 Divide(u8,s32); s32 Modulo(u8,s32); void SetTileRectPalette(s32,s32,s32,s32); extern void *data_027e01d8;
-s32 flag; s8 a; u8 id; s32 x;
-if((u8)v==1)flag=1;else flag=0;
-M2C_FIELD(p,u8*,0x39)=v;
-if(flag & 255)a=0;else a=1;
-M2C_FIELD(M2C_FIELD(p,void**,0x4c),s8*,0x59)=a;
-SetTileRectPalette(M2C_FIELD(data_027e01d8,s32*,0x2c),32,32,0);
-flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
-if(flag){
-id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
-x=Modulo(id,4);
-{ s32 y=Divide(id,4); x=(x*8+0x60); SetTileRectPalette(M2C_FIELD(data_027e01d8,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
-}
-M2C_FIELD(data_027e01d8,u8*,0x46)|=8;
+/* Sets the setup panel's state: records it, hides the panel sprite while the
+ * active state is shown and clears the 32x32 background tile rect, then draws
+ * the 8x8 highlight of the selected entry and marks the engine dirty. */
+void Ov003_SetSetupPanelState(void *panel, u32 state) {
+    s32 Divide(u8, s32);
+    s32 Modulo(u8, s32);
+    void SetTileRectPalette(s32, s32, s32, s32);
+    extern void *gCur3DSpriteEngine;
+    s32 flag;
+    u8 entryIndex;
+    s32 tileX;
+
+    M2C_FIELD(panel, u8 *, 0x39) = state;
+    flag = state & 0xff;
+    if (flag == 1) flag = 1; else flag = 0;
+    if (flag & 255) M2C_FIELD(M2C_FIELD(panel, void **, 0x4c), s8 *, 0x59) = 0;
+    else M2C_FIELD(M2C_FIELD(panel, void **, 0x4c), s8 *, 0x59) = 1;
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c), 32, 32, 0);
+    flag = E1E88IsOne(M2C_FIELD(panel, u8 *, 0x39));
+    if (flag) {
+        entryIndex = M2C_FIELD(M2C_FIELD(M2C_FIELD(panel, void **, 0x44), void **, 0x10c), u16 *, 0x2e);
+        tileX = Modulo(entryIndex, 4);
+        {
+            s32 tileY = Divide(entryIndex, 4);
+            tileX = (tileX * 8 + 0x60);
+            SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c) + ((u32)((tileY * 0x120 + tileX) << 16) >> 15), 8, 8, 1);
+        }
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
 }
 
 u8 func_ov003_022021c0(void *arg0) {
@@ -232,13 +246,118 @@ Hide3DSprite(M2C_FIELD(p,s32*,0));Hide3DSprite(M2C_FIELD(p,s32*,4));
 for(i=0;(u32)i<8;i++){Hide3DSprite(((s32*)(p+8))[i]);Hide3DSprite(((s32*)(p+0x28))[i]);}
 Hide3DSprite(M2C_FIELD(arg0,s32*,0x4c));}
 
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+void func_ov003_022024a8(void *arg0) {
+    void AddSprite(u16, u8, u16, void *, s32);
+    s32 func_020cfb94(void);
+    void UpdateSpriteAnimation(void *);
+    s16 GetSpriteAnimValue(void *);
+    s32 func_ov003_022004a8(u8);
+    s32 func_ov003_022004d0();
+    s32 func_ov003_022004f0(M2C_UNK);
+    s32 func_ov003_02200ca8();
+    M2C_UNK func_ov003_0220501c(void *, s16, M2C_UNK);
+    extern M2C_UNK gSpriteDesc64x32;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
+    extern void *gCur3DSpriteEngine;
+    extern M2C_UNK data_ov003_022104c8;
+    s32 temp_r0_2;
+    s32 adjustedY;
+    s16 temp_r1;
+    s32 temp_r5;
+    s16 temp_r6;
+    s32 temp_r10;
+    s32 temp_r2;
+    s32 temp_r4_2;
+    s32 temp_r5_2;
+    s32 screenX;
+    s32 temp_r8;
+    void *temp_r4, *temp_r11;
+    u32 temp_r0;
+    u32 var_r0;
+    s32 var_r9;
+    void *temp_r0_3;
+    void *temp_r0_4;
+    void *temp_r2_2;
+    void *temp_r3;
+
+    temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x19) >> 0x1F;
+    if (temp_r0 == 0) {
+        return;
+    }
+    UpdateSpriteAnimation(M2C_FIELD(arg0, void **, 0x3C));
+    UpdateSpriteAnimation(M2C_FIELD(arg0, void **, 0x48));
+    temp_r6 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x3C));
+    temp_r4 = gCur3DSpriteEngine;
+    temp_r5 = 0 - temp_r6;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    M2C_FIELD(*(void **)g3DSpriteEngineMain, s16 *, 0x3E) = temp_r5;
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x46) = 0;
+    M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 0x38) = temp_r6;
+    AddSprite(0, (u8) GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x48)), (u16) ((0x3FF & (0x1C0 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7C00), &data_ov003_022104c8, 0xB);
+    func_ov003_0220501c(arg0, temp_r6, 0);
+    if (func_ov003_02200ca8() != 0) {
+        temp_r2 = (s32)((u32)GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x48)) << 5);
+        adjustedY = -(temp_r2 / 32);
+        AddSprite(0xC0, (u8)(s16)(adjustedY + 0xA0), (u16) ((0x3FF & (0x320 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), &gSpriteDesc64x32, 0xB);
+    }
+    gCur3DSpriteEngine = temp_r4;
+    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
+        var_r0 = 1;
+    } else {
+        var_r0 = 0;
+    }
+    if (var_r0 & 0xFF) {
+        return;
+    }
+    temp_r11 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    temp_r4_2 = temp_r6 - 8;
+    M2C_FIELD(*(void **)g3DSpriteEngineSub, s16 *, 0x3E) = temp_r5;
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x46) = 0xFFD0;
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x38) = (s16) (0 - (temp_r4_2 + func_ov003_022004d0()));
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x40) = 0xFFC0;
+    temp_r5_2 = func_ov003_022004d0();
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + func_ov003_022004f0(1)));
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0xFFC0;
+    temp_r10 = func_020cfb94();
+    screenX = (s16)(temp_r6 - 4);
+    temp_r8 = M2C_FIELD(arg0, s32 *, 0x50);
+    var_r9 = 0;
+    do {
+        temp_r0_2 = (s16)(func_ov003_022004a8((u8)var_r9) + screenX);
+        if ((s32) var_r9 < temp_r10) {
+            temp_r3 = temp_r8 + (var_r9 * 4);
+            temp_r2_2 = M2C_FIELD(temp_r3, void **, 4);
+            temp_r1 = (s16)temp_r0_2;
+            M2C_FIELD(temp_r2_2, s16 *, 0x34) = temp_r1;
+            M2C_FIELD(temp_r2_2, s16 *, 0x36) = 0x30;
+            temp_r0_3 = M2C_FIELD(temp_r3, void **, 0x14);
+            M2C_FIELD(temp_r0_3, s16 *, 0x34) = temp_r1;
+            M2C_FIELD(temp_r0_3, s16 *, 0x36) = 0x78;
+            temp_r0_4 = M2C_FIELD(temp_r3, void **, 0x24);
+            M2C_FIELD(temp_r0_4, s16 *, 0x34) = temp_r1;
+            M2C_FIELD(temp_r0_4, s16 *, 0x36) = 0x88;
+        } else {
+            Hide3DSprite(M2C_FIELD((temp_r8 + (var_r9 * 4)), void **, 4));
+            Hide3DSprite(M2C_FIELD((temp_r8 + (var_r9 * 4)), void **, 0x14));
+            Hide3DSprite(M2C_FIELD((temp_r8 + (var_r9 * 4)), void **, 0x24));
+        }
+        var_r9 += 1;
+    } while ((s32) var_r9 < 4);
+    gCur3DSpriteEngine = temp_r11;
+}
+#pragma opt_common_subs on
+#pragma opt_strength_reduction on
 void func_ov003_0220277c(void *arg0) {
     void func_ov003_02202b68(void *);
     M2C_UNK func_ov003_021e88a4(M2C_UNK);
     M2C_UNK func_ov003_021ebb88(M2C_UNK);
     u8 func_ov003_022021d8(void *);
     void func_ov003_02202bb0();
-    void func_ov003_02202dc8(void *, s32);
+    void Ov003_IncreaseSelectedEntry(void *, s32);
     u8 func_ov003_02202e94(s32, s32);
     void Ov003_UpdateSelectedEntryText(void *);
     u8 func_ov003_022021c0(void *);
@@ -278,7 +397,7 @@ void func_ov003_0220277c(void *arg0) {
     for (r8 = 0; r8 < 8; r8++) {
         if (r7 != 0) {
             if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8)) != 0) {
-                func_ov003_02202dc8(M2C_FIELD(arg0, void **, 0x44), r8);
+                Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
                 func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r8) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
@@ -349,7 +468,7 @@ void func_ov003_0220277c(void *arg0) {
         r4 = (s32)func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44));
         if (r7 != 0 && (r9 & 0x100)) {
             if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
-                func_ov003_02202dc8(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
+                Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
                 func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);

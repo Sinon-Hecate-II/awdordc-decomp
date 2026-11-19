@@ -9,7 +9,7 @@ extern s32 gErrno;
 #pragma opt_common_subs off
 double func_0206ce00(double x,double y) {
 double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double func_020724f8(double,double);
-double func_020709bc(double);double fabs(double);double func_0207191c(float);double func_0206f818(double,s32);
+double func_020709bc(double);double fabs(double);double _f2d(float);double func_0206f818(double,s32);
 s32 hx=POW_HI(x),hy=POW_HI(y),ix=hx&0x7fffffff,iy=hy&0x7fffffff;
 u32 lx=POW_LO(x),ly=POW_LO(y);s32 j; s32 yisint,k,n,i,signFlag;
 double z,ax,zh,zl,ph,pl,y1,t1,t2,r,s,t,u,v,w;
@@ -45,7 +45,7 @@ else if(yisint==1)z=func_02070b70(0.0,z);
 return z;
 }
 signFlag=(hx>>31)+1;
-if((signFlag|yisint)==0){gErrno=33;return func_0207191c(gFloatNanBits);}
+if((signFlag|yisint)==0){gErrno=33;return _f2d(gFloatNanBits);}
 if(iy>0x41e00000){
 if(iy>0x43f00000){
 if(ix<=0x3fefffff){return hy<0?(1.0/0.0):0.0;}

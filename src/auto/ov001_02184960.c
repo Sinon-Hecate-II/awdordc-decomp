@@ -4,6 +4,12 @@
 typedef struct { u8 bytes[240]; } UnkOv001SaveBlock;
 typedef struct { u8 pad[0xe6]; u8 mode:2; u8 flags:6; u8 active; } SaveFlags84;
 
+/* Fields of the ov001 sound block (gOv001SoundState, 0x9C bytes): the loaded
+ * sound archive at its start, then the sound player and the per-frame update task. */
+#define OV001_SOUND_PLAYER 0x90 /* s32 sound player handle the sound calls work on */
+#define OV001_SOUND_FILE   0x94 /* void *base of the loaded sound archive file */
+#define OV001_SOUND_TASK   0x98 /* s32 id of the sound update task */
+
 /* Commits the working save slot into its physical slot: copies the slot image,
  * keeps, blanks or recomputes the optional player-code fields and the code's
  * set-bit count according to the "extra empty" flags, then refreshes the save
@@ -101,7 +107,7 @@ p[0xf5]=1;p[0xf6]=1;
 CommitSaveSlot();
 }
 
-s32 func_ov001_02184c60(void) {
+s32 GetSaveData(void) {
     extern s32 gSaveData;
     return gSaveData;
 }
@@ -126,8 +132,8 @@ for(i=0;i<4;i++)UpdateSaveChecksums(i);
 #pragma opt_strength_reduction off
 void UpdateSaveChecksums(s32 a) {
  M2C_UNK MI_CpuFill8(void *, s32, s32);
- u16 func_02076838(void *, void *, s32);
- s32 func_02045ee0(s32, s32 *, s32);
+ u16 Crc16Block(void *, void *, s32);
+ s32 FifoUploadSelectedBlocks(s32, s32 *, s32);
  s32 Ov001_Alloc(s32, s32);
  M2C_UNK Ov001_FreeAlloc(void *);
  extern s32 gSaveData;
@@ -148,11 +154,11 @@ void UpdateSaveChecksums(s32 a) {
  }}
  idx=0; off=0; do {
  if(arr[idx]){
- u16 res=func_02076838((u8 *)gSaveData+0x4f8,(u8 *)gSaveData+off,254);
+ u16 res=Crc16Block((u8 *)gSaveData+0x4f8,(u8 *)gSaveData+off,254);
  *(u16 *)((u8 *)gSaveData+(idx<<8)+254)=res;
  } idx++; off+=256; }while(idx<4);
  ptr=Ov001_Alloc(256,32);
- func_02045ee0(gSaveData,arr,ptr);
+ FifoUploadSelectedBlocks(gSaveData,arr,ptr);
  Ov001_FreeAlloc(&ptr);
 }
 #pragma pop
@@ -177,24 +183,44 @@ s32 HexCharValue(u32 arg0) {
     return arg0 - 0x57;
 }
 
-void func_ov001_02184f68(void){void func_ov001_021850ac(void);extern s32 data_ov001_02193e08;extern M2C_UNK data_ov001_02190b68;s32 Ov001_Alloc(s32,s32);s32 Ov001_LoadFile(void *,void *,s32);void func_0202a968(void);M2C_UNK InitSoundArchive(s32,s32);M2C_UNK Sound_InitArchiveChannels(s32);M2C_UNK func_0202acb0(s32);s32 Ov001_AddTask(s32,void (*)(void),s32,s32);s32 local;
-data_ov001_02193e08=Ov001_Alloc(0x9c,4);
-M2C_FIELD(data_ov001_02193e08,s32 *,0x94)=Ov001_LoadFile(&data_ov001_02190b68,&local,32);
-func_0202a968();InitSoundArchive(data_ov001_02193e08,M2C_FIELD(data_ov001_02193e08,s32 *,0x94));Sound_InitArchiveChannels(0);func_0202acb0(data_ov001_02193e08+0x90);M2C_FIELD(data_ov001_02193e08,s32 *,0x98)=Ov001_AddTask(0,func_ov001_021850ac,0,200);}
+/* Start the ov001 sound system: load the sound archive file, initialise the
+ * archive and its channels, reset the sound player and start the per-frame sound
+ * update task. */
+void Ov001_InitSound(void) {
+    void func_ov001_021850ac(void);
+    extern s32 gOv001SoundState;
+    extern M2C_UNK sOv001SoundArchivePath;
+    s32 Ov001_Alloc(s32, s32);
+    s32 Ov001_LoadFile(void *, void *, s32);
+    void InitSoundDriver(void);
+    M2C_UNK InitSoundArchive(s32, s32);
+    M2C_UNK Sound_InitArchiveChannels(s32);
+    M2C_UNK func_0202acb0(s32);
+    s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
+    s32 fileSize;
 
-void func_ov001_02184ff8(void){extern s32 data_ov001_02193e08;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK Ov001_FreeAlloc(void *);Ov001_PostTaskMessage(0,M2C_FIELD(data_ov001_02193e08,s32 *,0x98));Ov001_FreeAlloc((void *)0x02193e08);}
+    gOv001SoundState = Ov001_Alloc(0x9C, 4);
+    M2C_FIELD(gOv001SoundState, s32 *, OV001_SOUND_FILE) = Ov001_LoadFile(&sOv001SoundArchivePath, &fileSize, 32);
+    InitSoundDriver();
+    InitSoundArchive(gOv001SoundState, M2C_FIELD(gOv001SoundState, s32 *, OV001_SOUND_FILE));
+    Sound_InitArchiveChannels(0);
+    func_0202acb0(gOv001SoundState + OV001_SOUND_PLAYER);
+    M2C_FIELD(gOv001SoundState, s32 *, OV001_SOUND_TASK) = Ov001_AddTask(0, func_ov001_021850ac, 0, 200);
+}
 
-void Ov001_PlaySound(s32 a){extern s32 data_ov001_02193e08;M2C_UNK func_0202d3e8(s32,s32,s32);func_0202d3e8(data_ov001_02193e08+0x90,0,a);}
+void func_ov001_02184ff8(void){extern s32 gOv001SoundState;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK Ov001_FreeAlloc(void *);Ov001_PostTaskMessage(0,M2C_FIELD(gOv001SoundState,s32 *,0x98));Ov001_FreeAlloc((void *)0x02193e08);}
+
+void Ov001_PlaySound(s32 a){extern s32 gOv001SoundState;M2C_UNK func_0202d3e8(s32,s32,s32);func_0202d3e8(gOv001SoundState+0x90,0,a);}
 
 void func_ov001_02185048(M2C_UNK arg0) {
     M2C_UNK func_0202acdc(s32, M2C_UNK);
-    extern s32 data_ov001_02193e08;
-    func_0202acdc(data_ov001_02193e08 + 0x90, arg0);
+    extern s32 gOv001SoundState;
+    func_0202acdc(gOv001SoundState + 0x90, arg0);
 }
 
-void func_ov001_02185068(s32 a,s32 b){extern s32 data_ov001_02193e08;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(data_ov001_02193e08+0x90,a,b);}
+void func_ov001_02185068(s32 a,s32 b){extern s32 gOv001SoundState;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(gOv001SoundState+0x90,a,b);}
 
-void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 data_ov001_02193e08;func_0202ac60(data_ov001_02193e08+0x90,0);}
+void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 gOv001SoundState;func_0202ac60(gOv001SoundState+0x90,0);}
 
 void func_ov001_021850ac(void) {
     M2C_UNK func_0202a9f0();

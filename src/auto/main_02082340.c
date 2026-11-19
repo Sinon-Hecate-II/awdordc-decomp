@@ -335,25 +335,29 @@ void func_02082d08(void) {
 
 void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; DC_FlushRange(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){GX_BeginLoadBGExtPltt();GX_LoadBGExtPltt(a,c+(b<<13),d);GX_EndLoadBGExtPltt();}else{GX_BeginLoadBGExtPlttSub();GX_LoadBGExtPlttSub(a,c+(b<<13),d);GX_EndLoadBGExtPlttSub();}}
 
-s32 func_02082f34(s32 arg0) {
+/* Whether map `mapId` can be played in the current session: with no link
+ * session the link-only custom map slots are unavailable, and with one the map
+ * must seat at least as many players as the session.  A campaign map slot must
+ * hold a playable map record. */
+s32 IsMapValidForSession(s32 mapId) {
     s32 IsLinkSessionActive();
-    s32 func_02084a0c();
+    s32 GetSessionPlayerCount();
     s32 IsCampaignMapRecordPlayable(s32);
     s32 GetMapPlayerCount(u16);
-    s32 temp_r4;
+    s32 players;
 
     if (IsLinkSessionActive() == 0) {
-        if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (arg0 >= 0x113)) {
+        if ((mapId >= MAP_CUSTOM_FIRST) && (mapId < MAP_CUSTOM_LINK_END) && (mapId >= MAP_CUSTOM_LOCAL_END)) {
             return 0;
         }
-        goto block_7;
+        goto campaign_check;
     }
-    temp_r4 = GetMapPlayerCount((u16) arg0);
-    if (temp_r4 < func_02084a0c()) {
+    players = GetMapPlayerCount((u16) mapId);
+    if (players < GetSessionPlayerCount()) {
         return 0;
     }
-block_7:
-    if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (IsCampaignMapRecordPlayable(arg0) == 0)) {
+campaign_check:
+    if ((mapId >= MAP_CUSTOM_FIRST) && (mapId < MAP_CUSTOM_LINK_END) && (IsCampaignMapRecordPlayable(mapId) == 0)) {
         return 0;
     }
     return 1;
@@ -426,7 +430,7 @@ M2C_FIELD(categoryBlock,u8 *,MAP_LIST_COUNT_OFFSET)=count;
 s32 IsMapSelectable(s32 a,s32 b,s32 c){
 s32 func_020a8958(void);s32 IsLinkSessionActive(void);s32 func_02086940(s32);s32 GetMapPlayerCount(u16);
 if(b!=func_020a8958())return 0;
-if(!func_02082f34(a))return 0;
+if(!IsMapValidForSession(a))return 0;
 if(c && c!=GetMapPlayerCount((u16)a))return 0;
 if(!IsLinkSessionActive() && b==2){if(!func_02086940(a))return 0;}
 return 1;

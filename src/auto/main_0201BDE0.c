@@ -106,14 +106,18 @@ M2C_FIELD(conn,u32 *,TCP_CONN_ACK_NUM)=(((u16)(((s32)peerHi>>8)|(peerHi<<8))<<16
 func_0201be44(seg,conn);TcpTransmitSegment((s32)conn,18,0);
 }
 
-s32 TcpProcessSynExisting(s32 a,s32 b,s32 c) {
- void *p=TcpFindConnection(a,b);
- u8 v;
- if(p) {
- v=M2C_FIELD(p,u8 *,8);
- if(v==1)TcpSendSynAck(a,b,p);
- else if((u8)(v+253)<=1) {M2C_FIELD(p,s32 *,40)--;TcpSendSynAck(a,b,p);}
- else TcpSendReset(a,b,c,0);
+/* Answer a SYN that arrives on an existing connection: resend the SYN/ACK when
+ * the connection is still handshaking (state 1, or SYN_RCVD/ESTABLISHED with
+ * its send sequence wound back one), otherwise send a reset.  Returns whether a
+ * connection was found. */
+s32 TcpProcessSynExisting(s32 ipHeader,s32 seg,s32 len) {
+ void *conn=TcpFindConnection(ipHeader,seg);
+ u8 state;
+ if(conn) {
+ state=M2C_FIELD(conn,u8 *,SOCKET_STATE);
+ if(state==1)TcpSendSynAck(ipHeader,seg,conn);
+ else if((u8)(state+253)<=1) {M2C_FIELD(conn,s32 *,TCP_CONN_SEND_SEQ)--;TcpSendSynAck(ipHeader,seg,conn);}
+ else TcpSendReset(ipHeader,seg,len,0);
  return 1;
  }
  return 0;

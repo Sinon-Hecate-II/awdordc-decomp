@@ -4,6 +4,8 @@
 #ifndef OV000_UNIT_MOVE_H
 #define OV000_UNIT_MOVE_H
 
+#define UNIT_MOVE_SLOT_COUNT  3    /* simultaneous unit-move controllers (the map's slot pool) */
+#define UNIT_MOVE_SPRITE_LAYER 9   /* 3D sprite layer the moving unit's object is created in */
 #define UNIT_MOVE_SPRITE      0x34 /* s32 * unit sprite object */
 #define UNIT_MOVE_SPRITE2     0x38 /* s32 * second unit sprite object */
 #define UNIT_MOVE_UNIT        0x3c /* u8 * map unit record being moved */

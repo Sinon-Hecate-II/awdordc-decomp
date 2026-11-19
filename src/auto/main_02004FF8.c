@@ -1,9 +1,9 @@
 /* 56 functions from 0x02004FF8 to 0x02005F80 (main), found by ds-decomp. */
 #include "common.h"
 static inline u8 *stack_end_02005968(void) {
-extern M2C_UNK data_027e0000;
+extern M2C_UNK gOsArea;
 extern char data_00000800[];
-return (u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+return (u8 *)&gOsArea+0x3f80-(s32)data_00000800;
 }
 static inline u8 *stack_start_02005968(void) {
 extern char data_00000000[];
@@ -14,68 +14,74 @@ else p=stack_end_02005968();
 return p-size;
 }
 
-void OS_SetFifoReceiveHandlers(u32 arg0, s32 arg1) {
-    extern M2C_UNK data_0212dc1c;
-    extern M2C_UNK data_027e0000;
-    s32 i;
-    s32 *entry;
-    i = 0;
+/* Install each selected IRQ handler in the OS table or its shared DMA/timer channel record. */
+void OS_SetIrqHandler(u32 irqMask, s32 handler) {
+    extern M2C_UNK gDmaTimerIrqHandlers;
+    extern M2C_UNK gOsArea;
+    s32 irqIndex;
+    s32 *channelEntry;
+
+    irqIndex = 0;
     do {
-        if (arg0 & 1) {
-            entry = NULL;
-            if (i >= 8 && i <= 11) {
-                entry = (s32 *)((s8 *)&data_0212dc1c + (i - 8) * sizeof(s32[3]));
-            } else if (i >= 3 && i <= 6) {
-                entry = (s32 *)((s8 *)&data_0212dc1c + (i + 1) * sizeof(s32[3]));
+        if (irqMask & 1) {
+            channelEntry = NULL;
+            if (irqIndex >= IRQ_NUMBER_DMA0 && irqIndex <= IRQ_NUMBER_DMA3) {
+                channelEntry = (s32 *)((s8 *)&gDmaTimerIrqHandlers + (irqIndex - IRQ_NUMBER_DMA0) * sizeof(IrqHandler));
+            } else if (irqIndex >= IRQ_NUMBER_TIMER0 && irqIndex <= IRQ_NUMBER_TIMER3) {
+                channelEntry = (s32 *)((s8 *)&gDmaTimerIrqHandlers + (irqIndex + 1) * sizeof(IrqHandler));
             } else {
-                ((s32 *)&data_027e0000)[i] = arg1;
+                ((s32 *)&gOsArea)[irqIndex] = handler;
             }
-            if (entry != NULL) {
-                entry[0] = arg1;
-                entry[2] = 0;
-                entry[1] = 1;
+            if (channelEntry != NULL) {
+                channelEntry[0] = handler;
+                channelEntry[2] = 0;
+                channelEntry[1] = 1;
             }
         }
-        i++;
-        arg0 >>= 1;
-    } while (i < 22);
+        irqIndex++;
+        irqMask >>= 1;
+    } while (irqIndex < IRQ_COUNT);
 }
 
-s32 OS_GetFifoReceiveHandler(u32 arg0) {
-    extern M2C_UNK data_0212dc1c;
-    extern s32 data_027e0000;
-    s32 i;
-    s32 *ptr;
-    ptr = &data_027e0000;
-    i = 0;
+/* Return the handler registered for the lowest IRQ set in mask (IRQ n is bit n),
+ * or 0 when the mask names no IRQ.  The timers and DMA channels keep their
+ * handlers in the gDmaTimerIrqHandlers entries, every other IRQ straight in the
+ * OS area's handler table. */
+s32 OS_GetIrqHandler(u32 mask) {
+    extern M2C_UNK gDmaTimerIrqHandlers;
+    extern s32 gOsArea;
+    s32 irq;
+    s32 *handler;
+    handler = &gOsArea;
+    irq = 0;
     do {
-        if (arg0 & 1) {
-            if (i >= 8 && i <= 11) {
-                return M2C_FIELD(&data_0212dc1c, s32 *, (i - 8) * 12);
+        if (mask & 1) {
+            if (irq >= IRQ_NUMBER_DMA0 && irq <= IRQ_NUMBER_DMA3) {
+                return M2C_FIELD(&gDmaTimerIrqHandlers, s32 *, (irq - IRQ_NUMBER_DMA0) * sizeof(IrqHandler));
             }
-            if (i >= 3 && i <= 6) {
-                return M2C_FIELD(&data_0212dc1c, s32 *, (i + 1) * 12);
+            if (irq >= IRQ_NUMBER_TIMER0 && irq <= IRQ_NUMBER_TIMER3) {
+                return M2C_FIELD(&gDmaTimerIrqHandlers, s32 *, (IRQ_HANDLER_DMA_COUNT + irq - IRQ_NUMBER_TIMER0) * sizeof(IrqHandler));
             }
-            return *ptr;
+            return *handler;
         }
-        i++;
-        arg0 >>= 1;
-        ptr++;
-    } while (i < 22);
+        irq++;
+        mask >>= 1;
+        handler++;
+    } while (irq < IRQ_COUNT);
     return 0;
 }
 
 #pragma scheduling on
 void OS_SetDmaHandler(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_EnableIrqMask(s32);
-    extern M2C_UNK data_0212dc1c;
+    extern M2C_UNK gDmaTimerIrqHandlers;
     extern M2C_UNK data_0212dc20;
     extern M2C_UNK data_0212dc24;
     s32 shift;
     s32 offset;
     offset = arg0 * 12;
     shift = arg0 + 8;
-    M2C_FIELD(&data_0212dc1c, s32 *, offset) = arg1;
+    M2C_FIELD(&gDmaTimerIrqHandlers, s32 *, offset) = arg1;
     M2C_FIELD(&data_0212dc24, s32 *, offset) = arg2;
     M2C_FIELD(&data_0212dc20, s32 *, offset) = OS_EnableIrqMask(1 << shift) & (1 << shift);
 }
@@ -140,10 +146,10 @@ s32 OS_SetIrqMask(s32 arg0) {
 
 #pragma opt_propagation off
 void func_02005254(void) {
-    extern M2C_UNK data_027e0000;
+    extern M2C_UNK gOsArea;
     s32 off = 0x800;
-    M2C_FIELD(&data_027e0000, s32 *, 0x3F7C) = 0xFDDB597D;
-    *(s32 *)((u8 *)&data_027e0000 + 0x3F80 - off) = 0x7BF9DD5B;
+    M2C_FIELD(&gOsArea, s32 *, 0x3F7C) = 0xFDDB597D;
+    *(s32 *)((u8 *)&gOsArea + 0x3F80 - off) = 0x7BF9DD5B;
 }
 #pragma opt_propagation reset
 void func_02005288(void) {
@@ -405,11 +411,11 @@ if(!prev){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(a,void **,0x68);}els
 void RescheduleThreads(void) {
 extern M2C_UNK gThreadManager;
 extern M2C_UNK gSocketManager;
-s32 func_02007580(void); void *FindNextReadyThread(void); s32 func_02006224(void *); void func_02006270(s32);
+s32 GetProcessorMode(void); void *FindNextReadyThread(void); s32 func_02006224(void *); void func_02006270(s32);
 void *manager; void *current,*next; void (*cb)(void *,void *);
 if(M2C_FIELD(&gThreadManager,s32 *,4))return;
 manager=&gSocketManager;
-if(M2C_FIELD(&gThreadManager,u16 *,0x26) || func_02007580()==18){M2C_FIELD(manager,u16 *,0)=1;return;}
+if(M2C_FIELD(&gThreadManager,u16 *,0x26) || GetProcessorMode()==18){M2C_FIELD(manager,u16 *,0)=1;return;}
 current=M2C_FIELD(M2C_FIELD(&gThreadManager,void **,8),void **,0);
 next=FindNextReadyThread();
 if(current==next || next==0)return;
@@ -422,7 +428,7 @@ func_02006270((s32)next);
 
 #pragma peephole off
 void func_02005968(void) {
-extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,data_027e0000,gSocketManager,gIdleThread,data_0212defc;
+extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,gOsArea,gSocketManager,gIdleThread,data_0212defc;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
 void TaskCreate(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
@@ -437,9 +443,9 @@ M2C_FIELD(&gThreadManager,s32 *,360)=0;
 M2C_FIELD(&gThreadManager,void **,44)=&data_0212dd74;
 M2C_FIELD(&gThreadManager,void **,40)=&data_0212dd74;
 size=(s32)data_00000000;
-if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&gOsArea+0x3f80-(s32)data_00000800;
 start-=size;
-end=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+end=(u8 *)&gOsArea+0x3f80-(s32)data_00000800;
 M2C_FIELD(&gThreadManager,void **,392)=end;
 M2C_FIELD(&gThreadManager,void **,388)=start;
 M2C_FIELD(&gThreadManager,s32 *,396)=0;
@@ -553,11 +559,11 @@ OS_WakeupThread(p+156);OS_EnableScheduler();OS_RestoreInterrupts(old);OS_Resched
 }
 
 void func_02005d48(void *arg0) {
-    M2C_UNK func_02007338();
+    M2C_UNK CancelTimer();
     if (M2C_FIELD(arg0, s32 *, 0xB0) == 0) {
         return;
     }
-    func_02007338();
+    CancelTimer();
 }
 
 void OS_JoinThread(void *arg0) {

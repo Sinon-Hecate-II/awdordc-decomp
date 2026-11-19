@@ -1,6 +1,26 @@
 /* 62 functions from 0x02081400 to 0x02082340 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct DS3DSpritePreset {
+    u8 mode;
+    u8 mainScreenEnabled;
+    u8 firstLayer : 4;
+    u8 secondLayer : 4;
+    u8 mainScreenLayer;
+} DS3DSpritePreset;
+
+typedef struct DS3DSpritePresetFlags {
+    u16 mode : 3;
+    u16 reserved : 9;
+    u16 firstLayer : 1;
+    u16 secondLayer : 2;
+    u16 reservedTop : 1;
+} DS3DSpritePresetFlags;
+
+typedef struct DS3DSpritePresetFlagRef {
+    DS3DSpritePresetFlags *flags;
+} DS3DSpritePresetFlagRef;
+
 void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0207da60(s32, M2C_UNK, M2C_UNK);
     s32 temp_r0;
@@ -23,11 +43,11 @@ void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_020807e4(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK DrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = LoadFileToBuffer(arg0, 0);
-    func_020807e4(temp_r0, arg1, arg2, arg3);
+    DrawTilemapBlock(temp_r0, arg1, arg2, arg3);
     HeapFreeBlock(temp_r0);
 }
 
@@ -35,7 +55,7 @@ void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 temp_r0;
 
     temp_r0 = func_02081070(arg0, 0);
-    func_020807e4(temp_r0, arg1, arg2, arg3);
+    DrawTilemapBlock(temp_r0, arg1, arg2, arg3);
     HeapFreeBlock(temp_r0);
 }
 
@@ -274,8 +294,8 @@ M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) |= arg0;
 #pragma scheduling off
 void func_02081a48(void){
 extern M2C_UNK data_02101e84;
-void func_0200d544(void);s32 func_0200d5bc(u16 *);void SetTouchCalibration(u16 *);
-u16 a[4];func_0200d544();if(!func_0200d5bc(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;SetTouchCalibration(a);}
+void func_0200d544(void);s32 TP_GetFirmwareCalibration(u16 *);void SetTouchCalibration(u16 *);
+u16 a[4];func_0200d544();if(!TP_GetFirmwareCalibration(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;SetTouchCalibration(a);}
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x12)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x13)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x14)=0;
@@ -513,9 +533,9 @@ void MemFreeArray(void) {
 }
 
 void func_02082058(void) {
-    M2C_UNK func_02007740(u8 *);
+    M2C_UNK GetSystemUserProfile(u8 *);
     extern u8 data_0214c1b8;
-    func_02007740(&data_0214c1b8);
+    GetSystemUserProfile(&data_0214c1b8);
 }
 
 M2C_UNK *GetLocalPlayerName(void) {
@@ -562,66 +582,52 @@ void SetLayerSize(s32 arg0, u32 arg1) {
     M2C_FIELD(p, u16 *, index) = (old & ~0xc000) | (bits >> 16);
 }
 
-void func_02082164(u8 *arg0) {
+#pragma optimization_level 2
+#pragma opt_propagation off
+void func_02082164(u8 *presetData)
+{
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *g3DSpriteBankMain;
-    u8 *r4;
-    u16 *p;
-    u16 *q;
-    s32 i;
     void Reset3DSpriteLayers(void);
     void Reset3DSpriteCorners(void);
     void Configure3DSpriteLayer(s32, void *);
-
-    r4 = arg0;
+    DS3DSpritePreset *config = (DS3DSpritePreset *)presetData;
+    DS3DSpritePresetFlagRef mode, a, b;
+    u16 *bank;
+    u8 isMain;
+    s32 layer;
 
     Reset3DSpriteLayers();
     Reset3DSpriteCorners();
 
-    p = *(u16 **)gCur3DSpriteEngine;
-    *p = (*p & ~0x7) | (r4[0] & 0x7);
+    mode = *(DS3DSpritePresetFlagRef *)gCur3DSpriteEngine;
+    *(u16 *)mode.flags = (*(u16 *)mode.flags & ~7) | (config->mode & 7);
+    a = *(DS3DSpritePresetFlagRef *)gCur3DSpriteEngine;
+    *(u16 *)a.flags = (*(u16 *)a.flags & ~0x1000) | ((u32)config->firstLayer << 31 >> 19);
+    b = *(DS3DSpritePresetFlagRef *)gCur3DSpriteEngine;
+    *(u16 *)b.flags = (*(u16 *)b.flags & ~0x6000) | ((u32)config->secondLayer << 30 >> 17);
 
-    p = *(u16 **)gCur3DSpriteEngine;
-    {
-        u8 b2 = r4[2];
-        u16 t = *p;
-        u8 low = b2 & 0xF;
-        u16 bit = (low & 0x1) << 12;
-        *p = (t & ~0x1000) | bit;
+    isMain = (gCur3DSpriteEngine == g3DSpriteEngineMain);
+    if (isMain == 1) {
+        bank = (u16 *)g3DSpriteBankMain;
+        bank[0] = (bank[0] & ~8) | (((u32)config->mainScreenEnabled << 31) >> 28);
+        bank = (u16 *)g3DSpriteBankMain;
+        bank[1] = (bank[1] & ~7) | (config->mainScreenLayer & 7);
+        bank = (u16 *)g3DSpriteBankMain;
+        bank[1] &= ~0x38;
     }
 
-    p = *(u16 **)gCur3DSpriteEngine;
-    {
-        u8 b2b = r4[2];
-        u16 t2 = *p;
-        u8 high = (b2b >> 4) & 0xF;
-        u16 bits = (high & 0x3) << 13;
-        *p = (t2 & ~0x6000) | bits;
-    }
-
-    if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-        q = (u16 *)g3DSpriteBankMain;
-        {
-            u8 t1 = r4[1];
-            *q = (*q & ~0x8) | ((t1 & 0x1) << 3);
-        }
-        q = (u16 *)g3DSpriteBankMain;
-        {
-            u8 t3 = r4[3];
-            *(q + 1) = (*(q + 1) & ~0x7) | (t3 & 0x7);
-        }
-        q = (u16 *)g3DSpriteBankMain;
-        *(q + 1) = *(q + 1) & ~0x38;
-    }
-
-    r4 += 4;
-    for (i = 0; i < 4; i++) {
-        Configure3DSpriteLayer(i, r4);
-        r4 += 2;
-    }
+    presetData += 4;
+    layer = 0;
+    do {
+        Configure3DSpriteLayer((u8)layer, presetData);
+        ++layer;
+        presetData += 2;
+    } while (layer < 4);
 }
-
+#pragma opt_propagation reset
+#pragma optimization_level 4
 M2C_UNK func_020822b8(M2C_UNK *a) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;

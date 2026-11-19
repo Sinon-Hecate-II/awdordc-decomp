@@ -188,5 +188,18 @@ void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRo
 
 void Ov001_LockIconRow(void){M2C_FIELD(gOv001IconRow,u8 *,0x18)=1;}
 
-void Ov001_IconRow_Layout(void *a){s32 n,i;n=gOv001IconRowCount[M2C_FIELD(gOv001IconRow,u8 *,0x17)];Ov001_MoveSpriteLayout(M2C_FIELD(gOv001IconRow,void **,8),-1,0,a);for(i=0;i<n;i++)Ov001_MoveSpriteLayout(((void **)gOv001IconRow)[i],-1,gOv001IconRowX[((const u8 (*)[2])gOv001IconRowSlot)[M2C_FIELD(gOv001IconRow,u8 *,0x17)][i]*2],(u8 *)a+4);}
+/* Places the icon row's sprites at height `y` (the row's y coordinate, passed on
+ * as the layout helper's pointer-sized y): the wide backdrop bar at `y` and each
+ * bar of the current page at the X its slot table gives, 4 pixels below the
+ * backdrop. */
+void Ov001_IconRow_Layout(void *y) {
+    s32 n, i;
+
+    n = gOv001IconRowCount[((Ov001IconRow *)gOv001IconRow)->page];
+    Ov001_MoveSpriteLayout(((Ov001IconRow *)gOv001IconRow)->backdrop, -1, 0, y);
+    for (i = 0; i < n; i++)
+        Ov001_MoveSpriteLayout(((Ov001IconRow *)gOv001IconRow)->bars[i], -1,
+            gOv001IconRowX[((const u8 (*)[2])gOv001IconRowSlot)[((Ov001IconRow *)gOv001IconRow)->page][i] * 2],
+            (u8 *)y + 4);
+}
 

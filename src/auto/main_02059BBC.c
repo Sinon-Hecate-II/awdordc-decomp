@@ -92,25 +92,28 @@ M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a>>8;
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
-void gti2AddToBuffer(void *arg0, s32 arg1, s32 arg2) {
+/* Append `len` bytes from `data` to the GT2 buffer `buffer` (all of `data`'s
+ * string when `len` is -1), asserting that they fit.  Nothing is written when
+ * `data` or `len` is 0. */
+void gti2BufferWriteData(Gt2Buffer *buffer, const void *data, s32 len) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(s32, s32, s32);
     s32 StringLength(s32);
-    extern M2C_UNK data_020ff594;
+    extern M2C_UNK gAssertNameBufferWriteData;
     extern M2C_UNK gAssertFileNameBuffer;
-    extern M2C_UNK data_020ff620;
-    s32 var_r4;
+    extern M2C_UNK gAssertExprBufferFits;
+    s32 size;
 
-    var_r4 = arg2;
-    if ((arg1 != 0) && (var_r4 != 0)) {
-        if (var_r4 == -1) {
-            var_r4 = StringLength(arg1);
+    size = len;
+    if ((data != 0) && (size != 0)) {
+        if (size == -1) {
+            size = StringLength((s32)data);
         }
-        if ((s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4) > (s32) M2C_FIELD(arg0, s32 *, 4)) {
-            AssertFailed(&data_020ff620, &gAssertFileNameBuffer, &data_020ff594, 0x40);
+        if ((s32)(buffer->len + size) > buffer->size) {
+            AssertFailed(&gAssertExprBufferFits, &gAssertFileNameBuffer, &gAssertNameBufferWriteData, 0x40);
         }
-        MemCopy(M2C_FIELD(arg0, s32 *, 0) + M2C_FIELD(arg0, s32 *, 8), arg1, var_r4);
-        M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + var_r4);
+        MemCopy((s32)(buffer->data + buffer->len), (s32)data, size);
+        buffer->len = buffer->len + size;
     }
 }
 

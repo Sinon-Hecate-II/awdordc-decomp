@@ -226,29 +226,36 @@ func_02055cd0(connection,func_0204fb2c,refCount);
 return 0;
 }
 
-s32 gpiAppendChar(void **a,void *b,s32 c) {
-extern char sAssertOutputBufferNotNull[],gGpiBufferFileName[],data_020fdf0c[];
-extern M2C_UNK gGpiRecvOutOfMemory;
-void AssertFailed(void *,void *,void *,s32);
-void *gpiRealloc(void *,s32);
-M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
-s32 len,cap;
-u8 *p;
-if(!b) AssertFailed(sAssertOutputBufferNotNull,gGpiBufferFileName,data_020fdf0c,0x25);
-len=M2C_FIELD(b,s32 *,8);
-p=M2C_FIELD(b,u8 **,0);
-cap=M2C_FIELD(b,s32 *,4);
-if(cap==len) {
-cap+=0x800;
-p=gpiRealloc(p,cap+1);
-if(!p) {gpiSetErrorString(a,&gGpiRecvOutOfMemory);return 1;}
-}
-p[len]=c;
-p[len+1]=0;
-M2C_FIELD(b,s32 *,8)++;
-M2C_FIELD(b,s32 *,4)=cap;
-M2C_FIELD(b,u8 **,0)=p;
-return 0;
+/* Appends one character to a gpi text buffer, growing its storage by
+ * GPI_BUFFER_GROWTH bytes when it is full; sets the session's error and returns
+ * 1 when that reallocation fails. */
+s32 gpiAppendChar(void **gpi, GPIBuffer *buffer, s32 c) {
+    extern char sAssertOutputBufferNotNull[], gGpiBufferFileName[], data_020fdf0c[];
+    extern M2C_UNK gGpiRecvOutOfMemory;
+    void AssertFailed(void *, void *, void *, s32);
+    void *gpiRealloc(void *, s32);
+    M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
+    s32 len, capacity;
+    u8 *data;
+
+    if (!buffer) AssertFailed(sAssertOutputBufferNotNull, gGpiBufferFileName, data_020fdf0c, 0x25);
+    len = buffer->len;
+    data = buffer->data;
+    capacity = buffer->size;
+    if (capacity == len) {
+        capacity += GPI_BUFFER_GROWTH;
+        data = gpiRealloc(data, capacity + 1);
+        if (!data) {
+            gpiSetErrorString(gpi, &gGpiRecvOutOfMemory);
+            return 1;
+        }
+    }
+    data[len] = c;
+    data[len + 1] = 0;
+    buffer->len++;
+    buffer->size = capacity;
+    buffer->data = data;
+    return 0;
 }
 
 /* Append stringLen bytes, growing the buffer as needed and retaining a trailing NUL. */

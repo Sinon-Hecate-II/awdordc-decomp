@@ -157,7 +157,7 @@ void func_020d908c(void) {
     void LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     void AddToU16Array(void *, s32, s32);
     void CopyToObjPaletteShadow(M2C_UNK *, s32, s32);
-    void func_02091cd0(void);
+    void LoadScenePanelGraphicsOnBothEngines(void);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern u16 data_020f4ea8[6];
@@ -189,7 +189,7 @@ void func_020d908c(void) {
     AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);
     CopyToObjPaletteShadow(&data_020f28d0, 0x20, 0x20);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x8);
-    func_02091cd0();
+    LoadScenePanelGraphicsOnBothEngines();
     layer1 = (u16 *)*(void **)gCur3DSpriteEngine;
     *layer1 = (u16)(*layer1 | 0x10);
     layer2 = (u16 *)*(void **)gCur3DSpriteEngine;
@@ -250,7 +250,7 @@ extern void *gUiMode;extern M2C_UNK data_0212c4f8;
 CreateSpriteObject(*(M2C_UNK **)((u8*)&data_0212c4f8+M2C_FIELD(gUiMode,s16 *,2)*12),arg0);
 }
 
-void func_020d9394(void) {
+void CreateSubScreenUi(void) {
     void func_020d8d48(M2C_UNK, M2C_UNK);
     func_020d8d48(1, 0);
 }

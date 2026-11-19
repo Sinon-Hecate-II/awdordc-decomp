@@ -59,10 +59,10 @@ typedef struct VoiceChatWidget {
 } VoiceChatWidget;
 
 void func_020852f4(void){
- void *FindObjectByClass(M2C_UNK *); M2C_UNK func_02091cd0(void *); extern M2C_UNK data_02102088;
+ void *FindObjectByClass(M2C_UNK *); M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *); extern M2C_UNK data_02102088;
  void *p=FindObjectByClass(&data_02102088);
  if(!p)return;
- M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;func_02091cd0(p);
+ M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;LoadScenePanelGraphicsOnBothEngines(p);
 }
 
 void func_02085324(void){
@@ -71,22 +71,24 @@ void func_02085324(void){
  if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
 }
 
-void func_02085348(M2C_UNK arg0,M2C_UNK arg1){
+void SendLinkCommand(M2C_UNK arg0,M2C_UNK arg1){
  s32 func_0208492c();
  Link_BroadcastMessage((u8)(func_0208492c()+0x81),arg0,arg1);
 }
 
-u8 func_02085370(s32 arg0, M2C_UNK arg1) {
+/* Pop the oldest message of one link command queue into buf.  Returns 1 when a
+ * message was copied, 0 when the queue was empty. */
+u8 PopLinkCommand(s32 queue, void *buf) {
     s32 func_02085df8(s32, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_02157644;
-    u8 var_r0;
+    extern M2C_UNK gLinkCommandQueues;
+    u8 popped;
 
-    if (func_02085df8((0xC * arg0) + (s32) &data_02157644, arg1, 0) != 0) {
-        var_r0 = 1;
+    if (func_02085df8((LINK_COMMAND_QUEUE_STRIDE * queue) + (s32) &gLinkCommandQueues, (M2C_UNK) buf, 0) != 0) {
+        popped = 1;
     } else {
-        var_r0 = 0;
+        popped = 0;
     }
-    return var_r0;
+    return popped;
 }
 
 s32 func_020853a0(M2C_UNK arg0, void *arg1) {
@@ -281,7 +283,7 @@ void func_02085788(s32 arg0) {
     M2C_UNK func_020c4dd0(s32);
     void *func_020c5328();
     s32 func_020c5708(s32);
-    M2C_UNK func_020c5770(M2C_UNK, s32 *, s32 *);
+    M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     s8 GetOnlineTransportPlayerId();
     s32 GetOnlinePeerMask();
@@ -339,7 +341,7 @@ loop_10:
             sp4 = temp_r4;
             M2C_FIELD(&data_02157634, s32 *, 8) = temp_r6;
             M2C_FIELD(&data_02157634, s32 *, 0xC) = temp_r4;
-            func_020c5770(1, &sp8, &sp4);
+            ConvergeSyncedPositions(1, &sp8, &sp4);
             var_r2 = sp8;
             if (var_r2 > 0x01388000) {
                 var_r2 = 0x01388000;
@@ -399,7 +401,7 @@ void func_020859b4(M2C_UNK arg0) {
     M2C_UNK func_020c4cdc(M2C_UNK);
     M2C_UNK func_020c4dd0(M2C_UNK);
     void *func_020c5328();
-    M2C_UNK func_020c5770(M2C_UNK, s32 *, s32 *);
+    M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
     u32 func_020cd164(s32, s32);
     void *GetLocalPlayerStatus();
     extern M2C_UNK data_02157634;
@@ -452,7 +454,7 @@ void func_020859b4(M2C_UNK arg0) {
             M2C_FIELD(temp_r0, s32 *, 0x20) = coords[1];
             break;
         case 1:                                     /* switch 2 */
-            func_020c5770(0, &coords[1], &coords[0]);
+            ConvergeSyncedPositions(0, &coords[1], &coords[0]);
             var_r2_2 = coords[1];
             if (var_r2_2 > 0x01388000) {
                 var_r2_2 = 0x01388000;
@@ -465,7 +467,7 @@ void func_020859b4(M2C_UNK arg0) {
             M2C_FIELD(temp_r0, s32 *, 0x20) = coords[1];
             break;
         case 3:                                     /* switch 2 */
-            func_020c5770(2, &coords[1], &coords[0]);
+            ConvergeSyncedPositions(2, &coords[1], &coords[0]);
             var_r2_3 = coords[1];
             if (var_r2_3 > 0x01388000) {
                 var_r2_3 = 0x01388000;
@@ -531,18 +533,18 @@ s32 func_02085c3c(void) {
 
 void func_02085c4c(void) {
     void func_02085e50(void *);
-    extern M2C_UNK data_02157644;
+    extern M2C_UNK gLinkCommandQueues;
     s32 i;
     u8 *p;
-    p=(u8 *)&data_02157644;
+    p=(u8 *)&gLinkCommandQueues;
     i=0;
     do { func_02085e50(p); ++i; p+=12; } while(i<4);
 }
 
 s32 func_02085c78(u8 a,void *b,s32 c) {
     s32 func_02085d90(void *,s32,u16,s16);
-    extern M2C_UNK data_02157644;
-    func_02085d90((u8 *)&data_02157644+12*a,(s32)((u8 *)b+2),(u16)(c-2),0);
+    extern M2C_UNK gLinkCommandQueues;
+    func_02085d90((u8 *)&gLinkCommandQueues+12*a,(s32)((u8 *)b+2),(u16)(c-2),0);
 }
 
 void func_02085ca8(void) {

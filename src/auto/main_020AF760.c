@@ -197,103 +197,69 @@ void func_020afc40(void) {
 
 }
 
-void DrawMapCellSpriteParts(s32 arg0, s32 arg1, s32 arg2, void *arg3, s32 arg4, s32 arg5, s32 arg6) {
+#pragma opt_common_subs off
+/* Draw the ring of parts of a wide map-cell sprite: the four side parts (top,
+ * bottom, left, right) at the ring's cardinal points, then the four diagonal
+ * runs between them, one part per radius step.  x and y are the cell's
+ * 1/16-cell position and radius is in 1/16-cell steps. */
+void DrawMapCellSpriteParts(s32 x, s32 y, s32 radius, void *scripts, s32 gfxAddr, s32 tileDataSize, s32 gfxSize) {
     void DrawSpriteScript(void *, s32, s32, VecAff *, s32, s32, s32, s32, s32);
     extern s32 gFrameCounter;
-    volatile s32 sp30;
-    volatile s32 sp2C;
-    volatile s32 sp28;
-    volatile s32 sp24;
-    volatile s32 sp20;
-    volatile s32 sp1C;
-    volatile s32 sp18;
-    volatile s32 sp14;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 temp_r0_4;
-    s32 temp_r4;
-    s32 temp_r4_2;
-    s32 var_r11;
-    s32 var_r11_2;
-    s32 var_r11_3;
-    s32 var_r11_4;
-    s32 var_r4;
-    s32 var_r4_2;
-    s32 var_r4_3;
-    s32 var_r4_4;
+    VecAff pos;
+    s32 worldX = x * MAP_SPRITE_CELL_SIZE;
+    s32 limit4, limit3, limit2, limit1;
+    s32 worldY;
+    s32 step;
 
-    temp_r4 = arg0 * 0x30;
-    sp14 = arg0;
-    sp2C = (arg1 - (arg2 * 0x10)) * 0x30;
-    sp30 = 0x8A1;
-    sp28 = temp_r4;
-    DrawSpriteScript(arg3, 0x14, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-    sp2C = (arg1 + (arg2 * 0x10)) * 0x30;
-    sp28 = temp_r4;
-    DrawSpriteScript(arg3, 0x15, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-    temp_r4_2 = arg1 * 0x30;
-    sp28 = (sp14 - (arg2 * 0x10)) * 0x30;
-    sp2C = temp_r4_2;
-    DrawSpriteScript(arg3, 0x16, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-    sp2C = temp_r4_2;
-    sp28 = (sp14 + (arg2 * 0x10)) * 0x30;
-    DrawSpriteScript(arg3, 0x17, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-    temp_r0 = arg2 - 1;
-    var_r11 = 1;
-    sp18 = temp_r0;
-    if (temp_r0 >= 1) {
-        var_r4 = 0x10;
-        do {
-            sp28 = (sp14 - var_r4) * 0x30;
-            sp2C = (arg1 - ((arg2 - var_r11) * 0x10)) * 0x30;
-            DrawSpriteScript(arg3, 0x18, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-            var_r11 += 1;
-            var_r4 += 0x10;
-        } while (var_r11 <= sp18);
+    pos.z = MAP_SPRITE_ATTR;
+    pos.y = (y - radius * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+    pos.x = worldX;
+    DrawSpriteScript(scripts, MAP_CELL_PART_TOP, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+    pos.y = (y + radius * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+    pos.x = worldX;
+    DrawSpriteScript(scripts, MAP_CELL_PART_BOTTOM, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+    pos.x = (x - radius * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+    worldY = y * MAP_SPRITE_CELL_SIZE;
+    pos.y = worldY;
+    DrawSpriteScript(scripts, MAP_CELL_PART_LEFT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+    pos.y = worldY;
+    pos.x = (x + radius * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+    DrawSpriteScript(scripts, MAP_CELL_PART_RIGHT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+    {
+        step = 1;
+        limit1 = radius - 1;
+        for (; step <= limit1; ++step) {
+            pos.x = (x - step * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            pos.y = (y - (radius - step) * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            DrawSpriteScript(scripts, MAP_CELL_PART_UP_LEFT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+        }
     }
-    temp_r0_2 = arg2 - 1;
-    sp1C = temp_r0_2;
-    var_r4_2 = 1;
-    if (temp_r0_2 >= 1) {
-        var_r11_2 = sp14 + 0x10;
-        do {
-            sp28 = var_r11_2 * 0x30;
-            sp2C = (arg1 - ((arg2 - var_r4_2) * 0x10)) * 0x30;
-            DrawSpriteScript(arg3, 0x19, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-            var_r4_2 += 1;
-            var_r11_2 += 0x10;
-        } while (var_r4_2 <= sp1C);
+    {
+        limit2 = radius - 1;
+        for (step = 1; step <= limit2; ++step) {
+            pos.x = (x + step * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            pos.y = (y - (radius - step) * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            DrawSpriteScript(scripts, MAP_CELL_PART_UP_RIGHT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+        }
     }
-    temp_r0_3 = arg2 - 1;
-    sp20 = temp_r0_3;
-    var_r4_3 = 1;
-    if (temp_r0_3 >= 1) {
-        var_r11_3 = 0x10;
-        do {
-            sp28 = (sp14 - var_r11_3) * 0x30;
-            sp2C = (arg1 + ((arg2 - var_r4_3) * 0x10)) * 0x30;
-            DrawSpriteScript(arg3, 0x1A, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-            var_r4_3 += 1;
-            var_r11_3 += 0x10;
-        } while (var_r4_3 <= sp20);
+    {
+        limit3 = radius - 1;
+        for (step = 1; step <= limit3; ++step) {
+            pos.x = (x - step * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            pos.y = (y + (radius - step) * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            DrawSpriteScript(scripts, MAP_CELL_PART_DOWN_LEFT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+        }
     }
-    temp_r0_4 = arg2 - 1;
-    sp24 = temp_r0_4;
-    var_r4_4 = 1;
-    if (temp_r0_4 < 1) {
-        return;
+    {
+        limit4 = radius - 1;
+        for (step = 1; step <= limit4; ++step) {
+            pos.x = (x + step * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            pos.y = (y + (radius - step) * MAP_SPRITE_PART_STEP) * MAP_SPRITE_CELL_SIZE;
+            DrawSpriteScript(scripts, MAP_CELL_PART_DOWN_RIGHT, gFrameCounter, &pos, gfxAddr, tileDataSize, gfxSize, 0, 0);
+        }
     }
-    var_r11_4 = sp14 + 0x10;
-    do {
-        sp28 = var_r11_4 * 0x30;
-        sp2C = (arg1 + ((arg2 - var_r4_4) * 0x10)) * 0x30;
-        DrawSpriteScript(arg3, 0x1B, gFrameCounter, (VecAff *)&sp28, arg4, arg5, arg6, 0, 0);
-        var_r4_4 += 1;
-        var_r11_4 += 0x10;
-    } while (var_r4_4 <= sp24);
 }
-
+#pragma opt_common_subs on
 /* Draw the 3D sprite of the map cell at the 1/16-cell position (x, y): pick the
    sprite script table and graphics block for the current view zoom, look up the
    cell's sprite id, then draw it either as one sprite or, for a wide sprite id,

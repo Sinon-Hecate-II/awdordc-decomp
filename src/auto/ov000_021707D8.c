@@ -8,7 +8,7 @@ void func_ov000_021707d8(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern void **gCurrentMap;
 extern u8 gMapConfig[];
-s32 func_020cd6d4(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
+s32 IsCampaignBattleRules(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
 void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void func_0209c024(s16,s16,void *,void *,s32,s32);
 s32 GetLanguage(void);s32 GetDigitCount(s32);s32 func_020cfb94(void);
@@ -21,7 +21,7 @@ s32 c,d;u8 *dummy; s32 y,color,a,b,x;
 u8 *p,*map;
 old=gCur3DSpriteEngine;dst=M2C_FIELD(old,void **,0x24);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(func_020cd6d4()){
+if(IsCampaignBattleRules()){
 DrawTilemapNumber(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
 func_0209c024(5,1,dst,GetCurrentMapName(),0,0);
 }else func_0209c024(2,1,dst,GetCurrentMapName(),0,0);

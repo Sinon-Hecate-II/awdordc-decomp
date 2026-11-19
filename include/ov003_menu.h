@@ -60,4 +60,21 @@ typedef struct OptionCounter {
     u8  wrap;       /* +0x14 nonzero: wrap around [minimum,maximum], else clamp */
 } OptionCounter;
 
+/* The ov003 setup screen's options object, kept by the scene at +0x44 (class
+ * data_ov003_02210764): the eight option counters, the child objects and sprites
+ * that draw them, the sprite of the value being previewed and the link packet
+ * the option values are shared through. */
+typedef struct Ov003OptionsObject {
+    void *vtable;             /* +0x00 class data_ov003_02210764 */
+    u8 field04;               /* +0x04 */
+    u8 field05;               /* +0x05 */
+    u8 field06;               /* +0x06 */
+    u8 pad07;
+    OptionCounter options[8]; /* +0x08 the eight option rows */
+    void *rows[8];            /* +0xC8 child object drawing each option */
+    void *sprites[9];         /* +0xE8 sprite handles */
+    void *preview;            /* +0x10C sprite of the unit being previewed */
+    u32 packet[9];            /* +0x110 0x24-byte link packet of the option values */
+} Ov003OptionsObject;
+
 #endif

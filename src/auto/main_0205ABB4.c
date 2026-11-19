@@ -24,10 +24,10 @@ s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 M2C_UNK func_0205ac1c(s32 a,s32 b) {
-void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void func_0205d164(s32);void func_0205c8c8(s32);
+void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void gti2RemoveConnection(s32);void func_0205c8c8(s32);
 if(b){
 if(M2C_FIELD(a,s32 *,12)>=7)return;
-gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);func_0205d164(a);
+gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);gti2RemoveConnection(a);
 }else {M2C_FIELD(a,s32 *,12)=6;func_0205c8c8(a);}
 }
 
@@ -92,13 +92,13 @@ void func_0205adc0(void) {
 }
 
 s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void gpiSleep(s32);s32 func_0205a830(s32,void **);s32 gti2StartConnectionAttempt(void *,s32,s32,s32);void func_0205d164(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
+void gpiSleep(s32);s32 func_0205a830(s32,void **);s32 gti2StartConnectionAttempt(void *,s32,s32,s32);void gti2RemoveConnection(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
 void *p;u32 ip;u16 port;s32 result,done;
 if(!gt2StringToAddress(c,&ip,&port)||!ip||!port)return 4;
 if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
 result=func_0205a830(a,&p);if(result)return result;
 M2C_FIELD(p,s32 *,32)=f;
-result=gti2StartConnectionAttempt(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
+result=gti2StartConnectionAttempt(p,d,e,g);if(result){gti2RemoveConnection((s32)p);return result;}
 if(!h){if(b)*b=p;return 0;}
 M2C_FIELD(p,s32 *,36)++;
 do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)gpiSleep(1);}while(!done);
@@ -179,19 +179,36 @@ s16 Gt2CompareSequence(s32 arg0, s32 arg1) {
     return (s16) (arg0 - arg1);
 }
 
-s32 func_0205b110(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
-s32 Gt2ConnectionCallCallback(s32,s32,s32,s32);s32 gti2ClosedCallback(s32,s32);
-s32 n=M2C_FIELD(a,s32 *,12);
-if(n<5){
-if(M2C_FIELD(a,s32 *,16)){gti2MarkConnectionClosed((void *)a);if(!Gt2ConnectionCallCallback(a,b,0,0))return 0;}
-else {if(n==4)M2C_FIELD(a,s32 *,20)=1;gti2MarkConnectionClosed((void *)a);}
-}else if(n!=7){gti2MarkConnectionClosed((void *)a);if(!gti2ClosedCallback(a,c))return 0;}
-return 1;
+/* Shared teardown path of a GT2 connection.  A connection that is still
+ * handshaking reports the failure through its connected callback with
+ * `connectEvent` when this side opened it; one accepted from the peer is only
+ * marked closed (and noted so that a late accept is refused).  A live connection
+ * reports `closeReason` through its closed callback.  A connection that is
+ * already closed is left alone.  Returns 0 when a callback freed the connection,
+ * so the caller must not touch it any more. */
+s32 gti2CloseConnection(M2C_UNK connection, M2C_UNK connectEvent, M2C_UNK closeReason) {
+    s32 Gt2ConnectionCallCallback(s32, s32, s32, s32);
+    s32 gti2ClosedCallback(s32, s32);
+    s32 state = M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE);
+
+    if (state < GT2_STATE_CONNECTED) {
+        if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_INITIATOR)) {
+            gti2MarkConnectionClosed((void *)connection);
+            if (!Gt2ConnectionCallCallback(connection, connectEvent, 0, 0)) return 0;
+        } else {
+            if (state == GT2_STATE_AWAIT_ACCEPT) M2C_FIELD(connection, s32 *, GT2_CONNECTION_CLOSE_PENDING) = 1;
+            gti2MarkConnectionClosed((void *)connection);
+        }
+    } else if (state != GT2_STATE_CLOSED) {
+        gti2MarkConnectionClosed((void *)connection);
+        if (!gti2ClosedCallback(connection, closeReason)) return 0;
+    }
+    return 1;
 }
 
 s32 Gt2CloseConnection(M2C_UNK arg0) {
-    M2C_UNK func_0205b110(M2C_UNK, M2C_UNK, M2C_UNK);
-    return func_0205b110(arg0, 7, 2);
+    M2C_UNK gti2CloseConnection(M2C_UNK, M2C_UNK, M2C_UNK);
+    return gti2CloseConnection(arg0, 7, 2);
 }
 
 s32 gti2SendClosedAndClose(M2C_UNK arg0) {
@@ -199,44 +216,48 @@ s32 gti2SendClosedAndClose(M2C_UNK arg0) {
     if (gti2SendClosed() == 0) {
         return 0;
     }
-    return func_0205b110(arg0, 1, 4);
+    return gti2CloseConnection(arg0, 1, 4);
 }
 
 /* Drop the leading entries of the sorted list a->list whose key is below b,
    then rebase every remaining entry's index by the first entry's value and
    delete that many leading items from the object's backing store at a+0x50. */
+#pragma opt_strength_reduction off
 s32 Gt2AckSentData(void *a,s32 b){
 void *Vector_GetItem(s32,s32);
 s32 n,i,removed; s32 *p;
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n)return 1;
 for(i=0;i<n;i++){if(Gt2CompareSequence(M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i),u16 *,8),b)>=0)break;}
 if(!i)return 1;
-while(i--){Vector_RemoveItem(M2C_FIELD(a,s32 *,0x60),i);}
+while(((u32)i-- != 0U)){Vector_RemoveItem(M2C_FIELD(a,s32 *,0x60),i);}
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n){M2C_FIELD(a,s32 *,0x58)=0;return 1;}
 removed=*(s32 *)Vector_GetItem(M2C_FIELD(a,s32 *,0x60),0);
 for(i=0;i<n;i++){p=Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i);*p-=removed;}
 gti2RemoveFromBuffer((u8 *)a+0x50,0,removed);return 1;}
-
-s32 func_0205b2e0(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Delivers application data that arrived on a GT2 connection to its receive
+ * filters, or to the message callback when it has none.  Returns 1 when the data
+ * was handled (or the connection is not receiving) and 0 when the callback freed
+ * the socket. */
+s32 gti2HandleData(void *connection, void *message, s32 length) {
     s32 Vector_GetCount(s32);
     s32 Gt2ConnectionCallMessageCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 gti2ReceiveFilterCallback(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 temp_r0;
-    s32 var_r0;
+    s32 state;
+    s32 result;
 
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0xC);
-    if ((temp_r0 != 5) && (temp_r0 != 6)) {
+    state = M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE);
+    if ((state != GT2_STATE_CONNECTED) && (state != GT2_STATE_PEER_CLOSED)) {
         return 1;
     }
-    if (Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x9C)) != 0) {
-        if (gti2ReceiveFilterCallback(arg0, 0, arg1, arg2, 0) != 0) {
-            var_r0 = 1;
+    if (Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_FILTERS)) != 0) {
+        if (gti2ReceiveFilterCallback(connection, 0, message, length, 0) != 0) {
+            result = 1;
         } else {
-            var_r0 = 0;
+            result = 0;
         }
-        return var_r0;
+        return result;
     }
-    if (Gt2ConnectionCallMessageCallback(arg0, arg1, arg2, 0) != 0) {
+    if (Gt2ConnectionCallMessageCallback(connection, message, length, 0) != 0) {
         return 1;
     }
     return 0;
@@ -317,7 +338,7 @@ s32 func_0205b758(void *arg0) {
     if (gti2SendClosed() == 0) {
         return 0;
     }
-    if (func_0205b110(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) != 6 ? 1 : 0) == 0) {
+    if (gti2CloseConnection(arg0, 2, M2C_FIELD(arg0, s32 *, 0xC) != 6 ? 1 : 0) == 0) {
         return 0;
     }
     return 1;
@@ -347,14 +368,14 @@ void func_0205b89c(void *arg0, void *arg1) {
    sequence gap that was filled. Returns 0 to retry, 1 when finished; *error is
    set when the sequence already exists or the queue rejected the record. */
 s32 Gt2QueuePendingCommand(void *session,s32 command,u16 sequence,void *data,s32 size,s32 *error){
-s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2GetBufferFreeSpace(void *);void func_020487fc(s32,void *,void *);void gti2AddToBuffer(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
+s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2GetBufferFreeSpace(void *);void func_020487fc(s32,void *,void *);void gti2BufferWriteData(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
 s32 count=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 nextSequence;
 for(i=0;i<count;i++){u16 queued=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),i),u16 *,12);if(queued==sequence){*error=0;return 1;}if(Gt2CompareSequence(queued,sequence)>0)break;}
 if(gti2GetBufferFreeSpace(session+0x44)<size){*error=1;return 1;}
 record.offset=M2C_FIELD(session,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
 func_020487fc(M2C_FIELD(session,s32 *,0x5c),&record,func_0205b89c);
 if(count+1!=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c))){*error=1;return 1;}
-gti2AddToBuffer(session+0x44,data,size);
+gti2BufferWriteData(session+0x44,data,size);
 if(count==0){if(!func_0205caac(session,M2C_FIELD(session,u16 *,0x66),(u16)(sequence-1)))return 0;}
 else {nextSequence=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),count),u16 *,12);if(nextSequence==sequence){
 prev=Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),count-1);

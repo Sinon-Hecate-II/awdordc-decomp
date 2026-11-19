@@ -302,9 +302,29 @@ void func_020b4b98(void *arg0) {
 
 void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_UNK data_0212882c;func_020b3c44();if(gBattleEndState)return;M2C_FIELD(CreateSpriteForOwner(&data_0212882c,arg1),s32 *,0x5c)=arg0;}
 
-void ResumeSavedBattle(u8 arg0){void *GetSaveRecordBuffer();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);extern M2C_UNK data_0215d9b8;extern void *gCurrentMap;void (*fn)(void);
-LoadNewestSaveRecord(arg0,GetSaveRecordBuffer());RestoreBattleFromRecord(GetSaveRecordBuffer());if(!func_020bf084(arg0)){M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~0x70)|((u32)((u16)func_020bf0dc(0,arg0)<<29)>>25);}
-func_020cfd14();fn=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x50);if(fn)fn();SetupPlayerTeams();RefreshMapView();func_020c0a1c(3);}
+/* Resume a saved battle: load the newest save record of `saveType`, restore the
+ * map and the battle state (random seed, saved settings and view) from it,
+ * remember the saved-battle slot the record belongs to (types 5..7; type 8 has
+ * no slot), then rebuild the map's AI state, player teams and view. */
+void ResumeSavedBattle(u8 saveType) {
+    s32 func_020bf084(u8);
+    s32 func_020bf0dc(s32, u8);
+    extern M2C_UNK data_0215d9b8;
+    extern void *gCurrentMap;
+    void (*callback)(void);
+
+    LoadNewestSaveRecord(saveType, GetSaveRecordBuffer());
+    RestoreBattleFromRecord(GetSaveRecordBuffer());
+    if (!func_020bf084(saveType)) {
+        M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x70) | ((u32) ((u16) func_020bf0dc(0, saveType) << 29) >> 25);
+    }
+    func_020cfd14();
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x50);
+    if (callback) callback();
+    SetupPlayerTeams();
+    RefreshMapView();
+    func_020c0a1c(3);
+}
 
 void func_020b4ca0(void) {
     s32 IsUnitAvailable();
@@ -350,13 +370,13 @@ void func_020b4d24(void) {
 
 void func_020b4d3c(void *arg0) {
     M2C_UNK func_020e4870(s32);
-    extern s32 data_0215d8a0;
+    extern s32 gSaveSlotSummary;
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
     func_020bf054(0, temp_r4);
-    func_020bef44();
-    data_0215d8a0 = (data_0215d8a0 & ~0xF) | (temp_r4 & 0xF);
+    StartBattleRecord();
+    gSaveSlotSummary = (gSaveSlotSummary & ~0xF) | (temp_r4 & 0xF);
     func_020e4870(temp_r4);
     func_020bf798();
 }
@@ -377,7 +397,7 @@ void func_020b4db0(s32 arg0) {
 }
 
 void func_020b4dcc(void *arg0) {
-    M2C_UNK func_020bef44();
+    M2C_UNK StartBattleRecord();
     M2C_UNK func_020bf054(M2C_UNK, s32);
     M2C_UNK func_020bf798();
     M2C_UNK func_020e4818(s32);
@@ -385,7 +405,7 @@ void func_020b4dcc(void *arg0) {
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
     func_020bf054(0, temp_r4);
-    func_020bef44();
+    StartBattleRecord();
     func_020e4818(temp_r4);
     func_020bf798();
 }
@@ -498,7 +518,7 @@ s32 GetEffectSpritePoolOffset(void) {
     return gEffectSpritePoolUsed;
 }
 
-s32 LoadEffectSpriteSheet(s32 arg0,s32 arg1){s32 func_0208c570(s32,s32,u16);extern s32 gEffectSpritePoolUsed;s32 old=gEffectSpritePoolUsed;gEffectSpritePoolUsed+=func_0208c570(arg0,old+0x329a0,(u16)(arg1+0xab));return old;}
+s32 LoadEffectSpriteSheet(s32 arg0,s32 arg1){s32 LoadSpriteGraphics(s32,s32,u16);extern s32 gEffectSpritePoolUsed;s32 old=gEffectSpritePoolUsed;gEffectSpritePoolUsed+=LoadSpriteGraphics(arg0,old+0x329a0,(u16)(arg1+0xab));return old;}
 
 void func_020b5240(void) {
     M2C_UNK OpenEffectNarcArchive();

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "net_session.h"
 typedef struct ByteBlock16 { u8 bytes[16]; } ByteBlock16;
+static const s8 gGpiInfoXorKey[] = "ameSpy3D";
 
 #pragma opt_common_subs off
 /* Reads whatever the gpi info socket has pending into the module's receive
@@ -33,7 +34,7 @@ else{MemMove(M2C_FIELD(state,void **,12),M2C_FIELD(state,u8 **,12)+used,M2C_FIEL
 if(M2C_FIELD(&gGpiInfoSocket,s32 *,0)==-1)return 0;else return 1;
 }
 #pragma opt_common_subs reset
-void func_02058df4(s8 *arg0, s32 arg1) {
+void gpiXorInfoMessage(s8 *arg0, s32 arg1) {
     extern M2C_UNK gGpiInfoSocket;
     s32 i;
     s8 *p;
@@ -103,7 +104,7 @@ s32 SocketHasPendingData(s32 a) {
     return ghiSocketCanRecv(a);
 }
 
-s8 *func_02058f34(s8 *arg0, s32 arg1) {
+s8 *gpiFindInfoMessageTerminator(s8 *arg0, s32 arg1) {
     s32 length = arg1 - 6;
     s8 *p = arg0;
     while (p - arg0 < length) {
@@ -160,29 +161,32 @@ void gpiHandleAuthReply(void *reply) {
     gpiReportProfileUpdate(profileIndex, success, 0, errorMessage, 0);
 }
 
-void func_020590d0(void *arg0) {
+/* Handle the server's reply to a \getpidr\ request: find the buddy profile
+ * record named by the reply's \lid\, store the reply's profile number on it and
+ * report whether that number is positive to the record's callback. */
+void gpiHandleGetPidReply(void *reply) {
     s32 ParseInt(M2C_UNK);
     s32 *Vector_GetItem(s32, s32);
     M2C_UNK gpiReportProfileUpdate(s32, s32, s32, s32, s32);
-    extern M2C_UNK data_020ff4c4;
+    extern M2C_UNK gGpiKeyGetPidr;
     extern M2C_UNK gGpiKeyLid;
     extern M2C_UNK gGpiInfoState;
-    s32 var_r1;
-    s32 temp_r0;
-    s32 temp_r4;
+    s32 success;
+    s32 profileIndex;
+    s32 pid;
 
-    temp_r4 = ParseInt(gpiGetInfoFieldOrEmpty(arg0, &data_020ff4c4));
-    temp_r0 = gpiFindProfileRecord(3, ParseInt(gpiGetInfoFieldOrEmpty(arg0, &gGpiKeyLid)), 0);
-    if (temp_r0 == -1) {
+    pid = ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyGetPidr));
+    profileIndex = gpiFindProfileRecord(GPI_PROFILE_BUDDY, ParseInt(gpiGetInfoFieldOrEmpty(reply, &gGpiKeyLid)), 0);
+    if (profileIndex == -1) {
         return;
     }
-    M2C_FIELD(Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), temp_r0), s32 *, 8) = temp_r4;
-    if (temp_r4 > 0) {
-        var_r1 = 1;
+    M2C_FIELD(Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES), profileIndex), s32 *, GPI_PROFILE_PID) = pid;
+    if (pid > 0) {
+        success = 1;
     } else {
-        var_r1 = 0;
+        success = 0;
     }
-    gpiReportProfileUpdate(temp_r0, var_r1, 0, 0, 0);
+    gpiReportProfileUpdate(profileIndex, success, 0, 0, 0);
 }
 
 /* Handle the server's reply to a \getpdr\ profile-data request: find the
@@ -236,7 +240,7 @@ void gpiHandleSetProfileReply(void *reply) {
 void func_020592d8(s8 *arg0, s32 arg1) {
     s32 StringCompareN(void *, void *, s32);
     void gpiHandleAuthReply();
-    void func_020590d0();
+    void gpiHandleGetPidReply();
     void gpiHandleGetProfileReply();
     void gpiHandleSetProfileReply();
     extern u8 data_020ff4f4[];
@@ -246,31 +250,33 @@ void func_020592d8(s8 *arg0, s32 arg1) {
 
     arg0[arg1] = 0;
     if (StringCompareN(arg0, data_020ff4f4, 8) == 0) { gpiHandleAuthReply(arg0, arg1); return; }
-    if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
-    if (StringCompareN(arg0, data_020ff500, 9) == 0) { func_020590d0(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff500, 9) == 0) { gpiHandleGetPidReply(arg0, arg1); return; }
+    if (StringCompareN(arg0, data_020ff500, 9) == 0) { gpiHandleGetPidReply(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff50c, 8) == 0) { gpiHandleGetProfileReply(arg0, arg1); return; }
     if (StringCompareN(arg0, data_020ff518, 8) != 0) return;
     gpiHandleSetProfileReply(arg0, arg1);
 }
 
-s32 gpiInfoProcessRecvData(s8 *arg0, s32 arg1) {
- void func_020592d8(s8 *, s32);
- extern M2C_UNK gGpiInfoSocket, data_020ff488;
- s8 *end;
- s32 original;
- s32 length;
- original = arg1;
- end = func_02058f34(arg0, arg1);
- while (arg1 > 0 && end != NULL) {
- length = end - arg0;
- M2C_FIELD(&gGpiInfoSocket, M2C_UNK **, 8) = &data_020ff488;
- func_02058df4(arg0, length);
- func_020592d8(arg0, length);
- arg1 -= length + 7;
- arg0 = end + 7;
- if (arg1 > 0) end = func_02058f34(arg0, arg1);
- }
- return original - arg1;
+/* Decrypt and dispatch complete \final\-terminated GameSpy info messages, preserving any incomplete tail. */
+s32 gpiInfoProcessRecvData(s8 *buffer, s32 bytesAvailable) {
+    void gpiInfoDispatchMessage(s8 *, s32);
+    extern M2C_UNK gGpiInfoSocket;
+    s8 *messageEnd;
+    s32 originalLength;
+    s32 messageLength;
+
+    originalLength = bytesAvailable;
+    messageEnd = gpiFindInfoMessageTerminator(buffer, bytesAvailable);
+    while (bytesAvailable > 0 && messageEnd != NULL) {
+        messageLength = messageEnd - buffer;
+        M2C_FIELD(&gGpiInfoSocket, M2C_UNK **, 8) = (void *)&gGpiInfoXorKey;
+        gpiXorInfoMessage(buffer, messageLength);
+        gpiInfoDispatchMessage(buffer, messageLength);
+        bytesAvailable -= messageLength + 7;
+        buffer = messageEnd + 7;
+        if (bytesAvailable > 0) messageEnd = gpiFindInfoMessageTerminator(buffer, bytesAvailable);
+    }
+    return originalLength - bytesAvailable;
 }
 
 /* Report a server update for profile record `profileIndex` (type and status
@@ -324,7 +330,7 @@ s32 gpiReportProfileUpdate(s32 profileIndex, s32 status, s32 secret, s32 text, s
 
 #pragma opt_common_subs on
 void func_0205954c(void) {
-    s32 Vector_GetCount(s32); void Vector_Free(s32); void func_02058df4(s8 *, s32); M2C_UNK gpiReportProfileUpdate(s32,s32,s32,s32,s32);
+    s32 Vector_GetCount(s32); void Vector_Free(s32); void gpiXorInfoMessage(s8 *, s32); M2C_UNK gpiReportProfileUpdate(s32,s32,s32,s32,s32);
     extern M2C_UNK gGpiInfoState, data_020ff498, gGpiInfoSocket;
     extern const u8 data_020ea9ac[];
     ByteBlock16 buf1, buf0; s32 i;
@@ -335,7 +341,7 @@ void func_0205954c(void) {
         do {
             buf1=buf0;
             M2C_FIELD(&gGpiInfoSocket,M2C_UNK **,8)=&data_020ff498;
-            func_02058df4((s8 *)&buf1,15);
+            gpiXorInfoMessage((s8 *)&buf1,15);
             gpiReportProfileUpdate(i,0,0,(s32)&buf1,0);
         } while(--i>=0);
     }

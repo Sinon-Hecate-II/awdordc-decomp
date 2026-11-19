@@ -189,7 +189,7 @@ s32 GetFaceLayoutFile(s32 layout) {
 }
 
 /* Returns a filename string from one of the face/skin filename tables based on a transformed index and type. */
-s32 func_0209834c(s32 index, s32 type) {
+s32 GetFacePaletteFile(s32 index, s32 type) {
     s32 func_020bf8cc(s32);
     extern s32 data_02102ffc[], data_0210300c[], data_0210301c[];
     if (index == 15) {
@@ -436,20 +436,53 @@ void ApplyPaletteEffects(u16 *palette, u32 effects, s32 length) {
     ApplyGrayscaleToPalette(palette, length);
 }
 
-void LoadFacePalette(s32 a,s32 b,s32 c,s32 d,u8 e){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 LoadFileToNewBuffer(s32,s32);void func_0207c650(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=d<<9;if(!p)return;SetFileDirectory(p);q=LoadFileToNewBuffer(q,512);ApplyPaletteEffects(q,e,512);func_0207c650(q,c,off,512,1);}
+/* Loads a character's face palette file for the given layout, applies the
+ * FACE_EFFECT_* tints, and queues the 512-byte palette for upload into an
+ * extended palette slot at `paletteOffset` pages within it. */
+void LoadFacePalette(s32 faceId,s32 layout,s32 paletteSlot,s32 paletteOffset,u8 effects){
+s32 GetFaceTexturePath();s32 GetFacePaletteFile(s32,s32);M2C_UNK SetFileDirectory(s32);s32 LoadFileToNewBuffer(s32,s32);void QueueBGExtPaletteUpload(s32,s32,u16,s32,s32);
+s32 faceDir,palette;u16 offset;
+faceDir=GetFaceTexturePath(faceId);
+palette=GetFacePaletteFile(faceId,layout);
+offset=paletteOffset<<9;
+if(!faceDir)return;
+SetFileDirectory(faceDir);
+palette=LoadFileToNewBuffer(palette,512);
+ApplyPaletteEffects(palette,effects,512);
+QueueBGExtPaletteUpload(palette,paletteSlot,offset,512,1);}
 
-void LoadFacePaletteAt(s32 a,s32 b,s32 c,s32 d){s32 GetFaceTexturePath();s32 func_0209834c(s32,s32);M2C_UNK SetFileDirectory(s32);s32 LoadFileToNewBuffer(s32,s32);void func_0207c728(s32,s32,u16,s32,s32);s32 p,q;u16 off;p=GetFaceTexturePath();q=func_0209834c(a,b);off=c<<9;if(!p)return;SetFileDirectory(p);q=LoadFileToNewBuffer(q,512);ApplyPaletteEffects(q,d,512);func_0207c728(q,0,off,512,1);}
+/* Loads a character's face palette file for the given layout, applies the
+ * FACE_EFFECT_* tints, and queues the 512-byte palette for upload into OBJ
+ * extended palette page `palettePage`. */
+void LoadFacePaletteAt(s32 faceId, s32 layout, s32 palettePage, s32 effects) {
+    s32 GetFaceTexturePath();
+    s32 GetFacePaletteFile(s32, s32);
+    M2C_UNK SetFileDirectory(s32);
+    s32 LoadFileToNewBuffer(s32, s32);
+    void QueueOBJExtPaletteUpload(s32, s32, u16, s32, s32);
+    s32 faceDir, palette;
+    u16 offset;
+
+    faceDir = GetFaceTexturePath();
+    palette = GetFacePaletteFile(faceId, layout);
+    offset = palettePage << 9;
+    if (!faceDir) return;
+    SetFileDirectory(faceDir);
+    palette = LoadFileToNewBuffer(palette, 512);
+    ApplyPaletteEffects(palette, effects, 512);
+    QueueOBJExtPaletteUpload(palette, 0, offset, 512, 1);
+}
 
 void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SetFileDirectory(s32);
     M2C_UNK LoadFileToAddress(s32, M2C_UNK);
     s32 GetFaceTexturePath();
-    s32 func_0209834c(M2C_UNK, M2C_UNK);
+    s32 GetFacePaletteFile(M2C_UNK, M2C_UNK);
     s32 temp_r4;
     s32 temp_r5;
 
     temp_r5 = GetFaceTexturePath();
-    temp_r4 = func_0209834c(arg0, arg1);
+    temp_r4 = GetFacePaletteFile(arg0, arg1);
     if (temp_r5 == 0) {
         return;
     }

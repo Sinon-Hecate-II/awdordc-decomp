@@ -5,7 +5,9 @@
 #define PROFILE_STATE      0xA90 /* u8: current profile / download-play screen state */
 #define PROFILE_RESULT     0xAAC /* u8: result the state-2 list start acts on (1 start list, 2 leave) */
 #define PROFILE_LINK_FRAMES 0xA98 /* u32: frames the download-play link step has been running */
+#define PROFILE_STATE_TIMER 0xA9C /* u32: frames the current profile state has been held */
 #define PROFILE_CHILD      0x64A /* u16: child the channel measurement picked (1..16, 0 = none) */
+#define PROFILE_STATE_DELAY 30   /* frames a state waits for the link task to settle before it advances */
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
 extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
@@ -55,7 +57,7 @@ if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))M2C_FIELD(&gWhWork,void (**)(
 if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_02191684,M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,4768));
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,68)=a;SetWhStatus(3);
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,12)=b;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,50)=c;
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,24)=func_02011e08();
+M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,24)=GetGameGroupId();
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,52)=208;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,54)=68;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,16)=2;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,22)=0;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,18)=0;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,14)=1;
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,20)=a==2;
 if(a==0||a==2||a==4)return func_ov001_02187bb0();
@@ -124,7 +126,7 @@ case 0:case 4: if(!func_ov001_02188100())func_ov001_02188b04();break;
 }
 }
 
-s32 func_ov001_02188c28(void){
+s32 Ov001_EndLink(void){
 extern M2C_UNK gWhWork;
 extern M2C_UNK func_ov001_02188344;
 s32 WFC_EndLink(void *);
@@ -138,7 +140,7 @@ void func_ov001_02188c78(void *p, void *a) {
     extern void *gOv001ProfileState;
     void func_ov001_02186e40(void *);
     void func_02045eb4(void *);
-    void *func_ov001_02184c60(void);
+    void *GetSaveData(void);
     gOv001ProfileState = p;
     func_ov001_02186e40((u8 *)p + 0xb00);
     M2C_FIELD(gOv001ProfileState, u16 *, 1608) = 0;
@@ -158,7 +160,7 @@ void func_ov001_02188c78(void *p, void *a) {
     GetSystemTick();
     func_02045eb4((u8 *)gOv001ProfileState + 0x64c);
     GetSystemTick();
-    M2C_FIELD(gOv001ProfileState, void **, 0xaa4) = func_ov001_02184c60();
+    M2C_FIELD(gOv001ProfileState, void **, 0xaa4) = GetSaveData();
 }
 
 /* Leaves the profile / download-play setup screen from its current state: moves the
@@ -215,7 +217,12 @@ M2C_FIELD(gOv001ProfileState,u8 *,0xa90)=6;
 Ov001_DropUnacknowledgedPlayers();return 1;
 }
 
-void func_ov001_02188f40(void) {
+/* Per-frame state machine of the ov001 profile / download-play setup screen.
+ * It walks the screen states: wait for the list, find and connect to a
+ * download-play child, run the profile list task, and then run the teardown
+ * sequence that ends the WFC link (each step gives the link task
+ * PROFILE_STATE_DELAY frames to settle before Ov001_EndLink closes it). */
+void Ov001_UpdateProfileSetup(void) {
     s32 func_ov001_02188ec4(void);
     void Ov001_UpdateChildSearch(void);
     void func_ov001_021893c0(void);
@@ -225,161 +232,125 @@ void func_ov001_02188f40(void) {
     void func_ov001_021897a4(void);
     s32 func_ov001_021897bc(void);
     s32 Ov001_GetTaskStep(void);
-    s32 func_ov001_02188c28(void);
+    s32 Ov001_EndLink(void);
     void func_ov001_02188b20(void);
     void func_0201808c(void);
     extern void *gOv001ProfileState;
-#define G ((u8 *)gOv001ProfileState)
-    u8 state = G[0xa90];
-
-    switch (state) {
-    case 0:
+    u8 *state = gOv001ProfileState;
+    switch (state[PROFILE_STATE]) {
     case 1:
-        return;
-    case 2: {
-        u8 r2 = G[0xaac];
-        if (r2 == 1) {
-            G[0xaac] = 0;
+        if (state[PROFILE_RESULT] == 1) {
+            state[PROFILE_RESULT] = 0;
             func_ov001_02188ec4();
-        } else if (r2 == 2) {
-            G[0xaac] = 0;
-            G[0xa90] = 0x22;
+        } else if (state[PROFILE_RESULT] == 2) {
+            state[PROFILE_RESULT] = 0;
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 34;
         }
         return;
-    }
-    case 3:
+    case 2:
         Ov001_UpdateChildSearch();
         return;
-    case 4:
+    case 3:
         func_ov001_021893c0();
-        G[0xa90] = 4;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 4;
+        return;
+    case 4:
+        (*(u32 *)(state + PROFILE_LINK_FRAMES))++;
+        Ov001_UpdateLinkState();
         return;
     case 5:
-        (*(u32 *)(G + 0xa98))++;
-        Ov001_UpdateLinkState();
-        return;
     case 6:
-    case 7:
         Ov001_UpdateLinkState();
         return;
-    case 8:
+    case 7:
         func_ov001_0218959c();
         return;
+    case 8:
     case 9:
     case 10:
-    case 11:
         Ov001_UpdateProfileTask();
         return;
-    case 12:
+    case 11:
         func_ov001_021897a4();
         return;
-    case 13:
-    case 14:
-    case 15:
     case 16:
+        *(u32 *)(state + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 17;
         return;
     case 17:
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x11;
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY)
+            func_ov001_021897bc();
         return;
-    case 18: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        func_ov001_021897bc();
-        return;
-    }
-    case 19:
+    case 18:
         func_0201808c();
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x16;
+        *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 22;
         return;
-    case 20: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        Ov001_GetTaskStep();
+    case 19:
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+            Ov001_EndLink();
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 20;
+        }
         return;
-    }
     case 21:
+        func_ov001_02188b20();
+        *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 22;
         return;
     case 22:
-        func_ov001_02188b20();
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x16;
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+            Ov001_EndLink();
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 23;
+        }
         return;
-    case 23: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        Ov001_GetTaskStep();
-        return;
-    }
     case 24:
+        func_ov001_02188b20();
+        *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 25;
         return;
     case 25:
-        func_ov001_02188b20();
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x19;
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+            Ov001_EndLink();
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 26;
+        }
         return;
-    case 26: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        Ov001_GetTaskStep();
-        return;
-    }
     case 27:
+        func_ov001_02188b20();
+        *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 28;
         return;
     case 28:
-        func_ov001_02188b20();
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x1c;
-        return;
-    case 29: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        if (Ov001_GetTaskStep() == 1) {
-            func_ov001_02188c28();
-            G[0xa90] = 0x1d;
-        } else {
-            G[0xa90] = 0x1c;
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ <= PROFILE_STATE_DELAY)
+            return;
+        if (Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+            Ov001_EndLink();
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 29;
+            return;
+        }
+        {
+            u32 ticks = *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER);
+            if (ticks % PROFILE_STATE_DELAY == 1 && ticks > 55)
+                func_ov001_02188b20();
         }
         return;
-    }
-    case 30:
-        return;
-    case 31: {
-        u32 x = *(u32 *)(G + 0xa9c);
-        u32 rem = x - (x / 18) * 18;
-        if (rem != 1) return;
-        if (x <= 0x37) return;
-        func_ov001_02188b20();
-        return;
-    }
     case 32:
+        func_ov001_02188b20();
+        *(u32 *)((u8 *)gOv001ProfileState + PROFILE_STATE_TIMER) = 0;
+        ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 33;
         return;
-    case 33: {
-        *(u32 *)(G + 0xa9c) = 0;
-        G[0xa90] = 0x21;
-        if (Ov001_GetTaskStep() == 1) {
-            func_ov001_02188c28();
-            G[0xa90] = 0x22;
+    case 33:
+        if ((*(u32 *)(state + PROFILE_STATE_TIMER))++ > PROFILE_STATE_DELAY && Ov001_GetTaskStep() == WH_STATUS_IDLE) {
+            Ov001_EndLink();
+            ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 34;
         }
         return;
-    }
-    case 34: {
-        u32 old = *(u32 *)(G + 0xa9c);
-        (*(u32 *)(G + 0xa9c))++;
-        if (old <= 0x1e) return;
-        Ov001_GetTaskStep();
+    case 30:
+        func_ov001_02188b20();
         return;
-    }
+    case 34:
     default:
         return;
     }
-#undef G
 }
 
 void func_ov001_021892c4(u8 *arg0,u8 *arg1) {

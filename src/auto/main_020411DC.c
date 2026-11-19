@@ -50,13 +50,16 @@ func_0203bd0c();if(M2C_FIELD(GetConnection(),u8*,21)==2){ReportGpiSessionStatus(
 if(update&&M2C_FIELD(GetConnection(),u8*,21)!=3)ResetSessionList(M2C_FIELD(GetConnection(),s32*,228));
 }
 
-s32 func_0204183c(s32 *p,u32 n) {
+/* True when every player id in the list is a member of the connection.  While a
+ * flagged join is settling (session state 4, then 1) the test passes, because
+ * the peer list is not final yet. */
+s32 AreAllConnectionMembers(s32 *playerIds,u32 count) {
  s32 IsConnectionMember();
  u32 i;
- if(M2C_FIELD(GetConnection(),u8*,0x1a6)!=0 && M2C_FIELD(GetConnection(),s32*,0x1a0)==4)return 1;
- for(i=0;i<n;i++) {
- if(!IsConnectionMember(p[i]))return 0;
- if(M2C_FIELD(GetConnection(),u8*,0x1a6)!=0 && M2C_FIELD(GetConnection(),s32*,0x1a0)==1)return 1;
+ if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_FLAG)!=0 && M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)==4)return 1;
+ for(i=0;i<count;i++) {
+ if(!IsConnectionMember(playerIds[i]))return 0;
+ if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_JOIN_FLAG)!=0 && M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)==1)return 1;
  }return 1;
 }
 
@@ -68,7 +71,7 @@ void DisconnectConnection(void) {
     void CloseConnection(void);
     s32 SendMatchAddress(void);
     M2C_UNK GT2NotifyConnectionClosed(s32);
-    void func_0205df50(s32);
+    void NatNeg_ReleasePeer(s32);
     s32 func_02040dc8(M2C_UNK);
     s32 func_0204084c(void);
 
@@ -103,7 +106,7 @@ void DisconnectConnection(void) {
         if (((s32 (*)())func_0204084c)() != 0) return;
     }
     if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) != 0) {
-        func_0205df50(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
+        NatNeg_ReleasePeer(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
         M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) = 0;
     }
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
@@ -156,7 +159,7 @@ return result;
 
 /* Handle a connection state refresh: if the active mode is 2/3, invoke the mode callback; if mode 0, run the next connection step; if mode 1 with refresh requested, start a contextual action. */
 void func_02041be0(s32 refresh) {
-    s32 GetSessionPlayerSlot(); s32 func_02043008();
+    s32 GetSessionPlayerSlot(); s32 ReportMatchmakingResult();
     s32 b,c; void *p;
     if(refresh==0){CloseConnection();return;}
     ResetConnection();
@@ -166,7 +169,7 @@ void func_02041be0(s32 refresh) {
         c=GetSessionPlayerSlot(M2C_FIELD(GetConnection(),s32*,0x20c));
         ((void (*)(s32,s32,s32,s32,s32,s32))M2C_FIELD(p,void**,0x464))(0,1,b,0,c,M2C_FIELD(GetConnection(),s32*,0x468));
     } else if(M2C_FIELD(GetConnection(),u8*,0x15)==0) {
-        if(refresh==1){SendMatchmakingParameter(0);if(func_02043008())return;}
+        if(refresh==1){SendMatchmakingParameter(0);if(ReportMatchmakingResult())return;}
     } else if(M2C_FIELD(GetConnection(),u8*,0x15)==1 && refresh==1)TryConnectToPeer(0,0,0);
 }
 
@@ -183,7 +186,7 @@ void ReconnectUnlessServing(void) {
  * instead.  Returns 0 unless a send error was reported. */
 s32 StartMatchmaking(void) {
     s32 SendMatchmakingParameter();
-    s32 func_02043008();
+    s32 ReportMatchmakingResult();
     s32 SendJoinRequest();
     s32 func_0204084c();
     s32 result;
@@ -196,7 +199,7 @@ s32 StartMatchmaking(void) {
             SetConnectionState(3);
             result = SendMatchmakingParameter(0);
             /* The error report takes the code left in r0 by the send above. */
-            if (func_02043008()) return result;
+            if (ReportMatchmakingResult()) return result;
         } else if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 1) {
             SetConnectionState(4);
             result = SendJoinRequest(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SELF_ID), 0);

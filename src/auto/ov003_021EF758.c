@@ -154,7 +154,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK Hide3DSpriteSlide(s32);
-    M2C_UNK func_02088f1c(s32);
+    M2C_UNK Show3DSpriteSlide(s32);
     M2C_UNK IsLinkSessionActive(void);
     M2C_UNK SetTextById(void *, s32);
     M2C_UNK IsWaypointOptionValid(u8);
@@ -217,8 +217,8 @@ void func_ov003_021efb74(void *arg0) {
     r4 = M2C_FIELD(r7, void **, 0x64);
     byte1v = M2C_FIELD(r0p, s8 *, 0x4);
     r5u = (u8)byte1v;
-    func_02088f1c(M2C_FIELD(r4, s32 *, 0x0));
-    func_02088f1c(M2C_FIELD(r4, s32 *, 0x4));
+    Show3DSpriteSlide(M2C_FIELD(r4, s32 *, 0x0));
+    Show3DSpriteSlide(M2C_FIELD(r4, s32 *, 0x4));
 
     r6 = 0;
     if (r5u > 0) {
@@ -262,7 +262,7 @@ void func_ov003_021efb74(void *arg0) {
             M2C_FIELD(r1p, s16 *, 0x10) = (s16)0x24;
             M2C_FIELD(r1p, s16 *, 0xc) = (s16)0xc;
             M2C_FIELD(r1p, s16 *, 0x2) = M2C_FIELD(r1p, u16 *, 0x4);
-            func_02088f1c(M2C_FIELD(r7, s32 *, 0x54));
+            Show3DSpriteSlide(M2C_FIELD(r7, s32 *, 0x54));
         }
     }
 
@@ -395,31 +395,36 @@ void func_ov003_021f00d0(void) {
     func_ov003_021ee8b8();
 }
 
-void func_ov003_021f00dc(void *arg0) {
-void *GetNetworkPlayerRecord(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
-s32 flag; s8 old,count,value; u8 i; void *p,*q;
-i=0; count=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c),s8 *,4);
-if(count<=0)return;
-do {
-p=M2C_FIELD(arg0,void **,0x6c)+i;
-old=M2C_FIELD(p,s8 *,10);
-if(M2C_FIELD(p,u8 *,0x74)==255) flag=1; else flag=0;
-if(!(flag&255)){
-q=GetNetworkPlayerRecord();
-if(q) value=M2C_FIELD(q,s8 *,13); else value=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
-}else{
-q=func_02084e64();
-if(q) value=M2C_FIELD(q+i,s8 *,0x12); else value=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
-}
-if(old!=value){
-M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+i,u8 *,10)=(u8)value;
-M2C_FIELD(arg0,u8 *,0x3a)|=8;
-if(i==M2C_FIELD(M2C_FIELD(arg0,void **,0x6c),u8 *,7)){
-q=M2C_FIELD(arg0,void **,0x40); M2C_FIELD(q,u8 *,0x10)=i; M2C_FIELD(q,u8 *,0x11)=(u8)value;
-}
-}
-i++;
-}while(i<count);
+/* Refresh the CO icon of every player slot in the waypoint list from that
+ * player's link/online record (the local player's record for an empty slot).
+ * A changed icon is written back, marks the panel dirty and, on the selected
+ * slot, goes to the CO panel record too. */
+void WaypointPanel_RefreshCoIcons(void *panel) {
+    void *GetNetworkPlayerRecord(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
+    s32 isEmpty; u8 playerId; s8 oldIcon,count,newIcon; u8 i; void *slot,*record;
+    i=0; count=M2C_FIELD(M2C_FIELD(panel,void **,WAYPOINT_PANEL_LIST),s8 *,WAYPOINT_LIST_COUNT);
+    if(count<=0)return;
+    do {
+        slot=M2C_FIELD(panel,void **,WAYPOINT_PANEL_LIST)+i;
+        playerId=M2C_FIELD(slot,u8 *,WAYPOINT_LIST_IDS);
+        oldIcon=M2C_FIELD(slot,s8 *,WAYPOINT_LIST_SLOT_OPTIONS);
+        if(playerId==255) isEmpty=1; else isEmpty=0;
+        if(!(isEmpty&255)){
+            record=GetNetworkPlayerRecord(playerId);
+            if(record) newIcon=M2C_FIELD(record,s8 *,13); else newIcon=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
+        }else{
+            record=func_02084e64();
+            if(record) newIcon=M2C_FIELD(record+i,s8 *,0x12); else newIcon=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
+        }
+        if(oldIcon!=newIcon){
+            M2C_FIELD(M2C_FIELD(panel,void **,WAYPOINT_PANEL_LIST)+i,u8 *,WAYPOINT_LIST_SLOT_OPTIONS)=(u8)newIcon;
+            M2C_FIELD(panel,u8 *,OV003_FLAGS)|=OV003_FLAG_PANEL_DIRTY;
+            if(i==M2C_FIELD(M2C_FIELD(panel,void **,WAYPOINT_PANEL_LIST),u8 *,WAYPOINT_LIST_SELECTED)){
+                record=M2C_FIELD(panel,void **,WAYPOINT_PANEL_ICON_RECORD); M2C_FIELD(record,u8 *,BATTLE_PANEL_CURRENT)=i; M2C_FIELD(record,u8 *,BATTLE_PANEL_ICON)=(u8)newIcon;
+            }
+        }
+        i++;
+    }while(i<count);
 }
 
 void func_ov003_021f01cc(void *arg0) {
@@ -436,12 +441,12 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *MemAlloc(s32);
     M2C_UNK ConstructArray(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021f13ec(M2C_UNK *);
+    M2C_UNK SetOv003SceneClass(M2C_UNK *);
     void func_ov003_021f05cc(void *);
     void func_ov003_021f05f8(void);
-    extern M2C_UNK data_02102174;
+    extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK data_ov003_0220f8e0;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
     extern M2C_UNK data_ov003_0220faf8;
@@ -453,11 +458,11 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     u8 b, r3, r5, r12, i;
     M2C_UNK *base;
 
-    func_ov003_021f13ec(&data_ov003_0220f8e0);
+    SetOv003SceneClass(&data_ov003_0220f8e0);
     temp_r0 = CreateSpriteFromClass(&data_ov003_0220f8e0, arg0);
     if (temp_r0 == NULL) return;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_0220fb38;
     M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
     M2C_FIELD(temp_r0, s8 *, 0x38) = 0;

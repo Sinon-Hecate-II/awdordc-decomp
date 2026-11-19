@@ -33,6 +33,16 @@
 #define SPRITE_OAM_ATTR2 0x28 /* u32 OAM attribute word 2: tile id in bits 0..9, priority/palette above */
 #define SPRITE_PARTS     0x30 /* s32 extra quad parts of the sprite, 0 when it has none */
 
+/* A sprite wrapper (main_02090E0C): a 3D sprite object that holds one child
+ * sprite and draws it at the wrapper's position every frame, deleting itself
+ * once the child has stopped.  The 3D draw scales x and y by the map cell size
+ * and uses z as the child's graphics-block size; the 2D draw takes them as
+ * screen pixels. */
+#define SPRITE_WRAPPER_CHILD 0x58 /* void *child sprite the wrapper draws */
+#define SPRITE_WRAPPER_X     0x5C /* s32 x of the child: 1/16-cell units, or pixels for the 2D draw */
+#define SPRITE_WRAPPER_Y     0x60 /* s32 y of the child, same units as X */
+#define SPRITE_WRAPPER_Z     0x64 /* s32 z/attribute word handed to the 3D draw */
+
 /* Extra fields of the sprite that runs the map's tile-scatter transition
  * (main_0207A3B0): the motion points of the effect, one x, y, velocity x,
  * velocity y per map tile, and the frame counter that ends it. */

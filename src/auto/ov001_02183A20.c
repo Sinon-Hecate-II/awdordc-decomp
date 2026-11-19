@@ -4,7 +4,7 @@
 
 #pragma optimization_level 2
 void func_ov001_02183a20(void) {
-    s32 func_ov001_02183d80(void);
+    s32 Ov001_HitScrollbarPart(void);
     void func_ov001_02183cec(s8);
     s32 func_ov001_02183e0c(void);
     void func_ov001_02183d18(void);
@@ -22,7 +22,7 @@ void func_ov001_02183a20(void) {
             if (r != 0) {
                 return;
             }
-            r = func_ov001_02183d80();
+            r = Ov001_HitScrollbarPart();
             switch (r) {
                 case 0:
                     break;
@@ -62,7 +62,7 @@ void func_ov001_02183a20(void) {
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
                 return;
             }
-            r = func_ov001_02183d80();
+            r = Ov001_HitScrollbarPart();
             if (r != 2) {
                 return;
             }
@@ -76,7 +76,7 @@ void func_ov001_02183a20(void) {
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
                 return;
             }
-            r = func_ov001_02183d80();
+            r = Ov001_HitScrollbarPart();
             if (r != 3) {
                 return;
             }
@@ -192,28 +192,30 @@ Ov001_SetScrollbarHandlePos(v);
 M2C_FIELD(gOv001Scrollbar,u8 *,0x1d)=3;
 }
 #pragma peephole reset
-s32 func_ov001_02183d80(void) {
+/* Which part of the friend roster's scrollbar the stylus tapped: the handle, the
+ * up or down cap, the track, or 0 when it missed the bar. */
+s32 Ov001_HitScrollbarPart(void) {
     void Ov001_GetScrollbarPartRect(s32, M2C_UNK *);
     s32 TouchRectPressed(M2C_UNK *);
-    s32 func_ov001_0218bc44(M2C_UNK *);
-    s32 sp0[2];
-    s32 var_r5;
+    s32 TouchRectPressOrRepeat(M2C_UNK *);
+    s32 rect[2];
+    s32 part;
 
-    Ov001_GetScrollbarPartRect(1, sp0);
-    if (func_ov001_0218bc44(sp0) != 0) {
-        return 1;
+    Ov001_GetScrollbarPartRect(OV001_SCROLLBAR_PART_HANDLE, rect);
+    if (TouchRectPressOrRepeat(rect) != 0) {
+        return OV001_SCROLLBAR_PART_HANDLE;
     }
-    var_r5 = 2;
+    part = OV001_SCROLLBAR_PART_UP;
 loop_3:
-    Ov001_GetScrollbarPartRect(var_r5, sp0);
-    if (func_ov001_0218bc44(sp0) != 0) {
-        return var_r5;
+    Ov001_GetScrollbarPartRect(part, rect);
+    if (TouchRectPressOrRepeat(rect) != 0) {
+        return part;
     }
-    var_r5 += 1;
-    if (var_r5 > 3) {
-        Ov001_GetScrollbarPartRect(4, sp0);
-        if (TouchRectPressed(sp0) != 0) {
-            return 4;
+    part += 1;
+    if (part > OV001_SCROLLBAR_PART_DOWN) {
+        Ov001_GetScrollbarPartRect(OV001_SCROLLBAR_PART_TRACK, rect);
+        if (TouchRectPressed(rect) != 0) {
+            return OV001_SCROLLBAR_PART_TRACK;
         }
         return 0;
     }
@@ -314,38 +316,40 @@ void func_ov001_02183fa0(void) {
 }
 #pragma pool_constants reset
 #pragma opt_common_subs reset
-s32 func_ov001_02183fd4(void) {
+/* Opens the friend roster: clears its slots, opens the WFC channel that fetches
+ * the roster, waits for the reply, then builds the request packet from its
+ * defaults and the local console id and sends it.  Returns 0 when the channel
+ * or the request cannot be started. */
+s32 Ov001_OpenFriendRoster(void) {
     s32 FillU16(s32, void *, s32);
     s32 func_02012218(void *, void (*)(void), s32);
     s32 func_02011af8(void *);
-    u16 func_02011e98(void);
-    s32 func_ov001_021840a0(void);
-    void func_ov001_021841cc();
+    u16 GetConsoleLocalId(void);
+    s32 Ov001_SendFriendRosterRequest(void);
+    void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
-    extern u32 data_ov001_0218fb6c[];
-    typedef struct { u32 w[17]; } Blk;
-    s32 *ptr = (s32 *)&gWfcFriendRoster;
+    extern u32 gFriendRosterRequestDefaults[];
+    u8 *base;
 
-    FillU16(0, (u8 *)(*ptr) + 0x1300, 0x348);
-    if (func_02012218((void *)(*ptr), (void (*)(void))func_ov001_021841cc, 3) != 2) return 0;
-    func_02011af8((void *)((u8 *)(*ptr) + 0x168c));
-    {
-        u8 *base = (u8 *)(*ptr);
-        if (*(u16 *)(base + 0x168c) == 2) {
-            *(Blk *)(base + 0x1648) = *(const Blk *)data_ov001_0218fb6c;
-            *(u8 **)(base + 0x1648) = base + 0xf00;
-            *(u16 *)((u8 *)(*(s32 *)&gWfcFriendRoster) + 0x1650) = func_02011e98();
-        }
-    }
-    return func_ov001_021840a0() ? 1 : 0;
+    FillU16(0, (u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS, WFC_FRIEND_SLOTS_SIZE);
+    if (func_02012218((void *)gWfcFriendRoster, Ov001_HandleFriendRosterReply, 3) != WFC_CMD_OK)
+        return 0;
+    do {
+        func_02011af8((u8 *)gWfcFriendRoster + WFC_FRIEND_REPLY);
+        base = (u8 *)gWfcFriendRoster;
+    } while (*(u16 *)(base + WFC_FRIEND_REPLY) != WFC_REPLY_DONE);
+    *(WfcFriendRosterRequest *)(base + WFC_FRIEND_REQUEST) = *(const WfcFriendRosterRequest *)gFriendRosterRequestDefaults;
+    *(u8 **)(base + WFC_FRIEND_REQUEST) = base + 0xf00;
+    *(u16 *)((u8 *)(*(s32 *)&gWfcFriendRoster) + WFC_FRIEND_REQUEST + 8) = GetConsoleLocalId();
+    return Ov001_SendFriendRosterRequest() ? 1 : 0;
 }
 
-s32 func_ov001_021840a0(void) {
+s32 Ov001_SendFriendRosterRequest(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
-    void func_ov001_021841cc();
+    void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
     void *base = (void *)gWfcFriendRoster;
-    if (WFC_SendRequestPacket(func_ov001_021841cc, (s8 *)base + 0x1648) == 2) {
+    if (WFC_SendRequestPacket(Ov001_HandleFriendRosterReply, (s8 *)base + 0x1648) == 2) {
         return 1;
     }
     return 0;
@@ -358,20 +362,20 @@ s32 Ov001_CloseFriendRoster(void) {
     s32 func_02011af8(void *);
     s32 func_02012274(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
-    void func_ov001_021841cc();
+    void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
 
     *(u8 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_CLOSING) = 1;
     func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
     if (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE) {
-        if (func_02012274(func_ov001_021841cc) != WFC_CMD_OK) {
+        if (func_02012274(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {
             return 0;
         }
         do {
             func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
         } while (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE);
     }
-    if (WFC_EndLink(func_ov001_021841cc) != WFC_CMD_OK) {
+    if (WFC_EndLink(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {
         return 0;
     }
     return 1;
@@ -382,16 +386,14 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     extern u8 data_ov001_0218fb64[];
     extern s32 gWfcFriendRoster;
     u8 *p;
-    u8 *pattern;
     s32 count;
     s32 i;
 
     p = (u8 *)gWfcFriendRoster + 0x1300;
     *arg0 = p;
-    pattern = data_ov001_0218fb64;
     count = 0;
     for (i = 0; i < 20; i++) {
-        if (ByteCompareN(p + 0x20, pattern, 6) != 0) {
+        if (ByteCompareN((M2C_UNK)(p + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
             count = count + 1;
         }
         p = p + 0x2a;
@@ -399,8 +401,8 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     return count;
 }
 
-void func_ov001_021841cc(u16 *p) {
-    s32 func_ov001_021840a0(void);
+void Ov001_HandleFriendRosterReply(u16 *p) {
+    s32 Ov001_SendFriendRosterRequest(void);
     void func_ov001_02184230(u16 *);
     void SystemHalt(u16 *);
     extern s32 gWfcFriendRoster;
@@ -414,10 +416,10 @@ void func_ov001_021841cc(u16 *p) {
         switch (p[4]) {
             case 5:
                 func_ov001_02184230(p);
-                func_ov001_021840a0();
+                Ov001_SendFriendRosterRequest();
                 break;
             case 4:
-                func_ov001_021840a0();
+                Ov001_SendFriendRosterRequest();
                 break;
             default:
                 SystemHalt(p);
@@ -721,38 +723,47 @@ u8 Ov001_GetSaveSlotStatus(s32 arg0) {
     return *((u8 *)((s8 *)gSaveData + (arg0 << 8) + 0xe7));
 }
 
-void func_ov001_02184880(s32 arg0) {
+#pragma opt_common_subs off
+/* Loads physical save slot `slotIndex` into the working copy: copies the slot
+ * image, records which slot it is, marks absent player codes from the zero
+ * sentinel, and rebuilds the working code from the slot's set-bit count. */
+void LoadSaveSlot(s32 slotIndex) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02046058(u8, M2C_UNK *);
     extern s32 gSaveData;
-    extern u8 data_ov001_0218fbb0[];
-    u8 *base = (u8 *)gSaveData;
-    u8 *page = base + (arg0 << 8);
-    u8 *src = page;
-    u8 *dst = base + 0x400;
-    s32 count = 0x78;
+    extern u8 gEmptyPlayerCode[];
+    u32 count;
+    u8 *page;
+    u8 *dst;
+    u8 *src;
+    u8 *base;
+
+    count = SAVE_SLOT_IMAGE_SIZE / 2;
+    base = (u8 *)gSaveData;
+    page = base + (slotIndex << 8);
+    src = page;
+    dst = base + SAVE_WORK_SLOT;
     do {
         u8 a = src[0];
         u8 b = src[1];
+        src += 2;
+        count--;
         dst[0] = a;
         dst[1] = b;
-        src = src + 2;
-        dst = dst + 2;
-        count--;
+        dst += 2;
     } while (count != 0);
-    base[0x4f4] = (u8)arg0;
-    if (ByteCompareN((M2C_UNK)(page + 0xc0), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
-        ((u8 *)gSaveData)[0x4f5] = 1;
+    base[SAVE_SLOT_INDEX] = (u8)slotIndex;
+    if (ByteCompareN((M2C_UNK)(page + SAVE_SLOT_PLAYER_CODES), (M2C_UNK)gEmptyPlayerCode, 4) != 0) {
+        ((u8 *)gSaveData)[SAVE_EXTRA_EMPTY_A] = 0;
     } else {
-        ((u8 *)gSaveData)[0x4f5] = 0;
+        ((u8 *)gSaveData)[SAVE_EXTRA_EMPTY_A] = 1;
     }
-    if (ByteCompareN((M2C_UNK)(page + 0xc8), (M2C_UNK)data_ov001_0218fbb0, 4) != 0) {
-        ((u8 *)gSaveData)[0x4f6] = 0;
-    } else if (ByteCompareN((M2C_UNK)(page + 0xcc), (M2C_UNK)data_ov001_0218fbb0, 4) == 0) {
-        ((u8 *)gSaveData)[0x4f6] = 1;
+    if (ByteCompareN((M2C_UNK)(page + SAVE_SLOT_PLAYER_CODES + 8), (M2C_UNK)gEmptyPlayerCode, 4) != 0 ||
+        ByteCompareN((M2C_UNK)(page + SAVE_SLOT_PLAYER_CODES + 12), (M2C_UNK)gEmptyPlayerCode, 4) != 0) {
+        ((u8 *)gSaveData)[SAVE_EXTRA_EMPTY_B] = 0;
     } else {
-        ((u8 *)gSaveData)[0x4f6] = 0;
+        ((u8 *)gSaveData)[SAVE_EXTRA_EMPTY_B] = 1;
     }
-    func_02046058(base[page - base + 0xd0], (M2C_UNK *)(gSaveData + 0x4f0));
+    func_02046058(page[SAVE_SLOT_CODE_BITS], (M2C_UNK *)((u8 *)gSaveData + SAVE_CODE));
 }
-
+#pragma opt_common_subs reset

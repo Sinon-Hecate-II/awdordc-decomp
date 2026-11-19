@@ -188,7 +188,12 @@ void OS_InitMessageQueue(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x1C) = 0;
 }
 
-s32 OS_SendMessage(void *arg0, s32 arg1, s32 arg2) {
+/* Send a message to a thread message queue: with OS_MESSAGE_BLOCK it sleeps on
+ * the queue while it is full, then stores the message at firstIndex + usedCount
+ * (wrapped over the slot count), counts it and wakes a thread waiting to
+ * receive.  Returns 0 when a non-blocking call finds the queue full, 1 once the
+ * message is queued. */
+s32 OS_SendMessage(OSMessageQueue *queue, s32 message, s32 flags) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
@@ -197,16 +202,16 @@ s32 OS_SendMessage(void *arg0, s32 arg1, s32 arg2) {
     s32 state;
 
     state = OS_DisableInterrupts();
-    while (M2C_FIELD(arg0, s32 *, 0x14) <= M2C_FIELD(arg0, s32 *, 0x1C)) {
-        if (!(arg2 & 1)) {
+    while (queue->msgCount <= queue->usedCount) {
+        if (!(flags & OS_MESSAGE_BLOCK)) {
             OS_RestoreInterrupts(state);
             return 0;
         }
-        OS_SleepThread(arg0);
+        OS_SleepThread(&queue->sendQueue);
     }
-    ((s32 *)M2C_FIELD(arg0, void **, 0x10))[(s32)(func_020720f0(M2C_FIELD(arg0, s32 *, 0x18) + M2C_FIELD(arg0, s32 *, 0x1C), M2C_FIELD(arg0, s32 *, 0x14)) >> 32)] = arg1;
-    M2C_FIELD(arg0, s32 *, 0x1C) = M2C_FIELD(arg0, s32 *, 0x1C) + 1;
-    OS_WakeupThread((u8 *)arg0 + 8);
+    queue->msgArray[(s32)(func_020720f0(queue->firstIndex + queue->usedCount, queue->msgCount) >> 32)] = message;
+    queue->usedCount = queue->usedCount + 1;
+    OS_WakeupThread(&queue->receiveQueue);
     OS_RestoreInterrupts(state);
     return 1;
 }
@@ -515,12 +520,12 @@ s32 func_02006a24(s32 arg0) {
 }
 
 s32 func_02006a38(s32 arg0) {
-s32 func_020062bc(void); extern M2C_UNK data_0212defc,data_027e0000; extern char data_00000000[],data_00000800[];
+s32 func_020062bc(void); extern M2C_UNK data_0212defc,gOsArea; extern char data_00000000[],data_00000800[];
 switch(arg0) {
 case 0:return 0x23e0000;
 case 2: if(M2C_FIELD(&data_0212defc,s32 *,4)!=0) {if((func_020062bc()&3)==1)return 0;else goto mainram;} else return 0x2700000;
 case 3:mainram:return 0x2000000;
-case 4:{s32 a=(s32)&data_027e0000; s32 c; s32 e; arg0=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
+case 4:{s32 a=(s32)&gOsArea; s32 c; s32 e; arg0=(s32)data_00000000; c=(s32)data_00000800; e=a+0x3f80; c=e-c;
 if(arg0==0){if((u32)a<0x27e15e0U)a=0x27e15e0;return a;} if(arg0<0)return 0x27e15e0-arg0;return c-arg0;}
 case 5:return 0x27ff680;case 6:return 0x37f8000;default:return 0;
 }}

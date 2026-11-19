@@ -1,5 +1,6 @@
 /* 7 functions from 0x02175FB0 to 0x02176E28 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 #pragma opt_strength_reduction off
 void func_ov000_02175fb0(void *a) {
@@ -103,24 +104,27 @@ void func_ov000_021769dc(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 1 - M2C_FIELD(arg0, s32 *, 0);
 }
 
-void func_ov000_02176a0c(M2C_UNK arg0) {
+/* Full redraw of the ov000 unit info panel on the sub engine: offset layer 0
+ * of its 3D sprite by (2,1), draw the backdrop, the tile frame around the unit
+ * and the unit's stats, then mark layers 0..2 dirty. */
+void Ov000Info_DrawFullPanel(M2C_UNK arg0) {
     M2C_UNK DrawInfoPanelBackdrop(M2C_UNK);
     M2C_UNK func_ov000_021759b8(M2C_UNK);
     M2C_UNK Ov000Info_DrawUnitPanel(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    void *savedEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x38) = 2;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x40) = 1;
+    DS3D_BANK(gCur3DSpriteEngine)->corner[0] = 2;
+    DS3D_BANK(gCur3DSpriteEngine)->corner[4] = 1;
     DrawInfoPanelBackdrop(arg0);
     func_ov000_021759b8(arg0);
     Ov000Info_DrawUnitPanel(arg0);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
-    gCur3DSpriteEngine = temp_r4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02176a9c(M2C_UNK arg0) {

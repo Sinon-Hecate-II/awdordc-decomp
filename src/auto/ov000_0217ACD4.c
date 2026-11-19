@@ -27,7 +27,7 @@ gMoveSearchWrite+=4;gMoveSearchCount++;return 0;
 }
 
 s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void func_01ffb454(s32);
+    void LoadUnitMovementCosts(s32);
     s32 ExpandCostSearchNode(s32);
     s32 GetUnitMoveRange(u16, s32);
     extern s8 gMoveSearchBuffer;
@@ -45,7 +45,7 @@ s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(gMoveSearchState, s16 *, 0x20) = arg3;
     M2C_FIELD(gMoveSearchState, s16 *, 0x22) = GetUnitMoveRange(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
     M2C_FIELD(gMoveSearchState, s8 *, 0x26) = arg2;
-    func_01ffb454(arg2);
+    LoadUnitMovementCosts(arg2);
     M2C_FIELD(gMoveSearchWrite, s8 *, 0) = arg0;
     M2C_FIELD(gMoveSearchWrite, s8 *, 1) = arg1;
     M2C_FIELD(gMoveSearchWrite, s8 *, 2) = 1;
@@ -137,7 +137,7 @@ gMoveSearchWrite+=4;gMoveSearchCount++;return 0;
 
 #pragma opt_common_subs off
 s32 func_ov000_0217b3bc(s8 arg0, s8 arg1, s8 arg2, s16 arg3) {
-    void func_01ffb454(s32);
+    void LoadUnitMovementCosts(s32);
     s32 ExpandGoalSearchNode(M2C_UNK);
     s32 GetUnitMoveRange(u16, s32);
     extern void **gCurrentMap;
@@ -157,7 +157,7 @@ s32 func_ov000_0217b3bc(s8 arg0, s8 arg1, s8 arg2, s16 arg3) {
     M2C_FIELD(gMoveSearchState, s16 *, 0x20) = arg3;
     M2C_FIELD(gMoveSearchState, s16 *, 0x22) = GetUnitMoveRange(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), arg2);
     M2C_FIELD(gMoveSearchState, s8 *, 0x26) = arg2;
-    func_01ffb454(arg2);
+    LoadUnitMovementCosts(arg2);
     M2C_FIELD(gMoveSearchWrite, s8 *, 0) = arg0;
     M2C_FIELD(gMoveSearchWrite, s8 *, 1) = arg1;
     M2C_FIELD(gMoveSearchWrite, s8 *, 2) = 1;

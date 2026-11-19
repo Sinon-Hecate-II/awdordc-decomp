@@ -2,6 +2,13 @@
 #include "common.h"
 #include "ov006_map_transfer.h"
 typedef struct { s32 v[4]; } Ov006Date;
+
+/* The map-code screen object: what its digit display shows (kind 1 is the local
+ * online player id, kind 2 a received 64-bit map code) and the code being
+ * displayed or edited. */
+#define MAP_CODE_SCREEN_KIND 0x3B /* u8 display kind: 1 = own player id, 2 = received map code */
+#define MAP_CODE_SCREEN_CODE 0x3C /* u64 map code shown, edited in place by the display */
+
 extern const Ov006Date data_ov006_02218394;
 
 /* Status texts of the map-transfer screen: the valid pair is shown when the
@@ -82,17 +89,17 @@ void func_ov006_02217410(void) {
 
 void func_ov006_02217414(void) {
     s32 MemAlloc(M2C_UNK);
-    extern M2C_UNK data_ov006_02218e20;
-    M2C_FIELD(&data_ov006_02218e20, s32 *, 4) = MemAlloc(0x310);
-    M2C_FIELD(&data_ov006_02218e20, s32 *, 8) = 0;
-    M2C_FIELD(&data_ov006_02218e20, s8 *, 0) = 0;
+    extern M2C_UNK gMapOfferState;
+    M2C_FIELD(&gMapOfferState, s32 *, 4) = MemAlloc(0x310);
+    M2C_FIELD(&gMapOfferState, s32 *, 8) = 0;
+    M2C_FIELD(&gMapOfferState, s8 *, 0) = 0;
 }
 
-void func_ov006_02217438(void) {extern M2C_UNK data_ov006_02218e20;
-if(M2C_FIELD(&data_ov006_02218e20,s32 *,4)) {
-MemFree(M2C_FIELD(&data_ov006_02218e20,s32 *,4));
+void func_ov006_02217438(void) {extern M2C_UNK gMapOfferState;
+if(M2C_FIELD(&gMapOfferState,s32 *,4)) {
+MemFree(M2C_FIELD(&gMapOfferState,s32 *,4));
 }
-M2C_FIELD(&data_ov006_02218e20,s32 *,4)=0;
+M2C_FIELD(&gMapOfferState,s32 *,4)=0;
 }
 
 void func_ov006_02217464(M2C_UNK arg0) {
@@ -124,17 +131,17 @@ void func_ov006_022174d0(void *arg0) {
 }
 
 void func_ov006_02217504(void *arg0) {
-    M2C_UNK func_02084f2c(void *, M2C_UNK, M2C_UNK, void *, void *, void *);
+    M2C_UNK Link_CreateMatchRequest(void *, M2C_UNK, M2C_UNK, void *, void *, void *);
     M2C_UNK ConvertTextToGlyphs(s32, s32);
     s32 GetMapName(u16);
     ConvertTextToGlyphs(M2C_FIELD(arg0, s32 *, 0x3C), GetMapName((u16) M2C_FIELD(arg0, s32 *, 0x34)));
-    func_02084f2c(arg0 + 0x3C, 1, 0, arg0 + 0x40, arg0 + 0x44, arg0);
+    Link_CreateMatchRequest(arg0 + 0x3C, 1, 0, arg0 + 0x40, arg0 + 0x44, arg0);
 }
 
 void func_ov006_02217554(void *p) {
-extern M2C_UNK data_ov006_02218e20;
-if(M2C_FIELD(&data_ov006_02218e20,s32 *,8)) {M2C_FIELD(p,s32 *,0x38)=1;return;}
-CreateOnlinePlayerListNode(M2C_FIELD(&data_ov006_02218e20,s32 *,4),p+0x38);
+extern M2C_UNK gMapOfferState;
+if(M2C_FIELD(&gMapOfferState,s32 *,8)) {M2C_FIELD(p,s32 *,0x38)=1;return;}
+CreateOnlinePlayerListNode(M2C_FIELD(&gMapOfferState,s32 *,4),p+0x38);
 }
 
 void func_ov006_02217588(void *arg0) {
@@ -145,19 +152,21 @@ void func_ov006_02217588(void *arg0) {
     SetSpriteAnimation(arg0, 1);
 }
 
-void func_ov006_022175a4(void *p) {
-extern M2C_UNK data_ov006_02218e20;
-if(M2C_FIELD(p,s32 *,0x38)) {
-void *q=M2C_FIELD(&data_ov006_02218e20,void **,4);
-s32 ready;
-if(M2C_FIELD(q,s32 *,0x30c)==0) ready=0;
-else if(M2C_FIELD(q,s32 *,4)==0) ready=0;
-else ready=1;
-if(ready) M2C_FIELD(&data_ov006_02218e20,u8 *,0)=1;
-}
-if(M2C_FIELD(&data_ov006_02218e20,u8 *,0)) SetUiMessageText(0x46000017);
-else SetUiMessageText(0x46000016);
-M2C_FIELD(&data_ov006_02218e20,s32 *,8)=1;
+/* Finish the search for a player to exchange the offered map with: when the
+ * search found a player, mark whether its record was received, then show the
+ * found or no-player status text and close the search. */
+void FinishMapOfferSearch(void *offer) {
+    if (M2C_FIELD(offer, s32 *, MAP_OFFER_PLAYER_COUNT) != 0) {
+        void *record = M2C_FIELD(&gMapOfferState, void **, MAP_OFFER_STATE_RECORD);
+        s32 received;
+        if (M2C_FIELD(record, s32 *, PLAYER_ENTRY_DATA_LEN) == 0) received = 0;
+        else if (M2C_FIELD(record, s32 *, PLAYER_ENTRY_ID) == 0) received = 0;
+        else received = 1;
+        if (received) M2C_FIELD(&gMapOfferState, u8 *, MAP_OFFER_STATE_RECEIVED) = 1;
+    }
+    if (M2C_FIELD(&gMapOfferState, u8 *, MAP_OFFER_STATE_RECEIVED)) SetUiMessageText(MAP_OFFER_MSG_PLAYER_FOUND);
+    else SetUiMessageText(MAP_OFFER_MSG_NO_PLAYER);
+    M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_DONE) = 1;
 }
 
 void func_ov006_0221762c(void *arg0) {
@@ -282,8 +291,8 @@ void func_ov006_0221791c(void *arg0) {
 
 void func_ov006_02217948(void *arg0) {
     M2C_UNK CreateOnlinePlayerListUpToLimitNode(M2C_UNK, M2C_UNK, void *, void *);
-    M2C_UNK func_020e3d6c(M2C_UNK, void *, void *);
-    M2C_UNK func_020e3f88(void *, M2C_UNK, void *, void *);
+    M2C_UNK CreateOnlinePlayerListNoLimitNode(M2C_UNK, void *, void *);
+    M2C_UNK CreateOnlinePlayerListWithIdsNode(void *, M2C_UNK, void *, void *);
     s32 temp_r0;
 
     M2C_FIELD(arg0, s32 *, 0x3C) = 10;
@@ -293,10 +302,10 @@ void func_ov006_02217948(void *arg0) {
         CreateOnlinePlayerListUpToLimitNode(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C, arg0);
         return;
     case 1:
-        func_020e3d6c(M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListNoLimitNode(M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
         return;
     case 2:
-        func_020e3f88(arg0 + 0x48, M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListWithIdsNode(arg0 + 0x48, M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
         return;
     }
 }
@@ -415,12 +424,12 @@ void func_ov006_02217b7c(M2C_UNK arg0) {
 }
 
 void func_ov006_02217ba4(s32 arg0) {
-    M2C_UNK func_0208ee60(void *, M2C_UNK, M2C_UNK);
-    void *func_0208f3b0();
+    M2C_UNK SetNumberDisplayGraphics(void *, M2C_UNK, M2C_UNK);
+    void *CreateNumberDisplay();
     void *temp_r0;
 
-    temp_r0 = func_0208f3b0();
-    func_0208ee60(temp_r0, 0xCC00, 0xF);
+    temp_r0 = CreateNumberDisplay();
+    SetNumberDisplayGraphics(temp_r0, 0xCC00, 0xF);
     M2C_FIELD(temp_r0, s32 *, 0x68) = (s32) (arg0 + 0x40);
     M2C_FIELD(temp_r0, s32 *, 0x60) = 0;
     M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
@@ -498,31 +507,37 @@ void func_ov006_02217d9c(void *arg0) {
     func_02089740();
 }
 
-void func_ov006_02217de4(void *arg0) {
+/* Start the map-code screen's digit display, which shows and edits the 64-bit
+ * code at object+0x3c.  Kind 1 starts from the local online player id, drawn as
+ * nine digits at (0xa0, 0x58); kind 2 starts from zero, drawn as the sixteen
+ * digits of a received map code at (0xc0, 0x58). */
+void func_ov006_02217de4(void *object) {
     s32 GetOnlineLocalPlayerId();
-    s32 temp_r0_3;
-    u8 temp_r0_2;
-    void *temp_r0;
+    void *CreateNumberDisplay();
+    M2C_UNK SetNumberDisplayGraphics(void *, M2C_UNK, M2C_UNK);
+    s32 playerId;
+    u8 kind;
+    void *display;
 
-    temp_r0 = func_0208f3b0();
-    func_0208ee60(temp_r0, 0x6B80, 0xB);
-    M2C_FIELD(temp_r0, s32 *, 0x68) = (s32) (arg0 + 0x3C);
-    temp_r0_2 = M2C_FIELD(arg0, u8 *, 0x3B);
-    switch (temp_r0_2) {                            /* irregular */
+    display = CreateNumberDisplay();
+    SetNumberDisplayGraphics(display, 0x6B80, 0xB);
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_SOURCE) = (s32) (object + MAP_CODE_SCREEN_CODE);
+    kind = M2C_FIELD(object, u8 *, MAP_CODE_SCREEN_KIND);
+    switch (kind) {
     case 1:
-        temp_r0_3 = GetOnlineLocalPlayerId();
-        M2C_FIELD(temp_r0, s32 *, 0x60) = temp_r0_3;
-        M2C_FIELD(temp_r0, s32 *, 0x64) = (s32) (temp_r0_3 >> 0x1F);
-        M2C_FIELD(temp_r0, s32 *, 0x5C) = 9;
-        M2C_FIELD(temp_r0, s16 *, 0x34) = 0xA0;
-        M2C_FIELD(temp_r0, s16 *, 0x36) = 0x58;
+        playerId = GetOnlineLocalPlayerId();
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_VALUE) = playerId;
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_HIGH) = (s32) (playerId >> 0x1F);
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_DIGITS) = 9;
+        M2C_FIELD(display, s16 *, SPRITE_ACTOR_X) = 0xA0;
+        M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0x58;
         return;
     case 2:
-        M2C_FIELD(temp_r0, s32 *, 0x60) = 0;
-        M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
-        M2C_FIELD(temp_r0, s32 *, 0x5C) = 0x10;
-        M2C_FIELD(temp_r0, s16 *, 0x34) = 0xC0;
-        M2C_FIELD(temp_r0, s16 *, 0x36) = 0x58;
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_VALUE) = 0;
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_HIGH) = 0;
+        M2C_FIELD(display, s32 *, NUMBER_DISPLAY_DIGITS) = 0x10;
+        M2C_FIELD(display, s16 *, SPRITE_ACTOR_X) = 0xC0;
+        M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0x58;
         return;
     }
 }
@@ -563,7 +578,7 @@ void func_ov006_02217f20(void *arg0) {
             if (M2C_FIELD(arg0, u32 *, 0x34) >= 10) break;
         }
     }
-    func_020e3f88(M2C_FIELD(arg0, void **, 0x44), M2C_FIELD(arg0, s32 *, 0x54), (u8 *)arg0 + 0x34, arg0);
+    CreateOnlinePlayerListWithIdsNode(M2C_FIELD(arg0, void **, 0x44), M2C_FIELD(arg0, s32 *, 0x54), (u8 *)arg0 + 0x34, arg0);
 }
 
 /* Fill the object's status/joinable arrays for an online game list: for each candidate map
@@ -603,7 +618,7 @@ id=M2C_FIELD(p,u16 **,0x50)[i]; GetMapRecord(id); q=GetMapRecordStamp(id);
 flags=(M2C_FIELD(q,u32 *,0xc)>>29)<<8;
 value=M2C_FIELD(q,s32 *,0x10); out=p+0x58;
 if(M2C_FIELD(p,u8 *,0x3a)==M2C_FIELD(p,u8 *,0x39)) func_020e40e0(value,flags,out,p);
-else func_020e4174(value,flags,out,p);
+else CreateOnlinePlayerIdListNode(value,flags,out,p);
 }
 
 void func_ov006_022181a4(void *p) { s32 i; for(i=0;i<M2C_FIELD(p,u8 *,0x38);i++){u16 b=M2C_FIELD(p,u16 **,0x48)[i]; s32 a=M2C_FIELD(p,u8 **,0x4c)[i]; if(a==1)goto call; if(a!=2)continue; call: func_020868ac(b-0xe1,0);}}

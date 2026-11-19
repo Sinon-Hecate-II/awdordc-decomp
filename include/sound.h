@@ -44,6 +44,14 @@
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
 #define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
 
+/* The sound player slots (gSoundPlayerSlots), handed out by Sound_AcquirePlayer. */
+#define SOUND_PLAYER_SLOTS  4    /* player slots in the pool */
+#define SOUND_PLAYER_STRIDE 0x174 /* bytes per player slot */
+
+/* Fields of a player slot that couple it to the handle variable that owns it. */
+#define SOUND_HANDLE_OWNER    0x14C /* void ** the caller's handle variable, NULL when the slot is detached */
+#define SOUND_HANDLE_PRIORITY 0x150 /* s32 priority of the sound in the slot: a new sound replaces it only with at least this priority */
+
 /* Test one bit of a SOUND_HANDLE_FLAGS word the way the game reads it (a signed
  * shift pair); `bit` is the bit number, 0 being the lowest bit. */
 #define SOUND_HANDLE_FLAG_IS_SET(flags, bit) ((s32) ((flags) << (31 - (bit))) >> 31)
@@ -60,6 +68,12 @@
 /* The streamed-sound state (gStreamSoundState); its streamed voice object
  * (gStreamVoice) starts at +0x48. */
 #define STREAM_STATE_VOICE 0x48 /* s32 first word of the streamed voice: nonzero while open */
+
+/* The sound driver's one-time init block (gSoundInitState): the done flag its
+ * setup checks, and the handlers it installs to reset the driver. */
+#define SOUND_INIT_DONE    0x0C /* s32 nonzero once the driver has been set up */
+#define SOUND_INIT_STOP    0x10 /* void (*)(void) stops every channel and waits for the driver */
+#define SOUND_INIT_SILENCE 0x1C /* void (*)(void) silences the streamed sound buffers */
 
 /* Fields of the streamed sound voice (gStreamVoice). */
 #define STREAM_VOICE_ACTIVE   0x00 /* s32 nonzero while a stream is open */
@@ -123,6 +137,16 @@ enum {
 /* An id field of a sound-archive record meaning "no file/entry". */
 #define SOUND_FILE_NONE 0xFFFF
 
+/* `flags` bits of a SoundGroupItem (and of the loaders it selects): each resource
+ * kind has its own bit, so a group can load only some of its items. */
+#define SOUND_LOAD_SEQUENCE         0x01 /* load the sequence */
+#define SOUND_LOAD_BANK             0x02 /* load the bank */
+#define SOUND_LOAD_WAVE_ARCHIVE     0x04 /* load the wave archive */
+#define SOUND_LOAD_SEQUENCE_ARCHIVE 0x08 /* load the sequence archive */
+
+/* Flags byte of a packed wave-archive table record. */
+#define SOUND_RECORD_WAVE_ENTRY_TABLE 0x01 /* the wave archive carries its own entry table */
+
 /* A loaded wave archive file, as LoadWaveArchiveEntry and the packed-table
  * helpers read it: the entry count, then one data pointer per entry (a value
  * below 0x02000000 is an offset from the object itself), followed by one word
@@ -159,10 +183,13 @@ typedef struct PackedBankEntry {
  * gFreeVoices both link the voices at SOUND_VOICE_LINKS; a playing voice is
  * also linked into its channel's list at SOUND_CHANNEL_VOICE_LINKS. */
 #define SOUND_VOICE_SIZE     0x44
+#define SOUND_VOICE_PLAYER   0x00 /* void * player object that owns the voice (the player keeps the voice back at SOUND_PLAYER_VOICE) */
 #define SOUND_VOICE_LINKS    0x14 /* the {prev, next} pair of the voice lists */
 #define SOUND_VOICE_STATE    0x2C /* u8 0 = free, 1 = keyed on, 2 = playing */
 #define SOUND_VOICE_CHANNEL  0x3C /* u8 hardware channel the voice plays on */
+#define SOUND_VOICE_PRIORITY 0x3D /* u8 priority: a request of lower priority cannot take this voice's place */
 #define SOUND_VOICE_COUNT    16
+#define SOUND_PLAYER_VOICE   0x00 /* void * driver voice currently attached to a player, NULL when none */
 
 /* One channel of gSoundChannels (32 channels, 0x24 bytes each): the voices and
  * the sequences playing through it, its voice limit and its volume. */
@@ -174,6 +201,17 @@ typedef struct PackedBankEntry {
 #define SOUND_CHANNEL_UNK_1C      0x1C /* u32 cleared at start-up */
 #define SOUND_CHANNEL_VOLUME      0x20 /* u8 volume, 0..SOUND_VOLUME_MAX */
 #define SOUND_CHANNEL_COUNT       32
+
+/* A preallocated per-channel sequence-player heap: one of the sound data blocks
+ * a channel keeps on its SOUND_CHANNEL_SEQ_LIST until a sequence player takes it
+ * over.  The block's payload holds a heap (Sound_CreateHeap) the player then
+ * allocates its sequences from; a data block's free callback destroys that heap
+ * when the block is freed and detaches the node from the player that held it, or
+ * from the channel's list when nobody did. */
+#define SOUND_CHANNEL_HEAP_RESERVED 0x14 /* the node's fields, in front of its heap memory */
+#define SOUND_CHANNEL_HEAP_HEAP     0x08 /* void * the heap created in the payload, NULL at first */
+#define SOUND_CHANNEL_HEAP_OWNER    0x0C /* void * sequence player using the heap, NULL when free */
+#define SOUND_CHANNEL_HEAP_CHANNEL  0x10 /* s32 channel whose list the node belongs to */
 
 /* One of the 32 records of the loaded sound archive's channel table: how many
  * heaps are preallocated for a channel, the volume written to it and the size
@@ -240,5 +278,11 @@ typedef struct SoundChannelRecord {
 #define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
 #define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
 #define SOUND_MENU_TAB     0x10020 /* the active tab changed */
+
+/* Battle music tracks: the CO-power theme that replaces the map's music while a
+ * player's CO power is active (GetCoPowerMusicTrack).  Armies 1..7 use the first,
+ * every other army the second. */
+#define SOUND_CO_POWER_THEME_1 0x10002
+#define SOUND_CO_POWER_THEME_2 0x10003
 
 #endif

@@ -39,7 +39,7 @@ void Ov001_UpdateLinkState(void) {
     void func_ov001_02187454(void);
     void func_ov001_0218754c(void);
     s32 Ov001_GetTaskStep(void);
-    s32 func_ov001_02188c28(void);
+    s32 Ov001_EndLink(void);
     extern void *gOv001ProfileState;
 
     s32 status = Ov001_GetLinkStatus();
@@ -95,7 +95,7 @@ void Ov001_UpdateLinkState(void) {
     }
     case 0: {
         switch(Ov001_GetTaskStep()){
-        case 1:func_ov001_02188c28();return;
+        case 1:Ov001_EndLink();return;
         case 0:
             M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=0x1f;
             return;
@@ -189,12 +189,12 @@ void func_ov001_021897a4(void) {
 
 s32 func_ov001_021897bc(void) {
     M2C_UNK Ov001_GetTaskStep(void);
-    M2C_UNK func_ov001_02188c28(void);
+    M2C_UNK Ov001_EndLink(void);
     extern void *gOv001ProfileState;
     if (Ov001_GetTaskStep() != 1) {
         return 0;
     }
-    func_ov001_02188c28();
+    Ov001_EndLink();
     M2C_FIELD(gOv001ProfileState, u8 *, 0xA90) = 1;
     return 1;
 }
@@ -374,13 +374,13 @@ void func_ov001_02189c80(void) {
 extern void *data_ov001_021917b4[2];
 extern void *data_ov001_02193e2c;
 void func_0200bc5c(void *);
-void func_0200b510(void *);
+void UnloadArchiveIndex(void *);
 void func_0200b32c(void *);
 void func_0200b238(void *);
 void OS_ReleaseLockID(u16);
 void Ov001_FreeAlloc(void *);
 func_0200bc5c(data_ov001_021917b4);
-func_0200b510((u8 *)data_ov001_02193e2c+0x88);
+UnloadArchiveIndex((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);
 OS_ReleaseLockID(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
@@ -519,7 +519,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
     s32 OS_DisableIrqMask(s32);
     void OS_EnableIrqMask(s32);
     void SystemHalt(void);
-    void func_ov001_0218bf84(void *, void *);
+    void Ov001_ListInsertBefore(void *, void *);
     extern s32 gOv001SpritePools;
     s32 idx = in_idx;
     s32 arg1 = in_arg1;
@@ -547,7 +547,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
                 need = curEnd + arg1 * 8;
                 if ((u32)need <= (u32)next->start) {
                     node->start = curEnd;
-                    func_ov001_0218bf84(next, node);
+                    Ov001_ListInsertBefore(next, node);
                     break;
                 }
                 cur = next;
@@ -567,7 +567,7 @@ void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
                 need = prev->start + prev->size * 8;
                 if ((u32)curEnd >= (u32)need) {
                     node->start = curEnd;
-                    func_ov001_0218bf84(cur, node);
+                    Ov001_ListInsertBefore(cur, node);
                     break;
                 }
                 cur = prev;
@@ -611,7 +611,7 @@ s32 Ov001_GetSpriteObjEntry(void *arg0, s32 arg1) {
     return M2C_FIELD(arg0, s32 *, 8) + (arg1 * 8);
 }
 
-u8 func_ov001_0218a258(void *arg0) {
+u8 Ov001_GetSpriteEntryCount(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0xC);
 }
 

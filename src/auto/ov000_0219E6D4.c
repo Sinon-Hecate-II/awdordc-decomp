@@ -75,25 +75,29 @@ void func_ov000_0219e830(void) {
     *gAiCommandState = 4;
 }
 
-void func_ov000_0219e848(void) {
+/* Run the AI's unit-selection step for the current plan phase: call the routine
+ * the normal role table holds for that phase, or the blind one when the AI cannot
+ * see its units (fog of war, or snow cutting vision), then move on to the next
+ * plan phase. */
+void RunAiUnitSelectionStep(void) {
     extern void (*data_ov000_021df42c[])(void);
     extern void (*data_ov000_021df4b8[])(void);
     extern s8 *gAiCommandState;
     extern void **gCurrentMap;
-    void *temp_r0;
-    temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) == 0 && M2C_FIELD(temp_r0, u8 *, 0x5158) != 2) {
-        data_ov000_021df42c[M2C_FIELD(gAiCommandState, u8 *, 2)]();
+    void *map;
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) == 0 && M2C_FIELD(map, u8 *, MAP_WEATHER) != WEATHER_SNOW) {
+        data_ov000_021df42c[M2C_FIELD(gAiCommandState, u8 *, AI_STATE_PHASE)]();
     } else {
-        data_ov000_021df4b8[M2C_FIELD(gAiCommandState, u8 *, 2)]();
+        data_ov000_021df4b8[M2C_FIELD(gAiCommandState, u8 *, AI_STATE_PHASE)]();
     }
-    M2C_FIELD(gAiCommandState, u8 *, 2)++;
+    M2C_FIELD(gAiCommandState, u8 *, AI_STATE_PHASE)++;
 }
 
 s32 func_ov000_0219e8d0(void) {
     s32 func_0208485c();
     extern u8 gBattleEndState;
-    extern u16 data_02156e4c;
+    extern u16 gLinkAiCommandStage;
     extern void **gCurrentMap;
     void *temp_r3;
     if (gBattleEndState == 0) {
@@ -105,7 +109,7 @@ s32 func_ov000_0219e8d0(void) {
             return 0;
         }
     }
-    if (data_02156e4c != 1) {
+    if (gLinkAiCommandStage != 1) {
         return 0;
     }
     return 1;
@@ -374,7 +378,7 @@ s32 func_ov000_0219efa4(void) {
 s32 func_ov000_0219f0d8(void) {
     s32 IsPlayerHuman(s32);
     void SetMapCursorTargetTile(s32, s32);
-    void func_020babfc(s32, s32, void *);
+    void RevealUnitsAroundCursor(s32, s32, void *);
     void MarkPathThreatRange(s32, s32, void *);
     void RefreshMapView(void);
     void func_020bbc2c(s32);
@@ -414,7 +418,7 @@ s32 func_ov000_0219f0d8(void) {
         *(s8 *)(*(u8 **)((u8 *)*gCurrentMap + 0x52d0) + 2) = *(s16 *)((u8 *)*gCurrentMap + 0x52de);
         if (IsPlayerHuman(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
             SetMapCursorTargetTile(*(s16 *)((u8 *)*gCurrentMap + 0x52dc), *(s16 *)((u8 *)*gCurrentMap + 0x52de));
-            func_020babfc(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
+            RevealUnitsAroundCursor(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
             MarkPathThreatRange(*(s16 *)((u8 *)*gCurrentMap + 0x52e0), *(s16 *)((u8 *)*gCurrentMap + 0x52e2), (u8 *)*gCurrentMap + 0x5388);
         }
         RefreshMapView();

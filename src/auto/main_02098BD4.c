@@ -63,7 +63,7 @@ M2C_UNK func_02098d48(M2C_UNK arg0, u16 arg1) {
     LoadFileToSpriteBuffer(&data_02103288, arg1 << 5, 0x20);
 }
 
-void func_02098d78(M2C_UNK arg0, s32 arg1, s32 arg2) {
+void LoadFaceTextureAndPalette(M2C_UNK arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_02098d08(M2C_UNK, s32);
     M2C_UNK func_02098d48(M2C_UNK, u16);
     extern void *gCur3DSpriteEngine;
@@ -108,7 +108,7 @@ if(bank==0) engine=g3DSpriteEngineMain; else engine=g3DSpriteEngineSub;
 gCur3DSpriteEngine=engine;
 screen=((u32)M2C_FIELD(face,u8*,FACE_SPRITE_SCREEN)<<28)>>29;
 if ((screen!=0 || engine==g3DSpriteEngineMain) && (screen!=1 || engine==g3DSpriteEngineSub) && (screen!=3 || engine==oldEngine))
-func_02098d78(faceId,M2C_FIELD(face,u16*,0x3e)<<5,(u16)((M2C_FIELD(face,u32*,FACE_SPRITE_TILE)<<6)>>24));
+LoadFaceTextureAndPalette(faceId,M2C_FIELD(face,u16*,0x3e)<<5,(u16)((M2C_FIELD(face,u32*,FACE_SPRITE_TILE)<<6)>>24));
 bank += 1;
 } while(bank<2);
 gCur3DSpriteEngine=oldEngine;
@@ -221,37 +221,37 @@ void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
 }
 
 void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
-u8 GetFaceTileRow(s32);
-u8 FaceSpriteIsLoaded(void *);
-void LoadFaceTexture(s32, s32, s32);
-void SetFaceSpriteFace(void *, s32);
-void RefreshFaceSprite(void *);
-extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
+u8 func_02097ce4(s32);
+u8 func_02099320(void *);
+void func_020985b0(s32, s32, s32);
+void func_02098e2c(void *, s32);
+void func_02099204(void *);
+extern void *gCur3DSpriteEngine, *data_027e00c4, *data_027e00c8;
 
 void *old; void *v; s32 i; u32 mode;
 M2C_FIELD(arg0, u8 *, 0x58) = (u8)arg1;
 M2C_FIELD(arg0, u8 *, 0x59) = (u8)arg2;
-M2C_FIELD(arg0, u8 *, 0x49) = GetFaceTileRow(M2C_FIELD(arg0,u8*,0x58));
-if (FaceSpriteIsLoaded(arg0)) {
+M2C_FIELD(arg0, u8 *, 0x49) = func_02097ce4(M2C_FIELD(arg0,u8*,0x58));
+if (func_02099320(arg0)) {
 old = gCur3DSpriteEngine;
 i = 0;
 do {
-if (i == 0) v = g3DSpriteEngineMain; else v = g3DSpriteEngineSub;
+if (i == 0) v = data_027e00c8; else v = data_027e00c4;
 gCur3DSpriteEngine = v;
 mode = ((u32)M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29;
-if ((mode != 0 || v == g3DSpriteEngineMain) &&
-(mode != 1 || v == g3DSpriteEngineSub) &&
+if ((mode != 0 || v == data_027e00c8) &&
+(mode != 1 || v == data_027e00c4) &&
 (mode != 3 || v == old)) {
-LoadFaceTexture(arg1, arg2, M2C_FIELD(v, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3e) << 5));
+func_020985b0(arg1, arg2, M2C_FIELD(v, s32 *, 0x1C) + (M2C_FIELD(arg0, u16 *, 0x3e) << 5));
 }
 i++;
 } while (i < 2);
 gCur3DSpriteEngine = old;
 }
 if (arg3) {
-SetFaceSpriteFace(M2C_FIELD(arg0, void **, 0x60), arg1);
+func_02098e2c(M2C_FIELD(arg0, void **, 0x60), arg1);
 }
-RefreshFaceSprite(arg0);
+func_02099204(arg0);
 }
 
 void func_020991f4(void *arg0, s8 arg1) {
@@ -378,20 +378,30 @@ s32 func_0209943c(s32 arg0) {
     return arg0;
 }
 
-M2C_UNK func_02099450(s32 a,s32 b,s32 c){
- extern void *gCur3DSpriteEngine;extern M2C_UNK data_0211e9dc,data_0211f0dc;
- void MI_CpuCopy32(void*,void*,s32);
- void *p=M2C_FIELD(gCur3DSpriteEngine,void**,0x50);
- M2C_FIELD(p,u16*,0x300)=b+100;M2C_FIELD(p,u8*,0)=1;M2C_FIELD(p,u8*,0x302)=a;
- switch(c){
- case 0:MI_CpuCopy32(&data_0211e9dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
- case 1:MI_CpuCopy32(&data_0211f0dc,(u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,12)+((b+16)<<5),0x700);break;
- }
+/* Set up the current engine's text on `layer`: forget the cached strings, start
+ * the next string at tile `baseTile` + TEXT_FIRST_TILE, and copy glyph tile set
+ * `tileSet` (TEXT_GLYPH_TILES bytes) into the layer from tile `baseTile` + 16. */
+M2C_UNK InitTextTiles(s32 layer, s32 baseTile, s32 tileSet) {
+    extern void *gCur3DSpriteEngine;
+    extern M2C_UNK data_0211e9dc, data_0211f0dc;
+    void MI_CpuCopy32(void *, void *, s32);
+    void *text = M2C_FIELD(gCur3DSpriteEngine, void **, DS3D_ENGINE_TEXT_CACHE);
+    M2C_FIELD(text, u16 *, TEXT_CACHE_NEXT_TILE) = baseTile + TEXT_FIRST_TILE;
+    M2C_FIELD(text, u8 *, TEXT_CACHE_EMPTY) = 1;
+    M2C_FIELD(text, u8 *, TEXT_CACHE_LAYER) = layer;
+    switch (tileSet) {
+    case 0:
+        MI_CpuCopy32(&data_0211e9dc, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
+        break;
+    case 1:
+        MI_CpuCopy32(&data_0211f0dc, (u8 *)M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, void **, 12) + ((baseTile + TEXT_GLYPH_OFFSET) << 5), TEXT_GLYPH_TILES);
+        break;
+    }
 }
 
 void func_020994e0(M2C_UNK arg0) {
-    M2C_UNK func_02099450(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02099450(1, arg0, 0);
+    M2C_UNK InitTextTiles(M2C_UNK, M2C_UNK, M2C_UNK);
+    InitTextTiles(1, arg0, 0);
 }
 
 void func_020994f8(u16 *a, s32 b, s32 c) {

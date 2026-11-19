@@ -1,5 +1,7 @@
 /* 32 functions from 0x020216CC to 0x020222D8 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
+#include "ghttp.h"
 extern M2C_UNK gHostName, gHostRecord, gHostAddressList, gHostEntry;
 
 #pragma scheduling off
@@ -50,25 +52,30 @@ void *ghiResolveHostname(void *hostname) {
     return &gHostEntry;
 }
 
-s32 func_02021828(void *p,void *q) {
-u32 func_02021264(void *);
-u32 v;u32 t;
-if(!p)return -39;
-v=func_02021264(p);
-t=p?M2C_FIELD(p,u16 *,0x74):0;
-t=(u16)(v?t:0);
-M2C_FIELD(q,u8 *,0)=8;
-M2C_FIELD(q,u8 *,1)=2;
-M2C_FIELD(q,u16 *,2)=(u8)((s32)t>>8)|((t<<8)&0xff00);
-M2C_FIELD(q,u32 *,4)=((v << 24) & 0xFF000000) | (((v << 8) & 0xFF0000) | ((u8)(v >> 24) | ((v >> 8) & 0xFF00)));
-return 0;
+/* Fill `addr` with the socket's local endpoint (BSD get sock name): its
+ * receive port and the console's local IPv4 address, both in network byte
+ * order, with the DS address length (8) and the AF_INET family.  Returns 0,
+ * or -39 when the socket is NULL. */
+s32 SocketGetSockName(void *socket, GhiSocketAddress *addr) {
+    u32 GetLocalIpAddress();
+    u32 address;
+    u32 port;
+    if (!socket) return -39;
+    address = GetLocalIpAddress();
+    port = socket ? M2C_FIELD(socket, u16 *, SOCK_RECV_PORT) : 0;
+    port = (u16)(address ? port : 0);
+    addr->len = 8;
+    addr->family = 2;
+    addr->port = (u8)((s32)port >> 8) | ((port << 8) & 0xff00);
+    addr->addr = ((address << 24) & 0xFF000000) | (((address << 8) & 0xFF0000) | ((u8)(address >> 24) | ((address >> 8) & 0xFF00)));
+    return 0;
 }
 
 s32 func_020218bc(void) {
-    u32 func_02021264();
+    u32 GetLocalIpAddress();
     u32 temp_r0;
 
-    temp_r0 = func_02021264();
+    temp_r0 = GetLocalIpAddress();
     return ((temp_r0 << 0x18) & 0xFF000000) | (((temp_r0 << 8) & 0xFF0000) | ((u8) (temp_r0 >> 0x18) | ((temp_r0 >> 8) & 0xFF00)));
 }
 
@@ -221,19 +228,36 @@ SleepMilliseconds(1);timeout-=0x20b;
 }return ready;
 }
 
-void TlsRestoreSessionById(void *p) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); 
-void MI_CpuCopy8(void *,void *,u32);s32 ByteCompareN(void *,void *,s32);
-extern M2C_UNK gTlsSessionCache;
-s32 i; s32 old;void *q;old=OS_DisableInterrupts();i=0;q=&gTlsSessionCache;
-M2C_FIELD(p,u8 *,0x30)=0;
-do{
-if(M2C_FIELD(q,u8 *,0x5a)&&!M2C_FIELD(q,u32 *,0x54)&&!M2C_FIELD(q,u16 *,0x58)&&!ByteCompareN(q,p+0x74,32)){
-MI_CpuCopy8(q+32,p,48);M2C_FIELD(p,u8 *,0x30)=1;break;
-}
-i++;q+=92;
-}while(i<4);
-OS_RestoreInterrupts(old);
+/* Restore a cached TLS session for a peer that named it by id (the session id it
+ * echoed in its ClientHello): the first cache entry that is valid, was stored
+ * without a peer address and carries the same id hands over its master secret,
+ * and the channel is marked as resumable.  The cache is read with interrupts
+ * disabled. */
+void TlsRestoreSessionById(void *channel) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void MI_CpuCopy8(void *, void *, u32);
+    s32 ByteCompareN(void *, void *, s32);
+    extern M2C_UNK gTlsSessionCache;
+    s32 i;
+    s32 old;
+    void *entry;
+
+    old = OS_DisableInterrupts();
+    i = 0;
+    entry = &gTlsSessionCache;
+    M2C_FIELD(channel, u8 *, TLS_SESSION_CACHED) = 0;
+    do {
+        if (M2C_FIELD(entry, u8 *, TLS_CACHE_VALID) && !M2C_FIELD(entry, u32 *, TLS_CACHE_ADDRESS) && !M2C_FIELD(entry, u16 *, TLS_CACHE_PORT) &&
+            !ByteCompareN(entry, channel + TLS_SESSION_ID, TLS_RANDOM_SIZE)) {
+            MI_CpuCopy8(entry + TLS_CACHE_SECRET, channel, TLS_MASTER_SECRET_SIZE);
+            M2C_FIELD(channel, u8 *, TLS_SESSION_CACHED) = 1;
+            break;
+        }
+        i++;
+        entry += TLS_CACHE_ENTRY_SIZE;
+    } while (i < TLS_CACHE_ENTRIES);
+    OS_RestoreInterrupts(old);
 }
 
 /* Look the peer (address, port) up in the four-entry TLS session-resumption
@@ -290,9 +314,9 @@ OS_RestoreInterrupts(old);
 }
 
 s32 GetUnixTime(void){
-void func_0200ef4c(void *);void func_0200eff8(void *);s32 MakeTime(void *,void *);
+void GetRtcDate(void *);void GetRtcTime(void *);s32 MakeTime(void *,void *);
 s32 a[4],b[3];
-func_0200ef4c(a);func_0200eff8(b);return MakeTime(a,b)+0x386d4380;
+GetRtcDate(a);GetRtcTime(b);return MakeTime(a,b)+0x386d4380;
 }
 
 void func_020220a8(s32 arg0) {

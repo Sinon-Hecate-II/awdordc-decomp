@@ -122,12 +122,12 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
 
 void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 data_0215be0c;
-M2C_UNK func_020d472c();M2C_UNK func_020c75cc();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
+M2C_UNK func_020d472c();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=UpdateMapCursorOption(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
 if(flags&32){
-func_020d472c();func_020c75cc();
+func_020d472c();OpenMapActionMenu();
 map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c2)=M2C_FIELD(map,s16 *,0x52d8);
 map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c4)=M2C_FIELD(map,s16 *,0x52da);
 DeleteSpriteObject(p);return;
@@ -149,9 +149,9 @@ Sprite_ResumeAnimation(p);
  * it issues battle command 8 (attack) with the direction chosen for each target. */
 void ConfirmAttackCommand(void *option) {
     M2C_UNK func_020d472c();
-    s32 func_020c6384();
-    s32 func_020c6414();
-    M2C_UNK func_020c75cc();
+    s32 CanConfirmFirstCargoDrop();
+    s32 CanConfirmSecondCargoDrop();
+    M2C_UNK OpenMapActionMenu();
     M2C_UNK func_020c9580(u8);
     M2C_UNK func_020d468c();
     M2C_UNK DeleteDirectionMarkerSprites();
@@ -162,11 +162,11 @@ void ConfirmAttackCommand(void *option) {
     s32 dir0, dir1;
 
     func_020d472c();
-    if ((func_020c6384() == 0) || (func_020c6414() == 0)) {
+    if ((CanConfirmFirstCargoDrop() == 0) || (CanConfirmSecondCargoDrop() == 0)) {
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X);
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y);
         func_020c9580((u8) M2C_FIELD(option, s16 *, 0x70));
-        func_020c75cc();
+        OpenMapActionMenu();
         return;
     }
     func_020d468c();
@@ -277,7 +277,10 @@ if(!health)level=0;else level=Divide(health-1,10)+1;
 ((UnitHealthCB*)unit)->health=(u16)(level*10);
 return totalCost;
 }
-s32 IsAllySupplyUnitAtCell(s32 a,s32 b){extern void **gCurrentMap;s32 IsSupplyUnitKind(void *);u8 *base=*gCurrentMap;u8 *start=base+0x59a4;u8 *p=start+(s16)base[a+((u16 *)(base+0x3758))[b]]*14;s32 index=p?(p-start)/14:0;if(M2C_FIELD(base,u16 *,0x52a8)==(index&0xc0) && IsSupplyUnitKind(p))return 1;return 0;}
+/* Returns true when the cell (x, y) has a visible unit id belonging to the
+ * current player's unit group and that unit is a supply unit (rig or carrier).
+ * The id read at the cell indexes MAP_UNIT_RECORDS. */
+s32 IsAllySupplyUnitAtCell(s32 x,s32 y){extern void **gCurrentMap;s32 IsSupplyUnitKind(void *);u8 *base=*gCurrentMap;u8 *units=base+MAP_UNIT_RECORDS;u8 *unit=units+(s16)base[x+((u16 *)(base+MAP_ROW_OFFSETS))[y]]*MAP_UNIT_STRIDE;s32 unitId=unit?(unit-units)/MAP_UNIT_STRIDE:0;if(M2C_FIELD(base,u16 *,MAP_UNIT_GROUP_BASE)==(unitId&MAP_UNIT_OWNER_MASK) && IsSupplyUnitKind(unit))return 1;return 0;}
 
 /* Whether unit `unit` can be supplied where it stands: its kind must be
  * supplyable and one of its four orthogonal neighbours inside the map must hold
@@ -315,12 +318,12 @@ return func_020c98d8(unit[1],unit[2],2);
 }
 #pragma opt_propagation reset
 u8 func_020cb6a4(void *arg0) {
-s32 func_020a8604(u32);
+s32 UnitKindCanSupply(u32);
 u8 func_020c98d8(u8,u8,s32);
 s32 RefillUnitAmmo(void *,s32);
 s32 RefillUnitFuel(void *,s32);
 s32 n=0;
-if(func_020a8604((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==0) n+=RefillUnitAmmo(arg0,0);
+if(UnitKindCanSupply((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==0) n+=RefillUnitAmmo(arg0,0);
 n+=RefillUnitFuel(arg0,0);
 if(n==0) return n;
 return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
@@ -394,7 +397,7 @@ map=*gCurrentMap; x=unit->x;y=unit->y;
 terrain=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS),u8 *,MAP_CELL_TERRAIN)&31;
 table=M2C_FIELD((u8 *)&gUnitKindStats+kind*112,s8 **,0x58);
 if(table[terrain]){
-if(!func_020a8604(kind)){
+if(!UnitKindCanSupply(kind)){
 a+=RefillUnitAmmo(unit,0);
 }
 a+=RefillUnitFuel(unit,0);

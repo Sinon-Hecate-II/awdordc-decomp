@@ -311,22 +311,37 @@ M2C_FIELD(newOwner,Link09a0c **,24)=(Link09a0c *)((char *)object+24)+index;
 Sound_UnlockMutex();DC_CleanRange(object,60);DC_CleanRange(newOwner,60);
 }
 
-void func_02009a0c(void *a){
-int i;Link09a0c *entry,*p,*next;void *owner;
-Sound_LockMutex();
-entry=(Link09a0c *)((char *)a+24);
-for(i=0;i<4;i++,entry++){
-owner=((Link09a0c *)a+i)[3].owner;
-if(owner){
-p=M2C_FIELD(owner,Link09a0c **,24);
-if(entry==p){M2C_FIELD(owner,Link09a0c **,24)=((Link09a0c *)a+i)[3].next;DC_CleanRange(owner,60);}
-else {
-if(p){do {next=p->next;if(entry==next)break;p=next;}while(next);}
-p->next=((Link09a0c *)a+i)[3].next;DC_CleanRange(p,8);
-}
-}
-}
-Sound_UnlockMutex();
+/* Detaches all four link slots of an object from their owners' slot lists,
+ * cleaning the caches of the slots and of the owners they had; holds the sound
+ * mutex throughout. */
+void Link_ClearSlotOwners(void *object) {
+    int i;
+    Link09a0c *slot, *p, *next;
+    void *owner;
+
+    Sound_LockMutex();
+    slot = (Link09a0c *)((char *)object + 24);
+    for (i = 0; i < 4; i++, slot++) {
+        owner = ((Link09a0c *)object + i)[3].owner;
+        if (owner) {
+            p = M2C_FIELD(owner, Link09a0c **, 24);
+            if (slot == p) {
+                M2C_FIELD(owner, Link09a0c **, 24) = ((Link09a0c *)object + i)[3].next;
+                DC_CleanRange(owner, 60);
+            } else {
+                if (p) {
+                    do {
+                        next = p->next;
+                        if (slot == next) break;
+                        p = next;
+                    } while (next);
+                }
+                p->next = ((Link09a0c *)object + i)[3].next;
+                DC_CleanRange(p, 8);
+            }
+        }
+    }
+    Sound_UnlockMutex();
 }
 
 void func_02009aa4(void *arg0) {
@@ -422,7 +437,7 @@ gLinkInitialized=1;
 {Shared09d40 *p=(Shared09d40 *)0x027ffc00; p->value=0;}
 for(i=0;i<32;i++)gFifoMessageHandlers[i]=0;
 *(volatile u16 *)0x04000184=0xc408;
-OS_SetIrqMask(0x40000);OS_SetFifoReceiveHandlers(0x40000,FifoReceiveHandler);OS_EnableIrqMask(0x40000);
+OS_SetIrqMask(0x40000);OS_SetIrqHandler(0x40000,FifoReceiveHandler);OS_EnableIrqMask(0x40000);
 stable=0;
 for(;;){value=*(volatile u16 *)0x04000180&15;
 *(volatile u16 *)0x04000180=value<<8;

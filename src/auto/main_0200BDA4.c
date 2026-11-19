@@ -167,16 +167,24 @@ arg0[9]=work[9];arg0[10]=work[10]-work[9];CloseFileRequest(work);return 1;
 return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
 }
 #pragma optimization_level 4
-s32 HmacSha1Verify(u32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK MI_CpuFill8(s32,M2C_UNK,s32);
-void MI_CpuCopy8();void HmacSha1();
-extern u32 gHmacSha1Key[2];
-u32 out[5];u8 work[64];u32 i;u32 *p;
-MI_CpuFill8((s32)out,0,20);
-MI_CpuCopy8(gHmacSha1Key[0],work,gHmacSha1Key[1]);
-HmacSha1(out,arg1,arg2,work,gHmacSha1Key[1]);
-p=out;for(i=0;i<20;i+=4,p++) if(*p!=*(u32 *)(arg0+i)) break;
-return i==20;
+/* Verify that `message` carries the expected HMAC-SHA1 signature
+ * (`expectedDigest`): sign it with the fixed archive key and compare the 20-byte
+ * digest word by word.  Returns 1 when they match. */
+s32 HmacSha1Verify(u32 expectedDigest, s32 message, s32 messageLength) {
+    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
+    void MI_CpuCopy8();
+    void HmacSha1();
+    extern HmacKey gHmacSha1Key;
+    u32 digest[5], i;
+    u8 keyBlock[64];
+    u32 *computed;
+    MI_CpuFill8((s32)digest, 0, SHA1_DIGEST_SIZE);
+    MI_CpuCopy8(gHmacSha1Key.data, keyBlock, gHmacSha1Key.length);
+    HmacSha1(digest, message, messageLength, keyBlock, gHmacSha1Key.length);
+    computed = digest;
+    for (i = 0; i < SHA1_DIGEST_SIZE; i += 4, computed++)
+        if (*computed != *(u32 *)(expectedDigest + i)) break;
+    return i == SHA1_DIGEST_SIZE;
 }
 
 void CompleteFileLoad(void *arg0) {

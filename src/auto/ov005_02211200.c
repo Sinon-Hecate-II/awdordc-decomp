@@ -29,7 +29,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     void func_020ab150(void *, s32);
-    void func_02088f1c(void *);
+    void Show3DSpriteSlide(void *);
     void func_020aad18(void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
     void func_020af04c(s32, s32, s32, s32);
@@ -76,7 +76,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         func_02087d84(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite));
     }
     func_020ab150(sprite, 1);
-    func_02088f1c(sprite);
+    Show3DSpriteSlide(sprite);
     func_020aad18(sprite);
 
     }
@@ -90,7 +90,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         func_02087d84(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite2));
     }
     func_020ab150(sprite2, 2);
-    func_02088f1c(sprite2);
+    Show3DSpriteSlide(sprite2);
     func_020aad18(sprite2);
 
     }
@@ -259,9 +259,9 @@ void UpdateTabMenu(void *menu) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 func_ov005_02211988(void *arg0) {
-s32 func_020c818c(s32,s32);
+s32 SetCampaignMapShareMode(s32,s32);
 extern void **gCurrentMap;
-return func_020c818c(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(arg0,s32 *,0x34)+1);
+return SetCampaignMapShareMode(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(arg0,s32 *,0x34)+1);
 }
 
 void func_ov005_022119b4(void) {

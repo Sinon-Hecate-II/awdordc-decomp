@@ -165,7 +165,7 @@ void UpdateTextObject(TextState *st) {
     M2C_UNK StopTextObject(M2C_UNK);
     s32 DrawTextStep(void *);
     u32 func_0209dc9c(void);
-    u32 func_0209dde0(void);
+    u32 GetTextObjectTouchConfirm(void);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
@@ -180,7 +180,7 @@ void UpdateTextObject(TextState *st) {
     s32 screenIndex;
 
     actionMask = func_0209dc9c();
-    actionMask = actionMask | func_0209dde0();
+    actionMask = actionMask | GetTextObjectTouchConfirm();
     actionMask = (u16)actionMask;
 
     if (st->flags & 0x1) {
@@ -396,26 +396,36 @@ block++;}while(block<blockCount);
 HeapFreeBlock((s32)temp);
 }
 
-void func_0209b59c(M2C_UNK arg0, s32 arg1) {
+void ClearTextBitmap(M2C_UNK arg0, s32 arg1) {
     M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK, s32);
     MI_CpuFill32(0, arg0, ((s32) (((s32) (arg1 + 7) >> 3) + 3) >> 2) << 8);
 }
 
-void func_0209b5c4(M2C_UNK arg0, M2C_UNK arg1) {
+void RenderLocalizedTextToTiles(M2C_UNK arg0, M2C_UNK arg1) {
     s32 GetLocalizedText(M2C_UNK);
-    M2C_UNK func_0209b5e4(M2C_UNK, s32);
-    func_0209b5e4(arg0, GetLocalizedText(arg1));
+    M2C_UNK RenderTextToTiles(M2C_UNK, s32);
+    RenderTextToTiles(arg0, GetLocalizedText(arg1));
 }
 
-s32 func_0209b5e4(M2C_UNK a,s32 b) {
- s32 MeasureMessageLinesWidth(s32,M2C_UNK); s32 HeapAllocBlock(); void SplitTextBitmapHalves(s32,s32,u16); M2C_UNK HeapFreeBlock(s32);
- s32 n,p;
- n=MeasureMessageLinesWidth(b,0);
- if((((((n+7)>>3)+3)>>2)<<8)>0) {
- p=HeapAllocBlock(); func_0209b59c(p,n); func_0209b370(0,0,4,p,0,b,0,0,0);
- SplitTextBitmapHalves(p,a,(u16)n); HeapFreeBlock(p);
- }
- return n;
+/* Renders a text string into a temporary bitmap and splits it into the label
+ * tile layout at the destination; returns the text's width in pixels. */
+s32 RenderTextToTiles(s32 destination, s32 text) {
+    s32 MeasureMessageLinesWidth(s32, M2C_UNK);
+    s32 HeapAllocBlock(s32);
+    void ClearTextBitmap(M2C_UNK, s32);
+    void SplitTextBitmapHalves(s32, s32, u16);
+    M2C_UNK HeapFreeBlock(s32);
+    s32 width, bitmap;
+
+    width = MeasureMessageLinesWidth(text, 0);
+    if ((((((width + 7) >> 3) + 3) >> 2) << 8) > 0) {
+        bitmap = HeapAllocBlock(((((width + 7) >> 3) + 3) >> 2) << 8);
+        ClearTextBitmap(bitmap, width);
+        func_0209b370(0, 0, 4, bitmap, 0, text, 0, 0, 0);
+        SplitTextBitmapHalves(bitmap, destination, (u16)width);
+        HeapFreeBlock(bitmap);
+    }
+    return width;
 }
 
 #pragma push
@@ -454,32 +464,34 @@ void func_0209b8c0(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
-void func_0209b8ec(s32 arg0, s32 arg1, s32 arg2) {
+void CreateTextBitmapSplitter(s32 arg0, s32 arg1, s32 arg2) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021032b8;
+    extern M2C_UNK gTextBitmapSplitterClass;
     void *temp_r0;
 
-    temp_r0 = CreateSpriteFromClass(&data_021032b8, 1);
+    temp_r0 = CreateSpriteFromClass(&gTextBitmapSplitterClass, 1);
     M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
 }
 
-s32 RenderTextToBitmap(M2C_UNK arg0, s32 arg1) {
+/* Renders a text id into a temporary bitmap and hands it to a new splitter
+ * sprite that will copy it into `destination`; returns the text width in pixels. */
+s32 RenderTextToBitmap(s32 destination, s32 text) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
     s32 MeasureMessageLinesWidth(s32, M2C_UNK);
     s32 HeapAllocBlock();
-    s32 temp_r0;
-    s32 temp_r0_2;
+    s32 width;
+    s32 bitmap;
 
-    temp_r0 = MeasureMessageLinesWidth(arg1, 0);
-    if ((s32) (((s32) (((s32) (temp_r0 + 7) >> 3) + 3) >> 2) << 8) > 0) {
-        temp_r0_2 = HeapAllocBlock();
-        func_0209b59c(temp_r0_2, temp_r0);
-        func_0209b370(0, 0, 4, temp_r0_2, 0, arg1, 0, 0, 0);
-        func_0209b8ec(temp_r0_2, arg0, temp_r0);
+    width = MeasureMessageLinesWidth(text, 0);
+    if ((s32) (((s32) (((s32) (width + 7) >> 3) + 3) >> 2) << 8) > 0) {
+        bitmap = HeapAllocBlock();
+        ClearTextBitmap(bitmap, width);
+        func_0209b370(0, 0, 4, bitmap, 0, text, 0, 0, 0);
+        CreateTextBitmapSplitter(bitmap, destination, width);
     }
-    return temp_r0;
+    return width;
 }
 
 #pragma scheduling off

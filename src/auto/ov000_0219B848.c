@@ -1,6 +1,7 @@
 /* 11 functions from 0x0219B848 to 0x0219C7EC (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates;
 extern s8 data_ov000_021b5580[],gTerrainPropertyType[],data_ov000_021b5500[],gAiRangeLayer[];
@@ -226,10 +227,10 @@ void ProcessAiCommandPhase(void) {
             BeginAiTurn();
             break;
         case 1:
-            func_ov000_0219e848();
+            RunAiUnitSelectionStep();
             break;
         case 2:
-            func_ov000_0219997c();
+            PickAiUnitAction();
             break;
         case 4:
             if (((u32) gMapConfig << 22) >> 31) {
@@ -238,7 +239,7 @@ void ProcessAiCommandPhase(void) {
                     return;
                 }
             }
-            func_ov000_0219fdc8();
+            ProcessAiTurnPlan();
             return;
         default:
             return;
@@ -246,13 +247,13 @@ void ProcessAiCommandPhase(void) {
     }
 }
 
-s32 func_ov000_0219c680(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
+s32 IsAiCommandPlanningPhase(void){switch(*gAiCommandState){case 0:case 1:case 2:case 4:return 1;default:return 0;}}
 
-u8 func_ov000_0219c6c0(void) {
-    s32 func_0209e0dc(M2C_UNK);
+u8 IsAiCommandTaskRunning(void) {
+    s32 IsTaskSpriteRunning(M2C_UNK);
     u8 var_r0;
 
-    if (func_0209e0dc(6) != 0) {
+    if (IsTaskSpriteRunning(6) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -260,10 +261,33 @@ u8 func_ov000_0219c6c0(void) {
     return var_r0;
 }
 
-void func_ov000_0219c774(void);
-void func_ov000_0219c6e0(void){if(IsDialogActive())return;if(func_0209e0dc(6))return;if(func_ov000_0219c680()){func_0209e044(ProcessAiCommandPhase,6,0x2000,17,0);return;}switch(*gAiCommandState){case 3:ProcessAiCommandStep();return;case 5:AiPlaceBuildingUnit();return;case 6:func_ov000_0219c774();return;}}
+void EndAiTurn(void);
+/* Per-frame handler of the AI's turn: hold still while a dialog is up or while
+ * the AI command task sprite is already running, start that task while the
+ * command phase is one of the planning phases, and otherwise step the phase that
+ * works frame by frame: the unit's action, placing a built unit, or the end of
+ * the turn. */
+void UpdateAiTurn(void) {
+    if (IsDialogActive()) return;
+    if (IsTaskSpriteRunning(AI_COMMAND_TASK_SPRITE_Z)) return;
+    if (IsAiCommandPlanningPhase()) {
+        CreateTaskSprite(ProcessAiCommandPhase, AI_COMMAND_TASK_SPRITE_Z, 0x2000, 17, 0);
+        return;
+    }
+    switch (*gAiCommandState) {
+    case AI_COMMAND_PHASE_ACT:
+        ProcessAiCommandStep();
+        return;
+    case AI_COMMAND_PHASE_PLACE_UNIT:
+        AiPlaceBuildingUnit();
+        return;
+    case AI_COMMAND_PHASE_END_TURN:
+        EndAiTurn();
+        return;
+    }
+}
 
-void func_ov000_0219c774(void) {
+void EndAiTurn(void) {
     MarkKnownEnemyUnits();
     EndPlayerTurn();
     gAiCommandState[0] = 0;

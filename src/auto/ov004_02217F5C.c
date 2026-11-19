@@ -1,5 +1,6 @@
 /* 6 functions from 0x02217F5C to 0x02218BAC (ov004), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u16 a, b, c, d, e, f; } Ov004DisplayConfig;
 
 #pragma opt_instruction_scheduling off
@@ -28,7 +29,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_02088f1c(void *);
+    M2C_UNK Show3DSpriteSlide(void *);
     M2C_UNK func_020994e0();
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -203,7 +204,7 @@ void func_ov004_02217f5c(void *arg0) {
         temp_r9 = GetUnitSpriteWidth(temp_r0_3);
         func_02087d84(M2C_FIELD(temp_r0_3, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r0_3));
     }
-    func_02088f1c(temp_r0_3);
+    Show3DSpriteSlide(temp_r0_3);
     func_020aad18(temp_r0_3);
     temp_r0_4 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_4, 6, 0x150, 3, 0);
@@ -221,7 +222,7 @@ void func_ov004_02217f5c(void *arg0) {
         temp_r9_2 = GetUnitSpriteWidth(temp_r0_4);
         func_02087d84(M2C_FIELD(temp_r0_4, void **, 0x64), 1, temp_r7_2, temp_r6, (u16) temp_r9_2, (u16) GetUnitSpriteHeight(temp_r0_4));
     }
-    func_02088f1c(temp_r0_4);
+    Show3DSpriteSlide(temp_r0_4);
     func_020aad18(temp_r0_4);
     temp_r0_5 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_5, 0x12, 0x160, 3, 0);
@@ -239,7 +240,7 @@ void func_ov004_02217f5c(void *arg0) {
         temp_r9_3 = GetUnitSpriteWidth(temp_r0_5);
         func_02087d84(M2C_FIELD(temp_r0_5, void **, 0x64), 1, temp_r7_3, temp_r6_2, (u16) temp_r9_3, (u16) GetUnitSpriteHeight(temp_r0_5));
     }
-    func_02088f1c(temp_r0_5);
+    Show3DSpriteSlide(temp_r0_5);
     func_020aad18(temp_r0_5);
     gCur3DSpriteEngine = temp_r5;
     func_ov003_021fef58(arg0);
@@ -329,7 +330,10 @@ void func_ov004_022188b8(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x39) = 1;
 }
 
-void func_ov004_022188c4(void *a){extern void **gCurrentMap;extern u32 data_0215d8a0[2];PlaySoundEffect(0x10014);data_0215d8a0[1]=(data_0215d8a0[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,0x5142)-0xa1);if(func_020a8958(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))SetSpriteAnimation(a,7);M2C_FIELD(a,u8 *,0x38)=2;M2C_FIELD(a,u8 *,0x36)=0;}
+/* Called when the battle map view is entered: play the mission sound, save the
+ * map's story index in the progress word, switch to the non-story animation
+ * when the map is not a story mission, and restart the fade transition. */
+void MapView_StartBattle(void *view){extern void **gCurrentMap;extern u32 gSaveSlotSummary[2];PlaySoundEffect(0x10014);gSaveSlotSummary[1]=(gSaveSlotSummary[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)-MAP_ID_STORY_FIRST);if(func_020a8958(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))SetSpriteAnimation(view,7);M2C_FIELD(view,u8 *,0x38)=2;M2C_FIELD(view,u8 *,0x36)=0;}
 
 /* Advance a 16-frame transition, linearly raising the 3D sprite engine's visibility and setting its display flags. */
 void func_ov004_02218950(void *transition) {

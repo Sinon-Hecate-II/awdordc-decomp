@@ -120,33 +120,36 @@ void Mb_RemoteReadyHandler(void) {
     M2C_FIELD(&gMbBootState, s32 *, 4) = 0;
 }
 
-void Mb_StartTask(M2C_UNK a) {
-void func_02019320(M2C_UNK);
-extern s32 data_02136e68;
+/* Start the multiboot worker thread on thread object `task`, once: empty the
+ * thread's own job record, hand it the network stack's memory as its 0x400-byte
+ * stack at priority 20 and wake it. */
+void Mb_StartTask(M2C_UNK task) {
+void MbJob_Clear(M2C_UNK);
+extern s32 gMbJobTask;
 extern M2C_UNK data_02136e6c,gNetStack;
-void func_02019334();
+void MbWorker_Main();
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
 void TaskCreate(M2C_UNK,void (*)(void),M2C_UNK,void *,s32,s32);
 s32 saved=OS_DisableInterrupts();
-if(!data_02136e68){
-data_02136e68=a;
-func_02019320(a+0xc4);
-func_02019320((s32)&data_02136e6c);
-M2C_FIELD(a,s32 *,0xc0)=0;
-TaskCreate(a,func_02019334,a,&gNetStack,0x400,20);
-TaskWake(a);
+if(!gMbJobTask){
+gMbJobTask=task;
+MbJob_Clear(task+MB_TASK_JOB_BLOCK);
+MbJob_Clear((s32)&data_02136e6c);
+M2C_FIELD(task,s32 *,MB_TASK_JOB)=0;
+TaskCreate(task,MbWorker_Main,task,&gNetStack,0x400,20);
+TaskWake(task);
 }
 OS_RestoreInterrupts(saved);
 }
 
-void func_02019320(M2C_UNK arg0) {
+void MbJob_Clear(M2C_UNK arg0) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     MI_CpuFill8(arg0, 0, 0x24);
 }
 
-void func_02019334(void *arg0) {
-extern s32 data_02136e68;
+void MbWorker_Main(void *arg0) {
+extern s32 gMbJobTask;
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
 void OS_SleepThread(s32); void func_02005bbc(void);
 s32 saved; Work19334 w; void (*second)(Work19334 *);
@@ -159,9 +162,9 @@ OS_RestoreInterrupts(saved);
 if(w.first) w.result=w.first(&w);
 saved=OS_DisableInterrupts();
 second=w.second;
-M2C_FIELD(&data_02136e68,u8 *,0x26)=0;
+M2C_FIELD(&gMbJobTask,u8 *,0x26)=0;
 if(second) second(&w);
-if(!data_02136e68) break;
+if(!gMbJobTask) break;
 M2C_FIELD(arg0,Work19334 **,0xc0)=0;
 OS_RestoreInterrupts(saved);
 }

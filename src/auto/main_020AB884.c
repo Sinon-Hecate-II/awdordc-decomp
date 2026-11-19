@@ -410,7 +410,7 @@ void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
 void func_020ac598(s32 arg0) {
     M2C_UNK func_01ff91d8();
     M2C_UNK func_01ff9690();
-    M2C_UNK func_01ff9b38();
+    M2C_UNK Apply3DSpriteBanks();
     switch (arg0) {                                 /* irregular */
     case 0:
         func_01ff91d8();
@@ -419,7 +419,7 @@ void func_020ac598(s32 arg0) {
         func_01ff9690();
         return;
     default:
-        func_01ff9b38();
+        Apply3DSpriteBanks();
         return;
     }
 }

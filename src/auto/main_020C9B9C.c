@@ -54,7 +54,7 @@ void func_020c9b9c(void *arg0) {
 extern void **gCurrentMap;
 extern u16 data_ov000_021aeee8[];
 extern s8 gTerrainPropertyFlags[];
-void func_0207ab84(s32,s32,u8); void RebuildPropertyTile(s32,s32,s32);
+void SetPropertyOwnerTile(s32,s32,u8); void RebuildPropertyTile(s32,s32,s32);
 void func_020cf2c8(void);void RefreshMapView(void);void func_020d2470(void);
 u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
 if(M2C_FIELD(arg0,s16 *,0x6e)!=2) player=0;
@@ -70,7 +70,7 @@ old=tile[unit];tile[unit]=data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]|15;
 map=(u8 *)*gCurrentMap;
 p=map+0x67a4+M2C_FIELD(arg0,s16 *,0x6c)*0x8c;
 player=(u32)((old&0xe0)<<11)>>16;
-func_0207ab84(p[0x2b]&127,p[0x2c]&127,(u8)data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]);
+SetPropertyOwnerTile(p[0x2b]&127,p[0x2c]&127,(u8)data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]);
 func_020cf2c8();
 }
 for(i=0;i<99;i++){
@@ -92,12 +92,12 @@ switch(kind){case 15:
 map=(u8 *)*gCurrentMap;
 M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)=data_ov000_021aeee8[player]|16;
 RebuildPropertyTile(x,y,0);
-func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
+SetPropertyOwnerTile(x,y,(u8)data_ov000_021aeee8[player]);
 break;
 default:
 map=(u8 *)*gCurrentMap;
 M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x1420)=kind|data_ov000_021aeee8[player];
-func_0207ab84(x,y,(u8)data_ov000_021aeee8[player]);
+SetPropertyOwnerTile(x,y,(u8)data_ov000_021aeee8[player]);
 }
 }
 }
@@ -276,8 +276,8 @@ void func_020ca484(void) {
 }
 
 void func_020ca4c0(void) {
-    M2C_UNK func_02096c7c(s32, M2C_UNK);
-    M2C_UNK func_020c9b70();
+    M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
+    M2C_UNK EnterBattleEnd();
     void StartPlayerDefeatSequences();
     void RecordDefeatedPlayers();
     s32 func_020ca190();
@@ -286,12 +286,12 @@ void func_020ca4c0(void) {
 
     if (func_020ca1ec() != 0) {
         RecordDefeatedPlayers();
-        func_020c9b70();
+        EnterBattleEnd();
         return;
     }
     temp_r0 = func_020ca190();
     if (temp_r0 != 0) {
-        func_02096c7c(temp_r0, 0x20);
+        AwardVictoryToPlayer(temp_r0, 0x20);
         return;
     }
     StartPlayerDefeatSequences();
@@ -305,7 +305,7 @@ void func_020ca4c0(void) {
 void InitTargetSelectionMenu(void *dialog) {
     void *GetTargetPosition(s16);
     s16 GetTargetCount(void);
-    void RefreshCursorCell(void);
+    void RefreshMapCursorCellCache(void);
     void PlaySoundEffect(s32);
     extern void **gCurrentMap;
     s16 savedX;
@@ -321,7 +321,7 @@ void InitTargetSelectionMenu(void *dialog) {
     target = (MapTargetEntry *)GetTargetPosition(((SelectionMenu *)dialog)->selection);
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = target->x;
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = target->y;
-    RefreshCursorCell();
+    RefreshMapCursorCellCache();
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = savedX;
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = savedY;
     PlaySoundEffect(SOUND_MENU_SELECT);
@@ -454,7 +454,7 @@ M2C_FIELD(*gCurrentMap,s16*,0x52c4)=M2C_FIELD(*gCurrentMap,s16*,0x52de);
 /* Handles a confirmation-style selection menu: moves the cursor, opens detail view on confirm, or signals cancel. */
 void func_020caa34(void *dialog) {
     M2C_UNK func_020bdfdc(void);
-    s32 func_020d4dd0(void);
+    s32 IsMapCursorIdle(void);
     s32 GetMapCursorKeyAction(void);
     s32 GetMapCursorTouchAction(void);
     M2C_UNK StepMapViewToTile(s16, s16);
@@ -474,7 +474,7 @@ void func_020caa34(void *dialog) {
     s32 flags = 0;
 
     func_020bdfdc();
-    if (func_020d4dd0() != 0) {
+    if (IsMapCursorIdle() != 0) {
         flags |= GetMapCursorKeyAction();
         flags |= GetMapCursorTouchAction();
         if (flags & 0x20) {

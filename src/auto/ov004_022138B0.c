@@ -197,10 +197,10 @@ s32 func_ov004_02213fe0(void) {
 }
 
 u8 func_ov004_02214010(void) {
-    s32 func_02086b40(M2C_UNK);
+    s32 IsEventFlagSet(M2C_UNK);
     u8 var_r0;
 
-    if (func_02086b40(0) != 0) {
+    if (IsEventFlagSet(0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -296,7 +296,7 @@ u8 func_ov004_022141fc(void) {
 u8 func_ov004_0221421c(void) {
     u8 var_r0;
 
-    if (func_02086b40(0) == 0) {
+    if (IsEventFlagSet(0) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -304,23 +304,37 @@ u8 func_ov004_0221421c(void) {
     return var_r0;
 }
 
-void func_ov004_0221423c(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 i; u16 start=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52A4)];
- for(i=start+1;i<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52A4)]+0x33;i++){
- u8 *p=(u8 *)*gCurrentMap+0x59A4+i*14;
- if((u32)(*p<<26)>>26) M2C_FIELD(p,u16 *,4)|=1;
- }
+/* Mark every unit of the current player as having acted, so the rest of the
+ * turn skips it.  The player's unit group starts at gPlayerUnitIdBase, and the
+ * ids scanned are base+1 .. base+MAP_UNIT_GROUP_SCAN; empty records (kind 0) are
+ * left alone. */
+void Ov004_MarkPlayerUnitsActed(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 i;
+    u16 groupBase;
+    u8 *unit;
+
+    groupBase = gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)];
+    for (i = groupBase + 1; i < gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN; i++) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        if ((u32) (unit[MAP_UNIT_KIND] << 26) >> 26) {
+            M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_FLAG_ACTED;
+        }
+    }
 }
 
-s32 func_ov004_022142d4(void) {
+/* ov004 battle-script condition: from the second turn on, with event flag 0
+ * clear, true when a unit is selected and the map cursor sits on the scripted
+ * watch tile (4, 12). */
+s32 IsSelectedUnitAtScriptTile(void) {
  extern void **gCurrentMap;
- void *p; s16 a,b;
- if((s32)M2C_FIELD(*gCurrentMap,u16 *,0x52A2)<2)return 0;
- if(func_02086b40(0))return 0;
- if(!IsUnitSelected(M2C_FIELD(*gCurrentMap,s32 *,0x52D0)))return 0;
- p=*gCurrentMap; a=M2C_FIELD(p,s16 *,0x52DC); b=M2C_FIELD(p,s16 *,0x52DE);
- return a==4 && b==12;
+ void *p; s16 cursorX,cursorY;
+ if((s32)M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)<2)return 0;
+ if(IsEventFlagSet(0))return 0;
+ if(!IsUnitSelected(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT)))return 0;
+ p=*gCurrentMap; cursorX=M2C_FIELD(p,s16 *,MAP_CURSOR_X); cursorY=M2C_FIELD(p,s16 *,MAP_CURSOR_Y);
+ return cursorX==4 && cursorY==12;
 }
 
 s32 func_ov004_0221435c(void) {
@@ -332,15 +346,29 @@ s32 func_ov004_0221435c(void) {
  if(count!=0)return 0; return 1;
 }
 
-s32 func_ov004_022143cc(void) {
- extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
- s32 count,i,end;u8 *p,v;
- count=0;
- if(HasPlayerLost(2))return 1;
- i=gPlayerUnitIdBase[2]+1;end=gPlayerUnitIdBase[2]+0x33;
- if(i<end){p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do{v=*p;if((u32)(v<<26)>>26)count++;i++;p+=14;}while(i<end);}
- if(count!=0)return 0;return 1;
+/* Battle-script condition: player 2 is defeated.  True when the player's lost
+ * flag is set or when none of its unit slots (base+1 .. base+MAP_UNIT_GROUP_SCAN)
+ * holds a live unit kind. */
+s32 IsPlayerTwoDefeated(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 count, i, end;
+    u8 *unit, kind;
+    count = 0;
+    if (HasPlayerLost(2)) return 1;
+    i = gPlayerUnitIdBase[2] + 1;
+    end = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (i < end) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        do {
+            kind = *unit;
+            if ((u32)(kind << 26) >> 26) count++;
+            i++;
+            unit += MAP_UNIT_STRIDE;
+        } while (i < end);
+    }
+    if (count != 0) return 0;
+    return 1;
 }
 
 s32 func_ov004_02214454(void) {
@@ -492,11 +520,14 @@ u8 func_ov004_022147e0(void) {
     return var_r0;
 }
 
-void func_ov004_02214814(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Draw the outline of the rectangle (x0,y0)-(x1,y1) as four GX lines at depth
+ * z: top and bottom run one pixel past the right edge, right and left one
+ * pixel past the bottom edge. */
+void DrawGxRectFrame(s32 x0, s32 y0, s32 x1, s32 y1, s32 z, s32 color) {
     M2C_UNK DrawGxLine(s32, s32, s32, s32, s32, s32);
-    DrawGxLine(arg0, arg1, arg2 + 1, arg1, arg4, arg5);
-    DrawGxLine(arg2, arg1, arg2, arg3 + 1, arg4, arg5);
-    DrawGxLine(arg2 + 1, arg3, arg0, arg3, arg4, arg5);
-    DrawGxLine(arg0, arg3 + 1, arg0, arg1, arg4, arg5);
+    DrawGxLine(x0, y0, x1 + 1, y0, z, color);
+    DrawGxLine(x1, y0, x1, y1 + 1, z, color);
+    DrawGxLine(x1 + 1, y1, x0, y1, z, color);
+    DrawGxLine(x0, y1 + 1, x0, y0, z, color);
 }
 

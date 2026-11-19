@@ -43,13 +43,14 @@ typedef struct Panel {
     u8 filler_3d;
     u8 modeChangeFlag;   /* +0x3E bits0-2: pending mode, bit6: refresh */
     void *items;         /* +0x40 */
-    u8 filler_44[8];     /* +0x44 .. +0x4B two 5-slot 0xffff lock tables */
+    void *pickLists;     /* +0x44 link map screen's MapPickLists block */
     u8 *categoryCells;   /* +0x48 panel grid: 12 cells x 13 category columns */
     void *cursor;        /* +0x4C PanelItem */
+    u8 filler_50[0xC];
     void *rowState;      /* +0x5C PanelRowState */
     u8 filler_60[8];
-    void *sprite;        /* +0x68 PanelSprite */
-    void *spriteList;    /* +0x6C */
+    PanelSprite **buttons; /* +0x68 button sprites: 0/1/2 confirm, 3 back, 4/5 previous/next */
+    void **sprites;      /* +0x6C panel sprites: [0] is the sliding panel body */
 } Panel;
 
 #endif

@@ -4,7 +4,7 @@ typedef struct { u8 v[5]; } SpriteGroupCounts;
 typedef struct { s32 x; u32 y; } Position;
 
 
-void func_ov001_0217355c(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
+void Ov001_LayoutKeyboardRow(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
 void func_ov001_0217385c(s32 arg0, s32 arg1);
 s32 *Ov001_GetSpriteObjEntry(s32 arg0, s32 arg1);
 void Ov001_SetSlideStep(void *arg0, void *arg1);
@@ -71,7 +71,7 @@ if(KeyPressed(KEY_Y))Ov001_ToggleKeyboardSymbols();
 #pragma optimization_level 3
 #pragma opt_loop_invariants off
 #pragma opt_strength_reduction off
-void func_ov001_0217355c(u8 arg0,s32 arg1,s32 arg2,u32 arg3){
+void Ov001_LayoutKeyboardRow(u8 arg0,s32 arg1,s32 arg2,u32 arg3){
 extern u8 data_ov001_0218f328[];
 extern u16 gKeyboardAuxKeyPos[],gKeyboardActionKeyPos[];
 void Ov001_DrawTextPanelToSprite(s32,u16,s32,s32,s32);
@@ -118,7 +118,7 @@ s32 var_r4,var_r5,var_r6,var_r7;
 var_r5=0;var_r6=0;var_r4=0;var_r7=0;
 M2C_FIELD(gOv001MenuState,s8*,0x11d)=arg0;
 do {
-((void(*)(s8,s32,u16))func_ov001_0217355c)(arg0,var_r4,M2C_FIELD(gKeyboardCharKeyPos+var_r7*4,u16*,2));
+((void(*)(s8,s32,u16))Ov001_LayoutKeyboardRow)(arg0,var_r4,M2C_FIELD(gKeyboardCharKeyPos+var_r7*4,u16*,2));
 var_r4++;var_r7+=12;
 }while(var_r4<4);
 if(arg0==2)var_r5=1;else if(arg0==1)var_r6=1;
@@ -220,7 +220,7 @@ void func_ov001_02173e38(void *arg0) {
     bits = *Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0xFC), 0);
     pos.x = (u8)bits + 0xC;
     pos.y = (u32)(bits & 0x01FF0000) >> 0x10;
-    func_ov001_0217355c(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 4, pos.x, pos.y);
+    Ov001_LayoutKeyboardRow(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 4, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xC0) {
         return;
     }
@@ -233,7 +233,7 @@ void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0xc0);
 u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-func_ov001_0217355c(b,3,pos.x,pos.y);
+Ov001_LayoutKeyboardRow(b,3,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
 Ov001_SetSlideStep(arg0,func_ov001_02173f30);
 }
@@ -244,7 +244,7 @@ void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0x90);
 u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-func_ov001_0217355c(b,2,pos.x,pos.y);
+Ov001_LayoutKeyboardRow(b,2,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
 Ov001_SetSlideStep(arg0,func_ov001_02173fa4);
 }
@@ -256,21 +256,21 @@ void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0x60);
 u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-func_ov001_0217355c(b,1,pos.x,pos.y);
+Ov001_LayoutKeyboardRow(b,1,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
 Ov001_SetSlideStep(arg0,func_ov001_02174018);
 }
 #pragma opt_strength_reduction reset
 void func_ov001_02174018(void *arg0) {
     void Ov001_SetSlideStep(void *, void *);
-    void func_ov001_0217355c(u8, s32, s32, u32);
+    void Ov001_LayoutKeyboardRow(u8, s32, s32, u32);
     Position pos;
     void *a = gOv001MenuState;
     u32 bits = *M2C_FIELD(a, u32 **, 0x30);
     u8 b = M2C_FIELD(a, u8 *, 0x11d);
     pos.y = (bits & 0x01ff0000U) >> 16;
     pos.x = (u8)bits + 12;
-    func_ov001_0217355c(b, 0, pos.x, pos.y);
+    Ov001_LayoutKeyboardRow(b, 0, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xc0) return;
     Ov001_SetSlideStep(arg0, &func_ov001_0217408c);
 }

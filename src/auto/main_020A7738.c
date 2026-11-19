@@ -100,9 +100,9 @@ s32 GetWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 u8 func_020a796c(s32 arg0, s32 arg1, s32 arg2) {
- s32 func_020a5ae0(s32);
+ s32 GetDamageTargetIndex(s32);
  extern u8 data_ov000_021b5c13[];
- return *(func_020a5ae0(arg1) + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
+ return *(GetDamageTargetIndex(arg1) + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
 }
 
 s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -118,23 +118,26 @@ s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return var_r4;
 }
 
-s32 func_020a79e0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u8 arg6) {
+/* Estimate the damage a unit kind deals: the higher of its two weapons' damage
+ * percentages, scaled by 100 + the kind's damage bonus, never below 1.  Returns
+ * 0 when neither weapon can damage the target. */
+s32 GetEstimatedDamage(s32 kind, s32 row, s32 altRow, s32 weather, s32 player, s32 bonusType, u8 applyBonus) {
  s32 Divide(s32, s32);
  s32 GetKindDamageBonus(s32, s32, s32, s32, u8);
  register s32 temp_r0;
- s32 var_r0;
+ s32 damage;
  s32 base;
- s32 var_r5;
- var_r5 = GetWeaponDamagePercent(arg0, arg1, 0, arg2);
- temp_r0 = GetWeaponDamagePercent(arg0, arg1, 1, arg2);
+ s32 percent;
+ percent = GetWeaponDamagePercent(kind, row, 0, altRow);
+ temp_r0 = GetWeaponDamagePercent(kind, row, 1, altRow);
  base = 100;
- if (var_r5 <= temp_r0) var_r5 = temp_r0;
- if ((int)var_r5 == 0) return 0;
- temp_r0 = GetKindDamageBonus(arg0, arg3, arg4, arg5, arg6);
+ if (percent <= temp_r0) percent = temp_r0;
+ if ((int)percent == 0) return 0;
+ temp_r0 = GetKindDamageBonus(kind, weather, player, bonusType, applyBonus);
  base += temp_r0;
- var_r0 = Divide(var_r5 * base, 100);
- if (var_r0 <= 1) var_r0 = 1;
- return var_r0;
+ damage = Divide(percent * base, 100);
+ if (damage <= 1) damage = 1;
+ return damage;
 }
 /* Percentage bonus a unit kind's damage estimate gets: the owner's attack
  * properties (5 percent each), the sandstorm penalty that every army but the
@@ -196,11 +199,11 @@ u8 func_020a7bf8(s32 arg0) {
 }
 
 s32 ComputeUnitMaxAttackRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
- s32 func_020a29e4(s32, s32, s32);
+ s32 GetCoZoneRangeBonus(s32, s32, s32);
  extern u8 data_ov000_021b5c09[];
  s32 var_r4;
  var_r4 = data_ov000_021b5c09[arg0 * 0x70];
- if (arg3 != 0 || arg4 != 0) var_r4 += func_020a29e4(arg0, arg2, arg3);
+ if (arg3 != 0 || arg4 != 0) var_r4 += GetCoZoneRangeBonus(arg0, arg2, arg3);
  return var_r4;
 }
 
@@ -576,7 +579,7 @@ u8 IsUnitKindCarrier(s32 arg0) {
     return var_r0;
 }
 
-s32 func_020a8604(s32 arg0) {
+s32 UnitKindCanSupply(s32 arg0) {
     switch (arg0) {                                 /* irregular */
     case 13:
         return 1;

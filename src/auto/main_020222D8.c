@@ -73,12 +73,12 @@ goto again;
 #pragma optimization_level reset
 void TlsProcessCertificate(void *a, u8 *b) {
 s32 func_020222d8(void *,u8 **,s32,s32,s32);
-void func_0200ef4c(s32 *);
+void GetRtcDate(s32 *);
 s32 VerifyRsaSignature(void *,void *);
 s32 date[4]; u8 low; s32 result; u32 remaining; s32 i; u8 *next; u32 n;
 n=b[0]; remaining=b[1]; remaining=b[2]+(((n<<8)+remaining)<<8);b+=3;
 M2C_FIELD(a,s32 *,0x45c)=-1;
-func_0200ef4c(date);
+GetRtcDate(date);
 M2C_FIELD(a,s32 *,0x80c)=date[2]+((date[0]+2000<<16)+(date[1]<<8));
 low=0;M2C_FIELD(a,u8 *,0x6b0)=low;
 M2C_FIELD(a,s32 *,0x5a0)=low;M2C_FIELD(a,s32 *,0x594)=low;i=low;
@@ -164,7 +164,7 @@ if(!value)return;
 M2C_FIELD(p,u16*,0x32)=value;
 offset=(q[4]<<8)+q[5];n=(q[6]<<8)+q[7];
 p[0x30]=0;
-offset=(size+8)+offset;
+offset=(size+8)-(-offset);
 if(n>=32)MI_CpuCopy8(q+offset,p+0x34,32);
 else {MI_CpuFill8(p+0x34,0,32-n);MI_CpuCopy8(q+offset,p+0x54-n,n);}
 p[0x455]=1;

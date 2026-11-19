@@ -37,7 +37,7 @@ void func_0203cb38(void *arg0) {
     s32 RestartConnection(s32);
     s32 func_02040e1c(s32);
     s32 SendMatchmakingParameter(s32);
-    s32 func_02043008(s32);
+    s32 ReportMatchmakingResult(s32);
     s32 ReconnectUnlessServing(void);
     void func_0203dc18(void);
     void ReportConnectionError(s32, s32);
@@ -103,7 +103,7 @@ void func_0203cb38(void *arg0) {
         now = GetSystemTick();
         elapsed = U64Divide((now - M2C_FIELD(GetConnection(), u64 *, 0xec)) << 6, 0x82ea);
         if (elapsed <= timeout) break;
-        if (func_02043008(SendMatchmakingParameter(M2C_FIELD(GetConnection(), s32 *, 0x204)))) return;
+        if (ReportMatchmakingResult(SendMatchmakingParameter(M2C_FIELD(GetConnection(), s32 *, 0x204)))) return;
         M2C_FIELD(GetConnection(), s32 *, 0xe8) = 0;
         break;
     case 7:
@@ -252,7 +252,7 @@ void HandleGt2ConnectAttempt(s32 unused, s32 connectionArg, s32 remoteAddressArg
     void *GetPlayerConnectionSlot(s32);
     void *GetPlayerPeer(s32);
     s32 func_0205adb4(s32, s32);
-    s32 func_0206abd8(void *, s32, s32);
+    s32 strtoul(void *, s32, s32);
     void func_0205b058(void *, s32);
     void func_020411dc(s32);
 
@@ -299,7 +299,7 @@ find_slot:
 
 check_profile:
     if (requestMessage[0] != 0) {
-        profileId = func_0206abd8(requestMessage, 0, 10);
+        profileId = strtoul(requestMessage, 0, 10);
         profileState = GetConnection();
         matchState = GetConnection();
         peerIndex = M2C_FIELD(matchState, u8 *, 0x0d);

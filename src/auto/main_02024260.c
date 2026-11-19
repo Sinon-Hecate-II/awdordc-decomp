@@ -165,7 +165,22 @@ void TlsSendFinished(void *transport) {
 
 s32 TlsReadPeerFinished(void *p){s32 TlsReadRecord(void *);if(TlsReadRecord(p)!=7)return 1;return TlsReadRecord(p)!=6;}
 
-s32 func_02024a9c(void *p){s32 TlsReadRecord(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void TlsSendFinished(void *);if(TlsReadRecord(p)!=1)return 1;if(TlsSendServerHello(p)){TlsInitRecordKeys(M2C_FIELD(p,void **,12));TlsSendFinished(p);if(TlsReadPeerFinished(p))return 1;}else{if(TlsReadRecord(p)!=5)return 1;if(TlsReadPeerFinished(p))return 1;TlsSendFinished(p);}return 0;}
+/* Drive the server side of a TLS handshake: accept the ClientHello, send the
+ * server's hello flight (either resuming the cached session, or reading the
+ * client's key exchange and sending Finished on a full handshake), then verify
+ * the peer's Finished.  Returns 1 on failure, 0 once the handshake is done. */
+s32 TlsServerHandshake(void *transport) {
+s32 TlsReadRecord(void *);s32 TlsSendServerHello(void *);void TlsInitRecordKeys(void *);void TlsSendFinished(void *);s32 TlsReadPeerFinished(void *);
+if(TlsReadRecord(transport)!=TLS_STATE_CLIENT_HELLO)return 1;
+if(TlsSendServerHello(transport)){
+TlsInitRecordKeys(M2C_FIELD(transport,void **,12));
+TlsSendFinished(transport);
+if(TlsReadPeerFinished(transport))return 1;
+}else{
+if(TlsReadRecord(transport)!=TLS_STATE_CLIENT_KEY_EXCHANGE)return 1;
+if(TlsReadPeerFinished(transport))return 1;
+TlsSendFinished(transport);
+}return 0;}
 
 #pragma push
 #pragma peephole on
@@ -177,7 +192,7 @@ retry:
 func_0201d25c(p);
 M2C_FIELD(q,u8 *,0x455)=0; M2C_FIELD(q,s32 *,0x1d4)=0; M2C_FIELD(q,u8 *,0x454)=1;
 SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);
-if (!func_02024a9c(p)) {M2C_FIELD(q,u8 *,0x455)=8; return;}
+if (!TlsServerHandshake(p)) {M2C_FIELD(q,u8 *,0x455)=8; return;}
 func_0201d434(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);
 goto retry;
 }

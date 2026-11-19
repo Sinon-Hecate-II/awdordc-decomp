@@ -166,22 +166,26 @@ void StampBattleRecord(void) {
     M2C_FIELD(record, u16 *, BATTLE_RECORD_DAYS) = M2C_FIELD(*gCurrentMap, u16 *, 0x52A2);
 }
 
-void func_020bef44(void) {
+/* Start a fresh battle record: stamp it with the current local date and time and
+ * clear the map id and the day count; both are filled in when the battle ends
+ * (see StampBattleRecord). */
+void StartBattleRecord(void) {
     M2C_UNK GetLocalTime(s32 *, s32 *);
     void *GetBattleRecord();
     s32 date[4];
     s32 time[3];
-    void *p;
-    p = GetBattleRecord();
-    GetLocalTime(date, time);
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0xFF) | (u8)date[0];
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0x3F00) | ((u32)(date[1] << 26) >> 18);
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0xFC000) | ((u32)(date[2] << 26) >> 12);
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0x3F00000) | ((u32)(time[0] << 26) >> 6);
-    M2C_FIELD(p, u32 *, 4) = (M2C_FIELD(p, u32 *, 4) & ~0xFC000000) | (time[1] << 26);
+    void *record;
 
-    M2C_FIELD(p, u16 *, 0) = 0;
-    M2C_FIELD(p, u16 *, 2) = 0;
+    record = GetBattleRecord();
+    GetLocalTime(date, time);
+    M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFF) | (u8)date[0];
+    M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0x3F00) | ((u32)(date[1] << 26) >> 18);
+    M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFC000) | ((u32)(date[2] << 26) >> 12);
+    M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0x3F00000) | ((u32)(time[0] << 26) >> 6);
+    M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) = (M2C_FIELD(record, u32 *, BATTLE_RECORD_DATE) & ~0xFC000000) | (time[1] << 26);
+
+    M2C_FIELD(record, u16 *, BATTLE_RECORD_MAP) = 0;
+    M2C_FIELD(record, u16 *, BATTLE_RECORD_DAYS) = 0;
 }
 
 s32 func_020befd8(void) {

@@ -66,7 +66,7 @@ int SelectDirectAttackAction(void *arg0) {
  n=((u16 *)(map+0x3758))[y]+x;
  if(((hp=map[n+0x539c]&127)!=0) && map[n]==0) {
  repair:
- damage=Divide(func_ov000_021a9740(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),kind)*(M2C_FIELD(*gCurrentMap,UnkStruct_ov000_021A860C **,0x52d0)->unk6),100);
+ damage=Divide(GetUnitMaxWeaponDamagePercent(M2C_FIELD(*gCurrentMap,u8 **,0x52d0),kind)*(M2C_FIELD(*gCurrentMap,UnkStruct_ov000_021A860C **,0x52d0)->unk6),100);
  if(damage<hp && damage<10) continue;
  if(!func_ov000_02177f24(x,y,pos)) continue;
  func_020d1690(((u8 *)*gCurrentMap)[0x52d4],kind,pos);
@@ -92,7 +92,7 @@ int SelectDirectAttackAction(void *arg0) {
  p=(u8 *)((UnkStruct_ov000_021A860C *)(map+0x59a4)+map[n]);
  if(!((UnkStruct_ov000_021A860C *)p)->unk0) continue;
  if(func_020d27a4(map[0x52d4],p ? (p-(map+0x59a4))/14:0)==1) continue;
- if(!func_ov000_021a93ec((s16)x,sy)) continue;
+ if(!IsCellVisibleToCurrentTeam((s16)x,sy)) continue;
  if(!func_ov000_02177f24(x,y,pos)) continue;
  map=*gCurrentMap; n=((u16 *)(map+0x3758))[pos[1]]+pos[0];
  if(map[n+0x2d48]>=gAiUnitTypeTuning[2] || map[n+0x2840]>=gAiUnitTypeTuning[1]) {

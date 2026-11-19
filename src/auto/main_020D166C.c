@@ -14,7 +14,7 @@ void func_020d166c(s32 a, s32 b) {
 #pragma opt_strength_reduction off
 void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     extern void **gCurrentMap;
-    s32 func_020a5ae0(s32);
+    s32 GetDamageTargetIndex(s32);
     s32 func_020a8204(void *);
     s32 func_020a796c(s32, s32, s32);
     s32 CalculateUnitDamage(void *, s32, s32, s32);
@@ -38,11 +38,11 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
         InitBattleUnit((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
     }
         if (func_020a8204(unit)) {
-            r4 = CalculateUnitDamage(unit, func_020a5ae0(arg1), 0, 0);
+            r4 = CalculateUnitDamage(unit, GetDamageTargetIndex(arg1), 0, 0);
         } else {
             r6 = func_020a796c(((UnitKindD1690 *)unit)->kind, arg1, 1);
             if (r6) {
-                r5 = CalculateUnitDamage(unit, func_020a5ae0(arg1), 1, 0);
+                r5 = CalculateUnitDamage(unit, GetDamageTargetIndex(arg1), 1, 0);
             }
         }
 
@@ -118,10 +118,10 @@ s32 func_020d1a1c(s32 arg0) {
 }
 
 u8 func_020d1a74(void) {
-    s32 func_020a334c();
+    s32 GetPlayerArmyVariantIfSet();
     u8 var_r0;
 
-    if (func_020a334c() != 0) {
+    if (GetPlayerArmyVariantIfSet() != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -199,13 +199,17 @@ void func_020d1c38(void) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C0) = 0;
 }
 
-void func_020d1c58(void){
+/* Set up the new current player's phase: point the view at that player, set the
+ * owner bits and unit-group base, make it the active player, split the players
+ * into teams, then clear its team's sight bitmap and rebuild the map's cell
+ * units and unit visibility. */
+void BeginPlayerPhase(void){
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-void SetupPlayerTeams(void);void func_020cd754(s32);void func_020d0270(void);void RefreshUnitVisibility(void);
-M2C_FIELD(*gCurrentMap,u16 *,0x52a6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4)<<5;
-M2C_FIELD(*gCurrentMap,u16 *,0x52a8)=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)];
-M2C_FIELD(*gCurrentMap,u16 *,0x52b6)=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
-SetupPlayerTeams();func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));func_020d0270();RefreshUnitVisibility();
+void SetupPlayerTeams(void);void FillTeamSightBitmap(s32);void func_020d0270(void);void RefreshUnitVisibility(void);
+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_OWNER)=M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)<<5;
+M2C_FIELD(*gCurrentMap,u16 *,MAP_UNIT_GROUP_BASE)=gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)];
+M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER);
+SetupPlayerTeams();FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER));func_020d0270();RefreshUnitVisibility();
 }
 
 /* Start the current player's turn: rewind the unit-slot allocation cursor, reset
@@ -245,7 +249,7 @@ void LoadPlayerPalettes(void) {
 void func_020d1dc8(void) {
     extern void **gCurrentMap;
     extern u8 gMovementCostTable[];
-    s32 func_020cd6d4(void);
+    s32 IsCampaignBattleRules(void);
     s32 func_020a8ae0(u16, s32);
     s32 func_020cd728(void);
     s32 i;
@@ -255,7 +259,7 @@ void func_020d1dc8(void) {
         state = 0;
         flag = state;
         other = state;
-        if (func_020cd6d4()) state = func_020a8ae0(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
+        if (IsCampaignBattleRules()) state = func_020a8ae0(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
         if (state == 0) state = gMovementCostTable[((u32)(M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c + 0x23];
         if (func_020cd728()) state = i;
         switch (state) {
@@ -303,7 +307,7 @@ void func_020d1f2c(void) {
     void func_020a3550(s32, s32);
     s32 GetPlayerArmyId(s32);
     s32 func_020a2380(s32);
-    s32 func_020cd6d4(void);
+    s32 IsCampaignBattleRules(void);
     void func_020d2168(void);
     void func_020d1dc8(void);
     s32 func_020d3154(s32, s32);
@@ -354,7 +358,7 @@ void func_020d1f2c(void) {
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
             r10[0x32] = (u8)func_020a2380(r8);
 
-            if (func_020cd6d4() != 0) {
+            if (IsCampaignBattleRules() != 0) {
                 ((u8 *)*gCurrentMap)[r9 + 0x67ce] = 2;
             } else {
                 u16 val = M2C_FIELD(&gMapData, u16 *, 0xc);

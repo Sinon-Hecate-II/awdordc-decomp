@@ -350,7 +350,11 @@ s32 func_0209d204(void *arg0) {
     return 1;
 }
 
-s32 func_0209d224(void *arg0) {
+/* Copy of SpriteState_DeleteSelfIfDuplicate for the other state table: when a live
+ * sprite of the same class exists, delete this sprite and stop - for any sprite
+ * when the state's parameter is 0, for one on the current engine otherwise - and
+ * advance the state cursor when no duplicate is found. */
+s32 SpriteState_DeleteSelfIfDuplicateAlt(void *sprite) {
     extern M2C_UNK g3DSpriteOrderCursor;
     extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
@@ -358,18 +362,22 @@ s32 func_0209d224(void *arg0) {
     p = g3DSpriteSortOrder;
     for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
-        if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
-            if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
-                DeleteSpriteObject(arg0);
+        if (other != sprite && M2C_FIELD(other, s32 *, DS3D_SPRITE_ALIVE) == M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE)) {
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM) == 0 || M2C_FIELD(other, s32 *, DS3D_SPRITE_ENGINE) == gCur3DSpriteEngine) {
+                DeleteSpriteObject(sprite);
                 return 0;
             }
         }
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d2b0(void *arg0) {
+/* 3D-sprite state handler: when another live sprite of the same class exists it
+ * deletes this object and stops - for any sprite when the state's parameter is 0,
+ * for one on the current engine otherwise - and advances the state cursor when no
+ * duplicate is found. */
+s32 SpriteState_DeleteSelfIfDuplicate(void *sprite) {
     extern M2C_UNK g3DSpriteOrderCursor;
     extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
@@ -377,18 +385,22 @@ s32 func_0209d2b0(void *arg0) {
     p = g3DSpriteSortOrder;
     for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
-        if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
-            if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
-                DeleteSpriteObject(arg0);
+        if (other != sprite && M2C_FIELD(other, s32 *, DS3D_SPRITE_ALIVE) == M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE)) {
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM) == 0 || M2C_FIELD(other, s32 *, DS3D_SPRITE_ENGINE) == gCur3DSpriteEngine) {
+                DeleteSpriteObject(sprite);
                 return 0;
             }
         }
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d33c(void *arg0) {
+/* 3D-sprite state handler used when a sprite replaces another of its class: delete
+ * the older sprite of the same class from the sort order - any sprite when the
+ * state's parameter is 0, one on the current engine otherwise - and advance the
+ * new sprite's state cursor. */
+s32 SpriteState_DeleteOtherIfDuplicate(void *sprite) {
     extern M2C_UNK g3DSpriteOrderCursor;
     extern void *g3DSpriteSortOrder[];
     extern s32 gCur3DSpriteEngine;
@@ -396,14 +408,14 @@ s32 func_0209d33c(void *arg0) {
     p = g3DSpriteSortOrder;
     for (; p < M2C_FIELD(&g3DSpriteOrderCursor, void ***, 0); p++) {
         void *other = *p;
-        if (other != arg0 && M2C_FIELD(other, s32 *, 4) == M2C_FIELD(arg0, s32 *, 4)) {
-            if (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2) == 0 || M2C_FIELD(other, s32 *, 0x28) == gCur3DSpriteEngine) {
+        if (other != sprite && M2C_FIELD(other, s32 *, DS3D_SPRITE_ALIVE) == M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE)) {
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM) == 0 || M2C_FIELD(other, s32 *, DS3D_SPRITE_ENGINE) == gCur3DSpriteEngine) {
                 DeleteSpriteObject(other);
                 break;
             }
         }
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 

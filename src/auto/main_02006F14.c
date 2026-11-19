@@ -8,7 +8,7 @@ typedef struct { u8 bytes[0x64]; u16 flags; } SystemInfo;
 
 void func_02006f14(void) {
     void func_02006ef8(s32);
-    void OS_SetFifoReceiveHandlers(u32, void (*)(void));
+    void OS_SetIrqHandler(u32, void (*)(void));
     void OS_EnableIrqMask(u32);
     void func_02006f9c(void);
     extern u16 gSystemTickState;
@@ -19,7 +19,7 @@ void func_02006f14(void) {
     *(volatile u16 *)0x04000102 = 0;
     *(volatile u16 *)0x04000100 = 0;
     *(volatile u16 *)0x04000102 = 0xC1;
-    OS_SetFifoReceiveHandlers(8, func_02006f9c);
+    OS_SetIrqHandler(8, func_02006f9c);
     OS_EnableIrqMask(8);
     M2C_FIELD(&gSystemTickState, s32 *, 4) = 0;
 }
@@ -67,7 +67,7 @@ u16 func_020070a4(void) {
 }
 
 #pragma opt_if_conversion off
-void func_020070b4(void *arg0) {
+void ArmTimerCountdown(void *arg0) {
 void func_02005154(u32, void (*)(void), u32); s32 func_020073c0(s32); void OS_EnableIrqMask(u32);
 u64 now=GetSystemTick(); s64 delta; u16 timer;
 *(volatile u16 *)0x04000106=0;
@@ -84,18 +84,18 @@ OS_EnableIrqMask(0x10);
 void func_02007140(void) {
  void func_02006ef8(s32);
  M2C_UNK OS_DisableIrqMask(M2C_UNK);
- extern u16 data_0212dfc4;
- if (M2C_FIELD(&data_0212dfc4, u16 *, 0) != 0) return;
- M2C_FIELD(&data_0212dfc4, u16 *, 0) = 1;
+ extern u16 gTimerQueue;
+ if (M2C_FIELD(&gTimerQueue, u16 *, 0) != 0) return;
+ M2C_FIELD(&gTimerQueue, u16 *, 0) = 1;
  func_02006ef8(1);
- M2C_FIELD(&data_0212dfc4, s32 *, 4) = 0;
- M2C_FIELD(&data_0212dfc4, s32 *, 8) = 0;
+ M2C_FIELD(&gTimerQueue, s32 *, 4) = 0;
+ M2C_FIELD(&gTimerQueue, s32 *, 8) = 0;
  OS_DisableIrqMask(0x10);
 }
 
 u16 func_02007180(void) {
-    extern u16 data_0212dfc4;
-    return data_0212dfc4;
+    extern u16 gTimerQueue;
+    return gTimerQueue;
 }
 
 void InitTimer(void *arg0) {
@@ -106,9 +106,9 @@ void InitTimer(void *arg0) {
 #pragma opt_if-conversion off
 void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     u64 GetSystemTick(void);
-    void func_020070b4(void *);
+    void ArmTimerCountdown(void *);
     u64 U64Divide(u64, u64);
-    extern u16 data_0212dfc4;
+    extern u16 gTimerQueue;
     u32 pa, pb;
     u64 now, period, stored, q, inc;
     u64 nodedl;
@@ -129,7 +129,7 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
     stored += inc;
     M2C_FIELD(arg0, u64 *, 0x0C) = stored;
 
-    for (node = M2C_FIELD(&data_0212dfc4, void **, 4); node != 0; node = M2C_FIELD(node, void **, 0x18)) {
+    for (node = M2C_FIELD(&gTimerQueue, void **, 4); node != 0; node = M2C_FIELD(node, void **, 0x18)) {
         nodedl = M2C_FIELD(node, u64 *, 0x0C);
         if ((s64)(stored - nodedl) < 0) break;
     }
@@ -141,20 +141,20 @@ void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
         if (next != 0) {
             M2C_FIELD(next, void **, 0x18) = arg0;
         } else {
-            M2C_FIELD(&data_0212dfc4, void **, 4) = arg0;
-            func_020070b4(arg0);
+            M2C_FIELD(&gTimerQueue, void **, 4) = arg0;
+            ArmTimerCountdown(arg0);
         }
     } else {
-        old_head = M2C_FIELD(&data_0212dfc4, void **, 8);
+        old_head = M2C_FIELD(&gTimerQueue, void **, 8);
         M2C_FIELD(arg0, void **, 0x18) = 0;
-        M2C_FIELD(&data_0212dfc4, void **, 8) = arg0;
+        M2C_FIELD(&gTimerQueue, void **, 8) = arg0;
         M2C_FIELD(arg0, void **, 0x14) = old_head;
         if (old_head != 0) {
             M2C_FIELD(old_head, void **, 0x18) = arg0;
         } else {
-            M2C_FIELD(&data_0212dfc4, void **, 8) = arg0;
-            M2C_FIELD(&data_0212dfc4, void **, 4) = arg0;
-            func_020070b4(arg0);
+            M2C_FIELD(&gTimerQueue, void **, 8) = arg0;
+            M2C_FIELD(&gTimerQueue, void **, 4) = arg0;
+            ArmTimerCountdown(arg0);
         }
     }
 }
@@ -171,29 +171,33 @@ void ScheduleTimer(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
  func_020071a0(arg0,(u32)time,(u32)(time>>32)); OS_RestoreInterrupts(state);
 }
 #pragma opt_common_subs reset
-void func_02007338(void *arg0) {
+/* Take a timer off the OS timer queue: unlink it from the deadline-sorted list
+ * (+0x14 links toward the head, +0x18 toward the tail), re-arm the hardware
+ * countdown for the new head, then mark it unscheduled by clearing its callback
+ * and repeat period. */
+void CancelTimer(void *arg0) {
  u32 OS_DisableInterrupts(void);
  void OS_RestoreInterrupts(u32);
- extern u16 data_0212dfc4;
+ extern u16 gTimerQueue;
  u32 state;
- void *prev;
  void *next;
+ void *prev;
  state = OS_DisableInterrupts();
  if (M2C_FIELD(arg0,s32 *,0) == 0) {
  OS_RestoreInterrupts(state);
  return;
  }
- prev = M2C_FIELD(arg0,void **,0x18);
- if (prev == NULL) {
- M2C_FIELD(&data_0212dfc4,void **,8) = M2C_FIELD(arg0,void **,0x14);
+ next = M2C_FIELD(arg0,void **,0x18);
+ if (next == NULL) {
+ M2C_FIELD(&gTimerQueue,void **,8) = M2C_FIELD(arg0,void **,0x14);
  } else {
- M2C_FIELD(prev,void **,0x14) = M2C_FIELD(arg0,void **,0x14);
+ M2C_FIELD(next,void **,0x14) = M2C_FIELD(arg0,void **,0x14);
  }
- next = M2C_FIELD(arg0,void **,0x14);
- if (next != NULL) M2C_FIELD(next,void **,0x18) = prev;
+ prev = M2C_FIELD(arg0,void **,0x14);
+ if (prev != NULL) M2C_FIELD(prev,void **,0x18) = next;
  else {
- M2C_FIELD(&data_0212dfc4,void **,4) = prev;
- if (prev != NULL) func_020070b4(prev);
+ M2C_FIELD(&gTimerQueue,void **,4) = next;
+ if (next != NULL) ArmTimerCountdown(next);
  }
  M2C_FIELD(arg0,s32 *,0) = 0;
  M2C_FIELD(arg0,s32 *,0x1C) = 0;
@@ -210,10 +214,10 @@ s32 func_020073c0(s32 arg0) {
 void func_020073d0(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
     u64 GetSystemTick(void);
-    void func_020070b4(void *);
+    void ArmTimerCountdown(void *);
     void func_020071a0(void *, u32, u32);
-    extern u16 data_0212dfc4;
-    extern M2C_UNK data_027e0000;
+    extern u16 gTimerQueue;
+    extern M2C_UNK gOsArea;
 
     void *node;
     void *next;
@@ -226,23 +230,23 @@ void func_020073d0(void) {
 
     *(volatile u16 *)0x04000106 = 0;
     OS_DisableIrqMask(0x10);
-    *(u32 *)((u8 *)&data_027e0000 + 0x3FF8) |= 0x10;
+    *(u32 *)((u8 *)&gOsArea + 0x3FF8) |= 0x10;
 
     now = GetSystemTick();
 
-    node = *(void **)((u8 *)&data_0212dfc4 + 0x4);
+    node = *(void **)((u8 *)&gTimerQueue + 0x4);
     if (node == 0) return;
 
     deadline = *(u64 *)((u8 *)node + 0x0C);
     if (now < deadline) {
-        func_020070b4(node);
+        ArmTimerCountdown(node);
         return;
     }
 
     next = *(void **)((u8 *)node + 0x18);
-    *(void **)((u8 *)&data_0212dfc4 + 0x4) = next;
+    *(void **)((u8 *)&gTimerQueue + 0x4) = next;
     if (next == 0) {
-        *(u32 *)((u8 *)&data_0212dfc4 + 0x8) = 0;
+        *(u32 *)((u8 *)&gTimerQueue + 0x8) = 0;
     } else {
         *(u32 *)((u8 *)next + 0x14) = 0;
     }
@@ -268,9 +272,9 @@ void func_020073d0(void) {
         func_020071a0(node, 0, 0);
     }
 
-    node = *(void **)((u8 *)&data_0212dfc4 + 0x4);
+    node = *(void **)((u8 *)&gTimerQueue + 0x4);
     if (node != 0) {
-        func_020070b4(node);
+        ArmTimerCountdown(node);
     }
 }
 
@@ -344,21 +348,22 @@ void func_02007668(s32 arg0) {
     M2C_UNK func_01ff81e4();
     void func_0200519c(s32);
     void OS_SetIrqMask(s32);
-    u16 OS_GetLockID(void);
+    s32 OS_GetLockID(void);
     void func_0200763c(s32);
     M2C_UNK SystemHalt();
-    void func_02007ca4(s32);
+    void DmaStopChannel(s32);
     u16 CARD_LockRom(u16);
 
-    if (*(u16 *)0x027FFC40 == 2) {
-        u16 x;
+    s32 isMultiboot = *(u16 *)0x027FFC40 == 2;
+    if (isMultiboot) {
+        s32 lockId;
         SystemHalt();
-        x = OS_GetLockID();
-        CARD_LockRom((u16)(x << 16 >> 16));
-        func_02007ca4(0);
-        func_02007ca4(1);
-        func_02007ca4(2);
-        func_02007ca4(3);
+        lockId = OS_GetLockID();
+        CARD_LockRom((u16)lockId);
+        DmaStopChannel(0);
+        DmaStopChannel(1);
+        DmaStopChannel(2);
+        DmaStopChannel(3);
         func_0200519c(0x40000);
         OS_SetIrqMask(0xFFFFFFFF);
     }
@@ -372,7 +377,7 @@ void GetMacAddress(M2C_UNK arg0) {
     MI_CpuCopy8(0x027FFCF4, arg0, 6);
 }
 
-void func_02007740(void *arg0) {
+void GetSystemUserProfile(void *arg0) {
  void CopyU16(void *, void *, u32);
  SystemInfo *info=(SystemInfo *)0x027FFC80;
  M2C_FIELD(arg0,u8 *,0) = (u32)(info->flags << 29) >> 29;
@@ -482,9 +487,9 @@ void DmaFill(s32 a,s32 b,u32 c,u32 n) {
 }
 
 void func_02007a04(s32 a,s32 b,s32 c,u32 n) {
- void func_01ff84c0(s32,s32,s32,u32); void func_02007da4(s32,s32,s32,s32);
+ void func_01ff84c0(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
  volatile u32 *p;
- func_02007da4(a,b,n,0);
+ DmaValidateTransfer(a,b,n,0);
  if (!n) return;
  p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
  while (*p & 0x80000000) {}
@@ -493,10 +498,10 @@ void func_02007a04(s32 a,s32 b,s32 c,u32 n) {
 }
 
 void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
- void func_01ff84c0(s32,s32,s32,u32); void func_02007da4(s32,s32,s32,s32);
+ void func_01ff84c0(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
  volatile u32 *p;
  if (!n) return;
- func_02007da4(a,b,n,0);
+ DmaValidateTransfer(a,b,n,0);
  p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
  while (*p & 0x80000000) {}
  func_01ff84c0(a,b,c,(n>>1)|0x80000000);
@@ -537,25 +542,30 @@ void DmaFillAsync(s32 channel, M2C_UNK dst, s32 fillValue, u32 size, void (*hand
     OS_RestoreInterrupts(state);
 }
 
-void func_02007ba4(s32 a, s32 b, s32 c, s32 d, void (*e)(s32), s32 f) {
-    void func_02007da4(s32, s32, s32, s32);
+/* Start an async 32-bit DMA copy of `size` bytes from `src` to `dst` on DMA
+ * channel `channel`: with a completion handler the copy runs with the channel's
+ * end-of-transfer interrupt enabled and the handler is called with `handlerArg`
+ * when it finishes (right away when there is nothing to copy); without one the
+ * copy runs without an interrupt.  The counterpart of DmaFillAsync. */
+void DmaCopyAsync(s32 channel, s32 src, s32 dst, u32 size, void (*handler)(s32), s32 handlerArg) {
+    void DmaValidateTransfer(s32, s32, s32, s32);
     void DmaWaitChannel(s32);
     void OS_SetDmaHandler(s32, s32, s32);
-    void func_01ff8480(s32, s32, s32, s32);
-    func_02007da4(a, b, d, 0);
-    if (d == 0) {
-        if (e != 0) {
-            e(f);
+    void DmaStartTransferLocked(s32, s32, s32, s32);
+    DmaValidateTransfer(channel, src, size, 0);
+    if (size == 0) {
+        if (handler != 0) {
+            handler(handlerArg);
         }
         return;
     }
-    DmaWaitChannel(a);
-    if (e != 0) {
-        OS_SetDmaHandler(a, (s32)e, f);
-        func_01ff8480(a, b, c, ((u32)d >> 2) | 0xC4000000);
+    DmaWaitChannel(channel);
+    if (handler != 0) {
+        OS_SetDmaHandler(channel, (s32)handler, handlerArg);
+        DmaStartTransferLocked(channel, src, dst, DMA_COPY_CTRL_IRQ(size));
         return;
     }
-    func_01ff8480(a, b, c, ((u32)d >> 2) | 0x84000000);
+    DmaStartTransferLocked(channel, src, dst, DMA_COPY_CTRL(size));
 }
 
 void DmaWaitChannel(s32 a) {
@@ -569,7 +579,7 @@ void DmaWaitChannel(s32 a) {
  OS_RestoreInterrupts(state);
 }
 
-void func_02007ca4(s32 a) {
+void DmaStopChannel(s32 a) {
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
     u32 state = OS_DisableInterrupts();
@@ -615,7 +625,7 @@ void func_02007d20(s32 arg0, s32 arg1) {
     } while (i < 3);
 }
 
-void func_02007da4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+void DmaValidateTransfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK SystemHalt();
     s32 var_r1;
     u32 temp_ip;

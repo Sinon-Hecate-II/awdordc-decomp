@@ -2,6 +2,7 @@
 #include "common.h"
 #include "natneg.h"
 #include "qr2.h"
+#include "net_socket.h"
 
 typedef struct { u8 bytes[6]; } NetworkAddress6;
 typedef struct { NetworkAddress6 address; u8 type,length; u32 ip; u8 reserved,value,flag,addr[4],port[2]; char name[64]; } NetworkHandshakePacket;
@@ -111,7 +112,7 @@ s32 func_0205ddd0(void *arg0, s32 arg1) {
  return func_0205dd98((M2C_UNK)arg0);
 }
 
-s32 func_0205de10(void) {
+s32 NatNeg_ResolveServers(void) {
  extern M2C_UNK gNatNegManager, data_020ff89c, data_020ff8b8;
  if (M2C_FIELD(&gNatNegManager,s32 *,12)==0)
  M2C_FIELD(&gNatNegManager,s32 *,12)=func_0205ddd0(M2C_FIELD(&gNatNegManager,void **,4),(s32)&data_020ff89c);
@@ -122,47 +123,53 @@ s32 func_0205de10(void) {
 }
 
 #pragma scheduling off
-s32 func_0205de88(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+extern void NatNeg_FreePeer(s32 *);
+/* Start NAT negotiation for one peer: allocate its record, keep the socket the
+ * reports go through, the peer address, the join flag and the three callbacks,
+ * open the peer's own UDP socket and send the initial requests.  Returns 0 when
+ * started, 1 when no peer record is free, 2 when the service-availability lookup
+ * is not idle or the socket cannot be opened, and 3 while the NATNEG server names
+ * are still being resolved (the caller retries). */
+s32 NatNeg_BeginNegotiation(s32 reportSocket, s32 peerAddress, s32 isJoin, s32 event, s32 send, s32 data) {
     s32 ghiSocket(s32, s32, s32);
-    void *func_0205d7f4();
-    M2C_UNK func_0205d88c();
-    void func_0205da30();
-    s32 func_0205de10();
+    void *NatNeg_NewPeer();
+    void NatNeg_SendInitRequests(void *);
+    s32 NatNeg_ResolveServers();
     extern s32 gDnsQueryState;
-    void *temp_r0;
+    void *peer;
 
-    if (gDnsQueryState != 1) {
+    if (gDnsQueryState != DNS_QUERY_IDLE) {
         return 2;
     }
-    if (func_0205de10() == 0) {
+    if (NatNeg_ResolveServers() == 0) {
         return 3;
     }
-    temp_r0 = func_0205d7f4();
-    if (temp_r0 == NULL) {
+    peer = NatNeg_NewPeer();
+    if (peer == NULL) {
         return 1;
     }
-    M2C_FIELD(temp_r0, s32 *, 4) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0xC) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 8) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg4;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg5;
-    M2C_FIELD(temp_r0, s32 *, 0) = ghiSocket(2, 2, 0);
-    M2C_FIELD(temp_r0, s32 *, 0x20) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x32) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x33) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x2C) = 0;
-    M2C_FIELD(temp_r0, s16 *, 0x30) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x24) = 0;
-    if (M2C_FIELD(temp_r0, s32 *, 0) == -1) {
-        func_0205d88c();
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET2) = reportSocket;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_VALUE) = isJoin;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_ADDRESS) = peerAddress;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_EVENT) = event;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND) = send;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA) = data;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) = ghiSocket(2, 2, 0);
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_RETRIES) = 0;
+    M2C_FIELD(peer, s8 *, NATNEG_PEER_FLAG32) = 0;
+    M2C_FIELD(peer, s8 *, NATNEG_PEER_FLAG33) = 0;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_REMOTE_IP) = 0;
+    M2C_FIELD(peer, u16 *, NATNEG_PEER_REMOTE_PORT) = 0;
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_MAX_RETRIES) = 0;
+    if (M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET) == -1) {
+        NatNeg_FreePeer(peer);
         return 2;
     }
-    func_0205da30();
+    NatNeg_SendInitRequests(peer);
     return 0;
 }
 #pragma scheduling reset
-void func_0205df50(void) {
+void NatNeg_ReleasePeer(void) {
  void *FindNatNegPeer(void);
  void func_020496b8(s32);
  void *p=FindNatNegPeer();
@@ -175,10 +182,10 @@ void func_0205df50(void) {
 /* Polls one NAT-negotiation peer: drains its socket, retries the current step
    when the deadline passes, and releases the peer on completion or timeout. */
 void UpdateNatNegPeer(void *peer) {
-s32 func_0205d88c(); s32 ghiSocketCanRecv(s32); s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void func_0205da30(); void NatNeg_SendConnectPong(void *);
+s32 ghiSocketCanRecv(s32); s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void NatNeg_SendInitRequests(); void NatNeg_SendConnectPong(void *);
 extern u8 gNatNegRecvBuffer[];
 u8 address[8]; s32 size=8; u8 reply[8]; s32 n;
-if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){func_0205d88c(peer);return;}
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){NatNeg_FreePeer(peer);return;}
 if(-1!=M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)){
 do {
 if(!ghiSocketCanRecv(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)))break;
@@ -190,10 +197,10 @@ HandleNatNegPacket(gNatNegRecvBuffer,n,(M2C_UNK)address);
 if((M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START || M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_CONNECT) && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)>M2C_FIELD(peer,s32 *,NATNEG_PEER_MAX_RETRIES)){
 M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(2,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
-((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
+((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }else{
 M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)++;
-if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))func_0205da30)(peer);else NatNeg_SendConnectPong(peer);
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))NatNeg_SendInitRequests)(peer);else NatNeg_SendConnectPong(peer);
 }
 }
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_REPORT && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
@@ -206,11 +213,11 @@ port=M2C_FIELD(peer,u16 *,NATNEG_PEER_REMOTE_PORT);
 M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),reply,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
 M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)=-1;
 }
-((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
+((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_ACKED && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
 M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(1,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
-((void (*)(s32))func_0205df50)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
+((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
 }
 
@@ -235,41 +242,67 @@ void func_0205e178(void) {
     } while (var_r5 >= 0);
 }
 
-M2C_UNK func_0205e1bc(void *arg0, M2C_UNK arg1) {
+#pragma scheduling off
+/* Answers a connect ping: builds a 21-byte connect ack (kind 6) holding the magic
+ * bytes, the peer's address as its cookie and the low byte of its echoed value,
+ * and sends it to the address the ping came from. */
+M2C_UNK NatNeg_SendConnectAck(void *peer, M2C_UNK fromAddress) {
  void func_0205d944(s32,s32,u16,void *,s32);
- NetworkPacket21 packet;
+ u8 packet[24];
+ u8 *header=(u8 *)((NetworkAddress6 *)packet);
+ const u8 *magic=(const u8 *)&gNatNegMagic;
+ u8 m0,m1,m2,m3,m4,m5;
  u16 port;
  u32 ip;
- packet.length=6;
- packet.address=gNatNegMagic;
- packet.type=2;
- packet.value=M2C_FIELD(arg0,s32 *,12);
- ip=M2C_FIELD(arg0,u32 *,8);
- packet.ip=((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00)));
- port=M2C_FIELD(arg1,u16 *,2);
- func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(arg1,s32 *,4),(u16)((u8)((s32)port>>8)|((port<<8)&0xff00)),&packet,21);
+ m0=magic[0];
+ m1=magic[1];
+ m2=magic[2];
+ m3=magic[3];
+ m4=magic[4];
+ m5=magic[5];
+ packet[NATNEG_PKT_VERSION]=NATNEG_PROTOCOL_VERSION;
+ header[0]=m0;
+ header[1]=m1;
+ header[2]=m2;
+ header[3]=m3;
+ header[4]=m4;
+ header[5]=m5;
+ packet[NATNEG_PKT_KIND]=NATNEG_KIND_CONNECT_ACK;
+ packet[NATNEG_PKT_ACK_VALUE]=M2C_FIELD(peer,s32 *,NATNEG_PEER_VALUE);
+ ip=M2C_FIELD(peer,u32 *,NATNEG_PEER_ADDRESS);
+ *(u32 *)(packet+NATNEG_PKT_PEER_ADDR)=((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00)));
+ port=M2C_FIELD(fromAddress,u16 *,NATNEG_ADDR_PORT);
+ func_0205d944(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET),M2C_FIELD(fromAddress,s32 *,NATNEG_ADDR_IP),(u16)((u8)((s32)port>>8)|((port<<8)&0xff00)),packet,NATNEG_PKT_ACK_LEN);
  (void)packet;
 }
-
-void NatNeg_HandleConnectPing(void *arg0, void *arg1, M2C_UNK arg2) {
+#pragma scheduling reset
+/* Handle a CONNECT_PING from another peer: when the sender is still in its connect
+ * step (packet mode 0) answer it with a connect ack; then, unless the peer itself
+ * has already moved past its connect step, either report the packet's mode as send
+ * kind 1..3 and release the peer, or take the sender's address and port as the
+ * peer's remote ones, clear the retries, move to the connect step and answer with
+ * a connect pong. */
+void NatNeg_HandleConnectPing(void *peer, void *packet, void *fromAddress) {
     void NatNeg_SendConnectPong(void *);
-    M2C_UNK func_0205e1bc(void *, M2C_UNK);
-    s32 var_r0; u16 temp_r2; u8 temp_r1;
-    (void)arg2;
-    if (M2C_FIELD(arg1, u8 *, 0x13) == 0) func_0205e1bc(arg0, arg2);
-    if (M2C_FIELD(arg0, s32 *, 0x10) >= 2) return;
-    temp_r1 = M2C_FIELD(arg1, u8 *, 0x13);
-    if (temp_r1) {
-        var_r0 = 3; if (temp_r1 == 1) var_r0 = 1; else if (temp_r1 == 2) var_r0 = 2;
-        M2C_FIELD(arg0, M2C_UNK (**)(s32, s32, s32, s32), 0x38)(var_r0, -1, 0, M2C_FIELD(arg0, s32 *, 0x3C));
-        ((void (*)(s32))func_0205df50)(M2C_FIELD(arg0, s32 *, 8)); return;
+    void NatNeg_ReleasePeer(void);
+    M2C_UNK NatNeg_SendConnectAck(void *, M2C_UNK);
+    s32 kind;
+    u16 port;
+    u8 mode;
+    if (M2C_FIELD(packet, u8 *, NATNEG_PKT_MODE) == 0) NatNeg_SendConnectAck(peer, (M2C_UNK)fromAddress);
+    if (M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) >= NATNEG_STATE_CONNECT) return;
+    mode = M2C_FIELD(packet, u8 *, NATNEG_PKT_MODE);
+    if (mode) {
+        kind = 3; if (mode == 1) kind = 1; else if (mode == 2) kind = 2;
+        M2C_FIELD(peer, M2C_UNK (**)(s32, s32, s32, s32), NATNEG_PEER_SEND)(kind, -1, 0, M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA));
+        ((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer, s32 *, NATNEG_PEER_ADDRESS)); return;
     }
-    M2C_FIELD(arg0, s32 *, 0x2C) = M2C_FIELD(arg1, s32 *, 0x0C);
-    temp_r2 = M2C_FIELD(arg1, u16 *, 0x10);
-    M2C_FIELD(arg0, s16 *, 0x30) = (s16)(((u8)(temp_r2 >> 8)) | ((temp_r2 << 8) & 0xFF00));
-    M2C_FIELD(arg0, s32 *, 0x10) = 2; M2C_FIELD(arg0, s32 *, 0x20) = 0;
-    M2C_FIELD(arg0, M2C_UNK (**)(s32, s32), 0x34)(2, M2C_FIELD(arg0, s32 *, 0x3C));
-    NatNeg_SendConnectPong(arg0);
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_REMOTE_IP) = M2C_FIELD(packet, s32 *, NATNEG_PKT_PEER_IP);
+    port = M2C_FIELD(packet, u16 *, NATNEG_PKT_PEER_PORT);
+    M2C_FIELD(peer, s16 *, NATNEG_PEER_REMOTE_PORT) = (s16)(((u8)(port >> 8)) | ((port << 8) & 0xFF00));
+    M2C_FIELD(peer, s32 *, NATNEG_PEER_RETRIES) = 0;
+    M2C_FIELD(peer, M2C_UNK (**)(s32, s32), NATNEG_PEER_EVENT)(M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_CONNECT, M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA));
+    NatNeg_SendConnectPong(peer);
 }
 
 /* NatNeg_HandleConnectPong: handles a CONNECT_PONG packet from a peer — records
@@ -560,7 +593,7 @@ void Qr2_ReadPackets(void *qr2) {
 #pragma push
 #pragma opt_propagation off
 #pragma scheduling on
-void func_0205da30(void *arg0) {
+void NatNeg_SendInitRequests(void *arg0) {
 s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);

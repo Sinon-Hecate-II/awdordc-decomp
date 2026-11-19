@@ -78,7 +78,7 @@ void func_ov001_0217def8(void) {
 #pragma opt_strength_reduction off
 void func_ov001_0217df44(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
-extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,func_ov001_0218223c,func_ov001_0217f73c,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
+extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,Ov001_OpenWfcConnectScreen,func_ov001_0217f73c,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
 s32 Ov001_IsFadeActive(s32);
 void *GetCurrentMapRecord(void);
 s32 CountSetBits(void *);
@@ -107,10 +107,10 @@ Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(n,0);Ov001_SetStepCallback(&
 case 11:p=GetCurrentMapRecord();p[0xd0]=CountSetBits(p+0xf0);
 if(p[0xf5]){MI_CpuFill8(p+0xc0,0,4);MI_CpuFill8(p+0xc4,0,4);MI_CpuFill8(p+0xf0,0,4);p[0xd0]=0;}
 if(p[0xf6])MI_CpuFill8(p+0xc8,0,8);
-Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&func_ov001_0218223c);break;
+Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);break;
 case 12:Ov001_SetNextScreenMode(0,0);Ov001_SetStepCallback(&func_ov001_0217f73c);break;
 case 13:if(M2C_FIELD(&gMapListState,u8 *,1)==0){Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);}
-else{p=GetCurrentMapRecord();func_ov001_02184880(p[0xf4]);Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
+else{p=GetCurrentMapRecord();LoadSaveSlot(p[0xf4]);Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02181a84);}break;
 }
 Ov001_FreeAlloc(&data_ov001_02193db4);
 }
@@ -180,7 +180,7 @@ case 8:if(record[0xf6])return;DrawMapInfoDottedValue(record+0xcc,line);break;
 
 void DrawMapInfoRowIcon(s32 row, s32 slot) {
     void *GetCurrentMapRecord(void);
-    s32 func_ov001_0217e5e8(u32);
+    s32 IsMapListChoiceAvailable(u32);
     void func_ov001_0217e67c(s32, s32, s32);
     extern M2C_UNK gMapListState;
     u8 *record;
@@ -192,7 +192,7 @@ void DrawMapInfoRowIcon(s32 row, s32 slot) {
     case 1:
         icon = 0;
         variant = 0;
-        if (func_ov001_0217e5e8(icon) == 0)
+        if (IsMapListChoiceAvailable(icon) == 0)
             variant = 2;
         break;
     case 2: {
@@ -254,42 +254,47 @@ void DrawMapInfoRowIcon(s32 row, s32 slot) {
 }
 
 #pragma opt_common_subs reset
-s32 func_ov001_0217e5e8(u32 arg0) {
+/* Test whether a map-list choice can be taken with the current working save
+ * slot: choices 0/1 need a slot that is not written, the choices that edit the
+ * +0xc0/+0xc4 codes need those codes present (SAVE_SLOT_EMPTY_A clear) and the
+ * ones that edit the +0xc8/+0xcc codes need the other pair present.  Choices
+ * with no such requirement are always available. */
+s32 IsMapListChoiceAvailable(u32 choice) {
     void *GetCurrentMapRecord();
-    s32 var_r1;
-    void *temp_r0;
+    s32 available;
+    void *record;
 
-    temp_r0 = GetCurrentMapRecord();
-    var_r1 = 1;
-    switch (arg0) {
+    record = GetCurrentMapRecord();
+    available = 1;
+    switch (choice) {
     default:
         break;
     case 7:
-        if (M2C_FIELD(temp_r0, u8 *, 0xF5) == 0) {
-            var_r1 = 0;
+        if (M2C_FIELD(record, u8 *, SAVE_SLOT_EMPTY_A) == 0) {
+            available = 0;
         }
         break;
     case 0:
     case 1:
-        if ((u32) (u8) (M2C_FIELD(temp_r0, u8 *, 0xE7) + 0xFF) <= 1U) {
-            var_r1 = 0;
+        if ((u32) (u8) (M2C_FIELD(record, u8 *, SAVE_SLOT_STATUS_REL) + 0xFF) <= 1U) {
+            available = 0;
         }
         break;
     case 4:
     case 5:
     case 6:
-        if (M2C_FIELD(temp_r0, u8 *, 0xF5) != 0) {
-            var_r1 = 0;
+        if (M2C_FIELD(record, u8 *, SAVE_SLOT_EMPTY_A) != 0) {
+            available = 0;
         }
         break;
     case 9:
     case 10:
-        if (M2C_FIELD(temp_r0, u8 *, 0xF6) != 0) {
-            var_r1 = 0;
+        if (M2C_FIELD(record, u8 *, SAVE_SLOT_EMPTY_B) != 0) {
+            available = 0;
         }
         break;
     }
-    return var_r1;
+    return available;
 }
 
 void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {

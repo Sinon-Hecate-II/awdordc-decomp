@@ -314,7 +314,7 @@ void func_ov011_02225420(void *arg0, s32 arg1) {
 void DrawMenuEntryHighlight(MenuEntry011 *entry) {
     s32 func_020720f0(s32, s32);
     s32 GetLocalizedText(s32);
-    s32 func_0209b5e4(s32, s32);
+    s32 RenderTextToTiles(s32, s32);
     void DrawTileRow(u16, s32, u16, s32, s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -333,7 +333,7 @@ void DrawMenuEntryHighlight(MenuEntry011 *entry) {
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    entry->textWidth = func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((entry->index + 1) << 6) + 0x40) << 5), GetLocalizedText(entry->labelId));
+    entry->textWidth = RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + ((((entry->index + 1) << 6) + 0x40) << 5), GetLocalizedText(entry->labelId));
     labelWidth = entry->textWidth;
     x = 0x80 - ((s32) (labelWidth + ((u32) labelWidth >> 0x1F)) >> 1);
     clamped = entry->posX - x;
@@ -384,11 +384,11 @@ void func_ov011_022257b4(void *arg0) {
 /* Draw the intro-menu entry's localized label centred on the main screen:
  * measure the label's width and draw its two tile rows (shadow and text). */
 void DrawIntroMenuLabel(void *entry) {
-s32 GetLocalizedText(s32); s32 func_0209b5e4(s32,s32); void DrawTileRow(u16,s32,u16,s32,s32);
+s32 GetLocalizedText(s32); s32 RenderTextToTiles(s32,s32); void DrawTileRow(u16,s32,u16,s32,s32);
 extern void *g3DSpriteEngineMain; extern void *gCur3DSpriteEngine;
 s16 labelWidth,x; u16 w; void *savedEngine;
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-labelWidth=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c),GetLocalizedText(M2C_FIELD(entry,s32 *,0x50)));
+labelWidth=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c),GetLocalizedText(M2C_FIELD(entry,s32 *,0x50)));
 x=128-labelWidth/2;w=labelWidth;
 DrawTileRow((u16)(x&511),14,w,0xf800,11);
 DrawTileRow((u16)((x+1)&511),15,w,0xe800,17);

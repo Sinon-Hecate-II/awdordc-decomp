@@ -1,13 +1,14 @@
 /* 36 functions from 0x021E4448 to 0x021E5118 (ov003), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov003_scene.h"
 
 void func_ov003_021e4448(void *arg0){
 M2C_UNK func_ov003_021f2860(void *);M2C_UNK SetOv003SceneState(M2C_UNK);M2C_UNK CountMapPicks(M2C_UNK,M2C_UNK *);M2C_UNK CreateMapTransferPanel(M2C_UNK,M2C_UNK,M2C_UNK);s32 LoadMapRecord(s32,s32);
-extern M2C_UNK data_ov003_0220f47c;
+extern M2C_UNK gMapPickSelectionIfaceVTable;
 struct {void *data;u16 buf0[5];u16 buf1[5];}local;
 u32 count;u8 i; void *block;void *base;u16 val;u8 zero;
-local.data=&data_ov003_0220f47c;
+local.data=&gMapPickSelectionIfaceVTable;
 for(i=0;i<5;i++){local.buf1[i]=65535;local.buf0[i]=local.buf1[i];}
 func_ov003_021f2860(&local);SetOv003SceneState(1);
 i=0;zero=i;block=&local;
@@ -87,7 +88,7 @@ void func_ov003_021e4630(void **arg0) {
 
 void func_ov003_021e4644(void *arg0) {
     M2C_UNK Show3DSprite(s32);
-    M2C_UNK func_02088f1c(s32);
+    M2C_UNK Show3DSpriteSlide(s32);
     void *temp_ip;
     void *temp_r1;
     void *temp_r5;
@@ -103,10 +104,10 @@ void func_ov003_021e4644(void *arg0) {
     M2C_FIELD(temp_r1, s16 *, 0xC) = 0xC;
     M2C_FIELD(temp_r1, u16 *, 2) = (u16) M2C_FIELD(temp_r1, u16 *, 4);
     Show3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
-    func_02088f1c(M2C_FIELD(arg0, s32 *, 0x58));
+    Show3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
     temp_r5 = M2C_FIELD(arg0, void **, 0x44);
-    func_02088f1c(M2C_FIELD(temp_r5, s32 *, 0));
-    func_02088f1c(M2C_FIELD(temp_r5, s32 *, 4));
+    Show3DSpriteSlide(M2C_FIELD(temp_r5, s32 *, 0));
+    Show3DSpriteSlide(M2C_FIELD(temp_r5, s32 *, 4));
     M2C_FIELD(arg0, s8 *, 0x39) = 1;
 }
 
@@ -119,32 +120,33 @@ void func_ov003_021e46c8(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x18)(arg0);
 }
 
-u32 func_ov003_021e46dc(void *arg0) {
+/* Starts the map-transfer panel's slide-out and hides its sprites when the panel is marked unavailable. */
+u32 SlideOutMapTransferPanelWhenEmpty(void *panel) {
     u32 Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    u32 temp_r0;
-    void *temp_r4;
-    void *temp_r5;
-    void *temp_r5_2;
+    u32 unavailable;
+    void *spritePair;
+    void *topTween;
+    void *bottomTween;
 
-    temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x60) << 0x18) >> 0x1F;
-    if (temp_r0 == 0) {
-        return temp_r0;
+    unavailable = (u32) (((Ov003MapTransferPanel *)panel)->mapFlags << 0x18) >> 0x1F;
+    if (unavailable == 0) {
+        return unavailable;
     }
-    temp_r5 = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(temp_r5, s16 *, 0xE) = GetSpriteAnimValue(temp_r5);
-    M2C_FIELD(temp_r5, s16 *, 0x10) = 0;
-    M2C_FIELD(temp_r5, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r5, u16 *, 2) = (u16) M2C_FIELD(temp_r5, u16 *, 4);
-    temp_r5_2 = M2C_FIELD(arg0, void **, 0x40);
-    M2C_FIELD(temp_r5_2, s16 *, 0xE) = GetSpriteAnimValue(temp_r5_2);
-    M2C_FIELD(temp_r5_2, s16 *, 0x10) = -0x20;
-    M2C_FIELD(temp_r5_2, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r5_2, u16 *, 2) = (u16) M2C_FIELD(temp_r5_2, u16 *, 4);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    temp_r4 = M2C_FIELD(arg0, void **, 0x44);
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0));
-    return Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 4));
+    topTween = ((Ov003MapTransferPanel *)panel)->topTween;
+    M2C_FIELD(topTween, s16 *, 0xE) = GetSpriteAnimValue(topTween);
+    M2C_FIELD(topTween, s16 *, 0x10) = 0;
+    M2C_FIELD(topTween, s16 *, 0xC) = OV003_MAP_TRANSFER_SLIDE_FRAMES;
+    M2C_FIELD(topTween, u16 *, 2) = (u16) M2C_FIELD(topTween, u16 *, 4);
+    bottomTween = ((Ov003MapTransferPanel *)panel)->bottomTween;
+    M2C_FIELD(bottomTween, s16 *, 0xE) = GetSpriteAnimValue(bottomTween);
+    M2C_FIELD(bottomTween, s16 *, 0x10) = -0x20;
+    M2C_FIELD(bottomTween, s16 *, 0xC) = OV003_MAP_TRANSFER_SLIDE_FRAMES;
+    M2C_FIELD(bottomTween, u16 *, 2) = (u16) M2C_FIELD(bottomTween, u16 *, 4);
+    Hide3DSpriteSlide(((Ov003MapTransferPanel *)panel)->sprite);
+    spritePair = ((Ov003MapTransferPanel *)panel)->spritePair;
+    Hide3DSpriteSlide(M2C_FIELD(spritePair, s32 *, 0));
+    return Hide3DSpriteSlide(M2C_FIELD(spritePair, s32 *, 4));
 }
 
 void func_ov003_021e4764(void **arg0) {
@@ -181,12 +183,12 @@ void func_ov003_021e47b0(void) {
 }
 
 u32 func_ov003_021e47bc(void *arg0) {
-    extern M2C_UNK data_ov003_0220f47c;
+    extern M2C_UNK gMapPickSelectionIfaceVTable;
     struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
     u8 count;
     u8 i;
     M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) & ~0x80);
-    local.data = (void *)&data_ov003_0220f47c;
+    local.data = (void *)&gMapPickSelectionIfaceVTable;
     for (i = 0; i < 5; i++) {
         local.buf1[i] = 0xFFFF;
         local.buf0[i] = local.buf1[i];
@@ -226,212 +228,200 @@ void func_ov003_021e48e8(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
 }
 
-void func_ov003_021e4908(void *arg0) {
-    void func_ov003_021f13ec(M2C_UNK *);
+/* Create the ov003 scene view (class gOv003SceneViewClass): make the scene
+ * object, install its vtables, then build its two intro slide tweens, the
+ * 11-glyph label group, the two number labels, the map-pick selection child and
+ * the two five-map record lists it switches between. */
+void CreateOv003SceneView(void *owner) {
+    void SetOv003SceneClass(M2C_UNK *);
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK *);
     void *MemAlloc(s32);
-    M2C_UNK SetTextSpriteValue(M2C_UNK *);
+    void SetTextSpriteValue(void *, s32);
     void *HeapAllocBlock(s32);
     void AddRecordValue(s32, s32);
-
-    extern M2C_UNK data_02102174;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gOv003SceneViewClass;
+    extern M2C_UNK gSceneBaseVTable;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK gOv003SceneViewVTable;
     extern M2C_UNK gOv003SceneViewIfaceVTable;
-    extern M2C_UNK data_ov003_0220f46c;
-    extern M2C_UNK data_ov003_0220f45c;
-    extern M2C_UNK data_ov003_0220f47c;
+    extern M2C_UNK gMapPickSelectionVTable;
+    extern M2C_UNK gMapPickSelectionIfaceVTable;
+    extern M2C_UNK gSceneLabelGroupVTable;
     extern M2C_UNK gHeapObjectVTable;
 
-    void *r4;
-    unsigned char *bp;
-    void *p;
-    s32 i;
+    Ov003SceneView *view;
+    void *child;
+    u8 i;
 
-    func_ov003_021f13ec(&data_02102174);
-    r4 = CreateSpriteFromClass(&data_02102174, arg0);
-    if (r4 == 0) {
+    SetOv003SceneClass(&gOv003SceneViewClass);
+    view = (Ov003SceneView *)CreateSpriteFromClass(&gOv003SceneViewClass, owner);
+    if (view == NULL) {
         return;
     }
 
-    *(void **)r4 = &data_ov003_0220f48c;
-    *(void **)((char *)r4 + 0x34) = &gOv003SceneViewVTable;
-    *(void **)r4 = &gOv003SceneViewIfaceVTable;
-    *(void **)((char *)r4 + 0x34) = &data_02102174;
+    view->vtable = &gSceneBaseVTable;
+    view->iface = &gSceneBaseIfaceVTable;
+    view->vtable = &gOv003SceneViewVTable;
+    view->iface = &gOv003SceneViewIfaceVTable;
 
-    bp = (unsigned char *)r4;
-    bp[0x38] = 0;
-    bp[0x39] = 0;
-    bp[0x3a] = 0;
-    *(s32 *)(bp + 0x3c) = 0;
-    *(s32 *)(bp + 0x40) = 0;
-    *(s32 *)(bp + 0x44) = 0;
-    *(s32 *)(bp + 0x48) = 0;
-    *(s32 *)(bp + 0x4c) = 0;
-    *(s32 *)(bp + 0x50) = 0;
-    *(s32 *)(bp + 0x54) = 0;
-    *(s32 *)(bp + 0x58) = 0;
+    view->state38 = 0;
+    view->visible = 0;
+    view->flags3A = 0;
+    view->tweenTop = NULL;
+    view->tweenBottom = NULL;
+    view->spritePair = NULL;
+    view->labelGroup = NULL;
+    view->sprite4C = 0;
+    view->labelA = NULL;
+    view->labelB = NULL;
+    view->sprite58 = 0;
+    view->selection = NULL;
 
-    {
-        unsigned char v = bp[0x60];
-        unsigned char a = (unsigned char)(v & ~0x3);
-        unsigned char b = (unsigned char)(a & ~0xc);
-        unsigned char c = (unsigned char)(b & ~0x30);
-        unsigned char d = (unsigned char)(c & ~0x40);
-        unsigned char e = (unsigned char)(d & ~0x80);
-        bp[0x60] = a;
-        bp[0x60] = c;
-        bp[0x60] = e;
-    }
-    *(s32 *)(bp + 0x68) = 0;
-    *(s32 *)(bp + 0x6c) = 0;
+    view->flags.first = 0;
+    view->flags.second = 0;
+    view->flags.third = 0;
+    view->flags.fourth = 0;
+    view->flags.fifth = 0;
+    view->mapRecords = NULL;
+    view->downloadedMaps = NULL;
 
-    p = MemAlloc(0x58);
-    if (p) {
-        *(void **)p = &gOv003SceneViewIfaceVTable;
-        *(void **)((char *)p + 4) = &data_ov003_0220f46c;
+    child = MemAlloc(0x58);
+    if (child) {
+        MapPickSelection *selection = child;
+
+        selection->vtable = &gMapPickSelectionVTable;
+        selection->iface = &gMapPickSelectionIfaceVTable;
         for (i = 0; i < 5; i++) {
-            *(u16 *)((char *)p + i * 2 + 0x12) = 0xFFFF;
-            *(u16 *)((char *)p + i * 2 + 0x8) = 0xFFFF;
+            selection->pending[i] = MAP_PICK_NONE;
+            selection->current[i] = selection->pending[i];
         }
-        *(void **)(bp + 0x5c) = p;
-    } else {
-        *(void **)(bp + 0x5c) = 0;
     }
+    view->selection = child;
 
-    p = MemAlloc(0x12);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        q[0] = 4;
-        q[1] = 0;
-        *(u16 *)(q + 2) = 0;
-        *(u16 *)(q + 4) = 0;
-        *(u16 *)(q + 6) = 1;
-        *(u16 *)(q + 8) = 0;
-        *(u16 *)(q + 0xA) = 1;
-        *(u16 *)(q + 0xC) = 1;
-        *(u16 *)(q + 0xE) = 0;
-        *(u16 *)(q + 0x10) = 0;
-        *(u16 *)(q + 2) = *(u16 *)(q + 4);
-        *(void **)(bp + 0x3c) = p;
-    } else {
-        *(void **)(bp + 0x3c) = 0;
+    child = MemAlloc(0x12);
+    if (child) {
+        SpriteTween *tween = child;
+
+        tween->mode = SPRITE_TWEEN_EASE_OUT;
+        tween->done = 0;
+        tween->current = 0;
+        tween->start = 0;
+        tween->step = 1;
+        tween->base = 0;
+        tween->amplitude = 1;
+        tween->duration = 1;
+        tween->from = 0;
+        tween->to = 0;
+        tween->current = tween->start;
     }
+    view->tweenTop = child;
 
-    p = MemAlloc(0x12);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        q[0] = 4;
-        q[1] = 0;
-        *(u16 *)(q + 2) = 0;
-        *(u16 *)(q + 4) = 0;
-        *(u16 *)(q + 6) = 1;
-        *(u16 *)(q + 8) = 0;
-        *(u16 *)(q + 0xA) = 1;
-        *(u16 *)(q + 0xC) = 1;
-        *(u16 *)(q + 0xE) = 0;
-        *(u16 *)(q + 0x10) = 0;
-        *(u16 *)(q + 2) = *(u16 *)(q + 4);
-        *(void **)(bp + 0x40) = p;
-    } else {
-        *(void **)(bp + 0x40) = 0;
+    child = MemAlloc(0x12);
+    if (child) {
+        SpriteTween *tween = child;
+
+        tween->mode = SPRITE_TWEEN_EASE_OUT;
+        tween->done = 0;
+        tween->current = 0;
+        tween->start = 0;
+        tween->step = 1;
+        tween->base = 0;
+        tween->amplitude = 1;
+        tween->duration = 1;
+        tween->from = 0;
+        tween->to = 0;
+        tween->current = tween->start;
     }
+    view->tweenBottom = child;
 
-    p = MemAlloc(0x8);
-    if (p) {
-        *(s32 *)p = 0;
-        *(s32 *)((char *)p + 4) = 0;
+    child = MemAlloc(0x8);
+    if (child) {
+        ((s32 *)child)[0] = 0;
+        ((s32 *)child)[1] = 0;
     }
-    *(void **)(bp + 0x44) = p;
+    view->spritePair = child;
 
-    p = MemAlloc(0x3C);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        *(void **)q = &data_ov003_0220f45c;
-        q[4] = 0xFF;
-        q[5] = 0xFF;
-        q[6] = 0xFF;
-        q[7] = 0;
-        q[8] = 0;
-        q[9] = 0;
-        q[10] = 0;
-        q[11] = 0;
-        *(s32 *)(q + 0x38) = 0;
+    child = MemAlloc(0x3C);
+    if (child) {
+        SceneViewLabelGroup *group = child;
+
+        group->vtable = &gSceneLabelGroupVTable;
+        group->color = -1;
+        group->palette = -1;
+        group->flags = 0xFF;
+        group->unk07 = 0;
+        group->unk08 = 0;
+        group->unk09 = 0;
+        group->unk0A = 0;
+        group->unk0B = 0;
+        group->count = 0;
         for (i = 0; i < 11; i++) {
-            *(s32 *)(q + 0xC + i * 4) = 0;
+            group->glyphs[i] = 0;
         }
-        *(void **)(bp + 0x48) = p;
-    } else {
-        *(void **)(bp + 0x48) = 0;
     }
+    view->labelGroup = child;
 
-    p = MemAlloc(0x2C);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        *(void **)q = &data_ov003_0220f47c;
-        q[4] = 0;
-        *(u16 *)(q + 0x12) = 0;
-        q[0x14] = 8;
-        q[0x15] = 8;
-        q[0x16] = 1;
-        q[0x17] = 8;
-        q[0x18] = 8;
-        q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
-        q[0x21] = 0;
-        *(s32 *)(q + 0x24) = 0;
-        q[0x28] = (unsigned char)(q[0x28] & ~0xE0);
-        q[0x29] = 0;
-        *(void **)(bp + 0x50) = p;
-    } else {
-        *(void **)(bp + 0x50) = 0;
-    }
-    p = *(void **)(bp + 0x50);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        q[0x16] = 2;
-        q[0x14] = 8;
-        q[0x17] = 8;
-        SetTextSpriteValue(q);
-        q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
-        q[0x28] = (unsigned char)((q[0x28] & ~0xE0) | 0x20);
-    }
+    child = MemAlloc(0x2C);
+    if (child) {
+        SceneViewLabel *label = child;
 
-    p = MemAlloc(0x2C);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        *(void **)q = &data_ov003_0220f47c;
-        q[4] = 0;
-        *(u16 *)(q + 0x12) = 0;
-        q[0x14] = 8;
-        q[0x15] = 8;
-        q[0x16] = 1;
-        q[0x17] = 8;
-        q[0x18] = 8;
-        q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
-        q[0x21] = 0;
-        *(s32 *)(q + 0x24) = 0;
-        q[0x28] = (unsigned char)(q[0x28] & ~0xE0);
-        q[0x29] = 0;
-        *(void **)(bp + 0x54) = p;
-    } else {
-        *(void **)(bp + 0x54) = 0;
+        label->vtable = &gHeapObjectVTable;
+        label->kind = 0;
+        label->textId = 0;
+        label->unk14 = 8;
+        label->unk15 = 8;
+        label->unk16 = 1;
+        label->unk17 = 8;
+        label->unk18 = 8;
+        label->flags.first = 0;
+        label->flags.second = 0;
+        label->flags.third = 2;
+        label->unk21 = 0;
+        label->unk24 = 0;
+        label->unk28 = (u8)(label->unk28 & ~0xE0);
+        label->unk29 = 0;
     }
-    p = *(void **)(bp + 0x54);
-    if (p) {
-        unsigned char *q = (unsigned char *)p;
-        q[0x16] = 2;
-        q[0x14] = 8;
-        q[0x17] = 8;
-        SetTextSpriteValue(q);
-        q[0x20] = (unsigned char)((q[0x20] & ~0xE0) | 0x40);
-        q[0x28] = (unsigned char)(q[0x28] & ~0xE0);
-        *(u16 *)(q + 0x12) = 0x270;
-        q[0x21] = 0x9;
-    }
+    view->labelA = child;
+    view->labelA->unk16 = 2;
+    view->labelA->unk14 = 8;
+    view->labelA->unk17 = 8;
+    SetTextSpriteValue(view->labelA, 0);
+    view->labelA->flags.third = 2;
+    view->labelA->unk28 = (u8)((view->labelA->unk28 & ~0xE0) | 0x20);
 
-    *(void **)(bp + 0x68) = HeapAllocBlock((s32)&gHeapObjectVTable);
-    *(void **)(bp + 0x6c) = HeapAllocBlock((s32)&gHeapObjectVTable);
-    AddRecordValue(0x22, 0x1);
+    child = MemAlloc(0x2C);
+    if (child) {
+        SceneViewLabel *label = child;
+
+        label->vtable = &gHeapObjectVTable;
+        label->kind = 0;
+        label->textId = 0;
+        label->unk14 = 8;
+        label->unk15 = 8;
+        label->unk16 = 1;
+        label->unk17 = 8;
+        label->unk18 = 8;
+        label->flags.first = 0;
+        label->flags.second = 0;
+        label->flags.third = 2;
+        label->unk21 = 0;
+        label->unk24 = 0;
+        label->unk28 = (u8)(label->unk28 & ~0xE0);
+        label->unk29 = 0;
+    }
+    view->labelB = child;
+    view->labelB->unk16 = 2;
+    view->labelB->unk14 = 8;
+    view->labelB->unk17 = 8;
+    SetTextSpriteValue(view->labelB, 0);
+    view->labelB->flags.third = 2;
+    view->labelB->unk28 = (u8)(view->labelB->unk28 & ~0xE0);
+    view->labelB->textId = 0x270;
+    view->labelB->unk21 = 9;
+
+    view->mapRecords = HeapAllocBlock(MAP_RECORD_LIST_SIZE);
+    view->downloadedMaps = HeapAllocBlock(MAP_RECORD_LIST_SIZE);
+    AddRecordValue(0x22, 1);
 }
 
 /* Base (non-deleting) destructor of the ov003 battle-scene view: restores the
@@ -514,10 +504,10 @@ s32 func_ov003_021e4e58(s32 arg0) {
 M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
-    extern M2C_UNK data_ov003_0220f45c;
+    extern M2C_UNK gSceneLabelGroupVTable;
     u8 var_r4;
 
-    *arg0 = &data_ov003_0220f45c;
+    *arg0 = &gSceneLabelGroupVTable;
     var_r4 = 0;
     do {
         if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {
@@ -602,10 +592,10 @@ void *DestroyOv003SceneView(void *obj) {
 
 M2C_UNK **func_ov003_021e4fec(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
-    extern M2C_UNK data_ov003_0220f45c;
+    extern M2C_UNK gSceneLabelGroupVTable;
     u8 var_r4;
 
-    *arg0 = &data_ov003_0220f45c;
+    *arg0 = &gSceneLabelGroupVTable;
     var_r4 = 0;
     do {
         if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {

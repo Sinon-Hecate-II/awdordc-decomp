@@ -4,7 +4,7 @@
 
 
 #pragma scheduling on
-void func_ov001_0217416c(void) {
+void Ov001_OpenKeypad(void) {
     extern u8 gKeypadLayout[];
     extern u8 data_ov001_0218f5dc[], data_ov001_0218f5e0[];
     extern u16 data_ov001_0218f628[];
@@ -103,19 +103,19 @@ u8 func_ov001_021744dc(void) {
     return M2C_FIELD(gOv001Keypad, u8 *, 0x60);
 }
 
-void func_ov001_021744f0(s8 arg0) {
+void Ov001_SetKeypadDeleteEnabled(s8 arg0) {
     extern void *gOv001Keypad;
     M2C_FIELD(gOv001Keypad, s8 *, 0x66) = arg0;
 }
 
-void func_ov001_02174504(s8 arg0) {
+void Ov001_SetKeypadDigitsEnabled(s8 arg0) {
     extern void *gOv001Keypad;
     M2C_FIELD(gOv001Keypad, s8 *, 0x67) = arg0;
 }
 
-void func_ov001_02174518(s8 arg0){extern void *gOv001Keypad;M2C_FIELD(gOv001Keypad,s8*,0x68)=arg0;}
+void Ov001_SetKeypadNextEnabled(s8 arg0){extern void *gOv001Keypad;M2C_FIELD(gOv001Keypad,s8*,0x68)=arg0;}
 
-s32 func_ov001_0217452c(void) {
+s32 Ov001_IsKeypadOpen(void) {
     extern void *gOv001Keypad;
     if (gOv001Keypad != 0) {
         return 1;
@@ -190,7 +190,7 @@ s32 pos[2];
 Ov001_GetSpritePosition(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
 pos[0]-=12;
 if(pos[0]>170){func_ov001_02174f68(4,pos[0]);return;}
-func_ov001_02174f68(4,170);Ov001KeypadCommitKey();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
+func_ov001_02174f68(4,170);Ov001_UpdateKeypadCursor();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
 }
 
 void Ov001KeypadTouchHeld(void);
@@ -293,7 +293,7 @@ void Ov001KeypadTouchHeld(void) {
     extern u8 gTouchScreenRect[];
     int TouchRectHeld(void *);
     void BuildTouchRect(void *, void *, void *);
-    int Ov001KeypadCommitKey(void);
+    int Ov001_UpdateKeypadCursor(void);
 
     u8 touchRect[8];
     u8 *keyRect;
@@ -313,7 +313,7 @@ void Ov001KeypadTouchHeld(void) {
             }
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadDigitChars[key];
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)key;
-            Ov001KeypadCommitKey();
+            Ov001_UpdateKeypadCursor();
             return;
         }
         keyRect += 4;
@@ -328,7 +328,7 @@ void Ov001KeypadTouchHeld(void) {
             }
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadAuxCodes[key];
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)(key + KEYPAD_DELETE);
-            Ov001KeypadCommitKey();
+            Ov001_UpdateKeypadCursor();
             return;
         }
         keyRect += 4;
@@ -343,7 +343,7 @@ void Ov001KeypadTouchHeld(void) {
             }
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_CODE) = gKeypadActionCodes[key];
             M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_LAST_KEY) = (u8)(key + KEYPAD_CLEAR);
-            Ov001KeypadCommitKey();
+            Ov001_UpdateKeypadCursor();
             return;
         }
         keyRect += 4;

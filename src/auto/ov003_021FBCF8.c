@@ -1,5 +1,7 @@
 /* 8 functions from 0x021FBCF8 to 0x021FCB70 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "panel.h"
+#include "sound.h"
 typedef struct PanelFlagByte { unsigned char low:3; unsigned char mode:3; unsigned char pending:1; unsigned char high:1; } PanelFlagByte;
 static inline void PanelDispatch(void *p, int slot) { ((void (**)(void *))*(void **)p)[slot](p); }
 
@@ -255,7 +257,7 @@ void func_ov003_021fc26c(void *arg0) {
  void *GetMapRecord(u16);
  void MapSettings_Apply(void *);
  void func_ov003_021fc820(void *);
- void func_ov003_021fc95c(void *);
+ void Ov003_CloseMapPanel(void *);
  u8 value;
  s32 category;
  u16 selected;
@@ -333,7 +335,7 @@ void func_ov003_021fc26c(void *arg0) {
   M2C_FIELD(sprite,s8 *,0x5a)=12;
  }
  func_ov003_021f1bd4();
- func_ov003_021fc95c(arg0);
+ Ov003_CloseMapPanel(arg0);
  func_020d8ccc(selected);
  EnableMapConfirm();
  if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) PlaySoundEffect(0x1000e);
@@ -360,82 +362,55 @@ void func_ov003_021fc820(void *arg0) {
     Link_FlushSend();
 }
 
-void func_ov003_021fc860(void *arg0) {
-M2C_UNK func_ov003_021f1be8(M2C_UNK);
-void func_ov003_021fc95c(void *);
-s32 GetActiveOverlay(void);
-s32 IsLinkSessionActive(void);
-M2C_UNK PlaySoundEffect(s32);
-void DisableMapConfirm(void);
+/* Back action of the ov003 map-select panel: flash the back button, hide the
+ * panel and return to the scene, play the cancel sound unless this is a link
+ * map screen (modes 6-8, or mode 4 in an online session) with an active link,
+ * then clear the map-confirm flag. */
+void Ov003_LeaveMapPanel(void *panelObj) {
+    void func_ov003_021f1be8(void);
+    void Ov003_CloseMapPanel(void *);
+    s32 GetActiveOverlay(void);
+    s32 IsLinkSessionActive(void);
+    M2C_UNK PlaySoundEffect(s32);
+    void DisableMapConfirm(void);
 
-void *p;
-s8 sb;
-u8 ub;
-u32 x;
-s32 a;
-s32 b;
-s32 c;
-s32 special;
-s32 result;
+    Panel *panel;
+    PanelSprite *backButton;
+    s8 timer;
+    u8 step;
+    u32 mode;
+    s32 linkBack;
 
-p = M2C_FIELD(arg0, void **, 0x68);
-p = M2C_FIELD(p, void **, 0xC);
-sb = M2C_FIELD(p, s8 *, 0x5A);
-if (sb >= 0) {
-ub = M2C_FIELD(p, u8 *, 0x59);
-M2C_FIELD(p, s32 *, 0x40) = (s32) ((M2C_FIELD(p, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (ub << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-M2C_FIELD(p, u8 *, 0x5A) = 0xC;
-func_ov003_021f1be8(p);
-func_ov003_021fc95c(arg0);
-}
+    panel = panelObj;
+    backButton = panel->buttons[3];
+    timer = backButton->timer;
+    if (timer >= 0) {
+        step = backButton->colorStep;
+        backButton->color = (backButton->color & ~0x03FC0000) | ((u32) ((u16) (((u32) (step << 0x1C) >> 0x1C) + 1) << 0x18) >> 6);
+        backButton->timer = 0xC;
+    }
+    func_ov003_021f1be8();
+    Ov003_CloseMapPanel(panel);
 
-x = (u32) (M2C_FIELD(arg0, u8 *, 0x3B) << 0x1C) >> 0x1C;
-result = 1;
-special = 1;
-if ((s32) x == 6) {
-a = 1;
-} else {
-a = 0;
-}
-if (!(a & 0xFF)) {
-if ((s32) x == 7) {
-b = 1;
-} else {
-b = 0;
-}
-if (!(b & 0xFF)) {
-special = 0;
-}
-}
-if (special == 0) {
-if ((s32) x == 8) {
-c = 1;
-} else {
-c = 0;
-}
-if (!(c & 0xFF)) {
-result = 0;
-}
+    mode = (u32) (panel->modeBits << 0x1C) >> 0x1C;
+    if (((mode == 6 ? 1 : 0) & 0xff) ||
+        ((mode == 7 ? 1 : 0) & 0xff) ||
+        ((mode == 8 ? 1 : 0) & 0xff)) {
+        linkBack = 1;
+    } else {
+        if (((mode == 4 ? 1 : 0) & 0xff) && GetActiveOverlay() == 2) {
+            linkBack = 1;
+        } else {
+            linkBack = 0;
+        }
+    }
+    if (linkBack == 0 || IsLinkSessionActive() == 0) {
+        PlaySoundEffect(SOUND_MENU_CANCEL);
+    }
+    DisableMapConfirm();
 }
 
-if (result == 0) {
-if ((s32) x == 4) {
-result = (GetActiveOverlay() == 2) ? 1 : 0;
-} else {
-result = 0;
-}
-}
-
-if (result != 0) {
-if (IsLinkSessionActive() != 0) {
-return;
-}
-}
-PlaySoundEffect(0x1000F);
-DisableMapConfirm();
-}
-
-void func_ov003_021fc95c(void *arg0) {
+void Ov003_CloseMapPanel(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
@@ -445,52 +420,48 @@ void func_ov003_021fc95c(void *arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void SetMenuPanelState(void *arg0, u32 arg1) {
+#pragma scheduling off
+void SetMenuPanelState(void *panel, u32 state) {
 void *CreateTextLayer(void *);
 void RenderTextLayerMessage(void *, s32, s32, u32);
 u8 byte;
-u32 r1tmp;
-u32 low;
+u32 stateByte;
+u32 stateBits;
 u32 merged;
-u32 temp;
-void *r0;
-byte = M2C_FIELD(arg0, u8 *, 0x3E);
-r1tmp = arg1 & 0xFFu;
-low = r1tmp << 0x1Du;
-merged = byte | 0x40u;
-temp = merged & ~0x38u;
-M2C_FIELD(arg0, u8 *, 0x3E) = (u8)(temp | (low >> 0x1Au));
-switch (arg1) {
-case 0:
-case 1:
-case 2:
-    return;
+u32 flags;
+void *textLayer;
+byte = M2C_FIELD(panel, u8 *, 0x3E);
+stateByte = (u8)state;
+stateBits = stateByte << 0x1D;
+M2C_FIELD(panel, u8 *, 0x3E) = byte | 0x40u;
+merged = M2C_FIELD(panel, u8 *, 0x3E);
+flags = merged & ~0x38u;
+M2C_FIELD(panel, u8 *, 0x3E) = (u8)(flags | (stateBits >> 0x1Au));
+switch (state) {
 case 3:
-    r0 = CreateTextLayer(arg0);
-    RenderTextLayerMessage(r0, 3, 0xDC00, 0x4200001D);
-    M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
+    textLayer = CreateTextLayer(panel);
+    RenderTextLayerMessage(textLayer, 3, 0xDC00, 0x4200001D);
+    M2C_FIELD(textLayer, s32 *, 0x58) = M2C_FIELD(textLayer, s32 *, 0x58) | 0x400;
     return;
 case 4:
-    r0 = CreateTextLayer(arg0);
-    RenderTextLayerMessage(r0, 2, 0xDC00, 0x4700001E);
-    M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
+    textLayer = CreateTextLayer(panel);
+    RenderTextLayerMessage(textLayer, 2, 0xDC00, 0x4700001E);
+    M2C_FIELD(textLayer, s32 *, 0x58) = M2C_FIELD(textLayer, s32 *, 0x58) | 0x400;
     return;
 case 5:
-    r0 = CreateTextLayer(arg0);
-    RenderTextLayerMessage(r0, 2, 0xDC00, 0x47000020);
-    M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
+    textLayer = CreateTextLayer(panel);
+    RenderTextLayerMessage(textLayer, 2, 0xDC00, 0x47000020);
+    M2C_FIELD(textLayer, s32 *, 0x58) = M2C_FIELD(textLayer, s32 *, 0x58) | 0x400;
     return;
 case 6:
-    r0 = CreateTextLayer(arg0);
-    RenderTextLayerMessage(r0, 2, 0xDC00, 0x47000021);
-    M2C_FIELD(r0, s32 *, 0x58) = M2C_FIELD(r0, s32 *, 0x58) | 0x400;
+    textLayer = CreateTextLayer(panel);
+    RenderTextLayerMessage(textLayer, 2, 0xDC00, 0x47000021);
+    M2C_FIELD(textLayer, s32 *, 0x58) = M2C_FIELD(textLayer, s32 *, 0x58) | 0x400;
     return;
 default:
     return;
 }
 }
-
-#pragma scheduling off
 void func_ov003_021fca84(void *arg0) {
  s32 IsMapConfirmEnabled(); M2C_UNK Clear3DSpriteLayer(M2C_UNK); M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK); M2C_UNK func_020c8e40(); extern void *gCur3DSpriteEngine;
  PanelFlagByte *flags=(PanelFlagByte *)((u8 *)arg0+0x3e);
@@ -498,9 +469,9 @@ void func_ov003_021fca84(void *arg0) {
  flags->pending=0;
  switch(flags->mode) {
  case 0: if(!IsMapConfirmEnabled())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); func_ov003_021f92f4(arg0,0); return;
- case 1: case 2: if(!IsMapConfirmEnabled())return; PanelDispatch(arg0, 7); return;
- case 3: if(!IsMapConfirmEnabled())return; PanelDispatch(arg0, 8); return;
+ case 1: case 2: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[7](self); }; return;
+ case 3: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[8](self); }; return;
  case 4: case 5: case 6: default: return;
  }
 }
-#pragma scheduling reset
+#pragma opt_instruction_scheduling reset

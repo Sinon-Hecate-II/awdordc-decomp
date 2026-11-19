@@ -6,58 +6,64 @@ typedef struct {
     u8 unk_0xa2[1];
 } UnkOv005Selection;
 
-void func_ov005_02215168(s16 arg0) {
+#define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
+
+/* Records screen D-pad down.  On tab 0 (the full list) move the highlight one
+ * record down, skipping locked records and wrapping at the end of the record
+ * table returned by func_020ad570; tabs 1 and 2 step their enabled-only and
+ * shuffled lists instead. */
+void RecordsMenu_SelectNext(s16 record) {
  void *func_020ad570(s32);
- s32 func_ov005_022140f8(s32);
- void func_ov005_022172d8(s32,s32);
- void func_ov005_02215278(s16);
- void func_ov005_02215360(s16);
+ s32 RecordsMenu_IsRecordAvailable(s32);
+ void RecordsMenu_BeginAction(s32,s32);
+ void RecordsMenu_SelectNextEnabled(s16);
+ void RecordsMenu_SelectNextInList(s16);
  extern M2C_UNK gRecordsMenuState;
- switch (M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **,8),s16 *,0x92)) {
+ switch (RECORDS_SCREEN->tab) {
  case 0:
- M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=arg0;
+ RECORDS_SCREEN->highlighted = record;
  do {
- arg0++;
- if (*(s32 *)func_020ad570(arg0)==0) {
- arg0=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);
+ record++;
+ if (*(s32 *)func_020ad570(record) == 0) {
+ record = RECORDS_SCREEN->highlighted;
  break;
  }
- } while (!func_ov005_022140f8(arg0));
- func_ov005_022172d8(arg0,1); break;
- case 1: func_ov005_02215278(arg0); break;
- case 2: func_ov005_02215360(arg0); break;
+ } while (!RecordsMenu_IsRecordAvailable(record));
+ RecordsMenu_BeginAction(record, 1); break;
+ case 1: RecordsMenu_SelectNextEnabled(record); break;
+ case 2: RecordsMenu_SelectNextInList(record); break;
  }
 }
 
-void func_ov005_02215200(s16 arg0) {
- s32 func_ov005_022140f8(s32);
- void func_ov005_022172d8(s32,s32);
+void RecordsMenu_SelectPreviousEnabled(s16 arg0) {
+ s32 RecordsMenu_IsRecordAvailable(s32);
+ void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
  s16 i=arg0;
  do {
  if (--i < 0) i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)-1;
- if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
- func_ov005_022172d8(i,1); return;
+ if (RecordsMenu_IsRecordAvailable(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
+ RecordsMenu_BeginAction(i,1); return;
  }
  } while (i!=arg0);
 }
 
-void func_ov005_02215278(s16 arg0) {
- s32 func_ov005_022140f8(s32);
- void func_ov005_022172d8(s32,s32);
+void RecordsMenu_SelectNextEnabled(s16 arg0) {
+ s32 RecordsMenu_IsRecordAvailable(s32);
+ void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
  s16 i=arg0;
  do {
  if (++i >= M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)) i=0;
- if (func_ov005_022140f8(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
- func_ov005_022172d8(i,1); return;
+ if (RecordsMenu_IsRecordAvailable(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
+ RecordsMenu_BeginAction(i,1); return;
  }
  } while (i!=arg0);
 }
 
-void func_ov005_022152ec(void) {
+void RecordsMenu_SelectPreviousInList(void) {
  void RecordsMenu_ShuffleList(s32);
- void func_ov005_022172d8(s32,s32);
+ void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
  if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
  M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)--;
@@ -65,12 +71,12 @@ void func_ov005_022152ec(void) {
  RecordsMenu_ShuffleList(-1);
  M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)-1;
  }
- func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ RecordsMenu_BeginAction(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
 }
 
-void func_ov005_02215360(s16 arg0) {
+void RecordsMenu_SelectNextInList(s16 arg0) {
  void RecordsMenu_ShuffleList(s32);
- void func_ov005_022172d8(s32,s32);
+ void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
  if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
  M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)++;
@@ -78,7 +84,7 @@ void func_ov005_02215360(s16 arg0) {
  RecordsMenu_ShuffleList(-1);
  M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=0;
  }
- func_ov005_022172d8(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ RecordsMenu_BeginAction(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
 }
 
 void func_ov005_022153d4(u8 *arg0) {
@@ -170,13 +176,13 @@ void func_ov005_022155c0(u8 *arg0) {
 }
 
 void func_ov005_022155e8(u8 *arg0) {
- s32 func_ov005_022140f8(s32);
+ s32 RecordsMenu_IsRecordAvailable(s32);
  void RecordsMenu_DrawList(s32);
  void RecordsMenu_ShuffleList(s32);
  extern M2C_UNK gRecordsMenuState;
  u8 *flags;
  s32 i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0;
- if (!func_ov005_022140f8(i)) return;
+ if (!RecordsMenu_IsRecordAvailable(i)) return;
  flags=((UnkOv005Selection *)M2C_FIELD(&gRecordsMenuState,void **,8))->unk_0xa2;
  flags[i] = flags[i] == 0 ? 1 : 0;
  RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));

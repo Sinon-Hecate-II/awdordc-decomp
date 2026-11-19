@@ -104,7 +104,7 @@ M2C_FIELD(&data_0213dc60,u16 *,16)=2;
 M2C_FIELD(&data_0213dc60,u16 *,18)=0;
 M2C_FIELD(&data_0213dc60,void **,20)=&data_0213dc8c;
 M2C_FIELD(&data_0213dc60,s32 *,24)=0;
-func_02021d14(func_02021264(&data_0213dc60),&data_0213dc78);
+func_02021d14(GetLocalIpAddress(&data_0213dc60),&data_0213dc78);
 if(!M2C_FIELD(&data_0213dc60,s32 *,24))return 0;
 M2C_FIELD(&data_0213dc60,void **,44)=&data_0213dc78;
 M2C_FIELD(&data_0213dc60,u16 *,18)=4;
@@ -156,7 +156,7 @@ void ghiRecv(void) {
     func_0204968c(func_020215d4(), -1);
 }
 
-void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 func_020215f8(int,int,int,int,u8 *);s32 r;*e=*f;r=func_020215f8(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
+void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 SocketRecvFromAddress(int,int,int,int,u8 *);s32 r;*e=*f;r=SocketRecvFromAddress(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
 
 void ghiSend(void) {
     s32 func_020216a8();
@@ -180,13 +180,13 @@ void func_020498a4(void) {
     func_0204968c(0, -1);
 }
 
-void func_020498b8(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
-    s32 func_02021828(M2C_UNK);
+void ghiGetSockName(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
+    s32 SocketGetSockName(M2C_UNK);
     M2C_UNK func_0204968c(s32, M2C_UNK);
     s32 temp_r0;
 
     *arg1 = (u8) *arg2;
-    temp_r0 = func_02021828(arg0);
+    temp_r0 = SocketGetSockName(arg0);
     *arg2 = (s32) *arg1;
     func_0204968c(temp_r0, -1);
 }
@@ -237,12 +237,18 @@ void SeedRandom(s32 arg0) {
 
 s32 RandomRange(s32 a,s32 b){s32 n=b-a;s32 result;if(n==0)return a;result=func_020499c0();result%=n;return result+a;}
 
-void Base64PackGroup(signed char *src,unsigned char *dst,int n) {
-unsigned char b[3]; int i;
-for(i=0;i<n;i++)b[i]=src[i];
-for(;i<3;i++)b[i]=0;
-dst[0]=b[0]>>2;
-dst[1]=((b[0]&3)<<4)|(b[1]>>4);
-dst[2]=((b[1]&15)<<2)|(b[2]>>6);
-dst[3]=b[2]&63;
+/* Pack up to `count` bytes of `src` into the four base64 digit values of
+ * `dst`: the group's bytes are read into a 3-byte buffer (padded with zeros
+ * when fewer are given) and split into 6-bit groups, most significant first.
+ * Base64Encode turns the digits into the alphabet's characters. */
+void Base64PackGroup(signed char *src, unsigned char *dst, int count) {
+    unsigned char group[3];
+    int i;
+
+    for (i = 0; i < count; i++) group[i] = src[i];
+    for (; i < 3; i++) group[i] = 0;
+    dst[0] = group[0] >> 2;
+    dst[1] = ((group[0] & 3) << 4) | (group[1] >> 4);
+    dst[2] = ((group[1] & 15) << 2) | (group[2] >> 6);
+    dst[3] = group[2] & 63;
 }

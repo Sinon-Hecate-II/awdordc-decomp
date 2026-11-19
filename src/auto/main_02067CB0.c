@@ -11,8 +11,8 @@ char *ParseScanConversion(char *,ScanSpec677b8 *);
 u32 ScanUint(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 u64 func_0206a76c(int,int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *,s32 *);
 f64 ScanFloatStrtod(int,s32 (*)(void *,s32,s32),void *,s32 *,s32 *);
-f64 func_0207191c(f32);
-f32 func_0207044c(f64);
+f64 _f2d(f32);
+f32 _d2f(f64);
 int func_02065020(void *,const char *,int);
 #pragma opt_peephole off
 s32 func_02067cb0(s32 (*get)(void *,s32,s32),void *ctx,s32 arg2,s32 arg3,s32 safe){
@@ -28,7 +28,10 @@ while((fc=*fmt)!=0){
 if(ScanSpace67cb0(fc)){
 do{fc=*++fmt;}while(ScanSpace67cb0(fc));
 if(failed)continue;
-do{nread++;ch=get(ctx,0,0);}while(ScanSpace67cb0(ch));
+goto readWhitespace;
+skipWhitespace: nread++;
+readWhitespace: ch=get(ctx,0,0);
+{s32 bits; if(ch<0 || ch>=128) bits=0; else bits=gCharClassTable[(s32)ch]&0x100; if(bits!=0) goto skipWhitespace;}
 get(ctx,ch,1);continue;
 }
 if(fc!='%' && !failed){
@@ -89,7 +92,7 @@ if(!safe)goto done;
 failed=1;value=0;magnitude=0;
 }else{
 nread+=used;
-if(negative){if(spec.length!=7)value=-value;else magnitude=-magnitude;}
+if(negative){if(spec.length==7)magnitude=-magnitude;else value=-value;}
 }
 }
 if(dst){
@@ -107,16 +110,16 @@ if(!failed)assigned++;conversions++;
 }
 break;
 case 'a':case 'A':case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':
-if(failed)real=func_0207191c(*(f32 *)&gFloatNanBits);
+if(failed)real=_f2d(*(f32 *)&gFloatNanBits);
 else{
 real=ScanFloatStrtod(spec.width,get,ctx,&used,&overflow);
 if(used==0){
 if(!safe)goto done;
-failed=1;real=func_0207191c(*(f32 *)&gFloatNanBits);
+failed=1;real=_f2d(*(f32 *)&gFloatNanBits);
 }else nread+=used;
 }
 if(dst){
-switch(spec.length){case 0:*(f32 *)dst=func_0207044c(real);break;case 8:*(f64 *)dst=real;break;case 9:*(f64 *)dst=real;break;}
+switch(spec.length){case 0:*(f32 *)dst=_d2f(real);break;case 8:*(f64 *)dst=real;break;case 9:*(f64 *)dst=real;break;}
 if(!failed)assigned++;conversions++;
 }
 break;
@@ -150,16 +153,20 @@ if(!used)goto done;
 conversions++;break;
 case '%':
 if(failed)break;
-ch=get(ctx,0,0);
-while(ScanSpace67cb0(ch)){nread++;ch=get(ctx,0,0);}
+goto readPercent;
+skipBeforePercent: nread++;
+readPercent: ch=get(ctx,0,0);
+{s32 bits; if(ch<0 || ch>=128) bits=0; else bits=gCharClassTable[(s32)ch]&0x100; if(bits!=0) goto skipBeforePercent;}
 if(ch!='%'){
 get(ctx,ch,1);if(!safe)goto done;failed=1;
 }else nread++;
 break;
 case 's':
 if(!failed){
-ch=get(ctx,0,0);
-while(ScanSpace67cb0(ch)){nread++;ch=get(ctx,0,0);}
+goto readString;
+skipBeforeString: nread++;
+readString: ch=get(ctx,0,0);
+{s32 bits; if(ch<0 || ch>=128) bits=0; else bits=gCharClassTable[(s32)ch]&0x100; if(bits!=0) goto skipBeforeString;}
 get(ctx,ch,1);
 }
 case '[':

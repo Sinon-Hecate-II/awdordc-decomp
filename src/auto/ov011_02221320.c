@@ -18,27 +18,29 @@ s32 func_ov011_02221338(s32 arg0) {
     return arg0;
 }
 
+#pragma scheduling off
 void ConfigureIntroScreens(void *arg0) {
     M2C_UNK func_020822b8(u16 *);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
-    extern s32 data_027e01d8;
+    extern s32 gCur3DSpriteEngine;
     extern M2C_UNK data_ov011_02227f08;
     typedef struct { u16 a, b, c, d, e, f; } T;
-    T first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
+    T first;
+    s32 mainEngine;
     T second;
     s32 temp_r4;
+    mainEngine = g3DSpriteEngineMain;
+    first = M2C_FIELD(&data_ov011_02227f08, T *, 0x12);
     second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
-    temp_r4 = data_027e01d8;
-    data_027e01d8 = g3DSpriteEngineMain;
+    temp_r4 = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = mainEngine;
     func_020822b8((u16 *)&first);
-    data_027e01d8 = g3DSpriteEngineSub;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
     func_020822b8((u16 *)&second);
-    data_027e01d8 = temp_r4;
+    gCur3DSpriteEngine = temp_r4;
 }
-
-#pragma opt_common_subs on
-#pragma opt_strength_reduction off
+#pragma scheduling reset
 /* Initialise the intro overlay's display: configure the VRAM banks, both 3D
    sprite engines and the intro screen configurations, then start the logo
    animation in its initial state. */
@@ -53,7 +55,7 @@ void InitIntroScene(void *logo) {
     M2C_UNK func_020032bc(s32);
     M2C_UNK ApplyScreenMode(s32);
     M2C_UNK Reset3DSpriteBankState(void);
-    M2C_UNK func_01ff9b38(void);
+    M2C_UNK Apply3DSpriteBanks(void);
     void ConfigureIntroScreens(void *);
     void InitIntroLogo(void *);
 
@@ -97,7 +99,7 @@ void InitIntroScene(void *logo) {
         *(volatile u16 *)((char *)gCur3DSpriteEngine + 0x44) = 0;
         ApplyScreenMode(3);
         Reset3DSpriteBankState();
-        func_01ff9b38();
+        Apply3DSpriteBanks();
     }
     gCur3DSpriteEngine = savedEngine;
     *((u8 *)logo + 0x38) = 0;

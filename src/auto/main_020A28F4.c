@@ -1,82 +1,92 @@
 /* 50 functions from 0x020A28F4 to 0x020A38F4 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "sound.h"
 
 typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
 
 s32 func_020a28f4(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
-    extern M2C_UNK data_0211fbfd;
-    extern s16 data_0211fbf6;
-    s32 func_020a27b8(s32, s32);
+    extern M2C_UNK gCoZoneKindEnabled;
+    extern s16 gCoZoneDefensePct;
+    s32 GetCoZoneBonusIndex(s32, s32);
     s32 index;
 
-    index = func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
+    index = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
     if (index == -1) {
         return 0;
     }
     index *= 0x48;
-    if (!*(s8 *)(arg0 + ((s32)&data_0211fbfd + index))) {
+    if (!*(s8 *)(arg0 + ((s32)&gCoZoneKindEnabled + index))) {
         return 0;
     }
-    return M2C_FIELD(&data_0211fbf6, s16 *, index);
+    return M2C_FIELD(&gCoZoneDefensePct, s16 *, index);
 }
 
 s32 func_020a296c(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
-    extern M2C_UNK data_0211fbfd;
-    extern s8 data_0211fbee;
-    s32 func_020a27b8(s32, s32);
+    extern M2C_UNK gCoZoneKindEnabled;
+    extern s8 gCoZoneMoveBonus;
+    s32 GetCoZoneBonusIndex(s32, s32);
     s32 index;
 
-    index = func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
+    index = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
     if (index == -1) {
         return 0;
     }
     index *= 0x48;
-    if (!*(s8 *)(arg0 + ((s32)&data_0211fbfd + index))) {
+    if (!*(s8 *)(arg0 + ((s32)&gCoZoneKindEnabled + index))) {
         return 0;
     }
-    return M2C_FIELD(&data_0211fbee, s8 *, index);
+    return M2C_FIELD(&gCoZoneMoveBonus, s8 *, index);
 }
 
-s32 func_020a29e4(s32 arg0, s32 arg1, s32 arg2) {
+/* Bonus the CO zone of `commander` gives unit kind `kind`'s maximum attack
+ * range: only kinds the commander's zone covers and kinds that already attack
+ * at range 2 or more receive it. */
+s32 GetCoZoneRangeBonus(s32 kind, s32 commander, s32 powerActive) {
     extern s32 *gCurrentMap;
-    extern M2C_UNK data_0211fbfd;
-    extern s8 data_0211fbf2;
-    s32 func_020a27b8(s32, s32);
+    extern M2C_UNK gCoZoneKindEnabled;
+    extern s8 gCoZoneRangePct;
+    s32 GetCoZoneBonusIndex(s32, s32);
     s32 GetUnitKindMaxAttackRange(s32);
-    s32 index;
+    s32 row;
 
-    index = func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
-    if (index == -1) {
+    row = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + commander * MAP_PLAYER_STRIDE, s32 *, PLAYER_REC_SPRITE + MAP_PLAYER_STATES) << 24) >> 24), powerActive);
+    if (row == -1) {
         return 0;
     }
-    index *= 0x48;
-    if (!*(s8 *)(arg0 + ((s32)&data_0211fbfd + index))) {
+    row *= CO_ZONE_RECORD_STRIDE;
+    if (!*(s8 *)(kind + ((s32)&gCoZoneKindEnabled + row))) {
         return 0;
     }
-    if (GetUnitKindMaxAttackRange(arg0) < 2) {
+    if (GetUnitKindMaxAttackRange(kind) < 2) {
         return 0;
     }
-    return M2C_FIELD(&data_0211fbf2, s8 *, index);
+    return M2C_FIELD(&gCoZoneRangePct, s8 *, row);
 }
 
-s32 func_020a2a70(s32 a){
-extern s32 *gCurrentMap;
-switch((u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<24)>>24){
-case 1:case 2:case 3:case 4:case 5:case 6:case 7:return 0x10002;
-case 8:case 9:case 10:case 11:case 12:case 13:case 14:return 0x10003;
-default:return 0x10003;
-}
+/* Music track that replaces the map theme while the player's CO power is
+ * active: armies 1..7 use the first CO-power theme, every other army the
+ * second. */
+s32 GetCoPowerMusicTrack(s32 player) {
+    extern s32 *gCurrentMap;
+    switch ((u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24) {
+    case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+        return SOUND_CO_POWER_THEME_1;
+    case 8: case 9: case 10: case 11: case 12: case 13: case 14:
+        return SOUND_CO_POWER_THEME_2;
+    default:
+        return SOUND_CO_POWER_THEME_2;
+    }
 }
 
 s32 func_020a2b00(u8 a) {
     extern s32 *gCurrentMap;
     extern s32 data_02126180;
     s32 r;
-    if (func_020a33c4(a)) {
-        return func_020a2a70(a);
+    if (GetPlayerArmyVariant(a)) {
+        return GetCoPowerMusicTrack(a);
     }
     r = func_020a8ac4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), a);
     if (r) {
@@ -93,10 +103,10 @@ void func_020a2b84(s32 arg0) {
 }
 
 void func_020a2b98(s32 a,s32 b){
-s32 func_020a334c(s32);
+s32 GetPlayerArmyVariantIfSet(s32);
 extern u16 gMapConfig;
 if(((u32)(gMapConfig<<19)>>31)==0)return;
-if(func_020a334c(a)!=0)return;
+if(GetPlayerArmyVariantIfSet(a)!=0)return;
 func_020a3684(a,b);
 }
 
@@ -104,7 +114,7 @@ s32 GetCoPowerMeterPointsPerStar(void) {
     return 0xA;
 }
 
-u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 func_020a334c(s32);s32 func_020a3518(s32);s32 GetCoPowerMeterCost(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(func_020a334c(a))return 0;if(!GetCoPowerMeterCost(a,2))return 0;t=func_020a3518(a);if(t>=GetCoPowerMeterCost(a,2))r=1;else r=0;return r;}
+u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 GetPlayerArmyVariantIfSet(s32);s32 func_020a3518(s32);s32 GetCoPowerMeterCost(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(GetPlayerArmyVariantIfSet(a))return 0;if(!GetCoPowerMeterCost(a,2))return 0;t=func_020a3518(a);if(t>=GetCoPowerMeterCost(a,2))r=1;else r=0;return r;}
 
 void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
@@ -309,7 +319,7 @@ u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;
 
 u8 *GetPlayerSelectedUnit(s32 a){extern s32 *gCurrentMap;s32 base=*gCurrentMap;s32 p=base+0x67a4+140*a;u32 b;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;b=M2C_FIELD(p,u8 *,112);if(!b)return 0;return (u8 *)(base+0x59a4+14*b);}
 
-s32 func_020a334c(s32 a) {
+s32 GetPlayerArmyVariantIfSet(s32 a) {
     extern s32 *gCurrentMap;
     s32 p = *gCurrentMap + 0x67a4 + 140 * a;
     Word020a334c *w = (Word020a334c *)(p + 108);
@@ -319,7 +329,7 @@ s32 func_020a334c(s32 a) {
 
 void func_020a338c(s32 a,s32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0xc00)|((u32)(b<<30)>>20);}
 
-s32 func_020a33c4(s32 a){
+s32 GetPlayerArmyVariant(s32 a){
 extern s32 *gCurrentMap;
 return (u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<20)>>30;
 }
@@ -453,20 +463,23 @@ s32 func_020a3790(s32 arg0) {
     return var_r0;
 }
 
-void func_020a379c(void *a){extern s32 *gCurrentMap;void (*cb)(u8,u8);M2C_FIELD(*gCurrentMap,u8 *,0x5158)=M2C_FIELD(a,s16 *,0x36);if(M2C_FIELD(a,s16 *,0x38))func_020cd754((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));cb=M2C_FIELD(gCurrentMap[1],void (**)(u8,u8),0x58);if(!cb)return;cb(M2C_FIELD(*gCurrentMap,u8 *,0x5158),M2C_FIELD(*gCurrentMap,u8 *,0x5157));}
+void func_020a379c(void *a){extern s32 *gCurrentMap;void (*cb)(u8,u8);M2C_FIELD(*gCurrentMap,u8 *,0x5158)=M2C_FIELD(a,s16 *,0x36);if(M2C_FIELD(a,s16 *,0x38))FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));cb=M2C_FIELD(gCurrentMap[1],void (**)(u8,u8),0x58);if(!cb)return;cb(M2C_FIELD(*gCurrentMap,u8 *,0x5158),M2C_FIELD(*gCurrentMap,u8 *,0x5157));}
 
 void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:PlaySoundEffect(0xd4);return;case 1:PlaySoundEffect(0xd6);return;case 2:PlaySoundEffect(0xd5);return;case 3:PlaySoundEffect(0xd7);return;default:return;}}
 
 #pragma opt_instruction_scheduling off
+/* Ticks down the current player's weather-change delay and reports whether the
+ * weather may change now: the delay reached zero and no active player still has a
+ * reset weather pending. */
 s32 IsWeatherChangeDue(void) {
 extern s32 *gCurrentMap; s32 IsPlayerActive(s32);
-u8 *arr; s32 idx,value,i;
-arr=(u8*)(*gCurrentMap+0x515c);
-idx=M2C_FIELD(*gCurrentMap,u16*,0x52a4)-1;
-value=arr[idx];
-if(value>0){value--;arr[idx]=value;}
-if(value>0)return 0;
-for(i=1;i<5;i++){if(IsPlayerActive(i)!=0){if(M2C_FIELD(*gCurrentMap+i,u8*,0x515b)!=0)return 0;}}
+u8 *delay; s32 player,turnsLeft,i;
+delay=(u8*)(*gCurrentMap+MAP_WEATHER_DELAY);
+player=M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)-1;
+turnsLeft=delay[player];
+if(turnsLeft>0){turnsLeft--;delay[player]=turnsLeft;}
+if(turnsLeft>0)return 0;
+for(i=1;i<MAX_PLAYERS;i++){if(IsPlayerActive(i)!=0){if(M2C_FIELD(*gCurrentMap+i,u8*,MAP_WEATHER_RESET)!=0)return 0;}}
 return 1;
 }
 #pragma opt_instruction_scheduling reset

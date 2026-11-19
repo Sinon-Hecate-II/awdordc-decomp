@@ -30,11 +30,11 @@ void InitNasLoginKey(void *record) {
 
 s32 func_020322ec(void *a) {
 void GetWfcProfileIds(void *);
-u64 func_02031d90(void *);
+u64 GetNasPlayerCode(void *);
 u32 s[5];
 GetWfcProfileIds(s);
-if(s[4]) return *(u64 *)&s[0]==func_02031d90(a);
-return *(u64 *)&s[2]==func_02031d90(a);
+if(s[4]) return *(u64 *)&s[0]==GetNasPlayerCode(a);
+return *(u64 *)&s[2]==GetNasPlayerCode(a);
 }
 
 s32 func_02032358(s32 a) {
@@ -47,7 +47,7 @@ s32 func_02032370(s32 arg0) {
     return func_02032358(arg0 + 0x10);
 }
 
-s32 func_02032380(void) {
+s32 IsPlayerRecordPresent(void) {
     s32 func_02031e28();
     if (func_02031e28() != 0) {
         return 1;
@@ -56,8 +56,8 @@ s32 func_02032380(void) {
 }
 
 void func_02032398(void) {
-    M2C_UNK func_02032380();
-    func_02032380();
+    M2C_UNK IsPlayerRecordPresent();
+    IsPlayerRecordPresent();
 }
 
 void func_020323a4(void) {
@@ -85,12 +85,12 @@ s32 func_020323f4(void *arg0) {
 s32 func_02032424(void *a) {
 s32 func_02031e28(void *);
 void GetWfcProfileIds(void *);
-u64 func_02031d90(void *);
+u64 GetNasPlayerCode(void *);
 u32 s[5];
 if(func_02031e28((u8 *)a+0x10)==0)return 1;
 GetWfcProfileIds(s);
 if(s[4]==0)return 0;
-return *(u64 *)&s[0]==func_02031d90((u8 *)a+0x10);
+return *(u64 *)&s[0]==GetNasPlayerCode((u8 *)a+0x10);
 }
 
 void SetNasProfileKey(void *a,Unk032Record *b,s32 c) {
@@ -192,12 +192,12 @@ FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
 /* Compares two NAS session/profile records (Unk032Record).  Records of
  * different kinds never match; keyed records compare their whole key, joined
  * records their profile id, and gpi records their encoded gpi user id. */
-s32 func_02032710(void *a,void *b){
-s32 func_02031e28(void *); s32 func_02031dcc(void *); u64 func_02031d90(void *); s32 func_02031db0(void *); u64 func_02031db8(void *);
+s32 PlayerRecordsEqual(void *a,void *b){
+s32 func_02031e28(void *); s32 func_02031dcc(void *); u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *); u64 func_02031db8(void *);
 s32 kind=func_02031e28(a);
 if(kind!=func_02031e28(b))return 0;
 if(kind==3)return func_02031dcc(a)==func_02031dcc(b);
-if(kind==1){if(func_02031d90(a)==func_02031d90(b) && func_02031db0(a)==func_02031db0(b))return 1;return 0;}
+if(kind==1){if(GetNasPlayerCode(a)==GetNasPlayerCode(b) && GetNasRecordCheckWord(a)==GetNasRecordCheckWord(b))return 1;return 0;}
 if(kind==2)return func_02031db8(a)==func_02031db8(b);
 return 0;
 }
@@ -271,16 +271,18 @@ TaskCreate(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK,NasConnectTask,&gN
 TaskWake(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
-void func_02032a84(void) {
-M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *); M2C_UNK func_02033f3c(s32); M2C_UNK OS_JoinThread(void *);
+/* Ask a running NAS connection to stop: set its abort flag under the connection
+ * mutex, abort the HTTP client it is using, and wait for its task to finish. */
+void NasAbort(void) {
+M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *); M2C_UNK HttpClientAbort(void *); M2C_UNK OS_JoinThread(void *);
 extern M2C_UNK gNasConnection;
 if(!M2C_FIELD(&gNasConnection,void **,8))return;
-LockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
-M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x13f0)=1;
-UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))func_02033f3c(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
-if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1384))return;
-OS_JoinThread(M2C_FIELD(&gNasConnection,void **,8)+0x1318);
+LockMutex(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_MUTEX);
+M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_ABORT)=1;
+UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_MUTEX);
+if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_HANDLE))HttpClientAbort(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_HANDLE));
+if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_TASK_ID))return;
+OS_JoinThread(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
 void func_02032b10(void) {
@@ -313,32 +315,33 @@ UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
 return result;
 }
 
-void func_02032be4(void *arg0) {
+/* Copies the NAS connection's result block (its head word is the NAS result
+ * status) out to `result`, or zeroes it when no connection is open, and
+ * normalizes that head word: a word outside the NAS status range becomes
+ * NAS_STATUS_UNKNOWN, and a failure code is handed back negated. */
+void Nas_GetResult(void *result) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gNasConnection;
+    s32 code;
 
-    void *p = M2C_FIELD(&gNasConnection, void **, 8);
-    if (p == 0) {
-        MI_CpuFill8(arg0, 0, 0x1C4);
+    if (M2C_FIELD(&gNasConnection, void **, 8) == 0) {
+        MI_CpuFill8(result, 0, NAS_CONN_STATUS_SIZE);
     }
-        p = M2C_FIELD(&gNasConnection, void **, 8);
-        MI_CpuCopy8((u8 *)p + 8 + 0x1000, arg0, 0x1C4);
-    {
-        s32 v = M2C_FIELD(arg0, s32 *, 0);
-        if (v < 0x4E20 || v >= 0x7530) {
-            M2C_FIELD(arg0, s32 *, 0) = 0x5206;
-        }
-        v = M2C_FIELD(arg0, s32 *, 0);
-        if (v >= 0x4E84) {
-            M2C_FIELD(arg0, s32 *, 0) = -v;
-        }
+    MI_CpuCopy8((u8 *)M2C_FIELD(&gNasConnection, void **, 8) + NAS_CONN_STATUS, result, NAS_CONN_STATUS_SIZE);
+    code = M2C_FIELD(result, s32 *, 0);
+    if (code < NAS_STATUS_BASE || code >= NAS_STATUS_LIMIT) {
+        M2C_FIELD(result, s32 *, 0) = NAS_STATUS_UNKNOWN;
+    }
+    code = M2C_FIELD(result, s32 *, 0);
+    if (code >= NAS_STATUS_ERROR_MIN) {
+        M2C_FIELD(result, s32 *, 0) = -code;
     }
 }
 
 s32 NasConnect(s32 arg0){
 extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
-s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 func_02033de8(void *);s32 func_02006028(s32);void HttpClientStartTask(void *,s32);
+s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 HttpAppendConnectionHeaders(void *);s32 func_02006028(s32);void HttpClientStartTask(void *,s32);
 if(StringCompare(M2C_FIELD(&gNasServer,void **,0),&data_020fb35c))M2C_FIELD(&gNasServer,s32 *,20)=1;
 { void *p=M2C_FIELD(&gNasConnection,void **,8);
 M2C_FIELD(&gNasServer,s32 *,12)=M2C_FIELD(p,s32 *,0x120c);
@@ -348,7 +351,7 @@ if(HttpClientInit(M2C_FIELD(p,void **,0x1314),(const void *)&gNasServer))return 
 if(arg0==1)GetWfcProfile(&data_0213d120);
 M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004)=func_020334d8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x1200,(u8 *)M2C_FIELD(&gNasConnection,void **,8)+0x11cc);
 if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004))return 4;
-if(func_02033de8(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
+if(HttpAppendConnectionHeaders(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314)))return 4;
 HttpClientStartTask(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),func_02006028(M2C_FIELD(&gSocketManager,s32 *,4))-1);
 return 0;
 }

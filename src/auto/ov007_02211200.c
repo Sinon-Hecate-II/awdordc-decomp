@@ -33,7 +33,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();LoadUiGraphicsBank(4);RefreshCursorCell();ResetMapUnits();func_020a45cc();func_020a23c4();func_020d1c58();InitPlayerTurnState();
+ LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();func_020a45cc();func_020a23c4();BeginPlayerPhase();InitPlayerTurnState();
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -615,7 +615,7 @@ M2C_FIELD(&gMapEditorState,u8 *,MAP_EDITOR_PLAYER_COUNT)=0;
 for(player=0;player<5;player++){if(GetPlayerTeam(player)==1)M2C_FIELD(&gMapEditorState,u8 *,MAP_EDITOR_PLAYER_COUNT)++;}
 }
 
-u8 func_ov007_0221216c(s32 arg0) {
+u8 MapEditor_PlayerHasTeam(s32 arg0) {
     s32 GetPlayerTeam();
     extern u8 gMapEditorState;
     u8 var_r0;

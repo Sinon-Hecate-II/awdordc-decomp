@@ -528,11 +528,11 @@ void func_02088e7c(void *arg0, s32 arg1) {
 
 void func_02088e84(void *p,s16 a,s16 b,s16 c,s32 d){func_02088e5c(p,a,b);func_02088e70(p,c,d);}
 
-void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void func_02088f1c(void *);func_02088e5c(p,c,d);func_02088e70(p,a,b);func_02088e68(p,e);func_02088f1c(p);}
+void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void Show3DSpriteSlide(void *);func_02088e5c(p,c,d);func_02088e70(p,a,b);func_02088e68(p,e);Show3DSpriteSlide(p);}
 
-void func_02088eec(void *p,s8 a){void func_02088f1c(void *);func_02088e5c(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);func_02088f1c(p);}
+void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);func_02088e5c(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);Show3DSpriteSlide(p);}
 
-void func_02088f1c(void *p){if(!M2C_FIELD(p,u8 *,0x4e)){M2C_FIELD(p,s16 *,0x34)=M2C_FIELD(p,s16 *,0x50);M2C_FIELD(p,s16 *,0x36)=M2C_FIELD(p,s16 *,0x52);M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)&=~0xc0;Show3DSprite(p);return;}if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==2)return;M2C_FIELD(p,s8 *,0x4c)=0;M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0xc0)|0x80;}
+void Show3DSpriteSlide(void *p){if(!M2C_FIELD(p,u8 *,0x4e)){M2C_FIELD(p,s16 *,0x34)=M2C_FIELD(p,s16 *,0x50);M2C_FIELD(p,s16 *,0x36)=M2C_FIELD(p,s16 *,0x52);M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)&=~0xc0;Show3DSprite(p);return;}if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==2)return;M2C_FIELD(p,s8 *,0x4c)=0;M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0xc0)|0x80;}
 
 void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
 

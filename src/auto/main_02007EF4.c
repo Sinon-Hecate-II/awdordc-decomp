@@ -253,14 +253,14 @@ do {acc|=val<<pos;pos^=8;if(!pos){*out++=acc;acc=0;}}while(--cnt>0);
 #pragma thumb off
 void func_02008538(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 func_02007d20(s32, s32);
-    void func_02007da4(s32, s32, s32, s32);
-    void func_01ff8480(s32, s32, s32, s32);
+    void DmaValidateTransfer(s32, s32, s32, s32);
+    void DmaStartTransferLocked(s32, s32, s32, s32);
 
     s32 off;
     volatile u32 *p;
 
     func_02007d20(arg0, -1);
-    func_02007da4(arg0, arg1, arg3, 0x1000000);
+    DmaValidateTransfer(arg0, arg1, arg3, 0x1000000);
 
     if (arg3 != 0) {
         off = arg0;
@@ -274,12 +274,12 @@ void func_02008538(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             return;
         }
 
-        func_01ff8480(arg0, arg1, arg2, 0xaf000001);
+        DmaStartTransferLocked(arg0, arg1, arg2, 0xaf000001);
         return;
     }
 }
 
-void func_020085ac(void *arg0, s32 arg1, u32 *arg2) {
+void InitRleDecompress(void *arg0, s32 arg1, u32 *arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, u32 *, 4) = (u32) ((u32) *arg2 >> 8);
     M2C_FIELD(arg0, s8 *, 0xB) = 0;
@@ -288,7 +288,7 @@ void func_020085ac(void *arg0, s32 arg1, u32 *arg2) {
     M2C_FIELD(arg0, s8 *, 0xA) = 0;
 }
 
-void func_020085d4(void *arg0, s32 arg1, u32 *arg2) {
+void InitLz77Decompress(void *arg0, s32 arg1, u32 *arg2) {
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, u32 *, 4) = (u32) ((u32) *arg2 >> 8);
     M2C_FIELD(arg0, s8 *, 0xB) = 0;
@@ -301,7 +301,7 @@ void func_020085d4(void *arg0, s32 arg1, u32 *arg2) {
 
 #pragma push
 #pragma opt_propagation off
-void func_02008604(void *arg0,s32 arg1,s32 *arg2) {
+void InitHuffmanDecompress(void *arg0,s32 arg1,s32 *arg2) {
 M2C_FIELD(arg0,s32 *,0)=arg1;
 M2C_FIELD(arg0,u32 *,4)=(u32)*arg2>>8;
 M2C_FIELD(arg0,s8 *,0x18)=(u32)(*arg2<<28)>>28;
@@ -313,7 +313,7 @@ M2C_FIELD(arg0,s32 *,0xc)=0;
 M2C_FIELD(arg0,s8 *,0x16)=0;
 }
 #pragma pop
-s32 func_0200864c(void *arg0,u8 *src,s32 size){
+s32 RleDecompress8Bit(void *arg0,u8 *src,s32 size){
  u8 *dst=M2C_FIELD(arg0,u8**,0);s32 remaining=M2C_FIELD(arg0,s32*,4);u32 hdr=M2C_FIELD(arg0,u8*,11);s32 cnt=M2C_FIELD(arg0,u16*,12);
  for(;;){
  if(!(hdr&128)){while(cnt>0){u8 val;cnt--;val=*src++;remaining--;*dst++=val;if(--size==0)goto done;}}
@@ -325,26 +325,28 @@ done:M2C_FIELD(arg0,u8**,0)=dst;M2C_FIELD(arg0,s32*,4)=remaining;M2C_FIELD(arg0,
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_02008700(void *arg0,u8 *src,s32 size){
+s32 RleDecompress16Bit(void *arg0,u8 *src,s32 size){
  struct S { u16 *out; s32 remain; u16 acc; u8 pos; u8 hdr; u16 cnt; };
  volatile struct S *s=arg0;
- u32 out;s32 remaining;u32 hdr;s32 cnt;u32 acc;s32 pos;u8 val;
+ u32 out;s32 remaining;u32 hdr;s32 cnt;u32 acc;s32 pos;u32 val;
  out=(u32)s->out;remaining=s->remain;hdr=s->hdr;cnt=s->cnt;acc=s->acc;pos=s->pos;
 loop:
  if(remaining<=0)goto done;
  if(!(hdr&128)){
 lit:
   if(cnt<=0)goto next;
-  cnt--;val=*src++;acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}if(--size==0)goto done;
-  goto lit;
+  val=*src++;cnt--;acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}size--;
+  if (size) goto lit;
+  goto done;
  }
  else if(cnt>0){val=*src++;do{acc|=val<<pos;pos+=8;if(pos==16){*(u16*)out=acc;out+=2;acc=0;pos=0;remaining-=2;}}while(--cnt>0);if(--size==0)goto done;}
 next:
- hdr=*src++;cnt=hdr&127;if(hdr&128)cnt+=2;cnt++;if(--size!=0)goto loop;
+ hdr=*src++;cnt=hdr&127; if ((hdr&128)==0) goto increment; cnt+=2;
+increment: cnt++;if(--size!=0)goto loop;
 done:s->out=(u16*)out;s->remain=remaining;s->hdr=hdr;s->cnt=cnt;s->acc=acc;s->pos=pos;return remaining;
 }
 #pragma pop
-s32 func_020087ec(void *arg0, u8 *src, s32 size) {
+s32 Lz77Decompress8Bit(void *arg0, u8 *src, s32 size) {
     struct S { u8 *out; s32 remain; u16 unk8; u8 unkA; u8 hdr; u8 cnt; u8 prev; u8 have; };
     volatile struct S *s = (volatile struct S *)arg0;
     u8 *out = s->out;
@@ -402,7 +404,7 @@ done:
     return remain;
 }
 
-s32 func_020088ec(void *arg0, u8 *arg1, s32 arg2) {
+s32 Lz77Decompress16Bit(void *arg0, u8 *arg1, s32 arg2) {
     s32 temp_ip;
     s32 temp_r11_3;
     s32 var_r2;
@@ -525,7 +527,7 @@ block_25:
     return var_r4;
 }
 
-s32 func_02008a60(void *arg0, u8 *arg1, s32 arg2) {
+s32 HuffmanDecompress(void *arg0, u8 *arg1, s32 arg2) {
     s16 var_r8;
     s32 temp_gt;
     s32 temp_ip_2;
@@ -650,9 +652,9 @@ block_18:
 #pragma opt_strength_reduction reset
 void func_02008bb8(void) {
     M2C_UNK func_02007974(M2C_UNK);
-    M2C_UNK func_02007ca4(M2C_UNK);
+    M2C_UNK DmaStopChannel(M2C_UNK);
     func_02007974(3);
-    func_02007ca4(0);
+    DmaStopChannel(0);
 }
 
 void func_02008bd0(M2C_UNK arg0) {

@@ -44,7 +44,7 @@ void func_ov003_021ee8b8(void *arg0) {
     M2C_UNK Link_SendPacket(M2C_UNK *, M2C_UNK);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088f1c(s32);
+    M2C_UNK Show3DSpriteSlide(s32);
     M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -156,7 +156,7 @@ foundPlayer:
             rawFlags=M2C_FIELD(arg0,u8 *,0x39)&~12;
             if((((u32)(u8)rawFlags<<28)>>30)==0)var_r0_4=1;else var_r0_4=0;
             M2C_FIELD(arg0,u8 *,0x39)=rawFlags;
-            if((var_r0_4&255)&&func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(arg0,void **,0x58));func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
+            if((var_r0_4&255)&&func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(arg0,void **,0x58));Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));}
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8) Ov003PanelCount(M2C_FIELD(arg0,void **,0x6c));
             if (IsLinkSessionActive() == 0) {
@@ -263,7 +263,7 @@ foundPlayer:
                     }
                 }
             }
-            func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
+            Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
             M2C_FIELD(M2C_FIELD(arg0,void **,0x58),u8 *,0x59)=1;
             if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
             Link_SendPacket(sp0,0x24);return;

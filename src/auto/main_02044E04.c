@@ -1,5 +1,16 @@
 /* 24 functions from 0x02044E04 to 0x02045D94 (main), found by ds-decomp. */
 #include "common.h"
+
+/* One player record in a web response, as GetWebResponsePlayer copies it out:
+ * 0x18 bytes of header (five leading words, then the payload size), followed in
+ * the response by dataSize bytes of payload.  When the record is returned, its
+ * data pointer is filled in with the address of that payload. */
+typedef struct WebResponsePlayer {
+    u32 unk[5];          /* +0x00 leading record words */
+    u32 dataSize;        /* +0x14 bytes of payload that follow the record */
+    u8 *data;            /* payload address inside the response */
+} WebResponsePlayer;
+#include "wfc.h"
 #include "ghttp.h"
 typedef struct { u32 words[4]; } CallbackRecord;
 
@@ -172,7 +183,7 @@ void HttpRequestFreeAll(void) {
  M2C_FIELD(&gHttpRequestList,void **,0)=0;
 }
 
-s32 func_020453e4(s32 *a) {
+s32 GetWebResponseHeader(s32 *a) {
  s32 HasNetError();s32 *func_02047928(s32 *);extern s32 gWebTransaction;
  s32 x; s32 *p;
  if(HasNetError())return 1;
@@ -192,7 +203,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     s32 func_020323f4(void *);
     u32 StringLength(void *);
     void *StringCopyPad(void *, void *, s32);
-    s32 func_0206abd8(void *, s32, s32);
+    s32 strtoul(void *, s32, s32);
     s32 func_0204800c(void *, void *, s32, s32, s32, s32);
     s32 StringCompare(void *, void *);
     void func_02047750(s32);
@@ -218,10 +229,10 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     }
     StringCopyPad(key, (void *)requestStr, 0x14);
     key[0x14] = 0;
-    param0 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x14), 8), 0, 0x10);
-    param1 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x1c), 8), 0, 0x10);
-    param2 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x24), 8), 0, 0x10);
-    param3 = func_0206abd8(StringCopyPad(parseBuf, (void *)(requestStr + 0x2c), 8), 0, 0x10);
+    param0 = strtoul(StringCopyPad(parseBuf, (void *)(requestStr + 0x14), 8), 0, 0x10);
+    param1 = strtoul(StringCopyPad(parseBuf, (void *)(requestStr + 0x1c), 8), 0, 0x10);
+    param2 = strtoul(StringCopyPad(parseBuf, (void *)(requestStr + 0x24), 8), 0, 0x10);
+    param3 = strtoul(StringCopyPad(parseBuf, (void *)(requestStr + 0x2c), 8), 0, 0x10);
     if (func_0204800c((void *)(requestStr + 0x34), key, param0, param1, param2, param3) == 0) {
         return 5;
     }
@@ -380,70 +391,65 @@ s32 func_02045a88(void) {
 }
 
 s32 HasNetError(void);
-s32 func_02045a98(s32 a, s32 b) {
-    s32 buf[3];
-    s32 *pVar1;
-    s32 iVar2;
-    s32 *pVar3;
-    s32 uVar4;
-    s32 *pVar5;
-    
-    if (HasNetError() != 0) {
-        return 1;
+/* Copy the web response's player record at `index` into *player: return 1 on a
+ * network error or the response header's error, 2 when there is no output
+ * pointer or the record is out of range, WEB_STATUS_NO_DATA when the reply
+ * carries no player data, otherwise 0.  The returned record's data pointer
+ * addresses its payload inside the response. */
+s32 GetWebResponsePlayer(WebResponsePlayer *player, u32 index)
+{
+    s32 header[3];
+    s32 error;
+    u8 *records;
+    u8 *payload;
+    WebResponsePlayer *record;
+
+    if (HasNetError()) return 1;
+    error = GetWebResponseHeader(header);
+    if (error) return error;
+    switch (header[WEB_RESPONSE_STATUS]) {
+    case 0:
+        return WEB_STATUS_NO_DATA;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    case 6:
+    default:
+        break;
     }
-    if (func_020453e4(buf) != 0) {
-        return 1;
+
+    if (!player) return 2;
+    records = (u8 *)header[WEB_RESPONSE_RECORDS];
+    if (index >= *(u32 *)records) return 2;
+    record = (WebResponsePlayer *)(records + 8);
+    while (index--) {
+        record = (WebResponsePlayer *)((u8 *)record + 0x18 + record->dataSize);
     }
-    iVar2 = buf[1];
-    if ((u32)iVar2 < 8) {
-        switch (iVar2) {
-        case 0:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
-        case 7:
-            return 15;
-        case 1:
-            break;
-        }
-    }
-    if (a == 0) {
-        return 2;
-    }
-    pVar3 = (s32 *)buf[2];
-    if (pVar3 == NULL || a >= *pVar3) {
-        return 2;
-    }
-    pVar5 = pVar3 + 2;
-    if (b != 0) {
-        do {
-            uVar4 = pVar5[5];
-            pVar5 = (s32 *)((char *)(pVar5 + 6) + uVar4);
-            b--;
-        } while (b != 0);
-    }
-    uVar4 = pVar5[5];
-    pVar1 = (s32 *)((char *)(pVar5 + 6) + uVar4);
-    pVar5 = (s32 *)buf[0];
-    if ((char *)pVar1 - (char *)pVar5 > *(s32 *)((char *)pVar3 + (int)pVar5)) {
-        return 2;
-    }
-    pVar1 = (s32 *)buf[5]; // placeholder to match remaining stores
+    payload = (u8 *)record + 0x18;
+    if (payload + record->dataSize > records + header[WEB_RESPONSE_SIZE]) return 2;
+    *player = *record;
+    player->data = payload;
     return 0;
 }
 
-s32 func_02045ba0(s32 *a) {
-    s32 HasNetError();
-    s32 func_020453e4(s32 *);
-    s32 x[3], r;
+/* Read the number of player records in the current web response: return 1 on a
+ * network error, the response header's error, 2 when there is no output pointer,
+ * WEB_STATUS_NO_DATA when the server's reply has no player data, otherwise store
+ * the record count through `total` and return 0. */
+s32 GetWebResponsePlayerTotal(s32 *total) {
+    s32 HasNetError(void);
+    s32 GetWebResponseHeader(s32 *);
+    s32 info[3], error;
+
     if (HasNetError()) return 1;
-    r = func_020453e4(x); if (r) return r;
-    if (!a) return 2;
-    switch (x[1]) {
+    error = GetWebResponseHeader(info);
+    if (error) return error;
+    if (!total) return 2;
+    switch (info[WEB_RESPONSE_STATUS]) {
         case 0:
-            return 15;
+            return WEB_STATUS_NO_DATA;
         case 1:
         case 2:
         case 3:
@@ -451,74 +457,49 @@ s32 func_02045ba0(s32 *a) {
         case 5:
         case 6:
         default:
-            *a = *(s32 *)x[2];
+            *total = *(s32 *)info[WEB_RESPONSE_RECORDS];
             return 0;
     }
 }
 
 s32 func_02045c34(s32 *a) {
- s32 HasNetError(); s32 func_020453e4(s32 *);
+ s32 HasNetError(); s32 GetWebResponseHeader(s32 *);
  s32 x[3],r;
  if(HasNetError())return 1;
- r=func_020453e4(x);if(r)return r;
+ r=GetWebResponseHeader(x);if(r)return r;
  if(!a)return 2;
  *a=M2C_FIELD(x[2],s32 *,4);return 0;
 }
 
 s32 func_02045c90(M2C_UNK arg0) {
     s32 func_020465c4(s32, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213db28;
-    if (func_020465c4(M2C_FIELD(&data_0213db28, s32 *, 8), 0x300, arg0) != 0) {
+    extern M2C_UNK gFifoBlockTransfer;
+    if (func_020465c4(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x300, arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
-void GetWfcProfile(void *arg0) {
+/* Unpacks the local WFC profile from the packed firmware blob into the 20-byte
+ * record the game passes around: the 43-bit friend code, the generated 43-bit
+ * profile code, the 10-bit profile id and the 16-bit seed the code came from. */
+void GetWfcProfile(void *profile) {
     void MI_CpuCopy8(void *, void *, u32);
-    extern M2C_UNK data_0213db34;
+    extern M2C_UNK gWfcProfileCode;
     extern M2C_UNK data_0213db39;
     extern M2C_UNK data_0213db3e;
     extern M2C_UNK data_0213db40;
-    u32 *p = (u32 *)arg0;
-    u32 a, b, c, d, mask;
+    u64 *ids = (u64 *)profile;
+    u16 *idAndSeed = (u16 *)((u8 *)profile + WFC_PROFILE_ID);
 
-    MI_CpuCopy8(&data_0213db34, arg0, 6);
-    mask = 0x7FF;
-    a = p[0];
-    d = mask - 0x800;
-    b = p[1];
-    c = a & d;
-    p[0] = c;
-    mask = b & mask;
-    p[1] = mask;
-
-    MI_CpuCopy8(&data_0213db39, (char *)arg0 + 8, 6);
-    a = p[2];
-    b = p[3];
-    a = a >> 3;
-    a = a | (b << 29);
-    p[2] = a;
-    d = b >> 3;
-    p[3] = d;
-
-    mask = 0x7FF;
-    a = p[2];
-    c = mask - 0x800;
-    c = a & c;
-    p[2] = c;
-    mask = mask & d;
-    p[3] = mask;
-
-    MI_CpuCopy8(&data_0213db3e, (char *)arg0 + 0x10, 2);
-    a = *(u16 *)((char *)arg0 + 0x10);
-    d = 0x3FF;
-    a = (s32)a >> 6;
-    *(u16 *)((char *)arg0 + 0x10) = (u16)a;
-    a = *(u16 *)((char *)arg0 + 0x10);
-    d = a & d;
-    *(u16 *)((char *)arg0 + 0x10) = (u16)d;
-
-    MI_CpuCopy8(&data_0213db40, (char *)arg0 + 0x12, 2);
+    MI_CpuCopy8(&gWfcProfileCode, &ids[0], 6);
+    ids[0] &= WFC_PROFILE_ID_MASK;
+    MI_CpuCopy8(&data_0213db39, &ids[1], 6);
+    ids[1] >>= WFC_PROFILE_CODE_SHIFT;
+    ids[1] &= WFC_PROFILE_ID_MASK;
+    MI_CpuCopy8(&data_0213db3e, idAndSeed, 2);
+    *idAndSeed >>= WFC_PROFILE_ID_SHIFT;
+    *idAndSeed &= WFC_PROFILE_ID10_MASK;
+    MI_CpuCopy8(&data_0213db40, idAndSeed + 1, 2);
 }
 

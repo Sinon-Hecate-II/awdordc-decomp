@@ -84,11 +84,60 @@ u16 WFC_GetPlayerMask(void) {
     return *(u16 *)0x027FFCFA;
 }
 
-u16 WFC_GetLinkStatusValue(void){void *WFC_GetInfoBlock();s32 WFC_CheckReady();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;u16 n;if(WFC_CheckReady())return 0;DC_InvalidateRange(M2C_FIELD(p,void **,4),2);q=M2C_FIELD(p,void **,4);n=M2C_FIELD(q,u16 *,0);switch(n){case 9:DC_InvalidateRange((u8 *)q+0x182,2);q=M2C_FIELD(p,void **,4);if(!M2C_FIELD(q,u16 *,0x182))return 0;case 10:case 11:DC_InvalidateRange((u8 *)q+0xbc,2);return M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0xbc);default:return 0;}}
+/* The status value of the WFC link: 0 unless the link is in state 9, 10 or 11;
+ * in state 9 it also needs a connected player in WFC_LINK_CONNECTED_MASK, and
+ * the value is WFC_LINK_STATUS_VALUE of the (re-read) link object. */
+u16 WFC_GetLinkStatusValue(void) {
+ void *WFC_GetInfoBlock();
+ s32 WFC_CheckReady();
+ void DC_InvalidateRange(void *, s32);
+ void *info = WFC_GetInfoBlock();
+ void *link;
+ u16 state;
+ if (WFC_CheckReady()) return 0;
+ DC_InvalidateRange(M2C_FIELD(info, void **, WFC_INFO_LINK), 2);
+ link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+ state = M2C_FIELD(link, u16 *, WFC_LINK_STATE);
+ switch (state) {
+ case 9:
+  DC_InvalidateRange((u8 *)link + WFC_LINK_CONNECTED_MASK, 2);
+  link = M2C_FIELD(info, void **, WFC_INFO_LINK);
+  if (!M2C_FIELD(link, u16 *, WFC_LINK_CONNECTED_MASK)) return 0;
+ case 10:
+ case 11:
+  DC_InvalidateRange((u8 *)link + WFC_LINK_STATUS_VALUE, 2);
+  return M2C_FIELD(M2C_FIELD(info, void **, WFC_INFO_LINK), u16 *, WFC_LINK_STATUS_VALUE);
+ default: return 0;
+ }
+}
 
-u16 func_02011e08(void){void GetMacAddress(u8 *);u8 buf[6];u16 sum;s32 i;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*7;return (s32)v%20+200;}
+/* The download-play game group id this console advertises: a value in
+ * [MB_GROUP_ID_FIRST, MB_GROUP_ID_FIRST + MB_GROUP_ID_COUNT) picked from the sum
+ * of the six MAC address bytes and the shared frame counter. */
+u16 GetGameGroupId(void) {
+    void GetMacAddress(u8 *);
+    u8 mac[6];
+    u16 sum;
+    s32 i;
+    u8 *p;
+    u16 value;
+    GetMacAddress(mac);
+    i = 0;
+    p = mac;
+    sum = 0;
+    do {
+        sum += *p++;
+        i++;
+    } while (i < 6);
+    value = sum + *(s32 *)SHARED_FRAME_COUNTER;
+    value = value * 7;
+    return (s32)value % MB_GROUP_ID_COUNT + MB_GROUP_ID_FIRST;
+}
 
-u16 func_02011e98(void){void GetMacAddress(u8 *);u8 buf[6];s32 i;u16 sum;u8 *p;u16 v;GetMacAddress(buf);i=0;p=buf;sum=0;do{sum+=*p++;i++;}while(i<6);v=sum+*(s32 *)0x027ffc3c;v=v*13;return (s32)v%10+30;}
+/* Derive the console's 16-bit local id for the outgoing WFC records: the sum of
+ * the six MAC address bytes plus the handshake word at 0x027FFC3C, times 13,
+ * reduced into 30..39. */
+u16 GetConsoleLocalId(void){void GetMacAddress(u8 *);u8 mac[6];s32 i;u16 sum;u8 *p;u16 value;GetMacAddress(mac);i=0;p=mac;sum=0;do{sum+=*p++;i++;}while(i<6);value=sum+*(s32 *)0x027ffc3c;value=value*13;return (s32)value%10+30;}
 
 /* Parse the item list embedded in the input buffer into *out (at most 16 items). */
 void func_02011f2c(ParsedItems *out, void *in) {
@@ -129,9 +178,9 @@ void func_02011f2c(ParsedItems *out, void *in) {
 }
 
 u16 func_02012084(void){
-extern u32 data_020f5540;void func_0200ee70(void);s32 func_0200eff8(void *);
+extern u32 data_020f5540;void func_0200ee70(void);s32 GetRtcTime(void *);
 s32 a[3];
-if(data_020f5540==0x10000){func_0200ee70();if(func_0200eff8(a)==0)data_020f5540=(u16)(a[2]+(a[1]<<8));}
+if(data_020f5540==0x10000){func_0200ee70();if(GetRtcTime(a)==0)data_020f5540=(u16)(a[2]+(a[1]<<8));}
 data_020f5540=(u16)(data_020f5540+1);return (u16)data_020f5540;
 }
 

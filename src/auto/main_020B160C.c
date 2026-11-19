@@ -22,7 +22,7 @@ CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void
 CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
 func_020c09c0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER));}
 
-void func_020b172c(void) {
+void ApplyMapViewTilesetWeather(void) {
     M2C_UNK func_02091d20();
     M2C_UNK func_020d672c();
     M2C_UNK func_ov000_02169368();
@@ -101,26 +101,30 @@ void func_020b1810(void) {
     func_0200323c(0x80);
 }
 
-void func_020b185c(void) {
+/* The map view's +0x50 setup method: rebuild the battle map's graphics on the
+ * main 3D sprite engine (screen mode 3, 1D OBJ mapping), run the view's scroll
+ * callback and its graphics upload, copy the map layers and refresh the view,
+ * then clear the engine's sprite layers and hand the engine back. */
+void InitBattleMapView(void) {
     extern void *gCurrentMap, *gCur3DSpriteEngine, *g3DSpriteEngineMain;
-    void *saved;
+    void *savedEngine;
     void (*callback)(void);
-    saved = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     ApplyScreenMode(3);
     Init3DSpriteLayers1D();
     func_02077a7c();
     Reset3DSpriteCorners();
-    callback = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_SCROLL_DONE);
     if (callback != NULL) callback();
-    func_02091cd0();
-    callback = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
+    LoadScenePanelGraphicsOnBothEngines();
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_UPLOAD_GRAPHICS);
     if (callback != NULL) callback();
-    func_020b172c();
+    ApplyMapViewTilesetWeather();
     func_020b179c();
     func_020b17dc();
-    func_01ff9e00();
-    gCur3DSpriteEngine = saved;
+    ClearAll3DSpriteLayers();
+    gCur3DSpriteEngine = savedEngine;
 }
 
 /* Sets up the battle-map view on the current 3D sprite engine: configures the
@@ -135,9 +139,9 @@ bank1=(u16 *)*(void **)gCur3DSpriteEngine;*bank1=*bank1|DS3D_BANK_OBJ_1D;
 bank2=(u16 *)*(void **)gCur3DSpriteEngine;*bank2=*bank2&~DS3D_BANK_OBJ_BOUNDARY_MASK;
 Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
-func_01ff9b38();func_02091cd0();
+Apply3DSpriteBanks();LoadScenePanelGraphicsOnBothEngines();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();
-func_020b1770();func_020b172c();func_020b179c();func_020b17dc();
+func_020b1770();ApplyMapViewTilesetWeather();func_020b179c();func_020b17dc();
 }
 
 void func_020b19a8(s32 arg0, s32 arg1) {
@@ -213,7 +217,7 @@ u8 GetSpriteSlotState(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 3);
 }
 
-void func_020b1b3c(void) {
+void ResetSpriteSlots(void) {
 extern u8 gSpriteSlots[];
 extern void *gSpriteSlotManager;
 s32 i;
@@ -262,11 +266,11 @@ s32 FocusSpriteSlotById(s32 arg0) {
 
 s32 SelectSpriteSlot(void) {
     s32 FocusSpriteSlotById();
-    void func_020b204c();
+    void SetSpriteSlotFrameToFocus();
     s32 temp_r4;
 
     temp_r4 = FocusSpriteSlotById();
-    func_020b204c();
+    SetSpriteSlotFrameToFocus();
     return temp_r4;
 }
 
@@ -329,7 +333,30 @@ flags=(u16)(((0x80 >> ((u32)(M2C_FIELD(*(void**)gCur3DSpriteEngine,u16 *,0)<<17)
 DrawFrameBorderPulse((s16)(x+M2C_FIELD(q,s16 *,32)),(s16)(y+M2C_FIELD(q,s16 *,34)),(s16)(M2C_FIELD(q,s16 *,28)-x),(s16)(M2C_FIELD(q,s16 *,30)-y),flags,0);
 }
 #pragma pop
-void func_020b204c(void){extern void *gSpriteSlotManager;void *p; s32 d,c,b,a,sum;p=M2C_FIELD(gSpriteSlotManager,void **,12);if(!p)return;a=M2C_FIELD(p,s16 *,20);b=M2C_FIELD(p,s16 *,22);c=M2C_FIELD(p,s16 *,24);d=M2C_FIELD(p,s16 *,26);M2C_FIELD(gSpriteSlotManager,s16 *,16)=(s16)a;M2C_FIELD(gSpriteSlotManager,s16 *,18)=(s16)b;M2C_FIELD(gSpriteSlotManager,s16 *,20)=(s16)(a+c);sum=b+d;M2C_FIELD(gSpriteSlotManager,s16 *,22)=(s16)b;M2C_FIELD(gSpriteSlotManager,s16 *,24)=(s16)a;M2C_FIELD(gSpriteSlotManager,s16 *,26)=(s16)sum;M2C_FIELD(gSpriteSlotManager,s16 *,28)=(s16)(a+c);M2C_FIELD(gSpriteSlotManager,s16 *,30)=(s16)sum;}
+/* Snap the manager's focus frame to the focused sprite slot: copy the slot's
+ * rectangle into the frame's four corners (top-left, top-right, bottom-left,
+ * bottom-right) without the easing the per-frame update applies. */
+void SetSpriteSlotFrameToFocus(void) {
+    extern void *gSpriteSlotManager;
+    void *slot;
+    s32 h, w, y, x, bottom;
+
+    slot = M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS);
+    if (!slot) return;
+    x = M2C_FIELD(slot, s16 *, SPRITE_SLOT_X);
+    y = M2C_FIELD(slot, s16 *, SPRITE_SLOT_Y);
+    w = M2C_FIELD(slot, s16 *, SPRITE_SLOT_W);
+    h = M2C_FIELD(slot, s16 *, SPRITE_SLOT_H);
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_TL_X) = (s16)x;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_TL_Y) = (s16)y;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_TR_X) = (s16)(x + w);
+    bottom = y + h;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_TR_Y) = (s16)y;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_BL_X) = (s16)x;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_BL_Y) = (s16)bottom;
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_BR_X) = (s16)(x + w);
+    M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_BR_Y) = (s16)bottom;
+}
 
 s32 FindSpriteSlotById(a) s32 a; {extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;do{if(p[1]&&a==p[0])return (s32)gSpriteSlots+60*i;i++;p+=60;}while(i<85);return 0;}
 

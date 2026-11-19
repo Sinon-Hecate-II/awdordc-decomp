@@ -4,7 +4,7 @@ extern u16 data_ov003_0220f34a,data_ov003_0220f346,data_ov003_0220f342,data_ov00
 void func_ov003_021f1b38(s32,void*);void func_ov003_021f1b7c(s32,void*);void func_ov003_021f2860(void*);
 u32 func_ov003_021f2574(void);u32 func_ov003_021f2560(void);
 void *GetCampaignMapHeader(u16);void MI_CpuCopy32(void*,void*,s32);
-void func_ov003_021f14a0(void);void func_01ff9b38(void);
+void func_ov003_021f14a0(void);void Apply3DSpriteBanks(void);
 void *func_020ab1c4(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void func_02088e84(void*,s32,s32,s32,s32);void Hide3DSprite(void*);
 s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);void func_02087d84(void*,s32,s16,s16,u16,u16);
@@ -47,7 +47,7 @@ func_ov003_021f1b38(0,&data_ov003_0220f34a);func_ov003_021f1b38(1,&data_ov003_02
 func_ov003_021f1b7c(0,&data_ov003_0220f344);func_ov003_021f1b7c(1,&data_ov003_0220f340);func_ov003_021f1b7c(3,&data_ov003_0220f348);
 func_ov003_021f2860(M2C_FIELD(p,u8**,0x5c)+4);
 for(i=0;i<VisibleEntries(p);i++)MI_CpuCopy32(M2C_FIELD(p,u8**,0x6c)+i*0x6f8,GetCampaignMapHeader((u16)(i+50)),84);
-func_ov003_021f14a0();func_01ff9b38();
+func_ov003_021f14a0();Apply3DSpriteBanks();
 q=M2C_FIELD(p,u8**,0x44);
 M2C_FIELD(q,void**,0)=func_020ab1c4(p);InitUnitSprite(M2C_FIELD(q,void**,0),32,320,3,0);
 sprite=M2C_FIELD(q,u8**,0);func_02088e84(sprite,112,164,112,192);{u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;if(active){s16 sy=M2C_FIELD(sprite,s16*,0x52);s16 sx=M2C_FIELD(sprite,s16*,0x50);s32 sw=GetUnitSpriteWidth(sprite);s32 sh=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,sx,sy,(u16)sw,(u16)sh);}}Hide3DSprite(M2C_FIELD(q,void**,0));

@@ -4,7 +4,7 @@
 void func_ov000_02188688(void);
 u8 func_ov000_021889ac(void);
 
-u8 func_ov000_02188850(void);
+u8 AiRangeReachesPlayerHq(void);
 
 
 #pragma opt_strength_reduction off
@@ -82,7 +82,7 @@ s32 func_ov000_021882c4(void) {
     if (flag) count = CountCapturableProperties();
     else count = CountUnusedCapturableProperties();
     if (count == 0) return 0;
-    current = func_ov000_0218a230();
+    current = CountActiveTeamFootUnits();
     if (flag == 0) {
         if (current < count + 1) return 1;
     } else {
@@ -92,7 +92,7 @@ s32 func_ov000_021882c4(void) {
 }
 
 s32 func_ov000_02188338(void) {
-    s32 func_ov000_0218a230();
+    s32 CountActiveTeamFootUnits();
     s32 AiHasAttackTargetOrFootUnit();
     s32 temp_r4;
     s32 var_r0;
@@ -104,7 +104,7 @@ s32 func_ov000_02188338(void) {
     } else {
         var_r5 = 0;
     }
-    var_r0 = (temp_r4 + 2) - func_ov000_0218a230();
+    var_r0 = (temp_r4 + 2) - CountActiveTeamFootUnits();
     if (var_r0 & 0x80) {
         var_r0 = 0x7F;
     }
@@ -121,17 +121,21 @@ void func_ov000_02188370(void) {
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
-u8 CanDoFootAiAction(s32 arg0, s32 arg1) {
+/* Whether the AI may still act with the foot unit at (x, y): flood-fill that
+ * unit's search range, then return 1 while the team's active foot units stay
+ * under the capturable properties plus two, 0 once they reach it. */
+u8 CanDoFootAiAction(s32 x, s32 y) {
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
     s32 current, offset;
     u8 result;
-    void *base, *table;
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
-    current = func_ov000_0218a230();
+    void *map, *unitBase;
+
+    map = *gCurrentMap;
+    unitBase = (u8 *)map + MAP_UNIT_RECORDS;
+    offset = M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, 0x0D) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(unitBase, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)unitBase + offset), 0);
+    current = CountActiveTeamFootUnits();
     if (current < CountCapturableProperties() + 2) result = 1;
     else result = 0;
     return result;
@@ -149,7 +153,7 @@ u8 func_ov000_02188448(void) {
     if (temp_r0 == 0) {
         return 0U;
     }
-    if (func_ov000_0218a294() < (s32) (temp_r0 + 5)) {
+    if (CountTeamAttackUnits() < (s32) (temp_r0 + 5)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -166,7 +170,7 @@ s32 func_ov000_02188488(void) {
     s32 var_r2;
 
     temp_r4 = CountAiAttackTargetUnits();
-    temp_r0 = func_ov000_0218a294();
+    temp_r0 = CountTeamAttackUnits();
     if (temp_r4 > 5) {
         var_r2 = 5;
     } else {
@@ -200,20 +204,23 @@ void func_ov000_021884e4(void) {
     func_ov000_02188688();
 }
 
-u8 CanDoAiAction01(s32 arg0, s32 arg1) {
+/* AI action check for unit AI states 0 and 1: flood-fill the acting unit's
+ * movement range from (x,y), then report whether the enemy offers attack
+ * targets and the team's attack units do not already outnumber them by five. */
+u8 CanDoAiAction01(s32 x, s32 y) {
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
-    s32 current, offset;
+    s32 targetCount, unitOffset;
     u8 result;
-    void *base, *table;
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
+    void *map, *unitRecords;
+    map = *gCurrentMap;
+    unitRecords = (u8 *)map + MAP_UNIT_RECORDS;
+    unitOffset = M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(unitRecords, u8 *, unitOffset) << 26) >> 26, GetAiUnitSearchRange((u8 *)unitRecords + unitOffset), 0);
 
-    current = CountAiAttackTargetUnits();
-    if (current == 0) return 0;
-    if (func_ov000_0218a294() < current + 5) result = 1;
+    targetCount = CountAiAttackTargetUnits();
+    if (targetCount == 0) return 0;
+    if (CountTeamAttackUnits() < targetCount + 5) result = 1;
     else result = 0;
     return result;
 }
@@ -279,7 +286,7 @@ u8 func_ov000_02188744(void) {
         return 0U;
     }
     temp_r4 = CountCapturableProperties();
-    if (temp_r4 > func_ov000_0218a294()) {
+    if (temp_r4 > CountTeamAttackUnits()) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -289,11 +296,11 @@ u8 func_ov000_02188744(void) {
 
 s32 func_ov000_02188778(void) {
     s32 CountCapturableProperties();
-    s32 func_ov000_0218a294();
+    s32 CountTeamAttackUnits();
     s32 temp_r4;
 
     temp_r4 = CountCapturableProperties();
-    return temp_r4 - func_ov000_0218a294();
+    return temp_r4 - CountTeamAttackUnits();
 }
 
 void func_ov000_02188790(void) {
@@ -320,16 +327,20 @@ void CanDoAiAction34(s32 arg0, s32 arg1) {
     func_ov000_02188744();
 }
 
-u8 func_ov000_02188850(void) {
+/* Returns 1 when the HQ cell of the current player (the side whose turn it is)
+ * lies in the movement range marked in the map grid, i.e. the AI unit whose range
+ * was just flood-filled could reach that HQ.
+ * This is the objective check of AI state 5. */
+u8 AiRangeReachesPlayerHq(void) {
     s32 PlayerHasHq(s32);
     extern void **gCurrentMap;
     void *base, *entry;
     u8 result;
     if (func_ov000_02187e50() == 1) return 0;
-    if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) return 0;
+    if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 0) return 0;
     base = *gCurrentMap;
-    entry = (u8 *)base + 0x67A4 + M2C_FIELD(base, u16 *, 0x52A4) * 0x8C;
-    if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, 0x2C) << 25) >> 23), s8 **, 0x52E8), s8 *, M2C_FIELD(entry, u8 *, 0x2B) & 0x7F) > 0) result = 1;
+    entry = (u8 *)base + MAP_PLAYER_STATES + M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
+    if (M2C_FIELD(M2C_FIELD((u8 *)base + ((u32)(M2C_FIELD(entry, u8 *, PLAYER_REC_HQ_Y) << 25) >> 23), s8 **, MAP_GRID), s8 *, M2C_FIELD(entry, u8 *, PLAYER_REC_HQ_X) & 0x7F) > 0) result = 1;
     else result = 0;
     return result;
 }
@@ -342,7 +353,7 @@ void func_ov000_021888ec(void) {
     extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))func_ov000_02188850;
+    data_ov000_021df64c = (s32 (*)(void))AiRangeReachesPlayerHq;
     data_ov000_021df648 = func_ov000_021888e4;
     func_ov000_02187f7c();
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
@@ -359,7 +370,7 @@ void CanDoAiAction5(s32 arg0, s32 arg1) {
     table = (u8 *)base + 0x59A4;
     offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
     FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
-    func_ov000_02188850();
+    AiRangeReachesPlayerHq();
 }
 
 #pragma opt_lifetimes off

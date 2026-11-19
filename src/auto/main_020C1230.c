@@ -136,7 +136,7 @@ u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 x,y,w,z,h;u16 *src,*dst;void *base;z=func_020d4dac();base=*gCurrentMap;
 h=M2C_FIELD(base,volatile u16 *,0x5146+0);w=M2C_FIELD(base,volatile u16 *,0x5144+0);
-h=(h+1)&~1;w=(w+1)&~1;
+w=(w+1)&~1;h=(h+1)&~1;
 for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPreviewColumnOffset[x]+gPreviewRowOffset[y];dst[0]=src[0];dst[2]=src[2];dst[4]=src[4];dst[6]=src[6];}}
 }
 

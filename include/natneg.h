@@ -5,6 +5,16 @@
 #define NATNEG_H
 
 #define NATNEG_MAGIC_LEN 6 /* gNatNegMagic bytes at the start of every packet */
+#define NATNEG_PROTOCOL_VERSION 2 /* version byte every packet carries */
+
+/* Bytes of the packet header that follow the magic. */
+#define NATNEG_PKT_VERSION 0x06 /* u8 NATNEG_PROTOCOL_VERSION */
+#define NATNEG_PKT_KIND    0x07 /* u8 packet kind, NATNEG_KIND_* */
+
+/* The receive address ghiRecvFrom fills (8 bytes) is also what the connect
+ * packets send back: the sender's port and address, host byte order. */
+#define NATNEG_ADDR_PORT 0x02 /* u16 source port */
+#define NATNEG_ADDR_IP   0x04 /* u32 source address */
 
 /* gNatNegManager fields. */
 #define NATNEG_HOST2  0x00 /* char[] natneg2 server host name */
@@ -60,5 +70,11 @@ enum {
 #define NATNEG_PKT_PEER_PORT 0x10 /* u16 the sending peer's remote port, byte-swapped */
 #define NATNEG_PKT_FLAG      0x12 /* u8 the sender's NATNEG_PEER_FLAG32 */
 #define NATNEG_PKT_MODE      0x13 /* u8 nonzero when the sender was not in its connect step */
+
+/* The connect ack (kind NATNEG_KIND_CONNECT_ACK) is 21 bytes: the header, the
+ * peer's address as its cookie and the low byte of its echoed value; the port
+ * it answers is handed to the send helper separately. */
+#define NATNEG_PKT_ACK_VALUE 0x0D /* u8 low byte of the peer's NATNEG_PEER_VALUE */
+#define NATNEG_PKT_ACK_LEN   0x15 /* bytes of a connect ack */
 
 #endif

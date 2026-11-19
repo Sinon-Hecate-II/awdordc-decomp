@@ -91,7 +91,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     extern s32 g3DSpriteEngineMain;
     extern s32 data_ov004_02218cb0;
     unsigned long long func_020720f0(s32, s32);
-    s32 func_02091e14(void);
+    s32 Get3DSpriteTargetMode(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *Build3DSpriteTransform(void *, void *);
     void func_0209dabc(s32, void *);
@@ -140,9 +140,9 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     loop = 0;
     while (loop < 2) {
         if (loop == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
-        if (func_02091e14() == 0 && gCur3DSpriteEngine != g3DSpriteEngineMain) goto skip_update;
-        if (func_02091e14() == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) goto skip_update;
-        if (func_02091e14() == 3 && gCur3DSpriteEngine != savedEngine) goto skip_update;
+        if (Get3DSpriteTargetMode() == 0 && gCur3DSpriteEngine != g3DSpriteEngineMain) goto skip_update;
+        if (Get3DSpriteTargetMode() == 1 && gCur3DSpriteEngine != g3DSpriteEngineSub) goto skip_update;
+        if (Get3DSpriteTargetMode() == 3 && gCur3DSpriteEngine != savedEngine) goto skip_update;
 
         M2C_FIELD(arg0, s16 *, 0x20) = 0;
         spblk.c = r11;
@@ -228,7 +228,7 @@ void func_ov004_02211740(void) {
 void func_ov004_02211744(void *ctx) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cbc[], data_ov004_02218cc4[], data_ov004_02218cd4[], data_ov004_02218ce0[];
-    s32 func_02091e14(void);
+    s32 Get3DSpriteTargetMode(void);
     s32 savedContext, i;
     M2C_FIELD(ctx, s16 *, 0x42) = 0;
     M2C_FIELD(ctx, s16 *, 0x44) = 48;
@@ -236,9 +236,9 @@ void func_ov004_02211744(void *ctx) {
     i = 0;
     do {
         if (i == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
-        if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
-            (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
-            (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
+        if ((Get3DSpriteTargetMode() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
+            (Get3DSpriteTargetMode() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
+            (Get3DSpriteTargetMode() != 3 || gCur3DSpriteEngine == savedContext)) {
             SetFileDirectory(data_ov004_02218cbc);
             OpenNarcArchive(data_ov004_02218cc4);
             LoadNarcFileDecompressed(data_ov004_02218cd4, M2C_FIELD((void *)gCur3DSpriteEngine, u8 **, 0x1c) + 0x6b80);
@@ -254,7 +254,7 @@ void func_ov004_02211744(void *ctx) {
 void func_ov004_02211844(void *ctx) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub, g3DSpriteEngineMain;
     extern u8 data_ov004_02218cec[];
-    s32 func_02091e14(void);
+    s32 Get3DSpriteTargetMode(void);
     s32 savedContext, i;
     M2C_FIELD(ctx, s16 *, 0x46) = 0;
     M2C_FIELD(ctx, s16 *, 0x48) = 360;
@@ -262,9 +262,9 @@ void func_ov004_02211844(void *ctx) {
     i = 0;
     do {
         if (i == 0) gCur3DSpriteEngine = g3DSpriteEngineMain; else gCur3DSpriteEngine = g3DSpriteEngineSub;
-        if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
-            (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
-            (func_02091e14() != 3 || gCur3DSpriteEngine == savedContext)) {
+        if ((Get3DSpriteTargetMode() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
+            (Get3DSpriteTargetMode() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
+            (Get3DSpriteTargetMode() != 3 || gCur3DSpriteEngine == savedContext)) {
             LoadCompressedSpriteGraphics(data_ov004_02218cec, 0, 0);
             func_02080774(1, 1, 0, 100, 0);
         }
@@ -293,7 +293,7 @@ void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208161c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020822b8(u16 *);
-    s32 func_02091e14();
+    s32 Get3DSpriteTargetMode();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -365,7 +365,7 @@ config[4]=e;config[5]=f;
             var_r0 = g3DSpriteEngineSub;
         }
         gCur3DSpriteEngine = var_r0;
-        if (((func_02091e14() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((func_02091e14() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((func_02091e14() != 3) || (gCur3DSpriteEngine == temp_r8))) {
+        if (((Get3DSpriteTargetMode() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTargetMode() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTargetMode() != 3) || (gCur3DSpriteEngine == temp_r8))) {
             func_020822b8(config);
             SetFileDirectory(&data_ov004_02218cf8);
             OpenNarcArchive(&data_ov004_02218d00);
@@ -542,12 +542,12 @@ void func_ov004_02212048(void) {
 }
 
 s32 func_ov004_0221205c(void) {
-    M2C_UNK func_020868e0(M2C_UNK, M2C_UNK);
-    s32 func_020869a0(M2C_UNK);
-    if (func_020869a0(0x60) != 0) {
+    M2C_UNK SetEventFlagHigh(M2C_UNK, M2C_UNK);
+    s32 IsEventFlagHighSet(M2C_UNK);
+    if (IsEventFlagHighSet(0x60) != 0) {
         return 0;
     }
-    func_020868e0(0x60, 1);
+    SetEventFlagHigh(0x60, 1);
     return 1;
 }
 

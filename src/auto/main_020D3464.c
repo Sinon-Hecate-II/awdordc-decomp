@@ -105,7 +105,7 @@ void func_020d3628(void) {
 }
 
 s32 HandleOverlayResult(void) {
- M2C_UNK func_ov000_0219c6c0();
+ M2C_UNK IsAiCommandTaskRunning();
  M2C_UNK GetActiveOverlay();
  M2C_UNK GetLinkPhase();
  void func_ov009_022244ec(M2C_UNK);
@@ -120,7 +120,7 @@ s32 HandleOverlayResult(void) {
  /* Poll the active UI overlay (ov009/ov010) for a finished event; while the map
     waits in state 13/14/19/20, record the result and move on to state 23/24. */
  if(M2C_FIELD(&gMapData,u8 *,4)==0) return 0;
- if(func_ov000_0219c6c0()!=0) return 0;
+ if(IsAiCommandTaskRunning()!=0) return 0;
  if(M2C_FIELD(&gMapData,u8 *,5)!=0 || M2C_FIELD(&gMapData,u8 *,6)!=0) return 0;
  overlayResult=0; eventFlags=0;
  switch(GetActiveOverlay()){
@@ -314,8 +314,8 @@ void func_020d3b24(void) {
     void BeginPlayerTurn();
     M2C_UNK UpdateMapMode();
     M2C_UNK func_020d1a1c(M2C_UNK);
-    M2C_UNK func_ov000_0219c6e0();
-    void func_02084304();
+    M2C_UNK UpdateAiTurn();
+    void UpdateLinkAiCommand();
     void func_020d45d8();
     M2C_UNK func_020d4614();
     M2C_UNK func_020d466c();
@@ -389,9 +389,9 @@ void func_020d3b24(void) {
             UpdateMapMode();
             return;
         case 14:
-            if (func_020d1a1c(*(u16 *)(p+0xa4))) { func_ov000_0219c6e0(); return; }
-            func_02084304(); return;
-        case 19: func_02084304(); return;
+            if (func_020d1a1c(*(u16 *)(p+0xa4))) { UpdateAiTurn(); return; }
+            UpdateLinkAiCommand(); return;
+        case 19: UpdateLinkAiCommand(); return;
         case 16: func_020d45d8(); return;
         case 18: func_020d4614(); return;
         case 20: func_020d466c(); return;
@@ -428,7 +428,7 @@ void func_020d3d24(void) {
     M2C_UNK func_020a23c4();
     M2C_UNK func_020cfd14();
     M2C_UNK func_0207b6d0();
-    M2C_UNK func_020d1c58();
+    M2C_UNK BeginPlayerPhase();
     M2C_UNK InitPlayerTurnState();
     extern void **gCurrentMap;
     ResetBattleMap();
@@ -438,7 +438,7 @@ void func_020d3d24(void) {
     func_020a23c4();
     func_020cfd14();
     func_0207b6d0();
-    func_020d1c58();
+    BeginPlayerPhase();
     InitPlayerTurnState();
 }
 
@@ -507,7 +507,7 @@ void func_020d3d68(void) {
 s32 ResolvePropertyCountVictory(void) {
     s32 IsPlayerActive(s32);
     void MarkPlayerDefeated(s32, s32);
-    void func_020c9b70();
+    void EnterBattleEnd();
     extern void **gCurrentMap;
     s32 player;
     s32 offset;
@@ -533,7 +533,7 @@ s32 ResolvePropertyCountVictory(void) {
             }
         }
     }
-    func_020c9b70();
+    EnterBattleEnd();
 }
 
 /* True when the battle's active human players are split over different armies:
@@ -657,14 +657,14 @@ void func_020d41c4(void) {
 
 void func_020d422c(void) {
     M2C_UNK func_020a3498(M2C_UNK);
-    M2C_UNK func_020d1c58();
+    M2C_UNK BeginPlayerPhase();
     M2C_UNK InitPlayerTurnState();
     M2C_UNK func_020a23c4();
     M2C_UNK RefreshMapView();
     void func_020d427c(void);
     extern void **gCurrentMap;
     func_020a3498(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4));
-    func_020d1c58();
+    BeginPlayerPhase();
     InitPlayerTurnState();
     func_020a23c4();
     RefreshMapView();

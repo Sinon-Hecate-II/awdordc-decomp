@@ -180,7 +180,7 @@ func_020ae7a4(a,1,GetPlayerPanelFlagTile((u8)GetPlayerIdForSlot(b+1)));
 void func_ov003_022006dc(s32 arg0) {
     extern void **gCurrentMap;
     s32 IsLinkSessionActive(void);
-    void func_020833d0(void);
+    void ResetTextLabelSlotsPartial(void);
     s32 MapSettings_Randomize(s32);
     void SetPlayerIdForSlot(s32, s32);
     void SetPlayerArmyId(s32, s32);
@@ -199,7 +199,7 @@ void func_ov003_022006dc(s32 arg0) {
     if (IsLinkSessionActive() == 0) {
         return;
     }
-    func_020833d0();
+    ResetTextLabelSlotsPartial();
     if (arg0 == 0) {
         MapSettings_Randomize(0);
         M2C_FIELD(*gCurrentMap, u8 *, 0x5141) = 2;
@@ -302,46 +302,48 @@ s32 GetIconGridRecordIndex(u32 a){switch(a){case 0:return 0;case 1:return 1;case
 
 s32 func_ov003_02200b5c(u32 a){switch(a){case 0:return 15;case 1:return 16;case 2:return 17;case 3:return 18;case 4:return 19;case 5:return 22;case 6:return 23;case 7:return 24;default:return -1;}}
 
-void func_ov003_02200bd0(u32 arg0) {
+/* Translate a map record's kind byte (2..11) into the map-list icon id the
+ * row draws, then resolve that id to its icon frame index. */
+s32 GetMapKindIconFrameIndex(u32 kind) {
     M2C_UNK GetMapIconFrameIndex(u32);
-    u32 var_r0;
+    u32 iconId;
 
-    var_r0 = arg0;
-    switch (var_r0) {
+    iconId = kind;
+    switch (iconId) {
     default:
         break;
     case 3:
-        var_r0 = 4;
+        iconId = 4;
         break;
     case 4:
-        var_r0 = 0;
+        iconId = 0;
         break;
     case 5:
-        var_r0 = 1;
+        iconId = 1;
         break;
     case 6:
-        var_r0 = 2;
+        iconId = 2;
         break;
     case 2:
-        var_r0 = 6;
+        iconId = 6;
         break;
     case 7:
-        var_r0 = 5;
+        iconId = 5;
         break;
     case 8:
-        var_r0 = 8;
+        iconId = 8;
         break;
     case 9:
-        var_r0 = 9;
+        iconId = 9;
         break;
     case 10:
-        var_r0 = 0xA;
+        iconId = 0xA;
         break;
     case 11:
-        var_r0 = 0xB;
+        iconId = 0xB;
         break;
     }
-    GetMapIconFrameIndex(var_r0);
+    return GetMapIconFrameIndex(iconId);
 }
 
 u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {
@@ -374,20 +376,23 @@ void func_ov003_02200cd4(M2C_UNK arg0) {
     func_02084ea0(0x4D4C5342, arg0);
 }
 
-u16 func_ov003_02200cec(u32 a, u16 b) {
-    extern u16 data_ov003_0221045e[];
-    extern u16 data_ov003_0221047a[];
-    extern u16 data_ov003_02210462[];
-    extern u16 data_ov003_0221046a[];
-    switch (a) {
-    case 0: b = data_ov003_0221045e[b]; break;
-    case 1: b = data_ov003_0221047a[b]; break;
-    case 2: b = data_ov003_02210462[b]; break;
-    case 6: b = data_ov003_0221046a[b]; break;
-    case 7: b = data_ov003_0221045e[b]; break;
+/* Icon tile offset of a setup-menu entry's value: the value indexes the icon
+ * table of the entry's kind (kinds 0 and 7 share one), and the tile index is
+ * returned in 16-byte units.  Kinds without a table keep the value as it is. */
+u16 Ov003_GetEntryValueIconTile(u32 kind, u16 value) {
+    extern u16 gOv003EntryIconTableKind0[];
+    extern u16 gOv003EntryIconTableKind1[];
+    extern u16 gOv003EntryIconTableKind2[];
+    extern u16 gOv003EntryIconTableKind6[];
+    switch (kind) {
+    case 0: value = gOv003EntryIconTableKind0[value]; break;
+    case 1: value = gOv003EntryIconTableKind1[value]; break;
+    case 2: value = gOv003EntryIconTableKind2[value]; break;
+    case 6: value = gOv003EntryIconTableKind6[value]; break;
+    case 7: value = gOv003EntryIconTableKind0[value]; break;
     default: break;
     }
-    return (u16)(b << 4);
+    return (u16)(value << 4);
 }
 
 s32 Ov003_GetEntryValueTextId(s32 a, s32 b) {

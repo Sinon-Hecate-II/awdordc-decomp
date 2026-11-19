@@ -98,13 +98,13 @@ CommitAiAction(targetIndex);return 1;
    AI's infantry and mech units. */
 s32 TryBuildUnitKind13(void){
 s32 Divide(s32,s32);s32 GetUnitBuildCost(u16,s32);
-void CommitAiAction(s32);s32 func_ov000_021a61cc(s32);s32 CountPlayerUnitsOfKind(s32);
+void CommitAiAction(s32);s32 FindBestCaptureTargetCandidate(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *map=*gCurrentMap;u16 playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);s32 targetIndex,kind13Count,groupCount;u8 lastTurn;
 if(GetUnitBuildCost(playerId,13)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
 lastTurn=M2C_FIELD(gAiSettings,u8 *,AI_SETTING_UNIT13_LAST_TURN);
 if(lastTurn && M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)>lastTurn)return 0;
-targetIndex=func_ov000_021a61cc(1);if(targetIndex==-1)return 0;
+targetIndex=FindBestCaptureTargetCandidate(1);if(targetIndex==-1)return 0;
 kind13Count=CountPlayerUnitsOfKind(13);groupCount=kind13Count+CountPlayerUnitsOfKind(UNIT_KIND_TRANSPORT);
 lastTurn=M2C_FIELD(gAiState,u8 *,AI_STATE_INFANTRY_MECH);if(!lastTurn)return 0;
 if(Divide(groupCount*100,lastTurn)<M2C_FIELD(gAiSettings,u8 *,AI_SETTING_UNIT13_PERCENT)){

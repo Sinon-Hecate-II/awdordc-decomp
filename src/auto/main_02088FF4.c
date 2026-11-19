@@ -83,13 +83,13 @@ u8 Is3DSpriteAnimating(void *arg0) {
  return result;
 }
 
+#pragma scheduling on
 M2C_UNK func_02089108(void *arg0) {
 extern M2C_UNK data_02102610;
-extern void *gCur3DSpriteEngine;
-extern s32 g3DSpriteEngineMain;
+extern void *data_027e01d8;
+extern s32 data_027e00c8;
 u8 a;
 u8 b;
-M2C_UNK z = 0;
 M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102610;
 M2C_FIELD(arg0,u8 *,0x48) = (M2C_FIELD(arg0,u8 *,0x48)&~1)|1;
 M2C_FIELD(arg0,s16 *,0x34)=0;
@@ -100,20 +100,19 @@ M2C_FIELD(arg0,s32 *,0x40)&=~0x03FC0000;
 M2C_FIELD(arg0,s16 *,0x3E)=0;
 M2C_FIELD(arg0,s16 *,0x3C)=0xC00;
 M2C_FIELD(arg0,s32 *,0x40)=(M2C_FIELD(arg0,s32 *,0x40)&~0xFC000000)|0x40000000;
-a = ((s32)gCur3DSpriteEngine == g3DSpriteEngineMain) ? 1 : 0;
-b = (a == 1) ? 0 : 1;
+if ((s32)data_027e01d8 == data_027e00c8) a=1; else a=0;
+if (a!=1) b=1; else b=0;
 M2C_FIELD(arg0,u8 *,0x48)=(M2C_FIELD(arg0,u8 *,0x48)&~0xE)|((u32)(b<<0x1D)>>0x1C);
 M2C_FIELD(arg0,u8 *,0x49)=0x11;
-M2C_FIELD(arg0,s32 *,0x44)=z;
+M2C_FIELD(arg0,s32 *,0x44)=0;
 M2C_FIELD(arg0,u8 *,0x48)=(u8)(M2C_FIELD(arg0,u8 *,0x48)&~0x30)&~0xC0;
-M2C_FIELD(arg0,u8 *,0x4D)=z;
-M2C_FIELD(arg0,u8 *,0x4C)=z;
+M2C_FIELD(arg0,u8 *,0x4D)=0;
+M2C_FIELD(arg0,u8 *,0x4C)=0;
 M2C_FIELD(arg0,u8 *,0x4E)=8;
 M2C_FIELD(arg0,u8 *,0x4F)=8;
-M2C_FIELD(arg0,s16 *,0x38)=z;
-M2C_FIELD(arg0,s16 *,0x3A)=z;
+M2C_FIELD(arg0,s16 *,0x38)=0;
+M2C_FIELD(arg0,s16 *,0x3A)=0;
 }
-
 void func_020891fc(void *arg0)
 {
     extern M2C_UNK data_02102610;

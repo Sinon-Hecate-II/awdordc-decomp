@@ -91,7 +91,7 @@ CreateNasConnection(buf,n);
 void func_0203a2b4(void) {
     extern M2C_UNK gNasLogin;
     s32 func_02032b98(void);
-    void func_02032be4(void *);
+    void Nas_GetResult(void *);
     void func_02032b10(void);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
@@ -114,7 +114,7 @@ void func_0203a2b4(void) {
 
     r = func_02032b98();
     if (r == 0x15) {
-        func_02032be4(buf + 0x20C);
+        Nas_GetResult(buf + 0x20C);
         StringCopy((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x48, (M2C_UNK)(buf + 0x200 + 0x56));
         StringCopy((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x148, (M2C_UNK)(buf + 0x300 + 0x83));
         func_02032b10();
@@ -142,7 +142,7 @@ void func_0203a2b4(void) {
         diff = now - stored;
         q = U64Divide(diff << 6, 0x82EAULL);
         if (q > 0x2710ULL) {
-            func_02032be4(buf + 0x48);
+            Nas_GetResult(buf + 0x48);
             func_02032b10();
             HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24), 0);
             M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24) = 0;
@@ -202,7 +202,7 @@ s32 IsNasLoginDone(void) {
     return 0;
 }
 
-void func_0203a68c(M2C_UNK arg0, M2C_UNK arg1) {
+void GetMatchPlayerRecordInfo(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK GetMatchPlayerInfo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     GetMatchPlayerInfo(arg0, 0, 0, arg1);
 }
@@ -215,13 +215,13 @@ s32 GetMatchPlayerInfo(M2C_UNK matchId,M2C_UNK scmOut,M2C_UNK scnOut,M2C_UNK nam
 extern u8 gBuddyKeySCM[],gBuddyKeySCN[];
 s32 FetchMatchPlayerInfo(M2C_UNK,void *);
 s32 ExtractKeyValue(void *,void *,void *,s32);
-s32 func_0206abd8(void *,void *,s32);
+s32 strtoul(void *,void *,s32);
 void StringCopy(void *,M2C_UNK);
 MatchPlayerInfo info;u32 keyValue;
 if(FetchMatchPlayerInfo(matchId,&info)){
 if(info.status==6){
-if(scmOut){if(ExtractKeyValue(gBuddyKeySCM,&keyValue,info.fields,47)<=0)*(u8 *)scmOut=0;else *(u8 *)scmOut=func_0206abd8(&keyValue,0,10);}
-if(scnOut){if(ExtractKeyValue(gBuddyKeySCN,&keyValue,info.fields,47)<=0)*(u8 *)scnOut=0;else *(u8 *)scnOut=func_0206abd8(&keyValue,0,10);}
+if(scmOut){if(ExtractKeyValue(gBuddyKeySCM,&keyValue,info.fields,47)<=0)*(u8 *)scmOut=0;else *(u8 *)scmOut=strtoul(&keyValue,0,10);}
+if(scnOut){if(ExtractKeyValue(gBuddyKeySCN,&keyValue,info.fields,47)<=0)*(u8 *)scnOut=0;else *(u8 *)scnOut=strtoul(&keyValue,0,10);}
 }else{if(scmOut)*(u8 *)scmOut=0;if(scnOut)*(u8 *)scnOut=0;}
 if(nameOut)StringCopy((void *)nameOut,(M2C_UNK)info.name);
 return (u8)info.status;
@@ -229,25 +229,41 @@ return (u8)info.status;
 if(scmOut)*(u8 *)scmOut=0;if(scnOut)*(u8 *)scnOut=0;return 0;
 }
 
-s32 func_0203a7c0(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 *e) {
-s32 GetMatchPlayerInfo(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK);
-s32 StringLength(void *);
-s32 func_0203739c(void *,s32,s32,s32);
-u8 buf[256];s32 n,v;
-n=GetMatchPlayerInfo(a,b,c,(s32)buf);
-if(!n){*e=-1;return n;}
-*e=func_0203739c(buf,StringLength(buf),0,0);
-if(!d || (v=*e)==-1)return n;func_0203739c(buf,StringLength(buf),d,v);
-return n;
+/* Reads the match player record of `matchId` and decodes its base64-encoded name
+ * into `name` through the base64 decoder func_0203739c, reporting the decoded
+ * byte count in `nameLength` (-1 when there is no record).  The record's player
+ * and connected counts are reported through `playerCount`/`connectedCount`.
+ * Returns the record's status, 6 when the player was found. */
+s32 GetMatchPlayerName(s32 matchId, u8 *playerCount, u8 *connectedCount, char *name, s32 *nameLength) {
+    s32 GetMatchPlayerInfo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 StringLength(void *);
+    s32 func_0203739c(void *, s32, s32, s32);
+    u8 encoded[256];
+    s32 status;
+    s32 length;
+
+    status = GetMatchPlayerInfo(matchId, playerCount, connectedCount, (s32)encoded);
+    if (!status) {
+        *nameLength = -1;
+        return status;
+    }
+    *nameLength = func_0203739c(encoded, StringLength(encoded), 0, 0);
+    if (!name || (length = *nameLength) == -1) return status;
+    func_0203739c(encoded, StringLength(encoded), name, length);
+    return status;
 }
 
-s32 func_0203a850(s32 a,s32 b) {
+/* Publishes the length-byte player status block data as the match session's
+ * GameSpy location string: base64-encodes it and sets the cached GPI status with
+ * the encoded text. Does nothing without a match session or a finished NAS login.
+ * Returns 1 when the status was accepted, 0 otherwise. */
+s32 PublishPlayerStatusLocation(s32 data,s32 length) {
 extern M2C_UNK gMatchSessionMgr;
-s32 func_02037214(s32,s32,void *,s32);
+s32 Base64EncodeUrl(s32,s32,void *,s32);
 s32 SetGpiStatus(s32,s32,void *);
 u8 buf[256];s32 n;
 if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!IsNasLoginDone())return 0;
-n=func_02037214(a,b,buf,255);
+n=Base64EncodeUrl(data,length,buf,255);
 if(n==-1)return 0;
 buf[n]=0;
 return SetGpiStatus(-1,0,buf)==0;
@@ -260,17 +276,27 @@ if(p && (u8)(M2C_FIELD(p,u8 *,0x1e)+255)<=1)return 0;
 return 1;
 }
 
-void func_0203a910(void *a) {
-extern M2C_UNK gMatchSessionMgr;
-s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,void *);
-s32 func_0204e364(s32,s32);void func_0204e3b0(s32,s32);void MI_CpuFill8(void *,s32,s32);
-s32 n;
-if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!IsNasLoginDone()||!GetLocalPlayerInfo())goto clear;
-n=GetPlayerRecordId(GetLocalPlayerInfo(),a);
-if(!n || n==-1)goto clear;
-if(func_0204e364(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,4),n))
-func_0204e3b0(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,4),n);
-clear: MI_CpuFill8(a,0,12);
+/* Empties the 12-byte player record `record` of the online match: while the match
+ * session is up and the record resolves to a player (which needs the local
+ * profile), that player's GameSpy buddy profile is deleted first so the match
+ * connection does not keep the profile of a player who is leaving.  The record
+ * ends up empty either way. */
+void ReleasePlayerRecord(void *record) {
+    extern M2C_UNK gMatchSessionMgr;
+    s32 GetLocalPlayerInfo(void);
+    s32 GetPlayerRecordId(s32, void *);
+    s32 HasBuddyProfile(s32, s32);
+    void DeleteBuddyProfile(s32, s32);
+    void MI_CpuFill8(void *, s32, s32);
+    s32 profileId;
+
+    if (!M2C_FIELD(&gMatchSessionMgr, void **, 8) || !IsNasLoginDone() || !GetLocalPlayerInfo()) goto clear;
+    profileId = GetPlayerRecordId(GetLocalPlayerInfo(), record);
+    if (!profileId || profileId == -1) goto clear;
+    if (HasBuddyProfile(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), s32 *, MATCH_SESSION_CONNECTION), profileId))
+        DeleteBuddyProfile(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), s32 *, MATCH_SESSION_CONNECTION), profileId);
+clear:
+    MI_CpuFill8(record, 0, MATCH_SESSION_PLAYER_SIZE);
 }
 
 s32 func_0203a9a4(s32 a,s32 b) {
@@ -323,7 +349,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void**,8),s32*,88)=0;
 /* Advance the registered communication session by one step. */
 void func_0203aabc(void) {
 extern M2C_UNK gMatchSessionMgr;
-s32 HasNetError(void *); s32 func_0203b09c(void); s32 func_0203bcf8(s32); s32 func_02058c84(void);
+s32 HasNetError(void *); s32 MatchSession_Think(void); s32 func_0203bcf8(s32); s32 func_02058c84(void);
 void gpiInfoReadSocket(void); void gpiInfoCloseSocket(void); void SyncSessionPlayerConnections(s32,s32); void func_0203b3c4(void);
 void *ctx,*child; u32 status;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
@@ -332,7 +358,7 @@ if(HasNetError(ctx))return;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(!M2C_FIELD(ctx,s32 *,0x18)){
 child=M2C_FIELD(ctx,void **,4);
-if(child && M2C_FIELD(child,s32 *,0))func_0203b09c();
+if(child && M2C_FIELD(child,s32 *,0))MatchSession_Think();
 return;
 }
 if(func_0203bcf8(M2C_FIELD(ctx,s32 *,0x18)) || func_02058c84()){
@@ -346,7 +372,7 @@ M2C_FIELD(&gMatchSessionMgr,s32 *,12)=0;gpiInfoCloseSocket();
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 child=M2C_FIELD(ctx,void **,4);
 if(child && M2C_FIELD(child,s32 *,0)){
-if(func_0203b09c())return;
+if(MatchSession_Think())return;
 ctx=M2C_FIELD(&gMatchSessionMgr,void **,8);
 if(!M2C_FIELD(ctx,s32 *,0))return;
 if(M2C_FIELD(ctx,s32 *,0x18) && (status=M2C_FIELD(ctx,u8 *,0x1e))!=3){

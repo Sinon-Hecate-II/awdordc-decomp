@@ -303,7 +303,7 @@ case SIDE_NONE:default:break;
  * threat bitmap it is marked into.  Units that are mid-action are skipped, and a unit
  * whose commander may use its kind gets the stricter marker. */
 void MarkUnitThreatAt(void *unit,s32 x,s32 y) {
-s32 GetUnitOwner(void *),func_020a33c4(s32),func_020a27f8(s32,s32),GetUnitMoveScoreWeather(void *,s32,s32);
+s32 GetUnitOwner(void *),GetPlayerArmyVariant(s32),func_020a27f8(s32,s32),GetUnitMoveScoreWeather(void *,s32,s32);
 extern void **gCurrentMap;
 s32 owner=GetUnitOwner(unit);
 s32 mark;
@@ -312,7 +312,7 @@ s32 radius;
 if(((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0)return;
 if((M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&2)&&!(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&4))return;
 mark=0;commanderReady=0;
-if(((u32)(M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24)==3) {if(func_020a33c4(owner))commanderReady=1;}
+if(((u32)(M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24)==3) {if(GetPlayerArmyVariant(owner))commanderReady=1;}
 if(commanderReady) {if(func_020a27f8((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26,owner))mark=2;}
 radius=GetUnitMoveScoreWeather(unit,x,y);
 MarkThreatBitmap((s16)x,(s16)y,(s16)radius,M2C_FIELD(*gCurrentMap+owner*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF),(u8)owner,(u8)mark);

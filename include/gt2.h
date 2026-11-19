@@ -9,11 +9,13 @@
 #define GT2_CONNECTION_ACK_QUEUE   0x60 /* Vector *of sent commands awaiting the peer's acknowledgement, sorted by sequence */
 #define GT2_CONNECTION_STATE       0x0C /* s32 handshake/connection state */
 #define GT2_CONNECTION_INITIATOR   0x10 /* s32 nonzero for a connection this side opened (the client), 0 for one the peer opened and the server accepted */
+#define GT2_CONNECTION_CLOSE_PENDING 0x14 /* s32 set when a connection closed while still awaiting the server's accept; gti2AcceptConnection then refuses it (and clears the flag) */
 #define GT2_CONNECTION_LAST_RECEIVE 0x1C /* u32 tick of the last command received, set to the creation time at first */
 #define GT2_CONNECTION_TIMEOUT     0x20 /* u32 silence limit in ms while this connection handshakes, 0 to use GT2_CONNECT_TIMEOUT */
 #define GT2_CONNECTION_RESPONSE    0x68 /* 32-byte expected challenge response */
 #define GT2_CONNECTION_SEND_SEQUENCE 0x64 /* u16 sequence number the next sent command carries */
-#define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds */
+#define GT2_CONNECTION_LAST_SENT   0x88 /* s32 tick of the last successful raw send */
+#define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds, set when a handshake command was sent */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */
 #define GT2_CONNECTION_MESSAGE_CALLBACKS 0x98 /* Vector of per-message callbacks (func_0205a424) */
@@ -30,6 +32,8 @@
 #define GT2_SOCKET_CALLBACKS       0x1C /* s32 callbacks running on the socket */
 #define GT2_SOCKET_DIRTY           0x14 /* s32 set when the socket was asked to be freed */
 #define GT2_SOCKET_CONNECT_ATTEMPT 0x20 /* callback for incoming connections */
+#define GT2_SOCKET_CONNECTION_TABLE 0x0C /* HashTable *of the connections keyed by remote address/port */
+#define GT2_SOCKET_CONNECTIONS      0x10 /* Vector *of the connections the socket owns */
 #define GT2_SOCKET_ERROR_CALLBACK  0x24 /* void (*)(socket): socket error callback the socket was created with */
 /* A connection accepted by the server may stay silent for this long while its
  * handshake is in progress before GT2 gives up on it. */

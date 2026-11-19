@@ -7,16 +7,20 @@ void RedrawNameEntryText(void);
 
 void func_ov001_0217b130(void);
 
-void MapSelectList_SetRowTiles(s32 arg0, s32 arg1) {
+/* Give the (row)th label and map-name sprite of the map-select list the tiles of
+ * entry mapIndex: the label's tile comes from MAPSELECT_LABEL_TILES indexed by the
+ * entry's flag byte, the name's from MAPSELECT_NAME_TILES indexed by the entry's
+ * name id.  Entries past the end of the list are ignored. */
+void MapSelectList_SetRowTiles(s32 mapIndex, s32 row) {
     extern M2C_UNK gMapSelectState;
-    s32 offset;
-    void *first, *second;
-    if (arg0 >= M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x51)) return;
-    offset = arg0 * 0x2A;
-    first = M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + arg1 * 4, void **, 0x10);
-    M2C_FIELD(first, u16 *, 4) = (M2C_FIELD(first, u16 *, 4) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), void **, 0) + offset, u8 *, 0x28), u16 *, 0x42);
-    second = M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + arg1 * 4, void **, 0x24);
-    M2C_FIELD(second, u16 *, 4) = (M2C_FIELD(second, u16 *, 4) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, 4) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), void **, 0) + offset, u16 *, 0x26), u16 *, 0x48);
+    s32 entryOffset;
+    void *labelSprite, *nameSprite;
+    if (mapIndex >= M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_COUNT)) return;
+    entryOffset = mapIndex * MAPSELECT_ENTRY_SIZE;
+    labelSprite = M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ) + row * 4, void **, MAPSELECT_ROW_OBJS_A);
+    M2C_FIELD(labelSprite, u16 *, MAPSELECT_ROW_TILE) = (M2C_FIELD(labelSprite, u16 *, MAPSELECT_ROW_TILE) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), void **, MAPSELECT_ENTRIES) + entryOffset, u8 *, MAPSELECT_ENTRY_FLAG), u16 *, MAPSELECT_LABEL_TILES);
+    nameSprite = M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ) + row * 4, void **, MAPSELECT_ROW_OBJS_B);
+    M2C_FIELD(nameSprite, u16 *, MAPSELECT_ROW_TILE) = (M2C_FIELD(nameSprite, u16 *, MAPSELECT_ROW_TILE) & ~0x3FF) | M2C_FIELD((u8 *)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ) + 2 * M2C_FIELD((u8 *)M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), void **, MAPSELECT_ENTRIES) + entryOffset, u16 *, MAPSELECT_ENTRY_NAME_ID), u16 *, MAPSELECT_NAME_TILES);
 }
 
 /* Place the visible row sprites down the screen: the label and the map name of
@@ -230,9 +234,9 @@ u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001Na
 gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
 if(mode==0) {func_ov001_021846f8((u8 *)gNameEntryState+NAME_ENTRY_TEXT); M2C_FIELD(gNameEntryState,u8 *,NAME_ENTRY_LENGTH)=StringLengthUpTo((u8 *)gNameEntryState+NAME_ENTRY_TEXT,NAME_ENTRY_MAX_LENGTH);}
-Ov001_LoadNameEntryGraphics();func_ov001_02172250(mode+9);
+Ov001_LoadNameEntryGraphics();Ov001_LoadObjLayoutBlock(mode+9);
 if(variant==1)Ov001_ShowMessagePanel(53,-1,0);else Ov001_ShowMessagePanel(modeMessages[mode],-1,0);
-func_ov001_02171dd0(2);
+Ov001_OpenMenuForMode(2);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=Ov001_CreateSpriteFromLayout(0,62);
 M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)&~0xc00)|0xc00;

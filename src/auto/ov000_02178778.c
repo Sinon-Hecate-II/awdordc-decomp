@@ -34,7 +34,7 @@ for(yy=top;yy<=bottom;yy++){for(xx=left;xx<=right;xx++){
 m=Map787();u=(u8 *)m+xx;{u16 row=M2C_FIELD((u8 *)m+yy*2,u16 *,0x3758);sel=(u8 *)u+row;id=M2C_FIELD(u,u8 *,row);}
 if((id!=0 || (M2C_FIELD(gAiCommandState,Bit2787 *,7).bit==0 && (M2C_FIELD(sel,u8 *,0x539c)&127)!=0)) && IsUnitOnCurrentTeam(id)!=1){
 s16 cx=(s16)xx,cy=(s16)yy;
-s32 l=Max787(cx-1,0),t=((cy-1)<0?0:cy-1),r=Min787(cx+1,M2C_FIELD(Map787(),u16 *,0x5144)-1),b=Min787(cy+1,M2C_FIELD(Map787(),u16 *,0x5146)-1),ix,iy;
+s32 iy,ix,b,r,t,l; l=Max787(cx-1,0);t=((cy-1)<0?0:cy-1);r=Min787(cx+1,M2C_FIELD(Map787(),u16 *,0x5144)-1);b=Min787(cy+1,M2C_FIELD(Map787(),u16 *,0x5146)-1);
 for(iy=t;iy<=b;iy++)for(ix=l;ix<=r;ix++){
 s32 dist=Distance787(cx,ix,cy,iy);if(dist<1)continue;if(dist>1)continue;if( M2C_FIELD(M2C_FIELD((u8 *)Map787()+iy*4,s8 **,0x52e8),s8 *,ix)>=0 && IsAllyUnitAtCell((s16)ix,(s16)iy)==0)count++;
 }

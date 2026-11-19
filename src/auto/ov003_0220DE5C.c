@@ -264,8 +264,8 @@ if(q[68]) { while(M2C_FIELD(q,s32 *,52)>M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *
 else { if(M2C_FIELD(q,s32 *,56)>=M2C_FIELD(q,s32 *,52)) M2C_FIELD(q,s32 *,52)=M2C_FIELD(q,s32 *,60)>M2C_FIELD(q,s32 *,52)?M2C_FIELD(q,s32 *,60):M2C_FIELD(q,s32 *,52); }
 }
 M2C_FIELD(p,u8 **,0x40)=q;
-((Unk0220C6C8Nibbles *)(p+0x36))->high=2;
 }
+((Unk0220C6C8Nibbles *)(p+0x36))->high=2;
 }
 
 /* Deleting destructor of the ov003 map-select screen: restores the palette

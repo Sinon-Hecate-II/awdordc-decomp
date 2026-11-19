@@ -1,6 +1,7 @@
 /* 58 functions from 0x02029E98 to 0x0202AE00 (main), found by ds-decomp. */
 #include "common.h"
 #include "exp_heap.h"
+#include "sound.h"
 typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
 M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
@@ -532,7 +533,11 @@ s32 func_0202a940(M2C_UNK arg0) {
     return 1;
 }
 
-void func_0202a968(void) {
+/* Sets the sound driver up once: shorts out if it is already up, initializes the
+ * sound command queue, installs the handlers that reset the driver's channels,
+ * then starts the voice allocator and the streamed sound state.  The driver's id
+ * (-1 = none) and state are left at their start values. */
+void InitSoundDriver(void) {
     M2C_UNK func_02008fcc(M2C_UNK);
     M2C_UNK func_0200ee10(M2C_UNK);
     M2C_UNK func_0200ee28(M2C_UNK);
@@ -541,38 +546,38 @@ void func_0202a968(void) {
     M2C_UNK Sound_InitVoices(void);
     void func_0202aa20(void);
     void func_0202aa58(void);
-    extern M2C_UNK data_02138ea0;
+    extern M2C_UNK gSoundInitState;
     extern M2C_UNK data_02138eb0;
     extern M2C_UNK data_02138ebc;
-    if (M2C_FIELD(&data_02138ea0, s32 *, 0xC) != 0) {
+    if (M2C_FIELD(&gSoundInitState, s32 *, SOUND_INIT_DONE) != 0) {
         return;
     }
-    M2C_FIELD(&data_02138ea0, s32 *, 0xC) = 1;
-    func_02008fcc((M2C_UNK)&data_02138ea0);
-    M2C_FIELD(&data_02138ea0, void **, 0x10) = (void *)func_0202aa20;
-    M2C_FIELD(&data_02138ea0, s32 *, 0x14) = 0;
-    M2C_FIELD(&data_02138ea0, void **, 0x1C) = (void *)func_0202aa58;
-    M2C_FIELD(&data_02138ea0, s32 *, 0x20) = 0;
+    M2C_FIELD(&gSoundInitState, s32 *, SOUND_INIT_DONE) = 1;
+    func_02008fcc((M2C_UNK)&gSoundInitState);
+    M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_STOP) = (void *)func_0202aa20;
+    M2C_FIELD(&gSoundInitState, s32 *, 0x14) = 0;
+    M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_SILENCE) = (void *)func_0202aa58;
+    M2C_FIELD(&gSoundInitState, s32 *, 0x20) = 0;
     func_0200ee10((M2C_UNK)&data_02138eb0);
     func_0200ee28((M2C_UNK)&data_02138ebc);
     func_0202ab60();
     func_0202ba8c();
     Sound_InitVoices();
-    M2C_FIELD(&data_02138ea0, s8 *, 0) = -1;
-    M2C_FIELD(&data_02138ea0, s32 *, 4) = 1;
+    M2C_FIELD(&gSoundInitState, s8 *, 0) = -1;
+    M2C_FIELD(&gSoundInitState, s32 *, 4) = 1;
 }
 
 void func_0202a9f0(void) {
     s32 func_02009100(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK func_0202aeb4();
-    M2C_UNK func_0202baa4();
+    M2C_UNK UpdateStreamVoiceVolume();
     M2C_UNK func_0202d9e4();
     do {
 
     } while (func_02009100(0) != 0);
     func_0202aeb4();
-    func_0202baa4();
+    UpdateStreamVoiceVolume();
     func_0202d9e4();
     Sound_FlushCommands(0);
 }
@@ -670,28 +675,33 @@ void func_0202abb4(s32 arg0, s32 arg1) {
     *(s32 *)(data_0213b720 + arg0 * 0x24) = arg1;
 }
 
-s32 func_0202abcc(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK ListAppend(s32, void *);
+/* Allocates one of a channel's preallocated sequence-player heaps: a sound data
+ * block of heapSize usable bytes plus its node header, holding a heap that the
+ * channel's sequence players claim through Sound_LinkVoiceChannel.  The node
+ * waits on the channel's sequence list until a player takes it.  Returns 0 when
+ * the block or the heap inside it cannot be created. */
+s32 Sound_CreateChannelHeap(s32 channel, void *soundPlayer, s32 heapSize) {
+    s32 ListAppend(s32, void *);
     s32 Sound_CreateHeap(void *, s32);
     void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
     extern M2C_UNK gSoundChannels;
-    extern M2C_UNK func_0202b3bc;
-    s32 temp_r0_2;
-    void *temp_r0;
+    void Sound_FreeChannelHeap(void *, s32, s32, s32);
+    void *node;
+    s32 heap;
 
-    temp_r0 = Sound_AllocDataBlock((s32 *)arg1, arg2 + 0x14, (s32)&func_0202b3bc, 0, 0);
-    if (temp_r0 == 0) {
+    node = Sound_AllocDataBlock((s32 *)soundPlayer, heapSize + SOUND_CHANNEL_HEAP_RESERVED, (s32)&Sound_FreeChannelHeap, 0, 0);
+    if (node == 0) {
         return 0;
     }
-    M2C_FIELD(temp_r0, s32 *, 0xC) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x10) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x8) = 0;
-    temp_r0_2 = Sound_CreateHeap((void *)((char *)temp_r0 + 0x14), arg2);
-    if (temp_r0_2 == 0) {
+    M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_OWNER) = 0;
+    M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_CHANNEL) = channel;
+    M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_HEAP) = 0;
+    heap = Sound_CreateHeap((void *)((char *)node + SOUND_CHANNEL_HEAP_RESERVED), heapSize);
+    if (heap == 0) {
         return 0;
     }
-    M2C_FIELD(temp_r0, s32 *, 0x8) = temp_r0_2;
-    ListAppend((s32)&gSoundChannels + arg0 * 0x24 + 0xC, temp_r0);
+    M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_HEAP) = heap;
+    ListAppend((s32)&gSoundChannels + channel * SOUND_CHANNEL_SIZE + SOUND_CHANNEL_SEQ_LIST, node);
     return 1;
 }
 
@@ -772,7 +782,7 @@ void func_0202ad90(void *arg0, s32 arg1, s32 arg2) {
 }
 
 #pragma opt_common_subs off
-void func_0202adb0(void **arg0, s16 arg1) {
+void Sound_SetSequenceSource(void **arg0, s32 arg1) {
     if (*(void * volatile *)arg0 == NULL) {
         return;
     }

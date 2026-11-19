@@ -229,21 +229,30 @@ M2C_FIELD(p,s32 *,0x2c)=a+b;
 M2C_FIELD(q,void (**)(void *,s32,s32,s32),0x4c)(q,c,a,b);
 }
 
-s32 func_0200a3d8(void *p) {
-void *q=M2C_FIELD(p,void **,8);
-u32 out[2], in[2]; s32 r; u32 *v=(u32 *)((u8 *)p+0x30);
-in[0]=(u32)q;
-in[1]=M2C_FIELD(q,u32 *,0x34)+(M2C_FIELD(v,u16 *,4)<<3);
-r=FileStreamRead(in,(M2C_UNK)out,8);
-if(!r){
-*(UnkA3Block *)((u8 *)p+0x20)=*(UnkA3Block *)v;
-if(!M2C_FIELD(v,u16 *,6)&&!v[2]){
-M2C_FIELD(p,u16 *,0x26)=M2C_FIELD(out,u16 *,4);
-M2C_FIELD(p,u32 *,0x28)=M2C_FIELD(q,u32 *,0x34)+out[0];
-}
-M2C_FIELD(p,u32 *,0x2c)=M2C_FIELD(out,u16 *,6)&0xfff;
-}
-return r;
+/* FS directory command (2): reads the FNT main-table record of the directory
+ * named by the request's directory block, caches that block as the walk's
+ * resolved directory and, while its name subtable is still unknown, records the
+ * first file id and the subtable's offset.  The record's parent directory index
+ * is kept for a later ".." step.  Returns the read's result, 0 on success. */
+s32 ReadDirectoryRecord(void *request) {
+    FSArchive *archive = M2C_FIELD(request, FSArchive **, 8);
+    FSDirectoryBlock *block = (FSDirectoryBlock *)((u8 *)request + FS_REQ_DIR_BLOCK);
+    FSDirectoryTableEntry record;
+    FSStreamPos pos;
+    s32 result;
+
+    pos.file = archive;
+    pos.offset = archive->fntPos + (block->index << 3);
+    result = FileStreamRead(&pos, &record, sizeof(record));
+    if (!result) {
+        *(FSDirectoryBlock *)((u8 *)request + FS_REQ_DIR_RESOLVED) = *block;
+        if (!block->firstFileId && !block->nameOffset) {
+            M2C_FIELD(request, u16 *, FS_REQ_DIR_INDEX) = record.firstFileId;
+            M2C_FIELD(request, u32 *, FS_REQ_DIR_OFFSET) = archive->fntPos + record.nameOffset;
+        }
+        M2C_FIELD(request, u32 *, FS_REQ_DIR_PARENT) = record.parentIndex & 0xfff;
+    }
+    return result;
 }
 
 /* Read the next directory entry from the request's stream into the entry at

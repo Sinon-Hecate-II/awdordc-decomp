@@ -218,7 +218,7 @@ void func_020a8bd8(s32 a,s32 b){extern s32 *gCurrentMap;s32 *p=(s32 *)(*gCurrent
 
 u32 func_020a8c10(s32 a){extern s32 *gCurrentMap;return M2C_FIELD(*gCurrentMap+140*a,Bits020a8c10 *,0x6810).value;}
 
-u8 func_020a8c3c(s32 arg0, s32 arg1, s32 arg2) {
+u8 IsIndexInRange(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
  if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
  else result = 0;
@@ -257,7 +257,7 @@ s32 ScaleFixed8(s32 arg0, s32 arg1) {
 }
 
 void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg6,u16 arg7,u16 arg8,volatile u16 arg9) {
- M2C_UNK func_02087064(s32,s32,s32,u16,s32);
+ M2C_UNK SetGxTextureParams(s32,s32,s32,u16,s32);
  M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  volatile s32 width; volatile s32 z; volatile s32 origin;
  s32 height; s32 flags; s32 scaleY; s32 scaleX;
@@ -273,7 +273,7 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  dy=(tileH*scaleY)>>8;
  do {
  tileW=func_020a8cc0((u16)remaining);
- func_02087064(arg5,tileW,tileH,index,flags);
+ SetGxTextureParams(arg5,tileW,tileH,index,flags);
  dx=tileW*scaleX;
  DrawTexturedQuadUV(x,y,z,dx>>8,dy,0,0,tileW,tileH);
  index+=(tileW*tileH)>>6;
@@ -299,7 +299,7 @@ if(widthScale!=256)x=ScaleFixed8(x,widthScale);
 if(heightScale!=256)y=ScaleFixed8(y,heightScale);
 ResetGxTextureParams();DrawSolidQuad(px,py,z,x,y,(u16)color);}
 
-u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(func_020a8c3c((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
+u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(IsIndexInRange((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
 
 u16 func_020a8f4c(s32 arg0) {
     M2C_UNK IsLinkSessionActive();
@@ -449,27 +449,33 @@ void SetTextSpriteValue(void *sprite,s32 number) {
  }
 }
 
-s16 func_020a93e4(void *arg0,s32 arg1) {
-s32 result=0;
-s32 count;
-s32 base;
-u8 step;
-switch((u32)(M2C_FIELD(arg0,u8 *,32)<<24)>>29){
-case 0:
-result=M2C_FIELD(arg0,u8 *,23)*(M2C_FIELD(arg0,u8 *,10)-arg1-1)+M2C_FIELD(arg0,s16 *,6);
-break;
-case 1:
-step=M2C_FIELD(arg0,u8 *,23);
-count=M2C_FIELD(arg0,u8 *,10)-1;
-base=M2C_FIELD(arg0,s16 *,6)-((step*count+M2C_FIELD(arg0,u8 *,20))>>1);
-result=base+step*(count-arg1);
-break;
-case 2:
-base=M2C_FIELD(arg0,u8 *,23)*-arg1-M2C_FIELD(arg0,u8 *,20);
-result=base+M2C_FIELD(arg0,s16 *,6);
-break;
-}
-return result;
+/* X screen coordinate of glyph `index` of a text sprite; glyph 0 is the
+ * rightmost one (the digits are stored least significant first).  The top three
+ * bits of the sprite's +0x20 flags byte pick the layout: 0 = left aligned at
+ * TEXT_SPRITE_X, 1 = centred on it, 2 = right aligned; each glyph advances
+ * +0x17 pixels and the run's width is at +0x14. */
+s16 GetTextSpriteGlyphX(void *sprite, s32 index) {
+    s32 x = 0;
+    s32 count;
+    s32 start;
+    u8 advance;
+
+    switch ((u32) (M2C_FIELD(sprite, u8 *, 32) << 24) >> 29) {
+    case 0:
+        x = M2C_FIELD(sprite, u8 *, 23) * (M2C_FIELD(sprite, u8 *, 10) - index - 1) + M2C_FIELD(sprite, s16 *, 6);
+        break;
+    case 1:
+        advance = M2C_FIELD(sprite, u8 *, 23);
+        count = M2C_FIELD(sprite, u8 *, 10) - 1;
+        start = M2C_FIELD(sprite, s16 *, 6) - ((advance * count + M2C_FIELD(sprite, u8 *, 20)) >> 1);
+        x = start + advance * (count - index);
+        break;
+    case 2:
+        start = M2C_FIELD(sprite, u8 *, 23) * -index - M2C_FIELD(sprite, u8 *, 20);
+        x = start + M2C_FIELD(sprite, s16 *, 6);
+        break;
+    }
+    return x;
 }
 
 void func_020a947c(void *arg0,u32 arg1) {

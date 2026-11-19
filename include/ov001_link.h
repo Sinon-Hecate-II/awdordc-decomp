@@ -28,4 +28,15 @@
 #define OV001_LINK_TRANSFER      0x1b140 /* void *: buffer handed to MultiBoot_StartParent */
 #define OV001_LINK_PROGRAM       0x1b144 /* void *: program image loaded at work +0x2c */
 
+/* The stage Ov001_GetPlayerStage reports for a player: 0 when its bit is in no
+ * header word at all, otherwise the index of the first stage word (offset / 2)
+ * that holds it, from OV001_LINK_JOINED up to OV001_LINK_JOINED_COPY. */
+#define OV001_STAGE_NONE          0
+#define OV001_STAGE_JOINED        1
+#define OV001_STAGE_KICKED        2
+#define OV001_STAGE_KICK_PENDING  3
+#define OV001_STAGE_KICK_ANSWERED 4
+#define OV001_STAGE_READY         5
+#define OV001_STAGE_END           6 /* OV001_LINK_JOINED_COPY says the link is ending */
+
 #endif

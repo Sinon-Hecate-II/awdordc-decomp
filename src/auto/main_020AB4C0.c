@@ -69,97 +69,88 @@ void ListWidgetScrollDown(void *arg0) {
     M2C_FIELD(arg0, u16 *, LIST_WIDGET_SCROLL_CURRENT) = (u16)M2C_FIELD(arg0, u16 *, LIST_WIDGET_SCROLL_START);
 }
 
-s32 ListWidgetScrollBy(void *arg0, s16 arg1, s32 flag, s32 arg3) {
-    s16 oldHeight = (s16)M2C_FIELD(arg0, s32 *, 0x14);
-    s16 row = (s16)(arg1 + oldHeight);
-    s16 c0 = Divide(oldHeight, M2C_FIELD(arg0, s16 *, 0x8));
-    s32 maxRow = M2C_FIELD(arg0, s32 *, 0x18);
+#pragma push
+#pragma opt_common_subs off
+/* Scroll the list's first-visible index by `delta` items, re-anchoring it to the
+ * last row when the move would pass the end of a partial row, then wrap it around
+ * [min,max] or clamp it, per the widget's wrap flag.  A move into a new row arms
+ * the widget's pending-move flag with `direction`. */
+s32 ListWidgetScrollBy(void *widget, s16 delta, s32 force, s32 direction) {
+    s16 oldScroll, oldRow, nextScroll;
+    s32 max;
 
-    if (maxRow < row) {
-        s16 saved = Divide(
-            (s16)maxRow, M2C_FIELD(arg0, s16 *, 0x8));
-        s16 sec = Divide(
-            (s16)(row - arg1), M2C_FIELD(arg0, s16 *, 0x8));
+    oldScroll = (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL);
+    nextScroll = (s16)(delta + oldScroll);
+    oldRow = (s16)Divide(oldScroll, M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+    max = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
 
-        if (sec < saved) {
-            row = (s16)maxRow;
+    if (max < nextScroll) {
+        s16 maxRow = (s16)Divide((s16)max, M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+        s16 previousRow = (s16)Divide((s16)(nextScroll - delta), M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+        if (previousRow < maxRow) {
+            nextScroll = (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+            goto setScroll;
         }
     }
-
-    if (flag == 0) {
-        if (func_020a8c3c(
-                row,
-                M2C_FIELD(arg0, s32 *, 0x1c),
-                M2C_FIELD(arg0, s32 *, 0x18)) == 0) {
-            row = oldHeight;
-        }
+    if (force == 0 && IsIndexInRange(nextScroll, (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MIN),
+                                    (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX)) == 0) {
+        nextScroll = (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL);
+        goto setScroll;
     }
-
-    maxRow = M2C_FIELD(arg0, s32 *, 0x18);
-
-    if (Modulo((s16)maxRow, M2C_FIELD(arg0, s16 *, 0x8))
-        != M2C_FIELD(arg0, s16 *, 0x8) - 1) {
-        if (row < 0) {
-            s16 newRow = (s16)(row + maxRow + 1);
-            s16 t1 = Divide(
-                (s16)maxRow, M2C_FIELD(arg0, s16 *, 0x8));
-            s16 t2 = Divide(
-                newRow, M2C_FIELD(arg0, s16 *, 0x8));
-
-            if (t2 == t1) {
-                row = newRow;
-            } else {
-                row = (s16)maxRow;
+    if ((s16)Modulo((s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX),
+                    M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW)) !=
+        M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW) - 1) {
+        if (nextScroll < 0) {
+            s16 maxRow, wrappedRow;
+            max = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+            nextScroll = (s16)(nextScroll + max + 1);
+            maxRow = (s16)Divide((s16)max, M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+            wrappedRow = (s16)Divide(nextScroll, M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW));
+            if (wrappedRow != maxRow) {
+                nextScroll = (s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
             }
+        } else if (nextScroll > M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX)) {
+            nextScroll = 0;
         }
     }
 
-    maxRow = M2C_FIELD(arg0, s32 *, 0x18);
-    if (row > maxRow) {
-        row = 0;
-    }
-    M2C_FIELD(arg0, s32 *, 0x14) = row;
-
-    if (M2C_FIELD(arg0, u8 *, 0x24) != 0) {
-        s32 minRow;
-        s32 value;
-
-        maxRow = M2C_FIELD(arg0, s32 *, 0x18);
-        value = M2C_FIELD(arg0, s32 *, 0x14);
-
-        while (value > maxRow) {
-            minRow = M2C_FIELD(arg0, s32 *, 0x1c);
-            value -= maxRow - minRow + 1;
-            M2C_FIELD(arg0, s32 *, 0x14) = value;
-        }
-
-        minRow = M2C_FIELD(arg0, s32 *, 0x1c);
-        if (value < minRow) {
+setScroll:
+    M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) = nextScroll;
+    if (M2C_FIELD(widget, u8 *, LIST_WIDGET_WRAP) != 0) {
+        s32 bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+        s32 value = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL);
+        if (value > bound) {
             do {
-                value += maxRow - minRow + 1;
-                M2C_FIELD(arg0, s32 *, 0x14) = value;
-                minRow = M2C_FIELD(arg0, s32 *, 0x1c);
-            } while (value < minRow);
+                s32 start = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MIN);
+                value = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) - (bound - start + 1);
+                M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) = value;
+                bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+            } while (value > bound);
+        }
+        bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MIN);
+        if (value < bound) {
+            do {
+                s32 end = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+                value = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) + (end - bound + 1);
+                M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) = value;
+                bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MIN);
+            } while (value < bound);
         }
     } else {
-        s32 value = M2C_FIELD(arg0, s32 *, 0x14);
-        s32 maximum = M2C_FIELD(arg0, s32 *, 0x18);
-
-        if (value <= maximum) {
-            s32 minimum = M2C_FIELD(arg0, s32 *, 0x1c);
-            if (value < minimum) {
-                value = minimum;
+        s32 bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MAX);
+        s32 value = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL);
+        if (value <= bound) {
+            bound = M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL_MIN);
+            if (value >= bound) {
+                bound = value;
             }
-            M2C_FIELD(arg0, s32 *, 0x14) = value;
         }
+        M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL) = bound;
     }
-
-    if (c0 != (s16)Divide(
-            (s16)M2C_FIELD(arg0, s32 *, 0x14),
-            M2C_FIELD(arg0, s16 *, 0x8))) {
-        M2C_FIELD(arg0, u8 *, 0x4) = (u8)arg3;
+    if (oldRow != (s16)Divide((s16)M2C_FIELD(widget, s32 *, LIST_WIDGET_SCROLL),
+                              M2C_FIELD(widget, s16 *, LIST_WIDGET_ITEMS_PER_ROW))) {
+        M2C_FIELD(widget, u8 *, LIST_WIDGET_PENDING) = (u8)direction;
     }
-
-    UpdateListScroll(arg0);
+    UpdateListScroll(widget);
 }
-
+#pragma pop

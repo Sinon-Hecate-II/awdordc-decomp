@@ -21,20 +21,27 @@ extern void *gArmyInfoState;extern void **gCurrentMap;
 extern const u8 data_ov000_021adcfc[];
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
 extern u8 gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x8[],data_02101f0c[];
-s32 func_020a334c(s32);void AddSprite(u16,u16,u16,void *,s32);
+s32 GetPlayerArmyVariantIfSet(s32);void AddSprite(u16,u16,u16,void *,s32);
 s32 y,v,topIndex,topX,x,unit,owner,i,palette,tile,t,colorIndex;void *old,*p; u8 colors[6]; u8 c0,c1,c2,c3,c4,c5;
-p=gArmyInfoState;unit=M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,13));owner=func_020a334c(unit);
-c0=data_ov000_021adcfc[0];c1=data_ov000_021adcfc[1];c2=data_ov000_021adcfc[2];c3=data_ov000_021adcfc[3];c4=data_ov000_021adcfc[4];c5=data_ov000_021adcfc[5];colors[1]=c1;colors[3]=c3;colors[5]=c5;
+p=gArmyInfoState;unit=M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,13));owner=GetPlayerArmyVariantIfSet(unit);
 p=*gCurrentMap;colorIndex=M2C_FIELD(p+unit*140,u8 *,0x67c1);
+c0=data_ov000_021adcfc[0];c1=data_ov000_021adcfc[1];c2=data_ov000_021adcfc[2];c3=data_ov000_021adcfc[3];c4=data_ov000_021adcfc[4];c5=data_ov000_021adcfc[5];colors[1]=c1;colors[3]=c3;colors[5]=c5;
+
 
 p=gArmyInfoState;M2C_FIELD(p,s16 *,18)+=M2C_FIELD(p,s16 *,20);
 colors[0]=c0;colors[2]=c2;colors[4]=c4;palette=colors[colorIndex];
 p=gArmyInfoState;if(M2C_FIELD(p,s16 *,18)<0)M2C_FIELD(p,s16 *,18)=0;
 p=gArmyInfoState;if(M2C_FIELD(p,s16 *,18)>12)M2C_FIELD(p,s16 *,18)=12;
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-for(topIndex=0,topX=80,tile=352;topIndex<M2C_FIELD(gArmyInfoState,u8 *,12);topIndex++,topX+=24,tile+=4){
+p=gArmyInfoState;
+topIndex=0;
+if(topIndex<M2C_FIELD(p,u8 *,12)){
+topX=80;tile=352;
+do {
 t=M2C_FIELD(*((void **)gCur3DSpriteEngine),u16 *,0);
 AddSprite((u16)(topX&511),168,(u16)(((tile>>((u32)(t<<17)>>30))&1023)|((u32)((topIndex+7)<<28)>>16)),gSpriteDesc16x16,0);
+topIndex++;topX+=24;tile+=4;
+} while(topIndex<M2C_FIELD(gArmyInfoState,u8 *,12));
 }
 if(M2C_FIELD(gArmyInfoState,u8 *,16)==1){
 s32 mx1=511,mt1=1023,mx2=511,mt2=1023,mx3=511,mt3=1023,mx4=511,mt4=1023,mx5=511,mt5=1023,mx6=511,mt6=1023,mx7=511,mt7=1023;
@@ -52,7 +59,7 @@ if(t==1){AddSprite((u16)((x+47)&mx4),(u8)(y+19),(u16)(((433)>>((u32)(M2C_FIELD(M
 }
 else if(t==2){AddSprite((u16)((x+47)&mx5),(u8)(y+19),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt5)|0x6000),gSpriteDesc16x8,0);
 }
-t=(s8)func_020a29e4(v,unit,owner);
+t=(s8)GetCoZoneRangeBonus(v,unit,owner);
 if(t==1){AddSprite((u16)((x+47)&mx6),(u8)(y+28),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt6)|0x6000),gSpriteDesc16x8,0);
 }
 else if(t==2){AddSprite((u16)((x+47)&mx7),(u8)(y+28),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt7)|0x6000),gSpriteDesc16x8,0);

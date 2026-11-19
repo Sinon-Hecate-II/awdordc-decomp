@@ -6,7 +6,7 @@
 void DrawTextSprite(void *arg0) {
     extern void *gCur3DSpriteEngine;
     extern u8 gSpriteDesc16x16[], gSpriteDesc8x8[];
-    s16 func_020a93e4(void *, s32);
+    s16 GetTextSpriteGlyphX(void *, s32);
     s32 func_020a8c54(s32, s32, s32, s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     void AddSprite(s32, s32, s32, s32, s32);
@@ -22,7 +22,7 @@ void DrawTextSprite(void *arg0) {
     if ((u32)(p[0x20] << 31) >> 31) {
         saved = *(s32 *)(p + 0x1c);
         SetTextSpriteValue(p, 0);
-        x = func_020a93e4(p, 0);
+        x = GetTextSpriteGlyphX(p, 0);
         AddSprite((u16)(x & 0x1ff), *(s16 *)(p+8) & 0xff,
             (u16)((0x3ff & (((s32)((u32)(p[0x20]<<27)>>28)*p[0x16]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17)>>30))) |
             ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
@@ -32,7 +32,7 @@ void DrawTextSprite(void *arg0) {
     }
     if (p[0x29]) p[0xa] = p[0x29];
     for (i=0; i<p[0xa]; i++) {
-        x=func_020a93e4(p,(u8)i);
+        x=GetTextSpriteGlyphX(p,(u8)i);
         y=*(s16 *)(p+8);
         if (func_020a8c54(x,y,p[0x14],p[0x15])) {
             if (*(s32 *)(p+0x24)) {

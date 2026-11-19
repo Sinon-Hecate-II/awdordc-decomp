@@ -15,7 +15,7 @@ typedef struct ThreadGlobal { s32 unused; void *current; } ThreadGlobal;
  * flushes through the stream's write callback, stops early at a newline when the
  * stream is line-buffered, and returns written/size via the divide helper. */
 s32 StreamWrite(s32 buffer, s32 elemSize, s32 count, void *stream) {
-    M2C_UNK func_020640ec(void *);
+    M2C_UNK StreamResetBuffer(void *);
     s32 StreamFlush(void *, s32);
     s8 *MemCopy(s8 *, s8 *, s32);
     u8 *FindLastByte(u8 *, s32, u32);
@@ -54,7 +54,7 @@ s32 StreamWrite(s32 buffer, s32 elemSize, s32 count, void *stream) {
     stateWord = M2C_FIELD(stream, s32 *, 8);
     if ((((u32) (stateWord << 0x1D) >> 0x1D) == 0) && (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x1B) >> 0x1D) & 2)) {
         M2C_FIELD(stream, s32 *, 8) = (s32) ((stateWord & ~7) | 1);
-        func_020640ec(stream);
+        StreamResetBuffer(stream);
     }
     if (((u32) (M2C_FIELD(stream, s32 *, 8) << 0x1D) >> 0x1D) != 1) {
         M2C_FIELD(stream, u8 *, 0xD) = 1U;
@@ -116,7 +116,7 @@ loop_21:
         }
         M2C_FIELD(stream, s32 *, 0x1C) = savedBase;
         M2C_FIELD(stream, u32 *, 0x20) = savedSize;
-        func_020640ec(stream);
+        StreamResetBuffer(stream);
         M2C_FIELD(stream, u32 *, 0x28) = 0U;
     }
     if (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) != 2) {

@@ -170,29 +170,27 @@ result=SBServerListSendToMaster(arg0,packet,9);if(result)return result;
 return ghiSend(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
 #pragma opt_strength_reduction reset
-void func_02063bd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void func_02063bd0(void *context, u32 arg1, u32 arg2, u32 code) {
     s32 func_02063aa8(void *, u32, u32, void *, s32);
-    u32 sp44;
-    M2C_UNK spA;
-    s8 sp9;
-    s8 sp8;
-    s8 sp7;
-    s8 sp6;
-    s8 sp5;
-    s8 sp4;
-
-    sp7 = 0x66;
-    sp44 = ((sp44 << 0x18) & 0xFF000000) | (((sp44 << 8) & 0xFF0000) | ((u8) (sp44 >> 0x18) | ((sp44 >> 8) & 0xFF00)));
-    sp4 = 0xFD;
-    sp5 = 0xFC;
-    sp6 = 0x1E;
-    sp8 = 0x6A;
-    sp9 = 0xB2;
-    M2C_FIELD(&spA, u8 *, 0) = (u8) M2C_FIELD(&sp44, u8 *, 0);
-    M2C_FIELD(&spA, u8 *, 1) = (u8) M2C_FIELD(&sp44, u8 *, 1);
-    M2C_FIELD(&spA, u8 *, 2) = (u8) M2C_FIELD(&sp44, u8 *, 2);
-    M2C_FIELD(&spA, u8 *, 3) = (u8) M2C_FIELD(&sp44, u8 *, 3);
-    func_02063aa8((void *)arg0, (u32)arg1, (u32)arg2, (void *)&sp4, 0xA);
+    u8 packet[10];
+    u8 *bytes;
+    packet[0] = 0xfd;
+    code = ((code << 24) & 0xff000000) | (((code << 8) & 0xff0000) | ((u8)(code >> 24) | ((code >> 8) & 0xff00)));
+    packet[1] = 0xfc;
+    packet[2] = 0x1e;
+    packet[3] = 0x66;
+    packet[4] = 0x6a;
+    packet[5] = 0xb2;
+    bytes = (u8 *)&code;
+    {
+        u8 *out = packet + 6;
+        u8 b0 = bytes[0], b1 = bytes[1], b2 = bytes[2], b3 = bytes[3];
+        out[0] = b0;
+        out[1] = b1;
+        out[2] = b2;
+        out[3] = b3;
+    }
+    func_02063aa8(context, arg1, arg2, packet, sizeof(packet));
 }
 #pragma scheduling reset
 extern s32 sSbNoServer[];
@@ -323,9 +321,9 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
 }
 #pragma opt_common_subs reset
 void func_02063f90(void) {
-    M2C_UNK func_0207191c(s32);
+    M2C_UNK _f2d(s32);
     extern s32 gFloatNanBits;
-    func_0207191c(gFloatNanBits);
+    _f2d(gFloatNanBits);
 }
 
 #pragma opt_strength_reduction off
@@ -381,7 +379,7 @@ void func_020640e8(M2C_UNK, M2C_UNK *) {
 
 }
 
-void func_020640ec(void *arg0) {
+void StreamResetBuffer(void *arg0) {
     s32 temp_r3;
 
     M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
@@ -391,33 +389,38 @@ void func_020640ec(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x34) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
 }
 
-s32 func_0206411c(void *arg0, M2C_UNK *arg1, M2C_UNK arg2) {
-    M2C_UNK temp_r0;
+/* Fills the stream's read buffer through its read callback (the function at
+ * +0x3C): resets the buffer cursor, runs the callback with the buffer and its
+ * byte count, advances the stream's total byte count and returns the callback's
+ * result (0 = success). `wholeBuffer` 1 asks for the whole buffer, which the
+ * unbuffered read path uses to read straight into the caller's own buffer. */
+s32 StreamFillBuffer(void *stream, M2C_UNK *filled, M2C_UNK wholeBuffer) {
+    M2C_UNK result;
 
-    func_020640ec(arg0);
-    if (arg2 == 1) {
-        M2C_FIELD(arg0, s32 *, 0x28) = M2C_FIELD(arg0, s32 *, 0x20);
+    StreamResetBuffer(stream);
+    if (wholeBuffer == 1) {
+        M2C_FIELD(stream, s32 *, 0x28) = M2C_FIELD(stream, s32 *, 0x20);
     }
-    temp_r0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK), 0x3C)(M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, s32 *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, s32 *, 0x48));
-    if (temp_r0 == 2) {
-        M2C_FIELD(arg0, s32 *, 0x28) = 0;
+    result = M2C_FIELD(stream, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK), 0x3C)(M2C_FIELD(stream, s32 *, 0), M2C_FIELD(stream, s32 *, 0x1C), &M2C_FIELD(stream, s32 *, 0x28), M2C_FIELD(stream, s32 *, 0x48));
+    if (result == 2) {
+        M2C_FIELD(stream, s32 *, 0x28) = 0;
     }
-    if (arg1 != NULL) {
-        *arg1 = M2C_FIELD(arg0, s32 *, 0x28);
+    if (filled != NULL) {
+        *filled = M2C_FIELD(stream, s32 *, 0x28);
     }
-    if (temp_r0 != 0) {
-        return temp_r0;
+    if (result != 0) {
+        return result;
     }
-    M2C_FIELD(arg0, s32 *, 0x18) += M2C_FIELD(arg0, s32 *, 0x28);
-    if (((u32) M2C_FIELD(arg0, s32 *, 4) << 0x13) >> 0x1F == 0) {
-        func_020640e8(M2C_FIELD(arg0, s32 *, 0x1C), &M2C_FIELD(arg0, s32 *, 0x28));
+    M2C_FIELD(stream, s32 *, 0x18) += M2C_FIELD(stream, s32 *, 0x28);
+    if (((u32) M2C_FIELD(stream, s32 *, 4) << 0x13) >> 0x1F == 0) {
+        func_020640e8(M2C_FIELD(stream, s32 *, 0x1C), &M2C_FIELD(stream, s32 *, 0x28));
     }
     return 0;
 }
 
 #pragma scheduling off
 s32 StreamFlush(void *arg0,M2C_UNK *arg1){
-void func_020640e4(M2C_UNK,M2C_UNK*);void func_020640ec(void*);
+void func_020640e4(M2C_UNK,M2C_UNK*);void StreamResetBuffer(void*);
 s32 n=M2C_FIELD(arg0,s32*,0x24)-M2C_FIELD(arg0,s32*,0x1c);s32 result;
 if(n){
 M2C_FIELD(arg0,s32*,0x28)=n;
@@ -426,7 +429,7 @@ result=M2C_FIELD(arg0,M2C_UNK (**)(M2C_UNK,M2C_UNK,M2C_UNK*,M2C_UNK),0x40)(M2C_F
 if(arg1)*arg1=M2C_FIELD(arg0,s32*,0x28);
 if(result)return result;
 M2C_FIELD(arg0,s32*,0x18)+=*(volatile s32 *)((u8 *)arg0+0x28);
-func_020640ec(arg0);
+StreamResetBuffer(arg0);
 }return 0;
 }
 #pragma scheduling reset
@@ -480,7 +483,7 @@ s32 ReadFileData(void *buffer, s32 elemSize, s32 count, void *stream) {
 
 s32 StreamRead(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 func_02063fa8();
-    s32 func_0206411c(void *, M2C_UNK *, M2C_UNK);
+    s32 StreamFillBuffer(void *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(void *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
     s32 func_020722fc(s32, s32);
@@ -562,7 +565,7 @@ loop_21:
 
         } else {
 loop_33:
-            if ((M2C_FIELD(arg3, u32 *, 0x28) == 0) && (temp_r0_3 = func_0206411c(arg3, NULL, 0), (temp_r0_3 != 0))) {
+            if ((M2C_FIELD(arg3, u32 *, 0x28) == 0) && (temp_r0_3 = StreamFillBuffer(arg3, NULL, 0), (temp_r0_3 != 0))) {
                 if (temp_r0_3 == 1) {
                     M2C_FIELD(arg3, u8 *, 0xD) = 1U;
                 } else {
@@ -594,7 +597,7 @@ loop_33:
         temp_r10 = M2C_FIELD(arg3, u32 *, 0x20);
         M2C_FIELD(arg3, u16 **, 0x1C) = (u16 *) var_r9;
         M2C_FIELD(arg3, u32 *, 0x20) = var_r4;
-        temp_r0_5 = func_0206411c(arg3, &sp0, 1);
+        temp_r0_5 = StreamFillBuffer(arg3, &sp0, 1);
         if (temp_r0_5 != 0) {
             if (temp_r0_5 == 1) {
                 M2C_FIELD(arg3, u8 *, 0xD) = 1U;
@@ -608,7 +611,7 @@ loop_33:
         M2C_FIELD(arg3, u16 **, 0x1C) = temp_r6;
         M2C_FIELD(arg3, u32 *, 0x20) = temp_r10;
         var_r5 += sp0;
-        func_020640ec(arg3);
+        StreamResetBuffer(arg3);
         M2C_FIELD(arg3, u32 *, 0x28) = 0U;
     }
     return func_020722fc(var_r5, arg1);

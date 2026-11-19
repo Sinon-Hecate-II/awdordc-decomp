@@ -215,7 +215,7 @@ void InitMapListScreen(void) {
     void InitMapListGraphics(void);
     u8 Ov001_GetLanguage(void);
     M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
-    void func_ov001_02171dd0(M2C_UNK);
+    void Ov001_OpenMenuForMode(M2C_UNK);
     void func_ov001_021722c4(void);
     M2C_UNK Ov001_CreateScrollBar(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *CreateTextPanel(s32, s32);
@@ -246,7 +246,7 @@ void InitMapListScreen(void) {
     } else {
         Ov001_ShowMessagePanel(0x45, -1, 0);
     }
-    func_ov001_02171dd0(1);
+    Ov001_OpenMenuForMode(1);
     func_ov001_021722c4();
     Ov001_CreateScrollBar(2, 0x55, 0xf1, 0x41,
                         (M2C_FIELD(&gMapListState, u16 *, 4) * 55) / 145);
@@ -468,7 +468,7 @@ void func_ov001_0217d754(void) {
 
 s32 func_ov001_0217d9d4(void) {
     M2C_UNK func_ov001_0217da58(u32);
-    s32 func_ov001_0217e5e8();
+    s32 IsMapListChoiceAvailable();
     u32 func_ov001_0217eb6c();
     M2C_UNK func_ov001_0217f1c0(u32);
     M2C_UNK MapListHighlightCustomRow();
@@ -480,7 +480,7 @@ s32 func_ov001_0217d9d4(void) {
     if (temp_r0 == 0xE) {
         return 0;
     }
-    if (func_ov001_0217e5e8() == 0) {
+    if (IsMapListChoiceAvailable() == 0) {
         Ov001_PlaySound(9);
         return 1;
     }
@@ -501,7 +501,7 @@ s32 func_ov001_0217d9d4(void) {
 
 /* Dispatch a screen selection (0..13): set up UI state, graphics, and continue via func_ov001_0217ded8. */
 s32 func_ov001_0217da58(u32 a){
-if(func_ov001_0217e5e8()==0){Ov001_PlaySound(9);return;}
+if(IsMapListChoiceAvailable()==0){Ov001_PlaySound(9);return;}
 switch(a){
 case 2:case 3:Ov001_PlaySound(6);func_ov001_0217dbd8(((a-2)^1)!=0);return;
 case 7:case 8:Ov001_PlaySound(6);func_ov001_0217dc44(((a-7)^1)!=0);return;

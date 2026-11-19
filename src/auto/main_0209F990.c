@@ -269,27 +269,46 @@ void SetUnitPathCursor(u16 arg0, u16 arg1) {
     M2C_FIELD(gUnitMovePath, s8 *, 0x35) = arg1;
 }
 
-M2C_UNK func_020a0068(s32 arg0) {
+#pragma optimization_level 3
+void func_020a0068(s32 arg0) {
 extern void *gUnitMovePath;extern s32 *gCurrentMap;
 extern u16 gMapConfig;extern u8 gMovementCostTable[];extern u8 gUnitKindStats[];
-void *map,*player,*path; s8 i;u32 id; s32 weather,kind,terrain; s8 *cost;
+void *map,*player,*path; s8 i;u32 id; s32 weather,kind,terrain,owner; s8 *cost;
 if(M2C_FIELD(gUnitMovePath,s8 *,0x5b)<arg0)return;
 M2C_FIELD(gUnitMovePath,s8 *,0x5b)=arg0-1;
 M2C_FIELD(gUnitMovePath+M2C_FIELD(gUnitMovePath,s8 *,0x5b),s8 *,0x4e)=M2C_FIELD(gUnitMovePath,s8 *,0x5a);
 for(i=1;i<=M2C_FIELD(gUnitMovePath,s8 *,0x5b);i++){
 map=(void *)*gCurrentMap;
-player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
+owner=(M2C_FIELD(map,u8 *,0x52d4)>>6)+1;
+player=map+0x67a4+owner*140;
 id=((u32)(gMapConfig<<18)>>31)?(u8)M2C_FIELD(player,u32 *,0x6c):0;
 path=gUnitMovePath+i;
-weather=func_020a33c4();
-cost=M2C_FIELD(gMovementCostTable+id*156+weather*40+M2C_FIELD(player,u8 *,0x25)*4,s8 **,0x64);
-kind=(u32)(M2C_FIELD(M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0),u8 *,0)<<26)>>26;
-terrain=M2C_FIELD(map+M2C_FIELD(path,s8 *,0x36)+M2C_FIELD(map+M2C_FIELD(path,s8 *,0x42)*2,u16 *,0x3758),u8 *,0x1420)&31;
-M2C_FIELD(path,s8 *,0x4e)=M2C_FIELD(path,s8 *,0x4d)-cost[M2C_FIELD(gUnitKindStats+kind*112,u8 *,0x12)*32+terrain];
+weather=GetPlayerArmyVariant(owner);
+{
+    u8 *costRecord = gMovementCostTable + id * 156 + weather * 40;
+    u8 *current = (void *)*gCurrentMap;
+    u8 faction = M2C_FIELD(player, u8 *, 0x25);
+    u8 *unit;
+    s32 previous = M2C_FIELD(path, s8 *, 0x4d);
+    s32 x = M2C_FIELD(path, s8 *, 0x36);
+    s32 y = M2C_FIELD(path, s8 *, 0x42);
+    const u8 *type;
+    u16 row;
+    costRecord += 4 * faction;
+    unit = M2C_FIELD(current, u8 **, 0x52d0);
+    kind = (u32)(unit[0] << 26) >> 26;
+    type = gUnitKindStats + kind * 0x70;
+    {
+        u8 movementType = type[0x12];
+        row = M2C_FIELD(map + 2 * y, u16 *, 0x3758);
+        cost = M2C_FIELD(costRecord, s8 **, 0x64) + movementType * 32;
+    }
+    terrain = M2C_FIELD(map + x + row, u8 *, 0x1420) & 31;
+    M2C_FIELD(path, s8 *, 0x4e) = previous - cost[terrain];
 }
 }
-
-#pragma optimization_level 3
+}
+#pragma optimization_level reset
 void func_020a01c0(s32 x,s32 y){
 extern void *gUnitMovePath;extern s32 *gCurrentMap;
 void *map; void *player;void *path;s8 i;u32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;u8 *unit;void *table;u16 row;u8 faction;
@@ -301,7 +320,7 @@ player=map+0x67a4+((M2C_FIELD(map,u8 *,0x52d4)>>6)+1)*140;
 id=((u32)(gMapConfig<<18)>>31)?((PathPlayerId *)(player+0x6c))->id:0;
 path=gUnitMovePath;i=M2C_FIELD(path,s8 *,0x5b);
 table = data_021261d0 + id * 156;
-weather=func_020a33c4();
+weather=GetPlayerArmyVariant();
 unit = M2C_FIELD((void *)*gCurrentMap,u8 **,0x52d0);
 row = M2C_FIELD(map+y*2,u16 *,0x3758);
 kind = (u32)(unit[0] << 26) >> 26;
@@ -398,7 +417,7 @@ void BuildMovePathDirections(void) {
     return;
 }
 
-M2C_UNK func_020a0560(void) {
+M2C_UNK BuildMoveRangeFromPathEnd(void) {
     extern void *gUnitMovePath; extern s32 *gCurrentMap;
     void func_01ffc294(u16, s32, s32, u32, s32, s32);
     s8 *p;
@@ -413,11 +432,10 @@ M2C_UNK func_020a0560(void) {
 
 void func_020a05d8(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020a0068(M2C_UNK);
-    M2C_UNK func_020a0560();
+    M2C_UNK BuildMoveRangeFromPathEnd();
 extern s32 *gCurrentMap;
     func_020a0068(1);
-    func_020a0560();
+    BuildMoveRangeFromPathEnd();
     func_01ffc4b8(arg0, arg1, *gCurrentMap + 0x5388);
     func_020a0360();
 }
@@ -446,7 +464,6 @@ void StartUnitMovePath(s32 followInput) {
     extern void *gUnitMovePath;
     extern s32 *gCurrentMap;
     s32 GetUnitRemainingMoveRange(s32);
-    M2C_UNK func_020a0068(s32);
     void func_020a01c0(s32, s32);
     M2C_UNK func_020a0360(void);
     M2C_UNK func_020a0d18();

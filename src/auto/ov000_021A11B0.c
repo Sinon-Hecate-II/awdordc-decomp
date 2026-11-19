@@ -122,14 +122,14 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[10]>d)p[10]=d;
  * per capturable property cell, with its type taken from the terrain and its
  * status marked fresh and its group unset.  Returns how many were collected. */
 s32 CollectAiTargetCandidates(void) {
-s32 func_020cf878(u8,u8);
+s32 IsOwnedProductionSite(u8,u8);
 extern void **gCurrentMap;
 extern s8 gTerrainPropertyType[];
 extern u8 gAiTargetCandidates[];
 s32 n=0;u8 *p;u8 *dst; u8 *base;
 dst=gAiTargetCandidates; base=*gCurrentMap; p=base+MAP_PROPERTY_CELLS;
 if(base[MAP_PROPERTY_CELLS]!=MAP_PROPERTY_END) do {
-if(func_020cf878(p[MAP_PROPERTY_X],p[MAP_PROPERTY_Y])==1) {
+if(IsOwnedProductionSite(p[MAP_PROPERTY_X],p[MAP_PROPERTY_Y])==1) {
 n++;
 dst[AI_CANDIDATE_X]=p[MAP_PROPERTY_X];
 dst[AI_CANDIDATE_Y]=p[MAP_PROPERTY_Y];
@@ -186,8 +186,8 @@ s32 func_ov000_021a1ab8(void) {
  return 0;
 }
 
-s32 func_ov000_021a1b1c(void){
-s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK func_ov000_02199330();s32 FindPropertyTargetCandidate();s32 PlayerHasHealthyCounterUnit();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
+s32 BuildAiCounterUnit(void){
+s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);M2C_UNK BuildMoveRangeThreatMapAgainstKind14();s32 FindPropertyTargetCandidate();s32 PlayerHasHealthyCounterUnit();s32 func_ov000_021a860c();M2C_UNK CommitAiAction();
 extern void **gCurrentMap;extern void *gAiSettings,*gAiCommandState;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,0xa)<<20)>>29)&2))return 0;
@@ -197,7 +197,7 @@ base=*gCurrentMap;id=M2C_FIELD(base,u16 *,0x52a4);
 if(GetUnitBuildCost(id,14)*10>M2C_FIELD(id*0x8c+(s32)base,s32 *,0x67a4))return 0;
 if(PlayerHasHealthyCounterUnit()==1)return 0;
 if(func_ov000_021a860c()==0)return 0;
-func_ov000_02199330();
+BuildMoveRangeThreatMapAgainstKind14();
 result=FindPropertyTargetCandidate();if(result==-1)return 0;
 M2C_FIELD(&gAiCommand,s8 *,6)=14;
 CommitAiAction(result);return 1;
@@ -258,7 +258,7 @@ s32 func_ov000_021a1d08(void) {
 /* Builds a unit kind 22 (submarine) when the AI's command mode allows it, its
  * unit set wants kind 22 and the player can afford one, aiming it at the best
  * remaining target candidate. */
-s32 func_ov000_021a1dec(void) {
+s32 BuildAiSubmarine(void) {
 s32 CanBuildUnitKind(u16,M2C_UNK);s32 GetUnitBuildCost(u16,M2C_UNK);s32 FindBestTargetCandidate();M2C_UNK CommitAiAction();
 extern void **gCurrentMap;extern void *gAiSettings,*gAiCommandState;extern M2C_UNK gAiCommand;
 void *base;u16 id;s32 result;

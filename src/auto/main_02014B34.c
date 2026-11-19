@@ -65,7 +65,7 @@ s32 func_02014d6c(void) {
     void func_02015188(s32);
     s32 Mb_GetChunkTransfer(void *,void *,u16,void *);
     s32 SerializeCommand(s8 *,void *);
-    s32 func_020184ec(void *,u32,s32,u32);
+    s32 Mb_CopyImageRange(void *,u32,s32,u32);
     s32 func_0201874c(void *);
     void SystemHalt(void);
     void func_02018764(void *,void (*)(void *),s32,s32);
@@ -118,7 +118,7 @@ s32 func_02014d6c(void) {
     offset=table[bank]+(position-previous);
     buffer=M2C_FIELD(interior,void **,0xd54);
     size=output[1];
-    if (!func_020184ec(buffer,offset,command,size)) {
+    if (!Mb_CopyImageRange(buffer,offset,command,size)) {
         task=gMbWork+0x7ce0;
         if (!func_0201874c(task)) {
             if (M2C_FIELD(buffer,u32 *,0)) M2C_FIELD(buffer,u32 *,0)--;

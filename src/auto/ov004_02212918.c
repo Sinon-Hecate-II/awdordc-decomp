@@ -1,5 +1,6 @@
 /* 23 functions from 0x02212918 to 0x022138B0 (ov004), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 static inline void Clear129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p&~mask;}
 static inline void Set129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p|mask;}
@@ -104,15 +105,22 @@ s32 func_ov004_0221322c(void) {
  return x == 11 && y == 6;
 }
 
-s32 func_ov004_0221326c(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 i; u8 *p; s32 end; u8 *base;
- base=(u8 *)*gCurrentMap;
- if((s32)M2C_FIELD(base,u16 *,0x52A2)<2)return 0;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=base+0x59A4+i*14;
- do {if(((u32)(*p<<26)>>26)&&p[1]==11&&p[2]==6)return 1; i++; p+=14;}while(i<end);}
- return 0;
+/* Mission condition: from the second turn on, true while any unit of player 1
+ * stands on tile (11,6). */
+s32 IsPlayerOneUnitOnTileAfterFirstTurn(void) {
+    extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
+    s32 i; u8 *unit; s32 end; u8 *map;
+    map = (u8 *) *gCurrentMap;
+    if ((s32) M2C_FIELD(map, u16 *, MAP_TURN) < 2) return 0;
+    i = gPlayerUnitIdBase[1] + 1; end = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (i < end) {
+        unit = map + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        do {
+            if (((u32) (unit[MAP_UNIT_KIND] << 26) >> 26) && unit[MAP_UNIT_X] == 11 && unit[MAP_UNIT_Y] == 6) return 1;
+            i++; unit += MAP_UNIT_STRIDE;
+        } while (i < end);
+    }
+    return 0;
 }
 
 s32 func_ov004_022132fc(void) {
@@ -161,15 +169,33 @@ s32 func_ov004_02213460(void) {
  if(count<=4)return 1; return 0;
 }
 
+/* Mission condition: holds while the battle is still on its first turn and no
+ * infantry unit (kind 1) of player 1 stands in the top five map rows (y <= 5). */
 s32 func_ov004_022134d0(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 result; u32 bits; s32 i; u8 *p; s32 end; u8 *base;
- result=1; base=(u8 *)*gCurrentMap;
- if((s32)M2C_FIELD(base,u16 *,0x52A2)>1)return 0;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=base+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26; if(bits&&bits==1&&p[2]<=5U)result=0; i++; p+=14;}while(i<end);}
- return result;
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 result;
+    u32 kind;
+    s32 i;
+    u8 *unit;
+    s32 end;
+    u8 *base;
+
+    result = 1;
+    base = (u8 *) *gCurrentMap;
+    if ((s32) M2C_FIELD(base, u16 *, MAP_TURN) > 1) return 0;
+    i = gPlayerUnitIdBase[1] + 1;
+    end = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (i < end) {
+        unit = base + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        do {
+            kind = (u32) (*unit << 26) >> 26;
+            if (kind && kind == 1 && M2C_FIELD(unit, u8 *, MAP_UNIT_Y) <= 5U) result = 0;
+            i++;
+            unit += MAP_UNIT_STRIDE;
+        } while (i < end);
+    }
+    return result;
 }
 
 s32 func_ov004_02213564(void) {
@@ -230,24 +256,36 @@ if(((s32)(v&0xe0)>>5)==1) {if(base[i]==0)return 1;}
 }return 0;
 }
 
-s32 func_ov004_02213798(void) {
-extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
-s32 count,i,end;u8 *p,v;
-count=0;
-if(func_02086b40(0))return count;
-i=gPlayerUnitIdBase[2]+1;end=gPlayerUnitIdBase[2]+0x33;
-if(i<end) {
-p=(u8 *)*gCurrentMap+0x59a4+i*14;
-do {v=*p;if((u32)(v<<26)>>26)count++;i++;p+=14;}while(i<end);
-}
-if(count!=0)return 0;return 1;
+/* Battle-script condition: true while event flag 0 is clear and player 2 has no
+ * live units (none of its unit slots base+1 .. base+MAP_UNIT_GROUP_SCAN holds a
+ * kind).  The flag-gated twin of IsPlayerTwoDefeated. */
+s32 IsPlayerTwoDefeatedFlagClear(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 count, i, end;
+    u8 *unit, kind;
+    count = 0;
+    if (IsEventFlagSet(0)) return count;
+    i = gPlayerUnitIdBase[2] + 1;
+    end = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (i < end) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        do {
+            kind = *unit;
+            if ((u32)(kind << 26) >> 26) count++;
+            i++;
+            unit += MAP_UNIT_STRIDE;
+        } while (i < end);
+    }
+    if (count != 0) return 0;
+    return 1;
 }
 
 u8 func_ov004_02213820(void) {
-    s32 func_02086b40(M2C_UNK);
+    s32 IsEventFlagSet(M2C_UNK);
     u8 var_r0;
 
-    if (func_02086b40(1) != 0) {
+    if (IsEventFlagSet(1) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

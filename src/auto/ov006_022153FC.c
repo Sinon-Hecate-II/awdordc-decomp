@@ -122,35 +122,36 @@ void *func_ov006_022156e4(void *arg0) {
     M2C_UNK MemFree(M2C_UNK);
     M2C_UNK func_020e4ca0();
     extern M2C_UNK gFriendCodeEntryVTable;
-    void *p = arg0;
+    register void **sprites;
+    void *child;
 
-    M2C_FIELD(p, void **, 0) = &gFriendCodeEntryVTable;
-    p = M2C_FIELD(p, void **, 0x3C);
-    if (p != 0) {
-        DeleteSpriteObject(M2C_FIELD(p, void **, 0));
-        DeleteSpriteObject(M2C_FIELD(p, void **, 4));
-        DeleteSpriteObject(M2C_FIELD(p, void **, 8));
-        DeleteSpriteObject(M2C_FIELD(p, void **, 0xC));
-        DeleteSpriteObject(M2C_FIELD(p, void **, 0x10));
-        DeleteSpriteObject(M2C_FIELD(p, void **, 0x14));
-        MemFree(p);
-        p = arg0;
+    M2C_FIELD(arg0, void **, 0) = &gFriendCodeEntryVTable;
+    sprites = M2C_FIELD(arg0, void ***, 0x3C);
+    if (sprites == 0) goto children;
+
+    DeleteSpriteObject(sprites[0]);
+    DeleteSpriteObject(sprites[1]);
+    DeleteSpriteObject(sprites[2]);
+    DeleteSpriteObject(sprites[3]);
+    DeleteSpriteObject(sprites[4]);
+    DeleteSpriteObject(sprites[5]);
+    MemFree(sprites);
+children:;
+    child = M2C_FIELD(arg0, void **, 0x40);
+    if (child != 0) {
+        M2C_FIELD(M2C_FIELD(child, void **, 0), void (**)(void *), 4)(child);
     }
-    p = M2C_FIELD(arg0, void **, 0x40);
-    if (p != 0) {
-        M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
+    child = M2C_FIELD(arg0, void **, 0x44);
+    if (child != 0) {
+        M2C_FIELD(M2C_FIELD(child, void **, 0), void (**)(void *), 4)(child);
     }
-    p = M2C_FIELD(arg0, void **, 0x44);
-    if (p != 0) {
-        M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
+    child = M2C_FIELD(arg0, void **, 0x48);
+    if (child != 0) {
+        MemFree(child);
     }
-    p = M2C_FIELD(arg0, void **, 0x48);
-    if (p != 0) {
-        MemFree(p);
-    }
-    p = M2C_FIELD(arg0, void **, 0x4C);
-    if (p != 0) {
-        M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
+    child = M2C_FIELD(arg0, void **, 0x4C);
+    if (child != 0) {
+        M2C_FIELD(M2C_FIELD(child, void **, 0), void (**)(void *), 4)(child);
     }
     func_020e4ca0();
     return arg0;
@@ -384,7 +385,7 @@ void func_ov006_02215b84(u8 *arg0) {
     u16 key0;
     u16 keys;
     u8 ip;
-    u8 value;
+    u32 value;
 
     ip = *arg0;
     key0 = M2C_FIELD(gKeyState, u16 *, 0);
@@ -448,9 +449,7 @@ L:
         }
     }
 done:
-    if (*arg0 != value) {
-        FocusSpriteSlotById(value);
-    }
+    if (value != ip) FocusSpriteSlotById((u8)value);
 }
 
 #pragma opt_common_subs off
@@ -492,80 +491,80 @@ void func_ov006_02215dd8(void) {
     func_ov006_022157a0();
 }
 
-void func_ov006_02215de4(u8 *arg0) {
+/* D-pad navigation for the friend-code keypad's action keys: up selects DELETE,
+ * the initial down press jumps into the digit grid (0 from CANCEL, 2 from
+ * CONFIRM), left/right swap CANCEL and CONFIRM, and A submits the code. */
+void FriendCodeKeypad_MoveActionSelection(u8 *arg0) {
     M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK ConfirmFriendCode();
     extern void *gKeyState;
-    u16 temp_r1;
-    u16 temp_r2;
-    u8 var_r3;
-    u8 temp_ip;
+    u16 pressed;
+    u16 held;
+    u8 target;
+    u8 key;
 
-    temp_ip = *arg0;
-    temp_r2 = M2C_FIELD(gKeyState, u16 *, 0);
-    var_r3 = temp_ip;
-    temp_r1 = M2C_FIELD(gKeyState, u16 *, 2);
-    if (temp_r2 & 1) {
-        ConfirmFriendCode();
+    key = *arg0;
+    held = M2C_FIELD(gKeyState, u16 *, 0);
+    target = key;
+    pressed = M2C_FIELD(gKeyState, u16 *, 2);
+    if (held & KEY_A) {
+        ConfirmFriendCode(arg0);
         return;
     }
-    if (temp_r1 & 0x40) {
-        if ((temp_ip != 0xC) && (temp_ip != 0xD)) {
+    if (pressed & KEY_UP) {
+        if (key != FRIEND_CODE_KEYPAD_CANCEL && key != FRIEND_CODE_KEYPAD_CONFIRM) {
         } else {
-            var_r3 = 0xB;
+            target = FRIEND_CODE_KEYPAD_DELETE;
         }
-        if (var_r3 == 0xC || var_r3 == 0xD) {
+        if (target == FRIEND_CODE_KEYPAD_CANCEL || target == FRIEND_CODE_KEYPAD_CONFIRM) {
             goto L;
         }
         goto done;
-    } else if (temp_r1 & 0x80) {
-        switch (temp_ip) {
-        case 12:
-            if (temp_r2 == temp_r1) {
-                var_r3 = 0;
+    } else if (pressed & KEY_DOWN) {
+        switch (key) {
+        case FRIEND_CODE_KEYPAD_CANCEL:
+            if (held == pressed) {
+                target = 0;
             }
             break;
-        case 13:
-            if (temp_r2 == temp_r1) {
-                var_r3 = 2;
+        case FRIEND_CODE_KEYPAD_CONFIRM:
+            if (held == pressed) {
+                target = 2;
             }
             break;
         }
-        if (var_r3 != 0xC && var_r3 != 0xD) {
+        if (target != FRIEND_CODE_KEYPAD_CANCEL && target != FRIEND_CODE_KEYPAD_CONFIRM) {
             goto done;
         }
     }
 L:
-    if (temp_r1 & 0x20) {
-        switch (var_r3) {
-        case 12:
-            if (temp_r2 == temp_r1) {
-                var_r3 = 0xD;
+    if (pressed & KEY_LEFT) {
+        switch (target) {
+        case FRIEND_CODE_KEYPAD_CANCEL:
+            if (held == pressed) {
+                target = FRIEND_CODE_KEYPAD_CONFIRM;
             }
             break;
-        case 13:
-            var_r3 = 0xC;
+        case FRIEND_CODE_KEYPAD_CONFIRM:
+            target = FRIEND_CODE_KEYPAD_CANCEL;
             break;
         }
-        if (var_r3 != 0xC) {
-            goto done;
-        }
-    }
-    if (temp_r1 & 0x10) {
-        switch (var_r3) {
-        case 12:
-            var_r3 = 0xD;
+        if (target >= FRIEND_CODE_KEYPAD_CANCEL && target <= FRIEND_CODE_KEYPAD_CONFIRM) goto done;
+    } else if (pressed & KEY_RIGHT) {
+        switch (target) {
+        case FRIEND_CODE_KEYPAD_CANCEL:
+            target = FRIEND_CODE_KEYPAD_CONFIRM;
             break;
-        case 13:
-            if (temp_r2 == temp_r1) {
-                var_r3 = 0xC;
+        case FRIEND_CODE_KEYPAD_CONFIRM:
+            if (held == pressed) {
+                target = FRIEND_CODE_KEYPAD_CANCEL;
             }
             break;
         }
     }
 done:
-    if (temp_ip != var_r3) {
-        FocusSpriteSlotById(var_r3);
+    if (key != target) {
+        FocusSpriteSlotById(target);
     }
 }
 

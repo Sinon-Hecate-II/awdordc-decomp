@@ -3,6 +3,7 @@
 #include "battle_map.h"
 #include "battle_map.h"
 #include "sprite_grid.h"
+#include "sound.h"
 extern void **gCurrentMap;
 extern u16 data_0215d9b8[];
 extern u8 gMapConfig[];
@@ -145,23 +146,27 @@ M2C_FIELD(p,s16 *,18)=delta*factor;
 if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))PlaySoundEffect(0x10019);
 }
 #pragma opt_propagation off
-void func_020b38d0(s32 arg0) {
-M2C_UNK func_020b3038(s32,s16);
+/* Touch handler of the sprite grid: when no scroll animation is running and the
+ * touch hit a cell of the visible page (its hit id is below rows*columns), it
+ * selects the item that cell shows, scrolling the grid to it, and plays the menu
+ * select sound when the selection or the scroll position moved. */
+void HandleSpriteGridTouch(s32 grid) {
+M2C_UNK ScrollSpriteGridToItem(s32,s16);
 M2C_UNK PlaySoundEffect(s32);
-u8 var_r2,var_r0; s8 var_r1; s16 var_r4,var_r5,prod,newval;
-if ((u8)(M2C_FIELD(arg0,s16 *,0x12)!=0)) return;
-var_r2=M2C_FIELD(arg0,u8 *,5);
-var_r0=M2C_FIELD(arg0,u8 *,4);
-var_r1=M2C_FIELD(arg0,s8 *,0x24);
-var_r4=M2C_FIELD(arg0,s16 *,0xc);
-prod=(s16)(var_r0*var_r2);
-var_r5=M2C_FIELD(arg0,s16 *,8);
-if(var_r1<0) return;
-if(prod<=var_r1) return;
-newval=(s16)(var_r2*var_r4+var_r1);
-if(newval!=var_r5)func_020b3038(arg0,newval);
-if(var_r4==M2C_FIELD(arg0,s16 *,0xc) && var_r5==M2C_FIELD(arg0,s16 *,8))return;
-PlaySoundEffect(0x10019);
+u8 columns,rows; s8 hitId; s16 scroll,selected,pageItems,newItem;
+if ((u8)(M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0)) return;
+columns=M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS);
+rows=M2C_FIELD(grid,u8 *,SPRITE_GRID_ROWS);
+hitId=M2C_FIELD(grid,s8 *,SPRITE_GRID_CELLS+SPRITE_CELL_LIST_HIT_ID);
+scroll=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);
+pageItems=(s16)(rows*columns);
+selected=M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED);
+if(hitId<0) return;
+if(pageItems<=hitId) return;
+newItem=(s16)(columns*scroll+hitId);
+if(newItem!=selected)ScrollSpriteGridToItem(grid,newItem);
+if(scroll==M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL) && selected==M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED))return;
+PlaySoundEffect(SOUND_MENU_SELECT);
 }
 #pragma opt_propagation reset
 /* Returns whether tile column x is currently visible in the camera viewport. */
@@ -187,7 +192,7 @@ void func_020b3a58(M2C_UNK arg0) {
     UpdateSpriteGridPixelOffset();
     func_02088044(arg0 + 0x18);
     func_020b35d4(arg0);
-    func_020b38d0(arg0);
+    HandleSpriteGridTouch(arg0);
 }
 
 /* Eases the sprite grid's cursor toward the selected cell: the cell's screen
@@ -233,13 +238,13 @@ void *func_020b3b6c(void *arg0) {
  * preset-player (campaign) map - the four map ids listed for it plus the map
  * itself - as available in the map list, and writes the save block. */
 void FinishBattleAndSave(void) {
-    M2C_UNK func_020bef44();
+    M2C_UNK StartBattleRecord();
     s32 func_020befd8();
     s32 func_020bf084(s32);
     M2C_UNK func_020bf0dc(M2C_UNK, s32);
     M2C_UNK func_020bf798();
     u16 GetMapFollowupMapId(u16, s32);
-    s32 func_020cd6d4();
+    s32 IsCampaignBattleRules();
     M2C_UNK func_020e4870();
     extern void **gCurrentMap;
     s32 recordType;
@@ -248,13 +253,13 @@ void FinishBattleAndSave(void) {
 
     recordType = func_020befd8();
     if (recordType != 0) {
-        func_020bef44();
+        StartBattleRecord();
         if (func_020bf084(recordType) == 0) {
             func_020bf0dc(0, recordType);
             func_020e4870();
         }
     }
-    if (func_020cd6d4() != 0) {
+    if (IsCampaignBattleRules() != 0) {
         slot = 0;
         do {
             relatedMap = GetMapFollowupMapId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), slot);

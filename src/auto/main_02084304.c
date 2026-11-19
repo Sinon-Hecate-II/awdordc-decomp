@@ -1,51 +1,111 @@
 /* 58 functions from 0x02084304 to 0x020852F4 (main), found by ds-decomp. */
 #include "common.h"
 #include "ov009_link.h"
+#include "battle_map.h"
+#include "ov000_ai.h"
 
 typedef struct {u8 pad[0x1e];u8 value;u8 rest[0x6d];} PlayerEntry;
 typedef struct {u8 pad[0x67a4];PlayerEntry entries[5];} PlayerTable;
 extern void **gCurrentMap;
-extern u16 data_02156e4c;
+extern u16 gLinkAiCommandStage;
 extern u8 gAiCommand[];
 extern u8 gBattleCommand[];
 extern u8 data_02156e5c[];
 
-void func_02084304(void) {
-    void func_0208435c();
-    void func_020843e8();
-    extern u16 data_02156e4c;
-    switch (data_02156e4c) {                        /* irregular */
-    case 0:
-        func_0208435c();
+/* Dispatcher of the battle state's replay of another console's battle commands
+ * (battle states 14 and 19, main_020D3464.c): idle waits for a command, busy
+ * carries one out. */
+void UpdateLinkAiCommand(void) {
+    void BeginLinkAiCommand(void);
+    void RunLinkAiCommand(void);
+
+    switch (gLinkAiCommandStage) {                  /* irregular */
+    case AI_COMMAND_STAGE_IDLE:
+        BeginLinkAiCommand();
         return;
-    case 1:
-        func_020843e8();
+    case AI_COMMAND_STAGE_BUSY:
+        RunLinkAiCommand();
         return;
     }
 }
 
-s32 func_02084338(u8 *arg0) {
-    u8 temp_r0;
+/* True when a battle command record holds a command kind the game knows
+ * (AI_COMMAND_KIND 1..0x18). */
+s32 IsAiCommandKindValid(u8 *command) {
+    u8 kind;
 
-    temp_r0 = *arg0;
-    if ((temp_r0 == 0) || ((u32) temp_r0 >= 0x19U)) {
+    kind = M2C_FIELD(command, u8 *, AI_COMMAND_KIND);
+    if ((kind == 0) || ((u32) kind >= (u32) AI_COMMAND_KIND_LIMIT)) {
         return 0;
     }
     return 1;
 }
 
-void func_0208435c(void){void func_0208441c(void);s32 func_02085370(u8,u8 *);s32 func_02084338(u8 *);void SetAiCommandPhase(s32);void func_ov000_0219c7d8(s32);u8 v;u8 *base;u8 *p;func_0208441c();base=*gCurrentMap;p=base+0x67a4; p+=M2C_FIELD(base,u16 *,0x52a4)*0x8c;v=p[0x1e];if(v==2)v=0;else v-=3;if(func_02085370(v,gAiCommand)!=1)return;if(func_02084338(gAiCommand)!=1)return;SetAiCommandPhase(3);func_ov000_0219c7d8(0);data_02156e4c=1;}
+/* Stage 0 of the battle state's replay of commands broadcast by another console
+ * (AI_COMMAND_STAGE_IDLE): take the next command meant for the current player
+ * off its queue and start carrying it out.  A CPU player's commands arrive on
+ * queue 0, a link player's on the queue of their control kind (3..6 -> 0..3). */
+void BeginLinkAiCommand(void) {
+    void UpdateLocalPlayerInput(void);
+    s32 PopLinkCommand(u8, u8 *);
+    s32 IsAiCommandKindValid(u8 *);
+    void SetAiCommandPhase(s32);
+    void func_ov000_0219c7d8(s32);
+    u8 control;
+    u8 queue;
+    void **map;
+    u8 *players;
 
-void func_020843e8(void){void func_0208441c(void);s32 func_020d4dd0(void);s32 ProcessAiCommandStep(void);s32 func_ov000_0219c7b0(void);func_0208441c();if(!func_020d4dd0())return;ProcessAiCommandStep();if(func_ov000_0219c7b0()==2)data_02156e4c=0;}
+    UpdateLocalPlayerInput();
+    map = gCurrentMap;
+    players = (u8 *)*map + MAP_PLAYER_STATES;
+    players += M2C_FIELD(*map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
+    control = M2C_FIELD(players, u8 *, PLAYER_REC_CTRL);
+    if (control == PLAYER_CONTROL_CPU) {
+        queue = 0;
+    } else {
+        queue = control - 3;
+    }
+    if (PopLinkCommand(queue, gAiCommand) != 1) {
+        return;
+    }
+    if (IsAiCommandKindValid(gAiCommand) != 1) {
+        return;
+    }
+    SetAiCommandPhase(AI_COMMAND_PHASE_ACT);
+    func_ov000_0219c7d8(0); /* the new phase starts at its first step */
+    gLinkAiCommandStage = AI_COMMAND_STAGE_BUSY;
+}
 
-void func_0208441c(void) {
-    M2C_UNK func_0207a7a4(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020cf80c();
-    void *temp_r3;
-    extern void **gCurrentMap;
+/* Stage 1 of the battle state's replay (AI_COMMAND_STAGE_BUSY): step the command
+ * popped by BeginLinkAiCommand while the map cursor is idle, and go back to
+ * waiting for the next command once the AI picks its next action. */
+void RunLinkAiCommand(void) {
+    void UpdateLocalPlayerInput(void);
+    u8 IsMapCursorIdle(void);
+    s32 ProcessAiCommandStep(void);
+    u8 func_ov000_0219c7b0(void);
 
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD(((M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C) + temp_r3), u8 *, 0x67C2) == 2) {
+    UpdateLocalPlayerInput();
+    if (!IsMapCursorIdle()) {
+        return;
+    }
+    ProcessAiCommandStep();
+    if (func_ov000_0219c7b0() == AI_COMMAND_PHASE_PICK_ACTION) {
+        gLinkAiCommandStage = AI_COMMAND_STAGE_IDLE;
+    }
+}
+
+/* Let the local player keep working the map cursor and scrolling the view while
+ * a link AI command is being replayed.  A CPU player takes no input, so its
+ * turn only steps the command. */
+void UpdateLocalPlayerInput(void) {
+    void func_0207a7a4(s32, s32);
+    void func_020cf80c(void);
+    void *map;
+
+    map = *gCurrentMap;
+    if (M2C_FIELD((M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE) + map, u8 *, PLAYER_CONTROL_OFF) == PLAYER_CONTROL_CPU) {
         return;
     }
     func_020cf80c();
@@ -58,17 +118,17 @@ void func_020844a0(u8 *a,u8 *b){s32 i=0,j=0,v;do{v=(a[i]>>4)&15;if(v==15)b[j]=25
 
 #pragma opt_common_subs off
 void func_020844f8(void) {
-void func_02085348(void *, s32);
+void SendLinkCommand(void *, s32);
 void **p; u8 *dst; u32 i;
-u8 *packet=(u8 *)&data_02156e4c;
+u8 *packet=(u8 *)&gLinkAiCommandStage;
 packet[4]=12;p=gCurrentMap;
 packet[10]=M2C_FIELD(*p,u8 *,0x515a);
 i=0;dst=gBattleCommand;
 do{dst[12]=M2C_FIELD((u8 *)*p+i,u8 *,0x515c);i++;dst++;}while((s32)i<4);
-func_02085348(gBattleCommand,20);
+SendLinkCommand(gBattleCommand,20);
 }
 #pragma opt_common_subs reset
-void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void func_02085348(void *,s32);u8 *q=(u8 *)&data_02156e4c;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];UnpackCursorPath((u8 *)*p+0x5388,data_02156e5c);func_02085348(gBattleCommand,20);}
+void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void SendLinkCommand(void *,s32);u8 *q=(u8 *)&gLinkAiCommandStage;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];UnpackCursorPath((u8 *)*p+0x5388,data_02156e5c);SendLinkCommand(gBattleCommand,20);}
 
 s32 GetLinkMode(void) {
     s32 func_0208858c(M2C_UNK);
@@ -187,16 +247,16 @@ void func_02084824(void) {
 s32 func_02084830(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,0x27)==0)return 1;return 0;}
 
 s32 func_0208485c(void) {
-    s32 func_ov009_022254a4();
-    s32 func_ov010_02229bdc();
+    s32 IsLinkHost();
+    s32 IsOnlineSessionHost();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_022254a4();
+        return IsLinkHost();
     case 2:
-        return func_ov010_02229bdc();
+        return IsOnlineSessionHost();
     default:
         return 0;
     }
@@ -291,7 +351,7 @@ u16 GetActivePlayerMask(void) {
     return mask;
 }
 
-s32 func_02084a0c(void) {
+s32 GetSessionPlayerCount(void) {
     s32 func_ov009_02225470();
     s32 GetConnectedPlayerCount();
     s32 temp_r0;
@@ -605,17 +665,21 @@ s32 func_02084eec(M2C_UNK arg0) {
     }
 }
 
-s32 func_02084f2c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
-    s32 func_ov009_02225938(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 func_ov010_02229fd0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 temp_r0;
+/* Create the match-request node that asks the active link overlay (local
+ * wireless or Wi-Fi) to search for a game hosted with `nameCount` names, the
+ * given game type and timeout, writing the search's flags and match count into
+ * the caller's buffers. */
+s32 Link_CreateMatchRequest(M2C_UNK names, M2C_UNK nameCount, M2C_UNK type, M2C_UNK timeout, s32 flags, s32 owner) {
+    s32 CreateLocalMatchRequest(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s32 CreateOnlineMatchRequest(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {
+    overlay = GetActiveOverlay();
+    switch (overlay) {
     case 1:
-        return func_ov009_02225938(arg0, arg1, arg2, arg3, arg4, arg5);
+        return CreateLocalMatchRequest(names, nameCount, type, timeout, flags, owner);
     case 2:
-        return func_ov010_02229fd0(arg0, arg1, arg2, arg3, arg4, arg5);
+        return CreateOnlineMatchRequest(names, nameCount, type, timeout, flags, owner);
     default:
         return 0;
     }

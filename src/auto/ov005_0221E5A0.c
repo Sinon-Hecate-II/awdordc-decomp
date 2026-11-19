@@ -114,7 +114,7 @@ void *HeapAllocBlock(s32);
 s32 GetLocalizedFileName(M2C_UNK *);
 s32 func_020cfb94(void);
 s32 GetCurrentMapName(void);
-s32 func_020cd6d4(void);
+s32 IsCampaignBattleRules(void);
 s32 GetLanguage(void);
 s32 func_020a7290(void);
 s32 func_020a7278(void);
@@ -186,9 +186,9 @@ dst=M2C_FIELD(gCur3DSpriteEngine,u8 *volatile *,28)+((s32)saved<<5);
 MI_CpuCopy32(GetTerrainTileData(*b),dst,256);
 b++; saved=(void **)((s32)saved+8); k++; } while(*b); }
 CopyToObjPaletteShadow(GetTerrainPalette(16,M2C_FIELD((u8 *)*gCurrentMap+(M2C_FIELD(p,s32 *,0x50)+1)*140,u8 *,0x67c1)),0x3c0,32);
-gCur3DSpriteEngine=g3DSpriteEngineSub; func_02099450(0,0,0);
+gCur3DSpriteEngine=g3DSpriteEngineSub; InitTextTiles(0,0,0);
 v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
-if(func_020cd6d4()) {
+if(IsCampaignBattleRules()) {
 DrawTilemapNumber(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
 func_0209c024(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
 } else func_0209c024(5,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
@@ -294,7 +294,7 @@ void func_ov005_0221f038(M2C_UNK arg0) {
 }
 
 void func_ov005_0221f084(void *arg0) {
-    M2C_UNK func_0207c650(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK QueueBGExtPaletteUpload(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
@@ -307,7 +307,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_02091cd0();
+    M2C_UNK LoadScenePanelGraphicsOnBothEngines();
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     u16 GetUnitSpriteWidth(void *);
@@ -352,7 +352,7 @@ void func_ov005_0221f084(void *arg0) {
 
     sp8 = data_ov005_02220078;
     Set3DSpriteVramBanks();
-    func_02091cd0();
+    LoadScenePanelGraphicsOnBothEngines();
     SetFileDirectory(&data_ov005_02221230);
     temp_r11 = data_027e01d8;
     var_r9 = 0;
@@ -387,7 +387,7 @@ void func_ov005_0221f084(void *arg0) {
     LoadNarcFileDecompressed(&data_ov005_0222124c, M2C_FIELD(data_027e01d8, s32 *, 0x18));
     LoadNarcFileDecompressed(&data_ov005_02221260, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
     M2C_FIELD(arg0, s32 *, 0x3C) = func_020815bc(&data_ov005_02221274, 0x200);
-    func_0207c650(M2C_FIELD(arg0, s32 *, 0x3C), 3, 0, 0x200, 0);
+    QueueBGExtPaletteUpload(M2C_FIELD(arg0, s32 *, 0x3C), 3, 0, 0x200, 0);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     CloseNarcArchive();
     LoadDecompressedFileTo(GetLocalizedFileName(&data_ov005_02221288), M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
@@ -397,7 +397,7 @@ void func_ov005_0221f084(void *arg0) {
     LoadNarcFileDecompressed(&data_ov005_022212c4, M2C_FIELD(data_027e01d8, s32 *, 0x18));
     LoadNarcFileDecompressed(&data_ov005_022212d4, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
     M2C_FIELD(arg0, s32 *, 0x40) = func_020815bc(&data_ov005_022212e4, 0x200);
-    func_0207c650(M2C_FIELD(arg0, s32 *, 0x40), 3, 0, 0x200, 0);
+    QueueBGExtPaletteUpload(M2C_FIELD(arg0, s32 *, 0x40), 3, 0, 0x200, 0);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     CloseNarcArchive();
     data_027e01d8 = (void*)g3DSpriteEngineMain;

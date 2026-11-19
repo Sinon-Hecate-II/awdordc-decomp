@@ -252,7 +252,7 @@ if(callback && kind==1) callback(total,channel);
 return 1;
 }
 
-s32 func_0204445c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 SendTransferToPlayers(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 var_r10;
  s32 var_r6;
  u8 var_r9;
@@ -267,23 +267,27 @@ s32 func_0204445c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  return var_r6;
 }
 
-s32 func_020444cc(u8 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 HasNetError(void);
- s32 IsConnectionActive(M2C_UNK);
- void SendConnectionData(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
- extern s32 gTransferManager;
- void (*callback)(s32, M2C_UNK);
- if (HasNetError() != 0) return 0;
- if (IsConnectionActive(arg0) == 0) return 0;
- if (arg2 > M2C_FIELD(gTransferManager, u16 *, 0x610)) return 0;
- SendConnectionData(arg0, arg1, arg2, 0);
- callback = M2C_FIELD(gTransferManager, void (**)(s32, M2C_UNK), 0x600);
- if (callback != NULL) callback(arg2, arg0);
- return 1;
+/* Send raw data straight to one player's connection (no transfer slot): refused
+ * on a network error, on an inactive connection, or when the size exceeds the
+ * transfer manager's per-frame chunk.  The manager's onSent callback then
+ * reports the completed send. */
+s32 SendDataToPlayer(u8 playerId, M2C_UNK data, M2C_UNK size) {
+    s32 HasNetError(void);
+    s32 IsConnectionActive(M2C_UNK);
+    void SendConnectionData(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    extern s32 gTransferManager;
+    void (*callback)(s32, s32);
+    if (HasNetError() != 0) return 0;
+    if (IsConnectionActive(playerId) == 0) return 0;
+    if (size > ((TransferManager *)gTransferManager)->chunkSize) return 0;
+    SendConnectionData(playerId, data, size, 0);
+    callback = ((TransferManager *)gTransferManager)->onSent;
+    if (callback != NULL) callback(size, playerId);
+    return 1;
 }
 
-s32 func_0204455c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_020444cc(u8, M2C_UNK, M2C_UNK);
+s32 SendDataToPlayers(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    s32 SendDataToPlayer(u8, M2C_UNK, M2C_UNK);
     s32 var_r10;
     s32 var_r6;
     u8 var_r9;
@@ -296,7 +300,7 @@ s32 func_0204455c(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
         } else {
             var_r10 = 1;
         }
-        if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (func_020444cc(var_r9, arg1, arg2) == 0)) {
+        if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (SendDataToPlayer(var_r9, arg1, arg2) == 0)) {
             var_r6 &= ~var_r10;
         }
         var_r9 += 1;
@@ -368,7 +372,20 @@ if(((TransferManager *)gTransferManager)->onSent)((TransferManager *)gTransferMa
 }
 }
 
-void func_02044954(s32 a){extern s32 gTransferManager;if(!gTransferManager)return;M2C_FIELD(gTransferManager+a*0x30,s32 *,0xc)=0;M2C_FIELD(gTransferManager+a*0x30,s32 *,0x10)=0;M2C_FIELD(gTransferManager+a*0x30,s32 *,0x14)=0;M2C_FIELD(gTransferManager+a*0x30,s32 *,0x18)=0;M2C_FIELD(gTransferManager+a*0x30,u8 *,0x1c)=0;if(((u8 *)(gTransferManager+0x1d))[a*0x30])((u8 *)(gTransferManager+0x1d))[a*0x30]=1;M2C_FIELD(gTransferManager+a*0x30,u16 *,0x22)=0;}
+/* Resets one player's transfer slot after the player dropped: clears the
+ * progress of both directions, stops sending, clears the transfer kind and puts
+ * a transfer that was still active back to its idle state. */
+void ResetTransferSlot(s32 playerId) {
+    extern s32 gTransferManager;
+    if (!gTransferManager) return;
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->outSent = 0;
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->inReceived = 0;
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->outSize = 0;
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->inExpected = 0;
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->sending = 0;
+    if (((u8 *)(gTransferManager + 0x1d))[playerId * 0x30]) ((u8 *)(gTransferManager + 0x1d))[playerId * 0x30] = 1; /* state */
+    ((TransferSlot *)(gTransferManager + playerId * 0x30))->kind = 0;
+}
 
 void func_020449dc(void) {
     extern s32 gTransferManager;

@@ -441,7 +441,7 @@ s32 func_0204e2f4(void **arg0,s32 arg1,s32 *arg2) {
  return 0;
 }
 
-s32 func_0204e364(void **arg0,s32 arg1) {
+s32 HasBuddyProfile(void **arg0,s32 arg1) {
  s32 gpiFindBuddyStatus(void **,s32,void **);
  void *sp0;
  if(arg0==0 || *arg0==0) return 0;
@@ -450,7 +450,7 @@ s32 func_0204e364(void **arg0,s32 arg1) {
  return 0;
 }
 
-s32 func_0204e3b0(void **arg0,s32 arg1) {
+s32 DeleteBuddyProfile(void **arg0,s32 arg1) {
  s32 func_0204fb50(void **,s32);
  extern s32 gGpiMsgDisconnected;
  void *p; s32 result;

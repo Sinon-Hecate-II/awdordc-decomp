@@ -62,7 +62,7 @@ u32 i=0;
 for(;i<arg0->count;i++) arg0->entries[i].active=0;
 }
 
-void func_02074a7c(List_02074920 *arg0,u16 a,u8 b,s32 c,void *data) {
+void SaveList_AddRecord(List_02074920 *arg0,u16 a,u8 b,s32 c,void *data) {
 void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32);
 u32 n=arg0->count; Entry_02074920 *p;
 if(n>=128) return;
@@ -71,19 +71,30 @@ if(data) MI_CpuCopy32(data,p->data,32); else MI_CpuFill32(0,p->data,32);
 arg0->count++;
 }
 
-void func_02074aec(List_02074920 *arg0,s32 arg1) {
-void MI_CpuCopy8(void *,void *,u32);
-Entry_02074920 *p; u32 i,n;
-n=arg0->count; i=0; p=arg0->entries;
-for(;i<n;i++,p++) {
-if(arg1==p->id) {
-if(i<n-1) {
-Entry_02074920 *q=&arg0->entries[i];
-do {MI_CpuCopy8(q+1,q,40); i++; q++;} while(i<arg0->count-1);
-}
-arg0->count--; return;
-}
-}
+/* Removes the save record with the given slot id from the save list, moving the
+ * records after it down one place. */
+void SaveList_Remove(List_02074920 *list, s32 id) {
+    void MI_CpuCopy8(void *, void *, u32);
+    Entry_02074920 *entry;
+    u32 i, count;
+
+    count = list->count;
+    i = 0;
+    entry = list->entries;
+    for (; i < count; i++, entry++) {
+        if (id == entry->id) {
+            if (i < count - 1) {
+                Entry_02074920 *cur = &list->entries[i];
+                do {
+                    MI_CpuCopy8(cur + 1, cur, 40);
+                    i++;
+                    cur++;
+                } while (i < list->count - 1);
+            }
+            list->count--;
+            return;
+        }
+    }
 }
 
 /* Sorts the entry list by kind and id using bubble sort. */
@@ -195,7 +206,7 @@ CARD_UnlockBackup(lockIdLow); OS_ReleaseLockID(lockIdLow); return result;
 
 void SaveManager_ScanArchive(s32 arg0){
 void *HeapAllocBlock(u32);void HeapFreeBlock(void *);s32 OS_GetLockID(void);void OS_ReleaseLockID(u8);void CARD_LockBackup(u16);void CARD_UnlockBackup(u8);
-s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 func_02074734(void *,void *);s32 func_020747c8(void *,void *);s32 IsNodeChainValid(void *,u16);
+s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,s32,s32,s32,s32);s32 IsSaveArchiveBlockValid(void *,void *);s32 func_020747c8(void *,void *);s32 IsNodeChainValid(void *,u16);
 void MI_CpuCopy32(void *,void *,u32);void MI_CpuFill32(s32,void *,u32);void MI_CpuFill8(void *,s32,u32);void MI_CpuCopy8(void *,void *,u32);
 u8 *a=(u8 *)arg0;s32 selected;u8 *p;u8 *buf;u8 low;u32 stamp;s32 page;s32 i;u16 id;u8 ok0,ok1,ok2,ok;s32 off,off20,off256;u32 value,old; s32 newer;u8 rank; s32 shift;u32 *count;u16 invalid=65535;s32 mask;
 buf=HeapAllocBlock(1024);selected=-1;stamp=0;page=0;if(!a[0x2050]||a[0x2052]==1)return;
@@ -203,7 +214,7 @@ id=OS_GetLockID();low=id;i=0;p=a;off=0;off20=20;off256=256;
 for(;i<256;p+=12,off+=1024,off256+=1024,off20+=1024,i++){
 CARD_LockBackup(low);ok0=SaveDevice_Transfer(off,(s32 *)buf,20,0,0,0,6,1,0)!=0;CARD_UnlockBackup(low);
 if(!ok0){a[0x2052]=1;goto empty;}
-if(!func_02074734(a,buf))goto empty;
+if(!IsSaveArchiveBlockValid(a,buf))goto empty;
 CARD_LockBackup(low);ok1=SaveDevice_Transfer(off20,(s32 *)(buf+20),M2C_FIELD(buf,u16*,12)-20,0,0,0,6,1,0)!=0;CARD_UnlockBackup(low);
 if(ok1 == 0){a[0x2052]=1;goto empty;}
 if(!func_020747c8(a,buf))goto empty;
@@ -252,7 +263,7 @@ u32 func_020746fc(void *,void *); s32 SaveDevice_Transfer(s32,s32 *,s32,s32,s32,
 u8 *p; s32 idx; u16 prev; s32 mask; u16 id; u8 ok; u32 n;
 if(!M2C_FIELD(a,u8 *,0x2050)||M2C_FIELD(a,u8 *,0x2052)==1||!e)return;
 p=HeapAllocBlock(0x400); prev=0xffff; idx=FindFreeNode(a);
-func_02074a7c((List_02074920 *)((u8 *)a+0xc4c),(u16)idx,e,f,c);
+SaveList_AddRecord((List_02074920 *)((u8 *)a+0xc4c),(u16)idx,e,f,c);
 id=OS_GetLockID();
 mask=prev-0x10000;
 while(d){

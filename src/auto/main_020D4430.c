@@ -11,7 +11,7 @@ void func_020d4430(void){extern void **gCurrentMap;if((s32)M2C_FIELD(*gCurrentMa
    handle the current entry's pending flag, otherwise run the step sequence. */
 void func_020d447c(void) {
 extern void **gCurrentMap;
-void RefreshCursorCell(void);
+void RefreshMapCursorCellCache(void);
 u8 IsMapViewScrolling(void);
 void *state;
 if(IsDialogActive())return;
@@ -27,7 +27,7 @@ StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
 if(IsMapViewScrolling())return;
 func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-RefreshCursorCell();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
+RefreshMapCursorCellCache();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
@@ -102,7 +102,7 @@ void func_020d482c(void) {
 }
 
 void func_020d4928(void) {
-    M2C_UNK func_020d9394();
+    M2C_UNK CreateSubScreenUi();
     M2C_UNK func_020d4b30();
     M2C_UNK func_020d3d68();
     M2C_UNK LoadCurrentMap();
@@ -113,7 +113,7 @@ void func_020d4928(void) {
     LoadCurrentMap();
     func_020d3d68();
     func_020d4b30();
-    func_020d9394();
+    CreateSubScreenUi();
 }
 
 void func_020d4948(void) {
@@ -138,7 +138,7 @@ void FinishBattle(void) {
     M2C_UNK func_020d895c();
     M2C_UNK func_020d8cc8();
     s32 func_020e4b54();
-    extern s32 data_0215d8a0;
+    extern s32 gSaveSlotSummary;
     extern M2C_UNK gBattleEndState;
     extern u16 gMapConfig;
     u32 battleMode;
@@ -146,7 +146,7 @@ void FinishBattle(void) {
     battleMode = (u32) (gMapConfig << 0x1D) >> 0x1D;
     switch ((u8) battleMode) {
     case 0:
-        if ((DidPlayerWin() != 0) && (func_020e4b54() != 0) && (((u32) (data_0215d8a0 << 8) >> 0x18) == 1)) {
+        if ((DidPlayerWin() != 0) && (func_020e4b54() != 0) && (((u32) (gSaveSlotSummary << 8) >> 0x18) == 1)) {
             func_020d88ac();
             return;
         }
@@ -187,7 +187,7 @@ int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24(
 extern void func_020d4cf0(void);
 extern void func_020a44d0(void);
 extern void func_020d33d8(void);
-extern void RefreshCursorCell(void);
+extern void RefreshMapCursorCellCache(void);
 extern int IsLinkSessionActive(void);
 extern void func_020852a8(void);
 extern void PlaySlotScriptedSoundAtVolume(int, int, int, int);
@@ -207,7 +207,7 @@ int func_020d4b30() {
     func_020d4cf0();
     func_020a44d0();
     func_020d33d8();
-    RefreshCursorCell();
+    RefreshMapCursorCellCache();
 
     if (IsLinkSessionActive() == 1) {
         func_020852a8();
@@ -219,7 +219,7 @@ int func_020d4b30() {
 
 int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();func_02090034(1,10);func_02090034(2,10);}
 
-M2C_UNK func_020d4bd4(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();func_02091cd0();func_020d4b30();RefreshMapView();}
+M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();LoadScenePanelGraphicsOnBothEngines();func_020d4b30();RefreshMapView();}
 
 void func_020d4c08(void) {
     M2C_UNK func_020d4ba4();
@@ -229,10 +229,10 @@ void func_020d4c08(void) {
 }
 
 void func_020d4c18(void) {
-    M2C_UNK func_020d9394();
-    M2C_UNK func_020d4bd4();
-    func_020d4bd4();
-    func_020d9394();
+    M2C_UNK CreateSubScreenUi();
+    M2C_UNK RestoreBattleMapView();
+    RestoreBattleMapView();
+    CreateSubScreenUi();
 }
 
 void func_020d4ca4(void *);
@@ -280,7 +280,7 @@ void *func_020d4cd4(void) {
     return func_01ffa860(&data_0212bd84, 0xFF03);
 }
 
-void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK CreateSpriteFromClass();void func_01ffa8bc(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=CreateSpriteFromClass(&data_0212bd84,4);func_01ffa8bc(p,0xff03);func_020d4cc8((void*)p);func_01ffa8bc(CreateSpriteFromClass(&data_0212bdb4,6),0xff03);func_01ffa8bc(CreateSpriteFromClass(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
+void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK CreateSpriteFromClass();void SetSpriteZ(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=CreateSpriteFromClass(&data_0212bd84,4);SetSpriteZ(p,0xff03);func_020d4cc8((void*)p);SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4,6),0xff03);SetSpriteZ(CreateSpriteFromClass(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
 
 int func_020d4d78(void){s32 func_01ffa810(s32);void *func_0209cce4(void (*)(void *),int);if(!func_01ffa810(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
 
@@ -296,7 +296,7 @@ u8 func_020d4dac(void) {
     return var_r0;
 }
 
-u8 func_020d4dd0(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
+u8 IsMapCursorIdle(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
 
 void func_020d5068(void);
 /* Runs the per-frame update handler of the battle map's current input mode
@@ -352,7 +352,7 @@ key=func_020bd13c();
 switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1; break; }
 if(playSound) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
 MoveMapCursorToTarget(0);
-if(func_020d4dd0()) {
+if(IsMapCursorIdle()) {
 if(func_ov000_0216ab64(1)) return;
 switch(key) {
 case 0: case 0x20: case 0x1000:
@@ -416,7 +416,7 @@ void UpdateAimingCursor(void) {
  if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MoveMapCursorToTarget(2);
  else MoveMapCursorToTarget(1);
  }
- if(func_020d4dd0()){
+ if(IsMapCursorIdle()){
  keys=0;
  keys|=func_020bca68();
  keys|=GetTouchReleaseKeyAction();
@@ -462,7 +462,7 @@ func_020cf828(0x1001a);
 func_0207a7a4(1,4);
 valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 if(valid) MoveMapCursorToTarget(4); else MoveMapCursorToTarget(5);
-if(!func_020d4dd0()) return;
+if(!IsMapCursorIdle()) return;
 keys |= func_020bcaf0();
 keys |= GetAimCursorTouchAction();
 if(keys&0x20) {CloseAimingCursor();return;}

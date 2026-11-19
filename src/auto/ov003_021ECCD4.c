@@ -16,7 +16,7 @@ void func_ov003_021eccd4(void *arg0) {
     M2C_UNK Link_SendPacket(M2C_UNK *, M2C_UNK);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088f1c(s32);
+    M2C_UNK Show3DSpriteSlide(s32);
     M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK SetTextById(s32, s32);
     M2C_UNK PlaySoundEffect(s32);
@@ -126,7 +126,7 @@ void func_ov003_021eccd4(void *arg0) {
             M2C_FIELD(arg0, u8 *, 0x39) = temp_r1;
             if ((var_r0_4 & 0xFF) && (func_ov003_021e6d28() != 0)) {
                 Show3DSprite(M2C_FIELD(arg0, void **, 0x58));
-                func_02088f1c(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
+                Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), s32 *, 0));
             }
             temp_r4 = M2C_FIELD(arg0, void **, 0x64);
             temp_r7 = (u8)GetPanelCount(M2C_FIELD(arg0, void **, 0x6C));

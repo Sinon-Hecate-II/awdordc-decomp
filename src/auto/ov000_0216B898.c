@@ -15,7 +15,7 @@ extern s16 gSinCosTable[];
 #pragma peephole off
 void func_ov000_0216b898(void *arg0){
 s32 GetSpriteAnimValue(void*);s32 GetLanguage(void);
-s32 func_ov000_0216b15c(s32,s32,s32,s32);s32 func_020a93e4(void*,u8);
+s32 func_ov000_0216b15c(s32,s32,s32,s32);s32 GetTextSpriteGlyphX(void*,u8);
 s32 Divide(s32,s32);void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void*,s32);void DrawTileRow(u16,s32,s32,u16,s32);
 s32 x1,x2,y1,y2,anchor,xa,ya,i,tile;u16 *volatile control;
@@ -44,7 +44,7 @@ else M2C_FIELD(p,u8*,0x17)=26;
 }
 M2C_FIELD(M2C_FIELD(arg0,void**,0x40),s16*,6)=x2;
 for(i=0;i<M2C_FIELD(M2C_FIELD(arg0,void**,0x40),u8*,10);i++){
-s32 x=func_020a93e4(M2C_FIELD(arg0,void**,0x40),(u8)i);
+s32 x=GetTextSpriteGlyphX(M2C_FIELD(arg0,void**,0x40),(u8)i);
 if(func_ov000_0216b15c(x,y2,32,32)){
 void *p=M2C_FIELD(arg0,void**,0x40);
 s32 offset=(u16)(M2C_FIELD(p,u16*,0x12)+M2C_FIELD(p,u8*,0x16)*M2C_FIELD(p+(i&255),u8*,11));

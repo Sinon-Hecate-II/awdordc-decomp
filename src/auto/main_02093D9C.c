@@ -1,43 +1,48 @@
 /* 57 functions from 0x02093D9C to 0x02094D8C (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 void *Get3DSpriteManager(void);
 
-s32 func_02093d9c(void *arg0) {
-    s32 func_02091e14();
-    M2C_UNK func_020d4bd4();
-    M2C_UNK func_020d9394();
+/* Map-script command that restores the battle map view and/or the sub-screen UI,
+ * depending on which 3D sprite engine the scene is drawn into: the main engine
+ * gets the map view back, the sub engine its UI, and both get both.  Target
+ * DS3D_TARGET_ACTIVE means whichever engine the current one is. */
+s32 ScriptCmd_RestoreMapView(void *script) {
+    s32 Get3DSpriteTargetMode();
+    M2C_UNK RestoreBattleMapView();
+    M2C_UNK CreateSubScreenUi();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 var_r0;
-    u8 var_r0_2;
+    s32 target;
+    u8 isMain;
 
-    var_r0 = func_02091e14();
-    if (var_r0 == 3) {
+    target = Get3DSpriteTargetMode();
+    if (target == DS3D_TARGET_ACTIVE) {
         if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-            var_r0_2 = 1;
+            isMain = 1;
         } else {
-            var_r0_2 = 0;
+            isMain = 0;
         }
-        if (var_r0_2 != 1) {
-            var_r0 = 1;
+        if (isMain != 1) {
+            target = DS3D_TARGET_SUB;
         } else {
-            var_r0 = 0;
+            target = DS3D_TARGET_MAIN;
         }
     }
-    switch (var_r0) {                               /* irregular */
-    case 0:
-        func_020d4bd4();
+    switch (target) {
+    case DS3D_TARGET_MAIN:
+        RestoreBattleMapView();
         break;
-    case 1:
-        func_020d9394();
+    case DS3D_TARGET_SUB:
+        CreateSubScreenUi();
         break;
-    case 2:
-        func_020d4bd4();
-        func_020d9394();
+    case DS3D_TARGET_BOTH:
+        RestoreBattleMapView();
+        CreateSubScreenUi();
         break;
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(script, s32 *, 4) = (s32) (M2C_FIELD(script, s32 *, 4) + 0x10);
     return 1;
 }
 

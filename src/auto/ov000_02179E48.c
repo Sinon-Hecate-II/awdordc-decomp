@@ -167,7 +167,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void SelectMapLayer(void *);
     u16 GetUnitMoveRange(u16, s32);
     extern void **gCurrentMap;
-    void func_01ffb454(s32);
+    void LoadUnitMovementCosts(s32);
     extern s8 gMoveSearchBuffer;
     extern void *gMoveSearchState;
     extern void *gMoveSearchCount;
@@ -190,7 +190,7 @@ void func_ov000_0217a59c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
     *(u16 *)((u8 *)gMoveSearchState + 0x22) =
         GetUnitMoveRange(*(u16 *)((u8 *)(*gCurrentMap) + 0x52A4), arg2);
-    func_01ffb454(arg2);
+    LoadUnitMovementCosts(arg2);
 
     M2C_FIELD(gMoveSearchWrite, u8 *, 0) = (u8)arg0;
     M2C_FIELD(gMoveSearchWrite, u8 *, 1) = (u8)arg1;

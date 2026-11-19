@@ -34,7 +34,7 @@ func_ov006_02215b84 kind:function(arm,size=0xe8) addr:0x02215b84
 FriendCodeKeypad_Erase kind:function(arm,size=0x158) addr:0x02215c6c
 func_ov006_02215dc4 kind:function(arm,size=0x14) addr:0x02215dc4
 func_ov006_02215dd8 kind:function(arm,size=0xc) addr:0x02215dd8
-func_ov006_02215de4 kind:function(arm,size=0x100) addr:0x02215de4
+FriendCodeKeypad_MoveActionSelection kind:function(arm,size=0x100) addr:0x02215de4
 ConfirmFriendCode kind:function(arm,size=0x2a4) addr:0x02215ee4
 func_ov006_02216188 kind:function(arm,size=0x14) addr:0x02216188
 func_ov006_0221619c kind:function(arm,size=0x158) addr:0x0221619c
@@ -80,7 +80,7 @@ func_ov006_022174d0 kind:function(arm,size=0x34) addr:0x022174d0
 func_ov006_02217504 kind:function(arm,size=0x50) addr:0x02217504
 func_ov006_02217554 kind:function(arm,size=0x34) addr:0x02217554
 func_ov006_02217588 kind:function(arm,size=0x1c) addr:0x02217588
-func_ov006_022175a4 kind:function(arm,size=0x88) addr:0x022175a4
+FinishMapOfferSearch kind:function(arm,size=0x88) addr:0x022175a4
 func_ov006_0221762c kind:function(arm,size=0x168) addr:0x0221762c
 func_ov006_02217794 kind:function(arm,size=0x34) addr:0x02217794
 func_ov006_022177c8 kind:function(arm,size=0x1c) addr:0x022177c8
@@ -177,6 +177,6 @@ data_ov006_02218cdc kind:data(any) addr:0x02218cdc
 sMapCodeDebugFormat kind:data(any) addr:0x02218dd4
 gMapCodeString kind:bss addr:0x02218e00
 gFriendCodeInput kind:bss addr:0x02218e10
-data_ov006_02218e20 kind:bss addr:0x02218e20
+gMapOfferState kind:bss addr:0x02218e20
 data_ov006_02218e2c kind:bss addr:0x02218e2c
 data_ov006_02218e3c kind:bss addr:0x02218e3c ambiguous

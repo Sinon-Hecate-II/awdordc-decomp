@@ -19,9 +19,9 @@ void func_02001114(void *,s32,s32,s32);void MTX_TransApply43(void *,void *,s32,s
 void func_02001148(void *,void *,void *);void MTX_Copy43(void *,void *);void func_02003a70(void *);
 void SetGxPolygonAttr(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);void ResetGxTextureParams(void);
-void DrawGxLine(s32,s32,s32,s32,s32,s32);void func_ov004_02214814(s32,s32,s32,s32,s32,s32);
+void DrawGxLine(s32,s32,s32,s32,s32,s32);void DrawGxRectFrame(s32,s32,s32,s32,s32,s32);
 void func_02087a08(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
-void func_0200112c(void *,s32,s32);void func_02087064(s32,s32,s32,s32,s32);void func_02003aa8(void *);s32 GetDigitCount(s32);
+void func_0200112c(void *,s32,s32);void SetGxTextureParams(s32,s32,s32,s32,s32);void func_02003aa8(void *);s32 GetDigitCount(s32);
 s32 qp[12],qr[12],q2[12],q1[12],qt[12],qs[12],qm[12],q0[12],pivot[12],tr[12],sz[12],rot[12],mat[12],p2[12],p1[12],p0[12],d[12],c[12],b[12],a[12];s32 j,k,n,value,spacing,tex,flags,cx,cy,amount;void *link,*node; s32 scale,i,x,y,h,w,bottom,top;void *entry;
 volatile u32 *gx=(volatile u32 *)0x04000440;
 func_0200100c(a);func_0200100c(b);func_0200100c(c);
@@ -62,7 +62,7 @@ DrawGxLine(0,M2C_FIELD(arg0,s16 *,70),512,M2C_FIELD(arg0,s16 *,70),2,32767);
 DrawGxLine(M2C_FIELD(arg0,s16 *,68),0,M2C_FIELD(arg0,s16 *,68),304,2,32767);
 x=256;y=152;w=0;h=0;entry=RenderSelection(M2C_FIELD(arg0,void **,92));
 if(entry){w=M2C_FIELD(arg0,s16 *,76)/2;h=M2C_FIELD(arg0,s16 *,78)/2;x=M2C_FIELD(entry,s16 *,0);y=M2C_FIELD(entry,s16 *,2);}
-if(w>0||h>0){SetGxPolygonAttr(0,31);ResetGxTextureParams();if(M2C_FIELD(arg0,s32 *,64)==4096)func_ov004_02214814(x-w,y-h,x+w,y+h,1,32767);else func_ov004_02214814(x-w,y-h,x+w-1,y+h-1,1,32767);}
+if(w>0||h>0){SetGxPolygonAttr(0,31);ResetGxTextureParams();if(M2C_FIELD(arg0,s32 *,64)==4096)DrawGxRectFrame(x-w,y-h,x+w,y+h,1,32767);else DrawGxRectFrame(x-w,y-h,x+w-1,y+h-1,1,32767);}
 gx[0]=3;gx[1]=0;{u16 phase=M2C_FIELD(arg0,u16 *,60);gx[5]=0;gx[12]=-((u32)((phase>>2)<<24)>>8);gx[12]=(u32)((phase>>3)<<24)>>8;gx[12]=0;}
 if(M2C_FIELD(arg0,u8 *,57)){SetGxPolygonAttr(4,4);func_020870dc(3,256,256,6144,17,1,0,1);top=y-h;
 func_02087a08(0,0,512,0,0,top,512,top,4,0,0,512,top);bottom=y+h+1;
@@ -91,7 +91,7 @@ if(M2C_FIELD(link_0,s16 *,0)<cx_0){func_0200100c(pivot);MTX_TransApply43(pivot,p
 if(M2C_FIELD(link_0,s16 *,2)>cy_0){func_0200100c(pivot);MTX_TransApply43(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*38)/8,4096,4096);func_0200112c(rot,data_020e6b30[0],data_020e6b30[1]);func_0200100c(tr);MTX_TransApply43(tr,tr,cx_0,cy_0,0);}
 if(M2C_FIELD(link_0,s16 *,2)<cy_0){func_0200100c(pivot);MTX_TransApply43(pivot,pivot,0,-4,0);func_02001114(sz,(amount_0*38)/8,4096,4096);func_0200112c(rot,data_020e8b30[0],data_020e8b30[1]);func_0200100c(tr);MTX_TransApply43(tr,tr,cx_0,cy_0,0);}
 func_0200100c(p0);func_02001148(pivot,sz,p0);func_0200100c(p1);func_02001148(p0,rot,p1);func_0200100c(p2);func_02001148(p1,tr,p2);MTX_Copy43(p2,mat);
-func_02087064(3,8,8,7424,24);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(mat);
+SetGxTextureParams(3,8,8,7424,24);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(mat);
 DrawTexturedQuadUV(0,0,5,8,8,0,0,8,8);*(volatile u32 *)0x04000448=1;
 }
 }
@@ -108,8 +108,8 @@ amount_1=Divide(scale*M2C_FIELD(node_1,s32 *,8),4096);
 func_02001114(qs,amount_1,amount_1,4096);func_0200100c(qt);MTX_TransApply43(qt,qt,cx_1,cy_1,0);func_0200100c(q0);func_02001148(qs,qt,q0);MTX_Copy43(q0,qm);
 *(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(qm);
 flags_1=0;if(M2C_FIELD(node_1,u8 *,5)!=0)flags_1=2;if((u8)((M2C_FIELD(node_1,u8 *,4)&4)!=0))flags_1++;
-func_02087064(3,256,32,7168,flags_1+18);DrawTexturedQuadUV(-8,-8,6,16,16,tex_1,0,tex_1+16,16);
-if(amount_1==4096&&(gFrameCounter&63)<48){func_02087064(3,256,32,7168,22);
+SetGxTextureParams(3,256,32,7168,flags_1+18);DrawTexturedQuadUV(-8,-8,6,16,16,tex_1,0,tex_1+16,16);
+if(amount_1==4096&&(gFrameCounter&63)<48){SetGxTextureParams(3,256,32,7168,22);
 if((u8)((M2C_FIELD(node_1,u8 *,4)&16)!=0))DrawTexturedQuadUV(2,6,6,32,8,224,8,256,16);
 if((u8)((M2C_FIELD(node_1,u8 *,4)&8)!=0))DrawTexturedQuadUV(2,6,6,32,8,224,0,256,8);
 }
@@ -126,7 +126,7 @@ value_2=M2C_FIELD(node_2,u8 *,6);cx_2=M2C_FIELD(node_2,s16 *,0);cy_2=M2C_FIELD(n
 if(!(u8)((M2C_FIELD(node_2,u8 *,4)&1)!=0)||scale!=4096)continue;
 if((u8)((M2C_FIELD(node_2,u8 *,4)&2)!=0)){spacing_2=12;tex_2=16;}
 cx_2-=((n_2+1)*spacing_2)/2;func_0200100c(qp);MTX_TransApply43(qp,qp,cx_2,cy_2-20,0);func_0200100c(q1);func_02001148(qr,qp,q1);MTX_Copy43(q1,q2);
-func_02087064(3,256,32,7296,23);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(q2);
+SetGxTextureParams(3,256,32,7296,23);*(volatile u32 *)0x04000444=0;gx[0]=2;func_02003aa8(q2);
 flags_2=(u8)((M2C_FIELD(node_2,u8 *,4)&4)!=0)?192:176;
 DrawTexturedQuadUV(0,0,8,16,16,flags_2,tex_2,flags_2+16,tex_2+16);
 for(j_2=0;j_2<n_2;j_2++){k_2=(value_2%10)*16;DrawTexturedQuadUV((n_2-j_2)*spacing_2,0,8,16,16,k_2,tex_2,k_2+16,tex_2+16);value_2/=10;}

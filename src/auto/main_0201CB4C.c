@@ -129,29 +129,26 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
 }
 
 void func_0201cfdc(void) {
-    u8 *NetStackPeekFrame(s32 *);
+    u8 *NetStackPeekFrame(u32 *);
     void func_0201ce18(u8 *, s32);
     void HandleArpPacket(u8 *, s32);
     void func_0201ab8c(void);
-
-    s32 size;
-    u8 *buf;
-    u32 magic;
+    u32 size;
 
     for (;;) {
-        buf = NetStackPeekFrame(&size);
-        if (size <= 0x22) {
-            break;
+        u8 *frame = NetStackPeekFrame(&size);
+        if (size > 0x22) {
+            s32 type = M2C_FIELD(frame, u16 *, 0xC);
+            switch ((u16)((type >> 8) | (type << 8))) {
+                case 0x800:
+                    func_0201ce18(frame + 0xE, size - 0xE);
+                    break;
+                case 0x806:
+                    HandleArpPacket(frame + 0xE, size - 0xE);
+                    break;
+            }
         }
-        magic = M2C_FIELD(buf, u16 *, 0xC);
-        magic = (magic << 8) | (magic >> 8);
-        magic = magic & 0xFFFF;
-        if (magic == 0x800) {
-            func_0201ce18(buf + 0xE, size - 0xE);
-        } else if (magic == 0x806) {
-            HandleArpPacket(buf + 0xE, size - 0xE);
-            func_0201ab8c();
-        }
+        func_0201ab8c();
     }
 }
 
@@ -527,75 +524,68 @@ if(M2C_FIELD(p,u8*,9)!=0)func_02024d8c(arg0,p);
 else ConsumeReceivedData(arg0,p);
 }
 
-s32 func_0201d744(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
+s32 func_0201d744(M2C_UNK data, s32 length, M2C_UNK socket, s32 probe) {
     extern M2C_UNK gNetStack;
     M2C_UNK TcpSendSegment(M2C_UNK, s32, M2C_UNK, s32, s32);
     M2C_UNK TaskYield(void);
 
-    M2C_UNK v8;
-    s32 v11;
-    M2C_UNK v10;
-    s32 v9;
-    s32 v6;
-    s32 v5;
-    s32 v7;
-    s32 v4;
-    s32 v1;
-    s32 sum;
-    u16 global;
+    M2C_UNK sock;
+    s32 probeMode;
+    M2C_UNK cursor;
+    u32 remaining;
+    u32 segmentLength;
+    u32 available;
+    u32 previousResult;
+    u32 budget;
+    u32 currentResult;
+    u16 stackLimit;
     s32 zero;
 
-    v8 = arg2;
-    v11 = arg3;
-    v10 = arg0;
-    v9 = arg1;
-    v6 = M2C_FIELD(v8, s32 *, 0x34);
-    if (v11 != 0) {
-        v5 = 1;
+    sock = socket;
+    previousResult = M2C_FIELD(sock, s32 *, TCP_SOCK_RESULT);
+    probeMode = probe;
+    cursor = data;
+    remaining = length;
+    if (probeMode != 0) {
+        available = 1;
     } else {
-        v5 = M2C_FIELD(v8, u16 *, 0x2C);
+        available = M2C_FIELD(sock, u16 *, TCP_SOCK_ACKFLAG);
     }
-    v7 = (v6 << 1) + 4;
+    budget = (previousResult << 1) + 4;
 
-    for (;;) {
-        v4 = M2C_FIELD(v8, u16 *, 0x2E);
-        global = M2C_FIELD(&gNetStack, u16 *, 0x2);
-        v1 = M2C_FIELD(v8, s32 *, 0x34);
-        if ((u32)v4 >= (u32)v5) {
-            v4 = v5;
+    /* The send path enters with nonzero length and an established socket. */
+    while (remaining != 0 && M2C_FIELD(sock, u8 *, TCP_SOCK_STATE) == 4) {
+        segmentLength = M2C_FIELD(sock, u16 *, 0x2E);
+        stackLimit = M2C_FIELD(&gNetStack, u16 *, 0x2);
+        currentResult = M2C_FIELD(sock, s32 *, TCP_SOCK_RESULT);
+        if ((u32)segmentLength >= (u32)available) {
+            segmentLength = available;
         }
-        if ((u32)global < (u32)v4) {
-            v4 = global;
+        if ((u32)stackLimit < (u32)segmentLength) {
+            segmentLength = stackLimit;
         }
-        if (v11 == 0) {
-            v4 &= ~1;
+        if (probeMode == 0) {
+            segmentLength &= ~1;
         }
-        if (v9 < v4) {
-            v4 = v9;
+        if (remaining < (u32)segmentLength) {
+            segmentLength = remaining;
         }
-        sum = v7 + (v1 - v6);
-        if (sum == 0) {
-            v4 = 0;
+        budget += currentResult - previousResult;
+        previousResult = currentResult;
+        if (budget-- == 0) {
+            segmentLength = 0;
         }
-        v6 = v1;
-        v7 = sum - 1;
-        if (v4 == 0) {
+        if (segmentLength == 0) {
             break;
         }
         zero = 0;
-        v5 = v5 - v4;
-        TcpSendSegment(v10, v4, v8, 0x18, zero);
+        available = available - segmentLength;
+        TcpSendSegment(cursor, segmentLength, sock, 0x18, zero);
         TaskYield();
-        v10 = (M2C_UNK)((u8 *)v10 + v4);
-        v9 = v9 - v4;
-        if (v9 == 0) {
-            break;
-        }
-        if (M2C_FIELD(v8, u8 *, 8) != 4) {
-            break;
-        }
+        cursor = (M2C_UNK)((u8 *)cursor + segmentLength);
+        remaining = remaining - segmentLength;
     }
-    return v4;
+    return segmentLength;
 }
 
 void func_0201d808(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5) {

@@ -9,9 +9,9 @@ typedef struct { s32 first, second, hp, ammo; StatsDigits1734 digits; s32 count,
 
 #pragma opt_if-conversion off
 void func_ov000_02173468(void *arg0) {
-s32 func_ov000_0217244c(void *);
+s32 GetTerrainInfoContext(void *);
 s32 func_ov000_021724b8(s32,s32);
-s32 func_ov000_0216cbc4(s32);
+s32 GetTerrainKindFromInfoId(s32);
 void AddSprite(u16,u16,u16,void *,s32);
 u8 func_ov000_02173e6c(void *);
 s32 func_02086420(u8);
@@ -33,7 +33,7 @@ s32 recordOffset,y1,y2,y3,mapOffset,y5,y6,y7,counter;
 s32 line,xDigit;
 extern StatsOrder1734 data_ov000_021ae280;
 u8 *map;
-temp=func_ov000_0217244c(arg0);
+temp=GetTerrainInfoContext(arg0);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(!M2C_FIELD(arg0,u8 *,0x15)){
 if(func_ov000_021724b8(temp,M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0))!=-1)AddSprite(4,1,0xc144,data_ov000_021b8dfc,0);
@@ -44,15 +44,15 @@ AddSprite(143,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,20)+128)&1
 AddSprite(151,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,16)+128)&1023)|0x8000),gSpriteDesc8x8,1);
 AddSprite(159,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,12)+128)&1023)|0x8000),gSpriteDesc8x8,1);
 }else AddSprite(147,38,0x808a,gSpriteDesc8x8,1);
-a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
-b=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
-c=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
+a=GetTerrainKindFromInfoId(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
+b=GetTerrainKindFromInfoId(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
+c=GetTerrainKindFromInfoId(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 base=(data_ov000_021b56a0[a]+2*data_ov000_021b5600[b]+3*data_ov000_021b5680[c])*4;
 AddSprite(136,45,(u16)(((base+192)&1023)|0x6000),gSpriteDesc32x8,1);
 AddSprite(136,53,(u16)(((base+224)&1023)|0x6000),gSpriteDesc32x8,1);
 {order=data_ov000_021ae280;
 for(line=73,i=0;i<8;i++,line+=10){
-a=func_ov000_0216cbc4(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
+a=GetTerrainKindFromInfoId(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0));
 digit=M2C_FIELD(data_ov000_021b56e0+order.values[i]*32,s8 *,a);if(digit<0)digit=10;
 AddSprite(147,(u16)line,(u16)(((digit+128)&1023)|0x8000),gSpriteDesc8x8,1);
 }

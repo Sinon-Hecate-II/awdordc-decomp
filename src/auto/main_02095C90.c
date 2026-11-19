@@ -220,12 +220,12 @@ void func_0209614c(void *arg0) {
     M2C_UNK GetMenuCursor();
     M2C_UNK HideMenuCursor();
     s32 func_0209dc48();
-    s32 func_0209dd54();
+    s32 GetScreenTouchConfirm();
     s32 temp_r4;
     u16 temp_r4_2;
 
     temp_r4 = func_0209dc48();
-    temp_r4_2 = temp_r4 | func_0209dd54();
+    temp_r4_2 = temp_r4 | GetScreenTouchConfirm();
     if ((func_02096038() != 0) && (temp_r4_2 & 0x400)) {
         func_02095ff8(1);
     }

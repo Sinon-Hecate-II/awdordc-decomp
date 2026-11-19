@@ -24,6 +24,8 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_TASK_READY 0x1ba4 /* s32 nonzero once the task has been created */
 #define HTTP_TASK_MUTEX 0x1bf8 /* OS mutex guarding the abort flag */
 #define HTTP_TASK_ABORT 0x1c10 /* s32 set to 1 to ask the task to stop */
+#define HTTP_SEND_BUFFER 0x19f8 /* s32[4] request send buffer: start, current write, end, size; its start holds the request line and headers */
+#define HTTP_SEND_BUFFER_START HTTP_SEND_BUFFER /* char *first byte of the send buffer */
 
 #pragma push
 #pragma opt_common_subs on
@@ -107,7 +109,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     void MI_CpuFill8(void *, s32, s32);
     void func_0200563c(void *, void *, ...);
     void GetMacAddress(void *);
-    void func_02007740(void *);
+    void GetSystemUserProfile(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetLocalTime(s32, s32);
     void SystemHalt(void);
@@ -155,7 +157,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     GetMacAddress(macBytes);
     dst=(u8*)arg0+0x1f;src=macBytes;
     for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,gFmtHex02,*src);
-    func_02007740(userSettings);
+    GetSystemUserProfile(userSettings);
     if (userSettings[0] >= 8) {
         userSettings[0] = 1;
     }
@@ -247,19 +249,23 @@ if(!((HttpClientState*)client)->status)((HttpClientState*)client)->flag=255;
 return ((HttpClientState*)client)->status;
 }
 
-s32 func_02033de8(void *arg0) {
+/* Append the headers that finish the request: "Connection: close" and, when the
+ * send buffer already has a body behind its headers, "Content-Length" with that
+ * body's byte count.  Returns 1 when a header could not be appended. */
+s32 HttpAppendConnectionHeaders(void *client) {
     M2C_UNK StringFormatN();
     s32 HttpAppendHeader(void *, void *, void *);
     s32 StringLength(s32);
     s32 StringFind(s32, void *);
-    extern u8 data_020fb588[], data_020fb594[], gHttpHeaderEnd[], data_020fb5a4[], data_020fb5a8[];
-    u8 sp0[8];
-    s32 temp;
-    if (HttpAppendHeader(arg0, data_020fb588, data_020fb594)) return 1;
-    temp = StringLength(StringFind(M2C_FIELD(arg0,s32 *,0x19f8),gHttpHeaderEnd)+4);
-    if (temp) {
-        StringFormatN(sp0,7,data_020fb5a4,temp);
-        if (HttpAppendHeader(arg0,data_020fb5a8,sp0)) return 1;
+    extern u8 gHttpConnectionName[], gHttpConnectionClose[], gHttpHeaderEnd[], gFmtDecimal[], gHttpContentLengthName[];
+    u8 lengthText[8];
+    s32 bodyLength;
+
+    if (HttpAppendHeader(client, gHttpConnectionName, gHttpConnectionClose)) return 1;
+    bodyLength = StringLength(StringFind(M2C_FIELD(client, s32 *, HTTP_SEND_BUFFER_START), gHttpHeaderEnd) + 4);
+    if (bodyLength) {
+        StringFormatN(lengthText, 7, gFmtDecimal, bodyLength);
+        if (HttpAppendHeader(client, gHttpContentLengthName, lengthText)) return 1;
     }
     return 0;
 }
@@ -284,7 +290,7 @@ void HttpClientStartTask(void *client, s32 priority) {
     TaskWake(client + HTTP_TASK);
 }
 
-void func_02033f3c(void *arg0) {
+void HttpClientAbort(void *arg0) {
     M2C_UNK OS_JoinThread(void *);
     if (M2C_FIELD(arg0, u8 *, 0x1000) != 0xFF) {
         return;

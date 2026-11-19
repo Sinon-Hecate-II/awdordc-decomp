@@ -76,7 +76,7 @@ void SetAiActingUnit(s32 fromUnitId, s32 unitId) {
 void func_ov000_0217f96c(void *arg0) {
 extern void **gCurrentMap;
 void SelectMapLayer(void*); void func_01ffc2e8(void*); void MarkAdjacentCells(s32);
-s32 func_020d27a4(s32,s32); s32 func_ov000_021a93ec(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
+s32 func_020d27a4(s32,s32); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 func_ov000_02177f24(s32,s32,s16*);
 s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
 void SetMapCursor(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
 s32 bestX=-1,bestY=-1,best=0,score,id=0;
@@ -104,7 +104,7 @@ unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 if(((u32)(unit[0]<<26)>>26)==0)continue;
 index=unit?(unit-(map+0x59a4))/14:0;
 if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
-if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
+if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
 if(!func_ov000_02177f24(x,y,pos))continue;
 map=*gCurrentMap;
 score=func_ov000_02176e28(map[x+M2C_FIELD(map+y*2,u16*,0x3758)]|0x30000,pos);
@@ -142,7 +142,7 @@ func_ov000_0218d040(1);
 #pragma opt_strength_reduction off
 void func_ov000_0217fe68(void *arg0) {
 extern void **gCurrentMap;extern u8 gUnitKindStats[];
-s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s16,s16);s32 func_ov000_02176e28(s32,s16*);
+s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 func_ov000_02176e28(s32,s16*);
 void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void func_01ffc2e8(void*);void func_ov000_0218d040(s32);
 s32 best=0,id=0; s16 pos[2];s32 minX,minY,maxX,maxY,x,y,distance,score,index;u8 *unit,*map;
 pos[0]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1];pos[1]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2];
@@ -159,7 +159,7 @@ map=*gCurrentMap;unit=map+0x59a4+14*(s16)map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 if(!((u32)(unit[0]<<26)>>26))continue;
 index=unit?(unit-(map+0x59a4))/14:0;
 if(func_020d27a4(M2C_FIELD(map,u8*,0x52d4),index)==1)continue;
-if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
+if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
 map=*gCurrentMap;
 score=func_ov000_02176e28(map[unit[1]+M2C_FIELD(map+unit[2]*2,u16*,0x3758)]|0x30000,pos);
 if(!score||score<best)continue;

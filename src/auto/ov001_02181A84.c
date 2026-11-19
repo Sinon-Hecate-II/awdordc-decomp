@@ -1,15 +1,16 @@
 /* 42 functions from 0x02181A84 to 0x02182A4C (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "wfc.h"
 
 /* Load the background-step character data and enable display backgrounds. */
 void func_ov001_02181a84(void) {
     M2C_UNK GetCurrentMapRecord(void);
     M2C_UNK Ov001_GetLanguage(void);
     void func_ov001_02181ba8(void);
-    M2C_UNK func_ov001_021722ac(void);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02171dd0(M2C_UNK);
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK);
@@ -44,14 +45,14 @@ void func_ov001_02181a84(void) {
             M2C_FIELD(&data_ov001_02193dd4, u8 *, 0) = 1;
         }
         func_ov001_02181ba8();
-        func_ov001_021722ac();
+        Ov001_LoadSaveSlotObjLayout();
         r5 = Ov001_GetLanguage();
         {
             u8 u = (u8)M2C_FIELD((void *)r4, u8 *, 0xF4);
             s8 d = (s8)M2C_FIELD(&data_ov001_0218fb38, s8 *, r5);
             Ov001_ShowMessagePanel(0x32, d, u + 1);
         }
-        func_ov001_02171dd0(1);
+        Ov001_OpenMenuForMode(1);
     }
 
     r6 = Ov001_HasOptionFlag(1);
@@ -330,35 +331,39 @@ void func_ov001_021821e4(void) {
     Ov001_LoadObjTile(M2C_FIELD(&data_ov001_02193dd4, s32 *, 4), value, value);
 }
 
-void func_ov001_0218223c(void) {
+/* Entry step of the online match's WFC connect screen: load its background, show
+ * the "connecting" panel and the selected save slot's map sprite on the plain
+ * map path, set up the menu, then start the WFC connection and hand over to the
+ * fade-in step. */
+void Ov001_OpenWfcConnectScreen(void) {
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02171dd0(M2C_UNK);
-    M2C_UNK func_ov001_021722ac();
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout();
     M2C_UNK Ov001_ShowWfcIcon(M2C_UNK);
     void Ov001_LoadWfcConnectBg(void);
-    void func_ov001_02182370(void);
+    void Ov001_StartWfcConnect(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    extern s8 data_ov001_02193ddc;
-    extern M2C_UNK func_ov001_02182408;
-    s32 sp0;
+    extern s8 gOv001WfcConnected;
+    extern M2C_UNK Ov001_FadeInWfcConnectScreen;
+    s32 nameEntryMode;
 
-    data_ov001_02193ddc = 0;
+    gOv001WfcConnected = 0;
     Ov001_LoadWfcConnectBg();
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 == 0) {
-        Ov001_ShowMessagePanel(0x31, -1, 0);
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
+    if (nameEntryMode == 0) {
+        Ov001_ShowMessagePanel(OV001_MSG_CONNECTING, -1, 0);
     }
-    func_ov001_02171dd0(2);
-    if (sp0 == 0) {
-        func_ov001_021722ac();
+    Ov001_OpenMenuForMode(2);
+    if (nameEntryMode == 0) {
+        Ov001_LoadSaveSlotObjLayout();
     }
-    func_ov001_02171e58(0x2C);
+    Ov001_ShowMessageBox(0x2C);
     Ov001_CreateAnimSprite(0);
-    func_ov001_02182370();
+    Ov001_StartWfcConnect();
     Ov001_ShowWfcIcon(0);
     Ov001_PlaySound(0xC);
-    Ov001_SetStepCallback(&func_ov001_02182408);
+    Ov001_SetStepCallback(&Ov001_FadeInWfcConnectScreen);
 }
 
 /* Loads the WFC connection screen's background: tile graphics, palette and map,
@@ -378,32 +383,37 @@ void Ov001_LoadWfcConnectBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_02182370(void) {
-    extern u8 data_ov001_0218fb40[];
-    extern void func_ov001_021825a8(s32);
+/* Starts the Wi-Fi (WFC) connection for the current save slot: copies the WFC
+ * init-parameter template, selects the saved friend list to connect with (4 when
+ * the name was just entered, otherwise the save slot + 1), initializes WFC and
+ * halts when that fails, publishes the slot's record for the normal map path and
+ * queues the connection step task. */
+void Ov001_StartWfcConnect(void) {
+    extern u8 sWfcInitParams[];
+    extern void Ov001_WfcConnectStep(s32);
 
-    M2C_UNK temp_r4;
-    M2C_UNK sp0;
-    u8 sp4[12];
+    void *mapRecord;
+    M2C_UNK nameEntryMode;
+    u8 wfcParams[12];
 
-    temp_r4 = GetCurrentMapRecord();
-    func_02007e70(data_ov001_0218fb40, sp4, 0xC);
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 == 2) {
-        sp4[10] = 4;
+    mapRecord = GetCurrentMapRecord();
+    func_02007e70(sWfcInitParams, wfcParams, 0xC);
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
+    if (nameEntryMode == 2) {
+        wfcParams[10] = 4;
     } else {
-        sp4[10] = M2C_FIELD(temp_r4, u8 *, 0xF4) + 1;
+        wfcParams[10] = M2C_FIELD(mapRecord, u8 *, SAVE_SLOT_INDEX_REL) + 1;
     }
-    if (WFC_Init(sp4) == 0) {
+    if (WFC_Init(wfcParams) == 0) {
         SystemHalt();
     }
-    if (sp0 == 0) {
-        func_0202f2c8(M2C_FIELD(temp_r4, u8 *, 0xF4), temp_r4);
+    if (nameEntryMode == 0) {
+        Wfc_SetSlotImage(M2C_FIELD(mapRecord, u8 *, SAVE_SLOT_INDEX_REL), mapRecord);
     }
-    Ov001_AddTask(0, (void *)func_ov001_021825a8, 0, 0x78);
+    Ov001_AddTask(0, (void *)Ov001_WfcConnectStep, 0, 0x78);
 }
 
-void func_ov001_02182408(void) {
+void Ov001_FadeInWfcConnectScreen(void) {
     void func_ov001_02182474(void);
     s32 sp0;
     Ov001_StartFade(2, 0, 0x15, 8);
@@ -457,51 +467,56 @@ void func_ov001_021824c8(void) {
 
 void func_ov001_021824f0(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_02182514;
+    extern M2C_UNK Ov001_CloseWfcConnectScreen;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_02182514);
+    Ov001_SetStepCallback(&Ov001_CloseWfcConnectScreen);
 }
 
-void func_ov001_02182514(void) {
-    s32 func_ov001_02184c60();
-    s32 func_0202f28c();
-    s32 func_02046878();
+/* Close the Wi-Fi connect screen once the connection attempt has finished:
+ * store the console's Wi-Fi profile code in the first two save slots, free the
+ * screen's sprites and backgrounds, then show the success or error screen
+ * according to the connection result. */
+void Ov001_CloseWfcConnectScreen(void) {
+    s32 GetSaveData();
+    s32 Wfc_EndSession();
+    s32 GetWfcProfileCode();
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     M2C_UNK Ov001_FreeOptionSprites();
     M2C_UNK Ov001_FreePageBackground(s32);
     M2C_UNK Ov001_DisableVisiblePlanes(s32, s32);
     M2C_UNK Ov001_SetNextScreenMode(s32, s32);
-    extern s8 data_ov001_02193ddc;
-    extern M2C_UNK func_ov001_0217cc4c;
-    void func_ov001_02182638(void);
-    s32 temp_r4;
-    temp_r4 = func_ov001_02184c60();
-    if (func_0202f28c() == 0) return;
-    MI_CpuCopy8(func_02046878(), temp_r4 + 0xF0, 0xE);
-    MI_CpuCopy8(func_02046878(), temp_r4 + 0x1F0, 0xE);
+    extern s8 gOv001WfcConnected;
+    extern M2C_UNK Ov001_ShowWfcErrorScreen;
+    void Ov001_ShowWfcSuccessScreen(void);
+    s32 saveData;
+
+    saveData = GetSaveData();
+    if (Wfc_EndSession() == 0) return;
+    MI_CpuCopy8(GetWfcProfileCode(), saveData + SAVE_SLOT_CODE, SAVE_SLOT_PROFILE_CODE_SIZE);
+    MI_CpuCopy8(GetWfcProfileCode(), saveData + SAVE_SLOT_SIZE + SAVE_SLOT_CODE, SAVE_SLOT_PROFILE_CODE_SIZE);
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if ((u8)data_ov001_02193ddc == 0) {
+    if ((u8) gOv001WfcConnected == 0) {
         Ov001_SetNextScreenMode(0, 1);
-        Ov001_SetStepCallback(&func_ov001_0217cc4c);
+        Ov001_SetStepCallback(&Ov001_ShowWfcErrorScreen);
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182638);
+    Ov001_SetStepCallback((M2C_UNK *) &Ov001_ShowWfcSuccessScreen);
 }
 
-void func_ov001_021825a8(s32 arg0) {
+void Ov001_WfcConnectStep(s32 arg0) {
     s32 Wfc_ProcessStep(void);
-    extern s8 data_ov001_02193ddc;
+    extern s8 gOv001WfcConnected;
     s32 result = Wfc_ProcessStep();
     if (result == 0) return;
     Ov001_HideWfcIcon();
     Ov001_StopSound();
     if (result > 0) {
-        data_ov001_02193ddc = 1;
+        gOv001WfcConnected = 1;
         Ov001_PlaySound(0x11);
     } else {
         GetWfcSessionProgress();
@@ -522,14 +537,14 @@ void func_ov001_02182628(s32 arg0, s32 arg1) {
     func_ov001_0218b760(arg1);
 }
 
-void func_ov001_02182638(void) {
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
+void Ov001_ShowWfcSuccessScreen(void) {
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void func_ov001_02182668();
     extern u8 data_ov001_02193de0;
     extern M2C_UNK func_ov001_021826d4;
     data_ov001_02193de0 = 0;
     func_ov001_02182668();
-    func_ov001_02171e58(0x2D);
+    Ov001_ShowMessageBox(0x2D);
     Ov001_SetStepCallback(&func_ov001_021826d4);
 }
 
@@ -643,7 +658,7 @@ void func_ov001_0218283c(void) {
 void func_ov001_021828ac(void) {
     M2C_UNK func_ov001_02183fa0(void);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_021722ac(void);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     M2C_UNK CommitSaveSlot(void);
     void func_ov001_02182904(void);
     void func_ov001_02182970(void);
@@ -652,7 +667,7 @@ void func_ov001_021828ac(void) {
     Ov001_GetNameEntryMode(0, &sp0);
     func_ov001_02182904();
     Ov001_ShowMessagePanel(0x31, -1, 0);
-    if (sp0 != 2) func_ov001_021722ac();
+    if (sp0 != 2) Ov001_LoadSaveSlotObjLayout();
     if (sp0 == 1) CommitSaveSlot();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);
 }
@@ -669,25 +684,30 @@ void func_ov001_02182904(void) {
 }
 
 void func_ov001_02182970(void) {
-    extern M2C_UNK func_ov001_021829c4;
+    extern M2C_UNK Ov001_ShowSaveSlotMenu;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x14);
-    Ov001_SetStepCallback(&func_ov001_021829c4);
+    Ov001_SetStepCallback(&Ov001_ShowSaveSlotMenu);
 }
 
-void func_ov001_021829c4(void) {
-    struct Table { s32 values[3]; };
-    extern struct Table data_ov001_0218fb4c;
-    extern M2C_UNK func_ov001_02182a4c;
+/* Fade-in step of the save-slot menu: once both fades are done, it shows the menu
+ * with the title its name-entry argument picks (a save that went through the name
+ * entry and one started without it get different texts) and hands over to the
+ * step that waits for a row and closes the menu. */
+void Ov001_ShowSaveSlotMenu(void) {
+    struct Titles { s32 values[3]; }; /* one message id per name-entry argument */
+    extern struct Titles gOv001SaveSlotMenuTitles;
+    extern M2C_UNK Ov001_CloseSaveSlotMenuStep;
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
-    struct Table table = data_ov001_0218fb4c;
-    s32 index;
+    struct Titles titles = gOv001SaveSlotMenuTitles;
+    s32 nameEntryArg;
+
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
-    Ov001_GetNameEntryMode(0, &index);
-    Ov001_ShowMessage(table.values[index], 1, 1, -1, 0);
-    Ov001_SetStepCallback(&func_ov001_02182a4c);
+    Ov001_GetNameEntryMode(0, &nameEntryArg);
+    Ov001_ShowMessage(titles.values[nameEntryArg], 1, 1, -1, 0);
+    Ov001_SetStepCallback(&Ov001_CloseSaveSlotMenuStep);
 }
 

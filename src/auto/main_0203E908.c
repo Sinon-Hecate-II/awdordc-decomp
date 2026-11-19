@@ -239,10 +239,10 @@ s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {
  * transport needs are not ready yet (3). */
 s32 StartPeerConnect(void *arg0) {
     ConnAttempt *attempt = (ConnAttempt *)arg0;
-    s32 func_02043008();
+    s32 ReportMatchmakingResult();
     s32 GT2SocketHandle(s32);
     s32 gt2AddressToString(s32, M2C_UNK, M2C_UNK);
-    s32 func_0205de88(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
+    s32 NatNeg_BeginNegotiation(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
     M2C_UNK func_02061690(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
     void OnPeerConnect(s32,s32,s32,void *);
@@ -253,13 +253,13 @@ s32 StartPeerConnect(void *arg0) {
     if (attempt->isJoin == 0) {
         connection = GetConnection();
         func_02061690(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
-        if (func_02043008() != 0) {
+        if (ReportMatchmakingResult() != 0) {
             return 2;
         }
     }
     retries = 0;
 loop_4:
-    result = func_0205de88(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET)), attempt->natNeg, attempt->isJoin, &func_02043e0c, (M2C_UNK *)&OnPeerConnect, attempt);
+    result = NatNeg_BeginNegotiation(GT2SocketHandle(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET)), attempt->natNeg, attempt->isJoin, &func_02043e0c, (M2C_UNK *)&OnPeerConnect, attempt);
     if (result == 0) {
         return result;
     }

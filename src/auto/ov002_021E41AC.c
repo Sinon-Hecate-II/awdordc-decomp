@@ -121,13 +121,13 @@ REG_GX_COLOR=GX_RGB_WHITE;
  * two rows of nine 8x32 tiles, the columns running right to left, each tile using
  * its own 8x32 block of the panel's texture tile list. */
 void DrawVersusPanelArtFlipped(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
- M2C_UNK func_02087064(s32,s32,s32,s32,s32);
+ M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 row,i,rowBase,nextRow;
  row=0;rowBase=0;
  do {
  i=0; do {
- func_02087064(4,8,32,tiles+(i+rowBase)*8,pal);
+ SetGxTextureParams(4,8,32,tiles+(i+rowBase)*8,pal);
  DrawTexturedQuadUVFlip(x+(8-i)*8,y,0,8,32,0,0,8,32,1,0);
  i++; } while(i<9);
  rowBase+=9; y+=32; nextRow=row+1; row=nextRow;
@@ -136,7 +136,7 @@ void DrawVersusPanelArtFlipped(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
 
 #pragma opt_strength_reduction off
 void DrawVersusPanelArt(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
- M2C_UNK func_02087064(s32,s32,s32,s32,s32);
+ M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 j,i,k,pp;
  u32 xx;
@@ -144,30 +144,32 @@ void DrawVersusPanelArt(s32 x,u32 y,s32 unused,s32 tiles,s32 pal) {
  j=0;k=0;
  do {
  xx=x;i=0;do {
- func_02087064(4,8,32,tiles+(i+k)*8,pp);
+ SetGxTextureParams(4,8,32,tiles+(i+k)*8,pp);
  DrawTexturedQuadUV(xx,y,0,8,32,0,0,8,32);
  xx+=8;i++; if(i>=9) break; } while(1);
  k+=9;j++;y+=32;
  }while(j<2);
 }
 #pragma opt_strength_reduction reset
-void func_ov002_021e4728(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
- M2C_UNK func_02087064(s32,s32,s32,s32,s32);
+/* Draw the versus-screen player panel's smaller artwork mirrored about x: three
+ * 16x16 tiles from the panel's tile list, drawn right to left. */
+void DrawVersusPanelArtSmallFlipped(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
+ M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 i=0;
+ s32 col=0;
  do {
- func_02087064(4,16,16,tiles+((u32)i<<3),pal);
- DrawTexturedQuadUVFlip(x+(2-i)*16,y,0,16,16,0,0,16,16,1,0);
- i++;
- }while(i<3);
+ SetGxTextureParams(4,16,16,tiles+((u32)col<<3),pal);
+ DrawTexturedQuadUVFlip(x+(2-col)*16,y,0,16,16,0,0,16,16,1,0);
+ col++;
+ }while(col<3);
 }
 
-void func_ov002_021e47b0(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
- M2C_UNK func_02087064(s32,s32,s32,s32,s32);
+void DrawVersusPanelArtSmall(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
+ M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
  M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
  s32 i;
  i=0; do {
- func_02087064(4,16,16,tiles+((u32)i<<3),pal);
+ SetGxTextureParams(4,16,16,tiles+((u32)i<<3),pal);
  DrawTexturedQuadUV(x,y,0,16,16,0,0,16,16);
  i++; x+=16;
  } while(i<3);
@@ -190,16 +192,19 @@ void DrawGaugeFillAnchoredRight(s32 x,s32 y,s32 z,s32 fill) {
  }while(i<5);
 }
 
-void func_ov002_021e48e8(u8 *x,s32 y,s32 z,s32 w) {
- M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 k,h,i,o;
- h=16;
- DrawTexturedQuadUV((s32)x,y,z,w+12,h,0,0,w+12,h);
- k=w+12; h-=4; i=0; o=1;
- do {
-  DrawTexturedQuadUV((s32)(x+k),y,z,o,h,k,0,k+1,h);
-  i++; k++; h-=2;
- } while(i<5);
+/* Draw a versus-screen player panel's gauge fill, anchored at its left edge: a
+ * 16-pixel-high textured body starting at x, then five one-pixel strips that
+ * taper the fill's right end.  y is the top edge, z the depth. */
+void DrawGaugeFillAnchoredLeft(u8 *x, s32 y, s32 z, s32 fill) {
+    M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+    s32 edge, height, i, stripWidth;
+    height = 16;
+    DrawTexturedQuadUV((s32)x, y, z, fill + 12, height, 0, 0, fill + 12, height);
+    edge = fill + 12; height -= 4; i = 0; stripWidth = 1;
+    do {
+        DrawTexturedQuadUV((s32)(x + edge), y, z, stripWidth, height, edge, 0, edge + 1, height);
+        i++; edge++; height -= 2;
+    } while (i < 5);
 }
 
 #pragma scheduling off

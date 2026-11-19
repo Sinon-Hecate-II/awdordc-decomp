@@ -68,7 +68,7 @@ void func_ov010_02227df8(void) {
  * installed error handler. */
 void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 GetNetErrorCode(void);
-    s32 func_0203a850(void *, s32);
+    s32 PublishPlayerStatusLocation(void *, s32);
     s32 Transfer_SetStartCallback(s32);
     s32 Transfer_SetEndCallback(s32);
     s32 func_02038d14(s32, s32);
@@ -100,7 +100,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     flags = M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa);
  M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa) = flags | 1;
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0xfc) = arg1;
-    func_0203a850(&gLocalPlayerStatus, 0x6c);
+    PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
 
     Transfer_SetStartCallback((s32)func_ov010_02227934);
     Transfer_SetEndCallback((s32)func_ov010_02227954);
@@ -146,7 +146,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
     void SetOnlineSessionFlag(s32);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
-    s32 func_0203a850(void *, s32);
+    s32 PublishPlayerStatusLocation(void *, s32);
     void func_ov010_02227f14(void);
     s32 func_ov010_02229a94(void);
     extern M2C_UNK gOv010OnlineSession;
@@ -159,7 +159,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
         if (aborted == 0) {
             SetOnlineSessionFlag(OV010_FLAG_RUNNING);
             M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_LOCAL_ID) = GetOnlineTransportPlayerId();
-            func_0203a850(&gLocalPlayerStatus, 0x6c);
+            PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
             func_ov010_02227f14();
             func_ov010_02229a94();
         } else {
@@ -185,7 +185,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     void SetOnlineSessionFlag(s32);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
-    s32 func_0203a850(void *, s32);
+    s32 PublishPlayerStatusLocation(void *, s32);
     void func_ov010_02227f14(void);
     s32 func_ov010_02229a94(void);
     extern M2C_UNK gOv010OnlineSession;
@@ -201,7 +201,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
             SetOnlineSessionFlag(3);
             M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfb) =
                 (u8)GetOnlineTransportPlayerId();
-            func_0203a850(&gLocalPlayerStatus, 0x6c);
+            PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
             func_ov010_02227f14();
             func_ov010_02229a94();
             goto callback_call;

@@ -3,7 +3,7 @@
 static inline void CallSlot20(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),32)(p); }
 
 void func_ov003_021e5118(void *arg0) {
-    M2C_UNK func_01ff9b38();
+    M2C_UNK Apply3DSpriteBanks();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
@@ -102,7 +102,7 @@ void func_ov003_021e5118(void *arg0) {
     func_ov003_021f1b7c(0, &data_ov003_0220f60c);
     func_ov003_021f1b7c(1, &data_ov003_0220f606);
     func_ov003_021f1b7c(3, &data_ov003_0220f60a);
-    func_01ff9b38();
+    Apply3DSpriteBanks();
     temp_r4 = M2C_FIELD(arg0, void ***, 0x48);
     *temp_r4 = func_020ab1c4(arg0);
     InitUnitSprite(*temp_r4, 2, 0x1A4, 3, 0);

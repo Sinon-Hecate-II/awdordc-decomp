@@ -90,6 +90,9 @@ void ClearAiInfluenceMaps(void) {
     MI_CpuFill8(&gAiInfluenceMap, 0, 0x508);
 }
 
+/* Build the AI influence maps for the current cursor position: once per pass,
+   clear the maps and add the threat of every player hostile to the current one,
+   then clear the cell of a carried unit so its transport is not scored. */
 void BuildAiInfluenceMaps(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
@@ -97,48 +100,58 @@ void BuildAiInfluenceMaps(void) {
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
     void AddPlayerThreatInfluence(u8);
-    extern s32 *data_027e0058;
+    extern s32 *gCurrentMap;
     extern void *gAiCommandState;
     extern M2C_UNK gAiInfluenceMap;
-    u8 state;
-    u16 saved;
-    s32 i;
-    u8 idx;
-    u8 xi;
-    u8 yi;
-    u16 row;
-    u16 width;
+    void *command;
+    struct { u8 ready : 1; } *flags;   /* +0x07 bit 0: the maps are built for this pass */
+    u16 savedActivePlayer;
+    s32 player;
+    u8 carrierId;
+    Unit98 *carrier;
+    s32 map;
+    s32 *mapRef;
+    s32 carrierY;
+    s32 carrierX;
+    u16 cellRow;
+    u16 mapWidth;
 
-    state = M2C_FIELD(gAiCommandState, u8 *, 7);
-    saved = M2C_FIELD(*data_027e0058, u16 *, 0x52B6);
-    if (state & 1) {
+    mapRef = *(s32 *volatile *)&gCurrentMap;
+    command = gAiCommandState;
+    flags = (void *)((u8 *)command + AI_COMMAND_STATE_FLAGS);
+    savedActivePlayer = M2C_FIELD(*(volatile s32 *)mapRef, u16 *, MAP_ACTIVE_PLAYER);
+    if (flags->ready)
         return;
-    }
-    state = (u8)((state & ~1) | 1);
-    M2C_FIELD(gAiCommandState, u8 *, 7) = state;
+    flags->ready = 1;
     ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 &&
-            IsSameTeam(M2C_FIELD(*data_027e0058, u16 *, 0x52A4), i) == 0) {
-            AddPlayerThreatInfluence((u8)i);
+    for (player = 1; player < 5; player++) {
+        if (IsPlayerActive(player) != 0 &&
+            IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) {
+            AddPlayerThreatInfluence((u8)player);
         }
     }
 
-    idx = M2C_FIELD(*data_027e0058, u8 *, 0x52D6);
-    if (idx != 0) {
-        xi = M2C_FIELD(*data_027e0058, u8 *, 0x59A4 + idx * 14 + 1);
-        yi = M2C_FIELD(*data_027e0058, u8 *, 0x59A4 + idx * 14 + 2);
-        row = M2C_FIELD(*data_027e0058, u16 *, 0x3758 + yi * 2);
-        M2C_FIELD(*data_027e0058, u8 *, 0x2840 + xi + row) = 0;
-        row = M2C_FIELD(*data_027e0058, u16 *, 0x3758 + yi * 2);
-        M2C_FIELD(*data_027e0058, u8 *, 0x2D48 + xi + row) = 0;
-        width = M2C_FIELD(*data_027e0058, u16 *, 0x5144);
-        M2C_FIELD(gAiInfluenceMap, u8 *, (s32)yi * (s32)width + (s32)xi) = 0;
+    mapRef = gCurrentMap;
+    map = *mapRef;
+    carrierId = M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER);
+    if (carrierId != 0) {
+        carrier = (Unit98 *)((u8 *)map + MAP_UNIT_RECORDS) + carrierId;
+        carrierX = carrier->x;
+        carrierY = carrier->y;
+        cellRow = M2C_FIELD(map + carrierY * 2, u16 *, MAP_ROW_OFFSETS);
+        M2C_FIELD(map + (carrierX + cellRow), u8 *, MAP_CELL_THREAT_DIRECT) = 0;
+        map = *gCurrentMap;
+        cellRow = M2C_FIELD(map + carrierY * 2, u16 *, MAP_ROW_OFFSETS);
+        M2C_FIELD(map + (carrierX + cellRow), u8 *, MAP_CELL_THREAT_INDIRECT) = 0;
+        mapRef = gCurrentMap;
+        mapWidth = M2C_FIELD(*mapRef, u16 *, MAP_WIDTH);
+        carrierX += carrierY * mapWidth;   /* the linear cell index in gAiInfluenceMap */
+        M2C_FIELD(&gAiInfluenceMap, u8 *, carrierX) = 0;
     }
 
-    M2C_FIELD(*data_027e0058, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*mapRef, u16 *, MAP_ACTIVE_PLAYER) = savedActivePlayer;
 }
 
 /* Add the AI influence of one player's units against a kind-14 unit: score the
@@ -169,6 +182,9 @@ AddUnitThreatInfluence(unit,damage,14,100,0,1,0);
 }
 }
 
+/* Build the AI influence maps for a hypothetical kind-14 target: clear the maps,
+ * refresh the order overlays, then add every player's threat against such a unit
+ * for the players hostile to the current one, restoring the active player. */
 void BuildThreatMapAgainstKind14(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
@@ -176,142 +192,106 @@ void BuildThreatMapAgainstKind14(void) {
     void func_ov000_0219798c(void);
     void AddThreatAgainstKind14(u8);
     extern s32 *gCurrentMap;
-    u16 saved;
-    s32 i;
-    saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
+    u16 savedPlayer;
+    s32 player;
+    savedPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER);
     ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            AddThreatAgainstKind14(i);
+    for (player = 1; player < MAX_PLAYERS; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) {
+            AddThreatAgainstKind14(player);
         }
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
-#pragma push
-#pragma opt_strength_reduction off
-void func_ov000_02198fec(u8 player) {
-    extern s32 *gCurrentMap;
-    extern u16 gPlayerUnitIdBase[];
-    extern u8 gUnitKindStats[];
-
-    s32 *map;
-    Unit98 *unit;
-    s32 i;
-    s32 start;
-    s32 bonus;
-    s32 value;
-    s32 kind;
-    s32 h;
-    s32 w;
-    s32 x;
-    s32 y;
-    s32 rowOffset;
-    s32 idx;
-    s32 cell;
-    u8 oldVal;
-    u8 newVal;
-    u16 saved;
-
-    if (!func_ov000_021973f8(14)) {
-        return;
-    }
-
-    map = (s32 *)*gCurrentMap;
-    bonus = GetDamageBonus((s32)(*(u16 *)((u8 *)map + 0x52a4) & 0xff));
-    saved = *(u16 *)((u8 *)map + 0x52b6);
-    *(u16 *)((u8 *)map + 0x52b6) = player;
-
-    start = gPlayerUnitIdBase[player];
-    for (i = start + 1; i < start + 0x33; i++) {
-        unit = (Unit98 *)((u8 *)*gCurrentMap + 0x59a4 + i * 14);
-        if (unit->kind == 0) {
-            continue;
-        }
-        if (unit->flags & 8) {
-            s32 m = *gCurrentMap;
-            s32 yy = unit->y;
-            s32 xx = unit->x;
-            s32 r = *(u16 *)((u8 *)m + yy * 2 + 0x3758);
-            idx = *(u8 *)((u8 *)m + xx + r + 0x508);
-            if (!IsCarrierUnitKind(((Unit98 *)((u8 *)m + idx * 14 + 0x59a4))->kind)) {
-                continue;
-            }
-        }
-        kind = unit->kind & 0x3f;
-        if (gUnitKindStats[kind * 112 + 0x13] & 0x10) {
-            continue;
-        }
-        value = GetModifiedDamagePercent(kind, 14);
-        if (value < 25) {
-            continue;
-        }
-        if (!func_ov000_02197814(*((s32 *)((u8 *)*gCurrentMap + 0x52d0)), (void *)unit, 1)) {
-            continue;
-        }
-        value = ApplyAttackBonus(value, 0, (s32)unit->owner);
-        value = ApplyCoZoneBonus(value, 0, (void *)unit);
-        value = ApplyHealthBonus(value, (void *)unit, (s32)(unit->health & 0x7f));
-
-        if (!GetUnitAttackClass(kind)) {
-            if (bonus == 1) {
-                if (GetUnitDamagePercent(14, kind) >= 0x32) {
-                    continue;
-                }
-            }
-        }
-
-        AddUnitThreatInfluence((void *)unit, value, 14, 100, 0, 1, bonus);
-
-        {
-            map = (s32 *)*gCurrentMap;
-            h = *(s16 *)((u8 *)map + 0x5146);
-            w = *(s16 *)((u8 *)map + 0x5144);
-            for (y = 0; y < h; y++) {
-                for (x = 0; x < w; x++) {
-                    s32 base = *gCurrentMap;
-                    void *grid = *(void **)((u8 *)base + y * 4 + 0x52e8);
-                    cell = ((s8 *)grid)[x];
-                    if (cell < 0) {
-                        continue;
-                    }
-                    rowOffset = *(u16 *)((u8 *)base + y * 2 + 0x3758);
-                    oldVal = *(u8 *)((u8 *)base + x + rowOffset + 0x2840);
-                    newVal = (u8)(value + oldVal);
-                    if (newVal < (u8)value) {
-                        newVal = 0xff;
-                    }
-                    *(u8 *)((u8 *)base + x + rowOffset + 0x2840) = newVal;
-                }
-            }
-        }
-    }
-
-    *(u16 *)((u8 *)*gCurrentMap + 0x52b6) = saved;
+#pragma opt_strength_reduction on
+/* Threat pass against a hypothetical kind-14 target: for every unit of `player`
+ * able to hurt that kind without taking too much counter-damage, add the damage
+ * it would deal.  A direct attacker's damage is written onto every cell it can
+ * move to (the direct-threat layer); an indirect attacker's goes through
+ * AddUnitThreatInfluence. */
+void AddMoveRangeThreatAgainstKind14(u8 player) {
+extern s32 *gCurrentMap;
+extern u16 gPlayerUnitIdBase[];
+s32 func_ov000_021973f8(s32);
+s32 GetModifiedDamagePercent(s32,s32);
+s32 ApplyAttackBonus(s32,s32,s32);
+s32 ApplyCoZoneBonus(s32,s32,void*);
+s32 ApplyHealthBonus(s32,void*,s32);
+s32 IsCarrierUnitKind(s32);
+s32 GetUnitAttackClass(s32);
+s32 GetUnitMoveRange(s32,s32);
+s32 FloodFillUnitRange(s32,s32,s32,s32,s32);
+void MarkAdjacentCells(s32);
+s32 GetDamageBonus(s32);
+s32 GetUnitDamagePercent(s32,s32);
+s32 tileX,tileY,bonus;
+s32 unitId,damage;
+Unit98 *unit;
+u8 *map,*cell;
+s32 owner,id,amount;
+if(!func_ov000_021973f8(14))return;
+bonus=GetDamageBonus(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)&255);
+M2C_FIELD(*gCurrentMap,u16 *,MAP_ACTIVE_PLAYER)=player;
+for(unitId=gPlayerUnitIdBase[player]+1;unitId<gPlayerUnitIdBase[player]+MAP_UNIT_GROUP_SCAN;unitId++){
+map=(u8 *)*gCurrentMap;
+unit=(Unit98 *)(map+MAP_UNIT_RECORDS+unitId*MAP_UNIT_STRIDE);
+if(!unit->kind)continue;
+if(M2C_FIELD(unit,u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_LOADED){
+s32 unitY=((u8 *)unit)[2];s32 unitX=((u8 *)unit)[1];s32 row=M2C_FIELD(map+unitY*2,u16 *,MAP_ROW_OFFSETS);
+id=M2C_FIELD(map+unitX+row,u8 *,MAP_CELL_UNIT_ID);
+if(!IsCarrierUnitKind(((Unit98 *)(map+id*MAP_UNIT_STRIDE+MAP_UNIT_RECORDS))->kind))continue;
 }
-#pragma pop
+damage=GetModifiedDamagePercent(unit->kind,14);
+if(damage<25)continue;
+if(GetUnitDamagePercent(14,unit->kind)>=50)continue;
+damage=ApplyAttackBonus(damage,0,unit->owner);
+damage=ApplyCoZoneBonus(damage,0,unit);
+damage=ApplyHealthBonus(damage,unit,unit->health);
+if(!GetUnitAttackClass(unit->kind)){
+if(bonus==1 && GetUnitDamagePercent(14,unit->kind)>=45)continue;
+if(unit){if(!unit)id=0;else id=unit-(Unit98 *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS);owner=(id>>6)+1;}else owner=0;
+owner=GetUnitMoveRange(owner,unit->kind);
+FloodFillUnitRange(((u8 *)unit)[1],((u8 *)unit)[2],unit->kind,owner,1);
+MarkAdjacentCells(111);
+for(tileY=0;tileY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);tileY++){
+for(tileX=0;tileX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);tileX++){
+map=(u8 *)*gCurrentMap;
+if(((s8 **)(map+MAP_GRID))[tileY][tileX]>=0){
+cell=map+tileX+((u16 *)map)[tileY+MAP_ROW_OFFSETS_WORD];
+amount=damage+((u8 *)(cell+0x2000))[0x840];
+if(amount>=255)amount=255;
+M2C_FIELD(cell,u8 *,MAP_CELL_THREAT_DIRECT)=amount;
+}
+}
+}
+}else AddUnitThreatInfluence(unit,damage,14,100,0,1,bonus);
+}
+}
 
-void func_ov000_02199330(void) {
+/* Same kind-14 threat pass as BuildThreatMapAgainstKind14, but from the cells
+ * each hostile player's units can move to rather than their current cells. */
+void BuildMoveRangeThreatMapAgainstKind14(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
-    void func_ov000_02198fec(u8);
+    void AddMoveRangeThreatAgainstKind14(u8);
     extern s32 *gCurrentMap;
-    u16 saved;
-    s32 i;
-    saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
+    u16 savedPlayer;
+    s32 player;
+    savedPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER);
     ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            func_ov000_02198fec(i);
+    for (player = 1; player < MAX_PLAYERS; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) {
+            AddMoveRangeThreatAgainstKind14(player);
         }
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
 /* Add the AI influence of one player's units against a full-health kind-6
@@ -363,6 +343,9 @@ void AddThreatAgainstKind6(u8 player) {
     }
 }
 
+/* Build the AI influence maps for a hypothetical kind-6 target: clear the maps,
+ * refresh the order overlays, then add every hostile player's threat against such
+ * a unit, restoring the map's active player afterwards. */
 void BuildThreatMapAgainstKind6(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
@@ -370,17 +353,17 @@ void BuildThreatMapAgainstKind6(void) {
     void func_ov000_0219798c(void);
     void AddThreatAgainstKind6(u8);
     extern s32 *gCurrentMap;
-    u16 saved;
-    s32 i;
-    saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
+    u16 savedPlayer;
+    s32 player;
+    savedPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER);
     ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            AddThreatAgainstKind6(i);
+    for (player = 1; player < MAX_PLAYERS; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) {
+            AddThreatAgainstKind6(player);
         }
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 

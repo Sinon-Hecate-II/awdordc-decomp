@@ -172,13 +172,13 @@ s32 func_0201ee58(s32 arg0) {
 }
 
 s32 func_0201ee94(void) {
-    s32 func_0201f0cc(s32);
+    s32 NetworkAllocTaskPool(s32);
     s32 SocketCreateFromConfig();
     extern s32 gNetAllocator;
     extern M2C_UNK data_020fafd0;
     extern M2C_UNK data_02138ac0;
     s32 result;
-    result = func_0201f0cc(M2C_FIELD(gNetAllocator, s32 *, 0x20));
+    result = NetworkAllocTaskPool(M2C_FIELD(gNetAllocator, s32 *, 0x20));
     if (result >= 0) {
         M2C_FIELD(&data_02138ac0, s32 *, 0xC) = SocketCreateFromConfig(&data_020fafd0);
     }
@@ -200,7 +200,7 @@ void func_0201eed4(void) {
     extern s32 gNetStackState;
     extern s32 data_02138ac0;
     extern s32 gTcpSocketConfig;
-    extern s32 data_021372e0;
+    extern s32 gLocalIpAddress;
     void *base;
     void *ctx;
     s32 tmp;
@@ -229,7 +229,7 @@ void func_0201eed4(void) {
         M2C_FIELD(&gTcpSocketConfig, s16 *, 0x2) = (s16)lr;
         M2C_FIELD(&gTcpSocketConfig, s16 *, 0x4) = (s16)((lr + (lr >> 31)) >> 1);
         M2C_FIELD(base, s32 *, 0x24) = r12;
-        M2C_FIELD(&data_021372e0, s32 *, 0x0) = 0;
+        M2C_FIELD(&gLocalIpAddress, s32 *, 0x0) = 0;
         if (M2C_FIELD(ctx, s32 *, 0x0) != 0) {
             M2C_FIELD(base, s32 *, 0x0) = 0;
             M2C_FIELD(base, s32 *, 0xC) = (s32)func_0201f09c;
@@ -254,13 +254,13 @@ void func_0201eed4(void) {
 #pragma opt_strength_reduction off
 void func_0201f030(void) {
     extern s32 gNetAllocator;
-    extern s32 data_021372e0, data_021372ac, data_021372bc;
+    extern s32 gLocalIpAddress, data_021372ac, data_021372bc;
     extern M2C_UNK data_021372f0;
     extern M2C_UNK data_02138ac0;
     s32 *src;
     s32 *dst;
     src = (s32 *)gNetAllocator;
-    dst = &data_021372e0;
+    dst = &gLocalIpAddress;
     *dst = src[1];
     dst = &data_021372ac;
     *dst = src[2];
@@ -286,48 +286,54 @@ s32 func_0201f0b4(void) {
     return 0;
 }
 
-s32 func_0201f0cc(s32 arg0) {
+/* Create the socket task pool: allocate one block holding `count` message-queue
+ * words followed by `count` TASK_BYTES task slots, initialise the free-task
+ * queue over the block with room for `count` tasks, post every task slot to it,
+ * and keep the block in gSocketTaskPool.
+ * Returns 0, or -1 when the net allocator fails. */
+s32 NetworkAllocTaskPool(s32 count) {
     void SocketFreeTask(s32);
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     extern s32 gNetAllocator;
-    extern M2C_UNK data_02138b00, data_02138b04;
-    s32 temp_r5;
-    s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
-    s32 size;
-    var_r4 = arg0;
-    temp_r5 = ((var_r4 * 4) + 3) & ~3;
-    size = ((var_r4 * 0x2C) + 3) & ~3;
-    temp_r0 = M2C_FIELD(gNetAllocator, s32 (**)(s32), 0x18)(size + temp_r5);
-    if (temp_r0 == 0) return -1;
-    OS_InitMessageQueue((s32)&data_02138b04, temp_r0, var_r4);
-    var_r5 = temp_r0 + temp_r5;
-    if (var_r4 > 0) {
+    extern M2C_UNK gSocketTaskPool, gSocketTaskQueue;
+    s32 queueBytes;
+    s32 block;
+    s32 remaining;
+    s32 task;
+    s32 taskBytes;
+
+    remaining = count;
+    queueBytes = ((remaining * 4) + 3) & ~3;
+    taskBytes = ((remaining * TASK_BYTES) + 3) & ~3;
+    block = M2C_FIELD(gNetAllocator, s32 (**)(s32), NET_ALLOC_ALLOC)(taskBytes + queueBytes);
+    if (block == 0) return -1;
+    OS_InitMessageQueue((s32) &gSocketTaskQueue, block, remaining);
+    task = block + queueBytes;
+    if (remaining > 0) {
         do {
-            SocketFreeTask(var_r5);
-            var_r4 -= 1;
-            var_r5 += 0x2C;
-        } while (var_r4 > 0);
+            SocketFreeTask(task);
+            remaining -= 1;
+            task += TASK_BYTES;
+        } while (remaining > 0);
     }
-    M2C_FIELD(&data_02138b00, s32 *, 0) = temp_r0;
+    M2C_FIELD(&gSocketTaskPool, s32 *, 0) = block;
     return 0;
 }
 
 s32 NetworkFreeTaskPool(void) {
     extern s32 gNetAllocator;
-    extern M2C_UNK data_02138b00;
-    if (M2C_FIELD(&data_02138b00, s32 *, 0x20) < M2C_FIELD(&data_02138b00, s32 *, 0x18)) return -1;
-    M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&data_02138b00, s32 *, 0));
-    M2C_FIELD(&data_02138b00, s32 *, 0) = 0;
+    extern M2C_UNK gSocketTaskPool;
+    if (M2C_FIELD(&gSocketTaskPool, s32 *, 0x20) < M2C_FIELD(&gSocketTaskPool, s32 *, 0x18)) return -1;
+    M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&gSocketTaskPool, s32 *, 0));
+    M2C_FIELD(&gSocketTaskPool, s32 *, 0) = 0;
     return 0;
 }
 
 s32 func_0201f1a8(s32 arg0) {
     s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
-    extern M2C_UNK data_02138b04;
+    extern M2C_UNK gSocketTaskQueue;
     s32 result;
-    if (OS_ReceiveMessage(&data_02138b04, &result, arg0) != 0) return result;
+    if (OS_ReceiveMessage(&gSocketTaskQueue, &result, arg0) != 0) return result;
     return 0;
 }
 
@@ -344,11 +350,11 @@ s32 SocketAllocTask(M2C_UNK *arg0, s32 arg1, M2C_UNK arg2) {
 
 void SocketFreeTask(s32 arg0) {
     M2C_UNK OS_SendMessage(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_02138b04;
+    extern M2C_UNK gSocketTaskQueue;
     if (arg0 == 0) {
         return;
     }
-    OS_SendMessage(&data_02138b04, arg0, 0);
+    OS_SendMessage(&gSocketTaskQueue, arg0, 0);
 }
 
 s32 func_0201f230(void *arg0) {
@@ -593,7 +599,7 @@ s32 SocketCreateListen(void *tmpl, u16 *peerPort, s32 *peerAddr) {
     usable = 1;
     if (state != 0 && state != 4) usable = 0;
     if (!usable) return -28;
-    if (M2C_FIELD(tmpl, s8 *, SOCK_KIND) != SOCK_KIND_TCP) return -6;
+    if (M2C_FIELD(tmpl, s8 *, SOCK_BLOCKING) != SOCK_BLOCKING_ON) return -6;
     sock = SocketCreateFromConfig(&gTcpSocketConfig);
     if (sock < 0) return sock;
     result = SocketSetReceivePort(sock, M2C_FIELD(tmpl, u16 *, SOCK_RECV_PORT));

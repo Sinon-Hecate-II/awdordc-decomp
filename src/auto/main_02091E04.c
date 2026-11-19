@@ -9,21 +9,21 @@ u8 func_02091e04(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4E);
 }
 
-s32 func_02091e14(void) {
+s32 Get3DSpriteTargetMode(void) {
     void *Get3DSpriteManager();
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
 u8 Get3DSpriteTarget(void) {
-    if (func_02091e14() == 2) {
+    if (Get3DSpriteTargetMode() == 2) {
         return 0U;
     }
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
 void func_02091e44(void) {
-    M2C_UNK func_02091e14();
-    func_02091e14();
+    M2C_UNK Get3DSpriteTargetMode();
+    Get3DSpriteTargetMode();
 }
 
 s8 GetMenuCursor(void) {
@@ -633,30 +633,44 @@ s32 func_02092c94(void *arg0) {
     return 1;
 }
 
-s32 *func_02092ca8(s32 **arg0,s32 arg1) {
+s32 *MapScriptFindLabel(s32 **arg0,s32 arg1) {
 s32 *p=*arg0;
-while(*p!=7){if(*p==29 && p[3]==arg1)return p;p+=4;}
+while(*p!=MAP_SCRIPT_OP_END){if(*p==MAP_SCRIPT_OP_LABEL && p[3]==arg1)return p;p+=4;}
 return NULL;
 }
 
-s32 func_02092cdc(void *arg0) {
-u8 flag;
-void *p=M2C_FIELD(arg0,void **,4);
-s32 (*callback)(void)=M2C_FIELD(p,s32 (**)(void),4);
-void *next;
-if(callback){if(callback())flag=1;else flag=0;p=M2C_FIELD(arg0,void **,4);if(M2C_FIELD(p,s16 *,8))flag=(u8)!flag;}else flag=1;
-if(flag){next=func_02092ca8(arg0,M2C_FIELD(p,s32 *,12));if(next)M2C_FIELD(arg0,void **,4)=next;else M2C_FIELD(arg0,s32 *,4)+=16;}else M2C_FIELD(arg0,s32 *,4)+=16;
-return 1;
+/* Map-script opcode: conditional jump. The command may carry a condition
+ * callback at +4; when it reports true the script jumps to the label command
+ * named by the command's wide operand, otherwise it runs the next command. A
+ * nonzero first operand inverts the condition, and a command without a callback
+ * always jumps. Returns 1 so the interpreter keeps running. */
+s32 MapScriptJumpIf(void *state) {
+    u8 takeJump;
+    void *cmd = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    s32 (*condition)(void) = M2C_FIELD(cmd, s32 (**)(void), 4);
+    void *label;
+
+    if (condition) {
+        if (condition()) takeJump = 1; else takeJump = 0;
+        cmd = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+        if (M2C_FIELD(cmd, s16 *, MAP_SCRIPT_OPERAND0)) takeJump = (u8)!takeJump;
+    } else takeJump = 1;
+    if (takeJump) {
+        label = MapScriptFindLabel(state, M2C_FIELD(cmd, s32 *, MAP_SCRIPT_OPERAND2));
+        if (label) M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = label;
+        else M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    } else M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 s32 func_02092d70(void *arg0) {
-s32 func_02086b40(s16);
+s32 IsEventFlagSet(s16);
 u8 flag;
 void *p,*next;
-if(func_02086b40(M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8)))flag=1;else flag=0;
+if(IsEventFlagSet(M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8)))flag=1;else flag=0;
 p=M2C_FIELD(arg0,void **,4);
 if(M2C_FIELD(p,s16 *,10)){if(flag)flag=0;else flag=1;}
-if(flag){next=func_02092ca8(arg0,M2C_FIELD(p,s32 *,12));if(next)M2C_FIELD(arg0,void **,4)=next;else M2C_FIELD(arg0,s32 *,4)+=16;}else M2C_FIELD(arg0,s32 *,4)+=16;
+if(flag){next=MapScriptFindLabel(arg0,M2C_FIELD(p,s32 *,12));if(next)M2C_FIELD(arg0,void **,4)=next;else M2C_FIELD(arg0,s32 *,4)+=16;}else M2C_FIELD(arg0,s32 *,4)+=16;
 return 1;
 }
 

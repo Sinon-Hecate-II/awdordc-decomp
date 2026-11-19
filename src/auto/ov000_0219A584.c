@@ -20,14 +20,17 @@ typedef struct AiCapabilityFields { u16 all : 3; u16 own : 3; u16 enemy : 3; u16
 #define CELL_TERRAIN(x, y) ((u8 *)*gCurrentMap)[M2C_FIELD((u8 *)*gCurrentMap + ((y) << 1), u16 *, MAP_ROW_OFFSETS) + (x) + MAP_CELL_TERRAIN]
 #define CELL_PROPERTY_BITS(x, y) propertyFlags[gTerrainPropertyType[CELL_TERRAIN(x, y) & MAP_TERRAIN_KIND_MASK]]
 
-void func_ov000_0219a584(void) {
-s32 func_ov000_0219a3b0(s32); s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32);
+/* Sums the property counts of the opposing army (player 0's record, then every
+ * active player not sharing the current army) into the AI command state's
+ * enemy property total.  A large total makes the AI push to capture property. */
+void CountEnemyProperties(void) {
+s32 CountPlayerProperties(s32); s32 IsPlayerActive(s32); s32 IsSameTeam(u16,s32);
 s32 i;
-gAiCommandState[4]=0;
-gAiCommandState[4]+=func_ov000_0219a3b0(0);
+gAiCommandState[AI_COMMAND_STATE_ENEMY_PROPERTIES]=0;
+gAiCommandState[AI_COMMAND_STATE_ENEMY_PROPERTIES]+=CountPlayerProperties(0);
 for(i=1;i<5;i++) {
-if(IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),i))
-gAiCommandState[4]+=func_ov000_0219a3b0(i);
+if(IsPlayerActive(i) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),i))
+gAiCommandState[AI_COMMAND_STATE_ENEMY_PROPERTIES]+=CountPlayerProperties(i);
 }
 }
 
@@ -56,7 +59,7 @@ do { i++; *p++=zero; } while(i<64);
 }
 
 void SelectAiUnitSupplyState(void *arg0) {
-s32 IsUnitSelected(void); s32 func_020a8604(u32,u32); s32 Divide(s32,s32);
+s32 IsUnitSelected(void); s32 UnitKindCanSupply(u32,u32); s32 Divide(s32,s32);
 u32 a,b;
 if ((s32)M2C_FIELD(gAiUnitTypeTuning,u8 *,4) > (s32)((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
@@ -67,7 +70,7 @@ M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
 a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
 if(gUnitKindMaxAmmo[a*0x70]) {
 b=(u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28;
-if(b==0 && func_020a8604(a,b)==0) {
+if(b==0 && UnitKindCanSupply(a,b)==0) {
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000; return;
 }
 }
@@ -75,16 +78,19 @@ if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25)*100,gUnitKindMaxFuel[((u3
 M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000;
 }
 
-void UpdateAiUnitSupplyState(void *arg0) {
-s32 func_020a8604(u32,u32);
-u32 a,b;
-a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
-if(gUnitKindMaxAmmo[a*0x70]) {
-b=(u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28;
-if(b==0 && func_020a8604(a,b)==0) return;
+/* Re-check a unit's pending resupply need: keep it while the unit is out of ammo
+ * (unless its kind supplies others instead of shooting) and clear it once the
+ * unit has more than half its maximum fuel. */
+void UpdateAiUnitSupplyState(void *unit) {
+s32 UnitKindCanSupply(u32,u32);
+u32 kind,ammo;
+kind=(u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26;
+if(gUnitKindMaxAmmo[kind*UNIT_KIND_STATS_SIZE]) {
+ammo=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)<<21)>>28;
+if(ammo==0 && UnitKindCanSupply(kind,ammo)==0) return;
 }
-if((s32)(gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]>>1)<(s32)((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25))
-M2C_FIELD(arg0,u16 *,8)&=~0x3000;
+if((s32)(gUnitKindMaxFuel[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE]>>1)<(s32)((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_FUEL)<<25)>>25))
+M2C_FIELD(unit,u16 *,MAP_UNIT_NEED_STATE)&=~MAP_UNIT_NEED_MASK;
 }
 
 void UpdateAiUnitRepairState(void *arg0) {

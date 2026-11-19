@@ -148,30 +148,34 @@ table[3]=(u16*)(q+4);table[4]=(u16*)(q+5);table[5]=(u16*)(q+6);
 return *(u16 *)M2C_FIELD(data_ov001_02190c68,s32 *,arg0*4);
 }
 #pragma scheduling off
-s32 Ov001_GetPlayerStage(s32 arg0) {
+/* Which stage of the Download Play link the player is in: 0 when the player is in
+ * no stage word at all, else the first link-header bitmap (joined, kicked, kick
+ * pending, kick answered, ready, joined copy) that has the player's bit.  The
+ * header is copied under an interrupt lock and then tested from the copy. */
+s32 Ov001_GetPlayerStage(s32 player) {
     void *OS_DisableInterrupts(s32);
     void OS_RestoreInterrupts(void *);
     s32 MI_CpuCopy8(void *, void *, s32);
     extern s16 *gOv001LinkWork;
-    u16 buf[7];
+    u16 header[7];
     s16 *gp;
     u16 mask;
-    void *r;
-    r = OS_DisableInterrupts(arg0);
+    void *interrupts;
+    interrupts = OS_DisableInterrupts(player);
     gp = gOv001LinkWork;
-    mask = 1 << arg0;
-    if (!((u16)gp[1] & mask)) {
-        OS_RestoreInterrupts(r);
-        return 0;
+    mask = 1 << player;
+    if (!((u16)gp[OV001_LINK_JOINED / 2] & mask)) {
+        OS_RestoreInterrupts(interrupts);
+        return OV001_STAGE_NONE;
     }
-    MI_CpuCopy8(gp, buf, 14);
-    OS_RestoreInterrupts(r);
-    if (buf[2] & mask) return 2;
-    if (buf[3] & mask) return 3;
-    if (buf[4] & mask) return 4;
-    if (buf[5] & mask) return 5;
-    if (buf[6] & mask) return 6;
-    return 1;
+    MI_CpuCopy8(gOv001LinkWork, header, sizeof header);
+    OS_RestoreInterrupts(interrupts);
+    if (header[OV001_LINK_KICKED / 2] & mask) return OV001_STAGE_KICKED;
+    if (header[OV001_LINK_KICK_PENDING / 2] & mask) return OV001_STAGE_KICK_PENDING;
+    if (header[OV001_LINK_KICK_ANSWERED / 2] & mask) return OV001_STAGE_KICK_ANSWERED;
+    if (header[OV001_LINK_READY / 2] & mask) return OV001_STAGE_READY;
+    if (header[OV001_LINK_JOINED_COPY / 2] & mask) return OV001_STAGE_END;
+    return OV001_STAGE_JOINED;
 }
 #pragma scheduling reset
 s32 func_ov001_021879fc(s32 arg0) {
@@ -347,16 +351,23 @@ break;
 }
 }
 #pragma pop
+/* WH connect step: start the parent task that makes this console the parent of
+ * the group.  Returns 1 when the connection already passed this point or the
+ * task was queued, 0 when it could not be started (the error is recorded). */
 s32 Ov001_StartParent(void) {
-extern M2C_UNK gWhWork;
-extern M2C_UNK HandleParentStartResult;
-s32 func_02012b08(void *,void *,u16,void *,u16,s32);
-void *p;
-if((u32)(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40)-4)<=2) return 1;
-SetWhStatus(4);
-p=M2C_FIELD(&gWhWork,void **,4);
-if(func_02012b08(&HandleParentStartResult,(u8 *)p+0x1060,(u16)M2C_FIELD(p,s32 *,0x12A4),(u8 *)p+0xF80,(u16)M2C_FIELD(p,s32 *,0x12A0),1)==2)return 1;
-SetWhError(); return 0;
+    extern M2C_UNK gWhWork;
+    extern M2C_UNK HandleParentStartResult;
+    s32 func_02012b08(void *, void *, u16, void *, u16, s32);
+    void *connection;
+
+    if ((u32)(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS) - 4) <= 2) return 1;
+    SetWhStatus(WH_STATUS_CONNECTED);
+    connection = M2C_FIELD(&gWhWork, void **, 4);
+    /* the task carries two buffers of the connection object: +0x1060 of length
+     * +0x12A4 and +0xF80 of length +0x12A0 */
+    if (func_02012b08(&HandleParentStartResult, (u8 *)connection + 0x1060, (u16)M2C_FIELD(connection, s32 *, 0x12A4), (u8 *)connection + 0xF80, (u16)M2C_FIELD(connection, s32 *, 0x12A0), 1) == 2) return 1;
+    SetWhError();
+    return 0;
 }
 
 /* Completion callback of the WH parent-start task begun by the connect step:
@@ -550,10 +561,15 @@ s32 WhStartChildScan(void) {
     extern M2C_UNK gWhWork;
     u16 buf[3];
     u16 rv;
+    u32 seed;
+    const u32 *tick = (const u32 *)0x027ffc3c;
 
     GetMacAddress((u8 *)buf);
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x58) =
-        buf[0] + *(s32 *)0x027ffc3c + buf[1] + buf[2];
+    seed = *tick;
+    seed += buf[0];
+    seed += buf[1];
+    seed += buf[2];
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u32 *, 0x58) = seed;
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x58) =
         M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x58) * 0x10dcd + 0x39 + 0x3000;
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x5c) = 0;

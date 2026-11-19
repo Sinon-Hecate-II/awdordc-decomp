@@ -1,33 +1,37 @@
 /* 31 functions from 0x02096C7C to 0x02097C50 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 
-void func_02096c7c(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK func_020c9b70();
+/* Award the battle to `winner`: every active player outside its team is marked
+ * defeated with the given reason, and each one's surviving unit count is added
+ * to the winner's total of enemy units; then the battle starts its end. */
+void AwardVictoryToPlayer(s32 winner, M2C_UNK reason) {
+    M2C_UNK EnterBattleEnd();
     M2C_UNK MarkPlayerDefeated(s32, M2C_UNK);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
-    s32 temp_r2;
-    s32 var_r5;
-    s32 var_r6;
-    s32 var_r7;
-    void *temp_r3;
+    s32 map;
+    s32 player;
+    s32 loserOffset;
+    s32 winnerOffset;
+    void *winnerRecord;
 
-    var_r6 = 0x8C;
-    var_r5 = 1;
-    var_r7 = arg0 * 0x8C;
+    loserOffset = MAP_PLAYER_STRIDE;
+    player = 1;
+    winnerOffset = winner * MAP_PLAYER_STRIDE;
     do {
-        if ((IsPlayerActive(var_r5) != 0) && (IsSameTeam(arg0, var_r5) == 0)) {
-            temp_r2 = *gCurrentMap;
-            temp_r3 = var_r7 + temp_r2;
-            M2C_FIELD(temp_r3, u16 *, 0x67C6) = (u16) (M2C_FIELD(temp_r3, u16 *, 0x67C6) + M2C_FIELD((temp_r2 + var_r6), u8 *, 0x67D5));
-            MarkPlayerDefeated(var_r5, arg1);
+        if ((IsPlayerActive(player) != 0) && (IsSameTeam(winner, player) == 0)) {
+            map = *gCurrentMap;
+            winnerRecord = winnerOffset + map;
+            M2C_FIELD(winnerRecord, u16 *, MAP_PLAYER_STATES + PLAYER_REC_ENEMY_UNITS) = (u16) (M2C_FIELD(winnerRecord, u16 *, MAP_PLAYER_STATES + PLAYER_REC_ENEMY_UNITS) + M2C_FIELD((map + loserOffset), u8 *, MAP_PLAYER_STATES + PLAYER_REC_UNIT_COUNT));
+            MarkPlayerDefeated(player, reason);
         }
-        var_r5 += 1;
-        var_r6 += 0x8C;
-    } while (var_r5 < 5);
-    func_020c9b70();
+        player += 1;
+        loserOffset += MAP_PLAYER_STRIDE;
+    } while (player < 5);
+    EnterBattleEnd();
 }
 
 void func_02096d0c(void) {
@@ -79,8 +83,8 @@ void EnableSpriteLayers(void) {
     void func_02096d5c(void);
     void func_02096d0c(void);
     M2C_UNK ApplyScreenMode(M2C_UNK);
-    M2C_UNK func_01ff9e00(void);
-    s32 func_02091e14(void);
+    M2C_UNK ClearAll3DSpriteLayers(void);
+    s32 Get3DSpriteTargetMode(void);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
     u16 *volatile layer0, *volatile layer1, *volatile layer2, *volatile layer3, *volatile layer4;
     void *savedEngine;
@@ -90,9 +94,9 @@ void EnableSpriteLayers(void) {
     engineIndex = 0;
     do {
         gCur3DSpriteEngine = (engineIndex == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-        if ((func_02091e14() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
-            (func_02091e14() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
-            (func_02091e14() != 3 || gCur3DSpriteEngine == savedEngine)) {
+        if ((Get3DSpriteTargetMode() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
+            (Get3DSpriteTargetMode() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
+            (Get3DSpriteTargetMode() != 3 || gCur3DSpriteEngine == savedEngine)) {
             func_02096d0c();
             layer0 = *(u16 **)gCur3DSpriteEngine; *layer0 = *layer0 | 0x10;
             layer1 = *(u16 **)gCur3DSpriteEngine; *layer1 = *layer1 | 0x20;
@@ -100,7 +104,7 @@ void EnableSpriteLayers(void) {
             layer3 = *(u16 **)gCur3DSpriteEngine; *layer3 = *layer3 | 0x80;
             layer4 = *(u16 **)gCur3DSpriteEngine; *layer4 = *layer4 | 0x100;
             ApplyScreenMode(3);
-            func_01ff9e00();
+            ClearAll3DSpriteLayers();
         }
         engineIndex++;
     } while (engineIndex < 2);
@@ -113,7 +117,7 @@ void EnableSpriteLayers(void) {
 void DisableSpriteLayers(void) {
 M2C_UNK Set3DSpriteVramBanks();
 M2C_UNK Apply3DSpriteDisplayConfig();
-s32 func_02091e14();
+s32 Get3DSpriteTargetMode();
 M2C_UNK ApplyScreenMode(M2C_UNK);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
 u16 *volatile layer0;u16 *volatile layer1;u16 *volatile layer2;u16 *volatile layer3;u16 *volatile layer4;
@@ -123,7 +127,7 @@ savedEngine=gCur3DSpriteEngine;
 engineIndex=0;
 do {
 gCur3DSpriteEngine=engineIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-if((func_02091e14()!=0||gCur3DSpriteEngine==g3DSpriteEngineMain)&&(func_02091e14()!=1||gCur3DSpriteEngine==g3DSpriteEngineSub)&&(func_02091e14()!=3||gCur3DSpriteEngine==savedEngine)){
+if((Get3DSpriteTargetMode()!=0||gCur3DSpriteEngine==g3DSpriteEngineMain)&&(Get3DSpriteTargetMode()!=1||gCur3DSpriteEngine==g3DSpriteEngineSub)&&(Get3DSpriteTargetMode()!=3||gCur3DSpriteEngine==savedEngine)){
 Apply3DSpriteDisplayConfig();
 layer0=*(u16 **)gCur3DSpriteEngine;*layer0=*layer0&~DS3D_BANK_MODE0;
 layer1=*(u16 **)gCur3DSpriteEngine;*layer1=*layer1&~DS3D_BANK_MODE1;

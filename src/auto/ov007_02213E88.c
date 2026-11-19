@@ -291,9 +291,9 @@ void func_ov007_022144e0(void) {
 }
 
 void func_ov007_022144ec(void) {
-    M2C_UNK func_020c0748(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateMenuAt(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov007_0221fc20;
-    func_020c0748(&data_ov007_0221fc20, 0x50, 0x18, 0x50);
+    CreateMenuAt(&data_ov007_0221fc20, 0x50, 0x18, 0x50);
 }
 
 void func_ov007_0221450c(void) {
@@ -368,7 +368,7 @@ void func_ov007_0221470c(void) {
    returning 1 on success and 0 when the tile has no entry. */
 s32 func_ov007_02214718(s32 x, s32 y) {
     void GetMapCursorScreenPosition(s32, s32, s32 *);
-    s32 func_020c0748(s32 *, s32, s32, s32);
+    s32 CreateMenuAt(s32 *, s32, s32, s32);
     extern s32 *gCurrentMap;
     extern u8 data_ov007_0221fb30[];
     u8 *base;
@@ -380,7 +380,7 @@ s32 func_ov007_02214718(s32 x, s32 y) {
     if (index == 0) return 0;
     M2C_FIELD(base, void **, 0x52D0) = base + 0x59A4 + index * 14;
     GetMapCursorScreenPosition(x, y, coords);
-    obj = (void *)func_020c0748((s32 *)data_ov007_0221fb30, coords[0], coords[1], 0x30);
+    obj = (void *)CreateMenuAt((s32 *)data_ov007_0221fb30, coords[0], coords[1], 0x30);
     switch (((MapEntry14718 *)M2C_FIELD((void *)*gCurrentMap, void **, 0x52D0))->kind) {
     case 0: M2C_FIELD(obj, u8 *, 0x4E) = 0; break;
     case 1: M2C_FIELD(obj, u8 *, 0x4E) = 1; break;
@@ -584,35 +584,38 @@ void Map_RandomScaledValue(void) {
     Map_MinDistanceThreshold();
 }
 
-s32 RandomCoordInRange(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Pick a random coordinate in [min, max] that lies inside the map's width (axis
+ * 0) or height (axis 1); retries up to 100 times and gives up with 0 when none
+ * was found.  Any other axis returns the raw random value. */
+s32 RandomCoordInRange(s32 min, s32 max, s32 axis) {
     M2C_UNK RandomIntRange(M2C_UNK, M2C_UNK);
     extern s32 *gCurrentMap;
-    s32 var_r4;
-    s32 var_r0;
+    s32 tries;
+    s32 value;
 
-    var_r4 = 0;
+    tries = 0;
 loop:
-    var_r4++;
-    if (var_r4 > 0x64) {
+    tries++;
+    if (tries > 0x64) {
         return 0;
     }
-    var_r0 = RandomIntRange(arg0, arg1);
-    if (var_r0 < 0) {
+    value = RandomIntRange(min, max);
+    if (value < 0) {
         goto loop;
     }
-    switch (arg2) {
+    switch (axis) {
     case 0:
-        if (var_r0 >= M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5144)) {
+        if (value >= M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_WIDTH)) {
             goto loop;
         }
-        return var_r0;
+        return value;
     case 1:
-        if (var_r0 >= M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5146)) {
+        if (value >= M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_HEIGHT)) {
             goto loop;
         }
-        return var_r0;
+        return value;
     default:
-        return var_r0;
+        return value;
     }
 }
 

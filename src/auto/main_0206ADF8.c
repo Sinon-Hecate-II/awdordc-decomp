@@ -374,23 +374,25 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
     FormatFlags f;
     u16 *p;
     s32 precision;
-    u8 spec;
+    u16 spec;
     u8 alt;
-    s8 signFlag;
-    u8 *bytes;
-    int i, bit, n;
+    u8 signFlag;
+    s8 *bytes;
+    u8 *digits;
+    int i, n, bit;
+    double magnitude = value;
+
     s8 tmp;
     s32 exp;
     u8 conv[4];
     u8 decimal[40];
-    p = end;
     precision = fmt.precision;
     spec = fmt.conversion;
     alt = fmt.alternate;
     signFlag = fmt.sign;
     if (precision > 509) return 0;
     conv[0] = 0; *(u16 *)(conv + 2) = 32;
-    FormatDoubleAsDecimal(conv, value, decimal);
+    FormatDoubleAsDecimal(conv, magnitude, decimal);
     if (fabs(value) == 0.0) {
         p = end - 6;
         func_0206cdac(p, data_02100558);
@@ -401,11 +403,11 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
             p = end - 5;
             if (spec == 'A') func_0206cdac(p, data_02100564);
             else func_0206cdac(p, data_02100570);
-            return p;
-        }
+        } else {
         p = end - 4;
         if (spec == 'A') func_0206cdac(p, data_0210057c);
         else func_0206cdac(p, data_02100584);
+        }
         return p;
     }
     if (decimal[5] == 'N') {
@@ -413,29 +415,30 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
             p = end - 5;
             if (spec == 'A') func_0206cdac(p, data_0210058c);
             else func_0206cdac(p, data_02100598);
-            return p;
-        }
+        } else {
         p = end - 4;
         if (spec == 'A') func_0206cdac(p, data_021005a4);
         else func_0206cdac(p, data_021005ac);
+        }
         return p;
     }
-    bytes = (u8 *)&value;
+    f.pad = 1; f.sign = 1; f.unused = 0; f.alternate = 0; f.reserved = 0; f.width = 0; f.precision = 1; f.conversion = 'd';
+    bytes = (s8 *)&value;
     for (i = 0; i < 4; i++) { tmp = bytes[i]; bytes[i] = bytes[7 - i]; bytes[7 - i] = tmp; }
-    exp = ((((u32)bytes[1]) << 17) | (((u32)bytes[0]) << 25)) >> 21 & 0x7ff;
-    exp = exp - 1023;
-    f.pad = 1; f.sign = 1; f.unused = 0; f.alternate = 0; f.reserved = 0; f.conversion = 'd'; f.width = 0; f.precision = 1;
-    p = FormatInteger(exp, end, f);
-    *--p = (spec == 'a' ? 'p' : 'P');
-    bit = precision * 4 + 11;
+    exp = (0x7ff & ((((u32)((u8 *)&value)[0] << 25) | ((u32)((u8 *)&value)[1] << 17)) >> 21));
+    { FormatFlags exponentFmt = f; p = FormatInteger(exp - 1023, end, exponentFmt); }
+    if (spec == 'a') *--p = 'p';
+    else *--p = 'P';
     n = precision;
+    bit = n * 4 + 11;
+    digits = (u8 *)&value;
     while (n >= 1) {
         u8 digit;
         if (bit < 64) {
             int shift = 7 - (bit & 7);
-            digit = bytes[bit >> 3] >> shift;
+            digit = digits[bit >> 3] >> shift;
             if (((bit & ~7) != ((bit - 4) & ~7)))
-                digit = (u8)(digit | (bytes[(bit >> 3) - 1] << 8) >> shift);
+                digit = (u8)(digit | (digits[(bit >> 3) - 1] << 8) >> shift);
             digit &= 0x0f;
             if (digit < 10) digit += '0';
             else if (spec == 'a') digit += 87;
@@ -448,9 +451,9 @@ u16 *func_0206b8c0(double value, u16 *end, FormatFlags fmt) {
         bit -= 4;
     }
     if (precision || alt) *--p = '.';
-    p[-1] = '1';
-    p -= 2;
-    *p = (spec == 'a' ? 'x' : 'X');
+    *--p = '1';
+    if (spec == 'a') *--p = 'x';
+    else *--p = 'X';
     *--p = '0';
     if (*(s8 *)decimal != 0) *--p = '-';
     else if (signFlag == 1) *--p = '+';

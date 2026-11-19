@@ -114,12 +114,12 @@ void Mb_ReportPacketResult(s32 arg0, s32 arg1) {
  M2C_FIELD(p,void (**)(u8,void *),0x51c)((u8)(arg0 | 255),buf);
 }
 
-void func_02018470(M2C_UNK arg0) {
+void Mb_InitLoadQueue(M2C_UNK arg0) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     MI_CpuFill8(arg0, 0, 0x70);
 }
 
-void func_02018484(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
+void Mb_AddImageBlock(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
 s32 OS_DisableInterrupts();void OS_RestoreInterrupts(s32);void SystemHalt();
 u32 end; s32 saved; u32 p;
 saved=OS_DisableInterrupts();p=arg0+0x30;end=arg0+0x70;
@@ -133,27 +133,32 @@ p+=16;
 OS_RestoreInterrupts(saved);
 }
 
-s32 func_020184ec(s32 *arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
+/* Serves one read of the multiboot download image from the queue's cache: finds
+ * the resident (or fixed) block that holds the requested range, copies it into
+ * the caller's buffer and clears the queue's pending count.  Returns 1 when the
+ * range was copied, 0 when no cached block covers it. */
+s32 Mb_CopyImageRange(MbLoadQueue *queue, u32 offset, void *dest, s32 length) {
     s32 OS_DisableInterrupts(void);
     void MI_CpuCopy8(s32, M2C_UNK, s32);
     void OS_RestoreInterrupts(s32);
-    u8 *end;
+    MbLoadBlock *end;
     s32 result;
-    u8 *p;
-    s32 temp_r0;
+    MbLoadBlock *block;
+    s32 relative;
     s32 saved;
+
     result = 0;
     saved = OS_DisableInterrupts();
-    p = (u8 *)arg0 + 0x30;
-    end = (u8 *)arg0 + 0x70;
-    for (; p < end; p += 0x10) {
-        if (M2C_FIELD(p, u32 *, 0xC) >= 2U) {
-            temp_r0 = arg1 - M2C_FIELD(p, s32 *, 0);
-            if (0 <= temp_r0) {
-                if ((u32)(temp_r0 + arg3) <= (u32)M2C_FIELD(p, u32 *, 4)) {
-                    MI_CpuCopy8(M2C_FIELD(p, s32 *, 8) + temp_r0, arg2, arg3);
+    block = &queue->blocks[0];
+    end = &queue->blocks[MB_LOAD_BLOCK_COUNT];
+    for (; block < end; block++) {
+        if ((u32)block->state >= MB_LOAD_STATE_RESIDENT) {
+            relative = offset - block->offset;
+            if (0 <= relative) {
+                if ((u32)(relative + length) <= (u32)block->size) {
+                    MI_CpuCopy8((s32)(block->data + relative), dest, length);
                     result = 1;
-                    *arg0 = 0;
+                    queue->pending = 0;
                     break;
                 }
             }
@@ -227,7 +232,7 @@ void func_02018584(void *r7) {
 }
 
 void func_0201869c(M2C_UNK arg0, s32 arg1) {
-    extern s32 data_02136c80;
+    extern s32 gMbWorkerTask;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void func_02018738(M2C_UNK);
@@ -236,8 +241,8 @@ void func_0201869c(M2C_UNK arg0, s32 arg1) {
     void func_02018584(void *);
     s32 saved;
     saved = OS_DisableInterrupts();
-    if (data_02136c80 == 0) {
-        data_02136c80 = arg0;
+    if (gMbWorkerTask == 0) {
+        gMbWorkerTask = arg0;
         func_02018738(arg0 + 0x000000C4);
         M2C_FIELD(arg0, s32 *, 0x000000C0) = 0;
         TaskCreate(arg0, func_02018584, arg0, arg0 + 0x000000E4 + ((arg1 - 0x000000E4) & ~3), (arg1 - 0x000000E4) & ~3, 0);
@@ -246,9 +251,9 @@ void func_0201869c(M2C_UNK arg0, s32 arg1) {
     OS_RestoreInterrupts(saved);
 }
 
-s32 func_0201871c(void) {
-    extern s32 data_02136c80;
-    if (data_02136c80 != 0) {
+s32 Mb_IsTaskCreated(void) {
+    extern s32 gMbWorkerTask;
+    if (gMbWorkerTask != 0) {
         return 1;
     }
     return 0;
@@ -266,8 +271,8 @@ s32 func_0201874c(void *arg0) {
 }
 
 void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
-    extern s32 data_02136c80;
-    s32 func_0201871c(void);
+    extern s32 gMbWorkerTask;
+    s32 Mb_IsTaskCreated(void);
     s32 func_02006028(void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
@@ -276,9 +281,9 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     void *base;
     void *p;
     s32 r6;
-    base = (void *)data_02136c80;
+    base = (void *)gMbWorkerTask;
     p = (void *)arg0;
-    if (!func_0201871c()) {
+    if (!Mb_IsTaskCreated()) {
         return;
     }
     if (((M2C_FIELD(p, u32 *, 4) << 31) >> 31) != 0) {
@@ -310,7 +315,7 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     }
     if (M2C_FIELD(base, void **, 0xc0) == (void *)0) {
         if (p == (void *)((u8 *)base + 0xc4)) {
-            data_02136c80 = 0;
+            gMbWorkerTask = 0;
         }
         M2C_FIELD(base, void **, 0xc0) = p;
         M2C_FIELD(p, void **, 0) = (void *)0;
@@ -322,7 +327,7 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
                 curp = (void **)M2C_FIELD(curp, void **, 0);
             }
             M2C_FIELD(curp, void **, 0) = p;
-            data_02136c80 = 0;
+            gMbWorkerTask = 0;
         } else {
             void **head = (void **)M2C_FIELD(base, void ***, 0xc0);
             if ((u32)r6 < (M2C_FIELD(head, u32 *, 4) >> 1)) {
@@ -353,16 +358,16 @@ void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     OS_RestoreInterrupts(saved);
 }
 
-void func_020188c8(M2C_UNK arg0) {
-    extern M2C_UNK data_02136c80;
+void Mb_QueueTaskExit(M2C_UNK arg0) {
+    extern M2C_UNK gMbWorkerTask;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_0201871c(void);
+    s32 Mb_IsTaskCreated(void);
     void func_02018764(M2C_UNK, s32, M2C_UNK, s32);
     s32 saved;
     saved = OS_DisableInterrupts();
-    if (func_0201871c() != 0) {
-        func_02018764((M2C_UNK)((u8 *)data_02136c80 + 0xC4), 0, arg0, 0);
+    if (Mb_IsTaskCreated() != 0) {
+        func_02018764((M2C_UNK)((u8 *)gMbWorkerTask + 0xC4), 0, arg0, 0);
     }
     OS_RestoreInterrupts(saved);
 }
@@ -460,23 +465,24 @@ void *MultiBoot_DecodePacket(u8 *packet, u8 *header, s32 player) {
     return (void *)p;
 }
 
-s32 MultiBoot_StoreRecordFragment(u8 *arg0, s32 arg1) {
+/* Store fragment `header[2]` of `player`'s multiboot info record (its payload
+ * follows the header) into that player's slot and mark the fragment received.
+ * Returns the finished record once every fragment has arrived, otherwise 0. */
+s32 MultiBoot_StoreRecordFragment(u8 *header, s32 player) {
     extern M2C_UNK gMbRecordRx;
     void MI_CpuCopy8(M2C_UNK, M2C_UNK, s32);
     s32 MultiBoot_RecordComplete(s32);
 
-    s32 r6 = arg1;
-
-    if (M2C_FIELD(&gMbRecordRx, u32 *, 0x4) == 0) return 0;
+    if (MB_RECORD_RX->buffer == 0) return 0;
     {
-        u8 type = arg0[2];
-        s32 r4;
-        if (type > M2C_FIELD(&gMbRecordRx, s32 *, 0xC)) return 0;
-        r4 = arg1 - 1;
-        MI_CpuCopy8((M2C_UNK)(arg0 + 3), (M2C_UNK)(M2C_FIELD(&gMbRecordRx, u32 *, 0x4) + r4 * 32 + type * M2C_FIELD(&gMbRecordRx, s32 *, 0x8)), M2C_FIELD(&gMbRecordRx, s32 *, 0x8));
-        *((u32 *)((u8 *)M2C_FIELD(&gMbRecordRx, u32 *, 0x4) + 0x1E0 + r4 * 4)) |= (1U << type);
-        if (!MultiBoot_RecordComplete(r6)) return 0;
-        return (s32)(M2C_FIELD(&gMbRecordRx, M2C_UNK *, 0x4) + r4 * 32);
+        u8 fragment = header[2];
+        s32 index;
+        if (fragment > MB_RECORD_RX->fragmentCount) return 0;
+        index = player - 1;
+        MI_CpuCopy8((M2C_UNK)(header + 3), (M2C_UNK)(MB_RECORD_RX->buffer + index * MB_RECORD_SLOT + fragment * MB_RECORD_RX->fragmentSize), MB_RECORD_RX->fragmentSize);
+        *(u32 *)(MB_RECORD_RX->buffer + MB_RECORD_MASK + index * 4) |= (1U << fragment);
+        if (!MultiBoot_RecordComplete(player)) return 0;
+        return (s32)(MB_RECORD_RX->buffer + index * MB_RECORD_SLOT);
     }
 }
 

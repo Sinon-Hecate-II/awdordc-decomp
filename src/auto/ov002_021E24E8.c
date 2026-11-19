@@ -131,7 +131,7 @@ s32 func_ov002_021e2994(void) {
     return 0;
 }
 
-void func_ov002_021e299c(void *a,s32 b){void func_ov002_021e17b4(s32,s32,s32);extern M2C_UNK data_ov002_021f312c;extern u8 data_ov002_021f3046;s32 n=M2C_FIELD(a,u8 *,0x53);s32 i=M2C_FIELD(a,u8 *,0x47);func_ov002_021e17b4(M2C_FIELD((u8 *)&data_ov002_021f312c+n*44,s32 *,i*4),b,(&data_ov002_021f3046+n*100)[i*8]);}
+void func_ov002_021e299c(void *a,s32 b){void SetEffectNodeFlash(s32,s32,s32);extern M2C_UNK data_ov002_021f312c;extern u8 data_ov002_021f3046;s32 n=M2C_FIELD(a,u8 *,0x53);s32 i=M2C_FIELD(a,u8 *,0x47);SetEffectNodeFlash(M2C_FIELD((u8 *)&data_ov002_021f312c+n*44,s32 *,i*4),b,(&data_ov002_021f3046+n*100)[i*8]);}
 
 void func_ov002_021e29d8(void *arg0) {
     M2C_UNK func_ov002_021e88a0(s32);
@@ -175,7 +175,7 @@ void func_ov002_021e2aa8(void *arg0) {
     void func_ov002_021e1790(void *, s32, s32);
     void func_ov002_021e1844(void *);
     void func_ov002_021e299c(void *, s32);
-    s32 func_ov002_021e2e28(void *);
+    s32 IsEffectNodeOffScreen(void *);
     s32 t;
     if (M2C_FIELD(arg0, s32 *, 0x6C) >= 0) {
         M2C_FIELD(arg0, s32 *, 0x6C) = M2C_FIELD(arg0, s32 *, 0x6C) + 1;
@@ -189,7 +189,7 @@ void func_ov002_021e2aa8(void *arg0) {
                 if (t < 0) t = 0;
                 M2C_FIELD(arg0, u16 *, 0x78) = (u16)t;
                 func_ov002_021e1790(arg0, (s32)(M2C_FIELD(arg0, s32 *, 0x54) << 8) >> 16, (s32)(M2C_FIELD(arg0, s32 *, 0x58) << 8) >> 16);
-                if (func_ov002_021e2e28(arg0) != 0) {
+                if (IsEffectNodeOffScreen(arg0) != 0) {
                     func_ov002_021e1780(arg0);
                     M2C_FIELD(arg0, s32 *, 0x6C) = -1;
                 }
@@ -298,28 +298,31 @@ void SetEffectNodeScreenPosition(void *arg0, s16 arg1, s16 arg2, s16 arg3) {
     M2C_FIELD(arg0, s16 *, 0x84) = arg3;
 }
 
-s32 func_ov002_021e2e28(void *arg0) {
-    s32 temp_r1;
-    s32 temp_r2;
-    s32 temp_r3;
-    s32 temp_r4;
-    u16 temp_lr;
+/* Whether an effect node has left the screen in the direction it is
+ * accelerating towards: its drifted position (whole pixels, scaled by
+ * FX_NODE_SCREEN_S) is past that edge, so its handler can finish and free it. */
+s32 IsEffectNodeOffScreen(void *node) {
+    s32 screenY;
+    s32 accelY;
+    s32 screenX;
+    s32 accelX;
+    u16 screenScale;
 
-    temp_lr = M2C_FIELD(arg0, u16 *, 0x84);
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x64);
-    temp_r3 = M2C_FIELD(arg0, s16 *, 0x80) + ((s32) (((s32) M2C_FIELD(arg0, s32 *, 0x54) >> 8) * temp_lr) >> 8);
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x82) + ((s32) (((s32) M2C_FIELD(arg0, s32 *, 0x58) >> 8) * temp_lr) >> 8);
-    temp_r2 = M2C_FIELD(arg0, s32 *, 0x68);
-    if ((temp_r4 < 0) && (temp_r3 < -0xA0)) {
+    screenScale = M2C_FIELD(node, u16 *, FX_NODE_SCREEN_S);
+    accelX = M2C_FIELD(node, s32 *, FX_NODE_AX);
+    screenX = M2C_FIELD(node, s16 *, FX_NODE_SCREEN_X) + ((s32) (((s32) M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) >> 8) * screenScale) >> 8);
+    screenY = M2C_FIELD(node, s16 *, FX_NODE_SCREEN_Y) + ((s32) (((s32) M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) >> 8) * screenScale) >> 8);
+    accelY = M2C_FIELD(node, s32 *, FX_NODE_AY);
+    if ((accelX < 0) && (screenX < FX_CULL_LEFT)) {
         return 1;
     }
-    if ((temp_r2 < 0) && (temp_r1 < -0x20)) {
+    if ((accelY < 0) && (screenY < FX_CULL_TOP)) {
         return 1;
     }
-    if ((temp_r4 > 0) && (temp_r3 >= 0xA0)) {
+    if ((accelX > 0) && (screenX >= FX_CULL_RIGHT)) {
         return 1;
     }
-    if ((temp_r2 > 0) && (temp_r1 >= 0xE0)) {
+    if ((accelY > 0) && (screenY >= FX_CULL_BOTTOM)) {
         return 1;
     }
     return 0;

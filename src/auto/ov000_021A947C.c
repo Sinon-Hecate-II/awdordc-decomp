@@ -3,8 +3,8 @@
 #include "battle_map.h"
 static inline s32 unit_blocks_action(s32 unit) {
  extern void **gCurrentMap;
- s32 func_020a33c4(s32);
- if (((u32)(M2C_FIELD((u8 *)*gCurrentMap + unit*0x8c, s32 *, 0x6810)<<24)>>24)==3 && func_020a33c4(unit)) return 1;
+ s32 GetPlayerArmyVariant(s32);
+ if (((u32)(M2C_FIELD((u8 *)*gCurrentMap + unit*0x8c, s32 *, 0x6810)<<24)>>24)==3 && GetPlayerArmyVariant(unit)) return 1;
  return 0;
 }
 
@@ -19,7 +19,7 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     extern void *gAiCommandState;
     extern u8 gUnitKindFlags[];
     extern s8 data_ov000_021b5680[];
-    s32 func_020a33c4(s32);
+    s32 GetPlayerArmyVariant(s32);
     u8 IsCellUnitOnSameArmy(u8, s32, s32);
     s32 func_ov000_021a93b0(s32, s32, s32);
 
@@ -74,33 +74,35 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
 }
 #pragma pop
 void GetAttackDamage(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
+    M2C_UNK GetEstimatedDamage(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    func_020a79e0(arg0, arg1, 0, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    GetEstimatedDamage(arg0, arg1, 0, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
 }
 
 void func_ov000_021a96f4(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_020a79e0(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
+    M2C_UNK GetEstimatedDamage(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    func_020a79e0(arg0, arg1, 1, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    GetEstimatedDamage(arg0, arg1, 1, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
 }
 
-s32 func_ov000_021a9740(void *arg0, M2C_UNK arg1) {
-    s32 func_020a5ae0(M2C_UNK);
+/* The higher of the unit's two weapon damage percentages against a target kind:
+ * the primary weapon only while the unit still has ammo, the secondary always. */
+s32 GetUnitMaxWeaponDamagePercent(void *unit, M2C_UNK targetKind) {
+    s32 GetDamageTargetIndex(M2C_UNK);
     s32 CalculateUnitDamage(void *, s32, M2C_UNK, M2C_UNK);
     extern u8 gUnitKindMaxAmmo;
-    s32 var_r0;
-    s32 var_r5;
-    if ((*(&gUnitKindMaxAmmo + (((u32) (M2C_FIELD(arg0, u8 *, 0) << 0x1A) >> 0x1A) * 0x70)) != 0) && (((u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C) == 0)) {
-        var_r5 = 0;
+    s32 secondaryDamage;
+    s32 primaryDamage;
+    if ((*(&gUnitKindMaxAmmo + (((u32) (M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 0x1A) >> 0x1A) * 0x70)) != 0) && (((u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 0x15) >> 0x1C) == 0)) {
+        primaryDamage = 0;
     } else {
-        var_r5 = CalculateUnitDamage(arg0, func_020a5ae0(arg1), 0, 0);
+        primaryDamage = CalculateUnitDamage(unit, GetDamageTargetIndex(targetKind), 0, 0);
     }
-    var_r0 = CalculateUnitDamage(arg0, func_020a5ae0(arg1), 1, 0);
-    if (var_r5 > var_r0) var_r0 = var_r5;
-    return var_r0;
+    secondaryDamage = CalculateUnitDamage(unit, GetDamageTargetIndex(targetKind), 1, 0);
+    if (primaryDamage > secondaryDamage) secondaryDamage = primaryDamage;
+    return secondaryDamage;
 }
 
 void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {

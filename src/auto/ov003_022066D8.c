@@ -22,7 +22,7 @@ extern u8 data_ov003_02211160[];
 extern u8 data_ov003_02211178[];
 extern void *g3DSpriteEngineSub;
 extern u32 data_0215d9b8;
-extern u32 data_0215d8a0;
+extern u32 gSaveSlotSummary;
 
 extern u8 data_ov003_0221106c[16];
 extern void *gCur3DSpriteEngine;
@@ -31,7 +31,7 @@ void Init3DRendering(void *);
 void func_02082c84(void);
 void Set3DSpriteVramBanks(void);
 void SetFileDirectory(void *);
-void func_02091cd0(void);
+void LoadScenePanelGraphicsOnBothEngines(void);
 void func_020c8ed4(void *);
 
 
@@ -39,7 +39,7 @@ void func_020c8ed4(void *);
 void func_ov003_022066d8(void *a){
 void func_020822b8(void *);void func_02004d3c(void);u8 *LoadFileToBuffer(void *,s32);void func_02004d70(void *,s32,s32);void HeapFreeBlock(void *);void func_02004ddc(void);void LoadDecompressedFileTo(void *,void *);void LoadFileToBGExtPltt(void *,s32,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void LoadGraphicsBlock(void *,void *);void CopyToObjPaletteShadow(void *,s32,s32);void LoadScenePanelPalette(s32);void func_020a9a30(s32,s32,s32,void *);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void Hide3DSprite(void *);
 void func_02082eb4(void *,s32,s32,s32);void *GetLocalizedFileName(void *);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void func_0208f780(s32);s32 IsUnitAvailable(s32);void UpdateMapSelectLabelTransform(void *);void SetSpriteAnimation(void *,s32);s32 GetSpriteAnimValue(void *);s32 n,m;void *saved,*q;u8 *p;
-Init3DRendering(a);func_02082c84();Set3DSpriteVramBanks();SetFileDirectory(data_ov003_0221106c);func_02091cd0();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))func_020c8ed4(a);
+Init3DRendering(a);func_02082c84();Set3DSpriteVramBanks();SetFileDirectory(data_ov003_0221106c);LoadScenePanelGraphicsOnBothEngines();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))func_020c8ed4(a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(data_ov003_022109e0);
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~16)|16;}
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~32)|0;}
@@ -111,7 +111,7 @@ M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,10)=1;
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==10)&&IsUnitAvailable(8)==0)func_ov003_02209d0c(a,1);
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==8))M2C_FIELD(a,u8 *,0x38)|=8;break;
 case 1:M2C_FIELD(a,u8 *,0x39)=M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15);q=M2C_FIELD(a,void **,0x3c);M2C_FIELD(a,u8 *,0x3a)=M2C_FIELD(q,u8 *,M2C_FIELD(q,u8 *,15));M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,8)=0;func_ov003_02209d0c(a,8);break;
-case 2:M2C_FIELD(a,u8 *,0x39)=M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15);q=M2C_FIELD(a,void **,0x3c);M2C_FIELD(a,u8 *,0x3a)=M2C_FIELD(q,u8 *,M2C_FIELD(q,u8 *,15));M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,11)=(u32)((s32)data_0215d8a0<<28)>>28;func_ov003_02209d0c(a,11);break;
+case 2:M2C_FIELD(a,u8 *,0x39)=M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15);q=M2C_FIELD(a,void **,0x3c);M2C_FIELD(a,u8 *,0x3a)=M2C_FIELD(q,u8 *,M2C_FIELD(q,u8 *,15));M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,11)=(u32)((s32)gSaveSlotSummary<<28)>>28;func_ov003_02209d0c(a,11);break;
 }
 M2C_FIELD(a,u8 *,0x38)|=64;
 p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;{u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~16)|16;}

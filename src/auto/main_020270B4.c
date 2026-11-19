@@ -33,7 +33,7 @@ s32 WFC_InitSession(void *buffer, u32 size) {
     OS_RestoreInterrupts(irq); return 0;
 }
 
-s32 func_020271cc(void){s32 s=OS_DisableInterrupts(); void *p=(void *)gWfcSession; if(!p){OS_RestoreInterrupts(s);return 1;} if(M2C_FIELD(p,s32 *,0x2260)!=1){OS_RestoreInterrupts(s);return 1;} gWfcSession=0;OS_RestoreInterrupts(s);return 0;}
+s32 Wfc_ReleaseSession(void){s32 s=OS_DisableInterrupts(); void *p=(void *)gWfcSession; if(!p){OS_RestoreInterrupts(s);return 1;} if(M2C_FIELD(p,s32 *,0x2260)!=1){OS_RestoreInterrupts(s);return 1;} gWfcSession=0;OS_RestoreInterrupts(s);return 0;}
 
 /* One step of the WFC session's connection startup: queues the send request,
  * verifies the wireless link and starts hosting/joining with the operation
@@ -125,45 +125,54 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
 }
 
 void WFC_OperationCallback(void);
-s32 func_02027428(void) {
-    s32 s = OS_DisableInterrupts();
-    void *p = (void *)gWfcSession;
-    s32 v;
-    s32 r;
+/* Step run while the WFC session is ready: queues the wireless start command with
+ * the operation callback and moves the session to WFC_SESSION_STATE_WIRELESS.
+ * Returns 3 (progressed), 2 when that command is already running, 0 when the
+ * session has only started, and 1 in any other state or without a session. */
+s32 WFC_StartWirelessStep(void) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void WFC_SetState(s32);
+    void WFC_OperationCallback(void);
+    s32 func_020121d8(M2C_UNK);
+    s32 irq = OS_DisableInterrupts();
+    void *session = (void *)gWfcSession;
+    s32 result;
 
-    if (p == 0) {
-        OS_RestoreInterrupts(s);
+    if (session == 0) {
+        OS_RestoreInterrupts(irq);
         return 1;
     }
-    v = M2C_FIELD(p, s32 *, 0x2260);
-    switch (v) {
-    case 1:
-        OS_RestoreInterrupts(s);
+    switch (M2C_FIELD(session, s32 *, WFC_SESSION_STATE)) {
+    case WFC_SESSION_STATE_WIRELESS:
+        OS_RestoreInterrupts(irq);
+        return 2;
+    case WFC_SESSION_STATE_STARTED:
+        OS_RestoreInterrupts(irq);
+        return 0;
+    default:
+        OS_RestoreInterrupts(irq);
         return 1;
-    case 3:
-        r = func_020121d8((M2C_UNK)WFC_OperationCallback);
-        switch (r) {
+    case WFC_SESSION_STATE_READY:
+        result = func_020121d8((M2C_UNK)WFC_OperationCallback);
+        switch (result) {
         case 2:
-            WFC_SetState(4);
-            M2C_FIELD((void *)gWfcSession, u16 *, 0x2280) = 2;
-            OS_RestoreInterrupts(s);
-            return 3;
+            WFC_SetState(WFC_SESSION_STATE_WIRELESS);
+            M2C_FIELD((void *)gWfcSession, u16 *, WFC_SESSION_SUBSTATE) = 2;
+            break;
         case 8:
-            OS_RestoreInterrupts(s);
+            OS_RestoreInterrupts(irq);
             return 4;
         case 3:
         default:
-            WFC_SetState(0xB);
-            OS_RestoreInterrupts(s);
+            WFC_SetState(WFC_SESSION_STATE_ERROR);
+            OS_RestoreInterrupts(irq);
             return 7;
         }
-    case 4:
-        OS_RestoreInterrupts(s);
-        return 2;
-    default:
-        OS_RestoreInterrupts(s);
-        return 0;
+        break;
     }
+    OS_RestoreInterrupts(irq);
+    return 3;
 }
 
 void func_02027518(s32 a,s32 b){s32 WFC_ProcessConnectStep(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)WFC_ProcessConnectStep();else WFC_SubmitMatchRequest();}
@@ -453,8 +462,8 @@ void WFC_SetRequest(void *a, s32 b) {
 
 void WFC_FillRequest(s32 a, void *b, s32 c) {
     u32 WFC_SetStatusBits(u32);
-    u16 func_02028038(s32);
-    u16 func_02011e98(void);
+    u16 WFC_FindFreePlayerSlot(s32);
+    u16 GetConsoleLocalId(void);
     void MI_CpuCopy8(void *, void *, u32);
     extern s32 gWfcSession;
     extern u8 data_020ea758[];
@@ -464,10 +473,10 @@ void WFC_FillRequest(s32 a, void *b, s32 c) {
     WFC_SetStatusBits((u32)c);
     M2C_FIELD((void *)gWfcSession, void **, 0x2288) = (void *)((s32)gWfcSession + 0x1500);
     M2C_FIELD((void *)gWfcSession, u16 *, 0x228c) = 0x400;
-    tmp = func_02028038(0);
+    tmp = WFC_FindFreePlayerSlot(0);
     M2C_FIELD((void *)gWfcSession, u16 *, 0x228e) = (u16)(((s32)1 << tmp) >> 1);
     if (M2C_FIELD((void *)gWfcSession, u16 *, 0x2268) == 0) {
-        u16 v = func_02011e98();
+        u16 v = GetConsoleLocalId();
         M2C_FIELD((void *)gWfcSession, u16 *, 0x2290) = v;
         {
             u32 x = M2C_FIELD((void *)gWfcSession, u32 *, 0x2264);

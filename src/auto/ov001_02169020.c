@@ -1,7 +1,6 @@
 /* 17 functions from 0x02169020 to 0x02169E3C (ov001), found by ds-decomp. */
 #include "common.h"
 extern u8 data_ov001_0218c9e4[4][4][2];
-typedef struct { s32 x, y; } FontSize;
 
 void *func_ov001_02169020(void *a,s32 b){u16 n,i;void *p; p=a+M2C_FIELD(a,u16 *,12);n=M2C_FIELD(a,u16 *,14);i=0;for(;i<n;i++){if(M2C_FIELD(p,s32 *,0)==b)return p;p+=M2C_FIELD(p,s32 *,4);}return 0;}
 
@@ -60,7 +59,22 @@ s32 GetTextLineWidth(void *font,s32 letterSpacing,s32 start,s32 *nextLine){s32 p
 
 s32 GetTextBlockHeight(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
 
-void GetTextBlockSize(FontSize *out,void **a,s32 b,s32 c,s32 d){FontSize v={0,0};s32 n=1,w;while(d){w=GetTextLineWidth(a,b,d,&d);if(w>v.x)v.x=w;n++;}v.y=(n-1)*(c+M2C_FIELD(*a,s8 *,1))-c;*out=v;}
+/* Measure a block of text: the widest line becomes the block width, and the
+ * block height is the line count times the font's line height plus the extra
+ * line spacing, less one line's spacing. Each iteration measures one line and
+ * leaves `text` at the start of the next; 0 means the text has ended. */
+void GetTextBlockSize(Ov001TextSize *out, Ov001Font *font, s32 letterSpacing, s32 lineSpacing, s32 text) {
+    Ov001TextSize size = {0, 0};
+    s32 lines = 1, width;
+
+    while (text) {
+        width = GetTextLineWidth(font, letterSpacing, text, &text);
+        if (width > size.width) size.width = width;
+        lines++;
+    }
+    size.height = (lines - 1) * (lineSpacing + font->resource->lineHeight) - lineSpacing;
+    *out = size;
+}
 
 #pragma intrinsic on
 u32 func_ov001_0216939c(u32 x,u32 y,s32 w,s32 h,s32 sx,s32 sy){
@@ -89,7 +103,7 @@ s32 func_ov001_02169494(u8 *a){extern s32 data_ov001_0218ca04[4][4];return data_
 
 void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp) {
     M2C_UNK MI_CpuFill32(s32, s32, s32);
-    u64 mask;
+    u32 left, right, mask;
     u32 lo, hi, v0, v1, n0, n1;
     u32 *p;
     u32 *end;
@@ -99,8 +113,10 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
         return;
     }
     if (bpp == 4) {
-        mask = (~0ull >> (64 - (shift * 4 + w * 4))) << (shift * 4);
-        lo = (u32) mask;
+        left = shift * 4;
+        right = 32 - (left + w * 4);
+        mask = (~0u >> left) << (right + left);
+        lo = mask >> right;
         v0 = color & lo;
         n0 = ~lo;
         p = dst + start;
@@ -114,9 +130,18 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
         } while (p < end);
         return;
     }
-    mask = (~0ull >> (64 - (shift * 8 + w * 8))) << (shift * 8);
-    lo = (u32) mask;
-    hi = (u32) (mask >> 32);
+    left = shift * 8;
+    right = 64 - (left + w * 8);
+    lo = ~0u >> left;
+    if (right < 32)
+        lo <<= left;
+    else
+        lo = (lo << (left + (right - 32))) >> (right - 32);
+    hi = ~0u << right;
+    if (left < 32)
+        hi >>= right;
+    else
+        hi = (hi >> ((left - 32) + right)) << (left - 32);
     v0 = color & lo;
     v1 = color & hi;
     n0 = ~lo;

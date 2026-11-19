@@ -25,7 +25,7 @@ s32 GetUnitIconTiles(s32,s32);
 s32 GetArmyPalette(s32);
 void QueueMemoryCopy(s32,s32,s32,s32);
 void CopyToObjPaletteShadow(s32,s32,s32);
-s32 func_020a8604(s32);
+s32 UnitKindCanSupply(s32);
 s32 func_020a7c68(s32);
 void DrawDecimalNumber(s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
@@ -41,7 +41,7 @@ AddSprite((u16)((x+23)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FI
 DrawDecimalNumber((x+39)&511,screenY,GetUnitHealthBarCount(unit));
 AddSprite((u16)((x+47)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))) | 0x9000) + (0x3ff & (24 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),gSpriteDesc8x8,8);
 DrawDecimalNumber((x+63)&511,screenY,func_ov000_0216cd2c(unit));
-if(func_020a8604((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)) {
+if(UnitKindCanSupply((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)) {
 AddSprite((u16)((x+71)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))) | 0x9000) + (0x3ff & (58 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),gSpriteDesc8x8,8);
 }else{
 AddSprite((u16)((x+71)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))) | 0x9000) + (0x3ff & (26 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),gSpriteDesc8x8,8);
@@ -186,7 +186,7 @@ void func_020d87d8(void) {
     }
 }
 
-void func_020d8804(void) {
+void UpdateCursorCellDisplayMode(void) {
     extern void **gCurrentMap;
     s32 temp_r0;
 

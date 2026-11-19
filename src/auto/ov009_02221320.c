@@ -231,7 +231,7 @@ if(callback)callback(M2C_FIELD(arg0,u16*,0x44),M2C_FIELD(arg0,s32*,0x3c));
 mask=1<<me;
 if(M2C_FIELD(arg0,u16*,0x44)&(1<<me)){
 func_ov009_022236f4(M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40),(u16)mask);
-func_ov009_02223744(21,(u8)me,M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40));
+HandleLinkChannelCommand(21,(u8)me,M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40));
 }
 M2C_FIELD(arg0,u16*,0x44)&=(-1 ^ mask);
 if(M2C_FIELD(arg0,u16*,0x44)){
@@ -273,7 +273,7 @@ loop_1:
 #pragma opt_lifetimes off
 void func_ov009_02221ae8(Receive21ae8 *state){
 s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
-s32 func_ov009_022254a4(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
+s32 IsLinkHost(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
 s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
 M2C_UNK MI_CpuCopy8();void func_ov009_02222278(s32,M2C_UNK);
 s32 GetLinkLocalPlayerId(void);s32 func_ov009_022240ac(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 func_ov009_022222d0(u8);
@@ -286,12 +286,12 @@ keep=1;packet=func_ov009_02224d0c(size);Pop21ae8((u8)i,packet);
 channel=M2C_FIELD(packet,PacketBits215a4 *,5).low;
 switch(M2C_FIELD(packet,u8 *,4)){
 case 2:
-value=func_ov009_022254a4();p=M2C_FIELD(gLinkState,s32 *,0x48);
+value=IsLinkHost();p=M2C_FIELD(gLinkState,s32 *,0x48);
 if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))QueueHostLinkPacket(2,p,8,(u16)(1<<channel));}
 else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))QueueHostLinkPacket(3,p,8,(u16)(1<<channel));
 else QueueHostLinkPacket(2,packet+12,8,(u16)(1<<channel));break;
 case 3:
-value=func_ov009_022254a4();p=M2C_FIELD(gLinkState,s32 *,0x48);
+value=IsLinkHost();p=M2C_FIELD(gLinkState,s32 *,0x48);
 if(value){if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,4)|=1<<channel;}
 else if(p && M2C_FIELD(p,u32 *,0)==M2C_FIELD(packet,u32 *,12))M2C_FIELD(p,u16 *,4)=0xffff;break;
 case 4:

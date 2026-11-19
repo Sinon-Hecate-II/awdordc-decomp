@@ -80,18 +80,22 @@ void func_0208068c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x60) = 0;
 }
 
-void func_020806b8(void *a) {
+/* Update callback of a screen-offset track sprite: move the tracked engine
+ * offsets to the sprite's current path point and advance the point.  After the
+ * last point the path starts over; once the track has shown its `steps` points
+ * the object goes back to its regular animation. */
+void Step3DSpriteOffsetPath(DS3DSpriteOffsetTrack *track) {
  M2C_UNK Sprite_ResumeAnimation(void *);
- s16 (*p)[2]=M2C_FIELD(a,s16 (**)[2],0x54);
- if(p[M2C_FIELD(a,s32 *,0x5c)][0]==0x7fff) {
- M2C_FIELD(a,s32 *,0x5c)=0;
- if(M2C_FIELD(a,s16 *,0x4c)==-1){Sprite_ResumeAnimation(a);return;}
+ s16 (*point)[2]=track->path;
+ if(point[track->index][0]==0x7fff) {
+ track->index=0;
+ if(track->steps==-1){Sprite_ResumeAnimation(track);return;}
  }
- Set3DSpriteOffset(M2C_FIELD(a,s16 *,0x50),M2C_FIELD(a,u16 *,0x52),p[M2C_FIELD(a,s32 *,0x5c)][0],p[M2C_FIELD(a,s32 *,0x5c)][1]);
- M2C_FIELD(a,s32 *,0x5c)++;
- M2C_FIELD(a,s32 *,0x60)++;
- if(M2C_FIELD(a,s32 *,0x60)!=M2C_FIELD(a,s16 *,0x4c))return;
- Sprite_ResumeAnimation(a);
+ Set3DSpriteOffset(track->target,track->scale,point[track->index][0],point[track->index][1]);
+ track->index++;
+ track->elapsed++;
+ if(track->elapsed!=track->steps)return;
+ Sprite_ResumeAnimation(track);
 }
 
 void func_02080750(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
@@ -117,7 +121,7 @@ void func_020807d0(void) {
 }
 
 #pragma opt_common_subs off
-void func_020807e4(u8 *a,u16 *b,s32 c,s32 d) {
+void DrawTilemapBlock(u8 *a,u16 *b,s32 c,s32 d) {
 u16 v=(c&0x3ff)|((d&15)<<12);
 s32 h=a[1]; register s32 w=a[0]; register u16 *p=(u16 *)(a+2); s32 x,y;
 for(y=0;y<h;y++)for(x=0;x<w;x++) b[y*32+x]=v+*p++;
@@ -449,7 +453,7 @@ s32 LoadFileToBGExtPltt(M2C_UNK path, s32 paletteSlot, s32 offset, s32 size) {
 }
 
 s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_0207c650(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK QueueBGExtPaletteUpload(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 LoadFileToNewBuffer(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
@@ -457,7 +461,7 @@ s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     if (temp_r0 == 0) {
         return 0;
     }
-    func_0207c650(temp_r0, arg1, arg2, arg3, 1);
+    QueueBGExtPaletteUpload(temp_r0, arg1, arg2, arg3, 1);
     return 1;
 }
 

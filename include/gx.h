@@ -35,6 +35,16 @@
 /* 3D display control. */
 #define REG_DISP3DCNT (*(volatile u16 *)0x04000060)
 
+/* Power control 1: bit 15 swaps which engine drives the two LCDs. */
+#define REG_POWCNT1 (*(volatile u16 *)0x04000304)
+#define POWCNT1_LCD_SWAP 0x8000
+
+/* Display capture control and the two blended-capture values the battle screen
+ * swap uses: one captures the 2D engine, the other the 3D engine. */
+#define REG_DISPCAPCNT (*(volatile u32 *)0x04000064)
+#define DISPCAPCNT_CAPTURE_2D 0x80320000
+#define DISPCAPCNT_CAPTURE_3D 0x80330000
+
 /* Geometry engine command ports.  Writing a command's parameters to these
  * FIFO ports queues the command; see GBATEK's GX command list. */
 #define REG_GX_MTX_MODE   (*(volatile u32 *)0x04000440)

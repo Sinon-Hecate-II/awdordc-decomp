@@ -43,10 +43,10 @@ void func_0202aeb4(void) {
     M2C_UNK func_02008c38(u8, s32);
     void func_02008c18(u8);
     void func_0202b338(void *);
-    void func_0202ef34(void *);
-    s32 func_0202ef00(void *);
-    s32 func_0202ef4c(void *);
-    void func_0202b298(void *);
+    void AdvanceFade(void *);
+    s32 GetFadeValue(void *);
+    s32 IsFadeDone(void *);
+    void Sound_ReleaseVoice(void *);
     extern M2C_UNK gActiveVoices;
     extern s16 data_020e9ca0[];
     s32 r11;
@@ -74,7 +74,7 @@ void func_0202aeb4(void) {
             func_0202b338(r6);
             goto next;
         }
-        func_0202ef34((u8 *)r6 + 0x1C);
+        AdvanceFade((u8 *)r6 + 0x1C);
         {
             void *four = *(void **)((u8 *)r6 + 0x04);
             u8 v41 = *(u8 *)((u8 *)r6 + 0x41);
@@ -83,7 +83,7 @@ void func_0202aeb4(void) {
             s32 r8v = data_020e9ca0[v41];
             s32 r10 = data_020e9ca0[fi];
             s32 r9v = data_020e9ca0[v40];
-            s32 ef = func_0202ef00((u8 *)r6 + 0x1C);
+            s32 ef = GetFadeValue((u8 *)r6 + 0x1C);
             s32 r89 = r9v + r8v;
             s32 pef = data_020e9ca0[ef >> 8];
             s32 r10r = r10 + r89;
@@ -99,8 +99,8 @@ void func_0202aeb4(void) {
             }
         }
         if (*(u8 *)((u8 *)r6 + 0x2C) == 2) {
-            if (func_0202ef4c((u8 *)r6 + 0x1C)) {
-                func_0202b298(r6);
+            if (IsFadeDone((u8 *)r6 + 0x1C)) {
+                Sound_ReleaseVoice(r6);
             }
         }
     tail:
@@ -113,12 +113,36 @@ void func_0202aeb4(void) {
     } while (r7 != 0);
 }
 
-void *Sound_AcquireVoice(void *a,s32 b,s32 c){
-extern M2C_UNK gSoundChannels;void *ListNext();void *func_0202b2d0();void func_0202acbc();
-void func_0202b298(void *);M2C_UNK func_0202b1f4(M2C_UNK *,void *);void *old=M2C_FIELD(a,void **,0);void *p=(u8 *)&gSoundChannels+b*36;void *q;
-if(old)func_0202acbc(a);
-if(M2C_FIELD(p,u16 *,8)>=M2C_FIELD(p,u32 *,24)){q=ListNext(p,0);if(!q)return 0;if(c<M2C_FIELD(q,u8 *,61))return 0;func_0202b298(q);}
-q=func_0202b2d0(c);if(!q)return 0;func_0202b1f4(p,q);M2C_FIELD(q,void **,0)=a;M2C_FIELD(a,void **,0)=q;return q;
+/* Gives a player a driver voice on one of its channels: detaches the voice the
+ * player already holds, frees the channel's lowest-priority voice when the
+ * channel is full and the request's priority allows it, allocates a voice of
+ * that priority, inserts it into the channel's priority-ordered list and links
+ * it to the player.  Returns the voice, or NULL when the channel is full of
+ * higher-priority voices or no voice can be taken. */
+void *Sound_AcquireVoice(void *player, s32 channel, s32 priority) {
+    extern M2C_UNK gSoundChannels;
+    void *ListNext();
+    void *Sound_AllocVoice();
+    void func_0202acbc();
+    void Sound_ReleaseVoice(void *);
+    M2C_UNK Sound_InsertChannelVoice(M2C_UNK *, void *);
+    void *previous = M2C_FIELD(player, void **, SOUND_PLAYER_VOICE);
+    void *channelVoices = (u8 *)&gSoundChannels + channel * SOUND_CHANNEL_SIZE;
+    void *voice;
+
+    if (previous) func_0202acbc(player);
+    if (M2C_FIELD(channelVoices, u16 *, SOUND_LIST_COUNT) >= M2C_FIELD(channelVoices, u32 *, SOUND_CHANNEL_VOICE_LIMIT)) {
+        voice = ListNext(channelVoices, 0);
+        if (!voice) return 0;
+        if (priority < M2C_FIELD(voice, u8 *, SOUND_VOICE_PRIORITY)) return 0;
+        Sound_ReleaseVoice(voice);
+    }
+    voice = Sound_AllocVoice(priority);
+    if (!voice) return 0;
+    Sound_InsertChannelVoice(channelVoices, voice);
+    M2C_FIELD(voice, void **, SOUND_VOICE_PLAYER) = player;
+    M2C_FIELD(player, void **, SOUND_PLAYER_VOICE) = voice;
+    return voice;
 }
 
 void Sound_FreeVoice(void) {
@@ -132,7 +156,7 @@ func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_F
 func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
 }
 
-void func_0202b10c(void *a,s32 b){void func_0202b298(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){func_0202b298(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
+void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
 
 void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *ListNext();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=ListNext(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
 
@@ -150,11 +174,11 @@ void func_0202b1ac(void *arg0) {
     func_0202eed8(arg0 + 0x1C, 0x7F00, 1);
 }
 
-M2C_UNK func_0202b1f4(M2C_UNK *a,void *b){void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}func_02029d18(a,p,b);M2C_FIELD(b,void **,4)=a;}
+M2C_UNK Sound_InsertChannelVoice(M2C_UNK *a,void *b){void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}func_02029d18(a,p,b);M2C_FIELD(b,void **,4)=a;}
 
 M2C_UNK func_0202b244(void *a){extern M2C_UNK gActiveVoices;void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(&gActiveVoices,p);}func_02029d18(&gActiveVoices,p,a);}
 
-void func_0202b298(void *arg0) {
+void Sound_ReleaseVoice(void *arg0) {
     M2C_UNK func_02008bd0(u8);
     M2C_UNK func_02008c38(u8, s32);
     if (M2C_FIELD(arg0, u8 *, 0x2C) == 2) {
@@ -164,7 +188,7 @@ void func_0202b298(void *arg0) {
     func_0202b338(arg0);
 }
 
-void *func_0202b2d0(s32 a){void *ListNext();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=ListNext(&gFreeVoices,0);if(!p){p=ListNext(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;func_0202b298(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
+void *Sound_AllocVoice(s32 a){void *ListNext();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=ListNext(&gFreeVoices,0);if(!p){p=ListNext(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;Sound_ReleaseVoice(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
 
 void func_0202b338(void *a){M2C_UNK ListRemove();void ListAppend();extern M2C_UNK gActiveVoices,gFreeVoices;void *p=M2C_FIELD(a,void **,0);void *list;
 if(p){M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(a,s32 *,0)=0;}
@@ -173,15 +197,15 @@ if(M2C_FIELD(a,void **,8)){ListAppend(list+12,M2C_FIELD(a,void **,8));M2C_FIELD(
 ListRemove(&gActiveVoices,a);ListAppend(&gFreeVoices,a);M2C_FIELD(a,u8 *,44)=0;
 }
 
-void func_0202b3bc(void *arg0) {
-    M2C_UNK func_0202c51c();
+void Sound_FreeChannelHeap(void *arg0) {
+    M2C_UNK Sound_DestroyHeap();
     extern M2C_UNK gSoundChannels;
     void *temp_r1;
 
     if (M2C_FIELD(arg0, s32 *, 8) == 0) {
         return;
     }
-    func_0202c51c();
+    Sound_DestroyHeap();
     temp_r1 = M2C_FIELD(arg0, void **, 0xC);
     if (temp_r1 != NULL) {
         M2C_FIELD(temp_r1, s32 *, 8) = 0;
@@ -191,7 +215,7 @@ void func_0202b3bc(void *arg0) {
 }
 
 void func_0202b40c(void *arg0, s8 arg1) {
-    M2C_UNK func_0202b1f4(M2C_UNK *, void *);
+    M2C_UNK Sound_InsertChannelVoice(M2C_UNK *, void *);
     M2C_UNK func_0202b244(void *);
     extern M2C_UNK gActiveVoices;
     M2C_UNK *temp_r4;
@@ -204,7 +228,7 @@ void func_0202b40c(void *arg0, s8 arg1) {
     ListRemove(&gActiveVoices, arg0);
     M2C_FIELD(arg0, s8 *, 0x3D) = arg1;
     if (temp_r4 != NULL) {
-        func_0202b1f4(temp_r4, arg0);
+        Sound_InsertChannelVoice(temp_r4, arg0);
     }
     func_0202b244(arg0);
 }
@@ -437,10 +461,23 @@ void func_0202ba8c(void) {
     M2C_FIELD(&gStreamSoundState, s32 *, 0x48) = 0;
 }
 
-void func_0202baa4(void){void func_0202ef34(void *);s32 func_0202ef4c(void *);s32 func_0202ef00(void *);void StopStreamVoice(void);M2C_UNK func_02008dfc();extern M2C_UNK gStreamSoundState,gStreamVoice;void *p=&gStreamVoice;s32 volume;
-if(!M2C_FIELD(&gStreamSoundState,s32 *,72))return;if(M2C_FIELD(p,s32 *,4))return;func_0202ef34(p+60);
-if(M2C_FIELD(p,s32 *,76)&&func_0202ef4c(p+60)){StopStreamVoice();return;}
-volume=func_0202ef00(p+60)>>8;if(volume==M2C_FIELD(p,s32 *,80))return;func_02008dfc(M2C_FIELD(p,s32 *,36),volume,0);M2C_FIELD(p,s32 *,80)=volume;
+/* Per-frame volume update of the streamed voice: advances the open voice's fade
+ * and, once the fade has run out while a refill is pending, stops the stream;
+ * otherwise it writes the fade's volume to the stream's channels as soon as it
+ * changes. */
+void UpdateStreamVoiceVolume(void){
+    void AdvanceFade(void *);s32 IsFadeDone(void *);s32 GetFadeValue(void *);void StopStreamVoice(void);M2C_UNK func_02008dfc();
+    extern M2C_UNK gStreamSoundState,gStreamVoice;
+    void *voice=&gStreamVoice;
+    s32 volume;
+    if(!M2C_FIELD(&gStreamSoundState,s32 *,STREAM_STATE_VOICE))return;
+    if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED))return;
+    AdvanceFade((u8 *)voice+STREAM_VOICE_ENVELOPE);
+    if(M2C_FIELD(voice,s32 *,STREAM_VOICE_REFILL)&&IsFadeDone((u8 *)voice+STREAM_VOICE_ENVELOPE)){StopStreamVoice();return;}
+    volume=GetFadeValue((u8 *)voice+STREAM_VOICE_ENVELOPE)>>8;
+    if(volume==M2C_FIELD(voice,s32 *,STREAM_VOICE_VOLUME))return;
+    func_02008dfc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),volume,0);
+    M2C_FIELD(voice,s32 *,STREAM_VOICE_VOLUME)=volume;
 }
 
 /* Stops the streamed sound voice: silences its channel masks, waits for the
@@ -482,7 +519,7 @@ channel=p->channel;
 func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
 #pragma opt_common_subs on
-void func_0202bd00(void *a,s32 b,s32 c,s32 d){M2C_UNK InitFileRequest(void *);s32 func_0200b95c(void *,s32);s32 OpenFileRange(void *,Unk02BDFileRange);s32 LoadResourceArchive(void *,s32,s32);extern void *gCurrentArchive;
+void Sound_OpenArchive(void *a,s32 b,s32 c,s32 d){M2C_UNK InitFileRequest(void *);s32 func_0200b95c(void *,s32);s32 OpenFileRange(void *,Unk02BDFileRange);s32 LoadResourceArchive(void *,s32,s32);extern void *gCurrentArchive;
 M2C_FIELD(a,s32 *,140)=0;M2C_FIELD(a,s32 *,132)=0;M2C_FIELD(a,s32 *,136)=0;
 if(!func_0200b95c(a+124,b))return;InitFileRequest(a+52);
 if(!OpenFileRange(a+52,M2C_FIELD(a,Unk02BDFileRange *,124)))return;M2C_FIELD(a,s32 *,48)=1;

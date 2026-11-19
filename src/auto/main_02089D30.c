@@ -10,7 +10,7 @@ void func_02089d30(void *arg0) {
     void func_02089cec(void *);
     void *func_0209c658(void *);
     void *func_0209c5dc(void *,s32);
-    s32 func_0209b5e4(s32,void *);
+    s32 RenderTextToTiles(s32,void *);
     s32 func_0209c690(void *);
     void *func_020ab1c4(s32);
     void InitUnitSprite(void *,s32,s32,s32,s32);
@@ -52,7 +52,7 @@ void func_02089d30(void *arg0) {
         do{
             entry=func_0209c5dc(M2C_FIELD(arg0,void **,0x70),index);
             if(!entry||entry==end||index==8)break;
-            length=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+offset,entry);
+            length=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+offset,entry);
             measuredKind=func_0209c690(entry);
             M2C_FIELD(arg0,u8 **,0x68)[index]=length;
             M2C_FIELD(arg0,u8 **,0x6c)[index]=measuredKind;

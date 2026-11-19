@@ -21,6 +21,16 @@
 
 /* Fields of the sprite-slot manager (gSpriteSlotManager). */
 #define SPRITE_SLOT_MGR_FOCUS     0x0C /* void *slot that currently has focus, 0 when none */
+#define SPRITE_SLOT_MGR_FRAME_TL_X 0x10 /* s16 focus frame top-left x */
+#define SPRITE_SLOT_MGR_FRAME_TL_Y 0x12 /* s16 focus frame top-left y */
+#define SPRITE_SLOT_MGR_FRAME_TR_X 0x14 /* s16 focus frame top-right x */
+#define SPRITE_SLOT_MGR_FRAME_TR_Y 0x16 /* s16 focus frame top-right y */
+#define SPRITE_SLOT_MGR_FRAME_BL_X 0x18 /* s16 focus frame bottom-left x */
+#define SPRITE_SLOT_MGR_FRAME_BL_Y 0x1A /* s16 focus frame bottom-left y */
+#define SPRITE_SLOT_MGR_FRAME_BR_X 0x1C /* s16 focus frame bottom-right x */
+#define SPRITE_SLOT_MGR_FRAME_BR_Y 0x1E /* s16 focus frame bottom-right y */
+#define SPRITE_SLOT_MGR_FRAME_OFF_X 0x20 /* s16 x drawn from the top-left corner */
+#define SPRITE_SLOT_MGR_FRAME_OFF_Y 0x22 /* s16 y drawn from the top-left corner */
 #define SPRITE_SLOT_MGR_SCREEN    0x24 /* u8 screen the active slots belong to (0 main, 1 sub, 3 either) */
 #define SPRITE_SLOT_MGR_HAS_FOCUS 0x25 /* u8 nonzero while a slot took focus */
 

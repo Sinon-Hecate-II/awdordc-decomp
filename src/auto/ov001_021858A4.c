@@ -122,11 +122,11 @@ void func_ov001_02185ba8(s32 arg0) {
 s32 Ov001_ConnectToWfcServer(s32 callback){
 void *Ov001_Alloc(s32,s32);u64 GetSystemTick(void);
 s32 func_02012218(M2C_UNK,M2C_UNK,M2C_UNK);
-s32 func_02011af8(void *);u16 func_02011e98(void);void func_02007740(void *);
+s32 func_02011af8(void *);u16 GetConsoleLocalId(void);void GetSystemUserProfile(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 Ov001_SendServerRequest(void);
 M2C_UNK Ov001_AddTask(M2C_UNK,void (*)(void),M2C_UNK,M2C_UNK);
 M2C_UNK Ov001_FreeAlloc(M2C_UNK);
-void func_ov001_02185ea8();void Ov001_ReportConnectionState();
+void Ov001_HandleServerReply();void Ov001_ReportConnectionState();
 extern void *gOv001ConnectionState;extern s32 gOv001MenuLayout;extern const u8 data_ov001_0218fbfc[],gOv001GameId[];
 u8 buf[0x54];void *p;u64 ts;void **state;
 gOv001ConnectionState=Ov001_Alloc(0x1ba0,0x20);
@@ -136,7 +136,7 @@ state=&gOv001ConnectionState;
 p=*state;
 M2C_FIELD(p,u32 *,OV001_CONN_START_TICK)=(u32)ts;M2C_FIELD(p,u32 *,OV001_CONN_START_TICK+4)=(u32)(ts>>32);
 /* wait for the library to finish starting, then for its response block */
-if(func_02012218((M2C_UNK)*state,(M2C_UNK)func_ov001_02185ea8,3)==2){
+if(func_02012218((M2C_UNK)*state,(M2C_UNK)Ov001_HandleServerReply,3)==2){
 do {
 func_02011af8((u8 *)*state+OV001_CONN_RESPONSE);
 p=*state;
@@ -146,8 +146,8 @@ p=*state;
 *(InitBlock68 *)((u8 *)p+OV001_CONN_PROFILE)=*(const InitBlock68 *)data_ov001_0218fbfc;
 {void *base=(u8 *)p+0xf00;p=(u8 *)p+0x1000;M2C_FIELD(p,void **,0x374)=base;}
 }
-M2C_FIELD(gOv001ConnectionState,u16 *,0x137c)=func_02011e98();
-func_02007740(buf);
+M2C_FIELD(gOv001ConnectionState,u16 *,0x137c)=GetConsoleLocalId();
+GetSystemUserProfile(buf);
 MI_CpuCopy8((void *)gOv001GameId,(u8 *)gOv001ConnectionState+OV001_CONN_GAME_ID,8);
 M2C_FIELD(gOv001ConnectionState,u8 *,OV001_CONN_USER_COUNT)=1;
 MI_CpuCopy8(buf+4,(u8 *)gOv001ConnectionState+OV001_CONN_USERS,M2C_FIELD(buf,u16 *,0x1a)<<1);
@@ -161,9 +161,9 @@ Ov001_FreeAlloc((M2C_UNK)(&gOv001MenuLayout+2));return 0;
 #pragma opt_common_subs reset
 s32 Ov001_SendServerRequest(void) {
     s32 WFC_SendRequestPacket(void (*)(void), void *);
-    void func_ov001_02185ea8();
+    void Ov001_HandleServerReply();
     extern void *gOv001ConnectionState;
-    if (WFC_SendRequestPacket(func_ov001_02185ea8, (s8 *)gOv001ConnectionState + 0x1374) == 2) {
+    if (WFC_SendRequestPacket(Ov001_HandleServerReply, (s8 *)gOv001ConnectionState + 0x1374) == 2) {
         return 1;
     }
     return 0;
@@ -174,7 +174,7 @@ s32 func_ov001_02185dac(void) {
     s32 func_02011af8(void *);
     s32 func_02012274(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
-    void func_ov001_02185ea8(u16 *);
+    void Ov001_HandleServerReply(u16 *);
     void func_ov001_0218c94c(s32,s32);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK);
     extern void *gOv001ConnectionState;
@@ -184,14 +184,14 @@ u32 state;
     *(u8 *)((s8 *)gOv001ConnectionState + 0x1b94) = 1;
     func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
     if (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2) {
-        if (func_02012274((void (*)(void))func_ov001_02185ea8) != 2) {
+        if (func_02012274((void (*)(void))Ov001_HandleServerReply) != 2) {
             return 0;
         }
         do {
             func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
         } while (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2);
     }
-    if (WFC_EndLink((void (*)(void))func_ov001_02185ea8) != 2) {
+    if (WFC_EndLink((void (*)(void))Ov001_HandleServerReply) != 2) {
         return 0;
     }
     if (M2C_FIELD((s8*)gOv001ConnectionState+0x1000,s32*,0xb90) != 0) {
@@ -209,14 +209,38 @@ void Ov001_SetConnectionStatusCallback(s32 arg0) {
     M2C_FIELD(gOv001ConnectionState, s32 *, 0x1370) = arg0;
 }
 
-void func_ov001_02185ea8(u16 *p) {
-extern void *gOv001ConnectionState;u32 v;void *q;
-if(p[1])return;q=gOv001ConnectionState;
-v=M2C_FIELD(q,u8 *,0x1b94);
-if(v){if(p[0]==2)M2C_FIELD(q,u8 *,0x1b94)=2;return;}
-v=p[0];if(v!=38)return;
-v=p[4];switch(v){case 5:if(M2C_FIELD(q,u8 *,0x1b96))Ov001_MergeProfileList(p);else func_ov001_02185f38(p);Ov001_SendServerRequest();break;
-case 4:Ov001_SendServerRequest();break;default:SystemHalt(p);break;}
+/* Reply callback of the ov001 WFC connection: ignores failed replies, marks the
+ * lobby quit finished when the link shuts down, and answers the server's profile
+ * list (the first reply builds the player roster, later ones merge into it) by
+ * polling the next request.  Any other request operation halts the console. */
+void Ov001_HandleServerReply(u16 *reply) {
+    extern void *gOv001ConnectionState;
+    u32 v;
+    void *state;
+
+    if (reply[WFC_REPLY_RESULT]) return;
+    state = gOv001ConnectionState;
+    v = M2C_FIELD(state, u8 *, OV001_CONN_FLAG);
+    if (v) {
+        if (reply[WFC_REPLY_COMMAND] == WFC_CMD_SHUTDOWN) M2C_FIELD(state, u8 *, OV001_CONN_FLAG) = 2;
+        return;
+    }
+    v = reply[WFC_REPLY_COMMAND];
+    if (v != WFC_REQUEST_COMMAND) return;
+    v = reply[WFC_REPLY_OP];
+    switch (v) {
+    case WFC_REQUEST_OP_PROFILE_LIST:
+        if (M2C_FIELD(state, u8 *, OV001_CONN_HAS_PROFILE)) Ov001_MergeProfileList(reply);
+        else func_ov001_02185f38(reply);
+        Ov001_SendServerRequest();
+        break;
+    case WFC_REQUEST_OP_NEXT:
+        Ov001_SendServerRequest();
+        break;
+    default:
+        SystemHalt(reply);
+        break;
+    }
 }
 
 #pragma opt_strength_reduction off
@@ -441,9 +465,9 @@ else M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_SlideRegionMenu
 }
 #pragma scheduling reset
 void func_ov001_02186604(void) {
-extern void *gOv001RegionMenu;void func_ov001_02186c68();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
+extern void *gOv001RegionMenu;void Ov001_RegionMenuCloseDelay();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,20));
-M2C_FIELD(gOv001RegionMenu,s32 *,20)=Ov001_AddTask(1,func_ov001_02186c68,0,120);
+M2C_FIELD(gOv001RegionMenu,s32 *,20)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
 }
 
 s8 func_ov001_02186648(void) {

@@ -230,18 +230,24 @@ void func_ov000_0219fd54(void) {
     AddRecordValue(0x11, 1);
 }
 
-void func_ov000_0219fdc8(void) {
+/* The AI's turn-plan state machine.  Each pass runs the plan step for the current
+ * AI_STATE_PHASE: the step either completes (advancing the phase and releasing the
+ * targets it no longer needs) or returns so the machine is called again next frame.
+ * A phase is skipped on the first turn, or when the AI fields no units at all;
+ * once the army is at its unit cap the AI gives up and ends its turn. */
+void ProcessAiTurnPlan(void) {
     void InitAiTurn(void);
     void BuildThreatMapAgainstKind6(void);
     s32 BuildAiKind6Unit(void);
     s32 func_ov000_021a1ab8(void);
-    s32 func_ov000_021a1b1c(void);
+    s32 BuildAiCounterUnit(void);
+    s32 func_ov000_021a1c24(void);
     s32 func_ov000_021a1d08(void);
     s32 func_ov000_021a21f8(s32);
     s32 BuildAiBasicUnit(void);
     void UpdateAiCandidateCosts(void);
     s32 func_ov000_021a4320(void);
-    s32 func_ov000_021a1dec(void);
+    s32 BuildAiSubmarine(void);
     s32 func_ov000_021a2db8(void);
     s32 func_ov000_021a20d4(void);
     void CommitAiAction(s32);
@@ -251,110 +257,122 @@ void func_ov000_0219fdc8(void) {
     extern u8 gAiCommand[];
     extern void **gCurrentMap;
 
-    void ***addrMap = (void ***)&gCurrentMap;
-    u8 **addr578 = &gAiState;
-    register s32 zero = 0;
-    register s32 one = 1;
-
-    if (addr578[0][2] != 0 && addr578[0][7] >= 0x32) {
-        M2C_FIELD(gAiCommandState, u8 *, 0) = 6;
-        return;
-    }
-    switch (addr578[0][2]) {
+    for (;;) {
+        u8 *state = gAiState;
+        u8 phase = state[AI_STATE_PHASE];
+        if (phase != 0 && state[AI_STATE_UNIT_COUNT] >= AI_STATE_UNIT_COUNT_MAX) {
+            M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_PHASE) = AI_COMMAND_PHASE_END_TURN;
+            return;
+        }
+        switch (phase) {
         case 0:
             InitAiTurn();
-            addr578[0][2]++;
+            gAiState[AI_STATE_PHASE]++;
             BuildThreatMapAgainstKind6();
             break;
         case 1:
-            if (BuildAiKind6Unit() != 0) return;
-            addr578[0][2]++;
+            if (BuildAiKind6Unit()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 2:
-            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 && addr578[0][7] == 0) {
-                addr578[0][2]++;
+            if (M2C_FIELD(gCurrentMap[0], u16 *, MAP_TURN) == 1 && state[AI_STATE_UNIT_COUNT] == 0) {
+                state[AI_STATE_PHASE]++;
                 break;
             }
+            if (func_ov000_021a1ab8()) return;
+            gAiState[AI_STATE_PHASE]++;
+            ReleaseAiTargets();
+            break;
         case 3:
-            if (func_ov000_021a1ab8() != 0) return;
-            addr578[0][2]++;
+            if (M2C_FIELD(gCurrentMap[0], u16 *, MAP_TURN) == 1 || state[AI_STATE_UNIT_COUNT] == 0) {
+                state[AI_STATE_PHASE]++;
+                break;
+            }
+            if (BuildAiCounterUnit()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 4:
-            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
-                addr578[0][2]++;
+            if (M2C_FIELD(gCurrentMap[0], u16 *, MAP_TURN) == 1 || state[AI_STATE_UNIT_COUNT] == 0) {
+                state[AI_STATE_PHASE]++;
                 break;
             }
+            if (func_ov000_021a1c24()) return;
+            gAiState[AI_STATE_PHASE]++;
+            ReleaseAiTargets();
+            break;
         case 5:
-            if (func_ov000_021a1b1c() != 0) return;
-            addr578[0][2]++;
+            if (M2C_FIELD(gCurrentMap[0], u16 *, MAP_TURN) == 1 || state[AI_STATE_UNIT_COUNT] == 0) {
+                state[AI_STATE_PHASE]++;
+                break;
+            }
+            if (func_ov000_021a1d08()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 6:
-            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) == 1 || addr578[0][7] == 0) {
-                addr578[0][2]++;
-                break;
-            }
-        case 7:
-            if (addr578[0][0xc] != 0) {
-                gAiCommand[6] = addr578[0][0xc];
-                CommitAiAction(addr578[0][0xd]);
-                gAiCommand[7] = 1;
-                addr578[0][0xc] = 0;
+            if (state[AI_STATE_ACTION] != 0) {
+                gAiCommand[AI_COMMAND_UNIT] = state[AI_STATE_ACTION];
+                CommitAiAction(state[0xd]);
+                gAiCommand[AI_COMMAND_ARG_Y] = 1;
+                gAiState[AI_STATE_ACTION] = 0;
                 return;
             }
-            if (func_ov000_021a21f8(one) != 0) return;
-            addr578[0][2]++;
+            if (func_ov000_021a21f8(1)) return;
+            gAiState[AI_STATE_PHASE]++;
+            ReleaseAiTargets();
+            break;
+        case 7:
+            if ((s32)M2C_FIELD(gCurrentMap[0], u16 *, MAP_TURN) > 1) {
+                state[AI_STATE_PHASE]++;
+                break;
+            }
+            if (state[AI_STATE_ACTION] != 0) {
+                gAiCommand[AI_COMMAND_UNIT] = state[AI_STATE_ACTION];
+                CommitAiAction(state[0xd]);
+                gAiCommand[AI_COMMAND_ARG_Y] = 1;
+                gAiState[AI_STATE_ACTION] = 0;
+                return;
+            }
+            if (func_ov000_021a21f8(0)) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 8:
-            if (M2C_FIELD(addrMap[0][0], u16 *, 0x52a2) > 1) {
-                addr578[0][2]++;
-                break;
-            }
-            if (addr578[0][0xc] != 0) {
-                gAiCommand[6] = addr578[0][0xc];
-                CommitAiAction(addr578[0][0xd]);
-                gAiCommand[7] = 1;
-                addr578[0][0xc] = 0;
-                return;
-            }
-            if (func_ov000_021a21f8(zero) != 0) return;
-            addr578[0][2]++;
+            if (BuildAiBasicUnit()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 9:
-            if (BuildAiBasicUnit() != 0) return;
-            addr578[0][2]++;
-            ReleaseAiTargets();
+            UpdateAiCandidateCosts();
+            gAiState[AI_STATE_PHASE]++;
             break;
         case 10:
-            UpdateAiCandidateCosts();
-            addr578[0][2]++;
+            if (func_ov000_021a4320()) return;
+            gAiState[AI_STATE_PHASE]++;
+            ReleaseAiTargets();
             break;
         case 11:
-            if (func_ov000_021a4320() != 0) return;
-            addr578[0][2]++;
+            if (BuildAiSubmarine()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 12:
-            if (func_ov000_021a1dec() != 0) return;
-            addr578[0][2]++;
+            if (func_ov000_021a2db8()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         case 13:
-            if (func_ov000_021a2db8() != 0) return;
-            addr578[0][2]++;
+            if (func_ov000_021a20d4()) return;
+            gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;
         default:
-            if (func_ov000_021a20d4() != 0) return;
-            addr578[0][2]++;
-            ReleaseAiTargets();
-            break;
+            M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_PHASE) = AI_COMMAND_PHASE_END_TURN;
+            return;
+        }
     }
-    M2C_FIELD(gAiCommandState, u8 *, 0) = 6;
 }
 
 void ReleaseAiTargetGroups(void) {

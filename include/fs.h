@@ -24,6 +24,7 @@ struct FSFileRequest {
 #define FS_REQ_RESULT  0x14 /* s32 result of the last command */
 #define FS_REQ_QUEUE   0x18 /* OSThreadQueue the caller waits on */
 #define FS_REQ_DIR_BLOCK 0x30 /* 12-byte directory entry the path resolves from */
+#define FS_REQ_DIR_RESOLVED 0x20 /* 12-byte directory entry the walk has resolved so far */
 #define FS_REQ_PATH      0x3C /* u8 * rest of the path to resolve */
 #define FS_REQ_WANT_DIR  0x40 /* s32 nonzero when the path must name a directory */
 #define FS_REQ_OUT       0x44 /* void * receives the resolved directory or file entry */
@@ -53,8 +54,9 @@ struct FSFileRequest {
 
 /* Scratch fields the directory-read command (3) keeps in the request (it shares
  * the +0x28 word with FS_REQ_FILE_END). */
-#define FS_REQ_DIR_INDEX  0x26 /* u16 index handed to the next short entry */
+#define FS_REQ_DIR_INDEX  0x26 /* u16 id the next short entry gets */
 #define FS_REQ_DIR_OFFSET 0x28 /* u32 stream offset of the next entry */
+#define FS_REQ_DIR_PARENT 0x2C /* u32 index of the current directory's parent in the FNT main table, 0 for the root */
 #define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
 
 /* Request flags at FSFileRequest::flags. */
@@ -169,5 +171,24 @@ typedef struct FSStreamPos {
     void *file;   /* +0x00 the FSFile to read from */
     s32   offset; /* +0x04 byte offset of the next read */
 } FSStreamPos;
+
+/* One 8-byte record of the FNT (file name table) main table: where a
+ * directory's name subtable starts, the id of its first file entry and its
+ * parent directory's index.  The directory commands walk the table by index. */
+typedef struct FSDirectoryTableEntry {
+    u32 nameOffset;  /* +0x00 offset of the directory's name subtable in the FNT */
+    u16 firstFileId; /* +0x04 id of the directory's first file entry */
+    u16 parentIndex; /* +0x06 parent directory's index in the main table, 0 for the root */
+} FSDirectoryTableEntry; /* 8 bytes */
+
+/* The 12 bytes the directory commands keep at FS_REQ_DIR_BLOCK: the archive the
+ * current directory belongs to and, once its table record has been read, the
+ * directory's index and the start of its name subtable. */
+typedef struct FSDirectoryBlock {
+    void *file;      /* +0x00 archive the directory belongs to */
+    u16 index;       /* +0x04 directory's index in the FNT main table */
+    u16 firstFileId; /* +0x06 id of the directory's first file entry */
+    u32 nameOffset;  /* +0x08 offset of the directory's name subtable in the FNT */
+} FSDirectoryBlock;  /* 12 bytes */
 
 #endif

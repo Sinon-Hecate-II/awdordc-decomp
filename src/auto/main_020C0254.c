@@ -1,6 +1,23 @@
 /* 53 functions from 0x020C0254 to 0x020C1230 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct { u8 pad[0x34]; void *entries; u8 status[10]; u8 indices[10]; u8 total,count,selection,width; u8 pad50[4]; u16 x,y; } MenuC0634;
+/* A row of the caller-supplied 0x28-byte entry table a carried-unit list menu is
+ * built from; only the fields the menu reads are named. */
+typedef struct { u8 pad00[0x24]; u16 slot; u16 icon; } MenuRowC0634;
+/* The carried-unit list menu func_020c0634 builds and func_020c04fc drives: the
+ * caller's entry table, a status and an entry index per visible row, the row
+ * counts, the chosen row and the panel's screen position. */
+typedef struct {
+    u8 pad[0x34];
+    void *entries;    /* +0x34 caller's 0x28-byte entry table */
+    u8 status[10];    /* +0x38 per-row status; a row whose status is 2 is hidden */
+    u8 indices[10];   /* +0x42 entry-table index of each visible row */
+    u8 total;         /* +0x4c rows the entry table holds */
+    u8 count;         /* +0x4d visible rows */
+    u8 selection;     /* +0x4e chosen row */
+    u8 width;         /* +0x4f panel width */
+    u8 pad50[4];      /* +0x50 */
+    s16 x, y;         /* +0x54 panel screen position */
+} MenuC0634;
 typedef struct { u8 pad[0x1420]; u8 tiles[0x2338]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0xb9]; u8 visible[0x200]; } MapC10;
 extern void *data_02163eec;
 extern u8 data_02163ef0[];
@@ -72,11 +89,11 @@ void func_020c0394(M2C_UNK arg0) {
     CreateSpriteObject(&data_021294c4, arg0);
 }
 
-s32 func_020c03bc(void *arg0, s32 arg1) {
+s32 GetCarriedUnitListEntry(void *arg0, s32 arg1) {
     return (M2C_FIELD((arg0 + arg1), u8 *, 0x42) * 0x28) + M2C_FIELD(arg0, s32 *, 0x34);
 }
 
-s8 func_020c03d4(s32 arg0, s32 arg1) {
+s8 GetCarriedUnitListEntryStatus(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), s8 *, 0x38);
 }
 
@@ -85,7 +102,7 @@ void func_020c03e0(void *arg0, s32 arg1) {
     void DrawSpriteBatch(void);
     s32 temp_r0;
     void (*temp_r3)(s32, u8, u8);
-    temp_r0 = func_020c03bc(arg0, arg1);
+    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
     func_0207bc80(M2C_FIELD(temp_r0, u16 *, 0x26));
     DrawSpriteBatch();
     temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 0x10);
@@ -96,7 +113,7 @@ void func_020c03e0(void *arg0, s32 arg1) {
 void func_020c0424(void *arg0, s32 arg1) {
     s32 temp_r0;
     void (*temp_r3)(s32, u8, u8);
-    temp_r0 = func_020c03bc(arg0, arg1);
+    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
     temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 8);
     if (temp_r3 == 0) return;
     temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
@@ -105,7 +122,7 @@ void func_020c0424(void *arg0, s32 arg1) {
 void func_020c0454(void *arg0, s32 arg1) {
     s32 temp_r0;
     void (*temp_r3)(s32, u8, u8);
-    temp_r0 = func_020c03bc(arg0, arg1);
+    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
     temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 0xC);
     if (temp_r3 == 0) return;
     temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
@@ -114,7 +131,7 @@ void func_020c0454(void *arg0, s32 arg1) {
 void func_020c0484(void *arg0, s32 arg1) {
     void (*callback)(s32, u8, u8);
     s32 entry;
-    entry = func_020c03bc(arg0, arg1);
+    entry = GetCarriedUnitListEntry(arg0, arg1);
     callback = M2C_FIELD(entry, void (**)(s32, u8, u8), 0x18);
     if (callback == NULL) return;
     callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
@@ -123,7 +140,7 @@ void func_020c0484(void *arg0, s32 arg1) {
 void func_020c04b4(void *arg0, s32 arg1) {
     void (*callback)(s32, u8, u8);
     s32 entry;
-    entry = func_020c03bc(arg0, arg1);
+    entry = GetCarriedUnitListEntry(arg0, arg1);
     callback = M2C_FIELD(entry, void (**)(s32, u8, u8), 0x1C);
     if (callback == NULL) return;
     callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
@@ -141,13 +158,13 @@ void func_020c04fc(void *arg0) {
     void func_020c03e0(void *, s32);
     void func_020c0424(void *, s32);
     M2C_UNK func_020c0e94(void *);
-    M2C_UNK func_020c0f24();
+    M2C_UNK DrawCarriedUnitListBatch();
     void *CreateMenuUnitSprite(void *);
 
     void func_020c04e4(void);
     s32 var_r4;
 
-    func_020c0f24();
+    DrawCarriedUnitListBatch();
     CreateMenuUnitSprite(arg0);
     var_r4 = 0;
     if ((s32) M2C_FIELD(arg0, u8 *, 0x4D) > 0) {
@@ -215,10 +232,10 @@ void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 a
 }
 
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
-void func_020b1b3c(void); s32 CreateSpriteFromClass(s32 *,s32); void func_020d4704(void);
+void ResetSpriteSlots(void); s32 CreateSpriteFromClass(s32 *,s32); void func_020d4704(void);
 extern s32 data_02129630;
 MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
-func_020b1b3c(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=0; offset=0;
+ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=0; offset=0;
 p->entries=(void *)entries;
 for(;;) {
 u8 *entry=((u8 *)p->entries)+offset;
@@ -241,7 +258,7 @@ p->x=x;p->y=y;
 func_020d4704();return (s32)p;
 }
 
-void func_020c0748(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void CreateMenuAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK PlaySoundEffect(s32);
     PlaySoundEffect(0x10017);
     func_020c05fc(arg0, arg1, arg2, 0, arg3);
@@ -361,7 +378,7 @@ s8 func_020c0b9c(void) {extern void *data_02163eec;return M2C_FIELD(data_02163ee
  * slot (the row's +0x24 slot, 0xFFFF when empty), with the carried unit's icon
  * and, when that unit is damaged, the number of health bars it has left. */
 void DrawCarriedUnitList(void *list) {
-M2C_UNK func_0209c764(u16,u16,u16,M2C_UNK,s32);
+M2C_UNK DrawCarriedUnitIcon(u16,u16,u16,M2C_UNK,s32);
 M2C_UNK DrawDecimalNumber(s32,s32,s32);
 s32 GetUnitHealthBarCount(s32);
 extern void *gCurrentMap;
@@ -369,10 +386,10 @@ s32 row=0,x,y,bars;s32 rowOffset;void *entry,*map;u16 slot;u8 carriedId;
 if((s32)M2C_FIELD(list,u8 *,0x4d)<=0)return;
 rowOffset=0;
 do{
-entry=(void *)func_020c03bc(list,row);slot=M2C_FIELD(entry,u16 *,0x24);
+entry=(void *)GetCarriedUnitListEntry(list,row);slot=M2C_FIELD(entry,u16 *,0x24);
 if(slot!=0xffff){
 x=M2C_FIELD(list,s16 *,0x54);y=M2C_FIELD(list,s16 *,0x56)+((u32)rowOffset<<3);
-func_0209c764(slot,(u16)(x+2),(u16)y,0,11);
+DrawCarriedUnitIcon(slot,(u16)(x+2),(u16)y,0,11);
 slot=M2C_FIELD(entry,u16 *,0x24);
 if((slot!=0)&&(slot!=1)){}else{map=*(void **)gCurrentMap;carriedId=M2C_FIELD(M2C_FIELD(map,s32 *,0x52d0)+slot,u8 *,12);
 if(carriedId){bars=GetUnitHealthBarCount((s32)map+0x59a4+carriedId*14);if(bars!=10)DrawDecimalNumber(x+9,y+7,bars);}
@@ -429,7 +446,7 @@ s32 func_020c0d78(void *arg0) {
 s32 func_ov000_0216aa44(u8,s32);
 u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
 if(!func_020c05c4())return 0;
-if(func_ov000_0216aa44(M2C_FIELD(func_020c03bc(p,index),u8 *,0),0))return 0;
+if(func_ov000_0216aa44(M2C_FIELD(GetCarriedUnitListEntry(p,index),u8 *,0),0))return 0;
 if(M2C_FIELD(p+index,u8 *,0x38)==1)PlaySoundEffect(0x1001d);
 else {PlaySoundEffect(0x10016);func_020c0484(p,index);}
 return 1;
@@ -458,7 +475,7 @@ M2C_UNK func_020c0e94(void *p) {
 extern M2C_UNK data_02129608;
 void *AddSpriteSlot(s32,s32,M2C_UNK *,s32);
 s32 func_0207c1b4(s32); s32 func_0207c1d8(s32);
-M2C_UNK FocusSpriteSlotById(); M2C_UNK func_020b204c();
+M2C_UNK FocusSpriteSlotById(); M2C_UNK SetSpriteSlotFrameToFocus();
 s32 i,y; y=0; i=y;
 for(;i<M2C_FIELD(p,u8 *,0x4d);i++) {
 void *q=AddSpriteSlot(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&data_02129608,i);
@@ -467,7 +484,7 @@ s32 h=func_0207c1d8(i);
 M2C_FIELD(q,s16 *,0x18)=w;M2C_FIELD(q,s16 *,0x1a)=h;
 M2C_FIELD(q,void **,0x10)=p;y+=h>>3;
 }
-FocusSpriteSlotById(M2C_FIELD(p,u8 *,0x4e));func_020b204c();
+FocusSpriteSlotById(M2C_FIELD(p,u8 *,0x4e));SetSpriteSlotFrameToFocus();
 }
 
 void func_020c0f18(void) {
@@ -475,19 +492,23 @@ void func_020c0f18(void) {
     func_020b2268();
 }
 
-M2C_UNK func_020c0f24(void *p) {
+/* Draw the carried-unit list menu: add one sprite-batch cell per visible row
+ * (its icon kind and status byte), then draw the finished batch at the menu's
+ * screen position. */
+M2C_UNK DrawCarriedUnitListBatch(void *p) {
 extern u8 data_02163f30[];
 void SetCurrentSpriteBatch(void *);void InitSpriteBatch(s32,s32,s32,s32);
 void func_0207bcc4(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
-s32 i;u16 v;
+MenuC0634 *list=(MenuC0634 *)p;
+s32 i;u16 icon;
 SetCurrentSpriteBatch(data_02163f30);
 InitSpriteBatch(2,1,0x24,3);
-for(i=0;i<M2C_FIELD(p,u8 *,0x4d);i++) {
-v=M2C_FIELD(func_020c03bc(p,i),u16 *,0x26);
-func_0207bcc4((u8)v,(u8)func_020c03d4((s32)p,i));
+for(i=0;i<list->count;i++) {
+icon=((MenuRowC0634 *)GetCarriedUnitListEntry(p,i))->icon;
+func_0207bcc4((u8)icon,(u8)GetCarriedUnitListEntryStatus((s32)p,i));
 }
 func_0207bdc4();
-DrawSpriteBatchAt(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));
+DrawSpriteBatchAt(list->x,list->y);
 }
 
 /* Creates the fixed-geometry unit sprite a menu shows (style 2, size 0x120, kind
@@ -499,7 +520,7 @@ void InitUnitSprite(void *,s32,s32,s32,s32);
 void func_02088e84(void *,s16,s16,s16,s32);
 u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s32,s32,u16,u16);
-void func_020ab150(void *,s16); void func_020aad18(void *);void func_02088f1c(void *);
+void func_020ab150(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
 void *unit; s16 y; s16 x; u32 width,height; u32 visible;
 unit=func_020ab1c4((s32)owner);
 InitUnitSprite(unit,2,0x120,3,1);
@@ -510,7 +531,7 @@ y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);
 width=GetUnitSpriteWidth(unit);height=GetUnitSpriteHeight(unit);
 func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
 }
-func_020ab150(unit,2);func_020aad18(unit);func_02088f1c(unit);return unit;
+func_020ab150(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
 }
 
 void func_020c1078(void) {

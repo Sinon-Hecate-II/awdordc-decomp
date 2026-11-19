@@ -163,8 +163,8 @@ M2C_FIELD(a,u16 *,0x44)&=~0U ^ (one<<self);
 }
 if(M2C_FIELD(a,u16 *,0x44)){
 switch(((Ov010Packet *)M2C_FIELD(a,void **,0x3c))->flags){
-case 0:func_0204445c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));Sprite_ResumeAnimation(a);return;
-case 1:func_0204455c(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
+case 0:SendTransferToPlayers(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));Sprite_ResumeAnimation(a);return;
+case 1:SendDataToPlayers(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
 default:return;
 }}
 func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;
@@ -191,7 +191,7 @@ Sprite_ResumeAnimation(arg0);
 void func_ov010_022272cc(void *arg0) {
 s32 IsOnlineSessionFlagSet(s32);
 s32 GetOnlineTransportPlayerId();
-s32 func_ov010_02229bdc();
+s32 IsOnlineSessionHost();
 s32 func_ov010_02229b48(s32);
 unsigned int func_ov010_022298a0(unsigned int);
 s32 func_ov010_02229920(s32,void *);
@@ -229,7 +229,7 @@ hp=(Ov010Packet *)p;
 chan=hp->channel;
 switch(hp->kind){
 case 2:
-if(func_ov010_02229bdc()){
+if(IsOnlineSessionHost()){
 s=M2C_FIELD(state,void **,0x18);
 if(s&&M2C_FIELD(s,s32 *,0)==M2C_FIELD(p,s32 *,0xc))func_ov010_02229608(2,s,8,(u16)(1<<chan));
 }else{
@@ -242,7 +242,7 @@ func_ov010_02229608(2,(u8 *)p+0xc,8,(u16)(1<<chan));
 }
 break;
 case 3:
-if(func_ov010_02229bdc()){
+if(IsOnlineSessionHost()){
 s=M2C_FIELD(state,void **,0x18);
 if(s&&M2C_FIELD(s,s32 *,0)==M2C_FIELD(p,s32 *,0xc))M2C_FIELD(s,u16 *,4)|=1<<chan;
 }else{

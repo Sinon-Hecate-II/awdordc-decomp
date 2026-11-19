@@ -69,7 +69,7 @@ void HandleWaypointPanelCancel(void *panel, u32 selection) {
 void ToggleWaypointPanelMode(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
- void Show3DSprite(void*); void Hide3DSprite(void*); void func_02088f1c(s32); void Hide3DSpriteSlide(s32);
+ void Show3DSprite(void*); void Hide3DSprite(void*); void Show3DSpriteSlide(s32); void Hide3DSpriteSlide(s32);
  s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 GetUnitSpriteHeight(void*); s32 GetUnitSpriteWidth(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
@@ -89,7 +89,7 @@ void ToggleWaypointPanelMode(void *p) {
  }
  if(((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1){
  {u8 v=M2C_FIELD(p,u8*,0x39)&~12;flag=((u32)(v<<28)>>30)==0;M2C_FIELD(p,u8*,0x39)=v;}
- if(flag && func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(p,void**,0x58));func_02088f1c(*M2C_FIELD(p,s32**,0x64));}
+ if(flag && func_ov003_021e6d28()){Show3DSprite(M2C_FIELD(p,void**,0x58));Show3DSpriteSlide(*M2C_FIELD(p,s32**,0x64));}
  entries=M2C_FIELD(p,s32**,0x64);count=M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);n=count&255;
  if(!IsLinkSessionActive()){for(i=0;i<4;i++){if(i<n){Show3DSprite((void*)entries[i+2]);Show3DSprite((void*)entries[i+6]);}}}
  s=M2C_FIELD(p,void**,0x48);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
@@ -122,27 +122,31 @@ void ToggleWaypointPanelMode(void *p) {
 }
 #pragma pop
 
-void RestoreWaypointOption(u8 *p) {
-s32 GetLocalPlayerIdForOverlay(void);
-s32 func_ov003_021e6cfc(void);
-s32 func_ov003_021e6d28(void);
-s32 IsWaypointOptionValid(u8);
-u8 v=p[9];
-u8 t;
-if(func_ov003_021e6cfc()!=0) {
-t=(p+p[7])[0x74];
-if(t!=GetLocalPlayerIdForOverlay()) {
-if((u8)((p+p[7])[0x74]==255)==0)goto update;
-}
-}
-if(func_ov003_021e6d28()!=0) {
-t=(p+p[7])[0x74];
-if(t!=GetLocalPlayerIdForOverlay())goto update;
-}
-if(IsWaypointOptionValid(v)==0)return;
+/* Apply the option the player-option menu was editing to the selected waypoint
+ * slot (and to the list's current option), unless the link rules reserve the
+ * slot for another player, or the option itself is not a usable CO choice. */
+void RestoreWaypointOption(u8 *list) {
+    s32 GetLocalPlayerIdForOverlay(void);
+    s32 func_ov003_021e6cfc(void);
+    s32 func_ov003_021e6d28(void);
+    s32 IsWaypointOptionValid(u8);
+    u8 pending = M2C_FIELD(list, u8 *, WAYPOINT_LIST_PENDING_OPTION);
+    u8 owner;
+
+    if (func_ov003_021e6cfc() != 0) {
+        owner = M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_IDS);
+        if (owner != GetLocalPlayerIdForOverlay()) {
+            if ((u8)(M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_IDS) == 255) == 0) goto update;
+        }
+    }
+    if (func_ov003_021e6d28() != 0) {
+        owner = M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_IDS);
+        if (owner != GetLocalPlayerIdForOverlay()) goto update;
+    }
+    if (IsWaypointOptionValid(pending) == 0) return;
 update:
-(p+p[7])[10]=v;
-p[8]=v;
+    M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_SLOT_OPTIONS) = pending;
+    M2C_FIELD(list, u8 *, WAYPOINT_LIST_OPTION) = pending;
 }
 
 #pragma push

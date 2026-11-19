@@ -25,14 +25,14 @@ s32 func_ov001_0216cd38(s32 arg0, s32 arg1, s32 arg2) {
     s32 Ov001SwapEndian32(s32);
     s32 func_02021a90(void *);
     void SleepMilliseconds();
-    extern s32 data_021372e0;
+    extern s32 gLocalIpAddress;
     extern M2C_UNK data_ov001_0218fd44;
     extern M2C_UNK data_ov001_0218fd4c;
     M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x18) = Ov001SwapEndian32(arg0);
     M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x1c) = Ov001SwapEndian32(arg1);
     M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x20) = Ov001SwapEndian32(arg2);
     if (func_02021a90(&data_ov001_0218fd4c) < 0) return -1;
-    while (data_021372e0 == 0) SleepMilliseconds(100);
+    while (gLocalIpAddress == 0) SleepMilliseconds(100);
     return 0;
 }
 
@@ -63,9 +63,9 @@ void Ov001MemClear(s32 arg0, s32 arg1) {
 }
 
 void func_ov001_0216cdf0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 *arg4, s32 *arg5) {
- void func_020215f8(s32, s32, s32, s32, u8 *);
+ void SocketRecvFromAddress(s32, s32, s32, s32, u8 *);
  *arg4 = *arg5;
- func_020215f8(arg0, arg1, arg2, arg3, arg4);
+ SocketRecvFromAddress(arg0, arg1, arg2, arg3, arg4);
 }
 
 void func_ov001_0216ce04(M2C_UNK arg0, s32 *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 *arg4) {
@@ -141,7 +141,7 @@ s32 Ov001StringLength(s8 *arg0) {
 
 #pragma thumb on
 u16 func_ov001_0216cf1c(void) {
-    s32 func_0200eff8(void *);
+    s32 GetRtcTime(void *);
     extern s32 gRoomState;
     u32 t[3];
     u32 seed;
@@ -149,7 +149,7 @@ u16 func_ov001_0216cf1c(void) {
     if (M2C_FIELD(&gRoomState, s32 *, 8) == 0) {
         seed = 0;
         ((void (*)(void *, s32, s32))Ov001MemClear)(t, 0, 12);
-        if (func_0200eff8(t) == 0) {
+        if (GetRtcTime(t) == 0) {
             seed += t[0] << 10;
             seed += t[1] << 3;
             seed += t[2];
@@ -226,7 +226,7 @@ s32 func_ov001_0216d1e4(void) {
 #pragma opt_propagation off
 #pragma thumb on
 s32 func_ov001_0216d394(void *arg0,s32 *arg1){
- s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void func_02007338(void *);
+ s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void CancelTimer(void *);
  void MI_CpuFill8(s32,u8);void func_02029220(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
@@ -254,7 +254,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  case 18:if(!ready){active=0;}
  case 19:goto test;
  case 5:if(ready)break;
- func_02007338(timer);
+ CancelTimer(timer);
  if(func_ov001_0216d8a0((s32)&data_ov001_02192620,1)!=1){active=0;break;}
  func_ov001_0216d02c(p,&data_ov001_02192620);
  rx=(u16 *)&data_ov001_02192620;
@@ -272,7 +272,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  case 4:case 8:break;
  default:active=0;break;
  } next:; test:; }while(active);
- func_02007338(timer);
+ CancelTimer(timer);
  while(OS_ReceiveMessage(&data_ov001_02192600,&msg,0)==1){}
  }
  func_ov001_0216d050(arg1,(s32)&data_ov001_02192620,result==0);
@@ -335,7 +335,7 @@ s32 func_ov001_0216da10(void) {
     return 0;
 }
 
-s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov001_02192740,s32 *,0x18)==3){if(func_02027428()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov001_02192740,s32 *,0x18)==3){if(WFC_StartWirelessStep()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 
 s32 func_ov001_0216daa0(s32 a,s32 b,s32 c){s32 t=OS_DisableInterrupts();M2C_FIELD(&data_ov001_02192740,s32 *,12)=c;if(b)MI_CpuCopy8(b,M2C_FIELD(&data_ov001_02192740,s32 *,36),80);else MI_CpuFill8(M2C_FIELD(&data_ov001_02192740,s32 *,36),0,80);func_02007e70(a,M2C_FIELD(&data_ov001_02192740,s32 *,32),192);if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}if(M2C_FIELD(&data_ov001_02192740,s32 *,24)==3 && WFC_StartConnection(M2C_FIELD(&data_ov001_02192740,s32 *,32),M2C_FIELD(&data_ov001_02192740,s32 *,36),M2C_FIELD(&data_ov001_02192740,s32 *,12))==3){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 

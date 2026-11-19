@@ -48,15 +48,19 @@ MarkThreatBitmap((s16)x,(s16)y,radius,3,0,1);
 }
 }
 #pragma opt_strength_reduction reset
-void func_020ce9a0(void) {
+/* When the current player is on the human team, copy that team's sight bitmap
+ * into the other team slot so both share one view; otherwise refill the other
+ * slot's bitmap. Rebuild the danger-zone bitmaps afterwards when fog of war or
+ * snow limits how far the teams can see. */
+void RefreshTeamVisibility(void) {
 extern void **gCurrentMap;
-void func_020cd7bc(u8,u8); void func_020cd754(u8);void MarkThreatRanges(void);
+void CopyTeamSightBitmap(u8,u8); void FillTeamSightBitmap(u8);void MarkThreatRanges(void);
 void *p=*gCurrentMap;
-if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67c3)==3)
-func_020cd7bc(M2C_FIELD(p,u16 *,0x52b8),M2C_FIELD(p,u16 *,0x52ba));
-else func_020cd754(M2C_FIELD(p,u16 *,0x52ba));
+if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF)==SIDE_HUMAN)
+CopyTeamSightBitmap(M2C_FIELD(p,u16 *,MAP_TEAM_A_PLAYER),M2C_FIELD(p,u16 *,MAP_TEAM_B_PLAYER));
+else FillTeamSightBitmap(M2C_FIELD(p,u16 *,MAP_TEAM_B_PLAYER));
 p=*gCurrentMap;
-if(M2C_FIELD(p,u8 *,0x5156)!=0 || M2C_FIELD(p,u8 *,0x5158)==2)MarkThreatRanges();
+if(M2C_FIELD(p,u8 *,MAP_FOG)!=0 || M2C_FIELD(p,u8 *,MAP_WEATHER)==WEATHER_SNOW)MarkThreatRanges();
 }
 
 /* Recompute the fog-of-war visibility of the units of the teams in play: reset
@@ -91,7 +95,7 @@ if(IsUnitInSight((u16)id))M2C_FIELD(unit,u16*,MAP_UNIT_FLAGS)|=UNIT_FLAG_VISIBLE
  * buffers. */
 void ResetBattleMap(void) {
     extern void **gCurrentMap;
-    void RefreshCursorCell(void);
+    void RefreshMapCursorCellCache(void);
     void func_0207ce28(void *);
     void func_020d4754(void);
     void func_020d47b0(void);
@@ -99,14 +103,14 @@ void ResetBattleMap(void) {
     void func_020a45cc(void);
     void MI_CpuFill32(s32, void *, s32);
     void func_0207688c(void);
-    extern u16 data_02156e4c;
+    extern u16 gLinkAiCommandStage;
     s32 i;
 
     *(u16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_X) = 0;
     *(u16 *)((u8 *)*gCurrentMap + MAP_CURSOR_TARGET_Y) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c6) = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52c8) = 0;
-    RefreshCursorCell();
+    RefreshMapCursorCellCache();
 
     *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_X) = 0;
     *(u16 *)((u8 *)*gCurrentMap + MAP_VIEW_Y) = 0;
@@ -127,7 +131,7 @@ void ResetBattleMap(void) {
     func_020d4754();
     func_020d47b0();
 
-    data_02156e4c = 0;
+    gLinkAiCommandStage = 0;
     *(u16 *)((u8 *)*gCurrentMap + 0x52b0) = 4;
     *(u16 *)((u8 *)*gCurrentMap + MAP_MODE) = 0;
     *(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER) = 0;
@@ -147,7 +151,7 @@ void func_020ced08(void) {
     extern u16 data_ov000_021aeee8[];
     void func_020cf2c8(void);
     s32 IsPlayerPresent(s32);
-    void func_0207ab84(s32, s32, u8);
+    void SetPropertyOwnerTile(s32, s32, u8);
     register u8 tile;
     register s32 i;
     register s32 offset;
@@ -202,7 +206,7 @@ void func_020ced08(void) {
                         u16 *rt4 = (u16 *)((u8 *)p4 + 0x3758);
                         u16 row4 = rt4[yc];
                         ((u8 *)p4 + xc)[row4 + 0x1420] = tile;
-                        func_0207ab84(xc, yc, 0);
+                        SetPropertyOwnerTile(xc, yc, 0);
                     }
                 }
             }

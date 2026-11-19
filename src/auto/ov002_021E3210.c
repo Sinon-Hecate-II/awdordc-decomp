@@ -1,5 +1,6 @@
 /* 21 functions from 0x021E3210 to 0x021E41AC (ov002), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ds3dsprite.h"
 #include "ov002_effects.h"
 #include "ov002_panel.h"
@@ -12,6 +13,14 @@ typedef struct PanelStat {
     u8 comparison : 1;
     u8 padding;
 } PanelStat;
+
+/* View of the flags byte when walking a panel's source entries. */
+typedef struct PanelStatFlags {
+    u8 stat : 3;
+    u8 order : 3;
+    u8 highlighted : 1;
+    u8 comparison : 1;
+} PanelStatFlags;
 
 extern u8 data_ov002_021f30fd[], gVersusGaugeHp[];
 #pragma opt_common_subs off
@@ -128,64 +137,52 @@ void func_ov002_021e3210(void *arg0) {
         flags[(CountPanelEntries(panel + PANEL_STAT_SOURCE) - 1) * 4] |= 0x40;
     }
 }
-#pragma opt_strength_reduction reset
-#pragma opt_common_subs reset
-void func_ov002_021e3578(void *arg0) {
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+/* Rebuild one versus-screen player panel's list of drawn stat entries from its
+ * own source entries: clear the five display entries, then copy each source
+ * entry whose value differs from the other player's CO (or that is already
+ * highlighted) into the display list, rebased onto the other panel's base stat
+ * value.  The display list therefore holds only the differences the gauge
+ * between the two players draws. */
+void BuildPanelDisplayEntries(void *panel) {
     s8 CountPanelEntries(void *);
     extern u8 gPlayerSettings;
-    s32 temp_r0_2;
-    s32 var_r10;
-    s32 var_r11;
-    s32 var_r2;
-    s32 var_r6;
-    u8 *var_r5;
-    u8 temp_r9;
-    u8 temp_r9_2;
-    u8 temp_r9_3;
-    u8 temp_r9_4;
-    void *var_lr;
+    s32 count, i;
+    PanelStat *out;
+    PanelStatFlags *src;
 
-    var_r2 = 0;
-    do {
-        M2C_FIELD(arg0 + var_r2 * 4, s16 *, 0x4A) = -1;
-        var_r2 = var_r2 + 1;
-    } while (var_r2 < 5);
-    temp_r0_2 = CountPanelEntries(arg0 + 0x36);
-    var_r6 = 0;
-    var_lr = arg0 + 0x4A;
-    if (temp_r0_2 <= 0) {
-        return;
+    for (i = 0; i < 5; ++i) {
+        M2C_FIELD(panel + i * 4, s16 *, PANEL_STAT_DISPLAY) = -1;
     }
-    var_r5 = arg0 + 0x38;
-    do {
-        temp_r9 = *var_r5;
-        if ((((u32) (temp_r9 << 0x18) >> 0x1F) == 0) || (((u32) (temp_r9 << 0x19) >> 0x1F) != 0)) {
-            temp_r9_2 = M2C_FIELD(arg0, u8 *, 0x64);
-            if (temp_r9_2 == 0) {
-                var_r10 = 1;
-            } else {
-                var_r10 = 0;
+    count = CountPanelEntries(panel + PANEL_STAT_SOURCE);
+    i = 0;
+    out = (PanelStat *)(panel + PANEL_STAT_DISPLAY);
+    if (count > 0) {
+        src = (PanelStatFlags *)(panel + PANEL_STAT_SOURCE + 2);
+        do {
+            if (!src->comparison || src->highlighted) {
+                u8 player = M2C_FIELD(panel, u8 *, PANEL_PLAYER);
+                s32 other = player == 0 ? 1 : 0;
+                s32 otherTable = player == 0 ? 1 : 0;
+                u8 *entry = &gPlayerSettings + other * VERSUS_DATA_STRIDE;
+                void *table = M2C_FIELD(&gPlayerSettings + otherTable * VERSUS_DATA_STRIDE, void **, 4);
+                if (M2C_FIELD(table + entry[0x13] * 4, void **, 0x1c) || src->highlighted) {
+                    out->value = M2C_FIELD(M2C_FIELD(M2C_FIELD(panel, void **, PANEL_OTHER), void **, PANEL_STAT_TABLE), u8 *, 2)
+                               + M2C_FIELD(panel + i * 4, s16 *, PANEL_STAT_SOURCE);
+                    out->stat = src->stat;
+                    out->order = src->order;
+                    out->highlighted = src->highlighted;
+                    ++out;
+                }
             }
-            if (temp_r9_2 == 0) {
-                var_r11 = 1;
-            } else {
-                var_r11 = 0;
-            }
-            if ((M2C_FIELD((M2C_FIELD(((var_r11 * 0x18) + (s32) &gPlayerSettings), s32 *, 4) + (M2C_FIELD(((var_r10 * 0x18) + (s32) &gPlayerSettings), u8 *, 0x13) * 4)), s32 *, 0x1C) != 0) || (((u32) (*var_r5 << 0x19) >> 0x1F) != 0)) {
-                M2C_FIELD(var_lr, s16 *, 0) = (s16) (M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), void **, 4), u8 *, 2) + M2C_FIELD((arg0 + (var_r6 * 4)), s16 *, 0x36));
-                temp_r9_3 = (M2C_FIELD(var_lr, u8 *, 2) & ~7) | (((u32) (*var_r5 << 0x1D) >> 0x1D) & 7);
-                M2C_FIELD(var_lr, u8 *, 2) = temp_r9_3;
-                temp_r9_4 = (temp_r9_3 & ~0x38) | ((u32) (((u32) (*var_r5 << 0x1A) >> 0x1D) << 0x1D) >> 0x1A);
-                M2C_FIELD(var_lr, u8 *, 2) = temp_r9_4;
-                M2C_FIELD(var_lr, u8 *, 2) = (u8) ((temp_r9_4 & ~0x40) | ((u32) (((u32) (*var_r5 << 0x19) >> 0x1F) << 0x1F) >> 0x19));
-                var_lr = var_lr + 4;
-            }
-        }
-        var_r6 = var_r6 + 1;
-        var_r5 = var_r5 + 4;
-    } while (var_r6 < temp_r0_2);
+            ++i;
+            src = (PanelStatFlags *)((u8 *)src + sizeof(PanelStat));
+        } while (i < count);
+    }
 }
-
+#pragma opt_strength_reduction on
+#pragma opt_common_subs on
 /* Reset a versus-screen player panel for its gauge animation: record how many of
  * the five stat entries are filled, then, when the player's CO gauge is shown,
  * clear the icon index of every entry in the stat, source and display lists and
@@ -290,7 +287,7 @@ void func_ov002_021e3890(s32 arg0) {
    then have their icons, positions and gauges refreshed. */
 void PlayerPanels_Init(void *p){
 void func_ov002_021e2eb8(void *,s32,s32);void func_ov002_021e3044(void *,s32,s32);
-void BuildPanelStatEntries(void *);void func_ov002_021e3210(void *);void func_ov002_021e3578(void *);
+void BuildPanelStatEntries(void *);void func_ov002_021e3210(void *);void BuildPanelDisplayEntries(void *);
 extern u8 gPlayerSettings;
 func_ov002_021e2eb8(p,M2C_FIELD(M2C_FIELD(&gPlayerSettings,void **,4)+M2C_FIELD(&gPlayerSettings,u8 *,0x13)*4,s32 *,0x2c),0);
 func_ov002_021e2eb8(p+0x68,M2C_FIELD(M2C_FIELD(&gPlayerSettings,void **,0x1c)+M2C_FIELD(&gPlayerSettings,u8 *,0x2b)*4,s32 *,0x2c),0);
@@ -298,14 +295,32 @@ func_ov002_021e3044(p,(M2C_FIELD(&gPlayerSettings,u8 *,0xd)+9)/10,(M2C_FIELD(&gP
 func_ov002_021e3044(p+0x68,(M2C_FIELD(&gPlayerSettings,u8 *,0x25)+9)/10,(M2C_FIELD(&gPlayerSettings,u8 *,0x26)+9)/10);
 BuildPanelStatEntries(p);BuildPanelStatEntries(p+0x68);
 func_ov002_021e3210(p);func_ov002_021e3210(p+0x68);
-func_ov002_021e3578(p);func_ov002_021e3578(p+0x68);
+BuildPanelDisplayEntries(p);BuildPanelDisplayEntries(p+0x68);
 ResetPanelEntries(p);ResetPanelEntries(p+0x68);
 }
 
-M2C_UNK func_ov002_021e39e8(s32 *p) {
-u32 v;
-if(*p&1){*(volatile u16 *)0x4000304|=0x8000;func_020033f4();func_02003124(4);func_02003104(8);v=0x80330000;*(volatile u32 *)0x4000064=v;}
-else{*(volatile u16 *)0x4000304&=~0x8000;func_020033e0();func_020031cc(8);func_02003104(4);v=0x80320000;*(volatile u32 *)0x4000064=v;}return ++*p;
+/* Swap the battle screen between the 3D and 2D views: for an odd phase swap the
+ * LCDs and capture the 3D engine, for an even phase capture the 2D engine,
+ * moving the extended-palette VRAM bank with the view.  Returns the next
+ * phase. */
+M2C_UNK SwapBattleScreenCapture(s32 *phase) {
+    u32 capture;
+    if (*phase & 1) {
+        REG_POWCNT1 |= POWCNT1_LCD_SWAP;
+        func_020033f4();
+        func_02003124(4);
+        func_02003104(8);
+        capture = DISPCAPCNT_CAPTURE_3D;
+        REG_DISPCAPCNT = capture;
+    } else {
+        REG_POWCNT1 &= ~POWCNT1_LCD_SWAP;
+        func_020033e0();
+        func_020031cc(8);
+        func_02003104(4);
+        capture = DISPCAPCNT_CAPTURE_2D;
+        REG_DISPCAPCNT = capture;
+    }
+    return ++*phase;
 }
 
 #pragma opt_strength_reduction off
@@ -346,23 +361,23 @@ M2C_UNK func_ov002_021e3a7c(s32 *p) {
 }
 #pragma opt_strength_reduction off
 void func_ov002_021e3b7c(M2C_UNK *p) {
-extern u32 gCur3DSpriteEngine, g3DSpriteEngineSub;
-extern u8 gSpriteDesc64x64[];
+extern u32 gCur3DSpriteEngine, data_027e00c4;
+extern u8 data_027e008c[];
 s32 x,y,tx,ty; u32 old; u16 v;
 if(*p&1)return;
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
+old=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c4;
 for(y=0,ty=0;y<192;y+=64,ty+=8){
 v=(u16)((y&255)|0xc00);
 for(tx=0,x=0;tx<32;tx+=8,x+=64)
-AddSprite((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),gSpriteDesc64x64,0);
+func_01ffaacc((u16)(x&511),v,(u16)(((tx+(ty<<5))&1023)|0xf000),data_027e008c,0);
 }
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction on
 void SwapBattleScreen(void) {
-    M2C_UNK func_ov002_021e39e8(M2C_UNK *);
+    M2C_UNK SwapBattleScreenCapture(M2C_UNK *);
     extern M2C_UNK data_ov002_021f3014;
-    func_ov002_021e39e8(&data_ov002_021f3014);
+    SwapBattleScreenCapture(&data_ov002_021f3014);
 }
 
 void UpdateBattleSpriteLayers(void) {

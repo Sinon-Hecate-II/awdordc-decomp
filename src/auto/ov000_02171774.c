@@ -68,23 +68,26 @@ void func_020a947c(void *,u32); void SetTextSpriteValue(void *,s32); void DrawTe
 void AddSprite(u16,u8,u16,void *,s32);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine; extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],data_02101f1c[],gMapConfig[];
-u8 sp[44]; void *saved; s32 i,idx,unit,pal,tile,k; s32 one;
+u8 sp[44]; void *saved; s32 i,idx,unit,pal,tile,k;
 M2C_FIELD(sp,u8 *,32)=(u8)((u8)(sp[32]&~1)&~30);
 sp[32]=(sp[32]&~224)|64;
 
 saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(sp,void **,0)=gHeapObjectVTable;sp[4]=0;
-M2C_FIELD(sp,u16 *,18)=0;sp[20]=8;sp[21]=8;sp[22]=1;one=1;sp[23]=8;sp[24]=8;
+M2C_FIELD(sp,u16 *,18)=0;sp[20]=8;sp[21]=8;sp[22]=1;sp[23]=8;sp[24]=8;
 sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[40]&=~224;sp[41]=0;
 func_020a947c(sp,3);M2C_FIELD(sp,u16 *,18)=0x36c;sp[33]=15;sp[32]=(sp[32]&~224)|32;
-for(i=one,k=0x8c;i<5;k+=0x8c,i++){ if(IsPlayerPresent(i)){
+i=sp[22]; k=0x8c;
+do { if(IsPlayerPresent(i)){
 idx=i-1;unit=M2C_FIELD((u8*)*gCurrentMap+k+0x6000,u8 *,0x7ca)-1;
 AddSprite((u16)(idx*64+5),23,(u16)((0x3ff&((idx*4+0x35c)>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)((idx+11)<<12)),gSpriteDesc16x16,11);
 pal=M2C_FIELD((u8*)arg0+i,u8 *,0x34)?10:2;
 if(!IsPlayerCpu(i)) tile=idx*16+0x3a0; else tile=0x3e0;
 AddSprite((u16)(idx*64+4),23,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
 AddSprite((u16)(idx*64),40,(u16)((0x3ff&((unit*16+0x3f0)>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(u16)(pal<<12)),data_02101f1c,11);
-}}
+}
+k+=0x8c;
+} while(++i<5);
 if(M2C_FIELD(*gCurrentMap,u8 *,0x5156)){tile=func_ov000_02171768(0);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(0,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}if(M2C_FIELD(*gCurrentMap,u8 *,0x5159)==1){tile=func_ov000_02171768(10);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else switch(M2C_FIELD(*gCurrentMap,u8 *,0x515b)){case 0: tile=func_ov000_02171768(6);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1: tile=func_ov000_02171768(8);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(7);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(9);AddSprite(64,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}switch(M2C_FIELD(*gCurrentMap,u8 *,0x5157)){case 1: tile=func_ov000_02171768(4);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2: tile=func_ov000_02171768(5);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3: tile=func_ov000_02171768(3);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;default:tile=func_ov000_02171768(2);AddSprite(128,104,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}SetTextSpriteValue(sp,gMapConfig[3]);M2C_FIELD(sp,s16 *,6)=224;M2C_FIELD(sp,s16 *,8)=104;
 if(!gMapConfig[3]){sp[32]=((u8)((sp[32]&~1)|1)&~30)|20;DrawTextSprite(sp);sp[32]&=~1;}else DrawTextSprite(sp);
 SetTextSpriteValue(sp,M2C_FIELD(gMapConfig,s32 *,8));M2C_FIELD(sp,s16 *,6)=32;M2C_FIELD(sp,s16 *,8)=144;DrawTextSprite(sp);
@@ -123,7 +126,7 @@ void func_ov000_02172448(void) {
 
 }
 
-M2C_UNK *func_ov000_0217244c(void) {
+M2C_UNK *GetTerrainInfoContext(void) {
     extern M2C_UNK data_ov000_021df5ec;
     return &data_ov000_021df5ec;
 }
@@ -240,7 +243,7 @@ void func_ov000_02172654(void *entry) {
         break;
     }
     func_ov000_02173468(entry);
-    if (!GetTerrainIcon(func_ov000_0217244c(), *M2C_FIELD(entry, s32 **, 0x18))
+    if (!GetTerrainIcon(GetTerrainInfoContext(), *M2C_FIELD(entry, s32 **, 0x18))
         && !M2C_FIELD(entry, u8 *, 0x15)) {
         func_ov000_02172dc0(entry);
     }

@@ -76,14 +76,14 @@ void func_0208f3a4(void) {
     func_0208ee90();
 }
 
-void func_0208f3b0(M2C_UNK arg0) {
+void CreateNumberDisplay(M2C_UNK arg0) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_0208ed88();
-    extern M2C_UNK data_021026f8;
-    if (CreateSpriteObject(&data_021026f8, arg0) == 0) {
+    M2C_UNK InitNumberDisplay();
+    extern M2C_UNK gNumberDisplayStateClass;
+    if (CreateSpriteObject(&gNumberDisplayStateClass, arg0) == 0) {
         return;
     }
-    func_0208ed88();
+    InitNumberDisplay();
 }
 
 void func_0208f3d4(void *arg0) {
@@ -236,15 +236,15 @@ s32 GetLanguageIndex(void) {
  * temporary work buffer.  Afterwards it restores the handlers and interrupts,
  * resets the sound engine and turns the display back on. */
 void RunFrontEndOverlay(void) {
-s32 OS_GetFifoReceiveHandler(s32);
-void OS_SetFifoReceiveHandlers(s32,s32);
+s32 OS_GetIrqHandler(s32);
+void OS_SetIrqHandler(s32,s32);
 void OS_DisableIrqMask(s32);
 void GX_SetVBlankIrq(s32);
 void func_0208fce8(void);
 void func_02088724(void);
 void func_02037854(s32);
 void *func_020e3580(s32,s32);
-void func_ov001_0217589c(void *,s32,s32);
+void Ov001_RunFrontEnd(void *,s32,s32);
 M2C_UNK HeapFreeBlock();
 void func_0208859c(void);
 void func_02088634(void);
@@ -253,21 +253,21 @@ void OS_EnableIrqMask(s32);
 void func_02007598(void);
 void GX_TurnOnDisplay(void);
 s32 savedFifoHandler;void *workBuffer;u16 imeState;
-savedFifoHandler=OS_GetFifoReceiveHandler(1);
-OS_SetFifoReceiveHandlers(1,0);
+savedFifoHandler=OS_GetIrqHandler(1);
+OS_SetIrqHandler(1,0);
 OS_DisableIrqMask(1);
 GX_SetVBlankIrq(0);
 func_0208fce8();
 func_02088724();
 func_02037854(2);
 workBuffer=func_020e3580(0x40000,0x20);
-if(GetLanguageIndex()==0) func_ov001_0217589c(workBuffer,GetLanguageIndex(),0x10);
-else func_ov001_0217589c(workBuffer,GetLanguageIndex(),0);
+if(GetLanguageIndex()==0) Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0x10);
+else Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0);
 HeapFreeBlock(workBuffer);
 func_0208859c();
 func_02088634();
 InitSound();
-OS_SetFifoReceiveHandlers(1,savedFifoHandler);
+OS_SetIrqHandler(1,savedFifoHandler);
 OS_EnableIrqMask(1);
 imeState=*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=1;
@@ -530,7 +530,7 @@ void InitSound(void) {
     s32 i;
     u8 *handle;
 
-    func_0202a968();
+    InitSoundDriver();
     func_0202acb0(&data_0215783c);
     func_0202acb0(&data_02157834);
     func_0202d9c0(&data_02157838);
@@ -556,30 +556,34 @@ void func_0208fc4c(void) {
 
 }
 
+/* Bring the sound player up: take the driver's heap from the game heap, create
+ * the driver's own sound heap inside it, open the sound archive into that heap,
+ * initialise the archive's channels and the sound worker, then mark the driver
+ * enabled and apply its settings. */
 void OpenSoundPlayer(void){
  s32 func_020e34f4(s32);s32 Sound_CreateHeap(s32,s32);
- extern M2C_UNK gSoundDriverState,data_02157880,data_021029ac;
- s32 p;
- if(M2C_FIELD(&gSoundDriverState,u8*,0))return;
- if(!M2C_FIELD(&gSoundDriverState,s32*,0x14))M2C_FIELD(&gSoundDriverState,s32*,0x14)=func_020e34f4(0xd0000);
- p=Sound_CreateHeap(M2C_FIELD(&gSoundDriverState,s32*,0x14),0xd0000);
- M2C_FIELD(&gSoundDriverState,s32*,0x10)=p;
- func_0202bd00(&data_02157880,&data_021029ac,p,0);
- Sound_InitArchiveChannels(M2C_FIELD(&gSoundDriverState,s32*,0x10));
- func_0202d6d4(10,M2C_FIELD(&gSoundDriverState,s32*,0x10));
- M2C_FIELD(&gSoundDriverState,u8*,0)=1;func_020903b0();
+ extern M2C_UNK gSoundDriverState,gSoundArchive,gSoundArchivePath;
+ s32 player;
+ if(M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED))return;
+ if(!M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP))M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP)=func_020e34f4(SOUND_HEAP_BYTES);
+ player=Sound_CreateHeap(M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP),SOUND_HEAP_BYTES);
+ M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER)=player;
+ Sound_OpenArchive(&gSoundArchive,&gSoundArchivePath,player,0);
+ Sound_InitArchiveChannels(M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER));
+ Sound_StartWorker(SOUND_WORKER_PRIORITY,M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER));
+ M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED)=1;func_020903b0();
 }
 
 void func_0208fce8(void) {
     M2C_UNK func_0202ac70(M2C_UNK);
-    M2C_UNK func_0202c51c(s32);
+    M2C_UNK Sound_DestroyHeap(s32);
     M2C_UNK HeapFreeBlock();
     extern M2C_UNK gSoundDriverState;
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
     func_0202ac70(0);
-    func_0202c51c(M2C_FIELD(&gSoundDriverState, s32 *, 0x14));
+    Sound_DestroyHeap(M2C_FIELD(&gSoundDriverState, s32 *, 0x14));
     M2C_FIELD(&gSoundDriverState, u8 *, 0) = 0U;
     if (M2C_FIELD(&gSoundDriverState, s32 *, 0x14) == 0) {
         return;
@@ -600,28 +604,31 @@ void func_0208fd94(void) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_0208fda0(s32 arg0) {
+/* Claims one of the SOUND_PLAYED_MAX per-frame sound-id slots for `soundId`:
+ * returns 1 and remembers the id when it has not been started yet this frame, 0
+ * when it already has.  A frame change clears the list first. */
+s32 Sound_ClaimPlaySlot(s32 soundId) {
 extern M2C_UNK gSoundDriverState; extern s32 gFrameCounter; extern M2C_UNK gSoundFrameIds;
 u32 i,count;
-if(M2C_FIELD(&gSoundDriverState,s32*,0x1c)!=gFrameCounter){
-M2C_FIELD(&gSoundDriverState,s32*,0x18)=0;
-M2C_FIELD(&gSoundDriverState,s32*,0x1c)=gFrameCounter;
+if(M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_FRAME)!=gFrameCounter){
+M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYED_COUNT)=0;
+M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_FRAME)=gFrameCounter;
 }
-count=M2C_FIELD(&gSoundDriverState,s32*,0x18);
-for(i=0;i<count;i++){if(arg0==M2C_FIELD(&gSoundFrameIds,s32*,i<<2))return 0;}
-if(count<8){
-u32 next = M2C_FIELD(&gSoundDriverState,volatile u32*,0x18)+1;
-M2C_FIELD(&gSoundFrameIds,s32*,count<<2)=arg0;
-M2C_FIELD(&gSoundDriverState,u32*,0x18)=next;
+count=M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYED_COUNT);
+for(i=0;i<count;i++){if(soundId==M2C_FIELD(&gSoundFrameIds,s32*,i<<2))return 0;}
+if(count<SOUND_PLAYED_MAX){
+u32 next = M2C_FIELD(&gSoundDriverState,volatile u32*,SOUND_STATE_PLAYED_COUNT)+1;
+M2C_FIELD(&gSoundFrameIds,s32*,count<<2)=soundId;
+M2C_FIELD(&gSoundDriverState,u32*,SOUND_STATE_PLAYED_COUNT)=next;
 } return 1;
 }
 s32 PlaySoundEffect(s32 a){
- s32 func_0208fda0(s32);
+ s32 Sound_ClaimPlaySlot(s32);
  void func_0208fd40(M2C_UNK*,s32,u32);
  extern M2C_UNK gSoundDriverState,data_02157834;
  u8 enabled=M2C_FIELD(&gSoundDriverState,u8*,0);
  if(enabled==0)return 0;
- if(!func_0208fda0(a))return 0;
+ if(!Sound_ClaimPlaySlot(a))return 0;
  func_0208fd40(&data_02157834,-1,a);return 1;
 }
 

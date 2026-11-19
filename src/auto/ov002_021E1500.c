@@ -1,5 +1,6 @@
 /* 23 functions from 0x021E1500 to 0x021E24E8 (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ov002_panel.h"
 
 void func_ov002_021e1500(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
@@ -168,25 +169,28 @@ void SetEffectScale(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x42) = arg1;
 }
 
-void func_ov002_021e17b4(void *a,s32 b,s8 c) {
-    void *node;
-    void *p;
-    if(M2C_FIELD(a,u8 *,0x48)) {
-        if(!M2C_FIELD(a,u8 *,0x49)) M2C_FIELD(a,u8 *,0x49)=2;
+/* Start an effect node's palette flash and pass it on: the node blinks for
+ * `frames` ticks (counting the phase it is already in) drawing `palette` as its
+ * alternate palette, and so does every child marked FX_NODE_FLASH_CHILD. */
+void SetEffectNodeFlash(void *effect, s32 frames, s8 palette) {
+    void *link;
+    void *child;
+    if(M2C_FIELD(effect,u8 *,FX_NODE_FLASH_FRAMES)) {
+        if(!M2C_FIELD(effect,u8 *,FX_NODE_FLASH_PHASE)) M2C_FIELD(effect,u8 *,FX_NODE_FLASH_PHASE)=2;
     }
-    M2C_FIELD(a,u8 *,0x48)=b-M2C_FIELD(a,u8 *,0x49);
-    M2C_FIELD(a,s8 *,0x3b)=c;
-    node=NULL;
+    M2C_FIELD(effect,u8 *,FX_NODE_FLASH_FRAMES)=frames-M2C_FIELD(effect,u8 *,FX_NODE_FLASH_PHASE);
+    M2C_FIELD(effect,s8 *,FX_NODE_PALETTE_ALT)=palette;
+    link=NULL;
     goto next;
     do {
-        p=M2C_FIELD(node,void **,0);
-        if(M2C_FIELD(p,u8 *,0x52)) func_ov002_021e17b4(p,b,c);
+        child=M2C_FIELD(link,void **,FX_LINK_NODE);
+        if(M2C_FIELD(child,u8 *,FX_NODE_FLASH_CHILD)) SetEffectNodeFlash(child,frames,palette);
 next:
-        if(!node) {
-            if(!M2C_FIELD(a,void **,8)) node=NULL;
-            else node=(u8 *)a+8;
-        } else node=M2C_FIELD(node,void **,4);
-    } while(node);
+        if(!link) {
+            if(!M2C_FIELD(effect,void **,FX_NODE_CHILD)) link=NULL;
+            else link=(u8 *)effect+FX_NODE_CHILD;
+        } else link=M2C_FIELD(link,void **,FX_LINK_NEXT);
+    } while(link);
 }
 
 void func_ov002_021e1844(void *arg0) {
@@ -649,7 +653,7 @@ loop_65:
 }
 
 void func_ov002_021e2204(void *arg0) {
-    M2C_UNK func_02087064(M2C_UNK, u16, u16, s32, s32);
+    M2C_UNK SetGxTextureParams(M2C_UNK, u16, u16, s32, s32);
     M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     u8 *p20;
@@ -687,7 +691,7 @@ void func_ov002_021e2204(void *arg0) {
                 } else {
                     var_r2 = M2C_FIELD(arg0, u8 *, 0x3A);
                 }
-                func_02087064(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
+                SetGxTextureParams(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
             }
             DrawTexturedQuadUVFlip(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
             var_r5 = (u8 *) var_r5 + 8;
@@ -698,7 +702,7 @@ void func_ov002_021e2204(void *arg0) {
 }
 
 void func_ov002_021e2364(void *arg0) {
-    M2C_UNK func_02087064(M2C_UNK, u16, u16, s32, s32);
+    M2C_UNK SetGxTextureParams(M2C_UNK, u16, u16, s32, s32);
     M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     register void *var_r4;
@@ -741,7 +745,7 @@ void func_ov002_021e2364(void *arg0) {
                 } else {
                     var_ip = M2C_FIELD(arg0, u8 *, 0x3A);
                 }
-                func_02087064(3, temp_r9, temp_r6, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_ip + ((u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x1C) >> 0x1C)));
+                SetGxTextureParams(3, temp_r9, temp_r6, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_ip + ((u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x1C) >> 0x1C)));
             DrawTexturedQuadUVFlip(temp_r5_3, M2C_FIELD(var_r4, s16 *, 2), (u32) (M2C_FIELD(var_r4, u8 *, 7) << 0x18) >> 0x1E, temp_r9, (s32) temp_r6, 0, 0, (s32) temp_r9, (s32) temp_r6, (s32) var_r1, (u32) (temp_r5_2 << 0x1A) >> 0x1F);
             var_r4 += 8;
             var_r3 = M2C_FIELD(var_r4, u16 *, 4);

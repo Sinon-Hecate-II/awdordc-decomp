@@ -162,12 +162,12 @@ void func_ov001_021771f4(void) {
 }
 
 void func_ov001_02177214(void) {
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void func_ov001_02177238(void);
     M2C_UNK ResetSaveSlotsWithWfcProfile();
     extern M2C_UNK func_ov001_021772b8;
     func_ov001_02177238();
-    func_ov001_02171e58(0x19);
+    Ov001_ShowMessageBox(0x19);
     ResetSaveSlotsWithWfcProfile();
     Ov001_SetStepCallback(&func_ov001_021772b8);
 }
@@ -274,12 +274,12 @@ void func_ov001_0217740c(void) {
 
 void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02172250(M2C_UNK);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void func_ov001_02177474(void);
     M2C_UNK DrawMacAddressPanel();
     extern M2C_UNK func_ov001_021776c8;
     func_ov001_02177474();
-    func_ov001_02172250(0x11);
+    Ov001_LoadObjLayoutBlock(0x11);
     Ov001_ShowMessagePanel(0x3A, -1, 0);
     DrawMacAddressPanel();
     Ov001_SetStepCallback(&func_ov001_021776c8);
@@ -426,7 +426,7 @@ void Ov001_InitOptionMenu(void) {
     void Ov001_LoadOptionMenuBg(void);
     void Ov001_FadeInOptionMenu(void);
     void *Ov001_CreateSpriteFromLayout(s32, s32);
-    M2C_UNK func_ov001_02172250(s32);
+    M2C_UNK Ov001_LoadObjLayoutBlock(s32);
     M2C_UNK Ov001_LoadMenuResource(s32);
     M2C_UNK Ov001_ShowMessagePanel(s32, s32, s32);
     M2C_UNK Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
@@ -434,7 +434,7 @@ void Ov001_InitOptionMenu(void) {
     s32 offset;
     ((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded = 0;
     Ov001_LoadOptionMenuBg();
-    func_ov001_02172250(16);
+    Ov001_LoadObjLayoutBlock(16);
     Ov001_LoadMenuResource(3);
     Ov001_ShowMessagePanel(0x39, -1, 0);
     p = Ov001_CreateSpriteFromLayout(0, 0x5b);

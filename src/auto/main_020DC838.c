@@ -204,7 +204,7 @@ void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK SetSpriteSlotScroll(s32,s32);
-M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
+M2C_UNK Show3DSpriteSlide(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
 s32 row, rowX, bar;
@@ -266,17 +266,17 @@ if (selectedRow) {
 }
 SetSpriteSlotScroll(0, 0);
 sprite = M2C_FIELD(entity, void **, 0x50);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x50);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
 sprite = M2C_FIELD(entity, void **, 0x58);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x58);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
 SetTextById(M2C_FIELD(entity, void **, 0x64), 0x44000010);
-func_02088f1c(M2C_FIELD(entity, void **, 0x64));
+Show3DSpriteSlide(M2C_FIELD(entity, void **, 0x64));
 if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));
     sprite = M2C_FIELD(entity, void **, 0x68);
@@ -285,7 +285,7 @@ if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     M2C_FIELD(sprite, u16 *, 0xc) = 12;
     M2C_FIELD(sprite, u16 *, 2) = M2C_FIELD(sprite, u16 *, 4);
 sprite = M2C_FIELD(entity, void **, 0x5c);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x5c);
 if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
 else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);
@@ -320,7 +320,7 @@ void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 void PlaySoundEffect(s32);
 M2C_UNK SetSpriteSlotScroll(s32,s32);
-M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
+M2C_UNK Show3DSpriteSlide(void *), SetTextById(void *,s32);
 s16 GetSpriteAnimValue(void *);
 void func_ov009_02224560(s32,s32,s32);
 s32 row, rowX, bar;
@@ -382,17 +382,17 @@ if (selectedRow) {
 }
 SetSpriteSlotScroll(0, 0);
 sprite = M2C_FIELD(entity, void **, 0x50);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x50);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
 sprite = M2C_FIELD(entity, void **, 0x58);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x58);
 func_020dcc00(sprite);
 M2C_FIELD(sprite,u8 *,0x5a)=0;
 SetTextById(M2C_FIELD(entity, void **, 0x64), 0x44000010);
-func_02088f1c(M2C_FIELD(entity, void **, 0x64));
+Show3DSpriteSlide(M2C_FIELD(entity, void **, 0x64));
 if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     s16 result = GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68));
     sprite = M2C_FIELD(entity, void **, 0x68);
@@ -401,7 +401,7 @@ if (GetSpriteAnimValue(M2C_FIELD(entity, void **, 0x68))) {
     M2C_FIELD(sprite, u16 *, 0xc) = 12;
     M2C_FIELD(sprite, u16 *, 2) = M2C_FIELD(sprite, u16 *, 4);
 sprite = M2C_FIELD(entity, void **, 0x5c);
-func_02088f1c(sprite);
+Show3DSpriteSlide(sprite);
 sprite = M2C_FIELD(entity, void **, 0x5c);
 if(SpriteAvailable(sprite))SetSpriteFrame(sprite,SpriteBase(sprite),0);
 else SetSpriteFrame(sprite,SpriteBase(sprite)+2,0);

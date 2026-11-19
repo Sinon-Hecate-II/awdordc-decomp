@@ -22,14 +22,14 @@ int SelectIndirectAttackAction(void *arg0) {
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
-    s32 func_ov000_021a9740(void *, s32);
+    s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
     s32 IsFootUnitKind(s32);
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
-    s32 func_ov000_021a93ec(s16, s16);
+    s32 IsCellVisibleToCurrentTeam(s16, s16);
     s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
@@ -52,7 +52,7 @@ int SelectIndirectAttackAction(void *arg0) {
         if (IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && (M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31) == 17 && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health > 80)
             terrainFlags |= 0x40000;
         else if ((IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,u8 *,0x52d4), M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420)) == 1 && gTerrainPropertyType[M2C_FIELD((u8 *)*gCurrentMap + (M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1] + M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2] * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31] != 0) ||
-            ((gUnitKindFlags[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && func_ov000_021a9318(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
+            ((gUnitKindFlags[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind * 112] & 7) && ((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health <= 70 && IsPropertyAllowedForKind(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind, M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1], M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2]) == 0))
             terrainFlags |= 0x10000;
     }
     position[0] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1]; position[1] = M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
@@ -82,7 +82,7 @@ int SelectIndirectAttackAction(void *arg0) {
                 goto c20;
             }
 
-            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * GetUnitMaxWeaponDamagePercent(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             if (damage < health && damage < 10) continue;
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
             if (M2C_FIELD(*gCurrentMap, s16 *, 0x6ed6) == 0) continue;
@@ -115,7 +115,7 @@ int SelectIndirectAttackAction(void *arg0) {
                 other = base + id * 14;
                 if (((Unit0218C4 *)other)->kind == 0) continue;
                 if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
-                if (func_ov000_021a93ec((s16)x, (s16)y) == 0) continue;
+                if (IsCellVisibleToCurrentTeam((s16)x, (s16)y) == 0) continue;
                     {
                     score = func_ov000_02176e28(flags | (terrainFlags | ((u8 *)*gCurrentMap)[other[1] + M2C_FIELD((u8 *)*gCurrentMap + other[2] * 2, u16 *, 0x3758)]), position);
                     if (score == 0) continue;
@@ -150,14 +150,14 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
-    s32 func_ov000_021a9740(void *, s32);
+    s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
     s32 func_020d1690(s32, s32, s16 *);
     s32 IsFootUnitKind(s32);
     s32 func_ov000_021a9c90(s32, s32);
     s32 func_ov000_02178e84(s32, s32);
-    s32 func_ov000_021a93ec(s16, s16);
+    s32 IsCellVisibleToCurrentTeam(s16, s16);
     s32 GetKindAttackClass(s32);
     s32 CanAttackUnitFrom(s32, s32, void *);
     s32 func_ov000_02176e28(s32, s16 *);
@@ -193,7 +193,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
                 goto c20;
             }
 
-            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * GetUnitMaxWeaponDamagePercent(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             if (damage < health && damage < 10) continue;
             if (func_ov000_02178268(x, y, position) == 0) continue;
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
@@ -237,7 +237,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
                 other = base + id * 14;
                 if (((Unit0218C4 *)other)->kind == 0) continue;
                 if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
-                if (func_ov000_021a93ec((s16)x, (s16)y) == 0) continue;
+                if (IsCellVisibleToCurrentTeam((s16)x, (s16)y) == 0) continue;
                 if (func_ov000_02178268(x, y, position) == 0) continue;
                 {
                     u32 v2 = M2C_FIELD((u8 *)*gCurrentMap + position[0] + M2C_FIELD((u8 *)*gCurrentMap + position[1] * 2, u16 *, 0x3758), u8 *, 0x2d48);
@@ -278,11 +278,14 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     return 0;
 }
 #pragma opt_strength_reduction reset
+/* Perform the attack the AI unit under the cursor picked: a direct unit fires at an
+ * adjacent target, an indirect one moves to a firing tile when it can or fires from
+ * where it stands (argument 0 = really act, not just check). */
 void RunAiAttackAction(void) {
 extern void **gCurrentMap;
-switch(GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)){
-case 0: SelectDirectAttackAction(0); return;
-case 1: if(IsMobileIndirectUnitKind((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26))SelectMovingIndirectAttackAction(0);else SelectIndirectAttackAction(0);return;
+switch(GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT)<<26)>>26)){
+case UNIT_ATTACK_DIRECT: SelectDirectAttackAction(0); return;
+case UNIT_ATTACK_INDIRECT: if(IsMobileIndirectUnitKind((u32)(*M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT)<<26)>>26))SelectMovingIndirectAttackAction(0);else SelectIndirectAttackAction(0);return;
 }}
 
 /* Whether the AI unit under the cursor has an attack action it can take: a

@@ -17,8 +17,7 @@ ZeroBlock526 z={0}; ZeroBlock526 *p=(ZeroBlock526*)r; s32 i=7;
 do { *p++=z; *p++=z; } while(--i); *p=z;
 }
 
-#pragma push
-#pragma opt_common_subs off
+#pragma c99 on
 s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     void *gpiMalloc(M2C_UNK);
     M2C_UNK gpiFree(s32);
@@ -39,7 +38,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     s32 StringCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK atof(s8 *);
     s32 ParseInt(s8 *);
-    s32 func_0207044c();
+    s32 _d2f();
     extern M2C_UNK data_020fe690;
     extern M2C_UNK gGpiInfoFileName;
     extern M2C_UNK data_020fe6d8;
@@ -74,7 +73,6 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     extern M2C_UNK data_020fe81c;
     extern M2C_UNK data_020fe824;
     void *sp10;
-    Callback526 callback;
     s32 temp_r0;
     s32 temp_r0_2;
     s32 temp_r0_3;
@@ -150,13 +148,13 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
         response.n2C = 0;
     } else {
         atof(&buffers.bufEC[0]);
-        response.n2C = func_0207044c();
+        response.n2C = _d2f();
     }
     if (gpiValueForKey(arg2, &data_020fe7a0, &buffers.bufEC[0], 0x40) == 0) {
         response.n30 = 0;
     } else {
         atof(&buffers.bufEC[0]);
-        response.n30 = func_0207044c();
+        response.n30 = _d2f();
     }
     if (gpiValueForKey(arg2, &data_020fe7a8, &response.b34[0], 0x80) == 0) {
         response.b34[0] = 0;
@@ -264,7 +262,7 @@ block_41:
     if (M2C_FIELD(temp_r6, s32 *, 0x100) != 0) {
         func_02053e40(arg0, sp10, &response.p0);
     }
-    callback=*(Callback526*)((u8*)arg1+12);
+    Callback526 callback = *(Callback526*)((u8*)arg1+12);
     temp_r1=callback.a;
     if (temp_r1 != 0) {
         temp_r0_4 = gpiMalloc(0x204);
@@ -284,7 +282,6 @@ block_41:
     return 0;
 }
 }
-#pragma pop
 /* Flush the accumulated profile ("updatepro") and user-info ("updateui") fields
  * to the connection's outgoing buffer: each pending block gets its command
  * header, the session key and the accumulated fields, then a "\final\"

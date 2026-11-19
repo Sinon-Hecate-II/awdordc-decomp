@@ -305,5 +305,22 @@ mgr=gConnectionMgr;M2C_FIELD(mgr,u64*,24)=GetSystemTick();M2C_FIELD(mgr,u8*,2)=1
 #pragma pop
 u32 ReportConnectionStatusResult(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}ReportConnectionError(code,off+0xfffec398);return ret;}
 
-u32 func_02043008(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=6;off=code-56;break;case 2:code=6;off=code-36;break;case 3:code=6;off=code-26;break;case 4:code=6;off=code-46;break;case 5:code=9;off=code-10;break;case 6:code=9;off=code-11;break;}ReportConnectionError(code,off+0xfffeb3f8);return ret;}
+/* Reports a matchmaking-send result: maps the operation result (1..6) to a WFC
+ * error class and a detail word for this call site, hands them to
+ * ReportConnectionError, and returns the result unchanged.  Result 0 (success)
+ * reports nothing. */
+u32 ReportMatchmakingResult(u32 result,u32 unused,u32 detail){
+u32 ret=result;u32 errorCode=ret;
+if(ret==0)return 0;
+switch(ret){
+case 1:errorCode=6;detail=errorCode-56;break;
+case 2:errorCode=6;detail=errorCode-36;break;
+case 3:errorCode=6;detail=errorCode-26;break;
+case 4:errorCode=6;detail=errorCode-46;break;
+case 5:errorCode=9;detail=errorCode-10;break;
+case 6:errorCode=9;detail=errorCode-11;break;
+}
+ReportConnectionError(errorCode,detail+0xfffeb3f8);
+return ret;
+}
 

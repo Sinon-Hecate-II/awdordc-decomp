@@ -66,8 +66,8 @@ void UpdateToonTableBlend(void) {
 
 void GetFrameStep(void) {
     M2C_UNK FX_Div(M2C_UNK, s32);
-    extern M2C_UNK data_02140f70;
-    FX_Div(0x60000, M2C_FIELD(&data_02140f70, s32 *, 0x18) * 3);
+    extern M2C_UNK gMapHighlightState;
+    FX_Div(0x60000, M2C_FIELD(&gMapHighlightState, s32 *, 0x18) * 3);
 }
 
 void func_02077720(void) {*(volatile u32 *)0x40004c0=0x7fffffff;*(volatile u32 *)0x40004c4=0x7fff4210;}
@@ -142,7 +142,7 @@ void GX_DisableFog(void) {
     GX_SetFog(0, 0, 0, 0);
 }
 
-void func_02077a4c(void) {extern M2C_UNK data_02140f70;M2C_FIELD(&data_02140f70,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
+void func_02077a4c(void) {extern M2C_UNK gMapHighlightState;M2C_FIELD(&gMapHighlightState,s32 *,4)=0;*(volatile u32 *)0x40004c8=0x20000000;*(volatile u32 *)0x40004cc=0x7fff;}
 
 void func_02077a7c(void) {void Map_BeginFrame();void func_02077eb8(void);void func_02077ebc(void);void func_0207ce28();void func_0207cbb0();void func_0207749c();extern s32 *gCurrentMap;
 Map_BeginFrame();func_02077a4c();func_02077eb8();func_02077ebc();func_0207ce28(*gCurrentMap+0x6ef8);func_0207cbb0();func_0207749c();}
@@ -336,57 +336,49 @@ void func_02077ebc(void) {
     CloseNarcArchive();
 }
 
-void func_02078068(void) {
-    M2C_UNK MI_CpuFill32(M2C_UNK, void *, M2C_UNK);
+#pragma push
+#pragma optimization_level 2
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+/* Rebuild the current player's movement-range overlay: clear the per-cell flags,
+ * then mark every cell inside the selected unit's move range.  Leaves the flags
+ * cleared when the player has no selected unit, while their CO power is active,
+ * or when the unit's own cell is hidden by fog. */
+void BuildMoveRangeFlags(void)
+{
+    void MI_CpuFill32(u32, void *, u32);
     u8 *GetPlayerSelectedUnit(s32);
-    s32 func_020a334c(s32);
-    s32 func_020d0468(s32, s32, s32);
+    s32 GetPlayerArmyVariantIfSet(s32);
+    s32 GetMoveRangeCommanderId(s32, s32, s32);
     extern s32 *gCurrentMap;
     extern u8 gMapMoveRangeFlags[];
-    u8 *base;
-    s32 selected;
-    u16 width;
-    u16 height;
-    u8 *unit;
-    u8 kindByte;
-    u8 otherByte;
-    u16 rowVal;
-    s32 idx;
-    s32 x;
-    s32 y;
+    s32 x, y;
+    s32 base = *gCurrentMap;
+    u8 *dimensions = (u8 *)base + 0x5120;
+    s32 player = M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER);
+    s32 width = M2C_FIELD(dimensions, u16 *, 0x24);
+    s32 height = M2C_FIELD(dimensions, u16 *, 0x26);
+    BattleMapUnit *unit;
 
-    base = (u8 *)*gCurrentMap;
-    selected = *(u16 *)(base + 0x52A4);
-    width = *(u16 *)(base + 0x5144);
-    height = *(u16 *)(base + 0x5146);
     MI_CpuFill32(0, gMapMoveRangeFlags, 0x780);
-    unit = GetPlayerSelectedUnit(selected);
-    if (unit == 0) {
+    unit = (BattleMapUnit *)GetPlayerSelectedUnit(player);
+    if (unit == 0 || GetPlayerArmyVariantIfSet(player)) {
         return;
     }
-    if (func_020a334c(selected) != 0) {
+    base = *gCurrentMap;
+    dimensions = (u8 *)base + 0x5120;
+    if (!mapFog020778cc(mapBits020778cc(dimensions), MapCellIndex(unit->x, unit->y))) {
         return;
     }
-    base = (u8 *)*gCurrentMap;
-    kindByte = unit[2];
-    otherByte = unit[1];
-    rowVal = *(u16 *)(base + 0x3758 + kindByte * 2);
-    idx = otherByte + rowVal;
-    if (!(base[0x5201 + (idx >> 3)] & (1 << (idx & 7)))) {
-        return;
-    }
-    y = 0;
-    while (y < height) {
-        x = 0;
-        while (x < width) {
-            if (func_020d0468(selected, x, y) != -1) {
-                gMapMoveRangeFlags[x * 0x28 + y] = 1;
+    for (y = 0; y < height; ++y) {
+        for (x = 0; x < width; ++x) {
+            if (GetMoveRangeCommanderId(player, x, y) != -1) {
+                (gMapMoveRangeFlags + x * 40)[y] = 1;
             }
-            x = x + 1;
         }
-        y = y + 1;
     }
 }
+#pragma pop
 
 #pragma optimization_level 2
 #pragma opt_strength_reduction off
@@ -400,7 +392,7 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     u8 func_020a4700(s32, s32);
     extern s32 *gCurrentMap;
     extern u8 gMapCellCodes[];
-    extern M2C_UNK data_02140f70;
+    extern M2C_UNK gMapHighlightState;
     u8 *viewRect;
     u16 mapWidth;
     u16 mapHeight;
@@ -435,7 +427,7 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
             if (elev >= 0x40) code = 3;
 
             if ((tile & MAP_TERRAIN_KIND_MASK) == 0x1D &&
-                *(s32 *)(((u8 *)&data_02140f70) + 0xC) != 0 &&
+                *(s32 *)(((u8 *)&gMapHighlightState) + 0xC) != 0 &&
                 func_020a4700(x, y) != 0) {
                 code = 1;
             }
@@ -498,30 +490,29 @@ void BuildMapCellShades(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0++;
     }
 }
-#pragma opt_strength_reduction on
+#pragma opt_strength_reduction off
 void func_0207843c(s32 x0,s32 y0,s32 x1,s32 y1){
 s32 func_0207e52c(s32,s32);s32 func_0207ef5c(s32,s32,u16);
 extern s32 *gCurrentMap;extern u8 data_02142ebc[3840],data_02143dbc[3840];
-u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off; s32 a,x,y,w,h,b;
+u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off;u16 *p; s32 a,x,y,w,h,b;u16 *q;
 w=M2C_FIELD(sub,u16*,0x5024);h=M2C_FIELD(sub,u16*,0x5026);
 if(x0<0)x0=0;if(y0<0)y0=0;if(x1>w-1)x1=w-1;if(y1>h-1)y1=h-1;
-y=y0;goto outercheck;outer: x=x0;off=y*2;goto innercheck;inner:
+p=(u16*)data_02142ebc;y=y0;goto outercheck;outer: off=y*2;x=x0;goto innercheck;inner:
 a=func_0207e52c(x,y);b=func_0207ef5c(x,y,(u16)a);
-*(u16 *)((u8 *)data_02142ebc + x*0x50 + off)=a;
-*(u16 *)((u8 *)data_02143dbc + x*0x50 + off)=b;
+M2C_FIELD((u8*)p+x*80,u16*,off)=a;
+M2C_FIELD(data_02143dbc+x*80,u16*,off)=b;
 x++;innercheck:if(x<=x1)goto inner;
 y++;outercheck:if(y<=y1)goto outer;
 }
-#pragma opt_strength_reduction on
 void func_02078528(void) {
 unsigned long long func_020722fc(unsigned long, unsigned long);
-extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 gFrameCounter;extern M2C_UNK data_02140f70;
+extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 gFrameCounter;extern M2C_UNK gMapHighlightState;
 s32 sum,idx,accum;u8 *p;s32 i;unsigned long long res;s32 rem;
 sum=0;accum=0;idx=0;i=0;p=data_020ebd78;
 do{sum+=*p++;i++;}while(i<30);
 res=func_020722fc(gFrameCounter,sum);rem=res>>32;
 {u8 *q=data_020ebd78;s32 j=0;
 do{accum+=*q;if(accum>rem){idx=j;break;}j++;q++;}while(j<30);}
-*(u8*)&data_02140f70=data_020ebd58[idx];
+*(u8*)&gMapHighlightState=data_020ebd58[idx];
 }
 

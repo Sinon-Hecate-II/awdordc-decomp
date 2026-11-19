@@ -11,141 +11,155 @@ typedef struct { s8 unk0[0x36]; s8 x[12]; s8 y[12]; s8 fuel[12]; } MapPathCoords
 static inline s32 GetPathX(s8 *ctx, s32 index) { return (ctx + index)[0x36]; }
 static inline s32 GetPathY(s8 *ctx, s32 index) { return (ctx + index)[0x42]; }
 
-void func_020a0964(s32 a, s32 b, u16 *out) {
-    M2C_UNK GetUnitAttackRangeMax(M2C_UNK);
-    M2C_UNK IsMobileIndirectUnitKind(M2C_UNK);
+#pragma push
+#pragma opt_strength_reduction off
+/* Picks the tile the selected unit attacks from when the cursor is put on the
+ * target tile (targetX,targetY): a direct or mobile indirect unit chooses the
+ * best reachable tile within its attack range (highest ScoreMoveCell, random
+ * tie-break), while a static indirect unit attacks from where it stands. The
+ * pending move path's last step is used when it is already in range, otherwise
+ * the range is flood-filled from it (or taken from the movement preview layer). */
+void ChooseAttackPosition(s16 targetX, s16 targetY, s16 *out)
+{
+    s32 GetUnitAttackRangeMax(BattleMapUnitHead *);
+    s32 IsMobileIndirectUnitKind(s32);
     M2C_UNK SelectMapLayer(M2C_UNK);
-    M2C_UNK func_020a0560(void);
-    M2C_UNK func_020a0360(void);
-    M2C_UNK func_020a061c(void);
-    M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
-    M2C_UNK NextRandomValue(void);
-    M2C_UNK ScoreMoveCell(M2C_UNK, M2C_UNK);
-
+    M2C_UNK BuildMoveRangeFromPathEnd(void);
+    s32 NextRandomValue(void);
+    s32 ScoreMoveCell(s32, s32);
     extern s32 *gCurrentMap;
     extern s32 gUnitMovePath;
     extern u8 gUnitMinAttackRange[];
+    BattleMapUnitHead *unit;
+    u8 *map;
+    s8 *path = (s8 *)gUnitMovePath;
+    s32 pathIndex = path[UNIT_PATH_LENGTH];
+    s32 bestScore, x, y;
+    s32 scanX, scanY;
+    s8 endX, endY;
+    u8 minRange;
+    const u8 *rangeTable;
+    s32 rangeOffset;
+    u16 maxRange;
+    s32 dx, dy, distance;
+    s32 negDySecond;
+    s32 negDyFirst;
 
-    u8 *base;
-    s8 *ctx;
-    s8 idx;
-    s8 f36, f42;
-    u8 *unit;
-    u8 kind;
-    s32 attr;
-    s32 cap;
-    s32 best;
-    s32 manX, manY, manhattan;
-    s32 terrain;
-    u16 width, height;
-    u8 *rowPtr;
-    s32 inner, outer;
-    s32 best2;
-    s32 score;
-
-    base = (u8 *)*gCurrentMap;
-    ctx = (s8 *)gUnitMovePath;
-    idx = ctx[0x5b];
-    ctx = ctx + idx;
-    f36 = ctx[0x36];
-    f42 = ctx[0x42];
-
-    unit = *(u8 **)(base + 0x52d0);
-    kind = unit[0] & 0x3F;
-    attr = gUnitMinAttackRange[kind * 112];
-    cap = GetUnitAttackRangeMax((M2C_UNK)unit);
-
-    if (cap > 1 && IsMobileIndirectUnitKind(kind) == 0) {
-        out[0] = unit[1];
-        out[1] = unit[2];
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    rangeTable = gUnitMinAttackRange;
+    rangeOffset = unit->kind * 112;
+    endX = GetPathX(path, pathIndex);
+    endY = GetPathY(path, pathIndex);
+    minRange = rangeTable[rangeOffset];
+    maxRange = GetUnitAttackRangeMax(unit);
+    if (maxRange > 1 && !IsMobileIndirectUnitKind(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind)) {
+        out[0] = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->x;
+        out[1] = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->y;
         return;
     }
 
-    manX = f42 - b;
-    if (manX < 0) manX = -manX;
-    manY = f36 - a;
-    if (manY < 0) manY = -manY;
-    manhattan = manX + manY;
-    if (manhattan >= attr && manhattan <= cap) {
-        terrain = base[f36 + *(u16 *)(base + (f42 << 1) + 0x3758)];
-        if (terrain == 0) {
-            out[0] = f36;
-            out[1] = f42;
+    dy = endY - targetY;
+    distance = dy < 0 ? -dy : dy;
+    dx = endX - targetX;
+    dx = dx < 0 ? -dx : dx;
+    dx += distance;
+    distance = dx;
+    if (distance >= minRange && distance <= maxRange) {
+        map = (u8 *)*gCurrentMap;
+        if (!map[endX + M2C_FIELD(map + endY * 2, u16 *, MAP_ROW_OFFSETS)]) {
+            out[0] = endX;
+            out[1] = endY;
             return;
         }
     }
 
-    SelectMapLayer((M2C_UNK)(base + 0x2338));
-    func_020a0560();
-
-    best = 0;
-    height = *(u16 *)(base + 0x5146);
-    width = *(u16 *)(base + 0x5144);
-    for (outer = 0; outer < (s32)height; outer++) {
-        for (inner = 0; inner < (s32)width; inner++) {
-            rowPtr = *(u8 **)(base + outer * 4 + 0x52e8);
-            terrain = (s8)rowPtr[inner];
-            if (terrain < 0) continue;
-            manX = a - inner;
-            if (manX < 0) manX = -manX;
-            manY = b - outer;
-            if (manY < 0) manY = -manY;
-            manhattan = manX + manY;
-            if (manhattan < attr || manhattan > cap) continue;
-            score = ScoreMoveCell(inner, outer);
-            if (score == 0) continue;
-            if (score > best) {
-                best = score;
-                out[0] = (u16)inner;
-                out[1] = (u16)outer;
-            } else if (score == best) {
-                if (NextRandomValue() & 1) {
-                    out[0] = (u16)inner;
-                    out[1] = (u16)outer;
+    SelectMapLayer((M2C_UNK)((u8 *)*gCurrentMap + MAP_CELL_SCORE));
+    BuildMoveRangeFromPathEnd();
+    bestScore = 0;
+    map = (u8 *)*gCurrentMap;
+    for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH)) {
+            s32 dy = targetY - y;
+            negDyFirst = -dy;
+            do {
+                s32 dx, distance, score;
+                s8 cost = M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x];
+                if (cost < 0)
+                    continue;
+                distance = dy < 0 ? negDyFirst : dy;
+                dx = targetX - x;
+                dx = dx < 0 ? -dx : dx;
+                dx += distance;
+                distance = dx;
+                if (distance < minRange || distance > maxRange)
+                    continue;
+                score = ScoreMoveCell(x, y);
+                if (!score)
+                    continue;
+                if (score > bestScore) {
+                    out[0] = x;
+                    bestScore = score;
+                    out[1] = y;
+                } else if (score == bestScore) {
+                    if (NextRandomValue() & 1) {
+                        out[0] = x;
+                        out[1] = y;
+                    }
                 }
-            }
+            } while (++x, map = (u8 *)*gCurrentMap, x < M2C_FIELD(map, u16 *, MAP_WIDTH));
         }
     }
+    SelectMapLayer((M2C_UNK)(map + MAP_CELL_ORDER));
+    if (bestScore)
+        return;
 
-    SelectMapLayer((M2C_UNK)(base + 0x1e30));
-    if (best != 0) return;
-
-    best2 = 0;
-    height = *(u16 *)(base + 0x5146);
-    width = *(u16 *)(base + 0x5144);
-    for (outer = 0; outer < (s32)height; outer++) {
-        for (inner = 0; inner < (s32)width; inner++) {
-            rowPtr = *(u8 **)(base + outer * 4 + 0x52e8);
-            terrain = (s8)rowPtr[inner];
-            if (terrain < 0 || terrain > 110) continue;
-            manX = a - inner;
-            if (manX < 0) manX = -manX;
-            if (manY < 0) manY = -manY;
-            manhattan = manX + manY;
-            if (manhattan < attr || manhattan > cap) continue;
-            score = ScoreMoveCell(inner, outer);
-            if (score == 0) continue;
-            if (score > best2) {
-                best2 = score;
-                out[0] = (u16)inner;
-                out[1] = (u16)outer;
-            } else if (score == best2) {
-                if (NextRandomValue() & 1) {
-                    out[0] = (u16)inner;
-                    out[1] = (u16)outer;
+    SelectMapLayer((M2C_UNK)((u8 *)*gCurrentMap + MAP_CELL_ORDER));
+    bestScore = 0;
+    map = (u8 *)*gCurrentMap;
+    for (scanY = 0; scanY < M2C_FIELD(map, u16 *, MAP_HEIGHT); scanY++) {
+        scanX = 0;
+        if (scanX < M2C_FIELD(map, u16 *, MAP_WIDTH)) {
+            s32 dy = targetY - scanY;
+            negDySecond = -dy;
+            do {
+                s32 dx, distance, score;
+                s8 cost = M2C_FIELD(map + scanY * 4, s8 **, MAP_GRID)[scanX];
+                if (cost < 0 || cost > MAP_GRID_NO_UNIT_MAX)
+                    continue;
+                distance = dy < 0 ? negDySecond : dy;
+                dx = targetX - scanX;
+                dx = dx < 0 ? -dx : dx;
+                dx += distance;
+                distance = dx;
+                if (distance < minRange || distance > maxRange)
+                    continue;
+                score = ScoreMoveCell(scanX, scanY);
+                if (!score)
+                    continue;
+                if (score > bestScore) {
+                    out[0] = scanX;
+                    bestScore = score;
+                    out[1] = scanY;
+                } else if (score == bestScore) {
+                    if (NextRandomValue() & 1) {
+                        out[0] = scanX;
+                        out[1] = scanY;
+                    }
                 }
-            }
+            } while (++scanX, map = (u8 *)*gCurrentMap, scanX < M2C_FIELD(map, u16 *, MAP_WIDTH));
         }
     }
-    return;
 }
+
+#pragma pop
 
 #pragma push
 #pragma opt_common_subs off
 void func_020a0d18(void) {
     M2C_UNK SetUnitPathCursor(M2C_UNK, M2C_UNK);
     M2C_UNK SelectMapLayer(M2C_UNK);
-    M2C_UNK func_020a0560(void);
+    M2C_UNK BuildMoveRangeFromPathEnd(void);
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020a0360(void);
@@ -154,7 +168,7 @@ void func_020a0d18(void) {
     s32 func_020a0300(s8, s8);
     void func_020a0068(s8);
     void func_020a01c0(s8, s8);
-    s32 func_020a33c4(s32);
+    s32 GetPlayerArmyVariant(s32);
     extern s32 *gCurrentMap;
     extern s32 gUnitMovePath;
     extern u8 data_ov000_021b5c09[];
@@ -197,7 +211,7 @@ void func_020a0d18(void) {
         dx = cx - x; if (dx < 0) dx = -dx;
         if (dx + dy == 1 && base[cx + *(u16 *)(base + cy * 2 + 0x3758)] == 0) return;
         SelectMapLayer(base + 0x2338);
-        func_020a0560();
+        BuildMoveRangeFromPathEnd();
         sx = x; sy = y;
         if (func_020a086c(&sx, &sy)) {
             func_01ffc4b8(sx, sy, (u8 *)*gCurrentMap + 0x5388);
@@ -233,7 +247,7 @@ void func_020a0d18(void) {
     ctx = (s8 *)gUnitMovePath;
     idx = ctx[0x5b];
     fuel = (ctx + idx)[0x4e];
-    result = func_020a33c4(owner);
+    result = GetPlayerArmyVariant(owner);
     kind = (*(MapUnitBits **)((u8 *)*gCurrentMap + 0x52d0))->kind;
     rowOffset = *(u16 *)(base + y * 2 + 0x3758);
     terrain = (base + (x + rowOffset))[0x1420];
@@ -252,7 +266,7 @@ void func_020a0d18(void) {
     }
     if (fuel == 0) func_020a0068(1);
     SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
-    func_020a0560();
+    BuildMoveRangeFromPathEnd();
     base = (u8 *)*gCurrentMap;
     if ((*(s8 **)(base + y * 4 + 0x52e8))[x] == -1) {
         func_020a05d8(x, y);

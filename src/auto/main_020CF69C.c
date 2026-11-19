@@ -49,8 +49,8 @@ void StepMapCursorAndNotifyOffset(s32 arg0, s32 arg1) {
 void func_020cf80c(void) {
     M2C_UNK MoveMapCursorWithKeys();
     M2C_UNK UpdateMapCursorFromTouch();
-    s32 func_020d4dd0();
-    if (func_020d4dd0() == 0) {
+    s32 IsMapCursorIdle();
+    if (IsMapCursorIdle() == 0) {
         return;
     }
     MoveMapCursorWithKeys();
@@ -60,7 +60,7 @@ void func_020cf80c(void) {
 void func_020cf828(M2C_UNK arg0) {
     M2C_UNK func_020bc610(M2C_UNK);
     M2C_UNK func_020bd220(M2C_UNK);
-    if (func_020d4dd0() == 0) {
+    if (IsMapCursorIdle() == 0) {
         return;
     }
     func_020bc610(arg0);
@@ -70,25 +70,28 @@ void func_020cf828(M2C_UNK arg0) {
 void func_020cf850(M2C_UNK arg0) {
     M2C_UNK MoveMapCursorByDirection(M2C_UNK);
     M2C_UNK func_020bd3c0(M2C_UNK);
-    if (func_020d4dd0() == 0) {
+    if (IsMapCursorIdle() == 0) {
         return;
     }
     MoveMapCursorByDirection(arg0);
     func_020bd3c0(arg0);
 }
 
-u8 func_020cf878(s32 arg0,s32 arg1) {
+/* Whether (x, y) is a production property the current player owns: the cell must
+ * carry one of the player's production terrains (base, port or airport), have no
+ * unit standing on it, and the map data's rule flag 2 must be clear. */
+u8 IsOwnedProductionSite(s32 x, s32 y) {
  s32 func_020a88fc(u16); s32 func_020d048c(u8, s32);
  extern s32 *gCurrentMap;
- u8 result; void *p; s32 offset; u8 value;
- p=(void *)*gCurrentMap;
- offset=arg0+M2C_FIELD(p+arg1*2,u16 *,0x3758);
- value=M2C_FIELD(p+offset,u8 *,0x1420);
- if(M2C_FIELD(p,u16 *,0x52A4)==0) return 0;
- offset=((u8 *)p)[offset];
- if(offset!=0) return 0;
- if(func_020d048c(value, M2C_FIELD(p,u16 *,0x52A4))==0) return 0;
- if(func_020a88fc(M2C_FIELD((void *)*gCurrentMap,u16 *,0x5142))==0) result=1; else result=0;
+ u8 result; void *map; s32 index; u8 terrain;
+ map=(void *)*gCurrentMap;
+ index=x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS);
+ terrain=M2C_FIELD(map+index,u8 *,MAP_CELL_TERRAIN);
+ if(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)==0) return 0;
+ index=((u8 *)map)[index];
+ if(index!=0) return 0;
+ if(func_020d048c(terrain, M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))==0) return 0;
+ if(func_020a88fc(M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID))==0) result=1; else result=0;
  return result;
 }
 
@@ -346,23 +349,23 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
 void InitAreaScan(void *,s32,s32,s32,s32,s32); void func_020d0428(s32,s32,s32,s32); s32 func_020d03c4(s32);
-s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 func_020a334c(s32); s32 NextAreaTile(void *); void func_02078068(void);
+s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!IsPlayerActive(player))continue;
 func_020d0164(func_020d03c4(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
-moveRange=func_020d2cf0(player); if(func_020a334c(player))moveRange=6;
+moveRange=func_020d2cf0(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
 InitAreaScan(pathState,moveRange,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146));
 for(;;){if(!NextAreaTile(pathState))break;func_020d0428(player,pathState[4],pathState[5],1);}
 }
-func_02078068();
+BuildMoveRangeFlags();
 }
 
 M2C_UNK func_020d0270(void) {
- M2C_UNK func_020ce9a0(); M2C_UNK func_020d0178(); M2C_UNK func_ov000_02174ce8();
- func_020ce9a0(); RefreshMapCellUnits(); func_020d0178(); func_ov000_02174ce8();
+ M2C_UNK RefreshTeamVisibility(); M2C_UNK func_020d0178(); M2C_UNK func_ov000_02174ce8();
+ RefreshTeamVisibility(); RefreshMapCellUnits(); func_020d0178(); func_ov000_02174ce8();
 }
 
 void InitAreaScan(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
@@ -406,7 +409,7 @@ s32 IsCellInPlayerMoveRange(s32 arg0,s32 arg1,s32 arg2) {extern s32 *gCurrentMap
 
 void func_020d0428(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;s32 p=*gCurrentMap;s32 off=M2C_FIELD(p+c*2,u16 *,0x3758);s32 row=p+a*0x508;M2C_FIELD(row+(b+off),u8 *,0x37f8)=d;}
 
-s32 func_020d0468(M2C_UNK arg0) {
+s32 GetMoveRangeCommanderId(M2C_UNK arg0) {
     s32 IsCellInPlayerMoveRange();
     s32 GetPlayerCommanderId(M2C_UNK);
     if (IsCellInPlayerMoveRange() == 0) {

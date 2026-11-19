@@ -19,11 +19,38 @@ s32 func_020303e4(void *arg0) {
 
 s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
 
-s32 Wfc_BuildFriendEntries(s32 a){void *Wfc_GetWorkBlock(s32);void CpuFill(s32,void *,s32);s32 func_02030634(void *);s32 func_02030888();s32 func_02030918(void *);s32 Wfc_BuildFreespotEntries(void *);u8 *p=Wfc_GetWorkBlock(16);switch(a){case 0:CpuFill(0,p+0x300,0x144);p[0xd10]=func_02030634(p);break;case 1:p[0xd10]=func_02030888();p[0xd0f]=func_02030918(p);break;case 2:CpuFill(0,p+0x300,0x144);p[0xd0f]=0;p[0xd10]=Wfc_BuildFreespotEntries(p);break;}return p[0xd10];}
+/* Rebuilds the WFC friend-list row table for one source: the save slots (0),
+ * the connected friend records (1) or the FREESPOT configuration (2).  Returns
+ * the number of rows the table now holds. */
+s32 Wfc_BuildFriendEntries(s32 source) {
+    void *Wfc_GetWorkBlock(s32);
+    void CpuFill(s32, void *, s32);
+    s32 Wfc_BuildFriendCodeEntries(void *);
+    s32 Wfc_MarkRecordsToSend();
+    s32 Wfc_FindFirstRecordToSend(void *);
+    s32 Wfc_BuildFreespotEntries(void *);
+    u8 *state = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+    switch (source) {
+    case 0:
+        CpuFill(0, state + WFC_STATE_ENTRIES, WFC_ENTRY_TABLE_SIZE);
+        state[WFC_STATE_ENTRY_COUNT] = Wfc_BuildFriendCodeEntries(state);
+        break;
+    case 1:
+        state[WFC_STATE_ENTRY_COUNT] = Wfc_MarkRecordsToSend(state);
+        state[WFC_STATE_WORK_INDEX] = Wfc_FindFirstRecordToSend(state);
+        break;
+    case 2:
+        CpuFill(0, state + WFC_STATE_ENTRIES, WFC_ENTRY_TABLE_SIZE);
+        state[WFC_STATE_WORK_INDEX] = 0;
+        state[WFC_STATE_ENTRY_COUNT] = Wfc_BuildFreespotEntries(state);
+        break;
+    }
+    return state[WFC_STATE_ENTRY_COUNT];
+}
 
 s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
-s32 func_02030634(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
+s32 Wfc_BuildFriendCodeEntries(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 
 /* Build the friend-list rows of the FREESPOT connection: after the rows of the
  * shared friend code (func_02030780), append one row per enabled connection mode
@@ -116,33 +143,37 @@ done:
 }
 
 #pragma opt_strength_reduction off
-s32 func_02030888(void *a) {
+/* Marks the friend records that still have to be sent for their current friend: a
+ * record whose result is pending and whose friend id differs from the one stored
+ * in its result entry loses its sent mark, every other record keeps it.  Returns
+ * the number of records to send. */
+s32 Wfc_MarkRecordsToSend(void *friends) {
     s32 i;
-    u8 n;
-    u8 *p;
-    void *q;
+    u8 count;
+    u8 *flags;
+    void *record;
 
-    n = 0;
+    count = 0;
     i = 0;
-    if ((s32) M2C_FIELD(a, u8 *, 0xD12) > 0) {
-        q = a;
-        p = (u8 *) a + 0x447;
+    if ((s32) M2C_FIELD(friends, u8 *, WFC_STATE_RECORD_COUNT) > 0) {
+        record = friends;
+        flags = (u8 *) friends + WFC_STATE_RECORD_FLAGS;
         do {
-            if ((M2C_FIELD((u8 *) a + i * 4, u8 *, 0x444) == 0) && ((M2C_FIELD(q, u16 *, 0x4A6) - 1) != ((u32) (*p << 0x19) >> 0x19))) {
-                *p &= ~0x80;
-                n++;
+            if ((M2C_FIELD((u8 *) friends + i * 4, u8 *, WFC_STATE_RECORD_RESULT) == 0) && ((M2C_FIELD(record, u16 *, WFC_STATE_RECORDS + WFC_RECORD_FRIEND_ID) - 1) != ((u32) (*flags << 0x19) >> 0x19))) {
+                *flags &= ~WFC_STATE_RECORD_SENT;
+                count++;
             } else {
-                *p |= 0x80;
+                *flags |= WFC_STATE_RECORD_SENT;
             }
             i++;
-            p += 4;
-            q = (u8 *) q + 0xC0;
-        } while (i < (s32) M2C_FIELD(a, u8 *, 0xD12));
+            flags += 4;
+            record = (u8 *) record + WFC_RECORD_STRIDE;
+        } while (i < (s32) M2C_FIELD(friends, u8 *, WFC_STATE_RECORD_COUNT));
     }
-    return n;
+    return count;
 }
 #pragma opt_strength_reduction on
-s32 func_02030918(void *a) {
+s32 Wfc_FindFirstRecordToSend(void *a) {
  u8 n;u8 i;u8 r;
  n=M2C_FIELD(a,u8 *,0xd12);r=0;i=0;
  if((u32)n>(u32)i) {
@@ -160,7 +191,7 @@ u8 Wfc_StepLink(void) {
     M2C_UNK WFC_ProcessLinkState();
     u32 Wfc_GetLinkState();
     void *Wfc_GetWorkBlock(M2C_UNK);
-    M2C_UNK func_0202f558(M2C_UNK);
+    M2C_UNK Wfc_SetResultCode(M2C_UNK);
     M2C_UNK Wfc_SendConnectionMessage(u8);
     u32 mode;
     u8 result;
@@ -189,11 +220,11 @@ u8 Wfc_StepLink(void) {
         break;
     case 12:
         WFC_ProcessLinkState();
-        func_0202f558(4);
+        Wfc_SetResultCode(4);
         result = 0x11;
         break;
     case 11:
-        func_0202f558(0);
+        Wfc_SetResultCode(0);
         result = 0x11;
         break;
     }
@@ -413,7 +444,7 @@ s32 Wfc_NextFriendStep(void *state, s32 finishedStep) {
  * the WFC engine is not idle (WFC_ProcessConnectStep). */
 s32 Wfc_StepFriendResults(void *friends, s32 state) {
     s32 WFC_ProcessConnectStep(void);
-    M2C_UNK func_0202f558(M2C_UNK);
+    M2C_UNK Wfc_SetResultCode(M2C_UNK);
     s32 result = state;
     u8 count;
     u8 index;
@@ -430,7 +461,7 @@ loop_next:
     }
     if (result == WFC_STEP_FRIEND_RESULTS) {
         if (count == index) {
-            if (index == 0) func_0202f558(5); else func_0202f558(6);
+            if (index == 0) Wfc_SetResultCode(5); else Wfc_SetResultCode(6);
             return WFC_STEP_DONE;
         }
         goto start_link;
@@ -467,14 +498,14 @@ s32 Wfc_StepConnect(void) {
  u32 Wfc_GetLinkState(void);
  void *Wfc_GetWorkBlock(s32);
  s32 WFC_ConnectStep(s32 *,void *);
- s32 func_0202f558(s32);
- extern M2C_UNK func_0202fc10;
+ s32 Wfc_SetResultCode(s32);
+ extern M2C_UNK Wfc_HandleConnectMessage;
  s32 v[4];s32 r=Wfc_GetLinkState();void *p=Wfc_GetWorkBlock(16);
  if(r==1){
  v[0]=M2C_FIELD(p,u8 *,0xd0a);v[1]=0;v[2]=0;v[3]=0;
  Wfc_BuildFriendEntries(0);
- r=WFC_ConnectStep(v,&func_0202fc10);
- if(r==1||r>=4){func_0202f558(1);return 17;}
+ r=WFC_ConnectStep(v,&Wfc_HandleConnectMessage);
+ if(r==1||r>=4){Wfc_SetResultCode(1);return 17;}
  }else return 1;
  return 2;
 }

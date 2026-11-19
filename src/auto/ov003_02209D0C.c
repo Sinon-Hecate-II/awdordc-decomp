@@ -50,7 +50,7 @@ s16 func_020bfa20(void);s16 func_020bf9e0(void);
 void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
 s32 GetLanguage(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
 void func_0209b26c(u8,s32,s32,void *,s32,u16);
-void func_ov003_0220a864(M2C_UNK);void func_02088f1c(void *);void Hide3DSpriteSlide(void *);s32 func_02089080(void *);
+void func_ov003_0220a864(M2C_UNK);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);s32 func_02089080(void *);
 void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK Ov003_RefreshListRowAnimations(void *,s32,s32);
 extern M2C_UNK data_0215d9b8;extern u8 data_ov003_02210c80[];extern void *gCur3DSpriteEngine;
 void *p;u8 i,total,j,x;s32 tile,k,mode;
@@ -131,21 +131,21 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }
 func_ov003_0220a864((M2C_UNK)a);
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==8)) {
-func_02088f1c(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));
+Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));
 if((u8)(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==0))
-func_02088f1c(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20));
+Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20));
 } else {
 Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));
 if((u8)(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==0))
 Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20));
 }
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==9))
-func_02088f1c(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));
+Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));
 else Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==0))
 Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
 else if(func_02089080(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0)))
-func_02088f1c(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
+Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));
 p=M2C_FIELD(a,void **,0x3c);
 func_02087ec0(M2C_FIELD(a,void **,0x5c),(s16)((u8)(M2C_FIELD(p,u8 *,M2C_FIELD(p,u8 *,15))+1)+10));
 func_ov003_02207a8c(a);

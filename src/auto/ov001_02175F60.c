@@ -48,7 +48,7 @@ void func_ov001_02175f8c(void *arg0) {
     M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
 }
 
-void func_ov001_02176078(void) {
+void Ov001_StartProfileExitTask(void) {
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_02176098;
     Ov001_AddTask(0, &func_ov001_02176098, 0, 0x78);
@@ -70,7 +70,7 @@ s32 Ov001_IsProfileScreenDone(void) {
     return data_ov001_02193d50 == 0;
 }
 
-void func_ov001_021760f0(s32 arg0) {
+void Ov001_SetProfileScreenCallback(s32 arg0) {
     extern void *data_ov001_02193d50;
     M2C_FIELD(data_ov001_02193d50, s32 *, 0x1E298) = arg0;
 }
@@ -91,11 +91,11 @@ void *func_ov001_02176114(void) {
 #pragma push
 #pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
-void func_ov001_02188f40(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
+void Ov001_UpdateProfileSetup(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
 M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK Ov001_FreeAlloc(M2C_UNK*);
 void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
-func_ov001_02188f40();
+Ov001_UpdateProfileSetup();
 if(M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)!=0 && M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a1)==0){
 fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);if(fp)fp(0);return;}
 func_ov001_021892c4(&sp1,&sp0);
@@ -391,7 +391,7 @@ void func_ov001_02176844(void) {
 
 void Ov001_OpenWifiMenu(void) {
  void func_ov001_02176934(void);
- M2C_UNK func_ov001_02172250(M2C_UNK);
+ M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
  M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
  M2C_UNK Ov001_LoadMenuResource(M2C_UNK);
  M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
@@ -400,7 +400,7 @@ void Ov001_OpenWifiMenu(void) {
    extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
  s32 offset;
  func_ov001_02176934();
- func_ov001_02172250(0);
+ Ov001_LoadObjLayoutBlock(0);
  Ov001_ShowMessagePanel(0x2e,-1,0);
  Ov001_LoadMenuResource(4);
  offset = gOv001WifiMenuSelection * 8;
@@ -622,16 +622,16 @@ Ov001_LoadObjTile(M2C_FIELD(&gOv001WifiMenuSelection,s32 *,4),value,value);
 
 void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
-    M2C_UNK func_ov001_02172250(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void func_ov001_02176e78();
     extern s8 gOv001WfcSettingsReset;
     extern M2C_UNK func_ov001_02176ef8;
     gOv001WfcSettingsReset = 0;
     func_ov001_02176e78();
-    func_ov001_02172250(0x12);
+    Ov001_LoadObjLayoutBlock(0x12);
     Ov001_ShowMessagePanel(0x3B, -1, 0);
-    func_ov001_02171e58(0x17);
+    Ov001_ShowMessageBox(0x17);
     Ov001_SetStepCallback(&func_ov001_02176ef8);
 }
 

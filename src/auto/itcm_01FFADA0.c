@@ -1,6 +1,7 @@
 /* 12 functions from 0x01FFADA0 to 0x01FFBD90 (itcm), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 static inline s16 SearchMovementFlags(s8 *state) { return M2C_FIELD(state,s16*,0x22); }
 static inline u8 *SearchPlayerRecords(void *map) { return (u8*)map+0x67a4; }
@@ -28,7 +29,7 @@ if((M2C_FIELD(state,s16*,0x22)&8)&&((u32)(unit[10]<<24)>>31))return 1;
 
 return 0;
 }
-typedef struct UnkB454Bits { u32 value : 8; u32 rest : 24; } UnkB454Bits;
+typedef struct PlayerArmyBits { u32 army : 8; u32 rest : 24; } PlayerArmyBits;
 
 /* Flood-fill the tiles a unit of `kind` at (x,y) can reach within the cost
  * budget `value`: seed the two ping-pong search queues, write the accumulated
@@ -43,7 +44,7 @@ void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
     extern void *gMoveSearchCurrent;
     extern u8 gMovementTypeTable[];
     void FillMapLayer(s8);
-    void func_01ffb454(s32);
+    void LoadUnitMovementCosts(s32);
     void func_01ffb50c(s32);
     void func_01ffb114(s32, s32, s32);
     s32 func_020a85b8(s32);
@@ -71,7 +72,7 @@ void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
             }
         }
         FillMapLayer(-1);
-        func_01ffb454(kind);
+        LoadUnitMovementCosts(kind);
     } else {
         FillMapLayer(-1);
         func_01ffb50c(kind);
@@ -184,21 +185,28 @@ base=*gCurrentMap;
 }
 }
 
-void func_01ffb454(s32 arg0) {
-extern u8 gUnitKindStats[]; extern u8 gMovementCostTable[]; extern s8 *gMoveSearchState; extern void **data_027e0058; extern u8 gMapData[];
-s32 func_020a33c4(s32);
-s32 i; u8 *unit=gUnitKindStats+arg0*0x70;
+/* Copy the 32 per-terrain movement costs unit kind `kind` pays under the
+ * active player's army and weather into the movement search's cost table.
+ * Maps that leave army-specific movement off use army 0's table. */
+void LoadUnitMovementCosts(s32 kind) {
+extern u8 gUnitKindStats[]; extern u8 gMovementCostTable[]; extern s8 *gMoveSearchState; extern void **gCurrentMap; extern u8 gMapData[];
+s32 GetPlayerArmyVariant(s32);
+s32 i; u8 *stats=gUnitKindStats+kind*UNIT_KIND_STATS_SIZE;
 for(i=0;i<32;i++) {
-void *base=*data_027e0058;
-s32 index=M2C_FIELD(base,u16 *,0x52b6);
-u8 *entry=(u8 *)base+0x67a4+index*0x8c;
-u32 variant;
-s32 type;
-s8 *table;
-variant=(u32)(M2C_FIELD(gMapData,u16 *,12)<<18)>>31; if(variant) variant=((UnkB454Bits *)(entry+0x6c))->value;
-type=func_020a33c4(index);
-table=M2C_FIELD(gMovementCostTable+variant*0x9c+type*0x28+entry[0x25]*4,s8 **,0x64);
-gMoveSearchState[i]=(table+unit[0x12]*32)[i];
+void *map=*gCurrentMap;
+s32 player=M2C_FIELD(map,u16 *,MAP_ACTIVE_PLAYER);
+u8 *record=(u8 *)map+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE;
+u32 armyId;
+s32 variant;
+s8 *costs;
+if (((u32)(M2C_FIELD(gMapData,u16 *,MAPDATA_RULES)<<18)>>31) == 0) {
+    armyId = 0;
+} else {
+    armyId = ((PlayerArmyBits *)(record+PLAYER_REC_SPRITE))->army;
+}
+variant=GetPlayerArmyVariant(player);
+costs=M2C_FIELD(gMovementCostTable+armyId*ARMY_DATA_SIZE+variant*ARMY_DATA_VARIANT_STRIDE+record[PLAYER_REC_MOVE_COST_ROW]*ARMY_DATA_ROW_STRIDE,s8 **,ARMY_DATA_MOVE_COSTS);
+gMoveSearchState[i]=(costs+stats[UNIT_KIND_STATS_MOVETYPE]*32)[i];
 }
 }
 
@@ -213,15 +221,22 @@ for(i=0;i<32;i++) {
 }
 }
 #pragma opt_peephole reset
-void SelectMapLayer(s32 arg0) {
-extern void **gCurrentMap; extern s8 *gMoveSearchState;
-s32 i=0; void *base=*gCurrentMap;
-for(;i<M2C_FIELD(base,u16 *,0x5146);i++) {
-((s32 *)base)[i+0x14ba]=arg0+((u16 *)base)[i+0x1bac];
-base=*gCurrentMap;
-}
-gMoveSearchState[0x24]=M2C_FIELD(base,u16 *,0x5144);
-gMoveSearchState[0x25]=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
+/* Point the movement search at a per-cell byte layer of the map: MAP_GRID's row
+ * pointers (+0x52e8, one s32 per row) are set to `layer` plus the map's per-row
+ * offsets (MAP_ROW_OFFSETS, +0x3758, one u16 per row), and the search state
+ * records the map's width and height. */
+void SelectMapLayer(s32 layer) {
+    extern void **gCurrentMap;
+    extern s8 *gMoveSearchState;
+    s32 i = 0;
+    void *map = *gCurrentMap;
+
+    for (; i < M2C_FIELD(map, u16 *, MAP_HEIGHT); i++) {
+        ((s32 *)map)[i + 0x14ba] = layer + ((u16 *)map)[i + 0x1bac];
+        map = *gCurrentMap;
+    }
+    gMoveSearchState[MOVE_SEARCH_WIDTH] = M2C_FIELD(map, u16 *, MAP_WIDTH);
+    gMoveSearchState[MOVE_SEARCH_HEIGHT] = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);
 }
 
 void func_01ffb5ec(s32 cx,s32 cy,s32 radius,s8 value){
@@ -261,52 +276,33 @@ void func_01ffb734(int cx,int cy,int radius,s8 value) {
 void func_01ffb80c(s32 x, s32 y, s32 dir, s8 value) {
     extern void **gCurrentMap;
     switch (dir) {
-    case 0: {
-        void *base;
-        s8 *row;
+    case 0:
         --x;
         ++y;
-        base = *gCurrentMap;
-        if (!(y < M2C_FIELD(base, u16 *, 0x5146))) return;
-        for (;;) {
-            row = ((s8 **)base)[y + 0x14ba];
-            ++y;
-            row[x] = value;
-            if (--x < 0) return;
-            base = *gCurrentMap;
-            if (!(y < M2C_FIELD(base, u16 *, 0x5146))) return;
-        }
-    }
+        goto check_left;
+    left:
+        ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4][x] = value;
+        --x;
+    check_left:
+        if (x < 0) return;
+        if (y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT)) goto left;
+        return;
     case 1:
-    case 3: {
-        void *base;
-        s8 *row;
-        ++y;
-        base = *gCurrentMap;
-        if (!(y < M2C_FIELD(base, u16 *, 0x5146))) return;
-        for (;;) {
-            row = ((s8 **)base)[y + 0x14ba];
-            ++y;
-            row[x] = value;
-            base = *gCurrentMap;
-            if (!(y < M2C_FIELD(base, u16 *, 0x5146))) return;
-        }
-    }
-    case 2: {
-        void *base;
-        s8 *row;
+    case 3:
+        for (++y; y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);)
+            *(x + ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4]) = value;
+        return;
+    case 2:
         ++x;
         ++y;
-        for (;;) {
-            base = *gCurrentMap;
-            if (!(x < M2C_FIELD(base, u16 *, 0x5144))) return;
-            if (!(y < M2C_FIELD(base, u16 *, 0x5146))) return;
-            row = ((s8 **)base)[y + 0x14ba];
-            ++y;
-            row[x] = value;
-            ++x;
-        }
-    }
+        goto check_right;
+    right:
+        ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4][x] = value;
+        ++x;
+    check_right:
+        if (x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) &&
+            y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT)) goto right;
+        return;
     default:
         return;
     }
@@ -355,127 +351,53 @@ map=*gCurrentMap;
 }
 }
 
-void func_01ffbb04(void) {
+/* Extend the movement-range overlay: for every cell the flood fill reached, bump
+ * its four neighbours into the range and flag them taken; then drop every cell
+ * that was not flagged (set it to -1, impassable). */
+void MarkUnitMoveRangeCells(void) {
     extern void **gCurrentMap;
-    void *base;
-    u16 height;
-    u16 width;
-    u8 y;
-    u8 x;
+    u8 y, x;
 
-    base = *gCurrentMap;
-    height = *(u16 *)((u8 *)base + 0x5146);
-    if (height <= 0) {
-        return;
-    }
-    width = *(u16 *)((u8 *)base + 0x5144);
-    if (width <= 0) {
-        return;
-    }
+    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            u8 *map = *gCurrentMap;
+            s8 *cell = M2C_FIELD(map + y * 4, s8 **, MAP_GRID) + x;
+            s8 cost = *cell;
 
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            s8 *cellRow;
-            s8 cell;
-            u16 rowOff;
-            u8 terrain;
-            s8 *leftRow;
-            s8 left;
-            s8 *rightRow;
-            s8 right;
-            s8 *upRow;
-            s8 up;
-            s8 *downRow;
-            s8 down;
-            s8 v;
+            if (cost < 0 || cost == MAP_GRID_TAKEN) continue;
+            if (cost != 0 && map[MAP_CELL_VISIBLE_UNIT + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)] != 0) continue;
 
-            base = *gCurrentMap;
-            cellRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
-            cell = cellRow[x];
-            if (cell < 0) continue;
-            if (cell == 0x40) continue;
-            if (cell != 0) {
-                rowOff = *(u16 *)((u8 *)base + y * 2 + 0x3758);
-                terrain = *((u8 *)base + rowOff + x);
-                if (terrain != 0) continue;
+            if (x != 0 && cell[-1] != MAP_GRID_TAKEN) {
+                cell[-1]++;
+                (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID) + x)[-1] |= MAP_GRID_TAKEN;
             }
-
-            if (x != 0) {
-                left = cellRow[x - 1];
-                if (left != 0x40) {
-                    cellRow[x - 1] = (s8)(left + 1);
-                    base = *gCurrentMap;
-                    leftRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
-                    v = leftRow[x - 1];
-                    leftRow[x - 1] = (s8)(v | 0x40);
+            if (x != M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1) {
+                s8 *right = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID) + x;
+                if (right[1] != MAP_GRID_TAKEN) {
+                    right[1]++;
+                    (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID) + x)[1] |= MAP_GRID_TAKEN;
                 }
             }
-
-            base = *gCurrentMap;
-            width = *(u16 *)((u8 *)base + 0x5144);
-            if (x != (u8)(width - 1)) {
-                base = *gCurrentMap;
-                rightRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
-                right = rightRow[x + 1];
-                if (right != 0x40) {
-                    rightRow[x + 1] = (s8)(right + 1);
-                    base = *gCurrentMap;
-                    rightRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
-                    v = rightRow[x + 1];
-                    rightRow[x + 1] = (s8)(v | 0x40);
-                }
-            }
-
             if (y != 0) {
-                base = *gCurrentMap;
-                upRow = *(s8 **)((u8 *)base + y * 4 + 0x52e4);
-                up = upRow[x];
-                if (up != 0x40) {
-                    upRow[x] = (s8)(up + 1);
-                    base = *gCurrentMap;
-                    upRow = *(s8 **)((u8 *)base + y * 4 + 0x52e4);
-                    v = upRow[x];
-                    upRow[x] = (s8)(v | 0x40);
+                s8 *above = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID - 4);
+                if (above[x] != MAP_GRID_TAKEN) {
+                    above[x]++;
+                    M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID - 4)[x] |= MAP_GRID_TAKEN;
                 }
             }
-
-            base = *gCurrentMap;
-            height = *(u16 *)((u8 *)base + 0x5146);
-            if (y != (u8)(height - 1)) {
-                base = *gCurrentMap;
-                downRow = *(s8 **)((u8 *)base + y * 4 + 0x52ec);
-                down = downRow[x];
-                if (down != 0x40) {
-                    downRow[x] = (s8)(down + 1);
-                    base = *gCurrentMap;
-                    downRow = *(s8 **)((u8 *)base + y * 4 + 0x52ec);
-                    v = downRow[x];
-                    downRow[x] = (s8)(v | 0x40);
+            if (y != M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1) {
+                s8 *below = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID + 4);
+                if (below[x] != MAP_GRID_TAKEN) {
+                    below[x]++;
+                    M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID + 4)[x] |= MAP_GRID_TAKEN;
                 }
             }
         }
     }
-
-    base = *gCurrentMap;
-    height = *(u16 *)((u8 *)base + 0x5146);
-    if (height <= 0) {
-        return;
-    }
-    width = *(u16 *)((u8 *)base + 0x5144);
-    if (width <= 0) {
-        return;
-    }
-
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            s8 *tailRow;
-            s8 tailCell;
-            base = *gCurrentMap;
-            tailRow = *(s8 **)((u8 *)base + y * 4 + 0x52e8);
-            tailCell = tailRow[x];
-            if ((tailCell & 0x40) == 0) {
-                tailRow[x] = -1;
-            }
+    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            s8 *row = M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, MAP_GRID);
+            if (!(row[x] & MAP_GRID_TAKEN)) row[x] = -1;
         }
     }
 }

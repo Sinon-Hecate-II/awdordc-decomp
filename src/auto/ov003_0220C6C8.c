@@ -51,6 +51,7 @@ void ScrollBar_PlaceThumb(void *, int, int);
 int func_020bf9e0(void);
 int func_020bfa20(void);
 int Divide(int, int);
+#pragma peephole off
 void func_ov003_0220c6c8(void *a) {
 u8 *t, *q;
 Unk0220C6C8Anim *anim;
@@ -205,7 +206,14 @@ M2C_FIELD(q,u8 **,28)=t;
 }
 M2C_FIELD(p,u8 **,96)=q;
 i=func_020bf9e0(); q=M2C_FIELD(p,u8 **,96); M2C_FIELD(q,s16 *,18)=i;
-if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
+{
+s16 upper=M2C_FIELD(q,s16 *,22);
+s16 value=M2C_FIELD(q,s16 *,18);
+if(value<=upper){
+s16 lower=M2C_FIELD(q,s16 *,20);
+M2C_FIELD(q,s16 *,18)=value>=lower?value:lower;
+}
+}
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 ScrollBar_PlaceThumb(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
@@ -230,7 +238,14 @@ M2C_FIELD(q,u8 **,28)=t;
 }
 M2C_FIELD(p,u8 **,100)=q;
 i=func_020bfa20(); q=M2C_FIELD(p,u8 **,100); M2C_FIELD(q,s16 *,18)=i;
-if(M2C_FIELD(q,s16 *,18)<=M2C_FIELD(q,s16 *,22)) M2C_FIELD(q,s16 *,18)=M2C_FIELD(q,s16 *,18)<M2C_FIELD(q,s16 *,20)?M2C_FIELD(q,s16 *,20):M2C_FIELD(q,s16 *,18);
+{
+s16 upper=M2C_FIELD(q,s16 *,22);
+s16 value=M2C_FIELD(q,s16 *,18);
+if(value<=upper){
+s16 lower=M2C_FIELD(q,s16 *,20);
+M2C_FIELD(q,s16 *,18)=value>=lower?value:lower;
+}
+}
 base=M2C_FIELD(q,s16 *,8);
 i=base+Divide(M2C_FIELD(q,s16 *,18)*(s16)(M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,20)-M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,18)),M2C_FIELD(q,s16 *,22)-M2C_FIELD(q,s16 *,20));
 ScrollBar_PlaceThumb(M2C_FIELD(q,u8 **,28),(s16)i,M2C_FIELD(M2C_FIELD(q,u8 **,28),s16 *,10));
@@ -243,15 +258,19 @@ M2C_FIELD(q,void **,24)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,
 M2C_FIELD(q,void **,48)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;
 M2C_FIELD(q,s32 *,4)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<18)>>30;
 if(q[20]) { while(M2C_FIELD(q,s32 *,4)>M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)-=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; while(M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)) M2C_FIELD(q,s32 *,4)+=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; }
-else { if(M2C_FIELD(q,s32 *,4)<=M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)=M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)?M2C_FIELD(q,s32 *,12):M2C_FIELD(q,s32 *,4); }
+else { s32 value=M2C_FIELD(q,s32 *,4), upper=M2C_FIELD(q,s32 *,8);
+if(value<=upper){s32 lower=M2C_FIELD(q,s32 *,12);M2C_FIELD(q,s32 *,4)=value>=lower?value:lower;} }
 M2C_FIELD(q,s32 *,28)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<20)>>30;
 if(q[44]) { while(M2C_FIELD(q,s32 *,28)>M2C_FIELD(q,s32 *,32)) M2C_FIELD(q,s32 *,28)-=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; while(M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)) M2C_FIELD(q,s32 *,28)+=M2C_FIELD(q,s32 *,32)-M2C_FIELD(q,s32 *,36)+1; }
-else { if(M2C_FIELD(q,s32 *,28)<=M2C_FIELD(q,s32 *,32)) M2C_FIELD(q,s32 *,28)=M2C_FIELD(q,s32 *,28)<M2C_FIELD(q,s32 *,36)?M2C_FIELD(q,s32 *,36):M2C_FIELD(q,s32 *,28); }
+else { s32 value=M2C_FIELD(q,s32 *,28), upper=M2C_FIELD(q,s32 *,32);
+if(value<=upper){s32 lower=M2C_FIELD(q,s32 *,36);M2C_FIELD(q,s32 *,28)=value>=lower?value:lower;} }
 M2C_FIELD(q,s32 *,52)=((u32)M2C_FIELD(data_0215d9b8,u16 *,6)<<17)>>31;
 if(q[68]) { while(M2C_FIELD(q,s32 *,52)>M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *,52)-=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; while(M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)) M2C_FIELD(q,s32 *,52)+=M2C_FIELD(q,s32 *,56)-M2C_FIELD(q,s32 *,60)+1; }
-else { if(M2C_FIELD(q,s32 *,52)<=M2C_FIELD(q,s32 *,56)) M2C_FIELD(q,s32 *,52)=M2C_FIELD(q,s32 *,52)<M2C_FIELD(q,s32 *,60)?M2C_FIELD(q,s32 *,60):M2C_FIELD(q,s32 *,52); }
+else { s32 value=M2C_FIELD(q,s32 *,52), upper=M2C_FIELD(q,s32 *,56);
+if(value<=upper){s32 lower=M2C_FIELD(q,s32 *,60);M2C_FIELD(q,s32 *,52)=value>=lower?value:lower;} }
 }
 M2C_FIELD(p,u8 **,0x40)=q;
+}
 p[0x36]&=~0xf0;
 }
-}
+#pragma peephole on

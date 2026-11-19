@@ -260,7 +260,7 @@ void func_02039698(s32 unused, void *arg1) {
    the MAT payload to the command parser. */
 void HandleGpcmMatMessage(s32 conn,void *info,s32 arg){
 extern char sGpcmPrefix[],sMatPrefix[];extern void *gNetSession;
-s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 func_0206abd8(const char *,void *,s32);
+s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 strtoul(const char *,void *,s32);
 void func_0203db94(s32,s32,char *);
 char versionText[12]={0};char *text=M2C_FIELD(info,char **,8);u32 len;
 if(func_0203ad70(conn,info,arg))return;
@@ -269,7 +269,7 @@ text+=StringLength(sGpcmPrefix);
 len=StringFindChar(text,'v')-text;
 StringCopyPad(versionText,text,len);
 if(len>10)return;
-if(func_0206abd8(versionText,0,10)!=3)return;
+if(strtoul(versionText,0,10)!=3)return;
 text+=len+1;
 if(ByteCompareN(text,sMatPrefix,StringLength(sMatPrefix)))return;
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=5){
@@ -291,7 +291,7 @@ void func_02039844(s32 arg0, s32 arg1) {
 
     s32 func_0203e558(void);
     void *func_0205b094();
-    void func_02044954();
+    void ResetTransferSlot();
     s32 func_02039224(s32);
     M2C_UNK func_0203dee8();
     void SetNetError(s32, s32);
@@ -347,7 +347,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             r7 = 1;
             if ((M2C_FIELD(base, u32 *, 0x664) & (1u << r4)) == 0) r7 = 0;
         }
-        func_02044954(r4);
+        ResetTransferSlot(r4);
         {
             void *base = gNetSession;
             if ((M2C_FIELD(base, u8 *, 0x389) == (u8)2 && arg1v == 0) ||
@@ -574,9 +574,9 @@ s32 ReportNasLoginError(u32 arg0, s32 arg1) {
 void func_02039e04(void) {
 extern M2C_UNK gNasLogin;
 M2C_UNK HeapFree(s32,s32,s32);
-void func_02032a84(void); void func_02032b10(void);
+void NasAbort(void); void func_02032b10(void);
 if(M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)){
-func_02032a84();func_02032b10();
+NasAbort();func_02032b10();
 HeapFree(0,M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24),0);
 M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)=0;
 }

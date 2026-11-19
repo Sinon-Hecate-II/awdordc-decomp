@@ -38,7 +38,7 @@ typedef struct DispatchRecord171 { u8 pad[0xca]; u8 id[6]; u8 padD0[0x26]; u16 v
 #pragma opt_strength_reduction off
 void func_02017158(void *arg0) {
     void func_020170e8(void *);
-    s32 func_02017ff8(void);
+    s32 Mb_CloseLink(void);
     s32 func_02013d4c(void *, u16, u16, u16, u16);
     s32 func_020124c4(void *, void *);
     s32 WFC_SendConnectionData(void *, s32, s32, s32, s32);
@@ -48,13 +48,12 @@ void func_02017158(void *arg0) {
     s32 WFC_SetChannelHandler(s32, void *, s32);
     s32 func_020167d0(void *);
     s32 func_02016840(void);
-    void func_020168f0(void *);
+    void Mb_CancelLink(void *);
     void DC_InvalidateRange(void *, s32);
     void func_02007a74(u16, void *, void *, s32);
     void CopyU16(void *, void *, s32);
-    u8 *base;
-    s32 i;
     void *event;
+    u8 *base;
     u8 *records;
     event=arg0;
     base=M2C_FIELD(&gMbState, u8 **, 8);
@@ -82,7 +81,8 @@ void func_02017158(void *arg0) {
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)) {
         case 3: return;
-        case 5:
+        case 5: {
+            s32 i;
             records=base+0x600;
             for(i=0;i<M2C_FIELD(base+0x500,u16 *,0xe0);i++){
                 s32 e,d,c,b,a;
@@ -111,18 +111,20 @@ void func_02017158(void *arg0) {
 found:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(4,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
-            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))func_02017ff8();
+            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))Mb_CloseLink();
             Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
+        }
         case 4:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(5,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
-            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))func_02017ff8();
+            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))Mb_CloseLink();
             Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
         default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
         }
     case 11:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
-        Mb_ReportPacketResult(12,WFC_SendConnectionData(func_02017158,M2C_FIELD(base,s32 *,0x520),0,1,0)); return;
+        {s32 channel = M2C_FIELD(base,s32 *,0x520);
+        Mb_ReportPacketResult(12,WFC_SendConnectionData(func_02017158,channel,0,1,0)); return;}
     case 12:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base+0x500,u16 *,0xe0)=0; M2C_FIELD(base,void (**)(s32,void *),0x51c)(11,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)){
@@ -133,7 +135,7 @@ found:
             M2C_FIELD(base+0x500,u16 *,0x2a)=1;
             if(WFC_SetChannelHandler(1,func_020170e8,0))return;
             {u32 flag;
-            if(M2C_FIELD(base+0x500,u16 *,0x2c))flag=0;else flag=1;
+            switch (M2C_FIELD(base+0x500,u16 *,0x2c)) {default: flag=0; break; case 0: flag=1; break;}
             Mb_ReportPacketResult(14,func_02012a64(func_02017158,M2C_FIELD(base,s32 *,0x504),M2C_FIELD(base+0x500,u16 *,0x1a),base+0x40,M2C_FIELD(base+0x500,u16 *,0x18),(u16)flag,0,0,0,1,1));}return;
         case 9: M2C_FIELD(base,void (**)(s32,void *),0x51c)(10,event); M2C_FIELD(base+0x500,u16 *,0x2a)=0;M2C_FIELD(base+0x500,u16 *,0x28)=0;return;
         case 26:return;
@@ -142,7 +144,7 @@ found:
     case 14:
         switch((s32)M2C_FIELD(event,u16 *,4)){
         case 10: M2C_FIELD(base+0x500,u16 *,0x28)=1;if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
-        case 12:break;case 13:break;
+        case 12:return;case 13:return;
         default:M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
         }
         return;
@@ -158,7 +160,7 @@ found:
         M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;
         Mb_ReportPacketResult(2,WFC_EndLink(func_02017158));return;
     case 2:
-        if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}func_020168f0(event);return;
+        if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}Mb_CancelLink(event);return;
     case 21: if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
     case 128: switch((s32)M2C_FIELD(event,u16 *,4)){case 22:SystemHalt();return;case 23:return;}return;
     default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
@@ -248,7 +250,7 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 func_02017bd0(u32 arg0, u32 arg1, s32 arg2) {
+s32 IsMultiBootParamValid(u32 arg0, u32 arg1, s32 arg2) {
     if ((arg0 > 0x1FEU) || (arg0 < 0xE4U)) {
         return 0;
     }
@@ -261,16 +263,21 @@ s32 func_02017bd0(u32 arg0, u32 arg1, s32 arg2) {
     return 0;
 }
 
-s32 func_02017c40(u32 a,u32 b){
-s32 t;
-t=OS_DisableInterrupts();
-if(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d)){OS_RestoreInterrupts(t);return 0;}
-if(!func_02017bd0(a,8,b)){OS_RestoreInterrupts(t);return 0;}
-M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,16)=b;
-M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x500)=a;
-M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x502)=8;
-OS_RestoreInterrupts(t);
-return 1;
+/* Set the multiboot parent's transfer parameters before it starts: the block
+ * size `blockSize` and the maximum number of children `children` must fit the
+ * parent's work area (IsMultiBootParamValid checks the 8-block layout), and the
+ * session context then remembers them for the transfer.  Fails once the
+ * transfer has begun. */
+s32 MultiBoot_SetParentParams(u32 blockSize, u32 children) {
+    s32 irq;
+    irq = OS_DisableInterrupts();
+    if (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, 0x50d)) { OS_RestoreInterrupts(irq); return 0; }
+    if (!IsMultiBootParamValid(blockSize, 8, children)) { OS_RestoreInterrupts(irq); return 0; }
+    M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 16) = children;
+    M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0x500) = blockSize;
+    M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0x502) = 8;
+    OS_RestoreInterrupts(irq);
+    return 1;
 }
 
 #pragma push
@@ -375,7 +382,7 @@ s32 MultiBoot_Init(s32 reason) {
 
 void func_02017f90(s32 a){M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320)=1;MultiBoot_Init(a);}
 
-s32 func_02017fb4(void) {
+s32 Mb_SendStopCommand(void) {
     s32 func_02012274(s32);
     M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
         s32 var_r4;
@@ -388,12 +395,34 @@ s32 func_02017fb4(void) {
     return var_r4;
 }
 
-void func_02017fec(void) {
-    M2C_UNK func_02017fb4();
-    func_02017fb4();
+void Mb_StopCommandCallback(void) {
+    M2C_UNK Mb_SendStopCommand();
+    Mb_SendStopCommand();
 }
 
-s32 func_02017ff8(void){s32 t;u32 v=1;t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d))func_020168f0(0);else if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x5e4)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=v;v=func_0201871c();if(v){func_020188c8(func_02017fec);v=0;}else v=func_02017fb4();}OS_RestoreInterrupts(t);return v;}
+/* Close the multiboot link: cancel it when it never started, otherwise mark it
+ * closing and send the stop command - on the worker task when one is running,
+ * directly otherwise. Returns the stop command's result (0 = success, 1 = the
+ * link was already closing or never started). */
+s32 Mb_CloseLink(void) {
+    s32 state;
+    u32 result = 1;
+
+    state = OS_DisableInterrupts();
+    if (!M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, MB_LINK_STARTED))
+        Mb_CancelLink(0);
+    else if (!M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_LINK_CLOSING)) {
+        M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), s32 *, MB_LINK_ALIVE) = 0;
+        M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_LINK_CLOSING) = result;
+        result = Mb_IsTaskCreated();
+        if (result) {
+            Mb_QueueTaskExit(Mb_StopCommandCallback);
+            result = 0;
+        } else result = Mb_SendStopCommand();
+    }
+    OS_RestoreInterrupts(state);
+    return result;
+}
 #pragma pop
-void func_0201808c(void){s32 t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320))SystemHalt();func_02017ff8();OS_RestoreInterrupts(t);}
+void func_0201808c(void){s32 t=OS_DisableInterrupts();if(!M2C_FIELD(M2C_FIELD(&gMbState,void **,12),s32 *,0x1320))SystemHalt();Mb_CloseLink();OS_RestoreInterrupts(t);}
 

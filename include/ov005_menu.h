@@ -19,11 +19,19 @@
 #define OV005_MENU_SCROLL_VEL  0x18 /* s16 scroll velocity of the list */
 #define OV005_MENU_SPRITE      0x1c /* void * sprite object animated by the menu */
 #define OV005_MENU_COLOR_OBJ   0x24 /* object whose sprite (+0x3E y) shows the page colour strip */
+#define OV005_MENU_DETAIL_SPRITES 0x2c /* void *[4] sprite objects of the detail row's entries */
+#define OV005_MENU_DETAIL_COUNT   4    /* entries in the detail row */
+#define OV005_MENU_CO_COUNT      12    /* COs listed on page 0: three rows of four */
+#define OV005_MENU_CO_COLUMNS     4    /* COs per row of the page-0 grid */
 
 enum {
     OV005_PAGE_LIST   = 0,
     OV005_PAGE_DETAIL = 1
 };
+
+#define OV005_LABEL_VRAM_OFFSET  0x8380 /* byte offset of the entry label in the main engine's VRAM */
+#define OV005_LABEL_PALETTE      6      /* OBJ palette slot of the entry label */
+#define OV005_LABEL_CLEAR_SIZE   0x20   /* bytes of label graphics cleared while the CO is locked */
 
 #define OV005_MENU_ANIM_FRAMES    15  /* length of the page slide */
 #define OV005_MENU_ANIM_FRAMES_SQ 225 /* its square, the ease denominator */

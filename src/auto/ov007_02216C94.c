@@ -342,7 +342,7 @@ M2C_UNK func_ov007_022179e4(void){s32 Map_RandomScaledValue(s32,s32);s32 Map_Pic
 
 /* Fill every tile of the current map with type 1, then populate enemies, items and other map content. */
 void func_ov007_02217a5c(void) {
-    M2C_UNK func_0207c240();
+    M2C_UNK SeedRandomFromRtc();
     M2C_UNK Map_SetCellTile(s32, s32, M2C_UNK);
     M2C_UNK Map_GenerateWastelandTerrain();
     M2C_UNK Map_GenerateWoodsTerrain();
@@ -365,7 +365,7 @@ void func_ov007_02217a5c(void) {
     s32 y;
     void *map;
 
-    func_0207c240();
+    SeedRandomFromRtc();
     y = 0;
     map = *gCurrentMap;
     if ((s32) M2C_FIELD(map, u16 *, 0x5146) > 0) {

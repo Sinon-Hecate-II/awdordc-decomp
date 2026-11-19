@@ -79,7 +79,7 @@ case 0x200:
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+(u32)arg1),u16*,0)|=0x80;
 buffer=func_020815bc(func_020ad520(arg2),0x200);
 func_020ae768((u8)func_02091e04(),buffer,0x200);
-func_0207c650(buffer,arg1,bank<<9,0x200,1);
+QueueBGExtPaletteUpload(buffer,arg1,bank<<9,0x200,1);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((bank&15)<<12));
 break;
 }

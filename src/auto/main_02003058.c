@@ -4,8 +4,8 @@
 
 extern u16 data_0212dbc2;
 
-s32 func_02003ec4(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x1f00)>>8;return 0;}
-s32 func_02003ef4(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x2000)>>13;return 0;}
+s32 GX_GetMatrixStackLevel(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x1f00)>>8;return 0;}
+s32 GX_GetMatrixStackOverflow(s32 *a){if(*(volatile u32 *)0x4000600&0x4000)return -1;*a=(*(volatile u32 *)0x4000600&0x2000)>>13;return 0;}
 void func_02003f34(void *arg0) {
     s32 *p = (s32 *)arg0;
     s32 i;
@@ -324,13 +324,13 @@ void G3X_Init(void) {
     REG_GX_TEXPLTT_BASE = 0;
 }
 
-void func_02003cfc(void);
+void G3X_ResetMatrixStack(void);
 void func_02003bd0(void){
 while(*(volatile u32 *)0x4000600 & 0x8000000){}
 *(volatile u32 *)0x4000600 |=0x8000;
 *(volatile u16 *)0x4000060 |=0x2000;
 *(volatile u16 *)0x4000060 |=0x1000;
-func_02003cfc();
+G3X_ResetMatrixStack();
 ((volatile u32 *)0x40004a4)[0]=0x1f0080;
 ((volatile u32 *)0x40004a4)[1]=0;
 ((volatile u32 *)0x40004a4)[2]=0;
@@ -343,38 +343,46 @@ while(*(volatile u32 *)0x4000600&0x8000000){
 }
 
 
-void GX_RestoreMatrixStack(void){
-s32 a,b;
-*(volatile u32 *)0x4000600|=0x8000;
-while(func_02003ec4(&a)){
-}
-while(func_02003ef4(&b)){
-}
-*(volatile u32 *)0x4000440=3;
-*(volatile u32 *)0x4000454=0;
-*(volatile u32 *)0x4000440=0;
-if(b)*(volatile u32 *)0x4000448=b;
-*(volatile u32 *)0x4000454=0;
-*(volatile u32 *)0x4000440=2;
-*(volatile u32 *)0x4000448=a;
-*(volatile u32 *)0x4000454=0;
+/* Reset the geometry engine's matrix stacks after an overflow: wait until the
+ * stack is idle, read its level and its overflow flag, then pop the recorded
+ * levels on the projection and position stacks, leaving identity matrices. */
+void GX_RestoreMatrixStack(void) {
+    s32 level;
+    s32 overflow;
+
+    REG_GXSTAT |= GXSTAT_STACK_ERROR;
+    while (GX_GetMatrixStackLevel(&level)) {
+    }
+    while (GX_GetMatrixStackOverflow(&overflow)) {
+    }
+    REG_GX_MTX_MODE = 3;
+    REG_GX_MTX_IDENTITY = 0;
+    REG_GX_MTX_MODE = 0;
+    if (overflow) REG_GX_MTX_POP = overflow;
+    REG_GX_MTX_IDENTITY = 0;
+    REG_GX_MTX_MODE = 2;
+    REG_GX_MTX_POP = level;
+    REG_GX_MTX_IDENTITY = 0;
 }
 
 
-void func_02003cfc(void){
-s32 a,b;
-*(volatile u32 *)0x4000600|=0x8000;
-while(func_02003ec4(&a)){
+/* Per-frame reset of the geometry engine's matrix stacks: wait until the stack is
+ * idle, read its level and its overflow flag, then pop the recorded levels on the
+ * projection and position stacks, leaving identity matrices. */
+void G3X_ResetMatrixStack(void){
+s32 level, overflow;
+REG_GXSTAT|=GXSTAT_STACK_ERROR;
+while(GX_GetMatrixStackLevel(&level)){
 }
-while(func_02003ef4(&b)){
+while(GX_GetMatrixStackOverflow(&overflow)){
 }
-*(volatile u32 *)0x4000440=3;
-*(volatile u32 *)0x4000454=0;
-*(volatile u32 *)0x4000440=0;
-if(b)*(volatile u32 *)0x4000448=b;
-*(volatile u32 *)0x4000440=2;
-*(volatile u32 *)0x4000448=a;
-*(volatile u32 *)0x4000454=0;
+REG_GX_MTX_MODE=3;
+REG_GX_MTX_IDENTITY=0;
+REG_GX_MTX_MODE=0;
+if(overflow)REG_GX_MTX_POP=overflow;
+REG_GX_MTX_MODE=2;
+REG_GX_MTX_POP=level;
+REG_GX_MTX_IDENTITY=0;
 }
 
 

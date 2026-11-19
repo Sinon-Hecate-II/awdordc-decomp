@@ -233,10 +233,24 @@ u8 *p; s32 i; s32 best; s32 result; u8 value;
 best=0x7fff; result=-1; p=(u8 *)&gAiTargetCandidates;
 for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) { value=p[9]; if(best > (s32)value) {best=value;result=i;} } } return result; }
 
-s32 func_ov000_021a61cc(s32 arg0) { extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates; extern M2C_UNK gAiTargetGroups;
-u8 *p; s32 i; s32 best; s32 result; u8 value;
-best=0x7fff; result=-1; p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU && ((u8 *)&gAiTargetGroups)[(s8)p[4]*8+2] && (arg0==4 || p[2]==arg0)) { value=p[9]; if(best > (s32)value) {best=value;result=i;} } } return result; }
+/* Picks the AI target candidate of `type` (4 = any type) in the group the AI
+ * can capture soonest: the smallest AI_CANDIDATE_CAPTURE_DISTANCE (distance from
+ * the candidate tile to the closest capture unit of the acting player), looking
+ * only at candidates whose target group still holds properties.  The first
+ * candidate wins a tie.  Returns the candidate index, or -1 when there is none. */
+s32 FindBestCaptureTargetCandidate(s32 type) {
+ extern u8 *gAiState;
+ extern M2C_UNK gAiTargetCandidates,gAiTargetGroups;
+ u8 *candidate; s32 i,bestDistance,bestIndex,distance;
+ bestDistance=0x7fff;bestIndex=-1;candidate=(u8 *)&gAiTargetCandidates;
+ for(i=0;i<*gAiState;i++,candidate+=AI_CANDIDATE_STRIDE){
+ if((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && ((u8 *)&gAiTargetGroups)[(s8)candidate[AI_CANDIDATE_GROUP]*AI_GROUP_STRIDE+AI_GROUP_PROPERTIES] && (type==4 || candidate[AI_CANDIDATE_TYPE]==type)){
+ distance=candidate[AI_CANDIDATE_CAPTURE_DISTANCE];
+ if(bestDistance>(s32)distance){bestDistance=distance;bestIndex=i;}
+ }
+ }
+ return bestIndex;
+}
 
 /* Picks the build target for `player` (4 = any player) from the AI's candidate
  * records: the one with the smallest combat distance whose capture distance is
@@ -270,15 +284,31 @@ if(bestDistance>distance){bestDistance=distance;bestIndex=i;}
 return bestIndex;
 }
 
-s32 func_ov000_021a63b8(s32 a,s32 b) {
-extern u8 *gAiState;extern M2C_UNK gAiTargetCandidates;
-u8 *p; s32 i,best,result;u8 value;
-best=0x7fff;result=-1;p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12){
-if((u32)p[3]<0xfcU && (a==4 || p[2]==a) && (s8)p[4]==b){
-value=p[7];if(best>value){best=value;result=i;}
-}}
-return result;
+/* Select the active candidate in a target group whose tile is nearest to its closest enemy. */
+s32 FindAiTargetCandidateByEnemyDistanceAndGroup(s32 targetType, s32 targetGroup) {
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *candidate;
+    s32 i;
+    s32 bestDistance;
+    s32 bestIndex;
+    u8 enemyDistance;
+
+    bestDistance = 0x7fff;
+    bestIndex = -1;
+    candidate = (u8 *)&gAiTargetCandidates;
+    for (i = 0; i < *gAiState; i++, candidate += AI_CANDIDATE_STRIDE) {
+        if ((u32)candidate[AI_CANDIDATE_STATUS] < 0xFCU &&
+            (targetType == 4 || candidate[AI_CANDIDATE_TYPE] == targetType) &&
+            (s8)candidate[AI_CANDIDATE_GROUP] == targetGroup) {
+            enemyDistance = candidate[AI_CANDIDATE_ENEMY_GROUP_DISTANCE];
+            if (bestDistance > enemyDistance) {
+                bestDistance = enemyDistance;
+                bestIndex = i;
+            }
+        }
+    }
+    return bestIndex;
 }
 
 s32 FindBestCandidateInGroup(s32 a,s32 b) {
@@ -310,27 +340,34 @@ s32 FindTargetInBestGroup(s32 type) {
  for(;;) { result=-1; for(i=0;i<(s32)gAiState[AI_STATE_GROUP_COUNT];i++,group+=AI_GROUP_STRIDE) { if(group[AI_GROUP_CLAIMED]!=255 && best<(s32)group[AI_GROUP_SCORE]) { best=group[AI_GROUP_SCORE];result=i; } } if(result==-1)return -1; candidate=FindBestCandidateInGroup(type,result); if(candidate!=-1)return candidate; group[AI_GROUP_CLAIMED]=255; }
 }
 #pragma opt_lifetimes reset
-s32 FindNearestPropertyCandidateInGroup(s32 arg0, s32 arg1) {
+/* Index of the nearest (smallest AI_CANDIDATE_PROPERTY_DISTANCE) target
+ * candidate of `targetType` (4 = any type) in `targetGroup`; -1 when the group
+ * has none.  The counterpart of FindAiTargetCandidateByEnemyDistanceAndGroup,
+ * which ranks candidates by their distance to the closest enemy. */
+s32 FindNearestPropertyCandidateInGroup(s32 targetType, s32 targetGroup) {
     extern u8 *gAiState;
     extern M2C_UNK gAiTargetCandidates;
-    u8 *p;
+    u8 *candidate;
     s32 i;
-    s32 best;
-    s32 result;
-    u8 value;
-    best = 0x7fff;
-    result = -1;
-    p = (u8 *)&gAiTargetCandidates;
-    for (i = 0; i < *gAiState; i++, p += 12) {
-        if ((u32)p[3] < 0xFCU && (arg0 == 4 || p[2] == arg0) && (s8)p[4] == arg1) {
-            value = p[8];
-            if (best > (s32)value) {
-                best = value;
-                result = i;
+    s32 bestDistance;
+    s32 bestIndex;
+    u8 propertyDistance;
+
+    bestDistance = 0x7fff;
+    bestIndex = -1;
+    candidate = (u8 *)&gAiTargetCandidates;
+    for (i = 0; i < *gAiState; i++, candidate += AI_CANDIDATE_STRIDE) {
+        if ((u32)candidate[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED &&
+            (targetType == 4 || candidate[AI_CANDIDATE_TYPE] == targetType) &&
+            (s8)candidate[AI_CANDIDATE_GROUP] == targetGroup) {
+            propertyDistance = candidate[AI_CANDIDATE_PROPERTY_DISTANCE];
+            if (bestDistance > (s32)propertyDistance) {
+                bestDistance = propertyDistance;
+                bestIndex = i;
             }
         }
     }
-    return result;
+    return bestIndex;
 }
 
 /* Picks the AI's build target for a basic unit: the nearest property (type 1)
@@ -377,7 +414,7 @@ if(p[1]!=255 && ((u32)(p[3]<<30)>>31)){found=i;break;}
 }
 if(found==-1)return -1;
 r=FindBestCandidateInGroup(1,found);
-if(r!=-1)r=func_ov000_021a63b8(1,found);
+if(r!=-1)r=FindAiTargetCandidateByEnemyDistanceAndGroup(1,found);
 if(r==-1)break;
 entry=(u8 *)&gAiTargetCandidates+r*12;map=*data_027e0058;
 map=map+entry[0]+M2C_FIELD(map+entry[1]*2,u16 *,0x3758)+0x2000;

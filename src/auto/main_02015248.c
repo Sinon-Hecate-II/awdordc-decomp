@@ -37,7 +37,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
- s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 FindArchive();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void func_02018470();void func_02018484();void CloseFileRequest();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
+ s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 FindArchive();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void Mb_InitLoadQueue();void Mb_AddImageBlock();void CloseFileRequest();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -59,8 +59,8 @@ s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
  if(left<0x88)left=0;
  else{FileSeek(arg0,origin+base,0);FileRead(arg0,(s32)p,0x88);p+=0x88;left-=0x88;}
  if(left>=0x70){
- header=p;func_02018470(p);
- p+=0x70;left-=0x70;func_02018484(header,0,0x160,arg1,3);
+ header=p;Mb_InitLoadQueue(p);
+ p+=0x70;left-=0x70;Mb_AddImageBlock(header,0,0x160,arg1,3);
  n=M2C_FIELD(arg0,u32 *,8);
  for(i=0;i<3&&M2C_FIELD(n,s8 *,i)!=0;i++);
  MI_CpuCopy8(n,(s32)header+0x10,i);M2C_FIELD(header,u32 *,0x14)=i;
@@ -76,20 +76,20 @@ s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
  readBase=M2C_FIELD(arg0,u32 *,0x24);
  FileSeek(arg0,M2C_FIELD(table,u32 *,4)-readBase,0);
  FileRead(arg0,(s32)p,M2C_FIELD(arg1,u32 *,0x2c));
- func_02018484(header,M2C_FIELD(table,u32 *,4),M2C_FIELD(arg1,u32 *,0x2c),p,3);
+ Mb_AddImageBlock(header,M2C_FIELD(table,u32 *,4),M2C_FIELD(arg1,u32 *,0x2c),p,3);
  left=M2C_FIELD(arg1,u32 *,0x2c);
  FileSeek(arg0,M2C_FIELD(table,u32 *,8)-readBase,0);
  FileRead(arg0,(s32)p+left,M2C_FIELD(arg1,u32 *,0x3c));
- func_02018484(header,M2C_FIELD(table,u32 *,8),M2C_FIELD(arg1,u32 *,0x3c),p+left,3);
+ Mb_AddImageBlock(header,M2C_FIELD(table,u32 *,8),M2C_FIELD(arg1,u32 *,0x3c),p+left,3);
  result=1;
  }else if(left>=0xcc00){
  left=M2C_FIELD(arg0,u32 *,0x24);base=M2C_FIELD(table,u32 *,4);
  FileSeek(arg0,base-left,0);FileRead(arg0,(s32)p,0x4400);
- func_02018484(header,base,0x4400,p,3);
+ Mb_AddImageBlock(header,base,0x4400,p,3);
  FileSeek(arg0,base+0x4400-left,0);FileRead(arg0,(s32)p+0x4400,0x4400);
- func_02018484(header,base+0x4400,0x4400,p+0x4400,2);
+ Mb_AddImageBlock(header,base+0x4400,0x4400,p+0x4400,2);
  FileSeek(arg0,base+0x8800-left,0);FileRead(arg0,(s32)p+0x8800,0x4400);
- func_02018484(header,base+0x8800,0x4400,p+0x8800,2);result=1;
+ Mb_AddImageBlock(header,base+0x8800,0x4400,p+0x8800,2);result=1;
  }
  FileSeek(arg0,origin,0);
  if(owned){
@@ -151,7 +151,7 @@ s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
     M2C_UNK func_020161bc(void *);
     s32 func_02018418();
     M2C_UNK func_0201869c(void *, M2C_UNK);
-    s32 func_0201871c();
+    s32 Mb_IsTaskCreated();
     M2C_UNK func_02018738(void *);
     extern u8 data_02131184;
     extern void *gMbWork;
@@ -209,7 +209,7 @@ block_10:
         M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D54) = (s32) (arg1 + 0x1E8);
         M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D58) = (s32) (arg1 + 0x258);
         data_02131184 = sequence+1;
-        if ((M2C_FIELD(M2C_FIELD((gMbWork + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (func_0201871c() == 0)) {
+        if ((M2C_FIELD(M2C_FIELD((gMbWork + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (Mb_IsTaskCreated() == 0)) {
             func_02018738(gMbWork + 0x7CE0);
             func_0201869c(gMbWork + 0x74E0, 0x800);
         }

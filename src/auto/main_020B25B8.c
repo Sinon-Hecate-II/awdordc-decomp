@@ -333,74 +333,69 @@ for(row=0;row<rasterRows;row=(u8)(row+1))for(col=0;col<columns;col++)AddSpriteCe
 return grid;
 }
 
-void func_020b3038(void *arg0, s32 arg1) {
+#pragma opt_common_subs off
+void ScrollSpriteGridToItem(void *arg0, s32 arg1) {
     M2C_UNK Divide();
-    s16 val8;
-    u8 step;
-    s16 orig_a;
-    s32 r8;
+    s32 step, r9, r8c, r8const;
+    s32 r8, orig_a;
+    s16 visible, fres;
+    s32 c, f, cur, diff;
     s16 orig_c;
-    s16 fres;
-    s32 r7, r8c, r8const, r9;
-    s16 c, f;
-    s16 cur;
-    s16 diff;
+    void *grid = arg0;
+    s32 item = arg1;
 
-    val8 = M2C_FIELD(arg0, s16 *, 0x8);
-    if (arg1 == val8) {
+    if (item == M2C_FIELD(grid, s16 *, 0x8)) {
         return;
     }
-    step = M2C_FIELD(arg0, u8 *, 0x5);
-    orig_a = M2C_FIELD(arg0, s16 *, 0xA);
-    r8 = M2C_FIELD(arg0, u8 *, 0x4);
-    orig_c = M2C_FIELD(arg0, s16 *, 0xC);
+    step = M2C_FIELD(grid, u8 *, 0x5);
+    orig_a = M2C_FIELD(grid, s16 *, 0xA);
+    r8 = M2C_FIELD(grid, u8 *, 0x4);
     fres = (s16) Divide(orig_a + step - 1, step);
-    if (arg1 < 0) {
+    orig_c = M2C_FIELD(grid, s16 *, 0xC);
+    if (item < 0) {
         return;
     }
-    if (orig_a <= arg1) {
+    if (orig_a <= item) {
         return;
     }
-    if (fres <= r8) {
-        r8 = fres;
-    }
-    if (arg1 < val8) {
+    visible = (s16) ((fres <= r8) ? fres : r8);
+    if (item < M2C_FIELD(grid, s16 *, 0x8)) {
         do {
-            M2C_FIELD(arg0, s16 *, 0x8) = (s16) (M2C_FIELD(arg0, s16 *, 0x8) - 1);
-            c = M2C_FIELD(arg0, s16 *, 0xC);
-            f = (s16) Divide(M2C_FIELD(arg0, s16 *, 0x8), step);
-            diff = (s16) (f - c);
+            M2C_FIELD(grid, s16 *, 0x8) = (s16) (M2C_FIELD(grid, s16 *, 0x8) - 1);
+            orig_a = M2C_FIELD(grid, s16 *, 0xC);
+            f = Divide(M2C_FIELD(grid, s16 *, 0x8), step);
+            diff = (s16) (f - orig_a);
             if (diff < 0) {
-                if (c > 0) {
-                    M2C_FIELD(arg0, s16 *, 0xC) = (s16) (M2C_FIELD(arg0, s16 *, 0xC) - 1);
+                if (orig_a > 0) {
+                    M2C_FIELD(grid, s16 *, 0xC) = (s16) (M2C_FIELD(grid, s16 *, 0xC) - 1);
                 }
             }
-        } while (arg1 < M2C_FIELD(arg0, s16 *, 0x8));
+        } while (item < M2C_FIELD(grid, s16 *, 0x8));
     } else {
-        r7 = orig_a - 1;
-        r8c = r8;
-        r8const = r8c - 1;
+        orig_a--;
+        r8c = visible;
         r9 = fres - r8c;
+        r8const = r8c - 1;
         do {
-            M2C_FIELD(arg0, s16 *, 0x8) = (s16) (M2C_FIELD(arg0, s16 *, 0x8) + 1);
-            cur = M2C_FIELD(arg0, s16 *, 0x8);
-            if ((s32) cur > r7) {
-                cur = (s16) r7;
+            M2C_FIELD(grid, s16 *, 0x8) = (s16) (M2C_FIELD(grid, s16 *, 0x8) + 1);
+            cur = M2C_FIELD(grid, s16 *, 0x8);
+            if ((s32) cur > orig_a) {
+                cur = orig_a;
             }
-            M2C_FIELD(arg0, s16 *, 0x8) = cur;
-            c = M2C_FIELD(arg0, s16 *, 0xC);
-            f = (s16) Divide(cur, step);
-            diff = (s16) (f - c);
-            if (diff > (s16) r8const) {
+            M2C_FIELD(grid, s16 *, 0x8) = cur;
+            f = (s16) Divide(M2C_FIELD(grid, s16 *, 0x8), step);
+            c = M2C_FIELD(grid, s16 *, 0xC);
+            diff = f - c;
+            if (diff > r8const) {
                 if (c < r9) {
-                    M2C_FIELD(arg0, s16 *, 0xC) = (s16) (c + 1);
+                    M2C_FIELD(grid, s16 *, 0xC) = c + 1;
                 }
             }
-        } while (M2C_FIELD(arg0, s16 *, 0x8) < arg1);
+        } while (M2C_FIELD(grid, s16 *, 0x8) < item);
     }
-    M2C_FIELD(arg0, s16 *, 0x12) = (s16) ((M2C_FIELD(arg0, s16 *, 0xC) - orig_c) * M2C_FIELD(arg0, u8 *, 0x7));
+    M2C_FIELD(grid, s16 *, 0x12) = (s16) ((M2C_FIELD(grid, s16 *, 0xC) - orig_c) * M2C_FIELD(grid, u8 *, 0x7));
 }
-
+#pragma opt_common_subs reset
 /* Eases the sprite grid's animated pixel offset back to zero: a whole cell
  * height per frame while it is at least that far from zero, a quarter of one
  * once closer, without crossing zero.  Returns the remaining offset. */

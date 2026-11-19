@@ -34,7 +34,7 @@ s16 posHigh[2];
 s32 a;
 volatile u16 posMid[2],posLow[2];
 s32 offset;
-s32 threshold,team,id,value,cost,kind,x,y,terrain,index,xx,yy,x0,y0,x1,y1,sum,delta;
+s32 threshold,team,cost,id,kind,value,y,x,terrain,index,yy,xx,x0,y0,x1,y1,sum,delta;
 u8 *map,*unit,*selected;
 GetAiUnitRange();
 BuildAiUnitThreatRange();
@@ -45,18 +45,19 @@ for(team=1;team<5;team++){
 if(!IsPlayerActive(team))continue;
 if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),team)==1)continue;
 id=gPlayerUnitIdBase[team]+1;
+if(id<gPlayerUnitIdBase[team]+51){
 offset=id*14;
-for(;id<gPlayerUnitIdBase[team]+51;id++,offset+=14){
+for(;;){
 map=*gCurrentMap;unit=(map+0x59a4)+offset;
 kind=((UnitKind1955 *)unit)->kind;
-if(!kind)continue;
-if(M2C_FIELD(unit,u16 *,4)&8)continue;
+if(!kind)goto next_unit;
+if(M2C_FIELD(unit,u16 *,4)&8)goto next_unit;
 x=unit[1];y=unit[2];
-if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]<0)continue;
-if(!((u32)(unit[11]<<25)>>31)&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16 *,0x52a4),kind,x,y))continue;
-if(((UnitKind1955 *)unit)->kind==22&&(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind!=23&&!IsUnitInSight((u16)id))continue;
+if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]<0)goto next_unit;
+if(!((u32)(unit[11]<<25)>>31)&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16 *,0x52a4),kind,x,y))goto next_unit;
+if(((UnitKind1955 *)unit)->kind==22&&(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind!=23&&!IsUnitInSight((u16)id))goto next_unit;
 if(M2C_FIELD(unit,u16 *,4)&32){
-if(!func_ov000_021a96f4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))continue;
+if(!func_ov000_021a96f4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))goto next_unit;
 }
 kind=(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind;
 if(kind==21)value=GetAttackDamage(17,((UnitKind1955 *)unit)->kind,0);else value=GetAttackDamage(kind,((UnitKind1955 *)unit)->kind,0);
@@ -66,17 +67,21 @@ kind=(*(UnitKind1955 **)(map+0x52d0))->kind;
 if(kind==23&&((UnitKind1955 *)unit)->kind==22)cost>>=2;
 if(kind==16){if(gUnitKindStats[((UnitKind1955 *)unit)->kind*112+19]&16)value<<=1;else value>>=1;}
 if(value<20){
-if(!IsFootUnitKind(kind))continue;
-if(low<=threshold){if(cost>threshold||cost<low)continue;}else if(cost>low)continue;
+if(!IsFootUnitKind(kind))goto next_unit;
+if(low<=threshold){if(cost>threshold||cost<low)goto next_unit;}else if(cost>low)goto next_unit;
 low=cost;posLow[0]=unit[1];posLow[1]=unit[2];
 }else if(value<50){
-if(mid<=threshold){if(cost>threshold||cost<mid)continue;}else if(cost>mid)continue;
+if(mid<=threshold){if(cost>threshold||cost<mid)goto next_unit;}else if(cost>mid)goto next_unit;
 posMid[0]=unit[1];posMid[1]=unit[2];mid=cost;
 }else{
-if(high<=threshold){if(cost>threshold||cost<high)continue;}else if(cost>high)continue;
+if(high<=threshold){if(cost>threshold||cost<high)goto next_unit;}else if(cost>high)goto next_unit;
 posHigh[0]=unit[1];posHigh[1]=unit[2];high=cost;
 }
-}}
+next_unit:
+++id;
+offset+=14;
+if(id>=gPlayerUnitIdBase[team]+51)break;
+}}}
 map=*gCurrentMap;
 index=M2C_FIELD(map+(posHigh[1])*2,u16 *,0x3758)+posHigh[0];
 id=M2C_FIELD(map+index,u8 *,0x508);
@@ -92,7 +97,7 @@ if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),terrain&255)==1)continue;
 if(!func_ov000_0217d000((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,terrain))continue;
 map=*gCurrentMap;
 if(high<=threshold){cost=M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x];if(cost>threshold||cost<high)continue;}
-else if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]>high)continue;
+else {if(M2C_FIELD(map+0x52e8,s8 ***,0)[y][x]>high)continue;}
 posHigh[0]=x;posHigh[1]=y;
 high=M2C_FIELD(*gCurrentMap+(y)*4,s8 **,0x52e8)[x];
 }}}
@@ -100,8 +105,10 @@ if(high==0x7fff){if(mid==0x7fff){if(low==0x7fff)return 0;posHigh[0]=posLow[0];po
 else{posHigh[0]=posMid[0];posHigh[1]=posMid[1];}}
 map=*gCurrentMap;selected=M2C_FIELD(map,u8 **,0x52d0);
 if(((UnitKind1955 *)selected)->kind==23){
-index=M2C_FIELD(map+(posHigh[1])*2,u16 *,0x3758)+posHigh[0];id=M2C_FIELD(map+index,u8 *,0x508);unit=map+0x59a4+id*14;
-if(id&&!((u32)(unit[11]<<25)>>31)&&((UnitKind1955 *)unit)->kind==22&&(M2C_FIELD(unit,u16 *,4)&32)&&!(M2C_FIELD(unit,u16 *,4)&64)){
+index=M2C_FIELD(map+(posHigh[1])*2,u16 *,0x3758)+posHigh[0];id=M2C_FIELD(map+index,u8 *,0x508);
+if(id){
+unit=map+0x59a4+id*14;
+if(!((u32)(unit[11]<<25)>>31)&&((UnitKind1955 *)unit)->kind==22&&(M2C_FIELD(unit,u16 *,4)&32)&&!(M2C_FIELD(unit,u16 *,4)&64)){
 func_01ffc2e8(selected);MarkAdjacentCells(111);
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
 high=M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x];
@@ -115,13 +122,15 @@ sum=0;delta=x-xx;if(delta>0)sum+=delta;else sum+=xx-x;
 delta=y-yy;if(delta>0)sum+=delta;else sum+=yy-y;
 if(sum<1)continue;if(sum>1)continue;
 {cost=M2C_FIELD(*gCurrentMap+(yy)*4,s8 **,0x52e8)[xx];
-if(cost>=0&&cost<=110&&high<=cost)high=cost;}
+if(cost>=0&&cost<=110){if(cost < high)continue;high=cost;}}
 }}
 if(high==-1)high=GetAiUnitMoveRange(M2C_FIELD(map,void **,0x52d0));
 }
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
-x0=x-3;if(x0<0)x0=0;y0=y-3;if(y0<0)y0=0;
-x1=M2C_FIELD(map,u16 *,0x5144)-1;if(x+3<x1)x1=x+3;
+x0=x-3;if(x0<0)x0=0;
+x1=M2C_FIELD(map,u16 *,0x5144)-1;
+y0=y-3;if(y0<0)y0=0;
+if(x+3<x1)x1=x+3;
 y1=M2C_FIELD(map,u16 *,0x5146)-1;if(y+3<y1)y1=y+3;
 sum=1;
 for(yy=y0;yy<=y1;yy++)for(xx=x0;xx<=x1;xx++){
@@ -135,8 +144,10 @@ if(cost>=high)sum++;
 sum=RandomIntRange(0,sum-1);
 if(sum){
 map=*gCurrentMap;x=posHigh[0];y=posHigh[1];
-x0=x-3;if(x0<0)x0=0;y0=y-3;if(y0<0)y0=0;
-x1=M2C_FIELD(map,u16 *,0x5144)-1;if(x+3<x1)x1=x+3;
+x0=x-3;if(x0<0)x0=0;
+x1=M2C_FIELD(map,u16 *,0x5144)-1;
+y0=y-3;if(y0<0)y0=0;
+if(x+3<x1)x1=x+3;
 y1=M2C_FIELD(map,u16 *,0x5146)-1;if(y+3<y1)y1=y+3;
 for(yy=y0;yy<=y1;yy++)for(xx=x0;xx<=x1;xx++){
 value=0;delta=x-xx;if(delta>0)value+=delta;else value+=xx-x;
@@ -148,6 +159,7 @@ if(--sum==0){posHigh[0]=xx;posHigh[1]=yy;goto finish;}
 }
 }
 
+}
 }
 }
 }

@@ -5,7 +5,7 @@ typedef struct { u8 active:1; u8 remaining:7; } TransitionFlags;
 #pragma opt_common_subs off
 u32 func_ov011_02226658(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK DeleteSpriteObject();
+    M2C_UNK DeleteSpriteObject(void *);
     u8 Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(s32, s32, M2C_UNK, s32, s32);
     M2C_UNK func_ov011_022257b4(void *);
@@ -13,7 +13,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_ov011_0222588c(void *);
     s32 func_ov011_02225a18(void *);
     M2C_UNK func_ov011_02225a24(void *, u16, u16);
-    M2C_UNK func_ov011_02225a9c(void *, M2C_UNK, M2C_UNK, M2C_UNK);
+    void func_ov011_02225a9c(void *, s32, s32, s32);
     extern u16 *gKeyState;
     extern void *gTouchState;
     extern u16 **g3DSpriteEngineSub;
@@ -99,8 +99,9 @@ u32 func_ov011_02226658(void *arg0) {
     u8 temp_r1;
     u8 temp_r2_8;
 
+    u16 **mainEngine = g3DSpriteEngineMain;
     temp_r4 = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    gCur3DSpriteEngine = mainEngine;
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) < 0x29CCU) {
         if ((u32) M2C_FIELD(arg0, u8 *, 0x37) >= 0xC8U) {
             M2C_FIELD(arg0, u8 *, 0x37) = 0U;
@@ -145,6 +146,7 @@ u32 func_ov011_02226658(void *arg0) {
         }
         temp_r0_4 = M2C_FIELD(arg0, u8 *, 0x37);
         if ((u32) temp_r0_4 <= 0x1EU) {
+            u32 showLayer = (u32)(M2C_FIELD(arg0, u8 *, 0x34) << 29) >> 31;
             sp68 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp68 = (u16) (*sp68 & ~1);
             sp64 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
@@ -154,7 +156,7 @@ u32 func_ov011_02226658(void *arg0) {
             sp5C = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp5C = (s16) (*sp5C & ~8);
             sp58 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
-            *sp58 = (s16) ((*sp58 & ~0x10) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1D) >> 0x1F) << 0x1F) >> 0x1B));
+            *sp58 = (s16) ((*sp58 & ~0x10) | ((showLayer << 31) >> 27));
             temp_r0_6 = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x37), 0x1E);
             M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_6;
             sp54 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
@@ -200,6 +202,7 @@ u32 func_ov011_02226658(void *arg0) {
                 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x51) = (s8) (0x10 - temp_r0_14);
                 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u8 *, 0x52) = temp_r0_14;
             } else {
+                u32 showLayer = (u32)(M2C_FIELD(arg0, u8 *, 0x34) << 28) >> 31;
                 sp20 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp20 = (u16) (*sp20 & ~1);
                 sp1C = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
@@ -209,7 +212,7 @@ u32 func_ov011_02226658(void *arg0) {
                 sp14 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp14 = (s16) (*sp14 & ~8);
                 sp10 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
-                *sp10 = (s16) ((*sp10 & ~0x10) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1C) >> 0x1F) << 0x1F) >> 0x1B));
+                *sp10 = (s16) ((*sp10 & ~0x10) | ((showLayer << 31) >> 27));
                 temp_r0_16 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
                 M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_16;
                 spC = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
@@ -274,9 +277,10 @@ u32 func_ov011_02226658(void *arg0) {
     var_r5 = 0;
     M2C_FIELD(arg0, u16 *, 0x3A) = 0x29CBU;
     do {
-        if (M2C_FIELD((arg0 + (var_r5 * 4)), s32 *, 0x40) != 0) {
-            DeleteSpriteObject();
-            M2C_FIELD((arg0 + (var_r5 * 4)), s32 *, 0x40) = 0;
+        void *sprite = M2C_FIELD(arg0 + var_r5 * 4, void **, 0x40);
+        if (sprite != 0) {
+            DeleteSpriteObject(sprite);
+            M2C_FIELD(arg0 + var_r5 * 4, void **, 0x40) = 0;
         }
         var_r5 += 1;
     } while (var_r5 < 3);

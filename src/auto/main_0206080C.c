@@ -6,38 +6,42 @@ typedef struct { u8 a,b; } Pair60E;
 static inline void CopyPair60E(u8 *d,const u8 *s) { *(Pair60E *)d=*(const Pair60E *)s; }
 static inline u16 SwapPair60E(u16 v) { return (u8)(v>>8)|((v<<8)&0xff00); }
 
-void func_0206080c(void *arg0) {
+/* Give up on the detail queries in the pending list that have waited more than
+ * SB_QUERY_TIMEOUT_MS for a reply: flag each server as timed out, store the
+ * timeout as its ping, drop the query's flags, report the failed query through
+ * the list's query callback and take the server off the pending list. */
+void Qr2Query_ExpireTimeouts(void *list) {
     u32 GetTickCountMs();
-    M2C_UNK func_02060104(void *);
-    u32 temp_r5;
-    void *temp_r3;
+    M2C_UNK QueryQueue_Pop(void *);
+    u32 now;
+    GpiPlayer *server;
 
-    temp_r5 = GetTickCountMs();
-    if (M2C_FIELD(arg0, void **, 8) == NULL) {
+    now = GetTickCountMs();
+    if (M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS) == NULL) {
         return;
     }
 loop_3:
-    if (temp_r5 <= (u32) (M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 0x1C) + 0x9C4)) {
+    if (now <= (u32) (M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS)->ping + SB_QUERY_TIMEOUT_MS)) {
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 8), u8 *, 0x15) = (u8) (M2C_FIELD(M2C_FIELD(arg0, void **, 8), u8 *, 0x15) | 0x10);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 0x1C) = 0x9C4;
-    temp_r3 = M2C_FIELD(arg0, void **, 8);
-    M2C_FIELD(temp_r3, u8 *, 0x15) = (u8) (M2C_FIELD(temp_r3, u8 *, 0x15) & 0xD3);
-    M2C_FIELD(arg0, M2C_UNK (**)(void *, M2C_UNK, void *, s32), 0x44)(arg0, 1, M2C_FIELD(arg0, void **, 8), M2C_FIELD(arg0, s32 *, 0x48));
-    func_02060104(arg0 + 8);
-    if (M2C_FIELD(arg0, void **, 8) == NULL) {
+    M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS)->flags = (u8) (M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS)->flags | SB_SERVER_FLAG_TIMED_OUT);
+    M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS)->ping = SB_QUERY_TIMEOUT_MS;
+    server = M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS);
+    server->flags = (u8) (server->flags & SB_SERVER_FLAG_QUERY_MASK);
+    M2C_FIELD(list, M2C_UNK (**)(void *, M2C_UNK, void *, s32), SB_LIST_ON_QUERY_DONE)(list, SB_QUERY_STAGE_FAILED, M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS), M2C_FIELD(list, s32 *, SB_LIST_QUERY_DATA));
+    QueryQueue_Pop((u8 *)list + SB_LIST_REQUESTS);
+    if (M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS) == NULL) {
         return;
     }
     goto loop_3;
 }
 
 void func_0206089c(void *arg0) {
-    M2C_UNK func_02060104(void *);
+    M2C_UNK QueryQueue_Pop(void *);
     M2C_UNK func_020601b8(void *, void *);
 
     while ((s32) M2C_FIELD(arg0, s32 *, 0x10) < (s32) M2C_FIELD(arg0, s32 *, 4) && (s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0) {
-        func_020601b8(arg0, func_02060104(arg0 + 0x14));
+        func_020601b8(arg0, QueryQueue_Pop(arg0 + 0x14));
     }
 }
 
@@ -48,7 +52,7 @@ void func_020608dc(void *arg0) {
         return;
     }
     func_02060678(arg0, 0);
-    func_0206080c(arg0);
+    Qr2Query_ExpireTimeouts(arg0);
     if (M2C_FIELD(arg0, s32 *, 0x1C) > 0) {
         func_0206089c(arg0);
     }
@@ -70,12 +74,12 @@ void AddServerListField(void *arg0, u8 arg1) {
 }
 
 void func_0206095c(void *arg0, M2C_UNK arg1) {
-    s32 func_02060138(void *, M2C_UNK);
+    s32 Qr2Query_RemoveRequest(void *, M2C_UNK);
 
-    if (func_02060138(arg0 + 8, arg1) != 0) {
+    if (Qr2Query_RemoveRequest(arg0 + 8, arg1) != 0) {
         return;
     }
-    func_02060138(arg0 + 0x14, arg1);
+    Qr2Query_RemoveRequest(arg0 + 0x14, arg1);
 }
 
 void func_02060988(s8 **arg0, s32 arg1) {
@@ -242,7 +246,7 @@ M2C_UNK *func_02060d2c(s32 input,s32 arg1){
  return arg0;
 }
 
-void func_02060d90(M2C_UNK arg0, s32 arg1) {
+void Qr2Query_ParseTextFields(M2C_UNK arg0, s32 arg1) {
     M2C_UNK gpiPlayerSetString(M2C_UNK, M2C_UNK *, M2C_UNK *);
     s32 func_02060ccc(M2C_UNK *);
     M2C_UNK *func_02060d2c(s32, M2C_UNK);

@@ -33,16 +33,19 @@ s32 SetGpiStatus(s32 status, void *statusString, void *locationString) {
     return gpiSetStatusInfo(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void **, MATCH_SESSION_CONNECTION), status, statusString, locationString);
 }
 
-void NotifyPlayerSlotChanged(s32 a) {
- extern M2C_UNK gMatchSessionMgr; s32 func_0203a68c(void *,void *);
- u32 out[132]; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8); s32 n;
- if(M2C_FIELD(p,void **,0x44)&&M2C_FIELD(p,s32 *,0)!=1)
- M2C_FIELD(p,void (**)(s32,s32),0x44)(a,M2C_FIELD(p,s32 *,0x48));
+/* Tell the match session that player slot `slot` changed: run its slot-changed
+ * callback unless the match is running, then, when it has an info callback, read
+ * the slot's player info from the session's player record and hand it over. */
+void NotifyPlayerSlotChanged(s32 slot) {
+ extern M2C_UNK gMatchSessionMgr; s32 GetMatchPlayerRecordInfo(void *,void *);
+ u32 infoOut[132]; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8); s32 status;
+ if(M2C_FIELD(p,void **,MATCH_SESSION_SLOT_CB)&&M2C_FIELD(p,s32 *,MATCH_SESSION_STATUS)!=MATCH_SESSION_STATUS_RUNNING)
+ M2C_FIELD(p,void (**)(s32,s32),MATCH_SESSION_SLOT_CB)(slot,M2C_FIELD(p,s32 *,MATCH_SESSION_SLOT_DATA));
  p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- if(!M2C_FIELD(p,void **,0x34))return;
- n=func_0203a68c((u8 *)M2C_FIELD(p,void **,0x18)+a*12,out+66);
+ if(!M2C_FIELD(p,void **,MATCH_SESSION_INFO_CB))return;
+ status=GetMatchPlayerRecordInfo((u8 *)M2C_FIELD(p,void **,MATCH_SESSION_PLAYERS)+slot*MATCH_SESSION_PLAYER_SIZE,infoOut+66);
  p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- M2C_FIELD(p,void (**)(s32,s32,void *,s32),0x34)(a,n,out+66,M2C_FIELD(p,s32 *,0x38));
+ M2C_FIELD(p,void (**)(s32,s32,void *,s32),MATCH_SESSION_INFO_CB)(slot,status,infoOut+66,M2C_FIELD(p,s32 *,MATCH_SESSION_INFO_DATA));
 }
 
 void func_0203b088(void) {
@@ -50,17 +53,23 @@ void func_0203b088(void) {
     M2C_FIELD(&gMatchSessionMgr, s32 *, 8) = 0;
 }
 
-s32 func_0203b09c(void) {
- extern M2C_UNK gMatchSessionMgr; u64 GetSystemTick(void);
- u64 U64Divide(u64,u64);
- s32 func_0204db50(void *);
- s32 r=0; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
- if(U64Divide((GetSystemTick()-M2C_FIELD(p,u64 *,0xC))<<6,0x82EA) >=300) {
- M2C_FIELD(p,s32 *,8)++;
- r=func_0204db50(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4));
- M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u64 *,0xC)=GetSystemTick();
- }
- return r;
+/* Paced think of the online match session: once every 300 tick units it bumps the
+ * session's think counter, pumps its GameSpy connection and records the new tick;
+ * returns the pump's result (nonzero tells the caller to stop this update pass). */
+s32 MatchSession_Think(void) {
+    extern M2C_UNK gMatchSessionMgr;
+    u64 GetSystemTick(void);
+    u64 U64Divide(u64, u64);
+    s32 func_0204db50(void *);
+    s32 result = 0;
+    void *session = M2C_FIELD(&gMatchSessionMgr, void **, 8);
+
+    if (U64Divide((GetSystemTick() - M2C_FIELD(session, u64 *, MATCH_SESSION_THINK_TICK)) << 6, 0x82EA) >= 300) {
+        M2C_FIELD(session, s32 *, MATCH_SESSION_THINK_COUNT)++;
+        result = func_0204db50(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), void **, MATCH_SESSION_CONNECTION));
+        M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, 8), u64 *, MATCH_SESSION_THINK_TICK) = GetSystemTick();
+    }
+    return result;
 }
 
 void func_0203b128(void) {
@@ -78,7 +87,7 @@ void func_0203b128(void) {
  * one step of the session update and stops early when a request is pending. */
 void SyncSessionPlayerConnections(M2C_UNK *arg0,s32 playerCount){
 extern M2C_UNK gMatchSessionMgr;
-s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 func_0204e3b0(void *,s32);
+s32 func_0204e184(void *,s32 *);s32 gpGetBuddyStatus(void *,s32,s32);s32 DeleteBuddyProfile(void *,s32);
 u32 ReportNetError();s32 GetSessionPlayerId(s32);s32 IsPlayerRecordJoined(void *);void AssignPlayerRecordId(void *,s32);void MarkPlayerRecordJoined(void *);
 s32 MatchSession_MergeDuplicatePlayer(u8 *,s32,s32);s32 func_0204e2f4(void *,s32,s32 *);s32 DropSessionPlayer(s32);
 s32 GetLocalPlayerInfo(void);s32 GetPlayerRecordId(s32,s32);void FormatPlayerNasId(s32,void *,void *);
@@ -97,7 +106,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1d)=1;
 }break;
 }}
 if(slot==playerCount){
-ReportNetError(func_0204e3b0(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),buddyInfo[0]));
+ReportNetError(DeleteBuddyProfile(M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,4),buddyInfo[0]));
 remoteCount--;remoteIndex--;
 }}
 M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,0x1e)=1;

@@ -36,7 +36,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void CloseNarcArchive(void);
     void AddTileRectPalette(void *, s32, s32, s32);
     void func_0208e7ec(s32, s32);
-    void func_02088f1c(void *);
+    void Show3DSpriteSlide(void *);
     void Hide3DSprite(void *);
     void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
@@ -89,10 +89,10 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     ptr = M2C_FIELD((void *)setup, void **, 0x54);
     SetupSetFrame(ptr,(u16)(((SetupSprite*)ptr)->baseFrame+2),0);
 
-    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
+    Show3DSpriteSlide(M2C_FIELD((void *)setup, void **, 0x58));
     Hide3DSprite(M2C_FIELD((void *)setup, void **, 0x60));
     SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
-    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
+    Show3DSpriteSlide(M2C_FIELD((void *)setup, void **, 0x64));
 
     if (GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68)) != 0) {
         animValue = GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68));ptr=M2C_FIELD(setup,void **,0x68);
@@ -173,7 +173,7 @@ void func_020de610(void) {
  * menu sprites, then registers the scene's ov010 update callbacks. */
 M2C_UNK SetupMatchScene(M2C_UNK setup, M2C_UNK side) {
 void Clear3DSpriteLayer(u8); void SetFileDirectory(void *); void *GetLocalizedFileName(void *); void OpenNarcArchive(void *); void LoadNarcFileDecompressed(void *,void *); void CloseNarcArchive(void); void AddTileRectPalette(void *,s32,s32,s32);
-void func_02088f1c(void *); void Hide3DSprite(void *); void SetTextById(void *,u32); s32 GetSpriteAnimValue(void *);
+void Show3DSpriteSlide(void *); void Hide3DSprite(void *); void SetTextById(void *,u32); s32 GetSpriteAnimValue(void *);
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
@@ -196,10 +196,10 @@ gCur3DSpriteEngine=savedEngine;
 M2C_FIELD(setup,u16 *,0x48)|=0x20;
 sprite=M2C_FIELD(setup,void **,0x54);
 SetupSetFrame(sprite,(u16)(((SetupSprite *)sprite)->baseFrame+2),0);
-func_02088f1c(M2C_FIELD(setup,void **,0x58));
+Show3DSpriteSlide(M2C_FIELD(setup,void **,0x58));
 Hide3DSprite(M2C_FIELD(setup,void **,0x60));
 SetTextById(M2C_FIELD(setup,void **,0x64),0x44000011);
-func_02088f1c(M2C_FIELD(setup,void **,0x64));
+Show3DSpriteSlide(M2C_FIELD(setup,void **,0x64));
 if(GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68))) {
 animValue=GetSpriteAnimValue(M2C_FIELD(setup,void **,0x68));
 sprite=M2C_FIELD(setup,void **,0x68);
@@ -248,7 +248,7 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     void LoadNarcFileDecompressed(void *, void *);
     void CloseNarcArchive(void);
     void AddTileRectPalette(void *, s32, s32, s32);
-    void func_02088f1c(void *);
+    void Show3DSpriteSlide(void *);
     void Hide3DSprite(void *);
     void SetTextById(void *, u32);
     s32 GetSpriteAnimValue(void *);
@@ -301,10 +301,10 @@ void SetupMatchingUnitScene(M2C_UNK setup, M2C_UNK side) {
     M2C_FIELD(sprite, u32 *, 0x40) = spriteWord;
     M2C_FIELD(sprite, u8 *, 0x5a) = 0;
 
-    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x58));
+    Show3DSpriteSlide(M2C_FIELD((void *)setup, void **, 0x58));
     Hide3DSprite(M2C_FIELD((void *)setup, void **, 0x60));
     SetTextById(M2C_FIELD((void *)setup, void **, 0x64), 0x44000011U);
-    func_02088f1c(M2C_FIELD((void *)setup, void **, 0x64));
+    Show3DSpriteSlide(M2C_FIELD((void *)setup, void **, 0x64));
 
     if (GetSpriteAnimValue(M2C_FIELD((void *)setup, void **, 0x68)) != 0) {
         animValue = GetSpriteAnimValue(M2C_FIELD((void *)setup, void **, 0x68));
@@ -380,7 +380,7 @@ void PlaySoundEffect(u32);
 u32 GetActivePlayerMask(void);
 u32 CountBits(void);
 u32 func_ov009_02225470(void);
-void func_02088f1c(void*);
+void Show3DSpriteSlide(void*);
 void Hide3DSpriteSlide(void*);
 void SetTextById(void*,u32);
 u32 GetReadyPlayerMask(void);
@@ -480,7 +480,7 @@ v=func_ov009_02225470();
 p=M2C_FIELD(self,void * *,0x54);
 
 if(v>=2){if(!SetupIsActive(p)){SetupSetFrame(p,((SetupSprite*)p)->baseFrame,0);
-func_02088f1c(M2C_FIELD(self,void * *,0x54));
+Show3DSpriteSlide(M2C_FIELD(self,void * *,0x54));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
 else if(SetupIsActive(p)){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+2,0);
@@ -512,7 +512,7 @@ PlaySoundEffect(0x1000e);return;
 v=func_ov009_02225470();
 p=M2C_FIELD(self,void * *,0x60);
 
-if(v>=2){if(!func_020890b8(p)&&!Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){func_02088f1c(M2C_FIELD(self,void * *,0x60));
+if(v>=2){if(!func_020890b8(p)&&!Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Show3DSpriteSlide(M2C_FIELD(self,void * *,0x60));
 SetTextById(M2C_FIELD(self,void * *,0x64),0x44000012);
 }}
 else if(!func_020890b8(p)&&Is3DSpriteVisible(M2C_FIELD(self,void * *,0x60))){Hide3DSpriteSlide(M2C_FIELD(self,void * *,0x60));

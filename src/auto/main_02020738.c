@@ -1,6 +1,7 @@
 /* 39 functions from 0x02020738 to 0x020216CC (main), found by ds-decomp. */
 #include "common.h"
 #include "net_socket.h"
+#include "ghttp.h"
 
 
 s32 NetworkPollClosing(void);
@@ -227,7 +228,7 @@ s32 SocketShutdown(void *socket) {
     if (sendConn != NULL) {
         s32 owner = M2C_FIELD(sendConn, s32 *, SEND_RING_OWNER);
         if (owner != 0) {
-            owner = SocketAllocTask(SocketShutdownTask, owner, M2C_FIELD(socket, s8 *, SOCK_KIND));
+            owner = SocketAllocTask(SocketShutdownTask, owner, M2C_FIELD(socket, s8 *, SOCK_BLOCKING));
             if (owner == 0) {
                 return -0x21;
             }
@@ -427,11 +428,11 @@ s32 NetworkShutdown(void) {
     M2C_UNK func_0201a508();
     s32 NetworkFreeTaskPool();
     extern void *gNetAllocator;
-    extern s32 data_021372e0;
+    extern s32 gLocalIpAddress;
     extern s32 data_02138ac4;
     extern M2C_UNK gNetStackState;
     s32 result;
-    if (data_02138ac4 == 0) { data_02138ac4 = data_021372e0; }
+    if (data_02138ac4 == 0) { data_02138ac4 = gLocalIpAddress; }
     if (NetworkPollClosing() == SOCK_BUSY) {
         do { SleepMilliseconds(0x64); } while (NetworkPollClosing() == SOCK_BUSY);
     }
@@ -549,9 +550,9 @@ s32 func_020211e4(s32 arg0) {
 }
 
 s32 func_02021230(s32 arg0, s32 arg1) {
-    s32 func_02021264();
+    s32 GetLocalIpAddress();
     extern M2C_UNK data_021372f0;
-    if (func_02021264() == 0) {
+    if (GetLocalIpAddress() == 0) {
         return -0x27;
     }
     M2C_FIELD(&data_021372f0, s32 *, 0) = arg0;
@@ -559,20 +560,20 @@ s32 func_02021230(s32 arg0, s32 arg1) {
     return 0;
 }
 
-s32 func_02021264(void) {
+s32 GetLocalIpAddress(void) {
     M2C_UNK SleepMilliseconds(M2C_UNK);
-    s32 func_02007580();
-    extern s32 data_021372e0;
+    s32 GetProcessorMode();
+    extern s32 gLocalIpAddress;
     extern s32 data_02138ac4;
     extern s32 data_02138ac8;
-    if (data_021372e0 == 0) {
-        if (((data_02138ac8 & 3) == 1) && (func_02007580() != 0x12)) {
+    if (gLocalIpAddress == 0) {
+        if (((data_02138ac8 & 3) == 1) && (GetProcessorMode() != 0x12)) {
             SleepMilliseconds(0xA);
         }
     } else if (data_02138ac4 == 0) {
-        data_02138ac4 = data_021372e0;
+        data_02138ac4 = gLocalIpAddress;
     }
-    return data_021372e0;
+    return gLocalIpAddress;
 }
 
 /* Polls a socket and returns a readiness bitmask: bit 0 readable (data queued),
@@ -712,23 +713,25 @@ void func_02021558(M2C_UNK arg0, void *arg1) {
 }
 
 void func_020215b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_0201fc18(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_0201fc18(arg0, arg1, arg2, 0, 0, 0);
+    M2C_UNK SocketRecvFrom(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    SocketRecvFrom(arg0, arg1, arg2, 0, 0, 0);
 }
 
 void func_020215d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_0201fc18(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_0201fc18(arg0, arg1, arg2, 0, 0, arg3);
+    M2C_UNK SocketRecvFrom(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    SocketRecvFrom(arg0, arg1, arg2, 0, 0, arg3);
 }
 
-s32 func_020215f8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, void *arg4) {
- u32 spC; u16 sp8;
- s32 result = func_0201fc18(arg0,arg1,arg2,&sp8,&spC,arg3);
- if(result < 0) return result;
- if(arg4 == NULL) return result;
- M2C_FIELD(arg4,u16 *,2)=((sp8 >> 8)&255)|((sp8 << 8)&0xff00);
- M2C_FIELD(arg4,u32 *,4)=((spC >> 24)&255)|((spC >> 8)&0xff00)|((spC << 8)&0xff0000)|((spC << 24)&0xff000000);
- return result;
+/* Receive up to len bytes on a socket and report the sender in peer as a socket
+ * address: the port and the IPv4 address are written in network byte order. */
+s32 SocketRecvFromAddress(M2C_UNK sock, M2C_UNK buf, M2C_UNK len, s32 flags, void *peer) {
+    u32 peerAddr; u16 peerPort;
+    s32 result = SocketRecvFrom(sock, buf, len, &peerPort, &peerAddr, flags);
+    if (result < 0) return result;
+    if (peer == NULL) return result;
+    ((GhiSocketAddress *)peer)->port = ((peerPort >> 8)&255)|((peerPort << 8)&0xff00);
+    ((GhiSocketAddress *)peer)->addr = ((peerAddr >> 24)&255)|((peerAddr >> 8)&0xff00)|((peerAddr << 8)&0xff0000)|((peerAddr << 24)&0xff000000);
+    return result;
 }
 
 void SocketSend(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

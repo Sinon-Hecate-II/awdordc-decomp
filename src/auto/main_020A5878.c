@@ -69,7 +69,7 @@ void func_020a5ac8(void) {
     CreateSpriteFromClass(&data_02120608, 7);
 }
 
-s32 func_020a5ae0(u32 arg0) {
+s32 GetDamageTargetIndex(u32 arg0) {
     s32 var_r1;
 
     var_r1 = 0;
@@ -207,7 +207,21 @@ void IsMapUnitRevealed(s32 arg0) {
     func_020a5d8c((s32)entry, entry[1], entry[2]);
 }
 #pragma opt_propagation reset
-s32 func_020a5f80(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitOnCurrentTeam(s32);u8 *p=(u8 *)*gCurrentMap;register u32 i=a+M2C_FIELD(p+b*2,u16 *,0x3758);u8 v=M2C_FIELD(p+i,u8 *,0x508);if(!v||!(u8)(M2C_FIELD(p+(i>>3),u8 *,0x5160)&(1<<(i&7))))return 0;if(!M2C_FIELD(p,u8 *,i)&&!(M2C_FIELD(p+v*14,u16 *,0x59a8)&4))return 0;return IsUnitOnCurrentTeam(v);}
+/* Whether map cell (x, y) holds a unit of the current team that the player can
+ * see: the cell must be in the first team's sight bitmap, and either its
+ * visible-unit entry must be set or the unit must be moving (a moving unit is
+ * always drawn). IsUnitInSight checks the four neighbours of a submerged
+ * submarine with this. */
+s32 IsCellUnitOnCurrentTeamVisible(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 IsUnitOnCurrentTeam(s32);
+    u8 *map = (u8 *)*gCurrentMap;
+    register u32 cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    u8 unitId = M2C_FIELD(map + cell, u8 *, MAP_CELL_UNIT_ID);
+    if (!unitId || !(u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (cell & 7)))) return 0;
+    if (!M2C_FIELD(map, u8 *, cell + MAP_CELL_VISIBLE_UNIT) && !(M2C_FIELD(map + unitId * MAP_UNIT_STRIDE, u16 *, MAP_UNIT_RECORDS + MAP_UNIT_FLAGS) & UNIT_FLAG_MOVING)) return 0;
+    return IsUnitOnCurrentTeam(unitId);
+}
 
 s32 IsUnitInSight(s32 arg0) {
     extern s32 *gCurrentMap;
@@ -215,7 +229,7 @@ s32 IsUnitInSight(s32 arg0) {
     s32 IsUnitSubmerged(Unit5B *);
     s32 IsUnitOnCurrentTeam(s32);
     s32 IsTerrainOnUnitTeam(s32, s32);
-    s32 func_020a5f80(s32, s32);
+    s32 IsCellUnitOnCurrentTeamVisible(s32, s32);
 
     u8 x;
     Unit5B *unit = (Unit5B *)((u8 *)*gCurrentMap + 0x59a4 + arg0 * 14);
@@ -255,23 +269,23 @@ s32 IsUnitInSight(s32 arg0) {
     }
 
     if (x > 0) {
-        acc = (u16)(acc + func_020a5f80((s16)(x - 1), y));
+        acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible((s16)(x - 1), y));
     }
     if (y > 0) {
-        acc = (u16)(acc + func_020a5f80(x, (s16)(y - 1)));
+        acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible(x, (s16)(y - 1)));
     }
     {
         u8 *base = (u8 *)*gCurrentMap;
         s32 maxw = *(u16 *)(base + 0x5144);
         if (x < maxw - 1) {
-            acc = (u16)(acc + func_020a5f80((s16)(x + 1), y));
+            acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible((s16)(x + 1), y));
         }
     }
     {
         u8 *base = (u8 *)*gCurrentMap;
         s32 maxh = *(u16 *)(base + 0x5146);
         if (y < maxh - 1) {
-            acc = (u16)(acc + func_020a5f80(x, (s16)(y + 1)));
+            acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible(x, (s16)(y + 1)));
         }
     }
 

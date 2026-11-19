@@ -110,15 +110,15 @@ s32 func_ov001_0217fd74(void) {
 
 void func_ov001_0217fd94(void) {
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
-    M2C_UNK func_ov001_021722ac(void);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     void func_ov001_0217fdd0(void);
     void func_ov001_0217fe50(void);
     extern u8 data_ov001_02193dbc;
     data_ov001_02193dbc = 0;
     func_ov001_0217fdd0();
-    func_ov001_021722ac();
-    func_ov001_02171e58(0x2A);
+    Ov001_LoadSaveSlotObjLayout();
+    Ov001_ShowMessageBox(0x2A);
     Ov001_CreateAnimSprite(2);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fe50);
 }
@@ -299,16 +299,16 @@ void func_ov001_021801a4(void) {
 }
 
 void Ov001_AdvanceMatchSetup(void) {
-M2C_UNK func_ov001_02171e58(M2C_UNK);
-M2C_UNK func_ov001_021722ac(void);
+M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
 void func_ov001_02180200(void);
 void func_ov001_02180280(void);
 extern s8 data_ov001_02193dc0;
 data_ov001_02193dc0=0;
 func_ov001_02180200();
-func_ov001_021722ac();
-func_ov001_02171e58(0x26);
+Ov001_LoadSaveSlotObjLayout();
+Ov001_ShowMessageBox(0x26);
 Ov001_PlaySound(0x10);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180280);
 }
@@ -402,18 +402,18 @@ void func_ov001_021803ec(void) {
 extern u8 data_ov001_02193dc4;
 void func_ov001_021804f0(void);
 void Ov001_LoadOptionPageBg(void);
-M2C_UNK func_ov001_021722ac(void);
+M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
 M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK func_ov001_02171dd0(M2C_UNK);
-M2C_UNK func_ov001_02171e58(M2C_UNK);
+M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
+M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
 M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
 data_ov001_02193dc4=0;
 Ov001_LoadOptionPageBg();
-func_ov001_021722ac();
+Ov001_LoadSaveSlotObjLayout();
 Ov001_ShowMessagePanel(0x37,-1,0);
-func_ov001_02171dd0(2);
-func_ov001_02171e58(0x24);
+Ov001_OpenMenuForMode(2);
+Ov001_ShowMessageBox(0x24);
 Ov001_CreateAnimSprite(0);
 Ov001_PlaySound(0xb);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021804f0);
@@ -619,20 +619,20 @@ extern u8 gOv001FriendListState;
 extern M2C_UNK func_ov001_02180970;
 void Ov001_LoadFriendListBg(void);
 M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK func_ov001_021722ac(void);
-M2C_UNK func_ov001_02171dd0(M2C_UNK);
+M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
+M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
 M2C_UNK func_ov001_02183f6c(void);
-M2C_UNK func_ov001_02183fd4(void);
+M2C_UNK Ov001_OpenFriendRoster(void);
 M2C_FIELD(&gOv001FriendListState,u16 *,2)=0;
 gOv001FriendListState=0;
 Ov001_LoadFriendListBg();
 Ov001_ShowMessagePanel(0x33,-1,0);
-func_ov001_021722ac();
-func_ov001_02171dd0(2);
-func_ov001_02171e58(0x33);
+Ov001_LoadSaveSlotObjLayout();
+Ov001_OpenMenuForMode(2);
+Ov001_ShowMessageBox(0x33);
 Ov001_CreateAnimSprite(0);
 func_ov001_02183f6c();
-func_ov001_02183fd4();
+Ov001_OpenFriendRoster();
 Ov001_PlaySound(10);
 Ov001_SetStepCallback(&func_ov001_02180970);
 }

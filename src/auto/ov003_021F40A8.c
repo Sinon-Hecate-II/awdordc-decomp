@@ -7,14 +7,14 @@
 void func_ov003_021f40a8(void *arg0) {
     void func_ov003_021f1b7c(s32, void *);
     void func_ov003_021f1b38(s32, void *);
-    void func_01ff9b38(void);
+    void Apply3DSpriteBanks(void);
     void *func_020896f0(void *);
     void func_020893f4(void *, void *, s32);
     void Sync3DSpriteToTarget(void *);
     void Hide3DSprite(void *);
     void *func_0208bc24(void *);
     void SetTextById(void *, s32);
-    void func_02088f1c(void *);
+    void Show3DSpriteSlide(void *);
     void func_ov003_021f14a0(void);
     void func_ov006_02217464(void *);
     void ScrollListTo(void *, s32, s32);
@@ -53,7 +53,7 @@ void func_ov003_021f40a8(void *arg0) {
     func_ov003_021f1b7c(0, &data_ov003_0220fde8);
     func_ov003_021f1b7c(1, &data_ov003_0220fdf0);
     func_ov003_021f1b7c(3, &data_ov003_0220fdea);
-    func_01ff9b38();
+    Apply3DSpriteBanks();
     q = M2C_FIELD(arg0, void **, 0x6c);
     o = func_020896f0(arg0);
     M2C_FIELD(q, void **, 0) = o;
@@ -91,7 +91,7 @@ void func_ov003_021f40a8(void *arg0) {
     } else {
         SetTextById(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4), 0x47000013);
     }
-    func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4));
+    Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x6c), void **, 4));
     if ((u8)(OV3KIND(arg0) == 4)) {
         func_ov003_021f14a0();
     }
@@ -107,7 +107,7 @@ void func_ov003_021f40a8(void *arg0) {
         func_ov003_021f1b38(0, &data_ov003_0220fdee);
         func_ov003_021f1b38(1, &data_ov003_0220fdec);
         func_ov003_021f1b38(3, &data_ov003_0220fde4);
-        func_01ff9b38();
+        Apply3DSpriteBanks();
         o = MemAlloc(0x68);
         if (o) {
             M2C_FIELD(o, void **, 0) = &data_ov003_022100e4;

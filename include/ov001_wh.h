@@ -79,6 +79,7 @@ enum {
     OV001_OPTION_WFC_SETTINGS = 1, /* configure the Nintendo WFC profile */
     OV001_OPTION_ERASE_WFC    = 2  /* erase the saved WFC profile */
 };
+#define OV001_OPTION_COUNT 3
 
 /* What the ov001 option menu's icon row reports: the shared row has a back icon
  * and a confirm icon, and the menu latches a touch or key press as one of them
@@ -111,7 +112,17 @@ enum {
     OV001_SOUND_CONFIRM = 6, /* an action was accepted */
     OV001_SOUND_CANCEL  = 7, /* the screen is being left without an action */
     OV001_SOUND_MOVE    = 8, /* the cursor moved to another row */
-    OV001_SOUND_ERROR   = 9  /* the action is not possible */
+    OV001_SOUND_ERROR   = 9, /* the action is not possible */
+    OV001_SOUND_SAVED   = 0x10, /* a profile or save operation completed */
+    OV001_SOUND_FAILED  = 0x12  /* a profile action failed or was cancelled */
+};
+
+/* Outcome of the ov001 WFC profile screen, kept in gOv001ProfileScreenResult for
+ * the screen that follows it to show. */
+enum {
+    OV001_PROFILE_NO_CHANGE = 0, /* left without changing the profile */
+    OV001_PROFILE_SAVED     = 1, /* the obtained WFC profile was written to the save slots */
+    OV001_PROFILE_OTHER     = 2  /* the profile action ended another way */
 };
 
 #endif

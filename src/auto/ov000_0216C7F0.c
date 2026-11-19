@@ -72,20 +72,24 @@ if(terrainKind==1){switch(M2C_FIELD(map+cellIndex*2,u16 *,MAP_CELL_TILE_ID)){cas
 return terrainKind;
 }
 
-s32 func_ov000_0216cbc4(s32 arg0) {
- switch(arg0) {
- case 32: arg0=29; break;
- case 38: arg0=29; break;
- case 39: arg0=4; break;
- case 37: arg0=29; break;
- case 36: arg0=2; break;
- case 34: arg0=29; break;
- case 35: arg0=29; break;
- case 33: arg0=29; break;
- case 40: arg0=1; break;
- case 41: arg0=1; break;
- }
- return arg0;
+/* Maps a detailed terrain id back to the map's terrain kind: the ids 32..41 that
+ * GetCellTerrainId hands out for tilesets drawing their own graphics of a tile
+ * collapse onto the kind they stand for, and every other id is a terrain kind
+ * already and is returned unchanged. */
+s32 GetTerrainKindFromInfoId(s32 terrainId) {
+    switch (terrainId) {
+    case 32: terrainId = 29; break; /* plain tile of tileset 0 */
+    case 38: terrainId = 29; break; /* plain tile of tileset 4 */
+    case 39: terrainId = 4; break;  /* wooded tile of tileset 4 */
+    case 37: terrainId = 29; break; /* plain tile of tileset 8 */
+    case 36: terrainId = 2; break;  /* kind 2 tile of tileset 8 */
+    case 34: terrainId = 29; break; /* plain tile of tileset 9 */
+    case 35: terrainId = 29; break; /* plain tile of tileset 9 */
+    case 33: terrainId = 29; break; /* plain tile of tileset 9 */
+    case 40: terrainId = 1; break;  /* plain ground, tile 4 */
+    case 41: terrainId = 1; break;  /* plain ground, tile 5 */
+    }
+    return terrainId;
 }
 
 s32 GetCellPropertyArmy(s32 arg0, s32 arg1) {
@@ -280,13 +284,13 @@ void func_ov000_0216d1c8(void) {
 
 void func_ov000_0216d23c(void) {
  s32 func_020a8b3c(s32);
- void func_0209b59c(s32,s32);
- void func_0209b5e4(s32,s32);
+ void ClearTextBitmap(s32,s32);
+ void RenderTextToTiles(s32,s32);
  extern void *gArmyInfoState;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
  s32 val=func_020a8b3c(M2C_FIELD(*gCurrentMap + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140,u8 *,0x67cb));
- func_0209b59c(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,128);
- func_0209b5e4(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,val);
+ ClearTextBitmap(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,128);
+ RenderTextToTiles(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,val);
 }
 

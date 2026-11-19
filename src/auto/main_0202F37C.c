@@ -68,7 +68,7 @@ u8 Wfc_GetSessionState(void) {
     return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 9);
 }
 
-void func_0202f558(s32 arg0) {
+void Wfc_SetResultCode(s32 arg0) {
     void *Wfc_GetWorkBlock(M2C_UNK);
     void *temp_r0;
 
@@ -133,7 +133,7 @@ s32 Wfc_GetFriendConnectResult(void) {
 void Wfc_HandleFriendMessage(s32 arg0) {
  void *msg=(void *)arg0;
  void *Wfc_GetWorkBlock(s32); u8 Wfc_GetSessionState(void);
- void Wfc_MarkFriendId(u16); s32 func_0202f894(void *,s32,void *); s32 func_0202f910(void *,void *);
+ void Wfc_MarkFriendId(u16); s32 Wfc_MatchFriendEntry(void *,s32,void *); s32 Wfc_MatchFriendRecord(void *,void *);
  s32 Wfc_StoreFriendRecord(s32,void *,M2C_UNK,void *); void Wfc_SortFriendRoster(s32,s32);
  s32 result=-1; u8 friendId; void *wfc=Wfc_GetWorkBlock(16);
  M2C_FIELD(Wfc_GetWorkBlock(1),u8 *,11)=1;
@@ -143,17 +143,17 @@ void Wfc_HandleFriendMessage(s32 arg0) {
  if(M2C_FIELD(msg,u16 *,10)==0 || M2C_FIELD(msg,u8 *,12)==0) {Wfc_MarkFriendId(M2C_FIELD(msg,u16 *,0x36));}
  else if(M2C_FIELD(msg,u16 *,10)==1 || M2C_FIELD(msg,u8 *,12)==WFC_CODE_LEN_FRIEND) {
  Wfc_MarkFriendId(M2C_FIELD(msg,u16 *,0x36));
- result=func_0202f894(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
- }else result=func_0202f894(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
+ result=Wfc_MatchFriendEntry(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
+ }else result=Wfc_MatchFriendEntry(msg,M2C_FIELD(wfc,u8 *,WFC_STATE_ENTRY_COUNT),wfc+WFC_STATE_ENTRIES);
  break;
  case 4:
  friendId=M2C_FIELD(wfc+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*WFC_RECORD_STRIDE,u16 *,0x4A6)-1;
- result=func_0202f910(msg,wfc);
+ result=Wfc_MatchFriendRecord(msg,wfc);
  if(result>=0) M2C_FIELD(wfc+0x447+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*4,u8 *,0)|=0x80;
  break;
  case 5:
  friendId=M2C_FIELD(wfc,u8 *,WFC_STATE_FRIEND_ID);
- result=func_0202f894(msg,1,wfc+WFC_STATE_ENTRIES+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE);
+ result=Wfc_MatchFriendEntry(msg,1,wfc+WFC_STATE_ENTRIES+M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*WFC_ENTRY_STRIDE);
  if(result>=0) {
  s32 i=(s16)M2C_FIELD(wfc,u8 *,WFC_STATE_WORK_INDEX)*(s16)WFC_ENTRY_STRIDE; void *q=wfc+WFC_STATE_ENTRIES;
  M2C_FIELD(q+i,u8 *,0)=(M2C_FIELD(q+i,u8 *,0)&~15)|1;
@@ -163,18 +163,22 @@ void Wfc_HandleFriendMessage(s32 arg0) {
  if(result>=0) Wfc_SortFriendRoster(Wfc_StoreFriendRecord(result,msg,friendId,wfc),(s32)wfc);
 }
 
-s32 Wfc_MatchFriendCode(void *arg0) {
- s32 func_0203174c(void *);
- s32 func_020317f8(void *);
- void *p = Wfc_GetWorkBlock(0x10);
- u32 a = (u32)(M2C_FIELD(p,u8 *,0xD0C)<<28)>>28;
- if ((a==0 || a==4) && (((s32)M2C_FIELD(arg0,u16 *,0x2C)>>4)&1)==1 && func_020317f8(arg0+0xC)==1) return 6;
- a = (u32)(M2C_FIELD(p,u8 *,0xD0C)<<28)>>28;
- if ((a==0 || a==5) && (((s32)M2C_FIELD(arg0,u16 *,0x2C)>>4)&1)==1 && func_0203174c(arg0+0xC)==1) return 7;
+/* Recognise a friend record whose code is one of the built-in connection codes:
+ * when the roster's list mode includes it and the code carries the connection
+ * flag, return the friend id of the NWCUSBAP USB access point (6) or of the
+ * encoded NDWCSHAP shared access point (7); -1 for any other code. */
+s32 Wfc_MatchFriendCode(void *record) {
+ s32 Wfc_IsSharedApCode(void *);
+ s32 Wfc_IsUsbApCode(void *);
+ void *friends = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+ u32 mode = (u32)(M2C_FIELD(friends,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+ if ((mode==WFC_LIST_MODE_ALL || mode==WFC_LIST_MODE_USB_AP) && (((s32)M2C_FIELD(record,u16 *,WFC_RECORD_FLAGS)>>4)&1)==1 && Wfc_IsUsbApCode(record+WFC_RECORD_CODE)==1) return WFC_FRIEND_ID_USB_AP;
+ mode = (u32)(M2C_FIELD(friends,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+ if ((mode==WFC_LIST_MODE_ALL || mode==WFC_LIST_MODE_SHARED_AP) && (((s32)M2C_FIELD(record,u16 *,WFC_RECORD_FLAGS)>>4)&1)==1 && Wfc_IsSharedApCode(record+WFC_RECORD_CODE)==1) return WFC_FRIEND_ID_SHARED_AP;
  return -1;
 }
 
-s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
+s32 Wfc_MatchFriendEntry(void *arg0, s32 arg1, void *arg2) {
  s32 StringCompareN(void *,void *,s32);
  s32 t; u8 k; s32 i; u32 n; void *p=arg2;
  if(M2C_FIELD(arg0,u16 *,0xA)==0x20) { t=Wfc_MatchFriendCode(arg0); if(t>0)return t; }
@@ -189,19 +193,36 @@ s32 func_0202f894(void *arg0, s32 arg1, void *arg2) {
  return -1;
 }
 
-s32 func_0202f910(void *arg0,void *arg1) {
- s32 StringCompareN(void *,void *,s32);
- s32 t,i; void *p,*q; s32 len,n;
- if(M2C_FIELD(arg0,u16 *,0xA)==0x20) {t=Wfc_MatchFriendCode(arg0); if(t>0)return t;}
- n=M2C_FIELD(arg1,u8 *,0xD12); i=0;
- if(n>0) {
- len=M2C_FIELD(arg0,u16 *,0xA); p=arg1; q=arg1+0x47C;
- do{
- if(len==M2C_FIELD(p,u16 *,0x47A) && StringCompareN(arg0+0xC,q,len)==0) return M2C_FIELD(arg1+i*4,u8 *,0x445);
- i++; p+=0xC0; q+=0xC0;
- }while(i<n);
- }
- return -1;
+/* Matches an incoming friend message against the WFC friend records by the friend
+ * code the message carries and returns the friend id the matching record resolved
+ * to, or -1 when no record matches.  A 32-byte code is first tried against the
+ * built-in connection codes. */
+s32 Wfc_MatchFriendRecord(void *msg, void *friends) {
+    s32 StringCompareN(void *, void *, s32);
+    s32 t, i;
+    void *p, *q;
+    s32 len, n;
+
+    if (M2C_FIELD(msg, u16 *, WFC_MSG_CODE_LEN) == WFC_CODE_LEN_FRIEND) {
+        t = Wfc_MatchFriendCode(msg);
+        if (t > 0) return t;
+    }
+    n = M2C_FIELD(friends, u8 *, WFC_STATE_RECORD_COUNT);
+    i = 0;
+    if (n > 0) {
+        len = M2C_FIELD(msg, u16 *, WFC_MSG_CODE_LEN);
+        p = friends;
+        q = friends + WFC_STATE_RECORDS + WFC_RECORD_CODE;
+        do {
+            if (len == M2C_FIELD(p, u16 *, WFC_STATE_RECORDS + WFC_RECORD_CODE_LEN) &&
+                StringCompareN(msg + WFC_MSG_CODE, q, len) == 0)
+                return M2C_FIELD(friends + i * 4, u8 *, WFC_STATE_RECORD_ID);
+            i++;
+            p += WFC_RECORD_STRIDE;
+            q += WFC_RECORD_STRIDE;
+        } while (i < n);
+    }
+    return -1;
 }
 
 /* Matches an incoming friend message against the WFC friend records by the
@@ -247,8 +268,6 @@ loop_2:
     return index;
 }
 
-#pragma opt_propagation off
-#pragma opt_common_subs off
 void func_0202fa68(u8 arg0,void *arg1,s32 arg2,s32 arg3) {
 M2C_UNK func_02007e70(void *,s32,M2C_UNK);
 s32 value;
@@ -260,8 +279,7 @@ M2C_FIELD(p,u8 *,0x401)=arg0;
 code=M2C_FIELD(arg1,u16 *,2);
 value=(s32)code>>2;
 if(!(code&2))value+=25;
-byte=value;
-M2C_FIELD(p,u8 *,0x402)=byte;
+M2C_FIELD(p,volatile u8 *,0x402)=(u8)(value & 0xff);
 M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);
 func_02007e70(arg1,arg3+0xbf0,0xc0);
 }
@@ -330,19 +348,23 @@ loop_2:
     CpuFill(0, records + 0x780, 0xC0);
 }
 #pragma opt_common_subs reset
-void func_0202fc10(void *arg0) {
+/* Step callback of the WFC connect step: a connection-status message stores its
+ * outcome as the friend connection's event (cancelled, reported, finished, or the
+ * fourth event for any other code), and the peer's friend message is handed to the
+ * friend roster's handler. */
+void Wfc_HandleConnectMessage(void *msg) {
  void Wfc_HandleFriendMessage(s32);
- void *p=Wfc_GetWorkBlock(0x10);
- s16 type=M2C_FIELD(arg0,s16 *,0);
- if(type==5) {
- if(M2C_FIELD(arg0,s16 *,2)==0) return;
- switch(M2C_FIELD(arg0,s32 *,8)) {
- case 13: M2C_FIELD(p,u8 *,0xD14)=1; return;
- case 15: M2C_FIELD(p,u8 *,0xD14)=2; return;
- case 17: M2C_FIELD(p,u8 *,0xD14)=3; return;
- default: M2C_FIELD(p,u8 *,0xD14)=4; return;
+ void *wfc=Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+ s16 type=M2C_FIELD(msg,s16 *,WFC_MSG_TYPE);
+ if(type==WFC_MSG_TYPE_STATUS) {
+ if(M2C_FIELD(msg,s16 *,WFC_MSG_HAS_RESULT)==0) return;
+ switch(M2C_FIELD(msg,s32 *,WFC_MSG_RESULT)) {
+ case WFC_RESULT_CANCELLED: M2C_FIELD(wfc,u8 *,WFC_STATE_CONN_EVENT)=WFC_CONN_EVENT_CANCELLED; return;
+ case WFC_RESULT_REPORTED: M2C_FIELD(wfc,u8 *,WFC_STATE_CONN_EVENT)=WFC_CONN_EVENT_REPORTED; return;
+ case WFC_RESULT_FINISHED: M2C_FIELD(wfc,u8 *,WFC_STATE_CONN_EVENT)=WFC_CONN_EVENT_FINISHED; return;
+ default: M2C_FIELD(wfc,u8 *,WFC_STATE_CONN_EVENT)=WFC_CONN_EVENT_OTHER; return;
  }
- } else if(type==7) Wfc_HandleFriendMessage(M2C_FIELD(arg0,s32 *,4));
+ } else if(type==WFC_MSG_TYPE_FRIEND) Wfc_HandleFriendMessage(M2C_FIELD(msg,s32 *,WFC_MSG_PEER));
 }
 
 s32 Wfc_StepFriends(void) {
@@ -532,11 +554,11 @@ case 8:case 9:break;
 }
 
 s32 func_020301dc(s32 arg0) {
- s32 func_02030264(void); void func_02035244(void); void func_0203514c(void);
+ s32 Wfc_UpdateSession(void); void func_02035244(void); void func_0203514c(void);
  u8 *p=(u8 *)arg0;
  u32 v=*p;
  if(v<=10) {
- v=func_02030264();
+ v=Wfc_UpdateSession();
  if(v==1) {*p=0; return 1;}
  if(v==-1) {*p=18;return 1;}
  } else if(v==14) {
@@ -547,23 +569,41 @@ s32 func_020301dc(s32 arg0) {
  return 0;
 }
 
-s32 func_02030264(void) {
- void func_020271cc(void);
- void func_02027428(void);
- void WFC_ProcessConnectStep(void);
- void WFC_ProcessLinkStep(void);
- void WFC_ProcessLinkState(void);
- u32 Wfc_GetLinkState(void);
- switch(Wfc_GetLinkState()) {
- case 0:return 1;
- case 1:func_020271cc();break;
- case 3:func_02027428();break;
- case 6:WFC_ProcessConnectStep();break;
- case 9:WFC_ProcessLinkStep();break;
- case 12:WFC_ProcessLinkState();break;
- case 11:func_0202f558(0);return -1;
- }
- return 0;
+/* Drives the WFC session one step in whatever state it is in: releases a session
+ * that has only just started, begins the wireless operation once it is ready,
+ * runs the connect, link-wait and linked steps, and records result code 0 when
+ * the session failed.  Returns 1 when the session is gone, -1 when it failed and
+ * 0 while it is still running. */
+s32 Wfc_UpdateSession(void) {
+    void Wfc_ReleaseSession(void);
+    void WFC_StartWirelessStep(void);
+    void WFC_ProcessConnectStep(void);
+    void WFC_ProcessLinkStep(void);
+    void WFC_ProcessLinkState(void);
+    u32 Wfc_GetLinkState(void);
+    switch (Wfc_GetLinkState()) {
+    case WFC_SESSION_STATE_NONE:
+        return 1;
+    case WFC_SESSION_STATE_STARTED:
+        Wfc_ReleaseSession();
+        break;
+    case WFC_SESSION_STATE_READY:
+        WFC_StartWirelessStep();
+        break;
+    case WFC_SESSION_STATE_CONNECTING:
+        WFC_ProcessConnectStep();
+        break;
+    case WFC_SESSION_STATE_LINKING:
+        WFC_ProcessLinkStep();
+        break;
+    case WFC_SESSION_STATE_LINKED:
+        WFC_ProcessLinkState();
+        break;
+    case WFC_SESSION_STATE_ERROR:
+        Wfc_SetResultCode(0);
+        return -1;
+    }
+    return 0;
 }
 
 s32 func_020302f4(void) {

@@ -60,7 +60,7 @@ extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
 extern s8 sLocalCountUnits[],sLocalCountTens[],sLocalCountFormat[],sOnlineCountUnits[],sOnlineCountTens[],sOnlineCountFormat[],sZeroPlayerText[];
 extern s32 gUnitSlotIds[];
 M2C_UNK UpdateSpriteAnimation(s32),SetSpriteSlotScroll(s32,s32),ClearTileRect(void *,s32,s32),DrawGlyphString(void *,s32,void *,s32,s32,u16,s32),StringFormat(char *,void *,s32,...),DrawTextLine(s32,s32,s32,char *,s32,u16),InitOnlinePlayerRecord(void *);
-s32 GetSpriteAnimValue(s32),GetBattleSlotSummary(s32),func_0203a7c0(s32,u8 *,u8 *,void *,s32 *),IsOnlineSessionFlagSet(s32);
+s32 GetSpriteAnimValue(s32),GetBattleSlotSummary(s32),GetMatchPlayerName(s32,u8 *,u8 *,void *,s32 *),IsOnlineSessionFlagSet(s32);
 void *GetLocalPlayerStatus(void),*GetOnlinePlayerRecord(s32);
 u32 GetLinkPlayerCount(void),GetConnectedPlayerCount(void);
 void **savedEngine;
@@ -94,7 +94,7 @@ tile+=52;
 }else{
 anim=GetBattleSlotSummary(gUnitSlotIds[M2C_FIELD(arg0,s8 *,0x43)]);
 InitOnlinePlayerRecord(playerInfo);
-if(func_0203a7c0(anim,&playerCount,&connectedCount,playerInfo,&fitWidth)!=6){M2C_FIELD(arg0,u16 *,0x48)|=0x100;return;}
+if(GetMatchPlayerName(anim,&playerCount,&connectedCount,playerInfo,&fitWidth)!=6){M2C_FIELD(arg0,u16 *,0x48)|=0x100;return;}
 if(!IsOnlineSessionFlagSet(3)&&(!(playerInfo[0x1a]&2)||playerCount==connectedCount)){M2C_FIELD(arg0,u16 *,0x48)|=0x200;return;}
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x86,20,2);
 DrawGlyphString(playerInfo,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),9,3,2,tile);
@@ -239,7 +239,7 @@ s32 FindSpriteSlotById(s32);
 void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
 M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
 M2C_UNK PlaySoundEffect(s32), SetSpriteSlotScroll(s32,s32);
-M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
+M2C_UNK Show3DSpriteSlide(void *), SetTextById(void *,s32);
 s32 GetSpriteAnimValue(s32);
 void *sp4;
 void **sp0;
@@ -296,12 +296,12 @@ PlaySoundEffect(0x10019);
 }
 SetSpriteSlotScroll(0,0);
 p=M2C_FIELD(arg0,void **,0x50);
-func_02088f1c(p);
+Show3DSpriteSlide(p);
 p=M2C_FIELD(arg0,void **,0x50);
 func_020dbe00(p);
 M2C_FIELD(p,u8 *,0x5a)=0;
 p=M2C_FIELD(arg0,void **,0x58);
-func_02088f1c(p);
+Show3DSpriteSlide(p);
 p=M2C_FIELD(arg0,void **,0x58);
 func_020dbe10(p);
 M2C_FIELD(p,u8 *,0x5a)=0;
@@ -309,7 +309,7 @@ do {
 func_020dbe20(M2C_FIELD(arg0,void **,0x50));
 } while(0);
 SetTextById(M2C_FIELD(arg0,void **,0x64),0x4400000e);
-func_02088f1c(M2C_FIELD(arg0,void **,0x64));
+Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x64));
 if(GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68))) {
 s32 result=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68));
 p=M2C_FIELD(arg0,void **,0x68);
@@ -332,7 +332,7 @@ void *arg0;
     void *AddSpriteSlot(s32,s32,void *,s32), *SelectSpriteSlot(s32);
     M2C_UNK SetTileRectPalette(s32,s32,u16,u16);
     M2C_UNK PlaySoundEffect(s32), SetSpriteSlotScroll(s32,s32);
-    M2C_UNK func_02088f1c(void *), SetTextById(void *,s32);
+    M2C_UNK Show3DSpriteSlide(void *), SetTextById(void *,s32);
     s32 GetSpriteAnimValue(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
     extern M2C_UNK data_0212d380, data_0212d388, data_0212d398, data_0212c658;
@@ -391,18 +391,18 @@ void *arg0;
     }
     SetSpriteSlotScroll(0,0);
     p=M2C_FIELD(arg0,void **,0x50);
-    func_02088f1c(p);
+    Show3DSpriteSlide(p);
     p=M2C_FIELD(arg0,void **,0x50);
     func_020dbe00(p);
     M2C_FIELD(p,u8 *,0x5a)=0;
     p=M2C_FIELD(arg0,void **,0x58);
-    func_02088f1c(p);
+    Show3DSpriteSlide(p);
     p=M2C_FIELD(arg0,void **,0x58);
     func_020dbe10(p);
     M2C_FIELD(p,u8 *,0x5a)=0;
     func_020dbe20(M2C_FIELD(arg0,void **,0x50));
     SetTextById(M2C_FIELD(arg0,void **,0x64),0x4400000e);
-    func_02088f1c(M2C_FIELD(arg0,void **,0x64));
+    Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x64));
     if(GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68))) {
         s32 result=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68));
         p=M2C_FIELD(arg0,void **,0x68);

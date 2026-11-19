@@ -39,7 +39,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     void func_ov003_021f1bc0(void);
     func_ov003_021f1bc0();
     func_ov003_021f14d8(c,d,e);
-    func_ov003_021f13ec(0);
+    SetOv003SceneClass(0);
     func_ov003_021f1a70();
     func_ov003_021f14b4();
     switch(kind){
@@ -50,7 +50,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     case 4: func_ov003_021fd850(entry); return;
     case 5: func_ov003_021fdc1c(entry); return;
     case 6: func_ov003_021fdfe8(entry); return;
-    case 7: func_ov003_021e4908(entry); return;
+    case 7: CreateOv003SceneView(entry); return;
     case 8:
     case 9: func_02085000(0,0x6e0,entry); return;
     case 10: func_020e0f14(entry); return;
@@ -184,9 +184,9 @@ void DeleteOv003SceneSprite(void) {
 }
 
 void func_ov003_021f1a70(void) {
- extern s32 data_ov003_0220fc88[2][4];
+ extern s32 gSceneLayerOverrides[2][4];
  u8 i=0,j;
- do { j=0; do { data_ov003_0220fc88[i][j]=0; j++; }while(j<4); i++; }while(i<2);
+ do { j=0; do { gSceneLayerOverrides[i][j]=0; j++; }while(j<4); i++; }while(i<2);
 }
 
 void func_ov003_021f1ab8(s32 arg0) {
@@ -220,13 +220,13 @@ void func_ov003_021f1b38(s32 arg0, s32 arg1) {
     M2C_UNK Configure3DSpriteLayer();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    extern s32 data_ov003_0220fc88[2][4];
+    extern s32 gSceneLayerOverrides[2][4];
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     Configure3DSpriteLayer();
     gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&data_ov003_0220fc88, s32 *, arg0 * 4) = arg1;
+    M2C_FIELD(&gSceneLayerOverrides, s32 *, arg0 * 4) = arg1;
 }
 
 void func_ov003_021f1b7c(s32 arg0, s32 arg1) {
@@ -321,20 +321,24 @@ M2C_UNK ApplyBgLayerVisibility(void) {
     return (M2C_UNK)&gCur3DSpriteEngine;
 }
 
-void func_ov003_021f2008(void) {
+/* Show on the main 2D engine, then on the sub engine, the four BG layers the
+ * current scene uses and hide the rest.  A layer is used when the scene set an
+ * override pointer for it (gSceneLayerOverrides) or when the shared layer
+ * descriptor (gSceneLayerConfig[4]: [0]/[1] main, [3]/[4] sub) names it. */
+void ApplySceneLayerVisibility(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
     extern M2C_UNK gSceneLayerConfig;
-    extern s32 data_ov003_0220fc88[2][4];
+    extern s32 gSceneLayerOverrides[2][4];
     extern M2C_UNK g3DSpriteEngineSub;
-    u8 *layers;
+    u8 *descriptor;
     u8 layer;
     s32 savedEngine;
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     for (layer = 0; layer < 4; layer++) {
-        if (data_ov003_0220fc88[0][layer] != 0 || ((layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[0] != 0 && layers[1] == layer)) {
+        if (gSceneLayerOverrides[0][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[0] != 0 && descriptor[1] == layer)) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
             case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
@@ -354,7 +358,7 @@ void func_ov003_021f2008(void) {
     }
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     for (layer = 0; layer < 4; layer++) {
-        if (data_ov003_0220fc88[1][layer] != 0 || ((layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[3] != 0 && layers[4] == layer)) {
+        if (gSceneLayerOverrides[1][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[3] != 0 && descriptor[4] == layer)) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
             case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }

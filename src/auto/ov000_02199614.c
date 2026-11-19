@@ -64,145 +64,147 @@ M2C_FIELD(cell,u8 *,0x2840)=amount;
 }
 }
 
-void func_ov000_021998f0(void) {
+/* Rebuilds the influence maps from the units of every player hostile to the
+ * current one: clear the AI influence maps, refresh the order overlays, build
+ * each such player's unit influence, then restore the active player. */
+void BuildPlayerInfluenceMaps(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
+    void ClearAiInfluenceMaps(void);
     void func_ov000_02197990(void);
     void func_ov000_0219798c(void);
     void BuildPlayerInfluence(u8);
     extern s32 *gCurrentMap;
-    u16 saved;
-    s32 i;
-    saved = M2C_FIELD(*gCurrentMap, u16 *, 0x52B6);
+    u16 savedPlayer;
+    s32 player;
+
+    savedPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER);
     ClearAiInfluenceMaps();
     func_ov000_02197990();
     func_ov000_0219798c();
-    for (i = 1; i < 5; i++) {
-        if (IsPlayerActive(i) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) == 0) {
-            BuildPlayerInfluence(i);
+    for (player = 1; player < 5; player++) {
+        if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) {
+            BuildPlayerInfluence(player);
         }
     }
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B6) = saved;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
-void func_ov000_0219997c(void) {
-s32 NextRandomValue(void);
-s32 Modulo(s32, s32);
-s32 func_02072b04(void *);
-s32 GetAiUnitMoveRange(void *);
-extern s32 *gCurrentMap;
-extern u8 *gAiUnitListCursor;
-extern u8 *gAiCommandState;
-extern u8 *gAiSettings;
-extern u8 *gAiUnitTypeTuning;
-extern u8 gAiCommand[];
-extern M2C_UNK data_ov000_021df604;
-extern void (*gAiUnitAction)(void);
+#pragma opt_common_subs off
+#pragma opt_propagation off
+/* AI phase 2, one step per frame: takes the unit id under gAiUnitListCursor,
+ * makes it the map's cursor unit (looking up its transport and clearing the
+ * tile it stands on), resets the AI command state and runs the installed
+ * gAiUnitAction callback to fill in the unit's command.  A filled command moves
+ * the AI on to its action phase; otherwise the unit's tile is restored, the
+ * cursor advances, and an exhausted list returns to the unit-planning phase. */
+void PickAiUnitAction(void)
+{
+    s32 NextRandomValue(void);
+    s32 Modulo(s32, s32);
+    s32 func_02072b04(void *);
+    s32 GetAiUnitMoveRange(BattleMapUnitHead *);
+    extern s32 *gCurrentMap;
+    extern u8 *gAiUnitListCursor;
+    extern u8 *gAiCommandState;
+    extern u8 *gAiSettings;
+    extern u8 *gAiUnitTypeTuning;
+    extern u8 gAiCommand[];
+    extern M2C_UNK data_ov000_021df604;
+    extern void (*gAiUnitAction)(void);
 
-u8 state;
-u8 *cont;
-u8 *base;
-u8 *up;
-u8 kind;
-u8 tile;
-u8 s;
-u8 ux, uy;
-s16 x, y;
-u16 row;
-s32 tmp;
+    s32 id = *gAiUnitListCursor;
+    if (id == AI_UNIT_LIST_END) {
+        gAiCommandState[AI_COMMAND_STATE_PHASE] = AI_COMMAND_PHASE_PLAN_UNITS;
+        return;
+    }
 
-state = *gAiUnitListCursor;
-if (state == 0) {
-    gAiCommandState[0] = 1;
-    return;
-}
-if (state == 0x40) {
-    gAiCommand[0x13] = 0;
-} else {
-    cont = (u8 *)*gCurrentMap;
-    base = *(u8 **)cont;
-    base[0x52d4] = state;
-    up = base + 0x59a4 + base[0x52d4] * 14;
-    *(u8 **)(base + 0x52d0) = up;
-    gAiUnitTypeTuning = gAiSettings + 0x14 + 0xc * (((u8)up[0] & 0x3f) - 1);
-    base[0x52d6] = 0;
-
-    if (!(*(u16 *)(up + 4) & 0x1)) {
-        kind = (u8)(up[0] & 0x3f);
-        if (kind == 0) {
+    if (id != AI_UNIT_LIST_NO_UNIT) {
+        BattleMapUnitHead *unit;
+        u8 *map;
+        u16 flags;
+        s32 slot;
+        M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID) = id;
+        map = (u8 *)*gCurrentMap;
+        slot = M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID);
+        M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT) =
+            (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS) + slot;
+        {
+            u8 *settings = gAiSettings;
+            unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+            gAiUnitTypeTuning = settings + 0x14 + 12 * (unit->kind - 1);
+        }
+        M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_CARRIER) = 0;
+        unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+        flags = unit->flags;
+        if ((flags & 1) || !unit->kind) {
             gAiUnitListCursor++;
             return;
         }
-    }
-    up = *(u8 **)(base + 0x52d0);
-    if (*(u16 *)(up + 4) & 0x8) {
-        *(u16 *)(up + 4) &= ~0x8;
-        uy = up[2];
-        ux = up[1];
-        row = *(u16 *)(base + uy * 2 + 0x3758);
-        tile = base[ux + row];
-        base[0x52d6] = tile;
-    }
+        if (flags & 8) {
+            s32 x, y, row;
+            unit->flags = flags & ~8;
+            map = (u8 *)*gCurrentMap;
+            unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+            y = unit->y;
+            x = unit->x;
+            row = M2C_FIELD(map + 2 * y, u16 *, MAP_ROW_OFFSETS);
+            M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER) = map[x + row];
+        }
 
-    up = *(u8 **)(base + 0x52d0);
-    x = up[1];
-    *(s16 *)(base + 0x52e0) = x;
-    *(s16 *)(base + 0x52d8) = x;
-    y = up[2];
-    *(s16 *)(base + 0x52e2) = y;
-    *(s16 *)(base + 0x52da) = y;
-    gAiCommandState[7] = (u8)(gAiCommandState[7] & ~1);
-    gAiCommandState[7] = (u8)(gAiCommandState[7] & ~2);
-    *(u16 *)(gAiCommandState + 8) = 0;
-    gAiCommand[0] = 0;
-    gAiCommand[0x13] = 0;
-    gAiCommand[6] = 0;
-    {
-        u8 *up2 = *(u8 **)(base + 0x52d0);
-        u8 uuy = up2[2];
-        u8 uux = up2[1];
-        u16 rrow = *(u16 *)(base + uuy * 2 + 0x3758);
-        base[uux + rrow] = 0;
-    }
-    tmp = NextRandomValue();
-    tmp = Modulo(tmp, 0x64);
-    gAiCommandState[3] = (u8)tmp;
-    up = *(u8 **)(base + 0x52d0);
-    gAiCommandState[5] = (u8)GetAiUnitMoveRange(up);
-}
-
-if (func_02072b04(&data_ov000_021df604) == 0) {
-    gAiUnitAction();
-}
-if (gAiCommand[0x13] != 0) {
-    gAiUnitListCursor++;
-    gAiCommandState[0] = 3;
-    return;
-}
-cont = (u8 *)*gCurrentMap;
-base = *(u8 **)cont;
-state = *gAiUnitListCursor;
-if (state != 0x40) {
-    if (base[0x52d6] != 0) {
-        up = *(u8 **)(base + 0x52d0);
-        *(u16 *)(up + 4) |= 0x8;
-        base[0x52d6] = 0;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X) = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->x;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X);
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y) = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->y;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y);
+        gAiCommandState[AI_COMMAND_STATE_FLAGS] &= ~1;
+        gAiCommandState[AI_COMMAND_STATE_FLAGS] &= ~2;
+        M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) = 0;
+        gAiCommand[AI_COMMAND_KIND] = 0;
+        gAiCommand[AI_COMMAND_READY] = 0;
+        gAiCommand[AI_COMMAND_UNIT] = 0;
+        gAiCommand[AI_COMMAND_ARG_Y] = 0;
+        map = (u8 *)*gCurrentMap;
+        if (!M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER)) {
+            s32 x, y, row;
+            unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+            y = unit->y;
+            x = unit->x;
+            row = M2C_FIELD(map + 2 * y, u16 *, MAP_ROW_OFFSETS);
+            map[x + row] = 0;
+        }
+        gAiCommandState[AI_COMMAND_STATE_TIEBREAK] = Modulo(NextRandomValue(), 100);
+        gAiCommandState[AI_COMMAND_STATE_MOVE_RANGE] = GetAiUnitMoveRange(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT));
     } else {
-        up = *(u8 **)(base + 0x52d0);
-        s = base[0x52d4];
-        uy = up[2];
-        ux = up[1];
-        row = *(u16 *)(base + uy * 2 + 0x3758);
-        base[ux + row] = s;
+        gAiCommand[AI_COMMAND_READY] = 0;
     }
-}
-gAiUnitListCursor++;
-return;
-}
 
-#pragma opt_lifetimes off
+    if (func_02072b04(&data_ov000_021df604) == 0)
+        gAiUnitAction();
+    if (!gAiCommand[AI_COMMAND_READY]) {
+        if (*gAiUnitListCursor != AI_UNIT_LIST_NO_UNIT) {
+            u8 *map = (u8 *)*gCurrentMap;
+            if (M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER)) {
+                M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT)->flags |= 8;
+                M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_CARRIER) = 0;
+            } else {
+                BattleMapUnitHead *unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+                s32 tileUnitId = M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID);
+                s32 y = unit->y;
+                s32 x = unit->x;
+                s32 row = M2C_FIELD(map + 2 * y, u16 *, MAP_ROW_OFFSETS);
+                map[x + row] = tileUnitId;
+            }
+        }
+        gAiUnitListCursor++;
+        return;
+    }
+    gAiUnitListCursor++;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = AI_COMMAND_PHASE_ACT;
+}
+#pragma opt_propagation reset
+#pragma opt_common_subs reset
 void func_ov000_02199ce0(void) {
-void func_02085348(void *,s32);
+void SendLinkCommand(void *,s32);
 extern u8 data_ov000_021df7d0[];
 extern u8 gBattleCommand[];
 s32 i;
@@ -214,7 +216,7 @@ d[0]=s[0]; d[2]=s[2]; d[3]=s[3]; d[4]=s[4]; d[5]=s[5]; d[1]=s[1];
 *(s32 *)(d+8)=*(s32 *)(s+8);
 d[6]=s[6]; d[7]=s[7]; d[0x12]=s[0x12];
 for(i=0;i<6;i++,s++,d++) d[12]=s[12];
-func_02085348(gBattleCommand,0x14);
+SendLinkCommand(gBattleCommand,0x14);
 }
 #pragma opt_lifetimes reset
 void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
@@ -248,8 +250,8 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
 
         unit[0xA] |= 0x80;
         func_02072b10(&data_ov000_021df604, 1);
-        BuildUnitMoveRange(unit);
     }
+    BuildUnitMoveRange(unit);
         func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
         UnpackCursorPath(((u8 *)*gCurrentMap) + 0x5388, gCommandPath);
 
@@ -268,8 +270,8 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         result=GetUnitMoveFuelCost((s32)*(u8 **)((u8 *)*gCurrentMap+0x52d0),((u8 *)*gCurrentMap)[0x52d5]);
         state=gAiCommand;
         unit=*(u8 **)((u8 *)*gCurrentMap+0x52d0);
-        ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
         ((volatile u8 *)state)[0x13] = 1;
+        ((volatile u8 *)state)[0x12] = ((u32)(unit[10]<<25)>>25)-result;
 
     if (*(volatile u8 *)gBattleEndState != 0) {
         func_ov000_02199ce0();
@@ -366,7 +368,7 @@ void BeginAiTurn(void) {
     void MarkAiTargetAreas(void);
     void ClearAiUnitActions(void);
     void func_ov000_0219a6c8(void);
-    void func_ov000_0219a584(void);
+    void CountEnemyProperties(void);
     void Ov000_AssignAiOrders(void);
     void func_ov000_02181c88(void);
     void func_ov000_0219a350(void);
@@ -398,7 +400,7 @@ void BeginAiTurn(void) {
     MarkAiTargetAreas();
     ClearAiUnitActions();
     func_ov000_0219a6c8();
-    func_ov000_0219a584();
+    CountEnemyProperties();
     Ov000_AssignAiOrders();
     func_ov000_02181c88();
     func_ov000_0219a350();
@@ -437,7 +439,7 @@ void func_ov000_0219a370(void) {
     } while (var_r1 < 0x63);
 }
 
-s32 func_ov000_0219a3b0(s32 n) {
+s32 CountPlayerProperties(s32 n) {
 extern s32 *gCurrentMap;
 u8 *p=(u8 *)*gCurrentMap+0x67a4+n*0x8c;
 s32 sum=0;

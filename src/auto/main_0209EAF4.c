@@ -65,7 +65,7 @@ void InitBattlePreviewSprite(void *panel) {
 void func_0209ecf0(s32 arg0, s32 arg1) {
     void func_020d166c(u8, s32, void *);
     s32 Divide(s32, s32);
-    s32 func_020d0468(s32, s32, s32);
+    s32 GetMoveRangeCommanderId(s32, s32, s32);
     void func_020a2b98(s32, s32);
     s16 func_020a3518(s32);
     s32 func_020cd614(void);
@@ -77,77 +77,96 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0211f984;
     extern M2C_UNK data_0211f8fc;
 
-    u8 *unitPtr;
-    s32 selectedBucket;
+    u8 selectedBucket;
     s32 unitBucket;
-    void *chosen;
     void *p;
+    s32 player;
+    BattleMapUnitHead *unitPtr;
+    BattleMapUnitHead *selected;
+    u8 *map = *gCurrentMap;
+    unitPtr = (BattleMapUnitHead *)(map + MAP_UNIT_RECORDS) + arg0;
+    selected = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
 
-    unitPtr = (u8 *)*gCurrentMap + 0x59a4 + arg0 * 14;
+    if (selected) {
+        s32 index;
+        if (!selected) index = 0;
+        else index = ((u8 *)selected - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        player = (index >> 6) + 1;
+    } else player = 0;
+    selectedBucket = player;
 
-    selectedBucket = 0;
-    if (M2C_FIELD(*gCurrentMap, void **, 0x52d0) != (void *)0)
-        selectedBucket = ((((s32)((u8 *)M2C_FIELD(*gCurrentMap, void **, 0x52d0) - ((u8 *)*gCurrentMap + 0x59a4))) / 14) >> 6) + 1;
-    selectedBucket &= 0xff;
-
-    unitBucket = 0;
-    if (unitPtr != (u8 *)0)
-        unitBucket = ((((s32)(unitPtr - ((u8 *)*gCurrentMap + 0x59a4))) / 14) >> 6) + 1;
-    unitBucket &= 0xff;
+    if (unitPtr) {
+        s32 index;
+        if (!unitPtr) index = 0;
+        else index = ((u8 *)unitPtr - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        player = (index >> 6) + 1;
+    } else player = 0;
+    unitBucket = (u8)player;
 
     if (arg0 == 0) {
-        void *sel = M2C_FIELD(*gCurrentMap, void **, 0x52d0);
-        u16 h = M2C_FIELD(sel, u16 *, 0x6);
-        u32 t = (h << 21) >> 28;
-        u32 nibble = (t == 0) ? 15 : (t - 1);
-        M2C_FIELD(sel, u16 *, 0x6) = (u16)((h & ~0x780u) | (nibble << 7));
+        BattleMapUnitHead *sel = M2C_FIELD(map + 0x5000, BattleMapUnitHead * volatile *, 0x2d0);
+        sel->ammo = (u16)(sel->ammo + 0xffff);
         (void)func_020d468c();
         BattleUpdateUnitCursor();
         return;
     }
 
-    M2C_FIELD(&gBattleCommand, s32 *, 0x8) = GetRandomSeed();
-    func_020d166c((u8)M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), arg0, (u8 *)*gCurrentMap + 0x52dc);
+    {
+        s32 seed = GetRandomSeed();
+        void **mapHandle = gCurrentMap;
+        M2C_FIELD(&gBattleCommand, s32 *, 0x8) = seed;
+        map = *mapHandle;
+        func_020d166c(M2C_FIELD(map, u8 *, 0x52d4), arg0, map + 0x52dc);
+    }
 
     {
-        s16 d = M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xd4);
-        s32 f = M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x74) + d;
-        if (f < 0x0fffffff && (s32)M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) < 0x0fffffff) {
-            M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x74) = f;
-            M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) =
-                M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x78) + 1;
+        register void ***mapGlobal = &gCurrentMap;
+        s32 playerOffset = selectedBucket * 0x8c;
+        u8 *record;
+        s32 value;
+        map = **mapGlobal;
+        record = map + 0x67a4 + playerOffset;
+        value = M2C_FIELD(record, s32 *, 0x74) + M2C_FIELD(map, s16 *, 0x6ed4);
+        if (value < 0x0fffffff && M2C_FIELD(record, s32 *, 0x78) < 0x0fffffff) {
+            M2C_FIELD(record, s32 *, 0x74) = value;
+            record = (u8 *)**mapGlobal + 0x67a4 + playerOffset;
+            M2C_FIELD(record, s32 *, 0x78)++;
+            map = **mapGlobal;
+            if (M2C_FIELD(map, s16 *, 0x6ee6) == 0) {
+                record = map + 0x67a4 + playerOffset;
+                M2C_FIELD(record, s32 *, 0x7c) += M2C_FIELD(map, s16 *, 0x6ed4);
+                record = (u8 *)**mapGlobal + 0x67a4 + playerOffset;
+                M2C_FIELD(record, s32 *, 0x80)++;
+            }
         }
     }
-    if (M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xe6) == 0)
-        M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, s32 *, 0x7c) += M2C_FIELD((u8 *)*gCurrentMap + 0x6e00, s16 *, 0xd4);
-    M2C_FIELD((u8 *)*gCurrentMap + 0x67a4 + selectedBucket * 0x8c, u32 *, 0x80) += 1;
 
     {
         s16 globalW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ec6);
         s32 globalRng = (globalW == 0) ? 0 : Divide(globalW - 1, 10) + 1;
-        u16 selFlags = M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u16 *, 0x6);
-        s32 selLow7 = selFlags & 0x7f;
+        s32 selLow7 = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->health;
         s32 selRng = (selLow7 == 0) ? 0 : Divide(selLow7 - 1, 10) + 1;
+        s32 sdiff = selRng - globalRng;
         s16 baseW = M2C_FIELD(*gCurrentMap, s16 *, 0x6ee6);
         s32 baseRng = (baseW == 0) ? 0 : Divide(baseW - 1, 10) + 1;
-        u16 unitFlags = M2C_FIELD(unitPtr, u16 *, 0x6);
-        s32 unitLow7 = unitFlags & 0x7f;
+        s32 unitLow7 = unitPtr->health;
         s32 unitRng = (unitLow7 == 0) ? 0 : Divide(unitLow7 - 1, 10) + 1;
 
-        s32 sdiff = selRng - globalRng;
         s32 udiff = unitRng - baseRng;
 
-        s32 aa = M2C_FIELD((u8 *)*gCurrentMap + 0x5200, s16 *, 0xdc);
-        s32 bb = M2C_FIELD((u8 *)*gCurrentMap + 0x5200, s16 *, 0xde);
-        if (func_020d0468(selectedBucket, aa, bb) != -1) func_020a2b98(selectedBucket, udiff);
-        if (func_020d0468(unitBucket, aa, bb) != -1) func_020a2b98(unitBucket, sdiff);
+        if (GetMoveRangeCommanderId(selectedBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) func_020a2b98(selectedBucket, udiff);
+        if (GetMoveRangeCommanderId(unitBucket, M2C_FIELD(*gCurrentMap, s16 *, 0x52dc), M2C_FIELD(*gCurrentMap, s16 *, 0x52de)) != -1) func_020a2b98(unitBucket, sdiff);
     }
 
-    M2C_FIELD((u8 *)*gCurrentMap + 0x2b8 + 0x6c00, s16 *, 0x12) = func_020a3518(selectedBucket);
-    M2C_FIELD((u8 *)*gCurrentMap + 0x2d8 + 0x6c00, s16 *, 0x12) = func_020a3518(unitBucket);
+    {
+        u8 *side = (u8 *)*gCurrentMap + 0x6eb8;
+        M2C_FIELD(side, s16 *, 0x12) = func_020a3518(selectedBucket);
+        side = (u8 *)*gCurrentMap + 0x6ed8;
+        M2C_FIELD(side, s16 *, 0x12) = func_020a3518(unitBucket);
+    }
 
-    if (func_020cd614() == 0) chosen = &data_0211f984; else chosen = &data_0211f8fc;
-    p = CreateSpriteFromClass(chosen, 7);
+    if (func_020cd614()) p = CreateSpriteFromClass(&data_0211f984, 7);
+    else p = CreateSpriteFromClass(&data_0211f8fc, 7);
     M2C_FIELD(p, s32 *, 0x60) = arg1;
     M2C_FIELD(p, void **, 0x34) = unitPtr;
     M2C_FIELD(p, s32 *, 0x38) = (s32)M2C_FIELD(unitPtr, u8 *, 0x1);

@@ -270,47 +270,63 @@ void *p=BucketFind(a,b);if(!p)return 0;
 M2C_FIELD(p,s32 *,8)=0;return BucketSetValue(p,c);
 }
 
-s32 func_02058720(void *a,s32 b,void *c){
-void *BucketValue(void *);M2C_UNK *func_02058ab4(s32);M2C_UNK *func_02058acc(s32,s32);
-void *BucketFind(void *,s32);s32 BucketSetValue(void *,void *);s32 BucketConcat(void *,s32,void *);
-s64 func_02070134(s64,s64);
-void *p=BucketFind(a,b);void *q;s64 v;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(c,s32 *,0)+M2C_FIELD(q,s32 *,0)));}
-else if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070134(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
-else return BucketConcat(a,b,c);
+/* gbucket.c BucketAdd: add `value` to the entry for `key` in bucket `store` and
+ * store the sum, integer or double by the entry's type; a string entry gets the
+ * text appended instead.  Returns the entry's new value, or 0 when the key is
+ * absent. */
+s32 BucketAdd(void *store, s32 key, void *value) {
+    void *BucketValue(void *);
+    M2C_UNK *BucketIntValue(s32);
+    M2C_UNK *BucketDoubleValue(s32, s32);
+    void *BucketFind(void *, s32);
+    s32 BucketSetValue(void *, void *);
+    s32 BucketConcat(void *, s32, void *);
+    s64 func_02070134(s64, s64); /* the C runtime's double addition */
+    void *entry = BucketFind(store, key);
+    void *old;
+    s64 sum;
+
+    if (!entry) return 0;
+    if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_INT) {
+        old = BucketValue(entry);
+        return BucketSetValue(entry, BucketIntValue(M2C_FIELD(value, s32 *, 0) + M2C_FIELD(old, s32 *, 0)));
+    } else if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_DOUBLE) {
+        old = BucketValue(entry);
+        sum = func_02070134(*(s64 *)value, *(s64 *)old);
+        return BucketSetValue(entry, BucketDoubleValue((s32)sum, (s32)(sum >> 32)));
+    } else return BucketConcat(store, key, value);
 }
 
-s32 func_020587b4(void *a,s32 b,void *c) {
-void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
-void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
+s32 BucketSubtract(void *a,s32 b,void *c) {
+void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
 s64 func_02070b70(s64,s64);
 void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(q,s32 *,0) - M2C_FIELD(c,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070b70(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(M2C_FIELD(q,s32 *,0) - M2C_FIELD(c,s32 *,0)));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070b70(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
 return (s32)BucketValue(p);
 }
 
-s32 func_02058838(void *a,s32 b,void *c) {
-void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
-void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
+s32 BucketMultiply(void *a,s32 b,void *c) {
+void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
 s64 func_02070658(s64,s64);
 void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(M2C_FIELD(c,s32 *,0) * M2C_FIELD(q,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070658(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(M2C_FIELD(c,s32 *,0) * M2C_FIELD(q,s32 *,0)));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070658(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
 return (s32)BucketValue(p);
 }
 
-s32 func_020588b8(void *a,s32 b,void *c) {
-void *BucketFind(void *,s32);M2C_UNK *func_02058ab4(s32);s32 BucketSetValue(void *,void *);
-void *BucketValue(void *);M2C_UNK *func_02058acc(s32,s32);
+s32 BucketDivide(void *a,s32 b,void *c) {
+void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
+void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
 s64 func_020724f8(s64,s64);s32 func_020720f0(s32,s32);
 void *p=BucketFind(a,b);void *q;s64 v;
 if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,func_02058ab4(func_020720f0(M2C_FIELD(q,s32 *,0),M2C_FIELD(c,s32 *,0))));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_020724f8(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,func_02058acc((s32)v,(s32)(v>>32)));}
+if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(func_020720f0(M2C_FIELD(q,s32 *,0),M2C_FIELD(c,s32 *,0))));}
+if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_020724f8(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
 return (s32)BucketValue(p);
 }
 
@@ -342,8 +358,8 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     void *BucketFind(void *, s32);
     void *BucketValue(void *);
     s32 BucketSetValue(void *, void *);
-    M2C_UNK *func_02058ab4(s32);
-    M2C_UNK *func_02058acc(s32, s32);
+    M2C_UNK *BucketIntValue(s32);
+    M2C_UNK *BucketDoubleValue(s32, s32);
     void *entry = BucketFind(store, key);
     void *old;
     s32 count;
@@ -353,24 +369,24 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     if (M2C_FIELD(entry, s32 *, 4) == 0) {
         old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
-        return BucketSetValue(entry, func_02058ab4(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
+        return BucketSetValue(entry, BucketIntValue(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
     }
     if (M2C_FIELD(entry, s32 *, 4) == 1) {
         old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
         average = func_02070134(*(s64 *)value, func_02070658(func_020705dc(count), *(s64 *)old));
         average = func_020724f8(average, func_020705dc(count));
-        return BucketSetValue(entry, func_02058acc((s32)average, (s32)(average >> 32)));
+        return BucketSetValue(entry, BucketDoubleValue((s32)average, (s32)(average >> 32)));
     }
     return (s32)BucketValue(entry);
 }
 
-M2C_UNK *func_02058ab4(s32 a) {
+M2C_UNK *BucketIntValue(s32 a) {
     *(s32 *)&data_0213dcd0 = a;
     return (M2C_UNK *)&data_0213dcd0;
 }
 
-M2C_UNK *func_02058acc(s32 arg0, s32 arg1) {
+M2C_UNK *BucketDoubleValue(s32 arg0, s32 arg1) {
     extern M2C_UNK data_0213dcd0;
     extern M2C_UNK data_0213dcd8;
     M2C_FIELD(&data_0213dcd0, s32 *, 8) = arg0;

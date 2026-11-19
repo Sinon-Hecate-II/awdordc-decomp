@@ -1,24 +1,7 @@
 /* 41 functions from 0x02225F60 to 0x02226D9C (ov010), found by ds-decomp. */
 #include "common.h"
+#define ONLINE_USE_INTERRUPT_GUARD
 #include "online_link.h"
-static inline u32 ov010DisableInterrupts(void) {
-    u32 previous = *(volatile u16 *)0x4000208;
-    *(volatile u16 *)0x4000208 = 0;
-    return previous;
-}
-static inline u32 ov010RestoreInterrupts(u32 saved) {
-    u32 previous = *(volatile u16 *)0x4000208;
-    *(volatile u16 *)0x4000208 = saved;
-    return previous;
-}
-#pragma cplusplus on
-class Ov010InterruptGuard {
-    u32 saved;
-public:
-    Ov010InterruptGuard() : saved(ov010DisableInterrupts()) {}
-    ~Ov010InterruptGuard() { ov010RestoreInterrupts(saved); }
-};
-#pragma cplusplus off
 typedef struct Ov010MemberCall { s32 function; s32 adjustment; } Ov010MemberCall;
 static inline void ov010CallMember(void *object, Ov010MemberCall *call) {
 s32 adj=call->adjustment;
@@ -460,10 +443,10 @@ void func_ov010_02226738(void) {
 }
 
 s32 func_ov010_02226744(void) {
- s32 func_02045ba0(s32 *);
+ s32 GetWebResponsePlayerTotal(s32 *);
  s32 sp0, temp_r0, var_r4;
  var_r4 = -1;
- temp_r0 = func_02045ba0(&sp0);
+ temp_r0 = GetWebResponsePlayerTotal(&sp0);
  switch(temp_r0) {
  case 0: var_r4 = sp0; break;
  case 1: break;
@@ -477,10 +460,10 @@ s32 func_ov010_02226744(void) {
 }
 
 s32 func_ov010_022267b0(M2C_UNK arg0, M2C_UNK arg1) {
- s32 func_02045a98(M2C_UNK, M2C_UNK);
+ s32 GetWebResponsePlayer(M2C_UNK, M2C_UNK);
  s32 temp_r0, var_r4;
  var_r4 = 0;
- temp_r0 = func_02045a98(arg1,arg0);
+ temp_r0 = GetWebResponsePlayer(arg1,arg0);
  switch(temp_r0) {
  case 0: var_r4 = 1; break;
  case 1: break;

@@ -57,7 +57,7 @@ void FormatDoubleAsDecimal(void *form, s32 valueLo, s32 valueHi, Decimal38 *numb
 double func_0206f0dc(Decimal38 *input){
 s32 ClassifyDouble(double,...);
 double func_0206df88(double,double);
-double func_0207191c(u32);
+double _f2d(u32);
 double func_0206e2d8(double,double);
 double ScaleDoubleByExp(double,s32);
 void DecimalFromDigitString(void*,void*,s32);
@@ -71,7 +71,7 @@ Decimal38 value,a,b,c,d,e;DoubleBits nan;double x,y,tmp,scaled;volatile u64 *yp;
 if(input->length==0)return func_0206df88(0.0,input->sign==0?1.0:-1.0);
 switch(input->digits[0]){
 case '0':return func_0206df88(0.0,input->sign==0?1.0:-1.0);
-case 'I':return func_0206df88(func_0207191c(data_021002e8),input->sign==0?1.0:-1.0);
+case 'I':return func_0206df88(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
 case 'N':{DoubleBits *nanp;nanp=&nan;
 #pragma scheduling off
 nanp->u=0x7ff0000000000000ULL;if(input->sign)nanp->u|=0x8000000000000000ULL;nanp->u|=0x0008000000000000ULL;return nanp->d;
@@ -82,7 +82,7 @@ value=*input;cursor=value.digits;end=cursor+value.length;
 if(cursor<end)do{*cursor=(u8)(*cursor-'0');cursor++;}while(cursor<end);
 value.exponent+=value.length-1;exp=value.exponent;
 DecimalFromDigitString(&a,data_021006d0,0x134);
-if(func_0206eb30(&a,&value))return func_0206df88(func_0207191c(data_021002e8),input->sign==0?1.0:-1.0);
+if(func_0206eb30(&a,&value))return func_0206df88(_f2d(data_021002e8),input->sign==0?1.0:-1.0);
 cursor=value.digits;x=*cursor++;
 while(cursor<end){
 n=(end-cursor)%8;if(n==0)n=8;
@@ -113,12 +113,14 @@ if(value.sign)x=-x;return x;
 }
 
 #pragma opt_strength_reduction reset
-s32 CountBits64(unsigned long long x) {
- x=x-((x>>1)&0x5555555555555555ULL);
- x=(x&0x3333333333333333ULL)+((x>>2)&0x3333333333333333ULL);
- x=(x+(x>>4))&0x0f0f0f0f0f0f0f0fULL;
- x+=x>>8; x+=x>>16; x+=x>>32;
- return (u32)x&255;
+/* Returns the number of one bits in `value`, by the classic SWAR popcount
+ * (folding the pairs, then the nibbles, then the bytes and halves together). */
+s32 CountBits64(unsigned long long value) {
+ value=value-((value>>1)&0x5555555555555555ULL);
+ value=(value&0x3333333333333333ULL)+((value>>2)&0x3333333333333333ULL);
+ value=(value+(value>>4))&0x0f0f0f0f0f0f0f0fULL;
+ value+=value>>8; value+=value>>16; value+=value>>32;
+ return (u32)value&255;
 }
 
 u32 DoubleSignBit(double x, ...) { return ((u32 *)&x)[1] & 0x80000000; }

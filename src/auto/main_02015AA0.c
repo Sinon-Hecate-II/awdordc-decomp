@@ -267,18 +267,37 @@ void DownloadResetProgress(void) {
     M2C_FIELD(&gDownloadSendState, s8 *, 0x29) = 0;
 }
 
-void func_02016250(s32 a,s32 b,s32 c) {
- extern M2C_UNK gDownloadSendState;
- s32 DownloadStartNextFile(void);void func_0201637c(void);
- void func_020163d0(s32,s32,s32);void func_02016534(void);void func_02016564(s32,s32,s32);
- for(;;) switch(M2C_FIELD(&gDownloadSendState,u8 *,0x24)){
- case 0:case 1:if(DownloadStartNextFile()==0)return;break;
- case 2:func_0201637c();break;
- case 3:func_020163d0(a,b,c);return;
- case 4:func_02016534();break;
- case 5:func_02016564(a,b,c);return;
- case 6:default:break;
- }
+/* One step of the DS Download Play sender's state machine: start the next queued
+ * file, submit its 0x62-byte chunk packets, then its roster/unit packets; it
+ * returns once nothing can be sent or a packet has been handed to WFC. */
+void DownloadSendStep(s32 sendCode, s32 sequence, s32 flags) {
+    extern M2C_UNK gDownloadSendState;
+    s32 DownloadStartNextFile(void);
+    void DownloadBeginPacket(void);
+    void DownloadSendChunkPacket(s32, s32, s32);
+    void DownloadFinishChunkFile(void);
+    void DownloadSendRosterPacket(s32, s32, s32);
+    for (;;) switch (M2C_FIELD(&gDownloadSendState, u8 *, DL_STATE)) {
+    case DL_STATE_IDLE:
+    case DL_STATE_START:
+        if (DownloadStartNextFile() == 0) return;
+        break;
+    case DL_STATE_BEGIN_PACKET:
+        DownloadBeginPacket();
+        break;
+    case DL_STATE_SEND_CHUNK:
+        DownloadSendChunkPacket(sendCode, sequence, flags);
+        return;
+    case DL_STATE_FILE_DONE:
+        DownloadFinishChunkFile();
+        break;
+    case DL_STATE_SEND_ROSTER:
+        DownloadSendRosterPacket(sendCode, sequence, flags);
+        return;
+    case DL_STATE_WAIT:
+    default:
+        break;
+    }
 }
 
 /* Start the next queued download file (or send the idle packet when the queue is
@@ -304,7 +323,7 @@ s32 DownloadStartNextFile(void) {
  return 1;
 }
 
-void func_0201637c(void) {
+void DownloadBeginPacket(void) {
  extern M2C_UNK gDownloadSendState;
  void *p;
  if(M2C_FIELD(&gDownloadSendState,u8 *,0x24)!=2)return;
@@ -319,7 +338,7 @@ void func_0201637c(void) {
  M2C_FIELD(&gDownloadSendState,u8 *,0x24)=3;
 }
 
-void func_020163d0(s32 a,s32 b,s32 c) {
+void DownloadSendChunkPacket(s32 a,s32 b,s32 c) {
 extern M2C_UNK gDownloadSendState;
 extern M2C_UNK data_021311ee;
 extern M2C_UNK data_021311e8;
@@ -351,7 +370,7 @@ else M2C_FIELD(&gDownloadSendState,u32 *,0x20)+=0x62;
 WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
 }
 
-void func_02016534(void) {
+void DownloadFinishChunkFile(void) {
 extern M2C_UNK gDownloadSendState;
 M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u16 *,0x4b0)=1;
 M2C_FIELD(&gDownloadSendState,u8 *,0x26)=M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u8 *,0x4b4);
@@ -362,14 +381,14 @@ M2C_FIELD(&gDownloadSendState,u8 *,0x24)=5;
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 #pragma opt_lifetimes off
-void func_02016564(s32 a,s32 b,s32 c) {
+void DownloadSendRosterPacket(s32 a,s32 b,s32 c) {
 extern M2C_UNK gDownloadSendState,data_02131248,data_021311f0,data_021311e8,gDownloadPacket;
 s32 FillU16(s32,void *,s32);s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
 p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
-if(M2C_FIELD(&gDownloadSendState,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))func_02016534();
+if(M2C_FIELD(&gDownloadSendState,u8 *,0x26)!=M2C_FIELD(p,u8 *,0x4b4))DownloadFinishChunkFile();
 state=&gDownloadSendState;
 ((PacketBits *)((u8 *)state+0x44))->low=2;
 p=M2C_FIELD(state,void **,0x1c); header=(u8 *)p+0x300;
@@ -458,7 +477,7 @@ void func_020168a0(void) {
     Mb_ReportPacketResult(0x1D, func_02013d4c(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
 }
 
-void func_020168f0(s32 arg0) {
+void Mb_CancelLink(s32 arg0) {
 extern M2C_UNK gMbState;
 void (*callback)(s32,s32);
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d)=0;

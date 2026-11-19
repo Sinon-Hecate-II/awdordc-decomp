@@ -83,14 +83,14 @@ s32 func_ov001_0216e07c(void) {
 s32 func_ov001_0216e0b4(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_02027428();
+    s32 WFC_StartWirelessStep();
     s32 func_ov001_0216dee8();
     extern M2C_UNK gWhState;
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
     if (M2C_FIELD(&gWhState, s32 *, 0x2C) == 3) {
-        if (func_02027428() != 3) {
+        if (WFC_StartWirelessStep() != 3) {
             OS_RestoreInterrupts(temp_r4);
             return 0;
         }
@@ -239,7 +239,7 @@ s32 WhJoinSelectedHost(void) {
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK InitTimer(void *);
     M2C_UNK ScheduleTimer(void *, s32, s32, void *, s32);
-    M2C_UNK func_02007338(void *);
+    M2C_UNK CancelTimer(void *);
     s32 func_02021a90(void *);
     u32 WhGetTime();
     extern M2C_UNK gWhState, gWhPacketInfo, data_ov001_0218fdfc;
@@ -290,7 +290,7 @@ s32 WhJoinSelectedHost(void) {
             }
         }
     } while (running);
-    func_02007338(alarm);
+    CancelTimer(alarm);
     while (WhPopEvent()) {}
     if (result > 0) {
         M2C_FIELD(&gWhState, s32 *, 32) = 1;
@@ -306,7 +306,7 @@ s32 func_ov001_0216e79c(void) {
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK InitTimer(void *);
     M2C_UNK ScheduleTimer(void *, s32, s32, void *, s32);
-    M2C_UNK func_02007338(void *);
+    M2C_UNK CancelTimer(void *);
     M2C_UNK MemCopy(void *, void *, s32);
     M2C_UNK StringCopy(void *, void *);
     s32 func_ov001_0216df50(s32, s32);
@@ -358,7 +358,7 @@ s32 func_ov001_0216e79c(void) {
                 case 5:
                     m = func_ov001_0216df50(M2C_FIELD(&gWhState, s32 *, 0x5c), M2C_FIELD(&gWhState, s32 *, 0x70));
                     if (m > result) { result = m;
-                    func_02007338(timer);
+                    CancelTimer(timer);
                     ScheduleTimer(timer, 0xffb10, 0, WhEventTimerCallback, 0x13); }
                     break;
                 case 10:
@@ -379,7 +379,7 @@ s32 func_ov001_0216e79c(void) {
                 event = WhPopEvent();
             }
         } while (again);
-        func_02007338(timer);
+        CancelTimer(timer);
         while (WhPopEvent() != 0) {}
         state=&gWhState;
         if (M2C_FIELD(state, s32 *, 0x10)) break;
@@ -457,12 +457,12 @@ s32 r=func_020216cc(a,c,d,0,b);if(r<0)r=-4;return r;
 
 #pragma thumb on
 void func_ov001_0216ea48(s32 a,s32 b,s32 c) {
-s32 func_02021264(void);
+s32 GetLocalIpAddress(void);
 void func_02021d14(s32,void *);
 s32 func_ov001_0216ea30(s32,s32,s32,s32,s32);
 u8 buf[12];
 buf[4]=8;buf[5]=2;*(s32 *)(buf+8)=-1;*(u16 *)(buf+6)=0x1e6;
-func_02021d14(func_02021264(),buf);
+func_02021d14(GetLocalIpAddress(),buf);
 func_ov001_0216ea30(a,(s32)(buf+4),(s32)buf,b,c);
 }
 

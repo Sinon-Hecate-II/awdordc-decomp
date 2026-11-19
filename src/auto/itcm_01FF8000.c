@@ -3,14 +3,14 @@
 #include "ds3dsprite.h"
 
 void func_01ff8000(void) {
- extern void (*data_027e0000[])(void);
+ extern void (*gOsArea[])(void);
  u32 bits,n=0;
  if(!*(volatile u32 *)0x4000208)return;
  bits=*(volatile u32 *)0x4000210 & *(volatile u32 *)0x4000214;
  if(!bits)return;
  while(bits>>1){bits>>=1;n++;}
  *(volatile u32 *)0x4000214=1u<<n;
- data_027e0000[n]();
+ gOsArea[n]();
 }
 
 void func_01ff81e4(void) {
@@ -82,6 +82,12 @@ s32 LoadCardImage(void) {
     return ReadCardRange(block1Src + cardBase, block1Dst, block1Size);
 }
 
+#pragma opt_strength_reduction off
+/* Reads `size` bytes of the card at `addr` into `dst` through the card's read
+ * command, one page at a time: each command fetches CARD_PAGE_SIZE bytes into the
+ * data port and the words are copied out as they become ready.  The read starts
+ * a little before the data so that the partial first word of a page is skipped.
+ * Returns the address the last command ended at. */
 int ReadCardRange(unsigned int addr, void *dst, int size)
 {
     unsigned int control;
@@ -93,14 +99,12 @@ int ReadCardRange(unsigned int addr, void *dst, int size)
     volatile unsigned char *regs;
     volatile unsigned int *romdata;
 
-    control = *(volatile unsigned int *)0x027FFE60;
-    offset = -(int)(addr & 0x1FF);
-    control = (control & ~0x07000000U) | 0xA1000000U;
+    control = (*(unsigned int *)CARD_HEADER_CONTROL & ~0x07000000U) | 0xA1000000U;
+    offset = -(int)(addr & (CARD_PAGE_SIZE - 1));
 
-    if ((*(volatile unsigned int *)0x040001A4 & 0x80000000U) != 0)
-        return addr;
+    while (*(volatile unsigned int *)CARD_REG_ROMCTRL & 0x80000000U) {}
 
-    regs = (volatile unsigned char *)0x040001A1;
+    regs = (volatile unsigned char *)CARD_REG_COMMAND;
     regs[0] = 0x80;
 
     addr += offset;
@@ -108,12 +112,12 @@ int ReadCardRange(unsigned int addr, void *dst, int size)
     if (offset >= size)
         return addr;
 
-    romdata = (volatile unsigned int *)0x04100010;
+    romdata = (volatile unsigned int *)CARD_REG_DATA;
 
     addressHigh = addr >> 8;
 
     do {
-        regs[7] = 0xB7;
+        regs[7] = CARD_READ_OPCODE;
         regs[8] = (unsigned char)(addr >> 24);
         regs[9] = (unsigned char)(addr >> 16);
         regs[10] = (unsigned char)addressHigh;
@@ -131,21 +135,21 @@ int ReadCardRange(unsigned int addr, void *dst, int size)
                 value = *romdata;
 
                 if (offset >= 0 && offset < size)
-                    *(unsigned int *)((unsigned char *)dst + offset) = value;
+                    *(unsigned int *)((unsigned int)dst + offset) = value;
 
                 offset += 4;
             }
         } while (status & 0x80000000U);
 
         addressHigh += 2;
-        addr += 0x200;
+        addr += CARD_PAGE_SIZE;
 
     } while (offset < size);
 
     return addr;
 }
-
-void func_01ff8480(s32 a,s32 b,s32 c,s32 d) {
+#pragma opt_strength_reduction reset
+void DmaStartTransferLocked(s32 a,s32 b,s32 c,s32 d) {
  s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
  s32 state=OS_DisableInterrupts();
  volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
@@ -438,7 +442,8 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
     extern u8 data_02101f94[];
     u16 *dst;
     s32 count;
-    s32 lo, hi, mask = 0x3ff;
+    s32 hi, lo;
+    s32 mask = 0x3ff;
     u16 *base;
     u8 n;
     s32 ypos;
@@ -450,9 +455,8 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
     dst = base + n * 4;
     if (!count) return;
     ypos = p1 + (s8)p3;
-    hi = p4 & 0xfc00;
     lo = p4 & mask;
-    if (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48) >= 0x80) return;
+    hi = p4 & 0xfc00;
     do {
         u16 a;
         s32 b, c;
@@ -461,25 +465,29 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
         s32 field3e;
         s16 part;
         s32 shift, val;
+        void *engine = gCur3DSpriteEngine;
+        if (M2C_FIELD(engine, u8 *, 0x48) >= 0x80) return;
         a = p5[0];
         if (ypos + (s8)a <= limit || ypos + (s8)a > 0xc0) {
             p5 += 3;
             count--;
             continue;
         }
+        field3e = M2C_FIELD(engine, s16 *, 0x3e);
         orient1 = (a >> 14) & 255;
-        field3e = M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3e);
+        b = ((volatile u16 *)p5)[1];
         dst[0] = ((a | p3) & 0xff00) + ((field3e + (p1 + (a + p3))) & 0xff);
-        b = p5[1];
         orient0 = (b >> 14) & 255;
         index = orient0 + (orient1 << 2);
-        part = b & 0x1ff;
+        b = ((volatile u16 *)p5)[1];
+        part = b & ((u32)limit >> 23);
         if (part & 0x100) part |= 0xfe00;
         part = -part;
         part = part - data_02101f94[index * 2];
         val = M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x3c) + (p0 + (p2 + part));
-        dst[1] = ((b | p2) & 0xfe00) + (val & 0x1ff);
-        if (p5[1] & 0x1000) dst[1] = dst[1] & ~0x1000;
+        dst[1] = ((b | p2) & 0xfe00) + (val & ((u32)limit >> 23));
+        count--;
+        if (((volatile u16 *)p5)[1] & 0x1000) dst[1] = dst[1] & ~0x1000;
         else dst[1] = dst[1] | 0x1000;
         c = p5[2];
         p5 += 3;
@@ -492,7 +500,6 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
         }
         dst += 4;
         M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x48)++;
-        count--;
     } while (count);
 }
 

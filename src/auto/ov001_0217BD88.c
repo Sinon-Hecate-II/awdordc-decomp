@@ -85,7 +85,7 @@ handlers.handlers[a](gOv001FriendCodeState+8);
 p=gOv001FriendCodeState;
 if(ByteCompareN(p+8,&data_ov001_02190770,3)) M2C_FIELD(p,u8*,20)=3;
 else {MI_CpuFill8(p+8,0,12);M2C_FIELD(gOv001FriendCodeState,u8*,20)=0;}
-Ov001_LoadCodeEntryGraphics();func_ov001_02172250(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);func_ov001_02171dd0(2);
+Ov001_LoadCodeEntryGraphics();Ov001_LoadObjLayoutBlock(a+11);Ov001_ShowMessagePanel(choices[a],-1,0);Ov001_OpenMenuForMode(2);
 M2C_FIELD(gOv001FriendCodeState,void**,0)=CreateTextPanel(0,0);
 M2C_FIELD(gOv001FriendCodeState,void**,4)=Ov001_CreateSpriteFromLayout(0,63);
 M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)&~0xc00)|0xc00;
@@ -116,33 +116,37 @@ void Ov001_LoadCodeEntryGraphics(void) {
 }
 
 void func_ov001_0217c1b4(void) {
-    extern M2C_UNK func_ov001_0217c208;
+    extern M2C_UNK Ov001_OpenCodeEntryKeypad;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217c208);
+    Ov001_SetStepCallback(&Ov001_OpenCodeEntryKeypad);
 }
 
-void func_ov001_0217c208(void) {
-    s32 func_ov001_0217c5d4(s32);
-    extern M2C_UNK func_ov001_0217c294;
+/* Step that runs once the code-entry screen has faded in: opens the keypad and
+ * sets its keys for the current group - the first group starts with nothing
+ * enabled, a later one keeps the digits off once its last group is complete -
+ * then waits for the first key. */
+void Ov001_OpenCodeEntryKeypad(void) {
+    s32 IsCodeGroupComplete(s32);
+    extern M2C_UNK Ov001_WaitKeypadFirstKey;
     extern void *gOv001FriendCodeState;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_0217416c();
+    Ov001_OpenKeypad();
     Ov001_PlaySound(0x14);
-    if (M2C_FIELD(gOv001FriendCodeState, u8 *, 0x14) == 0) {
-        func_ov001_021744f0(0);
-        func_ov001_02174518(0);
+    if (M2C_FIELD(gOv001FriendCodeState, u8 *, CODE_ENTRY_GROUP) == 0) {
+        Ov001_SetKeypadDeleteEnabled(0);
+        Ov001_SetKeypadNextEnabled(0);
     } else {
-        if (func_ov001_0217c5d4(0x1A) != 0) func_ov001_02174504(0);
-        func_ov001_02174518(0);
+        if (IsCodeGroupComplete(CODE_ENTRY_LAST_GROUP_MIN) != 0) Ov001_SetKeypadDigitsEnabled(0);
+        Ov001_SetKeypadNextEnabled(0);
     }
-    Ov001_SetStepCallback(&func_ov001_0217c294);
+    Ov001_SetStepCallback(&Ov001_WaitKeypadFirstKey);
 }
 
-void func_ov001_0217c294(void) {
+void Ov001_WaitKeypadFirstKey(void) {
     s32 func_ov001_021744dc();
     extern M2C_UNK func_ov001_0217c2b4;
     if (func_ov001_021744dc() == 0x1F) {
@@ -162,7 +166,7 @@ s32 func_ov001_0217c2c4(void){
 void func_ov001_0217c8ac(void);
 void func_ov001_0217ca10(void);
 s32 func_ov001_021744dc(void);
-s32 func_ov001_0217c5d4(s32);
+s32 IsCodeGroupComplete(s32);
 void func_ov001_0217c66c(void);
 s32 code=func_ov001_021744dc();u8 *p; s32 i,a,b;
 if(code==0)return;
@@ -173,12 +177,12 @@ Ov001_PlaySound(3);
 p=gOv001FriendCodeState;i=p[20];
 if(!p[8+i*3+2])p[20]=i-1;
 MI_CpuFill8((u8 *)gOv001FriendCodeState+8+M2C_FIELD(gOv001FriendCodeState,u8 *,20)*3,0,3);
-if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==0 && M2C_FIELD(gOv001FriendCodeState,u8 *,10)==0)func_ov001_021744f0(0);
-func_ov001_02174504(1);func_ov001_02174518(0);break;
+if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==0 && M2C_FIELD(gOv001FriendCodeState,u8 *,10)==0)Ov001_SetKeypadDeleteEnabled(0);
+Ov001_SetKeypadDigitsEnabled(1);Ov001_SetKeypadNextEnabled(0);break;
 case 17:
 p=gOv001FriendCodeState;
 if(p[20]<3 && p[8+p[20]*3+2]){
-Ov001_PlaySound(1);M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;func_ov001_02174518(0);
+Ov001_PlaySound(1);M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;Ov001_SetKeypadNextEnabled(0);
 }break;
 case 18:
 M2C_FIELD(gOv001FriendCodeState,u8 *,21)=0;
@@ -194,50 +198,55 @@ p=M2C_FIELD(gOv001FriendCodeState,u8 **,4);
 *(u32 *)p=(*(u32 *)p&0xc1fffcff)|512;
 func_ov001_0217c8ac();func_ov001_0217ca10();Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
 default:
-if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && func_ov001_0217c5d4(26))break;
+if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && IsCodeGroupComplete(26))break;
 Ov001_PlaySound(1);
 p=(u8 *)gOv001FriendCodeState+8;i=M2C_FIELD(gOv001FriendCodeState,u8 *,20)*3;
 a=p[i+2];
 if(!a)p[i+2]=code;
 else if(!(b=p[i+1])){
 p[i+1]=a;p[i+2]=code;
-if(func_ov001_0217c5d4(26) && M2C_FIELD(gOv001FriendCodeState,u8 *,20)<3)M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;
+if(IsCodeGroupComplete(26) && M2C_FIELD(gOv001FriendCodeState,u8 *,20)<3)M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;
 }else{
 p[i]=b;p[i+1]=p[i+2];p[i+2]=code;
 if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)<3)M2C_FIELD(gOv001FriendCodeState,u8 *,20)++;
 }
-func_ov001_021744f0(1);
-if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)<3)func_ov001_02174518(1);else func_ov001_02174518(0);
-if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && func_ov001_0217c5d4(26))func_ov001_02174504(0);
+Ov001_SetKeypadDeleteEnabled(1);
+if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)<3)Ov001_SetKeypadNextEnabled(1);else Ov001_SetKeypadNextEnabled(0);
+if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && IsCodeGroupComplete(26))Ov001_SetKeypadDigitsEnabled(0);
 break;
 }
 func_ov001_0217c7e8();func_ov001_0217c8ac();
 }
 
-s32 func_ov001_0217c5d4(s32 arg0) {
+/* Test whether the friend-code group being edited (CODE_ENTRY_GROUP of the
+ * four 3-digit groups at CODE_ENTRY_TEXT) is complete: a group that already has
+ * a leading digit counts, a shorter one only once its value reaches `minimum`.
+ * NUL padding is turned into spaces before the group is parsed. */
+s32 IsCodeGroupComplete(s32 minimum) {
     M2C_UNK MI_CpuCopy8(void *, u8 *, s32);
     s32 ParseInt(u8 *);
     extern void *gOv001FriendCodeState;
-    u8 buf[4];
+    u8 digits[4];
     s32 offset;
     s32 i;
     u8 *p;
-    u8 c;
-    u8 *base;
-    base = (u8 *)gOv001FriendCodeState + 8;
-    offset = M2C_FIELD(gOv001FriendCodeState, u8 *, 0x14) * 3;
-    c = base[offset];
-    if (c != 0 && c != 0x20) return 1;
-    MI_CpuCopy8(base + offset, buf, 3);
+    u8 first;
+    u8 *text;
+
+    text = (u8 *)gOv001FriendCodeState + CODE_ENTRY_TEXT;
+    offset = M2C_FIELD(gOv001FriendCodeState, u8 *, CODE_ENTRY_GROUP) * CODE_ENTRY_GROUP_SIZE;
+    first = text[offset];
+    if (first != 0 && first != 0x20) return 1;
+    MI_CpuCopy8(text + offset, digits, CODE_ENTRY_GROUP_SIZE);
     i = 0;
-    p = buf;
-    buf[3] = 0;
+    p = digits;
+    digits[3] = 0;
     do {
         if (*p != 0) break;
         i++;
         *p++ = 0x20;
-    } while (i < 3);
-    return ParseInt(buf) >= arg0;
+    } while (i < CODE_ENTRY_GROUP_SIZE);
+    return ParseInt(digits) >= minimum;
 }
 
 void func_ov001_0217c668(void) {
@@ -255,32 +264,36 @@ void func_ov001_0217c66c(void) {
 void func_ov001_0217c688(void) {
     M2C_UNK func_ov001_021744a8();
     s32 Ov001_IsFadeActive(M2C_UNK);
-    extern M2C_UNK func_ov001_0217c6b8;
+    extern M2C_UNK Ov001_HandleCodeEntryResult;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     func_ov001_021744a8();
     Ov001_PlaySound(0x15);
-    Ov001_SetStepCallback(&func_ov001_0217c6b8);
+    Ov001_SetStepCallback(&Ov001_HandleCodeEntryResult);
 }
 
-void func_ov001_0217c6b8(void) {
-    s32 func_ov001_0217452c();
+/* Acts on the friend-code entry screen's result once its keypad has closed: a
+ * cancelled entry (0) leaves for the map list, a rejected code (2) shows the
+ * "invalid code" message and reopens the entry screen, and an accepted code shows
+ * the completion message before the region menu's answer is applied. */
+void Ov001_HandleCodeEntryResult(void) {
+    s32 Ov001_IsKeypadOpen();
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     extern void *gOv001FriendCodeState;
-    extern M2C_UNK func_ov001_0217c744;
+    extern M2C_UNK Ov001_LeaveCodeEntry;
     extern M2C_UNK func_ov001_0217c900;
-    extern M2C_UNK func_ov001_0217cbdc;
-    u8 state;
-    if (func_ov001_0217452c() != 0) return;
-    state = M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15);
-    if (state == 0) {
-        Ov001_SetStepCallback(&func_ov001_0217c744);
+    extern M2C_UNK Ov001_RetryCodeEntry;
+    u8 result;
+    if (Ov001_IsKeypadOpen() != 0) return;
+    result = M2C_FIELD(gOv001FriendCodeState, u8 *, CODE_ENTRY_RESULT);
+    if (result == 0) {
+        Ov001_SetStepCallback(&Ov001_LeaveCodeEntry);
         return;
     }
-    if (state == 2) {
+    if (result == 2) {
         Ov001_ShowMessage(6, 3, 1, -1, 0);
-        Ov001_SetStepCallback(&func_ov001_0217cbdc);
+        Ov001_SetStepCallback(&Ov001_RetryCodeEntry);
         return;
     }
     Ov001_ShowMessage(0x47, 2, 1, -1, 0);
@@ -289,7 +302,7 @@ void func_ov001_0217c6b8(void) {
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
-void func_ov001_0217c744(void) {
+void Ov001_LeaveCodeEntry(void) {
 M2C_UNK Ov001_LoadAsset(M2C_UNK *,M2C_UNK *);
 extern void *gOv001FriendCodeState;
 extern M2C_UNK data_ov001_021907d0,GX_LoadOBJPltt,InitMapListScreen;
@@ -309,15 +322,18 @@ M2C_UNK func_ov001_0217c7e8(void){
  extern void *gOv001FriendCodeState; extern const u16 data_ov001_0218f848[]; extern M2C_UNK data_ov001_0218f888;
  void TextPanel_ClearText(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
  u16 buf[6];s32 i,a,handle;const u8 *p;
- handle=M2C_FIELD(gOv001FriendCodeState,s32 *,0);
+ void *state;
+ state=gOv001FriendCodeState;
+ handle=M2C_FIELD(state,s32 *,0);
  buf[2]=data_ov001_0218f848[7];buf[3]=data_ov001_0218f848[8];buf[4]=11;buf[5]=16;
  TextPanel_ClearText(handle,0);
  buf[1]=0;
  p=(const u8 *)&data_ov001_0218f888;
  for(i=0;i<12;i++){
- buf[0]=M2C_FIELD((u8 *)gOv001FriendCodeState+i,u8 *,0x8);
- a=*p++;buf[2]=a;
- DrawPanelText(M2C_FIELD(gOv001FriendCodeState,s32 *,0),a,buf[3],buf[4],buf[5],2,0x480,buf);
+ state=gOv001FriendCodeState;
+ a=*p++;
+ buf[0]=M2C_FIELD((u8 *)state+i,u8 *,8);
+ DrawPanelText(M2C_FIELD(state,s32 *,0),a,buf[3],buf[4],buf[5],2,0x480,(buf[2]=a,buf));
  }
  CloseTextPanel(M2C_FIELD(gOv001FriendCodeState,s32 *,0));
 }
@@ -355,11 +371,11 @@ void Ov001_FinishCodeEntry(void) {
  if(Ov001_IsRegionMenuActive()) return;
  if(M2C_FIELD(gOv001FriendCodeState,u8 *,CODE_ENTRY_RESULT)==0) {
  p=M2C_FIELD(gOv001FriendCodeState,s32 **,CODE_ENTRY_CURSOR); *p &=CODE_ENTRY_CURSOR_MASK;
- Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217c208); return;
+ Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenCodeEntryKeypad); return;
  }
  Ov001_GetNameEntryMode(&index,0);
  table.handlers[index]((u8 *)gOv001FriendCodeState+CODE_ENTRY_TEXT);
- Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217c744);
+ Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveCodeEntry);
 }
 
 void func_ov001_0217ca10(void) {
@@ -397,7 +413,7 @@ if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=
 return func_0204612c(code)!=0;
 }
 
-void func_ov001_0217cbdc(void) {
+void Ov001_RetryCodeEntry(void) {
     extern M2C_UNK func_ov001_0217cc08;
     if (func_ov001_02186648() != 0) {
         return;
@@ -409,7 +425,7 @@ void func_ov001_0217cbdc(void) {
 
 void func_ov001_0217cc08(void) {
     extern void *gOv001FriendCodeState;
-    void func_ov001_0217c208(void);
+    void Ov001_OpenCodeEntryKeypad(void);
     s32 *temp_r3;
 
     if (Ov001_IsRegionMenuActive() != 0) {
@@ -417,10 +433,10 @@ void func_ov001_0217cc08(void) {
     }
     temp_r3 = M2C_FIELD(gOv001FriendCodeState, s32 **, 4);
     *temp_r3 &= 0xC1FFFCFF;
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217c208);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenCodeEntryKeypad);
 }
 
-void func_ov001_0217cc4c(void) {
+void Ov001_ShowWfcErrorScreen(void) {
     void func_ov001_0217cc68(void);
     M2C_UNK DrawWfcErrorPanel();
     extern M2C_UNK func_ov001_0217d044;

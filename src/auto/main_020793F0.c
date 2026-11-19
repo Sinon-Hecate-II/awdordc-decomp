@@ -16,18 +16,18 @@ typedef struct { Vec3 pos; void *unit; s32 kind,frame,variant,side,hp,flags; u8 
 
 #pragma opt_propagation off
 void func_020793f0(void *arg0) {
-extern M2C_UNK data_02140f70;
+extern M2C_UNK gMapHighlightState;
 s32 kind=M2C_FIELD(arg0,s32 *,16);
 s32 x=M2C_FIELD(arg0,s32 *,0), y=M2C_FIELD(arg0,s32 *,4), z=M2C_FIELD(arg0,s32 *,8);
 DrawLookup793f0 lookup=data_020eb1c0;
-s32 frame=lookup.values[M2C_FIELD(&data_02140f70,u8 *,2)];
+s32 frame=lookup.values[M2C_FIELD(&gMapHighlightState,u8 *,2)];
 s32 c0=0x7fff,c1=c0,c2=c0,c3=c0,mode;
 
 s32 vx,vy,ex;
 s32 *base=(s32 *)(data_020eb7b8+kind*48), *size;
 s32 tx,ty,rx,by;u32 alpha;
 frame*=104;
-if(!M2C_FIELD(arg0,s32 *,44)) mode=0; else { c0=M2C_FIELD(&data_02140f70,u16 *,16);c1=M2C_FIELD(&data_02140f70,u16 *,18);c2=M2C_FIELD(&data_02140f70,u16 *,20);c3=M2C_FIELD(&data_02140f70,u16 *,22);mode=2;}
+if(!M2C_FIELD(arg0,s32 *,44)) mode=0; else { c0=M2C_FIELD(&gMapHighlightState,u16 *,16);c1=M2C_FIELD(&gMapHighlightState,u16 *,18);c2=M2C_FIELD(&gMapHighlightState,u16 *,20);c3=M2C_FIELD(&gMapHighlightState,u16 *,22);mode=2;}
 vx=x-384;vy=y-768;ex=x+384;
 if(M2C_FIELD(arg0,s32 *,20)==16) {size=base+6;if(size[1]==24)vy=y-1152;}else{size=base+9;base+=3;if(size[1]==32)vy=y-1152;}
 tx=(base[0]<<12)+2048;rx=((base[0]+size[0])<<12)+2048;
@@ -38,7 +38,7 @@ if(M2C_FIELD(arg0,u8 *,40)) { s32 tmp=tx;tx=rx-4096;rx=tmp-4096;}
 alpha=M2C_FIELD(arg0,u8 *,48)?12:31;
 tx=(s32)(tx<<8)>>16;ty=(s32)(ty<<8)>>16;rx=(s32)(rx<<8)>>16;by=(s32)(by<<8)>>16;
 vx=(s16)vx;vy=(s16)vy;ex=(s16)ex;y=(s16)y;z=(s16)z;
-*(volatile u32 *)0x40004a4=M2C_FIELD(&data_02140f70,u32 *,8)|(M2C_FIELD(&data_02140f70,u32 *,4)|(mode<<4)|128)|0x2000000|(alpha<<16);
+*(volatile u32 *)0x40004a4=M2C_FIELD(&gMapHighlightState,u32 *,8)|(M2C_FIELD(&gMapHighlightState,u32 *,4)|(mode<<4)|128)|0x2000000|(alpha<<16);
 *(volatile u32 *)0x4000500=1;
 *(volatile u32 *)0x4000488=(u16)tx|((u16)ty<<16);
 *(volatile u32 *)0x4000480=c0;
@@ -168,7 +168,7 @@ chosen:
 }
 void func_020799dc(void *arg0, void *arg1, void *arg2, u32 arg3) {
 #pragma opt_propagation on
-extern M2C_UNK data_02140f70;
+extern M2C_UNK gMapHighlightState;
 s16 x=((s16*)arg1)[0], y=((s16*)arg1)[1];
 s16 h=((s16*)arg2)[1], w=((s16*)arg2)[0];
 s32 px=((s32*)arg0)[0], py=((s32*)arg0)[1];
@@ -178,7 +178,7 @@ s32 by=(s32)((((y+h)<<12)+2048)<<8)>>16, rx=(s32)((((x+w)<<12)+2048)<<8)>>16;
 s32 ey=(s16)py, ex=(s16)(px+192);
 
 (*(volatile u32*)0x40004a8)=0x6d504000; (*(volatile u32*)0x40004ac)=arg3>>4;
-(*(volatile u32*)0x40004a4)=M2C_FIELD(&data_02140f70,u32*,8)|(M2C_FIELD(&data_02140f70,u32*,4)|0xc0)|0x21f0000;
+(*(volatile u32*)0x40004a4)=M2C_FIELD(&gMapHighlightState,u32*,8)|(M2C_FIELD(&gMapHighlightState,u32*,4)|0xc0)|0x21f0000;
 (*(volatile u32*)0x4000480)=0x7fff; (*(volatile u32*)0x4000500)=1;
 (*(volatile u32*)0x4000488)=(u16)tx|((u16)ty<<16);
 (*(volatile u32*)0x400048c)=(u16)vx|((u16)vy<<16); (*(volatile u32*)0x400048c)=0x831;
@@ -281,48 +281,51 @@ void ScreenToMapFixedPoint(s32 screenX, s32 screenY, Vec3 *out) {
 }
 
 #pragma opt_propagation off
-void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
+void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, signed int a5) {
     extern u8 gTerrainClassFlags[];
-    extern M2C_UNK data_02140f70;
+    extern M2C_UNK gMapHighlightState;
     extern u8 data_02142688[];
     extern u16 data_020eb1a8[];
     extern u16 data_020eb1d0[];
     extern u16 data_020eb1e0[];
     s32 func_0207fa64(s32);
-    volatile s16 jy, jx;
-    volatile u16 raw1, raw0;
+    volatile s16 offsets[2];
+    volatile u16 raw[2];
     s32 mode = 0;
-    s32 c0 = 0x7fff, c1 = c0, c2 = c0, c3 = c0;
+    u16 c0 = 0x7fff, c1 = c0, c2 = c0, c3 = c0;
     s32 u0 = (a0 << 4) * 0x30;
     s32 v0 = (a1 << 4) * 0x30;
-    s32 z = 0;
-    u16 low;
+    s32 z = mode;
+    u32 low;
     s32 vx, vy, ex, ey;
     s32 tx, ty, rx, by;
-    u8 *entry = gTerrainClassFlags + a2 * 8;
-    s32 flags = M2C_FIELD(entry, s32 *, 0);
-    s32 sign = flags & 0x80000000;
-    s32 x = M2C_FIELD(entry, u8 *, 4);
-    s32 y = M2C_FIELD(entry, u8 *, 5);
-    u32 h = M2C_FIELD(entry, u8 *, 6) + a3;
-    s32 k = M2C_FIELD(entry, u8 *, 7);
+    u32 flags = M2C_FIELD(gTerrainClassFlags + a2 * 8, u32 *, 0);
+    struct { u32 flags; u8 x, y, palette, offset; } *entry = (void *)(gTerrainClassFlags + a2 * 8);
+    s32 x = entry->x;
+    s32 y = entry->y;
+    u32 sign = flags & 0x80000000;
+    u32 h = entry->palette + a3;
+    s32 k = entry->offset;
 
-    low = (u16)flags;
+    low = flags & 0xffff;
     if (k != 0) {
         u32 v = func_0207fa64(k);
-        raw0 = v;
-        raw1 = v >> 16;
-        jx = raw0;
-        jy = raw1;
-        x += jx;
-        y += jy;
+        u16 offsetX, offsetY;
+        raw[0] = v;
+        raw[1] = v >> 16;
+        offsetX = raw[0];
+        offsetY = raw[1];
+        offsets[0] = offsetX;
+        offsets[1] = offsetY;
+        x += offsets[0];
+        y += offsets[1];
     }
     switch (a4) {
     case 0:
     case 1:
         if (low & 0x40) {
-            *(volatile u32 *)0x40004ac = (((u32)(M2C_FIELD(&data_02140f70, u8 *, 0) + a3) << 5) + 0xc00) >> 4;
-        } else if ((low & 0x80) && M2C_FIELD(&data_02140f70, u8 *, 1) && a3 && a3 < 0x10) {
+            *(volatile u32 *)0x40004ac = (((u32)(M2C_FIELD(&gMapHighlightState, u8 *, 0) + a3) << 5) + 0xc00) >> 4;
+        } else if ((low & 0x80) && M2C_FIELD(&gMapHighlightState, u8 *, 1) && a3 && a3 < 0x10) {
             *(volatile u32 *)0x40004ac = (((u32)(a3 - 1) << 5) + 0x1000) >> 4;
         } else {
             *(volatile u32 *)0x40004ac = (h << 5) >> 4;
@@ -337,33 +340,35 @@ void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
     }
     if (a4 != 0) {
         mode = 2;
-        c0 = M2C_FIELD(&data_02140f70, u16 *, 0x10);
-        c1 = M2C_FIELD(&data_02140f70, u16 *, 0x12);
-        c2 = M2C_FIELD(&data_02140f70, u16 *, 0x14);
-        c3 = M2C_FIELD(&data_02140f70, u16 *, 0x16);
+        c0 = M2C_FIELD(&gMapHighlightState, u16 *, 0x10);
+        c1 = M2C_FIELD(&gMapHighlightState, u16 *, 0x12);
+        c2 = M2C_FIELD(&gMapHighlightState, u16 *, 0x14);
+        c3 = M2C_FIELD(&gMapHighlightState, u16 *, 0x16);
     } else {
-        if (flags & 0x20) {
-            u16 d = (a5 << 10) | (a5 << 5) | a5;
+        if (entry->flags & 0x20) {
+            u16 d = (a5 | (a5 << 5)) | (a5 << 10);
             if (sign != 0) {
                 if (sign == 0x80000000) {
-                    s32 i0 = a0 * 0x2a;
-                    s32 i1 = (a0 + 1) * 0x2a;
+                    const u8 (*cells)[42] = (const u8 (*)[42])data_02142688;
                     c0 = (u16)(data_020eb1a8[0x14] - d);
+                    c1 = (u16)(data_020eb1d0[cells[a0][a1+1]] - d);
                     c3 = c0;
-                    c1 = (u16)(data_020eb1d0[data_02142688[i0 + a1 + 1]] - d);
-                    c2 = (u16)(data_020eb1d0[data_02142688[i1 + a1 + 1]] - d);
+                    c2 = (u16)(data_020eb1d0[cells[a0+1][a1+1]] - d);
                 }
             } else {
-                s32 i0 = a0 * 0x2a;
+                const u8 *row0 = data_02142688 + a0 * 42;
                 s32 i1 = (a0 + 1) * 0x2a;
-                c0 = (u16)(data_020eb1e0[data_02142688[i0 + a1]] - d);
-                c1 = (u16)(data_020eb1e0[data_02142688[i0 + a1 + 1]] - d);
-                c2 = (u16)(data_020eb1e0[data_02142688[i1 + a1 + 1]] - d);
+                c0 = (u16)(data_020eb1e0[row0[a1]] - d);
+                c1 = (u16)(data_020eb1e0[row0[a1 + 1]] - d);
                 c3 = (u16)(data_020eb1e0[data_02142688[i1 + a1]] - d);
+                c2 = (u16)(data_020eb1e0[data_02142688[i1 + a1 + 1]] - d);
             }
         } else {
-            u16 d = (a5 << 10) | (a5 << 5) | a5;
-            c0 = c1 = c2 = c3 = (u16)(0x7fff - d);
+            u16 d = (a5 | (a5 << 5)) | (a5 << 10);
+            c0 = (u16)(0x7fff - d);
+            c1 = c0;
+            c2 = c0;
+            c3 = c0;
         }
     }
     if (sign != 0) {
@@ -389,39 +394,30 @@ void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, s32 a5) {
         vy = v0;
         ey = v0 + 0x300;
     }
-    tx = (s32)(tx << 8) >> 16;
-    ty = (s32)(ty << 8) >> 16;
-    rx = (s32)(rx << 8) >> 16;
-    by = (s32)(by << 8) >> 16;
-    vx = (s16)vx;
-    vy = (s16)vy;
-    ex = (s16)ex;
-    ey = (s16)ey;
-    z = (s16)z;
-    if (flags & 0x100) {
-        *(volatile u32 *)0x40004a4 = M2C_FIELD(&data_02140f70, u32 *, 8) |
-            (M2C_FIELD(&data_02140f70, u32 *, 4) | (mode << 4) | 0x80) | 0x1140000;
+    if (entry->flags & 0x100) {
+        *(volatile u32 *)0x40004a4 = M2C_FIELD(&gMapHighlightState, u32 *, 8) |
+            (M2C_FIELD(&gMapHighlightState, u32 *, 4) | (mode << 4) | 0x80) | 0x1140000;
     } else {
-        *(volatile u32 *)0x40004a4 = M2C_FIELD(&data_02140f70, u32 *, 8) |
-            (M2C_FIELD(&data_02140f70, u32 *, 4) | (mode << 4) | 0x80) | 0x1f0000;
+        *(volatile u32 *)0x40004a4 = M2C_FIELD(&gMapHighlightState, u32 *, 8) |
+            (M2C_FIELD(&gMapHighlightState, u32 *, 4) | (mode << 4) | 0x80) | 0x1f0000;
     }
     *(volatile u32 *)0x4000500 = 1;
-    *(volatile u32 *)0x4000488 = (u16)tx | ((u16)ty << 16);
+    *(volatile u32 *)0x4000488 = ((u32)(u16)(s16)(ty >> 8) << 16) | (u32)(u16)(s16)(tx >> 8);
     *(volatile u32 *)0x4000480 = c0;
-    *(volatile u32 *)0x400048c = (u16)vx | ((u16)vy << 16);
-    *(volatile u32 *)0x400048c = (u16)z;
-    *(volatile u32 *)0x4000488 = (u16)tx | ((u16)by << 16);
+    *(volatile u32 *)0x400048c = ((u32)(u16)(s16)vy << 16) | (u32)(u16)(s16)vx;
+    *(volatile u32 *)0x400048c = (u16)(s16)z;
+    *(volatile u32 *)0x4000488 = ((u32)(u16)(s16)(by >> 8) << 16) | (u32)(u16)(s16)(tx >> 8);
     *(volatile u32 *)0x4000480 = c1;
-    *(volatile u32 *)0x400048c = (u16)vx | ((u16)ey << 16);
-    *(volatile u32 *)0x400048c = (u16)z;
-    *(volatile u32 *)0x4000488 = (u16)rx | ((u16)by << 16);
+    *(volatile u32 *)0x400048c = ((u32)(u16)(s16)ey << 16) | (u32)(u16)(s16)vx;
+    *(volatile u32 *)0x400048c = (u16)(s16)z;
+    *(volatile u32 *)0x4000488 = ((u32)(u16)(s16)(by >> 8) << 16) | (u32)(u16)(s16)(rx >> 8);
     *(volatile u32 *)0x4000480 = c2;
-    *(volatile u32 *)0x400048c = (u16)ex | ((u16)ey << 16);
-    *(volatile u32 *)0x400048c = (u16)z;
-    *(volatile u32 *)0x4000488 = (u16)rx | ((u16)ty << 16);
+    *(volatile u32 *)0x400048c = ((u32)(u16)(s16)ey << 16) | (u32)(u16)(s16)ex;
+    *(volatile u32 *)0x400048c = (u16)(s16)z;
+    *(volatile u32 *)0x4000488 = ((u32)(u16)(s16)(ty >> 8) << 16) | (u32)(u16)(s16)(rx >> 8);
     *(volatile u32 *)0x4000480 = c3;
-    *(volatile u32 *)0x400048c = (u16)ex | ((u16)vy << 16);
-    *(volatile u32 *)0x400048c = (u16)z;
+    *(volatile u32 *)0x400048c = ((u32)(u16)(s16)vy << 16) | (u32)(u16)(s16)ex;
+    *(volatile u32 *)0x400048c = (u16)(s16)z;
     *(volatile u32 *)0x4000504 = 0;
 }
 #pragma opt_propagation reset

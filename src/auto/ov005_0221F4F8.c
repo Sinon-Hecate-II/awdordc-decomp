@@ -4,7 +4,7 @@
 #include "battle_map.h"
 
 void func_ov005_0221f4f8(void *arg0){
-s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void func_0207c650(void *,s32,s32,s32,s32);void func_02088f1c(void *);
+s32 EaseInterpolate(s32,s32,s32,s32,s32);void func_01ffac9c(u16,u16,u16,void *,s32);void QueueBGExtPaletteUpload(void *,s32,s32,s32,s32);void Show3DSpriteSlide(void *);
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineMain,**g3DSpriteEngineSub;extern u8 data_02101f78[];
 u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatile p4;u16 *volatile p5;u16 *volatile p6;u16 *volatile p7;u16 *volatile p8;u16 *volatile p9;u16 *volatile p10;
 s32 saved;u8 alpha;
@@ -43,7 +43,7 @@ M2C_FIELD(arg0,u8 **,60)[index]=(u8)color;
 index+=2;
 }while(index<512);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_0207c650(M2C_FIELD(arg0,void **,60),3,0,512,0);
+QueueBGExtPaletteUpload(M2C_FIELD(arg0,void **,60),3,0,512,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;gCur3DSpriteEngine=saved;
 }
 {
@@ -61,11 +61,11 @@ M2C_FIELD(arg0,u8 **,64)[index]=(u8)color;
 index+=2;
 }while(index<512);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_0207c650(M2C_FIELD(arg0,void **,64),3,0,512,0);
+QueueBGExtPaletteUpload(M2C_FIELD(arg0,void **,64),3,0,512,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;gCur3DSpriteEngine=saved;
 }
 }
-if(M2C_FIELD(arg0,s32 *,0x38)==126)func_02088f1c(M2C_FIELD(arg0,void **,0x34));
+if(M2C_FIELD(arg0,s32 *,0x38)==126)Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x34));
 }
 
 void func_ov005_0221fa00(M2C_UNK arg0) {
@@ -182,33 +182,36 @@ void func_ov005_0221fd10(void) {
     FreeUiGraphicsBank(0xB);
 }
 
-void func_ov005_0221fd20(M2C_UNK arg0) {
-    M2C_UNK func_020868e0(s32, M2C_UNK);
-    s32 func_020869a0(s32);
-    s32 func_020cd6d4();
+/* Spawns the results screen's campaign hint panel for a story mission
+ * (map id 0xA1..0xBA) while its per-mission high event flag is clear, and then
+ * sets that flag; other maps and non-campaign battles get no panel. */
+void CreateCampaignHintPanel(M2C_UNK parent) {
+    M2C_UNK SetEventFlagHigh(s32, M2C_UNK);
+    s32 IsEventFlagHighSet(s32);
+    s32 IsCampaignBattleRules();
     extern void **gCurrentMap;
-    extern M2C_UNK data_ov005_02220bb0;
-    s32 temp_r5;
-    s32 var_r1;
-    u16 temp_r0;
+    extern M2C_UNK gCampaignHintPanelClass;
+    s32 flagIndex;
+    s32 isStoryMission;
+    u16 mapId;
 
-    temp_r5 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142) - 0x40;
-    if (func_020cd6d4() == 0) {
+    flagIndex = M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) - 0x40;
+    if (IsCampaignBattleRules() == 0) {
         return;
     }
-    var_r1 = 0;
-    temp_r0 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
-    if (((u32) temp_r0 >= 0xA1U) && ((u32) temp_r0 < 0xBBU)) {
-        var_r1 = 1;
+    isStoryMission = 0;
+    mapId = M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+    if (((u32) mapId >= MAP_ID_STORY_FIRST) && ((u32) mapId < MAP_ID_STORY_END)) {
+        isStoryMission = 1;
     }
-    if (var_r1 == 0) {
+    if (isStoryMission == 0) {
         return;
     }
-    if (func_020869a0(temp_r5) != 0) {
+    if (IsEventFlagHighSet(flagIndex) != 0) {
         return;
     }
-    func_020868e0(temp_r5, 1);
-    CreateSpriteObject(&data_ov005_02220bb0, arg0);
+    SetEventFlagHigh(flagIndex, 1);
+    CreateSpriteObject(&gCampaignHintPanelClass, parent);
 }
 
 void *func_ov005_0221fdb0(void *arg0) {

@@ -1,6 +1,7 @@
 /* 24 functions from 0x0205F83C to 0x0206080C (main), found by ds-decomp. */
 #include "common.h"
 #include "qr2.h"
+#include "sb_serverlist.h"
 typedef struct { u8 v[4]; } PacketBytes4;
 typedef struct { u8 header[3]; PacketBytes4 id; u8 rest[249]; } Packet256;
 typedef struct { u8 v[13]; } PacketBytes13;
@@ -340,7 +341,7 @@ void func_020600dc(void *arg0, void *arg1) {
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 1);
 }
 
-void *func_02060104(void *arg0) {
+void *QueryQueue_Pop(void *arg0) {
     void *temp_r1;
     void *temp_r2;
 
@@ -356,7 +357,7 @@ void *func_02060104(void *arg0) {
     return temp_r2;
 }
 
-s32 func_02060138(void *a,void *b){void *p=M2C_FIELD(a,void **,0),*prev=0;while(p){if(p==b){if(prev)M2C_FIELD(prev,void **,32)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,0)==p)M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,4)==p)M2C_FIELD(a,void **,4)=prev;M2C_FIELD(a,s32 *,8)--;return 1;}prev=p;p=M2C_FIELD(p,void **,32);}return 0;}
+s32 Qr2Query_RemoveRequest(void *a,void *b){void *p=M2C_FIELD(a,void **,0),*prev=0;while(p){if(p==b){if(prev)M2C_FIELD(prev,void **,32)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,0)==p)M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,4)==p)M2C_FIELD(a,void **,4)=prev;M2C_FIELD(a,s32 *,8)--;return 1;}prev=p;p=M2C_FIELD(p,void **,32);}return 0;}
 
 void func_020601a4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
@@ -462,38 +463,45 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
     }
     M2C_FIELD(entry, u8 *, 0x14) &= 0xF3;
     M2C_FIELD(entry, s32 *, 0x1C) = GetTickCountMs() - M2C_FIELD(entry, s32 *, 0x1C);
-    func_02060138((u8 *)owner + 8, entry);
+    Qr2Query_RemoveRequest((u8 *)owner + 8, entry);
     M2C_FIELD(owner, void (**)(void *, s32, void *, s32), 0x44)(owner, 0, entry, M2C_FIELD(owner, s32 *, 0x48));
 }
 
-void func_020605d8(void *arg0, void *arg1, void *arg2, s32 unused) {
-    s32 GetTickCountMs();
-    M2C_UNK func_02060138(void *, void *);
-    M2C_UNK func_02060d90(void *, M2C_UNK);
+/* Handles the text reply to one pending server query, a game server's
+ * "\key\value..." answer: parses the fields into the server record and, when the
+ * reply carries the \fin marker, marks the record complete, turns its send stamp
+ * into the round-trip time, takes it off the pending list and reports the
+ * finished query to the browser through its query callback. */
+void Qr2Query_HandleTextReply(void *list, void *server, void *reply, s32 unused) {
+    s32 GetTickCountMs(void);
+    M2C_UNK Qr2Query_RemoveRequest(void *, void *);
+    M2C_UNK Qr2Query_ParseTextFields(void *, M2C_UNK);
     s32 StringFind(M2C_UNK, M2C_UNK *);
-    extern M2C_UNK data_02100030;
-    s32 var_r6;
-    u8 temp_r0;
+    extern M2C_UNK gQr2FinalMarker;
+    GpiPlayer *player = server;
+    s32 complete;
+    u8 state;
 
-    if (StringFind(arg2, &data_02100030) != 0) {
-        var_r6 = 1;
+    if (StringFind(reply, &gQr2FinalMarker) != 0) {
+        complete = 1;
     } else {
-        var_r6 = 0;
+        complete = 0;
     }
-    func_02060d90(arg1, arg2);
-    if (var_r6 == 0) {
+    Qr2Query_ParseTextFields(server, reply);
+    if (complete == 0) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg1, u8 *, 0x14);
-    if (temp_r0 & 4) {
-        M2C_FIELD(arg1, u8 *, 0x14) = temp_r0 | 0x41;
+    state = player->state;
+    if (state & GPI_PLAYER_QUERY_KEYS) {
+        player->state = state | (GPI_PLAYER_STATE_COMPLETE | GPI_PLAYER_STATE_FIELDS);
     } else {
-        M2C_FIELD(arg1, u8 *, 0x14) = temp_r0 | 0x42;
+        player->state = state | (GPI_PLAYER_STATE_COMPLETE | GPI_PLAYER_STATE_KEYS);
     }
-    M2C_FIELD(arg1, u8 *, 0x14) = (u8)(M2C_FIELD(arg1, u8 *, 0x14) & 0xF3);
-    M2C_FIELD(arg1, s32 *, 0x1C) = (s32) (GetTickCountMs() - M2C_FIELD(arg1, s32 *, 0x1C));
-    func_02060138(arg0 + 8, arg1);
-    M2C_FIELD(arg0, M2C_UNK (**)(void *, M2C_UNK, void *, s32), 0x44)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x48));
+    player->state &= GPI_PLAYER_QUERY_CLEAR;
+    player->ping = GetTickCountMs() - player->ping;
+    Qr2Query_RemoveRequest((u8 *)list + SB_LIST_REQUESTS, server);
+    M2C_FIELD(list, M2C_UNK (**)(void *, M2C_UNK, void *, s32), SB_LIST_ON_QUERY_DONE)(
+        list, 0, server, M2C_FIELD(list, s32 *, SB_LIST_QUERY_DATA));
 }
 
 s32 func_02060670(void *a,void *b,void *c,s32 d) {
@@ -516,7 +524,7 @@ if(peer==M2C_FIELD(p,u32 *,0x28)&&(M2C_FIELD(q,u8 *,0x15)&2)&&M2C_FIELD(q,u32 *,
 continue;
 found:
 if(mode){if(!func_02060670(p,q,buf,n))continue;break;}
-else{if(M2C_FIELD(p,s32 *,0)==1)func_020604d8(p,q,buf,n);else func_020605d8(p,q,buf,n);break;}
+else{if(M2C_FIELD(p,s32 *,0)==1)func_020604d8(p,q,buf,n);else Qr2Query_HandleTextReply(p,q,buf,n);break;}
 }
 }
 }

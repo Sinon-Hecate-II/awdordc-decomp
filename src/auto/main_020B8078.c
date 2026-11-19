@@ -348,7 +348,7 @@ void func_020b8970(void *arg0) {
     void LoadDecompressedFileTo(void *, void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
     void func_02088e84(void *, s32, s32, s32, s32);
-    void func_02088f1c(void *);
+    void Show3DSpriteSlide(void *);
     void Load3DSpritePattern(void *, s32, s32, s32);
     void func_020994e0(s32);
     void func_0209c024(s32, s32, void *, s32, s32, s32);
@@ -418,7 +418,7 @@ void func_020b8970(void *arg0) {
         temp_r10 = GetUnitSpriteHeight(temp_r5);
         func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7, temp_r6, (u16) temp_r9, (u16) temp_r10);
     }
-    func_02088f1c(M2C_FIELD(arg0, void **, 0x50));
+    Show3DSpriteSlide(M2C_FIELD(arg0, void **, 0x50));
     CreateMenuUnitSprite(arg0);
     Load3DSpritePattern((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
     DrawTilemapNumber(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);

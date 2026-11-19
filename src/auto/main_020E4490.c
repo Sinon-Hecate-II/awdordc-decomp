@@ -1,5 +1,15 @@
 /* 22 functions from 0x020E4490 to 0x020E5080 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
+#include "battle_map.h"
+
+typedef struct {
+    u16 unused : 4;
+    u16 slot : 3;
+} SaveSlotBits;
+
+typedef struct { u32 words[64]; } SaveProgressWords;
+typedef struct { u8 bytes[8]; } SaveProgressFlags;
 
 typedef struct { u8 pixels[32]; } Unk020ETile;
 typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
@@ -28,9 +38,9 @@ void func_020e4490(void) {
     M2C_UNK Init3DSpritePool();
     M2C_UNK func_020e4458();
     M2C_UNK func_0200ee70();
-    M2C_UNK func_0207c240();
+    M2C_UNK SeedRandomFromRtc();
     M2C_UNK SaveManager_Start();
-    void func_020e476c(void);
+    void ResetGameState(void);
     M2C_UNK func_020e349c();
     extern s32 data_027e15bc;
     extern s32 data_027e15c0;
@@ -77,9 +87,9 @@ void func_020e4490(void) {
     Init3DSpritePool();
     func_020e4458();
     func_0200ee70();
-    func_0207c240();
+    SeedRandomFromRtc();
     SaveManager_Start();
-    func_020e476c();
+    ResetGameState();
     func_020e349c();
 }
 #pragma opt_common_subs reset
@@ -135,13 +145,13 @@ func_02004e60(1,1);
 void func_020e4688(void) {
     void Upload3DSpriteOam(void);
     void func_01ff87e4(void);
-    M2C_UNK func_01ff9b38();
+    M2C_UNK Apply3DSpriteBanks();
     void Update3DSpriteVram(void);
     void GetSpriteLayerHead(int);
     void Update3DSpriteObject(void);
     void func_0200d248(void *);
     void func_0200d288(void *);
-    extern int data_027e0000;
+    extern int gOsArea;
     extern unsigned char data_027e15b4;
     extern unsigned char data_027e15b8;
     extern int data_027e15c0;
@@ -159,7 +169,7 @@ void func_020e4688(void) {
     if (data_027e15b4 == 0) {
         GetSpriteLayerHead(2);
         Update3DSpriteObject();
-        func_01ff9b38();
+        Apply3DSpriteBanks();
         Update3DSpriteVram();
         Upload3DSpriteOam();
         data_027e15b4 = 1;
@@ -167,55 +177,60 @@ void func_020e4688(void) {
         func_01ff87e4();
     }
     data_027e15b8 = 0;
-    M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) = (M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) | 1);
+    M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
     func_0200d288(sp0);
     while (*(unsigned short *)0x04000280 & 0x8000) {
     }
 }
 
-void func_020e476c(void) {
-    M2C_UNK func_01ff9b38();
+/* Resets everything a fresh game session needs before the title screen: the
+ * default settings and dialog state, the sprite slot and text tables, the
+ * campaign map headers, and both 3D sprite engines (each is put back into
+ * graphics display mode and its bank flushed to the hardware).  Afterwards the
+ * map's buffers, graphics files and config are set up again. */
+void ResetGameState(void) {
+    M2C_UNK Apply3DSpriteBanks();
     M2C_UNK func_0207b800();
-    M2C_UNK func_0208337c();
+    M2C_UNK ResetTextLabelSlots();
     M2C_UNK func_020834c4();
     M2C_UNK ResetDialogUI();
     M2C_UNK func_020960b4();
     M2C_UNK func_0209f87c();
     M2C_UNK func_020abf94();
     M2C_UNK ApplyScreenMode(M2C_UNK);
-    M2C_UNK func_020b1b3c();
+    M2C_UNK ResetSpriteSlots();
     M2C_UNK InitDefaultGameSettings();
-    M2C_UNK func_020c8eec();
+    M2C_UNK ClearCampaignMapHeaders();
     M2C_UNK func_020d3cec();
     M2C_UNK func_ov000_02169368();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r8;
-    s32 var_r1;
-    s32 var_r9;
+    s32 savedEngine;
+    s32 engine;
+    s32 screen;
 
     InitDefaultGameSettings();
     ResetDialogUI();
-    func_020b1b3c();
+    ResetSpriteSlots();
     func_020834c4();
-    func_0208337c();
-    func_020c8eec();
+    ResetTextLabelSlots();
+    ClearCampaignMapHeaders();
     func_020abf94();
-    temp_r8 = gCur3DSpriteEngine;
-    var_r9 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r9 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (screen == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        ApplyScreenMode(1);
-        func_01ff9b38();
-        var_r9 += 1;
-    } while (var_r9 < 2);
-    gCur3DSpriteEngine = temp_r8;
+        gCur3DSpriteEngine = engine;
+        ApplyScreenMode(DS3D_DISPLAY_GRAPHICS);
+        Apply3DSpriteBanks();
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
     func_0207b800();
     func_020d3cec();
     func_0209f87c();
@@ -247,92 +262,58 @@ p[0]&=~0xff000000;
 
 }
 
+#pragma peephole off
 void func_020e4870(s32 arg0) {
     extern M2C_UNK data_0215d9b8;
-    extern M2C_UNK data_0215d8a0;
+    extern M2C_UNK gSaveSlotSummary;
     extern void **gCurrentMap;
     extern u8 data_0215dba4[];
     extern u8 data_0215dbac[];
     extern M2C_UNK data_0215d8a8;
     extern u8 data_0215dcac[];
-    extern M2C_UNK data_0215d9a8;
+    extern M2C_UNK gEventFlagsHigh;
     extern u8 data_0215dcb4[];
-    extern M2C_UNK data_0215d9b0;
+    extern M2C_UNK gEventValues;
 
-    u16 a16;
-    u16 t;
-    u16 f2;
-    u32 d0, d1;
-    u8 *gm;
-    u32 gm0;
-    s32 b;
-    u32 off;
-    u32 *dst, *src;
-    u8 *d2, *s2;
-    s32 i;
+    SaveSlotBits *slot = (SaveSlotBits *)((u8 *)&data_0215d9b8 + 6);
+    u32 *summary = (u32 *)&gSaveSlotSummary;
+    u16 slotFlags = *(u16 *)slot;
+    u32 word = summary[0];
+    void ***mapBase = &gCurrentMap;
+    void **map;
+    u32 location;
+    s32 count;
+    s32 offset;
+    u32 *dest;
 
-    a16 = (u16)arg0;
-    t = ((u16 *)&data_0215d9b8)[3];
-    d0 = ((u32 *)&data_0215d8a0)[0];
+    *(u16 *)slot = (((u32)(u16)arg0 << 29) >> 25) | (slotFlags & ~0x70);
+    word = (word & ~0xf) | (arg0 & 0xf);
+    summary[0] = word;
 
-    t = (u16)((t & ~0x70) | ((a16 << 4) & 0x70));
-    ((u16 *)&data_0215d9b8)[3] = t;
+    map = *mapBase;
+    location = summary[1];
+    location = (location & 0xffff0000) | (u16)(M2C_FIELD(map[0], u16 *, MAP_ID) - 0xa1);
+    summary[1] = location;
+    {
+        u16 turn = M2C_FIELD(map[0], u16 *, MAP_TURN);
+        count = (u32)(word << 16) >> 24;
+        summary[1] = ((u32)turn << 16) | (u16)location;
+    }
 
-    d0 = (d0 & ~0x0F) | ((u32)arg0 & 0x0F);
-    ((u32 *)&data_0215d8a0)[0] = d0;
-
-    gm = (u8 *)*gCurrentMap;
-    gm0 = *(u32 *)gm;
-
-    d1 = ((u32 *)&data_0215d8a0)[1];
-    d1 = (d1 & 0xFFFF0000u) | ((u32)(*(u16 *)((u8 *)gm0 + 0x5142) - 0xA1) & 0xFFFFu);
-    ((u32 *)&data_0215d8a0)[1] = d1;
-
-    f2 = *(u16 *)((u8 *)gm0 + 0x52A2);
-    d1 = ((u32 *)&data_0215d8a0)[1];
-    ((u32 *)&data_0215d8a0)[1] = (d1 & 0xFFFFu) | ((u32)f2 << 16);
-
-    b = (s32)((d0 >> 8) & 0xFF);
-    if (b < 0xFF) b++;
-    ((u32 *)&data_0215d8a0)[0] = (((u32 *)&data_0215d8a0)[0] & ~0xFF00u) | ((u32)b << 8);
-
-    off = (u32)(arg0 * 0x118);
-    *(u32 *)(data_0215dba4 + off) = ((u32 *)&data_0215d8a0)[0];
-    *(u32 *)(data_0215dba4 + off + 4) = ((u32 *)&data_0215d8a0)[1];
-
-    dst = (u32 *)(data_0215dbac + off);
-    src = (u32 *)&data_0215d8a8;
-    i = 16;
-    do {
-        dst[0] = src[0];
-        dst[1] = src[1];
-        dst[2] = src[2];
-        dst[3] = src[3];
-        dst += 4;
-        src += 4;
-    } while (--i);
-
-    d2 = data_0215dcac + off;
-    s2 = (u8 *)&data_0215d9a8;
-    i = 4;
-    do {
-        d2[0] = s2[0];
-        d2[1] = s2[1];
-        s2 += 2;
-        d2 += 2;
-    } while (--i);
-
-    d2 = data_0215dcb4 + off;
-    s2 = (u8 *)&data_0215d9b0;
-    i = 4;
-    do {
-        d2[0] = s2[0];
-        d2[1] = s2[1];
-        s2 += 2;
-        d2 += 2;
-    } while (--i);
+    if (count < 0xff)
+        count++;
+    word = summary[0];
+    word = (word & ~0xff00) | (((u32)count << 24) >> 16);
+    summary[0] = word;
+    offset = arg0 * 0x118;
+    dest = (u32 *)(data_0215dba4 + offset);
+    dest[0] = word;
+    dest[1] = summary[1];
+    *(SaveProgressWords *)(data_0215dbac + offset) = *(SaveProgressWords *)&data_0215d8a8;
+    *(SaveProgressFlags *)(data_0215dcac + offset) = *(SaveProgressFlags *)&gEventFlagsHigh;
+    *(SaveProgressFlags *)(data_0215dcb4 + offset) = *(SaveProgressFlags *)&gEventValues;
 }
-
+#pragma peephole reset
 void func_020e49ec(void) {
     M2C_UNK func_02086ae4(s32, M2C_UNK);
     M2C_UNK func_0209c7fc();
@@ -346,82 +327,51 @@ void func_020e49ec(void) {
     } while (var_r5 < 0xA0);
 }
 
-void func_020e4a18(s32 arg0) {
-    s32 GetSaveRecordBuffer(void);
-    s32 LoadNewestSaveRecord(s32, s32);
-    extern M2C_UNK data_0215d8a0;
-    extern M2C_UNK data_0215d8a8;
-    extern M2C_UNK data_0215d9a8;
-    extern M2C_UNK data_0215d9b0;
-    extern M2C_UNK data_0215d9b8;
-
-    s32 handle;
-    s32 r12;
-    s32 *base;
-    s32 i;
-    u8 *p;
-    u8 *q;
-
-    handle = GetSaveRecordBuffer();
-    if (LoadNewestSaveRecord(4, handle) == 0) {
-        return;
-    }
-
-    r12 = arg0 * 0x118;
-    base = (s32 *)(handle + r12);
-
-    M2C_FIELD(&data_0215d8a0, s32 *, 0x0) = (s32) M2C_FIELD(base, s32 *, 0x284);
-    M2C_FIELD(&data_0215d8a0, s32 *, 0x4) = (s32) M2C_FIELD(base, s32 *, 0x288);
-
-    {
-        s32 *src = (s32 *)((u8 *)base + 0x28c);
-        s32 *dst = (s32 *)&data_0215d8a8;
-        i = 0x10;
-        do {
-            *dst++ = *src++;
-            i--;
-        } while (i != 0);
-    }
-
-    p = (u8 *)handle + r12 + 0x38c;
-    q = (u8 *)&data_0215d9a8;
-    i = 4;
-    do {
-        u8 a;
-        u8 b;
-        a = p[0];
-        b = p[1];
-        p += 2;
-        i--;
-        q[0] = a;
-        q[1] = b;
-        q += 2;
-    } while (i != 0);
-
-    p = (u8 *)handle + r12 + 0x394;
-    q = (u8 *)&data_0215d9b0;
-    i = 4;
-    do {
-        u8 a;
-        u8 b;
-        a = p[0];
-        b = p[1];
-        p += 2;
-        i--;
-        q[0] = a;
-        q[1] = b;
-        q += 2;
-    } while (i != 0);
-
-    for (i = 0; i < 3; i++) {
-        u8 *b = (u8 *)handle + i * 8;
-        u8 *out = (u8 *)&data_0215d9b8 + i * 8;
-        *(u16 *)(out + 0x34) = *(u16 *)(b + 0xcc);
-        *(u16 *)(out + 0x36) = *(u16 *)(b + 0xce);
-        *(s32 *)(out + 0x38) = *(s32 *)(b + 0xd0);
-    }
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_strength_reduction off
+/* Loads save slot `slot` from the newest campaign save record and copies its
+ * fields into the live progress globals: the slot summary, the per-map progress
+ * records, the high event flags and value bytes, and the three map-slot entries. */
+void LoadSaveSlotProgress(s32 slot)
+{
+  s32 GetSaveRecordBuffer(void);
+  s32 LoadNewestSaveRecord(s32, s32);
+  extern M2C_UNK gSaveSlotSummary;
+  extern M2C_UNK data_0215d8a8;
+  extern M2C_UNK gEventFlagsHigh;
+  extern M2C_UNK gEventValues;
+  extern M2C_UNK data_0215d9b8;
+  s32 saveBuffer;
+  s32 offset;
+  s32 *slotRecord;
+  s32 i;
+  saveBuffer = GetSaveRecordBuffer();
+  if (LoadNewestSaveRecord(4, saveBuffer) == 0)
+  {
+    return;
+  }
+  offset = slot * 0x118;
+  slotRecord = (s32 *) (saveBuffer + offset);
+  {
+    u32 word0 = ((volatile u32 *) slotRecord)[0x284 / 4];
+    u32 word1 = ((volatile u32 *) slotRecord)[0x288 / 4];
+    ((volatile u32 *) (&gSaveSlotSummary))[0] = word0;
+    ((volatile u32 *) (&gSaveSlotSummary))[1] = word1;
+  }
+  *((SaveProgressWords *) (&data_0215d8a8)) = *((SaveProgressWords *) (((u8 *) slotRecord) + 0x28c));
+  *((SaveProgressFlags *) (&gEventFlagsHigh)) = *((SaveProgressFlags *) (((u8 *) (saveBuffer + offset)) + 0x38c));
+  *((SaveProgressFlags *) (&gEventValues)) = *((SaveProgressFlags *) (((u8 *) (saveBuffer + offset)) + 0x394));
+  for (i = 0; i < 3; i++)
+  {
+    u8 *entry = ((u8 *) saveBuffer) + (i * 8);
+    u16 first = *((u16 *) (entry + 0xcc));
+    *((u16 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x34)) = first;
+    *((u16 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x36)) = *((u16 *) (entry + 0xce));
+    *((s32 *) ((((u8 *) (&data_0215d9b8)) + (i * 8)) + 0x38)) = *((s32 *) (entry + 0xd0));
+  }
 }
-
+#pragma pop
 void func_020e4b24(void) {
 
 }

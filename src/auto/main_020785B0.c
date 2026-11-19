@@ -20,29 +20,32 @@ extern s16 gSinCosTable[2048];
 extern u32 gTerrainClassFlags[][2];
 
 extern u32 gFrameCounter;
-extern u8 data_02140f70[24];
+extern u8 gMapHighlightState[24];
 
-void func_020785b0(void) {
+/* Decides each frame whether property cells are drawn in their owner's palette
+ * band: only in the zoomed-in view, and only for the last 80 frames of every
+ * 140-frame pulse. */
+void Map_UpdateOwnerColorBands(void) {
     s32 GetViewZoom(s32);
     extern s32 *gCurrentMap;
-    s32 var_r0;
-    if ((s32)(gFrameCounter % 140) < 60) {
-        data_02140f70[1] = 0;
+    s32 cellSize;
+    if ((s32)(gFrameCounter % MAP_VIEW_OWNER_BAND_CYCLE) < MAP_VIEW_OWNER_BAND_DELAY) {
+        gMapHighlightState[MAP_VIEW_OWNER_BANDS] = 0;
     } else {
-        data_02140f70[1] = 1;
+        gMapHighlightState[MAP_VIEW_OWNER_BANDS] = 1;
     }
-    if (GetViewZoom(*gCurrentMap + 0x6EF8) <= 0) {
-        var_r0 = 0x10;
+    if (GetViewZoom(*gCurrentMap + MAP_VIEW_ZOOM) <= 0) {
+        cellSize = MAP_SPRITE_ZOOM_SMALL;
     } else {
-        var_r0 = 0x18;
+        cellSize = MAP_SPRITE_ZOOM_LARGE;
     }
-    if (var_r0 == 0x10) {
-        data_02140f70[1] = 0;
+    if (cellSize == MAP_SPRITE_ZOOM_SMALL) {
+        gMapHighlightState[MAP_VIEW_OWNER_BANDS] = 0;
     }
 }
 
 void func_0207863c(void) {
-    data_02140f70[2] = (gFrameCounter / 12) & 3;
+    gMapHighlightState[2] = (gFrameCounter / 12) & 3;
 }
 
 #pragma scheduling on
@@ -146,7 +149,7 @@ y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
 func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);BuildMapCellShades(x0,y0,x1,y1);
-func_02078528();func_020785b0();func_0207863c();func_0207f9f4();
+func_02078528();Map_UpdateOwnerColorBands();func_0207863c();func_0207f9f4();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
@@ -233,7 +236,7 @@ MapView_SetCursorPosition((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
 void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     s32 func_020a7d80(void *);
     s32 func_020a7dc4(void *);
-    s32 func_020a8604(s32);
+    s32 UnitKindCanSupply(s32);
     s32 IsUnitSubmerged(void *);
     s32 UnitHasFacing(void *);
     s32 UnitHasCargo(void *);
@@ -262,7 +265,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     if (func_020a7d80((void *)unit)) flags |= 0x2;
     if (func_020a7dc4((void *)unit)) {
         kind = ((RenderUnit *)unit)->kind;
-        if (func_020a8604(kind)) flags |= 0x8;
+        if (UnitKindCanSupply(kind)) flags |= 0x8;
         else flags |= 0x4;
     }
     if (IsUnitSubmerged((void *)unit)) flags |= 0x20;

@@ -225,36 +225,40 @@ void func_0208ed64(M2C_UNK arg0) {
     func_0208ecc0();
 }
 
-void *func_0208ed88(void *arg0) {
+/* Constructor of a number-display sprite: run the sprite actor's shared base
+ * initialiser, install the number display's vtable, draw on the main screen (or
+ * both when the display is created while the sub engine is current), and start
+ * with no digits shown: cursor on digit 0, nine digits, value 0 and no source. */
+void *InitNumberDisplay(void *display) {
     M2C_UNK func_02089108();
-    extern M2C_UNK data_02102624;
+    extern M2C_UNK gNumberDisplayVtable;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    u8 var_r0;
-    u8 var_r0_2;
+    u8 isMain;
+    u8 target;
 
     func_02089108();
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_02102624;
+    M2C_FIELD(display, M2C_UNK **, 0) = &gNumberDisplayVtable;
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-        var_r0 = 1;
+        isMain = 1;
     } else {
-        var_r0 = 0;
+        isMain = 0;
     }
-    if (var_r0 != 1) {
-        var_r0_2 = 1;
+    if (isMain != 1) {
+        target = 1;
     } else {
-        var_r0_2 = 0;
+        target = 0;
     }
-    M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0xE) | ((u32) (var_r0_2 << 0x1D) >> 0x1C));
-    M2C_FIELD(arg0, s16 *, 0x34) = 0;
-    M2C_FIELD(arg0, s16 *, 0x36) = 0;
-    M2C_FIELD(arg0, s16 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x58) = 0;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 9;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s32 *, 0x64) = 0;
-    M2C_FIELD(arg0, s32 *, 0x68) = 0;
-    return arg0;
+    M2C_FIELD(display, u8 *, SPRITE_ACTOR_STATE) = (u8) ((M2C_FIELD(display, u8 *, SPRITE_ACTOR_STATE) & ~0xE) | ((u32) (target << 0x1D) >> 0x1C));
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_X) = 0;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_TILE) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_DIGIT) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_DIGITS) = 9;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_VALUE) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_HIGH) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_SOURCE) = 0;
+    return display;
 }
 
 #pragma opt_propagation off
@@ -269,7 +273,7 @@ void *func_0208ee1c(void *arg0) {
 void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); MemFree(arg0); return arg0; }
 
 #pragma opt_propagation reset
-void func_0208ee60(void *arg0, u32 arg1, s32 arg2) {
+void SetNumberDisplayGraphics(void *arg0, u32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
     func_0208e7ec(arg1, arg2);

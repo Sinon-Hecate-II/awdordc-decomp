@@ -14,12 +14,11 @@ u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
     extern u8 gAiRangeBitmap[];
     s32 func_020ce0ec(s32, s32);
 
-    s32 result = 0;
+    u32 result = 0;
     u8 hasFlag = 0;
-    void *base;
-    u16 width, height;
-    s32 yMin, xMax, xMin, yMax;
-    s32 row, col;
+
+    s32 yMax, xMin, yMin, xMax;
+    s32 col, row;
     s32 dist, dy, dx;
     u16 rowOffset;
     s32 vIndex;
@@ -37,57 +36,56 @@ u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
     xMin = xMin >= 0 ? xMin : 0;
     yMin = yOrig - 2;
     yMin = yMin >= 0 ? yMin : 0;
-    base = *gCurrentMap;
-    width = M2C_FIELD(base, u16 *, 0x5144);
-    height = M2C_FIELD(base, u16 *, 0x5146);
-    xMax = width - 1;
+    xMax = M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) - 1;
     if (xOrig + 2 < xMax) xMax = xOrig + 2;
-    yMax = height - 1;
+    yMax = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT) - 1;
     if (yOrig + 2 < yMax) yMax = yOrig + 2;
 
     for (row = yMin; row <= yMax; row++) {
-        for (col = xMin; col <= xMax; col++) {
+        col = xMin;
+        if (col > xMax) continue;
+        do {
             dx = xOrig - col;
             if (dx <= 0) dx = col - xOrig;
             dist = 0;
             dist += dx;
             dy = yOrig - row;
             if (dy > 0) dist += dy; else dist += row - yOrig;
-            if (dist < 0 || dist > 2) continue;
+            if (dist < 0 || dist > 2) goto next;
 
             rowOffset = M2C_FIELD((u8 *)*gCurrentMap + row * 2, u16 *, 0x3758);
             vIndex = rowOffset + col;
-            base = *gCurrentMap;
-            if ((u8)(M2C_FIELD(base, u8 *, ((u32)vIndex >> 3) + 0x5160) & (1 << (vIndex & 7)))) continue;
+                    if ((u8)(M2C_FIELD(((u8 *)*gCurrentMap) + ((u32)vIndex >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (vIndex & 7)))) goto next;
 
-            rowPtr = M2C_FIELD(base + row * 4, s8 **, 0x52e8);
+            rowPtr = M2C_FIELD(((u8 *)*gCurrentMap) + row * 4, s8 **, 0x52e8);
             terrainVal = rowPtr[col];
-            prop = M2C_FIELD((u8 *)base + col + rowOffset, u8 *, 0x1420);
+
 
             if (terrainVal != 0) {
+                prop = M2C_FIELD((u8 *)*gCurrentMap + col + rowOffset, u8 *, 0x1420);
                 if (prop & 0xe0) hasFlag = 1;
-                funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff), prop);
+                funcRes = func_020ce0ec((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), prop);
                 if (funcRes != 0) result += 0x1000000; else result += 0x100000;
-                base = *gCurrentMap;
-                width = M2C_FIELD(base, u16 *, 0x5144);
-                linear = row * width + col;
+                linear = row * M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) + col;
                 if ((u8)(gAiRangeBitmap[linear >> 3] & (1 << (linear & 7)))) result += 0x10000;
             } else {
+                prop = M2C_FIELD((u8 *)*gCurrentMap + col + rowOffset, u8 *, 0x1420);
                 if (prop & 0xe0) result += 0x100; else result += 0x10;
-                linear = (u16)(row * width + col);
+                linear = row * M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) + col;
                 if ((u8)(gAiRangeBitmap[linear >> 3] & (1 << (linear & 7)))) result += 1;
             }
-        }
+        next:
+            col++;
+        } while (col <= xMax);
     }
 
     if (!hasFlag) return 0;
 
-    rowOffsetOrig = M2C_FIELD((u8 *)base + yOrig * 2, u16 *, 0x3758);
+    rowOffsetOrig = M2C_FIELD((u8 *)((u8 *)*gCurrentMap) + yOrig * 2, u16 *, 0x3758);
     finalIdx = xOrig + rowOffsetOrig;
     result <<= 2;
-    prop = M2C_FIELD((u8 *)base + finalIdx, u8 *, 0x1420);
-    if (!(u8)(M2C_FIELD(base, u8 *, (finalIdx >> 3) + 0x5160) & (1 << (finalIdx & 7)))) {
-        funcRes = func_020ce0ec((s32)(M2C_FIELD(base, u16 *, 0x52a4) & 0xff), prop);
+    if (!(u8)(M2C_FIELD(((u8 *)*gCurrentMap) + (finalIdx >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (finalIdx & 7)))) {
+        funcRes = func_020ce0ec((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), M2C_FIELD(((u8 *)*gCurrentMap) + finalIdx, u8 *, 0x1420));
         if (funcRes != 0) {
             rowPtr0 = M2C_FIELD((u8 *)*gCurrentMap + yOrig * 4, s8 **, 0x52e8);
             terrain0 = rowPtr0[xOrig];
@@ -233,7 +231,7 @@ s32 ApplyAttackBonus(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
     s32 GetCoZoneAttackBonus(u32, s32, s32);
     s32 func_020a28f4(u32, s32, s32);
-    s32 func_020a334c(u16);
+    s32 GetPlayerArmyVariantIfSet(u16);
     s32 IsUnitSelected(void *);
     s32 Divide(s32, s32);
     extern void **gCurrentMap;
@@ -242,9 +240,9 @@ s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
         if (secondUnit) { if (!secondUnit) n = 0; else n = (s32)((u8 *)secondUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
         a = GetCoZoneAttackBonus((u32)(M2C_FIELD(secondUnit, u8 *, 0) << 26) >> 26, idx, 0);
     } else a = 0;
-    if (firstUnit && (IsUnitSelected(firstUnit) || func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
+    if (firstUnit && (IsUnitSelected(firstUnit) || GetPlayerArmyVariantIfSet(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
         if (firstUnit) { if (!firstUnit) n = 0; else n = (s32)((u8 *)firstUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
-        b = func_020a28f4((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, func_020a334c(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
+        b = func_020a28f4((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, GetPlayerArmyVariantIfSet(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
     } else b = 0;
     if (a == 0 && b == 0) { } else base = Divide(base * (a + 100), b + 100);
     return base;

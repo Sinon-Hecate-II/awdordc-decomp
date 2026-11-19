@@ -6,7 +6,8 @@
 
 #define AI_STATE_TARGET_COUNT  0x00 /* u8 number of target candidates (CollectAiTargetCandidates) */
 #define AI_STATE_GROUP_COUNT   0x01 /* u8 number of target groups (BuildAiTargetGroups) */
-#define AI_STATE_PHASE         0x02 /* u8 AI turn phase (state machine in ProcessAiTurn) */
+#define AI_STATE_PHASE         0x02 /* u8 AI turn phase (state machine in ProcessAiTurnPlan) */
+#define AI_STATE_UNIT_COUNT_MAX 50 /* the AI's army is at its unit cap, so the turn plan stops */
 #define AI_STATE_RESERVE_RETRY 0x05 /* u8 retries left to reserve money for a purchase */
 #define AI_STATE_UNIT_COUNT    0x07 /* u8 friendly units counted this turn */
 #define AI_STATE_INFANTRY_MECH 0x08 /* u8 the AI's infantry and mech units, denominator of the unit-type ratios */
@@ -18,6 +19,26 @@
  * the AI marked for this turn; 1 means a single area. */
 #define AI_COMMAND_STATE_TARGET_AREAS 0x06
 
+/* Values of AI_COMMAND_STATE_PHASE, driven by UpdateAiTurn (ov000_0219B848.c).
+ * Phases 0..2 and 4 are stepped inside a task sprite running
+ * ProcessAiCommandPhase until the phase leaves that set; 3, 5 and 6 are stepped
+ * once per frame by UpdateAiTurn itself. */
+#define AI_COMMAND_PHASE_START_TURN  0 /* begin the AI's turn (BeginAiTurn) */
+#define AI_COMMAND_PHASE_PLAN_UNITS  1 /* run the turn plan's unit-selection step for the current AI_STATE_PHASE */
+#define AI_COMMAND_PHASE_PICK_ACTION 2 /* pick the next AI unit's action */
+#define AI_COMMAND_PHASE_ACT         3 /* carry out the picked command, frame by frame (ProcessAiCommandStep) */
+#define AI_COMMAND_PHASE_PLAN_TURN   4 /* run the turn plan's order step for the current AI_STATE_PHASE */
+#define AI_COMMAND_PHASE_PLACE_UNIT  5 /* place the unit the AI bought (AiPlaceBuildingUnit) */
+#define AI_COMMAND_PHASE_END_TURN    6 /* end the AI's turn (EndAiTurn) */
+#define AI_COMMAND_TASK_SPRITE_Z     6 /* z slot of the task sprite that runs the planning phases */
+
+/* Values of gLinkAiCommandStage, the battle state's replay of a battle command
+ * that another console broadcast (UpdateLinkAiCommand, main_02084304.c).  Idle
+ * polls the current player's command queue; Busy steps the popped command with
+ * ProcessAiCommandStep until the AI goes back to picking its next action. */
+#define AI_COMMAND_STAGE_IDLE 0 /* no command queued for this player */
+#define AI_COMMAND_STAGE_BUSY 1 /* a popped command is being carried out */
+
 /* Fields of the AI command state used while a unit's action is chosen. */
 #define AI_COMMAND_STATE_PHASE      0x00 /* u8 AI command phase (*gAiCommandState, dispatched by the AI state machine) */
 #define AI_COMMAND_STATE_STEP       0x01 /* u8 step within the current phase */
@@ -28,6 +49,10 @@
 #define AI_ACTION_SKIP_REPLAN 0x20 /* suppress the fallback callback in action finalization */
 #define AI_ACTION_DESTINATION_CHOSEN 0x10 /* the acting unit's destination is chosen; finalization does not choose it again */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
+/* Total property count of the players not on the current army's team, summed
+ * at the start of the AI's turn (CountEnemyProperties). */
+#define AI_COMMAND_STATE_ENEMY_PROPERTIES 0x04 /* u8 enemy property total */
+#define AI_COMMAND_STATE_CAPTURE_PUSH     0x20 /* bit of the above: the enemies hold enough properties that infantry and mechs head straight for any property */
 #define AI_COMMAND_STATE_ATTACKER   0x0C /* u8 kind of the unit the AI is evaluating an attack with */
 #define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */
 
@@ -43,6 +68,16 @@
 #define AI_COMMAND_SEED    0x08 /* s32 random seed captured with the command */
 #define AI_COMMAND_FUEL_LEFT 0x12 /* u8 fuel the acting unit has left after the move */
 #define AI_COMMAND_READY   0x13 /* u8 set once the command record is complete */
+/* One past the last valid AI_COMMAND_KIND: kinds 1..0x18 are commands, 0 and
+ * above this are not (IsAiCommandKindValid). */
+#define AI_COMMAND_KIND_LIMIT 0x19
+
+/* Sentinels in gAiUnitList, the list of unit ids the current AI phase walks.
+ * AI_UNIT_LIST_END finishes the walk; AI_UNIT_LIST_NO_UNIT is an entry with no
+ * unit behind it (a build or other army-wide action) that just runs the
+ * installed gAiUnitAction callback. */
+#define AI_UNIT_LIST_END     0x00
+#define AI_UNIT_LIST_NO_UNIT 0x40
 
 /* The army value is scaled by 3/2 and never goes below this floor. */
 #define AI_ARMY_VALUE_MIN      1000
@@ -83,7 +118,7 @@
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
 
-/* The AI's counter-unit kind (func_ov000_021a1b1c builds one when an enemy has
+/* The AI's counter-unit kind (BuildAiCounterUnit builds one when an enemy has
  * a unit of the class it answers).  An existing one is only considered usable
  * while it keeps at least half its health. */
 #define AI_COUNTER_UNIT_KIND       14
@@ -101,6 +136,7 @@
 #define AI_CANDIDATE_TYPE     0x02 /* u8 target type */
 #define AI_CANDIDATE_STATUS   0x03 /* u8 AI_CANDIDATE_* status */
 #define AI_CANDIDATE_GROUP    0x04 /* s8 target group */
+#define AI_CANDIDATE_ENEMY_GROUP_DISTANCE 0x07 /* u8 distance to the closest enemy in the candidate's target group */
 #define AI_CANDIDATE_STRIDE   12
 /* Candidate fields 0x05..0x0A are reused per target type.  On a property
  * candidate (type 2) the AI target-group scan files the number of enemy units

@@ -3,13 +3,13 @@
 
 double func_02070b70(double arg0, double arg1) { return 0.0; }
 
-float func_02070f24(float a, float b) { return a + b; }
+float _fadd(float a, float b) { return a + b; }
 
 s32 func_02071140(void) {
     return 0x7FFFFFFF;
 }
 
-s32 func_02071438(s32 arg0, s32 arg1) {
+s32 _fgr(s32 arg0, s32 arg1) {
     s32 var_r0;
     s32 var_r0_2;
     s32 var_r1;
@@ -37,12 +37,12 @@ s32 func_02071438(s32 arg0, s32 arg1) {
     return 0;
 }
 
-float func_02071564(float a, float b) {
+float _fdiv(float a, float b) {
     (void)a; (void)b;
     return 0.0f;
 }
 
-s32 func_0207191c(u32 arg0) {
+s32 _f2d(u32 arg0) {
     u32 temp_ip;
     u32 temp_r3;
     u32 var_r3;
@@ -68,7 +68,7 @@ s32 func_0207191c(u32 arg0) {
 }
 
 #pragma opt_common_subs off
-u32 func_020719a0(s32 x) {
+u32 _ffix(s32 x) {
     s32 n = 158;
     u32 a = x & 0x7fffffff;
     n -= (s32)(a >> 23);
@@ -83,7 +83,7 @@ u32 func_020719a0(s32 x) {
     return ~(x >> 31) + 0x80000000U;
 }
 #pragma opt_common_subs reset
-s32 func_020719d4(s32 arg0) {
+s32 _fflt(s32 arg0) {
     s32 temp_r0;
     s32 temp_r2;
     s32 temp_r3;

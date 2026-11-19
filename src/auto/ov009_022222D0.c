@@ -127,6 +127,7 @@ M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;
 
 #pragma cplusplus on
 #pragma optimization_level 2
+#pragma opt_propagation off
 extern "C" void ResetLinkQueues(void) {
  s32 func_ov009_02221338(void *,s32);
  extern s32 gLinkState;
@@ -134,11 +135,11 @@ extern "C" void ResetLinkQueues(void) {
  extern s32 data_ov009_022269b0;
  extern s32 data_ov009_022269e0;
  extern Ov009CallbackFn gLinkSession[];
- volatile s32 saved;
  void *node;
  Ov009CallbackFn a,b;
- saved=*(volatile u16 *)0x04000208;
- *(volatile u16 *)0x04000208=0;
+ s32 bytes;
+ {
+ Ov009InterruptGuard guard;
  node=M2C_FIELD(&gLinkState,void **,0x64);
  if(node) do {
  M2C_FIELD(&gLinkState,void **,0x64)=M2C_FIELD(node,void **,0);
@@ -148,13 +149,15 @@ extern "C" void ResetLinkQueues(void) {
  M2C_FIELD(&gLinkState,s32 *,0x68)=0;
  M2C_FIELD(&gLinkState,s32 *,0x64)=0;
  M2C_FIELD(&gLinkState,s32 *,0x6c)=0;
- (void)*(volatile u16 *)0x04000208;
- *(volatile u16 *)0x04000208=saved;
+ }
+ bytes = 48;
  a=gLinkSession[1];
- ov009CallRange((u8 *)&data_ov009_02226980,48,a);
+ ov009Apply((u8 *)&data_ov009_02226980, (u8 *)&data_ov009_022269b0, bytes, Ov009Functor(a));
+ bytes = 48;
  b=gLinkSession[2];
- ov009CallRange((u8 *)&data_ov009_022269b0,48,b);
+ ov009Apply((u8 *)&data_ov009_022269b0, (u8 *)&data_ov009_022269e0, 48, Ov009Functor(b));
 }
+#pragma opt_propagation reset
 #pragma optimization_level 4
 #pragma cplusplus off
 
@@ -170,27 +173,30 @@ node=M2C_FIELD(node,void **,0);
 return 0;
 }
 #pragma cplusplus off
-void func_ov009_022226b8(void *arg0) {
+/* General WFC event callback of the link overlay: a fatal result halts the
+ * console, the Download Play host-ready event clears the link actor's retry
+ * count, and every event is then forwarded to the installed event handler. */
+void HandleLinkWfcEvent(void *event) {
     void SignalLinkEvent();
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK gLinkState;
-    void *temp;
-    if(M2C_FIELD(arg0,u16 *,2)==8) {
+    void *actor;
+    if(M2C_FIELD(event,u16 *,LINK_WFC_EVENT_RESULT)==LINK_WFC_RESULT_FATAL) {
         SignalLinkEvent();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         SystemHalt();
     }
-    switch((u32)(M2C_FIELD(arg0,u16 *,4)-0x10)) {
+    switch((u32)(M2C_FIELD(event,u16 *,LINK_WFC_EVENT_KIND)-LINK_WFC_KIND_HOST_READY)) {
     case 1: case 2: case 3: case 4: case 5: case 6: case 7: break;
     default: break;
     case 0:
-        temp=FindObjectByClass(&gLinkActorClass);
-        if(temp!=NULL) M2C_FIELD(temp,u16 *,0x34)=0;
+        actor=FindObjectByClass(&gLinkActorClass);
+        if(actor!=NULL) M2C_FIELD(actor,u16 *,LINK_ACTOR_RETRY)=0;
         break;
     }
-    if(M2C_FIELD(&gLinkState,void (**)(void *),0x3C)==NULL) return;
-    M2C_FIELD(&gLinkState,void (**)(void *),0x3C)(arg0);
+    if(M2C_FIELD(&gLinkState,void (**)(void *),LINK_STATE_EVENT_HANDLER)==NULL) return;
+    M2C_FIELD(&gLinkState,void (**)(void *),LINK_STATE_EVENT_HANDLER)(event);
 }
 
 void SignalLinkEvent(arg0)
@@ -238,13 +244,13 @@ s32 arg0;
 void func_ov009_0222281c(void *arg0) {
     s32 func_020119dc(M2C_UNK *);
     M2C_UNK func_ov009_022244d4(M2C_UNK);
-    void func_ov009_022226b8(void *);
+    void HandleLinkWfcEvent(void *);
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SignalLinkEvent();
         SetLinkPhase(9);
         return;
     }
-    if (func_020119dc((M2C_UNK *)func_ov009_022226b8) != 0) {
+    if (func_020119dc((M2C_UNK *)HandleLinkWfcEvent) != 0) {
         SignalLinkEvent(M2C_FIELD(arg0, u16 *, 2));
         SetLinkPhase(9);
         return;
@@ -253,26 +259,33 @@ void func_ov009_0222281c(void *arg0) {
     SetLinkPhase(1);
 }
 
-s32 AnnounceNextLinkPlayer(u16 arg0) {
+/* Ask the next player slot to announce itself: queue the player-announcement
+ * command (0x11) for the first slot at or after `firstSlot` that the WFC player
+ * mask holds, and let HandleLinkAnnounceEvent take the slot's answer (its result
+ * reaches the caller).  A mask that is not ready (0x8000) fails with code 3, and
+ * an empty mask reports result 0x17 and ends the announcement: both it and
+ * running past slot 16 end with LINK_ANNOUNCE_DONE. */
+s32 AnnounceNextLinkPlayer(u16 firstSlot) {
     s32 WFC_GetPlayerMask();
     void SignalLinkResult();
-    void func_ov009_02222a00(M2C_UNK, M2C_UNK);
+    void RequestLinkPlayerAnnounce(M2C_UNK, M2C_UNK);
     void HandleLinkAnnounceEvent(void *);
-    s32 mask=WFC_GetPlayerMask();
-    if(mask==0x8000) {
+    s32 mask = WFC_GetPlayerMask();
+
+    if (mask == 0x8000) {
         SignalLinkError(3);
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return 3;
     }
-    if(mask==0) {
+    if (mask == 0) {
         SignalLinkResult(0x17);
-        SetLinkPhase(8);
-        return 0x19;
+        SetLinkPhase(LINK_PHASE_ERROR);
+        return LINK_ANNOUNCE_DONE;
     }
-    while(!(mask & (1 << (arg0-1)))) {
-        if((u32)arg0++>=0x10) return 0x19;
+    while (!(mask & (1 << (firstSlot - 1)))) {
+        if ((u32) firstSlot++ >= 0x10) return LINK_ANNOUNCE_DONE;
     }
-    func_ov009_02222a00((M2C_UNK)&HandleLinkAnnounceEvent,arg0);
+    RequestLinkPlayerAnnounce((M2C_UNK) &HandleLinkAnnounceEvent, firstSlot);
 }
 
 void SignalLinkResult(arg0)
@@ -328,7 +341,7 @@ void HandleLinkAnnounceEvent(void *event) {
     SetLinkPhase(LINK_PHASE_ERROR);
 }
 
-void func_ov009_02222a00(M2C_UNK arg0, M2C_UNK arg1) {
+void RequestLinkPlayerAnnounce(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02013dac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     func_02013dac(arg0, 3, 0x11, arg1, 0x1E);
 }
@@ -512,7 +525,7 @@ void HandleLinkConnectTaskEvent(void *arg0) {
 }
 
 s32 func_ov009_02222f84(void) {
-s32 WFC_GetPlayerMask(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
+s32 WFC_GetPlayerMask(void); s32 GetConsoleLocalId(void); s32 func_020124c4(void *,void *);
 extern M2C_UNK gLinkState; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
 s32 bits; s32 result;
 bits=WFC_GetPlayerMask();
@@ -524,7 +537,7 @@ M2C_FIELD(&gLinkState,u16 *,0x84)++;
 if(M2C_FIELD(&gLinkState,u16 *,0x84)>14) M2C_FIELD(&gLinkState,u16 *,0x84)=1;
 } while(!(bits&(1<<(M2C_FIELD(&gLinkState,u16 *,0x84)-1))));
 } else M2C_FIELD(&gLinkState,u16 *,0x84)=M2C_FIELD(&gLinkState,u16 *,6);
-M2C_FIELD(&gLinkState,u16 *,0x86)=func_02011e98();
+M2C_FIELD(&gLinkState,u16 *,0x86)=GetConsoleLocalId();
 M2C_FIELD(&gLinkState,void **,0x80)=&data_ov009_02226a80;
 result=func_020124c4(&func_ov009_02223078,&data_ov009_02226960);
 if(result==2) return 1;
@@ -550,7 +563,7 @@ void func_ov009_02223078(void *arg0) {
     s32 GetLinkPhase(void);
     s32 func_ov009_02223244(void);
     void DC_InvalidateRange(void *, s32);
-    s32 func_0201a09c(void *);
+    s32 IsConnectionDataValid(void *);
     s32 func_ov009_02222f84(void);
     s32 func_ov009_02222348(s32);
     extern Ov009CallbackFn gLinkSession[];
@@ -627,7 +640,7 @@ test:
     if (t8 == 5) {
         DC_InvalidateRange(&data_ov009_02226a80, 0xc0);
         if (M2C_FIELD(&gLinkState, s32 *, 0x30) != 0 &&
-            func_0201a09c(&data_ov009_02226a80) != 0) {
+            IsConnectionDataValid(&data_ov009_02226a80) != 0) {
             cb = M2C_FIELD(&gLinkState, void (**)(void *), 0x4c);
             if (cb != 0) cb(&data_ov009_02226a80);
         } else {

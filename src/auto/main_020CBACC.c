@@ -111,16 +111,23 @@ void func_020cbda4(void) {
     CreateSpriteFromClass(&data_0212b25c, 7);
 }
 
-void RefreshCursorCell(void) {
-extern void **gCurrentMap;
-void func_020d8804(void);void *p;
-p=*gCurrentMap;
-M2C_FIELD(p,u16 *,0x52e6)=(M2C_FIELD(p,u16 *,0x52e6)&~0x1fc)|((u32)(M2C_FIELD(p,u16 *,0x52c2)<<25)>>23);
-p=*gCurrentMap;
-M2C_FIELD(p,u16 *,0x52e6)=(M2C_FIELD(p,u16 *,0x52e6)&~0xfe00)|((u32)(M2C_FIELD(p,u16 *,0x52c4)<<25)>>16);
-M2C_FIELD(*gCurrentMap,u16 *,0x52e4)=0;
-M2C_FIELD(*gCurrentMap,u16 *,0x52e6)&=~3;
-func_020d8804();
+/* Pack the target cursor tile into the cached cell coordinates, reset display flags, and refresh display mode. */
+void RefreshMapCursorCellCache(void) {
+    extern void **gCurrentMap;
+    void UpdateCursorCellDisplayMode(void);
+    void *map;
+
+    map = *gCurrentMap;
+    M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) =
+        (M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) & ~MAP_CURSOR_CELL_COORD_MASK) |
+        ((u32)(M2C_FIELD(map, u16 *, MAP_CURSOR_TARGET_X) << 25) >> 23);
+    map = *gCurrentMap;
+    M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) =
+        (M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) & ~MAP_CURSOR_CELL_COORD_Y_MASK) |
+        ((u32)(M2C_FIELD(map, u16 *, MAP_CURSOR_TARGET_Y) << 25) >> 16);
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_CELL_DISPLAY_MODE) = 0;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_CELL_CACHE) &= ~MAP_CURSOR_CELL_FLAGS_MASK;
+    UpdateCursorCellDisplayMode();
 }
 
 /* Spawn the ripple effect on the tile under the map cursor when that tile is
@@ -157,8 +164,8 @@ void SpawnRippleOut(M2C_UNK arg0) {
 
 void func_020cbfb4(void) {
     M2C_UNK SetUiMessageText(s32);
-    s32 func_020cd6d4();
-    if (func_020cd6d4() != 0) {
+    s32 IsCampaignBattleRules();
+    if (IsCampaignBattleRules() != 0) {
         SetUiMessageText(0xC000032F);
         return;
     }
@@ -178,9 +185,9 @@ void func_020cbffc(void) {
 }
 
 void func_020cc028(void) {
-    M2C_UNK func_02096c7c(u16, M2C_UNK);
+    M2C_UNK AwardVictoryToPlayer(u16, M2C_UNK);
     extern void **gCurrentMap;
-    func_02096c7c(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 8);
+    AwardVictoryToPlayer(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 8);
 }
 
 void func_020cc050(void) {
@@ -290,7 +297,7 @@ void func_020cc430(void *arg0) {
     extern u16 *gKeyState;
     func_020cf80c();
     func_0207a7a4(1, 8);
-    if (func_020d4dd0() != 0) {
+    if (IsMapCursorIdle() != 0) {
         if (!(*gKeyState & 0xB)) {
             return;
         }
@@ -343,7 +350,7 @@ void CloseMapViewStep(void *a) {
         M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_X) = (GetMapViewWidth() >> 1) + (M2C_FIELD(p, s16 *, 0x28) >> 4);
         p = (u8 *)*gCurrentMap + 0x5120;   /* +0x2a is MAP_VIEW_Y */
         M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_TARGET_Y) = (GetMapViewHeight() >> 1) + (M2C_FIELD(p, s16 *, 0x2a) >> 4);
-        RefreshCursorCell();
+        RefreshMapCursorCellCache();
     }
     Reset3DSpriteBankState();
     func_020c0a88();
@@ -380,10 +387,10 @@ void CancelMapCursorAnimation(void) {
  * then records one or two cursor-movement stats. */
 void SubmitCursorTarget(void){
 extern s32 data_0215be0c;extern void **gCurrentMap;
-s32 func_020d46cc(void);void func_020d46ac(void);void func_020c75cc(void);void func_020d468c(void);
+s32 func_020d46cc(void);void func_020d46ac(void);void OpenMapActionMenu(void);void func_020d468c(void);
 void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void AddRecordValue(s32,s32);
 MapTargetEntry *target; s32 distance;
-if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else func_020c75cc();return;}
+if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else OpenMapActionMenu();return;}
 target=(MapTargetEntry *)GetTargetPosition();
 if(target->value==0){
 func_020d468c();
@@ -444,7 +451,7 @@ void UpdateAdjacentAllySelection(void *option) {
     M2C_UNK UpdateMapCursorOption(s32 *, M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);
     void func_020d472c(void);
-    void func_020c75cc(void);
+    void OpenMapActionMenu(void);
     M2C_UNK CreateAdjacentAllyMarker(s32);
     M2C_UNK Sprite_ResumeAnimation(void *);
     extern void **gCurrentMap;
@@ -459,7 +466,7 @@ void UpdateAdjacentAllySelection(void *option) {
     if (action & 0x20) {
         DeleteSpriteObject(option);
         func_020d472c();
-        func_020c75cc();
+        OpenMapActionMenu();
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X);
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y);
         return;
@@ -477,8 +484,8 @@ func_020d468c();func_020d472c();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;BattleUpd
 
 s32 func_020cc9a4(void) {
     M2C_UNK func_0207a7a4(M2C_UNK, M2C_UNK);
-    s32 func_020d4dd0();
-    if (func_020d4dd0() != 0) {
+    s32 IsMapCursorIdle();
+    if (IsMapCursorIdle() != 0) {
         return 0;
     }
     func_0207a7a4(0, 4);

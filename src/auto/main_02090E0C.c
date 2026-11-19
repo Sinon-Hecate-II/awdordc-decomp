@@ -1,6 +1,7 @@
 /* 47 functions from 0x02090E0C to 0x02091E04 (main), found by ds-decomp. */
 #include "common.h"
 #include "sprite.h"
+#include "battle_map.h"
 
 extern u8 gSpritePaletteCycle[];
 static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
@@ -122,18 +123,21 @@ void *func_02090f0c(void *arg0) {
 void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gScriptedSpriteVtbl;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&gScriptedSpriteVtbl;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
 
 #pragma opt_propagation off
-void func_02090fdc(void *arg0) {
+/* One frame of a child-sprite wrapper: draw the sprite it holds at the wrapper's
+ * map position (x and y in cell units scaled by the map cell size, z from the
+ * wrapper) and delete the wrapper once the child sprite has stopped. */
+void DrawChildSprite3D(void *wrapper) {
 M2C_UNK DrawSprite3D(void *); M2C_UNK DeleteSpriteObject(void *);
-s32 pos[3]; s32 *p; s32 valid,invalid;
-pos[0]=M2C_FIELD(arg0,s32 *,0x5c)*48;
-pos[1]=M2C_FIELD(arg0,s32 *,0x60)*48;
-pos[2]=M2C_FIELD(arg0,s32 *,0x64);
-if(((s32 (*)(void *,s32 *,s32,s32))DrawSprite3D)(M2C_FIELD(arg0,void **,0x58),pos,0x30000,0)) return;
-p=M2C_FIELD(arg0,s32 **,0x58);invalid=1;
-if(p && *p) invalid=0;
-valid=invalid==0;
-if(valid) return;
-DeleteSpriteObject(arg0);
+s32 pos[3]; s32 *child; s32 alive,gone;
+pos[0]=M2C_FIELD(wrapper,s32 *,SPRITE_WRAPPER_X)*MAP_SPRITE_CELL_SIZE;
+pos[1]=M2C_FIELD(wrapper,s32 *,SPRITE_WRAPPER_Y)*MAP_SPRITE_CELL_SIZE;
+pos[2]=M2C_FIELD(wrapper,s32 *,SPRITE_WRAPPER_Z);
+if(((s32 (*)(void *,s32 *,s32,s32))DrawSprite3D)(M2C_FIELD(wrapper,void **,SPRITE_WRAPPER_CHILD),pos,MAP_SPRITE_GFX_SIZE_SMALL,0)) return;
+child=M2C_FIELD(wrapper,s32 **,SPRITE_WRAPPER_CHILD);gone=1;
+if(child && *child) gone=0;
+alive=gone==0;
+if(alive) return;
+DeleteSpriteObject(wrapper);
 }
 #pragma opt_propagation reset
 void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
@@ -711,7 +715,7 @@ LoadGraphicsBlock(&data_0211e738,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
 CopyToObjPaletteShadow(&data_0211e068,0x200,0x20);
 }
 
-void func_02091cd0(void) {
+void LoadScenePanelGraphicsOnBothEngines(void) {
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineSub;
 extern void *g3DSpriteEngineMain;

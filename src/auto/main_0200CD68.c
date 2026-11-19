@@ -2,7 +2,10 @@
 #include "common.h"
 #include "hw_div.h"
 typedef struct { u16 x,y; } TouchPair;
-typedef struct { u8 pad[0x58]; u16 a,b; u8 e,f; u16 c,d; u8 g,h; } TouchInput;
+/* The factory touch calibration kept in the firmware's user-settings block at
+ * 0x027FFC80: two sampled raw touch points, each with the screen position it was
+ * taken at. */
+typedef struct { u8 pad[0x58]; u16 rawX1,rawY1; u8 screenX1,screenY1; u16 rawX2,rawY2; u8 screenX2,screenY2; } TouchCalibrationPoints;
 typedef struct {
     u32 unk0;                      /* +0x00 */
     void (*callback)(s32,s32,s32); /* +0x04 */
@@ -20,8 +23,8 @@ typedef struct {
     s32 calYScale;                 /* +0x30 1<<28 divided by the y range */
     u16 calibrated;                /* +0x34 nonzero once calibration is set */
     u16 state;                     /* +0x36 */
-    u16 flags38;                   /* +0x38 */
-    u16 flags3a;                   /* +0x3A */
+    u16 flags38;                   /* +0x38 bit per touch command that failed */
+    u16 flags3a;                   /* +0x3A bit per touch command that finished */
 } TouchState;
 extern HashDescriptor gSha1HashDescriptor;
 extern M2C_UNK gTouchDriverState;
@@ -43,12 +46,16 @@ typedef struct {
     s32 yScale;  /* +0x14 */
 } TouchCalibration;
 
-void HmacSha1(u32 a,u32 b,u32 c,u32 d,u32 e) {
+/* Computes the HMAC-SHA1 (RFC 2104) of `message` under `key` into the 20-byte
+ * `digest`, using a private hash descriptor that points the SHA1 state and the
+ * inner digest at this function's buffers.  The caller has already copied the
+ * key into its own work buffer. */
+void HmacSha1(u32 digest,u32 message,u32 messageLength,u32 key,u32 keyLength) {
 void Hmac(u8 *,u8 *,s32,u8 *,s32,HashDescriptor *);
-u8 ctx[0x68]; u8 innerDigest[0x14]; HashDescriptor cfg = gSha1HashDescriptor;
-cfg.context=ctx; cfg.digest=innerDigest;
-cfg.init=Sha1Init; cfg.update=Sha1Update; cfg.final=SHA1_Finalize;
-Hmac(a,b,c,d,e,&cfg);
+u8 sha1Context[0x68]; u8 innerDigest[0x14]; HashDescriptor descriptor = gSha1HashDescriptor;
+descriptor.context=sha1Context; descriptor.digest=innerDigest;
+descriptor.init=Sha1Init; descriptor.update=Sha1Update; descriptor.final=SHA1_Finalize;
+Hmac(digest,message,messageLength,key,keyLength,&descriptor);
 }
 
 #pragma scheduling off
@@ -240,19 +247,24 @@ SetFifoMessageHandler(6,&func_0200d2c4);
 }
 
 #pragma opt_propagation off
-s32 func_0200d5bc(u16 *p) {
-    s32 func_0200da04(void *,u16,u16,u16,u16,u16,u16,u16,u16);
-    volatile void *base = (volatile void *)0x027ffc80;
-    u16 a = M2C_FIELD(base, u16 *, 0x58);
-    u16 b = M2C_FIELD(base, u16 *, 0x5a);
-    u16 c = M2C_FIELD(base, u16 *, 0x5e);
-    u16 d = M2C_FIELD(base, u16 *, 0x60);
-    u8 e = M2C_FIELD(base, u8 *, 0x5c);
-    u8 f = M2C_FIELD(base, u8 *, 0x5d);
-    u8 g = M2C_FIELD(base, u8 *, 0x62);
-    u8 h = M2C_FIELD(base, u8 *, 0x63);
-    if ((!a && !c && !b && !d) || func_0200da04(p, a, b, e, f, c, d, g, h)) {
-        p[0] = 0; p[1] = 0; p[2] = 0; p[3] = 0; return 1;
+/* Build the touch screen calibration from the factory points stored in the
+ * firmware's user-settings block: the two raw/screen point pairs are handed to
+ * TP_CalculateCalibration, and cal is zeroed when the firmware has no usable
+ * points or the calculation fails. */
+s32 TP_GetFirmwareCalibration(u16 *cal) {
+    s32 TP_CalculateCalibration(void *,u16,u16,u16,u16,u16,u16,u16,u16);
+    TouchCalibrationPoints *points = (TouchCalibrationPoints *)0x027FFC80;
+    u16 rawX1 = points->rawX1;
+    u16 rawY1 = points->rawY1;
+    u16 rawX2 = points->rawX2;
+    u16 rawY2 = points->rawY2;
+    u8 screenX1 = points->screenX1;
+    u8 screenY1 = points->screenY1;
+    u8 screenX2 = points->screenX2;
+    u8 screenY2 = points->screenY2;
+    if ((!rawX1 && !rawX2 && !rawY1 && !rawY2) ||
+        TP_CalculateCalibration(cal, rawX1, rawY1, screenX1, screenY1, rawX2, rawY2, screenX2, screenY2)) {
+        cal[0] = 0; cal[1] = 0; cal[2] = 0; cal[3] = 0; return 1;
     }
     return 1;
 }
@@ -342,12 +354,25 @@ okpath:
     return;
 }
 #pragma opt_instruction_scheduling reset
-void func_0200d95c(void) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 SendFifoMessage(s32,u32,s32);
-s32 t=OS_DisableInterrupts();s32 ok=(SendFifoMessage(6,0x3000200,0)>=0);
-if(ok==0) {OS_RestoreInterrupts(t);M2C_FIELD(&gTouchDriverState,u16 *,0x38)=4|M2C_FIELD(&gTouchDriverState,u16 *,0x38);
-if(M2C_FIELD(&gTouchDriverState,void (**)(s32,s32,s32),4))M2C_FIELD(&gTouchDriverState,void (**)(s32,s32,s32),4)(2,4,0);
-} else { M2C_FIELD(&gTouchDriverState,u16 *,0x3a)=4|M2C_FIELD(&gTouchDriverState,u16 *,0x3a);M2C_FIELD(&gTouchDriverState,u16 *,0x38)=~4&M2C_FIELD(&gTouchDriverState,u16 *,0x38);OS_RestoreInterrupts(t);}
+/* Stop the touch driver's sampling through the ARM7: send command 2 and record
+ * the outcome in the driver's command-failed/completed masks (bit 2).  A failed
+ * send is also reported to the driver's state callback as error 4. */
+void TP_StopSampling(void) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 SendFifoMessage(s32, u32, s32);
+    s32 irq = OS_DisableInterrupts();
+    s32 sent = (SendFifoMessage(6, 0x03000200, 0) >= 0);
+    if (sent == 0) {
+        OS_RestoreInterrupts(irq);
+        M2C_FIELD(&gTouchDriverState, u16 *, 0x38) = 4 | M2C_FIELD(&gTouchDriverState, u16 *, 0x38);
+        if (M2C_FIELD(&gTouchDriverState, void (**)(s32, s32, s32), 4))
+            M2C_FIELD(&gTouchDriverState, void (**)(s32, s32, s32), 4)(2, 4, 0);
+    } else {
+        M2C_FIELD(&gTouchDriverState, u16 *, 0x3a) = 4 | M2C_FIELD(&gTouchDriverState, u16 *, 0x3a);
+        M2C_FIELD(&gTouchDriverState, u16 *, 0x38) = ~4 & M2C_FIELD(&gTouchDriverState, u16 *, 0x38);
+        OS_RestoreInterrupts(irq);
+    }
 }
 #pragma opt_instruction_scheduling reset
 u16 func_0200d9f4(void) {
@@ -356,7 +381,7 @@ u16 func_0200d9f4(void) {
 }
 
 #pragma opt_instruction_scheduling off
-s32 func_0200da04(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8) {
+s32 TP_CalculateCalibration(void *arg0, u16 arg1, u16 arg2, u16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u16 arg8) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     volatile s16 *p = (volatile s16 *)arg0;

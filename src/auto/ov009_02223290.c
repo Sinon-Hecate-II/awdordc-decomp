@@ -1,6 +1,7 @@
 /* 52 functions from 0x02223290 to 0x02224284 (ov009), found by ds-decomp. */
 #include "common.h"
 #include "ov009_link.h"
+#include "wfc_channel.h"
 
 s32 func_ov009_02223290(void) {
     s32 WFC_SendConnectionData(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32, s32);
@@ -191,10 +192,10 @@ M2C_FIELD(&gLinkState,M2C_UNK (**)(s32,u16,u16),0x60)(arg0,arg1,arg2);
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-s32 func_ov009_02223744(u16 arg0,u8 arg1,s32 arg2,u16 arg3) {
+s32 HandleLinkChannelCommand(u16 arg0,u8 arg1,s32 arg2,u16 arg3) {
 void *FindObjectByClass(M2C_UNK *);
 M2C_UNK MI_CpuCopy8(s32,s32,s32);
-s32 func_ov009_022254a4(void);
+s32 IsLinkHost(void);
 u16 GetConnectedPlayers(void);
 s8 GetLinkLocalPlayerId(void);
 void func_ov009_02224fec(s32,s32,s32,s32,u32,s32);
@@ -211,7 +212,7 @@ if(M2C_FIELD(p,u32 *,0)==0x5f574c4d){
 mask=(u32)(p[5]<<28)>>28;
 task=FindObjectByClass(&gLinkActorClass);
 if(task) M2C_FIELD(task+mask*4,s32 *,0x3c)=0;
-if(func_ov009_022254a4()){
+if(IsLinkHost()){
 mask=(u16)(M2C_FIELD(p,u16 *,6)^0);mask=(u16)(mask&(-1^(1<<arg1)));
 mask=GetConnectedPlayers()&mask;
 mask = (u16)(mask & (-1^(1<<GetLinkLocalPlayerId())));
@@ -288,15 +289,19 @@ void func_ov009_02223a90(void *arg0) {
     func_ov009_022236f4(temp_r0, M2C_FIELD(arg0, u16 *, 0x18), M2C_FIELD(arg0, u16 *, 0x10));
 }
 
-void HandleLinkChannelEvent(void *arg0) {
- M2C_UNK func_ov009_02223744(u16,u8,s32,u16);
- u16 temp_r0;
- if(M2C_FIELD(arg0,u16 *,2)!=0) { SignalLinkEvent(); return; }
- temp_r0=M2C_FIELD(arg0,u16 *,4);
- switch((s32)temp_r0) {
+/* Callback of the Download Play link channels 4 and 12: a failed event reports
+ * the link error, otherwise the received-data command 21 (with its payload and
+ * length) and command 9 (with no payload) go to the link command handler, while
+ * the completion commands 7, 25 and 26 are ignored. */
+void HandleLinkChannelEvent(void *event) {
+ M2C_UNK HandleLinkChannelCommand(u16,u8,s32,u16);
+ u16 command;
+ if(M2C_FIELD(event,u16 *,WFC_EVENT_RESULT)!=0) { SignalLinkEvent(M2C_FIELD(event,u16 *,WFC_EVENT_RESULT)); return; }
+ command=M2C_FIELD(event,u16 *,WFC_EVENT_COMMAND);
+ switch((s32)command) {
  case 7: return; case 25: case 26: return;
- case 21: func_ov009_02223744(temp_r0,(u8)M2C_FIELD(arg0,u16 *,0x12),M2C_FIELD(arg0,s32 *,0xc),M2C_FIELD(arg0,u16 *,0x10)); return;
- case 9: func_ov009_02223744(temp_r0,(u8)M2C_FIELD(arg0,u16 *,0x12),0,0); return;
+ case 21: HandleLinkChannelCommand(command,(u8)M2C_FIELD(event,u16 *,WFC_EVENT_BIT),M2C_FIELD(event,s32 *,WFC_EVENT_DATA),M2C_FIELD(event,u16 *,WFC_EVENT_LENGTH)); return;
+ case 9: HandleLinkChannelCommand(command,(u8)M2C_FIELD(event,u16 *,WFC_EVENT_BIT),0,0); return;
  }
 }
 
@@ -496,14 +501,14 @@ void func_ov009_02223f7c(s32 a,s32 b){
 }
 
 s32 AnnounceLinkPlayer(void){
- s32 func_ov009_022254a4(void);
+ s32 IsLinkHost(void);
  s32 func_ov009_02224c70(void);
  s32 GetLinkPhase(void);
  s8 GetLinkLocalPlayerId(void);
  void func_ov009_02222278(s32,void*);
  M2C_UNK QueueHostLinkPacket(s32,s32,s32,s32);
  extern M2C_UNK data_ov009_02226a20;
- if(func_ov009_022254a4()){if(!func_ov009_02224c70())return 0;}
+ if(IsLinkHost()){if(!func_ov009_02224c70())return 0;}
  if(GetLinkPhase()==4 || GetLinkPhase()==5){
  func_ov009_02222278(GetLinkLocalPlayerId(),&data_ov009_02226a20);
  QueueHostLinkPacket(11,(s32)&data_ov009_02226a20,0x60,0xffff);

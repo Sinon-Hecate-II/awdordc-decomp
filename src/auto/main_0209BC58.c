@@ -12,9 +12,9 @@ typedef struct SpriteStateWord {
 
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain;
-extern u8 data_021580a8[256];
+extern u8 gCarriedUnitIconTable[256];
 extern s32 data_0215d8a8[58];  // 232 bytes / 4
-extern s32 data_0215d8a0[2];   // 8 bytes / 4
+extern s32 gSaveSlotSummary[2];   // 8 bytes / 4
 
 void func_0209bc58(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
@@ -59,7 +59,7 @@ void func_0209be10(void *,s32,s32,s32,s32,s32,s32,u16,u16,u16);
 func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
 }
 
-#pragma scheduling off
+#pragma scheduling on
 void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
     void (*func_02091fb4(u32))(void);
     extern s32 gCur3DSpriteEngine;
@@ -79,11 +79,11 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x49) = (u8)(arg2 & 0xFF);
     M2C_FIELD(arg0, u8 *, 0x4a) = (u8)(arg1 & 0xFF);
     M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(arg2 & 0xFF);
-    M2C_FIELD(arg0, u8 *, 0x54) = (u8)(-1);
+    M2C_FIELD(arg0, u8 *, 0x54) = (s8)-1;
     M2C_FIELD(arg0, u8 *, 0x55) = 2;
     M2C_FIELD(arg0, s32 *, 0x50) = (s32)func_02091fb4((u32)arg3);
     {
-        s32 temp_r0 = (s32)(gCur3DSpriteEngine == g3DSpriteEngineMain);
+        u32 temp_r0 = gCur3DSpriteEngine == g3DSpriteEngineMain ? 1u : 0u;
         temp_r0 = (s32)(u8)temp_r0;
         if (temp_r0 != 1) {
             temp_r0 = 1;
@@ -97,7 +97,7 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x59) = 0;
     M2C_FIELD(arg0, u8 *, 0x5c) = 0;
 }
-#pragma scheduling reset
+#pragma scheduling off
 void func_0209bee0(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
 M2C_FIELD(a,u8 *,0x57)=d;
 M2C_FIELD(a,s32 *,0x3c)=e;
@@ -408,39 +408,43 @@ s32 MeasureMessageLinesWidth(u8 *text, s32 stopAtBreak) {
     return width;
 }
 
-s32 func_0209c550(u8 *arg0) {
-    s32 var_r1;
-    u8 *var_r0;
-    u8 var_r2;
+/* Height in pixels of a message string: each line is 0x10 pixels tall, so the
+ * result counts one line per 0x0A/0x0D break.  0x16/0x17/0x1C/0x1D introduce a
+ * two-byte code with no glyph of its own; every other byte advances one.  A NULL
+ * string has no height. */
+s32 MeasureMessageHeight(u8 *text) {
+    s32 height;
+    u8 *cursor;
+    u8 c;
 
-    var_r0 = arg0;
-    var_r1 = 0x10;
-    if (var_r0 == NULL) {
+    cursor = text;
+    height = 0x10;
+    if (cursor == NULL) {
         return 0;
     }
-    var_r2 = *var_r0;
-    if (var_r2 != 0) {
+    c = *cursor;
+    if (c != 0) {
         do {
-            switch ((s32) var_r2) {                 /* irregular */
+            switch ((s32) c) {
             case 10:
             case 13:
-                var_r1 += 0x10;
-                var_r0 += 1;
+                height += 0x10;
+                cursor += 1;
                 break;
             case 23:
             case 28:
                 /* fallthrough */
             case 22:
-                var_r0 += 2;
+                cursor += 2;
                 break;
             default:
-                var_r0 += 1;
+                cursor += 1;
                 break;
             }
-            var_r2 = *var_r0;
-        } while (var_r2 != 0);
+            c = *cursor;
+        } while (c != 0);
     }
-    return var_r1;
+    return height;
 }
 
 void *func_0209c5dc(void *arg0, s32 arg1) {
@@ -514,30 +518,35 @@ fail:
     return 0;
 }
 
-void *func_0209c6d8(s32 arg0) {
+void *GetCarriedUnitIcon(s32 arg0) {
  u8 result=(gCur3DSpriteEngine==g3DSpriteEngineMain);
  s32 flag=result!=1;
- u8 *base=data_021580a8;
+ u8 *base=gCarriedUnitIconTable;
  return base+(flag<<7)+(arg0<<2);
 }
 
 void SetCarriedUnitIconSprite(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
- void *func_0209c6d8(s32);
- SpriteAttribute0209 *p=func_0209c6d8(arg0);
+ void *GetCarriedUnitIcon(s32);
+ SpriteAttribute0209 *p=GetCarriedUnitIcon(arg0);
  p->value=arg1;p->mode=arg2;p->low=arg4;p->high=arg4;
 }
 
-void func_0209c764(s32 a,s32 b,s32 c,s32 d,s32 e) {
-void *func_0209c6d8(s32);
-s32 GetSpriteDescForSize(s32,s32);
-void AddSprite(s32,s32,s32,s32,s32);
-extern M2C_UNK gCur3DSpriteEngine;
-u8 *p=func_0209c6d8(a);
-u8 v=p[3];
-s32 sprite=GetSpriteDescForSize((u32)(v<<28)>>25,((u32)(v<<24)>>28)<<3);
-if(sprite) {
-AddSprite(b,c,(u16)(d|(1023&(*(u16*)p>>((u32)(***(u16 ***)(&gCur3DSpriteEngine)<<17)>>30)))|((u32)(p[2]<<28)>>16)),sprite,e);
-}
+/* Draw the icon of the unit carried in list slot `slot` at screen position
+ * (x, y): look up the slot's icon record, size its sprite from the record's
+ * width and height nibbles (in 8-pixel units), and add that sprite with
+ * `tileBase`, the record's tile index shifted by the engine's display mode and
+ * its palette, at `priority`. */
+void DrawCarriedUnitIcon(s32 slot, s32 x, s32 y, s32 tileBase, s32 priority) {
+    void *GetCarriedUnitIcon(s32);
+    s32 GetSpriteDescForSize(s32, s32);
+    void AddSprite(s32, s32, s32, s32, s32);
+    extern M2C_UNK gCur3DSpriteEngine;
+    u8 *icon = GetCarriedUnitIcon(slot);
+    u8 size = icon[3];
+    s32 sprite = GetSpriteDescForSize((u32)(size << 28) >> 25, ((u32)(size << 24) >> 28) << 3);
+    if (sprite) {
+        AddSprite(x, y, (u16)(tileBase | (1023 & (*(u16 *)icon >> ((u32)(***(u16 ***)(&gCur3DSpriteEngine) << 17) >> 30))) | ((u32)(icon[2] << 28) >> 16)), sprite, priority);
+    }
 }
 
 #pragma opt_propagation off
@@ -554,7 +563,7 @@ void func_0209c7fc(void) {
  p->field29=0;
  p++; i++;
  } while(i<64);
- *(s32 *)((u8 *)&data_0215d8a0+8)=(*(s32 *)((u8 *)&data_0215d8a0+8)&~7)|1;
+ *(s32 *)((u8 *)&gSaveSlotSummary+8)=(*(s32 *)((u8 *)&gSaveSlotSummary+8)&~7)|1;
 }
 #pragma opt_propagation reset
 void func_0209c868(void) {
@@ -586,7 +595,7 @@ void func_0209c8d4(void) {
     s32 func_020e4b54();
     extern M2C_UNK gCoState;
     extern M2C_UNK gCoPlayerSlots;
-    extern s32 data_0215d8a0[2];
+    extern s32 gSaveSlotSummary[2];
     extern s32 data_0215d8a8[58];
     extern u16 gMapConfig;
     extern void **data_027e0058;
@@ -652,11 +661,11 @@ void func_0209c8d4(void) {
                 data_0215d8a8[temp_r9] = var_r0_2;
                 func_020bf814(temp_r8);
                 if (func_020e4b54() != 0) {
-                    var_r1 = (u32) (data_0215d8a0[0] << 8) >> 0x18;
+                    var_r1 = (u32) (gSaveSlotSummary[0] << 8) >> 0x18;
                     if ((s32) var_r1 < 0xFF) {
                         var_r1 += 1;
                     }
-                    data_0215d8a0[0] = (data_0215d8a0[0] & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
+                    gSaveSlotSummary[0] = (gSaveSlotSummary[0] & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
                 }
                 switch (M2C_FIELD(&gCoState, u8 *, 3)) { /* switch 2 */
                 default:                            /* switch 2 */

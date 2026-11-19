@@ -5,7 +5,7 @@
 #pragma push
 #pragma opt_propagation off
 void func_ov011_02222204(M2C_UNK arg0) {
-    M2C_UNK func_01ff9e00();
+    M2C_UNK ClearAll3DSpriteLayers();
     M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
     M2C_UNK func_ov011_022216d8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -61,7 +61,7 @@ void func_ov011_02222204(M2C_UNK arg0) {
         M2C_FIELD(*data_027e01d8, s8 *, 0x51) = 0;
         M2C_FIELD(*data_027e01d8, s8 *, 0x52) = 0;
         M2C_FIELD(*data_027e01d8, s8 *, 0x53) = 0;
-        func_01ff9e00();
+        ClearAll3DSpriteLayers();
         M2C_FIELD(*data_027e01d8, s16 *, 0x38) = 0;
         M2C_FIELD(*data_027e01d8, s16 *, 0x40) = 0;
         M2C_FIELD(*data_027e01d8, s16 *, 0x3A) = 0;
@@ -84,6 +84,127 @@ void func_ov011_02222204(M2C_UNK arg0) {
     func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
     func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
 }
+
+void func_ov011_022224a8(void *arg0) {
+    M2C_UNK func_01ffac9c(M2C_UNK, M2C_UNK, s32, M2C_UNK *, s32);
+    M2C_UNK func_01ffacd4(u16, u16, u16, M2C_UNK *, s32);
+    extern M2C_UNK data_02101f2c;
+    extern M2C_UNK data_02101f5c;
+    extern M2C_UNK gSpriteDesc64x64;
+    extern u16 **g3DSpriteEngineSub;
+    extern u16 **g3DSpriteEngineMain;
+    extern u16 **gCur3DSpriteEngine;
+    extern u32 gFrameCounter;
+    u16 *volatile sp34;
+    u16 *volatile sp30;
+    u16 *volatile sp2C;
+    u16 *volatile sp28;
+    u16 *volatile sp24;
+    u16 *volatile sp20;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
+    u16 *volatile sp8;
+    u16 *volatile sp4;
+    s32 var_r1;
+    s32 var_r3;
+    u16 zero;
+    u8 temp_r1;
+    u8 var_r7;
+    u16 **temp_r2;
+    u16 **var_lr;
+    u16 **var_r6;
+    void *temp_r6;
+    void *temp_r6_10;
+    void *temp_r6_11;
+    void *temp_r6_12;
+    void *temp_r6_13;
+    void *temp_r6_2;
+    void *temp_r6_3;
+    void *temp_r6_4;
+    void *temp_r6_5;
+    void *temp_r6_6;
+    void *temp_r6_7;
+    void *temp_r6_8;
+    void *temp_r6_9;
+
+    var_r1 = 0;
+    temp_r2 = (*(u16 **volatile *)&gCur3DSpriteEngine);
+    zero = 0;
+    do {
+        var_lr = var_r1 == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        (*(u16 **volatile *)&gCur3DSpriteEngine) = var_lr;
+        M2C_FIELD(*var_lr, s16 *, 0x38) = (s16) (u8) ((u32) gFrameCounter >> 2);
+        var_r1 += 1;
+        M2C_FIELD(*(*(u16 **volatile *)&gCur3DSpriteEngine), u16 *, 0x40) = zero;
+    } while (var_r1 < 2);
+    (*(u16 **volatile *)&gCur3DSpriteEngine) = temp_r2;
+    var_r3 = zero;
+    do {
+        if (var_r3 == 0) {
+            var_r6 = g3DSpriteEngineMain;
+        } else {
+            var_r6 = g3DSpriteEngineSub;
+        }
+        (*(u16 **volatile *)&gCur3DSpriteEngine) = var_r6;
+        temp_r6 = *var_r6;
+        sp34 = (u16 *)((u8 *)temp_r6 + 0x12);
+        *sp34 = (*sp34 & ~1) | 1;
+        temp_r6_2 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp30 = (u16 *)((u8 *)temp_r6_2 + 0x12);
+        *sp30 = *sp30 & ~2;
+        temp_r6_3 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp2C = (u16 *)((u8 *)temp_r6_3 + 0x12);
+        *sp2C = *sp2C & ~4;
+        temp_r6_4 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp28 = (u16 *)((u8 *)temp_r6_4 + 0x12);
+        *sp28 = *sp28 & ~8;
+        temp_r6_5 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp24 = (u16 *)((u8 *)temp_r6_5 + 0x12);
+        *sp24 = *sp24 & ~0x10;
+        temp_r6_6 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp20 = (u16 *)((u8 *)temp_r6_6 + 0x12);
+        *sp20 = *sp20 & ~0x20;
+        temp_r6_7 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp1C = (u16 *)((u8 *)temp_r6_7 + 0x12);
+        *sp1C = *sp1C & ~0x100;
+        temp_r6_8 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp18 = (u16 *)((u8 *)temp_r6_8 + 0x12);
+        *sp18 = *sp18 & ~0x200;
+        temp_r6_9 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp14 = (u16 *)((u8 *)temp_r6_9 + 0x12);
+        *sp14 = *sp14 & ~0x400;
+        temp_r6_10 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp10 = (u16 *)((u8 *)temp_r6_10 + 0x12);
+        *sp10 = *sp10 | 0x800;
+            temp_r6_11 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        spC = (u16 *)((u8 *)temp_r6_11 + 0x12);
+        *spC = *spC & ~0x1000;
+        temp_r6_12 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp8 = (u16 *)((u8 *)temp_r6_12 + 0x12);
+        *sp8 = *sp8 & ~0x2000;
+        temp_r6_13 = *(*(u16 **volatile *)&gCur3DSpriteEngine);
+        sp4 = (u16 *)((u8 *)temp_r6_13 + 0x12);
+        *sp4 = (*sp4 & ~0xC0) | 0x40;
+        M2C_FIELD(*(*(u16 **volatile *)&gCur3DSpriteEngine), s8 *, 0x51) = 8;
+        M2C_FIELD(*(*(u16 **volatile *)&gCur3DSpriteEngine), s8 *, 0x52) = 8;
+    } while (++var_r3 < 2);
+    (*(u16 **volatile *)&gCur3DSpriteEngine) = temp_r2;
+    temp_r1 = M2C_FIELD(arg0, u8 *, 0x37);
+    if (temp_r1 == (temp_r1 & M2C_FIELD(arg0, u16 *, 0x34))) {
+        func_01ffac9c(0x40, 0x50, 0, &data_02101f2c, 0);
+    }
+    func_01ffac9c(0, 0xAA, 0x6040, &data_02101f5c, 0);
+    func_01ffac9c(0x80, 0xAA, 0x6060, &data_02101f5c, 0);
+    var_r7 = 0;
+    do {
+        func_01ffacd4((u16) (0x1FF & ((var_r7 % 4) << 6)), (u16) ((u8) ((((u32)var_r7 >> 2) << 6) + 0x20) | 0x2000), (u16) (0x3FF & (var_r7 << 7)), &gSpriteDesc64x64, 0);
+        var_r7 += 1;
+    } while ((u32) var_r7 < 8U);
+}
+
 #pragma pop
 void func_ov011_02222830(void *arg0,u32 mode,u32 first,u32 second,u32 amount) {
 extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;

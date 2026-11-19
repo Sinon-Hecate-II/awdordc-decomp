@@ -32,28 +32,32 @@ u8 IsMapInLinkCategory(s32 arg0,s32 arg1) {
  return (u8)((s32)(u16)(arg0-225)/50)==(u8)(arg1-8);
 }
 
-void func_0208337c(void) {
- extern s8 data_02156cdc;
+void ResetTextLabelSlots(void) {
+ extern s8 gTextLabelSlotState;
  s32 i,j; s8 *p,*a,*b;
- a=&data_02156cdc; i=0; b=a;
+ a=&gTextLabelSlotState; i=0; b=a;
  do { j=0; *a=0;
  do { p=b+j; M2C_FIELD(p,s8 *,169)=0; ++j; M2C_FIELD(p,s8 *,13)=0; }while(j<12);
  ++i; ++a; b+=12;
  }while(i<13);
 }
 
-void func_020833d0(void) {
- extern s8 data_02156cdc;
- s32 i,j; s8 *p,*a,*b;
- a=&data_02156cdc; i=0; b=a;
- do { switch(i) {
+/* Clear the generated text state of the label slots the link player setup does
+ * not keep: every slot except 0, 2, 7 and 8 loses its used flag (the one byte
+ * per slot at the table base) and its 12 glyph entries in the two per-slot
+ * tables at +0x0D and +0xA9. */
+void ResetTextLabelSlotsPartial(void) {
+ extern s8 gTextLabelSlotState;
+ s32 slot,j; s8 *used,*row,*entry;
+ used=&gTextLabelSlotState; slot=0; row=used;
+ do { switch(slot) {
  case 1: case 3: case 4: case 5: case 6: case 9: case 10: case 11: case 12:
- j=0; *a=0;
- do { p=b+j; M2C_FIELD(p,s8 *,169)=0; ++j; M2C_FIELD(p,s8 *,13)=0; }while(j<12);
+ j=0; *used=0;
+ do { entry=row+j; M2C_FIELD(entry,s8 *,169)=0; ++j; M2C_FIELD(entry,s8 *,13)=0; }while(j<12);
  break; default: break;
  }
- ++i; ++a; b+=12;
- }while(i<13);
+ ++slot; ++used; row+=12;
+ }while(slot<13);
 }
 
 void func_02083464(void) {

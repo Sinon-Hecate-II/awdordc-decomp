@@ -25,7 +25,7 @@ void func_020d54b4(void) {
 void func_020d54b8(void) {
  extern void *gCurrentMap;
  func_020cf80c();func_0207a7a4(1,8);
- if(!func_020d4dd0())return;
+ if(!IsMapCursorIdle())return;
  if(!func_020bcc04())return;
  if(!func_020bdcd0())return;
  Reset3DSpriteBankState();
@@ -53,11 +53,11 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     M2C_UNK func_020ba414();
     M2C_UNK SelectMapLayer();
     M2C_UNK func_01ffc2e8();
-    void func_01ffbb04(s32);
+    void MarkUnitMoveRangeCells(s32);
     M2C_UNK IsMobileIndirectUnitKind();
     void MarkUnitAttackRangeCells(void *);
     M2C_UNK FillMapLayer();
-    void func_01ffc204(s32, s32, BattleMapUnitHead *);
+    void MarkUnitAttackRing(s32, s32, BattleMapUnitHead *);
     u8 *map;
     BattleMapUnitHead *unit;
     s32 showMoveRange, showAttackRange;
@@ -77,7 +77,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
         } else {
             M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] = 0;
         }
-        func_01ffbb04(64);
+        MarkUnitMoveRangeCells(64);
         M2C_FIELD(M2C_FIELD(gCurrentMap, u8 **, 0) + y * 4, s8 **, MAP_GRID)[x] = -1;
     }
     if (!showAttackRange) return;
@@ -99,7 +99,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     }
     if (!showMoveRange) FillMapLayer(-1);
     unit = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), BattleMapUnitHead **, MAP_CURSOR_UNIT);
-    func_01ffc204(unit->x, unit->y, unit);
+    MarkUnitAttackRing(unit->x, unit->y, unit);
     if (!showMoveRange) return;
     if (x != 0) M2C_FIELD(M2C_FIELD(gCurrentMap, u8 **, 0) + y * 4, s8 **, MAP_GRID)[x - 1] = 0;
     map = M2C_FIELD(gCurrentMap, u8 **, 0);
@@ -183,7 +183,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)=M2C_FIELD(M2
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_UNIT_RECORDS+M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_UNIT_ID)*14;
 
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
-if(func_020cf878(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
+if(IsOwnedProductionSite(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
 if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
 RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
@@ -248,7 +248,7 @@ void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK PlaySoundEffect();
     M2C_UNK CanMoveCursorTo(s32, s32);
     M2C_UNK func_0207a768();
-    M2C_UNK func_020a0964();
+    M2C_UNK ChooseAttackPosition();
     M2C_UNK func_020d468c();
     M2C_UNK func_020a0d18();
     M2C_UNK func_020d46ac();
@@ -288,7 +288,7 @@ void MoveCursorTo(s32 x, s32 y) {
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_PATH_Y);
     }
     if (occupied != 0) {
-        func_020a0964(x, y, (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CURSOR_X);
+        ChooseAttackPosition(x, y, (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CURSOR_X);
         func_020d468c();
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_X);
         M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_CURSOR_Y);
@@ -345,7 +345,7 @@ void func_020d61ac(void) {
  extern void *gCurrentMap;
  void *p=M2C_FIELD(gCurrentMap,void **,0);
  SetMapCursorTargetTile(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
- func_020c75cc();
+ OpenMapActionMenu();
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=5;
 }
 
@@ -406,7 +406,7 @@ void func_020d6208(void) {
 
 void func_020d6310(void) {
  extern void *gCurrentMap;
- if(!func_020d4dd0())return;
+ if(!IsMapCursorIdle())return;
  ProcessAiCommandStep();
  if(func_ov000_0219c7b0()!=2)return;
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;

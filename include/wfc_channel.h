@@ -46,6 +46,7 @@
 #define WFC_CH_SLOT_INDEX    0x808 /* u16 the ring's current slot */
 #define WFC_CH_PLAYER_MASK   0x80e /* u16 bit per connected player */
 #define WFC_CH_PAYLOAD_LEN   0x810 /* u16 bytes of one player's data copy */
+#define WFC_CH_TRANSFER_LEN  0x814 /* u16 bytes sent per slot transfer (payload plus header) */
 #define WFC_CH_PARENT_MODE   0x818 /* u16 1 in the host (parent) channel */
 
 /* Channel state object control fields (the four data slots come before them). */

@@ -8,7 +8,7 @@ s32 func_02050c24(void **arg0, void *arg1) {
     s32 func_020496e0(s32, M2C_UNK *, M2C_UNK);
     s32 ghiConnect(s32, M2C_UNK *, M2C_UNK);
     s32 func_0204978c(s32);
-    s32 func_020498b8(s32, M2C_UNK *, s32 *);
+    s32 ghiGetSockName(s32, M2C_UNK *, s32 *);
     s32 ghiGetLastSocketError(s32);
     M2C_UNK gpiCallErrorCallback(void **, M2C_UNK, M2C_UNK);
     M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
@@ -64,7 +64,7 @@ s32 func_02050c24(void **arg0, void *arg1) {
             return 3;
         }
         sp0 = 8;
-        if (func_020498b8(M2C_FIELD(temp_r4, s32 *, 0x204), &sp4, &sp0) == -1) {
+        if (ghiGetSockName(M2C_FIELD(temp_r4, s32 *, 0x204), &sp4, &sp0) == -1) {
             gpiSetError(arg0, 5, &data_020fe340);
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;

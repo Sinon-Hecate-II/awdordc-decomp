@@ -102,7 +102,7 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void func_02091cd0(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
+void func_ov005_02212ef0(void);void LoadScenePanelGraphicsOnBothEngines(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
@@ -127,7 +127,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,12)=(M2C_FIELD(*(void **)gCur3DSpri
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,81)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,82)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,83)=0;
-func_02099450(1,0,0);
+InitTextTiles(1,0,0);
 
 SetFileDirectory(&data_ov005_02220348);
 OpenNarcArchive(GetLocalizedFileName(&data_ov005_02220358));
@@ -163,7 +163,7 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,12)=(M2C_FIELD(*(void **)gCur3DSpri
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,81)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,82)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,83)=0;
-func_02099450(1,0,0);
+InitTextTiles(1,0,0);
 
 SetFileDirectory(&data_ov005_022203dc);
 OpenNarcArchive(GetLocalizedFileName(&data_ov005_022203ec));
@@ -191,8 +191,8 @@ M2C_FIELD(p,u16 *,0x3c)=0xc00;
 M2C_FIELD(gHistoryMenu,void **,0x48)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(gHistoryMenu,void **,0x48),u16 *,0x3e)=0xdc;
 ((MenuAnimSprite *)M2C_FIELD(gHistoryMenu,void **,0x48))->frame=7;
-func_02088f1c(M2C_FIELD(gHistoryMenu,void **,0x48));
-CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;func_02091cd0();func_ov005_02212ef0();
+Show3DSpriteSlide(M2C_FIELD(gHistoryMenu,void **,0x48));
+CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;LoadScenePanelGraphicsOnBothEngines();func_ov005_02212ef0();
 }
 #pragma opt_instruction_scheduling reset
 #pragma opt_strength_reduction reset
@@ -371,7 +371,7 @@ void func_ov005_022140e4(void) {
     SetFileDirectory(&data_ov005_02220644);
 }
 
-s32 func_ov005_022140f8(s32 arg0) {
+s32 RecordsMenu_IsRecordAvailable(s32 arg0) {
     s32 func_020ad658(s32);
     extern M2C_UNK gRecordsMenuState;
     if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;

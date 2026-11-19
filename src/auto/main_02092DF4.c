@@ -1,6 +1,7 @@
 /* 50 functions from 0x02092DF4 to 0x02093D9C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 
 s32 func_02092df4(void *arg0) {
  s32 (*temp_r0)();
@@ -62,13 +63,16 @@ M2C_FIELD(dest,u32 *,0x6c)=(M2C_FIELD(dest,u32 *,0x6c)&~255)|(value&255);
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-s32 MapScriptSetCursor(void *arg0){
+/* Map-script opcode: set the map cursor to the command's two signed operands,
+ * then record the new position as the current player's cursor.  Advances the
+ * script and keeps running. */
+s32 MapScriptSetCursor(void *state){
 extern void **gCurrentMap;
-M2C_FIELD(*gCurrentMap,s16 *,0x52c2)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-M2C_FIELD(*gCurrentMap,s16 *,0x52c4)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,10);
-M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d1)=M2C_FIELD(*gCurrentMap,s16 *,0x52c2);
-M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c,u8 *,0x67d2)=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X)=M2C_FIELD(M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP),s16 *,MAP_SCRIPT_OPERAND0);
+M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP),s16 *,MAP_SCRIPT_OPERAND1);
+M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_X)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X);
+M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_CURSOR_Y)=M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y);
+M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
 /* Map-script opcode: move the map cursor by adding the command's two signed
@@ -101,7 +105,7 @@ s32 func_020930e0(void *arg0) {
 
 s32 func_02093100(void *arg0) {
     s32 func_02091ecc(s16);
-    M2C_UNK func_02096c7c(s32, M2C_UNK);
+    M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
@@ -110,7 +114,7 @@ s32 func_02093100(void *arg0) {
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_02096c7c(temp_r0, 0x80);
+    AwardVictoryToPlayer(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
@@ -118,7 +122,7 @@ s32 func_02093100(void *arg0) {
 
 s32 func_02093154(void *arg0) {
     s32 func_02091ecc(s16);
-    M2C_UNK func_02096c7c(s32, M2C_UNK);
+    M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
@@ -127,7 +131,7 @@ s32 func_02093154(void *arg0) {
     temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_02096c7c(temp_r0, 0x80);
+    AwardVictoryToPlayer(temp_r0, 0x80);
     gCur3DSpriteEngine = temp_r5;
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
@@ -400,13 +404,15 @@ return 1;
 s32 func_02093888(void *arg0) {
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
+s32 i, end;
+u8 a,b;
 void *p=M2C_FIELD(arg0,void **,4);
 u32 v=M2C_FIELD(p,s32 *,12);
 void *found=0;
-s32 i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;
-s32 end=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;
-u8 a=(u8)v;
-u8 b=(u8)(v>>8);
+i=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+1;
+end=gPlayerUnitIdBase[M2C_FIELD(p,s16 *,8)]+0x33;
+a=(u8)v;
+b=(u8)(v>>8);
 if(i<end) {
 u8 *base=(u8 *)*gCurrentMap+0x59A4;
 u8 *entry=base+i*14;
@@ -491,40 +497,32 @@ s32 func_02093b28(void *arg0) {
 s32 func_02093b48(void *arg0) {
     extern u16 gPlayerUnitIdBase[];
     extern void **gCurrentMap;
-    s32 *func_02092ca8(s32 **, s32);
+    s32 *MapScriptFindLabel(s32 **, s32);
     void *p = M2C_FIELD(arg0, void **, 4);
-    s16 start_field = M2C_FIELD(p, s16 *, 8);
-    s32 start = gPlayerUnitIdBase[start_field];
-    s32 i = start + 1;
-    s32 limit = start + 0x33;
-    s32 found = 0;
-    u8 *entry;
-    if (i < limit) {
-        u8 *base = (u8 *)M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, 0) + 0x59a4;
-        entry = base + i * 14;
-        for (; i < limit; i++) {
-            u32 bits = ((u32)(*entry) << 26) >> 26;
-            if (bits != 0) {
-                s16 p10 = M2C_FIELD(p, s16 *, 10);
-                if (p10 == 0 || bits == (u32)p10) {
-                    found = 1;
-                    break;
-                }
-            }
-            entry += 14;
+    s32 i;
+    u32 found = 0;
+    u8 (*units)[MAP_UNIT_STRIDE];
+    u32 kind;
+
+    for (i = gPlayerUnitIdBase[M2C_FIELD(p, s16 *, 8)] + 1; i < gPlayerUnitIdBase[M2C_FIELD(p, s16 *, 8)] + MAP_UNIT_GROUP_SCAN; i++) {
+        units = (void *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS);
+        kind = (u32)(units[i][MAP_UNIT_KIND] << 26) >> 26;
+        if (kind && (M2C_FIELD(p, s16 *, 10) == 0 || kind == M2C_FIELD(p, s16 *, 10))) {
+            found = 1;
+            break;
         }
     }
-    if (M2C_FIELD(p, void **, 4) != 0) {
-        M2C_FIELD(arg0, void **, 4) = (void *)((u8 *)M2C_FIELD(arg0, void **, 4) + 0x10);
-    } else if (!found) {
-        s32 *res = func_02092ca8((s32 **)arg0, M2C_FIELD(p, s32 *, 12));
-        if (res != 0) {
-            M2C_FIELD(arg0, void **, 4) = (void *)res;
-        } else {
-            M2C_FIELD(arg0, void **, 4) = (void *)((u8 *)M2C_FIELD(arg0, void **, 4) + 0x10);
-        }
+    if (0 == M2C_FIELD(p, s32 *, 4)) {
+        found = found ? 0 : 1;
+    }
+    if (found) {
+        s32 *label = MapScriptFindLabel((s32 **)arg0, M2C_FIELD(p, s32 *, 12));
+        if (label)
+            M2C_FIELD(arg0, void **, 4) = label;
+        else
+            M2C_FIELD(arg0, s32 *, 4) += 0x10;
     } else {
-        M2C_FIELD(arg0, void **, 4) = (void *)((u8 *)M2C_FIELD(arg0, void **, 4) + 0x10);
+        M2C_FIELD(arg0, s32 *, 4) += 0x10;
     }
     return 1;
 }
@@ -562,41 +560,44 @@ s32 func_02093ce4(void *arg0) {
     return 1;
 }
 
-s32 func_02093d0c(void *arg0) {
-    M2C_UNK func_02091e14();
+/* Map-script command: rebuild the scene's 3D sprites (the battle view and/or the
+ * sub-screen UI) on the engine the scene is drawn into; DS3D_TARGET_ACTIVE means
+ * whichever engine gCur3DSpriteEngine already holds.  Advances the script. */
+s32 ScriptCmd_RebuildScene(void *script) {
+    M2C_UNK Get3DSpriteTargetMode();
     M2C_UNK func_020d4ba4();
     M2C_UNK func_020d8e28();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 var_r0;
-    u8 var_r0_2;
+    s32 target;
+    u8 isMain;
 
-    var_r0 = func_02091e14();
-    if (var_r0 == 3) {
+    target = Get3DSpriteTargetMode();
+    if (target == DS3D_TARGET_ACTIVE) {
         if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-            var_r0_2 = 1;
+            isMain = 1;
         } else {
-            var_r0_2 = 0;
+            isMain = 0;
         }
-        if (var_r0_2 != 1) {
-            var_r0 = 1;
+        if (isMain != 1) {
+            target = DS3D_TARGET_SUB;
         } else {
-            var_r0 = 0;
+            target = DS3D_TARGET_MAIN;
         }
     }
-    switch (var_r0) {                               /* irregular */
-    case 0:
+    switch (target) {                               /* irregular */
+    case DS3D_TARGET_MAIN:
         func_020d4ba4();
         break;
-    case 1:
+    case DS3D_TARGET_SUB:
         func_020d8e28();
         break;
-    case 2:
+    case DS3D_TARGET_BOTH:
         func_020d8e28();
         func_020d4ba4();
         break;
     }
-    M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
+    M2C_FIELD(script, s32 *, 4) = (s32) (M2C_FIELD(script, s32 *, 4) + 0x10);
     return 0;
 }
 

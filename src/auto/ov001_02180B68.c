@@ -4,7 +4,7 @@
 #include "wfc.h"
 typedef struct { u8 bytes[22]; } PathBuffer80;
 extern u8 gOv001Step11PalettePath[];
-extern u16 data_ov001_0218f9ea[], data_ov001_0218f9ec[];
+extern u16 sOv001MenuSpriteX[], sOv001MenuSpriteY[];
 extern M2C_UNK gOv001WayObjPalettePath, gOv001Step1TilesPath, gOv001Step1PalettePath, gOv001AccessPointTilemapPath;
 extern M2C_UNK gOv001MenuRegion;
 extern M2C_UNK GX_LoadOBJPltt, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG2Scr;
@@ -71,7 +71,7 @@ void Ov001_LeaveFriendList(void) {
     M2C_UNK func_ov001_02183fa0();
     s32 Ov001_CloseFriendRoster();
     void *GetCurrentMapRecord();
-    M2C_UNK func_ov001_02184880(u8);
+    M2C_UNK LoadSaveSlot(u8);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001FriendListState;
@@ -96,7 +96,7 @@ void Ov001_LeaveFriendList(void) {
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (gOv001FriendListState != OV001_FRIEND_LIST_AVAILABLE) {
         func_ov001_02183fa0();
-        func_ov001_02184880(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
+        LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
@@ -133,18 +133,18 @@ void Ov001_OpenAccessPointMenu(void) {
     void func_ov001_02180eb4(void);
     void Ov001_UpdateMenuCursor(void);
     void func_ov001_02180fbc(void);
-    void func_ov001_02172250(s32);
+    void Ov001_LoadObjLayoutBlock(s32);
     void Ov001_ShowMessagePanel(s32, s32, s32);
-    void func_ov001_02171dd0(s32);
+    void Ov001_OpenMenuForMode(s32);
     extern M2C_UNK gOv001MenuRegion;
     void *temp_r0;
     temp_r0 = Ov001_Alloc(0x20, 4);
     M2C_FIELD(&gOv001MenuRegion, void **, 4) = temp_r0;
     M2C_FIELD(temp_r0, u8 *, 0x1D) = 0;
     Ov001_LoadAccessPointMenuGraphics();
-    func_ov001_02172250(1);
+    Ov001_LoadObjLayoutBlock(1);
     Ov001_ShowMessagePanel(0x2F, -1, 0);
-    func_ov001_02171dd0(0);
+    Ov001_OpenMenuForMode(0);
     func_ov001_02180eb4();
     Ov001_UpdateMenuCursor();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180fbc);
@@ -175,7 +175,7 @@ void func_ov001_02180eb4(void) {
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void Ov001_SetSpritePalette(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
-    extern u16 data_ov001_0218f9ea[];
+    extern u16 sOv001MenuSpriteX[];
     extern u8 data_ov001_0218f9c8[];
     s32 i;
     M2C_UNK idx;
@@ -193,8 +193,8 @@ void func_ov001_02180eb4(void) {
         Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
             -1,
-            data_ov001_0218f9ea[(i + 3) * 2],
-            data_ov001_0218f9ea[(i + 3) * 2 + 1]);
+            sOv001MenuSpriteX[(i + 3) * 2],
+            sOv001MenuSpriteX[(i + 3) * 2 + 1]);
         Ov001_SetSpritePalette(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
             -1, 3);
@@ -205,8 +205,8 @@ second:
         Ov001_MoveSpriteLayout(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
             -1,
-            data_ov001_0218f9ea[i * 2],
-            data_ov001_0218f9ea[i * 2 + 1]);
+            sOv001MenuSpriteX[i * 2],
+            sOv001MenuSpriteX[i * 2 + 1]);
         Ov001_SetSpritePalette(
             M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
             -1, 3);
@@ -315,8 +315,8 @@ s32 Ov001_GetIconRowSelection(void),Ov001_GetScreenLayout(void),Ov001_GetLanguag
 s32 Ov001_GetSaveSlotStatus();
 M2C_UNK Ov001_PlaySound(s32),Ov001_SetIconRowSelection(s32),Ov001_LockIconRow(void);
 M2C_UNK Ov001_ShowMessage(s32,s32,s32,s32,s32);
-M2C_UNK func_ov001_02184880(u8);
-void func_ov001_02181794(void),Ov001_ShowRegionIcon(void),func_ov001_021812c0(void);
+M2C_UNK LoadSaveSlot(u8);
+void Ov001_ShowSelectedSaveSlot(void),Ov001_ShowRegionIcon(void),func_ov001_021812c0(void);
 extern s8 data_ov001_0218fa74[];
 extern M2C_UNK func_ov001_02176578,func_ov001_02181824;
 u8 region;
@@ -336,9 +336,9 @@ if(Ov001_GetSaveSlotStatus(record)==255) {Ov001_PlaySound(9);Ov001_SetIconRowSel
 Ov001_PlaySound(6);
 languageFrame = data_ov001_0218fa74[Ov001_GetLanguage()];
 Ov001_ShowMessage(70,0,1,languageFrame,record+1);
-func_ov001_02181794();Ov001_LockIconRow();Ov001_SetStepCallback(&func_ov001_02181824);return;
+Ov001_ShowSelectedSaveSlot();Ov001_LockIconRow();Ov001_SetStepCallback(&func_ov001_02181824);return;
 }
-if(region<=2)func_ov001_02184880(region);
+if(region<=2)LoadSaveSlot(region);
 Ov001_PlaySound(6);Ov001_ShowRegionIcon();
 done:
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021812c0);
@@ -454,21 +454,24 @@ case 6:
 if(direction==OV001_DIR_LEFT) ((Ov001MenuRegion *)&gOv001MenuRegion)->index=5; else if(direction==OV001_DIR_RIGHT) ((Ov001MenuRegion *)&gOv001MenuRegion)->index=4; else if(direction==OV001_DIR_UP) ((Ov001MenuRegion *)&gOv001MenuRegion)->index=2; else ((Ov001MenuRegion *)&gOv001MenuRegion)->index=3; break;
 } if(changed){Ov001_PlaySound(8);Ov001_UpdateMenuCursor();}}
 
-void func_ov001_02181794(void) {
+/* Show the selected save slot (region 4..6, slot 0..2) as chosen: load the
+ * chosen layout of its middle-row sprite, place it on the slot row and give it
+ * palette 3. */
+void Ov001_ShowSelectedSaveSlot(void) {
     s32 Ov001_GetSpriteObjEntry(s32, s32);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void Ov001_SetSpritePalette(s32, s32, s32);
     void Ov001_LoadSpriteObjLayout(s32, s32, s32);
     extern M2C_UNK gOv001MenuRegion;
-    extern u16 data_ov001_0218f9ea[];
-    extern u16 data_ov001_0218f9ec[];
-    s32 temp_r3;
-    s32 temp_r4;
-    temp_r4 = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) - 4;
-    Ov001_LoadSpriteObjLayout(0, 0x32, Ov001_GetSpriteObjEntry(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), 0));
-    temp_r3 = (temp_r4 + 3) * 2;
-    Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, data_ov001_0218f9ea[temp_r3], data_ov001_0218f9ec[temp_r3]);
-    Ov001_SetSpritePalette(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + temp_r4 * 4, s32 *, 0x10), -1, 3);
+    extern u16 sOv001MenuSpriteX[];
+    extern u16 sOv001MenuSpriteY[];
+    s32 slot;
+    s32 pos;
+    slot = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) - 4;
+    Ov001_LoadSpriteObjLayout(0, 0x32, Ov001_GetSpriteObjEntry(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + slot * 4, s32 *, 0x10), 0));
+    pos = (slot + 3) * 2;
+    Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + slot * 4, s32 *, 0x10), -1, sOv001MenuSpriteX[pos], sOv001MenuSpriteY[pos]);
+    Ov001_SetSpritePalette(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + slot * 4, s32 *, 0x10), -1, 3);
 }
 
 void func_ov001_02181824(void) {
@@ -488,7 +491,7 @@ case 1:
 Ov001_PlaySound(14);
 func_ov001_02184c70(i);
 Ov001_LoadSpriteObjLayout(0,86,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
-Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,data_ov001_0218f9ea[i*2],data_ov001_0218f9ec[i*2]);
+Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,sOv001MenuSpriteX[i*2],sOv001MenuSpriteY[i*2]);
 Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
 Ov001_DestroySprite(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
 M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16)=0;
@@ -496,7 +499,7 @@ break;
 case 0:
 Ov001_PlaySound(7);
 Ov001_LoadSpriteObjLayout(0,17,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),0));
-Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,data_ov001_0218f9ea[(i+3)*2],data_ov001_0218f9ec[(i+3)*2]);
+Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,sOv001MenuSpriteX[(i+3)*2],sOv001MenuSpriteY[(i+3)*2]);
 Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,3);
 break;
 default:return;

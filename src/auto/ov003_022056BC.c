@@ -1,5 +1,7 @@
 /* 81 functions from 0x022056BC to 0x022066A8 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
+#include "battle_map.h"
 
 extern void **gCurrentMap;
 
@@ -29,11 +31,11 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    M2C_UNK func_ov003_021f13ec(M2C_UNK *);
+    M2C_UNK SetOv003SceneClass(M2C_UNK *);
     s32 func_ov003_02200c7c();
-    extern M2C_UNK data_02102174;
+    extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_02210544;
     extern M2C_UNK data_ov003_02210754;
     extern M2C_UNK data_ov003_02210764;
@@ -54,13 +56,13 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     u8 var_r2;
     u8 var_r3_2;
 
-    func_ov003_021f13ec(&data_ov003_02210544);
+    SetOv003SceneClass(&data_ov003_02210544);
     temp_r0 = CreateSpriteFromClass(&data_ov003_02210544, arg0);
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_022108b4;
     M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_022108e0;
     M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
@@ -185,9 +187,9 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
     s32 func_ov003_02200c7c();
-    extern M2C_UNK data_02102174;
+    extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_02210544;
     extern M2C_UNK data_ov003_02210754;
     extern M2C_UNK data_ov003_02210764;
@@ -209,8 +211,8 @@ void func_ov003_022059d0(M2C_UNK arg0) {
 
     temp_r0 = CreateSpriteObject(&data_ov003_02210544, arg0);
     if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_022108b4;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_022108e0;
         M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
@@ -428,34 +430,38 @@ M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
     return arg0;
 }
 
-M2C_UNK **func_ov003_02205e94(M2C_UNK **arg0) {
+/* Deleting destructor of the ov003 options object (vtable slot 1): restores the
+ * base class's vtable, destroys the eight option rows through their own
+ * destructors, deletes the nine sprites it owns, destroys the option-counter
+ * array at +0x08 and frees the object. */
+Ov003OptionsObject *DestroyOv003OptionsObject(Ov003OptionsObject *options) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020741c4(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK MemFree();
     extern M2C_UNK data_ov003_02210764;
     extern M2C_UNK func_ov003_021f05f8;
-    u8 var_r5;
-    M2C_UNK *temp_r0;
+    u8 i;
+    M2C_UNK *row;
 
-    *arg0 = &data_ov003_02210764;
-    var_r5 = 0;
+    options->vtable = &data_ov003_02210764;
+    i = 0;
     do {
-        temp_r0 = arg0[var_r5 + 0x32];
-        if (temp_r0 != NULL) {
-            M2C_FIELD(*temp_r0, void (**)(M2C_UNK *), 0x4)(temp_r0);
+        row = options->rows[i];
+        if (row != NULL) {
+            M2C_FIELD(*row, void (**)(M2C_UNK *), 0x4)(row);
         }
-        var_r5 += 1;
-    } while (var_r5 < 8);
-    var_r5 = 0;
+        i += 1;
+    } while (i < 8);
+    i = 0;
     do {
-        if (arg0[var_r5 + 0x3A] != 0) {
-            DeleteSpriteObject();
+        if (options->sprites[i] != 0) {
+            DeleteSpriteObject(options->sprites[i]);
         }
-        var_r5 += 1;
-    } while (var_r5 < 9);
-    func_020741c4((u8 *)arg0 + 8, 8, 0x18, &func_ov003_021f05f8);
-    MemFree(arg0);
-    return arg0;
+        i += 1;
+    } while (i < 9);
+    DestroyArray((u8 *)options + 8, 8, 0x18, &func_ov003_021f05f8);
+    MemFree(options);
+    return options;
 }
 
 #pragma opt_common_subs off
@@ -557,27 +563,33 @@ M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
     return arg0;
 }
 
-M2C_UNK **func_ov003_022060d4(M2C_UNK **arg0) {
-M2C_UNK DeleteSpriteObject(void *);
-M2C_UNK func_020741c4(void *,M2C_UNK,M2C_UNK,M2C_UNK *);
-extern M2C_UNK data_ov003_02210764;
-extern M2C_UNK func_ov003_021f05f8;
-u8 i; M2C_UNK *p;
-*arg0=&data_ov003_02210764;
-i=0;
-do {
-p=arg0[i+0x32];
-if(p) M2C_FIELD(*p,void (**)(void *),4)(p);
-i++;
-}while(i<8);
-i=0;
-do {
-p=arg0[i+0x3a];
-if(p)DeleteSpriteObject(p);
-i++;
-}while(i<9);
-func_020741c4((u8 *)arg0+8,8,0x18,&func_ov003_021f05f8);
-return arg0;
+/* Destructor of the ov003 options object (vtable slot 0): restore the class
+ * vtable, run the destructor of each of the eight option rows, delete the nine
+ * sprites the object owns and destroy the eight option counters. The object
+ * itself stays allocated; the deleting destructor frees it. */
+Ov003OptionsObject *Ov003OptionsObject_Destructor(Ov003OptionsObject *options) {
+    M2C_UNK DeleteSpriteObject(void *);
+    M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
+    extern M2C_UNK data_ov003_02210764;
+    extern M2C_UNK func_ov003_021f05f8;
+    u8 i;
+    M2C_UNK *p;
+
+    options->vtable = &data_ov003_02210764;
+    i = 0;
+    do {
+        p = options->rows[i];
+        if (p) M2C_FIELD(*p, void (**)(void *), 4)(p);
+        i++;
+    } while (i < 8);
+    i = 0;
+    do {
+        p = options->sprites[i];
+        if (p) DeleteSpriteObject(p);
+        i++;
+    } while (i < 9);
+    DestroyArray((u8 *)options + 8, 8, 0x18, &func_ov003_021f05f8);
+    return options;
 }
 
 s32 func_ov003_02206160(s32 arg0) {
@@ -848,20 +860,24 @@ s32 func_ov003_022064a8(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_022064bc(s32 arg0_unused, s32 arg1) {
+/* Apply the weather menu option `weatherOption` to the current map: the random
+ * option turns on the auto-change mode and starts clear, any other value sets
+ * that weather directly.  The chosen weather also becomes the map's start and
+ * reset weather. */
+void ApplyWeatherOption(s32 arg0_unused, s32 weatherOption) {
     extern void **gCurrentMap;
-    u16 var_r3;
+    u16 weather;
 
-    if (arg1 == 4) {
-        var_r3 = 0;
-        M2C_FIELD(*gCurrentMap, s8 *, 0x5159) = 1;
+    if (weatherOption == WEATHER_OPTION_RANDOM) {
+        weather = 0;
+        M2C_FIELD(*gCurrentMap, s8 *, MAP_WEATHER_MODE) = 1;
     } else {
-        var_r3 = arg1;
-        M2C_FIELD(*gCurrentMap, s8 *, 0x5159) = 0;
+        weather = weatherOption;
+        M2C_FIELD(*gCurrentMap, s8 *, MAP_WEATHER_MODE) = 0;
     }
-    M2C_FIELD(*gCurrentMap, u8 *, 0x5158) = (u8) var_r3;
-    M2C_FIELD(*gCurrentMap, u8 *, 0x515A) = (u8) var_r3;
-    M2C_FIELD(*gCurrentMap, u8 *, 0x515B) = (u8) var_r3;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER) = (u8) weather;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_START) = (u8) weather;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_RESET) = (u8) weather;
 }
 
 u8 func_ov003_02206544(void **arg0) {

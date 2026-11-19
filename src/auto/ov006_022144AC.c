@@ -12,7 +12,7 @@ void Configure3DSpriteLayer(s32,void *);void Clear3DSpriteLayer(s32);void SetFil
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);
 void func_02081340(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
 s32 func_020a9a30(s32,s32,s32,s32);void func_01ff9dd8(s32);void LoadScenePanelPalette(s32);
-s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void func_01ffa920(void *,void *);void Show3DSprite(void *);void func_02088f1c(void *);
+s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void func_01ffa920(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
 u32 func_020c5464(s16);
 void func_ov006_02215010(void);
 u16 text[13];u16 *volatile p0,*volatile p1,*volatile p2,*volatile p3,*volatile p4,*volatile p5;
@@ -68,10 +68,10 @@ Show3DSprite(sprites[0]);Show3DSprite(sprites[1]);Show3DSprite(sprites[2]);Show3
 {MenuSprite_02213e98 *s=toggle[5];u32 frame=s->base;if(IsMenuDisabled_02213e98(s))SetMenuFrame_02213e98(s,frame);else SetMenuFrame_02213e98(s,MenuBase_02213e98(s)+2);}
 }
 sprites=M2C_FIELD(arg0,void **,0x3c);
-func_02088f1c(sprites[0]);
+Show3DSpriteSlide(sprites[0]);
 {MenuSprite_02213e98 *s=sprites[1];s->frame=(u16)(s->base+2);s->timer=0;}
 {MenuSprite_02213e98 *s=sprites[2];s->frame=(u16)(s->base+2);s->timer=0;}
-func_02088f1c(sprites[3]);func_02088f1c(sprites[4]);func_02088f1c(sprites[5]);
+Show3DSpriteSlide(sprites[3]);Show3DSpriteSlide(sprites[4]);Show3DSpriteSlide(sprites[5]);
 switch(func_020c5464(M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8))){
 case 0:
 {MenuSprite_02213e98 *s=((MenuSprite_02213e98 **)M2C_FIELD(arg0,void **,0x3c))[3];u32 frame=s->base;u8 disabled=(s->base+2!=(u16)s->frame);if(!disabled){s->frame=(u16)frame;s->timer=0;}}

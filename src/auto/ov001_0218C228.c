@@ -9,7 +9,7 @@ s32 Ov001_QueuePop(s32);
 s32 OS_DisableIrqMask(s32);
 void OS_EnableIrqMask(s32);
 void SystemHalt(void);
-void func_ov001_0218bf84(void *,void *);
+void Ov001_ListInsertBefore(void *,void *);
 extern s32 gOv001TilePools;
 RuntimeRangeNode *node,*p;
 s32 old,units;
@@ -24,7 +24,7 @@ RuntimeRangeNode *next=p->next;
 s32 pos=p->start+p->size;
 if(pos+units<=next->start) {
 node->start=pos;
-func_ov001_0218bf84(next,node);
+Ov001_ListInsertBefore(next,node);
 break;
 }
 p=next;
@@ -37,7 +37,7 @@ RuntimeRangeNode *prev=p->prev;
 s32 pos=p->start-units;
 if(pos>=prev->start+prev->size) {
 node->start=pos;
-func_ov001_0218bf84(p,node);
+Ov001_ListInsertBefore(p,node);
 break;
 }
 p=prev;
@@ -252,35 +252,40 @@ func_ov001_0218c958(n,p);
 }
 
 void Ov001_AddTask(s32 a,s32 b,s32 c,s32 d) {
-void *func_ov001_0218c898(s32,s32,s32,s32,u8);
-func_ov001_0218c898(a,b,c,d,0);
+void *Ov001_AddTaskNode(s32,s32,s32,s32,u8);
+Ov001_AddTaskNode(a,b,c,d,0);
 }
 
-void *func_ov001_0218c898(s32 n,s32 callback,s32 arg,s32 priority,u8 owns) {
-s32 Ov001_QueuePop(s32);
-s32 OS_DisableIrqMask(s32);
-void OS_EnableIrqMask(s32);
-void func_ov001_0218bf84(void *,void *);
-extern s32 gOv001Tasks;
-void *p;
-void *q;
-s32 saved;
-p=(void *)Ov001_QueuePop(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0));
-M2C_FIELD(p,s32 *,8)=callback;
-M2C_FIELD(p,s32 *,12)=arg;
-M2C_FIELD(p,u8 *,16)=priority;
-M2C_FIELD(p,u8 *,17)=owns;
-saved=OS_DisableIrqMask(1);
-q=M2C_FIELD(gOv001Tasks+(n<<6),void **,16);
-for(;;) {
-if((u32)priority<M2C_FIELD(q,u8 *,16)) {
-func_ov001_0218bf84(q,p);
-break;
-}
-q=M2C_FIELD(q,void **,4);
-}
-OS_EnableIrqMask(saved);
-return p;
+/* Take a free node from task group `group`, fill in the callback, its argument,
+ * priority and ownership flag, and link it into the group's pending-callback
+ * list just before the first node with a lower priority (lower runs first).
+ * Interrupts are masked only while the list is walked and relinked. */
+void *Ov001_AddTaskNode(s32 group, s32 callback, s32 arg, s32 priority, u8 ownsArg) {
+    s32 Ov001_QueuePop(s32);
+    s32 OS_DisableIrqMask(s32);
+    void OS_EnableIrqMask(s32);
+    void Ov001_ListInsertBefore(void *, void *);
+    extern s32 gOv001Tasks;
+    Ov001TaskNode *node;
+    Ov001TaskNode *cur;
+    s32 saved;
+
+    node = (Ov001TaskNode *)Ov001_QueuePop(OV001_TASKS[group].freeNodes);
+    node->callback = (void (*)(void *, s32))callback;
+    node->arg = arg;
+    node->priority = priority;
+    node->ownsArg = ownsArg;
+    saved = OS_DisableIrqMask(1);
+    cur = OV001_TASKS[group].head.next;
+    for (;;) {
+        if ((u32)priority < cur->priority) {
+            Ov001_ListInsertBefore(cur, node);
+            break;
+        }
+        cur = cur->next;
+    }
+    OS_EnableIrqMask(saved);
+    return node;
 }
 
 void Ov001_SetSlideStep(void *arg0, s32 arg1) {

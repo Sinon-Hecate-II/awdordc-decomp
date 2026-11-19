@@ -69,6 +69,10 @@ typedef struct Ov003BattleSetupMenu {
 #define BATTLE_PANEL_ICON    0x11 /* u8 waypoint option icon */
 #define BATTLE_PANEL_NONE    0x63 /* no player / no icon */
 
+/* The ov003 scene and panel objects share a flag byte at +0x3A. */
+#define OV003_FLAGS           0x3A /* u8 state/dirty flags */
+#define OV003_FLAG_PANEL_DIRTY 0x08 /* a panel value changed: the panel redraws itself */
+
 /* The ov003 battle-display object that SetupSceneObjectDisplay and
  * CloseSceneObjectDisplay drive: two tween sprites that slide the rows in and
  * out, the arrays of part sprites and per-slot records, a sprite group, a text
@@ -80,5 +84,116 @@ typedef struct Ov003BattleSetupMenu {
 #define SCENE_DISPLAY_GROUP        0x50 /* s32 *: group sprite handles, 3 runs of 4 */
 #define SCENE_DISPLAY_TEXT         0x54 /* void *: text sprite */
 #define SCENE_DISPLAY_SPRITE       0x58 /* s32: sprite hidden together with the display */
+
+/* Map-transfer panel object used by the battle setup scene. */
+typedef struct Ov003MapTransferPanel {
+    u8 pad00[0x3C];
+    SpriteTween *topTween;     /* +0x3C */
+    SpriteTween *bottomTween;  /* +0x40 */
+    s32 *spritePair;           /* +0x44: two sprites hidden on close */
+    u8 pad48[0x10];
+    s32 sprite;                /* +0x58: shared panel sprite */
+    u8 pad5C[4];
+    u8 mapFlags;               /* +0x60: bit 7 means map transfer is unavailable */
+} Ov003MapTransferPanel;
+
+#define OV003_MAP_TRANSFER_UNAVAILABLE 0x80
+#define OV003_MAP_TRANSFER_SLIDE_FRAMES 12
+
+/* An empty entry of a map-pick list. */
+#define MAP_PICK_NONE 0xFFFF
+
+/* The +0x20 flag byte of a scene-view label sprite. */
+typedef struct SceneViewLabelFlags {
+    u8 first:1;
+    u8 second:4;
+    u8 third:3;
+} SceneViewLabelFlags;
+
+/* A number-label sprite of the scene view (0x2C bytes, gHeapObjectVTable):
+ * SetTextSpriteValue fills in the number it draws. */
+typedef struct SceneViewLabel {
+    void *vtable;            /* +0x00 gHeapObjectVTable */
+    u8 kind;                 /* +0x04 0 = number label */
+    u8 pad05[1];
+    s16 x;                   /* +0x06 screen x */
+    s16 y;                   /* +0x08 screen y */
+    u8 pad0A[8];
+    s16 textId;              /* +0x12 */
+    u8 unk14;                /* +0x14 */
+    u8 unk15;                /* +0x15 */
+    u8 unk16;                /* +0x16 */
+    u8 unk17;                /* +0x17 */
+    u8 unk18;                /* +0x18 */
+    u8 pad19[7];
+    SceneViewLabelFlags flags; /* +0x20 */
+    u8 unk21;                /* +0x21 */
+    u8 pad22[2];
+    s32 unk24;               /* +0x24 */
+    u8 unk28;                /* +0x28 */
+    u8 unk29;                /* +0x29 */
+    u8 pad2A[2];
+} SceneViewLabel;            /* 0x2C bytes */
+
+/* The scene view's 11-glyph label group (gSceneLabelGroupVTable): the sprite
+ * handle of each glyph. */
+typedef struct SceneViewLabelGroup {
+    void *vtable;            /* +0x00 gSceneLabelGroupVTable */
+    s8 color;                /* +0x04 */
+    s8 palette;              /* +0x05 */
+    u8 flags;                /* +0x06 */
+    u8 unk07;                /* +0x07 */
+    u8 unk08;                /* +0x08 */
+    u8 unk09;                /* +0x09 */
+    u8 unk0A;                /* +0x0A */
+    u8 unk0B;                /* +0x0B */
+    s32 glyphs[11];          /* +0x0C glyph sprite handles */
+    s32 count;               /* +0x38 */
+} SceneViewLabelGroup;
+
+/* The scene view's map-pick selection child: five current and five pending map
+ * ids, MAP_PICK_NONE when a slot is empty. */
+typedef struct MapPickSelection {
+    void *vtable;            /* +0x00 gMapPickSelectionVTable */
+    void *iface;             /* +0x04 gMapPickSelectionIfaceVTable */
+    u16 current[5];          /* +0x08 */
+    u16 pending[5];          /* +0x12 */
+} MapPickSelection;
+
+/* Flag byte at +0x60 of the scene view. */
+typedef struct SceneViewFlags {
+    u8 first:2;
+    u8 second:2;
+    u8 third:2;
+    u8 fourth:1;
+    u8 fifth:1;
+} SceneViewFlags;
+
+/* The ov003 scene-view object built by the scene-view constructor and freed by
+ * DestroyOv003SceneView: the two intro slide tweens, the 11-glyph label group,
+ * the two number labels, the map-pick selection child and the campaign and
+ * downloaded map-record lists. */
+typedef struct Ov003SceneView {
+    void *vtable;                    /* +0x00 gOv003SceneViewVTable */
+    u8 pad04[0x30];
+    void *iface;                     /* +0x34 gOv003SceneViewIfaceVTable */
+    u8 state38;                      /* +0x38 */
+    u8 visible;                      /* +0x39 */
+    u8 flags3A;                      /* +0x3A */
+    u8 pad3B;
+    SpriteTween *tweenTop;           /* +0x3C */
+    SpriteTween *tweenBottom;        /* +0x40 */
+    s32 *spritePair;                 /* +0x44 two sprite handles */
+    SceneViewLabelGroup *labelGroup; /* +0x48 */
+    s32 sprite4C;                    /* +0x4C */
+    SceneViewLabel *labelA;          /* +0x50 */
+    SceneViewLabel *labelB;          /* +0x54 */
+    s32 sprite58;                    /* +0x58 */
+    MapPickSelection *selection;     /* +0x5C */
+    SceneViewFlags flags;            /* +0x60 */
+    u8 pad61[7];
+    u8 *mapRecords;                  /* +0x68 MAP_RECORD_LIST_COUNT map records */
+    u8 *downloadedMaps;              /* +0x6C MAP_RECORD_LIST_COUNT map records */
+} Ov003SceneView;
 
 #endif

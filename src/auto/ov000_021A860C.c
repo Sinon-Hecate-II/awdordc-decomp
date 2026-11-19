@@ -9,11 +9,16 @@ typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
 s32 func_ov000_021a860c(void){
-s32 IsPlayerActive(s32);s32 IsSameTeam(u16,s32);extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gUnitKindStats[];
+s32 func_020d1938(s32);s32 func_020d273c(u16,s32);extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];extern u8 data_ov000_021b5bfc[];
 s32 p=1,i,end;
 while(p<5){
-if(IsPlayerActive(p) && !IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
-u16 start=gPlayerUnitIdBase[p];i=start+1;end=start+0x33;while(i<end){UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];u32 kind=(u32)(entry->unk0 & 0x3f);if(kind && (gUnitKindStats[kind*112+0x13]&16))return 1;i++;}} p=p+1;}
+if(func_020d1938(p) && !func_020d273c(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),p)){
+u16 start=data_ov000_021aeef4[p];i=start+1;end=start+0x33;
+while(i<end){
+UnkStruct_ov000_021A860C *entry=&((UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap+0x59a4))[i];
+u32 kind=(u32)(entry->unk0 & 0x3f);
+if(kind && (data_ov000_021b5bfc[kind*112+0x13]&16))return 1;
+i++;}} p++;}
 return 0;}
 #pragma pool_constants reset
 /* Whether the current player's unit block already holds a unit of the AI's
@@ -314,7 +319,18 @@ p=*gCurrentMap;
 if(M2C_FIELD(data_ov000_021b5c54,s8 **,((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)*UNIT_KIND_STATS_SIZE)[M2C_FIELD(p+(x+M2C_FIELD(p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 1;
 }}return 0;}
 
-u8 func_ov000_021a9318(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 IsPropertyOwnedByTeam(s32);void *p;if(!IsPropertyOwnedByTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))return 0;p=*gCurrentMap;return M2C_FIELD(data_ov000_021b5c54,s8 **,a*112)[M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420)&31]!=0;}
+/* Whether tile (x, y) is a property the current team holds and a unit of `kind`
+ * may use it: the current team must own the property and the kind's per-terrain
+ * capture mask must allow the tile's terrain kind. */
+u8 IsPropertyAllowedForKind(s32 kind, s32 x, s32 y) {
+    extern void **gCurrentMap;
+    s32 IsPropertyOwnedByTeam(s32, s32, s32);
+    void *map;
+
+    if (!IsPropertyOwnedByTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), x, y)) return 0;
+    map = *gCurrentMap;
+    return M2C_FIELD(data_ov000_021b5c54, s8 **, kind * UNIT_KIND_STATS_SIZE)[M2C_FIELD((u8 *)map + (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK] != 0;
+}
 
 s32 func_ov000_021a93a8(void) {
     return 0;
@@ -322,5 +338,13 @@ s32 func_ov000_021a93a8(void) {
 
 s32 func_ov000_021a93b0(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 func_020ce0ec(u8,u8);void *p=*gCurrentMap;return func_020ce0ec(a,M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420));}
 
-s32 func_ov000_021a93ec(s32 a,s32 b){extern void **gCurrentMap;s32 IsUnitInSight(u16);void *p=*gCurrentMap;u32 n;u32 id=M2C_FIELD((u8 *)p+(a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758)),u8 *,0);if(id&&!IsUnitInSight((u16)id))return 0;p=*gCurrentMap;n=a+M2C_FIELD((u8 *)p+b*2,u16 *,0x3758);return (u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,0x5160)&(1<<(n&7)))!=0;}
+/* Whether the current team can see tile (x, y): a unit standing there must be in
+ * sight, and the tile must be marked in the first team's sight bitmap. */
+s32 IsCellVisibleToCurrentTeam(s32 x,s32 y){
+extern void **gCurrentMap;s32 IsUnitInSight(u16);void *p=*gCurrentMap;u32 n;
+u32 id=M2C_FIELD((u8 *)p+(x+M2C_FIELD((u8 *)p+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_VISIBLE_UNIT);
+if(id&&!IsUnitInSight((u16)id))return 0;
+p=*gCurrentMap;n=x+M2C_FIELD((u8 *)p+y*2,u16 *,MAP_ROW_OFFSETS);
+return (u8)(M2C_FIELD((u8 *)p+(n>>3),u8 *,MAP_CELL_BITMAP_TEAM_A)&(1<<(n&7)))!=0;
+}
 

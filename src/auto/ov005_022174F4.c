@@ -30,16 +30,19 @@ M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1;
 gCur3DSpriteEngine = saved;
 }
 
+/* Refreshes the entry label of the detail list's CO (BASE_INDEX) in the main
+ * screen's 3D sprite layer: the CO's face graphics and palette are loaded, or
+ * the label's graphics are cleared while that CO is still locked. */
 void Ov005RefreshEntryLabel(void) {
 extern void *gOv005MenuState,*gCur3DSpriteEngine,*g3DSpriteEngineMain;
-s32 value=M2C_FIELD(gOv005MenuState,s16 *,0x10);
+s32 coId=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX);
 void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(IsCoUnlocked(M2C_FIELD(gOv005MenuState,s16 *,0x10)))
-func_02098d78(value,0x8380,6);
-else MI_CpuFill32(0,M2C_FIELD(g3DSpriteEngineMain,s32 *,0x1c)+0x8380,0x20);
+if(IsCoUnlocked(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX)))
+LoadFaceTextureAndPalette(coId,OV005_LABEL_VRAM_OFFSET,OV005_LABEL_PALETTE);
+else MI_CpuFill32(0,M2C_FIELD(g3DSpriteEngineMain,s32 *,0x1c)+OV005_LABEL_VRAM_OFFSET,OV005_LABEL_CLEAR_SIZE);
 gCur3DSpriteEngine=saved;
-M2C_FIELD(gOv005MenuState,s16 *,0x18)=-1;
+M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SCROLL_VEL)=-1;
 }
 
 #pragma opt_strength_reduction off
@@ -99,18 +102,22 @@ M2C_FIELD(ENGINE,s16*,0x40)=0;
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction reset
-void func_ov005_02217dc0(u8 *arg0) {
+/* D-pad input on the page-0 CO grid (twelve COs in rows of four): move the
+ * selection kept in *selection up/down a whole row or left/right one slot,
+ * wrapping at both ends, focus the newly selected slot and record it as the
+ * menu's index, with the detail list based on the CO after it. */
+void Ov005MoveCoListSelection(u8 *selection) {
 extern void *gKeyState,*gOv005MenuState;
-u32 old=*arg0; u16 keys=M2C_FIELD(gKeyState,u16 *,2);s32 value=old;
-if(keys&0x40)value=old-4;
-else if(keys&0x80)value=old+4;
-else if(keys&0x20)value=old-1;
-else if(keys&0x10)value=old+1;
-if(value<0)value+=12;
-if(value>11)value-=12;
+u32 old=*selection; u16 keys=M2C_FIELD(gKeyState,u16 *,2*KEY_PRESSED);s32 value=old;
+if(keys&KEY_UP)value=old-OV005_MENU_CO_COLUMNS;
+else if(keys&KEY_DOWN)value=old+OV005_MENU_CO_COLUMNS;
+else if(keys&KEY_LEFT)value=old-1;
+else if(keys&KEY_RIGHT)value=old+1;
+if(value<0)value+=OV005_MENU_CO_COUNT;
+if(value>OV005_MENU_CO_COUNT-1)value-=OV005_MENU_CO_COUNT;
 if(value!=old)FocusSpriteSlotById(value);
-M2C_FIELD(gOv005MenuState,s16 *,0xe)=value;
-M2C_FIELD(gOv005MenuState,s16 *,0x10)=M2C_FIELD(gOv005MenuState,s16 *,0xe)+1;
+M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX)=value;
+M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX)=M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX)+1;
 }
 
 void func_ov005_02217e4c(u8 *arg0) {
@@ -121,24 +128,28 @@ void func_ov005_02217e4c(u8 *arg0) {
     PlaySoundEffect(0x10019);
 }
 
-void func_ov005_02217e84(u8 *arg0) {
+/* Left/right input on the detail row's four entries: step the selection kept in
+ * *selection by one, wrapping at either end (the wrap also happens while the
+ * key stays held at the edge), then focus the entry's sprite slot and update
+ * the entries' highlight frames. */
+void Ov005MoveDetailSelection(u8 *selection) {
 extern void *gKeyState;
-u16 keys;s32 old; s32 value;
-old=*arg0;keys=M2C_FIELD(gKeyState,u16 *,2);value=old;
-if(keys&0x20) {if(old<=0) {if(M2C_FIELD(gKeyState,u16 *,0)&0x20)value=old-1;}else value=old-1;}
-else if(keys&0x10) {if(old>=3) {if(M2C_FIELD(gKeyState,u16 *,0)&0x10)value=old+1;}else value=old+1;}
-if(value<0)value=3;
-if(value>3)value=0;
+u16 pressed;s32 old; s32 value;
+old=*selection;pressed=M2C_FIELD(gKeyState,u16 *,2);value=old;
+if(pressed&KEY_LEFT) {if(old<=0) {if(M2C_FIELD(gKeyState,u16 *,KEY_HELD)&KEY_LEFT)value=old-1;}else value=old-1;}
+else if(pressed&KEY_RIGHT) {if(old>=OV005_MENU_DETAIL_COUNT-1) {if(M2C_FIELD(gKeyState,u16 *,KEY_HELD)&KEY_RIGHT)value=old+1;}else value=old+1;}
+if(value<0)value=OV005_MENU_DETAIL_COUNT-1;
+if(value>OV005_MENU_DETAIL_COUNT-1)value=0;
 if(value!=old)FocusSpriteSlotById(value);
-func_ov005_02217334(value);
+Ov005SetDetailSelection(value);
 }
 
 void func_ov005_02217f18(u8 *arg0) {
 extern void *gOv005MenuState;
 M2C_FIELD(gOv005MenuState,s16 *,0x12)=*arg0;
-func_ov005_02217334(*arg0);
+Ov005SetDetailSelection(*arg0);
 func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,0x10),M2C_FIELD(gOv005MenuState,s16 *,0x12));
-Ov005DrawEntryList(M2C_FIELD(gOv005MenuState,s16 *,0x10));
+Ov005LoadEntryFacePalettes(M2C_FIELD(gOv005MenuState,s16 *,0x10));
 PlaySoundEffect(0x10019);
 }
 

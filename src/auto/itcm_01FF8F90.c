@@ -286,7 +286,7 @@ void func_01ff9ab4(void) {
     }
 }
 
-void func_01ff9b38(void) {
+void Apply3DSpriteBanks(void) {
     M2C_UNK func_01ff9690();
     void func_0207fafc(void);
     func_01ff9ab4();
@@ -345,7 +345,7 @@ void func_01ff9d88(s32 arg0) {
 #pragma opt_propagation off
 void func_01ff9dd8(u8 arg0) { M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32); extern u16 **gCur3DSpriteEngine; s32 dest; dest=M2C_FIELD((char *)gCur3DSpriteEngine + arg0*4,s32 *,0xC); { s32 zero=0; s32 size=0x40; MI_CpuFill32(zero,dest,size); } }
 #pragma opt_propagation reset
-void func_01ff9e00(void) {
+void ClearAll3DSpriteLayers(void) {
     extern u16 **gCur3DSpriteEngine;
     s32 i;
     for (i = 0; i < 4; i++) {

@@ -1,32 +1,49 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *EncodeWfcProfileBlob(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void SystemHalt(void); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;EncodeWfcProfileBlob(arg0);func_02076710(a+512,0xa001);i=0;do {
-if(!func_020465c4(b,256,(s32)a)){SystemHalt();return 0;}MI_CpuCopy8((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
-s32 func_02045e70(u16 *a) {  extern M2C_UNK data_0213db28; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&data_0213db28,s32 *,8)=(*a<<3)-1024;return 1; }
+s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
 
 s32 func_02045eb4(M2C_UNK arg0) {
 
-    extern M2C_UNK data_0213db28;
-    if (func_020465c4(M2C_FIELD(&data_0213db28, s32 *, 8), 0x400, arg0) != 0) {
+    extern M2C_UNK gFifoBlockTransfer;
+    if (func_020465c4(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x400, arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_02045ee0(s32 arg0,s32 *arg1,s32 arg2) { void func_02046654(s32,s32,s32); extern M2C_UNK data_0213db28; register s32 a=arg0; register s32 i=0; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); do {if(arg1[i]) {do {func_02046654(b,256,a);}while(!func_020466d0(a,b,256,arg2));} i++;a+=256;b+=256;}while(i<4);return func_0204671c()!=0; }
+/* Upload the 0x100-byte blocks of `data` selected by `blocks` (one entry per
+ * block), one after the other: copy each block to the ARM7 transfer address and
+ * read it back into `readback` until it verifies, then advance to the next
+ * block.  Returns whether the transfer could be finished. */
+s32 FifoUploadSelectedBlocks(s32 data,s32 *blocks,s32 readback) { void FifoWriteBlock(s32,s32,s32); extern M2C_UNK gFifoBlockTransfer; register s32 block=data; register s32 i=0; register s32 address=M2C_FIELD(&gFifoBlockTransfer,s32 *,FIFO_XFER_ADDRESS); do {if(blocks[i]) {do {FifoWriteBlock(address,FIFO_BLOCK_SIZE,block);}while(!FifoVerifyBlock(block,address,FIFO_BLOCK_SIZE,readback));} i++;block+=FIFO_BLOCK_SIZE;address+=FIFO_BLOCK_SIZE;}while(i<FIFO_BLOCK_COUNT);return FifoFinishTransfer()!=0; }
 
 #pragma opt_strength_reduction off
-s32 func_02045f68(u8 *arg0) {
-u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); extern M2C_UNK data_0213db28;
-register u8 *a=arg0; register s32 i=0; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8);
-do { *(u16 *)(arg0+(i<<8)+254)=func_02076838(arg0+0x500,a,254);
-do {func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(arg0+0x400)));
-i++;a+=256;b+=256;}while(i<4); return func_0204671c()!=0;
+/* Upload the four 256-byte blocks of `data` over the FIFO, one after the other:
+ * checksum each block into its last two bytes, copy it to the transfer address
+ * and read it back until it verifies, then advance to the next block. Returns
+ * whether the transfer could be finished. */
+s32 FifoUploadVerifiedBlocks(u8 *data) {
+    u16 Crc16Block(void *,void *,s32); void FifoWriteBlock(s32,s32,s32); extern M2C_UNK gFifoBlockTransfer;
+    register u8 *block = data;
+    register s32 i = 0;
+    register s32 address = M2C_FIELD(&gFifoBlockTransfer, s32 *, FIFO_XFER_ADDRESS);
+
+    do {
+        *(u16 *)(data + (i << 8) + 254) = Crc16Block(data + 0x500, block, 254);
+        do {
+            FifoWriteBlock(address, 256, (s32)block);
+        } while (!FifoVerifyBlock((s32)block, address, 256, (s32)(data + 0x400)));
+        i++;
+        block += 256;
+        address += 256;
+    } while (i < 4);
+    return FifoFinishTransfer() != 0;
 }
 #pragma opt_strength_reduction reset
-void func_02045ffc(M2C_UNK a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34; MI_CpuCopy8(a,&data_0213db34,14); }
+void func_02045ffc(M2C_UNK a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode; MI_CpuCopy8(a,&gWfcProfileCode,14); }
 
 u8 CountSetBits(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
 
@@ -84,7 +101,7 @@ M2C_UNK DC_InvalidateRange(M2C_UNK,...);
 u64 GetSystemTick(void);
 u64 U64Divide(u64,u64);
 s32 SendFifoMessage(s32,u32,s32);
-extern M2C_UNK data_0213db28;
+extern M2C_UNK gFifoBlockTransfer;
 extern u8 data_0213db60[];
 u32 c2,c1,c0,b3,b2,b1,b0,a6,a5,a4,a3,a2,a1,a0;
 u64 start;
@@ -108,7 +125,7 @@ b3=0x1040000|(u16)arg3;
 a6=0x3002000;
 for(;;){
 if(state==0){
-M2C_FIELD(&data_0213db28,s32*,4)=0;
+M2C_FIELD(&gFifoBlockTransfer,s32*,4)=0;
 switch(arg0){
 case 1:
 if(SendFifoMessage(4,a0,0)<0){state=0;break;}
@@ -132,9 +149,9 @@ if(SendFifoMessage(4,c2,0)<0)state=0;else state=1;break;
 case 6:if(SendFifoMessage(4,0x3002d00,0)<0)state=0;else state=1;break;
 case 7:if(SendFifoMessage(4,0x3002100,0)<0)state=0;else state=1;break;
 }
-}else if(M2C_FIELD(&data_0213db28,s32*,4)==1){
+}else if(M2C_FIELD(&gFifoBlockTransfer,s32*,4)==1){
 state=0;
-if(M2C_FIELD(&data_0213db28,u16*,0))goto fail;
+if(M2C_FIELD(&gFifoBlockTransfer,u16*,0))goto fail;
 switch(arg0){
 case 1:return 1;
 case 2:arg0=4;break;
@@ -168,9 +185,9 @@ DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHan
 len=(u16)arg1;
 loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
-void func_02046654(s32 a,s32 b,s32 c) { s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
+void FifoWriteBlock(s32 a,s32 b,s32 c) { s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
 
-s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+s32 FifoVerifyBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
     if (func_020465c4(arg1, arg2, arg3) == 0) {
         return 0;
@@ -181,7 +198,7 @@ s32 func_020466d0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     return 0;
 }
 
-s32 func_0204671c(void) {
+s32 FifoFinishTransfer(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
@@ -199,13 +216,13 @@ loop_3:
     return 1;
 }
 
-s32 func_02046788(s32 a,s32 b,s32 c) { extern M2C_UNK data_0213db28; M2C_FIELD(&data_0213db28,u16 *,0)=(u8)b;M2C_FIELD(&data_0213db28,s32 *,4)=1;if(c)M2C_FIELD(&data_0213db28,u16 *,0)=255;return M2C_FIELD(&data_0213db28,u16 *,0); }
+s32 func_02046788(s32 a,s32 b,s32 c) { extern M2C_UNK gFifoBlockTransfer; M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=(u8)b;M2C_FIELD(&gFifoBlockTransfer,s32 *,4)=1;if(c)M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=255;return M2C_FIELD(&gFifoBlockTransfer,u16 *,0); }
 
-void *EncodeWfcProfileBlob(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db34,data_0213db3a,data_0213db40; u32 low,lo,hi,z; u64 x,y; lo=M2C_FIELD(a,u32 *,8);hi=M2C_FIELD(a,u32 *,12);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&data_0213db34,5);low=(u32)x;hi=(u32)(x>>32);y=x>>5;z=(M2C_FIELD(a,u32 *,4)>>8)&7; M2C_FIELD(&data_0213db34,u8 *,5)=z|((u32)(x&31)<<3);x=y;MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&data_0213db34,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&data_0213db34,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &data_0213db34; }
+void *EncodeWfcProfileBlob(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode,data_0213db3a,data_0213db40; u32 lo,hi,z; u64 x,y; hi=M2C_FIELD(a,u32 *,12);lo=M2C_FIELD(a,u32 *,8);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&gWfcProfileCode,5);z=((M2C_FIELD(a,u64 *,0)>>40)&7ULL) | ((u32)(x&31)<<3);y=x>>5;x=y; M2C_FIELD(&gWfcProfileCode,u8 *,5)=z; MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&gWfcProfileCode,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&gWfcProfileCode,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &gWfcProfileCode; }
 
-M2C_UNK *func_02046878(void) {
-    extern M2C_UNK data_0213db34;
-    return &data_0213db34;
+M2C_UNK *GetWfcProfileCode(void) {
+    extern M2C_UNK gWfcProfileCode;
+    return &gWfcProfileCode;
 }
 
 s32 func_02046884(void *arg0) {
@@ -237,7 +254,7 @@ s32 func_02046884(void *arg0) {
     r7 = (u8 *)r8;
     r5 = 0;
     while (r5 < 3) {
-        tmp = func_02076838((u8 *)r8 + 0x500, r6, 0xFE);
+        tmp = Crc16Block((u8 *)r8 + 0x500, r6, 0xFE);
         {
             s32 v = *(u16 *)((u8 *)r8 + (r5 << 8) + 0xFE);
             if (tmp == v) {
@@ -251,7 +268,7 @@ s32 func_02046884(void *arg0) {
         r7 += 0x100;
     }
 
-    tmp = func_02076838((u8 *)r8 + 0x500, (u8 *)r8 + 0x300, 0xFE);
+    tmp = Crc16Block((u8 *)r8 + 0x500, (u8 *)r8 + 0x300, 0xFE);
     {
         s32 v = *(u16 *)((u8 *)r8 + 0x300 + 0xFE);
         if (tmp == v) {
@@ -266,7 +283,7 @@ s32 func_02046884(void *arg0) {
 
     if (stk[0] == 0 && stk[1] == 0 && stk[2] == 0 && stk[3] == 0) {
         func_02046c8c((s32)r8);
-        if (func_02045f68((u8 *)r8) == 0) {
+        if (FifoUploadVerifiedBlocks((u8 *)r8) == 0) {
             return 0xffffd8f0;
         }
         return 0;
@@ -277,7 +294,7 @@ s32 func_02046884(void *arg0) {
     }
     if (stk[2] == 0 && stk[3] == 0) {
         func_02046c8c((s32)r8);
-        if (func_02045f68((u8 *)r8) == 0) {
+        if (FifoUploadVerifiedBlocks((u8 *)r8) == 0) {
             return 0xffffd8f0;
         }
         return 0;
@@ -286,7 +303,7 @@ s32 func_02046884(void *arg0) {
  Lc98:
     if (stk[0] == 0 && stk[1] == 0) {
         func_02046c8c((s32)r8);
-        if (func_02045f68((u8 *)r8) != 0) {
+        if (FifoUploadVerifiedBlocks((u8 *)r8) != 0) {
             return 0xffffd8ed;
         }
         return 0xffffd8f0;
@@ -333,7 +350,7 @@ s32 func_02046884(void *arg0) {
         }
     }
 
-    if (func_02045f68((u8 *)r8) == 0) {
+    if (FifoUploadVerifiedBlocks((u8 *)r8) == 0) {
         return 0xffffd8f0;
     }
     if (r4 != 0) {

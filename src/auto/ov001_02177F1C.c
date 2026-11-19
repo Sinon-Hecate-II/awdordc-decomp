@@ -1,22 +1,26 @@
 /* 68 functions from 0x02177F1C to 0x02178E80 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 
-void Ov001_MoveOptionSelection(s32 arg0) {
+/* Moves the Wi-Fi option menu's selection one row: direction 1 is up (two rows
+ * forward modulo the option count), anything else down; plays the move sound and
+ * lays the choice frame over the newly selected row. */
+void Ov001_MoveOptionSelection(s32 direction) {
     s32 HardwareDivideRemainder(s32, s32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
     extern M2C_UNK gOv001OptionFrameLeft;
-extern M2C_UNK gOv001OptionFrameTop;
-extern M2C_UNK gOv001OptionFrameRight;
-extern M2C_UNK gOv001OptionFrameBottom;
+    extern M2C_UNK gOv001OptionFrameTop;
+    extern M2C_UNK gOv001OptionFrameRight;
+    extern M2C_UNK gOv001OptionFrameBottom;
     extern M2C_UNK gOv001OptionMenuState;
     s32 offset;
-    if (arg0 == 1) {
-        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 2, 3);
+    if (direction == 1) {
+        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 2, OV001_OPTION_COUNT);
     } else {
-        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 1, 3);
+        M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) = HardwareDivideRemainder(M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) + 1, OV001_OPTION_COUNT);
     }
-    Ov001_PlaySound(8);
+    Ov001_PlaySound(OV001_SOUND_MOVE);
     offset = M2C_FIELD(&gOv001OptionMenuState, u8 *, 0) * 8;
     Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset), M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset), M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset), M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
 }
@@ -33,12 +37,12 @@ void Ov001_LoadSelectedOptionTile(void) {
 void func_ov001_02177fd8(void) {
     void func_ov001_02178010(void);
     void func_ov001_02178090(void);
-    M2C_UNK func_ov001_02171e58(s32);
+    M2C_UNK Ov001_ShowMessageBox(s32);
     M2C_UNK Ov001_CreateAnimSprite(s32);
     M2C_UNK Ov001_ShowWfcIcon(s32);
     M2C_UNK Ov001_PlaySound(s32);
     func_ov001_02178010();
-    func_ov001_02171e58(30);
+    Ov001_ShowMessageBox(30);
     Ov001_CreateAnimSprite(0);
     Ov001_ShowWfcIcon(1);
     Ov001_PlaySound(11);
@@ -67,14 +71,14 @@ void func_ov001_02178090(void) {
 }
 
 void func_ov001_021780c4(void) {
-    M2C_UNK func_ov001_021760f0(M2C_UNK *);
+    M2C_UNK Ov001_SetProfileScreenCallback(M2C_UNK *);
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_021780f4;
-    extern M2C_UNK func_ov001_021781c8;
+    extern M2C_UNK Ov001_ProfileScreenCallback;
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_021760f0(&func_ov001_021781c8);
+    Ov001_SetProfileScreenCallback(&Ov001_ProfileScreenCallback);
     Ov001_SetStepCallback(&func_ov001_021780f4);
 }
 
@@ -93,21 +97,25 @@ void func_ov001_02178108(void) {
 
 }
 
-void func_ov001_0217810c(void) {
+void Ov001_FadeOutProfileScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02178134;
+    extern M2C_UNK Ov001_CloseWfcProfileScreen;
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02178134);
+    Ov001_SetStepCallback(&Ov001_CloseWfcProfileScreen);
 }
 
-void func_ov001_02178134(void) {
+/* Close the Wi-Fi profile screen once its fades are done and the profile task
+ * has finished: hide the WFC icon, free the screen's sprites and background,
+ * hide its planes, then show the screen that follows from the profile result
+ * (no profile change, profile saved, or the alternate profile action). */
+void Ov001_CloseWfcProfileScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites();
     M2C_UNK Ov001_HideWfcIcon();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     s32 Ov001_IsProfileScreenDone();
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern s8 data_ov001_02193d74;
+    extern s8 gOv001ProfileScreenResult;
     void func_ov001_02178250(void);
     void func_ov001_021789d8(void);
     void func_ov001_02178bc0(void);
@@ -118,48 +126,52 @@ void func_ov001_02178134(void) {
     Ov001_FreePageBackground(0);
     Ov001_DisableVisiblePlanes(0, 0x15);
     Ov001_SetNextScreenMode(0, 1);
-    if ((u8)data_ov001_02193d74 == 0) {
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178bc0);
+    if ((u8) gOv001ProfileScreenResult == 0) {
+        Ov001_SetStepCallback((M2C_UNK *) &func_ov001_02178bc0);
         return;
     }
-    if ((u8)data_ov001_02193d74 == 2) {
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021789d8);
+    if ((u8) gOv001ProfileScreenResult == 2) {
+        Ov001_SetStepCallback((M2C_UNK *) &func_ov001_021789d8);
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178250);
+    Ov001_SetStepCallback((M2C_UNK *) &func_ov001_02178250);
 }
 
-void func_ov001_021781c8(s32 arg0) {
-    M2C_UNK func_ov001_02176078();
+/* Completion callback of the WFC profile screen: event 2 means a profile was
+ * obtained, so write it into the save slots and mark the screen as saved; event
+ * 3 is the failed attempt; any other event leaves the profile unchanged.  Plays
+ * the matching sound, clears the callback and fades the screen out. */
+void Ov001_ProfileScreenCallback(s32 event) {
+    M2C_UNK Ov001_StartProfileExitTask();
     M2C_UNK ResetSaveSlotsWithWfcProfile();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    extern s8 data_ov001_02193d74;
-    if (arg0 == 2) {
+    extern s8 gOv001ProfileScreenResult;
+    if (event == 2) {
         ResetSaveSlotsWithWfcProfile();
-        data_ov001_02193d74 = 1;
+        gOv001ProfileScreenResult = OV001_PROFILE_SAVED;
         Ov001_StopSound();
-        Ov001_PlaySound(0x10);
-    } else if (arg0 == 3) {
-        data_ov001_02193d74 = 2;
+        Ov001_PlaySound(OV001_SOUND_SAVED);
+    } else if (event == 3) {
+        gOv001ProfileScreenResult = OV001_PROFILE_OTHER;
         Ov001_StopSound();
-        Ov001_PlaySound(0x12);
+        Ov001_PlaySound(OV001_SOUND_FAILED);
     } else {
-        data_ov001_02193d74 = 0;
+        gOv001ProfileScreenResult = OV001_PROFILE_NO_CHANGE;
         Ov001_StopSound();
-        Ov001_PlaySound(0x12);
+        Ov001_PlaySound(OV001_SOUND_FAILED);
     }
-    func_ov001_021760f0(0);
-    func_ov001_02176078();
-    Ov001_SetStepCallback(&func_ov001_0217810c);
+    Ov001_SetProfileScreenCallback(0);
+    Ov001_StartProfileExitTask();
+    Ov001_SetStepCallback(&Ov001_FadeOutProfileScreen);
 }
 
 void func_ov001_02178250(void) {
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void func_ov001_02178270(void);
     extern M2C_UNK func_ov001_021782d8;
     func_ov001_02178270();
-    func_ov001_02171e58(0x1F);
+    Ov001_ShowMessageBox(0x1F);
     Ov001_SetStepCallback(&func_ov001_021782d8);
 }
 
@@ -263,7 +275,7 @@ void func_ov001_02178460(void) {
     void func_ov001_02178480(void);
     extern M2C_UNK func_ov001_021784e8;
     func_ov001_02178480();
-    func_ov001_02171e58(0x1A);
+    Ov001_ShowMessageBox(0x1A);
     Ov001_SetStepCallback(&func_ov001_021784e8);
 }
 
@@ -371,15 +383,15 @@ void func_ov001_0217863c(void) {
 
 void Ov001_OpenWfcEraseScreen(void) {
     s8 Ov001_ShowMessagePanel(s32, s32, s32);
-    M2C_UNK func_ov001_02172250(M2C_UNK);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void func_ov001_021786d4(void);
     void func_ov001_02178754(void);
     extern u8 gOv001WfcEraseConfirmed;
     gOv001WfcEraseConfirmed = 0;
     func_ov001_021786d4();
-    func_ov001_02172250(0x13);
+    Ov001_LoadObjLayoutBlock(0x13);
     Ov001_ShowMessagePanel(0x3C, -1, 0);
-    func_ov001_02171e58(0x1B);
+    Ov001_ShowMessageBox(0x1B);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178754);
 }
 
@@ -516,7 +528,7 @@ void func_ov001_021789d8(void) {
     extern M2C_UNK func_ov001_02178a74;
     data_ov001_02193d7c = 0;
     func_ov001_02178a08();
-    func_ov001_02171e58(0x21);
+    Ov001_ShowMessageBox(0x21);
     Ov001_SetStepCallback(&func_ov001_02178a74);
 }
 
@@ -601,7 +613,7 @@ void func_ov001_02178bc0(void) {
     extern s8 gOv001MessageState;
     extern M2C_UNK func_ov001_02178c7c;
     func_ov001_02178bfc();
-    func_ov001_02171e58(0x20);
+    Ov001_ShowMessageBox(0x20);
     gOv001MessageState = Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02178c7c);
 }

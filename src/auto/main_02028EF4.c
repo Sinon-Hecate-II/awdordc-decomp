@@ -190,76 +190,96 @@ s32 func_02029348(void *arg0) {
     return (s32)result + 0x10;
 }
 
-void func_020293a0(void *arg0,s32 arg1){
-void *GetSession(void);void *func_02029528(s32);void *func_0202942c(void);s32 func_020294f8(void);void WFC_TouchPlayerNode(void*);void MI_CpuCopy32(void*,void*,u32);
-void *base;void *node;
-base=GetSession();if(!base)return;
-if(M2C_FIELD(base,u8*,0x226a)||M2C_FIELD(arg0,u16*,0x3c))return;
-node=func_02029528((s32)arg0+4);
-if(!node)node=func_0202942c();
-if(!node && M2C_FIELD(base,u32*,0x2278)==1)node=(void*)func_020294f8();
-if(!node)return;
-M2C_FIELD(node,u16*,2)=arg1;
-MI_CpuCopy32(arg0,(u8*)node+0x10,0xc0);WFC_TouchPlayerNode(node);
+/* Store the connection-data record `record` received for WFC player slot `slot`
+ * in the session's player list: overwrite the node that already holds the
+ * record's player id, else take a free node, else the least recently updated
+ * one. The record is copied into the node and the node is moved to the tail so
+ * it counts as the most recently updated. Nothing is stored while the session
+ * discards player records or the record is already marked as gone. */
+void WFC_StorePlayerRecord(void *record, u16 slot) {
+    void *GetSession(void);
+    void *func_02029528(s32);
+    void *WFC_AllocPlayerNode(void);
+    s32 func_020294f8(void);
+    void WFC_TouchPlayerNode(void *);
+    void MI_CpuCopy32(void *, void *, u32);
+    void *session;
+    void *node;
+
+    session = GetSession();
+    if (!session) return;
+    if (M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK) || M2C_FIELD(record, u16 *, 0x3c)) return;
+    node = func_02029528((s32)record + WFC_PLAYER_RECORD_ID);
+    if (!node) node = WFC_AllocPlayerNode();
+    if (!node && M2C_FIELD(session, u32 *, 0x2278) == 1) node = (void *)func_020294f8();
+    if (!node) return;
+    M2C_FIELD(node, u16 *, WFC_PLAYER_NODE_SLOT) = slot;
+    MI_CpuCopy32(record, (u8 *)node + WFC_PLAYER_NODE_RECORD, 0xC0);
+    WFC_TouchPlayerNode(node);
 }
 
 #pragma opt_strength_reduction off
-void *func_0202942c(void) {
+/* Allocate a free node of the session's player-record list: take the first node
+ * whose in-use byte is clear, give it the next index, append it at the tail as
+ * the newest node and bump the list's insert count.  Returns NULL when the list
+ * is missing, its buffer holds no node, or every node has already been used. */
+void *WFC_AllocPlayerNode(void) {
     void *GetSession(void);
-    void *base;
-    void *p2000;
-    void *hdr;
-    u32 cap;
-    u32 nslots;
+    void *session;
+    void *block;
+    void *list;
+    u32 capacity;
+    u32 maxNodes;
     u32 count;
     u32 i;
-    u8 *slotbase;
-    void *slot;
-    void *prev;
+    u8 *nodes;
+    void *node;
+    void *oldTail;
 
-    base = GetSession();
-    p2000 = (void *)((s8 *)base + 0x2000);
-    hdr = M2C_FIELD(p2000, void **, 0x270);
-    if (hdr != 0) goto have_hdr;
-    return (void *)0;
-have_hdr:
-    cap = M2C_FIELD(p2000, u32 *, 0x274);
-    if (cap <= 0xCU) {
+    session = GetSession();
+    block = (void *)((s8 *)session + WFC_SESSION_PLAYER_BLOCK);
+    list = M2C_FIELD(block, void **, WFC_PLAYER_LIST_BLOCK_OFFSET);
+    node = 0;
+    if (list == 0) return node;
+    capacity = M2C_FIELD(block, u32 *, WFC_PLAYER_LIST_CAP_OFFSET);
+    if (capacity <= WFC_PLAYER_LIST_HEADER_SIZE) {
         return (void *)0;
     }
-    nslots = (cap - 0xCU) / 0xD0U;
-    if (nslots == 0U) {
+    maxNodes = (capacity - WFC_PLAYER_LIST_HEADER_SIZE) / WFC_PLAYER_NODE_SIZE;
+    if (maxNodes == 0U) {
         return (void *)0;
     }
-    count = M2C_FIELD(hdr, u32 *, 0);
-    if (nslots <= count) {
+    count = M2C_FIELD(list, u32 *, WFC_PLAYER_LIST_COUNT);
+    if (maxNodes <= count) {
         return (void *)0;
     }
-    slotbase = (u8 *)hdr + 0xC;
-    for (i = 0; i < nslots; i++) {
-        slot = (void *)(slotbase + i * 0xD0U);
-        if (*(u8 *)slot == 0U) {
-            goto found;
-        }
+    i = 0;
+    if (i < maxNodes) {
+        nodes = (u8 *)list + WFC_PLAYER_LIST_HEADER_SIZE;
+        do {
+            node = nodes + i * WFC_PLAYER_NODE_SIZE;
+            if (M2C_FIELD(node, u8 *, WFC_PLAYER_NODE_IN_USE) == 0U) {
+                break;
+            }
+        } while (++i < maxNodes);
     }
-    return (void *)0;
-found:
-    *(u8 *)slot = 1;
-    count = M2C_FIELD(hdr, u32 *, 0);
-    M2C_FIELD(slot, u32 *, 4) = count;
-    M2C_FIELD(slot, void **, 0xC) = (void *)0;
-    M2C_FIELD(slot, void **, 8) = M2C_FIELD(hdr, void **, 8);
-    M2C_FIELD(hdr, void **, 8) = slot;
-    prev = M2C_FIELD(slot, void **, 8);
-    if (prev != (void *)0) {
-        M2C_FIELD(prev, void **, 0xC) = slot;
+    if (i >= maxNodes) return node;
+    M2C_FIELD(node, u8 *, WFC_PLAYER_NODE_IN_USE) = 1;
+    count = M2C_FIELD(list, u32 *, WFC_PLAYER_LIST_COUNT);
+    M2C_FIELD(node, u32 *, WFC_PLAYER_NODE_INDEX) = count;
+    M2C_FIELD(node, void **, WFC_PLAYER_NODE_NEXT) = (void *)0;
+    M2C_FIELD(node, void **, WFC_PLAYER_NODE_PREV) = M2C_FIELD(list, void **, WFC_PLAYER_LIST_TAIL);
+    M2C_FIELD(list, void **, WFC_PLAYER_LIST_TAIL) = node;
+    oldTail = M2C_FIELD(node, void **, WFC_PLAYER_NODE_PREV);
+    if (oldTail != (void *)0) {
+        M2C_FIELD(oldTail, void **, WFC_PLAYER_NODE_NEXT) = node;
     } else {
-        M2C_FIELD(hdr, void **, 4) = slot;
+        M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD) = node;
     }
-    count = M2C_FIELD(hdr, u32 *, 0);
+    count = M2C_FIELD(list, u32 *, WFC_PLAYER_LIST_COUNT);
     count = count + 1;
-    M2C_FIELD(hdr, u32 *, 0) = count;
-    return slot;
+    M2C_FIELD(list, u32 *, WFC_PLAYER_LIST_COUNT) = count;
+    return node;
 }
 #pragma opt_strength_reduction on
 s32 func_020294f8(void) {
@@ -558,11 +578,11 @@ s32 WFC_SendPacket(void *destAddr, void *data, s32 dataLen, s32 extra, s32 extra
 }
 #pragma opt_if-conversion reset
 void WFC_OnSendComplete(void *arg0) {
-void func_020281f8(void); void OS_WakeupThread(void *);
+void WFC_RearmStateTimer(void); void OS_WakeupThread(void *);
 extern M2C_UNK gWfcSendState; extern M2C_UNK gWfcSendThread;
 if(M2C_FIELD(arg0,u16 *,0)!=0x12) return;
 M2C_FIELD(&gWfcSendState,u32 *,0x24)=M2C_FIELD(arg0,u16 *,2);
-if(M2C_FIELD(arg0,u16 *,2)==0) func_020281f8();
+if(M2C_FIELD(arg0,u16 *,2)==0) WFC_RearmStateTimer();
 OS_WakeupThread(&gWfcSendThread);
 }
 

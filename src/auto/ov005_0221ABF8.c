@@ -1,5 +1,6 @@
 /* 14 functions from 0x0221ABF8 to 0x0221BB70 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ov005_results.h"
 
 static inline s32 MaxU8(u8 a, u8 b, u8 c) {
     s32 m;
@@ -126,19 +127,23 @@ void func_ov005_0221b01c(void *arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_ov005_0221b088(void *arg0) {
+/* Slides a results-screen score row back out to the right over
+ * RESULT_ROW_SLIDE_FRAMES frames; once it has gone, the row clears the layer its
+ * digits were drawn on (marking it dirty and resetting its x offset) and deletes
+ * itself. */
+void ResultScoreRow_SlideOut(void *row) {
     M2C_UNK Clear3DSpriteLayer(s32);
     M2C_UNK DeleteSpriteObject(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void *gCur3DSpriteEngine;
-    M2C_FIELD(arg0, s32 *, 0x34) += 1;
-    M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(1, 0, 0x100, M2C_FIELD(arg0, s32 *, 0x34), 0x20);
-    if (M2C_FIELD(arg0, s32 *, 0x34) != 0x20) return;
-    Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x34) = 0;
-    DeleteSpriteObject(arg0);
+    M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) += 1;
+    M2C_FIELD(row, s32 *, RESULT_ROW_SLIDE_X) = EaseInterpolate(EASE_IN_QUAD, 0, RESULT_ROW_SLIDE_END, M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED), RESULT_ROW_SLIDE_FRAMES);
+    if (M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) != RESULT_ROW_SLIDE_FRAMES) return;
+    Clear3DSpriteLayer(RESULT_SCORE_LAYER);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, DS3D_QUAD_X + 2 * RESULT_SCORE_LAYER) = 0;
+    M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) = 0;
+    DeleteSpriteObject(row);
 }
 
 /* Draws the three result-screen scores (at +0x3C/+0x40/+0x44) and their total as
@@ -262,8 +267,8 @@ void func_ov005_0221b4b4(void) {
 }
 
 void func_ov005_0221b4c0(void) {
-    void func_ov005_0221b088();
-    func_ov005_0221b088();
+    void ResultScoreRow_SlideOut();
+    ResultScoreRow_SlideOut();
 }
 
 void func_ov005_0221b4cc(void) {
@@ -350,118 +355,88 @@ void Tick3DSpriteAnimation(void *animState) {
     Sprite_ResumeAnimation(animState);
 }
 
-void func_ov005_0221b854(void *arg0) {
+void func_ov005_0221b854(void *animState) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_UNK func_01ffa730(void *);
-    s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    s32 DidPlayerWin();
+    void func_01ffa730(void *);
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
+    s32 DidPlayerWin(void);
     extern M2C_UNK gCoState;
-    extern M2C_UNK gCoPlayerSlots;
-    extern u16 **data_027e01d8;
-    u16 *sp3C;
-    u16 *sp38;
-    u16 *sp34;
-    u16 *sp30;
-    u16 *sp2C;
-    u16 *sp28;
-    u16 *sp24;
-    u16 *sp20;
-    u16 *sp1C;
-    u16 *sp18;
-    u16 *sp14;
-    u16 *sp10;
-    u16 *spC;
-    u16 *sp8;
-    u16 *sp4;
-    s32 temp_r0;
-    s32 var_r0;
-    s32 temp_r0_3;
-    u16 *temp_r0_2;
-    u16 *temp_r1;
-    u16 *temp_r1_10;
-    u16 *temp_r1_11;
-    u16 *temp_r1_12;
-    u16 *temp_r1_13;
-    u16 *temp_r1_2;
-    u16 *temp_r1_3;
-    u16 *temp_r1_4;
-    u16 *temp_r1_5;
-    u16 *temp_r1_6;
-    u16 *temp_r1_7;
-    u16 *temp_r1_8;
-    u16 *temp_r1_9;
-    u16 *temp_r2;
+    extern u16 gCoPlayerSlots[];
+    extern void *gCur3DSpriteEngine;
+    u16 *volatile bankFlags;
+    u16 *volatile blendMode;
+    u16 *volatile oam1;
+    u16 *volatile oam2;
+    u16 *volatile oam4;
+    u16 *volatile oam8;
+    u16 *volatile oam10;
+    u16 *volatile oam20;
+    u16 *volatile oam100;
+    u16 *volatile oam200;
+    u16 *volatile oam400;
+    u16 *volatile oam800;
+    u16 *volatile oam1000;
+    u16 *volatile oam2000;
+    u16 *volatile blendReset;
+    s32 enabled;
+    s32 t;
 
-    if (DidPlayerWin() == 0) {
-        var_r0 = 0;
-    } else if (*(&gCoPlayerSlots + (M2C_FIELD(&gCoState, u8 *, 4) * 0xC)) == 0) {
-        var_r0 = 0;
+    if (!DidPlayerWin()) {
+        enabled = 0;
+    } else if (*(u16 *)((u8 *)gCoPlayerSlots + (s16)M2C_FIELD(&gCoState, u8 *, 4) * (s16)12) == 0) {
+        enabled = 0;
     } else {
-        var_r0 = 1;
+        enabled = 1;
     }
-    if (var_r0 == 0) {
-        func_01ffa730(arg0);
+    if (!enabled) {
+        func_01ffa730(animState);
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x34) + 1;
-    M2C_FIELD(arg0, s32 *, 0x34) = temp_r0;
-    if (temp_r0 == 1) {
-        temp_r1 = *data_027e01d8;
-        sp3C = temp_r1;
-        *temp_r1 = *sp3C | 0x20;
-        temp_r1_2 = *data_027e01d8;
-        sp38 = temp_r1_2 + 0x12;
-        M2C_FIELD(temp_r1_2, s16 *, 0x12) = (s16) ((*sp38 & ~0xC0) | 0x40);
-        temp_r1_3 = *data_027e01d8;
-        sp34 = temp_r1_3 + 0x12;
-        M2C_FIELD(temp_r1_3, s16 *, 0x12) = (s16) (*sp34 & ~1);
-        temp_r1_4 = *data_027e01d8;
-        sp30 = temp_r1_4 + 0x12;
-        M2C_FIELD(temp_r1_4, s16 *, 0x12) = (s16) (*sp30 | 2);
-        temp_r1_5 = *data_027e01d8;
-        sp2C = temp_r1_5 + 0x12;
-        M2C_FIELD(temp_r1_5, s16 *, 0x12) = (s16) (*sp2C & ~4);
-        temp_r1_6 = *data_027e01d8;
-        sp28 = temp_r1_6 + 0x12;
-        M2C_FIELD(temp_r1_6, s16 *, 0x12) = (s16) (*sp28 & ~8);
-        temp_r1_7 = *data_027e01d8;
-        sp24 = temp_r1_7 + 0x12;
-        M2C_FIELD(temp_r1_7, s16 *, 0x12) = (s16) (*sp24 & ~0x10);
-        temp_r1_8 = *data_027e01d8;
-        sp20 = temp_r1_8 + 0x12;
-        M2C_FIELD(temp_r1_8, s16 *, 0x12) = (s16) (*sp20 & ~0x20);
-        temp_r1_9 = *data_027e01d8;
-        sp1C = temp_r1_9 + 0x12;
-        M2C_FIELD(temp_r1_9, s16 *, 0x12) = (s16) (*sp1C & ~0x100);
-        temp_r1_10 = *data_027e01d8;
-        sp18 = temp_r1_10 + 0x12;
-        M2C_FIELD(temp_r1_10, s16 *, 0x12) = (s16) (*sp18 & ~0x200);
-        temp_r1_11 = *data_027e01d8;
-        sp14 = temp_r1_11 + 0x12;
-        M2C_FIELD(temp_r1_11, s16 *, 0x12) = (s16) (*sp14 & ~0x400);
-        temp_r1_12 = *data_027e01d8;
-        sp10 = temp_r1_12 + 0x12;
-        M2C_FIELD(temp_r1_12, s16 *, 0x12) = (s16) (*sp10 | 0x800);
-        temp_r1_13 = *data_027e01d8;
-        spC = temp_r1_13 + 0x12;
-        M2C_FIELD(temp_r1_13, s16 *, 0x12) = (s16) (*spC | 0x1000);
-        temp_r0_2 = *data_027e01d8;
-        sp8 = temp_r0_2 + 0x12;
-        M2C_FIELD(temp_r0_2, s16 *, 0x12) = (s16) (*sp8 & ~0x2000);
+
+    M2C_FIELD(animState, s32 *, 0x34) += 1;
+    if (M2C_FIELD(animState, s32 *, 0x34) == 1) {
+        bankFlags = *(u16 **)gCur3DSpriteEngine;
+        *bankFlags = *bankFlags | 0x20;
+        blendMode = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *blendMode = (*blendMode & ~0xc0) | 0x40;
+        oam1 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam1 = *oam1 & ~0x1;
+        oam2 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam2 = *oam2 | 0x2;
+        oam4 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam4 = *oam4 & ~0x4;
+        oam8 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam8 = *oam8 & ~0x8;
+        oam10 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam10 = *oam10 & ~0x10;
+        oam20 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam20 = *oam20 & ~0x20;
+        oam100 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam100 = *oam100 & ~0x100;
+        oam200 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam200 = *oam200 & ~0x200;
+        oam400 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam400 = *oam400 & ~0x400;
+        oam800 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam800 = *oam800 | 0x800;
+        oam1000 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam1000 = *oam1000 | 0x1000;
+        oam2000 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oam2000 = *oam2000 & ~0x2000;
     }
-    temp_r0_3 = EaseInterpolate(0, 0, 0x10, M2C_FIELD(arg0, s32 *, 0x34), 0x10);
-    M2C_FIELD(*data_027e01d8, s8 *, 0x51) = (s8)temp_r0_3;
-    M2C_FIELD(*data_027e01d8, s8 *, 0x52) = (s8) (0x10 - temp_r0_3);
-    if (M2C_FIELD(arg0, s32 *, 0x34) != 0x10) {
+
+    t = EaseInterpolate(0, 0, 0x10, M2C_FIELD(animState, s32 *, 0x34), 0x10);
+    DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = t;
+    DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = 0x10 - t;
+    if (M2C_FIELD(animState, s32 *, 0x34) != 0x10)
         return;
-    }
-    temp_r2 = *data_027e01d8;
-    sp4 = temp_r2 + 0x12;
-    M2C_FIELD(temp_r2, s16 *, 0x12) = (s16) (*sp4 & ~0xC0);
-    M2C_FIELD(*data_027e01d8, s8 *, 0x51) = 0;
-    M2C_FIELD(*data_027e01d8, s8 *, 0x52) = 0;
-    M2C_FIELD(*data_027e01d8, s8 *, 0x53) = 0;
-    M2C_FIELD(arg0, s32 *, 0x34) = 0;
-    Sprite_ResumeAnimation(arg0);
+
+    blendReset = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+    *blendReset = *blendReset & ~0xc0;
+    DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = 0;
+    DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = 0;
+    DS3D_BANK(gCur3DSpriteEngine)->filler_53 = 0;
+    M2C_FIELD(animState, s32 *, 0x34) = 0;
+    Sprite_ResumeAnimation(animState);
 }
 

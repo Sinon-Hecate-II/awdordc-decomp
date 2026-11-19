@@ -9,17 +9,34 @@ static inline void set_obj_xy(void *base,s32 index,s32 x,s32 y) {
 M2C_FIELD(base,u32 *,index*8)=(M2C_FIELD(base,u32 *,index*8)&0xfe00ff00)|(y&255)|((u32)(x<<23)>>7);
 }
 
-void Ov001_MoveSpriteLayout(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
-void *p=M2C_FIELD(arg0,void **,8);
-s32 orig[2],xy[2],i,dx,dy;
-if(arg1>=0) {set_obj_xy(p,arg1,arg2,arg3);return;}
-get_obj_xy(p,0,&orig[1],&orig[0]);
-set_obj_xy(p,0,arg2,arg3);
-dx=arg2-orig[1];dy=arg3-orig[0];
-for(i=1;i<M2C_FIELD(arg0,u8 *,12);i++) {
-get_obj_xy(p,i,&xy[1],&xy[0]);
-set_obj_xy(p,i,xy[1]+dx,xy[0]+dy);
-}
+void Ov001_MoveSpriteLayout(void *layout, s32 index, s32 x, s32 y) {
+    u32 (*entries)[2] = M2C_FIELD(layout, u32 (**)[2], 8);
+    volatile s32 original[2], last[2];
+    u32 attr;
+    s32 dx, dy, oldX, oldY;
+    if (index >= 0) {
+        set_obj_xy(entries,index,x,y);
+        return;
+    }
+    attr = entries[0][0];
+    set_obj_xy(entries,0,x,y);
+    oldX = (attr & 0x1ff0000) >> 16;
+    oldY = (u8)attr;
+    original[1] = oldX;
+    original[0] = oldY;
+    dx = x - oldX;
+    dy = y - oldY;
+    index = 1;
+    if (index >= M2C_FIELD(layout, u8 *, 12)) return;
+    do {
+        attr = entries[index][0];
+        oldY = (u8)attr;
+        oldX = (attr & 0x1ff0000) >> 16;
+        set_obj_xy(entries,index,dx + oldX,dy + oldY);
+        index++;
+    } while (index < M2C_FIELD(layout, u8 *, 12));
+    last[0] = oldY;
+    last[1] = oldX;
 }
 
 #pragma opt_strength_reduction off
@@ -504,36 +521,33 @@ void DrawTextRun(void *panel, s32 x, s32 y, s32 color, s32 cellWidth, u16 *text,
     } while (*text);
 }
 
-void DrawPanelText(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    M2C_UNK DrawVerticallyAnchoredText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    u8 spC;
-    u8 spD;
-    u8 temp_ip;
+void DrawPanelText(void *panel, s32 x, s32 y, s32 blockWidth, s32 anchor, s32 color, s32 flags, s32 text) {
+    void DrawVerticallyAnchoredText(void *, s32, s32, s32, s32, s32, s32, s32, TextDirection);
+    void **entry = M2C_FIELD(panel, void ***, 0x1C);
+    TextDirection dir = {0, 0};
+    u8 dirIndex = M2C_FIELD(M2C_FIELD(*entry, void **, 8), u8 *, 7);
 
-    M2C_FIELD(&spC, u8 *, 0) = 0;
-    M2C_FIELD(&spD, u8 *, 0) = 0;
-    temp_ip = M2C_FIELD(M2C_FIELD(*M2C_FIELD(arg0, void ***, 0x1C), void **, 8), u8 *, 7);
-    switch (temp_ip) {
-    default:
-        break;
+    switch (dirIndex) {
     case 0:
     case 7:
-        M2C_FIELD(&spC, u8 *, 0) = 1;
+        dir.x = 1;
         break;
     case 1:
     case 2:
-        M2C_FIELD(&spD, u8 *, 0) = 1;
+        dir.y = 1;
         break;
     case 3:
     case 4:
-        M2C_FIELD(&spC, u8 *, 0) = (u8)-1;
+        dir.x = -1;
         break;
     case 5:
     case 6:
-        M2C_FIELD(&spD, u8 *, 0) = (u8)-1;
+        dir.y = -1;
+        break;
+    default:
         break;
     }
-    DrawVerticallyAnchoredText((s32)(arg0 + 0x18), arg1, arg2, arg3, arg4, arg5, arg6, arg7, spC, spD);
+    DrawVerticallyAnchoredText(panel + 0x18, x, y, blockWidth, anchor, color, flags, text, dir);
 }
 
 void TextPanel_ClearText(void *arg0, s32 arg1) {

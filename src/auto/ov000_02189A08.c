@@ -14,160 +14,108 @@ typedef struct {
     u8 unk6[8];
 } UnkStruct_ov000_02189A08;
 
-void func_ov000_02189a08(void) {
-    s32 func_020a33c4(s32);
+#pragma opt_strength_reduction off
+/* Fallback move choice for the AI's acting unit when it cannot attack: flood-fill
+ * its movement range, take the cheapest reachable property tile (kind 19 or 21)
+ * that belongs to the other army as the capture target, then rescan the tiles
+ * reachable from there and hand the best one to PlanMoveDestination. */
+void ChooseCaptureDestination(void) {
+    s32 GetPlayerArmyVariant(s32);
     s32 ComputeUnitMoveRange(s32, s32, s32, s32, s32);
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void SelectMapLayer(void *);
     s32 func_ov000_021a8eb0(s32, s32, s32);
     s32 func_ov000_021a9084(s32);
     void PlanMoveDestination(s32, s32);
-
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     extern u8 gUnitKindStats[];
 
-    register s32 bestX asm("r4") = -1;
-    register s32 bestY asm("r5") = -1;
-    register s32 bestCost asm("r6") = 0x7fff;
-    register s32 score asm("r7");
-    register s32 candScore asm("r10") = 0x7fff;
+    s32 bestX = -1;
+    s32 bestY = -1;
+    s32 bestCost = 0x7fff;
+    u8 *map = *gCurrentMap;
+    s32 army = GetPlayerArmyVariant(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER));
+    s32 moveRange = ComputeUnitMoveRange(M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind,
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_ATTACKER), M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), army, 0);
+    BattleMapUnitHead *unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
     s32 x, y;
-    s32 candCost2, finalCost;
-    s8 *costRow;
-    s32 moveCost;
-    u16 rowOff;
-    u8 terrainByte;
-    u8 terrain;
-    u8 *cell;
-    s8 age;
-    u8 unitId;
-    u8 *sel;
-    u8 *sel2;
-    s32 bonus;
-    s32 bonus2;
-    s32 visResult;
-    u8 selType;
-    u8 *info;
-    u8 infoVal;
-    u8 moveLimit;
+    s32 rowY, columnX;
+    s32 candidateCost;
+    FloodFillUnitRange(unit->x, unit->y, unit->kind, MAP_GRID_NO_UNIT_MAX, 0);
 
-    score = (s32)*gCurrentMap;
-    bonus = func_020a33c4(*(u16 *)((u8 *)score + 0x52a4));
-    score = ComputeUnitMoveRange((u32)(*(u8 *)*(void **)((u8 *)score + 0x52d0) << 26) >> 26, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)score + 0x52a4), bonus, 0);
-    sel = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-    FloodFillUnitRange(sel[1], sel[2], (u8)((u32)(sel[0] << 26) >> 26), 0x6e, 0);
+    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); x++) {
+            u8 *current = *gCurrentMap;
+            candidateCost = M2C_FIELD(current + y * 4, s8 **, MAP_GRID)[x];
+            if (candidateCost >= 0) {
+                u16 row = M2C_FIELD(current + y * 2, u16 *, MAP_ROW_OFFSETS);
+                u8 terrain = current[x + row + MAP_CELL_TERRAIN];
+                s32 kind = terrain & MAP_TERRAIN_KIND_MASK;
+                if ((kind == 0x13 || kind == 0x15) &&
+                    M2C_FIELD(current, u16 *, MAP_CURRENT_OWNER) == (terrain & MAP_TERRAIN_OWNER_MASK)) {
+                    if (func_ov000_021a8eb0(x, y, 5) == 0) candidateCost += 0x100;
+                    if (bestCost >= candidateCost) {
+                        bestX = x;
+                        bestY = y;
+                        bestCost = candidateCost;
+                    }
+                }
+            }
+        }
+    }
 
-    if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
-        y = 0;
-        do {
-            x = 0;
-            if (*(u16 *)((u8 *)*gCurrentMap + 0x5144) > 0) {
-                do {
-                    costRow = *(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8);
-                    moveCost = costRow[x];
-                    if (moveCost >= 0) {
-                        rowOff = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
-                        terrainByte = *(u8 *)((u8 *)*gCurrentMap + x + rowOff + 0x1420);
-                        terrain = terrainByte & 0x1f;
-                        if (terrain == 0x13 || terrain == 0x15) {
-                            if (*(u16 *)((u8 *)*gCurrentMap + 0x52a6) == (terrainByte & 0xe0)) {
-                                visResult = func_ov000_021a8eb0(x, y, 5);
-                                candScore = moveCost;
-                                if (visResult == 0) candScore += 0x100;
-                                if (bestCost >= candScore) {
-                                    bestX = x;
-                                    bestY = y;
-                                    bestCost = candScore;
-                                }
+    if (bestX == -1) return;
+    SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_SCORE);
+    army = GetPlayerArmyVariant(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    FloodFillUnitRange(bestX, bestY, 7, ComputeUnitMoveRange(7,
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_ATTACKER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), army, 0), 0);
+    SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_ORDER);
+
+    candidateCost = 0x7fff;
+    for (rowY = 0; rowY < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); rowY++) {
+        for (columnX = 0; columnX < (s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH); columnX++) {
+            u8 *current = *gCurrentMap;
+            s32 cost = M2C_FIELD(current + rowY * 4, s8 **, MAP_GRID)[columnX];
+            if (cost >= 0) {
+                u16 row = M2C_FIELD(current + rowY * 2, u16 *, MAP_ROW_OFFSETS);
+                u8 *cell = current + columnX + row;
+                if (M2C_FIELD(cell, s8 *, MAP_CELL_SCORE) >= 0 && *cell == 0) {
+                    u8 terrain = cell[MAP_CELL_TERRAIN];
+                    if ((terrain & MAP_TERRAIN_KIND_MASK) == 0x13) {
+                        BattleMapUnitHead *selected = M2C_FIELD(current, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+                        if (gUnitKindStats[selected->kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FUEL] > selected->fuel + 20) {
+                            if (candidateCost >= cost) {
+                                bestX = columnX;
+                                bestY = rowY;
+                                candidateCost = cost;
+                            }
+                            continue;
+                        }
+                    }
+                    if (func_ov000_021a9084(terrain) != 0) {
+                        current = *gCurrentMap;
+                        row = M2C_FIELD(current + rowY * 2, u16 *, MAP_ROW_OFFSETS);
+                        if ((current[columnX + row + MAP_CELL_TERRAIN] & MAP_TERRAIN_KIND_MASK) != 0x13) {
+                            cost = moveRange + M2C_FIELD(current + rowY * 4, s8 **, MAP_GRID)[columnX];
+                            if (candidateCost >= cost) {
+                                bestX = columnX;
+                                bestY = rowY;
+                                candidateCost = cost;
                             }
                         }
                     }
-                    x++;
-                } while (x < *(u16 *)((u8 *)*gCurrentMap + 0x5144));
+                }
             }
-            y++;
-        } while (y < *(u16 *)((u8 *)*gCurrentMap + 0x5146));
+        }
     }
 
-    if (bestX == -1) {
-        return;
-    }
-
-    candScore = 0x7fff;
-    SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
-    bonus = func_020a33c4(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
-    bonus2 = ComputeUnitMoveRange(7, *(u8 *)((u8 *)gAiCommandState + 0xc), *(u16 *)((u8 *)*gCurrentMap + 0x52a4), bonus, 0);
-    FloodFillUnitRange(bestX, bestY, 7, 0x6e, 0);
-    SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
-
-    if (*(u16 *)((u8 *)*gCurrentMap + 0x5146) > 0) {
-        y = 0;
-        do {
-            x = 0;
-            if (*(u16 *)((u8 *)*gCurrentMap + 0x5144) > 0) {
-                do {
-                    costRow = *(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8);
-                    moveCost = costRow[x];
-                    if (moveCost >= 0) {
-                        rowOff = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
-                        cell = (u8 *)*gCurrentMap + x + rowOff;
-                        age = *(s8 *)(cell + 0x2338);
-                        if (age >= 0) {
-                            unitId = *cell;
-                            if (unitId == 0) {
-                                terrainByte = *(u8 *)(cell + 0x1420);
-                                terrain = terrainByte & 0x1f;
-                                if (terrain == 0x13) {
-                                    sel2 = *(u8 **)((u8 *)*gCurrentMap + 0x52d0);
-                                    selType = (u32)(sel2[0] << 26) >> 26;
-                                    info = gUnitKindStats + selType * 0x70;
-                                    infoVal = info[0x0e];
-                                    moveLimit = sel2[0x0a] + 0x14;
-                                    if (infoVal > moveLimit) {
-                                        if (candScore >= moveCost) {
-                                            bestX = x;
-                                            bestY = y;
-                                            candScore = moveCost;
-                                        }
-                                    } else {
-                                        if (func_ov000_021a9084(terrainByte) != 0) {
-                                            candCost2 = score + moveCost;
-                                            if (candScore >= candCost2) {
-                                                bestX = x;
-                                                bestY = y;
-                                                candScore = candCost2;
-                                            }
-                                        }
-                                    }
-                                } else {
-                                    if (func_ov000_021a9084(terrainByte) != 0) {
-                                        candCost2 = score + moveCost;
-                                        if (candScore >= candCost2) {
-                                            bestX = x;
-                                            bestY = y;
-                                            candScore = candCost2;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    x++;
-                } while (x < *(u16 *)((u8 *)*gCurrentMap + 0x5144));
-            }
-            y++;
-        } while (y < *(u16 *)((u8 *)*gCurrentMap + 0x5146));
-    }
-
-    costRow = *(s8 **)((u8 *)*gCurrentMap + bestY * 4 + 0x52e8);
-    finalCost = costRow[bestX];
-    if (finalCost <= *(u8 *)((u8 *)gAiCommandState + 0x05)) {
-        return;
-    }
+    if (candidateCost == 0x7fff &&
+        M2C_FIELD((u8 *)*gCurrentMap + bestY * 4, s8 **, MAP_GRID)[bestX] <=
+            M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_MOVE_RANGE)) return;
     PlanMoveDestination(bestX, bestY);
 }
-
+#pragma opt_strength_reduction reset
 void func_ov000_02189df4(void) {
     M2C_UNK SelectCarriedUnitAction();
     M2C_UNK func_ov000_021895bc();
@@ -257,7 +205,7 @@ s32 CountPlayerFootUnits(u8 player) {
 }
 
 /* Counts units of an enemy player whose map position is visible (-1 would mark blocked) and whose unit info has nonzero field at +0xC and bit0-2 of +0x13. */
-s32 func_ov000_0218a140(u8 arg0) {
+s32 CountPlayerAttackUnits(u8 arg0) {
     s32 IsFootUnitKind(u32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
@@ -279,7 +227,7 @@ s32 func_ov000_0218a140(u8 arg0) {
     return count;
 }
 
-s32 func_ov000_0218a230(void) {
+s32 CountActiveTeamFootUnits(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     s32 CountPlayerFootUnits(u8);
@@ -297,10 +245,10 @@ s32 func_ov000_0218a230(void) {
     return count;
 }
 
-s32 func_ov000_0218a294(void) {
+s32 CountTeamAttackUnits(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
-    s32 func_ov000_0218a140(u8);
+    s32 CountPlayerAttackUnits(u8);
     extern void **gCurrentMap;
     s32 count = 0;
     s32 i;
@@ -308,7 +256,7 @@ s32 func_ov000_0218a294(void) {
     i = 1;
     do {
         if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
-            count += func_ov000_0218a140(i);
+            count += CountPlayerAttackUnits(i);
         }
         i += 1;
     } while (i < 5);

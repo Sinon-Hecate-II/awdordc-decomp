@@ -2,6 +2,7 @@
 #include "common.h"
 #include "dhcp.h"
 #include "tcp_socket.h"
+#include "net_socket.h"
 static inline u32 NextPacketRandom(void) {
  extern M2C_UNK gNetStack;
  M2C_FIELD(&gNetStack,u64*,0x68)=M2C_FIELD(&gNetStack,u64*,0x70)*M2C_FIELD(&gNetStack,u64*,0x68)+M2C_FIELD(&gNetStack,u64*,0x78);
@@ -22,26 +23,30 @@ static inline s32 PacketTransactionMatches(const u16 *p, const u32 *expected) {
 static inline void PacketPut32(u8 *p,u32 x) { *(u16*)p=PacketSwap(x>>16); *(u16*)(p+2)=PacketSwap(x); }
 static inline void PacketAddress(u8 *p) { extern M2C_UNK gLocalMacAddress; void MI_CpuCopy8(s32,u8*,s32); MI_CpuCopy8((s32)&gLocalMacAddress,p,6); }
 
-u32 SendNetPacket(s32 a, s32 b) {
+/* Send `packet` over the current socket, together with the connection's queued
+ * send data when it has any: the queued bytes go first, so this call returns 0
+ * while they still only partly drain (the rest is moved to the front of the
+ * queue), otherwise the packet's own bytes are sent and their count returned. */
+u32 SendNetPacket(s32 packet, s32 length) {
     extern M2C_UNK gSocketManager;
     M2C_UNK MemMove(s32, s32, u32);
-    void *p;
-    u32 n, used;
-    p = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (p) {
-        n = M2C_FIELD(p, u32 *, 0x60);
-        if (n) {
-            used = SendSocketData(M2C_FIELD(p, s32 *, 0x5C), n, a, b);
-            n = M2C_FIELD(p, u32 *, 0x60);
-            if (used < n) {
-                MemMove(M2C_FIELD(p, s32 *, 0x5C), M2C_FIELD(p, s32 *, 0x5C) + used, n - used);
-                M2C_FIELD(p, u32 *, 0x60) -= used;
+    void *conn;
+    u32 queued, used;
+    conn = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
+    if (conn) {
+        queued = M2C_FIELD(conn, u32 *, CONN_PENDING_TX_LEN);
+        if (queued) {
+            used = SendSocketData(M2C_FIELD(conn, s32 *, CONN_PENDING_TX_BUF), queued, packet, length);
+            queued = M2C_FIELD(conn, u32 *, CONN_PENDING_TX_LEN);
+            if (used < queued) {
+                MemMove(M2C_FIELD(conn, s32 *, CONN_PENDING_TX_BUF), M2C_FIELD(conn, s32 *, CONN_PENDING_TX_BUF) + used, queued - used);
+                M2C_FIELD(conn, u32 *, CONN_PENDING_TX_LEN) -= used;
                 return 0;
             }
-            M2C_FIELD(p, u32 *, 0x60) = 0;
-            return used - n;
+            M2C_FIELD(conn, u32 *, CONN_PENDING_TX_LEN) = 0;
+            return used - queued;
         }
-        return SendSocketData(a, b, 0, 0);
+        return SendSocketData(packet, length, 0, 0);
     }
     return 0;
 }

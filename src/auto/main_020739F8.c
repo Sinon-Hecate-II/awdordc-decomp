@@ -5,7 +5,7 @@ extern "C" {
 void func_020742f8(void);
 M2C_UNK func_020742e0(void);
 void *DecodeExceptionValue(void *, s32 *);
-void *func_02072b20(void *, s32 *);
+void *DecodeExceptionSignedValue(void *, s32 *);
 s32 func_02073b4c(M2C_UNK,void *);
 void func_020746a4(void);
 void func_0207465c(void *,void *,void *);
@@ -23,7 +23,7 @@ typedef struct { s32 a,b,c,d; } CtxOperands_020739f8;
 #pragma scheduling off
 s32 func_020739f8(void *arg0, void *arg1) {
     u8 func_02072da4(CtxToken_020739f8 *);
-    void *func_02072b20(void *, s32 *);
+    void *DecodeExceptionSignedValue(void *, s32 *);
     s32 func_02072dc0(Ctx_020739f8 *);
     s32 out;
     Ctx_020739f8 ctx;
@@ -74,7 +74,7 @@ s32 func_020739f8(void *arg0, void *arg1) {
             func_02072dc0(&ctx);
             break;
         case 13:
-            func_02072b20((u8 *)ctx.token.t2 + 1, &out);
+            DecodeExceptionSignedValue((u8 *)ctx.token.t2 + 1, &out);
             p = (u8 *)ctx.state.f6 + out;
             ((s32 *)arg0)[0] = *(s32 *)(p + 4);
             ((s32 *)arg0)[1] = *(s32 *)p;
@@ -105,7 +105,7 @@ u8 *p=M2C_FIELD(arg0,u8 **,20);s32 values[4];
 try{func_020742f8();}catch(...){
 void *q=DecodeExceptionValue(p+1,&values[0]);
 q=DecodeExceptionValue(q,&values[1]);
-values[3]=(s32)func_02072b20(q,&values[2]);
+values[3]=(s32)DecodeExceptionSignedValue(q,&values[2]);
 if(func_02073b4c(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
 if(func_02073b4c((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
 }
@@ -139,7 +139,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     u8 func_02072da4(CtxToken_020739f8 *);
     s32 func_02072dc0(Ctx_020739f8 *);
     void *DecodeExceptionValue(void *, M2C_UNK *);
-    void *func_02072b20(void *, s32 *);
+    void *DecodeExceptionSignedValue(void *, s32 *);
     M2C_UNK func_020742e0(void);
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
     s32 func_02073b4c(M2C_UNK, void *);
@@ -172,7 +172,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
             values[0] = node[1] | (node[2] << 8) | (node[3] << 16) | (node[4] << 24);
             {
                 u8 *r = (u8 *)DecodeExceptionValue(node + 5, &values[1]);
-                func_02072b20(r, &values[2]);
+                DecodeExceptionSignedValue(r, &values[2]);
             }
             if (func_02074330(((CtxState_020739f8 *)arg0)->f0, values[0], arg2) != 0) {
                 goto done;
@@ -184,7 +184,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
             u8 *r;
             r = (u8 *)DecodeExceptionValue(node + 1, &operands.a);
             r = (u8 *)DecodeExceptionValue(r, &operands.b);
-            r = (u8 *)func_02072b20(r, &operands.c);
+            r = (u8 *)DecodeExceptionSignedValue(r, &operands.c);
             operands.d = (s32)r;
             if (func_02073b4c(((CtxState_020739f8 *)arg0)->f0, &operands.a) != 0) {
                     break;
@@ -241,7 +241,7 @@ void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
  * run the block's opcodes until one continues or ends execution.  Returns 0 when the
  * block runs to its end (or the record has no handler). */
 void Js_RunHandler(void *a){
-void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *func_02072b20(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void Js_DecodeFrameData(void *,void *);
+void FindExceptionTableHandler(s32,void *); M2C_UNK func_020742e0(void); s32 func_020739f8(void *,void *); u8 *func_02073cdc(void *,void *,s32 *); void *DecodeExceptionValue(void *,M2C_UNK *); void *DecodeExceptionSignedValue(void *,s32 *); M2C_UNK func_02073148(); M2C_UNK func_0207462c(void *,s32 *,s32); void Js_DecodeFrameData(void *,void *);
 s32 frame[6]; s32 operands[4]; u8 *p; u8 *data;
 FindExceptionTableHandler(M2C_FIELD(a,s32 *,16),frame);
 if(!frame[1])func_020742e0();
@@ -250,7 +250,7 @@ if(M2C_FIELD(a,s32 *,0))M2C_FIELD(a,s32 *,12)=0;
 else {M2C_FIELD(a,s32 *,12)=func_020739f8(a,frame);if(!M2C_FIELD(a,s32 *,12))func_020742e0();}
 p=func_02073cdc(a,frame,&operands[0]);
 operands[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
-func_02072b20(DecodeExceptionValue(p+5,&operands[2]),&operands[3]);
+DecodeExceptionSignedValue(DecodeExceptionValue(p+5,&operands[2]),&operands[3]);
 func_02073148(a,frame,p);
 func_02073eb8(a,operands[3],operands[0]);
 func_0207462c(a,frame,frame[0]+operands[2]);
@@ -325,7 +325,7 @@ extern "C" void ConstructArray(s32 first, s32 count, s32 stride, M2C_UNK (*const
 }
 #pragma cplusplus on
 #pragma exceptions on
-extern "C" void func_020741c4(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32)) {
+extern "C" void DestroyArray(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32)) {
     s32 current;
     if (arg3 != 0) {
         current = arg1 * arg2 + arg0;
@@ -562,18 +562,22 @@ for(i=8;i<(s32)n;i++)sum+=*arg1++;
 return sum;
 }
 
-s32 func_02074734(s32 unused,void *arg1) {
-u16 a,b; u8 type;
-if(M2C_FIELD(arg1,s32 *,0)!=0x32777364)return 0;
-if(M2C_FIELD(arg1,u16 *,12)>0x400U)return 0;
-type=M2C_FIELD(arg1,u8 *,14);
-if(type>=0x3bU)return 0;
-if(M2C_FIELD(arg1,u8 *,15)!=1)return 0;
-if(type!=1) {
-a=M2C_FIELD(arg1,u16 *,16);
-if(a>0x100U && a!=0xffff)return 0;
-b=M2C_FIELD(arg1,u16 *,18);
-if(b>0x100U && b!=0xffff)return 0;
+/* True when `header` is a plausible block header of the card save archive: the
+ * block magic, a length within the block, a known block type, version 1, and
+ * (except for the save-list head, whose two words are a timestamp) two block
+ * links that are within range or empty.  The first argument is unused. */
+s32 IsSaveArchiveBlockValid(s32 unused,void *header) {
+u16 previous,next; u8 type;
+if(M2C_FIELD(header,s32 *,0)!=SAVE_ARCHIVE_MAGIC)return 0;
+if(M2C_FIELD(header,u16 *,SAVE_ARCHIVE_LENGTH)>SAVE_ARCHIVE_MAX_SIZE)return 0;
+type=M2C_FIELD(header,u8 *,SAVE_ARCHIVE_TYPE);
+if(type>=SAVE_ARCHIVE_TYPE_LIMIT)return 0;
+if(M2C_FIELD(header,u8 *,SAVE_ARCHIVE_VERSION)!=1)return 0;
+if(type!=SAVE_ARCHIVE_TYPE_HEAD) {
+previous=M2C_FIELD(header,u16 *,SAVE_ARCHIVE_PREV);
+if(previous>SAVE_ARCHIVE_LINK_MAX && previous!=SAVE_ARCHIVE_LINK_NONE)return 0;
+next=M2C_FIELD(header,u16 *,SAVE_ARCHIVE_NEXT);
+if(next>SAVE_ARCHIVE_LINK_MAX && next!=SAVE_ARCHIVE_LINK_NONE)return 0;
 }
 return 1;
 }

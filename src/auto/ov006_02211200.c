@@ -26,7 +26,7 @@ void *func_ov000_0216a77c(s32);
 s32 func_ov000_0216a7c4(void);
 void *func_ov000_0216a7d4(s32);
 void *func_0209b26c(s32,s32,s32,void *,s32,s32);
-void func_02088f1c(void *);
+void Show3DSpriteSlide(void *);
 static inline void Bits02211388(s32 offset,u16 set,u16 clear){
 u16 *volatile p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+offset);
 *p=(*p&~clear)|set;
@@ -47,7 +47,7 @@ static inline u8 Visible02211388(void *p){return M2C_FIELD(M2C_FIELD(p,void **,0
 
 
 void func_ov006_02211200(void *arg0) {
-M2C_UNK func_01ff9b38();
+M2C_UNK Apply3DSpriteBanks();
 M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
 M2C_UNK func_02003560();
 M2C_UNK func_020822b8(M2C_UNK *);
@@ -76,7 +76,7 @@ M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
 M2C_FIELD(p,u16 *,0x3e)=0x22c;
 M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|0x640000;
 M2C_FIELD(p,u16 *,0x3c)=0xc00;
-gCur3DSpriteEngine=saved;func_01ff9b38();
+gCur3DSpriteEngine=saved;Apply3DSpriteBanks();
 }
 
 void func_ov006_02211314(M2C_UNK arg0) {
@@ -119,7 +119,7 @@ w=M2C_FIELD(arg0,void **,68);M2C_FIELD(w,u8 *,0x20)=(M2C_FIELD(w,u8 *,0x20)&~0xe
 w=M2C_FIELD(arg0,void **,68);M2C_FIELD(w,u8 *,0x28)=(M2C_FIELD(w,u8 *,0x28)&~0xe0)|0;
 M2C_FIELD(M2C_FIELD(arg0,void **,68),u16 *,0x12)=480;M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,0x21)=23;M2C_FIELD(M2C_FIELD(arg0,void **,68),void **,0x24)=data_ov006_022183c0;
 w=M2C_FIELD(arg0,void **,72);M2C_FIELD(w,u16 *,14)=0;M2C_FIELD(w,u16 *,16)=0;M2C_FIELD(w,u16 *,12)=12;M2C_FIELD(w,u16 *,2)=M2C_FIELD(w,u16 *,4);
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
+saved=gCur3DSpriteEngine;w=(void *)g3DSpriteEngineMain;gCur3DSpriteEngine=(s32)w;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;
 Clear3DSpriteLayer(0);
 SetFileDirectory(data_ov006_0221861c);
@@ -139,7 +139,7 @@ w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,1,M2C_FIELD(w,s32 *,28)+0x34c0);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,2,0,M2C_FIELD(w,s32 *,48)+0x2c0);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,5,M2C_FIELD(w,s32 *,28)+0x37c0);
 Load3DSpritePattern(0x3e40,1,GetUiColor(9),2);
-Load3DSpritePattern(0x4240,1,GetUiColor(12),2);gCur3DSpriteEngine=g3DSpriteEngineSub;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg&~128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
+Load3DSpritePattern(0x4240,1,GetUiColor(12),2);w=(void *)&gCur3DSpriteEngine;M2C_FIELD(w,s32 *,0)=g3DSpriteEngineSub;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg&~128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;
 Clear3DSpriteLayer(0);
 SetFileDirectory(data_ov006_02218668);
@@ -151,7 +151,7 @@ func_02081340(data_ov006_022186a4,160,0,64);
 AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(1);
 func_01ff9dd8(1);LoadScenePanelPalette(7);
-a=2;w=(void *)gCur3DSpriteEngine;
+a=2;w=(void *)M2C_FIELD(&gCur3DSpriteEngine,volatile s32 *,0);
 DrawGlyphString(GetLocalPlayerName(),M2C_FIELD(w,s32 *,16),M2C_FIELD(w,s32 *,36),7,6,4,a);
 a+=48;func_ov000_0216a470();func_ov000_0216a30c(func_ov000_0216a564(),0x4280,8);
 if(func_ov000_0216a76c()!=-2 && func_ov000_0216a76c()!=-1){
@@ -164,6 +164,6 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,5,M2C_FIELD(w,s32 *,28)+0x3c00);
 w=(void *)gCur3DSpriteEngine;func_020a9a30(1,2,0,M2C_FIELD(w,s32 *,48)+0x2e0);
 gCur3DSpriteEngine=saved;items=M2C_FIELD(arg0,void ***,60);
-func_02088f1c(items[0]);
-w=items[1];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;w=items[2];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;func_02088f1c(items[3]);func_02088f1c(items[4]);func_02088f1c(items[5]);}
+Show3DSpriteSlide(items[0]);
+w=items[1];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;w=items[2];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;Show3DSpriteSlide(items[3]);Show3DSpriteSlide(items[4]);Show3DSpriteSlide(items[5]);}
 

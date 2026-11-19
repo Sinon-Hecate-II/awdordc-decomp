@@ -175,7 +175,7 @@ void AiProduceCargoUnit(void) {
 void func_020bc0e0(void) {
     extern s32 *gCurrentMap;
     s32 GetUnitCaptureRate(void *, s32, s32);
-    void func_020baa64(void);
+    void ClearCursorUnitCapture(void);
     void func_020baaac(void);
     s32 IsPlayerHuman();
     s32 AddRecordValue(s32, s32);
@@ -200,7 +200,7 @@ void func_020bc0e0(void) {
     terrain = M2C_FIELD(map + CURSOR_INDEX(map), u8 *, MAP_CELL_TERRAIN);
     unit = CURSOR_UNIT(map);
     unitId = unit ? (s32)(unit - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE : 0;
-    func_020baa64();
+    ClearCursorUnitCapture();
     func_020baaac();
     map = (u8 *)*gCurrentMap;
     points += CAPTURE(M2C_FIELD(CURSOR_UNIT(map), u16 *, MAP_UNIT_CAPTURE));

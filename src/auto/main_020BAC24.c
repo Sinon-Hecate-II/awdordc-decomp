@@ -8,9 +8,9 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK func_020baa64();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK func_020babfc(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshCursorCell(void);
+M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
-func_020baa64();func_020bf858();
+ClearCursorUnitCapture();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
 M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNIT),u8*,1)=M2C_FIELD(*gCurrentMap,s16*,MAP_CURSOR_X);
 M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNIT),u8*,2)=M2C_FIELD(*gCurrentMap,s16*,MAP_CURSOR_Y);
@@ -41,7 +41,7 @@ if((u8)(M2C_FIELD(map+(tileIndex>>3),u8*,MAP_CELL_BITMAP)&(1<<(tileIndex&7))) &&
 }}
 func_ov000_0219a064();
 /* highlight the path the unit would walk to the cursor */
-func_020babfc(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_Y),(u8*)*gCurrentMap+MAP_CURSOR_PATH);
+RevealUnitsAroundCursor(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_Y),(u8*)*gCurrentMap+MAP_CURSOR_PATH);
 MarkPathThreatRange(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_Y),(u8*)*gCurrentMap+MAP_CURSOR_PATH);
 func_020a8050(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),(u8*)*gCurrentMap+MAP_PATH_X,(u8*)*gCurrentMap+MAP_CURSOR_X,(u8*)*gCurrentMap+MAP_CURSOR_PATH);
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);
@@ -50,7 +50,7 @@ if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_
 RefreshMapView();
 if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))func_ov000_0216aa04(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
 else func_ov000_0216a9bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
-RefreshCursorCell();
+RefreshMapCursorCellCache();
 }
 
 void func_020bb028(void) {
@@ -62,197 +62,157 @@ void func_020bb028(void) {
     RefreshMapView();
 }
 
-void func_020bb03c(void) {
-    M2C_UNK func_020baa64();
-    M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
+/* Place the unit under the cursor on the cursor's tile and refresh the map's
+ * path preview: clear its capture points when the cursor moved, reveal the units
+ * around the cursor, mark the path's threat range and redraw the view. */
+void MoveUnitToCursor(void) {
+    M2C_UNK ClearCursorUnitCapture();
+    M2C_UNK RevealUnitsAroundCursor(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MarkPathThreatRange(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK RefreshMapView();
     extern void **gCurrentMap;
 
-    func_020baa64();
-    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u8 *, 1) =
-        (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
-    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u8 *, 2) =
-        (u8)M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
-    func_020babfc(
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E0),
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*gCurrentMap + 0x5388));
+    ClearCursorUnitCapture();
+    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_X) =
+        (u8)M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X);
+    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_Y) =
+        (u8)M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y);
+    RevealUnitsAroundCursor(
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X),
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y),
+        (M2C_UNK)((u8 *)*gCurrentMap + MAP_CURSOR_PATH));
     MarkPathThreatRange(
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E0),
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*gCurrentMap + 0x5388));
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X),
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y),
+        (M2C_UNK)((u8 *)*gCurrentMap + MAP_CURSOR_PATH));
     RefreshMapView();
 }
 
 void func_020bb0d0(M2C_UNK arg0) {
     M2C_UNK func_0209ecf0(M2C_UNK, M2C_UNK);
-    void func_020bb03c(void);
-    func_020bb03c();
+    void MoveUnitToCursor(void);
+    MoveUnitToCursor();
     func_0209ecf0(arg0, 0);
 }
 
 void func_020bb0ec(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK StartBattlePreviewOnFeature(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020bb03c();
+    MoveUnitToCursor();
     StartBattlePreviewOnFeature(arg0, arg1, 0);
 }
 
 void func_020bb110(void) {
     extern void **gCurrentMap;
-    M2C_UNK GetUnitCaptureRate(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020baa64();
-    M2C_UNK func_020baaac();
-    M2C_UNK IsPlayerHuman(u16);
-    M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020cd5d8();
-    M2C_UNK CreateBattleEffectPending(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020c32bc(M2C_UNK);
-    M2C_UNK func_0207ab24(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020ca484();
-
+    s32 GetUnitCaptureRate(void *, s16, s16);
+    M2C_UNK ClearCursorUnitCapture();
+    void func_020baaac(void);
+    s32 IsPlayerHuman(u16);
+    M2C_UNK AddRecordValue(s32, s32);
+    s32 func_020cd5d8(void);
+    void CreateBattleEffectPending(u8, u8, u8, u8, u8, u8);
+    void func_020c32bc(s32);
+    void func_0207ab24(s16, s16);
+    void func_020ca484(void);
     u8 *map;
-    u8 *sel;
-    s16 cx;
-    s16 cy;
-    u16 rowoff;
+    BattleMapUnitHead *unit;
+    s32 capture, unitId;
+    u32 tile;
     u8 terrain;
-    s32 r4;
-    s32 selIndex;
-    u8 r5;
+    u16 previous;
 
-    map = (u8 *)*gCurrentMap;
-    sel = (u8 *)M2C_FIELD(map, u8 **, 0x52D0);
-    cx = M2C_FIELD(map, s16 *, 0x52DC);
-    cy = M2C_FIELD(map, s16 *, 0x52DE);
-    r4 = (s32)GetUnitCaptureRate((M2C_UNK)sel, cx, cy);
-    selIndex = 0;
-    rowoff = M2C_FIELD(map, u16 *, 0x3758 + cy * 2);
-    terrain = map[0x1420 + cx + rowoff];
-    r5 = terrain;
+    capture = GetUnitCaptureRate(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT),
+                                 M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
+                                 M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
+    map = *gCurrentMap;
+    tile = M2C_FIELD(map, s16 *, MAP_CURSOR_X) +
+           M2C_FIELD(map + M2C_FIELD(map, s16 *, MAP_CURSOR_Y) * 2, u16 *, MAP_ROW_OFFSETS);
+    terrain = M2C_FIELD(map + tile, u8 *, MAP_CELL_TERRAIN);
+    unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    if (unit)
+        unitId = (s32)((u8 *)unit - (map + MAP_UNIT_RECORDS)) / 14;
+    else
+        unitId = 0;
+    ClearCursorUnitCapture();
+    func_020baaac();
 
-    if (sel != 0) {
-        u8 *unitBase;
-        u16 *sel6p;
-        u16 sel6;
-        u16 pl;
-        u16 t2;
-        unitBase = map + 0x59A4;
-        selIndex = (s32)(sel - unitBase) / 14;
-        func_020baa64();
-        func_020baaac();
-        sel6p = (u16 *)(sel + 6);
-        sel6 = *sel6p;
-        r4 = r4 + (s32)((sel6 << 16) >> 27);
-        if (r4 >= 20) r4 = 20;
-        t2 = (u16)((sel6 << 16) >> 27);
-        if (t2 == 0) {
-            pl = M2C_FIELD(map, u16 *, 0x52A4);
-            if (IsPlayerHuman(pl) != 0) {
-                AddRecordValue(9, 1);
-            }
-        }
-        if (r4 == 20) {
-            pl = M2C_FIELD(map, u16 *, 0x52A4);
-            if (IsPlayerHuman(pl) != 0) {
-                AddRecordValue(10, 1);
-            }
-        }
+    map = *gCurrentMap;
+    previous = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT)->facing;
+    capture += previous;
+    if (capture >= 20)
+        capture = 20;
+    if (previous == 0 && IsPlayerHuman(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)))
+        AddRecordValue(9, 1);
+    if (capture == 20 && IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)))
+        AddRecordValue(10, 1);
+
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW) {
+        u8 visible;
+        u32 index;
+        u16 player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+        s32 y = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+        u8 side = M2C_FIELD(map + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_SIDE);
+        s32 x = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+        if (!(side & 2)) {
+            index = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+            visible = 1;
+            if (!(u8)(M2C_FIELD(map + (index >> 3), u8 *, MAP_CELL_BITMAP) & (1 << (index & 7))))
+                visible = 0;
+        } else
+            visible = 1;
+        if (!visible)
+            goto storeCapture;
     }
 
-    if (map[0x5156] != 0 || map[0x5158] == 2) {
-        u16 player;
-        u8 unitrec;
-        s16 cx2;
-        s16 cy2;
-        s32 r2flag;
-        M2C_UNK cdret;
-        u8 lr;
-        s32 r6v;
-        u16 sel6v;
-        u8 tr2;
-        u16 playerU;
-        u8 a;
-        u8 b;
-        s32 arg;
-        player = M2C_FIELD(map, u16 *, 0x52A4);
-        unitrec = map[player * 0x8C + 0x67C3];
-        cx2 = M2C_FIELD(map, s16 *, 0x52DC);
-        cy2 = M2C_FIELD(map, s16 *, 0x52DE);
-        r2flag = 1;
-        if ((unitrec & 0x2) == 0) {
-            u16 rowoff2;
-            u32 idx;
-            u8 byte;
-            u32 bit;
-            u8 val;
-            rowoff2 = M2C_FIELD(map, u16 *, 0x3758 + cy2 * 2);
-            idx = (cx2 + rowoff2) >> 3;
-            byte = map[idx + 0x5201];
-            bit = (cx2 + rowoff2) & 7;
-            val = (u8)(byte & (u8)(1u << bit));
-            if (val == 0) r2flag = 0;
+    if (func_020cd5d8() || (u8)(terrain & MAP_TERRAIN_KIND_MASK) == MAP_TERRAIN_HQ) {
+        {
+            u8 *players;
+            s32 owner, capturingPlayer;
+            u8 previousCapture;
+            map = *gCurrentMap;
+            capturingPlayer = (unitId & 0xc0) >> 6;
+            owner = (terrain & MAP_TERRAIN_OWNER_MASK) >> 5;
+            unit = M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+            players = map + 0x67a4;
+            previousCapture = unit->facing;
+            capturingPlayer++;
+            CreateBattleEffectPending(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER),
+                                      terrain & MAP_TERRAIN_KIND_MASK,
+                                      M2C_FIELD(players + owner * 0x8c, u8 *, 0x1d),
+                                      M2C_FIELD(players + capturingPlayer * 0x8c, u8 *, 0x1d),
+                                      previousCapture, capture);
         }
-        if (r2flag != 0) {
-            cdret = func_020cd5d8();
-            if (cdret == 0) {
-                /* fallthrough */
-            }
-            if ((terrain & 0x1F) == 0x0F) {
-                lr = (terrain & 0xE0) >> 5;
-                r6v = (selIndex & 0xC0) >> 6;
-                r6v = r6v + 1;
-                sel6v = 0;
-                if (sel != 0) {
-                    sel6v = (u16)((M2C_FIELD(sel, u16 *, 6) << 16) >> 27);
-                }
-                tr2 = terrain & 0x1F;
-                playerU = (u16)(player & 0xFF);
-                a = map[lr * 0x8C + 0x67A4 + 0x1D];
-                b = map[r6v * 0x8C + 0x67A4 + 0x1D];
-                CreateBattleEffectPending(playerU, tr2, a, b, sel6v, (M2C_UNK)(r4 & 0xFF));
-            } else if (r4 >= 20) {
-                arg = ((selIndex & 0xC0) >> 6) + 1;
-                func_020c32bc(arg);
-            }
-        }
+    } else if (capture >= 20) {
+        func_020c32bc(((unitId & 0xc0) >> 6) + 1);
     }
 
-    {
-        u16 pl;
-        u16 *sel6p;
-        u16 sel6;
-        u16 t;
-        u8 lr;
-        u8 tmp2;
-        u16 *p22;
-        pl = M2C_FIELD(map, u16 *, 0x52A4);
-        sel6p = (u16 *)(sel + 6);
-        sel6 = *sel6p;
-        sel6 = (u16)((sel6 & ~0xF800u) | ((r4 & 0xFFFF) << 11));
-        *sel6p = sel6;
-        t = (u16)((sel6 << 16) >> 27);
-        if (t >= 20) {
-            *sel6p = (u16)(sel6 & ~0xF800u);
-            if ((terrain & 0x1F) == 0x0F) {
-                lr = (terrain & 0xE0) >> 5;
-                map[lr * 0x8C + 0x67D4] = 1;
-                tmp2 = map[lr * 0x8C + 0x67A4 + 0x31];
-                p22 = (u16 *)(map + pl * 0x8C + 0x67A4 + 0x22);
-                *p22 = (u16)(*p22 + tmp2);
+storeCapture:
+    M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->facing = (u16)capture;
+    unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+    if (unit->facing >= 20) {
+        unit->facing = 0;
+        if ((terrain & MAP_TERRAIN_KIND_MASK) == MAP_TERRAIN_HQ) {
+            s32 ownerOffset = ((terrain & MAP_TERRAIN_OWNER_MASK) >> 5) * 0x8c;
+            M2C_FIELD((u8 *)*gCurrentMap + ownerOffset, u8 *, 0x67d4) = 1;
+            map = *gCurrentMap;
+            {
+                u8 *players = map + 0x67a4;
+                u16 player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+                u8 value = M2C_FIELD(players + ownerOffset, u8 *, 0x31);
+                M2C_FIELD(players + player * 0x8c, u16 *, 0x22) += value;
             }
         }
+        func_0207ab24(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
+                      M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
     }
-
-    func_0207ab24(cx, cy);
     func_020ca484();
 }
 
 void func_020bb458(void) {
     s32 IsPlayerHuman(u16);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020baa64(void);
-    M2C_UNK func_020babfc(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK ClearCursorUnitCapture(void);
+    M2C_UNK RevealUnitsAroundCursor(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MarkPathThreatRange(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK PlaySoundAtTile(M2C_UNK, M2C_UNK, M2C_UNK);
     extern void **data_027e0058;
@@ -270,7 +230,7 @@ void func_020bb458(void) {
         ] * 0xE;
     /* simplify: reset cy term 0 */
     /* Actually the above *0 is wrong; fix below by recompute */
-    func_020baa64();
+    ClearCursorUnitCapture();
     if (unit[0xC] != 0) {
         unit[0xD] = M2C_FIELD(*data_027e0058, u8 *, 0x52D4);
     } else {
@@ -282,7 +242,7 @@ void func_020bb458(void) {
         u16 h = * (u16 *)(unit + 4);
         * (u16 *)(unit + 4) = (u16)(h | 0x10);
     }
-    func_020babfc(
+    RevealUnitsAroundCursor(
         M2C_FIELD(*data_027e0058, s16 *, 0x52E0),
         M2C_FIELD(*data_027e0058, s16 *, 0x52E2),
         (M2C_UNK)((u8 *)*data_027e0058 + 0x5388));

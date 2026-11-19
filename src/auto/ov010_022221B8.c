@@ -65,7 +65,7 @@ case 4: func_ov010_02221474((u8 *)arg0+4,arg1,arg2,arg3); return;
 
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
-s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void func_ov010_0222393c(void *,u32,s32);void func_ov010_022232e0(void);void func_ov010_02225288(void);
+s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void func_ov010_022232e0(void);void func_ov010_02225288(void);
 extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,gLinkConfig;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 gLinkChannelStates[];
 s32 i; s32 saved; s32 n; u8 x,y; u8 *t;
 saved=func_020070a4();
@@ -87,7 +87,7 @@ M2C_FIELD(&data_ov010_0222c960,s32 *,3848)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3856)=0;
 M2C_FIELD(&data_ov010_0222c960,s32 *,3860)=0;
 func_ov010_02225174();
-i=0;goto test;loop:{data_ov010_0222c98c[i]=0;func_ov010_02223654(i);func_ov010_0222393c(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
+i=0;goto test;loop:{data_ov010_0222c98c[i]=0;func_ov010_02223654(i);Link_InitChannelState(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
 func_ov010_022232e0();func_ov010_02225288();return 1;
 }
 #pragma opt_strength_reduction reset
@@ -98,7 +98,7 @@ void func_ov010_022225b0(s32 arg0) {
 
 #pragma optimization_level 2
 s32 func_ov010_022225c4(void *p){
-void func_ov010_0222393c(void*,u32,s32);
+void Link_InitChannelState(void*,u32,s32);
 void func_ov010_02223654(u32);
 void func_ov010_02224f28(void);
 s32 func_020070a4(void);
@@ -118,7 +118,7 @@ test2:if((u32)i<3)goto loop2;
 found:
 M2C_FIELD(&data_ov010_0222c960,s32*,0x20)++;
 M2C_FIELD(&data_ov010_0222c960,u32*,4)|=M2C_FIELD(p,u32*,8);
-func_ov010_0222393c((void *)((s32)gLinkChannelStates+i*0x94),i,M2C_FIELD(p,u8*,5));
+Link_InitChannelState((void *)((s32)gLinkChannelStates+i*0x94),i,M2C_FIELD(p,u8*,5));
 func_ov010_02223654(i);
 if(M2C_FIELD(p,s32*,12)!=2)return 1;
 if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==1){
@@ -143,17 +143,27 @@ void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010
 u32 i;
 for(i=0;i<3;i++) {
 if(data_ov010_0222c98c[i]==arg0) {
+void *channel = gLinkChannelStates + i * 0x94;
 s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20);
-data_ov010_0222c98c[i]=0;
+void *empty = 0;
+data_ov010_0222c98c[i]=empty;
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;
-func_ov010_022239c8(gLinkChannelStates+i*0x94);
+func_ov010_022239c8(channel);
 func_ov010_0222369c(i);
 func_ov010_02223314(i);
-M2C_FIELD(&data_ov010_0222c960,u32 *,4)=M2C_FIELD(&data_ov010_0222c960,u32 *,4) & ~M2C_FIELD(arg0,u32 *,8);
+{
+    u32 *state = (u32 *)&data_ov010_0222c960;
+    u32 flags = state[1];
+    u32 mask = M2C_FIELD(arg0,u32 *,8);
+    mask = ~mask;
+    mask &= flags;
+    state[1] = mask;
+}
 break;
 }
 }
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)==0) {
+if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)!=0) return;
+{
 M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)=1;
 func_ov010_02224f28();
 M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;

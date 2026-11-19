@@ -67,22 +67,25 @@ return;
 Ov001_SetSpriteAttrs(M2C_FIELD((u8 *)gOv001Keypad+(arg0-12)*4,s32 *,0x40),-1,0,data_ov001_0218f5d8[arg1]);
 }
 
-void Ov001KeypadCommitKey(void) {
+/* Refreshes the keypad's selection cursor: loads the obj layout that matches the
+ * selected key's kind (the clear and confirm keys use the larger one), sets the
+ * cursor's palette and moves it onto that key's position from the per-key table. */
+void Ov001_UpdateKeypadCursor(void) {
     s32 Ov001_GetSpriteObjEntry(s32, M2C_UNK);
     M2C_UNK Ov001_MoveSpriteLayout(s32, M2C_UNK, u16, u16);
     M2C_UNK Ov001_SetSpritePalette(s32, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
-    extern u16 data_ov001_0218f66a[];
-    extern u16 data_ov001_0218f66c[];
+    extern u16 gKeypadKeyCursorPosX[];
+    extern u16 gKeypadKeyCursorPosY[];
     extern void *gOv001Keypad;
-    M2C_UNK var_r4;
-    s32 temp_ip;
-    if (M2C_FIELD(gOv001Keypad, s8 *, 0x63) <= 0xB) var_r4 = 0x44;
-    else var_r4 = 0x45;
-    Ov001_LoadSpriteObjLayout(0, var_r4, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, 0x58), 0));
-    Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, 2);
-    temp_ip = M2C_FIELD(gOv001Keypad, s8 *, 0x63) * 2;
-    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001Keypad, s32 *, 0x58), -1, data_ov001_0218f66a[temp_ip], data_ov001_0218f66c[temp_ip]);
+    M2C_UNK layout;
+    s32 keyIndex;
+    if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) <= KEYPAD_NEXT) layout = 0x44;
+    else layout = 0x45;
+    Ov001_LoadSpriteObjLayout(0, layout, Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_CURSOR_SPRITE), 0));
+    Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_CURSOR_SPRITE), -1, 2);
+    keyIndex = M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) * 2;
+    Ov001_MoveSpriteLayout(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_CURSOR_SPRITE), -1, gKeypadKeyCursorPosX[keyIndex], gKeypadKeyCursorPosY[keyIndex]);
 }
 
 /* Move the keypad selection one step in `direction` (one of OV001_DIR_*).
@@ -91,7 +94,7 @@ void Ov001KeypadCommitKey(void) {
  * column remembered in KEYPAD_NAV_KEY picks the key to land on.  Entering the
  * confirm key from above or below remembers that column. */
 void Ov001KeypadMoveSelection(s32 direction) {
-    void Ov001KeypadCommitKey(void);
+    void Ov001_UpdateKeypadCursor(void);
     void Ov001_PlaySound(s32);
     extern s8 gKeypadNeighborTable[][4];
     extern void *gOv001Keypad;
@@ -111,7 +114,7 @@ void Ov001KeypadMoveSelection(s32 direction) {
             M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = 1;
         else M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_LAST_KEY) = 2;
     }
-    Ov001KeypadCommitKey();
+    Ov001_UpdateKeypadCursor();
     Ov001_PlaySound(8); /* cursor-move blip */
 }
 

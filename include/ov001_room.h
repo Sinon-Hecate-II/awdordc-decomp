@@ -28,6 +28,19 @@
 /* Bytes of the decoded record data of one room (four player entries). */
 #define OV001_ROOM_PLAYER_DATA_SIZE 0x6a0
 
+/* One player's 0x70-byte record (Ov001UnpackPlayerRecord fills it from that
+ * player's chunk list): a 33-byte message and a 64-byte profile block. */
+#define OV001_RECORD_DATA_LENGTH 0x04 /* u32: bytes of the profile block */
+#define OV001_RECORD_TEXT        0x08 /* char[33]: the player's message */
+#define OV001_RECORD_DATA        0x30 /* char[64]: the player's profile block */
+#define OV001_RECORD_TEXT_MAX    0x21 /* bytes one message chunk may carry */
+#define OV001_RECORD_DATA_MAX    0x40 /* bytes one profile chunk may carry */
+
+/* Chunk kinds carrying those fields; the 0x40 and 0x45 kinds are the same chunk
+ * in the second of the two parallel chunk sets (kinds x0..x5 and x0+0x10..). */
+#define OV001_CHUNK_PROFILE      0x30
+#define OV001_CHUNK_TEXT         0x35
+
 /* gRoomState fields of the room session used by the request builders. */
 #define OV001_TRANSFER_BUFFER 0x14 /* u8 *room transfer buffer, cleared before each request */
 #define OV001_REQUEST_MASK    0x2c /* u32 room groups this client asks for */

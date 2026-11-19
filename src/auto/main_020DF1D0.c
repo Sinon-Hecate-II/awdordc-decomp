@@ -47,10 +47,10 @@ static inline s32 SpriteCancelDF(void *q,u16 keys) {
  * three row sprites, handles back (B) and ready (A) input, plays page/count
  * sounds, and mirrors the menu onto the requested DS screen side. */
 void LinkMenuUpdate(void *menu) {
- void MenuSpriteUpdate(void *);void func_02088f1c(void *);void Hide3DSpriteSlide(void *);
+ void MenuSpriteUpdate(void *);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
- s32 IsOnlineSessionFlagSet(s32);s32 func_ov010_02229bdc(void);
+ s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
  void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
  void func_ov010_0222952c(void);void func_ov010_02229a94(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
  s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
@@ -98,12 +98,12 @@ void LinkMenuUpdate(void *menu) {
  }
  if(GetConnectedPlayerCount()>=2&&IsOnlineSessionFlagSet(3)) {
  if(M2C_FIELD(menu,s16 *,0x4c)>0)M2C_FIELD(menu,s16 *,0x4c)--;
- if(func_ov010_02229bdc()) {
+ if(IsOnlineSessionHost()) {
  sprite=M2C_FIELD(menu,void **,0x54);
  {u32 base=(u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28; s32 next=base+2,test;
  if(next!=(u16)((u32)(M2C_FIELD(sprite,u32 *,0x40)<<6)>>24))test=1;else test=0;
  if(!(test&255)) {SpriteStateDF(sprite,base,0);
- func_02088f1c(M2C_FIELD(menu,void **,0x54));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);}}
+ Show3DSpriteSlide(M2C_FIELD(menu,void **,0x54));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);}}
  {sprite=M2C_FIELD(menu,void **,0x54);
  if(!SpriteChangedDF(sprite))return;
  if(!SpritePressedDF(sprite)&&!(keys&1)&&M2C_FIELD(menu,s16 *,0x4c)!=0)return;
@@ -114,7 +114,7 @@ void LinkMenuUpdate(void *menu) {
  func_ov010_0222952c();func_ov010_02229a94();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);return;
  } else {
  sprite=M2C_FIELD(menu,void **,0x60);
- if(!func_020890b8(sprite)&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {func_02088f1c(M2C_FIELD(menu,void **,0x60));
+ if(!func_020890b8(sprite)&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {Show3DSpriteSlide(M2C_FIELD(menu,void **,0x60));
  SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);}
  {void *entry=GetOnlinePlayerRecord(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
  readyMask=GetReadyPlayerMask();if(readyMask!=GetActivePlayerMask())return;
@@ -122,7 +122,7 @@ void LinkMenuUpdate(void *menu) {
  }
  } else {
  M2C_FIELD(menu,s16 *,0x4c)=0x708;
- if(func_ov010_02229bdc()) {
+ if(IsOnlineSessionHost()) {
  {void *row=M2C_FIELD(menu,void **,0x54);
  u32 base=(u32)(M2C_FIELD(row,u8 *,0x59)<<28)>>28;
  s32 next=base+2,test;
@@ -141,10 +141,10 @@ void LinkMenuUpdate(void *menu) {
 
 #pragma opt_common_subs off
 void func_020df718(void *arg0) {
- void MenuSpriteUpdate(void *);void func_02088f1c(void *);void Hide3DSpriteSlide(void *);
+ void MenuSpriteUpdate(void *);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
- s32 IsOnlineSessionFlagSet(s32);s32 func_ov010_02229bdc(void);
+ s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
  void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
  void func_ov010_0222952c(void);void func_ov010_02229a94(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
  s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
@@ -174,10 +174,10 @@ void func_020df718(void *arg0) {
  }
  }
  if(GetConnectedPlayerCount()>=2&&IsOnlineSessionFlagSet(3)) {
- if(func_ov010_02229bdc()) {
+ if(IsOnlineSessionHost()) {
  q=M2C_FIELD(arg0,void **,0x54);
  SpriteResetDF(q);
- func_02088f1c(M2C_FIELD(arg0,void **,0x54));SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000012);
+ Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x54));SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000012);
  {void *button=M2C_FIELD(arg0,void **,0x54);
  {u32 base=(u32)(M2C_FIELD(button,u8 *,0x59)<<28)>>28;
  s32 next=base+2,test;
@@ -191,14 +191,14 @@ void func_020df718(void *arg0) {
  func_ov010_0222952c();func_ov010_02229a94();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
  } else {
  q=M2C_FIELD(arg0,void **,0x60);
- if(!func_020890b8(q)&&!Is3DSpriteVisible(M2C_FIELD(arg0,void **,0x60)))func_02088f1c(M2C_FIELD(arg0,void **,0x60));
+ if(!func_020890b8(q)&&!Is3DSpriteVisible(M2C_FIELD(arg0,void **,0x60)))Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x60));
  SetTextById(M2C_FIELD(arg0,void **,0x64),0x44000012);
  {void *entry=GetOnlinePlayerRecord(0);if(!entry)return;if(M2C_FIELD(entry,u8 *,0x1a)&2)return;}
  state=GetReadyPlayerMask();if(state!=GetActivePlayerMask())return;
  func_ov010_0222952c();func_ov010_02229a94();EnableMapConfirm();ResetPlayerMask();Sprite_ResumeAnimation(arg0);PlaySoundEffect(0x1000e);return;
  }
  } else {
- if(func_ov010_02229bdc()) {
+ if(IsOnlineSessionHost()) {
  {void *q=M2C_FIELD(arg0,void **,0x54);
  u32 base=(u32)(M2C_FIELD(q,u8 *,0x59)<<28)>>28;
  s32 next=base+2,test;
@@ -221,10 +221,10 @@ void func_020df718(void *arg0) {
  * onto the requested DS screen, keeps the player-count sound in sync and commits
  * the ready state when every player is ready. */
 void LinkMenuPageFlipUpdate(void *menu) {
- void MenuSpriteUpdate(void *);void func_02088f1c(void *);void Hide3DSpriteSlide(void *);
+ void MenuSpriteUpdate(void *);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);
  void DisableMapConfirm(void);void Sprite_ResumeAnimation(void *);void func_ov010_022294ec(void);void PlaySoundEffect(s32);
  u32 GetActivePlayerMask(void);u32 CountBits(void);u32 GetConnectedPlayerCount(void);
- s32 IsOnlineSessionFlagSet(s32);s32 func_ov010_02229bdc(void);
+ s32 IsOnlineSessionFlagSet(s32);s32 IsOnlineSessionHost(void);
  void SetTextById(void *,s32);u32 GetReadyPlayerMask(void);
  void func_ov010_0222952c(void);void func_ov010_02229a94(void);void EnableMapConfirm(void);void ResetPlayerMask(void);
  s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
@@ -298,7 +298,7 @@ void LinkMenuPageFlipUpdate(void *menu) {
  if(nextFrame!=(u16)((u32)(M2C_FIELD(sprite,u32 *,0x40)<<6)>>24))frameChanged=1;else frameChanged=0;
  if(!(frameChanged&255)) {
  SpriteStateDF(sprite,frameBase,0);
- func_02088f1c(M2C_FIELD(menu,void **,0x54));
+ Show3DSpriteSlide(M2C_FIELD(menu,void **,0x54));
  SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);
  }}
  } else {
@@ -322,7 +322,7 @@ void LinkMenuPageFlipUpdate(void *menu) {
  } else {
  if(GetConnectedPlayerCount()>=2) {
  if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&!Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {
- func_02088f1c(M2C_FIELD(menu,void **,0x60));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);
+ Show3DSpriteSlide(M2C_FIELD(menu,void **,0x60));SetTextById(M2C_FIELD(menu,void **,0x64),0x44000012);
  }
  } else {
  if(!func_020890b8(M2C_FIELD(menu,void **,0x60))&&Is3DSpriteVisible(M2C_FIELD(menu,void **,0x60))) {

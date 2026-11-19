@@ -48,7 +48,7 @@ s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
 s32 IsFootUnitKind(s32); s32 IsMidActionStep(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out=&gAiTargetCandidates+*gAiState*12;
-u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *candidate,*scan,*best; void *map; s32 player,index,count=0,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row; u8 funds; unsigned int penalty; u32 kind;
+u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *best,*scan,*candidate; void *map; s32 player,index,count=0,relation,pass,i,cost,oldpass,bestcost,price,allow,delta,bestdelta; s32 row; u8 funds; s32 penalty; u32 kind;
 s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 GetUnitBuildCost(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 if(!arg0 && (func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&8))return 0;
@@ -108,7 +108,7 @@ if(scan[2]==data_ov000_021df594[pass]){
 map=*gCurrentMap;
 row=M2C_FIELD(map+scan[1]*2,u16 *,0x3758);cost=M2C_FIELD(map+scan[0]+row,s8 *,0x2338);
 if(cost>=0){
-if(scan[3]<252U){if(!funds)penalty=1;else penalty=0;}else penalty=0;
+if(scan[3]>=252U || funds) penalty=0; else penalty=1;
 penalty=(u8)(penalty+1);
 if(out[4]>=cost+penalty&&(out[4]!=cost+penalty||(pass==oldpass&&bestcost>M2C_FIELD(M2C_FIELD(map+scan[1]*4,s8 **,0x52e8),s8 *,scan[0])))){
 if(data_ov000_021df590[pass]==19){
@@ -117,8 +117,8 @@ out[6]=index;out[7]=i;
 }else out[6]=i;
 map=*gCurrentMap;
 out[4]=penalty+M2C_FIELD(map+scan[0]+M2C_FIELD(map+scan[1]*2,u16 *,0x3758),s8 *,0x2338);
-if(scan[3]<252U){if(!funds){out[3]=0;goto scored;}}
-out[3]=data_ov000_021df590[pass];scored:;
+if(scan[3]<252U && !funds) out[3]=0;
+else out[3]=data_ov000_021df590[pass];
 bestcost=M2C_FIELD(M2C_FIELD(*gCurrentMap+scan[1]*4,s8 **,0x52e8),s8 *,scan[0]);oldpass=pass;
 }
 }
@@ -132,11 +132,12 @@ if(gTerrainPropertyType[candidate[0]]==data_ov000_021df594[pass]){
 map=*gCurrentMap;
 index=M2C_FIELD(map+candidate[2]*2,u16 *,0x3758)+candidate[1];
 kind=M2C_FIELD(map+index,u8 *,0x1420)&224;
-if(kind!=0&&kind==M2C_FIELD(map,u16 *,0x52a6))goto nextProperty;
+if(kind==0||kind==M2C_FIELD(map,u16 *,0x52a6))goto nextProperty;
 {
 cost=M2C_FIELD(map+index,s8 *,0x2338);
-if(cost>=0&&out[5]>=cost+1){
-out[5]=cost+1;relation=func_ov000_021a911c(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
+if(cost>=0 && cost+1<=out[5]){
+{s32 distance=cost+1;
+out[5]=distance;}relation=func_ov000_021a911c(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
 }
 }
 }
@@ -153,17 +154,16 @@ if(cost<0||(M2C_FIELD(enemyUnit,u16 *,4)&8))continue;
 if(kind==19){
 if(!enemyUnit[12]&&IsMidActionStep(19))continue;
 map=*gCurrentMap;cost=1+M2C_FIELD(map+enemyUnit[1]+M2C_FIELD(map+enemyUnit[2]*2,u16 *,0x3758),s8 *,0x2338);
-if(out[5]<cost)continue;out[5]=cost;
+if(cost>out[5])continue;out[5]=cost;
 }else {if(out[5]<cost)continue;out[5]=cost;}
 relation=IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),enemyPlayer);
 }
 }
 }
-if(out[3]&&out[4]!=255){
+if(!out[3]||out[4]==255)goto nextEntry;
 if(arg0){if(relation){if(out[4]>(u32)out[5])goto nextEntry;}else if(out[4]>out[5]+1)goto nextEntry;}
 else {if(relation){if(out[4]>out[5]-2)goto nextEntry;}else if(out[4]>out[5]-1)goto nextEntry;}
 count++;out+=12;
-}
 nextEntry:entry+=6;
 }
 if(!count)return 0;
@@ -184,7 +184,7 @@ best=out;bestdelta=(s32)out[4]-out[5];if(bestdelta<0)bestdelta=-bestdelta;
 if(!best)return 0;
 if(best[3]==19){
 gAiCommand[6]=1;CommitAiAction((s8)best[6]);
-gAiCommand[7]=2;gAiState[12]=19;gAiState[13]=(s8)best[7];
+gAiCommand[7]=2;gAiState[12]=19;gAiState[13]=*(s8 *)(best+7);
 }else{
 gAiCommand[6]=best[3];CommitAiAction((s8)best[6]);gAiCommand[7]=1;
 }

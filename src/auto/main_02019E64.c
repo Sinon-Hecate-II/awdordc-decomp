@@ -1,13 +1,22 @@
-/* 29 functions from 0x02019E64 to 0x0201AE0C (main), found by ds-decomp. */
+/* 29 functions from 0x02019E64 to 0x0201AE0C (main), found by ds-decomp */
 #include "common.h"
 #include "tcp_socket.h"
 static inline void seed_network_random(unsigned long long seed) { extern s32 gNetStack; M2C_FIELD(&gNetStack,unsigned long long *,0x68)=seed; M2C_FIELD(&gNetStack,unsigned long long *,0x70)=0x5d588b656c078965ULL; M2C_FIELD(&gNetStack,unsigned long long *,0x78)=0x269ec3; }
 typedef struct { u8 dest[6],src[6];u16 type;u8 pad14,hw;u8 proto,pad17;u16 sizes;u8 pad20,op;u8 sender[6];u16 shi,slo;u8 target[6];u16 thi,tlo; } Packet0201ACA0;
 
+/* Layout of the 0xC0-byte connection-data block Download Play peers exchange:
+ * a 16-bit word count heads it, its payload carries an 8-byte header at +0x50,
+ * and it may only be handed on once its status word is clear. */
+#define LINK_DATA_LENGTH  0x3C /* u16: amount of transfer data in the block, 0 = nothing */
+#define LINK_DATA_STATUS  0x44 /* s32: nonzero while the block is not ready to be used */
+#define LINK_DATA_HEADER  0x50 /* the header of the carried data */
+#define LINK_DATA_ID_A    0x2348
+#define LINK_DATA_ID_B    0xBD8A
+#define LINK_DATA_VERSION 4    /* format version the receiver accepts */
 typedef struct {
-    u16 tag;
+    u16 tag;     /* LINK_DATA_ID_A or LINK_DATA_ID_B */
     u8 pad[4];
-    u16 extra;
+    u16 extra;   /* LINK_DATA_VERSION */
 } Func0201A09CBuf;
 
 s32 func_02019e64(void *out, s32 *outCount, s8 *input, s32 *inCount, s32 (*callback)(u16 *,s32 *,const char *,s32 *)) {
@@ -68,17 +77,20 @@ if(outCount)*outCount=outPos;
 return result;
 }
 
-s32 func_0201a09c(u8 *r0) {
+/* Tells whether a Download Play connection-data block holds a usable transfer:
+ * it must carry data, not be marked busy, and its 8-byte header at +0x50 must
+ * have a known id and the supported format version. */
+s32 IsConnectionDataValid(u8 *connData) {
     void MI_CpuCopy8(void *, void *, s32);
     void DC_CleanRange(void *, s32);
-    Func0201A09CBuf buf;
-    if (r0 == NULL) return 0;
-    if (*(u16 *)(r0 + 0x3C) == 0) return 0;
-    MI_CpuCopy8(r0 + 0x50, &buf, 8);
-    DC_CleanRange(&buf, 8);
-    if (*(s32 *)(r0 + 0x44) == 0) {
-        if (*(volatile u16 *)&buf.tag == 0x2348 || *(volatile u16 *)&buf.tag == 0xBD8A) {
-            if (buf.extra == 4) return 1;
+    Func0201A09CBuf header;
+    if (connData == NULL) return 0;
+    if (*(u16 *)(connData + LINK_DATA_LENGTH) == 0) return 0;
+    MI_CpuCopy8(connData + LINK_DATA_HEADER, &header, 8);
+    DC_CleanRange(&header, 8);
+    if (*(s32 *)(connData + LINK_DATA_STATUS) == 0) {
+        if (*(volatile u16 *)&header.tag == LINK_DATA_ID_A || *(volatile u16 *)&header.tag == LINK_DATA_ID_B) {
+            if (header.extra == LINK_DATA_VERSION) return 1;
         }
     }
     return 0;

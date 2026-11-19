@@ -302,33 +302,42 @@ void func_020d2bc0(s32 arg0, s32 arg1) {
 #pragma opt_propagation off
 s32 GetPlayerCommanderId(s32 arg0) {
     extern s32 *gCurrentMap;
-    s32 func_020a27b8(s32, s32);
+    s32 GetCoZoneBonusIndex(s32, s32);
     struct PlayerRec { u8 pad[0x6c]; u32 id:8; u32 unk:2; u32 flag:2; } *rec;
 
     rec = (struct PlayerRec *)(*gCurrentMap + 0x3a4 + 0x6400 + arg0 * 0x8c);
-    return func_020a27b8(rec->id, rec->flag);
+    return GetCoZoneBonusIndex(rec->id, rec->flag);
 }
 #pragma pop
-s32 func_020d2c58(s32 arg0) {
- extern M2C_UNK gMapData;
- s32 func_020a334c(s32);s32 GetCoPowerMeterCost(s32,s32);s32 func_020a3518(s32);
- s32 r5; s32 count=0;
- if((((u32)M2C_FIELD(&gMapData,u16 *,12)<<19)>>31)==0)return 0;
- if(func_020a334c(arg0))return 0;
- if(!GetCoPowerMeterCost(arg0,2))return 0;
- r5=func_020a3518(arg0);if(r5>=GetCoPowerMeterCost(arg0,1))count++;
- r5=func_020a3518(arg0);if(r5>=GetCoPowerMeterCost(arg0,2))count++;
- return count;
+/* Returns how many of a player's CO power meters are fully charged: 0 when CO
+ * powers are disabled, the player has no CO power, or the meter is not full; 1
+ * when the single CO power is ready; 2 when the dual power is ready too. */
+s32 GetCoPowerMeterLevel(s32 player) {
+    extern M2C_UNK gMapData;
+    s32 GetPlayerArmyVariantIfSet(s32);
+    s32 GetCoPowerMeterCost(s32, s32);
+    s32 func_020a3518(s32);
+    s32 meter;
+    s32 level = 0;
+
+    if ((((u32)M2C_FIELD(&gMapData, u16 *, MAPDATA_RULES) << 19) >> 31) == 0) return 0;
+    if (GetPlayerArmyVariantIfSet(player)) return 0;
+    if (!GetCoPowerMeterCost(player, 2)) return 0;
+    meter = func_020a3518(player);
+    if (meter >= GetCoPowerMeterCost(player, 1)) level++;
+    meter = func_020a3518(player);
+    if (meter >= GetCoPowerMeterCost(player, 2)) level++;
+    return level;
 }
 
 void func_020d2cf0(M2C_UNK arg0) {
     M2C_UNK func_020a25bc(s32, s32);
     s32 GetPlayerCommanderId();
-    s32 func_020d2c58(M2C_UNK);
+    s32 GetCoPowerMeterLevel(M2C_UNK);
     s32 temp_r4;
 
     temp_r4 = GetPlayerCommanderId();
-    func_020a25bc(temp_r4, func_020d2c58(arg0));
+    func_020a25bc(temp_r4, GetCoPowerMeterLevel(arg0));
 }
 
 s32 GetUnitBuildCost(arg0, arg1)

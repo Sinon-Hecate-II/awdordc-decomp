@@ -88,8 +88,8 @@ void func_020bcde0(void) {
 
 void func_020bcdec(void *arg0) {
     M2C_UNK func_0208f7d0();
-    M2C_UNK func_020a2a70(u8);
-    func_020a2a70((u8) M2C_FIELD(arg0, s32 *, 0x5C));
+    M2C_UNK GetCoPowerMusicTrack(u8);
+    GetCoPowerMusicTrack((u8) M2C_FIELD(arg0, s32 *, 0x5C));
     func_0208f7d0();
 }
 

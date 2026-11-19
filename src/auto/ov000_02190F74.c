@@ -8,7 +8,7 @@ void MarkAdjacentCells(int);
 int func_020d27a4(int,int);
 int IsFootUnitKind(int);int GetUnitAttackClass(int);
 int WillCaptureCompleteThisTurn(void *);
-int func_ov000_021a93ec(s16,s16);
+int IsCellVisibleToCurrentTeam(s16,s16);
 int func_ov000_02177f24(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
 int HasBetterAttackerNearby(void *);
@@ -159,7 +159,7 @@ void func_ov000_0219137c(void){
  if(!unit->value && unit->health<=60)continue;
  }
  candidate_checks:
- if(!func_ov000_021a93ec((s16)x,(s16)y))continue;
+ if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
  if(!func_ov000_02177f24(x,y,position))continue;
  map=*gCurrentMap;
  score=func_ov000_02176e28(((u8 *)map)[x+map->rows[y]],position);

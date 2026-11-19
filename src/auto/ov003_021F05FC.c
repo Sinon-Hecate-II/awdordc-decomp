@@ -5,9 +5,9 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
-    void func_ov003_021f13ec(s32);
-    extern M2C_UNK data_02102174;
-    extern M2C_UNK data_ov003_0220f48c;
+    void SetOv003SceneClass(s32);
+    extern M2C_UNK gSceneBaseVTable;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220f8e0;
     extern M2C_UNK data_ov003_0220faf8;
     extern M2C_UNK data_ov003_0220fb08;
@@ -36,11 +36,11 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     u8 var_r3_2;
     void *temp_r0;
 
-    func_ov003_021f13ec((s32)&data_ov003_0220f8e0);
+    SetOv003SceneClass((s32)&data_ov003_0220f8e0);
     temp_r0 = CreateSpriteFromClass(&data_ov003_0220f8e0, arg0);
     if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_0220fb38;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220fb64;
         M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
@@ -388,7 +388,7 @@ M2C_UNK **func_ov003_021f0de0(M2C_UNK **arg0) {
 
 M2C_UNK **func_ov003_021f0e30(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020741c4(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK func_ov003_021f05f8;
     u8 var_r4;
@@ -400,7 +400,7 @@ M2C_UNK **func_ov003_021f0e30(M2C_UNK **arg0) {
         }
         var_r4 += 1;
     } while ((u32)var_r4 < 0x1AU);
-    func_020741c4((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
+    DestroyArray((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
     MemFree(arg0);
     return arg0;
 }
@@ -594,7 +594,7 @@ M2C_UNK **func_ov003_021f128c(M2C_UNK **arg0) {
 
 M2C_UNK **func_ov003_021f12d4(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020741c4(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK func_ov003_021f05f8;
     u8 var_r4;
@@ -606,7 +606,7 @@ M2C_UNK **func_ov003_021f12d4(M2C_UNK **arg0) {
         }
         var_r4 += 1;
     } while ((u32)var_r4 < 0x1AU);
-    func_020741c4((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
+    DestroyArray((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
     return arg0;
 }
 
@@ -634,7 +634,7 @@ s32 func_ov003_021f13c8(void) {
     return FindObjectByClass();
 }
 
-void func_ov003_021f13ec(s32 arg0) {
+void SetOv003SceneClass(s32 arg0) {
     void SetOv003SceneState(s8);
     extern M2C_UNK gOv003SceneState;
     SetOv003SceneState(0);

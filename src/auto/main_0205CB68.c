@@ -1,19 +1,21 @@
 /* 30 functions from 0x0205CB68 to 0x0205DA30 (main), found by ds-decomp. */
 #include "common.h"
+#include "gt2.h"
 struct BytePair_0205 { u8 v[2]; };
 struct Packet_0205 { u8 a,b; u16 c; s32 d; };
 struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 #pragma push
 #pragma opt_global_reg off
-s32 func_0205cb68(void *a,s32 b,s32 c) {
-s32 func_0205d228(void *,s32,s32,void *,s32);
-extern u8 gGt2Magic[];
-u8 v[3];
-struct BytePair_0205 *p=(struct BytePair_0205 *)v;
-v[2]=0x68;
-*p=*(struct BytePair_0205 *)gGt2Magic;
-return func_0205d228((void *)a,b,c,p,3)!=0;
+s32 func_0205cb68(s32 a, s32 b, s32 c) {
+    s32 func_0205d228(void *, s32, s32, void *, s32);
+    extern u8 gGt2Magic[];
+    u8 v[3];
+    struct BytePair_0205 *p = (struct BytePair_0205 *)v;
+
+    v[2] = 0x68;
+    *p = *(struct BytePair_0205 *)gGt2Magic;
+    return func_0205d228((void *)a, b, c, p, 3) != 0;
 }
 #pragma pop
 s32 gti2ResendPendingCommand(void *a, s32 *b) {
@@ -74,7 +76,7 @@ s32 Vector_Free(s32);
 s32 ghiSocket(s32,s32,s32);
 s32 func_020496e0(s32,void *,s32);
 M2C_UNK func_020496b8(s32);
-s32 func_020498b8(s32,void *,s32 *);
+s32 ghiGetSockName(s32,void *,s32 *);
 u16 port;
 s32 addr;
 s32 len;
@@ -105,7 +107,7 @@ pkt.c=swapped;
 if(func_020496e0(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
 func_020496b8(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
 }
-len=8;func_020498b8(M2C_FIELD(p,s32 *,0),&pkt,&len);
+len=8;ghiGetSockName(M2C_FIELD(p,s32 *,0),&pkt,&len);
 M2C_FIELD(p,s32 *,4)=pkt.d;
 M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 *a=p;return 0;
@@ -238,35 +240,35 @@ done:
 }
 
 #pragma scheduling off
-s32 func_0205d164(s32 arg) {
+/* Remove a GT2 connection from the structures tracking it on its owning socket:
+ * a closed connection is dropped from the socket's connection vector, any other
+ * from its address/port table.  Does nothing while a close is pending or a
+ * callback is still running on the connection. */
+void gti2RemoveConnection(s32 conn)
+{
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
     void Vector_RemoveItem(s32, s32);
     void TableRemove(s32, void *);
-    void *p = (void *)arg;
-    s32 v = M2C_FIELD(p, s32 *, 0x14);
-    if (v == 0) v = M2C_FIELD(p, s32 *, 0x24);
-    if (v) return v;
-    if (M2C_FIELD(p, s32 *, 0x0C) == 7) {
-        s32 *field8 = (s32 *)M2C_FIELD(p, s32 *, 0x08);
-        s32 base = M2C_FIELD(field8, s32 *, 0x10);
-        s32 n = Vector_GetCount(base);
-        s32 i;
-        if (n <= 0) return 0;
-        for (i = 0; i < n; i++) {
-            s32 *item = Vector_GetItem(base, i);
-            if (item[0] == arg) {
-                Vector_RemoveItem(base, i);
-                return 0;
+    if (M2C_FIELD((void *)conn, s32 *, GT2_CONNECTION_CLOSE_PENDING) || M2C_FIELD((void *)conn, s32 *, GT2_CONNECTION_CALLBACKS)) {
+        return;
+    }
+    if (M2C_FIELD((void *)conn, s32 *, GT2_CONNECTION_STATE) == GT2_STATE_CLOSED) {
+        s32 count = Vector_GetCount(M2C_FIELD(M2C_FIELD((void *)conn, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS));
+        s32 i = 0;
+        if (count <= 0) return;
+        do {
+            if (conn == *Vector_GetItem(M2C_FIELD(M2C_FIELD((void *)conn, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS), i)) {
+                Vector_RemoveItem(M2C_FIELD(M2C_FIELD((void *)conn, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS), i);
+                return;
             }
-        }
-        return 0;
+            i++;
+        } while (i < count);
+        return;
+    } else {
+        TableRemove(M2C_FIELD(M2C_FIELD((void *)conn, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTION_TABLE), &conn);
     }
-    {
-        s32 *field8 = (s32 *)M2C_FIELD(p, s32 *, 0x08);
-        TableRemove(M2C_FIELD(field8, s32 *, 0x0C), (void *)&arg);
-        return 0;
-    }
+    return;
 }
 #pragma scheduling reset
 s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
@@ -334,7 +336,7 @@ success:
 s32 func_0205d3d0(void **a,void **b) {
 void *p=*a;void *q=*b;
 if(M2C_FIELD(p,s32 *,12)!=7) {if(!func_0205abb4(p,q))return 0;}
-if(M2C_FIELD(p,s32 *,12)==7 && M2C_FIELD(p,s32 *,20)==0 && M2C_FIELD(p,s32 *,36)==0)func_0205d164((s32)p);
+if(M2C_FIELD(p,s32 *,12)==7 && M2C_FIELD(p,s32 *,20)==0 && M2C_FIELD(p,s32 *,36)==0)gti2RemoveConnection((s32)p);
 return 1;
 }
 
@@ -354,7 +356,6 @@ s32 func_0205d428(void *arg0) {
 void func_0205d464(void *arg0) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem(s32, s32);
-    M2C_UNK func_0205d164(s32);
     s32 var_r4;
 
     var_r4 = Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x10)) - 1;
@@ -362,7 +363,7 @@ void func_0205d464(void *arg0) {
         return;
     }
     do {
-        func_0205d164(*Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x10), var_r4));
+        gti2RemoveConnection(*Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x10), var_r4));
         var_r4 -= 1;
     } while (var_r4 >= 0);
 }
@@ -517,7 +518,7 @@ if(M2C_FIELD(p,s32 *,0)!=-1)func_020496b8(M2C_FIELD(p,s32 *,0));
 M2C_FIELD(p,s32 *,0)=-1; M2C_FIELD(p,s32 *,16)=4;
 }
 
-s32 *func_0205d7f4(void) {
+s32 *NatNeg_NewPeer(void) {
 extern M2C_UNK data_0213e144;
 s32 Vector_New(s32,s32,void (*)(void *));
 s32 func_02048688(s32); s32 *func_02048690(s32,s32);
@@ -527,13 +528,13 @@ Vector_AddItem(M2C_FIELD(&data_0213e144,s32 *,16),data);
 return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
 
-void func_0205d88c(s32 *p) {
+void NatNeg_FreePeer(s32 *p) {
 extern M2C_UNK gNatNegManager;
 s32 Vector_GetCount(s32); s32 *Vector_GetItem(s32,s32);
 s32 i=0;
 for(;i<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,16));i++) {
 if(p==Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,16),i)) {
-func_0204887c(M2C_FIELD(&gNatNegManager,s32 *,16),i);return;
+Vector_RemoveAt(M2C_FIELD(&gNatNegManager,s32 *,16),i);return;
 }
 }
 }
@@ -583,9 +584,9 @@ return result;
 }
 
 s32 func_0205d9fc(s32 a) {
-s32 func_020498b8(s32,void *,s32 *);
+s32 ghiGetSockName(s32,void *,s32 *);
 u16 v[4]; s32 size=8;
-if (func_020498b8(a,v,&size)==-1) return 0;
+if (ghiGetSockName(a,v,&size)==-1) return 0;
 return v[1];
 }
 

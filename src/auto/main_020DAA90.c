@@ -155,9 +155,9 @@ DAE_RET DrawUnitSlotList(void *menu) {
     M2C_UNK DrawTextLine(s32, s32, s32, void *, s32, s32);
     s32 GetBattleSlotSummary(s32);
     s32 func_020c544c(s32);
-    s32 func_0203a68c(s32, s32);
+    s32 GetMatchPlayerRecordInfo(s32, s32);
     void InitOnlinePlayerRecord(void *);
-    s32 func_0203a7c0(s32, u8 *, u8 *, void *, s32 *);
+    s32 GetMatchPlayerName(s32, u8 *, u8 *, void *, s32 *);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
     extern s32 gUnitSlotIds[];
@@ -194,9 +194,9 @@ DAE_RET DrawUnitSlotList(void *menu) {
             unit = GetBattleSlotSummary(i);
             if (!unit) continue;
             if (func_020c544c(unit) != 3) continue;
-            if (func_0203a68c(unit, 0) != 6) continue;
+            if (GetMatchPlayerRecordInfo(unit, 0) != 6) continue;
             InitOnlinePlayerRecord(info);
-            if (func_0203a7c0(unit, &glyphA, &glyphB, info, &code) != 6) continue;
+            if (GetMatchPlayerName(unit, &glyphA, &glyphB, info, &code) != 6) continue;
             if (!(info[0x1a] & 2) || glyphA == glyphB) continue;
             if (M2C_FIELD(menu, s32 *, 0x38) != M2C_FIELD(info, s8 *, 0x28)) continue;
             gUnitSlotIds[M2C_FIELD(menu, s8 *, 0x42)] = i;
@@ -339,7 +339,7 @@ M2C_UNK func_020db5e8(void *arg0) {
     s32 GetConnectedPlayerCount(void);
     u32 GetOnlinePlayerRecord(s32);
     s32 IsOnlineSessionFlagSet(s32);
-    s32 func_ov010_02229bdc(void);
+    s32 IsOnlineSessionHost(void);
     M2C_UNK DrawTimerDigits(s32, s32, u16, s32, s32);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
@@ -405,7 +405,7 @@ M2C_UNK func_020db5e8(void *arg0) {
 
     if (GetConnectedPlayerCount() >= 2) {
         if (IsOnlineSessionFlagSet(3) != 0) {
-            if (func_ov010_02229bdc() != 0) {
+            if (IsOnlineSessionHost() != 0) {
                 vval = (s16)M2C_FIELD(arg0, s16 *, 0x4c);
                 if (vval < 0x708) {
                     f0 = M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x00);

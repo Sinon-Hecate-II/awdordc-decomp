@@ -11,10 +11,10 @@ M2C_UNK func_ov000_0218cbc0(void) {
     extern void *gAiCommandState;
     u8 *func_020a47e0(s32, s32);
     s32 func_ov000_021a9bc0(void);
-    s32 func_ov000_021a9740(void *, s32);
+    s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
     s32 func_020d1690(s32, s32, s16 *);
-    s32 func_ov000_021a93ec(s16, s16);
+    s32 IsCellVisibleToCurrentTeam(s16, s16);
     s32 func_ov000_02176e28(s32, s16 *);
     s32 func_020d27a4(s32, s32);
     void ClearUnitMoveTarget(void);
@@ -72,7 +72,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
                 goto c20;
             }
 
-            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * func_ov000_021a9740(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
+            damage = Divide(((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->health * GetUnitMaxWeaponDamagePercent(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), kind), 100);
             func_020d1690(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), kind, position);
             if (M2C_FIELD(*gCurrentMap, s16 *, 0x6ed6) == 0) continue;
             if (damage >= bestHealth) {
@@ -96,7 +96,7 @@ M2C_UNK func_ov000_0218cbc0(void) {
                 other = base + id * 14;
                 if (((Unit0218C4 *)other)->kind == 0) continue;
                 if (func_020d27a4(M2C_FIELD(*gCurrentMap, u8 *, 0x52d4), other ? (s32)((other - base) / 14) : 0) == 1) continue;
-                if (func_ov000_021a93ec((s16)x, (s16)y) == 0) continue;
+                if (IsCellVisibleToCurrentTeam((s16)x, (s16)y) == 0) continue;
                 score = func_ov000_02176e28(((u8 *)*gCurrentMap)[x + M2C_FIELD((u8 *)*gCurrentMap + y * 2, u16 *, 0x3758)], position);
                 if (score == 0) continue;
                 if (score < bestScore) continue;

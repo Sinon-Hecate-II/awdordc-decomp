@@ -119,13 +119,13 @@ s32 WFC_SubmitLinkRequest(M2C_UNK arg0) {
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 s32 func_02012fac(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
-s32 WFC_CheckChannelState();s32 func_02011934(void);s32 func_02011994(void);
+s32 WFC_CheckChannelState();s32 WFC_GetLocalPlayerIndex(void);s32 func_02011994(void);
 void MI_CpuFill32(s32,void *,s32);s32 CountBits(s32);s32 WFC_SetChannelHandler(u16,s32,s32);
 void WFC_ParentChannelHandler(void *);void WFC_ChildChannelHandler(void *);void WFC_OnChannelSendComplete(void *);
 s32 mode,mask=1,result,i,opt;u32 bits;u16 *p;u8 *block;
 result=WFC_CheckChannelState(2,9,10);if(result)return result;
 if(!buffer)return 6;if((u32)channel>=16)return 6;if(!flags)return 6;
-mode=func_02011934();if(!mode)mask=func_02011994();
+mode=WFC_GetLocalPlayerIndex();if(!mode)mask=func_02011994();
 MI_CpuFill32(0,(void *)buffer,0x820);
 p=(u16 *)(buffer+0x800);
 p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;p[7]=0;
@@ -170,7 +170,7 @@ s32 func_02013200(void *arg0) {
 
 s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     s32 WFC_CheckChannelState(s32, s32);
-    s32 func_02011934(void);
+    s32 WFC_GetLocalPlayerIndex(void);
     s32 func_02011994(void);
     s32 WFC_SendChannelData(s32, s32, void *, u32, u16, u16, u16);
     void CopyU16(void *, void *, u32);
@@ -193,7 +193,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     if (r10 == 0) return 6;
     if (r9 == 0) return 6;
     if (r8 == 0) return 6;
-    r5 = func_02011934();
+    r5 = WFC_GetLocalPlayerIndex();
     if (r5 == 0) r4 = func_02011994();
     state = M2C_FIELD(r10, u16 *, 0x81c);
     if (state == 5) return 1;
@@ -266,7 +266,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
  * through, rewind the slot when the receiver had no room, and mark the channel
  * failed on any other result. */
 void WFC_OnChannelSendComplete(void *event) {
- void *WFC_GetInfoBlock(void); s32 func_02011934(void); void WFC_ParentChannelHandler(void *);void WFC_ChildChannelHandler(void *);
+ void *WFC_GetInfoBlock(void); s32 WFC_GetLocalPlayerIndex(void); void WFC_ParentChannelHandler(void *);void WFC_ChildChannelHandler(void *);
  void *channel=WFC_GetInfoBlock(); void *state; void *callback; s32 playerIndex;
  channel=(u8 *)channel+M2C_FIELD(event,u16 *,WFC_EVENT_CHANNEL)*4;
  callback=M2C_FIELD(channel,void **,WFC_INFO_CHANNEL_CALLBACK);
@@ -274,7 +274,7 @@ void WFC_OnChannelSendComplete(void *event) {
  if(callback!=(void *)WFC_ParentChannelHandler && callback!=(void *)WFC_ChildChannelHandler)return;
  if(!state)return;
  if(state!=M2C_FIELD(event,void **,WFC_EVENT_SEND_OBJECT))return;
- playerIndex=func_02011934();
+ playerIndex=WFC_GetLocalPlayerIndex();
  if(M2C_FIELD(event,u16 *,WFC_EVENT_RESULT)==WFC_EVENT_RESULT_DONE) {
  if(playerIndex)return;
  ((u16 *)((u8 *)state+WFC_CH_SENT_SEQUENCE))[M2C_FIELD(state,u16 *,WFC_CH_SEND_INDEX)]=M2C_FIELD(event,u16 *,WFC_EVENT_SEQUENCE)>>1;
@@ -309,25 +309,42 @@ break;
 }else M2C_FIELD(q,u16 *,0x81c)=5;
 }
 
-void WFC_ChildChannelHandler(void *p) {
-void CopyU16(void *,void *,u32);s32 func_02011934(void);
-void *q=M2C_FIELD(p,void **,0x1C);u16 *data;u16 mask;u32 len;s32 bit;
-if(!q)return;
-if(M2C_FIELD(p,u16 *,2)==0) {
-switch((s32)M2C_FIELD(p,u16 *,4)) {
-case 7:case 9:
-case 25:case 26:
-case 21:
-len=M2C_FIELD(p,u16 *,0x10);data=M2C_FIELD(p,u16 **,0xC);mask=*data;bit=func_02011934();
-if(len!=M2C_FIELD(q,u16 *,0x814)){if(len>0x200)len=0x200;}
-if(len<4)return;
-if(!(mask&(1<<bit)))return;
-CopyU16(data,q+(M2C_FIELD(q,u16 *,0x808)<<9),len);
-M2C_FIELD(q+M2C_FIELD(q,u16 *,0x808)*2,u16 *,0x800)=(s32)M2C_FIELD(p,u16 *,0x1A)>>1;
-M2C_FIELD(q,u16 *,0x808)=(M2C_FIELD(q,u16 *,0x808)+1)&3;
-break;
-}
-}else M2C_FIELD(q,u16 *,0x81C)=5;
+/* Channel callback of a joining (child) peer: on a data event (command 21) it copies
+ * the peer's payload into the ring's current receive slot when the slot's mask has
+ * this player's bit, stamps the slot's start sequence and advances the ring; any
+ * event that carries a nonzero result marks the channel failed. */
+void WFC_ChildChannelHandler(void *event) {
+    void CopyU16(void *, void *, u32);
+    s32 WFC_GetLocalPlayerIndex(void);
+    void *state = M2C_FIELD(event, void **, WFC_EVENT_RECV_OBJECT);
+    u32 length;
+    u16 mask;
+    u16 *data;
+    s32 playerIndex;
+    if (!state) return;
+    if (M2C_FIELD(event, u16 *, WFC_EVENT_RESULT) == 0) {
+        switch ((s32) M2C_FIELD(event, u16 *, WFC_EVENT_COMMAND)) {
+        case 7:
+        case 9:
+        case 25:
+        case 26:
+            break;
+        case 21:
+            data = M2C_FIELD(event, u16 **, WFC_EVENT_DATA);
+            length = M2C_FIELD(event, u16 *, WFC_EVENT_LENGTH);
+            mask = *data;
+            playerIndex = WFC_GetLocalPlayerIndex();
+            if (length != M2C_FIELD(state, u16 *, WFC_CH_TRANSFER_LEN)) {
+                if (length > WFC_CH_SLOT_SIZE) length = WFC_CH_SLOT_SIZE;
+            }
+            if (length < 4) return;
+            if (!(mask & (1 << playerIndex))) return;
+            CopyU16(data, state + (M2C_FIELD(state, u16 *, WFC_CH_SLOT_INDEX) << 9), length);
+            M2C_FIELD(state + M2C_FIELD(state, u16 *, WFC_CH_SLOT_INDEX) * 2, u16 *, WFC_CH_SENT_SEQUENCE) = (s32) M2C_FIELD(event, u16 *, WFC_EVENT_SEQUENCE) >> 1;
+            M2C_FIELD(state, u16 *, WFC_CH_SLOT_INDEX) = (M2C_FIELD(state, u16 *, WFC_CH_SLOT_INDEX) + 1) & 3;
+            break;
+        }
+    } else M2C_FIELD(state, u16 *, WFC_CH_SEND_STATE) = WFC_CH_STATE_FAILED;
 }
 
 /* Stores a player's received payload into the channel's current transfer slot:

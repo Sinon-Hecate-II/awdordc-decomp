@@ -8,7 +8,7 @@ M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
 s32 Wfc_StepMatch(void) {
     s32 Wfc_GetLinkState();
     s32 Wfc_GetSessionState();
-    s32 func_020313f0(void *);
+    s32 Wfc_StepFriendConnect(void *);
     s32 func_0203152c();
     M2C_UNK func_02035244();
     s32 state;
@@ -26,7 +26,7 @@ s32 Wfc_StepMatch(void) {
             state = func_0203138c(ctx);
             break;
         case 2:                                 /* switch 1 */
-            state = func_020313f0(ctx);
+            state = Wfc_StepFriendConnect(ctx);
             break;
         case 3:                                 /* switch 1 */
             state = func_02031480();
@@ -76,38 +76,43 @@ s32 func_0203138c(M2C_UNK arg0) {
     if (func_02021a90(temp_r0) == 0) {
         return 0xC;
     }
-    func_0202f558(2);
+    Wfc_SetResultCode(2);
     return 0x11;
 }
 
-s32 func_020313f0(void *arg0) {
+/* Friend-connection step 12: once the console has a local IP address, prepare the
+ * selected friend's player codes and return the next state -- 0xF to connect a
+ * built-in access-point entry directly, 0xD for the matchmaking step.  Without an
+ * address it waits WFC_ADDRESS_WAIT_SECONDS, then fails with 0xB and marks the
+ * selected friend record's result. */
+s32 Wfc_StepFriendConnect(void *state) {
     s32 func_020218bc();
     void func_020316c4(void *);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
-    u32 temp_r0;
+    u32 selection;
 
     if (func_020218bc() != 0) {
-        func_020316c4(arg0);
-        temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0xD0C) << 0x1A) >> 0x1E;
-        return (temp_r0 == 1) ? 0xF : 0xD;
+        func_020316c4(state);
+        selection = (u32)(M2C_FIELD(state, u8 *, WFC_STATE_FLAGS) << 0x1A) >> 0x1E;
+        return (selection == 1) ? 0xF : 0xD;
     }
-    if (U64Divide((GetSystemTick() - M2C_FIELD(arg0, u64 *, 0xCB0)) << 6, 0x1FF6210ULL) < 0xAULL) {
+    if (U64Divide((GetSystemTick() - M2C_FIELD(state, u64 *, WFC_STATE_TIMER)) << 6, TICKS_TO_SECONDS_DIVISOR) < (u64)WFC_ADDRESS_WAIT_SECONDS) {
         return 0xC;
     }
-    *((u8 *)arg0 + (M2C_FIELD(arg0, u8 *, 0xD13) * 4) + 0x444) = 1;
+    M2C_FIELD(((u8 *)state + (M2C_FIELD(state, u8 *, WFC_STATE_RECORD_INDEX) * 4)), u8 *, WFC_STATE_RECORD_RESULT) = 1;
     return 0xB;
 }
 
 s32 func_02031480(void) {
     M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
-    M2C_UNK func_0202f558(M2C_UNK);
+    M2C_UNK Wfc_SetResultCode(M2C_UNK);
     s32 Dwc_HttpStartup();
     Wfc_GetWorkBlock(8);
     if (Dwc_HttpStartup() == 0) {
         return 0xE;
     }
-    func_0202f558(3);
+    Wfc_SetResultCode(3);
     return 0x11;
 }
 
@@ -243,7 +248,7 @@ void func_020316c4(void *arg0) {
     func_020218f4(&sp4, &sp0);
 }
 #pragma opt_strength_reduction reset
-s32 func_0203174c(M2C_UNK arg0) {
+s32 Wfc_IsSharedApCode(M2C_UNK arg0) {
     M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fb2a4;
@@ -279,7 +284,7 @@ void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
     MI_CpuCopy8(buf1, (void *)arg1, 0xA);
 }
 
-s32 func_020317f8(M2C_UNK arg0) {
+s32 Wfc_IsUsbApCode(M2C_UNK arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fb2b0;
     if (ByteCompareN(arg0, &data_020fb2b0, 8) == 0) {
@@ -490,13 +495,13 @@ s32 func_02031d64(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     return 1;
 }
 
-u64 func_02031d90(void *arg0) {
+u64 GetNasPlayerCode(void *arg0) {
     u32 hi = M2C_FIELD(arg0, u32 *, 0) & 0x7FF;
     u32 lo = M2C_FIELD(arg0, u32 *, 4);
     return ((u64) hi << 32) | lo;
 }
 
-s32 func_02031db0(void *arg0) {
+s32 GetNasRecordCheckWord(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 8);
 }
 
@@ -657,12 +662,12 @@ u64 func_02032024(void *arg0)
   return result;
 }
 #pragma opt_strength_reduction reset
-void func_020320ac(u64 value, s32 arg2, char *arg3) {
- extern u8 data_020fb2c4[];
+void Base32Encode(u64 value, s32 arg2, char *arg3) {
+ extern u8 gBase32Alphabet[];
  char *end;
  s32 c;
  s32 i;
- s8 *table=(s8 *)data_020fb2c4;
+ s8 *table=(s8 *)gBase32Alphabet;
  s32 count=(arg2+4)/5;
  i=0;
  if(count>0) {
@@ -678,15 +683,18 @@ void func_020320ac(u64 value, s32 arg2, char *arg3) {
  arg3[count]=0;
 }
 
-void FormatNasId(void *arg0, u32 arg1, void *arg2) {
-u64 func_02031d90(void *); s32 func_02031db0(void *);
-void func_020320ac(u64,s32,char *);
+/* Render a NAS player/key record as the text id the server exchanges: the 43-bit
+ * player code and the 32-bit check word in base 32, with the four bytes of the
+ * key kind in between ("%s%c%c%c%c%s"). */
+void FormatNasId(void *record, u32 keyType, void *out) {
+u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *);
+void Base32Encode(u64,s32,char *);
 M2C_UNK StringFormatN(M2C_UNK,M2C_UNK,M2C_UNK *,...);
-extern M2C_UNK data_020fb2e8;
-char sp29[21]; char sp14[21];
-func_020320ac(func_02031d90(arg0),43,sp29);
-func_020320ac((u64)(u32)func_02031db0(arg0),32,sp14);
-StringFormatN((M2C_UNK)arg2,21,&data_020fb2e8,sp29,(arg1>>24)&255,(arg1>>16)&255,(arg1>>8)&255,arg1&255,sp14);
+extern M2C_UNK sNasIdFormat;
+char code[NAS_ID_TEXT_SIZE]; char check[NAS_ID_TEXT_SIZE];
+Base32Encode(GetNasPlayerCode(record),NAS_ID_CODE_BITS,code);
+Base32Encode((u64)(u32)GetNasRecordCheckWord(record),NAS_ID_CHECK_BITS,check);
+StringFormatN((M2C_UNK)out,NAS_ID_TEXT_SIZE,&sNasIdFormat,code,(keyType>>24)&255,(keyType>>16)&255,(keyType>>8)&255,keyType&255,check);
 }
 
 void func_020321ac(void *arg0, s32 arg1) {

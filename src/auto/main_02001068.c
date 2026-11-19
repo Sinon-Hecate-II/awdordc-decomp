@@ -124,13 +124,17 @@ void func_02001524(void *arg0,UnkVec3 *arg1) {
 *arg1++=*(UnkVec3 *)arg0;
 }
 
-void MTX_TransApply44(s32 *arg0, s32 *arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Applies a local translation (x, y, z) to a Q12 4x4 matrix: copies the
+ * matrix and adds the delta, rotated by the source rotation, to the
+ * translation column. */
+void MTX_TransApply44(s32 *src, s32 *dst, s32 x, s32 y, s32 z) {
     void MTX_Copy43(void *, void *);
-    if (arg0 != arg1) MTX_Copy43(arg0, arg1);
-    arg1[12] = arg0[12] + (s32)(((long long)arg3 * arg0[4] + (long long)arg2 * arg0[0] + (long long)arg4 * arg0[8]) >> 12);
-    arg1[13] = arg0[13] + (s32)(((long long)arg3 * arg0[5] + (long long)arg2 * arg0[1] + (long long)arg4 * arg0[9]) >> 12);
-    arg1[14] = arg0[14] + (s32)(((long long)arg3 * arg0[6] + (long long)arg2 * arg0[2] + (long long)arg4 * arg0[10]) >> 12);
-    arg1[15] = arg0[15] + (s32)(((long long)arg3 * arg0[7] + (long long)arg2 * arg0[3] + (long long)arg4 * arg0[11]) >> 12);
+    if (src != dst)
+        MTX_Copy43(src, dst);
+    dst[MTX44_TRANS + 0] = src[MTX44_TRANS + 0] + (s32)(((s64)x * src[0] + (s64)y * src[4] + (s64)z * src[8]) >> MTX_FX_SHIFT);
+    dst[MTX44_TRANS + 1] = src[MTX44_TRANS + 1] + (s32)(((s64)x * src[1] + (s64)y * src[5] + (s64)z * src[9]) >> MTX_FX_SHIFT);
+    dst[MTX44_TRANS + 2] = src[MTX44_TRANS + 2] + (s32)(((s64)x * src[2] + (s64)y * src[6] + (s64)z * src[10]) >> MTX_FX_SHIFT);
+    dst[MTX44_TRANS + 3] = src[MTX44_TRANS + 3] + (s32)(((s64)x * src[3] + (s64)y * src[7] + (s64)z * src[11]) >> MTX_FX_SHIFT);
 }
 
 /* Scale the three basis columns of a 4x4 Q12 matrix by (x, y, z) -- that is,
@@ -159,49 +163,156 @@ void MatrixScale44(s32 *src, s32 *dst, s32 x, s32 y, s32 z) {
     }
 }
 
-void func_02001748(void *arg0,void *arg1,void *arg2){Matrix016 tmp;s32 *a=arg0,*b=arg1,*out;s32 u,v,w,t;out=arg2==arg1?tmp.m:arg2;
-{ s32 x,y,z,q;
-x=a[0];y=a[1];z=a[2];q=a[3];
-u=b[0];v=b[4];w=b[8];t=b[12];
-out[0]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[1];v=b[5];w=b[9];t=b[13];
-out[1]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[3];v=b[7];w=b[11];t=b[15];
-out[3]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[2];v=b[6];w=b[10];t=b[14];
-out[2]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-}
-{ s64 x,y,z,q;
-x=a[4];y=a[5];z=a[6];q=a[7];
-out[6]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[1];v=b[5];w=b[9];t=b[13];
-out[5]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[3];v=b[7];w=b[11];t=b[15];
-out[7]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[0];v=b[4];w=b[8];t=b[12];
-out[4]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-}
-{ s64 x,y,z,q;
-x=a[8];y=a[9];z=a[10];q=a[11];
-out[8]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[1];v=b[5];w=b[9];t=b[13];
-out[9]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[3];v=b[7];w=b[11];t=b[15];
-out[11]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[2];v=b[6];w=b[10];t=b[14];
-out[10]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-}
-{ s64 x,y,z,q;
-x=a[12];y=a[13];z=a[14];q=a[15];
-out[14]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[1];v=b[5];w=b[9];t=b[13];
-out[13]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[0];v=b[4];w=b[8];t=b[12];
-out[12]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-u=b[3];v=b[7];w=b[11];t=b[15];
-out[15]=(s32)(((s64)x*u+(s64)y*v+(s64)z*w+(s64)q*t)>>12);
-}
-if(out==tmp.m)*(Matrix016*)arg2=tmp;
+void func_02001748(void *arg0, void *arg1, void *arg2) {
+    Matrix016 tmp;
+    s32 *a = arg0, *b = arg1;
+    s32 *out = arg2 == arg1 ? tmp.m : arg2;
+    s32 b0_1;
+    s32 b0_0;
+    s32 b0_2;
+    s32 b0_3;
+    s32 b1_1;
+    s32 b1_0;
+    s32 b1_2;
+    s32 b1_3;
+    s32 b3_1;
+    s32 b3_0;
+    s32 b3_2;
+    s32 b3_3;
+    s32 b2_1;
+    s32 b2_0;
+    s32 b2_2;
+    s32 b2_3;
+    s32 b5_1;
+    s32 b5_0;
+    s32 b5_2;
+    s32 b5_3;
+    s32 b7_1;
+    s32 b7_0;
+    s32 b7_2;
+    s32 b7_3;
+    s32 b4_1;
+    s32 b4_0;
+    s32 b4_2;
+    s32 b4_3;
+    s32 b9_1;
+    s32 b9_0;
+    s32 b9_2;
+    s32 b9_3;
+    s32 b11_1;
+    s32 b11_0;
+    s32 b11_2;
+    s32 b11_3;
+    s32 b10_1;
+    s32 b10_0;
+    s32 b10_2;
+    s32 b10_3;
+    s32 b13_1;
+    s32 b13_0;
+    s32 b13_2;
+    s32 b13_3;
+    s32 b12_1;
+    s32 b12_0;
+    s32 b12_2;
+    s32 b12_3;
+    s32 b15_1;
+    s32 b15_0;
+    s32 b15_2;
+    s32 b15_3;
+    {
+        s32 a1 = a[1];
+        s32 a0 = a[0];
+        s32 a2 = a[2];
+        s32 a3 = a[3];
+        b0_1 = b[4];
+        b0_0 = b[0];
+        b0_2 = b[8];
+        b0_3 = b[12];
+        out[0] = (s32)(((s64)(s32)a0 * b0_0 + (s64)(s32)a1 * b0_1 + (s64)(s32)a2 * b0_2 + (s64)(s32)a3 * b0_3) >> MTX_FX_SHIFT);
+        b1_1 = b[5];
+        b1_0 = b[1];
+        b1_2 = b[9];
+        b1_3 = b[13];
+        out[1] = (s32)(((s64)(s32)a0 * b1_0 + (s64)(s32)a1 * b1_1 + (s64)(s32)a2 * b1_2 + (s64)(s32)a3 * b1_3) >> MTX_FX_SHIFT);
+        b3_1 = b[7];
+        b3_0 = b[3];
+        b3_2 = b[11];
+        b3_3 = b[15];
+        out[3] = (s32)(((s64)(s32)a0 * b3_0 + (s64)(s32)a1 * b3_1 + (s64)(s32)a2 * b3_2 + (s64)(s32)a3 * b3_3) >> MTX_FX_SHIFT);
+        b2_1 = b[6];
+        b2_0 = b[2];
+        b2_2 = b[10];
+        b2_3 = b[14];
+        out[2] = (s32)(((s64)(s32)a0 * b2_0 + (s64)(s32)a1 * b2_1 + (s64)(s32)a2 * b2_2 + (s64)(s32)a3 * b2_3) >> MTX_FX_SHIFT);
+    }
+    {
+        s64 a1 = a[5];
+        s64 a0 = a[4];
+        s64 a2 = a[6];
+        s64 a3 = a[7];
+        out[6] = (s32)(((s64)a0 * (s64)b2_0 + (s64)a1 * (s64)b2_1 + (s64)a2 * (s64)b2_2 + (s64)a3 * (s64)b2_3) >> MTX_FX_SHIFT);
+        b5_1 = b[5];
+        b5_0 = b[1];
+        b5_2 = b[9];
+        b5_3 = b[13];
+        out[5] = (s32)(((s64)(s32)a0 * b5_0 + (s64)(s32)a1 * b5_1 + (s64)(s32)a2 * b5_2 + (s64)(s32)a3 * b5_3) >> MTX_FX_SHIFT);
+        b7_1 = b[7];
+        b7_0 = b[3];
+        b7_2 = b[11];
+        b7_3 = b[15];
+        out[7] = (s32)(((s64)(s32)a0 * b7_0 + (s64)(s32)a1 * b7_1 + (s64)(s32)a2 * b7_2 + (s64)(s32)a3 * b7_3) >> MTX_FX_SHIFT);
+        b4_1 = b[4];
+        b4_0 = b[0];
+        b4_2 = b[8];
+        b4_3 = b[12];
+        out[4] = (s32)(((s64)(s32)a0 * b4_0 + (s64)(s32)a1 * b4_1 + (s64)(s32)a2 * b4_2 + (s64)(s32)a3 * b4_3) >> MTX_FX_SHIFT);
+    }
+    {
+        s64 a1 = a[9];
+        s64 a0 = a[8];
+        s64 a2 = a[10];
+        s64 a3 = a[11];
+        out[8] = (s32)(((s64)a0 * (s64)b4_0 + (s64)a1 * (s64)b4_1 + (s64)a2 * (s64)b4_2 + (s64)a3 * (s64)b4_3) >> MTX_FX_SHIFT);
+        b9_1 = b[5];
+        b9_0 = b[1];
+        b9_2 = b[9];
+        b9_3 = b[13];
+        out[9] = (s32)(((s64)(s32)a0 * b9_0 + (s64)a1 * (s64)b9_1 + (s64)(s32)a2 * b9_2 + (s64)(s32)a3 * b9_3) >> MTX_FX_SHIFT);
+        b11_1 = b[7];
+        b11_0 = b[3];
+        b11_2 = b[11];
+        b11_3 = b[15];
+        out[11] = (s32)(((s64)(s32)a0 * b11_0 + (s64)a1 * (s64)b11_1 + (s64)(s32)a2 * b11_2 + (s64)(s32)a3 * b11_3) >> MTX_FX_SHIFT);
+        b10_1 = b[6];
+        b10_0 = b[2];
+        b10_2 = b[10];
+        b10_3 = b[14];
+        out[10] = (s32)(((s64)(s32)a0 * b10_0 + (s64)a1 * (s64)b10_1 + (s64)(s32)a2 * b10_2 + (s64)(s32)a3 * b10_3) >> MTX_FX_SHIFT);
+    }
+    {
+        s64 a1 = a[13];
+        s64 a0 = a[12];
+        s64 a2 = a[14];
+        s64 a3 = a[15];
+        out[14] = (s32)(((s64)(s32)a0 * b10_0 + (s64)(s32)a1 * b10_1 + (s64)(s32)a2 * b10_2 + (s64)(s32)a3 * b10_3) >> MTX_FX_SHIFT);
+        b13_1 = b[5];
+        b13_0 = b[1];
+        b13_2 = b[9];
+        b13_3 = b[13];
+        out[13] = (s32)(((s64)a0 * (s64)b13_0 + (s64)a1 * (s64)b13_1 + (s64)a2 * (s64)b13_2 + (s64)a3 * (s64)b13_3) >> MTX_FX_SHIFT);
+        b12_1 = b[4];
+        b12_0 = b[0];
+        b12_2 = b[8];
+        b12_3 = b[12];
+        out[12] = (s32)(((s64)a0 * (s64)b12_0 + (s64)a1 * (s64)b12_1 + (s64)a2 * (s64)b12_2 + (s64)a3 * (s64)b12_3) >> MTX_FX_SHIFT);
+        b15_1 = b[7];
+        b15_0 = b[3];
+        b15_2 = b[11];
+        b15_3 = b[15];
+        out[15] = (s32)(((s64)a0 * (s64)b15_0 + (s64)a1 * (s64)b15_1 + (s64)a2 * (s64)b15_2 + (s64)a3 * (s64)b15_3) >> MTX_FX_SHIFT);
+    }
+    if (out == tmp.m)
+        *(Matrix016 *)arg2 = tmp;
 }
 
 u64 func_02001fd4(void);

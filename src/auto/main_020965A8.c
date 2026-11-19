@@ -11,16 +11,20 @@ static inline u32 MinUnitResource(u32 a,u32 b) { if(a<=b)b=a;return b; }
 /* The word at a player record's +0x6C (PLAYER_REC_SPRITE): low byte the player's army id. */
 typedef struct { u32 armyId:8; u32 rest:24; } PlayerSpriteWord;
 
+#pragma opt_strength_reduction off
 s32 FindNearestFreeCell(void *arg0, s16 *arg1, s32 arg2) {
-    M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern s32 *data_027e0058;
+    void FloodFillUnitRange(s32, s32, u8, s32, s32);
     extern s32 gFrameCounter;
-
-    u8 *node = (u8 *)arg0;
-    s32 gen = gFrameCounter;
-    s32 found = 0;
-    s32 threshold = 0x7fff;
+    extern s32 *gCurrentMap;
+    u8 *node = arg0;
     s16 *out = arg1;
+    s32 best, gen, found;
+    s32 y;
+    s32 x;
+
+    gen = gFrameCounter;
+    best = 0x7fff;
+    found = 0;
 
     if (node[3] & 8) {
     node_search:
@@ -32,61 +36,22 @@ s32 FindNearestFreeCell(void *arg0, s16 *arg1, s32 arg2) {
     }
 
     FloodFillUnitRange(node[0], node[1], node[2], 0x6e, 0);
-
-    {
-        void *base = (void *)*data_027e0058;
-        s32 row = 0;
-        s32 col;
-        s32 inner_count;
-        u16 outer_count = *(u16 *)((u8 *)base + 0x5146);
-
-        if (outer_count <= 0) goto done;
-
-    outer_loop:
-        if (row >= (s32)*(u16 *)((u8 *)base + 0x5146)) goto done;
-        base = (void *)*data_027e0058;
-        inner_count = (s32)*(u16 *)((u8 *)base + 0x5144);
-        col = 0;
-        if (inner_count <= 0) goto outer_next;
-
-    inner_loop:
-        if (col >= inner_count) goto outer_next;
-        {
-            s8 cand = ((s8 **)((u8 *)base + (row << 2) + 0x52e8))[0][col];
-            if (cand < 0) goto skip_col;
-            {
-                u16 rtab = *(u16 *)((u8 *)base + (row << 1) + 0x3758);
-                u8 cond = *((u8 *)base + col + rtab + 0x508);
-                if (cond != 0) goto skip_col;
-                if (threshold < cand) goto skip_col;
-                if (threshold == cand) {
-                    gen += 1;
-                    if (gen & 1) goto skip_col;
-                }
-                out[0] = (s16)col;
-                out[1] = (s16)row;
-                found = 1;
-                base = (void *)*data_027e0058;
-                threshold = ((s8 **)((u8 *)base + (row << 2) + 0x52e8))[0][col];
-                inner_count = (s32)*(u16 *)((u8 *)base + 0x5144);
-                col += 1;
-                goto inner_loop;
-            }
+    for (y = 0; y < *(u16 *)(((u8 *)*gCurrentMap) + MAP_HEIGHT); y++) {
+        for (x = 0; x < *(u16 *)(((u8 *)*gCurrentMap) + MAP_WIDTH); x++) {
+            s8 cand = (*(s8 **)(((u8 *)*gCurrentMap) + MAP_GRID + y * 4))[x];
+            if (cand < 0) continue;
+            if (((u8 *)*gCurrentMap)[x + *(u16 *)(((u8 *)*gCurrentMap) + MAP_ROW_OFFSETS + y * 2) + 0x508]) continue;
+            if (best < cand) continue;
+            if (best == cand && (++gen & 1)) continue;
+            out[0] = x;
+            out[1] = y;
+            found = 1;
+            best = (*(s8 **)(((u8 *)*gCurrentMap) + MAP_GRID + y * 4))[x];
         }
-    skip_col:
-        col += 1;
-        goto inner_loop;
-
-    outer_next:
-        row += 1;
-        base = (void *)*data_027e0058;
-        goto outer_loop;
     }
-
-done:
     return found;
 }
-
+#pragma opt_strength_reduction reset
 /* Place a map's units from its deployment ("dispos") file: each 16-byte entry
  * gives one unit's tile, kind, owner and starting state.  An entry at 0xfe
  * selects the player the following entries belong to (and resets the ids the
@@ -165,7 +130,7 @@ void func_02096b88(void) {
  * every active teammate's units into the first active opponent's opposing-unit
  * total, refresh each teammate's record, then finish the view update. */
 void UpdateTeamRecords(s32 player, M2C_UNK flags) {
-    M2C_UNK func_020c9b70();
+    M2C_UNK EnterBattleEnd();
     M2C_UNK MarkPlayerDefeated(s32, M2C_UNK);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32, s32);
@@ -204,5 +169,5 @@ loop_1:
         mate += 1;
         offset += MAP_PLAYER_STRIDE;
     } while (mate < 5);
-    func_020c9b70();
+    EnterBattleEnd();
 }

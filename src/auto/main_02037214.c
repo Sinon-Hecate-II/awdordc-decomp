@@ -15,8 +15,8 @@ return data_0213d1e0[0]>>32;
 
 /* Returns the current state code, exposing its param through outParam and a derived type through outType. */
 #pragma opt_propagation off
-s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
- extern s8 *data_020fba88;
+s32 Base64EncodeUrl(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
+ extern s8 *gBase64AlphabetUrl;
  void MI_CpuFill8(void *,s32,s32);
  void MI_CpuCopy8(void *,void *,u32);
  u32 extra,total;
@@ -39,10 +39,10 @@ s32 func_02037214(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  if(n>=3)n=3;
  MI_CpuFill8(buf,0,3);
  MI_CpuCopy8(src,buf,n);
- dst[0]=data_020fba88[buf[0]>>2];
- if(count<2)c=42;else {a=buf[0];b=buf[1];c=data_020fba88[((a<<4)&63)|(b>>4)];}dst[1]=c;
- if(count<3)c=42;else {a=buf[1];b=buf[2];c=data_020fba88[((a<<2)&63)|(b>>6)];}dst[2]=c;
- if(count<4)c=42;else {a=buf[2];c=data_020fba88[a&63];}
+ dst[0]=gBase64AlphabetUrl[buf[0]>>2];
+ if(count<2)c=42;else {a=buf[0];b=buf[1];c=gBase64AlphabetUrl[((a<<4)&63)|(b>>4)];}dst[1]=c;
+ if(count<3)c=42;else {a=buf[1];b=buf[2];c=gBase64AlphabetUrl[((a<<2)&63)|(b>>6)];}dst[2]=c;
+ if(count<4)c=42;else {a=buf[2];c=gBase64AlphabetUrl[a&63];}
  src+=n;dst[3]=c;dst+=4;
  }
  return dst-arg2;
@@ -402,16 +402,16 @@ s32 GetNetConnectionStatus(void) {
 }
 
 void func_02037abc(void) {
-extern void *gWfcConnection;s32 func_0202f28c(void);void SleepMilliseconds(s32);
+extern void *gWfcConnection;s32 Wfc_EndSession(void);void SleepMilliseconds(s32);
 if(!gWfcConnection)return;
 if(M2C_FIELD(gWfcConnection,u16 *,4)==1){gWfcConnection=0;return;}
-while(!func_0202f28c())SleepMilliseconds(10);
+while(!Wfc_EndSession())SleepMilliseconds(10);
 gWfcConnection=0;
 }
 
 s32 func_02037b1c(void) {
     extern void *gWfcConnection;
-    s32 func_0202f28c(void);
+    s32 Wfc_EndSession(void);
     s32 dummy = 0;
     (void)dummy;
     if (!gWfcConnection) return 1;
@@ -421,7 +421,7 @@ s32 func_02037b1c(void) {
         return 1;
     }
     M2C_FIELD(gWfcConnection, u16 *, 4) = 5;
-    if (!func_0202f28c()) return 0;
+    if (!Wfc_EndSession()) return 0;
     gWfcConnection = 0;
     return 1;
 }
@@ -496,19 +496,26 @@ s32 GetLastNasError(void) {
     return gNasConnection;
 }
 
-s32 GetServerTime(s32 a,s32 b){
-extern s32 gServerTimeSync;extern s64 gServerTimeNow,gServerTimeOffset;
-s32 GetLocalTime(s32,s32);s64 MakeTime(s32,s32);void func_0200f9c4(s32,s32);
-s64 t,d;
-if(!gServerTimeSync)return 0;
-if(GetLocalTime(a,b))return 0;
-t=MakeTime(a,b);if(t==-1)return 0;
-if(t<gServerTimeNow)t+=0xbc191380LL;
-d=t-gServerTimeOffset;
-if(d<0 || d>0xbc19137fLL)return 0;
-func_0200f9c4(a,b);
-(void)t;
-return 1;
+/* Fills `date` (year, month, day, ...) and `time` (hour, minute, second) with the
+ * server clock, corrected for the local clock's offset.  Returns 0 when the server
+ * time is unknown or is more than one RTC century away from the local clock. */
+s32 GetServerTime(s32 *date, s32 *time) {
+    extern s32 gServerTimeSync;
+    extern s64 gServerTimeNow, gServerTimeOffset;
+    s32 GetLocalTime(void *, void *);
+    s64 MakeTime(void *, void *);
+    void RtcSecondsToDateTime(void *, s32 *, s64);
+    s64 serverTime, elapsed;
+    if (!gServerTimeSync) return 0;
+    if (GetLocalTime(date, time)) return 0;
+    serverTime = MakeTime(date, time);
+    if (serverTime == -1) return 0;
+    /* A date before the local clock means the RTC wrapped into the next century. */
+    if (serverTime < gServerTimeNow) serverTime += SERVER_TIME_SPAN_SECONDS;
+    elapsed = serverTime - gServerTimeOffset;
+    if (elapsed < 0 || elapsed > SERVER_TIME_SPAN_LAST) return 0;
+    RtcSecondsToDateTime((void *)date, time, elapsed);
+    return 1;
 }
 
 M2C_UNK FormatKeyValue(s32 a,s32 b,s32 c,s32 d){

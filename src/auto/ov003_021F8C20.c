@@ -328,7 +328,7 @@ void func_ov003_021f92f4(void *obj) {
         func_020cf278(id);
         if((u32)id>=225 && (u32)id<425 && func_ov003_021f2654() && !func_ov003_021f400c() && !func_020a8ef8(id)) {
             M2C_FIELD(obj,u8 *,0x39)|=0x80;
-            func_020c83f4(GetCampaignMapHeader(id-225));
+            ApplyMapHeader(GetCampaignMapHeader(id-225));
         } else LoadBattleMap(id);
     }
     M2C_FIELD(obj,u16 *,0x40)=M2C_FIELD(*gCurrentMap,u16 *,0x5144)*4;

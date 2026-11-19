@@ -139,9 +139,9 @@ return FileRead(root+52,b,n);
 
 void func_0202c424(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
 
-s32 func_0202c444(u32 a) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
+s32 GetLoadedArchiveFile(u32 a) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
 
-s32 func_0202c46c(s32 a,s32 b) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
+s32 SetLoadedArchiveFile(s32 a,s32 b) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84)+a*16;M2C_FIELD(p,s32 *,20)=b;return (s32)p;}
 
 void func_0202c488(M2C_UNK arg0, M2C_UNK arg1, void *arg2) {
     M2C_FIELD(arg2, s32 *, 0x8C) = 0;
@@ -179,7 +179,7 @@ u32 Sound_CreateHeap(s32 arg0, s32 arg1) {
     return 0U;
 }
 
-void func_0202c51c(s32 *arg0) {
+void Sound_DestroyHeap(s32 *arg0) {
     M2C_UNK func_0202a670(s32);
     M2C_UNK Sound_FreeAllBlocks();
     Sound_FreeAllBlocks();
@@ -348,7 +348,7 @@ void *p=func_0202c03c(a);s32 r;
 if(!p)return 2;
 r=LoadSoundBank(M2C_FIELD(p,u16 *,4),flags,b,c,0);if(r)return r;
 a=M2C_FIELD(p,s32 *,0);
-if(flags&1){r=func_0202cd0c(a,b,c);if(!r)return 6;}else r=func_0202c444(a);
+if(flags&1){r=func_0202cd0c(a,b,c);if(!r)return 6;}else r=GetLoadedArchiveFile(a);
 if(out)*out=r;return 0;
 }
 
@@ -357,7 +357,7 @@ s32 func_0202cd78(s32,s32,s32);
 void *p=func_0202c0a0(a);s32 r;
 if(!p)return 3;
 a=M2C_FIELD(p,s32 *,0);
-if(flags&8){r=func_0202cd78(a,b,c);if(!r)return 7;}else r=func_0202c444(a);
+if(flags&8){r=func_0202cd78(a,b,c);if(!r)return 7;}else r=GetLoadedArchiveFile(a);
 if(out)*(s32 *)out=r;return 0;
 }
 
@@ -370,7 +370,7 @@ s32 func_0202cde4(s32,s32,s32);s32 LoadBankWaveArchiveEntries(s32,s32,s32,s32,s3
 void *bankRecord;void *waveRecord;s32 bank;s32 i;s32 loadWaveArchives;s32 result;s32 waveObject;
 bankRecord=GetSoundBankRecord(bankId);if(!bankRecord)return 4;
 if(flags&2){bank=func_0202cde4(M2C_FIELD(bankRecord,s32 *,0),pool,create);if(!bank)return 8;}
-else bank=func_0202c444(M2C_FIELD(bankRecord,u32 *,0));
+else bank=GetLoadedArchiveFile(M2C_FIELD(bankRecord,u32 *,0));
 loadWaveArchives=flags&4;
 for(i=0;i<4;i++){
 if(((u16 *)bankRecord)[i+2]==SOUND_FILE_NONE)continue;
@@ -385,12 +385,16 @@ if(out)*(s32 *)out=bank;
 return 0;
 }
 
-s32 LoadWaveArchive(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
-s32 func_0202ce50(u32,s32,s32);s32 func_0202cebc(u32,s32,s32);
-Unk0202PackedId *p=GetWaveArchiveRecord(a);s32 r;
-if(!p)return 5;
-if(flags&4){if(p->flags&1)r=func_0202cebc(p->id,b,c);else r=func_0202ce50(p->id,b,c);if(!r)return 9;}else r=func_0202c444(p->id);
-if(out)*out=r;return 0;
+/* Loads the wave archive named by the packed record for waveArchiveId: either
+ * from its file (rebuilding the entry table when the record says it has one)
+ * or from the already loaded files. Stores the archive in *out when out is set.
+ * Returns 0 on success, 5 for a missing record, 9 when the load fails. */
+s32 LoadWaveArchive(s32 waveArchiveId,s32 flags,s32 pool,s32 create,s32 *out) {
+s32 LoadWaveArchiveFile(u32,s32,s32);s32 LoadWaveArchiveFileWithEntryTable(u32,s32,s32);
+Unk0202PackedId *record=GetWaveArchiveRecord(waveArchiveId);s32 result;
+if(!record)return 5;
+if(flags&SOUND_LOAD_WAVE_ARCHIVE){if(record->flags&SOUND_RECORD_WAVE_ENTRY_TABLE)result=LoadWaveArchiveFileWithEntryTable(record->id,pool,create);else result=LoadWaveArchiveFile(record->id,pool,create);if(!result)return 9;}else result=GetLoadedArchiveFile(record->id);
+if(out)*out=result;return 0;
 }
 
 /* Loads sound-archive file `fileId` into a fresh block of `pool` (allocated with
@@ -411,14 +415,14 @@ s32 Sound_LoadArchiveFile(s32 fileId, M2C_UNK *freeCallback, s32 freeArg, s32 fr
 }
 
 s32 func_0202cd0c(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    s32 func_0202c444();
-    M2C_UNK func_0202c46c(M2C_UNK, s32);
+    s32 GetLoadedArchiveFile();
+    M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d01c;
     s32 var_r2;
     s32 var_r4;
 
-    var_r4 = func_0202c444();
+    var_r4 = GetLoadedArchiveFile();
     if (var_r4 == 0) {
         if (arg2 == 0) {
             var_r2 = 0;
@@ -427,7 +431,7 @@ s32 func_0202cd0c(M2C_UNK arg0, s32 arg1, s32 arg2) {
         }
         var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d01c, var_r2, arg0, arg1);
         if ((arg2 != 0) && (var_r4 != 0)) {
-            func_0202c46c(arg0, var_r4);
+            SetLoadedArchiveFile(arg0, var_r4);
         }
     }
     return var_r4;

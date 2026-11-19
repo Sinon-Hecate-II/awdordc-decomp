@@ -6,12 +6,12 @@ void *GetConnection(void);
 /* Decide how to answer an incoming join request from peer (payload b/c,
  * mode d, force e) for the current session, returning the reply code. */
 s32 ConnectionHandleJoin(s32 peer, s32 b, s32 c, s32 mode, s32 force) {
-s32 func_0204e364(s32,s32); s32 IsConnectionMember(s32); void Qr2_StateChanged(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
+s32 HasBuddyProfile(s32,s32); s32 IsConnectionMember(s32); void Qr2_StateChanged(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
 extern u8 gConnectionMgr[];
 s32 result; void *session;
 switch(M2C_FIELD(GetConnection(),u8*,0x15)) {
 case 1:
- if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
+ if(!HasBuddyProfile(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
  if(!IsConnectionMember(peer)){result=3;break;}
 case 0:
  if(mode!=M2C_FIELD(GetConnection(),u8*,0x15) || M2C_FIELD(GetConnection(),u8*,0x1a9)!=0 || (session=GetConnection(), M2C_FIELD(session,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16)) || (M2C_FIELD(GetConnection(),u8*,0x17)!=0 && (session=GetConnection(), M2C_FIELD(session,s32*,0x20)==M2C_FIELD(GetConnection(),s32*,0x200)))) {
@@ -33,7 +33,7 @@ case 0:
  }else result=2;
  break;
 case 2:
- if(!func_0204e364(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
+ if(!HasBuddyProfile(M2C_FIELD(GetConnection(),s32*,0),peer)){result=255;break;}
  if(mode!=3 || (session=GetConnection(), M2C_FIELD(session,u8*,0x14)==M2C_FIELD(GetConnection(),u8*,0x16))){result=3;break;}
  if(gConnectionMgr[0x1c]==1 && gConnectionMgr[0x1d]==1){result=19;break;}
  if(!(M2C_FIELD(GetConnection(),s32*,0x1a0)==10 && (M2C_FIELD(GetConnection(),s32*,0x1c)!=0 || M2C_FIELD(GetConnection(),u16*,0x1a)!=0)) || (b==0 && c==0)){result=4;break;}
@@ -93,8 +93,8 @@ M2C_FIELD(GetConnection(),s32 *,0x34c)=arg0;
 }
 
 void func_0204084c(s32 arg0) {
-void ReportConnectionStatusResult(s32); void func_02043008(s32); void *GetConnection(void);
-if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { func_02043008(arg0); return; }
+void ReportConnectionStatusResult(s32); void ReportMatchmakingResult(s32); void *GetConnection(void);
+if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { ReportMatchmakingResult(arg0); return; }
 ReportConnectionStatusResult(arg0);
 }
 
@@ -163,7 +163,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 func_0204e2f4(void **, s32, s32 *);
     s32 gpGetBuddyStatus(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
-    s32 func_0206abd8(void *, s32, s32);
+    s32 strtoul(void *, s32, s32);
     s32 GetLocalPlayerInfo(void);
     s32 func_02032398(void *);
     u64 GetSystemTick(void);
@@ -241,10 +241,10 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
         if (!(verLen > 0 && fmeLen > 0 && mdfLen > 0)) {
             continue;
         }
-        if (func_0206abd8(&fields[3], 0, 10) != 3) {
+        if (strtoul(&fields[3], 0, 10) != 3) {
             continue;
         }
-        if (func_0206abd8(&fields[2], 0, 10) != M2C_FIELD(GetConnection(), u8 *, 0x16)) {
+        if (strtoul(&fields[2], 0, 10) != M2C_FIELD(GetConnection(), u8 *, 0x16)) {
             continue;
         }
         if (peerId == preferredPeer) {
@@ -261,14 +261,14 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
    (mode 3).  Returns 0 when the step failed, 1 otherwise. */
 s32 StartConnection(M2C_UNK preferredPeer) {
  void *GetConnection(); unsigned long long GetSystemTick(); s32 SendMatchmakingParameter(); s32 TryConnectToPeer(); M2C_UNK SetConnectionState(M2C_UNK); M2C_UNK ReportConnectionError(M2C_UNK,s32);
- void func_02043008(s32); void *p;
+ void ReportMatchmakingResult(s32); void *p;
  M2C_FIELD(GetConnection(),s32*,CONN_SESSION_SELF_ID)=0;
  M2C_FIELD(GetConnection(),s32*,CONN_SESSION_JOIN_PEER)=0;
  M2C_FIELD(GetConnection(),u8*,0x1a7)=0;
  p=GetConnection();
  M2C_FIELD(p,unsigned long long*,CONN_SESSION_ATTEMPT_TICK)=GetSystemTick();
  if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0) {
- SetConnectionState(3); SendMatchmakingParameter(0); if(((s32 (*)())func_02043008)())return 0;
+ SetConnectionState(3); SendMatchmakingParameter(0); if(((s32 (*)())ReportMatchmakingResult)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1) {
  TryConnectToPeer(0,0,preferredPeer); if(((s32 (*)())func_0204084c)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==3) {
@@ -298,7 +298,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     M2C_UNK func_02041dd4(M2C_UNK);
     s32 SendPeerSyncNotice(s32, M2C_UNK);
     void Qr2_StateChanged(s32);
-    M2C_UNK func_0205df50(s32);
+    M2C_UNK NatNeg_ReleasePeer(s32);
     M2C_UNK SetConnectionState(M2C_UNK);
     void *GetConnection(void);
     s32 var_r4;
@@ -322,7 +322,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
         }
         M2C_FIELD(GetConnection(), u8 *, 0x3CC) = 0xFF;
         if (M2C_FIELD(GetConnection(), s32 *, 0x19C) != 0) {
-            func_0205df50(M2C_FIELD(GetConnection(), s32 *, 0x19C));
+            NatNeg_ReleasePeer(M2C_FIELD(GetConnection(), s32 *, 0x19C));
             M2C_FIELD(GetConnection(), s32 *, 0x19C) = 0;
         }
         temp_r6 = GetConnection();
@@ -385,7 +385,7 @@ s32 RestartConnection(void) {
     M2C_UNK ReconnectUnlessServing();
     M2C_UNK CloseGt2Connection();
     M2C_UNK SetConnectionState(M2C_UNK);
-    M2C_UNK func_0205df50(s32);
+    M2C_UNK NatNeg_ReleasePeer(s32);
     s32 result;
     void *conn;
 
@@ -401,7 +401,7 @@ s32 RestartConnection(void) {
     M2C_FIELD(conn, u8 *, CONN_SESSION_SLOT) = (u8) M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT);
     M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SELF_ID) = 0;
     if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) != 0) {
-        func_0205df50(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
+        NatNeg_ReleasePeer(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG));
         M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_NATNEG) = 0;
     }
     if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {

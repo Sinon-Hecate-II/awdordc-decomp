@@ -360,7 +360,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
 }
 
 void func_0207ab24(s32 arg0, s32 arg1) {
- M2C_UNK func_0207ab84(s32,s32,u8);
+ M2C_UNK SetPropertyOwnerTile(s32,s32,u8);
  M2C_UNK RefreshMapView(void);
  M2C_UNK func_020cf2c8(void);
  M2C_UNK func_020d2470(void);
@@ -374,34 +374,39 @@ void func_0207ab24(s32 arg0, s32 arg1) {
  temp_ip = arg0 + M2C_FIELD((u8 *)temp_r3 + arg1*2,u16 *,0x3758);
  temp_r3_2 = M2C_FIELD(temp_r3,u16 *,0x52a6) + (temp_lr[temp_ip] & 0x1f);
  temp_lr[temp_ip] = temp_r3_2;
- func_0207ab84(arg0,arg1,(u8)(temp_r3_2 & 0xe0));
+ SetPropertyOwnerTile(arg0,arg1,(u8)(temp_r3_2 & 0xe0));
  RefreshMapView();
  func_020cf2c8();
  func_020d2470();
 }
 
-s32 func_0207ab84(s32 arg0, s32 arg1, u8 arg2) {
- extern u16 gPropertyTileIds[];
- extern void *data_027e0058;
- s32 i=0;
- s32 base;
- u16 value;
- void *p;
- if(gPropertyTileIds[0] != 0xffff) {
-  p=M2C_FIELD(data_027e0058,void **,0);
-  value=M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10);
-  do {
-   if(gPropertyTileIds[i] != value) {
-    i++;
-   } else {
-    break;
-   }
-  } while(gPropertyTileIds[i] != 0xffff);
- }
- p=M2C_FIELD(data_027e0058,void **,0);
- base=(i/5)*5;
- M2C_FIELD((u8 *)p+2*(arg0+M2C_FIELD((u8 *)p+arg1*2,u16 *,0x3758)),u16 *,0xa10)=gPropertyTileIds[base+(arg2>>5)];
- return (s16)base;
+/* Recolour the property at (x, y) for a new owner: find which row of
+ * gPropertyTileIds holds the cell's current tile and give the cell that row's
+ * tile for owner, whose bits are the packed MAP_TERRAIN_OWNER_MASK ones.  Returns
+ * the row's first index, 0 when the cell holds no property tile. */
+s32 SetPropertyOwnerTile(s32 x, s32 y, u8 owner)
+{
+    extern u16 gPropertyTileIds[];
+    extern void *gCurrentMap;
+    s32 i = 0;
+    s32 rowStart;
+    void *map;
+    u16 tile;
+    if (gPropertyTileIds[0] != MAP_PROPERTY_TILE_NONE) {
+        map = M2C_FIELD(gCurrentMap, void **, 0);
+        tile = M2C_FIELD((u8 *)map + 2 * (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u16 *, MAP_CELL_TILE_ID);
+        do {
+            u16 candidate = gPropertyTileIds[i];
+            if (candidate == tile)
+                break;
+            ++i;
+        } while (gPropertyTileIds[i] != MAP_PROPERTY_TILE_NONE);
+    }
+    map = M2C_FIELD(gCurrentMap, void **, 0);
+    rowStart = (i / MAP_PROPERTY_TILE_OWNERS) * MAP_PROPERTY_TILE_OWNERS;
+    M2C_FIELD((u8 *)map + 2 * (x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)), u16 *, MAP_CELL_TILE_ID) =
+        gPropertyTileIds[rowStart + (owner >> MAP_PROPERTY_TILE_OWNER_SHIFT)];
+    return (s16)rowStart;
 }
 
 /* Rewrite a property cell's tile for a new owner: when the cell shows a

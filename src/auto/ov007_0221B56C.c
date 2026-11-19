@@ -233,19 +233,34 @@ s32 MapEditor_GetUnitStateAt(s32 a,s32 b) {
  return (u32)(M2C_FIELD(p+id*14,u8 *,0x59AF)<<28)>>28;
 }
 
-void CopyUnitGroup(u8 *a,s32 b) {
- extern s32 *gCurrentMap;
- u8 *d=(u8 *)(*gCurrentMap+0x59A4+((b-1)<<6)*14);
- s32 i=0;
- do {
- u8 *s=a; u8 *t=d; u32 x,y;
- *d=*a; a+=14; d+=14; i++;
- t[1]=s[1];t[2]=s[2];
- M2C_FIELD(t,u16 *,4)=M2C_FIELD(s,u16 *,4);
- M2C_FIELD(t,u16 *,6)=M2C_FIELD(s,u16 *,6);
- M2C_FIELD(t,u16 *,8)=M2C_FIELD(s,u16 *,8);
- t[10]=s[10];t[11]=s[11];x=((volatile u8 *)s)[12];y=((volatile u8 *)s)[13];t[12]=x;t[13]=y;
- }while(i<64);
+/* Copies the 64 unit records of a stashed unit group back into the map's group
+ * `group` (1..4), field by field apart from the record's +0x03 byte. */
+void CopyUnitGroup(u8 *source, s32 group) {
+    extern s32 *gCurrentMap;
+    u8 *dest = (u8 *)(*gCurrentMap + MAP_UNIT_RECORDS + ((group - 1) << 6) * MAP_UNIT_STRIDE);
+    s32 i = 0;
+
+    do {
+        u8 *s = source;
+        u8 *t = dest;
+        u32 first, next;
+
+        *dest = *source;
+        source += MAP_UNIT_STRIDE;
+        dest += MAP_UNIT_STRIDE;
+        i++;
+        t[MAP_UNIT_X] = s[MAP_UNIT_X];
+        t[MAP_UNIT_Y] = s[MAP_UNIT_Y];
+        M2C_FIELD(t, u16 *, MAP_UNIT_FLAGS) = M2C_FIELD(s, u16 *, MAP_UNIT_FLAGS);
+        M2C_FIELD(t, u16 *, MAP_UNIT_HEALTH) = M2C_FIELD(s, u16 *, MAP_UNIT_HEALTH);
+        M2C_FIELD(t, u16 *, MAP_UNIT_TARGET) = M2C_FIELD(s, u16 *, MAP_UNIT_TARGET);
+        t[MAP_UNIT_FUEL] = s[MAP_UNIT_FUEL];
+        t[MAP_UNIT_AI_STATE] = s[MAP_UNIT_AI_STATE];
+        first = ((volatile u8 *)s)[MAP_UNIT_FIRST_CARRIED];
+        next = ((volatile u8 *)s)[MAP_UNIT_NEXT_CARRIED];
+        t[MAP_UNIT_FIRST_CARRIED] = first;
+        t[MAP_UNIT_NEXT_CARRIED] = next;
+    } while (i < 64);
 }
 
 /* Rearrange the map's four groups of 64 unit records: the group each parameter
@@ -350,14 +365,18 @@ loop_1:
     goto loop_1;
 }
 
-void func_ov007_0221c2b0(void *a) {
+/* Initialises the map-start panel for the map about to be played: shows the
+ * status message for a replay of the last campaign map (0x4600000C), for a map
+ * with two or more players (0x46000008) or for a single-player map (0x46000009),
+ * then records the current map id in the panel and clears its campaign flag. */
+void MapStart_InitState(void *state) {
  extern s32 *gCurrentMap;
- s32 func_020c8054(s32); s32 func_ov007_0221216c(s32); void SetUiMessageText(u32);
- if(func_020c8054(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))SetUiMessageText(0x4600000C);
- else if(func_ov007_0221216c(-1))SetUiMessageText(0x46000008);
+ s32 IsLastCampaignMap(s32); s32 MapEditor_PlayerHasTeam(s32); void SetUiMessageText(u32);
+ if(IsLastCampaignMap(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))SetUiMessageText(0x4600000C);
+ else if(MapEditor_PlayerHasTeam(-1))SetUiMessageText(0x46000008);
  else SetUiMessageText(0x46000009);
- M2C_FIELD(a,s32 *,0x5C)=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
- M2C_FIELD(a,u16 *,0x6C)=0;
+ M2C_FIELD(state,s32 *,0x5C)=M2C_FIELD(*gCurrentMap,u16 *,MAP_ID);
+ M2C_FIELD(state,u16 *,0x6C)=0;
 }
 
 /* Prepare the next map once any menu/transition object is gone: compact the

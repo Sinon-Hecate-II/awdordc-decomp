@@ -151,13 +151,14 @@ typedef struct DirectionMarker {
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
 #define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
 #define MAP_VIEW_Y          0x514a /* s16 view scroll y, in 1/16-cell units */
+#define MAPVIEW_SCROLL_DONE 0x001C /* callback invoked when map-view scrolling finishes */
 #define MAP_VIEW_WIDTH_CELLS  0x6f04 /* u8 width of the visible view in map cells */
 #define MAP_VIEW_HEIGHT_CELLS 0x6f05 /* u8 height of the visible view in map cells */
 #define MAP_VIEW_MARGIN       16   /* 1/16-cell units in one cell: border kept around a followed point */
 #define MAP_VIEW_NO_SCROLL    10000 /* s16 sentinel: this axis does not need to scroll */
 #define MAP_VIEW_CELL_X     0x5150 /* s16 view scroll x, in whole cells (MAP_VIEW_X / 16) */
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
-#define MAP_VIEW_SCROLL_STATE 0x5154 /* u8 map-view scroll flags; the low nibble is nonzero while a scroll runs (func_020d4dd0) */
+#define MAP_VIEW_SCROLL_STATE 0x5154 /* u8 map-view scroll flags; the low nibble is nonzero while a scroll runs (IsMapCursorIdle) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 /* Inside the map view block (MAP_VIEW_ZOOM is its base): the Q12 matrix the view
  * projects a point with, and the world origin a projected point is relative to. */
@@ -167,11 +168,26 @@ typedef struct DirectionMarker {
 #define MAP_FOG             0x5156 /* u8 nonzero when fog of war hides distant units */
 /* Values stored in the map's weather fields. */
 enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM = 3 };
+#define WEATHER_OPTION_RANDOM 4 /* the weather menu's random option: clear weather in auto-change mode */
 #define MAP_WEATHER         0x5158 /* u8 current weather (0 clear, 1 rain, 2 snow, 3 sandstorm) */
 #define MAP_WEATHER_MODE    0x5159 /* u8 nonzero when the weather may change by itself */
 #define MAP_WEATHER_START   0x515a /* u8 weather when the battle starts */
 #define MAP_WEATHER_RESET   0x515b /* u8 weather the battle returns to after a change */
 #define MAP_WEATHER_DELAY   0x515c /* u8[4] per-player turns left before the weather may change again */
+
+/* The map view's per-frame highlight state (gMapHighlightState, 24 bytes): the height
+ * the wave-animated cells are raised by, the property owner-colour pulse, the
+ * frame index of the highlighted unit's flash colours, the map's polygon
+ * attributes, the raise timer of the cells being lifted and those four colours. */
+#define MAP_VIEW_WAVE_HEIGHT      0x00 /* u8 0..15 height the wave-animated cells are raised by */
+#define MAP_VIEW_OWNER_BANDS      0x01 /* u8 1 while property cells are drawn in their owner's palette band */
+#define MAP_VIEW_FLASH_FRAME      0x02 /* u8 index of the highlighted unit's flash colours */
+#define MAP_VIEW_POLY_ATTR        0x04 /* u32 polygon attribute bits of the map's quads */
+#define MAP_VIEW_POLY_ATTR2       0x08 /* u32 further polygon attribute bits */
+#define MAP_VIEW_RAISE_TIMER      0x0c /* s32 frames the lifted cells have been rising, 0..8 */
+#define MAP_VIEW_FLASH_COLORS     0x10 /* u16[4] colours a highlighted unit is drawn in */
+#define MAP_VIEW_OWNER_BAND_CYCLE 140  /* frames one owner-band pulse lasts */
+#define MAP_VIEW_OWNER_BAND_DELAY  60  /* frames of that pulse the bands are hidden for */
 
 /* The map's effect state, the block gCurrentMap[3] points to.  ApplyWeatherEffects
  * (main_020A38F4) fills it when the weather changes; the particle update/draw
@@ -198,6 +214,7 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_NAME            0x5120 /* char[] the map's display name */
 #define MAP_CELL_TILE_ID    0xa10  /* u16 per cell: tile id, keyed through the current terrain tileset */
 #define MAP_ROW_OFFSETS     0x3758 /* u16 per row: offset of the row in the cell arrays */
+#define MAP_ROW_OFFSETS_WORD 0x1bac /* MAP_ROW_OFFSETS as a u16 index into gCurrentMap (0x3758 / 2) */
 #define MAP_CELL_UNIT_ID    0x508  /* u8 per cell: id of the unit standing there, 0 if none */
 #define MAP_CELL_VISIBLE_UNIT 0x000 /* u8 per cell: id of the unit the viewing player can see there, 0 if none (fog) */
 #define MAP_CELL_TERRAIN    0x1420 /* u8 per cell: low 5 bits terrain kind, high 3 bits owner */
@@ -221,6 +238,7 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
  * tileset sheet order; a row holds the kind's tile for owner 0 (unowned) up to
  * owner 4, so the row of a kind starts at row * MAP_PROPERTY_TILE_OWNERS. */
 #define MAP_PROPERTY_TILE_OWNERS      5
+#define MAP_PROPERTY_TILE_NONE        0xffff /* ends the table (gPropertyTileIds[0] is it when the map has no property tiles) */
 #define MAP_PROPERTY_TILE_OWNER_SHIFT 5  /* MAP_TERRAIN_OWNER_MASK >> this: the owner colour */
 #define MAP_PROPERTY_TILE_HQ_ROW      0  /* headquarters tiles (terrain kind 0x0f) */
 #define MAP_PROPERTY_TILE_REBUILT_ROW 2  /* tiles a cell shows once it is no longer a headquarters (terrain kind 0x10) */
@@ -381,6 +399,10 @@ typedef struct MapSettings {
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
 #define MAP_UNIT_TARGET     0x08 /* u16 packed AI move target: x in low six bits, y in bits 6..11 */
 #define MAP_UNIT_NEED_STATE 0x08 /* u16: resupply/repair need in bits 12..13 (0 none, 1 resupply, 2 repair) */
+#define MAP_UNIT_NEED_MASK   0x3000 /* bits 12..13 of MAP_UNIT_NEED_STATE */
+#define MAP_UNIT_NEED_NONE   0x0000
+#define MAP_UNIT_NEED_SUPPLY 0x1000
+#define MAP_UNIT_NEED_REPAIR 0x2000
 #define MAP_UNIT_TARGET_NONE 0x3F /* a target coordinate of 0x3f means "no target" */
 #define MAP_UNIT_ACTION     0x08 /* u16 bits 14..15 of MAP_UNIT_TARGET: the AI's action state */
 #define MAP_UNIT_ACTION_MASK 0xC000 /* bits 14..15 of MAP_UNIT_TARGET */
@@ -398,6 +420,9 @@ typedef struct MapSettings {
 #define MAP_UNIT_OWNER_MASK  0xC0 /* top two bits of MAP_UNIT_KIND: the owner group */
 #define MAP_UNIT_OWNER_SHIFT 6    /* player = (owner group >> this) + 1 */
 #define MAP_UNIT_LIMIT       50   /* most units one player may have; the map editor refuses to place past it */
+
+/* Unit kind ids the battle and command code names directly. */
+#define UNIT_KIND_FLARE      5    /* Flare: fires a flare that reveals fog, spending ammo; available in fog or snow */
 
 /* One 16-byte entry of a map's unit deployment ("dispos") file, the list
  * file, the list PlaceMapDeployment places the map's units from.  Entries are
@@ -440,6 +465,7 @@ typedef struct MapTargetEntry {
 
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_ACTED      0x0001 /* the unit has acted this turn (HasUnitActed) */
+#define UNIT_FLAG_MOVING     0x0004 /* the unit is playing its move animation: it is drawn even out of sight and the sight pass leaves its cell entry alone */
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
 #define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
 #define UNIT_FLAG_LOADED     0x0008 /* unit is loaded in a transport (turn passes skip it) */
@@ -464,6 +490,7 @@ typedef struct MapTargetEntry {
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_GRID_ROW_INDEX  0x14ba /* MAP_GRID seen as an s8 * array: index of row y (MAP_GRID / 4) */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
+#define MAP_GRID_TAKEN       0x40  /* bit of a cell an attack range covers */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
 #define MAP_CELL_UNSET      0x7f   /* s8 marker FillMapLayer clears a cell layer to: no value computed yet */
 #define MAP_CELL_LAYER_BYTES 0x508 /* bytes of one per-cell byte layer (the largest map's cell count) */
@@ -486,9 +513,16 @@ enum {
 #define MAP_CURSOR_OWNER    0x52a8 /* u16 owner mask the unit under the cursor must match */
 #define MAP_CONFIRM_ENABLED 0x52ad /* u8 nonzero while the current map/choice is confirmed (IsMapConfirmEnabled) */
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
-#define MAP_CURSOR_TARGET_Y 0x52c4
-#define MAP_CURSOR_PIXEL_X  0x52c6 /* s16 smoothed cursor position the view draws, x in 1/16-cell units */
-#define MAP_CURSOR_PIXEL_Y  0x52c8 /* s16 smoothed cursor position the view draws, y in 1/16-cell units */
+#define MAP_CURSOR_TARGET_Y 0x52c4 /* s16 tile the cursor is aimed at */
+#define MAP_CURSOR_CELL_DISPLAY_MODE 0x52e4 /* s16 cursor cell display mode */
+#define MAP_CURSOR_CELL_CACHE 0x52e6 /* u16 cached cursor-cell coordinates and flags */
+#define MAP_CURSOR_CELL_X_SHIFT 2
+#define MAP_CURSOR_CELL_Y_SHIFT 9
+#define MAP_CURSOR_CELL_COORD_MASK 0x1FC
+#define MAP_CURSOR_CELL_COORD_Y_MASK 0xFE00
+#define MAP_CURSOR_CELL_FLAGS_MASK 0x0003
+#define MAP_CURSOR_PIXEL_X  0x52c6 /* s16 smoothed cursor position, x in 1/16-cell units */
+#define MAP_CURSOR_PIXEL_Y  0x52c8 /* s16 smoothed cursor position, y in 1/16-cell units */
 #define MAP_TILE_SIZE 768 /* 3 * 256: one map tile's on-screen size in pixels */
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
@@ -518,7 +552,13 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
  * +0, the command being run at +4 and a wait callback at +8; a command holds
  * s16 operands at +8 and +10 and a s32 operand at +0x0C. */
 #define MAP_SCRIPT_COMMAND_SIZE 0x10
+#define MAP_SCRIPT_COMMAND_OPCODE 0x00 /* s32 opcode of a command */
+#define MAP_SCRIPT_OP_END       7  /* terminator command: the block ends here */
+#define MAP_SCRIPT_OP_LABEL     29 /* label command: names a jump target in MAP_SCRIPT_OPERAND2 */
 #define MAP_SCRIPT_STATE_IP     0x04
+#define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
+#define MAP_SCRIPT_OPERAND1     0x0A /* s16 second operand */
+#define MAP_SCRIPT_OPERAND2     0x0C /* s32 wide operand */
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
 #define PLAYER_REC_FUNDS_SPENT 0x04 /* s32 total funds the player has spent */
 #define PLAYER_FUNDS_SPENT_MAX 999999999 /* cap of PLAYER_REC_FUNDS_SPENT */
@@ -527,6 +567,13 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
 #define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
+/* Per-kind property counters of a player record, recounted with
+ * PLAYER_REC_PROPERTIES at the start of a turn (main_020D2470): bases
+ * (terrain kind 17), kind 16, HQs (18), ports (19), attack properties (22),
+ * kind 23, airports (20) and kind 21.  Cities only add income and are not
+ * counted here. */
+#define PLAYER_REC_PROPERTY_COUNTS 0x10 /* u8[8] property counts by kind */
+#define PLAYER_REC_KIND_COUNT     8
 #define PLAYER_REC_ATTACK_PROPERTIES 0x14 /* u8 attack-boosting properties the player owns (terrain kind 22), 5 percent attack each */
 #define PLAYER_ATTACK_PROPERTIES_OFF (MAP_PLAYER_STATES + PLAYER_REC_ATTACK_PROPERTIES) /* u8 */
 #define PLAYER_REC_DEFEAT_TURN   0x1A /* u16 turn the player was defeated on, 0 while still in the battle (IsPlayerActive) */
@@ -579,19 +626,45 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 
 /* The per-army (CO) data table at gMovementCostTable, one 0x9c-byte block per
  * army id: +0x00 is the s32 localized name text id, +0x64 the s8 * movement
- * cost table for the army's current weather. */
+ * cost table for the army's current weather and variant. */
 #define ARMY_DATA_SIZE 0x9c
 #define ARMY_DATA_NAME 0x00
+#define ARMY_DATA_MOVE_COSTS 0x64 /* s8 **[variant][row]: per-terrain cost rows, 32 bytes per movement type */
+#define ARMY_DATA_VARIANT_STRIDE 0x28 /* bytes between movement-cost variants */
+#define ARMY_DATA_ROW_STRIDE 4 /* bytes between cost-table rows within a variant */
 #define ARMY_REC_ARMY_ID 0x6c /* u8 low byte of PLAYER_REC_SPRITE (i.e. player record +0x6c): the player's army id, a row of the army data table */
+#define PLAYER_REC_MOVE_COST_ROW 0x25 /* u8 row of the army's movement-cost variant */
 
 /* Army id the weather rules leave alone: no rain movement penalty, no sandstorm damage penalty. */
 #define ARMY_WEATHER_IMMUNE 10
+
+/* CO-zone bonuses (the gCoZone* field symbols): one 0x48-byte record per
+ * commander and power state, selected by GetCoZoneBonusIndex() as
+ * (commander - 1) * 2 + powerActive.  A record holds the zone's percentages at
+ * +0x00 (s8 move), +0x04 (s8 range), +0x06 (s16 attack) and +0x08 (s16
+ * defense), then one byte per unit kind at +0x0F saying whether the
+ * commander's zone boosts that kind.  The field symbols point at record 0;
+ * later records follow every CO_ZONE_RECORD_STRIDE bytes. */
+#define CO_ZONE_RECORD_STRIDE 0x48
+#define CO_ZONE_KIND_COUNT    27
+#define CO_ZONE_MOVE_PCT      0x00 /* s8 movement bonus */
+#define CO_ZONE_RANGE_PCT     0x04 /* s8 maximum attack range bonus, for kinds with range 2 or more */
+#define CO_ZONE_ATTACK_PCT    0x06 /* s16 attack percent, damage scales by (100 + n) / 100 */
+#define CO_ZONE_DEFENSE_PCT   0x08 /* s16 defense percent, damage scales by 100 / (100 + n) */
+#define CO_ZONE_KIND_ENABLED  0x0F /* s8[CO_ZONE_KIND_COUNT]: nonzero when the kind receives the zone bonus */
+
+/* gCurrentMap[2] points to the three-slot pool of active unit-move controllers:
+ * a byte is nonzero while the controller with that slot exists. */
+#define MAP_UNIT_MOVE_SLOTS 0x08
 
 /* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
  * a callback run each time a scroll pan finishes. */
 #define MAPVIEW_SCROLL_DONE 0x1c /* void (*)(void): run when a view pan reaches its target */
 #define MAPVIEW_CURSOR_CB   0x08 /* void (*)(s16 x, s16 y, s32 kind): place a map cursor at a
-                                  * 1/16-cell position; kind selects which cursor, MAP_CURSOR_KIND_* */
+                                 * 1/16-cell position; kind selects which cursor, MAP_CURSOR_KIND_* */
+#define MAPVIEW_UPLOAD_GRAPHICS 0x54 /* void (*)(void): upload the map's tiles, terrain and army palettes */
+#define MAPVIEW_SET_TERRAIN     0x58 /* void (*)(u8 weather, u8 tileset): apply the map's current
+                                      * weather (MAP_WEATHER) and tileset (MAP_TILESET) to the view */
 #define MAP_CURSOR_KIND_TARGET 2 /* cursor selector the target-cursor updater (main_020CBACC) passes */
 
 /* A map-view panning animation, one of the view controller's sprite tasks.  It
@@ -673,7 +746,13 @@ enum {
 #define MAPDATA_HEIGHT  0x01 /* u8 map height in cells */
 #define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
 #define MAPDATA_LINK_BATTLE 0x04 /* u8 nonzero when the battle runs over a link/online session (its overlay is polled) */
+#define MAPDATA_RULES   0x0C /* u16 packed battle rule flags; bit 12 (0x1000) is CO powers enabled, cleared when the map forbids them, bit 13 (0x2000) selects army-specific movement costs instead of army 0's */
 #define MAPDATA_TURN_TIME 0x10 /* u16 configured per-turn time limit in frames, 0 = untimed */
+
+/* Map ids in this range are story missions with a rank entry in the per-map
+ * progress table; the trial maps follow up to 0xE0. */
+#define MAP_ID_STORY_FIRST 0xA1
+#define MAP_ID_STORY_END   0xBB /* one past the last story mission */
 
 /* Map ids in this range are campaign maps with a full 0x6f8-byte record. */
 #define MAP_ID_CAMPAIGN_FIRST 0xE1
@@ -697,6 +776,16 @@ typedef struct MapRecordHeader {
     u8  stamp[0x14];    /* +0x40 date, checksum and console id stamp */
 } MapRecordHeader;
 
+/* The stamp of a saved map record (MAP_RECORD_STAMP, 0x14 bytes): when and on
+ * which console it was saved, and the record's checksum. */
+typedef struct MapRecordStamp {
+    u8  pad00[6];
+    u16 checksum; /* +0x06 MAP_RECORD_CHECKSUM of the record */
+    u8  pad08[4];
+    u32 word;     /* +0x0C MAP_RECORD_STAMP_WORD (counter and flags) */
+    u32 playerId; /* +0x10 WFC player id of the console that saved the record */
+} MapRecordStamp;
+
 #define MAP_RECORD_MAGIC       0x20070731
 #define MAP_RECORD_CHECKSUM    0x46 /* u16 CRC-16 of the record data (Crc16 from +0x54, 0x6A4 bytes) */
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
@@ -707,6 +796,7 @@ typedef struct MapRecordHeader {
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
 #define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
 #define MAP_RECORD_PLAYER_COUNT 0x27 /* u8; a map-selection slot holding 0 is empty */
+#define MAP_RECORD_PLAYER_SLOTS 5    /* playerIds[] entries the record carries */
 
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
@@ -748,5 +838,19 @@ typedef struct MapViewTask {
 #define MAP_SPRITE_CELL_SIZE      48      /* map-position units per cell (1/16-cell input * this) */
 #define MAP_SPRITE_PART_MIN       20      /* first sprite id drawn from parts around the cell */
 #define MAP_SPRITE_ATTR           0x8a1   /* z/attribute word of the drawn cell sprite */
+#define MAP_SPRITE_PART_STEP      16      /* 1/16-cell units between the parts of the ring */
+
+/* Script ids of the ring parts (MAP_SPRITE_PART_MIN + 0..7): the four sides and
+ * then the four diagonal runs between them. */
+enum {
+    MAP_CELL_PART_TOP = MAP_SPRITE_PART_MIN,
+    MAP_CELL_PART_BOTTOM,
+    MAP_CELL_PART_LEFT,
+    MAP_CELL_PART_RIGHT,
+    MAP_CELL_PART_UP_LEFT,
+    MAP_CELL_PART_UP_RIGHT,
+    MAP_CELL_PART_DOWN_LEFT,
+    MAP_CELL_PART_DOWN_RIGHT
+};
 
 #endif

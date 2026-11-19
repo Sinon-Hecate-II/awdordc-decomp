@@ -29,7 +29,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     } else {
         M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0xC) = -1;
     }
-    owner = func_020d0468(M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50), M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    owner = GetMoveRangeCommanderId(M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50), M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
     if (owner != -1) M2C_FIELD(M2C_FIELD(entry, void **, 0x10), u8 *, 0x49) = 1;
     else M2C_FIELD(M2C_FIELD(entry, void **, 0x10), u8 *, 0x49) = 0;
 
@@ -57,7 +57,7 @@ void FillUnitInfo(void *arg0, void *arg1) {
     kind = ((UnitKind75310 *)unit)->value;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x54) = func_020a7c98((s32)kind);
 
-    value = func_020a334c(GetUnitOwner(unit));
+    value = GetPlayerArmyVariantIfSet(GetUnitOwner(unit));
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x48) = (s8)value;
     owner = M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x50);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x60) = (s32)M2C_FIELD((owner * 0x8C) + *gCurrentMap, u8 *, 0x67C1);

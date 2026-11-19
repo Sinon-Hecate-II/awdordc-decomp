@@ -432,12 +432,12 @@ void func_ov000_02175234(void *arg0){
         case 1:
             ClearTileRect(M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), 32, 32);
             func_ov000_021769dc(arg0);
-            func_ov000_02176a0c(arg0);
+            Ov000Info_DrawFullPanel(arg0);
             M2C_FIELD(arg0, s32 *, 4) = 0;
             break;
         case 2:
             func_ov000_021769dc(arg0);
-            func_ov000_02176a0c(arg0);
+            Ov000Info_DrawFullPanel(arg0);
             M2C_FIELD(arg0, s32 *, 4) = 0;
             break;
         case 0:

@@ -39,18 +39,26 @@
 #define FX_NODE_RESOURCE    0x00 /* void *resource/particle the node draws */
 #define FX_NODE_ID          0x04 /* s32 resource id */
 #define FX_NODE_CHILD       0x08 /* void *first child node */
-#define FX_NODE_NEXT        0x0C /* void *next sibling node */
+#define FX_NODE_NEXT        0x0C /* void *newest child link; older children follow it */
+/* A node's children are a chain: the newest child is FX_NODE_CHILD and the older
+ * ones hang off FX_NODE_NEXT as links of a node pointer and the next (older) link. */
+#define FX_LINK_NODE        0x00 /* void *child node */
+#define FX_LINK_NEXT        0x04 /* void *next, older link or NULL */
 #define FX_NODE_GRAPHIC_X   0x28 /* s32 graphic offset copied from the template's FX_TEMPLATE_X/Y */
 #define FX_NODE_GRAPHIC_Y   0x2C
+#define FX_NODE_PALETTE_ALT 0x3B /* u8 palette drawn on flash phase 0 */
 #define FX_NODE_X           0x3C /* s16 translation, whole pixels */
 #define FX_NODE_Y           0x3E
 #define FX_NODE_Z           0x40
 #define FX_NODE_SPEED       0x42 /* u16 speed used to fold the node's scale into the drawing */
 #define FX_NODE_TABLE_INDEX 0x47 /* u8 row in the CO's effect tables */
+#define FX_NODE_FLASH_FRAMES 0x48 /* u8 flash countdown; one tick every three frames */
+#define FX_NODE_FLASH_PHASE 0x49 /* u8 frame 0..2 inside the current flash tick */
 #define FX_NODE_COLOUR_BLEND 0x4B /* u8 colour blend copied from the template */
 #define FX_NODE_COLOUR      0x4C /* u8 */
 #define FX_NODE_ACTIVE      0x50 /* u8 animated flag */
 #define FX_NODE_FLAG_51     0x51 /* u8 */
+#define FX_NODE_FLASH_CHILD 0x52 /* u8 nonzero: the node flashes along with its parent */
 #define FX_NODE_PALETTE     0x53 /* u8 palette/effect bank */
 #define FX_NODE_X_FIXED     0x54 /* s32 position and velocity in 8.8 pixels */
 #define FX_NODE_Y_FIXED     0x58
@@ -83,5 +91,12 @@
 #define FX_TEMPLATE_ACTIVE      0x50 /* u8 */
 #define FX_TEMPLATE_FLAG_51     0x51 /* u8 */
 #define FX_TEMPLATE_PALETTE     0x53 /* u8 */
+
+/* Screen bounds (whole pixels) of an effect node: one still accelerating towards
+ * an edge it has passed is off-screen and gets finished by its handler. */
+#define FX_CULL_LEFT   (-0xA0)
+#define FX_CULL_TOP    (-0x20)
+#define FX_CULL_RIGHT  0xA0
+#define FX_CULL_BOTTOM 0xE0
 
 #endif

@@ -45,28 +45,48 @@ void Ov001_FreeWirelessWork(void) {
     func_ov001_0218b760();
 }
 
-s32 func_ov001_0217589c(M2C_UNK arg0, s32 arg1, s32 arg2) {
-void Ov001_InitScreen(void);
-s32 func_ov001_02175928(s32,s32);
-void Ov001_InitCore(void); void Ov001_SetupDisplay(void); void func_ov001_02184f68(void);
-void Ov001_SetStepCallback(s32); void func_ov001_0218b850(void); void func_ov001_0218c7d4(s32);
-void func_ov001_0218bdb0(void); void func_ov001_0218c63c(void); void func_02007598(void); void func_ov001_02175d04(void);
-extern u8 gOv001ScreenState;
-M2C_FIELD(&gOv001ScreenState,M2C_UNK*,4)=arg0;
-if (!func_ov001_02175928(arg1,arg2)) return -1;
-M2C_FIELD(&gOv001ScreenState,u8*,1)=0;
-Ov001_InitCore(); Ov001_SetupDisplay(); func_ov001_02184f68();
-Ov001_SetStepCallback((s32)Ov001_InitScreen);
-do {
-func_ov001_0218b850();
-M2C_FIELD(&gOv001ScreenState,void(**)(void),12)();
-func_ov001_0218c7d4(0); func_ov001_0218bdb0(); func_ov001_0218c63c(); func_02007598();
-} while (!M2C_FIELD(&gOv001ScreenState,u8*,1));
-func_ov001_02175d04(); return 0;
+/* Run the ov001 front end (title and menu screens) on the caller's work buffer
+ * `work` for screen mode `mode` with screen options `options`: store them in the
+ * screen state, then initialise the core devices, the display and the sound
+ * engine, and call the screen step callback once per frame until the exit flag is
+ * set.  Returns -1 when the screen mode and options are not valid, 0 after the
+ * overlay's shutdown routine has run. */
+s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
+    void Ov001_InitScreen(void);
+    s32 Ov001_InitScreenMode(s32, s32);
+    void Ov001_InitCore(void);
+    void Ov001_SetupDisplay(void);
+    void Ov001_InitSound(void);
+    void Ov001_SetStepCallback(s32);
+    void func_ov001_0218b850(void);
+    void func_ov001_0218c7d4(s32);
+    void func_ov001_0218bdb0(void);
+    void func_ov001_0218c63c(void);
+    void func_02007598(void);
+    void func_ov001_02175d04(void);
+    extern u8 gOv001ScreenState;
+
+    M2C_FIELD(&gOv001ScreenState, M2C_UNK *, OV001_SCREEN_WORK) = work;
+    if (!Ov001_InitScreenMode(mode, options)) return -1;
+    M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT) = 0;
+    Ov001_InitCore();
+    Ov001_SetupDisplay();
+    Ov001_InitSound();
+    Ov001_SetStepCallback((s32)Ov001_InitScreen);
+    do {
+        func_ov001_0218b850();
+        M2C_FIELD(&gOv001ScreenState, void (**)(void), OV001_SCREEN_STEP)();
+        func_ov001_0218c7d4(0);
+        func_ov001_0218bdb0();
+        func_ov001_0218c63c();
+        func_02007598();
+    } while (!M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT));
+    func_ov001_02175d04();
+    return 0;
 }
 
 #pragma scheduling off
-s32 func_ov001_02175928(s32 arg0,s32 arg1){
+s32 Ov001_InitScreenMode(s32 arg0,s32 arg1){
 extern u8 gOv001ScreenState;
 M2C_FIELD(&gOv001ScreenState,u8 *,0)=arg0;
 M2C_FIELD(&gOv001ScreenState,s32 *,8)=arg1;

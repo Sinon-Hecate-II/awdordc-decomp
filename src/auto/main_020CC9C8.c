@@ -63,8 +63,8 @@ void StepMapZoom(void *transition) {
 }
 
 void func_020ccc94(void) {
-    M2C_UNK func_020d8804();
-    func_020d8804();
+    M2C_UNK UpdateCursorCellDisplayMode();
+    UpdateCursorCellDisplayMode();
 }
 
 void CreateMapMenu(void) {
@@ -119,11 +119,11 @@ void func_020cce04(s32 arg0) {
     void BattleResults_ComputeRatings(void);
     void func_0209c8d4(void);
     void SetSpriteAnimation(s32, s32);
-    u8 func_020cd6d4(void);
+    u8 IsCampaignBattleRules(void);
     u8 DidPlayerLose(void);
     BattleResults_ComputeRatings();
     func_0209c8d4();
-    if (func_020cd6d4() && DidPlayerLose()) {
+    if (IsCampaignBattleRules() && DidPlayerLose()) {
         SetSpriteAnimation(arg0, 1);
     } else {
         SetSpriteAnimation(arg0, 0);
@@ -282,15 +282,15 @@ return 0;
 
 void func_020cd544(s32);
 void func_020cd480(s32 a){
-extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 data_0215d8a0[];u32 v;
+extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 gSaveSlotSummary[];u32 v;
 func_02088634();if(func_020e4b28(a)){func_020cd544(a);return;}
-func_020e49ec();data_0215d8a0[0]=(data_0215d8a0[0]&~15)|(a&15);
-v=data_0215d8a0[0]&~240;*(volatile u32 *)data_0215d8a0=v;
+func_020e49ec();gSaveSlotSummary[0]=(gSaveSlotSummary[0]&~15)|(a&15);
+v=gSaveSlotSummary[0]&~240;*(volatile u32 *)gSaveSlotSummary=v;
 gMapConfig &= ~7;
 v&=~0xff0000;
 v&=~0xff00;
-data_0215d8a0[1]=(u16)(data_0215d8a0[1]&0xffff0000);
-data_0215d8a0[0]=v&~0xff000000;
+gSaveSlotSummary[1]=(u16)(gSaveSlotSummary[1]&0xffff0000);
+gSaveSlotSummary[0]=v&~0xff000000;
 M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;SetMapListFlag(161,1);CreateSpriteFromClass(&data_0212b804,7);
 }
 
@@ -306,7 +306,7 @@ void func_020cd544(s32 mapKind) {
     func_02088634();
     kind = func_020bf054(0, mapKind);
     gMapConfig &= ~7;
-    func_020e4a18(mapKind);
+    LoadSaveSlotProgress(mapKind);
     if (IsUnitAvailable(kind)) {
         func_020d4ac8(kind);
     } else {
@@ -366,7 +366,7 @@ u8 func_020cd6b0(void) {
     return var_r0;
 }
 
-u8 func_020cd6d4(void) {
+u8 IsCampaignBattleRules(void) {
     extern M2C_UNK gMapData;
     u8 var_r0;
 
@@ -396,7 +396,7 @@ u8 func_020cd728(void) {
 
 #pragma push
 #pragma opt_common_subs off
-void func_020cd754(s32 arg0) {
+void FillTeamSightBitmap(s32 arg0) {
     extern s32 *gCurrentMap;
     void MI_CpuFill8(s32, s32, s32);
     s32 base = *gCurrentMap;
@@ -407,7 +407,7 @@ void func_020cd754(s32 arg0) {
     }
 }
 #pragma pop
-void func_020cd7bc(s32 arg0, s32 arg1) {
+void CopyTeamSightBitmap(s32 arg0, s32 arg1) {
  extern s32 *gCurrentMap;
  void MI_CpuCopy8(s32,s32);
  s32 base=*gCurrentMap+0x160;

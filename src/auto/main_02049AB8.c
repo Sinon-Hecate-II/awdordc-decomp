@@ -24,18 +24,26 @@ else if(*dst==63)*dst=alphabet[1];
 }
 }
 
-s32 ghiResizeBuffer(s32 *p,s32 n) {
-s32 gpiRealloc(s32,s32);
-extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce58,sAssertSizeIncrement;
-s32 v,total;
-if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce58,0x20);
-if(n<=0)AssertFailed(&sAssertSizeIncrement,&gGhttpBufferFileName,&data_020fce58,0x21);
-if(!p)return 0;
-if(n<=0)return 0;
-total=p[2];total+=n;
-v=gpiRealloc(p[1],total);
-if(!v)return 0;
-p[1]=v;p[2]=total;return 1;
+/* Grow a GHIBuffer's storage by sizeIncrement bytes: reallocate its data block to
+ * the new total size and record it.  Returns 0 when the buffer or the increment is
+ * invalid or the allocation fails. */
+s32 ghiResizeBuffer(s32 *bufferWords, s32 sizeIncrement) {
+    s32 gpiRealloc(s32, s32);
+    extern M2C_UNK sAssertBuffer, gGhttpBufferFileName, gGhiResizeBufferName, sAssertSizeIncrement;
+    GHIBuffer *buffer = (GHIBuffer *)bufferWords;
+    s32 newData, total;
+
+    if (!buffer) AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &gGhiResizeBufferName, 0x20);
+    if (sizeIncrement <= 0) AssertFailed(&sAssertSizeIncrement, &gGhttpBufferFileName, &gGhiResizeBufferName, 0x21);
+    if (!buffer) return 0;
+    if (sizeIncrement <= 0) return 0;
+    total = buffer->size;
+    total += sizeIncrement;
+    newData = gpiRealloc((s32)buffer->data, total);
+    if (!newData) return 0;
+    buffer->data = (u8 *)newData;
+    buffer->size = total;
+    return 1;
 }
 
 /* Initialise a GHIBuffer: record the owning connection and grow step, clear

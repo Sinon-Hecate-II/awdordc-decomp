@@ -16,18 +16,18 @@ extern M2C_UNK data_ov000_021d841c, data_ov000_021b8f5c;
 
 #pragma opt_strength_reduction off
 s32 func_ov000_02172754(void *arg0) {
-    s32 func_ov000_0216cbc4(s32);
+    s32 GetTerrainKindFromInfoId(s32);
     s32 func_020a86c4(s32, s32);
     s32 Divide(s32, s32);
     void LoadFacePalette(s32, s32, s32, s32, u8);
-    s32 func_020a334c(s32);
+    s32 GetPlayerArmyVariantIfSet(s32);
     s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
-    s32 func_020719d4(s32);
+    s32 _fflt(s32);
     s32 func_020714f0(s32, s32);
     s32 func_02071a1c(u32);
-    s32 func_02071a64(u32, u32);
-    s32 func_02071564(s32, s32);
-    u32 func_020719a0(s32);
+    s32 _fmul(u32, u32);
+    s32 _fdiv(s32, s32);
+    u32 _ffix(s32);
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern void **gCurrentMap;
@@ -52,7 +52,7 @@ s32 func_ov000_02172754(void *arg0) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     p18 = *(s32 **)((u8 *)arg0 + 0x18);
     changed = 0;
-    val = func_ov000_0216cbc4(*p18);
+    val = GetTerrainKindFromInfoId(*p18);
     val = func_020a86c4(0, val);
     p18 = *(s32 **)((u8 *)context + 0x18);
     if (val >= 0 && val <= 0x270f && val != p18[2]) {
@@ -68,7 +68,7 @@ s32 func_ov000_02172754(void *arg0) {
         p18[3] = rem - q * 0xa;
         p18[2] = val;
     }
-    val = func_ov000_0216cbc4(**(s32 **)((u8 *)context + 0x18));
+    val = GetTerrainKindFromInfoId(**(s32 **)((u8 *)context + 0x18));
     val = gTerrainDefenseStars[val];
     (*(s32 **)((u8 *)context + 0x18))[1] = val;
     i = 0;
@@ -122,7 +122,7 @@ s32 func_ov000_02172754(void *arg0) {
                 }
                 *(s32 *)(rcd + 0xc) = *((u8 *)rec + 0x18);
                 *(s32 *)(rcd + 8) = *((u8 *)rec + 0x31);
-                *(u8 *)(rcd + 0x30) = (u8)func_020a334c(player);
+                *(u8 *)(rcd + 0x30) = (u8)GetPlayerArmyVariantIfSet(player);
                 funds = GetCoPowerMeterCost(player, 2);
                 if (0.0f == (float)funds) {
                     *(s32 *)(rcd + 4) = 0;
@@ -167,7 +167,7 @@ void DrawTerrainInfoBanner(void *entry) {
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     void CopyToObjPaletteShadow(M2C_UNK, s32, s32);
     void func_0209b26c(s32, s32, s32, s32, s32, u16);
-    s32 func_ov000_0217244c();
+    s32 GetTerrainInfoContext();
     s32 GetTerrainGraphic(s32, s32);
     s32 func_ov000_02172478(s32, s32);
     s32 func_ov000_02172488(s32, s32);
@@ -175,7 +175,7 @@ void DrawTerrainInfoBanner(void *entry) {
     s32 func_ov000_021724a8(s32, s32);
     s32 GetTerrainNameId(s32, s32);
     s32 context; void *savedEngine; s32 drawY; s32 palette;
-    context = func_ov000_0217244c();
+    context = GetTerrainInfoContext();
     palette = M2C_FIELD(entry, s32 *, 0) ? 0xa3 : 0x103;
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -203,21 +203,24 @@ void DrawTerrainInfoBanner(void *entry) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void DrawTerrainInfoIcon(void *arg0) {
- M2C_UNK func_020807e4(s32,s32,u16,s32);
- s32 func_ov000_0217244c(); s32 GetTerrainIcon(s32,s32);
- s32 base; void *saved; s32 ctx,value; s32 color;
+/* Draw the selected terrain's icon into the info window's tile layer 1: the
+ * window flag picks the tile base (0x52 or 1) and the icon is drawn in palette
+ * bank 4, but only when the terrain has an icon. */
+void DrawTerrainInfoIcon(void *window) {
+ M2C_UNK DrawTilemapBlock(s32,s32,u16,s32);
+ s32 GetTerrainInfoContext(); s32 GetTerrainIcon(s32,s32);
+ s32 tiles; void *saved; s32 context,icon; s32 tileBase;
  saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
- ctx=func_ov000_0217244c();
- base=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x24);
- color=M2C_FIELD(arg0,s32 *,0)?0x52:1;
- value=GetTerrainIcon(ctx,*M2C_FIELD(arg0,s32 **,0x18));
- if(GetTerrainIcon(ctx,*M2C_FIELD(arg0,s32 **,0x18))) func_020807e4(value,base+0xc4,(u16)color,4);
+ context=GetTerrainInfoContext();
+ tiles=M2C_FIELD(g3DSpriteEngineSub,s32 *,0x24);
+ tileBase=M2C_FIELD(window,s32 *,0)?0x52:1;
+ icon=GetTerrainIcon(context,*M2C_FIELD(window,s32 **,0x18));
+ if(GetTerrainIcon(context,*M2C_FIELD(window,s32 **,0x18))) DrawTilemapBlock(icon,tiles+0xc4,(u16)tileBase,4);
  gCur3DSpriteEngine=saved;
 }
 
 void func_ov000_02172dc0(void *p){
-M2C_UNK func_020807e4(s32,s32,u16,s32);
+M2C_UNK DrawTilemapBlock(s32,s32,u16,s32);
 void *ctx,*saved;
 if(M2C_FIELD(p,s32*,12)%4==0){
 s32 *frames[6]={&data_ov000_021b976c,&data_ov000_021b9bec,&data_ov000_021bb06c,&data_ov000_021b9c6c,&data_ov000_021b99ec,&data_ov000_021bb1ec};
@@ -227,8 +230,8 @@ ctx=g3DSpriteEngineSub;
 gCur3DSpriteEngine=ctx;
 {
 s32 index=M2C_FIELD(p,s32*,12)/4;
-s32 base=M2C_FIELD(ctx,s32*,0x24);
-func_020807e4((s32)table[index],base+0xc4,(u16)(M2C_FIELD(p,s32*,0)?0x52:1),4);
+s32 base=M2C_FIELD(g3DSpriteEngineSub,s32*,0x24);
+DrawTilemapBlock((s32)table[index],base+0xc4,(u16)(M2C_FIELD(p,s32*,0)?0x52:1),4);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 gCur3DSpriteEngine=saved;
@@ -321,10 +324,10 @@ void func_ov000_02172e90(void *arg0) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 void func_ov000_02173058(void *arg0) {
-s32 func_ov000_0217244c();s32 func_ov000_021724b8(s32,s32);s32 GetNameGraphicFile(s32);void MI_CpuCopy32(s32,s32,u32);
+s32 GetTerrainInfoContext();s32 func_ov000_021724b8(s32,s32);s32 GetNameGraphicFile(s32);void MI_CpuCopy32(s32,s32,u32);
 s32 base;void *saved;s32 index;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-index=func_ov000_021724b8(func_ov000_0217244c(),*M2C_FIELD(arg0,s32 **,0x18));
+index=func_ov000_021724b8(GetTerrainInfoContext(),*M2C_FIELD(arg0,s32 **,0x18));
 base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2880;
 if(index!=-1)MI_CpuCopy32(GetNameGraphicFile(2)+(s16)index*0x4e0,base,0x4e0);
 gCur3DSpriteEngine=saved;
@@ -336,7 +339,7 @@ gCur3DSpriteEngine=saved;
  * player's army label element. */
 void DrawPlayerArmyList(void *info) {
     M2C_UNK Clear3DSpriteLayer(s32);
-    M2C_UNK func_020807e4(s32, s32, u16, s32);
+    M2C_UNK DrawTilemapBlock(s32, s32, u16, s32);
     void FillFaceTileMap(u32, s32, s32, s32, u16, u16, u8);
     u32 GetInfoWindowLanguage();
     extern u8 gArmyPaletteIndices[12];
@@ -379,7 +382,7 @@ void DrawPlayerArmyList(void *info) {
             case 5: sprite = &gArmyIconSprite5; break;
             default: sprite = &gArmyIconSprite0; break;
             }
-            func_020807e4((s32)sprite, dst, (u16)(M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_STATE) << 5), paletteIndices[M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_INDEX)]);
+            DrawTilemapBlock((s32)sprite, dst, (u16)(M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_STATE) << 5), paletteIndices[M2C_FIELD(playerState, u8 *, PLAYER_REC_ARMY_INDEX)]);
             FillFaceTileMap(0, 0x1a, row, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), gPlayerLabelTiles[player], (u16)player, 0);
             rowOff += 0xa0;
             row += 5;

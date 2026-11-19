@@ -5,11 +5,14 @@ typedef struct CallbackArgs_0202810c { s16 a,b; s32 c,d,e; } CallbackArgs_020281
 typedef struct State_02028038 { u8 pad[0x260]; s32 state; u32 bits; u8 pad268[0x14]; void (*callback)(CallbackArgs_0202810c *); } State_02028038;
 
 #pragma opt_common_subs off
-u16 func_02028038(s32 a){
+/* Returns the first player slot (1..13) whose bit in WFC_SESSION_STATUS is free,
+ * scanning at most one round of the WFC_PLAYER_SLOT_COUNT slots from `startSlot`,
+ * and falls back to the slot that round ends on when every slot is taken. */
+u16 WFC_FindFreePlayerSlot(s32 startSlot){
 extern void *gWfcSession;
-s32 i,b,bits,rem;void *p=gWfcSession;
-i=0;b=a;bits=M2C_FIELD(p,u32*,0x2264);do{rem=b%13;if(bits&(1<<(rem+1)))break;i++;b++;}while(i<13);
-rem=(a+i)%13;return rem+1;
+s32 i,slot,bits,rem;void *p=gWfcSession;
+i=0;slot=startSlot;bits=M2C_FIELD(p,u32*,WFC_SESSION_STATUS);do{rem=slot%WFC_PLAYER_SLOT_COUNT;if(bits&(1<<(rem+1)))break;i++;slot++;}while(i<WFC_PLAYER_SLOT_COUNT);
+rem=(startSlot+i)%WFC_PLAYER_SLOT_COUNT;return rem+1;
 }
 #pragma opt_common_subs on
 void WFC_DispatchEvent(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
@@ -33,15 +36,33 @@ state->callback(&args);
 }
 
 #pragma opt_common_subs off
-void WFC_SetState(s32 a){void func_0202826c(void);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02007338(void *);void ScheduleTimer(void *,s32,s32,void (*)(void),s32);extern void *gWfcSession;s32 old=OS_DisableInterrupts();if(M2C_FIELD(gWfcSession,s32 *,0x2260)==9&&a!=9)func_02007338((u8 *)gWfcSession+0x22cc);if(M2C_FIELD(gWfcSession,s32 *,0x2260)!=11)M2C_FIELD(gWfcSession,s32 *,0x2260)=a;if(a==9)ScheduleTimer((u8 *)gWfcSession+0x22cc,0x22f5341,0,func_0202826c,0);OS_RestoreInterrupts(old);}
+/* Set the WFC session's connection state: leaving state 9 stops the session's
+ * timer, entering state 9 (re)starts it with WFC_StateTimerCallback, and state
+ * 11 is final - no later state is stored.  Runs with interrupts held off. */
+void WFC_SetState(s32 state) {
+    void WFC_StateTimerCallback(void);
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void CancelTimer(void *);
+    void ScheduleTimer(void *, s32, s32, void (*)(void), s32);
+    extern void *gWfcSession;
+    s32 irq = OS_DisableInterrupts();
+    if (M2C_FIELD(gWfcSession, s32 *, 0x2260) == 9 && state != 9)
+        CancelTimer((u8 *)gWfcSession + 0x22cc);
+    if (M2C_FIELD(gWfcSession, s32 *, 0x2260) != 11)
+        M2C_FIELD(gWfcSession, s32 *, 0x2260) = state;
+    if (state == 9)
+        ScheduleTimer((u8 *)gWfcSession + 0x22cc, 0x22f5341, 0, WFC_StateTimerCallback, 0);
+    OS_RestoreInterrupts(irq);
+}
 #pragma opt_common_subs on
-M2C_UNK func_020281f8(void){void func_0202826c(void);extern void *gWfcSession;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void func_02007338(void *);void ScheduleTimer(void *,s32,s32,void (*)(void),s32);s32 old=OS_DisableInterrupts();func_02007338((u8 *)gWfcSession+0x22cc);if(M2C_FIELD(gWfcSession,s32 *,0x2260)==9)ScheduleTimer((u8 *)gWfcSession+0x22cc,0x22f5341,0,func_0202826c,0);OS_RestoreInterrupts(old);}
+M2C_UNK WFC_RearmStateTimer(void){void WFC_StateTimerCallback(void);extern void *gWfcSession;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void CancelTimer(void *);void ScheduleTimer(void *,s32,s32,void (*)(void),s32);s32 old=OS_DisableInterrupts();CancelTimer((u8 *)gWfcSession+0x22cc);if(M2C_FIELD(gWfcSession,s32 *,0x2260)==9)ScheduleTimer((u8 *)gWfcSession+0x22cc,0x22f5341,0,WFC_StateTimerCallback,0);OS_RestoreInterrupts(old);}
 
-void func_0202826c(void) {
-    M2C_UNK func_020281f8();
+void WFC_StateTimerCallback(void) {
+    M2C_UNK WFC_RearmStateTimer();
     M2C_UNK func_02029714();
     func_02029714();
-    func_020281f8();
+    WFC_RearmStateTimer();
 }
 
 u32 func_0202827c(u32 a){s32 __cntlzw(u32);u32 n=0;s32 bit;for(;;){bit=31-__cntlzw(a);if(bit<0)return n;a&=~(1U<<bit);n++;}}
@@ -93,7 +114,7 @@ case 2:case 3:case 4:default:WFC_SetState(11);{u8 *session=gWfcSession;WFC_Dispa
 /* Handle a message from the WFC socket: advance the connection state machine and report the result. */
 void WFC_ProcessCallback(u16 *msg){
 extern void *gWfcSession;
-void DC_InvalidateRange(s32,s32); void func_020293a0(s32,u16); u64 func_020722fc(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
+void DC_InvalidateRange(s32,s32); void WFC_StorePlayerRecord(s32,u16); u64 func_020722fc(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
 s32 result=20,i,n;u32 bits;
 switch(msg[1]){
 case 0:
@@ -102,10 +123,10 @@ switch(M2C_FIELD(gWfcSession,s32 *,0x2260)){
 case 6:
 M2C_FIELD(gWfcSession,u16 *,0x2280)=7;
 if(msg[4]==5){DC_InvalidateRange(M2C_FIELD(gWfcSession,s32 *,0x2288),M2C_FIELD(gWfcSession,u16 *,0x228c));
-for(i=0;i<msg[7];i++){func_020293a0(((s32 *)msg)[i+4],msg[i+40]);WFC_CallEventHandler(7,0,((s32 *)msg)[i+4],(s32)msg,0x71a);}}
+for(i=0;i<msg[7];i++){WFC_StorePlayerRecord(((s32 *)msg)[i+4],msg[i+40]);WFC_CallEventHandler(7,0,((s32 *)msg)[i+4],(s32)msg,0x71a);}}
 bits=M2C_FIELD(gWfcSession,u32 *,0x2264);
 if((bits&0xc00000)==0xc00000){n=func_0202827c(bits&0x3ffe);if(n){s32 v=M2C_FIELD(gWfcSession,s32 *,0x2284);if((u32)(func_020722fc(v,n)>>32)==0)WFC_CallEventHandler(8,0,v,0,0x728);}}
-M2C_FIELD(gWfcSession,u16 *,0x228e)=(1<<func_02028038((u16)(32-func_020282a8(msg[5]))))>>1;
+M2C_FIELD(gWfcSession,u16 *,0x228e)=(1<<WFC_FindFreePlayerSlot((u16)(32-func_020282a8(msg[5]))))>>1;
 DC_InvalidateRange(M2C_FIELD(gWfcSession,s32 *,0x2288),M2C_FIELD(gWfcSession,u16 *,0x228c));
 M2C_FIELD(gWfcSession,s32 *,0x2284)++;
 result=WFC_SendRequestPacket(WFC_ProcessCallback,(u8 *)gWfcSession+0x2288);break;

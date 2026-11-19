@@ -100,15 +100,17 @@ s32 ScrollMapViewToTile(s32 x, s32 y, s32 pan) {
     return 1;
 }
 
-s32 func_0207b648(s32 arg0, s32 arg1, s32 arg2) {
+/* Clamp the requested tile to the visible map bounds, update the map view, and notify its scroll callback. */
+s32 SetMapViewPositionToTile(s32 tileX, s32 tileY, s32 centerOnTile) {
     s32 ClampMapViewToTile(s32 *, s32 *, s32);
     extern void *gCurrentMap;
-    void (*callback)(void);
-    if (ClampMapViewToTile(&arg0, &arg1, arg2) == 0) return 0;
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x5148) = arg0 << 4;
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x514A) = arg1 << 4;
-    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x1C);
-    if (callback != NULL) callback();
+    void (*scrollDone)(void);
+
+    if (ClampMapViewToTile(&tileX, &tileY, centerOnTile) == 0) return 0;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_X) = tileX << 4;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_VIEW_Y) = tileY << 4;
+    scrollDone = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_SCROLL_DONE);
+    if (scrollDone != NULL) scrollDone();
     return 1;
 }
 
@@ -131,12 +133,12 @@ void func_0207b6d0(void) {
 }
 
 void func_0207b744(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0207b648(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0207b648(arg0, arg1, 0);
+    M2C_UNK SetMapViewPositionToTile(M2C_UNK, M2C_UNK, M2C_UNK);
+    SetMapViewPositionToTile(arg0, arg1, 0);
 }
 
 void func_0207b754(M2C_UNK arg0, M2C_UNK arg1) {
-    func_0207b648(arg0, arg1, 1);
+    SetMapViewPositionToTile(arg0, arg1, 1);
 }
 
 s32 StepMapViewToTile(M2C_UNK arg0, M2C_UNK arg1) {
@@ -153,7 +155,7 @@ s32 func_0207b784(void *arg0) {
     return StepMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
 
-s32 func_0207b7a4(void *arg0) {
+s32 PanMapViewToUnit(void *arg0) {
     if (arg0 == NULL) return 0;
     return PanMapViewToTile(M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2));
 }
@@ -248,7 +250,7 @@ void Init3DSpriteLayers2D(void) {
 /* Convert a tile type into the movement/collision result used by callers. */
 u32 func_0207b9f4(s32 tileX, s32 tileY, u32 tileType) {
     u32 func_0207badc(s32, s32, M2C_UNK);
-    s32 func_020cf878(s32, s32);
+    s32 IsOwnedProductionSite(s32, s32);
     M2C_UNK probeResult;
     u32 result;
 
@@ -257,7 +259,7 @@ u32 func_0207b9f4(s32 tileX, s32 tileY, u32 tileType) {
     default:
         break;
     case 0:
-        if (func_020cf878(tileX >> 4, tileY >> 4) != 0) {
+        if (IsOwnedProductionSite(tileX >> 4, tileY >> 4) != 0) {
             probeResult = 4;
         } else {
             probeResult = 0;
@@ -311,20 +313,24 @@ u32 func_0207badc(s32 arg0, s32 arg1, M2C_UNK arg2) {
     return result;
 }
 
-s32 ScreenToMapPosition(s32 arg0, s32 arg1, s32 *arg2) {
+/* Converts a point on the main screen to a position on the map in
+ * MAP_TILE_SUBPIXEL units per cell, clamped to the map's own bounds.  Returns 0
+ * once the point had to be clamped (the touch was off the map), 1 when it was
+ * already inside. */
+s32 ScreenToMapPosition(s32 screenX, s32 screenY, s32 *mapPos) {
     void ScreenToMapFixedPoint(s32, s32, s32 *);
     extern void *gCurrentMap;
-    s32 result = 1;
+    s32 inside = 1;
     s32 maxX, maxY;
     void *map = M2C_FIELD(gCurrentMap, void **, 0);
-    maxX = M2C_FIELD(map, u16 *, 0x5144) * 0x300 - 1;
-    maxY = M2C_FIELD(map, u16 *, 0x5146) * 0x300 - 1;
-    ScreenToMapFixedPoint(arg0, arg1, arg2);
-    if (arg2[0] < 0) { result = 0; arg2[0] = 0; }
-    if (arg2[1] < 0) { result = 0; arg2[1] = 0; }
-    if (arg2[0] > maxX) { arg2[0] = maxX; result = 0; }
-    if (arg2[1] > maxY) { result = 0; arg2[1] = maxY; }
-    return result;
+    maxX = M2C_FIELD(map, u16 *, MAP_WIDTH) * MAP_TILE_SUBPIXEL - 1;
+    maxY = M2C_FIELD(map, u16 *, MAP_HEIGHT) * MAP_TILE_SUBPIXEL - 1;
+    ScreenToMapFixedPoint(screenX, screenY, mapPos);
+    if (mapPos[0] < 0) { inside = 0; mapPos[0] = 0; }
+    if (mapPos[1] < 0) { inside = 0; mapPos[1] = 0; }
+    if (mapPos[0] > maxX) { mapPos[0] = maxX; inside = 0; }
+    if (mapPos[1] > maxY) { inside = 0; mapPos[1] = maxY; }
+    return inside;
 }
 
 void SetCurrentSpriteBatch(s32 arg0) {
@@ -580,14 +586,20 @@ void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
     func_02004ddc();
 }
 
-void func_0207c240(void) {
-s32 func_0200ef4c(void *); s32 func_0200eff8(void *); extern s32 gRandomSeed;
-s32 date[4]; s32 time[3];
-if(func_0200ef4c(date)==0 && func_0200eff8(time)==0) {
-gRandomSeed=((((date[0]*12+date[1])*30+date[2])*24+time[0])*60+time[1])*60+time[2];
-return;
-}
-gRandomSeed=0x12345678;
+/* Seed the random generator from the RTC: the date (year, month, day) and the
+ * time of day (hour, minute, second) are folded into one value, with a fixed
+ * seed when the RTC could not be read. */
+void SeedRandomFromRtc(void) {
+    s32 GetRtcDate(void *);
+    s32 GetRtcTime(void *);
+    extern s32 gRandomSeed;
+    s32 date[4]; /* year, month, day, weekday */
+    s32 time[3]; /* hour, minute, second */
+    if (GetRtcDate(date) == 0 && GetRtcTime(time) == 0) {
+        gRandomSeed = ((((date[0] * 12 + date[1]) * 30 + date[2]) * 24 + time[0]) * 60 + time[1]) * 60 + time[2];
+        return;
+    }
+    gRandomSeed = 0x12345678;
 }
 
 void func_0207c2d0(s32 arg0) {

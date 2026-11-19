@@ -7,8 +7,8 @@ extern M2C_UNK gWebRequestState, data_020fca68;
 extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, data_020fcba0, sWebEmptySuffix, sWebRequestFormat;
 extern u8 data_020fca88[56];
 extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
-extern M2C_UNK data_020fcc4c,data_020fcd04,data_020fcc70,data_020fcc1c;
-extern M2C_UNK data_020fccc4, data_020fcc2c, data_020fccb0, data_020fcbf8, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
+extern M2C_UNK data_020fcc4c,data_020fcd04,data_020fcc70,sArrayRemoveAtName;
+extern M2C_UNK sVectorIndexCheck, data_020fcc2c, data_020fccb0, data_020fcbf8, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
 extern M2C_UNK data_020fcc98, sDarrayFileName, data_020fcc04;
@@ -378,7 +378,7 @@ s32 Vector_GetCount(s32 *arg0) {
 
 s32 Vector_GetItem(void *a,s32 b) {
 s32 AssertFailed();
-if(b<0||b>=M2C_FIELD(a,s32 *,0))AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcbe0,0x94);
+if(b<0||b>=M2C_FIELD(a,s32 *,0))AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcbe0,0x94);
 if(b<0||b>=M2C_FIELD(a,s32 *,0))return 0;
 return M2C_FIELD(a,s32 *,20)+M2C_FIELD(a,s32 *,8)*b;
 }
@@ -418,15 +418,29 @@ s32 Vector_InsertAt(s32 *array, s32 item, s32 index) {
 
 void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 Vector_SearchSorted(s32,s32,s32,s32,s32,s32 *);s32 func_020720f0(s32,s32);s32 x,r;if(!c)AssertFailed(&data_020fcd04,&sDarrayFileName,&data_020fcc70,0xb7);r=Vector_SearchSorted(b,a[5],a[0],a[2],c,&x);Vector_InsertAt(a,b,func_020720f0(r-a[5],a[2]));}
 
-s32 func_0204887c(s32 *a,s32 b){s32 AssertFailed();s32 MemMove(s32,s32,s32);s32 n,p,q;if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc1c,0xc0);n=a[0]-1;if(b<n){p=Vector_GetItem(a,b);q=Vector_GetItem(a,b+1);MemMove(p,q,a[2]*(n-b));}return --a[0];}
-
-void Vector_RemoveItem(s32 *a,s32 b) {
-s32 func_0204887c();s32 AssertFailed();
-if(b<0||b>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc2c,0xca);
-func_020484b8(a,b);func_0204887c(a,b);
+/* GameSpy darray ArrayRemoveAt: drop the item at `index` by moving the items
+ * after it down one slot, then return the array's new count. */
+s32 Vector_RemoveAt(s32 *array, s32 index) {
+    s32 AssertFailed();
+    s32 MemMove(s32, s32, s32);
+    s32 last, dst, src;
+    if (index < 0 || index >= M2C_FIELD(array, s32 *, VECTOR_COUNT)) AssertFailed(&sVectorIndexCheck, &sDarrayFileName, &sArrayRemoveAtName, 0xc0);
+    last = M2C_FIELD(array, s32 *, VECTOR_COUNT) - 1;
+    if (index < last) {
+        dst = Vector_GetItem(array, index);
+        src = Vector_GetItem(array, index + 1);
+        MemMove(dst, src, M2C_FIELD(array, s32 *, VECTOR_ELEM_SIZE) * (last - index));
+    }
+    return --M2C_FIELD(array, s32 *, VECTOR_COUNT);
 }
 
-void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&data_020fccc4,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
+void Vector_RemoveItem(s32 *a,s32 b) {
+s32 Vector_RemoveAt();s32 AssertFailed();
+if(b<0||b>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc2c,0xca);
+func_020484b8(a,b);Vector_RemoveAt(a,b);
+}
+
+void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
 
 void func_020489c4(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);

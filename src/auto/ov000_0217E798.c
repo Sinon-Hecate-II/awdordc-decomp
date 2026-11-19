@@ -239,7 +239,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
 
 s32 func_ov000_0217f318(s16 x,s16 y) {
 extern void **data_027e0058;
-s32 func_020d27a4();s32 func_ov000_021a93ec();s32 func_ov000_02176e28();
+s32 func_020d27a4();s32 IsCellVisibleToCurrentTeam();s32 func_ov000_02176e28();
 s32 result,best,minx,miny,maxx,maxy; register s32 xx,yy; s32 d,unit,score;void *p;s16 pos[2];
 result=0;best=0;minx=x-1;if(minx<0)minx=0;
 p=*data_027e0058; miny=y-1;if(miny<0)miny=0;
@@ -253,7 +253,7 @@ p=*data_027e0058;
 unit=M2C_FIELD((u8*)p+xx+M2C_FIELD((u8*)p+((u32)yy<<1),u16*,0x3758),u8*,0);
 if(unit==0)continue;
 if(func_020d27a4(M2C_FIELD(p,u8*,0x52d4),unit)==1)continue;
-if(!func_ov000_021a93ec((s16)xx,(s16)yy))continue;
+if(!IsCellVisibleToCurrentTeam((s16)xx,(s16)yy))continue;
 pos[0]=x;pos[1]=y;
 score=func_ov000_02176e28(unit|0x20000,pos);
 if(best<score){result=unit;best=score;}
@@ -266,7 +266,7 @@ return result;
 #pragma opt_strength_reduction off
 s32 func_ov000_0217f494(s16 x,s16 y){
 extern void **gCurrentMap;extern u8 gUnitKindStats[];
-s32 GetUnitAttackRangeMax(u8 *);s32 func_020d27a4(s32,s32);s32 func_ov000_021a93ec(s32,s32);s32 func_ov000_02176e28(u32,void *);
+s32 GetUnitAttackRangeMax(u8 *);s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s32,s32);s32 func_ov000_02176e28(u32,void *);
 s32 result=0,best=result,minx,maxy,maxx,inner,dist,dy,rev,ret,score,cand; register s32 outer; s16 pos[2];u8 *up;void *map;
 ret=GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
 if(x-ret<0)minx=0;else minx=x-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8 **,0x52d0));
@@ -286,7 +286,7 @@ if(dist>GetUnitAttackRangeMax(up))continue;
 map=*gCurrentMap;cand=M2C_FIELD((u8 *)map+inner+M2C_FIELD((u8 *)map+outer*2,u16 *,0x3758),u8 *,0);
 if(!cand)continue;
 if(func_020d27a4(M2C_FIELD(map,u8 *,0x52d4),cand)==1)continue;
-if(!func_ov000_021a93ec((s16)inner,(s16)outer))continue;
+if(!IsCellVisibleToCurrentTeam((s16)inner,(s16)outer))continue;
 pos[0]=x;pos[1]=y;
 score=func_ov000_02176e28(cand|0x20000,pos);
 if(best<score){result=cand;best=score;}

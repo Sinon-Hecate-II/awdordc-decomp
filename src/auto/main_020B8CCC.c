@@ -124,7 +124,7 @@ void ProductionMenu_ConfirmBuild(void *row) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
-void func_020b953c(s32 arg0, s32 arg1) {
+void CreateProductionMenuRow(s32 arg0, s32 arg1) {
     void *CreateSpriteObject(M2C_UNK *);
     extern M2C_UNK data_02129178;
     M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
@@ -163,29 +163,34 @@ if(gKeyState[KEY_HELD]&KEY_A) {InvokeConfirmCallback(selection);return;}
 if(gKeyState[KEY_HELD]&KEY_B)InvokeCancelCallback();
 }
 
-void func_020b96e0(u8 *a) {
+/* Confirms the selected row of the unit-production menu: a kind the player cannot
+ * afford only plays the error sound, and otherwise the per-kind cost row is opened
+ * on the menu screen while a unit record is free; either refusal shows a message
+ * instead. The sprite slots are cleared and the screen finished afterwards. */
+void ProductionMenu_ConfirmSelection(u8 *selection) {
     s32 FindFreeUnitRecord(s32);
     M2C_UNK PlaySoundEffect(s32);
     void func_02096b6c(u32);
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020b2178();
     M2C_UNK func_01ffa9bc(M2C_UNK *);
-    void func_020b953c(s32, s32);
+    void CreateProductionMenuRow(s32, s32);
     extern void **gCurrentMap;
-    extern u8 data_0215d859[];
-    extern u8 data_0215d858[];
+    extern u8 gProductionChoices[];
+    extern u8 gProductionChoicesUnaffordable[];
     extern M2C_UNK gProductionMenuScreenClass;
-    u8 index = *a;
-    if (data_0215d859[index * 2] == 1) {
+    u8 index = *selection;
+
+    if (gProductionChoicesUnaffordable[index * 2] == 1) {
         PlaySoundEffect(0x1001d);
         return;
     }
-    if (!FindFreeUnitRecord(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4))) {
+    if (!FindFreeUnitRecord(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         PlaySoundEffect(0x1001d);
         func_02096b6c(0xc0000332);
     } else {
-        void *result = FindObjectByClass(&gProductionMenuScreenClass);
-        func_020b953c(data_0215d858[index * 2], (s32)result);
+        void *screen = FindObjectByClass(&gProductionMenuScreenClass);
+        CreateProductionMenuRow(gProductionChoices[index * 2], (s32)screen);
     }
     func_020b2178();
     func_01ffa9bc(&gProductionMenuScreenClass);
@@ -204,8 +209,8 @@ void func_020b9778(void) {
 void func_020b979c(u8 *a) {
     void func_020b9558(u8);
     M2C_UNK PlaySoundEffect(s32);
-    extern u8 data_0215d858[];
-    func_020b9558(data_0215d858[*a * 2]);
+    extern u8 gProductionChoices[];
+    func_020b9558(gProductionChoices[*a * 2]);
     PlaySoundEffect(0x10019);
 }
 
@@ -243,11 +248,11 @@ void BuildProductionMenuEntries(s8 mask) {
     s32 GetUnitBuildCostTimes10(s32, s32);
     extern s8 data_ov000_021aab94[];
     extern u8 gUnitKindStats[];
-    extern u8 data_0215d858[];
+    extern u8 gProductionChoices[];
     extern M2C_UNK gProductionMenuState;
     extern void **gCurrentMap;
 
-    u8 *buf = data_0215d858;
+    u8 *buf = gProductionChoices;
     s8 *table = data_ov000_021aab94;
     u8 *attrs = gUnitKindStats;
     u8 count = 0;
@@ -289,11 +294,11 @@ M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void DrawTilemapNumber(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK GetUnitBuildCostTimes10(M2C_UNK,M2C_UNK);
-extern u8 data_0215d858[],gUnitKindStats[];
+extern u8 gProductionChoices[],gUnitKindStats[];
 extern void *gCur3DSpriteEngine; extern void **gCurrentMap;
 s32 left; s32 right; s32 x;
 s32 y=arg1+1;
-u8 *ptr=data_0215d858+arg2*2;
+u8 *ptr=gProductionChoices+arg2*2;
 u16 mode, color; s32 row; u16 i;
 
 s32 value; u32 kind;
@@ -316,12 +321,12 @@ M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 #pragma opt_instruction_scheduling off
 void func_020b9b48(s32 a,s32 b,s32 c) {
 M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
-extern u8 data_0215d858[];extern M2C_UNK data_02129150;
+extern u8 gProductionChoices[];extern M2C_UNK data_02129150;
 s32 i; s32 y; register s32 x;
 Unk020BChoice *p;
 x=a+1; x<<=3;
 b++; y=b<<3;
-p=(Unk020BChoice *)data_0215d858;
+p=(Unk020BChoice *)gProductionChoices;
 i=0;
 do {
 if(p[c+i].value==0)return;

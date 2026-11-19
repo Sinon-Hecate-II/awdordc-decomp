@@ -17,10 +17,10 @@ void func_ov003_021f35b0(void *arg0) {
 }
 
 void func_ov003_021f35d8(void *arg0) {
-    M2C_UNK func_ov003_021f13ec(M2C_UNK);
+    M2C_UNK SetOv003SceneClass(M2C_UNK);
     M2C_FIELD(arg0, s8 *, 0x44) = 0;
     M2C_FIELD(arg0, s8 *, 0x34) = 4;
-    func_ov003_021f13ec(0);
+    SetOv003SceneClass(0);
 }
 
 void func_ov003_021f35f8(void *arg0) {
@@ -501,9 +501,9 @@ s16 func_ov003_021f3fe4(s32 arg0, s32 arg1, s32 arg2) {
 
 u8 func_ov003_021f400c(void) {
     s32 IsLinkSessionActive();
-    u32 func_02084a0c();
+    u32 GetSessionPlayerCount();
     s32 result;
-    if (IsLinkSessionActive() && func_02084a0c() <= 1U) result = 1;
+    if (IsLinkSessionActive() && GetSessionPlayerCount() <= 1U) result = 1;
     else result = 0;
     return result;
 }

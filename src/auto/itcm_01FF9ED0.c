@@ -73,30 +73,33 @@ u8 func_01ffa14c(u32 arg0) {
     return var_r0;
 }
 
-void Update3DSpriteState(void *arg0) {
-    extern s32 data_01ffa068[];
-    s16 *temp_r2;
+/* Runs one update of a live, childless 3D sprite object that has no update-callback
+ * override: calls the handler of its animation state and keeps calling the next
+ * state's handler while that asks to run again. */
+void Update3DSpriteState(void *sprite) {
+    extern s32 data_01ffa068[]; /* s32 handler per animation state */
+    s16 *animState;
 
-    if (M2C_FIELD(arg0, s32 *, 4) == 0) {
+    if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) == 0) {
         return;
     }
-    if (M2C_FIELD(arg0, u8 *, 0x31) != 0) {
+    if (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_CHILD_COUNT) != 0) {
         return;
     }
-    if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
+    if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) != 0) {
         return;
     }
-    temp_r2 = M2C_FIELD(arg0, s16 **, 8);
-    if (((s32 (*)(void *)) data_01ffa068[*temp_r2])(arg0) == 0) {
+    animState = M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM);
+    if (((s32 (*)(void *)) data_01ffa068[*animState])(sprite) == 0) {
         return;
     }
     for (;;) {
-        if (M2C_FIELD(arg0, s32 *, 4) == 0) {
+        if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) == 0) {
             return;
         }
-        if (M2C_FIELD(arg0, u8 *, 0x31) == 0 && M2C_FIELD(arg0, s32 *, 0x10) == 0) {
-            temp_r2 = M2C_FIELD(arg0, s16 **, 8);
-            if (((s32 (*)(void *)) data_01ffa068[*temp_r2])(arg0) != 0) {
+        if (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_CHILD_COUNT) == 0 && M2C_FIELD(sprite, s32 *, DS3D_SPRITE_UPDATE_CB) == 0) {
+            animState = M2C_FIELD(sprite, s16 **, DS3D_SPRITE_ANIM);
+            if (((s32 (*)(void *)) data_01ffa068[*animState])(sprite) != 0) {
                 continue;
             }
         }
@@ -262,30 +265,35 @@ void func_01ffa4a0(void *p) {
  func_01ffa244((s32)p);
 }
 
-void func_01ffa4e8(void *p) {
- void *q=M2C_FIELD(p,void **,0x24);
- void (*cb)(void *);
- if(q)func_01ffa4e8(q);
- q=M2C_FIELD(p,void **,0x1C);
- if(q)func_01ffa4e8(q);
- cb=M2C_FIELD(p,void (**)(void *),0xC);
- if(cb)cb(p);
- q=M2C_FIELD(p,void **,0);
- if(q)M2C_FIELD(q,void (**)(void *),0)(p);
- M2C_FIELD(p,s32 *,0)=0;
- M2C_FIELD(p,s32 *,4)=0;
- M2C_FIELD(p,s32 *,8)=0;
- M2C_FIELD(p,s32 *,0x10)=0;
- M2C_FIELD(p,s32 *,0x14)=0;
- if(M2C_FIELD(p,u8 *,0x30)&4) {
- q=M2C_FIELD(p,void **,0x18);
- M2C_FIELD(q,u8 *,0x31)--;
- }
+/* Destroys a 3D sprite object and everything below it: the later siblings and the
+ * children are destroyed first, then the object's delete callback and its class's
+ * destructor run, its class, state cursor and callbacks are cleared, and it is
+ * dropped from its parent's child count when it was created as a child object. */
+void Delete3DSpriteTree(void *obj) {
+    void *node;
+    void (*deleteCb)(void *);
+    node = M2C_FIELD(obj, void **, DS3D_SPRITE_NEXT);
+    if (node) Delete3DSpriteTree(node);
+    node = M2C_FIELD(obj, void **, DS3D_SPRITE_CHILD);
+    if (node) Delete3DSpriteTree(node);
+    deleteCb = M2C_FIELD(obj, void (**)(void *), DS3D_SPRITE_DELETE_CB);
+    if (deleteCb) deleteCb(obj);
+    node = M2C_FIELD(obj, void **, DS3D_SPRITE_CLASS);
+    if (node) M2C_FIELD(node, void (**)(void *), DS3D_CLASS_DESTROY)(obj);
+    M2C_FIELD(obj, s32 *, DS3D_SPRITE_CLASS) = 0;
+    M2C_FIELD(obj, s32 *, DS3D_SPRITE_ALIVE) = 0;
+    M2C_FIELD(obj, s32 *, DS3D_SPRITE_ANIM) = 0;
+    M2C_FIELD(obj, s32 *, DS3D_SPRITE_UPDATE_CB) = 0;
+    M2C_FIELD(obj, s32 *, DS3D_SPRITE_DRAW_CB) = 0;
+    if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_HAS_PARENT) {
+        node = M2C_FIELD(obj, void **, DS3D_SPRITE_PARENT);
+        M2C_FIELD(node, u8 *, DS3D_SPRITE_CHILD_COUNT)--;
+    }
 }
 
 #pragma push
 #pragma optimization_level 2
-void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);func_01ffa4e8(arg0);func_01ffa4a0(arg0); } while(0); }
+void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);Delete3DSpriteTree(arg0);func_01ffa4a0(arg0); } while(0); }
 #pragma pop
 /* One frame of a 3D sprite object tree: walk the sibling chain, then, unless the
  * object has children, run its state update (or the UPDATE_CB override), point
@@ -407,7 +415,7 @@ void *func_01ffa860(s32 a,s32 b) {
  return 0;
 }
 
-void func_01ffa8bc(void *arg0, s16 arg1) {
+void SetSpriteZ(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x2E) = arg1;
 }
 

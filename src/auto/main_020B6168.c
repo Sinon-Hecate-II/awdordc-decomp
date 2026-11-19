@@ -176,12 +176,12 @@ void func_020b6444(void *arg0) {
     }
 }
 
-void func_020b654c(s32 arg0) {
+void CreateUnitFlareSprite(s32 arg0) {
     void *CreateSpriteObject();
-    M2C_UNK func_0207b7a4(s32);
-    extern M2C_UNK data_02128adc;
-    M2C_FIELD(CreateSpriteObject(&data_02128adc), s32 *, 0x5C) = arg0;
-    func_0207b7a4(arg0);
+    M2C_UNK PanMapViewToUnit(s32);
+    extern M2C_UNK gUnitFlareSpriteClass;
+    M2C_FIELD(CreateSpriteObject(&gUnitFlareSpriteClass), s32 *, 0x5C) = arg0;
+    PanMapViewToUnit(arg0);
 }
 
 #pragma opt_propagation off

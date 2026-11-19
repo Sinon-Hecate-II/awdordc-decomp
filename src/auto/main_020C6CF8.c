@@ -252,7 +252,7 @@ void GetMapCursorScreenPosition(s32 tileX, s32 tileY, s32 *screenPos) {
 }
 
 void func_020c752c(void) {
-    M2C_UNK func_020c0748(M2C_UNK *, s32, s32, M2C_UNK);
+    M2C_UNK CreateMenuAt(M2C_UNK *, s32, s32, M2C_UNK);
     M2C_UNK func_020c0a88();
     extern M2C_UNK data_0212a8b4;
     s32 temp_r4;
@@ -260,7 +260,7 @@ void func_020c752c(void) {
     func_020994e0(0);
     func_020c0a88();
     temp_r4 = func_020c7438(0xC);
-    func_020c0748(&data_0212a8b4, temp_r4, func_020c744c(), 0x50);
+    CreateMenuAt(&data_0212a8b4, temp_r4, func_020c744c(), 0x50);
 }
 
 void func_020c7568(void) {
@@ -277,17 +277,23 @@ void func_020c757c(void) {
  func_020c0634(&data_0212a774,x,y,(u16)func_020c0b9c(),0x50);
 }
 
-void func_020c75cc(void) {
- extern void **gCurrentMap; extern M2C_UNK data_0212ab34;
- M2C_UNK func_020c0748(M2C_UNK *,s32,s32,M2C_UNK);
- s32 xy[3]; void *p;
- func_020994e0(0);
- p=*gCurrentMap;
- GetMapCursorScreenPosition(M2C_FIELD(p,s16 *,0x52c2),M2C_FIELD(p,s16 *,0x52c4),xy);
- func_020c0748(&data_0212ab34,xy[0],xy[1],0x30);
- FillMapLayer(-1);
- p=*gCurrentMap;
- M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,0x52de)*4,u8 **,0x52e8)[M2C_FIELD(p,s16 *,0x52dc)]=1;
+/* Opens the map cursor's action menu: clears the text tiles, lays the menu out at
+ * the screen position of the tile the cursor is aimed at, clears the map layer,
+ * then marks the cursor's cell in the map grid. */
+void OpenMapActionMenu(void) {
+    extern void **gCurrentMap;
+    extern M2C_UNK gMapActionMenuEntries;
+    M2C_UNK CreateMenuAt(M2C_UNK *, s32, s32, M2C_UNK);
+    s32 screenPos[3];
+    void *map;
+
+    func_020994e0(0);
+    map = *gCurrentMap;
+    GetMapCursorScreenPosition(M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y), screenPos);
+    CreateMenuAt(&gMapActionMenuEntries, screenPos[0], screenPos[1], 0x30);
+    FillMapLayer(-1);
+    map = *gCurrentMap;
+    M2C_FIELD((u8 *)map + M2C_FIELD(map, s16 *, MAP_CURSOR_Y) * 4, u8 **, MAP_GRID)[M2C_FIELD(map, s16 *, MAP_CURSOR_X)] = 1;
 }
 
 void func_020c7654(void) {
@@ -308,13 +314,13 @@ void func_020c7654(void) {
  * Input is ignored while a dialog is up or the view is auto-scrolling. */
 void HandleMapCursorInput(void *a) {
 extern void **gCurrentMap;
-s32 IsDialogActive(void *); s32 func_020d4dd0(void); s32 GetMapCursorKeyAction(void); s32 GetMapCursorTouchAction(void);
+s32 IsDialogActive(void *); s32 IsMapCursorIdle(void); s32 GetMapCursorKeyAction(void); s32 GetMapCursorTouchAction(void);
 M2C_UNK func_020d468c(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
 M2C_UNK StepMapViewToTile(s16,s16);
 u32 flags=0;
 if(IsDialogActive(a))return;
 func_020bdfdc();
-if(func_020d4dd0()){
+if(IsMapCursorIdle()){
 flags|=GetMapCursorKeyAction();flags|=GetMapCursorTouchAction();
 if(flags&16){
 func_020d468c();
@@ -390,18 +396,34 @@ void func_020c78e8(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
     M2C_FIELD(temp_r0, s16 *, 0x52) = arg3;
 }
 
-void func_020c7920(void *arg0) {
- void func_020b654c(void *,void *);
- extern void **gCurrentMap;
- u8 *p; u8 *q; s32 y; u32 x; s32 yes; u32 bit;
- p=*gCurrentMap;
- q=M2C_FIELD(p,u8 **,0x52d0);
- yes=M2C_FIELD(p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67c3);
- y=q[2]; x=q[1];
- if(yes & 2) yes=1;
- else { bit=x+M2C_FIELD(p+y*2,u16 *,0x3758); yes=1; if((u8)(M2C_FIELD(p+(bit>>3),u8 *,0x5201) & (1 << (bit & 7)))==0) yes=0; }
- if(yes==0) return;
- func_020b654c(q,arg0);
+/* State step of the flare-shot sprite: when the unit under the cursor is visible
+ * to the current player, drop the unit flare on it (owned by parent) and let it
+ * pan the map view onto the unit.  Team B sees every unit; for a team A player
+ * the unit's cell must be set in the map's visibility bitmap. */
+void DropFlareOnCursorUnitIfVisible(void *parent) {
+    void CreateUnitFlareSprite(void *, void *);
+    extern void **gCurrentMap;
+    u8 *map;
+    BattleMapUnit *unit;
+    s32 y;
+    u32 x;
+    s32 side;
+    u32 cell;
+    s32 visible;
+
+    map = *gCurrentMap;
+    unit = M2C_FIELD(map, BattleMapUnit **, MAP_CURSOR_UNIT);
+    side = M2C_FIELD(map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, PLAYER_SIDE_OFF);
+    y = unit->y;
+    x = unit->x;
+    if (side & SIDE_TEAM_B) visible = 1;
+    else {
+        cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+        visible = 1;
+        if ((u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP) & (1 << (cell & 7))) == 0) visible = 0;
+    }
+    if (visible == 0) return;
+    CreateUnitFlareSprite(unit, parent);
 }
 
 void func_020c79ac(void *arg0) { void func_020b67e0(s32,s32,void *); func_020b67e0(M2C_FIELD(arg0,s32 *,0x34),M2C_FIELD(arg0,s32 *,0x38),arg0); }
@@ -429,7 +451,7 @@ s32 GetMapRecordHeader(void) {
     return GetMapRecordBuffer();
 }
 
-s32 func_020c7a14(void) {
+s32 GetMapRecordBufferStamp(void) {
     return GetMapRecordHeader() + 0x40;
 }
 

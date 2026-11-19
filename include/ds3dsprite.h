@@ -180,6 +180,16 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_ENGINE_TEXTURE 0x1C /* u32 VRAM address graphics blocks are decompressed to */
 #define DS3D_ENGINE_PALETTES 0x30 /* void *0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
 #define DS3D_ENGINE_DIRTY    0x46 /* u8 DS3D_DIRTY_* bits (and bit i per layer) */
+/* The engine's cached text (the object at +0x50): the strings it has already
+ * rasterised into tiles, so a repeated string is drawn without re-rasterising. */
+#define DS3D_ENGINE_TEXT_CACHE 0x50 /* void *this engine's cached-text object */
+#define TEXT_CACHE_EMPTY     0x00 /* u8 1 when no string is cached */
+#define TEXT_CACHE_ENTRIES   0x200 /* 4 bytes per cached string: u16 tile, u8 width, u8 style */
+#define TEXT_CACHE_NEXT_TILE 0x300 /* u16 tile the next string is rasterised at */
+#define TEXT_CACHE_LAYER     0x302 /* u8 layer the text is drawn on */
+#define TEXT_GLYPH_TILES     0x700 /* bytes of one glyph tile set the text starts from */
+#define TEXT_GLYPH_OFFSET    16    /* tiles between the base tile and the glyph tiles */
+#define TEXT_FIRST_TILE      100   /* tiles between the base tile and the first string */
 #define DS3D_PALETTE_BYTES   0x20 /* bytes of one OBJ palette (16 colours, two bytes each) */
 #define DS3D_PALETTE_15      15   /* colours in a palette the fade code rewrites */
 
@@ -314,6 +324,19 @@ enum {
     TRANSITION_MODE_SPLIT  = 2  /* split the screen into two sliding windows */
 };
 
+/* A task sprite: a 3D sprite object that owns an OS thread, so that the thread
+ * lives in a heap block freed with the object.  Creation allocates the thread
+ * (TASK_SPRITE_THREAD_SIZE bytes) and its stack, starts the entry function on
+ * it and wakes it; the object's class destructor frees both blocks and calls
+ * TASK_SPRITE_CLEANUP.  The plain 3D sprite object fields (0x00..0x33) come
+ * first. */
+#define TASK_SPRITE_THREAD   0x34 /* void *OS thread object the sprite owns */
+#define TASK_SPRITE_STACK    0x38 /* u8 *bottom of the thread's stack block */
+#define TASK_SPRITE_CLEANUP  0x3C /* void (*)(void) run when the sprite is destroyed */
+#define TASK_SPRITE_ENTRY    0x40 /* void (*)(void): the thread's entry function */
+#define TASK_SPRITE_ARG      0x44 /* s32 argument recorded for the entry function */
+#define TASK_SPRITE_THREAD_SIZE 0xC0 /* bytes of the thread object */
+
 /* The UI mode the list/menu screens are in (gUiMode points at one UiModeState):
  * the mode in effect, the one asked for with SetUiMode and, while a sub screen
  * (mode 3) is up, the mode to come back to.  A requested mode is applied in one
@@ -334,8 +357,8 @@ typedef struct UiModeState {
  * (g3DSpriteLists) that Update3DSpriteObject walks.  An object has a sibling
  * chain through NEXT and a child tree through CHILD. */
 #define DS3D_SPRITE_CLASS        0x00 /* void ** class pointer; its +0 method destroys the object */
-#define DS3D_SPRITE_ALIVE        0x04 /* s32 nonzero while the object is alive */
-#define DS3D_SPRITE_ANIM         0x08 /* s16 *animation state: the low half indexes the state table */
+#define DS3D_SPRITE_ALIVE        0x04 /* s32 class pointer; 0 once the object is deleted */
+#define DS3D_SPRITE_ANIM         0x08 /* s16 *state cursor: 8-byte entries, DS3D_STATE_* */
 #define DS3D_SPRITE_DELETE_CB    0x0C /* void (*)(void *) run while the object is destroyed */
 #define DS3D_SPRITE_UPDATE_CB    0x10 /* void (*)(void *): overrides the default state update */
 #define DS3D_SPRITE_DRAW_CB      0x14 /* void (*)(void *): draw pass, run after the update */
@@ -349,6 +372,15 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
+#define DS3D_CLASS_DESTROY       0x00 /* method at DS3D_SPRITE_CLASS +0x00: destroys the object it is given */
+
+/* One entry of an object's animation state cursor (DS3D_SPRITE_ANIM).  The state
+ * machine runs the handler g3DSpriteStateHandlers[id] of the current entry; a
+ * handler advances the cursor by DS3D_STATE_SIZE to move on to the next entry. */
+#define DS3D_STATE_SIZE  0x08 /* bytes per state entry */
+#define DS3D_STATE_ID    0x00 /* s16 index into g3DSpriteStateHandlers (data_01ffa068) */
+#define DS3D_STATE_PARAM 0x02 /* s16 parameter of the state's handler */
+#define DS3D_STATE_DATA  0x04 /* s32 handler data (a class, callback or script) */
 
 /* The 3D sprite pool and its allocator.  g3DSpriteObjects is the pool of
  * DS3D_SPRITE_COUNT objects of DS3D_SPRITE_SIZE bytes each; g3DSpriteOrder is the
@@ -369,6 +401,24 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_FLAG_NEW        0x10 /* first update deferred until the screen is ready */
 #define DS3D_SPRITE_FLAG_VISITING   0x20 /* recursion guard: the object is being visited */
 #define DS3D_SPRITE_FLAG_REPEAT     0x40 /* the update asked to run again this frame */
+
+/* A screen-offset track sprite: a 3D sprite object whose update callback
+ * (see main_02080414.c) moves one or both engines' offset pair along a
+ * looping 2-D path and hands the object back to its regular animation after
+ * `steps` path points (or after the first pass when `steps` is -1).  The path
+ * tables are the pointers in g3DSpriteOffsetTracks; a point whose x is 0x7FFF
+ * ends a pass. */
+typedef struct DS3DSpriteOffsetTrack {
+    u8  pad00[0x4C];
+    s16 steps;      /* +0x4C path points shown before the effect ends, -1 = one pass */
+    u8  pad4E[2];
+    s16 target;     /* +0x50 Set3DSpriteOffset target: which engine offsets move */
+    u16 scale;      /* +0x52 offset size in percent */
+    s16 (*path)[2]; /* +0x54 path points: x in [0], y in [1], 0x7FFF ends a pass */
+    u8  pad58[4];
+    s32 index;      /* +0x5C current path point */
+    s32 elapsed;    /* +0x60 path points shown so far */
+} DS3DSpriteOffsetTrack;
 
 
 /* Palette fade fields a 3D sprite object gains when it is animated by

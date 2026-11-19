@@ -93,38 +93,42 @@ s32 GetPanelKeyAction(void) {
     return 0;
 }
 
-void func_0209dd34(void *arg0) {
+void InitFullScreenTouchRect(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0) = 0;
     M2C_FIELD(arg0, s16 *, 2) = 0;
     M2C_FIELD(arg0, s16 *, 4) = 0x100;
     M2C_FIELD(arg0, s16 *, 6) = 0xC0;
 }
 
-s32 func_0209dd54(void) {
+/* Return PANEL_INPUT_CONFIRM while a touch is held that began inside the whole
+ * screen (the full-screen touch rectangle), else no action. */
+s32 GetScreenTouchConfirm(void) {
     extern void *gTouchState;
-    s16 rect[4];
-    u16 x;
-    u16 y;
-    x = M2C_FIELD(gTouchState, u16 *, 0);
-    y = M2C_FIELD(gTouchState, u16 *, 2);
-    func_0209dd34(rect);
-    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return 0;
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return 0;
-    if (rect[0] < x && x < rect[0] + rect[2] && rect[1] < y && y < rect[1] + rect[3]) return 0x10;
+    s16 bounds[4];
+    u16 touchX;
+    u16 touchY;
+    touchX = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_X);
+    touchY = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_Y);
+    InitFullScreenTouchRect(bounds);
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) == 0) return 0;
+    if (bounds[0] < touchX && touchX < bounds[0] + bounds[2] && bounds[1] < touchY && touchY < bounds[1] + bounds[3]) return PANEL_INPUT_CONFIRM;
     return 0;
 }
 
-s32 func_0209dde0(void) {
+/* Text-object twin of GetScreenTouchConfirm: return PANEL_INPUT_CONFIRM while a
+ * touch is held that began inside the whole screen, else no action. */
+s32 GetTextObjectTouchConfirm(void) {
     extern void *gTouchState;
-    s16 rect[4];
-    u16 x;
-    u16 y;
-    x = M2C_FIELD(gTouchState, u16 *, 0);
-    y = M2C_FIELD(gTouchState, u16 *, 2);
-    func_0209dd34(rect);
-    if (M2C_FIELD(gTouchState, u8 *, 0x12) == 0) return 0;
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return 0;
-    if (rect[0] < x && x < rect[0] + rect[2] && rect[1] < y && y < rect[1] + rect[3]) return 0x10;
+    s16 bounds[4];
+    u16 touchX;
+    u16 touchY;
+    touchX = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_X);
+    touchY = M2C_FIELD(gTouchState, u16 *, TOUCH_CUR_Y);
+    InitFullScreenTouchRect(bounds);
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE) == 0) return 0;
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) == 0) return 0;
+    if (bounds[0] < touchX && touchX < bounds[0] + bounds[2] && bounds[1] < touchY && touchY < bounds[1] + bounds[3]) return PANEL_INPUT_CONFIRM;
     return 0;
 }
 
@@ -210,34 +214,39 @@ void func_0209e008(void *arg0) {
     temp_r0();
 }
 
-void func_0209e034(void *arg0) {
+void TaskSpriteEntry(void *arg0) {
     M2C_FIELD(arg0, void (**)(void), 0)();
 }
 
-void func_0209e044(s32 arg0, s32 arg1, u32 arg2, s32 arg3, s32 arg4) {
+/* Start an OS thread owned by a new task sprite: allocate the thread object and
+ * a `stackSize`-byte stack, record `cleanup` to be run with the sprite, start
+ * `entry` on the thread at `priority` and wake it.  `z` is the sprite's depth,
+ * also recorded as the value handed to the entry function. */
+void CreateTaskSprite(s32 entry, s32 z, u32 stackSize, s32 priority, s32 cleanup) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
     s32 HeapAllocBlock(u32);
-    void func_01ffa8bc(void *, s32);
+    void SetSpriteZ(void *, s32);
     void TaskCreate(s32, void (*)(void *), void *, s32, u32, s32);
     void TaskWake(s32);
-    extern M2C_UNK data_0211f7dc;
-    void *p;
-    p = CreateSpriteFromClass(&data_0211f7dc, 3);
-    M2C_FIELD(p, s32 *, 0x34) = HeapAllocBlock(0xC0);
-    M2C_FIELD(p, s32 *, 0x38) = HeapAllocBlock(arg2);
-    M2C_FIELD(p, s32 *, 0x3C) = arg4;
-    func_01ffa8bc(p, arg1);
-    M2C_FIELD(p, s32 *, 0x40) = arg0;
-    M2C_FIELD(p, s32 *, 0x44) = arg1;
-    TaskCreate(M2C_FIELD(p, s32 *, 0x34), func_0209e034, p + 0x40, M2C_FIELD(p, s32 *, 0x38) + (arg2 & ~3), arg2, arg3);
-    TaskWake(M2C_FIELD(p, s32 *, 0x34));
+    extern M2C_UNK gTaskSpriteClass;
+    void *sprite;
+
+    sprite = CreateSpriteFromClass(&gTaskSpriteClass, 3);
+    M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD) = HeapAllocBlock(TASK_SPRITE_THREAD_SIZE);
+    M2C_FIELD(sprite, s32 *, TASK_SPRITE_STACK) = HeapAllocBlock(stackSize);
+    M2C_FIELD(sprite, s32 *, TASK_SPRITE_CLEANUP) = cleanup;
+    SetSpriteZ(sprite, z);
+    M2C_FIELD(sprite, s32 *, TASK_SPRITE_ENTRY) = entry;
+    M2C_FIELD(sprite, s32 *, TASK_SPRITE_ARG) = z;
+    TaskCreate(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD), TaskSpriteEntry, sprite + TASK_SPRITE_ENTRY, M2C_FIELD(sprite, s32 *, TASK_SPRITE_STACK) + (stackSize & ~3), stackSize, priority);
+    TaskWake(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD));
 }
 
-u8 func_0209e0dc(M2C_UNK arg0) {
-    extern M2C_UNK data_0211f7dc;
+u8 IsTaskSpriteRunning(M2C_UNK arg0) {
+    extern M2C_UNK gTaskSpriteClass;
     u8 var_r0;
 
-    if (func_01ffa860(&data_0211f7dc, arg0) != 0) {
+    if (func_01ffa860(&gTaskSpriteClass, arg0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

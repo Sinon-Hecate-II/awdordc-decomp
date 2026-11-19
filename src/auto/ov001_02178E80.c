@@ -65,7 +65,7 @@ void Ov001_ShowProfileMessage(void) {
     CopyU16(message + 2, textBuf, M2C_FIELD(message, u8 *, 1) * 2);
     DrawPanelText(panel, 8, 53, 240, 28, 2, 0x480, textBuf);
     CloseTextPanel(panel);
-    func_ov001_021760f0(func_ov001_021792ec);
+    Ov001_SetProfileScreenCallback(func_ov001_021792ec);
     Ov001_ShowMessage(29, 4, 0, -1, 0);
     Ov001_SetStepCallback(func_ov001_02179078);
 }
@@ -129,7 +129,7 @@ void func_ov001_021790f4(void) {
         break;
     default: return;
     }
-    func_ov001_021760f0(0);
+    Ov001_SetProfileScreenCallback(0);
     func_ov001_02186604();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217916c);
 }
@@ -154,7 +154,7 @@ void func_ov001_0217916c(void) {
 }
 
 void func_ov001_021791c8(void) {
- M2C_UNK func_ov001_02176078();
+ M2C_UNK Ov001_StartProfileExitTask();
  M2C_UNK func_ov001_02176108();
  extern s8 gOv001ProfileChoice;
  extern M2C_UNK Ov001_CloseProfileScreen;
@@ -162,7 +162,7 @@ void func_ov001_021791c8(void) {
  if(Ov001_IsFadeActive(0)!=0)return;
  if(M2C_FIELD(&gOv001ProfileChoice,u8 *,0)==0 && M2C_FIELD(&gOv001ProfileChoice,u8 *,1)==1) {
  func_ov001_02176108();
- }else {func_ov001_02176078();}
+ }else {Ov001_StartProfileExitTask();}
  Ov001_SetStepCallback(&Ov001_CloseProfileScreen);
 }
 
@@ -208,7 +208,7 @@ s32 func_ov001_02179300(void) {
 
 void func_ov001_02179320(void) {
  M2C_UNK func_ov001_02175f8c(M2C_UNK *);
- M2C_UNK func_ov001_02171e58(M2C_UNK);
+ M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
  M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
  void func_ov001_0217969c(s32);
  void func_ov001_0217936c(void);
@@ -217,7 +217,7 @@ void func_ov001_02179320(void) {
  func_ov001_02175f8c((M2C_UNK *)&func_ov001_0217969c);
  data_ov001_02193d88=0;
  func_ov001_0217936c();
- func_ov001_02171e58(0x1C);
+ Ov001_ShowMessageBox(0x1C);
  Ov001_CreateAnimSprite(0);
  Ov001_PlaySound(11);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021793ec);
@@ -300,12 +300,12 @@ void func_ov001_021794c0(void) {
 
 void func_ov001_021794ec(void) {
     M2C_UNK Ov001_LockIconRow();
-    M2C_UNK func_ov001_02176078();
+    M2C_UNK Ov001_StartProfileExitTask();
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
     extern u8 data_ov001_02193d88;
     extern M2C_UNK func_ov001_02179524;
     if (data_ov001_02193d88 == 0) {
-        func_ov001_02176078();
+        Ov001_StartProfileExitTask();
     }
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
@@ -369,7 +369,7 @@ void func_ov001_0217969c(s32 arg0) {
         data_ov001_02193d88 = 2;
         Ov001_PlaySound(0x12);
     }
-    func_ov001_021760f0(0);
+    Ov001_SetProfileScreenCallback(0);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021794ec);
 }
 
@@ -384,16 +384,16 @@ void func_ov001_02179718(void) {
     extern u8 data_ov001_02193d8c;
     void Ov001_LoadWirelessSetupBg(void);
     void func_ov001_02179820(void);
-    M2C_UNK func_ov001_021722ac();
+    M2C_UNK Ov001_LoadSaveSlotObjLayout();
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02171dd0(M2C_UNK);
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
     M2C_UNK Ov001_InitWirelessSetup();
     M2C_FIELD(&data_ov001_02193d8c, u16 *, 2) = 0;
     Ov001_LoadWirelessSetupBg();
-    func_ov001_021722ac();
+    Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessagePanel(0x36, -1, 0);
-    func_ov001_02171dd0(2);
-    func_ov001_02171e58(0x22);
+    Ov001_OpenMenuForMode(2);
+    Ov001_ShowMessageBox(0x22);
     Ov001_CreateAnimSprite(0);
     Ov001_InitWirelessSetup();
     Ov001_PlaySound(0xB);
@@ -639,8 +639,8 @@ void func_ov001_02179cf0(void);
 void func_ov001_02179d5c(void);
 data_ov001_02193d94=0;
 func_ov001_02179cf0();
-func_ov001_021722ac();
-func_ov001_02171e58(0x23);
+Ov001_LoadSaveSlotObjLayout();
+Ov001_ShowMessageBox(0x23);
 Ov001_PlaySound(0x10);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179d5c);
 }

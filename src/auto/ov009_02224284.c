@@ -317,7 +317,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK func_ov009_02223290(void);
     void func_ov009_0222496c(void *);
     void *func_ov009_0222497c(void *);
-    s32 func_02011e08(void);
+    s32 GetGameGroupId(void);
     s32 func_ov009_02222ac4(void);
     extern M2C_UNK data_ov009_022269e0;
     extern M2C_UNK data_ov009_02226a20;
@@ -399,7 +399,7 @@ test:
     stk[0].first = x;
     stk[0].second = y;
     M2C_FIELD(&data_ov009_022269e0,u16 *,0x32)=arg3;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x18)=func_02011e08();
+    M2C_FIELD(&data_ov009_022269e0,u16 *,0x18)=GetGameGroupId();
     M2C_FIELD(&data_ov009_022269e0,u16 *,0x34)=0xc0;
     M2C_FIELD(&data_ov009_022269e0,u16 *,0x36)=0xc0;
     M2C_FIELD(&data_ov009_022269e0,u16 *,0x10)=arg4-1;
@@ -697,7 +697,7 @@ void *func_ov009_02224d30(void *arg0, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32
 
 s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkPhase(void);
-    M2C_UNK func_ov009_022254a4(void);
+    M2C_UNK IsLinkHost(void);
     M2C_UNK GetConnectedPlayers(void);
     M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
@@ -715,7 +715,7 @@ s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             return 0;
         }
     }
-    if (func_ov009_022254a4() == 0) {
+    if (IsLinkHost() == 0) {
         return 0;
     }
     arg3 = arg3 & GetConnectedPlayers();
@@ -752,7 +752,7 @@ s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 GetLinkPhase(void);
-    s32 func_ov009_022254a4(void);
+    s32 IsLinkHost(void);
     s32 GetConnectedPlayers(void);
     s32 GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
@@ -771,7 +771,7 @@ s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
             return 0;
         }
     }
-    if (func_ov009_022254a4() != 0) {
+    if (IsLinkHost() != 0) {
         arg3 = arg3 & GetConnectedPlayers();
     }
     first = GetLinkLocalPlayerId();
@@ -806,8 +806,10 @@ s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 arg5) {
-    M2C_UNK func_ov009_022254a4(void);
+#pragma cplusplus on
+#pragma opt_lifetimes off
+extern "C" s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, s32 size, u32 arg5) {
+    M2C_UNK IsLinkHost(void);
     M2C_UNK GetConnectedPlayers(void);
     M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
@@ -815,28 +817,26 @@ s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 a
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
-    u16 saved;
-    u16 masked;
+    register u32 mask = arg5;
+    register u16 recipients;
+    s32 allPlayers = -1;
     void *ptr;
 
-    if (func_ov009_022254a4() == 0) {
-        return 0;
+    if (IsLinkHost()) {
+        mask &= GetConnectedPlayers();
     }
-    arg5 &= GetConnectedPlayers();
-    masked = (u16)(arg5 & ~(1 << GetLinkLocalPlayerId()));
+    recipients = (u16)(mask & (allPlayers ^ (1U << GetLinkLocalPlayerId())));
 
-    saved = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
+    {
+    Ov009InterruptGuard guard;
 
-    ptr = (void *)func_ov009_0222132c((s32)((u8 *)arg4 + 0x10), 0x20);
+    ptr = (void *)func_ov009_0222132c(size + 0x10, 0x20);
     if (ptr == 0) {
-        (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = saved;
-        return 1;
+        goto done;
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    func_ov009_02224d30((u8 *)ptr + 4, arg0, arg1, arg2, arg3, (s32)arg4, masked);
+    func_ov009_02224d30((u8 *)ptr + 4, arg0, arg1, arg2, arg3, size, recipients);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
@@ -848,14 +848,12 @@ s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, void *arg4, s32 a
     M2C_FIELD(&gLinkState, s32 *, 0x6c) =
         M2C_FIELD(&gLinkState, s32 *, 0x6c) + 1;
 
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = saved;
+    }
+done:
     return 1;
 }
-
-#pragma optimization_level 4
-#pragma opt_propagation on
-#pragma opt_deadcode on
+#pragma opt_lifetimes reset
+#pragma cplusplus off
 s32 func_ov009_022250f8(s32 arg0) {
     extern M2C_UNK data_ov009_022269b0;
     s32 offset = arg0 * 12;

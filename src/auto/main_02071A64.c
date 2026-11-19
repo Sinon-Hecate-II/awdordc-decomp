@@ -1,7 +1,7 @@
 /* 10 functions from 0x02071A64 to 0x02072A54 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_02071a64(u32 arg0, u32 arg1) {
+s32 _fmul(u32 arg0, u32 arg1) {
     s32 temp_ip_2;
     s32 temp_ip_3;
     s32 temp_ip_4;
@@ -159,7 +159,7 @@ block_9:
     return temp_r2;
 }
 
-f32 func_02071c50(f32 a, f32 b) {
+f32 _fsub(f32 a, f32 b) {
     return a - b;
 }
 

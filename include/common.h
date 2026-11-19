@@ -20,6 +20,22 @@ typedef int BOOL;
 #define NULL ((void*)0)
 #endif
 
+/* The compression types of a DS compressed block: the high nibble of its first
+ * byte, which InitDecompress keeps in the decoder's type byte. */
+enum {
+    COMP_TYPE_LZ77    = 0x10,
+    COMP_TYPE_HUFFMAN = 0x20,
+    COMP_TYPE_RLE     = 0x30
+};
+
+/* State of the chunked decompressor: InitDecompress (main_0207C2F0) sets the
+ * two bytes below, then the compression type's Init*Decompress (main_02007EF4)
+ * fills in the decoder state at +0x04 that DecompressChunk runs. */
+typedef struct DecompressState {
+    u8 compType;  /* +0x00 COMP_TYPE_* from the block header's high nibble */
+    u8 vramFlag;  /* +0x01 1 when the output address is outside main RAM (VRAM) */
+} DecompressState;
+
 /* Word-at-a-time C string helpers (StringCompare, StringCopy): a little-endian word
  * holds a NUL byte when (word + STRING_ZERO_BIAS) & ~word & STRING_ZERO_MASK is set. */
 #define STRING_ZERO_BIAS 0xfefefeffu /* the word minus 0x01010101 */
@@ -70,6 +86,17 @@ typedef struct HashTable {
     s32 (*hash)(const void *, s32);    /* +0x0C element, nBuckets -> bucket */
     s32 (*compare)(const void *, const void *); /* +0x10 a, b -> 0 when equal */
 } HashTable;
+
+/* GameSpy gpi darray (darray.c; the Vector_* functions in main_02047B84): an
+ * array of count items of elemSize bytes that holds capacity slots and grows by
+ * growCapacity slots when full.  userData is the per-item release callback that
+ * Vector_Free and Vector_RemoveItem call. */
+#define VECTOR_COUNT     0x00 /* s32 items in use */
+#define VECTOR_CAPACITY  0x04 /* s32 slots allocated */
+#define VECTOR_ELEM_SIZE 0x08 /* s32 bytes per item */
+#define VECTOR_GROW      0x0C /* s32 slots added when the array is full */
+#define VECTOR_USER_DATA 0x10 /* s32 per-item release callback, 0 when none */
+#define VECTOR_ITEMS     0x14 /* void *the item slots */
 
 /* A 16-bit pixel rectangle (position and size) handed to the sprite widget code. */
 typedef struct WidgetRect {
@@ -165,6 +192,15 @@ typedef struct HashDescriptor {
     void (*final)(void *, void *);             /* +0x18 */
 } HashDescriptor;
 
+#define SHA1_DIGEST_SIZE 20 /* bytes of a SHA1 digest */
+
+/* A fixed HMAC key: the key bytes and their length.  gHmacSha1Key is the 64-byte
+ * archive-signing key HmacSha1Verify uses. */
+typedef struct HmacKey {
+    const u8 *data; /* +0x00 key bytes */
+    u32 length;     /* +0x04 key length in bytes */
+} HmacKey;
+
 /* SHA1 state worked on by Sha1Init, Sha1Update and SHA1_Finalize (main_0200BDA4). */
 typedef struct Sha1Context {
     u32 state[5];      /* +0x00 A, B, C, D, E */
@@ -247,6 +283,7 @@ enum {
 #define TLS_PENDING_READ   0x82c /* s32 bytes of it read so far */
 #define TLS_PENDING_KEEP   0x456 /* u8 keep the reassembled record for the caller */
 #define TLS_STATE_CLIENT_HELLO 1  /* TLS_STATE value: the peer's ClientHello was accepted */
+#define TLS_STATE_CLIENT_KEY_EXCHANGE 5 /* TLS_STATE value: the peer's ClientKeyExchange was accepted */
 #define TLS_STATE_SERVER_HELLO_DONE 4 /* TLS_STATE value: the peer sent ServerHelloDone */
 #define TLS_STATE_FINISHED  6     /* TLS_STATE value: the peer's Finished digest verified */
 #define TLS_MD5_CTX_SIZE    0x58  /* bytes of a saved MD5 transcript context */
@@ -373,6 +410,9 @@ typedef struct MapSelectScreen {
 #define WAYPOINT_LIST_CLICKED 0x05 /* s8: slot clicked this frame, -1 = none */
 #define WAYPOINT_LIST_PRESSED 0x06 /* s8: slot showing its pressed frame, -1 = none */
 #define WAYPOINT_LIST_SELECTED 0x07 /* u8: currently selected slot */
+#define WAYPOINT_LIST_OPTION  0x08 /* u8: the selected slot's option, what the list shows and plays with */
+#define WAYPOINT_LIST_PENDING_OPTION 0x09 /* u8: option the player-option menu is editing; RestoreWaypointOption puts it back */
+#define WAYPOINT_LIST_SLOT_OPTIONS 0x0A /* u8[4]: per-slot option, one byte per slot */
 #define WAYPOINT_LIST_IDS     0x74 /* u8[4]: player id of each slot, 0xFF = no player yet */
 #define WAYPOINT_LIST_SLOTS   0x78 /* void *[26]: the slot sprites */
 #define WAYPOINT_LIST_SLOT_COUNT 26
@@ -392,6 +432,7 @@ typedef struct WaypointSlotGroup {
 #define WAYPOINT_PANEL_SELECT_SPRITES 0x64 /* void *[4]: player-select sprite objects */
 #define WAYPOINT_PANEL_GROUP          0x68 /* the sprite group */
 #define WAYPOINT_PANEL_LIST           0x6C /* the waypoint list */
+#define WAYPOINT_PANEL_ICON_RECORD    0x40 /* CO panel record the icon refresh updates */
 #define WAYPOINT_GROUP_READY          0x7C /* u8[4]: that slot's player record has arrived */
 
 /* The ov003 setup menu (the object the setup screen holds at +0x44): nine entry
@@ -440,6 +481,7 @@ typedef struct WaypointSlotGroup {
 #define MAPSELECT_NAME_TILES    0x48 /* u16[]: tile of a row name sprite, indexed by the entry's MAPSELECT_ENTRY_NAME_ID */
 #define MAPSELECT_ROW_OBJS_A    0x10 /* void *[MAPSELECT_ROWS] row labels */
 #define MAPSELECT_ROW_OBJS_B    0x24 /* void *[MAPSELECT_ROWS] map names */
+#define MAPSELECT_ROW_TILE      0x04 /* u16 of a row sprite object: tile id in the low ten bits */
 #define MAPSELECT_ROWS          5    /* rows shown at once */
 #define MAPSELECT_ROW_UNITS     0x1c /* scroll units of one list row */
 #define MAPSELECT_COUNT         0x51 /* u8 number of maps in the list */
@@ -785,6 +827,11 @@ typedef struct BreakCutIn {
  * is captured in the s32 at +8. */
 #define BATTLE_COMMAND_SEED 0x08
 
+/* The link command queues (gLinkCommandQueues): one FIFO of incoming command
+ * messages per command source, 12 bytes of queue head each. */
+#define LINK_COMMAND_QUEUE_COUNT  4
+#define LINK_COMMAND_QUEUE_STRIDE 12
+
 /* DS key bits, as stored in the KeyState masks. */
 enum {
     KEY_A = 0x0001, KEY_B = 0x0002, KEY_SELECT = 0x0004, KEY_START = 0x0008,
@@ -813,8 +860,15 @@ typedef struct ProductionMenuState {
 #define PRODUCTION_BUILD_AIR    0x10 /* air kinds, built at an airport */
 #define PRODUCTION_BUILD_NAVAL  0x20 /* naval kinds, built at a port */
 
-/* The per-kind row object the production menu creates (func_020b953c): the unit
- * kind it will build, and the frame counter of the funds line's count-up. */
+/* The production menu's list of buildable entries (gProductionChoices): up
+ * to PRODUCTION_MENU_PAGE_ENTRIES {kind, unaffordable} byte pairs, terminated
+ * by a zero kind. */
+#define PRODUCTION_MENU_PAGE_ENTRIES    7 /* entries drawn on one page of the menu */
+#define PRODUCTION_MENU_CHOICE_KIND     0 /* u8: unit kind, 0 ends the list */
+#define PRODUCTION_MENU_UNAFFORDABLE    1 /* u8: 1 when the player cannot pay for that kind yet */
+
+/* The per-kind row object the production menu creates (CreateProductionMenuRow):
+ * the unit kind it will build, and the frame counter of the funds line's count-up. */
 #define PRODUCTION_ROW_KIND     0x5C /* s32 unit kind the row is about */
 #define PRODUCTION_ROW_FRAME    0x6C /* s16 frames elapsed */
 #define PRODUCTION_ROW_DURATION 0x6E /* s16 frames the count-up takes */
@@ -863,10 +917,17 @@ enum {
     GPI_FIELD_PORT   = 2  /* big-endian 16-bit */
 };
 
-/* Bits of a gpi player's state byte (player + 0x14). */
+/* Bits of a gpi player's state byte (player + 0x14): what sections of a reply
+ * have been applied, which query the record was sent for, and whether the reply
+ * is complete. */
 enum {
     GPI_PLAYER_STATE_FIELDS = 1, /* a fields section has been applied */
-    GPI_PLAYER_STATE_KEYS   = 2  /* a key/value section has been applied */
+    GPI_PLAYER_STATE_KEYS   = 2, /* a key/value section has been applied */
+    GPI_PLAYER_QUERY_MASK   = 0x0C, /* bits 2..3: one-hot kind of query the record was sent for */
+    GPI_PLAYER_QUERY_KEYS   = 0x04, /* the query asked for the record's named keys only */
+    GPI_PLAYER_QUERY_INFO   = 0x08, /* the query asked for the record's whole info */
+    GPI_PLAYER_QUERY_CLEAR  = 0xF3, /* a state byte with GPI_PLAYER_QUERY_MASK cleared */
+    GPI_PLAYER_STATE_COMPLETE = 0x40 /* the reply arrived in full, the query is done */
 };
 
 /* Fields of a gpi peer record (64 bytes, gpiCreatePeer). */
@@ -1125,6 +1186,7 @@ enum {
 #define CONN_SESSION_PEER_PORTS   0x290 /* u16 per slot: peer port */
 #define CONN_SESSION_PLAYER_MASK  0x2F0 /* u32 bitmask of player slots that are present */
 #define CONN_SESSION_MODE         0x15  /* u8 connection mode (0/1 joining, 2/3 serving) */
+#define CONN_SESSION_JOIN_FLAG    0x1A6 /* u8 flag StartJoinMatch was opened with: sends command 6 on the binary path and lets the peer-list membership checks pass while the join settles */
 #define CONN_SESSION_BUSY         0x1A9 /* u8 nonzero while a connection change is in progress */
 #define CONN_SESSION_TEARDOWN     0x1A8 /* u8 nonzero while peers are being removed or the session torn down */
 #define CONN_SESSION_NATNEG       0x19C /* s32 NAT negotiation session to free on teardown, 0 when none */
@@ -1193,10 +1255,29 @@ typedef struct PeerAddress {
 /* Fields of the online-match session context (the pointer held at
  * gMatchSessionMgr + 8). */
 #define MATCH_SESSION_STATUS       0x00 /* s32 0 idle, 1 running, 2 finished */
+#define MATCH_SESSION_STATUS_RUNNING 1  /* MATCH_SESSION_STATUS: the match is running */
 #define MATCH_SESSION_CONNECTION   0x04 /* void *GameSpy gpi connection handle of the match session */
+#define MATCH_SESSION_THINK_COUNT  0x08 /* s32 paced think passes run on the session's connection */
+#define MATCH_SESSION_THINK_TICK   0x0C /* u64 system tick of the last paced think pass */
 #define MATCH_SESSION_PLAYER_COUNT 0x14 /* s32 number of players */
 #define MATCH_SESSION_PLAYERS      0x18 /* array of 12-byte player records */
 #define MATCH_SESSION_PLAYER_SIZE  12
+
+/* Fields of one 12-byte player record (MATCH_SESSION_PLAYERS, and the record at
+ * the head of a saved battle's slot): the first word packs the record kind in its
+ * low two bits and a 21-bit flag field from bit 11 up; the two words after it are
+ * the player's profile id, or for a PLAYER_RECORD_CODE record a 64-bit player
+ * code whose low word is that id and whose high word is a 7-bit checksum of the
+ * id and the local user id. */
+#define PLAYER_RECORD_TYPE       0x00 /* u32 bits 0..1: a PLAYER_RECORD_KIND_* value */
+#define PLAYER_RECORD_CODE       0x04 /* u64 player code of a PLAYER_RECORD_KIND_CODE record */
+#define PLAYER_RECORD_ID         0x04 /* s32 GameSpy profile id of a PLAYER_RECORD_KIND_PROFILE record */
+
+/* PLAYER_RECORD_TYPE values. */
+#define PLAYER_RECORD_KIND_EMPTY      0 /* no player */
+#define PLAYER_RECORD_KIND_UNRESOLVED 1 /* its profile has not been looked up yet (GetPlayerRecordId gives -1) */
+#define PLAYER_RECORD_KIND_CODE       2 /* a player code, resolved against the local profile */
+#define PLAYER_RECORD_KIND_PROFILE    3 /* a profile id, marked joined once the player is in the match */
 #define MATCH_SESSION_CURSOR       0x1C /* u8 player being processed */
 #define MATCH_SESSION_DIRTY        0x1D /* u8 player list changed */
 #define MATCH_SESSION_STATE        0x1E /* u8 match-setup step */
@@ -1207,6 +1288,8 @@ typedef struct PeerAddress {
 #define MATCH_SESSION_INFO_DATA    0x38 /* s32 data passed to INFO_CB */
 #define MATCH_SESSION_STATS_CB     0x3C /* void (*)(s32 slot, s32 otherSlot, s32 data): folds one player's battle stats into another */
 #define MATCH_SESSION_STATS_DATA   0x40 /* s32 data passed to STATS_CB */
+#define MATCH_SESSION_SLOT_CB      0x44 /* void (*)(s32 slot, s32 data): invoked when a player slot changed */
+#define MATCH_SESSION_SLOT_DATA    0x48 /* s32 data passed to SLOT_CB */
 
 /* Multiboot (DS Download Play) boot state (gMbBootState, 0x20 bytes). */
 typedef struct MbBootState {
@@ -1241,6 +1324,30 @@ typedef struct MbBootState {
 #define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player 1-byte flag, -1 = gave up, indexed from 1 */
 #define MB_BLOCK_SIZE       0x1318 /* u32 bytes carried by one transfer block, at this work-area offset */
 
+/* The multiboot worker thread (gMbJobTask): a TaskCreate thread object whose
+ * MB_TASK_JOB word points at the job to run and whose MB_TASK_JOB_BLOCK record is
+ * the job it always owns.  A job's first callback runs it and returns its result,
+ * the second callback runs afterwards; the job record is 0x24 bytes. */
+#define MB_TASK_JOB         0xC0 /* void *job the worker is running, 0 while it sleeps */
+#define MB_TASK_JOB_BLOCK   0xC4 /* the worker's own MB_JOB_SIZE-byte job record */
+#define MB_JOB_SIZE         0x24 /* bytes of one job record */
+#define MB_JOB_FIRST        0x00 /* s32 (*)(void *job): runs the job, its return is the result */
+#define MB_JOB_SECOND       0x04 /* void (*)(void *job): runs after the job's first callback */
+#define MB_JOB_RESULT       0x08 /* s32 result the first callback returned */
+#define MB_JOB_REST         0x0C /* s32[6] */
+
+/* The game group id a download-play parent advertises in its beacon: a value
+ * from MB_GROUP_ID_COUNT ids starting at MB_GROUP_ID_FIRST, picked from the
+ * console's MAC address and the shared frame counter. */
+#define MB_GROUP_ID_FIRST   0xC8 /* 200 */
+#define MB_GROUP_ID_COUNT   20   /* ids a console chooses from */
+
+/* Link session fields of the multiboot context (gMbState.ctx, the front of the
+ * same work area the offsets above index). */
+#define MB_LINK_STARTED     0x50D /* u8 1 once the link has started (IsMultiBootLinkStarted) */
+#define MB_LINK_CLOSING     0x526 /* u16 nonzero once the link shutdown has begun */
+#define MB_LINK_ALIVE       0x5E4 /* s32 1 while the link keeps running; cleared when it closes */
+
 /* The DS Download Play send queue the WFC download channel drains
  * (gDownloadSendState, main_02015AA0): the files waiting to be sent, the file being
  * sent and the packet buffer transmitted.  The packet symbol gDownloadPacket is
@@ -1253,6 +1360,14 @@ typedef struct MbBootState {
 /* Fields of a DownloadFile (one queued 0x4C0-byte file record). */
 #define DL_FILE_STEP  0x4B4 /* u8 per-file counter copied into DL_FILE_INDEX */
 #define DL_FILE_NEXT  0x4BC /* DownloadFile *next queued file */
+/* DL_STATE values of the download sender. */
+#define DL_STATE_IDLE         0 /* no file has been started yet */
+#define DL_STATE_START        1 /* a queued file may be started */
+#define DL_STATE_BEGIN_PACKET 2 /* choose the file region the next packets carry */
+#define DL_STATE_SEND_CHUNK   3 /* send the file's 0x62-byte chunk packets */
+#define DL_STATE_FILE_DONE    4 /* file data complete, move on to its roster packets */
+#define DL_STATE_SEND_ROSTER  5 /* send the file's roster/unit packets */
+#define DL_STATE_WAIT         6 /* nothing to send, keep polling */
 
 /* Events a multiboot command callback receives.  The callback pointer lives in
  * MB_PLAYER_STATE + 0 (set by func_02013e70) and is run by func_0201409c as
@@ -1290,6 +1405,18 @@ typedef struct MbBootState {
  * area; the normal card read command cannot fetch them, so a card load that
  * starts in that range skips the unreadable part. */
 #define CARD_SECURE_AREA_END   0x8000
+
+/* What a card read drives: the byte-wide command registers (byte 0 the control
+ * byte, then the 0xB7 "read card" opcode and the four address bytes), the ROM
+ * control register that starts a command and reports its progress, and the 32-bit
+ * data port the command streams a page through.  The boot header's card control
+ * word supplies the transfer clock the commands are built from. */
+#define CARD_REG_COMMAND    0x040001A1 /* u8[8]: command registers */
+#define CARD_REG_ROMCTRL    0x040001A4 /* u32: bit 31 busy, bit 23 a data word is ready */
+#define CARD_REG_DATA       0x04100010 /* u32: data port the read command fills */
+#define CARD_HEADER_CONTROL 0x027FFE60 /* u32: card control word kept in the header window */
+#define CARD_READ_OPCODE    0xB7 /* u8 command byte that starts a read */
+#define CARD_PAGE_SIZE      0x200 /* bytes one read command fetches */
 
 /* One multiboot member's chunk transfer: the next block to send, where it goes in
  * the member's memory and which program chunk it belongs to. */
@@ -1341,6 +1468,28 @@ typedef struct MbRecordRx {
     s32 fragmentCount; /* +0x0C fragments that make up a full record */
     s32 recordSize;    /* +0x10 bytes per record */
 } MbRecordRx;
+/* State of the ov001 front end (the title and menu screens), kept in
+ * gOv001ScreenState and set up by the screen-mode initialiser before the main
+ * loop runs.  Functions declare it `extern u8 gOv001ScreenState;` locally. */
+#define OV001_SCREEN_LANGUAGE   0x00 /* u8 console language the front end was started with */
+#define OV001_SCREEN_EXIT       0x01 /* u8 nonzero asks the main loop to stop */
+#define OV001_SCREEN_WORK       0x04 /* void *work buffer the overlay was loaded on */
+#define OV001_SCREEN_OPTIONS    0x08 /* u32 screen options: low nibble = screen layout, bit 4+n = option n */
+#define OV001_SCREEN_STEP       0x0c /* void (*)(void) called once per frame by the main loop */
+#define OV001_SCREEN_NEXT_MODE  0x10 /* s32 next screen mode (see Ov001_SetNextScreenMode) */
+#define OV001_SCREEN_NEXT_ARG   0x14 /* s32 argument of the next screen mode */
+#define OV001_SCREEN_ENTRY_MODE 0x18 /* s32 name-entry mode (see Ov001_SetNameEntryMode) */
+#define OV001_SCREEN_ENTRY_ARG  0x1c /* s32 argument of the name-entry mode */
+
+/* Positions compared by ConvergeSyncedPositions are Q12 fixed-point pixels
+ * (0x1000 is one pixel).  Each call moves a position by at most one map cell
+ * (24 pixels, the size of a cell in the zoomed-in map view), by a saturating
+ * curve of the gap between the two positions whose scale is 400 pixels. */
+#define POS_FX_ONE          0x1000  /* 1.0 in Q12 */
+#define POS_FX_HALF         0x800   /* 0.5 in Q12 */
+#define POS_CONVERGE_CELL   0x18000 /* 24 pixels in Q12: most a position moves per call */
+#define POS_CONVERGE_SCALE  0x190000 /* 400 pixels in Q12: the curve's scale */
+
 /* The receive state itself is declared `extern M2C_UNK gMbRecordRx;` locally by
  * each user; access its fields through this. */
 #define MB_RECORD_RX ((MbRecordRx *)&gMbRecordRx)
@@ -1378,7 +1527,13 @@ typedef struct NetError {
 #define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as */
 
 /* Fields of the ov010 online session the match event handlers touch. */
+#define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
+#define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
+#define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
 #define OV010_SESSION_CALLBACK 0x0c /* void (*)(s32 error, s32 aborted, s32 data): the running match's event callback */
+#define OV010_SESSION_PLAYER   0x24 /* void *: the local player's join record (OV010_PLAYER_*) */
+#define OV010_PLAYER_JOINED    0x00 /* u8 nonzero once the local player joined the session */
+#define OV010_PLAYER_MASK      0x02 /* u16 this console's player bit */
 #define OV010_SESSION_LOCAL_ID 0xfb /* u8 this console's transport player id, stored when the match starts */
 
 /* A match player's info record (0x210 bytes), filled by gpGetBuddyStatus from
@@ -1524,6 +1679,7 @@ enum {
  #define SAVE_EXTRA_EMPTY_A  0x4f5 /* u8: the +0xc0/+0xc4 codes are absent (cleared on commit) */
  #define SAVE_EXTRA_EMPTY_B  0x4f6 /* u8: the +0xc8/+0xcc codes are absent (cleared on commit) */
 #define SAVE_SLOT_SIZE         0x100 /* bytes per physical save slot image */
+#define SAVE_SLOT_IMAGE_SIZE   0xF0  /* slot bytes copied to/from the working copy; above this is working-copy only */
 #define SAVE_SLOT_STATUS_REL   0xE7  /* slot-relative SAVE_SLOT_STATUS: 1/2 written, 0xFF erased */
 #define SAVE_SLOT_PROFILE_CODE_SIZE 14 /* bytes of the local Wi-Fi profile code stored at SAVE_SLOT_CODE */
 #define SAVE_SLOT_MAP_NAME     0x40 /* offset within one slot image of SAVE_MAP_NAME */
@@ -1546,6 +1702,22 @@ enum {
  * SAVE_RECORD_STRIDE-byte directory records to find the newest one of a type. */
 #define SAVE_BLOCK_MAGIC        0x07090600 /* first word of an initialised save block */
 #define SAVE_BLOCK_SIZE         0xC34      /* bytes of a complete battle save */
+
+/* A block of the card save archive (SaveManager_ScanArchive walks 256 of them
+ * in 0x400-byte steps): a magic word, the block's byte length, its type and
+ * version, then the links to the previous and next block of the chain.  Type 1
+ * is the save-list head, whose two link words hold its timestamp instead. */
+#define SAVE_ARCHIVE_MAGIC      0x32777364 /* "dws2" first word of an archive block */
+#define SAVE_ARCHIVE_LENGTH     0x0C /* u16 bytes the block occupies, at most SAVE_ARCHIVE_MAX_SIZE */
+#define SAVE_ARCHIVE_TYPE       0x0E /* u8 SAVE_ARCHIVE_TYPE_* or 9 + campaign map index */
+#define SAVE_ARCHIVE_VERSION    0x0F /* u8 block format version, 1 */
+#define SAVE_ARCHIVE_PREV       0x10 /* u16 previous block, SAVE_ARCHIVE_LINK_NONE; the head's low timestamp word */
+#define SAVE_ARCHIVE_NEXT       0x12 /* u16 next block, SAVE_ARCHIVE_LINK_NONE; the head's high timestamp word */
+#define SAVE_ARCHIVE_MAX_SIZE   0x400 /* largest block the archive holds */
+#define SAVE_ARCHIVE_TYPE_LIMIT 0x3B /* block types below this are known */
+#define SAVE_ARCHIVE_TYPE_HEAD  1    /* the block holding the save list itself */
+#define SAVE_ARCHIVE_LINK_MAX   0x100 /* highest block link that is not SAVE_ARCHIVE_LINK_NONE */
+#define SAVE_ARCHIVE_LINK_NONE  0xFFFF /* no previous/next block */
 
 /* The local player's profile save block (the object main_020C3D34's
  * func_020c4acc returns): the save magic, a 0x40-byte profile-id block and then
@@ -1577,6 +1749,27 @@ enum {
  * bits 8..15 (0x1202 = kind 2, bit 18).  The device must report state 2 after. */
 #define SAVE_DEVICE_CONFIG      0x1202
 #define SAVE_DEVICE_STATE_READY 2      /* SaveDevice_GetState result once configured */
+
+/* The save-chip device state (gSaveDeviceState): the card lock the CARD_* calls
+ * take, the backup transfer the device runs a chunk at a time, the device task
+ * with the thread queue transfers sleep on, and the transfer flags.  Offsets
+ * 0x18..0x4C hold the lock kind and then the chip configuration and the
+ * per-transfer parameters (callback, retries, unit size). */
+#define SAVE_DEVICE_RESPONSE      0x00 /* s32 *: reply block from the ARM7; word 0 is the transfer status */
+#define SAVE_DEVICE_STATE         0x04 /* s32: device state, SAVE_DEVICE_STATE_READY once configured */
+#define SAVE_DEVICE_CALLBACK      0x38 /* void (*)(s32): called once the transfer ends */
+#define SAVE_DEVICE_CALLBACK_ARG  0x3C /* s32: argument of that callback */
+#define SAVE_DEVICE_TASK          0x44 /* task the transfer runs in when it is asynchronous */
+#define SAVE_DEVICE_THREAD_QUEUE  0x10C /* OSThreadQueue: threads asleep on the running transfer */
+#define SAVE_DEVICE_FLAGS         0x114 /* u32: SAVE_DEVICE_FLAG_* of the transfer */
+#define SAVE_DEVICE_PRIORITY      0x108 /* s32: run priority of the transfer task */
+
+/* Flags of the save-chip device state (SAVE_DEVICE_FLAGS). */
+#define SAVE_DEVICE_FLAG_BUSY         0x04 /* a transfer is running */
+#define SAVE_DEVICE_FLAG_ASYNC        0x08 /* the transfer runs in SAVE_DEVICE_TASK */
+#define SAVE_DEVICE_FLAG_TASK_WAITING 0x10 /* a task sleeps until the transfer ends */
+#define SAVE_DEVICE_FLAG_COMMAND      0x20 /* a command is queued to the ARM7 */
+#define SAVE_DEVICE_FLAG_CHUNK        0x40 /* the transfer moves through the bounce buffer */
 
 /* The save manager / queued save list object (gSaveManager): byte 0x2050 is
  * nonzero once the archive was initialised, 0x2052 becomes 1 once it failed. */
@@ -1749,7 +1942,13 @@ typedef struct NamedRsaKey {
 /* On-screen keyboard of the ov001 name-entry screen; gOv001MenuState points at one.  The 47
  * character keys of a page are followed by two page toggles, space, delete and the two actions. */
 typedef struct Ov001KeyboardState {
-    u8 pad00[0x11C];
+    void *rowPanels[3][4]; /* +0x00 text panel of each key row, [page][row] */
+    void *charKeys[47];    /* +0x30 the 47 character-key sprites of the page */
+    void *auxKeys[4];      /* +0xEC sprites of the two page keys, space and delete */
+    void *actionKeys[2];   /* +0xFC sprites of the case and symbols keys */
+    void *textSprites[4];  /* +0x104 drawn text of each key row */
+    void *cursor;          /* +0x114 sprite marking the selected key */
+    s32 slideTask;         /* +0x118 slide-in animation task, 0 when none */
     u8 key;          /* +0x11C character/action produced by the last press, 0xFF = none */
     u8 page;         /* +0x11D layout shown: 0 lowercase, 1 symbols, 2 uppercase */
     s8 touchKey;     /* +0x11E key under the stylus, -1 = none */
@@ -1761,6 +1960,16 @@ typedef struct Ov001KeyboardState {
     u8 canAdd;       /* +0x124 character keys enabled (text not full) */
     u8 deleteBuzzed; /* +0x125 invalid-delete buzz already played while B is held */
 } Ov001KeyboardState;
+
+/* The on-screen keyboard slides in from the right one key row at a time; the rows
+ * are staggered 22 pixels apart, and a row waits just off the screen (x = 192)
+ * until the row above it has arrived. */
+#define KBD_ROW_HIDDEN_X 0xC0 /* where a key row waits off the right edge */
+#define KBD_ROW_REST_X0  0x51 /* resting x of the first (number) row */
+#define KBD_ROW_REST_X1  0x67 /* resting x of the second row */
+#define KBD_ROW_REST_X2  0x7D /* resting x of the third row */
+#define KBD_ROW_REST_X3  0x93 /* resting x of the fourth row */
+#define KBD_ROW_REST_X4  0xAA /* resting x of the bottom action row */
 
 /* The two-bar icon row shared by the ov001 screens (gOv001IconRow): each page
  * id picks the pair of wide bar sprites that slide in; tapping a bar selects it
@@ -1860,6 +2069,7 @@ typedef struct Ov001FadeStates {
 #define CODE_ENTRY_GROUP_SIZE  3    /* characters per group */
 #define CODE_ENTRY_GROUP       0x14 /* u8 group being edited, 0..3 */
 #define CODE_ENTRY_RESULT      0x15 /* u8 result: 0 cancelled, 1 accepted, 2 rejected */
+#define CODE_ENTRY_LAST_GROUP_MIN 26 /* value the last group must reach to count as complete */
 
 /* Cursor sprite attribute bits a cancelled code entry clears. */
 #define CODE_ENTRY_CURSOR_MASK 0xC1FFFCFF
@@ -1873,6 +2083,9 @@ typedef struct Ov001FadeStates {
 #define SPRITE_ENTRY_HIDDEN        0x200 /* bit 9: normal entry hidden, affine entry double size */
 #define SPRITE_ENTRY_AFFINE_DOUBLE 0x300 /* bits 8-9: affine entry drawn at double size */
 #define SPRITE_ENTRY_MATRIX_SHIFT  25    /* bits 25-29: rotation-scaling matrix index */
+
+/* The DS screen is 256x192 pixels: sprite layouts are clipped to its height. */
+#define SCREEN_HEIGHT 192
 
 /* Non-printing characters the on-screen keyboard produces. */
 enum {
@@ -1928,7 +2141,17 @@ enum {
 #define SPRITE_ACTOR_SPLIT       0x40 /* u32 bits 26..31: row where the cell grid is split in halves (16 = whole sprite) */
 #define SPRITE_ACTOR_PRIORITY    0x49 /* u8 OBJ priority passed to AddSprite */
 #define SPRITE_ACTOR_TILE_ROW    0x3e /* u16 texture row the actor draws */
+#define SPRITE_ACTOR_TILE        0x3c /* u16 first tile index of the actor's graphics */
 #define SPRITE_ACTOR_TEXT_WIDTH  0x58 /* s16 width in pixels of the text the actor drew */
+
+/* A number-display sprite: a sprite actor that draws a 64-bit decimal value as a
+ * row of digit sprites and lets the d-pad select a digit and change it.  Its own
+ * fields come after the sprite actor's (SPRITE_ACTOR_X/Y are the position). */
+#define NUMBER_DISPLAY_DIGIT     0x58 /* s32 digit the cursor starts on */
+#define NUMBER_DISPLAY_DIGITS    0x5C /* s32 number of digits drawn */
+#define NUMBER_DISPLAY_VALUE     0x60 /* s64 value drawn and edited */
+#define NUMBER_DISPLAY_HIGH      0x64 /* s32 sign extension of the value's low word */
+#define NUMBER_DISPLAY_SOURCE    0x68 /* s64 *value written back when the sprite is destroyed */
 
 /* A scene panel: a 3D sprite actor whose two halves (the sprite sources at
  * +0x60 and +0x64) show a pair of CO faces.  The face sprites themselves are its
@@ -2293,6 +2516,7 @@ typedef struct TransferSlot {
 #define TRANSFER_SLOT_COUNT    32    /* identity bits, one slot each */
 #define TRANSFER_DEFAULT_CHUNK 0x5B9 /* default bytes sent per frame */
 #define TICKS_TO_MS_DIVISOR    0x82EA /* ((GetSystemTick delta) << 6) / this = ms */
+#define TICKS_TO_SECONDS_DIVISOR 0x1FF6210ULL /* ((GetSystemTick delta) << 6) / this = seconds */
 
 typedef struct TransferManager {
     TransferSlot slots[TRANSFER_SLOT_COUNT];          /* +0x000 */
@@ -2415,6 +2639,12 @@ typedef struct VoiceLinkReply {
  * at, with the metrics and the section lists the glyph lookups walk. */
 #define OV001_TEXT_ALIGN_CENTER 0x400 /* DrawTextMultiline: centre each line in the block width */
 #define OV001_TEXT_ALIGN_RIGHT  0x800 /* DrawTextMultiline: right-align each line in the block width */
+
+/* A measured text line or text block, in pixels. */
+typedef struct Ov001TextSize {
+    s32 width;  /* +0x00 widest line */
+    s32 height; /* +0x04 block height across all lines */
+} Ov001TextSize;
 
 /* Anchor flags of the ov001 text-block placement: the horizontal flags move the
  * block along the text direction, the vertical ones across it. */
@@ -2559,6 +2789,15 @@ typedef struct Ov001TilePool {
 #define WEB_REQ_PAYLOAD      0x60 /* void * payload of the last request */
 #define WEB_REQ_PAYLOAD_SIZE 0x64 /* s32 its size in bytes */
 
+/* GetWebResponseHeader (src/auto/main_02044E04.c) reports the received response
+ * as three words: these are their indices. */
+#define WEB_RESPONSE_SIZE    0 /* body size in bytes */
+#define WEB_RESPONSE_STATUS  1 /* server result code, 1 = player records follow */
+#define WEB_RESPONSE_RECORDS 2 /* body+4: first word is the record count, the records start at +8 */
+
+/* Status the get.asp accessors return when the reply carries no player data. */
+#define WEB_STATUS_NO_DATA   15
+
 /* ov007 CO-power panel object (returned by GetPanelObject).  The panel keeps a
  * flag per graphic variant and three values that the opening/closing animation
  * eases between 0 and 256; the rest of the object is a set of sprite handles. */
@@ -2617,6 +2856,26 @@ typedef struct Ov001TilePool {
 #define IRQ_TIMER0   0x0008     /* REG_IF bit set when TIMER0 overflows */
 #define TIMER0_HALF  0x8000     /* top bit of the 16-bit counter */
 
+/* The ARM9 IRQ handler table: one handler per IRQ bit (the timers are IRQ 3-6,
+ * the DMA channels 8-11, IPC receive 18).  The table is the first words of the
+ * OS work area (gOsArea) and its entries are called with no argument by the
+ * dispatcher func_01ff8000.  The four timers and the four DMA channels share one
+ * IRQ line each, so they have an IrqHandler entry per channel instead; those
+ * entries follow each other in hardware order: DMA0-3, then TIMER0-3
+ * (OS_SetIrqHandler, OS_GetIrqHandler, OS_SetDmaHandler in main_02004FF8). */
+#define IRQ_COUNT          22 /* the dispatcher handles IRQ bits 0..21 */
+#define IRQ_NUMBER_TIMER0  3
+#define IRQ_NUMBER_TIMER3  6
+#define IRQ_NUMBER_DMA0    8
+#define IRQ_NUMBER_DMA3    11
+#define IRQ_HANDLER_DMA_COUNT 4 /* DMA entries before the timer entries */
+
+typedef struct IrqHandler {
+    s32 handler; /* +0x00 function the IRQ dispatcher calls with arg */
+    s32 ieMask;  /* +0x04 IE bit the channel was set up with; 1 when the handler manages its own IRQ */
+    s32 arg;     /* +0x08 argument the handler is called with */
+} IrqHandler;    /* 0x0C */
+
 /* The system tick state: TIMER0's 16-bit counter extended to 64 bits by counting
  * the overflows at SYSTEM_TICK_OVERFLOW.  Addressed by offset (its symbol is
  * declared as a u16 by its users). */
@@ -2649,6 +2908,17 @@ typedef struct FifoMessage {
 #define ARM7_CMD_CALLBACK  0x1C /* void (*)(s32, s32): called with a command's reply */
 #define ARM7_CMD_USER      0x20 /* s32: second argument handed to ARM7_CMD_CALLBACK */
 #define ARM7_CMD_VALUE_PTR 0x24 /* s32 *: where the reply to command 0x67 is stored */
+#define ARM7_CMD_DONE_NOTIFY 0x04 /* s32: nonzero once the ARM7 answered command 0x60 */
+#define ARM7_CMD_DONE_SLEEP  0x08 /* s32: nonzero once the ARM7 answered command 0x62 */
+
+/* The FIFO block-transfer state (gFifoBlockTransfer) of the save/profile upload in
+ * main_02045D94: the reply to the last FIFO command, whether it arrived, and the
+ * ARM7 address the current block is copied to.  Blocks are 0x100 bytes. */
+#define FIFO_XFER_REPLY   0x00 /* u16 reply value, nonzero = the command failed */
+#define FIFO_XFER_DONE    0x04 /* s32 1 once the reply arrived */
+#define FIFO_XFER_ADDRESS 0x08 /* s32 ARM7 destination address of the first block */
+#define FIFO_BLOCK_SIZE   0x100 /* bytes in one transferred block */
+#define FIFO_BLOCK_COUNT  4     /* blocks one transfer holds */
 
 /* One of the command service's five reply slots (gArm7CommandReplies, 8 bytes
  * each): when reply command 0x70..0x74 arrives its value is stored through
@@ -2697,6 +2967,13 @@ typedef struct MicTestScreen {
 /* Delay, in CPU cycles, between attempts to bring the LCD back up: the power
  * service refuses to re-enable it within seven frames of switching it off. */
 #define LCD_WAKE_DELAY_CYCLES 0x996A00
+/* Delay between display-wake attempts while the shell closes the lid. */
+#define DISPLAY_WAKE_RETRY_CYCLES 0xA3A47
+
+/* Word of the ARM7/ARM9 shared work area that the ARM7 keeps up to date; its
+ * top bit is set while the lid is closed. */
+#define SHARED_LID_WORD   0x027FFFA8 /* volatile u16 */
+#define SHARED_LID_CLOSED 0x8000
 
 /* Frame counter the engine keeps in the shared work area (incremented once per
  * frame, used for parity and short timeouts). */
@@ -2802,6 +3079,7 @@ typedef struct Thread {
  * translation row.  NitroSDK calls this type MtxFx43. */
 #define MTX43_ROT     0  /* s32[9] rotation/scale coefficients */
 #define MTX43_TRANS   9  /* s32[3] translation */
+#define MTX44_TRANS   12 /* s32[4] translation column of a 4x4 matrix (MtxFx44) */
 #define MTX_FX_SHIFT  12 /* fractional bits of a matrix coefficient */
 
 /* NitroSDK thread and message queues (os_thread.c, os_message.c).  An
@@ -2827,6 +3105,19 @@ enum {
     OS_MESSAGE_NOBLOCK = 0,
     OS_MESSAGE_BLOCK   = 1
 };
+
+/* ARM processor mode: the low five bits of CPSR (read by the CPSR reader in
+ * main_02006F14).  Code that would sleep or take a blocking mutex refuses to
+ * run in IRQ mode. */
+#define CPSR_MODE_IRQ 0x12
+
+/* The DS real-time clock counts seconds since 2000/01/01 and only distinguishes the
+ * years of one century: RtcSecondsToDateTime clamps a count to that range. */
+#define RTC_SECONDS_PER_MINUTE 60
+#define RTC_SECONDS_PER_HOUR   3600
+#define RTC_SECONDS_PER_DAY    86400
+#define RTC_SECONDS_SPAN       3155760000LL /* one RTC century, 100 * 365.25 days */
+#define RTC_SECONDS_LAST       3155759999LL /* last second the RTC can name */
 
 #endif
 

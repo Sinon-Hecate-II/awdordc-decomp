@@ -123,7 +123,7 @@ void func_ov003_021f2878(s32 entry) {
     void SetOnlineSessionFlag(M2C_UNK);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     s32 GetOverlayEventFlags(void);
-    s32 func_02084a0c(void);
+    s32 GetSessionPlayerCount(void);
     s32 func_ov003_021f17fc(void);
     M2C_UNK func_ov003_021f14c8(void);
     s32 var_sp4;
@@ -172,7 +172,7 @@ ready:
 
 tail:
  if(M2C_FIELD(entry,u8 *,0x47)) { M2C_FIELD(entry,u8 *,0x47)=0; return; }
- if(!GetOverlayEventFlags() && (u32)func_02084a0c()>1) return;
+ if(!GetOverlayEventFlags() && (u32)GetSessionPlayerCount()>1) return;
  if(!Active2878() && !(u8)(IsTerrain2878(M2C_FIELD(M2C_FIELD(entry,void **,0x40),u8 **,8)[M2C_FIELD(M2C_FIELD(entry,void **,0x40),s8 *,5)]) != 0)) M2C_FIELD(entry,u8 *,0x46)=1;
 }
 #pragma pop
@@ -240,7 +240,7 @@ s32 func_ov003_021f2b88(s32 a) {
  * background layers, sets up the cursor and preview-list objects at entry+0x3C
  * and entry+0x38, and marks the screen state ready (3). */
 void InitMapSelectScreen(s32 arg0) {
-    M2C_UNK func_01ff9e00(void);
+    M2C_UNK ClearAll3DSpriteLayers(void);
     void func_02082c84(void);
     void Set3DSpriteVramBanks(void);
     void func_02003560(void);
@@ -271,7 +271,7 @@ void InitMapSelectScreen(s32 arg0) {
     void *unusedSaved;
     void *unusedObj;
 
-    func_01ff9e00();
+    ClearAll3DSpriteLayers();
     func_02082c84();
     Set3DSpriteVramBanks();
     func_02003560();

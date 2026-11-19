@@ -16,9 +16,9 @@ typedef struct {
 } UnkStruct_020C5D0C;
 
 s32 func_020c5d0c(void) {
-    s32 func_020cd6d4();
+    s32 IsCampaignBattleRules();
     extern u8 gBattleEndState;
-    if ((gBattleEndState == 0) && (func_020cd6d4() != 0)) {
+    if ((gBattleEndState == 0) && (IsCampaignBattleRules() != 0)) {
         return 0;
     }
     return 2;
@@ -80,9 +80,9 @@ void func_020c5de0(void) {
 }
 
 s32 func_020c5e08(void) {
-    s32 func_020cd6d4();
+    s32 IsCampaignBattleRules();
     s32 func_ov000_0216b104();
-    if ((func_020cd6d4() != 0) && (func_ov000_0216b104() != 0)) {
+    if ((IsCampaignBattleRules() != 0) && (func_ov000_0216b104() != 0)) {
         return 0;
     }
     return 2;
@@ -237,27 +237,37 @@ s32 CanLoadUnitAtCursor(void) {
     return 2;
 }
 
-s32 func_020c6384(void) {
- s32 GetHeldDirection(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba770(void *,s32,s32);
+/* Whether a transport's first carried unit may be dropped right now: returns 2
+ * when a direction is held for it, when the cursor unit has nothing to drop, or
+ * when it is the two-slot Carrier; 0 while the drop direction is still missing. */
+s32 CanConfirmFirstCargoDrop(void) {
+ s32 GetHeldDirection(s32);
+ s32 IsCarrierUnitKind(s32);
+ s32 CanDropFirstCarriedUnit(void *, s32, s32);
  extern void **gCurrentMap;
  void *base;
- if(GetHeldDirection(0)!=0)return 2;
- if(CanLoadUnitAtCursor()==0)return 2;
- if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
- base=*gCurrentMap;
- if(func_020ba770(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
+ if (GetHeldDirection(0) != 0) return 2;
+ if (CanLoadUnitAtCursor() == 0) return 2;
+ if (IsCarrierUnitKind(((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT))->kind) != 0) return 2;
+ base = *gCurrentMap;
+ if (CanDropFirstCarriedUnit(M2C_FIELD(base, void **, MAP_CURSOR_UNIT), M2C_FIELD(base, s16 *, MAP_CURSOR_X), M2C_FIELD(base, s16 *, MAP_CURSOR_Y)) != 0) return 0;
  return 2;
 }
 
-s32 func_020c6414(void) {
- s32 GetHeldDirection(s32); s32 IsCarrierUnitKind(s32); s32 func_020ba780(void *,s32,s32);
+/* Whether a transport's second carried unit may be dropped right now: returns 2
+ * when a direction is held for it, when the cursor unit has nothing to drop, or
+ * when it is the two-slot Carrier; 0 while the drop direction is still missing. */
+s32 CanConfirmSecondCargoDrop(void) {
+ s32 GetHeldDirection(s32);
+ s32 IsCarrierUnitKind(s32);
+ s32 CanDropSecondCarriedUnit(void *, s32, s32);
  extern void **gCurrentMap;
  void *base;
- if(GetHeldDirection(1)!=0)return 2;
- if(CanLoadUnitAtCursor()==0)return 2;
- if(IsCarrierUnitKind(((UnkStruct_020C5D0C *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->unk0)!=0)return 2;
- base=*gCurrentMap;
- if(func_020ba780(M2C_FIELD(base,void **,0x52D0),M2C_FIELD(base,s16 *,0x52DC),M2C_FIELD(base,s16 *,0x52DE))!=0)return 0;
+ if (GetHeldDirection(1) != 0) return 2;
+ if (CanLoadUnitAtCursor() == 0) return 2;
+ if (IsCarrierUnitKind(((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT))->kind) != 0) return 2;
+ base = *gCurrentMap;
+ if (CanDropSecondCarriedUnit(M2C_FIELD(base, void **, MAP_CURSOR_UNIT), M2C_FIELD(base, s16 *, MAP_CURSOR_X), M2C_FIELD(base, s16 *, MAP_CURSOR_Y)) != 0) return 0;
  return 2;
 }
 
@@ -470,15 +480,18 @@ s32 func_020c689c(void) {
     return 2;
 }
 
-s32 func_020c68dc(void) {
+/* Availability check for the Flare command: the map must be in fog or snow, the
+ * cursor unit must be an unmoved kind-5 Flare, and it must have ammo left.
+ * Returns 0 when the command is available, 2 when it is not. */
+s32 CanFireFlare(void) {
  extern void **gCurrentMap;
  void *base=*gCurrentMap;
- UnkStruct_020C5D0C *p;
- if (M2C_FIELD(base,u8 *,0x5156)==0 && M2C_FIELD(base,u8 *,0x5158)!=2) return 2;
- p=M2C_FIELD(base,UnkStruct_020C5D0C **,0x52D0);
- if(p->unk0!=5) return 2;
- if(M2C_FIELD(base,s16 *,0x52DC)!=M2C_FIELD(base,s16 *,0x52D8) || M2C_FIELD(base,s16 *,0x52DE)!=M2C_FIELD(base,s16 *,0x52DA)) return 2;
- if (p->unk6_7) return 0;
+ BattleMapUnitHead *unit;
+ if (M2C_FIELD(base,u8 *,MAP_FOG)==0 && M2C_FIELD(base,u8 *,MAP_WEATHER)!=WEATHER_SNOW) return 2;
+ unit=M2C_FIELD(base,BattleMapUnitHead **,MAP_CURSOR_UNIT);
+ if(unit->kind!=UNIT_KIND_FLARE) return 2;
+ if(M2C_FIELD(base,s16 *,MAP_CURSOR_X)!=M2C_FIELD(base,s16 *,MAP_CURSOR_OLD_X) || M2C_FIELD(base,s16 *,MAP_CURSOR_Y)!=M2C_FIELD(base,s16 *,MAP_CURSOR_OLD_Y)) return 2;
+ if (unit->ammo) return 0;
  return 2;
 }
 

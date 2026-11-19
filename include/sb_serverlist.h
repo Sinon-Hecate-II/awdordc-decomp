@@ -7,6 +7,9 @@
 #define SB_SERVERLIST_H
 
 #define SB_LIST_PENDING     0x10  /* s32 nonzero while query replies are still awaited */
+#define SB_LIST_REQUESTS    0x08  /* s32[3]: the pending-query list (head, tail, SB_LIST_PENDING) */
+#define SB_LIST_ON_QUERY_DONE 0x44 /* void (*)(void *list, s32 event, void *server, void *instance): a pending query got its reply */
+#define SB_LIST_QUERY_DATA  0x48  /* void *instance passed to SB_LIST_ON_QUERY_DONE */
 #define SB_LIST_FIELDS      0x2C  /* u8[SB_LIST_MAX_FIELDS]: key ids asked of the master */
 #define SB_LIST_FIELD_COUNT 0x40  /* s32 number of used entries in SB_LIST_FIELDS */
 #define SB_LIST_QUERY       0x4C  /* QR2 query record the SBServerList* API works on */
@@ -69,9 +72,18 @@ typedef struct GpiPlayer {
     u8  flags;      /* +0x15 gpi record flags (GPI_REC_FLAG_*) */
     u16 pad16;
     s32 keyValues;  /* +0x18 table of the record's interned key/value strings */
-    s32 ping;       /* +0x1C last measured round-trip time in ms */
+    s32 ping;       /* +0x1C while queued the time the query was sent, then the round-trip time in ms */
     s32 next;       /* +0x20 next removed server on the browser's free list */
 } GpiPlayer; /* 0x24 bytes */
+
+/* The in-flight detail queries are kept in the SB_LIST_REQUESTS queue (a
+ * GpiPlayer chain through GpiPlayer.next) while their reply is awaited.  A query
+ * still unanswered after SB_QUERY_TIMEOUT_MS is given up on: its record is flagged
+ * as timed out and reports that timeout as its ping. */
+#define SB_QUERY_TIMEOUT_MS        2500 /* how long a detail query may stay unanswered */
+#define SB_SERVER_FLAG_TIMED_OUT   0x10 /* GpiPlayer.flags: the query ran into the timeout */
+#define SB_SERVER_FLAG_QUERY_MASK  0xD3 /* GpiPlayer.flags bits left once the query ends */
+#define SB_QUERY_STAGE_FAILED      1    /* SB_LIST_ON_QUERY_DONE stage of a query that got no reply */
 
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */

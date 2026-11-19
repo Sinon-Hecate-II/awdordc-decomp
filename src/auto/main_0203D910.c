@@ -163,12 +163,12 @@ void func_0203d910(s32 a, s32 b)
 }
 #pragma pop
 void func_0203db94(s32 arg0,s32 arg1,u8 *arg2) {
- s32 ExtractSlashField(void *,u8 *,s32); s32 func_0206abd8(void *,s32,s32);
+ s32 ExtractSlashField(void *,u8 *,s32); s32 strtoul(void *,s32,s32);
  void HandleConnectionCommand(s32,s32,s32,s32,s32 *,s32);
  char buf[16]; s32 values[128]; s32 i;
  for(i=0;i<128;i++) {
  if(ExtractSlashField(buf,arg2+1,i)==-1) break;
- values[i]=func_0206abd8(buf,0,10);
+ values[i]=strtoul(buf,0,10);
  }
  HandleConnectionCommand(arg2[0],arg1,0,0,values,i);
 }
@@ -288,7 +288,7 @@ void ReceiveConnectionPacket(u8 fromPlayer, s32 packetType, void *payload) {
 /* Handles deferred battle/action state transitions after the active phase check. */
 s32 func_0203dee8(s32 command, s32 parameter) {
 u64 GetSystemTick(void); s32 GetNetSessionState(void);
-M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void StartMatchmaking(void); void GT2NotifyConnectionClosed(s32); void func_0205df50(s32);
+M2C_UNK SetConnectionState(s32); void func_02041be0(s32); void StartMatchmaking(void); void GT2NotifyConnectionClosed(s32); void NatNeg_ReleasePeer(s32);
 void *state;
 if(GetNetSessionState()!=5)return 0;
 if(M2C_FIELD(GetConnection(),u8 *,21)==2)return 1;
@@ -296,7 +296,7 @@ if(command){ReportConnectionError(command,parameter+0xfffec780);return 1;}
 M2C_FIELD(GetConnection(),u8 *,0x2d0)=0;
 if(M2C_FIELD(GetConnection(),u8 *,0x1a9)==1 || M2C_FIELD(GetConnection(),u8 *,0x1a8)==1 || M2C_FIELD(GetConnection(),u8 *,0x1a8)==2)return 1;
 if(M2C_FIELD(GetConnection(),s32 *,0x19c)){
-func_0205df50(M2C_FIELD(GetConnection(),s32 *,0x19c));M2C_FIELD(GetConnection(),s32 *,0x19c)=0;}
+NatNeg_ReleasePeer(M2C_FIELD(GetConnection(),s32 *,0x19c));M2C_FIELD(GetConnection(),s32 *,0x19c)=0;}
 if(M2C_FIELD(GetConnection(),u8 *,13)){
 if(!M2C_FIELD(GetConnection(),u8 *,0x1a8)){M2C_FIELD(GetConnection(),u8 *,0x1a8)=3;GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(),s32 **,4));}
 }else if(M2C_FIELD(GetConnection(),u8 *,21)==3)ReportConnectionError(6,0xfffec5d2);

@@ -100,12 +100,37 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
     return func_0205cb38(a,b,c);
 }
 
-s32 func_0205be10(void *arg0,void *arg1,s32 arg2) { s32 GetTickCountMs(); s32 gti2PingCallback(void *,s32); s32 ByteCompareN(void *,M2C_UNK *,s32); extern M2C_UNK data_020ff810; s32 sp0; u8 a,b; volatile u8 *dst; if(!M2C_FIELD(arg0,s32 *,0x34))return 1;if(arg2!=8)return 1;if(ByteCompareN(arg1,&data_020ff810,4))return 1; dst=(volatile u8 *)&sp0; a=M2C_FIELD(arg1,volatile u8 *,4);b=M2C_FIELD(arg1,volatile u8 *,5);M2C_FIELD(dst,volatile u8 *,0)=a;M2C_FIELD(dst,volatile u8 *,1)=b;a=M2C_FIELD(arg1,volatile u8 *,6);b=M2C_FIELD(arg1,volatile u8 *,7);M2C_FIELD(dst,volatile u8 *,2)=a;M2C_FIELD(dst,volatile u8 *,3)=b; return gti2PingCallback(arg0,GetTickCountMs()-sp0)!=0; }
+/* Handle a GT2 ping control message (type 103): the eight-byte payload is the
+ * four-byte "time" magic followed by the sender's 32-bit timestamp.  Compute
+ * the round-trip time from that timestamp and hand it to the connection's ping
+ * callback.  Malformed or unexpected pings are ignored. */
+s32 gti2HandlePing(void *connection, void *message, s32 length) {
+    s32 GetTickCountMs();
+    s32 gti2PingCallback(void *, s32);
+    s32 ByteCompareN(void *, M2C_UNK *, s32);
+    extern M2C_UNK gti2PingMagic;
+    s32 pingTimestamp;
+    u8 b0, b1;
+    volatile u8 *dst;
+    if (!M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACK_PING)) return 1;
+    if (length != 8) return 1;
+    if (ByteCompareN(message, &gti2PingMagic, 4)) return 1;
+    dst = (volatile u8 *)&pingTimestamp;
+    b0 = M2C_FIELD(message, volatile u8 *, 4);
+    b1 = M2C_FIELD(message, volatile u8 *, 5);
+    M2C_FIELD(dst, volatile u8 *, 0) = b0;
+    M2C_FIELD(dst, volatile u8 *, 1) = b1;
+    b0 = M2C_FIELD(message, volatile u8 *, 6);
+    b1 = M2C_FIELD(message, volatile u8 *, 7);
+    M2C_FIELD(dst, volatile u8 *, 2) = b0;
+    M2C_FIELD(dst, volatile u8 *, 3) = b1;
+    return gti2PingCallback(connection, GetTickCountMs() - pingTimestamp) != 0;
+}
 
 #pragma push
 #pragma scheduling off
 s32 func_0205bea4(void *arg0) {
-    s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
+    s32 gti2CloseConnection(void *, M2C_UNK, M2C_UNK);
     u32 var_r2;
     u32 temp_r1;
 
@@ -118,7 +143,7 @@ s32 func_0205bea4(void *arg0) {
     } else {
         var_r2 = 1;
     }
-    if (func_0205b110(arg0, 2, var_r2) == 0) {
+    if (gti2CloseConnection(arg0, 2, var_r2) == 0) {
         return 0;
     }
     return 1;
@@ -140,7 +165,7 @@ s32 gti2HandleLargeMessage(void *session, s32 messageType, void *message, s32 si
     } else if (messageType == 102) {
         if (!func_0205be04((s32) session, message, size)) return 0;
     } else if (messageType == 103) {
-        if (!func_0205be10(session, (char *) message + 3, len)) return 0;
+        if (!gti2HandlePing(session, (char *) message + 3, len)) return 0;
     } else if (messageType == 104) {
         if (!func_0205bea4(session)) return 0;
     }
@@ -157,7 +182,7 @@ s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
 s32 func_0205cb68(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
-void gti2SendClosed(void *);s32 func_0205b2e0(void *,void *,s32);
+void gti2SendClosed(void *);s32 gti2HandleData(void *,void *,s32);
 s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 gti2HandleLargeMessage(void *,s32,void *,s32);
 extern M2C_UNK gGt2Magic;
 void *connection,*connection2; s32 handled,isControl,acceptResult,msgType;
@@ -190,7 +215,7 @@ if(!((s32 (*)(void *))gti2SendClosed)(connection2))return 0;
 accepted3:return 1;
 }
 if(isControl && len>=4 && !ByteCompareN(buf+2,&gGt2Magic,2)){buf+=2;len-=2;isControl=0;}
-if(!isControl)return func_0205b2e0(connection2,buf,len)!=0;
+if(!isControl)return gti2HandleData(connection2,buf,len)!=0;
 msgType=buf[2];
 if(msgType<0)return Gt2CloseConnection(connection2)!=0;
 if(msgType<8)return gti2HandleSmallMessage(connection2,msgType,(s32)buf,len)!=0;
@@ -201,7 +226,7 @@ return gti2HandleLargeMessage(connection2,msgType,buf,len)!=0;
 s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetTickCountMs();
     s32 gti2DumpCallback(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
-    s32 func_0205b110(void *, M2C_UNK, M2C_UNK);
+    s32 gti2CloseConnection(void *, M2C_UNK, M2C_UNK);
     void *func_0205cca0();
     void *entry;
 
@@ -218,11 +243,11 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
             ((u32)(GetTickCountMs() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
             return 1;
         }
-        if (func_0205b110(entry, 6, 1) == 0) {
+        if (gti2CloseConnection(entry, 6, 1) == 0) {
             return 0;
         }
     } else {
-        if (func_0205b110(entry, 2, 1) == 0) {
+        if (gti2CloseConnection(entry, 2, 1) == 0) {
             return 0;
         }
     }
@@ -289,7 +314,7 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     s32 gti2GetBufferFreeSpace(void *);
     s32 gti2SendClosedAndClose(M2C_UNK);
     s32 gti2QueueSentCommand(void *, s16, s32);
-    void gti2AddToBuffer(void *, M2C_UNK, s32);
+    void gti2BufferWriteData(void *, M2C_UNK, s32);
     void gti2AddByteToBuffer(void *, s32);
     void gti2AddShortToBuffer(void *, s32);
     s32 free;
@@ -311,7 +336,7 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
         *status = 1;
         return 1;
     }
-    gti2AddToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), &gGt2Magic, 2);
+    gti2BufferWriteData((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), &gGt2Magic, 2);
     gti2AddByteToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), (s32)(mode & 0xff));
     {
         u16 sequence = M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE);
@@ -324,7 +349,7 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 func_0205c5ac(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(gti2SendRaw(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
+s32 gti2SendQueuedCommand(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(gti2SendRaw(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
 #pragma scheduling reset
 s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     s32 sp0;
@@ -335,15 +360,15 @@ s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
     if (sp0 != 0) {
         return 1;
     }
-    gti2AddToBuffer(arg0 + 0x50, arg1, arg2);
-    if (func_0205c5ac(arg0) != 0) {
+    gti2BufferWriteData(arg0 + 0x50, arg1, arg2);
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
 s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
-    M2C_UNK gti2AddToBuffer(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK gti2BufferWriteData(s32, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     if (gti2BeginCommand(arg0, 1, 0x27, &sp0) == 0) {
@@ -352,14 +377,30 @@ s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
     if (sp0 != 0) {
         return 1;
     }
-    gti2AddToBuffer(arg0 + 0x50, arg1, 0x20);
-    if (func_0205c5ac(arg0) != 0) {
+    gti2BufferWriteData(arg0 + 0x50, arg1, 0x20);
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 gti2SendConnectAccept(s32 p,s32 a,s32 b){s32 s; s32 v;if(!gti2BeginCommand(p,2,0x47,&s))return 0;if(s)return 1;gti2AddToBuffer(p+0x50,a,0x20);gti2AddToBuffer(p+0x50,b,0x20);if(func_0205c5ac(p)==0)v=0;else{M2C_FIELD(p,s32 *,0x8c)=M2C_FIELD(p,s32 *,0x88);v=1;}return v;}
+/* Server side of the GT2 handshake: send the CONNECT_ACCEPT command carrying
+ * our response to the client's challenge followed by our own 32-byte challenge,
+ * then start the connection's clock from the tick the command was sent at. */
+s32 gti2SendConnectAccept(s32 connection, s32 response, s32 challenge) {
+    s32 status;
+    s32 sent;
+    if (!gti2BeginCommand(connection, 2, 0x47, &status)) return 0;
+    if (status) return 1;
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, response, GT2_RESPONSE_SIZE);
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, challenge, GT2_RESPONSE_SIZE);
+    if (gti2SendQueuedCommand(connection) == 0) sent = 0;
+    else {
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT);
+        sent = 1;
+    }
+    return sent;
+}
 
 s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     s32 sp0;
@@ -370,9 +411,9 @@ s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     if (sp0 != 0) {
         return 1;
     }
-    gti2AddToBuffer(arg0 + 0x50, arg1, 0x20);
-    gti2AddToBuffer(arg0 + 0x50, arg2, arg3);
-    if (func_0205c5ac(arg0) != 0) {
+    gti2BufferWriteData(arg0 + 0x50, arg1, 0x20);
+    gti2BufferWriteData(arg0 + 0x50, arg2, arg3);
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -380,7 +421,7 @@ s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 
 s32 func_0205c7f8(M2C_UNK arg0) {
     s32 gti2BeginCommand(M2C_UNK, M2C_UNK, M2C_UNK, s32 *);
-    s32 func_0205c5ac(M2C_UNK);
+    s32 gti2SendQueuedCommand(M2C_UNK);
     s32 sp0;
 
     if (gti2BeginCommand(arg0, 4, 7, &sp0) == 0) {
@@ -389,7 +430,7 @@ s32 func_0205c7f8(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (func_0205c5ac(arg0) != 0) {
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -404,8 +445,8 @@ s32 func_0205c854(s32 arg0, M2C_UNK arg1, s32 arg2) {
     if (sp0 != 0) {
         return 1;
     }
-    gti2AddToBuffer(arg0 + 0x50, arg1, arg2);
-    if (func_0205c5ac(arg0) != 0) {
+    gti2BufferWriteData(arg0 + 0x50, arg1, arg2);
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -420,7 +461,7 @@ s32 func_0205c8c8(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (func_0205c5ac(arg0) != 0) {
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -435,7 +476,7 @@ s32 func_0205c924(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (func_0205c5ac(arg0) != 0) {
+    if (gti2SendQueuedCommand(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -450,7 +491,7 @@ s32 gti2SendUnreliable(void *connection, M2C_UNK *message, s32 len) {
     s32 gti2GetBufferFreeSpace(void *);
     s32 ByteCompareN(void *, M2C_UNK *, s32);
     s32 gti2SendRaw(s32, void *, s32);
-    M2C_UNK gti2AddToBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK gti2BufferWriteData(M2C_UNK, M2C_UNK, M2C_UNK);
     void gti2RemoveFromBuffer(void *, M2C_UNK, s32);
     extern M2C_UNK gGt2Magic;
     s32 sendPos;
@@ -469,8 +510,8 @@ s32 gti2SendUnreliable(void *connection, M2C_UNK *message, s32 len) {
     }
     sendBase = M2C_FIELD(connection, s32 *, 0x50);
     sendPos = M2C_FIELD(connection, s32 *, 0x58);
-    gti2AddToBuffer((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)&gGt2Magic, 2);
-    gti2AddToBuffer((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)message, len);
+    gti2BufferWriteData((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)&gGt2Magic, 2);
+    gti2BufferWriteData((M2C_UNK)((char *)connection + GT2_CONNECTION_SEND_BUFFER), (M2C_UNK)message, len);
     if (gti2SendRaw((s32)connection, (void *)(sendBase + sendPos), escapedLen) == 0) {
         return 0;
     }

@@ -10,7 +10,7 @@ typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x
  * (menu_seisan) from its archive into the sprite engine's texture, tile-buffer
  * and palette areas, lay out the unit list and refresh the screen object. */
 void LoadProductionMenuScreen(u8 *screen) {
- void func_020994e0(s32); void func_02091cd0(void); void func_020c0a88(void);
+ void func_020994e0(s32); void LoadScenePanelGraphicsOnBothEngines(void); void func_020c0a88(void);
  void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
@@ -22,7 +22,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  extern u8 gProductionMenuState[];
  void (*mapCallback)(void);
  func_020994e0(0);
- func_02091cd0();
+ LoadScenePanelGraphicsOnBothEngines();
  func_020c0a88();
  mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
  if(mapCallback)mapCallback();
@@ -189,14 +189,18 @@ s32 GetUnitMoveDirections(s32 x, s32 y, s32 unitId) {
 }
 
 #pragma opt_common_subs reset
-s8 GetAdjacentAllyDirections(s32 a,s32 b,s32 c) {
- s32 IsFriendlyUnitAt(s32,s32,s32);
- s8 r=0;
- if(IsFriendlyUnitAt(a,b-1,c)==1)r|=4;
- if(IsFriendlyUnitAt(a,b+1,c)==1)r|=8;
- if(IsFriendlyUnitAt(a,b,c-1)==1)r|=1;
- if(IsFriendlyUnitAt(a,b,c+1)==1)r|=2;
- return r;
+/* Direction mask (MAP_DIR_*) of the neighbours of (x, y) that hold a unit on the
+ * same team as `unit`: a friendly unit sets its side's bit, anything else leaves
+ * it clear. */
+s8 GetAdjacentAllyDirections(s32 unit, s32 x, s32 y) {
+    s32 IsFriendlyUnitAt(s32, s32, s32);
+    s8 mask = 0;
+
+    if (IsFriendlyUnitAt(unit, x - 1, y) == 1) mask |= MAP_DIR_LEFT;
+    if (IsFriendlyUnitAt(unit, x + 1, y) == 1) mask |= MAP_DIR_RIGHT;
+    if (IsFriendlyUnitAt(unit, x, y - 1) == 1) mask |= MAP_DIR_UP;
+    if (IsFriendlyUnitAt(unit, x, y + 1) == 1) mask |= MAP_DIR_DOWN;
+    return mask;
 }
 
 u8 func_020ba3b4(void *arg0) {
@@ -257,7 +261,7 @@ valid:
 s32 IsSupplyTargetAt(s32 x, s32 y) {
     extern void **gCurrentMap;
     extern u8 gUnitKindSupplyFlag[], gUnitKindMaxAmmo[], gUnitKindMaxFuel[];
-    s32 func_020a8604(s32);
+    s32 UnitKindCanSupply(s32);
     u8 *map, *unit;
     s32 unitId;
 
@@ -274,7 +278,7 @@ valid:
     unit = map + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
     if (unit == M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT)) return 0;
     if (!gUnitKindSupplyFlag[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE]) return 0;
-    if (func_020a8604((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) || gUnitKindMaxAmmo[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE] == ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28)) {
+    if (UnitKindCanSupply((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) || gUnitKindMaxAmmo[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE] == ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28)) {
         if (gUnitKindMaxFuel[((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) * UNIT_KIND_STATS_SIZE] == ((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) << 25) >> 25)) return 0;
     }
     return 1;
@@ -283,7 +287,7 @@ valid:
 /* Check whether the unit carried in slot `slot` may be dropped at tile (x, y): the
  * carried kind must have a legal direction there, and the tile must be allowed for a
  * carrier of movement type 7 and enterable by the carried unit's own movement type. */
-s32 func_020ba654(s32 arg0,s32 x,s32 y,s32 slot){
+s32 CanDropCarriedUnit(s32 arg0,s32 x,s32 y,s32 slot){
 extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
 s32 GetUnitMoveDirections(s32,s32,s32);
 u8 *carrier=(u8 *)arg0,*map,*cargoUnit,*cargoIds=carrier+12;s32 kind,tile;s16 n;
@@ -297,13 +301,13 @@ if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTabl
 return 1;
 }
 
-void func_020ba770(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020ba654(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020ba654(arg0, arg1, arg2, 0);
+void CanDropFirstCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    M2C_UNK CanDropCarriedUnit(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    CanDropCarriedUnit(arg0, arg1, arg2, 0);
 }
 
-void func_020ba780(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    func_020ba654(arg0, arg1, arg2, 1);
+void CanDropSecondCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    CanDropCarriedUnit(arg0, arg1, arg2, 1);
 }
 
 u8 func_020ba790(s32 x,s32 y){
@@ -358,7 +362,7 @@ s32 func_020baa1c(s32 a,s32 b) {
  switch(M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31){case 24:return 1;default:return 0;}
 }
 #pragma opt_if-conversion on
-void func_020baa64(void) {
+void ClearCursorUnitCapture(void) {
  extern void **gCurrentMap;
  void *p=*gCurrentMap;
  void *q;
@@ -392,7 +396,7 @@ if(((u32)(unit[0]<<26)>>26) && (M2C_FIELD(unit,u16 *,4)&32))M2C_FIELD(unit,u16 *
 }
 }
 
-void func_020babfc(void) {
+void RevealUnitsAroundCursor(void) {
     void func_020baae0(s16, s16);
     extern void **gCurrentMap;
     void *temp_r0;

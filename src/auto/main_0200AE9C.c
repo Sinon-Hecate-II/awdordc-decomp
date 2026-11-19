@@ -30,16 +30,41 @@ static inline s32 TestFileFlag(void *a, s32 mask) {
  return result;
 }
 
-M2C_UNK func_0200ae9c(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 ExecuteFileCommand(void *,s32);s32 GetNextFileRequest(s32);s32 b=M2C_FIELD(a,s32 *,8),key;if(!a)return;do{key=OS_DisableInterrupts();M2C_FIELD(a,volatile s32 *,12)|=64;if((M2C_FIELD(a,volatile s32 *,12)&4)?1:0){OS_WakeupThread(a+24);OS_RestoreInterrupts(key);return;}M2C_FIELD(a,volatile s32 *,12)|=8;OS_RestoreInterrupts(key);if(ExecuteFileCommand(a,M2C_FIELD(a,s32 *,16))==6)return;a=(void *)GetNextFileRequest(b);}while(a);}
+/* Run the queued file requests of `request`'s file one after another: mark each
+ * request notified by the file callback, wake its waiter if it was already
+ * completed, and run its command.  Stop when a command is still in progress
+ * (result 6), otherwise continue with the file's next request. */
+M2C_UNK ProcessFileRequests(FSFileRequest *request) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    void OS_WakeupThread(void *);
+    s32 ExecuteFileCommand(void *, s32);
+    s32 GetNextFileRequest(s32);
+    s32 file = M2C_FIELD(request, s32 *, FS_REQ_FILE), key;
+    if (!request) return;
+    do {
+        key = OS_DisableInterrupts();
+        M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) |= FS_REQ_NOTIFIED;
+        if ((M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_COMPLETED) ? 1 : 0) {
+            OS_WakeupThread((u8 *)request + FS_REQ_QUEUE);
+            OS_RestoreInterrupts(key);
+            return;
+        }
+        M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) |= 8;
+        OS_RestoreInterrupts(key);
+        if (ExecuteFileCommand(request, M2C_FIELD(request, s32 *, FS_REQ_COMMAND)) == 6) return;
+        request = (FSFileRequest *)GetNextFileRequest(file);
+    } while (request);
+}
 
 s32 FinishFileRequest(void *arg0) {
     M2C_UNK CompleteFileRequest(void *, s32);
     s32 ExecuteFileCommand(void *, s32);
     s32 GetNextFileRequest(s32);
-    M2C_UNK func_0200ae9c();
+    M2C_UNK ProcessFileRequests();
     CompleteFileRequest(arg0, ExecuteFileCommand(arg0, M2C_FIELD(arg0, s32 *, 0x10)));
     if (GetNextFileRequest(M2C_FIELD(arg0, s32 *, 8)) != 0) {
-        func_0200ae9c();
+        ProcessFileRequests();
     }
     if (M2C_FIELD(arg0, s32 *, 0x14) == 0) {
         return 1;
@@ -63,7 +88,7 @@ if(!TestFileFlag(file,8)&&!TestFileFlag(file,16)){
 M2C_FIELD(file,s32 *,28)|=16;OS_RestoreInterrupts(key);
 if(M2C_FIELD(file,s32 *,88)&512) M2C_FIELD(file,void (**)(void *,s32),84)(req,9);
 { s32 key2=OS_DisableInterrupts();M2C_FIELD(req,volatile s32 *,12)|=64;
-if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key2);func_0200ae9c(req);return 1;}
+if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key2);ProcessFileRequests(req);return 1;}
 OS_RestoreInterrupts(key2);}
 }else{
 if(!TestRequestFlag(req,4)){OS_RestoreInterrupts(key);return 1;}
@@ -204,24 +229,30 @@ archive->state|=FS_ARCHIVE_IN_MEMORY;
 return required;
 }
 
-s32 func_0200b510(void *a) {
- s32 BeginFileOperation();
- s32 EndFileOperation(void *);
- s32 r,flag,out=0;
- flag=TestFileFlag(a,2);
- if(flag!=0){
- r=BeginFileOperation(a);
- flag=TestFileFlag(a,4);
- if(flag!=0){
- M2C_FIELD(a,s32 *,0x1c)&=~4;
- out=M2C_FIELD(a,s32 *,0x44);M2C_FIELD(a,s32 *,0x44)=0;
- M2C_FIELD(a,s32 *,0x2c)=M2C_FIELD(a,s32 *,0x3c);
- M2C_FIELD(a,s32 *,0x34)=M2C_FIELD(a,s32 *,0x40);
- M2C_FIELD(a,s32 *,0x50)=M2C_FIELD(a,s32 *,0x48);
- }
- if(r)EndFileOperation(a);
- }
- return out;
+/* Release an archive's in-memory FAT/FNT index tables: clear the in-memory
+ * flag, hand the pool that held the tables back to the caller (and clear it),
+ * and restore the table positions and read callback the archive had before
+ * LoadArchiveIndex moved them into the pool. */
+s32 UnloadArchiveIndex(FSArchive *archive) {
+    s32 BeginFileOperation();
+    s32 EndFileOperation(void *);
+    s32 busy, flag, pool = 0;
+
+    flag = TestFileFlag(archive, FS_ARCHIVE_LAYOUT);
+    if (flag != 0) {
+        busy = BeginFileOperation(archive);
+        flag = TestFileFlag(archive, FS_ARCHIVE_IN_MEMORY);
+        if (flag != 0) {
+            archive->state &= ~FS_ARCHIVE_IN_MEMORY;
+            pool = (s32)archive->pool;
+            archive->pool = 0;
+            archive->fatPos = archive->fatBase;
+            archive->fntPos = archive->fntBase;
+            archive->proc = archive->readProc;
+        }
+        if (busy) EndFileOperation(archive);
+    }
+    return pool;
 }
 
 /* Claim a file for an operation: report whether it was free and, when it was,
@@ -247,7 +278,7 @@ s32 BeginFileOperation(void *file) {
     return wasFree;
 }
 
-s32 EndFileOperation(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 p=0,key,r;key=OS_DisableInterrupts();r=((M2C_FIELD(a,s32 *,28)&8)?1:0)==0;if(!r){M2C_FIELD(a,s32 *,28)&=~8;p=GetNextFileRequest((s32)a);}OS_RestoreInterrupts(key);if(p)func_0200ae9c((void *)p);return r;}
+s32 EndFileOperation(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 p=0,key,r;key=OS_DisableInterrupts();r=((M2C_FIELD(a,s32 *,28)&8)?1:0)==0;if(!r){M2C_FIELD(a,s32 *,28)&=~8;p=GetNextFileRequest((s32)a);}OS_RestoreInterrupts(key);if(p)ProcessFileRequests((void *)p);return r;}
 
 void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
     s32 var_r1;
@@ -264,7 +295,7 @@ void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x58) = var_r2;
 }
 
-M2C_UNK func_0200b6c8(M2C_UNK a,M2C_UNK b){M2C_UNK CompleteFileRequest(void *,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 key,p;if((M2C_FIELD(a,volatile s32 *,28)&256)?1:0){key=M2C_FIELD(a,volatile s32 *,28);p=M2C_FIELD(a,s32 *,36);M2C_FIELD(a,volatile s32 *,28)=key&~256;CompleteFileRequest((void *)p,b);p=GetNextFileRequest(a);if(p)func_0200ae9c((void *)p);return;}p=M2C_FIELD(a,s32 *,36);key=OS_DisableInterrupts();M2C_FIELD(p,s32 *,20)=b;M2C_FIELD(a,volatile s32 *,28)&=~512;OS_WakeupThread((void *)(a+12));OS_RestoreInterrupts(key);}
+M2C_UNK func_0200b6c8(M2C_UNK a,M2C_UNK b){M2C_UNK CompleteFileRequest(void *,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 key,p;if((M2C_FIELD(a,volatile s32 *,28)&256)?1:0){key=M2C_FIELD(a,volatile s32 *,28);p=M2C_FIELD(a,s32 *,36);M2C_FIELD(a,volatile s32 *,28)=key&~256;CompleteFileRequest((void *)p,b);p=GetNextFileRequest(a);if(p)ProcessFileRequests((void *)p);return;}p=M2C_FIELD(a,s32 *,36);key=OS_DisableInterrupts();M2C_FIELD(p,s32 *,20)=b;M2C_FIELD(a,volatile s32 *,28)&=~512;OS_WakeupThread((void *)(a+12));OS_RestoreInterrupts(key);}
 
 void func_0200b74c(s32 a){void func_0200bda4(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;func_0200bda4(a);}
 

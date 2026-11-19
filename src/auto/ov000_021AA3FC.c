@@ -22,15 +22,18 @@ if(GetKindAttackClass(kind)==UNIT_ATTACK_NONE && isEnemy==0)damage>>=1;
 return damage;
 }
 
-u32 CalcAreaEffectUnitCount(void *arg0,s32 arg1,s32 arg2){
+/* Number of damage steps an area effect of `unit`'s kind lands on it: one for a
+ * unit already down to a single bar, then `power` steps capped at the unit's HP
+ * minus one, halved for a friendly unit the effect's kind cannot attack. */
+u32 CalcAreaEffectUnitCount(UnkStruct_ov000_021A860C *unit,s32 power,s32 isEnemy){
 s32 GetKindAttackClass(u32);
-u32 n;u16 count;
-if(((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<=10)return 1;
-if(GetKindAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==1)return 1;
-n=(u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25;
-if(arg1<(s32)n)count=arg1;else count=n-1;
-if(GetKindAttackClass((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==2 && arg2==0)count/=2;
-return count;
+u32 hp;u16 hits;
+if(unit->unk6<=10)return 1;
+if(GetKindAttackClass(unit->unk0)==UNIT_ATTACK_NONE && isEnemy==1)return 1;
+hp=unit->unk6;
+if(power<(s32)hp)hits=power;else hits=hp-1;
+if(GetKindAttackClass(unit->unk0)==UNIT_ATTACK_NONE && isEnemy==0)hits/=2;
+return hits;
 }
 
 s32 CombineAreaEffectDamage(s32 arg0, s32 arg1) {

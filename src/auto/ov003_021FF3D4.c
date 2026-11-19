@@ -7,12 +7,12 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
     void *MemAlloc(s32);
     M2C_UNK SpriteTween_Start(void *, M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
-    extern M2C_UNK data_02102174;
+    extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
-    extern M2C_UNK data_02156cdc;
+    extern M2C_UNK gTextLabelSlotState;
     extern void **data_027e0058;
-    extern M2C_UNK data_ov003_0220f47c;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gMapPickSelectionIfaceVTable;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220fe64;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
@@ -35,8 +35,8 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
 
     temp_r0 = CreateSpriteFromClass(&data_ov003_0220fe64, arg0);
     if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov003_02210104;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_02210130;
         M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
@@ -50,7 +50,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, u8 *, 0x3E) = temp_r5;
         M2C_FIELD(temp_r0, u8 *, 0x3E) = (u8) ((u8) (temp_r5 & ~0x40) & ~0x80);
         M2C_FIELD(temp_r0, void **, 0x44) = NULL;
-        M2C_FIELD(temp_r0, M2C_UNK **, 0x48) = &data_02156cdc;
+        M2C_FIELD(temp_r0, M2C_UNK **, 0x48) = &gTextLabelSlotState;
         M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
         M2C_FIELD(temp_r0, void **, 0x50) = NULL;
         M2C_FIELD(temp_r0, void **, 0x54) = NULL;
@@ -63,7 +63,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
         temp_r0_2 = MemAlloc(0x187C);
         if (temp_r0_2 != NULL) {
             M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_ov003_022100d4;
-            M2C_FIELD(temp_r0_2, M2C_UNK **, 4) = &data_ov003_0220f47c;
+            M2C_FIELD(temp_r0_2, M2C_UNK **, 4) = &gMapPickSelectionIfaceVTable;
             var_r0 = 0;
             do {
                 temp_r2 = temp_r0_2 + (var_r0 * 2);

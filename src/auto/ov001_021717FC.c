@@ -176,7 +176,7 @@ void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
  Ov001_FreeFile(p);
 }
 
-void func_ov001_02171dd0(s32 a){
+void Ov001_OpenMenuForMode(s32 a){
 s32 x;func_ov001_02175d78(&x,0);
 if(x==1){Ov001_OpenMenu(a);return;}
 if(x==2)Ov001_LoadMenuRows(a);
@@ -194,7 +194,7 @@ void func_ov001_02171e20(M2C_UNK arg0) {
     func_ov001_0217159c(arg0);
 }
 
-void func_ov001_02171e58(M2C_UNK arg0) {
+void Ov001_ShowMessageBox(M2C_UNK arg0) {
     s32 Ov001_GetTextFontId();
     s32 Ov001_GetMessageText(s32, M2C_UNK);
     s32 CreateTextPanel(M2C_UNK, M2C_UNK);
@@ -312,7 +312,7 @@ void func_ov001_0217223c(void) {
 }
 
 void func_ov001_021722dc(s32);
-M2C_UNK func_ov001_02172250(s32 a) {
+M2C_UNK Ov001_LoadObjLayoutBlock(s32 a) {
  void MI_CpuCopy32(s32,s32,s32);
  s32 p=Ov001_LoadFile(Ov001_LocalizePath(data_ov001_02190094[a]),0,4);
  MI_CpuCopy32(p,data_ov001_02193d14,192);
@@ -320,14 +320,14 @@ M2C_UNK func_ov001_02172250(s32 a) {
  Ov001_AddTask(1,func_ov001_021722dc,0,120);
 }
 
-void func_ov001_021722ac(void) {
-    M2C_UNK func_ov001_02172250(s32);
+void Ov001_LoadSaveSlotObjLayout(void) {
+    M2C_UNK Ov001_LoadObjLayoutBlock(s32);
     void *GetCurrentMapRecord();
-    func_ov001_02172250(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 5);
+    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 5);
 }
 
 void func_ov001_021722c4(void) {
-    func_ov001_02172250(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
+    Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
 }
 
 void func_ov001_021722dc(s32 a) {

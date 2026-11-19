@@ -221,7 +221,7 @@ gCur3DSpriteEngine=g3DSpriteEngineSub;
 M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(arg0,void**,0x4c),u16*,0x3e)=320;
 w=M2C_FIELD(arg0,void**,0x4c);M2C_FIELD(w,u32*,0x40)=(M2C_FIELD(w,u32*,0x40)&~0x3fc0000)|0x180000;
-SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);func_02088f1c(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;func_020b2178();
+SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);Show3DSpriteSlide(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;func_020b2178();
 }
 #pragma pop
 void func_ov006_02216bac(void) {

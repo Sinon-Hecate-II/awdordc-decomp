@@ -1,11 +1,13 @@
 /* The ov001 numeric keypad state.  The pointer global holds the widget built by
- * func_ov001_0217416c.  It has ten number keys (laid out 7 8 9 / 4 5 6 / 1 2 3
+ * Ov001_OpenKeypad.  It has ten number keys (laid out 7 8 9 / 4 5 6 / 1 2 3
  * / 0), a delete key with auto-repeat, a next-slot key and the clear/confirm
  * actions.  A key writes its code to KEYPAD_CODE: the number keys write their
  * ASCII character, the others a KEYPAD_CODE_* control code. */
 #ifndef OV001_KEYPAD_H
 #define OV001_KEYPAD_H
 
+#define KEYPAD_CURSOR_SPRITE 0x58 /* void *: sprite that marks the selected key */
+#define KEYPAD_SLIDE_TASK   0x5c /* void *: task sliding the highlight between keys */
 #define KEYPAD_CODE        0x60 /* u8 code produced by the key under the finger */
 #define KEYPAD_TOUCH_KEY   0x61 /* s8 index of the key under the finger, -1 none */
 #define KEYPAD_HIGHLIGHTED 0x62 /* s8 key whose pressed sprite is shown */

@@ -33,11 +33,11 @@ return code.value;
 
 #pragma opt_common_subs on
 s32 BuildWfcProfile(void *arg0) {
-void GetWfcProfile(void *);void func_0200ee70(void);s32 func_0200ef4c(void *);s32 func_0200eff8(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void GetMacAddress(void *);u64 GetSystemTick(void);
+void GetWfcProfile(void *);void func_0200ee70(void);s32 GetRtcDate(void *);s32 GetRtcTime(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void GetMacAddress(void *);u64 GetSystemTick(void);
 u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;u32 state;u8 flag;u32 mac;
 GetWfcProfile(p);func_0200ee70();
-if(func_0200ef4c(sp+0x14))return 0;
-if(func_0200eff8(sp+8))return 0;
+if(GetRtcDate(sp+0x14))return 0;
+if(GetRtcTime(sp+8))return 0;
 diff=MakeTime(sp+0x14,sp+8);if(diff<0)return 0;
 seed=diff;
 if(func_02006f8c()!=0)seed+=(u32)GetSystemTick;
@@ -72,8 +72,8 @@ s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u
 s32 func_0204712c(void *arg0) {
     void GetWfcProfile(void *);
     void func_0200ee70(void);
-    s32 func_0200ef4c(void *);
-    s32 func_0200eff8(void *);
+    s32 GetRtcDate(void *);
+    s32 GetRtcTime(void *);
     long long MakeTime(void *, void *);
     u16 func_02006f8c(void);
     void GetMacAddress(void *);
@@ -99,8 +99,8 @@ register u32 tmp4, tmp3;
 
     GetWfcProfile(p);
     func_0200ee70();
-    if (func_0200ef4c(&sp[0x14]) != 0) return 0;
-    if (func_0200eff8(&sp[0x8]) != 0) return 0;
+    if (GetRtcDate(&sp[0x14]) != 0) return 0;
+    if (GetRtcTime(&sp[0x8]) != 0) return 0;
 
     diff = MakeTime(&sp[0x14], &sp[0x8]);
     if (diff < 0) return 0;

@@ -141,7 +141,7 @@ s32 func_0200eedc(s32 arg0, s32 arg1, s32 arg2) {
     return 3;
 }
 
-s32 func_0200ef4c(s32 arg0) {
+s32 GetRtcDate(s32 arg0) {
     s32 func_0200eedc(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
@@ -174,7 +174,7 @@ s32 func_0200ef84(s32 arg0, s32 arg1, s32 arg2) {
     return 3;
 }
 #pragma opt_common_subs reset
-s32 func_0200eff8(s32 arg0) {
+s32 GetRtcTime(s32 arg0) {
     s32 func_0200ef84(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
@@ -406,12 +406,17 @@ s32 func_0200f70c(s32 arg0) {
     return 1;
 }
 
-s32 func_0200f734(void *arg0) {
-extern M2C_UNK data_020f5508;
+/* Converts an RTC date record (year at +0, month at +4, day at +8, weekday at
+ * +0xC) into the count of days since 2000/01/01, or -1 while a field is out of
+ * range.  gMonthDaysBeforeMonth is indexed by the month itself (entry 0 unused),
+ * so month 1 reads the zero entry before gMonthDayTable; a leap year adds the
+ * extra February day from March on. */
+s32 RtcDateToDays(void *date) {
+extern M2C_UNK gMonthDaysBeforeMonth;
 s32 days; u32 day,month,year;
-year=M2C_FIELD(arg0,u32 *,0);
-if(year>=100 || (month=M2C_FIELD(arg0,u32 *,4))<1 || month>12 || (day=M2C_FIELD(arg0,u32 *,8))<1 || day>31 || M2C_FIELD(arg0,s32 *,12)>=7 || month<1 || month>12) return -1;
-days=day-1+M2C_FIELD(&data_020f5508,s32 *,month*4);
+year=M2C_FIELD(date,u32 *,0);
+if(year>=100 || (month=M2C_FIELD(date,u32 *,4))<1 || month>12 || (day=M2C_FIELD(date,u32 *,8))<1 || day>31 || M2C_FIELD(date,s32 *,12)>=7 || month<1 || month>12) return -1;
+days=day-1+M2C_FIELD(&gMonthDaysBeforeMonth,s32 *,month*4);
 if(month>=3 && !(year&3)) days++;
 return year*365+days+((year+3)>>2);
 }
@@ -423,7 +428,7 @@ s32 func_0200f7c8(void *arg0) {
 #pragma opt_propagation off
 s64 MakeTime(void *arg0, void *arg1) {
     s32 func_0200f7c8(void *);
-    s32 days=func_0200f734(arg0); s32 seconds;
+    s32 days=RtcDateToDays(arg0); s32 seconds;
     if(days==-1) return -1;
     seconds=func_0200f7c8(arg1);
     if(seconds==-1) return -1;
@@ -498,7 +503,7 @@ void RtcDaysToDate(void *date, s32 days) {
     }
 }
 
-void func_0200f944(s32 *arg0,s32 arg1) {
+void RtcSecondsToTime(s32 *arg0,s32 arg1) {
     s32 minutes;
     if(arg1<0) arg1=0;
     if(arg1>86399) arg1=86399;
@@ -508,30 +513,33 @@ void func_0200f944(s32 *arg0,s32 arg1) {
     arg0[0]=minutes/60;
 }
 
-void func_0200f9c4(void *arg0,s32 *arg1,long long time) {
+/* Split a second count since 2000/01/01 into the RTC date record (year, month, day,
+ * weekday) and time record (hours, minutes, seconds), clamping the count to the one
+ * century the clock can name. */
+void RtcSecondsToDateTime(void *date,s32 *clock,s64 seconds) {
 void RtcDaysToDate(void *,s32);
-if(time<0) time=0;
-else if(time>3155759999LL) time=3155759999LL;
-func_0200f944(arg1,time%86400);
-RtcDaysToDate(arg0,time/86400);
+if(seconds<0) seconds=0;
+else if(seconds>RTC_SECONDS_LAST) seconds=RTC_SECONDS_LAST;
+RtcSecondsToTime(clock,seconds%RTC_SECONDS_PER_DAY);
+RtcDaysToDate(date,seconds/RTC_SECONDS_PER_DAY);
 }
 
 #pragma opt_instruction_scheduling off
 s32 func_0200fa50(void *arg0) {
-    s32 month = M2C_FIELD(arg0, s32 *, 4) - 2;
-    s32 year = M2C_FIELD(arg0, s32 *, 0) + 2000;
-    s32 century, yy, days, day = M2C_FIELD(arg0, s32 *, 8);
-    if (month < 1) year--;
-    century = year / 100; yy = year % 100;
-    if (month < 1) month += 12;
-    days = day + (month * 26 - 2) / 10 + yy;
-    days = days + yy / 4 + century / 4 + century * 5;
-    return days % 7;
+register s32 month=M2C_FIELD(arg0,s32 *,4)-2;
+register s32 year=M2C_FIELD(arg0,s32 *,0)+2000;
+s32 century,yy,days,day=M2C_FIELD(arg0,s32 *,8);
+if(month<1) year--;
+century=year/100; yy=year%100;
+if(month<1) month+=12;
+days=day+(month*26-2)/10+yy;
+days=days+yy/4+century/4+century*5;
+return days%7;
 }
 #pragma opt_instruction_scheduling reset
 void func_0200fb0c(s32 arg0) {
-void SetThreadPriority(void *,s32); void func_02005e5c(void *); extern M2C_UNK data_0212fde0;
-void *p=&data_0212fde0; s32 flags; void *thread;
+void SetThreadPriority(void *,s32); void func_02005e5c(void *); extern M2C_UNK gSaveDeviceState;
+void *p=&gSaveDeviceState; s32 flags; void *thread;
 SetThreadPriority((u8 *)p+0x44,M2C_FIELD(p,s32 *,0x108));
 flags=M2C_FIELD(p,s32 *,0x114)|8;
 thread=(u8 *)p+0x44;
@@ -544,8 +552,8 @@ func_02005e5c(thread);
 #pragma opt_common_subs off
 void func_0200fb48(s32 arg0,s32 arg1) {
 void OS_SleepThread(void *); s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void SystemHalt(void);
-extern M2C_UNK data_0212fde0;
-void *p=&data_0212fde0; s32 state=OS_DisableInterrupts();
+extern M2C_UNK gSaveDeviceState;
+void *p=&gSaveDeviceState; s32 state=OS_DisableInterrupts();
 if(M2C_FIELD(p,s32 *,8)==arg0) {
 if(M2C_FIELD(p,s32 *,0x18)!=arg1) SystemHalt();
 } else {
@@ -560,8 +568,8 @@ OS_RestoreInterrupts(state);
 #pragma opt_instruction_scheduling off
 void func_0200fbcc(s32 arg0, s32 arg1) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void SystemHalt(void); void OS_WakeupThread(void *);
-extern M2C_UNK data_0212fde0;
-void *p=&data_0212fde0; s32 state=OS_DisableInterrupts();
+extern M2C_UNK gSaveDeviceState;
+void *p=&gSaveDeviceState; s32 state=OS_DisableInterrupts();
 if(M2C_FIELD(p,s32*,8)!=arg0 || M2C_FIELD(p,s32*,12)==0){SystemHalt();goto done;}
 if(M2C_FIELD(p,s32*,0x18)!=arg1)SystemHalt();
 if(--M2C_FIELD(p,s32*,12)==0){

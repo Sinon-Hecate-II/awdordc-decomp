@@ -65,7 +65,7 @@ for(j=0;j<count;j++)packet[j+14]=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),
 }
 if(M2C_FIELD(remote,u8 *,8)==0){
 PlaySoundEffect(0x1000f);func_ov003_021e984c(arg0,0);
-func_02088f1c(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
+Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
 if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));
 Link_SendPacket(packet,36);return;

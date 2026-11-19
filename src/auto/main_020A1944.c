@@ -252,9 +252,9 @@ s32 GetTechniqueRating(s32 player) {
  * current one when NULL, with the CO, army and team of the four players, after
  * resetting the rest of the record to its defaults.  A link session keeps the
  * slots the other consoles sent, and a map that sets no player control mode
- * (func_020cd6d4) keeps the saved slots. */
+ * (IsCampaignBattleRules) keeps the saved slots. */
 void MapSettings_SavePlayers(u16 *settings) {
-    s32 IsLinkSessionActive(void); s32 func_020cd6d4(void);
+    s32 IsLinkSessionActive(void); s32 IsCampaignBattleRules(void);
     u16 *GetMapSettings(void); void MapSettings_SetDefaults(u16 *); void MapSettings_Capture(u16 *);
     s32 GetPlayerCoId(s32); s32 GetPlayerArmyId(s32); s32 GetPlayerTeam(s32);
     u16 *p;
@@ -263,7 +263,7 @@ void MapSettings_SavePlayers(u16 *settings) {
     p = settings;
     if (p == 0) p = GetMapSettings();
     if (IsLinkSessionActive() != 0) return;
-    if (func_020cd6d4() != 0) return;
+    if (IsCampaignBattleRules() != 0) return;
     MapSettings_SetDefaults(p);
     MapSettings_Capture(p);
     i = 0;
@@ -282,7 +282,7 @@ void MapSettings_SavePlayers(u16 *settings) {
  * their own slot number, all on the same team. */
 void ApplyMapSettingsToPlayers(u16 *settings) {
 u16 *GetMapSettings(void);
-s32 func_020cd6d4(void);
+s32 IsCampaignBattleRules(void);
 void MapSettings_Apply(u16 *);
 s32 IsLinkSessionActive(void);
 u32 IsCoUnlocked(s32);
@@ -303,7 +303,7 @@ if(settings==0){
 entries=GetMapSettings(); settings=entries;
 }
 entries=settings;
-if(func_020cd6d4()!=0) return;
+if(IsCampaignBattleRules()!=0) return;
 MapSettings_Apply(entries);
 for(idx=1;idx<5;idx++){
 SetPlayerCoId(idx,0);
@@ -417,7 +417,7 @@ s32 BuildUnitStatBlock(void *out, void *unit, s32 x, s32 y) {
     s32 GetUnitOwner(void *);
     u8 *GetPlayerSelectedUnit(s32);
     s32 GetPlayerCommanderId(s32);
-    s32 func_020d0468(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 GetMoveRangeCommanderId(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetUnitKindMaxAttackRange(s32);
     extern CommanderBonus gCommanderBonusTable[];
     UnitStatBlock *stats = (UnitStatBlock *)out;
@@ -441,7 +441,7 @@ s32 BuildUnitStatBlock(void *out, void *unit, s32 x, s32 y) {
     if (GetPlayerSelectedUnit(owner) == (u8 *)unit) {
         commander = GetPlayerCommanderId(owner);
     } else {
-        commander = func_020d0468(owner, x, y);
+        commander = GetMoveRangeCommanderId(owner, x, y);
     }
 
     kind = M2C_FIELD(unit, u8 *, 0x0) << 26;
@@ -550,11 +550,11 @@ s8 func_020a2788(s32 arg0, s32 arg1) {
 }
 
 s8 func_020a27a0(s32 arg0, s32 arg1) {
- extern M2C_UNK data_0211fbfd;
- return *(s8 *)(arg1 + (arg0 * 0x48 + (s32)&data_0211fbfd));
+ extern M2C_UNK gCoZoneKindEnabled;
+ return *(s8 *)(arg1 + (arg0 * 0x48 + (s32)&gCoZoneKindEnabled));
 }
 
-s32 func_020a27b8(s32 arg0, s32 arg1) {
+s32 GetCoZoneBonusIndex(s32 arg0, s32 arg1) {
     extern u16 gMapConfig;
     s32 var_r1;
 
@@ -574,29 +574,32 @@ s32 func_020a27b8(s32 arg0, s32 arg1) {
 
 u8 func_020a27f8(s32 arg0,s32 arg1) {
 extern s32 *gCurrentMap;
-extern M2C_UNK data_0211fbfd;
+extern M2C_UNK gCoZoneKindEnabled;
 s32 index;
 u8 result;
-index=func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap+arg1*0x8C,s32 *,0x6810)<<24)>>24),0);
+index=GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap+arg1*0x8C,s32 *,0x6810)<<24)>>24),0);
 if(index==-1)return 0;
-if(*(s8 *)(arg0+(index*0x48+(s32)&data_0211fbfd)))result=1;
+if(*(s8 *)(arg0+(index*0x48+(s32)&gCoZoneKindEnabled)))result=1;
 else result=0;
 return result;
 }
 
-s32 GetCoZoneAttackBonus(s32 arg0,s32 arg1,s32 arg2) {
-extern s32 *gCurrentMap;
-extern M2C_UNK data_0211fbfd;
-extern s16 data_0211fbf4;
-s32 GetUnitKindMaxAttackRange(s32);
-s32 index;
-s32 result;
-index=func_020a27b8(((u32)(M2C_FIELD(*gCurrentMap+arg1*0x8C,s32 *,0x6810)<<24)>>24),arg2);
-if(index==-1)return 0;
-index*=0x48;
-if(!*(s8 *)(arg0+((s32)&data_0211fbfd+index)))return 0;
-if(GetUnitKindMaxAttackRange(arg0) == 0) result = 0;
-else result = M2C_FIELD(&data_0211fbf4,s16 *,index);
-return result;
+/* Attack bonus the CO zone of `commander` gives unit kind `kind`: only kinds
+ * the commander's zone covers and kinds that can attack at all receive it. */
+s32 GetCoZoneAttackBonus(s32 kind, s32 commander, s32 powerActive) {
+    extern s32 *gCurrentMap;
+    extern M2C_UNK gCoZoneKindEnabled;
+    extern s16 gCoZoneAttackPct;
+    s32 GetUnitKindMaxAttackRange(s32);
+    s32 row;
+    s32 result;
+
+    row = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + commander * MAP_PLAYER_STRIDE, s32 *, PLAYER_REC_SPRITE + MAP_PLAYER_STATES) << 24) >> 24), powerActive);
+    if (row == -1) return 0;
+    row *= CO_ZONE_RECORD_STRIDE;
+    if (!*(s8 *)(kind + ((s32)&gCoZoneKindEnabled + row))) return 0;
+    if (GetUnitKindMaxAttackRange(kind) == 0) result = 0;
+    else result = M2C_FIELD(&gCoZoneAttackPct, s16 *, row);
+    return result;
 }
 

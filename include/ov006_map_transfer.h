@@ -33,4 +33,35 @@
  * headers, one page per player on the transfer screen. */
 #define CAMPAIGN_PAGE_HEADERS 50
 
+/* The ov006 "offer this map" object (class data_ov006_02218a48) that searches
+ * for another linked player to exchange the campaign map with: the map it
+ * offers, the text buffer the search request is named with, how many players
+ * the search found and the map record it sends them. */
+#define MAP_OFFER_MAP_ID       0x34 /* s32 campaign map id offered */
+#define MAP_OFFER_PLAYER_COUNT 0x38 /* s32 players the current request found */
+#define MAP_OFFER_NAME         0x3C /* void *text buffer holding the map name */
+#define MAP_OFFER_TIMEOUT      0x40 /* s32 match-request timeout result */
+#define MAP_OFFER_FLAGS        0x44 /* s32 match-request result flags */
+#define MAP_OFFER_RECORD       0x48 /* void *map record buffer, MAP_OFFER_RECORD_SIZE bytes */
+#define MAP_OFFER_PACKED       0x4C /* void *packed map record, MAP_OFFER_PACKED_SIZE bytes */
+#define MAP_OFFER_RECORD_SIZE 0x6F8
+#define MAP_OFFER_PACKED_SIZE 0x2AC
+
+/* The map-offer search state the whole overlay shares: the player-record buffer
+ * the search receives into (one PLAYER_ENTRY_* record), whether a valid record
+ * arrived, and whether the search has finished. */
+#define MAP_OFFER_STATE_RECEIVED 0x00 /* u8: a valid player record arrived */
+#define MAP_OFFER_STATE_RECORD   0x04 /* void *player-record buffer */
+#define MAP_OFFER_STATE_DONE     0x08 /* s32: the search has finished */
+extern M2C_UNK gMapOfferState;
+
+/* A received player record (0x310 bytes, as created by
+ * CreateOnlinePlayerListNode) carrying the player's map data. */
+#define PLAYER_ENTRY_ID       0x04   /* s32 player id, 0 when the record is empty */
+#define PLAYER_ENTRY_DATA_LEN 0x30C  /* s32 bytes of map data at +0x10 */
+
+/* Status texts of the map-offer search. */
+#define MAP_OFFER_MSG_PLAYER_FOUND 0x46000017
+#define MAP_OFFER_MSG_NO_PLAYER    0x46000016
+
 #endif

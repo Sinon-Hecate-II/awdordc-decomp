@@ -100,30 +100,33 @@ void func_ov003_021e6368(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
 }
 
-void func_ov003_021e637c(void *arg0) {
-    M2C_UNK func_02088f1c(s32);
-    void *temp_r1;
-    void *temp_r3;
-    void *temp_r3_2;
+/* Show the ov003 map-info scene: start its three 12-frame intro tweens (the
+ * map, its heading and the unit-category strip slide into place), show the map
+ * and unit sprites and mark the scene visible. */
+void Ov003_ShowMapInfoScene(void *scene) {
+    M2C_UNK Show3DSpriteSlide(s32);
+    SpriteTween *tween;
+    void *spriteHolder;
 
-    temp_r3 = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(temp_r3, s16 *, 0xE) = 0x100;
-    M2C_FIELD(temp_r3, s16 *, 0x10) = 0;
-    M2C_FIELD(temp_r3, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r3, u16 *, 2) = (u16) M2C_FIELD(temp_r3, u16 *, 4);
-    temp_r3_2 = M2C_FIELD(arg0, void **, 0x40);
-    M2C_FIELD(temp_r3_2, s16 *, 0xE) = 0xC0;
-    M2C_FIELD(temp_r3_2, s16 *, 0x10) = 0x68;
-    M2C_FIELD(temp_r3_2, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r3_2, u16 *, 2) = (u16) M2C_FIELD(temp_r3_2, u16 *, 4);
-    temp_r1 = M2C_FIELD(arg0, void **, 0x44);
-    M2C_FIELD(temp_r1, s16 *, 0xE) = 0xC0;
-    M2C_FIELD(temp_r1, s16 *, 0x10) = 0x90;
-    M2C_FIELD(temp_r1, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r1, u16 *, 2) = (u16) M2C_FIELD(temp_r1, u16 *, 4);
-    func_02088f1c(M2C_FIELD(arg0, s32 *, 0x5C));
-    func_02088f1c(*M2C_FIELD(arg0, s32 **, 0x48));
-    M2C_FIELD(arg0, s8 *, 0x39) = 1;
+    tween = M2C_FIELD(scene, SpriteTween **, 0x3C);
+    tween->from = 0x100;
+    tween->to = 0;
+    tween->duration = 0xC;
+    tween->current = tween->start;
+    tween = M2C_FIELD(scene, SpriteTween **, 0x40);
+    tween->from = 0xC0;
+    tween->to = 0x68;
+    tween->duration = 0xC;
+    tween->current = tween->start;
+    tween = M2C_FIELD(scene, SpriteTween **, 0x44);
+    tween->from = 0xC0;
+    tween->to = 0x90;
+    tween->duration = 0xC;
+    tween->current = tween->start;
+    Show3DSpriteSlide(M2C_FIELD(scene, s32 *, 0x5C));
+    spriteHolder = M2C_FIELD(scene, void **, 0x48);
+    Show3DSpriteSlide(M2C_FIELD(spriteHolder, s32 *, 0));
+    M2C_FIELD(scene, s8 *, 0x39) = 1;
 }
 
 void func_ov003_021e6404(void) {
@@ -178,10 +181,10 @@ void func_ov003_021e64a8(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK func_020e4c64();
-    M2C_UNK func_ov003_021f13ec(M2C_UNK *);
-    extern M2C_UNK data_02102174;
+    M2C_UNK SetOv003SceneClass(M2C_UNK *);
+    extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
-    extern M2C_UNK data_ov003_0220f48c;
+    extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220f650;
     extern M2C_UNK data_ov003_0220f6f8;
     extern M2C_UNK data_ov003_0220f700;
@@ -205,13 +208,13 @@ void func_ov003_021e64a8(M2C_UNK arg0) {
     M2C_UNK **temp_r2_4;
     void *temp_r0;
 
-    func_ov003_021f13ec(&data_ov003_0220f650);
+    SetOv003SceneClass(&data_ov003_0220f650);
     temp_r0 = CreateSpriteFromClass(&data_ov003_0220f650, arg0);
     if (temp_r0 == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02102174;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &data_ov003_0220f48c;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
+    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gOv003SceneVTable;
     M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gOv003SceneIfaceVTable;
     M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
@@ -566,8 +569,8 @@ void func_ov003_021e6c6c(void *arg0) {
 }
 
 void func_ov003_021e6c7c(void *arg0) {
-    void func_ov003_021e637c(void *);
-    ((void (*)(void *))func_ov003_021e637c)((char *)arg0 + 0xFFFFFFCC);
+    void Ov003_ShowMapInfoScene(void *);
+    ((void (*)(void *))Ov003_ShowMapInfoScene)((char *)arg0 + 0xFFFFFFCC);
 }
 
 s32 func_ov003_021e6c8c(s32 arg0) {

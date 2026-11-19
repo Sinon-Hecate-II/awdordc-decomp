@@ -24,7 +24,7 @@ static inline ScriptPlayer16 *ScriptPlayerAt16(s32 n) { extern s32 *gCurrentMap;
  * skipped with SkipToNextConditionGroup; when applyEffects is set the action commands
  * of a satisfied group are also executed. */
 s32 EvalScriptConditions(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
-u8 *SkipToNextConditionGroup(u8*); s32 func_02086b40(); void func_02086ae4(); void func_02094808(); s32 IsUnitSelected(); s32 GetPlayerSelectedUnit();
+u8 *SkipToNextConditionGroup(u8*); s32 IsEventFlagSet(); void func_02086ae4(); void func_02094808(); s32 IsUnitSelected(); s32 GetPlayerSelectedUnit();
 extern s32 *gCurrentMap;
 s32 (*conditionFn)(); s32 matched=0; s32 turnMatches;
 while(cmd[0]!=34) {
@@ -36,7 +36,7 @@ if(cmd[1]==0 || cmd[1]==ScriptPhase16())turnMatches=1;
 }
 if(!turnMatches)cmd=SkipToNextConditionGroup(cmd);break;
 case 23:case 24:case 25:
-if(cmd[1]!=255 && func_02086b40(cmd[1])){cmd=SkipToNextConditionGroup(cmd);break;}
+if(cmd[1]!=255 && IsEventFlagSet(cmd[1])){cmd=SkipToNextConditionGroup(cmd);break;}
 if(!applyEffects){matched=1;break;}
 if(*(s32*)(cmd+4)){func_02094808(*(s32*)(cmd+4));matched=1;}
 if(cmd[1]!=255)func_02086ae4(cmd[1],1);
@@ -56,8 +56,8 @@ case 31:if(!target || !IsUnitSelected(target))cmd=SkipToNextConditionGroup(cmd);
 case 32:if(!GetPlayerSelectedUnit(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
 case 33:if(ScriptPlayerAt16(cmd[1])->flag)cmd=SkipToNextConditionGroup(cmd);break;
 case 12:case 13:case 14:if(cmd[1]!=teamId)cmd=SkipToNextConditionGroup(cmd);break;
-case 6:case 7:case 8:if(!func_02086b40(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
-case 9:case 10:case 11:if(func_02086b40(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 6:case 7:case 8:if(!IsEventFlagSet(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
+case 9:case 10:case 11:if(IsEventFlagSet(cmd[1]))cmd=SkipToNextConditionGroup(cmd);break;
 case 22:cmd=SkipToNextConditionGroup(cmd);break;
 default:break;
 }
@@ -77,9 +77,9 @@ u8 *SkipToNextConditionGroup(u8 *arg0) {
 #pragma optimization_level reset
 void *GetMapEventScript(void) {
     void *func_020a8b0c(u16);
-    s32 func_020cd6d4();
+    s32 IsCampaignBattleRules();
     extern s32 *data_027e0058;
-    switch (func_020cd6d4()) {
+    switch (IsCampaignBattleRules()) {
     case 0: return NULL;
     default: return func_020a8b0c(M2C_FIELD((*data_027e0058 + 0x5120), u16 *, 0x22));
     }
@@ -101,6 +101,7 @@ s32 func_ov000_0216b15c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
+#pragma opt_lifetimes off
 void func_ov000_0216b194(void *arg0) {
     M2C_UNK CopyToObjPaletteShadow(s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -111,8 +112,8 @@ void func_ov000_0216b194(void *arg0) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
-    M2C_UNK func_0209b59c(s32, M2C_UNK);
-    M2C_UNK func_0209b5e4(s32, s32);
+    M2C_UNK ClearTextBitmap(s32, M2C_UNK);
+    M2C_UNK RenderTextToTiles(s32, s32);
     s32 MeasureStringWidth();
     s8 GetSpriteAnimValue(s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
@@ -208,9 +209,9 @@ void func_ov000_0216b194(void *arg0) {
     temp_r0_18 = LoadFileToBuffer(&data_ov000_021b86e0, 1);
     CopyToObjPaletteShadow(temp_r0_18 + (M2C_FIELD(arg0, u8 *, 0x3C) << 5), 0x360, 0x20);
     HeapFreeBlock(temp_r0_18);
-    func_0209b59c(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
+    ClearTextBitmap(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x8FC0, 0x60);
     temp_r6_5 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C);
-    func_0209b5e4(temp_r6_5 + 0x8FC0, GetCurrentMapName());
+    RenderTextToTiles(temp_r6_5 + 0x8FC0, GetCurrentMapName());
     LoadScenePanelPalette(0x12);
     M2C_FIELD(arg0, s16 *, 0x3E) = 0x20;
     GetCurrentMapName();
@@ -312,4 +313,3 @@ block_24:
     gCur3DSpriteEngine = saved;
     M2C_FIELD(arg0, s8 *, 0x36) = 1;
 }
-

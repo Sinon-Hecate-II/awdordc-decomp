@@ -93,7 +93,7 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     void TryConnectToPeer();
     s32 func_0203ecb0();
     void SendMatchmakingParameter();
-    void func_02043008();
+    void ReportMatchmakingResult();
     s32 func_02043184();
 
     extern M2C_UNK gConnectionMgr;
@@ -162,7 +162,7 @@ status2_done:
                 M2C_FIELD(ctx, s32 *, 0x204) = 0;
                 ctx = GetConnection();
                 SendMatchmakingParameter(M2C_FIELD(ctx, u32 *, 0x204));
-                func_02043008();
+                ReportMatchmakingResult();
             } else {
                 ctx = GetConnection();
                 M2C_FIELD(ctx, s32 *, 0xe8) = 2;

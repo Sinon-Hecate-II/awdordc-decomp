@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-void func_02010c14(void){extern u8 data_0212fde0[],data_02130400[];M2C_UNK *func_02010c84(void);void func_0200fc58();void func_02010e68();u8 *p=data_0212fde0;u8 *q;s32 zero,minus,one;if(M2C_FIELD(p,s32 *,276))return;q=data_02130400;zero=0;minus=zero-1;one=1;M2C_FIELD(p,s32 *,276)=one;M2C_FIELD(p,s32 *,36)=zero;M2C_FIELD(p,s32 *,32)=zero;M2C_FIELD(p,s32 *,28)=zero;M2C_FIELD(p,s32 *,40)=minus;M2C_FIELD(p,s32 *,56)=zero;M2C_FIELD(p,s32 *,60)=zero;M2C_FIELD(q,s32 *,0)=zero;func_0200fc58();M2C_FIELD(data_02130400,s32 *,32)=(s32)func_02010c84();func_02010e68();}
+void func_02010c14(void){extern u8 gSaveDeviceState[],data_02130400[];M2C_UNK *func_02010c84(void);void func_0200fc58();void func_02010e68();u8 *p=gSaveDeviceState;u8 *q;s32 zero,minus,one;if(M2C_FIELD(p,s32 *,276))return;q=data_02130400;zero=0;minus=zero-1;one=1;M2C_FIELD(p,s32 *,276)=one;M2C_FIELD(p,s32 *,36)=zero;M2C_FIELD(p,s32 *,32)=zero;M2C_FIELD(p,s32 *,28)=zero;M2C_FIELD(p,s32 *,40)=minus;M2C_FIELD(p,s32 *,56)=zero;M2C_FIELD(p,s32 *,60)=zero;M2C_FIELD(q,s32 *,0)=zero;func_0200fc58();M2C_FIELD(data_02130400,s32 *,32)=(s32)func_02010c84();func_02010e68();}
 
 void func_02010c78(void) {
     M2C_UNK func_0200fda0();
@@ -14,9 +14,9 @@ M2C_UNK *func_02010c84(void) {
     return &func_02010938;
 }
 
-void func_02010c90(s32 a,s32 b,s32 c){extern u8 data_0212fde0[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(data_0212fde0,s32 *,260);M2C_FIELD(data_0212fde0,s32 *,276)&=~32;TaskWake(v);}
+void func_02010c90(s32 a,s32 b,s32 c){extern u8 gSaveDeviceState[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(gSaveDeviceState,s32 *,260);M2C_FIELD(gSaveDeviceState,s32 *,276)&=~32;TaskWake(v);}
 
-void func_02010cc4(void){extern u8 data_0212fde0[];s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);void OS_SleepThread(s32);s32 zero=0;u8 *p=data_0212fde0;s32 a;for(;;){a=OS_DisableInterrupts();while(!(M2C_FIELD(p,s32 *,276)&8))OS_SleepThread(zero);OS_RestoreInterrupts(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
+void func_02010cc4(void){extern u8 gSaveDeviceState[];s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);void OS_SleepThread(s32);s32 zero=0;u8 *p=gSaveDeviceState;s32 a;for(;;){a=OS_DisableInterrupts();while(!(M2C_FIELD(p,s32 *,276)&8))OS_SleepThread(zero);OS_RestoreInterrupts(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
 
 /* Sends a packet over the device, retrying while the device reports "busy/again" (status 4). */
 s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
@@ -63,11 +63,11 @@ return 0;
 
 void func_02010e68(void) { void func_02009d34(void); void SetFifoMessageHandler(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; func_02009d34();SetFifoMessageHandler(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
 
-void func_02010e94(s32 a,s32 b) { void func_02010ef8(void); void SystemHalt(void); extern M2C_UNK data_02130640; s32 result;
+void func_02010e94(s32 a,s32 b) { void ShutdownSystem(void); void SystemHalt(void); extern M2C_UNK data_02130640; s32 result;
 if((b&63)==17) {if(M2C_FIELD(&data_02130640,s32 *,0))return;result=1;M2C_FIELD(&data_02130640,s32 *,0)=result;
 if(M2C_FIELD(&data_02130640,s32 (**)(),4))result=M2C_FIELD(&data_02130640,s32 (**)(),4)();
 if(!result)return;
-func_02010ef8();return;}SystemHalt();
+ShutdownSystem();return;}SystemHalt();
 }
 
 s32 func_02010ee8(void) {
@@ -75,18 +75,22 @@ s32 func_02010ee8(void) {
     return data_02130640;
 }
 
-void func_02010ef8(void) { void func_02007ca4(s32); s32 WakeDisplayWait(void); void WaitCycles(s32); void func_02010fe4(M2C_UNK,M2C_UNK); void SystemHalt(void);
-s32 ok=1; s32 result;
-func_02007ca4(0);func_02007ca4(1);func_02007ca4(2);func_02007ca4(3);
-if((*(u16 *)0x027fffa8 & 0x8000)>>15) {
-result=WakeDisplayWait();while(result==4){WaitCycles(0xa3a47);result=WakeDisplayWait();}
-if(result==0)ok=0;
+/* Final shutdown path: stop all four DMA channels and, while the lid is
+ * closed, wait for the display to come back up.  If that succeeded, notify the
+ * ARM7 over the system FIFO, then halt the CPU. */
+void ShutdownSystem(void) {
+void DmaStopChannel(s32); s32 WakeDisplayWait(void); void WaitCycles(s32); void SendFifoMessageWait(M2C_UNK,M2C_UNK); void SystemHalt(void);
+s32 canNotify=1; s32 result;
+DmaStopChannel(0);DmaStopChannel(1);DmaStopChannel(2);DmaStopChannel(3);
+if((*(u16 *)SHARED_LID_WORD & SHARED_LID_CLOSED)>>15) {
+result=WakeDisplayWait();while(result==4){WaitCycles(DISPLAY_WAKE_RETRY_CYCLES);result=WakeDisplayWait();}
+if(result==0)canNotify=0;
 }
-if(ok)func_02010fe4(1,1);
+if(canNotify)SendFifoMessageWait(1,1);
 SystemHalt();
 }
 
-void func_02010f84(s32 arg0) {
+void SaveDevice_CheckChipId(s32 arg0) {
 s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32);
 volatile s32 sp0; s32 *p; s32 saved;
 if(*(u16 *)0x027FFC10==0)p=(s32 *)0x027FF800;else p=(s32 *)0x027FFC00;
@@ -94,7 +98,7 @@ sp0=*p;if(arg0==sp0)return;
 saved=OS_DisableInterrupts();((void (*)(s32,s32,s32))func_02010e94)(14,17,0);OS_RestoreInterrupts(saved);
 }
 
-void func_02010fe4(M2C_UNK arg0, M2C_UNK arg1) {
+void SendFifoMessageWait(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK WaitByLoop(M2C_UNK);
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
     if (SendFifoMessage(0xE, arg0, 0) == 0) {
@@ -266,11 +270,25 @@ DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2
 return M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0)<=1U?3:0;
 }
 
-s32 WFC_CheckChannelState(s32 count,...) { extern M2C_UNK gWfcChannelState; s32 result=WFC_CheckReady();s32 *args;u16 value;
-if(result)return result;
-DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2);
-value=M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0);
-args=(s32 *)((u32)&count&~3)+1;result=3;while(count){args++;if(args[-1]==value)result=0;count--;}return result;
+/* Verify the WFC command channel is ready and that the link's current state is
+ * one of the `expectedCount` states passed as variable arguments.  Returns 0
+ * when one matches, otherwise the channel-not-ready result (3). */
+s32 WFC_CheckChannelState(s32 expectedCount, ...) {
+    extern M2C_UNK gWfcChannelState;
+    s32 result = WFC_CheckReady();
+    s32 *args;
+    u16 state;
+    if (result) return result;
+    DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO), void **, WFC_CMD_INFO_DATA), sizeof(u16));
+    state = M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO), void **, WFC_CMD_INFO_DATA), u16 *, WFC_CMD_INFO_LINK_STATE);
+    args = (s32 *)((u32)&expectedCount & ~3) + 1;
+    result = 3;
+    while (expectedCount) {
+        args++;
+        if (args[-1] == state) result = 0;
+        expectedCount--;
+    }
+    return result;
 }
 
 /* WFC command-channel FIFO handler: the ARM7 firmware posts a command packet,
@@ -410,7 +428,7 @@ if(WFC_CheckReady()!=0)return 0;
 return M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),s32 *,4);
 }
 
-s32 func_02011934(void) {
+s32 WFC_GetLocalPlayerIndex(void) {
 extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,u16 *,0x150);else r=0;OS_RestoreInterrupts(s);return r;
 }
 
@@ -468,7 +486,7 @@ s32 WFC_SetChannelHandler(s32 arg0, void (*callback)(void *), s32 arg2) {
     M2C_FIELD(p, s32 *, 0x10c) = arg2;
     if (callback) {
         M2C_FIELD(buf, u16 *, 34) = (void *)func_02011964();
-        M2C_FIELD(buf, u16 *, 32) = (void *)func_02011934();
+        M2C_FIELD(buf, u16 *, 32) = (void *)WFC_GetLocalPlayerIndex();
         callback(buf);
     }
     OS_RestoreInterrupts(irq);

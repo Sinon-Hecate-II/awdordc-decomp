@@ -13,4 +13,25 @@
 #define ONLINE_TICK_RATE_FX12 0x3C000 /* 60 updates per second, 20.12 fixed point */
 #define ONLINE_MS_PER_SECOND_FX12 0x3E8000
 
+#ifdef ONLINE_USE_INTERRUPT_GUARD
+static inline u32 ov010DisableInterrupts(void) {
+    u32 previous = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = 0;
+    return previous;
+}
+static inline u32 ov010RestoreInterrupts(u32 saved) {
+    u32 previous = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = saved;
+    return previous;
+}
+#pragma cplusplus on
+class Ov010InterruptGuard {
+    u32 saved;
+public:
+    Ov010InterruptGuard() : saved(ov010DisableInterrupts()) {}
+    ~Ov010InterruptGuard() { ov010RestoreInterrupts(saved); }
+};
+#pragma cplusplus off
+#endif
+
 #endif

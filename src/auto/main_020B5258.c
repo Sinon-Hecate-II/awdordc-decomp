@@ -21,16 +21,18 @@ u8 IsBattleEffectActive(void) {
     return var_r0;
 }
 
-M2C_UNK *func_020b5284(u32 arg0) {
-    extern M2C_UNK data_02128e1c, data_02128e2c, data_02128e3c, data_02128e4c, data_02128e5c, data_02128e6c, data_02128e7c;
-    switch (arg0) {
-    case 0: case 1: case 2: return &data_02128e1c;
-    case 3: return &data_02128e2c;
-    case 4: return &data_02128e3c;
-    case 5: return &data_02128e4c;
-    case 6: case 7: return &data_02128e5c;
-    case 8: return &data_02128e6c;
-    case 9: return &data_02128e7c;
+/* Name of the sprite resource an explosion effect of the given type plays:
+ * normal for types 0..2, air, ship, quick, hit for 6..7, meteor and boss. */
+M2C_UNK *GetExplosionSpriteName(u32 effectType) {
+    extern M2C_UNK sExplosionNormalName, sExplosionAirName, sExplosionShipName, sExplosionQuickName, sExplosionHitName, sExplosionMeteorName, sExplosionBossName;
+    switch (effectType) {
+    case 0: case 1: case 2: return &sExplosionNormalName;
+    case 3: return &sExplosionAirName;
+    case 4: return &sExplosionShipName;
+    case 5: return &sExplosionQuickName;
+    case 6: case 7: return &sExplosionHitName;
+    case 8: return &sExplosionMeteorName;
+    case 9: return &sExplosionBossName;
     default: return NULL;
     }
 }
@@ -114,7 +116,7 @@ void func_020b551c(void *arg0) {
     void *temp_r0;
     void *obj;
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    temp_r0 = func_020b5284(temp_r4);
+    temp_r0 = GetExplosionSpriteName(temp_r4);
     if (temp_r0 == 0) return;
     obj = func_020b5188(temp_r0, M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 0, 0, 0, arg0);
     M2C_FIELD(obj, s32 *, 0x58) = 0;
@@ -159,7 +161,7 @@ s32 kind, index; void *p;
 if (!unit) return;
 kind=data_ov000_021b5c0d[((UnitKindBits *)unit)->kind*0x70];
 index=unit ? ((s32)unit-(*gCurrentMap+0x59A4))/14 : 0;
-p=func_020b5284(kind);
+p=GetExplosionSpriteName(kind);
 if(!p) return;
 p=CreateAnimatedMapSprite(p,unit[1],unit[2],0,0,0,(void *)7);
 M2C_FIELD(p,s32 *,0x58)=0;
@@ -444,26 +446,29 @@ void func_020b5f74(s32 arg0, s32 arg1) {
     RefreshMapView();
 }
 
-void SpawnMissileStrike(void *arg0) {
+/* Spawns the missile strike effect: opens the effect archive, loads the
+ * effect's sprite sheet, creates its missile sprite high above the target tile
+ * plus the target cursor, and sets the missile's climb down onto the tile. */
+void SpawnMissileStrike(MissileEffect *effect) {
     M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
     void *CreateAnimatedMapSprite(void *, s16, s16, M2C_UNK, s32, s32, void *);
     M2C_UNK ResetEffectSpritePool();
     M2C_UNK LoadEffectSpriteSheet(s32, M2C_UNK);
     M2C_UNK func_020b5240(s32);
     M2C_UNK CreateTargetCursor(s16, s16);
-    void *temp_r0;
+    void *missile;
 
-    func_020b5240(arg0 + 0x34);
+    func_020b5240((s32)effect->name);
     ResetEffectSpritePool();
-    LoadEffectSpriteSheet(arg0 + 0x34, 0);
-    temp_r0 = CreateAnimatedMapSprite(arg0 + 0x34, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
-    M2C_FIELD(arg0, void **, 0x60) = temp_r0;
-    SetAnimatedSpriteFrame(temp_r0, 0);
-    M2C_FIELD(arg0, s16 *, 0x48) = 0;
-    M2C_FIELD(arg0, s16 *, 0x4A) = 0x20;
-    M2C_FIELD(arg0, s32 *, 0x54) = (s32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) - 0x1E00);
-    M2C_FIELD(arg0, s32 *, 0x58) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38);
-    CreateTargetCursor(M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    LoadEffectSpriteSheet((s32)effect->name, 0);
+    missile = CreateAnimatedMapSprite(effect->name, effect->tileX, effect->tileY, 0x10, 0, 0, effect);
+    effect->missile = missile;
+    SetAnimatedSpriteFrame(missile, 0);
+    effect->frame = 0;
+    effect->duration = 0x20;
+    effect->from = (s32) (effect->missile->y - 0x1E00);
+    effect->to = (s32) effect->missile->y;
+    CreateTargetCursor(effect->tileX, effect->tileY);
 }
 
 /* Drives the missile strike's descent: the sprite eases from its start height

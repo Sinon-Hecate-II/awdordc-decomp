@@ -51,7 +51,7 @@ void HttpClientTask(Unk02034164 *client) {
     void func_0201d4c0(void);
     s32 func_02034864(s32);
     extern u8 data_020fb528[];
-    extern s32 data_021372e0[];
+    extern s32 gLocalIpAddress[];
 
     u8 *work;
     void *mutex;
@@ -118,7 +118,7 @@ void HttpClientTask(Unk02034164 *client) {
 
     work = (u8 *)client + 0x1000;
     do {
-        if (!data_021372e0[0]) {
+        if (!gLocalIpAddress[0]) {
             M2C_FIELD(client, s32 *, 0x1020) = 5;
             goto cleanup;
         }
@@ -250,7 +250,7 @@ s32 HttpAppendHeader(Unk02034164 *client, char *name, char *value) {
 
 s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   extern M2C_UNK data_020fb680, data_020fb684;
-  s32 func_02037214(s32, s32, void *, s32);
+  s32 Base64EncodeUrl(s32, s32, void *, s32);
   s32 StringLength(s32);
   int HttpBufferGrow(s32, void *, s32);
   s32 ctr = *(s32 *)((u8 *)obj + 0x19f4);
@@ -268,7 +268,7 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 
   *(s32 *)((u8 *)obj + 0x19f4) = ctr + 1;
 
-  first = func_02037214(a, b, (void *)0, 0);
+  first = Base64EncodeUrl(a, b, (void *)0, 0);
 
   lenf = StringLength((s32)fmtstr);
 
@@ -289,7 +289,7 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
 
   room = buf->end - buf->current;
 
-  r = func_02037214(a, b, (void *)buf->current, room - 1);
+  r = Base64EncodeUrl(a, b, (void *)buf->current, room - 1);
 
   if (r < 0) return 1;
 
@@ -300,32 +300,32 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   return 0;
 }
 
-s32 func_020347dc(s32 arg0, M2C_UNK arg1) {
+/* Append a raw string (e.g. "&wtype=") to the request buffer, growing the
+ * buffer when the string does not fit.  Returns 0, or 1 when the buffer cannot
+ * be grown or the string is not written in full. */
+s32 HttpBufferAppendString(Unk02034164 *client, char *text) {
     s32 StringFormatN(s32, s32, M2C_UNK *, M2C_UNK);
     s32 HttpBufferGrow(s32, void *, s32);
     s32 StringLength(M2C_UNK);
-    extern M2C_UNK data_020fb68c;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 var_r1;
-    void *temp_r5;
+    extern M2C_UNK sHttpStringFormat;
+    s32 length;
+    s32 written;
+    s32 room;
+    Buffer02034164 *buffer = (Buffer02034164 *)client->buffer;
 
-    temp_r5 = arg0 + 0x19F8;
-    temp_r0 = StringLength(arg1);
-    var_r1 = M2C_FIELD(temp_r5, s32 *, 8) - M2C_FIELD(temp_r5, s32 *, 4);
-    if (temp_r0 > var_r1) {
-        if (HttpBufferGrow(arg0, temp_r5, (temp_r0 - var_r1) + 1) == 0) {
+    length = StringLength((s32)text);
+    room = buffer->end - buffer->current;
+    if (length > room) {
+        if (HttpBufferGrow((s32)client, buffer, (length - room) + 1) == 0) {
             return 1;
         }
-        var_r1 = M2C_FIELD(temp_r5, s32 *, 8) - M2C_FIELD(temp_r5, s32 *, 4);
-        goto block_4;
+        room = buffer->end - buffer->current;
     }
-block_4:
-    temp_r0_2 = StringFormatN(M2C_FIELD(temp_r5, s32 *, 4), var_r1, &data_020fb68c, arg1);
-    if (temp_r0_2 != temp_r0) {
+    written = StringFormatN(buffer->current, room, &sHttpStringFormat, (s32)text);
+    if (written != length) {
         return 1;
     }
-    M2C_FIELD(temp_r5, s32 *, 4) = (s32) (M2C_FIELD(temp_r5, s32 *, 4) + temp_r0_2);
+    buffer->current = buffer->current + written;
     return 0;
 }
 
@@ -521,7 +521,7 @@ return;
  * socket timeout and create the mutex the client state is locked with. Returns
  * 4 if any of that fails or the library is already initialised, 0 on success. */
 s32 Dwc_HttpStartup(Callbacks3506c *cb) {
- M2C_UNK InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK func_02035304();
+ M2C_UNK InitMutex(void *); M2C_UNK MI_CpuFill8(void *,M2C_UNK,s32); M2C_UNK Wfc_StartNetCheckTask();
  void *(*alloc)(void *,int)=cb->alloc; void *p;
  if(M2C_FIELD(&gWfcNet,void **,0))return 4;
  p=alloc(&data_020fb7dc,0x11f4); M2C_FIELD(&gWfcNet,void **,0)=p;
@@ -534,6 +534,6 @@ s32 Dwc_HttpStartup(Callbacks3506c *cb) {
  if(!p)return 4;
  M2C_FIELD(&gWfcNet,int *,4)=0;
  InitMutex((u8 *)M2C_FIELD(&gWfcNet,void **,0)+0x11dc);
- func_02035304();return 0;
+ Wfc_StartNetCheckTask();return 0;
 }
 

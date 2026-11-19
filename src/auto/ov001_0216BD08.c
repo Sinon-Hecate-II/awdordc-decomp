@@ -181,19 +181,25 @@ return 0;
 }
 
 #pragma thumb on
-int func_ov001_0216c318(void *p,int out) {
+/* Unpacks one player's chunk list into its 0x70-byte room record: the 33-byte
+ * message chunk goes to the record's text, a 64-byte profile chunk to its
+ * profile block (and its length to the record's length word).  Chunks chain
+ * through the big-endian offset at +0x04 of each chunk until it is zero; any
+ * other kind, or a length over the field's size, fails the unpack. */
+int Ov001UnpackPlayerRecord(void *packet,int record) {
  int Ov001SwapEndian16(unsigned short); void Ov001MemCopy();
- unsigned char *base=(unsigned char *)p+6,*r=base,*text=(unsigned char *)out+8,*data=(unsigned char *)out+48; unsigned int n; int kind;
+ unsigned char *base,*cur=(unsigned char *)packet+6,*message=(unsigned char *)record+OV001_RECORD_TEXT,*profile=(unsigned char *)record+OV001_RECORD_DATA; unsigned int n; int kind;
+ base=cur;
  for (;;) {
-  n=Ov001SwapEndian16(*(unsigned short *)(r+2)); kind=*r;
-  switch(kind) { case 0x30: case 0x40: if(n>64) return -1; break; case 0x35: case 0x45: if(n>33) return -1; break; }
+  n=Ov001SwapEndian16(*(unsigned short *)(cur+2)); kind=*cur;
+  switch(kind) { case OV001_CHUNK_PROFILE: case OV001_CHUNK_PROFILE+0x10: if(n>OV001_RECORD_DATA_MAX) return -1; break; case OV001_CHUNK_TEXT: case OV001_CHUNK_TEXT+0x10: if(n>OV001_RECORD_TEXT_MAX) return -1; break; }
   switch(kind) {
-   case 0x30: case 0x40: Ov001MemCopy(data,r+6,n); *(int *)(out+4)=n; break;
-   case 0x35: case 0x45: if(n && r[n+5]) return -1; Ov001MemCopy(text,r+6,n); break;
+   case OV001_CHUNK_PROFILE: case OV001_CHUNK_PROFILE+0x10: Ov001MemCopy(profile,cur+6,n); *(int *)(record+4)=n; break;
+   case OV001_CHUNK_TEXT: case OV001_CHUNK_TEXT+0x10: if(n && cur[n+5]) return -1; Ov001MemCopy(message,cur+6,n); break;
    default: return -1;
   }
-  if (!*(unsigned short *)(r+4)) break;
-  r=base+Ov001SwapEndian16(*(unsigned short *)(r+4));
+  if (!*(unsigned short *)(cur+4)) break;
+  cur=base+Ov001SwapEndian16(*(unsigned short *)(cur+4));
  }
  return 0;
 }
@@ -211,7 +217,7 @@ int func_ov001_0216c3d0(unsigned char *p, void *out) {
 #pragma thumb on
 s32 func_ov001_0216c400(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 s32 Ov001UnpackPlayerStrings(void *,s32);
-s32 func_ov001_0216c318(void *,s32);
+s32 Ov001UnpackPlayerRecord(void *,s32);
 s32 Ov001SwapEndian16(u16);
 s32 func_ov001_0216c3d0(u8 *,void *);
 s32 sp0=arg0;
@@ -242,8 +248,8 @@ do {
 switch(q[0]){
 case 3:result=Ov001UnpackPlayerStrings(q,sp10);flags|=1;break;
 case 4:result=Ov001UnpackPlayerStrings(q,base+0x138);flags|=2;break;
-case 5:result=func_ov001_0216c318(q,base+0x268);flags|=4;break;
-case 6:result=func_ov001_0216c318(q,base+0x2d8);flags|=8;break;
+case 5:result=Ov001UnpackPlayerRecord(q,base+0x268);flags|=4;break;
+case 6:result=Ov001UnpackPlayerRecord(q,base+0x2d8);flags|=8;break;
 case 10:result=func_ov001_0216c3d0(q,(void *)(sp8+spC));break;
 default:result=-3;break;
 }

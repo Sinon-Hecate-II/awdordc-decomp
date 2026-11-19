@@ -2,7 +2,7 @@
 #include "common.h"
 #include "gx.h"
 
-void func_ov001_02182a4c(void) {
+void Ov001_CloseSaveSlotMenuStep(void) {
     void func_ov001_02182a88(void);
     void func_ov001_02182a8c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
@@ -35,25 +35,25 @@ void func_ov001_02182ac4(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0218223c;
+    extern M2C_UNK Ov001_OpenWfcConnectScreen;
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_DisableVisiblePlanes(0, 0x14);
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_0218223c);
+    Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);
 }
 
 void func_ov001_02182b00(void) {
  void func_ov001_02182b40(void);
- M2C_UNK func_ov001_02172250(M2C_UNK);
- M2C_UNK func_ov001_02171e58(M2C_UNK);
+ M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
+ M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
  M2C_UNK Ov001_PlaySound(M2C_UNK);
  M2C_UNK Ov001_SetStepCallback();
  void func_ov001_02182bc0(void);
  extern u8 data_ov001_02193de4;
  data_ov001_02193de4 = 0;
  func_ov001_02182b40();
- func_ov001_02172250(8);
- func_ov001_02171e58(0x29);
+ Ov001_LoadObjLayoutBlock(8);
+ Ov001_ShowMessageBox(0x29);
  Ov001_PlaySound(0x10);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182bc0);
 }
@@ -121,20 +121,20 @@ void func_ov001_02182cd8(void) {
 }
 
 void func_ov001_02182d0c(void) {
-    M2C_UNK func_ov001_02172250(M2C_UNK);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02171dd0(M2C_UNK);
-    M2C_UNK func_ov001_02171e58(M2C_UNK);
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void Ov001_LoadWfcConnectStep2Bg(void);
     void func_ov001_02182e04(void);
     extern u8 gOv001WfcConnectChosen;
     gOv001WfcConnectChosen = 0;
     Ov001_LoadWfcConnectStep2Bg();
-    func_ov001_02172250(8);
+    Ov001_LoadObjLayoutBlock(8);
     Ov001_ShowMessagePanel(0x38, -1, 0);
-    func_ov001_02171dd0(1);
-    func_ov001_02171e58(0x27);
+    Ov001_OpenMenuForMode(1);
+    Ov001_ShowMessageBox(0x27);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182e04);
 }
 
@@ -265,7 +265,7 @@ void Ov001_CloseWfcMenuScreen(void) {
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern u8 gOv001WfcConnectChosen;
     extern M2C_UNK Ov001_OpenAccessPointMenu;
-    extern M2C_UNK Ov001_OpenWfcConnectScreen;
+    extern M2C_UNK Ov001_OpenUsbConnectScreen;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (gOv001WfcConnectChosen == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
@@ -281,7 +281,7 @@ void Ov001_CloseWfcMenuScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(2, 1);
-    Ov001_SetStepCallback(&Ov001_OpenWfcConnectScreen);
+    Ov001_SetStepCallback(&Ov001_OpenUsbConnectScreen);
 }
 
 s32 func_ov001_02183098(void) {
@@ -291,14 +291,19 @@ s32 func_ov001_02183098(void) {
     return 0;
 }
 
-void Ov001_OpenWfcConnectScreen(void) {
-    M2C_UNK func_02007740(u8 *);
+/* Open the Wi-Fi connect screen: load the Nintendo USB connector's background
+ * and the menu, copy the player's nickname out of the system user profile (the
+ * profile sits at +0x16, its nickname text at +4 and length at +0x1a) and show
+ * the message that names the player, then start the WFC connection and move to
+ * the fade-out step that closes the screen. */
+void Ov001_OpenUsbConnectScreen(void) {
+    M2C_UNK GetSystemUserProfile(u8 *);
     M2C_UNK FillU16(M2C_UNK, u8 *, s32);
     M2C_UNK CopyU16(u8 *, u8 *, s32);
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
-    M2C_UNK func_ov001_02171dd0(M2C_UNK);
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
     M2C_UNK Ov001_ShowMessageWithName(u8 *, M2C_UNK);
-    M2C_UNK func_ov001_02172250(M2C_UNK);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void Ov001_LoadUsbConnectBg(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
@@ -306,18 +311,18 @@ void Ov001_OpenWfcConnectScreen(void) {
     extern u8 gOv001WfcScreenState;
     extern M2C_UNK Ov001_HandleConnectionStatus;
     extern M2C_UNK func_ov001_021831f4;
-    u8 sp[0x6C];
+    u8 nameBuffer[0x6C];
 
     gOv001WfcScreenState = 0;
     Ov001_LoadUsbConnectBg();
-    func_ov001_02172250(8);
-    func_ov001_02171dd0(2);
-    func_02007740(&sp[0x16]);
-    FillU16(0, &sp[0], 0x16);
-    CopyU16(&sp[0x1A], &sp[0], M2C_FIELD(sp, u16 *, 0x30) * 2);
-    Ov001_ShowMessageWithName(&sp[0], 0x28);
+    Ov001_LoadObjLayoutBlock(8);
+    Ov001_OpenMenuForMode(2);
+    GetSystemUserProfile(&nameBuffer[0x16]);
+    FillU16(0, &nameBuffer[0], 0x16);
+    CopyU16(&nameBuffer[0x1A], &nameBuffer[0], M2C_FIELD(nameBuffer, u16 *, 0x30) * 2);
+    Ov001_ShowMessageWithName(&nameBuffer[0], 0x28);
     Ov001_CreateAnimSprite(0);
-    Ov001_ConnectToWfcServer((M2C_UNK *)&Ov001_HandleConnectionStatus);
+    Ov001_ConnectToWfcServer((M2C_UNK *) &Ov001_HandleConnectionStatus);
     Ov001_PlaySound(0xB);
     Ov001_SetStepCallback(&func_ov001_021831f4);
 }

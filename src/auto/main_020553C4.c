@@ -356,30 +356,33 @@ if(!buf){gpiSetErrorString(arg0,&gGpiSearchMsgOutOfMemory);return 1;}
 M2C_FIELD(p,s32 *,0x13c)=0; M2C_FIELD(p,s32 *,0x140)=0; *arg1=p; return 0;
 }
 
-s32 gpiStartSearch(void **arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Queues a profile search on the connection (bumping its pending-search count),
+ * opens the search manager connection, and, for a blocking call, waits for the
+ * search to complete.  Returns the operation's error code, 0 on success. */
+s32 gpiStartSearch(void **connection, GpiSearchRequest *search, s32 blocking, s32 callback, s32 callbackParam) {
     s32 gpiThink(void **, s32);
-    s32 gpiAddOperation(void **, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
+    s32 gpiAddOperation(void **, s32, GpiSearchRequest *, void **, s32, s32, s32);
     s32 gpiStartProfileSearch(void **, void *);
-    void *spC;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    void *temp_r4;
+    GPIOperation *operation;
+    s32 result;
+    s32 result2;
+    s32 result3;
+    void *gpi;
 
-    temp_r4 = *arg0;
-    M2C_FIELD(temp_r4, s32 *, 0x210) = (s32) (M2C_FIELD(temp_r4, s32 *, 0x210) + 1);
-    temp_r0_3 = gpiAddOperation(arg0, 3, arg1, &spC, arg2, arg3, arg4);
-    if (temp_r0_3 != 0) {
-        return temp_r0_3;
+    gpi = *connection;
+    M2C_FIELD(gpi, s32 *, GPI_CONN_SEARCH_COUNT) = (s32) (M2C_FIELD(gpi, s32 *, GPI_CONN_SEARCH_COUNT) + 1);
+    result3 = gpiAddOperation(connection, GPI_OP_SEARCH, search, (void **)&operation, blocking, callback, callbackParam);
+    if (result3 != 0) {
+        return result3;
     }
-    temp_r0_2 = gpiStartProfileSearch(arg0, spC);
-    if (temp_r0_2 != 0) {
-        return temp_r0_2;
+    result2 = gpiStartProfileSearch(connection, operation);
+    if (result2 != 0) {
+        return result2;
     }
-    if (M2C_FIELD(spC, s32 *, 8) != 0) {
-        temp_r0 = gpiThink(arg0, M2C_FIELD(spC, s32 *, 0x18));
-        if (temp_r0 != 0) {
-            return temp_r0;
+    if (operation->blocking != 0) {
+        result = gpiThink(connection, operation->id);
+        if (result != 0) {
+            return result;
         }
     }
     return 0;

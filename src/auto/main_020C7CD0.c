@@ -182,7 +182,7 @@ s32 func_020c8020(s32 a) {
  return r;
 }
 
-s32 func_020c8054(s32 arg0) {
+s32 IsLastCampaignMap(s32 arg0) {
     s32 IsUnitAvailable(M2C_UNK);
     u16 *GetBattleRecord(M2C_UNK);
     u16 *temp_r0;
@@ -222,15 +222,25 @@ u8 IsReceivedCampaignMap(s32 mapId) {
     return 0;
 }
 
-s32 func_020c818c(s32 a,s32 b) {
- s32 GetMapRecordBuffer(); s32 func_020c7a14(); s32 LoadMapRecord(s32,s32); void func_020868ac(s32,s32);
- s32 q,p,t;
- if(a<0xe1||a>=0x1a9)return 0;
- q=GetCampaignMapIndex(a);p=GetMapRecordBuffer();t=func_020c7a14();
- if(!LoadMapRecord(a,p))return 0;
- M2C_FIELD(t,u32 *,0xc)=(M2C_FIELD(t,u32 *,0xc)&~0xe0000000)|(b<<29);
- func_020868ac(q,1);
- return func_020c8624(a,p);
+/* Sets a campaign map's share mode: reloads the map's saved record into the
+ * map-record buffer, writes `mode` into the top three bits of its stamp word (a
+ * nonzero value is what marks a record as shared rather than received), flags the
+ * map in the campaign map bitmap, then saves the record back to its slot. */
+s32 SetCampaignMapShareMode(s32 mapId, s32 mode) {
+    s32 GetMapRecordBuffer();
+    s32 GetMapRecordBufferStamp();
+    s32 LoadMapRecord(s32, s32);
+    void func_020868ac(s32, s32);
+    s32 index, record, stamp;
+
+    if (mapId < MAP_ID_CAMPAIGN_FIRST || mapId >= MAP_ID_CAMPAIGN_END) return 0;
+    index = GetCampaignMapIndex(mapId);
+    record = GetMapRecordBuffer();
+    stamp = GetMapRecordBufferStamp();
+    if (!LoadMapRecord(mapId, record)) return 0;
+    M2C_FIELD(stamp, u32 *, 0xC) = (M2C_FIELD(stamp, u32 *, 0xC) & ~0xE0000000) | (mode << 29);
+    func_020868ac(index, 1);
+    return StoreCampaignMapRecord(mapId, record);
 }
 
 /* Normalizes the AI action steps saved with the units of a map record that has
@@ -311,7 +321,23 @@ unitIndex++;entry++;
 }while(unitIndex<((MapRecordHeader *)record)->unitCount);
 }
 
-void func_020c83f4(u8 *p){extern void **gCurrentMap;void StringCopy(void *,void *);void SetPlayerIdForSlot(s32,s32);s32 i;u8 *base;StringCopy((u8 *)*gCurrentMap+0x5120,p+6);M2C_FIELD(*gCurrentMap,u8 *,0x5141)=p[0x27];for(i=0;i<5;i++)SetPlayerIdForSlot(i,p[0x28+i]);base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5144)=p[4];base=(u8 *)*gCurrentMap;M2C_FIELD(base,u16 *,0x5146)=p[5];}
+/* Set the battle map up from a saved map record: its name, player count and the
+ * five player-slot ids, then its width and height. */
+void ApplyMapHeader(MapRecordHeader *record) {
+    extern void **gCurrentMap;
+    void StringCopy(void *, void *);
+    void SetPlayerIdForSlot(s32, s32);
+    s32 i;
+    u8 *base;
+    StringCopy((u8 *)*gCurrentMap + MAP_NAME, record->name);
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_PLAYER_COUNT) = record->playerCount;
+    for (i = 0; i < MAP_RECORD_PLAYER_SLOTS; i++)
+        SetPlayerIdForSlot(i, record->playerIds[i]);
+    base = (u8 *)*gCurrentMap;
+    M2C_FIELD(base, u16 *, MAP_WIDTH) = record->width;
+    base = (u8 *)*gCurrentMap;
+    M2C_FIELD(base, u16 *, MAP_HEIGHT) = record->height;
+}
 
 /* Applies a saved map record's terrain bytes to the runtime map: for every cell it
  * stores the byte as the cell's terrain and sets the cell's tile id from it. */
@@ -334,9 +360,9 @@ return (s32)base;
 }
 
 void ApplyMapRecord(s32 arg0) {
-    void func_020c83f4();
+    void ApplyMapHeader();
     M2C_UNK ApplyMapTerrain(s32);
-    func_020c83f4();
+    ApplyMapHeader();
     ApplyMapTerrain(arg0 + 0x54);
 }
 
@@ -367,7 +393,7 @@ s32 LoadMapById(M2C_UNK arg0) {
 
 s32 LoadMapRecord(s32 a,s32 b){u8 DoesMapRecordMatchBuffer(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 LoadNewestSaveRecord(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!LoadNewestSaveRecord(p,b))return 0;if(DoesMapRecordMatchBuffer(a,b))r=1;else r=0;return r;}
 
-s32 func_020c8624(s32 a,s32 b) {
+s32 StoreCampaignMapRecord(s32 a,s32 b) {
  s32 IsValidMapRecord(s32); void func_020be438(s32,s32,s32);
  s32 p=func_020c7ea8(a);
  if(!IsValidMapRecord(b))return 0;

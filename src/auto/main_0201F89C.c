@@ -38,13 +38,13 @@ s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
     if (usable == 0) {
         return -28;
     }
-    if (M2C_FIELD(sock, s8 *, SOCK_KIND) != SOCK_KIND_TCP) {
+    if (M2C_FIELD(sock, s8 *, SOCK_BLOCKING) != SOCK_BLOCKING_ON) {
         return -6;
     }
     if (M2C_FIELD(sock, u16 *, SOCK_RECV_PORT) == 0) {
         return -28;
     }
-    request = func_0201f1d0((s32 (*)(void *))SocketListenTask, sock, (s8)M2C_FIELD(sock, s8 *, SOCK_KIND));
+    request = func_0201f1d0((s32 (*)(void *))SocketListenTask, sock, (s8)M2C_FIELD(sock, s8 *, SOCK_BLOCKING));
     M2C_FIELD(request, u16 *, 0x10) = M2C_FIELD(sock, u16 *, SOCK_RECV_PORT);
     M2C_FIELD(request, s32 *, 0x14) = (s32)peerPort;
     M2C_FIELD(request, s32 *, 0x18) = (s32)peerAddr;
@@ -113,7 +113,7 @@ s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
     }
     if (usable != 0) {
         if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) {
-            return M2C_FIELD(sock, s8 *, SOCK_KIND) == SOCK_KIND_TCP ? -30 : 0;
+            return M2C_FIELD(sock, s8 *, SOCK_BLOCKING) == SOCK_BLOCKING_ON ? -30 : 0;
         }
         if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) {
             return (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) ? M2C_FIELD(sock, s32 *, SOCK_RECV_TIMEOUT) : gSocketDefaultRecvTimeout;
@@ -121,7 +121,7 @@ s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
         M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
         M2C_FIELD(sock, s32 *, SOCK_TIMEOUT_RESULT) = token;
         result = func_0201fb3c(sock);
-        if (M2C_FIELD(sock, s8 *, SOCK_KIND) != SOCK_KIND_TCP) result = -26;
+        if (M2C_FIELD(sock, s8 *, SOCK_BLOCKING) != SOCK_BLOCKING_ON) result = -26;
         return result;
     }
     M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
@@ -133,7 +133,7 @@ s32 func_0201fb3c(void *arg0) {
 s32 func_0201fb94(void *);
 void *SocketAllocTask(s32 (*)(void *),void *,s8);
 s32 func_0201f318(void *,void *);
-void *p=SocketAllocTask(func_0201fb94,arg0,M2C_FIELD(arg0,s8 *,0x72));
+void *p=SocketAllocTask(func_0201fb94,arg0,M2C_FIELD(arg0,s8 *,SOCK_BLOCKING));
 if(!p)return -33;
 M2C_FIELD(p,u16 *,0x10)=M2C_FIELD(arg0,u16 *,0x74);
 M2C_FIELD(p,u16 *,0x12)=M2C_FIELD(arg0,u16 *,0x76);
@@ -155,59 +155,66 @@ M2C_FIELD(p,volatile s16 *,0x70)|=4;return 0;
 }
 
 #pragma optimization_level 2
-s32 func_0201fc18(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
+/* Receive up to len bytes from sock into buf, taking the receive connection's
+ * mutex around the call and reporting the sender through peerPort/peerAddr.
+ * A non-blocking call (SOCK_RECV_NONBLOCK, or a socket whose blocking mode was
+ * cleared) only try-locks the connection and fails with SOCK_WOULD_BLOCK when no
+ * data can be read, and a blocking call is refused inside an IRQ handler.
+ * Returns the received byte count, or SOCK_ERROR / SOCK_NOT_READY / SOCK_ABORTED
+ * when the network, the socket or its state is not usable. */
+s32 SocketRecvFrom(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 flags) {
     s32 LockMutex();
     s32 UnlockMutex();
     s32 TryLockMutex();
-    s32 func_02007580();
-    s32 SocketRecvLocked(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
+    s32 GetProcessorMode();
+    s32 SocketRecvLocked(void *, s32, s32, s32, s32, s32, s32);
     s32 SocketIsUnregistered();
-    void *temp_r4;
-    s32 var_r5;
-    s32 var_r1;
-    s32 var_r1_2;
-    s8 temp_r0;
+    void *raw;
+    s32 wait;
+    s32 ready;
+    s32 usable;
+    s8 state;
 
-    if (SocketIsUnregistered() != 0) {
-        return -0x1C;
+    if (SocketIsUnregistered(sock) != 0) {
+        return SOCK_ERROR;
     }
-    if (!(arg5 & 4) && M2C_FIELD(arg0, s8 *, 0x72) == 0) {
-        if (M2C_FIELD(arg0, s8 *, 0x73) == 4) {
-            return -0x1C;
+    if ((flags & SOCK_RECV_NONBLOCK) || M2C_FIELD(sock, s8 *, SOCK_BLOCKING) == 0) {
+        if (M2C_FIELD(sock, s8 *, SOCK_STATE) == SOCK_STATE_CONNECTED) {
+            return SOCK_ERROR;
         }
-        var_r5 = 0;
+        wait = 0;
     } else {
-        if (func_02007580() == 0x12) {
-            return -0x1C;
+        if (GetProcessorMode() == CPSR_MODE_IRQ) {
+            return SOCK_ERROR;
         }
-        var_r5 = 1;
+        wait = 1;
     }
-    var_r1 = 0;
-    if (arg0 != 0) {
-        var_r1 = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
+    ready = 0;
+    if (sock != 0) {
+        ready = (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
     }
-    if (var_r1 == 0) {
-        return -0x27;
+    if (ready == 0) {
+        return SOCK_NOT_READY;
     }
-    temp_r0 = M2C_FIELD(arg0, s8 *, 0x73);
-    var_r1_2 = 1;
-    if (temp_r0 != 0 && temp_r0 != 4) {
-        var_r1_2 = 0;
+    state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+    usable = 1;
+    if (state != SOCK_STATE_IDLE && state != SOCK_STATE_CONNECTED) {
+        usable = 0;
     }
-    if (var_r1_2 != 0 && (!(M2C_FIELD(arg0, volatile s16 *, 0x70) & 4) || (M2C_FIELD(arg0, volatile s16 *, 0x70) & 8))) {
-        return -0x38;
+    if (usable != 0 && (!(M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR))) {
+        return SOCK_ABORTED;
     }
-    temp_r4 = M2C_FIELD(arg0, void **, 0x64);
-    if (!(var_r5 & 1)) {
-        if (TryLockMutex(temp_r4 + 0xE0) == 0) {
-            return -6;
+    raw = M2C_FIELD(sock, void **, SOCK_RAW);
+    if (!(wait & 1)) {
+        if (TryLockMutex(raw + CONN_MUTEX) == 0) {
+            return SOCK_WOULD_BLOCK;
         }
     } else {
-        LockMutex(temp_r4 + 0xE0);
+        LockMutex(raw + CONN_MUTEX);
     }
-    var_r5 = SocketRecvLocked(arg0, arg1, arg2, arg3, arg4, var_r5, arg5);
-    UnlockMutex(temp_r4 + 0xE0);
-    return var_r5;
+    wait = SocketRecvLocked(sock, buf, len, peerPort, peerAddr, wait, flags);
+    UnlockMutex(raw + CONN_MUTEX);
+    return wait;
 }
 #pragma optimization_level reset
 /* Receive up to len bytes from sock into buf with the socket's mutex already

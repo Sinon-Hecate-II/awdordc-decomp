@@ -178,7 +178,7 @@ void func_ov001_0218b79c(void) {
 extern M2C_UNK data_ov001_02193e48;
 s32 buf[2];
 M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())Ov001_Alloc)(0x3a,4);
-if(func_0200d5bc(buf)==0)SystemHalt();
+if(TP_GetFirmwareCalibration(buf)==0)SystemHalt();
 SetTouchCalibration(buf);
 func_0200d85c(0,4,M2C_FIELD(&data_ov001_02193e48,s32 *,4),5);
 func_0200dd14(2);
@@ -187,13 +187,13 @@ func_ov001_0218b850();
 }
 
 void func_ov001_0218b818(void) {
-    M2C_UNK func_0200d95c();
+    M2C_UNK TP_StopSampling();
     M2C_UNK func_0200dd14(M2C_UNK);
     s32 func_0200dd2c(M2C_UNK);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193e4c;
     do {
-        func_0200d95c();
+        TP_StopSampling();
         func_0200dd14(4);
     } while (func_0200dd2c(4) != 0);
     Ov001_FreeAlloc(&data_ov001_02193e4c);
@@ -309,7 +309,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 func_ov001_0218bc44(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectPressOrRepeat(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<29>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -347,8 +347,8 @@ void func_ov001_0218bedc(void);
 void func_ov001_0218be2c(void) {
 data_ov001_02193e60[1]=*(volatile u32 *)0x04000210;
 func_0200519c(0x40018);OS_EnableIrqMask(1);
-data_ov001_02193e60[0]=OS_GetFifoReceiveHandler(1);
-OS_SetFifoReceiveHandlers(1,func_ov001_0218bedc);OS_SetIrqMask(1);
+data_ov001_02193e60[0]=OS_GetIrqHandler(1);
+OS_SetIrqHandler(1,func_ov001_0218bedc);OS_SetIrqMask(1);
 {u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=1;func_02007508(1,old);}
 }
 
@@ -356,14 +356,14 @@ void func_ov001_0218bea0(void) {
 (void)*(volatile u16 *)0x04000208;
 *(volatile u16 *)0x04000208=0;
 func_0200519c(data_ov001_02193e60[1]);
-OS_SetFifoReceiveHandlers(1,data_ov001_02193e60[0]);
+OS_SetIrqHandler(1,data_ov001_02193e60[0]);
 }
 
 void func_ov001_0218bedc(void) {
     M2C_UNK func_ov001_0218c7d4(M2C_UNK);
-    extern M2C_UNK data_027e0000;
+    extern M2C_UNK gOsArea;
     func_ov001_0218c7d4(1);
-    M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) = (s32) (M2C_FIELD(&data_027e0000, s32 *, 0x3FF8) | 1);
+    M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (s32) (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
 }
 
 s32 Ov001_ListCreate(void){s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(16,4);
@@ -376,16 +376,16 @@ void func_ov001_0218bf30(s32 arg0, ...) {
 
 void func_ov001_0218bf4c(ListLink *node){s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 state=OS_DisableIrqMask(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;OS_EnableIrqMask(state);}
 
-M2C_UNK func_ov001_0218bf84(a,b)
+M2C_UNK Ov001_ListInsertBefore(a,b)
 s32 a; s32 b;{s32 OS_DisableIrqMask(s32);s32 state=OS_DisableIrqMask(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;OS_EnableIrqMask(state);}
 
 void Ov001_ListPushBack(s32 arg0) {
-    func_ov001_0218bf84(arg0 + 8);
+    Ov001_ListInsertBefore(arg0 + 8);
 }
 
 void Ov001_ListPushFront(void *arg0) {
-    M2C_UNK func_ov001_0218bf84();
-    func_ov001_0218bf84(M2C_FIELD(arg0, s32 *, 4));
+    M2C_UNK Ov001_ListInsertBefore();
+    Ov001_ListInsertBefore(M2C_FIELD(arg0, s32 *, 4));
 }
 
 /* Set up the ov001 sprite-object arena: allocate both screens' OAM entry

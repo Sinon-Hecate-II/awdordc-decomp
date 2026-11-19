@@ -3,28 +3,39 @@
 static inline void SetVisible3368(u8 flag,void *p) { M2C_FIELD(p,u8 *,0x59)=flag?0:1; }
 typedef struct { u8 pad[0x34]; s16 x,y; u8 pad38[8]; u32 width:9; u32 height:9; u32 flags:14; } SpriteFields3368;
 
+/* One row of the setup menu's value table: the table starts 12 bytes into the
+   menu context, each row is 0x18 bytes, and a D-pad press adds the row's step. */
 typedef struct {
-    s32 field_00;
-    u8  field_04;
-    u8  pad_05[7];
-    s32 value;
-    s32 max;
-    s32 min;
-} Ov003Elem; /* size 0x18 */
+    s32 value;   /* current value */
+    s32 maximum; /* clamp/wrap upper bound */
+    s32 minimum; /* clamp/wrap lower bound */
+    s32 step;    /* amount one press adds */
+    u8  wrap;    /* wrap around at the ends instead of clamping */
+    u8  pad[7];
+} Ov003MenuEntry; /* size 0x18 */
 
-void func_ov003_02202dc8(void *arg0,s32 arg1){
-s32 off=arg1*24; s32 limit,value;
-((Ov003Elem *)((char *)arg0+12))[arg1].field_00+=M2C_FIELD((unsigned)arg0+off,s32 *,24);
-if(M2C_FIELD(arg0+off,u8 *,28)){
-while(((Ov003Elem *)((char *)arg0+12))[arg1].field_00>M2C_FIELD(arg0+off,s32 *,16))
-((Ov003Elem *)((char *)arg0+12))[arg1].field_00-=M2C_FIELD(arg0+off,s32 *,16)-M2C_FIELD(arg0+off,s32 *,20)+1;
-while(((Ov003Elem *)((char *)arg0+12))[arg1].field_00<M2C_FIELD(arg0+off,s32 *,20))
-((Ov003Elem *)((char *)arg0+12))[arg1].field_00+=M2C_FIELD(arg0+off,s32 *,16)-M2C_FIELD(arg0+off,s32 *,20)+1;
-}else{
-limit=M2C_FIELD(arg0+off,s32 *,16);value=((Ov003Elem *)((char *)arg0+12))[arg1].field_00;
-if(value<=limit){limit=M2C_FIELD(arg0+off,s32 *,20);if(value>=limit)limit=value;}
-((Ov003Elem *)((char *)arg0+12))[arg1].field_00=limit;
-}
+/* The same row seen from the menu context: the value table starts 12 bytes in,
+   so value/maximum/minimum/step/wrap sit at +0x0C/+0x10/+0x14/+0x18/+0x1C. */
+typedef struct {
+    s32 pad[3];
+    s32 value;
+    s32 maximum;
+    s32 minimum;
+    s32 step;
+    u8  wrap;
+} Ov003MenuRow;
+
+/* One D-pad press on the selected setup-menu row: add the row's step to its
+   value, then wrap between min/max if the row wraps, else clamp. */
+void Ov003_IncreaseSelectedEntry(void *arg0, s32 arg1) {
+ s32 value,limit;
+#define F(o,t) (*(t *)((char *)arg0+(o)+arg1*24))  /* field at byte offset o of the row */
+ ((Ov003MenuEntry *)((char *)arg0+12))[arg1].value+=M2C_FIELD((unsigned)arg0+arg1*24,s32 *,24);
+ if(F(28,u8)){                                    /* row->wrap */
+ if(F(12,s32)>F(16,s32)) { Ov003MenuRow *p=(Ov003MenuRow *)((char *)arg0+arg1*24); do { p->value-=p->maximum-p->minimum+1; } while(p->value>p->maximum); }
+ if(F(12,s32)<F(20,s32)) { Ov003MenuRow *q=(Ov003MenuRow *)((char *)arg0+arg1*24); do { q->value+=q->maximum-q->minimum+1; } while(q->value<q->minimum); }
+ }else{limit=F(16,s32);value=F(12,s32);if(value<=limit){limit=F(20,s32);if(value>=limit)limit=value;}F(12,s32)=limit;}
+ #undef F
 }
 
 #pragma opt_common_subs off
@@ -209,7 +220,6 @@ void func_ov003_02203280(void *arg0) {
     extern u16 gMapConfig;
     void *self;
     void *temp_r0;
-    void **temp_r0_2;
     void *base;
     u8 var_r7;
 
@@ -225,8 +235,9 @@ void func_ov003_02203280(void *arg0) {
     base = M2C_FIELD(self, void **, 0x44);
     var_r7 = 0;
     do {
-        temp_r0_2 = M2C_FIELD((base + (var_r7 * 4)), void ***, 0xC8);
-        M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, M2C_FIELD(((var_r7 * 0x18) + base), s32 *, 0xC));
+        s32 value = M2C_FIELD(((var_r7 * 0x18) + base), s32 *, 0xC);
+        void **temp_r0_2 = M2C_FIELD((base + (var_r7 * 4)), void ***, 0xC8);
+        M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, value);
         var_r7 += 1;
     } while ((u32) var_r7 < 8U);
     gMapConfig |= 0x2000;
@@ -327,7 +338,8 @@ M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u
 void func_ov003_022035fc(void *arg0, s32 arg1) {
  s32 value,limit; void *p=(char *)arg0+(s32)arg1*24;
 #define F(o,t) (*(t *)((char *)arg0+(o)+arg1*24))
- F(12,s32)-=F(24,s32);
+ s32 *valuePtr=&F(12,s32);
+ *valuePtr-=M2C_FIELD(p,s32 *,24);
  if(F(28,u8)){
  if(F(12,s32)>F(16,s32)) do { M2C_FIELD(p,s32 *,12)-=M2C_FIELD(p,s32 *,16)-M2C_FIELD(p,s32 *,20)+1; } while(M2C_FIELD(p,s32 *,12)>M2C_FIELD(p,s32 *,16));
  if(F(12,s32)<F(20,s32)) { void *q=(char *)arg0+arg1*24; do { M2C_FIELD(q,s32 *,12)+=M2C_FIELD(q,s32 *,16)-M2C_FIELD(q,s32 *,20)+1; } while(M2C_FIELD(q,s32 *,12)<M2C_FIELD(q,s32 *,20)); }

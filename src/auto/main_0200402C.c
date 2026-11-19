@@ -260,7 +260,7 @@ default: break;
 }
 
 void GX_LoadBGExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     extern M2C_UNK gGxExtPlttLoad;
@@ -268,7 +268,7 @@ void GX_LoadBGExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK field0c = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0xC);
     M2C_UNK diff = field10 + (s32)arg1 - field0c;
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, arg0, diff, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, arg0, diff, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, diff, (u32)arg2);
@@ -310,13 +310,13 @@ store_6890:
 }
 
 void GX_LoadOBJExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     extern M2C_UNK gGxExtPlttLoad;
     M2C_UNK field = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4);
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, arg0, field + (s32)arg1, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, arg0, field + (s32)arg1, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, field + (s32)arg1, (u32)arg2);
@@ -342,11 +342,11 @@ void GX_BeginLoadBGExtPlttSub(void) {
 }
 
 void GX_LoadBGExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, arg0, (s32)arg1 + 0x6898000, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, arg0, (s32)arg1 + 0x6898000, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, (s32)arg1 + 0x6898000, (u32)arg2);
@@ -371,11 +371,11 @@ void GX_BeginLoadOBJExtPlttSub(void) {
 }
 
 void GX_LoadOBJExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, arg0, (s32)arg1 + 0x68a0000, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, arg0, (s32)arg1 + 0x68a0000, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, (s32)arg1 + 0x68a0000, (u32)arg2);
@@ -416,7 +416,7 @@ void func_02004b54(void) {
 void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     M2C_UNK func_02007a04(s32, M2C_UNK, s32, u32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
 
@@ -445,7 +445,7 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
                 func_02007e70(p, base + (s32)ofs, head);
             }
             if (gGxDmaChannel != -1) {
-                func_02007ba4(gGxDmaChannel, p + (M2C_UNK)head, base2, n - head, 0, 0);
+                DmaCopyAsync(gGxDmaChannel, p + (M2C_UNK)head, base2, n - head, 0, 0);
             } else {
                 func_02007e70(p + (M2C_UNK)head, base2, n - head);
             }
@@ -454,7 +454,7 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     }
 
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, p, dst, n, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, p, dst, n, 0, 0);
     } else {
         func_02007e70(p, dst, n);
     }
@@ -484,13 +484,13 @@ void func_02004d3c(void) {
 }
 
 void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02007ba4(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
+    M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK func_02007e70(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     extern M2C_UNK data_0212dbfc;
     s32 v8 = M2C_FIELD(&data_0212dbfc, s32 *, 0x8);
     if (gGxDmaChannel != -1) {
-        func_02007ba4(gGxDmaChannel, arg0, v8 + (s32)arg1, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, arg0, v8 + (s32)arg1, arg2, 0, 0);
         return;
     }
     func_02007e70(arg0, v8 + (s32)arg1, (u32)arg2);
@@ -528,12 +528,12 @@ void func_02004e44(void *arg0, void *arg1) {
 #pragma scheduling off
 void func_02004e60(s32 arg0,u32 mask) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(s32);
-extern M2C_UNK data_027e0000,data_027e00e0;
+extern M2C_UNK gOsArea,data_027e00e0;
 s32 ret=OS_DisableInterrupts();
-if(arg0) M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8)&=~mask;
+if(arg0) M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8)&=~mask;
 OS_RestoreInterrupts(ret);
-if(!(mask&M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8))) {
-do{OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&data_027e0000,volatile u32 *,0x3ff8)));
+if(!(mask&M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8))) {
+do{OS_SleepThread((s32)&data_027e00e0);}while(!(mask&M2C_FIELD(&gOsArea,volatile u32 *,0x3ff8)));
 }
 }
 #pragma scheduling reset
@@ -543,18 +543,18 @@ void func_02004ed4(void) {
 
 void func_02004ed8(s32 arg0) {
  void OS_DisableIrqMask(s32);
- extern M2C_UNK data_0212dc1c, data_020f5208, data_0212dc24, data_027e0000, data_0212dc20;
+ extern M2C_UNK gDmaTimerIrqHandlers, data_020f5208, data_0212dc24, gOsArea, data_0212dc20;
  s32 field20; u16 shift;
  u32 mask;
  void (*saved)(void *);
- saved = M2C_FIELD(&data_0212dc1c, void (**)(void *), arg0*12);
+ saved = M2C_FIELD(&gDmaTimerIrqHandlers, void (**)(void *), arg0*12);
  shift=M2C_FIELD(&data_020f5208,u16 *,arg0*2);
  mask=1;
  mask<<=shift;
- M2C_FIELD(&data_0212dc1c, void (**)(void *),arg0*12)=0;
+ M2C_FIELD(&gDmaTimerIrqHandlers, void (**)(void *),arg0*12)=0;
  if(saved) saved(M2C_FIELD(&data_0212dc24,void **,arg0*12));
  field20=M2C_FIELD(&data_0212dc20,s32 *,arg0*12);
- M2C_FIELD(&data_027e0000,u32 *,0x3ff8) |= mask;
+ M2C_FIELD(&gOsArea,u32 *,0x3ff8) |= mask;
  if(field20==0) OS_DisableIrqMask(mask);
 }
 

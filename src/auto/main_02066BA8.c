@@ -43,7 +43,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
             else {args+=4;value=*(s32 *)(args-4);}
             if(f.e==2)value=(s16)value;
             if(f.e==1)value=(s8)value;
-            if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
+            if(f.e==4 || f.e==6){char *converted=func_02065b48(wide,buffer+512,f);if(!converted)goto invalid;text=converted;}
             else {text=FormatIntegerNarrow(value,buffer+512,f);if(!text)goto invalid;}
             len=buffer+511-text;break;
         case 'o': case 'u': case 'x': case 'X':
@@ -55,7 +55,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
             else {args+=4;value=*(s32 *)(args-4);}
             if(f.e==2)value=(u16)value;
             if(f.e==1)value=(u8)value;
-            if(f.e==4 || f.e==6){text=func_02065b48(wide,buffer+512,f);if(!text)goto invalid;}
+            if(f.e==4 || f.e==6){char *converted=func_02065b48(wide,buffer+512,f);if(!converted)goto invalid;text=converted;}
             else {text=FormatIntegerNarrow(value,buffer+512,f);if(!text)goto invalid;}
             len=buffer+511-text;break;
         case 'e':case 'E':case 'f':case 'F':case 'g':case 'G':

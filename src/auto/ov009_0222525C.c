@@ -116,8 +116,8 @@ void func_ov009_02225438(M2C_UNK arg0) {
 }
 
 s32 GetLinkLocalPlayerId(void) {
-    s32 func_02011934();
-    return func_02011934() & 0xFF;
+    s32 WFC_GetLocalPlayerIndex();
+    return WFC_GetLocalPlayerIndex() & 0xFF;
 }
 
 u8 func_ov009_02225460(void) {
@@ -142,7 +142,7 @@ u16 func_ov009_02225494(void) {
     return M2C_FIELD(&gLinkState, u16 *, 8);
 }
 
-s32 func_ov009_022254a4(void) {
+s32 IsLinkHost(void) {
     s32 GetLinkLocalPlayerId();
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 1;
@@ -169,26 +169,31 @@ M2C_UNK func_ov009_0222550c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0) = arg1;
     M2C_FIELD(arg0, s16 *, 4) = 1 << GetLinkLocalPlayerId();
     M2C_FIELD(&gLinkState, void **, 0x48) = arg0;
-    if (func_ov009_022254a4() == 0) return;
+    if (IsLinkHost() == 0) return;
     QueueHostLinkPacket(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
 }
 
-s32 func_ov009_02225560(s32 arg0) {
+/* Reports whether every connected player has acknowledged this console's
+ * match-start request: the request record must be there and its ack mask must
+ * cover all connected players, the link must not have failed and this console
+ * must be connected as player 0.  While that is false, the link host re-sends
+ * the start request.  The caller's argument is not used by the original. */
+s32 IsLinkStartAcknowledged(s32 arg0) {
     s32 GetConnectedPlayers();
     s32 GetLinkPhase();
     M2C_UNK QueueHostLinkPacket(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
-    s32 temp_r4;
-    s32 var_r5;
-    temp_r4 = GetConnectedPlayers();
-    var_r5 = 0;
-    if (M2C_FIELD(&gLinkState, void **, 0x48) != NULL &&
-        temp_r4 != (temp_r4 & M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x48), u16 *, 4))) var_r5 = 1;
-    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r5 = 0;
-    if (!(temp_r4 & 1)) var_r5 = 0;
-    if (var_r5 == 0 && func_ov009_022254a4() != 0)
-        QueueHostLinkPacket(3, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
-    return var_r5;
+    s32 connected;
+    s32 acknowledged;
+    connected = GetConnectedPlayers();
+    acknowledged = 0;
+    if (M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD) != NULL &&
+        connected != (connected & M2C_FIELD(M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD), u16 *, LINK_START_RECORD_ACKS))) acknowledged = 1;
+    if (GetLinkPhase() == LINK_PHASE_ERROR || GetLinkPhase() == LINK_PHASE_ABORTED) acknowledged = 0;
+    if (!(connected & 1)) acknowledged = 0;
+    if (acknowledged == 0 && IsLinkHost() != 0)
+        QueueHostLinkPacket(LINK_MSG_START_ACK, M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD), 8, 0xFFFF);
+    return acknowledged;
 }
 
 void func_ov009_022255ec() {
@@ -202,11 +207,11 @@ void func_ov009_02225600(void *arg0) {
 }
 
 s32 func_ov009_02225614(s32 arg0) {
-    s32 func_ov009_02225560(s32);
+    s32 IsLinkStartAcknowledged(s32);
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
-    return func_ov009_02225560(arg0 + 0x38);
+    return IsLinkStartAcknowledged(arg0 + 0x38);
 }
 
 void func_ov009_02225644(s32 arg0) {
@@ -238,18 +243,22 @@ M2C_UNK func_ov009_022256a4(s32 arg0) {
     M2C_FIELD(&gLinkState, s32 *, 0x20) = arg0;
 }
 
-s32 func_ov009_022256d4(s32 arg0) {
+/* Whether the player announcement this console started is still waiting for
+ * replies: it counts as pending only during an active game, once the announcement
+ * went out, while some connected player slot has not answered it yet. */
+s32 IsPlayerAnnouncePending(s32 actor) {
     s32 GetConnectedPlayers();
     s32 GetLinkPhase();
     extern M2C_UNK gLinkState;
-    s32 temp_r4, mask, var_r4;
-    if (M2C_FIELD(&gLinkState, void * volatile *, 0x20) != NULL &&
-        (temp_r4 = GetConnectedPlayers(), mask = GetConnectedPlayers(), temp_r4 != (M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x20), u16 *, 2) & mask))) var_r4 = 1;
-    else var_r4 = 0;
-    if (M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x20), u8 *, 0) == 0) var_r4 = 0;
-    if (GetLinkPhase() != 4 && GetLinkPhase() != 5) var_r4 = 0;
-    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r4 = 0;
-    return var_r4;
+    s32 connected, mask, pending;
+    if (M2C_FIELD(&gLinkState, void * volatile *, LINK_STATE_ANNOUNCE_REQUEST) != NULL &&
+        (connected = GetConnectedPlayers(), mask = GetConnectedPlayers(),
+         connected != (M2C_FIELD(M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE_REQUEST), u16 *, LINK_REQUEST_PLAYERS) & mask))) pending = 1;
+    else pending = 0;
+    if (M2C_FIELD(M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE_REQUEST), u8 *, LINK_REQUEST_SENT) == 0) pending = 0;
+    if (GetLinkPhase() != LINK_PHASE_ACTIVE && GetLinkPhase() != LINK_PHASE_INGAME) pending = 0;
+    if (GetLinkPhase() == LINK_PHASE_ERROR || GetLinkPhase() == LINK_PHASE_ABORTED) pending = 0;
+    return pending;
 }
 
 void func_ov009_02225768(s32 arg0) {
@@ -263,8 +272,8 @@ void func_ov009_0222577c(s32 arg0) {
 }
 
 void func_ov009_0222578c(s32 arg0) {
-    M2C_UNK func_ov009_022256d4(s32);
-    func_ov009_022256d4(arg0 + 0x34);
+    M2C_UNK IsPlayerAnnouncePending(s32);
+    IsPlayerAnnouncePending(arg0 + 0x34);
 }
 
 void func_ov009_0222579c(s32 arg0) {
@@ -298,7 +307,7 @@ s32 func_ov009_022257f8(s32 arg0) {
     if (M2C_FIELD(&gLinkState, u8 **, 0x24) != NULL &&
         *M2C_FIELD(&gLinkState, u8 **, 0x24) != 0) var_r4 = 1;
     if (GetLinkPhase() != 4 && GetLinkPhase() != 5) var_r4 = 0;
-    if (func_ov009_022254a4() != 0) var_r4 = 0;
+    if (IsLinkHost() != 0) var_r4 = 0;
     if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r4 = 0;
     return var_r4;
 }
@@ -359,7 +368,7 @@ void func_ov009_02225934(void) {
 
 }
 
-void func_ov009_02225938(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+void CreateLocalMatchRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
     extern M2C_UNK data_ov009_02226518;
     extern M2C_UNK data_ov009_022266c4;
     void *temp_r0;
@@ -492,16 +501,16 @@ void *func_ov009_02225bbc(void *arg0) {
 }
 
 s32 func_ov009_02225bec(s32 arg0) {
-    M2C_UNK func_020741c4(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK func_ov009_0222497c;
-    func_020741c4(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
+    DestroyArray(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
     return arg0;
 }
 
 s32 func_ov009_02225c14(s32 arg0) {
-    M2C_UNK func_020741c4(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK func_ov009_0222497c;
-    func_020741c4(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
+    DestroyArray(arg0 + 0x34, 4, 8, &func_ov009_0222497c);
     MemFree(arg0);
     return arg0;
 }

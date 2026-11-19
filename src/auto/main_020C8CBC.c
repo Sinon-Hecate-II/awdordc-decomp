@@ -23,18 +23,18 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void func_020868ac(s32,s32);s32 func_020c8054(s32);void func_020bef44(s32);func_02086844(a,0);func_02086878(a,0);func_020868ac(a-225,0);if(!func_020c8054(a))return;func_020bef44(8);}
+s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void func_020868ac(s32,s32);s32 IsLastCampaignMap(s32);void StartBattleRecord(s32);func_02086844(a,0);func_02086878(a,0);func_020868ac(a-225,0);if(!IsLastCampaignMap(a))return;StartBattleRecord(8);}
 
 void func_020c8d50(M2C_UNK arg0) {
     s32 GetMapRecordBuffer();
-    M2C_UNK func_020c8624(M2C_UNK, s32);
+    M2C_UNK StoreCampaignMapRecord(M2C_UNK, s32);
     M2C_UNK func_020c879c();
     s32 temp_r4;
 
     temp_r4 = GetMapRecordBuffer();
     func_020c879c();
     func_020c8d0c(arg0);
-    func_020c8624(arg0, temp_r4);
+    StoreCampaignMapRecord(arg0, temp_r4);
 }
 
 /* Refresh one campaign map's cached header from its save record: accept only
@@ -59,7 +59,7 @@ void func_020c8e40(void) {
     M2C_UNK LoadCampaignMapHeader(s32);
     s32 var_r4;
 
-    func_020c8eec();
+    ClearCampaignMapHeaders();
     var_r4 = 0;
     do {
         LoadCampaignMapHeader(var_r4 + 0xE1);
@@ -68,9 +68,9 @@ void func_020c8e40(void) {
 }
 
 void func_020c8e64(void *arg0) {
-    M2C_UNK func_020c8eec();
+    M2C_UNK ClearCampaignMapHeaders();
     M2C_FIELD(arg0, s32 *, 0x5C) = 0;
-    func_020c8eec();
+    ClearCampaignMapHeaders();
 }
 
 void func_020c8e78(void *arg0) {
@@ -101,7 +101,7 @@ void func_020c8ea0(void *arg0) {
 
 #pragma optimization_level 2
 void func_020c8ed4(M2C_UNK arg0) { M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK); extern M2C_UNK data_0212b07c; CreateSpriteFromClass(&data_0212b07c,arg0); }
-s32 func_020c8eec(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 gCampaignMapHeaders[]; return MI_CpuFill32(0,gCampaignMapHeaders,0x41a0); }
+s32 ClearCampaignMapHeaders(void) { s32 MI_CpuFill32(s32,void *,s32); extern u8 gCampaignMapHeaders[]; return MI_CpuFill32(0,gCampaignMapHeaders,0x41a0); }
 
 /* Decodes a game text string into the font's glyph codes: ordinary characters go
  * through the shared text decoder, while the 0x1F escape supplies a raw glyph code
@@ -173,7 +173,7 @@ void LoadNextCampaignMapRecord(void *loader) {
         M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) = (s32) ((M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) & 0xF003FFFF) | ((u32) ((count + 1) << 0x16) >> 4));
     }
     func_020c8d0c(mapId);
-    func_020c8624(mapId, record);
+    StoreCampaignMapRecord(mapId, record);
     M2C_FIELD(loader, u8 *, 0x35) = (u8) (M2C_FIELD(loader, u8 *, 0x35) + 1);
 }
 
@@ -216,13 +216,18 @@ void func_020c9190(s32 arg0) {
 }
 
 #pragma opt_instruction_scheduling off
-u64 func_020c91ac(s32 a) {
+/* Pack a campaign map record into its shareable 64-bit map code: the low
+ * nibble of the record's stamp counter in bits 0..3, the inverted halves of the
+ * recording console's WFC player id in bits 4..19 and 36..51 (MapCode_GetPid
+ * re-inverts them) and the record checksum in bits 20..35.  Returns 0 when the
+ * map has no valid record or the stamp names no console. */
+u64 PackMapCode(s32 mapId) {
 s32 IsCampaignMapRecordValid(s32); void *GetMapRecordStamp(s32);
-void *p; s32 v;
-if (!IsCampaignMapRecordValid(a)) return 0;
-p=GetMapRecordStamp(a); v=M2C_FIELD(p,s32 *,0x10);
-if (!v) return 0;
-return ((u64)(u16)~v<<36) | ((u64)(s32)M2C_FIELD(p,u16 *,6)<<20) | ((u64)(s32)(u16)(~v>>16)<<4) | ((M2C_FIELD(p,u32 *,0xc)<<14>>20)&15);
+void *stamp; s32 playerId;
+if (!IsCampaignMapRecordValid(mapId)) return 0;
+stamp=GetMapRecordStamp(mapId); playerId=M2C_FIELD(stamp,s32 *,0x10);
+if (!playerId) return 0;
+return ((u64)(u16)~playerId<<36) | ((u64)(s32)M2C_FIELD(stamp,u16 *,6)<<20) | ((u64)(s32)(u16)(~playerId>>16)<<4) | ((M2C_FIELD(stamp,u32 *,0xc)<<14>>20)&15);
 }
 #pragma opt_instruction_scheduling reset
 s32 MapCode_GetPid(u64 a) {
@@ -240,7 +245,7 @@ s32 DrawMapCode(s32 mapIndex,s32 y,s32 owner) {
 void *GetMapRecordStamp(s32); void *CreateTextLayer(s32);
 void StringFormat(void *,const void *,...); void RenderTextLayer(void *,s32,s32,void *);
 extern char sMapCodeFormat[];
-u64 code=func_020c91ac(mapIndex), mid, top; s32 group3,group2,group1,group0; char buf[64]; void *sprite;
+u64 code=PackMapCode(mapIndex), mid, top; s32 group3,group2,group1,group0; char buf[64]; void *sprite;
 GetMapRecordStamp(mapIndex);
 if(!code)return 0;
 mid=code/10000; top=mid/10000;
@@ -511,7 +516,7 @@ second_path:
     return 1;
 }
 
-void func_020c9b70(void) {
+void EnterBattleEnd(void) {
     M2C_UNK RestorePlayersOfActiveArmies();
     M2C_UNK func_ov000_0216aa84();
     extern void **gCurrentMap;

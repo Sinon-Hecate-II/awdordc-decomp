@@ -37,13 +37,15 @@ void func_ov000_0216906c(void) {
 void func_ov000_02169070(void *p) {
  extern s16 data_ov000_021ae960[];
  u16 t;
+ s8 direction;
  M2C_FIELD(p,u16 *,0x48)+=M2C_FIELD(p,s16 *,0x4a);
  M2C_FIELD(p,s16 *,0x4c)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
  M2C_FIELD(p,s16 *,0x4e)+=M2C_FIELD(p,s16 *,0x4a)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
  t=M2C_FIELD(p,u16 *,0x48);
  if(t<16)return;
  M2C_FIELD(p,u16 *,0x48)=t-16;
- M2C_FIELD(p,s16 *,0x4c)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2];
+ direction=M2C_FIELD(p,s8 *,0x44);
+ M2C_FIELD(p,s16 *,0x4c)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[direction*2];
  M2C_FIELD(p,s16 *,0x4e)-=M2C_FIELD(p,u16 *,0x48)*data_ov000_021ae960[M2C_FIELD(p,s8 *,0x44)*2+1];
  M2C_FIELD(p,u16 *,0x48)=0;
 }
@@ -148,31 +150,35 @@ void *func_ov000_0216939c(u8 *p) {
  return q;
 }
 
-void *func_ov000_0216941c(s32 a,s32 b,s32 c,s32 d,s32 e) {
- s32 func_ov000_0216975c(void);
+/* Create the controller that walks a map unit along a movement path: claim a
+ * free slot in the map's move pool, create its sprite object in the unit layer
+ * and fill in the slot, 1/16-tile position, kind, owner, facing and movement
+ * speed, then build the two sprites.  Returns 0 when no slot is free. */
+void *CreateUnitMove(s32 x,s32 y,s32 owner,s32 kind,s32 direction) {
+ s32 FindFreeUnitMoveSlot(void);
  void *CreateSpriteFromClass(M2C_UNK *,s32);
  s32 func_ov000_02169f08(void *);
  void InitUnitMoveSprites(void *);
- extern M2C_UNK data_ov000_021ae988;
+ extern M2C_UNK gUnitMoveClass;
  void *p;
- s32 slot=func_ov000_0216975c();
+ s32 slot=FindFreeUnitMoveSlot();
  if(slot==-1)return 0;
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,8),u8 *,slot)=1;
- p=CreateSpriteFromClass(&data_ov000_021ae988,9);
- M2C_FIELD(p,u8 *,0x45)=slot;
- M2C_FIELD(p,u16 *,0x4C)=a<<4;
- M2C_FIELD(p,u16 *,0x4E)=b<<4;
- M2C_FIELD(p,u8 *,0x42)=d;
- M2C_FIELD(p,u8 *,0x43)=c;
- M2C_FIELD(p,u8 *,0x44)=e;
- M2C_FIELD(p,u16 *,0x4A)=func_ov000_02169f08(p);
+ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,MAP_UNIT_MOVE_SLOTS),u8 *,slot)=1;
+ p=CreateSpriteFromClass(&gUnitMoveClass,UNIT_MOVE_SPRITE_LAYER);
+ M2C_FIELD(p,u8 *,UNIT_MOVE_SLOT)=slot;
+ M2C_FIELD(p,u16 *,UNIT_MOVE_X)=x<<4;
+ M2C_FIELD(p,u16 *,UNIT_MOVE_Y)=y<<4;
+ M2C_FIELD(p,u8 *,UNIT_MOVE_KIND)=kind;
+ M2C_FIELD(p,u8 *,UNIT_MOVE_OWNER)=owner;
+ M2C_FIELD(p,u8 *,UNIT_MOVE_DIRECTION)=direction;
+ M2C_FIELD(p,u16 *,UNIT_MOVE_SPEED)=func_ov000_02169f08(p);
  InitUnitMoveSprites(p);
  return p;
 }
 
 void *func_ov000_021694b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    void *func_ov000_0216941c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    return func_ov000_0216941c(arg0, arg1, arg2, arg3, func_ov000_021694e8(arg2));
+    void *CreateUnitMove(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    return CreateUnitMove(arg0, arg1, arg2, arg3, func_ov000_021694e8(arg2));
 }
 
 s32 func_ov000_021694e8(s32 arg0) {
@@ -185,8 +191,8 @@ s32 func_ov000_021694e8(s32 arg0) {
 
 void BeginUnitMove(s32 arg0) {
  void StartUnitMove(void *,s32);
- extern M2C_UNK data_ov000_021ae988;
- void *p=(void *)FindObjectByClass(&data_ov000_021ae988);
+ extern M2C_UNK gUnitMoveClass;
+ void *p=(void *)FindObjectByClass(&gUnitMoveClass);
  if(!p)return;
  StartUnitMove(p,arg0);
 }
@@ -230,8 +236,8 @@ void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
 void func_ov000_021696d4(void) {
  s32 FindObjectByClass(M2C_UNK *);
  void func_ov000_021696f8(void *);
- extern M2C_UNK data_ov000_021ae988;
- void *p=(void *)FindObjectByClass(&data_ov000_021ae988);
+ extern M2C_UNK gUnitMoveClass;
+ void *p=(void *)FindObjectByClass(&gUnitMoveClass);
  if(!p)return;
  func_ov000_021696f8(p);
  func_ov000_021696d4();
@@ -248,10 +254,10 @@ void func_ov000_021696f8(void *arg0) {
 
 u8 func_ov000_0216971c(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov000_021ae988;
+    extern M2C_UNK gUnitMoveClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_ov000_021ae988) != 0) {
+    if (FindObjectByClass(&gUnitMoveClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -267,7 +273,7 @@ void func_ov000_02169740(void *arg0) {
     func_020d47b0();
 }
 
-s32 func_ov000_0216975c(void) {
+s32 FindFreeUnitMoveSlot(void) {
  u16 i=0;
  u8 *p=M2C_FIELD(gCurrentMap,u8 **,8);
  do {if(p[i]==0)return (s16)i; i++;}while(i<3);

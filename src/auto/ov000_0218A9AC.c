@@ -17,7 +17,7 @@ void SetMapCursor(int, int, int, int, int);
  * every reachable cell and pick the best one to attack from, then plan the move
  * to it. */
 void SelectAttackMoveDestination(void) {
-    s32 func_ov000_021a9740(void *, s32);
+    s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void MarkAdjacentCells(s8);
     s32 func_020a47e0(s32, s32);
@@ -38,7 +38,7 @@ void SelectAttackMoveDestination(void) {
     {
         void *unit;
         unit = *(void **)(((u8 *)*gCurrentMap) + MAP_CURSOR_UNIT);
-        if (func_ov000_021a9740(unit, 1) < 10) return;
+        if (GetUnitMaxWeaponDamagePercent(unit, 1) < 10) return;
 
         unit = *(void **)(((u8 *)*gCurrentMap) + MAP_CURSOR_UNIT);
         FloodFillUnitRange(

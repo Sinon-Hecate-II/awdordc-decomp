@@ -19,6 +19,14 @@ typedef struct CppExceptionEntry {
 /* CppExceptionEntry.range bit: the handler data is inline in the entry, at +0x08. */
 #define CPP_EXCEPTION_INLINE_DATA 0x01
 
+/* Length bits of a compact exception-table value, from its first byte: bit 0 set
+ * means at least one more byte follows, bit 1 two more, bit 2 three more (a
+ * four-byte value). The first byte's remaining high bits are the value's most
+ * significant bits and the following bytes follow little-endian. */
+#define CPP_EXCEPTION_VALUE_LONG2 0x01 /* one more byte follows */
+#define CPP_EXCEPTION_VALUE_LONG3 0x02 /* two more bytes follow */
+#define CPP_EXCEPTION_VALUE_LONG4 0x04 /* three more bytes follow */
+
 /* What FindExceptionTableHandler leaves in the caller's lookup state. */
 typedef struct CppExceptionState {
     s32  start;      /* +0x00 start address of the matching table entry */

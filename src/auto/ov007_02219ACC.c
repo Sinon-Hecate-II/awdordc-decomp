@@ -52,7 +52,7 @@ void func_ov007_02219bd8(void) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 void *func_ov000_0216ce84(s32);
 void CopyToObjPaletteShadow(void *,s32,s32);
-s32 func_ov007_0221216c(s32);
+s32 MapEditor_PlayerHasTeam(s32);
 void func_020ae528(void *);
 s32 old=gCur3DSpriteEngine;
 s32 i,offset;
@@ -60,7 +60,7 @@ gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(i=0;i<4;i++){
 offset=(i+0x15)<<5;
 CopyToObjPaletteShadow(func_ov000_0216ce84(i+1),offset,0x20);
-if(!func_ov007_0221216c(i+1))
+if(!MapEditor_PlayerHasTeam(i+1))
 func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+(offset&~1));
 }
 gCur3DSpriteEngine=old;
@@ -202,10 +202,10 @@ void func_ov007_0221a104(void) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
 extern void *gCurrentMap;
 extern s32 data_ov007_02221e08;
-s32 func_0209b5e4(void *,void *);
+s32 RenderTextToTiles(void *,void *);
 s32 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-data_ov007_02221e08=func_0209b5e4(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0x3980,M2C_FIELD(gCurrentMap,u8 **,0)+0x5120);
+data_ov007_02221e08=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0x3980,M2C_FIELD(gCurrentMap,u8 **,0)+0x5120);
 gCur3DSpriteEngine=old;
 }
 
@@ -221,7 +221,7 @@ void func_ov007_0221a160(void) {
     void AddToU16Array(M2C_UNK, u16, s32);
     void DrawMapPreview(M2C_UNK, M2C_UNK);
     void func_020af04c(s32, s32, s32);
-    void func_02099450(s32, s32, s32);
+    void InitTextTiles(s32, s32, s32);
     void LoadScenePanelPalette(s32);
     void func_020a9a30(s32, s32, s32, M2C_UNK);
     M2C_UNK func_ov000_0216ce10(s32);
@@ -312,7 +312,7 @@ void func_ov007_0221a160(void) {
     DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
 
     func_020af04c(3, 0xF, 6);
-    func_02099450(0, 0, 1);
+    InitTextTiles(0, 0, 1);
     LoadScenePanelPalette(1);
 
     func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
