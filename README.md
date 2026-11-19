@@ -3,6 +3,8 @@
 [![Progress](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp.svg)](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp)
 [![Functions](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp.svg?mode=shield&label=Functions&measure=matched_functions)](https://bytematch.dev/Sinon-Hecate-II/awdordc-decomp)
 
+We have a fuzzy match of 95%+ currently at the moment
+
 A work-in-progress decompilation of **Advance Wars: Days of Ruin** (also known as **Advance Wars: Dark Conflict**) for the Nintendo DS.
 
 This decompilation currently only supports the USA version of **Advance Wars: Days of Ruin (YW2E)**. Support for the European version, **Advance Wars: Dark Conflict**, may be added in the future.
