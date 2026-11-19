@@ -399,7 +399,7 @@ void func_ov005_02218fd0(void *arg0) {
 void func_ov005_02219a24(void *p){
 extern s32 data_027e01d8;
 s32 i,v; u32 a,b;
-if(M2C_FIELD(p,s32 *,0x60)<=0){func_01ffa730(p);return;}
+if(M2C_FIELD(p,s32 *,0x60)<=0){Sprite_ResumeAnimationRepeat(p);return;}
 M2C_FIELD(p,s32 *,0x5c)++;
 v=EaseInterpolate(0,0,16,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x60));
 a=(u8)(16-v);b=(u8)v;
@@ -417,7 +417,7 @@ M2C_FIELD(p,s32 *,0x5c)=0;Sprite_ResumeAnimation(p);
 void func_ov005_02219aec(void *p){
 extern s32 data_027e01d8;
 s32 i,v; u32 a,b;
-if(M2C_FIELD(p,s32 *,0x64)<=0){func_01ffa730(p);return;}
+if(M2C_FIELD(p,s32 *,0x64)<=0){Sprite_ResumeAnimationRepeat(p);return;}
 M2C_FIELD(p,s32 *,0x5c)++;
 v=EaseInterpolate(0,16,0,M2C_FIELD(p,s32 *,0x5c),M2C_FIELD(p,s32 *,0x64));
 a=(u8)(16-v);b=(u8)v;

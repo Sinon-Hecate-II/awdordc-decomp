@@ -56,8 +56,9 @@ s8 func_0203be54(s8 arg0, s32 arg1, s32 arg2) {
     Qr2_SetKeyName(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
     return var_r7;
 }
-#pragma pop
-s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
+#pragma push
+#pragma scheduling off
+s8 func_0203bf80(s8 arg0, s32 arg1, s32 arg2) {
     s32 HeapAlloc(M2C_UNK, s32);
     M2C_UNK HeapFree(M2C_UNK);
     M2C_UNK ReportConnectionError(M2C_UNK, s32);
@@ -71,54 +72,47 @@ s8 func_0203bf80(u32 arg0, s32 arg1, s32 arg2) {
     extern u8 data_0213d3be[];
     extern u8 data_0213d3c0[];
     extern u8 gSessionPlayerValue[];
-    s32 var_r6;
-    s32 var_r5;
-    u32 var_r7;
+    s32 var_r6 = arg1;
+    s32 var_r5 = arg2;
+    s8 var_r7 = arg0;
     s32 temp_r4;
-    u8 *var_r8;
     s32 temp_r0;
-    s32 temp_r3;
+    s32 oldName;
 
-    var_r6 = arg1;
-    var_r5 = arg2;
-    var_r7 = arg0;
-    if (var_r6 != 0 && var_r5 != 0) {
-        if (var_r7 >= 0x64U) {
-            temp_r3 = (var_r7 - 0x64) * 0xC;
-            if (gSessionPlayers[temp_r3] != 0) {
-                if (*((s32 *)(data_0213d3c0 + temp_r3)) != 0 && StringCompare() != 0) {
-                    return 0;
-                }
-                goto block_11;
-            }
-        }
-        var_r7 = (u32) func_020427b4();
-        if (var_r7 == 0) {
-            return 0;
-        }
-    block_11:
-        temp_r4 = (var_r7 - 0x64) * 0xC;
-        gSessionPlayers[temp_r4] = (s8) var_r7;
-        gSessionPlayerIsString[temp_r4] = 1;
-        *((u16 *)(data_0213d3be + temp_r4)) = 0;
-        if (*((s32 *)(data_0213d3c0 + temp_r4)) != 0) {
-            HeapFree(4);
-        }
-        temp_r0 = HeapAlloc(4, StringLength(var_r6) + 1);
-        var_r8 = data_0213d3c0;
-        *((s32 *)(var_r8 + temp_r4)) = temp_r0;
-        if (temp_r0 == 0) {
-            ReportConnectionError(9, 0xFFFEC77F);
-            return 0;
-        }
-        StringCopy(temp_r0, var_r6);
-        *((s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
-        Qr2_SetKeyName((s8) var_r7, *((s32 *)(var_r8 + temp_r4)));
-        return (s8) var_r7;
+    if (var_r6 == 0 || var_r5 == 0) {
+        return 0;
     }
-    return 0;
+    if ((u32) var_r7 >= 0x64U && gSessionPlayers[(var_r7 - 0x64) * 0xC] != 0) {
+        s32 off = (var_r7 - 0x64) * 0xC;
+        if (*((volatile s32 *)(data_0213d3c0 + off)) != 0 && ((s32 (*)(s32, s32))StringCompare)(*((volatile s32 *)(data_0213d3c0 + off)), var_r6) != 0) {
+            return 0;
+        }
+    } else {
+        var_r7 = func_020427b4();
+        if ((u32) var_r7 == 0) {
+            return 0;
+        }
+    }
+    temp_r4 = (var_r7 - 0x64) * 0xC;
+    ((volatile u8 *)gSessionPlayers)[temp_r4] = var_r7;
+    ((volatile u8 *)gSessionPlayerIsString)[temp_r4] = 1;
+    *((volatile u16 *)(data_0213d3be + temp_r4)) = 0;
+    oldName = *((volatile s32 *)(data_0213d3c0 + temp_r4));
+    if (oldName != 0) {
+        ((M2C_UNK (*)(M2C_UNK, s32))HeapFree)(4, oldName);
+    }
+    temp_r0 = HeapAlloc(4, StringLength(var_r6) + 1);
+    *((volatile s32 *)(data_0213d3c0 + temp_r4)) = temp_r0;
+    if (temp_r0 == 0) {
+        ReportConnectionError(9, 0xFFFEC77F);
+        return 0;
+    }
+    StringCopy(temp_r0, var_r6);
+    *((volatile s32 *)(gSessionPlayerValue + temp_r4)) = var_r5;
+    Qr2_SetKeyName(var_r7, *((volatile s32 *)(data_0213d3c0 + temp_r4)));
+    return var_r7;
 }
-
+#pragma pop
 s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
     s32 HasNetError();
     void *GetConnection();

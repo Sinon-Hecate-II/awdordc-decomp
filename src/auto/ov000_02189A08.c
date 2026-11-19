@@ -25,7 +25,7 @@ void ChooseCaptureDestination(void) {
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void SelectMapLayer(void *);
     s32 func_ov000_021a8eb0(s32, s32, s32);
-    s32 func_ov000_021a9084(s32);
+    s32 IsUnitProductionTerrain(s32);
     void PlanMoveDestination(s32, s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
@@ -93,7 +93,7 @@ void ChooseCaptureDestination(void) {
                             continue;
                         }
                     }
-                    if (func_ov000_021a9084(terrain) != 0) {
+                    if (IsUnitProductionTerrain(terrain) != 0) {
                         current = *gCurrentMap;
                         row = M2C_FIELD(current + rowY * 2, u16 *, MAP_ROW_OFFSETS);
                         if ((current[columnX + row + MAP_CELL_TERRAIN] & MAP_TERRAIN_KIND_MASK) != 0x13) {
@@ -319,9 +319,9 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     s32 IsUnitSelected(void *);
     s32 func_ov000_02178e84(s32, s32);
     s32 GetKindAttackClass(s32);
-    s32 func_ov000_021a90a8(s32, s32, s32);
+    s32 IsCellOwnedByOtherTeam(s32, s32, s32);
     s32 func_ov000_02178778(s32, s32);
-    s32 func_ov000_021a9084(s32);
+    s32 IsUnitProductionTerrain(s32);
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
     extern u8 data_ov000_021df9bc[];
@@ -363,7 +363,7 @@ u8 *m=(u8 *)*gCurrentMap;
 u16 rowOffset=*(u16 *)(m+y*2+0x3758);
 u8 terrain=(m+(x+rowOffset)+0x1000)[0x420]&0x1f;
 if(terrain==0x13 || terrain==0x15) {
-if(!func_ov000_021a90a8(m[0x52d4],x,y))return 0;
+if(!IsCellOwnedByOtherTeam(m[0x52d4],x,y))return 0;
 }
 }
 }
@@ -373,7 +373,7 @@ if(!func_ov000_021a90a8(m[0x52d4],x,y))return 0;
     if((((SelectedUnitFlagsA520 *)((u8 *)*(void **)((u8 *)*gCurrentMap+0x52d0)+8))->high)==2) {
         u16 rowOffset = *(u16 *)((u8 *)*gCurrentMap + y * 2 + 0x3758);
         u8 finalByte = ((u8 *)*gCurrentMap + (x + rowOffset) + 0x1000)[0x420];
-        if (func_ov000_021a9084(finalByte) != 0) {
+        if (IsUnitProductionTerrain(finalByte) != 0) {
             return 0;
         }
     }

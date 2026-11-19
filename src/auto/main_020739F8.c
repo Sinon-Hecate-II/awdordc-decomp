@@ -290,14 +290,14 @@ void func_02074048(void) {
 }
 
 void func_02074074(void) {
-    extern void *data_0213ea14;
+    extern void *gExitFunctionList;
     void *entry;
-    entry = data_0213ea14;
+    entry = gExitFunctionList;
     if (entry == NULL) return;
     do {
-        data_0213ea14 = M2C_FIELD(entry, void **, 0);
+        gExitFunctionList = M2C_FIELD(entry, void **, 0);
         M2C_FIELD(entry, void (**)(s32, s32), 4)(M2C_FIELD(entry, s32 *, 8), -1);
-        entry = data_0213ea14;
+        entry = gExitFunctionList;
     } while (entry != NULL);
 }
 
@@ -398,11 +398,11 @@ void func_020742f8(void) {
 }
 
 void func_02074310(s32 arg0, s32 arg1, void *arg2) {
-    extern void *data_0213ea14;
-    M2C_FIELD(arg2, void **, 0) = (void *) data_0213ea14;
+    extern void *gExitFunctionList;
+    M2C_FIELD(arg2, void **, 0) = (void *) gExitFunctionList;
     M2C_FIELD(arg2, s32 *, 4) = arg1;
     M2C_FIELD(arg2, s32 *, 8) = arg0;
-    data_0213ea14 = arg2;
+    gExitFunctionList = arg2;
 }
 
 #pragma opt_common_subs off

@@ -140,7 +140,7 @@ u8 HasAiBuildFlag(s32 arg0) {
     return var_r0;
 }
 
-u8 func_ov000_021a43c4(void) {
+u8 HasAiOptionalUnitBuildFlag(void) {
     extern void *gAiSettings;
     u8 var_r0;
 

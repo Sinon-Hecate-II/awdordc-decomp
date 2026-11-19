@@ -354,7 +354,7 @@ void Sprite_ResumeAnimation(void *arg0) {
     }
 }
 
-void func_01ffa730(void *arg0) {
+void Sprite_ResumeAnimationRepeat(void *arg0) {
     register s16 *temp_r2;
 
     if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
@@ -393,7 +393,7 @@ void *func_01ffa7b4(s32 arg0) {
  return 0;
 }
 
-void *func_01ffa810(s32 a) {
+void *FindObjectByZ(s32 a) {
  extern void **g3DSpriteOrderCursor;
  extern void *g3DSpriteSortOrder[];
  void **q;void *p;

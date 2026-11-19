@@ -695,7 +695,9 @@ void *func_ov009_02224d30(void *arg0, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32
  return arg0;
 }
 
-s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+#pragma push
+#pragma optimization_level 3
+s32 QueueHostLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkPhase(void);
     M2C_UNK IsLinkHost(void);
     M2C_UNK GetConnectedPlayers(void);
@@ -705,8 +707,7 @@ s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
-    u32 saved;
-    u16 masked;
+    volatile u32 saved;
     s32 r5;
     void *ptr;
 
@@ -715,25 +716,28 @@ s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
             return 0;
         }
     }
-    if (IsLinkHost() == 0) {
-        return 0;
+    if (IsLinkHost() != 0) {
+        arg3 &= GetConnectedPlayers();
     }
-    arg3 = arg3 & GetConnectedPlayers();
-    masked = (u16)(arg3 & (-1 ^ (1 << GetLinkLocalPlayerId())));
+    arg3 = (u16)(arg3 & (-1 ^ (1 << GetLinkLocalPlayerId())));
     r5 = GetLinkLocalPlayerId();
 
-    saved = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
+    {
+        u32 previous = *(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = 0;
+        saved = previous;
+    }
 
     ptr = (void *)func_ov009_0222132c((M2C_UNK)(arg2 + 0x10), 0x20);
     if (ptr == 0) {
+        u32 previous = saved;
         (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = saved;
-        return 1;
+        *(volatile u16 *)0x04000208 = previous;
+        goto done;
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    func_ov009_02224d30((u8 *)ptr + 4, (s8)arg0, r5, 0, arg1, arg2, masked);
+    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))func_ov009_02224d30)((u8 *)ptr + 4, arg0, r5, 0, arg1, arg2, arg3);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
@@ -742,14 +746,16 @@ s32 QueueHostLinkPacket(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
         M2C_FIELD(M2C_FIELD(&gLinkState, void **, 0x68), void **, 0) = ptr;
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
     }
-    M2C_FIELD(&gLinkState, s32 *, 0x6c) =
-        M2C_FIELD(&gLinkState, s32 *, 0x6c) + 1;
-
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = saved;
+    {
+        u32 previous = saved;
+        M2C_FIELD(&gLinkState, s32 *, 0x6c)++;
+        (void)*(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = previous;
+    }
+done:
     return 1;
 }
-
+#pragma pop
 s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 GetLinkPhase(void);
     s32 IsLinkHost(void);

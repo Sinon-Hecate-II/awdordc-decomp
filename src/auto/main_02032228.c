@@ -38,8 +38,8 @@ return *(u64 *)&s[2]==GetNasPlayerCode(a);
 }
 
 s32 func_02032358(s32 a) {
-s32 func_02031e28();
-return func_02031e28(a)==1;
+s32 GetPlayerRecordKind();
+return GetPlayerRecordKind(a)==1;
 }
 
 s32 func_02032370(s32 arg0) {
@@ -48,8 +48,8 @@ s32 func_02032370(s32 arg0) {
 }
 
 s32 IsPlayerRecordPresent(void) {
-    s32 func_02031e28();
-    if (func_02031e28() != 0) {
+    s32 GetPlayerRecordKind();
+    if (GetPlayerRecordKind() != 0) {
         return 1;
     }
     return 0;
@@ -83,11 +83,11 @@ s32 func_020323f4(void *arg0) {
 }
 
 s32 func_02032424(void *a) {
-s32 func_02031e28(void *);
+s32 GetPlayerRecordKind(void *);
 void GetWfcProfileIds(void *);
 u64 GetNasPlayerCode(void *);
 u32 s[5];
-if(func_02031e28((u8 *)a+0x10)==0)return 1;
+if(GetPlayerRecordKind((u8 *)a+0x10)==0)return 1;
 GetWfcProfileIds(s);
 if(s[4]==0)return 0;
 return *(u64 *)&s[0]==GetNasPlayerCode((u8 *)a+0x10);
@@ -132,7 +132,7 @@ M2C_FIELD(a,u32 *,0x3c)=func_02076860(table,a,0x3c);
 
 u64 func_02032558(void *a) {
 u64 func_02031db8(void *);
-if(func_02031e28(a)!=2)return 0;
+if(GetPlayerRecordKind(a)!=2)return 0;
 return func_02031db8(a);
 }
 
@@ -142,7 +142,7 @@ s32 func_02031dcc(void *);
 s32 func_02031f74(u64,s32);
 s32 func_02031fe4(u64,s32);
 u64 v;
-switch(func_02031e28(b)) {
+switch(GetPlayerRecordKind(b)) {
 case 2: v=func_02031db8(b);if(!func_02031f74(v,M2C_FIELD(a,s32 *,0x24)))return 0; return func_02031fe4(v,M2C_FIELD(a,s32 *,0x24));
 case 3:return func_02031dcc(b);
 case 1:return -1;
@@ -193,30 +193,46 @@ FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
  * different kinds never match; keyed records compare their whole key, joined
  * records their profile id, and gpi records their encoded gpi user id. */
 s32 PlayerRecordsEqual(void *a,void *b){
-s32 func_02031e28(void *); s32 func_02031dcc(void *); u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *); u64 func_02031db8(void *);
-s32 kind=func_02031e28(a);
-if(kind!=func_02031e28(b))return 0;
+s32 GetPlayerRecordKind(void *); s32 func_02031dcc(void *); u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *); u64 func_02031db8(void *);
+s32 kind=GetPlayerRecordKind(a);
+if(kind!=GetPlayerRecordKind(b))return 0;
 if(kind==3)return func_02031dcc(a)==func_02031dcc(b);
 if(kind==1){if(GetNasPlayerCode(a)==GetNasPlayerCode(b) && GetNasRecordCheckWord(a)==GetNasRecordCheckWord(b))return 1;return 0;}
 if(kind==2)return func_02031db8(a)==func_02031db8(b);
 return 0;
 }
 
-s32 func_020327f4(s32 a,s32 b) {
-void IsPlayerRecordJoined();
-u64 func_02031db8(void *);
-void func_02032004(void *,u32,u32);
-void FormatNasId(s32,s32,s32);
-u8 buf[33];u64 v;
-if(func_02031e28(b)==3) {IsPlayerRecordJoined(b);return;}
-if(func_02031e28(b)==2) {v=func_02031db8((void *)b);func_02032004(buf+21,(u32)v,(u32)(v>>32));return;}
-if(func_02031e28(b)==1)FormatNasId(b,M2C_FIELD(a,s32 *,0x24),(s32)buf);
+/* Fill a 33-byte text buffer with the id of the player record `record` of the
+ * match session `session`: a record whose profile is still unresolved has no text,
+ * a player code is written as the two words of its text, and a known profile is
+ * formatted together with the session's local profile id.  A record of a player
+ * who already joined the match is only marked as joined. */
+s32 FormatPlayerRecordId(s32 session, s32 record) {
+    s32 IsPlayerRecordJoined(s32);
+    u64 func_02031db8(void *);
+    void func_02032004(void *, u32, u32);
+    void FormatNasId(s32, s32, s32);
+    u8 text[33];
+    u64 code;
+
+    if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_PROFILE) {
+        IsPlayerRecordJoined(record);
+        return;
+    }
+    if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_CODE) {
+        code = func_02031db8((void *) record);
+        func_02032004(text + 21, (u32) code, (u32) (code >> 32));
+        return;
+    }
+    if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_UNRESOLVED) {
+        FormatNasId(record, M2C_FIELD(session, s32 *, 0x24), (s32) text);
+    }
 }
 
 void func_0203287c(s32 arg0) {
-    M2C_UNK func_020327f4(s32, s32);
-    func_020327f4(arg0, arg0 + 4);
-    func_020327f4(arg0, arg0 + 0x10);
+    M2C_UNK FormatPlayerRecordId(s32, s32);
+    FormatPlayerRecordId(arg0, arg0 + 4);
+    FormatPlayerRecordId(arg0, arg0 + 0x10);
 }
 
 void func_0203289c(s32 arg0) {

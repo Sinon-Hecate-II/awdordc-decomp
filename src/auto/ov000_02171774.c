@@ -172,7 +172,7 @@ s32 GetTerrainNameId(void *arg0, s32 arg1) {
 }
 
 #pragma opt_strength_reduction off
-void *func_ov000_021724dc(void *arg0) {
+void *Ov000_InfoPanel_Create(void *arg0) {
 void *MemAlloc(s32);
 s32 i,j,k; void *p,*q,*t;
 M2C_FIELD(arg0,s32 *,0)=0; M2C_FIELD(arg0,s32 *,4)=0;

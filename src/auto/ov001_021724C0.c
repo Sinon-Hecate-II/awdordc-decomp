@@ -35,7 +35,7 @@ extern "C" void func_ov001_021724c0(void)
     void Ov001_SetSpritePalette(void *, s32, s32);
     void *CreatePooledTextPanel(s32, s32, s32, s32, s32 *, s32);
     void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
-    void *func_ov001_0218a070(s32, s32, s32);
+    void *Ov001_AllocSpriteBlock(s32, s32, s32);
     s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     void Ov001_KeyboardSlideStep1(s32);
     void Ov001_LayoutKeyboardRow(s32, s32, s32);
@@ -96,7 +96,7 @@ extern "C" void func_ov001_021724c0(void)
                 ++label;
             } while (col < 12);
             if (page == 0) {
-                ((Ov001KeyboardState *)gOv001MenuState)->textSprites[row] = func_ov001_0218a070(0, work.layout, 1);
+                ((Ov001KeyboardState *)gOv001MenuState)->textSprites[row] = Ov001_AllocSpriteBlock(0, work.layout, 1);
             }
             work.firstLabel += 12;
         }

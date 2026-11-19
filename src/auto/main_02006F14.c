@@ -104,62 +104,68 @@ void InitTimer(void *arg0) {
 }
 
 #pragma opt_if-conversion off
-void func_020071a0(void *arg0, u32 arg1, u32 arg2) {
+/* Insert an OS timer into gTimerQueue, sorted by its u64 deadline: a one-shot
+ * timer is due at `due`, a repeating one is advanced from its last fire tick by
+ * whole periods until it is due again.  The timer is linked before the first
+ * node that is due later, or at the tail, and the hardware countdown is re-armed
+ * when it becomes the earliest. */
+void InsertTimer(void *timer, u64 due) {
     u64 GetSystemTick(void);
     void ArmTimerCountdown(void *);
     u64 U64Divide(u64, u64);
     extern u16 gTimerQueue;
-    u32 pa, pb;
-    u64 now, period, stored, q, inc;
-    u64 nodedl;
+    u64 now, period, deadline, periods, step;
+    u64 nodeDeadline;
     void *node;
     void *next;
-    void *old_head;
+    void *oldTail;
 
-    pa = M2C_FIELD(arg0, u32 *, 0x20);
-    pb = M2C_FIELD(arg0, u32 *, 0x1c);
-    stored = ((u64)arg2 << 32) | arg1;
-    if (pa == 0 && pb == 0) return;
-    now = GetSystemTick();
-    stored = M2C_FIELD(arg0, u64 *, 0x24);
-    if (stored >= now) return;
-    period = M2C_FIELD(arg0, u64 *, 0x1c);
-    q = U64Divide(now - stored, period);
-    inc = period * (q + 1);
-    stored += inc;
-    M2C_FIELD(arg0, u64 *, 0x0C) = stored;
-
-    for (node = M2C_FIELD(&gTimerQueue, void **, 4); node != 0; node = M2C_FIELD(node, void **, 0x18)) {
-        nodedl = M2C_FIELD(node, u64 *, 0x0C);
-        if ((s64)(stored - nodedl) < 0) break;
-    }
-    if (node != 0) {
-        next = M2C_FIELD(node, void **, 0x14);
-        M2C_FIELD(arg0, void **, 0x14) = next;
-        M2C_FIELD(node, void **, 0x14) = arg0;
-        M2C_FIELD(arg0, void **, 0x18) = node;
-        if (next != 0) {
-            M2C_FIELD(next, void **, 0x18) = arg0;
-        } else {
-            M2C_FIELD(&gTimerQueue, void **, 4) = arg0;
-            ArmTimerCountdown(arg0);
+    deadline = due;
+    if (M2C_FIELD(timer, u64 *, TIMER_NODE_PERIOD) != 0) {
+        now = GetSystemTick();
+        deadline = M2C_FIELD(timer, u64 *, TIMER_NODE_LAST);
+        if (deadline < now) {
+            period = M2C_FIELD(timer, u64 *, TIMER_NODE_PERIOD);
+            periods = U64Divide(now - deadline, period);
+            step = period * (periods + 1);
+            deadline += step;
         }
-    } else {
-        old_head = M2C_FIELD(&gTimerQueue, void **, 8);
-        M2C_FIELD(arg0, void **, 0x18) = 0;
-        M2C_FIELD(&gTimerQueue, void **, 8) = arg0;
-        M2C_FIELD(arg0, void **, 0x14) = old_head;
-        if (old_head != 0) {
-            M2C_FIELD(old_head, void **, 0x18) = arg0;
+    }
+    M2C_FIELD(timer, u64 *, TIMER_NODE_DEADLINE) = deadline;
+
+    for (node = M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD); node != 0; node = M2C_FIELD(node, void **, TIMER_NODE_NEXT)) {
+        nodeDeadline = M2C_FIELD(node, u64 *, TIMER_NODE_DEADLINE);
+        if ((s64)(deadline - nodeDeadline) < 0) {
+        next = M2C_FIELD(node, void **, TIMER_NODE_PREV);
+        M2C_FIELD(timer, void **, TIMER_NODE_PREV) = next;
+        M2C_FIELD(node, void **, TIMER_NODE_PREV) = timer;
+        M2C_FIELD(timer, void **, TIMER_NODE_NEXT) = node;
+        next = M2C_FIELD(timer, void **, TIMER_NODE_PREV);
+        if (next != 0) {
+            M2C_FIELD(next, void **, TIMER_NODE_NEXT) = timer;
         } else {
-            M2C_FIELD(&gTimerQueue, void **, 8) = arg0;
-            M2C_FIELD(&gTimerQueue, void **, 4) = arg0;
-            ArmTimerCountdown(arg0);
+            M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD) = timer;
+            ArmTimerCountdown(timer);
+        }
+        return;
+        }
+    }
+    {
+        M2C_FIELD(timer, void **, TIMER_NODE_NEXT) = 0;
+        oldTail = M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_TAIL);
+        M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_TAIL) = timer;
+        M2C_FIELD(timer, void **, TIMER_NODE_PREV) = oldTail;
+        if (oldTail != 0) {
+            M2C_FIELD(oldTail, void **, TIMER_NODE_NEXT) = timer;
+        } else {
+            M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_TAIL) = timer;
+            M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD) = timer;
+            ArmTimerCountdown(timer);
         }
     }
 }
 void ScheduleTimer(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
- M2C_UNK SystemHalt(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_020071a0();
+ M2C_UNK SystemHalt(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void InsertTimer(void *, u64);
  u32 state; u64 time;
  if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)SystemHalt();
  state=OS_DisableInterrupts();
@@ -168,7 +174,7 @@ void ScheduleTimer(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
  M2C_FIELD(arg0,volatile s32 *,0)=arg3;
  M2C_FIELD(arg0,s32 *,4)=arg4;
  time=delay+GetSystemTick();
- func_020071a0(arg0,(u32)time,(u32)(time>>32)); OS_RestoreInterrupts(state);
+ InsertTimer(arg0,time); OS_RestoreInterrupts(state);
 }
 #pragma opt_common_subs reset
 /* Take a timer off the OS timer queue: unlink it from the deadline-sorted list
@@ -215,7 +221,7 @@ void func_020073d0(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
     u64 GetSystemTick(void);
     void ArmTimerCountdown(void *);
-    void func_020071a0(void *, u32, u32);
+    void InsertTimer(void *, u64);
     extern u16 gTimerQueue;
     extern M2C_UNK gOsArea;
 
@@ -269,7 +275,7 @@ void func_020073d0(void) {
     t1c = *(u32 *)((u8 *)node + 0x1C);
     if (t20 != 0 || t1c != 0) {
         *(u32 *)node = cb;
-        func_020071a0(node, 0, 0);
+        InsertTimer(node, 0);
     }
 
     node = *(void **)((u8 *)&gTimerQueue + 0x4);

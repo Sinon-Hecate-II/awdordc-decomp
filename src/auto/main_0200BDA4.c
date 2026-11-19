@@ -246,82 +246,83 @@ void CompleteFileLoad(void *arg0) {
     }
 }
 
-M2C_UNK func_0200c308(void *arg0) {
+void func_0200c308(void *arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern void *data_0213ea14;
+    extern void *gExitFunctionList;
     s32 irq;
     u32 f4;
     u32 f8;
     u32 fc;
     u32 base;
     u32 end;
+    void *prev_kept;
     void *head;
     void *cur;
     void *next;
-    void *prev_kept;
     void *removed_head;
     void *removed_tail;
     u32 node_arg;
     void (*cb)(u32);
 
-    f8 = M2C_FIELD(arg0, u32 *, 8);
-    fc = M2C_FIELD(arg0, u32 *, 0xC);
-    f4 = M2C_FIELD(arg0, u32 *, 4);
-    base = f4;
-    removed_head = (void *)0;
-    removed_tail = (void *)0;
-    end = base + f8 + fc;
-    irq = OS_DisableInterrupts();
-    head = data_0213ea14;
-    cur = head;
-    prev_kept = (void *)0;
-    if (head != (void *)0) {
-        while (cur != (void *)0) {
-            next = M2C_FIELD(cur, void **, 0);
-            node_arg = M2C_FIELD(cur, u32 *, 8);
-            cb = M2C_FIELD(cur, void (**)(u32), 4);
-            if ((node_arg == 0 && (u32)cb >= base && (u32)cb < end) ||
-                (node_arg != 0 && node_arg >= base && node_arg < end)) {
-                if (removed_tail != (void *)0) {
-                    M2C_FIELD(removed_tail, void **, 0) = cur;
+    for (;;) {
+        f8 = M2C_FIELD(arg0, u32 *, 8);
+        fc = M2C_FIELD(arg0, u32 *, 0xC);
+        f4 = M2C_FIELD(arg0, u32 *, 4);
+        base = f4;
+        removed_head = (void *)0;
+        removed_tail = (void *)0;
+        end = base + (f8 + fc);
+        irq = OS_DisableInterrupts();
+        head = gExitFunctionList;
+        cur = head;
+        prev_kept = (void *)0;
+        if (head != (void *)0) {
+            do {
+                next = M2C_FIELD(cur, void **, 0);
+                node_arg = M2C_FIELD(cur, u32 *, 8);
+                cb = M2C_FIELD(cur, void (**)(u32), 4);
+                if ((node_arg == 0 && (u32)cb >= base && (u32)cb < end) ||
+                    (node_arg >= base && node_arg < end)) {
+                    if (removed_tail != (void *)0) {
+                        M2C_FIELD(removed_tail, void **, 0) = cur;
+                    } else {
+                        removed_head = cur;
+                    }
+                    if (head == cur) {
+                        gExitFunctionList = next;
+                        head = next;
+                    }
+                    M2C_FIELD(cur, void **, 0) = (void *)0;
+                    removed_tail = cur;
+                    if (prev_kept != (void *)0) {
+                        M2C_FIELD(prev_kept, void **, 0) = next;
+                    }
                 } else {
-                    removed_head = cur;
+                    prev_kept = cur;
                 }
-                M2C_FIELD(cur, void **, 0) = (void *)0;
-                if (cur == head) {
-                    data_0213ea14 = next;
-                    head = next;
-                }
-                if (prev_kept != (void *)0) {
-                    M2C_FIELD(prev_kept, void **, 0) = next;
-                }
-                removed_tail = cur;
-            } else {
-                prev_kept = cur;
+                cur = next;
+            } while (cur != (void *)0);
+        }
+        OS_RestoreInterrupts(irq);
+        if (removed_head == NULL) break;
+        do {
+            cb = M2C_FIELD(removed_head, void (**)(u32), 4);
+            removed_tail = M2C_FIELD(removed_head, void **, 0);
+            if (cb != NULL) {
+                cb(M2C_FIELD(removed_head, u32 *, 8));
             }
-            cur = next;
-        }
-    }
-    OS_RestoreInterrupts(irq);
-    cur = removed_head;
-    while (cur != (void *)0) {
-        next = M2C_FIELD(cur, void **, 0);
-        cb = M2C_FIELD(cur, void (**)(u32), 4);
-        if (cb != (void *)0) {
-            cb(M2C_FIELD(cur, u32 *, 8));
-        }
-        cur = next;
+            removed_head = removed_tail;
+        } while (removed_tail != NULL);
     }
 }
 
-s32 func_0200c3f8(void) {
-    M2C_UNK func_0200c308();
-    func_0200c308();
+s32 func_0200c3f8(void *range) {
+    func_0200c308(range);
     return 1;
 }
 
-s32 func_0200c408(s32 arg0,s32 arg1) {s32 LoadFileHeader();u8 temp[44];if(!LoadFileHeader(temp,arg0,arg1) || !((s32 (*)())func_0200c3f8)(temp)) return 0;return 1;}
+s32 func_0200c408(s32 arg0,s32 arg1) {s32 LoadFileHeader();u8 temp[44];if(!LoadFileHeader(temp,arg0,arg1) || !func_0200c3f8(temp)) return 0;return 1;}
 
 void func_0200c454(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;

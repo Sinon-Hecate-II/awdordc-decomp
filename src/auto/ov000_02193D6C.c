@@ -137,18 +137,18 @@ void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
 void func_ov000_02194370(void){
 s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
-s32 func_ov000_021a43c4(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
+s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
 s32 IsMidActionStep(u32);s32 CanUnitAttackKind(u8*,u32);
-s32 func_ov000_021a9084(u32);s32 func_ov000_021a911c(s16,s16,s16);
+s32 IsUnitProductionTerrain(u32);s32 func_ov000_021a911c(s16,s16,s16);
 void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
 u32 mode;u8 *unit;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)&4))return;
 if(!IsPlayerHuman(M2C_FIELD(MAP,u16*,0x52a4))&&GetUnitAttackClass(KIND(SEL))==1){
 if(KIND(SEL)!=26)return;
-if(!func_ov000_021a43c4()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
+if(!HasAiOptionalUnitBuildFlag()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
 }
 if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;
@@ -175,7 +175,7 @@ if(COST(unit[1],unit[2],0x3250)<0)continue;
 }
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),110,0);
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
-if(PATH(x,y)<0||!func_ov000_021a9084(CELL(x,y,0x1420)))continue;
+if(PATH(x,y)<0||!IsUnitProductionTerrain(CELL(x,y,0x1420)))continue;
 {void *base=MAP;u16 row=M2C_FIELD(base+y*2,u16*,0x3758);u8 *cell=(u8*)base+x+row;
 distance=M2C_FIELD(base+y*4,s8**,0x52e8)[x];
 if(distance>=M2C_FIELD(cell,s8*,0x2338))continue;
@@ -194,7 +194,7 @@ distance=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 if(bestX==-1)return;PlanMoveDestination(bestX,bestY);return;
 }
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
-if(PATH(x,y)<0||!func_ov000_021a9084(CELL(x,y,0x1420)))continue;
+if(PATH(x,y)<0||!IsUnitProductionTerrain(CELL(x,y,0x1420)))continue;
 distance=COST(x,y,0x2338);if(distance==127)continue;
 distance+=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}

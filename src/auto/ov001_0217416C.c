@@ -16,7 +16,7 @@ void Ov001_OpenKeypad(void) {
     void Ov001_SetSpritePalette(void *, s32, s32);
     void *CreatePooledTextPanel(s32, s32, s32, s32, s32 *, s32);
     void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
-    void *func_ov001_0218a070(s32, s32, s32);
+    void *Ov001_AllocSpriteBlock(s32, s32, s32);
     void *Ov001_AddTask(s32, void (*)(s32), s32, s32);
     void func_ov001_02174548(s32);
     void func_ov001_02174f68(s32, s32);
@@ -80,7 +80,7 @@ void Ov001_OpenKeypad(void) {
             DrawPanelText(((void **)gOv001Keypad)[i], x, work.y, work.width, height, 2, 0x480, work.text);
             work.x += 32;
         }
-        sprite = func_ov001_0218a070(0, work.layout, 0);
+        sprite = Ov001_AllocSpriteBlock(0, work.layout, 0);
         work.firstLabel = label;
         (((void **)gOv001Keypad + i)[18]) = sprite;
     }

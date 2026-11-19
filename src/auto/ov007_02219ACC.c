@@ -220,7 +220,7 @@ void func_ov007_0221a160(void) {
     s32 Get3DSpriteLayerSize(s32);
     void AddToU16Array(M2C_UNK, u16, s32);
     void DrawMapPreview(M2C_UNK, M2C_UNK);
-    void func_020af04c(s32, s32, s32);
+    void CreateWallpaperSprite(s32, s32, s32);
     void InitTextTiles(s32, s32, s32);
     void LoadScenePanelPalette(s32);
     void func_020a9a30(s32, s32, s32, M2C_UNK);
@@ -311,7 +311,7 @@ void func_ov007_0221a160(void) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x42) = 0;
     DrawMapPreview(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
 
-    func_020af04c(3, 0xF, 6);
+    CreateWallpaperSprite(3, 0xF, 6);
     InitTextTiles(0, 0, 1);
     LoadScenePanelPalette(1);
 

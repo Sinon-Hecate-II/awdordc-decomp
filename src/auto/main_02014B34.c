@@ -68,7 +68,7 @@ s32 func_02014d6c(void) {
     s32 Mb_CopyImageRange(void *,u32,s32,u32);
     s32 func_0201874c(void *);
     void SystemHalt(void);
-    void func_02018764(void *,void (*)(void *),s32,s32);
+    void Mb_QueueTask(void *,void (*)(void *),s32,s32);
     s32 SendMatchPacket(s32,u16,s32);
     u8 packet[8];
     u32 output[4];
@@ -136,7 +136,7 @@ s32 func_02014d6c(void) {
                 M2C_FIELD(best,u32 *,0)=offset&~31;
                 M2C_FIELD(task,void **,16)=best;
                 M2C_FIELD(task,void **,20)=buffer;
-                func_02018764(task,Mb_LoadBlockTask,0,4);
+                Mb_QueueTask(task,Mb_LoadBlockTask,0,4);
             }
         }
         return 21;

@@ -184,7 +184,7 @@ void func_020d4ac8(s16 arg0) {
 
 int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x4c);if(cb)cb();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x50);if(cb)return cb();return (int)cb;}
 
-extern void func_020d4cf0(void);
+extern void CreateBattleMapViewSprites(void);
 extern void func_020a44d0(void);
 extern void func_020d33d8(void);
 extern void RefreshMapCursorCellCache(void);
@@ -204,7 +204,7 @@ int func_020d4b30() {
         callback();
     }
 
-    func_020d4cf0();
+    CreateBattleMapViewSprites();
     func_020a44d0();
     func_020d33d8();
     RefreshMapCursorCellCache();
@@ -280,15 +280,35 @@ void *func_020d4cd4(void) {
     return func_01ffa860(&data_0212bd84, 0xFF03);
 }
 
-void func_020d4cf0(void){extern M2C_UNK data_0212bd84,data_0212bdb4,data_0212bd9c,gBattleEndState; s32 func_01ffa810(s32);M2C_UNK CreateSpriteFromClass();void SetSpriteZ(M2C_UNK,s32);M2C_UNK p;if(func_01ffa810(0xff03))return;p=CreateSpriteFromClass(&data_0212bd84,4);SetSpriteZ(p,0xff03);func_020d4cc8((void*)p);SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4,6),0xff03);SetSpriteZ(CreateSpriteFromClass(&data_0212bd9c,10),0xff03);if(M2C_FIELD(&gBattleEndState,u8*,0))func_020852a8();}
+/* Create the battle map view's three sprite objects (the map itself and its two
+ * overlay layers) at the view's Z marker, unless one of them is already there.
+ * The map's object starts out not pending; the secondary engine is updated too
+ * once the battle has ended. */
+void CreateBattleMapViewSprites(void) {
+    s32 FindObjectByZ(s32);
+    s32 CreateSpriteFromClass(void *, s32);
+    void SetSpriteZ(s32, s32);
+    void func_020d4cc8(void *);
+    extern M2C_UNK data_0212bd84, data_0212bdb4, data_0212bd9c;
+    extern M2C_UNK gBattleEndState;
+    s32 map;
 
-int func_020d4d78(void){s32 func_01ffa810(s32);void *func_0209cce4(void (*)(void *),int);if(!func_01ffa810(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
+    if (FindObjectByZ(BATTLE_END_SPRITE_Z)) return;
+    map = CreateSpriteFromClass(&data_0212bd84, 4);
+    SetSpriteZ(map, BATTLE_END_SPRITE_Z);
+    func_020d4cc8((void *)map);
+    SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4, 6), BATTLE_END_SPRITE_Z);
+    SetSpriteZ(CreateSpriteFromClass(&data_0212bd9c, 10), BATTLE_END_SPRITE_Z);
+    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) func_020852a8();
+}
+
+int func_020d4d78(void){s32 FindObjectByZ(s32);void *func_0209cce4(void (*)(void *),int);if(!FindObjectByZ(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
 
 u8 func_020d4dac(void) {
-    s32 func_01ffa810(s32);
+    s32 FindObjectByZ(s32);
     u8 var_r0;
 
-    if (func_01ffa810(0xFF03) != 0) {
+    if (FindObjectByZ(0xFF03) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

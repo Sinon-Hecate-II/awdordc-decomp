@@ -22,7 +22,7 @@ void func_ov003_021f8c20(void *arg0) {
     void *func_02084e64();
     M2C_UNK PlaySoundEffect(s32);
     s32 GetSpriteAnimValue(void *);
-    u32 func_020d886c();
+    u32 GetMapCategory();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
     s32 temp_r7;
@@ -149,7 +149,7 @@ void func_ov003_021f8c20(void *arg0) {
     M2C_FIELD(temp_r5, s16 *, 0x2C) = temp_r1_4;
     M2C_FIELD(temp_r5, u16 *, 0x22) = (u16) M2C_FIELD(temp_r5, u16 *, 0x24);
     temp_r5_2 = M2C_FIELD(temp_r0, u8 *, 0xA);
-    temp_r0_7 = func_020d886c();
+    temp_r0_7 = GetMapCategory();
     switch (temp_r0_7) {                            /* switch 1 */
     case 28:                                        /* switch 1 */
         var_r2_2 = 7;
@@ -208,7 +208,7 @@ void func_ov003_021f8c20(void *arg0) {
     }
     M2C_FIELD(((var_r2_2 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4)), u8 *, 0xD) = temp_r5_2;
     temp_r5_3 = M2C_FIELD(temp_r0, u8 *, 0xB);
-    temp_r0_8 = func_020d886c();
+    temp_r0_8 = GetMapCategory();
     switch (temp_r0_8) {                            /* switch 2 */
     case 28:                                        /* switch 2 */
         var_r3 = 7;

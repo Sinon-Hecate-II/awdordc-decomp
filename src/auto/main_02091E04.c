@@ -429,9 +429,9 @@ s32 func_020925e4(void *arg0) {
 
 s32 func_02092608(void *arg0) {
 extern void **gCurrentMap;
-s32 func_020a6658(s32,s32,s32,s32);void RefreshMapView(s32);
+s32 CreateOwnedMapUnit(s32,s32,s32,s32);void RefreshMapView(s32);
 void *p=M2C_FIELD(arg0,void **,4);
-RefreshMapView(func_020a6658(M2C_FIELD(p,s16 *,8),M2C_FIELD(p,s16 *,10),M2C_FIELD(p,s32 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
+RefreshMapView(CreateOwnedMapUnit(M2C_FIELD(p,s16 *,8),M2C_FIELD(p,s16 *,10),M2C_FIELD(p,s32 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 

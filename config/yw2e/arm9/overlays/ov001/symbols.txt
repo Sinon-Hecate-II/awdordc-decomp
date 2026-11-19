@@ -728,7 +728,7 @@ func_ov001_02180cf8 kind:function(arm,size=0x2c) addr:0x02180cf8
 func_ov001_02180d24 kind:function(arm,size=0x20) addr:0x02180d24
 Ov001_OpenAccessPointMenu kind:function(arm,size=0x60) addr:0x02180d44
 Ov001_LoadAccessPointMenuGraphics kind:function(arm,size=0x110) addr:0x02180da4
-func_ov001_02180eb4 kind:function(arm,size=0x108) addr:0x02180eb4
+Ov001_InitSaveSlotSprites kind:function(arm,size=0x108) addr:0x02180eb4
 func_ov001_02180fbc kind:function(arm,size=0x54) addr:0x02180fbc
 func_ov001_02181010 kind:function(arm,size=0x3c) addr:0x02181010
 func_ov001_0218104c kind:function(arm,size=0x34) addr:0x0218104c
@@ -1036,7 +1036,7 @@ Ov001_FreeFile kind:function(arm,size=0x34) addr:0x02189ebc
 Ov001_FileHasSuffix kind:function(arm,size=0x58) addr:0x02189ef0
 Ov001_InitSpritePools kind:function(arm,size=0xd4) addr:0x02189f48
 func_ov001_0218a01c kind:function(arm,size=0x54) addr:0x0218a01c
-func_ov001_0218a070 kind:function(arm,size=0x15c) addr:0x0218a070
+Ov001_AllocSpriteBlock kind:function(arm,size=0x15c) addr:0x0218a070
 Ov001_DestroySprite kind:function(arm,size=0x80) addr:0x0218a1cc
 Ov001_GetSpriteObjEntry kind:function(arm,size=0xc) addr:0x0218a24c
 Ov001_GetSpriteEntryCount kind:function(arm,size=0x8) addr:0x0218a258
@@ -1257,7 +1257,7 @@ data_ov001_0218f99c kind:data(any) addr:0x0218f99c
 gMapListRowToState kind:data(any) addr:0x0218f9a4
 data_ov001_0218f9b0 kind:data(any) addr:0x0218f9b0
 data_ov001_0218f9bc kind:data(any) addr:0x0218f9bc
-data_ov001_0218f9c8 kind:data(any) addr:0x0218f9c8
+sOv001SaveSlotIconIds kind:data(any) addr:0x0218f9c8
 sOv001RegionIconTable kind:data(any) addr:0x0218f9cc
 gOv001Step11PalettePath kind:data(any) addr:0x0218f9d4
 sOv001MenuSpriteX kind:data(any) addr:0x0218f9ea

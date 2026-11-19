@@ -202,13 +202,13 @@ void UpdateCursorCellDisplayMode(void) {
 }
 
 void func_020d885c(s32 arg0) {
-    extern s32 data_02168f28;
-    data_02168f28 = arg0;
+    extern s32 gMapCategory;
+    gMapCategory = arg0;
 }
 
-s32 func_020d886c(void) {
-    extern s32 data_02168f28;
-    return data_02168f28;
+s32 GetMapCategory(void) {
+    extern s32 gMapCategory;
+    return gMapCategory;
 }
 
 void func_020d887c(void) {
@@ -374,11 +374,11 @@ void func_020d8b28(void) {
 
 void func_020d8b34(void) {
  extern M2C_UNK data_0212c260; extern M2C_UNK data_0212c264; extern M2C_UNK data_0215d9b8;
- s32 func_020d886c();
+ s32 GetMapCategory();
  void (*callback)(void);
  u16 value;
- callback=M2C_FIELD((u8 *)&data_0212c260+func_020d886c()*8,void (**)(void),0);
- value=M2C_FIELD((u8 *)&data_0212c264+func_020d886c()*8,u32 *,0);
+ callback=M2C_FIELD((u8 *)&data_0212c260+GetMapCategory()*8,void (**)(void),0);
+ value=M2C_FIELD((u8 *)&data_0212c264+GetMapCategory()*8,u32 *,0);
  M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~15)|(value&15);
  callback();
 }

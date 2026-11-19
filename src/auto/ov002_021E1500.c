@@ -193,6 +193,7 @@ next:
     } while(link);
 }
 
+#pragma optimization_level 3
 void func_ov002_021e1844(void *arg0) {
     void func_ov002_021e1780(void *);
     M2C_UNK func_ov002_021e299c(void *, M2C_UNK);
@@ -201,13 +202,13 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK func_ov002_021e26d4(void *);
     M2C_UNK func_ov002_021e2724(void *);
     M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
-    M2C_UNK Ov002_CreateEffectNode(void *, M2C_UNK, M2C_UNK);
+    void Ov002_CreateEffectNode(void *, s32, s32);
     M2C_UNK func_ov002_021e2928(void *, M2C_UNK);
     M2C_UNK PlaySlotVolumeSound(M2C_UNK);
     M2C_UNK PlaySlotVariantSound(M2C_UNK);
     M2C_UNK func_020afb34(M2C_UNK);
     M2C_UNK func_020afb94(M2C_UNK);
-    if (M2C_FIELD(arg0, void **, 4) == NULL) return;
+    if (M2C_FIELD(arg0, void **, 4) == NULL) goto recurse;
     M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x3c) + M2C_FIELD(arg0, s8 *, 0x44));
     M2C_FIELD(arg0, s16 *, 0x3e) = (s16)(M2C_FIELD(arg0, s16 *, 0x3e) + M2C_FIELD(arg0, s8 *, 0x45));
     {
@@ -224,33 +225,34 @@ void func_ov002_021e1844(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x30) == 0) {
         void *current;
         M2C_FIELD(arg0, s32 *, 0x24) = 0;
-    dispatch:
-        current = (void *)M2C_FIELD(arg0, void **, 0x1c);
-        if (M2C_FIELD(current, u8 *, 0) != 0) goto countdown;
+        current = M2C_FIELD(arg0, void **, 0x1c);
+        if (M2C_FIELD(current, u8 *, 0) == 0) do {
         switch (M2C_FIELD(current, u8 *, 1)) {
         case 0:
             goto recurse;
-        case 1: {
-            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
-            ((void (*)(void *))vt[0])(arg0);
+        case 1:
+            M2C_FIELD(arg0, void **, 0x1c) = M2C_FIELD(arg0, void **, 0x18);
+            goto nextCommand;
+        case 2: {
+            void **vt = *(void ***)arg0;
+            (*(void (*)(void *))vt[0])(arg0);
             func_ov002_021e1780(arg0);
             goto recurse;
         }
-        case 2: {
-            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
-            ((void (*)(void *))vt[1])(arg0);
-            break;
-        }
         case 3: {
-            void **vt = (void **)M2C_FIELD(arg0, void **, 0);
-            if (((s32 (*)(void *))vt[2])(arg0) == 1) goto recurse;
+            void **vt = *(void ***)arg0;
+            (*(void (*)(void *))vt[1])(arg0);
             break;
         }
         case 4: {
+            void **vt = *(void ***)arg0;
+            if (((s32 (*)(void *))vt[2])(arg0) != 1) break;
+            goto recurse;
+        }
+        case 6: {
             void *r2 = (void *)M2C_FIELD(arg0, void **, 0x18);
-            for (;;) {
+            if (M2C_FIELD(r2, u8 *, 1) != 0xff) do {
                 u8 o = M2C_FIELD(r2, u8 *, 1);
-                if (o == 0xff) break;
                 if (o == 0x05) {
                     s16 a = M2C_FIELD(current, s16 *, 0x8);
                     s16 b = M2C_FIELD(r2, s16 *, 0x8);
@@ -260,24 +262,11 @@ void func_ov002_021e1844(void *arg0) {
                     }
                 }
                 r2 = (void *)((char *)r2 + 0xc);
-            }
+            } while (M2C_FIELD(r2, u8 *, 1) != 0xff);
             break;
         }
-        case 5:
-            break;
-        case 6:
-            func_ov002_021e299c(arg0, 4);
-            break;
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-        case 14:
-        case 15:
         case 16:
+            func_ov002_021e299c(arg0, 4);
             break;
         case 17:
             func_ov002_021e299c(arg0, 6);
@@ -299,11 +288,11 @@ void func_ov002_021e1844(void *arg0) {
             M2C_FIELD(arg0, u8 *, 0x4f) = (u8)M2C_FIELD(current, s16 *, 0x8);
             break;
         case 23:
+        case 24:
+        case 25:
             M2C_FIELD(arg0, void **, 0x24) = (void **)current;
             M2C_FIELD(arg0, u8 *, 0x4b) = (u8)M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x1c), u8 *, 1);
             break;
-        case 24:
-        case 25:
         case 26:
             func_ov002_021e29f8(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8), (M2C_UNK)M2C_FIELD(current, s16 *, 0xa));
             break;
@@ -328,69 +317,52 @@ void func_ov002_021e1844(void *arg0) {
         case 33:
             PlaySlotVariantSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
-        case 34:
-            func_020afb34(M2C_FIELD(arg0, u8 *, 0x53));
-            break;
         case 35:
+            func_020afb34(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 36:
             func_020afb94(M2C_FIELD(arg0, u8 *, 0x53));
             break;
-        case 37:
-            M2C_FIELD(arg0, void **, 0x1c) = M2C_FIELD(arg0, void **, 0x18);
-            current = (void *)M2C_FIELD(arg0, void **, 0x1c);
-            if (M2C_FIELD(current, u8 *, 0) == 0) goto dispatch;
-            goto countdown;
         }
         {
-            u8 op2 = M2C_FIELD(current, u8 *, 1);
-            if (op2 >= 0x41 && op2 <= 0x4f) {
-                Ov002_CreateEffectNode(arg0, (M2C_UNK)(op2 - 0x41), (M2C_UNK)(-1));
-                M2C_FIELD(arg0, s32 *, 0x24) = 0;
+            u8 op = M2C_FIELD(M2C_FIELD(arg0, void **, 0x1c), u8 *, 1);
+            if (op >= 0x41 && op <= 0x4f) {
+                Ov002_CreateEffectNode(arg0, (u8)(op - 0x41), -1);
+                M2C_FIELD(arg0, void **, 0x24) = NULL;
             }
-            if (op2 >= 0x51 && op2 <= 0x5f) {
-                Ov002_CreateEffectNode(arg0, (M2C_UNK)(op2 - 0x51), (M2C_UNK)1);
-                M2C_FIELD(arg0, s32 *, 0x24) = 0;
+            op = M2C_FIELD(M2C_FIELD(arg0, void **, 0x1c), u8 *, 1);
+            if (op >= 0x51 && op <= 0x5f) {
+                Ov002_CreateEffectNode(arg0, (u8)(op - 0x51), 1);
+                M2C_FIELD(arg0, void **, 0x24) = NULL;
             }
+            current = M2C_FIELD(arg0, void **, 0x1c);
             if (M2C_FIELD(current, u8 *, 1) == 0xff) {
                 func_ov002_021e1780(arg0);
                 goto recurse;
             }
-            M2C_FIELD(arg0, void **, 0x1c) = (void **)((char *)current + 0xc);
-            current = (void *)M2C_FIELD(arg0, void **, 0x1c);
-            if (M2C_FIELD(current, u8 *, 0) == 0) goto dispatch;
-            goto countdown;
+            M2C_FIELD(arg0, void **, 0x1c) = (u8 *)current + 0xc;
         }
-    countdown:
+    nextCommand:
+        current = M2C_FIELD(arg0, void **, 0x1c);
+        } while (M2C_FIELD(current, u8 *, 0) == 0);
         M2C_FIELD(arg0, s32 *, 0x30) = M2C_FIELD(current, u8 *, 0);
-        {
-            s32 idx = M2C_FIELD(current, u8 *, 1);
-            char *base = (char *)(s32)M2C_FIELD(arg0, s32 *, 4);
-            s32 *table = (s32 *)M2C_FIELD(arg0, s32 *, 0x10);
-            M2C_FIELD(arg0, s32 *, 0x14) = (s32)(base + table[idx]);
-        }
-        M2C_FIELD(arg0, void **, 0x20) = (void **)current;
-        M2C_FIELD(arg0, void **, 0x1c) = (void **)((char *)current + 0xc);
-        M2C_FIELD(arg0, s32 *, 0x30) = M2C_FIELD(arg0, s32 *, 0x30) - 1;
-        M2C_FIELD(arg0, s32 *, 0x34) = M2C_FIELD(arg0, s32 *, 0x34) + 1;
+        M2C_FIELD(arg0, void **, 0x14) = (u8 *)M2C_FIELD(arg0, void **, 4) +
+            M2C_FIELD(arg0, s32 **, 0x10)[M2C_FIELD(M2C_FIELD(arg0, void **, 0x1c), u8 *, 1)];
+        M2C_FIELD(arg0, void **, 0x20) = M2C_FIELD(arg0, void **, 0x1c);
+        M2C_FIELD(arg0, void **, 0x1c) = (u8 *)M2C_FIELD(arg0, void **, 0x1c) + 0xc;
     }
+    M2C_FIELD(arg0, s32 *, 0x30)--;
+    M2C_FIELD(arg0, s32 *, 0x34)++;
 recurse:
     {
-        void **node = 0;
-        for (;;) {
-            if (node == 0) {
-                if (!M2C_FIELD(arg0, void **, 8)) node = 0;
-                else node = (void **)((char *)arg0 + 8);
-            } else {
-                node = (void **)M2C_FIELD(node, void **, 4);
-            }
-            if (node == 0) break;
-            func_ov002_021e1844((void *)M2C_FIELD(node, void **, 0));
+        void **node = NULL;
+        while ((node = node ? M2C_FIELD(node, void ***, 4) :
+                (M2C_FIELD(arg0, void **, 8) == NULL ? NULL : (void **)((u8 *)arg0 + 8))) != NULL) {
+            func_ov002_021e1844(*node);
         }
     }
-    return;
 }
-
+#pragma optimization_level reset
 void func_ov002_021e1c34(void *a,s32 b) {
     s32 x,y,z;
     u16 scale;

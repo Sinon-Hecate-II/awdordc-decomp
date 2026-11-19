@@ -130,7 +130,7 @@ void func_ov001_02180d24(void) {
 void Ov001_OpenAccessPointMenu(void) {
     void *Ov001_Alloc(s32, s32);
     void Ov001_LoadAccessPointMenuGraphics(void);
-    void func_ov001_02180eb4(void);
+    void Ov001_InitSaveSlotSprites(void);
     void Ov001_UpdateMenuCursor(void);
     void func_ov001_02180fbc(void);
     void Ov001_LoadObjLayoutBlock(s32);
@@ -145,7 +145,7 @@ void Ov001_OpenAccessPointMenu(void) {
     Ov001_LoadObjLayoutBlock(1);
     Ov001_ShowMessagePanel(0x2F, -1, 0);
     Ov001_OpenMenuForMode(0);
-    func_ov001_02180eb4();
+    Ov001_InitSaveSlotSprites();
     Ov001_UpdateMenuCursor();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180fbc);
 }
@@ -169,50 +169,50 @@ void Ov001_LoadAccessPointMenuGraphics(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_02180eb4(void) {
-    s32 Ov001_GetSaveSlotStatus(void);
-    M2C_UNK Ov001_CreateSprite(M2C_UNK, M2C_UNK, M2C_UNK);
+/* Create the ov001 menu's save-slot sprites: for each of the three slots the
+ * status icon of its top-row item (the empty-slot icon when the slot is erased)
+ * and, for a written slot, the item sprite of its middle-row cell. */
+void Ov001_InitSaveSlotSprites(void) {
+    s32 Ov001_GetSaveSlotStatus(s32);
+    s32 Ov001_CreateSprite(s32, s32, s32);
     void Ov001_MoveSpriteLayout(s32, s32, u16, u16);
     void Ov001_SetSpritePalette(s32, s32, s32);
-    extern M2C_UNK gOv001MenuRegion;
-    extern u16 sOv001MenuSpriteX[];
-    extern u8 data_ov001_0218f9c8[];
-    s32 i;
-    M2C_UNK idx;
-    M2C_UNK handle;
+    extern u8 sOv001SaveSlotIconIds[];
+    typedef struct { u16 x, y; } SpritePos;
+    s32 screen;
+    s32 status;
+    s32 slot;
+    s32 emptyIcon;
+    s32 layout;
+    s32 pos;
 
-    i = 0;
-    while (i < 3) {
-        idx = Ov001_GetSaveSlotStatus();
-        if (idx == 0xff) {
-            idx = 3;
-            goto second;
+    slot = 0;
+    screen = slot;
+    layout = -1;
+    emptyIcon = 3;
+    do {
+        status = Ov001_GetSaveSlotStatus(slot);
+        if (status == 0xff) {
+            status = emptyIcon;
+        } else {
+            s32 sprite = Ov001_CreateSprite(screen, 0x11, 1);
+            pos = slot + 3;
+            ((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot] = (void *)sprite;
+            Ov001_MoveSpriteLayout((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot],
+                                   layout, ((const SpritePos *)sOv001MenuSpriteX)[pos].x,
+                                   ((const SpritePos *)sOv001MenuSpriteX)[pos].y);
+            Ov001_SetSpritePalette((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot], layout, 3);
         }
-        handle = Ov001_CreateSprite(0, 0x11, 1);
-        M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x10) = handle;
-        Ov001_MoveSpriteLayout(
-            M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
-            -1,
-            sOv001MenuSpriteX[(i + 3) * 2],
-            sOv001MenuSpriteX[(i + 3) * 2 + 1]);
-        Ov001_SetSpritePalette(
-            M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x10),
-            -1, 3);
-
-second:
-        handle = Ov001_CreateSprite(0, data_ov001_0218f9c8[idx], 1);
-        M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, M2C_UNK *, 0x4) = handle;
-        Ov001_MoveSpriteLayout(
-            M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
-            -1,
-            sOv001MenuSpriteX[i * 2],
-            sOv001MenuSpriteX[i * 2 + 1]);
-        Ov001_SetSpritePalette(
-            M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + i * 4, s32 *, 0x4),
-            -1, 3);
-
-        i = i + 1;
-    }
+        {
+            s32 sprite = Ov001_CreateSprite(0, sOv001SaveSlotIconIds[status], 1);
+            ((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot] = (void *)sprite;
+            Ov001_MoveSpriteLayout((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot],
+                                   layout, ((const SpritePos *)sOv001MenuSpriteX)[slot].x,
+                                   ((const SpritePos *)sOv001MenuSpriteX)[slot].y);
+            Ov001_SetSpritePalette((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot], layout, 3);
+        }
+        slot++;
+    } while (slot < 3);
 }
 
 void func_ov001_02180fbc(void) {

@@ -253,7 +253,7 @@ block_23:
     }
     callback(callbackArg);
 }
-#pragma opt_common_subs reset
+#pragma scheduling on
 s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *gSaveDeviceState;
     extern M2C_UNK gSocketManager;
@@ -265,9 +265,6 @@ s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     void RunTransferTask(void *);
     void *p = &gSaveDeviceState;
     s32 state;
-    u32 oldf;
-    u32 nf;
-    s32 a4;
     s32 a6, a7, a8, a5;
 
     func_02000b9c(0x2000bc4);
@@ -275,17 +272,14 @@ s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     while (M2C_FIELD(p, u32 *, 0x114) & 0x4) {
         OS_SleepThread((u8 *)p + 0x10c);
     }
-    oldf = M2C_FIELD(p, u32 *, 0x114);
-    a4 = arg4;
+    M2C_FIELD(p, u32 *, 0x114) |= 4;
+    M2C_FIELD(p, s32 *, 0x38) = arg3;
+    M2C_FIELD(p, s32 *, 0x3c) = arg4;
+    OS_RestoreInterrupts(state);
     a6 = arg6;
     a7 = arg7;
     a8 = arg8;
     a5 = arg5;
-    nf = oldf | 0x4;
-    M2C_FIELD(p, u32 *, 0x114) = nf;
-    M2C_FIELD(p, s32 *, 0x38) = arg3;
-    M2C_FIELD(p, s32 *, 0x3c) = a4;
-    OS_RestoreInterrupts(state);
     M2C_FIELD(p, s32 *, 0x1c) = arg0;
     M2C_FIELD(p, s32 *, 0x20) = arg1;
     M2C_FIELD(p, s32 *, 0x24) = arg2;
@@ -300,7 +294,7 @@ s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
     RunTransferTask(p);
     return *M2C_FIELD(p, s32 **, 0) == 0;
 }
-
+#pragma scheduling reset
 s32 SaveDevice_GetState(void) {
     extern void *gSaveDeviceState;
     return M2C_FIELD(gSaveDeviceState, s32 *, 4);

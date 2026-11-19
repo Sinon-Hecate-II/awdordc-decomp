@@ -347,6 +347,11 @@ AddSprite((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,attr,
 }}gCur3DSpriteEngine=saved;
 }
 
+typedef struct SpriteFadeWord {
+    u32 other : 26;
+    u32 alpha : 6;
+} SpriteFadeWord;
+
 void UpdateSpriteFade(void *arg0) {
     void Show3DSprite(void *);
     void Hide3DSprite(void *);
@@ -379,20 +384,19 @@ void UpdateSpriteFade(void *arg0) {
     }
     if (M2C_FIELD(arg0, u8 *, 0x4b) == 0 && top2 == 1) {
         Show3DSprite(arg0);
+    }
         M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(M2C_FIELD(arg0, u8 *, 0x4b) + 1);
         visibility = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x4b), M2C_FIELD(arg0, u8 *, 0x4a));
         field40 = M2C_FIELD(arg0, u32 *, 0x40);
         field40 = (field40 & ~0xFC000000U) | ((u32)visibility << 26);
         M2C_FIELD(arg0, u32 *, 0x40) = field40;
-        if (top2 == 2) {
+        if ((((u32)M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) == 2) {
             field40 = M2C_FIELD(arg0, u32 *, 0x40);
             field40 = (field40 & ~0xFC000000U) | ((16U - (field40 >> 26)) << 26);
             M2C_FIELD(arg0, u32 *, 0x40) = field40;
         }
-    }
 
     previousEngine = gCur3DSpriteEngine;
-    category = (s32)(((u32)(unsigned char)M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29);
 
     for (i = 0; i < 2; i++) {
         if (i == 0) {
@@ -400,6 +404,8 @@ void UpdateSpriteFade(void *arg0) {
         } else {
             chosen = g3DSpriteEngineSub;
         }
+        gCur3DSpriteEngine = chosen;
+        category = (s32)(((u32)M2C_FIELD(arg0, u8 *, 0x48) << 28) >> 29);
         if (category == 0 && chosen != g3DSpriteEngineMain) {
             continue;
         }
@@ -410,7 +416,6 @@ void UpdateSpriteFade(void *arg0) {
             continue;
         }
 
-        gCur3DSpriteEngine = chosen;
         engine = M2C_FIELD(chosen, void **, 0);
         flags0 = (u16 *)((u8 *)engine + 0x12);
         *flags0 = (u16)(*flags0 & ~0x1);
@@ -451,16 +456,16 @@ void UpdateSpriteFade(void *arg0) {
         flags9 = (u16 *)((u8 *)engine + 0x12);
         *flags9 = (u16)(*flags9 & ~0x1000);
 
-        engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
-        flags10 = (u16 *)((u8 *)engine + 0x12);
-        *flags10 = (u16)((*flags10 & ~0xC0) | 0x40);
-
         {
-            int top6;
-            top6 = (int)(M2C_FIELD(arg0, u32 *, 0x40) >> 26);
+            int top6 = (int)(M2C_FIELD(arg0, u32 *, 0x40) >> 26);
+            int complement = 16 - top6;
+            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+            flags10 = (u16 *)((u8 *)engine + 0x12);
+            *flags10 = (u16)((*flags10 & ~0xC0) | 0x40);
             engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
             M2C_FIELD(engine, u8 *, 0x51) = (u8)top6;
-            M2C_FIELD(engine, u8 *, 0x52) = (u8)(16 - top6);
+            engine = M2C_FIELD(gCur3DSpriteEngine, void **, 0);
+            M2C_FIELD(engine, u8 *, 0x52) = (u8)complement;
         }
     }
 
@@ -468,10 +473,10 @@ void UpdateSpriteFade(void *arg0) {
     if ((u8)M2C_FIELD(arg0, u8 *, 0x4b) < (u8)M2C_FIELD(arg0, u8 *, 0x4a)) {
         return;
     }
-    if (top2 == 2) {
+    if ((((u32)M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) == 2) {
         Hide3DSprite(arg0);
-        M2C_FIELD(arg0, u8 *, 0x48) = (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30);
     }
+        M2C_FIELD(arg0, u8 *, 0x48) = (u8)(M2C_FIELD(arg0, u8 *, 0x48) & ~0x30);
 }
 
 /* Animate a shown 3D sprite actor's slide: count the frames of the current

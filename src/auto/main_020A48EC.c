@@ -154,9 +154,9 @@ ClearSelectionQueue();
 }
 #pragma opt_strength_reduction reset
 void SelectLineOrderTargets(Unk020ABaseEntry *a){
-extern s32 *gCurrentMap;void SelectMapLayer(s32);void FillMapLayer(s32);void func_01ffb80c(s32,s32,s32,s32);
+extern s32 *gCurrentMap;void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapLine(s32,s32,s32,s32);
 s32 found=0,x,y,p;u8 id;
-SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);func_01ffb80c(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
+SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);FillMapLine(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
 for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
 p=*gCurrentMap;
@@ -190,7 +190,7 @@ xx++;}while(xx<=right);}}
 /* Paints the area an order targets on the map score layer, by order type: a
    radius-5 diamond centred on the order, a line of length top, or a point. */
 s32 DrawOrderTargetArea(Unk020AEntry *order,s8 color,u8 extra) {
-void func_01ffb734(s32,s32,s32,s8);void func_01ffb80c(s32,s32,s32,s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
+void func_01ffb734(s32,s32,s32,s8);void FillMapLine(s32,s32,s32,s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 GetOrderCenterOffsetX(void);s32 GetOrderCenterOffsetY(void);extern s32 *gCurrentMap;
 Unk020ABaseEntry *base=(Unk020ABaseEntry *)order;
 if(!IsMapOrderActive(order))return 0;
 switch(order->type) {
@@ -198,11 +198,11 @@ case 4: {
 s32 centerX=GetOrderCenterOffsetX();s32 centerY=GetOrderCenterOffsetY();
 func_01ffb734(base->x+centerX,base->y+centerY,5,color);return 1;
 }
-case 6:func_01ffb80c(base->x,base->y,order->top,color);return 1;
+case 6:FillMapLine(base->x,base->y,order->top,color);return 1;
 case 7: {
 s32 dir=order->top;
 if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)>=(s32)base->player) dir=(dir+1)%3;
-func_01ffb80c(base->x,base->y,dir,color);return 1;
+FillMapLine(base->x,base->y,dir,color);return 1;
 }
 case 5:FillMapColumn(base->x,base->y,order->top,color,extra);return 1;
 default:return 0;

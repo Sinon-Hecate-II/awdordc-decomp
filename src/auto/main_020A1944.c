@@ -367,7 +367,7 @@ s32 GetPlayerArmyId(s32 arg0) {
     return M2C_FIELD(&data_0215c38b, u8 *, arg0);
 }
 
-u8 func_020a2380(s32 arg0) {
+u8 GetPlayerOwnerGroup(s32 arg0) {
     extern M2C_UNK data_0215c390;
     return M2C_FIELD(&data_0215c390, u8 *, arg0);
 }

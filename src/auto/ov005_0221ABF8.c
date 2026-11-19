@@ -355,16 +355,23 @@ void Tick3DSpriteAnimation(void *animState) {
     Sprite_ResumeAnimation(animState);
 }
 
-void func_ov005_0221b854(void *animState) {
+/* Advance the winning CO's victory screen-split transition.  It only runs when
+ * the player won and the current slot holds a CO (otherwise the screen object is
+ * ended instead).  On its first frame it selects the mode-1 3D sprite view (the
+ * bank's mode-1 flag plus the OAM attribute priority and layer-enable bits), then
+ * eases the bank's grid split open, rowsAbove rising from 0 to RESULT_SPLIT_ROWS
+ * over RESULT_SPLIT_FRAMES frames; on the last frame it forces the split shut,
+ * clears the blend and resumes the object. */
+void TickCoVictorySplit(void *animState) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    void func_01ffa730(void *);
+    void Sprite_ResumeAnimationRepeat(void *);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     s32 DidPlayerWin(void);
     extern M2C_UNK gCoState;
     extern u16 gCoPlayerSlots[];
     extern void *gCur3DSpriteEngine;
     u16 *volatile bankFlags;
-    u16 *volatile blendMode;
+    u16 *volatile oamC0;
     u16 *volatile oam1;
     u16 *volatile oam2;
     u16 *volatile oam4;
@@ -377,28 +384,28 @@ void func_ov005_0221b854(void *animState) {
     u16 *volatile oam800;
     u16 *volatile oam1000;
     u16 *volatile oam2000;
-    u16 *volatile blendReset;
-    s32 enabled;
-    s32 t;
+    u16 *volatile oamC0Reset;
+    s32 showSplit;
+    s32 rowsAbove;
 
     if (!DidPlayerWin()) {
-        enabled = 0;
+        showSplit = 0;
     } else if (*(u16 *)((u8 *)gCoPlayerSlots + (s16)M2C_FIELD(&gCoState, u8 *, 4) * (s16)12) == 0) {
-        enabled = 0;
+        showSplit = 0;
     } else {
-        enabled = 1;
+        showSplit = 1;
     }
-    if (!enabled) {
-        func_01ffa730(animState);
+    if (!showSplit) {
+        Sprite_ResumeAnimationRepeat(animState);
         return;
     }
 
-    M2C_FIELD(animState, s32 *, 0x34) += 1;
-    if (M2C_FIELD(animState, s32 *, 0x34) == 1) {
+    M2C_FIELD(animState, s32 *, RESULT_SPLIT_ELAPSED) += 1;
+    if (M2C_FIELD(animState, s32 *, RESULT_SPLIT_ELAPSED) == 1) {
         bankFlags = *(u16 **)gCur3DSpriteEngine;
-        *bankFlags = *bankFlags | 0x20;
-        blendMode = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
-        *blendMode = (*blendMode & ~0xc0) | 0x40;
+        *bankFlags = *bankFlags | DS3D_BANK_MODE1;
+        oamC0 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+        *oamC0 = (*oamC0 & ~DS3D_BANK_OAMATTR_PRIORITY) | 0x40;
         oam1 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *oam1 = *oam1 & ~0x1;
         oam2 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
@@ -425,18 +432,18 @@ void func_ov005_0221b854(void *animState) {
         *oam2000 = *oam2000 & ~0x2000;
     }
 
-    t = EaseInterpolate(0, 0, 0x10, M2C_FIELD(animState, s32 *, 0x34), 0x10);
-    DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = t;
-    DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = 0x10 - t;
-    if (M2C_FIELD(animState, s32 *, 0x34) != 0x10)
+    rowsAbove = EaseInterpolate(0, 0, RESULT_SPLIT_ROWS, M2C_FIELD(animState, s32 *, RESULT_SPLIT_ELAPSED), RESULT_SPLIT_FRAMES);
+    DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = rowsAbove;
+    DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = RESULT_SPLIT_ROWS - rowsAbove;
+    if (M2C_FIELD(animState, s32 *, RESULT_SPLIT_ELAPSED) != RESULT_SPLIT_FRAMES)
         return;
 
-    blendReset = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
-    *blendReset = *blendReset & ~0xc0;
+    oamC0Reset = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
+    *oamC0Reset = *oamC0Reset & ~DS3D_BANK_OAMATTR_PRIORITY;
     DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = 0;
     DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = 0;
     DS3D_BANK(gCur3DSpriteEngine)->filler_53 = 0;
-    M2C_FIELD(animState, s32 *, 0x34) = 0;
+    M2C_FIELD(animState, s32 *, RESULT_SPLIT_ELAPSED) = 0;
     Sprite_ResumeAnimation(animState);
 }
 

@@ -306,7 +306,7 @@ void func_020d1f2c(void) {
     s32 func_020a2390(s32);
     void func_020a3550(s32, s32);
     s32 GetPlayerArmyId(s32);
-    s32 func_020a2380(s32);
+    s32 GetPlayerOwnerGroup(s32);
     s32 IsCampaignBattleRules(void);
     void func_020d2168(void);
     void func_020d1dc8(void);
@@ -356,7 +356,7 @@ void func_020d1f2c(void) {
             r10[0x26] = (u8)GetPlayerArmyId(r8);
 
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
-            r10[0x32] = (u8)func_020a2380(r8);
+            r10[0x32] = (u8)GetPlayerOwnerGroup(r8);
 
             if (IsCampaignBattleRules() != 0) {
                 ((u8 *)*gCurrentMap)[r9 + 0x67ce] = 2;

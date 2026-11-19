@@ -288,14 +288,14 @@ valid:
  * carried kind must have a legal direction there, and the tile must be allowed for a
  * carrier of movement type 7 and enterable by the carried unit's own movement type. */
 s32 CanDropCarriedUnit(s32 arg0,s32 x,s32 y,s32 slot){
-extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
+extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 gUnitProductionTerrain[];extern M2C_UNK gMovementCostTable;
 s32 GetUnitMoveDirections(s32,s32,s32);
 u8 *carrier=(u8 *)arg0,*map,*cargoUnit,*cargoIds=carrier+12;s32 kind,tile;s16 n;
 if(!GetUnitMoveDirections(x,y,cargoIds[slot]))return 0;
 map=*gCurrentMap;
 cargoUnit=map+MAP_UNIT_RECORDS+(s16)cargoIds[slot]*(s16)MAP_UNIT_STRIDE;
 if(gMovementTypeTable[((u32)(carrier[0]<<26)>>26)*UNIT_KIND_STATS_SIZE]==7){
-if(!data_ov000_021b54a0[M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 0;
+if(!gUnitProductionTerrain[M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK])return 0;
 }
 if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(cargoUnit[0]<<26)>>26)*UNIT_KIND_STATS_SIZE]*32,s8 *,M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)==-1)return 0;
 return 1;
@@ -311,7 +311,7 @@ void CanDropSecondCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 u8 func_020ba790(s32 x,s32 y){
-extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 data_ov000_021b54a0[];extern M2C_UNK gMovementCostTable;
+extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 gUnitProductionTerrain[];extern M2C_UNK gMovementCostTable;
 s32 func_020a6fe4(void *,s32);
 u8 *base=*gCurrentMap,*units=base+0x59a4;s32 offset,kind,tile;u8 *selected;u8 id;
 id=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)];offset=(s16)id*(s16)14;
@@ -321,7 +321,7 @@ if(!func_020a6fe4(units+offset,(u32)(M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *
 base=*gCurrentMap;selected=M2C_FIELD(base,u8 **,0x52d0);
 if(selected[1]==x&&selected[2]==y)return 0;
 kind=gMovementTypeTable[((u32)(units[offset]<<26)>>26)*112];
-if(kind==7){if(!data_ov000_021b54a0[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;}
+if(kind==7){if(!gUnitProductionTerrain[M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31])return 0;}
 tile=M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,0x3758)),u8 *,0x1420)&31;
 if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+kind*32,s8 *,tile)==-1)return 0;
 return M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;

@@ -182,7 +182,7 @@ void Sound_ReleaseChannel(void *arg0) {
     Sound_StopVoices();
 }
 
-void func_0202dfcc(void *arg0, s32 arg1) {
+void CreateSoundWorkerTask(void *arg0, s32 arg1) {
     M2C_UNK TaskCreate(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
     M2C_UNK InitMutex(void *);
@@ -346,7 +346,7 @@ void Sound_RequestNextSegment(void *player) {
     u16 oldRate;
     s32 segment[4];
 
-    segment[2] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SEGMENT_END);
+    segment[2] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SLOT_INDEX);
     segment[3] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID);
     segment[0] = M2C_FIELD(player, s32 *, SOUND_HANDLE_SOUND_ID);
     segment[1] = 0;

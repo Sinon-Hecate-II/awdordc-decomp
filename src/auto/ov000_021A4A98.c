@@ -1,6 +1,7 @@
 /* 5 functions from 0x021A4A98 to 0x021A58C8 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 extern void **gCurrentMap;
 extern u8 gUnitKindFlags[],gUnitKindStats[];
 #define MAP (*gCurrentMap)
@@ -12,114 +13,101 @@ static inline s32 UnitOwnerA4e08(u8 *p){return p?(UnitIndexA4e08(p)>>6)+1:0;}
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_ov000_021a4a98(u8 arg0, u8 arg1) {
+/* Evaluate whether the target group reached from candidate tile (candidateX,
+ * candidateY) is worth capturing: flood its tank movement range and the ring
+ * around it, reject impact terrain, bases of another team and enemy foot
+ * defenders, then return the current player's foot units there plus one, with
+ * bit 8 set when the group also holds a kind-24/25 production site. */
+s32 EvaluateAiTargetGroupForCapture(u8 candidateX, u8 candidateY) {
     void FloodFillUnitRange(s32, s32, s32, s32, s32);
     void MarkAdjacentCells(s8);
     s32 IsUnitOnCurrentTeam(s32);
     s32 GetTerrainPropertyFlagsAt(s32, s32);
-    s32 func_ov000_021a43c4(void);
+    s32 HasAiOptionalUnitBuildFlag(void);
     s32 CountPlayerUnitsOfKindTotal(s32);
-    s32 IsCurrentPlayerUnit(s32);
-    u8 func_ov000_021a9084(s32);
-    s32 func_ov000_021a90a8(s32, s32, s32);
+    s32 IsCurrentPlayerUnit(s16);
+    u8 IsUnitProductionTerrain(u8);
+    s32 IsCellOwnedByOtherTeam(s16, s16, s16);
     u8 IsFootUnitKind(s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     extern u8 gUnitKindStats[];
 
-    s32 count = 0;
-    s32 flag = 0;
-    s32 outer = 0;
-    s32 idx = 0;
-    s32 unit = 0;
-    s32 special = 0;
-    void *inner = (void *)0;
+    s32 enemyProperty = 0;
+    s32 footUnits = 0;
+    s32 productionSite = 0;
+    s32 y, x;
+    u32 unitId;
+    void *map;
+    u16 rowOffset;
+    u8 terrainKind;
+    u32 unitKind;
+    s32 result;
 
-    u16 rowOff;
-    u8 terrain;
-    u8 kind;
-    s32 ret;
+    FloodFillUnitRange(candidateX, candidateY, 7, MAP_GRID_NO_UNIT_MAX, 0);
+    MarkAdjacentCells(AI_THREAT_RING_FIRST);
 
-    FloodFillUnitRange(arg0, arg1, 7, 0x6e, 0);
-    MarkAdjacentCells(0x6f);
-
-    inner = *gCurrentMap;
-    if (*(s16 *)((u8 *)inner + 0x5146) <= 0) goto tail;
-    if (*(s16 *)((u8 *)inner + 0x5144) <= 0) goto tail;
-
-    for (outer = 0; outer < *(s16 *)((u8 *)inner + 0x5146); outer++) {
-        for (idx = 0; idx < *(s16 *)((u8 *)inner + 0x5144); idx++) {
-            void *grid = *(void **)((u8 *)inner + outer * 4 + 0x52e8);
-            s8 cellVal = ((s8 *)grid)[idx];
-            if (cellVal < 0) continue;
-            rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
-            terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
-            if (terrain == 0x1c) return 0;
-            if (cellVal > 0x6e) {
-                if (((u8 *)inner + idx + rowOff)[0] == 0) continue;
-                IsUnitOnCurrentTeam(((u8 *)inner + idx + rowOff)[0]);
+    map = *gCurrentMap;
+    for (y = 0; y < M2C_FIELD(map,u16*,MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(map,u16*,MAP_WIDTH); x++, map = MAP) {
+            void *grid = *(void **)((u8 *)map + y * 4 + MAP_GRID);
+            s8 rangeValue = ((s8 *)grid)[x];
+            if (rangeValue < 0) continue;
+            rowOffset = *(u16 *)((u8 *)map + y * 2 + MAP_ROW_OFFSETS);
+            terrainKind = ((u8 *)map + x + rowOffset)[MAP_CELL_TERRAIN] & MAP_TERRAIN_KIND_MASK;
+            if (terrainKind == MAP_TERRAIN_IMPACT) return 0;
+            if (rangeValue > MAP_GRID_NO_UNIT_MAX) {
+                unitId = ((u8 *)map + x + rowOffset)[MAP_CELL_VISIBLE_UNIT];
+                if (unitId != 0) IsUnitOnCurrentTeam(unitId);
                 continue;
             }
-            if (terrain == 0x11) {
-                s16 sv = *(s16 *)((u8 *)inner + 0x52a8);
-                if (func_ov000_021a90a8(sv, idx, outer) == 1) return 0;
+            if (terrainKind == MAP_TERRAIN_BASE) {
+                s16 groupBase = *(s16 *)((u8 *)map + MAP_UNIT_GROUP_BASE);
+                if (IsCellOwnedByOtherTeam(groupBase, x, y) == 1) return 0;
             }
-            if (flag == 0) {
-                inner = *gCurrentMap;
-                rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
-                terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
-                if (terrain == 0x13) {
-                    if (CountPlayerUnitsOfKindTotal(0x18) != 0) flag = 1;
-                    else if (func_ov000_021a43c4() == 1) flag = 1;
+            if (productionSite == 0) {
+                terrainKind = CELL(x, y, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;
+                if (terrainKind == MAP_TERRAIN_PORT) {
+                    if (CountPlayerUnitsOfKindTotal(0x18) != 0) productionSite = 1;
+                    else if (HasAiOptionalUnitBuildFlag() == 1) productionSite = 1;
                 }
-                if (flag == 0) {
-                    rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
-                    terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
-                    if (func_ov000_021a9084(terrain) != 0) {
-                        rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
-                        terrain = ((u8 *)inner + idx + rowOff)[0x1420] & 0x1f;
-                        if (terrain != 0x13 && CountPlayerUnitsOfKindTotal(0x18) != 0) flag = 1;
-                        if (flag == 0) {
-                            void *gp = gAiCommandState;
-                            u16 t = ((u16 *)gp)[5];
-                            if ((((t >> 9) & 7) & 4) && func_ov000_021a43c4() == 1) flag = 1;
-                        }
-                    }
+                if (productionSite == 0 && IsUnitProductionTerrain(CELL(x, y, MAP_CELL_TERRAIN)) != 0 &&
+                    (CELL(x, y, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) != MAP_TERRAIN_PORT) {
+                    if (CountPlayerUnitsOfKindTotal(0x18) != 0) productionSite = 1;
+                    else if ((((u32)M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_MODE) << 20 >> 29) & 4) &&
+                             HasAiOptionalUnitBuildFlag() == 1) productionSite = 1;
                 }
             }
-            inner = *gCurrentMap;
-            rowOff = *(u16 *)((u8 *)inner + outer * 2 + 0x3758);
-            unit = ((u8 *)inner + idx)[rowOff];
-            if (unit == 0) continue;
-            if (GetTerrainPropertyFlagsAt(idx, outer) == 1) special = 1;
-            if (IsUnitOnCurrentTeam(unit) == 0) {
-                kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
+            unitId = CELL(x, y, MAP_CELL_VISIBLE_UNIT);
+            if (unitId == 0) continue;
+            if (GetTerrainPropertyFlagsAt(x, y) == 1) enemyProperty = 1;
+            if (IsUnitOnCurrentTeam(unitId) == 0) {
+                unitKind = KIND((u8 *)MAP + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE);
                 {
-                    u8 *info = gUnitKindStats + kind * 0x70;
-                    if ((info[0x13] & 7) != 0 && IsFootUnitKind(kind) != 0) return 0;
+                    u8 *kindStats = gUnitKindStats + unitKind * UNIT_KIND_STATS_SIZE;
+                    if ((kindStats[UNIT_KIND_STATS_FLAGS] & 7) != 0 && IsFootUnitKind(unitKind) != 0) return 0;
                 }
             } else {
-                if (IsCurrentPlayerUnit(unit) == 1) {
-                    kind = *(u8 *)((u8 *)inner + 0x59a4 + unit * 0xe) & 0x3f;
-                    if (IsFootUnitKind(kind) != 0) count++;
+                if (IsCurrentPlayerUnit(unitId) == 1) {
+                    unitKind = KIND((u8 *)MAP + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE);
+                    if (IsFootUnitKind(unitKind) != 0) footUnits++;
                 }
             }
         }
     }
 
-tail:
-    if (special == 0) {
-        if (flag != 0) return 0x101;
+    if (enemyProperty != 0) {
+        if (productionSite != 0) return AI_CAPTURE_EVAL_PRODUCTION_SITE | 1;
         return 1;
     }
-    ret = count + 1;
-    if (flag != 0) ret |= 0x100;
-    return ret;
+    result = footUnits + 1;
+    if (productionSite != 0) result |= AI_CAPTURE_EVAL_PRODUCTION_SITE;
+    return result;
 }
 #pragma pop
 
 s32 func_ov000_021a4dc4(void) {
-    s32 func_ov000_021a4a98(u8, u8);
+    s32 EvaluateAiTargetGroupForCapture(u8, u8);
     s32 func_ov000_021a67f0(s32);
     extern u8 gAiTargetCandidates;
     extern u8 data_ov000_021e00ad;
@@ -127,7 +115,7 @@ s32 func_ov000_021a4dc4(void) {
     s32 offset;
     if (index == -1) return 0;
     offset = index * 12;
-    return func_ov000_021a4a98((&gAiTargetCandidates)[offset], (&data_ov000_021e00ad)[offset]);
+    return EvaluateAiTargetGroupForCapture((&gAiTargetCandidates)[offset], (&data_ov000_021e00ad)[offset]);
 }
 
 #pragma push

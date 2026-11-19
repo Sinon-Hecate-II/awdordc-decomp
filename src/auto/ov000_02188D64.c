@@ -61,7 +61,7 @@ void SelectCarriedUnitAction(void) {
 s32 FindAdjacentPassableTile(s32 x,s32 y,s16 *out) {
 extern void **gCurrentMap;
 extern u8 gUnitKindStats[];
-s32 func_ov000_021a9084(s32); s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
+s32 IsUnitProductionTerrain(s32); s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
 s32 row; s32 negDy,minX,maxY;
 register s32 unitId,dy,col,rowIndex,maxX;
 s32 dist,kind,cost,zero,adx;
@@ -89,7 +89,7 @@ if(dist>=1&&dist<=1){
 base=*gCurrentMap;
 cost=M2C_FIELD(M2C_FIELD(base+rowIndex*4,s8**,MAP_GRID),s8*,col);
 if(cost>=0&&cost<=110){
-if(func_ov000_021a9084(M2C_FIELD(base+col+M2C_FIELD(base+rowIndex*2,u16*,MAP_ROW_OFFSETS),u8*,MAP_CELL_TERRAIN))){
+if(IsUnitProductionTerrain(M2C_FIELD(base+col+M2C_FIELD(base+rowIndex*2,u16*,MAP_ROW_OFFSETS),u8*,MAP_CELL_TERRAIN))){
 base=*gCurrentMap;
 unitId=M2C_FIELD(base+col,u8*,M2C_FIELD(base+rowIndex*2,u16*,MAP_ROW_OFFSETS));
 if(unitId){
@@ -122,7 +122,7 @@ extern u8 *gAiCommandState;
 extern u8 gUnitKindStats[];
 s32 GetPlayerArmyVariant(s32); s32 ComputeUnitMoveRange(s32,s32,s32,s32);
 void SelectMapLayer(void *); void BuildUnitMoveRange(void *);
-s32 func_ov000_021a9084(s32); s32 IsAllyUnitAtCell(s16,s16);
+s32 IsUnitProductionTerrain(s32); s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16); s32 GetUnitAttackClass(s32);
 register s32 sy,bestScore,score,y,x,bestCost;
 s32 bestX,bestY,kind,terrain,attr;
@@ -148,7 +148,7 @@ while(y<M2C_FIELD(map,u16*,0x5146)){
    costRow=M2C_FIELD((u8*)map+y*4,s8**,0x52e8);
    if(costRow[x]<0)goto nextTile;
    if(M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,0x3758),s8*,0x2338)<0)goto nextTile;
-   if(!func_ov000_021a9084(M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,0x3758),u8*,0x1420)))goto nextTile;
+   if(!IsUnitProductionTerrain(M2C_FIELD((u8*)map+x+M2C_FIELD((u8*)map+y*2,u16*,0x3758),u8*,0x1420)))goto nextTile;
    if(IsAllyUnitAtCell((s16)x,sy)){
     map=*gCurrentMap;
     id=M2C_FIELD((u8*)map+x,u8*,M2C_FIELD((u8*)map+y*2,u16*,0x3758));

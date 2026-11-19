@@ -298,62 +298,61 @@ void func_0203181c(s32 arg0, u8 *dst) {
     func_0203197c((u8 *)arg0 + 0xC, dst);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
     extern u8 data_020ea8ef[];
     extern signed char *data_020fb23c[];
     M2C_UNK func_02031b98(M2C_UNK, u8 *, s32, s32);
     u8 buf[0x18];
-    u8 *p;
-    signed char *key;
+    u8 *p = (u8 *)arg1;
     u8 *src;
     u8 *dst;
-    s32 n;
+    u32 n;
     s32 i;
-    s32 pos;
-    s32 next;
+    u8 cursor;
+    u8 pos;
     s32 saved;
     s32 save;
-    u8 val;
-
-    p = (u8 *)arg1;
 
     src = (u8 *)data_020ea8ef;
     dst = buf;
-    for (n = 0xC; n > 0; n--) {
-        *dst++ = *src++;
-        *dst++ = *src++;
-    }
+    n = 12;
+    do {
+        u8 a = src[0];
+        u8 b = src[1];
+        src += 2;
+        dst[0] = a;
+        dst[1] = b;
+        dst += 2;
+    } while (--n != 0);
 
     func_02031b98(arg0, p, 0x20, 0x18);
 
-    key = (signed char *)data_020fb23c[2];
     for (i = 0; i < 0x18; i++) {
-        p[i] = (u8)(p[i] ^ key[i]);
+        p[i] = (u8)(p[i] ^ data_020fb23c[2][i]);
     }
 
     for (i = 0; i < 0x18; i++) {
-        val = buf[i];
-        if (val == 0xFF) {
-            continue;
-        }
-        saved = (s32)p[i];
-        pos = i;
-        do {
-            next = buf[pos];
-            save = (s32)p[next];
-            p[next] = (u8)saved;
-            buf[pos] = 0xFF;
+        cursor = (u8)i;
+        pos = cursor;
+        saved = p[i];
+        if (buf[cursor] != 0xFF) do {
+            u8 *entry = &buf[pos];
+            pos = buf[pos];
+            save = p[pos];
+            p[buf[cursor]] = (u8)saved;
+            cursor = pos;
+            *entry = 0xFF;
             saved = save;
-            pos = next;
         } while (buf[pos] != 0xFF);
     }
 
-    key = (signed char *)data_020fb23c[0];
     for (i = 0; i < 0x18; i++) {
-        p[i] = (u8)(p[i] ^ key[i]);
+        p[i] = (u8)(p[i] ^ data_020fb23c[0][i]);
     }
 }
-
+#pragma pop
 void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
     M2C_UNK func_0200c454(M2C_UNK *);
     M2C_UNK func_0200c494(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -540,7 +539,7 @@ s32 func_02031e14(u32 *arg0) {
     return 0x1FFFFF & ((u32) *arg0 >> 0xB);
 }
 
-s32 func_02031e28(void) {
+s32 GetPlayerRecordKind(void) {
     s32 func_02031e14();
     return func_02031e14() & 3;
 }
@@ -548,7 +547,7 @@ s32 func_02031e28(void) {
 s32 IsPlayerRecordJoined(M2C_UNK arg0) {
     s32 var_r0;
 
-    if (func_02031e28() == 3) {
+    if (GetPlayerRecordKind() == 3) {
         if ((func_02031e14((u32 *)arg0) & 4) == 4) {
             var_r0 = 1;
         } else {
@@ -560,8 +559,8 @@ s32 IsPlayerRecordJoined(M2C_UNK arg0) {
 }
 
 void GetPlayerRecordType(void) {
-    M2C_UNK func_02031e28();
-    func_02031e28();
+    M2C_UNK GetPlayerRecordKind();
+    GetPlayerRecordKind();
 }
 
 #pragma optimization_level 2
@@ -577,12 +576,12 @@ void func_02031e94(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void MarkPlayerRecordJoined(M2C_UNK arg0) {
-    s32 func_02031e28();
+    s32 GetPlayerRecordKind();
     s32 func_02031e14(u32 *);
     void func_02031e7c(M2C_UNK, M2C_UNK);
     s32 res;
 
-    if (func_02031e28() != 3) {
+    if (GetPlayerRecordKind() != 3) {
         return;
     }
     res = func_02031e14((u32 *) arg0) | 4;
@@ -590,7 +589,7 @@ void MarkPlayerRecordJoined(M2C_UNK arg0) {
 }
 
 void func_02031ee4(M2C_UNK arg0) {
-    if (func_02031e28() != 3) {
+    if (GetPlayerRecordKind() != 3) {
         return;
     }
     func_02031e7c(arg0, func_02031e14((u32 *)arg0) & ~4);

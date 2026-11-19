@@ -125,7 +125,7 @@ s32 IsValidMoveCell(s16,s16);
 s32 func_ov000_021a8be8(s16,s16,s32);
 s32 IsAllyUnitAtCell(s16,s16);
 s32 CellMoveScore(s32,s32,s32,s32);
-s32 func_ov000_021a90a8(u8,s16,s16);
+s32 IsCellOwnedByOtherTeam(u8,s16,s16);
 s32 DestinationScore(s32,s32,s32,s32);
 s32 bestX,bestY,specialX,specialY,bestD,specialD;
 s32 bestC,bestV,specialC,x,specialV,score,y,cost,cellCost;u8 *unit;
@@ -155,7 +155,7 @@ if(!IsValidMoveCell((s16)x,(s16)y))continue;
 score=CellMoveScore(x,y,1,2);
 if(((UnitKind0218 *)*(void **)((u8 *)*gCurrentMap+0x52d0))->kind==22 &&
 *(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338)<=specialC &&
-func_ov000_021a90a8(*(u8 *)((u8 *)*gCurrentMap+0x52d4),(s16)x,(s16)y)!=1 &&
+IsCellOwnedByOtherTeam(*(u8 *)((u8 *)*gCurrentMap+0x52d4),(s16)x,(s16)y)!=1 &&
 func_ov000_021a8be8((s16)x,(s16)y,1)!=1) {
 cost=DestinationScore(x,y,targetX,targetY);
 cellCost=*(s8 *)((u8 *)*gCurrentMap+x+*(u16 *)((u8 *)*gCurrentMap+0x3758+y*2)+0x2338);

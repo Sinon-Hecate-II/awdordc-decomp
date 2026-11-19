@@ -12,37 +12,40 @@ static inline u32 MinUnitResource(u32 a,u32 b) { if(a<=b)b=a;return b; }
 typedef struct { u32 armyId:8; u32 rest:24; } PlayerSpriteWord;
 
 #pragma opt_strength_reduction off
-s32 FindNearestFreeCell(void *arg0, s16 *arg1, s32 arg2) {
+/* Nearest cell to a deployment entry's tile that holds no unit, used when the
+ * entry's tile is already taken: flood the entry's tile as reachable ground,
+ * then scan the grid layer for the lowest-value cell without a unit (ties are
+ * broken by alternating on the frame counter's parity).  A loaded (carried)
+ * entry first steps forward to the entry whose carry link names `unitIndex`. */
+s32 FindNearestFreeCell(MapDeploymentEntry *entry, s16 *out, s32 unitIndex) {
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     extern s32 gFrameCounter;
     extern s32 *gCurrentMap;
-    u8 *node = arg0;
-    s16 *out = arg1;
-    s32 best, gen, found;
+    s32 best, tieBreak, found;
     s32 y;
     s32 x;
 
-    gen = gFrameCounter;
+    tieBreak = gFrameCounter;
     best = 0x7fff;
     found = 0;
 
-    if (node[3] & 8) {
+    if (entry->flags & UNIT_FLAG_LOADED) {
     node_search:
-        if (node[8] == arg2 || node[9] == arg2) goto node_check;
-        node += 0x10;
+        if (entry->firstCarried == unitIndex || entry->nextCarried == unitIndex) goto node_check;
+        entry++;
         goto node_search;
     node_check:
-        if (node[3] & 8) goto node_search;
+        if (entry->flags & UNIT_FLAG_LOADED) goto node_search;
     }
 
-    FloodFillUnitRange(node[0], node[1], node[2], 0x6e, 0);
+    FloodFillUnitRange(entry->x, entry->y, entry->kind, MAP_GRID_NO_UNIT_MAX, 0);
     for (y = 0; y < *(u16 *)(((u8 *)*gCurrentMap) + MAP_HEIGHT); y++) {
         for (x = 0; x < *(u16 *)(((u8 *)*gCurrentMap) + MAP_WIDTH); x++) {
             s8 cand = (*(s8 **)(((u8 *)*gCurrentMap) + MAP_GRID + y * 4))[x];
             if (cand < 0) continue;
-            if (((u8 *)*gCurrentMap)[x + *(u16 *)(((u8 *)*gCurrentMap) + MAP_ROW_OFFSETS + y * 2) + 0x508]) continue;
+            if (((u8 *)*gCurrentMap)[x + *(u16 *)(((u8 *)*gCurrentMap) + MAP_ROW_OFFSETS + y * 2) + MAP_CELL_UNIT_ID]) continue;
             if (best < cand) continue;
-            if (best == cand && (++gen & 1)) continue;
+            if (best == cand && (++tieBreak & 1)) continue;
             out[0] = x;
             out[1] = y;
             found = 1;

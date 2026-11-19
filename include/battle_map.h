@@ -226,6 +226,8 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 /* Terrain kinds the map code names directly; the tileset's MAP_TILE_TERRAIN
  * table maps each tile id to one of these packed values. */
 #define MAP_TERRAIN_SHOAL      9    /* shoal (beach) ground: a sea unit can enter it and a Rig builds a temporary port on it */
+#define MAP_TERRAIN_BASE       0x11 /* base: produces land units */
+#define MAP_TERRAIN_PORT       0x13 /* port: produces naval units */
 #define MAP_TERRAIN_PLAIN      1    /* plain ground */
 #define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
 #define MAP_TERRAIN_PROPERTY_FIRST 0x0f /* first property terrain kind: headquarters */
@@ -469,6 +471,7 @@ typedef struct MapTargetEntry {
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
 #define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
 #define UNIT_FLAG_LOADED     0x0008 /* unit is loaded in a transport (turn passes skip it) */
+#define UNIT_FLAG_SUBMERGED  0x0020 /* a submarine is created with it and IsUnitSubmerged reads it: the unit is hidden (the same bit as UNIT_FLAG_FOG) */
 #define UNIT_FLAG_TURN_MASK  0x0081 /* action bits cleared for every unit of the acting player at turn start */
 
 /* Per-unit fog-of-war bits in MAP_UNIT_FLAGS. At the start of a turn the two
@@ -587,6 +590,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
 #define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */
+#define PLAYER_REC_UNIT_OWNER  0x32 /* u8 low two bits: owner group stamped into MAP_UNIT_KIND of the units the player creates (allies share one) */
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
 #define PLAYER_REC_CROSS_ALL 0x1F /* u8 bits: terrain the player's units may enter regardless of movement type */
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
@@ -718,6 +722,10 @@ enum {
 #define BATTLE_END_FLAG1 1
 #define BATTLE_END_FLAG2 2
 #define BATTLE_END_FLAG3 3
+
+/* Z-order carried by the battle-end screen's sprites (its banner and two
+ * decorations); the screen counts as up once a sprite at this Z exists. */
+#define BATTLE_END_SPRITE_Z 0xFF03
 
 /* Player control kind (PLAYER_CONTROL_OFF). */
 enum {

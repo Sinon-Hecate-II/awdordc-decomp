@@ -494,19 +494,35 @@ s32 Wfc_SelectNextFriend(void *arg0) {
 
 void Wfc_SubmitMessage(s32 a,s32 b,s32 c,s32 d){void func_02027518(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;func_02027518(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
 
+/* First step of a WFC friend connection: while the session has only started,
+ * rebuild the friend-list rows from the save slots and ask the WFC engine to
+ * open the connection with the stored connection mode.  A connect step that
+ * cannot start (status 1) or fails (status 4 and above) records result 1 and
+ * finishes the connection; otherwise the friend session runs from state 2. */
 s32 Wfc_StepConnect(void) {
- u32 Wfc_GetLinkState(void);
- void *Wfc_GetWorkBlock(s32);
- s32 WFC_ConnectStep(s32 *,void *);
- s32 Wfc_SetResultCode(s32);
- extern M2C_UNK Wfc_HandleConnectMessage;
- s32 v[4];s32 r=Wfc_GetLinkState();void *p=Wfc_GetWorkBlock(16);
- if(r==1){
- v[0]=M2C_FIELD(p,u8 *,0xd0a);v[1]=0;v[2]=0;v[3]=0;
- Wfc_BuildFriendEntries(0);
- r=WFC_ConnectStep(v,&Wfc_HandleConnectMessage);
- if(r==1||r>=4){Wfc_SetResultCode(1);return 17;}
- }else return 1;
- return 2;
+    u32 Wfc_GetLinkState(void);
+    void *Wfc_GetWorkBlock(s32);
+    s32 WFC_ConnectStep(s32 *, void *);
+    s32 Wfc_SetResultCode(s32);
+    extern M2C_UNK Wfc_HandleConnectMessage;
+    s32 request[4];
+    s32 state = Wfc_GetLinkState();
+    void *friends = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+
+    if (state == WFC_SESSION_STATE_STARTED) {
+        request[0] = M2C_FIELD(friends, u8 *, WFC_STATE_CONN_MODE);
+        request[1] = 0;
+        request[2] = 0;
+        request[3] = 0;
+        Wfc_BuildFriendEntries(WFC_ENTRY_SOURCE_SAVE_SLOTS);
+        state = WFC_ConnectStep(request, &Wfc_HandleConnectMessage);
+        if (state == 1 || state >= 4) {
+            Wfc_SetResultCode(1);
+            return WFC_STEP_DONE;
+        }
+    } else {
+        return WFC_SESSION_STATE_STARTED;
+    }
+    return WFC_STEP_FRIEND_CONNECT;
 }
 

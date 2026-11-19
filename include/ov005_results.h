@@ -20,4 +20,33 @@
 /* Sprite layer the score digits of every row are drawn on. */
 #define RESULT_SCORE_LAYER 2
 
+/* The screen split a results screen plays before the winning CO's quote: the two
+ * halves of the sprite's cell grid (RESULT_SPLIT_ROWS rows) are moved apart over
+ * RESULT_SPLIT_FRAMES frames, then the bank is restored. */
+#define RESULT_SPLIT_ELAPSED 0x34 /* s32: frames the split has run */
+#define RESULT_SPLIT_ROWS    0x10 /* rows of the sprite's cell grid */
+#define RESULT_SPLIT_FRAMES  0x10 /* frames the split takes */
+
+/* The award object of the results screen, past the plain 3D sprite object
+ * fields (0x00..0x33): the main- and sub-screen sprite handles, the panel's x
+ * position, a frame counter, and four medals with a reveal flag and an (x, y)
+ * position each. */
+#define AWARD_SPRITES        0x34 /* s32[2]: main- and sub-screen sprite objects */
+#define AWARD_PANEL_X        0x3c /* s32: x position the awards panel is eased to */
+#define AWARD_MEDAL_FRAME    0x40 /* s32: frame counter of the current award animation */
+#define AWARD_MEDAL_FLAGS    0x44 /* u8[4]: reveal flag of each medal */
+#define AWARD_MEDAL_1_X      0x48 /* u16: x of the first medal */
+#define AWARD_MEDAL_1_Y      0x4a /* u16: y of the first medal */
+#define AWARD_MEDAL_2_X      0x4c
+#define AWARD_MEDAL_2_Y      0x4e
+#define AWARD_MEDAL_3_X      0x50
+#define AWARD_MEDAL_3_Y      0x52
+#define AWARD_MEDAL_4_X      0x54
+#define AWARD_MEDAL_4_Y      0x56
+#define AWARD_MEDAL_FLAG(n)  (AWARD_MEDAL_FLAGS + (n))
+#define AWARD_MEDAL_X(n)     (AWARD_MEDAL_1_X + (n) * 4)
+#define AWARD_MEDAL_Y(n)     (AWARD_MEDAL_1_Y + (n) * 4)
+#define AWARD_MEDAL_TWINKLE_FRAMES 0x10 /* frames a medal's random twinkle runs */
+#define AWARD_MEDAL_TWINKLE_RANGE  4    /* largest random twinkle offset, in pixels */
+
 #endif

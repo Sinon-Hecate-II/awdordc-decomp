@@ -526,6 +526,7 @@ typedef struct NasRequest {
  * 0x24-byte rows built from the 0xC0-byte friend records, plus the small state
  * used while the player picks one. */
 #define WFC_STATE_FLAGS        0xD0C /* u8: low nibble list mode, bits 6..7 friend selection mode */
+#define WFC_STATE_CONN_MODE    0xD0A /* u8 WFC connection mode (WfcInitParams::mode), sent as the connect request's kind */
 #define WFC_STATE_SELECT_MODE  0xC0  /* selection-mode bits of WFC_STATE_FLAGS */
 /* List modes (low nibble of WFC_STATE_FLAGS): which built-in connection entry
  * the friend list adds beside the save-slot codes.  0 adds them all. */
@@ -564,6 +565,13 @@ enum {
 #define WFC_ENTRY_ID           0x01 /* u8 friend id returned to the caller */
 #define WFC_ENTRY_CODE_LEN     0x03 /* u8 length of the row's code */
 #define WFC_ENTRY_CODE         0x04 /* u8[] code bytes */
+
+/* Sources Wfc_BuildFriendEntries rebuilds the friend-list rows from. */
+enum {
+    WFC_ENTRY_SOURCE_SAVE_SLOTS = 0, /* the friend codes of the three save slots */
+    WFC_ENTRY_SOURCE_RECORDS    = 1, /* the connected friend records */
+    WFC_ENTRY_SOURCE_FREESPOT   = 2  /* the FREESPOT configuration */
+};
 
 #define WFC_STATE_CONN_FLAGS   0xD0B /* u8: bits 2-3 connection status, bits 4-5 mode, high nibble attempts */
 #define WFC_STATE_FRIEND_MASK  0xD16 /* u16: one bit per friend id taking part in the friend connection */

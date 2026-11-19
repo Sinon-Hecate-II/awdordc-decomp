@@ -68,10 +68,10 @@ s32 IsWaypointOptionValid(s32 arg0) {
 /* Handle one input action on the waypoint/segment cursor menu: move the cursor
  * over the slot groups (previous/next), place the currently held unit into a
  * slot, or scroll the map view. The selected action is then passed to the
- * display refresh (func_01ffa810) and stored as the list's current handle. */
+ * display refresh (FindObjectByZ) and stored as the list's current handle. */
 void HandleWaypointInput(void *arg0,int action){
 s32 func_ov003_021e6cfc(void);s32 func_ov003_021e6d28(void);s32 GetLocalPlayerIdForOverlay(void);s32 IsLinkSessionActive(void);
-s32 func_01ffa810(s32);
+s32 FindObjectByZ(s32);
 u8 *list=arg0;
 switch((u32)action){
 case 0:case 1:case 2:case 3:SelectSlot(list,action);break;
@@ -96,7 +96,7 @@ case 21:case 22:case 23:case 24:SelectSlot(list,action-21);break;
 case 30:action=(u16)(list[7]+21);break;
 case 25:M2C_FIELD(M2C_FIELD(list,void **,0xdc),u16 *,0x68)=list[0xe4]+list[7];M2C_FIELD(M2C_FIELD(list,void **,0xdc),u16 *,0x6a)=list[0xe5]+list[7];break;
 }
-M2C_FIELD(list,s32 *,0xe0)=func_01ffa810(action);
+M2C_FIELD(list,s32 *,0xe0)=FindObjectByZ(action);
 }
 
 u8 func_ov003_021e73bc(s32 arg0, s32 arg1) {

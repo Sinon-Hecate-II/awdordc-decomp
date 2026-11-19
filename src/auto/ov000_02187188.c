@@ -451,7 +451,7 @@ if(((s8 **)((u8 *)base+0x52e8))[y][x]>=0) result=1; else result=0;
 return result;
 }
 #pragma optimization_level reset
-u8 func_ov000_021a9084(s32);
+u8 IsUnitProductionTerrain(s32);
 s32 func_ov000_02187eac(u16 *arg0) {
     extern void **gCurrentMap;
     void *base;
@@ -473,7 +473,7 @@ outer:
             if (((s8 **)((u8 *)base + 0x52e8))[y][x] >= 0) {
                 rowoff = *(u16 *)((u8 *)base + 0x3758 + y * 2);
                 v = *(u8 *)((u8 *)base + 0x1420 + rowoff + x);
-                if (func_ov000_021a9084(v)) {
+                if (IsUnitProductionTerrain(v)) {
                     arg0[0] = (u16)x;
                     arg0[1] = (u16)y;
                     return 1;

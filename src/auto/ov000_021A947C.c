@@ -197,7 +197,7 @@ u8 CanUnitKindStandAt(s32 unitKind, s32 mapX, s32 mapY) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
     extern u8 gMovementTypeTable[];
-    extern s8 data_ov000_021b54a0[];
+    extern s8 gUnitProductionTerrain[];
     extern u8 gMovementCostTable[];
     void *map = *gCurrentMap;
     s32 terrain = M2C_FIELD(map + (mapX + M2C_FIELD(map + mapY * 2, u16 *, 0x3758)), u8 *, 0x1420) & 31;
@@ -207,7 +207,7 @@ u8 CanUnitKindStandAt(s32 unitKind, s32 mapX, s32 mapY) {
         return M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[0x82] * 32, s8 *, terrain) != -1;
     case 24:
     case 25:
-        if (data_ov000_021b54a0[terrain] == 0) {
+        if (gUnitProductionTerrain[terrain] == 0) {
             return 0;
         }
         if (M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[0x82] * 32, s8 *, terrain) == -1) {

@@ -112,8 +112,8 @@ UpdateResultSpark kind:function(arm,size=0xc0) addr:0x02219ee0
 SpawnResultSpark kind:function(arm,size=0x120) addr:0x02219fa0
 DrawAwardedMedals kind:function(arm,size=0x2cc) addr:0x0221a0c0
 func_ov005_0221a38c kind:function(arm,size=0x84) addr:0x0221a38c
-func_ov005_0221a410 kind:function(arm,size=0x88) addr:0x0221a410
-func_ov005_0221a498 kind:function(arm,size=0x88) addr:0x0221a498
+AnimateAwardMedal3 kind:function(arm,size=0x88) addr:0x0221a410
+AnimateAwardMedal4 kind:function(arm,size=0x88) addr:0x0221a498
 func_ov005_0221a520 kind:function(arm,size=0x78) addr:0x0221a520
 func_ov005_0221a598 kind:function(arm,size=0xf0) addr:0x0221a598
 func_ov005_0221a688 kind:function(arm,size=0x16c) addr:0x0221a688
@@ -140,7 +140,7 @@ func_ov005_0221b4b4 kind:function(arm,size=0xc) addr:0x0221b4b4
 func_ov005_0221b4c0 kind:function(arm,size=0xc) addr:0x0221b4c0
 func_ov005_0221b4cc kind:function(arm,size=0xc) addr:0x0221b4cc
 Tick3DSpriteAnimation kind:function(arm,size=0x37c) addr:0x0221b4d8
-func_ov005_0221b854 kind:function(arm,size=0x31c) addr:0x0221b854
+TickCoVictorySplit kind:function(arm,size=0x31c) addr:0x0221b854
 StartCoVictoryQuote kind:function(arm,size=0xb8) addr:0x0221bb70
 func_ov005_0221bc28 kind:function(arm,size=0x1c) addr:0x0221bc28
 func_ov005_0221bc44 kind:function(arm,size=0x6c) addr:0x0221bc44
@@ -359,7 +359,7 @@ data_ov005_02220fcc kind:data(any) addr:0x02220fcc
 data_ov005_02220fe0 kind:data(any) addr:0x02220fe0
 data_ov005_02220fec kind:data(any) addr:0x02220fec
 data_ov005_02221008 kind:data(any) addr:0x02221008
-data_ov005_02221024 kind:data(any) addr:0x02221024
+gCoMapFaces kind:data(any) addr:0x02221024
 data_ov005_02221058 kind:data(any) addr:0x02221058
 data_ov005_02221060 kind:data(any) addr:0x02221060
 data_ov005_0222106c kind:data(any) addr:0x0222106c

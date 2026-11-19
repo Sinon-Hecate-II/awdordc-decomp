@@ -4,23 +4,31 @@
 static inline u32 LowerChar(u32 c) { c-=0x41; if(c<=25) return c+0x61;return c+0x41; }
 typedef struct { u32 a,b,c; } UnkA3Block;
 typedef struct { UnkA3Block block; u32 kind, length; u8 name[128]; } PathEntry;
-s32 SendFifoMessage(u32 tag,u32 payload,u32 reply) {
+/* Post a message to the ARM7 over the IPC FIFO: `tag` picks the handler that
+ * gets it, `payload` is its data word and `reply` marks a reply to a request.
+ * Interrupts are off while the send register is written.  Returns 0 when the
+ * message was posted, -1 when the FIFO reported an error (its send side is
+ * cleared, the caller may retry) and -2 when the send FIFO is still full. */
+s32 SendFifoMessage(u32 tag, u32 payload, u32 reply) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
-    FifoMessage v;
-    s32 key;
-    v.tag=tag;v.reply=reply;v.payload=payload;
+    FifoMessage message;
+    s32 irqState;
+
+    message.tag = tag;
+    message.reply = reply;
+    message.payload = payload;
     if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_ERROR) {
         *(volatile u16 *)REG_IPC_FIFO_CR |= IPC_FIFO_CLEAR;
         return -1;
     }
-    key=OS_DisableInterrupts();
+    irqState = OS_DisableInterrupts();
     if (*(volatile u16 *)REG_IPC_FIFO_CR & IPC_FIFO_SEND_FULL) {
-        OS_RestoreInterrupts(key);
+        OS_RestoreInterrupts(irqState);
         return -2;
     }
-    *(volatile u32 *)REG_IPC_FIFO_SEND = *(u32 *)&v;
-    OS_RestoreInterrupts(key);
+    *(volatile u32 *)REG_IPC_FIFO_SEND = *(u32 *)&message;
+    OS_RestoreInterrupts(irqState);
     return 0;
 }
 

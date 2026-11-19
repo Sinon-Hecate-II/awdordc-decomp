@@ -1,7 +1,28 @@
 /* 5 functions from 0x022120C0 to 0x02212918 (ov004), found by ds-decomp. */
 #include "common.h"
+
+typedef struct Overlay004TileTable {
+    u16 entries[6];
+} Overlay004TileTable;
+
+typedef struct Overlay004ScreenFlags {
+    u16 low : 4;
+    u16 layer0 : 1;
+    u16 layer1 : 1;
+    u16 layer2 : 1;
+    u16 layer3 : 1;
+    u16 layer4 : 1;
+    u16 high : 7;
+} Overlay004ScreenFlags;
+
+static inline void SetOverlay004Layer0(Overlay004ScreenFlags *flags) { flags->layer0 = 0; }
+static inline void SetOverlay004Layer1(Overlay004ScreenFlags *flags) { flags->layer1 = 0; }
+static inline void SetOverlay004Layer2(Overlay004ScreenFlags *flags) { flags->layer2 = 0; }
+static inline void SetOverlay004Layer3(Overlay004ScreenFlags *flags) { flags->layer3 = 1; }
+static inline void SetOverlay004Layer4(Overlay004ScreenFlags *flags) { flags->layer4 = 0; }
 static inline s32 SpriteTile124(s32 tile) { extern s32 gCur3DSpriteEngine; return (tile >> ((u32)(*(u16 *)*(void **)gCur3DSpriteEngine <<17)>>30))&1023; }
 
+#pragma opt_propagation off
 void func_ov004_022120c0(void *arg0) {
     M2C_UNK func_020822b8();
     M2C_UNK SetFileDirectory();
@@ -15,7 +36,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed();
     M2C_UNK AddToU16Array();
     M2C_UNK CloseNarcArchive();
-    M2C_UNK ApplyScreenMode();
+    M2C_UNK ApplyScreenMode(s32);
     M2C_UNK func_0208ca14();
     M2C_UNK func_0208c79c();
     M2C_UNK func_0208c75c();
@@ -23,7 +44,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK func_020a8a84();
     M2C_UNK func_ov004_02212088();
 
-    extern u16 data_ov004_02218bb8[];
+    extern const Overlay004TileTable data_ov004_02218bb8;
     extern M2C_UNK data_ov004_02218df8;
     extern M2C_UNK data_ov004_02218e04;
     extern M2C_UNK data_ov004_02218e0c;
@@ -41,40 +62,33 @@ void func_ov004_022120c0(void *arg0) {
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
 
-    register void *a0 asm("r10") = arg0;
-    register s32 i asm("r9");
-    register u8 *bp asm("r8");
+    
+    u8 *bp;
+    s32 i;
 
-    u16 tmp[6];
+    Overlay004TileTable tmp;
     u8 buf[0x20];
     s32 oldEngine;
     s32 e;
-    void *o1;
-    void *o2;
     s32 map;
     s32 inner;
     u16 v;
     u8 res;
 
-    bp = buf;
-
-    tmp[0] = data_ov004_02218bb8[0];
-    tmp[1] = data_ov004_02218bb8[1];
-    tmp[2] = data_ov004_02218bb8[2];
-    tmp[3] = data_ov004_02218bb8[3];
-    tmp[4] = data_ov004_02218bb8[4];
-    tmp[5] = data_ov004_02218bb8[5];
+    tmp = data_ov004_02218bb8;
 
     map = gCurrentMap;
     inner = *(s32 *)map;
     inner = inner + 0x5100;
     v = *(u16 *)(inner + 0x42);
     res = (u8)func_020a8a84(v);
-    *((u8 *)a0 + 0x3a) = res;
+    *((u8 *)arg0 + 0x3a) = res;
 
     oldEngine = gCur3DSpriteEngine;
+    bp = buf;
 
-    for (i = 0; i < 2; i++) {
+    i = 0;
+    do {
         if (i == 0) {
             e = g3DSpriteEngineMain;
         } else {
@@ -82,20 +96,20 @@ void func_ov004_022120c0(void *arg0) {
         }
         gCur3DSpriteEngine = e;
         if (e == g3DSpriteEngineSub) {
-            func_020822b8(tmp);
+            func_020822b8(&tmp);
             SetFileDirectory(&data_ov004_02218df8);
             LoadDecompressedFileTo(&data_ov004_02218e04, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
             LoadDecompressedFileTo(&data_ov004_02218e0c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c));
             LoadFileToBGExtPltt(&data_ov004_02218e14, 3, 0, 0x200);
             LoadFileToSpriteBuffer(&data_ov004_02218e1c, 0, 0x20);
             MI_CpuCopy32(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x20, 0x20);
-            StringFormat(bp, &data_ov004_02218e24, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e24, *((u8 *)arg0 + 0x3a));
             OpenNarcArchive(bp);
-            StringFormat(bp, &data_ov004_02218e34, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e34, *((u8 *)arg0 + 0x3a));
             LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e44, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
             AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x100, 1);
-            StringFormat(bp, &data_ov004_02218e4c, *((u8 *)a0 + 0x3a));
+            StringFormat(bp, &data_ov004_02218e4c, *((u8 *)arg0 + 0x3a));
             LoadNarcFileDecompressed(GetLocalizedFileName(bp), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x14) + 0x20);
             LoadDecompressedFileTo(&data_ov004_02218e5c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), 0x100, 0x1001);
@@ -117,42 +131,41 @@ void func_ov004_022120c0(void *arg0) {
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0x3e) = 0;
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0x46) = 0;
 
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) &= ~0x10;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) &= ~0x20;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) &= ~0x40;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) |= 0x80;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0), u16 *, 0) &= ~0x100;
+            SetOverlay004Layer0(*(Overlay004ScreenFlags **)gCur3DSpriteEngine);
+            SetOverlay004Layer1(*(Overlay004ScreenFlags **)gCur3DSpriteEngine);
+            SetOverlay004Layer2(*(Overlay004ScreenFlags **)gCur3DSpriteEngine);
+            SetOverlay004Layer3(*(Overlay004ScreenFlags **)gCur3DSpriteEngine);
+            SetOverlay004Layer4(*(Overlay004ScreenFlags **)gCur3DSpriteEngine);
 
-            ApplyScreenMode();
+            ApplyScreenMode(0);
 
-            o1 = func_0208ca14(a0);
-            M2C_FIELD(a0, void **, 0x40) = o1;
-            M2C_FIELD(o1, u8 *, 0x34) = 0;
-            func_0208c79c(o1, 0);
-            func_0208c75c(o1, 0);
-            func_0208c7b8(o1, 0);
+            M2C_FIELD(arg0, void **, 0x40) = (void *)func_0208ca14(arg0);
+            M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x40), u8 *, 0x34) = 0;
+            func_0208c79c(M2C_FIELD(arg0, void **, 0x40), 0);
+            func_0208c75c(M2C_FIELD(arg0, void **, 0x40), 0);
+            func_0208c7b8(M2C_FIELD(arg0, void **, 0x40), 0);
 
-            o2 = func_0208ca14(a0);
-            M2C_FIELD(a0, void **, 0x44) = o2;
-            M2C_FIELD(o2, u8 *, 0x34) = 1;
-            func_0208c79c(o2, 0);
-            func_0208c75c(o2, 1);
-            func_0208c7b8(o2, 0);
+            M2C_FIELD(arg0, void **, 0x44) = (void *)func_0208ca14(arg0);
+            M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x44), u8 *, 0x34) = 1;
+            func_0208c79c(M2C_FIELD(arg0, void **, 0x44), 0);
+            func_0208c75c(M2C_FIELD(arg0, void **, 0x44), 1);
+            func_0208c7b8(M2C_FIELD(arg0, void **, 0x44), 0);
         }
-    }
+        ++i;
+    } while (i < 2);
 
     gCur3DSpriteEngine = oldEngine;
 
-    M2C_FIELD(a0, u16 *, 0x34) = 0;
-    M2C_FIELD(a0, u16 *, 0x36) = 0;
-    M2C_FIELD(a0, u8 *, 0x3b) = 0;
-    M2C_FIELD(a0, u8 *, 0x3c) = 0;
-    M2C_FIELD(a0, u8 *, 0x3d) = 0;
-    M2C_FIELD(a0, u16 *, 0x38) = 0;
+    M2C_FIELD(arg0, u16 *, 0x34) = 0;
+    M2C_FIELD(arg0, u16 *, 0x36) = 0;
+    M2C_FIELD(arg0, u8 *, 0x3b) = 0;
+    M2C_FIELD(arg0, u8 *, 0x3c) = 0;
+    M2C_FIELD(arg0, u8 *, 0x3d) = 0;
+    M2C_FIELD(arg0, u16 *, 0x38) = 0;
 
-    func_ov004_02212088(a0);
+    func_ov004_02212088(arg0);
 }
-
+#pragma opt_propagation reset
 /* Draws the two-digit day counter at (x, y): two 32x16 icon tiles from
  * gSpriteDesc32x16, then the tens and ones digits (tiles 22..31) from
  * gSpriteDesc8x16, all shifted up by tileBase. */

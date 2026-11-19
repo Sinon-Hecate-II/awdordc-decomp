@@ -3,12 +3,12 @@
 #include "battle_map.h"
 static inline void ScanVisibilityRow(s32 ty,s32 player) {
 extern void **gCurrentMap; extern s8 gTerrainPropertyFlags[];
-s32 GetTerrainThreatRadius(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
+s32 GetTerrainThreatRadius(s32,s32); void func_ov000_0218500c(s32,s32,s32,s32); s32 IsCellOwnedByOtherTeam(s16,s16,s16);
 s32 tx,t,kind;u8 *map;
 for(tx=0;tx<M2C_FIELD(*gCurrentMap,u16*,0x5144);tx++){
 map=*gCurrentMap;t=M2C_FIELD(map+tx+M2C_FIELD(map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
 if(kind==26)func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
-if(gTerrainPropertyFlags[kind] && func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
+if(gTerrainPropertyFlags[kind] && IsCellOwnedByOtherTeam(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty))func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
 }
 }
 #pragma optimization_level 0
@@ -64,7 +64,7 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 void func_ov000_021855e4(void) {
 extern u8 *gAiCommandState; extern s8 gTerrainPropertyFlags[];
 void MI_CpuFill8(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
-void func_ov000_0218500c(s32,s32,s32,s32); s32 func_ov000_021a90a8(s16,s16,s16);
+void func_ov000_0218500c(s32,s32,s32,s32); s32 IsCellOwnedByOtherTeam(s16,s16,s16);
 s32 IsUnitOnCurrentTeam(s32); s32 IsCarrierUnitKind(u32); s32 GetUnitMoveScore(void*,s32,s32,s32);
 void func_ov000_021851b8(s32,s32,s32,s32); s32 GetUnitMoveRange(s32,u32);
 void func_01ffc294(u16,s32,s32,u32,s32,s32);
@@ -83,7 +83,7 @@ map=*gCurrentMap;
 t=M2C_FIELD(map+tx+M2C_FIELD((short)map+(u32)ty*2,u16*,0x3758),u8*,0x1420);kind=t&31;
 if(kind==26)func_ov000_0218500c(tx,ty,t,GetTerrainThreatRadius(t,player));
 if(gTerrainPropertyFlags[kind]){
-if(func_ov000_021a90a8(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty)){
+if(IsCellOwnedByOtherTeam(M2C_FIELD(*gCurrentMap,s16*,0x52a8),(s16)tx,(s16)ty)){
 s32 r=GetTerrainThreatRadius(t,player);
 func_ov000_0218500c(tx,ty,t,r);
 }

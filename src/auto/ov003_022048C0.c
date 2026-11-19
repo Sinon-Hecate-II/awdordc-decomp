@@ -50,6 +50,8 @@ void func_ov003_02204ff4(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x38)++;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK AddSprite(u16, u8, u16, M2C_UNK *, s32);
     s32 Divide(u8, M2C_UNK);
@@ -58,11 +60,11 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     M2C_UNK DrawTextSprite(void *);
-    u16 GetUnitSpriteWidth(void *);
-    u16 GetUnitSpriteHeight(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     s32 func_ov003_02200c64(u8, M2C_UNK, M2C_UNK);
     s32 Ov003_GetEntryValueIconTile(u8, u8);
-    extern u16 **data_027e01d8;
+    extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_02210484;
     s32 sp24;
     s32 sp20;
@@ -73,9 +75,6 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     s32 spC;
     s32 sp8;
     s16 temp_r10;
-    s16 temp_r10_2;
-    s16 temp_r10_3;
-    s16 temp_r10_4;
     s16 temp_r11;
     s16 temp_r11_2;
     s16 temp_r1;
@@ -86,16 +85,15 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     s32 var_r0_3;
     s32 var_r0_4;
     s32 var_r0_5;
-    u16 temp_r8;
-    u16 temp_r8_2;
-    u16 temp_r8_3;
-    u16 temp_r8_4;
+    s32 temp_r8;
+    s32 temp_r8_2;
+    s32 temp_r8_3;
+    s32 temp_r8_4;
     u8 temp_r1_3;
     u8 var_r4;
     void *temp_r1_2;
     void *temp_r5_2;
     void *temp_r9;
-    void *temp_r9_2;
 
     spC = arg1 + 4;
     sp8 = arg2 + 0x38;
@@ -117,7 +115,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
             sp20 = (s32) M2C_FIELD(temp_r9, s16 *, 0x52);
             sp1C = (s32) M2C_FIELD(temp_r9, s16 *, 0x50);
             temp_r8 = GetUnitSpriteWidth(temp_r9);
-            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, sp1C, sp20, (s32) temp_r8, (s32) GetUnitSpriteHeight(temp_r9));
+            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, sp1C, sp20, (u16) temp_r8, (u16) GetUnitSpriteHeight(temp_r9));
         }
         M2C_FIELD(temp_r9, s16 *, 0x34) = temp_r11;
         M2C_FIELD(temp_r9, s16 *, 0x36) = temp_r10;
@@ -127,38 +125,38 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
             var_r0_2 = 0;
         }
         if (var_r0_2 & 0xFF) {
-            temp_r10_2 = M2C_FIELD(temp_r9, s16 *, 0x50);
             sp18 = (s32) M2C_FIELD(temp_r9, s16 *, 0x52);
+            temp_r10 = M2C_FIELD(temp_r9, s16 *, 0x50);
             temp_r8_2 = GetUnitSpriteWidth(temp_r9);
-            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, (s32) temp_r10_2, sp18, (s32) temp_r8_2, (s32) GetUnitSpriteHeight(temp_r9));
+            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, (s32) temp_r10, sp18, (u16) temp_r8_2, (u16) GetUnitSpriteHeight(temp_r9));
         }
-        temp_r10_3 = temp_r5 + 0x10;
-        temp_r9_2 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x40) + (var_r4 * 4)), void **, 0x28);
+        temp_r10 = temp_r5 + 0x10;
+        temp_r9 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x40) + (var_r4 * 4)), void **, 0x28);
         temp_r1 = temp_r6 + 0xC;
-        func_02088e84(temp_r9_2, temp_r1, temp_r10_3, temp_r1, (s32) temp_r10_3);
-        if (M2C_FIELD(M2C_FIELD(temp_r9_2, void **, 0x64), u8 *, 0x12) != 0) {
+        func_02088e84(temp_r9, temp_r1, temp_r10, temp_r1, (s32) temp_r10);
+        if (M2C_FIELD(M2C_FIELD(temp_r9, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_3 = 1;
         } else {
             var_r0_3 = 0;
         }
         if (var_r0_3 & 0xFF) {
-            sp14 = (s32) M2C_FIELD(temp_r9_2, s16 *, 0x52);
-            sp10 = (s32) M2C_FIELD(temp_r9_2, s16 *, 0x50);
-            temp_r8_3 = GetUnitSpriteWidth(temp_r9_2);
-            func_02087d84(M2C_FIELD(temp_r9_2, void **, 0x64), 1, sp10, sp14, (s32) temp_r8_3, (s32) GetUnitSpriteHeight(temp_r9_2));
+            sp14 = (s32) M2C_FIELD(temp_r9, s16 *, 0x52);
+            sp10 = (s32) M2C_FIELD(temp_r9, s16 *, 0x50);
+            temp_r8_3 = GetUnitSpriteWidth(temp_r9);
+            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, sp10, sp14, (u16) temp_r8_3, (u16) GetUnitSpriteHeight(temp_r9));
         }
-        M2C_FIELD(temp_r9_2, s16 *, 0x34) = temp_r11;
-        M2C_FIELD(temp_r9_2, s16 *, 0x36) = temp_r10_3;
-        if (M2C_FIELD(M2C_FIELD(temp_r9_2, void **, 0x64), u8 *, 0x12) != 0) {
+        M2C_FIELD(temp_r9, s16 *, 0x34) = temp_r11;
+        M2C_FIELD(temp_r9, s16 *, 0x36) = temp_r10;
+        if (M2C_FIELD(M2C_FIELD(temp_r9, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_4 = 1;
         } else {
             var_r0_4 = 0;
         }
         if (var_r0_4 & 0xFF) {
-            temp_r11_2 = M2C_FIELD(temp_r9_2, s16 *, 0x52);
-            temp_r10_4 = M2C_FIELD(temp_r9_2, s16 *, 0x50);
-            temp_r8_4 = GetUnitSpriteWidth(temp_r9_2);
-            func_02087d84(M2C_FIELD(temp_r9_2, void **, 0x64), 1, (s32) temp_r10_4, (s32) temp_r11_2, (s32) temp_r8_4, (s32) GetUnitSpriteHeight(temp_r9_2));
+            temp_r11_2 = M2C_FIELD(temp_r9, s16 *, 0x52);
+            temp_r10 = M2C_FIELD(temp_r9, s16 *, 0x50);
+            temp_r8_4 = GetUnitSpriteWidth(temp_r9);
+            func_02087d84(M2C_FIELD(temp_r9, void **, 0x64), 1, (s32) temp_r10, (s32) temp_r11_2, (u16) temp_r8_4, (u16) GetUnitSpriteHeight(temp_r9));
         }
         if (func_ov003_02200c64(var_r4, 3, 5) != 0) {
             SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x54), M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC));
@@ -183,12 +181,12 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
                 DrawTextSprite(M2C_FIELD(arg0, void **, 0x54));
             }
         } else {
-            AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (Ov003_GetEntryValueIconTile(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
+            AddSprite((u16) ((temp_r6 - 4) & 0x1FF), (u8) temp_r5, (u16) ((sp24 & ((s32) (Ov003_GetEntryValueIconTile(var_r4, (u8) M2C_FIELD(((var_r4 * 0x18) + M2C_FIELD(arg0, s32 *, 0x44)), s32 *, 0xC)) + 0x200) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x8400), &data_ov003_02210484, 0xB);
         }
         var_r4 += 1;
     } while ((u32) var_r4 < 8U);
 }
-
+#pragma pop
 void func_ov003_02205400(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0xC)(arg0);
 }

@@ -19,7 +19,7 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
  * or without a CO in the current slot there is nothing to say, so the screen
  * object is ended instead. */
 void StartCoVictoryQuote(M2C_UNK screen) {
-    M2C_UNK func_01ffa730(M2C_UNK);
+    M2C_UNK Sprite_ResumeAnimationRepeat(M2C_UNK);
     s32 func_02097e84();
     void *func_0209bccc(s32, s32, s32, s32, s32, s32);
     s32 DidPlayerWin();
@@ -33,7 +33,7 @@ void StartCoVictoryQuote(M2C_UNK screen) {
     else if (M2C_FIELD(&gCoPlayerSlots, u16 *, M2C_FIELD(&gCoState, u8 *, 4) * 12) == 0) hasCo = 0;
     else hasCo = 1;
     if (hasCo == 0) {
-        func_01ffa730(screen);
+        Sprite_ResumeAnimationRepeat(screen);
         return;
     }
     sprite = func_0209bccc(2, 0x14, 0, GetCoQuoteTextId(), 0, 1);
@@ -269,8 +269,8 @@ void func_ov005_0221c9c0(void) {
 }
 
 void func_ov005_0221c9cc(void) {
-    M2C_UNK func_ov005_0221b854();
-    func_ov005_0221b854();
+    M2C_UNK TickCoVictorySplit();
+    TickCoVictorySplit();
 }
 
 void func_ov005_0221c9d8(void) {

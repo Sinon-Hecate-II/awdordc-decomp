@@ -19,7 +19,10 @@
 #define PROFILE_ID_ROW     0x10   /* entry id: the row is selected */
 #define PROFILE_ID_CONNECT 0xBC   /* entry id: wait for a connection */
 #define PROFILE_ID_JOIN    0xBD   /* entry id: the joining player said yes */
-typedef struct A070Node { struct A070Node *prev; struct A070Node *next; s32 start; u8 size; u8 pad[3]; } A070Node;
+/* One allocated run of 8-byte sprite object entries in a pool: the run's list
+ * links, the address of its first entry (+0x08) and its entry count (+0x0C). */
+typedef struct Ov001SpriteBlock { struct Ov001SpriteBlock *prev; struct Ov001SpriteBlock *next; s32 start; u8 size; u8 pad[3]; } Ov001SpriteBlock;
+typedef Ov001SpriteBlock A070Node;
 typedef struct A070Pool { u8 pad[0x200]; A070Node head; A070Node tail; s32 unk220; s32 handle; } A070Pool;
 /* The ov001 sprite-object pools (gOv001SpritePools): each pool recycles 0x10-byte
  * sprite objects through freeObjs and keeps the blocks it has handed out in an
@@ -514,72 +517,59 @@ void Ov001_InitSpritePools(void) {
 #pragma opt_propagation off
 void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
 #pragma opt_propagation reset
-void *func_ov001_0218a070(s32 in_idx, s32 in_arg1, s32 in_arg2) {
+/* Give a free sprite object of pool `pool` the first run of `size` 8-byte entry
+ * slots that fits in its arena, searching from the low addresses when `fromHead`
+ * is set and from the high ones otherwise; the object is linked into the pool's
+ * address-ordered list.  A run that fits nowhere aborts the program.  Returns
+ * the object, ready for its layout to be loaded. */
+void *Ov001_AllocSpriteBlock(s32 pool, s32 size, s32 fromHead) {
     s32 Ov001_QueuePop(s32);
     s32 OS_DisableIrqMask(s32);
     void OS_EnableIrqMask(s32);
     void SystemHalt(void);
     void Ov001_ListInsertBefore(void *, void *);
     extern s32 gOv001SpritePools;
-    s32 idx = in_idx;
-    s32 arg1 = in_arg1;
-    s32 off = idx * 0x228;
-    A070Node *node;
-    s32 state;
-    s32 arg2 = in_arg2;
-    A070Node *cur;
-    A070Node *next;
-    A070Node *prev;
-    A070Node *bound;
-    A070Node *headBound;
-    s32 curEnd;
-    s32 need;
 
-    node = (A070Node *)Ov001_QueuePop(*((s32 *)(gOv001SpritePools + off + 0x224)));
-    state = OS_DisableIrqMask(1);
-    if (arg2 != 0) {
-        bound = (A070Node *)(gOv001SpritePools + off + 0x210);
-        cur = (A070Node *)(gOv001SpritePools + off + 0x200);
-        if (cur != bound) {
-            do {
-                next = cur->next;
-                curEnd = cur->start + cur->size * 8;
-                need = curEnd + arg1 * 8;
-                if ((u32)need <= (u32)next->start) {
-                    node->start = curEnd;
-                    Ov001_ListInsertBefore(next, node);
-                    break;
-                }
-                cur = next;
-            } while (next != bound);
+    Ov001SpriteBlock *block;
+    Ov001SpriteBlock *cursor;
+    s32 irqMask;
+
+    block = (Ov001SpriteBlock *)Ov001_QueuePop(OV001_SPRITE_POOLS[pool].freeObjs);
+    irqMask = OS_DisableIrqMask(1);
+    if (fromHead) {
+        cursor = &OV001_SPRITE_POOLS[pool].head;
+        while (cursor != &OV001_SPRITE_POOLS[pool].tail) {
+            Ov001SpriteBlock *next = cursor->next;
+            u32 start = cursor->start + cursor->size * 8;
+            if (start + size * 8 <= (u32)next->start) {
+                block->start = start;
+                Ov001_ListInsertBefore(next, block);
+                break;
+            }
+            cursor = next;
         }
-        if (cur == bound) {
+        if (cursor == &OV001_SPRITE_POOLS[pool].tail) {
             SystemHalt();
         }
     } else {
-        bound = (A070Node *)(gOv001SpritePools + off + 0x210);
-        headBound = (A070Node *)(gOv001SpritePools + off + 0x200);
-        cur = bound;
-        if (cur != headBound) {
-            do {
-                prev = cur->prev;
-                curEnd = cur->start - arg1 * 8;
-                need = prev->start + prev->size * 8;
-                if ((u32)curEnd >= (u32)need) {
-                    node->start = curEnd;
-                    Ov001_ListInsertBefore(cur, node);
-                    break;
-                }
-                cur = prev;
-            } while (prev != headBound);
+        cursor = &OV001_SPRITE_POOLS[pool].tail;
+        while (cursor != &OV001_SPRITE_POOLS[pool].head) {
+            Ov001SpriteBlock *prev = cursor->prev;
+            u32 start = cursor->start - size * 8;
+            if (start >= (u32)(prev->start + prev->size * 8)) {
+                block->start = start;
+                Ov001_ListInsertBefore(cursor, block);
+                break;
+            }
+            cursor = prev;
         }
-        if (cur == headBound) {
+        if (cursor == &OV001_SPRITE_POOLS[pool].head) {
             SystemHalt();
         }
     }
-    OS_EnableIrqMask(state);
-    node->size = (u8)arg1;
-    return node;
+    OS_EnableIrqMask(irqMask);
+    block->size = size;
+    return block;
 }
 
 void Ov001_DestroySprite(void *arg0) {

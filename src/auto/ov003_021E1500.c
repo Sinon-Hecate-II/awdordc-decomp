@@ -14,14 +14,14 @@ void func_ov003_021e1518(M2C_UNK arg0) {
 }
 
 /* Sets up one slot of the table pointed at by state: allocates/recycles an entry via
-   func_01ffa810 for the normal case, or updates a sub-object when id == 10. */
+   FindObjectByZ for the normal case, or updates a sub-object when id == 10. */
 void func_ov003_021e1530(void *state, s32 id) {
     u8 count;
     s16 value;
     s16 id16;
     s32 freeCount;
     void *entry;
-    M2C_FIELD(state, s32 *, 0x38) = func_01ffa810(id);
+    M2C_FIELD(state, s32 *, 0x38) = FindObjectByZ(id);
     if (id != 10) {
         M2C_FIELD(state, u8 *, 7) = Modulo(id, 5);
         M2C_FIELD(state, u8 *, 8) = Divide(id, 5);

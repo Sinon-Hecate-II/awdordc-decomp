@@ -387,7 +387,21 @@ void InitUnitRecord(void *arg0, u8 kind) {
 #pragma scheduling reset
 void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *FindFreeUnitRecord(s32);void InitUnitRecord(void *,u8);void func_020d3154(s32,s32);void *p=FindFreeUnitRecord(d);if(!p)return 0;InitUnitRecord(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
 
-void *func_020a6658(s32 a,s32 b,s32 c,s32 d){extern s32 *gCurrentMap;void *CreateMapUnit(s32,s32,s32,s32);u8 *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);u8 v;if(!p)return 0;v=M2C_FIELD((u8 *)*gCurrentMap+d*0x8c,u8 *,0x67d6);p[0]=(p[0]&~0xc0)|((u32)(v<<30)>>24);M2C_FIELD(p,u16 *,4)|=1;if(c==22)M2C_FIELD(p,u16 *,4)|=32;return p;}
+/* Create a map unit of `kind` for `player` at tile (x, y): stamp it with the
+ * player's owner group, mark it as having already acted this turn, and start a
+ * new submarine submerged. */
+void *CreateOwnedMapUnit(s32 x, s32 y, s32 kind, s32 player) {
+    extern s32 *gCurrentMap;
+    void *CreateMapUnit(s32, s32, s32, s32);
+    u8 *unit = CreateMapUnit((s16)x, (s16)y, (s16)kind, player);
+    u8 ownerGroup;
+    if (!unit) return 0;
+    ownerGroup = M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_UNIT_OWNER);
+    unit[MAP_UNIT_KIND] = (unit[MAP_UNIT_KIND] & ~MAP_UNIT_OWNER_MASK) | ((u32)(ownerGroup << 30) >> 24);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_FLAG_ACTED;
+    if (kind == UNIT_KIND_SUBMARINE) M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_FLAG_SUBMERGED;
+    return unit;
+}
 
 void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
 

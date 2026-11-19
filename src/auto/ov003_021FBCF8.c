@@ -45,7 +45,7 @@ void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_ov003_021fbd48(void *arg0, s32 arg1) {
     s32 GetSpriteAnimValue(void *);
-    u32 func_020d886c();
+    u32 GetMapCategory();
     s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
     s32 animValue;
@@ -76,7 +76,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
     void *temp_r4_3;
 
     temp_r4 = (u8) (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14);
-    temp_r0 = func_020d886c();
+    temp_r0 = GetMapCategory();
     switch (temp_r0) {                              /* switch 1 */
     case 28:                                        /* switch 1 */
         var_r2 = 7;
@@ -117,7 +117,7 @@ void func_ov003_021fbd48(void *arg0, s32 arg1) {
     }
     M2C_FIELD(((u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4)+((var_r2 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48))), u8 *, 0xA9) = temp_r4;
     temp_r4_2 = (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 0xC);
-    temp_r0_2 = func_020d886c();
+    temp_r0_2 = GetMapCategory();
     switch (temp_r0_2) {                            /* switch 2 */
     case 28:                                        /* switch 2 */
         var_r2_2 = 7;
@@ -247,7 +247,7 @@ void func_ov003_021fc26c(void *arg0) {
  s32 CountMapPicks(void *,void *);
  void SetMenuPanelState(void *,u32);
  M2C_UNK PlaySoundEffect(s32);
- u32 func_020d886c(void);
+ u32 GetMapCategory(void);
  M2C_UNK func_ov003_021f92f4(void *,s32);
  void func_ov003_021f1bd4(void);
  void func_020d8ccc(u16);
@@ -273,7 +273,7 @@ void func_ov003_021fc26c(void *arg0) {
   }
  }
  value=(u8)(s16)M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x14);
- switch(func_020d886c()) {
+ switch(GetMapCategory()) {
  case 28: category=7;break;
  case 6: category=1;break;
  case 22:case 23:category=3;break;
@@ -290,7 +290,7 @@ void func_ov003_021fc26c(void *arg0) {
  category=(s32)M2C_FIELD(arg0,void **,0x48)+category*12;
  M2C_FIELD(category+(u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4),u8 *,0xa9)=value;
  value=(u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,0xc);
- switch(func_020d886c()) {
+ switch(GetMapCategory()) {
  case 28: category=7;break;
  case 6: category=1;break;
  case 22:case 23:category=3;break;
@@ -307,7 +307,7 @@ void func_ov003_021fc26c(void *arg0) {
  category=(s32)M2C_FIELD(arg0,void **,0x48)+category*12;
  M2C_FIELD(category+(u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4),u8 *,0xd)=value;
  value=(u8)M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4);
- switch(func_020d886c()) {
+ switch(GetMapCategory()) {
  case 28: category=7;break;
  case 6: category=1;break;
  case 22:case 23:category=3;break;

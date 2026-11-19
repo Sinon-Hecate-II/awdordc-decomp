@@ -273,15 +273,18 @@ void func_01ffb734(int cx,int cy,int radius,s8 value) {
  }
 }
 #pragma common_subs reset
-void func_01ffb80c(s32 x, s32 y, s32 dir, s8 value) {
+/* Write `value` along the line an order covers, downward from (x, y) in the map's
+ * selected cell layer: direction 0 steps down-left, 2 down-right, 1 and 3 straight
+ * down; it stops at the map's left/right or bottom edge. */
+void FillMapLine(s32 x, s32 y, s32 direction, s8 value) {
     extern void **gCurrentMap;
-    switch (dir) {
+    switch (direction) {
     case 0:
         --x;
         ++y;
         goto check_left;
     left:
-        ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4][x] = value;
+        ((s8 **)*gCurrentMap)[y++ + MAP_GRID_ROW_INDEX][x] = value;
         --x;
     check_left:
         if (x < 0) return;
@@ -290,14 +293,14 @@ void func_01ffb80c(s32 x, s32 y, s32 dir, s8 value) {
     case 1:
     case 3:
         for (++y; y < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);)
-            *(x + ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4]) = value;
+            *(x + ((s8 **)*gCurrentMap)[y++ + MAP_GRID_ROW_INDEX]) = value;
         return;
     case 2:
         ++x;
         ++y;
         goto check_right;
     right:
-        ((s8 **)*gCurrentMap)[y++ + MAP_GRID / 4][x] = value;
+        ((s8 **)*gCurrentMap)[y++ + MAP_GRID_ROW_INDEX][x] = value;
         ++x;
     check_right:
         if (x < M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) &&

@@ -102,12 +102,12 @@ s32 Ov001_CreateSpriteFromLayout(M2C_UNK arg0, M2C_UNK arg1) {
 
 M2C_UNK Ov001_CreateSprite(s32 arg0,s32 arg1,s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
-M2C_UNK func_ov001_0218a070(s32,s32,s32);
+M2C_UNK Ov001_AllocSpriteBlock(s32,s32,s32);
 s32 Ov001_GetSpriteObjEntry(s32,s32);
 void Ov001_LoadSpriteObjLayout(s32,s32,s32);
 void *base=((M2C_UNK **)&data_ov001_02193e34)[arg0];
 u16 count=*(u16 *)((u8 *)base+arg1*8);
-M2C_UNK t=func_ov001_0218a070(arg0,count,arg2);
+M2C_UNK t=Ov001_AllocSpriteBlock(arg0,count,arg2);
 Ov001_LoadSpriteObjLayout(arg0,arg1,Ov001_GetSpriteObjEntry(t,0));
 return t;
 }

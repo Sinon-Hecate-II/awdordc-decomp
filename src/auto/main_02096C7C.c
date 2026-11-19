@@ -503,7 +503,34 @@ s32 HideAllScenePanels(void) {
     return var_r4;
 }
 
-s32 func_020979a4(s32 a) { s32 *GetScenePanelState();s32 i,q,p,b;for(i=0;i<3;i++){q=GetScenePanelState(i);p=FindScenePanel((u16)i);if(p){b=0;if(i==a)b=1;func_02091d6c(M2C_FIELD(q,u8 *,6),b);func_0209e26c(p,b);UpdateScenePanelPalette(p);}}SetMenuCursor(a);func_02094ba0(a);MarkSpriteLayer1Dirty();return 1;}
+/* Highlight the scene panel `panelIndex` (top, middle or bottom) and clear the
+ * highlight of the other open panels, then put the menu cursor on it, clear the
+ * panel's tile rows and mark the sprite layer for a rebuild. */
+s32 HighlightScenePanel(s32 panelIndex) {
+    s32 *GetScenePanelState();
+    s32 index;
+    s32 *state;
+    s32 panel;
+    s32 highlighted;
+
+    for (index = 0; index < 3; index++) {
+        state = GetScenePanelState(index);
+        panel = FindScenePanel((u16) index);
+        if (panel) {
+            highlighted = 0;
+            if (index == panelIndex) {
+                highlighted = 1;
+            }
+            func_02091d6c(((ScenePanelState *) state)->palette, highlighted);
+            func_0209e26c((void *) panel, highlighted);
+            UpdateScenePanelPalette((void *) panel);
+        }
+    }
+    SetMenuCursor(panelIndex);
+    func_02094ba0(panelIndex);
+    MarkSpriteLayer1Dirty();
+    return 1;
+}
 
 void func_02097a2c(s32 arg0) {
     s32 Get3DSpriteCount();

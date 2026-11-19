@@ -104,9 +104,10 @@ s32 func_ov001_02169494(u8 *a){extern s32 data_ov001_0218ca04[4][4];return data_
 void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color, s32 bpp) {
     M2C_UNK MI_CpuFill32(s32, s32, s32);
     u32 left, right, mask;
-    u32 lo, hi, v0, v1, n0, n1;
+    u32 lo, hi, v0, v1, keepHigh;
     u32 *p;
     u32 *end;
+    u32 *wideEnd;
 
     if (w == 8 && h == 8) {
         MI_CpuFill32((s32) color, (s32) dst, bpp * 8);
@@ -117,15 +118,15 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
         right = 32 - (left + w * 4);
         mask = (~0u >> left) << (right + left);
         lo = mask >> right;
-        v0 = color & lo;
-        n0 = ~lo;
         p = dst + start;
         end = p + h;
+        v0 = color & lo;
+        lo = ~lo;
         if (p >= end) {
             return;
         }
         do {
-            *p = (*p & n0) | v0;
+            *p = (*p & lo) | v0;
             p++;
         } while (p < end);
         return;
@@ -135,27 +136,35 @@ void func_ov001_021694b0(u32 *dst, s32 shift, s32 start, s32 w, s32 h, u32 color
     lo = ~0u >> left;
     if (right < 32)
         lo <<= left;
-    else
-        lo = (lo << (left + (right - 32))) >> (right - 32);
-    hi = ~0u << right;
-    if (left < 32)
-        hi >>= right;
-    else
-        hi = (hi >> ((left - 32) + right)) << (left - 32);
+    else {
+        u32 spill = right - 32;
+        lo <<= left + spill;
+        lo >>= spill;
+    }
+    {
+        u32 highBits = ~0u << right;
+        if (left < 32)
+            hi = highBits >> right;
+        else {
+            u32 spill = left - 32;
+            u32 lower = highBits >> (spill + right);
+            hi = lower << spill;
+        }
+    }
+    p = dst + start * 2;
+    wideEnd = p + h * 2;
     v0 = color & lo;
     v1 = color & hi;
-    n0 = ~lo;
-    n1 = ~hi;
-    p = dst + start * 2;
-    end = p + h * 2;
-    if (p >= end) {
+    mask = ~lo;
+    keepHigh = ~hi;
+    if (p >= wideEnd) {
         return;
     }
     do {
-        p[0] = (p[0] & n0) | v0;
-        p[1] = (p[1] & n1) | v1;
+        p[0] = (p[0] & mask) | v0;
+        p[1] = (p[1] & keepHigh) | v1;
         p += 2;
-    } while (p < end);
+    } while (p < wideEnd);
 }
 
 #pragma push

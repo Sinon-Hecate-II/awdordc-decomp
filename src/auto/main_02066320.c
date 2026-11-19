@@ -67,7 +67,7 @@ int func_02071284(s32,s32,s32,s32);
 void func_02066320(void *, int);
 
 int StringLength(char *);
-void func_020650a4(void *, void *, int);
+void StringToWideString(void *, void *, int);
 double value=arg0;
 DecimalFormBD form;
 DecimalBD dec;

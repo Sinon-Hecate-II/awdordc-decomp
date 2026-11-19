@@ -118,6 +118,8 @@ void func_0207a77c(s32 arg0) {
  temp_r1(arg0);
 }
 
+#pragma push
+#pragma opt_propagation off
 void func_0207a7a4(s32 arg0, s32 arg1) {
     extern void *gCurrentMap;
     extern void *gTouchState;
@@ -130,14 +132,14 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
 
     s32 r5 = GetMapViewWidth();
     s32 r0v = GetMapViewHeight();
-    void *r9 = M2C_FIELD(gCurrentMap, void **, 0);
-    void *r8p = M2C_FIELD(gTouchState, void **, 0);
+    void *r9 = gCurrentMap;
+    void *r8p = gTouchState;
     s32 r12f = 0;
     u32 lr = 0;
     s32 r6f = 0;
     s32 r7f = 0;
-    u16 r2v = M2C_FIELD(r8p, u16 *, 0);
-    u16 r3v = M2C_FIELD(r8p, u16 *, 2);
+    s32 r2v = M2C_FIELD(r8p, u16 *, 0);
+    s32 r3v = M2C_FIELD(r8p, u16 *, 2);
     void *base9 = M2C_FIELD(r9, void **, 0);
     void *p5200 = (u8 *)base9 + 0x5200;
     s16 valC2 = M2C_FIELD(p5200, s16 *, 0xc2);
@@ -168,18 +170,16 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 if ((s32)r3v >= 0xb4) r7f = 1;
             }
         } else {
-            s16 a4a, a48;
-            s32 a, c;
             void *base5 = M2C_FIELD(r9, void **, 0);
             void *q5 = (u8 *)base5 + 0x5100;
-            a4a = M2C_FIELD(q5, s16 *, 0x4a);
-            a48 = M2C_FIELD(q5, s16 *, 0x48);
-            a = valC4 - (a4a >> 4);
-            c = stack0 - (a48 >> 4);
-            if (c < 1) r12f = 1;
-            if (a < 1) r6f = 1;
-            if (c > r5 - 2) lr = 1;
-            if (a > r0v - 2) r7f = 1;
+            r2v = M2C_FIELD(q5, s16 *, 0x4a);
+            r3v = M2C_FIELD(q5, s16 *, 0x48);
+            r2v = valC4 - (r2v >> 4);
+            r3v = stack0 - (r3v >> 4);
+            if (r3v < 1) r12f = 1;
+            if (r2v < 1) r6f = 1;
+            if (r3v > r5 - 2) lr = 1;
+            if (r2v > r0v - 2) r7f = 1;
         }
         base = M2C_FIELD(r9, void **, 0);
         q = (u8 *)base + 0x5000;
@@ -187,7 +187,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         if ((st & 0x3) == 0) {
             if (r12f) { st |= 0x2; M2C_FIELD(q, u8 *, 0x154) = st; }
             if (lr) {
-                base2 = M2C_FIELD(gCurrentMap, void **, 0);
+                base2 = gCurrentMap;
                 base2 = M2C_FIELD(base2, void **, 0);
                 q2 = (u8 *)base2 + 0x5000;
                 st2 = M2C_FIELD(q2, u8 *, 0x154);
@@ -195,14 +195,14 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 M2C_FIELD(q2, u8 *, 0x154) = st2;
             }
         }
-        base3 = M2C_FIELD(gCurrentMap, void **, 0);
+        base3 = gCurrentMap;
         base3 = M2C_FIELD(base3, void **, 0);
         q3 = (u8 *)base3 + 0x5000;
         st3 = M2C_FIELD(q3, u8 *, 0x154);
         if ((st3 & 0xc) == 0) {
             if (r6f) { st3 |= 0x4; M2C_FIELD(q3, u8 *, 0x154) = st3; }
             if (r7f) {
-                base4 = M2C_FIELD(gCurrentMap, void **, 0);
+                base4 = gCurrentMap;
                 base4 = M2C_FIELD(base4, void **, 0);
                 q4 = (u8 *)base4 + 0x5000;
                 st4 = M2C_FIELD(q4, u8 *, 0x154);
@@ -218,12 +218,12 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         u16 a;
         s16 bb, bb2;
         s32 t;
-        h = M2C_FIELD(gCurrentMap, void **, 0);
+        h = gCurrentMap;
         base = M2C_FIELD(h, void **, 0);
         q = (u8 *)base + 0x5000;
         st = M2C_FIELD(q, u8 *, 0x154);
         if (st & 0x1) {
-            b = M2C_FIELD(h, void **, 0);
+            b = base;
             qp = (u8 *)b + 0x5100;
             a = M2C_FIELD(qp, u16 *, 0x44);
             bb = M2C_FIELD(qp, s16 *, 0x48);
@@ -233,16 +233,16 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 M2C_FIELD(q, u8 *, 0x154) = st;
             } else {
                 M2C_FIELD(qp, s16 *, 0x48) = (s16)(bb + arg1);
-            }
-            h2 = M2C_FIELD(gCurrentMap, void **, 0);
-            base2 = M2C_FIELD(h2, void **, 0);
-            qp2 = (u8 *)base2 + 0x5100;
-            bb2 = M2C_FIELD(qp2, s16 *, 0x48);
-            if ((bb2 & 0xf) == 0) {
-                q2 = (u8 *)base2 + 0x5000;
-                st2 = M2C_FIELD(q2, u8 *, 0x154);
-                st2 ^= 0x1;
-                M2C_FIELD(q2, u8 *, 0x154) = st2;
+                h2 = gCurrentMap;
+                base2 = M2C_FIELD(h2, void **, 0);
+                qp2 = (u8 *)base2 + 0x5100;
+                bb2 = M2C_FIELD(qp2, s16 *, 0x48);
+                if ((bb2 & 0xf) == 0) {
+                    q2 = (u8 *)base2 + 0x5000;
+                    st2 = M2C_FIELD(q2, u8 *, 0x154);
+                    st2 ^= 0x1;
+                    M2C_FIELD(q2, u8 *, 0x154) = st2;
+                }
             }
         }
     }
@@ -251,12 +251,12 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
         u8 st, st2;
         s16 bb, bb2;
-        h = M2C_FIELD(gCurrentMap, void **, 0);
+        h = gCurrentMap;
         base = M2C_FIELD(h, void **, 0);
         q = (u8 *)base + 0x5000;
         st = M2C_FIELD(q, u8 *, 0x154);
         if (st & 0x2) {
-            b = M2C_FIELD(h, void **, 0);
+            b = base;
             qp = (u8 *)b + 0x5100;
             bb = M2C_FIELD(qp, s16 *, 0x48);
             if (bb <= 0) {
@@ -264,16 +264,16 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 M2C_FIELD(q, u8 *, 0x154) = st;
             } else {
                 M2C_FIELD(qp, s16 *, 0x48) = (s16)(bb - arg1);
-            }
-            h2 = M2C_FIELD(gCurrentMap, void **, 0);
-            base2 = M2C_FIELD(h2, void **, 0);
-            qp2 = (u8 *)base2 + 0x5100;
-            bb2 = M2C_FIELD(qp2, s16 *, 0x48);
-            if ((bb2 & 0xf) == 0) {
-                q2 = (u8 *)base2 + 0x5000;
-                st2 = M2C_FIELD(q2, u8 *, 0x154);
-                st2 ^= 0x2;
-                M2C_FIELD(q2, u8 *, 0x154) = st2;
+                h2 = gCurrentMap;
+                base2 = M2C_FIELD(h2, void **, 0);
+                qp2 = (u8 *)base2 + 0x5100;
+                bb2 = M2C_FIELD(qp2, s16 *, 0x48);
+                if ((bb2 & 0xf) == 0) {
+                    q2 = (u8 *)base2 + 0x5000;
+                    st2 = M2C_FIELD(q2, u8 *, 0x154);
+                    st2 ^= 0x2;
+                    M2C_FIELD(q2, u8 *, 0x154) = st2;
+                }
             }
         }
     }
@@ -282,12 +282,12 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         void *h, *base, *q, *b, *qp, *h2, *base2, *qp2, *q2;
         u8 st, st2;
         s16 bb, bb2;
-        h = M2C_FIELD(gCurrentMap, void **, 0);
+        h = gCurrentMap;
         base = M2C_FIELD(h, void **, 0);
         q = (u8 *)base + 0x5000;
         st = M2C_FIELD(q, u8 *, 0x154);
         if (st & 0x4) {
-            b = M2C_FIELD(h, void **, 0);
+            b = base;
             qp = (u8 *)b + 0x5100;
             bb = M2C_FIELD(qp, s16 *, 0x4a);
             if (bb <= 0) {
@@ -295,16 +295,16 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 M2C_FIELD(q, u8 *, 0x154) = st;
             } else {
                 M2C_FIELD(qp, s16 *, 0x4a) = (s16)(bb - arg1);
-            }
-            h2 = M2C_FIELD(gCurrentMap, void **, 0);
-            base2 = M2C_FIELD(h2, void **, 0);
-            qp2 = (u8 *)base2 + 0x5100;
-            bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
-            if ((bb2 & 0xf) == 0) {
-                q2 = (u8 *)base2 + 0x5000;
-                st2 = M2C_FIELD(q2, u8 *, 0x154);
-                st2 ^= 0x4;
-                M2C_FIELD(q2, u8 *, 0x154) = st2;
+                h2 = gCurrentMap;
+                base2 = M2C_FIELD(h2, void **, 0);
+                qp2 = (u8 *)base2 + 0x5100;
+                bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
+                if ((bb2 & 0xf) == 0) {
+                    q2 = (u8 *)base2 + 0x5000;
+                    st2 = M2C_FIELD(q2, u8 *, 0x154);
+                    st2 ^= 0x4;
+                    M2C_FIELD(q2, u8 *, 0x154) = st2;
+                }
             }
         }
     }
@@ -315,12 +315,12 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         u16 a;
         s16 bb, bb2;
         s32 t;
-        h = M2C_FIELD(gCurrentMap, void **, 0);
+        h = gCurrentMap;
         base = M2C_FIELD(h, void **, 0);
         q = (u8 *)base + 0x5000;
         st = M2C_FIELD(q, u8 *, 0x154);
         if (st & 0x8) {
-            b = M2C_FIELD(h, void **, 0);
+            b = base;
             qp = (u8 *)b + 0x5100;
             a = M2C_FIELD(qp, u16 *, 0x46);
             bb = M2C_FIELD(qp, s16 *, 0x4a);
@@ -330,16 +330,16 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
                 M2C_FIELD(q, u8 *, 0x154) = st;
             } else {
                 M2C_FIELD(qp, s16 *, 0x4a) = (s16)(bb + arg1);
-            }
-            h2 = M2C_FIELD(gCurrentMap, void **, 0);
-            base2 = M2C_FIELD(h2, void **, 0);
-            qp2 = (u8 *)base2 + 0x5100;
-            bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
-            if ((bb2 & 0xf) == 0) {
-                q2 = (u8 *)base2 + 0x5000;
-                st2 = M2C_FIELD(q2, u8 *, 0x154);
-                st2 ^= 0x8;
-                M2C_FIELD(q2, u8 *, 0x154) = st2;
+                h2 = gCurrentMap;
+                base2 = M2C_FIELD(h2, void **, 0);
+                qp2 = (u8 *)base2 + 0x5100;
+                bb2 = M2C_FIELD(qp2, s16 *, 0x4a);
+                if ((bb2 & 0xf) == 0) {
+                    q2 = (u8 *)base2 + 0x5000;
+                    st2 = M2C_FIELD(q2, u8 *, 0x154);
+                    st2 ^= 0x8;
+                    M2C_FIELD(q2, u8 *, 0x154) = st2;
+                }
             }
         }
     }
@@ -348,9 +348,8 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         void *h, *base, *q;
         void *fp;
         void (*cb)(void);
-        h = M2C_FIELD(gCurrentMap, void **, 0);
-        base = M2C_FIELD(h, void **, 0);
-        q = (u8 *)base + 0x4;
+        h = gCurrentMap;
+        q = (u8 *)h + 0x4;
         fp = M2C_FIELD(q, void **, 0);
         cb = (void (*)(void))M2C_FIELD(fp, void (**)(void), 0x1c);
         if (cb != 0) {
@@ -358,7 +357,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
         }
     }
 }
-
+#pragma pop
 void func_0207ab24(s32 arg0, s32 arg1) {
  M2C_UNK SetPropertyOwnerTile(s32,s32,u8);
  M2C_UNK RefreshMapView(void);

@@ -48,24 +48,32 @@ s32 Base64EncodeUrl(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  return dst-arg2;
 }
 #pragma opt_propagation reset
-s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
-    u32 i;
+/* Decode the base64 text `src` (len bytes, a multiple of four) into bytes at
+ * dest (at most maxDest of them).  The text uses the URL-safe alphabet, with '.'
+ * as value 62 and '-' as 63, and '*' as a filler that stands for no bits; a
+ * filler is skipped when sizing the output, which is the number of six-bit groups
+ * divided by eight and, when dest is NULL, is all this returns.  Returns the
+ * number of bytes written. */
+s32 DecodeBase64Url(char *src, u32 len, char *dest, u32 maxDest) {
+    s32 bitCount;
     s32 required;
-    u32 j;
+    u32 i;
+    char *value;
+    s32 j;
     char vals[4];
     char *out;
-    u32 written;
+    s32 written;
 
     if (len & 3u) {
         return -1;
     }
-    required = 0;
+    bitCount = 0;
     for (i = 0u; i < len; i++) {
-        if ((s8)src[i] != (s8)0x2a) {
-            required = required + 6;
+        if ((s8)src[i] != '*') {
+            bitCount += 6;
         }
     }
-    required = required / 8;
+    required = bitCount / 8;
     if (dest == (char *)0) {
         return required;
     }
@@ -77,43 +85,43 @@ s32 func_0203739c(char *src, u32 len, char *dest, u32 maxDest) {
         return 0;
     }
     out = dest;
-    written = 0u;
-    while (written < (u32)required) {
-        for (j = 0u; j < 4u; j++) {
-            s8 c;
-            s8 v;
-            c = (s8)src[j];
-            if (c >= (s8)0x41 && c <= (s8)0x5a) {
-                v = (s8)(c - (s8)0x41);
-            } else if (c >= (s8)0x61 && c <= (s8)0x7a) {
-                v = (s8)(c - (s8)0x47);
-            } else if (c >= (s8)0x30 && c <= (s8)0x39) {
-                v = (s8)(c + (s8)0x4);
-            } else if (c == (s8)0x2e) {
-                v = (s8)0x3e;
-            } else if (c == (s8)0x2d) {
-                v = (s8)0x3f;
+    do {
+        j = 0;
+        value = vals;
+        do {
+            s8 c = src[j];
+            if (c >= 'A' && c <= 'Z') {
+                *value = c - 'A';
+            } else if (c >= 'a' && c <= 'z') {
+                *value = c - 'a' + 26;
+            } else if (c >= '0' && c <= '9') {
+                *value = c - '0' + 52;
+            } else if (c == '.') {
+                *value = 62;
+            } else if (c == '-') {
+                *value = 63;
             } else {
-                v = (s8)0;
+                *value = 0;
             }
-            vals[j] = (char)v;
-        }
-        src = src + 4;
-        out[0] = (char)(((s8)vals[0] << 2) | ((s8)vals[1] >> 4));
-        written = (u32)(out + 1 - dest);
-        if (written >= (u32)required) {
+            j++;
+            value++;
+        } while (j < 4);
+        out[0] = (vals[0] << 2) | (vals[1] >> 4);
+        src += 4;
+        written = out + 1 - dest;
+        if (written >= required) {
             break;
         }
-        out[1] = (char)(((s8)vals[1] << 4) | ((s8)vals[2] >> 2));
-        written = (u32)(out + 2 - dest);
-        if (written >= (u32)required) {
+        out[1] = (vals[1] << 4) | (vals[2] >> 2);
+        written = out + 2 - dest;
+        if (written >= required) {
             break;
         }
-        out[2] = (char)(((s8)vals[2] << 6) | ((s8)vals[3]));
-        out = out + 3;
-        written = (u32)(out - dest);
-    }
-    return (s32)written;
+        out[2] = (vals[2] << 6) | vals[3];
+        out += 3;
+        written = out - dest;
+    } while (written < required);
+    return written;
 }
 
 s32 GetNetError(s32 *outParam, s32 *outType) {

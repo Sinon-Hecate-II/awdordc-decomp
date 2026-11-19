@@ -1,6 +1,16 @@
 /* 37 functions from 0x020180C8 to 0x02018FF0 (main), found by ds-decomp. */
 #include "common.h"
 
+typedef struct MbCartridgeState {
+    u16 checksum;
+    u8 reserved[3];
+    u8 compareGameCode : 1;
+    u8 changed : 1;
+    u8 otherFlags : 6;
+    u8 padding[2];
+    u32 gameCode;
+} MbCartridgeState;
+
 #pragma optimization_level 2
 void Mb_RemovePlayer(s32 arg0) {
 extern M2C_UNK gMbState;
@@ -270,89 +280,79 @@ s32 func_0201874c(void *arg0) {
     return 0;
 }
 
-void func_02018764(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
+typedef struct MbWorkerRequest {
+    struct MbWorkerRequest *next;
+    u32 queued : 1;
+    u32 priority : 31;
+    s32 callback;
+    s32 argument;
+} MbWorkerRequest;
+
+void Mb_QueueTask(M2C_UNK arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
     extern s32 gMbWorkerTask;
     s32 Mb_IsTaskCreated(void);
     s32 func_02006028(void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void TaskWake(M2C_UNK);
-    s32 saved;
     void *base;
-    void *p;
-    s32 r6;
+    s32 saved;
+    MbWorkerRequest *request;
+    MbWorkerRequest *prev, *next;
+    u32 priority;
+
     base = (void *)gMbWorkerTask;
-    p = (void *)arg0;
-    if (!Mb_IsTaskCreated()) {
+    request = (MbWorkerRequest *)arg0;
+    priority = arg3;
+    if (!Mb_IsTaskCreated() || request->queued) {
         return;
     }
-    if (((M2C_FIELD(p, u32 *, 4) << 31) >> 31) != 0) {
-        return;
-    }
-    r6 = arg3;
-    if ((u32)r6 > 0x1fu) {
-        s32 v = func_02006028(base);
-        if (r6 == 0x20) {
-            r6 = (v != 0) ? v - 1 : 0;
-        } else if (r6 == 0x21) {
-            r6 = ((u32)v < 0x1fU) ? v + 1 : 0x1f;
-        } else if (r6 == 0x22) {
-            r6 = v;
+    if (priority > 31) {
+        u32 current = func_02006028(base);
+        if (priority == 32) {
+            priority = current != 0 ? current - 1 : 0;
+        } else if (priority == 33) {
+            priority = current < 31 ? current + 1 : 31;
+        } else if (priority == 34) {
+            priority = current;
         } else {
-            r6 = 0x1f;
+            priority = 31;
         }
     }
+
     saved = OS_DisableInterrupts();
-    {
-        u32 f4 = M2C_FIELD(p, u32 *, 4);
-        u32 low = f4 & 1u;
-        f4 = (f4 & ~1u) | 1u;
-        M2C_FIELD(p, u32 *, 4) = f4;
-        f4 = low | ((u32)r6 << 1);
-        M2C_FIELD(p, u32 *, 4) = f4;
-        M2C_FIELD(p, void **, 8) = (void *)arg1;
-        M2C_FIELD(p, void **, 0xc) = (void *)arg2;
-    }
-    if (M2C_FIELD(base, void **, 0xc0) == (void *)0) {
-        if (p == (void *)((u8 *)base + 0xc4)) {
+    request->queued = 1;
+    request->priority = priority;
+    request->callback = arg1;
+    request->argument = arg2;
+    if (M2C_FIELD(base, MbWorkerRequest *volatile *, 0xc0) == NULL) {
+        if (request == (MbWorkerRequest *)((u8 *)base + 0xc4)) {
             gMbWorkerTask = 0;
         }
-        M2C_FIELD(base, void **, 0xc0) = p;
-        M2C_FIELD(p, void **, 0) = (void *)0;
+        M2C_FIELD(base, MbWorkerRequest **, 0xc0) = request;
         TaskWake((M2C_UNK)base);
     } else {
-        if (p == (void *)((u8 *)base + 0xc4)) {
-            void **curp = (void **)M2C_FIELD(base, void ***, 0xc0);
-            while (M2C_FIELD(curp, void **, 0) != (void *)0) {
-                curp = (void **)M2C_FIELD(curp, void **, 0);
+        prev = M2C_FIELD(base, MbWorkerRequest *volatile *, 0xc0);
+        if (request == (MbWorkerRequest *)((u8 *)base + 0xc4)) {
+            while (prev->next != NULL) {
+                prev = prev->next;
             }
-            M2C_FIELD(curp, void **, 0) = p;
+            prev->next = request;
             gMbWorkerTask = 0;
+        } else if (priority < prev->priority) {
+            M2C_FIELD(base, MbWorkerRequest **, 0xc0) = request;
+            request->next = prev;
         } else {
-            void **head = (void **)M2C_FIELD(base, void ***, 0xc0);
-            if ((u32)r6 < (M2C_FIELD(head, u32 *, 4) >> 1)) {
-                M2C_FIELD(base, void **, 0xc0) = p;
-                M2C_FIELD(p, void **, 0) = (void *)head;
-            } else {
-                void **prev = head;
-                void **cur;
-                for (;;) {
-                    cur = (void **)M2C_FIELD(prev, void **, 0);
-                    if (cur == (void *)0) {
-                        break;
-                    }
-                    if ((u32)r6 < (M2C_FIELD(cur, u32 *, 4) >> 1)) {
-                        break;
-                    }
-                    prev = cur;
-                }
-                if (cur != (void *)0) {
-                    M2C_FIELD(p, void **, 0) = (void *)cur;
-                } else {
-                    M2C_FIELD(p, void **, 0) = (void *)0;
-                }
-                M2C_FIELD(prev, void **, 0) = p;
+            goto checkNext;
+        advance:
+            prev = next;
+        checkNext:
+            next = prev->next;
+            if (next != NULL && priority >= next->priority) {
+                goto advance;
             }
+            request->next = next;
+            prev->next = request;
         }
     }
     OS_RestoreInterrupts(saved);
@@ -363,11 +363,11 @@ void Mb_QueueTaskExit(M2C_UNK arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 Mb_IsTaskCreated(void);
-    void func_02018764(M2C_UNK, s32, M2C_UNK, s32);
+    void Mb_QueueTask(M2C_UNK, s32, M2C_UNK, s32);
     s32 saved;
     saved = OS_DisableInterrupts();
     if (Mb_IsTaskCreated() != 0) {
-        func_02018764((M2C_UNK)((u8 *)gMbWorkerTask + 0xC4), 0, arg0, 0);
+        Mb_QueueTask((M2C_UNK)((u8 *)gMbWorkerTask + 0xC4), 0, arg0, 0);
     }
     OS_RestoreInterrupts(saved);
 }
@@ -529,6 +529,7 @@ u32 func_02018c84(void) {
     return (u32) (M2C_FIELD(&data_027ffc30, u8 *, 5) << 0x1F) >> 0x1F;
 }
 
+#pragma opt_strength_reduction off
 s32 func_02018c9c(void) {
     extern M2C_UNK data_02136c98;
     extern M2C_UNK data_027ffc30;
@@ -541,42 +542,45 @@ s32 func_02018c9c(void) {
     volatile u8 *base;
     s32 r2;
 
+    {
+    MbCartridgeState *shared = (MbCartridgeState *)&data_027ffc30;
     r4 = 1;
     base = (volatile u8 *)0x08000000;
 
-    if (M2C_FIELD(&data_027ffc30, u16 *, 0) == (u16)(0x10000 - r4)) {
+    if ((u16)(0x10000 - r4) == shared->checksum) {
         return 0;
     }
-    if ((((u32)M2C_FIELD(&data_027ffc30, u8 *, 5) << 30) >> 31) == 1) {
+    if (shared->changed == 1) {
         return 0;
+    }
     }
     func_02018e24(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));
     func_02018da8((void *)buf);
 
     r2 = base[0xB2];
-    if (r2 == 0x96) {
-        if (M2C_FIELD(&data_027ffc30, u16 *, 0) != *(volatile u16 *)(base + 0xBE)) {
-            goto fail;
-        }
-    } else {
-        if (M2C_FIELD(&data_027ffc30, u16 *, 0) != *(volatile u16 *)0x0801FFFE) {
-            goto fail;
-        }
+    if (r2 == 0x96 &&
+        ((MbCartridgeState *)&data_027ffc30)->checksum != *(volatile u16 *)(base + 0xBE)) {
+        goto changed;
     }
-    if (M2C_FIELD(&data_027ffc30, u32 *, 8) != *(volatile u32 *)(base + 0xAC)) {
-        if (M2C_FIELD(&data_027ffc30, u8 *, 5) & 1) {
-            r4 = 0;
-            M2C_FIELD(&data_027ffc30, u8 *, 5) |= 2;
-            func_02018df0((void *)buf);
-            func_02018e80(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));
-        }
+    if (r2 != 0x96 &&
+        *(volatile u16 *)0x0801FFFE != ((MbCartridgeState *)&data_027ffc30)->checksum) {
+        goto changed;
     }
+    {
+        MbCartridgeState *shared = (MbCartridgeState *)&data_027ffc30;
+        if (shared->gameCode == *(volatile u32 *)(base + 0xAC) || !shared->compareGameCode) {
+            goto restore;
+        }
+changed:
+        r4 = 0;
+        ((MbCartridgeState *)&data_027ffc30)->changed = 1;
+    }
+restore:
+    func_02018df0(buf);
+    func_02018e80(M2C_FIELD(&data_02136c98, u16 *, 6), &buf[2]);
     return r4;
-
-fail:
-    return 0;
 }
-
+#pragma opt_strength_reduction reset
 void func_02018da8(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = (s32) ((s32) (*(u16 *)0x04000204 & 0xC) >> 2);
     M2C_FIELD(arg0, s32 *, 4) = (s32) ((s32) (*(u16 *)0x04000204 & 0x10) >> 4);

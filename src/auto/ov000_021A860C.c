@@ -8,7 +8,7 @@ extern s8 *data_ov000_021b5c54[];
 typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
-s32 func_ov000_021a860c(void){
+s32 EnemyHasSeaUnit(void){
 s32 func_020d1938(s32);s32 func_020d273c(u16,s32);extern void **gCurrentMap;extern u16 data_ov000_021aeef4[];extern u8 data_ov000_021b5bfc[];
 s32 p=1,i,end;
 while(p<5){
@@ -279,10 +279,10 @@ s8 *table=M2C_FIELD(&gMovementCostTable,s8 **,0x64)+row*32;
 u8 r;if(table[b&31]>0)r=1;else r=0;return r;
 }
 
-u8 func_ov000_021a9084(s32 arg0) {
-    extern s8 data_ov000_021b54a0[];
+u8 IsUnitProductionTerrain(s32 arg0) {
+    extern s8 gUnitProductionTerrain[];
     u8 var_r0;
-    if (data_ov000_021b54a0[arg0 & 0x1F] != 0) {
+    if (gUnitProductionTerrain[arg0 & 0x1F] != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -290,7 +290,7 @@ u8 func_ov000_021a9084(s32 arg0) {
     return var_r0;
 }
 
-u8 func_ov000_021a90a8(s32 a,s32 b,s32 c){
+u8 IsCellOwnedByOtherTeam(s32 a,s32 b,s32 c){
 extern void **gCurrentMap;u8 *p=*gCurrentMap;
 u8 v=M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)>>5;
 u8 r;if(!v)return 0;

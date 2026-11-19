@@ -38,4 +38,13 @@ enum {
 #define OV005_FLOAT_256           0x43800000u /* +256.0f */
 #define OV005_FLOAT_NEG256        0xc3800000u /* -256.0f */
 
+/* The two CO faces that speak on each story map (map ids OV005_STORY_MAP_FIRST
+ * up to OV005_STORY_MAP_END): a 2-byte entry per map holding the first and the
+ * second speaker's face id. */
+#define OV005_STORY_MAP_FIRST      0xa1
+#define OV005_STORY_MAP_END        0xbb /* one past the last story map id */
+#define OV005_STORY_MAP_FACE_STRIDE 2
+#define OV005_STORY_MAP_FACE_FIRST 0 /* first speaker's face id in an entry */
+#define OV005_STORY_MAP_FACE_SECOND 1 /* second speaker's face id */
+
 #endif

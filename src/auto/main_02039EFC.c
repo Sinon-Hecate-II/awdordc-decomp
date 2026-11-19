@@ -230,14 +230,14 @@ if(scmOut)*(u8 *)scmOut=0;if(scnOut)*(u8 *)scnOut=0;return 0;
 }
 
 /* Reads the match player record of `matchId` and decodes its base64-encoded name
- * into `name` through the base64 decoder func_0203739c, reporting the decoded
+ * into `name` through the base64 decoder DecodeBase64Url, reporting the decoded
  * byte count in `nameLength` (-1 when there is no record).  The record's player
  * and connected counts are reported through `playerCount`/`connectedCount`.
  * Returns the record's status, 6 when the player was found. */
 s32 GetMatchPlayerName(s32 matchId, u8 *playerCount, u8 *connectedCount, char *name, s32 *nameLength) {
     s32 GetMatchPlayerInfo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 StringLength(void *);
-    s32 func_0203739c(void *, s32, s32, s32);
+    s32 DecodeBase64Url(void *, s32, s32, s32);
     u8 encoded[256];
     s32 status;
     s32 length;
@@ -247,9 +247,9 @@ s32 GetMatchPlayerName(s32 matchId, u8 *playerCount, u8 *connectedCount, char *n
         *nameLength = -1;
         return status;
     }
-    *nameLength = func_0203739c(encoded, StringLength(encoded), 0, 0);
+    *nameLength = DecodeBase64Url(encoded, StringLength(encoded), 0, 0);
     if (!name || (length = *nameLength) == -1) return status;
-    func_0203739c(encoded, StringLength(encoded), name, length);
+    DecodeBase64Url(encoded, StringLength(encoded), name, length);
     return status;
 }
 
@@ -308,8 +308,8 @@ return 1;
 }
 
 void DecodeNasBase64(void) {
-    M2C_UNK func_0203739c();
-    func_0203739c();
+    M2C_UNK DecodeBase64Url();
+    DecodeBase64Url();
 }
 
 /* Start a match session: register the session object a in gMatchSessionMgr and

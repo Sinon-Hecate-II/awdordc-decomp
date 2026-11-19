@@ -1,5 +1,6 @@
 /* 11 functions from 0x02218008 to 0x02218FD0 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ov005_menu.h"
 void Ov005RefreshEntryLabel(void);
 void Ov005RefreshEntryFace(void);
@@ -254,26 +255,29 @@ void func_ov005_02218e3c(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov005_02220850, arg0);
 }
 
+/* The face id of the CO who talks to the player: on a story map (map id
+ * OV005_STORY_MAP_FIRST..OV005_STORY_MAP_END-1) the map's first speaker, once
+ * the battle was won; otherwise the face of the CO the roster currently shows. */
 u32 GetCurrentCoFaceId(void) {
  s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[]; extern u8 gCoState[]; extern u16 gCoPlayerSlots[];
- s32 a,b; u16 x;
+ s32 a,b; u16 mapId;
  if(DidPlayerWin()) {
- a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
- if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
+ a=0; mapId=M2C_FIELD(*gCurrentMap,u16 *,MAP_ID);
+ if((u32)mapId>=OV005_STORY_MAP_FIRST && (u32)mapId<OV005_STORY_MAP_END) a=1;
  if(a) b=1; else b=0;
- if(b&255) return data_ov005_02221024[(x-0xa1)*2];
+ if(b&255) return data_ov005_02221024[(mapId-OV005_STORY_MAP_FIRST)*OV005_STORY_MAP_FACE_STRIDE+OV005_STORY_MAP_FACE_FIRST];
  }
- return *(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[4]*(s16)12);
+ return *(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[CO_STATE_CURRENT_SLOT]*(s16)CO_SLOT_STRIDE);
 }
 
 u32 func_ov005_02218edc(void) {
- s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 data_ov005_02221024[];
+ s32 DidPlayerWin(); extern void **gCurrentMap; extern u8 gCoMapFaces[];
  s32 a,b; u16 x;
  if(DidPlayerWin()) {
  a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
  if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
  if(a) b=1; else b=0;
- if(b&255) return data_ov005_02221024[(x-0xa1)*2+1];
+ if(b&255) return gCoMapFaces[(x-0xa1)*2+1];
  }
  return 9;
 }

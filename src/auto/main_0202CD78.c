@@ -429,60 +429,70 @@ s32 Sound_PlaySequenceEntry(s32 player, s32 channel, s32 bankId, s32 priority,
     return 1;
 }
 
-void Sound_StartWorker(M2C_UNK arg0, M2C_UNK arg1) {
+#pragma opt_strength_reduction off
+/* Bring the sound worker up: mark it ready, put the request nodes on the free
+ * list, start the decode lock, initialise the four player slots and create the
+ * worker task.  When the worker already exists, only refresh the slots. */
+void Sound_StartWorker(M2C_UNK taskPriority, M2C_UNK heap) {
     M2C_UNK InitMutex(M2C_UNK *);
     M2C_UNK InitFileRequest(s32);
     M2C_UNK ListInit(M2C_UNK *, M2C_UNK);
     M2C_UNK ListAppend(M2C_UNK *, s32);
     M2C_UNK func_0202b46c(s32);
-    M2C_UNK func_0202d7d8(M2C_UNK);
-    M2C_UNK func_0202dfcc(M2C_UNK *, M2C_UNK);
+    M2C_UNK InitSoundPlayerSlots(M2C_UNK);
+    M2C_UNK CreateSoundWorkerTask(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSoundWorkerState;
     extern M2C_UNK gSoundFreeRequests;
     extern M2C_UNK gSoundDecodeLock;
     extern M2C_UNK gSoundRequestPool;
     extern M2C_UNK gSoundWorker;
     extern u8 gSoundPlayerSlots[];
-    extern M2C_UNK data_0213cf00;
-    s32 temp_r6;
-    s32 var_r5;
-    s32 var_r9;
+    extern M2C_UNK gSoundDecodeState;
+    s32 requestPool;
+    s32 slots;
+    s32 slot;
+    M2C_UNK *freeRequests;
+    s32 player;
+    s32 request;
 
-    if (M2C_FIELD(&gSoundWorkerState, s32 *, 0) != 0) {
-        func_0202d7d8(arg1);
+    if (M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_READY) != 0) {
+        InitSoundPlayerSlots(heap);
         return;
     }
-    M2C_FIELD(&gSoundWorkerState, s32 *, 0) = 1;
+    M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_READY) = 1;
     ListInit(&gSoundFreeRequests, 0);
-    var_r9 = 0;
-loop_4:
-    if (var_r9 < 8) {
-        ListAppend(&gSoundFreeRequests, (var_r9 * 0x30) + (s32) &gSoundRequestPool);
-        var_r9 += 1;
-        goto loop_4;
-    }
+    request = 0;
+    freeRequests = &gSoundFreeRequests;
+    requestPool = (s32)&gSoundRequestPool;
+    goto checkRequests;
+appendRequest:
+        ListAppend(freeRequests, (request * SOUND_REQUEST_STRIDE) + requestPool);
+    ++request;
+checkRequests:
+    if (request < SOUND_REQUEST_COUNT) goto appendRequest;
     InitMutex(&gSoundDecodeLock);
-    var_r5 = 0;
-    M2C_FIELD(&gSoundWorkerState, M2C_UNK **, 8) = &data_0213cf00;
-loop_7:
-    if (var_r5 < 4) {
-        temp_r6 = (var_r5 * 0x174) + (s32) gSoundPlayerSlots;
-        M2C_FIELD(temp_r6, s32 *, 0x110) = (s32) (M2C_FIELD(temp_r6, s32 *, 0x110) & ~1);
-        InitFileRequest(temp_r6 + 0x5C);
-        func_0202b46c(temp_r6);
-        M2C_FIELD(temp_r6, s32 *, 0x148) = var_r5;
-        M2C_FIELD(temp_r6, s8 *, 0x124) = 0;
-        M2C_FIELD(temp_r6, s32 *, 0x12C) = 0;
-        M2C_FIELD(temp_r6, s32 *, 0x130) = 0;
-        M2C_FIELD(temp_r6, s32 *, 0x120) = 0;
-        var_r5 += 1;
-        goto loop_7;
-    }
-    func_0202d7d8(arg1);
-    func_0202dfcc(&gSoundWorker, arg0);
+    slot = 0;
+    M2C_FIELD(&gSoundWorkerState, M2C_UNK **, SOUND_TASK_STATE_DECODER) = &gSoundDecodeState;
+    slots = (s32)gSoundPlayerSlots;
+    goto checkSlots;
+initSlot:
+        player = (slot * SOUND_PLAYER_STRIDE) + slots;
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (s32) (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) & ~(1 << SOUND_HANDLE_BIT_ACTIVE));
+        InitFileRequest(player + SOUND_HANDLE_FILE_REQUEST);
+        func_0202b46c(player); /* install the slot's voice callbacks and clear its voice state */
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_SLOT_INDEX) = slot;
+        M2C_FIELD(player, s8 *, SOUND_HANDLE_MAX_CHANNELS) = 0;
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLE_DATA) = 0;
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_BYTES) = 0;
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_CHANNEL_REFS) = 0;
+    ++slot;
+checkSlots:
+    if (slot < SOUND_PLAYER_SLOTS) goto initSlot;
+    InitSoundPlayerSlots(heap);
+    CreateSoundWorkerTask(&gSoundWorker, taskPriority);
 }
-
-s32 func_0202d7d8(s32 heap)
+#pragma opt_strength_reduction reset
+s32 InitSoundPlayerSlots(s32 heap)
 {
     u8 *func_0202c294(s32);
     void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);

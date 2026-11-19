@@ -10,39 +10,40 @@ void DrawTextSprite(void *arg0) {
     s32 func_020a8c54(s32, s32, s32, s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     void AddSprite(s32, s32, s32, s32, s32);
-    register s32 saved, i;
-    register u8 *p = arg0;
-    register s32 y, x;
-    u16 tile;
-    switch (p[4]) {
+    s32 i;
+    u8 *p = arg0;
+    s16 y, x;
+    s32 descriptor;
+    switch (p[TEXT_SPRITE_TYPE]) {
     default: return;
     case 1: return;
     case 0: break;
     }
     if ((u32)(p[0x20] << 31) >> 31) {
-        saved = *(s32 *)(p + 0x1c);
+        s32 saved = *(s32 *)(p + TEXT_SPRITE_VALUE);
         SetTextSpriteValue(p, 0);
         x = GetTextSpriteGlyphX(p, 0);
-        AddSprite((u16)(x & 0x1ff), *(s16 *)(p+8) & 0xff,
+        AddSprite((u16)(x & 0x1ff), *(s16 *)(p + TEXT_SPRITE_X) & 0xff,
             (u16)((0x3ff & (((s32)((u32)(p[0x20]<<27)>>28)*p[0x16]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17)>>30))) |
             ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
             (s32)gSpriteDesc16x16, (u32)(p[0x28]<<27)>>27);
         SetTextSpriteValue(p, saved);
         return;
     }
-    if (p[0x29]) p[0xa] = p[0x29];
-    for (i=0; i<p[0xa]; i++) {
+    if (p[0x29]) p[TEXT_SPRITE_COUNT] = p[0x29];
+    for (i=0; i<p[TEXT_SPRITE_COUNT]; i++) {
         x=GetTextSpriteGlyphX(p,(u8)i);
-        y=*(s16 *)(p+8);
+        y=*(s16 *)(p + TEXT_SPRITE_X);
         if (func_020a8c54(x,y,p[0x14],p[0x15])) {
-            if (*(s32 *)(p+0x24)) {
+            descriptor = *(s32 *)(p + 0x24);
+            if (descriptor) {
                 AddSprite((u16)(x & 0x1ff), y & 0xff,
-                    (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[0xb+(u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
+                    (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[TEXT_SPRITE_DIGITS + (u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
                     ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
-                    *(s32 *)(p+0x24), (u32)(p[0x28]<<27)>>27);
+                    descriptor, (u32)(p[0x28]<<27)>>27);
             } else {
                 AddSprite((u16)(x & 0x1ff), y & 0xff,
-                    (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[0xb+(u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
+                    (u16)((0x3ff & ((s32)(u16)(p[0x16]*p[TEXT_SPRITE_DIGITS + (u8)i]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine <<17)>>30))) |
                     ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
                     (s32)gSpriteDesc8x8, (u32)(p[0x28]<<27)>>27);
             }

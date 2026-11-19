@@ -37,12 +37,13 @@
 #define SOUND_HANDLE_SEGMENT_CB    0x13C /* s32 (*)(s32 mode, s32 *previous, s32 *next, s32 arg): fills the next streamed segment */
 #define SOUND_HANDLE_SEGMENT_ARG   0x140 /* s32 argument to the segment callback */
 #define SOUND_HANDLE_SOUND_ID      0x144 /* s32 id of the sound/sample being played */
-#define SOUND_HANDLE_SEGMENT_END   0x148 /* s32 end of the current segment */
+#define SOUND_HANDLE_SLOT_INDEX    0x148 /* s32 the player slot's index, handed to a streamed sound's segment callback */
 #define SOUND_HANDLE_VOLUME        0x158 /* s32 volume, 0..0x7F */
 #define SOUND_HANDLE_SAMPLES_LEFT  0x160 /* s32 samples left in the current segment */
 #define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
 #define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
 #define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
+#define SOUND_HANDLE_FILE_REQUEST  0x5C  /* the slot's file request, used to load its sample data */
 
 /* The sound player slots (gSoundPlayerSlots), handed out by Sound_AcquirePlayer. */
 #define SOUND_PLAYER_SLOTS  4    /* player slots in the pool */
@@ -257,6 +258,7 @@ typedef struct SoundChannelRecord {
 #define SOUND_REQUEST_BUFFERS    0x14 /* u32 *[MAX_NOTES] the note buffers to fill */
 #define SOUND_REQUEST_SIZE       0x2C /* s32 bytes to fill in each note buffer */
 #define SOUND_REQUEST_STRIDE     0x30
+#define SOUND_REQUEST_COUNT      8    /* request nodes in gSoundRequestPool */
 
 /* The sound task (gSoundWorker): the worker's thread object with its stack
  * inside it, the wait queue the worker sleeps on and the queue of segment

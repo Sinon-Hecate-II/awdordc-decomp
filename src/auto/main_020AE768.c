@@ -271,11 +271,13 @@ M2C_FIELD(p,s16 *,0x4a)=0;
 } gCur3DSpriteEngine=saved;
 }
 
-void func_020af04c(M2C_UNK a,M2C_UNK b,s32 c) {
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
-void CreateSubWallpaperSprite(M2C_UNK,M2C_UNK,s32);
-if((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain))CreateMainWallpaperSprite(a,b,c);
-if((u8)(gCur3DSpriteEngine==g3DSpriteEngineSub))CreateSubWallpaperSprite(a,b,c);
+/* Create the wallpaper sprite on whichever 3D sprite engine is current: the main
+ * engine's wallpaper sprite or the sub engine's. */
+void CreateWallpaperSprite(M2C_UNK layer, M2C_UNK palette, s32 set) {
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
+    void CreateSubWallpaperSprite(M2C_UNK, M2C_UNK, s32);
+    if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) CreateMainWallpaperSprite(layer, palette, set);
+    if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineSub)) CreateSubWallpaperSprite(layer, palette, set);
 }
 
 s32 func_020af0d4(void) {
@@ -308,7 +310,7 @@ void func_020af19c(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
     
-    func_020af04c(arg0, arg1, func_020af0d4());
+    CreateWallpaperSprite(arg0, arg1, func_020af0d4());
 }
 
 void func_020af1e4(void) {

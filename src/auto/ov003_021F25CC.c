@@ -23,16 +23,16 @@ static inline void AdvanceState2e98(s32 a) {
  if(func_ov003_021f1448()) {func_ov003_021f182c(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
 }
 s32 func_ov003_021f25cc(void) {
- s32 func_020d886c();
- switch(func_020d886c()) {
+ s32 GetMapCategory();
+ switch(GetMapCategory()) {
  case 6: case 8: case 12: case 14: case 15: case 16: case 17: case 22: case 23: case 24: return 1;
  case 0: case 1: case 2: case 3: case 4: case 5: case 7: case 9: case 10: case 11: case 13: case 18: case 19: case 20: case 21: default: return 0;
  }
 }
 
 s32 func_ov003_021f2654(void) {
- s32 func_020d886c();
- switch(func_020d886c()) {
+ s32 GetMapCategory();
+ switch(GetMapCategory()) {
  case 6: case 12: case 22: case 23: return 1;
  default: return 0;
  }

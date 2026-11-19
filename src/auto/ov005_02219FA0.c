@@ -1,5 +1,6 @@
 /* 18 functions from 0x02219FA0 to 0x0221ABF8 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ov005_results.h"
 typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 
 #pragma opt_strength_reduction off
@@ -90,40 +91,48 @@ void func_ov005_0221a38c(void **arg0) {
     gCur3DSpriteEngine = temp_r8;
 }
 #pragma opt_strength_reduction reset
-void func_ov005_0221a410(void *arg0) {
-M2C_UNK PlaySoundEffect(s32);
-s32 RandomIntRange(s32, s32);
-M2C_UNK Sprite_ResumeAnimation(void *);
-M2C_FIELD(arg0,s32 *,0x40)++;
-if (M2C_FIELD(arg0,s32 *,0x40)==1) {
-M2C_FIELD(arg0,u8 *,0x46)=1;
-PlaySoundEffect(0x132);
-}
-M2C_FIELD(arg0,u16 *,0x50)=RandomIntRange(-4,4)&0x1ff;
-M2C_FIELD(arg0,u16 *,0x52)=RandomIntRange(-4,4)&0xff;
-if(M2C_FIELD(arg0,s32 *,0x40)!=0x10) return;
-M2C_FIELD(arg0,u16 *,0x50)=0;
-M2C_FIELD(arg0,u16 *,0x52)=0;
-M2C_FIELD(arg0,s32 *,0x40)=0;
-Sprite_ResumeAnimation(arg0);
+/* Per-frame handler of the third awarded medal: reveal it with a chime on the
+ * first frame, twinkle its position randomly for 16 frames, then settle it and
+ * hand the award back to its animation. */
+void AnimateAwardMedal3(void *award) {
+    M2C_UNK PlaySoundEffect(s32);
+    s32 RandomIntRange(s32, s32);
+    M2C_UNK Sprite_ResumeAnimation(void *);
+
+    M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME)++;
+    if (M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) == 1) {
+        M2C_FIELD(award, u8 *, AWARD_MEDAL_FLAG(2)) = 1;
+        PlaySoundEffect(0x132);
+    }
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_X(2)) = RandomIntRange(-AWARD_MEDAL_TWINKLE_RANGE, AWARD_MEDAL_TWINKLE_RANGE) & 0x1ff;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_Y(2)) = RandomIntRange(-AWARD_MEDAL_TWINKLE_RANGE, AWARD_MEDAL_TWINKLE_RANGE) & 0xff;
+    if (M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) != AWARD_MEDAL_TWINKLE_FRAMES) return;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_X(2)) = 0;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_Y(2)) = 0;
+    M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) = 0;
+    Sprite_ResumeAnimation(award);
 }
 
-void func_ov005_0221a498(void *arg0) {
-M2C_UNK PlaySoundEffect(s32);
-s32 RandomIntRange(s32, s32);
-M2C_UNK Sprite_ResumeAnimation(void *);
-M2C_FIELD(arg0,s32 *,0x40)++;
-if (M2C_FIELD(arg0,s32 *,0x40)==1) {
-M2C_FIELD(arg0,u8 *,0x47)=1;
-PlaySoundEffect(0x132);
-}
-M2C_FIELD(arg0,u16 *,0x54)=RandomIntRange(-4,4)&0x1ff;
-M2C_FIELD(arg0,u16 *,0x56)=RandomIntRange(-4,4)&0xff;
-if(M2C_FIELD(arg0,s32 *,0x40)!=0x10) return;
-M2C_FIELD(arg0,u16 *,0x54)=0;
-M2C_FIELD(arg0,u16 *,0x56)=0;
-M2C_FIELD(arg0,s32 *,0x40)=0;
-Sprite_ResumeAnimation(arg0);
+/* Per-frame handler of the fourth awarded medal: reveal it with a chime on the
+ * first frame, twinkle its position randomly for 16 frames, then settle it and
+ * hand the award back to its animation. */
+void AnimateAwardMedal4(void *award) {
+    M2C_UNK PlaySoundEffect(s32);
+    s32 RandomIntRange(s32, s32);
+    M2C_UNK Sprite_ResumeAnimation(void *);
+
+    M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME)++;
+    if (M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) == 1) {
+        M2C_FIELD(award, u8 *, AWARD_MEDAL_FLAG(3)) = 1;
+        PlaySoundEffect(0x132);
+    }
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_X(3)) = RandomIntRange(-AWARD_MEDAL_TWINKLE_RANGE, AWARD_MEDAL_TWINKLE_RANGE) & 0x1ff;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_Y(3)) = RandomIntRange(-AWARD_MEDAL_TWINKLE_RANGE, AWARD_MEDAL_TWINKLE_RANGE) & 0xff;
+    if (M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) != AWARD_MEDAL_TWINKLE_FRAMES) return;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_X(3)) = 0;
+    M2C_FIELD(award, u16 *, AWARD_MEDAL_Y(3)) = 0;
+    M2C_FIELD(award, s32 *, AWARD_MEDAL_FRAME) = 0;
+    Sprite_ResumeAnimation(award);
 }
 
 void func_ov005_0221a520(void *arg0) {
@@ -310,13 +319,13 @@ void func_ov005_0221ab38(void) {
 }
 
 void func_ov005_0221ab44(void) {
-    void func_ov005_0221a410();
-    func_ov005_0221a410();
+    void AnimateAwardMedal3();
+    AnimateAwardMedal3();
 }
 
 void func_ov005_0221ab50(void) {
-    void func_ov005_0221a498();
-    func_ov005_0221a498();
+    void AnimateAwardMedal4();
+    AnimateAwardMedal4();
 }
 
 void func_ov005_0221ab5c(void) {

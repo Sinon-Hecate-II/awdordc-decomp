@@ -7,10 +7,12 @@ typedef struct ListLinks { void *next; void *prev; } ListLinks;
 extern u8 data_02138e7c;
 extern u8 data_02138e80[16];
 
+#pragma push
+#pragma optimization_level 3
 void func_02028ef4(void *arg0) {
     s32 func_020121d8(M2C_UNK *);
     s32 WFC_SendConnectionData(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK WFC_DispatchEvent(M2C_UNK, void *, u16, s32);
+    void WFC_DispatchEvent(M2C_UNK, void *, u32, s32);
     M2C_UNK WFC_SetState(M2C_UNK);
     extern void *gWfcSession;
     extern M2C_UNK WFC_OperationCallback;
@@ -21,25 +23,18 @@ void func_02028ef4(void *arg0) {
     s32 temp_r2;
     u16 temp_r3;
     u16 temp_r4;
-    u16 var_r0;
+    u32 var_r0;
     u32 temp_r1;
+    void *session;
+    u8 *flags;
 
     if (M2C_FIELD(arg0, u16 *, 2) == 0) {
         var_r0 = 0;
         M2C_FIELD(gWfcSession, s8 *, 0x226B) = 0;
         M2C_FIELD(gWfcSession, s16 *, 0x2282) = 0;
-        temp_r1 = M2C_FIELD(gWfcSession, u32 *, 0x2260);
+        session = gWfcSession;
+        temp_r1 = M2C_FIELD(session, u32 *, 0x2260);
         switch (temp_r1) {
-        default:
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 11:
-            WFC_SetState(0xB);
-            WFC_DispatchEvent(7, NULL, (u16) M2C_FIELD(gWfcSession, u32 *, 0x2260), 0x959);
-            return;
         case 5:
         case 6:
             WFC_SetState(3);
@@ -50,11 +45,12 @@ void func_02028ef4(void *arg0) {
             WFC_DispatchEvent(0, NULL, 0U, 0x8FB);
             return;
         case 8:
-            temp_r4 = M2C_FIELD(gWfcSession, u16 *, 0x22F8);
+            temp_r4 = M2C_FIELD(session, u16 *, 0x22F8);
             M2C_FIELD(gWfcSession, u16 *, 0x22F8) = 0U;
-            if ((temp_r4 == 0x12) && (temp_r3 = M2C_FIELD(gWfcSession, u16 *, 0x2170), ((temp_r3 & 0x24) != 0x24))) {
-                M2C_FIELD(gWfcSession, u16 *, 0x2170) = (u16) (temp_r3 | 0x24);
-                temp_r2 = M2C_FIELD(gWfcSession, s32 *, 0x2264);
+            if ((temp_r4 == 0x12) && (flags = (u8 *)gWfcSession, flags += 0x2100, temp_r3 = M2C_FIELD(flags, u16 *, 0x70), (temp_r3 & 0x24) != 0x24)) {
+                M2C_FIELD(flags, u16 *, 0x70) = (u16) (temp_r3 | 0x24);
+                session = gWfcSession;
+                temp_r2 = M2C_FIELD(session, s32 *, 0x2264);
                 if ((temp_r2 & 0xC0000) == 0xC0000) {
                     var_r0 = 1;
                 }
@@ -63,7 +59,7 @@ void func_02028ef4(void *arg0) {
                 } else {
                     var_r3 = 0;
                 }
-                temp_r0 = WFC_SendConnectionData(&func_0202899c, gWfcSession + 0x2140, 0, var_r3, (s32) var_r0);
+                temp_r0 = WFC_SendConnectionData(&func_0202899c, (u8 *)session + 0x2140, 0, var_r3, (u16) var_r0);
                 switch (temp_r0) {
                 case 2:
                     return;
@@ -108,13 +104,17 @@ void func_02028ef4(void *arg0) {
                 return;
             }
             break;
+        default:
+            WFC_SetState(0xB);
+            WFC_DispatchEvent(7, NULL, M2C_FIELD(gWfcSession, u32 *, 0x2260), 0x959);
+            return;
         }
     } else {
         WFC_SetState(0xB);
         WFC_DispatchEvent(7, NULL, 0U, 0x960);
     }
 }
-
+#pragma pop
 void func_02029220(void) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *GetSession(void); void MI_CpuFill8(void *,s32,s32);
 s32 state; void *base; void *p; void *ptr; s32 val;

@@ -184,7 +184,7 @@ func_ov000_02172498 kind:function(arm,size=0x10) addr:0x02172498
 func_ov000_021724a8 kind:function(arm,size=0x10) addr:0x021724a8
 func_ov000_021724b8 kind:function(arm,size=0x14) addr:0x021724b8
 GetTerrainNameId kind:function(arm,size=0x10) addr:0x021724cc
-func_ov000_021724dc kind:function(arm,size=0xec) addr:0x021724dc
+Ov000_InfoPanel_Create kind:function(arm,size=0xec) addr:0x021724dc
 func_ov000_021725c8 kind:function(arm,size=0x18) addr:0x021725c8
 func_ov000_021725e0 kind:function(arm,size=0x68) addr:0x021725e0
 func_ov000_02172648 kind:function(arm,size=0xc) addr:0x02172648
@@ -202,7 +202,7 @@ func_ov000_02173290 kind:function(arm,size=0x30) addr:0x02173290
 DrawMapInfoWindow kind:function(arm,size=0x1a8) addr:0x021732c0
 func_ov000_02173468 kind:function(arm,size=0xa04) addr:0x02173468
 func_ov000_02173e6c kind:function(arm,size=0x3c) addr:0x02173e6c
-func_ov000_02173ea8 kind:function(arm,size=0x88) addr:0x02173ea8
+Ov000_InfoWindow_Init kind:function(arm,size=0x88) addr:0x02173ea8
 func_ov000_02173f30 kind:function(arm,size=0x48) addr:0x02173f30
 func_ov000_02173f78 kind:function(arm,size=0x474) addr:0x02173f78
 func_ov000_021743ec kind:function(arm,size=0x4) addr:0x021743ec
@@ -225,7 +225,7 @@ func_ov000_02174d50 kind:function(arm,size=0x28) addr:0x02174d50
 func_ov000_02174d78 kind:function(arm,size=0x2c) addr:0x02174d78
 func_ov000_02174da4 kind:function(arm,size=0x2d0) addr:0x02174da4
 GetInfoWindowLanguage kind:function(arm,size=0x14) addr:0x02175074
-func_ov000_02175088 kind:function(arm,size=0x114) addr:0x02175088
+Ov000_StatsWindow_Create kind:function(arm,size=0x114) addr:0x02175088
 func_ov000_0217519c kind:function(arm,size=0x18) addr:0x0217519c
 func_ov000_021751b4 kind:function(arm,size=0x7c) addr:0x021751b4
 func_ov000_02175230 kind:function(arm,size=0x4) addr:0x02175230
@@ -655,7 +655,7 @@ PlanUnitKind24Action kind:function(arm,size=0x44c) addr:0x021a3dac
 TryBuildKind24Unit kind:function(arm,size=0x128) addr:0x021a41f8
 func_ov000_021a4320 kind:function(arm,size=0x80) addr:0x021a4320
 HasAiBuildFlag kind:function(arm,size=0x24) addr:0x021a43a0
-func_ov000_021a43c4 kind:function(arm,size=0x24) addr:0x021a43c4
+HasAiOptionalUnitBuildFlag kind:function(arm,size=0x24) addr:0x021a43c4
 func_ov000_021a43e8 kind:function(arm,size=0x2c) addr:0x021a43e8
 IsIndirectUnitRatioOk kind:function(arm,size=0xfc) addr:0x021a4414
 IsSubmarineRatioOk kind:function(arm,size=0xf8) addr:0x021a4510
@@ -668,7 +668,7 @@ func_ov000_021a4908 kind:function(arm,size=0x3c) addr:0x021a4908
 func_ov000_021a4944 kind:function(arm,size=0x3c) addr:0x021a4944
 func_ov000_021a4980 kind:function(arm,size=0x60) addr:0x021a4980
 CanReservePurchaseFunds kind:function(arm,size=0xb8) addr:0x021a49e0
-func_ov000_021a4a98 kind:function(arm,size=0x32c) addr:0x021a4a98
+EvaluateAiTargetGroupForCapture kind:function(arm,size=0x32c) addr:0x021a4a98
 func_ov000_021a4dc4 kind:function(arm,size=0x44) addr:0x021a4dc4
 func_ov000_021a4e08 kind:function(arm,size=0x75c) addr:0x021a4e08
 MarkPlayerInfluence kind:function(arm,size=0x2b8) addr:0x021a5564
@@ -710,7 +710,7 @@ func_ov000_021a7d08 kind:function(arm,size=0x190) addr:0x021a7d08
 func_ov000_021a7e98 kind:function(arm,size=0x84) addr:0x021a7e98
 func_ov000_021a7f1c kind:function(arm,size=0x51c) addr:0x021a7f1c
 SelectUnitForTargetCandidate kind:function(arm,size=0x1d4) addr:0x021a8438
-func_ov000_021a860c kind:function(arm,size=0xd0) addr:0x021a860c
+EnemyHasSeaUnit kind:function(arm,size=0xd0) addr:0x021a860c
 PlayerHasHealthyCounterUnit kind:function(arm,size=0xa8) addr:0x021a86dc
 CountPlayerUnitsOfKindTotal kind:function(arm,size=0x98) addr:0x021a8784
 CountPlayerUnitsOfKindNotInAiState kind:function(arm,size=0xac) addr:0x021a881c
@@ -731,8 +731,8 @@ IsCurrentPlayerUnit kind:function(arm,size=0x30) addr:0x021a8fc0
 IsPropertyTerrain kind:function(arm,size=0x24) addr:0x021a8ff0
 func_ov000_021a9014 kind:function(arm,size=0x30) addr:0x021a9014
 IsTerrainPassable kind:function(arm,size=0x40) addr:0x021a9044
-func_ov000_021a9084 kind:function(arm,size=0x24) addr:0x021a9084
-func_ov000_021a90a8 kind:function(arm,size=0x74) addr:0x021a90a8
+IsUnitProductionTerrain kind:function(arm,size=0x24) addr:0x021a9084
+IsCellOwnedByOtherTeam kind:function(arm,size=0x74) addr:0x021a90a8
 func_ov000_021a911c kind:function(arm,size=0x48) addr:0x021a911c
 IsCellUnitOnSameArmy kind:function(arm,size=0x6c) addr:0x021a9164
 func_ov000_021a91d0 kind:function(arm,size=0x44) addr:0x021a91d0
@@ -1443,7 +1443,7 @@ data_ov000_021afe90 kind:data(any) addr:0x021afe90
 data_ov000_021b021a kind:data(any) addr:0x021b021a
 data_ov000_021b0fdc kind:data(any) addr:0x021b0fdc
 data_ov000_021b5480 kind:data(any) addr:0x021b5480
-data_ov000_021b54a0 kind:data(any) addr:0x021b54a0
+gUnitProductionTerrain kind:data(any) addr:0x021b54a0
 gTerrainIsProperty kind:data(any) addr:0x021b54c0
 data_ov000_021b54e0 kind:data(any) addr:0x021b54e0
 data_ov000_021b5500 kind:data(any) addr:0x021b5500

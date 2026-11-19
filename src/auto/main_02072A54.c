@@ -180,52 +180,15 @@ else result=0;
 return (u8)result;
 }
 
+#pragma push
+#pragma opt_common_subs off
 s32 func_02072dc0(void *arg0) {
-    void *DecodeExceptionSignedValue(void *, s32 *);
-    void *DecodeExceptionValue(u8 *, u32 *);
+
+
     void FindExceptionTableHandler(s32, void *);
     s32 func_020744e0(void *, void *);
     M2C_UNK Js_DecodeFrameData(void *, void *);
-    s32 sp9C;
-    s32 sp98;
-    s32 sp94;
-    s32 sp90;
-    s32 sp8C;
-    s32 sp88;
-    s32 sp84;
-    s32 sp80;
-    s32 sp7C;
-    s32 sp78;
-    s32 sp74;
-    s32 sp70;
-    s32 sp6C;
-    s32 sp68;
-    s32 sp64;
-    s32 sp60;
-    s32 sp5C;
-    s32 sp58;
-    s32 sp54;
-    s32 sp50;
-    s32 sp4C;
-    s32 sp48;
-    s32 sp44;
-    s32 sp40;
-    s32 sp3C;
-    s32 sp38;
-    s32 sp34;
-    s32 sp30;
-    s32 sp2C;
-    s32 sp28;
-    s32 sp24;
-    s32 sp20;
-    s32 sp1C;
-    s32 sp18;
-    s32 sp14;
-    s32 sp10;
-    s32 spC;
-    s32 sp8;
-    s32 sp4;
-    s32 sp0;
+    s32 operands[40];
     s32 temp_r0;
     s32 temp_r0_2;
     u32 temp_r0_4;
@@ -249,79 +212,80 @@ loop_1:
     }
     temp_r0_4 = temp_r0_3 & 0x1F;
     switch (temp_r0_4) {
-    default:
-    case 0:
-    case 1:
-    case 14:
-        return 0xFF;
     case 2:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp9C) + 4);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &operands[39]) + 4);
+        break;
+    case 3:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[37]), &operands[38]) + 4);
+        break;
+    case 4:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &operands[36]) + 4);
+        break;
+    case 5:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[33]), &operands[34]), &operands[35]) + 4);
+        break;
+    case 6:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[31]), &operands[32]) + 4);
+        break;
+    case 7:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[29]), &operands[30]) + 4);
+        break;
+    case 8:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[26]), &operands[27]), &operands[28]) + 4);
+        break;
+    case 9:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[22]), &operands[23]), &operands[24]), &operands[25]) + 4);
+        break;
+    case 10:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &operands[21]) + 4);
+        break;
+    case 11:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[19]), &operands[20]) + 4);
+        break;
+    case 12:
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(DecodeExceptionValue(temp_r2 + 5, &operands[17]), &operands[18]);
+        break;
+    case 13:
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &operands[16]);
+        break;
+    case 15:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionValue(DecodeExceptionValue(temp_r2 + 1, &operands[13]), &operands[14]), &operands[15]) + (operands[13] * 4));
+        break;
+    case 16:
+        temp_r0_5 = DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[9]), &operands[10]);
+        temp_r0_5 += 4;
+        operands[12] = (u32)temp_r0_5[-4] |
+                       ((u32)temp_r0_5[-3] << 8) |
+                       ((u32)temp_r0_5[-2] << 16) |
+                       ((u32)temp_r0_5[-1] << 24);
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *)DecodeExceptionSignedValue(temp_r0_5, &operands[11]) + 4;
+        break;
+    case 17:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[5]), &operands[7]) + 1, &operands[6]), &operands[8]) + 4);
+        break;
+    case 18:
+        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &operands[2]) + 1, &operands[3]), &operands[4]) + 4);
+        break;
+    case 19:
+        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &operands[1]);
+        break;
+    default:
+        return 0xFF;
+    }
 block_48:
-        var_r2 = M2C_FIELD(arg0, u8 **, 8);
-        temp_r0_2 = *var_r2 & 0x1F;
-        if (temp_r0_2 != 1) {
-            return temp_r0_2;
-        }
+    var_r2 = M2C_FIELD(arg0, u8 **, 8);
+    temp_r0 = *var_r2 & 0x1F;
+    if (temp_r0 == 1) {
+        s32 *offset = &operands[0];
         do {
-            DecodeExceptionSignedValue(var_r2 + 1, &sp0);
-            var_r2 = &M2C_FIELD(arg0, u8 **, 8)[sp0];
-            M2C_FIELD(arg0, u8 **, 8) = var_r2;
+            DecodeExceptionSignedValue(var_r2 + 1, offset);
+            var_r2 = (M2C_FIELD(arg0, u8 **, 8) += operands[0]);
             temp_r0 = *var_r2 & 0x1F;
         } while (temp_r0 == 1);
-        return temp_r0;
-    case 3:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp94), &sp98) + 4);
-        goto block_48;
-    case 4:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp90) + 4);
-        goto block_48;
-    case 5:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp84), &sp88), &sp8C) + 4);
-        goto block_48;
-    case 6:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp7C), &sp80) + 4);
-        goto block_48;
-    case 7:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp74), &sp78) + 4);
-        goto block_48;
-    case 8:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp68), &sp6C), &sp70) + 4);
-        goto block_48;
-    case 9:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp58), &sp5C), &sp60), &sp64) + 4);
-        goto block_48;
-    case 10:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r2 + 1, &sp54) + 4);
-        goto block_48;
-    case 11:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp4C), &sp50) + 4);
-        goto block_48;
-    case 12:
-        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(DecodeExceptionValue(temp_r2 + 5, &sp44), &sp48);
-        goto block_48;
-    case 13:
-        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &sp40);
-        goto block_48;
-    case 15:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionValue(DecodeExceptionValue(temp_r2 + 1, &sp34), &sp38), &sp3C) + (sp34 * 4));
-        goto block_48;
-    case 16:
-        temp_r0_5 = DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp24), &sp28);
-        sp30 = M2C_FIELD(temp_r0_5, u8 *, 0) | (M2C_FIELD(temp_r0_5, u8 *, 1) << 8) | (M2C_FIELD(temp_r0_5, u8 *, 2) << 0x10) | (M2C_FIELD(temp_r0_5, u8 *, 3) << 0x18);
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(temp_r0_5 + 4, &sp2C) + 4);
-        goto block_48;
-    case 17:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp14), &sp1C) + 1, &sp18), &sp20) + 4);
-        goto block_48;
-    case 18:
-        M2C_FIELD(arg0, u8 **, 8) = (u8 *) (DecodeExceptionValue(DecodeExceptionSignedValue(DecodeExceptionSignedValue(temp_r2 + 1, &sp8) + 1, &spC), &sp10) + 4);
-        goto block_48;
-    case 19:
-        M2C_FIELD(arg0, u8 **, 8) = DecodeExceptionSignedValue(temp_r2 + 1, &sp4);
-        goto block_48;
     }
+    return temp_r0;
 }
-
+#pragma pop
 void func_02073148(s32 arg0, void *arg1, s32 arg2) {
 u32 func_020722fc(s32,u32);
 s32 func_020744e0(void *,void *);

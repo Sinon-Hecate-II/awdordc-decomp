@@ -443,16 +443,16 @@ func_02081d6c();
 }
 
 void func_02081e84(void *arg0) {
-    M2C_UNK func_01ffa730(void *);
+    M2C_UNK Sprite_ResumeAnimationRepeat(void *);
     M2C_UNK func_0200e920(M2C_UNK, M2C_UNK, M2C_UNK);
     if (func_02081e14() == 0) {
-        func_01ffa730(arg0);
+        Sprite_ResumeAnimationRepeat(arg0);
     }
     if (M2C_FIELD(arg0, s16 *, 0x56) != 0) {
         return;
     }
     func_0200e920(0xC, 0, 0);
-    func_01ffa730(arg0);
+    Sprite_ResumeAnimationRepeat(arg0);
 }
 
 void func_02081ec8(void *arg0) {

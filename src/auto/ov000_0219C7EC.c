@@ -202,7 +202,7 @@ SortAiUnitsWorstFirst(count);
 }
 
 void ScoreAiUnitsByProperty(void){
-void SortAiUnitsBestFirst(s32);s32 func_ov000_021a9084(u8);
+void SortAiUnitsBestFirst(s32);s32 IsUnitProductionTerrain(u8);
 extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
 s32 n,a;u8 *p;s8 *q;u8 x;u32 yv,xv; s32 xa,ya;
 p=&gAiUnitList;q=&gAiUnitScores;n=0;
@@ -211,7 +211,7 @@ u8 *map=(u8 *)*gCurrentMap;
 a=(s32)(map+MAP_UNIT_RECORDS+x*MAP_UNIT_STRIDE);
 yv=M2C_FIELD(a,u8 *,2);xv=M2C_FIELD(a,u8 *,1);
 ya=(s32)&map[yv*2];xa=(s32)&map[xv];
-if(func_ov000_021a9084(M2C_FIELD(M2C_FIELD(ya,u16 *,0x3758)+xa,u8 *,0x1420))){
+if(IsUnitProductionTerrain(M2C_FIELD(M2C_FIELD(ya,u16 *,0x3758)+xa,u8 *,0x1420))){
 if(!M2C_FIELD(a,u8 *,12))*q=5;
 else if(M2C_FIELD(a,u8 *,13))*q=4;
 else *q=3;

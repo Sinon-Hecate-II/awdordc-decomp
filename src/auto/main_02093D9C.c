@@ -716,11 +716,11 @@ void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
 /* Builds a battle action entry for the given slot and submits it. */
 void func_02094c90(s32 slot, s32 arg1) {
  extern s32 gCur3DSpriteEngine;
- s32 func_0209600c(); s32 func_020979a4(); s32 GetMenuCursor(); s32 func_02091e70();
+ s32 func_0209600c(); s32 HighlightScenePanel(); s32 GetMenuCursor(); s32 func_02091e70();
  void *GetScenePanelState(s32);
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
  if(func_0209600c()!=0)return;
- if(func_020979a4(slot)!=1)return;
+ if(HighlightScenePanel(slot)!=1)return;
  HideMenuCursor(GetMenuCursor());
  if(GetMenuCursor()<0)return;
  if(GetMenuCursor()>=3)return;

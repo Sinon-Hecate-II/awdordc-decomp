@@ -17,7 +17,7 @@ void func_02094d8c(M2C_UNK arg0) {
 
 void func_02094dac(void) {
     s32 Get3DSpriteCount();
-    M2C_UNK func_020979a4(M2C_UNK);
+    M2C_UNK HighlightScenePanel(M2C_UNK);
     s32 temp_r0;
 
     if (func_0209600c() != 0) {
@@ -27,7 +27,7 @@ void func_02094dac(void) {
     switch (temp_r0) {                              /* irregular */
     case 0:
     case 1:
-        func_020979a4(-1);
+        HighlightScenePanel(-1);
         return;
     case 2:
         func_02097a2c(-1);

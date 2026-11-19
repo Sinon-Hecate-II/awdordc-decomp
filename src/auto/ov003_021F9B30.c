@@ -6,7 +6,7 @@ void func_ov003_021f9b30(void *arg0) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK ScrollListTo(void *, u8, M2C_UNK);
     M2C_UNK func_020ab3b0(void *, u8, M2C_UNK);
-    u32 func_020d886c();
+    u32 GetMapCategory();
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
     extern u16 **data_027e01d8;
     s32 temp_r1;
@@ -51,7 +51,7 @@ void func_ov003_021f9b30(void *arg0) {
         }
         M2C_FIELD(temp_r0, s32 *, 0x14) = var_r2;
     }
-    temp_r0_2 = func_020d886c();
+    temp_r0_2 = GetMapCategory();
     switch (temp_r0_2) {
     case 28: var_r2_2 = 7; break;
     case 6: var_r2_2 = 1; break;
@@ -70,7 +70,7 @@ void func_ov003_021f9b30(void *arg0) {
     }
     ptr_2 = (var_r2_2 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4);
     func_020ab3b0(M2C_FIELD(arg0, void **, 0x4C), M2C_FIELD(ptr_2, u8 *, 0xA9), 1);
-    temp_r0_3 = func_020d886c();
+    temp_r0_3 = GetMapCategory();
     switch (temp_r0_3) {
     case 28: var_r2_3 = 7; break;
     case 6: var_r2_3 = 1; break;

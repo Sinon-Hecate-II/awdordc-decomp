@@ -488,10 +488,10 @@ s32 FindHttpHeader(void *a,s32 b){s32 StringCompare(s32,s32);s32 i=0;loop:if(M2C
 #pragma optimize_ifs off
 #pragma scheduling off
 s32 ReadHttpHeader(void *a,s32 b,u8 *c,u32 d){
-s32 FindHttpHeader(void *,s32);s32 StringLength(s32);s32 func_0203739c(s32,s32,u8 *,u32);
+s32 FindHttpHeader(void *,s32);s32 StringLength(s32);s32 DecodeBase64Url(s32,s32,u8 *,u32);
 s32 p=FindHttpHeader(a,b);u32 n;
 if(!p)return 0;
-n=func_0203739c(p,StringLength(p),c,d);
+n=DecodeBase64Url(p,StringLength(p),c,d);
 if(n==-1)return n;
 if((u32)n>=d)return n;
 c[n]=0;return n;

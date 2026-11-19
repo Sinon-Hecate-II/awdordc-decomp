@@ -15,7 +15,7 @@ void func_ov000_02187f7c(void) {
     extern s32 (*data_ov000_021df648)(void);
     s32 GetAiUnitSearchRange(void *);
     s32 func_ov000_02187eac(s16 *);
-    u8 func_ov000_021a9084(s32);
+    u8 IsUnitProductionTerrain(s32);
     void SelectMapLayer(void *);
     void FillMapCellLayer(void *, s32);
     u8 *map = *gCurrentMap;
@@ -43,7 +43,7 @@ nextTile:
                 for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
                     u8 *cell;
                     if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
-                        func_ov000_021a9084(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
+                        IsUnitProductionTerrain(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
                         map = *gCurrentMap;
                         cell = (map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)) + 0x3000;
                         if (M2C_FIELD(cell, u8 *, 0x250) < score) {
@@ -61,7 +61,7 @@ nextTile:
             for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
                 for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
                     if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 &&
-                        func_ov000_021a9084(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
+                        IsUnitProductionTerrain(M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_TERRAIN))) {
                         map = *gCurrentMap;
                         M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), s8 *, MAP_CELL_ORDER) = -1;
                     }

@@ -32,7 +32,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void Show3DSpriteSlide(void *);
     void func_020aad18(void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
-    void func_020af04c(s32, s32, s32, s32);
+    void CreateWallpaperSprite(s32, s32, s32, s32);
     void SetFileDirectory(void *);
     s32 GetLocalizedFileName(void *);
     void OpenNarcArchive(void);
@@ -140,7 +140,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         u8 val = M2C_FIELD(cur, u8 *, 0x46);
         val |= 0x04;
         M2C_FIELD(cur, u8 *, 0x46) = val;
-        func_020af04c(3, 0x0F, 0x06, val);
+        CreateWallpaperSprite(3, 0x0F, 0x06, val);
     }
     gCur3DSpriteEngine = data_027e00c4;
     {

@@ -130,7 +130,37 @@ u8 func_ov000_02173e6c(void *arg0) {
     return var_r0;
 }
 
-void *func_ov000_02173ea8(void *a){s32 p;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,8)=1;M2C_FIELD(a,s32 *,12)=0;M2C_FIELD(a,u8 *,16)=0;M2C_FIELD(a,u8 *,17)=1;M2C_FIELD(a,u8 *,18)=0;M2C_FIELD(a,u8 *,19)=0;M2C_FIELD(a,u8 *,20)=0;M2C_FIELD(a,s16 *,22)=-1;M2C_FIELD(a,s16 *,24)=-1;M2C_FIELD(a,u8 *,26)=255;p=MemAlloc(20);if(p)p=func_ov000_02175088(p);M2C_FIELD(a,s32 *,0)=p;p=MemAlloc(28);if(p)p=func_ov000_021724dc(p);M2C_FIELD(a,s32 *,4)=p;M2C_FIELD(a,s32 *,28)=GetLanguage();return a;}
+/* Allocate the ov000 map info window's two panels (the unit-statistics window
+ * and the terrain/unit info panel), put the window in the idle state and record
+ * the language it was created with. */
+Ov000InfoMenu *Ov000_InfoWindow_Init(Ov000InfoMenu *menu) {
+    void *MemAlloc(s32);
+    void *Ov000_StatsWindow_Create(void *);
+    void *Ov000_InfoPanel_Create(void *);
+    s32 GetLanguage(void);
+    void *p;
+
+    menu->statsWindow = 0;
+    menu->panel = 0;
+    menu->state = OV000_INFO_IDLE;
+    menu->pendingState = 0;
+    menu->refresh = 0;
+    menu->trigger = 1;
+    menu->pressed = 0;
+    menu->hasUnit = 0;
+    menu->prevMode = 0;
+    menu->cursorX = -1;
+    menu->cursorY = -1;
+    *(u8 *)&menu->animFrame = 255; /* -1: the cursor does not blink yet */
+    p = MemAlloc(20);
+    if (p) p = Ov000_StatsWindow_Create(p);
+    menu->statsWindow = p;
+    p = MemAlloc(28);
+    if (p) p = Ov000_InfoPanel_Create(p);
+    menu->panel = p;
+    menu->language = GetLanguage();
+    return menu;
+}
 
 void *func_ov000_02173f30(void *arg0) {
     M2C_UNK MemFree(s32);

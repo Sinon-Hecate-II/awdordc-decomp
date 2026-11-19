@@ -311,7 +311,7 @@ ArmTimerCountdown kind:function(arm,size=0x8c) addr:0x020070b4
 func_02007140 kind:function(arm,size=0x40) addr:0x02007140
 func_02007180 kind:function(arm,size=0x10) addr:0x02007180
 InitTimer kind:function(arm,size=0x10) addr:0x02007190
-func_020071a0 kind:function(arm,size=0x12c) addr:0x020071a0
+InsertTimer kind:function(arm,size=0x12c) addr:0x020071a0
 ScheduleTimer kind:function(arm,size=0x6c) addr:0x020072cc
 CancelTimer kind:function(arm,size=0x88) addr:0x02007338
 func_020073c0 kind:function(arm,size=0x10) addr:0x020073c0
@@ -799,7 +799,7 @@ func_0201869c kind:function(arm,size=0x80) addr:0x0201869c
 Mb_IsTaskCreated kind:function(arm,size=0x1c) addr:0x0201871c
 func_02018738 kind:function(arm,size=0x14) addr:0x02018738
 func_0201874c kind:function(arm,size=0x18) addr:0x0201874c
-func_02018764 kind:function(arm,size=0x164) addr:0x02018764
+Mb_QueueTask kind:function(arm,size=0x164) addr:0x02018764
 Mb_QueueTaskExit kind:function(arm,size=0x48) addr:0x020188c8
 func_02018910 kind:function(arm,size=0x30) addr:0x02018910
 func_02018940 kind:function(arm,size=0x20) addr:0x02018940
@@ -1387,7 +1387,7 @@ Sound_PlayArchiveEntry kind:function(arm,size=0xac) addr:0x0202d468
 Sound_PlaySequenceById kind:function(arm,size=0xfc) addr:0x0202d514
 Sound_PlaySequenceEntry kind:function(arm,size=0xc4) addr:0x0202d610
 Sound_StartWorker kind:function(arm,size=0x104) addr:0x0202d6d4
-func_0202d7d8 kind:function(arm,size=0xc8) addr:0x0202d7d8
+InitSoundPlayerSlots kind:function(arm,size=0xc8) addr:0x0202d7d8
 func_0202d8a0 kind:function(arm,size=0x5c) addr:0x0202d8a0
 func_0202d8fc kind:function(arm,size=0x20) addr:0x0202d8fc
 func_0202d91c kind:function(arm,size=0x28) addr:0x0202d91c
@@ -1405,7 +1405,7 @@ Sound_StopPlayer kind:function(arm,size=0x98) addr:0x0202de74
 Sound_ReleasePlayerResources kind:function(arm,size=0x64) addr:0x0202df0c
 Sound_AcquireChannel kind:function(arm,size=0x38) addr:0x0202df70
 Sound_ReleaseChannel kind:function(arm,size=0x24) addr:0x0202dfa8
-func_0202dfcc kind:function(arm,size=0x60) addr:0x0202dfcc
+CreateSoundWorkerTask kind:function(arm,size=0x60) addr:0x0202dfcc
 func_0202e02c kind:function(arm,size=0x70) addr:0x0202e02c
 func_0202e09c kind:function(arm,size=0x50) addr:0x0202e09c
 Sound_AllocRequest kind:function(arm,size=0x40) addr:0x0202e0ec
@@ -1527,7 +1527,7 @@ func_02031dfc kind:function(arm,size=0x8) addr:0x02031dfc
 func_02031e04 kind:function(arm,size=0x8) addr:0x02031e04
 func_02031e0c kind:function(arm,size=0x8) addr:0x02031e0c
 func_02031e14 kind:function(arm,size=0x14) addr:0x02031e14
-func_02031e28 kind:function(arm,size=0x10) addr:0x02031e28
+GetPlayerRecordKind kind:function(arm,size=0x10) addr:0x02031e28
 IsPlayerRecordJoined kind:function(arm,size=0x38) addr:0x02031e38
 GetPlayerRecordType kind:function(arm,size=0xc) addr:0x02031e70
 func_02031e7c kind:function(arm,size=0x18) addr:0x02031e7c
@@ -1566,7 +1566,7 @@ func_02032670 kind:function(arm,size=0x54) addr:0x02032670
 AssignPlayerRecordId kind:function(arm,size=0x34) addr:0x020326c4
 FormatPlayerNasId kind:function(arm,size=0x18) addr:0x020326f8
 PlayerRecordsEqual kind:function(arm,size=0xe4) addr:0x02032710
-func_020327f4 kind:function(arm,size=0x88) addr:0x020327f4
+FormatPlayerRecordId kind:function(arm,size=0x88) addr:0x020327f4
 func_0203287c kind:function(arm,size=0x20) addr:0x0203287c
 func_0203289c kind:function(arm,size=0x10) addr:0x0203289c
 CreateNasConnection kind:function(arm,size=0x124) addr:0x020328ac
@@ -1630,7 +1630,7 @@ ProcessWfcMatchResponse kind:function(arm,size=0x1b8) addr:0x0203703c
 func_020371f4 kind:function(arm,size=0x10) addr:0x020371f4
 func_02037204 kind:function(arm,size=0x10) addr:0x02037204
 Base64EncodeUrl kind:function(arm,size=0x188) addr:0x02037214
-func_0203739c kind:function(arm,size=0x16c) addr:0x0203739c
+DecodeBase64Url kind:function(arm,size=0x16c) addr:0x0203739c
 GetNetError kind:function(arm,size=0xf4) addr:0x02037508
 ClearNetError kind:function(arm,size=0x20) addr:0x020375fc
 HasNetError kind:function(arm,size=0x1c) addr:0x0203761c
@@ -2612,7 +2612,7 @@ func_02065020 kind:function(arm,size=0x1c) addr:0x02065020
 func_0206503c kind:function(arm,size=0x38) addr:0x0206503c
 func_02065074 kind:function(arm,size=0x14) addr:0x02065074
 func_02065088 kind:function(arm,size=0x1c) addr:0x02065088
-func_020650a4 kind:function(arm,size=0x88) addr:0x020650a4
+StringToWideString kind:function(arm,size=0x88) addr:0x020650a4
 func_0206512c kind:function(arm,size=0x78) addr:0x0206512c
 MemCopy kind:function(arm,size=0x20) addr:0x020651a4
 MemMove kind:function(arm,size=0x4c) addr:0x020651c4
@@ -3937,7 +3937,7 @@ func_02097768 kind:function(arm,size=0x4) addr:0x02097768
 ShowScenePanel kind:function(arm,size=0x110) addr:0x0209776c
 HideScenePanel kind:function(arm,size=0xe8) addr:0x0209787c
 HideAllScenePanels kind:function(arm,size=0x40) addr:0x02097964
-func_020979a4 kind:function(arm,size=0x88) addr:0x020979a4
+HighlightScenePanel kind:function(arm,size=0x88) addr:0x020979a4
 func_02097a2c kind:function(arm,size=0x7c) addr:0x02097a2c
 func_02097aa8 kind:function(arm,size=0x4) addr:0x02097aa8
 ClearTilemapRows kind:function(arm,size=0x100) addr:0x02097aac
@@ -4258,7 +4258,7 @@ func_020a233c kind:function(arm,size=0x10) addr:0x020a233c
 func_020a234c kind:function(arm,size=0x14) addr:0x020a234c
 GetPlayerIdForSlot kind:function(arm,size=0x10) addr:0x020a2360
 GetPlayerArmyId kind:function(arm,size=0x10) addr:0x020a2370
-func_020a2380 kind:function(arm,size=0x10) addr:0x020a2380
+GetPlayerOwnerGroup kind:function(arm,size=0x10) addr:0x020a2380
 func_020a2390 kind:function(arm,size=0x14) addr:0x020a2390
 SetPlayerTeam kind:function(arm,size=0x10) addr:0x020a23a4
 GetPlayerTeam kind:function(arm,size=0x10) addr:0x020a23b4
@@ -4401,7 +4401,7 @@ func_020a64bc kind:function(arm,size=0x30) addr:0x020a64bc
 func_020a64ec kind:function(arm,size=0xc) addr:0x020a64ec
 InitUnitRecord kind:function(arm,size=0x114) addr:0x020a64f8
 CreateMapUnit kind:function(arm,size=0x4c) addr:0x020a660c
-func_020a6658 kind:function(arm,size=0x88) addr:0x020a6658
+CreateOwnedMapUnit kind:function(arm,size=0x88) addr:0x020a6658
 func_020a66e0 kind:function(arm,size=0x38) addr:0x020a66e0
 RemoveUnit kind:function(arm,size=0x10) addr:0x020a6718
 DestroyUnit kind:function(arm,size=0x10) addr:0x020a6728
@@ -4717,7 +4717,7 @@ LoadWallpaperGraphics kind:function(arm,size=0x198) addr:0x020aebb8
 func_020aed50 kind:function(arm,size=0x16c) addr:0x020aed50
 CreateMainWallpaperSprite kind:function(arm,size=0xc0) addr:0x020aeebc
 CreateSubWallpaperSprite kind:function(arm,size=0xd0) addr:0x020aef7c
-func_020af04c kind:function(arm,size=0x88) addr:0x020af04c
+CreateWallpaperSprite kind:function(arm,size=0x88) addr:0x020af04c
 func_020af0d4 kind:function(arm,size=0x70) addr:0x020af0d4
 func_020af144 kind:function(arm,size=0x34) addr:0x020af144
 func_020af178 kind:function(arm,size=0x24) addr:0x020af178
@@ -5845,7 +5845,7 @@ func_020d4ca4 kind:function(arm,size=0xc) addr:0x020d4ca4
 func_020d4cb0 kind:function(arm,size=0x18) addr:0x020d4cb0
 func_020d4cc8 kind:function(arm,size=0xc) addr:0x020d4cc8
 func_020d4cd4 kind:function(arm,size=0x1c) addr:0x020d4cd4
-func_020d4cf0 kind:function(arm,size=0x88) addr:0x020d4cf0
+CreateBattleMapViewSprites kind:function(arm,size=0x88) addr:0x020d4cf0
 func_020d4d78 kind:function(arm,size=0x34) addr:0x020d4d78
 func_020d4dac kind:function(arm,size=0x24) addr:0x020d4dac
 IsMapCursorIdle kind:function(arm,size=0x2c) addr:0x020d4dd0
@@ -5894,7 +5894,7 @@ func_020d8764 kind:function(arm,size=0x74) addr:0x020d8764
 func_020d87d8 kind:function(arm,size=0x2c) addr:0x020d87d8
 UpdateCursorCellDisplayMode kind:function(arm,size=0x58) addr:0x020d8804
 func_020d885c kind:function(arm,size=0x10) addr:0x020d885c
-func_020d886c kind:function(arm,size=0x10) addr:0x020d886c
+GetMapCategory kind:function(arm,size=0x10) addr:0x020d886c
 func_020d887c kind:function(arm,size=0x18) addr:0x020d887c
 func_020d8894 kind:function(arm,size=0x18) addr:0x020d8894
 func_020d88ac kind:function(arm,size=0x18) addr:0x020d88ac
@@ -10838,7 +10838,7 @@ gSoundWorker kind:bss addr:0x0213c440
 gSoundWorkerLock kind:bss addr:0x0213c908
 gSoundRequestQueue kind:bss addr:0x0213c920
 gSoundPlayerSlots kind:bss addr:0x0213c92c
-data_0213cf00 kind:bss addr:0x0213cf00
+gSoundDecodeState kind:bss addr:0x0213cf00
 gWfcManager kind:bss addr:0x0213d100
 gNasConnection kind:bss addr:0x0213d114
 gNasTaskOwner kind:bss addr:0x0213d11c
@@ -10925,7 +10925,7 @@ data_0213e7f4 kind:bss addr:0x0213e7f4
 data_0213e8f4 kind:bss addr:0x0213e8f4
 gErrno kind:bss addr:0x0213e9f4
 gSocketCallbacks kind:bss addr:0x0213e9f8
-data_0213ea14 kind:bss addr:0x0213ea14
+gExitFunctionList kind:bss addr:0x0213ea14
 gSaveManager kind:bss addr:0x0213ea18
 data_0213f664 kind:bss addr:0x0213f664
 data_02140a18 kind:bss addr:0x02140a18
@@ -11102,7 +11102,7 @@ gMapData kind:bss addr:0x02168f08
 gBattleEndState kind:bss addr:0x02168f0c
 gMapConfig kind:bss addr:0x02168f14
 data_02168f24 kind:bss addr:0x02168f24
-data_02168f28 kind:bss addr:0x02168f28
+gMapCategory kind:bss addr:0x02168f28
 data_02168f2c kind:bss addr:0x02168f2c
 data_02168f68 kind:bss addr:0x02168f68
 data_02168f74 kind:bss addr:0x02168f74

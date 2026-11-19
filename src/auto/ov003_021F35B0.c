@@ -66,7 +66,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     M2C_UNK func_0208f780(M2C_UNK);
     M2C_UNK MapSettings_SetDefaults(M2C_UNK);
     M2C_UNK func_020bfb74(M2C_UNK);
-    u32 func_020d886c();
+    u32 GetMapCategory();
     void SetOv003SceneState(s32);
     M2C_UNK func_ov003_021f1480(s32);
     extern M2C_UNK data_ov003_0220fca8;
@@ -130,7 +130,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, M2C_UNK ***, 0x40) = temp_r0_2;
     }
     func_0208f780(4);
-    temp_r0_3 = func_020d886c();
+    temp_r0_3 = GetMapCategory();
     switch (temp_r0_3) {
     case 28:
         temp_lr = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);

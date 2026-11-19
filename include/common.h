@@ -2074,6 +2074,8 @@ typedef struct Ov001FadeStates {
 /* Cursor sprite attribute bits a cancelled code entry clears. */
 #define CODE_ENTRY_CURSOR_MASK 0xC1FFFCFF
 
+
+
 /* Attribute bits of a sprite object's entry word (the first u32 of each 8-byte entry):
  * bits 8-9 choose how the entry is drawn and bits 25-29 hold the index of the
  * rotation-scaling matrix it reads.  A normal entry is hidden with SPRITE_ENTRY_HIDDEN;
@@ -2883,6 +2885,36 @@ typedef struct IrqHandler {
 #define SYSTEM_TICK_RELOAD      0x04 /* s32 nonzero when TIMER0 must be reloaded */
 #define SYSTEM_TICK_OVERFLOW    0x08 /* u64 TIMER0 overflows counted so far */
 
+/* The OS timer queue (gTimerQueue): timer nodes sorted by their u64 deadline,
+ * the earliest at TIMER_QUEUE_HEAD and the latest at TIMER_QUEUE_TAIL.  A node
+ * links toward the head at TIMER_NODE_PREV and toward the tail at
+ * TIMER_NODE_NEXT.  A node whose TIMER_NODE_PERIOD is set repeats, counting from
+ * the tick it last fired at; the timer interrupt calls its TIMER_NODE_CALLBACK
+ * with TIMER_NODE_ARG. */
+#define TIMER_QUEUE_READY   0x00 /* u16 nonzero once the queue is set up */
+#define TIMER_QUEUE_HEAD    0x04 /* void * node with the earliest deadline */
+#define TIMER_QUEUE_TAIL    0x08 /* void * node with the latest deadline */
+#define TIMER_NODE_CALLBACK 0x00 /* s32 function the timer interrupt calls, 0 while the node is idle */
+#define TIMER_NODE_ARG      0x04 /* s32 argument the callback gets */
+#define TIMER_NODE_DEADLINE 0x0c /* u64 system tick the timer is due */
+#define TIMER_NODE_PREV     0x14 /* void * node nearer the head */
+#define TIMER_NODE_NEXT     0x18 /* void * node nearer the tail */
+#define TIMER_NODE_PERIOD   0x1c /* u64 repeat period in ticks, 0 for a one-shot timer */
+#define TIMER_NODE_LAST     0x24 /* u64 system tick the timer last fired at */
+
+/* The OS timer queue (gTimerQueue) keeps its armed timers sorted by deadline,
+ * the earliest at TIMER_QUEUE_HEAD and the latest at TIMER_QUEUE_TAIL; the
+ * TIMER_* offsets describe one timer object. */
+#define TIMER_QUEUE_HEAD    0x04 /* void *: timer due first */
+#define TIMER_QUEUE_TAIL    0x08 /* void *: timer due last */
+#define TIMER_CALLBACK      0x00 /* void (*)(s32): run when the timer is due, 0 once cancelled */
+#define TIMER_ARG           0x04 /* s32 argument handed to the callback */
+#define TIMER_DEADLINE      0x0C /* u64 GetSystemTick() value the timer is due at */
+#define TIMER_PREV          0x14 /* the timer due before this one */
+#define TIMER_NEXT          0x18 /* the timer due after this one */
+#define TIMER_PERIOD        0x1C /* u64 repeat period, 0 for a one-shot timer */
+#define TIMER_LAST_DEADLINE 0x24 /* u64 deadline a periodic timer was last queued at */
+
 typedef struct FifoMessage {
     u32 tag:5;      /* bit 0: handler index, 0 when there is no message */
     u32 reply:1;    /* bit 5: 0 = request, 1 = reply */
@@ -3070,9 +3102,21 @@ typedef struct Thread {
  * SleepMilliseconds; 0 when the thread is not sleeping on a timer. */
 #define THREAD_WAKE_TIMER 0xB0
 
+/* The exit-function list (gExitFunctionList) the C++ runtime registers with
+ * __cxa_atexit: a singly-linked list of nodes, each a function and the argument
+ * it is run with.  Unloading a module takes out the nodes that belong to it. */
+#define EXIT_FUNC_NEXT     0x00 /* node *: next registered function, 0 at the end */
+#define EXIT_FUNC_CALLBACK 0x04 /* the function to run */
+#define EXIT_FUNC_ARG      0x08 /* u32 argument handed to it */
+
 /* The CO roster state (gCoState): +0x04 a u8, +0x08 the s32 bitset of the COs
  * the player has unlocked (bit i = CO i). */
+#define CO_STATE_CURRENT_SLOT 0x04 /* u8 index into gCoPlayerSlots of the CO the menus show */
 #define CO_STATE_UNLOCKED 0x08
+
+/* The CO roster (gCoPlayerSlots): 12-byte records, one per CO. */
+#define CO_SLOT_STRIDE 12 /* bytes per record */
+#define CO_SLOT_ID     0x00 /* u16 id of the CO in the slot, 0 when the slot is empty */
 
 /* A Q12 fixed-point 4x3 matrix as the matrix library (main_02001068) stores it:
  * three rows of three rotation/scale coefficients, row-major, then the

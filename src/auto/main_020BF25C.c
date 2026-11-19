@@ -231,18 +231,30 @@ M2C_FIELD(a,u32 *,8)=M2C_FIELD(&gGameSettings,u32 *,8);
 M2C_FIELD(a,u32 *,12)=M2C_FIELD(&gGameSettings,u32 *,12);
 }
 
+/* Pick a random map id among the maps a random battle may use: count them,
+ * choose one of them by its index, then walk the ids again and return the chosen
+ * one.  Returns 0 when no map can be picked. */
 s32 RandomSelectableMapId(void) {
-s32 NextRandomValue(void);
-s32 MapData_IsRandomSelectable(s32);
-s32 i,count,chosen,n;
-count=0;i=0;
-do { if(MapData_IsRandomSelectable(i))count++; i++; } while(i<0x113);
-if(count) {
-chosen=NextRandomValue()%count;
-n=0;i=0;
-do {if(MapData_IsRandomSelectable(i)){if(chosen==n)return i;n++;}i++;}while(i<0x113);
-}
-return 0;
+    s32 NextRandomValue(void);
+    s32 MapData_IsRandomSelectable(s32);
+    s32 index, count, chosen, mapId;
+
+    count = 0;
+    index = 0;
+    do { if (MapData_IsRandomSelectable(index)) count++; index++; } while (index < 0x113);
+    if (count) {
+        chosen = NextRandomValue() % count;
+        mapId = 0;
+        index = 0;
+        do {
+            if (MapData_IsRandomSelectable(index)) {
+                if (chosen == mapId) return index;
+                mapId++;
+            }
+            index++;
+        } while (index < 0x113);
+    }
+    return 0;
 }
 
 s32 RandomFog(void) {

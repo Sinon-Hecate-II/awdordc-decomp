@@ -348,20 +348,34 @@ extern u32 data_0210040c[];
 return (*(s32 (**)(s8 *,u16))(data_0210040c[2]+4))(a,b);
 }
 
-u32 func_020650a4(s16 *out,char *in,u32 n) {
-s32 StringLength(char *);
-u32 i; s32 left;
-left=StringLength(in); i=0;
-if(out) {
-for(;i<n;i++) {
-if(*in) {
-s32 len=func_02065020(out,in,left);
-out++;
-if(len>0) {in+=len;left-=len;} else return -1;
-} else {*out=0;break;}
-}
-}
-return i;
+/* Convert the multibyte string `in` to wide characters at `out`, at most `count`
+ * of them: each character is converted with the locale's mbtowc
+ * (data_0210040c[2]), and the string's NUL is stored as the end.  Returns the
+ * number of characters stored, or -1 when a character cannot be converted. */
+u32 StringToWideString(s16 *out, char *in, u32 count) {
+    s32 StringLength(char *);
+    u32 index;
+    s32 left;
+    s32 length;
+
+    left = StringLength(in);
+    index = 0;
+    if (out) {
+        for (; index < count; index++) {
+            if (*in) {
+                length = func_02065020(out, in, left);
+                out++;
+                if (length > 0) {
+                    in += length;
+                    left -= length;
+                } else return -1;
+            } else {
+                *out = 0;
+                break;
+            }
+        }
+    }
+    return index;
 }
 
 u32 func_0206512c(s8 *out,u16 *in,u32 n) {

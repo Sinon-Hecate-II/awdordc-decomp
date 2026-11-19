@@ -143,7 +143,7 @@ s32 BuildAiTargetGroups(void) {
     s32 func_ov000_021a99dc(void *);
     s32 IsPropertyTerrain(s32);
     s32 IsTerrainOnUnitTeam(s32,s32);
-    s32 func_ov000_021a4a98(s32,s32);
+    s32 EvaluateAiTargetGroupForCapture(s32,s32);
     void func_ov000_021a11b0(s32);
     extern void *gAiState;
     extern u8 gAiTargetCandidates[], gAiTargetGroups[], gUnitKindStats[];
@@ -213,7 +213,7 @@ s32 BuildAiTargetGroups(void) {
         }
         if ((statusFlags&1) || !(statusFlags&2)) group[3]=(group[3]&~1)|1;
         if (!(typeFlags&1) && (typeFlags&2)) group[3]|=2;
-        terrainValue=func_ov000_021a4a98(candidate[0],candidate[1]);
+        terrainValue=EvaluateAiTargetGroupForCapture(candidate[0],candidate[1]);
         if ((terrainValue&0x100) || !(terrainValue&255)) group[3]&=~4;
         else group[3]|=4;
         func_ov000_021a11b0(groupCount);

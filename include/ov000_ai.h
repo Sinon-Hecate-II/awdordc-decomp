@@ -199,4 +199,8 @@
 #define AI_GROUP_FLAG_SEA_THREAT  0x02 /* an enemy sea unit threatens the group and no ready kind-6/14 unit is in it */
 #define AI_GROUP_FLAG_PROPERTY    0x04 /* the group's best tile is worth capturing */
 
+/* Bit 0x100 of the capture-target evaluation result: the group holds a kind-24/25
+ * production site (a base or port), so its tile is not a capture target. */
+#define AI_CAPTURE_EVAL_PRODUCTION_SITE 0x100
+
 #endif

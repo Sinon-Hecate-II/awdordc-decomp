@@ -212,14 +212,14 @@ u8 func_ov000_02174c0c(void) {
 
 void func_ov000_02174c2c(void) {
     s32 *MemAlloc(M2C_UNK);
-    void *func_ov000_02173ea8(void *);
+    void *Ov000_InfoWindow_Init(void *);
     M2C_UNK CreateSpriteFromClass(void *, s32);
     extern M2C_UNK data_ov000_021b8e5c;
     extern Ov000MenuState *gOv000InfoWindow;
     void *var_r0;
     var_r0 = MemAlloc(0x20);
     if (var_r0 != 0) {
-        var_r0 = func_ov000_02173ea8(var_r0);
+        var_r0 = Ov000_InfoWindow_Init(var_r0);
     }
     gOv000InfoWindow = var_r0;
     CreateSpriteFromClass(&data_ov000_021b8e5c, 8);
@@ -349,7 +349,7 @@ s32 GetInfoWindowLanguage(void) {
 
 /* Initialize the 0x14-byte sub-object stored at entry+0x10 (allocating it
  * and its 0x104-byte descriptor) and clear the leading fields of entry. */
-void *func_ov000_02175088(void *entry) {
+void *Ov000_StatsWindow_Create(void *entry) {
     s32 *MemAlloc(M2C_UNK);
     s32 *alloc;
 

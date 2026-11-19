@@ -17,17 +17,8 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     s32 sp10;
     s32 spC;
     u32 sp8;
-    s16 temp_r11;
-    s16 temp_r11_2;
-    s16 temp_r11_3;
-    s16 temp_r1;
-    s16 temp_r4_5;
-    s16 temp_r4_6;
-    s16 temp_r4_7;
-    s16 temp_r6;
-    s16 temp_r6_2;
-    s16 temp_r6_3;
-    s16 temp_r6_4;
+    s32 temp_r4_6;
+    s32 temp_r4_7;
     s16 temp_r7;
     s16 temp_r9;
     s32 temp_r4;
@@ -36,14 +27,11 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     s32 var_r0_3;
     s32 var_r0_4;
     s32 var_r0_5;
-    u16 temp_r4_2;
-    u16 temp_r4_3;
-    u16 temp_r4_4;
-    u16 temp_r7_2;
-    u8 var_r1;
+    u32 var_r1;
     u8 var_r8;
     void *temp_r5;
-    void *temp_r5_2;
+
+    s16 spriteX, spriteY;
 
     sp8 = arg1;
     var_r8 = 0;
@@ -55,8 +43,8 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     do {
         temp_r4 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x50));
         temp_r9 = temp_r4 + func_ov003_022004a8(var_r8);
-        temp_r7 = temp_r9 + 0xD;
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x28);
+        temp_r7 = temp_r9 + 0xD;
         func_02088e84(temp_r5, temp_r7, 0x70, temp_r7, 0x70);
         if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0 = 1;
@@ -64,10 +52,10 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             var_r0 = 0;
         }
         if (var_r0 & 0xFF) {
-            temp_r11 = M2C_FIELD(temp_r5, s16 *, 0x52);
-            temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x50);
-            temp_r4_2 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6, temp_r11, (s32) temp_r4_2, (s32) GetUnitSpriteHeight(temp_r5));
+            spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
+            spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
+            temp_r4 = GetUnitSpriteWidth(temp_r5);
+            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r7;
         M2C_FIELD(temp_r5, s16 *, 0x36) = 0x70;
@@ -77,37 +65,36 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             var_r0_2 = 0;
         }
         if (var_r0_2 & 0xFF) {
-            temp_r11_2 = M2C_FIELD(temp_r5, s16 *, 0x52);
-            temp_r6_2 = M2C_FIELD(temp_r5, s16 *, 0x50);
-            temp_r4_3 = GetUnitSpriteWidth(temp_r5);
-            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r6_2, temp_r11_2, (s32) temp_r4_3, (s32) GetUnitSpriteHeight(temp_r5));
+            spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
+            spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
+            temp_r4 = GetUnitSpriteWidth(temp_r5);
+            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
-        temp_r5_2 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x38);
-        temp_r1 = temp_r9 + 0xD;
-        func_02088e84(temp_r5_2, temp_r1, 0x90, temp_r1, 0x90);
-        if (M2C_FIELD(M2C_FIELD(temp_r5_2, void **, 0x64), u8 *, 0x12) != 0) {
+        temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x38);
+        func_02088e84(temp_r5, temp_r9 + 0xD, 0x90, temp_r9 + 0xD, 0x90);
+        if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_3 = 1;
         } else {
             var_r0_3 = 0;
         }
         if (var_r0_3 & 0xFF) {
-            temp_r11_3 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
-            temp_r6_3 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
-            temp_r4_4 = GetUnitSpriteWidth(temp_r5_2);
-            func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_3, temp_r11_3, (s32) temp_r4_4, (s32) GetUnitSpriteHeight(temp_r5_2));
+            spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
+            spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
+            temp_r4 = GetUnitSpriteWidth(temp_r5);
+            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
-        M2C_FIELD(temp_r5_2, s16 *, 0x34) = temp_r7;
-        M2C_FIELD(temp_r5_2, s16 *, 0x36) = 0x90;
-        if (M2C_FIELD(M2C_FIELD(temp_r5_2, void **, 0x64), u8 *, 0x12) != 0) {
+        M2C_FIELD(temp_r5, s16 *, 0x34) = temp_r7;
+        M2C_FIELD(temp_r5, s16 *, 0x36) = 0x90;
+        if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_4 = 1;
         } else {
             var_r0_4 = 0;
         }
         if (var_r0_4 & 0xFF) {
-            temp_r4_5 = M2C_FIELD(temp_r5_2, s16 *, 0x52);
-            temp_r6_4 = M2C_FIELD(temp_r5_2, s16 *, 0x50);
-            temp_r7_2 = GetUnitSpriteWidth(temp_r5_2);
-            func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r6_4, temp_r4_5, (s32) temp_r7_2, (s32) GetUnitSpriteHeight(temp_r5_2));
+            spriteY = M2C_FIELD(temp_r5, s16 *, 0x52);
+            spriteX = M2C_FIELD(temp_r5, s16 *, 0x50);
+            temp_r4 = GetUnitSpriteWidth(temp_r5);
+            func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         temp_r4_6 = temp_r9 - 1;
         if (func_ov003_021e6cc4(temp_r4_6, 0x78, 0x40, 0x20) != 0) {
@@ -123,7 +110,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             }
             AddSprite((u16) (temp_r4_6 & 0x1FF), 0x78,
                           (u16) ((spC & (0x600 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) |
-                                 (u16) (var_r1 << 0xC) | 0x800),
+                                 (u16) ((u8)var_r1 << 0xC) | 0x800),
                           &gSpriteDesc64x32, 0xB);
         }
         temp_r4_7 = temp_r9 - 4;
