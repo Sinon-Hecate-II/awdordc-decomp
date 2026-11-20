@@ -188,7 +188,7 @@ s32 func_02094110(void *arg0) {
 }
 
 s32 func_02094130(void *arg0) {
-    M2C_UNK func_02096b50(s32);
+    M2C_UNK ShowUiMessage(s32);
     M2C_UNK func_02096b6c(s32);
     M2C_UNK func_02096b88(s32);
     s16 temp_r0;
@@ -199,7 +199,7 @@ s32 func_02094130(void *arg0) {
         temp_r0 = M2C_FIELD(temp_r1, s16 *, 8);
         switch (temp_r0) {                          /* irregular */
         case 0:
-            func_02096b50(M2C_FIELD(temp_r1, s32 *, 0xC));
+            ShowUiMessage(M2C_FIELD(temp_r1, s32 *, 0xC));
             break;
         case 1:
             func_02096b6c(M2C_FIELD(temp_r1, s32 *, 0xC));

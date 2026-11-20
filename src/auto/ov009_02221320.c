@@ -238,8 +238,8 @@ if(M2C_FIELD(arg0,u16*,0x44)){
 M2C_FIELD(arg0,u16*,0x46)=M2C_FIELD(arg0,u16*,0x44);
 packet=M2C_FIELD(arg0,s32*,0x3c);
 switch(M2C_FIELD(packet,PacketBits215a4*,5).high){
-case 0:func_ov009_02223640(12,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
-case 1:func_ov009_02223640(4,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
+case 0:SendLinkChannelData(12,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
+case 1:SendLinkChannelData(4,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg0,u32*,0x40),func_ov009_02221538);break;
 }
 Sprite_ResumeAnimation(arg0);
 }else{

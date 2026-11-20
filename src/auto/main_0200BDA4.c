@@ -1,6 +1,8 @@
 /* 19 functions from 0x0200BDA4 to 0x0200CD68 (main), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 #include "md5.h"
+#include "fs.h"
 typedef struct { u32 first, second; } Unk0200FilePair;
 
 void func_0200bda4(s32 arg0) {
@@ -246,14 +248,20 @@ void CompleteFileLoad(void *arg0) {
     }
 }
 
-void func_0200c308(void *arg0) {
+/* Run and unregister every exit function (a static destructor registered
+ * through gExitFunctionList) that belongs to the module now occupying `header`'s
+ * buffer: a node is taken out when its callback address, or its nonzero
+ * argument, lies in [data, data + dataSize + bssSize).  The list is walked under
+ * an interrupt lock, then the functions taken out are run, and the walk repeats
+ * until nothing is left to remove. */
+void RunModuleExitFunctions(FSFileHeader *header) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern void *gExitFunctionList;
     s32 irq;
-    u32 f4;
-    u32 f8;
-    u32 fc;
+    u32 dataSize;
+    u32 bssSize;
+    u32 data;
     u32 base;
     u32 end;
     void *prev_kept;
@@ -262,30 +270,30 @@ void func_0200c308(void *arg0) {
     void *next;
     void *removed_head;
     void *removed_tail;
-    u32 node_arg;
+    u32 exitArg;
     void (*cb)(u32);
 
     for (;;) {
-        f8 = M2C_FIELD(arg0, u32 *, 8);
-        fc = M2C_FIELD(arg0, u32 *, 0xC);
-        f4 = M2C_FIELD(arg0, u32 *, 4);
-        base = f4;
+        dataSize = header->dataSize;
+        bssSize = header->bssSize;
+        data = (u32)header->data;
+        base = data;
         removed_head = (void *)0;
         removed_tail = (void *)0;
-        end = base + (f8 + fc);
+        end = base + (dataSize + bssSize);
         irq = OS_DisableInterrupts();
         head = gExitFunctionList;
         cur = head;
         prev_kept = (void *)0;
         if (head != (void *)0) {
             do {
-                next = M2C_FIELD(cur, void **, 0);
-                node_arg = M2C_FIELD(cur, u32 *, 8);
-                cb = M2C_FIELD(cur, void (**)(u32), 4);
-                if ((node_arg == 0 && (u32)cb >= base && (u32)cb < end) ||
-                    (node_arg >= base && node_arg < end)) {
+                next = M2C_FIELD(cur, void **, EXIT_FUNC_NEXT);
+                exitArg = M2C_FIELD(cur, u32 *, EXIT_FUNC_ARG);
+                cb = M2C_FIELD(cur, void (**)(u32), EXIT_FUNC_CALLBACK);
+                if ((exitArg == 0 && (u32)cb >= base && (u32)cb < end) ||
+                    (exitArg >= base && exitArg < end)) {
                     if (removed_tail != (void *)0) {
-                        M2C_FIELD(removed_tail, void **, 0) = cur;
+                        M2C_FIELD(removed_tail, void **, EXIT_FUNC_NEXT) = cur;
                     } else {
                         removed_head = cur;
                     }
@@ -293,10 +301,10 @@ void func_0200c308(void *arg0) {
                         gExitFunctionList = next;
                         head = next;
                     }
-                    M2C_FIELD(cur, void **, 0) = (void *)0;
+                    M2C_FIELD(cur, void **, EXIT_FUNC_NEXT) = (void *)0;
                     removed_tail = cur;
                     if (prev_kept != (void *)0) {
-                        M2C_FIELD(prev_kept, void **, 0) = next;
+                        M2C_FIELD(prev_kept, void **, EXIT_FUNC_NEXT) = next;
                     }
                 } else {
                     prev_kept = cur;
@@ -307,10 +315,10 @@ void func_0200c308(void *arg0) {
         OS_RestoreInterrupts(irq);
         if (removed_head == NULL) break;
         do {
-            cb = M2C_FIELD(removed_head, void (**)(u32), 4);
-            removed_tail = M2C_FIELD(removed_head, void **, 0);
+            cb = M2C_FIELD(removed_head, void (**)(u32), EXIT_FUNC_CALLBACK);
+            removed_tail = M2C_FIELD(removed_head, void **, EXIT_FUNC_NEXT);
             if (cb != NULL) {
-                cb(M2C_FIELD(removed_head, u32 *, 8));
+                cb(M2C_FIELD(removed_head, u32 *, EXIT_FUNC_ARG));
             }
             removed_head = removed_tail;
         } while (removed_tail != NULL);
@@ -318,7 +326,7 @@ void func_0200c308(void *arg0) {
 }
 
 s32 func_0200c3f8(void *range) {
-    func_0200c308(range);
+    RunModuleExitFunctions(range);
     return 1;
 }
 

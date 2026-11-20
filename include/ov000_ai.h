@@ -114,9 +114,10 @@
 /* Attack-distance rings added outside a movement flood fill start above its cost values. */
 #define AI_THREAT_RING_FIRST 111
 
-/* Unit kinds the AI code names directly. */
+/* Unit kinds the battle and AI code names directly. */
 #define UNIT_KIND_INFANTRY  1
 #define UNIT_KIND_MECH      2
+#define UNIT_KIND_TANK      7
 
 /* The AI's counter-unit kind (BuildAiCounterUnit builds one when an enemy has
  * a unit of the class it answers).  An existing one is only considered usable
@@ -138,6 +139,7 @@
 #define AI_CANDIDATE_GROUP    0x04 /* s8 target group */
 #define AI_CANDIDATE_ENEMY_GROUP_DISTANCE 0x07 /* u8 distance to the closest enemy in the candidate's target group */
 #define AI_CANDIDATE_STRIDE   12
+#define AI_CANDIDATE_TYPE_ANY 4 /* wildcard used by candidate searches */
 /* Candidate fields 0x05..0x0A are reused per target type.  On a property
  * candidate (type 2) the AI target-group scan files the number of enemy units
  * that can reach the tile and the distance to the closest of them. */

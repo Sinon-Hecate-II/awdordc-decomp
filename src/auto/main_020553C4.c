@@ -122,8 +122,8 @@ return 0;
 }
 
 s32 func_02055848(s32 *arg0) {
-unsigned long long func_020720f0(s32);
-return (s32)(func_020720f0(*arg0)>>32);
+unsigned long long RuntimeIntDivMod(s32);
+return (s32)(RuntimeIntDivMod(*arg0)>>32);
 }
 
 s32 func_0205585c(s32 *arg0, s32 *arg1) {

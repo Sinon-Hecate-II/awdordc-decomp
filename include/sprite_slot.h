@@ -7,6 +7,7 @@
 #define SPRITE_SLOT_VISIBLE  0x01 /* u8 slot is active */
 #define SPRITE_SLOT_STATE    0x03 /* u8 SPRITE_SLOT_STATE_* */
 #define SPRITE_SLOT_ANIM     0x04 /* u8 animation state */
+#define SPRITE_SLOT_OWNER    0x10 /* void *object the slot's callbacks work on */
 #define SPRITE_SLOT_X        0x14 /* s16 left edge */
 #define SPRITE_SLOT_Y        0x16 /* s16 top edge */
 #define SPRITE_SLOT_W        0x18 /* s16 width */

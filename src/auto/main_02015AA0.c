@@ -338,6 +338,7 @@ void DownloadBeginPacket(void) {
  M2C_FIELD(&gDownloadSendState,u8 *,0x24)=3;
 }
 
+#pragma opt_propagation off
 void DownloadSendChunkPacket(s32 a,s32 b,s32 c) {
 extern M2C_UNK gDownloadSendState;
 extern M2C_UNK data_021311ee;
@@ -347,9 +348,9 @@ s32 FillU16(s32,void *,s32);
 s32 CopyU16();
 u16 func_02015f48(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
-void *p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
+register void *p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
 u32 end=(u32)p+0x358;
-u32 src=M2C_FIELD(&gDownloadSendState,u32 *,0x20);
+register u32 src=M2C_FIELD(&gDownloadSendState,u32 *,0x20);
 u32 n;
 if(src+0x62<=end)M2C_FIELD(&gDownloadSendState,u8 *,0x4c)=0x62;
 else {n=end-src;M2C_FIELD(&gDownloadSendState,u8 *,0x4c)=n;FillU16(0,(u8 *)&data_021311ee+(u8)n,0x62-(u8)n);}
@@ -365,11 +366,11 @@ M2C_FIELD(&gDownloadSendState,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
 M2C_FIELD(&gDownloadSendState,u8 *,0x47)=M2C_FIELD(&gDownloadSendState,u8 *,0x29)++;
 M2C_FIELD(&gDownloadSendState,u16 *,0x48)=0;
 M2C_FIELD(&gDownloadSendState,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
-if(++M2C_FIELD(&gDownloadSendState,u8 *,0x27)>=M2C_FIELD(&gDownloadSendState,u8 *,0x28))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=4;
-else M2C_FIELD(&gDownloadSendState,u32 *,0x20)+=0x62;
+if((u8)++M2C_FIELD(&gDownloadSendState,u8 *,0x27)>=M2C_FIELD(&gDownloadSendState,u8 *,0x28))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=4;
+else M2C_FIELD(&gDownloadSendState,volatile u32 *,0x20)+=0x62;
 WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
 }
-
+#pragma opt_propagation reset
 void DownloadFinishChunkFile(void) {
 extern M2C_UNK gDownloadSendState;
 M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u16 *,0x4b0)=1;

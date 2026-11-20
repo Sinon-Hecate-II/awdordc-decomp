@@ -18,7 +18,7 @@ void Mb_SendBootParams(void) {
     s32 func_0200519c(s32);
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02007a74(s32, M2C_UNK, M2C_UNK, u32);
-    void func_02007e70(void *, void *, s32);
+    void MIi_CpuCopy32(void *, void *, s32);
     void func_02006774(void);
     void WaitByLoop(s32);
 
@@ -73,7 +73,7 @@ void Mb_SendBootParams(void) {
         p[0] = 1;
     }
 
-    func_02007e70((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
+    MIi_CpuCopy32((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
     func_02006774();
     func_02018ea4((((u32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
 

@@ -327,11 +327,14 @@ plain:
     func_020b5594(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 6, 7);
 }
 
-void func_020d1174(u8 *a) {
+/* Records the destruction of a unit for the records screen: adds one to the
+   per-kind destroyed-unit counter (kind + RECORD_UNIT_KIND_BASE) and recurses
+   into the units this one was carrying. */
+void RecordDestroyedUnit(u8 *unit) {
 extern s32 *gCurrentMap;
-AddRecordValue(((u32)(a[0]<<26)>>26)+0x43,1);
-if(a[12])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[12]*14);
-if(a[13])func_020d1174((u8 *)(*gCurrentMap+0x59a4)+a[13]*14);
+AddRecordValue(((u32)(unit[MAP_UNIT_KIND]<<26)>>26)+RECORD_UNIT_KIND_BASE,1);
+if(unit[MAP_UNIT_FIRST_CARRIED])RecordDestroyedUnit((u8 *)(*gCurrentMap+MAP_UNIT_RECORDS)+unit[MAP_UNIT_FIRST_CARRIED]*MAP_UNIT_STRIDE);
+if(unit[MAP_UNIT_NEXT_CARRIED])RecordDestroyedUnit((u8 *)(*gCurrentMap+MAP_UNIT_RECORDS)+unit[MAP_UNIT_NEXT_CARRIED]*MAP_UNIT_STRIDE);
 }
 
 /* Resolves a fight after damage has been applied to both battle participants:
@@ -349,7 +352,7 @@ if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
 record=(void*)(*gCurrentMap+0x6eb8);
 func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)),D068CLow(M2C_FIELD(record,void**,0)));
-if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
+if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6ed8)))==1)RecordDestroyedUnit(M2C_FIELD(*gCurrentMap,u8**,0x6eb8));
 }
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ee6)<=0){
 if((u32)(M2C_FIELD(gMapData,u16*,12)<<23)>>31){
@@ -358,7 +361,7 @@ if(((D11F4Bits *)unit)->team<3)D11F4Set(unit,((D11F4Bits *)unit)->team+1);
 }
 record=(void*)(*gCurrentMap+0x6ed8);
 func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),D068CLow(M2C_FIELD(record,void**,0)));
-if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)func_020d1174(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
+if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)RecordDestroyedUnit(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
 }
 ((void (*)())func_020d1034)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
 ((void (*)())func_020d1034)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);

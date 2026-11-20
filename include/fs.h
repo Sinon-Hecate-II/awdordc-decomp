@@ -59,6 +59,12 @@ struct FSFileRequest {
 #define FS_REQ_DIR_PARENT 0x2C /* u32 index of the current directory's parent in the FNT main table, 0 for the root */
 #define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
 
+/* Scratch fields of the open-by-id command (6) and the open-range command (7) it
+ * chains to: the data range the file's FAT record gives. */
+#define FS_REQ_OPEN_START 0x30 /* u32 archive offset of the file's first byte */
+#define FS_REQ_OPEN_END   0x34 /* u32 offset one past its last byte, or the file id for command 6 */
+#define FS_REQ_OPEN_ID    0x38 /* u32 entry id of the opened file */
+
 /* Request flags at FSFileRequest::flags. */
 #define FS_REQ_ACTIVE    0x00000001 /* submitted and not yet finished by the worker */
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
@@ -78,6 +84,14 @@ struct FSFileRequest {
 #define FS_FILE_NOTIFY_PENDING 0x00000010 /* idle callback armed, not yet run */
 #define FS_FILE_CANCELLING     0x00000020 /* drop the queued requests */
 #define FS_FILE_ABORTING       0x00000040 /* finish up and wake the idle queue */
+#define FS_FILE_OP_NONBLOCKING 0x00000100 /* a command is in flight for a request whose caller does not wait:
+                                           * the async-completion callback finishes the request */
+#define FS_FILE_OP_BLOCKING    0x00000200 /* a command is in flight for a request whose caller waits on
+                                           * FS_FILE_OP_QUEUE: the async-completion callback wakes it */
+
+/* The thread queue a blocking request sleeps on (FSFile +0x0C) until the
+ * file's asynchronous operation completes. */
+#define FS_FILE_OP_QUEUE       0x0C
 
 /* Callback events and their FS_FILE_EVENTS bits. */
 #define FS_EVENT_REQUEST           9
@@ -180,6 +194,13 @@ typedef struct FSDirectoryTableEntry {
     u16 firstFileId; /* +0x04 id of the directory's first file entry */
     u16 parentIndex; /* +0x06 parent directory's index in the main table, 0 for the root */
 } FSDirectoryTableEntry; /* 8 bytes */
+
+/* One 8-byte record of an archive's FAT: the byte offsets of the file's data in
+ * the archive, first byte and one past the last. */
+typedef struct FSFileRange {
+    u32 start; /* +0x00 */
+    u32 end;   /* +0x04 */
+} FSFileRange; /* 8 bytes */
 
 /* The 12 bytes the directory commands keep at FS_REQ_DIR_BLOCK: the archive the
  * current directory belongs to and, once its table record has been read, the

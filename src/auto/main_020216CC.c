@@ -90,8 +90,8 @@ void func_020218f4(u32 *arg0, u32 *arg1) {
 }
 
 void func_02021960(void) {
-    M2C_UNK func_0201f758();
-    func_0201f758();
+    M2C_UNK SocketCheckReady();
+    SocketCheckReady();
 }
 
 s32 func_0202196c(M2C_UNK a,void *b){
@@ -176,9 +176,9 @@ void func_02021c04(void) {
 }
 
 M2C_UNK *IpToString(s32 a,...){
-M2C_UNK func_02021c90(M2C_UNK,void *,void *,M2C_UNK);
+M2C_UNK FormatIpAddress(M2C_UNK,void *,void *,M2C_UNK);
 extern M2C_UNK data_02138bac;
-func_02021c90(2,&a,&data_02138bac,16);
+FormatIpAddress(2,&a,&data_02138bac,16);
 return &data_02138bac;
 }
 
@@ -189,17 +189,20 @@ if(!v)return 0;
 return 1;
 }
 
-M2C_UNK func_02021c90(s32 a,void *b,void *c,s32 d){
-void MI_CpuCopy8(void *,void *,u32);void func_02021d14(u32,void *);
+/* Format a network-order IPv4 address (family AF_INET, 2) as a dotted decimal
+ * string into `buffer`, which must hold at least 16 bytes; returns buffer, or 0
+ * when the family is not AF_INET or the buffer is too small. */
+M2C_UNK FormatIpAddress(s32 family,void *address,void *buffer,s32 size){
+void MI_CpuCopy8(void *,void *,u32);void IpToBytes(u32,void *);
 void StringFormatN(void *,s32,void *,...);
-extern M2C_UNK data_020fafe8;
-u32 value;u8 bytes[4];
-if(a!=2)return 0;if((u32)d<16)return 0;
-MI_CpuCopy8(b,&value,4);func_02021d14(value,bytes);
-StringFormatN(c,16,&data_020fafe8,bytes[3],bytes[2],bytes[1],bytes[0]);return (M2C_UNK)c;
+extern M2C_UNK sIpAddressFormat;
+u32 value;u8 octets[4];
+if(family!=2)return 0;if((u32)size<16)return 0;
+MI_CpuCopy8(address,&value,4);IpToBytes(value,octets);
+StringFormatN(buffer,16,&sIpAddressFormat,octets[3],octets[2],octets[1],octets[0]);return (M2C_UNK)buffer;
 }
 
-void func_02021d14(u32 arg0, void *arg1) {
+void IpToBytes(u32 arg0, void *arg1) {
 M2C_FIELD(arg1,u8 *,0)=arg0>>24;
 M2C_FIELD(arg1,u8 *,1)=arg0>>16;
 M2C_FIELD(arg1,u8 *,2)=arg0>>8;
@@ -378,11 +381,23 @@ while(n-- && p-start<255)*p++=*q++;
 *p=0;
 }
 
-s32 func_02022258(u8 *p,s32 type){
-s32 year;u32 first;u8 b;
-b=p[1];first=p[0]*10+b-0x210;p+=2;
-if(type==0x17){if(first<50)year=first+2000;else year=first+1900;}
-else{b=p[1];year=first*100+(p[0]*10+b-0x210);p+=2;}
-return ((p[0]*10+p[1]-0x210)<<8)+(year<<16)+(p[2]*10+p[3]-0x210);
+/* Parses an ASN.1 time ("YYMMDD..." for UTCTime, "YYYYMMDD..." for
+ * GeneralizedTime) into year<<16 | month<<8 | day. */
+s32 ParseAsn1Time(u8 *time, s32 type) {
+    s32 year;
+    u32 first;
+    u8 digit;
+    digit = time[1];
+    first = time[0] * 10 + digit - ASN1_DIGITS_ZERO;
+    time += 2;
+    if (type == ASN1_TIME_UTC) {
+        if (first < 50) year = first + 2000;
+        else year = first + 1900;
+    } else {
+        digit = time[1];
+        year = first * 100 + (time[0] * 10 + digit - ASN1_DIGITS_ZERO);
+        time += 2;
+    }
+    return ((time[0] * 10 + time[1] - ASN1_DIGITS_ZERO) << 8) + (year << 16) + (time[2] * 10 + time[3] - ASN1_DIGITS_ZERO);
 }
 

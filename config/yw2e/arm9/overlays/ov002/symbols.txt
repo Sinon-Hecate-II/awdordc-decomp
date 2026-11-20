@@ -6,7 +6,7 @@ func_ov002_021e15ac kind:function(arm,size=0x34) addr:0x021e15ac
 func_ov002_021e15e0 kind:function(arm,size=0x14) addr:0x021e15e0
 CreateBattleSceneSprite kind:function(arm,size=0x30) addr:0x021e15f4
 func_ov002_021e1624 kind:function(arm,size=0x14) addr:0x021e1624
-func_ov002_021e1638 kind:function(arm,size=0x84) addr:0x021e1638
+ResetEffectNodeScriptState kind:function(arm,size=0x84) addr:0x021e1638
 func_ov002_021e16bc kind:function(arm,size=0x20) addr:0x021e16bc
 func_ov002_021e16dc kind:function(arm,size=0x60) addr:0x021e16dc
 func_ov002_021e173c kind:function(arm,size=0x44) addr:0x021e173c
@@ -26,7 +26,7 @@ FreeModelList1 kind:function(arm,size=0xf4) addr:0x021e25e0
 func_ov002_021e26d4 kind:function(arm,size=0x50) addr:0x021e26d4
 func_ov002_021e2724 kind:function(arm,size=0x4c) addr:0x021e2724
 func_ov002_021e2770 kind:function(arm,size=0x54) addr:0x021e2770
-func_ov002_021e27c4 kind:function(arm,size=0x84) addr:0x021e27c4
+Ov002_GetEffectScriptDuration kind:function(arm,size=0x84) addr:0x021e27c4
 Ov002_CreateEffectNode kind:function(arm,size=0xe0) addr:0x021e2848
 func_ov002_021e2928 kind:function(arm,size=0x64) addr:0x021e2928
 func_ov002_021e298c kind:function(arm,size=0x4) addr:0x021e298c
@@ -125,7 +125,7 @@ func_ov002_021e8738 kind:function(arm,size=0x160) addr:0x021e8738
 func_ov002_021e8898 kind:function(arm,size=0x8) addr:0x021e8898
 func_ov002_021e88a0 kind:function(arm,size=0xc) addr:0x021e88a0
 func_ov002_021e88ac kind:function(arm,size=0x68) addr:0x021e88ac
-func_ov002_021e8914 kind:function(arm,size=0x70) addr:0x021e8914
+StepUnitView kind:function(arm,size=0x70) addr:0x021e8914
 func_ov002_021e8984 kind:function(arm,size=0x320) addr:0x021e8984
 func_ov002_021e8ca4 kind:function(arm,size=0x60) addr:0x021e8ca4
 func_ov002_021e8d04 kind:function(arm,size=0x8) addr:0x021e8d04
@@ -1282,4 +1282,4 @@ data_ov002_021f3108 kind:bss addr:0x021f3108
 gUnitViews kind:bss addr:0x021f3124
 data_ov002_021f312c kind:bss addr:0x021f312c
 gEffectHasVariants kind:bss addr:0x021f314e
-data_ov002_021f3150 kind:bss addr:0x021f3150
+gUnitViewsP2 kind:bss addr:0x021f3150

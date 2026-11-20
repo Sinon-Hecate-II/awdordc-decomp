@@ -176,7 +176,7 @@ void func_ov007_022142ec(void) {
     M2C_UNK RefreshMapView();
     extern void *gCur3DSpriteEngine;
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
@@ -196,7 +196,7 @@ void func_ov007_02214354(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_0221f820;
-    func_020c0784();
+    DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
@@ -231,7 +231,7 @@ void func_ov007_022143bc(void) {
 void func_ov007_022143f0(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f9a8;
-    func_020c0784();
+    DeleteMapMenuSprites();
     CreateSpriteFromClass(&data_ov007_0221f9a8, 7);
 }
 
@@ -245,7 +245,7 @@ void func_ov007_0221440c(void) {
 void func_ov007_0221442c(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f918;
-    func_020c0784();
+    DeleteMapMenuSprites();
     CreateSpriteFromClass(&data_ov007_0221f918, 7);
 }
 
@@ -268,7 +268,7 @@ void func_ov007_0221446c(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_0221f780;
-    func_020c0784();
+    DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     RefreshMapView();
@@ -281,13 +281,13 @@ void func_ov007_0221446c(void) {
 }
 
 void func_ov007_022144d4(void) {
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_022144e0(void) {
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_022144ec(void) {
@@ -298,38 +298,38 @@ void func_ov007_022144ec(void) {
 
 void func_ov007_0221450c(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) (M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF);
     MapEditor_SetMapModified(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_02214544(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x1);
     MapEditor_SetMapModified(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_02214580(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x8);
     MapEditor_SetMapModified(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_022145bc(void) {
     M2C_UNK MapEditor_SetMapModified(M2C_UNK);
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     extern s32 *gCurrentMap;
     M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) = (u8) ((M2C_FIELD(M2C_FIELD((void *) *gCurrentMap, void **, 0x52D0), u8 *, 0xB) & ~0xF) | 0x6);
     MapEditor_SetMapModified(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 /* Marks the unit under the cursor: the marker is the unit's owner bits (value 3).
@@ -356,12 +356,12 @@ void MapEditor_MarkCursorUnit(void) {
         ((BattleMapUnitHead *)M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT))->owner = 3;
     }
     MapEditor_SetMapModified(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 void func_ov007_0221470c(void) {
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
 }
 
 /* Spawn an object on the map tile (x,y) if that tile is non-empty,

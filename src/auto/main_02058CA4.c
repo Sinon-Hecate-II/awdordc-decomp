@@ -114,16 +114,19 @@ s8 *gpiFindInfoMessageTerminator(s8 *arg0, s32 arg1) {
     return NULL;
 }
 
-s32 gpiFindProfileRecord(s32 arg0, s32 arg1, s32 arg2) {
+/* Index of the first GPI profile record whose type, id and pid all match the
+ * given values, or -1 when there is no profile list or no such record. */
+s32 gpiFindProfileRecord(s32 profileType, s32 profileId, s32 pid) {
     s32 Vector_GetCount(s32);
     s32 *Vector_GetItem();
     extern M2C_UNK gGpiInfoState;
     s32 i;
-    s32 *p;
-    if (M2C_FIELD(&gGpiInfoState, s32 *, 4) == 0) return -1;
-    for (i = 0; i < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, 4)); i++) {
-        p = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, 4), i);
-        if (p[0] == arg0 && p[1] == arg1 && p[2] == arg2) return i;
+    s32 *record;
+
+    if (M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES) == 0) return -1;
+    for (i = 0; i < Vector_GetCount(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES)); i++) {
+        record = Vector_GetItem(M2C_FIELD(&gGpiInfoState, s32 *, GPI_INFO_PROFILES), i);
+        if (M2C_FIELD(record, s32 *, GPI_PROFILE_TYPE) == profileType && M2C_FIELD(record, s32 *, GPI_PROFILE_ID) == profileId && M2C_FIELD(record, s32 *, GPI_PROFILE_PID) == pid) return i;
     }
     return -1;
 }

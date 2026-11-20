@@ -8,7 +8,7 @@
 #pragma push
 #pragma scheduling off
 void func_ov003_021eaed0(void *arg0) {
-s32 Link_ReceivePacket(void *,s32);void *func_02084e64();s32 GetLocalPlayerIdForOverlay();
+s32 Link_ReceivePacket(void *,s32);void *GetLocalNetworkPlayerRecord();s32 GetLocalPlayerIdForOverlay();
 s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
 s32 func_ov003_021e9c08(void *),func_ov003_021e9c30(void *);
 u8 func_ov003_021eba24(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
@@ -18,7 +18,7 @@ u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
 void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
 u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
-s32 func_ov003_021e73bc(s32,s32);s8 func_ov003_021ebd64(void *,s32);
+s32 func_ov003_021e73bc(s32,s32);s8 GetWaypointSlotCoIcon(void *,s32);
 void func_ov003_021e82f0(s32,s32,s32);u8 GetWaypointSlotIndex(s32);
 void func_ov003_021ebde8(void *,s8,s8);
 void func_ov003_021e9804(void *),func_ov003_021ebe60(void *);
@@ -35,7 +35,7 @@ u8 packet[36],send[36];u16 keys;s32 ready,touch;u8 i;u16 held;s32 action,slot;
 if(IsLinkSessionActive()){
 void *remote;s32 player,current,desired;u8 j,i;s8 count;
 if(!Link_ReceivePacket(packet,36))return;
-remote=func_02084e64();if(!remote)return;
+remote=GetLocalNetworkPlayerRecord();if(!remote)return;
 player=GetLocalPlayerIdForOverlay();
 count=func_ov003_021e9c24(arg0);
 func_ov003_021ea4a8(arg0,(u32)(M2C_FIELD(arg0,u8 *,0x3a)<<31)>>31);
@@ -80,7 +80,7 @@ if(current!=desired){PlaySoundEffect(0x10011);func_ov003_021ebca4(M2C_FIELD(arg0
 if(player==func_ov003_021e73bc(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
 if(func_ov003_021e6cfc() && func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
 {s32 co=(s8)func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),i);
-desired=func_ov003_021ebd64(arg0,i);
+desired=GetWaypointSlotCoIcon(arg0,i);
 if(co!=desired){
 PlaySoundEffect(0x10011);desired=(u8)desired;
 func_ov003_021e82f0(M2C_FIELD(arg0,s32 *,0x6c),i,desired);
@@ -306,23 +306,28 @@ void func_ov003_021ebca4(s32 arg0,s32 arg1,s32 arg2) {
  M2C_FIELD(base,s32 *,offset)=value;
 }
 
-s8 func_ov003_021ebd64(void *arg0,s32 arg1) {
- void *GetNetworkPlayerRecord(s32);
- void *func_02084e64(s32);
- s32 GetPlayerCoId(s32);
- s32 GetPlayerCoIconIndex(u8);
- s32 id=M2C_FIELD(M2C_FIELD(arg0,s32 *,0x6c)+arg1,u8 *,0x74);
- u8 missing;
- void *p;
- if(id==0xff) missing=1; else missing=0;
- if(!missing) {
-  p=GetNetworkPlayerRecord(id);
-  if(p) return M2C_FIELD(p,s8 *,0xd);
-  return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(arg1+1));
- }
- p=func_02084e64(id);
- if(p) return M2C_FIELD(p+arg1,s8 *,0x12);
- return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(arg1+1));
+/* Return the CO icon index a waypoint slot should show: the CO the player
+ * assigned to the slot picked, or for an empty slot the local player's saved
+ * choice for that slot.  Without a network player record both fall back to the
+ * local CO of the same slot number. */
+s8 GetWaypointSlotCoIcon(void *panel, s32 slot) {
+    void *GetNetworkPlayerRecord(s32);
+    void *GetLocalNetworkPlayerRecord();
+    s32 GetPlayerCoId(s32);
+    s32 GetPlayerCoIconIndex(u8);
+    s32 playerId = M2C_FIELD(M2C_FIELD(panel, s32 *, WAYPOINT_PANEL_LIST) + slot, u8 *, WAYPOINT_LIST_IDS);
+    u8 noPlayer;
+    void *record;
+
+    if (playerId == WAYPOINT_NO_PLAYER) noPlayer = 1; else noPlayer = 0;
+    if (!noPlayer) {
+        record = GetNetworkPlayerRecord(playerId);
+        if (record) return M2C_FIELD(record, s8 *, NET_PLAYER_CO_ICON);
+        return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(slot + 1));
+    }
+    record = GetLocalNetworkPlayerRecord(playerId);
+    if (record) return M2C_FIELD(record + slot, s8 *, NET_PLAYER_SLOT_ICONS);
+    return (s8)GetPlayerCoIconIndex((u8)GetPlayerCoId(slot + 1));
 }
 
 void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {

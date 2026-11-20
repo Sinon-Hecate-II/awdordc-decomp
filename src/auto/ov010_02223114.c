@@ -6,7 +6,7 @@ s32 func_ov010_02223114(void) {
     s32 func_ov010_02223430(s32);
     M2C_UNK func_ov010_022223e8(void *, void *, s32);
     void *func_ov010_02223440(s32);
-    M2C_UNK func_ov010_02223478(void *);
+    M2C_UNK Link_UnlinkPendingPacket(void *);
     void func_ov010_022235a4();
     M2C_UNK func_ov010_02223624(void *, void *, s32);
     s32 Link_InsertPacket(void *, u8);
@@ -35,7 +35,7 @@ s32 func_ov010_02223114(void) {
                 else func_ov010_02223624(old, (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
             }
             M2C_FIELD(item, void **, 0x474) = (s8 *)item + 0x1C;
-            func_ov010_02223478(item);
+            Link_UnlinkPendingPacket(item);
             if (Link_InsertPacket(item, M2C_FIELD(item, u8 *, 0x11)) < 0) Link_FreePacket(item);
             i++;
         } while (i < count);
@@ -75,76 +75,76 @@ goto done;
 }i++; test: if(i<n)goto loop; done: return 1;
 }
 void func_ov010_022232e0(void) {
-    extern s32 data_ov010_0222d878;
-    extern s32 data_ov010_0222d880[];
+    extern s32 gLinkPendingList;
+    extern s32 gLinkPendingCounts[];
     s32 i;
     i = 0;
-    M2C_FIELD(&data_ov010_0222d878, s32 *, 4) = 0;
-    data_ov010_0222d878 = 0;
+    M2C_FIELD(&gLinkPendingList, s32 *, 4) = 0;
+    gLinkPendingList = 0;
     do {
-        data_ov010_0222d880[i] = 0;
+        gLinkPendingCounts[i] = 0;
         i++;
     } while (i < 3);
 }
 
 void func_ov010_02223314(s32 arg0) {
     void *func_ov010_02223440(s32);
-    M2C_UNK func_ov010_02223478(void *);
+    M2C_UNK Link_UnlinkPendingPacket(void *);
     M2C_UNK Link_FreePacket();
-    extern s32 data_ov010_0222d880[];
+    extern s32 gLinkPendingCounts[];
     void *item;
     item = func_ov010_02223440(arg0);
     if (item != NULL) {
         do {
-            func_ov010_02223478(item);
+            Link_UnlinkPendingPacket(item);
             Link_FreePacket(item);
             item = func_ov010_02223440(arg0);
         } while (item != NULL);
     }
-    data_ov010_0222d880[arg0] = 0;
+    gLinkPendingCounts[arg0] = 0;
 }
 
 void func_ov010_0222335c(void) {
 M2C_UNK Link_FreePacket();
-extern s32 data_ov010_0222d878;
-extern s32 data_ov010_0222d880[];
-void *p=(void *)data_ov010_0222d878;
+extern s32 gLinkPendingList;
+extern s32 gLinkPendingCounts[];
+void *p=(void *)gLinkPendingList;
 s32 i;
 while(p) { void *old=p; p=M2C_FIELD(p,void **,8); Link_FreePacket(old); }
-for(i=0;i<3;i++) data_ov010_0222d880[i]=0;
+for(i=0;i<3;i++) gLinkPendingCounts[i]=0;
 }
 
 s32 func_ov010_022233ac(void *a) {
-extern s32 data_ov010_0222d878;
-extern s32 data_ov010_0222d880[];
-if(data_ov010_0222d878==0) {
-data_ov010_0222d878=(s32)a;
+extern s32 gLinkPendingList;
+extern s32 gLinkPendingCounts[];
+if(gLinkPendingList==0) {
+gLinkPendingList=(s32)a;
 M2C_FIELD(a,s32 *,4)=0;
-M2C_FIELD((void *)data_ov010_0222d878,s32 *,8)=0;
-M2C_FIELD(&data_ov010_0222d878,s32 *,4)=data_ov010_0222d878;
+M2C_FIELD((void *)gLinkPendingList,s32 *,8)=0;
+M2C_FIELD(&gLinkPendingList,s32 *,4)=gLinkPendingList;
 } else {
-M2C_FIELD(a,s32 *,4)=M2C_FIELD(&data_ov010_0222d878,s32 *,4);
+M2C_FIELD(a,s32 *,4)=M2C_FIELD(&gLinkPendingList,s32 *,4);
 M2C_FIELD(a,s32 *,8)=0;
-M2C_FIELD((void *)M2C_FIELD(&data_ov010_0222d878,s32 *,4),void **,8)=a;
-M2C_FIELD(&data_ov010_0222d878,void **,4)=a;
+M2C_FIELD((void *)M2C_FIELD(&gLinkPendingList,s32 *,4),void **,8)=a;
+M2C_FIELD(&gLinkPendingList,void **,4)=a;
 }
-data_ov010_0222d880[M2C_FIELD(a,u8 *,0x11)]++;
-return data_ov010_0222d880[M2C_FIELD(a,u8 *,0x11)];
+gLinkPendingCounts[M2C_FIELD(a,u8 *,0x11)]++;
+return gLinkPendingCounts[M2C_FIELD(a,u8 *,0x11)];
 }
 
 s32 func_ov010_02223420(void) {
-    extern s32 data_ov010_0222d878;
-    return data_ov010_0222d878;
+    extern s32 gLinkPendingList;
+    return gLinkPendingList;
 }
 
 s32 func_ov010_02223430(s32 arg0) {
-    extern s32 data_ov010_0222d880[];
-    return data_ov010_0222d880[arg0];
+    extern s32 gLinkPendingCounts[];
+    return gLinkPendingCounts[arg0];
 }
 
 void *func_ov010_02223440(s32 a) {
-extern s32 data_ov010_0222d878;
-void *p=(void *)data_ov010_0222d878;
+extern s32 gLinkPendingList;
+void *p=(void *)gLinkPendingList;
 while(p) {
 if(M2C_FIELD(p,u8 *,0x11)==a) return p;
 p=M2C_FIELD(p,void **,8);
@@ -152,19 +152,29 @@ p=M2C_FIELD(p,void **,8);
 return NULL;
 }
 
-s32 func_ov010_02223478(void *a) {
-extern s32 data_ov010_0222d878;
-extern s32 data_ov010_0222d880[];
-if(M2C_FIELD(a,void **,4)) M2C_FIELD(M2C_FIELD(a,void **,4),void **,8)=M2C_FIELD(a,void **,8);
-else { void *p8=M2C_FIELD(a,void **,8);
-data_ov010_0222d878=(s32)p8;
-if(p8) M2C_FIELD(p8,s32 *,4)=0; }
-if(M2C_FIELD(a,void **,8)) M2C_FIELD(M2C_FIELD(a,void **,8),void **,4)=M2C_FIELD(a,void **,4);
-else { void *p4=M2C_FIELD(a,void **,4);
-M2C_FIELD(&data_ov010_0222d878,s32 *,4)=(s32)p4;
-if(p4) M2C_FIELD(p4,s32 *,8)=0; }
-data_ov010_0222d880[M2C_FIELD(a,u8 *,0x11)]--;
-return data_ov010_0222d880[M2C_FIELD(a,u8 *,0x11)];
+/* Unlinks a packet from the pending-send list (head at gLinkPendingList, tail at
+ * +4) and returns how many packets its channel still has queued. */
+s32 Link_UnlinkPendingPacket(void *packet) {
+    extern s32 gLinkPendingList;
+    extern s32 gLinkPendingCounts[];
+    void *next;
+    void *prev;
+    if (M2C_FIELD(packet, void **, LINK_PACKET_PREV))
+        M2C_FIELD(M2C_FIELD(packet, void **, LINK_PACKET_PREV), void **, LINK_PACKET_NEXT) = M2C_FIELD(packet, void **, LINK_PACKET_NEXT);
+    else {
+        next = M2C_FIELD(packet, void **, LINK_PACKET_NEXT);
+        gLinkPendingList = (s32)next;
+        if (next) M2C_FIELD(next, s32 *, LINK_PACKET_PREV) = 0;
+    }
+    if (M2C_FIELD(packet, void **, LINK_PACKET_NEXT))
+        M2C_FIELD(M2C_FIELD(packet, void **, LINK_PACKET_NEXT), void **, LINK_PACKET_PREV) = M2C_FIELD(packet, void **, LINK_PACKET_PREV);
+    else {
+        prev = M2C_FIELD(packet, void **, LINK_PACKET_PREV);
+        M2C_FIELD(&gLinkPendingList, s32 *, 4) = (s32)prev;
+        if (prev) M2C_FIELD(prev, s32 *, LINK_PACKET_NEXT) = 0;
+    }
+    gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)]--;
+    return gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)];
 }
 
 void func_ov010_022234f8(u8 *out,s16 *in,u32 n) {
@@ -218,14 +228,16 @@ void func_ov010_0222369c(s32 arg0) {
     gLinkQueueCount[arg0] = 0;
 }
 
-void func_ov010_022236e4(void) {
+/* Free every packet queued on all three link channels and reset each channel's
+ * queue count, with the queue interrupt state saved and restored. */
+void Link_FreeAllQueuedPackets(void) {
  s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);M2C_UNK Link_FreePacket(void *);
  extern s32 gLinkQueueIrq,gLinkQueueHead[],gLinkQueueCount[];
- s32 i;void *node;void *next;
+ s32 channel;void *packet;void *next;
  gLinkQueueIrq=OS_DisableInterrupts();
- i=0;goto check;
- loop: node=(void *)gLinkQueueHead[i];while(node){next=M2C_FIELD(node,void **,8);gLinkQueueHead[i]=(s32)next;if(next)M2C_FIELD(next,s32 *,4)=0;Link_FreePacket(node);node=(void *)gLinkQueueHead[i];}gLinkQueueCount[i]=0;i++;
- check:if(i<3)goto loop;
+ channel=0;goto check;
+ loop: packet=(void *)gLinkQueueHead[channel];while(packet){next=M2C_FIELD(packet,void **,LINK_PACKET_NEXT);gLinkQueueHead[channel]=(s32)next;if(next)M2C_FIELD(next,s32 *,LINK_PACKET_PREV)=0;Link_FreePacket(packet);packet=(void *)gLinkQueueHead[channel];}gLinkQueueCount[channel]=0;channel++;
+ check:if(channel<LINK_CHANNEL_COUNT)goto loop;
  OS_RestoreInterrupts(gLinkQueueIrq);
 }
 

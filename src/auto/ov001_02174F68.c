@@ -13,7 +13,7 @@ typedef struct { s32 x; u32 y; } Position;
 #pragma opt_propagation off
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
-void func_ov001_02174f68(s32 arg0, u16 arg1) {
+void Ov001_PositionKeypadStep(s32 arg0, u16 arg1) {
  void Ov001_DrawTextPanelToSprite(s32,u16,s32,s32,s32);
  void Ov001_SetSpriteEntryFlags(s32,s32,s32,s32);
  s32 Ov001_MoveSpriteLayout(s32,s32,u16,u16);
@@ -142,7 +142,7 @@ void func_ov001_021753c8(M2C_UNK arg0) {
     bits = *(s32 *)Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, 0x40), 0);
     pos.y = (u32)(bits & 0x01ff0000) >> 16;
     pos.x = (u8)bits + 12;
-    ((void(*)(s32,s32,u32))func_ov001_02174f68)(4, pos.x, pos.y);
+    ((void(*)(s32,s32,u32))Ov001_PositionKeypadStep)(4, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xc0) return;
     Ov001_SetSlideStep(arg0, func_ov001_02175440);
 }
@@ -152,7 +152,7 @@ M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_021754b0(M2
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x34);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))func_ov001_02174f68)(3);
+((void(*)(s32))Ov001_PositionKeypadStep)(3);
 if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_021754b0);
 }
 
@@ -161,7 +161,7 @@ M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175520(M2
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x28);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))func_ov001_02174f68)(2);
+((void(*)(s32))Ov001_PositionKeypadStep)(2);
 if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175520);
 }
 
@@ -170,7 +170,7 @@ M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175590(M2
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x1c);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))func_ov001_02174f68)(1);
+((void(*)(s32))Ov001_PositionKeypadStep)(1);
 if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175590);
 }
 
@@ -179,7 +179,7 @@ M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175600(M2
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x10);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))func_ov001_02174f68)(0);
+((void(*)(s32))Ov001_PositionKeypadStep)(0);
 if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175600);
 }
 

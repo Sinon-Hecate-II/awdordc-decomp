@@ -11,6 +11,16 @@ typedef struct SelectionMenu {
     s16 count;      /* +0x6E: number of entries */
     s16 progress;   /* +0x70: animation/step counter */
 } SelectionMenu;
+
+/* The player-defeat presentation sprite (class gPlayerDefeatSpriteClass): the
+   player being defeated, the victory-rule flag that defeated them, and the
+   slot of their unit group the presentation has reached. */
+typedef struct PlayerDefeatSprite {
+    u8 pad00[0x6C];
+    s16 player;   /* +0x6C player being defeated */
+    s16 reason;   /* +0x6E PLAYER_DEFEAT_* flag that removed them */
+    s16 unitSlot; /* +0x70 next slot of the player's unit group to handle */
+} PlayerDefeatSprite;
 static inline s32 RangeLeft(void) {
 extern void **gCurrentMap; s32 func_020a7714(void *);
 void *p=*gCurrentMap; s32 range=func_020a7714(M2C_FIELD(p,void **,0x52d0)); return M2C_FIELD(p,s16 *,0x52dc)-range;
@@ -106,22 +116,28 @@ RefreshMapView();func_020cf2c8();func_020d2470();
 M2C_FIELD(arg0,s16 *,0x70)=1;
 }
 #pragma pop
-void func_020c9e14(void *arg0) {
+/* Removes the remaining units of a defeated player one per frame: each frame
+   spawns a removal effect for the next slot of the player's unit group and
+   moves the slot on; a player who was defeated because they had no units left
+   is skipped, and once every slot has been visited the presentation resumes. */
+void RemoveDefeatedPlayerUnits(PlayerDefeatSprite *sprite) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_UNK func_020cbc88(void *, void *);
+    M2C_UNK CreateUnitRemovalEffect(void *, void *);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    s16 temp_r1;
-    if (M2C_FIELD(arg0, s16 *, 0x6E) & 0x11) {
-        Sprite_ResumeAnimation(arg0);
+    s16 slot;
+
+    if (sprite->reason & (PLAYER_DEFEAT_NO_UNITS | PLAYER_DEFEAT_HUMAN)) {
+        Sprite_ResumeAnimation(sprite);
         return;
     }
-    while ((temp_r1 = M2C_FIELD(arg0, s16 *, 0x70)) < 0x33) {
-        func_020cbc88((u8 *)*gCurrentMap + 0x59A4 + (temp_r1 + gPlayerUnitIdBase[M2C_FIELD(arg0, s16 *, 0x6C)]) * 0xE, arg0);
-        M2C_FIELD(arg0, s16 *, 0x70) += 1;
+    while ((slot = sprite->unitSlot) < MAP_UNIT_GROUP_SCAN) {
+        CreateUnitRemovalEffect((u8 *)*gCurrentMap + MAP_UNIT_RECORDS +
+                                (slot + gPlayerUnitIdBase[sprite->player]) * MAP_UNIT_STRIDE, sprite);
+        sprite->unitSlot += 1;
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_020c9e94(u16 arg0, u16 arg1) {
@@ -161,12 +177,12 @@ void MarkPlayerDefeated(s32 player, s32 reason) {
 
 void func_020c9f74(s32 arg0) {
     typedef struct { s32 entries[4]; } Table;
-    M2C_UNK func_02096b50(s32);
+    M2C_UNK ShowUiMessage(s32);
     extern void **gCurrentMap;
     extern Table data_020f4e68;
     Table sp0;
     sp0 = data_020f4e68;
-    func_02096b50(sp0.entries[M2C_FIELD((u8 *)*gCurrentMap + arg0 * 0x8C, u8 *, 0x67C1) - 1]);
+    ShowUiMessage(sp0.entries[M2C_FIELD((u8 *)*gCurrentMap + arg0 * 0x8C, u8 *, 0x67C1) - 1]);
 }
 
 void StartPlayerDefeat(s32 arg0, s32 arg1) {

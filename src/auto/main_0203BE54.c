@@ -263,7 +263,7 @@ void StartJoinMatch(s32 playerList, s32 listLength, u8 matchType, s32 flag, s32 
     s32 ReportConnectionStatusResult(void);
     M2C_UNK StartQr2Reporting(s32);
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0204084c(void);
+    M2C_UNK ReportConnectionCommandResult(void);
     M2C_UNK ResetConnectionSync(M2C_UNK);
     s32 ReportGpiSessionStatus(void);
     extern M2C_UNK gConnectionMgr, data_020fc908, gKeyFME, data_020fc910, data_020fc914, gKeyMDF, gKeyVER, HandleServerListEvent;
@@ -334,7 +334,7 @@ error:
     }
 tail:
     TryConnectToPeer(0, 1, 0);
-    if (func_0204084c() != 0) {
+    if (ReportConnectionCommandResult() != 0) {
         goto done;
     }
     ResetConnectionSync(0);
@@ -381,7 +381,7 @@ s32 GetConnection(void);
 s32 SetConnectionState(s32);
 s32 BeginMatchmakingSession(s32,s32,M2C_UNK,M2C_UNK);
 M2C_UNK SetGpiStatus(M2C_UNK,M2C_UNK *,M2C_UNK);
-M2C_UNK func_0204084c(void);
+M2C_UNK ReportConnectionCommandResult(void);
 M2C_UNK SendJoinRequest(s32,M2C_UNK);
 s32 ReportMatchmakingResult(M2C_UNK);
 s32 ReportConnectionStatusResult(void);
@@ -406,7 +406,7 @@ SetGpiStatus(5,&sEmptyString,0);
 if(ReportConnectionStatusResult())return;
 if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_RECORD)&&StartQr2Reporting(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_QR2_PARAM)))return;
 SendJoinRequest(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PEER_IDS),0);
-if(func_0204084c())return;
+if(ReportConnectionCommandResult())return;
 }
 
 /* Pump one frame of the QR2 record (keep-alive, timeouts, incoming queries) and,

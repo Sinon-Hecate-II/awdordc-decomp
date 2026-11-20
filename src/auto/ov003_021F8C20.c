@@ -19,7 +19,7 @@ static inline u8 IsUnavailable92(s32 id) {
 }
 
 void func_ov003_021f8c20(void *arg0) {
-    void *func_02084e64();
+    void *GetLocalNetworkPlayerRecord();
     M2C_UNK PlaySoundEffect(s32);
     s32 GetSpriteAnimValue(void *);
     u32 GetMapCategory();
@@ -55,7 +55,7 @@ void func_ov003_021f8c20(void *arg0) {
     u8 temp_r5_3;
     void *temp_r0_2;
 
-    temp_r0 = func_02084e64();
+    temp_r0 = GetLocalNetworkPlayerRecord();
     if (temp_r0 == NULL) {
         return;
     }
@@ -319,7 +319,7 @@ void func_ov003_021f92f4(void *obj) {
     id=MapId92(obj);
     M2C_FIELD(obj,u8 *,0x3a) = (M2C_FIELD(obj,u8 *,0x3a)&~0x7f)|0x20;
     if(IsMapKind92(obj)) {
-        if((u32)id>=225 && (u32)id<425 && func_ov003_021f25cc()) {
+        if((u32)id>=225 && (u32)id<425 && IsCampaignMapCategory()) {
             value=0;
             if(IsMapKind92(obj)) value=id;
             if(!func_ov003_021f400c() && func_ov003_021f2654() && func_020a8ef8(id)) value=func_020a8f4c(id);

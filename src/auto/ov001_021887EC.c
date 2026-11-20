@@ -7,6 +7,12 @@
 #define PROFILE_LINK_FRAMES 0xA98 /* u32: frames the download-play link step has been running */
 #define PROFILE_STATE_TIMER 0xA9C /* u32: frames the current profile state has been held */
 #define PROFILE_CHILD      0x64A /* u16: child the channel measurement picked (1..16, 0 = none) */
+#define PROFILE_PROGRAM_ID 0x648 /* u16: program id the download-play parent starts this run with */
+#define PROFILE_GROUP_ID   0xAC8 /* s32: group id handed to the WH link */
+#define PROFILE_SAVE_DATA  0xAA4 /* void *: the save data (GetSaveData) */
+#define PROFILE_SAVE_COPY  0xA50 /* u8[0x40]: copy of the save data header */
+#define PROFILE_LINKED     0xA93 /* u8: the download-play link is connected */
+#define PROFILE_LIST_TIMER 0x204 /* u32: frames the profile list has been shown */
 #define PROFILE_STATE_DELAY 30   /* frames a state waits for the link task to settle before it advances */
 extern M2C_UNK gWhWork;
 extern M2C_UNK data_ov001_0219169c;
@@ -191,22 +197,25 @@ int Ov001_LeaveProfileSetup(void) {
     return 0;
 }
 
-void func_ov001_02188e44(void) {
+/* Begin a profile / download-play run: hand the saved group id to the link, set
+ * the screen to its initial state, take a fresh program id, copy the save data
+ * header into the link buffer and clear the link and list-timer flags. */
+void Ov001_BeginProfileTransfer(void) {
 extern void *gOv001ProfileState;
-func_ov001_0218836c(M2C_FIELD(gOv001ProfileState,s32 *,0xAC8));
-M2C_FIELD(gOv001ProfileState,u8 *,0xA90)=1;
-M2C_FIELD(gOv001ProfileState,u16 *,0x648)=func_02012084();
-MI_CpuCopy8(M2C_FIELD(gOv001ProfileState,void **,0xAA4),(u8 *)gOv001ProfileState+0xA50,0x40);
-M2C_FIELD(gOv001ProfileState,u8 *,0xA93)=0;
-M2C_FIELD(gOv001ProfileState,s32 *,0x204)=0;
-M2C_FIELD(gOv001ProfileState,u16 *,0x648)++;
+func_ov001_0218836c(M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_GROUP_ID));
+M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=1;
+M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)=func_02012084();
+MI_CpuCopy8(M2C_FIELD(gOv001ProfileState,void **,PROFILE_SAVE_DATA),(u8 *)gOv001ProfileState+PROFILE_SAVE_COPY,0x40);
+M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_LINKED)=0;
+M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_LIST_TIMER)=0;
+M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)++;
 }
 
 s32 func_ov001_02188ec4(void) {
 extern void *gOv001ProfileState;
 u32 state=M2C_FIELD(gOv001ProfileState,u8 *,0xA90);
 if(state!=1 && state!=26 && state!=29) return 0;
-func_ov001_02188e44();func_ov001_02188774();
+Ov001_BeginProfileTransfer();func_ov001_02188774();
 M2C_FIELD(gOv001ProfileState,u8 *,0xA90)=2;return 1;
 }
 

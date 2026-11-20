@@ -178,7 +178,7 @@ s32 Mb_CopyImageRange(MbLoadQueue *queue, u32 offset, void *dest, s32 length) {
     return result;
 }
 
-void func_02018584(void *r7) {
+void MbWorkerTask_Main(void *r7) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void SetThreadPriority(void *, s32);
@@ -241,22 +241,25 @@ void func_02018584(void *r7) {
     }
 }
 
-void func_0201869c(M2C_UNK arg0, s32 arg1) {
+/* Start the multiboot worker thread on `task`, once: remember it as the current
+ * worker, empty its own job record, give it the rest of the work area as its
+ * stack and wake it. */
+void Mb_StartWorkerTask(M2C_UNK task, s32 workSize) {
     extern s32 gMbWorkerTask;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_02018738(M2C_UNK);
+    void MbWorker_ClearJob(M2C_UNK);
     void TaskCreate(M2C_UNK, void (*)(void *), M2C_UNK, M2C_UNK, s32, s32);
     void TaskWake(M2C_UNK);
-    void func_02018584(void *);
+    void MbWorkerTask_Main(void *);
     s32 saved;
     saved = OS_DisableInterrupts();
     if (gMbWorkerTask == 0) {
-        gMbWorkerTask = arg0;
-        func_02018738(arg0 + 0x000000C4);
-        M2C_FIELD(arg0, s32 *, 0x000000C0) = 0;
-        TaskCreate(arg0, func_02018584, arg0, arg0 + 0x000000E4 + ((arg1 - 0x000000E4) & ~3), (arg1 - 0x000000E4) & ~3, 0);
-        TaskWake(arg0);
+        gMbWorkerTask = task;
+        MbWorker_ClearJob(task + MB_TASK_JOB_BLOCK);
+        M2C_FIELD(task, s32 *, MB_TASK_JOB) = 0;
+        TaskCreate(task, MbWorkerTask_Main, task, task + 0xE4 + ((workSize - 0xE4) & ~3), (workSize - 0xE4) & ~3, 0);
+        TaskWake(task);
     }
     OS_RestoreInterrupts(saved);
 }
@@ -269,7 +272,7 @@ s32 Mb_IsTaskCreated(void) {
     return 0;
 }
 
-void func_02018738(M2C_UNK arg0) {
+void MbWorker_ClearJob(M2C_UNK arg0) {
     MI_CpuFill8(arg0, 0, 0x20);
 }
 
@@ -378,9 +381,9 @@ void Mb_QueueTaskExit(M2C_UNK arg0) {
 
 void func_02018910(s32 arg0) {
     extern M2C_UNK gMbRecordRx;
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     M2C_FIELD(&gMbRecordRx, s32 *, 8) = arg0 - 2;
-    M2C_FIELD(&gMbRecordRx, s32 *, 12) = func_020720f0(0x1E, arg0 - 2);
+    M2C_FIELD(&gMbRecordRx, s32 *, 12) = RuntimeIntDivMod(0x1E, arg0 - 2);
     M2C_FIELD(&gMbRecordRx, s32 *, 16) = 0x1E;
 }
 
@@ -405,20 +408,32 @@ void func_02018960(s32 arg0) {
     M2C_FIELD((u8 *)base + idx * 4, u32 *, 0x1E0) = 0;
 }
 
-void *SerializeCommand(void *arg0, void *arg1) {
-u8 *p=arg1;
-*p++=M2C_FIELD(arg0,u8 *,0);
-switch(M2C_FIELD(arg0,u8 *,0)) {
-case 4:
-p[0]=M2C_FIELD(arg0,u16 *,2);
-p[1]=(M2C_FIELD(arg0,u16 *,2)&0xff00)>>8;
-p[2]=M2C_FIELD(arg0,u16 *,4);
-p[3]=(M2C_FIELD(arg0,u16 *,4)&0xff00)>>8;
-p+=4; break;
-default: case 0: return 0;
-case 1: case 2: case 3: case 5: case 6: break;
-}
-return p;
+/* Copy a multiboot command into a work buffer in its wire form: the one-byte
+ * opcode followed, for opcode 4, by its two 16-bit fields little-endian.  Opcode
+ * 0 and any unknown opcode are refused; otherwise the end of what was written is
+ * returned. */
+void *SerializeCommand(void *command, void *out) {
+    u8 *p = out;
+    *p++ = M2C_FIELD(command, u8 *, 0);
+    switch (M2C_FIELD(command, u8 *, 0)) {
+    case 4:
+        p[0] = M2C_FIELD(command, u16 *, 2);
+        p[1] = (M2C_FIELD(command, u16 *, 2) & 0xff00) >> 8;
+        p[2] = M2C_FIELD(command, u16 *, 4);
+        p[3] = (M2C_FIELD(command, u16 *, 4) & 0xff00) >> 8;
+        p += 4;
+        break;
+    default:
+    case 0:
+        return 0;
+    case 1:
+    case 2:
+    case 3:
+    case 5:
+    case 6:
+        break;
+    }
+    return p;
 }
 
 /* Decode one received multiboot command packet into `header`. A type-7 packet

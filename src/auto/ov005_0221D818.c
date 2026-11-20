@@ -160,7 +160,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
-    void func_ov005_0221a38c(void *);
+    void PositionAwardPanelSprites(void *);
     s32 RandomIntRange(s32, s32);
     void SpawnResultSpark(s32, s32, s32);
     extern M2C_UNK data_ov005_02220db8, data_ov005_02220f90, data_ov005_02220a4c, data_ov005_02220a78;
@@ -195,7 +195,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
             M2C_FIELD(medalDisplay + i * 4, void **, 0x34) = func_02090eb8(&data_ov005_02220a78, 0, 0, 0, (u16)(0xa000 | ((472 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 1023)), 0, medalDisplay);
         }
         gCur3DSpriteEngine = savedEngine;
-        func_ov005_0221a38c(medalDisplay);
+        PositionAwardPanelSprites(medalDisplay);
     }
     if (((u32)(gMapConfig << 29) >> 29) != 1) isOtherMode = 1;
     else isOtherMode = 0;

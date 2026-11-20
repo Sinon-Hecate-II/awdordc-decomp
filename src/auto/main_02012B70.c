@@ -15,11 +15,11 @@ return bits;
 
 
 s32 func_02012b70(s32 arg0, void *arg1) {
-void *WFC_GetInfoBlock(); s32 WFC_CheckReady(void *); s32 WFC_SetChannelParam(s32,s32); void CpuFill(s32,void *,s32); void func_02007e70(void *,void *,s32); s32 WFC_SendCommandPacket(void *,s32);
+void *WFC_GetInfoBlock(); s32 WFC_CheckReady(void *); s32 WFC_SetChannelParam(s32,s32); void CpuFill(s32,void *,s32); void MIi_CpuCopy32(void *,void *,s32); s32 WFC_SendCommandPacket(void *,s32);
 u32 buf[8]; s32 r;
 r=WFC_CheckReady(WFC_GetInfoBlock()); if(r) return r;
 WFC_SetChannelParam(0x23,arg0); CpuFill(0,buf,0x20);
-*(u16 *)buf=0x23; func_02007e70(arg1,&buf[1],0x1c);
+*(u16 *)buf=0x23; MIi_CpuCopy32(arg1,&buf[1],0x1c);
 r=WFC_SendCommandPacket(buf,0x20); if(!r) r=2; return r;
 }
 

@@ -35,4 +35,17 @@
 #define KEYPAD_REPEAT_DELAY 0x28 /* releases before the held delete key repeats */
 #define KEYPAD_REPEAT_STEP  7    /* counter drop per produced delete */
 
+/* The keypad slides in from the right one key row at a time (the steps in
+ * ov001_0217416C.c).  A key row is a group of up to three number-key sprites;
+ * it waits just off the screen (x = 192) until the row above has come to rest. */
+#define KEYPAD_KEYS_PER_ROW 3
+#define KEYPAD_KEY_SPRITES  0x10 /* void *[10]: the ten number-key sprites */
+#define KEYPAD_KEY_SPRITE(i) (KEYPAD_KEY_SPRITES + (i) * 4) /* sprite of number key i */
+#define KPAD_ROW_HIDDEN_X 0xC0 /* where a key row waits off the right edge */
+#define KPAD_ROW_REST_X0  0x4C /* resting x of the first (7 8 9) row */
+#define KPAD_ROW_REST_X1  0x63 /* resting x of the second (4 5 6) row */
+#define KPAD_ROW_REST_X2  0x7A /* resting x of the third (1 2 3) row */
+#define KPAD_ROW_REST_X3  0x91 /* resting x of the fourth (0) row */
+#define KPAD_ROW_REST_X4  0xAA /* resting x of the bottom action row */
+
 #endif

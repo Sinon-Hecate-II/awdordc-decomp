@@ -6,7 +6,7 @@ void Reset3DSpriteBankState();void *func_020ab1c4(void *);void *GetLocalizedFile
 static inline u8 Visible149(void *p){return M2C_FIELD(M2C_FIELD(p,void **,100),u8 *,18)!=0;}
 
 extern s32 gSaveSlotSummary;extern u32 data_0215d8a8[];
-void func_020885fc(void);void *MemAlloc(s32);s32 func_020a8958(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
+void func_020885fc(void);void *MemAlloc(s32);s32 MapData_GetCategory(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
 static inline void *Entry149(void *base,s32 i){if(i<0)return 0;if(i>=64)return 0;return (u8 *)base+i*32;}
 static inline void *Cell149(void *base,s32 x,s32 y){if(x<0)return 0;if(y<0)return 0;if(x>=8)return 0;if(y>=8)return 0;return Entry149(base,x+y*8);}
 static inline u8 Flag149(void *p,u32 bit){return (M2C_FIELD(p,u8 *,4)&bit)?1:0;}
@@ -47,10 +47,10 @@ for(i=0;i<64;i++){M2C_FIELD(base+i*32,u16 *,0)=(i%8)*64+32;M2C_FIELD(base+i*32,u
 }
 M2C_FIELD(arg0,void **,92)=base;
 for(i=0;i<275;i++){
-state=func_020a8958(i);pos=func_020a8a94(i);coords[0]=pos;x=coords[0];pos>>=8;coords[1]=pos;y=(u8)pos;coords[3]=y;coords[2]=x;
+state=MapData_GetCategory(i);pos=func_020a8a94(i);coords[0]=pos;x=coords[0];pos>>=8;coords[1]=pos;y=(u8)pos;coords[3]=y;coords[2]=x;
 if(state==0||state==2){base=M2C_FIELD(arg0,void **,92);p=Cell149(base,x,y);
 M2C_FIELD(p,u8 *,6)=func_020a8a84(i);M2C_FIELD(p,u8 *,7)=i-161;id=(u8)(i-161);
-state=func_020a8958(id+161);selected=Flag149(p,2);M2C_FIELD(p,u8 *,4)=0;
+state=MapData_GetCategory(id+161);selected=Flag149(p,2);M2C_FIELD(p,u8 *,4)=0;
 if(state==2)M2C_FIELD(p,u8 *,4)|=4;
 if((M2C_FIELD(data_0215d8a8,volatile u32 *,id*4)<<29)>>29)M2C_FIELD(p,u8 *,4)|=1;
 if((M2C_FIELD(data_0215d8a8,volatile u32 *,id*4)<<29)>>29==1)M2C_FIELD(p,u8 *,4)|=16;
@@ -65,7 +65,7 @@ base=M2C_FIELD(arg0,void **,92);p=Find149(base,(u16)M2C_FIELD(&gSaveSlotSummary,
 if(p&&p!=Selected149(base)&&Flag149(p,1)){for(i=0,cursor=base;i<64;i++,cursor+=32){if(i<0)q=0;else if(i>=64)q=0;else q=cursor;M2C_FIELD(q,u8 *,4)&=~2;}M2C_FIELD(p,u8 *,4)|=2;}
 if(p){y=M2C_FIELD(p,s16 *,2);x=M2C_FIELD(p,s16 *,0);M2C_FIELD(arg0,u16 *,68)=x;M2C_FIELD(arg0,u16 *,70)=y;M2C_FIELD(arg0,u16 *,72)=x;M2C_FIELD(arg0,u16 *,74)=y;}
 {volatile Config149 first=*(const Config149 *)data_ov004_02218bc4;volatile Config149 second=*(const Config149 *)(data_ov004_02218bc4+6);
-func_02082c84();GX_SetBankForTex(3);GX_SetBankForBG(32);GX_SetBankForOBJ(16);GX_SetBankForOBJExtPltt(64);func_02003124(4);func_020031cc(8);func_0200323c(128);func_020032bc(256);
+func_02082c84();GX_SetBankForTex(3);GX_SetBankForBG(32);GX_SetBankForOBJ(16);GX_SetBankForOBJExtPltt(64);func_02003124(4);func_020031cc(8);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&second);{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|16;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|32;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|64;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|128;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|256;}Reset3DSpriteBankState();M2C_FIELD(gCur3DSpriteEngine,u16 *,68)=0;func_020994e0();q=(u8 *)&gCur3DSpriteEngine;M2C_FIELD(q,s32 *,0)=g3DSpriteEngineSub;func_020822b8(&first);{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|16;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|32;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|64;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|128;}{u16 *volatile reg=M2C_FIELD(gCur3DSpriteEngine,u16 **,0);*reg=*reg|256;}Reset3DSpriteBankState();M2C_FIELD(gCur3DSpriteEngine,u16 *,68)=0;func_020994e0();gCur3DSpriteEngine=g3DSpriteEngineMain;SetFileDirectory(data_ov004_0223c5a8);
 func_02081384(data_ov004_0223c5f4,0);func_02081400(data_ov004_0223c5b8,0,512);
 func_02081384(data_ov004_0223c5d0,0x28000);func_02081400(data_ov004_0223c5c0,512,32);
@@ -78,7 +78,7 @@ n=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;func_020a9a30(0,2,71,M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+608);p=func_020ab1c4(arg0);InitUnitSprite(p,2,320,3,0);func_020ab150(p,2);M2C_FIELD(p,u16 *,60)=2048;func_02088e84(p,224,156,224,188);if(Visible149(p)){y=M2C_FIELD(p,s16 *,82);x=M2C_FIELD(p,s16 *,80);n=GetUnitSpriteWidth(p);j=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,100),1,x,y,(u16)n,(u16)j);}Show3DSpriteSlide(p);func_020aad18(p);p=func_020ab1c4(arg0);InitUnitSprite(p,6,336,3,0);func_020ab150(p,256);M2C_FIELD(p,u16 *,60)=2048;func_02088e84(p,192,156,192,188);if(Visible149(p)){y=M2C_FIELD(p,s16 *,82);x=M2C_FIELD(p,s16 *,80);n=GetUnitSpriteWidth(p);j=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,100),1,x,y,(u16)n,(u16)j);}Show3DSpriteSlide(p);func_020aad18(p);p=func_020ab1c4(arg0);InitUnitSprite(p,18,352,3,0);M2C_FIELD(p,u16 *,60)=2048;func_020ab150(p,8);func_02088e84(p,128,156,128,188);if(Visible149(p)){y=M2C_FIELD(p,s16 *,82);x=M2C_FIELD(p,s16 *,80);n=GetUnitSpriteWidth(p);j=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,100),1,x,y,(u16)n,(u16)j);}Show3DSpriteSlide(p);func_020aad18(p);gCur3DSpriteEngine=saved;}func_ov003_021fef58(arg0);func_0209cce4(func_ov004_022148a4,4);func_0209cce4(func_ov004_02214904,10);if(M2C_FIELD(arg0,s32 *,64)==2048||M2C_FIELD(arg0,s32 *,64)==4096){if(M2C_FIELD(arg0,s16 *,80)<96-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=96-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);if(M2C_FIELD(arg0,s16 *,82)<57-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=57-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);if(M2C_FIELD(arg0,s16 *,80)>160-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,80)=160-Divide(M2C_FIELD(arg0,s16 *,68)*M2C_FIELD(arg0,s32 *,64),4096);if(M2C_FIELD(arg0,s16 *,82)>95-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096))M2C_FIELD(arg0,s16 *,82)=95-Divide(M2C_FIELD(arg0,s16 *,70)*M2C_FIELD(arg0,s32 *,64),4096);}if(M2C_FIELD(arg0,s32 *,64)==2048||M2C_FIELD(arg0,s32 *,64)==4096){if(M2C_FIELD(arg0,s16 *,68)<0)M2C_FIELD(arg0,s16 *,68)=0;if(M2C_FIELD(arg0,s16 *,68)>512)M2C_FIELD(arg0,s16 *,68)=512;if(M2C_FIELD(arg0,s16 *,70)<0)M2C_FIELD(arg0,s16 *,70)=0;if(M2C_FIELD(arg0,s16 *,70)>304)M2C_FIELD(arg0,s16 *,70)=304;if(M2C_FIELD(arg0,s16 *,80)<256-Divide(M2C_FIELD(arg0,s32 *,64)*512,4096))M2C_FIELD(arg0,s16 *,80)=256-Divide(M2C_FIELD(arg0,s32 *,64)*512,4096);if(M2C_FIELD(arg0,s16 *,82)<192-Divide(M2C_FIELD(arg0,s32 *,64)*344,4096))M2C_FIELD(arg0,s16 *,82)=192-Divide(M2C_FIELD(arg0,s32 *,64)*344,4096);if(M2C_FIELD(arg0,s16 *,80)>0)M2C_FIELD(arg0,s16 *,80)=0;if(M2C_FIELD(arg0,s16 *,82)>0)M2C_FIELD(arg0,s16 *,82)=0;}
 p=Selected149(M2C_FIELD(arg0,void **,92));if(p){ResetBattleMap();func_020cf278(M2C_FIELD(p,u8 *,7)+161);LoadBattleMap(M2C_FIELD(p,u8 *,7)+161);func_ov003_021ff36c();}
 M2C_FIELD(arg0,s16 *,76)=0;M2C_FIELD(arg0,s16 *,78)=0;n=0;state=0x10019;{volatile u32 *progress=(volatile u32 *)data_0215d8a8;for(i=0;i<26;i++,progress++){if((*progress<<29)>>29>=3)n=i+1;}}
-if(n>=10)state=0x1001a;if(n>=16)state=0x1001b;if(n>=21)state=0x1001c;func_0208f780(state);}
+if(n>=10)state=0x1001a;if(n>=16)state=0x1001b;if(n>=21)state=0x1001c;PlayMusicTrack(state);}
 #pragma opt_strength_reduction reset
 /* Tear down a map view: reset the 3D sprite engine state, run the map's teardown
  * steps, unregister the two 3D display callbacks, remember the view's zoom in the

@@ -115,7 +115,7 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
     return temp_r0;
 }
 
-s32 func_ov010_02229ef4(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
+s32 Ov010_RequestWfcMatch(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
 
 s32 func_ov010_02229f64(void) {
     u32 func_02036f14();
@@ -139,8 +139,8 @@ s32 func_ov010_02229f64(void) {
 }
 
 void func_ov010_02229f98(void *arg0) {
-    M2C_UNK func_ov010_02229ef4(s32, s32, s32, s32, s32);
-    func_ov010_02229ef4(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), M2C_FIELD(arg0, s32 *, 0x44));
+    M2C_UNK Ov010_RequestWfcMatch(s32, s32, s32, s32, s32);
+    Ov010_RequestWfcMatch(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), M2C_FIELD(arg0, s32 *, 0x44));
 }
 
 void func_ov010_02229fc0(void) {
@@ -449,7 +449,7 @@ void StringStorageConcat(void *out, void *first, void *last) {
     StringStorageReplace(r, firstLen, 0, last, last + lastLen, flags[0]);
 }
 
-void func_ov010_0222a808(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *CreateSpriteForOwner(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=CreateSpriteForOwner(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
+void CreateNetErrorSprite(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *CreateSpriteForOwner(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=CreateSpriteForOwner(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
 
 void func_ov010_0222a880(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);
@@ -466,8 +466,15 @@ void func_ov010_0222a880(void *arg0) {
     StartScreenFadeChildren(2, 8, 1, arg0);
 }
 
-void func_ov010_0222a8ec(void *a){M2C_UNK func_ov010_0222ba94(s32,u16,void *);if(!M2C_FIELD(a,volatile s32 *,0x38))return;func_ov010_0222a808(M2C_FIELD(a,s8 *,0x35),M2C_FIELD(a,u16 *,0x36),M2C_FIELD(a,s32 *,0x38),M2C_FIELD(a,s32 *,0x3c),M2C_FIELD(a,u32 *,0x40),a);
-switch(M2C_FIELD(a,u32 *,0x40)){case 0:case 1:case 2:break;case 3:case 4:case 5:case 6:case 7:func_ov010_0222ba94(-1,M2C_FIELD(a,u16 *,0x36),a);break;default:break;}}
+/* Show the network error held by an online screen object (+0x38 code, +0x3C
+ * parameter, +0x40 class): spawn its error sprite, and for error classes 3..7
+ * also create the online match's name label. A screen with no error does
+ * nothing. */
+void Ov010Online_ShowNetError(void *error) {
+M2C_UNK CreateOnlineMatchNameLabel(s32,u16,void *);
+if(!M2C_FIELD(error,volatile s32 *,0x38))return;
+CreateNetErrorSprite(M2C_FIELD(error,s8 *,0x35),M2C_FIELD(error,u16 *,0x36),M2C_FIELD(error,s32 *,0x38),M2C_FIELD(error,s32 *,0x3c),M2C_FIELD(error,u32 *,0x40),error);
+switch(M2C_FIELD(error,u32 *,0x40)){case 0:case 1:case 2:break;case 3:case 4:case 5:case 6:case 7:CreateOnlineMatchNameLabel(-1,M2C_FIELD(error,u16 *,0x36),error);break;default:break;}}
 
 void func_ov010_0222a96c(void) {
 

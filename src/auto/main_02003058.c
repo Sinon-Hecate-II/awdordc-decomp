@@ -42,20 +42,42 @@ GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));
 
 void func_020031cc(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,20))&~a;M2C_FIELD(&gVramBankState,u16 *,20)=a;switch(a){case 0:break;case 8:*(volatile u8 *)0x4000243=0x84;break;case 0x100:*(volatile u8 *)0x4000249=0x82;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
 
-void func_0200323c(u32 a) {
-extern M2C_UNK gVramBankState;
-M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,22))&~a;
-M2C_FIELD(&gVramBankState,u16 *,22)=a;
-if(a!=0){if(a==128){*(volatile u32 *)0x04001000|=0x40000000;*(volatile u8 *)0x04000248=130;}}else {*(volatile u32 *)0x04001000&=~0x40000000;}
-GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
+/* Give the requested bank (bank H) to the sub engine's background extended
+ * palette: record the new grant and add the old one to the pending releases,
+ * switch DISPCNT_SUB's background-palette bit on for bank H (off when no bank is
+ * requested), then hand the released banks back to the allocator. */
+void GX_SetBankForBGExtPlttSub(u32 banks) {
+    extern M2C_UNK gVramBankState;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) = (M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) | M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_BG_EXTPLTT_SUB)) & ~banks;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_BG_EXTPLTT_SUB) = banks;
+    if (banks != 0) {
+        if (banks == VRAM_BANK_H) {
+            REG_DISPCNT_SUB |= DISPCNT_BG_EXT_PALETTE;
+            REG_VRAM_H_CR = VRAM_CR_SUB_BG_EXTPLTT;
+        }
+    } else {
+        REG_DISPCNT_SUB &= ~DISPCNT_BG_EXT_PALETTE;
+    }
+    GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
 }
 
-void func_020032bc(u32 a) {
-extern M2C_UNK gVramBankState;
-M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,24))&~a;
-M2C_FIELD(&gVramBankState,u16 *,24)=a;
-if(a!=0){if(a==256){*(volatile u32 *)0x04001000|=0x80000000;*(volatile u8 *)0x04000249=131;}}else {*(volatile u32 *)0x04001000&=~0x80000000;}
-GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));
+/* Give the requested bank (bank I) to the sub engine's OBJ (sprite) extended
+ * palette: record the new grant and add the old one to the pending releases,
+ * switch DISPCNT_SUB's OBJ-palette bit on for bank I (off when no bank is
+ * requested), then hand the released banks back to the allocator. */
+void GX_SetBankForOBJExtPlttSub(u32 banks) {
+    extern M2C_UNK gVramBankState;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) = (M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) | M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_OBJ_EXTPLTT_SUB)) & ~banks;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_OBJ_EXTPLTT_SUB) = banks;
+    if (banks != 0) {
+        if (banks == VRAM_BANK_I) {
+            REG_DISPCNT_SUB |= DISPCNT_OBJ_EXT_PALETTE;
+            REG_VRAM_I_CR = VRAM_CR_SUB_OBJ_EXTPLTT;
+        }
+    } else {
+        REG_DISPCNT_SUB &= ~DISPCNT_OBJ_EXT_PALETTE;
+    }
+    GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
 }
 
 s32 func_0200333c(M2C_UNK *a) {
@@ -216,9 +238,29 @@ s32 func_0200370c(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x1F00) >> 8) << 0xB) + 0x06200000;
 }
 
-s32 func_0200372c(void){u32 mode=*(volatile u32 *)0x4000000&7;u32 b=*(volatile u16 *)0x400000c;u32 base=((*(volatile u32 *)0x4000000&0x38000000)>>27)<<16;u32 index=(b&0x1f00)>>8;s32 r;switch(mode){case 0:case 1:case 2:case 3:case 4:return base+0x6000000+(index<<11);case 5:if(b&0x80)r=(index<<14)+0x6000000;else r=base+0x6000000+(index<<11);return r;case 6:return 0x6000000;default:return 0;}}
+/* Address of BG2's map data in the main engine's background VRAM: the display's
+ * VRAM base plus BG2's screen base block.  In mode 5 a direct-layout (linear)
+ * BG2 maps its 16 KiB blocks from the start of VRAM instead.  Modes 0..4 use the
+ * screen base block; mode 6 has no map. */
+s32 GX_GetBG2ScrPtr(void){
+u32 mode=REG_DISPCNT&DISPCNT_MODE_MASK;
+u32 b=REG_BG2CNT;
+u32 base=((REG_DISPCNT&DISPCNT_BG_VRAM_MASK)>>DISPCNT_BG_VRAM_SHIFT)<<16;
+u32 index=(b&BGCNT_SCR_BASE_MASK)>>BGCNT_SCR_BASE_SHIFT;
+s32 r;
+switch(mode){case GX_MODE_0:case GX_MODE_1:case GX_MODE_2:case GX_MODE_3:case GX_MODE_4:return base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);case GX_MODE_5:if(b&BGCNT_BITMAP_DIRECT)r=(index<<BG_BITMAP_BLOCK_SHIFT)+GX_MAIN_VRAM_BASE;else r=base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);return r;case GX_MODE_6:return GX_MAIN_VRAM_BASE;default:return 0;}}
 
-s32 func_020037b0(void){u32 mode=*(volatile u32 *)0x4000000&7;u32 b=*(volatile u16 *)0x400000e;u32 base=((*(volatile u32 *)0x4000000&0x38000000)>>27)<<16;u32 index=(b&0x1f00)>>8;s32 r;switch(mode){case 0:case 1:case 2:return base+0x6000000+(index<<11);case 3:case 4:case 5:if(b&0x80)r=(index<<14)+0x6000000;else r=base+0x6000000+(index<<11);return r;case 6:return 0;default:return 0;}}
+/* Address of BG3's map data in the main engine's background VRAM: the display's
+ * VRAM base plus BG3's screen base block.  In the bitmap modes a direct-layout
+ * (linear) BG3 maps its 16 KiB blocks from the start of VRAM instead.  Returns 0
+ * in mode 6, where BG3 has no map. */
+s32 GX_GetBG3ScrPtr(void){
+u32 mode=REG_DISPCNT&DISPCNT_MODE_MASK;
+u32 b=REG_BG3CNT;
+u32 base=((REG_DISPCNT&DISPCNT_BG_VRAM_MASK)>>DISPCNT_BG_VRAM_SHIFT)<<16;
+u32 index=(b&BGCNT_SCR_BASE_MASK)>>BGCNT_SCR_BASE_SHIFT;
+s32 r;
+switch(mode){case GX_MODE_0:case GX_MODE_1:case GX_MODE_2:return base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);case GX_MODE_3:case GX_MODE_4:case GX_MODE_5:if(b&BGCNT_BITMAP_DIRECT)r=(index<<BG_BITMAP_BLOCK_SHIFT)+GX_MAIN_VRAM_BASE;else r=base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);return r;case GX_MODE_6:return 0;default:return 0;}}
 
 s32 func_02003834(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
 

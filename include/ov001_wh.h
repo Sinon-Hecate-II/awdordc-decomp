@@ -30,6 +30,26 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_EVENT_INDICATE 0x08 /* u16 connect/disconnect indication kind */
 #define WH_EVENT_CHILD_ID 0x10 /* u16 child index, a bit position in the child bitmap */
 
+/* gWhState holds the work buffers for starting a WFC connection. */
+#define WH_STATE_CONNECT_SETTINGS 0x28 /* Buffer for optional connection settings. */
+#define WH_STATE_PHASE            0x2C
+#define WH_STATE_BSS_DESC         0x4C /* Buffer for the selected host descriptor. */
+#define WH_STATE_CONNECT_FLAGS    0x58
+#define WH_PHASE_READY_TO_CONNECT 3
+#define WH_PHASE_CONNECT_PENDING  8
+#define WH_CONNECT_SETTINGS_BYTES 0x60
+#define WH_BSS_DESC_BYTES         0xC0
+#define WH_WFC_STEP_QUEUED        3
+
+/* The WH connection task's smaller state object (0x28 bytes): like gWhState it
+ * stages a connection, but it keeps its buffers by pointer. */
+#define WH_TASK_CONNECT_PARAMS  0x08 /* void *connection parameters handed to WFC_ConnectStep */
+#define WH_TASK_CONNECT_FLAGS   0x0C /* s32 flags passed to WFC_StartConnection */
+#define WH_TASK_PHASE           0x18 /* s32 one of WH_PHASE_* */
+#define WH_TASK_BSS_DESC        0x20 /* void *0xC0-byte host descriptor buffer */
+#define WH_TASK_SETTINGS        0x24 /* void *0x50-byte connection settings buffer */
+#define WH_TASK_SETTINGS_BYTES  0x50
+
 /* Connection object fields (gWhWork+4). */
 #define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */

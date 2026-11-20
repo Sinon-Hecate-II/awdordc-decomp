@@ -170,7 +170,7 @@ arg0[0]=posHigh[0];arg0[1]=posHigh[1];return 1;
 #pragma opt_instruction_scheduling reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void func_ov000_021954a4(void) {
+void PlanEnemyUnitAttackDestination(void) {
     s32 func_ov000_02194ab8(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
@@ -185,7 +185,7 @@ void func_ov000_021954a4(void) {
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
-s32 func_ov000_021954dc(s16 *arg0) {
+s32 FindEnemyHqAttackPositionAlt(s16 *arg0) {
     void GetAiUnitRange();
     void BuildAiUnitThreatRange();
     s32 SelectEnemyHqDestination(s16 *);
@@ -205,13 +205,13 @@ s32 func_ov000_021954dc(s16 *arg0) {
     return 1;
 }
 
-void func_ov000_0219553c(void) {
-    s32 func_ov000_021954dc(s16 *);
+void PlanEnemyHqAttackDestinationAlt(void) {
+    s32 FindEnemyHqAttackPositionAlt(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
-    if (func_ov000_021954dc(sp0) == 0) {
+    if (FindEnemyHqAttackPositionAlt(sp0) == 0) {
         return;
     }
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {

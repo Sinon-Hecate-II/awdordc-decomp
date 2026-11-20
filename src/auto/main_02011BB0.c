@@ -468,7 +468,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     void *WFC_GetInfoBlock();
     void DC_InvalidateRange(void *, s32);
     void CpuFill(s32, void *, s32);
-    void func_02007e70(void *, void *, s32);
+    void MIi_CpuCopy32(void *, void *, s32);
     s32 WFC_SendCommandPacket(void *, s32);
     s32 func_02011b44();
     u32 packet[16];
@@ -497,7 +497,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     packet[3] = param;
     packet[4] = tag;
     CpuFill(0, &packet[5], 28);
-    func_02007e70(data, &packet[12], 16);
+    MIi_CpuCopy32(data, &packet[12], 16);
     rc = WFC_SendCommandPacket(packet, 64);
     if (!rc) rc = 2;
     return rc;

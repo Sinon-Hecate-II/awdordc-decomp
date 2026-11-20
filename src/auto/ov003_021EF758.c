@@ -387,7 +387,7 @@ void func_ov003_021f00d0(void) {
  * A changed icon is written back, marks the panel dirty and, on the selected
  * slot, goes to the CO panel record too. */
 void WaypointPanel_RefreshCoIcons(void *panel) {
-    void *GetNetworkPlayerRecord(); void *func_02084e64(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
+    void *GetNetworkPlayerRecord(); void *GetLocalNetworkPlayerRecord(); s32 GetPlayerCoId(s32); s32 GetPlayerCoIconIndex(u8);
     s32 isEmpty; u8 playerId; s8 oldIcon,count,newIcon; u8 i; void *slot,*record;
     i=0; count=M2C_FIELD(M2C_FIELD(panel,void **,WAYPOINT_PANEL_LIST),s8 *,WAYPOINT_LIST_COUNT);
     if(count<=0)return;
@@ -400,7 +400,7 @@ void WaypointPanel_RefreshCoIcons(void *panel) {
             record=GetNetworkPlayerRecord(playerId);
             if(record) newIcon=M2C_FIELD(record,s8 *,13); else newIcon=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }else{
-            record=func_02084e64();
+            record=GetLocalNetworkPlayerRecord();
             if(record) newIcon=M2C_FIELD(record+i,s8 *,0x12); else newIcon=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }
         if(oldIcon!=newIcon){

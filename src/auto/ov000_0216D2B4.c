@@ -54,7 +54,7 @@ if((s8)GetCoZoneAttackBonus(v,unit,owner)>0){AddSprite((u16)((x+28)&mx2),(u8)(y+
 }
 if((s8)func_020a28f4(v,unit,owner)>0){AddSprite((u16)((x+28)&mx3),(u8)(y+28),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt3)|0x6000),gSpriteDesc8x8,0);
 }
-t=(s8)func_020a296c(v,unit,owner);
+t=(s8)GetCoZoneMoveBonus(v,unit,owner);
 if(t==1){AddSprite((u16)((x+47)&mx4),(u8)(y+19),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt4)|0x6000),gSpriteDesc16x8,0);
 }
 else if(t==2){AddSprite((u16)((x+47)&mx5),(u8)(y+19),(u16)(((435)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt5)|0x6000),gSpriteDesc16x8,0);

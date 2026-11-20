@@ -1,6 +1,7 @@
 /* 53 functions from 0x02178E80 to 0x02179E74 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_wh.h"
 
 /* The ov001 profile screen's confirmation state (gOv001ProfileChoice). */
 #define OV001_CHOICE_CONFIRMED 0x00 /* u8: set once the player has confirmed an option */
@@ -44,7 +45,7 @@ void Ov001_CloseMessageScreen(void) {
  * shows message 29 before the fade-out step takes over. */
 void Ov001_ShowProfileMessage(void) {
     void *func_ov001_02176114(void);
-    void func_ov001_02178ff8(void);
+    void Ov001_LoadProfileMessageBg(void);
     void func_ov001_021792ec(void);
     void func_ov001_02179078(void);
     s32 CreateTextPanel(s32, s32);
@@ -60,7 +61,7 @@ void Ov001_ShowProfileMessage(void) {
     panel = CreateTextPanel(0, 0);
     M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) = 0;
     M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_CONFIRMED) = 0;
-    func_ov001_02178ff8();
+    Ov001_LoadProfileMessageBg();
     FillU16(0, textBuf, 22);
     CopyU16(message + 2, textBuf, M2C_FIELD(message, u8 *, 1) * 2);
     DrawPanelText(panel, 8, 53, 240, 28, 2, 0x480, textBuf);
@@ -70,16 +71,19 @@ void Ov001_ShowProfileMessage(void) {
     Ov001_SetStepCallback(func_ov001_02179078);
 }
 
-void func_ov001_02178ff8(void) {
+/* Load the profile confirmation message's background map and put BG0/BG1/BG2 on
+ * the lowest priority on both engines. */
+void Ov001_LoadProfileMessageBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190668;
+    extern M2C_UNK gOv001ProfileMessageBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190668, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001ProfileMessageBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02179078(void) {
@@ -211,28 +215,30 @@ void func_ov001_02179320(void) {
  M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
  M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
  void func_ov001_0217969c(s32);
- void func_ov001_0217936c(void);
+ void Ov001_LoadWfcEraseResultBackground(void);
  void func_ov001_021793ec(void);
- extern u8 data_ov001_02193d88;
+ extern u8 gOv001ProfileResult;
  func_ov001_02175f8c((M2C_UNK *)&func_ov001_0217969c);
- data_ov001_02193d88=0;
- func_ov001_0217936c();
+ gOv001ProfileResult=0;
+ Ov001_LoadWfcEraseResultBackground();
  Ov001_ShowMessageBox(0x1C);
  Ov001_CreateAnimSprite(0);
  Ov001_PlaySound(11);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021793ec);
 }
 
-void func_ov001_0217936c(void) {
+/* Loads the background map of the step that reports the Wi-Fi data-erase
+ * result (the shared "Multi" screen) and lowers the BG priorities. */
+void Ov001_LoadWfcEraseResultBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_0219067c;
+    extern M2C_UNK gOv001WfcEraseResultBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_0219067c, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001WfcEraseResultBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_021793ec(void) {
@@ -302,25 +308,28 @@ void func_ov001_021794ec(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_StartProfileExitTask();
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern u8 data_ov001_02193d88;
-    extern M2C_UNK func_ov001_02179524;
-    if (data_ov001_02193d88 == 0) {
+    extern u8 gOv001ProfileResult;
+    extern M2C_UNK Ov001_SlideOutProfileIconRow;
+    if (gOv001ProfileResult == 0) {
         Ov001_StartProfileExitTask();
     }
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02179524);
+    Ov001_SetStepCallback(&Ov001_SlideOutProfileIconRow);
 }
 
-void func_ov001_02179524(void) {
+/* Step that, once the profile action has finished, slides the icon row out and
+ * fades the screen away; when no action ran it first waits for the profile task. */
+void Ov001_SlideOutProfileIconRow(void) {
     s32 Ov001_IsProfileScreenDone();
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern u8 data_ov001_02193d88;
+    extern u8 gOv001ProfileResult;
     extern M2C_UNK func_ov001_021795a4;
+
     if (Ov001_IsFadeActive(1) != 0) return;
-    if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
+    if (gOv001ProfileResult == OV001_PROFILE_NO_CHANGE && Ov001_IsProfileScreenDone() == 0) return;
     Ov001_StartIconRowSlideOut();
-    if (data_ov001_02193d88 == 0) Ov001_StartFade(3, 1, 1, 8);
+    if (gOv001ProfileResult == OV001_PROFILE_NO_CHANGE) Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_021795a4);
 }
@@ -330,26 +339,26 @@ void func_ov001_02179524(void) {
 void func_ov001_021795a4(void) {
     s32 Ov001_IsIconRowIdle(void);
     s32 Ov001_IsProfileScreenDone(void);
-    extern u8 data_ov001_02193d88;
+    extern u8 gOv001ProfileResult;
     void Ov001_InitOptionMenu(void);
     void func_ov001_02178bc0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (data_ov001_02193d88 == 0 && Ov001_IsFadeActive(1) != 0) return;
+    if (gOv001ProfileResult == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
+    if (gOv001ProfileResult == 0 && Ov001_IsProfileScreenDone() == 0) return;
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193d88 == 0) {
+    if (gOv001ProfileResult == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193d88 == 0) {
+    if (gOv001ProfileResult == 0) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(Ov001_InitOptionMenu);
         return;
     }
-    if (data_ov001_02193d88 == 2) {
+    if (gOv001ProfileResult == 2) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(func_ov001_02178bc0);
         return;
@@ -359,14 +368,14 @@ void func_ov001_021795a4(void) {
 }
 
 void func_ov001_0217969c(s32 arg0) {
-    extern u8 data_ov001_02193d88;
+    extern u8 gOv001ProfileResult;
     void func_ov001_021794ec(void);
     Ov001_StopSound();
     if (arg0 == 0) {
-        data_ov001_02193d88 = 1;
+        gOv001ProfileResult = 1;
         Ov001_PlaySound(0x10);
     } else {
-        data_ov001_02193d88 = 2;
+        gOv001ProfileResult = 2;
         Ov001_PlaySound(0x12);
     }
     Ov001_SetProfileScreenCallback(0);

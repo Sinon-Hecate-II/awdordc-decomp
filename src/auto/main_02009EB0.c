@@ -493,13 +493,27 @@ foundDirectory:
     return 0;
 }
 #pragma opt_propagation reset
-s32 func_0200ab2c(void *p) {
-void *q=M2C_FIELD(p,void **,8); u32 n=M2C_FIELD(p,u32 *,0x34); u32 off=(n<<3); u32 out[2],in[2]; s32 r;
-if(off>=M2C_FIELD(q,u32 *,0x30)) return 1;
-in[0]=(u32)q; in[1]=M2C_FIELD(q,u32 *,0x2c)+off;
-r=FileStreamRead(in,(M2C_UNK)out,8); if(r)return r;
-M2C_FIELD(p,u32 *,0x30)=out[0]; M2C_FIELD(p,u32 *,0x34)=out[1]; M2C_FIELD(p,u32 *,0x38)=n;
-return ExecuteFileCommand(p,7);
+/* File command 6: open the file whose id the request names by reading its FAT
+ * record from the archive, store the file's data range and hand over to command
+ * 7, which installs the range in the request.  Returns 1 when the id points past
+ * the archive's FAT. */
+s32 OpenFileById(void *request) {
+    FSArchive *archive = M2C_FIELD(request, FSArchive **, FS_REQ_FILE);
+    u32 id = M2C_FIELD(request, u32 *, FS_REQ_OPEN_END);
+    u32 offset = id << 3;
+    FSFileRange range;
+    FSStreamPos pos;
+    s32 result;
+
+    if (offset >= (u32) archive->fatSize) return 1;
+    pos.file = archive;
+    pos.offset = archive->fatPos + offset;
+    result = FileStreamRead(&pos, &range, sizeof(range));
+    if (result) return result;
+    M2C_FIELD(request, u32 *, FS_REQ_OPEN_START) = range.start;
+    M2C_FIELD(request, u32 *, FS_REQ_OPEN_END) = range.end;
+    M2C_FIELD(request, u32 *, FS_REQ_OPEN_ID) = id;
+    return ExecuteFileCommand(request, 7);
 }
 
 s32 func_0200abac(void *arg0) {

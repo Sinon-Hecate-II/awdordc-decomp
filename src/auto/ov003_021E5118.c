@@ -33,7 +33,7 @@ void func_ov003_021e5118(void *arg0) {
     u16 GetUnitSpriteHeight(void *);
     void *func_020ab1c4(void *);
     s32 GetUiColor(M2C_UNK);
-    M2C_UNK func_020ae528(s32);
+    M2C_UNK DimPalette(s32);
     M2C_UNK DrawMapPreview(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     M2C_UNK HeapFreeBlock(s32);
@@ -208,7 +208,7 @@ void func_ov003_021e5118(void *arg0) {
     } while ((u32) var_r4 <= 7U);
     CopyToObjPaletteShadow(GetTerrainPalette(0xF, 0), 0x2E0, 0x20);
     CopyToObjPaletteShadow(GetTerrainPalette(0xF, 0), 0x300, 0x20);
-    func_020ae528(M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x300);
+    DimPalette(M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x300);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 0x10);
     data_027e01d8 = temp_r5_2;
 }

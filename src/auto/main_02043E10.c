@@ -189,22 +189,26 @@ void CanStartSend(M2C_UNK arg0) {
     CanStartTransfer(arg0, 1);
 }
 
-s32 CanStartTransfer(M2C_UNK arg0, s32 arg1) {
+/* Returns whether a transfer of `kind` can start on `channel` now: no network
+ * error, the player's connection present (and active when the caller needs it),
+ * no transfer already sending on the channel, and enough room in the link's
+ * send space for the transfer's first bytes. */
+s32 CanStartTransfer(s32 channel, s32 kind) {
     s32 HasNetError();
-    s32 IsConnectionActive(M2C_UNK);
-    s32 func_020391b8(M2C_UNK);
-    s32 func_020446e8(s32);
-    s32 IsTransferSending(M2C_UNK);
-    s32 temp_r4;
+    s32 IsConnectionActive(s32);
+    s32 HasPlayerConnection(s32);
+    s32 GetTransferStartSpace(s32);
+    s32 IsTransferSending(s32);
+    s32 sendSpace;
 
-    if ((HasNetError() != 0) || ((arg1 == 1) && (IsConnectionActive(arg0) == 0)) || (func_020391b8(arg0) == 0)) {
+    if ((HasNetError() != 0) || ((kind == 1) && (IsConnectionActive(channel) == 0)) || (HasPlayerConnection(channel) == 0)) {
         return 0;
     }
-    if (IsTransferSending(arg0) == 1) {
+    if (IsTransferSending(channel) == 1) {
         return 0;
     }
-    temp_r4 = GetSendSpace(arg0);
-    if (temp_r4 >= func_020446e8(arg1)) {
+    sendSpace = GetSendSpace(channel);
+    if (sendSpace >= GetTransferStartSpace(kind)) {
         return 1;
     }
     return 0;
@@ -326,7 +330,7 @@ void BuildTransferHeader(void *arg0, s16 arg1, s32 arg2) {
 
 u16 func_020446ac(void *a){void MI_CpuCopy8(void *,void *,s32);s32 ByteCompareN(void *,void *,s32);extern M2C_UNK gTransferMagic;u16 buf[4];MI_CpuCopy8(a,buf,8);if(ByteCompareN(&buf[3],&gTransferMagic,2)==0)return buf[2];return 0;}
 
-s32 func_020446e8(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
+s32 GetTransferStartSpace(s32 a){switch(a){case 2:case 3:case 4:return 12;default:return 8;}}
 
 void func_02044708(s32 a){extern s32 gTransferManager;void MI_CpuFill8(s32,s32,s32);gTransferManager=a;MI_CpuFill8(a,0,0x614);M2C_FIELD(gTransferManager,u16 *,0x610)=0x5b9;}
 
@@ -400,8 +404,8 @@ s32 GetTransferState(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransf
 
 void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 FindPlayerConnection(M2C_UNK);
- void func_0205af48(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_0205af48(FindPlayerConnection(arg0), arg1, arg2, arg3);
+ void gt2Send(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ gt2Send(FindPlayerConnection(arg0), arg1, arg2, arg3);
 }
 
 /* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */

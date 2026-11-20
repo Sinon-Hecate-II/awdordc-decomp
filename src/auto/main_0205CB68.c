@@ -29,7 +29,7 @@ s32 gti2ResendPendingCommand(void *a, s32 *b) {
     return 1;
 }
 
-void func_0205cc20(s32 a, s32 b, s32 c, s32 d) {
+void gti2Send(s32 a, s32 b, s32 c, s32 d) {
     M2C_UNK func_0205c620();
     M2C_UNK gti2SendUnreliable();
     if (d) { func_0205c620(); return; }
@@ -49,8 +49,8 @@ return (s16)(M2C_FIELD(p,u16 *,4)-M2C_FIELD(q,u16 *,4));
 }
 
 void func_0205cc90(s32 *arg0) {
-    M2C_UNK func_0205acc8(s32);
-    func_0205acc8(*arg0);
+    M2C_UNK gti2FreeConnection(s32);
+    gti2FreeConnection(*arg0);
 }
 
 s32 func_0205cca0(void *p,s32 a,s32 b) {
@@ -75,7 +75,7 @@ M2C_UNK func_02048dc4(s32);
 s32 Vector_Free(s32);
 s32 ghiSocket(s32,s32,s32);
 s32 func_020496e0(s32,void *,s32);
-M2C_UNK func_020496b8(s32);
+M2C_UNK ghiCloseSocket(s32);
 s32 ghiGetSockName(s32,void *,s32 *);
 u16 port;
 s32 addr;
@@ -105,7 +105,7 @@ pkt.b=2;
 pkt.d=addr;
 pkt.c=swapped;
 if(func_020496e0(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
-func_020496b8(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
+ghiCloseSocket(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
 }
 len=8;ghiGetSockName(M2C_FIELD(p,s32 *,0),&pkt,&len);
 M2C_FIELD(p,s32 *,4)=pkt.d;
@@ -115,9 +115,9 @@ M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 }
 #pragma pop
 void gti2FreeSocket(void *arg0) {
-M2C_UNK gpiFree(void *);M2C_UNK func_02048dc4(s32);M2C_UNK func_02049270();M2C_UNK func_020496b8(s32);
+M2C_UNK gpiFree(void *);M2C_UNK func_02048dc4(s32);M2C_UNK func_02049270();M2C_UNK ghiCloseSocket(s32);
 if(M2C_FIELD(arg0,s32 *,0x1c)!=0){M2C_FIELD(arg0,s32 *,0x14)=1;return;}
-func_020496b8(M2C_FIELD(arg0,s32 *,0));func_02048dc4(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
+ghiCloseSocket(M2C_FIELD(arg0,s32 *,0));func_02048dc4(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
 }
 
 void gti2SocketSetConnectAttempt(void *arg0, s32 arg1) {
@@ -272,7 +272,7 @@ void gti2RemoveConnection(s32 conn)
 }
 #pragma scheduling reset
 s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
-    void func_0205d70c(M2C_UNK **, s32 *);
+    void gti2NormalizeMessage(M2C_UNK **, s32 *);
     s32 func_0204955c(s32);
     s32 ghiSendTo(s32, s32, s32, s32, void *, s32);
     s32 ghiGetLastSocketError(s32);
@@ -284,7 +284,7 @@ s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
 
     s32 res;
 
-    func_0205d70c((M2C_UNK **)&arg3, &arg4);
+    gti2NormalizeMessage((M2C_UNK **)&arg3, &arg4);
 
     if (func_0204955c(*(s32 *)p) == 0) {
         return 1;
@@ -482,14 +482,14 @@ s32 gt2StringToAddress(char *string, s32 *ipOut, u16 *portOut) {
     return 1;
 }
 #pragma opt_common_subs reset
-void func_0205d70c(M2C_UNK **arg0, s32 *arg1) {
+void gti2NormalizeMessage(M2C_UNK **arg0, s32 *arg1) {
     s32 StringLength(M2C_UNK *);
-    extern M2C_UNK data_020ff888;
+    extern M2C_UNK sGt2EmptyMessage;
     M2C_UNK *temp_r2;
 
     temp_r2 = *arg0;
     if (temp_r2 == NULL) {
-        *arg0 = &data_020ff888;
+        *arg0 = &sGt2EmptyMessage;
         *arg1 = 0;
         return;
     }
@@ -513,8 +513,8 @@ return 0;
 }
 
 void func_0205d7c4(void *p) {
-s32 func_020496b8(s32);
-if(M2C_FIELD(p,s32 *,0)!=-1)func_020496b8(M2C_FIELD(p,s32 *,0));
+s32 ghiCloseSocket(s32);
+if(M2C_FIELD(p,s32 *,0)!=-1)ghiCloseSocket(M2C_FIELD(p,s32 *,0));
 M2C_FIELD(p,s32 *,0)=-1; M2C_FIELD(p,s32 *,16)=4;
 }
 

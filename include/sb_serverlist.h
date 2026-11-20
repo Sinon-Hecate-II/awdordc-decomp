@@ -96,4 +96,8 @@ typedef struct GpiPlayer {
 #define SB_SLIST_STATE_IDLE     1 /* disconnected, ready for a new query */
 #define SB_SLIST_STATE_QUERYING 3 /* a query is in flight */
 
+/* The QR2 reply parser's shared state (gQr2ParseState): wherever a reply is
+ * split into backslash-separated fields, the tokenizer keeps its position here. */
+#define SB_QR2_PARSE_CURSOR 0x00 /* char *next character the field tokenizer reads */
+
 #endif

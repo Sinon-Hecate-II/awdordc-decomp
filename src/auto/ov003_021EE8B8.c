@@ -91,7 +91,7 @@ void func_ov003_021ee8b8(void *arg0) {
     void *temp_r6;
     void *temp_r6_2;
 
-    void *func_02084e64(void);
+    void *GetLocalNetworkPlayerRecord(void);
     void *GetNetworkPlayerRecord(int);
     int GetLocalPlayerIdForOverlay(void);
     u32 GetReadyPlayerMask(void);
@@ -109,7 +109,7 @@ void func_ov003_021ee8b8(void *arg0) {
     int count;
     if (!IsLinkSessionActive()) return;
     if (!Link_ReceivePacket(sp0, 0x24)) return;
-    packet=func_02084e64();
+    packet=GetLocalNetworkPlayerRecord();
     if (!packet) return;
     local=GetLocalPlayerIdForOverlay();
     p=M2C_FIELD(arg0,void **,0x6c);
@@ -301,7 +301,7 @@ foundPlayer:
             if(q)newValue=M2C_FIELD(q,s8 *,0xd);
             else newValue=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }else{
-            q=func_02084e64();
+            q=GetLocalNetworkPlayerRecord();
             if(q)newValue=M2C_FIELD(q+i,s8 *,0x12);
             else newValue=GetPlayerCoIconIndex((u8)GetPlayerCoId(i+1));
         }

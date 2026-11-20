@@ -196,13 +196,13 @@ void func_0209907c(void) {
 
 void **func_02099088(s32 arg0) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_02102fd4, data_02102f8c;
     void **result;
     if (arg0 == 0) arg0 = 7;
     result = CreateSpriteFromClass(&data_02102fd4, arg0);
     if (result != 0) {
-        func_02089108();
+        Init3DSpriteActor();
         *result = &data_02102f8c;
     }
     return result;
@@ -340,13 +340,13 @@ void func_020993c8(void) {
 
 void **func_020993d4(s32 arg0) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_02102fac, data_02102fa0;
     void **result;
     if (arg0 == 0) arg0 = 7;
     result = CreateSpriteFromClass(&data_02102fac, arg0);
     if (result != 0) {
-        func_02089108();
+        Init3DSpriteActor();
         *result = &data_02102fa0;
     }
     return result;

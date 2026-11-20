@@ -14,20 +14,34 @@ void *TcpFindConnection(s32 a,s32 b) {
  return NULL;
 }
 
-void func_0201be44(void *a,void *b) {
- s32 n,t;
- u8 *p;
- M2C_FIELD(b,u16 *,46)=536;
- p=(u8 *)a+20;
- t=M2C_FIELD(a,u8 *,12)&240;
- n=((s32)(t+((u32)(t>>1)>>30))>>2)-20;
- while(n--) {
- u8 c=*p++;
- if(c==0)return;
- if(c==1)continue;
- if(c==2) {u8 h=p[1],l=p[2];p+=3;n-=3;M2C_FIELD(b,u16 *,46)=l|(h<<8);}
- else {t=p[0]-1;n-=t;p+=t;}
- }
+/* Save the peer's advertised TCP maximum segment size, defaulting to 536 bytes. */
+void TcpReadPeerMss(const TcpSegment *segment, void *connection) {
+    s32 remaining, length;
+    const u8 *option;
+
+    M2C_FIELD(connection, u16 *, TCP_CONN_PEER_MSS) = TCP_DEFAULT_MSS;
+    option = (const u8 *)segment + sizeof(*segment);
+    length = segment->dataOffset & TCP_DATA_OFFSET_MASK;
+    remaining = ((s32)(length + ((u32)(length >> 1) >> 30)) >> 2) - (s32)sizeof(*segment);
+    while (remaining--) {
+        u8 kind = *option++;
+        if (kind == TCP_OPTION_END) {
+            return;
+        }
+        if (kind == TCP_OPTION_NOP) {
+            continue;
+        }
+        if (kind == TCP_OPTION_MSS) {
+            u8 mssHigh = option[1], mssLow = option[2];
+            option += 3;
+            remaining -= 3;
+            M2C_FIELD(connection, u16 *, TCP_CONN_PEER_MSS) = mssLow | (mssHigh << 8);
+        } else {
+            length = option[0] - 1;
+            remaining -= length;
+            option += length;
+        }
+    }
 }
 
 s32 func_0201bec8(s32 arg0) {
@@ -103,7 +117,7 @@ srcLo=M2C_FIELD(ipHeader,u16 *,14);srcHi=M2C_FIELD(ipHeader,u16 *,12);
 M2C_FIELD(conn,u32 *,SOCKET_PEER_ADDR)=((u16)(((s32)srcHi>>8)|(srcHi<<8))<<16)|(u16)(((s32)srcLo>>8)|(srcLo<<8));
 peerLo=M2C_FIELD(seg,u16 *,6);peerHi=M2C_FIELD(seg,u16 *,4);
 M2C_FIELD(conn,u32 *,TCP_CONN_ACK_NUM)=(((u16)(((s32)peerHi>>8)|(peerHi<<8))<<16)|(u16)(((s32)peerLo>>8)|(peerLo<<8)))+1;
-func_0201be44(seg,conn);TcpTransmitSegment((s32)conn,18,0);
+TcpReadPeerMss(seg,conn);TcpTransmitSegment((s32)conn,18,0);
 }
 
 /* Answer a SYN that arrives on an existing connection: resend the SYN/ACK when
@@ -166,7 +180,7 @@ M2C_FIELD(p,u32 *,36)=(((u16)(((s32)e>>8)|(e<<8))<<16)|(u16)(((s32)d>>8)|(d<<8))
 f=M2C_FIELD(b,u16 *,10);g=M2C_FIELD(b,u16 *,8);
 M2C_FIELD(p,u32 *,48)=((u16)(((s32)g>>8)|(g<<8))<<16)|(u16)(((s32)f>>8)|(f<<8));
 h=M2C_FIELD(b,u16 *,14);M2C_FIELD(p,u16 *,44)=((s32)h>>8)|(h<<8);
-func_0201be44(b,p);TcpSendAck(p,0);M2C_FIELD(p,u8 *,8)=4;
+TcpReadPeerMss(b,p);TcpSendAck(p,0);M2C_FIELD(p,u8 *,8)=4;
 if(M2C_FIELD(p,s32 *,4)==1){M2C_FIELD(p,s32 *,4)=0;TaskWake(M2C_FIELD(p,s32 *,0));}
 }
 

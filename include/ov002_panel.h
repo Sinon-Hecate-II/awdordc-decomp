@@ -19,7 +19,8 @@
 
 /* One side's battle unit view on the versus screen (gUnitViews): the HP-gauge
  * animation and the character effect drawn for that player.  The two views lie
- * UNIT_VIEW_SIZE bytes apart, player 0 then player 1. */
+ * UNIT_VIEW_SIZE bytes apart: gUnitViews for player 0 and gUnitViewsP2 for
+ * player 1. */
 #define UNIT_VIEW_GAUGE_FRAME  0x00 /* u8 elapsed frame of the HP-gauge fill */
 #define UNIT_VIEW_GAUGE_LENGTH 0x01 /* u8 frames the gauge fill takes */
 #define UNIT_VIEW_Y            0x02 /* s8 vertical offset of the panel */
@@ -28,6 +29,20 @@
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
 #define UNIT_VIEW_SIZE         0x2C
+
+/* The battle scene's shared state (data_ov002_021f30e4): the phase its per-frame
+ * step is in, a frame counter inside that phase, the delay before it ends and
+ * whether it may be ended yet. */
+#define BATTLE_SCENE_FRAME     0x00 /* s32 frames elapsed in the current phase */
+#define BATTLE_SCENE_END_DELAY 0x04 /* s32 frames the scene has been ending for */
+#define BATTLE_SCENE_PHASE     0x08 /* u8 BATTLE_SCENE_PHASE_* */
+#define BATTLE_SCENE_READY     0x09 /* u8 nonzero once the scene may be ended */
+enum {
+    BATTLE_SCENE_PHASE_SETUP    = 0,
+    BATTLE_SCENE_PHASE_SLIDE_IN = 1, /* panels and sprites slide in over 32 frames */
+    BATTLE_SCENE_PHASE_HOLD     = 2, /* hold the posed scene for 32 frames */
+    BATTLE_SCENE_PHASE_EFFECTS  = 3  /* play the battle's effect script */
+};
 
 /* The versus screen's per-player data, VERSUS_DATA_STRIDE bytes per player.  The
  * fields are named as separate arrays in the game's symbols, each indexed by
@@ -44,6 +59,25 @@
  * ones hang off FX_NODE_NEXT as links of a node pointer and the next (older) link. */
 #define FX_LINK_NODE        0x00 /* void *child node */
 #define FX_LINK_NEXT        0x04 /* void *next, older link or NULL */
+#define FX_NODE_FRAME_OFFSETS 0x10 /* s32 *table of frame offsets from the resource base */
+#define FX_NODE_FRAME_DATA    0x14 /* void *current frame data */
+#define FX_NODE_SCRIPT_START  0x18 /* void *first command in the selected script */
+#define FX_NODE_SCRIPT_NEXT   0x1C /* void *next command */
+#define FX_NODE_FRAME_COMMAND 0x20 /* void *command for the current timed frame */
+#define FX_NODE_BLEND_COMMAND 0x24 /* void *active blend command */
+#define FX_NODE_FRAME_TICKS   0x30 /* s32 ticks remaining in the current frame */
+#define FX_NODE_SCRIPT_TICKS  0x34 /* s32 ticks elapsed since script start */
+#define FX_NODE_SHAPE         0x38 /* u16 */
+#define FX_NODE_KIND          0x3A /* u8 */
+#define FX_NODE_SCRIPT_SCALE  0x42 /* u16 scale in 8.8 */
+#define FX_NODE_STEP_X        0x44 /* s8 pixels added to X each tick */
+#define FX_NODE_STEP_Y        0x45 /* s8 pixels added to Y each tick */
+#define FX_NODE_SCRIPT_INDEX  0x46 /* u8 selected script */
+#define FX_NODE_POLYGON_SLOT  0x4D /* u8 offset from the node's base polygon ID */
+#define FX_NODE_POLYGON_ALPHA 0x4E /* u8 polygon alpha */
+#define FX_SCRIPT_SCALE_ONE   0x100
+#define FX_POLYGON_ALPHA_MAX  31
+
 #define FX_NODE_GRAPHIC_X   0x28 /* s32 graphic offset copied from the template's FX_TEMPLATE_X/Y */
 #define FX_NODE_GRAPHIC_Y   0x2C
 #define FX_NODE_PALETTE_ALT 0x3B /* u8 palette drawn on flash phase 0 */
@@ -91,6 +125,20 @@
 #define FX_TEMPLATE_ACTIVE      0x50 /* u8 */
 #define FX_TEMPLATE_FLAG_51     0x51 /* u8 */
 #define FX_TEMPLATE_PALETTE     0x53 /* u8 */
+
+/* The effect node's selected script is an array of FX_SCRIPT_COMMAND_SIZE-byte
+ * commands ending in an FX_SCRIPT_CMD_END opcode.  A command with a frame count
+ * runs for that many ticks; one with 0 frames runs at once. */
+#define FX_SCRIPT_COMMAND_SIZE 0x0C
+#define FX_SCRIPT_CMD_FRAMES   0x00 /* u8 ticks the command takes, 0 = immediate */
+#define FX_SCRIPT_CMD_OPCODE   0x01 /* u8 operation; 0xFF ends the script */
+#define FX_SCRIPT_CMD_ARG0     0x08 /* s16 first argument */
+#define FX_SCRIPT_CMD_ARG1     0x0A /* s16 second argument */
+#define FX_SCRIPT_CMD_END      0xFF
+#define FX_SCRIPT_OP_STOP      0x00 /* stop the script */
+#define FX_SCRIPT_OP_LOOP      0x01 /* restart the script from the beginning */
+#define FX_SCRIPT_OP_FINISH    0x02 /* run the node's finish callback and free it */
+#define FX_SCRIPT_OP_JUMP      0x06 /* jump to the command matching ARG0 */
 
 /* Screen bounds (whole pixels) of an effect node: one still accelerating towards
  * an edge it has passed is off-screen and gets finished by its handler. */

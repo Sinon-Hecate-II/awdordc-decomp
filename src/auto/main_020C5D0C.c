@@ -53,29 +53,29 @@ u8 func_020c5d6c(void) {
 
 void func_020c5da4(void) {
     M2C_UNK func_ov000_0216aaf4();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_ov000_0216aaf4();
 }
 
 void func_020c5db4(void) {
     M2C_UNK func_ov000_02171214();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_ov000_02171214();
 }
 
 void func_020c5dc4(void) {
     M2C_UNK func_020b9140(M2C_UNK);
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d464c();
     func_020b9140(0);
 }
 
 void func_020c5de0(void) {
     extern void **gCurrentMap;
-    func_020c0784();
+    DeleteMapMenuSprites();
     M2C_FIELD(*gCurrentMap, s16 *, 0x52B4) = 3;
 }
 
@@ -414,12 +414,12 @@ s32 func_020c61a4(void) {
 /* Returns 0 on success, 2 if the attempted move/attack is blocked. */
 s32 func_020c6214(void) {
     extern void **gCurrentMap;
-    extern u8 data_ov000_021b5c09[], gUnitMinAttackRange[];
+    extern u8 gUnitMaxAttackRange[], gUnitMinAttackRange[];
     s32 GetHeldDirection(s32);
     s32 IsMobileIndirectUnitKind(s32);
     s32 func_0209f990(void);
     s32 FillMapLayer(s32);
-    void func_01ffc368(s32, s32, void *);
+    void MarkUnitAttackRingCells(s32, s32, void *);
     void *base;
     s32 x, y;
 
@@ -434,7 +434,7 @@ s32 func_020c6214(void) {
     }
     if (x != M2C_FIELD(base, s16 *, 0x52D8) || y != M2C_FIELD(base, s16 *, 0x52DA)) {
         s32 id = ((UnkStruct_020C5D0C *)M2C_FIELD(base, void **, 0x52D0))->unk0;
-        if (data_ov000_021b5c09[id * 0x70] != 1 && IsMobileIndirectUnitKind(id) == 0) {
+        if (gUnitMaxAttackRange[id * 0x70] != 1 && IsMobileIndirectUnitKind(id) == 0) {
             return 2;
         }
     }
@@ -443,7 +443,7 @@ s32 func_020c6214(void) {
     }
     FillMapLayer(-1);
     base = *gCurrentMap;
-    func_01ffc368(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), M2C_FIELD(base, void **, 0x52D0));
+    MarkUnitAttackRingCells(M2C_FIELD(base, s16 *, 0x52DC), M2C_FIELD(base, s16 *, 0x52DE), M2C_FIELD(base, void **, 0x52D0));
     if (func_0209f990() != 0) {
         return 0;
     }
@@ -498,16 +498,16 @@ s32 CanFireFlare(void) {
 void func_020c6968(void) {
     M2C_UNK func_020c0adc();
     M2C_UNK func_020c757c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020c757c();
 }
 
 void func_020c697c(void) {
     extern M2C_UNK data_0212a6c4;
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d464c();
     CreateSpriteFromClass(&data_0212a6c4, 7);
 }
@@ -516,43 +516,43 @@ void func_020c69a0(void) {
     M2C_UNK func_020d464c();
     M2C_UNK func_ov000_02171028();
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d464c();
     func_ov000_02171028();
 }
 
 void func_020c69b8(void) {
     M2C_UNK func_ov000_0217242c();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_ov000_0217242c();
 }
 
 void func_020c69c8(void) {
     M2C_UNK func_ov000_02171750();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_ov000_02171750();
 }
 
 void func_020c69d8(void) {
     M2C_UNK func_020cbfe4();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_020cbfe4();
 }
 
 void func_020c69e8(void) {
     M2C_UNK func_020cc08c();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_020cc08c();
 }
 
 void func_020c69f8(void) {
     M2C_UNK func_ov000_021707c0();
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d464c();
     func_ov000_021707c0();
 }
@@ -561,7 +561,7 @@ void func_020c6a10(void) {
     M2C_UNK func_020844f8();
     M2C_UNK EndPlayerTurn();
     extern u8 gBattleEndState;
-    func_020c0784();
+    DeleteMapMenuSprites();
     EndPlayerTurn();
     if (gBattleEndState == 0) {
         return;
@@ -572,21 +572,21 @@ void func_020c6a10(void) {
 void func_020c6a38(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212a714;
-    func_020c0784();
+    DeleteMapMenuSprites();
     CreateSpriteFromClass(&data_0212a714, 7);
 }
 
 void func_020c6a54(void) {
     M2C_UNK func_020b4cf4();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_020b4cf4();
 }
 
 void func_020c6a64(void) {
     M2C_UNK func_020b4d24();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_020b4d24();
 }
 
@@ -595,7 +595,7 @@ void func_020c6a64(void) {
  * held direction resolved against the cursor tile. */
 void ConfirmHeldDirectionCommand(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK DeleteDirectionMarkerSprites();
     s32 GetHeldDirection(s32);
     s32 ResolveHeldDirection(s32, s32, s32);
@@ -605,7 +605,7 @@ void ConfirmHeldDirectionCommand(void) {
     s32 dir0, dir1;
 
     func_020d468c();
-    func_020c0784();
+    DeleteMapMenuSprites();
     if (!GetHeldDirection(0) && !GetHeldDirection(1)) {
         SetBattleCommand(2, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), 0, 0);
         return;
@@ -618,37 +618,37 @@ void ConfirmHeldDirectionCommand(void) {
 }
 
 void func_020c6b30(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(3,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6b68(void) {
     M2C_UNK func_020bbba4();
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
     func_020bbba4();
 }
 
 void func_020c6b78(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(7,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6bb0(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(9,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
 void func_020c6be8(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 
@@ -656,34 +656,34 @@ void func_020c6c20(void) {
     M2C_UNK func_020cb018(M2C_UNK);
     M2C_UNK func_020d4704();
     func_020cb018(0);
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d4704();
 }
 
 void func_020c6c38(void) {
     func_020cb018(1);
-    func_020c0784();
+    DeleteMapMenuSprites();
     func_020d4704();
 }
 
 void func_020c6c50(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784(); func_ov000_021696d4();
+ func_020d468c(); DeleteMapMenuSprites(); func_ov000_021696d4();
  SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),0,0);
 }
 
 void func_020c6c88(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK func_ov000_021696d4(); M2C_UNK SelectCarriedUnit(void *,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784(); func_ov000_021696d4();
+ func_020d468c(); DeleteMapMenuSprites(); func_ov000_021696d4();
  SelectCarriedUnit(M2C_FIELD(*gCurrentMap,void **,0x52D0),1,0);
 }
 
 void func_020c6cc0(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(0x17,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 

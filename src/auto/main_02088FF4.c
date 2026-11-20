@@ -84,7 +84,7 @@ u8 Is3DSpriteAnimating(void *arg0) {
 }
 
 #pragma scheduling on
-M2C_UNK func_02089108(void *arg0) {
+M2C_UNK Init3DSpriteActor(void *arg0) {
 extern M2C_UNK data_02102610;
 extern void *data_027e01d8;
 extern s32 data_027e00c8;
@@ -198,9 +198,9 @@ void func_0208931c(M2C_UNK arg0)
 
 
 void *func_02089340(void *arg0) {
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_021025fc;
-    func_02089108();
+    Init3DSpriteActor();
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021025fc;
     M2C_FIELD(arg0, s8 *, 0x58) = 1;
     M2C_FIELD(arg0, s8 *, 0x59) = 1;
@@ -353,14 +353,14 @@ void DrawUiGradientPulse(void) {
     s32 GetUiColor(M2C_UNK);
     s32 BlendRgb555_32(s32, s32, u8, u8);
     M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
-    extern volatile s32 data_027e15c0;
+    extern volatile s32 gVBlankCount;
     s32 highlightColor;
     s32 blendedColor;
     u8 pulse;
 
-    pulse = (u32)(data_027e15c0 & 0x1F) < UI_GRADIENT_PULSE_HALF ?
-        EaseInterpolate(0, 0, UI_GRADIENT_PULSE_FRAMES, data_027e15c0 & 0x1F, UI_GRADIENT_PULSE_HALF) :
-        EaseInterpolate(0, UI_GRADIENT_PULSE_FRAMES, 0, (data_027e15c0 & 0x1F) - UI_GRADIENT_PULSE_HALF, UI_GRADIENT_PULSE_HALF);
+    pulse = (u32)(gVBlankCount & 0x1F) < UI_GRADIENT_PULSE_HALF ?
+        EaseInterpolate(0, 0, UI_GRADIENT_PULSE_FRAMES, gVBlankCount & 0x1F, UI_GRADIENT_PULSE_HALF) :
+        EaseInterpolate(0, UI_GRADIENT_PULSE_FRAMES, 0, (gVBlankCount & 0x1F) - UI_GRADIENT_PULSE_HALF, UI_GRADIENT_PULSE_HALF);
     highlightColor = GetUiColor(0xF);
     blendedColor = BlendRgb555_32(highlightColor, GetUiColor(0x10), pulse, (u8)(UI_GRADIENT_PULSE_FRAMES - pulse));
     DrawUiGradient(UI_GRADIENT_TILE, UI_GRADIENT_PALETTE, GetUiColor(0xD), blendedColor);
@@ -380,7 +380,7 @@ void func_020898bc(void) {
 }
 
 void *func_020898d0(void *arg0) {
- func_02089108(arg0);
+ Init3DSpriteActor(arg0);
  M2C_FIELD(arg0,M2C_UNK **,0)=&data_02102638;
  M2C_FIELD(arg0,u32 *,0x58)&=~0x38;
  M2C_FIELD(arg0,u32 *,0x58)&=~0x300;

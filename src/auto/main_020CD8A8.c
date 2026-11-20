@@ -1,6 +1,7 @@
 /* 14 functions from 0x020CD8A8 to 0x020CE738 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 #pragma push
 #pragma opt_propagation off
@@ -172,13 +173,18 @@ if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8
 }}
 }
 #pragma opt_strength_reduction reset
-void func_020cdeac(s32 a,s32 b,u8 *p) {
-s32 GetUnitAttackRangeMax(u8 *);
-extern u8 gUnitMinAttackRange,data_ov000_021b5c09;s32 off;
-MarkAttackRangeCells(a,b,(s16)GetUnitAttackRangeMax(p),0);
-off=((u32)(*p<<26)>>26)*112;
-if(*(&data_ov000_021b5c09+off)==1)return;
-MarkAttackRangeCells(a,b,(s16)(*(&gUnitMinAttackRange+off)-1),-1);
+/* Mark attackable cells through the maximum range, then clear cells inside the minimum range for indirect fire. */
+void MarkUnitAttackRange(s32 x, s32 y, u8 *unit) {
+    s32 GetUnitAttackRangeMax(u8 *);
+    extern u8 gUnitMinAttackRange, gUnitMaxAttackRange;
+    s32 statsOffset;
+
+    MarkAttackRangeCells(x, y, (s16)GetUnitAttackRangeMax(unit), 0);
+    statsOffset = ((BattleMapUnitHead *)unit)->kind * UNIT_KIND_STATS_SIZE;
+    if (*(&gUnitMaxAttackRange + statsOffset) == 1) {
+        return;
+    }
+    MarkAttackRangeCells(x, y, (s16)(*(&gUnitMinAttackRange + statsOffset) - 1), -1);
 }
 
 /* Clear the cursor-direction marker (MAP_GRID cell value) on each neighbour of

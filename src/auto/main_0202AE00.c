@@ -1,7 +1,7 @@
 /* 36 functions from 0x0202AE00 to 0x0202BD7C (main), found by ds-decomp. */
 #include "common.h"
 #include "sound.h"
-void func_0202b338();
+void Sound_RecycleVoice();
 typedef struct { u32 words[2]; } Unk02BDFileRange;
 typedef struct { s32 pad[3]; s32 buffer0, buffer1, size, unk18, state, unk20, channel0, channel1, channel; } AudioBufferState;
 extern s32 gSoundChannelSampleState[];
@@ -42,7 +42,7 @@ void func_0202aeb4(void) {
     s32 func_02009524(void *);
     M2C_UNK func_02008c38(u8, s32);
     void func_02008c18(u8);
-    void func_0202b338(void *);
+    void Sound_RecycleVoice(void *);
     void AdvanceFade(void *);
     s32 GetFadeValue(void *);
     s32 IsFadeDone(void *);
@@ -71,7 +71,7 @@ void func_0202aeb4(void) {
             if (r11 & (1 << *(u8 *)((u8 *)r6 + 0x3C))) {
                 goto tail;
             }
-            func_0202b338(r6);
+            Sound_RecycleVoice(r6);
             goto next;
         }
         AdvanceFade((u8 *)r6 + 0x1C);
@@ -146,8 +146,8 @@ void *Sound_AcquireVoice(void *player, s32 channel, s32 priority) {
 }
 
 void Sound_FreeVoice(void) {
-    void func_0202b338();
-    func_0202b338();
+    void Sound_RecycleVoice();
+    Sound_RecycleVoice();
 }
 
 void Sound_StartSequence(void *a){
@@ -185,16 +185,37 @@ void Sound_ReleaseVoice(void *arg0) {
         func_02008c38(M2C_FIELD(arg0, u8 *, 0x3C), 0xFFFFFD2D);
     }
     func_02008bd0(M2C_FIELD(arg0, u8 *, 0x3C));
-    func_0202b338(arg0);
+    Sound_RecycleVoice(arg0);
 }
 
 void *Sound_AllocVoice(s32 a){void *ListNext();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=ListNext(&gFreeVoices,0);if(!p){p=ListNext(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;Sound_ReleaseVoice(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
 
-void func_0202b338(void *a){M2C_UNK ListRemove();void ListAppend();extern M2C_UNK gActiveVoices,gFreeVoices;void *p=M2C_FIELD(a,void **,0);void *list;
-if(p){M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(a,s32 *,0)=0;}
-list=M2C_FIELD(a,void **,4);ListRemove(list,a);M2C_FIELD(a,s32 *,4)=0;
-if(M2C_FIELD(a,void **,8)){ListAppend(list+12,M2C_FIELD(a,void **,8));M2C_FIELD(M2C_FIELD(a,void **,8),s32 *,12)=0;M2C_FIELD(a,s32 *,8)=0;}
-ListRemove(&gActiveVoices,a);ListAppend(&gFreeVoices,a);M2C_FIELD(a,u8 *,44)=0;
+/* Detaches a driver voice from its player and channel and returns it to the
+ * free voice list, marked free: the player forgets the voice, the voice leaves
+ * the channel's voice list and the channel heap it holds goes back on the
+ * channel's sequence list. */
+void Sound_RecycleVoice(void *voice) {
+    M2C_UNK ListRemove();
+    void ListAppend();
+    extern M2C_UNK gActiveVoices, gFreeVoices;
+    void *player = M2C_FIELD(voice, void **, SOUND_VOICE_PLAYER);
+    void *channel;
+
+    if (player) {
+        M2C_FIELD(player, s32 *, SOUND_PLAYER_VOICE) = 0;
+        M2C_FIELD(voice, s32 *, SOUND_VOICE_PLAYER) = 0;
+    }
+    channel = M2C_FIELD(voice, void **, SOUND_VOICE_CHANNEL_BASE);
+    ListRemove(channel, voice);
+    M2C_FIELD(voice, s32 *, SOUND_VOICE_CHANNEL_BASE) = 0;
+    if (M2C_FIELD(voice, void **, SOUND_VOICE_HEAP)) {
+        ListAppend((u8 *)channel + SOUND_CHANNEL_SEQ_LIST, M2C_FIELD(voice, void **, SOUND_VOICE_HEAP));
+        M2C_FIELD(M2C_FIELD(voice, void **, SOUND_VOICE_HEAP), s32 *, SOUND_CHANNEL_HEAP_OWNER) = 0;
+        M2C_FIELD(voice, s32 *, SOUND_VOICE_HEAP) = 0;
+    }
+    ListRemove(&gActiveVoices, voice);
+    ListAppend(&gFreeVoices, voice);
+    M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) = 0;
 }
 
 void Sound_FreeChannelHeap(void *arg0) {

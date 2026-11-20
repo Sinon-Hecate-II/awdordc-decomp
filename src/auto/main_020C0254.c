@@ -1,5 +1,6 @@
 /* 53 functions from 0x020C0254 to 0x020C1230 (main), found by ds-decomp. */
 #include "common.h"
+#include "sprite_slot.h"
 /* A row of the caller-supplied 0x28-byte entry table a carried-unit list menu is
  * built from; only the fields the menu reads are named. */
 typedef struct { u8 pad00[0x24]; u16 slot; u16 icon; } MenuRowC0634;
@@ -128,7 +129,7 @@ void func_020c0454(void *arg0, s32 arg1) {
     temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
 }
 
-void func_020c0484(void *arg0, s32 arg1) {
+void RunCarriedUnitRowAction(void *arg0, s32 arg1) {
     void (*callback)(s32, u8, u8);
     s32 entry;
     entry = GetCarriedUnitListEntry(arg0, arg1);
@@ -157,7 +158,7 @@ void func_020c04fc(void *arg0) {
     M2C_UNK func_0209cce4(void (*)(void), M2C_UNK);
     void func_020c03e0(void *, s32);
     void func_020c0424(void *, s32);
-    M2C_UNK func_020c0e94(void *);
+    M2C_UNK CreateCarriedUnitRowSlots(void *);
     M2C_UNK DrawCarriedUnitListBatch();
     void *CreateMenuUnitSprite(void *);
 
@@ -174,7 +175,7 @@ void func_020c04fc(void *arg0) {
         } while (var_r4 < (s32) M2C_FIELD(arg0, u8 *, 0x4D));
     }
     func_020c03e0(arg0, M2C_FIELD(arg0, u8 *, 0x4E));
-    func_020c0e94(arg0);
+    CreateCarriedUnitRowSlots(arg0);
     func_0209cce4(&func_020c04e4, 9);
 }
 
@@ -202,7 +203,7 @@ s32 func_020c05b0(void) {
     return FindObjectByClass(&data_02129630);
 }
 
-u8 func_020c05c4(void) {
+u8 IsCarriedUnitListOpen(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
     u8 var_r0;
@@ -220,8 +221,8 @@ s32 func_020c05e8(void) {
 }
 
 void func_020c05f0(void) {
-    void func_020c0784(void);
-    func_020c0784();
+    void DeleteMapMenuSprites(void);
+    DeleteMapMenuSprites();
 }
 
 void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
@@ -264,7 +265,7 @@ void CreateMenuAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_020c05fc(arg0, arg1, arg2, 0, arg3);
 }
 
-void func_020c0784(void) {
+void DeleteMapMenuSprites(void) {
     M2C_UNK func_0209bfa8();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
@@ -436,53 +437,60 @@ void func_020c0d50(void *arg0) {
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x10);
-    if (func_020c05c4() == 0) {
+    if (IsCarriedUnitListOpen() == 0) {
         return;
     }
     HandleCarriedUnitListInput(temp_r4, arg0);
 }
 
-s32 func_020c0d78(void *arg0) {
+/* Click handler for a carried-unit list row (a sprite slot whose id is the row
+ * and whose owner is the menu): ignore it when the list has closed or a map
+ * event's condition rejects the carried unit, buzz on a row that cannot be
+ * picked, else play the confirm sound and run the row's action. */
+s32 ClickCarriedUnitRow(void *slot) {
 s32 func_ov000_0216aa44(u8,s32);
-u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
-if(!func_020c05c4())return 0;
-if(func_ov000_0216aa44(M2C_FIELD(GetCarriedUnitListEntry(p,index),u8 *,0),0))return 0;
-if(M2C_FIELD(p+index,u8 *,0x38)==1)PlaySoundEffect(0x1001d);
-else {PlaySoundEffect(0x10016);func_020c0484(p,index);}
+u8 index=M2C_FIELD(slot,u8 *,SPRITE_SLOT_ID); MenuC0634 *list=M2C_FIELD(slot,MenuC0634 **,SPRITE_SLOT_OWNER);
+if(!IsCarriedUnitListOpen())return 0;
+if(func_ov000_0216aa44(M2C_FIELD(GetCarriedUnitListEntry(list,index),u8 *,0),0))return 0;
+if(list->status[index]==1)PlaySoundEffect(0x1001d);
+else {PlaySoundEffect(0x10016);RunCarriedUnitRowAction(list,index);}
 return 1;
 }
 
 s32 func_020c0df8(void *arg0) {
 u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
-if(!func_020c05c4())return 0;
+if(!IsCarriedUnitListOpen())return 0;
 func_0209bfa8();PlaySoundEffect(0x10018);func_020c04b4(p,index);return 1;
 }
 
 void func_020c0e38(void *arg0) {
 u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
-if(!func_020c05c4())return;
+if(!IsCarriedUnitListOpen())return;
 PlaySoundEffect(0x10019); func_020c03e0(p,index);
 }
 
 void func_020c0e6c(void *arg0) {
 u8 index = M2C_FIELD(arg0,u8 *,0);
 void *p = M2C_FIELD(arg0,void **,0x10);
-if (!func_020c05c4()) return;
+if (!IsCarriedUnitListOpen()) return;
 func_020c0454(p,index);
 }
 
-M2C_UNK func_020c0e94(void *p) {
-extern M2C_UNK data_02129608;
+/* Create one sprite slot per visible row of the carried-unit list: stack them
+ * down the panel by each row graphic's height and record the list as their
+ * owner, then put the focus frame on the selected row. */
+M2C_UNK CreateCarriedUnitRowSlots(void *p) {
+extern M2C_UNK gCarriedUnitRowSlotDef;
 void *AddSpriteSlot(s32,s32,M2C_UNK *,s32);
-s32 func_0207c1b4(s32); s32 func_0207c1d8(s32);
+s32 GetBatchSpriteSourceWidth(s32); s32 GetBatchSpriteSourceHeight(s32);
 M2C_UNK FocusSpriteSlotById(); M2C_UNK SetSpriteSlotFrameToFocus();
 s32 i,y; y=0; i=y;
 for(;i<M2C_FIELD(p,u8 *,0x4d);i++) {
-void *q=AddSpriteSlot(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&data_02129608,i);
-s32 w=func_0207c1b4(i);
-s32 h=func_0207c1d8(i);
-M2C_FIELD(q,s16 *,0x18)=w;M2C_FIELD(q,s16 *,0x1a)=h;
-M2C_FIELD(q,void **,0x10)=p;y+=h>>3;
+void *slot=AddSpriteSlot(M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56)+y*8,&gCarriedUnitRowSlotDef,i);
+s32 w=GetBatchSpriteSourceWidth(i);
+s32 h=GetBatchSpriteSourceHeight(i);
+M2C_FIELD(slot,s16 *,SPRITE_SLOT_W)=w;M2C_FIELD(slot,s16 *,SPRITE_SLOT_H)=h;
+M2C_FIELD(slot,void **,SPRITE_SLOT_OWNER)=p;y+=h>>3;
 }
 FocusSpriteSlotById(M2C_FIELD(p,u8 *,0x4e));SetSpriteSlotFrameToFocus();
 }

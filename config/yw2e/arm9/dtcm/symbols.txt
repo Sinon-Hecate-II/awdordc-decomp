@@ -47,7 +47,7 @@ gMoveSearchCount kind:bss addr:0x027e0a94
 gMoveSearchWrite kind:bss addr:0x027e0a98
 data_027e0a9c kind:bss addr:0x027e0a9c
 data_027e0fce kind:bss addr:0x027e0fce
-data_027e15b4 kind:bss addr:0x027e15b4
-data_027e15b8 kind:bss addr:0x027e15b8
+gFramePending kind:bss addr:0x027e15b4
+gSpriteUpdateBusy kind:bss addr:0x027e15b8
 gFrameCounter kind:bss addr:0x027e15bc
-data_027e15c0 kind:bss addr:0x027e15c0
+gVBlankCount kind:bss addr:0x027e15c0

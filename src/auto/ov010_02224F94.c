@@ -344,28 +344,29 @@ case 2:return 0;
 return 1;
 }
 
+#pragma opt_instruction_scheduling off
 s32 func_ov010_02225858(s32 a,s32 b,s32 c,s32 *out) {
 extern s32 data_ov010_0222edb4;
 u64 GetSystemTick(void);
 void func_ov010_02222f28(s32,s32,s32,u64);
 s32 func_ov010_02224334(s32,s32,s32,s32 *);
-u64 now; u8 kind; s32 *state;
+u64 now; register u32 kind, family; s32 *state;
 if(!b)return 0;
 if(M2C_FIELD(b,u32*,0)!=0x5f564354)return 2;
 if(!M2C_FIELD(&data_ov010_0222edb4,s32*,28)||!M2C_FIELD(&data_ov010_0222edb4,s32*,8))return 0;
 out[0]=0;out[1]=0;
 now=GetSystemTick();
 kind=M2C_FIELD(b,u8*,4);
-if((kind&0xf0)==0x40) {
+family = kind & 0xf0;
+if (family == 0x40) {
 state=&data_ov010_0222edb4;
 state[1]=state[1]+1;
 func_ov010_02222f28(a,b,c,now);
 return 0;
-}
-if(kind==0||kind==255) return func_ov010_02224334(a,b,c,out)!=0;
+} else if (kind == 0 || kind == 255) return func_ov010_02224334(a,b,c,out)!=0;
 return 0;
 }
-
+#pragma opt_instruction_scheduling reset
 void func_ov010_02225934(void) {
  extern s32 gStreamVoiceState;
  M2C_FIELD(&gStreamVoiceState,s32 *,0x10)=1;

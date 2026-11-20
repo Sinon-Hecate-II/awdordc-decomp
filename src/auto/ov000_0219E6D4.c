@@ -339,7 +339,7 @@ s32 func_ov000_0219e9f4(void)
 #pragma pop
 s32 func_ov000_0219efa4(void) {
     void func_020d61f0(void);
-    void *func_ov000_0216939c(void *);
+    void *CreateUnitMoveForUnit(void *);
     void RefreshMapView(void);
     void func_020844a0(u8 *, u8 *);
     s32 ResolvePathAttack(s32, s32, s32, void *, s32);
@@ -353,7 +353,7 @@ s32 func_ov000_0219efa4(void) {
     s32 result;
 
     func_020d61f0();
-    func_ov000_0216939c(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+    CreateUnitMoveForUnit(*(void **)((u8 *)*gCurrentMap + 0x52d0));
     RefreshMapView();
     func_020844a0(gCommandPath, (u8 *)*gCurrentMap + 0x5388);
     result = ResolvePathAttack(
@@ -385,7 +385,7 @@ s32 func_ov000_0219f0d8(void) {
     void BattleUpdateUnitCursor(void);
     void func_ov000_0219f3fc(void);
     void func_ov000_0219f448(void);
-    void func_ov000_0219f494(void);
+    void ApplyWeatherCommand(void);
     u8 AiMoveCursorToCommandTile(void);
     u8 AiMoveCursorToCommandPoint(void);
     void func_020bb458(void);
@@ -437,7 +437,7 @@ s32 func_ov000_0219f0d8(void) {
         func_ov000_0219f448();
         break;
     case 4:
-        func_ov000_0219f494();
+        ApplyWeatherCommand();
         break;
     case 5:
         func_020bbc2c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
@@ -535,20 +535,24 @@ void func_ov000_0219f448(void) {
     M2C_FIELD(gAiCommandState, s8 *, 1) = 9;
 }
 
-void func_ov000_0219f494(void) {
+/* AI command kind 4: apply a weather change to the battle map.  It switches the
+ * map to its weather state, spawns the weather sprite and resets the AI command
+ * phase, then copies the command's weather start and the four per-player change
+ * delays onto the map. */
+void ApplyWeatherCommand(void) {
 extern void **gCurrentMap;
 extern s8 *gAiCommandState;
 extern u8 gAiCommand[];
 void func_020a6fcc(void);
 s32 i;
 u8 *p;
-M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=1;
+M2C_FIELD(*gCurrentMap,u16 *,MAP_STATE)=1;
 func_020a6fcc();
 p=gAiCommand;
-*gAiCommandState=0;
-M2C_FIELD(*gCurrentMap,u8 *,0x515a)=p[6];
+*gAiCommandState=AI_COMMAND_PHASE_START_TURN;
+M2C_FIELD(*gCurrentMap,u8 *,MAP_WEATHER_START)=p[6];
 for(i=0;i<4;i++){
-M2C_FIELD((u8 *)*gCurrentMap+i,u8 *,0x515c)=p[12];
+M2C_FIELD((u8 *)*gCurrentMap+i,u8 *,MAP_WEATHER_DELAY)=p[12];
 p++;
 }
 }

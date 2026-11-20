@@ -13,6 +13,12 @@
 #define MAP_PICK_EMPTY 0xFFFF /* an empty slot of a side's pick list */
 #define MAP_PICK_NOT_FOUND 0xFF /* FindMapPick result when the map is not picked */
 
+/* gOv003SceneState+0: whether the map-select screen may confirm its chosen map
+ * (GetMapConfirmState, ApplyMapConfirmState). */
+#define MAP_CONFIRM_UNSET    0
+#define MAP_CONFIRM_ENABLED  1
+#define MAP_CONFIRM_DISABLED 2
+
 typedef struct MapPickLists {
     u8  unknown0[8];   /* +0x00 */
     u16 first[5];      /* +0x08 maps the first side picked, MAP_PICK_NONE = empty */

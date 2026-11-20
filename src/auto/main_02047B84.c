@@ -7,7 +7,7 @@ extern M2C_UNK gWebRequestState, data_020fca68;
 extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, data_020fcba0, sWebEmptySuffix, sWebRequestFormat;
 extern u8 data_020fca88[56];
 extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
-extern M2C_UNK data_020fcc4c,data_020fcd04,data_020fcc70,sArrayRemoveAtName;
+extern M2C_UNK data_020fcc4c,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
 extern M2C_UNK sVectorIndexCheck, data_020fcc2c, data_020fccb0, data_020fcbf8, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
@@ -297,7 +297,7 @@ s32 ParseServiceAvailabilityReply(s8 *packet, s32 length, void *source, u32 *sta
 s32 func_0204837c(void) {
 s32 ghiSocketCanRecv(void);
 s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *);
-s32 func_020496b8(s32);
+s32 ghiCloseSocket(s32);
 s32 GetTickCountMs(void);
 s8 buffer[64];
 u8 address[8];
@@ -309,7 +309,7 @@ gDnsQueryState[0]=1;
 return 1;
 }
 if(ghiSocketCanRecv() && ParseServiceAvailabilityReply(buffer,ghiRecvFrom(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
-func_020496b8(gDnsQueryState[1]);
+ghiCloseSocket(gDnsQueryState[1]);
 if(flags&1)gDnsQueryState[0]=2;
 else if(flags&2)gDnsQueryState[0]=3;
 else gDnsQueryState[0]=1;
@@ -317,7 +317,7 @@ return gDnsQueryState[0];
 }
 if((u32)GetTickCountMs()>M2C_FIELD(&gDnsQueryState,u32 *,0x54)+2000){
 if(gDnsQueryState[22]==1){
-func_020496b8(gDnsQueryState[1]);
+ghiCloseSocket(gDnsQueryState[1]);
 gDnsQueryState[0]=1;
 return 1;
 }
@@ -416,7 +416,15 @@ s32 Vector_InsertAt(s32 *array, s32 item, s32 index) {
     Vector_SetItem(array, item, index);
 }
 
-void func_020487fc(s32 *a,s32 b,s32 c){s32 AssertFailed();s32 Vector_SearchSorted(s32,s32,s32,s32,s32,s32 *);s32 func_020720f0(s32,s32);s32 x,r;if(!c)AssertFailed(&data_020fcd04,&sDarrayFileName,&data_020fcc70,0xb7);r=Vector_SearchSorted(b,a[5],a[0],a[2],c,&x);Vector_InsertAt(a,b,func_020720f0(r-a[5],a[2]));}
+/* GameSpy darray ArrayInsertSorted: find the item's place with a binary search
+ * using the comparison function, then insert it there. */
+void Vector_InsertSorted(s32 *array, s32 item, s32 compare) {
+s32 AssertFailed();s32 Vector_SearchSorted(s32,s32,s32,s32,s32,s32 *);s32 RuntimeIntDivMod(s32,s32);
+s32 found, pos;
+if(!compare)AssertFailed(&sArrayInsertSortedComparator,&sDarrayFileName,&sArrayInsertSortedName,0xb7);
+pos=Vector_SearchSorted(item,array[5],array[0],array[2],compare,&found);
+Vector_InsertAt(array,item,RuntimeIntDivMod(pos-array[5],array[2]));
+}
 
 /* GameSpy darray ArrayRemoveAt: drop the item at `index` by moving the items
  * after it down one slot, then return the array's new count. */
@@ -453,7 +461,7 @@ void func_020489c4(void *arg0, M2C_UNK arg1) {
 s32 Vector_Search(void *array, s32 item, s32 compare, s32 startIndex, s32 isSorted) {
     s32 Vector_SearchSorted(s32, s32, s32, s32, s32, s32 *);
     s32 Vector_SearchLinear(s32, s32, s32, s32, s32);
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     s32 found = 1;
     s32 count, offset;
 
@@ -465,7 +473,7 @@ s32 Vector_Search(void *array, s32 item, s32 compare, s32 startIndex, s32 isSort
         offset = Vector_SearchLinear(item, Vector_GetItem(array, startIndex), count - startIndex,
                                      M2C_FIELD(array, s32 *, 8), compare);
     if (!offset || !found) return -1;
-    return func_020720f0(offset - M2C_FIELD(array, s32 *, 20), M2C_FIELD(array, s32 *, 8));
+    return RuntimeIntDivMod(offset - M2C_FIELD(array, s32 *, 20), M2C_FIELD(array, s32 *, 8));
 }
 
 void func_02048a9c(s32 *a,void (*b)(s32,s32),s32 c) {

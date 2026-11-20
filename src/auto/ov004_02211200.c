@@ -90,7 +90,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 data_ov004_02218cb0;
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     s32 Get3DSpriteTargetMode(void);
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *Build3DSpriteTransform(void *, void *);
@@ -124,7 +124,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 0x38) < M2C_FIELD(arg0, u16 *, 0x3A)) {
         M2C_FIELD(arg0, u16 *, 0x38) = M2C_FIELD(arg0, u16 *, 0x38) + 1;
     }
-    M2C_FIELD(arg0, u16 *, 0x3E) = (u16)(func_020720f0(M2C_FIELD(arg0, u16 *, 0x3E) + 1, M2C_FIELD(arg0, u16 *, 0x40)) >> 32);
+    M2C_FIELD(arg0, u16 *, 0x3E) = (u16)(RuntimeIntDivMod(M2C_FIELD(arg0, u16 *, 0x3E) + 1, M2C_FIELD(arg0, u16 *, 0x40)) >> 32);
     max = M2C_FIELD(arg0, u16 *, 0x3A);
     spC = EaseInterpolate(4, M2C_FIELD(arg0, u16 *, 0x34), M2C_FIELD(arg0, u16 *, 0x36), M2C_FIELD(arg0, u16 *, 0x38), max);
     spC = spC & 0xFFFF;
@@ -552,7 +552,7 @@ s32 func_ov004_0221205c(void) {
 }
 
 void func_ov004_02212088(void *arg0) {
-    M2C_UNK func_0208f780(s32);
+    M2C_UNK PlayMusicTrack(s32);
     s32 var_r0;
     u8 temp_r1;
 
@@ -567,6 +567,6 @@ void func_ov004_02212088(void *arg0) {
     if ((u32) temp_r1 >= 0x16U) {
         var_r0 = 0x10016;
     }
-    func_0208f780(var_r0);
+    PlayMusicTrack(var_r0);
 }
 

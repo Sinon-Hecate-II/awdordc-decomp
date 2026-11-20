@@ -1,5 +1,6 @@
 /* 68 functions from 0x02177F1C to 0x02178E80 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ov001_wh.h"
 
 /* Moves the Wi-Fi option menu's selection one row: direction 1 is up (two rows
@@ -35,13 +36,13 @@ void Ov001_LoadSelectedOptionTile(void) {
 }
 
 void func_ov001_02177fd8(void) {
-    void func_ov001_02178010(void);
+    void Ov001_LoadMultiBackground(void);
     void func_ov001_02178090(void);
     M2C_UNK Ov001_ShowMessageBox(s32);
     M2C_UNK Ov001_CreateAnimSprite(s32);
     M2C_UNK Ov001_ShowWfcIcon(s32);
     M2C_UNK Ov001_PlaySound(s32);
-    func_ov001_02178010();
+    Ov001_LoadMultiBackground();
     Ov001_ShowMessageBox(30);
     Ov001_CreateAnimSprite(0);
     Ov001_ShowWfcIcon(1);
@@ -49,16 +50,19 @@ void func_ov001_02177fd8(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178090);
 }
 
-void func_ov001_02178010(void) {
+/* Set up the shared ov001 "Multi" background: load its screen map and give the
+ * main and sub background planes the lowest priority so the screen's sprites and
+ * text draw over it. */
+void Ov001_LoadMultiBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190618;
+    extern M2C_UNK gOv001MultiBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190618, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001MultiBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02178090(void) {
@@ -384,27 +388,29 @@ void func_ov001_0217863c(void) {
 void Ov001_OpenWfcEraseScreen(void) {
     s8 Ov001_ShowMessagePanel(s32, s32, s32);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
-    void func_ov001_021786d4(void);
+    void Ov001_LoadWfcEraseBackground(void);
     void func_ov001_02178754(void);
     extern u8 gOv001WfcEraseConfirmed;
     gOv001WfcEraseConfirmed = 0;
-    func_ov001_021786d4();
+    Ov001_LoadWfcEraseBackground();
     Ov001_LoadObjLayoutBlock(0x13);
     Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_ShowMessageBox(0x1B);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178754);
 }
 
-void func_ov001_021786d4(void) {
+/* Loads the Wi-Fi erase screen's background map (the shared "Multi" screen)
+ * and gives the main and sub background planes the lowest priority. */
+void Ov001_LoadWfcEraseBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_0219062c;
+    extern M2C_UNK gOv001WfcEraseBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_0219062c, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001WfcEraseBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02178754(void) {
@@ -609,25 +615,28 @@ void func_ov001_02178b8c(void) {
 
 void func_ov001_02178bc0(void) {
     s8 Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov001_02178bfc(void);
+    void Ov001_LoadProfileReturnBg(void);
     extern s8 gOv001MessageState;
     extern M2C_UNK func_ov001_02178c7c;
-    func_ov001_02178bfc();
+    Ov001_LoadProfileReturnBg();
     Ov001_ShowMessageBox(0x20);
     gOv001MessageState = Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_SetStepCallback(&func_ov001_02178c7c);
 }
 
-void func_ov001_02178bfc(void) {
+/* Reload the shared Multi map background ("char/yb5Multi.nsc.l") when the profile
+ * screen is left, and put BG0/BG1/BG2 on the lowest priority on both engines. */
+void Ov001_LoadProfileReturnBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190654;
+    extern M2C_UNK gOv001ProfileReturnBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190654, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001ProfileReturnBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02178c7c(void) {

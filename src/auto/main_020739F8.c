@@ -1,12 +1,13 @@
 /* 43 functions from 0x020739F8 to 0x02074920 (main), found by ds-decomp. */
 #include "common.h"
+#include "cpp_exception.h"
 #pragma cplusplus on
 extern "C" {
 void func_020742f8(void);
 M2C_UNK func_020742e0(void);
 void *DecodeExceptionValue(void *, s32 *);
 void *DecodeExceptionSignedValue(void *, s32 *);
-s32 func_02073b4c(M2C_UNK,void *);
+s32 ExceptionTypeMatches(M2C_UNK,void *);
 void func_020746a4(void);
 void func_0207465c(void *,void *,void *);
 void func_02073c78(void);
@@ -85,15 +86,18 @@ s32 func_020739f8(void *arg0, void *arg1) {
     }
 }
 #pragma scheduling reset
-s32 func_02073b4c(M2C_UNK arg0, void *arg1) {
+/* True when the catch type pattern in typePattern matches any of the thrown
+ * type names listed in the decoded exception context. */
+s32 ExceptionTypeMatches(M2C_UNK typePattern, void *exception) {
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
-    s32 values[2];
+    s32 match[2];
     u8 *p;
     u32 i;
-    p = M2C_FIELD(arg1, u8 **, 0xC);
-    for (i = 0; i < M2C_FIELD(arg1, u32 *, 0); i++, p += 4) {
-        values[1] = p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
-        if (func_02074330(arg0, values[1], values) != 0) return 1;
+
+    p = M2C_FIELD(exception, u8 **, CPP_EXCEPTION_TYPE_NAMES);
+    for (i = 0; i < M2C_FIELD(exception, u32 *, CPP_EXCEPTION_TYPE_COUNT); i++, p += 4) {
+        match[1] = p[0] | (p[1] << 8) | (p[2] << 16) | (p[3] << 24);
+        if (func_02074330(typePattern, match[1], match) != 0) return 1;
     }
     return 0;
 }
@@ -106,8 +110,8 @@ try{func_020742f8();}catch(...){
 void *q=DecodeExceptionValue(p+1,&values[0]);
 q=DecodeExceptionValue(q,&values[1]);
 values[3]=(s32)DecodeExceptionSignedValue(q,&values[2]);
-if(func_02073b4c(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
-if(func_02073b4c((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
+if(ExceptionTypeMatches(M2C_FIELD(arg0,s32 *,8),values))func_020746a4();
+if(ExceptionTypeMatches((s32)data_021009a4,values)){void *exception=data_02100998;func_0207465c(data_021009bc,&exception,(void *)func_02073c78);}
 }
 func_020742e0();
 }
@@ -142,7 +146,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
     void *DecodeExceptionSignedValue(void *, s32 *);
     M2C_UNK func_020742e0(void);
     s32 func_02074330(M2C_UNK, s32, M2C_UNK *);
-    s32 func_02073b4c(M2C_UNK, void *);
+    s32 ExceptionTypeMatches(M2C_UNK, void *);
     void func_02073c7c(s32 *, s32 *, void *, s32);
     s32 code;
     Ctx_020739f8 ctx;
@@ -186,7 +190,7 @@ u8 *func_02073cdc(void *arg0, void *arg1, s32 *arg2) {
             r = (u8 *)DecodeExceptionValue(r, &operands.b);
             r = (u8 *)DecodeExceptionSignedValue(r, &operands.c);
             operands.d = (s32)r;
-            if (func_02073b4c(((CtxState_020739f8 *)arg0)->f0, &operands.a) != 0) {
+            if (ExceptionTypeMatches(((CtxState_020739f8 *)arg0)->f0, &operands.a) != 0) {
                     break;
             }
             func_02073c7c((s32 *)arg0, (s32 *)arg1, (void *)&operands.a, (s32)node);

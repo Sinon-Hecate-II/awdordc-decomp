@@ -71,7 +71,27 @@ s32 UpdateConnectionSyncWait(void) {
  return 1;
 }
 #pragma opt_strength_reduction reset
-s32 SendPeerSyncNotice(s32 a,s32 b){void *GetConnection(void);u64 GetSystemTick(void);void SendConnectionCommand(s32,s32,s32,s32,s32 *,s32);s32 func_0204084c(void);s32 v,k;if(b==13){v=M2C_FIELD(GetConnection(),s32 *,0x20c);k=1;}else k=0;SendConnectionCommand(b,a,0,0,&v,k);if(func_0204084c())return 0;{void *p=GetConnection();M2C_FIELD(p,u64 *,0x1e8)=GetSystemTick();}return 1;}
+/* Send a peer-synchronization notice to `peerId`; a PEER_SYNC_PREPARE notice also
+ * carries the matchmaking target id as its single value.  The command's result is
+ * reported and the sync-sent tick recorded; returns 0 if the report says it failed. */
+s32 SendPeerSyncNotice(s32 peerId, s32 notice) {
+    void *GetConnection(void);
+    u64 GetSystemTick(void);
+    void SendConnectionCommand(s32, s32, s32, s32, s32 *, s32);
+    s32 ReportConnectionCommandResult(void);
+    s32 value, count;
+    if (notice == PEER_SYNC_PREPARE) {
+        value = M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID);
+        count = 1;
+    } else count = 0;
+    SendConnectionCommand(notice, peerId, 0, 0, &value, count);
+    if (ReportConnectionCommandResult()) return 0;
+    {
+        void *conn = GetConnection();
+        M2C_FIELD(conn, u64 *, CONN_SESSION_SYNC_SENT) = GetSystemTick();
+    }
+    return 1;
+}
 
 /* Handle a peer's synchronization notice: a prepare request opens the session,
  * an acknowledgement records the peer and its round-trip overrun, and once every
@@ -276,7 +296,7 @@ for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++) {
 if(!(M2C_FIELD(gConnectionMgr,u32*,8)&(1<<M2C_FIELD(GetConnection()+i,u8*,0x2d0)))) {
 connA=GetConnection(); connB=GetConnection(); conn=GetConnection();
 SendConnectionCommand(17,M2C_FIELD(connA+i*4,s32*,0xf4),M2C_FIELD(connB+i*4,s32*,0x24),M2C_FIELD(conn+i*2,u16*,0xa4),0,0);
-if(func_0204084c()) return;
+if(ReportConnectionCommandResult()) return;
 }}
 M2C_FIELD(gConnectionMgr,u8*,2)++; return;
 }
@@ -292,13 +312,13 @@ mgr=gConnectionMgr;
 if(((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6)/0x82ea<(M2C_FIELD(mgr,u32*,4)>>2)) return;
 send:
 if(M2C_FIELD(GetConnection(),s32*,0x204)) {
-func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204)); if(func_0204084c()) return;
+func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204)); if(ReportConnectionCommandResult()) return;
 }
 SetConnectionState(19);
 for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++) {
 connA=GetConnection();connB=GetConnection();conn=GetConnection();
 SendConnectionCommand(17,M2C_FIELD(connA+i*4,s32*,0xf4),M2C_FIELD(connB+i*4,s32*,0x24),M2C_FIELD(conn+i*2,u16*,0xa4),0,0);
-if(func_0204084c()) return;
+if(ReportConnectionCommandResult()) return;
 }
 mgr=gConnectionMgr;M2C_FIELD(mgr,u64*,24)=GetSystemTick();M2C_FIELD(mgr,u8*,2)=1;
 }

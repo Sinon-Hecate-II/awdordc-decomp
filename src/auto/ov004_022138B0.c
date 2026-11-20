@@ -445,11 +445,11 @@ void func_ov004_022146f8(void) {
 }
 
 u8 func_ov004_02214718(void) {
-    M2C_UNK func_020a45f8(M2C_UNK, M2C_UNK);
+    M2C_UNK FindMapOrderAtTile(M2C_UNK, M2C_UNK);
     s32 IsMapOrderActive();
     u8 var_r0;
 
-    func_020a45f8(6, 6);
+    FindMapOrderAtTile(6, 6);
     if (IsMapOrderActive() == 0) {
         var_r0 = 1;
     } else {
@@ -461,7 +461,7 @@ u8 func_ov004_02214718(void) {
 u8 func_ov004_02214740(void) {
     u8 var_r0;
 
-    func_020a45f8(0xB, 5);
+    FindMapOrderAtTile(0xB, 5);
     if (IsMapOrderActive() == 0) {
         var_r0 = 1;
     } else {
@@ -473,7 +473,7 @@ u8 func_ov004_02214740(void) {
 u8 func_ov004_02214768(void) {
     u8 var_r0;
 
-    func_020a45f8(0xC, 5);
+    FindMapOrderAtTile(0xC, 5);
     if (IsMapOrderActive() == 0) {
         var_r0 = 1;
     } else {
@@ -485,7 +485,7 @@ u8 func_ov004_02214768(void) {
 u8 func_ov004_02214790(void) {
     u8 var_r0;
 
-    func_020a45f8(0xD, 5);
+    FindMapOrderAtTile(0xD, 5);
     if (IsMapOrderActive() == 0) {
         var_r0 = 1;
     } else {
@@ -497,7 +497,7 @@ u8 func_ov004_02214790(void) {
 u8 func_ov004_022147b8(void) {
     u8 var_r0;
 
-    func_020a45f8(0x12, 6);
+    FindMapOrderAtTile(0x12, 6);
     if (IsMapOrderActive() == 0) {
         var_r0 = 1;
     } else {

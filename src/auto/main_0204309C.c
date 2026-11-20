@@ -94,7 +94,7 @@ void HandleServerListEvent(s32 list, s32 event, s32 server) {
     s32 SBServerGetIntValue();
     u64 GetSystemTick(void);
     void DisconnectAllPeers();
-    s32 func_0204084c();
+    s32 ReportConnectionCommandResult();
     void SendJoinRequest();
     void func_02040dc8();
     void TryConnectToPeer();
@@ -184,7 +184,7 @@ host_target_found:
             SelectMatchmakingSession();
             if (SBServerListGetCount(list) != 0) {
                 SendJoinRequest(0, 0);
-                if (func_0204084c() != 0) goto cleanup;
+                if (ReportConnectionCommandResult() != 0) goto cleanup;
                 SetConnectionState(CONN_STATE_JOINING);
                 M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_BROWSE_RETRY) = 0;
                 goto cleanup;
@@ -219,17 +219,17 @@ host_target_found:
                         conn = GetConnection();
                         if (M2C_FIELD(conn, u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
                             DisconnectAllPeers();
-                            if (func_0204084c() == 0) goto use_server;
+                            if (ReportConnectionCommandResult() == 0) goto use_server;
                             goto cleanup;
                         }
                     } else {
                         conn = GetConnection();
                         func_02040dc8((void *)M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
-                        if (func_0204084c() != 0) goto cleanup;
+                        if (ReportConnectionCommandResult() != 0) goto cleanup;
                         SetConnectionState(CONN_STATE_JOINING);
                         conn = GetConnection();
                         TryConnectToPeer(0, 0, M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
-                        if (func_0204084c() != 0) goto cleanup;
+                        if (ReportConnectionCommandResult() != 0) goto cleanup;
                         goto cleanup;
                     }
                 }
@@ -306,7 +306,7 @@ s32 SelectMatchmakingSession(void) {
     s32 gpiPlayerSetInt(void *, void *, s32);
     s32 SBServerListSort(s32, s32, void *, s32);
     s32 RandomBelow(s32);
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     extern s32 gMatchmakingSessionWeights[];
     extern char sDwcKeyEval[];
     u32 roll;
@@ -333,7 +333,7 @@ s32 SelectMatchmakingSession(void) {
     while (i < SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4))) {
         if (i == SBServerListGetCount(*(s32 *)((u8 *)GetConnection() + 0xE4)) - 1) break;
         prev = (i > 0) ? cumulative[i - 1] : 0;
-        scaled = func_020720f0(gMatchmakingSessionWeights[i] * 100, weightTotal);
+        scaled = RuntimeIntDivMod(gMatchmakingSessionWeights[i] * 100, weightTotal);
         cumulative[i] = scaled + prev;
         if (roll < (u32)cumulative[i]) break;
         i++;

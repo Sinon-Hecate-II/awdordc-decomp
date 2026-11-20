@@ -182,13 +182,16 @@ loop_1:
     SortAiUnitsWorstFirst(var_r4);
 }
 
-void ScoreAiUnitsByPosition(s32 arg0) {
+/* Score every unit in gAiUnitList by the weather-aware move score of its own
+ * tile, then order the list best-first when bestFirst is set (fog or snow),
+ * otherwise worst-first. */
+void ScoreAiUnitsByPosition(s32 bestFirst) {
 s8 GetUnitMoveScoreWeather(s32,u8,u8);
 extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
-s32 n;u8 *p;s8 *q;u8 x;s32 a;
-p=&gAiUnitList;q=&gAiUnitScores;n=0;
-loop: x=*p;if(x){a=x*14+(*gCurrentMap+0x59a4);*q=GetUnitMoveScoreWeather(a,M2C_FIELD(a,u8 *,1),M2C_FIELD(a,u8 *,2));q++;p++;n++;goto loop;}
-if(arg0==0){SortAiUnitsWorstFirst(n);return;}SortAiUnitsBestFirst(n);
+s32 count;u8 *units;s8 *scores;u8 unit;s32 record;
+units=&gAiUnitList;scores=&gAiUnitScores;count=0;
+loop: unit=*units;if(unit){record=unit*MAP_UNIT_STRIDE+(*gCurrentMap+MAP_UNIT_RECORDS);*scores=GetUnitMoveScoreWeather(record,M2C_FIELD(record,u8 *,MAP_UNIT_X),M2C_FIELD(record,u8 *,MAP_UNIT_Y));scores++;units++;count++;goto loop;}
+if(bestFirst==0){SortAiUnitsWorstFirst(count);return;}SortAiUnitsBestFirst(count);
 }
 
 /* Score the AI unit list by each unit's weather-aware move score at its own

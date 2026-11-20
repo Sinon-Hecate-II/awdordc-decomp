@@ -545,12 +545,15 @@ static inline unsigned int ReadQueuedPayloadSize(QueueNode **entry) {
 #pragma cplusplus off
 extern struct QueueNode *data_ov010_0222ef88;
 #pragma cplusplus on
-extern "C" unsigned int func_ov010_022298a0(unsigned int index) {
+/* Bytes needed to pop the next packet queued for `channel`: 0 when that
+ * channel's queue (the 12-byte entry data_ov010_0222ef88[channel]) is empty,
+ * otherwise the queued payload size plus the 12-byte Ov010Packet header. */
+extern "C" unsigned int Ov010Online_GetQueuedPacketSize(unsigned int channel) {
     Ov010InterruptGuard guard;
-    QueueNode **entry = (QueueNode **)((u8 *)&data_ov010_0222ef88 + index * 12);
-    if (*entry == NULL)
+    QueueNode **queue = (QueueNode **)((u8 *)&data_ov010_0222ef88 + channel * 12);
+    if (*queue == NULL)
         return 0;
-    return ReadQueuedPayloadSize(entry) + 12;
+    return ReadQueuedPayloadSize(queue) + 12;
 }
 #pragma cplusplus off
 s32 func_ov010_02229920(s32 a, void *b) {

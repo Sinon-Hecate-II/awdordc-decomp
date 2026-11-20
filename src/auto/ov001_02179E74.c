@@ -202,7 +202,7 @@ MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
 void MapSelectList_PollInput(void) {
 extern M2C_UNK gMapSelectState; extern u8 gTouchScreenRect[],gMapSelectRowRects[];
 s32 TouchRectPressed(void *);s32 TouchRectHeld(void *);s32 KeyPressed(s32);s32 KeyHeld(s32);s32 KeyReleased(s32);
-void Ov001_LatchIconRowSelection(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void Ov001_BlockScrollBar(void);void func_ov001_0217b33c(void);void func_ov001_0217b2c8(void);void MapSelectList_MoveCursor(s32);
+void Ov001_LatchIconRowSelection(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void Ov001_BlockScrollBar(void);void MapSelectList_PageDown(void);void func_ov001_0217b2c8(void);void MapSelectList_MoveCursor(s32);
 u8 *heldRect; s32 row; s32 index; u8 *pressedRect;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)||M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57))return;
 if(TouchRectPressed(gTouchScreenRect)){
@@ -221,7 +221,7 @@ Ov001_LatchIconRowSelection(1);M2C_FIELD(&gMapSelectState,u8 *,0)=row;func_ov001
 }}}
 if(KeyPressed(KEY_A)){Ov001_LatchIconRowSelection(1);Ov001_BlockScrollBar();return;}
 if(KeyPressed(KEY_B)){Ov001_LatchIconRowSelection(0);return;}
-if(KeyHeld(KEY_L)){func_ov001_0217b33c();return;}
+if(KeyHeld(KEY_L)){MapSelectList_PageDown();return;}
 if(KeyReleased(KEY_L)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }
 if(KeyHeld(KEY_R)){func_ov001_0217b2c8();return;}
 if(KeyReleased(KEY_R)){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x59)=0;return; }

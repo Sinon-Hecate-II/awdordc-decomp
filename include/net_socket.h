@@ -32,12 +32,20 @@
 #define SOCK_FLAG_CLOSING 0x0010 /* a close is under way (set by SocketClose) */
 #define SOCK_FLAG_CLOSED  0x0020 /* the close task finished tearing the socket down */
 
-/* A receive timeout request (SocketSetReceiveTimeout): while a read is in
- * progress (SOCK_FLAG_BUSY) the function reports instead of starting a new one. */
-#define SOCK_RECV_TIMEOUT     0x6c /* s32 peer receive timeout, used when SOCK_FLAG_TIMEOUT */
-#define SOCK_TIMEOUT          0x76 /* s16 timeout asked for */
-#define SOCK_TIMEOUT_RESULT   0x78 /* s32 timeout result the pending operation is given */
 #define SOCK_STATUS           0x6c /* s32 operation result, reported once SOCK_FLAG_DONE */
+
+/* A connect request (SocketConnect, the ghiConnect path): the peer port and IPv4
+ * address the socket's raw connection is pointed at.  While an operation is in
+ * progress (SOCK_FLAG_BUSY) the call reports its state instead of starting a new
+ * one.  The raw send path also reads these as the packet tag and fallback address. */
+#define SOCK_CONNECT_PORT     0x76 /* u16 peer port of a connect request (packet tag of a raw send) */
+#define SOCK_CONNECT_ADDR     0x78 /* s32 peer IPv4 address of a connect request (fallback address of a raw send) */
+#define SOCK_CONNECT_FAILED   (-76) /* the connect attempt failed */
+
+/* SocketConnect's task arguments (a socket task record, +0x10 onwards). */
+#define CONNECT_TASK_LOCAL_PORT 0x10 /* u16 local port bound to the connection */
+#define CONNECT_TASK_PEER_PORT  0x12 /* u16 peer port to connect to */
+#define CONNECT_TASK_PEER_ADDR  0x14 /* s32 peer IPv4 address, host order */
 
 /* The socket's own local port (SOCK_RECV_PORT) and the port the transport layer
  * bound it to (SOCK_LINK_PORT, the low-level socket's local port); the first
@@ -57,6 +65,7 @@
 #define CONN_RECV_LIMIT  0x10a /* u16 queue capacity in bytes */
 #define CONN_RECV_THREAD 0x10c /* OSThreadQueue the reader sleeps on */
 #define CONN_RECV_HOLD   0xfe  /* s8 nonzero while a caller peeks, so recv keeps the record */
+#define CONN_RECV_PENDING 0xf8 /* s32 received bytes waiting to be consumed (func_0201d70c) */
 
 /* A socket also holds a second raw connection at +0x68, used for sending.  Its
  * outgoing packet goes in a buffer described by {size at SOCK_TX_SIZE, pointer
@@ -67,6 +76,8 @@
 #define SOCK_TX_BUF   0x4c /* u8 *outgoing packet buffer */
 #define SOCK_TX_HDR_STREAM 0x36 /* link + IPv4 + TCP header in front of a stream payload */
 #define SOCK_TX_HDR_DGRAM  0x2a /* link + IPv4 + UDP header in front of a datagram payload */
+
+#define SOCK_SEND_WAIT_FOR_SPACE 0x01 /* Sleep when the send ring has too little room. */
 
 /* Receive flags handed to the socket's receive entry; bit 1 is looked at by
  * SocketRecvLocked, bit 2 while the call is being set up. */
@@ -206,5 +217,28 @@ enum {
     SOCK_STATE_SEND_ONLY = 2,
     SOCK_STATE_CONNECTED = 4  /* both directions open */
 };
+
+/* A socket config template (gTcpSocketConfig / gUdpSocketConfig):
+ * SocketCreateFromConfig copies one into the socket object it allocates.  A zero
+ * receive or send byte size disables that direction; each direction also has a
+ * task record describing its thread stack and message queue. */
+typedef struct SocketConfigTask {
+    u16 stackBytes;   /* +0x00 thread stack bytes */
+    u8  priority;     /* +0x02 thread priority */
+    u8  messageCount; /* +0x03 messages in its queue, four bytes each */
+} SocketConfigTask;
+typedef struct SocketConfigTemplate {
+    u8  state;          /* +0x00 SOCK_STATE */
+    u8  blocking;       /* +0x01 SOCK_BLOCKING_ON */
+    u16 rxBytes;        /* +0x02 receive-buffer bytes, 0 = no receive side */
+    u16 unknown04;      /* +0x04 */
+    u16 txBytes;        /* +0x06 outgoing packet-buffer bytes, 0 = no send side */
+    u16 rxPendingBytes; /* +0x08 pending-datagram buffer bytes */
+    u16 txBytes2;       /* +0x0A second send-buffer bytes */
+    u16 txRingBytes;    /* +0x0C send-ring bytes */
+    u16 unknown0E;      /* +0x0E */
+    SocketConfigTask rxTask; /* +0x10 */
+    SocketConfigTask txTask; /* +0x14 */
+} SocketConfigTemplate;
 
 #endif

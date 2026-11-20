@@ -104,7 +104,7 @@ if(func_0209600c())return;
 switch(arg0) {
 case 100:func_0208f890();return;
 case 101:CreateSpriteFromClass(&data_02102aa8,7);return;
-default:func_0208f780(func_020ad584(arg0));return;
+default:PlayMusicTrack(func_020ad584(arg0));return;
 }
 }
 

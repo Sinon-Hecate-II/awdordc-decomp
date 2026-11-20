@@ -1,6 +1,7 @@
 /* 44 functions from 0x0216CCE0 to 0x0216DBDC (ov001), found by ds-decomp. */
 #include "common.h"
-extern M2C_UNK data_ov001_02192740;
+#include "ov001_wh.h"
+extern M2C_UNK gWhConnTaskState;
 
 #pragma thumb on
 void func_ov001_0216cce0(s32 arg0, s32 arg1, s32 arg2) {
@@ -259,15 +260,15 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  func_ov001_0216d02c(p,&data_ov001_02192620);
  rx=(u16 *)&data_ov001_02192620;
  i=0;bound=rx[5];for(;i<bound;i++){}
- if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
+ if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
  ready=1;break;
  case 10:
  func_ov001_0216d02c(p,&data_ov001_02192620);
- if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;
+ if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;
  break;
  case 12:active=0;result=0;break;
  case 13:
- if(++tries<3){if(!func_ov001_0216daa0((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;}else active=0;
+ if(++tries<3){if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags))active=0;}else active=0;
  break;
  case 4:case 8:break;
  default:active=0;break;
@@ -287,7 +288,7 @@ void func_ov001_0216d564(void) {
 s32 func_ov001_0216d56c(s32 a){extern s32 (*data_ov001_021925e0)(s32);void (*f)(s32)=M2C_FIELD(&data_ov001_021925e0,void (**)(s32),4);if(f)f(a);return 0;}
 
 s32 func_ov001_0216d8a0(s32 arg0, s32 arg1) {
-    M2C_UNK func_02007e70(s32, s32, M2C_UNK);
+    M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
     s32 func_02029274();
     M2C_UNK func_020292cc(M2C_UNK);
     s32 func_02029348(u16);
@@ -303,7 +304,7 @@ s32 func_ov001_0216d8a0(s32 arg0, s32 arg1) {
         if (temp_r0 > 0) {
 loop_2:
             if (var_r4 < arg1) {
-                func_02007e70(func_02029348((u16) var_r4), var_r5, 0xC0);
+                MIi_CpuCopy32(func_02029348((u16) var_r4), var_r5, 0xC0);
                 var_r4 += 1;
                 var_r5 += 0xC0;
                 if (var_r4 < temp_r0) {
@@ -316,18 +317,18 @@ loop_2:
     return temp_r0;
 }
 
-s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov001_02192740,s32 *,0x18)==5 && func_02027518(0,0,0)==3){M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=4;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==5 && func_02027518(0,0,0)==3){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=4;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 
 s32 func_ov001_0216da10(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_ProcessLinkStep();
-    extern M2C_UNK data_ov001_02192740;
+    extern M2C_UNK gWhConnTaskState;
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    if ((M2C_FIELD(&data_ov001_02192740, s32 *, 0x18) == 7) && (WFC_ProcessLinkStep() == 3)) {
-        M2C_FIELD(&data_ov001_02192740, s32 *, 0x18) = 4;
+    if ((M2C_FIELD(&gWhConnTaskState, s32 *, 0x18) == 7) && (WFC_ProcessLinkStep() == 3)) {
+        M2C_FIELD(&gWhConnTaskState, s32 *, 0x18) = 4;
         OS_RestoreInterrupts(temp_r4);
         return 1;
     }
@@ -335,7 +336,19 @@ s32 func_ov001_0216da10(void) {
     return 0;
 }
 
-s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&data_ov001_02192740,s32 *,0x18)==3){if(WFC_StartWirelessStep()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==3){if(WFC_StartWirelessStep()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(WhConnTaskAdvance()==1){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 
-s32 func_ov001_0216daa0(s32 a,s32 b,s32 c){s32 t=OS_DisableInterrupts();M2C_FIELD(&data_ov001_02192740,s32 *,12)=c;if(b)MI_CpuCopy8(b,M2C_FIELD(&data_ov001_02192740,s32 *,36),80);else MI_CpuFill8(M2C_FIELD(&data_ov001_02192740,s32 *,36),0,80);func_02007e70(a,M2C_FIELD(&data_ov001_02192740,s32 *,32),192);if(func_ov001_0216d838()==1){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}if(M2C_FIELD(&data_ov001_02192740,s32 *,24)==3 && WFC_StartConnection(M2C_FIELD(&data_ov001_02192740,s32 *,32),M2C_FIELD(&data_ov001_02192740,s32 *,36),M2C_FIELD(&data_ov001_02192740,s32 *,12))==3){M2C_FIELD(&data_ov001_02192740,s32 *,24)=8;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+/* Stage the host descriptor and connection settings for the WH connection task,
+ * then queue the connection or the prerequisite step it waits for: 1 once a step
+ * is queued, 0 while it has to be retried. */
+s32 WhConnTaskStartConnection(s32 hostDescriptor,s32 settings,s32 connectionFlags){
+s32 interruptState=OS_DisableInterrupts();
+M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_CONNECT_FLAGS)=connectionFlags;
+if(settings)MI_CpuCopy8(settings,M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_SETTINGS),WH_TASK_SETTINGS_BYTES);
+else MI_CpuFill8(M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_SETTINGS),0,WH_TASK_SETTINGS_BYTES);
+MIi_CpuCopy32(hostDescriptor,M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_BSS_DESC),WH_BSS_DESC_BYTES);
+if(WhConnTaskAdvance()==1){M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_PHASE)=WH_PHASE_CONNECT_PENDING;OS_RestoreInterrupts(interruptState);return 1;}
+if(M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_PHASE)==WH_PHASE_READY_TO_CONNECT && WFC_StartConnection(M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_BSS_DESC),M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_SETTINGS),M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_CONNECT_FLAGS))==WH_WFC_STEP_QUEUED){M2C_FIELD(&gWhConnTaskState,s32 *,WH_TASK_PHASE)=WH_PHASE_CONNECT_PENDING;OS_RestoreInterrupts(interruptState);return 1;}
+OS_RestoreInterrupts(interruptState);return 0;
+}
 

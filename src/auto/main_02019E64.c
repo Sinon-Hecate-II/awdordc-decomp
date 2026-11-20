@@ -336,7 +336,18 @@ s32 IsMulticastAddress(s32 arg0) {
     return 0;
 }
 
-s32 func_0201a778(s32 a){extern M2C_UNK gNetStack;s32 r=1,s=1,t=1,u=1; s32 own=M2C_FIELD(&gNetStack,s32 *,80);if(own!=0&&a!=own)u=0;if(!u&&a!=0x7f000001)t=0;if(!t&&!IsBroadcastAddress(a))s=0;if(!s&&!IsMulticastAddress(a))r=0;return r;}
+/* True when an IPv4 destination address is one this host accepts: its own
+ * address, loopback, a broadcast on its subnet, or a multicast group. */
+s32 IsLocalDestinationAddress(s32 addr) {
+    extern M2C_UNK gNetStack;
+    s32 accepted = 1, broadcastOk = 1, loopbackOk = 1, ownOk = 1;
+    s32 own = M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP);
+    if (own != 0 && addr != own) ownOk = 0;
+    if (!ownOk && addr != IP_LOOPBACK) loopbackOk = 0;
+    if (!loopbackOk && !IsBroadcastAddress(addr)) broadcastOk = 0;
+    if (!broadcastOk && !IsMulticastAddress(addr)) accepted = 0;
+    return accepted;
+}
 
 s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 

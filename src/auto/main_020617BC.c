@@ -268,7 +268,7 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
 }
 
 s32 SBServerListOpenConnection(void *p){
-s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 ghiInetAddr(void*);void *ghiResolveHostname(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 func_020496b8(s32);
+s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 ghiInetAddr(void*);void *ghiResolveHostname(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 ghiCloseSocket(s32);
 extern void *data_0213e4bc;extern u8 data_02100160[];
 u8 buf[128];Addr617BC addr;s32 n,fd;void *host;
 n=func_02061fb8((u8*)p+12,20);
@@ -279,7 +279,7 @@ if(addr.addr==-1){host=ghiResolveHostname(buf);if(!host)return 2;Copy617BC((u8*)
 fd=M2C_FIELD(p,s32*,0x4b0);
 if(fd==-1){fd=ghiSocket(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
 if(ghiConnect(fd,&addr,8)==0)return 0;
-func_020496b8(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
+ghiCloseSocket(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
 }
 
 void AppendString(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
@@ -414,10 +414,10 @@ Vector_Free(M2C_FIELD(a,s32 *,8));M2C_FIELD(a,s32 *,8)=0;
 }
 
 s32 SBServerListDisconnect(void *a) {
-s32 gpiFree();s32 func_020496b8();
+s32 gpiFree();s32 ghiCloseSocket();
 if(M2C_FIELD(a,s32 *,0x7c))gpiFree(M2C_FIELD(a,s32 *,0x7c));
 M2C_FIELD(a,s32 *,0x7c)=0;M2C_FIELD(a,s32 *,0x80)=0;
-if(M2C_FIELD(a,s32 *,0x4b0)!=-1)func_020496b8(M2C_FIELD(a,s32 *,0x4b0));
+if(M2C_FIELD(a,s32 *,0x4b0)!=-1)ghiCloseSocket(M2C_FIELD(a,s32 *,0x4b0));
 M2C_FIELD(a,s32 *,0x4b0)=-1;M2C_FIELD(a,s32 *,0)=1;
 SBServerListFreeKeyList(a);M2C_FIELD(a,s32 *,0x484)=-1;func_0206262c(a);
 }

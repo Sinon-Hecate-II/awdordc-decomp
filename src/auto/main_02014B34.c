@@ -192,7 +192,7 @@ u32 func_02015204(u32 arg0, u32 arg1) {
     return var_r1;
 }
 
-s32 func_02015214(u32 arg0) {
+s32 Mb_IsValidPlayer(u32 arg0) {
     if ((arg0 >= 1U) && (arg0 <= 0xFU)) {
         return 1;
     }

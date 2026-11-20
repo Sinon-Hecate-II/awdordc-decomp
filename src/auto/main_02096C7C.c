@@ -50,8 +50,8 @@ void func_02096d5c(void) {
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
-    M2C_UNK func_0200323c(M2C_UNK);
-    M2C_UNK func_020032bc(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK func_02082c84();
     func_02082c84();
     GX_SetBankForBG(1);
@@ -60,8 +60,8 @@ void func_02096d5c(void) {
     func_020031cc(8);
     func_02002ab8(0x10);
     GX_SetBankForObjExtPalette(0x20);
-    func_0200323c(0x80);
-    func_020032bc(0x100);
+    GX_SetBankForBGExtPlttSub(0x80);
+    GX_SetBankForOBJExtPlttSub(0x100);
 }
 
 void func_02096da8(void) {

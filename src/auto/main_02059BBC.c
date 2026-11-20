@@ -5,7 +5,7 @@ typedef struct { s32 v[4]; } Unk0205Copy;
 
 u8 *gti2ComputeResponse(void *out_, void *in_)
 {
-  u64 func_020720f0(s32, s32);
+  u64 RuntimeIntDivMod(s32, s32);
   s32 StringLength(s32);
   s32 func_02059a04(s8 *);
   s32 Rand(void);
@@ -44,8 +44,8 @@ u8 *gti2ComputeResponse(void *out_, void *in_)
         prev = in[i - 1];
       }
       v = *((u8 *) (((u32) in) + ((u32) i)));
-      a = (s32) (func_020720f0(i + v, n) >> 32);
-      b = (s32) (func_020720f0(prev * step, n) >> 32);
+      a = (s32) (RuntimeIntDivMod(i + v, n) >> 32);
+      b = (s32) (RuntimeIntDivMod(prev * step, n) >> 32);
       a = data_020ff548[a];
       b = data_020ff548[b];
       v = (Abs(b ^ ((u8 *) in)[(a + (i * v)) % 32]) % 93) + 33;
@@ -296,7 +296,7 @@ s32 gti2PingCallback(void *connection, s32 pingTime) {
 }
 
 /* Invoke the send-filter callback entry, with nesting/refcount bookkeeping and release when idle. */
-s32 func_0205a424(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
+s32 gti2SendFilterCallback(void *connection, void *callbackIndex, s32 b, s32 c, s32 d) {
     void *Vector_GetItem(int, int);
     void *callback;
     extern int gAssertNameConnection, gAssertFileName, data_020ff6ec;
@@ -381,9 +381,9 @@ s32 func_0205a860(s32 a,void **p) {s32 gti2CreateConnection(s32);s32 r=gti2Creat
  * the peer's CONNECT_ACCEPT.  Returns 0 on success, 1 if the message could not
  * be copied. */
 s32 gti2StartConnectionAttempt(void *connection,s32 message,s32 messageLen,GT2ConnectionCallbacks *callbacks,...) {
-s32 func_0205d70c(s32 *,s32 *);void gti2GetChallenge(void *);u8 *gti2ComputeResponse(void *,void *);void gti2SendConnect(void *,void *);
+s32 gti2NormalizeMessage(s32 *,s32 *);void gti2GetChallenge(void *);u8 *gti2ComputeResponse(void *,void *);void gti2SendConnect(void *,void *);
 s32 challenge[8];s32 messageCopy;
-func_0205d70c(&message,&messageLen);
+gti2NormalizeMessage(&message,&messageLen);
 if(messageLen>0){messageCopy=gpiMalloc(messageLen);M2C_FIELD(connection,s32 *,GT2_CONNECTION_DATA)=messageCopy;if(!messageCopy)return 1;MemCopy(messageCopy,message,messageLen);M2C_FIELD(connection,s32 *,GT2_CONNECTION_DATA_LEN)=messageLen;}
 if(callbacks)M2C_FIELD(connection,GT2ConnectionCallbacks *,GT2_CONNECTION_CALLBACK)=*callbacks;
 gti2GetChallenge(challenge);gti2ComputeResponse((u8 *)connection+GT2_CONNECTION_RESPONSE,challenge);gti2SendConnect(connection,challenge);M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)=GT2_STATE_AWAIT_CONNECT_ACCEPT;return 0;
@@ -397,9 +397,9 @@ func_0205c7f8(p);M2C_FIELD(p,s32 *,12)=5;if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q
 }
 
 void func_0205a994(void *p,s32 a,s32 b,...) {
-M2C_UNK func_0205d70c(s32 *,s32 *);M2C_UNK func_0205c854(void *,s32,s32);
+M2C_UNK gti2NormalizeMessage(s32 *,s32 *);M2C_UNK func_0205c854(void *,s32,s32);
 M2C_FIELD(p,s32 *,20)=0;if(M2C_FIELD(p,s32 *,12)!=4)return;
-func_0205d70c(&a,&b);func_0205c854(p,a,b);M2C_FIELD(p,s32 *,12)=6;
+gti2NormalizeMessage(&a,&b);func_0205c854(p,a,b);M2C_FIELD(p,s32 *,12)=6;
 }
 
 s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {

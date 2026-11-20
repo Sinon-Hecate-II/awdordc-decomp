@@ -503,7 +503,7 @@ void func_ov002_021e88ac(void *p) { extern s8 data_ov002_021f2ef0[]; s32 i; if(M
  else M2C_FIELD(p,s8 *,0x26)++;
 }
 
-void func_ov002_021e8914(void *arg0) {
+void StepUnitView(void *arg0) {
     void StepUnitViewGauge(void *);
     s32 func_ov002_021e79ac(void *);
     void func_ov002_021e8e8c(void *);

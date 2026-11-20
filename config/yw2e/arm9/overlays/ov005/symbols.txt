@@ -66,7 +66,7 @@ func_ov005_022155c0 kind:function(arm,size=0x28) addr:0x022155c0
 func_ov005_022155e8 kind:function(arm,size=0x68) addr:0x022155e8
 func_ov005_02215650 kind:function(arm,size=0x14) addr:0x02215650
 func_ov005_02215664 kind:function(arm,size=0xe34) addr:0x02215664
-func_ov005_02216498 kind:function(arm,size=0x80) addr:0x02216498
+RecordsMenu_CreateRowSlots kind:function(arm,size=0x80) addr:0x02216498
 func_ov005_02216518 kind:function(arm,size=0xcf4) addr:0x02216518
 func_ov005_0221720c kind:function(arm,size=0x58) addr:0x0221720c
 func_ov005_02217264 kind:function(arm,size=0x18) addr:0x02217264
@@ -111,7 +111,7 @@ DrawResultSpark kind:function(arm,size=0x88) addr:0x02219e58
 UpdateResultSpark kind:function(arm,size=0xc0) addr:0x02219ee0
 SpawnResultSpark kind:function(arm,size=0x120) addr:0x02219fa0
 DrawAwardedMedals kind:function(arm,size=0x2cc) addr:0x0221a0c0
-func_ov005_0221a38c kind:function(arm,size=0x84) addr:0x0221a38c
+PositionAwardPanelSprites kind:function(arm,size=0x84) addr:0x0221a38c
 AnimateAwardMedal3 kind:function(arm,size=0x88) addr:0x0221a410
 AnimateAwardMedal4 kind:function(arm,size=0x88) addr:0x0221a498
 func_ov005_0221a520 kind:function(arm,size=0x78) addr:0x0221a520
@@ -172,7 +172,7 @@ func_ov005_0221e5a0 kind:function(arm,size=0x2ec) addr:0x0221e5a0
 func_ov005_0221e88c kind:function(arm,size=0x668) addr:0x0221e88c
 UpdateResultsScreen kind:function(arm,size=0xb8) addr:0x0221eef4
 func_ov005_0221efac kind:function(arm,size=0xc) addr:0x0221efac
-func_ov005_0221efb8 kind:function(arm,size=0x80) addr:0x0221efb8
+PlayMapBattleMusic kind:function(arm,size=0x80) addr:0x0221efb8
 func_ov005_0221f038 kind:function(arm,size=0x4c) addr:0x0221f038
 func_ov005_0221f084 kind:function(arm,size=0x364) addr:0x0221f084
 func_ov005_0221f3e8 kind:function(arm,size=0x60) addr:0x0221f3e8
@@ -253,8 +253,8 @@ data_ov005_02220464 kind:data(any) addr:0x02220464
 data_ov005_02220474 kind:data(any) addr:0x02220474
 data_ov005_02220484 kind:data(any) addr:0x02220484
 data_ov005_02220486 kind:data(any) addr:0x02220486
-data_ov005_02220490 kind:data(any) addr:0x02220490
-data_ov005_022204b8 kind:data(any) addr:0x022204b8
+sRecordsRowSlotDef kind:data(any) addr:0x02220490
+sRecordsToggleSlotDef kind:data(any) addr:0x022204b8
 data_ov005_022204e0 kind:data(any) addr:0x022204e0
 data_ov005_02220510 kind:data(any) addr:0x02220510
 gRecordSubBgId kind:data(any) addr:0x02220570
@@ -328,7 +328,7 @@ gCampaignHintPanelClass kind:data(any) addr:0x02220bb0
 data_ov005_02220bf0 kind:data(any) addr:0x02220bf0
 data_ov005_02220c38 kind:data(any) addr:0x02220c38
 data_ov005_02220c88 kind:data(any) addr:0x02220c88
-data_ov005_02220ce8 kind:data(any) addr:0x02220ce8
+gCoStoryMapQuoteTextIds kind:data(any) addr:0x02220ce8
 data_ov005_02220d50 kind:data(any) addr:0x02220d50
 data_ov005_02220db8 kind:data(any) addr:0x02220db8
 data_ov005_02220e30 kind:data(any) addr:0x02220e30

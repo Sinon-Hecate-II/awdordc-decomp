@@ -1,5 +1,6 @@
 /* 38 functions from 0x02175F60 to 0x02176F4C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 static inline s32 ov001_event_value(u8 value) { return value; }
 
 struct MenuValues2 { u8 values[2]; };
@@ -624,27 +625,30 @@ void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
-    void func_ov001_02176e78();
+    void Ov001_LoadWfcSettingsBackground();
     extern s8 gOv001WfcSettingsReset;
     extern M2C_UNK func_ov001_02176ef8;
     gOv001WfcSettingsReset = 0;
-    func_ov001_02176e78();
+    Ov001_LoadWfcSettingsBackground();
     Ov001_LoadObjLayoutBlock(0x12);
     Ov001_ShowMessagePanel(0x3B, -1, 0);
     Ov001_ShowMessageBox(0x17);
     Ov001_SetStepCallback(&func_ov001_02176ef8);
 }
 
-void func_ov001_02176e78(void) {
- M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
- extern M2C_UNK data_ov001_02190520;
- extern M2C_UNK GX_LoadBG2Scr;
- Ov001_LoadAsset(&data_ov001_02190520, &GX_LoadBG2Scr);
- M2C_FIELD((void *)0x04001008,u16 *,0) = (M2C_FIELD((void *)0x04001008,u16 *,0) & ~3) | 3;
- M2C_FIELD((void *)0x04001008,u16 *,2) = (M2C_FIELD((void *)0x04001008,u16 *,2) & ~3) | 3;
- *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
- M2C_FIELD((void *)0x0400000a,u16 *,0) = (M2C_FIELD((void *)0x0400000a,u16 *,0) & ~3) | 3;
- M2C_FIELD((void *)0x0400000a,u16 *,2) = (M2C_FIELD((void *)0x0400000a,u16 *,2) & ~3) | 3;
+/* Load the Wi-Fi settings background map (char/yb5Multi.nsc.l) into BG2 and put
+ * BG0..BG2 of the main engine and BG0/BG1 of the sub engine at the lowest
+ * priority, so that the map covers them. */
+void Ov001_LoadWfcSettingsBackground(void) {
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    extern M2C_UNK gOv001WfcSettingsBgMapPath;
+    extern M2C_UNK GX_LoadBG2Scr;
+    Ov001_LoadAsset(&gOv001WfcSettingsBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02176ef8(void) {

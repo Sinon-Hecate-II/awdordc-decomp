@@ -100,7 +100,7 @@ ghiUnlockMutex();return conn;
 s32 ghiFreeConnection(void *connection) {
     extern M2C_UNK data_020fd0a4, ghiAssertFile, data_020fd024, data_020fd0b0, gGhiConnectionList, data_020fd0cc, data_020fd0f4;
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
-    M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK func_020496b8(s32);
+    M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK ghiCloseSocket(s32);
     void ghiFreeBuffer(void *); void ghiPostCleanup(void *);
     s32 func_0204b688(void *); void func_0204b690(s32 *);
     GHIConnection *conn = (GHIConnection *)connection;
@@ -122,7 +122,7 @@ s32 ghiFreeConnection(void *connection) {
     gpiFree(conn->serverOverride);
     if (conn->socket != -1) {
         func_020496cc(conn->socket, 2);
-        func_020496b8(conn->socket);
+        ghiCloseSocket(conn->socket);
     }
     ghiFreeBuffer(&conn->buffer);
     ghiFreeBuffer(&conn->readBuffer);
@@ -173,7 +173,7 @@ void func_0204af74(M2C_UNK *arg0) {
 
 /* Reset and release an object's resources and counters, logging if null/empty. */
 void func_0204afd8(void *obj) {
-    M2C_UNK func_020496b8(s32);
+    M2C_UNK ghiCloseSocket(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
     M2C_UNK ResetBuffer(void *);
     extern M2C_UNK data_020fd038;
@@ -197,7 +197,7 @@ void func_0204afd8(void *obj) {
     gpiFree(M2C_FIELD(obj, s32 *, 0x24));
     M2C_FIELD(obj, s32 *, 0x24) = 0;
     func_020496cc(M2C_FIELD(obj, s32 *, 0x48), 2);
-    func_020496b8(M2C_FIELD(obj, s32 *, 0x48));
+    ghiCloseSocket(M2C_FIELD(obj, s32 *, 0x48));
     M2C_FIELD(obj, s32 *, 0x48) = -1;
     ResetBuffer(obj + 0x50);
     ResetBuffer(obj + 0x74);
@@ -250,14 +250,14 @@ void ghiDoConnect(void *);
 void ghiProcessConnected(void *);
 void ghiSendRequest(void *);
 void ghiDoPosting(void *);
-void func_0204ceb8(void *);
+void ghiDoWaiting(void *);
 void ghiReceiveStatusLine(void *);
 void func_0204d5c0(void *);
 void ghiReceiveFile(void *);
 /* Run one tick of an async operation/state machine: validate the handle, dispatch by its kind, then settle (signal completion and release the handle) unless it is still busy. */
 s32 func_0204b210(void *operation) {
     extern M2C_UNK data_020fd170, data_020fd17c, data_020fd158, data_020fd188;
-    void func_0204a498(void *);
+    void ghiCallCompletedCallback(void *);
     s32 ghiFreeConnection(void *);
     s32 status;
 
@@ -271,7 +271,7 @@ s32 func_0204b210(void *operation) {
     if (M2C_FIELD(operation, s32 *, 0x10) == 2) ghiProcessConnected(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 3) ghiSendRequest(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 4) ghiDoPosting(operation);
-    if (M2C_FIELD(operation, s32 *, 0x10) == 5) func_0204ceb8(operation);
+    if (M2C_FIELD(operation, s32 *, 0x10) == 5) ghiDoWaiting(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 6) ghiReceiveStatusLine(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 7) func_0204d5c0(operation);
     if (M2C_FIELD(operation, s32 *, 0x10) == 8) ghiReceiveFile(operation);
@@ -281,7 +281,7 @@ s32 func_0204b210(void *operation) {
         M2C_FIELD(operation, s32 *, 0x12C) = 0;
     else {
         ghiSetResultFromStatusCode(operation);
-        func_0204a498(operation);
+        ghiCallCompletedCallback(operation);
         ghiFreeConnection(operation);
     }
     return status;

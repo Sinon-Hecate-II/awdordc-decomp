@@ -1,5 +1,6 @@
 /* 17 functions from 0x021E6D04 to 0x021E7C84 (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ov002_panel.h"
 typedef struct { u16 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1,b8:1,b9:1,b10:1,b11:1,b12:1,b13:1,b14:1,b15:1; } SetupFlags;
 typedef struct { u8 low:4; u8 high:4; } NibbleFlags;
 
@@ -206,26 +207,29 @@ void UpdateBattleScene(void *state) {
     if ((gKeyState->pressed & (KEY_A | KEY_B | KEY_START)) || M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED)) EndBattleScene(state);
 }
 
-void StepBattleScene(void *arg0) {
+/* One frame of the battle scene's animation: run the current phase (setup,
+ * slide-in, hold or effects), step both players' unit views, then end the scene
+ * after its delay unless the scene is a demo. */
+void StepBattleScene(void *state) {
 void func_ov002_021e712c(void *);
 void func_ov002_021e749c(void *);
-void func_ov002_021e8914(void *);
-void func_020af7dc(void);
+void StepUnitView(void *);
+void TickSlotSoundDelays(void);
 void func_ov002_021e78a4(void *);
 extern M2C_UNK gUnitViews;
-extern M2C_UNK data_ov002_021f3150;
+extern M2C_UNK gUnitViewsP2;
 extern u8 data_ov002_021f2f40;
-switch(M2C_FIELD(arg0,u8 *,8)) {
-case 0: func_ov002_021e7120(arg0); break;
-case 1: func_ov002_021e712c(arg0); break;
-case 2: func_ov002_021e7474(arg0); break;
-case 3: func_ov002_021e749c(arg0); break;
+switch(M2C_FIELD(state,u8 *,BATTLE_SCENE_PHASE)) {
+case BATTLE_SCENE_PHASE_SETUP: func_ov002_021e7120(state); break;
+case BATTLE_SCENE_PHASE_SLIDE_IN: func_ov002_021e712c(state); break;
+case BATTLE_SCENE_PHASE_HOLD: func_ov002_021e7474(state); break;
+case BATTLE_SCENE_PHASE_EFFECTS: func_ov002_021e749c(state); break;
 }
-func_ov002_021e8914(&gUnitViews);
-func_ov002_021e8914(&data_ov002_021f3150);
-func_020af7dc();
+StepUnitView(&gUnitViews);
+StepUnitView(&gUnitViewsP2);
+TickSlotSoundDelays();
 if(data_ov002_021f2f40) return;
-func_ov002_021e78a4(arg0);
+func_ov002_021e78a4(state);
 }
 
 void func_ov002_021e7120(void *arg0) {
@@ -239,7 +243,7 @@ void func_ov002_021e712c(void *arg0) {
     void func_ov002_021e8898(void *, s32);
     void func_ov002_021e42a8(void *, s32);
     void func_ov002_021e8d04(void *, s32);
-    extern s32 gUnitViews, data_ov002_021f3150, gPlayerSettings;
+    extern s32 gUnitViews, gUnitViewsP2, gPlayerSettings;
     extern void *g3DSpriteBankMain, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     s32 v, i, j;
 
@@ -247,19 +251,19 @@ void func_ov002_021e712c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0)++;
     v = EaseInterpolate(4, -256, 0, M2C_FIELD(arg0, s32 *, 0), 32);
     func_ov002_021e8898(&gUnitViews, v);
-    func_ov002_021e8898(&data_ov002_021f3150, v);
+    func_ov002_021e8898(&gUnitViewsP2, v);
     v = EaseInterpolate(0, 16, 0, M2C_FIELD(arg0, s32 *, 0), 32);
     M2C_FIELD(g3DSpriteBankMain, u8 *, 0x51) = v;
     M2C_FIELD(g3DSpriteBankMain, u8 *, 0x52) = 16 - v;
     v = EaseInterpolate(4, -80, 0, M2C_FIELD(arg0, s32 *, 0), 32);
     func_ov002_021e42a8(&gUnitViews, v);
-    func_ov002_021e42a8(&data_ov002_021f3150, v);
+    func_ov002_021e42a8(&gUnitViewsP2, v);
     v = EaseInterpolate(0, 512, 256, M2C_FIELD(arg0, s32 *, 0), 32);
     if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 4), u8 *, 0x3D) == 2 && M2C_FIELD(&gUnitViews, u8 *, 0x2A)) {
         func_ov002_021e8d04(&gUnitViews, (u16)v);
     }
     if (M2C_FIELD(M2C_FIELD(&gPlayerSettings, void **, 28), u8 *, 0x3D) == 2 && M2C_FIELD(&gUnitViews, u8 *, 0x56)) {
-        func_ov002_021e8d04(&data_ov002_021f3150, (u16)v);
+        func_ov002_021e8d04(&gUnitViewsP2, (u16)v);
     }
     if (M2C_FIELD(arg0, s32 *, 0) != 32) {
         return;

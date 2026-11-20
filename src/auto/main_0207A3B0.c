@@ -614,7 +614,7 @@ void InitMapScrollAnimation(MapScrollAnim *pan) {
 void StepMapScrollAnimation(void *task) {
     extern u8 gMapScrollSpeedRamp[];
     s32 Abs(s32);
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     extern void *gCurrentMap;
     MapScrollAnim *pan = (MapScrollAnim *)task;
@@ -634,7 +634,7 @@ void StepMapScrollAnimation(void *task) {
         }
         accum = (s32)pan->accum * signMajor;
         fixedX = (pan->startX + accum) << 16;
-        fixedY = accum * func_020720f0(pan->deltaY << 16, pan->deltaX) + (pan->startY << 16);
+        fixedY = accum * RuntimeIntDivMod(pan->deltaY << 16, pan->deltaX) + (pan->startY << 16);
     } else {
         pan->accum = (u16)(pan->accum + gMapScrollSpeedRamp[pan->remaining]);
         if (pan->deltaY > 0) {
@@ -643,7 +643,7 @@ void StepMapScrollAnimation(void *task) {
             signMajor = -(pan->deltaY < 0);
         }
         accum = (s32)pan->accum * signMajor;
-        fixedX = accum * func_020720f0(pan->deltaX << 16, pan->deltaY) + (pan->startX << 16);
+        fixedX = accum * RuntimeIntDivMod(pan->deltaX << 16, pan->deltaY) + (pan->startX << 16);
         fixedY = (pan->startY + accum) << 16;
     }
 

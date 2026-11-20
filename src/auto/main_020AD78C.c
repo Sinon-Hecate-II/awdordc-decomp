@@ -493,7 +493,7 @@ if(r>31)r=31;if(g>31)g=31;if(bl>31)bl=31;
 }while(i<16);
 }
 
-void func_020ae528(M2C_UNK arg0) {
+void DimPalette(M2C_UNK arg0) {
     void BlendPalette(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     BlendPalette(arg0, 0, 8, 8, 0x20);
 }

@@ -175,22 +175,16 @@ s32 ghiAppendDataToBuffer(s32 arg0, s32 *arg1, s32 dataLen, ...) {
     return 1;
 }
 
-s32 AppendHttpHeader(M2C_UNK arg0, M2C_UNK *arg1, M2C_UNK *arg2) {
-    s32 ghiAppendDataToBuffer(M2C_UNK, M2C_UNK *, M2C_UNK,...);
-    extern M2C_UNK data_020fcf78;
-    extern M2C_UNK data_020fcf7c;
-    if (ghiAppendDataToBuffer(arg0, arg1, 0) == 0) {
-        return 0;
-    }
-    if (ghiAppendDataToBuffer(arg0, &data_020fcf78, 2) == 0) {
-        return 0;
-    }
-    if (ghiAppendDataToBuffer(arg0, arg2, 0) == 0) {
-        return 0;
-    }
-    if (ghiAppendDataToBuffer(arg0, &data_020fcf7c, 2) != 0) {
-        return 1;
-    }
+/* Append one HTTP header line, "name: value\r\n", to a ghttp send buffer.
+ * Returns 1 when the whole line was written, 0 as soon as any part fails. */
+s32 AppendHttpHeader(M2C_UNK buffer, M2C_UNK *name, M2C_UNK *value) {
+    s32 ghiAppendDataToBuffer(M2C_UNK, M2C_UNK *, M2C_UNK, ...);
+    extern M2C_UNK gHttpHeaderSeparator;
+    extern M2C_UNK gHttpHeaderCrlf;
+    if (ghiAppendDataToBuffer(buffer, name, 0) == 0) return 0;
+    if (ghiAppendDataToBuffer(buffer, &gHttpHeaderSeparator, 2) == 0) return 0;
+    if (ghiAppendDataToBuffer(buffer, value, 0) == 0) return 0;
+    if (ghiAppendDataToBuffer(buffer, &gHttpHeaderCrlf, 2) != 0) return 1;
     return 0;
 }
 
@@ -277,19 +271,23 @@ s32 ghiReadBuffer(s32 *bufferIn, u8 *bufferOut, s32 *bufferLen) {
     bufferOut[bytes] = 0; *bufferLen = bytes; bufferIn[4] += bytes; return 1;
 }
 
-void func_0204a498(void *p) {
-extern M2C_UNK data_020fcfec,data_020fcff8,data_020fcfd0;
-s32 a,b,r;
-if(!p)AssertFailed(&data_020fcfec,&data_020fcff8,&data_020fcfd0,0x1b);
-if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32),0x40))return;
-if(M2C_FIELD(p,s32 *,12)){a=0;b=0;}else{a=M2C_FIELD(p,s32 *,0xc0);b=M2C_FIELD(p,s32 *,0x100);}
-r=M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32),0x40)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x38),a,b,M2C_FIELD(p,s32 *,0x44));
-if(a && !r)M2C_FIELD(p,s32 *,0xd8)=1;
+/* Runs the connection's completed callback once its request has finished.  A
+   buffered transfer hands it the body buffer and the bytes received, the modes
+   that deliver the body as it arrives pass no body.  A callback that refuses the
+   buffer keeps ownership of it, so the connection no longer frees it. */
+void ghiCallCompletedCallback(GHIConnection *connection) {
+extern M2C_UNK sGhiAssertConnection,sGhiCallbacksSourceFile,sGhiCallCompletedCallbackName;
+s32 body,bodySize,result;
+if(!connection)AssertFailed(&sGhiAssertConnection,&sGhiCallbacksSourceFile,&sGhiCallCompletedCallbackName,0x1b);
+if(!connection->completedCallback)return;
+if(connection->transferMode){body=0;bodySize=0;}else{body=(s32)connection->bodyBuffer.data;bodySize=connection->bytesReceived;}
+result=connection->completedCallback(connection->request,connection->result,body,bodySize,connection->callbackParam);
+if(body && !result)connection->bodyBuffer.dontFree=1;
 }
 
 void InvokeRequestCallback(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020fcfec,data_020fcff8,data_020fcfb8;
-if(!p)AssertFailed(&data_020fcfec,&data_020fcff8,&data_020fcfb8,0x45);
+extern M2C_UNK sGhiAssertConnection,sGhiCallbacksSourceFile,data_020fcfb8;
+if(!p)AssertFailed(&sGhiAssertConnection,&sGhiCallbacksSourceFile,&data_020fcfb8,0x45);
 if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c))return;
 M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x10),a,b,M2C_FIELD(p,s32 *,0x100),M2C_FIELD(p,s32 *,0x104),M2C_FIELD(p,s32 *,0x44));
 }
@@ -297,10 +295,10 @@ M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c)(M2C_FIELD(p,s32 *,4),M2C
 void ghiCallPostCallback(void *arg0) {
     s32 Vector_GetCount(s32);
     extern M2C_UNK data_020fcfa4;
-    extern M2C_UNK data_020fcfec;
-    extern M2C_UNK data_020fcff8;
+    extern M2C_UNK sGhiAssertConnection;
+    extern M2C_UNK sGhiCallbacksSourceFile;
     if (arg0 == NULL) {
-        AssertFailed(&data_020fcfec, &data_020fcff8, &data_020fcfa4, 0x5E);
+        AssertFailed(&sGhiAssertConnection, &sGhiCallbacksSourceFile, &data_020fcfa4, 0x5E);
     }
     if (M2C_FIELD(arg0, M2C_UNK (**)(s32, s32, s32, s32, s32, s32), 0x150) == NULL) {
         return;

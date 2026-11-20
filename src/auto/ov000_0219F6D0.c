@@ -246,7 +246,7 @@ void ProcessAiTurnPlan(void) {
     s32 func_ov000_021a21f8(s32);
     s32 BuildAiBasicUnit(void);
     void UpdateAiCandidateCosts(void);
-    s32 func_ov000_021a4320(void);
+    s32 TryBuildSpecialistUnits(void);
     s32 BuildAiSubmarine(void);
     s32 func_ov000_021a2db8(void);
     s32 func_ov000_021a20d4(void);
@@ -349,7 +349,7 @@ void ProcessAiTurnPlan(void) {
             gAiState[AI_STATE_PHASE]++;
             break;
         case 10:
-            if (func_ov000_021a4320()) return;
+            if (TryBuildSpecialistUnits()) return;
             gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;

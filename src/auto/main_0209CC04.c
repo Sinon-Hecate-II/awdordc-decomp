@@ -521,8 +521,8 @@ s32 func_0209d60c(void *arg0) {
 }
 
 s32 func_0209d67c(void *arg0) {
-    M2C_UNK func_0208f780(s32);
-    func_0208f780(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
+    M2C_UNK PlayMusicTrack(s32);
+    PlayMusicTrack(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }

@@ -1,5 +1,6 @@
 /* 18 functions from 0x0218C228 to 0x0218C9B4 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct RuntimeRangeNode { struct RuntimeRangeNode *prev, *next; u16 start, size; } RuntimeRangeNode;
 typedef struct { u8 pad[0x180]; RuntimeRangeNode head, tail; s32 unk198, heap; } RuntimeRangePool;
 typedef struct { s32 a; u8 pad[4]; s32 b; u8 rest[52]; } RuntimePair64;
@@ -51,12 +52,12 @@ return node;
 
 void func_ov001_0218c3a0(u32 arg0) {
     M2C_UNK Ov001_QueuePush(s32, u32);
-    M2C_UNK func_ov001_0218bf4c();
+    M2C_UNK Ov001_ListRemove();
     extern s32 gOv001TilePools;
     s32 var_r4;
 
     var_r4 = 0;
-    func_ov001_0218bf4c();
+    Ov001_ListRemove();
     if (arg0 >= (u32) (gOv001TilePools + 0x1A0)) {
         var_r4 = 1;
     }
@@ -88,7 +89,7 @@ M2C_UNK func_0200365c(void);
 M2C_UNK func_020035e4(void);
 M2C_UNK func_020035f8(void);
 void GX_SetBankForObjCD(s32);
-void func_ov001_0218c5b8();
+void GxClearDisplayMemory();
 extern s32 gVramBankGrants[];
 gVramBankGrants[0]=func_02003538();
 gVramBankGrants[1]=func_0200354c();
@@ -104,7 +105,7 @@ gVramBankGrants[10]=func_0200365c();
 gVramBankGrants[11]=func_020035e4();
 gVramBankGrants[12]=func_020035f8();
 GX_SetBankForObjCD(gVramBankGrants[11]);
-func_ov001_0218c5b8();
+GxClearDisplayMemory();
 return;
 }
 
@@ -118,7 +119,7 @@ void func_ov001_0218c4c0(void) {
     s32 func_0200354c(void);
     s32 func_0200360c(void);
     s32 func_02003620(void);
-    void func_ov001_0218c5b8(void);
+    void GxClearDisplayMemory(void);
     void SetLcdEnabled(s32);
     void GX_SetBankForBG(s32);
     void GX_SetBankForOBJ(s32);
@@ -129,15 +130,15 @@ void func_ov001_0218c4c0(void) {
     void GX_SetBankForTexExtPltt(s32);
     void func_02003124(s32);
     void func_020031cc(s32);
-    void func_0200323c(s32);
-    void func_020032bc(s32);
+    void GX_SetBankForBGExtPlttSub(s32);
+    void GX_SetBankForOBJExtPlttSub(s32);
     s32 func_02003104(s32);
 
     func_02003538();
     func_0200354c();
     func_0200360c();
     func_02003620();
-    func_ov001_0218c5b8();
+    GxClearDisplayMemory();
     GX_SetBankForBG(gVramBankGrants[0]);
     GX_SetBankForOBJ(gVramBankGrants[1]);
     func_02002ab8(gVramBankGrants[2]);
@@ -147,8 +148,8 @@ void func_ov001_0218c4c0(void) {
     GX_SetBankForTexExtPltt(gVramBankGrants[6]);
     func_02003124(gVramBankGrants[7]);
     func_020031cc(gVramBankGrants[8]);
-    func_0200323c(gVramBankGrants[9]);
-    func_020032bc(gVramBankGrants[10]);
+    GX_SetBankForBGExtPlttSub(gVramBankGrants[9]);
+    GX_SetBankForOBJExtPlttSub(gVramBankGrants[10]);
     func_02003104(gVramBankGrants[12]);
     *(volatile u16 *)0x4000050 = 0;
     *(volatile u16 *)0x4001050 = 0;
@@ -163,18 +164,22 @@ void func_ov001_0218c4c0(void) {
     SetLcdEnabled(1);
 }
 #pragma opt_global_reg_alloc reset
-void func_ov001_0218c5b8(void) {
+/* Clear the display memory: release the background, extended-palette and OAM
+ * VRAM banks, clear the main-engine background character/map VRAM and its
+ * extended palettes, fill both engines' OAM areas with disabled entries and both
+ * palettes with zero, then hand the released banks back to the allocator. */
+void GxClearDisplayMemory(void) {
     M2C_UNK func_02003104(s32);
     M2C_UNK func_020035f8();
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
-    func_02003104(0x1F3);
-    MI_CpuFill32(0, 0x06800000, 0x40000);
-    MI_CpuFill32(0, 0x06880000, 0x24000);
+    func_02003104(VRAM_BANK_A | VRAM_BANK_B | VRAM_BANK_E | VRAM_BANK_F | VRAM_BANK_G | VRAM_BANK_H | VRAM_BANK_I);
+    MI_CpuFill32(0, GX_MAIN_BG_VRAM_BASE, GX_MAIN_BG_VRAM_SIZE);
+    MI_CpuFill32(0, GX_MAIN_BG_EXTPLTT_VRAM_BASE, GX_MAIN_BG_EXTPLTT_VRAM_SIZE);
     func_020035f8();
-    MI_CpuFill32(0x200, 0x07000000, 0x400);
-    MI_CpuFill32(0, 0x05000000, 0x400);
-    MI_CpuFill32(0x200, 0x07000400, 0x400);
-    MI_CpuFill32(0, 0x05000400, 0x400);
+    MI_CpuFill32(GX_OAM_DISABLED, GX_MAIN_OBJ_OAM_BASE, GX_OAM_SIZE);
+    MI_CpuFill32(0, GX_MAIN_PALETTE_BASE, GX_PALETTE_SIZE);
+    MI_CpuFill32(GX_OAM_DISABLED, GX_SUB_OBJ_OAM_BASE, GX_OAM_SIZE);
+    MI_CpuFill32(0, GX_SUB_PALETTE_BASE, GX_PALETTE_SIZE);
 }
 
 void func_ov001_0218c63c(void) {
@@ -305,11 +310,11 @@ void func_ov001_0218c94c(void) {
 
 M2C_UNK func_ov001_0218c958(s32 n,void *p) {
 void Ov001_FreeAlloc(void *);
-M2C_UNK func_ov001_0218bf4c();
+M2C_UNK Ov001_ListRemove();
 M2C_UNK Ov001_QueuePush(s32,u32);
 extern s32 gOv001Tasks;
 if(M2C_FIELD(p,u8 *,17)) Ov001_FreeAlloc((u8 *)p+12);
-func_ov001_0218bf4c(p);
+Ov001_ListRemove(p);
 Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
 }
 

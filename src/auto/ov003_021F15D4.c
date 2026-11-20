@@ -1,5 +1,6 @@
 /* 32 functions from 0x021F15D4 to 0x021F25CC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_mapselect.h"
 static inline void loadBank3(s32 k,u32 m) {
 extern s32 gCur3DSpriteEngine;
 void func_020a9a30(s32,s32,s32,void *);
@@ -9,9 +10,9 @@ func_020a9a30(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
 s32 GetSceneSlideDirection(void) {
     s32 func_ov003_021f1584();
     s32 func_ov003_021f15ac();
-    u8 func_ov003_021f1bfc(void);
+    u8 GetMapConfirmState(void);
     s32 temp_r0;
-    temp_r0 = func_ov003_021f1bfc();
+    temp_r0 = GetMapConfirmState();
     switch (temp_r0) {
     case 1: return func_ov003_021f1584();
     case 2: return func_ov003_021f15ac();
@@ -22,9 +23,9 @@ s32 GetSceneSlideDirection(void) {
 s32 GetSceneSlideOffset(void) {
     s32 func_ov003_021f1594();
     s32 func_ov003_021f15bc();
-    u8 func_ov003_021f1bfc(void);
+    u8 GetMapConfirmState(void);
     s32 temp_r0;
-    temp_r0 = func_ov003_021f1bfc();
+    temp_r0 = GetMapConfirmState();
     switch (temp_r0) {
     case 1: return func_ov003_021f1594();
     case 2: return func_ov003_021f15bc();
@@ -257,7 +258,7 @@ void func_ov003_021f1be8(void) {
     gOv003SceneState = 2;
 }
 
-u8 func_ov003_021f1bfc(void) {
+u8 GetMapConfirmState(void) {
     extern u8 gOv003SceneState;
     return gOv003SceneState;
 }
@@ -379,23 +380,25 @@ void ApplySceneLayerVisibility(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov003_021f242c(u16 *arg0) {
-    u8 i, j;
-    u16 a, b;
-    i = 0;
+/* Sort a 5-entry map-id list in place, leaving MAP_PICK_EMPTY (0xFFFF) slots
+ * at the end. */
+void SortMapIdList(u16 *mapIds) {
+    u8 pass, slot;
+    u16 left, right;
+    pass = 0;
     do {
-        j = 0;
+        slot = 0;
         do {
-            b = arg0[j + 1];
-            a = arg0[j];
-            if ((a > b && a != 0xFFFF && b != 0xFFFF) || (a == 0xFFFF && b != 0xFFFF)) {
-                arg0[j] = b;
-                arg0[j + 1] = a;
+            right = mapIds[slot + 1];
+            left = mapIds[slot];
+            if ((left > right && left != MAP_PICK_EMPTY && right != MAP_PICK_EMPTY) || (left == MAP_PICK_EMPTY && right != MAP_PICK_EMPTY)) {
+                mapIds[slot] = right;
+                mapIds[slot + 1] = left;
             }
-            j++;
-        } while ((u32)j < 4);
-        i++;
-    } while ((u32)i < 4);
+            slot++;
+        } while ((u32)slot < MAP_PICK_SLOTS - 1);
+        pass++;
+    } while ((u32)pass < MAP_PICK_SLOTS - 1);
 }
 
 void func_ov003_021f24ac(void *arg0, void *arg1) {
@@ -404,8 +407,8 @@ void func_ov003_021f24ac(void *arg0, void *arg1) {
     extern M2C_UNK gDownloadedMapIds;
     CopyU16(arg0, &data_ov003_022111de, 10);
     CopyU16(arg1, &gDownloadedMapIds, 10);
-    func_ov003_021f242c((u16 *)&data_ov003_022111de);
-    func_ov003_021f242c((u16 *)&gDownloadedMapIds);
+    SortMapIdList((u16 *)&data_ov003_022111de);
+    SortMapIdList((u16 *)&gDownloadedMapIds);
 }
 
 void func_ov003_021f24ec(void *arg0, void *arg1) {
@@ -444,6 +447,6 @@ extern M2C_UNK gDownloadedMapIds;
 u16 *base=(u16 *)&gDownloadedMapIds;
 u8 i=0;
 do { if(arg0==base[i]) base[i]=0xffff; i++; } while(i<5);
-func_ov003_021f242c((u16 *)&gDownloadedMapIds);
+SortMapIdList((u16 *)&gDownloadedMapIds);
 }
 

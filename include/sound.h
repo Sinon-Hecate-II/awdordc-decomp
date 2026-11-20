@@ -40,8 +40,9 @@
 #define SOUND_HANDLE_SLOT_INDEX    0x148 /* s32 the player slot's index, handed to a streamed sound's segment callback */
 #define SOUND_HANDLE_VOLUME        0x158 /* s32 volume, 0..0x7F */
 #define SOUND_HANDLE_SAMPLES_LEFT  0x160 /* s32 samples left in the current segment */
-#define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): restart the voices for a sound */
-#define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): stop the voices */
+#define SOUND_HANDLE_START_CB      0x164 /* s32 (*)(void *player, s32 soundId): open the sound's data source */
+#define SOUND_HANDLE_RELEASE_CB    0x168 /* void (*)(void *player): release the current data source */
+#define SOUND_HANDLE_READ_CB       0x16C /* void (*)(void *player, void *dst, s32 bytes, s32 offset): read sample data */
 #define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
 #define SOUND_HANDLE_FILE_REQUEST  0x5C  /* the slot's file request, used to load its sample data */
 
@@ -112,6 +113,13 @@ typedef struct SoundArchiveEntry {
     u8  priority; /* +0x08 priority: a voice of higher priority replaces a lower one */
     u8  channel;  /* +0x09 player channel/slot the entry is played on */
 } SoundArchiveEntry; /* 12 bytes */
+
+/* One record of the sound archive's sequence table (GetSoundSequenceRecord):
+ * the archive file holding the sequence and the bank it is played with. */
+typedef struct SoundSequenceRecord {
+    s32 fileId; /* +0x00 file id of the sequence in the archive */
+    u16 bankId; /* +0x04 sound bank the sequence is played with */
+} SoundSequenceRecord;
 
 /* A sound group of the sound archive: a count and that many items, each saying
  * which kind of sound resource it names and the load flags its loader gets. */
@@ -185,6 +193,8 @@ typedef struct PackedBankEntry {
  * also linked into its channel's list at SOUND_CHANNEL_VOICE_LINKS. */
 #define SOUND_VOICE_SIZE     0x44
 #define SOUND_VOICE_PLAYER   0x00 /* void * player object that owns the voice (the player keeps the voice back at SOUND_PLAYER_VOICE) */
+#define SOUND_VOICE_CHANNEL_BASE 0x04 /* void * the gSoundChannels entry whose voice list holds the voice */
+#define SOUND_VOICE_HEAP     0x08 /* void * channel heap block the voice plays from (its SOUND_CHANNEL_HEAP_OWNER points back) */
 #define SOUND_VOICE_LINKS    0x14 /* the {prev, next} pair of the voice lists */
 #define SOUND_VOICE_STATE    0x2C /* u8 0 = free, 1 = keyed on, 2 = playing */
 #define SOUND_VOICE_CHANNEL  0x3C /* u8 hardware channel the voice plays on */

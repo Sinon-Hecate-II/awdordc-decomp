@@ -154,13 +154,17 @@ void HandleLinkTransferTaskEvent(void *event) {
     }
 }
 
-s32 func_ov009_02223640(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Queues one link packet for the players in `playerMask` on a WFC channel
+ * (4 or 12), flushing the shared extra transfer buffer first.  Returns 1 when
+ * the send was queued; otherwise returns 0, signalling a link error unless the
+ * channel was simply not ready (result 7). */
+s32 SendLinkChannelData(s32 channel, s32 playerMask, void *packet, s32 length, M2C_UNK completion) {
     M2C_UNK DC_FlushRange(M2C_UNK *, s32);
     s32 WFC_SendChannelData(M2C_UNK *,s32,s32,s32,s32,s32,s32);
     extern M2C_UNK gLinkState, gLinkTransferExtra, func_ov009_022236c0;
     s32 result;
-    DC_FlushRange(&gLinkTransferExtra, M2C_FIELD(&gLinkState,s32 *,0x14));
-    result = WFC_SendChannelData(&func_ov009_022236c0,arg4,arg2,arg3,arg1,arg0,2);
+    DC_FlushRange(&gLinkTransferExtra, M2C_FIELD(&gLinkState,s32 *,LINK_STATE_EXTRA_LEN));
+    result = WFC_SendChannelData(&func_ov009_022236c0,completion,packet,length,playerMask,channel,2);
     if (result != 2) {
         if (result != 7) SignalLinkError();
         return 0;

@@ -40,7 +40,7 @@ void func_020bbc74(void *arg0) {
     M2C_UNK BuildMovePath(M2C_UNK *, s32, s32, M2C_UNK *);
     M2C_UNK func_020a8050(M2C_UNK *, s16 *, s16 *, M2C_UNK *);
     M2C_UNK func_020a83e4(M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov000_0216939c(M2C_UNK *);
+    M2C_UNK CreateUnitMoveForUnit(M2C_UNK *);
     M2C_UNK BeginUnitMove(M2C_UNK *);
     s16 arr1[2];
     s16 arr0[2];
@@ -49,7 +49,7 @@ void func_020bbc74(void *arg0) {
 
     temp_r4 = M2C_FIELD(arg0, M2C_UNK **, 0x54);
     BuildMovePath(temp_r4, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), buf);
-    func_ov000_0216939c(temp_r4);
+    CreateUnitMoveForUnit(temp_r4);
     BeginUnitMove(buf);
     arr1[0] = M2C_FIELD(temp_r4, u8 *, 1);
     arr1[1] = M2C_FIELD(temp_r4, u8 *, 2);

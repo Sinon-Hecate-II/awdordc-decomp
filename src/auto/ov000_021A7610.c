@@ -2,6 +2,8 @@
 #include "common.h"
 #include "ov000_ai.h"
 #include "battle_map.h"
+#include "ov000_unit_entry.h"
+#include "ov000_unit_entry.h"
 #pragma optimization_level 0
 static inline s32 AiWeightedCount(s32 value,s32 kind) { extern u16 data_ov000_021e14aa[]; return data_ov000_021e14aa[kind]*value; }
 #pragma optimization_level reset
@@ -95,26 +97,30 @@ data_ov000_021e1474[kind] += value >> 25;
     func_ov000_021a7610();
 }
 
-s32 func_ov000_021a7e98(s32 arg0) {
+/* Whether the AI should build a Carrier (unit kind 21): the player must be able
+ * to afford one while a funds shortfall is being reserved, the kind must be
+ * buildable this turn and the player must not already have one.  When it should,
+ * the nearest target candidate is returned, otherwise -1. */
+s32 FindCarrierTargetCandidate(s32 reserveFunds) {
     s32 GetUnitBuildCost(u16, M2C_UNK);
     s32 FindNearestTargetCandidate();
     s32 func_ov000_021a72c0(M2C_UNK);
     s32 CountPlayerUnitsOfKindTotal(M2C_UNK);
     extern void **gCurrentMap;
-    register void *temp_r4;
-    u16 temp_r5;
+    register void *map;
+    u16 player;
 
-    if (arg0) {
-        temp_r4 = *gCurrentMap;
-        temp_r5 = M2C_FIELD(temp_r4, u16 *, 0x52A4);
-        if ((s32) (GetUnitBuildCost(temp_r5, 0x15) * 0xA) > M2C_FIELD(((temp_r5 * 0x8C) + temp_r4), s32 *, 0x67A4)) {
+    if (reserveFunds) {
+        map = *gCurrentMap;
+        player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+        if ((s32) (GetUnitBuildCost(player, UNIT_KIND_CARRIER) * 0xA) > M2C_FIELD(((player * MAP_PLAYER_STRIDE) + map), s32 *, PLAYER_FUNDS_OFF)) {
             return -1;
         }
     }
-    if (func_ov000_021a72c0(0x15) == 0) {
+    if (func_ov000_021a72c0(UNIT_KIND_CARRIER) == 0) {
         return -1;
     }
-    if (CountPlayerUnitsOfKindTotal(0x15) != 0) {
+    if (CountPlayerUnitsOfKindTotal(UNIT_KIND_CARRIER) != 0) {
         return -1;
     }
     return FindNearestTargetCandidate();
@@ -173,7 +179,7 @@ map=*gCurrentMap;state=gAiState;
 goto reject;
 }
 if(CountPlayerUnitsOfKindNotInAiState(best,5)){
-other=func_ov000_021a7e98((u8)(*(s32 *)(gAiState+20)!=0));
+other=FindCarrierTargetCandidate((u8)(*(s32 *)(gAiState+20)!=0));
 if(other!=-1){
 if(!*(s32 *)(gAiState+20)){
 map=*gCurrentMap;player=*(u16 *)(map+0x52a4);

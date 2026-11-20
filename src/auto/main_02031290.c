@@ -504,7 +504,7 @@ s32 GetNasRecordCheckWord(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 8);
 }
 
-u64 func_02031db8(void *arg0) {
+u64 GetPlayerCodeValue(void *arg0) {
     u32 hi;
     u32 lo;
 
@@ -513,7 +513,7 @@ u64 func_02031db8(void *arg0) {
     return ((u64) hi << 32) | lo;
 }
 
-s32 func_02031dcc(void *arg0) {
+s32 GetProfileRecordId(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4);
 }
 
@@ -608,10 +608,10 @@ u64 func_02031f14(s32 arg0, s32 arg1) {
 }
 
 void func_02031f58(void *arg0, u64 arg1) {
-s32 func_02031f74(u64,s32);
-func_02031f74(arg1,M2C_FIELD(arg0,s32 *,0x24));
+s32 IsPlayerCodeValid(u64,s32);
+IsPlayerCodeValid(arg1,M2C_FIELD(arg0,s32 *,0x24));
 }
-s32 func_02031f74(u64 arg0,s32 arg2) {
+s32 IsPlayerCodeValid(u64 arg0,s32 arg2) {
 void func_02076698(u8 *,s32);
 s32 func_02076810(u8 *,s32 *,s32);
 u8 buf[256]; s32 in[2]; s32 h;
@@ -623,8 +623,8 @@ return (s64)h == (arg0>>32);
 }
 
 #pragma opt_propagation off
-s32 func_02031fe4(u64 arg0,s32 arg2) {
-s32 ok=func_02031f74(arg0,arg2);
+s32 GetPlayerCodeId(u64 arg0,s32 arg2) {
+s32 ok=IsPlayerCodeValid(arg0,arg2);
 s32 mask=0;
 if(ok) {mask--; mask=(u32)arg0 & mask;}
 return mask;

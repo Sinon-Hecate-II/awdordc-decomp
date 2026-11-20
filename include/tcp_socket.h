@@ -11,6 +11,9 @@
 
 /* Network stack state (gNetStack) callbacks. */
 #define NETSTACK_POLL   0x48 /* s32 (*poll)(void): nonzero while the link is up */
+#define NETSTACK_WAIT_INTERVAL 0x24 /* s32 milliseconds to sleep between idle polls */
+#define NETSTACK_SOCKET_RAW_CONNECTION 0xA4 /* void *raw transport connection of the current socket */
+#define NETSTACK_TLS_CLOSE_WAIT 39 /* tick count before abandoning a pending TLS close alert */
 #define NETSTACK_UPDATE 0x18 /* void (*)(void): stack upkeep callback run once per waiting step */
 
 /* gNetStack single-producer/single-consumer packet ring.  The producer appends

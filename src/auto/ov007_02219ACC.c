@@ -1,5 +1,7 @@
 /* 13 functions from 0x02219ACC to 0x0221A59C (ov007), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
+#include "ov007_map_editor.h"
 
 void func_ov007_02219acc(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
@@ -48,22 +50,27 @@ void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {
     M2C_FIELD(CreateSpriteObject(&data_ov007_0221fe48, arg0), s32 *, 0x5C) = arg1;
 }
 
-void func_ov007_02219bd8(void) {
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
-void *func_ov000_0216ce84(s32);
-void CopyToObjPaletteShadow(void *,s32,s32);
-s32 MapEditor_PlayerHasTeam(s32);
-void func_020ae528(void *);
-s32 old=gCur3DSpriteEngine;
-s32 i,offset;
-gCur3DSpriteEngine=g3DSpriteEngineSub;
-for(i=0;i<4;i++){
-offset=(i+0x15)<<5;
-CopyToObjPaletteShadow(func_ov000_0216ce84(i+1),offset,0x20);
-if(!MapEditor_PlayerHasTeam(i+1))
-func_020ae528(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30)+(offset&~1));
-}
-gCur3DSpriteEngine=old;
+/* Loads each of the four players' army-colour palettes from the player palette
+ * table into the sub engine's OBJ palette shadow, and dims the row of a player
+ * that has no team so its units read as inactive. */
+void MapEditor_LoadPlayerPalettes(void) {
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
+    void *func_ov000_0216ce84(s32);
+    void CopyToObjPaletteShadow(void *, s32, s32);
+    s32 MapEditor_PlayerHasTeam(s32);
+    void DimPalette(void *);
+    s32 savedEngine = gCur3DSpriteEngine;
+    s32 i, paletteOffset;
+
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    for (i = 0; i < 4; i++) {
+        paletteOffset = (i + MAP_EDITOR_PLAYER_PALETTE_ROW) << 5;
+        CopyToObjPaletteShadow(func_ov000_0216ce84(i + 1), paletteOffset, DS3D_PALETTE_BYTES);
+        if (!MapEditor_PlayerHasTeam(i + 1)) {
+            DimPalette((u8 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamBuffer + (paletteOffset & ~1));
+        }
+    }
+    gCur3DSpriteEngine = savedEngine;
 }
 
 /* Draw one cell of the map editor's unit catalogue: clear the two tiles under the
@@ -132,7 +139,7 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
     void *GetTerrainPalette(s32, s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
-    void func_020ae528(void *);
+    void DimPalette(void *);
     u8 GetMapEditorMode(void);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineSub;
@@ -154,7 +161,7 @@ void MapEditor_LoadTerrainBrushGraphics(void) {
     QueueMemoryCopy(tileBase, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2F80, 0x200, 0);
     CopyToObjPaletteShadow(palette, 0x340, 0x20);
     if (GetMapEditorMode() != 0) {
-        func_020ae528((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x340));
+        DimPalette((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x340));
     }
     gCur3DSpriteEngine = savedEngine;
 }
@@ -168,7 +175,7 @@ void func_ov007_0221a018(void) {
     void *GetArmyPalette(s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
-    void func_020ae528(void *);
+    void DimPalette(void *);
     u8 GetMapEditorMode(void);
     extern void *gCurrentMap;
     extern s32 gCur3DSpriteEngine;
@@ -193,7 +200,7 @@ void func_ov007_0221a018(void) {
     QueueMemoryCopy(baseAddr, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2E80, 0x100, 0);
     CopyToObjPaletteShadow(dstPtr, 0x320, 0x20);
     if (GetMapEditorMode() != 1) {
-        func_020ae528((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320));
+        DimPalette((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320));
     }
     gCur3DSpriteEngine = savedBank;
 }
@@ -238,7 +245,7 @@ void func_ov007_0221a160(void) {
     M2C_UNK func_ov000_0216ce10(s32);
     void MI_CpuCopy32(M2C_UNK, M2C_UNK, s32);
     void SetFrameRectPattern(s32, s32);
-    void func_020ae528(void *);
+    void DimPalette(void *);
     void MapEditor_FitPreviewToMap(void);
 
     extern const MapEditorPreviewPreset data_ov007_0221f508;
@@ -350,7 +357,7 @@ void func_ov007_0221a160(void) {
     LoadFileToSpriteBuffer(&data_ov007_02220120, 0x360, 0x20);
     LoadFileToSpriteBuffer(&data_ov007_02220130, 0x380, 0x20);
 
-    func_020ae528((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x380));
+    DimPalette((void *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x380));
 
     SetFileDirectory(&data_ov007_02220140);
 

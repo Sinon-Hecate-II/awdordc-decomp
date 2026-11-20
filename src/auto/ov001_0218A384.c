@@ -76,7 +76,7 @@ void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
 extern M2C_UNK data_ov001_02193e34;
 void CpuFill(u32,void *,s32);
 void CopyU16(const void *,void *,u32);
-void func_02007e70(const void *,void *,s32);
+void MIi_CpuCopy32(const void *,void *,s32);
 u8 *base=(u8 *)((M2C_UNK *)&data_ov001_02193e34)[arg0];
 s32 index=arg1<<3;
 u16 count=*(u16 *)(base+index);
@@ -86,7 +86,7 @@ u8 *dst=(u8 *)arg2;
 u8 sp[8]; s32 i;
 CpuFill(0,sp,8);
 for(i=0;i<(s32)count;i++){
-CopyU16(src,sp,6);func_02007e70(sp,dst,8);src+=6;dst+=8;
+CopyU16(src,sp,6);MIi_CpuCopy32(sp,dst,8);src+=6;dst+=8;
 }
 }
 
@@ -316,15 +316,16 @@ void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
     Ov001_PostTaskMessage(1, arg0);
 }
 
-void func_ov001_0218aab4(void) {
+#pragma opt_strength_reduction off
+void Ov001_CreateTextContext(void) {
     void *Ov001_Alloc(s32, M2C_UNK);
     void *Ov001_QueueCreateFromBuffer(s32, s32, s32);
     s32 Ov001_GetLanguage(void);
     s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
     void func_ov001_02169130(void *, M2C_UNK);
     extern M2C_UNK gOv001TextContext;
-    extern M2C_UNK data_ov001_021917c0;
-    extern M2C_UNK data_ov001_021917c8;
+    extern M2C_UNK gOv001KoreanFontFilePaths;
+    extern M2C_UNK gOv001DefaultFontFilePaths;
     M2C_UNK p;
 
     p = (M2C_UNK)Ov001_Alloc(0x680, 4);
@@ -333,29 +334,27 @@ void func_ov001_0218aab4(void) {
 
     if (Ov001_GetLanguage() == 6) {
         s32 i;
-        s32 acc = 0;
-        M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c0);
-        for (i = 0; i < 2; i++) {
+        s32 acc;
+        for (i = 0, acc = 0; i < 2; i++) {
             M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
-                (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
+                (M2C_UNK)Ov001_LoadFile((&gOv001KoreanFontFilePaths)[i], 0, 4);
             func_ov001_02169130((void *)gOv001TextContext + acc,
                 M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
             acc += 8;
         }
     } else {
-        s32 acc = 0;
+        s32 acc;
         s32 i;
-        M2C_UNK *arr = (M2C_UNK *)(&data_ov001_021917c8);
-        for (i = 0; i < 2; i++) {
+        for (i = 0, acc = 0; i < 2; i++) {
             M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
-                (M2C_UNK)Ov001_LoadFile(arr[i], 0, 4);
+                (M2C_UNK)Ov001_LoadFile((&gOv001DefaultFontFilePaths)[i], 0, 4);
             func_ov001_02169130((void *)gOv001TextContext + acc,
                 M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
             acc += 8;
         }
     }
 }
-
+#pragma opt_strength_reduction reset
 void func_ov001_0218abb8(void) {
  void Ov001_FreeFile(s32);
  void func_ov001_0218a6d8(s32,...);

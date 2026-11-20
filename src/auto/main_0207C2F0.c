@@ -156,7 +156,10 @@ void QueueVramCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     SetSpriteZ(var_r0, 0xFF02);
 }
 
-void UploadBGExtPaletteTask(void *arg0) {
+/* Run a queued BG extended-palette upload: copy the task's palette to the BG
+ * extended-palette area of the main engine, or of the sub engine when that is
+ * the screen being drawn, then free the source block if the task owns it. */
+void UploadBGExtPaletteTask(void *task) {
     M2C_UNK GX_BeginLoadBGExtPltt(void);
     M2C_UNK GX_LoadBGExtPltt(s32, s32, s32);
     M2C_UNK GX_EndLoadBGExtPltt(void);
@@ -167,15 +170,15 @@ void UploadBGExtPaletteTask(void *arg0) {
     extern s32 g3DSpriteEngineMain;
     if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
         GX_BeginLoadBGExtPltt();
-        GX_LoadBGExtPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_LoadBGExtPltt(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
         GX_EndLoadBGExtPltt();
     } else {
         GX_BeginLoadBGExtPlttSub();
-        GX_LoadBGExtPlttSub(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_LoadBGExtPlttSub(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
         GX_EndLoadBGExtPlttSub();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) return;
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
 void QueueBGExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
@@ -192,7 +195,10 @@ void QueueBGExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     SetSpriteZ(temp_r0, 0xFF02);
 }
 
-void UploadOBJExtPaletteTask(void *arg0) {
+/* Run a queued OBJ extended-palette upload: copy the task's palette to the OBJ
+ * extended-palette area of the main engine, or of the sub engine when that is
+ * the screen being drawn, then free the source block if the task owns it. */
+void UploadOBJExtPaletteTask(void *task) {
     M2C_UNK GX_BeginLoadOBJExtPltt(void);
     M2C_UNK GX_LoadOBJExtPltt(s32, s32, s32);
     M2C_UNK GX_EndLoadOBJExtPltt(void);
@@ -203,15 +209,15 @@ void UploadOBJExtPaletteTask(void *arg0) {
     extern s32 g3DSpriteEngineMain;
     if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain)) {
         GX_BeginLoadOBJExtPltt();
-        GX_LoadOBJExtPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_LoadOBJExtPltt(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
         GX_EndLoadOBJExtPltt();
     } else {
         GX_BeginLoadOBJExtPlttSub();
-        GX_LoadOBJExtPlttSub(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+        GX_LoadOBJExtPlttSub(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE), M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET), M2C_FIELD(task, s32 *, DS3D_TASK_SIZE));
         GX_EndLoadOBJExtPlttSub();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) return;
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
 void QueueOBJExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {

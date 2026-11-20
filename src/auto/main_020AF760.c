@@ -30,7 +30,7 @@ void func_020af7ac(void) {
         *q++ = (i++, zero);
     } while (i < 2);
 }
-void func_020af7dc(void) {
+void TickSlotSoundDelays(void) {
     extern u8 gSlotVariantSoundDelay[];
     extern u8 gSlotVolumeSoundDelay[];
     s32 var_r1;

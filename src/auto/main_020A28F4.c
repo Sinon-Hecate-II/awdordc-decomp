@@ -23,7 +23,7 @@ s32 func_020a28f4(s32 arg0, s32 arg1, s32 arg2) {
     return M2C_FIELD(&gCoZoneDefensePct, s16 *, index);
 }
 
-s32 func_020a296c(s32 arg0, s32 arg1, s32 arg2) {
+s32 GetCoZoneMoveBonus(s32 arg0, s32 arg1, s32 arg2) {
     extern s32 *gCurrentMap;
     extern M2C_UNK gCoZoneKindEnabled;
     extern s8 gCoZoneMoveBonus;
@@ -81,24 +81,27 @@ s32 GetCoPowerMusicTrack(s32 player) {
     }
 }
 
-s32 func_020a2b00(u8 a) {
+/* Battle music track for `player`: the CO-power theme while the player's army
+ * variant is set, otherwise the track the map's player record overrides, otherwise
+ * the army's default track. */
+s32 GetPlayerMusicTrack(u8 player) {
     extern s32 *gCurrentMap;
     extern s32 data_02126180;
-    s32 r;
-    if (GetPlayerArmyVariant(a)) {
-        return GetCoPowerMusicTrack(a);
+    s32 track;
+    if (GetPlayerArmyVariant(player)) {
+        return GetCoPowerMusicTrack(player);
     }
-    r = func_020a8ac4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), a);
-    if (r) {
-        return r;
+    track = func_020a8ac4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+    if (track) {
+        return track;
     }
-    return M2C_FIELD(&data_02126180, s32 *, ((u32)(M2C_FIELD(*gCurrentMap + a * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c);
+    return M2C_FIELD(&data_02126180, s32 *, ((u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24) * ARMY_DATA_SIZE);
 }
 
 void func_020a2b84(s32 arg0) {
     M2C_UNK func_0208f7d0();
-    M2C_UNK func_020a2b00(u8);
-    func_020a2b00((u8)(arg0 & 0xFF));
+    M2C_UNK GetPlayerMusicTrack(u8);
+    GetPlayerMusicTrack((u8)(arg0 & 0xFF));
     func_0208f7d0();
 }
 
@@ -118,7 +121,23 @@ u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 GetPlayerArmyVariantIfS
 
 void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
-void func_020a2c68(void *a){extern s32 *gCurrentMap;extern u8 data_021261c4[];s32 p=*gCurrentMap+0x67a4+M2C_FIELD(a,s32 *,0x5c)*0x8c;s32 i=func_020a3460(M2C_FIELD(a,s32 *,0x5c));u32 v=(u32)(M2C_FIELD(p,s32 *,0x6c)<<24)>>24;if(M2C_FIELD(data_021261c4+v*0x9c,s32 *,i*0x28)==0){DeleteSpriteObject(a);}else{M2C_FIELD(a,u16 *,0x70)=1;M2C_FIELD(a,u16 *,0x6c)=0;}}
+/* Start a player's on-map unit view at its first unit: when the player's army
+ * and sprite variant have a handler in the sprite-set table, reset the view's
+ * slot and frame counters; otherwise the view has nothing to draw and its
+ * sprite object is removed. */
+void StartPlayerUnitView(void *view) {
+    extern s32 *gCurrentMap;
+    extern u8 data_021261c4[];
+    s32 playerRecord = *gCurrentMap + MAP_PLAYER_STATES + M2C_FIELD(view, s32 *, 0x5C) * MAP_PLAYER_STRIDE;
+    s32 spriteVariant = func_020a3460(M2C_FIELD(view, s32 *, 0x5C));
+    u32 armyId = (u32)(M2C_FIELD(playerRecord, s32 *, PLAYER_REC_SPRITE) << 24) >> 24;
+    if (M2C_FIELD(data_021261c4 + armyId * 0x9C, s32 *, spriteVariant * 0x28) == 0) {
+        DeleteSpriteObject(view);
+    } else {
+        M2C_FIELD(view, u16 *, 0x70) = 1;
+        M2C_FIELD(view, u16 *, 0x6C) = 0;
+    }
+}
 
 /* Advances a player's on-map unit display by one unit: walks that player's unit
  * slots, checks whether the unit may be shown for this army, positions and
@@ -276,7 +295,7 @@ void func_020a30bc(void) {
 
 }
 
-s32 func_020a30c0(s32 a){
+s32 GetRandomCoQuoteTextId(s32 a){
 extern u8 data_02126194[];
 s32 NextRandomValue(void);
 return ((s32 *)(data_02126194+a*0x9c))[NextRandomValue()%3];
@@ -309,10 +328,23 @@ void SetPlayerSelectedUnit(s32 player, u8 *unit) {
     if (unit) *unit = (*unit & ~MAP_UNIT_OWNER_MASK) | MAP_UNIT_OWNER_MASK;
 }
 
-void func_020a3224(s32 a,s32 b){extern s32 *gCurrentMap;u8 *GetPlayerSelectedUnit(s32);s32 GetUnitOwner(s32);s32 index;
-if(a!=(s32)GetPlayerSelectedUnit(GetUnitOwner(a)))return;
-if(b==0)index=0;else index=(b-(*gCurrentMap+0x59a4))/14;
-M2C_FIELD(*gCurrentMap+GetUnitOwner(a)*0x8c,u8 *,0x6814)=index;
+/* Update the owner's selected-unit ID when the selected unit is merged into another unit or cleared. */
+void ReplacePlayerSelectedUnit(BattleMapUnitHead *selected, BattleMapUnitHead *replacement) {
+    extern s32 *gCurrentMap;
+    u8 *GetPlayerSelectedUnit(s32);
+    s32 GetUnitOwner(void *);
+    s32 replacementId;
+
+    if (selected != (BattleMapUnitHead *)GetPlayerSelectedUnit(GetUnitOwner(selected))) {
+        return;
+    }
+    if (replacement == 0) {
+        replacementId = 0;
+    } else {
+        replacementId = ((s32)replacement - (*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+    }
+    M2C_FIELD(*gCurrentMap + GetUnitOwner(selected) * MAP_PLAYER_STRIDE, u8 *,
+              MAP_PLAYER_STATES + PLAYER_REC_SELECTED_UNIT) = replacementId;
 }
 
 u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;u8 r;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;if(M2C_FIELD(p,u8 *,112))r=1;else r=0;return r;}

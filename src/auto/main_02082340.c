@@ -262,8 +262,8 @@ void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
-    M2C_UNK func_0200323c(M2C_UNK);
-    M2C_UNK func_020032bc(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     func_02082c84();
     GX_SetBankForTex(1);
     GX_SetBankForBG(2);
@@ -272,8 +272,8 @@ void Set3DSpriteVramBanks(void) {
     GX_SetBankForOBJ(0x10);
     GX_SetBankForOBJExtPltt(0x20);
     func_02002ab8(0x40);
-    func_0200323c(0x80);
-    func_020032bc(0x100);
+    GX_SetBankForBGExtPlttSub(0x80);
+    GX_SetBankForOBJExtPlttSub(0x100);
 }
 
 /* Initialise both 3DS-sprite engines: select the main engine as the current one,
@@ -333,7 +333,32 @@ void func_02082d08(void) {
     ((DS3DSpriteEngine *)g3DSpriteEngineSub)->filler_54 = (void *)data_0214c270;
 }
 
-void func_02082eb4(s32 a,s32 b,s32 c,s32 d){extern void **gCur3DSpriteEngine;extern void **g3DSpriteEngineMain; s32 v; DC_FlushRange(a,d); if(gCur3DSpriteEngine==g3DSpriteEngineMain)v=1;else v=0; if(v&255){GX_BeginLoadBGExtPltt();GX_LoadBGExtPltt(a,c+(b<<13),d);GX_EndLoadBGExtPltt();}else{GX_BeginLoadBGExtPlttSub();GX_LoadBGExtPlttSub(a,c+(b<<13),d);GX_EndLoadBGExtPlttSub();}}
+/* Copy `size` bytes of a buffer straight into the current 3D sprite engine's BG
+ * extended palette: the main engine's when it is current, the sub engine's
+ * otherwise, at the given palette slot and byte offset. */
+void UploadBGExtPalette(s32 src, s32 paletteSlot, s32 offset, s32 size) {
+    extern void **gCur3DSpriteEngine;
+    extern void **g3DSpriteEngineMain;
+    void DC_FlushRange(s32, s32);
+    void GX_BeginLoadBGExtPltt(void);
+    void GX_LoadBGExtPltt(s32, s32, s32);
+    void GX_EndLoadBGExtPltt(void);
+    void GX_BeginLoadBGExtPlttSub(void);
+    void GX_LoadBGExtPlttSub(s32, s32, s32);
+    void GX_EndLoadBGExtPlttSub(void);
+    s32 isMainEngine;
+    DC_FlushRange(src, size);
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) isMainEngine = 1; else isMainEngine = 0;
+    if (isMainEngine & 255) {
+        GX_BeginLoadBGExtPltt();
+        GX_LoadBGExtPltt(src, offset + (paletteSlot << 13), size);
+        GX_EndLoadBGExtPltt();
+    } else {
+        GX_BeginLoadBGExtPlttSub();
+        GX_LoadBGExtPlttSub(src, offset + (paletteSlot << 13), size);
+        GX_EndLoadBGExtPlttSub();
+    }
+}
 
 /* Whether map `mapId` can be played in the current session: with no link
  * session the link-only custom map slots are unavailable, and with one the map
@@ -367,7 +392,7 @@ s32 func_02082fc4(u32 x){switch(x){case 0:return 1;case 2:return 3;case 1:return
 
 s32 MapListCategoryToDataCategory(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
 
-u8 func_020830a8(u16 x){ s32 func_020a8958(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(func_020a8958()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
+u8 func_020830a8(u16 x){ s32 MapData_GetCategory(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(MapData_GetCategory()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
 
 #pragma opt_common_subs off
 /* Build the available map categories, or a single list of local custom-map slots. */
@@ -427,12 +452,16 @@ mapId=0;while(mapId<limit){if(IsMapSelectable(mapId,mapCategory,playerCount)){if
 M2C_FIELD(categoryBlock,u8 *,MAP_LIST_COUNT_OFFSET)=count;
 }
 
-s32 IsMapSelectable(s32 a,s32 b,s32 c){
-s32 func_020a8958(void);s32 IsLinkSessionActive(void);s32 func_02086940(s32);s32 GetMapPlayerCount(u16);
-if(b!=func_020a8958())return 0;
-if(!IsMapValidForSession(a))return 0;
-if(c && c!=GetMapPlayerCount((u16)a))return 0;
-if(!IsLinkSessionActive() && b==2){if(!func_02086940(a))return 0;}
+/* Whether map `mapId` can be picked in the current session: it must belong to the
+   requested map-data category, be valid for the session, have the requested number
+   of players (when one is asked for), and outside a link session a category-2 map
+   must also be flagged available in the map list. */
+s32 IsMapSelectable(s32 mapId,s32 dataCategory,s32 playerCount){
+s32 MapData_GetCategory(void);s32 IsLinkSessionActive(void);s32 IsMapListFlagSet(s32);s32 GetMapPlayerCount(u16);
+if(dataCategory!=MapData_GetCategory())return 0;
+if(!IsMapValidForSession(mapId))return 0;
+if(playerCount && playerCount!=GetMapPlayerCount((u16)mapId))return 0;
+if(!IsLinkSessionActive() && dataCategory==2){if(!IsMapListFlagSet(mapId))return 0;}
 return 1;
 }
 

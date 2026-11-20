@@ -98,19 +98,22 @@ if(availableUnits){kind24Empty=CountEmptyUnitsOfKind(24)+1;kind25Empty=CountEmpt
 M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=24;CommitAiAction(targetIndex);return 1;
 }
 
-u8 func_ov000_021a4320(void) {
+/* AI turn-plan step 10: record the AI's infantry and mech total, then try to
+ * build a transport, a kind-24 unit, a kind-25 unit and a kind-13 unit, in that
+ * order.  Returns 1 once one build has been committed, 0 when none was. */
+u8 TryBuildSpecialistUnits(void) {
     s32 TryBuildTransport();
     s32 TryBuildUnitKind13();
     s32 TryBuildUnitKind25();
     s32 TryBuildKind24Unit();
     u8 CountPlayerUnitsOfKind(s32);
     extern void *gAiState;
-    u8 var_r0;
-    u8 temp;
+    u8 built;
+    u8 mechCount;
 
-    M2C_FIELD(gAiState, u8 *, 8) = CountPlayerUnitsOfKind(1);
-    temp = CountPlayerUnitsOfKind(2);
-    M2C_FIELD(gAiState, u8 *, 8) += temp;
+    M2C_FIELD(gAiState, u8 *, AI_STATE_INFANTRY_MECH) = CountPlayerUnitsOfKind(UNIT_KIND_INFANTRY);
+    mechCount = CountPlayerUnitsOfKind(UNIT_KIND_MECH);
+    M2C_FIELD(gAiState, u8 *, AI_STATE_INFANTRY_MECH) += mechCount;
     if (TryBuildTransport() == 1) {
         return 1U;
     }
@@ -121,11 +124,11 @@ u8 func_ov000_021a4320(void) {
         return 1U;
     }
     if (TryBuildUnitKind13() == 1) {
-        var_r0 = 1;
+        built = 1;
     } else {
-        var_r0 = 0;
+        built = 0;
     }
-    return var_r0;
+    return built;
 }
 
 u8 HasAiBuildFlag(s32 arg0) {

@@ -281,7 +281,7 @@ MD5_Final(session+TLS_MD5_CTX,out);
 #pragma opt_strength_reduction off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
 s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
-u32 func_02022258(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
+u32 ParseAsn1Time(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
 u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
 if(len<0 || len>2000)return 1;
@@ -334,7 +334,7 @@ if(M2C_FIELD(ctx,u8*,0x5ae)==5 && len<=79){MI_CpuCopy8(p,(u8*)ctx+0x7b0,len);M2C
 M2C_FIELD(ctx,u8*,0x5ae)=0;p+=len;break;
 case 23:case 24:
 if(mode!=2){
-date=func_02022258(p);
+date=ParseAsn1Time(p);
 if(index==0){if(M2C_FIELD(ctx,u32*,0x80c)>=date)M2C_FIELD(ctx,u8*,0x5af)=1;}
 else if(M2C_FIELD(ctx,u32*,0x80c)>date)M2C_FIELD(ctx,u8*,0x5af)=0;
 }

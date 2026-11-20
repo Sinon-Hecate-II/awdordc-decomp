@@ -612,7 +612,7 @@ s32 GetNetworkPlayerRecord(M2C_UNK arg0) {
     }
 }
 
-void func_02084e64(void) {
+void GetLocalNetworkPlayerRecord(void) {
     M2C_UNK GetNetworkPlayerRecord(M2C_UNK);
     GetNetworkPlayerRecord(0);
 }
@@ -704,7 +704,7 @@ s32 func_02084fc0(M2C_UNK arg0) {
 void func_02085000(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02085c4c();
     M2C_UNK func_ov009_0222617c(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov010_0222ba10(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateOnlineNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     func_02085c4c();
@@ -714,14 +714,14 @@ void func_02085000(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
         func_ov009_0222617c(arg0, arg1, arg2);
         return;
     case 2:
-        func_ov010_0222ba10(arg0, arg1, arg2);
+        CreateOnlineNameLabel(arg0, arg1, arg2);
         return;
     }
 }
 
 void func_02085054(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_ov009_022261e4(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov010_0222ba94(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK CreateOnlineMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -730,7 +730,7 @@ void func_02085054(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
         func_ov009_022261e4(arg0, arg1, arg2);
         return;
     case 2:
-        func_ov010_0222ba94(arg0, arg1, arg2);
+        CreateOnlineMatchNameLabel(arg0, arg1, arg2);
         return;
     }
 }

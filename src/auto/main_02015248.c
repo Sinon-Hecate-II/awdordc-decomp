@@ -1,36 +1,44 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct RomHeader_020152c8 { u8 unk_0[0x80]; u32 offset; } RomHeader_020152c8;
+#define MB_PROGRAM_ADDR 0x027ffe00      /* the ROM program area the multiboot library reads from */
+#define MB_PROGRAM_HEADER_SIZE 0x60     /* program header at the start of a multiboot program image */
+#define MB_MIN_PROGRAM_SIZE 0x10000     /* smallest program image the loader accepts */
 static inline u32 FilePosition_020152c8(void *file) { return M2C_FIELD(file,u32 *,0x2c)-M2C_FIELD(file,u32 *,0x24); }
 
 
 /* Select units by state into priority groups, then dispatch the matching network action. */
 
-u32 Mb_GetProgramSize(void *arg0) {
+/* Size in bytes of the download-play program image: read the 0x60-byte
+ * program header from the request's current file position (or from the ROM
+ * program area when the caller passes no request), seek back, and add the two
+ * image block sizes that follow the header to the fixed header content.  The
+ * result is never below 64 KiB. */
+u32 Mb_GetProgramSize(void *file) {
  s32 FileRead(void *,s32,s32);
  void FileSeek(void *,s32,s32);
- void *p;
- u32 result;
- u32 sp0[24];
- s32 pos;
- p = NULL;
- result = 0;
- if (arg0 != NULL) {
-     pos = M2C_FIELD(arg0, s32 *, 0x2c) - M2C_FIELD(arg0, s32 *, 0x24);
-     if ((u32)FileRead(arg0, (s32)sp0, 0x60) >= 0x60U) {
-         p = sp0;
+ void *header;
+ u32 size;
+ u32 headerBuffer[24];
+ s32 origin;
+ header = NULL;
+ size = 0;
+ if (file != NULL) {
+     origin = M2C_FIELD(file, s32 *, 0x2c) - M2C_FIELD(file, s32 *, 0x24);
+     if ((u32)FileRead(file, (s32)headerBuffer, MB_PROGRAM_HEADER_SIZE) >= (u32)MB_PROGRAM_HEADER_SIZE) {
+         header = headerBuffer;
      }
-     FileSeek(arg0, pos, 0);
+     FileSeek(file, origin, 0);
  } else {
-     p = (void *)0x027ffe00;
+     header = (void *)MB_PROGRAM_ADDR;
  }
- if (p != NULL) {
-     result = M2C_FIELD(p, s32 *, 0x2c) + 0x268 + M2C_FIELD(p, s32 *, 0x3c);
-     if (result < 0x10000U) {
-         result = 0x10000;
+ if (header != NULL) {
+     size = M2C_FIELD(header, s32 *, 0x2c) + 0x268 + M2C_FIELD(header, s32 *, 0x3c);
+     if (size < (u32)MB_MIN_PROGRAM_SIZE) {
+         size = MB_MIN_PROGRAM_SIZE;
      }
  }
- return result;
+ return size;
 }
 
 void AutoloadCallback(void);
@@ -150,9 +158,9 @@ s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
     M2C_UNK func_02015f94(void *, s32, void *);
     M2C_UNK func_020161bc(void *);
     s32 func_02018418();
-    M2C_UNK func_0201869c(void *, M2C_UNK);
+    M2C_UNK Mb_StartWorkerTask(void *, M2C_UNK);
     s32 Mb_IsTaskCreated();
-    M2C_UNK func_02018738(void *);
+    M2C_UNK MbWorker_ClearJob(void *);
     extern u8 data_02131184;
     extern void *gMbWork;
     u8 var_r4;
@@ -210,8 +218,8 @@ block_10:
         M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D58) = (s32) (arg1 + 0x258);
         data_02131184 = sequence+1;
         if ((M2C_FIELD(M2C_FIELD((gMbWork + temp_r6), void **, 0x1D54), s32 *, 0x6C) != 0) && (Mb_IsTaskCreated() == 0)) {
-            func_02018738(gMbWork + 0x7CE0);
-            func_0201869c(gMbWork + 0x74E0, 0x800);
+            MbWorker_ClearJob(gMbWork + 0x7CE0);
+            Mb_StartWorkerTask(gMbWork + 0x74E0, 0x800);
         }
         M2C_FIELD((gMbWork + temp_r6), s8 *, 0x1D52) = 1;
         M2C_FIELD(gMbWork, u8 *, 0x1524) = (u8) (M2C_FIELD(gMbWork, u8 *, 0x1524) + 1);

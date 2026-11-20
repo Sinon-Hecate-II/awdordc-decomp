@@ -6,6 +6,15 @@
 #define GT2_CONNECTION_PORT        0x04 /* u16 remote port */
 #define GT2_CONNECTION_SOCKET      0x08 /* void *owning socket */
 #define GT2_CONNECTION_SEND_BUFFER 0x50 /* u8 *ring buffer keeping sent command bytes until the peer acknowledges them */
+#define GT2_CONNECTION_PENDING_QUEUE 0x5C /* Vector *of received commands buffered until their sequence is due, sorted by sequence */
+/* One entry of GT2_CONNECTION_PENDING_QUEUE: where the command's bytes sit in the
+ * receive buffer, its command id and its sequence number. */
+typedef struct Gt2PendingCommand {
+    s32 offset;   /* +0x00 offset in GT2_CONNECTION_RECV_BUFFER */
+    s32 size;     /* +0x04 byte length */
+    s32 kind;     /* +0x08 command id */
+    u16 sequence; /* +0x0C sequence number */
+} Gt2PendingCommand;
 #define GT2_CONNECTION_ACK_QUEUE   0x60 /* Vector *of sent commands awaiting the peer's acknowledgement, sorted by sequence */
 #define GT2_CONNECTION_STATE       0x0C /* s32 handshake/connection state */
 #define GT2_CONNECTION_INITIATOR   0x10 /* s32 nonzero for a connection this side opened (the client), 0 for one the peer opened and the server accepted */
@@ -18,7 +27,8 @@
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds, set when a handshake command was sent */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */
-#define GT2_CONNECTION_MESSAGE_CALLBACKS 0x98 /* Vector of per-message callbacks (func_0205a424) */
+#define GT2_CONNECTION_SEND_FILTERS 0x98 /* Vector of send filters (gti2SendFilterCallback) */
+#define GT2_CONNECTION_MESSAGE_CALLBACKS GT2_CONNECTION_SEND_FILTERS
 #define GT2_CONNECTION_FILTERS     0x9C /* Vector of receive filters (gti2ReceiveFilterCallback) */
 /* The connection's callback for the current event (0x28, or 0x2C with a message
  * pointer) and the two counters that nest around calling it: one on the

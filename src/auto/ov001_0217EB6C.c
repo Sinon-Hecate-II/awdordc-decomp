@@ -137,7 +137,22 @@ void MapListScrollDown(s32 message) {
     Ov001_PostTaskMessage(0, message);
 }
 
-void func_ov001_0217efb4(void){s32 HardwareDivide(u16,s32);s32 HardwareDivideRemainder(u16,s32);extern M2C_UNK gMapListState;extern volatile u8 data_ov001_0218f9b0[];s32 i,x;u32 y; if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44))return;i=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);x=HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,4),29)-51;y=data_ov001_0218f9b0[i];*(volatile u32 *)0x04000010=(x<<16)&0x1ff0000;*(volatile u32 *)0x04000018=((x+y)<<16)&0x1ff0000;M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),u8 *,0x44)=0;}
+/* Refresh the map list's background scroll when the screen object asks for it:
+ * set the vertical scroll of BG0 to the list's position within the top row and
+ * BG2 to that plus the top row's extra offset, then clear the request. */
+void MapListUpdateBackgroundScroll(void){
+ s32 HardwareDivide(u16,s32);s32 HardwareDivideRemainder(u16,s32);
+ extern M2C_UNK gMapListState;
+ extern volatile u8 gMapListRowBgOffset[];
+ s32 row,scroll;u32 rowOffset;
+ if(!M2C_FIELD(M2C_FIELD(&gMapListState,void **,OV001_MAP_LIST_OBJECT),u8 *,OV001_MAP_LIST_BG_DIRTY))return;
+ row=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,OV001_MAP_LIST_SCROLL),OV001_MAP_LIST_ROW_HEIGHT);
+ scroll=HardwareDivideRemainder(M2C_FIELD(&gMapListState,u16 *,OV001_MAP_LIST_SCROLL),OV001_MAP_LIST_ROW_HEIGHT)-51;
+ rowOffset=gMapListRowBgOffset[row];
+ REG_BG0OFS=(scroll<<16)&0x1ff0000;
+ REG_BG2OFS=((scroll+rowOffset)<<16)&0x1ff0000;
+ M2C_FIELD(M2C_FIELD(&gMapListState,void **,OV001_MAP_LIST_OBJECT),u8 *,OV001_MAP_LIST_BG_DIRTY)=0;
+}
 
 /* Selects a map-layout entry from the state index and applies it via Ov001_LayoutChoiceFrameRow. */
 void MapList_ApplyRowLayout(void) {
@@ -462,18 +477,22 @@ s32 func_ov001_0217f95c(void) {
     return 0;
 }
 
-void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK gOv001OptionExitToConnection;M2C_FIELD(&gOv001OptionExitToConnection,u8 *,0)=0;func_ov001_0217f9b8();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
+void func_ov001_0217f97c(void){void Ov001_LoadConnectionBackground(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK gOv001OptionExitToConnection;M2C_FIELD(&gOv001OptionExitToConnection,u8 *,0)=0;Ov001_LoadConnectionBackground();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
 
-void func_ov001_0217f9b8(void) {
+/* Loads the connection screen's background map and gives both engines'
+ * background planes the lowest priority so the screen's sprites and text draw
+ * over it. */
+void Ov001_LoadConnectionBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_021908d8;
+    extern M2C_UNK gOv001ConnectionBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_021908d8, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001ConnectionBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_0217fa38(void) {

@@ -13,6 +13,17 @@
 #define ONLINE_TICK_RATE_FX12 0x3C000 /* 60 updates per second, 20.12 fixed point */
 #define ONLINE_MS_PER_SECOND_FX12 0x3E8000
 
+/* The online session's outbound packet queue (gOv010OnlineSession): a singly
+ * linked list of nodes {void *next; Ov010Packet packet;}, the packet's kind
+ * byte at node+0x08 (Ov010Packet.kind sits at +0x04), its payload right after
+ * the 16-byte header.  The tail node is kept at ONLINE_SESSION_QUEUE_TAIL and
+ * ONLINE_SESSION_QUEUE_COUNT counts the queued nodes. */
+#define ONLINE_SESSION_QUEUE      0x60 /* node *: first queued packet, NULL when empty */
+#define ONLINE_SESSION_QUEUE_TAIL 0x64 /* node *: last queued packet, NULL when empty */
+#define ONLINE_SESSION_QUEUE_COUNT 0x68 /* u32 nodes currently queued */
+#define ONLINE_QUEUE_NODE_NEXT    0x00 /* node *: next queued packet */
+#define ONLINE_QUEUE_NODE_KIND    0x08 /* u8: packet kind (ONLINE_PACKET_*) */
+
 #ifdef ONLINE_USE_INTERRUPT_GUARD
 static inline u32 ov010DisableInterrupts(void) {
     u32 previous = *(volatile u16 *)0x4000208;

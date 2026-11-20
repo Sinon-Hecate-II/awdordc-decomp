@@ -225,7 +225,7 @@ void InitMapListScreen(void) {
     void MapList_ApplyRowLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern s8 data_ov001_0218f99c[];
-    void func_ov001_0217efb4(void);
+    void MapListUpdateBackgroundScroll(void);
     void func_ov001_0217f514(void);
     void func_ov001_0217d6bc(void);
 
@@ -271,7 +271,7 @@ void InitMapListScreen(void) {
             break;
         }
     }
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))func_ov001_0217efb4, 0, 0x6e);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))MapListUpdateBackgroundScroll, 0, 0x6e);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
     MapListRedrawInfoPanel();
     MapList_ApplyRowLayout();

@@ -1,7 +1,7 @@
 /* 27 functions from 0x020C1230 to 0x020C1F58 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-extern s32 gCOAssetNames[];
+extern s32 gOccupationBackgroundNames[];
 
 void DrawMapPreview(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
@@ -325,30 +325,31 @@ u8 func_020c1dac(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-s32 GetCOAssetIndex(s32 arg0) {
- switch(arg0) {
- case 18:return 0;
- case 19:return 1;
- case 15:return 2;
- case 16:return 3;
- case 17:return 4;
- case 22:return 5;
- case 23:return 6;
- case 20:return 7;
- case 21:return 8;
- default:return 0;
- }
+/* Map property terrain to the occupation screen's background index, using the airport art as the fallback. */
+s32 GetOccupationBackgroundIndex(s32 terrainKind) {
+    switch (terrainKind) {
+    case MAP_TERRAIN_AIRPORT:       return 0;
+    case MAP_TERRAIN_PORT:          return 1;
+    case MAP_TERRAIN_HQ:            return 2;
+    case MAP_TERRAIN_CITY:          return 3;
+    case MAP_TERRAIN_BASE:          return 4;
+    case MAP_TERRAIN_COM_TOWER:     return 5;
+    case MAP_TERRAIN_RADAR:         return 6;
+    case MAP_TERRAIN_TEMP_AIRFIELD: return 7;
+    case MAP_TERRAIN_TEMP_PORT:     return 8;
+    default:                        return 0;
+    }
 }
 
-u16 GetCOPaletteOffset(void) {
-    s32 GetCOAssetIndex();
-    return (u16) ((GetCOAssetIndex() * 0x14) + 0x424);
+u16 GetOccupationPaletteOffset(void) {
+    s32 GetOccupationBackgroundIndex();
+    return (u16) ((GetOccupationBackgroundIndex() * 0x14) + 0x424);
 }
 
-s32 GetCOAssetName(s32 arg0) {
- s32 n=GetCOAssetIndex(arg0);
+s32 GetOccupationBackgroundName(s32 arg0) {
+ s32 n=GetOccupationBackgroundIndex(arg0);
  func_020c1dac((s16)n,0,8);
- return gCOAssetNames[n];
+ return gOccupationBackgroundNames[n];
 }
 
 u16 GetCOPortraitOffset(u32 arg0) {

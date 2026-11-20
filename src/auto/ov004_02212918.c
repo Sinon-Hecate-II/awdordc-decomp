@@ -1,6 +1,7 @@
 /* 23 functions from 0x02212918 to 0x022138B0 (ov004), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 static inline void Clear129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p&~mask;}
 static inline void Set129(s32 off,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+off);*p=*p|mask;}
@@ -123,22 +124,52 @@ s32 IsPlayerOneUnitOnTileAfterFirstTurn(void) {
     return 0;
 }
 
-s32 func_ov004_022132fc(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- u32 bits; s32 i; u8 *p; s32 end;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=70U&&bits==2)return 1; i++; p+=14;}while(i<end);}
- return 0;
+/* Mission condition: true while player 1 still has a mech (kind 2) at 70 HP or
+ * below, i.e. one of its mechs has been damaged. */
+s32 IsPlayerOneMechWounded(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    u32 kind;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+
+    unitId = gPlayerUnitIdBase[1] + 1;
+    endId = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kind = (u32)(*unit << 26) >> 26;
+            if (kind && ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25) <= 70U && kind == UNIT_KIND_MECH) return 1;
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    return 0;
 }
 
-s32 func_ov004_02213380(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- u32 bits; s32 i; u8 *p; s32 end;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=70U&&bits==7)return 1; i++; p+=14;}while(i<end);}
- return 0;
+/* Mission condition: true while player 1 still has a tank (kind 7) at 70 HP or
+ * below, i.e. one of its tanks has been damaged. */
+s32 IsPlayerOneTankWounded(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    u32 kind;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+
+    unitId = gPlayerUnitIdBase[1] + 1;
+    endId = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kind = (u32)(*unit << 26) >> 26;
+            if (kind && ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25) <= 70U && kind == UNIT_KIND_TANK) return 1;
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    return 0;
 }
 
 u8 func_ov004_02213404(void) {

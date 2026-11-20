@@ -165,20 +165,24 @@ void func_0206f8b8(void) {
     func_02064ad4();
 }
 
-void *func_0206f8c4(u32 *self,u32 value,u32 first,...) {
+/* Build the exception's message string `string` from the already-allocated
+ * `buffer`: wrap the buffer in a 16-byte owner block of its own (so it lives
+ * and dies with the exception) and hand a disarmed temporary owner record to
+ * the destructor, the string having taken the buffer over. */
+void *func_0206f8c4(u32 *string,u32 buffer,u32 firstArg,...) {
  void *MemAlloc(u32);
  s32 *func_0206f9d4(s32 *);
- u32 local[2];
+ u32 temp[2];
 
- void *p;
- self[0]=value;
- local[0]=value; local[1]=(u32)&first;
- p=MemAlloc(16);
- if(p) {((u32*)p)[0]=(u32)data_02100734;((u32*)p)[1]=1;((u32*)p)[2]=1;((u32*)p)[0]=(u32)data_0210074c;((u32*)p)[3]=value;}
- self[1]=(u32)p;
- local[0]=0;
- func_0206f9d4((s32 *)local);
- return self;
+ void *owner;
+ string[0]=buffer;
+ temp[0]=buffer; temp[1]=(u32)&firstArg;
+ owner=MemAlloc(16);
+ if(owner) {((u32*)owner)[0]=(u32)data_02100734;((u32*)owner)[1]=1;((u32*)owner)[2]=1;((u32*)owner)[0]=(u32)data_0210074c;((u32*)owner)[3]=buffer;}
+ string[1]=(u32)owner;
+ temp[0]=0;
+ func_0206f9d4((s32 *)temp);
+ return string;
 }
 
 s32 func_0206f944(s32 arg0) {

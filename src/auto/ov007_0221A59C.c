@@ -79,14 +79,14 @@ void func_ov007_0221ab38(void) {
 }
 
 void MapEditor_RefreshGraphics(void) {
-    M2C_UNK func_ov007_02219bd8();
+    M2C_UNK MapEditor_LoadPlayerPalettes();
     M2C_UNK func_ov007_02219d10();
     M2C_UNK MapEditor_LoadTerrainBrushGraphics();
     M2C_UNK func_ov007_0221a018();
     M2C_UNK func_ov007_0221a104();
     MapEditor_LoadTerrainBrushGraphics();
     func_ov007_0221a018();
-    func_ov007_02219bd8();
+    MapEditor_LoadPlayerPalettes();
     func_ov007_02219d10();
     func_ov007_0221a104();
 }
@@ -307,26 +307,28 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     return 1;
 }
 
-s32 func_ov007_0221b24c(s32 a,s32 b,s32 c,s32 d) {
+/* Whether the map cell at (x,y) is in bounds and holds the given terrain kind
+ * and owner/direction, as the map editor's flood fill compares them. */
+s32 Map_IsCellTileAndOwner(s32 x,s32 y,s32 kind,s32 owner) {
 extern void **gCurrentMap;
-s32 Map_GetCellTerrainKind();
+s32 Map_GetCellTerrainKind(s32,s32);
 s32 Map_GetCellTerrainOwner(s32,s32);
-void *p;
-if(a>=0 && b>=0) {
-p=*gCurrentMap;
-if(a<M2C_FIELD(p,u16 *,0x5144)&&b<M2C_FIELD(p,u16 *,0x5146)) goto valid;
+void *map;
+if(x>=0 && y>=0) {
+map=*gCurrentMap;
+if(x<M2C_FIELD(map,u16 *,MAP_WIDTH)&&y<M2C_FIELD(map,u16 *,MAP_HEIGHT)) goto valid;
 }
 return 0;
 valid:
-if(c!=Map_GetCellTerrainKind(a,b))return 0;
-return (u8)(d==Map_GetCellTerrainOwner(a,b));
+if(kind!=Map_GetCellTerrainKind(x,y))return 0;
+return (u8)(owner==Map_GetCellTerrainOwner(x,y));
 }
 
 /* Flood-fills a connected 30x30 region of tiles currently matching oldTile/oldDir,
    converting each one to newTile/newDir (and extending to its neighbours). */
 s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTile, s32 oldDir) {
     s32 Map_PaintTile(s32, s32, M2C_UNK, M2C_UNK, u8);
-    s32 func_ov007_0221b24c(s32, s32, s32, s32);
+    s32 Map_IsCellTileAndOwner(s32, s32, s32, s32);
     s32 rightX;
     s32 bottomY;
     s32 topY;
@@ -337,7 +339,7 @@ s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTi
     s32 iDown;
     s32 leftX;
 
-    if (func_ov007_0221b24c(x, y, oldTile, oldDir) == 0) {
+    if (Map_IsCellTileAndOwner(x, y, oldTile, oldDir) == 0) {
         return 0;
     }
     if (Map_PaintTile(x, y, newTile, newDir, 0) == 0) {
@@ -350,7 +352,7 @@ s32 func_ov007_0221b2cc(s32 x, s32 y, M2C_UNK newTile, M2C_UNK newDir, s32 oldTi
     iLeft = x - 1;
     if (iLeft >= 0) {
 loop_5:
-        if ((func_ov007_0221b24c(iLeft, y, oldTile, oldDir) != 0) && (Map_PaintTile(iLeft, y, newTile, newDir, 0) != 0)) {
+        if ((Map_IsCellTileAndOwner(iLeft, y, oldTile, oldDir) != 0) && (Map_PaintTile(iLeft, y, newTile, newDir, 0) != 0)) {
             leftX = iLeft;
             iLeft -= 1;
             if (iLeft >= 0) {
@@ -361,7 +363,7 @@ loop_5:
     iRight = x + 1;
     if (iRight < 0x1E) {
 loop_9:
-        if ((func_ov007_0221b24c(iRight, y, oldTile, oldDir) != 0) && (Map_PaintTile(iRight, y, newTile, newDir, 0) != 0)) {
+        if ((Map_IsCellTileAndOwner(iRight, y, oldTile, oldDir) != 0) && (Map_PaintTile(iRight, y, newTile, newDir, 0) != 0)) {
             rightX = iRight;
             iRight += 1;
             if (iRight < 0x1E) {
@@ -372,7 +374,7 @@ loop_9:
     iUp = y - 1;
     if (iUp >= 0) {
 loop_13:
-        if ((func_ov007_0221b24c(x, iUp, oldTile, oldDir) != 0) && (Map_PaintTile(x, iUp, newTile, newDir, 0) != 0)) {
+        if ((Map_IsCellTileAndOwner(x, iUp, oldTile, oldDir) != 0) && (Map_PaintTile(x, iUp, newTile, newDir, 0) != 0)) {
             topY = iUp;
             iUp -= 1;
             if (iUp >= 0) {
@@ -383,7 +385,7 @@ loop_13:
     iDown = y + 1;
     if (iDown < 0x1E) {
 loop_17:
-        if ((func_ov007_0221b24c(x, iDown, oldTile, oldDir) != 0) && (Map_PaintTile(x, iDown, newTile, newDir, 0) != 0)) {
+        if ((Map_IsCellTileAndOwner(x, iDown, oldTile, oldDir) != 0) && (Map_PaintTile(x, iDown, newTile, newDir, 0) != 0)) {
             bottomY = iDown;
             iDown += 1;
             if (iDown < 0x1E) {

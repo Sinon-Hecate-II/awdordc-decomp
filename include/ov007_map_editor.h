@@ -31,4 +31,8 @@
 #define MAP_EDITOR_UNIT_ROWS     5
 #define MAP_EDITOR_UNIT_STRIDE   12
 
+/* First OBJ palette shadow row (0x20 bytes each) the four players' army-colour
+ * palettes are copied into, one row per player, when the editor refreshes. */
+#define MAP_EDITOR_PLAYER_PALETTE_ROW 0x15
+
 #endif

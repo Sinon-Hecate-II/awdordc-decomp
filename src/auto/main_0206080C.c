@@ -99,22 +99,22 @@ void func_020609ac(s32 *arg0) {
 }
 
 s32 func_020609bc(void) {
-    extern M2C_UNK data_0213e4b0;
+    extern M2C_UNK gQr2ParseState;
     s32 TableNew2(s32, s32, s32, void *, void *, void *);
-    if (M2C_FIELD(&data_0213e4b0, s32 *, 8) == 0) {
-        M2C_FIELD(&data_0213e4b0, s32 *, 8) = TableNew2(8, 0x64, 2, func_02060988, func_02060998, func_020609ac);
+    if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) {
+        M2C_FIELD(&gQr2ParseState, s32 *, 8) = TableNew2(8, 0x64, 2, func_02060988, func_02060998, func_020609ac);
     }
-    return M2C_FIELD(&data_0213e4b0, s32 *, 8);
+    return M2C_FIELD(&gQr2ParseState, s32 *, 8);
 }
 
 void func_02060a20(void) {
-    extern M2C_UNK data_0213e4b0;
+    extern M2C_UNK gQr2ParseState;
     s32 func_02048e38(s32);
     M2C_UNK func_02048dc4(s32);
-    if (M2C_FIELD(&data_0213e4b0, s32 *, 8) == 0) return;
-    if (func_02048e38(M2C_FIELD(&data_0213e4b0, s32 *, 8)) != 0) return;
-    func_02048dc4(M2C_FIELD(&data_0213e4b0, s32 *, 8));
-    M2C_FIELD(&data_0213e4b0, s32 *, 8) = 0;
+    if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) return;
+    if (func_02048e38(M2C_FIELD(&gQr2ParseState, s32 *, 8)) != 0) return;
+    func_02048dc4(M2C_FIELD(&gQr2ParseState, s32 *, 8));
+    M2C_FIELD(&gQr2ParseState, s32 *, 8) = 0;
 }
 
 void func_02060a60(void **arg0) {
@@ -224,50 +224,53 @@ s32 func_02060cc4(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x20);
 }
 
-s32 func_02060ccc(M2C_UNK *arg0){
+s32 Qr2_IsServerField(M2C_UNK *arg0){
  s32 StringCompare(s32,void *);
- extern void *data_020eac38[2];
+ extern void *gQr2MetaFields[2];
  void *sp0[2]; void **arr=sp0; u32 i;
- sp0[0]=data_020eac38[0];sp0[1]=data_020eac38[1];
+ sp0[0]=gQr2MetaFields[0];sp0[1]=gQr2MetaFields[1];
  for(i=0;i<2;i++){if(!StringCompare((s32)arg0,arr[i]))return 0;}
  return 1;
 }
 
-M2C_UNK *func_02060d2c(s32 input,s32 arg1){
- extern M2C_UNK data_0213e4b0;
+M2C_UNK *Qr2_NextField(s32 input,s32 arg1){
+ extern M2C_UNK gQr2ParseState;
  s8 *arg0=(s8 *)input;
  s32 c; s8 *p;
- if(arg0)M2C_FIELD(&data_0213e4b0,s8 **,0)=arg0;
- arg0=M2C_FIELD(&data_0213e4b0,s8 **,0);p=arg0;
- while((c=*p)!=0 && c!=arg1){p++;M2C_FIELD(&data_0213e4b0,s8 **,0)=p;}
+ if(arg0)M2C_FIELD(&gQr2ParseState,s8 **,0)=arg0;
+ arg0=M2C_FIELD(&gQr2ParseState,s8 **,0);p=arg0;
+ while((c=*p)!=0 && c!=arg1){p++;M2C_FIELD(&gQr2ParseState,s8 **,0)=p;}
  if(p==arg0)arg0=0;
  if(c==0)return arg0;
- {s8 *next=M2C_FIELD(&data_0213e4b0,s8 **,0);*p=0;M2C_FIELD(&data_0213e4b0,s8 **,0)=next+1;}
+ {s8 *next=M2C_FIELD(&gQr2ParseState,s8 **,0);*p=0;M2C_FIELD(&gQr2ParseState,s8 **,0)=next+1;}
  return arg0;
 }
 
-void Qr2Query_ParseTextFields(M2C_UNK arg0, s32 arg1) {
+/* Splits a QR2 reply's text into backslash-separated key/value pairs and stores
+ * every ordinary server field in the server record; a key without a value gets
+ * the empty string.  The 'queryid' and 'final' meta fields are skipped. */
+void Qr2Query_ParseTextFields(M2C_UNK server, s32 reply) {
     M2C_UNK gpiPlayerSetString(M2C_UNK, M2C_UNK *, M2C_UNK *);
-    s32 func_02060ccc(M2C_UNK *);
-    M2C_UNK *func_02060d2c(s32, M2C_UNK);
-    extern M2C_UNK data_02100080;
-    M2C_UNK *var_r8;
-    M2C_UNK *var_r9;
+    s32 Qr2_IsServerField(M2C_UNK *);
+    M2C_UNK *Qr2_NextField(s32, M2C_UNK);
+    extern M2C_UNK sQr2EmptyString;
+    M2C_UNK *key;
+    M2C_UNK *value;
 
-    var_r8 = func_02060d2c(arg1 + 1, 0x5C);
-    if (var_r8 == NULL) {
+    key = Qr2_NextField(reply + 1, 0x5C);
+    if (key == NULL) {
         return;
     }
     do {
-        var_r9 = func_02060d2c(0, 0x5C);
-        if (var_r9 == NULL) {
-            var_r9 = &data_02100080;
+        value = Qr2_NextField(0, 0x5C);
+        if (value == NULL) {
+            value = &sQr2EmptyString;
         }
-        if (func_02060ccc(var_r8) != 0) {
-            gpiPlayerSetString(arg0, var_r8, var_r9);
+        if (Qr2_IsServerField(key) != 0) {
+            gpiPlayerSetString(server, key, value);
         }
-        var_r8 = func_02060d2c(0, 0x5C);
-    } while (var_r8 != NULL);
+        key = Qr2_NextField(0, 0x5C);
+    } while (key != NULL);
 }
 
 #pragma peephole off
@@ -358,8 +361,8 @@ u8 gpiPlayerGetState(void *arg0) {
 }
 
 s32 func_02061168(s32 arg0) {
-    extern M2C_UNK data_0213e4b0;
-    if (arg0 == M2C_FIELD(&data_0213e4b0, s32 *, 4)) {
+    extern M2C_UNK gQr2ParseState;
+    if (arg0 == M2C_FIELD(&gQr2ParseState, s32 *, 4)) {
         return 1;
     }
     return 0;

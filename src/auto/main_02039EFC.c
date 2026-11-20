@@ -443,17 +443,20 @@ s32 func_0203ad70(M2C_UNK arg0, void *arg1) {
     return 1;
 }
 
-void func_0203adcc(s32 a,void *b) {
+/* Kind-2 match-session message handler: when the session has an info callback, map
+ * the request's target id to a player slot, fetch that buddy's GameSpy status and
+ * pass it (with the status word from the filled record) to the callback. */
+void MatchSession_ReportBuddyStatus(s32 conn,void *request) {
 extern M2C_UNK gMatchSessionMgr;
 s32 GetSessionPlayerSlot(s32);
 void gpGetBuddyStatus(s32,s32,void *);
-u32 out[66]; u32 buf[66];s32 n;void *p;
-if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,0x34))return;
-n=GetSessionPlayerSlot(M2C_FIELD(b,s32 *,0));
-if(n==-1)return;
-gpGetBuddyStatus(a,M2C_FIELD(b,s32 *,8),buf);
-p=M2C_FIELD(&gMatchSessionMgr,void **,8);
-M2C_FIELD(p,void (**)(s32,u32,void *,s32),0x34)(n,buf[1]&255,out,M2C_FIELD(p,s32 *,0x38));
+u32 out[66]; u32 buf[66];s32 slot;void *session;
+if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,MATCH_SESSION_INFO_CB))return;
+slot=GetSessionPlayerSlot(M2C_FIELD(request,s32 *,0));
+if(slot==-1)return;
+gpGetBuddyStatus(conn,M2C_FIELD(request,s32 *,8),buf);
+session=M2C_FIELD(&gMatchSessionMgr,void **,8);
+M2C_FIELD(session,void (**)(s32,u32,void *,s32),MATCH_SESSION_INFO_CB)(slot,buf[1]&255,out,M2C_FIELD(session,s32 *,MATCH_SESSION_INFO_DATA));
 }
 
 s32 func_0203ae50(void) {

@@ -155,11 +155,11 @@ void func_ov003_021e8958(void *arg0) {
     s32 func_ov003_021f153c(void);
     void func_ov003_021e9830(void *, s32);
     s32 IsLinkSessionActive(void);
-    void *func_02084e64(void);
+    void *GetLocalNetworkPlayerRecord(void);
     void SetWaypointPanelMode(void *, s32);
     s32 func_ov003_021e9ce0(void *);
     void SetWaypointPanelState(void *, s32);
-    void func_ov003_021e9c50(void *);
+    void PlaceWaypointPanelCursor(void *);
     s32 GetWaypointSlotIndex(void *);
     s32 func_ov003_021e7450(void *);
     void func_ov003_021e9e78(void *, s32, s32);
@@ -235,7 +235,7 @@ void func_ov003_021e8958(void *arg0) {
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x50), v);
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x4c), 0xc0);
     if (IsLinkSessionActive()) {
-        p = func_02084e64();
+        p = GetLocalNetworkPlayerRecord();
         if (p == 0) return;
         SetWaypointPanelMode(arg0, M2C_FIELD(p, u8 *, 8));
     } else if (func_ov003_021e9ce0(arg0) && v == (s32) 0xFFFFFF00) {
@@ -244,7 +244,7 @@ void func_ov003_021e8958(void *arg0) {
         SetWaypointPanelMode(arg0, 0);
     }
     SetWaypointPanelState(arg0, 0);
-    func_ov003_021e9c50(arg0);
+    PlaceWaypointPanelCursor(arg0);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
     {

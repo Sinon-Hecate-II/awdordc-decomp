@@ -389,7 +389,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void *func_ov010_02224eb8(void);
     void func_ov010_0222369c(u32);
     void func_ov010_02223314(u32);
-    void func_ov010_022236e4(void);
+    void Link_FreeAllQueuedPackets(void);
     void func_ov010_0222335c(void);
     s32 func_ov010_02223b18(void *, void *);
     void func_ov010_022233ac(void *);
@@ -464,7 +464,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         func_ov010_02223314((u32)M2C_FIELD(slot, s32 *, 0x34));
         item = func_ov010_02224eb8();
         if (!item) {
-            func_ov010_022236e4();
+            Link_FreeAllQueuedPackets();
             func_ov010_0222335c();
             item = func_ov010_02224eb8();
         }

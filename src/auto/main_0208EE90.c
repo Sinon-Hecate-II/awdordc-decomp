@@ -204,7 +204,7 @@ void func_0208f5cc(void) {
 }
 
 void func_0208f5d8(void) {
-    func_0208f780(4);
+    PlayMusicTrack(4);
 }
 
 s32 GetLanguageIndex(void) {
@@ -303,7 +303,7 @@ s32 func_0208f770(void) {
     return data_02102910;
 }
 
-M2C_UNK func_0208f780(s32 arg0) {
+M2C_UNK PlayMusicTrack(s32 arg0) {
 extern s32 data_02102910;
 void func_0208f904(void);
 void func_020901e0(s32);
@@ -319,7 +319,7 @@ func_020ad640();
 }
 
 void func_0208f7c0(void *arg0) {
-    func_0208f780(M2C_FIELD(arg0, s32 *, 0x5C));
+    PlayMusicTrack(M2C_FIELD(arg0, s32 *, 0x5C));
 }
 
 void func_0208f7d0(s32 arg0) {

@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221E5A0 to 0x0221F4F8 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ds3dsprite.h"
 extern u8 data_ov005_02220b70[];
 extern u8 data_ov005_02220f54[];
@@ -17,6 +18,10 @@ extern u8 data_ov005_02220a1c[];
 extern u8 data_ov005_02220f1c[];
 extern u8 data_ov005_02220e5c[];
 extern u8 data_ov005_02220eec[];
+
+/* Music tracks handed to PlayMusicTrack. */
+#define MUSIC_MAP_BATTLE          0x10017 /* the standard map battle theme */
+#define MUSIC_MAP_BATTLE_SPECIAL  0x10018 /* the theme of maps 0xAA, 0xB0, 0xB5 and 0xBA */
 
 #pragma opt_strength_reduction off
 #pragma opt_loop_invariants off
@@ -244,34 +249,37 @@ void func_ov005_0221efac(void) {
     UpdateResultsScreen();
 }
 
-void func_ov005_0221efb8(void) {
-    M2C_UNK func_0208f780(s32);
+/* Play the current map's battle music: the standard theme, except on the special
+ * maps 0xAA, 0xB0, 0xB5 and 0xBA while the battle mode (the low three bits of
+ * gMapConfig) is 0, which use the alternate theme. */
+void PlayMapBattleMusic(void) {
+    M2C_UNK PlayMusicTrack(s32);
     extern u16 gMapConfig;
     extern void **gCurrentMap;
-    s32 var_r0;
-    u16 temp_r1;
+    s32 track;
+    u16 mapId;
 
-    var_r0 = 0x10017;
+    track = MUSIC_MAP_BATTLE;
     if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
-        temp_r1 = M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
-        if ((s32) temp_r1 <= 0xB0) {
-            if (((s32) temp_r1 < 0xB0) && (temp_r1 != 0xAA)) {
+        mapId = M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+        if ((s32) mapId <= 0xB0) {
+            if (((s32) mapId < 0xB0) && (mapId != 0xAA)) {
 
             } else {
-                goto block_9;
+                goto useSpecialTheme;
             }
-        } else if ((s32) temp_r1 <= 0xB5) {
-            if (temp_r1 != 0xB5) {
+        } else if ((s32) mapId <= 0xB5) {
+            if (mapId != 0xB5) {
 
             } else {
-                goto block_9;
+                goto useSpecialTheme;
             }
-        } else if (temp_r1 == 0xBA) {
-block_9:
-            var_r0 = 0x10018;
+        } else if (mapId == 0xBA) {
+useSpecialTheme:
+            track = MUSIC_MAP_BATTLE_SPECIAL;
         }
     }
-    func_0208f780(var_r0);
+    PlayMusicTrack(track);
 }
 
 void func_ov005_0221f038(M2C_UNK arg0) {
@@ -293,6 +301,7 @@ void func_ov005_0221f038(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, s32 *, 0x34) = func_02081070(&data_ov005_02220a6c, 1);
 }
 
+#pragma peephole off
 void func_ov005_0221f084(void *arg0) {
     M2C_UNK QueueBGExtPaletteUpload(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
@@ -310,8 +319,8 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK LoadScenePanelGraphicsOnBothEngines();
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
-    u16 GetUnitSpriteWidth(void *);
-    u16 GetUnitSpriteHeight(void *);
+    s32 GetUnitSpriteWidth(void *);
+    s32 GetUnitSpriteHeight(void *);
     M2C_UNK func_020ab150(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
@@ -330,14 +339,12 @@ void func_ov005_0221f084(void *arg0) {
     extern M2C_UNK data_ov005_022212c4;
     extern M2C_UNK data_ov005_022212d4;
     extern M2C_UNK data_ov005_022212e4;
-    u16 *sp1C;
-    u16 *sp18;
-    u16 *sp14;
-    u16 *sp10;
-    u16 *spC;
+    u16 *volatile sp1C;
+    u16 *volatile sp18;
+    u16 *volatile sp14;
+    u16 *volatile sp10;
+    u16 *volatile spC;
     u16 sp8;
-    s16 temp_r5;
-    s16 temp_r6;
     s32 var_r0_2;
     s32 var_r9;
     u16 *temp_r0;
@@ -345,9 +352,8 @@ void func_ov005_0221f084(void *arg0) {
     u16 *temp_r0_3;
     u16 *temp_r0_4;
     u16 *temp_r0_5;
-    u16 temp_r7;
+    s32 temp_r7;
     void *temp_r11;
-    void *temp_r4;
     void *var_r0;
 
     sp8 = data_ov005_02220078;
@@ -368,19 +374,19 @@ void func_ov005_0221f084(void *arg0) {
         var_r9 += 1;
         temp_r0 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp1C = temp_r0;
-        *temp_r0 = *sp1C & ~0x10;
+        *sp1C = *sp1C & ~0x10;
         temp_r0_2 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp18 = temp_r0_2;
-        *temp_r0_2 = *sp18 & ~0x20;
+        *sp18 = *sp18 & ~0x20;
         temp_r0_3 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp14 = temp_r0_3;
-        *temp_r0_3 = *sp14 & ~0x40;
+        *sp14 = *sp14 & ~0x40;
         temp_r0_4 = M2C_FIELD(data_027e01d8, u16 **, 0);
         sp10 = temp_r0_4;
-        *temp_r0_4 = *sp10 | 0x80;
+        *sp10 = *sp10 | 0x80;
         temp_r0_5 = M2C_FIELD(data_027e01d8, u16 **, 0);
         spC = temp_r0_5;
-        *temp_r0_5 = *spC | 0x100;
+        *spC = *spC | 0x100;
     } while (var_r9 < 2);
     data_027e01d8 = (void*)g3DSpriteEngineMain;
     OpenNarcArchive(&data_ov005_02221238);
@@ -392,8 +398,7 @@ void func_ov005_0221f084(void *arg0) {
     CloseNarcArchive();
     LoadDecompressedFileTo(GetLocalizedFileName(&data_ov005_02221288), M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
     LoadFileToSpriteBuffer(&data_ov005_0222129c, 0x2C0, 0x20);
-    data_027e01d8 = (void*)g3DSpriteEngineSub;
-    OpenNarcArchive(&data_ov005_022212b0);
+    OpenNarcArchive((data_027e01d8 = (void*)g3DSpriteEngineSub, &data_ov005_022212b0));
     LoadNarcFileDecompressed(&data_ov005_022212c4, M2C_FIELD(data_027e01d8, s32 *, 0x18));
     LoadNarcFileDecompressed(&data_ov005_022212d4, M2C_FIELD(data_027e01d8, s32 *, 0x2C));
     M2C_FIELD(arg0, s32 *, 0x40) = func_020815bc(&data_ov005_022212e4, 0x200);
@@ -403,7 +408,8 @@ void func_ov005_0221f084(void *arg0) {
     data_027e01d8 = (void*)g3DSpriteEngineMain;
     M2C_FIELD(arg0, void **, 0x34) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x34), 1, 0x120, 3, 1);
-    temp_r4 = M2C_FIELD(arg0, void **, 0x34);
+    {
+    void *temp_r4 = M2C_FIELD(arg0, void **, 0x34);
     func_02088e84(temp_r4, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_2 = 1;
@@ -411,10 +417,11 @@ void func_ov005_0221f084(void *arg0) {
         var_r0_2 = 0;
     }
     if (var_r0_2 & 0xFF) {
-        temp_r5 = M2C_FIELD(temp_r4, s16 *, 0x52);
-        temp_r6 = M2C_FIELD(temp_r4, s16 *, 0x50);
+        s16 temp_r5 = M2C_FIELD(temp_r4, s16 *, 0x52);
+        s16 temp_r6 = M2C_FIELD(temp_r4, s16 *, 0x50);
         temp_r7 = GetUnitSpriteWidth(temp_r4);
-        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (s32) temp_r7, (s32) GetUnitSpriteHeight(temp_r4));
+        func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (u16) temp_r7, (u16) GetUnitSpriteHeight(temp_r4));
+    }
     }
     func_020ab150(M2C_FIELD(arg0, void **, 0x34), 1);
     func_020aad18(M2C_FIELD(arg0, void **, 0x34));
@@ -422,7 +429,7 @@ void func_ov005_0221f084(void *arg0) {
     data_027e01d8 = temp_r11;
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
 }
-
+#pragma peephole reset
 void func_ov005_0221f3e8(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation();
     extern u16 *gKeyState;

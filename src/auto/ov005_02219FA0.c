@@ -1,6 +1,7 @@
 /* 18 functions from 0x02219FA0 to 0x0221ABF8 (ov005), found by ds-decomp. */
 #include "common.h"
 #include "ov005_results.h"
+#include "sprite_script.h"
 typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 
 #pragma opt_strength_reduction off
@@ -72,23 +73,26 @@ gCur3DSpriteEngine=saved;
 }
 }
 
-void func_ov005_0221a38c(void **arg0) {
+/* Move the awards panel's two screens' sprite-player lists to the panel's x
+ * position (AWARD_PANEL_X): the main screen's list is shifted left by 0xC0, the
+ * sub screen's is not; a list is only moved when the panel has one. */
+void PositionAwardPanelSprites(void **panel) {
     M2C_UNK SpritePlayer_SetListPosition(s32, M2C_UNK, s16);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
-    s32 temp_r0, temp_r8, var_r0, var_r1, var_r9;
-    temp_r8 = gCur3DSpriteEngine;
-    var_r9 = 0;
+    s32 players, savedEngine, engine, x, screen;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r9 == 0) var_r0 = g3DSpriteEngineMain;
-        else var_r0 = g3DSpriteEngineSub;
-        gCur3DSpriteEngine = var_r0;
-        var_r1 = M2C_FIELD(arg0, s32 *, 0x3C);
-        temp_r0 = M2C_FIELD(M2C_FIELD((arg0 + var_r9), void **, 0x34), s32 *, 0x38);
-        if (var_r9 == 0) var_r1 -= 0xC0;
-        if (temp_r0 != 0) SpritePlayer_SetListPosition(temp_r0, 0x80, (s16)var_r1);
-        var_r9++;
-    } while (var_r9 < 2);
-    gCur3DSpriteEngine = temp_r8;
+        if (screen == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        x = M2C_FIELD(panel, s32 *, AWARD_PANEL_X);
+        players = M2C_FIELD(M2C_FIELD((panel + screen), void **, AWARD_SPRITES), s32 *, SPRITE_OWNER_PLAYER_LIST);
+        if (screen == 0) x -= 0xC0;
+        if (players != 0) SpritePlayer_SetListPosition(players, 0x80, (s16)x);
+        screen++;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_strength_reduction reset
 /* Per-frame handler of the third awarded medal: reveal it with a chime on the
@@ -139,11 +143,11 @@ void func_ov005_0221a520(void *arg0) {
 M2C_UNK PlaySoundEffect(s32);
 s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 M2C_UNK Sprite_ResumeAnimation(void *);
-void func_ov005_0221a38c(void **);
+void PositionAwardPanelSprites(void **);
 M2C_FIELD(arg0,s32 *,0x40)++;
 if(M2C_FIELD(arg0,s32 *,0x40)==1) PlaySoundEffect(0xe8);
 M2C_FIELD(arg0,s32 *,0x3c)=EaseInterpolate(0,0x1b0,0x58,M2C_FIELD(arg0,s32 *,0x40),0x20);
-func_ov005_0221a38c(arg0);
+PositionAwardPanelSprites(arg0);
 if(M2C_FIELD(arg0,s32 *,0x40)!=0x20) return;
 M2C_FIELD(arg0,s32 *,0x40)=0;
 Sprite_ResumeAnimation(arg0);
@@ -157,7 +161,7 @@ Sprite_ResumeAnimation(arg0);
  * finishes the effect. */
 void func_ov005_0221a598(void *award) {
     M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    void func_ov005_0221a38c(void **);
+    void PositionAwardPanelSprites(void **);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK Sprite_ResumeAnimation(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -167,7 +171,7 @@ void func_ov005_0221a598(void *award) {
 
     M2C_FIELD(award, s32 *, 0x40) = (M2C_FIELD(award, s32 *, 0x40) + 1);
     M2C_FIELD(award, s32 *, 0x3C) = EaseInterpolate(0, 0x58, 0x60, M2C_FIELD(award, s32 *, 0x40), 0x10);
-    func_ov005_0221a38c(award);
+    PositionAwardPanelSprites(award);
     if (M2C_FIELD(award, s32 *, 0x40) == 1) {
         M2C_FIELD(award, u8 *, 0x45) = 1;
     }

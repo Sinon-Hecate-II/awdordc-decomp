@@ -51,8 +51,8 @@ void InitIntroScene(void *logo) {
     M2C_UNK func_020031cc(s32);
     M2C_UNK GX_SetBankForOBJ(s32);
     M2C_UNK func_02002ab8(s32);
-    M2C_UNK func_0200323c(s32);
-    M2C_UNK func_020032bc(s32);
+    M2C_UNK GX_SetBankForBGExtPlttSub(s32);
+    M2C_UNK GX_SetBankForOBJExtPlttSub(s32);
     M2C_UNK ApplyScreenMode(s32);
     M2C_UNK Reset3DSpriteBankState(void);
     M2C_UNK Apply3DSpriteBanks(void);
@@ -73,8 +73,8 @@ void InitIntroScene(void *logo) {
     func_020031cc(8);
     GX_SetBankForOBJ(0x10);
     func_02002ab8(0x60);
-    func_0200323c(0x80);
-    func_020032bc(0x100);
+    GX_SetBankForBGExtPlttSub(0x80);
+    GX_SetBankForOBJExtPlttSub(0x100);
     ConfigureIntroScreens(logo);
 
     savedEngine = gCur3DSpriteEngine;

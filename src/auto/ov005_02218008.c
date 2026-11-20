@@ -19,8 +19,8 @@ void func_02003124();
 void func_020031cc();
 void func_02002ab8();
 void GX_SetBankForObjExtPalette();
-void func_0200323c();
-void func_020032bc();
+void GX_SetBankForBGExtPlttSub();
+void GX_SetBankForOBJExtPlttSub();
 void func_020822b8();
 void OpenNarcArchive();
 void LoadNarcFileDecompressed();
@@ -78,7 +78,7 @@ u16 * volatile v9;
 u16 * volatile v10;
 u16 * volatile v11;
 LoadUiGraphicsBank(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
-GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);GX_SetBankForObjExtPalette(32);func_0200323c(128);func_020032bc(256);
+GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);GX_SetBankForObjExtPalette(32);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
 M2C_FIELD(gOv005MenuState,u8 *,0)=0; M2C_FIELD(gOv005MenuState,s16 *,4)=0; M2C_FIELD(gOv005MenuState,s16 *,2)=M2C_FIELD(gOv005MenuState,s16 *,4);M2C_FIELD(gOv005MenuState,s16 *,14)=0;M2C_FIELD(gOv005MenuState,s16 *,12)=M2C_FIELD(gOv005MenuState,s16 *,14);M2C_FIELD(gOv005MenuState,s16 *,18)=0;M2C_FIELD(gOv005MenuState,s16 *,20)=0;M2C_FIELD(gOv005MenuState,s16 *,16)=M2C_FIELD(gOv005MenuState,s16 *,14)+1;M2C_FIELD(gOv005MenuState,s16 *,6)=0;M2C_FIELD(gOv005MenuState,s16 *,22)=12;M2C_FIELD(gOv005MenuState,s16 *,24)=0;M2C_FIELD(gOv005MenuState,s16 *,8)=0;M2C_FIELD(gOv005MenuState,s16 *,10)=256;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&first);
 v0=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v0 = *v0 &~ 16;
@@ -282,13 +282,16 @@ u32 func_ov005_02218edc(void) {
  return 9;
 }
 
+/* The id of the quote line the current CO speaks: on a story map (map id
+ * OV005_STORY_MAP_FIRST..OV005_STORY_MAP_END-1) the map's own quote text id,
+ * otherwise one of the current CO's three quote lines picked at random. */
 s32 GetCoQuoteTextId(void) {
-s32 func_020a30c0(u16); extern void **gCurrentMap; extern u32 data_ov005_02220ce8[]; extern u8 gCoState[]; extern u16 gCoPlayerSlots[];
-s32 a,b; u16 x;
-a=0; x=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
-if((u32)x>=0xa1U && (u32)x<0xbbU) a=1;
-if(a) b=1; else b=0;
-if(b&255) return data_ov005_02220ce8[x-0xa1];
-return func_020a30c0(*(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[4]*(s16)12));
+ s32 GetRandomCoQuoteTextId(u16); extern void **gCurrentMap; extern u32 gCoStoryMapQuoteTextIds[]; extern u8 gCoState[]; extern u16 gCoPlayerSlots[];
+ s32 a,b; u16 mapId;
+ a=0; mapId=M2C_FIELD(*gCurrentMap,u16 *,MAP_ID);
+ if((u32)mapId>=OV005_STORY_MAP_FIRST && (u32)mapId<OV005_STORY_MAP_END) a=1;
+ if(a) b=1; else b=0;
+ if(b&255) return gCoStoryMapQuoteTextIds[mapId-OV005_STORY_MAP_FIRST];
+ return GetRandomCoQuoteTextId(*(u16 *)((u8 *)gCoPlayerSlots + (s16)gCoState[CO_STATE_CURRENT_SLOT]*(s16)CO_SLOT_STRIDE));
 }
 

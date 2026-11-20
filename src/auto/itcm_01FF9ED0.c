@@ -300,7 +300,7 @@ void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg
  * gCur3DSpriteEngine at its engine while doing so, run its draw callback and
  * finally recurse into its children. */
 void Update3DSpriteObject(void *obj) {
-    extern u8 data_027e15b8, data_027e15b4;
+    extern u8 gSpriteUpdateBusy, gFramePending;
     extern s32 gCur3DSpriteEngine;
     s32 savedEngine;
     void *node;
@@ -312,7 +312,7 @@ void Update3DSpriteObject(void *obj) {
     M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_VISITING;
     if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_CHILD_COUNT) == 0 && !(M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_INIT)) {
         if (M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_NEW) {
-            if (data_027e15b8 && data_027e15b4) goto skip;
+            if (gSpriteUpdateBusy && gFramePending) goto skip;
             M2C_FIELD(obj, u8 *, DS3D_SPRITE_FLAGS) &= ~DS3D_SPRITE_FLAG_NEW;
         }
         savedEngine = gCur3DSpriteEngine;

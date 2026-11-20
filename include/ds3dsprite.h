@@ -76,6 +76,10 @@
 #define DS3D_OFFSET2_X 0x40
 #define DS3D_OFFSET2_Y 0x42
 
+/* Extra layer displacement used by the split-map scroll animation. */
+#define DS3D_SCROLL_LAYER_X 0x38 /* s16 scroll displacement on the x axis */
+#define DS3D_SCROLL_LAYER_Y 0x3A /* s16 scroll displacement on the y axis */
+
 /* Byte offsets, from the sprite bank plus the layer's s16 index, of that layer's
  * quad offset: x at +0x38, y at +0x40 (see DS3DSpriteBank::corner). */
 #define DS3D_QUAD_X 0x38
@@ -324,6 +328,17 @@ enum {
     TRANSITION_MODE_SPLIT  = 2  /* split the screen into two sliding windows */
 };
 
+/* A queued 3D sprite task: a plain 3D sprite object created by func_0209ccb8
+ * (main_0209CC04.c), which records the function the engine runs at +0x34.  The
+ * copy/upload tasks in main_0207C2F0.c keep their arguments in the fields
+ * below; the callback runs once and then the object is destroyed. */
+#define DS3D_TASK_CALLBACK    0x34 /* void (*)(void *): the task's run function */
+#define DS3D_TASK_SOURCE      0x38 /* void *source block to copy or upload */
+#define DS3D_TASK_DEST        0x3C /* void *destination of a memory copy */
+#define DS3D_TASK_SIZE        0x40 /* s32 bytes to copy or upload */
+#define DS3D_TASK_OFFSET      0x44 /* s32 destination offset of a VRAM/palette upload */
+#define DS3D_TASK_FREE_SOURCE 0x50 /* s32: free SOURCE when the task has run */
+
 /* A task sprite: a 3D sprite object that owns an OS thread, so that the thread
  * lives in a heap block freed with the object.  Creation allocates the thread
  * (TASK_SPRITE_THREAD_SIZE bytes) and its stack, starts the entry function on
@@ -421,6 +436,18 @@ typedef struct DS3DSpriteOffsetTrack {
 } DS3DSpriteOffsetTrack;
 
 
+/* Fields a 3D sprite object gains when it is a screen flash (func_02080358
+ * creates it; the update callbacks in main_02080414 step it): the fade to white,
+ * a hold at white, then the fade back.  The plain 3D sprite object fields
+ * (0x00..0x33) come first. */
+#define DS3D_SPRITE_FLASH_IN_ELAPSED   0x5C /* s32 frames the fade to white has run */
+#define DS3D_SPRITE_FLASH_HOLD_ELAPSED 0x60 /* s32 frames the white screen has been held */
+#define DS3D_SPRITE_FLASH_OUT_ELAPSED  0x64 /* s32 frames the fade back has run */
+#define DS3D_SPRITE_FLASH_IN_FRAMES    0x6C /* s16 frames the fade to white takes */
+#define DS3D_SPRITE_FLASH_HOLD_FRAMES  0x6E /* s16 frames the white screen is held */
+#define DS3D_SPRITE_FLASH_OUT_FRAMES   0x70 /* s16 frames the fade back takes */
+
+
 /* Palette fade fields a 3D sprite object gains when it is animated by
  * UpdatePaletteFade (main_0208C830): the object fades the palette of its layer
  * from `from` to `to` over `duration` frames.  The plain 3D sprite object
@@ -513,6 +540,7 @@ typedef struct ToggleWidget {
  * object extended with the face texture shown, its expression and palette
  * style, and a linked face object that is refreshed with it. */
 #define FACE_SPRITE_TILE        0x40 /* u32: bits 18..25 are the face tile row */
+#define FACE_SPRITE_TILE_ROW_MASK 0x03FC0000 /* bits of FACE_SPRITE_TILE holding the row */
 #define FACE_SPRITE_SCREEN      0x48 /* u8: bits 1..3 pick the engine (0 main, 1 sub, 3 active) */
 #define FACE_SPRITE_TILE_ROW    0x49 /* u8 tile row inside the face texture */
 #define FACE_SPRITE_FACE        0x58 /* u8 face id; 0 = no face loaded */

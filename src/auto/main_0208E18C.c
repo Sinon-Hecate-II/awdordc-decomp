@@ -201,7 +201,37 @@ M2C_FIELD(p,u8 *,0x49),clamped);
 gCur3DSpriteEngine=saved;
 }
 
-void *func_0208ecc0(void *arg0) { M2C_UNK func_02089108(); extern M2C_UNK data_021025d4; extern s32 g3DSpriteEngineMain,gCur3DSpriteEngine; u8 var_r0,var_r0_2; func_02089108(); M2C_FIELD(arg0,M2C_UNK **,0)=&data_021025d4; if(gCur3DSpriteEngine==g3DSpriteEngineMain)var_r0=1;else var_r0=0; if(var_r0!=1)var_r0_2=1;else var_r0_2=0; M2C_FIELD(arg0,u8 *,0x48)=(u8)((M2C_FIELD(arg0,u8 *,0x48)&~0xE)|((u32)(var_r0_2<<29)>>28)); M2C_FIELD(arg0,s16 *,0x34)=0; M2C_FIELD(arg0,s16 *,0x36)=0; M2C_FIELD(arg0,s32 *,0x58)=0; M2C_FIELD(arg0,s16 *,0x3c)=0; return arg0; }
+/* Constructor of a countdown-timer display sprite: run the sprite actor's shared
+ * base initialiser, install the timer display's class, draw on the main screen
+ * (or both when created while the sub engine is current), and reset its position
+ * and remaining time. */
+void *InitTimerDisplay(void *display) {
+    M2C_UNK Init3DSpriteActor();
+    extern M2C_UNK gTimerDisplayVtable;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 gCur3DSpriteEngine;
+    u8 isMain;
+    u8 target;
+
+    Init3DSpriteActor();
+    M2C_FIELD(display, M2C_UNK **, 0) = &gTimerDisplayVtable;
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
+        isMain = 1;
+    } else {
+        isMain = 0;
+    }
+    if (isMain != 1) {
+        target = 1;
+    } else {
+        target = 0;
+    }
+    M2C_FIELD(display, u8 *, SPRITE_ACTOR_STATE) = (u8) ((M2C_FIELD(display, u8 *, SPRITE_ACTOR_STATE) & ~0xE) | ((u32) (target << 0x1D) >> 0x1C));
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_X) = 0;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0;
+    M2C_FIELD(display, s32 *, TIMER_DISPLAY_TICKS) = 0;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_TILE) = 0;
+    return display;
+}
 
 void func_0208ed40(void) {
 
@@ -217,12 +247,12 @@ void func_0208ed58(void *p){func_0208eb80(p);}
 
 void func_0208ed64(M2C_UNK arg0) {
     s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    void *func_0208ecc0();
+    void *InitTimerDisplay();
     extern M2C_UNK data_021026b8;
     if (CreateSpriteFromClass(&data_021026b8, arg0) == 0) {
         return;
     }
-    func_0208ecc0();
+    InitTimerDisplay();
 }
 
 /* Constructor of a number-display sprite: run the sprite actor's shared base
@@ -230,14 +260,14 @@ void func_0208ed64(M2C_UNK arg0) {
  * both when the display is created while the sub engine is current), and start
  * with no digits shown: cursor on digit 0, nine digits, value 0 and no source. */
 void *InitNumberDisplay(void *display) {
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK gNumberDisplayVtable;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     u8 isMain;
     u8 target;
 
-    func_02089108();
+    Init3DSpriteActor();
     M2C_FIELD(display, M2C_UNK **, 0) = &gNumberDisplayVtable;
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
         isMain = 1;

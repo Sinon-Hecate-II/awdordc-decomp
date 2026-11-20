@@ -36,19 +36,29 @@ if(a&32)n+=2;
 return n;
 }
 
-s32 func_0206283c(void *arg,s32 n) {
-s8 *p=arg;
-s32 BoundedStringLength(s8 *,s32);
-while(n>0 && *p){
-s32 k=BoundedStringLength(p,n);
-if(k<0)return 0;
-n-=k;p+=k;
-k=BoundedStringLength(p,n);
-if(k<0)return 0;
-p+=k;n-=k;
-}
-if(n==0)return 0;
-return *p==0;
+/* Check that the player record's key/value pairs fit and end with an empty key. */
+s32 gpiCheckPlayerKeyValueList(void *data, s32 remaining) {
+    s8 *field = data;
+    s32 BoundedStringLength(s8 *, s32);
+
+    while (remaining > 0 && *field) {
+        s32 fieldBytes = BoundedStringLength(field, remaining);
+        if (fieldBytes < 0) {
+            return 0;
+        }
+        remaining -= fieldBytes;
+        field += fieldBytes;
+        fieldBytes = BoundedStringLength(field, remaining);
+        if (fieldBytes < 0) {
+            return 0;
+        }
+        field += fieldBytes;
+        remaining -= fieldBytes;
+    }
+    if (remaining == 0) {
+        return 0;
+    }
+    return *field == 0;
 }
 
 /* Walks a list of opcodes, advancing data/n as commands require; returns 1 on success. */
@@ -128,7 +138,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     s32 func_02061168();
     M2C_UNK SBServerListAddServer(M2C_UNK, s32);
     s32 func_02062810(u8);
-    s32 func_0206283c(void *, s32);
+    s32 gpiCheckPlayerKeyValueList(void *, s32);
     s32 func_020628c0(M2C_UNK, void *, s32);
 
     s32 gpiProcessPlayerRecord(M2C_UNK, s32, u8 *, s32, s32);
@@ -152,7 +162,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     if ((flags & 0x40) && (func_020628c0(context, data + headerLen, size - headerLen) == 0)) {
         return 0;
     }
-    if ((flags & 0x80) && (func_0206283c(data + headerLen, size - headerLen) == 0)) {
+    if ((flags & 0x80) && (gpiCheckPlayerKeyValueList(data + headerLen, size - headerLen) == 0)) {
         return 0;
     }
     if (ByteCompareN(data + 1, &data_021001a0, 4) == 0) {

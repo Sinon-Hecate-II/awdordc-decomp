@@ -73,41 +73,42 @@ void func_ov002_021e1624(void) {
     func_ov002_021e3e00(&data_ov002_021f3014);
 }
 
-s32 func_ov002_021e1638(void *a) {
-    M2C_FIELD(a,s32 *,4)=0;
-    M2C_FIELD(a,s32 *,16)=0;
-    M2C_FIELD(a,s32 *,24)=0;
-    M2C_FIELD(a,s32 *,28)=0;
-    M2C_FIELD(a,s32 *,32)=0;
-    M2C_FIELD(a,s32 *,36)=0;
-    M2C_FIELD(a,s32 *,40)=0;
-    M2C_FIELD(a,s32 *,44)=0;
-    M2C_FIELD(a,s32 *,48)=0;
-    M2C_FIELD(a,s32 *,52)=0;
-    M2C_FIELD(a,s32 *,20)=0;
-    M2C_FIELD(a,u16 *,56)=0;
-    M2C_FIELD(a,u8 *,58)=0;
-    M2C_FIELD(a,u8 *,59)=0;
-    M2C_FIELD(a,u16 *,60)=0;
-    M2C_FIELD(a,u16 *,62)=0;
-    M2C_FIELD(a,u16 *,64)=0;
-    M2C_FIELD(a,u8 *,70)=0;
-    M2C_FIELD(a,u16 *,66)=256;
-    M2C_FIELD(a,u8 *,68)=0;
-    M2C_FIELD(a,u8 *,69)=0;
-    M2C_FIELD(a,u8 *,72)=0;
-    M2C_FIELD(a,u8 *,73)=0;
-    M2C_FIELD(a,u8 *,74)=0;
-    M2C_FIELD(a,u8 *,77)=0;
-    M2C_FIELD(a,u8 *,78)=31;
-    M2C_FIELD(a,u8 *,79)=0;
-    M2C_FIELD(a,u8 *,80)=0;
-    M2C_FIELD(a,u8 *,81)=0;
+/* Clear script playback state and restore the default transform and polygon alpha. */
+s32 ResetEffectNodeScriptState(void *node) {
+    M2C_FIELD(node, s32 *, FX_NODE_ID) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_FRAME_OFFSETS) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_START) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_NEXT) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_FRAME_COMMAND) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_BLEND_COMMAND) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_GRAPHIC_X) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_GRAPHIC_Y) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_FRAME_TICKS) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_TICKS) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_FRAME_DATA) = 0;
+    M2C_FIELD(node, u16 *, FX_NODE_SHAPE) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_KIND) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_PALETTE_ALT) = 0;
+    M2C_FIELD(node, u16 *, FX_NODE_X) = 0;
+    M2C_FIELD(node, u16 *, FX_NODE_Y) = 0;
+    M2C_FIELD(node, u16 *, FX_NODE_Z) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_SCRIPT_INDEX) = 0;
+    M2C_FIELD(node, u16 *, FX_NODE_SCRIPT_SCALE) = FX_SCRIPT_SCALE_ONE;
+    M2C_FIELD(node, u8 *, FX_NODE_STEP_X) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_STEP_Y) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_FLASH_FRAMES) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_FLASH_PHASE) = 0;
+    M2C_FIELD(node, u8 *, 0x4A) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_POLYGON_SLOT) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_POLYGON_ALPHA) = FX_POLYGON_ALPHA_MAX;
+    M2C_FIELD(node, u8 *, 0x4F) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_ACTIVE) = 0;
+    M2C_FIELD(node, u8 *, FX_NODE_FLAG_51) = 0;
 }
 
 void func_ov002_021e16bc(void *arg0, s8 arg1, s8 arg2) {
-    M2C_UNK func_ov002_021e1638();
-    func_ov002_021e1638();
+    M2C_UNK ResetEffectNodeScriptState();
+    ResetEffectNodeScriptState();
     M2C_FIELD(arg0, s8 *, 0x53) = arg1;
     M2C_FIELD(arg0, s8 *, 0x47) = arg2;
 }
@@ -470,7 +471,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
     void func_ov002_021e2204(void *);
     void func_ov002_021e2364(void *);
-    s32 func_ov002_021e27c4(void *);
+    s32 Ov002_GetEffectScriptDuration(void *);
     M2C_UNK var_r1;
     s32 var_r0;
     s32 var_r0_2;
@@ -503,7 +504,7 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     if (M2C_FIELD(arg0, s32 *, 0x2C) == 0) {
         var_r0 = 0;
     } else {
-        var_r0 = func_ov002_021e27c4(arg0);
+        var_r0 = Ov002_GetEffectScriptDuration(arg0);
     }
     func_ov002_021e1cac(arg0, sameSide, 0, M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, s32 *, 0x2C), (s32) M2C_FIELD(arg0, u8 *, 0x4C), M2C_FIELD(arg0, s32 *, 0x34), var_r0);
     temp_r2_2 = M2C_FIELD(arg0, s8 *, 0x4F);

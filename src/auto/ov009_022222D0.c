@@ -162,15 +162,19 @@ extern "C" void ResetLinkQueues(void) {
 #pragma cplusplus off
 
 #pragma cplusplus on
-extern "C" s32 IsLinkPacketQueued(s32 arg0) {
-extern M2C_UNK gLinkState;
-Ov009InterruptGuard guard;
-void *node=M2C_FIELD(&gLinkState,void **,0x64);
-while(node) {
-if(arg0==M2C_FIELD(node,u8 *,8))return 1;
-node=M2C_FIELD(node,void **,0);
-}
-return 0;
+/* Whether a packet for `channel` is waiting in the overlay's pending-send queue.
+ * Interrupts are held off while the queue is walked because the link interrupt
+ * may unlink packets from it. */
+extern "C" s32 IsLinkPacketQueued(s32 channel) {
+    extern M2C_UNK gLinkState;
+    Ov009InterruptGuard guard;
+    void *packet = M2C_FIELD(&gLinkState, void **, LINK_STATE_SEND_QUEUE);
+
+    while (packet) {
+        if (channel == M2C_FIELD(packet, u8 *, LINK_SEND_CHANNEL)) return 1;
+        packet = M2C_FIELD(packet, void **, LINK_SEND_NEXT);
+    }
+    return 0;
 }
 #pragma cplusplus off
 /* General WFC event callback of the link overlay: a fatal result halts the
@@ -526,29 +530,23 @@ void HandleLinkConnectTaskEvent(void *arg0) {
 
 #pragma scheduling off
 s32 func_ov009_02222f84(void) {
-s32 WFC_GetPlayerMask(void); s32 GetConsoleLocalId(void); s32 func_020124c4(void *,void *);
-extern M2C_UNK gLinkState; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
-s32 bits; s32 result;
-    register void *state;
-    register u16 selected;
-    register u32 one;
-bits=WFC_GetPlayerMask();
-if(bits==0x8000) {SignalLinkError(3);return 0;}
-if(bits==0) {SignalLinkResult(0x17);return 0;}
-state = &gLinkState;
-    selected = M2C_FIELD(state, u16 *, 6);
-    if (selected == 0) {
-        one = 1;
+s32 func_02011d58(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
+extern M2C_UNK data_ov009_022268e0; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
+s32 mask; s32 result;
+mask=func_02011d58();
+if(mask==0x8000) {func_ov009_022227d4(3);return 0;}
+if(mask==0) {func_ov009_02222910(0x17);return 0;}
+if(M2C_FIELD(&data_ov009_022268e0,u16 *,6)==0) {
 do {
-M2C_FIELD(state,u16 *,0x84)++;
-if(M2C_FIELD(state,u16 *,0x84)>14) M2C_FIELD(state,u16 *,0x84)=one;
-} while(!(bits&(one<<(M2C_FIELD(state,u16 *,0x84)-1))));
-} else M2C_FIELD(state,u16 *,0x84)=selected;
-M2C_FIELD(&gLinkState,u16 *,0x86)=GetConsoleLocalId();
-M2C_FIELD(&gLinkState,void **,0x80)=&data_ov009_02226a80;
+M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)++;
+if(M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)>14) M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)=1;
+}while(!(mask&(1<<(M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)-1))));
+} else M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)=M2C_FIELD(&data_ov009_022268e0,u16 *,6);
+M2C_FIELD(&data_ov009_022268e0,u16 *,0x86)=func_02011e98();
+M2C_FIELD(&data_ov009_022268e0,void **,0x80)=&data_ov009_02226a80;
 result=func_020124c4(&func_ov009_02223078,&data_ov009_02226960);
 if(result==2) return 1;
-SignalLinkError(result);
+func_ov009_022227d4(result);
 return 0;
 }
 #pragma scheduling reset

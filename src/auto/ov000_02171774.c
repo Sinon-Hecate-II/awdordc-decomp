@@ -20,7 +20,7 @@ void func_ov000_02171774(void *p) {
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
  s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
- void MI_CpuCopy32(void*,void*,s32);void CopyToObjPaletteShadow(void*,s32,s32);void func_020ae528(void*);
+ void MI_CpuCopy32(void*,void*,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
  void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
  void *old=gCur3DSpriteEngine;
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
@@ -44,7 +44,7 @@ void func_ov000_02171774(void *p) {
    pal=(idx+0x1b)<<5;
    CopyToObjPaletteShadow(func_ov000_0216ce84(b),pal,32);
    if(IsPlayerActive(i))M2C_FIELD((u8*)object+i,u8*,0x34)=1;
-   else{M2C_FIELD((u8*)object+i,u8*,0x34)=0;func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+(pal&~1));}
+   else{M2C_FIELD((u8*)object+i,u8*,0x34)=0;DimPalette((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+(pal&~1));}
   }
  i++;k+=140;}while(i<5);
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=4;
@@ -57,14 +57,14 @@ void func_ov000_02171774(void *p) {
  LoadFileToSpriteBuffer(data_ov000_021b8de4,0x340,32);
  dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240;
  MI_CpuCopy32((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x340,dst,32);
- func_020ae528((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240);
+ DimPalette((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x240);
  CreateMenuUnitSprite(object);gCur3DSpriteEngine=old;
 }
 
 #pragma opt_strength_reduction off
 void func_ov000_02171a68(void *arg0) {
 s32 IsPlayerPresent(s32); s32 IsPlayerCpu(s32); s32 func_ov000_02171768(s32);
-void func_020a947c(void *,u32); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
+void SetTextSpriteFont(void *,u32); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
 void AddSprite(u16,u8,u16,void *,s32);
 extern void *g3DSpriteEngineMain,*gCur3DSpriteEngine; extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],data_02101f1c[],gMapConfig[];
@@ -76,7 +76,7 @@ saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 M2C_FIELD(sp,void **,0)=gHeapObjectVTable;sp[4]=0;
 M2C_FIELD(sp,u16 *,18)=0;sp[20]=8;sp[21]=8;sp[22]=1;sp[23]=8;sp[24]=8;
 sp[33]=0;M2C_FIELD(sp,s32 *,36)=0;sp[40]&=~224;sp[41]=0;
-func_020a947c(sp,3);M2C_FIELD(sp,u16 *,18)=0x36c;sp[33]=15;sp[32]=(sp[32]&~224)|32;
+SetTextSpriteFont(sp,3);M2C_FIELD(sp,u16 *,18)=0x36c;sp[33]=15;sp[32]=(sp[32]&~224)|32;
 i=sp[22]; k=0x8c;
 do { if(IsPlayerPresent(i)){
 idx=i-1;unit=M2C_FIELD((u8*)*gCurrentMap+k+0x6000,u8 *,0x7ca)-1;

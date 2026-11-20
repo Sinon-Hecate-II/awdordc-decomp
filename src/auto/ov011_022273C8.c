@@ -226,12 +226,12 @@ void func_ov011_02227ea4(M2C_UNK arg0) {
 
 void func_ov011_02227ecc(M2C_UNK arg0) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_ov011_02225684();
+    M2C_UNK InitIntroMenu();
     extern M2C_UNK data_ov011_02228a78;
     if (CreateSpriteObject(&data_ov011_02228a78, arg0) == 0) {
         return;
     }
-    func_ov011_02225684();
+    InitIntroMenu();
 }
 
 void func_ov011_02227ef0(void) {

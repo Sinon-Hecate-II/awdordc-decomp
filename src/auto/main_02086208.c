@@ -343,7 +343,7 @@ void func_02086930(s32 arg0, s8 arg1) {
     M2C_FIELD(&gEventValues, s8 *, arg0) = arg1;
 }
 
-u8 func_02086940(u32 arg0) {
+u8 IsMapListFlagSet(u32 arg0) {
     extern M2C_UNK data_02157744;
     return (u8) (M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }

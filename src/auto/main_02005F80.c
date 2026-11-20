@@ -198,7 +198,7 @@ s32 OS_SendMessage(OSMessageQueue *queue, s32 message, s32 flags) {
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_WakeupThread(void *);
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     s32 state;
 
     state = OS_DisableInterrupts();
@@ -209,7 +209,7 @@ s32 OS_SendMessage(OSMessageQueue *queue, s32 message, s32 flags) {
         }
         OS_SleepThread(&queue->sendQueue);
     }
-    queue->msgArray[(s32)(func_020720f0(queue->firstIndex + queue->usedCount, queue->msgCount) >> 32)] = message;
+    queue->msgArray[(s32)(RuntimeIntDivMod(queue->firstIndex + queue->usedCount, queue->msgCount) >> 32)] = message;
     queue->usedCount = queue->usedCount + 1;
     OS_WakeupThread(&queue->receiveQueue);
     OS_RestoreInterrupts(state);
@@ -225,7 +225,7 @@ s32 OS_ReceiveMessage(OSMessageQueue *queue, s32 *msg, s32 flags) {
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_WakeupThread(void *);
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     s32 state;
 
     state = OS_DisableInterrupts();
@@ -239,7 +239,7 @@ s32 OS_ReceiveMessage(OSMessageQueue *queue, s32 *msg, s32 flags) {
     if (msg != NULL) {
         *msg = queue->msgArray[queue->firstIndex];
     }
-    queue->firstIndex = (s32)(func_020720f0(queue->firstIndex + 1, queue->msgCount) >> 32);
+    queue->firstIndex = (s32)(RuntimeIntDivMod(queue->firstIndex + 1, queue->msgCount) >> 32);
     queue->usedCount = queue->usedCount - 1;
     OS_WakeupThread(queue);
     OS_RestoreInterrupts(state);
@@ -254,7 +254,7 @@ s32 OS_JamMessage(void *queue, s32 message, s32 flags) {
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
     M2C_UNK OS_WakeupThread(void *);
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     s32 state;
 
     state = OS_DisableInterrupts();
@@ -267,7 +267,7 @@ s32 OS_JamMessage(void *queue, s32 message, s32 flags) {
     }
     ((s32 *)M2C_FIELD(queue, void **, 0x10))[
         M2C_FIELD(queue, s32 *, 0x18) =
-            (s32)(func_020720f0(M2C_FIELD(queue, s32 *, 0x18) + M2C_FIELD(queue, s32 *, 0x14) - 1, M2C_FIELD(queue, s32 *, 0x14)) >> 32)
+            (s32)(RuntimeIntDivMod(M2C_FIELD(queue, s32 *, 0x18) + M2C_FIELD(queue, s32 *, 0x14) - 1, M2C_FIELD(queue, s32 *, 0x14)) >> 32)
     ] = message;
     M2C_FIELD(queue, s32 *, 0x1C) = M2C_FIELD(queue, s32 *, 0x1C) + 1;
     OS_WakeupThread((u8 *)queue + 8);
@@ -305,44 +305,47 @@ void InitMutex(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
 }
 
-void LockMutex(void *arg0) {
+/* Lock an OSMutex for the running thread: claim a free mutex, count the lock when
+ * the running thread already holds it (re-entrant), or sleep on it until the
+ * holder releases it. */
+void LockMutex(void *mutex) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
-    void func_020066f4(void *, void *);
+    void AppendThreadMutex(void *, void *);
     extern M2C_UNK gSocketManager;
-    s32 state;
-    void *head;
-    u32 c;
+    s32 irq;
+    void *thread;
+    u32 count;
 
-    state = OS_DisableInterrupts();
-    head = M2C_FIELD(&gSocketManager, void **, 0x4);
+    irq = OS_DisableInterrupts();
+    thread = M2C_FIELD(&gSocketManager, void **, 0x4); /* the running thread */
     while (1) {
-        void *cur = M2C_FIELD(arg0, void **, 0x8);
-        if (cur == NULL) {
-            M2C_FIELD(arg0, void **, 0x8) = head;
-            c = M2C_FIELD(arg0, u32 *, 0xC) + 1;
-            M2C_FIELD(arg0, u32 *, 0xC) = c;
-            func_020066f4(head, arg0);
+        void *holder = M2C_FIELD(mutex, void **, OSMUTEX_OWNER);
+        if (holder == NULL) {
+            M2C_FIELD(mutex, void **, OSMUTEX_OWNER) = thread;
+            count = M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) + 1;
+            M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) = count;
+            AppendThreadMutex(thread, mutex);
             break;
         }
-        if (cur == head) {
-            c = M2C_FIELD(arg0, u32 *, 0xC) + 1;
-            M2C_FIELD(arg0, u32 *, 0xC) = c;
+        if (holder == thread) {
+            count = M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) + 1;
+            M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) = count;
             break;
         }
-        M2C_FIELD(head, void **, 0x84) = arg0;
-        OS_SleepThread(arg0);
-        M2C_FIELD(head, void **, 0x84) = NULL;
+        M2C_FIELD(thread, void **, THREAD_WAIT_MUTEX) = mutex;
+        OS_SleepThread(mutex);
+        M2C_FIELD(thread, void **, THREAD_WAIT_MUTEX) = NULL;
     }
-    OS_RestoreInterrupts(state);
+    OS_RestoreInterrupts(irq);
 }
 
 void UnlockMutex(void *arg0) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_WakeupThread(void *);
-    void func_02006718(void *, void *);
+    void RemoveThreadMutex(void *, void *);
     extern M2C_UNK gSocketManager;
     s32 state;
     void *head;
@@ -355,7 +358,7 @@ void UnlockMutex(void *arg0) {
         c = c - 1;
         M2C_FIELD(arg0, u32 *, 0xC) = c;
         if (c == 0) {
-            func_02006718(head, arg0);
+            RemoveThreadMutex(head, arg0);
             M2C_FIELD(arg0, void **, 0x8) = NULL;
             OS_WakeupThread(arg0);
         }
@@ -382,7 +385,7 @@ void func_02006644(void *arg0) {
 s32 TryLockMutex(void *arg0) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void func_020066f4(void *, void *);
+    void AppendThreadMutex(void *, void *);
     extern M2C_UNK gSocketManager;
     void *head;
     void *cur;
@@ -397,7 +400,7 @@ s32 TryLockMutex(void *arg0) {
         M2C_FIELD(arg0, void **, 0x8) = head;
         tmp = M2C_FIELD(arg0, u32 *, 0xC) + 1;
         M2C_FIELD(arg0, u32 *, 0xC) = tmp;
-        func_020066f4(head, arg0);
+        AppendThreadMutex(head, arg0);
         r6 = 1;
     } else if (cur == head) {
         M2C_FIELD(arg0, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0xC) + 1;
@@ -409,7 +412,7 @@ s32 TryLockMutex(void *arg0) {
     return r6;
 }
 
-void func_020066f4(void *arg0, void *arg1) {
+void AppendThreadMutex(void *arg0, void *arg1) {
     void *temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, void **, 0x8C);
@@ -423,7 +426,7 @@ void func_020066f4(void *arg0, void *arg1) {
     M2C_FIELD(arg0, void **, 0x8C) = arg1;
 }
 
-void func_02006718(void *arg0, void *arg1) {
+void RemoveThreadMutex(void *arg0, void *arg1) {
     void *temp_r1;
     void *temp_r2;
 

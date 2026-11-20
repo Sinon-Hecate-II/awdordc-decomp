@@ -111,7 +111,7 @@ func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)func_ov005_02211c24(j);
-func_ov005_02211b4c();func_ov000_0216a4e0((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
+func_ov005_02211b4c();GetRecordTierTotals((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
 func_ov005_02211c94();UpdateMedalFlags();
 save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}

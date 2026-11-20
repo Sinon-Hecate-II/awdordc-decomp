@@ -2,14 +2,14 @@
 #include "common.h"
 #include "ghttp.h"
 
-/* A list node in the online player screen: its type table, the capacity of the
- * player array and the entries collected so far.  Each player record is 0x310
- * bytes (id, name, ... data size at +0x30C). */
+/* A list node in the online player screen: its type table, the player record
+ * array, its count-out slot and the entries collected so far.  Each player record
+ * is 0x310 bytes (id, name, ... data size at +0x30C). */
 #define LIST_VTABLE    0x00 /* s32 *type table */
 #define LIST_FIRST     0x34 /* void *first player record */
 #define LIST_COUNT     0x38 /* s32 number of players collected */
 #define LIST_LIMIT     0x3C /* s32 most players the list may hold */
-#define LIST_CAPACITY  0x40 /* s32 capacity the list was created with */
+#define LIST_CAPACITY  0x40 /* s32 *count-out: the answering request writes its count here */
 #define LIST_IDS       0x44 /* s32 *player id array, LIST_CAPACITY entries */
 #define LIST_UNK48     0x48
 #define LIST_ID_SLOTS  0x40 /* id array size the ids are padded to */
@@ -256,24 +256,28 @@ void FillOnlinePlayerListFirstEntry(void *list) {
     *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 1;
 }
 
-void func_020e3870(void *arg0) {
-    void func_02007e70(s32, void *, s32);
+/* Submit the player list's stored ids to the server (web request kind 3): the
+   payload is {byte length 0x10C, flag 1, count + 1, 0} followed by the list's
+   64-slot id array; clear the count-out slot for the answer and start the list's
+   waiting animation when the request cannot be queued. */
+void RequestOnlinePlayerListIds(void *list) {
+    void MIi_CpuCopy32(s32, void *, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 sp[68];
-    s32 val;
+    s32 request[68];
+    s32 count;
 
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    val = M2C_FIELD(arg0, s32 *, 0x38) + 1;
-    sp[0] = 0x10C;
-    sp[2] = val;
-    sp[3] = 0;
-    sp[1] = 1;
-    func_02007e70(M2C_FIELD(arg0, s32 *, 0x44), &sp[4], 0x100);
-    if (SubmitWebGetRequest(3, 0, 0xFF, sp, arg0) != 0) {
+    *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 0;
+    count = M2C_FIELD(list, s32 *, LIST_COUNT) + 1;
+    request[0] = 0x10C;
+    request[2] = count;
+    request[3] = 0;
+    request[1] = 1;
+    MIi_CpuCopy32(M2C_FIELD(list, s32 *, LIST_IDS), &request[4], 0x100);
+    if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 /* Build a list node for `capacity` online players: install its type table, keep
@@ -284,7 +288,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
     void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
     s32 GetOnlineLocalPlayerId(void);
-    void func_02007e70(s32, void *, s32);
+    void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d870;
     extern s32 gOnlinePlayerListVtable;
@@ -304,7 +308,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
         M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
         playerId = GetOnlineLocalPlayerId();
-        func_02007e70((s32)&playerId, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
+        MIi_CpuCopy32((s32)&playerId, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
         CpuFill(0, M2C_FIELD(node, s32 *, LIST_IDS) + count * 4, (LIST_ID_SLOTS - count) * 4);
         for (rec = (u8 *)records; (u32)rec < end + M2C_FIELD(node, s32 *, LIST_COUNT) * PLAYER_REC_SIZE; rec += PLAYER_REC_SIZE) {
@@ -571,24 +575,28 @@ void func_020e3e04(void *arg0) {
     *M2C_FIELD(arg0, s32 **, 0x40) = count;
 }
 
-void func_020e3f08(void *arg0) {
-    void func_02007e70(s32, void *, s32);
+/* Submit the online-player list's collected ids to the server (web request kind 3):
+ * the payload is {byte length 0x10C, flag 1, count + 1, 0} followed by the list's
+ * 64-slot id array; the count-out slot is cleared for the answer, and a request that
+ * could not be queued starts the list's waiting animation. */
+void RequestOnlinePlayersByIds(void *list) {
+    void MIi_CpuCopy32(s32, void *, s32);
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 sp[68];
-    s32 val;
+    s32 request[68];
+    s32 count;
 
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    val = M2C_FIELD(arg0, s32 *, 0x38) + 1;
-    sp[0] = 0x10C;
-    sp[2] = val;
-    sp[3] = 0;
-    sp[1] = 1;
-    func_02007e70(M2C_FIELD(arg0, s32 *, 0x44), &sp[4], 0x100);
-    if (SubmitWebGetRequest(3, 0, 0xFF, sp, arg0) != 0) {
+    *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 0;
+    count = M2C_FIELD(list, s32 *, LIST_COUNT) + 1;
+    request[0] = 0x10C;
+    request[2] = count;
+    request[3] = 0;
+    request[1] = 1;
+    MIi_CpuCopy32(M2C_FIELD(list, s32 *, LIST_IDS), &request[4], 0x100);
+    if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 /* Builds an online-player list node over a caller-owned array of `*countPtr`
@@ -599,7 +607,7 @@ void func_020e3f08(void *arg0) {
 void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
-    void func_02007e70(s32, void *, s32);
+    void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 gOnlinePlayerListWithIdsClass;
     extern s32 gOnlinePlayerListVtable;
@@ -617,7 +625,7 @@ void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s
         M2C_FIELD(node, s32 *, LIST_CAPACITY) = (s32)countPtr;
         M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
-        func_02007e70(ids, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
+        MIi_CpuCopy32(ids, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
         CpuFill(0, M2C_FIELD(node, s32 *, LIST_IDS) + count * 4, (LIST_ID_SLOTS - count) * 4);
         for (rec = (u8 *)records; (u32)rec < base + M2C_FIELD(node, s32 *, LIST_COUNT) * PLAYER_REC_SIZE; rec += PLAYER_REC_SIZE) {
@@ -658,7 +666,7 @@ void func_020e4090(void *arg0) {
 void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
-    void func_02007e70(s32, void *, s32);
+    void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d8a8;
     extern s32 gOnlinePlayerListVtable;
@@ -675,7 +683,7 @@ void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
         M2C_FIELD(node, s32 *, 0x40) = result;
         M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = flags;
-        func_02007e70((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
+        MIi_CpuCopy32((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
         CpuFill(0, M2C_FIELD(node, s32 *, LIST_IDS) + count * 4, (0x40 - count) * 4);
     }
@@ -690,7 +698,7 @@ void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
 void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
     s32 func_020e34f4(s32);
-    void func_02007e70(s32, void *, s32);
+    void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d7d8;
     extern s32 gOnlinePlayerListVtable;
@@ -707,7 +715,7 @@ void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
         M2C_FIELD(node, s32 *, 0x40) = result;
         M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = flags;
-        func_02007e70((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
+        MIi_CpuCopy32((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
         CpuFill(0, M2C_FIELD(node, s32 *, LIST_IDS) + count * 4, (0x40 - count) * 4);
     }
@@ -844,10 +852,10 @@ void func_020e4458(void) {
     M2C_UNK GX_SetVBlankIrq(M2C_UNK, u16);
     M2C_UNK OS_SetIrqHandler(M2C_UNK, M2C_UNK *);
     M2C_UNK OS_EnableIrqMask(M2C_UNK);
-    extern M2C_UNK func_020e4688;
+    extern M2C_UNK VBlankHandler;
     u16 temp_r1;
 
-    OS_SetIrqHandler(1, &func_020e4688);
+    OS_SetIrqHandler(1, &VBlankHandler);
     OS_EnableIrqMask(1);
     temp_r1 = *(u16 *)0x04000208;
     *(u16 *)0x04000208 = 1;

@@ -104,7 +104,7 @@ M2C_FIELD(&data_0213dc60,u16 *,16)=2;
 M2C_FIELD(&data_0213dc60,u16 *,18)=0;
 M2C_FIELD(&data_0213dc60,void **,20)=&data_0213dc8c;
 M2C_FIELD(&data_0213dc60,s32 *,24)=0;
-func_02021d14(GetLocalIpAddress(&data_0213dc60),&data_0213dc78);
+IpToBytes(GetLocalIpAddress(&data_0213dc60),&data_0213dc78);
 if(!M2C_FIELD(&data_0213dc60,s32 *,24))return 0;
 M2C_FIELD(&data_0213dc60,void **,44)=&data_0213dc78;
 M2C_FIELD(&data_0213dc60,u16 *,18)=4;
@@ -121,7 +121,7 @@ void ghiSocket(void) {
     func_0204968c(func_02021500(), -1);
 }
 
-void func_020496b8(void) {
+void ghiCloseSocket(void) {
     s32 func_0202175c();
     func_0204968c(func_0202175c(), -1);
 }

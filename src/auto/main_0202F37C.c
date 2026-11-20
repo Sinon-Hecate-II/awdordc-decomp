@@ -269,7 +269,7 @@ loop_2:
 }
 
 void func_0202fa68(u8 arg0,void *arg1,s32 arg2,s32 arg3) {
-M2C_UNK func_02007e70(void *,s32,M2C_UNK);
+M2C_UNK MIi_CpuCopy32(void *,s32,M2C_UNK);
 s32 value;
 u8 byte;
 u16 code;
@@ -281,13 +281,13 @@ value=(s32)code>>2;
 if(!(code&2))value+=25;
 M2C_FIELD(p,volatile u8 *,0x402)=(u8)(value & 0xff);
 M2C_FIELD(p,u8 *,0x403)=(M2C_FIELD(p,u8 *,0x403)&~127)|(arg2&127);
-func_02007e70(arg1,arg3+0xbf0,0xc0);
+MIi_CpuCopy32(arg1,arg3+0xbf0,0xc0);
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
 #pragma optimization_level 2
 void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
- M2C_UNK func_02007e70(void *, s32, M2C_UNK);
+ M2C_UNK MIi_CpuCopy32(void *, s32, M2C_UNK);
  s32 n; void *base; s32 offset; void *p; u16 v;
  v=M2C_FIELD(arg1,u16 *,2);
  base=(u8 *)arg3+0x444;
@@ -302,7 +302,7 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  M2C_FIELD(p,u8 *,2)=n;
  M2C_FIELD(p,u8 *,3)=(M2C_FIELD(p,u8 *,3)&~0x7F)|(arg2&0x7F);
  }
- func_02007e70(arg1,(s32)arg3+offset,0xC0);
+ MIi_CpuCopy32(arg1,(s32)arg3+offset,0xC0);
 }
 #pragma opt_common_subs off
 /* Bubble-sorts the WFC friend roster backwards from `count`-1: while the entry
@@ -313,7 +313,7 @@ void func_0202fab4(s32 arg0, void *arg1, s32 arg2, void *arg3) {
  * last result entry and the last record. */
 void Wfc_SortFriendRoster(s32 count, s32 base) {
     M2C_UNK CpuFill(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_02007e70(void *, s32, s32);
+    M2C_UNK MIi_CpuCopy32(void *, s32, s32);
     u8 recordTemp[0xc0];
     M2C_UNK resultTemp;
     s32 index; M2C_UNK *curResult; s32 prev; s32 results, records; s32 prevResult; s32 prevRecord, curOffset;
@@ -327,14 +327,14 @@ void Wfc_SortFriendRoster(s32 count, s32 base) {
         prevResult = results + prev*4;
 loop_2:
         if ((u32) M2C_FIELD((results + (index * 4)), u8 *, 2) >= (u32) M2C_FIELD((results + (prev * 4)), u8 *, 2)) {
-            func_02007e70((void *)prevResult, (s32)&resultTemp, 4);
+            MIi_CpuCopy32((void *)prevResult, (s32)&resultTemp, 4);
             curResult = (M2C_UNK *) (results + (index * 4));
-            func_02007e70(curResult, (s32)prevResult, 4);
-            func_02007e70(&resultTemp, (s32)curResult, 4);
-            func_02007e70((M2C_UNK *) prevRecord, (s32)recordTemp, 0xC0);
+            MIi_CpuCopy32(curResult, (s32)prevResult, 4);
+            MIi_CpuCopy32(&resultTemp, (s32)curResult, 4);
+            MIi_CpuCopy32((M2C_UNK *) prevRecord, (s32)recordTemp, 0xC0);
             curOffset = index * WFC_RECORD_STRIDE;
-            func_02007e70((void *)(records + curOffset), prevRecord, 0xC0);
-            func_02007e70(&recordTemp, records + curOffset, 0xC0);
+            MIi_CpuCopy32((void *)(records + curOffset), prevRecord, 0xC0);
+            MIi_CpuCopy32(&recordTemp, records + curOffset, 0xC0);
             index = prev;
             prevResult=prevResult-4;
             prevRecord -= WFC_RECORD_STRIDE;

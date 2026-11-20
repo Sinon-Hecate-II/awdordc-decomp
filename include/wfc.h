@@ -183,6 +183,15 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
 #define WFC_SESSION_RESULT   0x22F8 /* u16 result value of the last link request */
 #define WFC_SESSION_SEND_BUFFER 0xF00 /* byte buffer the sender fills before sending */
 
+/* The WFC link signal (gWfcSignalSampleCount, gWfcSignalSamples): the signal
+ * byte of each received packet, mapped to 0..255 by WFC_AddSignalSample, kept in
+ * a ring of WFC_SIGNAL_SAMPLE_COUNT. The count is 0..16 while the ring fills and
+ * above 16 once it has wrapped, its low 4 bits the slot the next sample goes to;
+ * WFC_GetAverageSignal averages the samples taken so far and WFC_GetSignalLevel
+ * buckets that average into a 0..3 connection level. */
+#define WFC_SIGNAL_SAMPLE_COUNT 16 /* samples the ring holds */
+#define WFC_SIGNAL_RING_FULL    16 /* a count above this means the ring has wrapped */
+
 /* The session's player-record list: a header followed by fixed 0xD0-byte nodes
  * in a buffer of capacity bytes (session +0x2270/+0x2274, also addressed as
  * +0x2000+0x270/+0x274). Nodes form a doubly linked list ordered least to most
@@ -438,6 +447,20 @@ enum {
 #define NAS_LOGIN_CONTEXT      0x04 /* void *current 0x280-byte login context */
 #define NAS_LOGIN_DONE_CB      0x08 /* void (*)(char *name, char *pass, s32 kind) */
 
+#define NAS_LOGIN_CONTEXT_BYTES 0x280
+
+/* Request parameters at the start of NAS_LOGIN_CONTEXT. */
+typedef struct NasLoginParameters {
+    s32 gpiConnection;
+    s32 state;
+    s32 gameId;
+    s32 keyType;
+    s32 requestName;
+    s32 resultCallback;
+    s32 callbackArg;
+    s32 session;
+} NasLoginParameters;
+
 /* Fields of the login context (NAS_LOGIN_CONTEXT). */
 #define NAS_LOGIN_STATE          0x04 /* s32 state, one of NAS_STATE_* */
 #define NAS_LOGIN_KEY_TYPE       0x0C /* s32 key passed to FormatNasId */
@@ -561,6 +584,8 @@ enum {
 
 #define WFC_STATE_ENTRY_CODES  0x40  /* friend-code groups of a record: three 0x20-byte codes */
 #define WFC_FRIEND_CODE_GROUPS 3
+#define WFC_STATE_SLOT_STRIDE  0x100 /* bytes per save-slot friend-code group */
+#define WFC_SAVE_SLOT_COUNT    3     /* save slots whose friend codes become list rows */
 #define WFC_STATE_MODE_RECORDS 0xE7  /* u8 record layout: 0xFF none, 1 two codes (0x40/0x60), 0 one */
 
 #define WFC_STATE_ENTRIES      0x300 /* friend-list rows, WFC_ENTRY_STRIDE bytes each */

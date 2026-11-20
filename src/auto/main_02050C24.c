@@ -1,6 +1,7 @@
 /* 4 functions from 0x02050C24 to 0x0205180C (main), found by ds-decomp. */
 #include "common.h"
 
+#pragma opt_propagation off
 s32 func_02050c24(void **arg0, void *arg1) {
     void *ghiResolveHostname(M2C_UNK *);
     s32 ghiSetNonBlocking(s32, M2C_UNK);
@@ -24,11 +25,19 @@ s32 func_02050c24(void **arg0, void *arg1) {
     extern M2C_UNK data_020fe3a4;
     extern M2C_UNK sGpiConnectSourceFile;
     extern M2C_UNK data_020fe3d4;
-    s32 sp8;
-    u16 sp6;
-    s8 sp5;
-    M2C_UNK sp4;
-    s32 sp0;
+    union {
+        u32 words[2];
+        struct {
+            u8 length;
+            u8 family;
+            u16 port;
+            u32 address;
+        } fields;
+    } addr;
+    s32 addrlen;
+    s32 bindResult;
+    s32 invalid;
+    s32 error;
     s32 temp_r0;
     s32 temp_r0_2;
     s32 temp_r0_4;
@@ -50,11 +59,17 @@ s32 func_02050c24(void **arg0, void *arg1) {
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
-        M2C_FIELD(&sp4, s32 *, 0) = 0;
-        M2C_FIELD(&sp4, s32 *, 4) = 0;
-        sp5 = 2;
-        if (func_020496e0(M2C_FIELD(temp_r4, s32 *, 0x204), &sp4, 8) == -1) {
-            gpiSetError(arg0, 5, &data_020fe2ec);
+        {
+        u32 *words = addr.words;
+        words[0] = 0;
+        words[1] = 0;
+    }
+        addr.fields.family = 2;
+        bindResult = func_020496e0(M2C_FIELD(temp_r4, s32 *, 0x204), (M2C_UNK *)&addr, 8);
+        invalid = -1;
+        error = 5;
+        if (bindResult == invalid) {
+            gpiSetError(arg0, error, &data_020fe2ec);
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
@@ -63,13 +78,13 @@ s32 func_02050c24(void **arg0, void *arg1) {
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
-        sp0 = 8;
-        if (ghiGetSockName(M2C_FIELD(temp_r4, s32 *, 0x204), &sp4, &sp0) == -1) {
+        addrlen = 8;
+        if (ghiGetSockName(M2C_FIELD(temp_r4, s32 *, 0x204), (M2C_UNK *)&addr, &addrlen) == -1) {
             gpiSetError(arg0, 5, &data_020fe340);
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
-        M2C_FIELD(temp_r4, s32 *, 0x208) = (s32) sp6;
+        M2C_FIELD(temp_r4, s32 *, 0x208) = (s32) addr.fields.port;
         goto block_13;
     }
     M2C_FIELD(temp_r4, s32 *, 0x204) = -1;
@@ -93,31 +108,31 @@ block_13:
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
-    M2C_FIELD(&sp4, s32 *, 0) = 0;
-    M2C_FIELD(&sp4, s32 *, 4) = 0;
-    sp5 = 2;
+    {
+        u32 *words = addr.words;
+        words[0] = 0;
+        words[1] = 0;
+    }
+    addr.fields.family = 2;
     temp_r0_4 = **M2C_FIELD(temp_r0_3, s32 ***, 0xC);
-    sp8 = temp_r0_4;
+    addr.fields.address = temp_r0_4;
     if (temp_r0_4 == 0) {
         AssertFailed(&data_020fe3a4, &sGpiConnectSourceFile, &data_020fe1f0, 0x90);
     }
-    sp6 = 0xCC74;
-    if (ghiConnect(M2C_FIELD(temp_r4, s32 *, 0x1D4), &sp4, 8) == -1) {
+    addr.fields.port = 0xCC74;
+    if (ghiConnect(M2C_FIELD(temp_r4, s32 *, 0x1D4), (M2C_UNK *)&addr, 8) == -1) {
         temp_r0_5 = ghiGetLastSocketError(M2C_FIELD(temp_r4, s32 *, 0x1D4));
         if ((temp_r0_5 != -6) && (temp_r0_5 != -0x1A) && (temp_r0_5 != -0x4C)) {
             gpiSetError(arg0, 5, &data_020fe3d4);
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
-        M2C_FIELD(arg1, s32 *, 0x14) = 1;
-        M2C_FIELD(temp_r4, s32 *, 0x1D8) = 1;
-        return 0;
     }
     M2C_FIELD(arg1, s32 *, 0x14) = 1;
     M2C_FIELD(temp_r4, s32 *, 0x1D8) = 1;
     return 0;
 }
-
+#pragma opt_propagation reset
 /* Prepare a GPI connection: store the login profile strings (nick, unique nick,
    email, lowercased, password) and an optional peer name/token/CD key in a new
    connection object, then create its operation and open the sockets. */

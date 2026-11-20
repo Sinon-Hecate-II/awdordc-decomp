@@ -1,7 +1,7 @@
 /* 16 functions from 0x022153FC to 0x022162F4 (ov006), found by ds-decomp. */
 #include "common.h"
 
-extern s8 data_ov006_02218345[];
+extern s8 gFriendCodeKeyChars[];
 extern s8 gFriendCodeInput[];
 /* Creates the friend-code entry screen node from its descriptor and attaches
  * its two sub-panels, the cursor animation frame table and a 7-cell sprite grid. */
@@ -348,19 +348,22 @@ done:
     }
 }
 #pragma opt_common_subs reset
+/* Handle a press on one of the keypad's digit keys: store the key's digit at the
+ * cursor in gFriendCodeInput, advance the cursor when the following slot holds a
+ * digit or follows one, and play the key feedback sound. */
 void FriendCodeKeypad_EnterDigit(void *arg0) {
-    s8 *temp_r0;
+    s8 *state;
     M2C_UNK PlaySoundEffect(s32);
-    s8 temp_r3;
+    s8 next;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x10);
-    gFriendCodeInput[M2C_FIELD(temp_r0, s8 *, 0x38)] =
-        data_ov006_02218345[M2C_FIELD(arg0, u8 *, 0) * 6];
-    temp_r3 = (s8)(M2C_FIELD(temp_r0, s8 *, 0x38) + 1);
-    if (temp_r3 >= 0 && temp_r3 < 12 &&
-        (gFriendCodeInput[temp_r3] != 0 ||
-         (temp_r3 > 0 && gFriendCodeInput[temp_r3 - 1] != 0))) {
-        M2C_FIELD(temp_r0, s8 *, 0x38) = temp_r3;
+    state = M2C_FIELD(arg0, void **, FRIEND_CODE_KEY_STATE);
+    gFriendCodeInput[M2C_FIELD(state, s8 *, FRIEND_CODE_CURSOR)] =
+        gFriendCodeKeyChars[M2C_FIELD(arg0, u8 *, FRIEND_CODE_KEY_ID) * FRIEND_CODE_KEY_RECORD];
+    next = (s8)(M2C_FIELD(state, s8 *, FRIEND_CODE_CURSOR) + 1);
+    if (next >= 0 && next < FRIEND_CODE_LENGTH &&
+        (gFriendCodeInput[next] != 0 ||
+         (next > 0 && gFriendCodeInput[next - 1] != 0))) {
+        M2C_FIELD(state, s8 *, FRIEND_CODE_CURSOR) = next;
     }
     PlaySoundEffect(0x1000D);
 }

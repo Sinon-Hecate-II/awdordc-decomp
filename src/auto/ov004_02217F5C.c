@@ -13,8 +13,8 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
-    M2C_UNK func_0200323c(M2C_UNK);
-    M2C_UNK func_020032bc(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 Divide(s32, M2C_UNK);
     M2C_UNK func_02081384(M2C_UNK *, M2C_UNK);
@@ -121,8 +121,8 @@ void func_ov004_02217f5c(void *arg0) {
     GX_SetBankForOBJExtPltt(0x40);
     func_02003124(4);
     func_020031cc(8);
-    func_0200323c(0x80);
-    func_020032bc(0x100);
+    GX_SetBankForBGExtPlttSub(0x80);
+    GX_SetBankForOBJExtPlttSub(0x100);
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     func_020822b8((u16 *)&sp30);
@@ -333,7 +333,7 @@ void func_ov004_022188b8(void *arg0) {
 /* Called when the battle map view is entered: play the mission sound, save the
  * map's story index in the progress word, switch to the non-story animation
  * when the map is not a story mission, and restart the fade transition. */
-void MapView_StartBattle(void *view){extern void **gCurrentMap;extern u32 gSaveSlotSummary[2];PlaySoundEffect(0x10014);gSaveSlotSummary[1]=(gSaveSlotSummary[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)-MAP_ID_STORY_FIRST);if(func_020a8958(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))SetSpriteAnimation(view,7);M2C_FIELD(view,u8 *,0x38)=2;M2C_FIELD(view,u8 *,0x36)=0;}
+void MapView_StartBattle(void *view){extern void **gCurrentMap;extern u32 gSaveSlotSummary[2];PlaySoundEffect(0x10014);gSaveSlotSummary[1]=(gSaveSlotSummary[1]&~0xffff)|(u16)(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)-MAP_ID_STORY_FIRST);if(MapData_GetCategory(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID)))SetSpriteAnimation(view,7);M2C_FIELD(view,u8 *,0x38)=2;M2C_FIELD(view,u8 *,0x36)=0;}
 
 /* Advance a 16-frame transition, linearly raising the 3D sprite engine's visibility and setting its display flags. */
 void func_ov004_02218950(void *transition) {

@@ -327,7 +327,7 @@ void func_ov006_02217948(void *arg0) {
 
 void func_ov006_022179b4(void *arg0) {
     s32 NextRandomValue();
-    u64 func_020720f0(s32, s32);
+    u64 RuntimeIntDivMod(s32, s32);
     s32 IsValidMapRecord(s32);
     M2C_UNK ExpandMapRecord(s32, s32);
     s32 IsLocalMacAddress(void *);
@@ -379,7 +379,7 @@ void func_ov006_022179b4(void *arg0) {
         SetSpriteAnimation(arg0, 3);
         return;
     }
-    temp_r1 = (s32)(func_020720f0(NextRandomValue(), sp0) >> 32);
+    temp_r1 = (s32)(RuntimeIntDivMod(NextRandomValue(), sp0) >> 32);
     temp_r2 = M2C_FIELD(arg0, u32 *, 0x3C);
     var_r3 = 0;
     var_r4 = 0;

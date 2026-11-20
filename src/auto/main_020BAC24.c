@@ -335,7 +335,7 @@ void func_020d2bc0(s32, s32);
 s32 func_020d1a1c(s32);
 void func_020a64bc(void *, s32);
 s32 IsUnitSelected(BattleMapUnitHead *);
-void func_020a3224(BattleMapUnitHead *, BattleMapUnitHead *);
+void ReplacePlayerSelectedUnit(BattleMapUnitHead *, BattleMapUnitHead *);
 void func_020d31e4(s32, s32);
 s32 Divide(s32, s32);
 void func_020bb768(void) {
@@ -389,7 +389,7 @@ void func_020bb768(void) {
     if (amount > limit) unit->fuel = limit;
     else unit->fuel = amount;
     if (IsUnitSelected(other)) {
-        func_020a3224(other, M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT));
+        ReplacePlayerSelectedUnit(other, M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT));
     }
     other->kind = 0;
     func_020baaac();

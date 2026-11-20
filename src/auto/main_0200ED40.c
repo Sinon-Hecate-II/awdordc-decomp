@@ -503,14 +503,17 @@ void RtcDaysToDate(void *date, s32 days) {
     }
 }
 
-void RtcSecondsToTime(s32 *arg0,s32 arg1) {
+/* Split a second count within one day into the RTC time record
+ * (hours, minutes, seconds), clamping it to the day's range. */
+void RtcSecondsToTime(s32 *clock, s32 secondsOfDay) {
     s32 minutes;
-    if(arg1<0) arg1=0;
-    if(arg1>86399) arg1=86399;
-    minutes=arg1/60;
-    arg0[2]=arg1%60;
-    arg0[1]=minutes%60;
-    arg0[0]=minutes/60;
+
+    if (secondsOfDay < 0) secondsOfDay = 0;
+    if (secondsOfDay > RTC_SECONDS_PER_DAY - 1) secondsOfDay = RTC_SECONDS_PER_DAY - 1;
+    minutes = secondsOfDay / RTC_SECONDS_PER_MINUTE;
+    clock[2] = secondsOfDay % RTC_SECONDS_PER_MINUTE;
+    clock[1] = minutes % RTC_SECONDS_PER_MINUTE;
+    clock[0] = minutes / RTC_SECONDS_PER_MINUTE;
 }
 
 /* Split a second count since 2000/01/01 into the RTC date record (year, month, day,

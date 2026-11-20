@@ -85,7 +85,7 @@ void func_ov000_02170ca0(void) {
 void LoadSituationScreen(void *object){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK sSituationDir,sSituationNarcName,sSituationCgName,sSituationScName,sSituationClName;
-void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void func_020ae528(void *);void func_ov000_021707d8(void);
+void func_020994e0(s32);M2C_UNK Clear3DSpriteLayer(M2C_UNK);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void AddTileRectPalette(void *,s32,s32,s32);void CloseNarcArchive(void);void LoadFileToSpriteBuffer(void *,s32,s32);void CreateMenuUnitSprite(void *);s32 func_020cfb94(void);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);void func_ov000_021707d8(void);
 void *oldEngine=gCur3DSpriteEngine;s32 i;void *dest;u8 *player;s32 tile,paletteOff;
 gCur3DSpriteEngine=g3DSpriteEngineMain;func_020994e0(0);Clear3DSpriteLayer(1);Clear3DSpriteLayer(2);
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3a)=0;
@@ -98,7 +98,7 @@ i=0;if(func_020cfb94()>0){tile=0x35c;do{
 player=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+(i+1)*MAP_PLAYER_STRIDE;dest=(u8 *)M2C_FIELD(g3DSpriteEngineMain,void * volatile *,0x1c)+(tile<<5);
 MI_CpuCopy32(func_ov000_0216ce10(player[PLAYER_REC_ARMY_STATE]),dest,128);
 paletteOff=(i+27)<<5;CopyToObjPaletteShadow(func_ov000_0216ce84(player[PLAYER_REC_ARMY_INDEX]),paletteOff,32);
-if(player[0x1c])func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(paletteOff&~1));
+if(player[0x1c])DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(paletteOff&~1));
 i++;tile+=4;}while(i<func_020cfb94());}
 func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=oldEngine;
 }
@@ -198,7 +198,7 @@ s32 IsPlayerPresent(s32);s32 IsPlayerCpu(s32);s32 IsPlayerActive(s32);
 void *GetLocalizedFileName(void *);void LoadNarcFileDecompressed(void *,void *);
 s32 func_02084b08(s32);void func_ov000_0216a30c(s32,s32,s32);
 void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
-void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void func_020ae528(void *);
+void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);
 s32 func_02084ac0(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
 s32 func_02084b58(s32);s32 func_02084ba8(s32);s32 func_ov000_0216a77c(s32);s32 func_ov000_0216a7d4(s32);s32 GetLocalizedText(s32);
 void func_0209b32c(s32,s16,s32,s32,s32,u16,u16);
@@ -214,7 +214,7 @@ dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void * volatile *,0x1c)+((t+0x364)<<5);
 MI_CpuCopy32(func_ov000_0216ce10(a),dst,128);
 off=(i+28)<<5;
 CopyToObjPaletteShadow(func_ov000_0216ce84(b),off,32);
-if(!IsPlayerActive(arg0))func_020ae528((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
+if(!IsPlayerActive(arg0))DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
 color=IsPlayerActive(arg0)?0:3;off=(i<<7)+16;engine=*(void * volatile *)&gCur3DSpriteEngine;
 DrawGlyphString(func_02084ac0(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
 func_0209b32c(13,(s16)(n+3),1,GetLocalizedText(func_ov000_0216a77c(func_02084b58(i))),0,(u16)color,(u16)(off+80));

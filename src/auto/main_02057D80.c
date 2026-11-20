@@ -81,13 +81,16 @@ s32 gpiSendTransferReply(void **gpi, s32 *values, void *peer, s32 result, void *
     return error;
 }
 
-void func_02057f74(s32 a,s32 b,s32 c,s32 d) {
+/* Answer a game-data message (types 200..208): parse the \xfer\ location it
+ * carries and reply with the same location and GPI_XFER_RESULT_UNSUPPORTED,
+ * because the game's peers relay game data rather than transferring it. */
+void gpiRefuseGameDataTransfer(void **gpi, void *peer, s32 messageType, char *command, char *message, s32 length) {
 s32 gpiValueForKey(s32,void *,void *,s32);s32 StringScanf(void *,void *,void *,void *,void *);
-extern M2C_UNK data_020ff244,data_020ff24c;
+extern char gGpiXferKey[],gGpiXferLocationFormat[];
 u8 buf[64];s32 z,y,x;
-if(!gpiValueForKey(d,&data_020ff244,buf,64))return;
-if(StringScanf(buf,&data_020ff24c,&x,&y,&z)!=3)return;
-gpiSendTransferReply(a,(s32)&x,b,2,0);
+if(!gpiValueForKey((s32)command,&gGpiXferKey,buf,64))return;
+if(StringScanf(buf,&gGpiXferLocationFormat,&x,&y,&z)!=3)return;
+gpiSendTransferReply(gpi,&x,peer,GPI_XFER_RESULT_UNSUPPORTED,NULL);
 }
 
 /* Handles a server message of type 4 (a player's "login" reply): any "rn" request
@@ -297,37 +300,60 @@ s32 BucketAdd(void *store, s32 key, void *value) {
     } else return BucketConcat(store, key, value);
 }
 
-s32 BucketSubtract(void *a,s32 b,void *c) {
+/* gbucket.c BucketSubtract: subtract `value` from the entry for `key` in bucket
+ * `store`, integer or double by the entry's type; other types are left alone.
+ * Returns the entry's new value, or 0 when the key is absent. */
+s32 BucketSubtract(void *store,s32 key,void *value) {
 void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
 void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
-s64 func_02070b70(s64,s64);
-void *p=BucketFind(a,b);void *q;s64 v;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(M2C_FIELD(q,s32 *,0) - M2C_FIELD(c,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070b70(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
-return (s32)BucketValue(p);
+s64 func_02070b70(s64,s64); /* the C runtime's double subtraction */
+void *entry=BucketFind(store,key);void *old;s64 difference;
+if(!entry)return 0;
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_INT){old=BucketValue(entry);return BucketSetValue(entry,BucketIntValue(M2C_FIELD(old,s32 *,0) - M2C_FIELD(value,s32 *,0)));}
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);difference=func_02070b70(*(s64 *)old,*(s64 *)value);return BucketSetValue(entry,BucketDoubleValue((s32)difference,(s32)(difference>>32)));}
+return (s32)BucketValue(entry);
 }
 
-s32 BucketMultiply(void *a,s32 b,void *c) {
+/* gbucket.c BucketMultiply: multiply the entry for `key` in bucket `store` by
+ * `value`, integer or double by the entry's type; other types are left alone.
+ * Returns the entry's new value, or 0 when the key is absent. */
+s32 BucketMultiply(void *store,s32 key,void *value) {
 void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
 void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
-s64 func_02070658(s64,s64);
-void *p=BucketFind(a,b);void *q;s64 v;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(M2C_FIELD(c,s32 *,0) * M2C_FIELD(q,s32 *,0)));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_02070658(*(s64 *)c,*(s64 *)q);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
-return (s32)BucketValue(p);
+s64 func_02070658(s64,s64); /* the C runtime's double multiplication */
+void *entry=BucketFind(store,key);void *old;s64 product;
+if(!entry)return 0;
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_INT){old=BucketValue(entry);return BucketSetValue(entry,BucketIntValue(M2C_FIELD(value,s32 *,0) * M2C_FIELD(old,s32 *,0)));}
+if(M2C_FIELD(entry,s32 *,GPI_BUCKET_TYPE)==GPI_BUCKET_DOUBLE){old=BucketValue(entry);product=func_02070658(*(s64 *)value,*(s64 *)old);return BucketSetValue(entry,BucketDoubleValue((s32)product,(s32)(product>>32)));}
+return (s32)BucketValue(entry);
 }
 
-s32 BucketDivide(void *a,s32 b,void *c) {
-void *BucketFind(void *,s32);M2C_UNK *BucketIntValue(s32);s32 BucketSetValue(void *,void *);
-void *BucketValue(void *);M2C_UNK *BucketDoubleValue(s32,s32);
-s64 func_020724f8(s64,s64);s32 func_020720f0(s32,s32);
-void *p=BucketFind(a,b);void *q;s64 v;
-if(!p)return 0;
-if(M2C_FIELD(p,s32 *,4)==0){q=BucketValue(p);return BucketSetValue(p,BucketIntValue(func_020720f0(M2C_FIELD(q,s32 *,0),M2C_FIELD(c,s32 *,0))));}
-if(M2C_FIELD(p,s32 *,4)==1){q=BucketValue(p);v=func_020724f8(*(s64 *)q,*(s64 *)c);return BucketSetValue(p,BucketDoubleValue((s32)v,(s32)(v>>32)));}
-return (s32)BucketValue(p);
+/* gbucket.c BucketDivide: divide the entry for `key` in bucket `store` by
+ * `value`, integer or double by the entry's type; other types are left alone.
+ * Returns the entry's new value, or 0 when the key is absent. */
+s32 BucketDivide(void *store, s32 key, void *value) {
+    void *BucketFind(void *, s32);
+    M2C_UNK *BucketIntValue(s32);
+    s32 BucketSetValue(void *, void *);
+    void *BucketValue(void *);
+    M2C_UNK *BucketDoubleValue(s32, s32);
+    s64 RuntimeDoubleDivide(s64, s64);
+    s32 RuntimeIntDivMod(s32, s32);
+    void *entry = BucketFind(store, key);
+    void *old;
+    s64 quotient;
+
+    if (!entry) return 0;
+    if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_INT) {
+        old = BucketValue(entry);
+        return BucketSetValue(entry, BucketIntValue(RuntimeIntDivMod(M2C_FIELD(old, s32 *, 0), M2C_FIELD(value, s32 *, 0))));
+    }
+    if (M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE) == GPI_BUCKET_DOUBLE) {
+        old = BucketValue(entry);
+        quotient = RuntimeDoubleDivide(*(s64 *)old, *(s64 *)value);
+        return BucketSetValue(entry, BucketDoubleValue((s32)quotient, (s32)(quotient >> 32)));
+    }
+    return (s32)BucketValue(entry);
 }
 
 /* BucketConcat (gbucket.c): append the string `text` to the string value of key
@@ -353,8 +379,8 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     s64 func_020705dc(s32);
     s64 func_02070658(s64, s64);
     s64 func_02070134(s64, s64);
-    s64 func_020724f8(s64, s64);
-    s32 func_020720f0(s32, s32);
+    s64 RuntimeDoubleDivide(s64, s64);
+    s32 RuntimeIntDivMod(s32, s32);
     void *BucketFind(void *, s32);
     void *BucketValue(void *);
     s32 BucketSetValue(void *, void *);
@@ -369,13 +395,13 @@ s32 gpiValueAverage(void *store, s32 key, void *value) {
     if (M2C_FIELD(entry, s32 *, 4) == 0) {
         old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
-        return BucketSetValue(entry, BucketIntValue(func_020720f0(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
+        return BucketSetValue(entry, BucketIntValue(RuntimeIntDivMod(count * M2C_FIELD(old, s32 *, 0) + M2C_FIELD(value, s32 *, 0), count)));
     }
     if (M2C_FIELD(entry, s32 *, 4) == 1) {
         old = BucketValue(entry);
         count = ++M2C_FIELD(entry, s32 *, 8);
         average = func_02070134(*(s64 *)value, func_02070658(func_020705dc(count), *(s64 *)old));
-        average = func_020724f8(average, func_020705dc(count));
+        average = RuntimeDoubleDivide(average, func_020705dc(count));
         return BucketSetValue(entry, BucketDoubleValue((s32)average, (s32)(average >> 32)));
     }
     return (s32)BucketValue(entry);
@@ -432,8 +458,8 @@ buf[0]=b;return TableLookup(M2C_FIELD(a,s32 *,0),buf);
 }
 
 void gpiInfoCloseSocket(void){
-void func_020496cc(s32,s32);void func_020496b8(s32);void func_0205954c(void);void gpiFree(void *);
-if(gGpiInfoSocket!=-1){func_020496cc(gGpiInfoSocket,2);func_020496b8(gGpiInfoSocket);}
+void func_020496cc(s32,s32);void ghiCloseSocket(s32);void func_0205954c(void);void gpiFree(void *);
+if(gGpiInfoSocket!=-1){func_020496cc(gGpiInfoSocket,2);ghiCloseSocket(gGpiInfoSocket);}
 gGpiInfoSocket=-1;
 func_0205954c();
 if(M2C_FIELD(&gGpiInfoState,void **,12)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,12));M2C_FIELD(&gGpiInfoState,s32 *,12)=0;M2C_FIELD(&gGpiInfoState,s32 *,44)=0;M2C_FIELD(&gGpiInfoState,s32 *,0)=0;}

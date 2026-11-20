@@ -498,37 +498,40 @@ cleanup:
     }
 }
 
-void func_020918a4(M2C_UNK arg0, M2C_UNK arg1) {
-    char *r0 = (char *)arg0;
+/* Install the sprite's animation data from the `script` block: when the sprite's
+ * SPRITE_FLAG_OFFSET_TABLE is set the block's first words are byte offsets into
+ * it, otherwise they are the data-base, loop and script pointers themselves. */
+void Sprite_SetScriptData(M2C_UNK arg0, M2C_UNK arg1) {
+    char *obj = (char *)arg0;
     char *base;
     char *r3;
     u32 off0;
     u32 off2;
     u32 b;
     u32 nested;
-    *(M2C_UNK *)r0 = arg1;
-    if (((unsigned char *)r0)[0x22] & 0x2) {
-        base = (char *)*(M2C_UNK *)r0;
+    *(M2C_UNK *)obj = arg1;
+    if (M2C_FIELD(obj, u8 *, SPRITE_FLAGS) & SPRITE_FLAG_OFFSET_TABLE) {
+        base = (char *)*(M2C_UNK *)obj;
         off0 = *(unsigned short *)base;
         off0 = off0 & ~1;
-        *(M2C_UNK *)(r0 + 4) = (M2C_UNK)(base + off0);
-        r3 = (char *)*(M2C_UNK *)r0;
+        *(M2C_UNK *)(obj + SPRITE_DATA_BASE) = (M2C_UNK)(base + off0);
+        r3 = (char *)*(M2C_UNK *)obj;
         off2 = *(unsigned short *)(r3 + 2);
         b = off2 & ~1;
         nested = *(unsigned short *)(r3 + b);
         nested = nested & ~1;
-        *(M2C_UNK *)(r0 + 8) = (M2C_UNK)(r3 + b + nested);
-        r3 = (char *)*(M2C_UNK *)r0;
+        *(M2C_UNK *)(obj + SPRITE_LOOP_PTR) = (M2C_UNK)(r3 + b + nested);
+        r3 = (char *)*(M2C_UNK *)obj;
         off2 = *(unsigned short *)(r3 + 2);
         b = off2 & ~1;
         nested = *(unsigned short *)(r3 + b);
         nested = nested & ~1;
-        *(M2C_UNK *)(r0 + 0xC) = (M2C_UNK)(r3 + b + nested);
+        *(M2C_UNK *)(obj + SPRITE_SCRIPT) = (M2C_UNK)(r3 + b + nested);
     } else {
-        base = (char *)*(M2C_UNK *)r0;
-        *(M2C_UNK *)(r0 + 4) = *(M2C_UNK *)base;
-        *(M2C_UNK *)(r0 + 8) = *(M2C_UNK *)(base + 4);
-        *(M2C_UNK *)(r0 + 0xC) = *(M2C_UNK *)(base + 4);
+        base = (char *)*(M2C_UNK *)obj;
+        *(M2C_UNK *)(obj + SPRITE_DATA_BASE) = *(M2C_UNK *)base;
+        *(M2C_UNK *)(obj + SPRITE_LOOP_PTR) = *(M2C_UNK *)(base + 4);
+        *(M2C_UNK *)(obj + SPRITE_SCRIPT) = *(M2C_UNK *)(base + 4);
     }
 }
 
@@ -544,9 +547,9 @@ void func_02091928(void *arg0) {
 }
 
 void func_02091954(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3) {
-void func_020918a4(M2C_UNK, M2C_UNK); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
+void Sprite_SetScriptData(M2C_UNK, M2C_UNK); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
 void *r5=(void*)arg0; M2C_UNK r4=arg2; M2C_UNK r1;
-M2C_FIELD(r5,u8*,0x22)=arg3; func_020918a4(arg0,arg1); r1=0;
+M2C_FIELD(r5,u8*,0x22)=arg3; Sprite_SetScriptData(arg0,arg1); r1=0;
 M2C_FIELD(r5,s32*,0x30)=r1; M2C_FIELD(r5,s32*,0x28)=r1; M2C_FIELD(r5,s32*,0x2c)=r1;
 M2C_FIELD(r5,s16*,0x18)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
 M2C_FIELD(r5,u8*,0x20)=r4; M2C_FIELD(r5,u8*,0x21)=31; M2C_FIELD(r5,s32*,0x14)=r1;
@@ -742,7 +745,7 @@ void func_02091d6c(s32 a,s32 b) {
 extern void *gCur3DSpriteEngine;
 LoadScenePanelPalette(a);
 if(b!=0)return;
-func_020ae528(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+((a<<5)&~1));
+DimPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+((a<<5)&~1));
 }
 
 M2C_UNK *Get3DSpriteManager(void) {

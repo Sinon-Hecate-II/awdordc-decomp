@@ -210,23 +210,25 @@ void ghiDoPosting(void *arg0) {
     InvokeRequestCallback(connection, 0, 0);
 }
 
-void func_0204ceb8(void *arg0) {
+/* GHI_STATE_WAITING step: wait until the socket has data from the server (or
+ * the poll fails), then move the request on to reading its status line. */
+void ghiDoWaiting(GHIConnection *connection) {
     s32 PollOneFd(s32, s32 *, M2C_UNK, M2C_UNK);
     s32 ghiGetLastSocketError(s32);
     M2C_UNK InvokeRequestCallback(void *, M2C_UNK, M2C_UNK);
-    s32 sp0;
+    s32 readable;
 
-    if (PollOneFd(M2C_FIELD(arg0, s32 *, 0x48), &sp0, 0, 0) == -1) {
-        M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-        M2C_FIELD(arg0, s32 *, 0x38) = 5;
-        M2C_FIELD(arg0, s32 *, 0x4C) = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
+    if (PollOneFd(connection->socket, &readable, 0, 0) == -1) {
+        connection->completed = 1;
+        connection->result = GHTTP_RESULT_SOCKET_FAILED;
+        connection->lastSocketError = ghiGetLastSocketError(connection->socket);
         return;
     }
-    if (sp0 == 0) {
+    if (readable == 0) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x10) = 6;
-    InvokeRequestCallback(arg0, 0, 0);
+    connection->state = GHI_STATE_RECEIVING_STATUS;
+    InvokeRequestCallback(connection, 0, 0);
 }
 
 /* Parse the "HTTP/x.y NNN" status line at the start of the request's read

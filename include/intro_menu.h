@@ -23,6 +23,46 @@ typedef struct MenuEntry011 {
     s16 textWidth;     /* +0x58 rendered label width */
 } MenuEntry011;
 
+/* One step of the intro-menu script gIntroMenuTable: type INTRO_MENU_STEP_LABEL
+   shows labelId on the menu object and goes on, type INTRO_MENU_STEP_ENTRY adds
+   the menu entry called `name` with label entryLabelId, type 0 ends the script. */
+enum {
+    INTRO_MENU_STEP_END   = 0,
+    INTRO_MENU_STEP_LABEL = 1,
+    INTRO_MENU_STEP_ENTRY = 2
+};
+
+typedef struct IntroMenuStep {
+    s32 type;          /* +0x00 INTRO_MENU_STEP_* */
+    s32 labelId;       /* +0x04 label the menu shows for this step */
+    s32 entryLabelId;  /* +0x08 label of this step's entry, when it has one */
+    const char *name;  /* +0x0C base name of the entry's .tex/.ctx files */
+} IntroMenuStep; /* 0x10 bytes */
+
+/* Intro-menu object: a 3D sprite (engine class data_ov011_02228a78) that walks
+   the gIntroMenuTable script, keeps up to three entry sprites and draws the
+   selected entry's label.  Vtable words: destroy, destroy-and-free, no-op. */
+typedef struct IntroMenu011 {
+    M2C_UNK *vtable;           /* +0x00 */
+    u8 unknown04[0x30];        /* +0x04 3D sprite state */
+    u8 flags;                  /* +0x34 INTRO_MENU_* flag and phase bits */
+    u8 entryCount;             /* +0x35 low nibble: number of entry sprites */
+    u8 slideSpeed;             /* +0x36 slide-frame increment per update */
+    u8 fadeTimer;              /* +0x37 */
+    u8 appearTimer;            /* +0x38 */
+    u8 unknown39;              /* +0x39 */
+    s16 timer;                 /* +0x3A frames the menu has been shown */
+    u8 unknown3C[4];           /* +0x3C */
+    void *entries[3];          /* +0x40 the entry sprites */
+    IntroMenuStep *step;       /* +0x4C cursor into gIntroMenuTable */
+    s32 labelId;               /* +0x50 label currently shown */
+} IntroMenu011;
+
+/* Menu object flags at IntroMenu011.flags. */
+#define INTRO_MENU_FLAG_ACTIVE 0x02 /* set while the menu is shown */
+#define INTRO_MENU_PHASE_MASK  0xF0 /* bits 4-7: phase of the current step */
+#define INTRO_MENU_COUNT_MASK  0x0F /* low nibble of entryCount */
+
 #define INTRO_MENU_TEXTURE_STRIDE 0x200
 #define INTRO_MENU_INITIAL_FRAME 5
 

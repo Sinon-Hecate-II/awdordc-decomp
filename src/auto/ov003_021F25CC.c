@@ -1,6 +1,7 @@
 /* 19 functions from 0x021F25CC to 0x021F35B0 (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ov003_mapselect.h"
+#include "ov003_scene.h"
 static inline s32 IsTerrain2878(s32 v) { switch(v) { case 6: case 18: case 19: case 20: case 21: return 1; default: return 0; } }
 static inline s32 Active2878(void) { s32 func_ov003_021f14c8(void); return func_ov003_021f14c8()!=0; }
 static inline u8 Block2878(s32 entry) { void *p; if(Active2878()) return 1; p=M2C_FIELD(entry,void **,0x40); return IsTerrain2878(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)]) != 0; }
@@ -22,7 +23,10 @@ static inline void AdvanceState2e98(s32 a) {
  if(M2C_FIELD(a,u8 *,0x44)) {M2C_FIELD(a,u8 *,0x34)=2; return;}
  if(func_ov003_021f1448()) {func_ov003_021f182c(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
 }
-s32 func_ov003_021f25cc(void) {
+/* True while the map-select list's current category (gMapCategory) is one that
+ * lists the campaign map records (ids 225..424): the story and the trial-map
+ * categories.  The other categories show different map lists. */
+s32 IsCampaignMapCategory(void) {
  s32 GetMapCategory();
  switch(GetMapCategory()) {
  case 6: case 8: case 12: case 14: case 15: case 16: case 17: case 22: case 23: case 24: return 1;
@@ -182,9 +186,9 @@ s32 func_ov003_021f2a9c(s32 entry) {
     s32 func_0208b5a8(void);
     s32 GetActiveOverlay(void);
     s32 func_ov009_022241b4(void);
-    void func_ov009_02225fb4(s32, s32, s32, void *);
+    void CreateLinkStatusLabel(s32, s32, s32, void *);
     s32 func_ov010_02228314(s32 *, s32 *);
-    void func_ov010_0222a808(s32, s32, s32, s32, s32, void *);
+    void CreateNetErrorSprite(s32, s32, s32, s32, s32, void *);
     void func_ov010_02228320(void);
     void Ov010Online_ClearStepFlag(s32);
     s32 result, spare;
@@ -200,10 +204,10 @@ s32 func_ov003_021f2a9c(s32 entry) {
     }
     switch (GetActiveOverlay()) {
     case 1:
-        func_ov009_02225fb4(0, 0x6e0, func_ov009_022241b4(), (void *)entry);
+        CreateLinkStatusLabel(0, 0x6e0, func_ov009_022241b4(), (void *)entry);
         break;
     case 2:
-        func_ov010_0222a808(0, 0x6e0, func_ov010_02228314(&result, &spare), result, spare, (void *)entry);
+        CreateNetErrorSprite(0, 0x6e0, func_ov010_02228314(&result, &spare), result, spare, (void *)entry);
         func_ov010_02228320();
         switch (spare) {
         case 0:
@@ -357,7 +361,7 @@ void InitMapSelectScreen(s32 arg0) {
 void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
  void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
- s32 func_ov003_021f1bfc(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
+ s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void func_02086330(void); void func_02085054(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
@@ -380,7 +384,7 @@ void func_ov003_021f2e98(s32 entry) {
  func_ov003_021f182c(); M2C_FIELD(entry,u8 *,0x44)=1; M2C_FIELD(entry,u8 *,0x34)=2;
  return;
  case 2:
- switch(func_ov003_021f1bfc()) {
+ switch(GetMapConfirmState()) {
  case 0: default: return;
  case 1:
  if(AtEnd2e98(M2C_FIELD(entry,void **,0x40))) {EnableMapConfirm();Sprite_ResumeAnimation(entry);return;}
@@ -402,7 +406,7 @@ void func_ov003_021f2e98(s32 entry) {
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])){SetSpriteAnimation(entry,3);return;}
  M2C_FIELD(entry,u8 *,0x34)=1;
- switch(func_ov003_021f1bfc()) {
+ switch(GetMapConfirmState()) {
  case 2: p=M2C_FIELD(entry,void **,0x40);direction=BlockNext2e98(p)?0:2;break;
  case 1: p=M2C_FIELD(entry,void **,0x40);if(BlockPrev2e98(p)) direction=0; else direction=1;break;
  }
@@ -417,26 +421,29 @@ void func_ov003_021f34d8(void) {
     ((void (*)())InitMapSelectScreen)();
 }
 
-void func_ov003_021f34e4(void *a) {
+/* Applies the map-select confirm state to the map, and in a link session on the
+ * campaign or trial map list opens the map-transfer panel.  Kinds 1, 3 and 5
+ * first reset the map settings to the global game settings. */
+void ApplyMapConfirmState(void *entry) {
     s32 IsLinkSessionActive(void);
-    void func_020bfbc0(s32);
+    void MapSettings_CopyFromGameSettings(s32);
     void EnableMapConfirm(void);
     void DisableMapConfirm(void);
-    s32 func_ov003_021f1bfc(void);
+    s32 GetMapConfirmState(void);
     void CreateMapTransferPanelStep2(void *);
-    u8 mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
-    s32 test;
-    switch(mode) {
-    case 1: case 3: case 5: test=1; break;
-    default: test=0; break;
+    u8 listKind = M2C_FIELD(M2C_FIELD(entry, Ov003BattleSetupMenu **, 0x40), u8 *, 4);
+    s32 resetSettings;
+    switch (listKind) {
+    case 1: case 3: case 5: resetSettings = 1; break;
+    default: resetSettings = 0; break;
     }
-    if(test) func_020bfbc0(0);
-    if(func_ov003_021f1bfc()==1) {
+    if (resetSettings) MapSettings_CopyFromGameSettings(0);
+    if (GetMapConfirmState() == MAP_CONFIRM_ENABLED) {
         EnableMapConfirm();
-        if(!IsLinkSessionActive()) return;
-        mode=M2C_FIELD(M2C_FIELD(a,void **,0x40),u8 *,4);
-        if(mode!=1 && mode!=5) return;
-        CreateMapTransferPanelStep2(a);
+        if (!IsLinkSessionActive()) return;
+        listKind = M2C_FIELD(M2C_FIELD(entry, Ov003BattleSetupMenu **, 0x40), u8 *, 4);
+        if (listKind != 1 && listKind != 5) return;
+        CreateMapTransferPanelStep2(entry);
     } else DisableMapConfirm();
 }
 

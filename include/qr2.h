@@ -41,7 +41,9 @@
 #define QR2_LAST_POLL     0xB0  /* s32 tick of the last keep-alive */
 #define QR2_STATE_DIRTY   0xB4  /* s32 state changed since the last update */
 #define QR2_ERROR_REPORTED 0xB8 /* s32: 1 at creation, 0 once any packet has arrived, -1 once the master reported an error */
+#define QR2_REPORT_TO_MASTER 0xBC /* s32: 1 while this connection reports its state to the master (the reportToMaster argument of Qr2_CreateConnection) */
 #define QR2_LOCAL_PORT    0xC0  /* s32 local port */
+#define QR2_RECV_BUFFER   0xC4  /* void *: receive buffer released on teardown; replies are only drained while it is set */
 #define QR2_NATNEG        0xC8  /* s32 NAT negotiation enabled */
 #define QR2_REQUEST_ID    0xCC  /* 8-byte socket address of the master server: the destination of every query (and the buffer the resolve fills in) */
 #define QR2_CB_ASCII      0xD4  /* void (*)(const char *text, s32 length, void *address): ';' console line from the master */

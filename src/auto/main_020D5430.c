@@ -127,13 +127,13 @@ void func_020d5868(void) {
  * if a map command entry covers the tile, activate it; otherwise make the unit on the tile the
  * cursor unit and show it, playing the invalid sound when there is nothing selectable there. */
 s32 SelectCursorTarget(s32 x, s32 y) {
-    void *func_020a45f8(s32, s32);
+    void *FindMapOrderAtTile(s32, s32);
     extern void *gCurrentMap;
     void *entry;
     s32 a, b;
     M2C_UNK (*cb)();
 
-    entry = func_020a45f8(x, y);
+    entry = FindMapOrderAtTile(x, y);
     if (entry) {
         SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
         FillMapLayer(-1);
@@ -159,7 +159,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
         return 0;
     }
     SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
-    func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    CreateUnitMoveForUnit(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 52);
     if (cb) cb();
     RefreshMapView();
@@ -186,7 +186,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,MAP_CURSOR_CARRIER)=0;
 if(IsOwnedProductionSite(x,y)) { if(playMoveEffect)OpenProductionMenu(x,y); return 1; }
 if (M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u8 *,x+M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+y*2,u16 *,MAP_ROW_OFFSETS)) == 0 || HasUnitActed(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT)) != 0 || ((u32)(gMapConfig<<22)>>31)) { if(!consumeInvalid)return 0; func_020c752c();return 1; }
 RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
-func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
+CreateUnitMoveForUnit(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),M2C_UNK (**)(),56);if(cb)cb();
 RefreshMapView();
 ShowCursorUnitRanges(x,y);
@@ -223,7 +223,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_CARRIER) = carrier;
     M2C_FIELD(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_FLAGS) &= ~8;
     RunUnitSelectedEvent(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
-    func_ov000_0216939c(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    CreateUnitMoveForUnit(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 56); if (cb) cb();
     RefreshMapView();
     unit = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT);
@@ -254,7 +254,7 @@ void MoveCursorTo(s32 x, s32 y) {
     M2C_UNK func_020d46ac();
     M2C_UNK BuildMovePathDirections();
     M2C_UNK func_01ffb3d0();
-    M2C_UNK func_020cc7e0();
+    M2C_UNK CreateTargetSelectionSprite();
     extern void *gCurrentMap;
     extern u8 data_02168f24;
     s32 occupied;
@@ -321,7 +321,7 @@ void MoveCursorTo(s32 x, s32 y) {
             u8 **grid = (u8 **)((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_GRID);
             grid[y][x] = 1;
         }
-        func_020cc7e0();
+        CreateTargetSelectionSprite();
         {
             void (*fp)() = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(), 0x3c);
             if (fp != NULL) {

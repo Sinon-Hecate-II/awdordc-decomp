@@ -1,7 +1,6 @@
 /* 42 functions from 0x0205ABB4 to 0x0205BB90 (main), found by ds-decomp. */
 #include "common.h"
 #include "gt2.h"
-typedef struct { s32 offset,size,command;u16 sequence; } Command5B8B0;
 
 s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
     s32 gti2CheckTimeout();
@@ -39,16 +38,19 @@ TableRemove(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,12),&p);
 Vector_AddItem(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
 }
 
-void func_0205acc8(void *p) {
-void gpiFree(void *);void Vector_Free(void *);void *q;
-q=M2C_FIELD(p,void **,56);if(q)gpiFree(q);
-q=M2C_FIELD(p,void **,68);if(q)gpiFree(q);
-q=M2C_FIELD(p,void **,80);if(q)gpiFree(q);
-q=M2C_FIELD(p,void **,92);if(q)Vector_Free(q);
-q=M2C_FIELD(p,void **,96);if(q)Vector_Free(q);
-q=M2C_FIELD(p,void **,152);if(q)Vector_Free(q);
-q=M2C_FIELD(p,void **,156);if(q)Vector_Free(q);
-gpiFree(p);
+/* Free a GT2 connection: its queued handshake data, receive and send buffers,
+ * send and acknowledgement queues, message-callback and filter vectors, then
+ * the connection itself. */
+void gti2FreeConnection(void *connection) {
+void gpiFree(void *);void Vector_Free(void *);void *p;
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_DATA);if(p)gpiFree(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_RECV_BUFFER);if(p)gpiFree(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_SEND_BUFFER);if(p)gpiFree(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_PENDING_QUEUE);if(p)Vector_Free(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_ACK_QUEUE);if(p)Vector_Free(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_MESSAGE_CALLBACKS);if(p)Vector_Free(p);
+p=M2C_FIELD(connection,void **,GT2_CONNECTION_FILTERS);if(p)Vector_Free(p);
+gpiFree(connection);
 }
 
 void Gt2CreateSocket(s32 a,s32 b,s32 c,s32 d,s32 e) {
@@ -107,15 +109,22 @@ if(M2C_FIELD(p,s32 *,12)==5)*b=p;
 return M2C_FIELD(p,s32 *,24);
 }
 
-void func_0205af48(void *a,s32 b,s32 c,s32 d) {
-s32 Vector_GetCount(s32);
-void func_0205d70c(s32 *,s32 *);
-void func_0205a424(void *,s32,s32,s32,s32);
-void func_0205cc20(void *,s32,s32,s32);
-if(M2C_FIELD(a,s32 *,12)!=5)return;
-func_0205d70c(&b,&c);
-if(Vector_GetCount(M2C_FIELD(a,s32 *,0x98))) {func_0205a424(a,0,b,c,d);return;}
-func_0205cc20(a,b,c,d);
+/* Send a message on a connected GT2 peer, starting with the first send filter when present. */
+void gt2Send(void *connection, const u8 *message, s32 length, s32 reliable) {
+    s32 Vector_GetCount(s32 *);
+    void gti2NormalizeMessage(const u8 **, s32 *);
+    s32 gti2SendFilterCallback(void *, s32, const u8 *, s32, s32);
+    void gti2Send(void *, const u8 *, s32, s32);
+
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_CONNECTED) {
+        return;
+    }
+    gti2NormalizeMessage(&message, &length);
+    if (Vector_GetCount(M2C_FIELD(connection, s32 **, GT2_CONNECTION_SEND_FILTERS))) {
+        gti2SendFilterCallback(connection, 0, message, length, reliable);
+        return;
+    }
+    gti2Send(connection, message, length, reliable);
 }
 
 void GT2FailConnectionAttempt(M2C_UNK arg0) {
@@ -372,12 +381,12 @@ void func_0205b89c(void *arg0, void *arg1) {
    sequence gap that was filled. Returns 0 to retry, 1 when finished; *error is
    set when the sequence already exists or the queue rejected the record. */
 s32 Gt2QueuePendingCommand(void *session,s32 command,u16 sequence,void *data,s32 size,s32 *error){
-s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2GetBufferFreeSpace(void *);void func_020487fc(s32,void *,void *);void gti2BufferWriteData(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
-s32 count=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c));s32 i;Command5B8B0 record;void *prev;s32 nextSequence;
+s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2GetBufferFreeSpace(void *);void Vector_InsertSorted(s32,void *,void *);void gti2BufferWriteData(void *,void *,s32);s32 func_0205caac(void *,u16,u16);
+s32 count=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c));s32 i;Gt2PendingCommand record;void *prev;s32 nextSequence;
 for(i=0;i<count;i++){u16 queued=M2C_FIELD(Vector_GetItem(M2C_FIELD(session,s32 *,0x5c),i),u16 *,12);if(queued==sequence){*error=0;return 1;}if(Gt2CompareSequence(queued,sequence)>0)break;}
 if(gti2GetBufferFreeSpace(session+0x44)<size){*error=1;return 1;}
-record.offset=M2C_FIELD(session,s32 *,0x4c);record.size=size;record.command=command;record.sequence=sequence;
-func_020487fc(M2C_FIELD(session,s32 *,0x5c),&record,func_0205b89c);
+record.offset=M2C_FIELD(session,s32 *,0x4c);record.size=size;record.kind=command;record.sequence=sequence;
+Vector_InsertSorted(M2C_FIELD(session,s32 *,0x5c),&record,func_0205b89c);
 if(count+1!=Vector_GetCount(M2C_FIELD(session,s32 *,0x5c))){*error=1;return 1;}
 gti2BufferWriteData(session+0x44,data,size);
 if(count==0){if(!func_0205caac(session,M2C_FIELD(session,u16 *,0x66),(u16)(sequence-1)))return 0;}
@@ -389,9 +398,35 @@ if(!func_0205caac(session,(u16)(M2C_FIELD(prev,u16 *,12)+1),(u16)(sequence-1)))r
 *error=0;return 1;
 }
 
-void func_0205ba64(void *a,void *b,s32 c) {void *Vector_GetItem(s32,s32);s32 x,y,n,i,max;void *p;s32 v;x=M2C_FIELD(b,s32 *,0);y=M2C_FIELD(b,s32 *,4);max=0;Vector_RemoveItem(M2C_FIELD(a,s32 *,92),c);n=Vector_GetCount(M2C_FIELD(a,s32 *,92));i=0;if(n>0)do{p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,s32 *,0)>x){M2C_FIELD(p,s32 *,0)-=y;v=M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,4);if(max<=v)max=v;}i++;}while(i<n);gti2RemoveFromBuffer((char*)a+68,x,y);}
+/* Drop a command the dispatch loop has finished with: remove it from the
+ * connection's pending-command queue, slide the queued commands that sit after it
+ * in the buffer back over its bytes, then drop those bytes from the buffer. */
+void Gt2RemovePendingCommand(void *connection, Gt2PendingCommand *command, s32 index) {
+ void *Vector_GetItem(s32,s32);
+ s32 offset,size,count,i,maxEnd;Gt2PendingCommand *entry;s32 end;
+ offset=command->offset;size=command->size;maxEnd=0;Vector_RemoveItem(M2C_FIELD(connection,s32 *,GT2_CONNECTION_PENDING_QUEUE),index);count=Vector_GetCount(M2C_FIELD(connection,s32 *,GT2_CONNECTION_PENDING_QUEUE));i=0;if(count>0)do{entry=Vector_GetItem(M2C_FIELD(connection,s32 *,GT2_CONNECTION_PENDING_QUEUE),i);if(entry->offset>offset){entry->offset-=size;end=entry->offset+entry->size;if(maxEnd<=end)maxEnd=end;}i++;}while(i<count);gti2RemoveFromBuffer((char*)connection+GT2_CONNECTION_RECV_BUFFER,offset,size);
+}
 
-s32 Gt2DispatchPendingCommands(void *a){s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 Gt2DispatchCommand(void *,s32,s32,s32);s32 i;void *p;restart:for(i=Vector_GetCount(M2C_FIELD(a,s32 *,92))-1;i>=0;i--){p=Vector_GetItem(M2C_FIELD(a,s32 *,92),i);if(M2C_FIELD(p,u16 *,12)==M2C_FIELD(a,u16 *,102)){if(Gt2DispatchCommand(a,M2C_FIELD(p,s32 *,8),M2C_FIELD(a,s32 *,68)+M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4))==0)return 0;func_0205ba64(a,p,i);goto restart;}}return 1;}
+/* Dispatches, newest entry first, every queued incoming command whose sequence
+ * is next due; a command whose dispatch fails stops the connection. */
+s32 Gt2DispatchPendingCommands(void *connection) {
+    s32 Vector_GetCount();
+    void *Vector_GetItem();
+    s32 Gt2DispatchCommand(void *, s32, s32, s32);
+    s32 i;
+    Gt2PendingCommand *command;
+
+restart:
+    for (i = Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_PENDING_QUEUE)) - 1; i >= 0; i--) {
+        command = Vector_GetItem(M2C_FIELD(connection, s32 *, GT2_CONNECTION_PENDING_QUEUE), i);
+        if (command->sequence == M2C_FIELD(connection, u16 *, GT2_RECV_SEQUENCE)) {
+            if (Gt2DispatchCommand(connection, command->kind, M2C_FIELD(connection, s32 *, GT2_CONNECTION_RECV_BUFFER) + command->offset, command->size) == 0) return 0;
+            Gt2RemovePendingCommand(connection, command, i);
+            goto restart;
+        }
+    }
+    return 1;
+}
 
 void Gt2NoteDataReceived(void *arg0) {
     s32 GetTickCountMs();

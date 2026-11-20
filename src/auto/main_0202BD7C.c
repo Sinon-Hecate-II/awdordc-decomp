@@ -83,7 +83,7 @@ void InitSoundArchive(void *archive, s32 base) {
     s32 offset;
     void *entry;
 
-    func_02007e70(base, archive, 0x30);
+    MIi_CpuCopy32(base, archive, 0x30);
     offset = M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_OFFSET);
     M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_BLOCK) = offset == 0 ? 0 : base + offset;
     offset = M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_TABLE_OFFSET);
@@ -107,9 +107,9 @@ s32 Sound_GetCurrentArchive(void) {
     return gCurrentArchive;
 }
 
-void *func_0202c03c(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,8);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *GetSoundSequenceRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,8);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-void *func_0202c0a0(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+void *GetSoundSequenceArchiveRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
 void *GetSoundBankRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
@@ -342,22 +342,26 @@ i++;item++;
 return 0;
 }
 
-s32 LoadSoundSequence(s32 a,s32 flags,s32 b,s32 c,s32 *out) {
+/* Loads the sound sequence named by sequenceId along with the bank it plays on:
+ * loads the sequence's bank, then either reads the sequence from its archive file
+ * or reuses the already loaded one.  Stores it in *out when out is set.  Returns 0
+ * on success, 2 when the sequence has no record, 6 when its file fails to load. */
+s32 LoadSoundSequence(s32 sequenceId,s32 flags,s32 pool,s32 create,s32 *out) {
 s32 LoadSoundBank(s32,s32,s32,s32,s32);
-void *p=func_0202c03c(a);s32 r;
-if(!p)return 2;
-r=LoadSoundBank(M2C_FIELD(p,u16 *,4),flags,b,c,0);if(r)return r;
-a=M2C_FIELD(p,s32 *,0);
-if(flags&1){r=func_0202cd0c(a,b,c);if(!r)return 6;}else r=GetLoadedArchiveFile(a);
-if(out)*out=r;return 0;
+SoundSequenceRecord *record=GetSoundSequenceRecord(sequenceId);s32 result;
+if(!record)return 2;
+result=LoadSoundBank(record->bankId,flags,pool,create,0);if(result)return result;
+sequenceId=record->fileId;
+if(flags&SOUND_LOAD_SEQUENCE){result=LoadSoundSequenceFile(sequenceId,pool,create);if(!result)return 6;}else result=GetLoadedArchiveFile(sequenceId);
+if(out)*out=result;return 0;
 }
 
 s32 LoadSoundSequenceArchive(s32 a,s32 flags,s32 b,s32 c,s32 out) {
-s32 func_0202cd78(s32,s32,s32);
-void *p=func_0202c0a0(a);s32 r;
+s32 LoadSoundSequenceArchiveFile(s32,s32,s32);
+void *p=GetSoundSequenceArchiveRecord(a);s32 r;
 if(!p)return 3;
 a=M2C_FIELD(p,s32 *,0);
-if(flags&8){r=func_0202cd78(a,b,c);if(!r)return 7;}else r=GetLoadedArchiveFile(a);
+if(flags&8){r=LoadSoundSequenceArchiveFile(a,b,c);if(!r)return 7;}else r=GetLoadedArchiveFile(a);
 if(out)*(s32 *)out=r;return 0;
 }
 
@@ -414,7 +418,7 @@ s32 Sound_LoadArchiveFile(s32 fileId, M2C_UNK *freeCallback, s32 freeArg, s32 fr
     return (s32)block;
 }
 
-s32 func_0202cd0c(M2C_UNK arg0, s32 arg1, s32 arg2) {
+s32 LoadSoundSequenceFile(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);

@@ -22,12 +22,10 @@
 /* One allocated run of 8-byte sprite object entries in a pool: the run's list
  * links, the address of its first entry (+0x08) and its entry count (+0x0C). */
 typedef struct Ov001SpriteBlock { struct Ov001SpriteBlock *prev; struct Ov001SpriteBlock *next; s32 start; u8 size; u8 pad[3]; } Ov001SpriteBlock;
-typedef Ov001SpriteBlock A070Node;
-typedef struct A070Pool { u8 pad[0x200]; A070Node head; A070Node tail; s32 unk220; s32 handle; } A070Pool;
 /* The ov001 sprite-object pools (gOv001SpritePools): each pool recycles 0x10-byte
  * sprite objects through freeObjs and keeps the blocks it has handed out in an
  * address-ordered list bookended by the head/tail sentinels. */
-typedef struct Ov001SpritePool { u8 slots[0x200]; A070Node head; A070Node tail; s32 list; s32 freeObjs; } Ov001SpritePool;
+typedef struct Ov001SpritePool { u8 slots[0x200]; Ov001SpriteBlock head; Ov001SpriteBlock tail; s32 list; s32 freeObjs; } Ov001SpritePool;
 #define OV001_SPRITE_POOL_COUNT 2
 #define OV001_SPRITE_POOLS ((Ov001SpritePool *)gOv001SpritePools)
 
@@ -379,13 +377,13 @@ extern void *data_ov001_02193e2c;
 void func_0200bc5c(void *);
 void UnloadArchiveIndex(void *);
 void func_0200b32c(void *);
-void func_0200b238(void *);
+void ReleaseArchiveName(void *);
 void OS_ReleaseLockID(u16);
 void Ov001_FreeAlloc(void *);
 func_0200bc5c(data_ov001_021917b4);
 UnloadArchiveIndex((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
-func_0200b238((u8 *)data_ov001_02193e2c+0x88);
+ReleaseArchiveName((u8 *)data_ov001_02193e2c+0x88);
 OS_ReleaseLockID(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
 M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4)=0;
 Ov001_FreeAlloc(data_ov001_02193e2c);
@@ -421,8 +419,8 @@ s32 func_ov001_02189d70(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
 }
 
 void func_ov001_02189db0(M2C_UNK arg0) {
-    M2C_UNK func_0200b6c8(M2C_UNK, M2C_UNK);
-    func_0200b6c8(arg0, 0);
+    M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
+    FileOperationCompleted(arg0, 0);
 }
 
 s32 func_ov001_02189dc0(void) {
@@ -572,29 +570,32 @@ void *Ov001_AllocSpriteBlock(s32 pool, s32 size, s32 fromHead) {
     return block;
 }
 
-void Ov001_DestroySprite(void *arg0) {
-    M2C_UNK Ov001_QueuePush(s32, void *);
-    M2C_UNK func_ov001_0218bf4c(void *);
+/* Hides every OAM entry of a sprite-object block, unlinks the block from its
+ * sprite pool's allocation list and returns it to that pool's queue of free
+ * objects. */
+void Ov001_DestroySprite(Ov001SpriteBlock *block) {
+    s32 Ov001_QueuePush(s32, void *);
+    void Ov001_ListRemove(void *);
     extern s32 gOv001SpritePools;
-    u8 *var_r2;
-    s32 var_r3;
-    s32 var_r4;
+    u8 *entry;
+    s32 i;
+    s32 pool;
 
-    var_r4 = 0;
-    var_r3 = 0;
-    var_r2 = M2C_FIELD(arg0, u8 **, 8);
-    if ((s32) M2C_FIELD(arg0, u8 *, 0xC) > 0) {
+    pool = 0;
+    i = 0;
+    entry = (u8 *)block->start;
+    if ((s32)block->size > 0) {
         do {
-            var_r3 += 1;
-            M2C_FIELD(var_r2, s32 *, 0) = (M2C_FIELD(var_r2, s32 *, 0) & 0xC1FFFCFF) | 0x200;
-            var_r2 += 8;
-        } while (var_r3 < (s32) M2C_FIELD(arg0, u8 *, 0xC));
+            i += 1;
+            M2C_FIELD(entry, u32 *, 0) = (M2C_FIELD(entry, u32 *, 0) & SPRITE_ENTRY_ATTR_MASK) | SPRITE_ENTRY_HIDDEN;
+            entry += 8;
+        } while (i < (s32)block->size);
     }
-    func_ov001_0218bf4c(arg0);
-    if ((u32) arg0 >= (u32) (gOv001SpritePools + 0x228)) {
-        var_r4 = 1;
+    Ov001_ListRemove(block);
+    if ((u32)block >= (u32)&OV001_SPRITE_POOLS[1]) {
+        pool = 1;
     }
-    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x228) + gOv001SpritePools), s32 *, 0x224), arg0);
+    Ov001_QueuePush(M2C_FIELD((pool * 0x228) + gOv001SpritePools, s32 *, 0x224), block);
 }
 
 s32 Ov001_GetSpriteObjEntry(void *arg0, s32 arg1) {
@@ -626,16 +627,18 @@ entries[index][0]=value;
 
 #pragma push
 #pragma opt_strength_reduction off
-void Ov001_SetSpriteAttrs(void *obj, s32 index, u32 a, u32 b) {
+/* Set the OAM draw mode and palette bank of a sprite object's entries: entry
+ * `index` alone when it is not negative, otherwise every entry of the object. */
+void Ov001_SetSpriteAttrs(void *obj, s32 index, u32 objMode, u32 palette) {
  u8 *entries=M2C_FIELD(obj,u8**,8);
  s32 i;
  if(index>=0) {
-  M2C_FIELD(entries+index*8,u32*,0)=(M2C_FIELD(entries+index*8,u32*,0)&~0xc00U)|(a<<10);
-  M2C_FIELD(entries+index*8,u16*,4)=(M2C_FIELD(entries+index*8,u16*,4)&~0xf000U)|(b<<12);
+  M2C_FIELD(entries+index*8,u32*,0)=(M2C_FIELD(entries+index*8,u32*,0)&~SPRITE_ENTRY_OBJ_MODE_MASK)|(objMode<<SPRITE_ENTRY_OBJ_MODE_SHIFT);
+  M2C_FIELD(entries+index*8,u16*,4)=(M2C_FIELD(entries+index*8,u16*,4)&~SPRITE_ENTRY_PALETTE_MASK)|(palette<<SPRITE_ENTRY_PALETTE_SHIFT);
  } else {
   for(i=0;i<M2C_FIELD(obj,u8*,12);i++) {
-   M2C_FIELD(entries+i*8,u32*,0)=(M2C_FIELD(entries+i*8,u32*,0)&~0xc00U)|(a<<10);
-   M2C_FIELD(entries+i*8,u16*,4)=(M2C_FIELD(entries+i*8,u16*,4)&~0xf000U)|(b<<12);
+   M2C_FIELD(entries+i*8,u32*,0)=(M2C_FIELD(entries+i*8,u32*,0)&~SPRITE_ENTRY_OBJ_MODE_MASK)|(objMode<<SPRITE_ENTRY_OBJ_MODE_SHIFT);
+   M2C_FIELD(entries+i*8,u16*,4)=(M2C_FIELD(entries+i*8,u16*,4)&~SPRITE_ENTRY_PALETTE_MASK)|(palette<<SPRITE_ENTRY_PALETTE_SHIFT);
   }
  }
 }

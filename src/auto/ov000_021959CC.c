@@ -344,7 +344,7 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_ov000_02196398(s16 *arg0) {
+s32 FindEnemyHqAttackPosition(s16 *arg0) {
     void GetAiUnitRange();
     void BuildAiUnitThreatRange();
     s32 SelectEnemyHqDestination(s16 *);
@@ -364,13 +364,13 @@ s32 func_ov000_02196398(s16 *arg0) {
     return 1;
 }
 
-void func_ov000_021963f8(void) {
-    s32 func_ov000_02196398(s16 *);
+void PlanEnemyHqAttackDestination(void) {
+    s32 FindEnemyHqAttackPosition(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
-    if (func_ov000_02196398(sp0) == 0) {
+    if (FindEnemyHqAttackPosition(sp0) == 0) {
         return;
     }
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
@@ -386,7 +386,7 @@ void func_ov000_021963f8(void) {
 s32 func_ov000_02196430(s16 *outPos) {
     s32 func_ov000_02194ab8(s16 *);
     s32 HasEnemyPlayer(void);
-    s32 func_ov000_021954dc(s16 *);
+    s32 FindEnemyHqAttackPositionAlt(s16 *);
     s32 func_ov000_02195574(s16 *);
     s32 SelectPropertyDestination(s16 *);
     s32 PlayerHasHq(u16);
@@ -394,7 +394,7 @@ s32 func_ov000_02196430(s16 *outPos) {
     s32 func_ov000_02196084(s16 *);
     s32 func_ov000_021961d4(s16 *);
     s32 func_ov000_02196330(void);
-    s32 func_ov000_02196398(s16 *);
+    s32 FindEnemyHqAttackPosition(s16 *);
     extern void **gCurrentMap;
     struct Nib { unsigned char lo : 4; unsigned char hi : 4; };
 
@@ -415,7 +415,7 @@ s32 func_ov000_02196430(s16 *outPos) {
         break;
     case 2:
         if (HasEnemyPlayer() == 1) {
-            if (func_ov000_021954dc(outPos) == 0) {
+            if (FindEnemyHqAttackPositionAlt(outPos) == 0) {
                 return 0;
             }
         } else {
@@ -464,7 +464,7 @@ s32 func_ov000_02196430(s16 *outPos) {
         break;
     case 10:
         if (func_ov000_02196330() == 1) {
-            if (func_ov000_02196398(outPos) == 0) {
+            if (FindEnemyHqAttackPosition(outPos) == 0) {
                 return 0;
             }
         } else {
@@ -515,7 +515,7 @@ if(!func_ov000_0217e6bc(target[0],target[1]))return;
 PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_021967fc(void) {
+void SelectPortDestination(void) {
 s32 CanKindAttack(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;

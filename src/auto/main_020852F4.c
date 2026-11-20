@@ -402,7 +402,7 @@ void func_020859b4(M2C_UNK arg0) {
     M2C_UNK func_020c4dd0(M2C_UNK);
     void *func_020c5328();
     M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
-    u32 func_020cd164(s32, s32);
+    u32 GetPlayerResultAgainst(s32, s32);
     void *GetLocalPlayerStatus();
     extern M2C_UNK data_02157634;
     s32 coords[2];
@@ -435,7 +435,7 @@ void func_020859b4(M2C_UNK arg0) {
         temp_r6 = func_020c4acc();
         values=(u8 *)&data_02157634;
         coords[0]=M2C_FIELD(values,s32 *,12);coords[1]=M2C_FIELD(values,s32 *,8);
-        temp_r0_2 = func_020cd164(values[1] + 1, values[4] + 1);
+        temp_r0_2 = GetPlayerResultAgainst(values[1] + 1, values[4] + 1);
         switch (temp_r0_2) {                        /* switch 2 */
         case 2:                                     /* switch 2 */
             break;
@@ -487,7 +487,7 @@ void func_020859b4(M2C_UNK arg0) {
         do {
             if ((s32) M2C_FIELD(((u8 *)&data_02157634 + var_r8), s8 *, 4) >= 0) {
                 temp_r5 = func_020c5328();
-                temp_r0_3 = func_020cd164(temp_r7 + 1, var_r8 + 1);
+                temp_r0_3 = GetPlayerResultAgainst(temp_r7 + 1, var_r8 + 1);
                 switch (temp_r0_3) {                /* switch 3 */
                 case 2:                             /* switch 3 */
                     break;

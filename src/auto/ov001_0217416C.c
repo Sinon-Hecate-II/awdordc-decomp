@@ -18,8 +18,8 @@ void Ov001_OpenKeypad(void) {
     void DrawPanelText(void *, s32, s32, s32, s32, s32, s32, u16 *);
     void *Ov001_AllocSpriteBlock(s32, s32, s32);
     void *Ov001_AddTask(s32, void (*)(s32), s32, s32);
-    void func_ov001_02174548(s32);
-    void func_ov001_02174f68(s32, s32);
+    void Ov001_KeypadSlideStep1(s32);
+    void Ov001_PositionKeypadStep(s32, s32);
     void *sprite;
     s32 i, label, j;
     s32 extra;
@@ -87,8 +87,8 @@ void Ov001_OpenKeypad(void) {
     M2C_FIELD(gOv001Keypad, void **, 0x58) = Ov001_CreateSprite(0, 0x44, 1);
     Ov001_SetSpriteEntryFlags(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 0x200, 0);
     Ov001_SetSpritePalette(M2C_FIELD(gOv001Keypad, void **, 0x58), -1, 2);
-    M2C_FIELD(gOv001Keypad, void **, 0x5c) = Ov001_AddTask(0, func_ov001_02174548, 0, 0x78);
-    func_ov001_02174f68(0, 192);
+    M2C_FIELD(gOv001Keypad, void **, 0x5c) = Ov001_AddTask(0, Ov001_KeypadSlideStep1, 0, 0x78);
+    Ov001_PositionKeypadStep(0, 192);
 }
 #pragma scheduling reset
 void func_ov001_021744a8(void) {
@@ -124,73 +124,90 @@ s32 Ov001_IsKeypadOpen(void) {
 }
 
 #pragma opt_propagation off
-void func_ov001_02174548(s32 arg0){
+/* Keypad slide-in step for the first number row: while its leftmost key is still
+ * right of where the row comes to rest, move the whole row along with it; once it
+ * has arrived, snap the row into place, park the second row just off the right
+ * edge and queue that row's step. */
+void Ov001_KeypadSlideStep1(s32 task){
 extern void *gOv001Keypad;
-void func_ov001_021745cc(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,16),u32 *,0);
-y=v&0x1ff0000;x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-((volatile s32 *)pos)[0]=x;
-if(pos[0]>76){func_ov001_02174f68(0,pos[0]);return;}
-func_ov001_02174f68(0,76);func_ov001_02174f68(1,192);
-Ov001_SetSlideStep(arg0,func_ov001_021745cc);
+void Ov001_KeypadSlideStep2(s32);
+u32 sprite; s32 keyX; u32 keyY; s32 pos[2];
+sprite=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,KEYPAD_KEY_SPRITE(0)),u32 *,0);
+keyY=sprite&0x1ff0000;
+keyX=(sprite&255)-12;
+((volatile s32 *)pos)[1]=keyY>>16;
+((volatile s32 *)pos)[0]=keyX;
+if(pos[0]>KPAD_ROW_REST_X0){Ov001_PositionKeypadStep(0,pos[0]);return;}
+Ov001_PositionKeypadStep(0,KPAD_ROW_REST_X0);
+Ov001_PositionKeypadStep(1,KPAD_ROW_HIDDEN_X);
+Ov001_SetSlideStep(task,Ov001_KeypadSlideStep2);
 }
 #pragma opt_propagation reset
-void func_ov001_021745cc(s32 arg0){
+/* Keypad slide-in step for the second number row: while its leftmost key is
+ * still right of where the row comes to rest, move the whole row along with it;
+ * once it has arrived, snap the row into place, park the third row just off the
+ * right edge and queue that row's step. */
+void Ov001_KeypadSlideStep2(s32 task){
 extern void *gOv001Keypad;
-void func_ov001_02174650(s32);
-u32 v; u32 hi; u32 lo; s32 x; s32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void**,28),u32*,0);
-y=v&0x1ff0000;
-x=(v&255)-12;
-y=(u32)y>>16;
+void Ov001_KeypadSlideStep3(s32);
+u32 v; s32 x; s32 y; s32 pos[2];
+v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void**,KEYPAD_KEY_SPRITE(KEYPAD_KEYS_PER_ROW)),u32*,0);
+y=v&OV001_SPRITE_POS_Y_MASK;
+x=(v&OV001_SPRITE_POS_X_MASK)-12;
+y=(u32)y>>OV001_SPRITE_POS_Y_SHIFT;
 ((volatile s32 *)pos)[1]=y;
 ((volatile s32 *)pos)[0]=x;
-if(pos[0]>99){func_ov001_02174f68(1,x);return;}
-func_ov001_02174f68(1,99);
-func_ov001_02174f68(2,192);
-Ov001_SetSlideStep(arg0,func_ov001_02174650);
+if(pos[0]>KPAD_ROW_REST_X1){Ov001_PositionKeypadStep(1,x);return;}
+Ov001_PositionKeypadStep(1,KPAD_ROW_REST_X1);
+Ov001_PositionKeypadStep(2,KPAD_ROW_HIDDEN_X);
+Ov001_SetSlideStep(task,Ov001_KeypadSlideStep3);
 }
 
 #pragma opt_propagation off
-void func_ov001_02174650(s32 arg0){
+/* Keypad slide-in step for the third number row: while its leftmost key is still
+ * right of where the row comes to rest, move the whole row along with it; once it
+ * has arrived, snap the row into place, park the next row just off the right edge
+ * and queue that row's step. */
+void Ov001_KeypadSlideStep3(s32 task){
 extern void *gOv001Keypad;
-void func_ov001_021746d4(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,40),u32 *,0);
-y=v&0x1ff0000;
-x=(v&255)-12;
-((volatile s32 *)pos)[1]=y>>16;
-((volatile s32 *)pos)[0]=x;
-if(pos[0]>122){func_ov001_02174f68(2,pos[0]);return;}
-func_ov001_02174f68(2,122);
-func_ov001_02174f68(3,192);
-Ov001_SetSlideStep(arg0,func_ov001_021746d4);
+void Ov001_KeypadSlideStep4(s32);
+u32 sprite; s32 keyX; u32 keyY; s32 pos[2];
+sprite=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,KEYPAD_KEY_SPRITE(6)),u32 *,0);
+keyY=sprite&0x1ff0000;
+keyX=(sprite&255)-12;
+((volatile s32 *)pos)[1]=keyY>>16;
+((volatile s32 *)pos)[0]=keyX;
+if(pos[0]>KPAD_ROW_REST_X2){Ov001_PositionKeypadStep(2,pos[0]);return;}
+Ov001_PositionKeypadStep(2,KPAD_ROW_REST_X2);
+Ov001_PositionKeypadStep(3,KPAD_ROW_HIDDEN_X);
+Ov001_SetSlideStep(task,Ov001_KeypadSlideStep4);
 }
 #pragma opt_propagation off
-void func_ov001_021746d4(s32 arg0){
+/* Keypad slide step 3: read the row sprite at +0x34's packed position and, once
+ * its x has passed 145, snap rows 3 and 4 to their final x and hand over to the
+ * last slide step. */
+void Ov001_KeypadSlideStep4(s32 task){
 extern void *gOv001Keypad;
-void func_ov001_02174758(s32);
-u32 v; s32 x; u32 y; s32 pos[2];
-v=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,52),u32 *,0);
-y=v&0x1ff0000;
-x=(v&255)-12;
+void Ov001_KeypadSlideStep5(s32);
+u32 packed; s32 x; u32 y; s32 pos[2];
+packed=M2C_FIELD(M2C_FIELD(gOv001Keypad,void **,52),u32 *,0);
+y=packed&0x1ff0000;
+x=(packed&255)-12;
 ((volatile s32 *)pos)[1]=y>>16;
 ((volatile s32 *)pos)[0]=x;
-if(pos[0]>145){func_ov001_02174f68(3,pos[0]);return;}
-func_ov001_02174f68(3,145);
-func_ov001_02174f68(4,192);
-Ov001_SetSlideStep(arg0,func_ov001_02174758);
+if(pos[0]>145){Ov001_PositionKeypadStep(3,pos[0]);return;}
+Ov001_PositionKeypadStep(3,145);
+Ov001_PositionKeypadStep(4,192);
+Ov001_SetSlideStep(task,Ov001_KeypadSlideStep5);
 }
 #pragma opt_propagation on
-void func_ov001_02174758(s32 arg0){extern void *gOv001Keypad;
+void Ov001_KeypadSlideStep5(s32 arg0){extern void *gOv001Keypad;
 void func_ov001_021747cc(void);
 s32 pos[2];
 Ov001_GetSpritePosition(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
 pos[0]-=12;
-if(pos[0]>170){func_ov001_02174f68(4,pos[0]);return;}
-func_ov001_02174f68(4,170);Ov001_UpdateKeypadCursor();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
+if(pos[0]>170){Ov001_PositionKeypadStep(4,pos[0]);return;}
+Ov001_PositionKeypadStep(4,170);Ov001_UpdateKeypadCursor();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
 }
 
 void Ov001KeypadTouchHeld(void);

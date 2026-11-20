@@ -227,7 +227,13 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
  * table maps each tile id to one of these packed values. */
 #define MAP_TERRAIN_SHOAL      9    /* shoal (beach) ground: a sea unit can enter it and a Rig builds a temporary port on it */
 #define MAP_TERRAIN_BASE       0x11 /* base: produces land units */
+#define MAP_TERRAIN_CITY       0x10
+#define MAP_TERRAIN_AIRPORT    0x12
 #define MAP_TERRAIN_PORT       0x13 /* port: produces naval units */
+#define MAP_TERRAIN_TEMP_AIRFIELD 0x14
+#define MAP_TERRAIN_TEMP_PORT  0x15
+#define MAP_TERRAIN_COM_TOWER  0x16
+#define MAP_TERRAIN_RADAR      0x17
 #define MAP_TERRAIN_PLAIN      1    /* plain ground */
 #define MAP_TERRAIN_WASTELAND  8    /* barren ground a destroyed owned property leaves */
 #define MAP_TERRAIN_PROPERTY_FIRST 0x0f /* first property terrain kind: headquarters */
@@ -415,6 +421,7 @@ typedef struct MapSettings {
 #define MAP_UNIT_TARGET_X_MASK 0x003F /* low six bits of MAP_UNIT_TARGET: target x */
 #define MAP_UNIT_TARGET_Y_MASK 0x0FC0 /* bits 6..11 of MAP_UNIT_TARGET: target y */
 #define MAP_UNIT_TARGET_Y_NONE 0x0FC0 /* all six target-y bits set: no target */
+#define MAP_DESTINATION_NONE 0x270F /* s16 destination-search sentinel: no tile found */
 #define MAP_UNIT_AI_STATE   0x0B /* u8 low nibble AI step; bit 5 held while a move target is assigned */
 #define MAP_UNIT_AI_STATE_MASK 0x0F /* low nibble of MAP_UNIT_AI_STATE */
 #define MAP_UNIT_AI_KNOWN   0x40 /* u8 bit 6 of MAP_UNIT_AI_STATE: the AI knows where this unit is even without sight of its cell */
@@ -755,6 +762,7 @@ enum {
 #define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
 #define MAPDATA_LINK_BATTLE 0x04 /* u8 nonzero when the battle runs over a link/online session (its overlay is polled) */
 #define MAPDATA_RULES   0x0C /* u16 packed battle rule flags; bit 12 (0x1000) is CO powers enabled, cleared when the map forbids them, bit 13 (0x2000) selects army-specific movement costs instead of army 0's */
+#define MAPDATA_DAY_LIMIT 0x0F /* u8 day limit: when a new day starts on this day (MAP_TURN) the battle ends, 0 = unlimited */
 #define MAPDATA_TURN_TIME 0x10 /* u16 configured per-turn time limit in frames, 0 = untimed */
 
 /* Map ids in this range are story missions with a rank entry in the per-map
@@ -821,11 +829,12 @@ typedef struct MapRecordStamp {
 #define MAP_RECORD_LIST_COUNT 5
 #define MAP_RECORD_LIST_SIZE  0x22D8 /* MAP_RECORD_LIST_COUNT * MAP_RECORD_SIZE */
 
-/* The task that fades the battle map in when the map view opens: MapFadeInStep
- * (main_020CBACC.c) bumps fadeTimer each frame while the map is drawn. */
+/* The task that fades the battle map in when the map view opens and out when it
+ * closes: MapFadeInStep (main_020CBACC.c) bumps fadeTimer each frame while the
+ * map is drawn, MapFadeOutStep counts it back down. */
 typedef struct MapViewTask {
     u8  pad0[0x34];
-    s16 fadeTimer; /* +0x34 fade-in frame counter */
+    s16 fadeTimer; /* +0x34 fade-in/fade-out frame counter */
     s16 viewX;     /* +0x36 saved map view scroll x (MAP_VIEW_X) */
     s16 viewY;     /* +0x38 saved map view scroll y (MAP_VIEW_Y) */
     s16 unk3A;     /* +0x3A */

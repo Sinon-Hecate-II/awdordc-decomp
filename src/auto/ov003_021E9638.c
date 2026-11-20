@@ -294,13 +294,15 @@ u8 func_ov003_021e9c30(void *arg0) {
     return var_r0;
 }
 
-void func_ov003_021e9c50(void *p) {
+/* Place the waypoint panel's target cursor over the selected slot's unit, sized
+ * to that unit's sprite, and the slot marker at the selected slot's column. */
+void PlaceWaypointPanelCursor(void *panel) {
  s32 GetUnitSpriteWidth(void *); s32 GetUnitSpriteHeight(void *); s16 GetWaypointSlotX(u8);
- void *q; s32 a,b;
- q=M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0);
- b=GetUnitSpriteHeight(q); a=GetUnitSpriteWidth(q);
- E9638Set(M2C_FIELD(p,void**,0x58),M2C_FIELD(q,s16*,0x34),M2C_FIELD(q,s16*,0x36),a,b);
- M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=GetWaypointSlotX(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
+ void *unit; s32 width,height;
+ unit = M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), void **, WAYPOINT_LIST_UNIT);
+ height = GetUnitSpriteHeight(unit); width = GetUnitSpriteWidth(unit);
+ E9638Set(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_X), M2C_FIELD(unit, s16 *, SPRITE_ACTOR_Y), width, height);
+ M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_MARKER), s16 *, SPRITE_ACTOR_X) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), u8 *, WAYPOINT_LIST_SELECTED));
 }
 
 u8 func_ov003_021e9cd0(void *arg0) {

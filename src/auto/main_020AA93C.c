@@ -423,10 +423,10 @@ void func_020ab1b8(void) {
 void *func_020ab1c4(s32 arg0) {
  extern M2C_UNK data_02126b94, data_02126be4;
  void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
- void func_02089108(void *);
+ void Init3DSpriteActor(void *);
  void *result = CreateSpriteFromClass(&data_02126b94,arg0);
  if (result != NULL) {
- func_02089108(result);
+ Init3DSpriteActor(result);
  M2C_FIELD(result,M2C_UNK **,0)=&data_02126be4;
  M2C_FIELD(result,s32 *,0x64)=0;
  }

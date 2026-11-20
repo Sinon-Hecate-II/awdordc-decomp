@@ -140,7 +140,7 @@ void func_ov001_0217b130(void) {
  * plays the cursor-move sound, or the no-move sound once per held key
  * (MAPSELECT_BUMP_LATCH). */
 void MapSelectList_MoveCursor(s32 dir){
-void func_ov001_0217b33c(void);
+void MapSelectList_PageDown(void);
 extern M2C_UNK gMapSelectState;
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 s32 moved=1;s32 row=M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR);
@@ -150,7 +150,7 @@ Ov001_PlaySound(19);
 M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),s32 *,MAPSELECT_SCROLL_ANIM)=Ov001_AddTask(0,MapSelectList_ScrollUp,0,120);return;
 }} else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
 case 1:case 2: if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_COUNT)>(row+1))M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row+1;else moved=0;}break;
-case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {func_ov001_0217b33c();return;}break;
+case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;else {MapSelectList_PageDown();return;}break;
 case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;MapSelectList_Redraw();Ov001_UpdateScrollbarHandle(0);}break;
 }
 if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH)=1;return;}
@@ -171,18 +171,21 @@ void func_ov001_0217b2c8(void) {
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, MapSelectList_ScrollUp, 0, 0x78);
 }
 
-void func_ov001_0217b33c(void) {
+/* Page the map-select list down from its last row: when the list is already at
+ * its bottom (or holds only the visible rows) play the no-move sound once per
+ * held key, otherwise start the scroll-down task. */
+void MapSelectList_PageDown(void) {
     M2C_UNK Ov001_PlaySound(s32);
     s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     extern M2C_UNK gMapSelectState;
-    if (M2C_FIELD(&gMapSelectState, u16 *, 2) == M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u16 *, 0x40) || M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x51) <= 4) {
-        if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) != 0) return;
+    if (M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) == M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL) || M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_COUNT) <= 4) {
+        if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_BUMP_LATCH) != 0) return;
         Ov001_PlaySound(9);
-        M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) = 1;
+        M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_BUMP_LATCH) = 1;
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, MapSelectList_ScrollDown, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = Ov001_AddTask(0, MapSelectList_ScrollDown, 0, 0x78);
 }
 
 void func_ov001_0217b3c0(void) {
@@ -369,13 +372,13 @@ void func_ov001_0217b8f8(void) {
 }
 
 void func_ov001_0217b914(void) {
-    M2C_UNK func_ov001_02172824();
+    M2C_UNK Ov001_StartKeyboardClose();
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_HandleNameEntryResult;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02172824();
+    Ov001_StartKeyboardClose();
     Ov001_PlaySound(0x15);
     Ov001_SetStepCallback(&Ov001_HandleNameEntryResult);
 }

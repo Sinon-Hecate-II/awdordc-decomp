@@ -129,7 +129,7 @@ u8 func_020d1a74(void) {
     return var_r0;
 }
 
-u8 func_020d1a90(void) {
+u8 WillNextTurnStartNewDay(void) {
  extern void **gCurrentMap;
  u16 n=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
  do { n++; if(n==5)n=1; } while(!IsPlayerActive(n));

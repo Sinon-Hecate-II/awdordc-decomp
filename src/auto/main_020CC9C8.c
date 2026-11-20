@@ -172,15 +172,17 @@ if(activeCount==totalCount)return BATTLE_RESULT_DRAW;if(inactiveCount==totalCoun
 }return BATTLE_RESULT_LOSE;
 }
 
-s32 func_020cd164(s32 arg0, s32 arg1) {
+/* A player's battle result as seen against another player: BATTLE_RESULT_NONE
+ * unless both players are present, different, and on opposing armies. */
+s32 GetPlayerResultAgainst(s32 player, s32 other) {
     extern s32 *gCurrentMap;
-    s32 base;
-    if (!IsPlayerPresent(arg0)) return 0;
-    if (!IsPlayerPresent(arg1)) return 0;
-    if (arg0 == arg1) return 0;
-    base = *gCurrentMap + 0x67A4;
-    if (M2C_FIELD(arg0 * 0x8C + base, u8 *, 0x26) == M2C_FIELD(arg1 * 0x8C + base, u8 *, 0x26)) return 0;
-    return GetPlayerResult(arg0);
+    s32 players;
+    if (!IsPlayerPresent(player)) return BATTLE_RESULT_NONE;
+    if (!IsPlayerPresent(other)) return BATTLE_RESULT_NONE;
+    if (player == other) return BATTLE_RESULT_NONE;
+    players = *gCurrentMap + MAP_PLAYER_STATES;
+    if (M2C_FIELD(player * MAP_PLAYER_STRIDE + players, u8 *, PLAYER_REC_ARMY) == M2C_FIELD(other * MAP_PLAYER_STRIDE + players, u8 *, PLAYER_REC_ARMY)) return BATTLE_RESULT_NONE;
+    return GetPlayerResult(player);
 }
 
 /* Whether the battle is won: a win by any human player decides it; otherwise a

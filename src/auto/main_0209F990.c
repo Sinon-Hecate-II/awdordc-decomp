@@ -12,7 +12,7 @@ s32 func_0209f990(void) {
     void func_0209f8c0(void);
     void func_0209f8f8(s32, s32, s32, s32);
     s32 func_020a4828(s32, s32);
-    void *func_020a45f8(s32, s32);
+    void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
     void func_020d166c(s32, s32, void *);
     u8 IsSameTeam(s32, s32);
@@ -48,7 +48,7 @@ s32 func_0209f990(void) {
                             }
                         } else {
                             if (visible != 0) {
-                                dim = func_020a45f8(x, y);
+                                dim = FindMapOrderAtTile(x, y);
                                 if (dim != 0) {
                                     bits = (s32)((UnkCellBits *)dim)->bits;
                                     if (bits != 0) {
@@ -79,7 +79,7 @@ s32 func_0209fb70(void) {
     void func_0209f8c0(void);
     void func_0209f8f8(s32, s32, s32, s32);
     s32 func_020a4828(s32, s32);
-    void *func_020a45f8(s32, s32);
+    void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
     s32 func_020d0a08(M2C_UNK, void *);
     s32 func_020d0a88(u8 *, M2C_UNK);
@@ -114,7 +114,7 @@ s32 func_0209fb70(void) {
                 }
             } else {
                 if (visible != 0) {
-                    dim = func_020a45f8(x, y);
+                    dim = FindMapOrderAtTile(x, y);
                     if (dim != 0) {
                         bits = (s32)((UnkCellBits *)dim)->bits;
                         if (bits != 0) {
@@ -440,20 +440,31 @@ extern s32 *gCurrentMap;
     func_020a0360();
 }
 
-s32 func_020a061c(void) {
-extern void *gUnitMovePath;
-void *p=gUnitMovePath; s8 i,j; s8 *q,*r; s32 x;
-i=M2C_FIELD(p,s8 *,0x5b);
-if(i>0) {q=p+i; do {
-j=i-1;
-if(j>=0) do {
-x=q[0x36]; r=p+j;
-if(x==r[0x36] && q[0x42]==r[0x42]) return 0;
-j--;
-}while(j>=0);
-i--;q--;
-}while(i>0);}
-return 1;
+/* Checks the pending move path for a repeated cell: returns 0 if any two steps
+ * land on the same tile, 1 when every step is on a different tile. */
+s32 IsMovePathCellUnique(void) {
+    extern void *gUnitMovePath;
+    void *path = gUnitMovePath;
+    s8 i, j;
+    s8 *step, *other;
+    s32 x;
+
+    i = M2C_FIELD(path, s8 *, UNIT_PATH_LENGTH);
+    if (i > 0) {
+        step = path + i;
+        do {
+            j = i - 1;
+            if (j >= 0) do {
+                x = step[UNIT_PATH_X];
+                other = path + j;
+                if (x == other[UNIT_PATH_X] && step[UNIT_PATH_Y] == other[UNIT_PATH_Y]) return 0;
+                j--;
+            } while (j >= 0);
+            i--;
+            step--;
+        } while (i > 0);
+    }
+    return 1;
 }
 
 /* Starts a fresh move path for the unit under the cursor: resets the path to the
@@ -505,7 +516,7 @@ return score+GetTerrainDefenseScore(player,kind,terrain);
 s32 func_020a086c(s16 *arg0, s16 *arg1) {
     s32 ScoreMoveCell(s32, s32);
     s32 NextRandomValue(void);
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     extern s8 data_0211fbbc[];
     s32 xv = *arg0;
     s32 yv = *arg1;
@@ -523,7 +534,7 @@ s32 func_020a086c(s16 *arg0, s16 *arg1) {
     }
     if (best == 0) return 0;
     {
-        unsigned long long q = func_020720f0(NextRandomValue(), tiecount + 1);
+        unsigned long long q = RuntimeIntDivMod(NextRandomValue(), tiecount + 1);
         s32 ticket = (s32)(q >> 32);
         s32 idx = 0;
         for (idx = 0; idx < 4; idx++) {

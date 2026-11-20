@@ -1,6 +1,7 @@
 /* 33 functions from 0x02038F88 to 0x02039EFC (main), found by ds-decomp. */
 #include "common.h"
 #include "net_session.h"
+#include "wfc.h"
 
 /* Opens the GameSpy GT2 socket of the logged-in session: picks a random local
  * port, creates the socket with the session's buffer sizes and the socket-error
@@ -93,7 +94,7 @@ void *GetPlayerPeer(s32 arg0) {
     return &gPlayerPeers + arg0 * 2;
 }
 
-s32 func_020391b8(s32 arg0) {
+s32 HasPlayerConnection(s32 arg0) {
     void *func_0205b094(void *);
     extern M2C_UNK gPlayerConnections;
     s32 i;
@@ -261,7 +262,7 @@ void func_02039698(s32 unused, void *arg1) {
 void HandleGpcmMatMessage(s32 conn,void *info,s32 arg){
 extern char sGpcmPrefix[],sMatPrefix[];extern void *gNetSession;
 s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 strtoul(const char *,void *,s32);
-void func_0203db94(s32,s32,char *);
+void HandleConnectionTextCommand(s32,s32,char *);
 char versionText[12]={0};char *text=M2C_FIELD(info,char **,8);u32 len;
 if(func_0203ad70(conn,info,arg))return;
 if(ByteCompareN(text,sGpcmPrefix,StringLength(sGpcmPrefix)))return;
@@ -276,7 +277,7 @@ if(M2C_FIELD(gNetSession,s32 *,0x24)!=5){
 if(M2C_FIELD(gNetSession,s32 *,0x24)!=6)return;
 if(M2C_FIELD(gNetSession,volatile u8 *,0x389)!=2&&M2C_FIELD(gNetSession,volatile u8 *,0x389)!=3)return;
 }
-func_0203db94(conn,M2C_FIELD(info,s32 *,0),text+StringLength(sMatPrefix));
+HandleConnectionTextCommand(conn,M2C_FIELD(info,s32 *,0),text+StringLength(sMatPrefix));
 }
 
 void func_02039838(void) {
@@ -305,23 +306,21 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK func_0203dcf4();
     void SetNetState(s32);
 
-    s32 r5 = 0;
+    s32 r8;
     s32 r10 = 0;
-    s32 r8 = 0;
-    s32 r6 = 0;
-    u8 r4 = 0;
-    s32 r7 = 0;
+    s32 r5 = 0;
+    s32 r6;
+    u8 r4;
+    s32 r7;
     s32 arg0v = arg0;
     s32 arg1v = arg1;
-    void *p = NULL;
 
     if (func_0203e558() != 0) return;
 
     switch (arg1v) {
         case 0:
         case 1:
-            r8 = 0;
-            r6 = 0;
+            r8 = r5;
             break;
         case 2:
         case 3:
@@ -329,19 +328,15 @@ void func_02039844(s32 arg0, s32 arg1) {
             r6 = (s32)0xffffe250;
             break;
         case 4:
-            r8 = 9;
             r6 = (s32)0xffffe24f;
-            break;
-        default:
-            r8 = 0;
-            r6 = 0;
+            r8 = 9;
             break;
     }
 
     if (r8 == 0) {
-        p = func_0205b094(arg0v);
-        if (p == NULL) return;
-        r4 = ((u8 *)p)[1];
+        u8 *peer = func_0205b094(arg0v);
+        if (peer == NULL) return;
+        r4 = peer[1];
         {
             void *base = gNetSession;
             r7 = 1;
@@ -357,7 +352,7 @@ void func_02039844(s32 arg0, s32 arg1) {
         }
         {
             s32 funcres = func_02039224(r4);
-            u8 idx = ((u8 *)p)[0];
+            u8 idx = peer[0];
             (&gPlayerConnections)[idx] = 0;
             {
                 void *base = gNetSession;
@@ -379,11 +374,10 @@ void func_02039844(s32 arg0, s32 arg1) {
         if (M2C_FIELD(base, u8 *, 0x2d) == 0 &&
             M2C_FIELD(base, u32 *, 0x24) == 6 && r7 == 0) {
             u8 d389 = M2C_FIELD(base, u8 *, 0x389);
-            if (!(d389 != 2 && r8 != 0)) {
-                ReportGpiSessionStatus();
-                func_0203e064(r5);
-                return;
-            }
+            if (d389 != 2 || r8 != 0) return;
+            ReportGpiSessionStatus();
+            func_0203e064(r5);
+            return;
         }
     }
 
@@ -396,18 +390,17 @@ void func_02039844(s32 arg0, s32 arg1) {
     {
         void *base = gNetSession;
         if (M2C_FIELD(base, u8 *, 0x2d) == 0) {
-            u8 a = M2C_FIELD(base, u8 *, 0x389);
-            if (a == 2 || a == 3) {
-                u8 t = M2C_FIELD(base, u8 *, 0x381);
+            if (M2C_FIELD(base, volatile u8 *, 0x389) == 2 || M2C_FIELD(base, volatile u8 *, 0x389) == 3) {
+                void *b = *(void *volatile *)&gNetSession;
+                u8 t = M2C_FIELD(b, u8 *, 0x381);
                 s32 idx = (s32)t + 2;
-                void *b = gNetSession;
                 u32 val = *(u32 *)((u8 *)b + 0x468 + (s32)idx * 4);
                 if (val != 0) {
                     u8 bb = *(u8 *)((u8 *)b + 0x644 + (s32)idx);
-                    u8 t2 = M2C_FIELD(b, u8 *, 0x381);
-                    *(u8 *)((u8 *)b + 0x644 + (s32)t2 + 1) = bb;
+                    s32 next = t + 1;
+                    M2C_FIELD((u8 *)b + next, u8 *, 0x644) = bb;
                     {
-                        void *b2 = gNetSession;
+                        void *b2 = *(void *volatile *)&gNetSession;
                         u8 t3 = M2C_FIELD(b2, u8 *, 0x381);
                         RemoveConnectionPeer((s32)t3 + 1, (s32)t3 + 3);
                     }
@@ -436,8 +429,8 @@ void func_02039844(s32 arg0, s32 arg1) {
 
     {
         void *base = gNetSession;
-        u8 d389 = M2C_FIELD(base, u8 *, 0x389);
-        if (d389 == 0 || d389 == 1) {
+        if (M2C_FIELD(base, volatile u8 *, 0x389) == 0 || M2C_FIELD(base, volatile u8 *, 0x389) == 1) {
+            base = *(void *volatile *)&gNetSession;
             M2C_FIELD(base, u8 *, 0x38a) = M2C_FIELD(base, u8 *, 0x388);
             {
                 void *base2 = gNetSession;
@@ -448,12 +441,12 @@ void func_02039844(s32 arg0, s32 arg1) {
 
     {
         void *base = gNetSession;
-        s32 ae = 0;
-        void (*cb)(s32, s32, s32, s32, s32, s32) = NULL;
+        s32 ae;
+        void (*cb)(s32, s32, s32, s32, s32, s32);
         if (M2C_FIELD(base, s32 *, 0x90) != 0 && r7 != 0) {
             if (arg1v == 0) r7 = 1; else r7 = 0;
             ae = GetSessionPlayerSlot(r5);
-            cb = (void (*)(s32, s32, s32, s32, s32, s32))M2C_FIELD(base, void **, 0x90);
+            cb = (void (*)(s32, s32, s32, s32, s32, s32))M2C_FIELD(gNetSession, void **, 0x90);
             cb(r8, r7, r10, r4, ae, M2C_FIELD(base, s32 *, 0x94));
         }
     }
@@ -487,19 +480,22 @@ void Gt2SocketErrorCallback(s32 *arg0) {
     M2C_FIELD(M2C_FIELD(&gNetSession, s32 *, 0), s32 *, 0) = 0;
 }
 
-void func_02039be4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
+/* Clear the NAS login work area and install the parameters for the next request. */
+void InitNasLoginContext(s32 context, s32 session, s32 gpiConnection, s32 gameId, s32 keyType,
+                         s32 requestName, s32 resultCallback, s32 callbackArg) {
     extern M2C_UNK gNasLogin;
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_FIELD(&gNasLogin, s32 *, 4) = arg0;
-    MI_CpuFill8(arg0, 0, 0x280);
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0) = arg2;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 4) = 0;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 8) = arg3;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0xc) = arg4;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x10) = arg5;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x14) = arg6;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x18) = arg7;
-    M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x1c) = arg1;
+
+    M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT) = context;
+    MI_CpuFill8(context, 0, NAS_LOGIN_CONTEXT_BYTES);
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->gpiConnection = gpiConnection;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->state = NAS_STATE_IDLE;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->gameId = gameId;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->keyType = keyType;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->requestName = requestName;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->resultCallback = resultCallback;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->callbackArg = callbackArg;
+    M2C_FIELD(&gNasLogin, NasLoginParameters **, NAS_LOGIN_CONTEXT)->session = session;
 }
 
 void func_02039c68(void) {

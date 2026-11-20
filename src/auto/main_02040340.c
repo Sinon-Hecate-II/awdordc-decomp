@@ -6,7 +6,7 @@ void *GetConnection(void);
 /* Decide how to answer an incoming join request from peer (payload b/c,
  * mode d, force e) for the current session, returning the reply code. */
 s32 ConnectionHandleJoin(s32 peer, s32 b, s32 c, s32 mode, s32 force) {
-s32 HasBuddyProfile(s32,s32); s32 IsConnectionMember(s32); void Qr2_StateChanged(s32); s32 func_02040dc8(s32); void func_0204084c(s32);
+s32 HasBuddyProfile(s32,s32); s32 IsConnectionMember(s32); void Qr2_StateChanged(s32); s32 func_02040dc8(s32); void ReportConnectionCommandResult(s32);
 extern u8 gConnectionMgr[];
 s32 result; void *session;
 switch(M2C_FIELD(GetConnection(),u8*,0x15)) {
@@ -26,7 +26,7 @@ case 0:
  }else{
  if(force!=0 || (M2C_FIELD(GetConnection(),s32*,0x200)<peer && M2C_FIELD(GetConnection(),s32*,0x208)==0)) {
  func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204));
- if(((s32 (*)())func_0204084c)())return 255;
+ if(((s32 (*)())ReportConnectionCommandResult)())return 255;
  result=2;
  }else result=3;
  }
@@ -85,14 +85,14 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
 }
 #pragma opt_strength_reduction reset
 void func_020407fc(s32 arg0,s32 *arg1) {
-void func_02007e70(void *,void *,u32); void *GetConnection(void);
+void MIi_CpuCopy32(void *,void *,u32); void *GetConnection(void);
 u32 n=*arg1+2;
-if(n>2) func_02007e70(arg1+1,(u8 *)GetConnection()+0x350,(n-2)*4);
+if(n>2) MIi_CpuCopy32(arg1+1,(u8 *)GetConnection()+0x350,(n-2)*4);
 M2C_FIELD(GetConnection(),s32 *,0x348)=n-1;
 M2C_FIELD(GetConnection(),s32 *,0x34c)=arg0;
 }
 
-void func_0204084c(s32 arg0) {
+void ReportConnectionCommandResult(s32 arg0) {
 void ReportConnectionStatusResult(s32); void ReportMatchmakingResult(s32); void *GetConnection(void);
 if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { ReportMatchmakingResult(arg0); return; }
 ReportConnectionStatusResult(arg0);
@@ -270,7 +270,7 @@ s32 StartConnection(M2C_UNK preferredPeer) {
  if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==0) {
  SetConnectionState(3); SendMatchmakingParameter(0); if(((s32 (*)())ReportMatchmakingResult)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==1) {
- TryConnectToPeer(0,0,preferredPeer); if(((s32 (*)())func_0204084c)())return 0;
+ TryConnectToPeer(0,0,preferredPeer); if(((s32 (*)())ReportConnectionCommandResult)())return 0;
  } else if(M2C_FIELD(GetConnection(),u8*,CONN_SESSION_MODE)==3) {
  ReportConnectionError(6,0xfffec5e6);return 0;
  }

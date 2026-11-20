@@ -163,17 +163,33 @@ SetNetError(errorKind,errorCode);return result;
 
 void *HttpRequestAlloc(CallbackRecord *src){void *HeapAlloc(s32,s32);extern M2C_UNK gHttpRequestList;void *p=HeapAlloc(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&gHttpRequestList,void **,0)){M2C_FIELD(&gHttpRequestList,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&gHttpRequestList,void **,0);M2C_FIELD(&gHttpRequestList,void **,0)=p;}return p;}
 
-void HttpRequestFree(void *a) {
- extern M2C_UNK gHttpRequestList; void HeapFree(s32,s32,s32);
- void *p=M2C_FIELD(&gHttpRequestList,void **,0),*q,*n;
- if(!p)return;
- if(p==a){n=M2C_FIELD(p,void **,24);HeapFree(4,(s32)p,0);M2C_FIELD(&gHttpRequestList,void **,0)=n;return;}
- q=M2C_FIELD(p,void **,24);
- while(q) {
- if(q!=a)p=q;
- else {n=M2C_FIELD(p,void **,24);M2C_FIELD(p,void **,24)=M2C_FIELD(n,void **,24);HeapFree(4,(s32)n,0);return;}
- q=M2C_FIELD(q,void **,24);
- }
+/* Unlink request node `node` from gHttpRequestList and free it. */
+void HttpRequestFree(void *node) {
+    extern M2C_UNK gHttpRequestList;
+    void HeapFree(s32, s32, s32);
+    WebRequestNode *head = M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0);
+    WebRequestNode *cur;
+    WebRequestNode *doomed;
+
+    if (!head) return;
+    if (head == (WebRequestNode *)node) {
+        doomed = head->next;
+        HeapFree(4, (s32)head, 0);
+        M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0) = doomed;
+        return;
+    }
+    cur = head->next;
+    while (cur) {
+        if (cur != (WebRequestNode *)node) {
+            head = cur;
+        } else {
+            doomed = head->next;
+            head->next = doomed->next;
+            HeapFree(4, (s32)doomed, 0);
+            return;
+        }
+        cur = cur->next;
+    }
 }
 
 void HttpRequestFreeAll(void) {

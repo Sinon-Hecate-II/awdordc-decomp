@@ -163,7 +163,7 @@ void func_020a0d18(void) {
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_020a0360(void);
-    M2C_UNK func_020a061c(void);
+    M2C_UNK IsMovePathCellUnique(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
     s32 func_020a0300(s8, s8);
     void func_020a0068(s8);
@@ -171,7 +171,7 @@ void func_020a0d18(void) {
     s32 GetPlayerArmyVariant(s32);
     extern s32 *gCurrentMap;
     extern s32 gUnitMovePath;
-    extern u8 data_ov000_021b5c09[];
+    extern u8 gUnitMaxAttackRange[];
     extern u16 gMapConfig[];
     extern u8 data_021261d0[];
     extern u8 gMovementTypeTable[];
@@ -202,7 +202,7 @@ void func_020a0d18(void) {
     x = *(s16 *)(base + 0x52c2);
     if ((*(s8 **)(base + y * 4 + 0x52e8))[x] > 110) {
         kind = (*(MapUnitBits **)(base + 0x52d0))->kind;
-        if (data_ov000_021b5c09[kind * 112] > 1) return;
+        if (gUnitMaxAttackRange[kind * 112] > 1) return;
         ctx = (s8 *)gUnitMovePath;
         index = ctx[0x5b];
         cy = ctx[0x42 + index];
@@ -216,7 +216,7 @@ void func_020a0d18(void) {
         if (func_020a086c(&sx, &sy)) {
             func_01ffc4b8(sx, sy, (u8 *)*gCurrentMap + 0x5388);
             func_020a0360();
-            if (!func_020a061c()) func_020a05d8(sx, sy);
+            if (!IsMovePathCellUnique()) func_020a05d8(sx, sy);
         } else {
             SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
             sx = x; sy = y;
@@ -273,7 +273,7 @@ void func_020a0d18(void) {
     } else {
         func_01ffc4b8(x, y, base + 0x5388);
         func_020a0360();
-        if (!func_020a061c()) func_020a05d8(x, y);
+        if (!IsMovePathCellUnique()) func_020a05d8(x, y);
     }
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 }

@@ -69,7 +69,27 @@ void Qr2_StateChanged(void *arg0) {
     M2C_FIELD(var_r4, s32 *, 0xB4) = 0;
 }
 
-void Qr2_DestroyConnection(void *p){extern void *gQr2Connection;extern M2C_UNK gQr2DefaultConnection;void func_020496b8(s32,s32);void func_02049270(s32);void gpiFree(void *);if(!p)p=gQr2Connection;if(M2C_FIELD(p,s32 *,0xbc))Qr2_SendState(p,2);if(M2C_FIELD(p,s32 *,0)!=-1 && M2C_FIELD(p,s32 *,0xc4)){func_020496b8(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0xc4));}M2C_FIELD(p,s32 *,0)=-1;M2C_FIELD(p,s32 *,0xac)=0;if(M2C_FIELD(p,s32 *,0xc4))func_02049270(M2C_FIELD(p,s32 *,0xc4));if(p==&gQr2DefaultConnection)return;gpiFree(p);}
+/* Tear down a QR2 connection: report the final state to the master, close its
+ * socket and release its receive buffer, then free the record itself - unless
+ * it is the static default record, which is never freed.  A NULL record means
+ * the current global connection. */
+void Qr2_DestroyConnection(void *qr2) {
+    extern void *gQr2Connection;
+    extern M2C_UNK gQr2DefaultConnection;
+    void ghiCloseSocket(s32, s32);
+    void func_02049270(s32);
+    void gpiFree(void *);
+    if (!qr2) qr2 = gQr2Connection;
+    if (M2C_FIELD(qr2, s32 *, QR2_REPORT_TO_MASTER)) Qr2_SendState(qr2, QR2_STATE_FINAL);
+    if (M2C_FIELD(qr2, s32 *, QR2_SOCKET) != -1 && M2C_FIELD(qr2, s32 *, QR2_RECV_BUFFER)) {
+        ghiCloseSocket(M2C_FIELD(qr2, s32 *, QR2_SOCKET), M2C_FIELD(qr2, s32 *, QR2_RECV_BUFFER));
+    }
+    M2C_FIELD(qr2, s32 *, QR2_SOCKET) = -1;
+    M2C_FIELD(qr2, s32 *, QR2_LAST_SENT) = 0;
+    if (M2C_FIELD(qr2, s32 *, QR2_RECV_BUFFER)) func_02049270(M2C_FIELD(qr2, s32 *, QR2_RECV_BUFFER));
+    if (qr2 == &gQr2DefaultConnection) return;
+    gpiFree(qr2);
+}
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off
@@ -171,7 +191,7 @@ end:
 }
 
 void Qr2CryptStateString(void *arg0, s32 arg1, void *arg2, s32 arg3) {
-    unsigned long long func_020720f0(s32, s32);
+    unsigned long long RuntimeIntDivMod(s32, s32);
     u8 S[256];
     u8 *key;
     u8 *data;
@@ -198,7 +218,7 @@ void Qr2CryptStateString(void *arg0, s32 arg1, void *arg2, s32 arg3) {
     p = S;
     for (i = 0; i < 256; i++) {
         j = (u8)((j + *p + key[idx]) % 256);
-        idx = (u8)(func_020720f0(idx + 1, keyLen) >> 32);
+        idx = (u8)(RuntimeIntDivMod(idx + 1, keyLen) >> 32);
         SwapBytes(p, S + j);
         p++;
     }

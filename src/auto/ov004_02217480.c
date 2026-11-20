@@ -42,7 +42,7 @@ s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
 void ResetBattleMap(void);void func_020cf278(s32);void LoadBattleMap(s32);void func_ov003_021ff36c(void);
-s32 func_020a8958(s32);void SetSpriteAnimation(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
+s32 MapData_GetCategory(s32);void SetSpriteAnimation(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
@@ -97,7 +97,7 @@ case 5:
 old=(data_0215d8a8[M2C_FIELD(entry,u8 *,7)]<<3)>>29;
 for(i=0;i<4;i++){q=M2C_FIELD((u8 *)entry+i*4,void **,16);if(q && (((Flags175 *)data_0215d8a8)[M2C_FIELD(q,u8 *,7)].low)==0){
 data_0215d8a8[M2C_FIELD(q,u8 *,7)]=(data_0215d8a8[M2C_FIELD(q,u8 *,7)]&~7)|1;
-id=M2C_FIELD(q,u8 *,7);value=func_020a8958(id+161);selected=Flag175(q,2);
+id=M2C_FIELD(q,u8 *,7);value=MapData_GetCategory(id+161);selected=Flag175(q,2);
 M2C_FIELD(q,u8 *,4)=0;
 if(value==2)M2C_FIELD(q,u8 *,4)|=4;
 if((((Flags175 *)data_0215d8a8)[id].low)!=0)M2C_FIELD(q,u8 *,4)|=1;

@@ -8,7 +8,7 @@ extern s32 gErrno;
 
 #pragma opt_common_subs off
 double func_0206ce00(double x,double y) {
-double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double func_020724f8(double,double);
+double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double RuntimeDoubleDivide(double,double);
 double func_020709bc(double);double fabs(double);double _f2d(float);double func_0206f818(double,s32);
 s32 hx=POW_HI(x),hy=POW_HI(y),ix=hx&0x7fffffff,iy=hy&0x7fffffff;
 u32 lx=POW_LO(x),ly=POW_LO(y);s32 j; s32 yisint,k,n,i,signFlag;
@@ -31,15 +31,15 @@ if(((ix-0x3ff00000)|lx)==0)return func_02070b70(y,y);
 if(ix>=0x3ff00000){if(hy>=0)return y;return 0.0;}
 if(hy<0)return func_02070b70(0.0,y);return 0.0;
 }
-if(iy==0x3ff00000){if(hy>=0)return x;return func_020724f8(1.0,x);}
+if(iy==0x3ff00000){if(hy>=0)return x;return RuntimeDoubleDivide(1.0,x);}
 if(hy==0x40000000)return func_02070658(x,x);
 if(hy==0x3fe00000&&hx>=0)return func_020709bc(x);
 }
 ax=fabs(x);
 if(lx==0&&(ix==0x7ff00000||ix==0||ix==0x3ff00000)){
-z=ax;if(hy<0)z=func_020724f8(1.0,z);
+z=ax;if(hy<0)z=RuntimeDoubleDivide(1.0,z);
 if(hx<0){
-if(((ix-0x3ff00000)|yisint)==0)z=func_020724f8(func_02070b70(z,z),func_02070b70(z,z));
+if(((ix-0x3ff00000)|yisint)==0)z=RuntimeDoubleDivide(func_02070b70(z,z),func_02070b70(z,z));
 else if(yisint==1)z=func_02070b70(0.0,z);
 }
 return z;
@@ -63,7 +63,7 @@ if(ix<0x100000){ax=func_02070658(ax,9007199254740992.0);n-=53;ix=POW_HI(ax);}
 n+=(ix>>20)-1023;j=ix&0xfffff;ix=j|0x3ff00000;
 if(j<=0x3988e)k=0;else if(j<0xbb67a)k=1;else {k=0;n++;ix-=0x100000;}
 POW_HI(ax)=ix;
-u=func_02070b70(ax,data_020eb188[k]);v=func_020724f8(1.0,func_02070134(ax,data_020eb188[k]));
+u=func_02070b70(ax,data_020eb188[k]);v=RuntimeDoubleDivide(1.0,func_02070134(ax,data_020eb188[k]));
 s=func_02070658(u,v);sh=s;POW_LO(sh)=0;
 th=0.0;POW_HI(th)=((ix>>1)|0x20000000)+0x80000+(k<<18);
 tl=func_02070b70(ax,func_02070b70(th,data_020eb188[k]));
@@ -100,7 +100,7 @@ t=func_02070134(pl,ph);POW_LO(t)=0;
 u=func_02070658(0.69314718246459961,t);v=func_02070134(func_02070658(0.69314718055994529,func_02070b70(pl,func_02070b70(t,ph))),func_02070658(-1.9046542999577680e-9,t));
 z=func_02070134(u,v);w=func_02070b70(v,func_02070b70(z,u));t=func_02070658(z,z);
 t1=func_02070b70(z,func_02070658(t,func_02070134(0.16666666666666602,func_02070658(t,func_02070134(-0.0027777777777015593,func_02070658(t,func_02070134(0.000066137563214379344,func_02070658(t,func_02070134(-0.0000016533902205465252,func_02070658(4.1381367970572385e-8,t))))))))));
-r=func_02070b70(func_020724f8(func_02070658(z,t1),func_02070b70(t1,2.0)),func_02070134(w,func_02070658(z,w)));
+r=func_02070b70(RuntimeDoubleDivide(func_02070658(z,t1),func_02070b70(t1,2.0)),func_02070134(w,func_02070658(z,w)));
 z=func_02070b70(1.0,func_02070b70(r,z));
 j=POW_HI(z);j+=n<<20;
 if(((s32)j>>20)<=0)z=func_0206f818(z,n);else POW_HI(z)+=n<<20;

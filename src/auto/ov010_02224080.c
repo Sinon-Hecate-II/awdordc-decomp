@@ -338,13 +338,15 @@ if(v==-2)return 0;
 M2C_FIELD(a,s32*,12)=v;return 1;
 }
 #pragma opt_propagation reset
-s32 *VoiceLink_FindContext(u8 a){
+/* Find the exchange context serving peerId: link mode 2 keeps one shared context
+ * (returned only for the peer being served), otherwise search the active list. */
+s32 *VoiceLink_FindContext(u8 peerId){
 extern M2C_UNK gLinkConfig;extern M2C_UNK gVoiceLinkState;extern M2C_UNK gVoiceLinkContext;
-void *p=M2C_FIELD(&gVoiceLinkState,void **,20);
-if(M2C_FIELD(&gLinkConfig,s32 *,16)==2){
-if(M2C_FIELD(&gVoiceLinkState,s32 *,60)&&M2C_FIELD(&gVoiceLinkState,u8 *,64)==a)return (s32 *)&gVoiceLinkContext;
+VoiceLinkContext *p=((VoiceLinkState *)&gVoiceLinkState)->activeList;
+if(((LinkConfig *)&gLinkConfig)->mode==2){
+if(((VoiceLinkState *)&gVoiceLinkState)->sessionState&&((VoiceLinkState *)&gVoiceLinkState)->peerId==peerId)return (s32 *)&gVoiceLinkContext;
 return 0;}
-while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,u8 *,4)==a)return p;p=M2C_FIELD(p,void **,20);}return 0;
+while(p){if(p->valid&&p->peerId==peerId)return (s32 *)p;p=p->next;}return 0;
 }
 
 /* Serve a voice-chat peer packet: dispatch it to the exchange context of its

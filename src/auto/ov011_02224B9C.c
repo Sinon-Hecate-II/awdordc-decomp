@@ -125,12 +125,12 @@ void func_ov011_02224fe0(M2C_UNK arg0) {
 }
 
 void func_ov011_02225010(M2C_UNK arg0) {
-    M2C_UNK func_0208f780(s32);
+    M2C_UNK PlayMusicTrack(s32);
     M2C_UNK InitIntroLogo();
     M2C_UNK func_ov011_02222204(M2C_UNK);
     InitIntroLogo();
     func_ov011_02222204(arg0);
-    func_0208f780(0x1001D);
+    PlayMusicTrack(0x1001D);
 }
 
 void func_ov011_02225034(void) {
@@ -312,7 +312,7 @@ void func_ov011_02225420(void *arg0, s32 arg1) {
 /* Renders the entry's localized label into the sprite buffer and draws the
  * two-row highlight bar behind it, positioned from the entry's index. */
 void DrawMenuEntryHighlight(MenuEntry011 *entry) {
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     s32 GetLocalizedText(s32);
     s32 RenderTextToTiles(s32, s32);
     void DrawTileRow(u16, s32, u16, s32, s32);
@@ -345,12 +345,12 @@ void DrawMenuEntryHighlight(MenuEntry011 *entry) {
     if ((s32) width > 0) {
         count = entry->count;
         slotA = entry->index + 1;
-        step1 = func_020720f0(0x80, count);
-        DrawTileRow((u16) (x2 & 0x1FF), (u16) ((u8) (((step1 * slotA) + 0x28) - func_020720f0(0x80, count * 2)) | 0x400), (u16) width, (u16) ((0x3FF & ((s32) ((slotA << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
+        step1 = RuntimeIntDivMod(0x80, count);
+        DrawTileRow((u16) (x2 & 0x1FF), (u16) ((u8) (((step1 * slotA) + 0x28) - RuntimeIntDivMod(0x80, count * 2)) | 0x400), (u16) width, (u16) ((0x3FF & ((s32) ((slotA << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xF800), 0xB);
         count2 = entry->count;
         slotB = entry->index + 1;
-        step2 = func_020720f0(0x80, count2);
-        DrawTileRow((u16) ((x2 + 2) & 0x1FF), (u16) ((u8) (((step2 * slotB) + 0x2A) - func_020720f0(0x80, count2 * 2)) | 0x400), (u16) entry->textWidth, (u16) ((0x3FF & ((s32) ((slotB << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
+        step2 = RuntimeIntDivMod(0x80, count2);
+        DrawTileRow((u16) ((x2 + 2) & 0x1FF), (u16) ((u8) (((step2 * slotB) + 0x2A) - RuntimeIntDivMod(0x80, count2 * 2)) | 0x400), (u16) entry->textWidth, (u16) ((0x3FF & ((s32) ((slotB << 6) + 0x40) >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
     }
     gCur3DSpriteEngine = savedEngine;
 }
@@ -371,11 +371,36 @@ if(M2C_FIELD(arg0,s32 *,0x50))DrawMenuEntryHighlight(arg0);
  if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
 }
 
-void *func_ov011_02225684(M2C_UNK **arg0) { M2C_UNK LoadUiGraphicsBank(s32); extern M2C_UNK data_02129b9c; extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; M2C_FIELD(arg0,u8 *,0x34)|=2; M2C_FIELD(arg0,s16 *,0x3a)=0; M2C_FIELD(arg0,s8 *,0x37)=0; M2C_FIELD(arg0,s8 *,0x38)=0; M2C_FIELD(arg0,u8 *,0x34)&=~0xf0; M2C_FIELD(arg0,u8 *,0x35)&=~15; M2C_FIELD(arg0,s32 *,0x50)=0; do { arg0[i+16]=0; i++; }while(i<3); M2C_FIELD(arg0,M2C_UNK **,0x4c)=&data_02129b9c; LoadUiGraphicsBank(10); return arg0; }
+/* Initialise the intro-menu object before it starts walking the menu script:
+   install its vtable, clear the flags, timers, entry sprites and shown label,
+   point the cursor at the first gIntroMenuTable step and load its UI graphics. */
+IntroMenu011 *InitIntroMenu(IntroMenu011 *menu) {
+    M2C_UNK LoadUiGraphicsBank(s32);
+    extern M2C_UNK gIntroMenuVTable;
+    extern IntroMenuStep gIntroMenuTable[];
+    s32 i;
 
-void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
+    menu->vtable = &gIntroMenuVTable;
+    i = 0;
+    menu->flags |= INTRO_MENU_FLAG_ACTIVE;
+    menu->timer = 0;
+    menu->fadeTimer = 0;
+    menu->appearTimer = 0;
+    menu->flags &= ~INTRO_MENU_PHASE_MASK;
+    menu->entryCount &= ~INTRO_MENU_COUNT_MASK;
+    menu->labelId = 0;
+    do {
+        menu->entries[i] = NULL;
+        i++;
+    } while (i < 3);
+    menu->step = gIntroMenuTable;
+    LoadUiGraphicsBank(10);
+    return menu;
+}
 
-void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK data_ov011_02228b08; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&data_ov011_02228b08; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10); MemFree(arg0); return arg0; }
+void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
+
+void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10); MemFree(arg0); return arg0; }
 
 void func_ov011_022257b4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 4);

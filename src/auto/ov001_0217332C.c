@@ -5,18 +5,18 @@ typedef struct { s32 x; u32 y; } Position;
 
 
 void Ov001_LayoutKeyboardRow(u8 arg0, s32 arg1, s32 arg2, u32 arg3);
-void func_ov001_0217385c(s32 arg0, s32 arg1);
+void Ov001_SetKeyboardKeySelected(s32 arg0, s32 arg1);
 s32 *Ov001_GetSpriteObjEntry(s32 arg0, s32 arg1);
 void Ov001_SetSlideStep(void *arg0, void *arg1);
 extern void *gOv001MenuState;
 extern u8 data_ov001_0218f314[];
 extern u8 data_ov001_0218f318[];
 extern u8 gKeyboardCharKeyPos[];
-void func_ov001_02173ebc(void *arg0);
-void func_ov001_02173f30(void *arg0);
-void func_ov001_02173fa4(void *arg0);
-void func_ov001_02174018(void *arg0);
-void func_ov001_0217408c(int arg0);
+void Ov001_KeyboardCloseStep4(void *arg0);
+void Ov001_KeyboardCloseStep3(void *arg0);
+void Ov001_KeyboardCloseStep2(void *arg0);
+void Ov001_KeyboardCloseStep1(void *arg0);
+void Ov001_KeyboardCloseDone(int arg0);
 
 /* Handle the on-screen keyboard: move the cursor, emit the highlighted character or action and
  * switch between the lowercase, symbols and uppercase pages with X/Y. */
@@ -113,20 +113,23 @@ Ov001_MoveSpriteLayout(M2C_FIELD((u8 *)gOv001MenuState+i*4,s32 *,0xfc),-1,gKeybo
 }
 }
 #pragma opt_strength_reduction off
-void Ov001_SetKeyboardPage(s8 arg0) {
-s32 var_r4,var_r5,var_r6,var_r7;
-var_r5=0;var_r6=0;var_r4=0;var_r7=0;
-M2C_FIELD(gOv001MenuState,s8*,0x11d)=arg0;
+/* Switch the on-screen keyboard to a page (0 lowercase, 1 symbols, 2 uppercase):
+ * remember it, lay every key row out at that page's position-table entry and set
+ * the case/symbols toggle keys to show whether their page is the one now shown. */
+void Ov001_SetKeyboardPage(s8 page) {
+s32 row,caseActive,symbolsActive,keyIndex;
+caseActive=0;symbolsActive=0;row=0;keyIndex=0;
+M2C_FIELD(gOv001MenuState,s8*,0x11d)=page;
 do {
-((void(*)(s8,s32,u16))Ov001_LayoutKeyboardRow)(arg0,var_r4,M2C_FIELD(gKeyboardCharKeyPos+var_r7*4,u16*,2));
-var_r4++;var_r7+=12;
-}while(var_r4<4);
-if(arg0==2)var_r5=1;else if(arg0==1)var_r6=1;
-func_ov001_0217385c(47,var_r5);func_ov001_0217385c(48,var_r6);
+((void(*)(s8,s32,u16))Ov001_LayoutKeyboardRow)(page,row,M2C_FIELD(gKeyboardCharKeyPos+keyIndex*4,u16*,2));
+row++;keyIndex+=12;
+}while(row<4);
+if(page==2)caseActive=1;else if(page==1)symbolsActive=1;
+Ov001_SetKeyboardKeySelected(47,caseActive);Ov001_SetKeyboardKeySelected(48,symbolsActive);
 }
 #pragma scheduling off
 #pragma opt_common_subs off
-void func_ov001_0217385c(s32 arg0,s32 arg1){
+void Ov001_SetKeyboardKeySelected(s32 arg0,s32 arg1){
 void Ov001_SetSpriteAttrs(void *,s32,s32,u8);
 s32 i; void *p;
 if(arg0<0)return;
@@ -211,23 +214,24 @@ else if(toState==-4) {switch(M2C_FIELD(state,s8 *,0x120)) {case 0:case 49:M2C_FI
 else if(toState==-5) {switch(M2C_FIELD(state,s8 *,0x120)) {case 6:case 41:M2C_FIELD(state,s8 *,0x121)=6;break;case 7:case 42:M2C_FIELD(state,s8 *,0x121)=7;break;case 9:case 44:M2C_FIELD(state,s8 *,0x121)=9;break;case 10:case 45:M2C_FIELD(state,s8 *,0x121)=10;break;case 11:case 34:M2C_FIELD(state,s8 *,0x121)=11;break;case 35:case 50:M2C_FIELD(state,s8 *,0x121)=50;break;default:M2C_FIELD(state,s8 *,0x121)=8;break;}}
 Ov001_UpdateKeyboardCursor();Ov001_PlaySound(8);}
 
-void func_ov001_02173e38(void *arg0) {
-    typedef struct { s32 x; u32 y; } Position;
-    extern void *gOv001MenuState;
+/* Last row of the keyboard close animation: slides the bottom action row 12
+ * pixels to the right each frame until it has left the screen, then hands the
+ * slide task to the row above it. */
+void Ov001_KeyboardCloseStep5(void *task) {
     Position pos;
     s32 bits;
 
-    bits = *Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001MenuState, s32 *, 0xFC), 0);
+    bits = *Ov001_GetSpriteObjEntry((s32)((Ov001KeyboardState *)gOv001MenuState)->actionKeys[0], 0);
     pos.x = (u8)bits + 0xC;
-    pos.y = (u32)(bits & 0x01FF0000) >> 0x10;
-    Ov001_LayoutKeyboardRow(M2C_FIELD(gOv001MenuState, u8 *, 0x11D), 4, pos.x, pos.y);
-    if (*(volatile s32 *)&pos.x < 0xC0) {
+    pos.y = (u32)(bits & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, KBD_ROW_ACTION, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < KBD_ROW_HIDDEN_X) {
         return;
     }
-    Ov001_SetSlideStep(arg0, &func_ov001_02173ebc);
+    Ov001_SetSlideStep(task, &Ov001_KeyboardCloseStep4);
 }
 
-void func_ov001_02173ebc(void *arg0) {
+void Ov001_KeyboardCloseStep4(void *arg0) {
 Position pos;
 void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0xc0);
@@ -235,10 +239,10 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 Ov001_LayoutKeyboardRow(b,3,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-Ov001_SetSlideStep(arg0,func_ov001_02173f30);
+Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep3);
 }
 
-void func_ov001_02173f30(void *arg0) {
+void Ov001_KeyboardCloseStep3(void *arg0) {
 Position pos;
 void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0x90);
@@ -246,11 +250,11 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 Ov001_LayoutKeyboardRow(b,2,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-Ov001_SetSlideStep(arg0,func_ov001_02173fa4);
+Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep2);
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02173fa4(void *arg0) {
+void Ov001_KeyboardCloseStep2(void *arg0) {
 Position pos;
 void *a=gOv001MenuState;
 u32 bits=*M2C_FIELD(a,u32**,0x60);
@@ -258,10 +262,10 @@ u8 b=M2C_FIELD(a,u8*,0x11d);
 pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
 Ov001_LayoutKeyboardRow(b,1,pos.x,pos.y);
 if(*(volatile s32 *)&pos.x<192)return;
-Ov001_SetSlideStep(arg0,func_ov001_02174018);
+Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep1);
 }
 #pragma opt_strength_reduction reset
-void func_ov001_02174018(void *arg0) {
+void Ov001_KeyboardCloseStep1(void *arg0) {
     void Ov001_SetSlideStep(void *, void *);
     void Ov001_LayoutKeyboardRow(u8, s32, s32, u32);
     Position pos;
@@ -272,10 +276,10 @@ void func_ov001_02174018(void *arg0) {
     pos.x = (u8)bits + 12;
     Ov001_LayoutKeyboardRow(b, 0, pos.x, pos.y);
     if (*(volatile s32 *)&pos.x < 0xc0) return;
-    Ov001_SetSlideStep(arg0, &func_ov001_0217408c);
+    Ov001_SetSlideStep(arg0, &Ov001_KeyboardCloseDone);
 }
 
-void func_ov001_0217408c(int arg0){
+void Ov001_KeyboardCloseDone(int arg0){
 int i,j; unsigned int *ptr;
 Ov001_PostTaskMessage(0,arg0);
 for(i=0;i<3;i++){

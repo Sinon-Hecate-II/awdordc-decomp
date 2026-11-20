@@ -115,27 +115,29 @@ void func_ov001_0217fd94(void) {
     M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
-    void func_ov001_0217fdd0(void);
+    void Ov001_LoadXb4MultiBackground(void);
     void func_ov001_0217fe50(void);
     extern u8 data_ov001_02193dbc;
     data_ov001_02193dbc = 0;
-    func_ov001_0217fdd0();
+    Ov001_LoadXb4MultiBackground();
     Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessageBox(0x2A);
     Ov001_CreateAnimSprite(2);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fe50);
 }
 
-void func_ov001_0217fdd0(void) {
+/* Load the "xb4Multi" background screen map and give the main and sub background
+ * planes the lowest priority so the screen's sprites and text draw over it. */
+void Ov001_LoadXb4MultiBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_021908ec;
+    extern M2C_UNK gOv001Xb4MultiBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_021908ec, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001Xb4MultiBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_0217fe50(void) {
@@ -167,12 +169,12 @@ void func_ov001_0217feb0(void) {
 
 void func_ov001_0217fed8(void) {
     M2C_UNK SleepMilliseconds(s32);
-    void Ov001_HandleOptionPage2Choice(void);
+    void Ov001_HandleMatchSetupPage2Choice(void);
     void func_ov001_0217fef8(void);
     void func_ov001_0217ff30(void);
     void func_ov001_0217ff34(void);
     SleepMilliseconds(10);
-    Ov001_HandleOptionPage2Choice();
+    Ov001_HandleMatchSetupPage2Choice();
     func_ov001_0217fef8();
     func_ov001_0217ff30();
     func_ov001_0217ff34();
@@ -271,7 +273,7 @@ void Ov001_CloseMatchSetupScreen(void) {
  * 5 it cancels - stop the sound, play the cancel sound, show the matching message
  * and lock the icon row. data_ov001_02193dbc records the branch for the fade-out
  * that follows. */
-void Ov001_HandleOptionPage2Choice(void) {
+void Ov001_HandleMatchSetupPage2Choice(void) {
 s32 Ov001_GetOptionChoice(void); M2C_UNK Ov001_PlaySound(M2C_UNK); M2C_UNK Ov001_StopSound(void); M2C_UNK Ov001_StoreMatchSetup(void); M2C_UNK Ov001_ShowMessage(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32); M2C_UNK Ov001_LockIconRow(void);
 extern u8 data_ov001_02193dbc; void func_ov001_0217ff60(void); void func_ov001_02180178(void);
 switch(Ov001_GetOptionChoice()){
@@ -305,27 +307,29 @@ void Ov001_AdvanceMatchSetup(void) {
 M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
 M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
-void func_ov001_02180200(void);
+void Ov001_LoadMatchSetupBackground(void);
 void func_ov001_02180280(void);
 extern s8 data_ov001_02193dc0;
 data_ov001_02193dc0=0;
-func_ov001_02180200();
+Ov001_LoadMatchSetupBackground();
 Ov001_LoadSaveSlotObjLayout();
 Ov001_ShowMessageBox(0x26);
 Ov001_PlaySound(0x10);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180280);
 }
 
-void func_ov001_02180200(void) {
+/* Loads the background map of the match-setup advance screen and gives the
+ * main and sub background planes the lowest priority. */
+void Ov001_LoadMatchSetupBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190900;
+    extern M2C_UNK gOv001MatchSetupBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190900, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001MatchSetupBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02180280(void) {
@@ -402,7 +406,7 @@ s32 func_ov001_021803cc(void) {
 }
 
 void func_ov001_021803ec(void) {
-extern u8 data_ov001_02193dc4;
+extern u8 gOv001OptionPage2ExitToConnection;
 void func_ov001_021804f0(void);
 void Ov001_LoadOptionPageBg(void);
 M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
@@ -411,7 +415,7 @@ M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
 M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
 M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
 M2C_UNK Ov001_PlaySound(M2C_UNK);
-data_ov001_02193dc4=0;
+gOv001OptionPage2ExitToConnection=0;
 Ov001_LoadOptionPageBg();
 Ov001_LoadSaveSlotObjLayout();
 Ov001_ShowMessagePanel(0x37,-1,0);
@@ -473,12 +477,12 @@ void func_ov001_02180584(void) {
 
 void func_ov001_021805ac(void) {
     M2C_UNK SleepMilliseconds(s32);
-    void func_ov001_02180790();
+    void Ov001_HandleOptionPage2Choice();
     void func_ov001_021805cc(void);
     void func_ov001_02180604(void);
     void func_ov001_02180608(void);
     SleepMilliseconds(10);
-    func_ov001_02180790();
+    Ov001_HandleOptionPage2Choice();
     func_ov001_021805cc();
     func_ov001_02180604();
     func_ov001_02180608();
@@ -502,16 +506,16 @@ void func_ov001_02180604(void) {
 void func_ov001_02180608(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    extern M2C_UNK func_ov001_02180634;
+    extern M2C_UNK Ov001_OptionPage2ConfirmStep;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     Ov001_StopSound();
     Ov001_PlaySound(7);
-    Ov001_SetStepCallback(&func_ov001_02180634);
+    Ov001_SetStepCallback(&Ov001_OptionPage2ConfirmStep);
 }
 
-void func_ov001_02180634(void) {
+void Ov001_OptionPage2ConfirmStep(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
@@ -522,15 +526,15 @@ void func_ov001_02180634(void) {
 }
 
 void func_ov001_02180654(void) {
-    extern u8 data_ov001_02193dc4;
+    extern u8 gOv001OptionPage2ExitToConnection;
     extern M2C_UNK Ov001_CloseOptionScreen2;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (data_ov001_02193dc4 == 0) {
+    if (gOv001OptionPage2ExitToConnection == 0) {
         Ov001_StartIconRowSlideOut();
     }
-    if (data_ov001_02193dc4 == 0) {
+    if (gOv001OptionPage2ExitToConnection == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x14, 8);
@@ -540,7 +544,7 @@ void func_ov001_02180654(void) {
 /* Step callback that runs once the second option page's fade-out and the
  * icon-row animation have finished: it tears down the option screen and opens
  * either the friend-list screen (mode 2) or the connection screen (mode 0),
- * according to data_ov001_02193dc4. */
+ * according to gOv001OptionPage2ExitToConnection. */
 void Ov001_CloseOptionScreen2(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
@@ -549,20 +553,20 @@ void Ov001_CloseOptionScreen2(void) {
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern u8 data_ov001_02193dc4;
+    extern u8 gOv001OptionPage2ExitToConnection;
     extern M2C_UNK func_ov001_0217f97c;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if ((data_ov001_02193dc4 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
+    if ((gOv001OptionPage2ExitToConnection == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193dc4 == 0) {
+    if (gOv001OptionPage2ExitToConnection == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193dc4 == 0) {
+    if (gOv001OptionPage2ExitToConnection == 0) {
         Ov001_FreeOptionPage();
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
@@ -572,34 +576,37 @@ void Ov001_CloseOptionScreen2(void) {
     Ov001_SetStepCallback(&func_ov001_0217f97c);
 }
 
-void func_ov001_02180790(void) {
+/* Handle a choice on the second page of the ov001 option menu: the first choice
+ * exits to the connection screen, while leaving records that the page returns to
+ * the friend list, plays the cancel sound and shows the cancel message. */
+void Ov001_HandleOptionPage2Choice(void) {
     s32 Ov001_GetOptionChoice(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern void func_ov001_02180634(void);
-    extern void func_ov001_02180814(void);
+    extern void Ov001_OptionPage2ConfirmStep(void);
+    extern void Ov001_OptionPage2CancelStep(void);
     M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Ov001_LockIconRow(void);
-    extern u8 data_ov001_02193dc4;
+    extern u8 gOv001OptionPage2ExitToConnection;
 
     switch (Ov001_GetOptionChoice()) {
     case 1:
-        data_ov001_02193dc4 = 1;
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180634);
+        gOv001OptionPage2ExitToConnection = 1;
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionPage2ConfirmStep);
         return;
     case 4:
-        data_ov001_02193dc4 = 0;
+        gOv001OptionPage2ExitToConnection = 0;
         Ov001_StopSound();
         Ov001_PlaySound(9);
         Ov001_ShowMessage(0xD, 1, 1, -1, 0);
         Ov001_LockIconRow();
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180814);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionPage2CancelStep);
         return;
     }
 }
 
-void func_ov001_02180814(void) {
+void Ov001_OptionPage2CancelStep(void) {
     extern M2C_UNK func_ov001_02180840;
     if (func_ov001_02186648() != 0) {
         return;
@@ -614,7 +621,7 @@ void func_ov001_02180840(void) {
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180634);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionPage2ConfirmStep);
 }
 
 void func_ov001_02180860(void) {

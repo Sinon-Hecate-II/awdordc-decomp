@@ -3,14 +3,17 @@
 #include "ds3dsprite.h"
 #include "fs.h"
 
-void func_02080414(void *arg0) {
+/* Screen-flash callback: ease the screen brightness from normal (0) to white
+ * (16) over the flash's fade-in frames, then continue the sprite's animation
+ * once the last frame is reached. */
+void StepScreenFlashFadeIn(void *sprite) {
  M2C_UNK Sprite_ResumeAnimation(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
  extern void *gCur3DSpriteEngine;
- if(M2C_FIELD(arg0,s16 *,0x6C)==0) {Sprite_ResumeAnimation(arg0);return;}
- M2C_FIELD(arg0,s32 *,0x5C)++;
- M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s8 *,0x50)=EaseInterpolate(0,0,16,M2C_FIELD(arg0,s32 *,0x5C),M2C_FIELD(arg0,s16 *,0x6C));
- if(M2C_FIELD(arg0,s32 *,0x5C)!=M2C_FIELD(arg0,s16 *,0x6C)) return;
- Sprite_ResumeAnimation(arg0);
+ if(M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_IN_FRAMES)==0) {Sprite_ResumeAnimation(sprite);return;}
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_IN_ELAPSED)++;
+ DS3D_BANK(gCur3DSpriteEngine)->brightness=EaseInterpolate(0,0,16,M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_IN_ELAPSED),M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_IN_FRAMES));
+ if(M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_IN_ELAPSED)!=M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_IN_FRAMES)) return;
+ Sprite_ResumeAnimation(sprite);
 }
 
 void func_02080498(void *arg0) {
@@ -23,14 +26,17 @@ void func_02080498(void *arg0) {
  Sprite_ResumeAnimation(arg0);
 }
 
-void func_020804d0(void *arg0) {
+/* Screen-flash callback: ease the screen brightness back from white (16) to
+ * normal (0) over the flash's fade-out frames, then continue the sprite's
+ * animation once the last frame is reached. */
+void StepScreenFlashFadeOut(void *sprite) {
  M2C_UNK Sprite_ResumeAnimation(void *); s8 EaseInterpolate(s32,s32,s32,s32,s32);
  extern void *gCur3DSpriteEngine;
- if(M2C_FIELD(arg0,s16 *,0x70)==0) {Sprite_ResumeAnimation(arg0);return;}
- M2C_FIELD(arg0,s32 *,0x64)++;
- M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),s8 *,0x50)=EaseInterpolate(0,16,0,M2C_FIELD(arg0,s32 *,0x64),M2C_FIELD(arg0,s16 *,0x70));
- if(M2C_FIELD(arg0,s32 *,0x64)!=M2C_FIELD(arg0,s16 *,0x70)) return;
- Sprite_ResumeAnimation(arg0);
+ if(M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_OUT_FRAMES)==0) {Sprite_ResumeAnimation(sprite);return;}
+ M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_OUT_ELAPSED)++;
+ DS3D_BANK(gCur3DSpriteEngine)->brightness=EaseInterpolate(0,16,0,M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_OUT_ELAPSED),M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_OUT_FRAMES));
+ if(M2C_FIELD(sprite,s32 *,DS3D_SPRITE_FLASH_OUT_ELAPSED)!=M2C_FIELD(sprite,s16 *,DS3D_SPRITE_FLASH_OUT_FRAMES)) return;
+ Sprite_ResumeAnimation(sprite);
 }
 
 /* Moves the 3D sprite engine(s) selected by target to (x, y) scaled by scale

@@ -201,7 +201,7 @@ void UpdateCursorCellDisplayMode(void) {
     }
 }
 
-void func_020d885c(s32 arg0) {
+void SetMapCategory(s32 arg0) {
     extern s32 gMapCategory;
     gMapCategory = arg0;
 }

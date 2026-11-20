@@ -252,14 +252,14 @@ do {acc|=val<<pos;pos^=8;if(!pos){*out++=acc;acc=0;}}while(--cnt>0);
 }
 #pragma thumb off
 void func_02008538(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_02007d20(s32, s32);
+    s32 DmaCheckChannelConflict(s32, s32);
     void DmaValidateTransfer(s32, s32, s32, s32);
     void DmaStartTransferLocked(s32, s32, s32, s32);
 
     s32 off;
     volatile u32 *p;
 
-    func_02007d20(arg0, -1);
+    DmaCheckChannelConflict(arg0, -1);
     DmaValidateTransfer(arg0, arg1, arg3, 0x1000000);
 
     if (arg3 != 0) {

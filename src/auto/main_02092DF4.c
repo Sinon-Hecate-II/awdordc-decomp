@@ -213,7 +213,7 @@ s32 func_02093304(void *arg0) {
 s32 v;
 s32 temp=M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,12);
 if(func_0209600c()!=0) v=1;
-else {func_0208f780(temp);v=0;}
+else {PlayMusicTrack(temp);v=0;}
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }
 
@@ -263,26 +263,26 @@ s32 func_020933f8(void *arg0) {
 
 s32 func_02093418(void *arg0) {
 extern void **gCurrentMap;
-s32 func_020a2b00(s32);
-func_0208f7d0(func_020a2b00(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255));
+s32 GetPlayerMusicTrack(s32);
+func_0208f7d0(GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255));
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_02093458(void *arg0) {
 extern void **gCurrentMap;
-s32 func_020a2b00(s32);
+s32 GetPlayerMusicTrack(s32);
 if(func_0209600c()==0) {
 s32 v=func_0208f770();
-if(v==func_020a2b00(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8c4();
+if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8c4();
 }
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_020934b4(void *arg0) {
 extern void **gCurrentMap;
-s32 func_020a2b00(s32);
+s32 GetPlayerMusicTrack(s32);
 s32 v=func_0208f770();
-if(v==func_020a2b00(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8d8();
+if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8d8();
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
@@ -330,10 +330,10 @@ s32 func_020935bc(void *arg0) {
 }
 
 void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_ov000_0216939c();
+    s32 CreateUnitMoveForUnit();
     M2C_UNK StartUnitMove(s32, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
-    StartUnitMove(func_ov000_0216939c(), arg1);
+    StartUnitMove(CreateUnitMoveForUnit(), arg1);
     func_ov000_02169998(arg0, arg1);
 }
 
@@ -344,7 +344,7 @@ void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
 void MoveUnitToTile(void *unit, u8 x, u8 y) {
     M2C_UNK FloodFillUnitRange(u8, u8, u32, s32, s32);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
-    s32 func_ov000_0216939c();
+    s32 CreateUnitMoveForUnit();
     M2C_UNK StartUnitMove(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
@@ -359,7 +359,7 @@ void MoveUnitToTile(void *unit, u8 x, u8 y) {
         ptr++;
     }
     *ptr = (signed char) -1;
-    move = (void *) func_ov000_0216939c(u);
+    move = (void *) CreateUnitMoveForUnit(u);
     StartUnitMove(move, (s32) *gCurrentMap + MAP_CURSOR_PATH);
     func_ov000_02169998(u, (s32) *gCurrentMap + MAP_CURSOR_PATH);
 }

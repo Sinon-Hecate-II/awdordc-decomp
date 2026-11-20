@@ -110,7 +110,7 @@ void func_02096b3c(void) {
     func_02094704(&data_02102e14);
 }
 
-void func_02096b50(void) {
+void ShowUiMessage(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102dbc;
     SetUiMessageText();

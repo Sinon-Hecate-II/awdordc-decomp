@@ -52,7 +52,7 @@ DrawMenuEntryHighlight kind:function(arm,size=0x1d8) addr:0x02225428
 func_ov011_02225600 kind:function(arm,size=0x4) addr:0x02225600
 func_ov011_02225604 kind:function(arm,size=0x20) addr:0x02225604
 func_ov011_02225624 kind:function(arm,size=0x60) addr:0x02225624
-func_ov011_02225684 kind:function(arm,size=0x80) addr:0x02225684
+InitIntroMenu kind:function(arm,size=0x80) addr:0x02225684
 func_ov011_02225704 kind:function(arm,size=0x54) addr:0x02225704
 func_ov011_02225758 kind:function(arm,size=0x5c) addr:0x02225758
 func_ov011_022257b4 kind:function(arm,size=0x10) addr:0x022257b4
@@ -192,7 +192,7 @@ data_ov011_02228a30 kind:data(any) addr:0x02228a30
 data_ov011_02228a3c kind:data(any) addr:0x02228a3c
 data_ov011_02228a48 kind:data(any) addr:0x02228a48
 data_ov011_02228a78 kind:data(any) addr:0x02228a78
-data_ov011_02228b08 kind:data(any) addr:0x02228b08
+gIntroMenuVTable kind:data(any) addr:0x02228b08
 data_ov011_02228b1c kind:data(any) addr:0x02228b1c
 sIntroMenuTextureFormat kind:data(any) addr:0x02228b28
 sIntroMenuContextFormat kind:data(any) addr:0x02228b30

@@ -21,7 +21,7 @@ int func_020a8ef8(int);
 int func_ov003_021f2654(void);
 void DrawFrameBorder(int,int,int,int,int,int,int);
 int GetMapListIconTile(int,int);
-int func_020a8958(int);
+int MapData_GetCategory(int);
 int func_020830a8(int);
 int func_020a8a84(int);
 void SetTextSpriteValue(void *,int);
@@ -75,7 +75,7 @@ mode=(u32)(p[59]<<28)>>28;
 if(Unk021F9FE0Eq(mode,0)||Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,3)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8)){
 icon=(u16)((GetMapListIconTile((M2C_FIELD(p,u8 **,68)+Unk021F9FE0PageIndex(M2C_FIELD(p,u8 **,92))*512)[556],id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,1)){
-v=(u8)(func_020a8958(M2C_FIELD(p,u16 *,60))==0);
+v=(u8)(MapData_GetCategory(M2C_FIELD(p,u16 *,60))==0);
 icon=(u16)((GetMapListIconTile((u16)(v==1?1:3),id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,5)){
 icon=(u16)((GetMapListIconTile(func_020830a8(id),id)<<2)+808);

@@ -150,7 +150,32 @@ s32 RegisterArchiveName(FSArchive *archive, M2C_UNK name, M2C_UNK length) {
     return registered;
 }
 
-void func_0200b238(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 key;void *p;if(!M2C_FIELD(a,s32 *,0))return;key=OS_DisableInterrupts();p=M2C_FIELD(a,void **,4);if(p)M2C_FIELD(p,void **,8)=M2C_FIELD(a,void **,8);p=M2C_FIELD(a,void **,8);if(p)M2C_FIELD(p,void **,4)=M2C_FIELD(a,void **,4);M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,28)&=~1;if(M2C_FIELD(&gArchiveList,void **,4)==a){M2C_FIELD(&gArchiveList,void **,4)=M2C_FIELD(&gArchiveList,void **,0);M2C_FIELD(&gArchiveList,s32 *,12)=0;M2C_FIELD(&gArchiveList,u16 *,10)=0;M2C_FIELD(&gArchiveList,u16 *,8)=0;}OS_RestoreInterrupts(key);}
+/* Release an archive's name registration: unlink it from gArchiveList, clear
+ * its packed-name id and links, and drop its FS_ARCHIVE_NAMED bit. */
+void ReleaseArchiveName(FSArchive *archive) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    s32 key;
+    FSArchive *link;
+
+    if (!archive->id) return;
+    key = OS_DisableInterrupts();
+    link = archive->next;
+    if (link) link->prev = archive->prev;
+    link = archive->prev;
+    if (link) link->next = archive->next;
+    archive->id = 0;
+    archive->prev = 0;
+    archive->next = 0;
+    archive->state &= ~FS_ARCHIVE_NAMED;
+    if (gArchiveList.last == archive) {
+        gArchiveList.last = gArchiveList.first;
+        gArchiveList.unk0C = 0;
+        gArchiveList.unk0A = 0;
+        gArchiveList.unk08 = 0;
+    }
+    OS_RestoreInterrupts(key);
+}
 
 s32 func_0200b2bc(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,void *g,void *h) {
  extern M2C_UNK func_0200ac34,func_0200ac50;
@@ -295,7 +320,33 @@ void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x58) = var_r2;
 }
 
-M2C_UNK func_0200b6c8(M2C_UNK a,M2C_UNK b){M2C_UNK CompleteFileRequest(void *,s32);s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);void OS_WakeupThread(void *);s32 key,p;if((M2C_FIELD(a,volatile s32 *,28)&256)?1:0){key=M2C_FIELD(a,volatile s32 *,28);p=M2C_FIELD(a,s32 *,36);M2C_FIELD(a,volatile s32 *,28)=key&~256;CompleteFileRequest((void *)p,b);p=GetNextFileRequest(a);if(p)ProcessFileRequests((void *)p);return;}p=M2C_FIELD(a,s32 *,36);key=OS_DisableInterrupts();M2C_FIELD(p,s32 *,20)=b;M2C_FIELD(a,volatile s32 *,28)&=~512;OS_WakeupThread((void *)(a+12));OS_RestoreInterrupts(key);}
+/* Completion callback of a file's asynchronous command (the card/ROM read task
+ * runs it with `result`).  A non-blocking request is finished through
+ * CompleteFileRequest and the file's next request is started; a blocking one
+ * has the result stored and wakes the caller waiting on FS_FILE_OP_QUEUE. */
+M2C_UNK FileOperationCompleted(M2C_UNK file, s32 result) {
+    M2C_UNK CompleteFileRequest(void *, s32);
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    void OS_WakeupThread(void *);
+    s32 key, request;
+
+    if ((M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) & FS_FILE_OP_NONBLOCKING) ? 1 : 0) {
+        key = M2C_FIELD(file, volatile s32 *, FS_FILE_STATE);
+        request = M2C_FIELD(file, s32 *, FS_FILE_REQUESTS);
+        M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) = key & ~FS_FILE_OP_NONBLOCKING;
+        CompleteFileRequest((void *)request, result);
+        request = GetNextFileRequest(file);
+        if (request) ProcessFileRequests((void *)request);
+        return;
+    }
+    request = M2C_FIELD(file, s32 *, FS_FILE_REQUESTS);
+    key = OS_DisableInterrupts();
+    M2C_FIELD(request, s32 *, FS_REQ_RESULT) = result;
+    M2C_FIELD(file, volatile s32 *, FS_FILE_STATE) &= ~FS_FILE_OP_BLOCKING;
+    OS_WakeupThread((void *)(file + FS_FILE_OP_QUEUE));
+    OS_RestoreInterrupts(key);
+}
 
 void func_0200b74c(s32 a){void func_0200bda4(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;func_0200bda4(a);}
 
@@ -432,7 +483,7 @@ s32 FileSeek(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile
 s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record gFileCurrentDirectory;InitFileRequest(buf);if(!SubmitPathRequest(buf,a,0,(s32)&v))return 0;gFileCurrentDirectory=v;return 1;}
 
 void func_0200bcb4(M2C_UNK arg0) {
-    M2C_UNK func_0200b6c8(M2C_UNK, M2C_UNK);
+    M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
     s32 func_02010ee8();
     M2C_UNK var_r1;
 
@@ -441,7 +492,7 @@ void func_0200bcb4(M2C_UNK arg0) {
     } else {
         var_r1 = 0;
     }
-    func_0200b6c8(arg0, var_r1);
+    FileOperationCompleted(arg0, var_r1);
 }
 
 s32 func_0200bcd8(s32 a,s32 b,s32 c,s32 d){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern M2C_UNK data_0212fbfc;func_02010b1c(M2C_FIELD(&data_0212fbfc,s32 *,4),c,b,d,(s32)func_0200bcb4,(void *)a,1);return 6;}

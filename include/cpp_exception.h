@@ -36,4 +36,9 @@ typedef struct CppExceptionState {
     u32  *tableEnd;  /* +0x10 past the last exception table entry */
 } CppExceptionState; /* 0x14 bytes */
 
+/* The decoded exception context the catch-type matcher walks: the number of
+ * thrown type names and, at +0x0C, the addresses of their strings. */
+#define CPP_EXCEPTION_TYPE_COUNT 0x00 /* u32: number of thrown type names */
+#define CPP_EXCEPTION_TYPE_NAMES 0x0C /* u8 *: packed addresses of the type-name strings */
+
 #endif

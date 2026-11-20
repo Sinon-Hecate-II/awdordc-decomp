@@ -20,55 +20,70 @@ void func_ov010_0222b9e8(void) {
     func_020852e0();
 }
 
-void func_ov010_0222ba10(s8 arg0, s16 arg1, M2C_UNK arg2) {
+/* Create the online lobby's local-player name label at (x, y) for its owner,
+ * unless matchmaking has already started (then the map-confirm prompt is enabled
+ * instead) or such a label already exists. */
+void CreateOnlineNameLabel(s8 x, s16 y, M2C_UNK owner) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
     s32 GetLocalPlayerName();
-    extern M2C_UNK data_ov010_0222c6c4;
-    extern M2C_UNK data_ov010_0222c928;
-    void *temp_r0;
+    M2C_UNK EnableMapConfirm();
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
+    extern M2C_UNK gOnlineLobbyNameLabelClass;
+    extern M2C_UNK gOnlineNameLabelVTable;
+    void *label;
 
-    if (IsOnlineSessionFlagSet(2) != 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_MATCHMAKING) != 0) {
         EnableMapConfirm();
         return;
     }
-    if (FindObjectByClass(&data_ov010_0222c6c4) != 0) {
+    if (FindObjectByClass(&gOnlineLobbyNameLabelClass) != 0) {
         return;
     }
-    temp_r0 = CreateSpriteObject(&data_ov010_0222c6c4, arg2);
-    if (temp_r0 == NULL) {
+    label = CreateSpriteObject(&gOnlineLobbyNameLabelClass, owner);
+    if (label == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov010_0222c928;
-    M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x35) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x36) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = GetLocalPlayerName();
-    M2C_FIELD(temp_r0, s8 *, 0x3C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = 0;
+    M2C_FIELD(label, M2C_UNK **, 0) = &gOnlineNameLabelVTable;
+    M2C_FIELD(label, s8 *, 0x34) = 0;
+    M2C_FIELD(label, s8 *, ONLINE_LABEL_X) = x;
+    M2C_FIELD(label, s16 *, ONLINE_LABEL_Y) = y;
+    M2C_FIELD(label, s32 *, ONLINE_LABEL_NAME) = GetLocalPlayerName();
+    M2C_FIELD(label, s8 *, 0x3C) = 0;
+    M2C_FIELD(label, s32 *, 0x40) = 0;
 }
 
-void func_ov010_0222ba94(s8 arg0, s16 arg1, M2C_UNK arg2) {
+/* Create the online match's local-player name label at (x, y) for its owner once
+ * the session has started; before that the map-confirm prompt is enabled
+ * instead.  Does nothing if such a label already exists. */
+void CreateOnlineMatchNameLabel(s8 x, s16 y, M2C_UNK owner) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 FindObjectByClass(M2C_UNK *);
     s32 GetLocalPlayerName();
-    extern M2C_UNK data_ov010_0222c5d4;
-    extern M2C_UNK data_ov010_0222c928;
-    void *temp_r0;
-    if (IsOnlineSessionFlagSet(0) == 0) {
+    M2C_UNK EnableMapConfirm();
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
+    extern M2C_UNK gOnlineMatchNameLabelClass;
+    extern M2C_UNK gOnlineNameLabelVTable;
+    void *label;
+
+    if (IsOnlineSessionFlagSet(OV010_FLAG_STARTED) == 0) {
         EnableMapConfirm();
         return;
     }
-    if (FindObjectByClass(&data_ov010_0222c5d4) != 0) return;
-    temp_r0 = CreateSpriteObject(&data_ov010_0222c5d4, arg2);
-    if (temp_r0 == NULL) return;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov010_0222c928;
-    M2C_FIELD(temp_r0, s8 *, 0x34) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x35) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x36) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = GetLocalPlayerName();
-    M2C_FIELD(temp_r0, s8 *, 0x3C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = 0;
+    if (FindObjectByClass(&gOnlineMatchNameLabelClass) != 0) {
+        return;
+    }
+    label = CreateSpriteObject(&gOnlineMatchNameLabelClass, owner);
+    if (label == NULL) {
+        return;
+    }
+    M2C_FIELD(label, M2C_UNK **, 0) = &gOnlineNameLabelVTable;
+    M2C_FIELD(label, s8 *, 0x34) = 0;
+    M2C_FIELD(label, s8 *, ONLINE_LABEL_X) = x;
+    M2C_FIELD(label, s16 *, ONLINE_LABEL_Y) = y;
+    M2C_FIELD(label, s32 *, ONLINE_LABEL_NAME) = GetLocalPlayerName();
+    M2C_FIELD(label, s8 *, 0x3C) = 0;
+    M2C_FIELD(label, s32 *, 0x40) = 0;
 }
 
 void func_ov010_0222bb18(M2C_UNK arg0) {

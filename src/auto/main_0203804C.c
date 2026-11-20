@@ -16,7 +16,7 @@ void func_02039838(void);
 void func_02039844(void);
 void func_02039b9c(void);
 void func_02039478(void);
-void func_02039be4(void *,void *,void *,s32,s32,void *,void *,s32);
+void InitNasLoginContext(void *,void *,void *,s32,s32,void *,void *,s32);
 void StartMatchSession(void *,void *,void *,s32,s32);
 void InitConnection(void *,void *,void *,void *,void *,void *,s32,s32);
 void func_02044708(void *);
@@ -41,7 +41,7 @@ M2C_FIELD(gNetSession,s32 *,104)=(s32)gSessionGameName;
 M2C_FIELD(gNetSession,s32 *,108)=(s32)gSessionGamePassword;
 M2C_FIELD(gNetSession,s32 *,112)=0;M2C_FIELD(gNetSession,s32 *,116)=0;M2C_FIELD(gNetSession,s32 *,120)=0;M2C_FIELD(gNetSession,s32 *,124)=0;M2C_FIELD(gNetSession,s32 *,128)=0;M2C_FIELD(gNetSession,s32 *,132)=0;M2C_FIELD(gNetSession,s32 *,136)=0;M2C_FIELD(gNetSession,s32 *,140)=0;M2C_FIELD(gNetSession,s32 *,144)=0;M2C_FIELD(gNetSession,s32 *,148)=0;
 ResetPlayerSlots();
-func_02039be4((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,func_02039478,0);
+InitNasLoginContext((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,func_02039478,0);
 StartMatchSession((u8 *)gNetSession+0x318,(u8 *)gNetSession+0x1c,(u8 *)gNetSession+0x2e,userData,timeout);
 InitConnection((u8 *)gNetSession+0x374,(u8 *)gNetSession+0x1c,gNetSession,(u8 *)gNetSession+4,gSessionGameName,gSessionGamePassword,userData,timeout);
 func_02044708((u8 *)gNetSession+0x7f8);
@@ -106,7 +106,7 @@ void TickNetSession(void) {
     extern M2C_UNK func_02039698;
     extern M2C_UNK HandleGpcmMatMessage;
     extern M2C_UNK func_0203ad24;
-    extern M2C_UNK func_0203adcc;
+    extern M2C_UNK MatchSession_ReportBuddyStatus;
     s32 func_02037bc4(void);
     void func_02039200(void);
     s32 HasNetError(void);
@@ -134,7 +134,7 @@ void TickNetSession(void) {
             if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
             if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
             if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 1, (s32)&func_0203ad24, 0))) return;
-            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&func_0203adcc, 0))) return;
+            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&MatchSession_ReportBuddyStatus, 0))) return;
             SetNetState(2);
             func_02039c68();
             break;
@@ -416,7 +416,7 @@ s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayer
 
 s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 func_02039284(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return func_02039284(a,b);}
 
-s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 func_020391b8(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return func_020391b8(a);}
+s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 HasPlayerConnection(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return HasPlayerConnection(a);}
 
 s32 GetNetSessionState(void) {
     extern void *gNetSession;

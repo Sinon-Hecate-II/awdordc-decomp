@@ -38,7 +38,7 @@ void func_020c8ed4(void *);
 #pragma scheduling off
 void func_ov003_022066d8(void *a){
 void func_020822b8(void *);void func_02004d3c(void);u8 *LoadFileToBuffer(void *,s32);void func_02004d70(void *,s32,s32);void HeapFreeBlock(void *);void func_02004ddc(void);void LoadDecompressedFileTo(void *,void *);void LoadFileToBGExtPltt(void *,s32,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void LoadGraphicsBlock(void *,void *);void CopyToObjPaletteShadow(void *,s32,s32);void LoadScenePanelPalette(s32);void func_020a9a30(s32,s32,s32,void *);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void Hide3DSprite(void *);
-void func_02082eb4(void *,s32,s32,s32);void *GetLocalizedFileName(void *);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void func_0208f780(s32);s32 IsUnitAvailable(s32);void UpdateMapSelectLabelTransform(void *);void SetSpriteAnimation(void *,s32);s32 GetSpriteAnimValue(void *);s32 n,m;void *saved,*q;u8 *p;
+void UploadBGExtPalette(void *,s32,s32,s32);void *GetLocalizedFileName(void *);void LoadFileToSpriteBuffer(void *,s32,s32);void func_020af62c(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void func_ov003_02209d0c(void *,s32);void PlayMusicTrack(s32);s32 IsUnitAvailable(s32);void UpdateMapSelectLabelTransform(void *);void SetSpriteAnimation(void *,s32);s32 GetSpriteAnimValue(void *);s32 n,m;void *saved,*q;u8 *p;
 Init3DRendering(a);func_02082c84();Set3DSpriteVramBanks();SetFileDirectory(data_ov003_0221106c);LoadScenePanelGraphicsOnBothEngines();if((u8)((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28==0))func_020c8ed4(a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(data_ov003_022109e0);
 {u16 * volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=(*reg&~16)|16;}
@@ -92,7 +92,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x38)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x40)=0;
 p=LoadFileToBuffer(data_ov003_02211148,1);
 LoadGraphicsBlock((u8 *)p+0x120,M2C_FIELD(g3DSpriteEngineSub,void **,24));LoadGraphicsBlock(p,M2C_FIELD(g3DSpriteEngineSub,void **,44));
-SetTileRectPalette(M2C_FIELD(g3DSpriteEngineSub,void **,44),32,32,1);func_02082eb4((u8 *)p+0x1e0,3,512,32);HeapFreeBlock(p);
+SetTileRectPalette(M2C_FIELD(g3DSpriteEngineSub,void **,44),32,32,1);UploadBGExtPalette((u8 *)p+0x1e0,3,512,32);HeapFreeBlock(p);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3e)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x46)=0;
 p=LoadFileToBuffer(GetLocalizedFileName(data_ov003_02211160),1);LoadGraphicsBlock(p,M2C_FIELD(g3DSpriteEngineSub,void **,40));SetTileRectPalette(M2C_FIELD(g3DSpriteEngineSub,void **,40),32,32,2);HeapFreeBlock(p);
@@ -105,7 +105,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3a)=0xffe4;M2C_FIELD(M
 gCur3DSpriteEngine=saved;
 if((u8)(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)==2)){func_020af62c(3,2,1,2,1,0,2,1,2,1);}else{func_020af62c(3,2,0,2,1,0,2,0,2,1);}
 switch(((u32)(M2C_FIELD(a,u8 *,0x36)<<24)>>28)){
-case 0:func_ov003_02209d0c(a,M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15));func_0208f780(4);
+case 0:func_ov003_02209d0c(a,M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15));PlayMusicTrack(4);
 M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,9)=(u32)(M2C_FIELD(&data_0215d9b8,u16 *,6)<<25)>>29;
 M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,10)=1;
 if((u8)(M2C_FIELD(M2C_FIELD(a,void **,0x3c),u8 *,15)==10)&&IsUnitAvailable(8)==0)func_ov003_02209d0c(a,1);

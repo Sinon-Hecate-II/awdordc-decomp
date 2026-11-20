@@ -420,8 +420,8 @@ void func_02060414(s32 arg0) {
 }
 
 void func_02060430(void *arg0) {
-    M2C_UNK func_020496b8(s32);
-    func_020496b8(M2C_FIELD(arg0, s32 *, 0x20));
+    M2C_UNK ghiCloseSocket(s32);
+    ghiCloseSocket(M2C_FIELD(arg0, s32 *, 0x20));
     M2C_FIELD(arg0, s32 *, 0x20) = -1;
     func_020601a4(arg0 + 0x14);
     func_020601a4(arg0 + 8);

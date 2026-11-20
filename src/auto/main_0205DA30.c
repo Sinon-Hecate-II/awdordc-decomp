@@ -171,10 +171,10 @@ s32 NatNeg_BeginNegotiation(s32 reportSocket, s32 peerAddress, s32 isJoin, s32 e
 #pragma scheduling reset
 void NatNeg_ReleasePeer(void) {
  void *FindNatNegPeer(void);
- void func_020496b8(s32);
+ void ghiCloseSocket(s32);
  void *p=FindNatNegPeer();
  if(p==NULL)return;
- if(M2C_FIELD(p,s32 *,0)!=-1) func_020496b8(M2C_FIELD(p,s32 *,0));
+ if(M2C_FIELD(p,s32 *,0)!=-1) ghiCloseSocket(M2C_FIELD(p,s32 *,0));
  M2C_FIELD(p,s32 *,0)=-1;
  M2C_FIELD(p,s32 *,16)=4;
 }

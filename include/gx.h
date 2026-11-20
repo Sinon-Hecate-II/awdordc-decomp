@@ -17,12 +17,40 @@
 #define REG_BG0CNT (*(volatile u16 *)0x04000008)
 #define REG_BG1CNT (*(volatile u16 *)0x0400000A)
 #define REG_BG2CNT (*(volatile u16 *)0x0400000C)
+#define REG_BG3CNT (*(volatile u16 *)0x0400000E)
 #define REG_SUB_BG0CNT (*(volatile u16 *)0x04001008)
 #define REG_SUB_BG1CNT (*(volatile u16 *)0x0400100A)
 #define BG_PRIORITY_MASK 3
 
-/* Display control of the main engine (the sub engine's copy is at 0x04001000). */
+/* Fields of a background control register (BGxCNT). */
+#define BGCNT_SCR_BASE_MASK 0x1F00 /* bits 8..12: screen base block of the background's map */
+#define BGCNT_SCR_BASE_SHIFT 8
+#define BGCNT_BITMAP_DIRECT 0x0080 /* a bitmap background maps VRAM linearly instead of in screen blocks */
+
+/* Sizes of a background's screen base block and of a direct bitmap block. */
+#define BG_SCR_BLOCK_SHIFT    11 /* screen base block: 2 KiB */
+#define BG_BITMAP_BLOCK_SHIFT 14 /* direct bitmap block: 16 KiB */
+
+/* Display control of the main engine and its copy for the sub engine. */
 #define REG_DISPCNT (*(volatile u32 *)0x04000000)
+#define REG_DISPCNT_SUB (*(volatile u32 *)0x04001000)
+/* DISPCNT bits 0..2 hold the display mode: modes 0..2 draw text backgrounds,
+ * 3..5 bitmap ones (BG3 is the bitmap in mode 3, BG2 in modes 4 and 5).
+ * Bits 27..29 select the VRAM bank the main engine's backgrounds map from. */
+#define DISPCNT_MODE_MASK    0x7
+#define DISPCNT_BG_VRAM_MASK 0x38000000
+#define DISPCNT_BG_VRAM_SHIFT 27
+enum {
+    GX_MODE_0 = 0, /* text backgrounds */
+    GX_MODE_1,
+    GX_MODE_2,
+    GX_MODE_3,     /* BG3 bitmap */
+    GX_MODE_4,
+    GX_MODE_5,     /* BG2 (and BG3) bitmap */
+    GX_MODE_6
+};
+/* Start of the main engine's background VRAM. */
+#define GX_MAIN_VRAM_BASE 0x06000000
 /* DISPCNT bits 30 and 31 switch the main engine's extended palettes on: bit 30
  * for the backgrounds, bit 31 for the OBJ (sprite) characters. */
 #define DISPCNT_BG_EXT_PALETTE  0x40000000
@@ -132,6 +160,11 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define VRAM_CR_MAIN_BG_PALETTE(slot)  ((u8)(0x84 | ((slot) << 3)))
 #define VRAM_CR_MAIN_OBJ_PALETTE(slot) ((u8)(0x85 | ((slot) << 3)))
 
+/* Bank control values for the sub engine's extended palettes: bank H holds the
+ * background palette and bank I the OBJ palette. */
+#define VRAM_CR_SUB_BG_EXTPLTT  0x82
+#define VRAM_CR_SUB_OBJ_EXTPLTT 0x83
+
 /* The four extended-palette loaders (GX_BeginLoad*ExtPltt / GX_Load*ExtPltt /
  * GX_EndLoad*ExtPltt) keep their state in gGxExtPlttLoad: for each palette the
  * bank grant it holds and the VRAM base and offset a load copies into. */
@@ -146,6 +179,20 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 /* VRAM base the main-engine BG extended palette is loaded at, keyed by the bank
  * grant GX_SetBankForBGExtPltt gave it (banks E, F and G).  G shares bank F's
  * base and sits GX_BGEXTPLTT_OFFSET_G further in. */
+#define GX_MAIN_BG_VRAM_BASE    0x06800000 /* main-engine background character/map VRAM */
+#define GX_MAIN_BG_VRAM_SIZE    0x00040000
+#define GX_MAIN_BG_EXTPLTT_VRAM_BASE 0x06880000 /* main-engine background extended palettes */
+#define GX_MAIN_BG_EXTPLTT_VRAM_SIZE 0x00024000
+#define GX_MAIN_OBJ_OAM_BASE    0x07000000 /* main-engine 3D sprite OAM */
+#define GX_SUB_OBJ_OAM_BASE     0x07000400 /* sub-engine 3D sprite OAM */
+#define GX_OAM_SIZE             0x400
+#define GX_OAM_DISABLED         0x200 /* attr0 value that leaves an OAM entry disabled */
+#define GX_MAIN_DISPCNT         0x04000000 /* main-engine display control */
+#define GX_SUB_DISPCNT          0x04001000 /* sub-engine display control */
+#define GX_MAIN_PALETTE_BASE    0x05000000 /* main-engine palette RAM */
+#define GX_SUB_PALETTE_BASE     0x05000400 /* sub-engine palette RAM */
+#define GX_PALETTE_SIZE         0x400
+
 #define GX_BGEXTPLTT_BASE_E     0x06880000 /* bank E grant */
 #define GX_BGEXTPLTT_BASE_F     0x06890000 /* bank F grant, or F and G together */
 #define GX_BGEXTPLTT_BASE_G     0x06894000 /* bank G grant */
@@ -159,11 +206,16 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
 #define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
 #define VRAM_BANKS_OBJ_PALETTE 0x10 /* banks assigned to the main engine OBJ extended palette (MST 5 area) */
+#define VRAM_BANKS_BG_EXTPLTT_SUB 0x16 /* banks assigned to the sub engine background extended palette */
+#define VRAM_BANKS_OBJ_EXTPLTT_SUB 0x18 /* banks assigned to the sub engine OBJ extended palette */
 #define VRAM_BANKS_OBJ_CD  0x06 /* banks assigned to the OBJ area built from banks C/D */
 
 /* 3D engine state and render parameters. */
 #define REG_GXSTAT           (*(volatile u32 *)0x04000600)
 #define REG_BG0OFS           (*(volatile u32 *)0x04000010)
+#define REG_BG2OFS           (*(volatile u32 *)0x04000018)
+#define REG_BG2OFS           (*(volatile u32 *)0x04000018)
+#define REG_BG2OFS           (*(volatile u32 *)0x04000018)
 #define REG_BG0CNT           (*(volatile u16 *)0x04000008)
 #define REG_GX_CLEAR_COLOR   (*(volatile u32 *)0x04000350)
 #define REG_GX_CLEAR_DEPTH   (*(volatile u16 *)0x04000354)

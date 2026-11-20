@@ -5,49 +5,48 @@ typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 
 void func_020c6cf8(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
-    func_020c0784();
+    DeleteMapMenuSprites();
     SetBattleCommand(0xA, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
 void func_020c6d30(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
-    func_020c0784();
+    DeleteMapMenuSprites();
     SetBattleCommand(0xB, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
-void func_020c6d68(void) {
-    M2C_UNK FillMapLayer(s32);
-    M2C_UNK func_020cdeac(s16, s16, s32);
-    M2C_UNK func_020cc7e0();
-    M2C_UNK func_020c0784();
+/* Attack command: clear the map layer, mark the cursor unit's cell and attack
+ * range, open the target-selection sprite and close the action menu. */
+void StartAttackTargetSelection(void) {
     extern void **gCurrentMap;
-    void *temp;
+    void *map;
     void (*callback)(void);
+
     FillMapLayer(-1);
-    temp = *gCurrentMap;
-    M2C_FIELD((u8 *)temp + M2C_FIELD(temp, s16 *, 0x52DE) * 4, u8 **, 0x52E8)[M2C_FIELD(temp, s16 *, 0x52DC)] = 1;
-    temp = *gCurrentMap;
-    func_020cdeac(M2C_FIELD(temp, s16 *, 0x52DC), M2C_FIELD(temp, s16 *, 0x52DE), M2C_FIELD(temp, s32 *, 0x52D0));
-    func_020cc7e0();
-    func_020c0784();
+    map = *gCurrentMap;
+    M2C_FIELD((u8 *)map + M2C_FIELD(map, s16 *, MAP_CURSOR_Y) * 4, u8 **, MAP_GRID)[M2C_FIELD(map, s16 *, MAP_CURSOR_X)] = 1;
+    map = *gCurrentMap;
+    MarkUnitAttackRange(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y), M2C_FIELD(map, s32 *, MAP_CURSOR_UNIT));
+    CreateTargetSelectionSprite();
+    DeleteMapMenuSprites();
     callback = M2C_FIELD(gCurrentMap[1], void (**)(void), 0x3C);
     if (callback == NULL) return;
     callback();
 }
 
 void func_020c6dec(void) {
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK func_020bbd8c();
     func_020bbd8c();
-    func_020c0784();
+    DeleteMapMenuSprites();
 }
 
 /* Returns 0 when the current player may select the unit under the cursor: the
@@ -84,26 +83,30 @@ return value>M2C_FIELD(map+player*MAP_PLAYER_STRIDE,s32 *,MAP_PLAYER_STATES)?2:0
 
 void func_020c6ffc(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
-    func_020c0784();
+    DeleteMapMenuSprites();
     SetBattleCommand(0x16, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
-s32 func_020c7034(void) {
+/* Availability check for activating the current player's CO power: returns 0 when
+ * no unit sits under the cursor, the cursor unit is the player's selected unit and
+ * that player's CO power meter is full; otherwise returns 2. */
+s32 CanActivateCoPower(void) {
     s32 IsPlayerCoPowerReady(u16);
     s32 GetPlayerSelectedUnit();
     M2C_UNK GetUnitOwner(s32);
     extern void **gCurrentMap;
-    void *temp_r4;
-    temp_r4 = *gCurrentMap;
-    if (((u8 *)temp_r4)[M2C_FIELD(temp_r4, s16 *, 0x52DC) + M2C_FIELD((u8 *)temp_r4 + M2C_FIELD(temp_r4, s16 *, 0x52DE) * 2, u16 *, 0x3758)] != 0) {
+    void *map;
+
+    map = *gCurrentMap;
+    if (((u8 *)map)[M2C_FIELD(map, s16 *, MAP_CURSOR_X) + M2C_FIELD((u8 *)map + M2C_FIELD(map, s16 *, MAP_CURSOR_Y) * 2, u16 *, MAP_ROW_OFFSETS)] != 0) {
         return 2;
     }
-    GetUnitOwner(M2C_FIELD(temp_r4, s32 *, 0x52D0));
-    if ((M2C_FIELD(temp_r4, s32 *, 0x52D0) == GetPlayerSelectedUnit()) && (IsPlayerCoPowerReady(M2C_FIELD(temp_r4, u16 *, 0x52A4)) != 0)) {
+    GetUnitOwner(M2C_FIELD(map, s32 *, MAP_CURSOR_UNIT));
+    if ((M2C_FIELD(map, s32 *, MAP_CURSOR_UNIT) == GetPlayerSelectedUnit()) && (IsPlayerCoPowerReady(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)) != 0)) {
         return 0;
     }
     return 2;
@@ -111,11 +114,11 @@ s32 func_020c7034(void) {
 
 void func_020c70b4(void) {
     M2C_UNK func_020d468c();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK SetBattleCommand(s32, u8, s32, s32);
     extern void **gCurrentMap;
     func_020d468c();
-    func_020c0784();
+    DeleteMapMenuSprites();
     SetBattleCommand(0xE, M2C_FIELD(*gCurrentMap, u8 *, 0x52D4), 0, 0);
 }
 
@@ -162,9 +165,9 @@ s32 CanBuildTemporaryPort(void) {
 }
 
 void func_020c727c(void) {
- M2C_UNK func_020d468c(); M2C_UNK func_020c0784(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
+ M2C_UNK func_020d468c(); M2C_UNK DeleteMapMenuSprites(); M2C_UNK SetBattleCommand(s32,u8,s32,s32);
  extern void **gCurrentMap;
- func_020d468c(); func_020c0784();
+ func_020d468c(); DeleteMapMenuSprites();
  SetBattleCommand(0x18,M2C_FIELD(*gCurrentMap,u8 *,0x52D4),0,0);
 }
 

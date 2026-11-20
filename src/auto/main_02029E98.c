@@ -519,17 +519,17 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     if (func_0200b2bc(archive, imageData, (fat + 0xC) - imageData, M2C_FIELD(fat, s32 *, 4) - 0xC, (fnt + 8) - imageData, M2C_FIELD(fnt, s32 *, 4) - 8, 0, 0) != 0) {
         return 1;
     }
-    func_0200b238(archive);
+    ReleaseArchiveName(archive);
     return 0;
 }
 
 s32 func_0202a940(M2C_UNK arg0) {
-    M2C_UNK func_0200b238(M2C_UNK);
+    M2C_UNK ReleaseArchiveName(M2C_UNK);
     s32 func_0200b32c();
     if (func_0200b32c() == 0) {
         return 0;
     }
-    func_0200b238(arg0);
+    ReleaseArchiveName(arg0);
     return 1;
 }
 

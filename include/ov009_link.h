@@ -21,6 +21,10 @@
 #define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
 #define LINK_STATE_LOCAL_PLAYER 0x157 /* u8: this console's player slot */
 
+/* gLinkState +0x14 and +0x34: byte lengths of the two link transfer buffers. */
+#define LINK_STATE_EXTRA_LEN    0x14 /* s32: bytes of gLinkTransferExtra */
+#define LINK_STATE_TRANSFER_LEN 0x34 /* s32: bytes of gLinkTransferData */
+
 /* General WFC event packet fields the link overlay's callback reads (the
  * WFC_CMD_GENERAL_EVENT packet, also handed to the per-channel callbacks). */
 #define LINK_WFC_EVENT_RESULT 0x02 /* u16 result; LINK_WFC_RESULT_FATAL halts the game */
@@ -105,11 +109,24 @@ typedef struct LinkRequestRecord {
 /* gLinkState +0x3C: handler the overlay's general WFC events are forwarded to. */
 #define LINK_STATE_EVENT_HANDLER 0x3C
 
+/* gLinkState +0x64: head of the overlay's pending-send queue.  Packets are linked
+ * through +0x00, the tail is at +0x68 and the count at +0x6C; a queued packet
+ * names its channel at +0x08, and +0x0C is its payload length, after the 16-byte
+ * header. */
+#define LINK_STATE_SEND_QUEUE 0x64
+#define LINK_STATE_SEND_TAIL  0x68
+#define LINK_STATE_SEND_COUNT 0x6C
+#define LINK_SEND_NEXT    0x00 /* void *next packet in the queue */
+#define LINK_SEND_CHANNEL 0x08 /* u8 channel the packet is sent on */
+#define LINK_SEND_LENGTH  0x0C /* u32 payload length in bytes */
+
 /* The link overlay's status-text layer (generic text-layer fields at 0x34..0x36
  * are in ds3dsprite.h): it shows a localized message while the link result is
  * on screen. */
 #define LINK_LAYER_TEXT_KEY 0x38 /* s32 localized-text key shown by the layer */
 #define LINK_LAYER_STYLE    0x3C /* s32 style word handed to the text renderer */
 #define LINK_LAYER_STATUS   0x40 /* s32 link status/result code; 0 hides the layer */
+#define LINK_STATUS_TEXT       0x4400000A /* localized text key of the link status message */
+#define LINK_STATUS_TEXT_CODE8 0x4400000B /* localized text key shown instead when the status code is 8 */
 
 #endif

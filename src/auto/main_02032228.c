@@ -131,21 +131,24 @@ M2C_FIELD(a,u32 *,0x3c)=func_02076860(table,a,0x3c);
 }
 
 u64 func_02032558(void *a) {
-u64 func_02031db8(void *);
+u64 GetPlayerCodeValue(void *);
 if(GetPlayerRecordKind(a)!=2)return 0;
-return func_02031db8(a);
+return GetPlayerCodeValue(a);
 }
 
-s32 GetPlayerRecordId(void *a,void *b) {
-u64 func_02031db8(void *);
-s32 func_02031dcc(void *);
-s32 func_02031f74(u64,s32);
-s32 func_02031fe4(u64,s32);
-u64 v;
-switch(GetPlayerRecordKind(b)) {
-case 2: v=func_02031db8(b);if(!func_02031f74(v,M2C_FIELD(a,s32 *,0x24)))return 0; return func_02031fe4(v,M2C_FIELD(a,s32 *,0x24));
-case 3:return func_02031dcc(b);
-case 1:return -1;
+/* Resolve the GameSpy profile id behind a match player record: -1 while the
+ * record's profile is still unresolved, 0 when it has no player or its player
+ * code does not check out against the local game id, otherwise the profile id. */
+s32 GetPlayerRecordId(void *localInfo,void *record) {
+u64 GetPlayerCodeValue(void *);
+s32 GetProfileRecordId(void *);
+s32 IsPlayerCodeValid(u64,s32);
+s32 GetPlayerCodeId(u64,s32);
+u64 code;
+switch(GetPlayerRecordKind(record)) {
+case PLAYER_RECORD_KIND_CODE: code=GetPlayerCodeValue(record);if(!IsPlayerCodeValid(code,M2C_FIELD(localInfo,s32 *,PROFILE_ID_BLOCK_GAME_ID)))return 0; return GetPlayerCodeId(code,M2C_FIELD(localInfo,s32 *,PROFILE_ID_BLOCK_GAME_ID));
+case PLAYER_RECORD_KIND_PROFILE:return GetProfileRecordId(record);
+case PLAYER_RECORD_KIND_UNRESOLVED:return -1;
 default:return 0;
 }
 }
@@ -193,12 +196,12 @@ FormatNasId(b,M2C_FIELD(a,s32 *,0x24),c);
  * different kinds never match; keyed records compare their whole key, joined
  * records their profile id, and gpi records their encoded gpi user id. */
 s32 PlayerRecordsEqual(void *a,void *b){
-s32 GetPlayerRecordKind(void *); s32 func_02031dcc(void *); u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *); u64 func_02031db8(void *);
+s32 GetPlayerRecordKind(void *); s32 GetProfileRecordId(void *); u64 GetNasPlayerCode(void *); s32 GetNasRecordCheckWord(void *); u64 GetPlayerCodeValue(void *);
 s32 kind=GetPlayerRecordKind(a);
 if(kind!=GetPlayerRecordKind(b))return 0;
-if(kind==3)return func_02031dcc(a)==func_02031dcc(b);
+if(kind==3)return GetProfileRecordId(a)==GetProfileRecordId(b);
 if(kind==1){if(GetNasPlayerCode(a)==GetNasPlayerCode(b) && GetNasRecordCheckWord(a)==GetNasRecordCheckWord(b))return 1;return 0;}
-if(kind==2)return func_02031db8(a)==func_02031db8(b);
+if(kind==2)return GetPlayerCodeValue(a)==GetPlayerCodeValue(b);
 return 0;
 }
 
@@ -209,7 +212,7 @@ return 0;
  * who already joined the match is only marked as joined. */
 s32 FormatPlayerRecordId(s32 session, s32 record) {
     s32 IsPlayerRecordJoined(s32);
-    u64 func_02031db8(void *);
+    u64 GetPlayerCodeValue(void *);
     void func_02032004(void *, u32, u32);
     void FormatNasId(s32, s32, s32);
     u8 text[33];
@@ -220,7 +223,7 @@ s32 FormatPlayerRecordId(s32 session, s32 record) {
         return;
     }
     if (GetPlayerRecordKind((void *) record) == PLAYER_RECORD_KIND_CODE) {
-        code = func_02031db8((void *) record);
+        code = GetPlayerCodeValue((void *) record);
         func_02032004(text + 21, (u32) code, (u32) (code >> 32));
         return;
     }

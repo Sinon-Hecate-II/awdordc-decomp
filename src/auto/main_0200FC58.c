@@ -579,7 +579,7 @@ s32 SaveDevice_ReadChipId(void) {
 
     func_02010628(0xB8000000, 0);
     mask = 0x2000;
-    control = M2C_FIELD(data_020f553c, u32 *, 0x60);
+    control = M2C_FIELD(*(void *volatile *)&data_020f553c, u32 *, 0x60);
     control &= ~0x07000000;
     control |= 0xA7000000;
     *(volatile u32 *)0x040001A4 = control & -mask;

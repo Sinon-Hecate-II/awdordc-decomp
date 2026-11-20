@@ -593,13 +593,15 @@ ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
 }
 
 #pragma cplusplus on
-extern "C" s32 IsOnlinePacketQueued(s32 a) {
+/* Whether a packet of the given kind (ONLINE_PACKET_*) is already waiting in
+ * the online session's outbound queue. */
+extern "C" s32 IsOnlinePacketKindQueued(s32 kind) {
     extern M2C_UNK gOv010OnlineSession;
     Ov010InterruptGuard guard;
-    void *p = M2C_FIELD(&gOv010OnlineSession, void **, 0x60);
-    while (p != NULL) {
-        if (a == M2C_FIELD(p, u8 *, 8)) return 1;
-        p = M2C_FIELD(p, void **, 0);
+    void *node = M2C_FIELD(&gOv010OnlineSession, void **, ONLINE_SESSION_QUEUE);
+    while (node != NULL) {
+        if (kind == M2C_FIELD(node, u8 *, ONLINE_QUEUE_NODE_KIND)) return 1;
+        node = M2C_FIELD(node, void **, ONLINE_QUEUE_NODE_NEXT);
     }
     return 0;
 }
@@ -610,7 +612,7 @@ void TickOnlinePeerKeepAlive(void *link) {
     s32 Divide(s32, s32);
     s32 IsConnectionActive(u8);
     void TickNetSession(void);
-    s32 IsOnlinePacketQueued(s32);
+    s32 IsOnlinePacketKindQueued(s32);
     void DisconnectOnlinePeer(u8);
     void QueueOnlinePacket(s32, void *, s32, u16);
     s32 GetOnlineTransportPlayerId(void);
@@ -626,7 +628,7 @@ void TickOnlinePeerKeepAlive(void *link) {
     if (elapsedMs > ONLINE_HEARTBEAT_INTERVAL_MS) {
         connectedPeers = GetOnlinePeerMask();
         remotePeers = connectedPeers & (-1 ^ (1U << GetOnlineTransportPlayerId()));
-        if (remotePeers && (remotePeers & GetOnlinePeerMask()) && !IsOnlinePacketQueued(ONLINE_PACKET_HEARTBEAT))
+        if (remotePeers && (remotePeers & GetOnlinePeerMask()) && !IsOnlinePacketKindQueued(ONLINE_PACKET_HEARTBEAT))
             QueueOnlinePacket(ONLINE_PACKET_HEARTBEAT, link + ONLINE_HEARTBEAT_FRAMES, 4, remotePeers);
         M2C_FIELD(link, s32 *, ONLINE_HEARTBEAT_FRAMES) = 0;
     }

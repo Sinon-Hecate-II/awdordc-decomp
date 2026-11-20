@@ -223,27 +223,31 @@ if(get(ctx,0,2) && !conversions)return -1;
 return assigned;
 }
 #pragma optimize_for_size off
-s32 ScanFloatStreamRead(void *arg0, s32 arg1, s32 arg2) {
-    s8 *temp_r1;
-    s8 temp_r2;
+/* C-string reader for the scanf-family parsers: operation 0 returns and consumes
+ * the next character (-1, and sets the end flag, at the terminating NUL), 1 puts
+ * a character back (or clears the end flag), 2 reports whether the end was
+ * reached. */
+s32 ScanFloatStreamRead(void *stream, s32 pushback, s32 op) {
+    s8 *next;
+    s8 ch;
 
-    switch (arg2) {                                 /* irregular */
-    case 0:
-        temp_r1 = M2C_FIELD(arg0, s8 **, 0);
-        temp_r2 = *temp_r1;
-        if (temp_r2 == 0) {
-            M2C_FIELD(arg0, s32 *, 4) = 1;
+    switch (op) {
+    case SCAN_STREAM_READ:
+        next = ((ScanStream *)stream)->ptr;
+        ch = *next;
+        if (ch == 0) {
+            ((ScanStream *)stream)->eof = 1;
             return -1;
         }
-        M2C_FIELD(arg0, s8 **, 0) = (s8 *) (temp_r1 + 1);
-        return (s32) (u8) temp_r2;
-    case 1:
-        if (M2C_FIELD(arg0, s32 *, 4) == 0) {
-            --M2C_FIELD(arg0,s8 **,0);
-        } else M2C_FIELD(arg0,s32 *,4)=0;
-        return arg1;
-    case 2:
-        return M2C_FIELD(arg0, s32 *, 4);
+        ((ScanStream *)stream)->ptr = next + 1;
+        return (s32)(u8)ch;
+    case SCAN_STREAM_PUSH_BACK:
+        if (((ScanStream *)stream)->eof == 0) {
+            --((ScanStream *)stream)->ptr;
+        } else ((ScanStream *)stream)->eof = 0;
+        return pushback;
+    case SCAN_STREAM_IS_END:
+        return ((ScanStream *)stream)->eof;
     default:
         return 0;
     }

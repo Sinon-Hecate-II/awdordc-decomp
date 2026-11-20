@@ -159,13 +159,13 @@ void func_ov007_02213440(M2C_UNK arg0, M2C_UNK arg1) {
 M2C_UNK func_020c0b88(M2C_UNK);
 M2C_UNK func_020c0b40();
 func_020c0b88(arg1);
-func_020c0784();
+DeleteMapMenuSprites();
 func_020c0b40();
 }
 
 void func_ov007_02213458(void) {
     M2C_UNK func_020c0adc();
-    M2C_UNK func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
     s32 func_020c0b9c();
@@ -173,7 +173,7 @@ void func_ov007_02213458(void) {
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov007_0221fa40;
     func_020c0adc();
-    func_020c0784();
+    DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     RefreshMapView();
@@ -291,7 +291,7 @@ void func_ov007_02213d1c(void *obj) {
     M2C_FIELD(sp, u16 *, 0x12) = 0x35c;
     M2C_FIELD(sp, u8 *, 0x21) = 11;
     M2C_FIELD(sp, u8 *, 0x28) = ((u8)(M2C_FIELD(sp, u8 *, 0x28) & ~0xe0) & ~0x1f) | 0x11;
-    func_020a947c(sp, 3);
+    SetTextSpriteFont(sp, 3);
     SetTextSpriteValue(sp, M2C_FIELD(obj, s32 *, 0x34));
     M2C_FIELD(sp, s16 *, 6) = 0x75;
     M2C_FIELD(sp, s16 *, 8) = 0x60;

@@ -187,7 +187,7 @@ void DrawRainParticles(void) {
     void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_021204a4[];
     extern s32 *gCurrentMap;
-    extern s32 data_027e15c0;
+    extern s32 gVBlankCount;
     s16 particle = 0;
     s32 offset = 0;
     void *p;
@@ -205,7 +205,7 @@ void DrawRainParticles(void) {
         offset += 12;
         M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
     } while (particle < 32);
-    first = (u32)(data_027e15c0 << 31) >> 27;
+    first = (u32)(gVBlankCount << 31) >> 27;
     end = first + 16;
     if (end <= (s32)first) return;
     drawOffset = (s16)first * 12;
@@ -234,7 +234,7 @@ void DrawSnowParticles(void) {
     void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_021204bc[];
     extern s32 *data_027e0058;
-    extern s32 data_027e15c0;
+    extern s32 gVBlankCount;
     s16 particle = 0;
     s32 offset = 0;
     void *p;
@@ -252,7 +252,7 @@ void DrawSnowParticles(void) {
         offset += 12;
         M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
     } while (particle < 32);
-    first = (u32)(data_027e15c0 << 31) >> 27;
+    first = (u32)(gVBlankCount << 31) >> 27;
     end = first + 16;
     if (end <= (s32)first) return;
     drawOffset = (s16)first * 12;
@@ -277,7 +277,7 @@ void func_020a434c(void) {
     void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_0212049c[];
     extern s32 *gCurrentMap;
-    extern s32 data_027e15c0;
+    extern s32 gVBlankCount;
     s16 i;
     s32 offset;
     void *p;
@@ -296,7 +296,7 @@ void func_020a434c(void) {
         offset += 12;
         M2C_FIELD(q, u16 *, 2) += M2C_FIELD(q, u16 *, 6);
     } while (i < 32);
-    j = (u32)(data_027e15c0 << 31) >> 27;
+    j = (u32)(gVBlankCount << 31) >> 27;
     end = j + 16;
     if (end <= (s32)j) return;
     drawOffset = (s16)j * 12;
@@ -363,10 +363,19 @@ void func_020a45cc(void) {
  ClearMapOrders();
 }
 
-void *func_020a45f8(s32 a,s32 b) {
-extern s32 *gCurrentMap;MapOrder *p=(MapOrder *)(*gCurrentMap+0x58a4);
-while(p->type){s32 x=M2C_FIELD(p,u8 *,0);s32 endx=x+p->width; s32 y=M2C_FIELD(p,u8 *,1);s32 endy=y+p->height;
-if(a>=x&&b>=y&&a<endx&&b<endy)return p;p++;}return 0;
+/* Returns the first map order whose tile rectangle covers (x, y), whatever its type, or NULL. */
+MapOrder *FindMapOrderAtTile(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    MapOrder *order = (MapOrder *)(*gCurrentMap + MAP_ORDERS);
+    while (order->type) {
+        s32 startX = order->x;
+        s32 endX = startX + order->width;
+        s32 startY = order->y;
+        s32 endY = startY + order->height;
+        if (x >= startX && y >= startY && x < endX && y < endY) return order;
+        order++;
+    }
+    return 0;
 }
 
 /* Finds the first map order of the given type whose rectangle contains the
@@ -379,7 +388,7 @@ if(x>=startX&&y>=startY&&x<endX&&y<endY){if(orderType==type)return order;}order+
 
 u8 func_020a4700(s32 a,s32 b) {
 extern s32 *gCurrentMap;
-s16 pos[2];s32 p;void *q=func_020a45f8(a,b);
+s16 pos[2];s32 p;void *q=FindMapOrderAtTile(a,b);
 if(!q)return 0;
 if(!func_020a488c(q,pos))return 0;
 p=*gCurrentMap;
@@ -387,7 +396,7 @@ return M2C_FIELD(p+(pos[0]+M2C_FIELD(p+pos[1]*2,u16 *,0x3758)),s8 *,0x1e30)>=0;
 }
 
 s32 FindMapFeatureAtTile(s32 a,s32 b) {
-s16 pos[2];void *p=func_020a45f8(a,b);
+s16 pos[2];void *p=FindMapOrderAtTile(a,b);
 if(!p)return 0;
 if(!func_020a488c(p,pos))return 0;
 if(pos[0]!=a||pos[1]!=b)return 0;

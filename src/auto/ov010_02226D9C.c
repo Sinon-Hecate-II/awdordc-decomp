@@ -193,7 +193,7 @@ s32 IsOnlineSessionFlagSet(s32);
 s32 GetOnlineTransportPlayerId();
 s32 IsOnlineSessionHost();
 s32 func_ov010_02229b48(s32);
-unsigned int func_ov010_022298a0(unsigned int);
+unsigned int Ov010Online_GetQueuedPacketSize(unsigned int);
 s32 func_ov010_02229920(s32,void *);
 void *func_ov010_02229568(u32);
 M2C_UNK func_ov010_02229580(s32);
@@ -301,7 +301,7 @@ void *p2;
 u32 size2,chan2;
 s32 keep2;
 for(j=0;j<4;j++){
-size2=func_ov010_022298a0((u8)j);
+size2=Ov010Online_GetQueuedPacketSize((u8)j);
 if(!size2)continue;
 keep2=1;
 p2=func_ov010_02229568(size2);

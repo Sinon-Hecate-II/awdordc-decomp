@@ -137,17 +137,26 @@ void func_ov000_02169368(void)
     } while (i < 3);
 }
 
-void *func_ov000_021694b0(s32,s32,s32,s32);
-void *func_ov000_0216939c(u8 *p) {
- extern s32 *gCurrentMap;
- s32 n; void *q;
- M2C_FIELD(p,u16 *,4)|=6;
- if(!p)n=0;
- else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59A4))/14;
- q=func_ov000_021694b0(p[1],p[2],(n>>6)+1,(u32)(p[0]<<26)>>26);
- if(!q)return 0;
- M2C_FIELD(q,void **,0x3C)=p;
- return q;
+void *CreateUnitMoveAt(s32,s32,s32,s32);
+/* Attach a unit-move controller to an existing map unit: flag the unit as drawn
+   by the controller, create the controller at the unit's tile with its owner and
+   kind, remember the unit record in it and return the controller (NULL when no
+   slot is free). */
+void *CreateUnitMoveForUnit(u8 *unit) {
+    void *CreateUnitMoveAt(s32, s32, s32, s32);
+    extern s32 *gCurrentMap;
+    s32 unitIndex;
+    void *move;
+
+    M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_MOVE_UNIT_FLAGS;
+    if (!unit) unitIndex = 0;
+    else unitIndex = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+    move = CreateUnitMoveAt(unit[MAP_UNIT_X], unit[MAP_UNIT_Y],
+                            (unitIndex >> MAP_UNIT_OWNER_SHIFT) + 1,
+                            (u32)(unit[MAP_UNIT_KIND] << 26) >> 26);
+    if (!move) return 0;
+    M2C_FIELD(move, void **, UNIT_MOVE_UNIT) = unit;
+    return move;
 }
 
 /* Create the controller that walks a map unit along a movement path: claim a
@@ -176,12 +185,12 @@ void *CreateUnitMove(s32 x,s32 y,s32 owner,s32 kind,s32 direction) {
  return p;
 }
 
-void *func_ov000_021694b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void *CreateUnitMoveAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     void *CreateUnitMove(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    return CreateUnitMove(arg0, arg1, arg2, arg3, func_ov000_021694e8(arg2));
+    return CreateUnitMove(arg0, arg1, arg2, arg3, GetPlayerUnitFacing(arg2));
 }
 
-s32 func_ov000_021694e8(s32 arg0) {
+s32 GetPlayerUnitFacing(s32 arg0) {
     extern s32 *gCurrentMap;
     if (M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67CC) != 0) {
         return 1;
@@ -227,7 +236,7 @@ func_020d4790();
 
 void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
  void StartUnitMove(void *,s32);
- void *p=func_ov000_021694b0(a,b,c,d);
+ void *p=CreateUnitMoveAt(a,b,c,d);
  if(!p)return 0;
  StartUnitMove(p,e);
  return p;

@@ -305,9 +305,9 @@ void *func_0208b610(s32 arg0) {
 
 void *func_0208b630(void *arg0) {
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_021025e8;
-    func_02089108();
+    Init3DSpriteActor();
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021025e8;
     M2C_FIELD(arg0, s16 *, 0x58) = 0;
     M2C_FIELD(arg0, s16 *, 0x5A) = 0;

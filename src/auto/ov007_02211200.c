@@ -68,7 +68,7 @@ void func_ov007_02211480(void) {
     M2C_UNK FreeUiGraphicsBank(M2C_UNK);
     M2C_UNK func_0208c748();
     M2C_UNK func_020b2178();
-    M2C_UNK func_020bfbc0(M2C_UNK);
+    M2C_UNK MapSettings_CopyFromGameSettings(M2C_UNK);
     M2C_UNK func_020d4c08();
     M2C_UNK func_ov007_02212db8();
     M2C_UNK func_ov007_0221ab38();
@@ -78,7 +78,7 @@ void func_ov007_02211480(void) {
     func_ov007_0221ab38();
     func_020d4c08();
     func_0208c748();
-    func_020bfbc0(0);
+    MapSettings_CopyFromGameSettings(0);
 }
 
 void MapEditor_SpawnCursorSprite(M2C_UNK arg0) {
@@ -257,8 +257,11 @@ void MapEditor_EraseTerrain(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     PlaySoundEffect(0x1001d);
 }
 
-void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK SpawnSoundEffectAtTile(s32, M2C_UNK, M2C_UNK, s32);
+/* Map editor terrain brush with a region repaint: try to paint the selected
+ * terrain at (x, y), then refresh the view, editor and graphics and play the
+ * paint sound; on refusal play the error sound when playErrorSound is set. */
+void MapEditor_TryPaintTerrain(M2C_UNK unused, s32 x, s32 y, s32 playErrorSound) {
+    M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK RefreshMapView();
     u8 GetMapEditorTerrainKind(void);
@@ -266,21 +269,22 @@ void func_ov007_0221190c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     void RefreshMapEditor(void);
     void MapEditor_SetMapModified(s32);
     M2C_UNK MapEditor_RefreshGraphics();
-    s32 Map_TryPaintTile(M2C_UNK, M2C_UNK, s32, s32);
-    s32 temp_r0;
-    s32 temp_r4;
-    temp_r4 = GetMapEditorTerrainKind();
-    temp_r0 = Map_TryPaintTile(arg1, arg2, temp_r4, GetMapEditorTerrainOwner());
-    switch (temp_r0) {
+    s32 Map_TryPaintTile(s32, s32, s32, s32);
+    s32 result;
+    s32 terrainKind;
+
+    terrainKind = GetMapEditorTerrainKind();
+    result = Map_TryPaintTile(x, y, terrainKind, GetMapEditorTerrainOwner());
+    switch (result) {
     case 1:
         RefreshMapView();
         RefreshMapEditor();
         MapEditor_RefreshGraphics();
         MapEditor_SetMapModified(1);
-        SpawnSoundEffectAtTile(0x11C, arg1, arg2, 1);
+        SpawnSoundEffectAtTile(0x11C, x, y, 1);
         return;
     case 0:
-        if (arg3 == 0) return;
+        if (playErrorSound == 0) return;
         PlaySoundEffect(0x1001D);
         return;
     }
@@ -360,7 +364,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void MapEditor_EraseUnit(M2C_UNK, s32, s32, s32);
     void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
     void func_ov007_022116a0(M2C_UNK, s32, s32, s32);
-    void func_ov007_0221190c(M2C_UNK, s32, s32, s32);
+    void MapEditor_TryPaintTerrain(M2C_UNK, s32, s32, s32);
     s32 r4;
     s32 r5;
     void *q;
@@ -439,7 +443,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         func_ov007_022116a0(arg0, r6, r7, r4);
         return;
     L_c3:
-        func_ov007_0221190c(arg0, r6, r7, r4);
+        MapEditor_TryPaintTerrain(arg0, r6, r7, r4);
         return;
     }
 L_b4c:
@@ -459,7 +463,7 @@ L_be4:
     if (mask) { func_ov007_022117e0(arg0, r6, r7); return; }
     if (r5 & 0x400) { MapEditor_EraseTerrain(arg0, r6, r7, r4 & 0x400); return; }
     mask = r4 & 0x800;
-    if (mask) { func_ov007_0221190c(arg0, r6, r7, mask); return; }
+    if (mask) { MapEditor_TryPaintTerrain(arg0, r6, r7, mask); return; }
 }
 
 void func_ov007_02211e6c(M2C_UNK arg0) {

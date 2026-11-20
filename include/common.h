@@ -178,6 +178,15 @@ enum TcpState {
  * raw 32-bit values that go on the wire. */
 #define TCP_CONN_ACK_NUM  0x24 /* u32 acknowledgement number to send */
 #define TCP_CONN_SEND_SEQ 0x28 /* u32 next send sequence number */
+#define TCP_CONN_PEER_MSS 0x2E /* u16 peer maximum segment size in bytes */
+
+#define TCP_DATA_OFFSET_MASK 0xF0
+#define TCP_DEFAULT_MSS 536
+enum {
+    TCP_OPTION_END = 0,
+    TCP_OPTION_NOP = 1,
+    TCP_OPTION_MSS = 2
+};
 
 /* Description of a hash used by Hmac for keyed hashing (HMAC): the digest and
  * block sizes, the hash state it works on and its three entry points.  The
@@ -310,12 +319,26 @@ enum {
 #define TLS_CACHE_PORT       0x58  /* u16 peer port */
 #define TLS_CACHE_VALID      0x5A  /* u8 nonzero once the entry holds a session */
 
+/* ASN.1 time values as they appear in a certificate's validity dates: a tag
+ * followed by ASCII digits.  UTCTime carries a two-digit year, GeneralizedTime
+ * a four-digit one; ParseAsn1Time turns either into year<<16 | month<<8 | day. */
+#define ASN1_TIME_UTC         0x17 /* UTCTime */
+#define ASN1_TIME_GENERALIZED 0x18 /* GeneralizedTime */
+#define ASN1_DIGITS_ZERO      0x210 /* '0' * 10 + '0', so d0*10 + d1 - this is the pair's value */
+
 /* TLS record content types (the first byte of a record). */
 enum {
+    TLS_CONTENT_ALERT              = 21,
     TLS_CONTENT_CHANGE_CIPHER_SPEC = 20,
     TLS_CONTENT_HANDSHAKE          = 22,
     TLS_CONTENT_APPLICATION_DATA   = 23
 };
+
+/* Fields of the close alert a TLS endpoint sends when it closes a channel: a
+ * two-byte alert message carrying a warning-level close_notify. */
+#define TLS_ALERT_LENGTH            2
+#define TLS_ALERT_LEVEL_WARNING     1
+#define TLS_ALERT_DESC_CLOSE_NOTIFY 0
 
 /* Application data is split across records no larger than this; each record
  * needs TLS_APP_RECORD_OVERHEAD extra bytes for its header and SHA1 MAC. */
@@ -414,6 +437,7 @@ typedef struct MapSelectScreen {
 #define WAYPOINT_LIST_PENDING_OPTION 0x09 /* u8: option the player-option menu is editing; RestoreWaypointOption puts it back */
 #define WAYPOINT_LIST_SLOT_OPTIONS 0x0A /* u8[4]: per-slot option, one byte per slot */
 #define WAYPOINT_LIST_IDS     0x74 /* u8[4]: player id of each slot, 0xFF = no player yet */
+#define WAYPOINT_NO_PLAYER    0xFF /* WAYPOINT_LIST_IDS: the slot has no player yet */
 #define WAYPOINT_LIST_SLOTS   0x78 /* void *[26]: the slot sprites */
 #define WAYPOINT_LIST_SLOT_COUNT 26
 #define WAYPOINT_LIST_UNIT    0xE0 /* void *: unit sprite of the selected slot */
@@ -560,7 +584,9 @@ typedef struct HistoryMenu {
     u8 selected;        /* +0x02: selected row */
     u8 pad03[0xD];
     HistoryMenuTab tabs[3]; /* +0x10 */
-    u8 unk2E[0x12];
+    u16 recordTierEarned; /* +0x2E: sum of the record tiers the player has reached */
+    u16 recordTierTotal;  /* +0x30: highest tier sum obtainable, 3 per listed record */
+    u8 unk32[0x0E];
     u8 medals[8];        /* +0x40: medals earned, one flag each (drawn on the records screen) */
     void *sprite48;     /* +0x48 */
     void *sprite4C;     /* +0x4C */
@@ -674,6 +700,10 @@ typedef struct RecordDefinition {
     u32 tierText[3];    /* +0x1C text ids of the three tiers' descriptions */
     u8 pad28[8];
 } RecordDefinition;     /* 0x30 bytes */
+
+/* Base of the per-unit-kind counters in gRecordValues: the count for a unit kind
+ * is at gRecordValues[RECORD_UNIT_KIND_BASE + kind]. */
+#define RECORD_UNIT_KIND_BASE 0x43
 
 /* Panels of the ov000 map info window (the box that follows the map cursor). */
 enum {
@@ -970,6 +1000,11 @@ enum {
 /* The \version\ value the game's gpi messages carry in their body. */
 #define GPI_PROTOCOL_VERSION 1
 
+/* A game-data message's \xfer\ field: three numbers (key gGpiXferKey, format
+ * gGpiXferLocationFormat) locating the data a transfer asks for.  The peers only
+ * relay game data, so the reply echoes the location with this result code. */
+#define GPI_XFER_RESULT_UNSUPPORTED 2
+
 /* GameSpy gpi receive buffer (the connection field at +0x1DC, and a peer's
  * message buffer at peer + 0x18): storage, the allocated size, the number of
  * bytes currently held and, for a peer buffer, the read position of the next
@@ -1116,6 +1151,7 @@ typedef struct GpiStringListData {
 #define GPI_CONN_CALLBACK_HEAD  0x438 /* GPICallbackData *first queued callback */
 #define GPI_CONN_CALLBACK_TAIL  0x43C /* GPICallbackData *last queued callback */
 #define GPI_CONN_OPERATIONS     0x424 /* GPIOperation *first pending operation */
+#define GPI_CONN_PEER_HEAD      0x434 /* void *first peer of the connection's peer list (linked through GPI_PEER_NEXT) */
 #define GPI_CONN_NEXT_OPERATION_ID 0x20C /* s32 next operation id handed out (starts at 2) */
 #define GPI_CONN_SEARCH_COUNT      0x210 /* s32 search operations still pending on the connection */
 
@@ -1221,6 +1257,27 @@ enum {
 #define CONN_SESSION_LAST_COMMAND_TRIES  0x3CD /* u8 times the last command has been repeated */
 #define CONN_SESSION_CLOSED              0x18  /* u8 set once the session has been torn down, cleared when it is reset */
 
+/* Matchmaking states taken by CONN_SESSION_STATE before the synchronization
+ * handshake (CONN_STATE_SYNC_* above): a host is set up by StartHostMatch, a
+ * client walks searching -> joining -> joined. */
+enum {
+    CONN_STATE_HOST_WAITING = 2, /* a host is up and waiting for the other players */
+    CONN_STATE_SEARCHING    = 3, /* a client is browsing the matchmaking server list */
+    CONN_STATE_JOINING      = 4, /* a client has sent its join request */
+    CONN_STATE_JOINED       = 5, /* the join was accepted and the parameters are exchanged */
+    CONN_STATE_CONNECTING   = 6  /* a client is connecting to the chosen host */
+};
+
+/* Matchmaking browse bookkeeping.  A browse that does not complete within
+ * CONN_BROWSE_TIMEOUT_TICKS fails with connection error 6; the retry mode is 1
+ * to rescan after 1 s and 2 after 3 s. */
+#define CONN_SESSION_BROWSE_DEADLINE   0x174 /* u64: GetSystemTick deadline of the running browse, 0 when none */
+#define CONN_SESSION_BROWSE_RETRY      0x0E8 /* s32: 0 none, 1 retry after 1 s, 2 retry after 3 s */
+#define CONN_SESSION_BROWSE_RETRY_TICK 0x0EC /* u64: GetSystemTick the retry mode was armed at */
+#define CONN_SESSION_TARGET_PORT       0x1B4 /* u16 port of the peer a join is being made to */
+#define CONN_SESSION_TARGET_ADDRESS    0x1B8 /* s32 IPv4 address of that peer */
+#define CONN_BROWSE_TIMEOUT_TICKS      0xEFB5F7 /* 30 s in GetSystemTick units */
+
 /* Flags of the connection manager (gConnectionMgr).  Its +0x18 counter is the
  * depth of the server-browser callbacks running; a teardown while it is nonzero
  * cannot free the browser, so it asks the think loop to (BROWSER_FREE). */
@@ -1312,6 +1369,14 @@ typedef struct MbBootState {
  * records of players grouped together for one battle. */
 #define MB_WORK_SIZE        0x7D00 /* bytes cleared when the match state is torn down */
 #define MB_CMD_BUFFER       0x0000 /* outgoing command record, written by SerializeCommand */
+
+/* A multiboot control command (MB_CMD_BUFFER): its type byte and the two 16-bit
+ * arguments that follow.  SerializeCommand writes it big-endian for sending. */
+typedef struct MbCommand {
+    u8  type; /* +0x00 command id */
+    u16 arg0; /* +0x02 first argument */
+    u16 arg1; /* +0x04 second argument */
+} MbCommand;
 #define MB_PLAYER_STATE     0x14E4 /* s32 per-player state, 4 bytes each, indexed from 1 */
 #define MB_PLAYER_STATE_GROUPED 5 /* the player has joined a group; the group's battle can start */
 #define MB_PLAYER_GROUP     0x1525 /* s8 per-player group id, 1 byte each, indexed from 1 */
@@ -1326,6 +1391,9 @@ typedef struct MbBootState {
 #define MB_GROUP_CHUNK_CURSOR 0x5C0 /* u16 record-relative: chunk transfer the group is sending */
 #define MB_GROUP_CHUNK_GOAL   0x5C2 /* u16 record-relative: newest chunk a member asked for; the cursor advances to it */
 #define MB_PLAYER_FORFEIT   0x1526 /* s8 per-player 1-byte flag, -1 = gave up, indexed from 1 */
+#define MB_PLAYER_INFO       0x1340 /* per-player info block, 22 bytes each, indexed from 1 (the block PlayerData packets carry) */
+#define MB_PLAYER_INFO_SIZE  0x16   /* bytes in one player's info block */
+#define MB_PLAYER_INFO_OUT   0x1772 /* scratch info block MultiBoot_GetPlayerInfo copies a player's block into */
 #define MB_BLOCK_SIZE       0x1318 /* u32 bytes carried by one transfer block, at this work-area offset */
 
 /* The multiboot worker thread (gMbJobTask): a TaskCreate thread object whose
@@ -1529,13 +1597,30 @@ typedef struct NetError {
 /* Step flags of the ov010 online session (gOv010OnlineSession+0x54): their bit
  * index is what SetOnlineSessionFlag/IsOnlineSessionFlagSet take. */
 #define OV010_FLAG_STARTED 0 /* the session's work block is allocated */
+#define OV010_FLAG_MATCHMAKING 2 /* matchmaking has started (set by its start callback) */
 #define OV010_FLAG_RUNNING 3 /* the online session is running (cleared when it stops or its start fails) */
 #define OV010_FLAG_FAILED  4 /* the session start failed or the session stopped */
 #define OV010_FLAG_ERROR   6 /* a network error has been handed to the UI, so it is not reported again */
 
+/* The online lobby's local-player name label: the player's name and the screen
+ * position it is shown at, created when the online lobby opens. */
+#define ONLINE_LABEL_X     0x35 /* s8 x position */
+#define ONLINE_LABEL_Y     0x36 /* s16 y position */
+#define ONLINE_LABEL_NAME  0x38 /* void *: the local player's name record (GetLocalPlayerName), the single name a WFC match query looks up */
+#define ONLINE_LABEL_MATCHED 0x3C /* u8: nonzero once the query matched the local player's name */
+#define ONLINE_LABEL_MATCH_COUNT 0x40 /* s32: number of matches the query returned (0..7) */
+
 /* An ov010 online player record, 0x6c bytes each. */
 #define ONLINE_PLAYER_FLAGS 0x1a /* u8: bit 0 set while the record holds a connected peer */
 #define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as */
+
+/* A connected player's network record, the block GetNetworkPlayerRecord returns
+ * (0x20 bytes into an ov009 link player slot, 0x2C into an ov010 online player
+ * record): the CO choices the player made in the waypoint panel. */
+#define NET_PLAYER_PANEL_OPEN   0x08 /* u8: 1 while the player has the waypoint panel open */
+#define NET_PLAYER_CO_ICON      0x0D /* u8: CO icon index of the player's own waypoint slot */
+#define NET_PLAYER_SLOT_OPTIONS 0x0E /* u8[4]: CO option chosen for each waypoint slot */
+#define NET_PLAYER_SLOT_ICONS   0x12 /* u8[4]: CO icon index chosen for each waypoint slot */
 
 /* Fields of the ov010 online session the match event handlers touch. */
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
@@ -1735,12 +1820,20 @@ enum {
  * the profile's own fields. */
 #define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (func_020321ac) */
 #define PROFILE_ID_BLOCK_SIZE 0x40
+#define PROFILE_ID_BLOCK_GAME_ID 0x24 /* u32 game id (0x5957324A, "YW2J"): salt of player codes and key type in their text form */
 #define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
 #define SAVE_SLOT_SUMMARY_SIZE  12         /* bytes per slot summary */
 #define SAVE_SLOT_RECORD_SIZE   0x28       /* bytes per slot record */
 #define SAVE_SUMMARIES_OFFSET   4          /* first slot summary */
 #define SAVE_RECORDS_OFFSET     0x2d4      /* first slot record */
-#define SAVE_RECORD_STRIDE      0x28       /* bytes per save-directory record */
+#define SAVE_RECORD_STRIDE      0x28       /* bytes per save-directory / battle-save record */
+#define SAVE_RECORD_ZERO_PREFIX 0x1A       /* initial bytes cleared in each battle-save record */
+#define SAVE_RECORD_INIT_WORD0  0x1A       /* s16 initialized to 0 */
+#define SAVE_RECORD_INIT_WORD1  0x1C       /* s16 initialized to 0 */
+#define SAVE_RECORD_INIT_WORD2  0x1E       /* s16 initialized to 0 */
+#define SAVE_RECORD_INIT_BYTE0  0x20       /* s8 initialized to -1 */
+#define SAVE_RECORD_INIT_BYTE1  0x21       /* s8 initialized to -2 */
+#define SAVE_RECORD_INIT_BYTE2  0x22       /* s8 initialized to -2 */
 #define SAVE_RECORD_ID          0          /* u16 slot id inside a directory record */
 #define SAVE_RECORD_TYPE        2          /* u8 save type inside a directory record */
 #define SAVE_RECORD_TIME        4          /* u32 timestamp inside a directory record */
@@ -1868,6 +1961,7 @@ typedef struct LinkChannelState {
 #define LINK_PACKET_PREV 0x04 /* void *previous packet in the queue */
 #define LINK_PACKET_NEXT 0x08 /* void *next packet in the queue */
 #define LINK_PACKET_KEY  0x18 /* u32 ordering key the queue is kept sorted by */
+#define LINK_PACKET_CHANNEL 0x11 /* u8 link channel the packet is sent on (LINK_CHANNEL_COUNT of them) */
 
 /* ov007 map editor text entry. The widget keeps a glyph layout table of three
  * blocks of MAPEDIT_GLYPH_COUNT entries: the base glyphs, then their voiced
@@ -2096,6 +2190,18 @@ typedef struct Ov001FadeStates {
 #define SPRITE_ENTRY_HIDDEN        0x200 /* bit 9: normal entry hidden, affine entry double size */
 #define SPRITE_ENTRY_AFFINE_DOUBLE 0x300 /* bits 8-9: affine entry drawn at double size */
 #define SPRITE_ENTRY_MATRIX_SHIFT  25    /* bits 25-29: rotation-scaling matrix index */
+/* The same entry also carries its OAM mode in bits 10-11 of the first u32 and
+ * its 16-colour palette bank in bits 12-15 of the u16 at entry +4. */
+#define SPRITE_ENTRY_OBJ_MODE_MASK  0x00000C00 /* bits 10-11 of the u32 at +0 */
+#define SPRITE_ENTRY_OBJ_MODE_SHIFT 10
+#define SPRITE_ENTRY_PALETTE_MASK   0xF000     /* bits 12-15 of the u16 at +4 */
+#define SPRITE_ENTRY_PALETTE_SHIFT  12
+
+/* Packed position word of an ov001 sprite object (the object's first word): x in
+ * the low byte, y in bits 16..24. */
+#define OV001_SPRITE_POS_X_MASK  0x000000FF
+#define OV001_SPRITE_POS_Y_MASK  0x01FF0000
+#define OV001_SPRITE_POS_Y_SHIFT 16
 
 /* The DS screen is 256x192 pixels: sprite layouts are clipped to its height. */
 #define SCREEN_HEIGHT 192
@@ -2113,6 +2219,7 @@ enum {
 #define KBD_CHAR_KEY_COUNT 0x2F /* character keys on a page */
 #define KBD_DELETE_INDEX   0x32 /* index of the delete key */
 #define KBD_ACTION_KEY_BASE 0x33 /* index of the first bottom action key */
+#define KBD_ROW_ACTION      4    /* layout row of the two bottom action keys */
 
 /* Delete-key auto-repeat: repeat after this many frames, dropping the counter
  * by this much per repeat. */
@@ -2124,7 +2231,8 @@ enum {
  * +0x59 and +0x5a is the press timer (negative while the press animation is
  * done). +0x64 points at the object that owns the sprite. */
 #define MENU_SPRITE_FRAME 0x40 /* u32 frame bits */
-#define MENU_SPRITE_BASE  0x59 /* u8 low nibble: base frame */
+#define MENU_SPRITE_FRAME_MASK 0x03FC0000 /* bits 18..25 of MENU_SPRITE_FRAME: the current frame */
+#define MENU_SPRITE_BASE  0x59 /* u8 low nibble: base frame; bit 4 enables the alternate (pressed) frame */
 #define MENU_SPRITE_TIMER 0x5a /* s8 press timer, -1 = idle */
 #define MENU_SPRITE_OWNER 0x64 /* owner/controller object */
 
@@ -2165,6 +2273,11 @@ enum {
 #define NUMBER_DISPLAY_VALUE     0x60 /* s64 value drawn and edited */
 #define NUMBER_DISPLAY_HIGH      0x64 /* s32 sign extension of the value's low word */
 #define NUMBER_DISPLAY_SOURCE    0x68 /* s64 *value written back when the sprite is destroyed */
+
+/* A countdown-timer display sprite: a sprite actor with the same layout as a
+ * number display, except that its +0x58 field is the time left. DrawTimerDigits
+ * renders it as minutes:centiseconds, one unit per 1/60 s frame. */
+#define TIMER_DISPLAY_TICKS      0x58 /* s32 time left, in 1/60 s units */
 
 /* A scene panel: a 3D sprite actor whose two halves (the sprite sources at
  * +0x60 and +0x64) show a pair of CO faces.  The face sprites themselves are its
@@ -2301,6 +2414,15 @@ typedef struct FriendCodeEntry {
 /* Digit cursor (0..FRIEND_CODE_LENGTH) of the friend-code entry state, the object
  * the keypad handlers reach through the keypad event's +0x10 pointer. */
 #define FRIEND_CODE_CURSOR 0x38
+
+/* The friend-code keypad event each per-key handler receives: the focused key
+ * id and the entry state object the key acts on. */
+#define FRIEND_CODE_KEY_ID    0x00 /* u8 focused key id (FRIEND_CODE_KEYPAD_*) */
+#define FRIEND_CODE_KEY_STATE 0x10 /* void *friend-code entry state object */
+
+/* The digit characters of the keypad's ten digit keys, keyed by key id 0-9:
+ * one 6-byte record per key whose first byte is the digit character. */
+#define FRIEND_CODE_KEY_RECORD 6
 
 /* ov007 map generator's 30-column scratch marker grid (gMapMarkerGrid). */
 #define MAP_MARKER_STRIDE 30
@@ -2582,6 +2704,16 @@ typedef struct VoiceLinkConfig {
     void *callbackArg;             /* +0x1C: argument for that callback */
 } VoiceLinkConfig;                 /* 0x20 bytes */
 
+/* The ov010 voice-chat link object (gVoiceChatLink): the streamed-voice work
+ * buffer whose refill callback serves the link, the exchange context currently
+ * attached to it, and the link's own configuration. */
+typedef struct VoiceChatLink {
+    u8 *streamBuffer;              /* +0x00: streamed-voice work buffer */
+    VoiceLinkContext *context;     /* +0x04: exchange context in use, or NULL */
+    VoiceLinkConfig config;        /* +0x08: link configuration (also data_ov010_0222ee78) */
+} VoiceChatLink;                   /* 0x28 bytes */
+#define VOICE_CHAT_LINK_CONTEXT 0x04 /* the VoiceChatLink.context field */
+
 typedef struct VoiceLinkState {
     s32 unk00;                       /* +0x00 */
     u32 peerMask;                    /* +0x04: connected peers, one bit each */
@@ -2735,8 +2867,16 @@ typedef struct Ov001TextPanel {
 #define MAP_ACTION_HOLD    0x1e /* frames the popup stays at normal size before it may end */
 
 /* The ov001 text/sprite context (gOv001TextContext, a 0x680-byte allocation). */
-#define OV001_CTX_FONTS       0x00  /* Ov001Font[2]: the parsed font sets */
-#define OV001_CTX_PANEL_QUEUE 0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
+#define OV001_CTX_FONTS              0x00  /* Ov001Font[2]: the parsed font sets */
+#define OV001_CTX_PANEL0_TILE_BUFFER 0x638 /* panel 0's cached tile image */
+#define OV001_CTX_PANEL1_TILE_BUFFER 0x668 /* panel 1's cached tile image */
+#define OV001_CTX_PANEL_UPLOAD_FLAGS 0x67C /* one pending-upload byte per panel */
+#define OV001_CTX_PANEL_QUEUE        0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
+#define OV001_CTX_SIZE               0x680 /* bytes of the text context allocation */
+#define OV001_CTX_PANEL_BUFFER       0x010 /* first of the 32 pooled text panels */
+#define OV001_TEXT_PANEL_COUNT       32    /* pooled panels CreatePooledTextPanel may hand out */
+#define OV001_TEXT_PANEL_SIZE        0x30  /* bytes per pooled text panel */
+#define OV001_CTX_FONT_FILES         0x674 /* s32[2]: file handles of the two loaded font sets */
 
 typedef struct Ov001TextState {
     void       *panel;         /* +0x00: text panel whose ops blit one glyph */
@@ -2832,7 +2972,13 @@ typedef struct Ov001TilePool {
 #define TEXT_SPRITE_X       0x08 /* s16: screen x of the first glyph */
 #define TEXT_SPRITE_COUNT   0x0A /* u8: number of digit glyphs to draw */
 #define TEXT_SPRITE_DIGITS  0x0B /* u8[6]: digit glyph indices, least significant first */
+#define TEXT_SPRITE_W       0x14 /* u8: glyph cell width in pixels */
+#define TEXT_SPRITE_H       0x15 /* u8: glyph cell height in pixels */
+#define TEXT_SPRITE_TILE_STEP 0x16 /* u8: tiles one glyph advances the tile index */
+#define TEXT_SPRITE_ADVANCE 0x17 /* u8: pixels the pen advances per glyph */
+#define TEXT_SPRITE_GLYPH_H 0x18 /* u8: glyph height in pixels */
 #define TEXT_SPRITE_VALUE   0x1C /* s32: numeric value, clamped to +/-999999 */
+#define TEXT_SPRITE_DESC    0x24 /* void *sprite descriptor used for each glyph */
 
 /* A text layer sprite (CreateTextLayer and the RenderTextLayer family in
  * main_02088FF4): a 3D-sprite object that owns the text it draws plus two small
@@ -2862,11 +3008,16 @@ typedef struct Ov001TilePool {
 #define IPC_FIFO_CLEAR      0xc000 /* clear the error and re-enable the FIFO */
 
 /* TIMER0, the free-running hardware counter the system tick is built on, and the
- * interrupt register that reports its overflow (main_02006F14). */
+ * interrupt register that reports its overflow (main_02006F14).  TIMER1 is the
+ * OS timer's hardware countdown: its countdown register arms the next timer and
+ * its interrupt runs the queue. */
 #define REG_TM0D     0x04000100 /* u16 TIMER0 counter, counted up by the timer hardware */
 #define REG_TM0CNT   0x04000102 /* u16 TIMER0 control; 0xC1 = enabled with an overflow interrupt */
+#define REG_TM1D     0x04000104 /* u16 TIMER1 countdown, armed by ArmTimerCountdown */
+#define REG_TM1CNT   0x04000106 /* u16 TIMER1 control; 0xC1 = enabled with an overflow interrupt */
 #define REG_IF       0x04000214 /* u32 interrupt flags */
 #define IRQ_TIMER0   0x0008     /* REG_IF bit set when TIMER0 overflows */
+#define IRQ_TIMER1   0x0010     /* REG_IF bit set when TIMER1 overflows (the OS timer) */
 #define TIMER0_HALF  0x8000     /* top bit of the 16-bit counter */
 
 /* The ARM9 IRQ handler table: one handler per IRQ bit (the timers are IRQ 3-6,
@@ -2889,12 +3040,54 @@ typedef struct IrqHandler {
     s32 arg;     /* +0x08 argument the handler is called with */
 } IrqHandler;    /* 0x0C */
 
+/* Event word near the end of the OS work area: one bit per IRQ line that an
+ * interrupt handler signals and a thread waits on.  Bit 0 is the VBlank event:
+ * the VBlank handler sets it and the main loop's frame wait consumes it; bit 4
+ * is TIMER1, set by the OS timer interrupt. */
+#define OS_AREA_EVENT_FLAGS 0x3FF8 /* u32 */
+#define OS_EVENT_VBLANK     0x0001 /* IRQ 0 */
+#define OS_EVENT_TIMER1     0x0010 /* IRQ 4, the OS timer */
+
 /* The system tick state: TIMER0's 16-bit counter extended to 64 bits by counting
  * the overflows at SYSTEM_TICK_OVERFLOW.  Addressed by offset (its symbol is
  * declared as a u16 by its users). */
 #define SYSTEM_TICK_INITIALIZED 0x00 /* u16 nonzero once the timer has been set up */
 #define SYSTEM_TICK_RELOAD      0x04 /* s32 nonzero when TIMER0 must be reloaded */
 #define SYSTEM_TICK_OVERFLOW    0x08 /* u64 TIMER0 overflows counted so far */
+
+/* The DS firmware's user settings ("Personal Data") at 0x027FFC80: version, the
+ * favourite colour and birthday, the nickname and personal message with their
+ * lengths, and a flags word at the end whose low three bits are the language. */
+typedef struct FirmwareUserSettings {
+    u16 version;       /* +0x00 */
+    u8  favoriteColor; /* +0x02 0..15 */
+    u8  birthMonth;    /* +0x03 1..12 */
+    u8  birthDay;      /* +0x04 1..31 */
+    u8  pad05;         /* +0x05 */
+    u16 name[10];      /* +0x06 nickname, UTF-16 */
+    u8  nameLength;    /* +0x1a number of nickname characters */
+    u8  pad1b;         /* +0x1b */
+    u16 message[26];   /* +0x1c personal message, UTF-16 */
+    u8  messageLength; /* +0x50 number of message characters */
+    u8  pad51[0x13];   /* +0x51..0x63 */
+    u16 flags;         /* +0x64 low 3 bits = system language */
+} FirmwareUserSettings; /* 0x66 bytes */
+
+/* The game's copy of the firmware user settings, filled by GetSystemUserProfile
+ * and read as the local player's profile: language, favourite colour and
+ * birthday, then the nickname and personal message with their lengths. */
+typedef struct UserProfile {
+    u8  language;      /* +0x00 0..7 */
+    u8  favoriteColor; /* +0x01 0..15 */
+    u8  birthMonth;    /* +0x02 */
+    u8  birthDay;      /* +0x03 */
+    u16 name[10];      /* +0x04 nickname, UTF-16 */
+    u16 pad18;         /* +0x18 cleared */
+    u16 nameLength;    /* +0x1a nickname length in characters */
+    u16 message[26];   /* +0x1c personal message, UTF-16 */
+    u16 pad50;         /* +0x50 cleared */
+    u16 messageLength; /* +0x52 personal message length in characters */
+} UserProfile; /* 0x54 bytes */
 
 /* The OS timer queue (gTimerQueue): timer nodes sorted by their u64 deadline,
  * the earliest at TIMER_QUEUE_HEAD and the latest at TIMER_QUEUE_TAIL.  A node
@@ -3042,9 +3235,13 @@ typedef struct MicTestScreen {
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
 #define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
+#define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the background scroll needs refreshing */
+#define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the list background must be scrolled */
+#define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 nonzero when the list moved and the background scroll must follow */
 #define OV001_MAP_LIST_SCROLL_STEP 6   /* pixels the scroll animation moves per step */
 #define OV001_MAP_LIST_SCROLL_MAX  145 /* scroll range in pixels */
 #define OV001_MAP_LIST_HANDLE_TRAVEL 55 /* pixels the scroll-bar handle travels over the range */
+#define OV001_MAP_LIST_NO_TOUCH 14 /* GetMapListTouchedEntry result when no row entry was touched */
 
 /* The ov001 friend-roster screen's vertical scroll bar (gOv001Scrollbar, a
  * 0x20-byte object built by Ov001_CreateScrollBar): a sprite whose touch
@@ -3091,7 +3288,8 @@ enum {
     LANGUAGE_FRENCH  = 2, /* f_ prefix */
     LANGUAGE_GERMAN  = 3, /* d_ prefix */
     LANGUAGE_ITALIAN = 4, /* i_ prefix */
-    LANGUAGE_SPANISH = 5  /* s_ prefix */
+    LANGUAGE_SPANISH = 5, /* s_ prefix */
+    LANGUAGE_KOREAN  = 6  /* kor.bmg archive, kc_ font */
 };
 
 /* One thread of the cooperative scheduler.  gThreadManager (a void * with
@@ -3113,6 +3311,18 @@ typedef struct Thread {
  * SleepMilliseconds; 0 when the thread is not sleeping on a timer. */
 #define THREAD_WAKE_TIMER 0xB0
 
+/* An OS mutex (the OSMutex a sound or network task locks): the waiting-thread
+ * queue the scheduler keeps at +0x00, the owning thread, and the owner's
+ * reentrant lock count.  A mutex the thread has locked is chained on the thread's
+ * own list through the mutex link. */
+#define OSMUTEX_OWNER     0x08 /* Thread *: the thread holding the mutex, 0 when free */
+#define OSMUTEX_COUNT     0x0c /* u32 nesting level of the owner's locks */
+#define OSMUTEX_LINK_NEXT 0x10 /* OSMutex * next mutex on the owner thread's list */
+#define OSMUTEX_LINK_PREV 0x14 /* OSMutex * previous mutex on that list */
+#define THREAD_WAIT_MUTEX      0x84 /* OSMutex * mutex the thread is blocked on */
+#define THREAD_MUTEX_LIST_HEAD 0x88 /* OSMutex * first mutex the thread has locked */
+#define THREAD_MUTEX_LIST_TAIL 0x8c /* OSMutex * last of that list */
+
 /* The exit-function list (gExitFunctionList) the C++ runtime registers with
  * __cxa_atexit: a singly-linked list of nodes, each a function and the argument
  * it is run with.  Unloading a module takes out the nodes that belong to it. */
@@ -3120,8 +3330,13 @@ typedef struct Thread {
 #define EXIT_FUNC_CALLBACK 0x04 /* the function to run */
 #define EXIT_FUNC_ARG      0x08 /* u32 argument handed to it */
 
-/* The CO roster state (gCoState): +0x04 a u8, +0x08 the s32 bitset of the COs
- * the player has unlocked (bit i = CO i). */
+/* The CO state (gCoState): the last battle's three ratings with their grade and
+ * the CO the menus show, then the bitset of unlocked COs.  The battle-results
+ * screen counts the ratings up from zero to these values. */
+#define CO_STATE_SPEED     0x00 /* u8 speed rating counted up by the results screen */
+#define CO_STATE_POWER     0x01 /* u8 power rating */
+#define CO_STATE_TECHNIQUE 0x02 /* u8 technique rating */
+#define CO_STATE_RANK      0x03 /* u8 grade 1..4 of the total rating */
 #define CO_STATE_CURRENT_SLOT 0x04 /* u8 index into gCoPlayerSlots of the CO the menus show */
 #define CO_STATE_UNLOCKED 0x08
 

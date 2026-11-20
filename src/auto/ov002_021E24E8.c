@@ -86,7 +86,36 @@ void func_ov002_021e2770(void *arg0, s8 arg1) {
  }
 }
 
-s32 func_ov002_021e27c4(void *a){s32 sum=0;u8 *p;if(!M2C_FIELD(a,s32 *,4))return sum;p=M2C_FIELD(a,u8 **,0x18);while(p[1]!=255){if(!p[0]){switch(p[1]){case 0:case 2:return sum;case 1:case 6:return 0;case 3:case 4:case 5:default:break;}}else sum+=p[0];p+=12;}return sum;}
+/* Total length in frames of an effect node's selected script: the sum of its
+ * commands' frame counts.  A command that stops or finishes the script ends the
+ * sum; one that loops or jumps may run forever, so the whole script is 0 frames. */
+s32 Ov002_GetEffectScriptDuration(void *node) {
+    s32 total = 0;
+    u8 *cmd;
+    if (!M2C_FIELD(node, s32 *, FX_NODE_ID)) return total;
+    cmd = M2C_FIELD(node, u8 **, FX_NODE_SCRIPT_START);
+    while (cmd[FX_SCRIPT_CMD_OPCODE] != FX_SCRIPT_CMD_END) {
+        if (!cmd[FX_SCRIPT_CMD_FRAMES]) {
+            switch (cmd[FX_SCRIPT_CMD_OPCODE]) {
+            case FX_SCRIPT_OP_STOP:
+            case FX_SCRIPT_OP_FINISH:
+                return total;
+            case FX_SCRIPT_OP_LOOP:
+            case FX_SCRIPT_OP_JUMP:
+                return 0;
+            case 3:
+            case 4:
+            case 5:
+            default:
+                break;
+            }
+        } else {
+            total += cmd[FX_SCRIPT_CMD_FRAMES];
+        }
+        cmd += FX_SCRIPT_COMMAND_SIZE;
+    }
+    return total;
+}
 
 /* Create the effect node for a template: chain the template's previous node as a
  * sibling, allocate and initialise a new node, and copy the template's resource,

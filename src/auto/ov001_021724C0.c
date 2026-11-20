@@ -108,11 +108,11 @@ extern "C" void func_ov001_021724c0(void)
     Ov001_LayoutKeyboardRow(((Ov001KeyboardState *)gOv001MenuState)->page, 0, KBD_ROW_HIDDEN_X);
 }
 #pragma cplusplus off
-void func_ov001_02172824(void) {
+void Ov001_StartKeyboardClose(void) {
  extern void *gOv001MenuState;
- void func_ov001_02173e38(void);
+ void Ov001_KeyboardCloseStep5(void);
  Ov001_DestroySprite(M2C_FIELD(gOv001MenuState, s32 *, 0x114));
- Ov001_SetSlideStep(M2C_FIELD(gOv001MenuState, s32 *, 0x118), func_ov001_02173e38);
+ Ov001_SetSlideStep(M2C_FIELD(gOv001MenuState, s32 *, 0x118), Ov001_KeyboardCloseStep5);
 }
 
 u8 GetKeyboardKey(void) {
@@ -553,8 +553,8 @@ tail:
 void Ov001_SetSelectedKeyboardKey(s32 arg0) {
  extern void *gOv001MenuState;
  if(arg0==M2C_FIELD(gOv001MenuState,s8 *,0x11f)) return;
- func_ov001_0217385c(arg0,1);
- func_ov001_0217385c(M2C_FIELD(gOv001MenuState,s8 *,0x11f),0);
+ Ov001_SetKeyboardKeySelected(arg0,1);
+ Ov001_SetKeyboardKeySelected(M2C_FIELD(gOv001MenuState,s8 *,0x11f),0);
  M2C_FIELD(gOv001MenuState,s8 *,0x11f)=arg0;
 }
 

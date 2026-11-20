@@ -378,7 +378,7 @@ void UpdateScenePanelPalette(void *arg0) {
     extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
     extern u8 data_020f3a08[],data_020f3a3a[],data_020f3a9e[],data_020f3ad0[],data_020f3a6c[],data_020f39ee[],data_020f39d4[];
     s32 Is3DSpriteVisible(void*);s32 IsFaceSpriteLoaded(void*);s32 BlendRgb555_16(s32,s32,s32,s32);
-    void func_020ae528(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
+    void DimPalette(void*);void *func_0209bfc8(void);void *func_02097e84(u8);
     s32 i;
     u8 *pal;
     s32 c0,c1,c2;
@@ -401,7 +401,7 @@ void UpdateScenePanelPalette(void *arg0) {
             if(a[0x59]){if(Is3DSpriteVisible(a))c0=c1;}else c1=BlendRgb555_16(c1,0,8,8);
             if(b[0x59]){if(Is3DSpriteVisible(b))c0=c2;}else c2=BlendRgb555_16(c2,0,8,8);
             M2C_FIELD(pal,u16*,6)=c1;M2C_FIELD(pal,u16*,8)=c2;M2C_FIELD(pal,u16*,10)=c0;
-            if(!p[0x59])func_020ae528(pal);
+            if(!p[0x59])DimPalette(pal);
             M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
         }
         i++;
@@ -528,13 +528,13 @@ void func_0209e998(void) {
 
 void **Alloc3DSprite(s32 arg0) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
-    M2C_UNK func_02089108();
+    M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_0211f810, data_0211f804;
     void **result;
     if (arg0 == 0) arg0 = 7;
     result = CreateSpriteFromClass(&data_0211f810, arg0);
     if (result != 0) {
-        func_02089108();
+        Init3DSpriteActor();
         *result = &data_0211f804;
     }
     return result;

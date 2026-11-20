@@ -161,9 +161,9 @@ void func_020d3830(void) {
     M2C_UNK func_0208b5a8();
     M2C_UNK GetActiveOverlay();
     M2C_UNK func_ov009_022241b4();
-    void func_ov009_02225fb4(M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    void CreateLinkStatusLabel(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
-    void func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    void CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     void func_ov010_02228320();
     void Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK func_02081fec();
@@ -179,7 +179,7 @@ void func_020d3830(void) {
     }
     switch (GetActiveOverlay()) {
     case 1:
-        func_ov009_02225fb4(0, 0x25c, func_ov009_022241b4(), (void *)7);
+        CreateLinkStatusLabel(0, 0x25c, func_ov009_022241b4(), (void *)7);
         M2C_FIELD(&gMapData, u8 *, 7) = 0;
         func_02081fec();
         M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
@@ -188,7 +188,7 @@ void func_020d3830(void) {
         s32 result;
         s32 spare;
         s32 ret = func_ov010_02228314(&result, &spare);
-        func_ov010_0222a808(0, 0x25c, ret, result, spare, (void *)7);
+        CreateNetErrorSprite(0, 0x25c, ret, result, spare, (void *)7);
         func_ov010_02228320();
         switch (spare) {
         case 0:
@@ -300,7 +300,7 @@ void func_020d3b24(void) {
     M2C_UNK IsUiModeSwitchBusy();
     M2C_UNK func_020d46e8();
     M2C_UNK func_020d4774();
-    void func_020d4144();
+    void CheckTurnLimitStep();
     void func_020d41c4();
     void func_020d422c();
     void func_020d4400();
@@ -350,7 +350,7 @@ void func_020d3b24(void) {
         
         switch (*(u16 *)(p + 0xb0)) {
         case 1:
-            func_020d4144();
+            CheckTurnLimitStep();
             return;
         case 2:
             func_020d41c4();
@@ -633,15 +633,26 @@ void func_020d4110(void) {
     CreateSpriteFromClass(data_0212ba3c, 7);
 }
 
-void func_020d4144(void) {
- M2C_UNK func_020d1a90(); M2C_UNK func_020ca484(); M2C_UNK func_02096b50(M2C_UNK); M2C_UNK ResolvePropertyCountVictory(); extern M2C_UNK gMapData; extern void **gCurrentMap;
- if(M2C_FIELD(&gMapData,u8*,15)!=0 && func_020d1a90()!=0) {
- if(M2C_FIELD(&gMapData,u8*,15)==M2C_FIELD(*gCurrentMap,u16*,0x52A2)) goto same;
- }
- M2C_FIELD(*gCurrentMap,u16*,0x52B0)=2;
- func_020ca484(); return;
+/* Turn-limit step (map state 1): when a new day begins, end the battle on the
+   map's configured day limit, the player holding the most properties winning;
+   otherwise move on to advancing to the next player's turn. */
+void CheckTurnLimitStep(void) {
+    void ShowUiMessage(s32);
+    s32 ResolvePropertyCountVictory(void);
+    void func_020ca484(void);
+    u32 WillNextTurnStartNewDay(void);
+    extern M2C_UNK gMapData;
+    extern void **gCurrentMap;
+
+    if (M2C_FIELD(&gMapData, u8 *, MAPDATA_DAY_LIMIT) != 0 && WillNextTurnStartNewDay() != 0) {
+        if (M2C_FIELD(&gMapData, u8 *, MAPDATA_DAY_LIMIT) == M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN)) goto same;
+    }
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = 2;
+    func_020ca484();
+    return;
 same:
- func_02096b50(0xc0000347); ResolvePropertyCountVictory();
+    ShowUiMessage(0xC0000347); /* "out of days" battle-end message */
+    ResolvePropertyCountVictory();
 }
 
 void func_020d41c4(void) {

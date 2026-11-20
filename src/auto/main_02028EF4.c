@@ -4,8 +4,8 @@
 
 typedef struct ListLinks { void *next; void *prev; } ListLinks;
 
-extern u8 data_02138e7c;
-extern u8 data_02138e80[16];
+extern u8 gWfcSignalSampleCount;
+extern u8 gWfcSignalSamples[16];
 
 #pragma push
 #pragma optimization_level 3
@@ -659,11 +659,11 @@ s32 func_02029ad8(void) {
     return var_r5;
 }
 
-u8 func_02029b1c(void) {
-    s32 func_020720f0(s32, s32);
-    extern u8 data_02138e7c;
-    extern u8 data_02138e80[16];
-    u8 n = data_02138e7c;
+u8 WFC_GetAverageSignal(void) {
+    s32 RuntimeIntDivMod(s32, s32);
+    extern u8 gWfcSignalSampleCount;
+    extern u8 gWfcSignalSamples[16];
+    u8 n = gWfcSignalSampleCount;
     s32 sum = 0;
     s32 i;
     s32 result;
@@ -671,17 +671,17 @@ u8 func_02029b1c(void) {
     if (n > 0x10) {
         i = 0;
         do {
-            sum += data_02138e80[i];
+            sum += gWfcSignalSamples[i];
             i++;
         } while (i < 16);
         result = sum / 16;
     } else if (n != 0) {
         i = 0;
         while (i < n) {
-            sum += data_02138e80[i];
+            sum += gWfcSignalSamples[i];
             i++;
         }
-        result = func_020720f0(sum, n);
+        result = RuntimeIntDivMod(sum, n);
     } else {
         result = 0;
     }
@@ -689,11 +689,11 @@ u8 func_02029b1c(void) {
 }
 
 s32 func_02029b9c(void) {
-    u8 func_02029b1c();
+    u8 WFC_GetAverageSignal();
     s32 var_r1;
     u32 temp_r0;
 
-    temp_r0 = func_02029b1c();
+    temp_r0 = WFC_GetAverageSignal();
     var_r1 = 0;
     if (temp_r0 >= 0x1CU) {
         var_r1 = 3;
@@ -707,15 +707,15 @@ s32 func_02029b9c(void) {
 
 #pragma opt_propagation off
 void func_02029bd0(s32 arg0) {
-extern u8 data_02138e7c;
-extern u8 data_02138e80[16];
+extern u8 gWfcSignalSampleCount;
+extern u8 gWfcSignalSamples[16];
 register u8 value;
 s32 shifted=arg0>>2;
 if(!(arg0&2)) shifted+=25;
 value=(u8)shifted;
-data_02138e80[data_02138e7c%16]=value;
-if(data_02138e7c<16) data_02138e7c++;
-else data_02138e7c=(data_02138e7c+1)%16+16;
+gWfcSignalSamples[gWfcSignalSampleCount%16]=value;
+if(gWfcSignalSampleCount<16) gWfcSignalSampleCount++;
+else gWfcSignalSampleCount=(gWfcSignalSampleCount+1)%16+16;
 }
 #pragma opt_propagation reset
 void ListInit(void *arg0, s16 arg1) {

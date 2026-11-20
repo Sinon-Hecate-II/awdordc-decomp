@@ -176,13 +176,18 @@ s32 CanKindAttack(s32 a,s32 b) {
  return p[data_ov000_021b5c5d[a*0x70]];
 }
 
-u8 CanUnitAttackKind(u8 *arg0,s32 arg1) {
-extern u8 gUnitKindCargoCount[];
-u32 a=(u32)(*arg0<<26)>>26; u8 result;
-if(!gUnitKindCargoCount[a*0x70]) return 0;
-if(!CanKindAttack(a,arg1)) return 0;
-if(M2C_FIELD(arg0+(gUnitKindCargoCount[((u32)(*arg0<<26)>>26)*0x70]-1),u8 *,12)==0) result=1;else result=0;
-return result;
+/* Whether `unit` can attack a unit of `targetKind`: its kind must have cargo
+ * slots, must be able to hit that kind, and its last cargo slot must be empty. */
+u8 CanUnitAttackKind(u8 *unit, s32 targetKind) {
+    extern u8 gUnitKindCargoCount[];
+    u32 unitKind = (u32)(*unit << 26) >> 26;
+    u8 result;
+
+    if (!gUnitKindCargoCount[unitKind * 0x70]) return 0;
+    if (!CanKindAttack(unitKind, targetKind)) return 0;
+    if (M2C_FIELD(unit + (gUnitKindCargoCount[((u32)(*unit << 26) >> 26) * 0x70] - 1), u8 *, MAP_UNIT_FIRST_CARRIED) == 0) result = 1;
+    else result = 0;
+    return result;
 }
 
 s32 func_ov000_021a99dc(u8 *arg0) {

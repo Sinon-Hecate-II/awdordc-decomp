@@ -3,7 +3,21 @@
 #include "dma.h"
 #include "gx.h"
 extern u32 data_0212dfbc[2];
-typedef struct { u8 bytes[0x64]; u16 flags; } SystemInfo;
+
+/* The console's user profile, filled by GetSystemUserProfile from the firmware's
+ * personal data: language and favourite colour, birthday, nickname and greeting. */
+typedef struct SystemUserProfile {
+    u8  language;      /* +0x00 firmware settings bits 0..2 */
+    u8  favoriteColor; /* +0x01 firmware byte 2, bits 0..3 */
+    u8  birthdayMonth; /* +0x02 firmware byte 3 */
+    u8  birthdayDay;   /* +0x03 firmware byte 4 */
+    u16 name[10];      /* +0x04 nickname, nameLength characters */
+    u16 unknown18;     /* +0x18 zeroed */
+    u16 nameLength;    /* +0x1A nickname length in characters */
+    u16 message[26];   /* +0x1C greeting message, messageLength characters */
+    u16 unknown50;     /* +0x50 zeroed */
+    u16 messageLength; /* +0x52 greeting length in characters */
+} SystemUserProfile;
 
 void func_02006f14(void) {
     void func_02006ef8(s32);
@@ -212,12 +226,18 @@ void CancelTimer(void *arg0) {
 
 #pragma interworking on
 s32 func_020073c0(s32 arg0) {
-    void func_020073d0(void);
-    func_020073d0();
+    void TimerInterruptHandler(void);
+    TimerInterruptHandler();
     return arg0;
 }
 #pragma scheduling on
-void func_020073d0(void) {
+/* TIMER1 interrupt body (reached through func_020073c0).  It stops the
+ * countdown, signals the OS timer event and walks the deadline-sorted timer
+ * queue from the head: when the earliest timer is not due yet it just re-arms
+ * the hardware for it, otherwise it unlinks that timer, runs its callback (a
+ * one-shot is marked idle first), re-queues it when it repeats, and finally
+ * re-arms the countdown for the new head. */
+void TimerInterruptHandler(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
     u64 GetSystemTick(void);
     void ArmTimerCountdown(void *);
@@ -225,57 +245,57 @@ void func_020073d0(void) {
     extern u16 gTimerQueue;
     extern M2C_UNK gOsArea;
 
-    void *node;
+    void *timer;
     void *next;
     u64 now;
     u64 deadline;
     u64 period;
-    u32 cb;
+    u32 callback;
     u32 arg;
 
-    *(volatile u16 *)0x04000106 = 0;
-    OS_DisableIrqMask(0x10);
-    *(u32 *)((u8 *)&gOsArea + 0x3FF8) |= 0x10;
+    *(volatile u16 *)REG_TM1CNT = 0;
+    OS_DisableIrqMask(IRQ_TIMER1);
+    M2C_FIELD(&gOsArea, u32 *, OS_AREA_EVENT_FLAGS) |= OS_EVENT_TIMER1;
 
     now = GetSystemTick();
 
-    node = *(void **)((u8 *)&gTimerQueue + 0x4);
-    if (node == 0) return;
+    timer = M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD);
+    if (timer == 0) return;
 
-    deadline = *(u64 *)((u8 *)node + 0x0C);
+    deadline = M2C_FIELD(timer, u64 *, TIMER_NODE_DEADLINE);
     if (now < deadline) {
-        ArmTimerCountdown(node);
+        ArmTimerCountdown(timer);
         return;
     }
 
-    next = *(void **)((u8 *)node + 0x18);
-    *(void **)((u8 *)&gTimerQueue + 0x4) = next;
+    next = M2C_FIELD(timer, void **, TIMER_NODE_NEXT);
+    M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD) = next;
     if (next == 0) {
-        *(u32 *)((u8 *)&gTimerQueue + 0x8) = 0;
+        M2C_FIELD(&gTimerQueue, u32 *, TIMER_QUEUE_TAIL) = 0;
     } else {
-        *(u32 *)((u8 *)next + 0x14) = 0;
+        M2C_FIELD(next, u32 *, TIMER_NODE_PREV) = 0;
     }
 
-    period = *(u64 *)((u8 *)node + 0x1c);
-    cb = *(u32 *)node;
+    period = M2C_FIELD(timer, u64 *, TIMER_NODE_PERIOD);
+    callback = M2C_FIELD(timer, u32 *, TIMER_NODE_CALLBACK);
     if (period == 0) {
-        *(u32 *)node = 0;
+        M2C_FIELD(timer, u32 *, TIMER_NODE_CALLBACK) = 0;
     }
 
-    if (cb != 0) {
-        arg = *(u32 *)((u8 *)node + 0x04);
-        ((void (*)(u32))cb)(arg);
+    if (callback != 0) {
+        arg = M2C_FIELD(timer, u32 *, TIMER_NODE_ARG);
+        ((void (*)(u32))callback)(arg);
     }
 
-    period = *(u64 *)((u8 *)node + 0x1c);
+    period = M2C_FIELD(timer, u64 *, TIMER_NODE_PERIOD);
     if (period != 0) {
-        *(u32 *)node = cb;
-        InsertTimer(node, 0);
+        M2C_FIELD(timer, u32 *, TIMER_NODE_CALLBACK) = callback;
+        InsertTimer(timer, 0);
     }
 
-    node = *(void **)((u8 *)&gTimerQueue + 0x4);
-    if (node != 0) {
-        ArmTimerCountdown(node);
+    timer = M2C_FIELD(&gTimerQueue, void **, TIMER_QUEUE_HEAD);
+    if (timer != 0) {
+        ArmTimerCountdown(timer);
     }
 }
 #pragma scheduling reset
@@ -377,19 +397,22 @@ void GetMacAddress(M2C_UNK arg0) {
     MI_CpuCopy8(0x027FFCF4, arg0, 6);
 }
 
-void GetSystemUserProfile(void *arg0) {
- void CopyU16(void *, void *, u32);
- SystemInfo *info=(SystemInfo *)0x027FFC80;
- M2C_FIELD(arg0,u8 *,0) = (u32)(info->flags << 29) >> 29;
- M2C_FIELD(arg0,u8 *,1) = (u32)(info->bytes[2] << 28) >> 28;
- M2C_FIELD(arg0,u8 *,2) = info->bytes[3];
- M2C_FIELD(arg0,u8 *,3) = info->bytes[4];
- M2C_FIELD(arg0,u16 *,0x1a) = info->bytes[0x1a];
- M2C_FIELD(arg0,u16 *,0x52) = info->bytes[0x50];
- CopyU16(info->bytes+6,(u8 *)arg0+4,20);
- CopyU16(info->bytes+0x1c,(u8 *)arg0+0x1c,52);
- M2C_FIELD(arg0,u16 *,0x18)=0;
- M2C_FIELD(arg0,u16 *,0x50)=0;
+/* Copy the DS firmware's user settings into the game's user profile record:
+ * language, favourite colour and birthday, then the nickname and personal
+ * message texts with their lengths. */
+void GetSystemUserProfile(UserProfile *profile) {
+    void CopyU16(void *, void *, u32);
+    FirmwareUserSettings *firmware = (FirmwareUserSettings *)0x027FFC80;
+    profile->language = (u32)(firmware->flags << 29) >> 29;
+    profile->favoriteColor = (u32)(firmware->favoriteColor << 28) >> 28;
+    profile->birthMonth = firmware->birthMonth;
+    profile->birthDay = firmware->birthDay;
+    profile->nameLength = firmware->nameLength;
+    profile->messageLength = firmware->messageLength;
+    CopyU16(firmware->name, profile->name, 20);
+    CopyU16(firmware->message, profile->message, 52);
+    profile->pad18 = 0;
+    profile->pad50 = 0;
 }
 
 #pragma intrinsic on
@@ -483,17 +506,19 @@ void func_02007974(s8 arg0) {
     *(s8 *)0x04000247 = arg0;
 }
 
-void DmaFill(s32 a,s32 b,u32 c,u32 n) {
- u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void func_01ff8554(s32,u32,s32,u32);
- volatile u32 *p; u32 state;
- if (!n) return;
- p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
- while (*p & 0x80000000) {}
- state=OS_DisableInterrupts();
- *(volatile u32 *)(0x040000E0+a*4)=c;
- func_01ff8554(a,0x040000E0+a*4,b,(n>>2)|0x85000000);
- OS_RestoreInterrupts(state);
- while (*p & 0x80000000) {}
+/* Fills `size` bytes at `dst` with the 32-bit `value` on DMA channel `channel`,
+ * waiting for the channel before and after the transfer. */
+void DmaFill(s32 channel, s32 dst, u32 value, u32 size) {
+    u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void DmaStartTransferFlushed(s32,u32,s32,u32);
+    volatile u32 *control; u32 state;
+    if (!size) return;
+    control = (volatile u32 *)DMA_CHANNEL_CTRL(channel);
+    while (*control & DMA_CTRL_ENABLE) {}
+    state = OS_DisableInterrupts();
+    *(volatile u32 *)DMA_FILL_REG(channel) = value;
+    DmaStartTransferFlushed(channel, DMA_FILL_REG(channel), dst, DMA_FILL_CTRL(size));
+    OS_RestoreInterrupts(state);
+    while (*control & DMA_CTRL_ENABLE) {}
 }
 
 void func_02007a04(s32 a,s32 b,s32 c,u32 n) {
@@ -607,23 +632,27 @@ void DmaStopChannel(s32 a) {
     OS_RestoreInterrupts(state);
 }
 
-void func_02007d20(s32 arg0, s32 arg1) {
+/* Halt the console unless the other enabled DMA channels can share the transfer
+ * mode `mode` being set on `channel`.  The two bit-27/bit-28 modes 0x08000000 and
+ * 0x10000000 may be paired with each other; an enabled channel in any of the other
+ * known modes (0x18000000 up to 0x38000000) is a conflict. */
+void DmaCheckChannelConflict(s32 channel, s32 mode) {
     M2C_UNK SystemHalt();
     s32 i;
-    s32 *ptr;
-    s32 temp_r0;
-    s32 temp_r0_2;
+    s32 *channelCtrl;
+    s32 ctrl;
+    s32 otherMode;
     i = 0;
-    ptr = (s32 *)0x040000B8;
+    channelCtrl = (s32 *)0x040000B8;
     do {
-        if (i != arg0) {
-            temp_r0 = *ptr;
-            if ((temp_r0 & 0x80000000) && (temp_r0_2 = temp_r0 & 0x38000000, (temp_r0_2 != arg1))) {
-                if ((temp_r0_2 == 0x08000000) && (arg1 == 0x10000000)) {
+        if (i != channel) {
+            ctrl = *channelCtrl;
+            if ((ctrl & DMA_CTRL_ENABLE) && (otherMode = ctrl & DMA_CTRL_MODE, (otherMode != mode))) {
+                if ((otherMode == 0x08000000) && (mode == 0x10000000)) {
 
-                } else if ((temp_r0_2 == 0x10000000) && (arg1 == 0x08000000)) {
+                } else if ((otherMode == 0x10000000) && (mode == 0x08000000)) {
 
-                } else if ((temp_r0_2 != 0x18000000) && (temp_r0_2 != 0x20000000) && (temp_r0_2 != 0x28000000) && (temp_r0_2 != 0x30000000) && (temp_r0_2 != 0x38000000) && (temp_r0_2 != 0x08000000) && (temp_r0_2 != 0x10000000)) {
+                } else if ((otherMode != 0x18000000) && (otherMode != 0x20000000) && (otherMode != 0x28000000) && (otherMode != 0x30000000) && (otherMode != 0x38000000) && (otherMode != 0x08000000) && (otherMode != 0x10000000)) {
 
                 } else {
                     SystemHalt();
@@ -631,7 +660,7 @@ void func_02007d20(s32 arg0, s32 arg1) {
             }
         }
         ++i;
-        ptr += 0xC / sizeof(s32);
+        channelCtrl += 0xC / sizeof(s32);
     } while (i < 3);
 }
 

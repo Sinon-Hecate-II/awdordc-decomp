@@ -80,7 +80,7 @@ s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16
  * where the queueing finished and producers waiting for space are woken. */
 s32 SocketSendTask(void *request) {
  void OS_WakeupThread(s32);
- M2C_UNK func_0201d190(u16,u16,s32);
+ M2C_UNK SetConnectionEndpoint(u16,u16,s32);
  s32 SendNetPacket(s32,s32);
  s32 WaitForTlsCloseNotify();
  s32 sent,sendBuffer,isStream,maxChunk,valid,read;void *socket; void *sendConn;u32 total;s32 headerSize;
@@ -92,7 +92,7 @@ s32 SocketSendTask(void *request) {
  if(state && state!=4)valid=0;
  if(!valid || (M2C_FIELD(socket,s16 *,SOCK_FLAGS)&4)) {
  s32 destAddr=M2C_FIELD(request,s32 *,0x28);
- if(destAddr)func_0201d190(M2C_FIELD(request,u16 *,0x24),M2C_FIELD(request,u16 *,0x26),destAddr);
+ if(destAddr)SetConnectionEndpoint(M2C_FIELD(request,u16 *,0x24),M2C_FIELD(request,u16 *,0x26),destAddr);
  state2=M2C_FIELD(socket,s8 *,SOCK_STATE);isStream=1;
  sendBuffer=M2C_FIELD(socket,s32 *,SOCK_TX_BUF);
  if(state2 && state2!=4)isStream=0;
@@ -126,7 +126,7 @@ s32 SocketSendTask(void *request) {
    connection the stack maximum is used.  Returns `size` itself when no unit is
    known or the unit is larger than the request. */
 s32 GetMaxSendChunk(s32 size) {
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     extern M2C_UNK gSocketManager;
     extern M2C_UNK gNetStackState;
     s32 count;
@@ -153,7 +153,7 @@ s32 GetMaxSendChunk(s32 size) {
     }
     OS_RestoreInterrupts(lock);
     if (chunkUnit > 0) {
-        count = func_020720f0(size, chunkUnit);
+        count = RuntimeIntDivMod(size, chunkUnit);
         if (count > 0) return chunkUnit * count;
     }
     return size;
@@ -581,7 +581,7 @@ s32 GetLocalIpAddress(void) {
  * (no operation pending) and bit 7 the socket is no longer registered.  A finished
  * operation that has not been read yet has its busy/done flags cleared. */
 s32 SocketPoll(void *sock) {
-    s32 func_02020714(void *);
+    s32 SocketGetSendRingFreeBytes(void *);
     s32 func_0202139c(void *);
     s32 lock, pending, status = 0;
     s8 state;
@@ -592,7 +592,7 @@ s32 SocketPoll(void *sock) {
         if (M2C_FIELD(sock, s8 *, SOCK_STATE) == 1 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE)) {
             lock = OS_DisableInterrupts();
             if (func_0202139c(sock) > 0) status |= 1;
-            if (func_02020714(sock) > 0) status |= 8;
+            if (SocketGetSendRingFreeBytes(sock) > 0) status |= 8;
             OS_RestoreInterrupts(lock);
         }
         state = M2C_FIELD(sock, s8 *, SOCK_STATE);
@@ -627,7 +627,7 @@ s32 func_0202139c(void *arg0) {
     return var_r3;
 }
 
-s32 func_020213e4(s32 arg0) {
+s32 AlignSize4(s32 arg0) {
     return (arg0 + 3) & ~3;
 }
 
@@ -695,21 +695,21 @@ void func_02021500(s32 unused, s32 arg1) {
 }
 
 void func_0202152c(M2C_UNK arg0, void *arg1) {
-    M2C_UNK SocketSetReceivePort(M2C_UNK, u16);
+    M2C_UNK SocketBind(M2C_UNK, u16);
     u16 temp_r1;
 
     temp_r1 = M2C_FIELD(arg1, u16 *, 2);
-    SocketSetReceivePort(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
+    SocketBind(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
 }
 
 void func_02021558(M2C_UNK arg0, void *arg1) {
-    M2C_UNK SocketSetReceiveTimeout(M2C_UNK, u16, s32);
+    M2C_UNK SocketConnect(M2C_UNK, u16, s32);
     u16 temp_r2;
     u32 temp_lr;
 
     temp_r2 = M2C_FIELD(arg1, u16 *, 2);
     temp_lr = M2C_FIELD(arg1, u32 *, 4);
-    SocketSetReceiveTimeout(arg0, (u16) ((u8) ((s32) temp_r2 >> 8) | ((temp_r2 << 8) & 0xFF00)), ((temp_lr << 0x18) & 0xFF000000) | (((temp_lr << 8) & 0xFF0000) | ((u8) (temp_lr >> 0x18) | ((temp_lr >> 8) & 0xFF00))));
+    SocketConnect(arg0, (u16) ((u8) ((s32) temp_r2 >> 8) | ((temp_r2 << 8) & 0xFF00)), ((temp_lr << 0x18) & 0xFF000000) | (((temp_lr << 8) & 0xFF0000) | ((u8) (temp_lr >> 0x18) | ((temp_lr >> 8) & 0xFF00))));
 }
 
 void func_020215b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

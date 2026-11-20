@@ -47,7 +47,7 @@ func_ov009_02223290 kind:function(arm,size=0x74) addr:0x02223290
 HandleLinkTaskEvent kind:function(arm,size=0x1d0) addr:0x02223304
 StartLinkTransfer kind:function(arm,size=0xc8) addr:0x022234d4
 HandleLinkTransferTaskEvent kind:function(arm,size=0xa4) addr:0x0222359c
-func_ov009_02223640 kind:function(arm,size=0x80) addr:0x02223640
+SendLinkChannelData kind:function(arm,size=0x80) addr:0x02223640
 func_ov009_022236c0 kind:function(arm,size=0x34) addr:0x022236c0
 func_ov009_022236f4 kind:function(arm,size=0x50) addr:0x022236f4
 HandleLinkChannelCommand kind:function(arm,size=0x2e0) addr:0x02223744
@@ -206,7 +206,7 @@ func_ov009_02225dd4 kind:function(arm,size=0x6c) addr:0x02225dd4
 RefreshLinkMessageText kind:function(arm,size=0x104) addr:0x02225e40
 func_ov009_02225f44 kind:function(arm,size=0x4) addr:0x02225f44
 func_ov009_02225f48 kind:function(arm,size=0x6c) addr:0x02225f48
-func_ov009_02225fb4 kind:function(arm,size=0x80) addr:0x02225fb4
+CreateLinkStatusLabel kind:function(arm,size=0x80) addr:0x02225fb4
 func_ov009_02226034 kind:function(arm,size=0x6c) addr:0x02226034
 func_ov009_022260a0 kind:function(arm,size=0x38) addr:0x022260a0
 func_ov009_022260d8 kind:function(arm,size=0x4) addr:0x022260d8
@@ -249,12 +249,12 @@ data_ov009_022266ec kind:data(any) addr:0x022266ec
 data_ov009_02226700 kind:data(any) addr:0x02226700
 data_ov009_02226714 kind:data(any) addr:0x02226714
 data_ov009_02226728 kind:data(any) addr:0x02226728
-data_ov009_0222673c kind:data(any) addr:0x0222673c
+gLinkStatusLabelVTable kind:data(any) addr:0x0222673c
 data_ov009_02226750 kind:data(any) addr:0x02226750
 data_ov009_0222675c kind:data(any) addr:0x0222675c
 data_ov009_02226784 kind:data(any) addr:0x02226784
 data_ov009_022267b4 kind:data(any) addr:0x022267b4
-data_ov009_0222682c kind:data(any) addr:0x0222682c
+gLinkStatusLabelClass kind:data(any) addr:0x0222682c
 data_ov009_02226874 kind:data(any) addr:0x02226874
 gLinkState kind:bss addr:0x022268e0
 data_ov009_02226960 kind:bss addr:0x02226960

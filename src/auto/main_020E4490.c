@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
+#include "hw_div.h"
 
 typedef struct {
     u16 unused : 4;
@@ -43,9 +44,9 @@ void func_020e4490(void) {
     void ResetGameState(void);
     M2C_UNK func_020e349c();
     extern s32 data_027e15bc;
-    extern s32 data_027e15c0;
-    extern u8 data_027e15b4;
-    extern u8 data_027e15b8;
+    extern s32 gVBlankCount;
+    extern u8 gFramePending;
+    extern u8 gSpriteUpdateBusy;
     extern s32 gCur3DSpriteEngine;
     extern s32 data_027e00c4;
     extern s32 data_027e00c8;
@@ -53,9 +54,9 @@ void func_020e4490(void) {
     s32 var_r8;
 
     data_027e15bc = 0;
-    data_027e15c0 = 0;
-    data_027e15b4 = 0;
-    data_027e15b8 = 0;
+    gVBlankCount = 0;
+    gFramePending = 0;
+    gSpriteUpdateBusy = 0;
     func_020e4378();
     func_02082058();
     func_02081724();
@@ -105,7 +106,7 @@ void func_020e4570(void) {
  * frame to be ready, run the input, sound and 3D-sprite updates for every
  * sprite layer, then let the pending frame callback (VBlank) run. */
 void NitroMain(void) {
-extern u8 data_027e15b4;
+extern u8 gFramePending;
 extern s32 gFrameCounter;
 extern void (*data_02168fe8)(void);
 void func_0208f4d8(void);
@@ -121,7 +122,7 @@ void SoundEngineUpdateTimers(void);
 void GetSpriteLayerHead(int);
 void Update3DSpriteObject(void);
 void func_02004e60(int,int);
-if (!data_027e15b4) return;
+if (!gFramePending) return;
 data_02168fe8=0;
 func_0208f4d8();
 gFrameCounter++;
@@ -137,12 +138,19 @@ GetSpriteLayerHead(9);Update3DSpriteObject();
 GetSpriteLayerHead(10);Update3DSpriteObject();
 func_0209db48();
 if(data_02168fe8) data_02168fe8();
-data_027e15b4=0;
+gFramePending=0;
 SoundEngineUpdateTimers();
 func_02004e60(1,1);
 }
 
-void func_020e4688(void) {
+/* VBlank interrupt handler.  It saves the hardware divide/square-root registers
+ * (a division may be in progress), ticks the VBlank counter, marks the sprite
+ * update busy and walks the 3D sprite layers: layer 1 every VBlank, and layers
+ * 0/2 plus the bank, VRAM and OAM uploads only when the main loop has already
+ * taken the previous frame; otherwise it just refreshes the OAM entries.  It
+ * then signals the VBlank event, restores the math registers and waits for the
+ * divider to finish. */
+void VBlankHandler(void) {
     void Upload3DSpriteOam(void);
     void func_01ff87e4(void);
     M2C_UNK Apply3DSpriteBanks();
@@ -152,35 +160,35 @@ void func_020e4688(void) {
     void func_0200d248(void *);
     void func_0200d288(void *);
     extern int gOsArea;
-    extern unsigned char data_027e15b4;
-    extern unsigned char data_027e15b8;
-    extern int data_027e15c0;
-    int sp0[7];
+    extern unsigned char gFramePending;
+    extern unsigned char gSpriteUpdateBusy;
+    extern int gVBlankCount;
+    int savedMathState[7];
 
-    volatile int *counter = &data_027e15c0;
-    func_0200d248(sp0);
-    (*(volatile unsigned char *)&data_027e15b8) = 1;
-    ++*counter;
-    if ((*(volatile unsigned char *)&data_027e15b4) == 0) {
+    volatile int *vblankCount = &gVBlankCount;
+    func_0200d248(savedMathState);
+    (*(volatile unsigned char *)&gSpriteUpdateBusy) = 1;
+    ++*vblankCount;
+    if ((*(volatile unsigned char *)&gFramePending) == 0) {
         GetSpriteLayerHead(0);
         Update3DSpriteObject();
     }
     GetSpriteLayerHead(1);
     Update3DSpriteObject();
-    if ((*(volatile unsigned char *)&data_027e15b4) == 0) {
+    if ((*(volatile unsigned char *)&gFramePending) == 0) {
         GetSpriteLayerHead(2);
         Update3DSpriteObject();
         Apply3DSpriteBanks();
         Update3DSpriteVram();
         Upload3DSpriteOam();
-        (*(volatile unsigned char *)&data_027e15b4) = 1;
+        (*(volatile unsigned char *)&gFramePending) = 1;
     } else {
         func_01ff87e4();
     }
-    (*(volatile unsigned char *)&data_027e15b8) = 0;
-    M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
-    func_0200d288(sp0);
-    while (*(volatile unsigned short *)0x04000280 & 0x8000) {
+    (*(volatile unsigned char *)&gSpriteUpdateBusy) = 0;
+    M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) = (M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) | OS_EVENT_VBLANK);
+    func_0200d288(savedMathState);
+    while (REG_DIVCNT & DIVCNT_BUSY) {
     }
 }
 
@@ -424,43 +432,47 @@ void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fe
 
 void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 
-void func_020e4d80(void *arg0) {
+/* Advance and confirm a menu button: update its sprite, and when its owner
+ * reports a click (or the button's alternate frame is enabled while the owner is
+ * pressed), or A is pressed, play the click sound, step the sprite to the pressed
+ * frame with a fresh press timer and resume the owning object's animation. */
+void ConfirmMenuButton(void *menu) {
     void Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
 
-    register u16 var_r3;
-    register void *temp_r2;
-    register void *temp_r1;
-    s8 var_r0;
-    u8 var_r12;
-    void *temp_r0;
+    register u16 keys;
+    register void *sprite;
+    register void *owner;
+    s8 ownerState;
+    u8 clicked;
+    void *button;
 
-    MenuSpriteUpdate(M2C_FIELD(arg0, void **, 0x38));
-    var_r3 = *gKeyState;
-    temp_r2 = M2C_FIELD(arg0, void **, 0x38);
-    temp_r1 = M2C_FIELD(temp_r2, void **, 0x64);
-    var_r0 = M2C_FIELD(temp_r1, s8 *, 0xb);
-    var_r12 = 1;
-    if (var_r0 != 1) {
-        if (((u32) (M2C_FIELD(temp_r2, u8 *, 0x59) << 0x1b) >> 0x1f) != 0) {
-            var_r0 = M2C_FIELD(temp_r1, s8 *, 0xc);
-            if (var_r0 == 1) goto check;
+    MenuSpriteUpdate(M2C_FIELD(menu, void **, 0x38));
+    keys = *gKeyState;
+    sprite = M2C_FIELD(menu, void **, 0x38);
+    owner = M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER);
+    ownerState = M2C_FIELD(owner, s8 *, 0xb);
+    clicked = 1;
+    if (ownerState != 1) {
+        if (((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1b) >> 0x1f) != 0) {
+            ownerState = M2C_FIELD(owner, s8 *, 0xc);
+            if (ownerState == 1) goto accept;
         }
-        var_r12 = 0;
+        clicked = 0;
     }
-check:
-    if (!(var_r12 & 0xff) && !(var_r3 & 0x2)) {
+accept:
+    if (!(clicked & 0xff) && !(keys & 0x2)) {
         return;
     }
     PlaySoundEffect(0x1000f);
-    temp_r0 = M2C_FIELD(arg0, void **, 0x38);
-    if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5a) >= 0) {
-        M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
-        M2C_FIELD(temp_r0, s8 *, 0x5a) = 0xc;
+    button = M2C_FIELD(menu, void **, 0x38);
+    if ((s32) M2C_FIELD(button, s8 *, MENU_SPRITE_TIMER) >= 0) {
+        M2C_FIELD(button, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(button, s32 *, MENU_SPRITE_FRAME) & ~MENU_SPRITE_FRAME_MASK) | ((u32) ((u16) (((u32) (M2C_FIELD(button, u8 *, MENU_SPRITE_BASE) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
+        M2C_FIELD(button, s8 *, MENU_SPRITE_TIMER) = 0xc;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(menu);
 }
 
 #pragma scheduling off

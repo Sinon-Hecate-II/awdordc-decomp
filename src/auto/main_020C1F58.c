@@ -28,7 +28,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *LoadFileToBuffer(void *,s32);void LoadGraphicsBlock(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetCOAssetName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void StepMapViewToTile(s32,s32);
+void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *LoadFileToBuffer(void *,s32);void LoadGraphicsBlock(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetOccupationBackgroundName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void AddToU16Array(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void StepMapViewToTile(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -82,23 +82,19 @@ LoadDecompressedFileTo(sOccupationPlateFile,M2C_FIELD(gCur3DSpriteEngine,u8 **,2
 LoadFileToSpriteBuffer(sOccupationCommonFile,0x360,64);
 Clear3DSpriteLayer(2);
 
-/* build "<CO name>.narc" and load the CO's portrait archive */
-StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-StringAppend(path,sNarcExt);
-OpenNarcArchive(path);
+/* Load the property's occupation background graphics, screen map and palette. */
+ StringCopy(path,GetOccupationBackgroundName((*(u8 **)(screen+64))[1]));
+ StringAppend(path,sNarcExt);
+ OpenNarcArchive(path);
 
-/* "<CO name>.cg" -> background frame slot */
-StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-StringAppend(path,sCgExt);
-LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
+ StringCopy(path,GetOccupationBackgroundName((*(u8 **)(screen+64))[1]));
+ StringAppend(path,sCgExt);
+ LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,20));
 
-/* "<CO name>.sc" -> portrait slot */
-StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
-StringAppend(path,sScExt);
-LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
-
-/* "<CO name>.cl" -> palette data */
-StringCopy(path,GetCOAssetName((*(u8 **)(screen+64))[1]));
+ StringCopy(path,GetOccupationBackgroundName((*(u8 **)(screen+64))[1]));
+ StringAppend(path,sScExt);
+ LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
+StringCopy(path,GetOccupationBackgroundName((*(u8 **)(screen+64))[1]));
 StringAppend(path,sClExt);
 func_020815d4(path,*(void **)(screen+76),0,128);
 CloseNarcArchive();
@@ -127,7 +123,7 @@ void UpdateSpriteAnimation(void *); s32 GetSpriteAnimValue(void *); void CopyToO
 s32 GetCOFaceIndex(s32); s32 BlendRgb555_16(s32,s32,u8,u8);
 void BlendPalette(void *,s32,u8,u8,s32); s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16); void SetTextSpriteValue(void *,s32); void DrawTextSprite(void *);
-void AddSprite(s32,u16,u16,void *,s32); s32 GetCOPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
+void AddSprite(s32,u16,u16,void *,s32); s32 GetOccupationPaletteOffset(s32); s32 GetCOPortraitOffset(s32);
 s32 scratch,scaleB,scaleC,scaleD,sine,cosine,q0,q1,q2,q3; u8 fade,row; s16 spriteY;
 if(!panel[0x35])return;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0x3c)=0xffb4;
@@ -149,7 +145,7 @@ SetSpriteQuad(0,q0,q1,q2,q3);
 if(((FlagsC253c *)(panel+80))->flag0){SetTextSpriteValue(*(void **)(panel+60),(*(u8 **)(panel+64))[5]);{u16 *q=*(u16 **)(panel+60);q[3]=102;q[4]=59;}DrawTextSprite(*(void **)(panel+60));}
 if(((FlagsC253c *)(panel+80))->flag1)AddSprite(104,857,((0x3fc>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc32x16,11);
 if(((FlagsC253c *)(panel+80))->flags)AddSprite(54,821,((0x404>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,gSpriteDesc64x32,11);
-scratch=GetCOPaletteOffset((*(u8 **)(panel+64))[1]);
+scratch=GetOccupationPaletteOffset((*(u8 **)(panel+64))[1]);
 AddSprite(76,117,((scratch>>((*(ModeC253c **)gCur3DSpriteEngine)->shift))&1023)|0xb000,data_02129780,11);
 for(row=0;row<20;row++){spriteY=row*-4+130;
 if(row<panel[57])scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[3]);else scratch=GetCOPortraitOffset((*(u8 **)(panel+64))[2]);

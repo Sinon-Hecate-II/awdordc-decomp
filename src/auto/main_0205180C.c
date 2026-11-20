@@ -183,13 +183,13 @@ void gpiDisconnect(void **arg0, s32 arg1) {
         temp_r0 = *(s32 *)((char *)temp_r4 + 0x1D4);
         if (temp_r0 != -1) {
             func_020496cc(temp_r0, 2);
-            func_020496b8(*(s32 *)((char *)temp_r4 + 0x1D4));
+            ghiCloseSocket(*(s32 *)((char *)temp_r4 + 0x1D4));
             *(s32 *)((char *)temp_r4 + 0x1D4) = -1;
         }
         temp_r0_2 = *(s32 *)((char *)temp_r4 + 0x204);
         if (temp_r0_2 != -1) {
             func_020496cc(temp_r0_2, 2);
-            func_020496b8(*(s32 *)((char *)temp_r4 + 0x204));
+            ghiCloseSocket(*(s32 *)((char *)temp_r4 + 0x204));
             *(s32 *)((char *)temp_r4 + 0x204) = -1;
         }
         *(s32 *)((char *)temp_r4 + 0x1D8) = 4;

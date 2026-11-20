@@ -88,7 +88,7 @@ void func_020b1810(void) {
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
-    M2C_UNK func_0200323c(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK func_02082c84();
     func_02082c84();
     GX_SetBankForTex(3);
@@ -98,7 +98,7 @@ void func_020b1810(void) {
     GX_SetBankForObjExtPalette(0x40);
     func_02003124(4);
     func_020031cc(0x100);
-    func_0200323c(0x80);
+    GX_SetBankForBGExtPlttSub(0x80);
 }
 
 /* The map view's +0x50 setup method: rebuild the battle map's graphics on the

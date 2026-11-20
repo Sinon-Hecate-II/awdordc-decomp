@@ -32,7 +32,7 @@ void func_0203cb38(void *arg0) {
     s32 Qr2_Think(s32);
     s32 func_0205ad78(s32);
     s32 SendJoinRequest(s32, s32);
-    s32 func_0204084c(void);
+    s32 ReportConnectionCommandResult(void);
     s32 StartConnection(s32);
     s32 RestartConnection(s32);
     s32 func_02040e1c(s32);
@@ -74,7 +74,7 @@ void func_0203cb38(void *arg0) {
                         return;
                     }
                     SendJoinRequest(M2C_FIELD(GetConnection(), s32 *, 0xf4), 0);
-                    if (func_0204084c()) return;
+                    if (ReportConnectionCommandResult()) return;
                 } else {
                     if (StartConnection(0) == 0) return;
                 }
@@ -88,7 +88,7 @@ void func_0203cb38(void *arg0) {
         elapsed = U64Divide((now - M2C_FIELD(GetConnection(), u64 *, 0x1c0)) << 6, 0x82ea);
         if (elapsed < timeout) break;
         SendJoinRequest(M2C_FIELD(GetConnection(), s32 *, 0xf4), 0);
-        if (func_0204084c()) return;
+        if (ReportConnectionCommandResult()) return;
         break;
     case 2:
     case 3:
@@ -124,7 +124,7 @@ void func_0203cb38(void *arg0) {
             if(!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
         } else {
             SendConnectionCommand(6,M2C_FIELD(GetConnection(),s32 *,0x454),M2C_FIELD(GetConnection(),s32 *,0x3d0),M2C_FIELD(GetConnection(),u16 *,0x3ce),(s32 *)((u8 *)GetConnection()+0x3d4),M2C_FIELD(GetConnection(),s32 *,0x458));
-            if(func_0204084c())return;
+            if(ReportConnectionCommandResult())return;
         }
         break;
     case 11:
@@ -149,7 +149,7 @@ void func_0203cb38(void *arg0) {
             } else ReconnectUnlessServing();
         } else {
             SendConnectionCommand(8,M2C_FIELD(GetConnection(),s32 *,0x454),M2C_FIELD(GetConnection(),s32 *,0x3d0),M2C_FIELD(GetConnection(),u16 *,0x3ce),(s32 *)((u8 *)GetConnection()+0x3d4),M2C_FIELD(GetConnection(),s32 *,0x458));
-            if(func_0204084c())return;
+            if(ReportConnectionCommandResult())return;
         }
         break;
     case 1:
@@ -160,7 +160,7 @@ void func_0203cb38(void *arg0) {
             if(!RestartConnection(M2C_FIELD(GetConnection(),s32 *,0xf4)))return;
         } else {
             SendConnectionCommand(0x40,M2C_FIELD(GetConnection(),s32 *,0xf4),M2C_FIELD(GetConnection(),s32 *,0x24),M2C_FIELD(GetConnection(),u16 *,0xa4),0,0);
-            if(func_0204084c())return;
+            if(ReportConnectionCommandResult())return;
             M2C_FIELD(GetConnection(),u8 *,0x1ad)++;
             M2C_FIELD(GetConnection(),u64 *,0x1f8)=GetSystemTick()-(u64)12567750;
         }

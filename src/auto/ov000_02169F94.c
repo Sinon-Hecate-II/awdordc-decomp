@@ -112,9 +112,11 @@ s32 i,j; s32 p;u16 result=0;
 i=0;do {p=GetRecordDefinition(i,0);j=0;if(M2C_FIELD(p,s32 *,0)) {do {result+=GetRecordTier(i,j);p+=0x30;j++;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);return result;
 }
 
-void func_ov000_0216a4e0(u16 *a,u16 *b) {
-s32 i,j,p,r;i=0;*a=0;*b=0;
-do {p=GetRecordDefinition(i,0);j=0;if(M2C_FIELD(p,s32 *,0)){do {r=GetRecordTier(i,j);j++;*a+=r;*b+=3;p+=0x30;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);
+/* Sums the player's record tiers over the three record groups: *earned receives
+ * the tiers reached and *possible the three tiers every listed record can reach. */
+void GetRecordTierTotals(u16 *earned, u16 *possible) {
+s32 group,index,record,tier;group=0;*earned=0;*possible=0;
+do {record=GetRecordDefinition(group,0);index=0;if(M2C_FIELD(record,s32 *,0)){do {tier=GetRecordTier(group,index);index++;*earned+=tier;*possible+=3;record+=0x30;}while(M2C_FIELD(record,s32 *,0));}group++;}while(group<3);
 }
 
 s8 func_ov000_0216a564(u32 a) { extern M2C_UNK data_ov000_021b67cc; s32 i=0; do {if(a>=((A564Entry *)&data_ov000_021b67cc)[i].threshold)return (s8)i;i++;}while(i<20);return 19; }

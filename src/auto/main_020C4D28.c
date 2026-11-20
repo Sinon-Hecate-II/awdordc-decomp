@@ -611,15 +611,15 @@ void func_020c5c78(void *arg0) {
 }
 
 void func_020c5c88(void) {
-    M2C_UNK func_020c0784();
-    func_020c0784();
+    M2C_UNK DeleteMapMenuSprites();
+    DeleteMapMenuSprites();
 }
 
 void func_020c5c94(M2C_UNK arg0, M2C_UNK arg1) {
 M2C_UNK func_020c0b88(M2C_UNK);
 M2C_UNK func_020c7568();
 func_020c0b88(arg1);
-func_020c0784();
+DeleteMapMenuSprites();
 func_020c7568();
 }
 

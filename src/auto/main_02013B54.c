@@ -96,20 +96,31 @@ s32 func_02013e24(M2C_UNK arg0, M2C_UNK arg1) {
 void func_02013e70(s32 arg0) { s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern s32 gMbWork; s32 state=OS_DisableInterrupts(); M2C_FIELD(gMbWork,s32 *,0x14e4)=arg0; OS_RestoreInterrupts(state); }
 
 #pragma opt_strength_reduction off
-void *MultiBoot_GetPlayerInfo(s32 arg0) {
-s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); s32 func_02015214(); void MI_CpuCopy8(void *,void *,u32); extern s32 gMbWork;
-s32 state=OS_DisableInterrupts();
-if(gMbWork && func_02015214(arg0)){
-MI_CpuCopy8((void *)(gMbWork+0x1340+(arg0-1)*22),(void *)(gMbWork+0x1772),22);
-OS_RestoreInterrupts(state); return (void *)(gMbWork+0x1772);
-}
-OS_RestoreInterrupts(state); return 0;
+/* Returns a copy of player `player`'s multiboot info block, or NULL when the
+ * match work area is gone or the player id is not a valid one.  The copy is
+ * made with interrupts off so the block cannot change under the caller. */
+void *MultiBoot_GetPlayerInfo(s32 player) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 Mb_IsValidPlayer(s32);
+    void MI_CpuCopy8(void *, void *, u32);
+    extern s32 gMbWork;
+    s32 state = OS_DisableInterrupts();
+
+    if (gMbWork && Mb_IsValidPlayer(player)) {
+        MI_CpuCopy8((void *)(gMbWork + MB_PLAYER_INFO + (player - 1) * MB_PLAYER_INFO_SIZE),
+                    (void *)(gMbWork + MB_PLAYER_INFO_OUT), MB_PLAYER_INFO_SIZE);
+        OS_RestoreInterrupts(state);
+        return (void *)(gMbWork + MB_PLAYER_INFO_OUT);
+    }
+    OS_RestoreInterrupts(state);
+    return 0;
 }
 #pragma opt_strength_reduction reset
 s32 func_02013f1c(s32 arg0) {
  extern s32 gMbWork;
- s32 func_02015214();
- if(gMbWork && func_02015214(arg0)) {
+ s32 Mb_IsValidPlayer();
+ if(gMbWork && Mb_IsValidPlayer(arg0)) {
  if(M2C_FIELD(gMbWork+(arg0-1)*4,s32 *,0x14e8)==7) return 1;
  }
  return 0;
@@ -121,7 +132,7 @@ s32 func_02013f1c(s32 arg0) {
 s32 Mb_AckPlayerPhase(s32 player, u32 phase) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02015214(s32);
+    s32 Mb_IsValidPlayer(s32);
     extern s32 gMbWork;
     u32 pending; s32 expected; s32 saved;
     saved = OS_DisableInterrupts();
@@ -134,7 +145,7 @@ s32 Mb_AckPlayerPhase(s32 player, u32 phase) {
         OS_RestoreInterrupts(saved);
         return 0;
     }
-    if (gMbWork && func_02015214(player)) {
+    if (gMbWork && Mb_IsValidPlayer(player)) {
         s32 idx = player - 1;
         u8 *base = (u8 *)gMbWork;
         if (expected == *(s32 *)(base + idx * 4 + 0x14e8)) {
@@ -148,10 +159,10 @@ s32 Mb_AckPlayerPhase(s32 player, u32 phase) {
 }
 
 void func_02014050(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    s32 func_02015214();
+    s32 Mb_IsValidPlayer();
     extern s32 gMbWork;
     M2C_UNK func_0201409c(s32, s32, M2C_UNK);
-    if (func_02015214() != 0) {
+    if (Mb_IsValidPlayer() != 0) {
         M2C_FIELD((gMbWork + ((arg0 - 1) * 4)), s32 *, 0x14E8) = arg1;
     }
     func_0201409c(arg0, arg1, arg2);

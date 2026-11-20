@@ -26,8 +26,8 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02002bb8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
     M2C_UNK func_020031cc(M2C_UNK);
-    M2C_UNK func_0200323c(M2C_UNK);
-    M2C_UNK func_020032bc(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
+    M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
     M2C_UNK func_02080cfc(M2C_UNK *, s32);
     M2C_UNK func_0208116c(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -155,8 +155,8 @@ void func_ov005_02218fd0(void *arg0) {
     func_020031cc(8);
     func_02002ab8(0x40);
     func_02002bb8(0x20);
-    func_0200323c(0x80);
-    func_020032bc(0x100);
+    GX_SetBankForBGExtPlttSub(0x80);
+    GX_SetBankForOBJExtPlttSub(0x100);
     func_02091cd0();
     var_r7 = 0;
     sp8 = gCur3DSpriteEngine;

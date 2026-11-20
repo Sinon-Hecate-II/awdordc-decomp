@@ -61,12 +61,12 @@ func_0208ae88(created,0);
 }
 
 /* Settles one text layer on a display bank: creates the layer's label with the chosen
-   value and bank (func_ov010_0222a808) and drops out of the message queue, or switches
+   value and bank (CreateNetErrorSprite) and drops out of the message queue, or switches
    back to the layer's idle animation.  Ignored while another message is showing. */
 void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     s32 GetScreenFlag(M2C_UNK);
     s32 IsScreenFadeActive(void);
-    M2C_UNK func_ov010_0222a808(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
+    M2C_UNK CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228320(void);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
@@ -79,7 +79,7 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
     if (arg0 == 0) {
         return;
     }
-    func_ov010_0222a808(M2C_FIELD(arg3, s8 *, 0x35), M2C_FIELD(arg3, u16 *, 0x36), arg0, arg1, arg2, arg3);
+    CreateNetErrorSprite(M2C_FIELD(arg3, s8 *, 0x35), M2C_FIELD(arg3, u16 *, 0x36), arg0, arg1, arg2, arg3);
     func_ov010_02228320();
     switch (arg2) {
     case 0:
@@ -158,19 +158,22 @@ void func_ov010_0222af58(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_ov010_0222af9c(void *arg0) {
-    s32 func_ov010_02229ef4(s32, M2C_UNK, M2C_UNK, s32, s32);
-    if (func_ov010_02229ef4(arg0 + 0x38, 1, 0, arg0 + 0x3C, arg0 + 0x40) != 0) {
+/* Online name-label step: starts the WFC match query for the local player's
+ * name.  If the query cannot be started, hides the status text layer and
+ * switches the label to its confirmed (11) or waiting (16) animation. */
+void Ov010_StartMatchQuery(void *label) {
+    s32 Ov010_RequestWfcMatch(s32, M2C_UNK, M2C_UNK, s32, s32);
+    if (Ov010_RequestWfcMatch(label + ONLINE_LABEL_NAME, 1, 0, label + ONLINE_LABEL_MATCHED, label + ONLINE_LABEL_MATCH_COUNT) != 0) {
         return;
     }
-    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (FindTextLayer() != 0)) {
+    if (((s32) M2C_FIELD(label, s8 *, TEXT_LAYER_ENGINE) >= 0) && (FindTextLayer() != 0)) {
         func_0208af20();
     }
-    if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
-        SetSpriteAnimation(arg0, 0xB);
+    if (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & TEXT_LAYER_FLAG_CONFIRMED) {
+        SetSpriteAnimation(label, 0xB);
         return;
     }
-    SetSpriteAnimation(arg0, 0x10);
+    SetSpriteAnimation(label, 0x10);
 }
 
 void func_ov010_0222b01c(void *arg0) {

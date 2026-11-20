@@ -548,22 +548,22 @@ void DrawSpriteBatch(void) {
 }
 
 s32 GetBatchSpriteCols(s32 arg0) {
-    s32 func_0207c1b4();
-    return (s32) (func_0207c1b4(arg0) + 7) >> 3;
+    s32 GetBatchSpriteSourceWidth();
+    return (s32) (GetBatchSpriteSourceWidth(arg0) + 7) >> 3;
 }
 
 s32 GetBatchSpriteRows(s32 arg0) {
-    s32 func_0207c1d8();
-    return (s32) (func_0207c1d8(arg0) + 7) >> 3;
+    s32 GetBatchSpriteSourceHeight();
+    return (s32) (GetBatchSpriteSourceHeight(arg0) + 7) >> 3;
 }
 
-s32 func_0207c1b4(s32 arg0) {
+s32 GetBatchSpriteSourceWidth(s32 arg0) {
     extern s32 gSpriteBatch;
     extern u8 data_021011d4[];
     return data_021011d4[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
-s32 func_0207c1d8(s32 arg0) {
+s32 GetBatchSpriteSourceHeight(s32 arg0) {
     extern s32 gSpriteBatch;
     extern u8 data_021011d5[];
     return data_021011d5[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];

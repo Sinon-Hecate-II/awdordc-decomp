@@ -374,7 +374,7 @@ void func_ov001_0218bf30(s32 arg0, ...) {
  Ov001_FreeAlloc(&arg0);
 }
 
-void func_ov001_0218bf4c(ListLink *node){s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 state=OS_DisableIrqMask(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;OS_EnableIrqMask(state);}
+void Ov001_ListRemove(ListLink *node){s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 state=OS_DisableIrqMask(1);node->prev->next=node->next;node->next->prev=node->prev;node->next=0;node->prev=0;OS_EnableIrqMask(state);}
 
 M2C_UNK Ov001_ListInsertBefore(a,b)
 s32 a; s32 b;{s32 OS_DisableIrqMask(s32);s32 state=OS_DisableIrqMask(1);ListLink *head=(ListLink *)a,*node=(ListLink *)b;head->prev->next=node;node->prev=head->prev;node->next=head;head->prev=node;OS_EnableIrqMask(state);}

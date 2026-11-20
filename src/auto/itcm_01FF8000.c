@@ -174,7 +174,7 @@ void DmaStartTransfer(s32 a,s32 b,s32 c,s32 d) {
 }
 
 #pragma optimization_level 2
-void func_01ff8554(s32 a, s32 b, s32 c, s32 d) {
+void DmaStartTransferFlushed(s32 a, s32 b, s32 c, s32 d) {
     volatile u32 *p = (volatile u32 *)(0x40000b0 + a * 12);
     p[0] = b;
     p[1] = c;

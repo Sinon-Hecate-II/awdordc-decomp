@@ -58,7 +58,7 @@ s32 GetCellTerrainKind(s32 arg0, s32 arg1) {
    terrain kind is returned. */
 s32 GetCellTerrainId(s32 x,s32 y){
 extern s32 *gCurrentMap;
-void *func_020a45f8(s32,s32);
+void *FindMapOrderAtTile(s32,s32);
 s32 terrainKind,cellIndex,map; void *feature; map=*gCurrentMap;
 cellIndex=x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS);
 terrainKind=M2C_FIELD(map+cellIndex,u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK;
@@ -66,7 +66,7 @@ switch(M2C_FIELD(map,u8 *,MAP_TILESET)){
 case 0:if(terrainKind==29)return 32;break;
 case 4:if(terrainKind==29)return 38;if(terrainKind==4)return 39;break;
 case 8:if(terrainKind==29)return 37;if(terrainKind==2)return 36;break;
-case 9:if(terrainKind!=29)break;feature=func_020a45f8(x,y);if(feature){u32 kind=((u32)M2C_FIELD(feature,u16 *,2)<<22)>>28;if(kind==6)return 34;if(kind==7)return 35;}return 33;
+case 9:if(terrainKind!=29)break;feature=FindMapOrderAtTile(x,y);if(feature){u32 kind=((u32)M2C_FIELD(feature,u16 *,2)<<22)>>28;if(kind==6)return 34;if(kind==7)return 35;}return 33;
 }
 if(terrainKind==1){switch(M2C_FIELD(map+cellIndex*2,u16 *,MAP_CELL_TILE_ID)){case 4:return 40;case 5:return 41;}}
 return terrainKind;

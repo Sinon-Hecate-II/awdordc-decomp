@@ -1,6 +1,7 @@
 /* 10 functions from 0x01FFBD90 to 0x01FFC778 (itcm), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 /* Fill a diamond (Manhattan circle) of the given radius centered at (x,y)
    in the map occupancy grid with value. */
@@ -93,12 +94,15 @@ s16 value=GetUnitRemainingMoveRange();
 FloodFillUnitRange(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26,value,3);
 }
 
-void func_01ffc368(s32 arg0,s32 arg1,u8 *arg2) {
-void func_01ffb5ec(u16,u16,u16,s32);
-s32 GetUnitAttackRangeMax(u8 *);
-extern u8 gUnitMinAttackRange;
-func_01ffb5ec((u16)arg0,(u16)arg1,(u16)GetUnitAttackRangeMax(arg2),0);
-func_01ffb5ec((u16)arg0,(u16)arg1,(u16)(*(&gUnitMinAttackRange+(((u32)(*arg2<<26)>>26)*0x70))-1),-1);
+/* Marks the cells the unit at (x, y) can attack in the map grid: fills its whole
+   maximum-range diamond with 0, then sets the cells inside its minimum range
+   back to -1 so only the ring between the two ranges stays marked. */
+void MarkUnitAttackRingCells(s32 x, s32 y, u8 *unit) {
+    void FillMapGridDiamondByRows(u16, u16, u16, s32);
+    s32 GetUnitAttackRangeMax(u8 *);
+    extern u8 gUnitMinAttackRange;
+    FillMapGridDiamondByRows((u16)x, (u16)y, (u16)GetUnitAttackRangeMax(unit), 0);
+    FillMapGridDiamondByRows((u16)x, (u16)y, (u16)(*(&gUnitMinAttackRange + (((u32)(*unit << 26) >> 26) * UNIT_KIND_STATS_SIZE)) - 1), -1);
 }
 
 /* Clears the movement-direction marker of each of the four tiles beside (x, y)

@@ -707,25 +707,28 @@ void func_ov009_02225f48(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
 }
 
-M2C_UNK func_ov009_02225fb4(s8 arg0, u16 arg1, s32 arg2, void *arg3) {
+/* Creates the link overlay's status-text label for `owner`: it shows the
+ * general link status message, or the status-8 variant, on the requested
+ * display engine at the given text value.  Does nothing for status 0. */
+M2C_UNK CreateLinkStatusLabel(s8 engine, u16 textValue, s32 status, void *owner) {
     void *CreateSpriteForOwner(void *, void *);
-    extern M2C_UNK data_ov009_0222682c, data_ov009_0222673c;
-    void *temp_r0;
-    if (arg2 == 0) return;
-    temp_r0 = CreateSpriteForOwner(&data_ov009_0222682c, arg3);
-    if (temp_r0 == NULL) return;
-    M2C_FIELD(temp_r0, void **, 0) = &data_ov009_0222673c;
-    M2C_FIELD(temp_r0, u8 *, 0x34) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x35) = arg0;
-    M2C_FIELD(temp_r0, u16 *, 0x36) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
-    if (arg2 == 8) {
-        M2C_FIELD(temp_r0, s32 *, 0x38) = 0x4400000B;
-        M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
+    extern M2C_UNK gLinkStatusLabelClass, gLinkStatusLabelVTable;
+    void *label;
+    if (status == 0) return;
+    label = CreateSpriteForOwner(&gLinkStatusLabelClass, owner);
+    if (label == NULL) return;
+    M2C_FIELD(label, void **, 0) = &gLinkStatusLabelVTable;
+    M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) = 0;
+    M2C_FIELD(label, s8 *, TEXT_LAYER_ENGINE) = engine;
+    M2C_FIELD(label, u16 *, TEXT_LAYER_VALUE) = textValue;
+    M2C_FIELD(label, s32 *, LINK_LAYER_STATUS) = status;
+    if (status == 8) {
+        M2C_FIELD(label, s32 *, LINK_LAYER_TEXT_KEY) = LINK_STATUS_TEXT_CODE8;
+        M2C_FIELD(label, s32 *, LINK_LAYER_STYLE) = 0;
         return;
     }
-    M2C_FIELD(temp_r0, s32 *, 0x38) = 0x4400000A;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = 2;
+    M2C_FIELD(label, s32 *, LINK_LAYER_TEXT_KEY) = LINK_STATUS_TEXT;
+    M2C_FIELD(label, s32 *, LINK_LAYER_STYLE) = 2;
 }
 
 void func_ov009_02226034(void *arg0) {
@@ -742,7 +745,7 @@ void func_ov009_02226034(void *arg0) {
 }
 
 void func_ov009_022260a0(void *arg0) {
-    M2C_UNK func_ov009_02225fb4(s8, u16, s32, void *);
+    M2C_UNK CreateLinkStatusLabel(s8, u16, s32, void *);
     void func_ov009_022261e4(M2C_UNK, u16, void *);
     s32 temp_r2;
 
@@ -750,7 +753,7 @@ void func_ov009_022260a0(void *arg0) {
     if (temp_r2 == 0) {
         return;
     }
-    func_ov009_02225fb4(M2C_FIELD(arg0, s8 *, 0x35), M2C_FIELD(arg0, u16 *, 0x36), temp_r2, arg0);
+    CreateLinkStatusLabel(M2C_FIELD(arg0, s8 *, 0x35), M2C_FIELD(arg0, u16 *, 0x36), temp_r2, arg0);
     func_ov009_022261e4(-1, M2C_FIELD(arg0, u16 *, 0x36), arg0);
 }
 

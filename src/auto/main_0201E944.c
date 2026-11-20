@@ -107,7 +107,7 @@ s32 ParseIpAddress(u8 *text, s32 *address) {
 
 s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK func_0201d164();
-    M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_0201d1f0();
     M2C_UNK func_0201d224();
     s32 DnsResolveName();
@@ -115,7 +115,7 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     if (arg1 == 0) return -1;
     func_0201d1f0();
     func_0201d164();
-    func_0201d190(0, 0x35, arg1);
+    SetConnectionEndpoint(0, 0x35, arg1);
     result = DnsResolveName(arg0, 1, arg2, 0, 0);
     func_0201d224();
     return result;
@@ -472,27 +472,44 @@ void *arg0;
 {
 extern s32 gNetAllocator;
 s32 p,old,size;
-size=func_0201f518(arg0);
+size=GetSocketConfigSize(arg0);
 old=OS_DisableInterrupts();
 p=M2C_FIELD(gNetAllocator,s32 (**)(s32),0x18)(size);
 if(p){MI_CpuFill8(p,0,size);func_0201f5c0(p,arg0);func_020213f0(p);}
 OS_RestoreInterrupts(old);return p;
 }
 
-s32 func_0201f518(void *arg0) {
-s32 n=0x80; u32 v;
-v=M2C_FIELD(arg0,u16*,2);
-if(v){n+=0x114;n+=func_020213e4(v);n+=func_020213e4(M2C_FIELD(arg0,u16*,8));n+=func_0201f598(arg0+0x10);}
-v=M2C_FIELD(arg0,u16*,6);
-if(v){n+=0x110;n+=func_020213e4(v);n+=func_020213e4(M2C_FIELD(arg0,u16*,0xa));n+=func_020213e4(M2C_FIELD(arg0,u16*,0xc));n+=func_0201f598(arg0+0x14);}
-return n;
+/* Bytes of the socket object SocketCreateFromConfig allocates for a socket
+ * config template: a fixed header plus, for each enabled direction, the
+ * connection header, its buffer sizes and its task's queue and stack. */
+s32 GetSocketConfigSize(SocketConfigTemplate *config) {
+    s32 AlignSize4(s32);
+    s32 GetSocketTaskBlockSize(void *);
+    s32 size = 0x80;
+    u32 bytes;
+    bytes = config->rxBytes;
+    if (bytes) {
+        size += 0x114;
+        size += AlignSize4(bytes);
+        size += AlignSize4(config->rxPendingBytes);
+        size += GetSocketTaskBlockSize(&config->rxTask);
+    }
+    bytes = config->txBytes;
+    if (bytes) {
+        size += 0x110;
+        size += AlignSize4(bytes);
+        size += AlignSize4(config->txBytes2);
+        size += AlignSize4(config->txRingBytes);
+        size += GetSocketTaskBlockSize(&config->txTask);
+    }
+    return size;
 }
 
-s32 func_0201f598(void *arg0) {
+s32 GetSocketTaskBlockSize(void *arg0) {
     s32 temp_r4;
 
-    temp_r4 = func_020213e4(M2C_FIELD(arg0, u8 *, 3) * 4);
-    return temp_r4 + func_020213e4(M2C_FIELD(arg0, u16 *, 0));
+    temp_r4 = AlignSize4(M2C_FIELD(arg0, u8 *, 3) * 4);
+    return temp_r4 + AlignSize4(M2C_FIELD(arg0, u16 *, 0));
 }
 
 /* Duplicate the sprite/frame data referenced by `src` into `dst`, advancing the cursor. */
@@ -544,7 +561,7 @@ s32 func_0201f6bc(s32 arg0, void *arg1, s32 arg2) {
     }
     M2C_FIELD(arg1, s32 *, 4) = var_r0;
     M2C_FIELD(arg1, s32 *, 0) = arg2;
-    return temp_r4 + func_020213e4(arg2);
+    return temp_r4 + AlignSize4(arg2);
 }
 
 s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
@@ -552,11 +569,11 @@ s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     M2C_UNK TaskWake(s32);
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     M2C_UNK InitMutex(s32);
-    s32 func_0201f598(void *);
+    s32 GetSocketTaskBlockSize(void *);
     void func_0201f350();
     s32 temp_r4;
 
-    temp_r4 = func_0201f598(arg2);
+    temp_r4 = GetSocketTaskBlockSize(arg2);
     OS_InitMessageQueue(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
     InitMutex(arg1 + 0xE0);
     TaskCreate(arg1 + 0x20, (M2C_UNK *)&func_0201f350, arg1, arg0 + temp_r4, (s32) M2C_FIELD(arg2, u16 *, 0), (s32) M2C_FIELD(arg2, u8 *, 2));
@@ -564,18 +581,21 @@ s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
     return arg0 + temp_r4;
 }
 
-s32 func_0201f758(void *arg0) {
+/* Check a socket is usable: the stack is registered, the socket is initialised,
+ * no task is running on it, it is in a duplex state and it may block. Returns 0
+ * when usable, otherwise the socket error that rejected it. */
+s32 SocketCheckReady(void *sock) {
 s32 SocketIsUnregistered();
-s32 a,b; s8 v;
-if(SocketIsUnregistered()!=0)return -28;
-a=0;
-if(arg0!=0) a=(M2C_FIELD(arg0,volatile s16*,0x70)&1)!=0;
-if(!a)return -39;
-if(M2C_FIELD(arg0,s16*,0x70)&2)return -28;
-v=M2C_FIELD(arg0,s8*,0x73);b=1;
-if(v!=0 && v!=4)b=0;
-if(!b)return -28;
-return M2C_FIELD(arg0,s8*,0x72)==1?0:-6;
+s32 ready,duplex; s8 state;
+if(SocketIsUnregistered()!=0)return SOCK_ERROR;
+ready=0;
+if(sock!=0) ready=(M2C_FIELD(sock,volatile s16*,SOCK_FLAGS)&SOCK_FLAG_READY)!=0;
+if(!ready)return SOCK_NOT_READY;
+if(M2C_FIELD(sock,s16*,SOCK_FLAGS)&SOCK_FLAG_BUSY)return SOCK_ERROR;
+state=M2C_FIELD(sock,s8*,SOCK_STATE);duplex=1;
+if(state!=SOCK_STATE_IDLE && state!=SOCK_STATE_CONNECTED)duplex=0;
+if(!duplex)return SOCK_ERROR;
+return M2C_FIELD(sock,s8*,SOCK_BLOCKING)==SOCK_BLOCKING_ON?0:SOCK_WOULD_BLOCK;
 }
 
 /* Validate the template socket, create the real TCP socket from
@@ -584,7 +604,7 @@ return M2C_FIELD(arg0,s8*,0x72)==1?0:-6;
 s32 SocketCreateListen(void *tmpl, u16 *peerPort, s32 *peerAddr) {
     s32 SocketIsUnregistered();
     s32 SocketCreateFromConfig();
-    s32 SocketSetReceivePort();
+    s32 SocketBind();
     s32 SocketListen();
     extern M2C_UNK gTcpSocketConfig;
     s32 ready, usable, result, sock;
@@ -602,7 +622,7 @@ s32 SocketCreateListen(void *tmpl, u16 *peerPort, s32 *peerAddr) {
     if (M2C_FIELD(tmpl, s8 *, SOCK_BLOCKING) != SOCK_BLOCKING_ON) return -6;
     sock = SocketCreateFromConfig(&gTcpSocketConfig);
     if (sock < 0) return sock;
-    result = SocketSetReceivePort(sock, M2C_FIELD(tmpl, u16 *, SOCK_RECV_PORT));
+    result = SocketBind(sock, M2C_FIELD(tmpl, u16 *, SOCK_RECV_PORT));
     if (result < 0) return result;
     result = SocketListen(sock, peerPort, peerAddr);
     if (result < 0) return result;

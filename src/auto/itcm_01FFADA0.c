@@ -174,15 +174,17 @@ gMoveSearchWrite=(u8*)gMoveSearchWrite+4;
 M2C_FIELD((u8*)*gCurrentMap+arg2*4,u8**,0x52e8)[arg1]=cost;
 }
 
-void FillMapLayer(s8 arg0) {
-extern void **gCurrentMap;
-s32 y=0,x; void *base=*gCurrentMap;
-for(;y<M2C_FIELD(base,u16 *,0x5146);y++) {
-for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++) {
-((s8 **)base)[y+0x14ba][x]=arg0;
-base=*gCurrentMap;
-}
-}
+/* Fill every cell of the map's grid value layer (MAP_GRID) with `value`. */
+void FillMapLayer(s8 value) {
+    extern void **gCurrentMap;
+    s32 y = 0, x;
+    void *base = *gCurrentMap;
+    for (; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
+            ((s8 **)base)[y + MAP_GRID_ROW_INDEX][x] = value;
+            base = *gCurrentMap;
+        }
+    }
 }
 
 /* Copy the 32 per-terrain movement costs unit kind `kind` pays under the
@@ -239,7 +241,7 @@ void SelectMapLayer(s32 layer) {
     gMoveSearchState[MOVE_SEARCH_HEIGHT] = M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT);
 }
 
-void func_01ffb5ec(s32 cx,s32 cy,s32 radius,s8 value){
+void FillMapGridDiamondByRows(s32 cx,s32 cy,s32 radius,s8 value){
 extern void **gCurrentMap;
 s32 y,x,end,d,w;void *base;
 d=radius;

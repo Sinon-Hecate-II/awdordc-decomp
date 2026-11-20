@@ -663,14 +663,18 @@ s32 MapScriptJumpIf(void *state) {
     return 1;
 }
 
-s32 func_02092d70(void *arg0) {
+/* Map-script opcode: conditional jump on an event flag. The command's first
+ * operand names the event flag; when it is set the script jumps to the label
+ * command named by the wide operand, otherwise it runs the next command. A
+ * nonzero second operand inverts the condition. Returns 1 to keep running. */
+s32 MapScriptJumpIfFlag(void *state) {
 s32 IsEventFlagSet(s16);
 u8 flag;
-void *p,*next;
-if(IsEventFlagSet(M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8)))flag=1;else flag=0;
-p=M2C_FIELD(arg0,void **,4);
-if(M2C_FIELD(p,s16 *,10)){if(flag)flag=0;else flag=1;}
-if(flag){next=MapScriptFindLabel(arg0,M2C_FIELD(p,s32 *,12));if(next)M2C_FIELD(arg0,void **,4)=next;else M2C_FIELD(arg0,s32 *,4)+=16;}else M2C_FIELD(arg0,s32 *,4)+=16;
+void *cmd,*label;
+if(IsEventFlagSet(M2C_FIELD(M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP),s16 *,MAP_SCRIPT_OPERAND0)))flag=1;else flag=0;
+cmd=M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP);
+if(M2C_FIELD(cmd,s16 *,MAP_SCRIPT_OPERAND1)){if(flag)flag=0;else flag=1;}
+if(flag){label=MapScriptFindLabel(state,M2C_FIELD(cmd,s32 *,MAP_SCRIPT_OPERAND2));if(label)M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP)=label;else M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;}else M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;
 return 1;
 }
 

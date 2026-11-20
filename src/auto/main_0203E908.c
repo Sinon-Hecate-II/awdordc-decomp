@@ -280,7 +280,7 @@ loop_4:
 s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *values, s32 count) {
     void SendConnectionTextCommand(M2C_UNK,s32,M2C_UNK,u8 *);
     s32 func_0203f20c(s32,s32,s32,s32,s32);
-    void func_02007e70(s32,void *,s32);
+    void MIi_CpuCopy32(s32,void *,s32);
     M2C_UNK StringFormatN();
     void MI_CpuCopy8(u8 *,u8 *,u32);
     u64 GetSystemTick(void);
@@ -313,13 +313,13 @@ s32 SendConnectionCommand(u8 command, s32 peerId, s32 address, u16 port, s32 *va
         M2C_FIELD(GetConnection(),s32 *,0x458)=count;
         conn=GetConnection();
         M2C_FIELD(conn,u64 *,0x45c)=GetSystemTick();
-        if(values!=0 && count!=0)func_02007e70((s32)values,(u8 *)GetConnection()+0x3d4,count*4);
+        if(values!=0 && count!=0)MIi_CpuCopy32((s32)values,(u8 *)GetConnection()+0x3d4,count*4);
     }
     return result;
 }
 
 s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
-    void func_02007e70(s32, void *, s32);
+    void MIi_CpuCopy32(s32, void *, s32);
     void *GetConnection(void);
     s32 gt2AddressToString(s32, s32, s32);
     s32 func_02061638(s32, s32, s32, void *, s32);
@@ -330,7 +330,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     s32 i, result;
     void *context;
     if (payload != 0 && count != 0) {
-        func_02007e70(payload, packet.payload, count * 4);
+        MIi_CpuCopy32(payload, packet.payload, count * 4);
     } else {
         count = 0;
     }

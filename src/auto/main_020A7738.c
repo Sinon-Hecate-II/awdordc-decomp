@@ -163,19 +163,22 @@ u8 GetUnitKindByte0(s32 arg0) {
 }
 
 u8 GetUnitKindMoveRange(s32 arg0) {
- extern u8 data_ov000_021b5c04[];
- return data_ov000_021b5c04[arg0 * 0x70];
+ extern u8 gUnitKindMoveRange[];
+ return gUnitKindMoveRange[arg0 * 0x70];
 }
 
-s32 ComputeUnitMoveRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
- s32 func_020a296c(s32, s32, s32);
- extern u8 data_ov000_021b5c04[];
+/* Movement range of a unit of `kind` for player `player`: the kind's base range,
+ * plus its CO-zone movement bonus when one applies, less one in rain for an army
+ * that the weather does not spare. */
+s32 ComputeUnitMoveRange(s32 kind, s32 weather, s32 player, s32 bonusType, u8 applyBonus) {
+ s32 GetCoZoneMoveBonus(s32, s32, s32);
+ extern u8 gUnitKindMoveRange[];
  extern void **gCurrentMap;
- s32 var_r4;
- var_r4 = data_ov000_021b5c04[arg0 * 0x70];
- if (arg3 != 0 || arg4 != 0) var_r4 += func_020a296c(arg0, arg2, arg3);
- if ((u32)(M2C_FIELD((u8 *)*gCurrentMap + arg2 * 0x8c, s32 *, 0x6810) << 24) >> 24 != 10 && arg1 == 1) var_r4--;
- return var_r4;
+ s32 range;
+ range = gUnitKindMoveRange[kind * 0x70];
+ if (bonusType != 0 || applyBonus != 0) range += GetCoZoneMoveBonus(kind, player, bonusType);
+ if ((u32)(M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + ARMY_REC_ARMY_ID) << 24) >> 24 != ARMY_WEATHER_IMMUNE && weather == WEATHER_RAIN) range--;
+ return range;
 }
 
 u16 func_020a7bbc(s32 arg0) {
@@ -184,8 +187,8 @@ u16 func_020a7bbc(s32 arg0) {
 }
 
 u8 GetUnitKindMaxAttackRange(s32 arg0) {
- extern u8 data_ov000_021b5c09[];
- return data_ov000_021b5c09[arg0 * 0x70];
+ extern u8 gUnitMaxAttackRange[];
+ return gUnitMaxAttackRange[arg0 * 0x70];
 }
 
 void func_020a7bec(void) {
@@ -200,9 +203,9 @@ u8 func_020a7bf8(s32 arg0) {
 
 s32 ComputeUnitMaxAttackRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
  s32 GetCoZoneRangeBonus(s32, s32, s32);
- extern u8 data_ov000_021b5c09[];
+ extern u8 gUnitMaxAttackRange[];
  s32 var_r4;
- var_r4 = data_ov000_021b5c09[arg0 * 0x70];
+ var_r4 = gUnitMaxAttackRange[arg0 * 0x70];
  if (arg3 != 0 || arg4 != 0) var_r4 += GetCoZoneRangeBonus(arg0, arg2, arg3);
  return var_r4;
 }

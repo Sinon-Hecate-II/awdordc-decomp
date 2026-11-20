@@ -1,5 +1,6 @@
 /* 23 functions from 0x02045D94 to 0x02046D38 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
@@ -282,7 +283,7 @@ s32 func_02046884(void *arg0) {
     }
 
     if (stk[0] == 0 && stk[1] == 0 && stk[2] == 0 && stk[3] == 0) {
-        func_02046c8c((s32)r8);
+        InitSaveSlotsWithWfcProfile((s32)r8);
         if (FifoUploadVerifiedBlocks((u8 *)r8) == 0) {
             return 0xffffd8f0;
         }
@@ -293,7 +294,7 @@ s32 func_02046884(void *arg0) {
         goto Lc98;
     }
     if (stk[2] == 0 && stk[3] == 0) {
-        func_02046c8c((s32)r8);
+        InitSaveSlotsWithWfcProfile((s32)r8);
         if (FifoUploadVerifiedBlocks((u8 *)r8) == 0) {
             return 0xffffd8f0;
         }
@@ -302,7 +303,7 @@ s32 func_02046884(void *arg0) {
 
  Lc98:
     if (stk[0] == 0 && stk[1] == 0) {
-        func_02046c8c((s32)r8);
+        InitSaveSlotsWithWfcProfile((s32)r8);
         if (FifoUploadVerifiedBlocks((u8 *)r8) != 0) {
             return 0xffffd8ed;
         }
@@ -398,7 +399,10 @@ block_13:
     return 1;
 }
 
-s32 func_02046c8c(s32 a) { void FillU16(s32,s32,s32); void BuildWfcProfile(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 sp0[20];s32 i;void *p;register u8 *q;register u32 fill=255;FillU16(0,a,1024);i=0;do{q=(u8 *)(a+((u32)i<<8));M2C_FIELD(q,u8 *,0xe7)=fill;i++;}while(i<3);BuildWfcProfile(sp0);p=EncodeWfcProfileBlob(sp0);i=0;do{MI_CpuCopy8((s32)p,(M2C_UNK *)(a+240),14);i++;a+=256;}while(i<2);return 0;}
+/* Reset the four 0x100-byte save slots at `saveData`: mark the first three
+ * erased, generate a local WFC profile and store its packed code in the first
+ * two slots. The caller refreshes the slot checksums. */
+s32 InitSaveSlotsWithWfcProfile(s32 saveData) { void FillU16(s32,s32,s32); void BuildWfcProfile(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 profile[WFC_PROFILE_SIZE];s32 i;void *code;register u8 *slot;register u32 erased=255;FillU16(0,saveData,1024);i=0;do{slot=(u8 *)(saveData+((u32)i<<8));M2C_FIELD(slot,u8 *,SAVE_SLOT_STATUS_REL)=erased;i++;}while(i<3);BuildWfcProfile(profile);code=EncodeWfcProfileBlob(profile);i=0;do{MI_CpuCopy8((s32)code,(M2C_UNK *)(saveData+SAVE_SLOT_CODE),SAVE_SLOT_PROFILE_CODE_SIZE);i++;saveData+=SAVE_SLOT_SIZE;}while(i<2);return 0;}
 
 #pragma opt_common_subs off
 void func_02046d0c(s32 a,s32 b) { void FillU16(s32,s32,s32); FillU16(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }

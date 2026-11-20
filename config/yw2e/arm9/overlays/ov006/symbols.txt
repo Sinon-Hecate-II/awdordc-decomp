@@ -116,7 +116,7 @@ func_ov006_02218200 kind:function(arm,size=0x100) addr:0x02218200
 func_ov006_02218300 kind:function(arm,size=0x28) addr:0x02218300
 func_ov006_02218328 kind:function(arm,size=0x18) addr:0x02218328
 data_ov006_02218340 kind:data(any) addr:0x02218340
-data_ov006_02218345 kind:data(any) addr:0x02218345
+gFriendCodeKeyChars kind:data(any) addr:0x02218345
 data_ov006_0221837c kind:data(any) addr:0x0221837c
 data_ov006_02218388 kind:data(any) addr:0x02218388
 data_ov006_02218394 kind:data(any) addr:0x02218394

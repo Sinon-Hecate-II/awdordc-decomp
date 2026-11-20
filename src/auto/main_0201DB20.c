@@ -517,7 +517,7 @@ final:
 #pragma opt_common_subs reset
 s32 func_0201e754(void) {
     M2C_UNK func_0201d164();
-    M2C_UNK func_0201d190(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d1f0();
     M2C_UNK func_0201d224();
     s32 BuildDhcpDiscover();
@@ -527,7 +527,7 @@ s32 func_0201e754(void) {
 
     func_0201d1f0();
     func_0201d164();
-    func_0201d190(0x44, 0x43, -1);
+    SetConnectionEndpoint(0x44, 0x43, -1);
     var_r5 = 0;
 loop_1:
     temp_r0 = func_0201e404(BuildDhcpDiscover(), var_r5);
@@ -557,9 +557,9 @@ s32 func_0201e7ac(u32 *out_size, s32 mode) {
     func_0201d1f0();
     func_0201d164();
     if (mode == 1) {
-        func_0201d190(0x44, 0x43, M2C_FIELD(&gNetStack, s32 *, 0x20));
+        SetConnectionEndpoint(0x44, 0x43, M2C_FIELD(&gNetStack, s32 *, 0x20));
     } else {
-        func_0201d190(0x44, 0x43, -1);
+        SetConnectionEndpoint(0x44, 0x43, -1);
     }
     attempt = 0;
 loop_4:
@@ -602,7 +602,7 @@ void func_0201e8a8(void) {
  s32 p; s32 base;
  func_0201d1f0();
  func_0201d164();
- func_0201d190(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
+ SetConnectionEndpoint(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
  base=(s32)gDhcpPacketBuffer;
  p=(s32)BuildDhcpPacket((u8 *)base,7,0);
  M2C_FIELD(p,u8 *,0)=0xff; p++;

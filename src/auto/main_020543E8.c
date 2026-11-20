@@ -6,7 +6,7 @@ typedef struct CallbackPair { s32 first, second; } CallbackPair;
  * releases its receive buffers and drops the connection's pending-search count,
  * then the operation's data and the operation itself are released. */
 void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
-    M2C_UNK func_020496b8(s32);
+    M2C_UNK ghiCloseSocket(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fe9b0;
@@ -24,7 +24,7 @@ void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
             AssertFailed(&data_020fea4c, &sGpiOperationSourceFile, &data_020fe9b0, 0xB6);
         }
         func_020496cc(M2C_FIELD(search, s32 *, 4), 2);
-        func_020496b8(M2C_FIELD(search, s32 *, 4));
+        ghiCloseSocket(M2C_FIELD(search, s32 *, 4));
         gpiFree(M2C_FIELD(search, void **, 0x18));
         M2C_FIELD(search, void **, 0x18) = NULL;
         gpiFree(M2C_FIELD(search, void **, 8));
@@ -318,7 +318,7 @@ s32 gpiProcessPeer(void **gpi, void *peer) {
     M2C_UNK gpiConsumeReadBuffer(void **, void *);
     s32 gpiAddCallback(void **, CallbackPair, void *, s32, s32);
     s32 gpiSendQueuedMessages(void **, void *);
-    M2C_UNK func_02057f74(void **, void *, s32, s32, s32, s32);
+    M2C_UNK gpiRefuseGameDataTransfer(void **, void *, s32, s32, s32, s32);
     M2C_UNK gpiSetErrorString(void **, M2C_UNK *);
     extern M2C_UNK data_020febb0;
     extern M2C_UNK gpiErrorOutOfMemory;
@@ -396,7 +396,7 @@ loop_15:
             gpiSendMessageToPlayer(gpi, M2C_FIELD(peer,s32 *,0xc),GPI_MSG_CHALLENGE_REPLY,&gpiChallengeReply);
             break;
         case 200: case 201: case 202: case 203: case 204: case 205: case 206: case 207: case 208:
-            func_02057f74(gpi,peer,messageType,M2C_FIELD(peer,s32 *,0x18),message,messageLength);
+            gpiRefuseGameDataTransfer(gpi,peer,messageType,M2C_FIELD(peer,s32 *,0x18),message,messageLength);
             break;
         default: break;
         }
@@ -436,7 +436,7 @@ s32 gpiProcessPeerState(M2C_UNK manager, void *peer) {
 M2C_UNK func_02054fa8(void **a,void *b) {
  M2C_UNK Vector_Free(s32);
  func_020496cc(M2C_FIELD(b,s32 *,8),2);
- func_020496b8(M2C_FIELD(b,s32 *,8));
+ ghiCloseSocket(M2C_FIELD(b,s32 *,8));
  gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=NULL;
  gpiFree(M2C_FIELD(b,void **,40));M2C_FIELD(b,void **,40)=NULL;
  if(M2C_FIELD(b,s32 *,56)) {Vector_Free(M2C_FIELD(b,s32 *,56));M2C_FIELD(b,s32 *,56)=0;}
@@ -529,7 +529,7 @@ s32 func_0205519c(void **manager) {
     s32 ghiSocketCanRecv(s32);
     s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
     s32 gpiGetTime(M2C_UNK);
-    M2C_UNK func_020496b8(s32);
+    M2C_UNK ghiCloseSocket(s32);
     s32 gpiProcessPeerState(M2C_UNK, void *);
     void func_02055008(void **, void *);
     void *gpiCreatePeer(void **, s32, s32);
@@ -551,7 +551,7 @@ s32 func_0205519c(void **manager) {
                 ghiSetNonBlocking(socket, 0);
                 func_02055124(M2C_FIELD(peer, s32 *, 8));
             } else {
-                func_020496b8(socket);
+                ghiCloseSocket(socket);
             }
         }
     }
@@ -575,29 +575,32 @@ void *gpiFindConnectedPeer(void **a,s32 b) {
  return NULL;
 }
 
-void func_020552c4(s32 *arg0) {
+void FreeGpiPeerCallbackEntry(s32 *arg0) {
     M2C_UNK gpiFree(s32);
     gpiFree(*arg0);
     *arg0 = 0;
 }
 
-void *gpiCreatePeer(void **a,s32 b,s32 c) {
+/* Allocates a gpi peer record for the given player and links it at the head of
+   the connection's peer list: it starts in the created state with its socket unset,
+   a handshake deadline of five seconds from now and an empty callback vector. */
+void *gpiCreatePeer(void **manager, s32 playerId, s32 initiator) {
  void *gpiMalloc(s32);
  s32 gpiGetTime(s32);
  s32 Vector_New(s32,s32,void *);
- void *base=*a;
- void *p=gpiMalloc(64);
- if(!p)return NULL;
- MemSet(p,0,64);
- M2C_FIELD(p,s32 *,0)=100;
- M2C_FIELD(p,s32 *,4)=c;
- M2C_FIELD(p,s32 *,8)=-1;
- M2C_FIELD(p,s32 *,12)=b;
- M2C_FIELD(p,s32 *,16)=gpiGetTime(0)+300;
- M2C_FIELD(p,void **,60)=M2C_FIELD(base,void **,0x434);
- M2C_FIELD(p,s32 *,56)=Vector_New(24,0,func_020552c4);
- M2C_FIELD(base,void **,0x434)=p;
- return p;
+ void *session=*manager;
+ void *peer=gpiMalloc(64);
+ if(!peer)return NULL;
+ MemSet(peer,0,64);
+ M2C_FIELD(peer,s32 *,GPI_PEER_STATE)=GPI_PEER_STATE_CREATED;
+ M2C_FIELD(peer,s32 *,GPI_PEER_INITIATOR)=initiator;
+ M2C_FIELD(peer,s32 *,GPI_PEER_SOCKET)=-1;
+ M2C_FIELD(peer,s32 *,GPI_PEER_PLAYER_ID)=playerId;
+ M2C_FIELD(peer,s32 *,GPI_PEER_DEADLINE)=gpiGetTime(0)+300;
+ M2C_FIELD(peer,void **,GPI_PEER_NEXT)=M2C_FIELD(session,void **,GPI_CONN_PEER_HEAD);
+ M2C_FIELD(peer,s32 *,GPI_PEER_CALLBACKS)=Vector_New(24,0,FreeGpiPeerCallbackEntry);
+ M2C_FIELD(session,void **,GPI_CONN_PEER_HEAD)=peer;
+ return peer;
 }
 
 s32 gpiStartPeerChallenge(M2C_UNK arg0, void *arg1) {

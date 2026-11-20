@@ -397,7 +397,7 @@ void Ov001_StartWfcConnect(void) {
     u8 wfcParams[12];
 
     mapRecord = GetCurrentMapRecord();
-    func_02007e70(sWfcInitParams, wfcParams, 0xC);
+    MIi_CpuCopy32(sWfcInitParams, wfcParams, 0xC);
     Ov001_GetNameEntryMode(0, &nameEntryMode);
     if (nameEntryMode == 2) {
         wfcParams[10] = 4;

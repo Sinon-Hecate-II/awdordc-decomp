@@ -1,5 +1,6 @@
 /* 48 functions from 0x02176F4C to 0x02177F1C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ov001_wh.h"
 typedef struct { u8 bytes[22]; } MenuBuf22;
 typedef struct { u8 bytes[23]; } MenuBuf23;
@@ -163,25 +164,28 @@ void func_ov001_021771f4(void) {
 
 void func_ov001_02177214(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
-    void func_ov001_02177238(void);
+    void Ov001_LoadResetProfileBg(void);
     M2C_UNK ResetSaveSlotsWithWfcProfile();
     extern M2C_UNK func_ov001_021772b8;
-    func_ov001_02177238();
+    Ov001_LoadResetProfileBg();
     Ov001_ShowMessageBox(0x19);
     ResetSaveSlotsWithWfcProfile();
     Ov001_SetStepCallback(&func_ov001_021772b8);
 }
 
-void func_ov001_02177238(void) {
+/* Load the shared Multi map background ("char/yb5Multi.nsc.l") for the option
+ * menu's reset-profile step, and lower BG0/BG1/BG2 on both engines. */
+void Ov001_LoadResetProfileBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190534;
+    extern M2C_UNK gOv001ResetProfileBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190534, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001ResetProfileBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_021772b8(void) {
@@ -275,26 +279,28 @@ void func_ov001_0217740c(void) {
 void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
-    void func_ov001_02177474(void);
+    void Ov001_LoadMacAddressBackground(void);
     M2C_UNK DrawMacAddressPanel();
     extern M2C_UNK func_ov001_021776c8;
-    func_ov001_02177474();
+    Ov001_LoadMacAddressBackground();
     Ov001_LoadObjLayoutBlock(0x11);
     Ov001_ShowMessagePanel(0x3A, -1, 0);
     DrawMacAddressPanel();
     Ov001_SetStepCallback(&func_ov001_021776c8);
 }
 
-void func_ov001_02177474(void) {
+/* Loads the MAC-address/info screen's background map and gives the main and
+ * sub background planes the lowest priority. */
+void Ov001_LoadMacAddressBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190548;
+    extern M2C_UNK gOv001MacAddressBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190548, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001MacAddressBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 /* Draws a two-line panel: the console's MAC address and its Wi-Fi profile code

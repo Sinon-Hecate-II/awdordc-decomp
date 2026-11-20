@@ -433,7 +433,26 @@ loop_1:
     return sent;
 }
 
-void func_020250d0(void *arg0) { M2C_UNK TcpSendData(s8 *,s32,s32,s32,void *); s32 TlsAppendRecordMac(void *,s8 *); s8 a[28]; void *p=M2C_FIELD(arg0,void **,12); if(M2C_FIELD(p,u8 *,0x455)==8) { a[0]=21;a[1]=3;a[2]=0;a[3]=0;a[4]=2;a[5]=1;a[6]=0; TcpSendData(a,TlsAppendRecordMac(p,a),0,0,arg0); } M2C_FIELD(p,u8 *,0x455)=0; }
+/* Sends the TLS close alert (a warning-level close_notify) with its record MAC
+   when the handshake completed, then resets the channel's TLS state. */
+void TlsSendCloseNotify(void *transport) {
+    M2C_UNK TcpSendData(s8 *, s32, s32, s32, void *);
+    s32 TlsAppendRecordMac(void *, s8 *);
+    s8 record[28];
+    void *channel = M2C_FIELD(transport, void **, 12);
+
+    if (M2C_FIELD(channel, u8 *, TLS_STATE) == TLS_STATE_DONE) {
+        record[0] = TLS_CONTENT_ALERT;
+        record[1] = 3;
+        record[2] = 0;
+        record[3] = 0;
+        record[4] = TLS_ALERT_LENGTH;
+        record[5] = TLS_ALERT_LEVEL_WARNING;
+        record[6] = TLS_ALERT_DESC_CLOSE_NOTIFY;
+        TcpSendData(record, TlsAppendRecordMac(channel, record), 0, 0, transport);
+    }
+    M2C_FIELD(channel, u8 *, TLS_STATE) = 0;
+}
 
 void func_02025150(void *arg0) { extern void (*gFree[])(void *); void *p=M2C_FIELD(arg0,void **,12); void *q; M2C_FIELD(p,u8 *,0x455)=0; q=M2C_FIELD(p,void **,0x824); if(q)gFree[0](q); M2C_FIELD(p,void **,0x824)=0; }
 

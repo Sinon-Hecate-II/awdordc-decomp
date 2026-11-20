@@ -64,7 +64,10 @@ typedef struct GHIConnection {
     char *headers;         /* +0x28: extra headers supplied by the caller */
     u8   pad2C[0x0C];
     s32  result;           /* +0x38: GHTTPResult of a failed request */
-    u8   pad3C[0x0C];
+    u8   pad3C[0x04];
+    s32 (*completedCallback)(s32 request, s32 result, s32 body, s32 bodySize, s32 param);
+                           /* +0x40: GHTTPCompletedCallback, run when the request finishes */
+    s32  callbackParam;    /* +0x44: last argument handed to the connection's callbacks */
     s32  socket;           /* +0x48: SOCKET, -1 until created */
         s32 lastSocketError;  /* +0x4C: saved errno of the last socket call */
     GHIBuffer buffer;         /* +0x50: request line/header buffer */

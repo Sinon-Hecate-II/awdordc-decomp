@@ -56,7 +56,7 @@ void func_020cbc20(void *arg0) {
  RefreshMapView();
 }
 #pragma opt_common_subs reset
-void func_020cbc88(void *arg0) {
+void CreateUnitRemovalEffect(void *arg0) {
  void *CreateSpriteObject(M2C_UNK *);
  extern M2C_UNK data_0212b22c;
  if (((Unk020cbc88 *)arg0)->unk_0==0) return;
@@ -324,17 +324,23 @@ void func_020cc490(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x34) = 6;
 }
 
-void func_020cc504(void *a) {
-extern void *gCur3DSpriteEngine;M2C_UNK Sprite_ResumeAnimation(void *);
-u16 *volatile p; s32 n;
-M2C_FIELD(a,s16 *,0x34)--;
-n=M2C_FIELD(a,s16 *,0x34);
-p=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0x12);
-*p=(*p&~0xc0)|0xc0;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=n;
-if(!M2C_FIELD(a,s16 *,0x34))Sprite_ResumeAnimation(a);
+/* One frame of the battle map fade-out: count the fade timer down, set the 3D
+ * sprite bank to top priority with no split rows and the remaining count as its
+ * blend level, then resume the task's animation when the timer runs out. */
+void MapFadeOutStep(MapViewTask *task) {
+    extern void *gCur3DSpriteEngine;
+    M2C_UNK Sprite_ResumeAnimation(void *);
+    u16 *volatile p;
+    s32 frames;
+
+    task->fadeTimer--;
+    frames = task->fadeTimer;
+    p = &((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->oamAttr;
+    *p = (*p & ~0xC0) | 0xC0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsAbove = 0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->rowsBelow = 0;
+    ((DS3DSpriteBank *)((DS3DSpriteEngine *)gCur3DSpriteEngine)->bank)->filler_53 = (u8)frames;
+    if (!task->fadeTimer) Sprite_ResumeAnimation(task);
 }
 
 /* Closing step of the battle map-view task: when the view is being closed,
@@ -406,7 +412,7 @@ if(distance==0)return;
 if(distance==1)AddRecordValue(7,1);else AddRecordValue(8,1);
 }
 
-void func_020cc7e0(void) {
+void CreateTargetSelectionSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212b294;
     CreateSpriteFromClass(&data_0212b294, 7);

@@ -213,7 +213,7 @@ void Ov001_InitSound(void) {
 
 void func_ov001_02184ff8(void){extern s32 gOv001SoundState;M2C_UNK Ov001_PostTaskMessage(s32,s32);M2C_UNK Ov001_FreeAlloc(void *);Ov001_PostTaskMessage(0,M2C_FIELD(gOv001SoundState,s32 *,0x98));Ov001_FreeAlloc((void *)0x02193e08);}
 
-void Ov001_PlaySound(s32 a){extern s32 gOv001SoundState;M2C_UNK func_0202d3e8(s32,s32,s32);func_0202d3e8(gOv001SoundState+0x90,0,a);}
+void Ov001_PlaySound(s32 a){extern s32 gOv001SoundState;M2C_UNK Sound_PlaySequenceArchiveEntry(s32,s32,s32);Sound_PlaySequenceArchiveEntry(gOv001SoundState+0x90,0,a);}
 
 void func_ov001_02185048(M2C_UNK arg0) {
     M2C_UNK func_0202acdc(s32, M2C_UNK);

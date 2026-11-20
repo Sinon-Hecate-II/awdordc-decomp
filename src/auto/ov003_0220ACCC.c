@@ -274,7 +274,7 @@ void func_ov003_0220bbcc(void *entity) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK EnableMapConfirm();
-    M2C_UNK func_020d885c(M2C_UNK);
+    M2C_UNK SetMapCategory(M2C_UNK);
     extern M2C_UNK data_0215d9b8;
     void *subObject;
     void *linkedObject;
@@ -285,7 +285,7 @@ void func_ov003_0220bbcc(void *entity) {
         M2C_FIELD(subObject, s8 *, 0x5A) = 0xC;
     }
     EnableMapConfirm();
-    func_020d885c(0x12);
+    SetMapCategory(0x12);
     Sprite_ResumeAnimation(entity);
     PlaySoundEffect(0x1000E);
     linkedObject = M2C_FIELD(entity, void **, 0x40);

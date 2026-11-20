@@ -55,7 +55,7 @@ s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
 s32 SocketListenTask(void *arg0) {
     M2C_UNK LockMutex(s32);
     M2C_UNK UnlockMutex(void *);
-    M2C_UNK func_0201d190(u16, M2C_UNK, M2C_UNK);
+    M2C_UNK SetConnectionEndpoint(u16, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d2b8();
     s32 func_0201d3e4(u16 *, M2C_UNK *);
     M2C_UNK sp4;
@@ -67,7 +67,7 @@ s32 SocketListenTask(void *arg0) {
     temp_r4 = M2C_FIELD(arg0, void **, 4);
     temp_r5 = M2C_FIELD(temp_r4, void **, 0x64);
     LockMutex(temp_r5 + 0xE0);
-    func_0201d190(M2C_FIELD(arg0, u16 *, 0x10), 0, 0);
+    SetConnectionEndpoint(M2C_FIELD(arg0, u16 *, 0x10), 0, 0);
     func_0201d2b8();
     M2C_FIELD(temp_r5, s32 *, 0xF8) = 0;
     temp_r0 = func_0201d3e4(&sp0, &sp4);
@@ -78,24 +78,25 @@ s32 SocketListenTask(void *arg0) {
     return 0;
 }
 
-s32 SocketSetReceivePort(void *arg0,s32 arg1) {
-s32 SocketIsUnregistered(); s32 func_0201fb3c(void *);s32 a;
+s32 SocketBind(void *arg0,s32 arg1) {
+s32 SocketIsUnregistered(); s32 SocketSubmitConnectTask(void *);s32 a;
 if(SocketIsUnregistered()!=0)return -28;
 a=0;if(arg0)a=(M2C_FIELD(arg0,volatile s16 *,0x70)&1)!=0;
 if(!a)return -39;
 if(M2C_FIELD(arg0,s16 *,0x70)&2)return -7;
 M2C_FIELD(arg0,s16 *,0x74)=arg1;
 if(M2C_FIELD(arg0,s8 *,0x73)!=1)return 0;
-return func_0201fb3c(arg0);
+return SocketSubmitConnectTask(arg0);
 }
 
-/* Give the socket a receive timeout: refuse when the network stack is down, the
- * socket is torn down or busy, or an operation is already running; a finished
- * operation reports its result, a running one asks for its timeout, and an idle
- * socket starts a receive that expires after timeout/token. */
-s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
+/* Start a connect to the peer port and IPv4 address: refuse when the network
+ * stack is down, the socket is torn down or busy, or an operation is already
+ * running.  A finished operation reports its result, a running one its progress,
+ * and an idle socket points its raw connection at the peer and queues the
+ * connect task. */
+s32 SocketConnect(void *sock, s16 peerPort, s32 peerAddr) {
     s32 SocketIsUnregistered();
-    s32 func_0201fb3c(void *);
+    s32 SocketSubmitConnectTask(void *);
     extern s32 gSocketDefaultRecvTimeout;
     s32 ready, usable, result;
     s8 state;
@@ -116,42 +117,49 @@ s32 SocketSetReceiveTimeout(void *sock, s16 timeout, s32 token) {
             return M2C_FIELD(sock, s8 *, SOCK_BLOCKING) == SOCK_BLOCKING_ON ? -30 : 0;
         }
         if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_BUSY) {
-            return (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) ? M2C_FIELD(sock, s32 *, SOCK_RECV_TIMEOUT) : gSocketDefaultRecvTimeout;
+            return (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) ? M2C_FIELD(sock, s32 *, SOCK_STATUS) : gSocketDefaultRecvTimeout;
         }
-        M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
-        M2C_FIELD(sock, s32 *, SOCK_TIMEOUT_RESULT) = token;
-        result = func_0201fb3c(sock);
+        M2C_FIELD(sock, s16 *, SOCK_CONNECT_PORT) = peerPort;
+        M2C_FIELD(sock, s32 *, SOCK_CONNECT_ADDR) = peerAddr;
+        result = SocketSubmitConnectTask(sock);
         if (M2C_FIELD(sock, s8 *, SOCK_BLOCKING) != SOCK_BLOCKING_ON) result = -26;
         return result;
     }
-    M2C_FIELD(sock, s16 *, SOCK_TIMEOUT) = timeout;
-    M2C_FIELD(sock, s32 *, SOCK_TIMEOUT_RESULT) = token;
+    M2C_FIELD(sock, s16 *, SOCK_CONNECT_PORT) = peerPort;
+    M2C_FIELD(sock, s32 *, SOCK_CONNECT_ADDR) = peerAddr;
     return 0;
 }
 
-s32 func_0201fb3c(void *arg0) {
-s32 func_0201fb94(void *);
+/* Queue a connect task for the socket: its arguments are the local port bound to
+ * the connection and the peer port/address, and the socket is marked busy until
+ * the task reports. */
+s32 SocketSubmitConnectTask(void *sock) {
+s32 SocketConnectTask(void *);
 void *SocketAllocTask(s32 (*)(void *),void *,s8);
 s32 func_0201f318(void *,void *);
-void *p=SocketAllocTask(func_0201fb94,arg0,M2C_FIELD(arg0,s8 *,SOCK_BLOCKING));
-if(!p)return -33;
-M2C_FIELD(p,u16 *,0x10)=M2C_FIELD(arg0,u16 *,0x74);
-M2C_FIELD(p,u16 *,0x12)=M2C_FIELD(arg0,u16 *,0x76);
-M2C_FIELD(p,s32 *,0x14)=M2C_FIELD(arg0,s32 *,0x78);
-M2C_FIELD(arg0,s16 *,0x70)|=2;
-return func_0201f318(arg0,p);
+void *task=SocketAllocTask(SocketConnectTask,sock,M2C_FIELD(sock,s8 *,SOCK_BLOCKING));
+if(!task)return -33;
+M2C_FIELD(task,u16 *,CONNECT_TASK_LOCAL_PORT)=M2C_FIELD(sock,u16 *,SOCK_RECV_PORT);
+M2C_FIELD(task,u16 *,CONNECT_TASK_PEER_PORT)=M2C_FIELD(sock,u16 *,SOCK_CONNECT_PORT);
+M2C_FIELD(task,s32 *,CONNECT_TASK_PEER_ADDR)=M2C_FIELD(sock,s32 *,SOCK_CONNECT_ADDR);
+M2C_FIELD(sock,s16 *,SOCK_FLAGS)|=SOCK_FLAG_BUSY;
+return func_0201f318(sock,task);
 }
 
-s32 func_0201fb94(void *arg0) {
-s32 func_0201d3a4(); void *p,*q;s32 v;s8 t;
-p=M2C_FIELD(arg0,void **,4);v=0;q=M2C_FIELD(p,void **,0x64);
-LockMutex(q+0xe0);
-func_0201d190(M2C_FIELD(arg0,u16 *,0x10),M2C_FIELD(arg0,u16 *,0x12),M2C_FIELD(arg0,s32 *,0x14));
-M2C_FIELD(q,s32 *,0xf8)=v;t=M2C_FIELD(arg0,s8 *,12);
-if(t==0 || t==4)v=func_0201d3a4();
-UnlockMutex(q+0xe0);
-if(v){M2C_FIELD(p,volatile s16 *,0x70)|=0x40;return -76;}
-M2C_FIELD(p,volatile s16 *,0x70)|=4;return 0;
+/* Connect task of a socket: point the raw connection at the peer from the task
+ * record and run the transport's connect under the connection mutex.  On failure
+ * the socket is flagged and SOCK_CONNECT_FAILED reported; otherwise the operation
+ * is marked done. */
+s32 SocketConnectTask(void *task) {
+s32 ConnectTransport(); void *socket,*raw;s32 result;s8 socketState;
+socket=M2C_FIELD(task,void **,TASK_SOCKET);result=0;raw=M2C_FIELD(socket,void **,SOCK_RAW);
+LockMutex(raw+CONN_MUTEX);
+SetConnectionEndpoint(M2C_FIELD(task,u16 *,CONNECT_TASK_LOCAL_PORT),M2C_FIELD(task,u16 *,CONNECT_TASK_PEER_PORT),M2C_FIELD(task,s32 *,CONNECT_TASK_PEER_ADDR));
+M2C_FIELD(raw,s32 *,CONN_RECV_PENDING)=result;socketState=M2C_FIELD(task,s8 *,12);
+if(socketState==0 || socketState==4)result=ConnectTransport();
+UnlockMutex(raw+CONN_MUTEX);
+if(result){M2C_FIELD(socket,volatile s16 *,SOCK_FLAGS)|=SOCK_FLAG_TIMEOUT;return SOCK_CONNECT_FAILED;}
+M2C_FIELD(socket,volatile s16 *,SOCK_FLAGS)|=SOCK_FLAG_DONE;return 0;
 }
 
 #pragma optimization_level 2
@@ -530,12 +538,12 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     s32 var_r1_2;
     s8 temp_r0;
 
-    if (SocketIsUnregistered() != 0) {
+    if (SocketIsUnregistered(arg0) != 0) {
         return -28;
     }
     var_r1 = 0;
-    if (arg0 != NULL && (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1)) {
-        var_r1 = 1;
+    if (arg0 != NULL) {
+        var_r1 = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
     }
     if (var_r1 == 0) {
         return -39;
@@ -546,12 +554,16 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
         var_r1_2 = 0;
     }
     if (var_r1_2 != 0) {
-        if (!(M2C_FIELD(arg0, s16 *, 0x70) & 4) || (M2C_FIELD(arg0, s16 *, 0x70) & 8)) {
+        if (!(M2C_FIELD(arg0, volatile s16 *, 0x70) & 4) || (M2C_FIELD(arg0, volatile s16 *, 0x70) & 8)) {
             return -56;
         }
     }
     temp_r4 = (s32) M2C_FIELD(arg0, void **, 0x68);
-    if (!(arg5 & 4) && M2C_FIELD(arg0, s8 *, 0x72) == 0) {
+    if (arg5 & 4) {
+        goto nonblocking;
+    }
+    if (M2C_FIELD(arg0, s8 *, 0x72) == 0) {
+nonblocking:
         if (TryLockMutex(temp_r4 + 0xE0) == 0) {
             return -6;
         }
@@ -566,7 +578,7 @@ s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
 }
 
 s32 func_0202058c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    s32 func_02020690(void *, s32, s32, s32 *, s32);
+    s32 SocketGetSendRingSpace(void *, s32, s32, s32 *, s32);
     s32 func_02020738(void *, s32, s32, s32, s32, s32, s32);
     s32 sp14;
     s32 sp10;
@@ -595,7 +607,7 @@ s32 func_0202058c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
     if (var_r8 > 0) {
         var_r11 = arg5 & 1;
         do {
-            temp_r0_3 = func_02020690(arg0, var_r8, sp10, &sp14, arg5);
+            temp_r0_3 = SocketGetSendRingSpace(arg0, var_r8, sp10, &sp14, arg5);
             if (temp_r0_3 > 0) {
                 if (func_02020738(arg0, var_r9, temp_r0_3, sp14, spC, arg4, arg5) <= 0) {
                     return -6;
@@ -616,40 +628,41 @@ s32 func_0202058c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) 
 
 #pragma dont_inline reset
 
-s32 func_02020690(void *arg0, s32 arg1, s32 arg2, s32 *arg3, s32 arg4) {
+/* Get a writable span's starting index and size, sleeping until enough room opens if requested. */
+s32 SocketGetSendRingSpace(void *socket, s32 requestedBytes, s32 minimumBytes, s32 *writePosition, s32 flags) {
     M2C_UNK OS_SleepThread(void *);
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 func_02020714(void *);
-    s32 temp_r11;
-    void *temp_r4;
-    s32 var_r8;
-    s32 var_r5;
+    s32 SocketGetSendRingFreeBytes(void *);
+    s32 interruptState;
+    void *sendConnection;
+    s32 threshold;
+    s32 writableBytes;
 
-    var_r8 = arg2;
-    temp_r4 = M2C_FIELD(arg0, void **, 0x68);
-    if (var_r8 > arg1) {
-        var_r8 = arg1;
+    threshold = minimumBytes;
+    sendConnection = M2C_FIELD(socket, void **, SOCK_TX_CONN);
+    if (threshold > requestedBytes) {
+        threshold = requestedBytes;
     }
-    temp_r11 = OS_DisableInterrupts();
-loop_3:
-    var_r5 = func_02020714(arg0);
-    if (var_r5 >= var_r8) {
-        if (var_r5 >= arg1) {
-            var_r5 = arg1;
+    interruptState = OS_DisableInterrupts();
+checkSpace:
+    writableBytes = SocketGetSendRingFreeBytes(socket);
+    if (writableBytes >= threshold) {
+        if (writableBytes >= requestedBytes) {
+            writableBytes = requestedBytes;
         }
-        *arg3 = (s32) M2C_FIELD(temp_r4, u16 *, 0x100);
-    } else if (!(arg4 & 1)) {
-        var_r5 = 0;
+        *writePosition = (s32) M2C_FIELD(sendConnection, u16 *, SEND_RING_WRITE);
+    } else if (!(flags & SOCK_SEND_WAIT_FOR_SPACE)) {
+        writableBytes = 0;
     } else {
-        OS_SleepThread(temp_r4 + 0x104);
-        goto loop_3;
+        OS_SleepThread(sendConnection + SEND_RING_WAIT);
+        goto checkSpace;
     }
-    OS_RestoreInterrupts(temp_r11);
-    return var_r5;
+    OS_RestoreInterrupts(interruptState);
+    return writableBytes;
 }
 
-s32 func_02020714(void *arg0) {
+s32 SocketGetSendRingFreeBytes(void *arg0) {
     volatile u16 *q = M2C_FIELD(arg0, void **, 0x68) + 0x100;
     s32 c = M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), s32 *, 0xf8);
     s32 a = q[0];

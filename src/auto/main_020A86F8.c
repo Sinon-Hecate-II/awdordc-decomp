@@ -105,7 +105,7 @@ u8 func_020a8948(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 9);
 }
 
-u8 func_020a8958(s32 arg0) {
+u8 MapData_GetCategory(s32 arg0) {
     if ((arg0 >= 0xE1) && (arg0 < 0x1A9)) {
         return 6U;
     }
@@ -478,24 +478,26 @@ s16 GetTextSpriteGlyphX(void *sprite, s32 index) {
     return x;
 }
 
-void func_020a947c(void *arg0,u32 arg1) {
+/* Set a number sprite's glyph metrics for a font size: sizes 0..2 use 8x8
+ * glyphs, sizes 3..5 16x16 glyphs; other sizes leave the sprite unchanged. */
+void SetTextSpriteFont(void *sprite,u32 font) {
 extern M2C_UNK gSpriteDesc8x8,gSpriteDesc16x16;
-switch(arg1){
+switch(font){
 case 0:case 1:case 2:
-M2C_FIELD(arg0,u8 *,20)=8;
-M2C_FIELD(arg0,u8 *,21)=8;
-M2C_FIELD(arg0,u8 *,23)=8;
-M2C_FIELD(arg0,u8 *,24)=8;
-M2C_FIELD(arg0,u8 *,22)=1;
-M2C_FIELD(arg0,void **,36)=&gSpriteDesc8x8;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_W)=8;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_H)=8;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_ADVANCE)=8;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_GLYPH_H)=8;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_TILE_STEP)=1;
+M2C_FIELD(sprite,void **,TEXT_SPRITE_DESC)=&gSpriteDesc8x8;
 break;
 case 3:case 4:case 5:
-M2C_FIELD(arg0,u8 *,20)=16;
-M2C_FIELD(arg0,u8 *,21)=16;
-M2C_FIELD(arg0,u8 *,23)=10;
-M2C_FIELD(arg0,u8 *,24)=16;
-M2C_FIELD(arg0,u8 *,22)=4;
-M2C_FIELD(arg0,void **,36)=&gSpriteDesc16x16;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_W)=16;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_H)=16;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_ADVANCE)=10;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_GLYPH_H)=16;
+M2C_FIELD(sprite,u8 *,TEXT_SPRITE_TILE_STEP)=4;
+M2C_FIELD(sprite,void **,TEXT_SPRITE_DESC)=&gSpriteDesc16x16;
 break;
 }
 }

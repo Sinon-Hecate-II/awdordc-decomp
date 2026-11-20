@@ -194,7 +194,7 @@ s32 b=EaseInterpolate(4,0,0x40000,top,bottom);
 func_0208c0d0(arg0,(u8)a);M2C_FIELD(arg0,s32 *,0x40)=b;
 }
 #pragma opt_propagation reset
-void func_020b65e4(void *arg0) {
+void InitFallingFlarePosition(void *arg0) {
     s32 temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, s32 *, 0x38);
@@ -224,20 +224,24 @@ void UpdateFlareSprite(void *sprite) {
     M2C_FIELD(copy, s32 *, 0x38) = M2C_FIELD(sprite, s32 *, 0x38);
 }
 
-void func_020b6698(void *arg0) {
+/* Spawn a falling flare over the task's cell: reset the effect sprite pool, load
+ * the flare sheet, place the flare sprite on the task's tile with the descent
+ * initialiser as its create callback and the flare update as its per-frame one,
+ * then play the flare launch sound there. */
+void CreateFallingFlareSprite(void *task) {
     void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK SetAnimatedSpriteFrame(void *, s32);
-    void func_020b65e4(void *);
+    void InitFallingFlarePosition(void *);
     void UpdateFlareSprite(void *);
-    extern M2C_UNK data_02128ed4, data_02128edc;
-    void *p;
+    extern M2C_UNK gFallingFlareName, gFallingFlareSprite;
+    void *flare;
     ResetEffectSpritePool();
-    LoadEffectSpriteSheet(&data_02128ed4, 0);
-    p = func_020b5188(&data_02128edc, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 16, 0, 0, arg0);
-    SetAnimatedSpriteFrame(p, 1);
-    M2C_FIELD(p, void (**)(void *), 0x68) = func_020b65e4;
-    M2C_FIELD(p, void (**)(void *), 0x6C) = UpdateFlareSprite;
-    PlaySoundAtTile(0x130, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    LoadEffectSpriteSheet(&gFallingFlareName, 0);
+    flare = func_020b5188(&gFallingFlareSprite, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46), 16, 0, 0, task);
+    SetAnimatedSpriteFrame(flare, 1);
+    M2C_FIELD(flare, void (**)(void *), 0x68) = InitFallingFlarePosition;
+    M2C_FIELD(flare, void (**)(void *), 0x6C) = UpdateFlareSprite;
+    PlaySoundAtTile(0x130, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46));
 }
 
 void func_020b6718(void *arg0) {
@@ -340,7 +344,7 @@ else func_0208facc(0x6d);
 s32 PanMapViewToTargetCenter(s16 start) {
     s32 GetTargetCount(void);
     void *GetTargetPosition(s32);
-    s32 func_020720f0(s32, s32);
+    s32 RuntimeIntDivMod(s32, s32);
     extern void **gCurrentMap;
     BattleMapUnit *unit;
     s32 sumX = 0, sumY = 0, count = 0, i = start;
@@ -353,7 +357,7 @@ s32 PanMapViewToTargetCenter(s16 start) {
         sumY += unit->y;
         count++;
     }
-    if (count > 0) PanMapViewToTile(func_020720f0(sumX, count), func_020720f0(sumY, count));
+    if (count > 0) PanMapViewToTile(RuntimeIntDivMod(sumX, count), RuntimeIntDivMod(sumY, count));
 }
 
 void UpdateAuroraAimMarker(void *arg0) {

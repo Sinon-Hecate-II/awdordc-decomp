@@ -50,7 +50,7 @@ M2C_FIELD(slot,u16 *,4)=0;*done=1;return freeSlot+14;
 #pragma scheduling on
 void func_0201ce18(u8 *arg0, s32 arg1) {
     s32 Checksum(u8 *, u32);
-    s32 func_0201a778(void);
+    s32 IsLocalDestinationAddress(void);
     M2C_UNK UpdateArpCache(void *, M2C_UNK, s32);
     M2C_UNK HandleIcmpPacket(void *, u8 *, M2C_UNK);
     M2C_UNK TcpReceiveSegment(void *, void *, s32);
@@ -71,7 +71,7 @@ void func_0201ce18(u8 *arg0, s32 arg1) {
         u8 b0;
         u32 dataA, dataB;
 
-        if (func_0201a778() == 0) {
+        if (IsLocalDestinationAddress() == 0) {
             return;
         }
         t2 = M2C_FIELD(arg0, u16 *, 2);
@@ -232,7 +232,7 @@ void func_0201d164(void) {
     M2C_FIELD(q, s32 *, 0x44) = 0;
 }
 
-void func_0201d190(s32 arg0, s32 arg1, s32 arg2) {
+void SetConnectionEndpoint(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gSocketManager;
     extern M2C_UNK gNetStack;
     u16 func_0201d04c(void);
@@ -367,7 +367,7 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_0201d3a4(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return TcpConnect(p);}return 1;}
+s32 ConnectTransport(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return TcpConnect(p);}return 1;}
 
 s32 func_0201d3e4(u16 *arg0,u32 *arg1) {
 extern M2C_UNK gSocketManager;
@@ -400,12 +400,12 @@ void func_0201d434(void *arg0) {
 }
 
 void func_0201d484(void) {
-void func_020250d0(void *);
+void TlsSendCloseNotify(void *);
 void func_0201d434(void *);
 extern M2C_UNK gSocketManager;
 void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
-if(M2C_FIELD(p,u8*,9)!=0)func_020250d0(p);
+if(M2C_FIELD(p,u8*,9)!=0)TlsSendCloseNotify(p);
 func_0201d434(p);
 }
 

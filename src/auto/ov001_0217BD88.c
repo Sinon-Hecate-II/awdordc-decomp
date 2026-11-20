@@ -437,22 +437,25 @@ void func_ov001_0217cc08(void) {
 }
 
 void Ov001_ShowWfcErrorScreen(void) {
-    void func_ov001_0217cc68(void);
+    void Ov001_LoadWfcErrorBackground(void);
     M2C_UNK DrawWfcErrorPanel();
     extern M2C_UNK func_ov001_0217d044;
-    func_ov001_0217cc68();
+    Ov001_LoadWfcErrorBackground();
     DrawWfcErrorPanel();
     Ov001_SetStepCallback(&func_ov001_0217d044);
 }
 
-void func_ov001_0217cc68(void) {
-M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-extern M2C_UNK data_ov001_021907e8, GX_LoadBG2Scr;
-Ov001_LoadAsset(&data_ov001_021907e8, &GX_LoadBG2Scr);
-M2C_FIELD((void *)0x04001008,u16 *,0) = (M2C_FIELD((void *)0x04001008,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x04001008,u16 *,2) = (M2C_FIELD((void *)0x04001008,u16 *,2)&~3)|3;
-*(u16 *)0x04000008 = (*(u16 *)0x04000008&~3)|3;
-M2C_FIELD((void *)0x0400000A,u16 *,0) = (M2C_FIELD((void *)0x0400000A,u16 *,0)&~3)|3;
-M2C_FIELD((void *)0x0400000A,u16 *,2) = (M2C_FIELD((void *)0x0400000A,u16 *,2)&~3)|3;
+/* Load the Wi-Fi error background map (char/jb4Error.nsc.l) into BG2 and put
+ * BG0..BG2 of the main engine and BG0/BG1 of the sub engine at the lowest
+ * priority, so that the map covers them. */
+void Ov001_LoadWfcErrorBackground(void) {
+    M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
+    extern M2C_UNK gOv001WfcErrorBgMapPath, GX_LoadBG2Scr;
+    Ov001_LoadAsset(&gOv001WfcErrorBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 

@@ -11,7 +11,7 @@ extern const u16 data_ov005_02220030[];
 extern u8 gRecordsMenuState[],data_ov005_02220484[],gRecordSubBgId[];
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 void LoadUiGraphicsBank(s32);void *HeapAllocBlock(s32);void func_02082c84(void);
-void GX_SetBankForBG(s32);void GX_SetBankForOBJ(s32);void func_02003124(s32);void func_020031cc(s32);void func_02002ab8(s32);void func_0200323c(s32);
+void GX_SetBankForBG(s32);void GX_SetBankForOBJ(s32);void func_02003124(s32);void func_020031cc(s32);void func_02002ab8(s32);void GX_SetBankForBGExtPlttSub(s32);
 void MI_CpuFill32(s32,void *,s32);s32 func_020ad5dc(void);s32 RecordsMenu_IsRecordAvailable(s32);s32 func_ov005_02214120(s32);
 s32 RandomIntRange(s32,s32);void func_02090248(s32);void func_ov005_022140e4(void);void func_020822b8(void *);
 
@@ -20,7 +20,7 @@ void func_ov005_02215664(void *arg0){
 volatile ScreenConfig02215664 first=*(const ScreenConfig02215664 *)(data_ov005_02220030+6);
 volatile ScreenConfig02215664 second=*(const ScreenConfig02215664 *)data_ov005_02220030;
 s32 i,j,k,t,saved;void *w;
-LoadUiGraphicsBank(7);M2C_FIELD(gRecordsMenuState,u8 **,8)=HeapAllocBlock(0x188);func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);func_0200323c(128);MI_CpuFill32(0,M2C_FIELD(gRecordsMenuState,u8 **,8),0x188);
+LoadUiGraphicsBank(7);M2C_FIELD(gRecordsMenuState,u8 **,8)=HeapAllocBlock(0x188);func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);func_02002ab8(16);GX_SetBankForBGExtPlttSub(128);MI_CpuFill32(0,M2C_FIELD(gRecordsMenuState,u8 **,8),0x188);
 M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,0)=1;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,2)=-1;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,136)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,134)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,136);M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u8 *,138)=0;
 M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,144)=-1;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,142)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,144);M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,140)=M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,142);
 M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,146)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,148)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,150)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,152)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,154)=func_020ad5dc();M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,158)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),u16 *,156)=0;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,160)=-1;M2C_FIELD(M2C_FIELD(gRecordsMenuState,u8 **,8),s16 *,226)=-1;
@@ -60,25 +60,27 @@ M2C_FIELD(w,u32 *,64)=(M2C_FIELD(w,u32 *,64)&~0x3fc0000)|0x5c0000;
 M2C_FIELD(w,u16 *,60)=0xc00;
 gCur3DSpriteEngine=saved;LoadScenePanelGraphicsOnBothEngines();RecordsMenu_DrawList(0);}
 
-void func_ov005_02216498(void) {
-    M2C_UNK SetSpriteSlotFrameRect(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK SelectSpriteSlot(M2C_UNK);
-    M2C_UNK UnlockInactiveSpriteSlots();
-    M2C_UNK AddSpriteSlot(M2C_UNK, s32, M2C_UNK *, s32);
-    extern M2C_UNK data_ov005_02220490;
-    extern M2C_UNK data_ov005_022204b8;
-    s32 var_r8;
-    s32 var_r9;
+/* Creates the records screen's six list rows: each row's wide selectable
+ * sprite on the left and its enable toggle on the right. */
+void RecordsMenu_CreateRowSlots(void) {
+    M2C_UNK SetSpriteSlotFrameRect(s32, s32, s32, s32);
+    M2C_UNK SelectSpriteSlot(s32);
+    M2C_UNK UnlockInactiveSpriteSlots(void);
+    M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
+    extern M2C_UNK sRecordsRowSlotDef;
+    extern M2C_UNK sRecordsToggleSlotDef;
+    s32 row;
+    s32 y;
 
     UnlockInactiveSpriteSlots();
     SetSpriteSlotFrameRect(0, -0x10, 0x100, -0x10);
-    var_r8 = 0;
-    var_r9 = 0x18;
+    row = 0;
+    y = 0x18;
     do {
-        AddSpriteSlot(4, var_r9, &data_ov005_02220490, var_r8);
-        AddSpriteSlot(0xE0, var_r9, &data_ov005_022204b8, var_r8);
-        var_r8 += 1;
-        var_r9 += 0x10;
-    } while (var_r8 < 6);
+        AddSpriteSlot(4, y, &sRecordsRowSlotDef, row);
+        AddSpriteSlot(0xE0, y, &sRecordsToggleSlotDef, row);
+        row += 1;
+        y += 0x10;
+    } while (row < 6);
     SelectSpriteSlot(0);
 }

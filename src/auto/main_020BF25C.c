@@ -223,7 +223,7 @@ M2C_FIELD(&gGameSettings,u32 *,8)=M2C_FIELD(a,u32 *,8);
 M2C_FIELD(&gGameSettings,u32 *,12)=M2C_FIELD(a,u32 *,12);
 }
 
-void func_020bfbc0(void *a) {
+void MapSettings_CopyFromGameSettings(void *a) {
 if (!a) a=GetMapSettings();
 M2C_FIELD(a,SavePair *,0)=M2C_FIELD(&gGameSettings,SavePair *,0);
 M2C_FIELD(a,SavePair *,4)=M2C_FIELD(&gGameSettings,SavePair *,4);

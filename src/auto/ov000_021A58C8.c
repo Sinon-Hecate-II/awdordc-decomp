@@ -311,15 +311,29 @@ s32 FindAiTargetCandidateByEnemyDistanceAndGroup(s32 targetType, s32 targetGroup
     return bestIndex;
 }
 
-s32 FindBestCandidateInGroup(s32 a,s32 b) {
-extern u8 *gAiState;extern M2C_UNK gAiTargetCandidates;
-u8 *p; s32 i,best,result;u8 value;
-best=0;result=-1;p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12){
-if((u32)p[3]<0xfcU && (a==4 || p[2]==a) && (s8)p[4]==b){
-value=p[6];if(best<value){best=value;result=i;}
-}}
-return result;
+/* Pick the eligible target in this group with the most counted enemies, or return -1 if none has any. */
+s32 FindBestCandidateInGroup(s32 targetType, s32 targetGroup) {
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *candidate;
+    s32 i, bestEnemyCount, bestIndex;
+    u8 enemyCount;
+
+    bestEnemyCount = 0;
+    bestIndex = -1;
+    candidate = (u8 *)&gAiTargetCandidates;
+    for (i = 0; i < gAiState[AI_STATE_TARGET_COUNT]; i++, candidate += AI_CANDIDATE_STRIDE) {
+        if ((u32)candidate[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED &&
+            (targetType == AI_CANDIDATE_TYPE_ANY || candidate[AI_CANDIDATE_TYPE] == targetType) &&
+            (s8)candidate[AI_CANDIDATE_GROUP] == targetGroup) {
+            enemyCount = candidate[AI_PROPERTY_CANDIDATE_ENEMY_COUNT];
+            if (bestEnemyCount < enemyCount) {
+                bestEnemyCount = enemyCount;
+                bestIndex = i;
+            }
+        }
+    }
+    return bestIndex;
 }
 
 s32 func_ov000_021a64c4(void) { extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates; 

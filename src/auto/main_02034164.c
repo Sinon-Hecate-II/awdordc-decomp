@@ -32,8 +32,8 @@ void HttpClientTask(Unk02034164 *client) {
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void func_02022128(void *, s32);
     void func_02025188(s32);
-    void func_0201d190(s32, s32, s32);
-    s32 func_0201d3a4(void);
+    void SetConnectionEndpoint(s32, s32, s32);
+    s32 ConnectTransport(void);
     void func_0201d224(void);
     void ClearCurrentRawConnection(void);
     s32 SendNetPacket(s32, s32);
@@ -93,8 +93,8 @@ void HttpClientTask(Unk02034164 *client) {
         func_02022128(data_020fb528, 0xc);
         func_02025188(1);
     }
-    func_0201d190(0, client->port, host);
-    if (func_0201d3a4() != 0) {
+    SetConnectionEndpoint(0, client->port, host);
+    if (ConnectTransport() != 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 3;
         func_0201d224();
         ClearCurrentRawConnection();

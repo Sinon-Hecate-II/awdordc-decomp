@@ -1,10 +1,11 @@
 /* 27 functions from 0x0216DBDC to 0x0216EB84 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 typedef struct { volatile s32 count; s32 index; } ScanCounters;
 
 #pragma thumb on
 
-s32 func_ov001_0216dee8(void) {
+s32 WhAdvanceConnectionState(void) {
     s32 func_02027518(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 WFC_ProcessLinkStep();
     M2C_UNK WFC_ConnectStep(void *, void (*)(void));
@@ -34,7 +35,7 @@ s32 func_ov001_0216dee8(void) {
 }
 
 s32 func_ov001_0216df50(s32 arg0, s32 arg1) {
-    M2C_UNK func_02007e70(s32, s32, M2C_UNK);
+    M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
     s32 func_02029274();
     M2C_UNK func_020292cc(M2C_UNK);
     s32 func_02029348(u16);
@@ -50,7 +51,7 @@ s32 func_ov001_0216df50(s32 arg0, s32 arg1) {
         if (temp_r0 > 0) {
 loop_2:
             if (var_r4 < arg1) {
-                func_02007e70(func_02029348((u16) var_r4), var_r5, 0xC0);
+                MIi_CpuCopy32(func_02029348((u16) var_r4), var_r5, 0xC0);
                 var_r4 += 1;
                 var_r5 += 0xC0;
                 if (var_r4 < temp_r0) {
@@ -84,7 +85,7 @@ s32 func_ov001_0216e0b4(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_StartWirelessStep();
-    s32 func_ov001_0216dee8();
+    s32 WhAdvanceConnectionState();
     extern M2C_UNK gWhState;
     s32 temp_r4;
 
@@ -98,7 +99,7 @@ s32 func_ov001_0216e0b4(void) {
         OS_RestoreInterrupts(temp_r4);
         return 1;
     }
-    if (func_ov001_0216dee8() == 1) {
+    if (WhAdvanceConnectionState() == 1) {
         M2C_FIELD(&gWhState, s32 *, 0x2C) = 2;
         OS_RestoreInterrupts(temp_r4);
         return 1;
@@ -107,16 +108,33 @@ s32 func_ov001_0216e0b4(void) {
     return 0;
 }
 
-s32 WhStartConnection(s32 a,s32 b,s32 c) {
-extern M2C_UNK gWhState;
-s32 t=OS_DisableInterrupts();
-M2C_FIELD(&gWhState,s32 *,0x58)=c;
-if(b)MI_CpuCopy8(b,M2C_FIELD(&gWhState,s32 *,0x28),0x60);
-else MI_CpuFill8(M2C_FIELD(&gWhState,s32 *,0x28),0,0x60);
-func_02007e70(a,M2C_FIELD(&gWhState,s32 *,0x4c),0xc0);
-if(func_ov001_0216dee8()==1){M2C_FIELD(&gWhState,s32 *,0x2c)=8;OS_RestoreInterrupts(t);return 1;}
-if(M2C_FIELD(&gWhState,s32 *,0x2c)==3 && WFC_StartConnection(M2C_FIELD(&gWhState,s32 *,0x4c),M2C_FIELD(&gWhState,s32 *,0x28),M2C_FIELD(&gWhState,s32 *,0x58))==3){M2C_FIELD(&gWhState,s32 *,0x2c)=8;OS_RestoreInterrupts(t);return 1;}
-OS_RestoreInterrupts(t);return 0;
+/* Stage the host descriptor and settings, then queue the connection or its prerequisite step. */
+s32 WhStartConnection(s32 hostDescriptor, s32 settings, s32 connectionFlags) {
+    extern M2C_UNK gWhState;
+    s32 interruptState = OS_DisableInterrupts();
+
+    M2C_FIELD(&gWhState, s32 *, WH_STATE_CONNECT_FLAGS) = connectionFlags;
+    if (settings) {
+        MI_CpuCopy8(settings, M2C_FIELD(&gWhState, s32 *, WH_STATE_CONNECT_SETTINGS), WH_CONNECT_SETTINGS_BYTES);
+    } else {
+        MI_CpuFill8(M2C_FIELD(&gWhState, s32 *, WH_STATE_CONNECT_SETTINGS), 0, WH_CONNECT_SETTINGS_BYTES);
+    }
+    MIi_CpuCopy32(hostDescriptor, M2C_FIELD(&gWhState, s32 *, WH_STATE_BSS_DESC), WH_BSS_DESC_BYTES);
+    if (WhAdvanceConnectionState() == 1) {
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) = WH_PHASE_CONNECT_PENDING;
+        OS_RestoreInterrupts(interruptState);
+        return 1;
+    }
+    if (M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) == WH_PHASE_READY_TO_CONNECT &&
+        WFC_StartConnection(M2C_FIELD(&gWhState, s32 *, WH_STATE_BSS_DESC),
+                            M2C_FIELD(&gWhState, s32 *, WH_STATE_CONNECT_SETTINGS),
+                            M2C_FIELD(&gWhState, s32 *, WH_STATE_CONNECT_FLAGS)) == WH_WFC_STEP_QUEUED) {
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) = WH_PHASE_CONNECT_PENDING;
+        OS_RestoreInterrupts(interruptState);
+        return 1;
+    }
+    OS_RestoreInterrupts(interruptState);
+    return 0;
 }
 
 /* Start the Nintendo WFC session on the caller's work block: carve the block
@@ -458,11 +476,11 @@ s32 r=func_020216cc(a,c,d,0,b);if(r<0)r=-4;return r;
 #pragma thumb on
 void func_ov001_0216ea48(s32 a,s32 b,s32 c) {
 s32 GetLocalIpAddress(void);
-void func_02021d14(s32,void *);
+void IpToBytes(s32,void *);
 s32 func_ov001_0216ea30(s32,s32,s32,s32,s32);
 u8 buf[12];
 buf[4]=8;buf[5]=2;*(s32 *)(buf+8)=-1;*(u16 *)(buf+6)=0x1e6;
-func_02021d14(GetLocalIpAddress(),buf);
+IpToBytes(GetLocalIpAddress(),buf);
 func_ov001_0216ea30(a,(s32)(buf+4),(s32)buf,b,c);
 }
 

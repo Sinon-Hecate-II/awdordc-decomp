@@ -162,15 +162,23 @@ void func_0203d910(s32 a, s32 b)
     }
 }
 #pragma pop
-void func_0203db94(s32 arg0,s32 arg1,u8 *arg2) {
- s32 ExtractSlashField(void *,u8 *,s32); s32 strtoul(void *,s32,s32);
- void HandleConnectionCommand(s32,s32,s32,s32,s32 *,s32);
- char buf[16]; s32 values[128]; s32 i;
- for(i=0;i<128;i++) {
- if(ExtractSlashField(buf,arg2+1,i)==-1) break;
- values[i]=strtoul(buf,0,10);
- }
- HandleConnectionCommand(arg2[0],arg1,0,0,values,i);
+/* Decode the command byte and slash-separated decimal arguments in a MAT message. */
+void HandleConnectionTextCommand(s32 unusedConnection, s32 peerId, u8 *message) {
+    s32 ExtractSlashField(u8 *, u8 *, s32);
+    u32 strtoul(const char *, char **, s32);
+    s32 HandleConnectionCommand(s32, s32, s32, s32, s32 *, s32);
+    enum { MAX_COMMAND_ARGUMENTS = 128, ARGUMENT_TEXT_SIZE = 16 };
+    char field[ARGUMENT_TEXT_SIZE];
+    s32 arguments[MAX_COMMAND_ARGUMENTS];
+    s32 argumentCount;
+
+    for (argumentCount = 0; argumentCount < MAX_COMMAND_ARGUMENTS; argumentCount++) {
+        if (ExtractSlashField((u8 *)field, message + 1, argumentCount) == -1) {
+            break;
+        }
+        arguments[argumentCount] = strtoul(field, 0, 10);
+    }
+    HandleConnectionCommand(message[0], peerId, 0, 0, arguments, argumentCount);
 }
 
 void func_0203dc18(void) {

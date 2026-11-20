@@ -43,7 +43,7 @@ void func_ov001_02182ac4(void) {
 }
 
 void func_ov001_02182b00(void) {
- void func_ov001_02182b40(void);
+ void Ov001_LoadWfcConnectDoneBg(void);
  M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
  M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
  M2C_UNK Ov001_PlaySound(M2C_UNK);
@@ -51,23 +51,26 @@ void func_ov001_02182b00(void) {
  void func_ov001_02182bc0(void);
  extern u8 data_ov001_02193de4;
  data_ov001_02193de4 = 0;
- func_ov001_02182b40();
+ Ov001_LoadWfcConnectDoneBg();
  Ov001_LoadObjLayoutBlock(8);
  Ov001_ShowMessageBox(0x29);
  Ov001_PlaySound(0x10);
  Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182bc0);
 }
 
-void func_ov001_02182b40(void) {
+/* Load the Wi-Fi connect screen's shared Multi background ("char/xb4Multi.nsc.l")
+ * for the connection-complete step, and lower BG0/BG1/BG2 on both engines. */
+void Ov001_LoadWfcConnectDoneBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190abc;
+    extern M2C_UNK gOv001WfcConnectDoneBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190abc, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001WfcConnectDoneBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02182bc0(void) {

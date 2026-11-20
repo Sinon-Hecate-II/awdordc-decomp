@@ -44,13 +44,14 @@ M2C_FIELD(record,volatile s32*,12)=v;
 }}
 
 
-#pragma push
-#pragma scheduling off
+#pragma opt_common_subs off
 void func_ov003_02203710(void *arg0,s32 arg1) {
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
 void func_ov003_02200dc8(void*,s32);void PlaySoundEffect(s32);
 void *ctx=M2C_FIELD(arg0,void**,0x44),*entry,*next;
-s32 old,index=M2C_FIELD(ctx,u8*,6),offset=(s16)index*(s16)24;
+s32 old;
+u8 index=M2C_FIELD(ctx,u8*,6);
+s32 offset=(s16)index*(s16)24;
 u8 state=M2C_FIELD(arg0,u8*,0x39),test;
 old=M2C_FIELD(ctx+offset,s32*,12);
 if((u8)(state==0)){
@@ -60,50 +61,198 @@ next=func_020abb9c(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
-PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if(MenuIsFixed(arg0))return;MenuDescribe(arg0);return;
+PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 2:
 next=func_020abbb4(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
-PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if(MenuIsFixed(arg0))return;MenuDescribe(arg0);return;
+PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 4:
 next=func_020abbcc(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
-PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if(MenuIsFixed(arg0))return;MenuDescribe(arg0);return;
+PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 case 8:
 next=func_020abbe4(M2C_FIELD(ctx,void**,0x10c));ctx=M2C_FIELD(arg0,void**,0x44);
 old=M2C_FIELD(M2C_FIELD(ctx,void**,0x10c),u16*,0x2e)&255;
 func_ov003_02200dc8(ctx,M2C_FIELD(next,u16*,0x2e)&255);
 if(old==(M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c),u16*,0x2e)&255))return;
-PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if(MenuIsFixed(arg0))return;MenuDescribe(arg0);return;
+PlaySoundEffect(0x10019);MenuCopyCursor(arg0);if (MenuIsFixed(arg0) == 0) MenuDescribe(arg0); return;
 default:return;
 }
 }else if((u8)(state==1)){switch(arg1){case 1:
-entry=ctx+index*24;M2C_FIELD(entry,s32*,12)+=M2C_FIELD(entry,s32*,24);MenuClampValue(entry);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,8));
-test=(u8)(index==1 || index==2 || index==6);
+{
+    s32 stepOffset = index*24;
+    s32 *value = (s32 *)((u8 *)ctx + 12 + stepOffset);
+    void *range = (u8 *)ctx + stepOffset;
+    *value += M2C_FIELD(range, s32 *, 24);
+    if (M2C_FIELD(range, u8 *, 28)) {
+        s32 current = *value;
+        if (current > M2C_FIELD(range, s32 *, 16)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) - (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current > M2C_FIELD(record, s32 *, 16));
+        }
+        current = *value;
+        if (current < M2C_FIELD((u8 *)ctx + stepOffset, s32 *, 20)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) + (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current < M2C_FIELD((u8 *)ctx + offset, s32 *, 20));
+        }
+    } else {
+        s32 max = M2C_FIELD(range, s32 *, 16);
+        s32 current = *value;
+        if (current > max)
+            current = max;
+        else {
+            s32 min = M2C_FIELD(range, s32 *, 20);
+            current = current < min ? min : current;
+        }
+        *value = current;
+    }
+}MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,8));
+{ u8 k = index + 255; test = (k <= 5) ? (0x23u >> k) & 1 : 0; }
 if(test&&!MenuIsFixed(arg0))MenuDescribe(arg0);
 if(old==M2C_FIELD(M2C_FIELD(arg0,void**,0x44)+offset,s32*,12))return;
 PlaySoundEffect(0x10011);return;
 case 8:
-test=(u8)((u8)(index+253)<=2);if(test){u8 i=0;do{ctx=M2C_FIELD(arg0,void**,0x44);entry=ctx+offset;M2C_FIELD(entry,s32*,12)+=M2C_FIELD(entry,s32*,24);MenuClampValue(entry);i++;}while(i<5);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,8));}
-test=0;switch((u8)(index+255)){case 0:case 1:case 5:test=1;break;}
+test=(u8)((u8)(index+253)<=2);if(test){u8 i=0;do{ctx=M2C_FIELD(arg0,void**,0x44);{
+    s32 stepOffset = offset;
+    s32 *value = (s32 *)((u8 *)ctx + stepOffset + 12);
+    void *range = (u8 *)ctx + stepOffset;
+    *value += M2C_FIELD(range, s32 *, 24);
+    if (M2C_FIELD(range, u8 *, 28)) {
+        s32 current = *value;
+        if (current > M2C_FIELD(range, s32 *, 16)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) - (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current > M2C_FIELD(record, s32 *, 16));
+        }
+        current = *value;
+        if (current < M2C_FIELD((u8 *)ctx + stepOffset, s32 *, 20)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) + (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current < M2C_FIELD((u8 *)ctx + offset, s32 *, 20));
+        }
+    } else {
+        s32 max = M2C_FIELD(range, s32 *, 16);
+        s32 current = *value;
+        if (current > max)
+            current = max;
+        else {
+            s32 min = M2C_FIELD(range, s32 *, 20);
+            current = current < min ? min : current;
+        }
+        *value = current;
+    }
+}i++;}while(i<5);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,8));}
+{ u8 k = index + 255; test = (k <= 5) ? (0x23u >> k) & 1 : 0; }
 if(test&&!MenuIsFixed(arg0))MenuDescribe(arg0);
 if(old==M2C_FIELD(M2C_FIELD(arg0,void**,0x44)+offset,s32*,12))return;
 PlaySoundEffect(0x10011);return;
 case 2:
-entry=ctx+index*24;M2C_FIELD(entry,s32*,12)-=M2C_FIELD(entry,s32*,24);MenuClampValue(entry);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,40));
-test=0;switch((u8)(index+255)){case 0:case 1:case 5:test=1;break;}
+{
+    s32 stepOffset = index*24;
+    s32 *value = (s32 *)((u8 *)ctx + 12 + stepOffset);
+    void *range = (u8 *)ctx + stepOffset;
+    *value -= M2C_FIELD(range, s32 *, 24);
+    if (M2C_FIELD(range, u8 *, 28)) {
+        s32 current = *value;
+        if (current > M2C_FIELD(range, s32 *, 16)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) - (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current > M2C_FIELD(record, s32 *, 16));
+        }
+        current = *value;
+        if (current < M2C_FIELD((u8 *)ctx + stepOffset, s32 *, 20)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) + (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current < M2C_FIELD((u8 *)ctx + offset, s32 *, 20));
+        }
+    } else {
+        s32 max = M2C_FIELD(range, s32 *, 16);
+        s32 current = *value;
+        if (current > max)
+            current = max;
+        else {
+            s32 min = M2C_FIELD(range, s32 *, 20);
+            current = current < min ? min : current;
+        }
+        *value = current;
+    }
+}MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,40));
+{ u8 k = index + 255; test = (k <= 5) ? (0x23u >> k) & 1 : 0; }
 if(test&&!MenuIsFixed(arg0))MenuDescribe(arg0);
 if(old==M2C_FIELD(M2C_FIELD(arg0,void**,0x44)+offset,s32*,12))return;
 PlaySoundEffect(0x10011);return;
 case 4:
-test=(u8)((u8)(index+253)<=2);if(test){u8 i=0;do{ctx=M2C_FIELD(arg0,void**,0x44);entry=ctx+offset;M2C_FIELD(entry,s32*,12)-=M2C_FIELD(entry,s32*,24);MenuClampValue(entry);i++;}while(i<5);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,40));}
-test=0;switch((u8)(index+255)){case 0:case 1:case 5:test=1;break;}
+test=(u8)((u8)(index+253)<=2);if(test){u8 i=0;do{ctx=M2C_FIELD(arg0,void**,0x44);{
+    s32 stepOffset = offset;
+    s32 *value = (s32 *)((u8 *)ctx + stepOffset + 12);
+    void *range = (u8 *)ctx + stepOffset;
+    *value -= M2C_FIELD(range, s32 *, 24);
+    if (M2C_FIELD(range, u8 *, 28)) {
+        s32 current = *value;
+        if (current > M2C_FIELD(range, s32 *, 16)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) - (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current > M2C_FIELD(record, s32 *, 16));
+        }
+        current = *value;
+        if (current < M2C_FIELD((u8 *)ctx + stepOffset, s32 *, 20)) {
+            void *record = (u8 *)ctx + offset;
+            do {
+                s32 max = M2C_FIELD(record, s32 *, 16);
+                s32 min = M2C_FIELD(record, s32 *, 20);
+                current = M2C_FIELD(record, s32 *, 12) + (max - min + 1);
+                M2C_FIELD(record, s32 *, 12) = current;
+            } while (current < M2C_FIELD((u8 *)ctx + offset, s32 *, 20));
+        }
+    } else {
+        s32 max = M2C_FIELD(range, s32 *, 16);
+        s32 current = *value;
+        if (current > max)
+            current = max;
+        else {
+            s32 min = M2C_FIELD(range, s32 *, 20);
+            current = current < min ? min : current;
+        }
+        *value = current;
+    }
+}i++;}while(i<5);MenuAnimate(M2C_FIELD(M2C_FIELD(arg0,void**,0x40)+index*4,void**,40));}
+{ u8 k = index + 255; test = (k <= 5) ? (0x23u >> k) & 1 : 0; }
 if(test&&!MenuIsFixed(arg0))MenuDescribe(arg0);
 if(old==M2C_FIELD(M2C_FIELD(arg0,void**,0x44)+offset,s32*,12))return;
 PlaySoundEffect(0x10011);return;
 default:return;}}}
-#pragma pop
+#pragma opt_common_subs reset

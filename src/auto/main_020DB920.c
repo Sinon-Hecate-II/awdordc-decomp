@@ -1,5 +1,6 @@
 /* 25 functions from 0x020DB920 to 0x020DC838 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 static inline void func_020dbe00(void *q) {
     s32 next;
@@ -152,70 +153,76 @@ void func_020dbd54(void *arg0) {
     DrawPlayerListPanel(arg0);
 }
 
-void func_020dbd60(void *arg0) {
+/* Step the player-list panel's scroll animation and shift the main engine's
+ * sprite-bank layer offsets by the opposite amount. */
+void UpdatePlayerListPanelScroll(void *panel) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
     M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
-    s32 temp_r0;
-    u16 temp_r3;
-    void **temp_ip;
-    UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    SetSpriteSlotScroll(temp_r0, 0);
-    temp_ip = gCur3DSpriteEngine;
-    temp_r3 = 0 - temp_r0;
+    s32 scrollValue;
+    u16 inverseScroll;
+    void **savedEngine;
+
+    UpdateSpriteAnimation(M2C_FIELD(panel, s32 *, 0x68));
+    scrollValue = GetSpriteAnimValue(M2C_FIELD(panel, s32 *, 0x68));
+    SetSpriteSlotScroll(scrollValue, 0);
+    savedEngine = gCur3DSpriteEngine;
+    inverseScroll = 0 - scrollValue;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(*g3DSpriteEngineMain, u16 *, 0x3A) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
-    gCur3DSpriteEngine = temp_ip;
+    M2C_FIELD(*g3DSpriteEngineMain, u16 *, DS3D_SCROLL_LAYER_Y) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_Y) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, DS3D_SCROLL_LAYER_X) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_X) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020dbde4(void *arg0) {
+/* Step the second player-list view's scroll animation and shift the main engine's
+ * sprite-bank layer offsets by the opposite amount (same as the first view). */
+void UpdatePlayerListPanelScrollAlt(void *panel) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
     M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
-    s32 temp_r0;
-    u16 temp_r3;
-    void **temp_ip;
-    UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    SetSpriteSlotScroll(temp_r0, 0);
-    temp_ip = gCur3DSpriteEngine;
-    temp_r3 = 0 - temp_r0;
+    s32 scrollValue;
+    u16 inverseScroll;
+    void **savedEngine;
+
+    UpdateSpriteAnimation(M2C_FIELD(panel, s32 *, 0x68));
+    scrollValue = GetSpriteAnimValue(M2C_FIELD(panel, s32 *, 0x68));
+    SetSpriteSlotScroll(scrollValue, 0);
+    savedEngine = gCur3DSpriteEngine;
+    inverseScroll = 0 - scrollValue;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(*g3DSpriteEngineMain, u16 *, 0x3A) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
-    gCur3DSpriteEngine = temp_ip;
+    M2C_FIELD(*g3DSpriteEngineMain, u16 *, DS3D_SCROLL_LAYER_Y) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_Y) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, DS3D_SCROLL_LAYER_X) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_X) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_020dbe68(void *arg0) {
-    void func_020dbde4(void *);
-    func_020dbde4(arg0);
+    void UpdatePlayerListPanelScrollAlt(void *);
+    UpdatePlayerListPanelScrollAlt(arg0);
 }
 
 void func_020dbe74(void *arg0) {
-    void func_020dbd60(void *);
-    func_020dbd60(arg0);
+    void UpdatePlayerListPanelScroll(void *);
+    UpdatePlayerListPanelScroll(arg0);
 }
 
 void func_020dbe80(void *arg0) {
-    func_020dbd60(arg0);
+    UpdatePlayerListPanelScroll(arg0);
 }
 
 void func_020dbe8c(void *arg0) {
-    func_020dbde4(arg0);
+    UpdatePlayerListPanelScrollAlt(arg0);
 }
 
 void func_020dbe98(void *arg0) {
-    func_020dbde4(arg0);
+    UpdatePlayerListPanelScrollAlt(arg0);
 }
 
 void func_020dbea4(void *arg0) {

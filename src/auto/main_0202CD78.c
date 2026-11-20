@@ -2,7 +2,7 @@
 #include "common.h"
 #include "sound.h"
 
-s32 func_0202cd78(M2C_UNK arg0, s32 arg1, s32 arg2) {
+s32 LoadSoundSequenceArchiveFile(M2C_UNK arg0, s32 arg1, s32 arg2) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
@@ -282,11 +282,11 @@ return 1;
 }
 
 s32 func_0202d330(M2C_UNK arg0, s32 arg1) {
-    void *func_0202c03c(s32);
+    void *GetSoundSequenceRecord(s32);
     s32 Sound_PlaySequenceById(M2C_UNK, s32, s32, s32, void *, s32);
     void *temp_r0;
 
-    temp_r0 = func_0202c03c(arg1);
+    temp_r0 = GetSoundSequenceRecord(arg1);
     if (temp_r0 == NULL) {
         return 0;
     }
@@ -294,9 +294,9 @@ s32 func_0202d330(M2C_UNK arg0, s32 arg1) {
 }
 
 s32 func_0202d378(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-void *func_0202c03c(s32);
+void *GetSoundSequenceRecord(s32);
 s32 Sound_PlaySequenceById(s32,s32,s32,s32,void *,s32);
-void *p=func_0202c03c(arg4);
+void *p=GetSoundSequenceRecord(arg4);
 if(!p)return 0;
 if(arg3<0)arg3=M2C_FIELD(p,u8 *,8);
 if(arg2<0)arg2=M2C_FIELD(p,u16 *,4);
@@ -304,38 +304,41 @@ if(arg1<0)arg1=M2C_FIELD(p,u8 *,9);
 return Sound_PlaySequenceById(arg0,arg1,arg2,arg3,p,arg4);
 }
 
-s32 func_0202d3e8(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    s32 *func_0202c0a0(s32);
-    s32 Sound_PlaySequenceEntry(M2C_UNK, s32, s32, s32, void *, s32, s32, s32);
+/* Play entry `entryIndex` of sequence archive `archiveId` on `player`, using the
+ * channel, bank and priority the entry itself carries.  Returns 0 when the
+ * archive record, the loaded archive or the entry cannot be found. */
+s32 Sound_PlaySequenceArchiveEntry(s32 player, s32 archiveId, s32 entryIndex) {
+    s32 *GetSoundSequenceArchiveRecord(s32);
+    s32 Sound_PlaySequenceEntry(s32, s32, s32, s32, void *, s32, s32, s32);
     void *GetSoundArchiveEntry(s32, s32);
-    s32 *temp_r0_3;
-    s32 temp_r0_2;
-    void *temp_r0;
+    s32 *record;
+    s32 archive;
+    SoundArchiveEntry *entry;
 
-    temp_r0_3 = func_0202c0a0(arg1);
-    if (temp_r0_3 == NULL) {
+    record = GetSoundSequenceArchiveRecord(archiveId);
+    if (record == NULL) {
         return 0;
     }
-    temp_r0_2 = GetLoadedArchiveFile(*temp_r0_3);
-    if (temp_r0_2 == 0) {
+    archive = GetLoadedArchiveFile(*record);
+    if (archive == 0) {
         return 0;
     }
-    temp_r0 = GetSoundArchiveEntry(temp_r0_2, arg2);
-    if (temp_r0 == NULL) {
+    entry = GetSoundArchiveEntry(archive, entryIndex);
+    if (entry == NULL) {
         return 0;
     }
-    return Sound_PlaySequenceEntry(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, temp_r0_2, arg1, arg2);
+    return Sound_PlaySequenceEntry(player, entry->channel, entry->bankId, entry->priority, entry, archive, archiveId, entryIndex);
 }
 
 /* Play entry `entryIndex` of the loaded sound archive `archiveId` on `player`: a
  * negative channel, bank or priority takes the entry's own value.  Returns 0 when
  * the archive record, the loaded archive or the entry cannot be found. */
 s32 Sound_PlayArchiveEntry(s32 player,s32 channel,s32 bankId,s32 priority,s32 archiveId,s32 entryIndex) {
-s32 *func_0202c0a0(s32);
+s32 *GetSoundSequenceArchiveRecord(s32);
 void *GetSoundArchiveEntry(s32,s32);
 s32 Sound_PlaySequenceEntry(s32,s32,s32,s32,void *,s32,s32,s32);
 s32 *record; s32 archive; SoundArchiveEntry *entry;
-record=func_0202c0a0(archiveId);
+record=GetSoundSequenceArchiveRecord(archiveId);
 if(!record)return 0;
 archive=GetLoadedArchiveFile(*record);
 if(!archive)return 0;
