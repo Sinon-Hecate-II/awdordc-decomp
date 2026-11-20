@@ -44,7 +44,7 @@ void func_0202e470(void *arg0) {
     M2C_UNK DC_FlushRange(s32, u32);
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     M2C_UNK Sound_RequestNextSegment(void *);
-    u32 func_020722fc(s32, u32);
+    u32 U32DivideRem(s32, u32);
     extern s8 data_020ea780[16];
     extern s16 data_020ea790[90];
     extern M2C_UNK gSoundWorkerState;
@@ -143,7 +143,7 @@ loop_4:
         } else {
             temp_r4 = M2C_FIELD(sp3C, u32 *, 0xDC);
             temp_r5 = M2C_FIELD(sp3C, s32 *, 0x160);
-            temp_r0_3 = func_020722fc(temp_r5, temp_r4);
+            temp_r0_3 = U32DivideRem(temp_r5, temp_r4);
             if (temp_r0_3 < (u32) (M2C_FIELD(sp3C, s32 *, 0xD4) - 1)) {
                 var_r1 = temp_r4;
                 sp2C = M2C_FIELD(sp3C, s32 *, 0xD8);

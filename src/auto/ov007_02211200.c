@@ -346,7 +346,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void func_020cf828(s32);
     void func_0207a7a4(s32, s32);
     s32 func_ov007_02211990(s32, s32);
-    void MoveMapCursorToTarget(s32);
+    void MapCursor_StepTowardTarget(s32);
     void CreateMapMenu(void);
     void func_ov007_02219418(void);
     void func_ov007_022144ec(void);
@@ -389,7 +389,7 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
         r6 = *(s16 *)((u8 *)*gCurrentMap + 0x52c2);
         r7 = *(s16 *)((u8 *)*gCurrentMap + 0x52c4);
         val = func_ov007_02211990(r6, r7);
-        MoveMapCursorToTarget(val);
+        MapCursor_StepTowardTarget(val);
     }
     if (r4 & 0x100) { CreateMapMenu(); return; }
     if (r4 & 0x200) { func_ov007_02219418(); return; }

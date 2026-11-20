@@ -50,17 +50,17 @@ s32 Wfc_BuildFriendEntries(s32 source) {
 
 s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
 
-s32 Wfc_BuildFriendCodeEntries(void *a){u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=func_02030780(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
+s32 Wfc_BuildFriendCodeEntries(void *a){u8 Wfc_BuildSaveSlotRows(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=Wfc_BuildSaveSlotRows(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
 
 /* Build the friend-list rows of the FREESPOT connection: after the rows of the
- * shared friend code (func_02030780), append one row per enabled connection mode
+ * shared friend code (Wfc_BuildSaveSlotRows), append one row per enabled connection mode
  * - 6 = Wayport2, 9 = NINTENDOWFC, 10 = the game's own id - storing the mode's
  * code in the row.  Mode 0 of WFC_STATE_FLAGS builds all three. */
 s32 Wfc_BuildFreespotEntries(void *a){
-u8 func_02030780(void *);void MI_CpuCopy8(void *,void *,s32);
+u8 Wfc_BuildSaveSlotRows(void *);void MI_CpuCopy8(void *,void *,s32);
 extern M2C_UNK data_020fb224,data_020ea844,data_020ea854;
 u8 rows;u8 *entry;u32 mode;
-entry=(u8*)a+WFC_STATE_ENTRIES;rows=func_02030780(a);
+entry=(u8*)a+WFC_STATE_ENTRIES;rows=Wfc_BuildSaveSlotRows(a);
 entry+=rows*WFC_ENTRY_STRIDE;
 mode=(u32)(M2C_FIELD(a,u8 *,WFC_STATE_FLAGS)<<28)>>28;
 if(mode==0||mode==4){MI_CpuCopy8(&data_020fb224,entry+WFC_ENTRY_CODE,8);entry[WFC_ENTRY_CODE_LEN]=8;entry[WFC_ENTRY_ID]=6;rows++;entry+=WFC_ENTRY_STRIDE;}
@@ -71,75 +71,106 @@ if(mode==0||mode==8){MI_CpuCopy8(&data_020ea854,entry+WFC_ENTRY_CODE,11);entry[W
 return rows;
 }
 
-u8 func_02030780(void *arg0) {
-    u8 *base;
-    u8 idx;
-    void *ip;
-    u8 result;
-    u8 cfg;
-    u8 count;
-    u8 count2;
-    u8 found;
-    u8 found2;
-    u8 temp;
-    u8 temp2;
-    u32 t;
-
-    base = (u8 *)arg0;
-    idx = 0;
-    ip = (u8 *)arg0 + 0x300;
-    result = 0;
-    t = ((u8 *)arg0)[0xD0C];
-    t = t << 28;
-    t = t >> 28;
-    cfg = (u8)t;
-
-    do {
-        if (cfg != 0 && cfg != (u8)(idx + 1)) goto done;
-        if (base[0xE7] != 0xFF) {
-            count = 0;
-            do {
-                temp = base[count + 0x40];
-                if (temp == 0) break;
-                ((u8 *)ip)[count + 4] = temp;
-                count++;
-            } while (count < 0x20);
-            if (count == 0) found = 0;
-            else {
-                ((u8 *)ip)[3] = count;
-                ((s8 *)ip)[1] = (s8)idx;
-                found = 1;
-            }
-            if (found) {
-                result++;
-                ip = (u8 *)ip + 0x24;
-            }
-            if (base[0xE7] == 1) {
-                count2 = 0;
-                do {
-                    temp2 = base[count2 + 0x60];
-                    if (temp2 == 0) break;
-                    ((u8 *)ip)[count2 + 4] = temp2;
-                    count2++;
-                } while (count2 < 0x20);
-                if (count2 == 0) found2 = 0;
-                else {
-                    ((u8 *)ip)[3] = count2;
-                    ((s8 *)ip)[1] = (s8)(idx + 3);
-                    found2 = 1;
-                }
-                if (found2) {
-                    result++;
-                    ip = (u8 *)ip + 0x24;
-                }
-            }
+/* Builds the friend-list rows from the save slots' friend-code groups: for each
+ * slot the list mode selects, copies its one or two 32-byte friend codes into
+ * rows (stopping at the first zero byte), recording each row's length and friend
+ * id.  Returns the number of rows built. */
+u8 Wfc_BuildSaveSlotRows(void *state)
+{
+  s32 slot;
+  char zero;
+  u8 rowCount;
+  u8 *slotBase;
+  u8 *row;
+  u32 listMode;
+  u8 codeLen;
+  u8 codeLen2;
+  u8 hasRow;
+  u8 hasRow2;
+  u8 codeByte;
+  u8 codeByte2;
+  rowCount = 0;
+  slotBase = state;
+  slot = 0;
+  zero = 0;
+  row = ((u8 *) state) + WFC_STATE_ENTRIES;
+  do
+  {
+    listMode = ((u32) (((u8 *) state)[WFC_STATE_FLAGS] << 28)) >> 28;
+    if ((listMode != 0) && (listMode != (slot + 1)))
+    {
+      goto next;
+    }
+    if (slotBase[WFC_STATE_MODE_RECORDS] != 0xFF)
+    {
+      codeLen = zero;
+      do
+      {
+        codeByte = (slotBase + codeLen)[WFC_STATE_ENTRY_CODES];
+        if (codeByte == 0)
+        {
+          break;
         }
-        idx++;
-        base += 0x100;
-    } while (idx < 3);
+        row[WFC_ENTRY_CODE + codeLen] = codeByte;
+        codeLen++;
+      }
+      while (codeLen < WFC_CODE_LEN_FRIEND);
+      if (!(codeLen == 0))
+      {
+        row[WFC_ENTRY_CODE_LEN] = codeLen;
+        ((s8 *) row)[WFC_ENTRY_ID] = (s8) slot;
+        hasRow = 1;
+      }
+      else
+      {
+        hasRow = slot * zero;
+      }
+      if (hasRow)
+      {
+        if (state)
+        {
+        }
+        rowCount++;
+        row = row + WFC_ENTRY_STRIDE;
+      }
+      if (slotBase[WFC_STATE_MODE_RECORDS] == 1)
+      {
+        codeLen2 = 0;
+        do
+        {
+          codeByte2 = (slotBase + codeLen2)[WFC_STATE_ENTRY_CODES + WFC_CODE_LEN_FRIEND];
+          if (codeByte2 == zero)
+          {
+            break;
+          }
+          row[WFC_ENTRY_CODE + codeLen2] = codeByte2;
+          codeLen2++;
+        }
+        while (codeLen2 < WFC_CODE_LEN_FRIEND);
+        if (codeLen2 == zero)
+        {
+          hasRow2 = zero;
+        }
+        else
+        {
+          row[WFC_ENTRY_CODE_LEN] = codeLen2;
+          ((s8 *) row)[WFC_ENTRY_ID] = (s8) (slot + 3);
+          hasRow2 = 1;
+        }
+        if (hasRow2)
+        {
+          rowCount++;
+          row = row + WFC_ENTRY_STRIDE;
+        }
+      }
+    }
+    next:
+    slot++;
 
-done:
-    return result;
+    slotBase += WFC_STATE_SLOT_STRIDE;
+  }
+  while (slot < WFC_SAVE_SLOT_COUNT);
+  return rowCount;
 }
 
 #pragma opt_strength_reduction off

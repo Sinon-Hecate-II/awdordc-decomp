@@ -153,12 +153,13 @@ s32 func_020639c0(void *arg0) {
     }
     return 0;
 }
-#pragma opt_strength_reduction off
+#pragma push
+#pragma opt_alias_analysis off
 s32 func_02063aa8(void *arg0,u32 arg1,u32 arg2,void *arg3,s32 arg4) {
-s32 ghiSend(s32,void *,s32,s32);s32 SBServerListSendToMaster(void *,void *,s32);s32 SBServerListConnectAndQuery(void *,s32,s32,s32,s32);
+s32 func_02049810(s32,void *,s32,s32);s32 func_02062324(void *,void *,s32);s32 func_020623bc(void *,s32,s32,s32,s32);
 u8 packet[16]; u16 size; u16 temp; s32 result; u8 *d; u8 *s;
 if(M2C_FIELD(arg0,s32 *,0)==1) {
-SBServerListConnectAndQuery(arg0,0,0,2,0);
+func_020623bc(arg0,0,0,2,0);
 }
 if(M2C_FIELD(arg0,s32 *,0)==1)return 3;
 temp=arg4+9;size=(u8)(temp>>8)|((temp<<8)&0xff00);
@@ -166,10 +167,10 @@ d=packet;s=(u8 *)&size;Copy2(d,s);
 d=packet+3;s=(u8 *)&arg1;Copy4(d,s);
 d=packet+7;s=(u8 *)&arg2;Copy2(d,s);
 packet[2]=2;
-result=SBServerListSendToMaster(arg0,packet,9);if(result)return result;
-return ghiSend(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
+result=func_02062324(arg0,packet,9);if(result)return result;
+return func_02049810(M2C_FIELD(arg0,s32 *,0x4b0),arg3,arg4,0)<0?3:0;
 }
-#pragma opt_strength_reduction reset
+#pragma pop
 void func_02063bd0(void *context, u32 arg1, u32 arg2, u32 code) {
     s32 func_02063aa8(void *, u32, u32, void *, s32);
     u8 packet[10];
@@ -481,12 +482,13 @@ s32 ReadFileData(void *buffer, s32 elemSize, s32 count, void *stream) {
     return bytesRead;
 }
 
+#pragma opt_common_subs off
 s32 StreamRead(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 func_02063fa8();
     s32 StreamFillBuffer(void *, M2C_UNK *, M2C_UNK);
     M2C_UNK MemCopy(void *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
-    s32 func_020722fc(s32, s32);
+    s32 U32DivideRem(s32, s32);
     u32 sp0;
     s32 temp_r0_2;
     s32 temp_r0_3;
@@ -494,34 +496,28 @@ s32 StreamRead(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     s32 temp_r1;
     s32 temp_r1_2;
     s32 temp_r1_3;
+    u32 var_r4;
     s32 var_r5;
     s32 var_r6;
-    s32 var_z;
     u16 *temp_r6;
     u8 *var_r9;
-    s32 temp_r0;
     s32 temp_r0_4;
     u32 temp_r10;
-    u32 var_r4;
 
-    var_r9 = (u8 *) arg0;
+    u32 size = arg1;
+    
+    var_r9 = (u8 *)arg0;
     if (func_0206ad4c(arg3, 0) == 0) {
         func_0206ad4c(arg3, -1);
     }
-    var_r4 = arg1 * arg2;
+    var_r4 = size * arg2;
     if ((var_r4 == 0) || (M2C_FIELD(arg3, u8 *, 0xD) != 0) || (temp_r1 = M2C_FIELD(arg3, s32 *, 4), (((u32) (temp_r1 << 0x16) >> 0x1D) == 0))) {
         return 0;
     }
-    temp_r0 = (u32) (temp_r1 << 0x13) >> 0x1F;
-    var_z = temp_r0 == 0;
-    if (temp_r0 != 0) {
-        var_z = ((u32) (temp_r1 << 0x19) >> 0x1E) == 2;
-    }
-    temp_r1_2 = M2C_FIELD(arg3, s32 *, 8);
     var_r6 = 1;
-    if (!var_z) {
-        var_r6 = 0;
-    }
+    if (((u32)(temp_r1 << 19) >> 31) != 0 &&
+        ((u32)(temp_r1 << 25) >> 30) != 2) var_r6 = 0;
+    temp_r1_2 = M2C_FIELD(arg3, s32 *, 8);
     if ((((u32) (temp_r1_2 << 0x1D) >> 0x1D) == 0) && (((u32) (M2C_FIELD(arg3, s32 *, 4) << 0x1B) >> 0x1D) & 1)) {
         M2C_FIELD(arg3, s32 *, 8) = (s32) ((temp_r1_2 & ~7) | 2);
         M2C_FIELD(arg3, u32 *, 0x28) = 0U;
@@ -539,16 +535,20 @@ s32 StreamRead(u16 *arg0, s32 arg1, s32 arg2, void *arg3) {
     var_r5 = 0;
     if ((var_r4 != 0) && ((u32) ((u32) (M2C_FIELD(arg3, s32 *, 8) << 0x1D) >> 0x1D) >= 3U)) {
 loop_21:
-        temp_r0_2 = M2C_FIELD(arg3, s32 *, 8);
-        if (func_0206ad4c(arg3, 0) == 1) {
+        temp_r0_2 = func_0206ad4c(arg3, 0);
+        if (temp_r0_2 == 1) {
+            u16 value = M2C_FIELD((arg3 + ((M2C_FIELD(arg3, u32 *, 8) << 29) >> 28)), u16 *, 0xE);
             var_r5 += 2;
             var_r4 -= 2;
-            *(u16 *) var_r9 = M2C_FIELD((arg3 + ((u32) (temp_r0_2 << 0x1D) >> 0x1C)), u16 *, 0xE);
+            *(u16 *) var_r9 = value;
             var_r9 += 2;
         } else {
+            u32 slot = M2C_FIELD(arg3, u32 *, 8);
+            u32 slotOffset = (slot << 29) >> 28;
+            u8 value = ((u8 *)arg3 + (slotOffset >> 1))[0xF];
             var_r5 += 1;
             var_r4 -= 1;
-            *var_r9 = (u8) M2C_FIELD((arg3 + ((u32) (temp_r0_2 << 0x1D) >> 0x1D)), u8 *, 0xF);
+            *var_r9 = value;
             var_r9 += 1;
         }
         temp_r1_3 = M2C_FIELD(arg3, s32 *, 8);
@@ -572,8 +572,10 @@ loop_33:
                     M2C_FIELD(arg3, s32 *, 8) = (s32) (M2C_FIELD(arg3, s32 *, 8) & ~7);
                     M2C_FIELD(arg3, s8 *, 0xC) = 1;
                 }
-                M2C_FIELD(arg3, u32 *, 0x28) = 0U;
+                temp_r0_3 = 0;
+                M2C_FIELD(arg3, u32 *, 0x28) = temp_r0_3;
                 var_r4 = 0;
+                goto buffer_done;
             } else {
                 temp_r0_4 = M2C_FIELD(arg3, u32 *, 0x28);
                 sp0 = temp_r0_4;
@@ -581,17 +583,23 @@ loop_33:
                     sp0 = var_r4;
                 }
                 MemCopy(var_r9, M2C_FIELD(arg3, s32 *, 0x24), sp0);
-                var_r4 -= sp0;
-                M2C_FIELD(arg3, s32 *, 0x24) = (s32) (M2C_FIELD(arg3, s32 *, 0x24) + sp0);
-                var_r9 += sp0;
-                var_r5 += sp0;
-                M2C_FIELD(arg3, u32 *, 0x28) = (u32) (M2C_FIELD(arg3, u32 *, 0x28) - sp0);
+                temp_r0_4 = sp0;
+                var_r4 -= temp_r0_4;
+                M2C_FIELD(arg3, s32 *, 0x24) += temp_r0_4;
+                var_r9 += temp_r0_4;
+                {
+                    u32 pending = M2C_FIELD(arg3, u32 *, 0x28);
+                    pending -= sp0;
+                    M2C_FIELD(arg3, u32 *, 0x28) = pending;
+                    var_r5 += temp_r0_4;
+                }
                 if ((var_r4 != 0) && (var_r6 != 0)) {
                     goto loop_33;
                 }
             }
         }
     }
+buffer_done:
     if ((var_r4 != 0) && (var_r6 == 0)) {
         temp_r6 = M2C_FIELD(arg3, u16 **, 0x1C);
         temp_r10 = M2C_FIELD(arg3, u32 *, 0x20);
@@ -608,12 +616,13 @@ loop_33:
                 M2C_FIELD(arg3, u32 *, 0x28) = 0U;
             }
         }
+        temp_r0_4 = sp0;
         M2C_FIELD(arg3, u16 **, 0x1C) = temp_r6;
         M2C_FIELD(arg3, u32 *, 0x20) = temp_r10;
-        var_r5 += sp0;
+        var_r5 += temp_r0_4;
         StreamResetBuffer(arg3);
         M2C_FIELD(arg3, u32 *, 0x28) = 0U;
     }
-    return func_020722fc(var_r5, arg1);
+    return U32DivideRem(var_r5, size);
 }
-
+#pragma opt_common_subs reset

@@ -157,29 +157,30 @@ void func_020e4688(void) {
     extern int data_027e15c0;
     int sp0[7];
 
+    volatile int *counter = &data_027e15c0;
     func_0200d248(sp0);
-    data_027e15b8 = 1;
-    data_027e15c0 += 1;
-    if (data_027e15b4 == 0) {
+    (*(volatile unsigned char *)&data_027e15b8) = 1;
+    ++*counter;
+    if ((*(volatile unsigned char *)&data_027e15b4) == 0) {
         GetSpriteLayerHead(0);
         Update3DSpriteObject();
     }
     GetSpriteLayerHead(1);
     Update3DSpriteObject();
-    if (data_027e15b4 == 0) {
+    if ((*(volatile unsigned char *)&data_027e15b4) == 0) {
         GetSpriteLayerHead(2);
         Update3DSpriteObject();
         Apply3DSpriteBanks();
         Update3DSpriteVram();
         Upload3DSpriteOam();
-        data_027e15b4 = 1;
+        (*(volatile unsigned char *)&data_027e15b4) = 1;
     } else {
         func_01ff87e4();
     }
-    data_027e15b8 = 0;
+    (*(volatile unsigned char *)&data_027e15b8) = 0;
     M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
     func_0200d288(sp0);
-    while (*(unsigned short *)0x04000280 & 0x8000) {
+    while (*(volatile unsigned short *)0x04000280 & 0x8000) {
     }
 }
 
@@ -423,35 +424,35 @@ void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fe
 
 void DrawGlyphString(u16 *keys,u32 dst,u32 map,u32 pal,u16 x,u16 y,u32 tileArg) {M2C_UNK MI_CpuCopy32();extern M2C_UNK data_02168fec;u16 *p;u32 bits;u32 i;u32 next,next2,cur;u32 source;if(!*keys)return;bits=pal<<28;{u32 offset=y<<5;p=(u16 *)(map+((x+offset)*2));}i=0;do {s32 index=func_020e4b9c(*keys);source=M2C_FIELD(&data_02168fec,u32 *,4)+index*128;MI_CpuCopy32(source,dst+((tileArg&0x7ffffffU)<<5),128);next=(tileArg+1)|(bits>>16);next2=(tileArg+2)|(bits>>16);cur=tileArg|(bits>>16);p[i]=cur;p[i+1]=next;p[i+32]=next2;p[i+33]=(tileArg+3)|(bits>>16);keys++;tileArg+=4;i+=2;}while(*keys);}
 
-s8 func_020e4d80(void *arg0) {
-    s8 Sprite_ResumeAnimation(void *);
+void func_020e4d80(void *arg0) {
+    void Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
 
-    void *temp_r2;
-    void *temp_r1;
-    u16 var_r3;
+    register u16 var_r3;
+    register void *temp_r2;
+    register void *temp_r1;
     s8 var_r0;
     u8 var_r12;
     void *temp_r0;
 
     MenuSpriteUpdate(M2C_FIELD(arg0, void **, 0x38));
+    var_r3 = *gKeyState;
     temp_r2 = M2C_FIELD(arg0, void **, 0x38);
     temp_r1 = M2C_FIELD(temp_r2, void **, 0x64);
-    var_r3 = *gKeyState;
     var_r0 = M2C_FIELD(temp_r1, s8 *, 0xb);
     var_r12 = 1;
     if (var_r0 != 1) {
         if (((u32) (M2C_FIELD(temp_r2, u8 *, 0x59) << 0x1b) >> 0x1f) != 0) {
             var_r0 = M2C_FIELD(temp_r1, s8 *, 0xc);
-            if (var_r0 != 1) {
-                var_r12 = 0;
-            }
+            if (var_r0 == 1) goto check;
         }
+        var_r12 = 0;
     }
+check:
     if (!(var_r12 & 0xff) && !(var_r3 & 0x2)) {
-        return var_r0;
+        return;
     }
     PlaySoundEffect(0x1000f);
     temp_r0 = M2C_FIELD(arg0, void **, 0x38);
@@ -459,7 +460,7 @@ s8 func_020e4d80(void *arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03fc0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1c) >> 0x1c) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5a) = 0xc;
     }
-    return Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(arg0);
 }
 
 #pragma scheduling off

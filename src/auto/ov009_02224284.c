@@ -891,6 +891,8 @@ s32 func_ov009_022250f8(s32 arg0) {
     *(volatile u16 *)0x04000208 = saved;
     return result;
 }
+#pragma push
+#pragma opt_strength_reduction off
 void *func_ov009_02225178(s32 arg0, void *arg1) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
     M2C_UNK func_ov009_02221338(void *, s32);
@@ -899,40 +901,45 @@ void *func_ov009_02225178(s32 arg0, void *arg1) {
     extern M2C_UNK data_ov009_022269b8;
     s32 off;
     volatile u16 *ime;
-    u16 saved;
+    volatile u32 saved;
+    u32 previous;
+    void *result;
     void *entry;
     void *next;
     void *p10;
     s32 cval;
     u16 aval;
     u8 b8;
-    u8 b9;
+    u32 b9;
 
     off = arg0 * 0xc;
     ime = (volatile u16 *)0x04000208;
-    saved = *ime;
+    previous = *ime;
     *ime = 0;
     entry = M2C_FIELD(&data_ov009_022269b0, void **, off);
+    saved = previous;
     if (entry == (void *)0) {
         (void)*ime;
-        *ime = saved;
+        *ime = previous;
         return (void *)0;
     }
     p10 = (void *)((u8 *)entry + 0x10);
-    cval = M2C_FIELD(entry, s32 *, 0xc);
-    aval = M2C_FIELD(entry, u16 *, 0xa);
-    b8 = M2C_FIELD(entry, u8 *, 8);
-    b9 = M2C_FIELD(entry, u8 *, 9);
-    func_ov009_02224d30(arg1, (s8)b8, b9 & 0x0f, (b9 >> 4) & 0x0f, (s32)p10, cval, aval);
+    cval = M2C_FIELD(entry, volatile s32 *, 0xc);
+    aval = M2C_FIELD(entry, volatile u16 *, 0xa);
+    b9 = M2C_FIELD(entry, volatile u8 *, 9);
+    b8 = M2C_FIELD(entry, volatile u8 *, 8);
+    ((void *(*)(void *, u32, u32, u32, s32, s32, u16))func_ov009_02224d30)(arg1, b8, (b9 << 28) >> 28, (b9 << 24) >> 28, (s32)p10, cval, aval);
     next = M2C_FIELD(entry, void **, 0);
     M2C_FIELD(&data_ov009_022269b0, void **, off) = next;
     if (next == (void *)0) {
         M2C_FIELD(&data_ov009_022269b4, void **, off) = (void *)0;
     }
-    func_ov009_02221338(entry, cval + 0x10);
+    func_ov009_02221338(entry, M2C_FIELD(entry, s32 *, 0xc) + 0x10);
+    previous = saved;
     M2C_FIELD(&data_ov009_022269b8, s32 *, off) -= 1;
+    result = (void *)(M2C_FIELD(arg1, s32 *, 8) + 0xc);
     (void)*ime;
-    *ime = saved;
-    return (void *)(M2C_FIELD(arg1, s32 *, 8) + 0xc);
+    *ime = previous;
+    return result;
 }
-
+#pragma pop

@@ -171,7 +171,7 @@ s8 func_ov003_021e74a4(void *arg0) {
  * released if active; in mode 1 (grid), slots 0-20 are released and 21-25 built.
  * The list's head/tail next-pointers are re-linked to the active range, then the
  * display is refreshed (HandleWaypointInput). */
-void func_ov003_021e74ac(void *list, s32 mode) {
+void SetWaypointListLayout(void *list, s32 mode) {
     s32 IsLinkSessionActive(void);
     M2C_UNK func_02087db8(void *, M2C_UNK);
     M2C_UNK func_020aad18(void *);

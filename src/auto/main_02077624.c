@@ -100,7 +100,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  void Map_SubmitTerrainQuads(s32,s32,s32,s32,u8,u8,u8,u8);
  extern s32 *gCurrentMap;
  extern u8 gMapCellCodes[];
- extern u8 data_02142ebc[3840];
+ extern u8 gMapCellCornerA[3840];
  extern u32 gTerrainClassFlags[][2];
  extern u8 gMapCellShades[];
  s32 x,y;
@@ -120,7 +120,7 @@ void func_020778cc(s32 left,s32 top,s32 right,s32 bottom) {
  base=*gCurrentMap;
  dims=(u8 *)base+0x5120;
  if(x<M2C_FIELD(dims,u16 *,0x24) && y<M2C_FIELD(dims,u16 *,0x26)) {
- flags=tileFlags020778cc(((u16 (*)[40])data_02142ebc)[x][y]);
+ flags=tileFlags020778cc(((u16 (*)[40])gMapCellCornerA)[x][y]);
  if(flags&0x20000) {
  bits=mapBits020778cc(dims);
  index=x+M2C_FIELD(base+y*2,u16 *,0x3758);
@@ -493,26 +493,57 @@ void BuildMapCellShades(s32 x0, s32 y0, s32 x1, s32 y1) {
 #pragma opt_strength_reduction off
 void func_0207843c(s32 x0,s32 y0,s32 x1,s32 y1){
 s32 func_0207e52c(s32,s32);s32 func_0207ef5c(s32,s32,u16);
-extern s32 *gCurrentMap;extern u8 data_02142ebc[3840],data_02143dbc[3840];
+extern s32 *gCurrentMap;extern u8 gMapCellCornerA[3840],gMapCellCornerB[3840];
 u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off;u16 *p; s32 a,x,y,w,h,b;u16 *q;
 w=M2C_FIELD(sub,u16*,0x5024);h=M2C_FIELD(sub,u16*,0x5026);
 if(x0<0)x0=0;if(y0<0)y0=0;if(x1>w-1)x1=w-1;if(y1>h-1)y1=h-1;
-p=(u16*)data_02142ebc;y=y0;goto outercheck;outer: off=y*2;x=x0;goto innercheck;inner:
+p=(u16*)gMapCellCornerA;y=y0;goto outercheck;outer: off=y*2;x=x0;goto innercheck;inner:
 a=func_0207e52c(x,y);b=func_0207ef5c(x,y,(u16)a);
 M2C_FIELD((u8*)p+x*80,u16*,off)=a;
-M2C_FIELD(data_02143dbc+x*80,u16*,off)=b;
+M2C_FIELD(gMapCellCornerB+x*80,u16*,off)=b;
 x++;innercheck:if(x<=x1)goto inner;
 y++;outercheck:if(y<=y1)goto outer;
 }
-void func_02078528(void) {
-unsigned long long func_020722fc(unsigned long, unsigned long);
-extern u8 data_020ebd78[32],data_020ebd58[32];extern u32 gFrameCounter;extern M2C_UNK gMapHighlightState;
-s32 sum,idx,accum;u8 *p;s32 i;unsigned long long res;s32 rem;
-sum=0;accum=0;idx=0;i=0;p=data_020ebd78;
-do{sum+=*p++;i++;}while(i<30);
-res=func_020722fc(gFrameCounter,sum);rem=res>>32;
-{u8 *q=data_020ebd78;s32 j=0;
-do{accum+=*q;if(accum>rem){idx=j;break;}j++;q++;}while(j<30);}
-*(u8*)&gMapHighlightState=data_020ebd58[idx];
+/* Chooses the height the wave-animated map cells are raised by: the frame
+ * counter picks a point in a weighted table of heights, and the matching entry
+ * of the height-step table is stored in the map view's wave-height field. */
+void UpdateMapWaveHeight(void) {
+    u64 U32DivideRem(u32, u32);
+    extern u8 gWaveHeightWeights[32], gWaveHeightSteps[32];
+    extern u32 gFrameCounter;
+    extern M2C_UNK gMapHighlightState;
+    s32 total;
+    s32 index;
+    s32 accumulated;
+    u8 *weights;
+    s32 i;
+    u64 division;
+    s32 remainder;
+
+    total = 0;
+    accumulated = 0;
+    index = 0;
+    i = 0;
+    weights = gWaveHeightWeights;
+    do {
+        total += *weights++;
+        i++;
+    } while (i < 30);
+    division = U32DivideRem(gFrameCounter, total);
+    remainder = division >> 32;
+    {
+        u8 *weight = gWaveHeightWeights;
+        s32 j = 0;
+        do {
+            accumulated += *weight;
+            if (accumulated > remainder) {
+                index = j;
+                break;
+            }
+            j++;
+            weight++;
+        } while (j < 30);
+    }
+    M2C_FIELD(&gMapHighlightState, u8 *, MAP_VIEW_WAVE_HEIGHT) = gWaveHeightSteps[index];
 }
 

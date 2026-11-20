@@ -1,7 +1,13 @@
 /* 28 functions from 0x0200FC58 to 0x02010C14 (main), found by ds-decomp. */
 #include "common.h"
 
+static inline s32 SaveDevice_IsMultiboot(void)
+{
+    return *(volatile u16 *)0x027FFC40 == 2;
+}
 
+
+#pragma optimization_level 2
 void func_0200fc58(void) {
     extern void *gSaveDeviceState;
     extern void *data_0212fd80;
@@ -16,45 +22,44 @@ void func_0200fc58(void) {
     void func_02010cc4(void);
     void func_02010c90(s32, s32, s32);
 
-    void *base = &gSaveDeviceState;
-    u16 v;
-    s32 n;
+    volatile u8 *base = (volatile u8 *) &gSaveDeviceState;
+    void *buffer = &data_0212fd80;
 
-    *(s32 *)((u8 *)base + 8) = -3;
-    *(s32 *)((u8 *)base + 0xC) = 0;
-    *(s32 *)((u8 *)base + 0x18) = 0;
-    *(void **)((u8 *)base + 0x0) = &data_0212fd80;
+    *(volatile s32 *)(base + 8) = -3;
+    *(volatile s32 *)(base + 0xC) = 0;
+    *(volatile s32 *)(base + 0x18) = 0;
+    *(void *volatile *)(base + 0x0) = buffer;
 
-    MI_CpuFill32(0, &data_0212fd80, 0x60);
+    MI_CpuFill32(0, buffer, 0x60);
     DC_FlushRange(&data_0212fd80, 0x60);
 
-    *(s32 *)((u8 *)base + 0x118) = -1;
-    *(s32 *)((u8 *)base + 0x11C) = -1;
+    *(volatile s32 *)(base + 0x118) = -1;
+    *(volatile s32 *)(base + 0x11C) = -1;
 
-    v = *(volatile u16 *)0x27ffc40;
-    n = (v == 2) ? 1 : 0;
-    if (n == 0) {
-        MI_CpuCopy8((void *)0x27ffe00, (void *)(0x27ffe00 - 0x380), 0x160);
-        *(s32 *)((u8 *)base + 0x108) = 4;
-        *(s32 *)((u8 *)base + 0x14) = 0;
-        *(s32 *)((u8 *)base + 0x10) = 0;
-        *(s32 *)((u8 *)base + 0x110) = 0;
-        *(s32 *)((u8 *)base + 0x10C) = 0;
-        TaskCreate((u8 *)base + 0x44, (void *)func_02010cc4, 0,
+    if (!SaveDevice_IsMultiboot()) {
+        MI_CpuCopy8((void *)0x27ffe00, (void *)((u8 *)0x27ffe00 - 0x380), 0x160);
+    }
+    {
+        s32 zero = 0;
+        *(volatile s32 *)(base + 0x108) = 4;
+        *(volatile s32 *)(base + 0x14) = zero;
+        *(volatile s32 *)(base + 0x10) = zero;
+        *(volatile s32 *)(base + 0x110) = zero;
+        *(volatile s32 *)(base + 0x10C) = zero;
+        TaskCreate(base + 0x44, (void *)func_02010cc4, 0,
                       (u8 *)data_02130400, 0x400,
-                      *(s32 *)((u8 *)base + 0x108));
-        TaskWake((u8 *)base + 0x44);
+                      *(volatile s32 *)(base + 0x108));
+        TaskWake(base + 0x44);
     }
 
     SetFifoMessageHandler(0xB, (void *)func_02010c90);
 
-    v = *(volatile u16 *)0x27ffc40;
-    n = (v == 2) ? 1 : 0;
-    if (n == 0) {
-        func_0200fd90(1);
+    if (SaveDevice_IsMultiboot()) {
+        return;
     }
+    func_0200fd90(1);
 }
-
+#pragma optimization_level reset
 s32 func_0200fd68(void) {
     extern s32 data_0212fd60;
     return data_0212fd60;
@@ -73,18 +78,22 @@ void func_0200fd90(s32 arg0) {
     data_0212fd60 = arg0;
 }
 
+#pragma optimization_level 2
 s32 func_0200fda0(void) {
- extern void *gSaveDeviceState;
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void OS_SleepThread(void *);
- void *p = &gSaveDeviceState;
- s32 state = OS_DisableInterrupts();
- goto test;
- loop: OS_SleepThread((u8 *)p + 0x10c);
- test: if (M2C_FIELD(p, u32 *, 0x114) & 4) goto loop;
- OS_RestoreInterrupts(state);
- return *M2C_FIELD(p, s32 **, 0) == 0;
-}
+    extern void *gSaveDeviceState;
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void OS_SleepThread(void *);
+    void *p = &gSaveDeviceState;
+    s32 state = OS_DisableInterrupts();
 
+    while (M2C_FIELD(p, volatile u32 *, 0x114) & 4) {
+        OS_SleepThread((u8 *)p + 0x10c);
+    }
+    OS_RestoreInterrupts(state);
+    return *M2C_FIELD(p, s32 **, 0) == 0;
+}
+#pragma optimization_level reset
 s32 func_0200fdec(void) {
  extern void *gSaveDeviceState;
  return (M2C_FIELD(&gSaveDeviceState, u32 *, 0x114) & 4) == 0;
@@ -152,7 +161,8 @@ M2C_FIELD(p,s32 *,0x1c)=0x10000;M2C_FIELD(p,s32 *,0x20)=256;M2C_FIELD(p,s32 *,0x
 }else if(kind==3){if(bit==0x2000||bit==0x8000){M2C_FIELD(p,u32 *,0x20)=bit;M2C_FIELD(p,u32 *,0x1c)=bit;M2C_FIELD(p,s32 *,0x24)=2;p[0x48]=0;M2C_FIELD(p,u32 *,0x4c)|=0x340;return;}}
 fail:M2C_FIELD(p,s32 *,0x18)=M2C_FIELD(p,s32 *,4)=0;M2C_FIELD(gSaveDeviceState,s32 *,0)=3;
 }
-#pragma opt_common_subs off
+#pragma push
+#pragma optimization_level 3
 /* Task body of the chunked memory transfer: moves the task's remaining bytes between its source
  * and destination in chunks (through a bounce buffer for reads), then wakes the waiting thread
  * and calls the completion callback. */
@@ -166,6 +176,7 @@ void RunTransferTask(void *arg0) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     void MI_CpuCopy8(void *, void *, u32);
+    s32 func_02010438(void);
     void func_02010d14(void *, s32, s32);
     register u32 irq;
     s32 callbackArg;
@@ -189,56 +200,51 @@ void RunTransferTask(void *arg0) {
     }
     buffer = arg0 + 0x120;
 loop_3:
-    count = M2C_FIELD(arg0, u32 *, 0x24);
+    count = M2C_FIELD(arg0, volatile u32 *, 0x24);
     if (chunk < count) {
         count = chunk;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), u32 *, 0x14) = count;
+    M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), u32 *, 0x14) = count;
     if (M2C_FIELD(arg0, volatile s32 *, 0x114) & 0x40) {
-        M2C_FIELD(arg0, s32 *, 0x114) = (s32) (M2C_FIELD(arg0, s32 *, 0x114) & ~0x40);
-        M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, 0) = 7;
-    } else {
+        M2C_FIELD(arg0, volatile s32 *, 0x114) &= ~0x40;
+        M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), s32 *, 0) = 7;
+        goto done;
+    }
+    {
         switch (mode) {
         default:
             break;
         case 0:
             DC_InvalidateRange(buffer, count);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = (void *) M2C_FIELD((u32)arg0, void **, 0x1C);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = buffer;
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0xC) = (void *) M2C_FIELD((u32)arg0, void **, 0x1C);
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0x10) = buffer;
             break;
         case 1:
         case 2:
             MI_CpuCopy8(M2C_FIELD(arg0, void **, 0x1C), buffer, count);
             DC_FlushRange(buffer, count);
             func_02006804();
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = buffer;
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0xC) = buffer;
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void *volatile *, 0x20);
             break;
         case 3:
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0xC) = (void *) M2C_FIELD(arg0, void **, 0x1C);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0xC) = (void *) M2C_FIELD(arg0, void **, 0x1C);
+            M2C_FIELD(M2C_FIELD(arg0, void *volatile *, 0), void **, 0x10) = (void *) M2C_FIELD(arg0, void **, 0x20);
             break;
         }
-        if (((s32 (*)(void *, s32, s32))func_02010d14)(arg0, type, retries) != 0) {
-            if (mode == 2) {
-                if (((s32 (*)(void *, s32, s32))func_02010d14)(arg0, 9, 1) != 0) {
-                    goto block_23;
-                }
-            } else {
-                if (mode == 0) {
-                    MI_CpuCopy8(buffer, M2C_FIELD(arg0, void **, 0x20), count);
-                }
-block_23:
-                M2C_FIELD(arg0, void **, 0x1C) = (void *) (M2C_FIELD(arg0, void **, 0x1C) + count);
-                M2C_FIELD(arg0, void **, 0x20) = (void *) (M2C_FIELD(arg0, void **, 0x20) + count);
-                left = M2C_FIELD(arg0, u32 *, 0x24) - count;
-                M2C_FIELD(arg0, u32 *, 0x24) = left;
-                if (left) {
-                    goto loop_3;
-                }
-            }
+        if (!((s32 (*)(void *, s32, s32))func_02010d14)(arg0, type, retries)) goto done;
+        if (mode == 2) {
+            if (!((s32 (*)(void *, s32, s32))func_02010d14)(arg0, 9, 1)) goto done;
+        } else if (mode == 0) {
+            MI_CpuCopy8(buffer, M2C_FIELD(arg0, void **, 0x20), count);
         }
+        M2C_FIELD(arg0, void *volatile *, 0x1C) = (u8 *)M2C_FIELD(arg0, void *volatile *, 0x1C) + count;
+        M2C_FIELD(arg0, void *volatile *, 0x20) = (u8 *)M2C_FIELD(arg0, void *volatile *, 0x20) + count;
+        left = M2C_FIELD(arg0, volatile u32 *, 0x24) - count;
+        M2C_FIELD(arg0, volatile u32 *, 0x24) = left;
+        if (left) goto loop_3;
     }
+done:
     callback = M2C_FIELD(arg0, M2C_UNK (**)(s32), 0x38);
     callbackArg = M2C_FIELD(arg0, s32 *, 0x3C);
     irq = OS_DisableInterrupts();
@@ -253,7 +259,7 @@ block_23:
     }
     callback(callbackArg);
 }
-#pragma scheduling on
+#pragma pop
 s32 SaveDevice_Transfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
     extern void *gSaveDeviceState;
     extern M2C_UNK gSocketManager;
@@ -369,13 +375,17 @@ void func_02010628(u32 arg0,u32 arg1) {
 }
 
 #pragma opt_propagation off
-void func_02010688(void) {
- extern void *gSaveDeviceState; extern u32 gSaveDeviceCommand[];
- void func_02008538(u32,void *,u32,u32);
- u32 *p=(u32 *)&gSaveDeviceState; u32 *q=gSaveDeviceCommand;
- func_02008538(p[10],(void *)0x04100010,p[8],512);
- func_02010628((p[7]>>8)|0xB7000000,p[7]<<24);
- *(volatile u32 *)0x040001A4 = q[1];
+void func_02010688(void)
+{
+  extern void *data_0212fde0;
+  extern u32 data_02130420[];
+  void func_02008538(u32, void *, u32, u32);
+  u32 *p;
+  u32 *q = data_02130420;
+  p = (u32 *) (&data_0212fde0);
+  func_02008538(p[10], (void *) 0x04100010, p[8], 512);
+  func_02010628((p[7] >> 8) | 0xB7000000, p[7] << 24);
+  *((volatile u32 *) 0x040001A4) = q[1];
 }
 #pragma opt_propagation on
 void func_020106dc(void) {
@@ -510,70 +520,74 @@ s32 func_020107ac(void *command) {
 }
 
 void func_02010938(void *arg0) {
-    extern void *gSaveDeviceState;
     void func_02010628(u32, u32);
     s32 SaveDevice_TransferChunk(void *);
-    void *p;
-    u32 aligned_src;
-    register void *dst_buf;
-    register u32 counter;
-    register u32 byte_counter;
-    u32 ctrl_val;
-    u32 data;
+    extern void *gSaveDeviceState;
+    void *state = &gSaveDeviceState;
+    u32 *dst;
+    u32 address, aligned;
+    register u32 remaining;
+    register u32 status, index, bytes;
+    u32 value;
+    volatile u32 *control = (volatile u32 *)0x040001A4;
+    volatile u32 *fifo = (volatile u32 *)0x04100010;
 
-    p = &gSaveDeviceState;
-    aligned_src = M2C_FIELD(p, u32 *, 0x1c) & ~0x1FF;
-    if (aligned_src != M2C_FIELD(p, u32 *, 0x1c)) goto fail;
-    if (M2C_FIELD(p, u32 *, 0x20) & 3) goto fail;
-    if (M2C_FIELD(p, u32 *, 0x24) >= 0x200) goto fail;
+    do {
+retry:
+        address = M2C_FIELD(state, u32 *, 0x1c);
+        aligned = address & ~0x1ff;
+        if (aligned == address && ((u32)(dst = M2C_FIELD(state, u32 **, 0x20)) & 3) == 0 &&
+            M2C_FIELD(state, u32 *, 0x24) >= 0x200) {
+            /* Transfer directly into the destination. */
+        } else {
+            M2C_FIELD(arg0, u32 *, 0x8) = aligned;
+            dst = (u32 *)((u8 *)arg0 + 0x20);
+        }
 
-    M2C_FIELD(arg0, u32 *, 0x8) = aligned_src;
-    dst_buf = (u8 *)arg0 + 0x20;
-
-    func_02010628((aligned_src >> 8) | 0xB7000000, aligned_src << 24);
-
-    counter = 0;
-    byte_counter = 0;
-    *(volatile u32 *)0x040001A4 = M2C_FIELD(arg0, u32 *, 0x4);
-    ctrl_val = *(volatile u32 *)0x040001A4;
-
-    if (ctrl_val & 0x00800000) {
+        func_02010628((aligned >> 8) | 0xB7000000, aligned << 24);
+        index = 0;
+        bytes = 0;
+        *control = M2C_FIELD(arg0, u32 *, 0x4);
         do {
-            data = *(volatile u32 *)0x04100010;
-            if (byte_counter < 0x200) {
-                *(u32 *)((u8 *)dst_buf + counter * 4) = data;
-                byte_counter += 4;
-                counter += 1;
+            status = *control;
+            if (status & 0x00800000) {
+                value = *fifo;
+                if (bytes < 0x200) {
+                    dst[index] = value;
+                    bytes += 4;
+                    index++;
+                }
             }
-            if (ctrl_val & 0x80000000) {
-                ctrl_val = *(volatile u32 *)0x040001A4;
-            } else {
-                break;
-            }
-        } while (ctrl_val & 0x00800000);
-    }
-
-    if (dst_buf != (void *)M2C_FIELD(p, u32 *, 0x20)) goto fail;
-
-    p = &gSaveDeviceState;
-    M2C_FIELD(p, u32 *, 0x1c) = M2C_FIELD(p, u32 *, 0x1c) + 0x200;
-    M2C_FIELD(p, u32 *, 0x20) = M2C_FIELD(p, u32 *, 0x20) + 0x200;
-    M2C_FIELD(p, u32 *, 0x24) = M2C_FIELD(p, u32 *, 0x24) - 0x200;
-
-    if (M2C_FIELD(p, u32 *, 0x24) != 0) goto fail;
-
-fail:
-    while (SaveDevice_TransferChunk(arg0) != 0) { }
+        } while (status & 0x80000000);
+        if (dst == M2C_FIELD(state, u32 **, 0x20)) {
+            void *device = &gSaveDeviceState;
+            M2C_FIELD(device, u32 *, 0x1c) += 0x200;
+            M2C_FIELD(device, u32 *, 0x20) += 0x200;
+            remaining = M2C_FIELD(device, u32 *, 0x24) - 0x200;
+            M2C_FIELD(device, u32 *, 0x24) = remaining;
+            if (remaining == 0) return;
+            goto retry;
+        }
+    } while (SaveDevice_TransferChunk(arg0));
 }
 
+#pragma opt_propagation off
 s32 SaveDevice_ReadChipId(void) {
- extern void *data_020f553c;
- func_02010628(0xB8000000,0);
- *(volatile u32 *)0x040001A4=((M2C_FIELD(data_020f553c,u32 *,0x60)&~0x07000000)|0xA7000000)&~0x1FFF;
- while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {}
- return *(volatile s32 *)0x04100010;
-}
+    extern void *data_020f553c;
+    u32 control;
+    register u32 mask;
 
+    func_02010628(0xB8000000, 0);
+    mask = 0x2000;
+    control = M2C_FIELD(data_020f553c, u32 *, 0x60);
+    control &= ~0x07000000;
+    control |= 0xA7000000;
+    *(volatile u32 *)0x040001A4 = control & -mask;
+    while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {
+    }
+    return *(volatile s32 *)0x04100010;
+}
+#pragma opt_propagation on
 /* Finishes a backup transfer in the calling thread: drains what is left of the
  * data through the device's bounce buffer one chunk at a time, reads the save
  * chip's ID and checks it, then clears the transfer flags, wakes the threads

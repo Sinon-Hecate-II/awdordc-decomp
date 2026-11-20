@@ -53,6 +53,7 @@ void func_ov000_0217e798(M2C_UNK arg0, M2C_UNK arg1, u8 *arg2, u8 *arg3, u8 *arg
     func_ov000_0217e8c4(arg0, arg1, arg2, arg3, arg4);
 }
 
+#pragma opt_strength_reduction off
 void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     extern void **gCurrentMap;
     extern u8 gUnitKindStats[];
@@ -88,11 +89,11 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
     sel = M2C_FIELD(map, u8 **, 0x52d0);
     kind = (s32)((u32)(sel[0] << 26) >> 26);
     switch (kind) {
+    case 1:
     case 2:
     case 3:
-        if (GetTerrainPropertyFlagsAt(x, y) == 1) {
-            *state = 3;
-        }
+        if (GetTerrainPropertyFlagsAt(x, y) != 1) return;
+        *state = 3;
         return;
     case 22:
         if (IsCaptureTargetAt(sel, x, y) == 1
@@ -117,7 +118,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 if (id == 0) continue;
                 if (func_020d27a4(M2C_FIELD(map, u8 *, 0x52d4), id) != 0) continue;
                 map = *gCurrentMap;
-                p = (u8 *)map + 0x59a4 + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0) * 14;
+                id = M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0);
+                p = (u8 *)map + 0x59a4 + id * 14;
                 if (p) {
                     if (!p) off = 0;
                     else off = ((s32)p - (s32)((u8 *)*gCurrentMap + 0x59a4)) / 14;
@@ -148,11 +150,13 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 if (GetUnitDamagePercent((s32)((u32)(p[0] << 26) >> 26), 0x16) >= 0xa) count++;
             }
         }
-        if (count != 0) {
-            if (!(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20)) *state = 0xa;
-        } else {
-            if (M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20) *state = 0xb;
+        if (count != 0 && !(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20)) {
+            *state = 0xa;
+            return;
         }
+        if (count != 0) return;
+        if (!(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0), u16 *, 4) & 0x20)) return;
+        *state = 0xb;
         return;
     case 13:
         if (x == sel[1] && y == sel[2]) return;
@@ -165,7 +169,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         if (y + 1 < maxY) maxY = y + 1;
         for (yy = minY; yy <= maxY; yy++) {
             for (xx = minX; xx <= maxX; xx++) {
-                if (tileDistance(x, y, xx, yy) != 1) continue;
+                dist = tileDistance(x, y, xx, yy);
+                if (dist < 1 || dist > 1) continue;
                 if (IsSupplyTargetAt(xx, yy) != 0) n++;
             }
         }
@@ -186,7 +191,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         if (y + 1 < maxY) maxY = y + 1;
         for (yy = minY; yy <= maxY; yy++) {
             for (xx = minX; xx <= maxX; xx++) {
-                if (tileDistance(x, y, xx, yy) != 1) continue;
+                dist = tileDistance(x, y, xx, yy);
+                if (dist < 1 || dist > 1) continue;
                 map = *gCurrentMap;
                 val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
@@ -196,8 +202,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 if (M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2840)
                     + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2d48) > 0x28) continue;
                 *state = 8;
-                if (xx != x) *dir1 = 3 - (xx - x);
-                if (yy != y) *dir1 = (yy - y) + 2;
+                if (xx - x != 0) *dir1 = 3 - (xx - x);
+                if (yy - y != 0) *dir1 = (yy - y) + 2;
                 goto phase2;
             }
         }
@@ -215,7 +221,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         if (y + 1 < maxY) maxY = y + 1;
         for (yy = minY; yy <= maxY; yy++) {
             for (xx = minX; xx <= maxX; xx++) {
-                if (tileDistance(x, y, xx, yy) != 1) continue;
+                dist = tileDistance(x, y, xx, yy);
+                if (dist < 1 || dist > 1) continue;
                 map = *gCurrentMap;
                 val = M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, 0x64) + gUnitKindStats[((s32)((u32)(p[0] << 26) >> 26)) * 112 + 0x12] * 32, s8 *,
                         M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x1420) & 0x1f);
@@ -225,8 +232,8 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
                 if (M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2840)
                     + M2C_FIELD(map + xx + M2C_FIELD(map + yy * 2, u16 *, 0x3758), u8 *, 0x2d48) > 0x28) continue;
                 *state = 8;
-                if (xx != x) *dir2 = 3 - (xx - x);
-                if (yy != y) *dir2 = (yy - y) + 2;
+                if (xx - x != 0) *dir2 = 3 - (xx - x);
+                if (yy - y != 0) *dir2 = (yy - y) + 2;
                 if (*dir1 != *dir2) return;
                 *dir2 = 0;
             }
@@ -236,7 +243,7 @@ void func_ov000_0217e8c4(s32 x, s32 y, u8 *state, u8 *dir1, u8 *dir2) {
         return;
     }
 }
-
+#pragma opt_strength_reduction reset
 s32 func_ov000_0217f318(s16 x,s16 y) {
 extern void **data_027e0058;
 s32 func_020d27a4();s32 IsCellVisibleToCurrentTeam();s32 func_ov000_02176e28();

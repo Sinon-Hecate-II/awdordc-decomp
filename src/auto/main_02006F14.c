@@ -216,6 +216,7 @@ s32 func_020073c0(s32 arg0) {
     func_020073d0();
     return arg0;
 }
+#pragma scheduling on
 void func_020073d0(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
     u64 GetSystemTick(void);
@@ -228,8 +229,7 @@ void func_020073d0(void) {
     void *next;
     u64 now;
     u64 deadline;
-    u32 t20;
-    u32 t1c;
+    u64 period;
     u32 cb;
     u32 arg;
 
@@ -256,13 +256,10 @@ void func_020073d0(void) {
         *(u32 *)((u8 *)next + 0x14) = 0;
     }
 
-    t20 = *(u32 *)((u8 *)node + 0x20);
-    t1c = *(u32 *)((u8 *)node + 0x1C);
+    period = *(u64 *)((u8 *)node + 0x1c);
     cb = *(u32 *)node;
-    if (t20 == 0) {
-        if (t1c == 0) {
-            *(u32 *)node = 0;
-        }
+    if (period == 0) {
+        *(u32 *)node = 0;
     }
 
     if (cb != 0) {
@@ -270,9 +267,8 @@ void func_020073d0(void) {
         ((void (*)(u32))cb)(arg);
     }
 
-    t20 = *(u32 *)((u8 *)node + 0x20);
-    t1c = *(u32 *)((u8 *)node + 0x1C);
-    if (t20 != 0 || t1c != 0) {
+    period = *(u64 *)((u8 *)node + 0x1c);
+    if (period != 0) {
         *(u32 *)node = cb;
         InsertTimer(node, 0);
     }
@@ -282,8 +278,7 @@ void func_020073d0(void) {
         ArmTimerCountdown(node);
     }
 }
-
-#pragma interworking reset
+#pragma scheduling reset
 
 void func_020074c0(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
@@ -432,42 +427,49 @@ void GX_ReleaseBanksByOwner(s32 banks,s32 owner) {
 }
 
 void GetConsoleEntropy(void *out_arg) {
-    extern u32 data_0212dfbc[2];
+
     u8 *base;
     u32 *out;
     u16 t0;
-    u32 *data;
+    u64 tick;
+    u16 mix;
     u8 *r;
     u32 tmp;
     u16 a, b, c, d, e;
+    u8 *last;
+    volatile u32 *gfxStatus = (volatile u32 *)0x04000600;
 
-    t0 = *(u16 *)0x04000006;
     base = (u8 *)0x027FFC00;
-    data = (u32 *)data_0212dfbc;
+    t0 = *(u16 *)0x04000006;
     out = (u32 *)out_arg;
 
-    out[0] = func_020070a4() | ((u32)t0 << 16);
+    tmp = func_020070a4();
+    tmp |= (u32)t0 << 16;
+    out[0] = tmp;
 
-    out[1] = data[0] ^ (((u32)*(u16 *)(base + 0xF8)) << 16);
+    mix = *(u16 *)(base + 0xF8);
+    tick = *(volatile u64 *)data_0212dfbc;
+    out[1] = ((u32)mix << 16) ^ (u32)tick;
 
-    tmp = *(u32 *)(base + 0x3C);
-    tmp = tmp ^ data[1];
-    tmp = tmp ^ *(u32 *)(base + 0xF4);
+    tmp = *(u32 *)(base + 0x3C) ^ ((u32)(*(volatile u64 *)data_0212dfbc >> 32) ^ *(u32 *)(base + 0xF4));
     out[2] = tmp;
-    out[2] = out[2] ^ *(u32 *)0x04000600;
+    out[2] = out[2] ^ *gfxStatus;
 
     out[3] = *(u32 *)(base + 0x1E8);
 
     r = base + 0x300;
     out[4] = *(u32 *)(base + 0x1EC);
-    out[5] = *(u32 *)(base + 0x390) ^ (((u32)*(u16 *)(r + 0x94)) << 16);
+    tmp = *(u32 *)(base + 0x390);
+    mix = *(u16 *)(r + 0x94);
+    last = base + 0x3A8;
+    out[5] = tmp ^ ((u32)mix << 16);
 
     a = *(u16 *)(r + 0xAA);
     b = *(u16 *)(r + 0xAC);
-    out[6] = (u32)b | ((u32)a << 16);
+    out[6] = ((u32)a << 16) | (u32)b;
 
-    c = *(u16 *)((u8 *)0x04000600 - 0x4D0);
-    d = *(u16 *)(base + 0x3A8);
+    c = *(volatile u16 *)((u8 *)0x04000600 - 0x4D0);
+    d = *(u16 *)last;
     e = *(u16 *)(r + 0x98);
     out[7] = (u32)c | (u32)d | ((u32)e << 16);
 }

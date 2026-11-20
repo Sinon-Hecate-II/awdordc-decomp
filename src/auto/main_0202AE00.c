@@ -262,7 +262,7 @@ void Sound_StopVoices(void *arg0) {
 s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelBytes, s32 rate, s32 segments, s32 segmentCallback, s32 callbackArg) {
     extern M2C_UNK gPlayingVoices;
     void Sound_StopIfPlaying(void *);
-    s32 func_020722fc(s32, s32);
+    s32 U32DivideRem(s32, s32);
     s32 Sound_AllocChannel(void);
     void func_02008e44(s32, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
     void func_02008d54(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -283,14 +283,14 @@ s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelByte
     }
         {
             s32 r2 = M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT);
-            s32 q = func_020722fc(channelBytes, r2 * (segments << 5));
+            s32 q = U32DivideRem(channelBytes, r2 * (segments << 5));
             M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES) = q * segments << 5;
             {
                 s32 r0 = M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES);
                 if (playMode == SOUND_PLAY_MODE_HALF) {
                     r0 = (s32)((u32)r0 >> 1);
                 }
-                timerPeriod = func_020722fc(rate * r0, segments);
+                timerPeriod = U32DivideRem(rate * r0, segments);
             }
         }
         hwChannel = Sound_AllocChannel();
@@ -398,10 +398,10 @@ void Sound_AdvanceVoice(M2C_UNK arg0) {
    segment, hand those addresses to the player's segment callback and advance the
    segment index, wrapping to 0 (also the return value) after the last segment. */
 M2C_UNK Sound_StartSegment(M2C_UNK arg0, M2C_UNK mode) {
-    s32 func_020722fc(s32, s32);
+    s32 U32DivideRem(s32, s32);
     void *player = (void *)arg0;
     s32 size, offset, i, next, value;
-    size = func_020722fc(M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES), M2C_FIELD(player, s32 *, SOUND_PLAYER_SEGMENTS));
+    size = U32DivideRem(M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES), M2C_FIELD(player, s32 *, SOUND_PLAYER_SEGMENTS));
     offset = size * M2C_FIELD(player, s32 *, SOUND_PLAYER_CURRENT_SEGMENT);
     for (i = 0; i < M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT); i++) {
         value = M2C_FIELD(gSoundChannelSampleState, s32 *, M2C_FIELD(player + i, u8 *, SOUND_PLAYER_NOTES) * SOUND_CHANNEL_STATE_STRIDE);

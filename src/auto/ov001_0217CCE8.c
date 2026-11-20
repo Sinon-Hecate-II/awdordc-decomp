@@ -146,12 +146,12 @@ void func_ov001_0217d13c(void) {
 }
 
 void func_ov001_0217d15c(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK Ov001_LeaveWfcErrorScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&Ov001_LeaveWfcErrorScreen);
@@ -378,11 +378,11 @@ void func_ov001_0217d754(void) {
     extern M2C_UNK gMapListState;
     extern M2C_UNK MapListScrollDown;
     extern M2C_UNK MapListScrollUp;
-    s32 func_ov001_0217d9d4(void);
+    s32 HandleMapListTouchChoice(void);
     s32 KeyPressed(s32);
     s32 KeyHeld(s32);
     s32 KeyReleased(s32);
-    M2C_UNK func_ov001_0217da58(u32);
+    M2C_UNK DispatchMapListChoice(u32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void *Ov001_AddTask(s32, void (*)(void), s32, s32);
@@ -393,11 +393,11 @@ void func_ov001_0217d754(void) {
     if (M2C_FIELD(obj, void **, 0x38) != 0 || M2C_FIELD(obj, u8 *, 0x45) != 0) {
         return;
     }
-    if (func_ov001_0217d9d4() != 0) {
+    if (HandleMapListTouchChoice() != 0) {
         return;
     }
     if (KeyPressed(1) != 0) {
-        func_ov001_0217da58(M2C_FIELD(&gMapListState, u8 *, 0));
+        DispatchMapListChoice(M2C_FIELD(&gMapListState, u8 *, 0));
         return;
     }
     if (KeyPressed(2) != 0) {
@@ -466,26 +466,29 @@ void func_ov001_0217d754(void) {
     func_ov001_0217f1f0(2);
 }
 
-s32 func_ov001_0217d9d4(void) {
-    M2C_UNK func_ov001_0217da58(u32);
+/* Handle a touch selection on the ov001 map list: ignore an untouched frame,
+ * refuse an entry the working save slot does not allow, select the row, start
+ * the highlight of the custom-map row entries and carry the choice out. */
+s32 HandleMapListTouchChoice(void) {
+    M2C_UNK DispatchMapListChoice(u32);
     s32 IsMapListChoiceAvailable();
-    u32 func_ov001_0217eb6c();
-    M2C_UNK func_ov001_0217f1c0(u32);
+    u32 GetMapListTouchedEntry();
+    M2C_UNK SelectMapListChoice(u32);
     M2C_UNK MapListHighlightCustomRow();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    u32 temp_r0;
+    u32 choice;
 
     GetCurrentMapRecord();
-    temp_r0 = func_ov001_0217eb6c();
-    if (temp_r0 == 0xE) {
+    choice = GetMapListTouchedEntry();
+    if (choice == OV001_MAP_LIST_NO_TOUCH) {
         return 0;
     }
     if (IsMapListChoiceAvailable() == 0) {
         Ov001_PlaySound(9);
         return 1;
     }
-    func_ov001_0217f1c0(temp_r0);
-    switch (temp_r0) {
+    SelectMapListChoice(choice);
+    switch (choice) {
     default:
         break;
     case 2:
@@ -495,12 +498,12 @@ s32 func_ov001_0217d9d4(void) {
         MapListHighlightCustomRow();
         break;
     }
-    func_ov001_0217da58(temp_r0);
+    DispatchMapListChoice(choice);
     return 1;
 }
 
 /* Dispatch a screen selection (0..13): set up UI state, graphics, and continue via func_ov001_0217ded8. */
-s32 func_ov001_0217da58(u32 a){
+s32 DispatchMapListChoice(u32 a){
 if(IsMapListChoiceAvailable()==0){Ov001_PlaySound(9);return;}
 switch(a){
 case 2:case 3:Ov001_PlaySound(6);func_ov001_0217dbd8(((a-2)^1)!=0);return;

@@ -99,7 +99,7 @@ void func_ov001_02177088(void) {
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (gOv001WfcSettingsReset == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
@@ -382,12 +382,12 @@ void func_ov001_021777e0(void) {
 }
 
 void func_ov001_02177800(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK func_ov001_02177850;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_02177850);
@@ -608,7 +608,7 @@ void Ov001_FadeOutOptionMenu(void) {
         return;
     }
     if (M2C_FIELD(&gOv001OptionMenuState, u8 *, 1) != 0) {
-        func_ov001_02171694();
+        Ov001_StartIconRowSlideOut();
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x14, 8);

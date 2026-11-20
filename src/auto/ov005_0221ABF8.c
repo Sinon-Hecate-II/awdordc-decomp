@@ -9,10 +9,16 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
     return m;
 }
 
-M2C_UNK func_ov005_0221abf8(void *arg0) {
+/* Per-frame count-up of a result row's three scores: each score rises by one
+ * towards its gCoState rating (holding A or touching skips straight to it),
+ * loads the "number_y" graphics as it passes 100 and spawns its effect sprite
+ * when it arrives.  A sound plays whenever a score finishes and every fourth
+ * frame while any is still counting; once all three have arrived the final
+ * sprite is spawned and the row's animation resumes. */
+void ResultScoreRow_CountUp(void *row) {
     extern M2C_UNK gCoState;
     extern u16 *gKeyState;
-    extern M2C_UNK gTouchState;
+    extern void *gTouchState;
     extern M2C_UNK data_ov005_02220aa8, data_ov005_02220fcc, data_ov005_0222120c;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK data_ov005_02221218, data_ov005_02221224, gFrameCounter;
@@ -21,86 +27,126 @@ M2C_UNK func_ov005_0221abf8(void *arg0) {
     M2C_UNK MI_CpuCopy32(void *, void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(M2C_UNK);
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 r5 = 0;
-    s32 r6 = 0;
-    if (M2C_FIELD(arg0, s32 *, 0x3c) < M2C_FIELD(&gCoState, u8 *, 0)) {
-        s32 old0 = M2C_FIELD(arg0, s32 *, 0x3c);
-        M2C_FIELD(arg0, s32 *, 0x3c) = old0 + 1;
-        if (((*gKeyState) & 1) == 0) { u8 byte0 = M2C_FIELD(gTouchState, u8 *, 0x14); (void)byte0; }
-        if (old0 < 0x64 && M2C_FIELD(arg0, s32 *, 0x3c) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2c0, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&gCoState, u8 *, 0)) {
-            void *o0 = CreateSpriteFromClass((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
-            if (o0 != NULL) {
-                M2C_FIELD(o0, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
-                M2C_FIELD(o0, M2C_UNK **, 0x58) = (M2C_UNK *)&data_ov005_02220fcc;
-                M2C_FIELD(o0, s32 *, 0x60) = 2;
-                M2C_FIELD(o0, s32 *, 0x64) = 0x10;
-                M2C_FIELD(o0, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0;
-                MI_CpuCopy32(M2C_FIELD(o0, void **, 0x54), (void *)((char *)o0 + 0x34), 0x20);
-                M2C_FIELD(o0, s32 *, 0x5c) = 0;
-                r5 = 1;
-            } else r6 = 1;
-        } else r6 = 1;
-    } else r6 = 1;
+    s32 counting = 0;
+    s32 finished = counting;
+    s32 scoreBefore;
+    s32 skipCountUp;
+    void *effect;
 
-    if (M2C_FIELD(arg0, s32 *, 0x40) < M2C_FIELD(&gCoState, u8 *, 1)) {
-        s32 old1 = M2C_FIELD(arg0, s32 *, 0x40);
-        M2C_FIELD(arg0, s32 *, 0x40) = old1 + 1;
-        if (old1 < 0x64 && M2C_FIELD(arg0, s32 *, 0x40) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x2e0, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&gCoState, u8 *, 1)) {
-            void *o1 = CreateSpriteFromClass((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
-            if (o1 != NULL) {
-                M2C_FIELD(o1, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
-                M2C_FIELD(o1, M2C_UNK **, 0x58) = (M2C_UNK *)&data_ov005_02220fcc;
-                M2C_FIELD(o1, s32 *, 0x60) = 2;
-                M2C_FIELD(o1, s32 *, 0x64) = 0x10;
-                M2C_FIELD(o1, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2e0;
-                MI_CpuCopy32(M2C_FIELD(o1, void **, 0x54), (void *)((char *)o1 + 0x34), 0x20);
-                M2C_FIELD(o1, s32 *, 0x5c) = 0;
-                r5 = 1;
-            } else r6 = 1;
-        } else r6 = 1;
-    } else r6 = 1;
-
-    if (M2C_FIELD(arg0, s32 *, 0x44) < M2C_FIELD(&gCoState, u8 *, 2)) {
-        s32 old2 = M2C_FIELD(arg0, s32 *, 0x44);
-        M2C_FIELD(arg0, s32 *, 0x44) = old2 + 1;
-        if (old2 < 0x64 && M2C_FIELD(arg0, s32 *, 0x44) >= 0x64) LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02220aa8, 0x300, 0x20);
-        if (M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&gCoState, u8 *, 2)) {
-            void *o2 = CreateSpriteFromClass((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
-            if (o2 != NULL) {
-                M2C_FIELD(o2, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
-                M2C_FIELD(o2, M2C_UNK **, 0x58) = (M2C_UNK *)&data_ov005_02220fcc;
-                M2C_FIELD(o2, s32 *, 0x60) = 2;
-                M2C_FIELD(o2, s32 *, 0x64) = 0x10;
-                M2C_FIELD(o2, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300;
-                MI_CpuCopy32(M2C_FIELD(o2, void **, 0x54), (void *)((char *)o2 + 0x34), 0x20);
-                M2C_FIELD(o2, s32 *, 0x5c) = 0;
-                r5 = 1;
-            } else r6 = 1;
-        } else r6 = 1;
-    } else r6 = 1;
-
-    if (r5 != 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221218);
-    if (r6 != 0) {
-        if (((M2C_UNK)gFrameCounter & 3) == 0) PlaySoundEffect((M2C_UNK)&data_ov005_02221224);
-    }
-    if (M2C_FIELD(arg0, s32 *, 0x3c) == M2C_FIELD(&gCoState, u8 *, 0) &&
-        M2C_FIELD(arg0, s32 *, 0x40) == M2C_FIELD(&gCoState, u8 *, 1) &&
-        M2C_FIELD(arg0, s32 *, 0x44) == M2C_FIELD(&gCoState, u8 *, 2)) {
-        void *o = CreateSpriteFromClass((M2C_UNK *)&data_ov005_02220fcc, (M2C_UNK)arg0);
-        if (o != NULL) {
-            M2C_FIELD(o, M2C_UNK **, 0) = (M2C_UNK *)&data_ov005_0222120c;
-            M2C_FIELD(o, M2C_UNK **, 0x58) = (M2C_UNK *)&data_ov005_02220fcc;
-            M2C_FIELD(o, s32 *, 0x60) = 2;
-            M2C_FIELD(o, s32 *, 0x64) = 0x10;
-            M2C_FIELD(o, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320;
-            MI_CpuCopy32(M2C_FIELD(o, void **, 0x54), (void *)((char *)o + 0x34), 0x20);
-            M2C_FIELD(o, s32 *, 0x5c) = 0;
-            Sprite_ResumeAnimation(arg0);
+    scoreBefore = M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0);
+    if (scoreBefore < M2C_FIELD(&gCoState, u8 *, CO_STATE_SPEED)) {
+        M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) = scoreBefore + 1;
+        if ((*gKeyState & 1) || M2C_FIELD(gTouchState, u8 *, 0x14)) {
+            skipCountUp = 1;
+        } else {
+            skipCountUp = 0;
+        }
+        if (skipCountUp) {
+            M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) = M2C_FIELD(&gCoState, u8 *, CO_STATE_SPEED);
+        }
+        if (scoreBefore < 100 && M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) >= 100) {
+            LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_0222120c, 0x2c0, 0x20);
+        }
+        if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) == M2C_FIELD(&gCoState, u8 *, CO_STATE_SPEED)) {
+            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            if (effect != NULL) {
+                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
+                M2C_FIELD(effect, s32 *, 0x60) = 2;
+                M2C_FIELD(effect, s32 *, 0x64) = 0x10;
+                M2C_FIELD(effect, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2c0;
+                MI_CpuCopy32(M2C_FIELD(effect, void **, 0x54), (u8 *)effect + 0x34, 0x20);
+                M2C_FIELD(effect, s32 *, 0x5c) = 0;
+            }
+            finished = 1;
+        } else {
+            counting = 1;
         }
     }
-    return 0;
+
+    scoreBefore = M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1);
+    if (scoreBefore < M2C_FIELD(&gCoState, u8 *, CO_STATE_POWER)) {
+        M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) = scoreBefore + 1;
+        if ((*gKeyState & 1) || M2C_FIELD(gTouchState, u8 *, 0x14)) {
+            skipCountUp = 1;
+        } else {
+            skipCountUp = 0;
+        }
+        if (skipCountUp) {
+            M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) = M2C_FIELD(&gCoState, u8 *, CO_STATE_POWER);
+        }
+        if (scoreBefore < 100 && M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) >= 100) {
+            LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02221218, 0x2e0, 0x20);
+        }
+        if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) == M2C_FIELD(&gCoState, u8 *, CO_STATE_POWER)) {
+            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            if (effect != NULL) {
+                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
+                M2C_FIELD(effect, s32 *, 0x60) = 2;
+                M2C_FIELD(effect, s32 *, 0x64) = 0x10;
+                M2C_FIELD(effect, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2e0;
+                MI_CpuCopy32(M2C_FIELD(effect, void **, 0x54), (u8 *)effect + 0x34, 0x20);
+                M2C_FIELD(effect, s32 *, 0x5c) = 0;
+            }
+            finished = 1;
+        } else {
+            counting = 1;
+        }
+    }
+
+    scoreBefore = M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2);
+    if (scoreBefore < M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE)) {
+        M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) = scoreBefore + 1;
+        if ((*gKeyState & 1) || M2C_FIELD(gTouchState, u8 *, 0x14)) {
+            skipCountUp = 1;
+        } else {
+            skipCountUp = 0;
+        }
+        if (skipCountUp) {
+            M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) = M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE);
+        }
+        if (scoreBefore < 100 && M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) >= 100) {
+            LoadFileToSpriteBuffer((M2C_UNK)&data_ov005_02221224, 0x300, 0x20);
+        }
+        if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) == M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE)) {
+            effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+            if (effect != NULL) {
+                M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+                M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
+                M2C_FIELD(effect, s32 *, 0x60) = 2;
+                M2C_FIELD(effect, s32 *, 0x64) = 0x10;
+                M2C_FIELD(effect, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300;
+                MI_CpuCopy32(M2C_FIELD(effect, void **, 0x54), (u8 *)effect + 0x34, 0x20);
+                M2C_FIELD(effect, s32 *, 0x5c) = 0;
+            }
+            finished = 1;
+        } else {
+            counting = 1;
+        }
+    }
+    if (finished) {
+        PlaySoundEffect(0x10024);
+    }
+    if (counting && !(gFrameCounter & 3)) {
+        PlaySoundEffect(0x10023);
+    }
+    if (M2C_FIELD(row, s32 *, RESULT_ROW_SCORE0) != M2C_FIELD(&gCoState, u8 *, CO_STATE_SPEED) ||
+        M2C_FIELD(row, s32 *, RESULT_ROW_SCORE1) != M2C_FIELD(&gCoState, u8 *, CO_STATE_POWER) ||
+        M2C_FIELD(row, s32 *, RESULT_ROW_SCORE2) != M2C_FIELD(&gCoState, u8 *, CO_STATE_TECHNIQUE)) {
+        return;
+    }
+    effect = CreateSpriteFromClass(&data_ov005_02220aa8, (M2C_UNK)row);
+    if (effect != NULL) {
+        M2C_FIELD(effect, M2C_UNK **, 0) = &data_ov005_02220fcc;
+        M2C_FIELD(effect, s32 *, 0x58) = 0x7fff;
+        M2C_FIELD(effect, s32 *, 0x60) = 2;
+        M2C_FIELD(effect, s32 *, 0x64) = 0x10;
+        M2C_FIELD(effect, s32 *, 0x54) = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x320;
+        MI_CpuCopy32(M2C_FIELD(effect, void **, 0x54), (u8 *)effect + 0x34, 0x20);
+        M2C_FIELD(effect, s32 *, 0x5c) = 0;
+    }
+    Sprite_ResumeAnimation(row);
 }
 
 void func_ov005_0221b000(void) {
@@ -229,8 +275,8 @@ void func_ov005_0221b424(void) {
 }
 
 void func_ov005_0221b430(void) {
-    M2C_UNK func_ov005_0221abf8();
-    func_ov005_0221abf8();
+    void ResultScoreRow_CountUp();
+    ResultScoreRow_CountUp();
 }
 
 void func_ov005_0221b43c(s32 arg0) {

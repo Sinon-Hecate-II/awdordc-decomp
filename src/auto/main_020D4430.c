@@ -371,7 +371,7 @@ cancelled=0; playSound=0;
 key=func_020bd13c();
 switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1; break; }
 if(playSound) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
-MoveMapCursorToTarget(0);
+MapCursor_StepTowardTarget(0);
 if(IsMapCursorIdle()) {
 if(func_ov000_0216ab64(1)) return;
 switch(key) {
@@ -425,16 +425,16 @@ void UpdateAimingCursor(void) {
  func_0207a7a4(1,4);
  map=*gCurrentMap;
  if (M2C_FIELD(M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*4, s8 **,MAP_GRID)+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),s8*,0)>110) {
- MoveMapCursorToTarget(2);
+ MapCursor_StepTowardTarget(2);
  } else if(func_020d5088(M2C_FIELD(map,void**,MAP_CURSOR_UNIT))) {
  map=*gCurrentMap;
  if(M2C_FIELD((u8*)map+(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*2,u16*,MAP_ROW_OFFSETS)),s8*,MAP_CELL_ORDER)>=0) {
  StepMapCursorAndNotifyOffset(1,GetUnitAttackRangeMax(M2C_FIELD(map,void**,MAP_CURSOR_UNIT)));
- } else MoveMapCursorToTarget(1);
+ } else MapCursor_StepTowardTarget(1);
  } else {
  map=*gCurrentMap;
- if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MoveMapCursorToTarget(2);
- else MoveMapCursorToTarget(1);
+ if(func_020ba790(M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)))MapCursor_StepTowardTarget(2);
+ else MapCursor_StepTowardTarget(1);
  }
  if(IsMapCursorIdle()){
  keys=0;
@@ -481,7 +481,7 @@ keys=0;
 func_020cf828(0x1001a);
 func_0207a7a4(1,4);
 valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
-if(valid) MoveMapCursorToTarget(4); else MoveMapCursorToTarget(5);
+if(valid) MapCursor_StepTowardTarget(4); else MapCursor_StepTowardTarget(5);
 if(!IsMapCursorIdle()) return;
 keys |= func_020bcaf0();
 keys |= GetAimCursorTouchAction();

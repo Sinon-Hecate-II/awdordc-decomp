@@ -114,7 +114,7 @@ case 2:case 3:case 4:default:WFC_SetState(11);{u8 *session=gWfcSession;WFC_Dispa
 /* Handle a message from the WFC socket: advance the connection state machine and report the result. */
 void WFC_ProcessCallback(u16 *msg){
 extern void *gWfcSession;
-void DC_InvalidateRange(s32,s32); void WFC_StorePlayerRecord(s32,u16); u64 func_020722fc(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
+void DC_InvalidateRange(s32,s32); void WFC_StorePlayerRecord(s32,u16); u64 U32DivideRem(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
 s32 result=20,i,n;u32 bits;
 switch(msg[1]){
 case 0:
@@ -125,7 +125,7 @@ M2C_FIELD(gWfcSession,u16 *,0x2280)=7;
 if(msg[4]==5){DC_InvalidateRange(M2C_FIELD(gWfcSession,s32 *,0x2288),M2C_FIELD(gWfcSession,u16 *,0x228c));
 for(i=0;i<msg[7];i++){WFC_StorePlayerRecord(((s32 *)msg)[i+4],msg[i+40]);WFC_CallEventHandler(7,0,((s32 *)msg)[i+4],(s32)msg,0x71a);}}
 bits=M2C_FIELD(gWfcSession,u32 *,0x2264);
-if((bits&0xc00000)==0xc00000){n=func_0202827c(bits&0x3ffe);if(n){s32 v=M2C_FIELD(gWfcSession,s32 *,0x2284);if((u32)(func_020722fc(v,n)>>32)==0)WFC_CallEventHandler(8,0,v,0,0x728);}}
+if((bits&0xc00000)==0xc00000){n=func_0202827c(bits&0x3ffe);if(n){s32 v=M2C_FIELD(gWfcSession,s32 *,0x2284);if((u32)(U32DivideRem(v,n)>>32)==0)WFC_CallEventHandler(8,0,v,0,0x728);}}
 M2C_FIELD(gWfcSession,u16 *,0x228e)=(1<<WFC_FindFreePlayerSlot((u16)(32-func_020282a8(msg[5]))))>>1;
 DC_InvalidateRange(M2C_FIELD(gWfcSession,s32 *,0x2288),M2C_FIELD(gWfcSession,u16 *,0x228c));
 M2C_FIELD(gWfcSession,s32 *,0x2284)++;

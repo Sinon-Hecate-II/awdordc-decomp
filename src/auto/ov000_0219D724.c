@@ -290,12 +290,12 @@ void func_ov000_0219dde8(void) {
  extern M2C_UNK *gAiUnitAction;
  extern s8 *gAiUnitListCursor;
  extern s8 gAiUnitList;
- extern M2C_UNK func_ov000_0217d6dc;
+ extern M2C_UNK ReleaseUnitMoveTargets;
  gAiUnitListCursor = &gAiUnitList;
  *gAiUnitListCursor++ = 0x40;
  *gAiUnitListCursor = 0;
  gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &func_ov000_0217d6dc;
+ gAiUnitAction = &ReleaseUnitMoveTargets;
  *gAiCommandState = 2;
 }
 

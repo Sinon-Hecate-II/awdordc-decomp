@@ -2,6 +2,7 @@
 #include "common.h"
 #include "net_session.h"
 #include "qr2.h"
+#include "sb_serverlist.h"
 
 /* Report a QR2 operation's result to whichever online subsystem owns the
  * session (NAS login, matchmaking or the live session), each with its own
@@ -26,7 +27,7 @@ default:SetNetError(code,detail+0xfffe90d0);break;
 return result;
 }
 
-s32 func_02043184(s32 a,s32 unused,s32 off) {
+s32 ReportPeerConnectResult(s32 a,s32 unused,s32 off) {
 s32 code=a;
 if(a==0)return 0;
 switch(a){
@@ -72,12 +73,18 @@ if(errCode)ReportConnectionError(errCode,detail+0xfffeac28);
 return ret;
 }
 
-void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
+#pragma opt_propagation off
+/* Server-browser callback: on a browsed-server event it arms the browse deadline
+ * (a server was added, or an unknown event), and once the browser disconnects it
+ * acts on the list collected for the match-making state: it drops unusable
+ * records, then for a host or a searching client evaluates, prunes and picks
+ * sessions, joins the chosen host or arms the retry timer for a later scan. */
+void HandleServerListEvent(s32 list, s32 event, s32 server) {
     void *GetConnection(void);
     s32 SBServerListGetCount();
     s32 SBServerListGetServer();
     void SBServerListRemoveServer();
-    s32 func_0204292c();
+    s32 GetBrowsedServerPid();
     s32 SBServerGetIp();
     s32 SBServerGetPort();
     s32 SetConnectionState();
@@ -94,159 +101,164 @@ void func_020432d4(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_0203ecb0();
     void SendMatchmakingParameter();
     void ReportMatchmakingResult();
-    s32 func_02043184();
+    s32 ReportPeerConnectResult();
 
     extern M2C_UNK gConnectionMgr;
     extern char sDwcKeyPid[];
 
-    void *ctx;
-    s32 i;
+    void *conn;
+    s32 index;
     s32 count;
-    s32 status;
-    void *unit;
-    s32 kind1;
-    s32 kind2;
-    s32 key;
+    s32 state;
+    void *browsed;
+    s32 browsedIp;
+    s32 browsedPort;
+    s32 browsedPid;
 
-    M2C_FIELD(&gConnectionMgr, s32 *, 0x18)++;
+    s32 depth = M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_DEPTH);
+    M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_DEPTH) = depth + 1;
 
-    switch (arg1) {
-    case 0:
-        func_020436d8(arg2);
-        ctx = GetConnection();
-        M2C_FIELD(ctx, u64 *, 0x174) = GetSystemTick() + 0xefb5f7;
+    switch (event) {
+    case SB_LIST_EVENT_SERVER_ADDED:
+        func_020436d8(server);
+        conn = GetConnection();
+        M2C_FIELD(conn, u64 *, CONN_SESSION_BROWSE_DEADLINE) = GetSystemTick() + CONN_BROWSE_TIMEOUT_TICKS;
         break;
-    case 4:
-        ctx = GetConnection();
-        i = 0;
-        M2C_FIELD(ctx, s32 *, 0x174) = 0;
-        M2C_FIELD(ctx, s32 *, 0x178) = 0;
+    case SB_LIST_EVENT_DISCONNECTED:
+        conn = GetConnection();
+        index = 0;
+        M2C_FIELD(conn, s32 *, CONN_SESSION_BROWSE_DEADLINE) = 0;
+        M2C_FIELD(conn, s32 *, CONN_SESSION_BROWSE_DEADLINE + 4) = 0;
 
-        count = SBServerListGetCount(arg0);
-        while (i < count) {
-            unit = (void *)SBServerListGetServer(arg0, i);
-            if (func_0204292c() == 0) {
-                SBServerListRemoveServer(arg0, unit);
-                i--;
+        count = SBServerListGetCount(list);
+        while (index < count) {
+            browsed = (void *)SBServerListGetServer(list, index);
+            /* The record is still in r0 here, so the check reads it as its argument. */
+            if (GetBrowsedServerPid() == 0) {
+                SBServerListRemoveServer(list, browsed);
+                index--;
             }
-            i++;
-            count = SBServerListGetCount(arg0);
+            index++;
+            count = SBServerListGetCount(list);
         }
 
-        ctx = GetConnection();
-        status = M2C_FIELD(ctx, s32 *, 0x1a0);
+        conn = GetConnection();
+        state = M2C_FIELD(conn, s32 *, CONN_SESSION_STATE);
 
-        switch (status) {
-        case 2:
-            i = 0;
-            count = SBServerListGetCount(arg0);
-            while (i < count) {
-                unit = (void *)SBServerListGetServer(arg0, i);
-                if (M2C_FIELD(GetConnection(), s32 *, 0x1c) != 0) {
-                    if (M2C_FIELD(GetConnection(), s32 *, 0x1c) == SBServerGetIp(unit)) {
-                        if (M2C_FIELD(GetConnection(), u16 *, 0x1a) != 0) {
-                            if (M2C_FIELD(GetConnection(), u16 *, 0x1a) == SBServerGetPort(unit)) {
-                                goto status2_done;
+        switch (state) {
+        case CONN_STATE_HOST_WAITING:
+            index = 0;
+            count = SBServerListGetCount(list);
+            while (index < count) {
+                browsed = (void *)SBServerListGetServer(list, index);
+                if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PUBLIC_IP) != 0) {
+                    if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PUBLIC_IP) == SBServerGetIp(browsed)) {
+                        if (M2C_FIELD(GetConnection(), u16 *, CONN_SESSION_PUBLIC_PORT) != 0) {
+                            if (M2C_FIELD(GetConnection(), u16 *, CONN_SESSION_PUBLIC_PORT) == SBServerGetPort(browsed)) {
+                                goto host_target_found;
                             }
                         }
                     }
                 }
-                i++;
-                count = SBServerListGetCount(arg0);
+                index++;
+                count = SBServerListGetCount(list);
             }
-status2_done:
-            count = SBServerListGetCount(arg0);
-            if (i < count) {
-                SetConnectionState(3);
-                ctx = GetConnection();
-                M2C_FIELD(ctx, s32 *, 0x204) = 0;
-                ctx = GetConnection();
-                SendMatchmakingParameter(M2C_FIELD(ctx, u32 *, 0x204));
+host_target_found:
+            count = SBServerListGetCount(list);
+            if (index < count) {
+                SetConnectionState(CONN_STATE_SEARCHING);
+                conn = GetConnection();
+                M2C_FIELD(conn, s32 *, CONN_SESSION_JOIN_PEER) = 0;
+                conn = GetConnection();
+                SendMatchmakingParameter(M2C_FIELD(conn, u32 *, CONN_SESSION_JOIN_PEER));
                 ReportMatchmakingResult();
             } else {
-                ctx = GetConnection();
-                M2C_FIELD(ctx, s32 *, 0xe8) = 2;
-                ctx = GetConnection();
-                M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
+                conn = GetConnection();
+                M2C_FIELD(conn, s32 *, CONN_SESSION_BROWSE_RETRY) = 2;
+                conn = GetConnection();
+                M2C_FIELD(conn, u64 *, CONN_SESSION_BROWSE_RETRY_TICK) = GetSystemTick();
             }
             break;
-        case 3:
-            ctx = GetConnection();
-            M2C_FIELD(ctx, s32 *, 0xe8) = 2;
-            ctx = GetConnection();
-            M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
-            break;
-        case 5:
+        case CONN_STATE_SEARCHING:
             EvaluateMatchmakingSessions(1);
             SelectMatchmakingSession();
-
-            while (1) {
-                count = SBServerListGetCount(arg0);
-                if (count == 0) break;
-                unit = (void *)SBServerListGetServer(arg0, 0);
-                kind1 = SBServerGetIp(unit);
-                ctx = GetConnection();
-                if (kind1 != M2C_FIELD(ctx, s32 *, 0x1b8)) {
-                    SBServerListRemoveServer(arg0, unit);
-                    continue;
-                }
-                kind2 = SBServerGetPort(unit);
-                ctx = GetConnection();
-                if (kind2 == (s32)M2C_FIELD(ctx, u16 *, 0x1b4)) {
-                    break;
-                }
-                SBServerListRemoveServer(arg0, unit);
+            if (SBServerListGetCount(list) != 0) {
+                SendJoinRequest(0, 0);
+                if (func_0204084c() != 0) goto cleanup;
+                SetConnectionState(CONN_STATE_JOINING);
+                M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_BROWSE_RETRY) = 0;
+                goto cleanup;
+            }
+            conn = GetConnection();
+            M2C_FIELD(conn, s32 *, CONN_SESSION_BROWSE_RETRY) = 2;
+            conn = GetConnection();
+            M2C_FIELD(conn, u64 *, CONN_SESSION_BROWSE_RETRY_TICK) = GetSystemTick();
+            break;
+        case CONN_STATE_JOINED:
+            if (SBServerListGetCount(list) != 0) {
+                s32 first = 0;
+                do {
+                    browsed = (void *)SBServerListGetServer(list, first);
+                    browsedIp = SBServerGetIp(browsed);
+                    conn = GetConnection();
+                    if (browsedIp == M2C_FIELD(conn, s32 *, CONN_SESSION_TARGET_ADDRESS)) {
+                        browsedPort = SBServerGetPort(browsed);
+                        conn = GetConnection();
+                        if (browsedPort == (s32)M2C_FIELD(conn, u16 *, CONN_SESSION_TARGET_PORT)) break;
+                    }
+                    SBServerListRemoveServer(list, browsed);
+                } while (SBServerListGetCount(list) != 0);
             }
 
-            count = SBServerListGetCount(arg0);
-            if (count == 0) {
-                ctx = GetConnection();
-                M2C_FIELD(ctx, s32 *, 0xe8) = 2;
-                ctx = GetConnection();
-                M2C_FIELD(ctx, u64 *, 0xec) = GetSystemTick();
-            } else {
-                unit = (void *)SBServerListGetServer(arg0, 0);
-                key = SBServerGetIntValue(unit, sDwcKeyPid, 0);
-                if (M2C_FIELD(GetConnection(), u8 *, 0x15) == 1 && key == M2C_FIELD(GetConnection(), s32 *, 0xf4)) {
+            count = SBServerListGetCount(list);
+            if (count != 0) {
+                browsed = (void *)SBServerListGetServer(list, 0);
+                browsedPid = SBServerGetIntValue(browsed, sDwcKeyPid, 0);
+                if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 1 && browsedPid == M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS)) {
                     if (EvaluateMatchmakingSessions(0) != 0) {
-                        ctx = GetConnection();
-                        if (M2C_FIELD(ctx, u8 *, 0x0d) != 0) {
+                        conn = GetConnection();
+                        if (M2C_FIELD(conn, u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
                             DisconnectAllPeers();
-                            if (func_0204084c() != 0) goto cleanup;
+                            if (func_0204084c() == 0) goto use_server;
+                            goto cleanup;
                         }
                     } else {
-                        ctx = GetConnection();
-                        func_02040dc8((void *)M2C_FIELD(ctx, s32 *, 0xf4));
+                        conn = GetConnection();
+                        func_02040dc8((void *)M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
                         if (func_0204084c() != 0) goto cleanup;
-                        SetConnectionState(4);
-                        ctx = GetConnection();
-                        TryConnectToPeer(0, 0, M2C_FIELD(ctx, s32 *, 0xf4));
+                        SetConnectionState(CONN_STATE_JOINING);
+                        conn = GetConnection();
+                        TryConnectToPeer(0, 0, M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
                         if (func_0204084c() != 0) goto cleanup;
                         goto cleanup;
                     }
                 }
-                SetConnectionState(6);
-                unit = (void *)SBServerListGetServer(arg0, 0);
-                func_0203ecb0(0, 0, (s32)unit);
-                func_02043184(0, 0, 0);
+use_server:
+                SetConnectionState(CONN_STATE_CONNECTING);
+                browsed = (void *)SBServerListGetServer(list, 0);
+                ReportPeerConnectResult(func_0203ecb0(0, 0, (s32)browsed));
                 goto cleanup;
             }
+            conn = GetConnection();
+            M2C_FIELD(conn, s32 *, CONN_SESSION_BROWSE_RETRY) = 2;
+            conn = GetConnection();
+            M2C_FIELD(conn, u64 *, CONN_SESSION_BROWSE_RETRY_TICK) = GetSystemTick();
             break;
         default:
-            ctx = GetConnection();
-            M2C_FIELD(ctx, u64 *, 0x174) = GetSystemTick() + 0xefb5f7;
+            conn = GetConnection();
+            M2C_FIELD(conn, u64 *, CONN_SESSION_BROWSE_DEADLINE) = GetSystemTick() + CONN_BROWSE_TIMEOUT_TICKS;
             break;
         }
         break;
-    case 5:
+    case SB_LIST_EVENT_QUERY_ERROR:
         break;
     }
 
 cleanup:
-    M2C_FIELD(&gConnectionMgr, s32 *, 0x18)--;
-    return;
+    depth = M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_DEPTH);
+    M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_BROWSER_DEPTH) = depth - 1;
 }
-
+#pragma opt_propagation reset
 void func_020436d8(void) {
 
 }
@@ -443,7 +455,7 @@ void Qr2OnPublicAddress(s32 arg0, s16 arg1) {
  * target and, unless reporting the error failed, mark the connection's last
  * command as none. */
 void Qr2OnStateChanged(s32 target){
-void *GetConnection();M2C_UNK SetConnectionState(M2C_UNK);s32 func_02043184();s32 func_0203ecb0();
+void *GetConnection();M2C_UNK SetConnectionState(M2C_UNK);s32 ReportPeerConnectResult();s32 func_0203ecb0();
 void *conn; s32 zero;
 conn=GetConnection();
 if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)==1)SetConnectionState(6);else{conn=GetConnection();if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)!=6){conn=GetConnection();if(M2C_FIELD(conn,s32 *,CONN_SESSION_STATE)!=11)return;}}
@@ -451,7 +463,7 @@ conn=GetConnection();if(target==M2C_FIELD(conn,s32 *,CONN_SESSION_CONNECT_TARGET
 conn=GetConnection();zero=0;
 M2C_FIELD(conn,s32 *,CONN_SESSION_JOIN_TICK)=zero;M2C_FIELD(conn,s32 *,CONN_SESSION_JOIN_TICK+4)=zero;
 func_0203ecb0(1,target,zero);
-if(func_02043184()!=0)return;conn=GetConnection();M2C_FIELD(conn,u8 *,CONN_SESSION_LAST_COMMAND)=0xFF;
+if(ReportPeerConnectResult()!=0)return;conn=GetConnection();M2C_FIELD(conn,u8 *,CONN_SESSION_LAST_COMMAND)=0xFF;
 }
 
 /* Validate and dispatch binary QR2 matchmaking commands while the session permits them. */

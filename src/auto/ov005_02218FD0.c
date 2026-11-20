@@ -1,9 +1,11 @@
 /* 11 functions from 0x02218FD0 to 0x02219FA0 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "sprite_script.h"
 
 /* A result-screen spark (SpawnResultSpark in ov005_02219FA0.c): a two-screen
  * particle that drifts towards the top-right corner and is deleted once it has
  * left the 256x384 view. */
+#define RESULT_SPARK_SPRITES 0x34 /* void *[2]: the spark's main- and sub-screen sprite objects */
 #define RESULT_SPARK_X       0x3C /* s32 horizontal position in the view */
 #define RESULT_SPARK_Y       0x40 /* s32 vertical position in the two-screen view */
 #define RESULT_SPARK_VARIANT 0x44 /* s32 sprite/motion variant */
@@ -497,20 +499,23 @@ void func_ov005_02219e4c(void) {
 }
 
 #pragma opt_strength_reduction off
-void DrawResultSpark(void *arg0){
-M2C_UNK func_02090810(s32,s32,s16);
+/* Draw the result-screen spark on both screens: for each screen, point the current
+ * 3D sprite engine at that screen's engine and move every script player of the
+ * spark's sprite object to the spark's position, the top screen's copy 192 rows up. */
+void DrawResultSpark(void *spark){
+M2C_UNK SpritePlayer_SetListPosition(s32,s32,s16);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 *second=&g3DSpriteEngineSub,*first=&g3DSpriteEngineMain,*eng=&gCur3DSpriteEngine;
-s32 saved; s32 i,a,x,y;
-saved=*eng;i=0;
+s32 *subEngine=&g3DSpriteEngineSub,*mainEngine=&g3DSpriteEngineMain,*curEngine=&gCur3DSpriteEngine;
+s32 saved; s32 screen,players,x,y;
+saved=*curEngine;screen=0;
 do{
-if(i==0)*eng=*first;else *eng=*second;
-x=M2C_FIELD(arg0,s32*,0x3c);y=M2C_FIELD(arg0,s32*,0x40);x=(s32)((s32)x<<16);
-a=M2C_FIELD(M2C_FIELD(arg0+i*4,void**,0x34),s32*,0x38);
-if(i==0)y-=192;
-x=(s32)((s32)x>>16);if(a)func_02090810(a,x,(s16)y);
-i++;
-}while(i<2);
+if(screen==0)*curEngine=*mainEngine;else *curEngine=*subEngine;
+x=M2C_FIELD(spark,s32*,RESULT_SPARK_X);y=M2C_FIELD(spark,s32*,RESULT_SPARK_Y);x=(s32)((s32)x<<16);
+players=M2C_FIELD(M2C_FIELD(spark+screen*4,void**,RESULT_SPARK_SPRITES),s32*,SPRITE_OWNER_PLAYER_LIST);
+if(screen==0)y-=192;
+x=(s32)((s32)x>>16);if(players)SpritePlayer_SetListPosition(players,x,(s16)y);
+screen++;
+}while(screen<2);
 gCur3DSpriteEngine=saved;
 }
 #pragma opt_strength_reduction on

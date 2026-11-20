@@ -2,7 +2,7 @@
 #include "common.h"
 void *func_020abb9c(void*);void *func_020abbb4(void*);void *func_020abbcc(void*);void *func_020abbe4(void*);
 void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void PlaySoundEffect(s32);
-s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);s16 func_ov003_022004a8(u8);void SetTextById(void*,s32);
+s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);s16 GetWaypointSlotX(u8);void SetTextById(void*,s32);
 typedef struct {u8 low:2,mode:2,state:4;} OptionsFlags;
 typedef struct {u8 enabled:1,other:7;} OptionsBits;
 void StepCounter(void*,s32,s32);void StepCounterDown(void*,u8,s32);void func_ov003_021e8354(void*,u8,s32);
@@ -36,7 +36,7 @@ s32 h=GetUnitSpriteHeight(sprite),w=GetUnitSpriteWidth(sprite);
 s16 y=M2C_FIELD(sprite,s16*,0x36),x;u8 *cursor;x=M2C_FIELD(sprite,s16*,0x34);cursor=M2C_FIELD(p,u8**,0x58);
 M2C_FIELD(cursor,s16*,0x34)=x;M2C_FIELD(cursor,s16*,0x36)=y;
 ((OptionsSize*)(cursor+0x40))->width=w;((OptionsSize*)(cursor+0x40))->height=h;
-M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=func_ov003_022004a8(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
+M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=GetWaypointSlotX(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
 }
 static inline void RefreshOptionText(void *p){
 u8 index;

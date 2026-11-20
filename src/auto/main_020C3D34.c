@@ -209,7 +209,7 @@ void func_020c488c(void *arg0) {
 void func_020c48b0(void *arg0) {
  if(func_020c4b6c(M2C_FIELD(arg0,s32*,0x34))==0) {
  InitPlayerProfile(M2C_FIELD(arg0,s32*,0x34));
- func_020c4ad8(M2C_FIELD(arg0,s32 **,0x38));
+ InitBattleSaveRecords(M2C_FIELD(arg0,s32 **,0x38));
  return;
  }
  SetSpriteAnimation(arg0,1);
@@ -302,30 +302,31 @@ M2C_UNK *func_020c4acc(void) {
     return &data_02164098;
 }
 
-s32 func_020c4ad8(s32 *arg0) {
+s32 InitBattleSaveRecords(s32 *saveBlock) {
     M2C_UNK FillU16(M2C_UNK, void *, M2C_UNK);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
-    register s32 var_r8;
-    register void *var_r9;
-    register s32 *var_r10;
+    register s32 recordIndex;
+    register void *recordData;
+    register s32 *recordBase;
 
-    var_r10 = arg0;
-    *var_r10 = 0x07090600;
-    MI_CpuFill8((s32)((u8*)var_r10 + 4), 0, 0x2D0);
-    var_r8 = 0;
-    var_r9 = (u8*)var_r10 + 0x2D4;
+    /* Clears and initializes all 60 fixed-size battle-save records in a save block. */
+    recordBase = saveBlock;
+    *recordBase = 0x07090600;
+    MI_CpuFill8((s32)((u8*)recordBase + 4), 0, 0x2D0);
+    recordIndex = 0;
+    recordData = (u8*)recordBase + 0x2D4;
     do {
-        FillU16(0, var_r9, 0x1A);
-        M2C_FIELD(var_r10, s16 *, 0x2EE) = 0;
-        M2C_FIELD(var_r10, s16 *, 0x2F0) = 0;
-        M2C_FIELD(var_r10, s16 *, 0x2F2) = 0;
-        M2C_FIELD(var_r10, s8 *, 0x2F4) = -1;
-        M2C_FIELD(var_r10, s8 *, 0x2F5) = -2;
-        var_r8 += 1;
-        M2C_FIELD(var_r10, s8 *, 0x2F6) = -2;
-        var_r9 = (u8*)var_r9 + 0x28;
-        var_r10 = (s32*)((u8*)var_r10 + 0x28);
-    } while (var_r8 < 0x3C);
+        FillU16(0, recordData, 0x1A);
+        M2C_FIELD(recordBase, s16 *, 0x2EE) = 0;
+        M2C_FIELD(recordBase, s16 *, 0x2F0) = 0;
+        M2C_FIELD(recordBase, s16 *, 0x2F2) = 0;
+        M2C_FIELD(recordBase, s8 *, 0x2F4) = -1;
+        M2C_FIELD(recordBase, s8 *, 0x2F5) = -2;
+        recordIndex += 1;
+        M2C_FIELD(recordBase, s8 *, 0x2F6) = -2;
+        recordData = (u8*)recordData + 0x28;
+        recordBase = (s32*)((u8*)recordBase + 0x28);
+    } while (recordIndex < 0x3C);
     return 1;
 }
 

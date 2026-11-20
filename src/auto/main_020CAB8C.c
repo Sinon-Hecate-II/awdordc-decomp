@@ -79,7 +79,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
     s32 PrevMapCursorOption(s32, s32);
     void func_020bda88(s32 *, s32);
     void PlaySoundEffect(s32);
-    void MoveMapCursorToTarget(s32);
+    void MapCursor_StepTowardTarget(s32);
     s32 GetKeyActionFlags(void);
     s32 GetMapCursorOptionTouchAction(s32);
     extern void **gCurrentMap;
@@ -108,7 +108,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
     M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X) = (s16)(M2C_FIELD(map, s16 *, MAP_CURSOR_X) + gMapCursorDirDX[selected * 4]);
     map = *gCurrentMap;
     M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y) = (s16)(M2C_FIELD(map, s16 *, MAP_CURSOR_Y) + gMapCursorDirDY[selected * 4]);
-    MoveMapCursorToTarget(1);
+    MapCursor_StepTowardTarget(1);
     keys = GetKeyActionFlags();
     keys = keys | GetMapCursorOptionTouchAction(optionMask);
     if (keys & 0x20) {
@@ -121,7 +121,7 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
 }
 
 void func_020cae2c(void *p){
-extern void **gCurrentMap; extern s32 data_0215be0c;
+extern void **gCurrentMap; extern s32 gMapCursorOptionValue;
 M2C_UNK func_020d472c();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=UpdateMapCursorOption(&a,mask);
@@ -133,7 +133,7 @@ map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c4)=M2C_FIELD(map,s16 *,0x52da);
 DeleteSpriteObject(p);return;
 }
 if((flags&16)==0)return;
-data_0215be0c=M2C_FIELD(p,s16 *,0x6e);
+gMapCursorOptionValue=M2C_FIELD(p,s16 *,0x6e);
 map=*gCurrentMap;selector=M2C_FIELD(p,s16 *,0x70);
 unit=(u8*)M2C_FIELD(map,void **,0x52d0)+selector;
 units=(u8*)map+0x59a4;
@@ -330,20 +330,31 @@ return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
 }
 
 #pragma opt_instruction_scheduling off
-void func_020cb704(void *a) {
-s32 IsSupplyTargetAt(s32,s32); extern s32 data_0215be0c; extern void **gCurrentMap; extern u8 gMapCursorDirs[][4];
-u16 i=0; data_0215be0c=0;
-do {
-void *p=*gCurrentMap;
-s32 n=IsSupplyTargetAt(M2C_FIELD(p,s16*,0x52dc)+(s8)gMapCursorDirs[i][2],M2C_FIELD(p,s16*,0x52de)+(s8)gMapCursorDirs[i][3]);
-{u32 mask=gMapCursorDirs[i][0]; data_0215be0c = (u32)data_0215be0c | mask*(u32)n;} i++;
-}while(i<4);
-M2C_FIELD(a,s16*,0x34)=0;
+/* Scans the four tiles around the map cursor and builds the MAP_DIR_* mask of
+ * the directions that hold a unit this one can supply, then restarts the
+ * option's direction scan. */
+void FindSupplyTargetDirections(void *option) {
+    s32 IsSupplyTargetAt(s32, s32);
+    extern s32 gMapCursorOptionValue;
+    extern void **gCurrentMap;
+    extern u8 gMapCursorDirs[][4];
+    u16 i = 0;
+    gMapCursorOptionValue = 0;
+    do {
+        void *map = *gCurrentMap;
+        s32 found = IsSupplyTargetAt(M2C_FIELD(map, s16 *, MAP_CURSOR_X) + (s8) gMapCursorDirs[i][2], M2C_FIELD(map, s16 *, MAP_CURSOR_Y) + (s8) gMapCursorDirs[i][3]);
+        {
+            u32 mask = gMapCursorDirs[i][0];
+            gMapCursorOptionValue = (u32) gMapCursorOptionValue | mask * (u32) found;
+        }
+        i++;
+    } while (i < 4);
+    M2C_FIELD(option, s16 *, 0x34) = 0;
 }
 #pragma opt_instruction_scheduling reset
 void func_020cb78c(void *arg0){
 void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
-extern s32 data_0215be0c;extern void **gCurrentMap;
+extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
 s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
 loop:
@@ -357,7 +368,7 @@ if(!M2C_FIELD(arg0,s16 *,0x36))SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x
 func_020d468c();
 return;
 }
-if(data_0215be0c&gMapCursorDirs[i][0]){
+if(gMapCursorOptionValue&gMapCursorDirs[i][0]){
 m=*gCurrentMap;q=(u8 *)gMapCursorDirs+i*4;
 func_020cb6a4(M2C_FIELD((M2C_FIELD(m+2*(M2C_FIELD(m,s16 *,0x52de)+M2C_FIELD(q,s8 *,3)),u16 *,0x3758)+(M2C_FIELD(q,s8 *,2)+(s32)(m+M2C_FIELD(m,s16 *,0x52dc)))),u8 *,0x508)*14+(m+0x59a4));
 M2C_FIELD(arg0,s16 *,0x34)++;

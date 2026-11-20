@@ -27,7 +27,7 @@ u32 ScanUint(s32 base, s32 width, s32 (*read)(void *, s32, s32), void *stream, s
 {
   extern u16 gCharClassTable[];
   extern u8 data_020eacc0[];
-  u32 func_020722fc(u32, u32);
+  u32 U32DivideRem(u32, u32);
   register s32 state;
   s32 ch;
   register u32 consumed;
@@ -51,7 +51,7 @@ u32 ScanUint(s32 base, s32 width, s32 (*read)(void *, s32, s32), void *stream, s
   }
   if (base)
   {
-    limit = func_020722fc(~0U, base);
+    limit = U32DivideRem(~0U, base);
   }
   while ((((s32)consumed <= width) && (ch != (-1))) && (!(state & 96)))
   {
@@ -119,7 +119,7 @@ u32 ScanUint(s32 base, s32 width, s32 (*read)(void *, s32, s32), void *stream, s
       }
         if (!limit)
       {
-        limit = func_020722fc(~0U, base);
+        limit = U32DivideRem(~0U, base);
       }
         if (((ch < 0) || (ch >= 128)) ? (0) : (gCharClassTable[ch] & 8))
       {

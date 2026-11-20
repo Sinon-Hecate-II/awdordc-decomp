@@ -26,8 +26,8 @@ void func_ov003_021eccd4(void *arg0) {
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6d28();
-    M2C_UNK func_ov003_021e74ac(void *, M2C_UNK);
-    s16 func_ov003_022004a8(u8);
+    M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
+    s16 GetWaypointSlotX(u8);
     s32 sp0[9];
     s32 temp_r3_2;
     s16 x, y;
@@ -188,7 +188,7 @@ void func_ov003_021eccd4(void *arg0) {
                 M2C_FIELD(temp_r4_7, s16 *, 0xC) = 0xC;
                 M2C_FIELD(temp_r4_7, u16 *, 2) = (u16) M2C_FIELD(temp_r4_7, u16 *, 4);
             }
-            func_ov003_021e74ac(M2C_FIELD(arg0, void **, 0x6C), 1);
+            SetWaypointListLayout(M2C_FIELD(arg0, void **, 0x6C), 1);
             temp_r6_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
             temp_r4_8 = GetUnitSpriteHeight(temp_r6_2);
             temp_r3_2 = GetUnitSpriteWidth(temp_r6_2) & (-0x200U >> 0x17);
@@ -200,7 +200,7 @@ void func_ov003_021eccd4(void *arg0) {
             spriteFlags = (M2C_FIELD(temp_r1_2, u32 *, 0x40) & ~0x1FF) | temp_r3_2;
             spriteFlags &= ~(0x1FFU << 9);
             M2C_FIELD(temp_r1_2, u32 *, 0x40) = spriteFlags | ((u32)(temp_r4_8 << 0x17) >> 0xE);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
                 if (InRange((u8) temp_r0_3, 0, 3) != 0) {
@@ -259,7 +259,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     s32 func_ov003_021e6e08(u32);
     M2C_UNK func_ov003_021e6e18(u32);
     M2C_UNK HandleWaypointInput(void *, u32);
-    s16 func_ov003_022004a8(u8);
+    s16 GetWaypointSlotX(u8);
     M2C_UNK Ov003_SetPanelPlayerFlagTile(M2C_UNK, u8);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -324,7 +324,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         M2C_FIELD(temp_r1, s16 *, 0x34) = xpos;
         M2C_FIELD(temp_r1, s16 *, 0x36) = ypos;
         M2C_FIELD(temp_r1, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r1, s32 *, 0x40) & mask) | temp_r3) & 0xFFFC01FF) | ((u32) (temp_r5_3 << 0x17) >> 0xE));
-        M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+        M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
         if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
             temp_r0_2 = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
             if (InRange((u8) temp_r0_2, 0, 3) != 0) {

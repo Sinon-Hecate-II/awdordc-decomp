@@ -70,13 +70,13 @@ void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
  * if the descriptor is null or a chunk's source range is invalid. */
 s32 Mb_BuildChunkIndex(void *chunkIndex,void *program) {
 extern void *gMbWork;
-u32 func_020722fc(u32,u32);
+u32 U32DivideRem(u32,u32);
 s32 Mb_ValidateChunkRange(u32,u32,u32);
 void *chunks;u16 *blockOffsets=chunkIndex+12;u32 byteOffset=0;u8 i;
 if(!program)return 0;
 for(i=0;i<3;i++){((u32 *)chunkIndex)[i]=byteOffset;byteOffset+=M2C_FIELD(program+i*16,u32 *,0x14);}
 blockOffsets[0]=0;chunks=program+12;
-for(i=0;i<3;i++){void *chunk=chunks+i*16;u32 blockSize=M2C_FIELD(gMbWork,u32 *,0x1318);u32 size=M2C_FIELD(chunk,u32 *,8);u16 end=blockOffsets[i]+(u16)func_020722fc(size+blockSize-1,blockSize);
+for(i=0;i<3;i++){void *chunk=chunks+i*16;u32 blockSize=M2C_FIELD(gMbWork,u32 *,0x1318);u32 size=M2C_FIELD(chunk,u32 *,8);u16 end=blockOffsets[i]+(u16)U32DivideRem(size+blockSize-1,blockSize);
 if(!Mb_ValidateChunkRange(i,M2C_FIELD(chunk,u32 *,4),size))return 0;
 if(i<2)blockOffsets[i+1]=end;else M2C_FIELD(chunkIndex,u16 *,0x12)=end;
 }return 1;

@@ -414,7 +414,7 @@ void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
-void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void func_ov001_0218ae84(M2C_UNK,void*);
+void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void Ov001_UploadTextPanelTiles(M2C_UNK,void*);
 extern M2C_UNK gOv001TextContext; extern u8 data_ov001_0218fd18[],data_ov001_0218fd1a[],data_ov001_0218fd14[];
 void *base;
 void *p=(u8*)(void*)gOv001TextContext+0x610+arg0*0x30;
@@ -433,26 +433,28 @@ zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
 func_ov001_0216a230(v,b,a,zero,zero,32,c,15);
 TextPanel_ClearText(p,0);
-*(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)func_ov001_0218ae84,(u8*)(void*)gOv001TextContext+0x67c+arg0,200);
+*(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)Ov001_UploadTextPanelTiles,(u8*)(void*)gOv001TextContext+0x67c+arg0,200);
 return p;
 }
 #pragma opt_propagation reset
-void func_ov001_0218ae84(M2C_UNK arg0, void *arg1) {
+void Ov001_UploadTextPanelTiles(M2C_UNK taskArg, void *uploadPendingFlag) {
     void DC_FlushRange(M2C_UNK, s32);
     void func_0200454c(M2C_UNK, s32, u32);
     void func_020045ac(M2C_UNK, s32, u32);
     extern M2C_UNK gOv001TextContext;
-    if (!*(u8 *)arg1) {
+
+    /* Uploads a dirty text panel's cached tiles to its background character VRAM. */
+    if (!*(u8 *)uploadPendingFlag) {
         return;
     }
-    if (arg1 == (void *)((u8 *)gOv001TextContext + 0x67C)) {
-        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x638), 0x6000);
-        func_0200454c(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x638), 0, 0x6000);
+    if (uploadPendingFlag == (void *)((u8 *)gOv001TextContext + OV001_CTX_PANEL_UPLOAD_FLAGS)) {
+        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL0_TILE_BUFFER), 0x6000);
+        func_0200454c(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL0_TILE_BUFFER), 0, 0x6000);
     } else {
-        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x668), 0x3000);
-        func_020045ac(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x668), 0x3000, 0x3000);
+        DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL1_TILE_BUFFER), 0x3000);
+        func_020045ac(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL1_TILE_BUFFER), 0x3000, 0x3000);
     }
-    *(u8 *)arg1 = 0;
+    *(u8 *)uploadPendingFlag = 0;
 }
 
 M2C_UNK func_ov001_0218af0c(s32 arg0) {

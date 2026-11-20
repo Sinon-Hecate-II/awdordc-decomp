@@ -463,7 +463,8 @@ void func_ov002_021e1cac(void *obj, s32 flip, s32 orient, void *ptr, void *ptr2,
         }
     }
 }
-#pragma pop
+#pragma push
+#pragma optimization_level 3
 void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     M2C_UNK SetGxPolygonAttr(s32, s32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
@@ -471,7 +472,6 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     void func_ov002_021e2364(void *);
     s32 func_ov002_021e27c4(void *);
     M2C_UNK var_r1;
-    M2C_UNK var_r4;
     s32 var_r0;
     s32 var_r0_2;
     s32 var_r0_3;
@@ -484,146 +484,108 @@ void func_ov002_021e1ef8(void *arg0, s32 arg1) {
     u8 temp_r0_5;
     u8 temp_r2;
     void **var_r7;
+    s32 sameSide;
 
     temp_r2 = M2C_FIELD(arg0, u8 *, 0x4D);
     if (temp_r2 != 0) {
         SetGxPolygonAttr((s32) (u8) (temp_r2 + ((M2C_FIELD(arg0, u8 *, 0x47) * 3) + 9)), (s32) M2C_FIELD(arg0, u8 *, 0x4E));
     }
-    var_r4 = 0;
-    M2C_FIELD((void *)0x04000444, s32 *, 0) = 0;
+    sameSide = 0;
+    M2C_FIELD((void *)0x04000444, volatile s32 *, 0) = 0;
     temp_r0 = M2C_FIELD(arg0, u8 *, 0x53);
     if (arg1 == 0) {
         if (temp_r0 == 0) {
-            var_r4 = 1;
+            sameSide = 1;
         }
     } else if (temp_r0 != 0) {
-        var_r4 = 1;
+        sameSide = 1;
     }
     if (M2C_FIELD(arg0, s32 *, 0x2C) == 0) {
         var_r0 = 0;
     } else {
         var_r0 = func_ov002_021e27c4(arg0);
     }
-    func_ov002_021e1cac(arg0, var_r4, 0, M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, s32 *, 0x2C), (s32) M2C_FIELD(arg0, u8 *, 0x4C), M2C_FIELD(arg0, s32 *, 0x34), var_r0);
+    func_ov002_021e1cac(arg0, sameSide, 0, M2C_FIELD(arg0, s32 *, 0x28), M2C_FIELD(arg0, s32 *, 0x2C), (s32) M2C_FIELD(arg0, u8 *, 0x4C), M2C_FIELD(arg0, s32 *, 0x34), var_r0);
     temp_r2_2 = M2C_FIELD(arg0, s8 *, 0x4F);
     if (temp_r2_2 != 0) {
-        *(s32 *)0x04000470 = 0;
-        *(s32 *)0x04000470 = 0;
-        *(s32 *)0x04000470 = (s32) temp_r2_2;
+        *(volatile s32 *)0x04000470 = 0;
+        *(volatile s32 *)0x04000470 = 0;
+        *(volatile s32 *)0x04000470 = (s32) temp_r2_2;
     }
     temp_r0_2 = M2C_FIELD(arg0, u8 *, 0x53);
-    if (arg1 == 0) {
-        if (temp_r0_2 == 0) {
-            var_r1 = 1;
-        } else {
-            var_r1 = 0;
-        }
-    } else if (temp_r0_2 == 0) {
-        var_r1 = 0;
-    } else {
-        var_r1 = 1;
-    }
+    var_r1 = arg1 == 0 ? temp_r0_2 == 0 : temp_r0_2 != 0;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(void *, M2C_UNK), 0xC)(arg0, var_r1);
     temp_r0_3 = M2C_FIELD(arg0, u8 *, 0x53);
-    if (arg1 == 0) {
-        if (temp_r0_3 == 0) {
-            var_r0_2 = 1;
-        } else {
-            var_r0_2 = 0;
-        }
-    } else if (temp_r0_3 == 0) {
-        var_r0_2 = 0;
-    } else {
-        var_r0_2 = 1;
-    }
+    var_r0_2 = arg1 == 0 ? temp_r0_3 == 0 : temp_r0_3 != 0;
     if (var_r0_2 != 0) {
         func_ov002_021e2364(arg0);
     } else {
         func_ov002_021e2204(arg0);
     }
     if ((M2C_FIELD(arg0, u8 *, 0x50) != 0) && (M2C_FIELD(arg0, u8 *, 0x4D) == 0)) {
-        M2C_FIELD((void *)0x04000444, s32 *, 0) = 0;
+        M2C_FIELD((void *)0x04000444, volatile s32 *, 0) = 0;
         if (M2C_FIELD(arg0, u8 *, 0x53) == 0) {
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 1;
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 0;
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = 1;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = 0;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = -1;
         } else {
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = 0;
-            M2C_FIELD((void *)0x04000444, s32 *, 0x2C) = -1;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = -1;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = 0;
+            M2C_FIELD((void *)0x04000444, volatile s32 *, 0x2C) = -1;
         }
         SetGxPolygonAttr(0x1E, 0xB);
         temp_r0_4 = M2C_FIELD(arg0, u8 *, 0x53);
-        if (arg1 == 0) {
-            if (temp_r0_4 == 0) {
-                var_r0_3 = 1;
-            } else {
-                var_r0_3 = 0;
-            }
-        } else if (temp_r0_4 == 0) {
-            var_r0_3 = 0;
-        } else {
-            var_r0_3 = 1;
-        }
+        var_r0_3 = arg1 == 0 ? temp_r0_4 == 0 : temp_r0_4 != 0;
         if (var_r0_3 != 0) {
             func_ov002_021e2364(arg0);
         } else {
             func_ov002_021e2204(arg0);
         }
-        M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
-        M2C_FIELD((void *)0x04000448, s32 *, -4) = 0;
+        M2C_FIELD((void *)0x04000448, volatile s32 *, 0) = 1;
+        M2C_FIELD((void *)0x04000448, volatile s32 *, -4) = 0;
         if (M2C_FIELD(arg0, u8 *, 0x53) == 0) {
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 0;
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = -1;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = 0;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = -1;
         } else {
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 1;
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = 0;
-            M2C_FIELD((void *)0x04000448, s32 *, 0x28) = -1;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = 1;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = 0;
+            M2C_FIELD((void *)0x04000448, volatile s32 *, 0x28) = -1;
         }
         SetGxPolygonAttr(0x1D, 8);
         temp_r0_5 = M2C_FIELD(arg0, u8 *, 0x53);
-        if (arg1 == 0) {
-            if (temp_r0_5 == 0) {
-                var_r0_4 = 1;
-            } else {
-                var_r0_4 = 0;
-            }
-        } else if (temp_r0_5 == 0) {
-            var_r0_4 = 0;
-        } else {
-            var_r0_4 = 1;
-        }
+        var_r0_4 = arg1 == 0 ? temp_r0_5 == 0 : temp_r0_5 != 0;
         if (var_r0_4 != 0) {
             func_ov002_021e2364(arg0);
         } else {
             func_ov002_021e2204(arg0);
         }
         SetGxPolygonAttr(0, 0x1F);
-        M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
+        M2C_FIELD((void *)0x04000448, volatile s32 *, 0) = 1;
     }
     var_r7 = NULL;
-loop_65:
+    sameSide = 0;
+    goto next_child;
+    do {
+        func_ov002_021e1ef8(*var_r7, arg1);
+next_child:
     if (var_r7 == NULL) {
         if (M2C_FIELD(arg0, s32 *, 8) == 0) {
-            var_r7 = NULL;
+            var_r7 = (void **)sameSide;
         } else {
             var_r7 = (void **) (arg0 + 8);
         }
     } else {
         var_r7 = M2C_FIELD(var_r7, void ***, 4);
     }
-    if (var_r7 != NULL) {
-        func_ov002_021e1ef8(*var_r7, arg1);
-        goto loop_65;
-    }
-    M2C_FIELD((void *)0x04000448, s32 *, 0) = 1;
+    } while (var_r7 != NULL);
+    M2C_FIELD((void *)0x04000448, volatile s32 *, 0) = 1;
     if (M2C_FIELD(arg0, u8 *, 0x4D) == 0) {
         return;
     }
     SetGxPolygonAttr(0, 0x1F);
 }
-
+#pragma pop
 void func_ov002_021e2204(void *arg0) {
     M2C_UNK SetGxTextureParams(M2C_UNK, u16, u16, s32, s32);
     M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);

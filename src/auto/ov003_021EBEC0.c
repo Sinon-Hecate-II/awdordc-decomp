@@ -70,7 +70,7 @@ void ToggleWaypointPanelMode(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32);
  s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
  void Show3DSprite(void*); void Hide3DSprite(void*); void Show3DSpriteSlide(s32); void Hide3DSpriteSlide(s32);
- s16 GetSpriteAnimValue(void*); void func_ov003_021e74ac(void*,s32); s32 GetUnitSpriteHeight(void*); s32 GetUnitSpriteWidth(void*); s16 func_ov003_022004a8(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
+ s16 GetSpriteAnimValue(void*); void SetWaypointListLayout(void*,s32); s32 GetUnitSpriteHeight(void*); s32 GetUnitSpriteWidth(void*); s16 GetWaypointSlotX(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
  PlaySoundEffect(0x1000f);
  if(IsLinkSessionActive()){
@@ -103,11 +103,11 @@ void ToggleWaypointPanelMode(void *p) {
   s=M2C_FIELD(p,void**,0x50);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=0;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
   s=M2C_FIELD(p,void**,0x4c);M2C_FIELD(s,s16*,14)=GetSpriteAnimValue(s);M2C_FIELD(s,s16*,16)=94;M2C_FIELD(s,s16*,12)=12;M2C_FIELD(s,u16*,2)=M2C_FIELD(s,u16*,4);
  }
- func_ov003_021e74ac(M2C_FIELD(p,void**,0x6c),0);
+ SetWaypointListLayout(M2C_FIELD(p,void**,0x6c),0);
  unit=M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0);y=GetUnitSpriteHeight(unit);x=GetUnitSpriteWidth(unit);
  {s16 yy=M2C_FIELD(unit,s16*,0x36),xx=M2C_FIELD(unit,s16*,0x34);dst=M2C_FIELD(p,void**,0x58);M2C_FIELD(dst,s16*,0x34)=xx;M2C_FIELD(dst,s16*,0x36)=yy;}
  ((SpritePosC57C*)((u8*)dst+0x40))->x=x;((SpritePosC57C*)((u8*)dst+0x40))->y=y;
- M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=func_ov003_022004a8(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
+ M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=GetWaypointSlotX(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
  if(!((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))return;
  state=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0),u16*,0x2e);
  if(InRange(state,0,3)){SetTextById(M2C_FIELD(p,s32*,0x54),0x47000011);return;}
@@ -161,7 +161,7 @@ void UpdateWaypointSelection(void *panel, s32 action) {
     s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     M2C_UNK HandleWaypointInput();
-    s16 func_ov003_022004a8(u8);
+    s16 GetWaypointSlotX(u8);
     s32 slotX;
     s32 slotY;
     s32 isMode1;
@@ -191,7 +191,7 @@ void UpdateWaypointSelection(void *panel, s32 action) {
     }
     ((SpritePosC57C *)((u8 *)cursor+0x40))->x=slotX;
     ((SpritePosC57C *)((u8 *)cursor+0x40))->y=slotY;
-    M2C_FIELD(M2C_FIELD(panel, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(panel, void **, 0x6C), u8 *, 7));
+    M2C_FIELD(M2C_FIELD(panel, void **, 0x5C), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(panel, void **, 0x6C), u8 *, 7));
     if (((u32) (M2C_FIELD(panel, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
         selection = M2C_FIELD(M2C_FIELD(M2C_FIELD(panel, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
         if (InRange((u8) selection, 0, 3) != 0) {

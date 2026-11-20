@@ -353,12 +353,12 @@ void func_ov001_021785e0(void) {
 }
 
 void func_ov001_02178600(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK func_ov001_0217863c;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_0217863c);
 }
@@ -487,7 +487,7 @@ void func_ov001_021788bc(void) {
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (gOv001WfcEraseConfirmed == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
@@ -719,14 +719,14 @@ void func_ov001_02178dfc(void) {
 
 void func_ov001_02178e1c(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
-    M2C_UNK func_ov001_02171694(void);
+    M2C_UNK Ov001_StartIconRowSlideOut(void);
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern s8 gOv001MessageState;
     extern M2C_UNK Ov001_CloseMessageScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (M2C_FIELD(&gOv001MessageState, u8 *, 1) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }

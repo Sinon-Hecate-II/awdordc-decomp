@@ -26,15 +26,17 @@ s32 HardwareDivideRemainder(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A8;
 }
 
-s32 func_02002100(s32 *arg0, s32 *arg1) {
+s32 Vec3DotProduct(s32 *arg0, s32 *arg1) {
     return ((s64)arg0[0] * arg1[0] + (s64)arg0[1] * arg1[1] + (s64)arg0[2] * arg1[2] + 0x800) >> 12;
 }
 
-void func_0200213c(s32 *arg0, s32 *arg1, s32 *arg2) {
-    s32 x = ((s64)arg0[1] * arg1[2] - (s64)arg0[2] * arg1[1] + 0x800) >> 12;
-    s32 y = ((s64)arg0[2] * arg1[0] - (s64)arg0[0] * arg1[2] + 0x800) >> 12;
-    s32 z = ((s64)arg0[0] * arg1[1] - (s64)arg0[1] * arg1[0] + 0x800) >> 12;
-    arg2[0] = x; arg2[1] = y; arg2[2] = z;
+/* Cross product of two 12-bit fixed-point 3-vectors, rounded back to 12-bit
+ * fixed point. */
+void Vec3CrossProduct(s32 *a, s32 *b, s32 *out) {
+    s32 x = ((s64) a[1] * b[2] - (s64) a[2] * b[1] + 0x800) >> 12;
+    s32 y = ((s64) a[2] * b[0] - (s64) a[0] * b[2] + 0x800) >> 12;
+    s32 z = ((s64) a[0] * b[1] - (s64) a[1] * b[0] + 0x800) >> 12;
+    out[0] = x; out[1] = y; out[2] = z;
 }
 
 typedef volatile unsigned int vu32;

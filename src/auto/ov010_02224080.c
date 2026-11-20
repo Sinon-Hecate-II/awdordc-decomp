@@ -42,7 +42,7 @@ s32 VoiceLink_BuildStepPacket(void *context, s32 step, void *packet, u32 size) {
     return 0;
 }
 
-s32 func_ov010_02224138(s32 arg0, s32 arg1) {
+s32 VoiceLink_TrySendStep(s32 arg0, s32 arg1) {
     s32 VoiceLink_SendPacket(void *, s32);
     extern M2C_UNK gLinkConfig;
     if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;

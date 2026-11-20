@@ -46,13 +46,13 @@ void func_ov001_02180bbc(void) {
 }
 
 void func_ov001_02180bdc(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_LeaveFriendList;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&Ov001_LeaveFriendList);
@@ -349,25 +349,27 @@ break;
 void func_ov001_021812c0(void) {
     M2C_UNK func_ov001_0218560c();
     extern M2C_UNK gOv001MenuRegion;
-    extern M2C_UNK func_ov001_021812fc;
+    extern M2C_UNK Ov001_FadeOutRegionMenu;
     if (M2C_FIELD(M2C_FIELD(&gOv001MenuRegion, void **, 4), u8 *, 0x1D) == 2) {
         func_ov001_0218560c();
     }
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021812fc);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutRegionMenu);
 }
 
-void func_ov001_021812fc(void) {
-    M2C_UNK func_ov001_02171694();
+/* Fade the ov001 region menu out and hand over to its teardown step; when the
+ * chosen region has an entry to open, the icon row slides out first. */
+void Ov001_FadeOutRegionMenu(void) {
+    M2C_UNK Ov001_StartIconRowSlideOut();
     void *GetCurrentMapRecord();
     extern M2C_UNK gOv001MenuRegion;
     extern M2C_UNK Ov001_FinishRegionMenu;
     if (Ov001_IsFadeActive(1) != 0) return;
-    if (M2C_FIELD(M2C_FIELD(&gOv001MenuRegion, void **, 4), u8 *, 0x1D) == 1 &&
-        (M2C_FIELD(&gOv001MenuRegion, u8 *, 0) == 3 ||
-         M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xE7) != 0xFF)) {
-        func_ov001_02171694();
+    if (((Ov001MenuRegion *) &gOv001MenuRegion)->sprites->mode == 1 &&
+        (((Ov001MenuRegion *) &gOv001MenuRegion)->index == 3 ||
+         M2C_FIELD(GetCurrentMapRecord(), u8 *, SAVE_SLOT_STATUS_REL) != 0xFF)) {
+        Ov001_StartIconRowSlideOut();
     }
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x14, 8);

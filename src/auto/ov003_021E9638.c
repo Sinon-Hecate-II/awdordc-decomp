@@ -6,6 +6,7 @@ static inline u8 E9638Toggle(void *p) { return ((u32)(M2C_FIELD(p,volatile u8*,0
 static inline u8 E9638IsFF(u8 v) { return v==255; }
 static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
 #include "coordinate_bits.h"
+#include "waypoint_panel.h"
 
 /* Create the waypoint panel's sprites: the panel's main 3D sprite, one sprite
    per waypoint slot (12) and one label sprite per slot plus a trailing label,
@@ -67,167 +68,206 @@ void func_ov003_021e9830(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, u16 *, 2) = (u16) M2C_FIELD(arg0, u16 *, 4);
 }
 
-u32 func_ov003_021e984c(void *arg0, u8 arg1) {
-    void Show3DSprite(void *);
-    void Hide3DSprite(void *);
-    s32 Show3DSpriteSlide(s32);
-    s32 Hide3DSpriteSlide(s32);
-    u32 SetTextById(s32, s32);
-    s16 GetSpriteAnimValue(void *);
-    s32 GetUnitSpriteWidth(void *);
-    s32 GetUnitSpriteHeight(void *);
-    u32 InRange(u8, M2C_UNK, M2C_UNK);
-    s32 func_ov003_021e6d28();
-    M2C_UNK func_ov003_021e74ac(void *, u8);
-    s16 func_ov003_022004a8(u8);
-    s32 IsLinkSessionActive();
-    s8 *temp_r4;
-    s8 *temp_r4_5;
-    s32 temp_r3;
-    s32 temp_r4_9;
-    s32 var_r0_2;
-    s32 var_r0_3;
-    s32 var_r1;
-    u16 temp_r0_3;
-    u32 temp_r0;
-    u32 temp_r0_2;
-    u32 temp_r0_4;
-    u32 var_r0;
-    u32 var_r8;
-    u8 temp_r1;
-    s8 temp_r7;
-    u8 var_r7;
-    void *temp_r1_2;
-    void *temp_r4_2;
-    void *temp_r4_3;
-    void *temp_r4_4;
-    void *temp_r4_6;
-    void *temp_r4_7;
-    void *temp_r4_8;
-    void *temp_r5;
+#pragma opt_common_subs off
+/* Switch the waypoint panel between its wide layout (all four player columns
+ * visible, background strips spread out) and its compact one: store the layout
+ * in the panel flags, show or hide the player-select sprites, retarget the three
+ * strip tweens, re-lay the slot list, then move the target cursor onto the
+ * selected unit and pick the description text for the selected slot. */
+void SetWaypointPanelMode(void *panel, s32 layout)
+{
+  void Show3DSprite(void *);
+  void Hide3DSprite(void *);
+  s32 Show3DSpriteSlide(s32);
+  s32 Hide3DSpriteSlide(s32);
+  u32 SetTextById(s32, s32);
+  s16 GetSpriteAnimValue(void *);
+  s32 GetUnitSpriteWidth(void *);
+  s32 GetUnitSpriteHeight(void *);
+  u32 InRange(u8, M2C_UNK, M2C_UNK);
+  s32 func_ov003_021e6d28();
+  void SetWaypointListLayout(void *, s32);
+  s16 GetWaypointSlotX(u8);
+  s32 IsLinkSessionActive();
+  typedef struct
+  {
+    s32 slide;          /* +0x00 first player-select slide */
+    s32 slideAlt;       /* +0x04 second player-select slide */
+    void *tile[4];      /* +0x08 first sprite of each player column */
+    void *tileAlt[4];   /* +0x18 second sprite of each player column */
+  } WaypointSelectSprites;
+  WaypointSelectSprites *selectSprites;
+  WaypointSelectSprites *hiddenSprites;
+  u32 flags;
+  u32 width;
+  s32 height;
+  s32 isWide;
+  s32 isCompact;
+  u32 wide;
+  u32 compact;
+  u8 selectedSlot;
+  u32 textEnabled;
+  u32 layoutNow;
+  u8 slotCount;
+  s8 count;
+  u8 slot;
+  u8 hideSlot;
+  s8 *panelBytes;
+  void *unit;
+  SpriteTween *strip;
 
-    temp_r1 = (M2C_FIELD(arg0, u8 *, 0x39) & ~0xC) | (((u8)(arg1 & 0xFF) << 0x1E) >> 0x1C);
-    if (((u32) (temp_r1 << 0x1C) >> 0x1E) == 0) {
-        var_r0_2 = 1;
-    } else {
-        var_r0_2 = 0;
+  flags = (M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) = ((M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS) & (~WAYPOINT_PANEL_LAYOUT_MASK)) | ((((u32) ((u8) layout)) << 0x1E) >> 0x1C)));
+  if ((((u32) (((u8) flags) << 0x1C)) >> 0x1E) == 0)
+  {
+    isWide = 1;
+  }
+  else
+  {
+    isWide = 0;
+  }
+  if ((isWide & 0xFF) && (func_ov003_021e6d28() != 0))
+  {
+    Show3DSprite(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR));
+    Show3DSpriteSlide(M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES)->slide);
+  }
+  selectSprites = M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES);
+  count = (s32) (M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), s8 *, WAYPOINT_LIST_COUNT));
+  slotCount = count & 0xffU;
+  if (IsLinkSessionActive() == 0)
+  {
+    slot = 0;
+    do
+    {
+      if (slot < slotCount)
+      {
+        Show3DSprite(selectSprites->tile[slot]);
+        Show3DSprite(selectSprites->tileAlt[slot]);
+      }
+      slot = (u32) ((u8) (slot + 1));
     }
-    M2C_FIELD(arg0, u8 *, 0x39) = temp_r1;
-    if ((var_r0_2 & 0xFF) && (func_ov003_021e6d28() != 0)) {
-        Show3DSprite(M2C_FIELD(arg0, void **, 0x58));
-        Show3DSpriteSlide(*M2C_FIELD(arg0, s32 **, 0x64));
+    while (slot < 4U);
+  }
+  strip = M2C_FIELD(panel, SpriteTween **, WAYPOINT_PANEL_STRIP_A);
+  strip->from = GetSpriteAnimValue(strip);
+  strip->to = 0;
+  strip->duration = 0xC;
+  strip->current = strip->start;
+  panelBytes = (s8 *) panel;
+  strip = M2C_FIELD(panelBytes, SpriteTween **, WAYPOINT_PANEL_STRIP_B);
+  strip->from = GetSpriteAnimValue(strip);
+  strip->to = 0x100;
+  strip->duration = 0xC;
+  strip->current = strip->start;
+  strip = M2C_FIELD(panelBytes, SpriteTween **, WAYPOINT_PANEL_STRIP_C);
+  strip->from = GetSpriteAnimValue(strip);
+  strip->to = 0xC0;
+  strip->duration = 0xC;
+  strip->current = strip->start;
+  if ((((u32) ((M2C_FIELD(panelBytes, u8 *, WAYPOINT_PANEL_FLAGS)) << 0x1C)) >> 0x1E) == 1)
+  {
+    isCompact = 1;
+  }
+  else
+  {
+    isCompact = 0;
+  }
+  if (isCompact & 0xFF)
+  {
+    if (func_ov003_021e6d28() != 0)
+    {
+      Hide3DSprite(M2C_FIELD(panelBytes, void **, WAYPOINT_PANEL_CURSOR));
+      Hide3DSpriteSlide(M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES)->slide);
     }
-    temp_r4 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
-    temp_r7 = (s8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), s8 *, 4);
-    if (IsLinkSessionActive() == 0) {
-        var_r8 = 0;
-        do {
-            if (var_r8 < (u32)(u8)temp_r7) {
-                Show3DSprite(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 8));
-                Show3DSprite(M2C_FIELD(temp_r4 + (var_r8 * 4), void **, 0x18));
-            }
-            var_r8 = (u32) (u8) (var_r8 + 1);
-        } while (var_r8 < 4U);
+    hiddenSprites = M2C_FIELD(panel, WaypointSelectSprites **, WAYPOINT_PANEL_SELECT_SPRITES);
+    hideSlot = 0;
+    do
+    {
+      Hide3DSprite(hiddenSprites->tile[hideSlot]);
+      Hide3DSprite(hiddenSprites->tileAlt[hideSlot]);
+      hideSlot += 1;
     }
-    temp_r4_2 = M2C_FIELD(arg0, void **, 0x48);
-    M2C_FIELD(temp_r4_2, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_2);
-    M2C_FIELD(temp_r4_2, s16 *, 0x10) = 0;
-    M2C_FIELD(temp_r4_2, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r4_2, u16 *, 2) = (u16) M2C_FIELD(temp_r4_2, u16 *, 4);
-    temp_r4_3 = M2C_FIELD(arg0, void **, 0x50);
-    M2C_FIELD(temp_r4_3, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_3);
-    M2C_FIELD(temp_r4_3, s16 *, 0x10) = 0x100;
-    M2C_FIELD(temp_r4_3, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r4_3, u16 *, 2) = (u16) M2C_FIELD(temp_r4_3, u16 *, 4);
-    temp_r4_4 = M2C_FIELD(arg0, void **, 0x4C);
-    M2C_FIELD(temp_r4_4, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_4);
-    M2C_FIELD(temp_r4_4, s16 *, 0x10) = 0xC0;
-    M2C_FIELD(temp_r4_4, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r4_4, u16 *, 2) = (u16) M2C_FIELD(temp_r4_4, u16 *, 4);
-
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E) == 1) {
-        var_r0_3 = 1;
-    } else {
-        var_r0_3 = 0;
-    }
-    if (var_r0_3 & 0xFF) {
-        if (func_ov003_021e6d28() != 0) {
-            Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
-            Hide3DSpriteSlide(*M2C_FIELD(arg0, s32 **, 0x64));
-        }
-        temp_r4_5 = (s8 *) M2C_FIELD(arg0, s32 **, 0x64);
-        var_r7 = 0;
-        do {
-            Hide3DSprite(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 8));
-            Hide3DSprite(M2C_FIELD(temp_r4_5 + (var_r7 * 4), void **, 0x18));
-            var_r7 += 1;
-        } while ((u32) var_r7 < 4U);
-        temp_r4_6 = M2C_FIELD(arg0, void **, 0x48);
-        M2C_FIELD(temp_r4_6, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_6);
-        M2C_FIELD(temp_r4_6, s16 *, 0x10) = -0x100;
-        M2C_FIELD(temp_r4_6, s16 *, 0xC) = 0xC;
-        M2C_FIELD(temp_r4_6, u16 *, 2) = (u16) M2C_FIELD(temp_r4_6, u16 *, 4);
-        temp_r4_7 = M2C_FIELD(arg0, void **, 0x50);
-        M2C_FIELD(temp_r4_7, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_7);
-        M2C_FIELD(temp_r4_7, s16 *, 0x10) = 0;
-        M2C_FIELD(temp_r4_7, s16 *, 0xC) = 0xC;
-        M2C_FIELD(temp_r4_7, u16 *, 2) = (u16) M2C_FIELD(temp_r4_7, u16 *, 4);
-        temp_r4_8 = M2C_FIELD(arg0, void **, 0x4C);
-        M2C_FIELD(temp_r4_8, s16 *, 0xE) = GetSpriteAnimValue(temp_r4_8);
-        M2C_FIELD(temp_r4_8, s16 *, 0x10) = 0x5E;
-        M2C_FIELD(temp_r4_8, s16 *, 0xC) = 0xC;
-        M2C_FIELD(temp_r4_8, u16 *, 2) = (u16) M2C_FIELD(temp_r4_8, u16 *, 4);
-    }
-    func_ov003_021e74ac(M2C_FIELD(arg0, void **, 0x6C), arg1);
-    temp_r5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
-    temp_r4_9 = GetUnitSpriteHeight(temp_r5);
-    temp_r3 = GetUnitSpriteWidth(temp_r5) & (-0x200U >> 0x17);
-    temp_r1_2 = M2C_FIELD(arg0, void **, 0x58);
-    M2C_FIELD(temp_r1_2, s16 *, 0x34) = (s16) M2C_FIELD(temp_r5, s16 *, 0x34);
-    M2C_FIELD(temp_r1_2, s16 *, 0x36) = (s16) M2C_FIELD(temp_r5, s16 *, 0x36);
-    M2C_FIELD(temp_r1_2, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r1_2, s32 *, 0x40) & ~0x1FF) | temp_r3) & 0xFFFC01FF) | ((u32) (temp_r4_9 << 0x17) >> 0xE));
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
-    temp_r0_2 = (u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F;
-    if (temp_r0_2 == 0) {
-        return temp_r0_2;
-    }
-    temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
-    if (InRange((u8) temp_r0_3, 0, 3) != 0) {
-        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-    }
-    if (InRange((u8) temp_r0_3, 4, 7) != 0) {
-        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000012);
-    }
-    if (InRange((u8) temp_r0_3, 8, 0x14) != 0) {
-        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000011);
-    }
-    temp_r0 = InRange((u8) temp_r0_3, 0x15, 0x18);
-    if (temp_r0 != 0) {
-        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000010);
-    }
-    if ((u8) temp_r0_3 != 0x19) {
-        return temp_r0;
-    }
-    temp_r0_4 = (u32) (M2C_FIELD(arg0, u8 *, 0x39) << 0x1C) >> 0x1E;
-    if (temp_r0_4 == 0) {
-        var_r1 = 1;
-    } else {
-        var_r1 = 0;
-    }
-    if (var_r1 & 0xFF) {
-        return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000016);
-    }
-    if (temp_r0_4 == 1) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    if (!(var_r0 & 0xFF)) {
-        return var_r0;
-    }
-    return SetTextById(M2C_FIELD(arg0, s32 *, 0x54), 0x47000017);
+    while (((u32) hideSlot) < 4U);
+    strip = M2C_FIELD(panel, SpriteTween **, WAYPOINT_PANEL_STRIP_A);
+    strip->from = GetSpriteAnimValue(strip);
+    strip->to = -0x100;
+    strip->duration = 0xC;
+    strip->current = strip->start;
+    strip = M2C_FIELD(panel, SpriteTween **, WAYPOINT_PANEL_STRIP_B);
+    strip->from = GetSpriteAnimValue(strip);
+    strip->to = 0;
+    strip->duration = 0xC;
+    strip->current = strip->start;
+    strip = M2C_FIELD(panelBytes, SpriteTween **, WAYPOINT_PANEL_STRIP_C);
+    strip->from = GetSpriteAnimValue(strip);
+    strip->to = 0x5E;
+    strip->duration = 0xC;
+    strip->current = strip->start;
+  }
+  SetWaypointListLayout(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), layout);
+  unit = M2C_FIELD(M2C_FIELD(panelBytes, void **, WAYPOINT_PANEL_LIST), void **, WAYPOINT_LIST_UNIT);
+  height = GetUnitSpriteHeight(unit);
+  width = GetUnitSpriteWidth(unit);
+  E9638Set(M2C_FIELD(panel, void **, WAYPOINT_PANEL_CURSOR), M2C_FIELD(unit, s16 *, 0x34), M2C_FIELD(unit, s16 *, 0x36), width, height);
+  M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_MARKER), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(panel, void **, WAYPOINT_PANEL_LIST), u8 *, WAYPOINT_LIST_SELECTED));
+  textEnabled = ((u32) ((M2C_FIELD(panelBytes, u8 *, WAYPOINT_PANEL_TEXT_ENABLED)) << 0x1F)) >> 0x1F;
+  if (textEnabled == 0)
+  {
+    return;
+  }
+  selectedSlot = M2C_FIELD(M2C_FIELD(M2C_FIELD(panelBytes, void **, WAYPOINT_PANEL_LIST), void **, WAYPOINT_LIST_UNIT), u16 *, 0x2E);
+  if (InRange(selectedSlot, 0, 3) != 0)
+  {
+    SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_SLOTS_0_TO_3);
+    return;
+  }
+  if (InRange(selectedSlot, 4, 7) != 0)
+  {
+    SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_SLOTS_4_TO_7);
+    return;
+  }
+  if (InRange(selectedSlot, 8, 0x14) != 0)
+  {
+    SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_SLOTS_8_TO_20);
+    return;
+  }
+  if (InRange(selectedSlot, 0x15, 0x18) != 0)
+  {
+    SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_SLOTS_21_TO_24);
+    return;
+  }
+  if (selectedSlot != 0x19)
+  {
+    return;
+  }
+  layoutNow = ((u32) ((M2C_FIELD(panel, u8 *, WAYPOINT_PANEL_FLAGS)) << 0x1C)) >> 0x1E;
+  if (layoutNow == 0)
+  {
+    wide = 1;
+  }
+  else
+  {
+    wide = 0;
+  }
+  if (wide & 0xFF)
+  {
+    SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_CONFIRM_WIDE);
+    return;
+  }
+  if (layoutNow == 1)
+  {
+    compact = 1;
+  }
+  else
+  {
+    compact = 0;
+  }
+  if (!(compact & 0xFF))
+  {
+    return;
+  }
+  SetTextById(M2C_FIELD(panelBytes, s32 *, WAYPOINT_PANEL_TEXT), WAYPOINT_TEXT_CONFIRM_COMPACT);
 }
-
+#pragma opt_common_subs reset
 u8 func_ov003_021e9c08(void *arg0) {
     u8 var_r0;
 
@@ -255,12 +295,12 @@ u8 func_ov003_021e9c30(void *arg0) {
 }
 
 void func_ov003_021e9c50(void *p) {
- s32 GetUnitSpriteWidth(void *); s32 GetUnitSpriteHeight(void *); s16 func_ov003_022004a8(u8);
+ s32 GetUnitSpriteWidth(void *); s32 GetUnitSpriteHeight(void *); s16 GetWaypointSlotX(u8);
  void *q; s32 a,b;
  q=M2C_FIELD(M2C_FIELD(p,void**,0x6c),void**,0xe0);
  b=GetUnitSpriteHeight(q); a=GetUnitSpriteWidth(q);
  E9638Set(M2C_FIELD(p,void**,0x58),M2C_FIELD(q,s16*,0x34),M2C_FIELD(q,s16*,0x36),a,b);
- M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=func_ov003_022004a8(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
+ M2C_FIELD(M2C_FIELD(p,void**,0x5c),s16*,0x34)=GetWaypointSlotX(M2C_FIELD(M2C_FIELD(p,void**,0x6c),u8*,7));
 }
 
 u8 func_ov003_021e9cd0(void *arg0) {
@@ -340,25 +380,23 @@ void func_ov003_021e9e78(void *arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(arg0, s8 *, 0x12) = 1;
 }
 
-#pragma opt_strength_reduction off
-#pragma opt_common_subs off
-#pragma opt_propagation off
+#pragma optimization_level 3
 void func_ov003_021e9eb4(void *p) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 s32 Modulo(s32,s32); s16 func_ov003_022004f0(s32); s32 GetWaypointOptionCoId(u8);
 void ClearTileRect(void*,s32,s32); void FillFaceTileMap(u32,s32,s32,s32,u32,u16,u8); void LoadFacePalette(s32,s32,s32,s32,u8);
-u8 i; void *old,*saved; s32 b; u8 a; s8 c; u16 v;
+u8 i; void *old,*saved; u8 a; s8 c;
 for(i=0;i<M2C_FIELD(M2C_FIELD(p,void**,0x6c),s8*,4);i++){
+    s32 b;
 old=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=(Modulo(i,2)!=0);
-if(i<2)b=0;
-else b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
+if(i>=2)b=(s32)(((u32)func_ov003_022004f0(2)<<16)>>3)>>16;
+else b=0;
 c=(s8)GetWaypointOptionCoId(M2C_FIELD((u8*)M2C_FIELD(p,void**,0x6c)+i,u8*,0xa));
 if(c==0){
 ClearTileRect((void*)((u8*)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+(b+1)*2),7,7);
 }else{
-v=(u16)(((((s8)(c-1))<<7)+2)<<15>>16);
 FillFaceTileMap(1,b,0,(s32)M2C_FIELD((u8*)gCur3DSpriteEngine+a*4,void**,0x20)+2,((u32)((((s8)(c-1))<<7)+2)<<15>>16),i,0);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1<<a;
@@ -382,9 +420,7 @@ gCur3DSpriteEngine=saved;
 M2C_FIELD(p,u8*,0x3a)&=~0x70;
 M2C_FIELD(p,u8*,0x3a)&=~0x8;
 }
-#pragma opt_strength_reduction reset
-#pragma opt_common_subs reset
-#pragma opt_propagation reset
+#pragma optimization_level reset
 void func_ov003_021ea134(s32 arg0) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | (1 << arg0));
@@ -479,8 +515,9 @@ void WaypointPanel_RefreshPlayerReady(void *panel) {
  }while(var_r8<M2C_FIELD(M2C_FIELD(panel,void**,WAYPOINT_PANEL_LIST),s8*,WAYPOINT_LIST_COUNT));
 }
 
+#pragma opt_loop_invariants off
 void func_ov003_021ea4a8(void *arg0,s32 arg1){
-void *GetNetworkPlayerRecord(u8);M2C_UNK PlaySoundEffect(s32);
+void *func_02084e24(u8);M2C_UNK func_0208fe30(s32);
 s32 temp_r2,var_r1;u8 var_r0,var_r7;void *temp_r0,*temp_r8;
 var_r7=0;
 if(M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4)<=0)return;
@@ -488,13 +525,13 @@ do{
 var_r0=M2C_FIELD((u8*)M2C_FIELD(arg0,void**,0x6c)+var_r7,u8*,0x74);
 var_r1=E9638IsFF(var_r0);
 if(var_r1)var_r0=M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),u8*,0x74);
-temp_r0=GetNetworkPlayerRecord(var_r0);if(!temp_r0)return;
+temp_r0=func_02084e24(var_r0);if(!temp_r0)return;
 temp_r2=E9638Value(temp_r0);
 temp_r8=(u8*)M2C_FIELD(arg0,void**,0x68)+var_r7;
 if(M2C_FIELD(temp_r8,u8*,0x7c)){
-if(!temp_r2){if(arg1)PlaySoundEffect(0x1000f);M2C_FIELD(temp_r8,u8*,0x7c)=0;}
-}else if(temp_r2){if(arg1)PlaySoundEffect(0x1000d);M2C_FIELD(temp_r8,u8*,0x7c)=1;}
-var_r7=(var_r7+1)&255;
+if(!temp_r2){if(arg1)func_0208fe30(0x1000f);M2C_FIELD(temp_r8,u8*,0x7c)=0;}
+}else if(temp_r2){if(arg1)func_0208fe30(0x1000d);M2C_FIELD(temp_r8,u8*,0x7c)=1;}
+var_r7++;
 }while(var_r7<M2C_FIELD(M2C_FIELD(arg0,void**,0x6c),s8*,4));
 }
-
+#pragma opt_loop_invariants reset

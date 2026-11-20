@@ -256,7 +256,7 @@ s32 SBServerListCheckQueryError(void *list) {
 
 s32 func_02061fb8(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];
-    s64 func_020722fc(s32, s32);
+    s64 U32DivideRem(s32, s32);
     s8 *p = (s8 *)arg0;
     s8 c;
     s32 h = 0;
@@ -264,7 +264,7 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
         h = 0x9CCF9319 * h + (c >= 0 && c < 0x80 ? data_020eac40[c] : c);
         p++;
     }
-    return (s32)((func_020722fc(h, arg1)) >> 32);
+    return (s32)((U32DivideRem(h, arg1)) >> 32);
 }
 
 s32 SBServerListOpenConnection(void *p){

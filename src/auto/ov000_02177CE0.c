@@ -38,67 +38,65 @@ if(threat<20)score+=0x400000;
 return score;
 }
 
-s32 func_ov000_02177f24(s32 arg0, s32 arg1, s16 *arg2) {
+/* Finds the highest-scoring tile orthogonally adjacent to (originX,originY),
+ * writing it to out.  Unlike FindBestAdjacentDestination it does not require the
+ * cursor unit to be able to stand on the tile, so callers use it to pick a tile
+ * to attack from.  Returns 1 if a tile was found, 0 otherwise. */
+s32 FindBestAdjacentTile(s32 originX, s32 originY, s16 *outBuf) {
     s32 ScoreMoveDestination(s32, s32);
     extern void **gCurrentMap;
     extern s32 gFrameCounter;
-    s32 magic = 0x270F;
-    s32 x = arg0;
-    s32 sp0 = arg1;
-    s16 *sp4 = arg2;
-    s32 sp8;
-    s32 spC;
-    s32 best = 0;
-    s32 outer;
-    s32 innerMax;
-    s32 inner;
-    s32 d0;
-    s32 d1;
-    s32 outerS16;
+    s32 noResult = MAP_DESTINATION_NONE;
+    s32 x = originX;
+    s32 y = originY;
+    s16 *out = outBuf;
+    s32 minX;
+    s32 maxY;
+    register s32 bestScore = 0, tx, dy0, dy1, ty, maxX, tyS16;
     void *base;
-    s32 temp;
+    s32 score;
     s32 adx;
     s32 dist;
 
-    *sp4 = (s16) magic;
-    spC = x - 1;
-    if (spC < 0) spC = 0;
-    outer = sp0 - 1;
-    if (outer < 0) outer = 0;
+    *out = (s16) noResult;
+    minX = x - 1;
+    if (minX < 0) minX = 0;
+    ty = y - 1;
+    if (ty < 0) ty = 0;
     base = *gCurrentMap;
-    innerMax = M2C_FIELD(base, u16 *, 0x5144) - 1;
-    if (x + 1 < innerMax) innerMax = x + 1;
-    sp8 = M2C_FIELD(base, u16 *, 0x5146) - 1;
-    if (sp0 + 1 < sp8) sp8 = sp0 + 1;
-    if (outer <= sp8) {
+    maxX = M2C_FIELD(base, u16 *, MAP_WIDTH) - 1;
+    if (x + 1 < maxX) maxX = x + 1;
+    maxY = M2C_FIELD(base, u16 *, MAP_HEIGHT) - 1;
+    if (y + 1 < maxY) maxY = y + 1;
+    if (ty <= maxY) {
         do {
-            inner = spC;
-            if (inner <= innerMax) {
+            tx = minX;
+            if (tx <= maxX) {
                 do {
-                    d0 = sp0 - outer;
-                    d1 = outer - sp0;
-                    outerS16 = (s16) outer;
-                    adx = x - inner;
-                    if (adx <= 0) adx = inner - x;
+                    dy0 = y - ty;
+                    dy1 = ty - y;
+                    tyS16 = ty;
+                    adx = x - tx;
+                    if (adx <= 0) adx = tx - x;
                     dist = 0;
                     dist = adx + dist;
-                    if (d0 > 0) dist = dist + d0;
-                    else dist = dist + d1;
-                    if (dist == 1) {
-                        temp = ScoreMoveDestination((s32)(s16)inner, (s32)(s16)outer);
-                        if (temp >= best && (temp != best || !(gFrameCounter & 1))) {
-                            best = temp;
-                            sp4[0] = (s16) inner;
-                            sp4[1] = (s16) outerS16;
+                    if (dy0 > 0) dist = dist + dy0;
+                    else dist = dist + dy1;
+                    if (dist >= 1 && dist <= 1  ) {
+                        score = ScoreMoveDestination(tx, ty);
+                        if (score >= bestScore && (score != bestScore || !(gFrameCounter & 1))) {
+                            bestScore = score;
+                            out[0] = (s16) tx;
+                            out[1] = (s16) tyS16;
                         }
                     }
-                    inner++;
-                } while (inner <= innerMax);
+                    tx++;
+                } while (tx <= maxX);
             }
-            outer++;
-        } while (outer <= sp8);
+            ty++;
+        } while (ty <= maxY);
     }
-    if (sp4[0] == (s16) magic) return 0;
+    if (out[0] == (s16) noResult) return 0;
     return 1;
 }
 

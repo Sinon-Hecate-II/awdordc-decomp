@@ -6,7 +6,7 @@ typedef struct { u8 bytes[14]; } FourteenBytes;
 typedef struct { u16 a,b,c,d; } FourShorts;
 
 #pragma scheduling on
-s32 func_ov001_0217eb6c(void){
+s32 GetMapListTouchedEntry(void){
  s32 TouchRectPressed(void *);s32 func_ov001_0218bd1c(FourShorts *);
  s32 HardwareDivide(u16,s32);
  extern M2C_UNK gTouchScreenRect,gMapListState;
@@ -195,7 +195,7 @@ M2C_UNK MapList_UpdateStateFromRow(void) {
     MapList_ApplyRowLayout();
 }
 
-void func_ov001_0217f1c0(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
+void SelectMapListChoice(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
 
 void func_ov001_0217f1f0(s32 event) {
     void *GetCurrentMapRecord(void);
@@ -462,7 +462,7 @@ s32 func_ov001_0217f95c(void) {
     return 0;
 }
 
-void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK data_ov001_02193db8;M2C_FIELD(&data_ov001_02193db8,u8 *,0)=0;func_ov001_0217f9b8();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
+void func_ov001_0217f97c(void){void func_ov001_0217f9b8(void);void func_ov001_0217fa38(void);M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);M2C_UNK Ov001_ShowMessageBox(M2C_UNK);M2C_UNK Ov001_LoadSaveSlotObjLayout(void);extern M2C_UNK gOv001OptionExitToConnection;M2C_FIELD(&gOv001OptionExitToConnection,u8 *,0)=0;func_ov001_0217f9b8();Ov001_LoadSaveSlotObjLayout();Ov001_ShowMessageBox(0x25);Ov001_CreateAnimSprite(1);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa38);}
 
 void func_ov001_0217f9b8(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
@@ -505,12 +505,12 @@ void func_ov001_0217fa98(void) {
 
 void func_ov001_0217fac0(void) {
     M2C_UNK SleepMilliseconds(s32);
-    M2C_UNK func_ov001_0217fca4();
+    M2C_UNK Ov001_HandleOptionPage1Choice();
     void func_ov001_0217fae0(void);
     void func_ov001_0217fb18(void);
     void func_ov001_0217fb1c(void);
     SleepMilliseconds(10);
-    func_ov001_0217fca4();
+    Ov001_HandleOptionPage1Choice();
     func_ov001_0217fae0();
     func_ov001_0217fb18();
     func_ov001_0217fb1c();

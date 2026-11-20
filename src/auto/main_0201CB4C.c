@@ -409,21 +409,29 @@ if(M2C_FIELD(p,u8*,9)!=0)func_020250d0(p);
 func_0201d434(p);
 }
 
-void func_0201d4c0(void) {
-extern M2C_UNK gSocketManager,gNetStack;
-void func_02025150(void *);M2C_UNK func_0201a238();u64 GetSystemTick(void);
-void *inner=M2C_FIELD(&gSocketManager,void **,4);
-void *node=M2C_FIELD(inner,void **,0xa4);
-s32 start;
-if(!node)return;
-if(M2C_FIELD(node,u8 *,9)){func_02025150(node);}
-start=(u32)(GetSystemTick()>>16);
-goto check;
-loop:func_0201a238();
+void WaitForTlsCloseNotify(void) {
+    extern M2C_UNK gSocketManager, gNetStack;
+    void func_02025150(void *);
+    M2C_UNK func_0201a238();
+    u64 GetSystemTick(void);
+    void *socketManagerEntry = M2C_FIELD(&gSocketManager, void **, 4);
+    void *rawConnection = M2C_FIELD(socketManagerEntry, void **, NETSTACK_SOCKET_RAW_CONNECTION);
+    s32 startTick;
+
+    /* Wait briefly for a TLS close alert to drain, then close the transport. */
+    if (!rawConnection) return;
+    if (M2C_FIELD(rawConnection, u8 *, SOCK_TLS_ACTIVE)) {
+        func_02025150(rawConnection);
+    }
+    startTick = (u32)(GetSystemTick() >> 16);
+    goto check;
+loop:
+    func_0201a238();
 check:
-if(!M2C_FIELD(&gNetStack,s32 (**)(void),0x48)() || !M2C_FIELD(node,u8 *,8))goto done;
-if((s32)((u32)(GetSystemTick()>>16)-start)<39)goto loop;
-done:M2C_FIELD(node,u8 *,8)=0;
+    if (!M2C_FIELD(&gNetStack, s32 (**)(void), NETSTACK_POLL)() || !M2C_FIELD(rawConnection, u8 *, TCP_SOCK_STATE)) goto done;
+    if ((s32)((u32)(GetSystemTick() >> 16) - startTick) < NETSTACK_TLS_CLOSE_WAIT) goto loop;
+done:
+    M2C_FIELD(rawConnection, u8 *, TCP_SOCK_STATE) = 0;
 }
 
 s32 func_0201d548(s32 *arg0, void *arg1) {

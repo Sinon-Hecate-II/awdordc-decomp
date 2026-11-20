@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-#pragma optimization_level 2
+#pragma opt_common_subs off
 void func_ov001_02183a20(void) {
     s32 Ov001_HitScrollbarPart(void);
     void func_ov001_02183cec(s8);
@@ -24,8 +24,6 @@ void func_ov001_02183a20(void) {
             }
             r = Ov001_HitScrollbarPart();
             switch (r) {
-                case 0:
-                    break;
                 case 1: {
                     if ((u8)M2C_FIELD(gOv001Scrollbar, u8 *, 0x1b) == 0) {
                         return;
@@ -46,8 +44,6 @@ void func_ov001_02183a20(void) {
                     return;
                 case 4:
                     func_ov001_02183d18();
-                    return;
-                default:
                     return;
             }
             return;
@@ -87,7 +83,7 @@ void func_ov001_02183a20(void) {
             return;
     }
 }
-#pragma optimization_level 4
+#pragma opt_common_subs reset
 /* The friend roster's scroll bar, drag state: while the stylus is down, move the
  * handle to follow its y (clamped into the track); once it lifts, stop the drag
  * sound and report the idle event. */
@@ -385,18 +381,20 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);
     extern u8 data_ov001_0218fb64[];
     extern s32 gWfcFriendRoster;
-    u8 *p;
+    WfcFriendSlot *p;
+    u8 *emptyCode;
     s32 count;
     s32 i;
 
-    p = (u8 *)gWfcFriendRoster + 0x1300;
+    p = (WfcFriendSlot *)((u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS);
+    emptyCode = data_ov001_0218fb64;
     *arg0 = p;
     count = 0;
-    for (i = 0; i < 20; i++) {
-        if (ByteCompareN((M2C_UNK)(p + 0x20), (M2C_UNK)data_ov001_0218fb64, 6) != 0) {
+    for (i = 0; i < WFC_FRIEND_SLOT_COUNT; i++) {
+        if (ByteCompareN((M2C_UNK)p->code, (M2C_UNK)emptyCode, sizeof(p->code)) != 0) {
             count = count + 1;
         }
-        p = p + 0x2a;
+        p++;
     }
     return count;
 }
@@ -428,7 +426,8 @@ void Ov001_HandleFriendRosterReply(u16 *p) {
     }
 }
 
-#pragma scheduling off
+#pragma opt_lifetimes off
+#pragma opt_loop_invariants off
 void func_ov001_02184230(u16 *arg0) {
     void DC_InvalidateRange(void *, s32);
     void MI_CpuCopy8(void *, void *, u32);
@@ -440,47 +439,56 @@ void func_ov001_02184230(u16 *arg0) {
 
     typedef struct { u8 kind; u8 length; u8 pad[2]; void *data; } ParsedItem;
     typedef struct { u8 count; u8 pad[3]; ParsedItem items[16]; } ParsedItems;
-    typedef struct { u8 *slots; ParsedItems parsed; } Work;
+    typedef struct { WfcFriendSlot *slots; ParsedItems parsed; } Work;
 
+    typedef struct { u8 pad[14]; u16 count; u8 *records[16]; u16 values[16]; } ScanResults;
+    ScanResults *results = (ScanResults *)arg0;
     s32 i;
     register u8 *record;
     Work work;
 
-    work.slots = (u8 *)gWfcFriendRoster + 0x1300;
-    DC_InvalidateRange((u8 *)gWfcFriendRoster + 0xf00, 0x400);
+    {
+        u8 *roster = (u8 *)gWfcFriendRoster;
+        void *cache = roster + 0xf00;
+        work.slots = (WfcFriendSlot *)(roster + WFC_FRIEND_SLOTS);
+        DC_InvalidateRange(cache, 0x400);
+    }
 
     i = 0;
-    if ((s32)*(u16 *)((u8 *)arg0 + 0xe) <= 0) {
+    if ((s32)results->count <= 0) {
         return;
     }
     do {
-        record = *(u8 **)((u8 *)arg0 + 0x10 + i * 4);
+        record = results->records[i];
         if (record[0xc] != 0 && *(u16 *)(record + 0x3c) == 0) {
-            register s32 j;
-            register u8 *searchSlot;
+            WfcFriendSlot *searchSlot;
+            s32 j;
+            register s32 codeLength;
 
             searchSlot = work.slots;
             j = 0;
+            codeLength = sizeof(searchSlot->code);
             do {
-                if (ByteCompareN((M2C_UNK)(record + 4), (M2C_UNK)(searchSlot + 0x20), 6) == 0) {
+                if (ByteCompareN((M2C_UNK)(record + 4), (M2C_UNK)(searchSlot->code), codeLength) == 0) {
                     break;
                 }
                 j++;
-                searchSlot += 0x2a;
+                searchSlot++;
             } while (j < 20);
 
             if (j == 20) {
                 register u8 *fallbackName;
-                register u8 *fallbackSlot;
+                WfcFriendSlot *fallbackSlot;
                 fallbackName = data_ov001_0218fb64;
                 fallbackSlot = work.slots;
                 j = 0;
+            codeLength = sizeof(searchSlot->code);
                 do {
-                    if (ByteCompareN((M2C_UNK)(fallbackSlot + 0x20), (M2C_UNK)fallbackName, 6) == 0) {
+                    if (ByteCompareN((M2C_UNK)(fallbackSlot->code), (M2C_UNK)fallbackName, codeLength) == 0) {
                         break;
                     }
                     j++;
-                    fallbackSlot += 0x2a;
+                    fallbackSlot++;
                 } while (j < 20);
                 if (j == 20) {
                     return;
@@ -488,34 +496,38 @@ void func_ov001_02184230(u16 *arg0) {
             }
 
             {
-                register u8 *dest;
-                s32 parsedCount;
+                WfcFriendSlot *dest;
+                ParsedItems *parsed;
                 s32 k;
-                dest = work.slots + j * 0x2a;
-                MI_CpuCopy8((void *)(record + 4), (void *)(dest + 0x20), 6);
+                s32 parsedCount;
+                const u8 *signature;
+                dest = &work.slots[j];
+                MI_CpuCopy8((void *)(record + 4), (void *)(dest->code), 6);
                 MI_CpuCopy8((void *)(record + 0xc), (void *)dest, 0x20);
-                *(u16 *)(dest + 0x26) = *(u16 *)((u8 *)arg0 + 0x50 + i * 2);
+                dest->unk26 = results->values[i];
 
                 if ((*(u16 *)(record + 0x2c) & 0x10) == 0) {
-                    dest[0x28] = 0;
+                    dest->status = 0;
                 } else {
-                    dest[0x28] = 1;
+                    dest->status = 1;
                     func_02011f2c((M2C_UNK *)&work.parsed, (M2C_UNK *)record);
                     parsedCount = work.parsed.count;
                     k = 0;
                     if (parsedCount <= 0) {
-                        continue;
+                        goto nextRecord;
                     }
+                    parsed = &work.parsed;
+                    signature = data_ov001_0218fb60;
                     do {
-                        if (work.parsed.items[k].kind == 0x30) {
-                            dest[0x28] = 2;
+                        if (parsed->items[k].kind == 0x30) {
+                            dest->status = 2;
                             break;
                         }
-                        if (work.parsed.items[k].kind == 0xdd &&
-                            work.parsed.items[k].length >= 4 &&
-                            ByteCompareN((M2C_UNK)work.parsed.items[k].data,
-                                          (M2C_UNK)data_ov001_0218fb60, 4) == 0) {
-                            dest[0x28] = 2;
+                        if (parsed->items[k].kind == 0xdd &&
+                            parsed->items[k].length >= 4 &&
+                            ByteCompareN((M2C_UNK)parsed->items[k].data,
+                                          (M2C_UNK)signature, 4) == 0) {
+                            dest->status = 2;
                             break;
                         }
                         k++;
@@ -523,10 +535,12 @@ void func_ov001_02184230(u16 *arg0) {
                 }
             }
         }
+nextRecord:
         i++;
-    } while (i < *(u16 *)((u8 *)arg0 + 0xe));
+    } while (i < results->count);
 }
-#pragma scheduling reset
+#pragma opt_loop_invariants reset
+#pragma opt_lifetimes reset
 void func_ov001_02184404(void) {
     s32 Ov001_Alloc(s32, M2C_UNK);
     void func_02076710(u16 *, u32);

@@ -386,11 +386,11 @@ void CancelMapCursorAnimation(void) {
  * command (kind 5) with the tile; a human player's cursor distance to the target
  * then records one or two cursor-movement stats. */
 void SubmitCursorTarget(void){
-extern s32 data_0215be0c;extern void **gCurrentMap;
+extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
 s32 func_020d46cc(void);void func_020d46ac(void);void OpenMapActionMenu(void);void func_020d468c(void);
 void *GetTargetPosition(void);s32 IsPlayerHuman(u16);void AddRecordValue(s32,s32);
 MapTargetEntry *target; s32 distance;
-if(data_0215be0c<0){if(func_020d46cc())func_020d46ac();else OpenMapActionMenu();return;}
+if(gMapCursorOptionValue<0){if(func_020d46cc())func_020d46ac();else OpenMapActionMenu();return;}
 target=(MapTargetEntry *)GetTargetPosition();
 if(target->value==0){
 func_020d468c();

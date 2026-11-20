@@ -237,13 +237,13 @@ void func_ov001_02182f5c(void) {
 }
 
 void func_ov001_02182f7c(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern u8 gOv001WfcConnectChosen;
     extern M2C_UNK Ov001_CloseWfcMenuScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (gOv001WfcConnectChosen == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
@@ -413,7 +413,7 @@ void func_ov001_02183318(void) {
     Ov001_SetStepCallback(&func_ov001_02183338);
 }
 
-void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK func_ov001_021833a4;M2C_UNK func_ov001_02171694();if(Ov001_IsFadeActive(1))return;func_ov001_02171694();if((u8)(gOv001WfcScreenState+254)<=1)Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,21,8);Ov001_SetStepCallback(&func_ov001_021833a4);}
+void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK func_ov001_021833a4;M2C_UNK Ov001_StartIconRowSlideOut();if(Ov001_IsFadeActive(1))return;Ov001_StartIconRowSlideOut();if((u8)(gOv001WfcScreenState+254)<=1)Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,21,8);Ov001_SetStepCallback(&func_ov001_021833a4);}
 
 /* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
 void func_ov001_021833a4(void) {

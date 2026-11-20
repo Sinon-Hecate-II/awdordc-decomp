@@ -15,7 +15,7 @@ u8 func_ov003_021eba24(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_02
 s32 func_ov003_021eba74(void);s32 func_ov003_021eaeb0(void *);
 u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),func_ov003_021ebb88(void *);
 u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
-void func_ov003_021e984c(void *,s32);void Link_SendPacket(void *,s32);
+void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
 u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
 s32 func_ov003_021e73bc(s32,s32);s8 func_ov003_021ebd64(void *,s32);
@@ -53,7 +53,7 @@ if(func_ov003_021e6e40() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C
 if(func_ov003_021e6d28() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021e9e58(arg0) && !func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(M2C_FIELD(remote,u8 *,8)==1){
-func_ov003_021e984c(arg0,1);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
+SetWaypointPanelMode(arg0,1);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 if(func_ov003_021e6d28())Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
 M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 }
@@ -64,7 +64,7 @@ if(!func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9e4c(M2C_FI
 for(j=0;j<count;j++)packet[j+14]=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),j);
 }
 if(M2C_FIELD(remote,u8 *,8)==0){
-PlaySoundEffect(0x1000f);func_ov003_021e984c(arg0,0);
+PlaySoundEffect(0x1000f);SetWaypointPanelMode(arg0,0);
 Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
 if(func_ov003_021e6d28())Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,0));

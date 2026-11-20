@@ -82,7 +82,7 @@ s32 SocketSendTask(void *request) {
  void OS_WakeupThread(s32);
  M2C_UNK func_0201d190(u16,u16,s32);
  s32 SendNetPacket(s32,s32);
- s32 func_0201d4c0();
+ s32 WaitForTlsCloseNotify();
  s32 sent,sendBuffer,isStream,maxChunk,valid,read;void *socket; void *sendConn;u32 total;s32 headerSize;
  s8 state,state2,state3;
  socket=M2C_FIELD(request,void **,4);
@@ -109,7 +109,7 @@ s32 SocketSendTask(void *request) {
  if(valid){
  M2C_FIELD(socket,s16 *,SOCK_FLAGS)&=~14;
  M2C_FIELD(socket,s16 *,SOCK_FLAGS)|=128;
- func_0201d4c0();
+ WaitForTlsCloseNotify();
  }
  total=-76;
  }else{total+=sent;goto loop;}
@@ -301,7 +301,7 @@ return 0;
  * interrupt lock and mark it closed. */
 s32 SocketCloseTask(void *request) {
     M2C_UNK func_0201d484();
-    M2C_UNK func_0201d4c0();
+    M2C_UNK WaitForTlsCloseNotify();
     M2C_UNK func_0201d224();
     M2C_UNK ClearCurrentRawConnection();
     M2C_UNK SocketQueueTask(s32, s32);
@@ -320,7 +320,7 @@ s32 SocketCloseTask(void *request) {
     if (duplex != 0) {
         OS_JoinThread(M2C_FIELD(socket, s32 *, SOCK_TX_CONN) + 0x20); /* the send connection's thread */
         func_0201d484();
-        func_0201d4c0();
+        WaitForTlsCloseNotify();
         func_0201d224();
     }
     ClearCurrentRawConnection();

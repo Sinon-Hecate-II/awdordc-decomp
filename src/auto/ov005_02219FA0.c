@@ -73,7 +73,7 @@ gCur3DSpriteEngine=saved;
 }
 
 void func_ov005_0221a38c(void **arg0) {
-    M2C_UNK func_02090810(s32, M2C_UNK, s16);
+    M2C_UNK SpritePlayer_SetListPosition(s32, M2C_UNK, s16);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
     s32 temp_r0, temp_r8, var_r0, var_r1, var_r9;
     temp_r8 = gCur3DSpriteEngine;
@@ -85,7 +85,7 @@ void func_ov005_0221a38c(void **arg0) {
         var_r1 = M2C_FIELD(arg0, s32 *, 0x3C);
         temp_r0 = M2C_FIELD(M2C_FIELD((arg0 + var_r9), void **, 0x34), s32 *, 0x38);
         if (var_r9 == 0) var_r1 -= 0xC0;
-        if (temp_r0 != 0) func_02090810(temp_r0, 0x80, (s16)var_r1);
+        if (temp_r0 != 0) SpritePlayer_SetListPosition(temp_r0, 0x80, (s16)var_r1);
         var_r9++;
     } while (var_r9 < 2);
     gCur3DSpriteEngine = temp_r8;

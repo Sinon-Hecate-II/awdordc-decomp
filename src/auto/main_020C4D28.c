@@ -338,8 +338,8 @@ s32 FormatMapCodeString(s32 arg0) {
 }
 
 void func_020c54ac(void) {
-    M2C_UNK func_02032024();
-    func_02032024();
+    M2C_UNK ParseFriendCodeDigits();
+    ParseFriendCodeDigits();
 }
 
 s32 CanModifyBattleSave(void) {

@@ -314,12 +314,12 @@ void func_ov001_021794ec(void) {
 
 void func_ov001_02179524(void) {
     s32 Ov001_IsProfileScreenDone();
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern u8 data_ov001_02193d88;
     extern M2C_UNK func_ov001_021795a4;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (data_ov001_02193d88 == 0 && Ov001_IsProfileScreenDone() == 0) return;
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (data_ov001_02193d88 == 0) Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_021795a4);
@@ -530,13 +530,13 @@ void func_ov001_02179a54(void) {
 }
 
 void func_ov001_02179a90(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern u8 data_ov001_02193d8c;
     extern M2C_UNK func_ov001_02179af4;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (data_ov001_02193d8c == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }

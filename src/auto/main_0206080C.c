@@ -295,10 +295,10 @@ p+=len;n-=len;key+=StringLength(key)+1;
 }
 #pragma peephole on
 s32 func_02060fe8(s8 *arg0,s32 arg1) {
-extern u8 data_020eac40[];s64 func_020722fc(s32,s32);
+extern u8 data_020eac40[];s64 U32DivideRem(s32,s32);
 s32 hash=0; s32 c=*arg0;
 if(c){do{if(c>=0 && c<128){c=(u32)data_020eac40[c];}else{c=(s32)c;}hash=hash*0x9CCF9319+c;c=*++arg0;}while(c);}
-return func_020722fc(hash,arg1)>>32;
+return U32DivideRem(hash,arg1)>>32;
 }
 void FreeServerKeyValue(void *arg0) {
     M2C_UNK StringInternRelease(M2C_UNK, s32);

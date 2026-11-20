@@ -551,12 +551,12 @@ void SpritePlayer_SpawnChild(void *player, void *parent, s32 slot) {
     M2C_FIELD(tail, void **, SPRITE_PLAYER_NEXT) = player;
 }
 
-void func_02090810(void *arg0, s32 arg1, s32 arg2) {
+void SpritePlayer_SetListPosition(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, u16 *, 0x20) = (u16)arg1;
     M2C_FIELD(arg0, u16 *, 0x22) = (u16)arg2;
     arg0 = M2C_FIELD(arg0, void **, 0x8);
     if (arg0 != 0) {
-        func_02090810(arg0, arg1, arg2);
+        SpritePlayer_SetListPosition(arg0, arg1, arg2);
     }
 }
 

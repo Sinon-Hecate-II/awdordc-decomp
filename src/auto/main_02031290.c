@@ -637,28 +637,30 @@ void func_02032004(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
 }
 
 #pragma opt_strength_reduction off
-u64 func_02032024(void *arg0)
+/* Parses the 12 ASCII digits at text[0..11] as a decimal u64, least significant
+ * digit first.  Returns 0 if any byte is not a digit. */
+u64 ParseFriendCodeDigits(void *text)
 {
-  s32 i;
-  u64 result = 0;
-  u64 mult = 1;
-  s32 c;
-  arg0 = (signed char *) arg0;
-  arg0 = arg0 + 11;
-  i = 0;
+  s32 digitIndex;
+  u64 value = 0;
+  u64 placeValue = 1;
+  s32 digitChar;
+  text = (signed char *) text;
+  text = text + (FRIEND_CODE_LENGTH - 1);
+  digitIndex = 0;
   do
   {
-    c = *(((signed char *) arg0) - i);
-    if (((c < 48) || (c > 57)) != 0)
+    digitChar = *(((signed char *) text) - digitIndex);
+    if (((digitChar < '0') || (digitChar > '9')) != 0)
     {
       return 0;
     }
-    result += ((u64) (c - 48)) * mult;
-    mult *= 10;
-    i++;
+    value += ((u64) (digitChar - '0')) * placeValue;
+    placeValue *= 10;
+    digitIndex++;
   }
-  while (i < 12);
-  return result;
+  while (digitIndex < FRIEND_CODE_LENGTH);
+  return value;
 }
 #pragma opt_strength_reduction reset
 void Base32Encode(u64 value, s32 arg2, char *arg3) {

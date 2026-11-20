@@ -17,7 +17,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     void func_0202eec0(void *);
     void func_0202eed8(void *, s32, s32);
     s32 Sound_AcquireChannel(void *, s32, s32);
-    u32 func_020722fc(u32, u32);
+    u32 U32DivideRem(u32, u32);
     s32 Sound_StartVoice(void *, s32, s32, s32, s32, s32, s32, s32);
     void Sound_ReleaseChannel(void *);
     void Sound_SetChannelVolume(void *, s32, M2C_UNK);
@@ -85,7 +85,7 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
 
     {
         s32 scaledSize = M2C_FIELD(player, s32 *, 0x130) * channels;
-        s32 channelBytes = (s32)func_020722fc((u32)scaledSize, (u32)M2C_FIELD(player, u8 *, 0x124));
+        s32 channelBytes = (s32)U32DivideRem((u32)scaledSize, (u32)M2C_FIELD(player, u8 *, 0x124));
         if (Sound_StartVoice(player, playMode, M2C_FIELD(player, s32 *, 0x12C), channelBytes, M2C_FIELD(player, u16 *, 0xC6), 4, (M2C_UNK)Sound_QueueSegment, (M2C_UNK)player) == 0) {
             Sound_ReleaseChannel(player);
             M2C_FIELD(player, void (**)(void *), 0x168)(player);

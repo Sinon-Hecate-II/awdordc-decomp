@@ -287,7 +287,7 @@ block_48:
 }
 #pragma pop
 void func_02073148(s32 arg0, void *arg1, s32 arg2) {
-u32 func_020722fc(s32,u32);
+u32 U32DivideRem(s32,u32);
 s32 func_020744e0(void *,void *);
 void func_020742e0(void);
 s32 Js_DecodeFrameData(void *,void *);
@@ -438,7 +438,7 @@ flag=op&32;
 q=DecodeExceptionSignedValue(p+1,&sp8);
 flag2=*q++ &32;q=DecodeExceptionSignedValue(q,&spc);q=DecodeExceptionValue(q,(u32 *)&sp10);
 f=(u32)q[0]|(u32)q[1]<<8|(u32)q[2]<<16|(u32)q[3]<<24;end=q+4;
-v=(flag?(s32)M2C_FIELD(arg0+sp8*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp8));w=flag2?M2C_FIELD(arg0+spc*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,spc);v+=w;n=func_020722fc(v,sp10);while(n){v-=sp10;((void (*)(s32,s32))f)(v,-1);--n;}M2C_FIELD(arg1,u8 **,8)=end;break;
+v=(flag?(s32)M2C_FIELD(arg0+sp8*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,sp8));w=flag2?M2C_FIELD(arg0+spc*4,s32 *,0x1c):M2C_FIELD(M2C_FIELD(arg0,u8 **,0x18),s32 *,spc);v+=w;n=U32DivideRem(v,sp10);while(n){v-=sp10;((void (*)(s32,s32))f)(v,-1);--n;}M2C_FIELD(arg1,u8 **,8)=end;break;
 case 19:
 q=DecodeExceptionSignedValue(p+1,&sp4);
 M2C_FIELD(arg1,u8 **,8)=q;break;

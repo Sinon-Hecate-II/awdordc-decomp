@@ -524,19 +524,26 @@ void HandleLinkConnectTaskEvent(void *arg0) {
  }
 }
 
+#pragma scheduling off
 s32 func_ov009_02222f84(void) {
 s32 WFC_GetPlayerMask(void); s32 GetConsoleLocalId(void); s32 func_020124c4(void *,void *);
 extern M2C_UNK gLinkState; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
 s32 bits; s32 result;
+    register void *state;
+    register u16 selected;
+    register u32 one;
 bits=WFC_GetPlayerMask();
 if(bits==0x8000) {SignalLinkError(3);return 0;}
 if(bits==0) {SignalLinkResult(0x17);return 0;}
-if(M2C_FIELD(&gLinkState,u16 *,6)==0) {
+state = &gLinkState;
+    selected = M2C_FIELD(state, u16 *, 6);
+    if (selected == 0) {
+        one = 1;
 do {
-M2C_FIELD(&gLinkState,u16 *,0x84)++;
-if(M2C_FIELD(&gLinkState,u16 *,0x84)>14) M2C_FIELD(&gLinkState,u16 *,0x84)=1;
-} while(!(bits&(1<<(M2C_FIELD(&gLinkState,u16 *,0x84)-1))));
-} else M2C_FIELD(&gLinkState,u16 *,0x84)=M2C_FIELD(&gLinkState,u16 *,6);
+M2C_FIELD(state,u16 *,0x84)++;
+if(M2C_FIELD(state,u16 *,0x84)>14) M2C_FIELD(state,u16 *,0x84)=one;
+} while(!(bits&(one<<(M2C_FIELD(state,u16 *,0x84)-1))));
+} else M2C_FIELD(state,u16 *,0x84)=selected;
 M2C_FIELD(&gLinkState,u16 *,0x86)=GetConsoleLocalId();
 M2C_FIELD(&gLinkState,void **,0x80)=&data_ov009_02226a80;
 result=func_020124c4(&func_ov009_02223078,&data_ov009_02226960);
@@ -544,7 +551,7 @@ if(result==2) return 1;
 SignalLinkError(result);
 return 0;
 }
-
+#pragma scheduling reset
 void func_ov009_0222304c(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0xC0) = (s16) (M2C_FIELD(arg0, s16 *, 0xC0) - 1);
     if ((s32) M2C_FIELD(arg0, s16 *, 0xC0) <= 0) {

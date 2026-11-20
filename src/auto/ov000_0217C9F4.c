@@ -76,49 +76,36 @@ return count;
 }
 #pragma opt_propagation on
 #pragma opt_strength_reduction on
-int func_ov000_0217d000(int r0, int r1) {
-    r1 &= 0x1F;
-    if (r1 == 0x11) {
-        if ((unsigned int)r0 > 0x1A) {
-            return 0;
-        }
-        switch (r0) {
-        case 5: case 7: case 8: case 10: case 11:
-        case 12: case 16: case 18: case 19: case 21:
-        case 22: case 26:
+int func_ov000_0217d000(int unitKind, int terrain) {
+    switch (terrain & 0x1F) {
+    case 0x11:
+        switch (unitKind) {
+        case 0:
+            goto unavailable;
+        case 4: case 6: case 7: case 9: case 10: case 11:
+        case 15: case 17: case 18: case 20: case 21: case 26:
             return 1;
+        }
+        break;
+    case 0x12:
+        switch (unitKind) {
         default:
-            return 0;
-        }
-    }
-    if (r1 == 0x12) {
-        if (r0 >= 0 && r0 <= 0x11) {
-            switch (r0) {
-            case 6: case 12: case 14: case 16: case 17:
-                return 1;
-            default:
-                goto case13;
-            }
-        } else if (r0 == 0x15) {
+        case 0:
+            goto terrain13;
+        case 6: case 12: case 14: case 16: case 17: case 21:
             return 1;
-        } else {
-            goto case13;
         }
-    } else if (r1 != 0x13) {
-        return 0;
+        /* fall through */
+    case 0x13:
+terrain13:
+        switch (unitKind) {
+        case 15: case 17: case 18: case 20: case 21: case 22: case 23:
+            return 1;
+        }
+        break;
     }
-case13:
-    r0 -= 0x0F;
-    if ((unsigned int)r0 > 8) {
-        return 0;
-    }
-    switch (r0) {
-    case 0: case 2: case 3: case 5: case 6:
-    case 7: case 8:
-        return 1;
-    default:
-        return 0;
-    }
+unavailable:
+    return 0;
 }
 
 #pragma opt_strength_reduction off
@@ -227,79 +214,64 @@ nextUnit: unitId++;unitOffset+=14;
 }while(unitId<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16*,0x52a4)]+51);
 }
 #pragma opt_strength_reduction off
-void func_ov000_0217d6dc(void) {
+/* AI action: releases the move targets assigned to the current player's active
+ * foot units, decrementing the use count of each targeted property cell. */
+void ReleaseUnitMoveTargets(void) {
     extern u16 gPlayerUnitIdBase[];
     s32 IsFootUnitKind(u32);
 
-    void ***mapSlot = (void ***)&gCurrentMap;
-    u16 *tblBase = gPlayerUnitIdBase;
+    register u16 *groupBaseTable = gPlayerUnitIdBase;
 
+    void **mapSlot;
     void *map;
-    void *m0;
-    s32 i;
-    u16 tbl;
-    s32 off;
-    u8 *rec;
-    u32 kind;
+    register s32 unitIndex;
+    u16 groupBase;
+    register BattleMapUnitHead *unit;
+    register s32 unitOffset;
+    u8 *property;
 
+    mapSlot = gCurrentMap;
     map = *mapSlot;
-    m0 = *(void **)map;
-    tbl = tblBase[M2C_FIELD(m0, u16 *, 0x52A4)];
-    i = (s32)tbl + 1;
-    if (i >= (s32)tbl + 0x33) return;
+    groupBase = groupBaseTable[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+    unitIndex = (s32)groupBase + 1;
+    if (unitIndex >= (s32)groupBase + MAP_UNIT_GROUP_SCAN) return;
 
-    off = i * 14;
+    unitOffset = unitIndex * MAP_UNIT_STRIDE;
 
     for (;;) {
+        mapSlot = gCurrentMap;
         map = *mapSlot;
-        m0 = *(void **)map;
-        rec = (u8 *)m0 + 0x59A4 + off;
+        unit = (BattleMapUnitHead *)((u8 *)map + MAP_UNIT_RECORDS + unitOffset);
 
-        kind = ((u32)rec[0] << 26) >> 26;
-        if (kind == 0) goto loopinc;
-        if (IsFootUnitKind(kind) == 0) goto loopinc;
-        if ((((u32)rec[11] << 26) >> 31) == 0) goto loopinc;
+        if (!unit->kind || !IsFootUnitKind(unit->kind) || !unit->unkB5) goto loopinc;
 
         {
-            u16 hw = *(u16 *)(rec + 8);
-            u32 low = ((u32)hw << 26) >> 26;
-            map = *mapSlot;
-            m0 = *(void **)map;
-            if (low != 0x3F) {
-                u32 idx = ((u32)hw << 20) >> 26;
-                u16 rowval = *(u16 *)((u8 *)m0 + idx * 2 + 0x3758);
-                signed char attrib = *(signed char *)((u8 *)m0 + low + rowval + 0x1928);
-                u8 *p = (u8 *)m0 + 0x6C60 + (s32)attrib * 6;
-                if (p[3] != 0) p[3] = (u8)(p[3] - 1);
+            u32 targetX = unit->targetX;
+            if (targetX != MAP_UNIT_TARGET_NONE) {
+                u32 targetY = unit->targetY;
+                u16 row = *(u16 *)((u8 *)*gCurrentMap + targetY * 2 + MAP_ROW_OFFSETS);
+                s8 cellIndex = *(s8 *)((u8 *)*gCurrentMap + targetX + row + MAP_CELL_PROPERTY_INDEX);
+                property = (u8 *)*gCurrentMap + MAP_PROPERTY_CELLS + (s32)cellIndex * MAP_PROPERTY_STRIDE;
             } else {
-                u8 rec2 = rec[2];
-                u8 rec1 = rec[1];
-                u16 rowval = *(u16 *)((u8 *)m0 + (u32)rec2 * 2 + 0x3758);
-                signed char attrib = *(signed char *)((u8 *)m0 + (u32)rec1 + rowval + 0x1928);
-                u8 *p = (u8 *)m0 + 0x6C60 + (s32)attrib * 6;
-                if (p[3] != 0) p[3] = (u8)(p[3] - 1);
+                u8 y = unit->y;
+                u16 row = *(u16 *)((u8 *)*gCurrentMap + (u32)y * 2 + MAP_ROW_OFFSETS);
+                s8 cellIndex = *(s8 *)((u8 *)*gCurrentMap + (u32)unit->x + row + MAP_CELL_PROPERTY_INDEX);
+                property = (u8 *)*gCurrentMap + MAP_PROPERTY_CELLS + (s32)cellIndex * MAP_PROPERTY_STRIDE;
             }
         }
 
-        {
-            u16 t = *(u16 *)(rec + 8);
-            t = (u16)((t & ~0x3F) | 0x3F);
-            *(u16 *)(rec + 8) = t;
-        }
-        {
-            u16 t = *(u16 *)(rec + 8);
-            t = (u16)((t & ~0xFC0) | 0xFC0);
-            *(u16 *)(rec + 8) = t;
-        }
-        rec[11] = (u8)(rec[11] & ~0x20);
+        if (property[MAP_PROPERTY_COUNT] != 0) property[MAP_PROPERTY_COUNT]--;
+        unit->targetX = MAP_UNIT_TARGET_NONE;
+        unit->targetY = MAP_UNIT_TARGET_NONE;
+        unit->unkB5 = 0;
 
 loopinc:
+        mapSlot = gCurrentMap;
         map = *mapSlot;
-        m0 = *(void **)map;
-        i++;
-        off = off + 14;
-        tbl = tblBase[M2C_FIELD(m0, u16 *, 0x52A4)];
-        if (i < (s32)tbl + 0x33) continue;
+        unitIndex++;
+        unitOffset = unitOffset + MAP_UNIT_STRIDE;
+        groupBase = groupBaseTable[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+        if (unitIndex < (s32)groupBase + MAP_UNIT_GROUP_SCAN) continue;
         break;
     }
 }

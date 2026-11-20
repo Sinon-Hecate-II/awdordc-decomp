@@ -346,13 +346,13 @@ void UpdateUnitSelectionMenu(void *dialog) {
     void MoveSelectionWithKeys(void *, s16);
     void UpdateSelectionFromTouch(void *, s16);
     void PlaySoundEffect(s32);
-    void MoveMapCursorToTarget(s32);
+    void MapCursor_StepTowardTarget(s32);
     void DrawUnitInfoPanel(s32);
     M2C_UNK func_020cf828(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
-    extern s32 data_0215be0c;
+    extern s32 gMapCursorOptionValue;
 
     s32 saved = ((SelectionMenu *)dialog)->selection;
     s32 flags = 0;
@@ -375,7 +375,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
         }
-        data_0215be0c = -1;
+        gMapCursorOptionValue = -1;
         DeleteSpriteObject(dialog);
         StepMapViewToTile(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                       M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
@@ -383,7 +383,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     }
     if (merged & 0x10) {
         void *target;
-        data_0215be0c = ((SelectionMenu *)dialog)->selection;
+        gMapCursorOptionValue = ((SelectionMenu *)dialog)->selection;
         target = GetTargetPosition(((SelectionMenu *)dialog)->selection);
         CreateTargetCursor(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
         DeleteSpriteObject(dialog);
@@ -408,7 +408,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(target, s16 *, 0x6);
     StepMapViewToTile(M2C_FIELD(target, s16 *, 0x4), M2C_FIELD(target, s16 *, 0x6));
     if (IsMapViewScrolling() != 0) return;
-    MoveMapCursorToTarget(2);
+    MapCursor_StepTowardTarget(2);
     DrawUnitInfoPanel(1);
 }
 
@@ -469,7 +469,7 @@ void func_020caa34(void *dialog) {
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
-    extern s32 data_0215be0c;
+    extern s32 gMapCursorOptionValue;
 
     s32 flags = 0;
 
@@ -480,7 +480,7 @@ void func_020caa34(void *dialog) {
         if (flags & 0x20) {
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DC);
             M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = M2C_FIELD(*gCurrentMap, s16 *, 0x52DE);
-            data_0215be0c = -1;
+            gMapCursorOptionValue = -1;
             StepMapViewToTile(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                           M2C_FIELD(*gCurrentMap, s16 *, 0x52C4));
             Sprite_ResumeAnimation(dialog);

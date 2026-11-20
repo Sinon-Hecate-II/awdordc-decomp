@@ -266,9 +266,9 @@ void func_ov007_0221a160(void) {
     u16 *volatile p5;
     s32 savedEngine;
     MapEditorPreviewPreset preset;
-    s32 i;
-    s32 zero, two;
     s32 base;
+    s32 zero, two;
+    s32 i;
 
     preset = data_ov007_0221f508;
 
@@ -326,7 +326,10 @@ void func_ov007_0221a160(void) {
 
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x38) = two;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x40) = 1;
-    func_020a9a30(1, zero, two, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
+    {
+        char *tiles = M2C_FIELD(gCur3DSpriteEngine, char **, 0x1C);
+        func_020a9a30(1, zero, two, tiles + 0x2800);
+    }
     func_020a9a30(1, zero, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
     func_020a9a30(1, two, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
 

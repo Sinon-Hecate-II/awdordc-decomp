@@ -9,7 +9,7 @@ int func_020d27a4(int,int);
 int IsFootUnitKind(int);int GetUnitAttackClass(int);
 int WillCaptureCompleteThisTurn(void *);
 int IsCellVisibleToCurrentTeam(s16,s16);
-int func_ov000_02177f24(int,int,s16 *);
+int FindBestAdjacentTile(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
 int HasBetterAttackerNearby(void *);
 int func_ov000_021aa820(s16 *,u16,int,int);
@@ -160,7 +160,7 @@ void func_ov000_0219137c(void){
  }
  candidate_checks:
  if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
- if(!func_ov000_02177f24(x,y,position))continue;
+ if(!FindBestAdjacentTile(x,y,position))continue;
  map=*gCurrentMap;
  score=func_ov000_02176e28(((u8 *)map)[x+map->rows[y]],position);
  if(!score)continue;

@@ -63,26 +63,29 @@ s32 func_02076860(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return ~sp0;
 }
 
-void func_0207688c(void) {
+/* Clears the map view's render caches: the per-cell corner colour codes, the
+ * cell display, shade and move-range buffers, and the two cell corner-variant
+ * buffers. */
+void ClearMapRenderBuffers(void) {
     M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK *, s32);
     extern M2C_UNK gMapMoveRangeFlags;
     extern M2C_UNK gMapCellShades;
     extern M2C_UNK gMapCellCodes;
-    extern M2C_UNK data_02142688;
-    extern M2C_UNK data_02142ebc;
-    extern M2C_UNK data_02143dbc;
-    MI_CpuFill32(0, &data_02142688, 0x834);
+    extern M2C_UNK gMapCellCornerColors;
+    extern M2C_UNK gMapCellCornerA;
+    extern M2C_UNK gMapCellCornerB;
+    MI_CpuFill32(0, &gMapCellCornerColors, 0x834);
     MI_CpuFill32(0, &gMapCellCodes, 0x900);
     MI_CpuFill32(0, &gMapCellShades, 0x900);
     MI_CpuFill32(0, &gMapMoveRangeFlags, 0x900);
-    MI_CpuFill32(0, &data_02142ebc, 0x1200);
-    MI_CpuFill32(0, &data_02143dbc, 0x1200);
+    MI_CpuFill32(0, &gMapCellCornerA, 0x1200);
+    MI_CpuFill32(0, &gMapCellCornerB, 0x1200);
 }
 
 #pragma opt_propagation off
 void func_02076910(s32 x,s32 y) {
  extern void *gCurrentMap;
- extern M2C_UNK data_02142688;
+ extern M2C_UNK gMapCellCornerColors;
  void *p;
  s32 a,b;
  s32 v;
@@ -90,8 +93,8 @@ void func_02076910(s32 x,s32 y) {
  p=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x5120;
  if(x>=M2C_FIELD(p,u16 *,0x24) || y>=M2C_FIELD(p,u16 *,0x26)) return;
  v=7;
- a=(s32)&data_02142688+x*42;
- b=(s32)&data_02142688+(x+1)*42;
+ a=(s32)&gMapCellCornerColors+x*42;
+ b=(s32)&gMapCellCornerColors+(x+1)*42;
  M2C_FIELD(y+0,u8 *,a)=v;
  M2C_FIELD(y+0,u8 *,b)=v;
  M2C_FIELD(y+1,u8 *,a)=v;
@@ -152,7 +155,7 @@ static inline s32 OverlayTopDiffers(u8 *map, s32 x, s32 y, s32 width, s32 height
 #pragma opt_common_subs off
 void func_02076980(s32 x0, s32 y, s32 x1, s32 y1)
 {
-    extern M2C_UNK data_02142688;
+    extern M2C_UNK gMapCellCornerColors;
     u8 *dimensions = M2C_FIELD(gCurrentMap, u8 **, 0) + 0x5120;
     s32 width = M2C_FIELD(dimensions, u16 *, 0x24);
     s32 height = M2C_FIELD(dimensions, u16 *, 0x26);
@@ -173,7 +176,7 @@ void func_02076980(s32 x0, s32 y, s32 x1, s32 y1)
         x = x0;
         top = y - 1;
         maxX = x1 + 1;
-        overlay = (u8 *)&data_02142688;
+        overlay = (u8 *)&gMapCellCornerColors;
         goto check_x;
     next_x: {
             if (M2C_FIELD(y, u8 *, (s32)overlay + x * 42) == 7)

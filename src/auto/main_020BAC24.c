@@ -280,7 +280,7 @@ void func_020bb608(s32 arg0) {
     M2C_UNK IsPlayerHuman(u16);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
-    extern s32 data_0215be0c;
+    extern s32 gMapCursorOptionValue;
     extern s16 data_0212923c[];
 
     if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
@@ -301,7 +301,7 @@ void func_020bb608(s32 arg0) {
             f = M2C_FIELD(u, u16 *, 0x4);
             f = (u16)(f & ~0x2);
             M2C_FIELD(u, u16 *, 0x4) = f;
-            idx = data_0215be0c;
+            idx = gMapCursorOptionValue;
             u[0x1] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, 0x52DC) + data_0212923c[idx * 2]);
             u[0x2] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, 0x52DE) + data_0212923c[idx * 2 + 1]);
             sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);

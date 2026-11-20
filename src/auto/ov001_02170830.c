@@ -162,7 +162,7 @@ void func_ov001_0217159c(s32 id) {
     M2C_FIELD(gOv001IconRow, s32 *, 12) = Ov001_AddTask(0, Ov001_IconRow_SlideOut, 0, 120);
 }
 
-void func_ov001_02171694(void){
+void Ov001_StartIconRowSlideOut(void){
  extern void *gOv001IconRow;void Ov001_SetSlideStep(s32,void (*)(void));void func_ov001_02171a44(void);
  M2C_FIELD(gOv001IconRow,u8 *,0x19)=1;
  Ov001_SetSlideStep(M2C_FIELD(gOv001IconRow,s32 *,12),func_ov001_02171a44);

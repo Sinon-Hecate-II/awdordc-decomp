@@ -253,7 +253,7 @@ void func_ov003_022024a8(void *arg0) {
     s32 func_020cfb94(void);
     void UpdateSpriteAnimation(void *);
     s16 GetSpriteAnimValue(void *);
-    s32 func_ov003_022004a8(u8);
+    s32 GetWaypointSlotX(u8);
     s32 func_ov003_022004d0();
     s32 func_ov003_022004f0(M2C_UNK);
     s32 func_ov003_02200ca8();
@@ -327,7 +327,7 @@ void func_ov003_022024a8(void *arg0) {
     temp_r8 = M2C_FIELD(arg0, s32 *, 0x50);
     var_r9 = 0;
     do {
-        temp_r0_2 = (s16)(func_ov003_022004a8((u8)var_r9) + screenX);
+        temp_r0_2 = (s16)(GetWaypointSlotX((u8)var_r9) + screenX);
         if ((s32) var_r9 < temp_r10) {
             temp_r3 = temp_r8 + (var_r9 * 4);
             temp_r2_2 = M2C_FIELD(temp_r3, void **, 4);

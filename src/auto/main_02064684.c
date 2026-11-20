@@ -20,7 +20,7 @@ s32 StreamWrite(s32 buffer, s32 elemSize, s32 count, void *stream) {
     s8 *MemCopy(s8 *, s8 *, s32);
     u8 *FindLastByte(u8 *, s32, u32);
     s32 func_0206ad4c(void *, M2C_UNK);
-    s32 func_020722fc(s32, s32);
+    s32 U32DivideRem(s32, s32);
     u32 chunk;
     s32 size;
     s32 writeBase;
@@ -122,7 +122,7 @@ loop_21:
     if (((u32) (M2C_FIELD(stream, s32 *, 4) << 0x19) >> 0x1E) != 2) {
         M2C_FIELD(stream, u32 *, 0x28) = 0U;
     }
-    return func_020722fc(written, size);
+    return U32DivideRem(written, size);
 }
 #pragma pop
 s32 func_02064934(void *arg0) {

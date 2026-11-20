@@ -10,7 +10,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK GetUnitSpriteWidth(void *);
     M2C_UNK GetUnitSpriteHeight(void *);
     M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_022004a8(u8);
+    M2C_UNK GetWaypointSlotX(u8);
     extern M2C_UNK gSpriteDesc64x32;
     extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK data_ov003_0220f89e;
@@ -42,7 +42,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     sp10 = 0x3FF;
     do {
         temp_r4 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x50));
-        temp_r9 = temp_r4 + func_ov003_022004a8(var_r8);
+        temp_r9 = temp_r4 + GetWaypointSlotX(var_r8);
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x28);
         temp_r7 = temp_r9 + 0xD;
         func_02088e84(temp_r5, temp_r7, 0x70, temp_r7, 0x70);

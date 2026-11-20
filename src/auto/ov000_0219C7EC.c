@@ -79,11 +79,13 @@ void SortAiUnitsWorstFirst(s32 count) {
     } while (i <= n);
 }
 
-void func_ov000_0219c8fc(void){
+/* Scores each AI unit in gAiUnitList by twice its health, plus one when it has a
+ * move target assigned, then sorts the list best-first. */
+void ScoreAiUnitsByHpAndTarget(void){
 void SortAiUnitsBestFirst(s32);extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
-u8 *p=&gAiUnitList;s8 *q=&gAiUnitScores;s32 *base=gCurrentMap;s32 n=0;u8 x;
-loop:x=*p;if(x!=0){s32 a=x*14+(*base+0x59a4);p++;*q=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>24;if(((u32)(M2C_FIELD(a,u16 *,8)<<26)>>26)!=63)*q=*(volatile u8 *)q+1;q++;n++;goto loop;}
-SortAiUnitsBestFirst(n);
+u8 *listCursor=&gAiUnitList;s8 *scoreCursor=&gAiUnitScores;s32 *mapSlot=gCurrentMap;s32 count=0;u8 unitId;
+loop:unitId=*listCursor;if(unitId!=0){s32 unit=unitId*MAP_UNIT_STRIDE+(*mapSlot+MAP_UNIT_RECORDS);listCursor++;*scoreCursor=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>24;if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_TARGET)<<26)>>26)!=MAP_UNIT_TARGET_NONE)*scoreCursor=*(volatile u8 *)scoreCursor+1;scoreCursor++;count++;goto loop;}
+SortAiUnitsBestFirst(count);
 }
 #pragma opt_common_subs reset
 void ScoreAiUnitsByHp(void){
@@ -333,7 +335,7 @@ void BuildScoredAiRole1UnitListWithAiStep(void) {
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
     extern M2C_UNK func_ov000_02180ec8;
-    void func_ov000_0219c8fc(void);
+    void ScoreAiUnitsByHpAndTarget(void);
     s32 index;
     s32 stride;
     s8 *out;
@@ -366,7 +368,7 @@ void BuildScoredAiRole1UnitListWithAiStep(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
-    func_ov000_0219c8fc();
+    ScoreAiUnitsByHpAndTarget();
     gAiUnitAction = &func_ov000_02180ec8;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
@@ -384,7 +386,7 @@ void BuildScoredAiRole1UnitList(void) {
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
     extern M2C_UNK PlanAiAdvanceDestination;
-    void func_ov000_0219c8fc(void);
+    void ScoreAiUnitsByHpAndTarget(void);
     s32 index;
     s32 stride;
     s8 *out;
@@ -417,7 +419,7 @@ void BuildScoredAiRole1UnitList(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
-    func_ov000_0219c8fc();
+    ScoreAiUnitsByHpAndTarget();
     gAiUnitAction = &PlanAiAdvanceDestination;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
@@ -432,7 +434,7 @@ void func_ov000_0219d220(void) {
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
     u8 IsMidActionStep(s32);
-    void func_ov000_0219c8fc(void);
+    void ScoreAiUnitsByHpAndTarget(void);
     extern M2C_UNK RunAIUnitAction;
     s32 index;
     s32 stride;
@@ -468,7 +470,7 @@ void func_ov000_0219d220(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
-    func_ov000_0219c8fc();
+    ScoreAiUnitsByHpAndTarget();
     gAiUnitAction = &RunAIUnitAction;
     *gAiCommandState = 2;
 }

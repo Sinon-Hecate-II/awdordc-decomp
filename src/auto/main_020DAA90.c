@@ -6,16 +6,16 @@ static inline u32 DisableUnitListIme(void) { u32 old=*(volatile u16 *)0x04000208
 static inline u32 RestoreUnitListIme(u32 old) { u16 previous; volatile u16 *reg=(volatile u16 *)0x04000208; previous=*reg; *reg=old; return previous; }
 
 void func_020daa90(void) {
-    M2C_UNK func_020daa0c();
-    func_020daa0c();
+    M2C_UNK UpdateMainEngineMapScroll();
+    UpdateMainEngineMapScroll();
 }
 
 void func_020daa9c(void) {
-    func_020daa0c();
+    UpdateMainEngineMapScroll();
 }
 
 void func_020daaa8(void) {
-    func_020daa0c();
+    UpdateMainEngineMapScroll();
 }
 
 void func_020daab4(void) {

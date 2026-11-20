@@ -233,7 +233,7 @@ void func_0209f2a8(void) {
     func_020d468c();
 }
 
-void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 data_0215be0c;extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(data_0215be0c);SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
+void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 gMapCursorOptionValue;extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(gMapCursorOptionValue);SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
 
 void func_0209f314(void *p){extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;SetBattleCommand(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
 

@@ -3,8 +3,8 @@
 #include "battle_map.h"
 typedef struct MapEffectParticle { u16 x, y, dx, dy, sprite, unkA; } MapEffectParticle;
 static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
- void DS3D_AddSpriteQuad(u8,u8,s32,void *);extern u8 data_021204a4[];
- DS3D_AddSpriteQuad(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,data_021204a4+p->sprite*8);
+ void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);extern u8 data_021204a4[];
+ DS3D_AddSpriteQuad(x,(u8)((p->y>>8)-M2C_FIELD(map,s16 *,0x514a)),0,(u16 *)(data_021204a4+p->sprite*8));
 }
 
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
@@ -184,7 +184,7 @@ M2C_FIELD(*gCurrentMap,u8 *,0x5159)=0;
 /* Rain pass, drawn through the effect sprite engine: advance the off-screen
  * weather particles (16 of the 32 by turn) and draw them as rain sprites. */
 void DrawRainParticles(void) {
-    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
+    void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_021204a4[];
     extern s32 *gCurrentMap;
     extern s32 data_027e15c0;
@@ -218,7 +218,7 @@ void DrawRainParticles(void) {
             u16 sprite = M2C_FIELD(p, volatile u16 *, 8);
             DS3D_AddSpriteQuad((u8)((x >> 8) - mx),
                           (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514a)),
-                          0, data_021204a4 + sprite * 8);
+                          0, (u16 *)(data_021204a4 + sprite * 8));
         }
         next = first + 1;
         drawOffset += 12;
@@ -231,7 +231,7 @@ void DrawRainParticles(void) {
 /* Snow pass, drawn through the effect sprite engine: advance the off-screen
  * weather particles (16 of the 32 by turn) and draw them as snow sprites. */
 void DrawSnowParticles(void) {
-    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
+    void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_021204bc[];
     extern s32 *data_027e0058;
     extern s32 data_027e15c0;
@@ -265,16 +265,16 @@ void DrawSnowParticles(void) {
             u16 sprite = M2C_FIELD(p, volatile u16 *, 8);
             DS3D_AddSpriteQuad((u8)((x >> 8) - mx),
                           (u8)((M2C_FIELD(p, u16 *, 2) >> 8) - M2C_FIELD(q, s16 *, 0x514a)),
-                          0, data_021204bc + sprite * 8);
+                          0, (u16 *)(data_021204bc + sprite * 8));
         }
         next = first + 1;
         drawOffset += 12;
         first = next;
     } while (end > (s32)first);
 }
-#pragma pop
+#pragma scheduling on
 void func_020a434c(void) {
-    void DS3D_AddSpriteQuad(u8, u8, s32, void *);
+    void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_0212049c[];
     extern s32 *gCurrentMap;
     extern s32 data_027e15c0;
@@ -303,16 +303,22 @@ void func_020a434c(void) {
     do {
         p = (u8 *)M2C_FIELD(gCurrentMap, void **, 0xC) + drawOffset;
         q = M2C_FIELD(gCurrentMap, void **, 0);
-        DS3D_AddSpriteQuad((u8)(((((M2C_FIELD(p, u16 *, 0) >> 8) - (s32)M2C_FIELD(M2C_FIELD(q, void **, 0), s16 *, 0x5148)) & 0xff) - 0x10) & 0x1ff),
-                     (u8)(((M2C_FIELD(p, u16 *, 2) >> 8) - (s32)M2C_FIELD(M2C_FIELD(q, void **, 0), s16 *, 0x514A)) & 0xff),
-                     0,
-                     data_0212049c);
+        {
+            u16 x = M2C_FIELD(p, volatile u16 *, 0);
+            s16 mx = M2C_FIELD(q, volatile s16 *, 0x5148);
+            u16 y = M2C_FIELD(p, u16 *, 2);
+            s16 my = M2C_FIELD(q, s16 *, 0x514a);
+            u8 relativeX = (x >> 8) - mx;
+            u8 relativeY = (y >> 8) - my;
+            DS3D_AddSpriteQuad((u32)((u16)((relativeX - 16) & 0x1ff)), relativeY,
+                              0, (u16 *)data_0212049c);
+        }
         next = j + 1;
         drawOffset += 12;
         j = next;
     } while (end > (s32)j);
 }
-
+#pragma scheduling reset
 void func_020a445c(void) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;extern s32 *gCurrentMap;
 void DrawSnowParticles(void);void func_020a434c(void);
@@ -363,10 +369,12 @@ while(p->type){s32 x=M2C_FIELD(p,u8 *,0);s32 endx=x+p->width; s32 y=M2C_FIELD(p,
 if(a>=x&&b>=y&&a<endx&&b<endy)return p;p++;}return 0;
 }
 
-void *func_020a4678(s32 a,s32 b,s32 c) {
-extern s32 *gCurrentMap;MapOrder *p=(MapOrder *)(*gCurrentMap+0x58a4);u32 t;
-while(t=p->type){s32 x=M2C_FIELD(p,u8 *,0);s32 endx=x+p->width; s32 y=M2C_FIELD(p,u8 *,1);s32 endy=y+p->height;
-if(a>=x&&b>=y&&a<endx&&b<endy){if(t==c)return p;}p++;}return 0;
+/* Finds the first map order of the given type whose rectangle contains the
+ * tile (x, y), or NULL. */
+void *FindMapOrderOfTypeAt(s32 x,s32 y,s32 type) {
+extern s32 *gCurrentMap;MapOrder *order=(MapOrder *)(*gCurrentMap+MAP_ORDERS);u32 orderType;
+while(orderType=order->type){s32 startX=order->x;s32 endX=startX+order->width; s32 startY=order->y;s32 endY=startY+order->height;
+if(x>=startX&&y>=startY&&x<endX&&y<endY){if(orderType==type)return order;}order++;}return 0;
 }
 
 u8 func_020a4700(s32 a,s32 b) {

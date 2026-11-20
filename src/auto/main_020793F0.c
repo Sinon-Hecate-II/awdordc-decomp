@@ -284,7 +284,7 @@ void ScreenToMapFixedPoint(s32 screenX, s32 screenY, Vec3 *out) {
 void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, signed int a5) {
     extern u8 gTerrainClassFlags[];
     extern M2C_UNK gMapHighlightState;
-    extern u8 data_02142688[];
+    extern u8 gMapCellCornerColors[];
     extern u16 data_020eb1a8[];
     extern u16 data_020eb1d0[];
     extern u16 data_020eb1e0[];
@@ -349,19 +349,19 @@ void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, signed int a5) 
             u16 d = (a5 | (a5 << 5)) | (a5 << 10);
             if (sign != 0) {
                 if (sign == 0x80000000) {
-                    const u8 (*cells)[42] = (const u8 (*)[42])data_02142688;
+                    const u8 (*cells)[42] = (const u8 (*)[42])gMapCellCornerColors;
                     c0 = (u16)(data_020eb1a8[0x14] - d);
                     c1 = (u16)(data_020eb1d0[cells[a0][a1+1]] - d);
                     c3 = c0;
                     c2 = (u16)(data_020eb1d0[cells[a0+1][a1+1]] - d);
                 }
             } else {
-                const u8 *row0 = data_02142688 + a0 * 42;
+                const u8 *row0 = gMapCellCornerColors + a0 * 42;
                 s32 i1 = (a0 + 1) * 0x2a;
                 c0 = (u16)(data_020eb1e0[row0[a1]] - d);
                 c1 = (u16)(data_020eb1e0[row0[a1 + 1]] - d);
-                c3 = (u16)(data_020eb1e0[data_02142688[i1 + a1]] - d);
-                c2 = (u16)(data_020eb1e0[data_02142688[i1 + a1 + 1]] - d);
+                c3 = (u16)(data_020eb1e0[gMapCellCornerColors[i1 + a1]] - d);
+                c2 = (u16)(data_020eb1e0[gMapCellCornerColors[i1 + a1 + 1]] - d);
             }
         } else {
             u16 d = (a5 | (a5 << 5)) | (a5 << 10);

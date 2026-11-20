@@ -226,10 +226,14 @@ s32 gti2SendClosedAndClose(M2C_UNK arg0) {
 s32 Gt2AckSentData(void *a,s32 b){
 void *Vector_GetItem(s32,s32);
 s32 n,i,removed; s32 *p;
+    u32 index;
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n)return 1;
 for(i=0;i<n;i++){if(Gt2CompareSequence(M2C_FIELD(Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i),u16 *,8),b)>=0)break;}
 if(!i)return 1;
-while(((u32)i-- != 0U)){Vector_RemoveItem(M2C_FIELD(a,s32 *,0x60),i);}
+index = i;
+    while (index--) {
+        Vector_RemoveItem(M2C_FIELD(a, s32 *, 0x60), index);
+    }
 n=Vector_GetCount(M2C_FIELD(a,s32 *,0x60));if(!n){M2C_FIELD(a,s32 *,0x58)=0;return 1;}
 removed=*(s32 *)Vector_GetItem(M2C_FIELD(a,s32 *,0x60),0);
 for(i=0;i<n;i++){p=Vector_GetItem(M2C_FIELD(a,s32 *,0x60),i);*p-=removed;}

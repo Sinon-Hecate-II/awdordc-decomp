@@ -170,7 +170,7 @@ void FinishMapOfferSearch(void *offer) {
 }
 
 void func_ov006_0221762c(void *arg0) {
-    M2C_UNK func_020c47e4(M2C_UNK);
+    void func_020c47e4(s32 *);
     M2C_UNK LoadMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK PackMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
@@ -180,35 +180,50 @@ void func_ov006_0221762c(void *arg0) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     extern const Ov006Date data_ov006_02218394;
 
-    const u32 *rd;
-    u32 a[4];
-    u32 b[3];
-    u32 c[4];
-    u32 d[3];
-    u32 i;
+    s32 dateTime[7];
+    volatile s32 initialTime[3];
+    Ov006Date initialDate = data_ov006_02218394;
     u32 *cell;
+    volatile s32 *zeroTime = initialTime;
+    u32 stamp;
+    u32 part;
 
-    rd = (const u32 *)&data_ov006_02218394;
-    a[0] = rd[0]; a[1] = rd[1]; a[2] = rd[2]; a[3] = rd[3];
-    b[0] = 0; b[1] = 0; b[2] = 0;
-    c[0] = a[0]; c[1] = a[1]; c[2] = a[2]; c[3] = a[3];
-    d[0] = 0; d[1] = 0; d[2] = 0;
+    dateTime[0] = initialDate.v[0];
+    dateTime[1] = initialDate.v[1];
+    dateTime[2] = initialDate.v[2];
+    dateTime[3] = initialDate.v[3];
+    zeroTime[0] = 0;
+    zeroTime[1] = 0;
+    zeroTime[2] = 0;
+    dateTime[4] = 0;
+    dateTime[5] = 0;
+    dateTime[6] = 0;
 
     cell = (u32 *)M2C_FIELD(arg0, u32 *, 0x4C);
 
-    func_020c47e4((M2C_UNK)c);
+    func_020c47e4(dateTime);
     LoadMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     PackMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
     ExpandMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     cell[0x14] = (u32)GetOnlineLocalPlayerId();
 
-    cell[0x12] = (cell[0x12] & ~0xFFU) | (c[0] & 0xFFU);
-    cell[0x12] = (cell[0x12] & ~0x3F00U) | ((c[1] << 26) >> 18);
-    cell[0x12] = (cell[0x12] & ~0xFC000U) | ((c[2] << 26) >> 12);
-    cell[0x12] = (cell[0x12] & ~0x3F00000U) | ((d[0] << 26) >> 6);
-    cell[0x12] = (cell[0x12] & ~0xFC000000U) | (d[1] << 26);
-    cell[0x13] = (cell[0x13] & ~0x3FU) | (d[2] & 0x3FU);
-    cell[0x13] &= 0xF003FFFFU;
+    part = (dateTime[0] & 0xFFU);
+    stamp = (cell[0x12] & ~0xFFU) | part;
+    cell[0x12] = stamp;
+    part = (((u32)dateTime[1] << 26) >> 18);
+    stamp = (stamp & ~0x3F00U) | part;
+    cell[0x12] = stamp;
+    part = (((u32)dateTime[2] << 26) >> 12);
+    stamp = (stamp & ~0xFC000U) | part;
+    cell[0x12] = stamp;
+    part = (((u32)dateTime[4] << 26) >> 6);
+    stamp = (stamp & ~0x3F00000U) | part;
+    cell[0x12] = stamp;
+    part = ((u32)dateTime[5] << 26);
+    stamp = (stamp & ~0xFC000000U) | part;
+    cell[0x12] = stamp;
+    cell[0x13] = (cell[0x13] & ~0x3FU) | (dateTime[6] & 0x3FU);
+    ((volatile u32 *)cell)[0x13] &= 0xF003FFFFU;
 
     if (IsValidMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
         func_020e3788((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);

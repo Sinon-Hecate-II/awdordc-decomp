@@ -4,7 +4,7 @@
 
 void func_020d5430(void) {
  extern void *gCurrentMap;
- func_020cf850(0x1001a);func_0207a7a4(1,4);MoveMapCursorToTarget(1);
+ func_020cf850(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
  if(!func_020bcac0())return;
  if(!func_020bd650())return;
  HideTouchCursor();func_ov000_021696d4();RefreshMapView();func_0207a768();

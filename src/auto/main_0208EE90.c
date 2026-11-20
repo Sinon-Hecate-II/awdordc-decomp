@@ -435,10 +435,10 @@ void func_0208f998(s32 arg0, s16 arg1) {
 }
 
 void func_0208f9d0(void *a){
- u64 func_020722fc(s32,s16);
+ u64 U32DivideRem(s32,s16);
  s32 PlaySoundEffect(s32);
  extern s32 gFrameCounter;
- if((u32)(func_020722fc(gFrameCounter,M2C_FIELD(a,s16*,0x52))>>32)!=0)return;
+ if((u32)(U32DivideRem(gFrameCounter,M2C_FIELD(a,s16*,0x52))>>32)!=0)return;
  PlaySoundEffect(M2C_FIELD(a,s32*,0x5c));
 }
 

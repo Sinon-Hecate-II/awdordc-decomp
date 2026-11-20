@@ -48,8 +48,8 @@ func_02002030 kind:function(arm,size=0x30) addr:0x02002030
 func_02002060 kind:function(arm,size=0x28) addr:0x02002060
 HardwareDivide kind:function(arm,size=0x3c) addr:0x02002088
 HardwareDivideRemainder kind:function(arm,size=0x3c) addr:0x020020c4
-func_02002100 kind:function(arm,size=0x3c) addr:0x02002100
-func_0200213c kind:function(arm,size=0x84) addr:0x0200213c
+Vec3DotProduct kind:function(arm,size=0x3c) addr:0x02002100
+Vec3CrossProduct kind:function(arm,size=0x84) addr:0x0200213c
 func_020021c0 kind:function(arm,size=0x118) addr:0x020021c0
 func_020022d8 kind:function(arm,size=0x4) addr:0x020022d8
 GX_InitDisplay kind:function(arm,size=0x14c) addr:0x020022dc
@@ -915,7 +915,7 @@ func_0201d3a4 kind:function(arm,size=0x40) addr:0x0201d3a4
 func_0201d3e4 kind:function(arm,size=0x50) addr:0x0201d3e4
 func_0201d434 kind:function(arm,size=0x50) addr:0x0201d434
 func_0201d484 kind:function(arm,size=0x3c) addr:0x0201d484
-func_0201d4c0 kind:function(arm,size=0x88) addr:0x0201d4c0
+WaitForTlsCloseNotify kind:function(arm,size=0x88) addr:0x0201d4c0
 func_0201d548 kind:function(arm,size=0x54) addr:0x0201d548
 PeekReceivedData kind:function(arm,size=0x7c) addr:0x0201d59c
 func_0201d618 kind:function(arm,size=0x64) addr:0x0201d618
@@ -1477,7 +1477,7 @@ Wfc_BuildFriendEntries kind:function(arm,size=0x94) addr:0x02030554
 Wfc_MatchFreespotCode kind:function(arm,size=0x4c) addr:0x020305e8
 Wfc_BuildFriendCodeEntries kind:function(arm,size=0x60) addr:0x02030634
 Wfc_BuildFreespotEntries kind:function(arm,size=0xec) addr:0x02030694
-func_02030780 kind:function(arm,size=0x108) addr:0x02030780
+Wfc_BuildSaveSlotRows kind:function(arm,size=0x108) addr:0x02030780
 Wfc_MarkRecordsToSend kind:function(arm,size=0x90) addr:0x02030888
 Wfc_FindFirstRecordToSend kind:function(arm,size=0x44) addr:0x02030918
 Wfc_StepLink kind:function(arm,size=0xdc) addr:0x0203095c
@@ -1539,7 +1539,7 @@ func_02031f58 kind:function(arm,size=0x1c) addr:0x02031f58
 func_02031f74 kind:function(arm,size=0x70) addr:0x02031f74
 func_02031fe4 kind:function(arm,size=0x20) addr:0x02031fe4
 func_02032004 kind:function(arm,size=0x20) addr:0x02032004
-func_02032024 kind:function(arm,size=0x88) addr:0x02032024
+ParseFriendCodeDigits kind:function(arm,size=0x88) addr:0x02032024
 Base32Encode kind:function(arm,size=0x70) addr:0x020320ac
 FormatNasId kind:function(arm,size=0x90) addr:0x0203211c
 func_020321ac kind:function(arm,size=0x7c) addr:0x020321ac
@@ -1840,7 +1840,7 @@ func_020427b4 kind:function(arm,size=0x40) addr:0x020427b4
 ClearSessionPlayers kind:function(arm,size=0x58) addr:0x020427f4
 func_0204284c kind:function(arm,size=0x70) addr:0x0204284c
 IsConnectionMember kind:function(arm,size=0x70) addr:0x020428bc
-func_0204292c kind:function(arm,size=0xdc) addr:0x0204292c
+GetBrowsedServerPid kind:function(arm,size=0xdc) addr:0x0204292c
 FindPeerSlot kind:function(arm,size=0x64) addr:0x02042a08
 GetConnectedPlayerMask kind:function(arm,size=0x64) addr:0x02042a6c
 func_02042ad0 kind:function(arm,size=0x28) addr:0x02042ad0
@@ -1849,10 +1849,10 @@ UpdateConnectionSync kind:function(arm,size=0x42c) addr:0x02042b68
 ReportConnectionStatusResult kind:function(arm,size=0x74) addr:0x02042f94
 ReportMatchmakingResult kind:function(arm,size=0x94) addr:0x02043008
 ReportQr2Error kind:function(arm,size=0xe8) addr:0x0204309c
-func_02043184 kind:function(arm,size=0x5c) addr:0x02043184
+ReportPeerConnectResult kind:function(arm,size=0x5c) addr:0x02043184
 func_020431e0 kind:function(arm,size=0x50) addr:0x020431e0
 ReportGt2ConnectResult kind:function(arm,size=0xa4) addr:0x02043230
-func_020432d4 kind:function(arm,size=0x404) addr:0x020432d4
+HandleServerListEvent kind:function(arm,size=0x404) addr:0x020432d4
 func_020436d8 kind:function(arm,size=0x4) addr:0x020436d8
 EvaluateMatchmakingSessions kind:function(arm,size=0x1d8) addr:0x020436dc
 SelectMatchmakingSession kind:function(arm,size=0x170) addr:0x020438b4
@@ -2760,7 +2760,7 @@ U64Divide kind:function(arm,size=0x48) addr:0x02072088
 .L_02072094 kind:label(arm) addr:0x02072094
 func_020720d0 kind:function(arm,size=0x20) addr:0x020720d0
 func_020720f0 kind:function(arm,size=0x20c) addr:0x020720f0
-func_020722fc kind:function(arm,size=0x1e4) addr:0x020722fc
+U32DivideRem kind:function(arm,size=0x1e4) addr:0x020722fc
 .L_02072304 kind:label(arm) addr:0x02072304
 func_020724f8 kind:function(arm,size=0x544) addr:0x020724f8
 func_02072a3c kind:function(arm,size=0x4) addr:0x02072a3c
@@ -2865,7 +2865,7 @@ func_020767d4 kind:function(arm,size=0x3c) addr:0x020767d4
 func_02076810 kind:function(arm,size=0x28) addr:0x02076810
 Crc16Block kind:function(arm,size=0x28) addr:0x02076838
 func_02076860 kind:function(arm,size=0x2c) addr:0x02076860
-func_0207688c kind:function(arm,size=0x84) addr:0x0207688c
+ClearMapRenderBuffers kind:function(arm,size=0x84) addr:0x0207688c
 func_02076910 kind:function(arm,size=0x70) addr:0x02076910
 func_02076980 kind:function(arm,size=0xb00) addr:0x02076980
 func_02077480 kind:function(arm,size=0x1c) addr:0x02077480
@@ -2893,7 +2893,7 @@ BuildMoveRangeFlags kind:function(arm,size=0x108) addr:0x02078068
 BuildMapCellCodes kind:function(arm,size=0x1d0) addr:0x02078170
 BuildMapCellShades kind:function(arm,size=0xfc) addr:0x02078340
 func_0207843c kind:function(arm,size=0xec) addr:0x0207843c
-func_02078528 kind:function(arm,size=0x88) addr:0x02078528
+UpdateMapWaveHeight kind:function(arm,size=0x88) addr:0x02078528
 Map_UpdateOwnerColorBands kind:function(arm,size=0x8c) addr:0x020785b0
 func_0207863c kind:function(arm,size=0x30) addr:0x0207863c
 DrawMapBackground kind:function(arm,size=0x110) addr:0x0207866c
@@ -3632,7 +3632,7 @@ func_0209066c kind:function(arm,size=0x2c) addr:0x0209066c
 func_02090698 kind:function(arm,size=0x10) addr:0x02090698
 SpritePlayer_Init kind:function(arm,size=0xb4) addr:0x020906a8
 SpritePlayer_SpawnChild kind:function(arm,size=0xb4) addr:0x0209075c
-func_02090810 kind:function(arm,size=0x20) addr:0x02090810
+SpritePlayer_SetListPosition kind:function(arm,size=0x20) addr:0x02090810
 func_02090830 kind:function(arm,size=0x64) addr:0x02090830
 func_02090894 kind:function(arm,size=0x48) addr:0x02090894
 func_020908dc kind:function(arm,size=0x1ac) addr:0x020908dc
@@ -4351,7 +4351,7 @@ func_020a44fc kind:function(arm,size=0x2c) addr:0x020a44fc
 ClearMapOrders kind:function(arm,size=0xa4) addr:0x020a4528
 func_020a45cc kind:function(arm,size=0x2c) addr:0x020a45cc
 func_020a45f8 kind:function(arm,size=0x80) addr:0x020a45f8
-func_020a4678 kind:function(arm,size=0x88) addr:0x020a4678
+FindMapOrderOfTypeAt kind:function(arm,size=0x88) addr:0x020a4678
 func_020a4700 kind:function(arm,size=0x70) addr:0x020a4700
 FindMapFeatureAtTile kind:function(arm,size=0x70) addr:0x020a4770
 func_020a47e0 kind:function(arm,size=0x48) addr:0x020a47e0
@@ -5281,7 +5281,7 @@ func_020c4910 kind:function(arm,size=0x44) addr:0x020c4910
 InitPlayerProfile kind:function(arm,size=0x120) addr:0x020c4954
 func_020c4a74 kind:function(arm,size=0x58) addr:0x020c4a74
 func_020c4acc kind:function(arm,size=0xc) addr:0x020c4acc
-func_020c4ad8 kind:function(arm,size=0x88) addr:0x020c4ad8
+InitBattleSaveRecords kind:function(arm,size=0x88) addr:0x020c4ad8
 GetBattleSaveBlock kind:function(arm,size=0xc) addr:0x020c4b60
 func_020c4b6c kind:function(arm,size=0x1c) addr:0x020c4b6c
 func_020c4b88 kind:function(arm,size=0x1c) addr:0x020c4b88
@@ -5541,7 +5541,7 @@ IsAllySupplyUnitAtCell kind:function(arm,size=0x8c) addr:0x020cb3a4
 CanBeSupplied kind:function(arm,size=0x120) addr:0x020cb430
 MarkTransportCargo kind:function(arm,size=0x154) addr:0x020cb550
 func_020cb6a4 kind:function(arm,size=0x60) addr:0x020cb6a4
-func_020cb704 kind:function(arm,size=0x88) addr:0x020cb704
+FindSupplyTargetDirections kind:function(arm,size=0x88) addr:0x020cb704
 func_020cb78c kind:function(arm,size=0x140) addr:0x020cb78c
 func_020cb8cc kind:function(arm,size=0x2c) addr:0x020cb8cc
 func_020cb8f8 kind:function(arm,size=0xc) addr:0x020cb8f8
@@ -5644,7 +5644,7 @@ func_020cf278 kind:function(arm,size=0x50) addr:0x020cf278
 func_020cf2c8 kind:function(arm,size=0x1d0) addr:0x020cf2c8
 SetMapCursorTargetTile kind:function(arm,size=0x58) addr:0x020cf498
 StepMapCursorPosition kind:function(arm,size=0xfc) addr:0x020cf4f0
-MoveMapCursorToTarget kind:function(arm,size=0x88) addr:0x020cf5ec
+MapCursor_StepTowardTarget kind:function(arm,size=0x88) addr:0x020cf5ec
 MapView_SetCursorPosition kind:function(arm,size=0x28) addr:0x020cf674
 StepMapCursorAndNotify kind:function(arm,size=0xb8) addr:0x020cf69c
 StepMapCursorAndNotifyOffset kind:function(arm,size=0xb8) addr:0x020cf754
@@ -6091,7 +6091,7 @@ func_020da480 kind:function(arm,size=0x368) addr:0x020da480
 func_020da7e8 kind:function(arm,size=0xfc) addr:0x020da7e8
 func_020da8e4 kind:function(arm,size=0x64) addr:0x020da8e4
 HandleOnlineLinkResult kind:function(arm,size=0xc4) addr:0x020da948
-func_020daa0c kind:function(arm,size=0x84) addr:0x020daa0c
+UpdateMainEngineMapScroll kind:function(arm,size=0x84) addr:0x020daa0c
 func_020daa90 kind:function(arm,size=0xc) addr:0x020daa90
 func_020daa9c kind:function(arm,size=0xc) addr:0x020daa9c
 func_020daaa8 kind:function(arm,size=0xc) addr:0x020daaa8
@@ -6420,8 +6420,8 @@ data_020eb460 kind:data(any) addr:0x020eb460
 data_020eb4e0 kind:data(any) addr:0x020eb4e0
 data_020eb4ec kind:data(any) addr:0x020eb4ec
 data_020eb7b8 kind:data(any) addr:0x020eb7b8
-data_020ebd58 kind:data(any) addr:0x020ebd58
-data_020ebd78 kind:data(any) addr:0x020ebd78
+gWaveHeightSteps kind:data(any) addr:0x020ebd58
+gWaveHeightWeights kind:data(any) addr:0x020ebd78
 data_020ebd98 kind:data(any) addr:0x020ebd98
 data_020ebda2 kind:data(any) addr:0x020ebda2
 gMapViewUpVector kind:data(any) addr:0x020ebdb8
@@ -10935,9 +10935,9 @@ gToonTable kind:bss addr:0x02140fc8
 gMapMoveRangeFlags kind:bss addr:0x02141008
 gMapCellShades kind:bss addr:0x02141788
 gMapCellCodes kind:bss addr:0x02141f08
-data_02142688 kind:bss addr:0x02142688
-data_02142ebc kind:bss addr:0x02142ebc
-data_02143dbc kind:bss addr:0x02143dbc
+gMapCellCornerColors kind:bss addr:0x02142688
+gMapCellCornerA kind:bss addr:0x02142ebc
+gMapCellCornerB kind:bss addr:0x02143dbc
 data_02144cbc kind:bss addr:0x02144cbc
 data_02144cdc kind:bss addr:0x02144cdc
 gMapScrollSpeedRamp kind:bss addr:0x02144ce0
@@ -11028,7 +11028,7 @@ data_0215bdf8 kind:bss addr:0x0215bdf8
 data_0215be00 kind:bss addr:0x0215be00
 gSelectionQueue kind:bss addr:0x0215be04
 gSelectionQueueCount kind:bss addr:0x0215be08
-data_0215be0c kind:bss addr:0x0215be0c
+gMapCursorOptionValue kind:bss addr:0x0215be0c
 data_0215be10 kind:bss addr:0x0215be10
 data_0215c2c8 kind:bss addr:0x0215c2c8
 gBattleResults kind:bss addr:0x0215c324

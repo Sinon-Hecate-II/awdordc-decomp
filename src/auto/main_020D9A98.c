@@ -1,5 +1,6 @@
 /* 19 functions from 0x020D9A98 to 0x020DAA90 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 /* Tear down a screen entity: run the cleanup for its driver type (+0x34/+0x38),
    reset the sprite bank of both 3D engines, release the entity's five sprite
@@ -265,126 +266,136 @@ void func_020da3c8(void *arg0) {
 void func_020da40c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
 
-void func_020da480(void *arg0) {
-    M2C_UNK ResetPlayerMask(void);
-    M2C_UNK func_02086330(void);
-    M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
-    M2C_UNK LoadScenePanelPalette(M2C_UNK);
-    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK SetFileDirectory(void *);
-    M2C_UNK GetLocalizedFileName(void *);
-    M2C_UNK OpenNarcArchive(void);
-    M2C_UNK LoadNarcFileDecompressed(M2C_UNK, void *);
-    M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK CloseNarcArchive(void);
-    M2C_UNK GetUiColor(M2C_UNK);
-    M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ff9dd8(M2C_UNK);
-    M2C_UNK DisableMapConfirm(void);
-    extern void **gCur3DSpriteEngine;
-    extern void **g3DSpriteEngineMain;
-    extern void *g3DSpriteBankMain;
-    extern u8 data_0212c5f2[];
-    extern u8 data_0212c5f0[];
-    extern u8 data_0212d1f4[];
-    extern u8 data_0212d1fc[];
-    extern u8 data_0212d20c[];
-    extern u8 data_0212d218[];
-    extern u8 data_0212d224[];
-    extern u8 data_0212d234[];
-    extern void **g3DSpriteEngineSub;
-
-    void *savedEngine;
-    void *unitStruct;
-    void *tmpPtr;
-    void *st;
-    u16 *pcl;
-    M2C_UNK r0v;
-
-    ResetPlayerMask();
-    func_02086330();
-
-    unitStruct = *(void **)((u8 *)arg0 + 0x68);
-    *(u16 *)((u8 *)unitStruct + 0xe) = 0;
-    *(u16 *)((u8 *)unitStruct + 0x10) = 0;
-    *(u16 *)((u8 *)unitStruct + 0xc) = 0xc;
-    *(u16 *)((u8 *)unitStruct + 0x2) = *(u16 *)((u8 *)unitStruct + 0x4);
-
-    tmpPtr = g3DSpriteBankMain;
-    *(u16 *)tmpPtr = (u16)(*(u16 *)tmpPtr & ~0x8);
-
-    savedEngine = gCur3DSpriteEngine;
-    gCur3DSpriteEngine = g3DSpriteEngineMain;
-
-    Configure3DSpriteLayer(1, data_0212c5f2);
-    Configure3DSpriteLayer(0, data_0212c5f0);
-
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl |= 0x10;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl |= 0x20;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl |= 0x40;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl &= ~0x80;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl |= 0x100;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)((u8 *)st + 0x12);
-    *pcl &= ~0xc0;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *((u8 *)pcl + 0x51) = 0;
-    *((u8 *)pcl + 0x52) = 0;
-    *((u8 *)pcl + 0x53) = 0;
-    ((u8 *)*gCur3DSpriteEngine)[0x46] |= 2;
-
-    LoadScenePanelPalette(9);
-    Clear3DSpriteLayer(0);
-    SetFileDirectory(data_0212d1f4);
-    r0v = GetLocalizedFileName(data_0212d1fc);
-    (void)r0v;
-    OpenNarcArchive();
-    LoadNarcFileDecompressed(GetLocalizedFileName(data_0212d20c), *(void **)((u8 *)*gCur3DSpriteEngine + 0xc));
-
-    LoadFileToSpriteBuffer(data_0212d218, 0xa0, 0x80);
-    ((u8 *)*gCur3DSpriteEngine)[0x46] |= 1;
-
-    r0v = GetLocalizedFileName(data_0212d224);
-    LoadNarcFileDecompressed(r0v, (void *)((u8 *)*(void **)((u8 *)*gCur3DSpriteEngine + 0x1c) + 0x7100));
-
-    LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
-    CloseNarcArchive();
-    r0v = GetUiColor(9);
-    Load3DSpritePattern(0x1000, 1, r0v, 2);
-
-    gCur3DSpriteEngine = g3DSpriteEngineSub;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *pcl |= 0x10;
-    *pcl |= 0x20;
-    *pcl |= 0x40;
-    *pcl &= ~0x80;
-    *pcl |= 0x100;
-    pcl = (u16 *)((u8 *)st + 0x12);
-    *pcl &= ~0xc0;
-    st = *gCur3DSpriteEngine;
-    pcl = (u16 *)st;
-    *((u8 *)pcl + 0x51) = 0;
-    *((u8 *)pcl + 0x52) = 0;
-    *((u8 *)pcl + 0x53) = 0;
-
-    Clear3DSpriteLayer(0);
-    func_01ff9dd8(0);
-    gCur3DSpriteEngine = savedEngine;
-    DisableMapConfirm();
+#pragma push
+#pragma opt_schedule off
+void func_020da480(void *arg0)
+{
+  M2C_UNK ResetPlayerMask(void);
+  M2C_UNK func_02086330(void);
+  M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
+  M2C_UNK LoadScenePanelPalette(M2C_UNK);
+  M2C_UNK Clear3DSpriteLayer(M2C_UNK);
+  M2C_UNK SetFileDirectory(void *);
+  M2C_UNK GetLocalizedFileName(void *);
+  M2C_UNK OpenNarcArchive(M2C_UNK);
+  M2C_UNK LoadNarcFileDecompressed(M2C_UNK, void *);
+  M2C_UNK LoadFileToSpriteBuffer(void *, M2C_UNK, M2C_UNK);
+  M2C_UNK CloseNarcArchive(void);
+  M2C_UNK GetUiColor(M2C_UNK);
+  M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+  M2C_UNK func_01ff9dd8(M2C_UNK);
+  M2C_UNK DisableMapConfirm(void);
+  unsigned char new_var;
+  extern void **gCur3DSpriteEngine;
+  extern void **g3DSpriteEngineMain;
+  extern void *g3DSpriteBankMain;
+  extern u8 data_0212c5f2[];
+  extern u8 data_0212c5f0[];
+  extern u8 data_0212d1f4[];
+  extern u8 data_0212d1fc[];
+  extern u8 data_0212d20c[];
+  extern u8 data_0212d218[];
+  extern u8 data_0212d224[];
+  extern u8 data_0212d234[];
+  extern void **g3DSpriteEngineSub;
+  void *savedEngine;
+  void *unitStruct;
+  void *tmpPtr;
+  M2C_UNK r0v;
+  ResetPlayerMask();
+  func_02086330();
+  unitStruct = *((void **) (((u8 *) arg0) + 0x68));
+  *((u16 *) (((u8 *) unitStruct) + 0xe)) = 0;
+  *((u16 *) (((u8 *) unitStruct) + 0x10)) = 0;
+  *((u16 *) (((u8 *) unitStruct) + 0xc)) = 0xc;
+  *((u16 *) (((u8 *) unitStruct) + 0x2)) = *((u16 *) (((u8 *) unitStruct) + 0x4));
+  tmpPtr = g3DSpriteBankMain;
+  *((u16 *) tmpPtr) = (u16) ((*((u16 *) tmpPtr)) & (~0x8));
+  savedEngine = gCur3DSpriteEngine;
+  gCur3DSpriteEngine = g3DSpriteEngineMain;
+  Configure3DSpriteLayer(1, data_0212c5f2);
+  Configure3DSpriteLayer(0, data_0212c5f0);
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x10);
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x20);
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x40);
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) & (~0x80));
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x100);
+  }
+  {
+    u16 * volatile flags = (u16 *) (((u8 *) (*gCur3DSpriteEngine)) + 0x12);
+    *flags = (u16) ((*flags) & (~0xc0));
+  }
+  ((u8 *) (*gCur3DSpriteEngine))[0x51] = 0;
+  ((u8 *) (*gCur3DSpriteEngine))[0x52] = 0;
+  ((u8 *) (*gCur3DSpriteEngine))[0x53] = 0;
+  new_var = 0;
+  ((u8 *) gCur3DSpriteEngine)[0x46] |= 2;
+  LoadScenePanelPalette(9);
+  Clear3DSpriteLayer(new_var);
+  SetFileDirectory(data_0212d1f4);
+  r0v = GetLocalizedFileName(data_0212d1fc);
+  OpenNarcArchive(r0v);
+  LoadNarcFileDecompressed(GetLocalizedFileName(data_0212d20c), *((void **) (((u8 *) gCur3DSpriteEngine) + 0xc)));
+  LoadFileToSpriteBuffer(data_0212d218, 0xa0, 0x80);
+  ((u8 *) gCur3DSpriteEngine)[0x46] |= 1;
+  r0v = GetLocalizedFileName(data_0212d224);
+  LoadNarcFileDecompressed(r0v, (void *) (((u8 *) (*((void **) (((u8 *) gCur3DSpriteEngine) + 0x1c)))) + 0x7100));
+  LoadFileToSpriteBuffer(data_0212d234, 0x2c0, 0x20);
+  CloseNarcArchive();
+  *flags = (u16) ((*flags) & (~0x10));
+  r0v = GetUiColor(9);
+  Load3DSpritePattern(0x1000, 1, r0v, 2);
+  gCur3DSpriteEngine = g3DSpriteEngineSub;
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) & (~0x10));
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) & (~0x20));
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x40);
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) & (~0x80));
+  }
+  if (flags)
+  {
+  }
+  {
+    u16 * volatile flags = (u16 *) ((u8 *) (*gCur3DSpriteEngine));
+    *flags = (u16) ((*flags) | 0x100);
+  }
+  {
+    u16 * volatile flags = (u16 *) (((u8 *) (*gCur3DSpriteEngine)) + 0x12);
+    *flags = (u16) ((*flags) & (~0xc0));
+  }
+  ((u8 *) (*gCur3DSpriteEngine))[0x51] = 0;
+  ((u8 *) (*gCur3DSpriteEngine))[0x52] = new_var;
+  ((u8 *) (*gCur3DSpriteEngine))[0x53] = new_var;
+  Clear3DSpriteLayer(0);
+  func_01ff9dd8(new_var);
+  gCur3DSpriteEngine = savedEngine;
+  DisableMapConfirm();
 }
-
+#pragma pop
 void func_020da8e4(s32,void *);
 void HandleOnlineLinkResult(s32,M2C_UNK,u32,void *);
 /* Dispatch an entity's driver based on its type field (+0x34) and sub-state (+0x38). */
@@ -463,26 +474,27 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
     }
 }
 
-void func_020daa0c(void *arg0) {
+void UpdateMainEngineMapScroll(void *scrollEffect) {
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
     M2C_UNK SetSpriteSlotScroll(s32, M2C_UNK);
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
-    s32 temp_r0;
-    u16 temp_r3;
-    void **temp_ip;
+    s32 scrollValue;
+    u16 inverseScroll;
+    void **savedEngine;
 
-    UpdateSpriteAnimation(M2C_FIELD(arg0, s32 *, 0x68));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x68));
-    SetSpriteSlotScroll(temp_r0, 0);
-    temp_ip = gCur3DSpriteEngine;
-    temp_r3 = 0 - temp_r0;
+    /* Animate the main engine's scroll offset and apply the matching sprite-bank offset. */
+    UpdateSpriteAnimation(M2C_FIELD(scrollEffect, s32 *, 0x68));
+    scrollValue = GetSpriteAnimValue(M2C_FIELD(scrollEffect, s32 *, 0x68));
+    SetSpriteSlotScroll(scrollValue, 0);
+    savedEngine = gCur3DSpriteEngine;
+    inverseScroll = 0 - scrollValue;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    M2C_FIELD(*g3DSpriteEngineMain, u16 *, 0x3A) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, u16 *, 0x38) = temp_r3;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
-    gCur3DSpriteEngine = temp_ip;
+    M2C_FIELD(*g3DSpriteEngineMain, u16 *, DS3D_SCROLL_LAYER_Y) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_Y) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, u16 *, DS3D_SCROLL_LAYER_X) = inverseScroll;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_OFFSET2_X) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 

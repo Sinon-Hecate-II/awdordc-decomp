@@ -38,8 +38,8 @@ void func_0205cc20(s32 a, s32 b, s32 c, s32 d) {
 
 s32 func_0205cc3c(void **a, s32 b) {
     void *p = *a;
-    s64 func_020722fc(s32, s32);
-    return (s32)(func_020722fc(M2C_FIELD(p, s32 *, 0) * (s32)M2C_FIELD(p, u16 *, 4), b) >> 32);
+    s64 U32DivideRem(s32, s32);
+    return (s32)(U32DivideRem(M2C_FIELD(p, s32 *, 0) * (s32)M2C_FIELD(p, u16 *, 4), b) >> 32);
 }
 
 s32 func_0205cc5c(void **a,void **b) {

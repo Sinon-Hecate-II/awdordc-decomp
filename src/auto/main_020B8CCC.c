@@ -243,6 +243,8 @@ void OpenProductionMenu(s32 x, s32 y) {
     CreateSpriteFromClass(&gProductionMenuScreenClass, 7);
 }
 
+#pragma push
+#pragma opt_common_subs off
 void BuildProductionMenuEntries(s8 mask) {
     s32 CanBuildUnitKind(s32, s32);
     s32 GetUnitBuildCostTimes10(s32, s32);
@@ -252,24 +254,24 @@ void BuildProductionMenuEntries(s8 mask) {
     extern M2C_UNK gProductionMenuState;
     extern void **gCurrentMap;
 
-    u8 *buf = gProductionChoices;
     s8 *table = data_ov000_021aab94;
     u8 *attrs = gUnitKindStats;
-    u8 count = 0;
     u8 i = 0;
+    u8 count = 0;
     if (table[0] != -1) {
+        u8 *buf = gProductionChoices;
         do {
             u8 kind = (u8)table[i];
             if (mask & attrs[kind * 0x70 + 0x13]) {
-                void **gp = gCurrentMap;
-                void *g = *gp;
-                u16 idx = *(u16 *)((u8 *)g + 0x52a4);
-                if (CanBuildUnitKind((s32)&((u8 *)g)[0x52a4], kind) != 0) {
-                    void *g2 = *gp;
+                if (CanBuildUnitKind(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), kind) != 0) {
+                    void *g2 = *gCurrentMap;
+                    u16 idx = M2C_FIELD(g2, u16 *, 0x52a4);
                     s32 base = GetUnitBuildCostTimes10(idx, kind);
                     s32 total = *(s32 *)((u8 *)g2 + idx * 0x8c + 0x67a4);
-                    u8 flag = (total < base) ? 1 : 0;
-                    buf[count * 2 + 1] = flag;
+                    if (total < base)
+                        buf[count * 2 + 1] = 1;
+                    else
+                        buf[count * 2 + 1] = 0;
                     buf[count * 2] = kind;
                     count++;
                 }
@@ -278,9 +280,9 @@ void BuildProductionMenuEntries(s8 mask) {
         } while (table[i] != -1);
     }
     M2C_FIELD(&gProductionMenuState, s32 *, 4) = count;
-    buf[count * 2] = 0;
+    gProductionChoices[count * 2] = 0;
 }
-
+#pragma pop
 void func_020b9978(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK, s32);
     extern void *gCur3DSpriteEngine;

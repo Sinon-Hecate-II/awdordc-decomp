@@ -566,62 +566,65 @@ M2C_FIELD(&gStreamVoiceState,s32 *,28)=0;
 func_0200e868(0);
 }
 
-void func_ov010_02225e10(s32 a) {
-extern s32 data_ov010_0222ee70;
-void func_ov010_022226fc(s32);
+void VoiceChat_DetachContext(s32 a) {
+extern s32 gVoiceChatLink;
+void VoiceChat_RemoveChannel(s32);
 void VoiceLink_ReleaseContext(s32);
-if(a==M2C_FIELD(&data_ov010_0222ee70,s32 *,4)){
-func_ov010_022226fc(a);
+if(a==M2C_FIELD(&gVoiceChatLink,s32 *,4)){
+VoiceChat_RemoveChannel(a);
 VoiceLink_ReleaseContext(a);
-M2C_FIELD(&data_ov010_0222ee70,s32 *,4)=0;
+M2C_FIELD(&gVoiceChatLink,s32 *,4)=0;
 }else VoiceLink_ReleaseContext(a);
 }
 
-void func_ov010_02225e50(u32 arg1, s32 arg2) {
-    M2C_UNK func_ov010_022225c4(s32);
+/* Voice link event callback: event 1 is a peer asking to open an exchange
+ * (start one unless another is already attached), events 7/8 attach the
+ * exchange's channel, and the remaining events detach and release its context. */
+void VoiceLink_HandleEvent(s32 unused, u32 event, VoiceLinkContext *context) {
+    M2C_UNK VoiceChat_AttachContext(s32);
     void VoiceLink_ReleaseContext(s32);
-    s32 func_ov010_02224138(s32, M2C_UNK);
-    void func_ov010_02225e10(s32);
-    extern M2C_UNK data_ov010_0222ee70;
-    switch (arg1) {
-    default:
-        return;
+    s32 VoiceLink_TrySendStep(s32, M2C_UNK);
+    void VoiceChat_DetachContext(s32);
+    extern M2C_UNK gVoiceChatLink;
+
+    switch (event) {
     case 1:
-        if (M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) != 0) {
-            func_ov010_02224138(arg2, 3);
-            VoiceLink_ReleaseContext(arg2);
+        if (M2C_FIELD(&gVoiceChatLink, VoiceLinkContext **, VOICE_CHAT_LINK_CONTEXT) != NULL) {
+            VoiceLink_TrySendStep((s32) context, 3);
+            VoiceLink_ReleaseContext((s32) context);
             return;
         }
-        if (func_ov010_02224138(arg2, 0) != 0) {
-            VoiceLink_ReleaseContext(arg2);
+        if (VoiceLink_TrySendStep((s32) context, 0) != 0) {
+            VoiceLink_ReleaseContext((s32) context);
             return;
         }
-        M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = arg2;
-        func_ov010_022225c4(arg2);
+        M2C_FIELD(&gVoiceChatLink, VoiceLinkContext **, VOICE_CHAT_LINK_CONTEXT) = context;
+        VoiceChat_AttachContext((s32) context);
         return;
     case 8:
-        func_ov010_02224138(arg2, 0);
-        func_ov010_02225e10(arg2);
+        VoiceLink_TrySendStep((s32) context, 0);
+        VoiceChat_DetachContext((s32) context);
         return;
     case 9:
-        func_ov010_02225e10(arg2);
+        VoiceChat_DetachContext((s32) context);
         return;
     case 7:
-        func_ov010_022225c4(arg2);
+        VoiceChat_AttachContext((s32) context);
         return;
     case 2:
-        func_ov010_02225e10(arg2);
+        VoiceChat_DetachContext((s32) context);
         return;
     case 3:
-        func_ov010_02225e10(arg2);
+        VoiceChat_DetachContext((s32) context);
         return;
     case 11:
-        func_ov010_02225e10(arg2);
+        VoiceChat_DetachContext((s32) context);
         return;
     case 12:
-        func_ov010_02225e10(arg2);
+        VoiceChat_DetachContext((s32) context);
         return;
-        return;
+    default:
+        break;
     }
 }
 

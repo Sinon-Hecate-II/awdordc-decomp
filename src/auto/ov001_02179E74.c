@@ -367,7 +367,7 @@ void func_ov001_0217a98c(void) {
 }
 
 void func_ov001_0217a9ac(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK gMapSelectState;
     extern M2C_UNK MapSelectList_Leave;
@@ -375,7 +375,7 @@ void func_ov001_0217a9ac(void) {
         return;
     }
     if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x54) != 0) {
-        func_ov001_02171694();
+        Ov001_StartIconRowSlideOut();
     } else {
         Ov001_LockIconRow();
     }

@@ -352,15 +352,17 @@ for(i=0;i<length;i++){if(text[i+16]==32)glyphs[i]=KBD_KEY_SPACE;else glyphs[i]=t
 DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,0x14),72,y+12,2,8,(M2C_UNK *)glyphs,1);
 }
 
-void DrawMapInfoDottedValue(void *arg0, s32 arg1) {
+/* Draws one row of the map-list info panel's dotted 4-byte value (an address
+ * or code) as "%3d.%3d.%3d.%3d." at the given panel line. */
+void DrawMapInfoDottedValue(void *value, s32 line) {
     M2C_UNK StringFormatWide(M2C_UNK *, M2C_UNK, M2C_UNK *, u8, s32, s32, s32);
     M2C_UNK DrawTextRun(s32, M2C_UNK, s32, M2C_UNK, s32, M2C_UNK *, s32);
-    extern M2C_UNK data_ov001_02190874;
+    extern u8 sDottedValueFormat[];
     extern M2C_UNK gMapListState;
-    u8 spC[0x20];
+    u8 text[0x20];
 
-    StringFormatWide(spC, 0x10, &data_ov001_02190874, M2C_FIELD(arg0, u8 *, 0), (s32) M2C_FIELD(arg0, u8 *, 1), (s32) M2C_FIELD(arg0, u8 *, 2), (s32) M2C_FIELD(arg0, u8 *, 3));
-    DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), s32 *, 0x14), 0x5F, (arg1 * 0x1D) + 8, 2, 7, spC, 1);
+    StringFormatWide(text, 0x10, sDottedValueFormat, M2C_FIELD(value, u8 *, 0), (s32) M2C_FIELD(value, u8 *, 1), (s32) M2C_FIELD(value, u8 *, 2), (s32) M2C_FIELD(value, u8 *, 3));
+    DrawTextRun(M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), s32 *, OV001_MAP_LIST_TEXT_PANEL), 0x5F, (line * OV001_MAP_LIST_ROW_HEIGHT) + 8, 2, 7, text, 1);
 }
 
 #pragma push

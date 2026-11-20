@@ -235,7 +235,8 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
     return 2;
 }
 
-#pragma peephole off
+#pragma push
+#pragma optimize_for_size on
 void func_ov000_02187664(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     s32 func_ov000_02187320(s32, s32, void *, void *);
@@ -247,30 +248,29 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     s16 pos1[2];
     s16 pos2[2];
     s32 t;
-    s32 r;
     u8 *unitC;
     u8 *unitD;
 
-    r = func_ov000_02187320(arg0, arg1, pos1, pos2);
+    s32 r = func_ov000_02187320(arg0, arg1, pos1, pos2);
     if (r == 0) return;
     t = func_ov000_0217bd44(arg0, arg1, pos1[0], pos1[1]);
-    if (r < 2) return;
+    if (r >= 2) {
     if (TryUnitAiActions(arg0, arg1) == 1) {
-        SetMapCursor((s16)arg0, (s16)arg1, 8, t & 0xff, func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]) & 0xff);
-        return;
-    }
+        r = func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]);
+        SetMapCursor((s16)arg0, (s16)arg1, 8, (u8)t, (u8)r);
+    } else {
     unitC = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) * 0xE;
-    if (IsFootUnitKind((u32)(unitC[0] << 26) >> 26) != 0) return;
-    if (((u32)(unitC[0] << 26) >> 26) == 0x0D) return;
-    if (((u32)(unitC[11] << 28) >> 28) >= 6) return;
+    if (!IsFootUnitKind((u32)(unitC[0] << 26) >> 26) && ((u32)(unitC[0] << 26) >> 26) != 0x0D && ((u32)(unitC[11] << 28) >> 28) < 6) {
     unitD = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xD) * 0xE;
-    if (IsFootUnitKind((u32)(unitD[0] << 26) >> 26) != 0) return;
-    if (((u32)(unitD[0] << 26) >> 26) == 0x0D) return;
-    if (((u32)(unitD[11] << 28) >> 28) >= 6) return;
+    if (!IsFootUnitKind((u32)(unitD[0] << 26) >> 26) && ((u32)(unitD[0] << 26) >> 26) != 0x0D && ((u32)(unitD[11] << 28) >> 28) < 6) {
     unitD[11] = (unitD[11] & 0xF0) | ((u32)(unitC[11] << 28) >> 28);
     SetMapCursor((s16)arg0, (s16)arg1, 8, t & 0xff, 0);
+    }
+    }
+    }
+    }
 }
-#pragma peephole reset
+#pragma pop
 void func_ov000_02187820(void) {
     extern void **gCurrentMap;
     extern u32 gFrameCounter;

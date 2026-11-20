@@ -168,6 +168,8 @@ void DrawInfoPanelBackdrop(void *entry) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+#pragma push
+#pragma optimization_level 4
 void func_ov000_02175878(void *arg0) {
     void CopyToObjPaletteShadow(void *, s32, s32);
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
@@ -180,9 +182,11 @@ void func_ov000_02175878(void *arg0) {
     u8 local[6];
     u8 flag;
     u8 idx;
+    s32 palette;
     void *saved;
     s32 color;
     s32 base;
+    u8 *graphics;
 
     local[0] = data_ov000_021ae2a0[0];
     local[1] = data_ov000_021ae2a0[1];
@@ -190,23 +194,25 @@ void func_ov000_02175878(void *arg0) {
     local[3] = data_ov000_021ae2a0[3];
     local[4] = data_ov000_021ae2a0[4];
     local[5] = data_ov000_021ae2a0[5];
-    idx = (u8)(local[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x60)] << 5);
+    palette = local[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0x60)] << 5;
     color = M2C_FIELD(arg0, s32 *, 0) ? 0xA3 : 0x103;
     flag = M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 0) != 0;
+    idx = palette;
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
+    graphics = data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag + 2];
     base = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x10);
     if (M2C_FIELD(arg0, s32 *, 0)) {
         base += 0x20;
     } else {
         base += 0xA40;
     }
-    LoadGraphicsBlock((M2C_UNK *)data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag + 2], base);
+    LoadGraphicsBlock((M2C_UNK *)graphics, base);
     CopyToObjPaletteShadow(data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag] + idx, 0x180, 0x20);
     func_0209b26c(2, 0xD, 1, data_ov000_021debc8[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)], 0xF000, color);
     gCur3DSpriteEngine = saved;
 }
-
+#pragma pop
 void func_ov000_021759b8(s32 *arg0) {
     M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
     extern void *g3DSpriteEngineSub;

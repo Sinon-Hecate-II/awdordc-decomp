@@ -69,9 +69,9 @@ func_ov001_0216c800 kind:function(thumb,size=0x8c) addr:0x0216c800
 func_ov001_0216c88c kind:function(thumb,size=0x54) addr:0x0216c88c
 func_ov001_0216c8e0 kind:function(thumb,size=0x56) addr:0x0216c8e0
 func_ov001_0216c938 kind:function(thumb,size=0x68) addr:0x0216c938
-func_ov001_0216c9a0 kind:function(thumb,size=0x7c) addr:0x0216c9a0
-func_ov001_0216ca1c kind:function(thumb,size=0x88) addr:0x0216ca1c
-func_ov001_0216caa4 kind:function(thumb,size=0x62) addr:0x0216caa4
+Ov001_EncryptRoomData kind:function(thumb,size=0x7c) addr:0x0216c9a0
+Ov001_DecryptRoomData kind:function(thumb,size=0x88) addr:0x0216ca1c
+Ov001Rc4Init kind:function(thumb,size=0x62) addr:0x0216caa4
 func_ov001_0216cb08 kind:function(thumb,size=0x2c) addr:0x0216cb08
 func_ov001_0216cb34 kind:function(thumb,size=0x3e) addr:0x0216cb34
 func_ov001_0216cb74 kind:function(thumb,size=0x28) addr:0x0216cb74
@@ -194,7 +194,7 @@ Ov001_CreateAnimSprite kind:function(arm,size=0xd0) addr:0x021713c4
 Ov001_FreeOptionSprites kind:function(arm,size=0x3c) addr:0x02171494
 Ov001_AnimSpriteTask kind:function(arm,size=0xcc) addr:0x021714d0
 func_ov001_0217159c kind:function(arm,size=0xf8) addr:0x0217159c
-func_ov001_02171694 kind:function(arm,size=0x30) addr:0x02171694
+Ov001_StartIconRowSlideOut kind:function(arm,size=0x30) addr:0x02171694
 Ov001_GetIconRowSelection kind:function(arm,size=0x14) addr:0x021716c4
 Ov001_LatchIconRowSelection kind:function(arm,size=0x20) addr:0x021716d8
 Ov001_SetIconRowSelection kind:function(arm,size=0x14) addr:0x021716f8
@@ -612,8 +612,8 @@ func_ov001_0217d6bc kind:function(arm,size=0x54) addr:0x0217d6bc
 func_ov001_0217d710 kind:function(arm,size=0x34) addr:0x0217d710
 func_ov001_0217d744 kind:function(arm,size=0x10) addr:0x0217d744
 func_ov001_0217d754 kind:function(arm,size=0x280) addr:0x0217d754
-func_ov001_0217d9d4 kind:function(arm,size=0x84) addr:0x0217d9d4
-func_ov001_0217da58 kind:function(arm,size=0x180) addr:0x0217da58
+HandleMapListTouchChoice kind:function(arm,size=0x84) addr:0x0217d9d4
+DispatchMapListChoice kind:function(arm,size=0x180) addr:0x0217da58
 func_ov001_0217dbd8 kind:function(arm,size=0x6c) addr:0x0217dbd8
 func_ov001_0217dc44 kind:function(arm,size=0x38) addr:0x0217dc44
 MapListHandleState kind:function(arm,size=0x25c) addr:0x0217dc7c
@@ -628,7 +628,7 @@ func_ov001_0217e67c kind:function(arm,size=0x104) addr:0x0217e67c
 DrawMapInfoString kind:function(arm,size=0x154) addr:0x0217e780
 DrawMapInfoDottedValue kind:function(arm,size=0x88) addr:0x0217e8d4
 MapListUpdateRowSprites kind:function(arm,size=0x210) addr:0x0217e95c
-func_ov001_0217eb6c kind:function(arm,size=0x274) addr:0x0217eb6c
+GetMapListTouchedEntry kind:function(arm,size=0x274) addr:0x0217eb6c
 func_ov001_0217ede0 kind:function(arm,size=0x44) addr:0x0217ede0
 func_ov001_0217ee24 kind:function(arm,size=0x24) addr:0x0217ee24
 MapListScrollUp kind:function(arm,size=0xc8) addr:0x0217ee48
@@ -636,7 +636,7 @@ MapListScrollDown kind:function(arm,size=0xa4) addr:0x0217ef10
 func_ov001_0217efb4 kind:function(arm,size=0x84) addr:0x0217efb4
 MapList_ApplyRowLayout kind:function(arm,size=0xd8) addr:0x0217f038
 MapList_UpdateStateFromRow kind:function(arm,size=0xb0) addr:0x0217f110
-func_ov001_0217f1c0 kind:function(arm,size=0x30) addr:0x0217f1c0
+SelectMapListChoice kind:function(arm,size=0x30) addr:0x0217f1c0
 func_ov001_0217f1f0 kind:function(arm,size=0x2f0) addr:0x0217f1f0
 func_ov001_0217f4e0 kind:function(arm,size=0x34) addr:0x0217f4e0
 func_ov001_0217f514 kind:function(arm,size=0x54) addr:0x0217f514
@@ -667,7 +667,7 @@ func_ov001_0217fb1c kind:function(arm,size=0x2c) addr:0x0217fb1c
 func_ov001_0217fb48 kind:function(arm,size=0x20) addr:0x0217fb48
 func_ov001_0217fb68 kind:function(arm,size=0x74) addr:0x0217fb68
 Ov001_CloseOptionScreen kind:function(arm,size=0xc8) addr:0x0217fbdc
-func_ov001_0217fca4 kind:function(arm,size=0x84) addr:0x0217fca4
+Ov001_HandleOptionPage1Choice kind:function(arm,size=0x84) addr:0x0217fca4
 func_ov001_0217fd28 kind:function(arm,size=0x2c) addr:0x0217fd28
 func_ov001_0217fd54 kind:function(arm,size=0x20) addr:0x0217fd54
 func_ov001_0217fd74 kind:function(arm,size=0x20) addr:0x0217fd74
@@ -737,7 +737,7 @@ func_ov001_02181094 kind:function(arm,size=0xf4) addr:0x02181094
 func_ov001_02181188 kind:function(arm,size=0x4) addr:0x02181188
 Ov001_HandleRegionMenuChoice kind:function(arm,size=0x134) addr:0x0218118c
 func_ov001_021812c0 kind:function(arm,size=0x3c) addr:0x021812c0
-func_ov001_021812fc kind:function(arm,size=0x84) addr:0x021812fc
+Ov001_FadeOutRegionMenu kind:function(arm,size=0x84) addr:0x021812fc
 Ov001_FinishRegionMenu kind:function(arm,size=0x1a4) addr:0x02181380
 Ov001_UpdateMenuCursor kind:function(arm,size=0x7c) addr:0x02181524
 Ov001_MoveMenuRegion kind:function(arm,size=0x1f4) addr:0x021815a0
@@ -1067,7 +1067,7 @@ func_ov001_0218abb8 kind:function(arm,size=0x4c) addr:0x0218abb8
 CreatePooledTextPanel kind:function(arm,size=0xdc) addr:0x0218ac04
 func_ov001_0218ace0 kind:function(arm,size=0x2c) addr:0x0218ace0
 CreateTextPanel kind:function(arm,size=0x178) addr:0x0218ad0c
-func_ov001_0218ae84 kind:function(arm,size=0x88) addr:0x0218ae84
+Ov001_UploadTextPanelTiles kind:function(arm,size=0x88) addr:0x0218ae84
 func_ov001_0218af0c kind:function(arm,size=0x64) addr:0x0218af0c
 Ov001_FreePageBackground kind:function(arm,size=0x24) addr:0x0218af70
 DrawPanelAnchoredText kind:function(arm,size=0xb0) addr:0x0218af94
@@ -1425,7 +1425,7 @@ sJbBgStep2NcgPath kind:data(any) addr:0x02190818
 sJbBgStep21NcgPath kind:data(any) addr:0x02190830
 sJb3ListNscPath kind:data(any) addr:0x02190848
 data_ov001_0219085c kind:data(any) addr:0x0219085c
-data_ov001_02190874 kind:data(any) addr:0x02190874
+sDottedValueFormat kind:data(any) addr:0x02190874
 sMapListBgCharName kind:data(any) addr:0x02190894
 sMapListBgPaletteName kind:data(any) addr:0x021908ac
 sMapListBgScreenName kind:data(any) addr:0x021908c4
@@ -1584,8 +1584,8 @@ gRoomTeamB kind:bss addr:0x02191ff8
 gRoomRecord5 kind:bss addr:0x02192128
 gRoomRecord6 kind:bss addr:0x02192198
 data_ov001_02192560 kind:bss addr:0x02192560
-data_ov001_02192568 kind:bss addr:0x02192568
-data_ov001_0219256a kind:bss addr:0x0219256a
+gOv001CryptSeed kind:bss addr:0x02192568
+gOv001CryptKeyTail kind:bss addr:0x0219256a
 data_ov001_021925e0 kind:bss addr:0x021925e0
 data_ov001_021925ec kind:bss addr:0x021925ec
 data_ov001_021925f0 kind:bss addr:0x021925f0
@@ -1656,7 +1656,7 @@ gOv001FriendCodeState kind:bss addr:0x02193da4
 gOv001WfcErrorCode kind:bss addr:0x02193da8
 gMapListState kind:bss addr:0x02193dac
 data_ov001_02193db4 kind:bss addr:0x02193db4
-data_ov001_02193db8 kind:bss addr:0x02193db8
+gOv001OptionExitToConnection kind:bss addr:0x02193db8
 data_ov001_02193dbc kind:bss addr:0x02193dbc
 data_ov001_02193dc0 kind:bss addr:0x02193dc0
 data_ov001_02193dc4 kind:bss addr:0x02193dc4

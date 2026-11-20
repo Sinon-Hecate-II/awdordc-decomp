@@ -10,8 +10,8 @@ extern unsigned char gOv001RoomRecords[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
 extern unsigned char gRoomState[];
 extern signed char data_ov001_02191820[];
-extern short data_ov001_02192568;
-extern unsigned char data_ov001_0219256a[118];
+extern short gOv001CryptSeed;
+extern unsigned char gOv001CryptKeyTail[118];
 
 #pragma thumb on
 /* State-1 handler of the multiplayer room protocol: accept only a room-data
@@ -37,13 +37,13 @@ extern unsigned char data_ov001_0219256a[118];
 #pragma thumb on
 
 void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out, int b) {
- int func_ov001_0216c9a0();
+ int Ov001_EncryptRoomData();
  void Ov001MemCopy();
  short func_ov001_0216ceb0(unsigned short);
  extern unsigned char data_ov001_02192560[8];
  if(mode == 1) {
  *out = 1;
- func_ov001_0216c9a0(a,p+4,*n,b,p+2,data_ov001_02192560,8);
+ Ov001_EncryptRoomData(a,p+4,*n,b,p+2,data_ov001_02192560,8);
  *(short *)p = func_ov001_0216ceb0((unsigned short)*n);
  *n += 4;
  return;
@@ -77,36 +77,39 @@ void func_ov001_0216c938(int a,int b,int c,int d) {
 }
 
 #pragma thumb on
-int func_ov001_0216c9a0(int a,int b,int c,signed char *d,void *e,void *f,int g) {
+int Ov001_EncryptRoomData(int a,int b,int c,signed char *d,void *e,void *f,int g) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int);
- void func_ov001_0216caa4(); void func_ov001_0216cb08();
+ void Ov001Rc4Init(); void func_ov001_0216cb08();
  int func_ov001_0216cb74(int,int); short func_ov001_0216cf1c(void); void Ov001MemCopy();
  int handle; int packet[4]; short seed;
  *d=func_ov001_0216cb74(a,c); handle=func_ov001_0216ad54(c); packet[2]=handle;
  if(!handle) return -1;
  seed=func_ov001_0216cf1c(); Ov001MemCopy(e,&seed,2);
- Ov001MemCopy(&data_ov001_02192568,e,2);
- Ov001MemCopy(data_ov001_0219256a,f,g);
- func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
+ Ov001MemCopy(&gOv001CryptSeed,e,2);
+ Ov001MemCopy(gOv001CryptKeyTail,f,g);
+ Ov001Rc4Init(packet,&gOv001CryptSeed,g+2,c);
  func_ov001_0216cb08(packet,b,a,c); func_ov001_0216ad64(packet[2]); return 0;
 }
 
 #pragma thumb on
-int func_ov001_0216ca1c(int a,int b,int c,unsigned int d,void *e,void *f,int g) {
+/* RC4-decrypts a room-protocol payload: builds the cipher state from a 2-byte
+ * seed plus the caller's key tail, decrypts src into dst and verifies the
+ * plaintext checksum.  Returns 0, or -1 after setting a room error. */
+int Ov001_DecryptRoomData(int src,int dst,int length,unsigned int expectedChecksum,void *seed,void *keyTail,int keyTailLength) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int); void Ov001_SetRoomError(int);
- void func_ov001_0216caa4(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void Ov001MemCopy();
- int packet[4]; int h=func_ov001_0216ad54(c); packet[2]=h;
- if(!h) {Ov001_SetRoomError(2); return -1;}
- Ov001MemCopy(&data_ov001_02192568,e,2);
- Ov001MemCopy(data_ov001_0219256a,f,g);
- func_ov001_0216caa4(packet,&data_ov001_02192568,g+2,c);
- func_ov001_0216cb08(packet,b,a,c);
- if((int *)func_ov001_0216cb74(b,c)!=(int *)d) {
- Ov001_SetRoomError(0x12); func_ov001_0216ad64(packet[2]); return -1;
+ void Ov001Rc4Init(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void Ov001MemCopy();
+ int cipher[4]; int state=func_ov001_0216ad54(length); cipher[2]=state;
+ if(!state) {Ov001_SetRoomError(2); return -1;}
+ Ov001MemCopy(&gOv001CryptSeed,seed,2);
+ Ov001MemCopy(gOv001CryptKeyTail,keyTail,keyTailLength);
+ Ov001Rc4Init(cipher,&gOv001CryptSeed,keyTailLength+2,length);
+ func_ov001_0216cb08(cipher,dst,src,length);
+ if((int *)func_ov001_0216cb74(dst,length)!=(int *)expectedChecksum) {
+ Ov001_SetRoomError(0x12); func_ov001_0216ad64(cipher[2]); return -1;
  }
- func_ov001_0216ad64(packet[2]); return 0;
+ func_ov001_0216ad64(cipher[2]); return 0;
 }
-void func_ov001_0216caa4(CipherState *st,unsigned char *key,unsigned int len,unsigned int n) {
+void Ov001Rc4Init(CipherState *st,unsigned char *key,unsigned int len,unsigned int n) {
  unsigned char *s=st->s; unsigned int i,j,k; unsigned char t,u;
  st->j=0; st->i=0; st->n=n;
  for(i=0;i<n;i++) s[i]=i;

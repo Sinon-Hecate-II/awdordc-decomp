@@ -101,7 +101,7 @@ void func_ov003_022003e4(void) {
 
 }
 
-s16 func_ov003_022004a8(M2C_UNK arg0) {
+s16 GetWaypointSlotX(M2C_UNK arg0) {
     s16 func_ov003_022004d0();
     s16 func_ov003_022004f0(M2C_UNK);
     s32 temp_r4;

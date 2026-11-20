@@ -8,8 +8,8 @@ func_ov010_022223e8 kind:function(arm,size=0x6c) addr:0x022223e8
 func_ov010_02222454 kind:function(arm,size=0x60) addr:0x02222454
 func_ov010_022224b4 kind:function(arm,size=0xfc) addr:0x022224b4
 func_ov010_022225b0 kind:function(arm,size=0x14) addr:0x022225b0
-func_ov010_022225c4 kind:function(arm,size=0x138) addr:0x022225c4
-func_ov010_022226fc kind:function(arm,size=0xb4) addr:0x022226fc
+VoiceChat_AttachContext kind:function(arm,size=0x138) addr:0x022225c4
+VoiceChat_RemoveChannel kind:function(arm,size=0xb4) addr:0x022226fc
 func_ov010_022227b0 kind:function(arm,size=0x110) addr:0x022227b0
 Link_PullChannelPacket kind:function(arm,size=0x24c) addr:0x022228c0
 func_ov010_02222b0c kind:function(arm,size=0x11c) addr:0x02222b0c
@@ -49,7 +49,7 @@ VoiceLink_ReleaseContext kind:function(arm,size=0xbc) addr:0x02223ef0
 VoiceLink_BuildControlPacket kind:function(arm,size=0xb0) addr:0x02223fac
 func_ov010_0222405c kind:function(arm,size=0x24) addr:0x0222405c
 VoiceLink_BuildStepPacket kind:function(arm,size=0xb8) addr:0x02224080
-func_ov010_02224138 kind:function(arm,size=0x24) addr:0x02224138
+VoiceLink_TrySendStep kind:function(arm,size=0x24) addr:0x02224138
 VoiceLink_Init kind:function(arm,size=0x114) addr:0x0222415c
 func_ov010_02224270 kind:function(arm,size=0x18) addr:0x02224270
 VoiceLink_CheckTimeout kind:function(arm,size=0xac) addr:0x02224288
@@ -104,8 +104,8 @@ DisableVoiceStream kind:function(arm,size=0x28) addr:0x02225d64
 func_ov010_02225d8c kind:function(arm,size=0x10) addr:0x02225d8c
 func_ov010_02225d9c kind:function(arm,size=0x1c) addr:0x02225d9c
 func_ov010_02225db8 kind:function(arm,size=0x58) addr:0x02225db8
-func_ov010_02225e10 kind:function(arm,size=0x40) addr:0x02225e10
-func_ov010_02225e50 kind:function(arm,size=0x104) addr:0x02225e50
+VoiceChat_DetachContext kind:function(arm,size=0x40) addr:0x02225e10
+VoiceLink_HandleEvent kind:function(arm,size=0x104) addr:0x02225e50
 func_ov010_02225f54 kind:function(arm,size=0xc) addr:0x02225f54
 func_ov010_02225f60 kind:function(arm,size=0xf4) addr:0x02225f60
 TickVoiceStream kind:function(arm,size=0xc) addr:0x02226054
@@ -443,7 +443,7 @@ gLinkConfig kind:bss addr:0x0222edc0
 gStreamVoiceState kind:bss addr:0x0222edd8
 data_ov010_0222edf8 kind:bss addr:0x0222edf8
 gStreamSoundPlayer kind:bss addr:0x0222ee14
-data_ov010_0222ee70 kind:bss addr:0x0222ee70
+gVoiceChatLink kind:bss addr:0x0222ee70
 data_ov010_0222ee78 kind:bss addr:0x0222ee78
 data_ov010_0222ee98 kind:bss addr:0x0222ee98
 gWebRequestError kind:bss addr:0x0222eec8

@@ -49,7 +49,7 @@ void HttpClientTask(Unk02034164 *client) {
     void func_0201d70c(u32);
     u64 U64Divide(u64, u64);
     void func_0201d484(void);
-    void func_0201d4c0(void);
+    void WaitForTlsCloseNotify(void);
     s32 func_02034864(s32);
     extern u8 data_020fb528[];
     extern s32 gLocalIpAddress[];
@@ -163,7 +163,7 @@ void HttpClientTask(Unk02034164 *client) {
     } while (1);
 
     func_0201d484();
-    func_0201d4c0();
+    WaitForTlsCloseNotify();
     func_0201d224();
     ClearCurrentRawConnection();
     M2C_FIELD(client, s32 *, 0x1020) = 8;
@@ -171,7 +171,7 @@ void HttpClientTask(Unk02034164 *client) {
 
 cleanup:
     func_0201d484();
-    func_0201d4c0();
+    WaitForTlsCloseNotify();
     func_0201d224();
     ClearCurrentRawConnection();
 }

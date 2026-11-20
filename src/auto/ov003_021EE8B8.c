@@ -29,7 +29,7 @@ void func_02088e84(void *,s16,s32,s16,s32);
 void func_02087d84(void *,int,s16,s16,u16,u16);
 u32 GetUnitSpriteWidth(void *);u32 GetUnitSpriteHeight(void *);
 int IsLinkSessionActive(void);
-s16 func_ov003_022004a8(u8);
+s16 GetWaypointSlotX(u8);
 int GetWaypointOptionCoId(u8);
 int func_ov003_021e6cc4(s16,int,int,int);
 int func_ov003_021e6e5c(void);
@@ -53,7 +53,7 @@ void func_ov003_021ee8b8(void *arg0) {
     s32 InRange(u8, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6cfc();
     s32 func_ov003_021e6d28();
-    M2C_UNK func_ov003_021e74ac(void *, M2C_UNK);
+    M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
 
     s32 sp0[9];
     s32 temp_r3_2;
@@ -217,7 +217,7 @@ foundPlayer:
                 M2C_FIELD(temp_r4_7, s16 *, 0xC) = 0xC;
                 M2C_FIELD(temp_r4_7, u16 *, 2) = (u16) M2C_FIELD(temp_r4_7, u16 *, 4);
             }
-            func_ov003_021e74ac(M2C_FIELD(arg0, void **, 0x6C), 0);
+            SetWaypointListLayout(M2C_FIELD(arg0, void **, 0x6C), 0);
             temp_r6_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0);
             temp_r4_8 = GetUnitSpriteHeight(temp_r6_2);
             temp_r3_2 = GetUnitSpriteWidth(temp_r6_2);
@@ -231,7 +231,7 @@ foundPlayer:
             spriteFlags |= temp_r3_2;
             spriteFlags &= 0xfffc01ff;
             M2C_FIELD(temp_r1_2,u32 *,0x40) = spriteFlags | ((u32)(temp_r4_8 << 23)>>14);
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = func_ov003_022004a8(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s16 *, 0x34) = GetWaypointSlotX(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 temp_r0_3 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), void **, 0xE0), u16 *, 0x2E);
                 if (InRange((u8) temp_r0_3, 0, 3) != 0) {
@@ -390,7 +390,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
     sp30 = 0x3FF;
     sp24 = 0x3FF;
     do {
-        temp_r9 = spC + func_ov003_022004a8(var_r8);
+        temp_r9 = spC + GetWaypointSlotX(var_r8);
         temp_r2_2 = (GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
         temp_r0_2 = temp_r9 - 4;
         sp10 = temp_r0_2;

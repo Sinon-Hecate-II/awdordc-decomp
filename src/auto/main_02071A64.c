@@ -169,7 +169,7 @@ u64 U64Divide(u64 a,u64 b){return b?a/b:a;}
 
 u64 func_020720d0(u64 a,u64 b){return a*b;}
 
-u64 func_020722fc(u32 n, u32 d) { if (!d) return ((u64)d<<32)|n; return ((u64)(n%d)<<32)|(n/d); }
+u64 U32DivideRem(u32 n, u32 d) { if (!d) return ((u64)d<<32)|n; return ((u64)(n%d)<<32)|(n/d); }
 
 M2C_UNK func_020724f8(M2C_UNK arg0, M2C_UNK arg1) { (void)arg0; (void)arg1; return 0; }
 

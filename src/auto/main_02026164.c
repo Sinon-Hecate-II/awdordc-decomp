@@ -452,7 +452,7 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     s32 t;
     s32 counter;
     u16 *r6;
-    u16 *sp20;
+    s32 sp20;
     u16 *r7;
     u16 *r8;
     u16 *sp24;
@@ -470,8 +470,8 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     r7 = sp24 + n;
     r8 = r7 + n;
     r5=r8+n;
-    sp20 = r5;
-    r5 = sp20 + n;
+    sp20 = (s32)r5;
+    r5 = (u16 *)sp20 + n;
 
     t = BigNumLen((u16 *)arg4, n);
     buf[t] = 1;
@@ -487,17 +487,17 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     counter=0;
     if ((t << 4) != 0) {
         do {
-            BigNumMontMul((u16 *)arg0, sp20, 1, n, t, (u16 *)arg4, r6, r7, r8);
+            BigNumMontMul((u16 *)arg0, (u16 *)sp20, 1, n, t, (u16 *)arg4, r6, r7, r8);
             {
                 u16 word = ((u16 *)arg2)[t - (counter >> 4) - 1];
                 if ((0x8000u >> (counter & 0x0F)) & word) {
-                    BigNumMontMul((u16 *)arg0, sp20, (s32)sp24, n, t, (u16 *)arg4, r6, r7, r8);
+                    BigNumMontMul((u16 *)arg0, (u16 *)sp20, (s32)sp24, n, t, (u16 *)arg4, r6, r7, r8);
                 }
             }
         counter++;
         } while ((u32)counter < (u32)(t << 4));
     }
-    BigNumMontMul((u16 *)arg0, sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
+    BigNumMontMul((u16 *)arg0, (u16 *)sp20, 0, n, t, (u16 *)arg4, r6, r7, r8);
 
     gFree(buf);
 }

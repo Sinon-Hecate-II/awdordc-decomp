@@ -101,9 +101,9 @@ void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     sp18[1] = r6[1] - arg2[1];
     sp18[2] = r6[2] - arg2[2];
     func_020021c0(sp18);
-    func_0200213c(r5, sp18, sp0c);
+    Vec3CrossProduct(r5, sp18, sp0c);
     func_020021c0(sp0c);
-    func_0200213c(r5, sp18, sp00);
+    Vec3CrossProduct(r5, sp18, sp00);
     r4[0] = sp0c[0];
     r4[1] = sp0c[1];
     r4[2] = sp18[0];
@@ -113,9 +113,9 @@ void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
     r4[6] = sp00[1];
     r4[7] = sp00[2];
     r4[8] = sp18[2];
-    r4[9] = -func_02002100(r6, sp00);
-    r4[10] = -func_02002100(r6, sp18);
-    r4[11] = -func_02002100(r6, sp18);
+    r4[9] = -Vec3DotProduct(r6, sp00);
+    r4[10] = -Vec3DotProduct(r6, sp18);
+    r4[11] = -Vec3DotProduct(r6, sp18);
 }
 
 void func_02001524(void *arg0,UnkVec3 *arg1) {

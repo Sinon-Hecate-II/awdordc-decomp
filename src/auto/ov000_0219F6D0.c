@@ -23,7 +23,7 @@ s32 func_ov000_0219f6fc(void) {
 s32 ProcessAiCommandDelay(void) {
     void CancelMapCursorAnimation(void);
     s32 IsPlayerHuman(u16);
-    void MoveMapCursorToTarget(s32);
+    void MapCursor_StepTowardTarget(s32);
     s32 IsFastAnimation(void);
     extern u16 gMapConfig;
     extern void **gCurrentMap;
@@ -74,7 +74,7 @@ s32 ProcessAiCommandDelay(void) {
         if (visible != 0) {
             M2C_FIELD(base, u16 *, MAP_CURSOR_TARGET_X) = col;
             M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURSOR_TARGET_Y) = unit[2];
-            MoveMapCursorToTarget(2);
+            MapCursor_StepTowardTarget(2);
         }
     }
     if (IsFastAnimation() != 0) limit = 0x14;
@@ -164,7 +164,7 @@ extern u8 data_ov000_021df7d6[];
 extern void *data_ov000_021e146c[];
 extern void **gCurrentMap;
 extern u16 data_ov000_021df58c[],data_ov000_021df584[];
-extern s32 data_0215be0c;
+extern s32 gMapCursorOptionValue;
 void *func_ov000_021696b0(u16,u16,s32,u32,void *);
 void func_020cad00(u32,s32,s32);
 void func_020bb608(s32);
@@ -181,11 +181,11 @@ if(unit) player=((unit-base)/14)>>6;
 data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,((UnitId6 *)(base+index))->id,data_ov000_021df58c);
 }else if(state!=0){
 u8 *map;u8 *unit;u8 *entry;s32 index;u8 *base;s32 player=0;
-data_0215be0c=state-1;
+gMapCursorOptionValue=state-1;
 map=*gCurrentMap;unit=M2C_FIELD(map,u8 **,0x52d0);
 entry=unit+n;index=(s16)entry[12]*14;base=map+0x59a4;
 if(unit) player=((unit-base)/14)>>6;
-data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+data_0215be0c);
+data_ov000_021e146c[n]=func_ov000_021696b0(M2C_FIELD(map,u16 *,0x52dc),M2C_FIELD(map,u16 *,0x52de),player+1,((UnitId6 *)(base+index))->id,data_ov000_021df584+gMapCursorOptionValue);
 func_020cad00(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc),M2C_FIELD(*gCurrentMap,s16 *,0x52de));
 func_020bb608(n);
 }}

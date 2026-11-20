@@ -4,15 +4,15 @@
 #include "gx.h"
 
 void func_ov001_0217fb68(void) {
-    extern u8 data_ov001_02193db8;
+    extern u8 gOv001OptionExitToConnection;
     extern M2C_UNK Ov001_CloseOptionScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    if (data_ov001_02193db8 == 0) {
-        func_ov001_02171694();
+    if (gOv001OptionExitToConnection == 0) {
+        Ov001_StartIconRowSlideOut();
     }
-    if (data_ov001_02193db8 == 0) {
+    if (gOv001OptionExitToConnection == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
@@ -22,7 +22,7 @@ void func_ov001_0217fb68(void) {
 /* Step callback that runs once the option menu's fade-out and the icon-row
  * animation have finished: it tears down the option screen and opens either the
  * friend-list screen (mode 2) or the connection screen (mode 0), according to
- * data_ov001_02193db8. */
+ * gOv001OptionExitToConnection. */
 void Ov001_CloseOptionScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
@@ -31,20 +31,20 @@ void Ov001_CloseOptionScreen(void) {
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern u8 data_ov001_02193db8;
+    extern u8 gOv001OptionExitToConnection;
     extern M2C_UNK func_ov001_0217fd94;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if ((data_ov001_02193db8 == 0) && (Ov001_IsFadeActive(1) != 0)) return;
+    if ((gOv001OptionExitToConnection == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193db8 == 0) {
+    if (gOv001OptionExitToConnection == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (data_ov001_02193db8 == 0) {
+    if (gOv001OptionExitToConnection == 0) {
         Ov001_FreeOptionPage();
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
@@ -54,22 +54,25 @@ void Ov001_CloseOptionScreen(void) {
     Ov001_SetStepCallback(&func_ov001_0217fd94);
 }
 
-void func_ov001_0217fca4(void) {
+/* Handle a choice on the ov001 option menu's first page: the second menu item
+ * records that the menu exits to the connection screen, while leaving records
+ * the friend list and shows the cancel message. */
+void Ov001_HandleOptionPage1Choice(void) {
     s32 Ov001_GetOptionChoice(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Ov001_LockIconRow(void);
-    extern u8 data_ov001_02193db8;
+    extern u8 gOv001OptionExitToConnection;
     extern M2C_UNK func_ov001_0217fb48;
     void func_ov001_0217fd28(void);
     switch (Ov001_GetOptionChoice()) {
     case 2:
-        data_ov001_02193db8 = 1;
+        gOv001OptionExitToConnection = 1;
         Ov001_SetStepCallback(&func_ov001_0217fb48);
         return;
     case 4:
-        data_ov001_02193db8 = 0;
+        gOv001OptionExitToConnection = 0;
         Ov001_StopSound();
         Ov001_PlaySound(9);
         Ov001_ShowMessage(0xD, 1, 1, -1, 0);
@@ -215,13 +218,13 @@ void func_ov001_0217ff60(void) {
 }
 
 void func_ov001_0217ff80(void) {
-    M2C_UNK func_ov001_02171694();
+    M2C_UNK Ov001_StartIconRowSlideOut();
     extern u8 data_ov001_02193dbc;
     extern M2C_UNK Ov001_CloseMatchSetupScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_02171694();
+    Ov001_StartIconRowSlideOut();
     if (data_ov001_02193dbc == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
@@ -525,7 +528,7 @@ void func_ov001_02180654(void) {
         return;
     }
     if (data_ov001_02193dc4 == 0) {
-        func_ov001_02171694();
+        Ov001_StartIconRowSlideOut();
     }
     if (data_ov001_02193dc4 == 0) {
         Ov001_StartFade(3, 1, 1, 8);

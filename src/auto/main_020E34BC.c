@@ -114,7 +114,7 @@ saved=temp;
 result=func_0202a468(data_02168fe4,arg0,-arg1);
 {
     volatile u16 *ime = (volatile u16 *)0x04000208;
-    *ime = (temp = saved, (void)*ime, (u16)temp);
+    *(volatile u16 *)((temp=saved, (void)*ime), ime) = temp;
 }
 return result;
 }

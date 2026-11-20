@@ -99,7 +99,7 @@ s16 buf[2];
 u8 *selected,*unit;
 u16 row;
 u8 id;
-s32 func_ov000_02177f24(s32,s32,s16 *);
+s32 FindBestAdjacentTile(s32,s32,s16 *);
 void MarkAdjacentCells(s8);
 extern u8 gUnitKindStats[];
 
@@ -122,7 +122,7 @@ case 13:
 selected=M2C_FIELD(((u8*)*gCurrentMap),u8**,0x52d0);
 if(!gUnitKindStats[((UnitKind18e584*)selected)->kind*112+0x6a])goto next;
 if(!(M2C_FIELD(unit,u16*,4)&1))goto next;
-if(!func_ov000_02177f24(x,y,buf))goto next;
+if(!FindBestAdjacentTile(x,y,buf))goto next;
 if(M2C_FIELD(((u8*)*gCurrentMap)+buf[0]+M2C_FIELD(((u8*)*gCurrentMap)+buf[1]*2,u16*,0x3758),u8*,0x2d48)>=((u8*)gAiUnitTypeTuning)[2])goto next;
 SetMapCursor(buf[0],buf[1],2,0,0);goto next;
 case 21:break;case 23:goto case23;default:goto next;
@@ -222,11 +222,11 @@ void SelectAiMoveActionTarget(void) {
 
 /* AI: builds the cursor unit's move range, scans the map for the reachable
  * enemy it should attack (validated by IsSupplyTargetAt, target flag set, lowest
- * health), resolves a firing tile with func_ov000_02177f24, then clears the
+ * health), resolves a firing tile with FindBestAdjacentTile, then clears the
  * target flag and moves the cursor onto that tile (mode 6). */
 void func_ov000_0218ef40(void) {
     s32 IsSupplyTargetAt(s32, s32);
-    s32 func_ov000_02177f24(s32, s32, s16 *);
+    s32 FindBestAdjacentTile(s32, s32, s16 *);
     void SetMapCursor(u32, u32, u32, u32, u32);
     void BuildUnitMoveRange(void *);
     void MarkAdjacentCells(s8);
@@ -274,7 +274,7 @@ inner_top:
     if ((((u32)flags << 18) >> 30) != 1) goto next_cell;
     health = *((u8 *)unit + 10);
     if (bestHealth < (s32)((u32)(health<<25)>>25)) goto next_cell;
-    ok = func_ov000_02177f24(x, y, pos);
+    ok = FindBestAdjacentTile(x, y, pos);
     if (ok == 0) goto next_cell;
     cursorX = pos[0];
     cursorY = pos[1];
@@ -299,7 +299,7 @@ outer_done:
 
 void func_ov000_0218f0ec(void) {
 extern void **gCurrentMap; extern void *gAiCommandState;
-s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 IsPropertyOwnedByTeam(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 WillCaptureCompleteThisTurn(void *); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 func_ov000_02177f24(s32,s32,s16 *); void func_ov000_02199f38(void); void ClearUnitMoveTarget(void); void SetMapCursor(u32,u32,u32,u32,u32);
+s32 IsFootUnitKind(u32); void BuildUnitMoveRange(void *); void MarkAdjacentCells(s8); s32 IsPropertyOwnedByTeam(s32,s32,s32); s32 func_020d27a4(s32,s32); s32 WillCaptureCompleteThisTurn(void *); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16 *); void func_ov000_02199f38(void); void ClearUnitMoveTarget(void); void SetMapCursor(u32,u32,u32,u32,u32);
 u8 *unit; s32 x; s16 out[2]; s32 y;
 if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,0)<<26)>>26))return;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
@@ -317,7 +317,7 @@ if(!IsFootUnitKind((u32)(unit[0]<<26)>>26))continue;
 if(func_020d27a4(M2C_FIELD(*gCurrentMap,u8 *,0x52d4),unit?((s32)unit-(s32)((u8 *)*gCurrentMap+0x59a4))/14:0)==1)continue;
 if(!WillCaptureCompleteThisTurn(unit))continue;
 if(!IsCellVisibleToCurrentTeam((s16)x,(s16)y))continue;
-if(!func_ov000_02177f24(x,y,out))continue;
+if(!FindBestAdjacentTile(x,y,out))continue;
 if((u32)(M2C_FIELD(gAiCommandState,u8 *,7)<<28)>>31){func_ov000_02199f38();return;}
 ClearUnitMoveTarget();
 {u8 *base=*gCurrentMap; SetMapCursor(out[0],out[1],4,base[x+M2C_FIELD(base+y*2,u16 *,0x3758)],0);}

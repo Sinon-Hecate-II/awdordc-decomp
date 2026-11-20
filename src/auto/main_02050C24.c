@@ -200,8 +200,12 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     return 0;
 }
 
-void func_020511dc(void *a, void *b) {
+#pragma push
+#pragma opt_common_subs off
+#pragma opt_propagation off
+s32 func_020511dc(void *a, void *b) {
     M2C_UNK func_02050bbc(M2C_UNK, M2C_UNK);
+    u32 StringLength(void *);
     M2C_UNK Md5Hex(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK StringFormat(M2C_UNK, M2C_UNK, ...);
     M2C_UNK func_02055c68(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
@@ -211,29 +215,28 @@ void func_020511dc(void *a, void *b) {
     void **pa = (void **)a;
     void *session = *pa;
     char *r5 = (char *)b;
-    char *r7;
-    int nameByte;
-    int otherByte;
+    register char *r7;
+    u32 length;
+    void *sp10;
+    char digest[0x21];
+    char response[0x200];
     char buf1[0x52];
-    char digest[64];
-    void *sp10 = 0;
-    int slen;
+    char *identity;
     func_02050bbc((M2C_UNK)(r5 + 0x80), 0x20);
-    nameByte = (signed char) r5[0x100 + 0xc2];
-    if (nameByte != 0) {
-        r7 = r5 + 0xc2;
+    r7 = r5[0x1c2] ? r5 + 0x1c2 : (char *)session + 0x177;
+    length = StringLength(r7);
+    Md5Hex((M2C_UNK)r7, length, (M2C_UNK)(r5 + 0xa1));
+    if (r5[0xc2]) {
+        identity = r5 + 0xc2;
+    } else if (((char *)session)[0x12f]) {
+        identity = (char *)session + 0x2f + 0x100;
     } else {
-        otherByte = (signed char) ((char *)session)[0x100 + 0x2f];
-        if (otherByte != 0) {
-            r7 = (char *)session + 0x2f + 0x100;
-        } else {
-            StringFormat((M2C_UNK)buf1, (M2C_UNK)&data_020fe434, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144));
-            r7 = buf1;
-        }
+        StringFormat((M2C_UNK)buf1, (M2C_UNK)&data_020fe434, (char *)session + 0x110, (char *)session + 0x144);
+        identity = buf1;
     }
-    r7 = r7 + 0x100;
-    slen = 0; while (r7[slen] != 0) slen++;
-    Md5Hex((M2C_UNK)r7, slen, (M2C_UNK)digest);
+    StringFormat((M2C_UNK)response, (M2C_UNK)&data_020fe43c, r5 + 0xa1, &data_020fe44c, identity, r5 + 0x80, r5, r5 + 0xa1);
+    length = StringLength(response);
+    Md5Hex((M2C_UNK)response, length, (M2C_UNK)digest);
     if (*((M2C_UNK *)((char *)session + 0x100)) != 0) {
         func_02055c68(pa, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144), (M2C_UNK *)&sp10);
         if (sp10 != 0) {
@@ -272,9 +275,9 @@ void func_020511dc(void *a, void *b) {
         gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4e0);
         gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &data_020fe4ec);
         {
-            unsigned int low = (unsigned int)M2C_FIELD(session, M2C_UNK *, 0x208) & 0xffffu;
-            unsigned int out = ((low >> 8) & 0xff) | ((low << 8) & 0xff00);
-            gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)((signed short)(out << 16 >> 16)));
+            u16 low = (u16)M2C_FIELD(session, M2C_UNK *, 0x208);
+            u16 out = ((low >> 8) & 0xff) | ((low << 8) & 0xff00);
+            gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)((s16)out));
         }
     }
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyProductId);
@@ -285,8 +288,9 @@ void func_020511dc(void *a, void *b) {
     gpiAppendIntField(pa, (void *)((char *)session + 0x1f4), (M2C_UNK)M2C_FIELD(session, M2C_UNK *, 0x470));
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyId1);
     gpiAppendStringField(pa, (void *)((char *)session + 0x1f4), &gGsKeyFinal);
+    return 0;
 }
-
+#pragma opt_common_subs reset
 #pragma push
 #pragma opt_propagation off
 /* Builds the GameSpy "newuser" request: encrypts the password and (if given)

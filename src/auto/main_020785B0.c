@@ -123,7 +123,7 @@ void Map_SubmitTerrainQuads(s32,s32,s32,s32,s32,s32,s32,s32);
 #pragma scheduling off
 void func_02078828(void) {
 extern s32 *gCurrentMap;
-extern u16 data_02142ebc[],data_02143dbc[];
+extern u16 gMapCellCornerA[],gMapCellCornerB[];
 void ScreenToMapFixedPoint(s32,s32,Vec3*);
 s32 Divide(s32,s32);
 s32 rawx,rawy,rawx1,rawy1;
@@ -149,7 +149,7 @@ y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
 func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);BuildMapCellShades(x0,y0,x1,y1);
-func_02078528();Map_UpdateOwnerColorBands();func_0207863c();func_0207f9f4();
+UpdateMapWaveHeight();Map_UpdateOwnerColorBands();func_0207863c();func_0207f9f4();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
@@ -157,7 +157,7 @@ if(x<0 || y<0)continue;
 base=*gCurrentMap;
 { u16 *dims=(u16*)(base+0x5120);if(x>=dims[18] || y>=dims[19])continue; }
 index=x+M2C_FIELD(base+y*2,u16*,0x3758);
-a=((u16*)((u8*)data_02142ebc+x*80))[y];b=((u16*)((u8*)data_02143dbc+x*80))[y];
+a=((u16*)((u8*)gMapCellCornerA+x*80))[y];b=((u16*)((u8*)gMapCellCornerB+x*80))[y];
 tile=M2C_FIELD(base+index,u8*,0x1420);
 visible=((u8*)(base+0x5120+0xe1))[index>>3]&(1<<(index&7));
 visible=(u8)visible;

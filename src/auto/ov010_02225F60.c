@@ -19,8 +19,8 @@ while(first!=last) { ov010CallMember(first,&copy); first+=12; }
 
 /* Initializes/starts the overlay 010 subsystem: allocates its working buffers, sets callbacks and enables it. */
 s32 func_ov010_02225f60(void) {
-    extern M2C_UNK data_ov010_0222ee70, data_ov010_0222ee98, data_ov010_0222ee78;
-    void func_ov010_02225e50();
+    extern M2C_UNK gVoiceChatLink, data_ov010_0222ee98, data_ov010_0222ee78;
+    void VoiceLink_HandleEvent();
     void func_ov010_02225f54();
     s32 GetOnlineTransportPlayerId();
     s32 func_ov010_02225cd8(s32);
@@ -33,18 +33,18 @@ s32 func_ov010_02225f60(void) {
     void func_ov010_02222c28();
     s32 AllocAlignedBuffer(s32, s32);
 
-    if (M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) != 0) {
+    if (M2C_FIELD(&gVoiceChatLink, s32 *, 0) != 0) {
         return 1;
     }
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) = AllocAlignedBuffer(0x6b40, 32);
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 16) = 1;
-    M2C_FIELD(&data_ov010_0222ee70, void **, 8) = &data_ov010_0222ee98;
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 12) = 2;
-    M2C_FIELD(&data_ov010_0222ee70, u8 *, 20) = (u8)GetOnlineTransportPlayerId();
-    M2C_FIELD(&data_ov010_0222ee70, void **, 32) = func_ov010_02225e50;
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 36) = 0;
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 24) = M2C_FIELD(&data_ov010_0222ee70, s32 *, 0);
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 28) = 0x6b40;
+    M2C_FIELD(&gVoiceChatLink, s32 *, 0) = AllocAlignedBuffer(0x6b40, 32);
+    M2C_FIELD(&gVoiceChatLink, s32 *, 16) = 1;
+    M2C_FIELD(&gVoiceChatLink, void **, 8) = &data_ov010_0222ee98;
+    M2C_FIELD(&gVoiceChatLink, s32 *, 12) = 2;
+    M2C_FIELD(&gVoiceChatLink, u8 *, 20) = (u8)GetOnlineTransportPlayerId();
+    M2C_FIELD(&gVoiceChatLink, void **, 32) = VoiceLink_HandleEvent;
+    M2C_FIELD(&gVoiceChatLink, s32 *, 36) = 0;
+    M2C_FIELD(&gVoiceChatLink, s32 *, 24) = M2C_FIELD(&gVoiceChatLink, s32 *, 0);
+    M2C_FIELD(&gVoiceChatLink, s32 *, 28) = 0x6b40;
     if (!func_ov010_02225cd8(0x6b40)) {
         return 0;
     }
@@ -53,7 +53,7 @@ s32 func_ov010_02225f60(void) {
     }
     func_ov010_02228b50(func_ov010_02225f54);
     func_ov010_02222c9c(1);
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = 0;
+    M2C_FIELD(&gVoiceChatLink, s32 *, 4) = 0;
     func_ov010_02225d00();
     DisableVoiceStream();
     if (func_ov010_02229bf4()) {
@@ -72,16 +72,16 @@ s32 func_ov010_02226060(s32 arg0) {
     s32 func_ov010_02223ec8(s32);
     void VoiceLink_ReleaseContext(s32);
     s32 func_ov010_0222405c(s32, s32);
-    extern M2C_UNK data_ov010_0222ee70;
+    extern M2C_UNK gVoiceChatLink;
     s32 temp_r4;
-    if (M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) == 0) {
+    if (M2C_FIELD(&gVoiceChatLink, s32 *, 4) == 0) {
         temp_r4 = func_ov010_02223ec8(arg0);
         if (temp_r4 == 0) return 0;
         if (func_ov010_0222405c(temp_r4, 0) != 0) {
             VoiceLink_ReleaseContext(temp_r4);
             return 0;
         }
-        M2C_FIELD(&data_ov010_0222ee70, s32 *, 4) = temp_r4;
+        M2C_FIELD(&gVoiceChatLink, s32 *, 4) = temp_r4;
     }
     return 1;
 }
@@ -92,13 +92,13 @@ void func_ov010_022260b8(void) {
     void func_ov010_02228b50(s32);
     void func_ov010_02225778();
     void FreeBuffer();
-    extern M2C_UNK data_ov010_0222ee70;
+    extern M2C_UNK gVoiceChatLink;
     func_ov010_02225d38();
     func_ov010_02225db8();
     func_ov010_02228b50(0);
     func_ov010_02225778();
-    FreeBuffer(M2C_FIELD(&data_ov010_0222ee70, s32 *, 0), M2C_FIELD(&data_ov010_0222ee70, s32 *, 0x1C));
-    M2C_FIELD(&data_ov010_0222ee70, s32 *, 0) = 0;
+    FreeBuffer(M2C_FIELD(&gVoiceChatLink, s32 *, 0), M2C_FIELD(&gVoiceChatLink, s32 *, 0x1C));
+    M2C_FIELD(&gVoiceChatLink, s32 *, 0) = 0;
 }
 
 s32 AllocAlignedBuffer() {

@@ -10,8 +10,8 @@ extern unsigned char gOv001RoomRecords[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
 extern unsigned char gRoomState[];
 extern signed char data_ov001_02191820[];
-extern short data_ov001_02192568;
-extern unsigned char data_ov001_0219256a[118];
+extern short gOv001CryptSeed;
+extern unsigned char gOv001CryptKeyTail[118];
 
 #pragma thumb on
 /* State-1 handler of the multiplayer room protocol: accept only a room-data

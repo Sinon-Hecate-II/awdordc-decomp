@@ -61,12 +61,12 @@ s32 func_02093e2c(void *arg0) {
 }
 
 s32 func_02093e94(void *arg0) {
-    s32 func_020a4678(u8, u8, M2C_UNK);
+    s32 FindMapOrderOfTypeAt(u8, u8, M2C_UNK);
     M2C_UNK func_020a4a68();
     s16 temp_r0;
 
     temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
-    if (func_020a4678((u8) temp_r0, (u8) (temp_r0 >> 8), 3) != 0) {
+    if (FindMapOrderOfTypeAt((u8) temp_r0, (u8) (temp_r0 >> 8), 3) != 0) {
         func_020a4a68();
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -94,7 +94,7 @@ s32 func_02093f50(void *arg0) {
     s16 temp_r0;
 
     temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
-    if (func_020a4678((u8) temp_r0, (u8) (temp_r0 >> 8), 9) != 0) {
+    if (FindMapOrderOfTypeAt((u8) temp_r0, (u8) (temp_r0 >> 8), 9) != 0) {
         func_020a4a68();
     }
     func_0208fa28();

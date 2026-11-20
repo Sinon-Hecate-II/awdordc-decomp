@@ -102,7 +102,7 @@ void ResetBattleMap(void) {
     void ResetMapUnits(void);
     void func_020a45cc(void);
     void MI_CpuFill32(s32, void *, s32);
-    void func_0207688c(void);
+    void ClearMapRenderBuffers(void);
     extern u16 gLinkAiCommandStage;
     s32 i;
 
@@ -142,7 +142,7 @@ void ResetBattleMap(void) {
 
     MI_CpuFill32(0, *gCurrentMap, 0x5120);
 
-    func_0207688c();
+    ClearMapRenderBuffers();
 }
 
 void func_020ced08(void) {
@@ -425,18 +425,20 @@ void StepMapCursorPosition(s16 targetX, s16 targetY, s32 unusedArg2, s16 *outX, 
     *outY = newY;
 }
 
-void MoveMapCursorToTarget(s32 arg0) {
+void MapCursor_StepTowardTarget(s32 cursorType) {
     void StepMapCursorPosition(s16, s16, s32, s16 *, s16 *);
     extern void **gCurrentMap;
-    s16 sp6;
-    s16 sp4;
-    void (*cb)(s16, s16, s32);
-    void *p = (void *)*gCurrentMap;
-    s16 *pp = (s16 *)((u8 *)p + 0x52C2);
-    StepMapCursorPosition((s16)(pp[0] * 16), (s16)(pp[1] * 16), arg0, &sp6, &sp4);
-    cb = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16, s16, s32), 8);
-    if (cb != NULL) {
-        cb(sp6, sp4, arg0);
+    s16 cursorX;
+    s16 cursorY;
+    void (*cursorCallback)(s16, s16, s32);
+    void *battleMap = (void *)*gCurrentMap;
+    s16 *targetTile = (s16 *)((u8 *)battleMap + MAP_CURSOR_TARGET_X);
+
+    /* Smoothly move the map cursor toward its target tile and notify the map view. */
+    StepMapCursorPosition((s16)(targetTile[0] * 16), (s16)(targetTile[1] * 16), cursorType, &cursorX, &cursorY);
+    cursorCallback = M2C_FIELD((void *)gCurrentMap[1], void (**)(s16, s16, s32), MAPVIEW_CURSOR_CB);
+    if (cursorCallback != NULL) {
+        cursorCallback(cursorX, cursorY, cursorType);
     }
 }
 
