@@ -16,7 +16,7 @@ u8 func_0208b5a8(void);
 /* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
 M2C_UNK func_0208abc4(M2C_UNK arg0) {
     void func_0208ad48(void *);
-    void func_0208af20(void *);
+    void StartWindowClose(void *);
     u8 func_0208ae88(Unk0208ABC4 *, s32);
     M2C_UNK PlaySoundEffect(s32);
     void EnableMapConfirm(void);
@@ -33,13 +33,13 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     case 1:
         if ((*(u16 *)gKeyState) & 3) {
             PlaySoundEffect(0x1000d);
-            func_0208af20(arg0);
+            StartWindowClose(arg0);
         }
         return;
     case 2:
         if ((*(u16 *)gKeyState) & 3) {
             PlaySoundEffect(0x1000d);
-            func_0208af20(arg0);
+            StartWindowClose(arg0);
         }
         return;
     case 3:
@@ -58,13 +58,13 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
                 DisableMapConfirm();
                 PlaySoundEffect(0x1000f);
             }
-            func_0208af20(arg0);
+            StartWindowClose(arg0);
             return;
         }
         if ((*(u16 *)gKeyState) & 2) {
             DisableMapConfirm();
             PlaySoundEffect(0x1000f);
-            func_0208af20(arg0);
+            StartWindowClose(arg0);
         }
         return;
     }
@@ -132,28 +132,31 @@ void func_0208aebc(void *arg0) {
     func_0208a6b0(arg0);
 }
 
-void func_0208af20(void *arg0) {
+/* Start closing a window sprite: a sprite with no animation state is deleted
+ * outright; otherwise it enters its closing mode, hides its two child sprites
+ * and starts an eight-frame close, which func_0208a714 then plays out. */
+void StartWindowClose(void *window) {
     M2C_UNK func_0208a714(void *);
-    s32 temp_r1;
-    u32 temp_r2;
+    s32 flags;
+    u32 state;
 
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0x58);
-    temp_r2 = (u32) (temp_r1 << 0x1A) >> 0x1D;
-    if (temp_r2 == 0) {
-        DeleteSpriteObject(arg0, temp_r1, temp_r2);
+    flags = M2C_FIELD(window, s32 *, 0x58);
+    state = (u32) (flags << 0x1A) >> 0x1D;
+    if (state == 0) {
+        DeleteSpriteObject(window, flags, state);
     } else {
-        M2C_FIELD(arg0, s32 *, 0x58) = (s32) ((temp_r1 & ~0x38) | 0x18);
-        M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0x30) | 0x20);
-        M2C_FIELD(arg0, s8 *, 0x4B) = 0;
-        M2C_FIELD(arg0, s8 *, 0x4A) = 8;
-        if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
+        M2C_FIELD(window, s32 *, 0x58) = (s32) ((flags & ~0x38) | 0x18);
+        M2C_FIELD(window, u8 *, 0x48) = (u8) ((M2C_FIELD(window, u8 *, 0x48) & ~0x30) | 0x20);
+        M2C_FIELD(window, s8 *, 0x4B) = 0;
+        M2C_FIELD(window, s8 *, 0x4A) = 8;
+        if (M2C_FIELD(window, s32 *, 0x5C) != 0) {
             Hide3DSprite();
         }
-        if (M2C_FIELD(arg0, s32 *, 0x60) != 0) {
+        if (M2C_FIELD(window, s32 *, 0x60) != 0) {
             Hide3DSprite();
         }
     }
-    func_0208a714(arg0);
+    func_0208a714(window);
 }
 
 void func_0208af98(void *p) {

@@ -181,7 +181,7 @@ void func_020cbfe4(void) {
 void func_020cbffc(void) {
  extern void **gCurrentMap;
  SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),1);
- func_020ca484();
+ ScheduleBattleEndCheck();
 }
 
 void func_020cc028(void) {

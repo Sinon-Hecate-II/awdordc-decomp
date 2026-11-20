@@ -407,23 +407,28 @@ case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);
 }
 Ov001_FreeAlloc(&data_ov001_02193dd0);
 }
+/* Redraw the selection frame around the ov001 menu's chosen region: regions 0..2
+ * take their frame edges (left, right, top, bottom) from the menu frame tables,
+ * while the wide bottom bar (region 3) uses a two-sprite row frame. */
 void Ov001_UpdateMenuCursor(void) {
     void Ov001_LayoutChoiceFrameRow(s32, u16, u16, u16);
     void Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
-    extern M2C_UNK gOv001MenuRegion;
-    extern u16 data_ov001_0218fa3a[];
-    extern u16 data_ov001_0218fa3c[];
-    extern u16 data_ov001_0218fa3e[];
-    extern u16 data_ov001_0218fa40[];
-    s32 temp_ip;
-    s32 temp_r3;
-    if ((u32)M2C_FIELD(&gOv001MenuRegion, u8 *, 0) < 4U) {
-        temp_ip = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) * 4;
-        Ov001_LayoutChoiceFrame(data_ov001_0218fa3a[temp_ip], data_ov001_0218fa3e[temp_ip], data_ov001_0218fa3c[temp_ip], data_ov001_0218fa40[temp_ip]);
+    extern u16 gOv001MenuFrameLeft[];
+    extern u16 gOv001MenuFrameTop[];
+    extern u16 gOv001MenuFrameRight[];
+    extern u16 gOv001MenuFrameBottom[];
+    s32 frameOffset;
+    s32 rowOffset;
+
+    if ((u32)((Ov001MenuRegion *)&gOv001MenuRegion)->index < 4U) {
+        frameOffset = ((Ov001MenuRegion *)&gOv001MenuRegion)->index * 4;
+        Ov001_LayoutChoiceFrame(gOv001MenuFrameLeft[frameOffset], gOv001MenuFrameRight[frameOffset],
+            gOv001MenuFrameTop[frameOffset], gOv001MenuFrameBottom[frameOffset]);
         return;
     }
-    temp_r3 = M2C_FIELD(&gOv001MenuRegion, u8 *, 0) * 4;
-    Ov001_LayoutChoiceFrameRow(0, data_ov001_0218fa3a[temp_r3], data_ov001_0218fa3e[temp_r3], data_ov001_0218fa3c[temp_r3]);
+    rowOffset = ((Ov001MenuRegion *)&gOv001MenuRegion)->index * 4;
+    Ov001_LayoutChoiceFrameRow(0, gOv001MenuFrameLeft[rowOffset], gOv001MenuFrameRight[rowOffset],
+        gOv001MenuFrameTop[rowOffset]);
 }
 
 /* Moves the selection around the ov001 menu screen's seven touch regions by

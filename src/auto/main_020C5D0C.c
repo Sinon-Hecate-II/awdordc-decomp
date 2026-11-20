@@ -35,14 +35,14 @@ s32 func_020c5d3c(void) {
 
 u8 func_020c5d6c(void) {
     s32 IsUnitAvailable();
-    M2C_UNK func_020befd8();
+    M2C_UNK GetCurrentSaveType();
     extern u8 gBattleEndState;
     u8 var_r0;
 
     if (gBattleEndState != 0) {
         return 2;
     }
-    func_020befd8();
+    GetCurrentSaveType();
     if (IsUnitAvailable() == 0) {
         var_r0 = 1;
     } else {

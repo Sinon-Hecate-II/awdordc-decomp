@@ -408,24 +408,27 @@ s32 SendPowerCommandWait(s32 arg0) {
     return sp0;
 }
 
-s32 Arm7SetBacklight(M2C_UNK arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
-    s32 sel;
+/* Switch the backlight of a screen (0 main, 1 sub, 2 both) on (enabled = 1) or
+ * off (enabled = 0) by sending the matching ARM7 power state; callback receives
+ * the reply and user.  Returns ARM7_POWER_INVALID for an unknown combination. */
+s32 Arm7SetBacklight(M2C_UNK screen, M2C_UNK enabled, void (*callback)(s32, s32 *), s32 *user) {
+    s32 powerState;
 
-    sel = 0;
-    if (arg0 == 0) {
-        if (arg1 == 1) sel = 6;
-        if (arg1 == 0) sel = 7;
-    } else if (arg0 == 1) {
-        if (arg1 == 1) sel = 4;
-        if (arg1 == 0) sel = 5;
-    } else if (arg0 == 2) {
-        if (arg1 == 1) sel = 8;
-        if (arg1 == 0) sel = 9;
+    powerState = 0;
+    if (screen == 0) {
+        if (enabled == 1) powerState = 6;
+        if (enabled == 0) powerState = 7;
+    } else if (screen == 1) {
+        if (enabled == 1) powerState = 4;
+        if (enabled == 0) powerState = 5;
+    } else if (screen == 2) {
+        if (enabled == 1) powerState = 8;
+        if (enabled == 0) powerState = 9;
     }
-    if (sel == 0) {
-        return 0xFFFF;
+    if (powerState == 0) {
+        return ARM7_POWER_INVALID;
     }
-    return Arm7SetPowerState(sel, (M2C_UNK)arg2, (s32)arg3);
+    return Arm7SetPowerState(powerState, (M2C_UNK)callback, (s32)user);
 }
 
 s32 Arm7SetBacklightWait(M2C_UNK arg0, M2C_UNK arg1) {

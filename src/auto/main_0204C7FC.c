@@ -14,7 +14,7 @@ void ghiDoConnect(GHIConnection *connection) {
     s32 ghiConnect(s32, void *, s32);
     s32 ghiGetLastSocketError(s32);
     s32 PollOneFd(s32, s32 *, s32, s32);
-    M2C_UNK InvokeRequestCallback(void *, s32, s32);
+    M2C_UNK ghiCallProgressCallback(void *, s32, s32);
     extern s32 data_020fd010;
     extern s32 gHttpServerOverride;
     extern u16 gHttpPortOverride;
@@ -79,14 +79,14 @@ void ghiDoConnect(GHIConnection *connection) {
         return;
     }
     connection->state = 2;
-    InvokeRequestCallback(connection, 0, 0);
+    ghiCallProgressCallback(connection, 0, 0);
 }
 
 /* Runs the connected step (state 2) of a ghttp request: rejects an https URL when
    no encryptor is configured with result 17, starts the installed encryptor,
    flushes whatever is still buffered, then reads the reply into a 1 KiB buffer. */
 void ghiProcessConnected(GHIConnection *connection){
-s32 StringCompareN(void *,void *,s32);M2C_UNK InvokeRequestCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK ghiReceiveData(void *,void *,s32 *);
+s32 StringCompareN(void *,void *,s32);M2C_UNK ghiCallProgressCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK ghiReceiveData(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK sUrlSchemeHttps,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
@@ -94,9 +94,9 @@ if(!M2C_FIELD(connection,s32 *,0x168)){
 if(!StringCompareN(connection->url,&sUrlSchemeHttps,8)){
 connection->completed=1;connection->result=17;return;
 }
-connection->state=3;InvokeRequestCallback(connection,0,0);return;
+connection->state=3;ghiCallProgressCallback(connection,0,0);return;
 }
-if(connection->encryptorFlag){connection->state=3;InvokeRequestCallback(connection,0,0);return;}
+if(connection->encryptorFlag){connection->state=3;ghiCallProgressCallback(connection,0,0);return;}
 if(!connection->encryptor&& connection->encryptorProcess(connection,(u8 *)connection+0x164)==3){
 AssertFailed(&gGhttpAssertZero,&gGhttpProcessFileName,&data_020fd804,0x146);return;
 }
@@ -120,7 +120,7 @@ void ghiSendRequest(void *request) {
   s32 SendBufferedData(void *);
   void ResetBuffer(void *);
   M2C_UNK *GetContentType(void *);
-  M2C_UNK InvokeRequestCallback(void *, s32, s32);
+  M2C_UNK ghiCallProgressCallback(void *, s32, s32);
   u8 *StringFind(s32, M2C_UNK *);
   M2C_UNK StringFormat(void *, void *, s32);
   extern M2C_UNK sHttpMethodPost, sHttpMethodHead, sHttpMethodGet, sHttpVersion;
@@ -171,7 +171,7 @@ void ghiSendRequest(void *request) {
   if (M2C_FIELD(request, s32 *, 0x60) < M2C_FIELD(request, s32 *, 0x5c)) return;
   ResetBuffer((u8 *)request + 0x50);
   if(M2C_FIELD(request, s32 *, 0x13c)) M2C_FIELD(request, s32 *, 0x10)=4; else M2C_FIELD(request, s32 *, 0x10)=5;
-  InvokeRequestCallback(request, 0, 0);
+  ghiCallProgressCallback(request, 0, 0);
 }
 #pragma pop
 /* GHI_STATE_POSTING step: push the connection's POST body through its item list.
@@ -207,7 +207,7 @@ void ghiDoPosting(void *arg0) {
     }
     ghiPostCleanup(connection);
     connection->state = GHI_STATE_WAITING;
-    InvokeRequestCallback(connection, 0, 0);
+    ghiCallProgressCallback(connection, 0, 0);
 }
 
 /* GHI_STATE_WAITING step: wait until the socket has data from the server (or
@@ -215,7 +215,7 @@ void ghiDoPosting(void *arg0) {
 void ghiDoWaiting(GHIConnection *connection) {
     s32 PollOneFd(s32, s32 *, M2C_UNK, M2C_UNK);
     s32 ghiGetLastSocketError(s32);
-    M2C_UNK InvokeRequestCallback(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK ghiCallProgressCallback(void *, M2C_UNK, M2C_UNK);
     s32 readable;
 
     if (PollOneFd(connection->socket, &readable, 0, 0) == -1) {
@@ -228,7 +228,7 @@ void ghiDoWaiting(GHIConnection *connection) {
         return;
     }
     connection->state = GHI_STATE_RECEIVING_STATUS;
-    InvokeRequestCallback(connection, 0, 0);
+    ghiCallProgressCallback(connection, 0, 0);
 }
 
 /* Parse the "HTTP/x.y NNN" status line at the start of the request's read
@@ -270,7 +270,7 @@ void ghiReceiveStatusLine(GHIConnection *connection){
  if(!ghiParseStatus(connection))return;
  connection->readBuffer.pos=offset+2;
  connection->state=GHI_STATE_RECEIVING_HEADERS;
- InvokeRequestCallback(connection,0,0);return;
+ ghiCallProgressCallback(connection,0,0);return;
  }
  if(recvResult!=GHI_RECV_CLOSED)return;
  connection->completed=1;
@@ -285,7 +285,7 @@ void ghiReceiveStatusLine(GHIConnection *connection){
  * if there is any body to save.  Returns 0 once the request has failed. */
 s32 ghiDeliverFileData(void *p,s32 data,s32 length) {
  s32 ghiAppendDataToBuffer();
- M2C_UNK InvokeRequestCallback(void *,s32,s32);
+ M2C_UNK ghiCallProgressCallback(void *,s32,s32);
  GHIConnection *connection=(GHIConnection *)p;
  s32 deliveredData=0,deliveredLen=0;
  s32 received=connection->bytesReceived+length;
@@ -298,7 +298,7 @@ s32 ghiDeliverFileData(void *p,s32 data,s32 length) {
   if(length) { connection->completed=1; connection->result=GHTTP_RESULT_FILE_WRITE_FAILED; return 0; }
   deliveredData=data;deliveredLen=length;
  } else if(connection->transferMode==GHI_TRANSFER_STREAM) {deliveredData=data;deliveredLen=length;}
- InvokeRequestCallback(connection,deliveredData,deliveredLen); return 1;
+ ghiCallProgressCallback(connection,deliveredData,deliveredLen); return 1;
 }
 
 s32 ghiParseChunkSize(void *arg0) {

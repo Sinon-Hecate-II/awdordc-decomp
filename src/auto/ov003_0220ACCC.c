@@ -57,7 +57,7 @@ void func_ov003_0220b7c0(void *);
 u8 func_ov003_0220b7fc(void *,s32);
 u8 func_ov003_0220b8ac(void *,s32);
 u8 func_ov003_0220bb40(void *,s32);
-void func_ov003_0220b830(void *,s32);
+void ScrollBar_ScrollBy(void *,s32);
 void Ov003_StepOptionCounter0(void *,s32);
 void Ov003_StepOptionCounter1(void *,s32);
 void ScrollA9SliderBy(void *,s32);
@@ -78,15 +78,15 @@ if(i==M2C_FIELD(M2C_FIELD(a,void **,0x44),u8 *,0)-1){if(press&128)i=0;else i=Ov0
 }
 held=M2C_FIELD(gKeyState,u16 *,2);
 if((held&32)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),-8);
-if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),-8);
+if(func_ov003_0220b7fc(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),-8);
+if(func_ov003_0220b8ac(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),-8);
 if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
 }
 else if((held&16)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(func_ov003_0220b7fc(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x60),8);
-if(func_ov003_0220b8ac(a,(u8)i))func_ov003_0220b830(M2C_FIELD(a,void **,0x64),8);
+if(func_ov003_0220b7fc(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),8);
+if(func_ov003_0220b8ac(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),8);
 if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
 if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
 func_ov003_0220bb88(a);
@@ -160,16 +160,25 @@ void func_ov003_0220b7c0(void *arg0) {
 
 u8 func_ov003_0220b7fc(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 0) result=1; else result=0; return result; }
 
-void func_ov003_0220b830(void *arg0, s32 arg1) {
- s32 Divide(s32,s32); M2C_UNK ScrollBar_PlaceThumb(void *,s16,s16);
- s32 current,limit; s32 x; s16 base; void *p;
- M2C_FIELD(arg0,s16 *,0x12) += arg1;
- limit=M2C_FIELD(arg0,s16 *,0x16); current=M2C_FIELD(arg0,s16 *,0x12);
- if(current<=limit){limit=M2C_FIELD(arg0,s16 *,0x14); if(current>=limit)limit=current;}
- M2C_FIELD(arg0,s16 *,0x12)=limit;
- p=M2C_FIELD(arg0,void **,0x1c);
- base=M2C_FIELD(arg0,s16 *,8); x=base+Divide(M2C_FIELD(arg0,s16 *,0x12)*(s16)(M2C_FIELD(p,s16 *,0x14)-M2C_FIELD(p,s16 *,0x12)),M2C_FIELD(arg0,s16 *,0x16)-M2C_FIELD(arg0,s16 *,0x14));
- p=M2C_FIELD(arg0,void **,0x1c); ScrollBar_PlaceThumb(p,(s16)x,M2C_FIELD(p,s16 *,0xa));
+/* Scrolls a scroll bar by `delta`: adds the step to the bar's scroll value,
+ * clamps the value into the bar's range, then maps the value onto the track and
+ * places the bar's thumb at the mapped position. */
+void ScrollBar_ScrollBy(void *bar, s32 delta) {
+    s32 Divide(s32, s32);
+    M2C_UNK ScrollBar_PlaceThumb(void *, s16, s16);
+    s32 current, limit;
+    s32 x;
+    s16 base;
+    void *thumb;
+    M2C_FIELD(bar, s16 *, SCROLLBAR_VALUE) += delta;
+    limit = M2C_FIELD(bar, s16 *, SCROLLBAR_MAX);
+    current = M2C_FIELD(bar, s16 *, SCROLLBAR_VALUE);
+    if (current <= limit) { limit = M2C_FIELD(bar, s16 *, SCROLLBAR_MIN); if (current >= limit) limit = current; }
+    M2C_FIELD(bar, s16 *, SCROLLBAR_VALUE) = limit;
+    thumb = M2C_FIELD(bar, void **, SCROLLBAR_THUMB);
+    base = M2C_FIELD(bar, s16 *, SCROLLBAR_X);
+    x = base + Divide(M2C_FIELD(bar, s16 *, SCROLLBAR_VALUE) * (s16) (M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MAX_X) - M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MIN_X)), M2C_FIELD(bar, s16 *, SCROLLBAR_MAX) - M2C_FIELD(bar, s16 *, SCROLLBAR_MIN));
+    thumb = M2C_FIELD(bar, void **, SCROLLBAR_THUMB); ScrollBar_PlaceThumb(thumb, (s16) x, M2C_FIELD(thumb, s16 *, SCROLLTHUMB_Y));
 }
 
 u8 func_ov003_0220b8ac(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) active=1; else active=0; if ((active & 255) && arg1 == 1) result=1; else result=0; return result; }

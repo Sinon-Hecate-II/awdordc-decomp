@@ -48,6 +48,7 @@ enum {
  * fields are named as separate arrays in the game's symbols, each indexed by
  * player * VERSUS_DATA_STRIDE; gVersusPlayerHp is the HP the gauge animates to. */
 #define VERSUS_DATA_STRIDE 0x18
+#define VERSUS_DATA_COUNTRY 0x01 /* u8 country/army id that picks the player's screen assets */
 
 /* Effect node (ov002 effect system), 0x88 bytes; built by Ov002_AddEffectNode
  * and animated by func_ov002_021e2aa8. */

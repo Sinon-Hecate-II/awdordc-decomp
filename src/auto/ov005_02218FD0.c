@@ -38,7 +38,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_020822b8(M2C_UNK *);
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02087db8(void *, M2C_UNK);
+    M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
     M2C_UNK func_02091d4c(M2C_UNK);
@@ -228,7 +228,7 @@ void func_ov005_02218fd0(void *arg0) {
         var_r2 = 1;
     }
     if (var_r2 & 0xFF) {
-        func_02087db8(temp_r0_8, 1);
+        RemoveSpriteCell(temp_r0_8, 1);
     }
     M2C_FIELD(arg0, void **, 0x3C) = func_020ab1c4(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x3C), 0xE, 0x168, 4, 1);
@@ -265,7 +265,7 @@ void func_ov005_02218fd0(void *arg0) {
         var_r2_2 = 1;
     }
     if (var_r2_2 & 0xFF) {
-        func_02087db8(temp_r0_9, 1);
+        RemoveSpriteCell(temp_r0_9, 1);
     }
     M2C_FIELD(arg0, void **, 0x40) = func_020ab1c4(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x40), 0xF, 0x170, 4, 1);
@@ -302,7 +302,7 @@ void func_ov005_02218fd0(void *arg0) {
         var_r2_3 = 1;
     }
     if (var_r2_3 & 0xFF) {
-        func_02087db8(temp_r0_10, 1);
+        RemoveSpriteCell(temp_r0_10, 1);
     }
     func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
     func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);

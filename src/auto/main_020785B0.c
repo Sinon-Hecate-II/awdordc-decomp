@@ -173,7 +173,7 @@ if((u32)(M2C_FIELD(p,u16*,2)<<22)>>28)DrawMapEffectEntry(p);
 }
 if(func_020cd6b0())func_02077740();
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
-if(func_020a62ac(x,y))RenderUnitAt(x,y,gMapCellCodes[x*40+y],mode);
+if(IsUnitVisibleAt(x,y))RenderUnitAt(x,y,gMapCellCodes[x*40+y],mode);
 }
 *(volatile u32*)0x4000448=1;
 SetAmbienceSoundVolume(1,0x108,counts[26]);SetAmbienceSoundVolume(2,0x109,counts[27]);

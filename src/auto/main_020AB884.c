@@ -1,6 +1,7 @@
 /* 24 functions from 0x020AB884 to 0x020AC7DC (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "list_widget.h"
 
 #pragma opt_strength_reduction off
 /* Scroll update for a vertical list: once its opening animation ends, clamps the
@@ -41,26 +42,29 @@ M2C_FIELD(arg0,s16 *,98)=GetSpriteAnimValue((u8 *)arg0+84);M2C_FIELD(arg0,s16 *,
 M2C_FIELD(arg0,u16 *,86)=M2C_FIELD(arg0,u16 *,88);
 }
 #pragma opt_strength_reduction reset
-s16 func_020abb24(void *arg0) {
+/* Vertical pixel offset of the list window's contents: the scroll tween's value
+ * plus the row sub-list tween's, restarting the row tween as a linear slide while
+ * the window is still moving (its slide target has not been reached). */
+s16 GetListScrollY(void *widget) {
     s32 GetSpriteAnimValue(void *);
-    s16 temp_r4_3;
-    s32 temp_r4;
-    s32 temp_r4_2;
-    s32 var_r0;
+    s16 slideTarget;
+    s32 firstValue;
+    s32 secondValue;
+    s32 moving;
 
-    temp_r4_3 = M2C_FIELD(arg0, s16 *, 0x2A);
-    if (temp_r4_3 != GetSpriteAnimValue(arg0 + 0x30)) {
-        var_r0 = 1;
+    slideTarget = M2C_FIELD(widget, s16 *, LIST_WIDGET_SLIDE_TARGET_Y);
+    if (slideTarget != GetSpriteAnimValue(widget + LIST_WIDGET_SCROLL_TWEEN)) {
+        moving = 1;
     } else {
-        var_r0 = 0;
+        moving = 0;
     }
-    if (var_r0 & 0xFF) {
-        M2C_FIELD(arg0, s8 *, 0x54) = 1;
-        temp_r4_2 = GetSpriteAnimValue(arg0 + 0x30);
-        return (s16) (temp_r4_2 + GetSpriteAnimValue(arg0 + 0x54));
+    if (moving & 0xFF) {
+        M2C_FIELD(widget, s8 *, LIST_WIDGET_ROW_TWEEN) = SPRITE_TWEEN_LINEAR;
+        firstValue = GetSpriteAnimValue(widget + LIST_WIDGET_SCROLL_TWEEN);
+        return (s16) (firstValue + GetSpriteAnimValue(widget + LIST_WIDGET_ROW_TWEEN));
     }
-    temp_r4 = GetSpriteAnimValue(arg0 + 0x30);
-    return (s16) (temp_r4 + GetSpriteAnimValue(arg0 + 0x54));
+    secondValue = GetSpriteAnimValue(widget + LIST_WIDGET_SCROLL_TWEEN);
+    return (s16) (secondValue + GetSpriteAnimValue(widget + LIST_WIDGET_ROW_TWEEN));
 }
 
 void func_020abb9c(void *arg0) {
@@ -432,15 +436,19 @@ void func_020ac5c8(void *arg0) {
     func_01ffaa6c();
 }
 
-void func_020ac5e0(void *arg0) {
+/* Starts the screen-split transition sprite: resets its elapsed-frame counter,
+ * adjusts its mode to one the screen's current display mode can show (a static
+ * screen cannot slide, an offset screen cannot stay static), and configures the
+ * sprite's engine for it. */
+void ScreenTransitionSprite_Start(void *transition) {
  u8 GetScreenMode(u8); void ConfigureScreenEngine(u8,s32,u8);
- M2C_FIELD(arg0,u16 *,0x38)=0;
- switch(GetScreenMode(M2C_FIELD(arg0,u8 *,0x3c))) {
- case 0: case 2: if(M2C_FIELD(arg0,s32 *,0x34)==1)M2C_FIELD(arg0,s32 *,0x34)=0; break;
- case 1: if(M2C_FIELD(arg0,s32 *,0x34)==0)M2C_FIELD(arg0,s32 *,0x34)=1;
- if(M2C_FIELD(arg0,s32 *,0x34)==2)M2C_FIELD(arg0,s32 *,0x34)=1; break;
+ M2C_FIELD(transition,u16 *,TRANSITION_SPRITE_ELAPSED)=0;
+ switch(GetScreenMode(M2C_FIELD(transition,u8 *,TRANSITION_SPRITE_SCREEN))) {
+ case 0: case 2: if(M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)==1)M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)=0; break;
+ case 1: if(M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)==0)M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)=1;
+ if(M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)==2)M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE)=1; break;
  }
- ConfigureScreenEngine(M2C_FIELD(arg0,u8 *,0x3c),0,M2C_FIELD(arg0,s32 *,0x34));
+ ConfigureScreenEngine(M2C_FIELD(transition,u8 *,TRANSITION_SPRITE_SCREEN),0,M2C_FIELD(transition,s32 *,TRANSITION_SPRITE_MODE));
 }
 
 void func_020ac65c(void *arg0) {

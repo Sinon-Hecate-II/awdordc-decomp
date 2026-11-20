@@ -371,7 +371,7 @@ void func_020debe4(M2C_UNK arg0) {
 #pragma opt_strength_reduction off
 void func_020debf4(void *self){void MenuSpriteUpdate(void*);
  int FindTextLayer(void);
- void func_0208af20(void);
+ void StartWindowClose(void);
 void *CreateTextLayer(void*);
 void RenderTextLayerMessage(void*,int,int,u32);
 void DisableMapConfirm(void);
@@ -414,7 +414,7 @@ keys=M2C_FIELD(gKeyState,u16 *,0);
 M2C_FIELD(self,u16 *,0x48)=M2C_FIELD(self,u16 *,0x48)&~0x20U;
 
 if(!(M2C_FIELD(self,u16 *,0x48)&1)){
-if(M2C_FIELD(self,u16 *,0x48)&0x100){if(FindTextLayer())func_0208af20();
+if(M2C_FIELD(self,u16 *,0x48)&0x100){if(FindTextLayer())StartWindowClose();
 old=gCur3DSpriteEngine;
 for(i=0;
 i<2;
@@ -435,7 +435,7 @@ DisableMapConfirm();
 Sprite_ResumeAnimation(self);
 return;
 }
-else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(FindTextLayer())func_0208af20();
+else if(M2C_FIELD(self,u16 *,0x48)&0x200){if(FindTextLayer())StartWindowClose();
 old=gCur3DSpriteEngine;
 for(i2=0;
 i2<2;

@@ -188,7 +188,7 @@ if ((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) return i;
 return -1;
 }
 
-s32 func_ov000_021a605c(s32 arg0) {
+s32 FindTargetCandidateByEnemyCount(s32 arg0) {
 extern u8 *gAiState;
 extern M2C_UNK gAiTargetCandidates;
 u8 *p;
@@ -208,30 +208,55 @@ if(best < (s32)value) {best=value;result=i;}
 return result;
 }
 
-s32 func_ov000_021a60d4(s32 arg0) {
+/* Picks the AI target candidate of targetType (AI_CANDIDATE_TYPE_ANY for any
+ * type) that is nearest to a capturable property (AI_CANDIDATE_PROPERTY_DISTANCE),
+ * the first candidate winning a tie.  A candidate whose status is
+ * AI_CANDIDATE_REJECTED or beyond has been given up on and is skipped.
+ * Returns the candidate index, or -1 when there is none. */
+s32 FindAiTargetByPropertyDistance(s32 targetType) {
 extern u8 *gAiState;
 extern M2C_UNK gAiTargetCandidates;
-u8 *p;
-s32 i;
-s32 best;
-s32 result;
-u8 value;
-best=0x7FFF;
-result=-1;
-p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12) {
-if ((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) {
-value=p[8];
-if(best > (s32)value) {best=value;result=i;}
+u8 *candidate;
+s32 index;
+s32 bestDistance;
+s32 bestIndex;
+u8 propertyDistance;
+bestDistance=0x7FFF;
+bestIndex=-1;
+candidate=(u8 *)&gAiTargetCandidates;
+for(index=0;index<*gAiState;index++,candidate+=AI_CANDIDATE_STRIDE) {
+if ((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && (targetType==AI_CANDIDATE_TYPE_ANY || candidate[AI_CANDIDATE_TYPE]==targetType)) {
+propertyDistance=candidate[AI_CANDIDATE_PROPERTY_DISTANCE];
+if(bestDistance > (s32)propertyDistance) {bestDistance=propertyDistance;bestIndex=index;}
 }
 }
-return result;
+return bestIndex;
 }
 
-s32 FindAiTargetByCost(s32 arg0) { extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates; 
-u8 *p; s32 i; s32 best; s32 result; u8 value;
-best=0x7fff; result=-1; p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) { value=p[9]; if(best > (s32)value) {best=value;result=i;} } } return result; }
+/* Picks the AI target candidate of targetType (AI_CANDIDATE_TYPE_ANY for any
+ * type) whose AI_CANDIDATE_CAPTURE_DISTANCE is smallest, the first candidate
+ * winning a tie.  A candidate whose status is AI_CANDIDATE_REJECTED or beyond
+ * has been given up on and is skipped.  Returns the candidate index, or -1 when
+ * there is none. */
+s32 FindAiTargetByCaptureDistance(s32 targetType) {
+extern u8 *gAiState;
+extern M2C_UNK gAiTargetCandidates;
+u8 *candidate;
+s32 index;
+s32 bestDistance;
+s32 bestIndex;
+u8 captureDistance;
+bestDistance=0x7FFF;
+bestIndex=-1;
+candidate=(u8 *)&gAiTargetCandidates;
+for(index=0;index<*gAiState;index++,candidate+=AI_CANDIDATE_STRIDE) {
+if ((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED && (targetType==AI_CANDIDATE_TYPE_ANY || candidate[AI_CANDIDATE_TYPE]==targetType)) {
+captureDistance=candidate[AI_CANDIDATE_CAPTURE_DISTANCE];
+if(bestDistance > (s32)captureDistance) {bestDistance=captureDistance;bestIndex=index;}
+}
+}
+return bestIndex;
+}
 
 /* Picks the AI target candidate of `type` (4 = any type) in the group the AI
  * can capture soonest: the smallest AI_CANDIDATE_CAPTURE_DISTANCE (distance from
@@ -438,14 +463,23 @@ p[1]=255;
 return r;
 }
 #pragma optimization_level 4
-s32 func_ov000_021a67f0(s32 a) {
-extern u8 *gAiState;
-s32 FindTargetInBestGroup(s32);s32 FindNearestTargetCandidateOfType(s32);
-s32 r=-1;
-if(gAiState[1]>=2)r=FindTargetInBestGroup(a);
-if(r==-1)r=func_ov000_021a605c(a);
-if(r==-1)r=FindNearestTargetCandidateOfType(a);
-if(r==-1)r=FindAiTargetOfType(a);
-return r;
+/* Picks the AI's target candidate of `targetType` (AI_CANDIDATE_TYPE_ANY for any
+ * type) for one of its units: from the best-scoring target group when the AI has
+ * more than one, otherwise the candidate with the most reachable enemies, then the
+ * nearest candidate of the type, then the first one of the type.  Returns the
+ * candidate index, or -1 when there is none. */
+s32 FindAiTargetCandidate(s32 targetType) {
+    extern u8 *gAiState;
+    s32 FindTargetInBestGroup(s32);
+    s32 FindTargetCandidateByEnemyCount(s32);
+    s32 FindNearestTargetCandidateOfType(s32);
+    s32 FindAiTargetOfType(s32);
+    s32 result = -1;
+
+    if (gAiState[AI_STATE_GROUP_COUNT] >= 2) result = FindTargetInBestGroup(targetType);
+    if (result == -1) result = FindTargetCandidateByEnemyCount(targetType);
+    if (result == -1) result = FindNearestTargetCandidateOfType(targetType);
+    if (result == -1) result = FindAiTargetOfType(targetType);
+    return result;
 }
 

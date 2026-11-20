@@ -134,24 +134,26 @@ if(Map_CanUnitKindStandOnCell(x,y,t)!=0)return;
 MapEditor_DestroyUnitAt(x,y);
 }
 
-s32 Map_CanPlaceTile(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
-    s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
-    s32 func_ov007_0221b030(M2C_UNK, M2C_UNK, s32, s32);
+/* Map editor: returns 2 when the cell already holds this terrain kind and
+ * direction, 1 when the tile may be painted there, 0 when it may not. */
+s32 Map_CanPlaceTile(s32 x, s32 y, s32 kind, s32 dir) {
+    s32 Map_IsTerrainKindPlaceable(s32, s32, s32);
+    s32 MapEditor_CheckPlacementLimits(s32, s32, s32, s32);
     s32 Map_GetCellTerrainKind();
-    s32 Map_GetCellTerrainOwner(M2C_UNK, M2C_UNK);
-    if ((arg2 == Map_GetCellTerrainKind()) && (arg3 == Map_GetCellTerrainOwner(arg0, arg1))) {
+    s32 Map_GetCellTerrainOwner(s32, s32);
+    if ((kind == Map_GetCellTerrainKind()) && (dir == Map_GetCellTerrainOwner(x, y))) {
         return 2;
     }
-    if (func_ov007_0221ad24(arg0, arg1, arg2) == 0) {
+    if (Map_IsTerrainKindPlaceable(x, y, kind) == 0) {
         return 0;
     }
-    if (func_ov007_0221b030(arg0, arg1, arg2, arg3) != 0) {
+    if (MapEditor_CheckPlacementLimits(x, y, kind, dir) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
+s32 Map_IsTerrainKindPlaceable(s32 x,s32 y,s32 kind) {
  s32 Map_IsWastelandTile(s32,s32);
  s32 func_ov007_0221bad0(s32,s32);
  extern u8 data_ov007_0221f544[],data_ov007_0221f52c[],data_ov007_0221f514[];
@@ -207,7 +209,7 @@ s32 func_ov007_0221ad24(s32 x,s32 y,s32 kind) {
  return 1;
 }
 
-s32 func_ov007_0221b030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 MapEditor_CheckPlacementLimits(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 IsDestroyedPipeTile(s32);
     s32 Map_GetCellTerrainKind(s32, s32);
     s32 GetEditorUnitCategoryCount(s32, s32);

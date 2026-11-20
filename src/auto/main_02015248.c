@@ -1,6 +1,10 @@
 /* 13 functions from 0x02014B34 to 0x02015AA0 (main), found by ds-decomp. */
 #include "common.h"
 typedef struct RomHeader_020152c8 { u8 unk_0[0x80]; u32 offset; } RomHeader_020152c8;
+/* One program image while it is being loaded: where it starts in the
+ * program's address space, its size, and the source/destination buffers
+ * biased by -start so that (buffer + image address) is the real address. */
+typedef struct MbImageRegion_02015248 { u32 start; u32 source; u32 dest; u32 size; } MbImageRegion_02015248;
 #define MB_PROGRAM_ADDR 0x027ffe00      /* the ROM program area the multiboot library reads from */
 #define MB_PROGRAM_HEADER_SIZE 0x60     /* program header at the start of a multiboot program image */
 #define MB_MIN_PROGRAM_SIZE 0x10000     /* smallest program image the loader accepts */
@@ -45,7 +49,7 @@ void AutoloadCallback(void);
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
 s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
- s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 FindArchive();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void Mb_InitLoadQueue();void Mb_AddImageBlock();void CloseFileRequest();void func_02015724(void *,u32,u32,s32);void DC_FlushRange();
+ s32 FileRead(void *,s32,s32);void FileSeek(void *,s32,s32);void InitFileRequest();s32 FindArchive();void OpenFileDirect();M2C_UNK MI_CpuCopy8(s32,s32,s32);void Mb_InitLoadQueue();void Mb_AddImageBlock();void CloseFileRequest();void Mb_FillOrCopyImageRange(void *,u32,u32,s32);void DC_FlushRange();
  extern u8 data_020f554c[];extern u32 *data_020f5548;
  u8 file[0x48];u32 info[4];s32 result,owned;u32 size;u32 left;void *p,*header,*table;u32 base,readBase,origin,n; s32 i;u32 *ranges;
  size=arg2;result=0;
@@ -105,8 +109,8 @@ s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
  if(result){
  info[0]=M2C_FIELD(arg1,u32 *,0x20);info[1]=M2C_FIELD(arg1,u32 *,0x28)-M2C_FIELD(arg1,u32 *,0x20);info[2]=M2C_FIELD(header,u32 *,0x48)-M2C_FIELD(arg1,u32 *,0x20);info[3]=size;
  ranges=data_020f5548;
- func_02015724(info,0x4000,0x8000,1);
- while(ranges[1]){func_02015724(info,ranges[0],ranges[0]+ranges[1],0);ranges+=2;}
+ Mb_FillOrCopyImageRange(info,0x4000,0x8000,1);
+ while(ranges[1]){Mb_FillOrCopyImageRange(info,ranges[0],ranges[0]+ranges[1],0);ranges+=2;}
  n=(u32)AutoloadCallback-M2C_FIELD(arg1,u32 *,0x28);M2C_FIELD(M2C_FIELD(header,void **,0x48),u32 *,n)=0xe12fff1e;
  }
  }
@@ -114,38 +118,38 @@ s32 Mb_LoadProgramImage(void *arg0,void *arg1,s32 arg2){
  }
  return result;
 }
-void func_02015724(void *arg0, u32 arg1, u32 arg2, s32 arg3) {
-    M2C_UNK MI_CpuFill8(s32, M2C_UNK, s32);
-    M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    u32 temp_ip;
-    u32 temp_r1;
-    u32 var_lr;
-    u32 var_r2;
+/* Fill or copy one range of a program image being loaded: clip the requested
+ * [start, end) address range to the image's own range (region->start ..
+ * region->start + region->size) and to the loader's 0x4000..0x8000 window,
+ * then clear the destination (clear != 0) or copy the source into it. */
+void Mb_FillOrCopyImageRange(void *arg0, u32 start, u32 end, s32 clear) {
+    MbImageRegion_02015248 *region = arg0;
+    s32 MI_CpuFill8(s32, s32, s32);
+    s32 MI_CpuCopy8(s32, s32, s32);
+    u32 imageStart = region->start;
+    u32 imageEnd;
 
-    var_r2 = arg2;
-    var_lr = arg1;
-    temp_ip = M2C_FIELD(arg0, u32 *, 0);
-    if (var_lr < 0x4000U) {
-        var_lr = 0x4000;
+    if (start < 0x4000U) {
+        start = 0x4000;
     }
-    if (var_r2 > 0x8000U) {
-        var_r2 = 0x8000;
+    if (end > 0x8000U) {
+        end = 0x8000;
     }
-    temp_r1 = temp_ip + M2C_FIELD(arg0, s32 *, 0xC);
-    if (var_lr < temp_ip) {
-        var_lr = temp_ip;
+    imageEnd = imageStart + region->size;
+    if (start < imageStart) {
+        start = imageStart;
     }
-    if (var_r2 > temp_r1) {
-        var_r2 = temp_r1;
+    if (end > imageEnd) {
+        end = imageEnd;
     }
-    if (var_lr >= var_r2) {
+    if (start >= end) {
         return;
     }
-    if (arg3 != 0) {
-        MI_CpuFill8(M2C_FIELD(arg0, s32 *, 8) + var_lr, 0, var_r2 - var_lr);
+    if (clear != 0) {
+        MI_CpuFill8(region->dest + start, 0, end - start);
         return;
     }
-    MI_CpuCopy8(M2C_FIELD(arg0, s32 *, 4) + var_lr, M2C_FIELD(arg0, s32 *, 8) + var_lr, var_r2 - var_lr);
+    MI_CpuCopy8(region->source + start, region->dest + start, end - start);
 }
 
 #pragma push

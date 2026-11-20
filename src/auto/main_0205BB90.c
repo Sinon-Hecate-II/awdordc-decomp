@@ -402,18 +402,21 @@ s32 gti2SendConnectAccept(s32 connection, s32 response, s32 challenge) {
     return sent;
 }
 
-s32 gti2SendClientResponse(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    s32 sp0;
+/* Client side of the GT2 handshake: send the CLIENT_RESPONSE command carrying
+ * our 32-byte response to the server's challenge followed by the caller's
+ * connection data.  Returns 0 when the connection was freed, 1 otherwise. */
+s32 gti2SendClientResponse(s32 connection, s32 response, s32 data, s32 len) {
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 3, arg3 + 0x27, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_CLIENT_RESPONSE, len + 7 + GT2_RESPONSE_SIZE, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    gti2BufferWriteData(arg0 + 0x50, arg1, 0x20);
-    gti2BufferWriteData(arg0 + 0x50, arg2, arg3);
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, response, GT2_RESPONSE_SIZE);
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, data, len);
+    if (gti2SendQueuedCommand(connection) != 0) {
         return 1;
     }
     return 0;

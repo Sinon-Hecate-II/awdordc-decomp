@@ -11,7 +11,7 @@ void InitSoundCommandQueue(void);
 void InitSoundCommandLink(void);
 void *AllocSoundCommand(int);
 s32 Sound_FlushCommands(s32);
-void func_02009854(void *);
+void Sound_InitCommandBuffer(void *);
 typedef struct Link09a0c { void *owner; struct Link09a0c *next; } Link09a0c;
 
 void func_0200973c(void);
@@ -74,7 +74,7 @@ M2C_FIELD(&gSoundCommandQueueState,int *,24)=0;
 M2C_FIELD(&gSoundCommandQueueState,int *,32)=1;
 M2C_FIELD(&gSoundCommandQueueState,int *,4)=0;
 gSoundCommandBufferPtr=(s32 *)&gSoundCommandBuffer;
-func_02009854((void *)gSoundCommandBufferPtr);
+Sound_InitCommandBuffer((void *)gSoundCommandBufferPtr);
 command=AllocSoundCommand(1);
 if(!command)return;
 M2C_FIELD(command,int *,4)=29;
@@ -272,12 +272,16 @@ s32 func_0200982c(void) {
     return *gSoundCommandBufferPtr;
 }
 
-void func_02009854(void *a){
-int i,j;void *p=a;
-M2C_FIELD(a,int *,4)=0;M2C_FIELD(a,s16 *,8)=0;M2C_FIELD(a,s16 *,10)=0;M2C_FIELD(a,int *,0)=0;
-for(i=0;i<16;i++,p=(char *)p+36){M2C_FIELD(p,int *,64)=0;for(j=0;j<16;j++)((s16 *)p+j)[16]=-1;}
-for(j=0;j<16;j++)((s16 *)a+j)[304]=-1;
-DC_FlushRange(a,640);
+/* Resets the ARM7 sound driver's shared command-argument buffer: clears its
+ * handshake counters and status words, fills the 16 argument entries' parameter
+ * arrays with -1 and their value words with 0, and clears the final parameter
+ * array, then flushes the buffer for the ARM7 to read. */
+void Sound_InitCommandBuffer(void *buffer){
+int entryIndex,paramIndex;void *entry=buffer;
+M2C_FIELD(buffer,int *,SND_CMD_BUFFER_COUNTER1)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK08)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK0A)=0;M2C_FIELD(buffer,int *,SND_CMD_BUFFER_COUNTER0)=0;
+for(entryIndex=0;entryIndex<SND_CMD_BUFFER_ENTRY_COUNT;entryIndex++,entry=(char *)entry+SND_CMD_BUFFER_ENTRY_STRIDE){M2C_FIELD(entry,int *,SND_CMD_BUFFER_ENTRY_VALUE)=0;for(paramIndex=0;paramIndex<SND_CMD_BUFFER_PARAM_COUNT;paramIndex++)((s16 *)entry+paramIndex)[SND_CMD_BUFFER_ENTRY_PARAMS/2]=-1;}
+for(paramIndex=0;paramIndex<SND_CMD_BUFFER_PARAM_COUNT;paramIndex++)((s16 *)buffer+paramIndex)[SND_CMD_BUFFER_TAIL_PARAMS/2]=-1;
+DC_FlushRange(buffer,SND_CMD_BUFFER_SIZE);
 }
 
 u16 func_020098d0(s32 a){

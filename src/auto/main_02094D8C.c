@@ -8,11 +8,11 @@ static inline void *SpriteBufferAt094df0(s32 buffer,s32 offset) { return (u8*)bu
 
 void func_02094d8c(M2C_UNK arg0) {
     s32 func_0209600c();
-    M2C_UNK func_02097a2c(M2C_UNK);
+    M2C_UNK HighlightScenePanelFace(M2C_UNK);
     if (func_0209600c() != 0) {
         return;
     }
-    func_02097a2c(arg0);
+    HighlightScenePanelFace(arg0);
 }
 
 void func_02094dac(void) {
@@ -30,7 +30,7 @@ void func_02094dac(void) {
         HighlightScenePanel(-1);
         return;
     case 2:
-        func_02097a2c(-1);
+        HighlightScenePanelFace(-1);
         return;
     }
 }

@@ -254,7 +254,7 @@ func_02098e2c(M2C_FIELD(arg0, void **, 0x60), arg1);
 func_02099204(arg0);
 }
 
-void func_020991f4(void *arg0, s8 arg1) {
+void SetFaceSpriteActive(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5C) = arg1;
 }
 

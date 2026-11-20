@@ -178,19 +178,27 @@ s32 Wfc_MatchFriendCode(void *record) {
  return -1;
 }
 
-s32 Wfc_MatchFriendEntry(void *arg0, s32 arg1, void *arg2) {
- s32 StringCompareN(void *,void *,s32);
- s32 t; u8 k; s32 i; u32 n; void *p=arg2;
- if(M2C_FIELD(arg0,u16 *,0xA)==0x20) { t=Wfc_MatchFriendCode(arg0); if(t>0)return t; }
- i=0;
- if(arg1>0) {
- n=M2C_FIELD(arg0,u16 *,0xA); k=n;
- do {
- if(k==M2C_FIELD(p,u8 *,3) && StringCompareN(arg0+0xC,p+4,n)==0)return M2C_FIELD(p,u8 *,1);
- i++; p+=0x24;
- }while(i<arg1);
- }
- return -1;
+/* Match an incoming friend message against the first `count` rows of the WFC
+ * friend-list `entries`: a row matches when its code length is the message's code
+ * length and its code bytes are the same.  A friend code that is one of the
+ * built-in connection codes is resolved first and wins when it is known; a matching
+ * row returns its friend id, and no match at all returns -1. */
+s32 Wfc_MatchFriendEntry(void *msg, s32 count, void *entries) {
+    s32 StringCompareN(void *,void *,s32);
+    s32 result; u8 codeLen; s32 row; u32 len; void *entry = entries;
+    if (M2C_FIELD(msg,u16 *,WFC_MSG_CODE_LEN) == WFC_CODE_LEN_FRIEND) {
+        result = Wfc_MatchFriendCode(msg);
+        if (result > 0) return result;
+    }
+    row = 0;
+    if (count > 0) {
+        len = M2C_FIELD(msg,u16 *,WFC_MSG_CODE_LEN); codeLen = len;
+        do {
+            if (codeLen == M2C_FIELD(entry,u8 *,WFC_ENTRY_CODE_LEN) && StringCompareN((u8 *)msg + WFC_MSG_CODE, (u8 *)entry + WFC_ENTRY_CODE, len) == 0) return M2C_FIELD(entry,u8 *,WFC_ENTRY_ID);
+            row++; entry = (u8 *)entry + WFC_ENTRY_STRIDE;
+        } while (row < count);
+    }
+    return -1;
 }
 
 /* Matches an incoming friend message against the WFC friend records by the friend

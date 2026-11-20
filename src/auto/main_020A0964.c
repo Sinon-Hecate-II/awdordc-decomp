@@ -486,36 +486,40 @@ void ResetTerrainHitPoints(void) {
     }
 }
 #pragma opt_strength_reduction reset
-void DecodeTerrainHitPoints(u8 *arg0) {
+/* Decode the run-length terrain hit points of a saved map record into the map's
+ * per-cell table: a byte with MAP_CELL_TERRAIN_HP_PRESENT set is one cell's
+ * value, a byte below 0x80 is that many cells with no hit points, and
+ * MAP_TERRAIN_HP_RLE_END closes the data. */
+void DecodeTerrainHitPoints(u8 *data) {
     extern s32 *gCurrentMap;
-    s32 var_ip;
-    u8 *var_lr;
-    u8 *var_r0;
-    u8 temp_r1;
+    s32 zeroCount;
+    u8 *out;
+    u8 *in;
+    u8 cell;
 
-    var_r0 = arg0;
-    var_lr = *gCurrentMap + 0x539C;
-    if (*var_r0 == 0xFF) {
+    in = data;
+    out = *gCurrentMap + MAP_CELL_TERRAIN_HP;
+    if (*in == MAP_TERRAIN_HP_RLE_END) {
         return;
     }
     do {
-        temp_r1 = *var_r0;
-        if (temp_r1 & 0x80) {
-            var_r0 += 1;
-            *var_lr = temp_r1;
-            var_lr += 1;
+        cell = *in;
+        if (cell & MAP_CELL_TERRAIN_HP_PRESENT) {
+            in += 1;
+            *out = cell;
+            out += 1;
         } else {
-            var_ip = 0;
-            if ((s32) temp_r1 > 0) {
+            zeroCount = 0;
+            if ((s32)cell > 0) {
                 do {
-                    *var_lr = 0;
-                    var_lr += 1;
-                    var_ip += 1;
-                } while (var_ip < (s32) *var_r0);
+                    *out = 0;
+                    out += 1;
+                    zeroCount += 1;
+                } while (zeroCount < (s32)*in);
             }
-            var_r0 += 1;
+            in += 1;
         }
-    } while (*var_r0 != 0xFF);
+    } while (*in != MAP_TERRAIN_HP_RLE_END);
 }
 
 /* Run-length encode the battle map's per-cell terrain-HP grid into dst: a run of

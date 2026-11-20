@@ -39,7 +39,7 @@ s32 GetFontCmapGlyphIndex(void *cmap, u32 ch) {
     return glyph;
 }
 
-void func_ov001_02169130(void *arg0, M2C_UNK arg1) {
+void Ov001_InitFontSet(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_ov001_0216aab0(M2C_UNK, void *);
     extern M2C_UNK func_ov001_0216ad40;
     func_ov001_0216aab0(arg1, arg0);

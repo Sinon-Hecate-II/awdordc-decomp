@@ -164,15 +164,17 @@ void DrawVersusPanelArtSmallFlipped(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
  }while(col<3);
 }
 
-void DrawVersusPanelArtSmall(s32 x,s32 y,s32 unused,s32 tiles,s32 pal) {
- M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
- M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
- s32 i;
- i=0; do {
- SetGxTextureParams(4,16,16,tiles+((u32)i<<3),pal);
- DrawTexturedQuadUV(x,y,0,16,16,0,0,16,16);
- i++; x+=16;
- } while(i<3);
+/* Draw the versus-screen player panel's smaller artwork: three 16x16 tiles of
+ * the panel's tile list, drawn left to right from (x, y). */
+void DrawVersusPanelArtSmall(s32 x, s32 y, s32 unused, s32 tiles, s32 palette) {
+    M2C_UNK SetGxTextureParams(s32,s32,s32,s32,s32);
+    M2C_UNK DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);
+    s32 tile;
+    tile = 0; do {
+        SetGxTextureParams(4,16,16,tiles+((u32)tile<<3),palette);
+        DrawTexturedQuadUV(x,y,0,16,16,0,0,16,16);
+        tile++; x+=16;
+    } while(tile<3);
 }
 
 /* Draw a versus-screen player panel's gauge fill, anchored at its right edge:

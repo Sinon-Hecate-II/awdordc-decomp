@@ -1,6 +1,12 @@
 #ifndef MAP_SELECTION_H
 #define MAP_SELECTION_H
 
+/* Map-data categories (MapData_GetCategory).  Every map id from
+ * MAP_CUSTOM_FIRST to MAP_CUSTOM_LINK_END is the custom category; the other
+ * categories come from the map record's category byte and are not named here.
+ * MapListCategoryToDataCategory maps a map-list slot to one of these. */
+#define MAP_DATA_CATEGORY_CUSTOM 6
+
 /* A map category occupies 0x200 bytes; its last two bytes hold category and count. */
 typedef struct MapSelectionCategory {
     u16 mapIds[255];

@@ -260,16 +260,23 @@ M2C_UNK func_ov007_02217608(void) {
  }
 }
 
-M2C_UNK func_ov007_02217680(void) {
- s32 Map_RandomScaledValue(s32,s32);
- s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s32 sp4; s32 sp0; s32 i; s32 n;
- n=Map_RandomScaledValue(5,20);
- for(i=0;i<n;i++){
- if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
- Map_SetCellTile(sp4,sp0,385);
- }
+/* Random-map generator pass: scatter 5..20 copies of terrain tile 385 (a
+ * single-cell detail tile, terrain kind 6) over random plain cells.  The other
+ * passes of func_ov007_02217a5c scatter MAP_TILE_ROCK and the wasteland debris. */
+M2C_UNK Map_ScatterDetailTiles(void) {
+    s32 Map_RandomScaledValue(s32, s32);
+    s32 Map_PickRandomTileOfValue(s32 *, s32 *, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
+    s32 x;
+    s32 y;
+    s32 i;
+    s32 count;
+
+    count = Map_RandomScaledValue(5, 20);
+    for (i = 0; i < count; i++) {
+        if (Map_PickRandomTileOfValue(&x, &y, 1) == 0) return;
+        Map_SetCellTile(x, y, 385);
+    }
 }
 
 M2C_UNK func_ov007_022176fc(void) {
@@ -350,7 +357,7 @@ void func_ov007_02217a5c(void) {
     void Map_GeneratePaths(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
     M2C_UNK func_ov007_02217608(void);
-    M2C_UNK func_ov007_02217680();
+    M2C_UNK Map_ScatterDetailTiles();
     M2C_UNK func_ov007_022176fc(void);
     M2C_UNK func_ov007_022178f4(void);
     M2C_UNK func_ov007_0221796c();
@@ -388,7 +395,7 @@ void func_ov007_02217a5c(void) {
     Map_GeneratePaths(&sp14, &sp10, &spC, &sp8, &sp4);
     func_ov007_02217598(&sp14, &sp10);
     func_ov007_02217608();
-    func_ov007_02217680();
+    Map_ScatterDetailTiles();
     func_ov007_022176fc();
     func_ov007_02217774();
     func_ov007_022178f4();

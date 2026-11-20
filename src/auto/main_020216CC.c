@@ -6,14 +6,14 @@ extern M2C_UNK gHostName, gHostRecord, gHostAddressList, gHostEntry;
 
 #pragma scheduling off
 void func_020216cc(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,void *arg4) {
-M2C_UNK func_02020478(M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32);
+M2C_UNK SocketSendTo(M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32);
 s32 var_r4;u16 temp_r4;register u16 var_r5;register u32 temp_r6;
 if(!arg4){var_r5=0;var_r4=0;}else {
 temp_r4=M2C_FIELD(arg4,u16*,2);temp_r6=M2C_FIELD(arg4,u32*,4);
 var_r5=(u8)((s32)temp_r4>>8)|((temp_r4<<8)&0xff00);
 var_r4=((temp_r6<<24)&0xff000000)|(((temp_r6<<8)&0xff0000)|((u8)(temp_r6>>24)|((temp_r6>>8)&0xff00)));
 }
-func_02020478(arg0,arg1,arg2,var_r5,var_r4,arg3);
+SocketSendTo(arg0,arg1,arg2,var_r5,var_r4,arg3);
 }
 #pragma scheduling on
 void func_02021750(void) {
@@ -94,14 +94,18 @@ void func_02021960(void) {
     SocketCheckReady();
 }
 
-s32 func_0202196c(M2C_UNK a,void *b){
-s32 SocketCreateListen(M2C_UNK,u16 *,u32 *);
-u32 v;u16 h;
-s32 result=SocketCreateListen(a,&h,&v);
-if(result<0)return result;
-M2C_FIELD(b,u16 *,2)=((h>>8)&255)|((h<<8)&0xff00);
-M2C_FIELD(b,u32 *,4)=((v>>24)&255)|((v>>8)&0xff00)|((v<<8)&0xff0000)|((v<<24)&0xff000000);
-return result;
+/* Accept a connection on a listening socket: create the accepted socket and
+ * report the peer's port and IPv4 address in `peer` as a GhiSocketAddress, in
+ * network byte order.  Returns the new socket, or a negative socket error. */
+s32 SocketAccept(void *listenSocket, GhiSocketAddress *peer) {
+    s32 SocketCreateListen(void *, u16 *, u32 *);
+    u32 peerAddr;
+    u16 peerPort;
+    s32 result = SocketCreateListen(listenSocket, &peerPort, &peerAddr);
+    if (result < 0) return result;
+    peer->port = ((peerPort >> 8) & 255) | ((peerPort << 8) & 0xff00);
+    peer->addr = ((peerAddr >> 24) & 255) | ((peerAddr >> 8) & 0xff00) | ((peerAddr << 8) & 0xff0000) | ((peerAddr << 24) & 0xff000000);
+    return result;
 }
 
 s32 func_020219e8(void *arg0, s32 arg1, s32 arg2) {

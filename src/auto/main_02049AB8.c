@@ -285,11 +285,13 @@ result=connection->completedCallback(connection->request,connection->result,body
 if(body && !result)connection->bodyBuffer.dontFree=1;
 }
 
-void InvokeRequestCallback(void *p,s32 a,s32 b) {
-extern M2C_UNK sGhiAssertConnection,sGhiCallbacksSourceFile,data_020fcfb8;
-if(!p)AssertFailed(&sGhiAssertConnection,&sGhiCallbacksSourceFile,&data_020fcfb8,0x45);
-if(!M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c))return;
-M2C_FIELD(p,s32 (**)(s32,s32,s32,s32,s32,s32,s32),0x3c)(M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,0x10),a,b,M2C_FIELD(p,s32 *,0x100),M2C_FIELD(p,s32 *,0x104),M2C_FIELD(p,s32 *,0x44));
+/* ghttp ghiCallProgressCallback: run the connection's progress callback with the
+ * current state, the bytes just received and the running byte counts. */
+void ghiCallProgressCallback(GHIConnection *connection, s32 buffer, s32 bufferLen) {
+extern M2C_UNK sGhiAssertConnection,sGhiCallbacksSourceFile,sGhiCallProgressCallbackName;
+if(!connection)AssertFailed(&sGhiAssertConnection,&sGhiCallbacksSourceFile,&sGhiCallProgressCallbackName,0x45);
+if(!connection->progressCallback)return;
+connection->progressCallback(connection->request,connection->state,buffer,bufferLen,connection->bytesReceived,connection->contentLength,connection->callbackParam);
 }
 
 void ghiCallPostCallback(void *arg0) {
@@ -409,27 +411,30 @@ out=0;dst[got]=0;*len=r;if(r<=0)out=1;return out;
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
-s32 ghiSocketSend(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 ghiSend(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+/* Send up to len bytes on the connection's socket.  A would-block style socket
+ * result is not an error; any other failure marks the request finished with the
+ * socket failure result and saves the socket error. */
+s32 ghiSocketSend(GHIConnection *connection, const void *data, s32 len) {
+    s32 ghiSend(s32, const void *, s32, s32);
     s32 ghiGetLastSocketError(s32);
-    s32 temp_r0;
-    s32 temp_r0_2;
+    s32 sent;
+    s32 error;
 
-    temp_r0 = ghiSend(M2C_FIELD(arg0, s32 *, 0x48), arg1, arg2, 0);
-    if (temp_r0 == -1) {
-        temp_r0_2 = ghiGetLastSocketError(M2C_FIELD(arg0, s32 *, 0x48));
-        if ((temp_r0_2 != -6) && (temp_r0_2 != -0x1A) && (temp_r0_2 != -0x4C)) {
-            M2C_FIELD(arg0, s32 *, 0xFC) = 1;
-            M2C_FIELD(arg0, s32 *, 0x38) = 5;
-            M2C_FIELD(arg0, s32 *, 0x4C) = temp_r0_2;
+    sent = ghiSend(connection->socket, data, len, 0);
+    if (sent == -1) {
+        error = ghiGetLastSocketError(connection->socket);
+        if ((error != -6) && (error != -0x1A) && (error != -0x4C)) {
+            connection->completed = 1;
+            connection->result = GHTTP_RESULT_SOCKET_FAILED;
+            connection->lastSocketError = error;
             return -1;
         }
         return 0;
     }
-    if (M2C_FIELD(arg0, s32 *, 0x10) == 4) {
-        M2C_FIELD(arg0, s32 *, 0x148) = (s32) (M2C_FIELD(arg0, s32 *, 0x148) + temp_r0);
+    if (connection->state == GHI_STATE_POSTING) {
+        connection->postOffset = (s32) (connection->postOffset + sent);
     }
-    return temp_r0;
+    return sent;
 }
 
 s32 ghiSendData(void *p,s32 a,s32 b) {

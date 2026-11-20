@@ -86,29 +86,32 @@ void func_ov003_021e4630(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
 }
 
-void func_ov003_021e4644(void *arg0) {
+/* Intro handler of the ov003 scene view (its +0x14 interface method): arms the
+ * two slide tweens (the top from off-screen 0x100, the bottom from -0x20), shows
+ * the view's sprites and marks the view visible. */
+void Ov003_ShowSceneView(void *scene) {
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Show3DSpriteSlide(s32);
-    void *temp_ip;
-    void *temp_r1;
-    void *temp_r5;
+    SpriteTween *tweenTop;
+    SpriteTween *tweenBottom;
+    void *spritePair;
 
-    temp_ip = M2C_FIELD(arg0, void **, 0x3C);
-    M2C_FIELD(temp_ip, s16 *, 0xE) = 0x100;
-    M2C_FIELD(temp_ip, s16 *, 0x10) = 0;
-    M2C_FIELD(temp_ip, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_ip, u16 *, 2) = (u16) M2C_FIELD(temp_ip, u16 *, 4);
-    temp_r1 = M2C_FIELD(arg0, void **, 0x40);
-    M2C_FIELD(temp_r1, s16 *, 0xE) = -0x20;
-    M2C_FIELD(temp_r1, s16 *, 0x10) = 0;
-    M2C_FIELD(temp_r1, s16 *, 0xC) = 0xC;
-    M2C_FIELD(temp_r1, u16 *, 2) = (u16) M2C_FIELD(temp_r1, u16 *, 4);
-    Show3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
-    Show3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    temp_r5 = M2C_FIELD(arg0, void **, 0x44);
-    Show3DSpriteSlide(M2C_FIELD(temp_r5, s32 *, 0));
-    Show3DSpriteSlide(M2C_FIELD(temp_r5, s32 *, 4));
-    M2C_FIELD(arg0, s8 *, 0x39) = 1;
+    tweenTop = M2C_FIELD(scene, SpriteTween **, 0x3C);
+    tweenTop->from = 0x100;
+    tweenTop->to = 0;
+    tweenTop->duration = 0xC;
+    tweenTop->current = tweenTop->start;
+    tweenBottom = M2C_FIELD(scene, SpriteTween **, 0x40);
+    tweenBottom->from = -0x20;
+    tweenBottom->to = 0;
+    tweenBottom->duration = 0xC;
+    tweenBottom->current = tweenBottom->start;
+    Show3DSprite(M2C_FIELD(scene, s32 *, 0x4C));
+    Show3DSpriteSlide(M2C_FIELD(scene, s32 *, 0x58));
+    spritePair = M2C_FIELD(scene, void **, 0x44);
+    Show3DSpriteSlide(M2C_FIELD(spritePair, s32 *, 0));
+    Show3DSpriteSlide(M2C_FIELD(spritePair, s32 *, 4));
+    M2C_FIELD(scene, s8 *, 0x39) = 1;
 }
 
 void func_ov003_021e46bc(void) {

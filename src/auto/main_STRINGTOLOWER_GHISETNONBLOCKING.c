@@ -39,15 +39,15 @@ void *ap = &b;
 return ((s32 (*)(s32,s32,s32,void *,s32))func_020498a4)(a,65535,4098,ap,4)!=-1;
 }
 
-s32 func_02049370(s32 a,s32 b,...) {
+s32 ghiSetSendBufferSize(s32 a,s32 b,...) {
 void func_020498a4(void);
 void *ap = &b;
 return ((s32 (*)(s32,s32,s32,void *,s32))func_020498a4)(a,65535,4097,ap,4)!=-1;
 }
 
-s32 func_020493b0(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1002,(int)&value,&size)==-1)return -1;return value;}
+s32 ghiGetRecvBufferSize(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1002,(int)&value,&size)==-1)return -1;return value;}
 
-s32 func_020493f8(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1001,(int)&value,&size)==-1)return -1;return value;}
+s32 ghiGetSendBufferSize(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1001,(int)&value,&size)==-1)return -1;return value;}
 
 s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
     s32 PollSockets(void *, u32, s64);
@@ -111,7 +111,18 @@ M2C_FIELD(&data_0213dc60,u16 *,18)=4;
 M2C_FIELD(&data_0213dc60,s32 *,48)=0;
 return &data_0213dc68;}
 
-s32 func_02049610(u32 *a){u32 x=*a;u32 y=((x<<24)&0xff000000)|(((x<<8)&0xff0000)|(((x>>24)&0xff)|((x>>8)&0xff00)));int first=(y>>24)&255;int second=(y>>16)&255;if(first==10)return 1;if(first==172 && second>=16 && second<=31)return 1;if(first==192 && second==168)return 1;return 0;}
+/* Check whether an IPv4 address (stored in network byte order at *addr) is a
+ * private LAN address: 10/8, 172.16/12 or 192.168/16. */
+s32 IsPrivateIpAddress(u32 *addr) {
+    u32 x = *addr;
+    u32 y = ((x << 24) & 0xff000000) | (((x << 8) & 0xff0000) | (((x >> 24) & 0xff) | ((x >> 8) & 0xff00)));
+    int first = (y >> 24) & 255;
+    int second = (y >> 16) & 255;
+    if (first == 10) return 1;
+    if (first == 172 && second >= 16 && second <= 31) return 1;
+    if (first == 192 && second == 168) return 1;
+    return 0;
+}
 
 s32 func_0204968c(s32 a, s32 b) { extern M2C_UNK data_0213dc60; if(a<0){M2C_FIELD(&data_0213dc60,s32 *,4)=a;a=b;} return a; }
 
@@ -131,22 +142,22 @@ void func_020496cc(void) {
     func_0204968c(func_02021750(), -1);
 }
 
-s32 func_020496e0(int a,UnkSocketAddress *b,u8 c){s32 func_0202152c(int,UnkSocketAddress *);UnkSocketAddress addr;if(*(u16 *)(b->bytes+2)==0)return 0;addr=*b;addr.bytes[0]=c;return func_0204968c(func_0202152c(a,&addr),-1);}
+s32 ghiBind(int a,UnkSocketAddress *b,u8 c){s32 func_0202152c(int,UnkSocketAddress *);UnkSocketAddress addr;if(*(u16 *)(b->bytes+2)==0)return 0;addr=*b;addr.bytes[0]=c;return func_0204968c(func_0202152c(a,&addr),-1);}
 
 s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 func_02021558(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return func_0204968c(func_02021558(a,&addr),-1);}
 
-void func_0204978c(void) {
+void ghiListen(void) {
     s32 func_02021960();
     func_0204968c(func_02021960(), -1);
 }
 
 void func_020497a0(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
-    s32 func_0202196c(M2C_UNK);
+    s32 SocketAccept(M2C_UNK);
     M2C_UNK func_0204968c(s32, M2C_UNK);
     s32 temp_r0;
 
     *arg1 = (u8) *arg2;
-    temp_r0 = func_0202196c(arg0);
+    temp_r0 = SocketAccept(arg0);
     *arg2 = (s32) *arg1;
     func_0204968c(temp_r0, -1);
 }

@@ -192,8 +192,8 @@ s32 func_02096064(void) {
 
 void func_020960b4(void) {
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK func_020949f8;
-    func_0209cce4(&func_020949f8, 5);
+    extern M2C_UNK UpdateDialogSequences;
+    func_0209cce4(&UpdateDialogSequences, 5);
 }
 
 void LayerOffsetToPixel(s32 arg0, s32 arg1, void *arg2) {

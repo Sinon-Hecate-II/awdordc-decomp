@@ -3,20 +3,23 @@
 #include "battle_map.h"
 #include "ov000_ai.h"
 
-s32 func_ov004_022138b0(void) {
+/* Battle-script condition: true when the AI's standing command is a unit build
+ * (kind 3) and its cursor sits on a city or base owned by player 1. */
+s32 IsAiBuildingOnPlayerOneCityOrBase(void) {
     extern void **gCurrentMap;
     extern u8 gAiCommand;
-    u8 value;
-    u8 *p;
-    u8 *base;
+    u8 terrain;
+    u8 *unit;
+    u8 *map;
     u8 x, y;
-    base = *gCurrentMap;
-    p = M2C_FIELD(base, u8 **, 0x52D0);
-    x = p[1]; y = p[2];
-    if (gAiCommand == 3) {
-        p = base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758));
-        value = p[0x1420];
-        if (((s32)(value & 0xE0) >> 5) == 1 && (u32)((value & 0x1F) - 0x10) <= 1) return 1;
+    map = *gCurrentMap;
+    unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
+    x = unit[MAP_UNIT_X]; y = unit[MAP_UNIT_Y];
+    if (gAiCommand == AI_COMMAND_PRODUCE_UNIT) {
+        unit = map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS));
+        terrain = unit[MAP_CELL_TERRAIN];
+        if (((s32)(terrain & MAP_TERRAIN_OWNER_MASK) >> MAP_PROPERTY_TILE_OWNER_SHIFT) == 1 &&
+            (u32)((terrain & MAP_TERRAIN_KIND_MASK) - MAP_TERRAIN_CITY) <= 1) return 1;
     }
     return 0;
 }

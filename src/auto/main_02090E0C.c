@@ -387,32 +387,37 @@ void func_02091570(M2C_UNK a) {
     } while (r7 < count);
 }
 
-void SetSpriteAnimFrame(void *arg0,s32 arg1) {
-void func_02091928(void *);
-void *root;
+/* Point a sprite at animation frame `frameIndex` and restart its script.  With
+ * SPRITE_FLAG_OFFSET_TABLE set, the frame data is a table of byte offsets (its
+ * u16 at +2 leads to the frame table); otherwise it is an array of frame
+ * pointers whose entry frameIndex+1 is the frame.  Both the loop cursor and the
+ * script cursor start at the selected frame. */
+void SetSpriteAnimFrame(void *sprite,s32 frameIndex) {
+void Sprite_RestartAnimation(void *);
+void *data;
 u8 *base;
-void *tail;
+void *frame;
 u32 off;
-if(arg0==NULL)return;
-root=*(void **)arg0;
-if(root==NULL)return;
-if(M2C_FIELD(arg0,u8 *,0x22)&2) {
-base=(u8 *)root;
+if(sprite==NULL)return;
+data=*(void **)sprite;
+if(data==NULL)return;
+if(M2C_FIELD(sprite,u8 *,SPRITE_FLAGS)&SPRITE_FLAG_OFFSET_TABLE) {
+base=(u8 *)data;
 off=*(u16 *)(base+2)&~1u;
 base+=off;
-tail=base+(*(u16 *)(base+arg1*2)&~1u);
-M2C_FIELD(arg0,void **,8)=tail;
-base=*(u8 **)arg0;
+frame=base+(*(u16 *)(base+frameIndex*2)&~1u);
+M2C_FIELD(sprite,void **,SPRITE_LOOP_PTR)=frame;
+base=*(u8 **)sprite;
 off=*(u16 *)(base+2)&~1u;
 base+=off;
-tail=base+(*(u16 *)(base+arg1*2)&~1u);
+frame=base+(*(u16 *)(base+frameIndex*2)&~1u);
 } else {
-u32 idx=arg1+1;
-M2C_FIELD(arg0,void **,8)=((void **)root)[idx];
-tail=((void **)root)[idx];
+u32 idx=frameIndex+1;
+M2C_FIELD(sprite,void **,SPRITE_LOOP_PTR)=((void **)data)[idx];
+frame=((void **)data)[idx];
 }
-M2C_FIELD(arg0,void **,12)=tail;
-func_02091928(arg0);
+M2C_FIELD(sprite,void **,SPRITE_SCRIPT)=frame;
+Sprite_RestartAnimation(sprite);
 }
 
 void DrawSprite3DParts(M2C_UNK a) {
@@ -535,7 +540,7 @@ void Sprite_SetScriptData(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-void func_02091928(void *arg0) {
+void Sprite_RestartAnimation(void *arg0) {
     M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
     u16 temp_r4;
     M2C_FIELD(arg0, s16 *, 0x1A) = 0;

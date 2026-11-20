@@ -4,7 +4,7 @@
 u8 IsLeadByte(u8 *arg0);
 u8 IsGlyphEscape(u8 *arg0);
 #pragma opt_propagation off
-s32 func_02099b18(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+s32 FindTextControlCode(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     u8 *data = (u8 *)arg0;
     s32 want = arg1;
     s32 allow = arg2;
@@ -88,13 +88,13 @@ s32 func_02099b18(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 #pragma opt_propagation reset
 u8 func_02099dcc(M2C_UNK arg0) {
-    s32 func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     u8 var_r0;
 
-    if (func_02099b18(arg0, 5, 1) != 0) {
+    if (FindTextControlCode(arg0, 5, 1) != 0) {
         return 0U;
     }
-    if (func_02099b18(arg0, 6, 1) == 0) {
+    if (FindTextControlCode(arg0, 6, 1) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -103,10 +103,10 @@ u8 func_02099dcc(M2C_UNK arg0) {
 }
 
 s32 func_02099e10(M2C_UNK arg0) {
-    s32 func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     void *temp_r0;
     u8 value;
-    temp_r0 = (void *)func_02099b18(arg0, 0x15, 1);
+    temp_r0 = (void *)FindTextControlCode(arg0, 0x15, 1);
     if (temp_r0 != NULL) {
         value = M2C_FIELD(temp_r0, u8 *, 1);
         if (value == 0x80) return 0;

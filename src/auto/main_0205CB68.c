@@ -74,7 +74,7 @@ s32 gpiFree(void *);
 M2C_UNK func_02048dc4(s32);
 s32 Vector_Free(s32);
 s32 ghiSocket(s32,s32,s32);
-s32 func_020496e0(s32,void *,s32);
+s32 ghiBind(s32,void *,s32);
 M2C_UNK ghiCloseSocket(s32);
 s32 ghiGetSockName(s32,void *,s32 *);
 u16 port;
@@ -104,7 +104,7 @@ swapped=((port>>8)&0xff)|((port<<8)&0xff00);
 pkt.b=2;
 pkt.d=addr;
 pkt.c=swapped;
-if(func_020496e0(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
+if(ghiBind(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
 ghiCloseSocket(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
 }
 len=8;ghiGetSockName(M2C_FIELD(p,s32 *,0),&pkt,&len);
@@ -577,7 +577,7 @@ q=M2C_FIELD(p,void ***,12)[i];
 if(!q)break;
 if(M2C_FIELD((s32)q,s32 *,0)!=0x100007f) {
 result=M2C_FIELD(q,s32 *,0);
-if(func_02049610(q))return result;
+if(IsPrivateIpAddress(q))return result;
 }
 }
 return result;

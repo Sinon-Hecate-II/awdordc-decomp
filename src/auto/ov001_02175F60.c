@@ -390,43 +390,51 @@ void func_ov001_02176844(void) {
     }
 }
 
+/* Open the ov001 Wi-Fi menu (its two options open the access-point list or the
+ * options menu): load its background and object layout, show the menu's
+ * explanation text, lay the choice frame out around the current selection and
+ * chain to the fade-in step. */
 void Ov001_OpenWifiMenu(void) {
- void func_ov001_02176934(void);
- M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
- M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
- M2C_UNK Ov001_LoadMenuResource(M2C_UNK);
- M2C_UNK Ov001_LayoutChoiceFrame(u16,u16,u16,u16);
- void func_ov001_02176a20(void);
- extern u8 gOv001WifiMenuSelection;
-   extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
- s32 offset;
- func_ov001_02176934();
- Ov001_LoadObjLayoutBlock(0);
- Ov001_ShowMessagePanel(0x2e,-1,0);
- Ov001_LoadMenuResource(4);
- offset = gOv001WifiMenuSelection * 8;
- Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameRight,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameTop,u16 *,offset),M2C_FIELD(&gOv001ChoiceFrameBottom,u16 *,offset));
- Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176a20);
+    void Ov001_LoadWifiMenuBackground(void);
+    M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LoadMenuResource(M2C_UNK);
+    M2C_UNK Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
+    void Ov001_FadeInWifiMenu(void);
+    extern u8 gOv001WifiMenuSelection;
+    extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
+    s32 offset;
+
+    Ov001_LoadWifiMenuBackground();
+    Ov001_LoadObjLayoutBlock(0);
+    Ov001_ShowMessagePanel(0x2E, -1, 0); /* explanation text of the menu */
+    Ov001_LoadMenuResource(4);
+    offset = gOv001WifiMenuSelection * 8;
+    Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft, u16 *, offset),
+                            M2C_FIELD(&gOv001ChoiceFrameRight, u16 *, offset),
+                            M2C_FIELD(&gOv001ChoiceFrameTop, u16 *, offset),
+                            M2C_FIELD(&gOv001ChoiceFrameBottom, u16 *, offset));
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWifiMenu);
 }
 
 /* Loads the step-screen background NCL file and registers its rendering callbacks, then selects VRAM banks 3 for the displays. */
-void func_ov001_02176934(void) {
+void Ov001_LoadWifiMenuBackground(void) {
     s32 Ov001_LocalizePath(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_0218f716;
-    extern M2C_UNK data_ov001_021904dc;
-    extern M2C_UNK data_ov001_021904f4;
-    extern M2C_UNK data_ov001_0219050c;
+    extern M2C_UNK gOv001WifiMenuLayoutPath;
+    extern M2C_UNK gOv001WifiMenuBgTilesPath;
+    extern M2C_UNK gOv001WifiMenuBgPalettePath;
+    extern M2C_UNK gOv001WifiMenuBgMapPath;
     extern M2C_UNK GX_LoadBGPltt;
     extern u8 gOv001WifiMenuSelection;
     extern M2C_UNK GX_LoadBG2Scr;
     extern M2C_UNK GX_LoadBG2Char;
     typedef struct { u8 bytes[22]; } Text;
-    Text text = *(Text *)&data_ov001_0218f716;
-    Ov001_LoadAsset(&data_ov001_021904f4, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&data_ov001_0219050c, &GX_LoadBG2Scr);
-    Ov001_LoadAsset(&data_ov001_021904dc, &GX_LoadBG2Char);
+    Text text = *(Text *)&gOv001WifiMenuLayoutPath;
+    Ov001_LoadAsset(&gOv001WifiMenuBgPalettePath, &GX_LoadBGPltt);
+    Ov001_LoadAsset(&gOv001WifiMenuBgMapPath, &GX_LoadBG2Scr);
+    Ov001_LoadAsset(&gOv001WifiMenuBgTilesPath, &GX_LoadBG2Char);
     M2C_FIELD(&gOv001WifiMenuSelection, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
@@ -434,7 +442,7 @@ void func_ov001_02176934(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
 }
 
-void func_ov001_02176a20(void) {
+void Ov001_FadeInWifiMenu(void) {
     extern M2C_UNK func_ov001_02176a74;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);

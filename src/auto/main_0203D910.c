@@ -441,23 +441,27 @@ AppendKeyValue(&gKeyVER,valueText,statusText,47);
 return SetGpiStatus(6,statusText,0);
 }
 
-void func_0203e4e0(void) {
+/* Shut the connection manager down: drop the active connection, free the
+ * manager's matchmaking-message and player-list buffers, clear the cached
+ * session players and forget whether a match was started and has finished. */
+void ShutdownConnection(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
     M2C_UNK ClearSessionPlayers();
     M2C_UNK SetActiveConnection(M2C_UNK);
     extern M2C_UNK gConnectionMgr;
+
     SetActiveConnection(0);
-    if (M2C_FIELD(&gConnectionMgr, s32 *, 8) != 0) {
-        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);
-        M2C_FIELD(&gConnectionMgr, s32 *, 8) = 0;
+    if (M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_MATCH_MESSAGE) != 0) {
+        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_MATCH_MESSAGE), 0);
+        M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_MATCH_MESSAGE) = 0;
     }
     ClearSessionPlayers();
-    if (M2C_FIELD(&gConnectionMgr, s32 *, 0) != 0) {
-        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 0), 0);
-        M2C_FIELD(&gConnectionMgr, s32 *, 0) = 0;
+    if (M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_PLAYER_LIST) != 0) {
+        HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_PLAYER_LIST), 0);
+        M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_PLAYER_LIST) = 0;
     }
-    M2C_FIELD(&gConnectionMgr, s8 *, 0x1C) = 0;
-    M2C_FIELD(&gConnectionMgr, s8 *, 0x1D) = 0;
+    M2C_FIELD(&gConnectionMgr, s8 *, CONN_MGR_MATCH_STARTED) = 0;
+    M2C_FIELD(&gConnectionMgr, s8 *, CONN_MGR_MATCH_FINISHED) = 0;
 }
 
 s32 func_0203e558(void) {

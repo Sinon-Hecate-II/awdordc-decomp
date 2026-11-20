@@ -191,10 +191,10 @@ void func_0201eed4(void) {
     void func_0201a550(s32);
     void func_0201f030(void);
     void func_0201f09c(void);
-    void func_02029828(s32);
+    void WFC_SetSendCallback(s32);
     void func_0201a26c(void *);
     void func_0201aa74(s32, s32, s32, s32);
-    s32 func_02020f30(void);
+    s32 ReapClosedSockets(void);
     s32 func_0201f0b4(void);
     extern s32 data_020faf98;
     extern s32 data_02138ad0;
@@ -246,8 +246,8 @@ void func_0201eed4(void) {
         if (r0v == 0) r0v = 0xB;
         func_0201a550(r0v);
     }
-    func_02029828((s32)func_0201aa74);
-    func_0201a4f8((s32)func_02020f30);
+    WFC_SetSendCallback((s32)func_0201aa74);
+    func_0201a4f8((s32)ReapClosedSockets);
     func_0201a26c(base);
 }
 

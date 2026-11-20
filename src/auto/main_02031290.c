@@ -698,7 +698,10 @@ Base32Encode((u64)(u32)GetNasRecordCheckWord(record),NAS_ID_CHECK_BITS,check);
 StringFormatN((M2C_UNK)out,NAS_ID_TEXT_SIZE,&sNasIdFormat,code,(keyType>>24)&255,(keyType>>16)&255,(keyType>>8)&255,keyType&255,check);
 }
 
-void func_020321ac(void *arg0, s32 arg1) {
+/* Build the 0x40-byte profile-id block: clear it, store its size and the game
+ * id, create the NAS login key at +4, mark the key record at +0x10 unresolved
+ * and store the CRC32 of the block's first 0x3C bytes at +0x3C. */
+void InitProfileIdBlock(void *block, s32 gameId) {
     void MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     void InitNasLoginKey(void *);
     void func_02031e94(M2C_UNK, M2C_UNK);
@@ -706,14 +709,14 @@ void func_020321ac(void *arg0, s32 arg1) {
     s32 func_02076860(M2C_UNK *, void *, M2C_UNK);
     u32 table[256];
 
-    MI_CpuFill8((M2C_UNK)arg0, 0, 0x40);
-    M2C_FIELD(arg0, s32 *, 0) = 0x40;
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x24) = arg1;
-    InitNasLoginKey((u8 *)arg0 + 4);
-    func_02031e94((M2C_UNK)((u8 *)arg0 + 0x10), 0);
+    MI_CpuFill8((M2C_UNK)block, 0, PROFILE_ID_BLOCK_SIZE);
+    M2C_FIELD(block, s32 *, 0) = PROFILE_ID_BLOCK_SIZE;
+    M2C_FIELD(block, s32 *, 0x1C) = 0;
+    M2C_FIELD(block, s32 *, PROFILE_ID_BLOCK_GAME_ID) = gameId;
+    InitNasLoginKey((u8 *)block + 4);
+    func_02031e94((M2C_UNK)((u8 *)block + 0x10), 0);
     func_02076794((M2C_UNK *)table, 0xEDB88320);
-    M2C_FIELD(arg0, s32 *, 0x3C) = func_02076860((M2C_UNK *)table, arg0, 0x3C);
-    M2C_FIELD(arg0, s32 *, 0x20) = (s32)(M2C_FIELD(arg0, s32 *, 0x20) | 1);
+    M2C_FIELD(block, s32 *, 0x3C) = func_02076860((M2C_UNK *)table, block, 0x3C);
+    M2C_FIELD(block, s32 *, 0x20) = (s32)(M2C_FIELD(block, s32 *, 0x20) | 1);
 }
 

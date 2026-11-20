@@ -37,14 +37,14 @@ s32 WhAdvanceConnectionState(void) {
 s32 func_ov001_0216df50(s32 arg0, s32 arg1) {
     M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
     s32 func_02029274();
-    M2C_UNK func_020292cc(M2C_UNK);
+    M2C_UNK WFC_SetDataLock(M2C_UNK);
     s32 func_02029348(u16);
     s32 temp_r0;
     s32 var_r4;
     s32 var_r5;
 
     var_r5 = arg0;
-    func_020292cc(1);
+    WFC_SetDataLock(1);
     temp_r0 = func_02029274();
     if (temp_r0 > 0) {
         var_r4 = 0;
@@ -60,7 +60,7 @@ loop_2:
             }
         }
     }
-    func_020292cc(0);
+    WFC_SetDataLock(0);
     return temp_r0;
 }
 

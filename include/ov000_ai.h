@@ -71,6 +71,7 @@
 /* One past the last valid AI_COMMAND_KIND: kinds 1..0x18 are commands, 0 and
  * above this are not (IsAiCommandKindValid). */
 #define AI_COMMAND_KIND_LIMIT 0x19
+#define AI_COMMAND_PRODUCE_UNIT 3 /* build the unit kind in AI_COMMAND_ACTOR at the command tile */
 
 /* Sentinels in gAiUnitList, the list of unit ids the current AI phase walks.
  * AI_UNIT_LIST_END finishes the walk; AI_UNIT_LIST_NO_UNIT is an entry with no

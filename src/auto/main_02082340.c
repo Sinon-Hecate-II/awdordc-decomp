@@ -390,7 +390,27 @@ campaign_check:
 
 s32 func_02082fc4(u32 x){switch(x){case 0:return 1;case 2:return 3;case 1:return 2;case 3:return 4;case 4:return 5;case 5:return 6;case 6:return 7;default:return 0;}}
 
-s32 MapListCategoryToDataCategory(u32 x){switch(x){case 2:return 1;case 4:return 3;case 1:return 0;case 5:return 4;case 6:return 5;case 3:return 2;case 7:case 8:case 9:case 10:case 11:return 6;default:return 0;}}
+/* Maps a map-list category (a slot of the map-selection list, MAP_LIST_*) to the
+ * map-data category (MapData_GetCategory) its maps are drawn from: the first six
+ * list slots are the six data categories in order, and every custom-map list slot
+ * uses the custom category. */
+s32 MapListCategoryToDataCategory(u32 listCategory) {
+    switch (listCategory) {
+    case 2: return 1;
+    case 4: return 3;
+    case 1: return 0;
+    case 5: return 4;
+    case 6: return 5;
+    case 3: return 2;
+    case MAP_LIST_CUSTOM:
+    case MAP_LIST_LINK_CUSTOM_FIRST:
+    case 9:
+    case 10:
+    case 11:
+        return MAP_DATA_CATEGORY_CUSTOM;
+    default: return 0;
+    }
+}
 
 u8 func_020830a8(u16 x){ s32 MapData_GetCategory(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=func_02082fc4(MapData_GetCategory()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
 

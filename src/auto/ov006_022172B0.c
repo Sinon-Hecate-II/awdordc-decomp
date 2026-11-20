@@ -624,16 +624,20 @@ i++;
 }while(i<(s32)M2C_FIELD(list,u8 *,0x38));
 }
 
-void func_ov006_02218128(void *p) {
-void *GetMapRecordStamp(s32); u32 i; u16 id; void *q; u32 flags; void *out; s32 value;
-i=M2C_FIELD(p,u8 *,0x3a);
-if(i>=M2C_FIELD(p,u8 *,0x39)){Sprite_ResumeAnimation(p);return;}
-M2C_FIELD(p,u8 *,0x3a)=i+1;
-id=M2C_FIELD(p,u16 **,0x50)[i]; GetMapRecord(id); q=GetMapRecordStamp(id);
-flags=(M2C_FIELD(q,u32 *,0xc)>>29)<<8;
-value=M2C_FIELD(q,s32 *,0x10); out=p+0x58;
-if(M2C_FIELD(p,u8 *,0x3a)==M2C_FIELD(p,u8 *,0x39)) func_020e40e0(value,flags,out,p);
-else CreateOnlinePlayerIdListNode(value,flags,out,p);
+/* List-row step callback for the joinable campaign maps: create one online-player
+ * id list row per joinable map id, taking the player id and flags of the map's
+ * record stamp; the last row comes from the other id-list sprite bank.  Once every
+ * row exists the list sprite goes back to its regular animation. */
+void func_ov006_02218128(void *list) {
+    void *GetMapRecordStamp(s32); u32 index; u16 mapId; void *stamp; u32 flags; void *owner; s32 playerId;
+    index = M2C_FIELD(list, u8 *, 0x3a);
+    if (index >= M2C_FIELD(list, u8 *, 0x39)) { Sprite_ResumeAnimation(list); return; }
+    M2C_FIELD(list, u8 *, 0x3a) = index + 1;
+    mapId = M2C_FIELD(list, u16 **, 0x50)[index]; GetMapRecord(mapId); stamp = GetMapRecordStamp(mapId);
+    flags = (M2C_FIELD(stamp, u32 *, 0xc) >> 29) << 8;
+    playerId = M2C_FIELD(stamp, s32 *, 0x10); owner = list + 0x58;
+    if (M2C_FIELD(list, u8 *, 0x3a) == M2C_FIELD(list, u8 *, 0x39)) func_020e40e0(playerId, flags, owner, list);
+    else CreateOnlinePlayerIdListNode(playerId, flags, owner, list);
 }
 
 void func_ov006_022181a4(void *p) { s32 i; for(i=0;i<M2C_FIELD(p,u8 *,0x38);i++){u16 b=M2C_FIELD(p,u16 **,0x48)[i]; s32 a=M2C_FIELD(p,u8 **,0x4c)[i]; if(a==1)goto call; if(a!=2)continue; call: func_020868ac(b-0xe1,0);}}

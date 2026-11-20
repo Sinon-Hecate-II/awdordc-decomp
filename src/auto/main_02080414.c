@@ -133,9 +133,15 @@ s32 h=a[1]; register s32 w=a[0]; register u16 *p=(u16 *)(a+2); s32 x,y;
 for(y=0;y<h;y++)for(x=0;x<w;x++) b[y*32+x]=v+*p++;
 }
 #pragma opt_common_subs on
-void FillTileRect(u16 *p,s32 w,s32 h,u32 tile,u16 pal) {
- s32 x,y; u16 v=(tile&0x3ff)|((pal&15)<<12);
- for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=v++;
+/* Fill a width x height rectangle of the 32-tile-wide `tilemap` with
+ * consecutive tile numbers, starting from the low 10 bits of `startTile` and
+ * taking the palette from `palette`. */
+void FillTileRect(u16 *tilemap, s32 width, s32 height, u32 startTile, u16 palette) {
+    s32 x, y;
+    u16 tile = (startTile & 0x3ff) | ((palette & 15) << 12);
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+            tilemap[y * 32 + x] = tile++;
 }
 
 void SetTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
@@ -143,11 +149,18 @@ void SetTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=(p[y*32+x]&0xfff)|((pal&15)<<12);
 }
 
-void AddTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
- s32 x,y;u16 v;u32 low;
- for(y=0;y<h;y++)for(x=0;x<w;x++){
- v=p[y*32+x];low=v&0xfff;v^=low;v+=(pal&15)<<12;p[y*32+x]=low|v;
- }
+/* Add (palette & 15) to the palette index of every tile in a width x height
+ * rectangle of the 32-tile-wide `tilemap`, wrapping the 4-bit index. */
+void AddTileRectPalette(u16 *tilemap, s32 width, s32 height, u32 palette) {
+    s32 x, y; u16 tile; u32 baseTile;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++) {
+            tile = tilemap[y * 32 + x];
+            baseTile = tile & 0xfff;
+            tile ^= baseTile;
+            tile += (palette & 15) << 12;
+            tilemap[y * 32 + x] = baseTile | tile;
+        }
 }
 
 void ClearTileRect(u16 *p,s32 w,s32 h){

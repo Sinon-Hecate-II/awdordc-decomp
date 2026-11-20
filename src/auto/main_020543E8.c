@@ -502,21 +502,24 @@ block_9:
     func_02054fa8(manager, entry);
 }
 
-void func_02055124(M2C_UNK arg0) {
+/* Configure a freshly accepted gpi peer socket: request the receive and send
+ * buffer sizes at each supported step up to the largest, then read both back to
+ * settle them. */
+void gpiSetSocketBuffers(s32 socket) {
     M2C_UNK ghiSetRecvBufferSize(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02049370(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020493b0(M2C_UNK);
-    M2C_UNK func_020493f8(M2C_UNK);
-    ghiSetRecvBufferSize(arg0, 0x4000);
-    ghiSetRecvBufferSize(arg0, 0x8000);
-    ghiSetRecvBufferSize(arg0, 0x10000);
-    ghiSetRecvBufferSize(arg0, 0x20000);
-    ghiSetRecvBufferSize(arg0, 0x40000);
-    func_02049370(arg0, 0x4000);
-    func_02049370(arg0, 0x8000);
-    func_02049370(arg0, 0x10000);
-    func_020493b0(arg0);
-    func_020493f8(arg0);
+    M2C_UNK ghiSetSendBufferSize(M2C_UNK, M2C_UNK);
+    M2C_UNK ghiGetRecvBufferSize(M2C_UNK);
+    M2C_UNK ghiGetSendBufferSize(M2C_UNK);
+    ghiSetRecvBufferSize(socket, 0x4000);
+    ghiSetRecvBufferSize(socket, 0x8000);
+    ghiSetRecvBufferSize(socket, 0x10000);
+    ghiSetRecvBufferSize(socket, 0x20000);
+    ghiSetRecvBufferSize(socket, 0x40000);
+    ghiSetSendBufferSize(socket, 0x4000);
+    ghiSetSendBufferSize(socket, 0x8000);
+    ghiSetSendBufferSize(socket, 0x10000);
+    ghiGetRecvBufferSize(socket);
+    ghiGetSendBufferSize(socket);
 }
 
 /* Ticks the gpi session manager: accepts a pending incoming connection (the
@@ -533,7 +536,7 @@ s32 func_0205519c(void **manager) {
     s32 gpiProcessPeerState(M2C_UNK, void *);
     void func_02055008(void **, void *);
     void *gpiCreatePeer(void **, s32, s32);
-    void func_02055124(M2C_UNK);
+    void gpiSetSocketBuffers(M2C_UNK);
     s32 socket;
     s32 peerResult;
     void *peer;
@@ -549,7 +552,7 @@ s32 func_0205519c(void **manager) {
                 M2C_FIELD(peer, s32 *, 0) = 0x68;
                 M2C_FIELD(peer, s32 *, 8) = socket;
                 ghiSetNonBlocking(socket, 0);
-                func_02055124(M2C_FIELD(peer, s32 *, 8));
+                gpiSetSocketBuffers(M2C_FIELD(peer, s32 *, 8));
             } else {
                 ghiCloseSocket(socket);
             }

@@ -55,7 +55,7 @@ M2C_UNK func_ov005_0221bc28(void) {
 
 void func_ov005_0221bc44(M2C_UNK arg0) {
     void *FindObjectByClass(M2C_UNK *);
-    M2C_UNK func_02087db8(void *, s32);
+    M2C_UNK RemoveSpriteCell(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     extern u16 *gKeyState;
@@ -66,7 +66,7 @@ void func_ov005_0221bc44(M2C_UNK arg0) {
     PlaySoundEffect(0x1000D);
     object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
     active = M2C_FIELD(object, u8 *, 0x12) != 0;
-    if (active) func_02087db8(object, 1);
+    if (active) RemoveSpriteCell(object, 1);
     Sprite_ResumeAnimation(arg0);
 }
 

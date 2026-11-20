@@ -6,7 +6,7 @@
 
 s32 NetworkPollClosing(void);
 
-s32 func_02020738(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
+s32 SocketQueueSend(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
     /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
     u16 func_0201d04c();
     s32 SocketSendTask(void *);
@@ -254,7 +254,7 @@ s32 SocketShutdownTask(void *arg0) {
     return 0;
 }
 
-s32 func_02020bf4(s32 arg0) {
+s32 SocketIsDestroyed(s32 arg0) {
     s32 SocketIsUnregistered();
     s32 SocketIsClosed(s32);
     if ((arg0 >= 0) && (SocketIsUnregistered() != 0) && (SocketIsClosed(arg0) == 0)) {
@@ -406,7 +406,7 @@ void ConnectionAbort(s32 conn) {
     OS_RestoreInterrupts(irq);
 }
 
-M2C_UNK func_02020f30(void) {
+M2C_UNK ReapClosedSockets(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK func_02020d90();
@@ -472,32 +472,35 @@ retry:
     return SOCK_BUSY;
 }
 
+/* One step of the network shutdown: close the sockets still open, then the one
+ * that is being shut down, reap the closed ones, and report SOCK_BUSY until the
+ * network task has finished. */
 s32 NetworkPollClosing(void) {
-    s32 func_0201a4a8();
+    s32 NetworkTaskIsFinished();
     M2C_UNK SocketClose(s32);
-    M2C_UNK func_02020f30();
+    M2C_UNK ReapClosedSockets();
     s32 SocketCloseAll();
-    M2C_UNK func_02029828(M2C_UNK);
+    M2C_UNK WFC_SetSendCallback(M2C_UNK);
     extern s32 gClosingSocket;
-    s32 var_r4;
+    s32 result;
 
     if (gClosingSocket != 0) {
-        var_r4 = SocketCloseAll();
-        if (var_r4 == 0) {
+        result = SocketCloseAll();
+        if (result == 0) {
             SocketClose(gClosingSocket);
-            if (func_02020bf4(gClosingSocket) != 0) {
+            if (SocketIsDestroyed(gClosingSocket) != 0) {
                 gClosingSocket = 0;
             }
-            var_r4 = -0x1A;
+            result = SOCK_BUSY;
         }
-        func_02020f30();
-    } else if (func_0201a4a8() == 0) {
-        var_r4 = -0x1A;
+        ReapClosedSockets();
+    } else if (NetworkTaskIsFinished() == 0) {
+        result = SOCK_BUSY;
     } else {
-        func_02029828(0);
-        var_r4 = 0;
+        WFC_SetSendCallback(0);
+        result = 0;
     }
-    return var_r4;
+    return result;
 }
 
 /* Resolve a host name to an IPv4 address: hand the network stack a temporary raw
@@ -735,12 +738,12 @@ s32 SocketRecvFromAddress(M2C_UNK sock, M2C_UNK buf, M2C_UNK len, s32 flags, voi
 }
 
 void SocketSend(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02020478(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_02020478(arg0, arg1, arg2, 0, 0, 0);
+    M2C_UNK SocketSendTo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    SocketSendTo(arg0, arg1, arg2, 0, 0, 0);
 }
 
 void func_020216a8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    M2C_UNK func_02020478(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_02020478(arg0, arg1, arg2, 0, 0, arg3);
+    M2C_UNK SocketSendTo(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    SocketSendTo(arg0, arg1, arg2, 0, 0, arg3);
 }
 

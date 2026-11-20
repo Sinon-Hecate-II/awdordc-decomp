@@ -706,10 +706,10 @@ s32 func_0209d9dc(void *arg0) {
 }
 
 s32 func_0209da3c(void *arg0) {
-    M2C_UNK func_0208af20();
+    M2C_UNK StartWindowClose();
     s32 FindTextLayer();
     if (FindTextLayer() != 0) {
-        func_0208af20();
+        StartWindowClose();
     }
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);
     return 0;

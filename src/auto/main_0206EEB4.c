@@ -161,8 +161,8 @@ void func_0206f8ac(void) {
 }
 
 void func_0206f8b8(void) {
-    M2C_UNK func_02064ad4();
-    func_02064ad4();
+    M2C_UNK IntegerToRadixString();
+    IntegerToRadixString();
 }
 
 /* Build the exception's message string `string` from the already-allocated

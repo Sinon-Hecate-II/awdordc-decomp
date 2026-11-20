@@ -380,14 +380,17 @@ extern s32 gSpriteBatch;
 M2C_FIELD(gSpriteBatch,s32 *,0x60)=arg0;
 }
 
-void func_0207bcc4(s32 arg0, s32 arg1) {
-extern s32 gSpriteBatch;
-extern u8 data_021011d4[], data_021011d5[];
-void func_0207bd58(s32,s32);
-M2C_FIELD(gSpriteBatch+M2C_FIELD(gSpriteBatch,s32 *,0x54),u8 *,0x3c)=arg0;
-M2C_FIELD(gSpriteBatch+M2C_FIELD(gSpriteBatch,s32 *,0x54),u8 *,0x46)=arg1;
-func_0207bd58(M2C_FIELD(gSpriteBatch,s32 *,0x54), ((data_021011d4[arg0*8]+7)>>3)*((data_021011d5[arg0*8]+7)>>3));
-M2C_FIELD(gSpriteBatch,s32 *,0x54)++;
+/* Append a sprite of the given kind and selection state to the current 3D sprite
+ * batch, advancing the next placed sprite's tile offset past this sprite's tiles
+ * (ceil(width / 8) * ceil(height / 8) tiles) and bumping the batch's count. */
+void AddSpriteToBatch(s32 kind, s32 selected) {
+    extern s32 gSpriteBatch;
+    extern u8 gSpriteKindWidths[], gSpriteKindHeights[];
+    void AdvanceBatchTileOffset(s32, s32);
+    SPRITE_BATCH->kind[SPRITE_BATCH->count] = kind;
+    SPRITE_BATCH->selected[SPRITE_BATCH->count] = selected;
+    AdvanceBatchTileOffset(SPRITE_BATCH->count, ((gSpriteKindWidths[kind * 8] + 7) >> 3) * ((gSpriteKindHeights[kind * 8] + 7) >> 3));
+    SPRITE_BATCH->count++;
 }
 
 s32 GetBatchTileOffset(s32 arg0) {
@@ -395,7 +398,7 @@ extern s32 gSpriteBatch;
 return M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
 }
 
-void func_0207bd58(s32 arg0,s32 arg1) {
+void AdvanceBatchTileOffset(s32 arg0,s32 arg1) {
 extern s32 gSpriteBatch;
 if(arg0>=9)return;
 M2C_FIELD(gSpriteBatch+(arg0+1)*4,s32 *,0x14)=arg1+M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
@@ -423,7 +426,7 @@ void func_0207bdc4(void) {
     void CloseNarcArchive(void);
     s32 func_0207bd88(s32);
     extern s32 gSpriteBatch;
-    extern u8 data_021011d4[];
+    extern u8 gSpriteKindWidths[];
     extern u8 data_021011d0[];
     extern M2C_UNK data_0211e12c;
     extern M2C_UNK data_02101408;
@@ -447,7 +450,7 @@ void func_0207bdc4(void) {
     for (i = 0; i < count; i++, p++) {
         kind = *p;
         if (kind != 0) {
-            r4 = data_021011d4[kind << 3];
+            r4 = gSpriteKindWidths[kind << 3];
             break;
         }
     }
@@ -559,14 +562,14 @@ s32 GetBatchSpriteRows(s32 arg0) {
 
 s32 GetBatchSpriteSourceWidth(s32 arg0) {
     extern s32 gSpriteBatch;
-    extern u8 data_021011d4[];
-    return data_021011d4[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
+    extern u8 gSpriteKindWidths[];
+    return gSpriteKindWidths[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
 s32 GetBatchSpriteSourceHeight(s32 arg0) {
     extern s32 gSpriteBatch;
-    extern u8 data_021011d5[];
-    return data_021011d5[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
+    extern u8 gSpriteKindHeights[];
+    return gSpriteKindHeights[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
 void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {

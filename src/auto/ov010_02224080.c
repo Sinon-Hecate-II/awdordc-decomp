@@ -121,25 +121,29 @@ void VoiceLink_CheckTimeout(void) {
         ((LinkConfig *) &gLinkConfig)->notifyArg);
 }
 
-s32 func_ov010_02224334(s32 arg0, void *arg1, s32 arg2, M2C_UNK arg3) {
+/* Receive dispatcher for a voice-chat link packet: accept only a full-size packet
+ * sent by the expected player to this one, then hand a short-header packet to the
+ * short-packet handler and a full one to the peer or control handler, chosen by
+ * the link config.  Returns whether a reply has to be sent. */
+s32 VoiceLink_HandlePacket(s32 peerId, VoiceLinkPacket *packet, s32 size, M2C_UNK reply) {
     s32 VoiceLink_HandlePeerPacket(void *, M2C_UNK);
     s32 VoiceLink_HandleControlPacket(void *, M2C_UNK);
-    s32 func_ov010_02224c40(void *, M2C_UNK);
+    s32 VoiceLink_HandleShortPacket(void *, M2C_UNK);
     extern M2C_UNK gLinkConfig;
 
-    if (arg2 != 0x10) {
+    if (size != VOICE_LINK_PACKET_SIZE) {
         return 0;
     }
-    if ((M2C_FIELD(arg1, u8 *, 8) != arg0) || (M2C_FIELD(arg1, u8 *, 9) != M2C_FIELD(&gLinkConfig, u8 *, 0))) {
+    if ((packet->sender != peerId) || (packet->target != M2C_FIELD(&gLinkConfig, u8 *, LINK_CONFIG_LOCAL_ID))) {
         return 0;
     }
-    if (M2C_FIELD(arg1, u8 *, 5) != 0x10) {
-        return func_ov010_02224c40(arg1, arg3);
+    if (packet->headerSize != VOICE_LINK_PACKET_SIZE) {
+        return VoiceLink_HandleShortPacket(packet, reply);
     }
-    if (M2C_FIELD(&gLinkConfig, s32 *, 0xC) == 0) {
-        return VoiceLink_HandlePeerPacket(arg1, arg3);
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_CONTROL) == 0) {
+        return VoiceLink_HandlePeerPacket(packet, reply);
     }
-    return VoiceLink_HandleControlPacket(arg1, arg3);
+    return VoiceLink_HandleControlPacket(packet, reply);
 }
 
 void *VoiceLink_AllocContext(u32 arg0) {
@@ -412,7 +416,7 @@ else{VoiceLink_SendControl(0);((VoiceLinkState *)&gVoiceLinkState)->lastActivity
 return 1;
 }
 
-s32 func_ov010_02224c40(void *arg0, M2C_UNK arg1) {
+s32 VoiceLink_HandleShortPacket(void *arg0, M2C_UNK arg1) {
 void VoiceLink_InitContext();extern M2C_UNK gVoiceLinkScratchContext;
 s32 *p;
 if(M2C_FIELD(arg0,u8 *,4)==255 && M2C_FIELD(arg0,u8 *,6)==4)return 0;

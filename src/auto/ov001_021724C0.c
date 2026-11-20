@@ -23,7 +23,7 @@ static inline void GetSpritePosition(const u32 *sprite, SpritePosition *pos) {
 }
 
 #pragma cplusplus on
-extern "C" void func_ov001_021724c0(void)
+extern "C" void Ov001_OpenKeyboard(void)
 {
     extern const u8 data_ov001_0218f324[], data_ov001_0218f31c[];
     extern const u16 *data_ov001_02190104[];

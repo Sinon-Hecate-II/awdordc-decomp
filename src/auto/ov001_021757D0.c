@@ -58,9 +58,9 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     void Ov001_SetupDisplay(void);
     void Ov001_InitSound(void);
     void Ov001_SetStepCallback(s32);
-    void func_ov001_0218b850(void);
+    void Ov001_UpdateInput(void);
     void func_ov001_0218c7d4(s32);
-    void func_ov001_0218bdb0(void);
+    void Ov001_UpdateLidState(void);
     void func_ov001_0218c63c(void);
     void func_02007598(void);
     void func_ov001_02175d04(void);
@@ -74,10 +74,10 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     Ov001_InitSound();
     Ov001_SetStepCallback((s32)Ov001_InitScreen);
     do {
-        func_ov001_0218b850();
+        Ov001_UpdateInput();
         M2C_FIELD(&gOv001ScreenState, void (**)(void), OV001_SCREEN_STEP)();
         func_ov001_0218c7d4(0);
-        func_ov001_0218bdb0();
+        Ov001_UpdateLidState();
         func_ov001_0218c63c();
         func_02007598();
     } while (!M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT));
@@ -105,12 +105,12 @@ return 1;
  * save-block initialiser on a temporary 0x700-byte scratch buffer. */
 void Ov001_InitCore(void) {
 extern u8 gOv001ScreenState;
-M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK func_ov001_0218b79c(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
+M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
 M2C_UNK scratch;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!func_02006f8c())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
-GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();func_ov001_0218b79c();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
+GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -211,7 +211,7 @@ void func_ov001_02175d04(void) {
     M2C_UNK Ov001_FreeFades();
     M2C_UNK func_ov001_0218abb8();
     M2C_UNK func_ov001_0218b688();
-    M2C_UNK func_ov001_0218b818();
+    M2C_UNK Ov001_StopInput();
     M2C_UNK func_ov001_0218bea0();
     M2C_UNK func_ov001_0218c0b8();
     M2C_UNK func_ov001_0218c4c0();
@@ -220,7 +220,7 @@ void func_ov001_02175d04(void) {
     func_02002490();
     *(s32 *)0x04001000 &= ~0x10000;
     func_ov001_0218c668();
-    func_ov001_0218b818();
+    Ov001_StopInput();
     func_ov001_0218bea0();
     func_ov001_02184ff8();
     func_ov001_0218a01c();

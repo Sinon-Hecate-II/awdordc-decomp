@@ -540,10 +540,24 @@ channel=p->channel;
 func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
 #pragma opt_common_subs on
-void Sound_OpenArchive(void *a,s32 b,s32 c,s32 d){M2C_UNK InitFileRequest(void *);s32 func_0200b95c(void *,s32);s32 OpenFileRange(void *,Unk02BDFileRange);s32 LoadResourceArchive(void *,s32,s32);extern void *gCurrentArchive;
-M2C_FIELD(a,s32 *,140)=0;M2C_FIELD(a,s32 *,132)=0;M2C_FIELD(a,s32 *,136)=0;
-if(!func_0200b95c(a+124,b))return;InitFileRequest(a+52);
-if(!OpenFileRange(a+52,M2C_FIELD(a,Unk02BDFileRange *,124)))return;M2C_FIELD(a,s32 *,48)=1;
-if(LoadResourceArchive(a,c,d))gCurrentArchive=a;
+/* Opens the sound archive whose file path is `path` into `archive`: clears the
+ * archive's loaded-section pointers, resolves the path and opens the file range
+ * through the archive's own file request, marks the archive open, then loads its
+ * sections into `pool` (plus the optional extra section when `loadExtra` is set);
+ * on success the archive becomes the current sound archive. */
+void Sound_OpenArchive(void *archive, s32 path, s32 pool, s32 loadExtra) {
+    M2C_UNK InitFileRequest(void *);
+    s32 func_0200b95c(void *, s32);
+    s32 OpenFileRange(void *, Unk02BDFileRange);
+    s32 LoadResourceArchive(void *, s32, s32);
+    extern void *gCurrentArchive;
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_BLOCK) = 0;
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_TABLE) = 0;
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_FILE) = 0;
+    if (!func_0200b95c(archive + SOUND_ARCHIVE_FILE_RANGE, path)) return;
+    InitFileRequest(archive + SOUND_ARCHIVE_FILE_REQUEST);
+    if (!OpenFileRange(archive + SOUND_ARCHIVE_FILE_REQUEST, M2C_FIELD(archive, Unk02BDFileRange *, SOUND_ARCHIVE_FILE_RANGE))) return;
+    M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_OPENED) = 1;
+    if (LoadResourceArchive(archive, pool, loadExtra)) gCurrentArchive = archive;
 }
 

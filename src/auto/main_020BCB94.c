@@ -54,7 +54,7 @@ s32 GetMapCursorKeyAction(void) {
  * army 8 special_def, every other army special_mini. */
 void SpawnArmySpecialEffect(u8 x, u8 y, M2C_UNK arg2, M2C_UNK arg3, s32 parent) {
     void PlaySoundAtTile(s32, u8, u8);
-    void func_020b5188(void *, u8, u8, s32, s32, s32, s32);
+    void CreateEffectMapSprite(void *, u8, u8, s32, s32, s32, s32);
     extern void **gCurrentMap;
     extern M2C_UNK sSpecialRecSprite, sSpecialDefSprite, sSpecialMiniSprite;
     s32 sprite;
@@ -65,15 +65,15 @@ void SpawnArmySpecialEffect(u8 x, u8 y, M2C_UNK arg2, M2C_UNK arg3, s32 parent) 
     switch ((u32)(sprite << 24) >> 24) {
     case 2:
     case 9:
-        func_020b5188(&sSpecialRecSprite, x, y, 0, 0, 0, parent);
+        CreateEffectMapSprite(&sSpecialRecSprite, x, y, 0, 0, 0, parent);
         PlaySoundAtTile(0x12a, x, y);
         break;
     case 8:
-        func_020b5188(&sSpecialDefSprite, x, y, 0, 0, 0, parent);
+        CreateEffectMapSprite(&sSpecialDefSprite, x, y, 0, 0, 0, parent);
         PlaySoundAtTile(0x12b, x, y);
         break;
     default:
-        func_020b5188(&sSpecialMiniSprite, x, y, 0, 0, 0, parent);
+        CreateEffectMapSprite(&sSpecialMiniSprite, x, y, 0, 0, 0, parent);
         PlaySoundAtTile(0x129, x, y);
         break;
     }
@@ -93,7 +93,7 @@ void func_020bcdec(void *arg0) {
     func_0208f7d0();
 }
 
-void func_020bce04(s32 a){void PlaySoundAtTile(s32,u8,u8);void func_020b5188(void *,u8,u8,s32,s32,s32,s32);extern u8 data_021293cc[];extern void **gCurrentMap;void *p=M2C_FIELD(*gCurrentMap,void **,0x52d0);PlaySoundAtTile(0x128,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2));p=M2C_FIELD(*gCurrentMap,void **,0x52d0);func_020b5188(data_021293cc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0,0,0,a);}
+void func_020bce04(s32 a){void PlaySoundAtTile(s32,u8,u8);void CreateEffectMapSprite(void *,u8,u8,s32,s32,s32,s32);extern u8 data_021293cc[];extern void **gCurrentMap;void *p=M2C_FIELD(*gCurrentMap,void **,0x52d0);PlaySoundAtTile(0x128,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2));p=M2C_FIELD(*gCurrentMap,void **,0x52d0);CreateEffectMapSprite(data_021293cc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0,0,0,a);}
 
 void func_020bce74(void *a){extern void **gCurrentMap;extern u8 data_021261bc[];void func_020a3428(s32,s32);s32 x=M2C_FIELD(a,s32 *,0x5c),y=M2C_FIELD(a,s32 *,0x64);u32 v;func_020a3428(x,y);v=(u32)(M2C_FIELD((u8 *)*gCurrentMap+x*0x8c,s32 *,0x6810)<<24)>>24;(*(void (**)(s32,void *))(data_021261bc+v*0x9c+y*0x28))(x,a);}
 

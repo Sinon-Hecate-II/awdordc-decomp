@@ -4,30 +4,34 @@
 #include "sound.h"
 typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
-M2C_UNK func_02029e98(void *arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
+/* Initialise a heap header: store its signature, region and attribute, start its
+ * child list and link the heap into the list of the heap that contains it (the
+ * global heap list, initialised on first use, when no heap contains it). */
+M2C_UNK InitHeapHead(void *heap, s32 signature, s32 start, M2C_UNK end, s32 attribute) {
     M2C_UNK ListInit(void *, s32);
     M2C_UNK ListAppend(M2C_UNK, void *);
-    M2C_UNK func_02029e70(void *);
-    extern s32 data_02138e90;
-    extern u8 data_02138e94[];
-    struct Flags { u32 value:8; u32 rest:24; };
-    M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x18) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x1C) = arg3;
-    M2C_FIELD(arg0, s32 *, 0x20) = 0;
-    M2C_FIELD(arg0, struct Flags *, 0x20).value = *(u16 *)&arg4;
-    ListInit(arg0 + 0xC, 4);
-    if (data_02138e90 == 0) {
-        ListInit(data_02138e94, 4);
-        data_02138e90 = 1;
+    M2C_UNK GetHeapListForAddress(void *);
+    extern s32 gHeapListInitialized;
+    extern u8 gHeapList[];
+    struct HeapAttribute { u32 value:8; u32 rest:24; };
+
+    M2C_FIELD(heap, s32 *, 0) = signature;
+    M2C_FIELD(heap, s32 *, 0x18) = start;
+    M2C_FIELD(heap, s32 *, 0x1C) = end;
+    M2C_FIELD(heap, s32 *, 0x20) = 0;
+    M2C_FIELD(heap, struct HeapAttribute *, 0x20).value = *(u16 *)&attribute;
+    ListInit(heap + 0xC, 4);
+    if (gHeapListInitialized == 0) {
+        ListInit(gHeapList, 4);
+        gHeapListInitialized = 1;
     }
-    ListAppend(func_02029e70(arg0), arg0);
+    ListAppend(GetHeapListForAddress(heap), heap);
 }
 
 M2C_UNK func_02029f14(void *arg0) {
-    M2C_UNK func_02029e70(void *);
+    M2C_UNK GetHeapListForAddress(void *);
     M2C_UNK ListRemove(M2C_UNK, void *);
-    ListRemove(func_02029e70(arg0), arg0);
+    ListRemove(GetHeapListForAddress(arg0), arg0);
 }
 
 void GetBlockRange(void *arg0, void *arg1) {
@@ -90,7 +94,7 @@ void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
     struct Flags { u16 flag:1; u16 rest:15; };
     s32 range[2];
     void *p;
-    func_02029e98(arg0, 0x45585048, (s32)(arg0 + 0x38), arg1, arg2);
+    InitHeapHead(arg0, 0x45585048, (s32)(arg0 + 0x38), arg1, arg2);
     M2C_FIELD(arg0, s16 *, 0x34) = 0;
     M2C_FIELD(arg0, u16 *, 0x36) = 0;
     M2C_FIELD(arg0, struct Flags *, 0x36).flag = 0;
@@ -291,8 +295,8 @@ return bit;
 }
 #pragma opt_propagation reset
 void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_02029e98();
-    func_02029e98(arg0, 0x46524D48, arg0 + 0x30, arg1, arg2);
+    M2C_UNK InitHeapHead();
+    InitHeapHead(arg0, 0x46524D48, arg0 + 0x30, arg1, arg2);
     M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
     M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
     M2C_FIELD(arg0, s32 *, 0x2C) = 0;

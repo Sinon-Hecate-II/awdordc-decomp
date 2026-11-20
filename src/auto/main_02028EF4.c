@@ -156,15 +156,34 @@ s32 func_02029274(void) {
 
 #pragma push
 #pragma opt_common_subs off
-s32 func_020292cc(s32 arg0) {
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *GetSession(void);
- s32 state; void *base; u8 flag; s32 result;
- state=OS_DisableInterrupts(); base=GetSession();
- if(base==NULL){OS_RestoreInterrupts(state);return 0;}
- flag=M2C_FIELD(base,u8 *,0x226a);
- if(arg0!=0){result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=1;}
- else {result=flag!=0;M2C_FIELD(base,u8 *,0x226a)=0;}
- OS_RestoreInterrupts(state);return result;
+/* Set the WFC session's data lock (WFC_SESSION_DATA_LOCK), which makes incoming
+ * player records be discarded, and return whether it was already set; 0 when there
+ * is no session. */
+s32 WFC_SetDataLock(s32 locked) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void *GetSession(void);
+    s32 state;
+    void *session;
+    u8 wasLocked;
+    s32 result;
+
+    state = OS_DisableInterrupts();
+    session = GetSession();
+    if (session == NULL) {
+        OS_RestoreInterrupts(state);
+        return 0;
+    }
+    wasLocked = M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK);
+    if (locked != 0) {
+        result = wasLocked != 0;
+        M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK) = 1;
+    } else {
+        result = wasLocked != 0;
+        M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK) = 0;
+    }
+    OS_RestoreInterrupts(state);
+    return result;
 }
 #pragma pop
 s32 func_02029348(void *arg0) {
@@ -487,7 +506,7 @@ void *func_020297c8(u16 *arg0) {
     return r7;
 }
 
-void func_02029828(s32 arg0) {
+void WFC_SetSendCallback(s32 arg0) {
 s32 OS_DisableInterrupts(void);
 void OS_RestoreInterrupts(s32);
 extern M2C_UNK gWfcSendState;
@@ -659,33 +678,35 @@ s32 func_02029ad8(void) {
     return var_r5;
 }
 
+/* Average the signal samples taken so far: 0 before the first sample, the
+ * mean of the whole ring once it has wrapped. */
 u8 WFC_GetAverageSignal(void) {
     s32 RuntimeIntDivMod(s32, s32);
     extern u8 gWfcSignalSampleCount;
     extern u8 gWfcSignalSamples[16];
-    u8 n = gWfcSignalSampleCount;
+    u8 count = gWfcSignalSampleCount;
     s32 sum = 0;
     s32 i;
-    s32 result;
+    s32 average;
 
-    if (n > 0x10) {
+    if (count > WFC_SIGNAL_RING_FULL) {
         i = 0;
         do {
             sum += gWfcSignalSamples[i];
             i++;
-        } while (i < 16);
-        result = sum / 16;
-    } else if (n != 0) {
+        } while (i < WFC_SIGNAL_SAMPLE_COUNT);
+        average = sum / WFC_SIGNAL_SAMPLE_COUNT;
+    } else if (count != 0) {
         i = 0;
-        while (i < n) {
+        while (i < count) {
             sum += gWfcSignalSamples[i];
             i++;
         }
-        result = RuntimeIntDivMod(sum, n);
+        average = RuntimeIntDivMod(sum, count);
     } else {
-        result = 0;
+        average = 0;
     }
-    return (u8)result;
+    return (u8)average;
 }
 
 s32 func_02029b9c(void) {
@@ -823,7 +844,7 @@ s32 ListPrev(void *arg0, s32 arg1) {
     return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 0);
 }
 
-M2C_UNK func_02029e08(M2C_UNK *arg0, M2C_UNK arg1) {
+M2C_UNK FindHeapForAddress(M2C_UNK *arg0, M2C_UNK arg1) {
     s32 ListNext(void *, s32);
     M2C_UNK orig = (M2C_UNK)arg0;
     M2C_UNK key = arg1;
@@ -838,7 +859,7 @@ M2C_UNK func_02029e08(M2C_UNK *arg0, M2C_UNK arg1) {
         if ((u32)key >= M2C_FIELD((void *)cur, u32 *, 0x1c)) {
             goto advance;
         }
-        r = func_02029e08((M2C_UNK *)((s8 *)(void *)cur + 0xc), key);
+        r = FindHeapForAddress((M2C_UNK *)((s8 *)(void *)cur + 0xc), key);
         if (r != 0) {
             return r;
         }
@@ -849,14 +870,14 @@ M2C_UNK func_02029e08(M2C_UNK *arg0, M2C_UNK arg1) {
     return 0;
 }
 
-M2C_UNK *func_02029e70(M2C_UNK arg0) {
-    s32 func_02029e08(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02138e94;
+M2C_UNK *GetHeapListForAddress(M2C_UNK arg0) {
+    s32 FindHeapForAddress(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gHeapList;
     M2C_UNK *var_r4;
     s32 temp_r0;
 
-    var_r4 = &data_02138e94;
-    temp_r0 = func_02029e08(&data_02138e94, arg0);
+    var_r4 = &gHeapList;
+    temp_r0 = FindHeapForAddress(&gHeapList, arg0);
     if (temp_r0 != 0) {
         var_r4 = temp_r0 + 0xC;
     }

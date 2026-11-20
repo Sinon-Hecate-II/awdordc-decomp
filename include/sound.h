@@ -96,6 +96,9 @@
 #define SOUND_ARCHIVE_TABLE        0x84 /* s32 * the object table (from TABLE_OFFSET) */
 #define SOUND_ARCHIVE_FILE_OFFSET  0x10 /* s32 offset in the file of the object file */
 #define SOUND_ARCHIVE_FILE         0x88 /* void * the object file (from FILE_OFFSET) */
+#define SOUND_ARCHIVE_OPENED       0x30 /* s32 nonzero once the archive's file request is open */
+#define SOUND_ARCHIVE_FILE_REQUEST 0x34 /* u8[0x48] the FSFileRequest the archive's file is read through */
+#define SOUND_ARCHIVE_FILE_RANGE   0x7C /* the archive file's resolved byte range, reused to reopen it */
 #define SOUND_ARCHIVE_ENTRY_COUNT  8    /* s32 objects in the table */
 #define SOUND_ARCHIVE_ENTRIES      12   /* the objects: 16 bytes each */
 #define SOUND_ARCHIVE_ENTRY_SIZE   16

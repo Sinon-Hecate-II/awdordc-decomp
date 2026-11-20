@@ -324,7 +324,7 @@ void func_0209e25c(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
 }
 
 void func_0209e26c(void *arg0, s8 arg1) {
-    M2C_UNK func_020991f4(s32, s8);
+    M2C_UNK SetFaceSpriteActive(s32, s8);
     M2C_UNK RefreshFaceSprite(s32);
     void UpdateScenePanelPalette(void *);
     s32 temp_r0;
@@ -334,7 +334,7 @@ void func_0209e26c(void *arg0, s8 arg1) {
     var_r5 = 0;
     do {
         temp_r0 = Get3DSpriteChild(arg0, var_r5);
-        func_020991f4(temp_r0, arg1);
+        SetFaceSpriteActive(temp_r0, arg1);
         RefreshFaceSprite(temp_r0);
         var_r5 += 1;
     } while (var_r5 < 2);

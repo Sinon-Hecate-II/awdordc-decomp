@@ -13,8 +13,8 @@ static inline s32 UnitOwnerC4c8(u8 *p){if(p)return (UnitIndexC4c8(p)>>6)+1;retur
 s32 func_ov000_0217bcd4(s8 a, s8 b, s8 c, s16 d) {
 s32 func_ov000_0217b3bc(s8,s8,s8,s16);
 extern s32 (*gMoveSearchGoal)(s32,s32,s32);
-extern s32 func_ov000_0217ab5c(s32,s32,s32);
-gMoveSearchGoal=func_ov000_0217ab5c;
+extern s32 IsAttackableEnemyMoveGoal(s32,s32,s32);
+gMoveSearchGoal=IsAttackableEnemyMoveGoal;
 return func_ov000_0217b3bc(a,b,c,d);
 }
 s32 func_ov000_0217bcf4(s32 arg0, s32 arg1, s32 arg2) {
@@ -318,15 +318,19 @@ s32 UnitCanReachPropertyCell(u8 *unit) {
     return 0;
 }
 
+/* Clear the AI move target of the unit under the cursor when that unit is an
+ * infantry-like unit: the target x and the target y are both set to their
+ * "no target" value (MAP_UNIT_TARGET_NONE / MAP_UNIT_TARGET_Y_NONE). */
 void ClearUnitMoveTarget(void) {
-extern void **gCurrentMap;
-s32 IsFootUnitKind();
-void *p;
-if(!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u8 *,0)<<26)>>26))return;
-p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
-M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0x3F)|0x3F;
-p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
-M2C_FIELD(p,u16 *,8)=(M2C_FIELD(p,u16 *,8)&~0xFC0)|0xFC0;
+    extern void **gCurrentMap;
+    s32 IsFootUnitKind();
+    void *unit;
+
+    if (!IsFootUnitKind((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26)) return;
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_X_MASK) | MAP_UNIT_TARGET_NONE;
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) = (M2C_FIELD(unit, u16 *, MAP_UNIT_TARGET) & ~MAP_UNIT_TARGET_Y_MASK) | MAP_UNIT_TARGET_Y_NONE;
 }
 
 /* Whether two unit kinds pass the AI's kind-pair mask test: the mask byte at

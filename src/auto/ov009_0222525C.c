@@ -657,7 +657,7 @@ void func_ov009_02225dd4(void *arg0) {
  * stale level. */
 void RefreshLinkMessageText(void *layer) {
     s32 FindTextLayer();
-    M2C_UNK func_0208af20();
+    M2C_UNK StartWindowClose();
     M2C_UNK RenderTextLayer(void *, u8, s32, s32);
     void *CreateTextLayer(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
@@ -671,7 +671,7 @@ void RefreshLinkMessageText(void *layer) {
     s8 engine;
 
     if (M2C_FIELD(layer, s32 *, LINK_LAYER_STATUS) == 0) return;
-    if (FindTextLayer()) func_0208af20();
+    if (FindTextLayer()) StartWindowClose();
     text = GetLocalizedText(M2C_FIELD(layer, s32 *, LINK_LAYER_TEXT_KEY));
     style = M2C_FIELD(layer, s32 *, LINK_LAYER_STYLE);
     savedBank = gCur3DSpriteEngine; i = 0; styleByte = style;

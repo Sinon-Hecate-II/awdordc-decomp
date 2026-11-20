@@ -346,22 +346,25 @@ void TlsFillPendingRecord(void *transport) {
     }
 }
 
-s32 func_02024f20(void *arg0) {
+/* Bytes of TLS data waiting to be read: reassemble the transport's pending record
+ * first, then report its unread bytes once the record is kept for the caller.
+ * Returns 0 when nothing is pending, -1 once the transport or TLS has failed. */
+s32 TlsGetReceivedDataSize(void *transport) {
     void TlsFillPendingRecord(void *);
-    s32 temp_r1;
-    void *temp_r4;
+    void *pendingRecord;
+    void *channel;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0xC);
-    if ((M2C_FIELD(temp_r4, s32 *, 0x824) != 0) && (M2C_FIELD(temp_r4, u8 *, 0x456) != 0)) {
+    channel = M2C_FIELD(transport, void **, 0xC);
+    if ((M2C_FIELD(channel, void **, TLS_PENDING_RECORD) != 0) && (M2C_FIELD(channel, u8 *, TLS_PENDING_KEEP) != 0)) {
 
     } else {
-        TlsFillPendingRecord(arg0);
+        TlsFillPendingRecord(transport);
     }
-    temp_r1 = M2C_FIELD(temp_r4, s32 *, 0x824);
-    if ((temp_r1 != 0) && (M2C_FIELD(temp_r4, u8 *, 0x456) != 0)) {
-        return M2C_FIELD(temp_r4, s32 *, 0x828) - M2C_FIELD(temp_r4, s32 *, 0x82C);
+    pendingRecord = M2C_FIELD(channel, void **, TLS_PENDING_RECORD);
+    if ((pendingRecord != 0) && (M2C_FIELD(channel, u8 *, TLS_PENDING_KEEP) != 0)) {
+        return M2C_FIELD(channel, s32 *, TLS_PENDING_SIZE) - M2C_FIELD(channel, s32 *, TLS_PENDING_READ);
     }
-    if ((temp_r1 == 0) && ((M2C_FIELD(arg0, u8 *, 8) != 4) || (M2C_FIELD(temp_r4, u8 *, 0x455) == 9))) {
+    if ((pendingRecord == 0) && ((M2C_FIELD(transport, u8 *, SOCKET_STATE) != TCP_STATE_ESTABLISHED) || (M2C_FIELD(channel, u8 *, TLS_STATE) == TLS_STATE_ERROR))) {
         return -1;
     }
     return 0;

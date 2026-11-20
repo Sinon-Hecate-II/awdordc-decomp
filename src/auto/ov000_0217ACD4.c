@@ -356,11 +356,11 @@ found:
 }
 #pragma pop
 s32 func_ov000_0217bc34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_ov000_0217ab10();
+    s32 IsEnemyUnitAt();
     s32 func_ov000_0217ae9c(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)();
 
-    gMoveSearchGoal = func_ov000_0217ab10;
+    gMoveSearchGoal = IsEnemyUnitAt;
     if (gMoveSearchGoal() == 1) {
         return 1;
     }

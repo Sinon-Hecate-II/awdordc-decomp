@@ -2,29 +2,37 @@
 #include "common.h"
 
 #pragma opt_propagation off
-s32 func_02050c24(void **arg0, void *arg1) {
+/* gpiStartConnect (gpiConnect.c): open the sockets of a new gpi connection.
+ * Without a firewall, a local socket is created, made non-blocking, bound to an
+ * ephemeral port and its port kept for NAT negotiation.  Then the server socket
+ * is created and made non-blocking, the connection manager host name
+ * (gpcm.gs.nintendowifi.net) resolved, and the socket connected to the
+ * master's GameSpy port.  A failed socket call stores the connection's network
+ * error and reports it as fatal.  On success the connection enters the
+ * connecting state and the operation is marked as running. */
+s32 gpiStartConnect(void **connectionPtr, void *operation) {
     void *ghiResolveHostname(M2C_UNK *);
     s32 ghiSetNonBlocking(s32, M2C_UNK);
     s32 ghiSocket(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_020496e0(s32, M2C_UNK *, M2C_UNK);
+    s32 ghiBind(s32, M2C_UNK *, M2C_UNK);
     s32 ghiConnect(s32, M2C_UNK *, M2C_UNK);
-    s32 func_0204978c(s32);
+    s32 ghiListen(s32);
     s32 ghiGetSockName(s32, M2C_UNK *, s32 *);
     s32 ghiGetLastSocketError(s32);
     M2C_UNK gpiCallErrorCallback(void **, M2C_UNK, M2C_UNK);
     M2C_UNK gpiSetError(void **, M2C_UNK, M2C_UNK *);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fe1f0;
-    extern M2C_UNK data_020fe210;
-    extern M2C_UNK data_020fe290;
-    extern M2C_UNK data_020fe2b8;
-    extern M2C_UNK data_020fe2ec;
-    extern M2C_UNK data_020fe314;
-    extern M2C_UNK data_020fe340;
-    extern M2C_UNK data_020fe370;
-    extern M2C_UNK data_020fe3a4;
+    extern M2C_UNK gGpiMasterHostName;
+    extern M2C_UNK gpiConnectSocketError;
+    extern M2C_UNK gpiConnectNonBlockingError;
+    extern M2C_UNK gpiConnectBindError;
+    extern M2C_UNK gpiConnectListenError;
+    extern M2C_UNK gpiConnectSockNameError;
+    extern M2C_UNK gpiConnectResolveError;
+    extern M2C_UNK gpiConnectAddressAssert;
     extern M2C_UNK sGpiConnectSourceFile;
-    extern M2C_UNK data_020fe3d4;
+    extern M2C_UNK gpiAssertStartConnect;
+    extern M2C_UNK gpiConnectConnectError;
     union {
         u32 words[2];
         struct {
@@ -38,25 +46,25 @@ s32 func_02050c24(void **arg0, void *arg1) {
     s32 bindResult;
     s32 invalid;
     s32 error;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_4;
-    s32 temp_r0_5;
-    void *temp_r0_3;
-    void *temp_r4;
+    s32 localSocket;
+    s32 serverSocket;
+    s32 hostAddress;
+    s32 socketError;
+    void *hostEntry;
+    void *session;
 
-    temp_r4 = *arg0;
-    if (M2C_FIELD(temp_r4, s32 *, 0x10C) == 0) {
-        temp_r0 = ghiSocket(2, 1, 0);
-        M2C_FIELD(temp_r4, s32 *, 0x204) = temp_r0;
-        if (temp_r0 == -1) {
-            gpiSetError(arg0, 5, &data_020fe290);
-            gpiCallErrorCallback(arg0, 3, 1);
+    session = *connectionPtr;
+    if (M2C_FIELD(session, s32 *, GPI_CONN_FIREWALL) == 0) {
+        localSocket = ghiSocket(2, 1, 0);
+        M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_SOCKET) = localSocket;
+        if (localSocket == -1) {
+            gpiSetError(connectionPtr, 5, &gpiConnectSocketError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
-        if (ghiSetNonBlocking(temp_r0, 0) == 0) {
-            gpiSetError(arg0, 5, &data_020fe2b8);
-            gpiCallErrorCallback(arg0, 3, 1);
+        if (ghiSetNonBlocking(localSocket, 0) == 0) {
+            gpiSetError(connectionPtr, 5, &gpiConnectNonBlockingError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
         {
@@ -65,47 +73,47 @@ s32 func_02050c24(void **arg0, void *arg1) {
         words[1] = 0;
     }
         addr.fields.family = 2;
-        bindResult = func_020496e0(M2C_FIELD(temp_r4, s32 *, 0x204), (M2C_UNK *)&addr, 8);
+        bindResult = ghiBind(M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_SOCKET), (M2C_UNK *)&addr, 8);
         invalid = -1;
         error = 5;
         if (bindResult == invalid) {
-            gpiSetError(arg0, error, &data_020fe2ec);
-            gpiCallErrorCallback(arg0, 3, 1);
+            gpiSetError(connectionPtr, error, &gpiConnectBindError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
-        if (func_0204978c(M2C_FIELD(temp_r4, s32 *, 0x204)) == -1) {
-            gpiSetError(arg0, 5, &data_020fe314);
-            gpiCallErrorCallback(arg0, 3, 1);
+        if (ghiListen(M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_SOCKET)) == -1) {
+            gpiSetError(connectionPtr, 5, &gpiConnectListenError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
         addrlen = 8;
-        if (ghiGetSockName(M2C_FIELD(temp_r4, s32 *, 0x204), (M2C_UNK *)&addr, &addrlen) == -1) {
-            gpiSetError(arg0, 5, &data_020fe340);
-            gpiCallErrorCallback(arg0, 3, 1);
+        if (ghiGetSockName(M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_SOCKET), (M2C_UNK *)&addr, &addrlen) == -1) {
+            gpiSetError(connectionPtr, 5, &gpiConnectSockNameError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
-        M2C_FIELD(temp_r4, s32 *, 0x208) = (s32) addr.fields.port;
+        M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_PORT) = (s32) addr.fields.port;
         goto block_13;
     }
-    M2C_FIELD(temp_r4, s32 *, 0x204) = -1;
-    M2C_FIELD(temp_r4, s32 *, 0x208) = 0;
+    M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_SOCKET) = -1;
+    M2C_FIELD(session, s32 *, GPI_CONN_LOCAL_PORT) = 0;
 block_13:
-    temp_r0_2 = ghiSocket(2, 1, 0);
-    M2C_FIELD(temp_r4, s32 *, 0x1D4) = temp_r0_2;
-    if (temp_r0_2 == -1) {
-        gpiSetError(arg0, 5, &data_020fe290);
-        gpiCallErrorCallback(arg0, 3, 1);
+    serverSocket = ghiSocket(2, 1, 0);
+    M2C_FIELD(session, s32 *, GPI_CONN_SOCKET) = serverSocket;
+    if (serverSocket == -1) {
+        gpiSetError(connectionPtr, 5, &gpiConnectSocketError);
+        gpiCallErrorCallback(connectionPtr, 3, 1);
         return 3;
     }
-    if (ghiSetNonBlocking(temp_r0_2, 0) == 0) {
-        gpiSetError(arg0, 5, &data_020fe2b8);
-        gpiCallErrorCallback(arg0, 3, 1);
+    if (ghiSetNonBlocking(serverSocket, 0) == 0) {
+        gpiSetError(connectionPtr, 5, &gpiConnectNonBlockingError);
+        gpiCallErrorCallback(connectionPtr, 3, 1);
         return 3;
     }
-    temp_r0_3 = ghiResolveHostname(&data_020fe210);
-    if (temp_r0_3 == NULL) {
-        gpiSetError(arg0, 5, &data_020fe370);
-        gpiCallErrorCallback(arg0, 3, 1);
+    hostEntry = ghiResolveHostname(&gGpiMasterHostName);
+    if (hostEntry == NULL) {
+        gpiSetError(connectionPtr, 5, &gpiConnectResolveError);
+        gpiCallErrorCallback(connectionPtr, 3, 1);
         return 3;
     }
     {
@@ -114,25 +122,24 @@ block_13:
         words[1] = 0;
     }
     addr.fields.family = 2;
-    temp_r0_4 = **M2C_FIELD(temp_r0_3, s32 ***, 0xC);
-    addr.fields.address = temp_r0_4;
-    if (temp_r0_4 == 0) {
-        AssertFailed(&data_020fe3a4, &sGpiConnectSourceFile, &data_020fe1f0, 0x90);
+    hostAddress = **M2C_FIELD(hostEntry, s32 ***, 0xC);
+    addr.fields.address = hostAddress;
+    if (hostAddress == 0) {
+        AssertFailed(&gpiConnectAddressAssert, &sGpiConnectSourceFile, &gpiAssertStartConnect, 0x90);
     }
-    addr.fields.port = 0xCC74;
-    if (ghiConnect(M2C_FIELD(temp_r4, s32 *, 0x1D4), (M2C_UNK *)&addr, 8) == -1) {
-        temp_r0_5 = ghiGetLastSocketError(M2C_FIELD(temp_r4, s32 *, 0x1D4));
-        if ((temp_r0_5 != -6) && (temp_r0_5 != -0x1A) && (temp_r0_5 != -0x4C)) {
-            gpiSetError(arg0, 5, &data_020fe3d4);
-            gpiCallErrorCallback(arg0, 3, 1);
+    addr.fields.port = GPI_MASTER_PORT;
+    if (ghiConnect(M2C_FIELD(session, s32 *, GPI_CONN_SOCKET), (M2C_UNK *)&addr, 8) == -1) {
+        socketError = ghiGetLastSocketError(M2C_FIELD(session, s32 *, GPI_CONN_SOCKET));
+        if ((socketError != -6) && (socketError != -0x1A) && (socketError != -0x4C)) {
+            gpiSetError(connectionPtr, 5, &gpiConnectConnectError);
+            gpiCallErrorCallback(connectionPtr, 3, 1);
             return 3;
         }
     }
-    M2C_FIELD(arg1, s32 *, 0x14) = 1;
-    M2C_FIELD(temp_r4, s32 *, 0x1D8) = 1;
+    M2C_FIELD(operation, s32 *, 0x14) = 1; /* operation->state: the request is now running */
+    M2C_FIELD(session, s32 *, GPI_CONN_STATE) = GPI_STATE_CONNECTING;
     return 0;
 }
-#pragma opt_propagation reset
 /* Prepare a GPI connection: store the login profile strings (nick, unique nick,
    email, lowercased, password) and an optional peer name/token/CD key in a new
    connection object, then create its operation and open the sockets. */
@@ -141,7 +148,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     M2C_UNK StringToLower(void *);
     s32 gpiResetConnection(void **);
     s32 gpiThink(void **, s32);
-    s32 func_02050c24(void **, void *);
+    s32 gpiStartConnect(void **, void *);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
     M2C_UNK gpiFinishOperation(void **, void *);
     s32 gpiAddOperation(void **, M2C_UNK, void *, void **, s32, s32, s32);
@@ -199,7 +206,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
     if (opResult != 0) {
         return opResult;
     }
-    status = func_02050c24(conn, newSession);
+    status = gpiStartConnect(conn, newSession);
     if (status != 0) {
         M2C_FIELD(newSession, s32 *, 0x1C) = status;
         gpiFinishOperation(conn, newSession);

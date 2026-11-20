@@ -38,10 +38,10 @@ loop_3:
 
 void func_0206089c(void *arg0) {
     M2C_UNK QueryQueue_Pop(void *);
-    M2C_UNK func_020601b8(void *, void *);
+    M2C_UNK Qr2Query_SendQuery(void *, void *);
 
     while ((s32) M2C_FIELD(arg0, s32 *, 0x10) < (s32) M2C_FIELD(arg0, s32 *, 4) && (s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0) {
-        func_020601b8(arg0, QueryQueue_Pop(arg0 + 0x14));
+        Qr2Query_SendQuery(arg0, QueryQueue_Pop(arg0 + 0x14));
     }
 }
 
@@ -98,7 +98,7 @@ void func_020609ac(s32 *arg0) {
     gpiFree(*arg0);
 }
 
-s32 func_020609bc(void) {
+s32 GetStringInternTable(void) {
     extern M2C_UNK gQr2ParseState;
     s32 TableNew2(s32, s32, s32, void *, void *, void *);
     if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) {
@@ -373,7 +373,7 @@ s32 func_02061168(s32 arg0) {
  * callback at self+0x630.  For a newly found server (event 0) it also starts the
  * detail query; once a pending server finishes it clears the pending query. */
 void Qr2ServerEventCallback(void *serverList,u32 event,void *server,void *self){
-void func_0206045c(void *,void *,s32,s32);
+void Qr2Query_StartServerQuery(void *,void *,s32,s32);
 void func_0206040c(void *,s32);
 s32 Vector_GetCount(s32);
 M2C_UNK SBServerListDisconnect(void *);
@@ -383,7 +383,7 @@ case 0:
 M2C_FIELD(self,void (**)(void *,s32,void *,s32),0x630)(self,0,server,M2C_FIELD(self,s32 *,0x634));
 if((!(M2C_FIELD(server,u8 *,0x14)&3)||!(M2C_FIELD(server,u8 *,0x14)&0x40))&&!(M2C_FIELD(server,u8 *,0x14)&0x2c)&&!M2C_FIELD(self,s32 *,0x624)){
 if(M2C_FIELD(server,u8 *,0x15)&1)queryFlag=!(M2C_FIELD(self,s32 *,0x4c)&&M2C_FIELD(self,s32 *,0x40));else queryFlag=2;
-func_0206045c(self,server,0,queryFlag);
+Qr2Query_StartServerQuery(self,server,0,queryFlag);
 }break;
 case 1:
 if(!(M2C_FIELD(server,u8 *,0x14)&0x43))

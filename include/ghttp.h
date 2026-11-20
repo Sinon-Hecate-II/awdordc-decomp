@@ -47,6 +47,12 @@ enum {
     GHI_TRANSFER_HEAD     = 3  /* HEAD: the response carries no body */
 };
 
+/* GameSpy ghttp progress callback (GHIProgressCallback): called as the request
+ * runs with the state, the bytes just received and the running byte counts.  The
+ * port passes the request index where the SDK passed the connection. */
+typedef s32 (*GHIProgressCallback)(s32 request, s32 state, s32 buffer, s32 bufferLen,
+                                   s32 bytesReceived, s32 bytesTotal, s32 param);
+
 /* GameSpy ghttp's per-request connection state machine.  Only the fields the
  * game's matched code touches so far are named; the rest is padding. */
 typedef struct GHIConnection {
@@ -64,7 +70,7 @@ typedef struct GHIConnection {
     char *headers;         /* +0x28: extra headers supplied by the caller */
     u8   pad2C[0x0C];
     s32  result;           /* +0x38: GHTTPResult of a failed request */
-    u8   pad3C[0x04];
+    GHIProgressCallback progressCallback; /* +0x3C: run as the request runs, may be NULL */
     s32 (*completedCallback)(s32 request, s32 result, s32 body, s32 bodySize, s32 param);
                            /* +0x40: GHTTPCompletedCallback, run when the request finishes */
     s32  callbackParam;    /* +0x44: last argument handed to the connection's callbacks */

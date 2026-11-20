@@ -41,4 +41,9 @@
 #define LIST_WIDGET_ANIM_Y         0x62 /* s16 row sub-list's current animation value */
 #define LIST_WIDGET_TARGET_Y       0x64 /* s16 row sub-list offset it animates to */
 
+/* The two sub-list tweens the window animates: the column sub-list (x) and the
+ * row sub-list (y), each a SpriteTween restarted as the scroll window moves. */
+#define LIST_WIDGET_COLUMN_TWEEN   0x42 /* SpriteTween: column sub-list slide */
+#define LIST_WIDGET_ROW_TWEEN      0x54 /* SpriteTween: row sub-list slide */
+
 #endif

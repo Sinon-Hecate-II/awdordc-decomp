@@ -244,23 +244,27 @@ void func_020c32bc(void) {
     PlaySoundEffect(0xE3);
 }
 
-void *func_020c32e4(void *arg0) {
+/* Destroy an occupation cut-in effect: reset its vtable, free the CO data, the
+ * panel sprite (through its own destructor), the two sprite effects and the
+ * palette, then free the effect itself. */
+void *DeleteOccupationEffect(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK HeapFreeBlock();
     extern M2C_UNK gOccupationEffectVTable;
+    OccupationEffect *effect = arg0;
     void *p;
-    M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
-    p = M2C_FIELD(arg0, void **, 0x40);
+    M2C_FIELD(effect, void **, 0) = &gOccupationEffectVTable;
+    p = effect->co;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x3C);
+    p = effect->sprite;
     if (p != NULL) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
-    p = M2C_FIELD(arg0, void **, 0x44);
+    p = effect->spriteA;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x48);
+    p = effect->spriteB;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x4C);
+    p = effect->palette;
     if (p != NULL) HeapFreeBlock(p);
     MemFree(arg0);
     return arg0;

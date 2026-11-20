@@ -50,6 +50,11 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_TASK_SETTINGS        0x24 /* void *0x50-byte connection settings buffer */
 #define WH_TASK_SETTINGS_BYTES  0x50
 
+/* Fields of gWhWork: the log callback the overlay reports through, then the
+ * connection object at +4 (WH_LINK_STATUS and friends). */
+#define WH_WORK_LOG    0x00 /* void (*)(u32 level, const char *text, s32 value): WH logging hook, 0 when none */
+#define WH_LOG_STATUS 0x08000000 /* log level of a WH status change */
+
 /* Connection object fields (gWhWork+4). */
 #define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */

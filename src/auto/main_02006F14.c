@@ -614,20 +614,24 @@ void DmaWaitChannel(s32 a) {
  OS_RestoreInterrupts(state);
 }
 
-void DmaStopChannel(s32 a) {
+/* Stops DMA channel `channel`: with interrupts held off, clears the transfer-mode
+ * and enable bits of the channel's control word (reading it back twice to let the
+ * writes settle) and, for channel 0, resets its source, destination and control
+ * registers to a one-word 32-bit transfer. */
+void DmaStopChannel(s32 channel) {
     u32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(u32);
     u32 state = OS_DisableInterrupts();
-    volatile u16 *p = (volatile u16 *)(0x040000B0 + (a * 6 + 5) * 2);
-    *p = *p & ~0x3A00;
-    *p = *p & ~0x8000;
-    (void)(*p);
-    (void)(*p);
-    if (a == 0) {
-        volatile u32 *q = (volatile u32 *)(0x040000B0 + a * 12);
-        q[0] = 0;
-        q[1] = 0;
-        q[2] = 0x81400001;
+    volatile u16 *control = (volatile u16 *)DMA_CHANNEL_CTRL_HI(channel);
+    *control = *control & ~DMA_CTRL_HI_MODE;
+    *control = *control & ~DMA_CTRL_HI_ENABLE;
+    (void)(*control);
+    (void)(*control);
+    if (channel == 0) {
+        volatile u32 *regs = (volatile u32 *)DMA_CHANNEL_BASE(channel);
+        regs[0] = 0;
+        regs[1] = 0;
+        regs[2] = 0x81400001;
     }
     OS_RestoreInterrupts(state);
 }

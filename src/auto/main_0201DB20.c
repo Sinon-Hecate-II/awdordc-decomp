@@ -53,12 +53,12 @@ u32 SendNetPacket(s32 packet, s32 length) {
 
 s32 func_0201dbb8(void) {
     extern M2C_UNK gSocketManager;
-    s32 func_02024f20(void *);
+    s32 TlsGetReceivedDataSize(void *);
     void *p;
     s32 n;
     p = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
     if (p) {
-        if (M2C_FIELD(p, u8 *, 9)) return func_02024f20(p);
+        if (M2C_FIELD(p, u8 *, 9)) return TlsGetReceivedDataSize(p);
         n = M2C_FIELD(p, s32 *, 0x44);
         if (n != 0) goto done;
         {

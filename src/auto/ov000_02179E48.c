@@ -335,7 +335,7 @@ if(v<result)result=v;
 return result;
 }
 
-u8 func_ov000_0217ab10(s32 arg0, s32 arg1, s32 arg2) {
+u8 IsEnemyUnitAt(s32 arg0, s32 arg1, s32 arg2) {
  extern void **gCurrentMap;
  s32 IsUnitOnCurrentTeam(s32);
  void *base = *gCurrentMap;
@@ -344,15 +344,17 @@ u8 func_ov000_0217ab10(s32 arg0, s32 arg1, s32 arg2) {
  return IsUnitOnCurrentTeam(id) != 1;
 }
 
-u8 func_ov000_0217ab5c(s32 arg0, s32 arg1, s32 arg2) {
- extern void **gCurrentMap;
- s32 GetUnitDamagePercent(s32, s32);
- void *base;
- u8 id;
- if (func_ov000_0217ab10(arg0,arg1,0) == 0) return 0;
- base = *gCurrentMap;
- id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
- return GetUnitDamagePercent(arg2, ((u32)(M2C_FIELD(base + id * 14, u8 *, 0x59A4) << 26) >> 26)) > 1;
+/* AI move-search goal: true when the tile (x, y) holds an enemy unit whose kind
+ * the moving unit kind `attackerKind` damages for more than a token amount. */
+u8 IsAttackableEnemyMoveGoal(s32 x, s32 y, s32 attackerKind) {
+    extern void **gCurrentMap;
+    s32 GetUnitDamagePercent(s32, s32);
+    void *base;
+    u8 unitId;
+    if (IsEnemyUnitAt(x, y, 0) == 0) return 0;
+    base = *gCurrentMap;
+    unitId = M2C_FIELD(base + (x + M2C_FIELD(base + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+    return GetUnitDamagePercent(attackerKind, ((u32)(M2C_FIELD(base + unitId * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_RECORDS) << 26) >> 26)) > 1;
 }
 
 /* AI move-search goal for property tiles: true for a property cell that holds no

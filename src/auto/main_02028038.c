@@ -92,7 +92,7 @@ void func_0202830c(u16 *p){extern void *gWfcSession;if(p[1]!=8||p[2]!=22||p[3]!=
  * result kind and the operation id, runs the matching continuation, then
  * advances the session state machine and reports the outcome. */
 void WFC_OperationCallback(u16 *msg) {
-s32 WFC_ShutdownCommandChannel(void);s32 func_02012158(void *);s32 func_02012198(void *);s32 func_02013cfc(void *,s32);s32 func_02013bc8(void *,s32,s32,void *);s32 WFC_SendConnectionData(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
+s32 WFC_ShutdownCommandChannel(void);s32 func_02012158(void *);s32 func_02012198(void *);s32 func_02013cfc(void *,s32);s32 WFC_SubmitMatchSettings(void *,s32,s32,void *);s32 WFC_SendConnectionData(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
 s32 result=20;
 switch(msg[1]){
 case 0:
@@ -102,7 +102,7 @@ case 4: {s32 n=WFC_ShutdownCommandChannel();switch(n){case 0: {WFC_SetState(1);W
 case 5:WFC_SetState(3);WFC_DispatchEvent(0,0,0,0x673);return;
 case 6:result=func_02012158(WFC_OperationCallback);break;
 case 29:result=func_02013cfc(WFC_OperationCallback,0);break;
-case 25:{u8 *session=gWfcSession;result=func_02013bc8(WFC_OperationCallback,session[0x2250],session[0x2251],session+0x2200);break;}
+case 25:{u8 *session=gWfcSession;result=WFC_SubmitMatchSettings(WFC_OperationCallback,session[0x2250],session[0x2251],session+0x2200);break;}
 case 39:{u8 *session=gWfcSession;u32 statusBits=M2C_FIELD(session,u32 *,0x2264);u16 bothSet=(statusBits&0xc0000)==0xc0000;result=WFC_SendConnectionData(func_0202899c,session+0x2140,0,(statusBits&0x30000)!=0x30000,bothSet);break;}
 }
 switch(result){case 2:return;case 3:break;case 8:WFC_SetState(12);{u8 *session=gWfcSession;WFC_DispatchEvent(1,M2C_FIELD(session,s16 *,0x2280)==5?session+0x2140:0,0,0x6af);}return;}

@@ -239,9 +239,9 @@ void *func_020b3b6c(void *arg0) {
  * itself - as available in the map list, and writes the save block. */
 void FinishBattleAndSave(void) {
     M2C_UNK StartBattleRecord();
-    s32 func_020befd8();
-    s32 func_020bf084(s32);
-    M2C_UNK func_020bf0dc(M2C_UNK, s32);
+    s32 GetCurrentSaveType();
+    s32 SaveTypeHasNoSlot(s32);
+    M2C_UNK GetSaveSlot(M2C_UNK, s32);
     M2C_UNK func_020bf798();
     u16 GetMapFollowupMapId(u16, s32);
     s32 IsCampaignBattleRules();
@@ -251,11 +251,11 @@ void FinishBattleAndSave(void) {
     s32 slot;
     u16 relatedMap;
 
-    recordType = func_020befd8();
+    recordType = GetCurrentSaveType();
     if (recordType != 0) {
         StartBattleRecord();
-        if (func_020bf084(recordType) == 0) {
-            func_020bf0dc(0, recordType);
+        if (SaveTypeHasNoSlot(recordType) == 0) {
+            GetSaveSlot(0, recordType);
             func_020e4870();
         }
     }

@@ -167,7 +167,7 @@ void Ov010_StartMatchQuery(void *label) {
         return;
     }
     if (((s32) M2C_FIELD(label, s8 *, TEXT_LAYER_ENGINE) >= 0) && (FindTextLayer() != 0)) {
-        func_0208af20();
+        StartWindowClose();
     }
     if (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & TEXT_LAYER_FLAG_CONFIRMED) {
         SetSpriteAnimation(label, 0xB);
@@ -177,14 +177,14 @@ void Ov010_StartMatchQuery(void *label) {
 }
 
 void func_ov010_0222b01c(void *arg0) {
-    M2C_UNK func_0208af20();
+    M2C_UNK StartWindowClose();
     s32 FindTextLayer();
     s32 func_ov010_02229f64();
     if (func_ov010_02229f64() != 0) {
         return;
     }
     if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (FindTextLayer() != 0)) {
-        func_0208af20();
+        StartWindowClose();
     }
     if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
         SetSpriteAnimation(arg0, 0xB);
@@ -239,7 +239,7 @@ void func_ov010_0222b140(void *entity) {
 M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
-if(M2C_FIELD(entity,s8 *,0x35)>=0&&FindTextLayer())func_0208af20();
+if(M2C_FIELD(entity,s8 *,0x35)>=0&&FindTextLayer())StartWindowClose();
 if(M2C_FIELD(entity,s8 *,0x35)>=0){
 savedBank=gCur3DSpriteEngine;i=0;
 do {

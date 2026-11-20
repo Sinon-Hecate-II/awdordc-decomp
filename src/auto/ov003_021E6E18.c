@@ -142,7 +142,7 @@ u8 func_ov003_021e7450(void *arg0) {
 }
 
 void func_ov003_021e7458(void *arg0, s32 arg1, s32 arg2) {
-    M2C_UNK func_02087db8(void *, M2C_UNK);
+    M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK func_020aad18(void *);
     s32 var_r1;
     s32 count;
@@ -157,7 +157,7 @@ void func_ov003_021e7458(void *arg0, s32 arg1, s32 arg2) {
     if (M2C_FIELD(temp_r0, u8 *, 0x12) != 0) var_r1 = 1;
     else var_r1 = 0;
     if (!(var_r1 & 0xFF)) return;
-    func_02087db8(temp_r0, 1);
+    RemoveSpriteCell(temp_r0, 1);
 }
 
 s8 func_ov003_021e74a4(void *arg0) {
@@ -173,7 +173,7 @@ s8 func_ov003_021e74a4(void *arg0) {
  * display is refreshed (HandleWaypointInput). */
 void SetWaypointListLayout(void *list, s32 mode) {
     s32 IsLinkSessionActive(void);
-    M2C_UNK func_02087db8(void *, M2C_UNK);
+    M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK func_020aad18(void *);
     s32 InRange(s32, s32, s32);
     void HandleWaypointInput(void *, s32);
@@ -197,7 +197,7 @@ void SetWaypointListLayout(void *list, s32 mode) {
                 sub = M2C_FIELD(M2C_FIELD(list + i * 4, void **, 0x78), void **, 0x64);
                 if (M2C_FIELD(sub, u8 *, 0x12)) active = 1;
                 else active = 0;
-                if (active & 255) func_02087db8(sub, 1);
+                if (active & 255) RemoveSpriteCell(sub, 1);
             }
             i = (u8)(i + 1);
         } while (i < 26);
@@ -220,7 +220,7 @@ void SetWaypointListLayout(void *list, s32 mode) {
                 sub = M2C_FIELD(M2C_FIELD(list + j * 4, void **, 0x78), void **, 0x64);
                 if (M2C_FIELD(sub, u8 *, 0x12)) active = 1;
                 else active = 0;
-                if (active & 255) func_02087db8(sub, 1);
+                if (active & 255) RemoveSpriteCell(sub, 1);
             }
             j = (u8)(j + 1);
         } while (j < 26);

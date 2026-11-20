@@ -178,7 +178,7 @@ p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
 SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
 }
 
-void func_ov000_02181c10(void) {
+void RunAiCoPowerAction(void) {
 s32 AiUnitHasAttackTarget(void);
 s32 func_ov000_021aa3bc(void);
 extern void *gAiSettings;

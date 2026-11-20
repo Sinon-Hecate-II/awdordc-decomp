@@ -150,7 +150,7 @@ void CloseNarcArchive(void);
 void AddToU16Array(void *,s32,s32);
 void PlaySoundEffect(s32);
 void *FindObjectByClass(void *);
-void func_02087db8(void *,s32);
+void RemoveSpriteCell(void *,s32);
 void func_02087e34(void *);
 void Sprite_ResumeAnimation(void *);
 #pragma push
@@ -262,17 +262,17 @@ void func_ov005_0221d160(void *arg0){
     {
         void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 56), void **, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
-            func_02087db8(p, 1);
+            RemoveSpriteCell(p, 1);
     }
     {
         void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 60), void**, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
-            func_02087db8(p, 1);
+            RemoveSpriteCell(p, 1);
     }
     {
         void *p = M2C_FIELD(M2C_FIELD(FindObjectByClass(data_ov005_02220d50), void **, 64), void **, 100);
         if ((u8)(M2C_FIELD(p, u8 *, 18) != 0))
-            func_02087db8(p, 1);
+            RemoveSpriteCell(p, 1);
     }
     func_02087e34(M2C_FIELD(arg0, void **, 0x34));
     Sprite_ResumeAnimation(arg0);

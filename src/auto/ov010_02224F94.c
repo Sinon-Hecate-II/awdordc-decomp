@@ -92,17 +92,20 @@ while(*(volatile u16 *)0x4000280&0x8000){}
 return *(volatile s32 *)0x40002a0;
 }
 #pragma opt_instruction_scheduling reset
-void func_ov010_02225288(void) {
- extern s32 data_ov010_0222d930;
- s16 *src=data_ov010_0222c03c;
- s32 i,j;
- M2C_FIELD(&data_ov010_0222d930,s32 *,12)=0;
- M2C_FIELD(&data_ov010_0222d930,s32 *,8)=0x19D;
- for(i=0;i<0x800;i++) data_ov010_0222ddb4[i]=0;
- for(j=0;j<6;j++) {
- data_ov010_0222d95c[j]=0;
- data_ov010_0222d944[j]=src[j];
- }
+/* Reset the voice codec's filter state: clear the sample history buffer, rewind
+ * the two history indices (read at 0x19D, write at 0) and load the initial tap
+ * coefficients into the two tap registers. */
+void VoiceCodec_ResetState(void) {
+    extern s32 data_ov010_0222d930;
+    s16 *defaultTaps = data_ov010_0222c03c;
+    s32 i, tap;
+    M2C_FIELD(&data_ov010_0222d930, s32 *, 12) = 0;
+    M2C_FIELD(&data_ov010_0222d930, s32 *, 8) = 0x19D;
+    for (i = 0; i < 0x800; i++) data_ov010_0222ddb4[i] = 0;
+    for (tap = 0; tap < 6; tap++) {
+        data_ov010_0222d95c[tap] = 0;
+        data_ov010_0222d944[tap] = defaultTaps[tap];
+    }
 }
 
 void func_ov010_02225304(M2C_UNK arg0, M2C_UNK arg1) {
@@ -349,7 +352,7 @@ s32 func_ov010_02225858(s32 a,s32 b,s32 c,s32 *out) {
 extern s32 data_ov010_0222edb4;
 u64 GetSystemTick(void);
 void func_ov010_02222f28(s32,s32,s32,u64);
-s32 func_ov010_02224334(s32,s32,s32,s32 *);
+s32 VoiceLink_HandlePacket(s32,s32,s32,s32 *);
 u64 now; register u32 kind, family; s32 *state;
 if(!b)return 0;
 if(M2C_FIELD(b,u32*,0)!=0x5f564354)return 2;
@@ -363,7 +366,7 @@ state=&data_ov010_0222edb4;
 state[1]=state[1]+1;
 func_ov010_02222f28(a,b,c,now);
 return 0;
-} else if (kind == 0 || kind == 255) return func_ov010_02224334(a,b,c,out)!=0;
+} else if (kind == 0 || kind == 255) return VoiceLink_HandlePacket(a,b,c,out)!=0;
 return 0;
 }
 #pragma opt_instruction_scheduling reset

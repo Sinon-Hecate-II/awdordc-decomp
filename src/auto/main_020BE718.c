@@ -188,30 +188,36 @@ void StartBattleRecord(void) {
     M2C_FIELD(record, u16 *, BATTLE_RECORD_DAYS) = 0;
 }
 
-s32 func_020befd8(void) {
+/* GetCurrentSaveType: the save-record type of the battle in progress, used to
+ * store its result.  A link session is never saved (0).  A campaign battle uses
+ * record 5 + its save slot (the low four bits of the game settings word at
+ * +0x10), while a versus battle uses the single record 8, which has no slot.
+ * Menu and other non-battle modes save nothing. */
+s32 GetCurrentSaveType(void) {
     s32 IsLinkSessionActive();
+    s32 GetSaveType(s32, s32);
     extern M2C_UNK gGameSettings;
     extern u16 gMapConfig;
-    s32 var_r4;
-    u32 temp_r0;
+    s32 saveType;
+    u32 mapMode;
 
-    var_r4 = 0;
+    saveType = 0;
     if (IsLinkSessionActive() != 0) {
         return 0;
     }
-    temp_r0 = (u32) (gMapConfig << 0x1D) >> 0x1D;
-    switch ((u8) temp_r0) {                         /* irregular */
+    mapMode = (u32) (gMapConfig << 0x1D) >> 0x1D;
+    switch ((u8) mapMode) {                         /* irregular */
     case 0:
-        var_r4 = func_020bf054(0, (u32) (M2C_FIELD(&gGameSettings, s32 *, 0x10) << 0x1C) >> 0x1C);
+        saveType = GetSaveType(0, (u32) (M2C_FIELD(&gGameSettings, s32 *, 0x10) << 0x1C) >> 0x1C);
         break;
     case 1:
-        var_r4 = func_020bf054(1, 0U);
+        saveType = GetSaveType(1, 0U);
         break;
     }
-    return var_r4;
+    return saveType;
 }
 
-s32 func_020bf054(s32 arg0, s32 arg1) {
+s32 GetSaveType(s32 arg0, s32 arg1) {
     switch (arg0) {                                 /* irregular */
     case 0:
     case 5:
@@ -223,7 +229,7 @@ s32 func_020bf054(s32 arg0, s32 arg1) {
     }
 }
 
-s32 func_020bf084(s32 arg0) {
+s32 SaveTypeHasNoSlot(s32 arg0) {
     switch (arg0) {
     case 5: return 0;
     case 6: return 0;
@@ -233,7 +239,7 @@ s32 func_020bf084(s32 arg0) {
     }
 }
 
-s32 func_020bf0dc(s32 arg0, s32 arg1) {
+s32 GetSaveSlot(s32 arg0, s32 arg1) {
     switch (arg0) {                                 /* irregular */
     case 0:
     case 5:

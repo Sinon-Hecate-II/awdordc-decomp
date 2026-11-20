@@ -9,7 +9,7 @@ static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<1
 void func_02089d30(void *arg0) {
     void func_02089cec(void *);
     void *func_0209c658(void *);
-    void *func_0209c5dc(void *,s32);
+    void *Text_GetLineStart(void *,s32);
     s32 RenderTextToTiles(s32,void *);
     s32 func_0209c690(void *);
     void *func_020ab1c4(s32);
@@ -50,7 +50,7 @@ void func_02089d30(void *arg0) {
         M2C_FIELD(arg0,u32 *,0x58)&=~0x3c0000;
         index=0;
         do{
-            entry=func_0209c5dc(M2C_FIELD(arg0,void **,0x70),index);
+            entry=Text_GetLineStart(M2C_FIELD(arg0,void **,0x70),index);
             if(!entry||entry==end||index==8)break;
             length=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+offset,entry);
             measuredKind=func_0209c690(entry);

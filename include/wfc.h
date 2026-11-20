@@ -253,6 +253,7 @@ typedef struct WfcSendState {
 /* Results of the command API; a caller retries when it gets NO_BUFFER. */
 #define WFC_CMD_OK         2 /* the command was posted, its completion arrives as an event */
 #define WFC_CMD_NO_BUFFER  8 /* no free block, or the FIFO refused the message */
+#define WFC_CMD_BAD_PARAM  6 /* the command's arguments are not acceptable */
 
 /* The WFC command channel's global state (gWfcChannelState).  The ARM9 allocates
  * one work area, splits it into buffers and keeps their pointers in the info block
@@ -327,6 +328,7 @@ typedef struct WfcSendState {
  * a u8 sub-mode (0..3) and a 0x50-byte display name. */
 #define WFC_SESSION_MODE     0x2250 /* u8, 0..3 */
 #define WFC_SESSION_SUBMODE  0x2251 /* u8, 0..3 */
+#define WFC_SESSION_MODE_MAX 3      /* highest mode and sub-mode value */
 #define WFC_SESSION_NAME     0x2200 /* 0x50-byte display name */
 #define WFC_SESSION_NAME_LEN 0x50
 

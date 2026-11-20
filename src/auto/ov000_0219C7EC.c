@@ -286,7 +286,7 @@ void BuildAiRole1UnitList(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
-    extern M2C_UNK func_ov000_02180e4c;
+    extern M2C_UNK RunAiRole1CaptureAction;
     s32 index;
     s32 stride;
     s8 *out;
@@ -320,7 +320,7 @@ void BuildAiRole1UnitList(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
-    gAiUnitAction = &func_ov000_02180e4c;
+    gAiUnitAction = &RunAiRole1CaptureAction;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 

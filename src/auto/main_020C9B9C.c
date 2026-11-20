@@ -186,7 +186,7 @@ void func_020c9f74(s32 arg0) {
 }
 
 void StartPlayerDefeat(s32 arg0, s32 arg1) {
-    void func_020ca484(void);
+    void ScheduleBattleEndCheck(void);
     void func_020a3498(void);
     void EndPlayerTurn(void);
     extern void **gCurrentMap;
@@ -198,7 +198,7 @@ void StartPlayerDefeat(s32 arg0, s32 arg1) {
         EndPlayerTurn();
     }
     if (arg1 != 2) return;
-    func_020ca484();
+    ScheduleBattleEndCheck();
 }
 
 /* Starts the defeat sequence for every active player a victory rule has removed:
@@ -277,7 +277,7 @@ maps=gCurrentMap; cur=buf+1; i=1; offset=140; do {if(*cur){mism=0;for(j=1,inner=
 return 0;
 }
 
-void func_020ca484(void) {
+void ScheduleBattleEndCheck(void) {
     extern void **gCurrentMap;
     u16 temp_r2;
     void *temp_r0;

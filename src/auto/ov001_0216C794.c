@@ -77,18 +77,22 @@ void func_ov001_0216c938(int a,int b,int c,int d) {
 }
 
 #pragma thumb on
-int Ov001_EncryptRoomData(int a,int b,int c,signed char *d,void *e,void *f,int g) {
+/* Encrypt one room-protocol payload: store the payload checksum in *checksum,
+ * seed the RC4 cipher from a fresh random 16-bit value plus the caller's key
+ * tail, then encrypt src into dst.  Returns 0, or -1 when the cipher buffer
+ * can't be allocated. */
+int Ov001_EncryptRoomData(int src,int dst,int length,signed char *checksum,void *seedOut,void *keyTail,int keyTailLength) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int);
  void Ov001Rc4Init(); void func_ov001_0216cb08();
  int func_ov001_0216cb74(int,int); short func_ov001_0216cf1c(void); void Ov001MemCopy();
- int handle; int packet[4]; short seed;
- *d=func_ov001_0216cb74(a,c); handle=func_ov001_0216ad54(c); packet[2]=handle;
- if(!handle) return -1;
- seed=func_ov001_0216cf1c(); Ov001MemCopy(e,&seed,2);
- Ov001MemCopy(&gOv001CryptSeed,e,2);
- Ov001MemCopy(gOv001CryptKeyTail,f,g);
- Ov001Rc4Init(packet,&gOv001CryptSeed,g+2,c);
- func_ov001_0216cb08(packet,b,a,c); func_ov001_0216ad64(packet[2]); return 0;
+ int state; int cipher[4]; short seed;
+ *checksum=func_ov001_0216cb74(src,length); state=func_ov001_0216ad54(length); cipher[2]=state;
+ if(!state) return -1;
+ seed=func_ov001_0216cf1c(); Ov001MemCopy(seedOut,&seed,2);
+ Ov001MemCopy(&gOv001CryptSeed,seedOut,2);
+ Ov001MemCopy(gOv001CryptKeyTail,keyTail,keyTailLength);
+ Ov001Rc4Init(cipher,&gOv001CryptSeed,keyTailLength+2,length);
+ func_ov001_0216cb08(cipher,dst,src,length); func_ov001_0216ad64(cipher[2]); return 0;
 }
 
 #pragma thumb on

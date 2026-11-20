@@ -166,22 +166,26 @@ s32 BuildNarcPath(M2C_UNK arg0) {
     return (s32)&data_0214c14c;
 }
 
-void func_02081724(void) {
- extern M2C_UNK gKeyState;
- extern M2C_UNK data_0214c18c;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,8) = 0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) = 0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,0) = 0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,2) = 0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,4) = 0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,10) = 780;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u8 *,12) = 16;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u8 *,13) = 10;
-M2C_FIELD(&data_0214c18c,u8 *,4) = 0;
-M2C_FIELD(&data_0214c18c,u8 *,0) = 0;
-M2C_FIELD(&data_0214c18c,u8 *,2) = 0;
-M2C_FIELD(&data_0214c18c,u8 *,3) = 0;
-M2C_FIELD(&data_0214c18c,u8 *,1) = 0;
+/* Clear the key and touch input state at startup: zero every key mask, seed the
+ * two-frames-ago mask so releasing Start/Select/L/R is detected, restore the
+ * auto-repeat delays, and clear the input-block counters and flags. */
+void ResetKeyState(void) {
+    extern M2C_UNK gKeyState;
+    extern M2C_UNK gInputBlockState;
+
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->prevHeld = 0;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->held = 0;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->pressed = 0;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat = 0;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat2 = 0;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->prevHeld2 = KEY_L | KEY_R | KEY_START | KEY_SELECT;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeatDelay = 16;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeatRate = 10;
+    M2C_FIELD(&gInputBlockState, u8 *, 4) = 0;
+    M2C_FIELD(&gInputBlockState, u8 *, 0) = 0;
+    M2C_FIELD(&gInputBlockState, u8 *, 2) = 0;
+    M2C_FIELD(&gInputBlockState, u8 *, 3) = 0;
+    M2C_FIELD(&gInputBlockState, u8 *, 1) = 0;
 }
 
 void func_020817a0(void) {
@@ -198,14 +202,14 @@ void func_020817a0(void) {
 
 void func_020817dc(void) {
  extern M2C_UNK gKeyState;
- extern M2C_UNK data_0214c18c;
+ extern M2C_UNK gInputBlockState;
  s32 func_020847f4(void);
  u16 temp = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6);
  if (temp != 0x30C) return;
  if (temp == M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,10)) return;
  if (!(M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,0) & 0x30C)) return;
- if (M2C_FIELD(&data_0214c18c,s8 *,4) <= 0 && M2C_FIELD(&data_0214c18c,s8 *,0) <= 0) {
- if (M2C_FIELD(&data_0214c18c,u8 *,1) != 0) return;
+ if (M2C_FIELD(&gInputBlockState,s8 *,4) <= 0 && M2C_FIELD(&gInputBlockState,s8 *,0) <= 0) {
+ if (M2C_FIELD(&gInputBlockState,u8 *,1) != 0) return;
  if (func_020847f4() == 0) return;
  func_020817a0();
  }
@@ -213,7 +217,7 @@ void func_020817dc(void) {
 
 void func_0208184c(void) {
     extern M2C_UNK gKeyState;
-    extern M2C_UNK data_0214c18c;
+    extern M2C_UNK gInputBlockState;
     void func_020817dc(void);
     u16 v, a, b;
     s32 v6, v8;
@@ -222,7 +226,7 @@ void func_0208184c(void) {
     M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 8) =
         M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 6);
 
-    if (M2C_FIELD(&data_0214c18c, u8 *, 1) != 0) {
+    if (M2C_FIELD(&gInputBlockState, u8 *, 1) != 0) {
         M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 6) = 0;
     } else {
         tmp = *(u16 *)0x4000130 | *(u16 *)0x027fffa8;
@@ -283,8 +287,8 @@ void func_0208184c(void) {
 
 void func_020819e8(s32 arg0) {
  extern M2C_UNK gKeyState;
- extern M2C_UNK data_0214c18c;
- if (M2C_FIELD(&data_0214c18c,u8 *,3) != 0) return;
+ extern M2C_UNK gInputBlockState;
+ if (M2C_FIELD(&gInputBlockState,u8 *,3) != 0) return;
 M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,0) |= arg0;
 M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,2) |= arg0;
 M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,4) |= arg0;
@@ -310,7 +314,7 @@ M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x11)=16;
  * and the started/pressed/tap/released flags the game reads. */
 void UpdateTouchInput(void) {
     extern M2C_UNK gKeyState;
-    extern M2C_UNK data_0214c18c;
+    extern M2C_UNK gInputBlockState;
     void func_0200d778(void);
     s32 func_0200d80c(u16 *);
     void CalibrateTouchSample(u16 *, u16 *);
@@ -321,7 +325,7 @@ void UpdateTouchInput(void) {
     M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_TAP) = 0;
     M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_RELEASED) = 0;
 
-    if (M2C_FIELD(&data_0214c18c, u8 *, 1) != 0) {
+    if (M2C_FIELD(&gInputBlockState, u8 *, 1) != 0) {
         return;
     }
     func_0200d778();
@@ -400,20 +404,20 @@ void func_02081d38(void) {
 
 void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);SetLcdEnabled(0);}
 
-void func_02081d6c(void){extern M2C_UNK data_0214c18c;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&data_0214c18c,u8 *,1)=1;}
+void func_02081d6c(void){extern M2C_UNK gInputBlockState;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
 
 void func_02081da0(void) {
-extern M2C_UNK data_0214c18c;
+extern M2C_UNK gInputBlockState;
 func_02081d38(); GX_TurnOnDisplay();
 *(s32 *)0x04001000 |= 0x10000;
 func_020863f0();
-M2C_FIELD(&data_0214c18c,u8 *,1) = 0;
+M2C_FIELD(&gInputBlockState,u8 *,1) = 0;
 }
 
 u8 func_02081dd8(void) {
-extern M2C_UNK data_0214c18c;
+extern M2C_UNK gInputBlockState;
 u8 var_r0;
-if (M2C_FIELD(&data_0214c18c,s8 *,0) > 0) return 0;
+if (M2C_FIELD(&gInputBlockState,s8 *,0) > 0) return 0;
 if (((s32)(*(u16 *)0x027FFFA8 & 0x8000) >> 15) != 0) var_r0 = 1; else var_r0 = 0;
 return var_r0;
 }
@@ -430,13 +434,13 @@ u8 func_02081e14(void) {
 }
 
 void func_02081e38(void *arg0) {
-extern M2C_UNK data_0214c18c;
+extern M2C_UNK gInputBlockState;
 M2C_FIELD(arg0,u16 *,0x56) = 0;
 if (func_02084824() == 0) {
 M2C_FIELD(arg0,u16 *,0x56) = 1;
 func_02081d6c();
 }
-if (M2C_FIELD(&data_0214c18c,u8 *,2) != 0) {
+if (M2C_FIELD(&gInputBlockState,u8 *,2) != 0) {
 M2C_FIELD(arg0,u16 *,0x56) = 1;
 func_02081d6c();
 }
@@ -473,20 +477,20 @@ void func_02081ee4(void) {
     CreateSpriteFromClass(&data_02101eac, 3);
 }
 
-s8 *func_02081f08(void) { extern M2C_UNK data_0214c18c; volatile s8 *p=(s8 *)&data_0214c18c; p[4]++; return (s8 *)p; }
+s8 *func_02081f08(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[4]++; return (s8 *)p; }
 
-s8 *func_02081f20(void) { extern M2C_UNK data_0214c18c; volatile s8 *p=(s8 *)&data_0214c18c; p[0]++; return (s8 *)p; }
+s8 *func_02081f20(void) { extern M2C_UNK gInputBlockState; volatile s8 *p=(s8 *)&gInputBlockState; p[0]++; return (s8 *)p; }
 
-void func_02081f38(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,s8 *,0)=M2C_FIELD(&data_0214c18c,s8 *,0)-1;}
+void func_02081f38(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,s8 *,0)=M2C_FIELD(&gInputBlockState,s8 *,0)-1;}
 
 void func_02081f50(void) {
-    extern M2C_UNK data_0214c18c;
-    M2C_FIELD(&data_0214c18c, s8 *, 3) = 1;
+    extern M2C_UNK gInputBlockState;
+    M2C_FIELD(&gInputBlockState, s8 *, 3) = 1;
 }
 
 void func_02081f64(void) {
-extern M2C_UNK data_0214c18c;
-M2C_FIELD(&data_0214c18c,u8 *,3) = 0;
+extern M2C_UNK gInputBlockState;
+M2C_FIELD(&gInputBlockState,u8 *,3) = 0;
 }
 
 void func_02081f78(void) {
@@ -510,9 +514,9 @@ void func_02081fec(void) {
     DeleteSpriteObjectsOfClass(&data_02101edc);
 }
 
-void func_02082000(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u8 *,2)=1;}
+void func_02082000(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=1;}
 
-void func_02082014(void){extern M2C_UNK data_0214c18c;M2C_FIELD(&data_0214c18c,u8 *,2)=0;}
+void func_02082014(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=0;}
 
 void MemAlloc(void) {
     M2C_UNK HeapAllocBlock();

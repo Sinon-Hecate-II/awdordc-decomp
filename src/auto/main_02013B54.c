@@ -1,10 +1,29 @@
 /* 17 functions from 0x02013B54 to 0x02014B34 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 typedef struct { u8 low:4; u8 high:4; } Packet14564;
 
-s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK DC_CleanRange(s32,M2C_UNK); s32 r=func_0201146c(); if(r)return r;if(b>3)return 6;if(b){if(!c)return 6;DC_CleanRange(c,80);}WFC_SetChannelParam(20,a);r=WFC_SendCommand(20,2,b,c);if(!r)r=2;return r;}
+s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK DC_CleanRange(s32,M2C_UNK); s32 r=WFC_CheckChannelOpen(); if(r)return r;if(b>3)return 6;if(b){if(!c)return 6;DC_CleanRange(c,80);}WFC_SetChannelParam(20,a);r=WFC_SendCommand(20,2,b,c);if(!r)r=2;return r;}
 
-s32 func_02013bc8(M2C_UNK a,u32 b,s32 c,s32 d){ s32 r=func_0201146c();if(r)return r;if(b>3)return 6;if(b){if(!d)return 6;DC_CleanRange(d,80);}WFC_SetChannelParam(39,a);r=WFC_SendCommand(39,3,b,d,c);if(!r)r=2;return r;}
+/* Submit the local player's match settings (mode, sub-mode and display name) to
+ * the WFC server as command 39 request 3: refuse unless the command channel is
+ * open and the mode is one of 0..3, flush the name out of the data cache, then
+ * post the mode, the name and the sub-mode.  Returns 2 once the request is
+ * queued. */
+s32 WFC_SubmitMatchSettings(M2C_UNK channelHandler, u32 mode, s32 subMode, s32 name) {
+    M2C_UNK DC_CleanRange(s32, M2C_UNK);
+    s32 result = WFC_CheckChannelOpen();
+    if (result) return result;
+    if (mode > WFC_SESSION_MODE_MAX) return WFC_CMD_BAD_PARAM;
+    if (mode) {
+        if (!name) return WFC_CMD_BAD_PARAM;
+        DC_CleanRange(name, WFC_SESSION_NAME_LEN);
+    }
+    WFC_SetChannelParam(39, channelHandler);
+    result = WFC_SendCommand(39, 3, mode, name, subMode);
+    if (!result) result = WFC_CMD_OK;
+    return result;
+}
 
 /* Submit a download-play data block to the WFC channel: require the channel to be
  * in one of the states this request may be sent from, copy the caller's block
@@ -25,11 +44,11 @@ s32 WFC_SubmitDownloadData(s32 channelParam, void *data, u32 length, s32 sendCod
 }
 
 s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
-    s32 func_0201146c();
+    s32 WFC_CheckChannelOpen();
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_0201146c();
+    temp_r0 = WFC_CheckChannelOpen();
     if (temp_r0 != 0) {
         return temp_r0;
     }
@@ -48,7 +67,7 @@ s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) 
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_0201146c();
+    temp_r0 = WFC_CheckChannelOpen();
     if (temp_r0 != 0) {
         return temp_r0;
     }

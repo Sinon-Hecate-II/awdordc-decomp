@@ -152,25 +152,27 @@ u8 func_ov005_02217320(void) {
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void Ov005SetDetailSelection(s16 arg0) {
+/* Highlight entry `selection` of the detail row: its sprite shows the alternate
+ * pose frame (base frame + 1), all the others their base frame. */
+void Ov005SetDetailSelection(s16 selection) {
     extern u8 *gOv005MenuState;
     s32 i;
-    void *p;
+    void *sprite;
     u32 frame;
     u32 word;
 
-    M2C_FIELD(gOv005MenuState, s16 *, 0x12) = arg0;
-    for (i = 0; i < 4; i++) {
-        if (i == arg0) {
-            p = M2C_FIELD(gOv005MenuState + i * 4, void **, 0x2c);
-            frame = ((u32)(M2C_FIELD(p, u8 *, 0x59) << 28) >> 28) + 1;
-            word = M2C_FIELD(p, u32 *, 0x40);
+    M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_SELECTION) = selection;
+    for (i = 0; i < OV005_MENU_DETAIL_COUNT; i++) {
+        if (i == selection) {
+            sprite = M2C_FIELD(gOv005MenuState + i * 4, void **, OV005_MENU_DETAIL_SPRITES);
+            frame = ((u32)(M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 28) >> 28) + 1;
+            word = M2C_FIELD(sprite, u32 *, MENU_SPRITE_FRAME);
         } else {
-            p = M2C_FIELD(gOv005MenuState + i * 4, void **, 0x2c);
-            frame = ((u32)(M2C_FIELD(p, u8 *, 0x59) << 28) >> 28);
-            word = M2C_FIELD(p, u32 *, 0x40);
+            sprite = M2C_FIELD(gOv005MenuState + i * 4, void **, OV005_MENU_DETAIL_SPRITES);
+            frame = ((u32)(M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 28) >> 28);
+            word = M2C_FIELD(sprite, u32 *, MENU_SPRITE_FRAME);
         }
-        M2C_FIELD(p, u32 *, 0x40) = (word & ~0x3fc0000) | ((u32)(((u16)frame) << 24) >> 6);
+        M2C_FIELD(sprite, u32 *, MENU_SPRITE_FRAME) = (word & ~MENU_SPRITE_FRAME_MASK) | ((u32)(((u16)frame) << 24) >> 6);
     }
 }
 #pragma opt_common_subs reset

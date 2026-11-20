@@ -1,5 +1,6 @@
 /* 30 functions from 0x0201CB4C to 0x0201DB20 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_socket.h"
 #include "tcp_socket.h"
 
 #pragma scheduling off
@@ -453,28 +454,34 @@ s32 func_0201d548(s32 *arg0, void *arg1) {
     return M2C_FIELD(arg1, s32 *, 0x40);
 }
 
-s32 PeekReceivedData(u32 *arg0, M2C_UNK arg1) {
+/* Peek at what a raw connection has received: when it has no data and is still
+ * established, ask its task for some and sleep until the data arrives (or the
+ * connection closes).  Reports the byte count in sizeOut and returns the
+ * receive buffer, or reports 0 and returns 0 when nothing is available. */
+s32 PeekReceivedData(u32 *sizeOut, M2C_UNK connection) {
     s32 OS_DisableInterrupts(void);
     M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK TaskYield(void);
-    s32 temp_r8;
-    s32 temp_r0;
+    s32 saved;
+    s32 available;
 
-    if (M2C_FIELD((void *)arg1, s32 *, 0x44) == 0 && M2C_FIELD((void *)arg1, u8 *, 0x8) == 4) {
-        temp_r8 = OS_DisableInterrupts();
-        while (M2C_FIELD((void *)arg1, s32 *, 0x44) == 0 && M2C_FIELD((void *)arg1, u8 *, 0x8) == 4) {
-            M2C_FIELD((void *)arg1, s32 *, 0x4) = 2;
+    if (M2C_FIELD((void *)connection, u32 *, CONN_RX_POS) == 0 &&
+        M2C_FIELD((void *)connection, u8 *, CONN_STATE) == CONN_STATE_ESTABLISHED) {
+        saved = OS_DisableInterrupts();
+        while (M2C_FIELD((void *)connection, u32 *, CONN_RX_POS) == 0 &&
+               M2C_FIELD((void *)connection, u8 *, CONN_STATE) == CONN_STATE_ESTABLISHED) {
+            M2C_FIELD((void *)connection, s32 *, CONN_TASK_ID) = 2;
             OS_SleepThread(0);
         }
-        OS_RestoreInterrupts(temp_r8);
+        OS_RestoreInterrupts(saved);
     } else {
         TaskYield();
     }
-    temp_r0 = M2C_FIELD((void *)arg1, s32 *, 0x44);
-    *arg0 = (u32)temp_r0;
-    if (temp_r0 != 0) {
-        return M2C_FIELD((void *)arg1, s32 *, 0x40);
+    available = M2C_FIELD((void *)connection, u32 *, CONN_RX_POS);
+    *sizeOut = (u32)available;
+    if (available != 0) {
+        return (s32)M2C_FIELD((void *)connection, void **, CONN_RX_BUFFER);
     }
     return 0;
 }

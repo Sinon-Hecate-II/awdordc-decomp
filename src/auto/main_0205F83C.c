@@ -317,7 +317,7 @@ u8 GsCryptByte(void *cipher, u8 data) {
 
 void func_0206006c(void *a,u8 *b,s32 n){u8 GsCryptByte(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=GsCryptByte(a,b[i]);}
 
-void func_020600a8(void *arg0, void *arg1) {
+void QueryQueue_Append(void *arg0, void *arg1) {
     void *temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, void **, 4);
@@ -332,7 +332,7 @@ void func_020600a8(void *arg0, void *arg1) {
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 1);
 }
 
-void func_020600dc(void *arg0, void *arg1) {
+void QueryQueue_PushFront(void *arg0, void *arg1) {
     M2C_FIELD(arg1, void **, 0x20) = (void *) M2C_FIELD(arg0, void **, 0);
     M2C_FIELD(arg0, void **, 0) = arg1;
     if (M2C_FIELD(arg0, void **, 4) == NULL) {
@@ -366,11 +366,11 @@ void func_020601a4(void *arg0) {
 }
 
 #pragma opt_propagation off
-void func_020601b8(void *a,void *b,s32 unused){
+void Qr2Query_SendQuery(void *a,void *b,s32 unused){
 s32 GetTickCountMs(void);
 M2C_UNK ghiSendTo(s32,void *,s32,s32,void *,s32);
 u8 buf[256]; u8 addr[8]; s32 n,i,j; u8 *dst;
-func_020600a8(a+8,b); M2C_FIELD(b,s32 *,28)=GetTickCountMs();
+QueryQueue_Append(a+8,b); M2C_FIELD(b,s32 *,28)=GetTickCountMs();
 addr[1]=2;
 if(M2C_FIELD(b,u8 *,20)&32)return;
 if(M2C_FIELD(a,s32 *,0)==1){
@@ -427,7 +427,22 @@ void func_02060430(void *arg0) {
     func_020601a4(arg0 + 8);
 }
 
-void func_0206045c(void *a,void *b,s32 c,s32 d){void func_020601b8(void *,void *,s32);M2C_FIELD(b,u8 *,20)&=0xc3;if(d==0)M2C_FIELD(b,u8 *,20)|=4;else if(d==1)M2C_FIELD(b,u8 *,20)|=8;else if(d==2)return;if(M2C_FIELD(a,s32 *,16)<M2C_FIELD(a,s32 *,4))func_020601b8(a,b,c);else if(c)func_020600dc(a+20,b);else func_020600a8(a+20,b);}
+/* Start a detail query for one server of the list: clear the record's query state
+ * and set the kind of query asked for (GPI_PLAYER_QUERY_KEYS, or
+ * GPI_PLAYER_QUERY_INFO when `queryKind` is 1; 2 asks for no query at all).  The
+ * query is sent right away while fewer than SB_LIST_QUERY_LIMIT are in flight,
+ * otherwise the record waits in the list's query queue, at its front when
+ * `priority` is set. */
+void Qr2Query_StartServerQuery(void *list, GpiPlayer *server, s32 priority, s32 queryKind) {
+    void Qr2Query_SendQuery(void *, void *, s32);
+    server->state = (u8)(server->state & 0xC3);
+    if (queryKind == 0) server->state = (u8)(server->state | GPI_PLAYER_QUERY_KEYS);
+    else if (queryKind == 1) server->state = (u8)(server->state | GPI_PLAYER_QUERY_INFO);
+    else if (queryKind == 2) return;
+    if (M2C_FIELD(list, s32 *, SB_LIST_PENDING) < M2C_FIELD(list, s32 *, SB_LIST_QUERY_LIMIT)) Qr2Query_SendQuery(list, server, priority);
+    else if (priority) QueryQueue_PushFront((u8 *)list + SB_LIST_WAITING, server);
+    else QueryQueue_Append((u8 *)list + SB_LIST_WAITING, server);
+}
 
 /* Dispatch each chunk of a typed message to its handlers found via a table, or fall back to a direct handler. */
 void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {

@@ -13,7 +13,7 @@ void func_0204d5c0(void *arg0) {
     s32 StringLength(s32);
     void MemMove(void *, void *, s32);
     void ResetBuffer(void *);
-    void InvokeRequestCallback(void *, s32, s32);
+    void ghiCallProgressCallback(void *, s32, s32);
     s32 gpiStringDup(s8 *);
     s32 StringCompareN(void *, void *, s32);
     s32 ParseInt(s8 *);
@@ -73,7 +73,7 @@ void func_0204d5c0(void *arg0) {
                 ResetBuffer((u8 *)arg0 + 0x74);
             }
             M2C_FIELD(arg0, s32 *, 0x10) = 6;
-            InvokeRequestCallback(arg0, 0, 0);
+            ghiCallProgressCallback(arg0, 0, 0);
             goto cleanup;
         }
         if (statusClass == 3) {

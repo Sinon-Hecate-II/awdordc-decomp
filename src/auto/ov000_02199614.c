@@ -319,15 +319,23 @@ void SetBattleCommand(s32 kind, s32 actor, s32 arg, s32 argY) {
     }
 }
 
-void func_ov000_0219a064(void) {
-extern s32 *gCurrentMap;
-extern u8 gAiCommand[];
-u8 *p=M2C_FIELD(*gCurrentMap,u8 **,0x52d0);
+/* Keeps the AI-known mark of the unit under the cursor in step with the battle
+ * command being replayed: a kind-4 command (a weather change) marks the unit as
+ * known to the AI, while a command that moved the cursor to another tile clears
+ * the mark.  A missing or dead unit under the cursor is left alone. */
+void UpdateCursorUnitAiKnown(void) {
+    extern s32 *gCurrentMap;
+    extern u8 gAiCommand[];
+    u8 *unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
 
-if(!p || !((Field7 *)(p+6))->value) return;
+    if (!unit || !((BattleMapUnitHead *)unit)->health) return;
 
-if(gAiCommand[0]==4) p[11]|=0x40;
-else if(gAiCommand[2]!=gAiCommand[4] || gAiCommand[3]!=gAiCommand[5]) p[11]&=~0x40;
+    if (gAiCommand[AI_COMMAND_KIND] == 4) {
+        unit[MAP_UNIT_AI_STATE] |= MAP_UNIT_AI_KNOWN;
+    } else if (gAiCommand[AI_COMMAND_CURSOR_X] != gAiCommand[AI_COMMAND_OLD_X] ||
+               gAiCommand[AI_COMMAND_CURSOR_Y] != gAiCommand[AI_COMMAND_OLD_Y]) {
+        unit[MAP_UNIT_AI_STATE] &= ~MAP_UNIT_AI_KNOWN;
+    }
 }
 
 #pragma push

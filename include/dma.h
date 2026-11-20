@@ -7,6 +7,7 @@
  * four bytes a channel from 0x040000E0. */
 #define DMA_CHANNEL_BASE(ch) (0x040000B0 + (ch) * 12) /* s32[3]: source, destination, control */
 #define DMA_CHANNEL_CTRL(ch) (0x040000B0 + ((ch) * 3 + 2) * 4) /* s32 control word; written this way to keep the ARM multiply short */
+#define DMA_CHANNEL_CTRL_HI(ch) (0x040000B0 + ((ch) * 6 + 5) * 2) /* u16 high half of the control word; written this way to keep the ARM multiply short */
 #define DMA_FILL_REG(ch)     (0x040000E0 + (ch) * 4)  /* u32 value a fill writes out */
 
 /* Fields of a channel's control word (DMA_CHANNEL_BASE(ch) + 8).  Bit 31 is the
@@ -15,6 +16,8 @@
  * modes are compatible, otherwise the transfer would be corrupted. */
 #define DMA_CTRL_ENABLE 0x80000000 /* bit 31: the channel is enabled */
 #define DMA_CTRL_MODE   0x38000000 /* bits 27..29: the channel's transfer mode */
+#define DMA_CTRL_HI_MODE   0x3a00 /* high half of the control word: transfer mode, size and 32-bit selection */
+#define DMA_CTRL_HI_ENABLE 0x8000 /* high half of DMA_CTRL_ENABLE */
 
 /* Control word of a 32-bit fill: the fill-value register is the fixed source, the
  * destination increments, and the word count goes in the low bits. */

@@ -21,7 +21,7 @@ extern s32 gMicTestIpc;
 void func_020e4490(void) {
     M2C_UNK func_020e4378();
     M2C_UNK func_02082058();
-    M2C_UNK func_02081724();
+    M2C_UNK ResetKeyState();
     M2C_UNK func_02081a48();
     M2C_UNK func_02082d08();
     M2C_UNK func_02082b78();
@@ -59,7 +59,7 @@ void func_020e4490(void) {
     gSpriteUpdateBusy = 0;
     func_020e4378();
     func_02082058();
-    func_02081724();
+    ResetKeyState();
     func_02081a48();
     func_02082d08();
     func_02082b78();

@@ -275,24 +275,27 @@ s32 OS_JamMessage(void *queue, s32 message, s32 flags) {
     return 1;
 }
 
-s32 OS_ReadMessage(void *arg0, s32 *arg1, s32 arg2) {
+/* Read the message at the head of a thread message queue without removing it:
+ * with OS_MESSAGE_BLOCK it sleeps on the queue's receive list until one arrives.
+ * Returns 0 when a non-blocking call finds the queue empty, 1 otherwise. */
+s32 OS_ReadMessage(OSMessageQueue *queue, s32 *msg, s32 flags) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
     s32 state;
 
     state = OS_DisableInterrupts();
-    while (M2C_FIELD(arg0, s32 *, 0x1C) == 0) {
-        if (!(arg2 & 1)) {
+    while (queue->usedCount == 0) {
+        if (!(flags & OS_MESSAGE_BLOCK)) {
             OS_RestoreInterrupts(state);
             return 0;
         }
-        OS_SleepThread((u8 *)arg0 + 8);
+        OS_SleepThread(&queue->receiveQueue);
     }
-    if (arg1 != NULL) {
-        u32 idx = M2C_FIELD(arg0, u32 *, 0x18);
-        s32 *base = M2C_FIELD(arg0,s32 **,0x10);
-        *arg1 = base[idx];
+    if (msg != NULL) {
+        u32 idx = queue->firstIndex;
+        s32 *base = queue->msgArray;
+        *msg = base[idx];
     }
     OS_RestoreInterrupts(state);
     return 1;

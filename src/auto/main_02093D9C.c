@@ -1,6 +1,7 @@
 /* 57 functions from 0x02093D9C to 0x02094D8C (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 
 void *Get3DSpriteManager(void);
 
@@ -73,20 +74,24 @@ s32 func_02093e94(void *arg0) {
     return 1;
 }
 
-s32 func_02093ed8(void *arg0) {
-    M2C_UNK func_0208fa00(s32, M2C_UNK);
-    s16 temp_ip;
-    s32 temp_r5;
-    void *temp_r0;
+/* Map-script command: place a map cursor on the command's tile - the s16 at +0x08
+ * packs x and y and the word at +0x0C is the cursor kind.  Cursor kind 6 also
+ * starts its repeating sound (0x10025, every 0x16 frames).  Advances the script. */
+s32 ScriptCmd_PlaceMapCursor(void *script) {
+    M2C_UNK AddMapOrder(u8, u8, u8, u8, s32, s32, s32, s32);
+    M2C_UNK StartLoopingSoundEffect(s32, M2C_UNK);
+    s16 tile;
+    s32 kind;
+    void *command;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 4);
-    temp_ip = M2C_FIELD(temp_r0, s16 *, 8);
-    temp_r5 = M2C_FIELD(temp_r0, s32 *, 0xC);
-    AddMapOrder((u8) temp_ip, (u8) (temp_ip >> 8), 1, 1, 9, 0, 0, temp_r5);
-    if (temp_r5 == 6) {
-        func_0208fa00(0x10025, 0x16);
+    command = M2C_FIELD(script, void **, 4);
+    tile = M2C_FIELD(command, s16 *, 8);
+    kind = M2C_FIELD(command, s32 *, 0xC);
+    AddMapOrder((u8) tile, (u8) (tile >> 8), 1, 1, MAPORDER_CURSOR, 0, 0, kind);
+    if (kind == 6) {
+        StartLoopingSoundEffect(0x10025, 0x16);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
@@ -461,7 +466,7 @@ void func_02094770(void) {
  M2C_FIELD(p,s8 *,0x4B)--;
 }
 
-u8 func_02094788(void) {
+u8 GetDialogSuspendCount(void) {
     void *Get3DSpriteManager();
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4B);
 }
@@ -541,7 +546,7 @@ base=(u8 *)&gDialogSequences;
 return base+offset;
 }
 #pragma optimization_level reset
-void func_02094958(void *arg0) {
+void StepDialogSequence(void *arg0) {
     s32 func_02096064(void);
     extern void *data_02102b50[];
     void **p;
@@ -567,19 +572,21 @@ advance:
     goto loop;
 }
 #pragma scheduling on
-void func_020949f8(void) {
+/* Per-frame update of the active dialog scripts: skipped while another dialog
+ * update is suspended, the map view is scrolling or a UI mode change is running.
+ * Each active sequence runs its wait callback and then steps its command script. */
+void UpdateDialogSequences(void) {
     s32 IsMapViewScrolling();
-    void func_02094958(void *);
+    void StepDialogSequence(void *);
     s32 IsUiModeSwitchBusy();
     extern M2C_UNK gDialogSequences;
-    M2C_UNK (*temp_r1)(void *);
-    u8 *var_r4;
-    s32 var_r5;
+    DialogSequence *sequence;
+    s32 i;
 
     if (IsDialogActive() == 0) {
         return;
     }
-    if (func_02094788() != 0) {
+    if (GetDialogSuspendCount() != 0) {
         return;
     }
     if (IsMapViewScrolling() != 0) {
@@ -588,19 +595,18 @@ void func_020949f8(void) {
     if (IsUiModeSwitchBusy() != 0) {
         return;
     }
-    var_r4 = (u8 *) &gDialogSequences;
-    var_r5 = 0;
+    sequence = (DialogSequence *) &gDialogSequences;
+    i = 0;
     do {
-        if (M2C_FIELD(var_r4, s32 *, 0) != 0) {
-            temp_r1 = M2C_FIELD(var_r4, M2C_UNK (**)(void *), 8);
-            if (temp_r1 != NULL) {
-                temp_r1(var_r4);
+        if (sequence->script != 0) {
+            if (sequence->wait != NULL) {
+                sequence->wait(sequence);
             }
-            func_02094958(var_r4);
+            StepDialogSequence(sequence);
         }
-        var_r5 += 1;
-        var_r4 += 0x18;
-    } while (var_r5 < 8);
+        i += 1;
+        sequence += 1;
+    } while (i < DIALOG_SEQUENCE_COUNT);
 }
 
 void func_02094a74(M2C_UNK arg0) {

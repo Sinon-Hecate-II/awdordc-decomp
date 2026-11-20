@@ -34,7 +34,7 @@ s32 IsCampaignMapCleared(u16);
 void *GetMapName(u16);
 void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
 extern u8 gSpriteDesc16x16[];
-s32 func_020abb24(void *);
+s32 GetListScrollY(void *);
 void func_0208e0b8(s16,s16,s16,u16,s32);
 s16 CountMapPicks(void *,void *);
 void func_02088e84(void *,s16,s16,s16,s16);
@@ -124,7 +124,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
 
  p=M2C_FIELD(arg0,void **,0x4c);
  {s32 a=M2C_FIELD(p,s16 *,0x28)+GetSpriteAnimValue((u8*)p+0x42);
- s32 b=func_020abb24(M2C_FIELD(arg0,void **,0x4c));
+ s32 b=GetListScrollY(M2C_FIELD(arg0,void **,0x4c));
  void *q=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c),void **,0);
  M2C_FIELD(q,s16 *,0x34)=arg1+(s16)(a+2);
  M2C_FIELD(q,s16 *,0x36)=arg2+(s16)(b+2);

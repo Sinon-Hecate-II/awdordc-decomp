@@ -173,33 +173,38 @@ func_0202a498(data_ov001_02193e44,a);
 OS_EnableIrqMask(saved);
 }
 
-void func_ov001_0218b850(void);
-void func_ov001_0218b79c(void) {
-extern M2C_UNK data_ov001_02193e48;
-s32 buf[2];
-M2C_FIELD(&data_ov001_02193e48,s32 *,4)=((s32 (*)())Ov001_Alloc)(0x3a,4);
-if(TP_GetFirmwareCalibration(buf)==0)SystemHalt();
-SetTouchCalibration(buf);
-func_0200d85c(0,4,M2C_FIELD(&data_ov001_02193e48,s32 *,4),5);
-func_0200dd14(2);
-if(func_0200dd2c(2)!=0)SystemHalt();
-func_ov001_0218b850();
+void Ov001_UpdateInput(void);
+/* Start the shell's input: allocate the input block, take the touch screen's
+ * factory calibration from the firmware, hand the block to the touch driver as a
+ * five-sample buffer and start the ARM7's touch sampling.  The system halts when
+ * the firmware has no usable calibration or the ARM7 does not start sampling,
+ * and the input is then read once to prime the key and touch state. */
+void Ov001_StartInput(void) {
+    extern M2C_UNK gOv001Input;
+    s32 calibration[2];
+    M2C_FIELD(&gOv001Input, s32 *, 4) = ((s32 (*)())Ov001_Alloc)(0x3a, 4);
+    if (TP_GetFirmwareCalibration(calibration) == 0) SystemHalt();
+    SetTouchCalibration(calibration);
+    TP_Init(0, 4, M2C_FIELD(&gOv001Input, s32 *, 4), 5);
+    TP_WaitBusy(2);
+    if (TP_CheckBusy(2) != 0) SystemHalt();
+    Ov001_UpdateInput();
 }
 
-void func_ov001_0218b818(void) {
+void Ov001_StopInput(void) {
     M2C_UNK TP_StopSampling();
-    M2C_UNK func_0200dd14(M2C_UNK);
-    s32 func_0200dd2c(M2C_UNK);
+    M2C_UNK TP_WaitBusy(M2C_UNK);
+    s32 TP_CheckBusy(M2C_UNK);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193e4c;
     do {
         TP_StopSampling();
-        func_0200dd14(4);
-    } while (func_0200dd2c(4) != 0);
+        TP_WaitBusy(4);
+    } while (TP_CheckBusy(4) != 0);
     Ov001_FreeAlloc(&data_ov001_02193e4c);
 }
 
-void func_ov001_0218b850(void) {
+void Ov001_UpdateInput(void) {
     void func_ov001_0218b860(void);
     void func_ov001_0218b964(void);
     func_ov001_0218b860();
@@ -207,19 +212,19 @@ void func_ov001_0218b850(void) {
 }
 
 void func_ov001_0218b860(void) {
-    extern M2C_UNK data_ov001_02193e48;
+    extern M2C_UNK gOv001Input;
     extern u8 data_ov001_02193e50[];
     u16 keyin = *(volatile u16 *)0x4000130;
     u16 gval = *(volatile u16 *)0x27fffa8;
     u16 pressed = (u16)(((keyin | gval) ^ 0x2fff) & 0x2fff);
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32) =
-        (M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) ^ pressed) & pressed;
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x36) =
-        M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) &
-        (M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) ^ pressed);
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x30) = pressed;
-    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) =
-        M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32);
+    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32) =
+        (M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) ^ pressed) & pressed;
+    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x36) =
+        M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) &
+        (M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) ^ pressed);
+    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) = pressed;
+    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34) =
+        M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32);
     {
         int i = 0;
         while (i < 14) {
@@ -231,9 +236,9 @@ void func_ov001_0218b860(void) {
                 cnt = (u8)(cnt + 1);
                 data_ov001_02193e50[i] = cnt;
                 if (cnt == 0x28) {
-                    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) |= bit;
+                    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34) |= bit;
                 } else if (cnt == 0x2f) {
-                    M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34) |= bit;
+                    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34) |= bit;
                     data_ov001_02193e50[i] = 0x28;
                 }
             }
@@ -243,22 +248,22 @@ void func_ov001_0218b860(void) {
 }
 
 void func_ov001_0218b964(void) {
-extern M2C_UNK data_ov001_02193e48;
+extern M2C_UNK gOv001Input;
 s32 HardwareDivideRemainder(s32,s32); s32 func_0200d9f4(void);void CalibrateTouchSample(void *);void func_ov001_0218b2bc(u16,u16,void *);
 register s32 i,active,old,delta; register s32 index; u16 xy[4]; InputState *p; InputGlobal *g; u8 *sp;
-old=((InputGlobal *)&data_ov001_02193e48)->state->flags.active?1:0;
+old=((InputGlobal *)&gOv001Input)->state->flags.active?1:0;
 active=0;index=func_0200d9f4();
-p=((InputGlobal *)&data_ov001_02193e48)->state;
+p=((InputGlobal *)&gOv001Input)->state;
 *(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
 for(i=active;i<4;) {
-sp=(u8 *)((InputGlobal *)&data_ov001_02193e48)->state->samples;
+sp=(u8 *)((InputGlobal *)&gOv001Input)->state->samples;
 sp+=index*8;
 if(M2C_FIELD(sp,u16 *,4)==1) if(M2C_FIELD(sp,u16 *,6)==0) {
-active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&data_ov001_02193e48)->state->field_0x28);break;
+active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&gOv001Input)->state->field_0x28);break;
 }
 i++;index=HardwareDivideRemainder(index+4,5);
 }
-g=(InputGlobal *)&data_ov001_02193e48;delta=active^old;
+g=(InputGlobal *)&gOv001Input;delta=active^old;
 g->state->flags.pressed=(u8)(active&delta);
 g->state->flags.lifted=(u8)(old&delta);
 M2C_FIELD(g->state,u8 *,0x38)=(M2C_FIELD(g->state,u8 *,0x38)&~1)|(active&1);
@@ -272,28 +277,28 @@ else if(M2C_FIELD(g,u8 *,1)==47){g->state->flags.released=1;M2C_FIELD(g,u8 *,1)=
 
 #pragma opt_peephole off
 s32 KeyPressed(s32 arg0) {
-    extern M2C_UNK data_ov001_02193e48;
-    if (arg0 == (arg0 & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x32))) {
+    extern M2C_UNK gOv001Input;
+    if (arg0 == (arg0 & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32))) {
         return 1;
     }
     return 0;
 }
 #pragma opt_peephole reset
 s32 KeyHeld(s32 a) {
-    extern M2C_UNK data_ov001_02193e48;
+    extern M2C_UNK gOv001Input;
     s32 t;
-    t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x34);
+    t = a & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34);
     return a == t;
 }
 
 s32 KeyReleased(s32 a) {
-    extern M2C_UNK data_ov001_02193e48;
+    extern M2C_UNK gOv001Input;
     s32 t;
-    t = a & M2C_FIELD(M2C_FIELD(&data_ov001_02193e48, void **, 4), u16 *, 0x36);
+    t = a & M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x36);
     return a == t;
 }
 
-s32 TouchRectReleased(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);
+s32 TouchRectReleased(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);
 if(M2C_FIELD(p,TouchFlags *,0x38).active==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -301,7 +306,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 TouchRectPressed(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectPressed(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<30>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -309,7 +314,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 TouchRectPressOrRepeat(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectPressOrRepeat(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<29>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -317,7 +322,7 @@ if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
 return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 }
 
-s32 TouchRectHeld(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
+s32 TouchRectHeld(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
 if((x<<28>>31)==0)return 0;
 if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
 if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
@@ -327,20 +332,24 @@ return a[3]>=M2C_FIELD(p,u16 *,0x2a);
 
 s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return TouchRectPressed(box);}
 
-s32 Ov001_ReadTouchPoint(u16 *a){extern M2C_UNK data_ov001_02193e48;void *p=M2C_FIELD(&data_ov001_02193e48,void **,4);u16 x,y;
+s32 Ov001_ReadTouchPoint(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u16 x,y;
 if(!M2C_FIELD(p,TouchFlags *,0x38).active){x=M2C_FIELD(p,volatile u16 *,0x2c);y=M2C_FIELD(p,volatile u16 *,0x2e);a[0]=x;a[1]=y;return 0;}
 x=M2C_FIELD(p,volatile u16 *,0x28);y=M2C_FIELD(p,volatile u16 *,0x2a);a[0]=x;a[1]=y;return 1;
 }
 
-void func_ov001_0218bdb0(void) {
-extern M2C_UNK data_ov001_02193e48;
-if(M2C_FIELD(&data_ov001_02193e48,u8 *,0)){
-if(((*(volatile u16 *)0x027fffa8)&0x8000)>>15)return;
-if(SetLcdEnabled(1))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=0;
-}else{
-if(!(((*(volatile u16 *)0x027fffa8)&0x8000)>>15))return;
-if(SetLcdEnabled(0))M2C_FIELD(&data_ov001_02193e48,u8 *,0)=1;
-}
+/* Keep the LCD in step with the shell's lid switch: turn the display off while
+ * the lid is closed and bring it back when it opens, latching the state in the
+ * input global's +0 byte. */
+void Ov001_UpdateLidState(void) {
+    s32 SetLcdEnabled(s32);
+    extern M2C_UNK gOv001Input;
+    if (M2C_FIELD(&gOv001Input, u8 *, 0)) {
+        if (((*(volatile u16 *)SHARED_LID_WORD) & SHARED_LID_CLOSED) >> 15) return;
+        if (SetLcdEnabled(1)) M2C_FIELD(&gOv001Input, u8 *, 0) = 0;
+    } else {
+        if (!(((*(volatile u16 *)SHARED_LID_WORD) & SHARED_LID_CLOSED) >> 15)) return;
+        if (SetLcdEnabled(0)) M2C_FIELD(&gOv001Input, u8 *, 0) = 1;
+    }
 }
 
 void func_ov001_0218bedc(void);

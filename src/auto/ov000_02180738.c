@@ -152,7 +152,12 @@ void func_ov000_02180924(void) {
     func_ov000_0218cfec();
 }
 
-void func_ov000_02180934(void) {
+/* Role-3 AI action for a unit in AI step 0 (also the fallback for a step-2 unit
+ * with no enemy to fight): build the influence maps and pick the unit's attack
+ * target, attacking from where it stands when the map is foggy, the weather is
+ * snow or the unit is a mobile indirect; then plan the move destination and
+ * finish the unit's action. */
+void RunAiRole3Step0Action(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
@@ -166,11 +171,11 @@ M2C_UNK FinishAiUnitAction();
 M2C_UNK RunAiAttackAction();
 s32 IsMobileIndirectUnitKind(u32);
 extern void **gCurrentMap;
-void *temp_r3;
+void *map;
 BuildAiInfluenceMaps();
 SelectAiActionTarget();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { RunAiAttackAction(); }
+map = *gCurrentMap;
+if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 PlanEnemyUnitAttackDestination();
 func_ov000_02194370();
@@ -181,7 +186,11 @@ SelectPortDestination();
 FinishAiUnitAction();
 }
 
-void func_ov000_021809b0(void) {
+/* Role-3 AI step-1 handler (RunAiRole3Action case 1): clear the influence maps
+ * and pick the acting unit's move-action target, attacking from where it stands
+ * when the map is foggy, the weather is snow or the unit is a mobile indirect;
+ * then plan the enemy-unit destination and finish the unit's action. */
+void RunAiRole3Step1Action(void) {
     M2C_UNK ClearAiInfluenceMaps();
     M2C_UNK SelectAiMoveActionTarget();
     M2C_UNK PlanEnemyUnitAttackDestination();
@@ -194,11 +203,11 @@ void func_ov000_021809b0(void) {
     M2C_UNK RunAiAttackAction();
     s32 IsMobileIndirectUnitKind(u32);
     extern void **gCurrentMap;
-    void *temp_r0;
+    void *map;
     ClearAiInfluenceMaps();
     SelectAiMoveActionTarget();
-    temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) {
         RunAiAttackAction();
     }
     PlanEnemyUnitAttackDestination();
@@ -210,7 +219,11 @@ void func_ov000_021809b0(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180a28(void) {
+/* Role-3 AI action for a unit in AI step 2 when an enemy player is left: build
+ * the influence maps and pick the unit's attack target, attacking from where it
+ * stands when the map is foggy, the weather is snow or the unit is a mobile
+ * indirect; then plan the HQ and enemy-unit destinations and finish the action. */
+void RunAiRole3Step2Action(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
@@ -224,11 +237,11 @@ M2C_UNK FinishAiUnitAction();
 M2C_UNK RunAiAttackAction();
 s32 IsMobileIndirectUnitKind(u32);
 extern void **gCurrentMap;
-void *temp_r3;
+void *map;
 BuildAiInfluenceMaps();
 SelectAiActionTarget();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { RunAiAttackAction(); }
+map = *gCurrentMap;
+if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 PlanEnemyHqAttackDestinationAlt();
 func_ov000_02194370();
@@ -239,7 +252,12 @@ SelectPortDestination();
 FinishAiUnitAction();
 }
 
-void func_ov000_02180aa4(void) {
+/* Role-3 AI step-3 handler (RunAiRole3Action case 3): rebuild the influence
+ * maps, pick the acting unit's action target, and run the attack action when
+ * the battlefield is hidden (fog of war or snow) or the unit under the cursor
+ * is a mobile indirect unit.  Then choose the move, attack, property and port
+ * destinations and finish the unit's action. */
+void RunAiRole3Step3Action(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
@@ -253,11 +271,11 @@ M2C_UNK FinishAiUnitAction();
 M2C_UNK RunAiAttackAction();
 s32 IsMobileIndirectUnitKind(u32);
 extern void **gCurrentMap;
-void *temp_r3;
+void *map;
 BuildAiInfluenceMaps();
 SelectAiActionTarget();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { RunAiAttackAction(); }
+map = *gCurrentMap;
+if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 func_ov000_02195750();
 func_ov000_02194370();
@@ -268,11 +286,16 @@ SelectPortDestination();
 FinishAiUnitAction();
 }
 
-void func_ov000_02180b20(void) {
+/* Role-3 AI step-4 handler (RunAiRole3Action case 4): rebuild the influence
+ * maps, pick the acting unit's action target, and run the attack action when
+ * the battlefield is hidden (fog of war or snow) or the unit under the cursor
+ * is a mobile indirect unit.  Then choose the move, attack, property and port
+ * destinations and finish the unit's action. */
+void RunAiRole3Step4Action(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
-M2C_UNK func_ov000_02195ea4();
+M2C_UNK PlanAiStep4Destination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
 M2C_UNK func_ov000_02194370();
@@ -282,13 +305,13 @@ M2C_UNK FinishAiUnitAction();
 M2C_UNK RunAiAttackAction();
 s32 IsMobileIndirectUnitKind(u32);
 extern void **gCurrentMap;
-void *temp_r3;
+void *map;
 BuildAiInfluenceMaps();
 SelectAiActionTarget();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD(temp_r3, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r3, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r3, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) { RunAiAttackAction(); }
+map = *gCurrentMap;
+if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
-func_ov000_02195ea4();
+PlanAiStep4Destination();
 SelectAttackMoveDestination();
 PlanEnemyUnitAttackDestination();
 func_ov000_02194370();
@@ -429,16 +452,27 @@ void RunAiRole3Step10Action(void) {
  FindBestMoveTarget(); PlanEnemyHqAttackDestination(); PlanEnemyUnitAttackDestination(); func_ov000_02194370(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); PlanEnemyHqAttackDestinationAlt(); SelectPortDestination(); FinishAiUnitAction();
 }
 
-void func_ov000_02180e4c(void) {
- s32 IsAiMap175Player2Override(); M2C_UNK BuildAiInfluenceMaps(); M2C_UNK func_ov000_0218f0ec(); M2C_UNK SelectCaptureStayDestination();
- extern void **gCurrentMap; u32 x; void *p;
- if(IsAiMap175Player2Override()) return;
- x=(u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28;
- if(x==6 || x==8) return;
- BuildAiInfluenceMaps();
- p=*gCurrentMap;
- if(M2C_FIELD((u8 *)p+M2C_FIELD(p,u16 *,0x52a4)*0x8c,u8 *,0x67ce)!=3) func_ov000_0218f0ec();
- SelectCaptureStayDestination();
+/* Role-1 capture action callback (installed by BuildAiRole1UnitList for the
+ * current player's placed role-1 units that already hold capture progress and
+ * have no AI step yet): skip the map-175 player-2 override and units already in
+ * the attack or capture step, rebuild the influence maps, plan a capture
+ * destination when the owner's AI mode is not 3, then commit the capture-stay
+ * destination. */
+void RunAiRole1CaptureAction(void) {
+    s32 IsAiMap175Player2Override();
+    M2C_UNK BuildAiInfluenceMaps();
+    M2C_UNK func_ov000_0218f0ec();
+    M2C_UNK SelectCaptureStayDestination();
+    extern void **gCurrentMap;
+    u32 aiStep;
+    void *map;
+    if (IsAiMap175Player2Override()) return;
+    aiStep = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28;
+    if (aiStep == AI_STEP_ATTACK || aiStep == AI_STEP_CAPTURE) return;
+    BuildAiInfluenceMaps();
+    map = *gCurrentMap;
+    if (M2C_FIELD((u8 *) map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 3) func_ov000_0218f0ec();
+    SelectCaptureStayDestination();
 }
 
 void func_ov000_02180ec8(void) {
@@ -586,12 +620,12 @@ void RunAiRole3Action(void) {
     if (IsAiMap175Player2Override()) { RunAiMap175MoveOverride(); return; }
     state = *gCurrentMap;
     switch ((u32)(M2C_FIELD(M2C_FIELD(state, void **, 0x52D0), u8 *, 11) << 28) >> 28) {
-    case 0: func_ov000_02180934(); return;
-    case 1: func_ov000_021809b0(); return;
-    case 2: if (HasEnemyPlayer() == 1) func_ov000_02180a28(); else func_ov000_02180934(); return;
-    case 3: func_ov000_02180aa4(); return;
-    case 4: func_ov000_02180b20(); return;
-    case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else func_ov000_02180b20(); return;
+    case 0: RunAiRole3Step0Action(); return;
+    case 1: RunAiRole3Step1Action(); return;
+    case 2: if (HasEnemyPlayer() == 1) RunAiRole3Step2Action(); else RunAiRole3Step0Action(); return;
+    case 3: RunAiRole3Step3Action(); return;
+    case 4: RunAiRole3Step4Action(); return;
+    case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else RunAiRole3Step4Action(); return;
     case 6: func_ov000_02180c10(); return;
     case 7: func_ov000_02180c74(); return;
     case 8: func_ov000_02180ce8(); return;

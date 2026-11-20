@@ -170,6 +170,10 @@ typedef struct DirectionMarker {
 enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM = 3 };
 #define WEATHER_OPTION_RANDOM 4 /* the weather menu's random option: clear weather in auto-change mode */
 #define MAP_WEATHER         0x5158 /* u8 current weather (0 clear, 1 rain, 2 snow, 3 sandstorm) */
+#define MAP_WEATHER_CLEAR     0 /* MAP_WEATHER: no weather */
+#define MAP_WEATHER_RAIN      1 /* MAP_WEATHER: rain */
+#define MAP_WEATHER_SNOW      2 /* MAP_WEATHER: snow */
+#define MAP_WEATHER_SANDSTORM 3 /* MAP_WEATHER: sandstorm */
 #define MAP_WEATHER_MODE    0x5159 /* u8 nonzero when the weather may change by itself */
 #define MAP_WEATHER_START   0x515a /* u8 weather when the battle starts */
 #define MAP_WEATHER_RESET   0x515b /* u8 weather the battle returns to after a change */
@@ -293,6 +297,17 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_ORDER_COUNT  32     /* MapOrder records the queue holds */
 #define MAP_ORDER_TIMER  0x06   /* s8 frames left before the order's targets are played */
 #define MAP_ORDER_TYPE   0x02   /* u16 bits 6..9: the order's type (0 ends the queue) */
+
+/* Values of MapOrder.type (the field at MAP_ORDER_TYPE). */
+enum {
+    MAPORDER_NONE               = 0, /* free slot, ends the queue */
+    MAPORDER_EFFECT_AREA        = 3, /* pulsating target-area rectangle */
+    MAPORDER_ATTACK_AREA        = 4, /* radius-5 area attack */
+    MAPORDER_ATTACK_POINT       = 5, /* point/column attack */
+    MAPORDER_ATTACK_LINE        = 6, /* line attack */
+    MAPORDER_ATTACK_LINE_FACING = 7, /* line attack whose facing depends on the player */
+    MAPORDER_CURSOR             = 9  /* map cursor placed on one tile */
+};
 
 /* One record of the map's order queue (MAP_ORDERS): the tile rectangle the order
  * covers, its type and the value and countdown it runs with.  The byte at +0x05

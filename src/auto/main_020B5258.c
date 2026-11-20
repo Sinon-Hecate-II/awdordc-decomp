@@ -1,6 +1,7 @@
 /* 29 functions from 0x020B5258 to 0x020B6168 (main), found by ds-decomp. */
 #include "common.h"
 #include "map_effect.h"
+#include "battle_map.h"
 typedef struct { u8 kind:6; u8 rest:2; } UnitKindBits;
 extern u8 data_ov000_021b5c0d[];
 extern s32 *gCurrentMap;
@@ -85,7 +86,7 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
     }
 }
 
-void func_020b5480(void *arg0) {
+void ExplosionSprite_Trigger(void *arg0) {
     s32 GetObjectTileX(void *);
     s32 GetObjectTileY(void *);
     void func_020b5314(u8, s32, s32);
@@ -98,11 +99,11 @@ void func_020b5480(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x58) = 1;
 }
 
-void func_020b54c8(void *arg0) {
+void ExplosionSprite_Update(void *arg0) {
     s32 func_0208c1dc(void *);
-    if ((u16)(M2C_FIELD(arg0, u32 *, 0x44) >> 26) == 0) func_020b5480(arg0);
+    if ((u16)(M2C_FIELD(arg0, u32 *, 0x44) >> 26) == 0) ExplosionSprite_Trigger(arg0);
     if (func_0208c1dc(arg0) == 0) return;
-    func_020b5480(arg0);
+    ExplosionSprite_Trigger(arg0);
 }
 
 void func_020b5504(void *arg0) {
@@ -110,19 +111,19 @@ void func_020b5504(void *arg0) {
     StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
 }
 
-void func_020b551c(void *arg0) {
-    void *func_020b5188(void *, s32, s32, s32, s32, s32, void *);
+void ExplosionEffect_Start(void *arg0) {
+    void *CreateEffectMapSprite(void *, s32, s32, s32, s32, s32, void *);
     s32 temp_r4;
     void *temp_r0;
     void *obj;
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
     temp_r0 = GetExplosionSpriteName(temp_r4);
     if (temp_r0 == 0) return;
-    obj = func_020b5188(temp_r0, M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 0, 0, 0, arg0);
+    obj = CreateEffectMapSprite(temp_r0, M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 0, 0, 0, arg0);
     M2C_FIELD(obj, s32 *, 0x58) = 0;
     M2C_FIELD(obj, s32 *, 0x5C) = temp_r4;
-    M2C_FIELD(obj, void (**)(void *), 0x6C) = func_020b54c8;
-    M2C_FIELD(obj, void (**)(void *), 0x70) = func_020b5480;
+    M2C_FIELD(obj, void (**)(void *), 0x6C) = ExplosionSprite_Update;
+    M2C_FIELD(obj, void (**)(void *), 0x70) = ExplosionSprite_Trigger;
     M2C_FIELD(obj, u32 *, 0x44) = (M2C_FIELD(obj, u32 *, 0x44) & ~0x03000000) | 0x02000000;
 }
 
@@ -132,18 +133,31 @@ void *p=CreateSpriteForOwner(&data_02128c6c,d);
 M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
 }
 
-void func_020b55c4(void *arg0) {
-s32 GetObjectTileX(void *); s32 GetObjectTileY(void *);
-void RemoveUnit(u8); void DestroyUnit(u8);
-void func_020b5314(u8,s32,s32); void func_020ca484(void); void func_ov000_0216ab2c(void);
-s32 x; u8 a,b,c;
-a=M2C_FIELD(arg0,s32 *,0x5c); b=M2C_FIELD(arg0,s32 *,0x60); c=M2C_FIELD(arg0,s32 *,0x64);
-if(M2C_FIELD(arg0,s32 *,0x58)&255) return;
-x=GetObjectTileX(arg0);
-func_020b5314(a,x,GetObjectTileY(arg0));
-if(b) DestroyUnit(c); else RemoveUnit(c);
-RefreshMapView();
-M2C_FIELD(arg0,s32 *,0x58)=1; func_020ca484(); func_ov000_0216ab2c();
+/* Finishing step of a unit removal effect: play the explosion on the unit's tile,
+ * then destroy the unit (or only remove it), refresh the map, mark the effect done
+ * and schedule the battle-end check and the map event. */
+void func_020b55c4(UnitRemoveEffect *effect) {
+    s32 GetObjectTileX(void *);
+    s32 GetObjectTileY(void *);
+    void RemoveUnit(u8);
+    void DestroyUnit(u8);
+    void func_020b5314(u8, s32, s32);
+    void ScheduleBattleEndCheck(void);
+    void func_ov000_0216ab2c(void);
+    s32 x;
+    u8 type, destroy, unitIndex;
+
+    type = effect->type;
+    destroy = effect->destroy;
+    unitIndex = effect->unitIndex;
+    if (effect->done & 0xFF) return;
+    x = GetObjectTileX(effect);
+    func_020b5314(type, x, GetObjectTileY(effect));
+    if (destroy) DestroyUnit(unitIndex); else RemoveUnit(unitIndex);
+    RefreshMapView();
+    effect->done = 1;
+    ScheduleBattleEndCheck();
+    func_ov000_0216ab2c();
 }
 
 void func_020b5640(void *arg0) {
@@ -169,7 +183,7 @@ M2C_FIELD(p,s32 *,0x5c)=kind;
 M2C_FIELD(p,s32 *,0x60)=arg1;
 M2C_FIELD(p,s32 *,0x64)=index;
 M2C_FIELD(p,void (**)(void *),0x6c)=func_020b5640;
-M2C_FIELD(p,void (**)(void *),0x70)=func_020b55c4;
+M2C_FIELD(p,void (**)(void *),0x70)=(void (*)(void *))func_020b55c4;
 M2C_FIELD(p,u32 *,0x44)=(M2C_FIELD(p,u32 *,0x44)&~0x3000000)|0x2000000;
 }
 
@@ -430,18 +444,20 @@ void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {
     StringCopy(temp_r0 + 0x34, &data_02128e8c);
 }
 
-void func_020b5f74(s32 arg0, s32 arg1) {
+/* Switch the map cell at (x, y) to its other tile: a cell showing tile 0x180
+ * becomes tile 0x1A0 with terrain 0x19, and the map is redrawn either way. */
+void func_020b5f74(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 temp_ip;
-    s32 temp_lr;
-    s32 temp_r3;
+    s32 cell;
+    s32 map;
+    s32 next;
 
-    temp_lr = *gCurrentMap;
-    temp_ip = arg0 + M2C_FIELD((temp_lr + (arg1 * 2)), u16 *, 0x3758);
-    if (M2C_FIELD((temp_lr + (temp_ip * 2)), u16 *, 0xA10) == 0x180) {
-        M2C_FIELD((temp_lr + temp_ip), s8 *, 0x1420) = 0x19;
-        temp_r3 = *gCurrentMap;
-        M2C_FIELD((temp_r3 + ((arg0 + M2C_FIELD((temp_r3 + (arg1 * 2)), u16 *, 0x3758)) * 2)), s16 *, 0xA10) = 0x1A0;
+    map = *gCurrentMap;
+    cell = x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS);
+    if (M2C_FIELD((map + (cell * 2)), u16 *, MAP_CELL_TILE_ID) == 0x180) {
+        M2C_FIELD((map + cell), s8 *, MAP_CELL_TERRAIN) = 0x19;
+        next = *gCurrentMap;
+        M2C_FIELD((next + ((x + M2C_FIELD((next + (y * 2)), u16 *, MAP_ROW_OFFSETS)) * 2)), s16 *, MAP_CELL_TILE_ID) = 0x1A0;
     }
     RefreshMapView();
 }

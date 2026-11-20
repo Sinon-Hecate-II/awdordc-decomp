@@ -523,14 +523,14 @@ func_02006270(a);
 
 void func_02005c38(s32 a){
 extern s32 gThreadManager;
-void func_02005c70(void);
+void TerminateCurrentThread(void);
 void *p=*M2C_FIELD(&gThreadManager,void ***,8);
 void (*cb)(s32)=M2C_FIELD(p,void (**)(s32),0xB4);
 if(cb){M2C_FIELD(p,void (**)(s32),0xB4)=NULL;cb(a);
-OS_DisableInterrupts();}func_02005c70();
+OS_DisableInterrupts();}TerminateCurrentThread();
 }
 
-void func_02005c70(void){
+void TerminateCurrentThread(void){
 extern s32 gThreadManager;
 void OS_DisableScheduler(void);
 void func_02006644(void *);
@@ -546,19 +546,24 @@ M2C_FIELD(p,s32 *,100)=2;
 OS_WakeupThread(p+156);OS_EnableScheduler();OS_Reschedule();SystemHalt();
 }
 
-void func_02005ccc(void *p){
-void func_02005d48(void *);
-void OS_Reschedule(void);
-extern s32 gThreadManager;
-s32 old=OS_DisableInterrupts();
-if(M2C_FIELD(&gThreadManager,void **,40)==p)func_02005c70();
-OS_DisableScheduler();func_02006644(p);func_02005d48(p);
-if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
-M2C_FIELD(p,s32 *,100)=2;
-OS_WakeupThread(p+156);OS_EnableScheduler();OS_RestoreInterrupts(old);OS_Reschedule();
+/* Terminate `thread` from outside: if it is the thread that is running, take
+ * the halt path instead.  Otherwise stop the scheduler, hand the CPU to another
+ * thread, release the mutexes it holds and unlink it from the queue it was
+ * sleeping on, cancel the timer that would have woken it, mark it finished and
+ * wake every thread that is joining it. */
+void TerminateThread(void *thread) {
+    void CancelThreadWakeTimer(void *);
+    void OS_Reschedule(void);
+    extern s32 gThreadManager;
+    s32 irqState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gThreadManager, void **, THREAD_MANAGER_CURRENT) == thread) TerminateCurrentThread();
+    OS_DisableScheduler(); func_02006644(thread); CancelThreadWakeTimer(thread);
+    if (M2C_FIELD(thread, void **, 120)) { func_02005774(M2C_FIELD(thread, void **, 120), thread); } func_02005858(thread);
+    M2C_FIELD(thread, s32 *, 100) = 2;
+    OS_WakeupThread((u8 *)thread + THREAD_JOIN_QUEUE); OS_EnableScheduler(); OS_RestoreInterrupts(irqState); OS_Reschedule();
 }
 
-void func_02005d48(void *arg0) {
+void CancelThreadWakeTimer(void *arg0) {
     M2C_UNK CancelTimer();
     if (M2C_FIELD(arg0, s32 *, 0xB0) == 0) {
         return;

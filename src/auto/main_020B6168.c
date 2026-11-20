@@ -7,7 +7,7 @@ typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
-    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
     void func_02080750(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
@@ -59,7 +59,7 @@ void func_020b6168(void *arg0) {
                 if (dy < 0) dy=-dy;
                 if (dx < 0) dx=-dx;
 
-                p = func_020b5188((M2C_UNK *)((u8 *)arg0 + 0x34), x, y, 0x10, 0, 0, arg0);
+                p = CreateEffectMapSprite((M2C_UNK *)((u8 *)arg0 + 0x34), x, y, 0x10, 0, 0, arg0);
                 SetAnimatedSpriteFrame(p, 2);
                 ((RangeEffect *)p)->distance=(u8)((dx+dy)*8);
                 M2C_FIELD(p, s32 *, 0x58) = x;
@@ -139,7 +139,7 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
 void func_020b6444(void *arg0) {
     void ResetEffectSpritePool(void);
     void LoadEffectSpriteSheet(M2C_UNK *, s32);
-    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     extern void **gCurrentMap;
@@ -167,7 +167,7 @@ void func_020b6444(void *arg0) {
     ResetEffectSpritePool();
     LoadEffectSpriteSheet(&data_02128ebc, 0);
     {
-        void *p = func_020b5188(&data_02128ec4, x, y, 0x30, 0, 0, arg0);
+        void *p = CreateEffectMapSprite(&data_02128ec4, x, y, 0x30, 0, 0, arg0);
         SetAnimatedSpriteFrame(p, 0);
     }
     {
@@ -185,7 +185,7 @@ void CreateUnitFlareSprite(s32 arg0) {
 }
 
 #pragma opt_propagation off
-void func_020b6570(void *arg0) {
+void UpdateSmallFlareSprite(void *arg0) {
 s32 EaseInterpolate(s32,s32,s32,u16,s32);M2C_UNK func_0208c0d0(void *,u8);
 u32 bits=M2C_FIELD(arg0,u32 *,0x48);
 u16 top=(u16)(bits>>21),bottom=(u16)((bits<<11)>>21);
@@ -229,7 +229,7 @@ void UpdateFlareSprite(void *sprite) {
  * initialiser as its create callback and the flare update as its per-frame one,
  * then play the flare launch sound there. */
 void CreateFallingFlareSprite(void *task) {
-    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     M2C_UNK SetAnimatedSpriteFrame(void *, s32);
     void InitFallingFlarePosition(void *);
     void UpdateFlareSprite(void *);
@@ -237,29 +237,33 @@ void CreateFallingFlareSprite(void *task) {
     void *flare;
     ResetEffectSpritePool();
     LoadEffectSpriteSheet(&gFallingFlareName, 0);
-    flare = func_020b5188(&gFallingFlareSprite, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46), 16, 0, 0, task);
+    flare = CreateEffectMapSprite(&gFallingFlareSprite, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46), 16, 0, 0, task);
     SetAnimatedSpriteFrame(flare, 1);
     M2C_FIELD(flare, void (**)(void *), 0x68) = InitFallingFlarePosition;
     M2C_FIELD(flare, void (**)(void *), 0x6C) = UpdateFlareSprite;
     PlaySoundAtTile(0x130, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46));
 }
 
-void func_020b6718(void *arg0) {
+/* Spawn the small "flare_s" effect over the task's cell: reset the effect sprite
+ * pool, load the flare sheet, place the flare sprite on the task's tile with the
+ * small-flare update as its per-frame callback, cancel the cursor animation and
+ * play the flare sound there. */
+void CreateSmallFlareSprite(void *task) {
     M2C_UNK SetAnimatedSpriteFrame(void *, M2C_UNK);
-    void *func_020b5188(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
     M2C_UNK CancelMapCursorAnimation();
-    extern M2C_UNK data_02128ee4;
-    extern M2C_UNK data_02128eec;
-    void func_020b6570(void *);
-    void *temp_r0;
+    extern M2C_UNK gSmallFlareName;
+    extern M2C_UNK gSmallFlareSprite;
+    void UpdateSmallFlareSprite(void *);
+    void *flare;
 
     ResetEffectSpritePool();
-    LoadEffectSpriteSheet(&data_02128ee4, 0);
-    temp_r0 = func_020b5188(&data_02128eec, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46), 0x10, 0, 0, arg0);
-    SetAnimatedSpriteFrame(temp_r0, 0);
-    M2C_FIELD(temp_r0, void (**)(void *), 0x6C) = func_020b6570;
+    LoadEffectSpriteSheet(&gSmallFlareName, 0);
+    flare = CreateEffectMapSprite(&gSmallFlareSprite, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46), 0x10, 0, 0, task);
+    SetAnimatedSpriteFrame(flare, 0);
+    M2C_FIELD(flare, void (**)(void *), 0x6C) = UpdateSmallFlareSprite;
     CancelMapCursorAnimation();
-    PlaySoundAtTile(0x131, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
+    PlaySoundAtTile(0x131, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46));
 }
 
 void func_020b6794(void *arg0) {
@@ -384,7 +388,7 @@ ApplyPendingDamageToTargets(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
 void AuroraBombardTargets(void *strike) {
     s32 GetTargetCount(void);
     void *GetTargetPosition(s32);
-    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     extern void **gCurrentMap;
     extern M2C_UNK gAuroraAimName;
 
@@ -397,7 +401,7 @@ void AuroraBombardTargets(void *strike) {
     for (; i < GetTargetCount(); i++) {
         u16 id = M2C_FIELD(GetTargetPosition(i), u16 *, 0);
         unit = *gCurrentMap + MAP_UNIT_RECORDS + id * MAP_UNIT_STRIDE;
-        marker = func_020b5188(&gAuroraAimName, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), 16, aimGraphic, 0, strike);
+        marker = CreateEffectMapSprite(&gAuroraAimName, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), 16, aimGraphic, 0, strike);
         M2C_FIELD(marker, u32 *, 0x48) = (M2C_FIELD(marker, u32 *, 0x48) & ~1023) | ((u8)delay & 1023);
         M2C_FIELD(marker, void (**)(void *), 0x6c) = UpdateAuroraAimMarker;
         delay += 8;
@@ -460,7 +464,7 @@ void func_020b6e58(void *arg0) {
 void StageAuroraEffect(void *effect) {
     s32 LoadEffectSpriteSheet(M2C_UNK *, s32);
     s32 GetEffectSpritePoolOffset(void);
-    void *func_020b5188(M2C_UNK *, s32, s32, s32, s32, s32, void *);
+    void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     void Sprite_ResumeAnimation(void *);
     extern M2C_UNK gAuroraAimSprite, gAuroraSmokeSprite, gAuroraDamageSprite, gAuroraSprite;
     void AuroraBombardTargets(void *);
@@ -486,7 +490,7 @@ void StageAuroraEffect(void *effect) {
         M2C_FIELD(effect, s32 *, 0x64) = LoadEffectSpriteSheet(&gAuroraDamageSprite, 8);
         break;
     case 3:
-        strike = func_020b5188(&gAuroraSprite, x, y, 1, GetEffectSpritePoolOffset(), 2, effect);
+        strike = CreateEffectMapSprite(&gAuroraSprite, x, y, 1, GetEffectSpritePoolOffset(), 2, effect);
         M2C_FIELD(strike, s32 *, 0x58) = power;
         M2C_FIELD(strike, s32 *, 0x5c) = M2C_FIELD(effect, s32 *, 0x5c);
         M2C_FIELD(strike, s32 *, 0x60) = M2C_FIELD(effect, s32 *, 0x60);

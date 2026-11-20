@@ -56,7 +56,7 @@ void LinkMenuUpdate(void *menu) {
  s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
  extern u16 *gKeyState;
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
- s32 FindTextLayer(void);void func_0208af20(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
+ s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
  void *sprite,*unused;u16 keys;u32 readyMask,playerCount;s32 prevPlayerCount;
  sprite=M2C_FIELD(menu,void **,0x50);if(sprite)MenuSpriteUpdate(sprite);
  sprite=M2C_FIELD(menu,void **,0x54);if(sprite)MenuSpriteUpdate(sprite);
@@ -82,7 +82,7 @@ void LinkMenuUpdate(void *menu) {
  }
  }
  if(M2C_FIELD(menu,u16 *,0x48)&0x100) {
- if(FindTextLayer())func_0208af20();
+ if(FindTextLayer())StartWindowClose();
  {s32 i; void *savedEngine=gCur3DSpriteEngine;
  for(i=0;i<2;i++) {
  u8 screen;gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
@@ -230,7 +230,7 @@ void LinkMenuPageFlipUpdate(void *menu) {
  s32 func_020890b8(void *);s32 Is3DSpriteVisible(void *);void *GetOnlinePlayerRecord(s32);
  extern u16 *gKeyState;
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
- s32 FindTextLayer(void);void func_0208af20(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
+ s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayerMessage(void *,s32,s32,u32);
  void *sprite;u16 keys;u32 readyMask,playerCount;s32 prevPlayerCount;
  sprite=M2C_FIELD(menu,void **,0x50);if(sprite)MenuSpriteUpdate(sprite);
  sprite=M2C_FIELD(menu,void **,0x54);if(sprite)MenuSpriteUpdate(sprite);
@@ -239,7 +239,7 @@ void LinkMenuPageFlipUpdate(void *menu) {
 
  if(!(M2C_FIELD(menu,u16 *,0x48)&1)) {
  if(M2C_FIELD(menu,u16 *,0x48)&0x100) {
- if(FindTextLayer())func_0208af20();
+ if(FindTextLayer())StartWindowClose();
  {s32 sideIndex; void *savedEngine=gCur3DSpriteEngine;
  for(sideIndex=0;sideIndex<2;sideIndex++) {
  u8 screen;gCur3DSpriteEngine=sideIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
@@ -254,7 +254,7 @@ void LinkMenuPageFlipUpdate(void *menu) {
  DisableMapConfirm();Sprite_ResumeAnimation(menu);func_ov010_022294ec();return;
  }
  if(M2C_FIELD(menu,u16 *,0x48)&0x200) {
- if(FindTextLayer())func_0208af20();
+ if(FindTextLayer())StartWindowClose();
  {s32 sideIndex; void *savedEngine=gCur3DSpriteEngine;
  for(sideIndex=0;sideIndex<2;sideIndex++) {
  u8 screen;gCur3DSpriteEngine=sideIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;

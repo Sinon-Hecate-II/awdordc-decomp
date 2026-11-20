@@ -488,9 +488,9 @@ s32 func_02045c34(s32 *a) {
 }
 
 s32 func_02045c90(M2C_UNK arg0) {
-    s32 func_020465c4(s32, M2C_UNK, M2C_UNK);
+    s32 FifoReadBlock(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gFifoBlockTransfer;
-    if (func_020465c4(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x300, arg0) != 0) {
+    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x300, arg0) != 0) {
         return 1;
     }
     return 0;

@@ -447,41 +447,45 @@ s32 MeasureMessageHeight(u8 *text) {
     return height;
 }
 
-void *func_0209c5dc(void *arg0, s32 arg1) {
-    void *func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
+/* Return the start of line `line` of `text`: skip that many line ends, each the
+ * next TEXT_CODE_LINE_END (or TEXT_CODE_LINE_END_ALT when the line has none),
+ * and point just past it.  Returns NULL when `text` is NULL or holds fewer than
+ * `line` lines. */
+void *Text_GetLineStart(void *text, s32 line) {
+    void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     void *cur;
     s32 i;
 
-    if (arg0 == NULL) {
+    if (text == NULL) {
         return NULL;
     }
-    cur = arg0;
+    cur = text;
     i = 0;
-    if (arg1 > 0) {
+    if (line > 0) {
         do {
-            void *r0;
+            void *lineEnd;
 
-            r0 = func_02099b18(cur, 13, 1);
-            if (r0 == NULL) {
-                r0 = func_02099b18(cur, 10, 1);
-                if (r0 == NULL) {
+            lineEnd = FindTextControlCode(cur, TEXT_CODE_LINE_END, 1);
+            if (lineEnd == NULL) {
+                lineEnd = FindTextControlCode(cur, TEXT_CODE_LINE_END_ALT, 1);
+                if (lineEnd == NULL) {
                     return NULL;
                 }
             }
             i++;
-            cur = (void *)((u8 *)r0 + 1);
-        } while (i < arg1);
+            cur = (void *)((u8 *)lineEnd + 1);
+        } while (i < line);
     }
     return cur;
 }
 
 void *func_0209c658(M2C_UNK arg0) {
-    void *func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
+    void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     u8 temp_r1;
     void *temp_r0;
     void *var_r0;
 
-    temp_r0 = func_02099b18(arg0, 4, 1);
+    temp_r0 = FindTextControlCode(arg0, 4, 1);
     if (temp_r0 != NULL) {
         temp_r1 = M2C_FIELD(temp_r0, u8 *, 1);
         var_r0 = temp_r0 + 1;
@@ -496,11 +500,11 @@ void *func_0209c658(M2C_UNK arg0) {
 }
 
 s32 func_0209c690(M2C_UNK arg0) {
-    void *func_02099b18(M2C_UNK, M2C_UNK, M2C_UNK);
+    void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     void *temp_r0;
     u8 temp_r1;
 
-    temp_r0 = func_02099b18(arg0, 0x1d, 0);
+    temp_r0 = FindTextControlCode(arg0, 0x1d, 0);
     if (temp_r0 == 0) {
         goto fail;
     }

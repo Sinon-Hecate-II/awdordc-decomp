@@ -21,7 +21,7 @@ s32 PlanTransportAction(void) {
  extern u8 gAiTargetCandidates[];
  extern M2C_UNK gAiCommand;
  void CommitAiAction(s32);
- s32 FindAiTargetByCost(s32);
+ s32 FindAiTargetByCaptureDistance(s32);
  s32 IsCurrentPlayerUnit(s16);
  s32 candidateIndex;
  u32 unitId;
@@ -32,7 +32,7 @@ s32 PlanTransportAction(void) {
  void *map;
  if(HasAiTargetOfType(3)==1)return 0;
 retry:
- candidateIndex=FindAiTargetByCost(2);
+ candidateIndex=FindAiTargetByCaptureDistance(2);
  if(candidateIndex==-1){ResetAiTargetCandidates();return 0;}
  candidate=gAiTargetCandidates+candidateIndex*12;
  {
@@ -78,12 +78,12 @@ reject:
    and otherwise the transport count must be below its share of the infantry. */
 s32 TryBuildTransport(void){
 s32 Divide(s32,s32);s32 GetUnitBuildCost(u16,s32);
-void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);
+void CommitAiAction(s32);s32 PlanTransportAction(void);s32 FindAiTargetByCaptureDistance(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);
 extern void **gCurrentMap;extern void *gAiCommandState;extern void *gAiState;extern void *gAiSettings;extern M2C_UNK gAiCommand;
 void *map=*gCurrentMap;u16 playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);s32 targetIndex,unused,transportCount;u8 unitCount;
 if(GetUnitBuildCost(playerId,UNIT_KIND_TRANSPORT)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
 if(M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_TARGET_AREAS)==1){unitCount=M2C_FIELD(gAiSettings,u8 *,AI_SETTING_TRANSPORT_LAST_TURN);if(unitCount && M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)>unitCount)return 0;}
-if(PlanTransportAction()==1)return 1;targetIndex=FindAiTargetByCost(2);if(targetIndex==-1){targetIndex=FindAiTargetOfType(2);if(targetIndex==-1)return 0;}
+if(PlanTransportAction()==1)return 1;targetIndex=FindAiTargetByCaptureDistance(2);if(targetIndex==-1){targetIndex=FindAiTargetOfType(2);if(targetIndex==-1)return 0;}
 transportCount=CountPlayerUnitsOfKind(UNIT_KIND_TRANSPORT);
 unitCount=M2C_FIELD(gAiState,u8 *,AI_STATE_INFANTRY_MECH);if(!unitCount)return 0;
 if(Divide(transportCount*100,unitCount)<M2C_FIELD(gAiSettings,u8 *,AI_SETTING_TRANSPORT_PERCENT)){
@@ -238,7 +238,7 @@ extern void **gCurrentMap;
 extern u8 gAiTargetCandidates[];
 extern M2C_UNK gUnitKindStats;
 extern M2C_UNK gAiCommand;
-s32 FindAiTargetByCost(s32);
+s32 FindAiTargetByCaptureDistance(s32);
 s32 IsCurrentPlayerUnit(s16);
 void CommitAiAction(s32);
 UnkStruct_ov000_021A860C *unit;
@@ -249,7 +249,7 @@ void *base;
 u8 *record;
 initial=(u8)(CountPlayerUnitsOfKind(24)+CountPlayerUnitsOfKind(25));
 retry:
-id=FindAiTargetByCost(3);
+id=FindAiTargetByCaptureDistance(3);
 if(id==-1){ResetAiTargetCandidates();return 0;}
 record=gAiTargetCandidates+12*id;
 FloodFillUnitRange(record[0],record[1],2,110,0);
@@ -315,14 +315,14 @@ record[3]=253;goto retry;
  * must exist with enough ready capture units waiting for the empty units. */
 s32 TryBuildUnitKind25(void){
  s32 GetUnitBuildCost(u16,s32);s32 HasAiBuildFlag(s32);s32 PlanUnitKind25Action(void);
- s32 FindAiTargetByCost(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);void CommitAiAction(s32);
+ s32 FindAiTargetByCaptureDistance(s32);s32 FindAiTargetOfType(s32);s32 CountPlayerUnitsOfKind(s32);void CommitAiAction(s32);
  extern void **gCurrentMap;extern M2C_UNK gAiCommand;
  void *map;u16 playerId;s32 targetIndex,kind24Count,kind25Count,readyCapture,x,y,z;
  if(!HasAiBuildFlag(AI_BUILD_FLAG_UNIT_25))return 0;
  map=*gCurrentMap;playerId=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
  if(GetUnitBuildCost(playerId,25)*10>M2C_FIELD((u8 *)map+playerId*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF))return 0;
  if(PlanUnitKind25Action()==1)return 1;
- targetIndex=FindAiTargetByCost(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
+ targetIndex=FindAiTargetByCaptureDistance(3);if(targetIndex==-1){targetIndex=FindAiTargetOfType(3);if(targetIndex==-1)return 0;}
  kind24Count=CountPlayerUnitsOfKind(24);kind25Count=CountPlayerUnitsOfKind(25);
  readyCapture=CountReadyCaptureUnits();if(!readyCapture)return 0;
  if(kind24Count+kind25Count){x=CountEmptyUnitsOfKind(24);y=CountEmptyUnitsOfKind(25)+1;z=x-(CountReadyCombatUnits()>>2);if(z<0)z=0;if(readyCapture<(y+z)*4)return 0;}

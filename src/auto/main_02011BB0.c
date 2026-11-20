@@ -261,11 +261,11 @@ s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 s32 func_02012274(M2C_UNK arg0) {
     M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
     s32 WFC_SendCommand();
-    s32 func_0201146c();
+    s32 WFC_CheckChannelOpen();
     s32 temp_r0;
     s32 var_r0;
 
-    temp_r0 = func_0201146c();
+    temp_r0 = WFC_CheckChannelOpen();
     if (temp_r0 != 0) {
         return temp_r0;
     }

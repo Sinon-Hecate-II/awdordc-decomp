@@ -61,6 +61,17 @@ enum {
     GT2_RESPONSE_SIZE = 32,
     GT2_CONNECT_ACCEPT_SIZE = 64        /* challenge response + the server's challenge */
 };
+/* Command ids of the short GT2 messages: the byte after the magic string. */
+enum {
+    GTI2_SERVER_CHALLENGE = 0, /* server -> client challenge */
+    GTI2_CLIENT_CHALLENGE = 1, /* client -> server challenge (CONNECT) */
+    GTI2_SERVER_RESPONSE  = 2, /* server: response plus its own challenge (CONNECT_ACCEPT) */
+    GTI2_CLIENT_RESPONSE  = 3, /* client: response to the server's challenge plus data */
+    GTI2_ACCEPT           = 4, /* connection accepted */
+    GTI2_CLOSE            = 5, /* close request with a reason string */
+    GTI2_CLOSED           = 6, /* close acknowledgement */
+    GTI2_DATA             = 7  /* empty data message */
+};
 /* A GT2 byte buffer: the connection keeps one for received bytes and one for
  * sent bytes.  data holds size bytes, of which len are used. */
 #define GT2_CONNECTION_RECV_BUFFER 0x44 /* Gt2Buffer holding received command bytes */

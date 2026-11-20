@@ -12,9 +12,9 @@ u8 hi=src[1],lo=src[0];dst[1]=hi;dst[0]=lo;
 #pragma pop
 static inline void CopyPair617BC(u8 *d,u8 *s) { *(Pair617BC *)d=*(Pair617BC *)s; }
 static inline void Copy617BC(u8 *d,u8 *s) { *(Bytes617BC *)d=*(Bytes617BC *)s; }
-extern u8 data_02100120[];
+extern u8 sSbAssertInterned[];
 extern u8 sSbFileName[];
-extern u8 data_02100094[];
+extern u8 sSbReleaseStrName[];
 extern void *sSbQueryErrorPrefix;
 extern s32 sSbNoServer[2];
 
@@ -185,20 +185,38 @@ void func_02061c8c(void *arg0) {
 }
 
 s32 StringIntern(s32 a,s32 b) {
-s32 func_020609bc(s32);
+s32 GetStringInternTable(s32);
 s32 *TableLookup(s32,s32 *);
 s32 gpiStringDup(s32);
 void TableEnter(s32,s32 *);
 s32 pair[2]; s32 *p;
 pair[0]=b;
-p=TableLookup(func_020609bc(a),pair);
+p=TableLookup(GetStringInternTable(a),pair);
 if(p){p[1]++;return p[0];}
 pair[0]=gpiStringDup(b);pair[1]=1;
-TableEnter(func_020609bc(a),pair);
+TableEnter(GetStringInternTable(a),pair);
 return pair[0];
 }
 
-void StringInternRelease(void *a,s32 b) {s32 func_020609bc(s32);s32 *TableLookup(s32,s32 *);void TableRemove(s32,s32 *);void AssertFailed(void *,void *,void *,s32);s32 pair[2];s32 *p;pair[0]=b;p=TableLookup(func_020609bc((s32)a),pair);if(!p)AssertFailed(data_02100120,sSbFileName,data_02100094,0xf4);if(!p)return;if(--p[1])return;TableRemove(func_020609bc((s32)a),pair);}
+/* Release one reference to an interned string: look the string up in the intern
+ * table, drop its reference count and, once that reaches zero, remove the entry
+ * (which frees the interned duplicate).  A string that was never interned trips
+ * an assert. */
+void StringInternRelease(void *a, s32 string) {
+    s32 GetStringInternTable(s32);
+    s32 *TableLookup(s32, s32 *);
+    void TableRemove(s32, s32 *);
+    void AssertFailed(void *, void *, void *, s32);
+    s32 key[2];
+    s32 *record;
+
+    key[0] = string;
+    record = TableLookup(GetStringInternTable((s32)a), key);
+    if (!record) AssertFailed(sSbAssertInterned, sSbFileName, sSbReleaseStrName, 0xf4);
+    if (!record) return;
+    if (--record[1]) return;
+    TableRemove(GetStringInternTable((s32)a), key);
+}
 
 s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;}return -1;}
 
@@ -208,10 +226,10 @@ s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;
    not ready, so a list is only created while networking is up. */
 void SBServerListInit(void *list,void *gameName,void *secretKey,void *gameVersion,s32 queryPort,s32 force,s32 callback,s32 instance){
 extern u8 sSbAssertSlistNotNull[],sSbServerListInitName[],sSbAssertCallbackNotNull[];extern s32 gDnsQueryState[];extern M2C_UNK sSbEmptyString;
-void AssertFailed(void*,void*,void*,s32);s32 func_020609bc(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
+void AssertFailed(void*,void*,void*,s32);s32 GetStringInternTable(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
 if(!list)AssertFailed(sSbAssertSlistNotNull,sSbFileName,sSbServerListInitName,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
-M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);func_020609bc((s32)list);
+M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);GetStringInternTable((s32)list);
 StringCopy((u8*)list+SB_SLIST_GAMENAME,gameName);StringCopy((u8*)list+SB_SLIST_SECRETKEY,secretKey);StringCopy((u8*)list+SB_SLIST_GAMEVERSION,gameVersion);
 M2C_FIELD(list,s32*,SB_SLIST_CALLBACK)=callback;M2C_FIELD(list,s32*,0x48c)=0;
 if(!callback)AssertFailed(sSbAssertCallbackNotNull,sSbFileName,sSbServerListInitName,0x132);

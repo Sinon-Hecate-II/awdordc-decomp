@@ -216,17 +216,20 @@ void func_ov001_02187ad8(void *arg0) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x13B0) = 0;
 }
 
-void SetWhStatus(s32 arg0) {
+/* SetWhStatus: record the connection's new WH status, logging the change as
+ * "old -> new" through the work block's log callback when one is installed.
+ * The old status name is logged before the status is stored, the new one after. */
+void SetWhStatus(s32 status) {
     extern M2C_UNK gWhWork;
-    extern s32 data_ov001_021914b0[];
-    extern M2C_UNK data_ov001_02191590;
-    extern M2C_UNK data_ov001_02191598;
-    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), 0) != NULL) {
-        M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), 0)(0x08000000, &data_ov001_02191590, data_ov001_021914b0[M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x40)]);
+    extern const char *gWhStatusNames[];
+    extern M2C_UNK gWhStatusArrowFormat;
+    extern M2C_UNK gWhStatusLineFormat;
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG) != NULL) {
+        M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(WH_LOG_STATUS, &gWhStatusArrowFormat, gWhStatusNames[M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS)]);
     }
-    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x40) = arg0;
-    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), 0) == NULL) return;
-    M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), 0)(0x08000000, &data_ov001_02191598, data_ov001_021914b0[M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x40)]);
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS) = status;
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG) == NULL) return;
+    M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(WH_LOG_STATUS, &gWhStatusLineFormat, gWhStatusNames[M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS)]);
 }
 
 s32 SetWhError(arg0)

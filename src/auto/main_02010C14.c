@@ -264,7 +264,7 @@ s32 WFC_GetInfoBlock(void) {
 
 s32 WFC_CheckReady(void) { extern M2C_UNK gWfcChannelState; if(M2C_FIELD(&gWfcChannelState,u16 *,0))return 0;return 3; }
 
-s32 func_0201146c(void) {
+s32 WFC_CheckChannelOpen(void) {
 extern M2C_UNK gWfcChannelState;s32 r=WFC_CheckReady();if(r)return r;
 DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2);
 return M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0)<=1U?3:0;

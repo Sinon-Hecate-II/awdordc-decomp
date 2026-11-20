@@ -1,5 +1,6 @@
 /* 24 functions from 0x021743F0 to 0x02175310 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 typedef Ov000InfoMenu Ov000MenuState;
 typedef struct { u16 pad[3]; u16 low:15, flag:1; } Ov000Flags;
@@ -11,7 +12,7 @@ void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
 extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *gOv000InfoWindow; extern u8 gProductionMenuScreenClass[];
 int GetMapInputState(void); int FindObjectByClass(void *); s32 GetCellTerrainId(s32,s32);
 void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
-void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void func_ov000_021751b4(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
+void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void Ov000_StatsWindow_Reset(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
 s32 x=M2C_FIELD(*gCurrentMap,s16 *,0x52c2), y=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 void *saved=gCur3DSpriteEngine; s32 mode;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -90,7 +91,7 @@ if(menu->pendingState==OV000_INFO_TERRAIN){menu->state=menu->pendingState;menu->
 else if(menu->pendingState==OV000_INFO_UNIT_STATS){menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;func_ov000_02172648(menu->panel);M2C_FIELD(menu->statsWindow,s32 *,0)=M2C_FIELD(menu->panel,s32 *,0)&255;}
 }break;
 case 4:
-if(menu->refresh){menu->refresh=0;func_ov000_021751b4(menu->statsWindow);}
+if(menu->refresh){menu->refresh=0;Ov000_StatsWindow_Reset(menu->statsWindow);}
 func_ov000_02175234(menu->statsWindow);
 if(menu->pendingState!=0&&menu->pendingState!=OV000_INFO_UNIT_STATS){
 menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;
@@ -395,23 +396,26 @@ void *func_ov000_0217519c(void *arg0) {
     return arg0;
 }
 
-void func_ov000_021751b4(void *arg0) {
+/* Reset the unit-statistics window: clear the sub engine's three layers, mark
+ * layer 1 dirty, zero layer 1's quad offsets, then restart the window's redraw
+ * in mode 2 with its blink counter cleared. */
+void Ov000_StatsWindow_Reset(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
+    void *savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Clear3DSpriteLayer(2);
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(0);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x3A) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), s16 *, 0x42) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 2;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    gCur3DSpriteEngine = temp_r4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
+    DS3D_BANK(gCur3DSpriteEngine)->corner[1] = 0;
+    DS3D_BANK(gCur3DSpriteEngine)->corner[5] = 0;
+    ((Ov000StatsWindow *)arg0)->drawMode = 2;
+    ((Ov000StatsWindow *)arg0)->blinkFrame = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02175230(void) {

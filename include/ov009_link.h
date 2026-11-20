@@ -56,6 +56,9 @@ enum {
 /* Link message that announces a player: the 12-byte player record, then a
  * 26-byte name area (UTF-16, NUL-padded) in a 40-byte packet. */
 #define LINK_MSG_PLAYER_INFO    13
+/* Link message 15: a peer's reply to a player-info announce; it carries the same
+ * 12-byte record plus 26-byte name payload as LINK_MSG_PLAYER_INFO. */
+#define LINK_MSG_PLAYER_INFO_REPLY 15
 #define LINK_PLAYER_INFO_SIZE   40
 #define LINK_PLAYER_RECORD_SIZE 12
 #define LINK_PLAYER_NAME_OFFSET 12

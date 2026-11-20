@@ -269,7 +269,7 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 }
 
 #pragma opt_common_subs off
-void *func_0201a4a8(void) {
+void *NetworkTaskIsFinished(void) {
 s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 TaskIsFinished(s32);void TaskWake(s32);
 extern M2C_UNK data_02137438;extern M2C_UNK gNetStack;
 s32 saved=OS_DisableInterrupts();
@@ -287,7 +287,7 @@ void func_0201a4f8(s32 arg0) {
     M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
 }
 
-void func_0201a508(void){void *func_0201a4a8(void);void OS_JoinThread(void *);void func_02005ccc(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;func_0201a4a8();OS_JoinThread(&data_02137438);func_02005ccc(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
+void func_0201a508(void){void *NetworkTaskIsFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;NetworkTaskIsFinished();OS_JoinThread(&data_02137438);TerminateThread(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
 
 void func_0201a550(s32 arg0) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);

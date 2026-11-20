@@ -318,7 +318,24 @@ return 0;
 ret1:return 1;
 }
 #pragma scheduling reset
-s32 func_020a62ac(s32 a,s32 b){extern s32 *gCurrentMap;s32 IsUnitVisible(void *);u8 *p;u8 v;if(a<0||b<0)goto fail;p=(u8 *)*gCurrentMap;if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;goto valid;fail:return 0;valid:v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);if(!v)return 0;return IsUnitVisible(p+0x59a4+v*14);}
+/* Whether the unit standing on the map cell (x, y) is visible: 0 when the cell
+ * is off the map or holds no unit, otherwise the unit record's visibility. */
+s32 IsUnitVisibleAt(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 IsUnitVisible(void *);
+    u8 *map;
+    u8 unitId;
+    if (x < 0 || y < 0) goto fail;
+    map = (u8 *)*gCurrentMap;
+    if (x >= M2C_FIELD(map, u16 *, MAP_WIDTH) || y >= M2C_FIELD(map, u16 *, MAP_HEIGHT)) goto fail;
+    goto valid;
+fail:
+    return 0;
+valid:
+    unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+    if (!unitId) return 0;
+    return IsUnitVisible(map + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE);
+}
 
 /* Adds `amount`-scaled income to the funds of the player/commander that owns terrain entry `entry`, capped at 999999999, and notifies the funds display if applicable. */
 s32 AddPlayerUnitValue(u8 *entry, s32 amount) {

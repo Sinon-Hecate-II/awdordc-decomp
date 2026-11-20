@@ -2,14 +2,14 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!func_020465c4(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
-s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!func_020465c4(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
+s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!FifoReadBlock(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
 
 s32 func_02045eb4(M2C_UNK arg0) {
 
     extern M2C_UNK gFifoBlockTransfer;
-    if (func_020465c4(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x400, arg0) != 0) {
+    if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x400, arg0) != 0) {
         return 1;
     }
     return 0;
@@ -61,26 +61,31 @@ void func_02046058(u8 arg0, M2C_UNK *arg1) {
 #pragma opt_common_subs reset
 s32 func_02046088(void *a) { u8 *p=a; s32 i=0;do {if(p[i])return 1;i++;}while(i<32);return 0; }
 
-s32 func_020460b0(M2C_UNK arg0, M2C_UNK arg1) {
+/* Whether a saved slot's 4-byte player code word is consistent with the slot's
+ * stored code word: the player code's first byte must be a valid text character,
+ * the pair must not be the empty sentinel 0xFFFFFFFE, and the player code must
+ * have a set bit the stored word does not. */
+s32 IsSavedPlayerCodeValid(M2C_UNK playerCode, M2C_UNK slotCode) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32 *, M2C_UNK);
-    s32 sp4;
-    s32 sp0;
+    s32 IsValidTextChar(u8 *);
+    s32 playerWord;
+    s32 codeWord;
 
-    if (func_0204612c() == 0) {
+    if (IsValidTextChar((u8 *)playerCode) == 0) {
         return 0;
     }
-    MI_CpuCopy8(arg0, &sp4, 4);
-    MI_CpuCopy8(arg1, &sp0, 4);
-    if ((sp4 | sp0) == -2) {
+    MI_CpuCopy8(playerCode, &playerWord, 4);
+    MI_CpuCopy8(slotCode, &codeWord, 4);
+    if ((playerWord | codeWord) == -2) {
         return 0;
     }
-    if (sp4 & ~sp0) {
+    if (playerWord & ~codeWord) {
         return 1;
     }
     return 0;
 }
 
-s32 func_0204612c(u8 *arg0) {
+s32 IsValidTextChar(u8 *arg0) {
     u8 temp_r0;
 
     temp_r0 = *arg0;
@@ -179,18 +184,38 @@ case 7:return 1;
 fail:return state;
 }
 #pragma opt_propagation reset
-s32 func_020465c4(s32 arg0,s32 arg1,M2C_UNK arg2) {
-M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788;
+s32 FifoReadBlock(s32 arg0,s32 arg1,M2C_UNK arg2) {
+M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK HandleFifoMessage;
 register u16 len;
-DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&func_02046788);
+DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&HandleFifoMessage);
 len=(u16)arg1;
 loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
-void FifoWriteBlock(s32 a,s32 b,s32 c) { s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); M2C_UNK DC_CleanRange(s32,s32); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK func_02046788; do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,(M2C_UNK *)&func_02046788);DC_CleanRange(c,b);loop: if(func_02046158(2,a,b,c)!=1){WaitByLoop(0x40000);goto loop;} }
+/* Send `size` bytes of `data` from the ARM9 to the ARM7 address `address` over
+ * the FIFO: wait for the channel, hand it the reply handler, clean the cache for
+ * the data, then run the write transfer until the ARM7 acknowledges the block. */
+void FifoWriteBlock(s32 address, s32 size, s32 data) {
+    s32 IsFifoMessageReady(s32, s32);
+    M2C_UNK SetFifoMessageHandler(s32, M2C_UNK *);
+    M2C_UNK DC_CleanRange(s32, s32);
+    s32 func_02046158(s32, s32, s32, s32);
+    M2C_UNK WaitByLoop(s32);
+    extern M2C_UNK HandleFifoMessage;
+
+    do {
+    } while (!IsFifoMessageReady(4, 1));
+    SetFifoMessageHandler(4, (M2C_UNK *)&HandleFifoMessage);
+    DC_CleanRange(data, size);
+ loop:
+    if (func_02046158(2, address, size, data) != 1) {
+        WaitByLoop(0x40000);
+        goto loop;
+    }
+}
 
 s32 FifoVerifyBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_020465c4(arg1, arg2, arg3) == 0) {
+    if (FifoReadBlock(arg1, arg2, arg3) == 0) {
         return 0;
     }
     if (ByteCompareN(arg0, arg3, arg2) == 0) {
@@ -204,11 +229,11 @@ s32 FifoFinishTransfer(void) {
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     s32 func_02046158(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_02046788;
+    extern M2C_UNK HandleFifoMessage;
     do {
 
     } while (IsFifoMessageReady(4, 1) == 0);
-    SetFifoMessageHandler(4, &func_02046788);
+    SetFifoMessageHandler(4, &HandleFifoMessage);
 loop_3:
     if (func_02046158(7, 0, 0, 0) != 1) {
         WaitByLoop(0x40000);
@@ -217,7 +242,7 @@ loop_3:
     return 1;
 }
 
-s32 func_02046788(s32 a,s32 b,s32 c) { extern M2C_UNK gFifoBlockTransfer; M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=(u8)b;M2C_FIELD(&gFifoBlockTransfer,s32 *,4)=1;if(c)M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=255;return M2C_FIELD(&gFifoBlockTransfer,u16 *,0); }
+s32 HandleFifoMessage(s32 a,s32 b,s32 c) { extern M2C_UNK gFifoBlockTransfer; M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=(u8)b;M2C_FIELD(&gFifoBlockTransfer,s32 *,4)=1;if(c)M2C_FIELD(&gFifoBlockTransfer,u16 *,0)=255;return M2C_FIELD(&gFifoBlockTransfer,u16 *,0); }
 
 void *EncodeWfcProfileBlob(void *a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode,data_0213db3a,data_0213db40; u32 lo,hi,z; u64 x,y; hi=M2C_FIELD(a,u32 *,12);lo=M2C_FIELD(a,u32 *,8);((u32 *)&x)[1]=hi;((u32 *)&x)[0]=lo;MI_CpuCopy8((s32)a,&gWfcProfileCode,5);z=((M2C_FIELD(a,u64 *,0)>>40)&7ULL) | ((u32)(x&31)<<3);y=x>>5;x=y; M2C_FIELD(&gWfcProfileCode,u8 *,5)=z; MI_CpuCopy8((s32)&x,&data_0213db3a,4);M2C_FIELD(&gWfcProfileCode,u8 *,10)=((x>>32)&63)|((M2C_FIELD(a,u16 *,16)&3)<<6);M2C_FIELD(&gWfcProfileCode,u8 *,11)=M2C_FIELD(a,u16 *,16)>>2;MI_CpuCopy8((s32)a+18,&data_0213db40,2);return &gWfcProfileCode; }
 
@@ -379,7 +404,7 @@ s32 func_02046b8c(void *obj) {
         return 0;
     }
     if (ByteCompareN(obj + 0xC0, &data_020ea940, 4) != 0) {
-        if (func_0204612c(obj + 0xC4) == 0) {
+        if (IsValidTextChar(obj + 0xC4) == 0) {
             return 0;
         }
         temp_r0_2 = M2C_FIELD(obj, u8 *, 0xD0);
@@ -387,13 +412,13 @@ s32 func_02046b8c(void *obj) {
             return 0;
         }
         func_02046058(temp_r0_2, &sp0);
-        if (func_020460b0(obj + 0xC0, &sp0) == 0) {
+        if (IsSavedPlayerCodeValid(obj + 0xC0, &sp0) == 0) {
             return 0;
         }
         goto block_13;
     }
 block_13:
-    if ((ByteCompareN(obj + 0xC8, &data_020ea940, 4) != 0) && (func_0204612c(obj + 0xC8) == 0) && (func_0204612c(obj + 0xCC) == 0)) {
+    if ((ByteCompareN(obj + 0xC8, &data_020ea940, 4) != 0) && (IsValidTextChar(obj + 0xC8) == 0) && (IsValidTextChar(obj + 0xCC) == 0)) {
         return 0;
     }
     return 1;

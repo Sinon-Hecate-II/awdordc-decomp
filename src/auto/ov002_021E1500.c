@@ -31,10 +31,10 @@ void func_ov002_021e152c(void) {
 
 void func_ov002_021e157c(void) {
  M2C_UNK UpdateBattleScene(void *);
- M2C_UNK func_ov002_021e78e4(void *);
+ M2C_UNK DrawBattleSceneUnitView(void *);
  extern M2C_UNK data_ov002_021f30e4;
  UpdateBattleScene(&data_ov002_021f30e4);
- func_ov002_021e78e4(&data_ov002_021f30e4);
+ DrawBattleSceneUnitView(&data_ov002_021f30e4);
 }
 
 void func_ov002_021e1598(void) {
@@ -68,9 +68,9 @@ void CreateBattleSceneSprite(s32 a) {
 }
 
 void func_ov002_021e1624(void) {
-    M2C_UNK func_ov002_021e3e00(M2C_UNK *);
+    M2C_UNK IsBattleScreenSwapped(M2C_UNK *);
     extern M2C_UNK data_ov002_021f3014;
-    func_ov002_021e3e00(&data_ov002_021f3014);
+    IsBattleScreenSwapped(&data_ov002_021f3014);
 }
 
 /* Clear script playback state and restore the default transform and polygon alpha. */

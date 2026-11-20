@@ -307,14 +307,14 @@ if(((TouchState *)base)->callback)((TouchState *)base)->callback(0,4,0);
 }
 #pragma opt_propagation reset
 s32 func_0200d80c(u16 *a) {
-void func_0200dd14(u32);
-func_0200dd14(1);if(M2C_FIELD(&gTouchDriverState,u16 *,0x38)&1)return 1;
+void TP_WaitBusy(u32);
+TP_WaitBusy(1);if(M2C_FIELD(&gTouchDriverState,u16 *,0x38)&1)return 1;
 ((TouchPair *)a)[0]=M2C_FIELD(&gTouchDriverState,TouchPair *,8);
 ((TouchPair *)a)[1]=M2C_FIELD(&gTouchDriverState,TouchPair *,12);return 0;
 }
 
 #pragma opt_instruction_scheduling off
-void func_0200d85c(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
+void TP_Init(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 SendFifoMessage(s32, u32, s32);
@@ -460,7 +460,7 @@ void CalibrateTouchSample(u16 *out, u16 *raw) {
     else if ((s16)out[1] > 191) out[1] = 191;
 }
 
-void func_0200dd14(u32 a) {while(M2C_FIELD(&gTouchDriverState,volatile u16 *,0x3a)&a) {}}
+void TP_WaitBusy(u32 a) {while(M2C_FIELD(&gTouchDriverState,volatile u16 *,0x3a)&a) {}}
 
-u32 func_0200dd2c(u32 arg0) { return M2C_FIELD(&gTouchDriverState, u16 *, 0x38) & arg0; }
+u32 TP_CheckBusy(u32 arg0) { return M2C_FIELD(&gTouchDriverState, u16 *, 0x38) & arg0; }
 

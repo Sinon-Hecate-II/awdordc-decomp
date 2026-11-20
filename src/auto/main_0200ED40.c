@@ -100,17 +100,17 @@ void func_0200ee70(void) {
     M2C_UNK func_02009d34();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0212fd34;
+    extern M2C_UNK gRtcState;
     extern M2C_UNK func_0200f0e4;
-    if (M2C_FIELD(&data_0212fd34, u16 *, 0) != 0) {
+    if (M2C_FIELD(&gRtcState, u16 *, 0) != 0) {
         return;
     }
-    M2C_FIELD(&data_0212fd34, u16 *, 0) = 1;
-    M2C_FIELD(&data_0212fd34, s32 *, 4) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 8) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x20) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0xC) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x10) = 0;
+    M2C_FIELD(&gRtcState, u16 *, 0) = 1;
+    M2C_FIELD(&gRtcState, s32 *, 4) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 8) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0x20) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0xC) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0x10) = 0;
     func_02009d34();
     do {
     } while (IsFifoMessageReady(4 + 1, 1) == 0);
@@ -120,21 +120,21 @@ void func_0200ee70(void) {
 s32 func_0200eedc(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212fd34;
+    extern M2C_UNK gRtcState;
     s32 func_0200f6dc(void);
     s32 state;
     state = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_0212fd34, s32 *, 4) != 0) {
+    if (M2C_FIELD(&gRtcState, s32 *, 4) != 0) {
         OS_RestoreInterrupts(state);
         return 1;
     }
-    M2C_FIELD(&data_0212fd34, s32 *, 4) = 1;
+    M2C_FIELD(&gRtcState, s32 *, 4) = 1;
     OS_RestoreInterrupts(state);
-    M2C_FIELD(&data_0212fd34, s32 *, 0x18) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x1C) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0xC) = arg0;
-    M2C_FIELD(&data_0212fd34, s32 *, 8) = arg1;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x14) = arg2;
+    M2C_FIELD(&gRtcState, s32 *, 0x18) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0x1C) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0xC) = arg0;
+    M2C_FIELD(&gRtcState, s32 *, 8) = arg1;
+    M2C_FIELD(&gRtcState, s32 *, 0x14) = arg2;
     if (func_0200f6dc() != 0) {
         return 0;
     }
@@ -145,31 +145,31 @@ s32 GetRtcDate(s32 arg0) {
     s32 func_0200eedc(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
-    extern M2C_UNK data_0212fd34;
+    extern M2C_UNK gRtcState;
     s32 result;
     result = func_0200eedc(arg0, (s32)func_0200f6a4, 0);
-    M2C_FIELD(&data_0212fd34, s32 *, 0x24) = result;
+    M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
     if (result == 0) func_0200f6b4();
-    return M2C_FIELD(&data_0212fd34, s32 *, 0x24);
+    return M2C_FIELD(&gRtcState, s32 *, 0x24);
 }
 
 s32 func_0200ef84(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212fd34;
+    extern M2C_UNK gRtcState;
     s32 state;
     state = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_0212fd34, s32 *, 4) != 0) {
+    if (M2C_FIELD(&gRtcState, s32 *, 4) != 0) {
         OS_RestoreInterrupts(state);
         return 1;
     }
-    M2C_FIELD(&data_0212fd34, s32 *, 4) = 1;
+    M2C_FIELD(&gRtcState, s32 *, 4) = 1;
     OS_RestoreInterrupts(state);
-    M2C_FIELD(&data_0212fd34, s32 *, 0x18) = 1;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x1C) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0xC) = arg0;
-    M2C_FIELD(&data_0212fd34, s32 *, 8) = arg1;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x14) = arg2;
+    M2C_FIELD(&gRtcState, s32 *, 0x18) = 1;
+    M2C_FIELD(&gRtcState, s32 *, 0x1C) = 0;
+    M2C_FIELD(&gRtcState, s32 *, 0xC) = arg0;
+    M2C_FIELD(&gRtcState, s32 *, 8) = arg1;
+    M2C_FIELD(&gRtcState, s32 *, 0x14) = arg2;
     if (func_0200f6ec() != 0) return 0;
     return 3;
 }
@@ -178,47 +178,51 @@ s32 GetRtcTime(s32 arg0) {
     s32 func_0200ef84(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
-    extern M2C_UNK data_0212fd34;
+    extern M2C_UNK gRtcState;
     s32 result;
     result = func_0200ef84(arg0, (s32)func_0200f6a4, 0);
-    M2C_FIELD(&data_0212fd34, s32 *, 0x24) = result;
+    M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
     if (result == 0) func_0200f6b4();
-    return M2C_FIELD(&data_0212fd34, s32 *, 0x24);
+    return M2C_FIELD(&gRtcState, s32 *, 0x24);
 }
 
-s32 func_0200f030(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Start an RTC read of the current date and time.  The reply fills dateOut and
+ * timeOut and then calls callback(result, callbackArg).  Returns 1 when another
+ * request is already in flight, 0 once the command is sent, 3 when sending the
+ * command failed. */
+s32 GetRtcDateTime(s32 dateOut, s32 timeOut, s32 callback, s32 callbackArg) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    extern M2C_UNK data_0212fd34;
-    s32 state;
-    state = OS_DisableInterrupts();
-    if (M2C_FIELD(&data_0212fd34, s32 *, 4) != 0) {
-        OS_RestoreInterrupts(state);
+    extern M2C_UNK gRtcState;
+    s32 interruptState;
+    interruptState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) != 0) {
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    M2C_FIELD(&data_0212fd34, s32 *, 4) = 1;
-    OS_RestoreInterrupts(state);
-    M2C_FIELD(&data_0212fd34, s32 *, 0x18) = 2;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x1C) = 0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0xC) = arg0;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x10) = arg1;
-    M2C_FIELD(&data_0212fd34, s32 *, 8) = arg2;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x14) = arg3;
-    if (func_0200f6cc() != 0) return 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) = 1;
+    OS_RestoreInterrupts(interruptState);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_KIND) = 2;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_STEP) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT0) = dateOut;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT1) = timeOut;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK) = callback;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK_ARG) = callbackArg;
+    if (SendRtcReadDateTimeCommand() != 0) return 0;
     return 3;
 }
 #pragma opt_common_subs reset
 s32 GetLocalTime(s32 arg0, s32 arg1) {
-void func_0200f6a4(s32); s32 func_0200f6b4(void); extern M2C_UNK data_0212fd34;
-s32 result = func_0200f030(arg0,arg1,(s32)func_0200f6a4,0);
-M2C_FIELD(&data_0212fd34,s32 *,0x24)=result;
+void func_0200f6a4(s32); s32 func_0200f6b4(void); extern M2C_UNK gRtcState;
+s32 result = GetRtcDateTime(arg0,arg1,(s32)func_0200f6a4,0);
+M2C_FIELD(&gRtcState,s32 *,0x24)=result;
 if(result==0) func_0200f6b4();
-return M2C_FIELD(&data_0212fd34,s32 *,0x24);
+return M2C_FIELD(&gRtcState,s32 *,0x24);
 }
 
 /* Handles RTC command callbacks and state machine updates */
 void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
- extern M2C_UNK data_0212fd34;
+ extern M2C_UNK gRtcState;
  s32 func_0200fa50(void *);
  s32 func_0200f6fc(void);
  u8 command;
@@ -227,58 +231,58 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
  s32 *out;
  void (*callback)(s32, s32);
  if (arg2) {
-  if (M2C_FIELD(&data_0212fd34, s32 *, 0x1c)) M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0;
-  if (M2C_FIELD(&data_0212fd34, s32 *, 4)) M2C_FIELD(&data_0212fd34, s32 *, 4) = 0;
-  callback = M2C_FIELD(&data_0212fd34, void (**)(s32, s32), 8);
-  if (callback) { M2C_FIELD(&data_0212fd34, s32 *, 8) = 0; callback(6, M2C_FIELD(&data_0212fd34, s32 *, 0x14)); }
+  if (M2C_FIELD(&gRtcState, s32 *, 0x1c)) M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
+  if (M2C_FIELD(&gRtcState, s32 *, 4)) M2C_FIELD(&gRtcState, s32 *, 4) = 0;
+  callback = M2C_FIELD(&gRtcState, void (**)(s32, s32), 8);
+  if (callback) { M2C_FIELD(&gRtcState, s32 *, 8) = 0; callback(6, M2C_FIELD(&gRtcState, s32 *, 0x14)); }
   return;
  }
  command = (u8)((arg1 & 0x7f00) >> 8);
  status = (u8)arg1;
  if (command == 0x30) {
-  if (M2C_FIELD(&data_0212fd34, void (**)(void), 0x20)) M2C_FIELD(&data_0212fd34, void (**)(void), 0x20)();
+  if (M2C_FIELD(&gRtcState, void (**)(void), 0x20)) M2C_FIELD(&gRtcState, void (**)(void), 0x20)();
   return;
  }
  if (status == 0) {
   result = 0;
-  switch (M2C_FIELD(&data_0212fd34, u32 *, 0x18)) {
+  switch (M2C_FIELD(&gRtcState, u32 *, 0x18)) {
    case 0:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     out[0] = func_0200f634((*(volatile u32 *)0x27ffde8 << 24) >> 24);
     out[1] = func_0200f634((*(volatile u32 *)0x27ffde8 << 19) >> 27);
     out[2] = func_0200f634((*(volatile u32 *)0x27ffde8 << 10) >> 26);
     out[3] = func_0200fa50(out);
     break;
    case 1:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     out[0] = func_0200f634((*(volatile u32 *)0x27ffdec << 26) >> 26);
     out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 17) >> 25);
     out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
     break;
    case 2:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     out[0] = func_0200f634(*(volatile u32 *)0x27ffde8 & 255);
     out[1] = func_0200f634((*(volatile u32 *)0x27ffde8 << 19) >> 27);
     out[2] = func_0200f634((*(volatile u32 *)0x27ffde8 << 10) >> 26);
     out[3] = func_0200fa50(out);
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0x10);
+    out = M2C_FIELD(&gRtcState, s32 **, 0x10);
     out[0] = func_0200f634((*(volatile u32 *)0x27ffdec << 26) >> 26);
     out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 17) >> 25);
     out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
     break;
    case 6:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     switch (((RTCStatus *)0x27ffdea)->bits.mode) {
      case 4: out[0] = 1; break;
      default: out[0] = 0; break;
     }
     break;
    case 7:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     if (((u32)*(u16 *)0x27ffdea << 25) >> 31) out[0] = 1; else out[0] = 0;
     break;
    case 8:
-    out = M2C_FIELD(&data_0212fd34, s32 **, 0xc);
+    out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     out[0] = (*(volatile u32 *)0x27ffdec << 29) >> 29;
     out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 18) >> 26);
     out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
@@ -288,40 +292,40 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
     if ((*(volatile u32 *)0x27ffdec << 8) >> 31) out[3] += 4;
     break;
    case 9:
-    if (M2C_FIELD(&data_0212fd34, s32 *, 0x1c) == 0) {
-     if (*M2C_FIELD(&data_0212fd34, s32 **, 0xc) == 1) {
+    if (M2C_FIELD(&gRtcState, s32 *, 0x1c) == 0) {
+     if (*M2C_FIELD(&gRtcState, s32 **, 0xc) == 1) {
       if ((((RTCStatus *)0x27ffdea)->bits.mode) != 4) {
-       M2C_FIELD(&data_0212fd34, s32 *, 0x1c)++;
+       M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
        *(u16 *)0x27ffdea = (*(u16 *)0x27ffdea & ~15) | 4;
-       if (!func_0200f6fc()) { M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0; result = 3; }
+       if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
       }
      } else if ((((RTCStatus *)0x27ffdea)->bits.mode) != 0) {
-      M2C_FIELD(&data_0212fd34, s32 *, 0x1c)++;
+      M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
       *(u16 *)0x27ffdea = *(u16 *)0x27ffdea & ~15;
-      if (!func_0200f6fc()) { M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0; result = 3; }
+      if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
      }
-    } else M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0;
+    } else M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
     break;
    case 10:
-    if (M2C_FIELD(&data_0212fd34, s32 *, 0x1c) == 0) {
-     if (*M2C_FIELD(&data_0212fd34, s32 **, 0xc) == 1) {
+    if (M2C_FIELD(&gRtcState, s32 *, 0x1c) == 0) {
+     if (*M2C_FIELD(&gRtcState, s32 **, 0xc) == 1) {
       if ((((u32)*(u16 *)0x27ffdea << 25) >> 31) == 0) {
-       M2C_FIELD(&data_0212fd34, s32 *, 0x1c)++;
+       M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
        *(u16 *)0x27ffdea = *(u16 *)0x27ffdea | 64;
-       if (!func_0200f6fc()) { M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0; result = 3; }
+       if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
       }
      } else if (((u32)*(u16 *)0x27ffdea << 25) >> 31) {
-      M2C_FIELD(&data_0212fd34, s32 *, 0x1c)++;
+      M2C_FIELD(&gRtcState, s32 *, 0x1c)++;
       *(u16 *)0x27ffdea = *(u16 *)0x27ffdea & ~64;
-      if (!func_0200f6fc()) { M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0; result = 3; }
+      if (!func_0200f6fc()) { M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 3; }
      }
-    } else M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0;
+    } else M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
     break;
    case 3: case 4: case 5: case 11: case 12: case 13: case 14: case 15: break;
-   default: M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0; result = 4; break;
+   default: M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0; result = 4; break;
   }
  } else {
-  M2C_FIELD(&data_0212fd34, s32 *, 0x1c) = 0;
+  M2C_FIELD(&gRtcState, s32 *, 0x1c) = 0;
   switch (status) {
    case 1: result = 4; break;
    case 2: result = 5; break;
@@ -329,10 +333,10 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
    case 0: case 4: default: result = 6; break;
   }
  }
- if (M2C_FIELD(&data_0212fd34, s32 *, 0x1c) == 0) {
-  if (M2C_FIELD(&data_0212fd34, s32 *, 4)) M2C_FIELD(&data_0212fd34, s32 *, 4) = 0;
-  callback = M2C_FIELD(&data_0212fd34, void (**)(s32, s32), 8);
-  if (callback) { M2C_FIELD(&data_0212fd34, s32 *, 8) = 0; callback(result, M2C_FIELD(&data_0212fd34, s32 *, 0x14)); }
+ if (M2C_FIELD(&gRtcState, s32 *, 0x1c) == 0) {
+  if (M2C_FIELD(&gRtcState, s32 *, 4)) M2C_FIELD(&gRtcState, s32 *, 4) = 0;
+  callback = M2C_FIELD(&gRtcState, void (**)(s32, s32), 8);
+  if (callback) { M2C_FIELD(&gRtcState, s32 *, 8) = 0; callback(result, M2C_FIELD(&gRtcState, s32 *, 0x14)); }
  }
 }
 
@@ -369,8 +373,8 @@ loop_1:
 }
 
 void func_0200f6a4(s32 arg0) {
-    extern M2C_UNK data_0212fd34;
-    M2C_FIELD(&data_0212fd34, s32 *, 0x24) = arg0;
+    extern M2C_UNK gRtcState;
+    M2C_FIELD(&gRtcState, s32 *, 0x24) = arg0;
 }
 
 #pragma opt_common_subs off
@@ -381,7 +385,7 @@ while ((v = *p) == 1) {}
 return v;
 }
 #pragma opt_common_subs reset
-s32 func_0200f6cc(void) {
+s32 SendRtcReadDateTimeCommand(void) {
     s32 func_0200f70c(s32);
     return func_0200f70c(0x10);
 }

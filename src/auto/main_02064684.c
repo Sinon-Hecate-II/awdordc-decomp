@@ -4,6 +4,12 @@
  * bits 2..4, access in bits 7..9, nonzero while the stream is open) and the
  * state word at +8 (low 3 bits: 0 closed, 1 open, 2 flushing). */
 typedef struct { u32 unused0; u32 flagsLow:2, mode:3, flagsMid:2, access:3, flagsHigh:22; u32 state:3, stateRest:29; } StreamFlags649;
+/* Other fields of a stream object, used to locate its current position. */
+#define STREAM_ERROR      0x0D /* u8 nonzero once a stream error was set */
+#define STREAM_POSITION   0x18 /* s32 position of a stream that does not buffer */
+#define STREAM_BUFFER     0x1C /* u8 *start of the stream's buffer */
+#define STREAM_CURSOR     0x24 /* u8 *current read/write cursor in it */
+#define STREAM_BUFFER_POS 0x34 /* s32 file offset the buffer starts at */
 extern u8 gStdinStream[], gStdoutStream[], gStderrStream[], gStreamMutexes[];
 extern s32 gStreamLockOwner[], gStreamLockDepth[];
 extern M2C_UNK gSocketManager;
@@ -183,7 +189,7 @@ s32 StreamClose(void *stream) {
     return 0;
 }
 
-char *func_02064a90(char *s) {
+char *StringReverse(char *s) {
  s32 StringLength(char *);
  s32 i=0;
  s32 j=StringLength(s)-1;
@@ -192,7 +198,10 @@ char *func_02064a90(char *s) {
 }
 
 #pragma opt_strength_reduction off
-char *func_02064ad4(s32 value, char *buffer, s32 radix) {
+/* Write `value` into `buffer` in the given radix (10 gives digits, 16 hex with
+ * lower-case letters), prefixed with '-' when negative, and return the buffer;
+ * the digits are generated least-significant first and the string reversed. */
+char *IntegerToRadixString(s32 value, char *buffer, s32 radix) {
     s32 negative = 0, i = 0, rem;
     if (value < 0) { value = -value; negative = 1; }
     do {
@@ -209,28 +218,34 @@ char *func_02064ad4(s32 value, char *buffer, s32 radix) {
         buffer[i++] = '-';
     }
     buffer[i] = 0;
-    func_02064a90(buffer);
+    StringReverse(buffer);
     return buffer;
 }
 #pragma opt_strength_reduction reset
-s32 GetStreamPosition(void *arg0) {
+/* GetStreamPosition: report the current read/write position of a stream.
+ * A stream that is not open for reading or writing (access 1 or 2) or that has
+ * an error set fails with errno 40.  A stream that does not buffer keeps its
+ * position directly; otherwise the position is the buffer's file offset plus
+ * the bytes used in it, less the bytes a pending flush holds back (the
+ * flushing states 3 and up keep one or two extra bytes). */
+s32 GetStreamPosition(void *stream) {
     extern s32 gErrno;
-    s32 var_r0;
-    u32 temp_ip;
+    s32 position;
+    u32 state;
 
-    if (((u32) (u8) ((u8) ((u32) (M2C_FIELD(arg0, s32 *, 4) << 0x16) >> 0x1D) + 0xFF) > 1U) || (M2C_FIELD(arg0, u8 *, 0xD) != 0)) {
+    if (((u32) (u8) ((u8) ((u32) (u8) (((StreamFlags649 *)stream)->access) + 0xFF)) > 1U) || (M2C_FIELD(stream, u8 *, STREAM_ERROR) != 0)) {
         gErrno = 0x28;
         return -1;
     }
-    temp_ip = (u32) (M2C_FIELD(arg0, s32 *, 8) << 0x1D) >> 0x1D;
-    if (temp_ip == 0) {
-        return M2C_FIELD(arg0, s32 *, 0x18);
+    state = ((StreamFlags649 *)stream)->state;
+    if (state == 0) {
+        return M2C_FIELD(stream, s32 *, STREAM_POSITION);
     }
-    var_r0 = M2C_FIELD(arg0, s32 *, 0x34) + (M2C_FIELD(arg0, s32 *, 0x24) - M2C_FIELD(arg0, s32 *, 0x1C));
-    if (temp_ip >= 3U) {
-        var_r0 -= temp_ip - 2;
+    position = M2C_FIELD(stream, s32 *, STREAM_BUFFER_POS) + (M2C_FIELD(stream, s32 *, STREAM_CURSOR) - M2C_FIELD(stream, s32 *, STREAM_BUFFER));
+    if (state >= 3U) {
+        position -= state - 2;
     }
-    return var_r0;
+    return position;
 }
 
 /* Reports the current position of stream fp, under the same reentrant per-stream

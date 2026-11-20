@@ -61,7 +61,7 @@ void func_ov001_0217bf14(void) {
 void func_ov001_0217bf40(void) {
     s32 Ov001_IsRegionMenuActive();
     extern void *gNameEntryState;
-    extern M2C_UNK func_ov001_0217b688;
+    extern M2C_UNK Ov001_OpenNameEntryKeyboard;
     s32 *temp_r3;
 
     if (Ov001_IsRegionMenuActive() != 0) {
@@ -69,7 +69,7 @@ void func_ov001_0217bf40(void) {
     }
     temp_r3 = M2C_FIELD(gNameEntryState, s32 **, 4);
     *temp_r3 &= 0xC1FFFCFF;
-    Ov001_SetStepCallback(&func_ov001_0217b688);
+    Ov001_SetStepCallback(&Ov001_OpenNameEntryKeyboard);
 }
 
 void func_ov001_0217bf84(void) {
@@ -398,7 +398,7 @@ extern const u16 data_ov001_0218f848[];
 extern void *gOv001FriendCodeState;
 void ParsePlayerCode(void *,void *);
 s32 Ov001_GetNameEntryMode(s32 *,s32);
-s32 func_0204612c(void *);
+s32 IsValidTextChar(void *);
 u8 maxDigits[4]="255"; s32 entryMode; u8 code[4]; u8 *group; s32 bit,groupIndex,seenZero; u8 *base;
 const u8 *src=(const u8 *)data_ov001_0218f848;
 
@@ -410,7 +410,7 @@ for(bit=0;bit<3;bit++){if(group[bit]>maxDigits[bit])return 0;if(group[bit]<maxDi
 ParsePlayerCode((u8 *)gOv001FriendCodeState+8,code);
 Ov001_GetNameEntryMode(&entryMode,0);
 if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=0;bit<8;bit++){if(seenZero){if(code[groupIndex]&(1<<(7-bit)))return 0;}else if(!(code[groupIndex]&(1<<(7-bit))))seenZero=1;}}return 1;}
-return func_0204612c(code)!=0;
+return IsValidTextChar(code)!=0;
 }
 
 void Ov001_RetryCodeEntry(void) {

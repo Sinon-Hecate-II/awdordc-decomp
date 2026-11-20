@@ -30,8 +30,8 @@ return 0;
 
 void Map_RefreshCellTile(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK Map_SetTileAndRefresh(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_ov007_0221ad24(M2C_UNK, M2C_UNK, s32);
-    if (func_ov007_0221ad24(arg0, arg1, Map_GetCellTerrainKind()) != 0) {
+    s32 Map_IsTerrainKindPlaceable(M2C_UNK, M2C_UNK, s32);
+    if (Map_IsTerrainKindPlaceable(arg0, arg1, Map_GetCellTerrainKind()) != 0) {
         return;
     }
     Map_SetTileAndRefresh(arg0, arg1, 8, 3);
@@ -309,29 +309,32 @@ if(slot4==((terrain&MAP_TERRAIN_OWNER_MASK)>>5)){map=*gCurrentMap;M2C_FIELD(M2C_
 map=*gCurrentMap;
 M2C_FIELD(map+(x+M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS))*2,u16 *,MAP_CELL_TILE_ID)=TerrainByteToTileId(M2C_FIELD(M2C_FIELD(map+(y<<1),u16 *,MAP_ROW_OFFSETS)+(map+x),u8 *,MAP_CELL_TERRAIN));
 }}}}
+/* Renumber the player ids so the players taking part (team != 0) sit in the
+ * lowest slots with no gaps: reset each slot to its own id, then swap every
+ * active slot's id into the next free slot. */
 void CompactPlayerSlots(void) {
     s32 GetPlayerTeam(s32);
-    s32 temp_r4;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
+    s32 swapped;
+    s32 slot;
+    s32 nextSlot;
+    s32 sourceSlot;
 
-    var_r5 = 1;
-    var_r4 = 0;
+    nextSlot = 1;
+    slot = 0;
     do {
-        SetPlayerIdForSlot(var_r4, var_r4);
-        var_r4 += 1;
-    } while (var_r4 < 5);
-    var_r6 = 1;
+        SetPlayerIdForSlot(slot, slot);
+        slot += 1;
+    } while (slot < 5);
+    sourceSlot = 1;
     do {
-        if (GetPlayerTeam(var_r6) != 0) {
-            temp_r4 = GetPlayerIdForSlot(var_r5);
-            SetPlayerIdForSlot(var_r5, GetPlayerIdForSlot(var_r6));
-            SetPlayerIdForSlot(var_r6, temp_r4);
-            var_r5 = (s32) (u8) (var_r5 + 1);
+        if (GetPlayerTeam(sourceSlot) != 0) {
+            swapped = GetPlayerIdForSlot(nextSlot);
+            SetPlayerIdForSlot(nextSlot, GetPlayerIdForSlot(sourceSlot));
+            SetPlayerIdForSlot(sourceSlot, swapped);
+            nextSlot = (s32) (u8) (nextSlot + 1);
         }
-        var_r6 += 1;
-    } while (var_r6 < 5);
+        sourceSlot += 1;
+    } while (sourceSlot < 5);
 }
 
 void ResetPlayerOrder(void) {

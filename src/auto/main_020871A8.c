@@ -199,35 +199,37 @@ void AddSpriteCell(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
 #pragma opt_strength_reduction reset
 void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *func_02087e68(void *,s32);u16 *p=func_02087e68(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}
 
-void func_02087db8(void *arg0, s32 arg1) {
-    s32 var_r2;
-    u16 temp_r3;
-    void *temp_r0;
-    void *var_r0;
+/* Take the cell showing tile `tile` out of a cell list: clear it, decrement the
+ * list's used-cell count and, when the list was on that cell, forget it. */
+void RemoveSpriteCell(void *list, s32 tile) {
+    s32 i;
+    u16 capacity;
+    SpriteCell *cell;
+    SpriteCell *current;
 
-    temp_r3 = M2C_FIELD(arg0, u16 *, 0x10);
-    var_r0 = M2C_FIELD(arg0, void **, 0x14);
-    var_r2 = 0;
-    if ((s32) temp_r3 > 0) {
+    capacity = M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_CAPACITY);
+    cell = M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CELLS);
+    i = 0;
+    if ((s32) capacity > 0) {
 loop_1:
-        if (M2C_FIELD(var_r0, u16 *, 8) == arg1) {
-            MI_CpuFill8(var_r0, 0, 0xC);
-            M2C_FIELD(arg0, u8 *, 0x12) = (u8) (M2C_FIELD(arg0, u8 *, 0x12) - 1);
+        if (cell->tile == tile) {
+            MI_CpuFill8(cell, 0, sizeof(SpriteCell));
+            M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_USED) = (u8) (M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_USED) - 1);
         } else {
-            var_r2 += 1;
-            var_r0 += 0xC;
-            if (var_r2 < (s32) temp_r3) {
+            i += 1;
+            cell += 1;
+            if (i < (s32) capacity) {
                 goto loop_1;
             }
         }
     }
-    temp_r0 = M2C_FIELD(arg0, void **, 0);
-    if (temp_r0 == NULL) {
+    current = M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CURRENT);
+    if (current == NULL) {
         return;
     }
-    if (arg1 == M2C_FIELD(temp_r0, u16 *, 8)) {
-        M2C_FIELD(arg0, void **, 0) = NULL;
-        M2C_FIELD(arg0, s32 *, 4) = 0;
+    if (tile == current->tile) {
+        M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CURRENT) = NULL;
+        M2C_FIELD(list, s32 *, SPRITE_CELL_LIST_PREVIOUS) = 0;
     }
 }
 

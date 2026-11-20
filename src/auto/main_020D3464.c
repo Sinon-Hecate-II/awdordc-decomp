@@ -639,7 +639,7 @@ void func_020d4110(void) {
 void CheckTurnLimitStep(void) {
     void ShowUiMessage(s32);
     s32 ResolvePropertyCountVictory(void);
-    void func_020ca484(void);
+    void ScheduleBattleEndCheck(void);
     u32 WillNextTurnStartNewDay(void);
     extern M2C_UNK gMapData;
     extern void **gCurrentMap;
@@ -648,7 +648,7 @@ void CheckTurnLimitStep(void) {
         if (M2C_FIELD(&gMapData, u8 *, MAPDATA_DAY_LIMIT) == M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN)) goto same;
     }
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = 2;
-    func_020ca484();
+    ScheduleBattleEndCheck();
     return;
 same:
     ShowUiMessage(0xC0000347); /* "out of days" battle-end message */

@@ -5,7 +5,7 @@ typedef struct { u16 values[6]; } SetupParams12;
 void func_020d8bb4(void) {
 M2C_UNK func_0208349c(u32);
 s32 IsUnitAvailable();
-s32 func_020bf054(s32,s32);
+s32 GetSaveType(s32,s32);
 M2C_UNK LoadMapTileset();
 s32 func_020d8b84(s32);
 s32 func_020e4b28(s32);
@@ -26,12 +26,12 @@ do {
 switch(k){
 case 0:
 j=0;
-do {t=func_020bf054(k,j);
+do {t=GetSaveType(k,j);
 if(IsUnitAvailable()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 j++;}while(j<3);
 break;
 case 1:
-t=func_020bf054(k,0);
+t=GetSaveType(k,0);
 if(IsUnitAvailable()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 break;
 }
@@ -276,7 +276,7 @@ void func_020d93e0(void *entity) {
     s32 func_0208477c(void);
     s32 GetOverlayEventFlags(void);
     s32 FindTextLayer(void);
-    void func_0208af20(void);
+    void StartWindowClose(void);
     void *CreateTextLayer(void *);
     void RenderTextLayerMessage(void *, s32, s32, u32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
@@ -289,7 +289,7 @@ void func_020d93e0(void *entity) {
     if (func_0208477c()) return;
     if (!GetOverlayEventFlags()) return;
     M2C_FIELD(entity, u16 *, 0x48) |= 0x1000;
-    if (FindTextLayer()) func_0208af20();
+    if (FindTextLayer()) StartWindowClose();
     savedEntity = gCur3DSpriteEngine;
     for (i = 0; i < 2; i++) {
         gCur3DSpriteEngine = (i == 0) ? g3DSpriteEngineMain : g3DSpriteEngineSub;

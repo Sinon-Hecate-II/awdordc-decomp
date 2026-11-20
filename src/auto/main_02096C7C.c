@@ -532,33 +532,37 @@ s32 HighlightScenePanel(s32 panelIndex) {
     return 1;
 }
 
-void func_02097a2c(s32 arg0) {
+/* Highlights the active face of the two-face scene panel: when exactly two 3D
+ * sprites exist, sets FACE_SPRITE_ACTIVE on panel 2's face child at `faceIndex`
+ * and clears it on the other, refreshes both face sprites and updates the
+ * panel's palette.  A faceIndex of -1 clears both. */
+void HighlightScenePanelFace(s32 faceIndex) {
     s32 Get3DSpriteCount();
-    M2C_UNK func_020991f4(s32, s32);
+    M2C_UNK SetFaceSpriteActive(s32, s32);
     M2C_UNK RefreshFaceSprite(s32);
-    long var_r6;
-    s32 temp_r0;
-    s32 temp_r0_2;
+    long index;
+    s32 panel;
+    s32 face;
 
     if (Get3DSpriteCount() != 2) {
         return;
     }
-    temp_r0 = FindScenePanel(2);
-    if (!temp_r0) {
+    panel = FindScenePanel(2);
+    if (!panel) {
         return;
     }
-    var_r6 = 0;
+    index = 0;
     do {
-        temp_r0_2 = Get3DSpriteChild(temp_r0, var_r6);
-        if (var_r6 == arg0) {
-            func_020991f4(temp_r0_2, 1);
+        face = Get3DSpriteChild(panel, index);
+        if (index == faceIndex) {
+            SetFaceSpriteActive(face, 1);
         } else {
-            func_020991f4(temp_r0_2, 0);
+            SetFaceSpriteActive(face, 0);
         }
-        RefreshFaceSprite(temp_r0_2);
-        var_r6++;
-    } while (2 > var_r6);
-    UpdateScenePanelPalette(temp_r0);
+        RefreshFaceSprite(face);
+        index++;
+    } while (2 > index);
+    UpdateScenePanelPalette(panel);
 }
 
 void func_02097aa8(void) {

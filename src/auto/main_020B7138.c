@@ -83,21 +83,21 @@ loop_15:
 void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) {
  M2C_UNK PanMapViewToTile(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
  u32 GetFacingOffset(u32);
- void *func_020b5188(M2C_UNK *,s32,s32,s32,s32,s32,void *);
+ void *CreateEffectMapSprite(M2C_UNK *,s32,s32,s32,s32,s32,void *);
  void ResetEffectSpritePool(void); s32 GetEffectSpritePoolOffset(void);
  extern M2C_UNK sBeam04Color,sBeam04Sprite,sBeamChargeSprite;
  s32 beamColor,chargeColor; u32 facingTile; s32 offsetX,offsetY; void *beam,*charge;
  facingTile=GetFacingOffset(facing); offsetX=0; offsetY=0;
  ResetEffectSpritePool(); beamColor=LoadEffectSpriteSheet(&sBeam04Color,0);
  switch(facing) {case 0:offsetX=-132;offsetY=132;break;case 1:offsetY=176;break;case 2:offsetX=132;offsetY=offsetX;break;case 3:offsetY=172;break;default:break;}
- beam=func_020b5188(&sBeam04Sprite,offsetX+tileX*16,offsetY+tileY*16,48,beamColor,0,parent);
+ beam=CreateEffectMapSprite(&sBeam04Sprite,offsetX+tileX*16,offsetY+tileY*16,48,beamColor,0,parent);
  if(beam) {
  ((SpriteTile *)beam)->tile=(u16)(facingTile+0x4000);
  M2C_FIELD(beam,s32 *,0x58)=order; M2C_FIELD(beam,s32 *,0x5c)=tileX; M2C_FIELD(beam,s32 *,0x60)=tileY; M2C_FIELD(beam,u32 *,0x64)=facing; M2C_FIELD(beam,void (**)(void *),0x68)=UpdateBeamEffect; parent=beam;
  }
  chargeColor=GetEffectSpritePoolOffset();
  switch(facing) {case 0:offsetX=-12;offsetY=12;break;case 1:offsetX=0;offsetY=16;break;case 2:offsetX=12;offsetY=offsetX;break;case 3:offsetX=0;offsetY=12;break;default:break;}
- charge=func_020b5188(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
+ charge=CreateEffectMapSprite(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
  if(charge) {PlaySoundAtTile(0x103,tileX,tileY+2); ((SpriteTile *)charge)->tile=(u16)facingTile;}
  PanMapViewToTile(tileX,tileY+2);func_0207b7e8(charge);
 }

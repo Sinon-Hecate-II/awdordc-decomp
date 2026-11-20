@@ -363,7 +363,7 @@ if(path==0)return 0;return 1;
  * resolve finishes the request with the matching result. */
 void func_0204c738(void *arg0) {
     GHIConnection *connection = arg0;
-    void InvokeRequestCallback(void *, s32, s32);
+    void ghiCallProgressCallback(void *, s32, s32);
     void func_0204926c(void);
     s32 ghiParseURL(void *);
     s32 ghiInetAddr(s32);
@@ -372,7 +372,7 @@ void func_0204c738(void *arg0) {
     s32 host, address;
     void *hostEntry;
 
-    InvokeRequestCallback(connection, 0, 0);
+    ghiCallProgressCallback(connection, 0, 0);
     func_0204926c();
     if (!ghiParseURL(connection)) {
         connection->completed = 1;
@@ -395,6 +395,6 @@ void func_0204c738(void *arg0) {
         connection->addr = **M2C_FIELD(hostEntry, s32 ***, 12);
     }
     connection->state = GHI_STATE_CONNECTING;
-    InvokeRequestCallback(connection, 0, 0);
+    ghiCallProgressCallback(connection, 0, 0);
 }
 

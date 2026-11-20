@@ -365,7 +365,7 @@ void func_ov000_02180670(void) {
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_02195ea4();
+    M2C_UNK PlanAiStep4Destination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK PlanEnemyUnitAttackDestination();
     M2C_UNK func_ov000_02194370();
@@ -383,7 +383,7 @@ void func_ov000_02180670(void) {
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
     }
-    func_ov000_02195ea4();
+    PlanAiStep4Destination();
     SelectAttackMoveDestination();
     PlanEnemyUnitAttackDestination();
     func_ov000_02194370();

@@ -61,8 +61,8 @@ void func_02032398(void) {
 }
 
 void func_020323a4(void) {
-    M2C_UNK func_020321ac();
-    func_020321ac();
+    M2C_UNK InitProfileIdBlock();
+    InitProfileIdBlock();
 }
 
 s32 func_020323b0(void *a) {

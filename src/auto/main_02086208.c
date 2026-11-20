@@ -236,15 +236,20 @@ void FreeUiGraphicsBank(u8 arg0) {
  ((s32 *)&gUiGraphicsBanks)[arg0] = 0;
 }
 
-s32 GetLocalizedText(u32 arg0) {
- extern u32 data_02102448;
+/* GetLocalizedText: look up a UI string by its text id (-1 asks for the id of
+ * the current message).  The bank table is walked in order and the first bank
+ * whose first text id is not above the wanted id holds the string; the id's low
+ * 24 bits index that bank's offset table, and the offset is added to the bank's
+ * base in memory.  An id that no bank claims returns 0. */
+s32 GetLocalizedText(u32 textId) {
+ extern u32 gTextBankTable;
  extern M2C_UNK gUiGraphicsBanks[];
- u32 *p = &data_02102448;
- if (arg0 == -1U) arg0 = GetUiMessageText();
- for (; p[1] != 0; p += 2) {
-  if (arg0 >= p[0]) {
-   s32 base = ((s32 *)&gUiGraphicsBanks)[((s32)p - (s32)&data_02102448) / 8];
-   return base + ((s32 *)base)[arg0 & 0xFFFFFF];
+ u32 *entry = &gTextBankTable;
+ if (textId == -1U) textId = GetUiMessageText();
+ for (; entry[1] != 0; entry += 2) {
+  if (textId >= entry[0]) {
+   s32 bank = ((s32 *)&gUiGraphicsBanks)[((s32)entry - (s32)&gTextBankTable) / 8];
+   return bank + ((s32 *)bank)[textId & TEXT_BANK_INDEX_MASK];
   }
  }
  return 0;

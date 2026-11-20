@@ -352,18 +352,18 @@ return;
    stored code word. */
 s32 IsCurrentSaveSlotValid(void) {
     void *GetCurrentMapRecord(void);
-    s32 func_0204612c(void *);
-    s32 func_020460b0(void *, void *);
+    s32 IsValidTextChar(void *);
+    s32 IsSavedPlayerCodeValid(void *, void *);
     u8 *record = GetCurrentMapRecord();
 
     if (!record[SAVE_SLOT_MAP_NAME]) return 0;
     if (!record[SAVE_SLOT_EMPTY_B] &&
-        !func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 8) &&
-        !func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 12)) return 0;
+        !IsValidTextChar(record + SAVE_SLOT_PLAYER_CODES + 8) &&
+        !IsValidTextChar(record + SAVE_SLOT_PLAYER_CODES + 12)) return 0;
     if (!record[SAVE_SLOT_EMPTY_A]) {
-        if (!func_0204612c(record + SAVE_SLOT_PLAYER_CODES)) return 0;
-        if (!func_0204612c(record + SAVE_SLOT_PLAYER_CODES + 4)) return 0;
-        if (!func_020460b0(record + SAVE_SLOT_PLAYER_CODES, record + SAVE_SLOT_CODE)) return 0;
+        if (!IsValidTextChar(record + SAVE_SLOT_PLAYER_CODES)) return 0;
+        if (!IsValidTextChar(record + SAVE_SLOT_PLAYER_CODES + 4)) return 0;
+        if (!IsSavedPlayerCodeValid(record + SAVE_SLOT_PLAYER_CODES, record + SAVE_SLOT_CODE)) return 0;
     }
     return 1;
 }

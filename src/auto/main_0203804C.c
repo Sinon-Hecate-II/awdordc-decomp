@@ -64,7 +64,7 @@ void TeardownNetSession(void) {
     void func_0204db34(void *channel);
     void func_02039e04(void);
     void func_0203b088(void);
-    void func_0203e4e0(void);
+    void ShutdownConnection(void);
     void func_020449dc(void);
     void func_0205ad60(void *resource);
 
@@ -91,7 +91,7 @@ void TeardownNetSession(void) {
     }
     func_02039e04();
     func_0203b088();
-    func_0203e4e0();
+    ShutdownConnection();
     func_020449dc();
     if (M2C_FIELD(gNetSession, void **, 0)) {
         func_0205ad60(M2C_FIELD(gNetSession, void **, 0));

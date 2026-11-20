@@ -506,14 +506,14 @@ void func_020c0f18(void) {
 M2C_UNK DrawCarriedUnitListBatch(void *p) {
 extern u8 data_02163f30[];
 void SetCurrentSpriteBatch(void *);void InitSpriteBatch(s32,s32,s32,s32);
-void func_0207bcc4(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
+void AddSpriteToBatch(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
 MenuC0634 *list=(MenuC0634 *)p;
 s32 i;u16 icon;
 SetCurrentSpriteBatch(data_02163f30);
 InitSpriteBatch(2,1,0x24,3);
 for(i=0;i<list->count;i++) {
 icon=((MenuRowC0634 *)GetCarriedUnitListEntry(p,i))->icon;
-func_0207bcc4((u8)icon,(u8)GetCarriedUnitListEntryStatus((s32)p,i));
+AddSpriteToBatch((u8)icon,(u8)GetCarriedUnitListEntryStatus((s32)p,i));
 }
 func_0207bdc4();
 DrawSpriteBatchAt(list->x,list->y);

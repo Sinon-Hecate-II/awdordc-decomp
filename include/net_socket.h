@@ -47,6 +47,12 @@
 #define CONNECT_TASK_PEER_PORT  0x12 /* u16 peer port to connect to */
 #define CONNECT_TASK_PEER_ADDR  0x14 /* s32 peer IPv4 address, host order */
 
+/* SocketListen's task arguments: the local port to listen on and the two
+ * out-pointers the task reports the peer endpoint through. */
+#define LISTEN_TASK_LOCAL_PORT    0x10 /* u16 receive port the socket listens on */
+#define LISTEN_TASK_PEER_PORT_PTR 0x14 /* u16 *out: peer port of the connection */
+#define LISTEN_TASK_PEER_ADDR_PTR 0x18 /* s32 *out: peer IPv4 address of the connection */
+
 /* The socket's own local port (SOCK_RECV_PORT) and the port the transport layer
  * bound it to (SOCK_LINK_PORT, the low-level socket's local port); the first
  * received record fills SOCK_RECV_PORT in.  SOCK_PEER_* is the peer of the
@@ -153,6 +159,7 @@ typedef struct SendRequest {
 #define SOCK_NOT_READY   (-39) /* the socket's ready flag is clear */
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
+#define SOCK_MESSAGE_TOO_LONG (-35) /* a send is larger than the packet buffer allows */
 
 /* A DNS lookup runs over a temporary raw connection whose buffers come from one
  * allocation: a receive buffer and, behind it, the pending-datagram buffer. */

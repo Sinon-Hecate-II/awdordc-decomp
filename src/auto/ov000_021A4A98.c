@@ -108,10 +108,10 @@ s32 EvaluateAiTargetGroupForCapture(u8 candidateX, u8 candidateY) {
 
 s32 func_ov000_021a4dc4(void) {
     s32 EvaluateAiTargetGroupForCapture(u8, u8);
-    s32 func_ov000_021a67f0(s32);
+    s32 FindAiTargetCandidate(s32);
     extern u8 gAiTargetCandidates;
     extern u8 data_ov000_021e00ad;
-    s32 index = func_ov000_021a67f0(1);
+    s32 index = FindAiTargetCandidate(1);
     s32 offset;
     if (index == -1) return 0;
     offset = index * 12;

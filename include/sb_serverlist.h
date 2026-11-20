@@ -8,6 +8,8 @@
 
 #define SB_LIST_PENDING     0x10  /* s32 nonzero while query replies are still awaited */
 #define SB_LIST_REQUESTS    0x08  /* s32[3]: the pending-query list (head, tail, SB_LIST_PENDING) */
+#define SB_LIST_QUERY_LIMIT 0x04  /* s32 most detail queries allowed in flight at once */
+#define SB_LIST_WAITING     0x14  /* s32[3]: the waiting queries (head, tail, count at +0x1C) */
 #define SB_LIST_ON_QUERY_DONE 0x44 /* void (*)(void *list, s32 event, void *server, void *instance): a pending query got its reply */
 #define SB_LIST_QUERY_DATA  0x48  /* void *instance passed to SB_LIST_ON_QUERY_DONE */
 #define SB_LIST_FIELDS      0x2C  /* u8[SB_LIST_MAX_FIELDS]: key ids asked of the master */

@@ -273,37 +273,41 @@ void Ov001_LoadNameEntryGraphics(void) {
 void func_ov001_0217b634(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217b688;
+    extern M2C_UNK Ov001_OpenNameEntryKeyboard;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217b688);
+    Ov001_SetStepCallback(&Ov001_OpenNameEntryKeyboard);
 }
 
-void func_ov001_0217b688(void) {
+/* Step that runs once the name-entry screen has faded in: opens the on-screen
+ * keyboard and sets its keys for the current name - nothing to delete while the
+ * name is empty, nothing to add once it holds its full 32 characters - then waits
+ * for the first key. */
+void Ov001_OpenNameEntryKeyboard(void) {
     s32 Ov001_IsFadeActive(s32);
-    M2C_UNK func_ov001_021724c0(void);
+    M2C_UNK Ov001_OpenKeyboard(void);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_SetKeyboardCanDelete(s32);
     M2C_UNK Ov001_SetKeyboardCanAdd(s32);
-    void func_ov001_0217b704(void);
+    void Ov001_WaitKeyboardFirstKey(void);
     M2C_UNK Ov001_SetStepCallback();
     extern void *gNameEntryState;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
-    func_ov001_021724c0();
+    Ov001_OpenKeyboard();
     Ov001_PlaySound(0x14);
-    if (M2C_FIELD(gNameEntryState, u8 *, 0x29) == 0) {
+    if (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_LENGTH) == 0) {
         Ov001_SetKeyboardCanDelete(0);
     }
-    if (M2C_FIELD(gNameEntryState, u8 *, 0x29) == 0x20) {
+    if (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_LENGTH) == NAME_ENTRY_MAX_LENGTH) {
         Ov001_SetKeyboardCanAdd(0);
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217b704);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitKeyboardFirstKey);
 }
 
-void func_ov001_0217b704(void) {
+void Ov001_WaitKeyboardFirstKey(void) {
     s32 GetKeyboardKey();
     void func_ov001_0217b724(void);
     if (GetKeyboardKey() == 0xFF) {
@@ -527,7 +531,7 @@ void Ov001_FinishNameEntry(void) {
     s32 Ov001_IsRegionMenuActive(void);
     s32 Ov001_SetStepCallback(s32 *);
     void Ov001_GetNameEntryMode(s32 *, s32);
-    void func_ov001_0217b688(void);
+    void Ov001_OpenNameEntryKeyboard(void);
     void func_ov001_0217ba1c(void);
     extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
@@ -542,7 +546,7 @@ void Ov001_FinishNameEntry(void) {
     if (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT) == 0) {
         s32 *cursor = M2C_FIELD(gNameEntryState, s32 **, NAME_ENTRY_CURSOR);
         *cursor &= NAME_ENTRY_CURSOR_MASK;
-        Ov001_SetStepCallback((s32 *)func_ov001_0217b688);
+        Ov001_SetStepCallback((s32 *)Ov001_OpenNameEntryKeyboard);
         return;
     }
     Ov001_GetNameEntryMode(&mode, 0);

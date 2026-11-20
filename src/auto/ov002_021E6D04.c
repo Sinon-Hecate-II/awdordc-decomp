@@ -447,28 +447,31 @@ if(temp!=0x4B) return;
 EndBattleScene(arg0);
 }
 
-void func_ov002_021e78e4(void) {
+/* Draw one frame of the battle scene on the main screen: pick the screen's
+ * unit view (the one of the country on that screen, which the screen swap
+ * decides) and draw its unit models. */
+void DrawBattleSceneUnitView(void) {
     M2C_UNK SetupSprite3DScene();
     M2C_UNK func_02086ec8();
     M2C_UNK SetGxPolygonAttr(M2C_UNK, M2C_UNK);
-    s32 func_ov002_021e3e00(M2C_UNK *);
+    s32 IsBattleScreenSwapped(M2C_UNK *);
     M2C_UNK func_ov002_021e8984(s32);
     extern M2C_UNK data_ov002_021f3014;
     extern M2C_UNK gPlayerSettings;
     extern M2C_UNK gUnitViews;
-    s32 var_r2;
+    s32 otherCountry;
 
     SetupSprite3DScene();
     SetGxPolygonAttr(0, 0x1F);
-    if (func_ov002_021e3e00(&data_ov002_021f3014) != 0) {
-        func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, 1) * 0x2C) + (s32) &gUnitViews);
+    if (IsBattleScreenSwapped(&data_ov002_021f3014) != 0) {
+        func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, VERSUS_DATA_COUNTRY) * 0x2C) + (s32) &gUnitViews);
     } else {
-        if (M2C_FIELD(&gPlayerSettings, u8 *, 1) == 0) {
-            var_r2 = 1;
+        if (M2C_FIELD(&gPlayerSettings, u8 *, VERSUS_DATA_COUNTRY) == 0) {
+            otherCountry = 1;
         } else {
-            var_r2 = 0;
+            otherCountry = 0;
         }
-        func_ov002_021e8984((var_r2 * 0x2C) + (s32) &gUnitViews);
+        func_ov002_021e8984((otherCountry * 0x2C) + (s32) &gUnitViews);
     }
     func_02086ec8();
 }

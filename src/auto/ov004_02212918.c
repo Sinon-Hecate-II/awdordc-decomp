@@ -84,13 +84,29 @@ s32 func_ov004_0221313c(void) {
  return 0;
 }
 
-s32 func_ov004_022131b0(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- u32 bits; s32 i; u8 *p; s32 end;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=90U)return 1; i++; p+=14;}while(i<end);}
- return 0;
+/* Battle-script condition: true while player 1 has a unit at 90 HP or below,
+ * i.e. one of its units has been damaged.  (The same check as
+ * IsPlayerOneUnitWounded; the mission script lists it under a second id.) */
+s32 IsPlayerOneUnitUnder90Hp(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    u32 kind;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+
+    unitId = gPlayerUnitIdBase[1] + 1;
+    endId = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kind = (u32)(*unit << 26) >> 26;
+            if (kind && ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25) <= 90U) return 1;
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    return 0;
 }
 
 s32 func_ov004_0221322c(void) {
@@ -267,13 +283,28 @@ if((value&0x1f)==0x11)return 1;
 return 0;
 }
 
-s32 func_ov004_022136c0(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- u32 bits; s32 i; u8 *p; s32 end;
- i=gPlayerUnitIdBase[1]+1; end=gPlayerUnitIdBase[1]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {bits=(u32)(*p<<26)>>26; if(bits&&((u32)(M2C_FIELD(p,u16 *,6)<<25)>>25)<=90U)return 1; i++; p+=14;}while(i<end);}
- return 0;
+/* Mission condition: true while player 1 has a unit at 90 HP or below, i.e. one
+ * of its units has been damaged. */
+s32 IsPlayerOneUnitWounded(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    u32 kind;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+
+    unitId = gPlayerUnitIdBase[1] + 1;
+    endId = gPlayerUnitIdBase[1] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kind = (u32)(*unit << 26) >> 26;
+            if (kind && ((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25) <= 90U) return 1;
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    return 0;
 }
 
 s32 func_ov004_0221373c(void) {

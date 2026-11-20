@@ -442,7 +442,7 @@ void func_0208f9d0(void *a){
  PlaySoundEffect(M2C_FIELD(a,s32*,0x5c));
 }
 
-void func_0208fa00(s32 a,s32 b){
+void StartLoopingSoundEffect(s32 a,s32 b){
  void *CreateSpriteFromClass(M2C_UNK*,M2C_UNK);
  extern M2C_UNK data_02102914;
  void *p=CreateSpriteFromClass(&data_02102914,7);

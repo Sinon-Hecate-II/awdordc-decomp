@@ -63,7 +63,7 @@ s32 gpiProcessSearches(void **connection) {
  * and the message framing around message (an empty one by default).  Returns 0
  * on success or the first send error. */
 s32 gpiSendTransferReply(void **gpi, s32 *values, void *peer, s32 result, void *message) {
-    s32 gpiSendTransferHeader(void **, void *, s32, s32 *);
+    s32 gpiPeerStartTransferMessage(void **, void *, s32, s32 *);
     s32 gpiSendString(void **, void *, void *);
     s32 gpiSendFramedMessage(void **, void *, void *, s32);
     void StringFormat(void *, void *, s32, s32);
@@ -71,7 +71,7 @@ s32 gpiSendTransferReply(void **gpi, s32 *values, void *peer, s32 result, void *
     u8 buf[32];
     s32 error;
     if (!message) message = &gGpiEmptyMessage;
-    error = gpiSendTransferHeader(gpi, peer, GPI_MSG_XFER_REPLY, values);
+    error = gpiPeerStartTransferMessage(gpi, peer, GPI_MSG_XFER_REPLY, values);
     if (error) return error;
     StringFormat(buf, &gGpiVersionResultFormat, GPI_PROTOCOL_VERSION, result);
     error = gpiSendString(gpi, peer, buf);
@@ -420,23 +420,35 @@ M2C_UNK *BucketDoubleValue(s32 arg0, s32 arg1) {
     return &data_0213dcd8;
 }
 
-s8 *func_02058ae8(s8 *p) {
+s8 *ConvertBackslashesToSlashes(s8 *p) {
 s8 *q=p;s32 c=*p;
 if(c){do{if(c==92)*p=47;c=*++p;}while(c);}
 return q;
 }
 
-s32 BucketSetValue(void *p,void *q) {
-void gpiFree(void *);s32 gpiStringDup(s32);s8 *func_02058ae8(s8 *);void *BucketValue(void *);
-s32 t=M2C_FIELD(p,s32 *,4);void *r;
-if(t==0)M2C_FIELD(p,s32 *,12)=M2C_FIELD(q,s32 *,0);
-else if(t==1){M2C_FIELD(p,double *,12)=M2C_FIELD(q,double *,0);}
-else if(t==2){
-r=M2C_FIELD(p,void **,12);if(r)gpiFree(r);
-if(!q)r=0;else r=func_02058ae8((s8 *)gpiStringDup((s32)q));
-M2C_FIELD(p,void **,12)=r;
-}
-return (s32)BucketValue(p);
+/* gbucket.c BucketSetValue: store `value` in bucket entry `entry`, by the
+ * entry's value type (integer, double, or owned string copy that has its
+ * backslashes turned into slashes); returns the entry's value. */
+s32 BucketSetValue(void *entry, void *value) {
+    void gpiFree(void *);
+    s32 gpiStringDup(s32);
+    s8 *ConvertBackslashesToSlashes(s8 *);
+    void *BucketValue(void *);
+    s32 type = M2C_FIELD(entry, s32 *, GPI_BUCKET_TYPE);
+    void *stored;
+
+    if (type == GPI_BUCKET_INT) {
+        M2C_FIELD(entry, s32 *, GPI_BUCKET_VALUE) = M2C_FIELD(value, s32 *, 0);
+    } else if (type == GPI_BUCKET_DOUBLE) {
+        M2C_FIELD(entry, double *, GPI_BUCKET_VALUE) = M2C_FIELD(value, double *, 0);
+    } else if (type == GPI_BUCKET_STRING) {
+        stored = M2C_FIELD(entry, void **, GPI_BUCKET_VALUE);
+        if (stored) gpiFree(stored);
+        if (!value) stored = 0;
+        else stored = ConvertBackslashesToSlashes((s8 *)gpiStringDup((s32)value));
+        M2C_FIELD(entry, void **, GPI_BUCKET_VALUE) = stored;
+    }
+    return (s32)BucketValue(entry);
 }
 
 void *BucketValue(void *arg0) {

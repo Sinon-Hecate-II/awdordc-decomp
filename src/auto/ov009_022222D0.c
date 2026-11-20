@@ -49,21 +49,23 @@ static inline void ov009CallRange(u8 *first,s32 size,Ov009CallbackFn fn) {
 #pragma cplusplus off
 
 
-void func_ov009_022222d0(s32 arg0) {
+/* Sends the local player's player-info reply to one peer channel: link message 15,
+ * the 12-byte player record (when one is present) followed by the local player's
+ * NUL-padded name. */
+void SendLinkPlayerInfo(s32 channel) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32, void *, s32);
     s32 GetLocalPlayerName();
     s32 GetLocalPlayerNameLength();
     s32 CopyLocalPlayerRecord(void *);
     M2C_UNK QueueHostLinkPacket(M2C_UNK, void *, M2C_UNK, s32);
-    u8 spC[0x1C];
-    u8 sp0[0xC];
-    s32 temp_r4;
-    if (CopyLocalPlayerRecord(sp0) == 0) return;
-    MI_CpuFill8(spC,0,0x1A);
-    temp_r4=GetLocalPlayerName();
-    MI_CpuCopy8(temp_r4,spC,GetLocalPlayerNameLength()*2);
-    QueueHostLinkPacket(0xF,sp0,0x28,(u16)(1<<arg0));
+    u8 packet[LINK_PLAYER_INFO_SIZE];
+    void *name;
+    if (CopyLocalPlayerRecord(packet) == 0) return;
+    MI_CpuFill8(packet + LINK_PLAYER_NAME_OFFSET, 0, LINK_PLAYER_NAME_SIZE);
+    name = (void *)GetLocalPlayerName();
+    MI_CpuCopy8((s32)name, packet + LINK_PLAYER_NAME_OFFSET, GetLocalPlayerNameLength() * 2);
+    QueueHostLinkPacket(LINK_MSG_PLAYER_INFO_REPLY, packet, LINK_PLAYER_INFO_SIZE, (u16)(1 << channel));
 }
 
 #pragma scheduling off

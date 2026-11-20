@@ -729,6 +729,17 @@ typedef struct Ov000InfoMenu {
     s8 animFrame;        /* +0x1A: cursor blink timer, -1 = not blinking */
     s32 language;        /* +0x1C: LANGUAGE_* the window was created with; picks its frame graphics */
 } Ov000InfoMenu;
+
+/* The ov000 unit-statistics window, allocated by Ov000_StatsWindow_Create and
+ * drawn on the sub engine; it owns the unit panel descriptor at +0x10. */
+typedef struct Ov000StatsWindow {
+    s32 toggle;      /* +0x00 alternates each redraw, copied to the info panel */
+    s32 drawMode;    /* +0x04 0 idle, 1/2 a full redraw was requested */
+    s32 blinkFrame;  /* +0x08 blink counter, 0..79 */
+    s8  unk0C;       /* +0x0C */
+    u8  pad0D[3];
+    void *panel;     /* +0x10 0x104-byte unit panel descriptor */
+} Ov000StatsWindow; /* 0x14 bytes */
 #endif
 
 /* Current key input state; the global gKeyState points at one of these. */
@@ -1118,6 +1129,18 @@ typedef struct GpiStringListData {
 #define GPI_STATE_LOGGED_IN    3 /* the login reply was handled; commands may flow */
 #define GPI_STATE_DISCONNECTED 4
 
+/* A gpi connection's sockets.  The server socket carries the GameSpy
+ * connection to the connection manager; the local socket is bound to an
+ * ephemeral port for NAT negotiation and only exists when the connection runs
+ * without a firewall (GPI_CONN_FIREWALL 0). */
+#define GPI_CONN_FIREWALL     0x10C /* s32 firewall mode: 0 no firewall (a local socket is bound), 1 normal */
+#define GPI_CONN_SOCKET       0x1D4 /* s32 server socket, -1 until it is created */
+#define GPI_CONN_LOCAL_SOCKET 0x204 /* s32 local socket, -1 when unused */
+#define GPI_CONN_LOCAL_PORT   0x208 /* u16 port the local socket was bound to, 0 when unused */
+
+/* Port of the GameSpy connection manager, in network byte order (29900). */
+#define GPI_MASTER_PORT 0xCC74
+
 /* State gpiCheckConnectionSocket leaves in its argument for a connection's
  * socket: no activity this poll, the connection accepted, or refused. */
 #define GPI_SOCKET_NONE     0
@@ -1283,6 +1306,10 @@ enum {
  * cannot free the browser, so it asks the think loop to (BROWSER_FREE). */
 #define CONN_MGR_BROWSER_FREE  0x14 /* s32 nonzero to have the think loop free the server browser */
 #define CONN_MGR_BROWSER_DEPTH 0x18 /* s32 server-browser callback nesting depth */
+#define CONN_MGR_PLAYER_LIST   0x00 /* void *heap copy of the player list of the match being joined */
+#define CONN_MGR_MATCH_MESSAGE 0x08 /* void *heap copy of the matchmaking message a host sends */
+#define CONN_MGR_MATCH_STARTED 0x1C /* u8 nonzero once a match session has been started */
+#define CONN_MGR_MATCH_FINISHED 0x1D /* u8 nonzero once that match session has finished */
 
 /* The in-flight peer-connect record at GetConnection()+0x194 (0xC bytes): what
  * the socket connect is for and how often it has been retried.  Its last word
@@ -1818,7 +1845,7 @@ enum {
 /* The local player's profile save block (the object main_020C3D34's
  * func_020c4acc returns): the save magic, a 0x40-byte profile-id block and then
  * the profile's own fields. */
-#define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (func_020321ac) */
+#define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (InitProfileIdBlock) */
 #define PROFILE_ID_BLOCK_SIZE 0x40
 #define PROFILE_ID_BLOCK_GAME_ID 0x24 /* u32 game id (0x5957324A, "YW2J"): salt of player codes and key type in their text form */
 #define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
@@ -2758,6 +2785,7 @@ typedef struct LinkConfig {
 } LinkConfig;       /* 0x18 bytes */
 
 /* Header of a voice-chat link packet (magic 0x5F564354). */
+#define VOICE_LINK_PACKET_SIZE 0x10 /* bytes in every voice-link packet and in its header */
 typedef struct VoiceLinkPacket {
     u32 magic;      /* +0x00: 0x5F564354 */
     u8  kind;       /* +0x04: packet kind, 0/0xFF are control packets */
@@ -2784,6 +2812,11 @@ typedef struct VoiceLinkReply {
  * at, with the metrics and the section lists the glyph lookups walk. */
 #define OV001_TEXT_ALIGN_CENTER 0x400 /* DrawTextMultiline: centre each line in the block width */
 #define OV001_TEXT_ALIGN_RIGHT  0x800 /* DrawTextMultiline: right-align each line in the block width */
+
+/* Text control codes a text-panel string carries: a line ends at 13, or at 10
+ * when the line has no 13 (FindTextControlCode steps over every code below 32). */
+#define TEXT_CODE_LINE_END     13
+#define TEXT_CODE_LINE_END_ALT 10
 
 /* A measured text line or text block, in pixels. */
 typedef struct Ov001TextSize {
@@ -3146,6 +3179,7 @@ typedef struct FifoMessage {
 #define ARM7_CMD_VALUE_PTR 0x24 /* s32 *: where the reply to command 0x67 is stored */
 #define ARM7_CMD_DONE_NOTIFY 0x04 /* s32: nonzero once the ARM7 answered command 0x60 */
 #define ARM7_CMD_DONE_SLEEP  0x08 /* s32: nonzero once the ARM7 answered command 0x62 */
+#define ARM7_POWER_INVALID   0xFFFF /* Arm7SetBacklight/SendPowerCommand: no matching power state */
 
 /* The FIFO block-transfer state (gFifoBlockTransfer) of the save/profile upload in
  * main_02045D94: the reply to the last FIFO command, whether it arrived, and the
@@ -3269,6 +3303,32 @@ enum {
     OV001_SCROLLBAR_PART_TRACK  = 4  /* the track itself, page by a touch */
 };
 
+/* The generic scroll bar (ScrollBar_*, main_020A94FC): the touchable track, the
+ * scroll value with its range, and the draggable thumb object it owns at +0x1C. */
+#define SCROLLBAR_FLAGS    0x05 /* u8 nonzero while the bar accepts touch */
+#define SCROLLBAR_DRAGGING 0x06 /* u8 nonzero while the thumb is grabbed */
+#define SCROLLBAR_X        0x08 /* s16 x of the track the thumb slides along */
+#define SCROLLBAR_Y        0x0A /* s16 y of the track */
+#define SCROLLBAR_TOUCH_W  0x0C /* u8 width of the track's touch rectangle */
+#define SCROLLBAR_TOUCH_H  0x0D /* u8 height of the track's touch rectangle */
+#define SCROLLBAR_VALUE    0x12 /* s16 current scroll value */
+#define SCROLLBAR_MIN      0x14 /* s16 lowest scroll value */
+#define SCROLLBAR_MAX      0x16 /* s16 highest scroll value */
+#define SCROLLBAR_THUMB    0x1C /* void * the draggable thumb (SCROLLTHUMB_*) */
+
+/* The thumb of a scroll bar (ScrollBar_PlaceThumb): its clamped position, the
+ * offsets from the track start, its touch box and the bounds it clamps to. */
+#define SCROLLTHUMB_X       0x08 /* s16 thumb x, clamped into [MIN_X,MAX_X] */
+#define SCROLLTHUMB_Y       0x0A /* s16 thumb y, clamped into [MIN_Y,MAX_Y] */
+#define SCROLLTHUMB_DX      0x0C /* s16 thumb x minus the track start (MIN_X) */
+#define SCROLLTHUMB_DY      0x0E /* s16 thumb y minus the track start (MIN_Y) */
+#define SCROLLTHUMB_TOUCH_W 0x10 /* u8 touch box width */
+#define SCROLLTHUMB_TOUCH_H 0x11 /* u8 touch box height */
+#define SCROLLTHUMB_MIN_X   0x12 /* s16 leftmost thumb x */
+#define SCROLLTHUMB_MAX_X   0x14 /* s16 rightmost thumb x */
+#define SCROLLTHUMB_MIN_Y   0x16 /* s16 topmost thumb y */
+#define SCROLLTHUMB_MAX_Y   0x18 /* s16 bottommost thumb y */
+
 /* Stream locking shared by ReadFileData, GetFilePosition and SetFilePosition.
  * gStreamMutexes holds one GsiMutex per stream class; the running thread object
  * (gSocketManager+0x04) carries its id at +0x6C, which gStreamLockOwner records
@@ -3292,6 +3352,17 @@ enum {
     LANGUAGE_KOREAN  = 6  /* kor.bmg archive, kc_ font */
 };
 
+/* A localized text bank, an entry of gTextBankTable: the first text id the
+ * bank holds and the localized file it is loaded from.  The table ends with an
+ * entry whose file name is null.  gUiGraphicsBanks holds the loaded bank for
+ * each entry, and a text id's low 24 bits index the bank's offset table
+ * (LoadUiGraphicsBank loads a bank, GetLocalizedText looks a string up). */
+typedef struct LocalizedTextBank {
+    u32 firstTextId;  /* +0x00 lowest text id the bank holds */
+    const char *file; /* +0x04 localized file name of the bank, 0 at the end of the table */
+} LocalizedTextBank;
+#define TEXT_BANK_INDEX_MASK 0xFFFFFF /* low bits of a text id: index in the bank's offset table */
+
 /* One thread of the cooperative scheduler.  gThreadManager (a void * with
  * gSocketManager straight after it) holds the running thread at
  * THREAD_MANAGER_CURRENT and the ready list, kept in priority order and chained
@@ -3310,6 +3381,10 @@ typedef struct Thread {
 /* The timer object scheduled to wake a thread that is sleeping in
  * SleepMilliseconds; 0 when the thread is not sleeping on a timer. */
 #define THREAD_WAKE_TIMER 0xB0
+
+/* The thread queue holding the threads asleep in OS_JoinThread on this thread;
+ * TerminateThread wakes them all once the thread is finished. */
+#define THREAD_JOIN_QUEUE 0x9C
 
 /* An OS mutex (the OSMutex a sound or network task locks): the waiting-thread
  * queue the scheduler keeps at +0x00, the owning thread, and the owner's
@@ -3388,6 +3463,51 @@ enum {
 #define RTC_SECONDS_PER_DAY    86400
 #define RTC_SECONDS_SPAN       3155760000LL /* one RTC century, 100 * 365.25 days */
 #define RTC_SECONDS_LAST       3155759999LL /* last second the RTC can name */
+
+/* The RTC request state (gRtcState): one request is in flight at a time, and the
+ * FIFO reply handler (func_0200f0e4) fills the out records and calls the
+ * callback when the operation completes.  A request kind repeats 0 for a date
+ * read, 1 for a time read and 2 for a read of both. */
+#define RTC_STATE_READY        0x00 /* u16 nonzero once the FIFO handler is installed */
+#define RTC_STATE_BUSY         0x04 /* s32 1 while the request is being started or completed */
+#define RTC_STATE_CALLBACK     0x08 /* void (*)(s32 result, s32 callbackArg) run on completion */
+#define RTC_STATE_OUT0         0x0C /* s32 * first result record (the date) */
+#define RTC_STATE_OUT1         0x10 /* s32 * second result record (the time) */
+#define RTC_STATE_CALLBACK_ARG 0x14 /* s32 second argument passed to the callback */
+#define RTC_STATE_KIND         0x18 /* s32 operation the reply is decoded as */
+#define RTC_STATE_STEP         0x1C /* s32 step/retry flag of a multi-frame operation */
+#define RTC_STATE_HANDLER      0x20 /* void (*)(void) handler for a command-0x30 reply */
+#define RTC_STATE_RESULT       0x24 /* s32 result of the last completed request */
+
+/* One record of gDialogSequences, the eight dialog scripts the game can run at
+ * once.  While script is set the record is active: its command pointer walks a
+ * script of 16-byte commands (run through the dispatch table) and wait, when
+ * set, is called every frame until it clears the slot. */
+typedef struct DialogSequence {
+    void *script;   /* +0x00: script being run, 0 when the slot is free */
+    u8   *command;  /* +0x04: next 16-byte command of the script */
+    s32 (*wait)(struct DialogSequence *); /* +0x08: per-frame wait callback, 0 = none */
+    u16  delay;     /* +0x0C: frames the current command still waits */
+    u8   pad0E[2];
+    u8   pad10[8];
+} DialogSequence;
+#define DIALOG_SEQUENCE_COUNT 8
+
+/* The ARM7 sound driver's shared command-argument buffer (gSoundCommandBuffer,
+ * 640 bytes): two handshake counters the ARM9 polls, then 16 argument entries —
+ * each a 16-value s16 parameter array and a value word — and a final 16-value
+ * parameter array.  InitSoundCommandBuffer resets it. */
+#define SND_CMD_BUFFER_SIZE         640
+#define SND_CMD_BUFFER_COUNTER0     0x000 /* s32 handshake counter read by func_0200982c */
+#define SND_CMD_BUFFER_COUNTER1     0x004 /* s32 handshake counter read by func_02009800 */
+#define SND_CMD_BUFFER_UNK08        0x008 /* s16 */
+#define SND_CMD_BUFFER_UNK0A        0x00A /* s16 */
+#define SND_CMD_BUFFER_ENTRY_COUNT  16   /* argument entries */
+#define SND_CMD_BUFFER_ENTRY_STRIDE 0x024 /* bytes per entry */
+#define SND_CMD_BUFFER_ENTRY_PARAMS 0x020 /* s16 parameter array of an entry (16 values) */
+#define SND_CMD_BUFFER_ENTRY_VALUE  0x040 /* s32 value word of an entry */
+#define SND_CMD_BUFFER_PARAM_COUNT  16   /* s16 parameters per array */
+#define SND_CMD_BUFFER_TAIL_PARAMS  0x260 /* final s16 parameter array (16 values) */
 
 #endif
 

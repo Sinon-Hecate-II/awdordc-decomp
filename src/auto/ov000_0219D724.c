@@ -225,50 +225,56 @@ void func_ov000_0219dc40(void) {
  *gAiCommandState = 2;
 }
 
-void func_ov000_0219dc98(void) {
+/* AI turn phase for the general case: ask FindBestSelectableUnit for the best unit
+ * to act with, put its id on the AI unit list and install the action callback that
+ * carries the choice out. */
+void SelectBestAiUnit(void) {
     s8 FindBestSelectableUnit();
     extern s8 *gAiCommandState;
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
     extern M2C_UNK func_ov000_02181ba4;
-    s8 *temp_r3;
-    s8 temp_r0;
+    s8 *cursor;
+    s8 unitId;
 
     gAiUnitListCursor = &gAiUnitList;
-    temp_r0 = FindBestSelectableUnit();
-    if (temp_r0 != 0) {
-        temp_r3 = gAiUnitListCursor;
-        gAiUnitListCursor = temp_r3 + 1;
-        *temp_r3 = temp_r0;
+    unitId = FindBestSelectableUnit();
+    if (unitId != 0) {
+        cursor = gAiUnitListCursor;
+        gAiUnitListCursor = cursor + 1;
+        *cursor = unitId;
     }
-    *gAiUnitListCursor = 0;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
     gAiUnitListCursor = &gAiUnitList;
     gAiUnitAction = &func_ov000_02181ba4;
-    *gAiCommandState = 2;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219dd14(void) {
+/* AI turn phase starter for a CO power: put the unit the CO power belongs to
+ * alone into gAiUnitList (the list is empty when it is not ready) and install
+ * the CO-power action callback. */
+void SelectAiCoPowerUnit(void) {
     s8 GetCoPowerUnitId();
     extern s8 *gAiCommandState;
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_02181c10;
-    s8 *temp_r3;
-    s8 temp_r0;
+    extern M2C_UNK RunAiCoPowerAction;
+    s8 *cursor;
+    s8 unitId;
 
     gAiUnitListCursor = &gAiUnitList;
-    temp_r0 = GetCoPowerUnitId();
-    if (temp_r0 != 0) {
-        temp_r3 = gAiUnitListCursor;
-        gAiUnitListCursor = temp_r3 + 1;
-        *temp_r3 = temp_r0;
+    unitId = GetCoPowerUnitId();
+    if (unitId != 0) {
+        cursor = gAiUnitListCursor;
+        gAiUnitListCursor = cursor + 1;
+        *cursor = unitId;
     }
-    *gAiUnitListCursor = 0;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
     gAiUnitListCursor = &gAiUnitList;
-    gAiUnitAction = &func_ov000_02181c10;
-    *gAiCommandState = 2;
+    gAiUnitAction = &RunAiCoPowerAction;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
 void func_ov000_0219dd90(void) {

@@ -302,11 +302,11 @@ M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;SetMapListFlag(161,1);CreateSpriteFro
 void func_020cd544(s32 mapKind) {
     extern u16 gMapConfig;
     extern M2C_UNK data_0212b844;
-    s32 func_020bf054(s32, s32);
+    s32 GetSaveType(s32, s32);
     s32 IsUnitAvailable(s32);
     u8 kind;
     func_02088634();
-    kind = func_020bf054(0, mapKind);
+    kind = GetSaveType(0, mapKind);
     gMapConfig &= ~7;
     LoadSaveSlotProgress(mapKind);
     if (IsUnitAvailable(kind)) {

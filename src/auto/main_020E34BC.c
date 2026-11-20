@@ -735,27 +735,32 @@ void func_020e4208(void *arg0) {
     gOnlinePlayerCount = func_ov010_0222681c();
 }
 
-void func_020e4240(void *arg0) {
+/* Online player list refresh handler: when the server already told us how many
+ * players are online (gOnlinePlayerCount >= 0) there is nothing to ask for, so the
+ * list just keeps animating; otherwise ask the server for that total (web request
+ * kind 1, payload {byte length 12, flag 1, count 1, 0}) and animate the list when
+ * the request cannot be queued.  A queued request leaves the list waiting. */
+void RequestOnlinePlayerCount(void *list) {
     s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
     M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 gOnlinePlayerCount;
-    s32 sp[68];
+    s32 request[68];
 
     if (gOnlinePlayerCount >= 0) {
-        SetSpriteAnimation(arg0, 1);
+        SetSpriteAnimation(list, 1);
         return;
     }
 
-    sp[0] = 0xC;
-    sp[1] = 1;
-    sp[2] = 1;
-    sp[3] = 0;
+    request[0] = 0xC; /* payload length in bytes */
+    request[1] = 1;
+    request[2] = 1;
+    request[3] = 0;
 
-    if (SubmitWebGetRequest(1, 0, 0xFF, sp, arg0) != 0) {
+    if (SubmitWebGetRequest(1, 0, 0xFF, request, list) != 0) {
         return;
     }
 
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 void func_020e42bc(s32 arg0) {

@@ -279,16 +279,20 @@ s32 func_ov000_021a9c90(s32 x,s32 y) {
  return count;
 }
 
-u8 IsAllyUnitAtCell(u32 arg0,s32 arg1) {
- extern void **gCurrentMap;
- s32 IsUnitInSight(u16);
- void *base=*gCurrentMap;
- u32 index=arg0+M2C_FIELD(base+arg1*2,u16 *,0x3758);
- s32 id;
- if((u8)(M2C_FIELD(base+(index>>3),u8 *,0x5160)&(1<<(index&7)))==0)return 0;
- id=M2C_FIELD(base+index,u8 *,0);
- if(id!=0)return IsUnitInSight((u16)(id & 0xFFFF))!=0;
- return 0;
+/* Whether the cell (x, y) holds a unit of the current team that the player can
+ * see: the cell must be set in the first team's sight bitmap and hold a visible
+ * unit id, and IsUnitInSight then rules out a submerged submarine the player
+ * cannot spot. */
+u8 IsAllyUnitAtCell(u32 x, s32 y) {
+    extern void **gCurrentMap;
+    s32 IsUnitInSight(u16);
+    void *map = *gCurrentMap;
+    u32 cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    s32 unitId;
+    if ((u8)(M2C_FIELD(map + (cell >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (cell & 7))) == 0) return 0;
+    unitId = M2C_FIELD(map + cell, u8 *, MAP_CELL_VISIBLE_UNIT);
+    if (unitId != 0) return IsUnitInSight((u16)(unitId & 0xFFFF)) != 0;
+    return 0;
 }
 
 /* Score moving the selected unit onto tile (x, y): the cell's AI influence plus the

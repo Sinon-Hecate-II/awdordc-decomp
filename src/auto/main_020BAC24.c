@@ -8,7 +8,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void func_ov000_0219a064(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
+M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void func_020a8050(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 ClearCursorUnitCapture();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -39,7 +39,7 @@ if(unit->health && !(unit->flags&32)){
 tileIndex=unit->x+M2C_FIELD(map+unit->y*2,u16*,MAP_ROW_OFFSETS);
 if((u8)(M2C_FIELD(map+(tileIndex>>3),u8*,MAP_CELL_BITMAP)&(1<<(tileIndex&7))) && !(M2C_FIELD(map+M2C_FIELD(map,u16*,MAP_CURRENT_PLAYER)*140,u8*,0x67c3)&2))unit->flags|=128;
 }}
-func_ov000_0219a064();
+UpdateCursorUnitAiKnown();
 /* highlight the path the unit would walk to the cursor */
 RevealUnitsAroundCursor(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_Y),(u8*)*gCurrentMap+MAP_CURSOR_PATH);
 MarkPathThreatRange(M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_X),M2C_FIELD(*gCurrentMap,s16*,MAP_PATH_Y),(u8*)*gCurrentMap+MAP_CURSOR_PATH);
@@ -112,7 +112,7 @@ void func_020bb110(void) {
     void CreateBattleEffectPending(u8, u8, u8, u8, u8, u8);
     void func_020c32bc(s32);
     void func_0207ab24(s16, s16);
-    void func_020ca484(void);
+    void ScheduleBattleEndCheck(void);
     u8 *map;
     BattleMapUnitHead *unit;
     s32 capture, unitId;
@@ -205,7 +205,7 @@ storeCapture:
         func_0207ab24(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
                       M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
     }
-    func_020ca484();
+    ScheduleBattleEndCheck();
 }
 
 void func_020bb458(void) {

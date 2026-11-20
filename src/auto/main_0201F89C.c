@@ -52,29 +52,33 @@ s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
     return func_0201f318(sock, request);
 }
 
-s32 SocketListenTask(void *arg0) {
+/* Task half of SocketListen: bind the socket's receive port to its raw connection
+ * and start the transport listening, drop the connection's pending receive bytes,
+ * then report the peer endpoint back through the task's out-pointers and mark the
+ * socket's operation done, all under the connection mutex. */
+s32 SocketListenTask(void *task) {
     M2C_UNK LockMutex(s32);
     M2C_UNK UnlockMutex(void *);
     M2C_UNK SetConnectionEndpoint(u16, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d2b8();
     s32 func_0201d3e4(u16 *, M2C_UNK *);
-    M2C_UNK sp4;
-    u16 sp0;
-    s32 temp_r0;
-    void *temp_r4;
-    void *temp_r5;
+    M2C_UNK peerAddr;
+    u16 peerPort;
+    s32 result;
+    void *socket;
+    void *raw;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 4);
-    temp_r5 = M2C_FIELD(temp_r4, void **, 0x64);
-    LockMutex(temp_r5 + 0xE0);
-    SetConnectionEndpoint(M2C_FIELD(arg0, u16 *, 0x10), 0, 0);
+    socket = M2C_FIELD(task, void **, TASK_SOCKET);
+    raw = M2C_FIELD(socket, void **, SOCK_RAW);
+    LockMutex(raw + CONN_MUTEX);
+    SetConnectionEndpoint(M2C_FIELD(task, u16 *, LISTEN_TASK_LOCAL_PORT), 0, 0);
     func_0201d2b8();
-    M2C_FIELD(temp_r5, s32 *, 0xF8) = 0;
-    temp_r0 = func_0201d3e4(&sp0, &sp4);
-    *M2C_FIELD(arg0, u16 **, 0x14) = sp0;
-    *M2C_FIELD(arg0, s32 **, 0x18) = temp_r0;
-    M2C_FIELD(temp_r4, s16 *, 0x70) = (s16) (M2C_FIELD(temp_r4, s16 *, 0x70) | 4);
-    UnlockMutex(temp_r5 + 0xE0);
+    M2C_FIELD(raw, s32 *, CONN_RECV_PENDING) = 0;
+    result = func_0201d3e4(&peerPort, &peerAddr);
+    *M2C_FIELD(task, u16 **, LISTEN_TASK_PEER_PORT_PTR) = peerPort;
+    *M2C_FIELD(task, s32 **, LISTEN_TASK_PEER_ADDR_PTR) = result;
+    M2C_FIELD(socket, s16 *, SOCK_FLAGS) = (s16) (M2C_FIELD(socket, s16 *, SOCK_FLAGS) | SOCK_FLAG_DONE);
+    UnlockMutex(raw + CONN_MUTEX);
     return 0;
 }
 
@@ -527,103 +531,113 @@ s32 SocketQueueReceivedData(void *data, s16 len, void *sock) {
     return 1;
 }
 
-s32 func_02020478(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Send up to len bytes from buf to peerPort/peerAddr — or to the socket's own
+ * peer when both are 0 — taking the send connection's mutex around the call.
+ * A non-blocking call (SOCK_RECV_NONBLOCK, or a socket whose blocking mode was
+ * cleared) only try-locks the connection and fails with SOCK_WOULD_BLOCK when it
+ * is busy.  Returns the bytes sent, or SOCK_ERROR / SOCK_NOT_READY /
+ * SOCK_ABORTED when the network, the socket or its state is not usable. */
+s32 SocketSendTo(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 flags) {
+    s32 LockMutex();
+    s32 UnlockMutex();
+    s32 TryLockMutex();
     s32 SocketIsUnregistered();
-    s32 TryLockMutex(s32);
-    s32 func_0202058c(void *, s32, s32, s32, s32, s32);
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 var_ip;
-    s32 var_r1;
-    s32 var_r1_2;
-    s8 temp_r0;
+    s32 SocketSendLocked(void *, s32, s32, s32, s32, s32);
+    void *sendConn;
+    s32 sent;
+    s32 wait;
+    s32 ready;
+    s32 usable;
+    s8 state;
 
-    if (SocketIsUnregistered(arg0) != 0) {
-        return -28;
+    if (SocketIsUnregistered(sock) != 0) {
+        return SOCK_ERROR;
     }
-    var_r1 = 0;
-    if (arg0 != NULL) {
-        var_r1 = (M2C_FIELD(arg0, volatile s16 *, 0x70) & 1) != 0;
+    ready = 0;
+    if (sock != NULL) {
+        ready = (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_READY) != 0;
     }
-    if (var_r1 == 0) {
-        return -39;
+    if (ready == 0) {
+        return SOCK_NOT_READY;
     }
-    temp_r0 = M2C_FIELD(arg0, s8 *, 0x73);
-    var_r1_2 = 1;
-    if (temp_r0 != 0 && temp_r0 != 4) {
-        var_r1_2 = 0;
+    state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+    usable = 1;
+    if (state != SOCK_STATE_IDLE && state != SOCK_STATE_CONNECTED) {
+        usable = 0;
     }
-    if (var_r1_2 != 0) {
-        if (!(M2C_FIELD(arg0, volatile s16 *, 0x70) & 4) || (M2C_FIELD(arg0, volatile s16 *, 0x70) & 8)) {
-            return -56;
+    if (usable != 0) {
+        if (!(M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE) || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_ERROR)) {
+            return SOCK_ABORTED;
         }
     }
-    temp_r4 = (s32) M2C_FIELD(arg0, void **, 0x68);
-    if (arg5 & 4) {
+    sendConn = M2C_FIELD(sock, void **, SOCK_TX_CONN);
+    if (flags & SOCK_RECV_NONBLOCK) {
         goto nonblocking;
     }
-    if (M2C_FIELD(arg0, s8 *, 0x72) == 0) {
+    if (M2C_FIELD(sock, s8 *, SOCK_BLOCKING) == 0) {
 nonblocking:
-        if (TryLockMutex(temp_r4 + 0xE0) == 0) {
-            return -6;
+        if (TryLockMutex(sendConn + CONN_MUTEX) == 0) {
+            return SOCK_WOULD_BLOCK;
         }
-        var_ip = 0;
+        wait = 0;
     } else {
-        LockMutex(temp_r4 + 0xE0);
-        var_ip = 1;
+        LockMutex(sendConn + CONN_MUTEX);
+        wait = 1;
     }
-    temp_r5 = func_0202058c(arg0, arg1, arg2, arg3, arg4, var_ip);
-    UnlockMutex(temp_r4 + 0xE0);
-    return temp_r5;
+    sent = SocketSendLocked(sock, buf, len, peerPort, peerAddr, wait);
+    UnlockMutex(sendConn + CONN_MUTEX);
+    return sent;
 }
 
-s32 func_0202058c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+s32 SocketSendLocked(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 wait) {
     s32 SocketGetSendRingSpace(void *, s32, s32, s32 *, s32);
-    s32 func_02020738(void *, s32, s32, s32, s32, s32, s32);
-    s32 sp14;
-    s32 sp10;
-    s32 spC = arg3;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
-    s32 var_r5 = 0;
-    s32 var_r8 = arg2;
-    s32 var_r9 = arg1;
-    s32 var_r11;
+    s32 SocketQueueSend(void *, s32, s32, s32, s32, s32, s32);
+    s32 writePos;
+    s32 chunk;
+    s32 packetPort;
+    s32 packetBytes;
+    s32 streamBytes;
+    s32 available;
+    s32 sent;
+    s32 remaining;
+    s32 cursor;
+    s32 blocking;
 
-    temp_r0 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x10C), s32 *, 0x48);
-    if (M2C_FIELD(arg0, s8 *, 0x73) == 1) {
-        if (var_r8 > temp_r0 - 0x2A) {
-            return -0x23;
+    packetPort = peerPort;
+    cursor = buf;
+    remaining = len;
+    packetBytes = M2C_FIELD(M2C_FIELD(M2C_FIELD(sock, void **, SOCK_TX_CONN), void **, SEND_RING_OWNER), s32 *, SOCK_TX_SIZE);
+    sent = 0;
+    if (M2C_FIELD(sock, s8 *, SOCK_STATE) == SOCK_STATE_RECV_ONLY) {
+        if (remaining > packetBytes - SOCK_TX_HDR_DGRAM) {
+            return SOCK_MESSAGE_TOO_LONG;
         }
-        sp10 = var_r8;
+        chunk = remaining;
     } else {
-        temp_r0_2 = temp_r0 - 0x36;
-        sp10 = temp_r0_2;
-        if (var_r8 <= temp_r0_2) {
-            sp10 = var_r8;
+        streamBytes = packetBytes - SOCK_TX_HDR_STREAM;
+        chunk = streamBytes;
+        if (remaining <= streamBytes) {
+            chunk = remaining;
         }
     }
-    if (var_r8 > 0) {
-        var_r11 = arg5 & 1;
+    if (remaining > 0) {
+        blocking = wait & 1;
         do {
-            temp_r0_3 = SocketGetSendRingSpace(arg0, var_r8, sp10, &sp14, arg5);
-            if (temp_r0_3 > 0) {
-                if (func_02020738(arg0, var_r9, temp_r0_3, sp14, spC, arg4, arg5) <= 0) {
-                    return -6;
+            available = SocketGetSendRingSpace(sock, remaining, chunk, &writePos, wait);
+            if (available > 0) {
+                if (SocketQueueSend(sock, cursor, available, writePos, packetPort, peerAddr, wait) <= 0) {
+                    return SOCK_WOULD_BLOCK;
                 }
-                var_r9 += temp_r0_3;
-                var_r8 -= temp_r0_3;
-                var_r5 += temp_r0_3;
+                cursor += available;
+                remaining -= available;
+                sent += available;
             }
-            if (var_r11 == 0) {
-                if (temp_r0_3 <= 0) {
-                    return -6;
-                }
+            if (blocking == 0 && available <= 0) {
+                return SOCK_WOULD_BLOCK;
             }
-        } while (var_r8 > 0);
+        } while (remaining > 0);
     }
-    return var_r5;
+    return sent;
 }
 
 #pragma dont_inline reset

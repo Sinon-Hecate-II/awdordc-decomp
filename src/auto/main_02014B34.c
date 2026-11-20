@@ -62,7 +62,7 @@ void Mb_LoadBlockTask(void *arg0) {
 #pragma opt_common_subs off
 s32 func_02014d6c(void) {
     extern void *gMbWork;
-    void func_02015188(s32);
+    void AdvanceGroupChunkCursor(s32);
     s32 Mb_GetChunkTransfer(void *,void *,u16,void *);
     s32 SerializeCommand(s8 *,void *);
     s32 Mb_CopyImageRange(void *,u32,s32,u32);
@@ -99,7 +99,7 @@ s32 func_02014d6c(void) {
         if (M2C_FIELD(loopEntry,u8 *,0x1d52) && M2C_FIELD(loopEntry,u16 *,0x1d4c)) break;
     }
     if (tries==16) return 21;
-    func_02015188(candidate);
+    AdvanceGroupChunkCursor(candidate);
     base=gMbWork;
     i=M2C_FIELD(base,u8 *,0x1525);
     if (!Mb_GetChunkTransfer(output,base+0x1d2c+i*0x5d4,M2C_FIELD(base+i*0x5d4,u16 *,0x1d48),base+0x1788+i*0x5d4)) return 21;
@@ -169,16 +169,21 @@ else result=func_02014d6c();
 if(result==21)func_02014af4(0,0xffff);
 }
 
-void func_02015188(s32 arg0) {
+/* Move group `group`'s outgoing chunk cursor on towards the chunk its members
+ * asked for: one step on while that chunk is at most two ahead, otherwise
+ * straight to it.  Does nothing while no member of the group waits for a chunk
+ * (the group record's active flag, cursor, goal and pending-member mask live at
+ * MB_GROUPS + MB_GROUP_ACTIVE / CHUNK_CURSOR / CHUNK_GOAL / 0x5C4). */
+void AdvanceGroupChunkCursor(s32 group) {
  extern s32 gGroupChunkPendingMask;
     extern void *gMbWork;
- u16 a,b; void *base;
- if(!(gGroupChunkPendingMask & (1<<arg0)))return;
- base=(void *)(arg0*0x5d4+gMbWork);
- if(M2C_FIELD(base,u8 *,0x1d52)!=0 && M2C_FIELD(base,u16 *,0x1d4c)!=0){
- a=M2C_FIELD(base+0x1d00,u16 *,0x48); b=M2C_FIELD(base,u16 *,0x1d4a);
- if((u32)b<=(u32)a && (s32)a<=b+2){M2C_FIELD(base+0x1d00,u16 *,0x48)=a+1;return;}
- M2C_FIELD(base+0x1d00,u16 *,0x48)=b;
+ u16 cursor,goal; void *record;
+ if(!(gGroupChunkPendingMask & (1<<group)))return;
+ record=(void *)(group*0x5d4+gMbWork);
+ if(M2C_FIELD(record,u8 *,0x1d52)!=0 && M2C_FIELD(record,u16 *,0x1d4c)!=0){
+ cursor=M2C_FIELD(record+0x1d00,u16 *,0x48); goal=M2C_FIELD(record,u16 *,0x1d4a);
+ if((u32)goal<=(u32)cursor && (s32)cursor<=goal+2){M2C_FIELD(record+0x1d00,u16 *,0x48)=cursor+1;return;}
+ M2C_FIELD(record+0x1d00,u16 *,0x48)=goal;
  }
 }
 

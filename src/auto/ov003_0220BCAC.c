@@ -101,11 +101,11 @@ void func_ov003_0220bf70(void) {
 }
 
 void func_ov003_0220bf98(void *a) {
-M2C_UNK UpdateSpriteAnimation(s32);M2C_UNK func_ov003_022084f0(void *);
+M2C_UNK UpdateSpriteAnimation(s32);M2C_UNK StepMapSelectAnimations(void *);
 s32 offset,flag,i;
 UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x54));
 flag=M2C_FIELD(a,u8 *,0x34)!=0;
-if((u8)flag){func_ov003_022084f0(a);return;}
+if((u8)flag){StepMapSelectAnimations(a);return;}
 UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x50));
 i=0;if((s32)*M2C_FIELD(a,u8 **,0x44)<=0)return;
 offset=0;do {

@@ -27,6 +27,7 @@ typedef struct SpriteCell {
 /* Cells a touch left current: the list points at the cell it is on, and keeps
  * the tile id of the cell the touch last hit (-1 when there is none). */
 #define SPRITE_CELL_LIST_CURRENT  0x00 /* SpriteCell * cell the list is on */
+#define SPRITE_CELL_LIST_PREVIOUS 0x04 /* void *cell the list was on before SPRITE_CELL_LIST_CURRENT */
 #define SPRITE_CELL_LIST_HIT_ID   0x0C /* s8 tile id of the cell the touch last hit, -1 = none */
 
 /* Fields the widget that owns the list adds: the box a touch must fall in for

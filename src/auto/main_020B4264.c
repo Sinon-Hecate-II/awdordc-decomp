@@ -290,7 +290,7 @@ void func_020b4b34(void) {
     func_0208f8d8();
 }
 
-void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 func_020bf084(u8);s32 func_020bf0dc(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!func_020bf084(v)){func_020bf0dc(0,v);func_020e4870();}func_020b4a44(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
+void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 SaveTypeHasNoSlot(u8);s32 GetSaveSlot(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!SaveTypeHasNoSlot(v)){GetSaveSlot(0,v);func_020e4870();}func_020b4a44(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {
@@ -307,16 +307,16 @@ void func_020b4bcc(s32 arg0, M2C_UNK arg1){extern u8 gBattleEndState;extern M2C_
  * remember the saved-battle slot the record belongs to (types 5..7; type 8 has
  * no slot), then rebuild the map's AI state, player teams and view. */
 void ResumeSavedBattle(u8 saveType) {
-    s32 func_020bf084(u8);
-    s32 func_020bf0dc(s32, u8);
+    s32 SaveTypeHasNoSlot(u8);
+    s32 GetSaveSlot(s32, u8);
     extern M2C_UNK data_0215d9b8;
     extern void *gCurrentMap;
     void (*callback)(void);
 
     LoadNewestSaveRecord(saveType, GetSaveRecordBuffer());
     RestoreBattleFromRecord(GetSaveRecordBuffer());
-    if (!func_020bf084(saveType)) {
-        M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x70) | ((u32) ((u16) func_020bf0dc(0, saveType) << 29) >> 25);
+    if (!SaveTypeHasNoSlot(saveType)) {
+        M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x70) | ((u32) ((u16) GetSaveSlot(0, saveType) << 29) >> 25);
     }
     func_020cfd14();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x50);
@@ -328,7 +328,7 @@ void ResumeSavedBattle(u8 saveType) {
 
 void func_020b4ca0(void) {
     s32 IsUnitAvailable();
-    func_020befd8();
+    GetCurrentSaveType();
     if (IsUnitAvailable() == 0) {
         SetUiMessageText(0xC000032D);
         return;
@@ -340,7 +340,7 @@ void func_020b4cd4(M2C_UNK arg0) {
     
     s32 temp_r0;
 
-    temp_r0 = func_020befd8();
+    temp_r0 = GetCurrentSaveType();
     if (temp_r0 == 0) {
         return;
     }
@@ -354,9 +354,9 @@ void func_020b4cf4(void) {
 }
 
 void func_020b4d0c(void) {
-    s32 func_020befd8();
+    s32 GetCurrentSaveType();
     M2C_UNK func_020d4ac8();
-    if (func_020befd8() == 0) {
+    if (GetCurrentSaveType() == 0) {
         return;
     }
     func_020d4ac8();
@@ -374,7 +374,7 @@ void func_020b4d3c(void *arg0) {
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    func_020bf054(0, temp_r4);
+    GetSaveType(0, temp_r4);
     StartBattleRecord();
     gSaveSlotSummary = (gSaveSlotSummary & ~0xF) | (temp_r4 & 0xF);
     func_020e4870(temp_r4);
@@ -398,13 +398,13 @@ void func_020b4db0(s32 arg0) {
 
 void func_020b4dcc(void *arg0) {
     M2C_UNK StartBattleRecord();
-    M2C_UNK func_020bf054(M2C_UNK, s32);
+    M2C_UNK GetSaveType(M2C_UNK, s32);
     M2C_UNK func_020bf798();
     M2C_UNK func_020e4818(s32);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    func_020bf054(0, temp_r4);
+    GetSaveType(0, temp_r4);
     StartBattleRecord();
     func_020e4818(temp_r4);
     func_020bf798();
@@ -499,7 +499,7 @@ s32 CreateAnimatedMapSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, 
     return temp_r0;
 }
 
-s32 func_020b5188(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
+s32 CreateEffectMapSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
     s32 func_0208c54c(s32);
     s32 temp_r0;
 

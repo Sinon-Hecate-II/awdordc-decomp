@@ -352,7 +352,7 @@ void func_ov010_0222a2b4(void *arg0) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void func_0208af20(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
 func_ov010_0222bc54((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
@@ -365,7 +365,7 @@ switch(M2C_FIELD(a,s32 *,0x40)){
 case 0:case 1:func_ov010_0222a238();return;
 case 2:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
-if(FindTextLayer())func_0208af20();
+if(FindTextLayer())StartWindowClose();
 if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
@@ -379,7 +379,7 @@ gCur3DSpriteEngine=old;func_ov010_0222a238();return;
 }
 case 3:case 4:case 5:case 6:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
-if(FindTextLayer())func_0208af20();
+if(FindTextLayer())StartWindowClose();
 if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
@@ -393,7 +393,7 @@ gCur3DSpriteEngine=old;func_ov010_0222a278();return;
 }
 case 7:{
 s32 old;void *text;s32 i;u32 current;s8 mode;void *p;
-if(FindTextLayer())func_0208af20();
+if(FindTextLayer())StartWindowClose();
 if(((UnkA750Bits *)((u8 *)a+0x44))->flag)text=M2C_FIELD(a,void **,0x4c);else text=(u8 *)a+0x45;
 old=gCur3DSpriteEngine;i=0;do{
 if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;

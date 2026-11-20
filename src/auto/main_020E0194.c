@@ -7,7 +7,7 @@ typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
 s32 IsLinkSessionActive(void);s32 func_0208477c(void);s32 GetOverlayEventFlags(void);
-s32 FindTextLayer(void); M2C_UNK func_0208af20(void);void *CreateTextLayer(void *);
+s32 FindTextLayer(void); M2C_UNK StartWindowClose(void);void *CreateTextLayer(void *);
 M2C_UNK RenderTextLayerMessage(void *,s32,s32,s32);
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
@@ -15,7 +15,7 @@ if(!IsLinkSessionActive())return 0;
 if(func_0208477c())return 0;
 if(GetOverlayEventFlags()){
 M2C_FIELD(entity,u16 *,0x48)|=0x1000;
-if(FindTextLayer())func_0208af20();
+if(FindTextLayer())StartWindowClose();
 saved=gCur3DSpriteEngine;i=0;
 do{
 if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
@@ -69,17 +69,18 @@ M2C_UNK CloseLinkMenu(void *menu) {
     return start;
 }
 
-M2C_UNK func_020e0230(void *arg0) { void *p;
- s16 v;
-void *q;
-u16 value;
- func_ov010_022294ec();func_ov010_02228c88(arg0);
- p=M2C_FIELD(arg0,void**,0x54);
- if(func_020e_check(p))Hide3DSpriteSlide(p);
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x58));
- if(Is3DSpriteVisible(M2C_FIELD(arg0,void**,0x60)))Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x60));
- Hide3DSpriteSlide(M2C_FIELD(arg0,void**,0x64));
- 
+/* Leave the online session, spawn its departure object and hide the menu's
+ * button and child sprites.  This is CloseOnlineMenu without the panel's
+ * slide-out tween, which the caller starts itself. */
+M2C_UNK HideOnlineMenuSprites(void *menu) {
+    void *button;
+
+    func_ov010_022294ec(); func_ov010_02228c88(menu);
+    button = M2C_FIELD(menu, void **, 0x54);
+    if (func_020e_check(button)) Hide3DSpriteSlide(button);
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x58));
+    if (Is3DSpriteVisible(M2C_FIELD(menu, void **, 0x60))) Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x60));
+    Hide3DSpriteSlide(M2C_FIELD(menu, void **, 0x64));
 }
 
 /* Closes the online session, hides the menu's button sprites and starts the menu
@@ -121,7 +122,7 @@ void func_020e0368(void) {
 }
 
 s32 IsMapConfirmEnabled();
-M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; func_020e0230(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
+M2C_UNK func_020e0374(void *arg0) { s16 v; void *q; u16 value; HideOnlineMenuSprites(arg0);  v=GetSpriteAnimValue(M2C_FIELD(arg0,void**,0x68));
  q=M2C_FIELD(arg0,void**,0x68);
  M2C_FIELD(q,s16*,0xe)=v;
  M2C_FIELD(q,s16*,0x10)=-255;
@@ -132,8 +133,8 @@ M2C_FIELD(q,u16*,2)=value;
 }
 
 void func_020e03ac(void) {
-    M2C_UNK func_020e0230();
-    func_020e0230();
+    M2C_UNK HideOnlineMenuSprites();
+    HideOnlineMenuSprites();
 }
 
 /* Hide an online menu's buttons and label and start its slide-out animation;
@@ -178,7 +179,7 @@ void func_020e0480(void) {
 void func_020e048c(void *entity) {
     M2C_UNK FillU16(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
-    M2C_UNK func_0208af20();
+    M2C_UNK StartWindowClose();
     void *func_0208b520(void *);
     s32 FindTextLayer();
     extern M2C_UNK data_02168f74;
@@ -188,7 +189,7 @@ void func_020e048c(void *entity) {
     register s32 i;
     u8 mode;
     int savedEntity;
-    if (FindTextLayer()) func_0208af20();
+    if (FindTextLayer()) StartWindowClose();
     i = 0;
     savedEntity = gCur3DSpriteEngine;
     do {
@@ -222,7 +223,7 @@ M2C_UNK func_020e0580(s32 arg0) {
    3D engine; if none differs, drop any leftover marker object. */
 void RefreshLinkPlayerSprites(void *entity) {
 s32 GetLocalPlayerIdForOverlay(); void EnableMapConfirm(); void DisableMapConfirm();
-s32 FindTextLayer(); M2C_UNK func_0208af20(); void *CreateTextLayer(void *);
+s32 FindTextLayer(); M2C_UNK StartWindowClose(); void *CreateTextLayer(void *);
 M2C_UNK RenderTextLayerMessage(void *,s32,s32,s32);
 extern u16 *gLinkPlayerMasks[];
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
@@ -231,7 +232,7 @@ playerMask=*gLinkPlayerMasks[GetLocalPlayerIdForOverlay()];
 EnableMapConfirm();
 for(player=0;player<4;player++){
 if((playerMask & (1<<player)) && playerMask != *gLinkPlayerMasks[player]){
-if(FindTextLayer())func_0208af20();
+if(FindTextLayer())StartWindowClose();
 savedEngine=gCur3DSpriteEngine;slot=0;
 do {
 if(slot==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
@@ -247,7 +248,7 @@ next: ++slot;
 }while(slot<2);
 gCur3DSpriteEngine=savedEngine;DisableMapConfirm();break;
 }}
-if(IsMapConfirmEnabled() && FindTextLayer())func_0208af20();
+if(IsMapConfirmEnabled() && FindTextLayer())StartWindowClose();
 }
 
 /* Build the voice-chat ("VCHT") option menu entity: load the menu's screen
@@ -381,7 +382,7 @@ void func_020e0af8(void) {
 /* Updates child objects and resumes the entity script when its primary child is ready or A is pressed. */
 void func_020e0b04(void *entity) {
     s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
-    s32 FindTextLayer(void); M2C_UNK func_0208af20(void); void *CreateTextLayer(void *);
+    s32 FindTextLayer(void); M2C_UNK StartWindowClose(void); void *CreateTextLayer(void *);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);
     void PlaySoundEffect(s32); void Sprite_ResumeAnimation(void *);

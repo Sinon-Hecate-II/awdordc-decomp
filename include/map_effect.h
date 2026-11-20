@@ -35,4 +35,33 @@ typedef struct MissileEffect {
     MapSprite *missile; /* +0x60 the flying missile sprite */
 } MissileEffect;
 
+
+/* An explosion effect: the effect task the battle map creates on a tile and the
+ * animated sprite it spawns for it.  The task keeps its tile at +0x38/+0x3C and
+ * its type at +0x5C; the spawned sprite carries the same type, a triggered flag,
+ * its per-frame callback and the trigger that plays the sound and map effect. */
+typedef struct ExplosionEffect {
+    u8  pad00[0x38];
+    s32 tileX;      /* +0x38 map tile x */
+    s32 tileY;      /* +0x3C map tile y */
+    s32 unk40;      /* +0x40 */
+    u32 flags;      /* +0x44 sprite control word (SpriteFlags; bits 24..25 are the easing curve) */
+    u8  pad48[0x10];
+    s32 triggered;  /* +0x58 nonzero once the effect has been triggered */
+    s32 type;       /* +0x5C explosion type (GetExplosionSpriteName) */
+    u8  pad60[0x0C];
+    void (*update)(void *);  /* +0x6C per-frame callback */
+    void (*trigger)(void *); /* +0x70 plays the explosion's sound and map effect once */
+} ExplosionEffect;
+
+/* A unit removal effect: an explosion plays on the unit's tile, then the unit is
+ * destroyed or simply removed from the map.  Fields from +0x34 are per effect. */
+typedef struct UnitRemoveEffect {
+    u8  pad00[0x58];
+    u32 done;       /* +0x58 nonzero once the effect has finished */
+    s32 type;       /* +0x5C explosion type (GetExplosionSpriteName) */
+    s32 destroy;    /* +0x60 nonzero: destroy the unit, 0: only remove it */
+    s32 unitIndex;  /* +0x64 index of the unit in the unit table */
+} UnitRemoveEffect;
+
 #endif

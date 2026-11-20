@@ -17,7 +17,7 @@ s32 gpiPeerBeginConnect(M2C_UNK connection, void *peer) {
     s32 ghiConnect(s32, UnkSocketAddress *, u8);
     s32 ghiGetLastSocketError(s32);
     void gpiCallErrorCallback(void *, s32, s32);
-    M2C_UNK func_02055124(s32);
+    M2C_UNK gpiSetSocketBuffers(s32);
     void gpiSetError(void **, s32, M2C_UNK);
     s32 gpiSetErrorString(M2C_UNK, M2C_UNK *);
     extern M2C_UNK gGpiErrorConnectPeer;
@@ -43,7 +43,7 @@ s32 gpiPeerBeginConnect(M2C_UNK connection, void *peer) {
         gpiCallErrorCallback(connection, 3, 0);
         return 3;
     }
-    func_02055124(M2C_FIELD(peer, s32 *, 0x8));
+    gpiSetSocketBuffers(M2C_FIELD(peer, s32 *, 0x8));
     InitSocketAddress(socketAddress);
     *((u8 *)socketAddress + 1) = 2;
     record = (s32 *)peerRecord;
@@ -84,16 +84,18 @@ Vector_AddItem(M2C_FIELD(peer,s32 *,0x38),buffer);
 M2C_FIELD(peer,s32 *,16)=gpiGetTime(0)+300;
 return 0;
 }
-void gpiSendTransferHeader(s32 arg0,s32 arg1,s32 arg2,s32 *arg3) {
+/* Send the gpi transfer-start header "\\m\\<type>\\xfer\\<id> <u> <u>",
+ * carrying the request type and its three values, and return the send result. */
+s32 gpiPeerStartTransferMessage(s32 connection, s32 peer, s32 type, s32 *values) {
 M2C_UNK gpiSendString(s32,s32,void *);
 M2C_UNK AssertFailed(void *,void *,void *,s32);
 M2C_UNK StringFormat(void *,void *,...);
-extern M2C_UNK data_020fed58,sGpiPeerSourceFile,data_020feae8,data_020fed64;
-u8 buf[64];s32 b,a,c;
-a=arg3[0];b=arg3[1];c=arg3[2];
-if(!arg3)AssertFailed(&data_020fed58,&sGpiPeerSourceFile,&data_020feae8,0x376);
-StringFormat(buf,&data_020fed64,arg2,a,b,c);
-gpiSendString(arg0,arg1,buf);
+extern M2C_UNK gGpiAssertTransferId,sGpiPeerSourceFile,gGpiPeerStartTransferMessageName,gGpiTransferHeaderFormat;
+u8 header[64];s32 second,first,third;
+first=values[0];second=values[1];third=values[2];
+if(!values)AssertFailed(&gGpiAssertTransferId,&sGpiPeerSourceFile,&gGpiPeerStartTransferMessageName,0x376);
+StringFormat(header,&gGpiTransferHeaderFormat,type,first,second,third);
+return gpiSendString(connection,peer,header);
 }
 
 /* Queues a gpi message to a peer: sends the "\len\<n>\msg\\n" header (the
@@ -130,32 +132,34 @@ s32 func_0205585c(s32 *arg0, s32 *arg1) {
     return *arg0 - *arg1;
 }
 
-void func_0205586c(void *arg0) {
+/* Release callback of the buddy table: free a GpiBuddyStatus record's presence
+ * details, cached profile info and owned strings, then clear their pointers. */
+void FreeGpiBuddyStatus(GpiBuddyStatus *status) {
     M2C_UNK gpiFree(void *);
     M2C_UNK gpiFreeInfo(void *);
-    void *temp_r0;
+    GpiBuddyStatusDetails *details;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 8);
-    if (temp_r0 != NULL) {
-        gpiFree(M2C_FIELD(temp_r0, void **, 8));
-        M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 8) = NULL;
-        gpiFree(M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 0xC));
-        M2C_FIELD(M2C_FIELD(arg0, void **, 8), void **, 0xC) = NULL;
-        gpiFree(M2C_FIELD(arg0, void **, 8));
-        M2C_FIELD(arg0, void **, 8) = NULL;
+    details = status->details;
+    if (details != NULL) {
+        gpiFree(details->statusString);
+        status->details->statusString = NULL;
+        gpiFree(status->details->locationString);
+        status->details->locationString = NULL;
+        gpiFree(status->details);
+        status->details = NULL;
     }
-    gpiFreeInfo(arg0);
-    gpiFree(M2C_FIELD(arg0, void **, 0x10));
-    M2C_FIELD(arg0, void **, 0x10) = NULL;
-    gpiFree(M2C_FIELD(arg0, void **, 0x18));
-    M2C_FIELD(arg0, void **, 0x18) = NULL;
+    gpiFreeInfo(status);
+    gpiFree(status->signature);
+    status->signature = NULL;
+    gpiFree(status->unk18);
+    status->unk18 = NULL;
 }
 
 s32 gpiCreateTimers(void **arg0) {
 s32 func_02048c5c();
 Unk020553C4 *p=*arg0;
 p->unk430=0;p->unk42c=0;
-p->handle=func_02048c5c(28,4,func_02055848,func_0205585c,func_0205586c);
+p->handle=func_02048c5c(28,4,func_02055848,func_0205585c,FreeGpiBuddyStatus);
 return p->handle!=0;
 }
 

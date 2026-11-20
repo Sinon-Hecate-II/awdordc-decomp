@@ -58,20 +58,22 @@ extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x27)-=1;
 }
 
-s32 SpriteSlotHitTest(void *arg0, s32 arg1, s32 arg2) {
+/* Is screen point (x, y) inside a sprite slot?  A slot flagged always-hit
+ * matches any point; otherwise the point must lie in the slot's rectangle. */
+s32 SpriteSlotHitTest(void *slot, s32 x, s32 y) {
     s32 SpriteSlotHasFlags(void *, M2C_UNK);
-    s16 temp_r1;
-    s16 temp_r1_2;
+    s16 left;
+    s16 top;
 
-    if (SpriteSlotHasFlags(arg0, 0x1000) != 0) {
+    if (SpriteSlotHasFlags(slot, SPRITE_SLOT_FLAG_ALWAYS_HIT) != 0) {
         return 1;
     }
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x14);
-    if ((arg1 < (s32) temp_r1) || ((s32) ((temp_r1 + M2C_FIELD(arg0, s16 *, 0x18)) - 1) < arg1)) {
+    left = M2C_FIELD(slot, s16 *, SPRITE_SLOT_X);
+    if ((x < (s32) left) || ((s32) ((left + M2C_FIELD(slot, s16 *, SPRITE_SLOT_W)) - 1) < x)) {
         return 0;
     }
-    temp_r1_2 = M2C_FIELD(arg0, s16 *, 0x16);
-    if ((arg2 < (s32) temp_r1_2) || ((s32) ((temp_r1_2 + M2C_FIELD(arg0, s16 *, 0x1A)) - 1) < arg2)) {
+    top = M2C_FIELD(slot, s16 *, SPRITE_SLOT_Y);
+    if ((y < (s32) top) || ((s32) ((top + M2C_FIELD(slot, s16 *, SPRITE_SLOT_H)) - 1) < y)) {
         return 0;
     }
     return 1;

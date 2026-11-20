@@ -425,7 +425,7 @@ void func_ov002_021e3dd4(void) {
     func_0209cd00(DrawBattleSpriteGrid);
 }
 
-s32 func_ov002_021e3e00(s32 *arg0) {
+s32 IsBattleScreenSwapped(s32 *arg0) {
     return *arg0 & 1;
 }
 

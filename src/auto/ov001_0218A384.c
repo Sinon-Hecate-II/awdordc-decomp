@@ -317,40 +317,45 @@ void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
 }
 
 #pragma opt_strength_reduction off
+/* Build the ov001 text context: allocate it, hand its 32 pooled text panels to a
+ * from-buffer queue and load the two bitmap font sets, choosing the Korean font
+ * file pair when the console language is Korean and the Latin pair otherwise. */
 void Ov001_CreateTextContext(void) {
     void *Ov001_Alloc(s32, M2C_UNK);
     void *Ov001_QueueCreateFromBuffer(s32, s32, s32);
     s32 Ov001_GetLanguage(void);
     s32 Ov001_LoadFile(M2C_UNK, M2C_UNK *, M2C_UNK);
-    void func_ov001_02169130(void *, M2C_UNK);
+    void Ov001_InitFontSet(void *, M2C_UNK);
     extern M2C_UNK gOv001TextContext;
     extern M2C_UNK gOv001KoreanFontFilePaths;
     extern M2C_UNK gOv001DefaultFontFilePaths;
-    M2C_UNK p;
+    M2C_UNK context;
 
-    p = (M2C_UNK)Ov001_Alloc(0x680, 4);
-    gOv001TextContext = p;
-    M2C_FIELD((void *)gOv001TextContext, void **, 0x670) = Ov001_QueueCreateFromBuffer(0x20, (s32)p + 0x10, 0x30);
+    context = (M2C_UNK)Ov001_Alloc(OV001_CTX_SIZE, 4);
+    gOv001TextContext = context;
+    M2C_FIELD((void *)gOv001TextContext, void **, OV001_CTX_PANEL_QUEUE) =
+        Ov001_QueueCreateFromBuffer(OV001_TEXT_PANEL_COUNT,
+            (s32)context + OV001_CTX_PANEL_BUFFER, OV001_TEXT_PANEL_SIZE);
 
-    if (Ov001_GetLanguage() == 6) {
+    if (Ov001_GetLanguage() == LANGUAGE_KOREAN) {
         s32 i;
-        s32 acc;
-        for (i = 0, acc = 0; i < 2; i++) {
-            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
+        s32 fontOffset;
+        for (i = 0, fontOffset = 0; i < 2; i++) {
+            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, OV001_CTX_FONT_FILES) =
                 (M2C_UNK)Ov001_LoadFile((&gOv001KoreanFontFilePaths)[i], 0, 4);
-            func_ov001_02169130((void *)gOv001TextContext + acc,
-                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
-            acc += 8;
+            Ov001_InitFontSet((void *)gOv001TextContext + fontOffset,
+                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, OV001_CTX_FONT_FILES));
+            fontOffset += 8;
         }
     } else {
-        s32 acc;
+        s32 fontOffset;
         s32 i;
-        for (i = 0, acc = 0; i < 2; i++) {
-            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674) =
+        for (i = 0, fontOffset = 0; i < 2; i++) {
+            M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, OV001_CTX_FONT_FILES) =
                 (M2C_UNK)Ov001_LoadFile((&gOv001DefaultFontFilePaths)[i], 0, 4);
-            func_ov001_02169130((void *)gOv001TextContext + acc,
-                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, 0x674));
-            acc += 8;
+            Ov001_InitFontSet((void *)gOv001TextContext + fontOffset,
+                M2C_FIELD((void *)gOv001TextContext + i * 4, M2C_UNK *, OV001_CTX_FONT_FILES));
+            fontOffset += 8;
         }
     }
 }

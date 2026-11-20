@@ -106,7 +106,7 @@ s32 func_ov000_02195b80(s16 *out) {
 }
 #pragma opt_strength_reduction reset
 
-void func_ov000_02195ea4(void) {
+void PlanAiStep4Destination(void) {
     s32 GetUnitAttackClass(u32);
     s32 func_ov000_02195b80(s16 *);
     s32 SelectPropertyDestination(s16 *);
