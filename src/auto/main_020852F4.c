@@ -16,6 +16,10 @@
 #define LINK_MSG_PLAYER_DATA     0x86
 #define LINK_MSG_PLAYER_DATA_ACK 0x87
 
+/* A whole data block carried by one link message (payload at message +0xC). */
+#define LINK_MSG_BLOCK           0x85
+#define LINK_BLOCK_RECEIVED      0x38 /* u8: set once the block has been copied */
+
 static inline u16 StatusX(void *p) { return M2C_FIELD(p,s16 *,0x34)&511; }
 static inline u8 StatusY(void *p) { return M2C_FIELD(p,s16 *,0x36); }
 static inline u16 StatusTile(u16 state) {
@@ -25,8 +29,8 @@ static inline u16 StatusTile(u16 state) {
 static inline u8 IsSpriteReady(void *p) { return M2C_FIELD(p,s16 *,0x4e)==0; }
 static inline void DrawStatusIcon(s16 x,s16 y,u16 state) {
  extern u16 **gCur3DSpriteEngine; extern M2C_UNK gSpriteDesc16x16;
- M2C_UNK func_01ff883c(u16,u8,u16,M2C_UNK *);
- func_01ff883c((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),&gSpriteDesc16x16);
+ M2C_UNK AppendSpriteDescToOam(u16,u8,u16,M2C_UNK *);
+ AppendSpriteDescToOam((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),&gSpriteDesc16x16);
 }
 
 /* A small value interpolator (see UpdateSpriteAnimation/GetSpriteAnimValue). */
@@ -72,8 +76,8 @@ void func_02085324(void){
 }
 
 void SendLinkCommand(M2C_UNK arg0,M2C_UNK arg1){
- s32 func_0208492c();
- Link_BroadcastMessage((u8)(func_0208492c()+0x81),arg0,arg1);
+ s32 GetLocalPlayerSlot();
+ Link_BroadcastMessage((u8)(GetLocalPlayerSlot()+0x81),arg0,arg1);
 }
 
 /* Pop the oldest message of one link command queue into buf.  Returns 1 when a
@@ -91,25 +95,31 @@ u8 PopLinkCommand(s32 queue, void *buf) {
     return popped;
 }
 
-s32 func_020853a0(M2C_UNK arg0, void *arg1) {
-    M2C_UNK MI_CpuCopy8();
-    M2C_UNK func_02085c78(u8, void *, s32);
-    u8 buf[32];
-    switch (M2C_FIELD(arg1, u8 *, 4) - 0x81) {
-    case 0: case 1: case 2: case 3:
-        buf[0] = M2C_FIELD(arg1, u8 *, 4);
-        buf[1] = 1;
-        MI_CpuCopy8((u8 *)arg1 + 0xC, buf + 2, M2C_FIELD(arg1, s32 *, 8));
-        func_02085c78((u8)(buf[0] - 0x81), buf, M2C_FIELD(arg1, s32 *, 8) + 2);
+/* Queue an incoming command using the source encoded in its message type. */
+s32 Link_HandleCommandMessage(s32 sender, void *messageData) {
+    s32 MI_CpuCopy8();
+    s32 QueueReceivedLinkCommand(u8, void *, s32);
+    LinkReceivedMessage *message = messageData;
+    u8 command[32];
+
+    switch (message->type - LINK_MSG_COMMAND_BASE) {
+    case 0:
+    case 1:
+    case 2:
+    case LINK_COMMAND_QUEUE_COUNT - 1:
+        command[0] = message->type;
+        command[1] = 1;
+        MI_CpuCopy8(message->payload, command + 2, message->payloadSize);
+        QueueReceivedLinkCommand((u8)(command[0] - LINK_MSG_COMMAND_BASE), command, message->payloadSize + 2);
         break;
     }
     return 1;
 }
 
-void func_02085414(void) {
-    M2C_UNK func_02084fc0(M2C_UNK *);
-    s32 func_020853a0(M2C_UNK, void *);
-    func_02084fc0((M2C_UNK *)&func_020853a0);
+void Link_InstallCommandHandler(void) {
+    M2C_UNK Link_SetMessageHandler(M2C_UNK *);
+    s32 Link_HandleCommandMessage(M2C_UNK, void *);
+    Link_SetMessageHandler((M2C_UNK *)&Link_HandleCommandMessage);
 }
 
 void func_02085428(M2C_UNK arg0) {
@@ -119,7 +129,7 @@ void func_02085428(M2C_UNK arg0) {
 
 void func_02085440(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    Link_BroadcastMessage(0x85, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    Link_BroadcastMessage(LINK_MSG_BLOCK, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
     Sprite_ResumeAnimation(arg0);
 }
 
@@ -163,34 +173,40 @@ void func_02085514(M2C_UNK arg0) {
     func_02084ea0(0x50524453, arg0);
 }
 
-s32 func_0208552c(M2C_UNK arg0, void *arg1) {
+/* Handles the link messages that carry a whole data block: a LINK_MSG_BLOCK
+ * message copies its payload (message + 0xC) into the receiver object's block
+ * buffer and marks the block as received; anything else goes to the handler
+ * installed before this one.  Returns 1 unless a forwarded handler says
+ * otherwise. */
+s32 Link_HandleBlockMessage(u32 sender, void *message) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK MI_CpuCopy8();
-    extern M2C_UNK data_021020f4;
-    s32 (*temp_r2)(M2C_UNK, void *);
-    s32 var_r5;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_021020f4);
-    var_r5 = 1;
-    if (temp_r0 != NULL) {
-        if (M2C_FIELD(arg1, u8 *, 4) == 0x85) {
-            MI_CpuCopy8((u8 *)arg1 + 0xC, M2C_FIELD(temp_r0, void **, 0x3C), M2C_FIELD(temp_r0, s32 *, 0x40));
-            M2C_FIELD(temp_r0, u8 *, 0x38) = 1;
+    extern M2C_UNK gLinkBlockReceiverClass;
+    s32 (*forward)(u32, void *);
+    s32 result;
+    void *receiver;
+
+    receiver = FindObjectByClass(&gLinkBlockReceiverClass);
+    result = 1;
+    if (receiver != NULL) {
+        if (M2C_FIELD(message, u8 *, 4) == LINK_MSG_BLOCK) {
+            MI_CpuCopy8((u8 *)message + 0xC, M2C_FIELD(receiver, void **, LINK_PLAYER_OWN_DATA), M2C_FIELD(receiver, s32 *, LINK_PLAYER_DATA_SIZE));
+            M2C_FIELD(receiver, u8 *, LINK_BLOCK_RECEIVED) = 1;
         } else {
-            temp_r2 = M2C_FIELD(temp_r0, s32 (**)(M2C_UNK, void *), 0x34);
-            if (temp_r2 != NULL) var_r5 = temp_r2(arg0, arg1);
+            forward = M2C_FIELD(receiver, s32 (**)(u32, void *), LINK_PLAYER_DATA_PREV_HANDLER);
+            if (forward != NULL) result = forward(sender, message);
         }
     }
-    return var_r5;
+    return result;
 }
 
 void func_0208559c(s32 a,s32 b,s32 c) {
     void *CreateSpriteForOwner(M2C_UNK *,M2C_UNK);
-    extern M2C_UNK data_021020f4, data_021021b0;
-    void *p=CreateSpriteForOwner(&data_021020f4,c);
+    extern M2C_UNK gLinkBlockReceiverClass, data_021021b0;
+    void *p=CreateSpriteForOwner(&gLinkBlockReceiverClass,c);
     if(!p) return;
     M2C_FIELD(p,void **,0)=&data_021021b0;
-    M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&func_0208552c);
+    M2C_FIELD(p,s32 *,0x34)=Link_SetMessageHandler((M2C_UNK *)&Link_HandleBlockMessage);
     M2C_FIELD(p,u8 *,0x38)=0;
     M2C_FIELD(p,s32 *,0x3c)=a;
     M2C_FIELD(p,s32 *,0x40)=b;
@@ -265,7 +281,7 @@ void func_02085724(s32 a,s32 b,s32 c,s32 d) {
     void *p=CreateSpriteForOwner(&gLinkPlayerDataClass,d);
     if(!p) return;
     M2C_FIELD(p,void **,0)=&data_0210219c;
-    M2C_FIELD(p,s32 *,0x34)=func_02084fc0((M2C_UNK *)&Link_HandlePlayerDataMessage);
+    M2C_FIELD(p,s32 *,0x34)=Link_SetMessageHandler((M2C_UNK *)&Link_HandlePlayerDataMessage);
     M2C_FIELD(p,s32 *,0x38)=a;
     M2C_FIELD(p,s32 *,0x3c)=b;
     M2C_FIELD(p,s32 *,0x40)=c;
@@ -514,8 +530,8 @@ void func_020859b4(M2C_UNK arg0) {
 }
 #pragma pop
 void func_02085c04(void) {
-    M2C_UNK func_020c47e4(s32);
-    func_020c47e4(func_020c4acc() + 0x58);
+    M2C_UNK GetServerDateTime(s32);
+    GetServerDateTime(func_020c4acc() + 0x58);
 }
 
 s32 func_02085c18(void) {
@@ -524,7 +540,7 @@ s32 func_02085c18(void) {
 }
 
 void func_02085c28(void) {
-    func_020c47e4(func_020c4acc() + 0x74);
+    GetServerDateTime(func_020c4acc() + 0x74);
 }
 
 s32 func_02085c3c(void) {
@@ -541,10 +557,10 @@ void func_02085c4c(void) {
     do { func_02085e50(p); ++i; p+=12; } while(i<4);
 }
 
-s32 func_02085c78(u8 a,void *b,s32 c) {
-    s32 func_02085d90(void *,s32,u16,s16);
+s32 QueueReceivedLinkCommand(u8 a,void *b,s32 c) {
+    s32 AppendLinkCommand(void *,s32,u16,s16);
     extern M2C_UNK gLinkCommandQueues;
-    func_02085d90((u8 *)&gLinkCommandQueues+12*a,(s32)((u8 *)b+2),(u16)(c-2),0);
+    AppendLinkCommand((u8 *)&gLinkCommandQueues+12*a,(s32)((u8 *)b+2),(u16)(c-2),0);
 }
 
 void func_02085ca8(void) {
@@ -555,7 +571,7 @@ void *func_02085cac(void *arg0) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK data_0210219c;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0210219c;
-    func_02084fc0(M2C_FIELD(arg0, s32 *, 0x34));
+    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     MemFree(arg0);
     return arg0;
 }
@@ -563,7 +579,7 @@ void *func_02085cac(void *arg0) {
 void *func_02085cd8(void *arg0) {
     extern M2C_UNK data_0210219c;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0210219c;
-    func_02084fc0(M2C_FIELD(arg0, s32 *, 0x34));
+    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
 
@@ -571,7 +587,7 @@ void *func_02085cfc(void *arg0) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK data_021021b0;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021b0;
-    func_02084fc0(M2C_FIELD(arg0, s32 *, 0x34));
+    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     MemFree(arg0);
     return arg0;
 }
@@ -579,7 +595,7 @@ void *func_02085cfc(void *arg0) {
 void *func_02085d28(void *arg0) {
     extern M2C_UNK data_021021b0;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021b0;
-    func_02084fc0(M2C_FIELD(arg0, s32 *, 0x34));
+    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
 
@@ -609,7 +625,7 @@ void func_02085d7c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-s32 func_02085d90(void *arg0, M2C_UNK arg1, u16 arg2, s16 arg3) {
+s32 AppendLinkCommand(void *arg0, M2C_UNK arg1, u16 arg2, s16 arg3) {
     M2C_UNK MI_CpuCopy8();
     void *HeapAllocBlock(M2C_UNK);
     void *temp_r0;
@@ -677,7 +693,7 @@ void func_02085ea4(void *arg0) {
 }
 
 void func_02085ebc(void *arg0) {
- M2C_UNK func_01ff883c(u16,u8,u16,M2C_UNK *);
+ M2C_UNK AppendSpriteDescToOam(u16,u8,u16,M2C_UNK *);
  s32 func_020847b8(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
@@ -694,7 +710,7 @@ void func_02085ebc(void *arg0) {
  s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
  s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
  s32 y=M2C_FIELD(arg0,s16 *,0x36);
- func_01ff883c((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
+ AppendSpriteDescToOam((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
  }
  gCur3DSpriteEngine=saved; return;
  }
@@ -702,7 +718,7 @@ void func_02085ebc(void *arg0) {
  s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
  s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
  s32 y=M2C_FIELD(arg0,s16 *,0x36);
- func_01ff883c((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
+ AppendSpriteDescToOam((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
  }
 }
 

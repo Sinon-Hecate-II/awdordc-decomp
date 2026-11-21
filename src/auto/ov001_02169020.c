@@ -57,7 +57,22 @@ void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD
  * after the newline, or 0 at the end of the text. */
 s32 GetTextLineWidth(void *font,s32 letterSpacing,s32 start,s32 *nextLine){s32 pos=start;s32 width,ch,glyph;s32 (*decodeChar)(s32 *);decodeChar=((Ov001Font *)font)->decodeChar;width=0;ch=decodeChar(&pos);if(ch){do{if(ch==10)break;glyph=GetFontGlyphIndex((void **)font,ch);if(glyph==65535)glyph=((Ov001Font *)font)->resource->defaultChar;width+=letterSpacing+((Ov001GlyphMetric *)GetFontGlyphMetric((void **)font,glyph))->advance;ch=decodeChar(&pos);}while(ch);}if(nextLine)*nextLine=ch==10?pos:0;if(width>0)width-=letterSpacing;return width;}
 
-s32 GetTextBlockHeight(void *a,s32 b,s32 arg2){s32 c=arg2;s32 z[2]={0,0};s32 n,ch;s32 (*f)(s32 *);f=M2C_FIELD(a,s32 (**)(s32 *),4);n=1;ch=f(&c);while(ch){if(ch==10)n++;ch=f(&c);}return n*(b+M2C_FIELD(M2C_FIELD(a,void **,0),s8 *,1))-b;}
+/* Height in pixels of the text block starting at `text`: count its lines (one
+ * per newline, 10) and give each the line spacing plus the font's line height. */
+s32 GetTextBlockHeight(void *font,s32 lineSpacing,s32 text){
+    s32 pos=text;
+    s32 z[2]={0,0};
+    s32 lines,ch;
+    s32 (*decodeChar)(s32 *);
+    decodeChar=((Ov001Font *)font)->decodeChar;
+    lines=1;
+    ch=decodeChar(&pos);
+    while(ch){
+        if(ch==TEXT_CODE_LINE_END_ALT)lines++;
+        ch=decodeChar(&pos);
+    }
+    return lines*(lineSpacing+((Ov001Font *)font)->resource->lineHeight)-lineSpacing;
+}
 
 /* Measure a block of text: the widest line becomes the block width, and the
  * block height is the line count times the font's line height plus the extra

@@ -16,20 +16,23 @@ typedef struct Arm7TransferDesc {
     u32 user2; /* +0x18 callback argument */
 } Arm7TransferDesc;
 
-void func_0200dd40(void) {
-    M2C_UNK func_02009d34();
+/* Initialises the ARM7 IPC transfer service: marks it started, clears its busy
+ * flag and completion callback, waits for its FIFO channel and installs the
+ * transfer reply handler. */
+void Arm7TransferInit(void) {
+    M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK gArm7TransferState;
-    void func_0200dfb8(s32,u32,s32);
+    void Arm7TransferFifoHandler(s32,u32,s32);
     if (M2C_FIELD(&gArm7TransferState, u16 *, 0) != 0) return;
     M2C_FIELD(&gArm7TransferState, u16 *, 0) = 1;
     M2C_FIELD(&gArm7TransferState, s32 *, 4) = 0;
     M2C_FIELD(&gArm7TransferState, s32 *, 8) = 0;
-    func_02009d34();
+    PXI_Init();
     do {} while (IsFifoMessageReady(9, 1) == 0);
     *(s32 *)0x027FFF90 = 0;
-    SetFifoMessageHandler(9, (M2C_UNK *)&func_0200dfb8);
+    SetFifoMessageHandler(9, (M2C_UNK *)&Arm7TransferFifoHandler);
 }
 
 /* Validate an ARM7 transfer descriptor and start it: the type picks the transfer
@@ -121,7 +124,7 @@ s32 func_0200dfa8(void) {
 }
 
 #pragma scheduling off
-void func_0200dfb8(s32 a,u32 b,s32 c){
+void Arm7TransferFifoHandler(s32 a,u32 b,s32 c){
 extern M2C_UNK gArm7TransferState;
 void (*cb)(s32,s32);u32 cmd;u32 low;s32 result;
 if(c){
@@ -243,7 +246,7 @@ void Arm7FinishCommand(s32 arg0) {
  * power-off. */
 void Arm7CommandInit(void) {
     M2C_UNK InitMutex(M2C_UNK *);
-    M2C_UNK func_02009d34();
+    M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);
     extern M2C_UNK gArm7CommandState;
@@ -255,7 +258,7 @@ void Arm7CommandInit(void) {
     M2C_FIELD(&gArm7CommandState,u16 *,ARM7_CMD_INIT)=1;
     M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_BUSY)=0;
     M2C_FIELD(&gArm7CommandState,s32 *,ARM7_CMD_CALLBACK)=0;
-    func_02009d34();
+    PXI_Init();
     do {} while(IsFifoMessageReady(ARM7_CMD_FIFO_TAG,1)==0);
     SetFifoMessageHandler(ARM7_CMD_FIFO_TAG,&Arm7CommandReply);
     for(i=0;i<ARM7_CMD_REPLY_COUNT;i++) ((u16 (*)[4])&gArm7CommandReplySlots)[i][0]=0;
@@ -509,7 +512,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(M2C_UNK);
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
-    M2C_UNK func_0200519c(M2C_UNK);
+    M2C_UNK OS_SetIrqEnableMask(M2C_UNK);
     void func_0200ede8(M2C_UNK);
     M2C_UNK func_02018c9c(void);
     M2C_UNK IsLcdEnabled(void);
@@ -548,7 +551,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
     sp8 = OS_DisableInterrupts();
     sp4 = OS_DisableIrqMask(0x3fffff);
-    func_0200519c(0x40000);
+    OS_SetIrqEnableMask(0x40000);
     OS_RestoreInterrupts(sp8);
 
     {
@@ -608,7 +611,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     WaitCycles(0x708100);
     }
     OS_DisableInterrupts();
-    func_0200519c(sp4);
+    OS_SetIrqEnableMask(sp4);
     OS_RestoreInterrupts(sp8);
 
     {u16 tmp=*hw208; *hw208=r8;}

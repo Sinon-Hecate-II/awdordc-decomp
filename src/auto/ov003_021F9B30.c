@@ -96,7 +96,7 @@ void func_ov003_021f9b30(void *arg0) {
  * its count and draw the matching 16x32 tile plus the count in front of it. */
 void Ov003_DrawIconGrid(void *arg0,s16 arg1,s16 arg2){
 void AddSprite(u16,u8,u16,void *,s32);s32 Divide(s32,s32);s32 Modulo(s32,s32);
-void SetTextSpriteValue(void *,s16);void DrawTextSprite(void *);s32 GetUnitCategoryCount(void *,s32,s32);s32 GetIconGridRecordIndex(u8);
+void SetTextSpriteValue(void *,s16);void DrawTextSprite(void *);s32 GetUnitCategoryCount(void *,s32,s32);s32 GetPropertyGridCountIndex(u8);
 extern u8 gSpriteDesc16x32[];extern u16 **gCur3DSpriteEngine,**g3DSpriteEngineSub;
 s32 xMask,tileMask,allIndex,baseY,baseX; s16 x,y,count;void *p; s32 i,palette,tile;u16 **savedEngine;
 baseX=arg1;
@@ -108,7 +108,7 @@ do{
 x=Modulo(i,3)*22+baseX;
 y=Divide(i,3)*28+baseY;
 p=M2C_FIELD(arg0,void **,0x44);
-count=GetUnitCategoryCount((u8 *)p+0x1830,GetIconGridRecordIndex(i),allIndex);
+count=GetUnitCategoryCount((u8 *)p+0x1830,GetPropertyGridCountIndex(i),allIndex);
 if(count){
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 SetTextSpriteValue(M2C_FIELD(arg0,void **,0x54),count);

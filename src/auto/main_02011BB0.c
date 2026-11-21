@@ -177,11 +177,20 @@ void func_02011f2c(ParsedItems *out, void *in) {
     *out = result;
 }
 
-u16 func_02012084(void){
-extern u32 data_020f5540;void func_0200ee70(void);s32 GetRtcTime(void *);
-s32 a[3];
-if(data_020f5540==0x10000){func_0200ee70();if(GetRtcTime(a)==0)data_020f5540=(u16)(a[2]+(a[1]<<8));}
-data_020f5540=(u16)(data_020f5540+1);return (u16)data_020f5540;
+/* Returns the next wireless temporary group ID, seeding the counter from the RTC on first use. */
+u16 WM_GetNextTgid(void) {
+    extern u32 sTgid;
+    void RTC_Init(void);
+    s32 GetRtcTime(RtcTime *);
+    RtcTime time;
+
+    if (sTgid == WM_TGID_UNINITIALIZED) {
+        RTC_Init();
+        if (GetRtcTime(&time) == 0)
+            sTgid = (u16)(time.second + (time.minute << 8));
+    }
+    sTgid = (u16)(sTgid + 1);
+    return (u16)sTgid;
 }
 
 s32 func_020120f8(M2C_UNK a){

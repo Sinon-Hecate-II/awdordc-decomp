@@ -252,25 +252,25 @@ void func_0208b514(void) {
 
 void func_0208b520(s32 arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    void *func_020898d0(void);
+    void *InitTextLayer(void);
     extern M2C_UNK data_021027f0;
     s32 temp_r4;
     void *var_r0;
     temp_r4 = func_0208b5a8();
     var_r0 = CreateSpriteFromClass(&data_021027f0, arg0);
-    if (var_r0 != 0) var_r0 = func_020898d0();
+    if (var_r0 != 0) var_r0 = InitTextLayer();
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
 }
 
 void CreateTextLayer(s32 arg0) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
-    void *func_020898d0(void);
+    void *InitTextLayer(void);
     extern M2C_UNK data_021027f0;
     s32 temp_r4;
     void *var_r0;
     temp_r4 = func_0208b5a8();
     var_r0 = CreateSpriteForOwner(&data_021027f0, arg0);
-    if (var_r0 != 0) var_r0 = func_020898d0();
+    if (var_r0 != 0) var_r0 = InitTextLayer();
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
 }
 
@@ -352,7 +352,7 @@ void SetTextById(M2C_UNK arg0, M2C_UNK arg1) {
 /* Refresh the display banks selected by the entity's mode, then allocate and link a handle for it. */
 void func_0208b778(void *entity) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
-    extern u8 data_0211e1ec[], data_0211e12c[];
+    extern u8 data_0211e1ec[], gUiSpritePalette[];
     void *savedBank;
     void *bank;
     u32 mode;
@@ -372,7 +372,7 @@ void func_0208b778(void *entity) {
             (mode != 1 || bank == g3DSpriteEngineSub) &&
             (mode != 3 || bank == savedBank)) {
             LoadGraphicsBlock(data_0211e1ec, M2C_FIELD(bank, u8 **, 0x1C) + (M2C_FIELD(entity, u16 *, 0x3E) << 5));
-            CopyToObjPaletteShadow(data_0211e12c, ((u16)((u32)(M2C_FIELD(entity, u32 *, 0x40) << 6) >> 24) + 16) << 5, 32);
+            CopyToObjPaletteShadow(gUiSpritePalette, ((u16)((u32)(M2C_FIELD(entity, u32 *, 0x40) << 6) >> 24) + 16) << 5, 32);
             LoadScenePanelPalette(18);
         }
         i++;

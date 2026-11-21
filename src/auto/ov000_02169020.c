@@ -1,6 +1,7 @@
 /* 44 functions from 0x02169020 to 0x02169F94 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 #include "ov000_unit_move.h"
 
 static inline s8 ReadMovementCommand(void *p) {
@@ -50,7 +51,7 @@ void func_ov000_02169070(void *p) {
  M2C_FIELD(p,u16 *,0x48)=0;
 }
 #pragma peephole reset
-void func_ov000_02169138(void *p) {
+void UnitMove_ReadCommand(void *p) {
 void func_020c98d8(s32,s32,s32);
 s32 IsPlayerHuman(u32);
 void AddRecordValue(s32,s32);
@@ -98,20 +99,24 @@ void func_ov000_021692a8(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x48) = 0;
 }
 
-void func_ov000_021692c0(void *p) {
- void func_ov000_02169138(void *);
- s32 UnitMove_CanStepOntoCell(void *);
- void DrawUnitMoveSprite(void *);
- extern void (*data_ov000_021ae970[])(void *);
- u32 n=M2C_FIELD(p,u8 *,0x41);
- if(n!=0) {
- if((u8)(n+0xFE)<=1 && M2C_FIELD(p,u16 *,0x48)==0) {
- func_ov000_02169138(p);
- if(M2C_FIELD(p,s32 *,4)==0)return;
- }
- data_ov000_021ae970[M2C_FIELD(p,u8 *,0x41)](p);
- }
- if(UnitMove_CanStepOntoCell(p))DrawUnitMoveSprite(p);
+/* Per-frame update of a unit-move controller (its class's update callback):
+ * with the step timer elapsed while walking (state 2) or holding (state 3) it
+ * reads the next movement command from the stream, runs the current state's
+ * handler, and redraws the moving unit when it may enter the cell it is over. */
+void UnitMove_Update(void *move) {
+    void UnitMove_ReadCommand(void *);
+    s32 UnitMove_CanStepOntoCell(void *);
+    void DrawUnitMoveSprite(void *);
+    extern void (*gUnitMoveStateHandlers[])(void *);
+    u32 state=M2C_FIELD(move,u8 *,UNIT_MOVE_STATE);
+    if(state!=0) {
+        if((u8)(state+0xFE)<=1 && M2C_FIELD(move,u16 *,UNIT_MOVE_PHASE)==0) {
+            UnitMove_ReadCommand(move);
+            if(M2C_FIELD(move,s32 *,DS3D_SPRITE_ALIVE)==0)return;
+        }
+        gUnitMoveStateHandlers[M2C_FIELD(move,u8 *,UNIT_MOVE_STATE)](move);
+    }
+    if(UnitMove_CanStepOntoCell(move))DrawUnitMoveSprite(move);
 }
 
 void func_ov000_02169334(void *p) {
@@ -451,7 +456,7 @@ s32 UnitMove_CanStepOntoCell(void *p) {
  * offsets, select each one's frame from the facing direction (the second sprite
  * uses the next frame), and upload the owner's army palette to palette RAM. */
 void InitUnitMoveSprites(void *move){
-s32 CreateSpriteAnim(s32,s32,s32);void SetSpriteAnimFrame(s32,s32);void QueueVramCopy(void *,s32,s32,s32);
+s32 CreateSpriteAnim(s32,s32,s32);void SetSpriteAnimFrame(s32,s32);void QueueMainOBJExtPaletteCopy(void *,s32,s32,s32);
 extern u8 gArmyPalettes[];
 void *player;s32 paletteOffset;
 M2C_FIELD(move,s32 *,UNIT_MOVE_GFX)=LoadUnitMoveGfx((s32)move);
@@ -469,7 +474,7 @@ M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x28)=UnitMoveTileOffs
 M2C_FIELD(M2C_FIELD(move,void **,UNIT_MOVE_SPRITE2),s32 *,0x2c)=UnitMovePaletteOffset(move);
 player=(u8*)M2C_FIELD(gCurrentMap,void **,0)+MAP_PLAYER_STATES+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE;
 paletteOffset=UnitMovePaletteOffset(move);
-QueueVramCopy(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
+QueueMainOBJExtPaletteCopy(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
 }
 
 void func_ov000_02169cd4(void *arg0) {

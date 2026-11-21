@@ -12,7 +12,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 IsLinkSessionActive();
     s32 GetReadyPlayerMask();
     void Hide3DSprite(void *);
-    void *func_0208931c(void *);
+    void *Create3DSprite(void *);
     void func_02098e04(void *, s32, s32);
     void SetFaceSpriteFace(void *, s32);
     void *func_02099088(void *);
@@ -83,7 +83,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         *(u16 *) ((u8 *) sprite + 0x3C) = 0x800;
         sprite = ((void **) spriteSlots)[player + 1];
         Hide3DSprite(sprite);
-        sprite = func_0208931c(allocationGroup);
+        sprite = Create3DSprite(allocationGroup);
         ((void **) spriteSlots)[player + 5] = sprite;
         *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
         if ((u8) iconMode == 1) {
@@ -98,7 +98,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3E) = (u32) (tileIndex << 5) >> 5;
         *(u16 *) ((u8 *) ((void **) spriteSlots)[player + 5] + 0x3C) = 0x6800;
         Hide3DSprite(((void **) spriteSlots)[player + 5]);
-        sprite = func_0208931c(allocationGroup);
+        sprite = Create3DSprite(allocationGroup);
         ((void **) spriteSlots)[player + 9] = sprite;
         *(void **) ((u8 *) sprite + 0x44) = data_ov003_02210484;
         sprite = ((void **) spriteSlots)[player + 9];
@@ -217,8 +217,8 @@ void func_ov003_022023c4(void *arg0, s32 arg1) {
 void func_ov003_022023cc(void *arg0,s32 arg1){M2C_FIELD(arg0,u8*,0x20)=(M2C_FIELD(arg0,u8*,0x20)&~0xe0)|((u32)(arg1<<29)>>24);}
 
 void func_ov003_022023e4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020a9a30(arg0, 0, arg1, arg2);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadSpriteResource(arg0, 0, arg1, arg2);
 }
 
 void func_ov003_022023fc(void) {
@@ -362,8 +362,8 @@ void func_ov003_0220277c(void *arg0) {
     void Ov003_UpdateSelectedEntryText(void *);
     u8 func_ov003_022021c0(void *);
     void func_ov003_02202ec0(void *, u32);
-    void func_ov003_02203368();
-    void func_ov003_022035fc(void *, s32);
+    void Ov003_RefreshSelectedEntry();
+    void Ov003_DecreaseSelectedEntry(void *, s32);
     void Ov003_UpdateSetupMenuButtons(void *);
     u8 func_ov003_022036c8(void *);
     s8 func_ov003_022036e4(void *);
@@ -404,7 +404,7 @@ void func_ov003_0220277c(void *arg0) {
                     if (func_ov003_022021c0(arg0) != 0) {
                         func_ov003_02202ec0(arg0, r8);
                     } else {
-                        func_ov003_02203368(arg0, r8);
+                        Ov003_RefreshSelectedEntry(arg0, r8);
                     }
                 }
                 PlaySoundEffect(r5);
@@ -413,12 +413,12 @@ void func_ov003_0220277c(void *arg0) {
         }
         if (r7 != 0) {
             if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28)) != 0) {
-                func_ov003_022035fc(M2C_FIELD(arg0, void **, 0x44), r8);
+                Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
                 func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28));
                 if (func_ov003_022021c0(arg0) != 0) {
                     func_ov003_02202ec0(arg0, r8);
                 } else {
-                    func_ov003_02203368(arg0, r8);
+                    Ov003_RefreshSelectedEntry(arg0, r8);
                 }
                 if (func_ov003_02202e94((s32)arg0, r8) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
@@ -438,7 +438,7 @@ void func_ov003_0220277c(void *arg0) {
         }
     } else {
         if (func_ov003_022036ec(M2C_FIELD(arg0, void **, 0x44)) != 0) {
-            func_ov003_02203368(arg0, (u8)func_ov003_02203708(M2C_FIELD(arg0, void **, 0x44)));
+            Ov003_RefreshSelectedEntry(arg0, (u8)func_ov003_02203708(M2C_FIELD(arg0, void **, 0x44)));
         }
     }
 
@@ -478,7 +478,7 @@ void func_ov003_0220277c(void *arg0) {
         }
         if (r7 != 0 && (r9 & 0x200)) {
             if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
-                func_ov003_022035fc(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
+                Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
                 func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 0x28));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);

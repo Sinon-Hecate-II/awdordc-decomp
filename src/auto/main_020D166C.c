@@ -15,8 +15,8 @@ void func_020d166c(s32 a, s32 b) {
 void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
     extern void **gCurrentMap;
     s32 GetDamageTargetIndex(s32);
-    s32 func_020a8204(void *);
-    s32 func_020a796c(s32, s32, s32);
+    s32 CanUnitUsePrimaryWeapon(void *);
+    s32 GetKindWeaponDamagePercent(s32, s32, s32);
     s32 CalculateUnitDamage(void *, s32, s32, s32);
     void InitBattleUnit(void *, s16);
     s32 Divide(s32, s32);
@@ -37,10 +37,10 @@ void func_020d1690(s32 arg0, s32 arg1, void *arg2) {
         unit[2] = (u8)*((s16 *)arg2 + 1);
         InitBattleUnit((u8 *)*gCurrentMap + 0x6eb8, (s16)arg0);
     }
-        if (func_020a8204(unit)) {
+        if (CanUnitUsePrimaryWeapon(unit)) {
             r4 = CalculateUnitDamage(unit, GetDamageTargetIndex(arg1), 0, 0);
         } else {
-            r6 = func_020a796c(((UnitKindD1690 *)unit)->kind, arg1, 1);
+            r6 = GetKindWeaponDamagePercent(((UnitKindD1690 *)unit)->kind, arg1, 1);
             if (r6) {
                 r5 = CalculateUnitDamage(unit, GetDamageTargetIndex(arg1), 1, 0);
             }
@@ -109,11 +109,11 @@ s32 IsPlayerHuman(s32 a){extern void **gCurrentMap;return (u8)(((u8 *)*gCurrentM
 u8 IsPlayerCpu(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==2;}
 
 s32 func_020d1a1c(s32 arg0) {
- s32 func_0208485c();
+ s32 IsLocalSessionHost();
  extern M2C_UNK gMapData;
  if(M2C_FIELD(&gMapData,u8 *,4)==0)return 1;
  if(IsPlayerHuman(arg0))return 1;
- if(func_0208485c() && IsPlayerCpu(arg0))return 1;
+ if(IsLocalSessionHost() && IsPlayerCpu(arg0))return 1;
  return 0;
 }
 

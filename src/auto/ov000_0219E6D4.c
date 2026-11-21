@@ -94,22 +94,25 @@ void RunAiUnitSelectionStep(void) {
     M2C_FIELD(gAiCommandState, u8 *, AI_STATE_PHASE)++;
 }
 
-s32 func_ov000_0219e8d0(void) {
-    s32 func_0208485c();
+/* Whether the AI action view may be skipped: the battle has ended while another
+ * console's AI command is being replayed, unless this console is the host and the
+ * current player is a CPU. */
+s32 ShouldSkipAiActionView(void) {
+    s32 IsLocalSessionHost();
     extern u8 gBattleEndState;
     extern u16 gLinkAiCommandStage;
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
     if (gBattleEndState == 0) {
         return 0;
     }
-    if (func_0208485c() != 0) {
-        temp_r3 = *gCurrentMap;
-        if (M2C_FIELD((u8 *) temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67C2) == 2) {
+    if (IsLocalSessionHost() != 0) {
+        map = *gCurrentMap;
+        if (M2C_FIELD((u8 *) map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, PLAYER_CONTROL_OFF) == PLAYER_CONTROL_CPU) {
             return 0;
         }
     }
-    if (gLinkAiCommandStage != 1) {
+    if (gLinkAiCommandStage != AI_COMMAND_STAGE_BUSY) {
         return 0;
     }
     return 1;
@@ -181,10 +184,10 @@ s32 func_ov000_0219e9f4(void)
     void func_020844a0(u8 *, u8 *);
     void func_020d61f0(void);
     s32 func_020d1a1c(s32);
-    s32 func_0208485c(void);
+    s32 IsLocalSessionHost(void);
     u8 IsUnitSubmerged(void *);
     u8 func_020a7d68(void *);
-    s32 func_ov000_0219e8d0(void);
+    s32 ShouldSkipAiActionView(void);
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
     extern void **gCurrentMap;
@@ -264,7 +267,7 @@ s32 func_ov000_0219e9f4(void)
 
     if ((u8)(gAiCommand[AI_COMMAND_KIND] + 0xea) <= 1) {
         scrolling = 0;
-        if (!func_ov000_0219e8d0()) {
+        if (!ShouldSkipAiActionView()) {
             map = *gCurrentMap;
             player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
             unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
@@ -303,7 +306,7 @@ s32 func_ov000_0219e9f4(void)
         }
     }
 
-    if ((M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == 14 && gBattleEndState && !func_0208485c()) ||
+    if ((M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == 14 && gBattleEndState && !IsLocalSessionHost()) ||
         M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) == 19) {
         M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR) = 0;
         unit = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
@@ -312,7 +315,7 @@ s32 func_ov000_0219e9f4(void)
     }
 
     scrolling = 0;
-    if (!func_ov000_0219e8d0()) {
+    if (!ShouldSkipAiActionView()) {
         map = *gCurrentMap;
         player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
         unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
@@ -392,9 +395,9 @@ s32 func_ov000_0219f0d8(void) {
     void func_ov000_0219fabc(s32);
     void func_020bb768(void);
     void func_020bbac8(void);
-    void func_ov000_0219fc64(void);
-    void func_ov000_0219fcdc(void);
-    void func_ov000_0219fd54(void);
+    void SubmergeUnit(void);
+    void SurfaceUnit(void);
+    void DestroyCursorUnit(void);
     void func_020cbffc(void);
     void func_020cc028(void);
     s32 func_ov000_0219f6d0(void);
@@ -471,15 +474,15 @@ s32 func_ov000_0219f0d8(void) {
         func_020bbac8();
         break;
     case 14:
-        func_ov000_0219fc64();
+        SubmergeUnit();
         BattleUpdateUnitCursor();
         break;
     case 15:
-        func_ov000_0219fcdc();
+        SurfaceUnit();
         BattleUpdateUnitCursor();
         break;
     case 17:
-        func_ov000_0219fd54();
+        DestroyCursorUnit();
         break;
     case 18:
         func_020cbffc();

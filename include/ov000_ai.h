@@ -7,6 +7,8 @@
 #define AI_STATE_TARGET_COUNT  0x00 /* u8 number of target candidates (CollectAiTargetCandidates) */
 #define AI_STATE_GROUP_COUNT   0x01 /* u8 number of target groups (BuildAiTargetGroups) */
 #define AI_STATE_PHASE         0x02 /* u8 AI turn phase (state machine in ProcessAiTurnPlan) */
+#define AI_STATE_PLACE_STEP    0x03 /* u8 built-unit placement step (0 idle, 1 panning to the tile, 2 waiting) */
+#define AI_STATE_ACTION_CANDIDATE 0x04 /* u8 target candidate the current action uses */
 #define AI_STATE_UNIT_COUNT_MAX 50 /* the AI's army is at its unit cap, so the turn plan stops */
 #define AI_STATE_RESERVE_RETRY 0x05 /* u8 retries left to reserve money for a purchase */
 #define AI_STATE_UNIT_COUNT    0x07 /* u8 friendly units counted this turn */
@@ -18,6 +20,10 @@
 /* Byte of gAiCommandState holding the number of distinct property target areas
  * the AI marked for this turn; 1 means a single area. */
 #define AI_COMMAND_STATE_TARGET_AREAS 0x06
+
+/* Extra infantry and mechs the AI wants beyond its weighted property count. */
+#define AI_FOOT_UNIT_BUFFER_NO_TARGETS 1
+#define AI_FOOT_UNIT_BUFFER_WITH_TARGETS 2
 
 /* Values of AI_COMMAND_STATE_PHASE, driven by UpdateAiTurn (ov000_0219B848.c).
  * Phases 0..2 and 4 are stepped inside a task sprite running
@@ -48,6 +54,7 @@
 #define AI_COMMAND_STATE_ACTION_FLAGS 0x08 /* u16 action-planning flags */
 #define AI_ACTION_SKIP_REPLAN 0x20 /* suppress the fallback callback in action finalization */
 #define AI_ACTION_DESTINATION_CHOSEN 0x10 /* the acting unit's destination is chosen; finalization does not choose it again */
+#define AI_ACTION_CO_POWER 0x100 /* the action being planned is the AI's CO-power use */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
 /* Total property count of the players not on the current army's team, summed
  * at the start of the AI's turn (CountEnemyProperties). */
@@ -63,8 +70,9 @@
 #define AI_COMMAND_CURSOR_Y 0x03 /* u8 cursor tile y when the command was given */
 #define AI_COMMAND_OLD_X   0x04 /* u8 cursor tile x before the last move */
 #define AI_COMMAND_OLD_Y   0x05 /* u8 cursor tile y before the last move */
-#define AI_COMMAND_UNIT    0x06 /* u8 unit the command acts on */
+#define AI_COMMAND_UNIT    0x06 /* u8 unit kind the command acts on */
 #define AI_COMMAND_ARG_Y   0x07 /* u8 second command parameter (target tile y) */
+#define AI_COMMAND_UNIT_STATE 0x07 /* u8 AI state a built unit starts with (same slot as AI_COMMAND_ARG_Y) */
 #define AI_COMMAND_SEED    0x08 /* s32 random seed captured with the command */
 #define AI_COMMAND_FUEL_LEFT 0x12 /* u8 fuel the acting unit has left after the move */
 #define AI_COMMAND_READY   0x13 /* u8 set once the command record is complete */
@@ -72,6 +80,16 @@
  * above this are not (IsAiCommandKindValid). */
 #define AI_COMMAND_KIND_LIMIT 0x19
 #define AI_COMMAND_PRODUCE_UNIT 3 /* build the unit kind in AI_COMMAND_ACTOR at the command tile */
+#define AI_COMMAND_SET_AI_MODE  24 /* set player AI_COMMAND_UNIT's AI behaviour mode to AI_COMMAND_ARG_Y */
+
+enum AiCargoDropDirection {
+    AI_CARGO_DROP_NONE = 0,
+    AI_CARGO_DROP_UP = 1,
+    AI_CARGO_DROP_RIGHT = 2,
+    AI_CARGO_DROP_DOWN = 3,
+    AI_CARGO_DROP_LEFT = 4,
+    AI_CARGO_DROP_OCCUPIED = 5
+};
 
 /* Sentinels in gAiUnitList, the list of unit ids the current AI phase walks.
  * AI_UNIT_LIST_END finishes the walk; AI_UNIT_LIST_NO_UNIT is an entry with no
@@ -185,18 +203,32 @@
 #define AI_BUILD_FLAG_UNIT_25          0x01 /* the AI may build unit kind 25 */
 #define AI_BUILD_FLAG_UNIT_24          0x02 /* the AI may build unit kind 24 */
 
+/* The two callbacks at the start of gAiSettings, before the per-kind records. */
+#define AI_SETTINGS_UNIT_FILTER  0x00 /* s32 (*)(s32 commander, s32 unitKind): picks the kind of unit to act; NULL uses AiSettings_DefaultUnitFilter */
+#define AI_SETTINGS_USE_CO_POWER 0x04 /* s32 (*)(void): whether to use the CO power now; NULL uses the default, AiCoPowerUnitIsHurt */
+
 /* The per-kind records of gAiSettings start after its 8-byte header.  The record
  * index is the unit kind and record byte 0 is the kind's weight in the AI unit
  * set chosen for this match; 0 means that set does not build the kind. */
 #define AI_SETTING_UNIT_RECORDS        0x08
 #define AI_SETTING_UNIT_WEIGHT         0x00
 #define AI_SETTING_UNIT(kind)          (AI_SETTING_UNIT_RECORDS + (kind) * AI_UNIT_RECORD_STRIDE + AI_SETTING_UNIT_WEIGHT)
+/* Byte fields of one AI_UNIT_RECORD (AI_UNIT_RECORD_STRIDE bytes): the threats
+ * above which the AI avoids a tile, and the fuel and health below which it sends
+ * the kind off to be resupplied or repaired. */
+#define AI_UNIT_RECORD_THREAT_DIRECT   0x01 /* u8 direct-threat limit */
+#define AI_UNIT_RECORD_THREAT_INDIRECT 0x02 /* u8 indirect-threat limit */
+#define AI_UNIT_RECORD_FUEL_PERCENT    0x03 /* u8 resupply below this fuel percentage */
+#define AI_UNIT_RECORD_HEALTH          0x04 /* u8 repair below this health */
 
 /* One AI target group record in gAiTargetGroups, 8 bytes each. */
 #define AI_GROUP_SCORE       0x00 /* s8 value of the group, higher is better */
 #define AI_GROUP_CLAIMED     0x01 /* u8 0xFF once the group can no longer be used */
 #define AI_GROUP_PROPERTIES  0x02 /* u8 number of properties in the group */
 #define AI_GROUP_FLAGS       0x03 /* u8 AI_GROUP_FLAG_* bits */
+#define AI_GROUP_DIRECT_COMMITTED   0x04 /* u8 direct-attack units committed to the group */
+#define AI_GROUP_INDIRECT_COMMITTED 0x05 /* u8 indirect-attack units committed to the group */
+#define AI_GROUP_KIND26_COMMITTED   0x06 /* u8 kind-26 units committed to the group (also counted as indirect) */
 #define AI_GROUP_STRIDE      8
 #define AI_GROUP_FLAG_CLAIMED     0x01 /* a build already reserved the group */
 #define AI_GROUP_FLAG_SEA_THREAT  0x02 /* an enemy sea unit threatens the group and no ready kind-6/14 unit is in it */

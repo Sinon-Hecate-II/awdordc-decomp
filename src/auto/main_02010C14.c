@@ -61,7 +61,7 @@ if (status == 0) return 1;
 return 0;
 }
 
-void func_02010e68(void) { void func_02009d34(void); void SetFifoMessageHandler(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; func_02009d34();SetFifoMessageHandler(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
+void func_02010e68(void) { void PXI_Init(void); void SetFifoMessageHandler(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; PXI_Init();SetFifoMessageHandler(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
 
 void func_02010e94(s32 a,s32 b) { void ShutdownSystem(void); void SystemHalt(void); extern M2C_UNK data_02130640; s32 result;
 if((b&63)==17) {if(M2C_FIELD(&data_02130640,s32 *,0))return;result=1;M2C_FIELD(&data_02130640,s32 *,0)=result;
@@ -124,11 +124,11 @@ return result;
 s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    void func_02009d34();
+    void PXI_Init();
     s32 IsFifoMessageReady(s32, s32);
     void DC_InvalidateRange();
     void DmaFill();
-    void func_020118f4(void);
+    void WFC_ClearSharedFlag(void);
     void OS_InitMessageQueue();
     void DC_CleanRange();
     s32 OS_SendMessage();
@@ -160,7 +160,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         OS_RestoreInterrupts(saved);
         return 6;
     }
-    func_02009d34();
+    PXI_Init();
     if (IsFifoMessageReady(10, 1) == 0) {
         OS_RestoreInterrupts(saved);
         return 4;
@@ -173,7 +173,7 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 4) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0) + 0x300;
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0xc) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 4) + 0x800;
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0x10) = M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0xc) + 0x100;
-    func_020118f4();
+    WFC_ClearSharedFlag();
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), u16 *, 0x14) = (u16)arg1;
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), s32 *, 0x14c) = 0;
     M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, 4), u16 *, 0x150) = 0;
@@ -194,14 +194,31 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
     return 0;
 }
 #pragma pop
+/* Shut down the WFC command channel: the channel must be initialized and the
+ * link must be in its idle state, otherwise return the not-ready result.  Then
+ * acknowledge the ARM7's shared flag, remove the FIFO handler and drop the
+ * channel's info block and ready flag. */
 s32 WFC_ShutdownCommandChannel(void) {
-s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);s32 WFC_CheckChannelState(s32,...);void func_020118f4(void);extern M2C_UNK gWfcChannelState;
-s32 saved=OS_DisableInterrupts();s32 result;
-if(WFC_CheckReady()!=0){OS_RestoreInterrupts(saved);return 3;}
-result=WFC_CheckChannelState(1,0);if(result!=0)return result;
-func_020118f4();SetFifoMessageHandler(10,0);
-M2C_FIELD(&gWfcChannelState,s32 *,4)=0;M2C_FIELD(&gWfcChannelState,u16 *,0)=0;
-OS_RestoreInterrupts(saved);return 0;
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
+    s32 WFC_CheckChannelState(s32, ...);
+    void WFC_ClearSharedFlag(void);
+    extern M2C_UNK gWfcChannelState;
+    s32 saved = OS_DisableInterrupts();
+    s32 result;
+
+    if (WFC_CheckReady() != 0) {
+        OS_RestoreInterrupts(saved);
+        return WFC_CMD_NOT_READY;
+    }
+    result = WFC_CheckChannelState(1, 0);
+    if (result != 0) return result;
+    WFC_ClearSharedFlag();
+    SetFifoMessageHandler(WFC_CMD_FIFO_TAG, 0);
+    M2C_FIELD(&gWfcChannelState, s32 *, WFC_CMD_STATE_INFO) = 0;
+    M2C_FIELD(&gWfcChannelState, u16 *, WFC_CMD_STATE_READY) = 0;
+    OS_RestoreInterrupts(saved);
+    return 0;
 }
 
 void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK gWfcChannelState;M2C_FIELD(M2C_FIELD(&gWfcChannelState,s32 *,4)+a*4,s32 *,24)=b;}
@@ -252,9 +269,14 @@ s32 WFC_SendCommand(u16 command, u16 argCount, ...) {
     return result < 0 ? WFC_CMD_NO_BUFFER : WFC_CMD_OK;
 }
 
-s32 WFC_SendCommandPacket(void *a,s32 b) {
+/* Send a raw command packet of `length` bytes through the command channel: take a
+ * free command block, copy the packet into it, clean its cache range, post it to
+ * the firmware over the command FIFO and give the block back to the free queue.
+ * Returns WFC_CMD_OK once posted, WFC_CMD_NO_BUFFER if no block was free or the
+ * FIFO refused the message. */
+s32 WFC_SendCommandPacket(void *packet,s32 length) {
 extern M2C_UNK gWfcFreeBufferQueue;s32 SendFifoMessage();s32 OS_SendMessage();void DC_CleanRange();void MI_CpuCopy8();
-u16 *p=WFC_AllocBuffer();s32 r;if(!p)return 8;MI_CpuCopy8(a,p,b);DC_CleanRange(p,b);r=SendFifoMessage(10,p,0);OS_SendMessage(&gWfcFreeBufferQueue,p,1);return r<0?8:2;
+u16 *block=WFC_AllocBuffer();s32 result;if(!block)return WFC_CMD_NO_BUFFER;MI_CpuCopy8(packet,block,length);DC_CleanRange(block,length);result=SendFifoMessage(WFC_CMD_FIFO_TAG,block,0);OS_SendMessage(&gWfcFreeBufferQueue,block,OS_MESSAGE_BLOCK);return result<0?WFC_CMD_NO_BUFFER:WFC_CMD_OK;
 }
 
 s32 WFC_GetInfoBlock(void) {
@@ -297,7 +319,7 @@ s32 WFC_CheckChannelState(s32 expectedCount, ...) {
  * packet (gWfcChannelState + WFC_CMD_STATE_EVENT) those callbacks read. */
 void WFC_CommandHandler(u32 fifoTag, void *packet, u32 error) {
     void SystemHalt(void);
-    void func_020118f4(void);
+    void WFC_ClearSharedFlag(void);
     void DC_CleanRange();
     extern M2C_UNK gWfcChannelState, gWfcEventPacket, gWfcEventMac, gWfcEventPayload;
     void *info = M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
@@ -406,14 +428,14 @@ void WFC_CommandHandler(u32 fifoTag, void *packet, u32 error) {
         }
     }
     DC_InvalidateRange(M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET), WFC_CMD_BLOCK_SIZE);
-    func_020118f4();
+    WFC_ClearSharedFlag();
     if (packet != M2C_FIELD(info, void **, WFC_CMD_INFO_PACKET)) {
         M2C_FIELD(packet, u16 *, 0) |= WFC_CMD_BLOCK_FREE;
         DC_CleanRange(packet, WFC_CMD_BLOCK_SIZE);
     }
 }
 
-void func_020118f4(void) {
+void WFC_ClearSharedFlag(void) {
     u16 temp_r0;
 
     temp_r0 = *(u16 *)0x027FFF96;

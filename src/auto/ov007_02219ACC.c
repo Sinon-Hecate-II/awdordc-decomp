@@ -55,7 +55,7 @@ void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {
  * that has no team so its units read as inactive. */
 void MapEditor_LoadPlayerPalettes(void) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
-    void *func_ov000_0216ce84(s32);
+    void *GetArmyIconPalette(s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
     s32 MapEditor_PlayerHasTeam(s32);
     void DimPalette(void *);
@@ -65,7 +65,7 @@ void MapEditor_LoadPlayerPalettes(void) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     for (i = 0; i < 4; i++) {
         paletteOffset = (i + MAP_EDITOR_PLAYER_PALETTE_ROW) << 5;
-        CopyToObjPaletteShadow(func_ov000_0216ce84(i + 1), paletteOffset, DS3D_PALETTE_BYTES);
+        CopyToObjPaletteShadow(GetArmyIconPalette(i + 1), paletteOffset, DS3D_PALETTE_BYTES);
         if (!MapEditor_PlayerHasTeam(i + 1)) {
             DimPalette((u8 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamBuffer + (paletteOffset & ~1));
         }
@@ -229,7 +229,7 @@ typedef struct MapEditorPreviewPreset {
 
 void func_ov007_0221a160(void) {
     M2C_UNK Clear3DSpriteLayer(s32);
-    M2C_UNK func_020822b8(M2C_UNK *);
+    M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     M2C_UNK SetFileDirectory();
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     void OpenNarcArchive(M2C_UNK);
@@ -241,8 +241,8 @@ void func_ov007_0221a160(void) {
     void CreateWallpaperSprite(s32, s32, s32);
     void InitTextTiles(s32, s32, s32);
     void LoadScenePanelPalette(s32);
-    void func_020a9a30(s32, s32, s32, M2C_UNK);
-    M2C_UNK func_ov000_0216ce10(s32);
+    void LoadSpriteResource(s32, s32, s32, M2C_UNK);
+    M2C_UNK GetArmyStateTiles(s32);
     void MI_CpuCopy32(M2C_UNK, M2C_UNK, s32);
     void SetFrameRectPattern(s32, s32);
     void DimPalette(void *);
@@ -289,7 +289,7 @@ void func_ov007_0221a160(void) {
 
     p0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *p0 = (u16)(*p0 & ~7);
-    func_020822b8((M2C_UNK *)&preset);
+    Apply3DSpriteLayout((M2C_UNK *)&preset);
 
     p1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *p1 = (u16)(*p1 | 0x10);
@@ -335,16 +335,16 @@ void func_ov007_0221a160(void) {
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0x40) = 1;
     {
         char *tiles = M2C_FIELD(gCur3DSpriteEngine, char **, 0x1C);
-        func_020a9a30(1, zero, two, tiles + 0x2800);
+        LoadSpriteResource(1, zero, two, tiles + 0x2800);
     }
-    func_020a9a30(1, zero, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
-    func_020a9a30(1, two, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
+    LoadSpriteResource(1, zero, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2980);
+    LoadSpriteResource(1, two, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
 
     i = zero;
     base = 0x158;
     do {
         s32 dest = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + (base << 5);
-        M2C_UNK ret = func_ov000_0216ce10(i + 1);
+        M2C_UNK ret = GetArmyStateTiles(i + 1);
         MI_CpuCopy32(ret, dest, 0x80);
         i++;
         base += 4;
@@ -380,14 +380,14 @@ void func_ov007_0221a160(void) {
 
 void func_ov007_0221a568(void) {
     M2C_UNK func_020af1e4();
-    M2C_UNK func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r4;
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020c127c();
+    RemoveMapViewSprites();
     func_020af1e4();
     gCur3DSpriteEngine = temp_r4;
 }

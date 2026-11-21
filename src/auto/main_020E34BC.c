@@ -821,7 +821,7 @@ void func_020e4378(void) {
     M2C_UNK func_02006c58();
     M2C_UNK func_02006c6c();
     M2C_UNK func_02006c7c();
-    M2C_UNK func_02006f14();
+    M2C_UNK InitSystemTick();
     M2C_UNK func_02007140();
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, M2C_UNK);
     M2C_UNK Arm7CommandInit();
@@ -830,7 +830,7 @@ void func_020e4378(void) {
     u16 *q;
     func_02006c58();
     func_02006858();
-    func_02006f14();
+    InitSystemTick();
     func_02007140();
     func_020022d8();
     gGxDmaChannel = -1;

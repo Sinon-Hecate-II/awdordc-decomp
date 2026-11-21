@@ -13,29 +13,29 @@ static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
    all allocated on the sub engine. */
 void CreateWaypointPanelSprites(SpriteGroup9638 *group,void *panel) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;extern u8 data_ov003_0220f896[];
-void *func_020993d4(void *);void *func_0208931c(void *);void func_020990d4(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void func_020990fc(void *,s32,s32,s32);
+void *CreateFaceSprite(void *);void *Create3DSprite(void *);void func_020990d4(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void func_020990fc(void *,s32,s32,s32);
 void *savedEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-group->main=func_020993d4(panel);
+group->main=CreateFaceSprite(panel);
 func_020990d4(group->main,0x4400,1);
 SetFaceSpriteActive(group->main,1);
 M2C_FIELD(group->main,u16 *,0x3c)=0x400;
 Hide3DSprite(group->main);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(slot=0;slot<12;slot++){
-group->sprites[slot]=func_020993d4(panel);
+group->sprites[slot]=CreateFaceSprite(panel);
 func_020990d4(group->sprites[slot],0x5c00+slot*2*GetFaceLayoutSize(0),(u16)slot);
 func_020990fc(group->sprites[slot],slot+1,0,0);
 SetFaceSpriteActive(group->sprites[slot],1);
 M2C_FIELD(group->sprites[slot],u16 *,0x3c)=0x400;
 Hide3DSprite(group->sprites[slot]);
-group->labels[slot]=func_0208931c(panel);
+group->labels[slot]=Create3DSprite(panel);
 M2C_FIELD(group->labels[slot],void **,0x44)=data_ov003_0220f896;
 M2C_FIELD(group->labels[slot],u16 *,0x3e)=0x540;
 M2C_FIELD(group->labels[slot],u16 *,0x3c)=0x800;
 Hide3DSprite(group->labels[slot]);
 }
-group->last=func_0208931c(panel);
+group->last=Create3DSprite(panel);
 M2C_FIELD(group->last,void **,0x44)=data_ov003_0220f896;
 M2C_FIELD(group->last,u16 *,0x3e)=0x560;
 M2C_FIELD(group->last,u16 *,0x3c)=0x800;
@@ -450,12 +450,12 @@ M2C_FIELD(p,u8*,0x3a)=(M2C_FIELD(p,u8*,0x3a)&~2)|((u32)(paletteBit<<31)>>30);
 }
 
 void func_ov003_021ea27c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020a9a30(arg0, 0, arg1, arg2);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadSpriteResource(arg0, 0, arg1, arg2);
 }
 
 void func_ov003_021ea294(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    func_020a9a30(arg0, 2, arg1, arg2);
+    LoadSpriteResource(arg0, 2, arg1, arg2);
 }
 
 void func_ov003_021ea2ac(void) {

@@ -185,37 +185,48 @@ void func_ov003_021e47b0(void) {
     RemoveDownloadedCampaignMaps();
 }
 
-u32 func_ov003_021e47bc(void *arg0) {
+/* Recompute the scene view's map-transfer-unavailable flag: mark the transfer
+ * unavailable when neither side has a map picked and the matching five-record map
+ * list is empty, then return the flag. */
+u32 Ov003_UpdateMapTransferAvailability(void *view) {
     extern M2C_UNK gMapPickSelectionIfaceVTable;
-    struct { void *data; u16 buf0[5]; u16 buf1[5]; } local;
+    struct { void *iface; u16 firstPicks[5]; u16 secondPicks[5]; } picks;
     u8 count;
     u8 i;
-    M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) & ~0x80);
-    local.data = (void *)&gMapPickSelectionIfaceVTable;
-    for (i = 0; i < 5; i++) {
-        local.buf1[i] = 0xFFFF;
-        local.buf0[i] = local.buf1[i];
+    M2C_FIELD(view, u8 *, 0x60) = (u8)(M2C_FIELD(view, u8 *, 0x60) & ~OV003_MAP_TRANSFER_UNAVAILABLE);
+    picks.iface = (void *)&gMapPickSelectionIfaceVTable;
+    for (i = 0; i < MAP_RECORD_LIST_COUNT; i++) {
+        picks.secondPicks[i] = MAP_PICK_NONE;
+        picks.firstPicks[i] = picks.secondPicks[i];
     }
-    func_ov003_021f2860(&local);
-    count = 0;
-    for (i = 0; i < 5; i++) {
-        if (M2C_FIELD((s32)M2C_FIELD(arg0, void **, 0x6C) + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
-            count++;
+    func_ov003_021f2860(&picks);
+    {
+        u8 count;
+        u8 i;
+        count = 0;
+        for (i = 0; i < MAP_RECORD_LIST_COUNT; i++) {
+            if (M2C_FIELD((s32)M2C_FIELD(view, void **, 0x6C) + (s32)i * MAP_RECORD_SIZE, u8 *, MAP_RECORD_PLAYER_COUNT) != 0) {
+                count++;
+            }
+        }
+        if (count == 0 && CountMapPicks((s32)&picks, picks.firstPicks) == 0) {
+            M2C_FIELD(view, u8 *, 0x60) = (u8)(M2C_FIELD(view, u8 *, 0x60) | OV003_MAP_TRANSFER_UNAVAILABLE);
         }
     }
-    if (count == 0 && CountMapPicks((s32)&local, local.buf0) == 0) {
-        M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) | 0x80);
-    }
-    count = 0;
-    for (i = 0; i < 5; i++) {
-        if (M2C_FIELD((s32)M2C_FIELD(arg0, void **, 0x68) + (s32)i * 0x6F8, u8 *, 0x27) != 0) {
-            count++;
+    {
+        u8 count;
+        u8 i;
+        count = 0;
+        for (i = 0; i < MAP_RECORD_LIST_COUNT; i++) {
+            if (M2C_FIELD((s32)M2C_FIELD(view, void **, 0x68) + (s32)i * MAP_RECORD_SIZE, u8 *, MAP_RECORD_PLAYER_COUNT) != 0) {
+                count++;
+            }
+        }
+        if (count == 0 && CountMapPicks((s32)&picks, picks.secondPicks) == 0) {
+            M2C_FIELD(view, u8 *, 0x60) = (u8)(M2C_FIELD(view, u8 *, 0x60) | OV003_MAP_TRANSFER_UNAVAILABLE);
         }
     }
-    if (count == 0 && CountMapPicks((s32)&local, local.buf1) == 0) {
-        M2C_FIELD(arg0, u8 *, 0x60) = (u8)(M2C_FIELD(arg0, u8 *, 0x60) | 0x80);
-    }
-    return (u32)((u32)M2C_FIELD(arg0, u8 *, 0x60) << 24) >> 31;
+    return (u32)((u32)M2C_FIELD(view, u8 *, 0x60) << 24) >> 31;
 }
 
 void func_ov003_021e48dc(void) {
@@ -434,7 +445,7 @@ void CreateOv003SceneView(void *owner) {
 void *Ov003SceneView_Destructor(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
-    M2C_UNK func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
     void HeapFreeBlock(void *);
     extern M2C_UNK gOv003SceneViewVTable;
@@ -488,7 +499,7 @@ void *Ov003SceneView_Destructor(void *obj) {
         DeleteSpriteObject();
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     if (M2C_FIELD(obj, s32 *, 0x68) != 0) {
         HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x68));
     }
@@ -528,7 +539,7 @@ M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
 void *DestroyOv003SceneView(void *obj) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
-    M2C_UNK func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
     void HeapFreeBlock(void *);
     extern M2C_UNK gOv003SceneViewVTable;
@@ -582,7 +593,7 @@ void *DestroyOv003SceneView(void *obj) {
         DeleteSpriteObject();
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     if (M2C_FIELD(obj, s32 *, 0x68) != 0) {
         HeapFreeBlock(M2C_FIELD(obj, s32 *, 0x68));
     }

@@ -232,9 +232,14 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     extern u32 data_ov003_0221079c[];
     extern u16 data_ov003_022104fa[];
     s32 tmp1, tmp2;
-    s32 r6, r5, r11, r10;
+    s32 r11, r10, r5, r6;
     u8 *cell;
-    void *obj;
+    void *option;
+    u32 result;
+    void *sprite;
+    void *newSprite;
+    u16 bounds[4];
+    const u16 (*rects)[4] = (const u16 (*)[4])data_ov003_022104fa;
     void *vt;
     u8 i;
 
@@ -243,61 +248,67 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
         if (i < 8) {
             switch (i) {
             case 0:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_022107c4;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_022107c4;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 1:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210774;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210774;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 2:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221088c;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221088c;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 3:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210864;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210864;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 4:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221083c;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221083c;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 5:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_02210814;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_02210814;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 6:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_022107ec;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_022107ec;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             case 7:
-                obj = MemAlloc(4);
-                if (obj != 0) M2C_FIELD(obj, void **, 0) = data_ov003_0221079c;
-                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = obj;
+                option = MemAlloc(4);
+                if (option != 0) M2C_FIELD(option, void **, 0) = data_ov003_0221079c;
+                M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8) = option;
                 break;
             }
-            obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
-            vt = M2C_FIELD(obj, void **, 0);
-            tmp1 = ((s32 (*)(void *)) ((void **) vt)[3])(obj);
-            obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
-            vt = M2C_FIELD(obj, void **, 0);
-            tmp2 = ((s32 (*)(void *)) ((void **) vt)[2])(obj);
+            option = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
+            vt = M2C_FIELD(option, void **, 0);
+            result = ((s32 (*)(void *)) ((void **) vt)[3])(option);
+            option = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
+            vt = M2C_FIELD(option, void **, 0);
+            tmp2 = ((s32 (*)(void *)) ((void **) vt)[2])(option);
             cell = (u8 *)arg0 + i * 0x18;
-            M2C_FIELD(cell, s32 *, 0x10) = tmp1;
+            M2C_FIELD(cell, s32 *, 0x10) = result;
             if (M2C_FIELD(cell, u8 *, 0x1c) != 0) {
                 while (M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10))
                     M2C_FIELD(cell, s32 *, 0xc) -= M2C_FIELD(cell, s32 *, 0x10) - M2C_FIELD(cell, s32 *, 0x14) + 1;
                 while (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14))
                     M2C_FIELD(cell, s32 *, 0xc) += M2C_FIELD(cell, s32 *, 0x10) - M2C_FIELD(cell, s32 *, 0x14) + 1;
             } else {
-                M2C_FIELD(cell, s32 *, 0xc) = M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10) ? M2C_FIELD(cell, s32 *, 0x10) : (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14) ? M2C_FIELD(cell, s32 *, 0x14) : M2C_FIELD(cell, s32 *, 0xc));
+                s32 limit = M2C_FIELD(cell,s32 *,0x10);
+                s32 value = M2C_FIELD(cell,s32 *,0xc);
+                if (value <= limit) {
+                    limit = M2C_FIELD(cell,s32 *,0x14);
+                    if (value >= limit) limit = value;
+                }
+                M2C_FIELD(cell,s32 *,0xc) = limit;
             }
             M2C_FIELD(cell, s32 *, 0x14) = tmp2;
             if (M2C_FIELD(cell, u8 *, 0x1c) != 0) {
@@ -306,24 +317,36 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
                 while (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14))
                     M2C_FIELD(cell, s32 *, 0xc) += M2C_FIELD(cell, s32 *, 0x10) - M2C_FIELD(cell, s32 *, 0x14) + 1;
             } else {
-                M2C_FIELD(cell, s32 *, 0xc) = M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10) ? M2C_FIELD(cell, s32 *, 0x10) : (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14) ? M2C_FIELD(cell, s32 *, 0x14) : M2C_FIELD(cell, s32 *, 0xc));
+                s32 limit = M2C_FIELD(cell,s32 *,0x10);
+                s32 value = M2C_FIELD(cell,s32 *,0xc);
+                if (value <= limit) {
+                    limit = M2C_FIELD(cell,s32 *,0x14);
+                    if (value >= limit) limit = value;
+                }
+                M2C_FIELD(cell,s32 *,0xc) = limit;
             }
-            obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
-            vt = M2C_FIELD(obj, void **, 0);
-            if (((s32 (*)(void *)) ((void **) vt)[5])(obj) != 0) M2C_FIELD(cell, u8 *, 0x1c) = 1;
-            obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
-            vt = M2C_FIELD(obj, void **, 0);
-            M2C_FIELD(cell, s32 *, 0x18) = ((s32 (*)(void *)) ((void **) vt)[4])(obj);
-            obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
-            vt = M2C_FIELD(obj, void **, 0);
-            M2C_FIELD(cell, s32 *, 0xc) = ((s32 (*)(void *)) ((void **) vt)[6])(obj);
+            option = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
+            vt = M2C_FIELD(option, void **, 0);
+            if (((s32 (*)(void *)) ((void **) vt)[5])(option) != 0) M2C_FIELD(cell, u8 *, 0x1c) = 1;
+            option = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
+            vt = M2C_FIELD(option, void **, 0);
+            M2C_FIELD(cell, s32 *, 0x18) = ((s32 (*)(void *)) ((void **) vt)[4])(option);
+            option = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xc8);
+            vt = M2C_FIELD(option, void **, 0);
+            M2C_FIELD(cell, s32 *, 0xc) = ((s32 (*)(void *)) ((void **) vt)[6])(option);
             if (M2C_FIELD(cell, u8 *, 0x1c) != 0) {
                 while (M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10))
                     M2C_FIELD(cell, s32 *, 0xc) -= M2C_FIELD(cell, s32 *, 0x10) - M2C_FIELD(cell, s32 *, 0x14) + 1;
                 while (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14))
                     M2C_FIELD(cell, s32 *, 0xc) += M2C_FIELD(cell, s32 *, 0x10) - M2C_FIELD(cell, s32 *, 0x14) + 1;
             } else {
-                M2C_FIELD(cell, s32 *, 0xc) = M2C_FIELD(cell, s32 *, 0xc) > M2C_FIELD(cell, s32 *, 0x10) ? M2C_FIELD(cell, s32 *, 0x10) : (M2C_FIELD(cell, s32 *, 0xc) < M2C_FIELD(cell, s32 *, 0x14) ? M2C_FIELD(cell, s32 *, 0x14) : M2C_FIELD(cell, s32 *, 0xc));
+                s32 limit = M2C_FIELD(cell,s32 *,0x10);
+                s32 value = M2C_FIELD(cell,s32 *,0xc);
+                if (value <= limit) {
+                    limit = M2C_FIELD(cell,s32 *,0x14);
+                    if (value >= limit) limit = value;
+                }
+                M2C_FIELD(cell,s32 *,0xc) = limit;
             }
             r6 = (s16)(Modulo(i, 4) * 64 + 4);
             r5 = (s16)(Divide(i, 4) * 0x48 + 0x38);
@@ -335,63 +358,69 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
             r11 = 0x20;
             r10 = 0x18;
         }
-        obj = func_020ab1c4(arg1);
-        M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8) = obj;
-        M2C_FIELD(obj, u16 *, 0x2e) = i;
+        newSprite = func_020ab1c4(arg1);
+        M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8) = newSprite;
+        M2C_FIELD(newSprite, u16 *, 0x2e) = i;
         InitUnitSprite(M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8), 0x47, 0x16c, 0, 0);
-        obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8);
-        func_02088e84(obj, r6, r5, r6, r5);
+        result = (u32)M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8);
+#define sprite ((void *)result)
+        func_02088e84(sprite, r6, r5, r6, r5);
         {
-            u8 b1;
-            s16 a1, c1;
-            u16 e1;
+            s32 b1;
+            s32 a1, c1;
+            s32 e1;
             s32 d1;
-            if (M2C_FIELD(M2C_FIELD(obj, void **, 0x64), u8 *, 0x12) != 0) b1 = 1; else b1 = 0;
-            if (b1 & 0xFF) {
-                a1 = M2C_FIELD(obj, s16 *, 0x52);
-                c1 = M2C_FIELD(obj, s16 *, 0x50);
-                e1 = GetUnitSpriteWidth(obj);
-                d1 = GetUnitSpriteHeight(obj);
-                func_02087d84(M2C_FIELD(obj, void **, 0x64), 1, c1, a1, (s32)((u32)e1 << 16 >> 16), (s32)((u32)d1 << 16 >> 16));
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12) != 0) b1 = 1; else b1 = 0;
+            if ((u8)b1) {
+                a1 = M2C_FIELD(sprite, s16 *, 0x52);
+                c1 = M2C_FIELD(sprite, s16 *, 0x50);
+                e1 = GetUnitSpriteWidth(sprite);
+                d1 = GetUnitSpriteHeight(sprite);
+                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c1, a1, (u16)e1, (u16)d1);
             }
         }
-        M2C_FIELD(obj, s16 *, 0x34) = (s16)r6;
-        M2C_FIELD(obj, s16 *, 0x36) = (s16)r5;
+        M2C_FIELD(sprite, s16 *, 0x34) = (s16)r6;
+        M2C_FIELD(sprite, s16 *, 0x36) = (s16)r5;
         {
-            u8 b2;
-            s16 a2, c2;
-            u16 e2;
+            s32 b2;
+            s32 a2, c2;
+            s32 e2;
             s32 d2;
-            if (M2C_FIELD(M2C_FIELD(obj, void **, 0x64), u8 *, 0x12) != 0) b2 = 1; else b2 = 0;
-            if (b2 & 0xFF) {
-                a2 = M2C_FIELD(obj, s16 *, 0x52);
-                c2 = M2C_FIELD(obj, s16 *, 0x50);
-                e2 = GetUnitSpriteWidth(obj);
-                d2 = GetUnitSpriteHeight(obj);
-                func_02087d84(M2C_FIELD(obj, void **, 0x64), 1, c2, a2, (s32)((u32)e2 << 16 >> 16), (s32)((u32)d2 << 16 >> 16));
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12) != 0) b2 = 1; else b2 = 0;
+            if ((u8)b2) {
+                a2 = M2C_FIELD(sprite, s16 *, 0x52);
+                c2 = M2C_FIELD(sprite, s16 *, 0x50);
+                e2 = GetUnitSpriteWidth(sprite);
+                d2 = GetUnitSpriteHeight(sprite);
+                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c2, a2, (u16)e2, (u16)d2);
             }
         }
-        M2C_FIELD(obj, u32 *, 0x40) = (M2C_FIELD(obj, u32 *, 0x40) & 0xFFFFFE00) | (r11 & 0x1FF);
-        M2C_FIELD(obj, u32 *, 0x40) = (M2C_FIELD(obj, u32 *, 0x40) & 0xFFFC01FF) | (r10 << 9);
+        M2C_FIELD(sprite, u32 *, 0x40) = (M2C_FIELD(sprite, u32 *, 0x40) & 0xFFFFFE00) | (r11 & 0x1FF);
+        M2C_FIELD(sprite, u32 *, 0x40) = (M2C_FIELD(sprite, u32 *, 0x40) & 0xFFFC01FF) | ((u32)(r10 << 23) >> 14);
         {
-            u8 b3;
-            s16 a3, c3;
-            u16 e3;
+            s32 b3;
+            s32 a3, c3;
+            s32 e3;
             s32 d3;
-            if (M2C_FIELD(M2C_FIELD(obj, void **, 0x64), u8 *, 0x12) != 0) b3 = 1; else b3 = 0;
-            if (b3 & 0xFF) {
-                a3 = M2C_FIELD(obj, s16 *, 0x52);
-                c3 = M2C_FIELD(obj, s16 *, 0x50);
-                e3 = GetUnitSpriteWidth(obj);
-                d3 = GetUnitSpriteHeight(obj);
-                func_02087d84(M2C_FIELD(obj, void **, 0x64), 1, c3, a3, (s32)((u32)e3 << 16 >> 16), (s32)((u32)d3 << 16 >> 16));
+            if (M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12) != 0) b3 = 1; else b3 = 0;
+            if ((u8)b3) {
+                a3 = M2C_FIELD(sprite, s16 *, 0x52);
+                c3 = M2C_FIELD(sprite, s16 *, 0x50);
+                e3 = GetUnitSpriteWidth(sprite);
+                d3 = GetUnitSpriteHeight(sprite);
+                func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, c3, a3, (u16)e3, (u16)d3);
             }
         }
-        obj = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8);
-        M2C_FIELD(obj, s16 *, 0x68) = data_ov003_022104fa[i * 4 + 0];
-        M2C_FIELD(obj, s16 *, 0x6a) = data_ov003_022104fa[i * 4 + 1];
-        M2C_FIELD(obj, s16 *, 0x6c) = data_ov003_022104fa[i * 4 + 2];
-        M2C_FIELD(obj, s16 *, 0x6e) = data_ov003_022104fa[i * 4 + 3];
+        bounds[3] = rects[i][3];
+        bounds[2] = rects[i][2];
+        bounds[1] = rects[i][1];
+        bounds[0] = rects[i][0];
+#undef sprite
+        sprite = M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8);
+        M2C_FIELD(sprite, u16 *, 0x68) = bounds[0];
+        M2C_FIELD(sprite, u16 *, 0x6a) = bounds[1];
+        M2C_FIELD(sprite, u16 *, 0x6c) = bounds[2];
+        M2C_FIELD(sprite, u16 *, 0x6e) = bounds[3];
         i++;
     } while (i < 9);
     func_ov003_02200dc8(arg0, 8);

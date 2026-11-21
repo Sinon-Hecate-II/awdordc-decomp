@@ -336,8 +336,8 @@ void func_ov007_022193bc(void) {
 }
 
 void func_ov007_022193c8(void) {
-    M2C_UNK func_ov007_02218a60();
-    func_ov007_02218a60();
+    M2C_UNK MapEditor_FreePaletteLists();
+    MapEditor_FreePaletteLists();
 }
 
 void func_ov007_022193d4(void) {

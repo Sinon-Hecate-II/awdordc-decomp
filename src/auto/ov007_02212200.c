@@ -6,7 +6,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     void Hide3DSprite(void *);
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(s32);
     u32 GetUnitSpriteWidth(void *);
@@ -21,7 +21,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
     s32 i;
 
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020a9a30(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, u8 **, 0x30) + 0x260);
+    LoadSpriteResource(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, u8 **, 0x30) + 0x260);
 
     data_ov007_02221a50[0] = (M2C_UNK)func_020ab1c4(arg0);
     InitUnitSprite((void *)data_ov007_02221a50[0], 19, 0x150, 3, 0);

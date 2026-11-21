@@ -33,13 +33,13 @@ void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_0208143c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK DC_FlushRange(s32, M2C_UNK);
-    M2C_UNK QueueVramCopy(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueMainOBJExtPaletteCopy(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = LoadFileToBuffer(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
-    QueueVramCopy(temp_r0, arg1, arg2, 1);
+    QueueMainOBJExtPaletteCopy(temp_r0, arg1, arg2, 1);
 }
 
 void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -188,7 +188,7 @@ void ResetKeyState(void) {
     M2C_FIELD(&gInputBlockState, u8 *, 1) = 0;
 }
 
-void func_020817a0(void) {
+void RebootConsole(void) {
     M2C_UNK func_02002490();
     M2C_UNK func_02006774();
     M2C_UNK func_02006804();
@@ -200,25 +200,29 @@ void func_020817a0(void) {
     func_02007668(*(s32 *)0x027FFC20 + 1);
 }
 
-void func_020817dc(void) {
- extern M2C_UNK gKeyState;
- extern M2C_UNK gInputBlockState;
- s32 func_020847f4(void);
- u16 temp = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6);
- if (temp != 0x30C) return;
- if (temp == M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,10)) return;
- if (!(M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,0) & 0x30C)) return;
- if (M2C_FIELD(&gInputBlockState,s8 *,4) <= 0 && M2C_FIELD(&gInputBlockState,s8 *,0) <= 0) {
- if (M2C_FIELD(&gInputBlockState,u8 *,1) != 0) return;
- if (func_020847f4() == 0) return;
- func_020817a0();
- }
+/* Soft reset: reboot the console when L+R+START+SELECT is held, was not
+ * already held two frames ago, is freshly pressed, input is not locked and
+ * the game is not in a link or Wi-Fi session. */
+void CheckSoftResetCombo(void) {
+    extern M2C_UNK gKeyState;
+    extern M2C_UNK gInputBlockState;
+    s32 IsSoftResetAllowed(void);
+    u16 held = M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 6);
+
+    if (held != KEY_RESET_COMBO) return;
+    if (held == M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 10)) return;
+    if (!(M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 0) & KEY_RESET_COMBO)) return;
+    if (M2C_FIELD(&gInputBlockState, s8 *, 4) <= 0 && M2C_FIELD(&gInputBlockState, s8 *, 0) <= 0) {
+        if (M2C_FIELD(&gInputBlockState, u8 *, 1) != 0) return;
+        if (IsSoftResetAllowed() == 0) return;
+        RebootConsole();
+    }
 }
 
 void func_0208184c(void) {
     extern M2C_UNK gKeyState;
     extern M2C_UNK gInputBlockState;
-    void func_020817dc(void);
+    void CheckSoftResetCombo(void);
     u16 v, a, b;
     s32 v6, v8;
     u32 tmp;
@@ -276,7 +280,7 @@ void func_0208184c(void) {
             } else {
                 M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u8 *, 12) = 0x10;
                 M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u8 *, 13) = 0x0a;
-                func_020817dc();
+                CheckSoftResetCombo();
             }
         }
     }
@@ -298,8 +302,8 @@ M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) |= arg0;
 #pragma scheduling off
 void func_02081a48(void){
 extern M2C_UNK data_02101e84;
-void func_0200d544(void);s32 TP_GetFirmwareCalibration(u16 *);void SetTouchCalibration(u16 *);
-u16 a[4];func_0200d544();if(!TP_GetFirmwareCalibration(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;SetTouchCalibration(a);}
+void TP_Init(void);s32 TP_GetFirmwareCalibration(u16 *);void SetTouchCalibration(u16 *);
+u16 a[4];TP_Init();if(!TP_GetFirmwareCalibration(a)){a[0]=0x390;a[1]=0x55f;a[2]=0xd52;a[3]=0x113a;SetTouchCalibration(a);}
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x12)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x13)=0;
 M2C_FIELD(M2C_FIELD(&data_02101e84,u8 **,4),u8 *,0x14)=0;
@@ -461,11 +465,11 @@ void func_02081e84(void *arg0) {
 
 void func_02081ec8(void *arg0) {
     void func_02081da0(void);
-    M2C_UNK func_020e5740();
+    M2C_UNK StartMicTestMeasurement();
     if (M2C_FIELD(arg0, s16 *, 0x56) != 0) {
         func_02081da0();
     }
-    func_020e5740();
+    StartMicTestMeasurement();
 }
 
 void func_02081ee4(void) {
@@ -588,7 +592,7 @@ void SetLayerSize(s32 arg0, u32 arg1) {
 
 #pragma optimization_level 2
 #pragma opt_propagation off
-void func_02082164(u8 *presetData)
+void Configure3DSpriteLayout(u8 *presetData)
 {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
@@ -632,37 +636,39 @@ void func_02082164(u8 *presetData)
 }
 #pragma opt_propagation reset
 #pragma optimization_level 4
-M2C_UNK func_020822b8(M2C_UNK *a) {
+/* Point the current screen's 3D sprite engine at its four layer tile buffers
+ * (the main screen's or the sub screen's), then apply layout `preset` to it. */
+M2C_UNK Apply3DSpriteLayout(M2C_UNK *preset) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
-    extern u8 data_02152cdc[];
-    extern u8 data_0214ecdc[];
-    void func_02082164(u8 *);
-    u8 *p;
-    u8 r;
-    s32 i;
+    extern u8 g3DSpriteLayerTilesMain[];
+    extern u8 g3DSpriteLayerTilesSub[];
+    void Configure3DSpriteLayout(u8 *);
+    u8 *layerTiles;
+    u8 isMain;
+    s32 layer;
 
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-        r = 1;
+        isMain = 1;
     } else {
-        r = 0;
+        isMain = 0;
     }
-    if (r == 1) {
-        p = data_02152cdc;
+    if (isMain == 1) {
+        layerTiles = g3DSpriteLayerTilesMain;
     } else {
-        p = data_0214ecdc;
+        layerTiles = g3DSpriteLayerTilesSub;
     }
 
-    for (i = 0; i < 4; i++) {
-        ((u8 **)gCur3DSpriteEngine)[8 + i] = p + i * 0x1000;
+    for (layer = 0; layer < 4; layer++) {
+        ((u8 **)gCur3DSpriteEngine)[8 + layer] = layerTiles + layer * 0x1000;
     }
 
-    func_02082164((u8 *)a);
+    Configure3DSpriteLayout((u8 *)preset);
 }
 
 void Apply3DSpriteDisplayConfig(void) {
-    M2C_UNK func_020822b8(M2C_UNK *);
+    M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     extern M2C_UNK data_02101fb4;
-    func_020822b8(&data_02101fb4);
+    Apply3DSpriteLayout(&data_02101fb4);
 }
 

@@ -23,9 +23,13 @@
 /* The session states whose online subsystem reports an operation's error. */
 enum {
     NET_STATE_LOGIN         = 2, /* logging in: errors go to the NAS login callback */
-    NET_STATE_MATCHMAKING   = 4, /* matchmaking: errors go through func_0203accc */
+    NET_STATE_MATCHMAKING   = 4, /* matchmaking: errors go through ReportMatchSessionError */
     NET_STATE_SESSION       = 5  /* online session: errors go through ReportConnectionError */
 };
+#define NET_LOGIN_STATUS_DETAIL_BASE   0xFFFF11B8u
+#define NET_SESSION_STATUS_DETAIL_BASE 0xFFFEC398u
+#define NET_MATCH_STATUS_DETAIL_BASE    0xFFFEEAA8u
+
 #define NET_LOGIN_NAME_MAX         25
 #define NET_LOGIN_NAME_BYTES       52
 
@@ -40,6 +44,13 @@ enum {
 #define GPI_INFO_PROFILES      0x04 /* Vector * of GpiProfile records */
 #define GPI_INFO_SCRATCH_BANK  0x24 /* s32 alternating index of the gGpiProfileScratch bank in use */
 #define GPI_INFO_SESSION       0x28 /* void * logged-in session, NULL until login */
+/* The logged-in session's bucket store (gbucket) holds the gpi key/value
+ * entries keyed by name; the gpiGetOrCreate* helpers look a key up there and
+ * add it with the requested type when it is missing. */
+#define GPI_SESSION_STORE      0x0C /* void * the session's bucket store */
+#define GPI_INFO_USED          0x00 /* s32 bytes used in the receive buffer */
+#define GPI_INFO_RECV_BUFFER   0x0C /* u8 * receive buffer, grown as data arrives */
+#define GPI_INFO_RECV_CAPACITY 0x2C /* s32 allocated size of the receive buffer */
 
 /* A GameSpy info string is a run of \key\value\ fields; the gpi info reader
  * (gpiGetInfoField) extracts one value into gGpiProfileScratch.  The gpi reply

@@ -112,7 +112,7 @@ s32 GetSaveData(void) {
     return gSaveData;
 }
 
-void func_ov001_02184c70(s32 a) {void UpdateSaveChecksums(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;UpdateSaveChecksums(a);}
+void Ov001_EraseSaveSlot(s32 a) {void UpdateSaveChecksums(s32);M2C_UNK MI_CpuFill8(void *,s32,s32);extern s32 gSaveData;u8 *p=(u8 *)(gSaveData+(a<<8));MI_CpuFill8(p,0,0xef);p[0xe7]=255;UpdateSaveChecksums(a);}
 
 /* Reset the save data: clear the four save slot images, mark the first three
  * erased, store the local Wi-Fi profile code in the first two slots and refresh
@@ -215,13 +215,13 @@ void func_ov001_02184ff8(void){extern s32 gOv001SoundState;M2C_UNK Ov001_PostTas
 
 void Ov001_PlaySound(s32 a){extern s32 gOv001SoundState;M2C_UNK Sound_PlaySequenceArchiveEntry(s32,s32,s32);Sound_PlaySequenceArchiveEntry(gOv001SoundState+0x90,0,a);}
 
-void func_ov001_02185048(M2C_UNK arg0) {
+void Ov001_SetScrollDragSoundLevel(M2C_UNK arg0) {
     M2C_UNK func_0202acdc(s32, M2C_UNK);
     extern s32 gOv001SoundState;
     func_0202acdc(gOv001SoundState + 0x90, arg0);
 }
 
-void func_ov001_02185068(s32 a,s32 b){extern s32 gOv001SoundState;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(gOv001SoundState+0x90,a,b);}
+void Ov001_SetScrollDragSoundPitch(s32 a,s32 b){extern s32 gOv001SoundState;M2C_UNK func_0202ad70(s32,s32,s32);func_0202ad70(gOv001SoundState+0x90,a,b);}
 
 void Ov001_StopSound(void) {M2C_UNK func_0202ac60(s32,s32);extern s32 gOv001SoundState;func_0202ac60(gOv001SoundState+0x90,0);}
 

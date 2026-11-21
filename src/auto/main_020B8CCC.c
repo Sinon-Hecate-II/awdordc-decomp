@@ -130,7 +130,20 @@ void CreateProductionMenuRow(s32 arg0, s32 arg1) {
     M2C_FIELD(CreateSpriteObject(&data_02129178), s32 *, 0x5C) = arg0;
 }
 
-void func_020b9558(u8 a) {s32 GetUnitBuildCostTimes10(s32,s32);void DrawFundsCostRow(s32,s32,s32,s32,s32);void func_ov000_02174d10(s32,s32);extern void **gCurrentMap;void *g=*gCurrentMap;s32 idx=M2C_FIELD(g,u16 *,0x52a4);s32 total=M2C_FIELD((u8 *)g+idx*140,s32 *,0x67a4);s32 base=GetUnitBuildCostTimes10(idx,a);DrawFundsCostRow(0,1,total,-base,total-base);func_ov000_02174d10(M2C_FIELD(*gCurrentMap,u16 *,0x52a4),a);}
+/* Draws the selected unit's cost and projected balance, then updates the unit info panel. */
+void DrawProductionUnitPreview(u8 unitKind) {
+    s32 GetUnitBuildCostTimes10(s32, s32);
+    void DrawFundsCostRow(s32, s32, s32, s32, s32);
+    void Ov000_InfoWindow_ShowProductionUnit(s32, s32);
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+    s32 player = M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
+    s32 funds = M2C_FIELD((u8 *)map + player * MAP_PLAYER_STRIDE, s32 *, PLAYER_FUNDS_OFF);
+    s32 cost = GetUnitBuildCostTimes10(player, unitKind);
+
+    DrawFundsCostRow(0, 1, funds, -cost, funds - cost);
+    Ov000_InfoWindow_ShowProductionUnit(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), unitKind);
+}
 
 void ProductionMenu_HandleInput(u8 *selection) {
 extern u16 *gKeyState;
@@ -207,10 +220,10 @@ void func_020b9778(void) {
 }
 
 void func_020b979c(u8 *a) {
-    void func_020b9558(u8);
+    void DrawProductionUnitPreview(u8);
     M2C_UNK PlaySoundEffect(s32);
     extern u8 gProductionChoices[];
-    func_020b9558(gProductionChoices[*a * 2]);
+    DrawProductionUnitPreview(gProductionChoices[*a * 2]);
     PlaySoundEffect(0x10019);
 }
 

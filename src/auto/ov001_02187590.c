@@ -270,13 +270,13 @@ SetWhStatus(9);
 s32 func_ov001_02187c60(void) {
 extern M2C_UNK gWhWork;
 void func_ov001_02187cc4(void *);
-s32 func_02013b54(void *,s32,void *);
+s32 WFC_SubmitUserInfo(void *,s32,void *);
 void *p;
 s32 value;
 SetWhStatus(3);
 p=M2C_FIELD(&gWhWork,void **,4);
 value=M2C_FIELD(p,s32 (**)(void *,void *),0x13AC)((u8 *)p+0x13C0,p);
-if(func_02013b54((void *)func_ov001_02187cc4,value,(u8 *)M2C_FIELD(&gWhWork,void **,4)+0x13C0)==2) return 1;
+if(WFC_SubmitUserInfo((void *)func_ov001_02187cc4,value,(u8 *)M2C_FIELD(&gWhWork,void **,4)+0x13C0)==2) return 1;
 SetWhError(); SetWhStatus(9); return 0;
 }
 
@@ -438,10 +438,10 @@ s32 func_ov001_02188094(void){extern M2C_UNK gWhWork;s32 func_02013b2c(void *,s3
 s32 func_ov001_021880d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);if(func_02013b48((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1e00)==2)return 1;SetWhError();return 0;}
 
 s32 func_ov001_02188100(void) {
-    s32 func_02012d64(M2C_UNK *);
+    s32 WFC_SendTeardownCommand(M2C_UNK *);
     extern M2C_UNK func_ov001_02188130;
     SetWhStatus(3);
-    if (func_02012d64(&func_ov001_02188130) == 2) {
+    if (WFC_SendTeardownCommand(&func_ov001_02188130) == 2) {
         return 1;
     }
     SetWhError();
@@ -473,7 +473,7 @@ s32 func_ov001_021881d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);i
 s32 func_ov001_02188220(void) {
     extern M2C_UNK func_ov001_02188250;
     SetWhStatus(3);
-    if (func_02012d64(&func_ov001_02188250) == 2) {
+    if (WFC_SendTeardownCommand(&func_ov001_02188250) == 2) {
         return 1;
     }
     SetWhError();

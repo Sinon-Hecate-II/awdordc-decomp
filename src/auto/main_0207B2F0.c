@@ -24,7 +24,7 @@ typedef struct SpriteBatch {
 #define SPRITE_BATCH ((SpriteBatch *)gSpriteBatch)
 
 u8 IsMapViewScrolling(void);
-void func_0207b754(M2C_UNK, M2C_UNK);
+void SetMapViewPositionToTileCentered(M2C_UNK, M2C_UNK);
 
 #pragma push
 #pragma optimization_level 2
@@ -114,22 +114,24 @@ s32 SetMapViewPositionToTile(s32 tileX, s32 tileY, s32 centerOnTile) {
     return 1;
 }
 
-void func_0207b6d0(void) {
+/* Center the starting view on player 1's HQ if available, or on the middle of the map. */
+void CenterMapViewAtBattleStart(void) {
     s32 IsPlayerActive(s32);
     s32 PlayerHasHq(s32);
     extern void *gCurrentMap;
-    u32 x, y;
-    void *p;
+    u32 tileX, tileY;
+    void *map;
+
     if (IsPlayerActive(1) != 0 && PlayerHasHq(1) != 0) {
-        p = M2C_FIELD(gCurrentMap, void **, 0);
-        x = M2C_FIELD(p, u8 *, 0x685B) & 0x7F;
-        y = M2C_FIELD(p, u8 *, 0x685C) & 0x7F;
+        map = M2C_FIELD(gCurrentMap, void **, 0);
+        tileX = M2C_FIELD(map, u8 *, MAP_PLAYER_STATES + MAP_PLAYER_STRIDE + PLAYER_REC_HQ_X) & 0x7F;
+        tileY = M2C_FIELD(map, u8 *, MAP_PLAYER_STATES + MAP_PLAYER_STRIDE + PLAYER_REC_HQ_Y) & 0x7F;
     } else {
-        p = M2C_FIELD(gCurrentMap, void **, 0);
-        x = (u32) M2C_FIELD(p, u16 *, 0x5144) >> 1;
-        y = (u32) M2C_FIELD(p, u16 *, 0x5146) >> 1;
+        map = M2C_FIELD(gCurrentMap, void **, 0);
+        tileX = (u32) M2C_FIELD(map, u16 *, MAP_WIDTH) >> 1;
+        tileY = (u32) M2C_FIELD(map, u16 *, MAP_HEIGHT) >> 1;
     }
-    func_0207b754(x, y);
+    SetMapViewPositionToTileCentered(tileX, tileY);
 }
 
 void func_0207b744(M2C_UNK arg0, M2C_UNK arg1) {
@@ -137,7 +139,7 @@ void func_0207b744(M2C_UNK arg0, M2C_UNK arg1) {
     SetMapViewPositionToTile(arg0, arg1, 0);
 }
 
-void func_0207b754(M2C_UNK arg0, M2C_UNK arg1) {
+void SetMapViewPositionToTileCentered(M2C_UNK arg0, M2C_UNK arg1) {
     SetMapViewPositionToTile(arg0, arg1, 1);
 }
 
@@ -193,7 +195,7 @@ void func_0207b800(void) {
 
 /* Configure the current 3D sprite engine: set control bit 3, clear the low 3 bits of the sprite header, then initialise engine slots from the default data block (and a second pass / the alternate block when not on the secondary engine). */
 void Init3DSpriteLayers1D(void) {
-    void func_020822b8(void *);
+    void Apply3DSpriteLayout(void *);
     extern M2C_UNK g3DSpriteLayout1D, g3DSpriteLayoutSub;
     extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
@@ -205,7 +207,7 @@ void Init3DSpriteLayers1D(void) {
     *g3DSpriteBankMain |= 8;
     sprite0 = *gCur3DSpriteEngine;
     *sprite0 = *sprite0 & ~7;
-    func_020822b8(&g3DSpriteLayout1D);
+    Apply3DSpriteLayout(&g3DSpriteLayout1D);
     if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
         isSecondaryEngine = 1;
     } else {
@@ -215,19 +217,19 @@ void Init3DSpriteLayers1D(void) {
         *g3DSpriteBankMain |= 8;
         sprite1 = *gCur3DSpriteEngine;
         *sprite1 = *sprite1 & ~7;
-        func_020822b8(&g3DSpriteLayout1D);
+        Apply3DSpriteLayout(&g3DSpriteLayout1D);
         return;
     }
     sprite2 = *gCur3DSpriteEngine;
     *sprite2 = *sprite2 & ~7;
-    func_020822b8(&g3DSpriteLayoutSub);
+    Apply3DSpriteLayout(&g3DSpriteLayoutSub);
 }
 
 /* Configure the current 3D sprite engine's layers for the 2D OBJ character VRAM
  * mapping: on the main engine clear the bank's 1D mapping bit and load the 2D layer
  * layout, otherwise reset the layer attribute's mode bits and use the sub layout. */
 void Init3DSpriteLayers2D(void) {
-    void func_020822b8(void *);
+    void Apply3DSpriteLayout(void *);
     extern M2C_UNK g3DSpriteLayout2D, g3DSpriteLayoutSub;
     extern u16 *g3DSpriteBankMain;
     extern u16 **g3DSpriteEngineMain, **gCur3DSpriteEngine;
@@ -239,12 +241,12 @@ void Init3DSpriteLayers2D(void) {
         *g3DSpriteBankMain &= ~DS3D_BANK_OBJ_MAPPING_1D;
         mainBank = *gCur3DSpriteEngine;
         *mainBank = *mainBank & ~7;
-        func_020822b8(&g3DSpriteLayout2D);
+        Apply3DSpriteLayout(&g3DSpriteLayout2D);
         return;
     }
     engineBank = *gCur3DSpriteEngine;
     *engineBank = *engineBank & ~7;
-    func_020822b8(&g3DSpriteLayoutSub);
+    Apply3DSpriteLayout(&g3DSpriteLayoutSub);
 }
 
 /* Convert a tile type into the movement/collision result used by callers. */
@@ -416,6 +418,8 @@ extern s32 gSpriteBatch;
 return M2C_FIELD(gSpriteBatch,s32 *,0x50)+arg0;
 }
 
+#pragma push
+#pragma opt_strength_reduction off
 void func_0207bdc4(void) {
     s32 GetBatchTile(s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
@@ -427,53 +431,58 @@ void func_0207bdc4(void) {
     s32 func_0207bd88(s32);
     extern s32 gSpriteBatch;
     extern u8 gSpriteKindWidths[];
-    extern u8 data_021011d0[];
-    extern M2C_UNK data_0211e12c;
-    extern M2C_UNK data_02101408;
-    extern M2C_UNK data_02101414;
-    extern M2C_UNK data_02101420;
-    extern M2C_UNK data_0210142c;
+    extern u8 gSpriteKindFileNames[];
+    extern M2C_UNK gUiSpritePalette;
+    extern M2C_UNK sSpriteBatchDir;
+    extern M2C_UNK sMenu00NarcFile;
+    extern M2C_UNK sMenu01NarcFile;
+    extern M2C_UNK sMenu02NarcFile;
 
     s32 i;
     u8 kind;
-    s32 r4 = 0;
+    s32 r4;
+    s32 tile;
     s32 base;
-    s32 count;
     s8 *p;
 
-    CopyToObjPaletteShadow(&data_0211e12c, GetBatchTile(0) << 5, 0x60);
+    tile = GetBatchTile(0);
     r4 = 0;
+    CopyToObjPaletteShadow(&gUiSpritePalette, tile << 5, 0x60);
 
     base = gSpriteBatch;
-    count = M2C_FIELD(base, s32 *, 0x54);
-    p = (s8 *)base + 0x3C;
-    for (i = 0; i < count; i++, p++) {
-        kind = *p;
-        if (kind != 0) {
-            r4 = gSpriteKindWidths[kind << 3];
-            break;
-        }
+    i = r4;
+    if (M2C_FIELD(base, s32 *, 0x54) > 0) {
+        p = (s8 *)base;
+        do {
+            kind = M2C_FIELD(p, u8 *, 0x3C);
+            if (kind != 0) {
+                r4 = gSpriteKindWidths[kind << 3];
+                break;
+            }
+            ++i;
+            ++p;
+        } while (i < M2C_FIELD(base, s32 *, 0x54));
     }
 
-    SetFileDirectory(&data_02101408);
+    SetFileDirectory(&sSpriteBatchDir);
 
     switch (r4) {
-    case 0x30:
-        OpenNarcArchive(GetLocalizedFileName(&data_0210142c));
+    case 0x60:
+        OpenNarcArchive(GetLocalizedFileName(&sMenu00NarcFile));
         break;
     case 0x40:
-        OpenNarcArchive(GetLocalizedFileName(&data_02101420));
+        OpenNarcArchive(GetLocalizedFileName(&sMenu01NarcFile));
         break;
-    case 0x60:
-        OpenNarcArchive(GetLocalizedFileName(&data_02101414));
+    case 0x30:
+        OpenNarcArchive(GetLocalizedFileName(&sMenu02NarcFile));
         break;
     }
 
     for (i = 0; i < M2C_FIELD(gSpriteBatch, s32 *, 0x54); i++) {
         base = gSpriteBatch;
-        kind = M2C_FIELD(base, u8 *, i + 0x3C);
+        kind = M2C_FIELD(base + i, u8 *, 0x3C);
         if (kind != 0) {
-            M2C_UNK ptr = M2C_FIELD(&data_021011d0, M2C_UNK *, kind << 3);
+            M2C_UNK ptr = M2C_FIELD(&gSpriteKindFileNames, M2C_UNK *, kind << 3);
             M2C_UNK res = GetLocalizedFileName(ptr);
             s32 idx = func_0207bd88(i);
             LoadNarcFileDecompressed(res, idx);
@@ -482,7 +491,7 @@ void func_0207bdc4(void) {
 
     CloseNarcArchive();
 }
-
+#pragma pop
 /* Draw the current sprite batch with its graphics at pixel (x, y): place the batch's base tile,
  * submit its tiles, then offset each of the two layers' quads by the leftover sub-tile pixels. */
 void DrawSpriteBatchAt(s32 x, s32 y) {

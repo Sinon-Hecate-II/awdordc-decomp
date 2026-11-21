@@ -20,7 +20,7 @@ s32 func_ov011_02221338(s32 arg0) {
 
 #pragma scheduling off
 void ConfigureIntroScreens(void *arg0) {
-    M2C_UNK func_020822b8(u16 *);
+    M2C_UNK Apply3DSpriteLayout(u16 *);
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -35,9 +35,9 @@ void ConfigureIntroScreens(void *arg0) {
     second = M2C_FIELD(&data_ov011_02227f08, T *, 6);
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = mainEngine;
-    func_020822b8((u16 *)&first);
+    Apply3DSpriteLayout((u16 *)&first);
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020822b8((u16 *)&second);
+    Apply3DSpriteLayout((u16 *)&second);
     gCur3DSpriteEngine = temp_r4;
 }
 #pragma scheduling reset
@@ -48,7 +48,7 @@ void InitIntroScene(void *logo) {
     M2C_UNK func_02082c84(void);
     M2C_UNK GX_SetBankForBG(s32);
     M2C_UNK func_02003124(s32);
-    M2C_UNK func_020031cc(s32);
+    M2C_UNK GX_SetBankForSubOBJ(s32);
     M2C_UNK GX_SetBankForOBJ(s32);
     M2C_UNK func_02002ab8(s32);
     M2C_UNK GX_SetBankForBGExtPlttSub(s32);
@@ -70,7 +70,7 @@ void InitIntroScene(void *logo) {
     func_02082c84();
     GX_SetBankForBG(3);
     func_02003124(4);
-    func_020031cc(8);
+    GX_SetBankForSubOBJ(8);
     GX_SetBankForOBJ(0x10);
     func_02002ab8(0x60);
     GX_SetBankForBGExtPlttSub(0x80);

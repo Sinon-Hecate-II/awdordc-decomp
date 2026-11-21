@@ -614,12 +614,16 @@ void SetGxPolygonAttr(s32 arg0, s32 arg1) {
     *(s32 *)0x040004A4 = (arg0 << 0x18) | 0x81 | (arg1 << 0x10);
 }
 
-void SetGxTextureParams(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
- s32 temp_r5; s32 var_r0;
- temp_r5=GetGxTextureSizeCode4(arg2);
- *(volatile u32 *)0x040004A8=((u32)(arg3<<5)>>3)|(arg0<<26)|0x40000000|(GetGxTextureSizeCode3(arg1)<<20)|(temp_r5<<23)|0x20000000;
- var_r0=arg0==2?1:0;
- *(volatile u32 *)0x040004AC=(u32)(arg4<<5)>>(4-var_r0);
+/* Program the GX texture registers for one texture: TEXIMAGE_PARAM gets the
+ * format, the width/height size codes, the texture's VRAM offset and the two
+ * always-set flag bits; TEXPLTT_BASE gets the palette base, scaled differently
+ * for 256-colour textures (format 2). */
+void SetGxTextureParams(s32 format,s32 width,s32 height,s32 textureOffset,s32 paletteBase) {
+ s32 heightCode; s32 paletteShift;
+ heightCode=GetGxTextureSizeCode4(height);
+ REG_GX_TEXIMAGE_PARAM=((u32)(textureOffset<<5)>>3)|(format<<GX_TEXIMAGE_FORMAT_SHIFT)|0x40000000|(GetGxTextureSizeCode3(width)<<GX_TEXIMAGE_SIZE_SHIFT)|(heightCode<<(GX_TEXIMAGE_SIZE_SHIFT+3))|0x20000000;
+ paletteShift=format==2?1:0;
+ REG_GX_TEXPLTT_BASE=(u32)(paletteBase<<5)>>(4-paletteShift);
 }
 
 void func_020870dc(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,u8 arg5,u8 arg6,u8 arg7) {

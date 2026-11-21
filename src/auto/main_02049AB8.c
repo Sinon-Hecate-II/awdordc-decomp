@@ -294,18 +294,21 @@ if(!connection->progressCallback)return;
 connection->progressCallback(connection->request,connection->state,buffer,bufferLen,connection->bytesReceived,connection->contentLength,connection->callbackParam);
 }
 
-void ghiCallPostCallback(void *arg0) {
+/* ghttp ghiCallPostCallback: run the connection's post callback with the body
+ * prepared so far: the request, its upload offset and length, the part index,
+ * the number of parts and the connection's callback data. */
+void ghiCallPostCallback(GHIConnection *connection) {
     s32 Vector_GetCount(s32);
-    extern M2C_UNK data_020fcfa4;
     extern M2C_UNK sGhiAssertConnection;
     extern M2C_UNK sGhiCallbacksSourceFile;
-    if (arg0 == NULL) {
-        AssertFailed(&sGhiAssertConnection, &sGhiCallbacksSourceFile, &data_020fcfa4, 0x5E);
+    extern M2C_UNK sGhiCallPostCallbackName;
+    if (connection == NULL) {
+        AssertFailed(&sGhiAssertConnection, &sGhiCallbacksSourceFile, &sGhiCallPostCallbackName, 0x5E);
     }
-    if (M2C_FIELD(arg0, M2C_UNK (**)(s32, s32, s32, s32, s32, s32), 0x150) == NULL) {
+    if (connection->postCallback == NULL) {
         return;
     }
-    M2C_FIELD(arg0, M2C_UNK (**)(s32, s32, s32, s32, s32, s32), 0x150)(M2C_FIELD(arg0, s32 *, 4), M2C_FIELD(arg0, s32 *, 0x148), M2C_FIELD(arg0, s32 *, 0x14C), M2C_FIELD(arg0, s32 *, 0x144), Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x140)), M2C_FIELD(arg0, s32 *, 0x44));
+    connection->postCallback(connection->request, connection->postOffset, connection->postLength, connection->postIndex, Vector_GetCount((s32)connection->postItems), connection->callbackParam);
 }
 
 void func_0204a608(void) {

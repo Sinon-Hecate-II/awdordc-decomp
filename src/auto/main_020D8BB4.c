@@ -1,24 +1,25 @@
 /* 152 functions from 0x020D8BB4 to 0x020D9A98 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct { u16 values[6]; } SetupParams12;
 
 void func_020d8bb4(void) {
 M2C_UNK func_0208349c(u32);
-s32 IsUnitAvailable();
-s32 GetSaveType(s32,s32);
-M2C_UNK LoadMapTileset();
+s32 func_020bee64();
+s32 func_020bf054(s32,s32);
+M2C_UNK func_020ceec8();
 s32 func_020d8b84(s32);
 s32 func_020e4b28(s32);
 extern M2C_UNK data_0215d9b8;
-extern u16 gMapConfig;
+extern u16 data_02168f14;
 extern s8 data_02168f2c;
 s32 k,j,t,i; s8 *p;
 u16 flags; u32 mode;
-flags=gMapConfig;
+flags=data_02168f14;
 mode=M2C_FIELD(&data_0215d9b8,u16 *,6)&15;
-gMapConfig=(flags&~7)|3;
+data_02168f14=(flags&~7)|3;
 func_0208349c(mode);
-LoadMapTileset();
+func_020ceec8();
 i=0;p=&data_02168f2c;
 do {i++;*p=0;p+=1;}while(i<59);
 k=0;
@@ -26,13 +27,13 @@ do {
 switch(k){
 case 0:
 j=0;
-do {t=GetSaveType(k,j);
-if(IsUnitAvailable()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+do {t=func_020bf054(k,j);
+if(func_020bee64()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 j++;}while(j<3);
 break;
 case 1:
-t=GetSaveType(k,0);
-if(IsUnitAvailable()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+t=func_020bf054(k,0);
+if(func_020bee64()!=0 && func_020d8b84(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
 break;
 }
 k++;
@@ -93,22 +94,25 @@ void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
     gCur3DSpriteEngine = temp_r4;
 }
 
+/* Whether the UI mode switch is still in progress: busy while the screen change
+ * that covers the swap is up, while the requested mode has not become current
+ * yet, or until the new mode's sprite object has appeared in the sub engine. */
 u8 IsUiModeSwitchBusy(void) {
     s32 FindObjectByClass(void *);
     extern void *gUiMode;
     extern M2C_UNK data_0212c498;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    u8 var_r0;
+    void *savedEngine;
+    u8 busy;
     if (func_020d8d00() == 0) return 0;
-    if (M2C_FIELD(gUiMode, s16 *, 4) != M2C_FIELD(gUiMode, s16 *, 2)) return 1;
-    temp_r4 = gCur3DSpriteEngine;
+    if (((UiModeState *)gUiMode)->requested != ((UiModeState *)gUiMode)->current) return 1;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (FindObjectByClass(&data_0212c498) != 0) var_r0 = 1;
-    else var_r0 = 0;
-    gCur3DSpriteEngine = temp_r4;
-    return var_r0;
+    if (FindObjectByClass(&data_0212c498) != 0) busy = 1;
+    else busy = 0;
+    gCur3DSpriteEngine = savedEngine;
+    return busy;
 }
 
 void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK data_0212c534;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&data_0212c534);gCur3DSpriteEngine=p;}
@@ -150,7 +154,7 @@ void func_020d9054(s32 a){M2C_UNK CreateSpriteObject(M2C_UNK *,M2C_UNK);extern M
    sprite layers (bits 4..8 of the bank's flags word). */
 void func_020d908c(void) {
     M2C_UNK func_020d4d78(void);
-    void func_020822b8(void *);
+    void Apply3DSpriteLayout(void *);
     void Reset3DSpriteBankState(void);
     void Reset3DSpriteCorners(void);
     void func_020c0a88(void);
@@ -180,7 +184,7 @@ void func_020d908c(void) {
     gCur3DSpriteEngine = savedEngine;
     bankFlags = (u16 *)*(void **)gCur3DSpriteEngine;
     *bankFlags = (u16)(*bankFlags & ~7);
-    func_020822b8(&setup);
+    Apply3DSpriteLayout(&setup);
     Reset3DSpriteBankState();
     Reset3DSpriteCorners();
     func_020c0a88();

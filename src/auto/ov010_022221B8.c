@@ -66,34 +66,34 @@ case 4: func_ov010_02221474((u8 *)arg0+4,arg1,arg2,arg3); return;
 #pragma opt_strength_reduction off
 s32 func_ov010_022224b4(void){
 s32 func_020070a4(void); void func_ov010_02225174(void);void func_ov010_02223654(u32);void Link_InitChannelState(void *,u32,s32);void func_ov010_022232e0(void);void VoiceCodec_ResetState(void);
-extern M2C_UNK data_ov010_0222c960,data_ov010_0222c000,gLinkConfig;extern u8 data_ov010_0222be2c[];extern void *data_ov010_0222c98c[];extern u8 gLinkChannelStates[];
-s32 i; s32 saved; s32 n; u8 x,y; u8 *t;
+extern M2C_UNK gVoiceChatState,data_ov010_0222c000,gLinkConfig;extern u8 gVoiceModePayloadUnits[];extern void *data_ov010_0222c98c[];extern u8 gLinkChannelStates[];
+s32 i; s32 saved; s32 n, x, y; u8 *t;
 saved=func_020070a4();
-M2C_FIELD(&data_ov010_0222c960,u16 *,0)=saved; data_ov010_0222c000=1;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
-if(M2C_FIELD(&gLinkConfig,s32 *,16)==1)M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=0;
-else M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=4;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x24)=0x440;
-n=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
-t=data_ov010_0222be2c+n*2;
+M2C_FIELD(&gVoiceChatState,u16 *,0)=saved; data_ov010_0222c000=1;
+M2C_FIELD(&gVoiceChatState,s32 *,0x20)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,4)=0;
+if(M2C_FIELD(&gLinkConfig,s32 *,16)==1)M2C_FIELD(&gVoiceChatState,s32 *,0x1c)=0;
+else M2C_FIELD(&gVoiceChatState,s32 *,0x1c)=4;
+M2C_FIELD(&gVoiceChatState,s32 *,0x24)=0x440;
+n=M2C_FIELD(&gVoiceChatState,s32 *,0x1c) * 2;
+t=&gVoiceModePayloadUnits[n];
 x=t[1];
-y=t[0];
-M2C_FIELD(&data_ov010_0222c960,s32 *,12)=x+y*68+12;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3840)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3844)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3852)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3848)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3856)=0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,3860)=0;
+y=gVoiceModePayloadUnits[n];
+M2C_FIELD(&gVoiceChatState,s32 *,12)=x+y*68+12;
+M2C_FIELD(&gVoiceChatState,s32 *,3840)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,3844)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,3852)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,3848)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,3856)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,3860)=0;
 func_ov010_02225174();
 i=0;goto test;loop:{data_ov010_0222c98c[i]=0;func_ov010_02223654(i);Link_InitChannelState(gLinkChannelStates+i*0x94,i,-1);i++;}test:if((u32)i<3)goto loop;
 func_ov010_022232e0();VoiceCodec_ResetState();return 1;
 }
 #pragma opt_strength_reduction reset
 void func_ov010_022225b0(s32 arg0) {
-    extern M2C_UNK data_ov010_0222c960;
-    M2C_FIELD(&data_ov010_0222c960, void **, 0x20) = NULL;
+    extern M2C_UNK gVoiceChatState;
+    M2C_FIELD(&gVoiceChatState, void **, 0x20) = NULL;
 }
 
 #pragma optimization_level 2
@@ -102,12 +102,12 @@ void Link_InitChannelState(void*,u32,s32);
 void func_ov010_02223654(u32);
 void func_ov010_02224f28(void);
 s32 func_020070a4(void);
-extern s32 data_ov010_0222c960;
+extern s32 gVoiceChatState;
 extern void *data_ov010_0222c98c[];
 extern u8 gLinkChannelStates[];
 s32 i;
 if(!p)return 0;
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==3)return 0;
+if(M2C_FIELD(&gVoiceChatState,s32*,0x20)==3)return 0;
 if(M2C_FIELD(p,s32*,12)!=2&&M2C_FIELD(p,s32*,12)!=3)return 0;
 i=0;goto test1;
 loop1:if(data_ov010_0222c98c[i]==p)return 1;i++;
@@ -116,43 +116,43 @@ i=0;goto test2;
 loop2:if(!data_ov010_0222c98c[i]){data_ov010_0222c98c[i]=p;goto found;}i++;
 test2:if((u32)i<3)goto loop2;
 found:
-M2C_FIELD(&data_ov010_0222c960,s32*,0x20)++;
-M2C_FIELD(&data_ov010_0222c960,u32*,4)|=M2C_FIELD(p,u32*,8);
+M2C_FIELD(&gVoiceChatState,s32*,0x20)++;
+M2C_FIELD(&gVoiceChatState,u32*,4)|=M2C_FIELD(p,u32*,8);
 Link_InitChannelState((void *)((s32)gLinkChannelStates+i*0x94),i,M2C_FIELD(p,u8*,5));
 func_ov010_02223654(i);
 if(M2C_FIELD(p,s32*,12)!=2)return 1;
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==1){
+if(M2C_FIELD(&gVoiceChatState,s32*,0x20)==1){
 func_ov010_02224f28();
-M2C_FIELD(&data_ov010_0222c960,u16*,0)=func_020070a4();
-M2C_FIELD(&data_ov010_0222c960,u16*,0x10)=0;
-M2C_FIELD(&data_ov010_0222c960,u8*,0x12)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0x14)=1;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf00)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf04)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf0c)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf08)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf10)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xf14)=0;
+M2C_FIELD(&gVoiceChatState,u16*,0)=func_020070a4();
+M2C_FIELD(&gVoiceChatState,u16*,0x10)=0;
+M2C_FIELD(&gVoiceChatState,u8*,0x12)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0x14)=1;
+M2C_FIELD(&gVoiceChatState,s32*,0xf00)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xf04)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xf0c)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xf08)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xf10)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xf14)=0;
 }
 return 1;
 }
 #pragma optimization_level reset
 void VoiceChat_RemoveChannel(void *arg0) {
-extern void *data_ov010_0222c98c[]; extern u8 gLinkChannelStates[]; extern M2C_UNK data_ov010_0222c960;
+extern void *data_ov010_0222c98c[]; extern u8 gLinkChannelStates[]; extern M2C_UNK gVoiceChatState;
 void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010_02223314(u32); void func_ov010_02224f28(void);
 u32 i;
 for(i=0;i<3;i++) {
 if(data_ov010_0222c98c[i]==arg0) {
 void *channel = gLinkChannelStates + i * 0x94;
-s32 count=M2C_FIELD(&data_ov010_0222c960,s32 *,0x20);
+s32 count=M2C_FIELD(&gVoiceChatState,s32 *,0x20);
 void *empty = 0;
 data_ov010_0222c98c[i]=empty;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)=count-1;
+M2C_FIELD(&gVoiceChatState,s32 *,0x20)=count-1;
 func_ov010_022239c8(channel);
 func_ov010_0222369c(i);
 func_ov010_02223314(i);
 {
-    u32 *state = (u32 *)&data_ov010_0222c960;
+    u32 *state = (u32 *)&gVoiceChatState;
     u32 flags = state[1];
     u32 mask = M2C_FIELD(arg0,u32 *,8);
     mask = ~mask;
@@ -162,35 +162,35 @@ func_ov010_02223314(i);
 break;
 }
 }
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x20)!=0) return;
+if(M2C_FIELD(&gVoiceChatState,s32 *,0x20)!=0) return;
 {
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)=1;
+M2C_FIELD(&gVoiceChatState,s32 *,0x14)=1;
 func_ov010_02224f28();
-M2C_FIELD(&data_ov010_0222c960,s32 *,4)=0;
+M2C_FIELD(&gVoiceChatState,s32 *,4)=0;
 }
 }
 
 #pragma push
 #pragma opt_common_subs off
 s32 func_ov010_022227b0(void *src,s32 len){
-extern M2C_UNK data_ov010_0222c960; extern void *data_ov010_0222c98c[];extern u8 gLinkPacketBuffers[];
+extern M2C_UNK gVoiceChatState; extern void *data_ov010_0222c98c[];extern u8 gLinkPacketBuffers[];
 void MI_CpuCopy32(void *,void *,s32);s64 GetSystemTick(void);s32 U64Divide(s64,s32,s32);
 s32 found=0; s32 off;u8 *p;u16 n;s32 mode;u32 magic=0x5f564354;
-if(len!=M2C_FIELD(&data_ov010_0222c960,s32 *,0x24))return found;
-if(!M2C_FIELD(&data_ov010_0222c960,s32 *,0x20))return found;
+if(len!=M2C_FIELD(&gVoiceChatState,s32 *,0x24))return found;
+if(!M2C_FIELD(&gVoiceChatState,s32 *,0x20))return found;
 {s32 i=0;goto test;loop:{if(data_ov010_0222c98c[i] && M2C_FIELD(data_ov010_0222c98c[i],s32 *,12)==2){found=1;goto done;}i++;}test:if((u32)i<3)goto loop;done:;}
 if(!found)return 0;
-if(M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)&1){magic=0x5f564354;off=0;}else{magic=0x5f564354;off=0x460;}
+if(M2C_FIELD(&gVoiceChatState,u32 *,0xf04)&1){magic=0x5f564354;off=0;}else{magic=0x5f564354;off=0x460;}
 p=gLinkPacketBuffers+off;
-mode=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
+mode=M2C_FIELD(&gVoiceChatState,s32 *,0x1c);
 M2C_FIELD(p,u32 *,0)=magic;
 if(mode>=2)MI_CpuCopy32(src,p+16,len);else MI_CpuCopy32(src,p+12,len);
-n=M2C_FIELD(&data_ov010_0222c960,u16 *,0);
+n=M2C_FIELD(&gVoiceChatState,u16 *,0);
 M2C_FIELD(p,u8 *,4)=64;
-M2C_FIELD(&data_ov010_0222c960,u16 *,0)=n+1;
+M2C_FIELD(&gVoiceChatState,u16 *,0)=n+1;
 M2C_FIELD(p,u16 *,6)=n;
 M2C_FIELD(p,s32 *,8)=U64Divide(GetSystemTick(),64,0);
-{u32 count=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04);M2C_FIELD(&data_ov010_0222c960,s32 *,0xf04)=count+1;}
+{u32 count=M2C_FIELD(&gVoiceChatState,u32 *,0xf04);M2C_FIELD(&gVoiceChatState,s32 *,0xf04)=count+1;}
 return 1;
 }
 
@@ -273,12 +273,12 @@ s32 Link_PullChannelPacket(void*,s32,u32,s32*);
 void func_ov010_02225558(void*,void*,void*,s32);
 void MI_CpuFill32(s32,void*,s32);
 void func_ov010_02225304(void*,s32);
-extern s32 data_ov010_0222c960;
+extern s32 gVoiceChatState;
 extern u8 data_ov010_0222cb54[];
 s32 received;u32 channel,nextChannel;
 if(players)*players=0;
 received=0;
-if(packetSize==M2C_FIELD(&data_ov010_0222c960,s32*,0x24)&&M2C_FIELD(&data_ov010_0222c960,s32*,0x20)){
+if(packetSize==M2C_FIELD(&gVoiceChatState,s32*,0x24)&&M2C_FIELD(&gVoiceChatState,s32*,0x20)){
 for(channel=0;channel<3;channel++){
 if(Link_PullChannelPacket(buffer,packetSize,channel,players)==1){received=1;break;}
 }
@@ -291,25 +291,35 @@ func_ov010_02225558(buffer,data_ov010_0222cb54,buffer,packetSize);
 }
 }else MI_CpuFill32(0,buffer,packetSize);
 }else{MI_CpuFill32(0,buffer,packetSize);received=0;}
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0x18))func_ov010_02225304(buffer,packetSize);
+if(M2C_FIELD(&gVoiceChatState,s32*,0x18))func_ov010_02225304(buffer,packetSize);
 return received;
 }
 
 #pragma pop
-s32 func_ov010_02222c28(s32 arg0) {
-extern M2C_UNK gLinkConfig; extern u8 data_ov010_0222be2d[]; extern u8 data_ov010_0222be2c[]; extern M2C_UNK data_ov010_0222c960;
-if(arg0>=5) return 0;
-if(M2C_FIELD(&gLinkConfig,s32 *,0x10)!=1 && (u32)arg0<=1) return 0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,12)=data_ov010_0222be2d[arg0*2]+data_ov010_0222be2c[arg0*2]*68+12;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c)=arg0;
-M2C_FIELD(&data_ov010_0222c960,s16 *,0x10)=0;
-M2C_FIELD(&data_ov010_0222c960,u8 *,0x12)=0;
-return 1;
+/* Selects the voice codec, records its wire packet size and resets the ADPCM encoder state. */
+s32 VoiceChat_SetCodecMode(s32 codecMode) {
+    extern M2C_UNK gLinkConfig;
+    extern u8 gVoiceModePayloadExtraBytes[];
+    extern u8 gVoiceModePayloadUnits[];
+    extern M2C_UNK gVoiceChatState;
+
+    if (codecMode >= VOICE_CODEC_MODE_COUNT) return 0;
+    if (M2C_FIELD(&gLinkConfig, s32 *, LINK_CONFIG_MODE) != 1 &&
+        (u32)codecMode <= VOICE_CODEC_MULAW) return 0;
+
+    M2C_FIELD(&gVoiceChatState, s32 *, VOICE_CHAT_WIRE_PACKET_BYTES) =
+        gVoiceModePayloadExtraBytes[codecMode * VOICE_CODEC_SIZE_ENTRY_BYTES] +
+        gVoiceModePayloadUnits[codecMode * VOICE_CODEC_SIZE_ENTRY_BYTES] * VOICE_CODEC_PAYLOAD_UNIT_BYTES +
+        VOICE_AUDIO_HEADER_BYTES;
+    M2C_FIELD(&gVoiceChatState, s32 *, VOICE_CHAT_CODEC_MODE) = codecMode;
+    M2C_FIELD(&gVoiceChatState, s16 *, VOICE_CHAT_ADPCM_PREDICTOR) = 0;
+    M2C_FIELD(&gVoiceChatState, u8 *, VOICE_CHAT_ADPCM_STEP_INDEX) = 0;
+    return 1;
 }
 
 void func_ov010_02222c9c(s32 arg0) {
-    extern M2C_UNK data_ov010_0222c960;
-    M2C_FIELD(&data_ov010_0222c960, s32 *, 0x18) = arg0;
+    extern M2C_UNK gVoiceChatState;
+    M2C_FIELD(&gVoiceChatState, s32 *, 0x18) = arg0;
 }
 
 #pragma push
@@ -322,7 +332,7 @@ void func_ov010_02222c9c(s32 arg0) {
  * current mode and update the sequence/timer state. Returns the packet to
  * transmit, or 0 when there is nothing to send. */
 s32 Link_BuildNextPacket(void) {
-extern M2C_UNK data_ov010_0222c960;
+extern M2C_UNK gVoiceChatState;
 extern u8 gLinkPacketBuffers[];
 extern s32 data_ov010_0222c000;
 extern M2C_UNK gLinkCodecState;
@@ -338,50 +348,50 @@ u32 packetFlags;
 u8 *payload,*packet;
 u32 energy,energyRoot;
 s32 mode;
-mode=M2C_FIELD(&data_ov010_0222c960,s32 *,0x1c);
-n=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00);
-if(n>1){M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf04)-1;n=1;}
+mode=M2C_FIELD(&gVoiceChatState,s32 *,0x1c);
+n=M2C_FIELD(&gVoiceChatState,u32 *,0xf04)-M2C_FIELD(&gVoiceChatState,u32 *,0xf00);
+if(n>1){M2C_FIELD(&gVoiceChatState,u32 *,0xf00)=M2C_FIELD(&gVoiceChatState,u32 *,0xf04)-1;n=1;}
 if(n==0)return 0;
-packet=gLinkPacketBuffers+((M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)&1)?0:0x460);
+packet=gLinkPacketBuffers+((M2C_FIELD(&gVoiceChatState,u32 *,0xf00)&1)?0:0x460);
 payload=packet+12;
 if(mode>=2)payload+=4;
-energy=func_ov010_0222519c(payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24));
+energy=func_ov010_0222519c(payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24));
 *(volatile u16 *)0x040002b0=0;
 *(volatile u32 *)0x040002b8=energy;
 while(*(volatile u16 *)0x040002b0&0x8000){}
 energyRoot=*(volatile u32 *)0x040002b4;
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x18))func_ov010_02225538(payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24),energyRoot);
+if(M2C_FIELD(&gVoiceChatState,s32 *,0x18))func_ov010_02225538(payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24),energyRoot);
 packet[5]=mode;
 if(data_ov010_0222c000){
 s32 energyCheck=func_ov010_02224f94(energy,energyRoot,0);
-M2C_FIELD(&data_ov010_0222c960,s32 *,0x28)=energyCheck;
+M2C_FIELD(&gVoiceChatState,s32 *,0x28)=energyCheck;
 switch(energyCheck){
-case 0: n=M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)+1;M2C_FIELD(&data_ov010_0222c960,u32 *,0xf00)=n;return 0;
+case 0: n=M2C_FIELD(&gVoiceChatState,u32 *,0xf00)+1;M2C_FIELD(&gVoiceChatState,u32 *,0xf00)=n;return 0;
 case 1: packet[5]|=0x80;break;
 case 3: packet[4]=0x41;break;
 }
 }
-if(!data_ov010_0222c000 && M2C_FIELD(&data_ov010_0222c960,s32 *,8)){
-packetFlags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,8)=0;packet[5]=packetFlags|0x80;
+if(!data_ov010_0222c000 && M2C_FIELD(&gVoiceChatState,s32 *,8)){
+packetFlags=packet[5];M2C_FIELD(&gVoiceChatState,s32 *,8)=0;packet[5]=packetFlags|0x80;
 }
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)){
-packetFlags=packet[5];M2C_FIELD(&data_ov010_0222c960,s32 *,0x14)=0;packet[5]=packetFlags|0x80;
+if(M2C_FIELD(&gVoiceChatState,s32 *,0x14)){
+packetFlags=packet[5];M2C_FIELD(&gVoiceChatState,s32 *,0x14)=0;packet[5]=packetFlags|0x80;
 }
 if(mode>=2){
-if(packet[5]&0x80){M2C_FIELD(&data_ov010_0222c960,s16 *,0x10)=0;M2C_FIELD(&data_ov010_0222c960,u8 *,0x12)=0;}
-func_ov010_02222454(payload-4,(s32)payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1,&gLinkCodecState,mode);
+if(packet[5]&0x80){M2C_FIELD(&gVoiceChatState,s16 *,0x10)=0;M2C_FIELD(&gVoiceChatState,u8 *,0x12)=0;}
+func_ov010_02222454(payload-4,(s32)payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1,&gLinkCodecState,mode);
 }else if(mode==1){
-func_ov010_022234f8(payload,payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
+func_ov010_022234f8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
 }else if(mode==0){
-func_ov010_022235f8(payload,payload,M2C_FIELD(&data_ov010_0222c960,u32 *,0x24)>>1);
+func_ov010_022235f8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
 }
-n=M2C_FIELD(&data_ov010_0222c960,u32 *,4);
-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
+n=M2C_FIELD(&gVoiceChatState,u32 *,4);
+M2C_FIELD(&gVoiceChatState,u32 *,0xf0c)=n;
 n&=~(1U<<M2C_FIELD(&gLinkConfig,u8 *,0));
-M2C_FIELD(&data_ov010_0222c960,u32 *,0xf0c)=n;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)=CountBits()-1;
-if(M2C_FIELD(&data_ov010_0222c960,s32 *,0xf14)>7)return 0;
-M2C_FIELD(&data_ov010_0222c960,s32 *,0xf10)=0;
+M2C_FIELD(&gVoiceChatState,u32 *,0xf0c)=n;
+M2C_FIELD(&gVoiceChatState,s32 *,0xf14)=CountBits()-1;
+if(M2C_FIELD(&gVoiceChatState,s32 *,0xf14)>7)return 0;
+M2C_FIELD(&gVoiceChatState,s32 *,0xf10)=0;
 return (s32)packet;
 }
 #pragma pop
@@ -392,13 +402,13 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void Link_FreeAllQueuedPackets(void);
     void func_ov010_0222335c(void);
     s32 func_ov010_02223b18(void *, void *);
-    void func_ov010_022233ac(void *);
+    void Link_AppendPendingPacket(void *);
     void Link_FreePacket(void *);
     void MI_CpuCopy8(void *, void *, s32);
-    extern M2C_UNK data_ov010_0222c960;
+    extern M2C_UNK gVoiceChatState;
     extern u8 gLinkChannelStates[];
-    extern u8 data_ov010_0222be2d[];
-    extern u8 data_ov010_0222be2c[];
+    extern u8 gVoiceModePayloadExtraBytes[];
+    extern u8 gVoiceModePayloadUnits[];
 
     void *item;
     u8 *slot;
@@ -420,7 +430,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     a3 = arg3;
 
     slot = 0;
-    if (M2C_FIELD(&data_ov010_0222c960, s32 *, 0x20) == 0)
+    if (M2C_FIELD(&gVoiceChatState, s32 *, 0x20) == 0)
         return (s32)slot;
 
     p = gLinkChannelStates;
@@ -450,11 +460,11 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     if (id >= 5)
         return 0;
 
-    if (a2 != (s32)data_ov010_0222be2d[id * 2] +
-                (s32)data_ov010_0222be2c[id * 2] * 0x44 + 0xc)
+    if (a2 != (s32)gVoiceModePayloadExtraBytes[id * 2] +
+                (s32)gVoiceModePayloadUnits[id * 2] * 0x44 + 0xc)
         return 0;
 
-    if (!(M2C_FIELD(&data_ov010_0222c960, u32 *, 4) &
+    if (!(M2C_FIELD(&gVoiceChatState, u32 *, 4) &
           (a0 ? (1u << a0) : 1u)))
         return 0;
 
@@ -491,7 +501,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         Link_FreePacket(item);
         return 0;
     }
-    func_ov010_022233ac(item);
+    Link_AppendPendingPacket(item);
     return 1;
 }
 

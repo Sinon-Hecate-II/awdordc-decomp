@@ -44,7 +44,7 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     void func_ov001_0216c88c(int, unsigned char *, int, short *, short *, int);
     void func_ov001_0216c8e0(unsigned short *, int, int, int, signed char, signed char, void *);
     void func_ov001_0216c938(int, int, int, int);
-    int func_ov001_0216cc0c(void *, int, void *, int);
+    int Ov001_ScrambleToken(void *, int, void *, int);
     int Ov001SwapEndian32(int);
     short func_ov001_0216ceb0(u16);
     void Ov001MemClear();
@@ -70,7 +70,7 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     func_ov001_0216c88c(M2C_FIELD(gRoomState, int *, 0), buffer + OV001_PKT_HEADER,
                        (int)&packet.work.type, &packet.work.length, &packet.work.flags, (int)&packet.work);
     Ov001MemCopy(packet.token, (void *)(session + 8), 8);
-    if (func_ov001_0216cc0c(packet.token, 8, data_ov001_0218fdb0, 6)) {
+    if (Ov001_ScrambleToken(packet.token, 8, data_ov001_0218fdb0, 6)) {
         Ov001_SetRoomError(2);
         return -1;
     }

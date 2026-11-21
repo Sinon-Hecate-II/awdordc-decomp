@@ -25,7 +25,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02002bb8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
-    M2C_UNK func_020031cc(M2C_UNK);
+    M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK func_0200bc5c(M2C_UNK *);
@@ -35,7 +35,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02081528();
     M2C_UNK func_02081590(M2C_UNK *, s32);
     M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020822b8(M2C_UNK *);
+    M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
@@ -43,7 +43,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02091cd0();
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_02098b94(s32, s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
@@ -51,7 +51,7 @@ void func_ov005_02218fd0(void *arg0) {
     void *func_020ab1c4(M2C_UNK);
     M2C_UNK *func_020e3218(M2C_UNK *);
     s32 func_ov005_02218e54();
-    s32 func_ov005_02218edc();
+    s32 GetResultSecondCoFaceId();
     extern M2C_UNK data_0215c334;
     extern u16 data_02168f14;
     extern void **data_027e0058;
@@ -152,7 +152,7 @@ void func_ov005_02218fd0(void *arg0) {
     func_020026d8(1);
     func_02002968(2);
     func_02003124(4);
-    func_020031cc(8);
+    GX_SetBankForSubOBJ(8);
     func_02002ab8(0x40);
     func_02002bb8(0x20);
     GX_SetBankForBGExtPlttSub(0x80);
@@ -167,7 +167,7 @@ void func_ov005_02218fd0(void *arg0) {
             var_r1 = data_027e00c4;
         }
         gCur3DSpriteEngine = var_r1;
-        func_020822b8(&data_ov005_02220a9c);
+        Apply3DSpriteLayout(&data_ov005_02220a9c);
         var_r7 += 1;
         temp_r0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
         sp24 = temp_r0;
@@ -304,10 +304,10 @@ void func_ov005_02218fd0(void *arg0) {
     if (var_r2_3 & 0xFF) {
         RemoveSpriteCell(temp_r0_10, 1);
     }
-    func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
-    func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
-    func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2E0);
-    func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300);
+    LoadSpriteResource(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2E0);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x300);
     func_0200bc5c(&data_ov005_02221058);
     func_0208116c(&data_ov005_02221060, 0x320, 0x20);
     func_020814e4(&data_ov005_0222106c);
@@ -321,8 +321,8 @@ void func_ov005_02218fd0(void *arg0) {
     func_0208116c(&data_ov005_022210b8, 0x3C0, 0x20);
     gCur3DSpriteEngine = data_027e00c4;
     func_02091d4c(0);
-    func_020a9a30(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
-    func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
+    LoadSpriteResource(1, 0, 2, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2800);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
     func_0200bc5c(&data_ov005_022210c8);
     func_020814e4(&data_ov005_022210d0);
     func_02081590(&data_ov005_022210e0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
@@ -391,7 +391,7 @@ void func_ov005_02218fd0(void *arg0) {
     } while (var_r9 < 2);
     gCur3DSpriteEngine = sp8;
     temp_r4 = func_ov005_02218e54();
-    temp_r1 = func_ov005_02218edc();
+    temp_r1 = GetResultSecondCoFaceId();
     if (temp_r4 == 0) {
         return;
     }

@@ -1,5 +1,6 @@
 /* 7 functions from 0x02209D0C to 0x0220ACCC (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
 static inline void AdvanceLabelX(s32 *x,u16 width) { *x=(u8)(*x+(width+8)); }
 
 
@@ -297,17 +298,24 @@ width=ScaleFixed8(rawWidth,constant);
   }
 }
 #pragma pop
-void func_ov003_0220ac58(void *arg0) {
-void *p=M2C_FIELD(arg0,void **,0x58);
-s16 current=M2C_FIELD(p,s16 *,2);
-s16 step;
-s16 target;
-if(current==M2C_FIELD(p,s16 *,4)) return;
-M2C_FIELD(p,s16 *,2)=current+M2C_FIELD(p,s16 *,6);
-p=M2C_FIELD(arg0,void **,0x58);
-step=M2C_FIELD(p,s16 *,6);
-if((step==6 && (target=M2C_FIELD(p,s16 *,4),M2C_FIELD(p,s16 *,2)>target)) || (step==-4 && (target=M2C_FIELD(p,s16 *,4),M2C_FIELD(p,s16 *,2)<target))) M2C_FIELD(p,s16 *,2)=target;
-p=M2C_FIELD(arg0,void **,0x58);
-M2C_FIELD(p,u8 *,1)+=1;
+/* Advance the help panel toward its target Y and clamp the final slide step. */
+void Ov003_UpdateHelpPanelSlide(void *menu) {
+    Ov003HelpPanel *panel = M2C_FIELD(menu, Ov003HelpPanel **, OV003_MENU_HELP_PANEL);
+    s16 currentY = panel->y;
+    s16 stepY;
+    s16 targetY;
+
+    if (currentY == panel->targetY) {
+        return;
+    }
+    panel->y = currentY + panel->stepY;
+    panel = M2C_FIELD(menu, Ov003HelpPanel **, OV003_MENU_HELP_PANEL);
+    stepY = panel->stepY;
+    if ((stepY == OV003_HELP_PANEL_HIDE_STEP && (targetY = panel->targetY, panel->y > targetY)) ||
+        (stepY == OV003_HELP_PANEL_SHOW_STEP && (targetY = panel->targetY, panel->y < targetY))) {
+        panel->y = targetY;
+    }
+    panel = M2C_FIELD(menu, Ov003HelpPanel **, OV003_MENU_HELP_PANEL);
+    panel->slideFrame += 1;
 }
 

@@ -19,7 +19,7 @@ extern s8 gTerrainPropertyType[];
 void func_ov000_0219234c(void *arg0) {
 void SelectMapLayer(void *);void FloodFillUnitRange(s32,s32,u32,s32,s32);
 s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(u32);s32 IsPropertyTerrain(u32);
-s32 FindBestAdjacentDestination(s32,s32,s16 *);s32 func_ov000_0217bd44(s32,s32,s32,s32);
+s32 FindBestAdjacentDestination(s32,s32,s16 *);s32 GetAiCargoDropDirection(s32,s32,s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
 s32 GetUnitMoveRange(u32,u32);s32 IsTerrainOnUnitTeam(u32,u32);
 void *unit; s32 ux,uy,range,n,d,score,bestX,bestY,candX,candY;void *m,*p; s8 *cost; s16 point[2];s8 *table;
@@ -38,7 +38,7 @@ func_ov000_02199f38();
 BuildUnitMoveRange(SEL);MarkAdjacentCells(111);
 if(M2C_FIELD(M2C_FIELD(MAP+uy*4,s8 **,0x52e8),s8 *,ux)>=0&&!IsAllyUnitAtCell((s16)ux,(s16)uy)&&(!IsPropertyTerrain(TILE(ux,uy))||M2C_FIELD(MAP+ux+ROW(uy),u8 *,0x508)==0)&&FindBestAdjacentDestination(ux,uy,point)){
 m=MAP;n=M2C_FIELD(m+uy*2,u16 *,0x3758);p=m+0x6c60;d=M2C_FIELD(m+(ux+n),s8 *,0x1928);p+=d*6;M2C_FIELD(p,u8 *,3)++;
-d=func_ov000_0217bd44(point[0],point[1],ux,uy);
+d=GetAiCargoDropDirection(point[0],point[1],ux,uy);
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u8 *,11)&=~15;
@@ -85,7 +85,7 @@ bestD=d;candX=point[0];candY=point[1];bestX=x;bestY=y;bestScore=score;
 
 if(bestScore!=-1){
 m=MAP;p=m+0x6c60+CELL(ux,uy,0x1928)*6;M2C_FIELD(p,u8 *,3)++;
-d=func_ov000_0217bd44(candX,candY,bestX,bestY);
+d=GetAiCargoDropDirection(candX,candY,bestX,bestY);
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~63)|63;
 M2C_FIELD(SEL,u16 *,8)=(M2C_FIELD(SEL,u16 *,8)&~0xfc0)|0xfc0;
 M2C_FIELD(SEL,u8 *,11)&=~15;

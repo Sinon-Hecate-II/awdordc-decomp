@@ -155,12 +155,10 @@ u8 HasAiOptionalUnitBuildFlag(void) {
     return var_r0;
 }
 
-s32 func_ov000_021a43e8(s32 arg0) {
-    s32 IsFootUnitKind();
-    if ((IsFootUnitKind() != 0) || (arg0 == 4)) {
-        return 1;
-    }
-    return 0;
+s32 func_ov000_021a43e8(s32 kind) {
+    s32 IsFootUnitKind(s32);
+
+    return IsFootUnitKind(kind) != 0 || kind == 4;
 }
 
 /* Kind-10 build rule: walk the acting player's units; for every non-foot,
@@ -334,11 +332,11 @@ s32 func_ov000_021a484c(s32 arg0, s32 arg1) {
 }
 
 u8 func_ov000_021a48ac(s32 arg0) {
-    extern u8 data_ov000_021dfd98[];
-    extern u8 data_ov000_021dfd99[];
+    extern u8 gAiGroupDirectUnits[];
+    extern u8 gAiGroupIndirectUnits[];
     u8 var_r0;
 
-    if (data_ov000_021dfd98[arg0 * 8] <= data_ov000_021dfd99[arg0 * 8] * 3) {
+    if (gAiGroupDirectUnits[arg0 * 8] <= gAiGroupIndirectUnits[arg0 * 8] * 3) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -347,14 +345,14 @@ u8 func_ov000_021a48ac(s32 arg0) {
 }
 
 u8 func_ov000_021a48dc(s32 arg0) {
-    extern u8 data_ov000_021dfd98[];
-    extern u8 data_ov000_021dfd99[];
+    extern u8 gAiGroupDirectUnits[];
+    extern u8 gAiGroupIndirectUnits[];
     s32 temp_r0;
     s32 temp_r2;
     u8 var_r0;
 
-    temp_r2 = data_ov000_021dfd98[arg0 * 8];
-    temp_r0 = data_ov000_021dfd99[arg0 * 8];
+    temp_r2 = gAiGroupDirectUnits[arg0 * 8];
+    temp_r0 = gAiGroupIndirectUnits[arg0 * 8];
     if (temp_r2 <= temp_r0) {
         var_r0 = 1;
     } else {
@@ -364,16 +362,16 @@ u8 func_ov000_021a48dc(s32 arg0) {
 }
 
 s32 func_ov000_021a4908(s32 arg0) {
-    extern u8 data_ov000_021dfd98[];
-    extern u8 data_ov000_021dfd99[];
-    extern u8 data_ov000_021dfd9a[];
+    extern u8 gAiGroupDirectUnits[];
+    extern u8 gAiGroupIndirectUnits[];
+    extern u8 gAiGroupKind26Units[];
     u8 *p98;
     s32 var_r3;
     s32 temp_r1;
 
-    var_r3 = data_ov000_021dfd99[arg0 * 8];
-    temp_r1 = var_r3 - data_ov000_021dfd9a[arg0 * 8];
-    p98 = data_ov000_021dfd98;
+    var_r3 = gAiGroupIndirectUnits[arg0 * 8];
+    temp_r1 = var_r3 - gAiGroupKind26Units[arg0 * 8];
+    p98 = gAiGroupDirectUnits;
     if (temp_r1 != 0) {
         var_r3 = temp_r1;
     }
@@ -385,18 +383,18 @@ s32 func_ov000_021a4908(s32 arg0) {
 
 #pragma opt_propagation off
 s32 func_ov000_021a4944(s32 arg0) {
-    extern u8 data_ov000_021dfd98[];
-    extern u8 data_ov000_021dfd99[];
-    extern u8 data_ov000_021dfd9a[];
+    extern u8 gAiGroupDirectUnits[];
+    extern u8 gAiGroupIndirectUnits[];
+    extern u8 gAiGroupKind26Units[];
     s32 temp_r1;
     s32 temp_r2;
     s32 var_ip;
     s32 temp_r3;
 
-    var_ip = data_ov000_021dfd99[arg0 * 8];
-    temp_r1 = data_ov000_021dfd9a[arg0 * 8];
+    var_ip = gAiGroupIndirectUnits[arg0 * 8];
+    temp_r1 = gAiGroupKind26Units[arg0 * 8];
     temp_r2 = var_ip - temp_r1;
-    temp_r3 = data_ov000_021dfd98[arg0 * 8];
+    temp_r3 = gAiGroupDirectUnits[arg0 * 8];
     if (temp_r2 != 0) {
         var_ip = temp_r2 + (temp_r1 >> 1);
     }

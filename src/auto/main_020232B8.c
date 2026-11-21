@@ -515,22 +515,27 @@ seed=total;OS_RestoreInterrupts(irq);index=0;
 }
 }
 
-void Random_AddEntropy(M2C_UNK *p,s32 n) {
- s32 OS_DisableInterrupts(void);
- M2C_UNK OS_RestoreInterrupts(s32);
- M2C_UNK SHA1_Init(void *);
- M2C_UNK SHA1_Update();
- M2C_UNK SHA1_Final(void *,void *);
- extern s8 gTlsRandomState;
- extern M2C_UNK gRandomEntropyPool;
- u8 buf[0x5C];
- s32 state;
- SHA1_Init(buf);
- state=OS_DisableInterrupts();
- SHA1_Update(buf,&gRandomEntropyPool,20);
- SHA1_Update(buf,p,n);
- SHA1_Final(buf,&gRandomEntropyPool);
- OS_RestoreInterrupts(state);
- gTlsRandomState=1;
+/* Fold `length` bytes of fresh entropy into the 20-byte SHA1 random pool: hash
+ * the old pool together with the new bytes, store the digest back into the pool
+ * (with interrupts off so the pool cannot be read mid-update), then mark the
+ * generator as seeded. */
+void Random_AddEntropy(M2C_UNK *entropy, s32 length) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    M2C_UNK SHA1_Init(void *);
+    M2C_UNK SHA1_Update();
+    M2C_UNK SHA1_Final(void *, void *);
+    extern s8 gTlsRandomState;
+    extern M2C_UNK gRandomEntropyPool;
+    u8 hashContext[0x5C];
+    s32 irqState;
+
+    SHA1_Init(hashContext);
+    irqState = OS_DisableInterrupts();
+    SHA1_Update(hashContext, &gRandomEntropyPool, 20);
+    SHA1_Update(hashContext, entropy, length);
+    SHA1_Final(hashContext, &gRandomEntropyPool);
+    OS_RestoreInterrupts(irqState);
+    gTlsRandomState = 1;
 }
 

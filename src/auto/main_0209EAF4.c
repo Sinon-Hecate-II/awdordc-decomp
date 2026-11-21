@@ -67,7 +67,7 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
     s32 Divide(s32, s32);
     s32 GetMoveRangeCommanderId(s32, s32, s32);
     void func_020a2b98(s32, s32);
-    s16 func_020a3518(s32);
+    s16 GetCoPowerMeterPoints(s32);
     s32 func_020cd614(void);
     void *CreateSpriteFromClass(void *, s32);
     s32 func_020d468c(void);
@@ -160,9 +160,9 @@ void func_0209ecf0(s32 arg0, s32 arg1) {
 
     {
         u8 *side = (u8 *)*gCurrentMap + 0x6eb8;
-        M2C_FIELD(side, s16 *, 0x12) = func_020a3518(selectedBucket);
+        M2C_FIELD(side, s16 *, 0x12) = GetCoPowerMeterPoints(selectedBucket);
         side = (u8 *)*gCurrentMap + 0x6ed8;
-        M2C_FIELD(side, s16 *, 0x12) = func_020a3518(unitBucket);
+        M2C_FIELD(side, s16 *, 0x12) = GetCoPowerMeterPoints(unitBucket);
     }
 
     if (func_020cd614()) p = CreateSpriteFromClass(&data_0211f984, 7);
@@ -224,7 +224,7 @@ void func_0209f26c(void) {
     func_0208f8d8();
 }
 
-void func_0209f278(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();func_020d4b30();Reset3DSpriteEngineState();}
+void func_0209f278(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();InitBattleMapPresentation();Reset3DSpriteEngineState();}
 
 void func_0209f2a8(void) {
     M2C_UNK func_020d468c();
@@ -436,18 +436,18 @@ void func_0209f858(void) {
 void func_0209f87c(void){extern MapConfigRecord gMapConfig;extern void **gCurrentMap;gMapConfig.flags=(gMapConfig.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}
 
 void func_0209f8c0(void) {
-    extern M2C_UNK data_0215be00;
-    M2C_FIELD(&data_0215be00, s32 *, 8) = 0;
+    extern M2C_UNK gTargetList;
+    M2C_FIELD(&gTargetList, s32 *, 8) = 0;
 }
 
 s32 GetTargetCount(void) {
-    extern M2C_UNK data_0215be00;
-    return M2C_FIELD(&data_0215be00, s32 *, 8);
+    extern M2C_UNK gTargetList;
+    return M2C_FIELD(&gTargetList, s32 *, 8);
 }
 
-void *GetTargetPosition(s32 n){extern M2C_UNK data_0215be00;return M2C_FIELD(&data_0215be00,u8 **,4)+n*8;}
+void *GetTargetPosition(s32 n){extern M2C_UNK gTargetList;return M2C_FIELD(&gTargetList,u8 **,4)+n*8;}
 
-void func_0209f8f8(s32 a,s32 b,s32 c,s32 d){extern M2C_UNK data_0215be00;Unk09List *s=(Unk09List *)&data_0215be00;Unk09Position *p=s->p;p[s->count].c=a;p[s->count].d=b;p[s->count].a=c;p[s->count].b=d;s->count++;}
+void func_0209f8f8(s32 a,s32 b,s32 c,s32 d){extern M2C_UNK gTargetList;Unk09List *s=(Unk09List *)&gTargetList;Unk09Position *p=s->p;p[s->count].c=a;p[s->count].d=b;p[s->count].a=c;p[s->count].b=d;s->count++;}
 
-s32 func_0209f944(s32 a,s32 b){extern M2C_UNK data_0215be00;Unk09List *s=(Unk09List *)&data_0215be00;Unk09Position *p=s->p;s32 i;s32 n=s->count;for(i=0;i<n;i++,p++){if(a==p->c&&b==p->d)return 1;}return 0;}
+s32 func_0209f944(s32 a,s32 b){extern M2C_UNK gTargetList;Unk09List *s=(Unk09List *)&gTargetList;Unk09Position *p=s->p;s32 i;s32 n=s->count;for(i=0;i<n;i++,p++){if(a==p->c&&b==p->d)return 1;}return 0;}
 

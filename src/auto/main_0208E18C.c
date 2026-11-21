@@ -1,5 +1,6 @@
 /* 16 functions from 0x0208E18C to 0x0208EE90 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 typedef struct { s32 a; s32 b; } Pair;
 typedef struct { u8 pad[0x60]; u64 v; u64 *p; } UnkNode0208EE1C;
@@ -118,7 +119,22 @@ void func_0208e18c(s32 a0, s32 a1, s16 a2, s32 a3, u16 a4, s32 a5) {
 #undef SHIFT
 }
 
-void func_0208e7ec(u32 arg0,s32 arg1) { extern u8 data_02102888[],data_02102898[],data_021028a4[],data_021028b0[]; extern s32 gCur3DSpriteEngine; void *p; SetFileDirectory(data_02102888); OpenNarcArchive(data_02102898); LoadNarcFileDecompressed(data_021028a4,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+arg0); LoadNarcFileToSpriteBuffer(data_021028b0,(arg1+16)<<5,32); CloseNarcArchive(); p=(void *)gCur3DSpriteEngine; M2C_FIELD(p,u8 *,0x46)|=16; }
+/* Load the digit tiles and palette shared by timer and number displays. */
+void LoadTimerSpriteGraphics(u32 textureOffset, s32 paletteSlot) {
+    extern u8 sTimerGraphicsDirectory[], sTimerGraphicsArchive[];
+    extern u8 sTimerTilesFile[], sTimerPaletteFile[];
+    extern s32 gCur3DSpriteEngine;
+    DS3DSpriteEngine *engine;
+
+    SetFileDirectory(sTimerGraphicsDirectory);
+    OpenNarcArchive(sTimerGraphicsArchive);
+    LoadNarcFileDecompressed(sTimerTilesFile, DS3D_ENGINE(gCur3DSpriteEngine)->textureAddr + textureOffset);
+    LoadNarcFileToSpriteBuffer(sTimerPaletteFile,
+        (paletteSlot + DS3D_OBJ_PALETTE_BASE) << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
+    CloseNarcArchive();
+    engine = DS3D_ENGINE(gCur3DSpriteEngine);
+    engine->layerDirty |= DS3D_DIRTY_PALETTE;
+}
 
 /* Draw a minutes:centiseconds readout with AddSprite digits at (x, y). */
 void DrawTimerDigits(s16 x, s32 y, u16 baseTile, u8 priority, s32 value) {
@@ -153,7 +169,7 @@ void func_0208eb30(void *arg0, u32 arg1, s32 arg2) {
 
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    func_0208e7ec(arg1, arg2);
+    LoadTimerSpriteGraphics(arg1, arg2);
 }
 
 void func_0208eb60(void *arg0, s32 arg1) {
@@ -306,6 +322,6 @@ void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(
 void SetNumberDisplayGraphics(void *arg0, u32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    func_0208e7ec(arg1, arg2);
+    LoadTimerSpriteGraphics(arg1, arg2);
 }
 

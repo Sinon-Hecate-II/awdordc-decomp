@@ -389,7 +389,7 @@ void BuildMoveRangeFlags(void)
 void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
     u8 func_020bd118(void);
     s32 func_020774cc(void);
-    u8 func_020a4700(s32, s32);
+    u8 IsCellInOrderEffectArea(s32, s32);
     extern s32 *gCurrentMap;
     extern u8 gMapCellCodes[];
     extern M2C_UNK gMapHighlightState;
@@ -428,7 +428,7 @@ void BuildMapCellCodes(s32 x0, s32 y0, s32 x1, s32 y1) {
 
             if ((tile & MAP_TERRAIN_KIND_MASK) == 0x1D &&
                 *(s32 *)(((u8 *)&gMapHighlightState) + 0xC) != 0 &&
-                func_020a4700(x, y) != 0) {
+                IsCellInOrderEffectArea(x, y) != 0) {
                 code = 1;
             }
 

@@ -44,7 +44,7 @@ void TcpReadPeerMss(const TcpSegment *segment, void *connection) {
     }
 }
 
-s32 func_0201bec8(s32 arg0) {
+s32 CanSendToNextHop(s32 arg0) {
     s32 GetIpNextHop();
     s32 FindArpMacAddress();
     if (GetIpNextHop() == 0) {
@@ -53,12 +53,16 @@ s32 func_0201bec8(s32 arg0) {
     return FindArpMacAddress();
 }
 
-M2C_UNK TcpTransmitSegment(M2C_UNK a,M2C_UNK b,M2C_UNK c) {
- extern M2C_UNK gSocketManager,data_021374f8;
- if(func_0201bec8(M2C_FIELD(a,s32 *,28)) || M2C_FIELD(&gSocketManager,void **,4)!=&data_021374f8) {
- TcpSendSegment(0,0,a,b,c);return;
- }
- SendArpRequest(GetIpNextHop(M2C_FIELD(a,s32 *,28)));
+/* Send a TCP control segment (no payload) for `conn` with the given flags.  On
+ * the network receive thread, when the next hop's MAC is not known yet, only
+ * start ARP resolution; otherwise send the segment now. */
+M2C_UNK TcpTransmitSegment(M2C_UNK conn, M2C_UNK flags, M2C_UNK reserved) {
+    extern M2C_UNK gSocketManager, gNetReceiveThread;
+    if (CanSendToNextHop(M2C_FIELD(conn, s32 *, SOCKET_PEER_ADDR)) || M2C_FIELD(&gSocketManager, void **, 4) != &gNetReceiveThread) {
+        TcpSendSegment(0, 0, conn, flags, reserved);
+        return;
+    }
+    SendArpRequest(GetIpNextHop(M2C_FIELD(conn, s32 *, SOCKET_PEER_ADDR)));
 }
 
 void TcpSendAck(M2C_UNK arg0, M2C_UNK arg1) {

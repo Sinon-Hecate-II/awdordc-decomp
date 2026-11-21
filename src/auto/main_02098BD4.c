@@ -288,11 +288,11 @@ gCur3DSpriteEngine=old;
 if(M2C_FIELD(p,void **,FACE_SPRITE_CHILD)){SetFaceSpriteExpression(M2C_FIELD(p,void **,FACE_SPRITE_CHILD),M2C_FIELD(p,u8 *,FACE_SPRITE_ACTIVE));RefreshFaceSpritePalette(M2C_FIELD(p,void **,FACE_SPRITE_CHILD));}
 }
 
-void func_02099310(void *arg0, s8 arg1) {
+void SetFaceSpriteLayout(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5A) = arg1;
 }
 
-void func_02099318(void *arg0, s8 arg1) {
+void SetFaceSpriteVariant(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5B) = arg1;
 }
 
@@ -338,7 +338,7 @@ void func_020993c8(void) {
     func_0209936c();
 }
 
-void **func_020993d4(s32 arg0) {
+void **CreateFaceSprite(s32 arg0) {
     void **CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK Init3DSpriteActor();
     extern M2C_UNK data_02102fac, data_02102fa0;

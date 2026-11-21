@@ -332,7 +332,7 @@ s32 gpiReportProfileUpdate(s32 profileIndex, s32 status, s32 secret, s32 text, s
 }
 
 #pragma opt_common_subs on
-void func_0205954c(void) {
+void gpiInfoFreeProfiles(void) {
     s32 Vector_GetCount(s32); void Vector_Free(s32); void gpiXorInfoMessage(s8 *, s32); M2C_UNK gpiReportProfileUpdate(s32,s32,s32,s32,s32);
     extern M2C_UNK gGpiInfoState, data_020ff498, gGpiInfoSocket;
     extern const u8 data_020ea9ac[];
@@ -391,16 +391,20 @@ M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 ar
  return *result;
 }
 
-s64 func_02059708(void *arg0, void *arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
+/* Read the double value the gpi key/value store holds under `key`, creating the
+ * entry as a double with `value` when no such key exists yet, and return it.
+ * `gpi` overrides the logged-in session's store; `lookup` finds an existing
+ * entry and returns NULL when the key is absent. */
+s64 gpiGetOrCreateDouble(void *gpi, void *key, M2C_UNK lookup, s64 value, s32 unused) {
  s32 *BucketNew(s32, void *, s32, M2C_UNK *);
  extern M2C_UNK gGpiInfoState;
  s32 *result;
- void *obj = arg0;
- if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
- if (obj == NULL) result = (s32 *)&arg3;
+ void *object = gpi;
+ if (object == NULL) object = M2C_FIELD(&gGpiInfoState, void **, GPI_INFO_SESSION);
+ if (object == NULL) result = (s32 *)&value;
  else {
- result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, (s32 *)&arg3);
- if (result == NULL) result = BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 1, (s32 *)&arg3);
+ result = ((s32 *(*)(s32, void *, M2C_UNK *))lookup)(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, (s32 *)&value);
+ if (result == NULL) result = BucketNew(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, GPI_BUCKET_DOUBLE, (s32 *)&value);
  }
  return *(s64 *)result;
 }
@@ -427,12 +431,12 @@ void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 void func_02059830(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
-    s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
+    s64 gpiGetOrCreateDouble(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp8[64];
     StringFormat(sp8, &data_020ff524, arg1, func_02059640(arg0, arg4));
-    func_02059708(arg0, sp8, arg2, arg3, arg4);
+    gpiGetOrCreateDouble(arg0, sp8, arg2, arg3, arg4);
 }
 
 void func_02059890(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
@@ -454,12 +458,12 @@ void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 void func_02059948(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
-    s64 func_02059708(void *, void *, M2C_UNK, s64, s32);
+    s64 gpiGetOrCreateDouble(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp8[64];
     StringFormat(sp8, &data_020ff52c, arg1, func_02059670(arg0, arg4));
-    func_02059708(arg0, sp8, arg2, arg3, arg4);
+    gpiGetOrCreateDouble(arg0, sp8, arg2, arg3, arg4);
 }
 
 void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
@@ -471,7 +475,7 @@ void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
     func_02059778(arg0, sp4, arg2, arg3, arg4);
 }
 
-s32 func_02059a04(u8 *arg0) {
+s32 gti2CheckChallenge(u8 *arg0) {
 s32 var_lr; s32 var_r4; u32 var_r8; u32 var_r9; register u8 *temp_r7; u8 temp_r5; s32 firstBit; u8 temp_r10;
 temp_r5=*arg0; firstBit=temp_r5&1; var_lr=0; var_r4=1;
 loop_1:

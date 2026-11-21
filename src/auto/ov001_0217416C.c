@@ -91,11 +91,11 @@ void Ov001_OpenKeypad(void) {
     Ov001_PositionKeypadStep(0, 192);
 }
 #pragma scheduling reset
-void func_ov001_021744a8(void) {
+void Ov001_StartKeypadClose(void) {
     extern void *gOv001Keypad;
-    void func_ov001_021753c8(void);
+    void Ov001_KeypadCloseStep5(void);
     Ov001_DestroySprite(M2C_FIELD(gOv001Keypad, s32 *, 0x58));
-    Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), func_ov001_021753c8);
+    Ov001_SetSlideStep(M2C_FIELD(gOv001Keypad, s32 *, 0x5c), Ov001_KeypadCloseStep5);
 }
 
 u8 func_ov001_021744dc(void) {
@@ -201,19 +201,30 @@ Ov001_PositionKeypadStep(4,192);
 Ov001_SetSlideStep(task,Ov001_KeypadSlideStep5);
 }
 #pragma opt_propagation on
-void Ov001_KeypadSlideStep5(s32 arg0){extern void *gOv001Keypad;
-void func_ov001_021747cc(void);
-s32 pos[2];
-Ov001_GetSpritePosition(M2C_FIELD(gOv001Keypad,s32*,0x40),0,&pos[1],&pos[0]);
-pos[0]-=12;
-if(pos[0]>170){Ov001_PositionKeypadStep(4,pos[0]);return;}
-Ov001_PositionKeypadStep(4,170);Ov001_UpdateKeypadCursor();Ov001_SetSlideStep(arg0,func_ov001_021747cc);
+/* Keypad slide-in step for the bottom action row: while the row's first action
+ * sprite is still right of its resting x, keep sliding the row; once it has
+ * arrived, snap it into place, update the highlighted key and switch the task to
+ * the keypad's input step. */
+void Ov001_KeypadSlideStep5(s32 task) {
+    extern void *gOv001Keypad;
+    void Ov001_KeypadInputStep(void);
+    s32 pos[2];
+
+    Ov001_GetSpritePosition(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_ACTION_SPRITES), 0, &pos[1], &pos[0]);
+    pos[0] -= 12;
+    if (pos[0] > KPAD_ROW_REST_X4) {
+        Ov001_PositionKeypadStep(4, pos[0]);
+        return;
+    }
+    Ov001_PositionKeypadStep(4, KPAD_ROW_REST_X4);
+    Ov001_UpdateKeypadCursor();
+    Ov001_SetSlideStep(task, Ov001_KeypadInputStep);
 }
 
 void Ov001KeypadTouchHeld(void);
 void Ov001KeypadTouchPressed(void);
 void Ov001KeypadTouchReleased(void);
-void func_ov001_021747cc(void) {
+void Ov001_KeypadInputStep(void) {
           void func_ov001_02174dcc(void);
     Ov001KeypadTouchPressed();
     Ov001KeypadTouchHeld();

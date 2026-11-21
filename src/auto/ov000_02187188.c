@@ -240,7 +240,7 @@ s32 func_ov000_02187320(s32 arg0, s32 arg1, void *arg2, void *arg3) {
 void func_ov000_02187664(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     s32 func_ov000_02187320(s32, s32, void *, void *);
-    s32 func_ov000_0217bd44(s32, s32, s32, s32);
+    s32 GetAiCargoDropDirection(s32, s32, s32, s32);
     s32 TryUnitAiActions(s32, s32);
     void SetMapCursor(s32, s32, s32, s32, s32);
     s32 IsFootUnitKind(u32);
@@ -253,10 +253,10 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
 
     s32 r = func_ov000_02187320(arg0, arg1, pos1, pos2);
     if (r == 0) return;
-    t = func_ov000_0217bd44(arg0, arg1, pos1[0], pos1[1]);
+    t = GetAiCargoDropDirection(arg0, arg1, pos1[0], pos1[1]);
     if (r >= 2) {
     if (TryUnitAiActions(arg0, arg1) == 1) {
-        r = func_ov000_0217bd44(arg0, arg1, pos2[0], pos2[1]);
+        r = GetAiCargoDropDirection(arg0, arg1, pos2[0], pos2[1]);
         SetMapCursor((s16)arg0, (s16)arg1, 8, (u8)t, (u8)r);
     } else {
     unitC = (u8 *)*gCurrentMap + 0x59A4 + M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xC) * 0xE;
@@ -439,7 +439,7 @@ func_ov000_02187c3c();
 }
 
 #pragma optimization_level 2
-u8 func_ov000_02187e50(void) {
+u8 AiRangeReachesAssignedMoveTarget(void) {
 void *base=*gCurrentMap;
 void *unit=M2C_FIELD(base,void **,0x52d0);
 u32 v=M2C_FIELD(unit,u16 *,8);
@@ -452,41 +452,27 @@ return result;
 }
 #pragma optimization_level reset
 u8 IsUnitProductionTerrain(s32);
-s32 func_ov000_02187eac(u16 *arg0) {
+#pragma opt_strength_reduction off
+/* Find the first map cell that can produce units and is reachable (its MAP_GRID
+ * value is not negative).  Writes the cell's x and y to `tile` and returns 1, or
+ * returns 0 when no such cell exists. */
+s32 FindReachableProductionTile(s16 *tile) {
     extern void **gCurrentMap;
-    void *base;
-    s32 height;
-    s32 width;
-    s32 y = 0;
+    u8 *map = *gCurrentMap;
     s32 x;
-    u16 rowoff;
-    u8 v;
+    s32 y;
 
-    base = *gCurrentMap;
-    height = *(u16 *)((u8 *)base + 0x5146);
-    if (height <= 0) return 0;
-outer:
-    width = *(u16 *)((u8 *)base + 0x5144);
-    x = y;
-    if (width > 0) {
-        do {
-            if (((s8 **)((u8 *)base + 0x52e8))[y][x] >= 0) {
-                rowoff = *(u16 *)((u8 *)base + 0x3758 + y * 2);
-                v = *(u8 *)((u8 *)base + 0x1420 + rowoff + x);
-                if (IsUnitProductionTerrain(v)) {
-                    arg0[0] = (u16)x;
-                    arg0[1] = (u16)y;
-                    return 1;
-                }
+    for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
+            if (M2C_FIELD(map + (y << 2), s8 **, MAP_GRID)[x] >= 0 &&
+                IsUnitProductionTerrain(M2C_FIELD(M2C_FIELD(map + (y << 1), u16 *, MAP_ROW_OFFSETS) + (map + x), u8 *, MAP_CELL_TERRAIN))) {
+                tile[0] = x;
+                tile[1] = y;
+                return 1;
             }
-            base = *gCurrentMap;
-            x = x + 1;
-            width = *(u16 *)((u8 *)base + 0x5144);
-        } while (x < width);
+            map = *gCurrentMap;
+        }
     }
-    height = *(u16 *)((u8 *)base + 0x5146);
-    y = y + 1;
-    if (y < height) goto outer;
     return 0;
 }
-
+#pragma opt_strength_reduction reset

@@ -98,7 +98,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
         if (attempt->isJoin == 0) {
             if (kind == 1 || (kind == 2 && attempt->retries >= 1)) {
                 attempt->natNeg = 0;
-                if (func_020441e8(0) == 0) {
+                if (CheckPeerConnectRetryLimit(0) == 0) {
                     return;
                 }
                 sessionA = GetConnection();
@@ -129,11 +129,11 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
         }
         attempt->natNeg = 0;
         if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 3 || M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 2) {
-            if (func_020441e8(1) == 0) {
+            if (CheckPeerConnectRetryLimit(1) == 0) {
                 return;
             }
         } else {
-            if (func_020441e8(0) == 0) {
+            if (CheckPeerConnectRetryLimit(0) == 0) {
                 return;
             }
         }
@@ -151,19 +151,22 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
     }
 }
 
-s32 func_020441e8(s32 arg0) {
-    M2C_UNK ReportConnectionError(M2C_UNK, s32);
-    void *temp_r0;
+/* Count a failed peer connect and report the error when the session cannot retry. */
+s32 CheckPeerConnectRetryLimit(s32 skipRetryCheck) {
+    void ReportConnectionError(s32, s32);
+    void *session;
 
-    if (arg0 != 0) {
+    if (skipRetryCheck != 0) {
         return 1;
     }
-    if (M2C_FIELD(GetConnection(), u8 *, 0x15) != 3) {
-        temp_r0 = GetConnection();
-        M2C_FIELD(temp_r0, u8 *, 0x17D) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x17D) + 1);
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) != CONN_MODE_SERVE_NO_RETRY) {
+        session = GetConnection();
+        M2C_FIELD(session, u8 *, CONN_SESSION_CONNECT_ATTEMPTS) =
+            (u8)(M2C_FIELD(session, u8 *, CONN_SESSION_CONNECT_ATTEMPTS) + 1);
     }
-    if ((M2C_FIELD(GetConnection(), u8 *, 0x15) == 3) || ((u32) M2C_FIELD(GetConnection(), u8 *, 0x17D) >= 5U)) {
-        ReportConnectionError(6, 0xFFFEAE6C);
+    if ((M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == CONN_MODE_SERVE_NO_RETRY) ||
+        ((u32)M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_CONNECT_ATTEMPTS) >= CONN_PEER_CONNECT_LIMIT)) {
+        ReportConnectionError(CONN_ERROR_MATCH_FAILED, CONN_DETAIL_PEER_CONNECT_FAILED);
         return 0;
     }
     return 1;
@@ -256,19 +259,23 @@ if(callback && kind==1) callback(total,channel);
 return 1;
 }
 
-s32 SendTransferToPlayers(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
- s32 var_r10;
- s32 var_r6;
- u8 var_r9;
- var_r6 = arg0;
- var_r9 = 0;
- do {
-  if (var_r9 != 0) var_r10 = 1 << var_r9;
-  else var_r10 = 1;
-  if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (SendTransferToPeer(var_r9, arg1, arg2) == 0)) var_r6 &= ~var_r10;
-  var_r9 += 1;
- } while ((u32)var_r9 < 0x20U);
- return var_r6;
+/* Start a transfer of `size` bytes from `data` to every player whose identity
+ * bit is set in `playerMask`, skipping the local player.  A player the transfer
+ * is refused for is cleared from the mask.  Returns the players it started for. */
+s32 SendTransferToPlayers(s32 playerMask, M2C_UNK data, M2C_UNK size) {
+    s32 playerBit;
+    s32 mask;
+    u8 playerId;
+
+    mask = playerMask;
+    playerId = 0;
+    do {
+        if (playerId != 0) playerBit = 1 << playerId;
+        else playerBit = 1;
+        if ((mask & playerBit) && (playerId != GetLocalPlayerId()) && (SendTransferToPeer(playerId, data, size) == 0)) mask &= ~playerBit;
+        playerId += 1;
+    } while ((u32)playerId < TRANSFER_SLOT_COUNT);
+    return mask;
 }
 
 /* Send raw data straight to one player's connection (no transfer slot): refused
@@ -290,29 +297,33 @@ s32 SendDataToPlayer(u8 playerId, M2C_UNK data, M2C_UNK size) {
     return 1;
 }
 
-s32 SendDataToPlayers(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Send `data` of `size` bytes to every player whose identity bit is set in
+ * `playerMask`, skipping the local player.  A player the send is refused for
+ * (network error, inactive connection, or more than one frame's chunk) is
+ * cleared from the mask.  Returns the players the data was accepted for. */
+s32 SendDataToPlayers(s32 playerMask, M2C_UNK data, M2C_UNK size) {
     s32 SendDataToPlayer(u8, M2C_UNK, M2C_UNK);
-    s32 var_r10;
-    s32 var_r6;
-    u8 var_r9;
+    s32 playerBit;
+    s32 mask;
+    u8 playerId;
 
-    var_r6 = arg0;
-    var_r9 = 0;
+    mask = playerMask;
+    playerId = 0;
     do {
-        if (var_r9 != 0) {
-            var_r10 = 1 << var_r9;
+        if (playerId != 0) {
+            playerBit = 1 << playerId;
         } else {
-            var_r10 = 1;
+            playerBit = 1;
         }
-        if ((var_r6 & var_r10) && (var_r9 != GetLocalPlayerId()) && (SendDataToPlayer(var_r9, arg1, arg2) == 0)) {
-            var_r6 &= ~var_r10;
+        if ((mask & playerBit) && (playerId != GetLocalPlayerId()) && (SendDataToPlayer(playerId, data, size) == 0)) {
+            mask &= ~playerBit;
         }
-        var_r9 += 1;
-    } while ((u32) var_r9 < 0x20U);
-    return var_r6;
+        playerId += 1;
+    } while ((u32) playerId < TRANSFER_SLOT_COUNT);
+    return mask;
 }
 
-s32 func_020445cc(s32 a,s32 b,s32 c){void *GetTransferSlot();void *p=GetTransferSlot(a);if(GetTransferState(a)==2)return 0;M2C_FIELD(p,s32 *,4)=b;M2C_FIELD(p,s32 *,8)=c;M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;return 1;}
+s32 SetTransferReceiveBuffer(s32 a,s32 b,s32 c){void *GetTransferSlot();void *p=GetTransferSlot(a);if(GetTransferState(a)==2)return 0;M2C_FIELD(p,s32 *,4)=b;M2C_FIELD(p,s32 *,8)=c;M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;return 1;}
 
 s32 Transfer_SetStartCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x600)=a;return 1;}
 

@@ -101,7 +101,7 @@ s32 func_0205dd98(M2C_UNK arg0) {
     return **M2C_FIELD(temp_r0, s32 ***, 0xC);
 }
 
-s32 func_0205ddd0(void *arg0, s32 arg1) {
+s32 NatNeg_ResolveServerAddress(void *arg0, s32 arg1) {
  M2C_UNK func_020675bc(void *,s32,void *,void *,s32);
  extern M2C_UNK data_020ff894, gServiceNameBuffer;
  u8 buffer[0x80];
@@ -112,14 +112,20 @@ s32 func_0205ddd0(void *arg0, s32 arg1) {
  return func_0205dd98((M2C_UNK)arg0);
 }
 
+/* Resolve the addresses of the two NAT-negotiation servers: look up each
+ * server's host name, falling back to the built-in natneg1/natneg2 host names
+ * when the manager has none.  Returns 1 once both are resolved, 0 when either
+ * lookup failed. */
 s32 NatNeg_ResolveServers(void) {
- extern M2C_UNK gNatNegManager, data_020ff89c, data_020ff8b8;
- if (M2C_FIELD(&gNatNegManager,s32 *,12)==0)
- M2C_FIELD(&gNatNegManager,s32 *,12)=func_0205ddd0(M2C_FIELD(&gNatNegManager,void **,4),(s32)&data_020ff89c);
- if (M2C_FIELD(&gNatNegManager,s32 *,8)==0)
- M2C_FIELD(&gNatNegManager,s32 *,8)=func_0205ddd0(M2C_FIELD(&gNatNegManager,void **,0),(s32)&data_020ff8b8);
- if(M2C_FIELD(&gNatNegManager,s32 *,12)==0 || M2C_FIELD(&gNatNegManager,s32 *,8)==0) return 0;
- return 1;
+    extern M2C_UNK gNatNegManager, sNatNeg1HostName, sNatNeg2HostName;
+    s32 NatNeg_ResolveServerAddress(void *, s32);
+
+    if (M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP1) == 0)
+        M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP1) = NatNeg_ResolveServerAddress(M2C_FIELD(&gNatNegManager, void **, NATNEG_HOST1), (s32)&sNatNeg1HostName);
+    if (M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP2) == 0)
+        M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP2) = NatNeg_ResolveServerAddress(M2C_FIELD(&gNatNegManager, void **, NATNEG_HOST2), (s32)&sNatNeg2HostName);
+    if (M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP1) == 0 || M2C_FIELD(&gNatNegManager, s32 *, NATNEG_IP2) == 0) return 0;
+    return 1;
 }
 
 #pragma scheduling off

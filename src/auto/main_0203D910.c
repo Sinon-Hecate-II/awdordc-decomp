@@ -323,7 +323,7 @@ void func_0203e064(M2C_UNK arg0) {
 }
 
 #pragma opt_strength_reduction off
-s32 func_0203e088(s32 arg0,s32 arg1) { s32 RemoveConnectionPeer(s32,s32); s32 i; if(GetConnection()==0)return 0; for(i=0;i<arg1;i++){ if(arg0==M2C_FIELD(GetConnection()+i*4,s32 *,0xf4)){RemoveConnectionPeer(i,arg1);return 1;}} return 0; }
+s32 RemovePlayerFromConnection(s32 arg0,s32 arg1) { s32 RemoveConnectionPeer(s32,s32); s32 i; if(GetConnection()==0)return 0; for(i=0;i<arg1;i++){ if(arg0==M2C_FIELD(GetConnection()+i*4,s32 *,0xf4)){RemoveConnectionPeer(i,arg1);return 1;}} return 0; }
 #pragma opt_strength_reduction reset
 /* Removes the peer at peer slot index `slotIndex` from the connection's per-peer tables
  * (player id + port, peer id, IPv4 address + port, and player slot): clears the

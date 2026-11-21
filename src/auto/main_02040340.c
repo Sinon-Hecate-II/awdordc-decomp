@@ -47,7 +47,7 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     s32 SendConnectionCommand(M2C_UNK, M2C_UNK, s32, u16, s32, s32);
     void *GetConnection(void);
     void Qr2_StateChanged(s32);
-    u8 func_0204284c(void);
+    u8 FindUnusedPlayerSlot(void);
     void ResetConnectionSync(s32);
     s32 loc[2];
     s32 i, r;
@@ -70,7 +70,7 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     M2C_FIELD((u8 *)GetConnection() + 0x100, u16 *, 0xb4) = arg2;
     p = GetConnection();
     q = GetConnection();
-    M2C_FIELD((u8 *)p + (M2C_FIELD(q, u8 *, 0x14) + 1), u8 *, 0x2d0) = func_0204284c();
+    M2C_FIELD((u8 *)p + (M2C_FIELD(q, u8 *, 0x14) + 1), u8 *, 0x2d0) = FindUnusedPlayerSlot();
     loc[0] = arg0;
     p = GetConnection();
     loc[1] = M2C_FIELD((u8 *)p + (M2C_FIELD(GetConnection(), u8 *, 0x14) + 1), u8 *, 0x2d0);
@@ -160,7 +160,7 @@ s32 SendJoinRequest(s32 peerId, s32 force) {
  * Stops and resets the timeout once it has wrapped around the record list. */
 s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
     s32 GetPlayerRecordId(void *, void *);
-    s32 func_0204e2f4(void **, s32, s32 *);
+    s32 gpiGetBuddyIndex(void **, s32, s32 *);
     s32 gpGetBuddyStatus(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 strtoul(void *, s32, s32);
@@ -230,7 +230,7 @@ s32 TryConnectToPeer(s32 force, s32 fromCurrent, s32 preferredPeer) {
         if (playerIndex <= (s32)M2C_FIELD(GetConnection(), u8 *, 0xd)) {
             continue;
         }
-        resA = func_0204e2f4((void **)M2C_FIELD(GetConnection(), void **, 0), peerId, &fields[1]);
+        resA = gpiGetBuddyIndex((void **)M2C_FIELD(GetConnection(), void **, 0), peerId, &fields[1]);
         resB = gpGetBuddyStatus((void **)M2C_FIELD(GetConnection(), void **, 0), fields[1], &info[2]);
         if ((resA | resB) != 0 || info[3] != 4) {
             continue;
@@ -295,7 +295,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
     M2C_UNK TryConnectToPeer(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_02041be0(M2C_UNK);
     M2C_UNK ReconnectUnlessServing(void);
-    M2C_UNK func_02041dd4(M2C_UNK);
+    M2C_UNK ClosePeerConnection(M2C_UNK);
     s32 SendPeerSyncNotice(s32, M2C_UNK);
     void Qr2_StateChanged(s32);
     M2C_UNK NatNeg_ReleasePeer(s32);
@@ -351,7 +351,7 @@ s32 func_02040e1c(M2C_UNK arg0) {
         SetConnectionState(0xE);
         M2C_FIELD(GetConnection(), s32 *, 0x1D8) = 0;
         M2C_FIELD(GetConnection(), s16 *, 0x1B2) = 0;
-        func_02041dd4(arg0);
+        ClosePeerConnection(arg0);
         var_r5 = 1;
         var_r4 = 0xD;
         if ((s32) M2C_FIELD(GetConnection(), u8 *, 0xD) >= 1) {

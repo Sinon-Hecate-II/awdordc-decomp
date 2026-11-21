@@ -431,13 +431,16 @@ s32 gpGetBuddyStatus(void **connection,s32 index,MatchPlayerInfo *status){
  return 0;
 }
 
-s32 func_0204e2f4(void **arg0,s32 arg1,s32 *arg2) {
+/* Writes to `index` the buddy-list index of the buddy with `profileId` on the
+ * gpi `connection` (-1 when it has no presence details), or 0 in simulation mode;
+ * returns 2 when there is no connection. */
+s32 gpiGetBuddyIndex(void **connection,s32 profileId,s32 *index) {
  s32 gpiFindBuddyStatus(void **,s32,void **);
- void *sp0; s32 *q;
- if(arg0==0 || *arg0==0) return 2;
- if(M2C_FIELD(*arg0,s32 *,0x108)!=0) {*arg2=0; return 0;}
- if(gpiFindBuddyStatus(arg0,arg1,&sp0)!=0 && (q=M2C_FIELD(sp0,s32 **,8))!=0) *arg2=*q;
- else *arg2=-1;
+ void *buddy; GpiBuddyStatusDetails *details;
+ if(connection==0 || *connection==0) return 2;
+ if(M2C_FIELD(*connection,s32 *,GPI_CONN_SIMULATION)!=0) {*index=0; return 0;}
+ if(gpiFindBuddyStatus(connection,profileId,&buddy)!=0 && (details=M2C_FIELD(buddy,GpiBuddyStatusDetails **,GPI_BUDDY_DETAILS))!=0) *index=details->index;
+ else *index=-1;
  return 0;
 }
 

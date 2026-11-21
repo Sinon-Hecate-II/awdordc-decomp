@@ -202,39 +202,71 @@ void BigNumMul(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     }
 }
 
-void func_02026604(u16 *dst, u16 *src, s32 mult, s32 len) {
+/* dst = src * mult over `len` 16-bit limbs: each limb is multiplied by the
+ * scalar and the 32-bit product carries into the next limb; one limb holds the
+ * last carry and the limbs after it are cleared. */
+void BigNumMulSmall(u16 *dst, u16 *src, s32 mult, s32 len) {
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
     s32 BigNumLen(u16 *, s32);
-    s32 n;
+    s32 srcLen;
     u32 carry;
-    s32 k;
+    s32 i;
 
-    n = BigNumLen(src, len);
+    srcLen = BigNumLen(src, len);
     carry = 0;
+    i = 0;
+    while (i < srcLen) {
+        u32 product = (u32)mult * src[i] + carry;
+        dst[i] = (u16)product;
+        carry = product >> 16;
+        i++;
+    }
+    if (i < len) {
+        dst[i] = (u16)carry;
+        i++;
+    }
+    MI_CpuFill8((u8 *)(dst + i), 0, (u32)((len - i) * 2));
+}
+
+#pragma opt_propagation off
+/* dst = src * src over `n` 16-bit limbs: the diagonal terms src[k]*src[k] are
+ * written first (each 32-bit product straddling limbs 2k and 2k+1), then every
+ * off-diagonal term 2*src[i]*src[k] is carry-added at limb i+k. */
+void BigNumSquare(u16 *dst, u16 *src, s32 n) {
+    s32 srcLen = BigNumLen(src, n);
+    s32 i, k, j;
+    u32 product;
+
+    if (n > srcLen * 2) {
+        MI_CpuFill8((u8 *)(dst + srcLen * 2), 0, (n - srcLen * 2) * 2);
+    }
     k = 0;
-    while (k < n) {
-        u32 s = (u32)mult * src[k] + carry;
-        dst[k] = (u16)s;
-        carry = s >> 16;
-        k++;
+    if (srcLen > 0) {
+        j = 0;
+        do {
+            if (j >= n) break;
+            product = (u32)src[k] * src[k];
+            dst[j] = product;
+            if (j == n - 1) break;
+            k++;
+            dst[j + 1] = product >> 16;
+            j += 2;
+        } while (k < srcLen);
     }
-    if (k < len) {
-        dst[k] = (u16)carry;
-        k++;
+    for (k = 0; k < srcLen; k++) {
+        for (i = k + 1; i < srcLen && k + i < n; i++) {
+            j = k + i;
+            product = (u32)src[i] * src[k];
+            if (product <= BIGNUM_DOUBLE_PRODUCT_MAX) {
+                BigNumAddCarryAt(dst, product << 1, j, n);
+            } else {
+                BigNumAddCarryAt(dst, product, j, n);
+                BigNumAddCarryAt(dst, product, j, n);
+            }
+        }
     }
-    MI_CpuFill8((u8 *)(dst + k), 0, (u32)((len - k) * 2));
 }
-
-void BigNumSquare(u16 *dst,u16 *src,s32 n){
-s32 m=BigNumLen(src,n); s32 i,k,j; u32 p;
-if(n>m*2)MI_CpuFill8((u8*)(dst+m*2),0,(n-m*2)*2);
-i=0;if(m>0){j=0;do{if(j>=n)break;p=(u32)src[i]*src[i];dst[j]=p;if(j==n-1)break;i++;dst[j+1]=p>>16;j+=2;}while(i<m);}
-for(k=0;k<m;k++){i=k+1;goto test;
-body:p=(u32)src[i]*src[k];if(p<=0x7fff8000U)BigNumAddCarryAt(dst,p<<1,j,n);else{BigNumAddCarryAt(dst,p,j,n);BigNumAddCarryAt(dst,p,j,n);}i++;
-test:if(i<m){j=k+i;if(j<n)goto body;}
-}
-}
-
+#pragma opt_propagation reset
 u64 func_020267b0(u16 *arg0) {
     return (u64)*arg0 << 32;
 }
@@ -276,7 +308,7 @@ MemMove((s32)(q+1),(s32)q,(n*2-1)*2);
 digit=U64Divide(func_020267e0((u8 *)r+bytes),divisor);
 if(digit>65535)digit=65535;
 again:
-func_02026604(work,b,(u16)digit,n);
+BigNumMulSmall(work,b,(u16)digit,n);
 if(BigNumCmp(r,work,n)<0){digit--;goto again;}
 BigNumSub(r,r,work,n);*q=digit;
 }while(++i<n);
@@ -543,13 +575,13 @@ void BigNumToBytes(u8 *dst, u16 *src, s32 n) {
 }
 
 void func_02027090(void) {
-    M2C_UNK func_0200c454();
-    func_0200c454();
+    M2C_UNK MD5Init();
+    MD5Init();
 }
 
 void func_0202709c(void) {
-    M2C_UNK func_0200c494();
-    func_0200c494();
+    M2C_UNK MD5Update();
+    MD5Update();
 }
 
 void func_020270a8(void) {

@@ -27,7 +27,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     void *func_0209b26c(s16, M2C_UNK, M2C_UNK, s32, s32, u32);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
@@ -39,7 +39,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK DrawGlyphString(s32, s32, s32, M2C_UNK, s32, s32, s32);
     M2C_UNK func_ov000_0216a30c(s32, s32, M2C_UNK);
-    M2C_UNK func_ov000_0216a470();
+    M2C_UNK GetEarnedRecordTierTotal();
     s32 func_ov000_0216a564();
     s32 func_ov000_0216a76c();
     s32 func_ov000_0216a77c();
@@ -49,7 +49,7 @@ void func_ov003_021e5118(void *arg0) {
     s32 GetTerrainPalette(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f1b38(M2C_UNK, M2C_UNK *);
     M2C_UNK func_ov003_021f1b7c(M2C_UNK, M2C_UNK *);
-    u8 func_ov003_02200b5c(u8);
+    u8 GetPreviewTerrainId(u8);
     extern u16 **g3DSpriteEngineSub;
     extern void *g3DSpriteEngineMain;
     extern void *data_027e01d8;
@@ -160,14 +160,14 @@ void func_ov003_021e5118(void *arg0) {
     SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x18, 5);
     LoadFileToSpriteBuffer(&data_ov003_0220f810, 0x300, 0x20);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
-    func_020a9a30(1, 0, 3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3680);
-    func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x2C0);
+    LoadSpriteResource(1, 0, 3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x3680);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x2C0);
     Clear3DSpriteLayer(0);
     func_01ff9dd8(0);
     LoadScenePanelPalette(7);
     temp_r6_2 = data_027e01d8;
     DrawGlyphString(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
-    func_ov000_0216a470();
+    GetEarnedRecordTierTotal();
     func_ov000_0216a30c(func_ov000_0216a564(), 0x5F80, 9);
     if ((func_ov000_0216a76c() != -2) && (func_ov000_0216a76c() != -1)) {
         func_ov000_0216a76c();
@@ -195,15 +195,15 @@ void func_ov003_021e5118(void *arg0) {
     LoadGraphicsBlock(temp_r0_3, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x2800);
     HeapFreeBlock(temp_r0_3);
     LoadFileToSpriteBuffer(&data_ov003_0220f87c, 0x2C0, 0x20);
-    func_020a9a30(1, 0, 4, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x6500);
-    func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x360);
-    func_020a9a30(1, 0, 0, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x4B00);
-    func_020a9a30(1, 0, 2, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x4E00);
-    func_020a9a30(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x320);
+    LoadSpriteResource(1, 0, 4, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x6500);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x360);
+    LoadSpriteResource(1, 0, 0, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x4B00);
+    LoadSpriteResource(1, 0, 2, M2C_FIELD(data_027e01d8, s32 *, 0x1C) + 0x4E00);
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(data_027e01d8, s32 *, 0x30) + 0x320);
     var_r4 = 0;
     do {
         temp_r8 = M2C_FIELD(data_027e01d8, s32 *, 0x1C) + ((u32) (((var_r4 * 8) + 0x210) << 0x10) >> 0xB);
-        MI_CpuCopy32(GetTerrainTileData(func_ov003_02200b5c(var_r4)), temp_r8, 0x100);
+        MI_CpuCopy32(GetTerrainTileData(GetPreviewTerrainId(var_r4)), temp_r8, 0x100);
         var_r4 += 1;
     } while ((u32) var_r4 <= 7U);
     CopyToObjPaletteShadow(GetTerrainPalette(0xF, 0), 0x2E0, 0x20);
@@ -306,7 +306,7 @@ void Ov003_DrawUnitCategoryGrid(void *arg0, s16 arg1, s16 arg2) {
     void SetTextSpriteValue(void *, s16);
     void DrawTextSprite(void *);
     s32 GetUnitCategoryCount(void *, s32, s32);
-    s32 GetIconGridRecordIndex(u8);
+    s32 GetPropertyGridCountIndex(u8);
     extern u8 gSpriteDesc16x32[];
     extern u16 **gCur3DSpriteEngine, **g3DSpriteEngineSub;
     s32 xMask, tileMask, allPlayers, baseY, baseX;
@@ -328,7 +328,7 @@ void Ov003_DrawUnitCategoryGrid(void *arg0, s16 arg1, s16 arg2) {
         x = Modulo(i, 3) * 22 + baseX;
         y = Divide(i, 3) * 28 + baseY;
         ptr = M2C_FIELD(arg0, u8 **, OV003_UNIT_COUNT_GRID);
-        count = GetUnitCategoryCount((u8 *)ptr + 4, GetIconGridRecordIndex(i), allPlayers);
+        count = GetUnitCategoryCount((u8 *)ptr + 4, GetPropertyGridCountIndex(i), allPlayers);
         if (count) {
             savedEngine = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineSub;

@@ -1,5 +1,6 @@
 /* 19 functions from 0x02216C94 to 0x02217C80 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct MapPoint { s16 x, y; } MapPoint;
 typedef struct MapScan { u8 pad0[0xa10]; u16 cells[0x16a4]; u16 rows[0xcf6]; u16 width, height; } MapScan;
@@ -238,26 +239,30 @@ s32 Map_PickRandomGroundCellBetween(void *arg0, void *arg1, s16 *out) {
     return found;
 }
 
-M2C_UNK func_ov007_02217598(M2C_UNK *a,M2C_UNK *b){
- s32 Map_PickRandomGroundCellBetween(void *,void *,s16 *);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s16 sp4[2],sp0[2];
- if(!Map_PickRandomGroundCellBetween(a,b,sp4))return;
- if(!Map_PickRandomGroundCellBetween(b,a,sp0))return;
- Map_SetCellTile(sp4[0],sp4[1],0x1c9);
- Map_SetCellTile(sp0[0],sp0[1],0x1ce);
+/* Places one port for each side on a random open ground cell between the two
+ * bases: side 1's port is picked from its base toward side 2, and vice versa. */
+M2C_UNK Map_PlaceSidePorts(M2C_UNK *baseA, M2C_UNK *baseB) {
+    s32 Map_PickRandomGroundCellBetween(void *, void *, s16 *);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
+    s16 portA[2], portB[2];
+    if (!Map_PickRandomGroundCellBetween(baseA, baseB, portA)) return;
+    if (!Map_PickRandomGroundCellBetween(baseB, baseA, portB)) return;
+    Map_SetCellTile(portA[0], portA[1], 0x1c9);
+    Map_SetCellTile(portB[0], portB[1], 0x1ce);
 }
 
-M2C_UNK func_ov007_02217608(void) {
- s32 Map_RandomScaledValue(s32,s32);
- s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s32 sp4; s32 sp0; s32 i; s32 n;
- n=Map_RandomScaledValue(20,40);
- for(i=0;i<n;i++){
- if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
- Map_SetCellTile(sp4,sp0,33);
- }
+/* Scatter rocks over the map: replace 20..40 random plain cells (tile id 1) with
+ * MAP_TILE_ROCK, stopping early when no plain cell is left to pick. */
+M2C_UNK Map_ScatterRocks(void) {
+    s32 Map_RandomScaledValue(s32,s32);
+    s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
+    M2C_UNK Map_SetCellTile(s32,s32,s32);
+    s32 x; s32 y; s32 i; s32 n;
+    n=Map_RandomScaledValue(20,40);
+    for(i=0;i<n;i++){
+        if(Map_PickRandomTileOfValue(&x,&y,1)==0)return;
+        Map_SetCellTile(x,y,MAP_TILE_ROCK);
+    }
 }
 
 /* Random-map generator pass: scatter 5..20 copies of terrain tile 385 (a
@@ -279,16 +284,23 @@ M2C_UNK Map_ScatterDetailTiles(void) {
     }
 }
 
-M2C_UNK func_ov007_022176fc(void) {
- s32 Map_RandomScaledValue(s32,s32);
- s32 Map_PickRandomTileOfValue(s32 *,s32 *,s32);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s32 sp4; s32 sp0; s32 i; s32 n;
- n=Map_RandomScaledValue(20,40);
- for(i=0;i<n;i++){
- if(Map_PickRandomTileOfValue(&sp4,&sp0,1)==0)return;
- Map_SetCellTile(sp4,sp0,2);
- }
+/* Scatter rough ground over plain tiles, stopping early if the search fails. */
+void Map_ScatterRoughGround(void) {
+    s32 Map_RandomScaledValue(s32, s32);
+    s32 Map_PickRandomTileOfValue(s32 *, s32 *, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
+    s32 x;
+    s32 y;
+    s32 placed;
+    s32 count;
+
+    count = Map_RandomScaledValue(MAP_RANDOM_ROUGH_GROUND_COUNT_MIN, MAP_RANDOM_ROUGH_GROUND_COUNT_MAX);
+    for (placed = 0; placed < count; placed++) {
+        if (Map_PickRandomTileOfValue(&x, &y, MAP_TILE_PLAIN) == 0) {
+            return;
+        }
+        Map_SetCellTile(x, y, MAP_TILE_ROUGH_GROUND);
+    }
 }
 
 /* On every passable type-3 cell, randomly place tile 34 with a chance based on how many of its neighbors are open; then in a second pass place tile 34 on type-3 cells with exactly two open neighbors. */
@@ -321,31 +333,55 @@ void func_ov007_02217774(void) {
     }
 }
 
-M2C_UNK func_ov007_022178f4(void) {
- s32 Map_RandomScaledValue(s32,s32);
- s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s32 sp4; s32 sp0; s32 i; s32 n;
- n=Map_RandomScaledValue(5,10);
- for(i=0;i<n;i++){
- if(Map_PickRandomWastelandTile(&sp4,&sp0,3)==0)return;
- Map_SetCellTile(sp4,sp0,360);
- }
+/* Scatter reefs over suitable sea cells until the map-scaled count is reached. */
+void Map_ScatterReefs(void) {
+    s32 Map_RandomScaledValue(s32, s32);
+    s32 Map_PickRandomSeaAreaTile(s32 *, s32 *, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
+    s32 x;
+    s32 y;
+    s32 placed;
+    s32 count;
+
+    count = Map_RandomScaledValue(MAP_RANDOM_REEF_COUNT_MIN, MAP_RANDOM_REEF_COUNT_MAX);
+    for (placed = 0; placed < count; placed++) {
+        if (Map_PickRandomSeaAreaTile(&x, &y, MAP_TILE_SEA) == 0) {
+            return;
+        }
+        Map_SetCellTile(x, y, MAP_TILE_REEF);
+    }
 }
 
+/* Random-map generator pass: scatter 5..10 single-cell wasteland decorations
+ * (tile id 39) over random wasteland (tile 3) cells, stopping early when no
+ * suitable cell is left to pick. */
 M2C_UNK func_ov007_0221796c(void) {
- s32 Map_RandomScaledValue(s32,s32);
- s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);
- M2C_UNK Map_SetCellTile(s32,s32,s32);
- s32 sp4; s32 sp0; s32 i; s32 n;
- n=Map_RandomScaledValue(5,10);
- for(i=0;i<n;i++){
- if(Map_PickRandomWastelandTile(&sp4,&sp0,3)==0)return;
- Map_SetCellTile(sp4,sp0,39);
- }
+    s32 Map_RandomScaledValue(s32, s32);
+    s32 Map_PickRandomSeaAreaTile(s32 *, s32 *, s32);
+    M2C_UNK Map_SetCellTile(s32, s32, s32);
+    s32 x;
+    s32 y;
+    s32 i;
+    s32 count;
+
+    count = Map_RandomScaledValue(5, 10);
+    for (i = 0; i < count; i++) {
+        if (Map_PickRandomSeaAreaTile(&x, &y, MAP_TILE_WASTELAND) == 0) return;
+        Map_SetCellTile(x, y, 39);
+    }
 }
 
-M2C_UNK func_ov007_022179e4(void){s32 Map_RandomScaledValue(s32,s32);s32 Map_PickRandomWastelandTile(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);s32 sp4,sp0,i,n;n=Map_RandomScaledValue(8,15);for(i=0;i<n;i++){if(!Map_PickRandomWastelandTile(&sp4,&sp0,3))return;Map_SetCellTile(sp4,sp0,7);}}
+/* Scatter 8..15 single-cell decorations over the map's wasteland areas:
+ * replace a random wasteland cell (tile id 3) with tile id 7 each time. */
+M2C_UNK Map_ScatterWastelandDebris(void){
+s32 Map_RandomScaledValue(s32,s32);s32 Map_PickRandomSeaAreaTile(s32 *,s32 *,s32);M2C_UNK Map_SetCellTile(s32,s32,s32);
+s32 x,y,i,count;
+count=Map_RandomScaledValue(8,15);
+for(i=0;i<count;i++){
+if(!Map_PickRandomSeaAreaTile(&x,&y,3))return;
+Map_SetCellTile(x,y,7);
+}
+}
 
 /* Fill every tile of the current map with type 1, then populate enemies, items and other map content. */
 void func_ov007_02217a5c(void) {
@@ -355,13 +391,11 @@ void func_ov007_02217a5c(void) {
     M2C_UNK Map_GenerateWoodsTerrain();
     M2C_UNK func_ov007_02216e08(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
     void Map_GeneratePaths(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov007_02217598(M2C_UNK *, M2C_UNK *);
-    M2C_UNK func_ov007_02217608(void);
+    M2C_UNK Map_PlaceSidePorts(M2C_UNK *, M2C_UNK *);
+    M2C_UNK Map_ScatterRocks(void);
     M2C_UNK Map_ScatterDetailTiles();
-    M2C_UNK func_ov007_022176fc(void);
-    M2C_UNK func_ov007_022178f4(void);
     M2C_UNK func_ov007_0221796c();
-    M2C_UNK func_ov007_022179e4();
+    M2C_UNK Map_ScatterWastelandDebris();
     extern void **gCurrentMap;
     M2C_UNK sp14;
     M2C_UNK sp10;
@@ -393,14 +427,14 @@ void func_ov007_02217a5c(void) {
     func_ov007_02216c94(&sp14, &sp10);
     func_ov007_02216e08(&sp14, &sp10, &spC, &sp8, &sp4);
     Map_GeneratePaths(&sp14, &sp10, &spC, &sp8, &sp4);
-    func_ov007_02217598(&sp14, &sp10);
-    func_ov007_02217608();
+    Map_PlaceSidePorts(&sp14, &sp10);
+    Map_ScatterRocks();
     Map_ScatterDetailTiles();
-    func_ov007_022176fc();
+    Map_ScatterRoughGround();
     func_ov007_02217774();
-    func_ov007_022178f4();
+    Map_ScatterReefs();
     func_ov007_0221796c();
-    func_ov007_022179e4();
+    Map_ScatterWastelandDebris();
 }
 
 s8 *func_ov007_02217b64(s32 arg0) {

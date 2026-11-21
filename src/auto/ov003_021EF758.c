@@ -137,6 +137,10 @@ void func_ov003_021efb60(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x14)(arg0);
 }
 
+#pragma push
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+#pragma opt_propagation off
 void func_ov003_021efb74(void *arg0) {
     M2C_UNK Show3DSprite(s32);
     M2C_UNK Hide3DSprite(s32);
@@ -154,43 +158,45 @@ void func_ov003_021efb74(void *arg0) {
 
     void *r7 = arg0;
     void *r4;
-    s32 r5;
+    u32 r5;
     void *r2;
     void *r0p;
-    s8 byte1v;
-    u8 r5u;
-    u8 r6;
+    void *playerSprites;
+    u32 playerCount;
+    u8 slot;
+    s32 byte1v;
     u8 byte2;
-    u8 cond2;
-    u8 ok;
+    u32 cond2;
+    u32 ok;
     void *r4b;
     u8 r5b;
     void *r4c;
     void *r1p;
     u8 b3a;
+    u32 textEnabled;
     void *p6c;
     void *p6c2;
     u16 val16;
-    u8 r4x;
+    u32 r4x;
     u8 byte39;
-    u8 cond3;
+    u32 cond3;
     M2C_UNK _v;
-    void *e;
-    void *er;
 
     Show3DSprite(M2C_FIELD(r7, s32 *, 0x58));
     r4 = M2C_FIELD(r7, void **, 0x68);
     Show3DSprite(M2C_FIELD(r4, s32 *, 0x78));
 
-    for (r5 = 0; r5 < 0xc; r5++) {
-        e = (char *)r4 + r5 * 4;
+    r5 = 0;
+    do {
+
         if (IsWaypointOptionValid((u8)r5) != 0) {
-            Show3DSprite(M2C_FIELD(e, s32 *, 0x14));
+            Show3DSprite(M2C_FIELD((char *)r4 + r5 * 4, s32 *, 0x14));
         } else {
-            Hide3DSprite(M2C_FIELD(e, s32 *, 0x14));
+            Hide3DSprite(M2C_FIELD((char *)r4 + r5 * 4, s32 *, 0x14));
         }
-        Show3DSprite(M2C_FIELD(e, s32 *, 0x44));
-    }
+        Show3DSprite(M2C_FIELD((char *)r4 + r5 * 4, s32 *, 0x44));
+        ++r5;
+    } while ((s32)r5 < 12);
 
     Show3DSprite(M2C_FIELD(r4, s32 *, 0x74));
     _v = func_ov003_021f153c();
@@ -201,49 +207,51 @@ void func_ov003_021efb74(void *arg0) {
     M2C_FIELD(r2, s16 *, 0x2) = M2C_FIELD(r2, u16 *, 0x4);
 
     r0p = M2C_FIELD(r7, void **, 0x6c);
-    r4 = M2C_FIELD(r7, void **, 0x64);
+    playerSprites = M2C_FIELD(r7, void **, 0x64);
     byte1v = M2C_FIELD(r0p, s8 *, 0x4);
-    r5u = (u8)byte1v;
-    Show3DSpriteSlide(M2C_FIELD(r4, s32 *, 0x0));
-    Show3DSpriteSlide(M2C_FIELD(r4, s32 *, 0x4));
+    playerCount = (u8)(s16)byte1v;
+    Show3DSpriteSlide(M2C_FIELD(playerSprites, s32 *, 0x0));
+    Show3DSpriteSlide(M2C_FIELD(playerSprites, s32 *, 0x4));
 
-    r6 = 0;
-    if (r5u > 0) {
+    slot = 0;
+    if ((u32)slot < playerCount) {
         do {
             if (IsLinkSessionActive() == 0) {
-                if (r6 < r5u) {
-                    er = (char *)r4 + r6 * 4;
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x8));
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x18));
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x28));
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x38));
+                if (slot < playerCount) {
+
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x8));
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x18));
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x28));
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x38));
                 }
             } else {
                 if (func_ov003_021e6cfc() != 0) {
-                    er = (char *)r4 + r6 * 4;
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x28));
-                    Show3DSprite(M2C_FIELD(er, s32 *, 0x38));
+
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x28));
+                    Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x38));
                 }
             }
-            r6 = (r6 + 1) & 0xff;
-        } while (r6 < r5u);
+            slot = (slot + 1) & 0xff;
+        } while (slot < playerCount);
     }
 
     byte2 = M2C_FIELD(r7, u8 *, 0x39);
-    cond2 = (u8)(((u32)byte2 << 0x1c) >> 0x1e);
+    cond2 = (((u32)byte2 << 0x1c) >> 0x1e);
     ok = (cond2 == 1) ? 1 : 0;
-    if (ok) {
+    if (ok & 0xff) {
         r4b = M2C_FIELD(r7, void **, 0x64);
-        for (r5b = 0; r5b < 4; r5b++) {
-            er = (char *)r4b + r5b * 4;
-            Hide3DSprite(M2C_FIELD(er, s32 *, 0x8));
-            Hide3DSprite(M2C_FIELD(er, s32 *, 0x18));
-        }
+        r5b = 0;
+        do {
+
+            Hide3DSprite(M2C_FIELD((char *)r4b + r5b * 4, s32 *, 0x8));
+            Hide3DSprite(M2C_FIELD((char *)r4b + r5b * 4, s32 *, 0x18));
+            ++r5b;
+        } while (r5b < 4);
         if (func_ov003_021e6d28() != 0) {
             Hide3DSprite(M2C_FIELD(r7, s32 *, 0x58));
             r4c = M2C_FIELD(r7, void **, 0x64);
             Hide3DSpriteSlide(M2C_FIELD(r4c, s32 *, 0x0));
-            Hide3DSpriteSlide(M2C_FIELD(r4c, s32 *, 0x4));
+            Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(r7, void **, 0x64), s32 *, 0x4));
             r1p = M2C_FIELD(r7, void **, 0x44);
             M2C_FIELD(r1p, s16 *, 0xe) = (s16)0xc0;
             M2C_FIELD(r1p, s16 *, 0x10) = (s16)0x24;
@@ -255,12 +263,14 @@ void func_ov003_021efb74(void *arg0) {
 
     b3a = M2C_FIELD(r7, u8 *, 0x3a);
     b3a = (b3a & ~1) | 1;
+    textEnabled = (u32)((u8)b3a << 31);
     M2C_FIELD(r7, u8 *, 0x3a) = b3a;
 
+    if (textEnabled >> 31) {
     p6c = M2C_FIELD(r7, void **, 0x6c);
     p6c2 = M2C_FIELD(p6c, void **, 0xe0);
     val16 = M2C_FIELD(p6c2, u16 *, 0x2e);
-    r4x = (u8)(val16 & 0xff);
+    r4x = val16 & 0xff;
 
     if (InRange((s32)r4x, 0, 3) != 0) {
         SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000011);
@@ -272,17 +282,20 @@ void func_ov003_021efb74(void *arg0) {
         SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000010);
     } else if (r4x == 0x19) {
         byte39 = M2C_FIELD(r7, u8 *, 0x39);
-        cond3 = (u8)(((u32)byte39 << 0x1c) >> 0x1e);
-        if (cond3 == 0) {
+        cond3 = (((u32)byte39 << 0x1c) >> 0x1e);
+        ok = cond3 == 0;
+        if (ok & 0xff) {
             SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000016);
-        } else if (cond3 == 1) {
-            SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000017);
+        } else {
+            ok = cond3 == 1;
+            if (ok & 0xff) SetTextById(M2C_FIELD(r7, void **, 0x54), 0x47000017);
         }
     }
 
+    }
     SetOv003SceneState(1);
 }
-
+#pragma pop
 void func_ov003_021efe90(void) {
     M2C_UNK func_ov003_021eaed0();
     func_ov003_021eaed0();
@@ -358,7 +371,7 @@ void Ov003_StartLinkMapTransfer(void *scene) {
     s32 func_ov003_021e6d28();
     void SetOv003SceneState(s32);
     void func_ov003_021f152c(s32);
-    void func_ov003_022006dc(s32);
+    void Ov003_BroadcastPlayerSetup(s32);
     s32 GetPlayerCoIconIndex(u8);
     void CreateMapTransferPanelStep3(void *);
     u8 packet[0x24];
@@ -366,7 +379,7 @@ void Ov003_StartLinkMapTransfer(void *scene) {
     if (!IsLinkSessionActive()) return;
     if (((u32)(M2C_FIELD(scene, u8 *, 0x39) << 31) >> 31) == 1) mapConfirmed = 1; else mapConfirmed = 0;
     if (!(mapConfirmed & 255)) return;
-    func_ov003_022006dc(0); func_ov003_021f152c(1); SetOv003SceneState(1); CreateMapTransferPanelStep3(scene);
+    Ov003_BroadcastPlayerSetup(0); func_ov003_021f152c(1); SetOv003SceneState(1); CreateMapTransferPanelStep3(scene);
     if (!func_ov003_021e6d28()) return;
     if (!Link_ReceivePacket(packet, 0x24)) return;
     packet[13] = GetPlayerCoIconIndex((u8)GetPlayerCoId(GetLocalPlayerIdForOverlay() + 1));

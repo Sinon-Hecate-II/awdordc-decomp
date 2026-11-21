@@ -45,24 +45,28 @@ if(GetUnitAttackClass(kind)==UNIT_ATTACK_INDIRECT)return 4;
 return 0;
 }
 
+/* Commit the AI's chosen build action for target candidate `arg0`: give the
+ * built kind its opening AI state, mark the candidate spent, count the unit and
+ * remember the candidate, bump the target group's committed direct, indirect and
+ * kind-26 unit counts, then start the unit-placement phase. */
 void CommitAiAction(s32 arg0) {
-s32 func_ov000_021a43e8(); s32 GetUnitAttackClass(M2C_UNK);
+s32 func_ov000_021a43e8(s32); s32 GetUnitAttackClass(M2C_UNK);
 extern u8 gAiCommand[]; extern void *gAiState; extern u8 *gAiCommandState;
-extern u8 data_ov000_021e00af[],data_ov000_021dfd98[],data_ov000_021dfd99[],data_ov000_021dfd9a[];
+extern u8 gAiTargetCandidateStatus[],gAiGroupDirectUnits[],gAiGroupIndirectUnits[],gAiGroupKind26Units[];
 extern s8 gAiTargetCandidateGroup[];
-s32 offset; s32 index;
-gAiCommand[7]=SelectAiUnitState(gAiCommand[6]);
-offset=arg0*12;
-data_ov000_021e00af[offset]=252;
-M2C_FIELD(gAiState,u8*,7)++;
-M2C_FIELD(gAiState,u8*,4)=arg0;
-if((gUnitKindFlags[(s16)gAiCommand[6]*(s16)112]&7) && func_ov000_021a43e8()==0){
-if(GetUnitAttackClass(gAiCommand[6])==0){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd98[index*8]++;}
-if(GetUnitAttackClass(gAiCommand[6])==1){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd99[index*8]++;}
-if(gAiCommand[6]==26){index=gAiTargetCandidateGroup[offset];data_ov000_021dfd9a[index*8]++;}
+s32 offset; s32 group;
+gAiCommand[AI_COMMAND_UNIT_STATE]=SelectAiUnitState(gAiCommand[AI_COMMAND_UNIT]);
+offset=arg0*AI_CANDIDATE_STRIDE;
+gAiTargetCandidateStatus[offset]=AI_CANDIDATE_REJECTED;
+M2C_FIELD(gAiState,u8*,AI_STATE_UNIT_COUNT)++;
+M2C_FIELD(gAiState,u8*,AI_STATE_ACTION_CANDIDATE)=arg0;
+if((gUnitKindFlags[(s16)gAiCommand[AI_COMMAND_UNIT]*(s16)UNIT_KIND_STATS_SIZE]&7) && func_ov000_021a43e8(gAiCommand[AI_COMMAND_UNIT])==0){
+if(GetUnitAttackClass(gAiCommand[AI_COMMAND_UNIT])==0){group=gAiTargetCandidateGroup[offset];gAiGroupDirectUnits[group*AI_GROUP_STRIDE]++;}
+if(GetUnitAttackClass(gAiCommand[AI_COMMAND_UNIT])==1){group=gAiTargetCandidateGroup[offset];gAiGroupIndirectUnits[group*AI_GROUP_STRIDE]++;}
+if(gAiCommand[AI_COMMAND_UNIT]==26){group=gAiTargetCandidateGroup[offset];gAiGroupKind26Units[group*AI_GROUP_STRIDE]++;}
 }
-M2C_FIELD(gAiState,u8*,3)=1;
-*gAiCommandState=5;
+M2C_FIELD(gAiState,u8*,AI_STATE_PLACE_STEP)=1;
+*gAiCommandState=AI_COMMAND_PHASE_PLACE_UNIT;
 }
 
 /* Initialise the AI for the current player's turn: collect the target

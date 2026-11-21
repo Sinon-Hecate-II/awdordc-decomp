@@ -3,6 +3,14 @@
 #include "battle_map.h"
 #include "waypoint_panel.h"
 
+/* Player-setup packet Ov003_BroadcastPlayerSetup sends to the peers when the
+ * link map transfer starts: this console's own CO icon, then every player
+ * slot's army (team position) and CO icon. */
+#define PLAYER_SETUP_LOCAL_CO_ICON 0x0D /* u8: CO icon of this console's slot */
+#define PLAYER_SETUP_ARMY_IDS      0x0E /* u8[4]: army id of player slots 1..4 */
+#define PLAYER_SETUP_CO_ICONS      0x12 /* u8[4]: CO icon of player slots 1..4 */
+#define PLAYER_SETUP_PACKET_SIZE   0x24
+
 /* A polymorphic ov003 scene object: a vtable at +0, a second interface vtable at
  * +0x34, then the children, buffers and sprite-handle arrays it owns. */
 typedef struct Ov003Object {
@@ -33,7 +41,7 @@ extern s16 data_ov003_022103cc[4];
 void *DestroyOv003Object(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     extern M2C_UNK data_ov003_02210104, data_ov003_02210130;
@@ -84,7 +92,7 @@ void *DestroyOv003Object(Ov003Object *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     MemFree(obj);
     return obj;
 }
@@ -177,7 +185,10 @@ s32 GetPlayerPanelFlagTile(u32);
 func_020ae7a4(a,1,GetPlayerPanelFlagTile((u8)GetPlayerIdForSlot(b+1)));
 }
 
-void func_ov003_022006dc(s32 arg0) {
+/* Apply the map's player settings (unless `keepSettings` is set, randomizing the
+ * map and defaulting the four slots) and broadcast each player's army id and CO
+ * icon, plus the local player's own CO icon, over the link. */
+void Ov003_BroadcastPlayerSetup(s32 keepSettings) {
     extern void **gCurrentMap;
     s32 IsLinkSessionActive(void);
     void ResetTextLabelSlotsPartial(void);
@@ -189,20 +200,19 @@ void func_ov003_022006dc(s32 arg0) {
     s8 GetPlayerArmyId(s32);
     s32 GetPlayerCoId(s32);
     s32 GetPlayerCoIconIndex(u32);
-    s32 func_0208492c(void);
+    s32 GetLocalPlayerSlot(void);
     void Link_SendPacket(void *, s32);
 
-    u8 r5;
-    u8 *r6;
-    u8 sp[0x24];
+    u8 player;
+    u8 packet[0x24];
 
     if (IsLinkSessionActive() == 0) {
         return;
     }
     ResetTextLabelSlotsPartial();
-    if (arg0 == 0) {
+    if (keepSettings == 0) {
         MapSettings_Randomize(0);
-        M2C_FIELD(*gCurrentMap, u8 *, 0x5141) = 2;
+        M2C_FIELD(*gCurrentMap, u8 *, MAP_PLAYER_COUNT) = 2;
         SetPlayerIdForSlot(1, 1);
         SetPlayerIdForSlot(2, 2);
         SetPlayerIdForSlot(3, 3);
@@ -213,16 +223,13 @@ void func_ov003_022006dc(s32 arg0) {
         SetPlayerArmyId(4, 4);
     }
     ApplyMapSettingsToPlayers(0);
-    MI_CpuFill32(0, sp, 0x24);
-    r5 = 0;
-    do {
-        r6 = sp + r5;
-        r6[0xe] = (u8)GetPlayerArmyId(r5 + 1);
-        r6[0x12] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(r5 + 1) & 0xFF);
-        r5 = (u8)(r5 + 1);
-    } while (r5 < 4);
-    sp[0xd] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(func_0208492c() + 1) & 0xFF);
-    Link_SendPacket(sp, 0x24);
+    MI_CpuFill32(0, packet, 0x24);
+    for (player = 0; player < 4; ++player) {
+        packet[0xe + player] = (u8)GetPlayerArmyId(player + 1);
+        packet[0x12 + player] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(player + 1) & 0xFF);
+    }
+    packet[0xd] = (u8)GetPlayerCoIconIndex(GetPlayerCoId(GetLocalPlayerSlot() + 1) & 0xFF);
+    Link_SendPacket(packet, 0x24);
 }
 
 /* Maps a CO id to its index in the CO icon strip: ids 1..12 use icons 0..11 in
@@ -298,9 +305,37 @@ s32 players=GetMapPlayerCount(id);s32 tile;
 switch(kind){case 1:return 3;case 3:return players+2;case 4:return 0;case 5:return 1;case 6:return 2;case 2:return players+5;case 7:case 8:case 9:case 10:case 11:if(!IsCampaignMapRecordPlayable(id))return 13;tile=IsLocalCampaignMapRecord(id)?players+8:players+12;return (u16)tile;default:case 0:break;}return 0;
 }
 
-s32 GetIconGridRecordIndex(u32 a){switch(a){case 0:return 0;case 1:return 1;case 2:return 2;case 3:return 3;case 4:return 4;case 5:return 7;case 6:return 9;case 7:return 8;default:return -1;}}
+/* Map a displayed property icon to its column in the per-owner count table. */
+s32 GetPropertyGridCountIndex(u32 iconSlot) {
+    switch (iconSlot) {
+    case 0: return MAP_PROPERTY_COUNT_HQ;
+    case 1: return MAP_PROPERTY_COUNT_CITY;
+    case 2: return MAP_PROPERTY_COUNT_BASE;
+    case 3: return MAP_PROPERTY_COUNT_AIRPORT;
+    case 4: return MAP_PROPERTY_COUNT_PORT;
+    case 5: return MAP_PROPERTY_COUNT_COM_TOWER;
+    case 6: return MAP_PROPERTY_COUNT_RADAR;
+    case 7: return MAP_PROPERTY_COUNT_KIND_18_19;
+    default: return MAP_PROPERTY_COUNT_NONE;
+    }
+}
 
-s32 func_ov003_02200b5c(u32 a){switch(a){case 0:return 15;case 1:return 16;case 2:return 17;case 3:return 18;case 4:return 19;case 5:return 22;case 6:return 23;case 7:return 24;default:return -1;}}
+/* Terrain id of map-preview slot `slot` (0..7): slots 0..4 select terrains 15..19
+ * and slots 5..7 select 22..24; any other slot has no terrain.  The caller copies
+ * each terrain's tile graphics into its preview strip slot. */
+s32 GetPreviewTerrainId(u32 slot) {
+    switch (slot) {
+    case 0: return 15;
+    case 1: return 16;
+    case 2: return 17;
+    case 3: return 18;
+    case 4: return 19;
+    case 5: return 22;
+    case 6: return 23;
+    case 7: return 24;
+    default: return -1;
+    }
+}
 
 /* Translate a map record's kind byte (2..11) into the map-list icon id the
  * row draws, then resolve that id to its icon frame index. */
@@ -355,9 +390,9 @@ u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {
 
 u8 func_ov003_02200c7c(void) {
     s32 IsLinkSessionActive();
-    s32 func_0208485c();
+    s32 IsLocalSessionHost();
     s32 result;
-    if (IsLinkSessionActive() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
 }

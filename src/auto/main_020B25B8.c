@@ -253,7 +253,7 @@ void AnimateSpriteSlot(void *context) {
    field widths) with the disabled flag, and its tile from the slot's 3D-sprite
    bank plus its priority, into the current 3D sprite engine. */
 void DrawSpriteSlotSprite(void *slot) {
-M2C_UNK func_01ff883c(u16,u16,u16,s32);
+M2C_UNK AppendSpriteDescToOam(u16,u16,u16,s32);
 s32 GetSpriteDescForSize(s16,s16);
 extern u16 **gCur3DSpriteEngine;
 u32 tile,prio; s16 w,h; s32 flag;
@@ -261,7 +261,7 @@ tile=M2C_FIELD(slot,u16 *,SPRITE_SLOT_TILE); prio=M2C_FIELD(slot,u16 *,SPRITE_SL
 w=M2C_FIELD(slot,s16 *,SPRITE_SLOT_W); h=M2C_FIELD(slot,s16 *,SPRITE_SLOT_H); flag=0;
 if(!SpriteSlotHasFlags(slot,2))return;
 if(SpriteSlotHasFlags(slot,0x800))flag=0x400;
-func_01ff883c((u16)(M2C_FIELD(slot,s16 *,SPRITE_SLOT_X)&0x1ff),(u16)((M2C_FIELD(slot,s16 *,SPRITE_SLOT_Y)&0xff)|flag),(u16)((0x3ff&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((prio<<28)>>16)),GetSpriteDescForSize(w,h));
+AppendSpriteDescToOam((u16)(M2C_FIELD(slot,s16 *,SPRITE_SLOT_X)&0x1ff),(u16)((M2C_FIELD(slot,s16 *,SPRITE_SLOT_Y)&0xff)|flag),(u16)((0x3ff&(tile>>((u32)(**gCur3DSpriteEngine<<17)>>30)))|((prio<<28)>>16)),GetSpriteDescForSize(w,h));
 }
 
 void InvokeConfirmCallback(void *p) {
@@ -270,16 +270,16 @@ if(!cb)return;cb(p);
 }
 
 void InvokeCancelCallback(void) {
-s32 func_020b1bb0(void);
+s32 IsFocusedSpriteSlotInteractive(void);
 extern void *gSpriteSlotManager;
 void *p; void (*cb)(void *);
-if(!func_020b1bb0())return;
+if(!IsFocusedSpriteSlotInteractive())return;
 p=M2C_FIELD(gSpriteSlotManager,void **,0xc);
 cb=M2C_FIELD(p,void (**)(void *),0x30);
 if(!cb)return; cb(p);
 }
 
-void func_020b2e60(void *p) {
+void InvokeSpriteSlotFocusCallback(void *p) {
 void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x34);
 if(!cb)return;cb(p);
 }

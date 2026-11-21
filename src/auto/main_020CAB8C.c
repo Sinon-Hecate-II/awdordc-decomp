@@ -16,15 +16,23 @@ void func_020cab8c(void) {
 }
 
 #pragma optimization_level 4
-s32 FindMapCursorOptionAt(s32 a,s32 b,s32 c){
- extern void **gCurrentMap;
- s32 i=0;void *p;
- do{
- if(c&gMapCursorDirs[i][0]){
- p=*gCurrentMap;
- if(a==M2C_FIELD(p,s16 *,0x52dc)+(s8)gMapCursorDirs[i][2] && b==M2C_FIELD(p,s16 *,0x52de)+(s8)gMapCursorDirs[i][3])return i;
- } i++;
- }while(i<4);return -1;
+/* Find the enabled cursor direction that points to the given tile. */
+s32 FindMapCursorOptionAt(s32 tileX, s32 tileY, s32 optionMask) {
+    extern void **gCurrentMap;
+    s32 direction = 0;
+    void *map;
+
+    do {
+        if (optionMask & gMapCursorDirs[direction][MAP_CURSOR_DIR_MASK]) {
+            map = *gCurrentMap;
+            if (tileX == M2C_FIELD(map, s16 *, MAP_CURSOR_X) + (s8)gMapCursorDirs[direction][MAP_CURSOR_DIR_DX]
+                && tileY == M2C_FIELD(map, s16 *, MAP_CURSOR_Y) + (s8)gMapCursorDirs[direction][MAP_CURSOR_DIR_DY]) {
+                return direction;
+            }
+        }
+        direction++;
+    } while (direction < MAP_CURSOR_OPTION_COUNT);
+    return -1;
 }
 s32 NextMapCursorOption(s32 a,s32 b){do{a=(a+1)&3;}while(!(b&gMapCursorDirs[a][0]));return a;}
 
@@ -355,7 +363,7 @@ void FindSupplyTargetDirections(void *option) {
 void func_020cb78c(void *arg0){
 void DeleteSpriteObject(void *);void BattleUpdateUnitCursor(void);s32 func_020c98b4(void);M2C_UNK func_020d468c();M2C_UNK SetBattleCommand(s32,u8,u8,u8);
 extern s32 gMapCursorOptionValue;extern void **gCurrentMap;
-s16 i;u8 *m;u8 *q;void *p;
+s32 offset; s16 i;u8 *m;u8 *q;void *p;
 if(func_020c98b4())return;
 loop:
 i=M2C_FIELD(arg0,s16 *,0x34);
@@ -368,9 +376,17 @@ if(!M2C_FIELD(arg0,s16 *,0x36))SetBattleCommand(6,M2C_FIELD(*gCurrentMap,u8 *,0x
 func_020d468c();
 return;
 }
-if(gMapCursorOptionValue&gMapCursorDirs[i][0]){
-m=*gCurrentMap;q=(u8 *)gMapCursorDirs+i*4;
-func_020cb6a4(M2C_FIELD((M2C_FIELD(m+2*(M2C_FIELD(m,s16 *,0x52de)+M2C_FIELD(q,s8 *,3)),u16 *,0x3758)+(M2C_FIELD(q,s8 *,2)+(s32)(m+M2C_FIELD(m,s16 *,0x52dc)))),u8 *,0x508)*14+(m+0x59a4));
+offset = i * 4;
+if (gMapCursorOptionValue & ((u8 *)gMapCursorDirs)[offset]) {
+    m = *gCurrentMap;
+    q = (u8 *)gMapCursorDirs + offset;
+{
+    s32 row = M2C_FIELD(m, s16 *, 0x52de) + (s8)q[3];
+    u8 *mapColumn = m + M2C_FIELD(m, s16 *, 0x52dc);
+    u16 rowOffset = M2C_FIELD(m + row * 2, u16 *, 0x3758);
+    u8 unitId = M2C_FIELD(rowOffset + ((s8)q[2] + mapColumn), u8 *, 0x508);
+    func_020cb6a4((m + 0x59a4) + 14 * unitId);
+}
 M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;
 }

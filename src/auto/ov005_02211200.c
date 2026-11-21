@@ -351,23 +351,27 @@ void func_ov005_02211b4c(void) {
     M2C_FIELD(gHistoryMenu, s32 *, 12) = Divide(timeVal, 0x3C) % 60;
 }
 
-void func_ov005_02211c24(s32 arg0) {
-s32 p=HistoryTabAt(arg0);
-s32 q=GetRecordDefinition(arg0,0);
-M2C_FIELD(p,s16 *,8)=0; M2C_FIELD(p,s16 *,6)=0;
-while(M2C_FIELD(q,s32 *,0)) {
-if(!func_ov005_02211a54(arg0,M2C_FIELD(p,s16 *,8))) M2C_FIELD(p,s16 *,6)++;
-M2C_FIELD(p,s16 *,8)++;
-q+=0x30;
-}
+/* Fills in a history tab's row counts: the number of rows in `count` and how
+ * many of them are selectable in `selectable` (a row is selectable once its
+ * record value is set, or while value display is disabled). */
+void CountTabRecords(s32 tabId) {
+    s32 p = HistoryTabAt(tabId);
+    s32 q = GetRecordDefinition(tabId, 0);
+    ((HistoryMenuTab *)p)->count = 0;
+    ((HistoryMenuTab *)p)->selectable = 0;
+    while (M2C_FIELD(q, s32 *, 0)) {
+        if (!func_ov005_02211a54(tabId, ((HistoryMenuTab *)p)->count)) ((HistoryMenuTab *)p)->selectable++;
+        ((HistoryMenuTab *)p)->count++;
+        q += 0x30;
+    }
 }
 
 void func_ov005_02211c94(void) {
 extern s32 gHistoryMenu;
 M2C_FIELD(gHistoryMenu,s32 *,0x34)=func_ov000_0216a77c(func_ov000_0216a76c());
 M2C_FIELD(gHistoryMenu,s32 *,0x38)=func_ov000_0216a7d4(func_ov000_0216a7c4());
-M2C_FIELD(gHistoryMenu,u8 *,0x32)=func_ov000_0216a564(func_ov000_0216a470());
-M2C_FIELD(gHistoryMenu,s32 *,0x3c)=func_ov000_0216a59c(func_ov000_0216a564(func_ov000_0216a470()));
+M2C_FIELD(gHistoryMenu,u8 *,0x32)=func_ov000_0216a564(GetEarnedRecordTierTotal());
+M2C_FIELD(gHistoryMenu,s32 *,0x3c)=func_ov000_0216a59c(func_ov000_0216a564(GetEarnedRecordTierTotal()));
 }
 
 #pragma opt_strength_reduction off

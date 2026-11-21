@@ -20,7 +20,7 @@ void func_02089d30(void *arg0) {
     s32 GetUnitSpriteHeight(void *);
     void func_020ab150(void *,s32);
     void func_020aad18(void *);
-    void func_020a9a30(s32,s32,s32,s32);
+    void LoadSpriteResource(s32,s32,s32,s32);
     extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
     s32 previousEngine,engineIndex;
     s32 maxLength,offset,index,length,rows,width,height,state,mode;
@@ -89,7 +89,7 @@ void func_02089d30(void *arg0) {
             M2C_FIELD(arg0,s16 *,0x36)=188-PanelHeight(arg0);break;
         }
         sprite4=0;sprite1=0;
-        func_020a9a30(0,2,0x47,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x260);
+        LoadSpriteResource(0,2,0x47,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x260);
         flags=M2C_FIELD(arg0,u32 *,0x58);
         switch((u32)((s32)flags<<29)>>29){
 case 1:

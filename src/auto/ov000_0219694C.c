@@ -230,7 +230,7 @@ s32 ApplyAttackBonus(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
 /* Scales a base value by percentage modifiers derived from up to two optional unit pointers; returns the base unchanged when neither modifier applies. */
 s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
     s32 GetCoZoneAttackBonus(u32, s32, s32);
-    s32 func_020a28f4(u32, s32, s32);
+    s32 GetCoZoneDefenseBonus(u32, s32, s32);
     s32 GetPlayerArmyVariantIfSet(u16);
     s32 IsUnitSelected(void *);
     s32 Divide(s32, s32);
@@ -242,34 +242,37 @@ s32 ApplyCoZoneBonus(s32 base, void *firstUnit, void *secondUnit) {
     } else a = 0;
     if (firstUnit && (IsUnitSelected(firstUnit) || GetPlayerArmyVariantIfSet(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)))) {
         if (firstUnit) { if (!firstUnit) n = 0; else n = (s32)((u8 *)firstUnit - ((u8 *)*gCurrentMap + 0x59a4)) / 14; idx = (n >> 6) + 1; } else idx = 0;
-        b = func_020a28f4((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, GetPlayerArmyVariantIfSet(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
+        b = GetCoZoneDefenseBonus((u32)(M2C_FIELD(firstUnit, u8 *, 0) << 26) >> 26, idx, GetPlayerArmyVariantIfSet(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4)));
     } else b = 0;
     if (a == 0 && b == 0) { } else base = Divide(base * (a + 100), b + 100);
     return base;
 }
 
-s32 ApplyHealthBonus(s32 arg0, void *arg1, s32 arg2) {
+/* Scale `value` by a unit's health percentage `healthPercent`, with a bonus for
+ * a unit standing on a property it can capture; the percentage is capped at 100
+ * and the result at 255.  Returns the scaled value. */
+s32 ApplyHealthBonus(s32 value, void *unit, s32 healthPercent) {
     s32 func_020a7558(void *);
     s32 IsCaptureTargetAt(void *, u8, u8);
     s32 func_ov000_021a93a8(void *, u8, u8);
-    s32 var_r0;
-    s32 var_r4;
+    s32 result;
+    s32 percent;
 
-    var_r4 = arg2;
-    if (func_ov000_021a93a8(arg1, M2C_FIELD(arg1, u8 *, 1), M2C_FIELD(arg1, u8 *, 2)) == 1) {
-        var_r4 += 0x14;
+    percent = healthPercent;
+    if (func_ov000_021a93a8(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y)) == 1) {
+        percent += 0x14;
     }
-    if (IsCaptureTargetAt(arg1, M2C_FIELD(arg1, u8 *, 1), M2C_FIELD(arg1, u8 *, 2)) == 1) {
-        var_r4 += func_020a7558(arg1) * 0xA;
+    if (IsCaptureTargetAt(unit, M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y)) == 1) {
+        percent += func_020a7558(unit) * 0xA;
     }
-    if (var_r4 >= 0x64) {
-        var_r4 = 0x64;
+    if (percent >= 0x64) {
+        percent = 0x64;
     }
-    var_r0 = Divide(arg0 * var_r4, 0x64);
-    if (var_r0 >= 0xFF) {
-        var_r0 = 0xFF;
+    result = Divide(value * percent, 0x64);
+    if (result >= 0xFF) {
+        result = 0xFF;
     }
-    return var_r0;
+    return result;
 }
 
 /* Returns the terrain damage rating for tile (x, y); for most unit kinds it blends the unit's stats through ApplyCoZoneBonus and clamps to the existing tile rating. */

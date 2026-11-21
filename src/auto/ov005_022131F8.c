@@ -102,18 +102,18 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void LoadScenePanelGraphicsOnBothEngines(void);void *func_0208931c(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
+void func_ov005_02212ef0(void);void LoadScenePanelGraphicsOnBothEngines(void);void *Create3DSprite(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
 gHistoryMenu=HeapAllocBlock(100);
-func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);func_020031cc(8);
+func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);GX_SetBankForSubOBJ(8);
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
-for(j=0;j<3;j++)func_ov005_02211c24(j);
+for(j=0;j<3;j++)CountTabRecords(j);
 func_ov005_02211b4c();GetRecordTierTotals((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
 func_ov005_02211c94();UpdateMedalFlags();
-save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;func_020822b8(&a);
+save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 64;}
@@ -149,7 +149,7 @@ CreateMenuTextSprite((u8 *)gHistoryMenu+0x58,0x5e,0x9b,10,0x190,3,-1,arg0,0);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x5c,0x82,0x9b,11,0x198,3,-1,arg0,0);
 CreateMenuTextSprite((u8 *)gHistoryMenu+0x60,0xe0,0xa0,2,0x1a0,3,2,arg0,0);
 p=M2C_FIELD(gHistoryMenu,void **,0x58);SetMenuAnimFrame(p,((MenuAnimSprite *)p)->base+2);
-gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(&b);
+gCur3DSpriteEngine=g3DSpriteEngineSub;Apply3DSpriteLayout(&b);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 64;}
@@ -179,11 +179,11 @@ OpenNarcArchive(&data_ov005_02220454);
 LoadNarcFileDecompressed(&data_ov005_02220464,(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0xc)+0x20);
 LoadNarcFileToSpriteBuffer(&data_ov005_02220474,0x20,0x100);CloseNarcArchive();
 func_ov005_02212b40();
-M2C_FIELD(gHistoryMenu,void **,0x4c)=func_0208931c(arg0);
+M2C_FIELD(gHistoryMenu,void **,0x4c)=Create3DSprite(arg0);
 p=M2C_FIELD(gHistoryMenu,void **,0x4c);
 M2C_FIELD(p,u8 *,0x58)=10;
-dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2780;func_020a9a30(2,0,10,dst);
-func_020a9a30(2,2,10,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+0x2c0);
+dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+0x2780;LoadSpriteResource(2,0,10,dst);
+LoadSpriteResource(2,2,10,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+0x2c0);
 M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
 M2C_FIELD(p,u16 *,0x3e)=0x13c;
 ((MenuAnimSprite *)p)->frame=22;

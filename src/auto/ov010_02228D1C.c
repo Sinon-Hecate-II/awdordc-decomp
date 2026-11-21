@@ -63,7 +63,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
-    s32 func_ov000_0216a470(void);
+    s32 GetEarnedRecordTierTotal(void);
     s32 func_ov000_0216a564(void);
     s32 func_ov000_0216a76c(void);
     s32 func_ov000_0216a7c4(void);
@@ -116,7 +116,7 @@ volatile Ov010CallbackFn d;
     d = c;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x107) = 0;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x108) = (u8)arg0;
-    func_ov000_0216a470();
+    GetEarnedRecordTierTotal();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)func_ov000_0216a564();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)func_ov000_0216a76c();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
@@ -158,7 +158,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s32 func_ov010_02229450(s32);
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
-    s32 func_ov000_0216a470(void);
+    s32 GetEarnedRecordTierTotal(void);
     s32 func_ov000_0216a564(void);
     s32 func_ov000_0216a76c(void);
     s32 func_ov000_0216a7c4(void);
@@ -211,7 +211,7 @@ volatile Ov010CallbackFn d;
     d = c;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x107) = 1;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x108) = (u8)arg0;
-    func_ov000_0216a470();
+    GetEarnedRecordTierTotal();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)func_ov000_0216a564();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)func_ov000_0216a76c();
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
@@ -241,7 +241,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
- s32 func_ov000_0216a470(void);
+ s32 GetEarnedRecordTierTotal(void);
  s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a76c(void);
  s32 func_ov000_0216a7c4(void);
@@ -272,7 +272,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  d=a;
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x107)=1;
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x108)=arg0;
- func_ov000_0216a470();
+ GetEarnedRecordTierTotal();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
@@ -287,7 +287,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov010_02229468(s32);
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
- s32 func_ov000_0216a470(void);
+ s32 GetEarnedRecordTierTotal(void);
  s32 func_ov000_0216a564(void);
  s32 func_ov000_0216a76c(void);
  s32 func_ov000_0216a7c4(void);
@@ -318,7 +318,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  d = c;
  *(volatile u8 *)((u8 *)&gOv010OnlineSession + 0x107) = 1;
  *(volatile u8 *)((u8 *)&gOv010OnlineSession + 0x108) = (u8)arg0;
- func_ov000_0216a470();
+ GetEarnedRecordTierTotal();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
@@ -418,8 +418,8 @@ void func_ov010_02229568(M2C_UNK arg0) {
 }
 
 void func_ov010_02229580(void *arg0) {
-    M2C_UNK func_ov010_02226908(M2C_UNK, void *, s32);
-    func_ov010_02226908(0, arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
+    M2C_UNK Ov010_FreeBlock(M2C_UNK, void *, s32);
+    Ov010_FreeBlock(0, arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
 }
 
 void *func_ov010_0222959c(void *arg0, u8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6) {
@@ -559,23 +559,27 @@ extern "C" unsigned int Ov010Online_GetQueuedPacketSize(unsigned int channel) {
 s32 func_ov010_02229920(s32 a, void *b) {
 extern QueueNode *data_ov010_0222ef88;
 extern s32 data_ov010_0222ef8c, data_ov010_0222ef90;
-s32 offset=a*12;
-u32 saved=*(volatile u16 *)0x4000208;
-void *force=&saved;
-
 QueueNode *p;
-QueueNode **head=(QueueNode **)((char *)&data_ov010_0222ef88+offset);
+s32 offset=a*12;
+volatile u32 saved;
+u32 previous=*(volatile u16 *)0x4000208;
+s32 result;
+
+QueueNode **head;
+head=(QueueNode **)((char *)&data_ov010_0222ef88+offset);
 *(volatile u16 *)0x4000208=0;
 p=*head;
-if(!p){(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;return 0;}
+saved=previous;
+if(!p){(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=previous;return 0;}
 func_ov010_0222959c(b,p->kind,p->low,p->high,(s32)(p+1),p->size,p->value);
 if(!(*head=p->next))M2C_FIELD(&data_ov010_0222ef8c,s32 *,offset)=0;
-func_ov010_02226908(0,p,p->size+16);
+Ov010_FreeBlock(0,p,p->size+16);
+previous=saved;
 M2C_FIELD(&data_ov010_0222ef90,s32 *,offset)--;
 (void)*(volatile u16 *)0x4000208;
-*(volatile u16 *)0x4000208=saved;
-(void)force;
-return M2C_FIELD(b,s32 *,8)+12;
+result=M2C_FIELD(b,s32 *,8)+12;
+*(volatile u16 *)0x4000208=previous;
+return result;
 }
 
 s32 GetOnlineTransportPlayerId(void) {

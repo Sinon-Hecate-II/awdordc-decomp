@@ -1,5 +1,6 @@
 /* 47 functions from 0x02229D0C to 0x0222A9DC (ov010), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #include "string_storage.h"
 typedef struct { u8 value; } UnkA750Flag;
 typedef struct { u32 flag:1; u32 rest:31; } UnkA750Bits;
@@ -115,15 +116,19 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
     return temp_r0;
 }
 
-s32 Ov010_RequestWfcMatch(s32 a,s32 b,s32 c,s32 d,s32 e){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(1))return 0;MI_CpuFill8(d,0,b);M2C_FIELD(e,s32 *,0)=0;return func_02036ec0(a,b,0,c,d,e,255);}
+/* Start the WFC match query that looks up `count` player names on the WFC
+ * connection: clears the caller's per-player flag buffer and count, then creates
+ * the query with the default encoding.  Returns 0 when the connection is not up
+ * or the query cannot be started. */
+s32 Ov010_RequestWfcMatch(s32 names,s32 count,s32 timeout,s32 flagsOut,s32 countOut){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED))return 0;MI_CpuFill8(flagsOut,0,count);M2C_FIELD(countOut,s32 *,0)=0;return func_02036ec0(names,count,0,timeout,flagsOut,countOut,255);}
 
 s32 func_ov010_02229f64(void) {
-    u32 func_02036f14();
+    u32 PollWfcMatchRequest();
     s32 var_r4;
     u32 temp_r0;
 
     var_r4 = 0;
-    temp_r0 = func_02036f14();
+    temp_r0 = PollWfcMatchRequest();
     switch (temp_r0) {
     case 0:
     case 2:
@@ -449,7 +454,28 @@ void StringStorageConcat(void *out, void *first, void *last) {
     StringStorageReplace(r, firstLen, 0, last, last + lastLen, flags[0]);
 }
 
-void CreateNetErrorSprite(s8 a,u16 b,s32 c,s32 d,u32 e,void *f){extern M2C_UNK data_ov010_0222c58c,data_ov010_0222c914;void *CreateSpriteForOwner(void *,void *);void *p;u32 i;u32 *out;if(!c)return;p=CreateSpriteForOwner(&data_ov010_0222c58c,f);if(!p)return;M2C_FIELD(p,void **,0)=&data_ov010_0222c914;M2C_FIELD(p,u8 *,0x34)=0;M2C_FIELD(p,s8 *,0x35)=a;M2C_FIELD(p,u16 *,0x36)=b;M2C_FIELD(p,s32 *,0x38)=c;M2C_FIELD(p,s32 *,0x3c)=d;M2C_FIELD(p,u32 *,0x40)=e;out=p+0x44;for(i=0;i<3;i++)out[i]=0;}
+/* Create the sprite showing a network error on an online screen: a text layer of
+ * the net-error class with the given engine, text value, error code, error
+ * parameter and error class.  A zero error code means no sprite is created. */
+void CreateNetErrorSprite(s8 engine, u16 value, s32 errorCode, s32 errorParam, u32 errorClass, void *owner) {
+ extern M2C_UNK gNetErrorSpriteClass, gNetErrorSpriteVTable;
+ void *CreateSpriteForOwner(void *, void *);
+ void *sprite;
+ u32 i;
+ u32 *extra;
+ if (!errorCode) return;
+ sprite = CreateSpriteForOwner(&gNetErrorSpriteClass, owner);
+ if (!sprite) return;
+ M2C_FIELD(sprite, void **, 0) = &gNetErrorSpriteVTable;
+ M2C_FIELD(sprite, u8 *, TEXT_LAYER_FLAGS) = 0;
+ M2C_FIELD(sprite, s8 *, TEXT_LAYER_ENGINE) = engine;
+ M2C_FIELD(sprite, u16 *, TEXT_LAYER_VALUE) = value;
+ M2C_FIELD(sprite, s32 *, 0x38) = errorCode;
+ M2C_FIELD(sprite, s32 *, 0x3c) = errorParam;
+ M2C_FIELD(sprite, u32 *, 0x40) = errorClass;
+ extra = sprite + 0x44;
+ for (i = 0; i < 3; i++) extra[i] = 0;
+}
 
 void func_ov010_0222a880(void *arg0) {
     s32 GetScreenFlag(M2C_UNK);

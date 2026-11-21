@@ -40,7 +40,22 @@ case VRAM_BANK_H:REG_VRAM_H_CR=VRAM_CR_MAIN_BG(0);break;
 GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));
 }
 
-void func_020031cc(s32 a){extern M2C_UNK gVramBankState;M2C_FIELD(&gVramBankState,u16 *,0)=(M2C_FIELD(&gVramBankState,u16 *,0)|M2C_FIELD(&gVramBankState,u16 *,20))&~a;M2C_FIELD(&gVramBankState,u16 *,20)=a;switch(a){case 0:break;case 8:*(volatile u8 *)0x4000243=0x84;break;case 0x100:*(volatile u8 *)0x4000249=0x82;break;}GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,0));}
+/* Give the requested VRAM banks to the sub engine's OBJ (sprite) area: record
+ * the new grant, add the banks it replaces to the pending releases, then map the
+ * banks the grant can hold (bank I in the sub OBJ area, bank D in the main
+ * engine's background extended palette) and hand the released banks back to the
+ * allocator. */
+void GX_SetBankForSubOBJ(s32 banks) {
+    extern M2C_UNK gVramBankState;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) = (M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING) | M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_SUB_OBJ)) & ~banks;
+    M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_SUB_OBJ) = banks;
+    switch (banks) {
+    case 0: break;
+    case VRAM_BANK_D: REG_VRAM_D_CR = VRAM_CR_MAIN_BG_PALETTE(0); break;
+    case VRAM_BANK_I: REG_VRAM_I_CR = 0x82; break;
+    }
+    GX_ReleaseBanks(M2C_FIELD(&gVramBankState, u16 *, VRAM_BANKS_PENDING));
+}
 
 /* Give the requested bank (bank H) to the sub engine's background extended
  * palette: record the new grant and add the old one to the pending releases,
@@ -107,7 +122,7 @@ void func_020033b8(void) {
     func_0200333c(&data_0212dbcc);
 }
 
-void func_020033cc(void) {
+void GX_ReleaseBankForOBJExtPltt(void) {
     extern M2C_UNK data_0212dbce;
     func_0200333c(&data_0212dbce);
 }

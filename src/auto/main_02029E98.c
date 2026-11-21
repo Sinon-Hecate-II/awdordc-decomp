@@ -89,23 +89,26 @@ void *InitBlock(void *arg0, s16 arg1) {
     return p;
 }
 
-void *func_02029fdc(void *arg0, M2C_UNK arg1, s32 arg2) {
+/* Creates an expanded heap ('EXPH') over the memory from `heap` up to
+ * `endAddress`: initialises the heap header, turns the whole area into one free
+ * block and links that block at both ends of the heap's free list. */
+void *CreateExpHeap(void *heap, u32 endAddress, s32 attribute) {
     void *InitBlock(void *, s16);
-    struct Flags { u16 flag:1; u16 rest:15; };
-    s32 range[2];
-    void *p;
-    InitHeapHead(arg0, 0x45585048, (s32)(arg0 + 0x38), arg1, arg2);
-    M2C_FIELD(arg0, s16 *, 0x34) = 0;
-    M2C_FIELD(arg0, u16 *, 0x36) = 0;
-    M2C_FIELD(arg0, struct Flags *, 0x36).flag = 0;
-    range[0] = M2C_FIELD(arg0, s32 *, 0x18);
-    range[1] = M2C_FIELD(arg0, s32 *, 0x1c);
-    p = InitBlock(range, 0x4652);
-    M2C_FIELD(arg0, void **, 0x24) = p;
-    M2C_FIELD(arg0, void **, 0x28) = p;
-    M2C_FIELD(arg0, s32 *, 0x2c) = 0;
-    M2C_FIELD(arg0, s32 *, 0x30) = 0;
-    return arg0;
+    s32 area[2];
+    void *block;
+
+    InitHeapHead(heap, HEAP_SIGNATURE_EXP, (s32)((u8 *)heap + 0x38), endAddress, attribute);
+    M2C_FIELD(heap, s16 *, 0x34) = 0;
+    M2C_FIELD(heap, u16 *, HEAP_FLAGS) = 0;
+    M2C_FIELD(heap, u16 *, HEAP_FLAGS) &= ~1;
+    area[0] = M2C_FIELD(heap, s32 *, HEAP_AREA_START);
+    area[1] = M2C_FIELD(heap, s32 *, HEAP_AREA_END);
+    block = InitBlock(area, HEAP_BLOCK_FREE);
+    M2C_FIELD(heap, void **, HEAP_FREE_LIST) = block;
+    M2C_FIELD(heap, void **, HEAP_FREE_LIST + 4) = block;
+    M2C_FIELD(heap, s32 *, HEAP_USED_LIST) = 0;
+    M2C_FIELD(heap, s32 *, HEAP_USED_LIST + 4) = 0;
+    return heap;
 }
 
 /* Carves an allocation of `size` bytes at `address` out of the free heap block
@@ -256,7 +259,7 @@ void *func_0202a424(u32 arg0, u32 arg1, s32 arg2) {
     u32 end = (arg1 + arg0) & ~3;
     u32 start = (arg0 + 3) & ~3;
     if (start > end || end - start < 0x4C) return NULL;
-    return func_02029fdc((void *)start, end, arg2);
+    return CreateExpHeap((void *)start, end, arg2);
 }
 
 void func_0202a45c(void) {
@@ -361,7 +364,7 @@ void func_0202a60c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
 }
 
-void *func_0202a638(u32 arg0, u32 arg1, s32 arg2) {
+void *CreateFrameHeap(u32 arg0, u32 arg1, s32 arg2) {
     void *func_0202a4fc(void *, M2C_UNK, s32);
     u32 end = (arg1 + arg0) & ~3;
     u32 start = (arg0 + 3) & ~3;
@@ -369,7 +372,7 @@ void *func_0202a638(u32 arg0, u32 arg1, s32 arg2) {
     return func_0202a4fc((void *)start, (M2C_UNK)end, arg2);
 }
 
-void func_0202a670(void) {
+void DestroyFrameHeap(void) {
     M2C_UNK func_02029f14();
     func_02029f14();
 }
@@ -474,7 +477,7 @@ s32 func_0202a7b4(void *arg0) {
 s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     s32 RegisterArchiveName(void *, M2C_UNK, s32);
     M2C_UNK func_0200b118(void *);
-    s32 func_0200b2bc(void *, void *, s32, s32, s32, s32, s32, s32);
+    s32 ConfigureArchiveLayout(void *, void *, s32, s32, s32, s32, s32, s32);
     s32 StringLength(M2C_UNK);
     void *fat;
     void *fnt;
@@ -520,7 +523,7 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     if (RegisterArchiveName(archive, name, StringLength(name)) == 0) {
         return 0;
     }
-    if (func_0200b2bc(archive, imageData, (fat + 0xC) - imageData, M2C_FIELD(fat, s32 *, 4) - 0xC, (fnt + 8) - imageData, M2C_FIELD(fnt, s32 *, 4) - 8, 0, 0) != 0) {
+    if (ConfigureArchiveLayout(archive, imageData, (fat + 0xC) - imageData, M2C_FIELD(fat, s32 *, 4) - 0xC, (fnt + 8) - imageData, M2C_FIELD(fnt, s32 *, 4) - 8, 0, 0) != 0) {
         return 1;
     }
     ReleaseArchiveName(archive);
@@ -755,7 +758,7 @@ void Sound_SetVoiceVolume(void **arg0, s8 arg1) {
 #pragma push
 #pragma optimizewithasm off
 #pragma peephole off
-void func_0202ad04(void * volatile *arg0, s32 arg1, s32 arg2) {
+void Sound_StartPlayerVolumeFade(void * volatile *arg0, s32 arg1, s32 arg2) {
  M2C_UNK func_0202eed8(void *, s32, s32);
  void *p;
  if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) func_0202eed8((u8 *)p+0x1C,arg1<<8,arg2); }

@@ -56,7 +56,22 @@ void WFC_SetState(s32 state) {
     OS_RestoreInterrupts(irq);
 }
 #pragma opt_common_subs on
-M2C_UNK WFC_RearmStateTimer(void){void WFC_StateTimerCallback(void);extern void *gWfcSession;s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void CancelTimer(void *);void ScheduleTimer(void *,s32,s32,void (*)(void),s32);s32 old=OS_DisableInterrupts();CancelTimer((u8 *)gWfcSession+0x22cc);if(M2C_FIELD(gWfcSession,s32 *,0x2260)==9)ScheduleTimer((u8 *)gWfcSession+0x22cc,0x22f5341,0,WFC_StateTimerCallback,0);OS_RestoreInterrupts(old);}
+/* Restarts the one-shot state timer while the session is waiting for its peer. */
+M2C_UNK WFC_RearmStateTimer(void) {
+    void WFC_StateTimerCallback(void);
+    extern void *gWfcSession;
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void CancelTimer(void *);
+    void ScheduleTimer(void *, s32, s32, void (*)(void), s32);
+    s32 interruptState = OS_DisableInterrupts();
+
+    CancelTimer((u8 *)gWfcSession + WFC_SESSION_TIMER);
+    if (M2C_FIELD(gWfcSession, s32 *, WFC_SESSION_STATE) == WFC_SESSION_STATE_LINKING)
+        ScheduleTimer((u8 *)gWfcSession + WFC_SESSION_TIMER,
+            WFC_STATE_TIMER_PERIOD, 0, WFC_StateTimerCallback, 0);
+    OS_RestoreInterrupts(interruptState);
+}
 
 void WFC_StateTimerCallback(void) {
     M2C_UNK WFC_RearmStateTimer();
@@ -85,7 +100,18 @@ void WFC_Finish(void){
  WFC_DispatchEvent(7,0,0,0x610);
 }
 #pragma optimization_level reset
-void func_0202830c(u16 *p){extern void *gWfcSession;if(p[1]!=8||p[2]!=22||p[3]!=37)return;switch(M2C_FIELD(gWfcSession,s32 *,0x2260)){case 8:WFC_SetState(12);return;case 9:case 12:WFC_Finish();return;case 10:WFC_SetState(12);return;}}
+/* Handle the WFC peer-status event (index 8, kind 0x16, channel 0x25): when it
+ * arrives while the session is in state 8 or matchmaking, the link is up; when
+ * the session is already linking or linked, finish it. */
+void WFC_ProcessPeerStatusEvent(u16 *event){
+extern void *gWfcSession;
+if(event[1]!=8||event[2]!=0x16||event[3]!=0x25)return;
+switch(M2C_FIELD(gWfcSession,s32 *,WFC_SESSION_STATE)){
+case 8:WFC_SetState(WFC_SESSION_STATE_LINKED);return;
+case WFC_SESSION_STATE_LINKING:
+case WFC_SESSION_STATE_LINKED:WFC_Finish();return;
+case WFC_SESSION_STATE_MATCHMAKING:WFC_SetState(WFC_SESSION_STATE_LINKED);return;
+}}
 
 #pragma opt_propagation off
 /* Completion callback for the WFC connection operations: dispatches on the
@@ -140,7 +166,28 @@ case 1:WFC_Finish();return;
 case 2:case 3:case 4:default:WFC_SetState(11);WFC_DispatchEvent(7,0,0,0x76d);return;
 }}
 
-void WFC_ProcessSendCallback(u16 *p){switch(p[1]){case 0:WFC_SetState(3);WFC_DispatchEvent(0,0,0,0x783);return;case 1:WFC_Finish();return;case 2:case 3:case 4:default:WFC_SetState(11);WFC_DispatchEvent(7,0,0,0x793);return;}}
+/* Completion callback of the WFC operation started by the session's send step:
+ * result 0 leaves the session ready for the next connection, result 1 means the
+ * operation was dropped and finishes the session, and any other result raises the
+ * WFC error event. */
+void WFC_ProcessSendCallback(u16 *reply){
+    switch(reply[WFC_REPLY_RESULT]){
+    case 0:
+        WFC_SetState(WFC_SESSION_STATE_READY);
+        WFC_DispatchEvent(0,0,0,0x783);
+        return;
+    case 1:
+        WFC_Finish();
+        return;
+    case 2:
+    case 3:
+    case 4:
+    default:
+        WFC_SetState(WFC_SESSION_STATE_ERROR);
+        WFC_DispatchEvent(7,0,0,0x793);
+        return;
+    }
+}
 
 #pragma opt_strength_reduction off
 void func_0202899c(const u16 *p){

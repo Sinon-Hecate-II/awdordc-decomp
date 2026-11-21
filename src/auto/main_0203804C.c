@@ -295,7 +295,7 @@ s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 m
     void SetNetState(s32);
     s32 GetSessionPlayerId(s32);
     s32 HasBuddyProfile(void **, s32);
-    s32 func_0204e2f4(void **, s32, s32 *);
+    s32 gpiGetBuddyIndex(void **, s32, s32 *);
     s32 gpGetBuddyStatus(void **, s32, void *);
     s32 ExtractKeyValue(s8 *, s8 *, s8 *, s32);
     s32 strtoul(s8 *, s32, s32);
@@ -329,7 +329,7 @@ s32 StartMatch(s32 playerSlot, s32 eventCallback, s32 eventData, s32 mode, s32 m
         goto tail;
     }
 
-    func_0204e2f4((void **)((char *)gNetSession + 0x1C), playerId, &playerIndex);
+    gpiGetBuddyIndex((void **)((char *)gNetSession + 0x1C), playerId, &playerIndex);
     gpGetBuddyStatus((void **)((char *)gNetSession + 0x1C), playerIndex, &player);
 
     if (player.status != 6) {

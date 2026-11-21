@@ -27,7 +27,7 @@ s32 EvaluateAiTargetGroupForCapture(u8 candidateX, u8 candidateY) {
     s32 CountPlayerUnitsOfKindTotal(s32);
     s32 IsCurrentPlayerUnit(s16);
     u8 IsUnitProductionTerrain(u8);
-    s32 IsCellOwnedByOtherTeam(s16, s16, s16);
+    s32 IsCellOwnedByOtherArmy(s16, s16, s16);
     u8 IsFootUnitKind(s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
@@ -63,7 +63,7 @@ s32 EvaluateAiTargetGroupForCapture(u8 candidateX, u8 candidateY) {
             }
             if (terrainKind == MAP_TERRAIN_BASE) {
                 s16 groupBase = *(s16 *)((u8 *)map + MAP_UNIT_GROUP_BASE);
-                if (IsCellOwnedByOtherTeam(groupBase, x, y) == 1) return 0;
+                if (IsCellOwnedByOtherArmy(groupBase, x, y) == 1) return 0;
             }
             if (productionSite == 0) {
                 terrainKind = CELL(x, y, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK;

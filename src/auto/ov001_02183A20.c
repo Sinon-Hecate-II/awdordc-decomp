@@ -10,7 +10,7 @@ void func_ov001_02183a20(void) {
     void func_ov001_02183d18(void);
     void Ov001_UpdateScrollbarDrag(void);
     void Ov001_PlaySound(s32);
-    void func_ov001_02185048(s32);
+    void Ov001_SetScrollDragSoundLevel(s32);
     void Ov001_ReadTouchPoint(M2C_UNK *);
     extern void *gOv001Scrollbar;
     s32 r;
@@ -29,7 +29,7 @@ void func_ov001_02183a20(void) {
                         return;
                     }
                     Ov001_PlaySound(0x16);
-                    func_ov001_02185048(0);
+                    Ov001_SetScrollDragSoundLevel(0);
                     M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 1;
                     Ov001_ReadTouchPoint((M2C_UNK *)((u8 *)gOv001Scrollbar + 0x14));
                     M2C_FIELD(gOv001Scrollbar, u8 *, 0x18) = M2C_FIELD(gOv001Scrollbar, u8 *, 0x1a);
@@ -130,23 +130,26 @@ void Ov001_UpdateScrollbarDrag(void) {
     M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_EVENT) = 3;
 }
 
-void Ov001_PlayScrollDragSound(s32 arg0) {
+/* Play the scrollbar's drag sound for a handle moved from its current offset to
+ * `handlePos`: the farther it moved, the louder and higher-pitched the tick; a
+ * move under two pixels is silent and a move of six or more is full level. */
+void Ov001_PlayScrollDragSound(s32 handlePos) {
     s32 HardwareDivide(s32, s32);
-    void func_ov001_02185048(M2C_UNK);
-    void func_ov001_02185068(s32, s32);
+    void Ov001_SetScrollDragSoundLevel(M2C_UNK);
+    void Ov001_SetScrollDragSoundPitch(s32, s32);
     extern void *gOv001Scrollbar;
-    s32 field;
-    s32 r4;
-    s32 r1;
+    s32 current;
+    s32 moved;
+    s32 pitch;
 
-    field = M2C_FIELD(gOv001Scrollbar, u8 *, 0x1A);
-    r4 = field - arg0;
-    if (r4 < 0) {
-        r4 = -r4;
+    current = M2C_FIELD(gOv001Scrollbar, u8 *, OV001_SCROLLBAR_HANDLE_POS);
+    moved = current - handlePos;
+    if (moved < 0) {
+        moved = -moved;
     }
-    func_ov001_02185048(r4 < 2 ? 0 : (r4 >= 6 ? 0x7F : HardwareDivide(0x7F, 6 - r4)));
-    r1 = r4 < 2 ? -256 : (r4 >= 6 ? 0x100 : HardwareDivide(0x200, 6 - r4) - 0x100);
-    func_ov001_02185068(0xFFFF, r1);
+    Ov001_SetScrollDragSoundLevel(moved < 2 ? 0 : (moved >= 6 ? 0x7F : HardwareDivide(0x7F, 6 - moved)));
+    pitch = moved < 2 ? -256 : (moved >= 6 ? 0x100 : HardwareDivide(0x200, 6 - moved) - 0x100);
+    Ov001_SetScrollDragSoundPitch(0xFFFF, pitch);
 }
 
 void func_ov001_02183cec(s8 arg0) {
@@ -552,7 +555,7 @@ void func_ov001_02184404(void) {
     func_02045eb4((M2C_UNK)gSaveData);
 }
 
-void func_ov001_02184448(void) {
+void Ov001_FreeSaveData(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK gSaveData;
     Ov001_FreeAlloc(&gSaveData);

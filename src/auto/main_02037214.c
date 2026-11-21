@@ -358,21 +358,24 @@ s32 func_02037954(void) {
     return 1;
 }
 
-void func_02037994(void) {
+/* Drive the library while connecting and mark the connection ready once linking ends. */
+void Wfc_UpdateConnection(void) {
     extern void *gWfcConnection;
     s32 Wfc_ProcessStep(void);
     s32 Wfc_GetLinkState(void);
     s32 dummy = 0;
     (void)dummy;
+
     if (!gWfcConnection) return;
-    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 2) {
-        M2C_FIELD(gWfcConnection, s32 *, 0) = Wfc_ProcessStep();
+    if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_RUNNING) {
+        M2C_FIELD(gWfcConnection, s32 *, WFC_CONN_STEP) = Wfc_ProcessStep();
         return;
     }
-    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 4 && M2C_FIELD(gWfcConnection, u16 *, 6) != 0) {
-        if (Wfc_GetLinkState() != 9) {
-            M2C_FIELD(gWfcConnection, u16 *, 6) = 0;
-            M2C_FIELD(gWfcConnection, u16 *, 4) = 6;
+    if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_CONNECTED
+        && M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_LINK_READY) != 0) {
+        if (Wfc_GetLinkState() != WFC_SESSION_STATE_LINKING) {
+            M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_LINK_READY) = 0;
+            M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_READY;
         }
     }
 }
@@ -417,18 +420,22 @@ while(!Wfc_EndSession())SleepMilliseconds(10);
 gWfcConnection=0;
 }
 
-s32 func_02037b1c(void) {
+/* Poll the shutdown of the WFC session: a connection that never started is
+ * dropped at once, a fatally failed one keeps its object for the error report,
+ * and any other is marked as closing while its session is ended.  Returns 1 once
+ * the connection object has been dropped. */
+s32 Wfc_PollSessionEnd(void) {
     extern void *gWfcConnection;
     s32 Wfc_EndSession(void);
     s32 dummy = 0;
     (void)dummy;
     if (!gWfcConnection) return 1;
-    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 8) return 0;
-    if (M2C_FIELD(gWfcConnection, u16 *, 4) == 1) {
+    if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_FATAL) return 0;
+    if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_IDLE) {
         gWfcConnection = 0;
         return 1;
     }
-    M2C_FIELD(gWfcConnection, u16 *, 4) = 5;
+    M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) = WFC_CONN_CLOSING;
     if (!Wfc_EndSession()) return 0;
     gWfcConnection = 0;
     return 1;
@@ -448,8 +455,8 @@ void func_02037bb8(void) {
 }
 
 s32 func_02037bc4(void) {
-    u32 func_0202f248(void);
-    void func_02037994(void);
+    u32 GetWfcFriendSlot(void);
+    void Wfc_UpdateConnection(void);
     void func_02037abc(void);
     void SetNetError(s32, s32);
     s32 func_02037b8c(void);
@@ -457,9 +464,9 @@ s32 func_02037bc4(void) {
     s32 dummy;
     (void)dummy;
 
-    func_02037994();
+    Wfc_UpdateConnection();
     if (func_02037b8c() != 0) {
-        var_r2 = func_0202f248();
+        var_r2 = GetWfcFriendSlot();
         if (var_r2 > 0x63U) {
             var_r2 = 0x63;
         }
@@ -475,27 +482,31 @@ void func_02037c10(void) {
     OpenWfcHttpConnection();
 }
 
-s32 func_02037c1c(void) {
+/* Poll the WFC matchmaking HTTP connection: report RUNNING while it is still
+ * opening or reading, DONE once the server has answered, NONE when there is no
+ * connection, and FAILED (recording network error 8 as 0xffff2cac minus the
+ * connecting friend slot) when it fails. */
+s32 PollWfcMatchmakingHttp(void) {
     u32 UpdateWfcHttpConnection(void);
-    u32 func_0202f248(void);
+    u32 GetWfcFriendSlot(void);
     void SetNetError(s32, s32);
-    u32 n;
+    u32 friendSlot;
     s32 dummy;
     (void)dummy;
 
     switch (UpdateWfcHttpConnection()) {
-    case 0: return 1;
-    case 1: return 2;
-    case 2:
-    case 3:
-        n = func_0202f248();
-        if (n > 99) {
-            n = 99;
+    case WFC_HTTP_RESULT_PENDING: return WFC_HTTP_STEP_RUNNING;
+    case WFC_HTTP_RESULT_OK: return WFC_HTTP_STEP_DONE;
+    case WFC_HTTP_RESULT_ERROR:
+    case WFC_HTTP_RESULT_CONNECT:
+        friendSlot = GetWfcFriendSlot();
+        if (friendSlot > 99) {
+            friendSlot = 99;
         }
-        SetNetError(8, 0xffff2cac - n);
-        return 3;
-    case 4: return 0;
-    default: return 3;
+        SetNetError(8, 0xffff2cac - friendSlot);
+        return WFC_HTTP_STEP_FAILED;
+    case WFC_HTTP_RESULT_NONE: return WFC_HTTP_STEP_NONE;
+    default: return WFC_HTTP_STEP_FAILED;
     }
 }
 
@@ -578,19 +589,20 @@ extract:
 
 u32 RandomBelow(u32 max) {
 extern u64 data_0213d1e0[];
+void *memcpy(void *, const void *, unsigned int);
 void GetMacAddress(void *); u64 GetSystemTick(void);
 u64 seed,v;
 if(data_0213d1e0[0]==0&&data_0213d1e0[1]==0&&data_0213d1e0[2]==0){
 GetMacAddress(&seed);
 seed=((seed>>24)&0xffffffULL)|(GetSystemTick()<<24);
-data_0213d1e0[0]=seed;
+memcpy(data_0213d1e0, &seed, sizeof(seed));
 data_0213d1e0[1]=0x5d588b656c078965ULL;
 data_0213d1e0[2]=0x269ec3;
 }
 data_0213d1e0[0]=data_0213d1e0[1]*data_0213d1e0[0]+data_0213d1e0[2];
+if(max==0)return data_0213d1e0[0]>>32;
 v=data_0213d1e0[0]>>32;
-if(max==0)return v;
-return (v*max)>>32;
+return (v*(u64)max)>>32;
 }
 
 s32 Utf16StringLength(u16 *a){s32 i=0;if(*a){do{i++;}while(a[i]);}return i;}

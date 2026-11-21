@@ -540,9 +540,9 @@ void func_ov001_02182628(s32 arg0, s32 arg1) {
 void Ov001_ShowWfcSuccessScreen(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     void func_ov001_02182668();
-    extern u8 data_ov001_02193de0;
+    extern u8 gOv001WfcSuccessFrames;
     extern M2C_UNK func_ov001_021826d4;
-    data_ov001_02193de0 = 0;
+    gOv001WfcSuccessFrames = 0;
     func_ov001_02182668();
     Ov001_ShowMessageBox(0x2D);
     Ov001_SetStepCallback(&func_ov001_021826d4);
@@ -577,9 +577,9 @@ void func_ov001_02182708(void) {
 }
 
 void func_ov001_0218272c(void) {
-    void func_ov001_0218283c(void);
+    void Ov001_WfcSuccessTimeoutStep(void);
     void func_ov001_0218273c(void);
-    func_ov001_0218283c();
+    Ov001_WfcSuccessTimeoutStep();
     func_ov001_0218273c();
 }
 
@@ -587,7 +587,7 @@ void func_ov001_0218273c(void) {
 
 }
 
-void func_ov001_02182740(void) {
+void Ov001_LeaveWfcSuccessScreen(void) {
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     M2C_UNK func_ov001_0218560c();
     extern M2C_UNK Ov001_FinishWfcScreen;
@@ -639,23 +639,28 @@ void Ov001_FinishWfcScreen(void) {
     Ov001_SetStepCallback(&Ov001_OpenWifiMenu);
 }
 
-void func_ov001_0218283c(void) {
+/* Step that holds the Wi-Fi success screen for OV001_WFC_SUCCESS_FRAMES frames,
+ * then picks the next step: shut the screen down when the layout is the Wi-Fi
+ * layout and a name entry is pending, otherwise fade on to the map list or the
+ * Wi-Fi menu. */
+void Ov001_WfcSuccessTimeoutStep(void) {
     s32 Ov001_GetScreenLayout(void);
-    extern u8 data_ov001_02193de0;
-    extern M2C_UNK func_ov001_02176578;
-    s32 sp0;
-    s32 temp_r0;
-    if ((u32)++data_ov001_02193de0 < 0xB4U) return;
-    Ov001_GetNameEntryMode(0, &sp0);
-    temp_r0 = Ov001_GetScreenLayout();
-    if ((temp_r0 != 0) && (temp_r0 == 1) && (sp0 != 0)) {
-        Ov001_SetStepCallback(&func_ov001_02176578);
+    extern u8 gOv001WfcSuccessFrames;
+    extern M2C_UNK Ov001_FadeToShutdownScreen;
+    s32 nameEntryMode;
+    s32 layout;
+
+    if ((u32)++gOv001WfcSuccessFrames < OV001_WFC_SUCCESS_FRAMES) return;
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
+    layout = Ov001_GetScreenLayout();
+    if ((layout != 0) && (layout == 1) && (nameEntryMode != 0)) {
+        Ov001_SetStepCallback(&Ov001_FadeToShutdownScreen);
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182740);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveWfcSuccessScreen);
 }
 
-void func_ov001_021828ac(void) {
+void Ov001_PrepareSaveSlotMenu(void) {
     M2C_UNK func_ov001_02183fa0(void);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);

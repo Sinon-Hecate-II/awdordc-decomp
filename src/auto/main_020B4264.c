@@ -8,6 +8,7 @@
 /* Four consecutive words, copied as one 16-byte block. */
 typedef struct { u32 w0; u32 w1; u32 w2; u32 w3; } MapQuad;
 
+#pragma opt_strength_reduction off
 s32 func_020b4264(u8 *arg0) {
     void LoadMapTileset(void);
     s32 GetMapPlayerCount(s32);
@@ -29,30 +30,33 @@ s32 func_020b4264(u8 *arg0) {
     extern M2C_UNK gMapData;
     u8 *src;
     u8 *dst;
-    u8 *rec;
     u8 *unit;
     u8 *ps;
     u8 *pd;
     u16 v;
     u32 n;
     s32 i;
+    u8 *rec;
     s32 j;
     s32 x;
     s32 y;
+    u8 *map;
+    u32 namePairs;
 
     M2C_FIELD(MAPBASE, u16 *, 0x52B0) = 0xC;
     M2C_FIELD(MAPBASE, u16 *, 0x52A2) = M2C_FIELD(arg0, u16 *, 0x16);
     M2C_FIELD(MAPBASE, u16 *, 0x52A4) = M2C_FIELD(arg0, u16 *, 0x14);
-    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16)((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x380) | ((u32)((u16)M2C_FIELD(arg0, u8 *, 0x125B) << 29) >> 22));
-    M2C_FIELD(MAPBASE, u16 *, 0x52C2) = M2C_FIELD(arg0, s16 *, 0x18);
-    M2C_FIELD(MAPBASE, u16 *, 0x52C4) = M2C_FIELD(arg0, s16 *, 0x1A);
+    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (u16)((M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~0x380) | ((u32)(M2C_FIELD(arg0, u8 *, 0x125B) & 7) << 7));
+    map = MAPBASE;
+    M2C_FIELD(map, u16 *, 0x52C2) = M2C_FIELD(arg0, s16 *, 0x18);
+    M2C_FIELD(map + 0xC2, u16 *, 0x5202) = M2C_FIELD(arg0, s16 *, 0x1A);
     M2C_FIELD(MAPBASE, u16 *, 0x52A6) = M2C_FIELD(MAPBASE, u16 *, 0x52A4) << 5;
     M2C_FIELD(MAPBASE, u16 *, 0x52A8) = (M2C_FIELD(MAPBASE, u16 *, 0x52A4) - 1) << 6;
     M2C_FIELD(MAPBASE, u16 *, 0x52B6) = M2C_FIELD(MAPBASE, u16 *, 0x52A4);
     src = arg0 + 0x2C;
     dst = MAPBASE + 0x5120;
     pd = dst;
-    n = 0x10;
+    namePairs = 0x10;
     do {
         u8 a = src[0];
         u8 b = src[1];
@@ -60,8 +64,8 @@ s32 func_020b4264(u8 *arg0) {
         pd[0] = a;
         pd[1] = b;
         pd += 2;
-        n -= 1;
-    } while (n != 0);
+        namePairs -= 1;
+    } while (namePairs != 0);
     M2C_FIELD(pd, u8 *, 0) = M2C_FIELD(src, u8 *, 0);
     M2C_FIELD(dst, u8 *, 0x21) = M2C_FIELD(arg0, u8 *, 0x4D);
     M2C_FIELD(dst, u16 *, 0x22) = M2C_FIELD(arg0, u16 *, 0x4E);
@@ -111,18 +115,27 @@ s32 func_020b4264(u8 *arg0) {
     StringCopy(dst + 0x5120, GetMapName(M2C_FIELD(dst, u16 *, 0x5142)));
     LoadMapTileData(M2C_FIELD(MAPBASE, u16 *, 0x5142));
     BuildMapRowOffsets();
-    for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {
-        for (x = 0; x < M2C_FIELD(MAPBASE, u16 *, 0x5144); x++) {
-            M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10) =
-                M2C_FIELD((u8 *)M2C_FIELD(&gMapData, u16 **, 0) + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 2);
+    map = MAPBASE;
+    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
+        for (x = 0; x < M2C_FIELD(map, u16 *, 0x5144); x++) {
+            s32 index = x + M2C_FIELD(map + y * 2, u16 *, 0x3758);
+            M2C_FIELD(map + index * 2, u16 *, 0xA10) =
+                M2C_FIELD((u8 *)M2C_FIELD(&gMapData, u16 **, 0) + index * 2, u16 *, 2);
+            map = MAPBASE;
         }
     }
     FreeMapTileData();
-    for (y = 0; y < M2C_FIELD(MAPBASE, u16 *, 0x5146); y++) {
-        for (x = 0; x < M2C_FIELD(MAPBASE, u16 *, 0x5144); x++) {
-            M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)), u8 *, 0x1420) =
-                M2C_FIELD(MAPBASE + M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10), u8 *, 0x6A60);
+    {
+    s32 x;
+    u8 *map = MAPBASE;
+    for (y = 0; y < M2C_FIELD(map, u16 *, 0x5146); y++) {
+        for (x = 0; x < M2C_FIELD(map, u16 *, 0x5144); x++) {
+            s32 row = M2C_FIELD(map + y * 2, u16 *, 0x3758);
+            u16 tile = M2C_FIELD(map + (x + row) * 2, u16 *, 0xA10);
+            M2C_FIELD(row + (map + x), u8 *, 0x1420) = M2C_FIELD(map + tile, u8 *, 0x6A60);
+            map = MAPBASE;
         }
+    }
     }
     rec = arg0 + 0xF08;
     for (i = 0; i < 0x63; i++) {
@@ -130,11 +143,16 @@ s32 func_020b4264(u8 *arg0) {
         x = M2C_FIELD(rec, u8 *, 0);
         y = M2C_FIELD(rec, u8 *, 1);
         if (v != 0xFFFF) {
-            if ((M2C_FIELD(MAPBASE + M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10), u8 *, 0x6A60) & 0x1F) == 0x1C) {
+            u8 *recordMap = MAPBASE;
+            s32 index = x + M2C_FIELD(recordMap + y * 2, u16 *, 0x3758);
+            u16 *tile = (u16 *)(recordMap + index * 2 + 0xA10);
+            if ((M2C_FIELD(recordMap + *tile, u8 *, 0x6A60) & 0x1F) == 0x1C) {
                 ApplyTerrainBlast(x, y);
             } else {
-                M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10) = v;
-                M2C_FIELD(MAPBASE + (x + M2C_FIELD(MAPBASE + y * 2, u16 *, 0x3758)), u8 *, 0x1420) = M2C_FIELD(MAPBASE + v, u8 *, 0x6A60);
+                *tile = v;
+                recordMap = MAPBASE;
+                M2C_FIELD(M2C_FIELD(recordMap + y * 2, u16 *, 0x3758) + (recordMap + x), u8 *, 0x1420) =
+                    M2C_FIELD(recordMap + v, u8 *, 0x6A60);
             }
         }
         rec += 4;
@@ -204,8 +222,12 @@ s32 func_020b4264(u8 *arg0) {
             n -= 1;
         } while (n != 0);
         M2C_FIELD(ps, u8 *, 0) = M2C_FIELD(pd, u8 *, 0);
-        M2C_FIELD(dst, u32 *, 0x6C) = M2C_FIELD(src, u32 *, 0x21C);
-        M2C_FIELD(dst, u32 *, 0x70) = M2C_FIELD(src, u32 *, 0x220);
+        {
+            u32 first = M2C_FIELD(src, u32 *, 0x21C);
+            u32 second = M2C_FIELD(src, u32 *, 0x220);
+            M2C_FIELD(dst, u32 *, 0x6C) = first;
+            M2C_FIELD(dst, u32 *, 0x70) = second;
+        }
         M2C_FIELD(dst, MapQuad *, 0x74) = M2C_FIELD(src, MapQuad *, 0x224);
         M2C_FIELD(dst, u32 *, 0x84) = M2C_FIELD(src, u32 *, 0x234);
         M2C_FIELD(dst, u32 *, 0x88) = M2C_FIELD(src, u32 *, 0x238);
@@ -221,10 +243,13 @@ s32 func_020b4264(u8 *arg0) {
         func_020a233c(i + 1, M2C_FIELD(unit, u8 *, 0x1E2));
         unit += 0x8C;
     }
-    for (y = 0; y < 4; y++) {
-        ps = arg0 + (y * 0x33) * 0xE;
+    {
+    s32 srcIndex = 0;
+    s32 dstIndex = 0;
+    for (y = 0; y < 4; y++, srcIndex += 0x33, dstIndex += 0x40) {
+        ps = arg0 + srcIndex * 0xE;
         for (i = 0; i < 0x33; i++) {
-            dst = MAPBASE + 0x59A4 + (i + y * 0x40) * 0xE;
+            dst = MAPBASE + 0x59A4 + (i + dstIndex) * 0xE;
             M2C_FIELD(dst, u8 *, 0) = M2C_FIELD(ps, u8 *, 0x3E0);
             M2C_FIELD(dst, u8 *, 1) = M2C_FIELD(ps, u8 *, 0x3E1);
             M2C_FIELD(dst, u8 *, 2) = M2C_FIELD(ps, u8 *, 0x3E2);
@@ -233,10 +258,15 @@ s32 func_020b4264(u8 *arg0) {
             M2C_FIELD(dst, u16 *, 8) = M2C_FIELD(ps, u16 *, 0x3E8);
             M2C_FIELD(dst, u8 *, 0xA) = M2C_FIELD(ps, u8 *, 0x3EA);
             M2C_FIELD(dst, u8 *, 0xB) = M2C_FIELD(ps, u8 *, 0x3EB);
-            M2C_FIELD(dst, u8 *, 0xC) = M2C_FIELD(ps, u8 *, 0x3EC);
-            M2C_FIELD(dst, u8 *, 0xD) = M2C_FIELD(ps, u8 *, 0x3ED);
-            ps += 0xE;
+            {
+                u8 a = M2C_FIELD(ps, u8 *, 0x3EC);
+                u8 b = M2C_FIELD(ps, u8 *, 0x3ED);
+                ps += 0xE;
+                M2C_FIELD(dst, u8 *, 0xC) = a;
+                M2C_FIELD(dst, u8 *, 0xD) = b;
+            }
         }
+    }
     }
     dst = arg0 + 0x1094;
     for (j = 0; j < 0x20; j++) {
@@ -245,14 +275,33 @@ s32 func_020b4264(u8 *arg0) {
     }
     DecodeTerrainHitPoints(arg0 + 0x1194);
 }
+#pragma opt_strength_reduction reset
+/* Save the battle prefix into `record`: the random seed, the 32 low event flags
+ * (data_02157718) and the saved battle-view state, then let func_020b3c48 fill
+ * in the map and unit data behind them. */
+void SaveBattleToRecord(void *record) {
+    s32 GetRandomSeed();
+    extern u8 data_02157718;
+    extern M2C_UNK data_02168f68;
+    s32 i;
+    u8 *p;
+    u8 flagByte;
 
-void func_020b4a44(void *arg0){s32 GetRandomSeed(); extern u8 data_02157718;extern M2C_UNK data_02168f68;s32 i;u8 *p;u8 v;
-M2C_FIELD(arg0,s32 *,0)=GetRandomSeed();p=&data_02157718;i=0;do{v=*p++;M2C_FIELD(arg0+i,u8 *,4)=v;i++;}while(i<4);
-M2C_FIELD(arg0,s16 *,8)=M2C_FIELD(&data_02168f68,s16 *,0);
-M2C_FIELD(arg0,s16 *,10)=M2C_FIELD(&data_02168f68,s16 *,2);
-M2C_FIELD(arg0,s16 *,12)=M2C_FIELD(&data_02168f68,s16 *,4);
-M2C_FIELD(arg0,s16 *,14)=M2C_FIELD(&data_02168f68,s16 *,6);
-M2C_FIELD(arg0,s32 *,16)=M2C_FIELD(&data_02168f68,s32 *,8);func_020b3c48(arg0);}
+    M2C_FIELD(record, s32 *, 0) = GetRandomSeed();
+    p = &data_02157718;
+    i = 0;
+    do {
+        flagByte = *p++;
+        M2C_FIELD(record + i, u8 *, 4) = flagByte;
+        i++;
+    } while (i < 4);
+    M2C_FIELD(record, s16 *, 8) = M2C_FIELD(&data_02168f68, s16 *, 0);
+    M2C_FIELD(record, s16 *, 10) = M2C_FIELD(&data_02168f68, s16 *, 2);
+    M2C_FIELD(record, s16 *, 12) = M2C_FIELD(&data_02168f68, s16 *, 4);
+    M2C_FIELD(record, s16 *, 14) = M2C_FIELD(&data_02168f68, s16 *, 6);
+    M2C_FIELD(record, s32 *, 16) = M2C_FIELD(&data_02168f68, s32 *, 8);
+    func_020b3c48(record);
+}
 
 void RestoreBattleFromRecord(void *arg0) {
     M2C_UNK func_0207c2d0(s32);
@@ -290,7 +339,7 @@ void func_020b4b34(void) {
     func_0208f8d8();
 }
 
-void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 SaveTypeHasNoSlot(u8);s32 GetSaveSlot(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!SaveTypeHasNoSlot(v)){GetSaveSlot(0,v);func_020e4870();}func_020b4a44(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
+void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 SaveTypeHasNoSlot(u8);s32 GetSaveSlot(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!SaveTypeHasNoSlot(v)){GetSaveSlot(0,v);func_020e4870();}SaveBattleToRecord(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {

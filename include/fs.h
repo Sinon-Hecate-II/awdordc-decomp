@@ -176,7 +176,7 @@ typedef struct FSArchiveList {
 
 /* FSArchive::state bits. */
 #define FS_ARCHIVE_NAMED      1 /* registered under a name */
-#define FS_ARCHIVE_LAYOUT     2 /* FAT/FNT layout set by SetArchiveLayout */
+#define FS_ARCHIVE_LAYOUT     2 /* FAT/FNT layout set by ConfigureArchiveLayout */
 #define FS_ARCHIVE_IN_MEMORY  4 /* index tables loaded into memory */
 
 /* A byte position in an open file's stream. FileStreamRead reads from it and

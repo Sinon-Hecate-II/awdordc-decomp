@@ -47,14 +47,14 @@ s32 IsNameEntryValid(void) {
 
 void func_ov001_0217bf14(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_0217bf40;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_0217bf40);
 }
 
@@ -164,7 +164,7 @@ void func_ov001_0217c2b4(void) {
 
 s32 func_ov001_0217c2c4(void){
 void func_ov001_0217c8ac(void);
-void func_ov001_0217ca10(void);
+void TrimCodeEntryDigits(void);
 s32 func_ov001_021744dc(void);
 s32 IsCodeGroupComplete(s32);
 void func_ov001_0217c66c(void);
@@ -196,7 +196,7 @@ M2C_FIELD(gOv001FriendCodeState,u8 *,21)=2;Ov001_PlaySound(9);
 M2C_FIELD(gOv001FriendCodeState,u8 *,20)=3;
 p=M2C_FIELD(gOv001FriendCodeState,u8 **,4);
 *(u32 *)p=(*(u32 *)p&0xc1fffcff)|512;
-func_ov001_0217c8ac();func_ov001_0217ca10();Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
+func_ov001_0217c8ac();TrimCodeEntryDigits();Ov001_SetStepCallback((s32 *)&func_ov001_0217c66c);return;
 default:
 if(M2C_FIELD(gOv001FriendCodeState,u8 *,20)==3 && IsCodeGroupComplete(26))break;
 Ov001_PlaySound(1);
@@ -262,13 +262,13 @@ void func_ov001_0217c66c(void) {
 }
 
 void func_ov001_0217c688(void) {
-    M2C_UNK func_ov001_021744a8();
+    M2C_UNK Ov001_StartKeypadClose();
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_HandleCodeEntryResult;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
-    func_ov001_021744a8();
+    Ov001_StartKeypadClose();
     Ov001_PlaySound(0x15);
     Ov001_SetStepCallback(&Ov001_HandleCodeEntryResult);
 }
@@ -350,13 +350,13 @@ if(index<=3) {} else index=3;
 void func_ov001_0217c900(void) {
     extern void *gOv001FriendCodeState;
     extern M2C_UNK Ov001_FinishCodeEntry;
-    M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15) = func_ov001_02186648();
+    M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15) = Ov001_GetRegionMenuSelection();
     switch (M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15)) {
     case 0: Ov001_PlaySound(7); break;
     case 1: Ov001_PlaySound(0xE); break;
     default: return;
     }
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&Ov001_FinishCodeEntry);
 }
 
@@ -378,12 +378,15 @@ void Ov001_FinishCodeEntry(void) {
  Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveCodeEntry);
 }
 
-void func_ov001_0217ca10(void) {
+/* Pad the friend code just entered before the entry screen redraws it: in each
+ * 3-digit group, leading blanks (NULs and spaces) become spaces, except the
+ * group's last digit, which becomes a '0'. */
+void TrimCodeEntryDigits(void) {
  M2C_UNK func_ov001_0217c7e8(); extern void *gOv001FriendCodeState;
  u8 *p; s32 i,j; u8 c;
- for(i=0;i<4;i++) {
- p=(u8 *)gOv001FriendCodeState+8+i*3;
- for(j=0;j<3;j++) {c=p[j]; if(c!=48 && c!=32 && c!=0) break; p[j]=(j==2)?48:32;}
+ for(i=0;i<CODE_ENTRY_GROUPS;i++) {
+ p=(u8 *)gOv001FriendCodeState+CODE_ENTRY_TEXT+i*CODE_ENTRY_GROUP_SIZE;
+ for(j=0;j<CODE_ENTRY_GROUP_SIZE;j++) {c=p[j]; if(c!='0' && c!=' ' && c!=0) break; p[j]=(j==CODE_ENTRY_GROUP_SIZE-1)?'0':' ';}
  }
  func_ov001_0217c7e8();
 }
@@ -415,11 +418,11 @@ return IsValidTextChar(code)!=0;
 
 void Ov001_RetryCodeEntry(void) {
     extern M2C_UNK func_ov001_0217cc08;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_0217cc08);
 }
 

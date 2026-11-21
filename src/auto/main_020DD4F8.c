@@ -289,7 +289,7 @@ void func_020ddfcc(void) {
 void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    s32 func_02012084();
+    s32 WM_GetNextTgid();
     M2C_UNK AddTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
@@ -380,7 +380,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
             switch(menu->variant){case 1:layout2=2;break;default:layout2=4;break;}
             break;
         }
-        id = func_02012084();
+        id = WM_GetNextTgid();
         func_ov009_02224730(0, side, id, func_ov009_0222429c(), (u8)layout2);
         return;
     }

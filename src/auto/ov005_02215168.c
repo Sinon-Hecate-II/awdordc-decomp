@@ -35,56 +35,68 @@ void RecordsMenu_SelectNext(s16 record) {
  }
 }
 
-void RecordsMenu_SelectPreviousEnabled(s16 arg0) {
+/* Records screen D-pad up on the enabled-only tab: step the highlight to the
+ * previous enabled record, wrapping back to the last one, and begin the action
+ * when an enabled record is reached. */
+void RecordsMenu_SelectPreviousEnabled(s16 record) {
  s32 RecordsMenu_IsRecordAvailable(s32);
  void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
- s16 i=arg0;
+ s16 i=record;
  do {
- if (--i < 0) i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)-1;
- if (RecordsMenu_IsRecordAvailable(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
+ if (--i < 0) i=RECORDS_SCREEN->count-1;
+ if (RecordsMenu_IsRecordAvailable(i) && RECORDS_SCREEN->enabled[i]==1) {
  RecordsMenu_BeginAction(i,1); return;
  }
- } while (i!=arg0);
+ } while (i!=record);
 }
 
-void RecordsMenu_SelectNextEnabled(s16 arg0) {
+/* Records screen D-pad down on the enabled-only tab: step the highlight to the
+ * next enabled record, wrapping back to the first one, and begin the action when
+ * an enabled record is reached. */
+void RecordsMenu_SelectNextEnabled(s16 record) {
  s32 RecordsMenu_IsRecordAvailable(s32);
  void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
- s16 i=arg0;
+ s16 i = record;
  do {
- if (++i >= M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a)) i=0;
- if (RecordsMenu_IsRecordAvailable(i) && M2C_FIELD((u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+i,u8 *,0xa2)==1) {
- RecordsMenu_BeginAction(i,1); return;
+ if (++i >= RECORDS_SCREEN->count) i = 0;
+ if (RecordsMenu_IsRecordAvailable(i) && RECORDS_SCREEN->enabled[i] == 1) {
+ RecordsMenu_BeginAction(i, 1); return;
  }
- } while (i!=arg0);
+ } while (i != record);
 }
 
+/* Records screen D-pad up on the shuffled-list tab: step the list cursor back one
+ * entry, wrapping to the last entry (reshuffling the list first), and begin the
+ * action for the record it points at. */
 void RecordsMenu_SelectPreviousInList(void) {
  void RecordsMenu_ShuffleList(s32);
  void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
- if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
- M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)--;
- if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)<0) {
+ if (RECORDS_SCREEN->listCount == 0) return;
+ RECORDS_SCREEN->listCursor--;
+ if (RECORDS_SCREEN->listCursor < 0) {
  RecordsMenu_ShuffleList(-1);
- M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)-1;
+ RECORDS_SCREEN->listCursor = RECORDS_SCREEN->listCount - 1;
  }
- RecordsMenu_BeginAction(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ RecordsMenu_BeginAction(RECORDS_SCREEN->list[RECORDS_SCREEN->listCursor], 1);
 }
 
-void RecordsMenu_SelectNextInList(s16 arg0) {
+/* Records screen D-pad down on the shuffled-list tab: step the list cursor to the
+ * next entry, wrapping to the first entry (reshuffling the list first), and begin
+ * the action for the record it points at. */
+void RecordsMenu_SelectNextInList(s16 record) {
  void RecordsMenu_ShuffleList(s32);
  void RecordsMenu_BeginAction(s32,s32);
  extern M2C_UNK gRecordsMenuState;
- if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)==0) return;
- M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)++;
- if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)>=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe4)) {
+ if (RECORDS_SCREEN->listCount == 0) return;
+ RECORDS_SCREEN->listCursor++;
+ if (RECORDS_SCREEN->listCursor >= RECORDS_SCREEN->listCount) {
  RecordsMenu_ShuffleList(-1);
- M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2)=0;
+ RECORDS_SCREEN->listCursor = 0;
  }
- RecordsMenu_BeginAction(M2C_FIELD((s16 *)M2C_FIELD(&gRecordsMenuState,void **,8)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xe2),s16 *,0xe6),1);
+ RecordsMenu_BeginAction(RECORDS_SCREEN->list[RECORDS_SCREEN->listCursor],1);
 }
 
 void func_ov005_022153d4(u8 *arg0) {

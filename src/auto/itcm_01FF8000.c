@@ -1,6 +1,7 @@
 /* 22 functions from 0x01FF8000 to 0x01FF8F90 (itcm), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "dma.h"
 
 void func_01ff8000(void) {
  extern void (*gOsArea[])(void);
@@ -157,15 +158,25 @@ void DmaStartTransferLocked(s32 a,s32 b,s32 c,s32 d) {
  OS_RestoreInterrupts(state);
 }
 
-void func_01ff84c0(s32 a,s32 b,s32 c,s32 d) {
- s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);
- s32 state=OS_DisableInterrupts();
- volatile u32 *p=(volatile u32 *)(0x40000b0+a*12);
- p[0]=b;p[1]=c;p[2]=d;
- (void)*(volatile u32 *)0x40000b0;
- (void)*(volatile u32 *)0x40000b0;
- if(a==0){p[0]=0;p[1]=0;p[2]=0x81400001;}
- OS_RestoreInterrupts(state);
+/* Start a DMA transfer on `channel` with interrupts held off, then flush the
+ * channel-0 registers: the two reads of DMA0's source register let the queued
+ * register writes settle, and channel 0 is left with the idle transfer. */
+void DmaStartTransferLockedFlushed(s32 channel, s32 src, s32 dst, s32 control) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 state = OS_DisableInterrupts();
+    volatile u32 *regs = (volatile u32 *)DMA_CHANNEL_BASE(channel);
+    regs[0] = src;
+    regs[1] = dst;
+    regs[2] = control;
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
+    if (channel == 0) {
+        regs[0] = 0;
+        regs[1] = 0;
+        regs[2] = DMA_CTRL_IDLE_CH0;
+    }
+    OS_RestoreInterrupts(state);
 }
 
 void DmaStartTransfer(s32 a,s32 b,s32 c,s32 d) {
@@ -272,7 +283,7 @@ void Upload3DSpriteOam(void) {
 void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;void Write3DSpriteOamEntries(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=p;Write3DSpriteOamEntries(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
 
 /* Draw a run of sprites from src into the current 3D sprite engine bank. */
-void func_01ff883c(s32 x, s32 y, s32 attr, u16 *src) {
+void AppendSpriteDescToOam(s32 x, s32 y, s32 attr, u16 *src) {
     extern void *gCur3DSpriteEngine;
     u16 *dst;
     s32 count;

@@ -398,7 +398,7 @@ void func_ov003_021e64a8(M2C_UNK arg0) {
  * in state 4 without freeing the object itself. */
 void *Ov003Scene_Destructor(void *scene) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
     M2C_UNK func_020e4ca0();
     extern M2C_UNK gOv003SceneVTable;
@@ -454,7 +454,7 @@ void *Ov003Scene_Destructor(void *scene) {
     if (M2C_FIELD(scene, s32 *, 0x5C) != 0) {
         DeleteSpriteObject();
     }
-    func_020c127c();
+    RemoveMapViewSprites();
     SetOv003SceneState(4);
     func_020c8e40();
     return scene;
@@ -476,7 +476,7 @@ void func_ov003_021e6b04(s32 arg0) {
  * and finally free the scene itself. */
 void *DestroyOv003Scene(void *scene) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
     M2C_UNK func_020c8e40();
     M2C_UNK func_020e4ca0();
     extern M2C_UNK gOv003SceneVTable;
@@ -532,7 +532,7 @@ void *DestroyOv003Scene(void *scene) {
     if (M2C_FIELD(scene, s32 *, 0x5C) != 0) {
         DeleteSpriteObject();
     }
-    func_020c127c();
+    RemoveMapViewSprites();
     SetOv003SceneState(4);
     func_020c8e40();
     MemFree(scene);
@@ -602,9 +602,9 @@ s32 func_ov003_021e6cc4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 u8 func_ov003_021e6cfc(void) {
     s32 IsLinkSessionActive();
-    s32 func_0208485c();
+    s32 IsLocalSessionHost();
     s32 result;
-    if (IsLinkSessionActive() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
 }

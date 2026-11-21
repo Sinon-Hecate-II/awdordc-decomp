@@ -148,6 +148,7 @@ typedef struct SendRequest {
 #define TASK_FUNC   0x00 /* void *(*)(void *) the task's function */
 #define TASK_SOCKET 0x04 /* void *socket the task works on */
 #define TASK_NOTIFY 0x08 /* void *message queue the task's result is sent to, 0 when no caller waits */
+#define TASK_WAIT   0x0D /* s8: 1 when the caller blocks waiting for the task's result */
 #define TASK_BYTES  0x2C /* bytes per queued socket task slot */
 
 /* Receive-side drop counters. */
@@ -158,6 +159,7 @@ typedef struct SendRequest {
 #define SOCK_ERROR       (-28) /* the socket is unregistered, not initialised or in the wrong state */
 #define SOCK_NOT_READY   (-39) /* the socket's ready flag is clear */
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */
+#define SOCK_ALREADY     (-7)  /* an operation is already in progress on the socket */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
 #define SOCK_MESSAGE_TOO_LONG (-35) /* a send is larger than the packet buffer allows */
 
@@ -207,7 +209,8 @@ typedef struct SendRequest {
 #define CONN_STATE_SYN_SENT    2
 #define CONN_STATE_SYN_RCVD    3
 #define CONN_STATE_ESTABLISHED 4
-
+#define CONN_STATE_RAW         10 /* a raw (connectionless) connection is open: no
+                                   * handshake, and buffered receive data is dropped */
 /* Transport kinds of a socket (the SOCK_TRANSPORT byte of tcp_socket.h). */
 enum {
     SOCK_KIND_TCP  = 1,
@@ -234,6 +237,10 @@ typedef struct SocketConfigTask {
     u8  priority;     /* +0x02 thread priority */
     u8  messageCount; /* +0x03 messages in its queue, four bytes each */
 } SocketConfigTask;
+
+/* A receive or transmit worker starts with its message queue at offset 0. */
+#define SOCKET_WORKER_THREAD 0x20
+#define SOCKET_WORKER_MUTEX  0xE0
 typedef struct SocketConfigTemplate {
     u8  state;          /* +0x00 SOCK_STATE */
     u8  blocking;       /* +0x01 SOCK_BLOCKING_ON */

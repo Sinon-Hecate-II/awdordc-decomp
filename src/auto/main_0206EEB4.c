@@ -125,13 +125,15 @@ s32 CountBits64(unsigned long long value) {
 
 u32 DoubleSignBit(double x, ...) { return ((u32 *)&x)[1] & 0x80000000; }
 
+/* Classify the double `x` for the software-float layer: a DOUBLE_CLASS_* value
+ * from its exponent and mantissa fields. */
 s32 ClassifyDouble(double x, ...) {
- u32 hi=((u32 *)&x)[1];
- u32 exp=hi&0x7ff00000;
- if(exp!=0) {
- if(exp==0x7ff00000) return ((hi&0x000fffff)||((u32 *)&x)[0])?1:2;
- } else return ((hi&0x000fffff)||((u32 *)&x)[0])?5:3;
- return 4;
+    u32 hi = ((u32 *)&x)[1];
+    u32 exp = hi & DOUBLE_EXP_HI;
+    if (exp != 0) {
+        if (exp == DOUBLE_EXP_HI) return ((hi & DOUBLE_MANTISSA_HI) || ((u32 *)&x)[0]) ? DOUBLE_CLASS_NAN : DOUBLE_CLASS_INFINITE;
+    } else return ((hi & DOUBLE_MANTISSA_HI) || ((u32 *)&x)[0]) ? DOUBLE_CLASS_SUBNORMAL : DOUBLE_CLASS_ZERO;
+    return DOUBLE_CLASS_NORMAL;
 }
 
 double func_0206f818(double x, s32 n) {

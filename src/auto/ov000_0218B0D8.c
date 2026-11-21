@@ -192,7 +192,7 @@ int SelectDirectAttackAction(void *arg0) {
  SetMapCursor((s16)repairX,(s16)repairY,5,(u8)rx,(u8)ry);
  }
  if(arg0) return 0;
- if(blocked) func_ov000_0218d040(0);
+ if(blocked) ChooseAiUnitMoveDestination(0);
  return 0;
 }
 #pragma pop

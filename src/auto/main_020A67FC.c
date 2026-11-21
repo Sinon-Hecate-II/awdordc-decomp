@@ -35,6 +35,8 @@ s32 ProduceUnit(s32 a, s32 b, s32 c) {
 }
 
 #pragma peephole off
+/* Mark every map unit slot empty (clear its kind bits, keeping the owner bits)
+ * and clear the cursor's unit. */
 void ResetMapUnits(void) {
     extern void **gCurrentMap;
     s32 i;
@@ -44,13 +46,13 @@ void ResetMapUnits(void) {
     offset = 0;
     do {
         i++;
-        p = (u8 *)*gCurrentMap + 0x59A4;
-        M2C_FIELD(p, u8 *, offset) &= ~0x3F;
-        offset += 14;
-    } while (i < 256);
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52C0) = 0;
-    M2C_FIELD(*gCurrentMap, u8 *, 0x52D4) = 0;
-    M2C_FIELD(*gCurrentMap, s32 *, 0x52D0) = 0;
+        p = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS;
+        M2C_FIELD(p, u8 *, offset) &= ~MAP_UNIT_KIND_MASK;
+        offset += MAP_UNIT_STRIDE;
+    } while (i < MAP_UNIT_COUNT);
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_UNIT_SLOT_CURSOR) = 0;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID) = 0;
+    M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT) = 0;
 }
 #pragma peephole on
 void func_020a694c(void) {
@@ -111,8 +113,8 @@ void func_020a6b50(void *arg0) {
 
 void func_020a6b68(void *arg0) {
     M2C_UNK func_020a7f48(M2C_UNK, s32, s32, M2C_UNK);
-    M2C_UNK func_020b576c(s32);
-    func_020b576c(M2C_FIELD(arg0, s32 *, 0x54));
+    M2C_UNK ExplodeUnit(s32);
+    ExplodeUnit(M2C_FIELD(arg0, s32 *, 0x54));
     func_020a7f48(0, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2);
 }
 

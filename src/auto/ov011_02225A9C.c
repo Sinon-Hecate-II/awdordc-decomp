@@ -47,12 +47,12 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 Set3DSpriteVramBanks(void *);s32 func_020822b8(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 PlayMusicTrack(s32);
+s32 Set3DSpriteVramBanks(void *);s32 Apply3DSpriteLayout(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 PlayMusicTrack(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;Set3DSpriteVramBanks(state);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020822b8(data_ov011_02228a3c);
+Apply3DSpriteLayout(data_ov011_02228a3c);
 Priority25d(6,0);Priority25d(8,1);Priority25d(10,2);Priority25d(12,3);
 Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Set25d(0,256);
 Clear25d(18,256);Clear25d(18,512);Set25d(18,1024);Set25d(18,2048);Clear25d(18,4096);
@@ -66,7 +66,7 @@ Set25d(0,4096);Clear25d(0,0x6000);
 LoadScenePanelPalette(31);func_02088774(30);CreateMainWallpaperSprite(3,15,7);
 FadePaletteTowardsBlack(M2C_FIELD(gCur3DSpriteEngine,s32 *,48)+480,0,8,8);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=16;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;
-gCur3DSpriteEngine=g3DSpriteEngineSub;func_020822b8(data_ov011_02228a30);
+gCur3DSpriteEngine=g3DSpriteEngineSub;Apply3DSpriteLayout(data_ov011_02228a30);
 Priority25d(6,3);Priority25d(8,0);Priority25d(10,1);Priority25d(12,2);
 Set25d(0,16);Clear25d(0,32);Clear25d(0,64);Set25d(0,128);Clear25d(0,256);
 Clear3DSpriteLayer(0);SetFileDirectory(data_ov011_02228b8c);OpenNarcArchive(data_ov011_02228b94);

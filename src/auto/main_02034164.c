@@ -28,7 +28,7 @@ Pair02034164 headers[32];     /* +0x1A38: parsed response header name/value pair
 void HttpClientTask(Unk02034164 *client) {
     void func_02034010(Unk02034164 *);
     s32 func_02034068(Unk02034164 *);
-    void func_0201d1f0(void);
+    void ResetCurrentConnection(void);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
     void func_02022128(void *, s32);
     void func_02025188(s32);
@@ -38,9 +38,9 @@ void HttpClientTask(Unk02034164 *client) {
     void ClearCurrentRawConnection(void);
     s32 SendNetPacket(s32, s32);
     void func_0201dc28(void);
-    s32 func_02033f98(Unk02034164 *);
+    s32 HttpClientTaskWait(Unk02034164 *);
     u64 GetSystemTick(void);
-    s32 func_0201dbb8(void);
+    s32 GetSocketReceivedDataSize(void);
     void *func_0201d618(s32 *);
     void MI_CpuCopy8(s32, s32, s32);
     void LockMutex(void *);
@@ -84,7 +84,7 @@ void HttpClientTask(Unk02034164 *client) {
         return;
     }
     client->unk112c = host;
-    func_0201d1f0();
+    ResetCurrentConnection();
     if (client->useTls == 1) {
         MI_CpuFill8(tls, 0, 0x830);
         M2C_FIELD(tls, s32 (**)(s32), 0x810) = func_02034864;
@@ -107,7 +107,7 @@ void HttpClientTask(Unk02034164 *client) {
         goto cleanup;
     }
     func_0201dc28();
-    if (func_02033f98(client) == 0) {
+    if (HttpClientTaskWait(client) == 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 7;
         goto cleanup;
     }
@@ -123,7 +123,7 @@ void HttpClientTask(Unk02034164 *client) {
             M2C_FIELD(client, s32 *, 0x1020) = 5;
             goto cleanup;
         }
-        received = func_0201dbb8();
+        received = GetSocketReceivedDataSize();
         if (received < 0) break;
         if (received > 0) {
             progress = GetSystemTick();
@@ -156,7 +156,7 @@ void HttpClientTask(Unk02034164 *client) {
             M2C_FIELD(client, s32 *, 0x1020) = 6;
             goto cleanup;
         }
-        if (func_02033f98(client) == 0) {
+        if (HttpClientTaskWait(client) == 0) {
             M2C_FIELD(client, s32 *, 0x1020) = 7;
             goto cleanup;
         }

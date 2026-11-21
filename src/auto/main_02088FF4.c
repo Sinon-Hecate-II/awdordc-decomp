@@ -10,25 +10,27 @@ return next;
 }
 #pragma pop
 void TextLayer_SetText(void *, s32);
-extern M2C_UNK data_02102638;
+extern M2C_UNK gTextLayerVtable;
 
 #pragma opt_common_subs off
-void Hide3DSpriteSlide(void *p) {
+void Hide3DSpriteSlide(void *sprite) {
     M2C_UNK Hide3DSprite(void *);
-    if (!M2C_FIELD(p, u8 *, 0x4F)) {
-        M2C_FIELD(p, s16 *, 0x34) = M2C_FIELD(p, s16 *, 0x54);
-        M2C_FIELD(p, s16 *, 0x36) = M2C_FIELD(p, s16 *, 0x56);
-        M2C_FIELD(p, s8 *, 0x4D) = 0;
-        M2C_FIELD(p, u8 *, 0x48) = (u8)(M2C_FIELD(p, u8 *, 0x48) & ~0xC0);
-        Hide3DSprite(p);
+
+    /* Hide immediately if reverse sliding is disabled; otherwise begin the slide-out animation. */
+    if (!M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_SLIDE_BACK_LEN)) {
+        M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_X) = M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_START_X);
+        M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_Y) = M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_START_Y);
+        M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_DELAY) = 0;
+        M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)(M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK);
+        Hide3DSprite(sprite);
         return;
     }
-    if ((((u32)M2C_FIELD(p, u8 *, 0x48) << 24) >> 30) == 3) {
+    if ((((u32)M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 24) >> 30) == SPRITE_SLIDE_REVERSE) {
         return;
     }
-    M2C_FIELD(p, s8 *, 0x4C) = 0;
-    M2C_FIELD(p, s8 *, 0x4D) = 0;
-    M2C_FIELD(p, u8 *, 0x48) = (u8)((M2C_FIELD(p, u8 *, 0x48) & ~0xC0) | 0xC0);
+    M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_TIMER) = 0;
+    M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_DELAY) = 0;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK) | SPRITE_ACTOR_SLIDE_MODE_MASK);
 }
 #pragma opt_common_subs reset
 u8 Is3DSpriteVisible(void *arg0) {
@@ -181,7 +183,7 @@ void func_02089310(void) {
 }
 
 
-void func_0208931c(M2C_UNK arg0)
+void Create3DSprite(M2C_UNK arg0)
 {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02102658;
@@ -379,34 +381,35 @@ void func_020898bc(void) {
     DeleteSpriteObjectsOfClass(&data_02102738);
 }
 
-void *func_020898d0(void *arg0) {
- Init3DSpriteActor(arg0);
- M2C_FIELD(arg0,M2C_UNK **,0)=&data_02102638;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x38;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x300;
- M2C_FIELD(arg0,u32 *,0x58)&=~0xC0;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x38000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x3C0000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x1FC00000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0xE0000000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x800;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x400;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x1000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x2000;
- M2C_FIELD(arg0,u32 *,0x58)&=~0x4000;
- M2C_FIELD(arg0,s32 *,0x5C)=0;
- M2C_FIELD(arg0,s32 *,0x60)=0;
- M2C_FIELD(arg0,s32 *,0x64)=0;
- M2C_FIELD(arg0,s32 *,0x68)=0;
- M2C_FIELD(arg0,s32 *,0x6C)=0;
- M2C_FIELD(arg0,s32 *,0x70)=0;
- return arg0;
+/* Initializes a 3D text layer with no child sprites or text buffers. */
+void *InitTextLayer(void *layer) {
+    Init3DSpriteActor(layer);
+    M2C_FIELD(layer, M2C_UNK **, 0) = &gTextLayerVtable;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_ANIMATION_MASK;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_POSITION_MASK;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_CHOICE_MASK;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_ICON_COUNT;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_LINE_COUNT;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_REFRESH_TIMER;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_SAVED_MODE;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~0x800;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_WINDOW_MASK;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~0x1000;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_NESTED;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~0x4000;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_LEFT_ICON) = 0;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_RIGHT_ICON) = 0;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_STRING) = 0;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_BUFFER_A) = 0;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_BUFFER_B) = 0;
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_TEXT_DATA) = 0;
+    return layer;
 }
 
 M2C_UNK **func_02089944(M2C_UNK **arg0) {
     M2C_UNK func_02089cec(M2C_UNK **);
-    extern M2C_UNK data_02102638;
-    *arg0 = &data_02102638;
+    extern M2C_UNK gTextLayerVtable;
+    *arg0 = &gTextLayerVtable;
     TextLayer_FreeText();
     func_02089cec(arg0);
     return arg0;
@@ -415,7 +418,7 @@ M2C_UNK **func_02089944(M2C_UNK **arg0) {
 M2C_UNK **func_0208996c(M2C_UNK **arg0) {
  M2C_UNK func_02089cec(M2C_UNK **);
  M2C_UNK MemFree(M2C_UNK **);
- *arg0=&data_02102638;
+ *arg0=&gTextLayerVtable;
  TextLayer_FreeText();func_02089cec(arg0);MemFree(arg0);return arg0;
 }
 

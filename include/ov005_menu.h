@@ -46,5 +46,6 @@ enum {
 #define OV005_STORY_MAP_FACE_STRIDE 2
 #define OV005_STORY_MAP_FACE_FIRST 0 /* first speaker's face id in an entry */
 #define OV005_STORY_MAP_FACE_SECOND 1 /* second speaker's face id */
+#define OV005_RESULT_SECOND_FACE_DEFAULT 9
 
 #endif

@@ -109,26 +109,35 @@ u64 U64Divide(u64,u64);
 s32 SendFifoMessage(s32,u32,s32);
 extern M2C_UNK gFifoBlockTransfer;
 extern u8 data_0213db60[];
-u32 c2,c1,c0,b3,b2,b1,b0,a6,a5,a4,a3,a2,a1,a0;
+volatile u32 a6;
+u32 c2,c1,c0,b3,b2,b1,b0,a5,a4,a3,a2,a1,a0;
 u64 start;
 u32 elapsedLo,elapsedHi;
 s32 state;
 u64 elapsed,scale;
-state=0;
-c0=0x2002200|((u32)data_0213db60>>24);
-c1=0x10000|(u16)((u32)data_0213db60>>8);
-c2=0x1020000|(((u32)data_0213db60<<8)&0xff00);
-a0=0x2002300|(((u32)arg1>>16)&255);
+u32 shared = (u32)data_0213db60;
+u32 top1 = (u32)arg1 >> 16;
+u32 shifted = shared << 8;
+u32 top3 = (u32)arg3 >> 16;
+u32 statusBase = 0x1020000;
+u32 packetBase = 0x2002200;
+u32 endBase = 0x3002100;
+c2=(shifted&0xff00)|0x20000;
 a1=0x10000|(u16)arg1;
-a2=0x20000|((u32)arg2>>16);
-a3=0x30000|(u16)arg2;
-a4=0x40000|((u32)arg3>>16);
-a5=0x1050000|(u16)arg3;
-b0=0x2002500|(((u32)arg1>>16)&255);
-b1=0x20000|arg2;
-b2=0x30000|((u32)arg3>>16);
+a5=(statusBase+0x30000)|(u16)arg3;
 b3=0x1040000|(u16)arg3;
-a6=0x3002000;
+c0=packetBase|(shared>>24);
+c2|=0x1000000;
+a0=(packetBase+0x100)|(top1&255);
+b1=0x20000|arg2;
+b2=0x30000|top3;
+a4=0x40000|top3;
+state=0;
+a6=endBase-0x100;
+a2=0x20000|((u32)arg2>>16);
+c1=0x10000|(shifted>>16);
+b0=(packetBase+0x300)|(top1&255);
+a3=0x30000|(u16)arg2;
 for(;;){
 if(state==0){
 M2C_FIELD(&gFifoBlockTransfer,s32*,4)=0;
@@ -152,8 +161,8 @@ case 4:case 5:
 if(SendFifoMessage(4,c0,0)<0){state=0;break;}
 if(SendFifoMessage(4,c1,0)<0){state=0;break;}
 if(SendFifoMessage(4,c2,0)<0)state=0;else state=1;break;
-case 6:if(SendFifoMessage(4,0x3002d00,0)<0)state=0;else state=1;break;
-case 7:if(SendFifoMessage(4,0x3002100,0)<0)state=0;else state=1;break;
+case 6:if(SendFifoMessage(4,endBase+0xc00,0)<0)state=0;else state=1;break;
+case 7:if(SendFifoMessage(4,endBase,0)<0)state=0;else state=1;break;
 }
 }else if(M2C_FIELD(&gFifoBlockTransfer,s32*,4)==1){
 state=0;
@@ -165,18 +174,18 @@ case 3:arg0=5;break;
 case 4:case 5:
 DC_InvalidateRange((s32)data_0213db60,1);
 if(arg0==4){
-if(data_0213db60[0]&2)arg0=3;else goto fail;
+if(data_0213db60[0]&2)arg0=3;else return state;
 }else{
 if(!(data_0213db60[0]&1))return 1;
-if(data_0213db60[0]&32)goto set6;
+if(data_0213db60[0]&32)goto delay;
 elapsed=GetSystemTick()-start;
 scale=(u64)(u32)64;
-if(U64Divide(elapsed*scale,0x82ea)<=4000)goto delay;
-set6:arg0=6;break;
+if(U64Divide(elapsed*scale,0x82ea)>4000) arg0=6;
+continue;
 delay:WaitByLoop(0x4000);
 }
 break;
-case 6:goto fail;
+case 6:return state;
 case 7:return 1;
 }
 }

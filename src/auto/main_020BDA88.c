@@ -1,6 +1,7 @@
 /* 31 functions from 0x020BDA88 to 0x020BE718 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 extern M2C_UNK gGameSettings,data_0215d990,data_0215d9b8;
 typedef struct { s16 a,b,c,d; } EntryBE;
 
@@ -182,34 +183,43 @@ s32 func_020bdf7c(s32 arg0, s32 arg1) {
 }
 
 void func_020bdfa8(void) {
-    M2C_UNK func_020be0ac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_020be0ac(0x70, 0, 0x20, 0x10, 0x9000, 0x1F0);
+    M2C_UNK DrawSizedOamSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1F0);
 }
 
 void func_020bdfdc(void) {
-    func_020be0ac(0x70, 0, 0x20, 0x10, 0x9000, 0x1F8);
+    DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1F8);
 }
 
 void func_020be010(void) {
-    func_020be0ac(0x70, 0, 0x20, 0x10, 0x9000, 0x1E8);
+    DrawSizedOamSprite(0x70, 0, 0x20, 0x10, 0x9000, 0x1E8);
 }
 
 void func_020be044(void) {
-    func_020be0ac(0x40, 0, 0x20, 0x10, 0x9000, 0x200);
+    DrawSizedOamSprite(0x40, 0, 0x20, 0x10, 0x9000, 0x200);
 }
 
 void func_020be078(void) {
-    func_020be0ac(0xA0, 0, 0x20, 0x10, 0x9000, 0x208);
+    DrawSizedOamSprite(0xA0, 0, 0x20, 0x10, 0x9000, 0x208);
 }
 
-M2C_UNK func_020be0ac(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
-s32 GetSpriteDescForSize(s32,s32);M2C_UNK func_01ff883c(u16,u8,u16,s32);extern u16 **gCur3DSpriteEngine;
-s32 v;u32 x;u32 shift;u32 flags;
-v=GetSpriteDescForSize(c,d);
-x=a&511;b=(u8)b;
-shift=(u32)(**gCur3DSpriteEngine<<17)>>30;
-flags=e|((f>>shift)&1023);
-return func_01ff883c((u16)x,(u8)b,(u16)flags,v);
+/* Draw a sprite using the size template and the active engine's OBJ tile boundary. */
+M2C_UNK DrawSizedOamSprite(s32 screenX, s32 screenY, s32 width, s32 height, s32 objFlags, s32 baseTile) {
+    void *GetSpriteDescForSize(s32, s32);
+    M2C_UNK AppendSpriteDescToOam(u16, u8, u16, SpriteQuadTemplate *);
+    extern void *gCur3DSpriteEngine;
+    SpriteQuadTemplate *spriteTemplate;
+    u32 objX;
+    u32 tileShift;
+    u32 attributes;
+
+    spriteTemplate = GetSpriteDescForSize(width, height);
+    objX = screenX & DS3D_OBJ_X_MASK;
+    screenY = (u8)screenY;
+    tileShift = (u32)(DS3D_BANK(gCur3DSpriteEngine)->flags << (32 - DS3D_BANK_OBJ_BOUNDARY_SHIFT - DS3D_BANK_OBJ_BOUNDARY_BITS)) >>
+                (32 - DS3D_BANK_OBJ_BOUNDARY_BITS);
+    attributes = objFlags | ((baseTile >> tileShift) & DS3D_OBJ_TILE_MASK);
+    return AppendSpriteDescToOam((u16)objX, (u8)screenY, (u16)attributes, spriteTemplate);
 }
 
 M2C_UNK *GetSaveRecordBuffer(void) {
@@ -264,15 +274,17 @@ u8 func_020be1a8(void) {
 }
 
 void func_020be1dc(s32 arg0) {
-void *GetSaveRecordList(void);s32 GetSaveRecordCount(void);
-M2C_UNK PruneSaveRecords(s32,s32);M2C_UNK DeleteSaveRecord(u16);
-u8 *p,*best;s32 n,i,id;
-switch(arg0){case 2:case 3:case 4:PruneSaveRecords(arg0,1);return;}
-p=GetSaveRecordList();best=0;n=GetSaveRecordCount();i=0;
-if(n>0)do{if(arg0==p[2]){if(best){if(!IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4))) goto next;}best=p;}next:i++;p+=40;}while(i<n);
+void *func_02076228(void);s32 func_02076234(void);
+M2C_UNK func_02076010(s32,s32);M2C_UNK func_02076180(u16);
+u8 *p,*best;s32 n,i,id;register s32 better;register u32 high;u32 b,a;
+switch(arg0){case 2:case 3:case 4:func_02076010(arg0,1);return;}
+p=func_02076228();best=0;n=func_02076234();i=0;
+if(n>0)do{if(arg0==p[2]){if(best){better=IsNewerValue(M2C_FIELD(best,u32 *,4),M2C_FIELD(p,u32 *,4));
+if(!better)goto next;
+}best=p;}next:i++;p+=40;}while(i<n);
 if(best)id=*(u16 *)best;else id=-1;
 if(id==-1)return;
-DeleteSaveRecord((u16)id);
+func_02076180((u16)id);
 }
 
 void func_020be2e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

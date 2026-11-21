@@ -81,11 +81,13 @@ M2C_FIELD(command,int *,4)=29;
 M2C_FIELD(command,s32 **,8)=gSoundCommandBufferPtr;
 EnqueueSoundCommand(command);Sound_FlushCommands(1);
 }
-#pragma opt_common_subs off
+#pragma peephole on
 s32 Sound_DequeueCommand(s32 flags){
 extern M2C_UNK gSoundCommandQueueState;extern QueueNode09298 *data_0212e044[];
 s32 OS_DisableInterrupts(void);s32 func_0200982c(void);
-State09100 *state; s32 irq;QueueNode09298 *head,*tail;
+s32 irq; QueueNode09298 *head,*oldTail,*tail;
+volatile State09100 *appendState;
+State09100 *state;
 irq=OS_DisableInterrupts();
 if(flags&1){
 while(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
@@ -95,20 +97,21 @@ OS_RestoreInterrupts(irq);WaitCycles(100);irq=OS_DisableInterrupts();
 OS_RestoreInterrupts(irq);return 0;
 }
 state=(State09100*)&gSoundCommandQueueState;
-head=data_0212e044[state->index];
-state->index++;
+head=data_0212e044[state->index++];
 if(state->index>8)state->index=0;
 tail=head;
 if(tail->next){do{tail=tail->next;}while(tail->next);}
-if(M2C_FIELD(&gSoundCommandQueueState,QueueNode09298**,16))M2C_FIELD(&gSoundCommandQueueState,QueueNode09298**,16)->next=head;
-else state->head=head;
+appendState = (State09100*)&gSoundCommandQueueState;
+oldTail = appendState->tail;
+if(oldTail) oldTail->next=head;
+else appendState->head=head;
+state = (State09100*)&gSoundCommandQueueState;
 state->tail=tail;
 state->pending--;
 state->count++;
 OS_RestoreInterrupts(irq);
 return (s32)head;
 }
-#pragma opt_common_subs reset
 /* Take a free node of the ARM7 sound command queue so a command can be written
  * into it. Bit 0 of `flags` makes it wait for one: it first discards commands
  * that are still only queued when others are already in flight, or else flushes
@@ -284,12 +287,26 @@ for(paramIndex=0;paramIndex<SND_CMD_BUFFER_PARAM_COUNT;paramIndex++)((s16 *)buff
 DC_FlushRange(buffer,SND_CMD_BUFFER_SIZE);
 }
 
-u16 func_020098d0(s32 a){
-extern u8 data_020ea3a0[];int n;u8 v;
-if(a < -723)a=-723;else if(a>0)a=0;
-v=data_020ea3a0[a+723];
-if(a < -240)n=3;else if(a < -120)n=2;else if(a < -60)n=1;else n=0;
-return v|(n<<8);
+/* Convert a NitroSDK volume (0 is full, down to -723 in the SDK's logarithmic
+ * units) into the ARM7 volume word: the linear amplitude byte from
+ * gSoundVolumeTable in the low 8 bits and the 2-bit volume step picked by the
+ * -60/-120/-240 boundaries in bits 8-9. */
+u16 SND_CalcVolume(s32 volume) {
+    extern u8 gSoundVolumeTable[];
+    int step;
+    u8 amplitude;
+
+    if (volume < -723) volume = -723;
+    else if (volume > 0) volume = 0;
+
+    amplitude = gSoundVolumeTable[volume + 723];
+
+    if (volume < -240) step = 3;
+    else if (volume < -120) step = 2;
+    else if (volume < -60) step = 1;
+    else step = 0;
+
+    return amplitude | (step << 8);
 }
 
 /* Make `newOwner` the owner of link slot `index` of `object`: detach the slot
@@ -427,7 +444,7 @@ if(v){if((u32)v<0x2000000U)v=a+(u32)v;}else v=0;
 Sound_UnlockMutex();return v;
 }
 
-void func_02009d34(void) {
+void PXI_Init(void) {
     M2C_UNK InitArm7Link();
     InitArm7Link();
 }

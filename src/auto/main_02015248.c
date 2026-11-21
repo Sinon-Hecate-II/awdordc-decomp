@@ -157,7 +157,7 @@ void Mb_FillOrCopyImageRange(void *arg0, u32 start, u32 end, s32 clear) {
 s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
-    void func_02015a2c(void *, void *);
+    void Mb_BuildProgramRecord(void *, void *);
     s32 Mb_BuildChunkIndex(void *, void *);
     M2C_UNK func_02015f94(void *, s32, void *);
     M2C_UNK func_020161bc(void *);
@@ -205,7 +205,7 @@ block_10:
         temp_r6 = var_r4 * 0x5D4;
         M2C_FIELD((gMbWork + temp_r6), s32 *, 0x1D40) = arg0;
         temp_r9 = gMbWork + 0x1788 + temp_r6;
-        func_02015a2c(temp_r9, arg1);
+        Mb_BuildProgramRecord(temp_r9, arg1);
         MI_CpuCopy8(arg0 + 0x1C, temp_r9 + 0xC4, 0x20);
         if (Mb_BuildChunkIndex(gMbWork + 0x1D2C + temp_r6, temp_r9) == 0) {
             OS_RestoreInterrupts(temp_r5);
@@ -233,20 +233,30 @@ block_10:
     goto loop_5;
 }
 #pragma pop
-void func_02015a2c(void *arg0, void *arg1) {
- M2C_UNK MI_CpuCopy8(s32,s32,s32);
- void func_02015aa0(void *, void *, void *, s32 *);
- extern u8 sMbChunkKinds[];
- s32 sp0;
- u8 *p;
- void *out;
- s32 i;
- sp0=0x022C0000;
- p=sMbChunkKinds;
- M2C_FIELD(arg0,s32 *,0)=M2C_FIELD(arg1,s32 *,0x24);
- out=arg0+12;
- M2C_FIELD(arg0,s32 *,4)=M2C_FIELD(arg1,s32 *,0x34);
- i=0;
- do {func_02015aa0(arg1,p,out,&sp0); i++; out+=16; p+=4;} while(i<3);
- MI_CpuCopy8((s32)arg1+0x160,(s32)arg0+0x3c,0x88);
+/* Build a member's program record from a program header: copy the two header
+ * offsets, describe each of the three image chunks (header, code, extra block)
+ * into its descriptor, allocating the extra block from the shared download pool,
+ * then copy the program's 0x88-byte chunk table. */
+void Mb_BuildProgramRecord(void *record, void *header) {
+    M2C_UNK MI_CpuCopy8(s32, s32, s32);
+    void Mb_DescribeChunk(void *, void *, void *, s32 *);
+    extern u8 sMbChunkKinds[];
+    s32 pool;
+    u8 *kind;
+    MbMemoryDescriptor *out;
+    s32 i;
+
+    pool = 0x022C0000;
+    kind = sMbChunkKinds;
+    M2C_FIELD(record, s32 *, 0) = M2C_FIELD(header, s32 *, 0x24);
+    out = (MbMemoryDescriptor *)((u8 *)record + 12);
+    M2C_FIELD(record, s32 *, 4) = M2C_FIELD(header, s32 *, 0x34);
+    i = 0;
+    do {
+        Mb_DescribeChunk(header, kind, out, &pool);
+        i++;
+        out++;
+        kind += 4;
+    } while (i < 3);
+    MI_CpuCopy8((s32)header + 0x160, (s32)record + 0x3C, 0x88);
 }

@@ -28,20 +28,23 @@ void HandleChildScanResult(void *report) {
 }
 
 void RequestChildChannelScan(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02013dac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02013dac(arg0, 3, 0x11, arg1, 0x1E);
+    M2C_UNK WFC_MeasureChannel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    WFC_MeasureChannel(arg0, 3, 0x11, arg1, 0x1E);
 }
 
+/* Pick the child of the wireless connection to connect to: allowed only once
+ * the parent has measured every child channel, then the chosen child is logged
+ * and returned. */
 s32 WhChooseChild(void) {
 extern M2C_UNK gWhWork;
-extern M2C_UNK data_ov001_021916b4;
+extern M2C_UNK gWhDecidedChannelFormat;
 s32 WhPickChild(u16);
-if(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,0x40)!=7) SystemHalt();
-SetWhStatus(1);
-M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C)=WhPickChild(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x60));
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))
-M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_021916b4,M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C));
-return M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,0x5C);
+if(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,WH_LINK_STATUS)!=WH_STATUS_MEASURECHAN) SystemHalt();
+SetWhStatus(WH_STATUS_IDLE);
+M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,WH_CHILD_PICKED)=WhPickChild(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,WH_CHILD_BITS));
+if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),WH_WORK_LOG))
+M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),WH_WORK_LOG)(WH_LOG_STATUS,&gWhDecidedChannelFormat,M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,WH_CHILD_PICKED));
+return M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),u16 *,WH_CHILD_PICKED);
 }
 
 /* Pick a wanted child of the wireless connection: its one-based index from the

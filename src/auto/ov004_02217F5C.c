@@ -12,7 +12,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
-    M2C_UNK func_020031cc(M2C_UNK);
+    M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -24,7 +24,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208168c(s32, M2C_UNK);
-    M2C_UNK func_020822b8(u16 *);
+    M2C_UNK Apply3DSpriteLayout(u16 *);
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
@@ -32,7 +32,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK Show3DSpriteSlide(void *);
     M2C_UNK func_020994e0();
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -120,12 +120,12 @@ void func_ov004_02217f5c(void *arg0) {
     GX_SetBankForOBJ(0x10);
     GX_SetBankForOBJExtPltt(0x40);
     func_02003124(4);
-    func_020031cc(8);
+    GX_SetBankForSubOBJ(8);
     GX_SetBankForBGExtPlttSub(0x80);
     GX_SetBankForOBJExtPlttSub(0x100);
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020822b8((u16 *)&sp30);
+    Apply3DSpriteLayout((u16 *)&sp30);
     temp_r1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp2C = temp_r1;
     *sp2C = *sp2C | 0x10;
@@ -145,7 +145,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, s16 *, 0x44) = 0;
     func_020994e0();
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020822b8((u16 *)&sp3C);
+    Apply3DSpriteLayout((u16 *)&sp3C);
     temp_r1_5 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp18 = temp_r1_5;
     *sp18 = *sp18 | 0x10;
@@ -187,7 +187,7 @@ void func_ov004_02217f5c(void *arg0) {
     CloseNarcArchive();
     AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16) Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 1), 0xF001);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
-    func_020a9a30(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
+    LoadSpriteResource(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
     temp_r0_3 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_3, 2, 0x140, 3, 0);
     func_020ab150(temp_r0_3, 2);

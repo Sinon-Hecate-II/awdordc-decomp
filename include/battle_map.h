@@ -38,6 +38,12 @@ typedef struct BattleMapUnit {
     u8 nextCarried;  /* +0x0D id of the next unit in the carry chain */
 } BattleMapUnit;
 
+/* The packed kind and rank byte at the start of each unit record. */
+typedef struct BattleMapUnitKindRank {
+    u8 kind:6;
+    u8 rank:2; /* 0 unranked, 1 level 1, 2 level 2, 3 veteran or CO unit */
+} BattleMapUnitKindRank;
+
 /* The head of a unit record read through bitfields: the kind is the low six bits
  * of the first byte and the owner the top two, followed by the tile position.
  * Sized like BattleMapUnit so it can index the record array directly. */
@@ -243,7 +249,22 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_TERRAIN_PROPERTY_FIRST 0x0f /* first property terrain kind: headquarters */
 #define MAP_TERRAIN_HQ         0x0f /* headquarters: the AI scores it 30 capture points, other properties 1 */
 #define MAP_TERRAIN_PROPERTY_LAST  0x18 /* last property terrain kind */
+#define MAP_TERRAIN_SILO       0x18 /* missile silo: a unit that can reach it may launch a missile; not capturable */
+#define MAP_TERRAIN_SILO_EMPTY 0x19 /* fired missile silo: the empty shell the cell shows afterwards */
 #define MAP_TERRAIN_IMPACT     0x1c /* destructible impact feature; its cell becomes a crater */
+
+/* Columns of the per-owner terrain count table used by the property icon grid. */
+enum {
+    MAP_PROPERTY_COUNT_HQ = 0,
+    MAP_PROPERTY_COUNT_CITY = 1,
+    MAP_PROPERTY_COUNT_BASE = 2,
+    MAP_PROPERTY_COUNT_AIRPORT = 3,
+    MAP_PROPERTY_COUNT_PORT = 4,
+    MAP_PROPERTY_COUNT_COM_TOWER = 7,
+    MAP_PROPERTY_COUNT_KIND_18_19 = 8, /* terrain kinds 0x18 and 0x19 share a column */
+    MAP_PROPERTY_COUNT_RADAR = 9,
+    MAP_PROPERTY_COUNT_NONE = -1
+};
 
 /* The property tile ids (gPropertyTileIds): nine rows of
  * MAP_PROPERTY_TILE_OWNERS tile ids, one row per capturable property kind in
@@ -277,6 +298,20 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
  * into patches with Map_GrowTerrain; their cells end up the given terrain kind. */
 #define MAP_TILE_WOODS         0x20 /* woods/forest, terrain kind 4 */
 #define MAP_TILE_ROCK          0x21 /* rock/mountain, terrain kind 3 */
+#define MAP_TILE_REEF          0x168 /* reef, terrain kind 0x0C */
+#define MAP_TILE_PLAIN         1
+#define MAP_TILE_ROUGH_GROUND  2    /* terrain kind 5 */
+#define MAP_TILE_SEA           3    /* terrain kind 8 */
+
+enum {
+    MAP_RANDOM_ROUGH_GROUND_COUNT_MIN = 20,
+    MAP_RANDOM_ROUGH_GROUND_COUNT_MAX = 40
+};
+
+enum {
+    MAP_RANDOM_REEF_COUNT_MIN = 5,
+    MAP_RANDOM_REEF_COUNT_MAX = 10
+};
 
 /* Reach of the impact blast: the movement range of a pseudo unit kind, searched
  * with an effectively unlimited movement-cost budget. */
@@ -297,6 +332,7 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_ORDER_COUNT  32     /* MapOrder records the queue holds */
 #define MAP_ORDER_TIMER  0x06   /* s8 frames left before the order's targets are played */
 #define MAP_ORDER_TYPE   0x02   /* u16 bits 6..9: the order's type (0 ends the queue) */
+#define MAP_ORDER_VALUE  0x04   /* u8 the order's value (health, amount...) */
 
 /* Values of MapOrder.type (the field at MAP_ORDER_TYPE). */
 enum {
@@ -348,6 +384,12 @@ typedef struct MapOrder {
 #define MAP_CURSOR_OPTION_RIGHT 1
 #define MAP_CURSOR_OPTION_DOWN  2
 #define MAP_CURSOR_OPTION_LEFT  3
+#define MAP_CURSOR_OPTION_COUNT 4
+
+/* Columns of the gMapCursorDirs table. */
+#define MAP_CURSOR_DIR_MASK 0
+#define MAP_CURSOR_DIR_DX   2
+#define MAP_CURSOR_DIR_DY   3
 
 /* The task object that drives a directional map-cursor option (the arrows that
  * pick a neighbouring cell): the directions that may be chosen, the option
@@ -385,6 +427,11 @@ typedef struct MapSettingsPlayer {
 #define CO_ICON_RANDOM    12
 #define CO_ICON_NONE      0xFF /* returned for a CO id outside the icon strip */
 
+/* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
+ * flags word followed by the battle setting, value limits and per-player mask. */
+#define MAPCONFIG_FLAGS     0x00 /* u16 packed rule flags */
+#define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
+
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
 typedef struct MapSettings {
@@ -413,10 +460,13 @@ typedef struct MapSettings {
 #define MAP_UNIT_FLAGS      0x04 /* u16 per-unit flags */
 #define MAP_UNIT_HEALTH     0x06 /* u16 health in the low seven bits */
 #define MAP_UNIT_AMMO       0x06 /* u16: ammo in bits 7..10 (health in bits 0..6) */
+#define MAP_UNIT_AMMO_SHIFT 7    /* first bit of the ammo field in MAP_UNIT_AMMO */
+#define MAP_UNIT_AMMO_MASK  0x780 /* the four ammo bits in MAP_UNIT_AMMO */
 #define MAP_UNIT_CAPTURE    0x06 /* u16: capture points in bits 11..15, 0 when the unit is not capturing (20 finishes it) */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
 #define MAP_UNIT_MOVE_PLANNED 0x80 /* bit 7 of the fuel byte: the AI has planned a move for the unit (SetMapCursor sets it) */
 #define MAP_UNIT_CAPTURE_COMPLETE 20 /* capture points at which a property is captured */
+#define MAP_UNIT_HEALTH_HEALTHY 61 /* lowest HP (0..100) the AI counts as healthy */
 #define MAP_UNIT_CARRIED    0x0C /* u8 first carried unit, 0 if none */
 #define MAP_UNIT_FIRST_CARRIED 0x0C /* u8 first unit this unit carries, 0 if none */
 #define MAP_UNIT_NEXT_CARRIED 0x0D /* u8 next unit in the carry chain, 0 if none */
@@ -479,7 +529,9 @@ typedef struct MapDeploymentEntry {
 /* One entry of the battle map's target list: the unit on a cell (0 when the
  * cell holds none), a value that is the damage to deal when the cell holds a
  * unit or the visibility value when it does not, and the cell's position.  The
- * cursor code (main_0209F990.c) builds the list; GetTargetPosition walks it. */
+ * cursor code (main_0209F990.c) builds the list; GetTargetPosition walks it.
+ * The list lives at gTargetList: +0x04 the MapTargetEntry array, +0x08 its count
+ * and +0x00 a scratch buffer pointer. */
 typedef struct MapTargetEntry {
     u16 id;    /* +0x00 unit id on the cell, 0 when there is none */
     u16 value; /* +0x02 damage to deal, or the cell's visibility value */
@@ -659,6 +711,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define ARMY_DATA_VARIANT_STRIDE 0x28 /* bytes between movement-cost variants */
 #define ARMY_DATA_ROW_STRIDE 4 /* bytes between cost-table rows within a variant */
 #define ARMY_REC_ARMY_ID 0x6c /* u8 low byte of PLAYER_REC_SPRITE (i.e. player record +0x6c): the player's army id, a row of the army data table */
+#define ARMY_TILE_BYTES 0x80 /* bytes of 4bpp tile data in one army state's face icon */
 #define PLAYER_REC_MOVE_COST_ROW 0x25 /* u8 row of the army's movement-cost variant */
 
 /* Army id the weather rules leave alone: no rain movement penalty, no sandstorm damage penalty. */
@@ -691,6 +744,8 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAPVIEW_UPLOAD_GRAPHICS 0x54 /* void (*)(void): upload the map's tiles, terrain and army palettes */
 #define MAPVIEW_SET_TERRAIN     0x58 /* void (*)(u8 weather, u8 tileset): apply the map's current
                                       * weather (MAP_WEATHER) and tileset (MAP_TILESET) to the view */
+#define MAPVIEW_INIT_PRESENTATION 0x40 /* void (*)(void): prepare the map view before creating its sprites */
+#define MAPVIEW_CONTROLLER_INDEX 1   /* index into gCurrentMap */
 #define MAP_CURSOR_KIND_TARGET 2 /* cursor selector the target-cursor updater (main_020CBACC) passes */
 
 /* A map-view panning animation, one of the view controller's sprite tasks.  It

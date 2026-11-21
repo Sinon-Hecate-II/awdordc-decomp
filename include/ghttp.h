@@ -106,7 +106,9 @@ typedef struct GHIConnection {
     s32  postIndex;       /* +0x144: item currently being written */
     s32  postOffset;      /* +0x148: body bytes written so far */
     s32  postLength;      /* +0x14C: total body length (Content-Length) */
-    u8   pad150[0x08];
+    s32  (*postCallback)(s32 request, s32 offset, s32 length, s32 index, s32 count, s32 param);
+                              /* +0x150: the post source's callback, run while its body is uploaded, may be NULL */
+    u8   pad154[0x04];
     s32  timeout;         /* +0x158: transfer timeout in milliseconds */
     char *serverOverride; /* +0x15C: connect here instead of the URL host */
     u16  portOverride;    /* +0x160: port used with serverOverride */
@@ -230,6 +232,12 @@ enum {
     WEB_TXN_FAILED    = 6  /* the request failed */
 };
 
+enum {
+    WEB_RESPONSE_NETWORK_ERROR = 1,
+    WEB_RESPONSE_NOT_COMPLETE = 16,
+    WEB_RESPONSE_EMPTY = 17
+};
+
 /* Kind of a multipart/form-data part (GHIPostData.type), from ghttpPost.c. */
 enum {
     GHIString = 0,      /* name=value string */
@@ -278,6 +286,7 @@ typedef struct GHIPost {
     s32 unk04;   /* +0x04 copied to GHIConnection.unk150 */
     s32 unk08;   /* +0x08 copied to GHIConnection.unk154 */
     s32 hasFiles;/* +0x0C nonzero: multipart/form-data, else a query string */
+    s32 autoFree;/* +0x10 nonzero: the request frees the post once it has been sent */
 } GHIPost;
 
 /* Fixed byte counts of a multipart/form-data body, measured once from the

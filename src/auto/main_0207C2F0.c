@@ -59,11 +59,11 @@ void func_0207c39c(void *arg0) {
 
 void QueueMemoryCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK SetSpriteZ(void *, s32);
-    void *func_0209ccb8(M2C_UNK *, M2C_UNK);
+    void *CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     void func_0207c39c(void *);
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8((M2C_UNK *)&func_0207c39c, 2);
+    temp_r0 = CreateQueuedSpriteTask((M2C_UNK *)&func_0207c39c, 2);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
@@ -90,7 +90,7 @@ void func_0207c42c(void *arg0) {
 void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8(&func_0207c42c, 0);
+    temp_r0 = CreateQueuedSpriteTask(&func_0207c42c, 0);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x44) = arg1;
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
@@ -100,7 +100,7 @@ void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     SetSpriteZ(temp_r0, 0xFF02);
 }
 
-void func_0207c4b4(void *arg0) {
+void CopyMainOBJExtPaletteWordsTask(void *arg0) {
     M2C_UNK func_02004d3c();
     M2C_UNK func_02004d70(s32, s32, s32);
     M2C_UNK func_02004ddc();
@@ -113,47 +113,53 @@ void func_0207c4b4(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c4ec(void *arg0) {
-    s32 func_020033cc(void);
+/* Fill a range of the main-engine OBJ extended palette with one halfword: release
+ * the palette's bank grant, look up the VRAM base for the banks it gave back, fill
+ * the task's destination halfwords from the task's source, then re-grant the bank
+ * and free the source when the task owns it.  The range is a byte count and a
+ * byte offset; the fill writes halfwords. */
+void FillMainOBJExtPaletteHalfwordsTask(void *task) {
+    s32 GX_ReleaseBankForOBJExtPltt(void);
     M2C_UNK GX_SetBankForOBJExtPltt(s32);
-    extern u16 data_02101438[];
+    extern u16 gExtPaletteVramBase[];
     s32 base;
     s32 count;
     s32 offset;
-    s32 mode;
-    count = M2C_FIELD(arg0, s32 *, 0x40);
-    offset = M2C_FIELD(arg0, s32 *, 0x44);
-    mode = func_020033cc();
-    base = data_02101438[mode >> 4] << 12;
+    s32 banks;
+    count = M2C_FIELD(task, s32 *, DS3D_TASK_SIZE);
+    offset = M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET);
+    banks = GX_ReleaseBankForOBJExtPltt();
+    base = gExtPaletteVramBase[banks >> 4] << 12;
     if (base == 0) return;
     if (count > 0) {
         do {
             count -= 2;
-            *(u16 *)(base + offset) = *M2C_FIELD(arg0, u16 **, 0x38);
+            *(u16 *)(base + offset) = *M2C_FIELD(task, u16 **, DS3D_TASK_SOURCE);
             offset += 2;
         } while (count > 0);
     }
-    GX_SetBankForOBJExtPltt(mode);
-    if (M2C_FIELD(arg0, s32 *, 0x50) == 0) return;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
+    GX_SetBankForOBJExtPltt(banks);
+    if (M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) == 0) return;
+    HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
-void QueueVramCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void func_0207c4ec(void *);
-    void *var_r0;
+/* Queue a main OBJ extended palette upload, using a halfword fill for unaligned ranges. */
+void QueueMainOBJExtPaletteCopy(s32 source, s32 paletteOffset, s32 byteCount, s32 freeSource) {
+    void FillMainOBJExtPaletteHalfwordsTask(void *);
+    void *task;
 
-    if (!(arg2 & 3) && !(arg1 & 3)) {
-        var_r0 = func_0209ccb8(&func_0207c4b4, 0);
+    if (!(byteCount & 3) && !(paletteOffset & 3)) {
+        task = CreateQueuedSpriteTask(&CopyMainOBJExtPaletteWordsTask, 0);
     } else {
-        var_r0 = func_0209ccb8(&func_0207c4ec, 0);
+        task = CreateQueuedSpriteTask(&FillMainOBJExtPaletteHalfwordsTask, 0);
     }
-    M2C_FIELD(var_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(var_r0, s32 *, 0x44) = arg1;
-    M2C_FIELD(var_r0, s32 *, 0x40) = arg2;
-    M2C_FIELD(var_r0, s32 *, 0x50) = arg3;
-    M2C_FIELD(var_r0, s32 *, 0x48) = 0;
-    M2C_FIELD(var_r0, s32 *, 0x4C) = 0;
-    SetSpriteZ(var_r0, 0xFF02);
+    M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE) = source;
+    M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET) = paletteOffset;
+    M2C_FIELD(task, s32 *, DS3D_TASK_SIZE) = byteCount;
+    M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) = freeSource;
+    M2C_FIELD(task, s32 *, 0x48) = 0;
+    M2C_FIELD(task, s32 *, 0x4C) = 0;
+    SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
 /* Run a queued BG extended-palette upload: copy the task's palette to the BG
@@ -185,7 +191,7 @@ void QueueBGExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void UploadBGExtPaletteTask(void *);
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8(&UploadBGExtPaletteTask, 0);
+    temp_r0 = CreateQueuedSpriteTask(&UploadBGExtPaletteTask, 0);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
@@ -224,7 +230,7 @@ void QueueOBJExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void UploadOBJExtPaletteTask(void *);
     void *temp_r0;
 
-    temp_r0 = func_0209ccb8(&UploadOBJExtPaletteTask, 0);
+    temp_r0 = CreateQueuedSpriteTask(&UploadOBJExtPaletteTask, 0);
     M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
     M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
@@ -394,9 +400,9 @@ s32 GetDigitCount(s32 arg0) {
 }
 
 void func_0207cbb0(void) {
-    M2C_UNK func_0207cc9c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK InitMapViewCameraVectors(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0214bfac;
-    func_0207cc9c(&data_0214bfac, 0, 0, 0);
+    InitMapViewCameraVectors(&data_0214bfac, 0, 0, 0);
 }
 
 #pragma opt_if-conversion off
@@ -419,17 +425,19 @@ Unk0207Color func_0207cbd0(s32 index) {
     return v;
 }
 #pragma opt_if-conversion reset
-M2C_UNK func_0207cc9c(M2C_UNK *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+M2C_UNK InitMapViewCameraVectors(M2C_UNK *view, M2C_UNK eyeX, M2C_UNK eyeY, M2C_UNK eyeZ) {
     struct Unk3 { s32 a; s32 b; s32 c; };
     extern struct Unk3 data_020ebdc4;
     extern struct Unk3 data_020ebdd0;
     struct Unk3 zero = { 0, 0, 0 };
-    *(struct Unk3 *)((u8 *)arg0 + 0xF0) = data_020ebdc4;
-    *(struct Unk3 *)((u8 *)arg0 + 0xFC) = zero;
-    *(struct Unk3 *)((u8 *)arg0 + 0x108) = data_020ebdd0;
-    M2C_FIELD(arg0, s32 *, 0x10) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x14) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x18) = arg3;
+
+    /* Seed the camera's eye, ground-plane and up vectors, then save its initial eye point. */
+    *(struct Unk3 *)((u8 *)view + 0xF0) = data_020ebdc4;
+    *(struct Unk3 *)((u8 *)view + 0xFC) = zero;
+    *(struct Unk3 *)((u8 *)view + 0x108) = data_020ebdd0;
+    M2C_FIELD(view, s32 *, 0x10) = eyeX;
+    M2C_FIELD(view, s32 *, 0x14) = eyeY;
+    M2C_FIELD(view, s32 *, 0x18) = eyeZ;
 }
 
 /* Rebuilds the map view's camera transform from its eye position: stores the eye
@@ -472,11 +480,11 @@ void func_0207cddc(s32 arg0, M2C_UNK arg1) {
 }
 
 void func_0207ce28(M2C_UNK arg0) {
-    M2C_UNK func_0207cfc0(M2C_UNK);
+    M2C_UNK UpdateViewForZoom(M2C_UNK);
     M2C_UNK func_020bf930(M2C_UNK);
-    func_0207cc9c(arg0, 0, 0, 0);
+    InitMapViewCameraVectors(arg0, 0, 0, 0);
     func_020bf930(arg0);
-    func_0207cfc0(arg0);
+    UpdateViewForZoom(arg0);
 }
 
 void func_0207ce54(void) {
@@ -493,10 +501,10 @@ M2C_UNK func_0207ce60(void *arg0) {
 
 void SetViewZoom(void *arg0, s16 arg1) {
     void func_0207cfb0(void *, s16);
-    M2C_UNK func_0207cfc0(M2C_UNK);
+    M2C_UNK UpdateViewForZoom(M2C_UNK);
     void func_020bf97c(void *);
     func_0207cfb0(arg0, arg1);
-    func_0207cfc0((M2C_UNK)arg0);
+    UpdateViewForZoom((M2C_UNK)arg0);
     func_020bf97c(arg0);
 }
 
@@ -521,7 +529,7 @@ s16 GetViewZoom(void *arg0) {
 }
 
 /* Interpolate the two preset colors (indices 0 and 1) by t/128 and store the result in p. */
-M2C_UNK func_0207cfc0(M2C_UNK arg) {
+M2C_UNK UpdateViewForZoom(M2C_UNK arg) {
     void *p = (void *)arg;
     Unk0207Color colorA = func_0207cbd0(0);
     Unk0207Color colorB = func_0207cbd0(1);

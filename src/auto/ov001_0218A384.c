@@ -65,7 +65,7 @@ void Ov001_LoadCharBank(s32 arg0, M2C_UNK arg1) {
  (&data_ov001_02193e34)[arg0]=Ov001_LoadFile(arg1,&sp0,4);
 }
 
-void func_ov001_0218a534(u8 arg0) {
+void Ov001_FreeCharBank(u8 arg0) {
  void Ov001_FreeFile(s32);
  extern M2C_UNK data_ov001_02193e34;
  Ov001_FreeFile(((s32 *)&data_ov001_02193e34)[arg0]);

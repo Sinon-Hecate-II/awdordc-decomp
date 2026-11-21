@@ -30,7 +30,7 @@ s32 func_ov010_02225f60(void) {
     void func_ov010_02225d00();
     void DisableVoiceStream();
     s32 func_ov010_02229bf4();
-    void func_ov010_02222c28();
+    void VoiceChat_SetCodecMode();
     s32 AllocAlignedBuffer(s32, s32);
 
     if (M2C_FIELD(&gVoiceChatLink, s32 *, 0) != 0) {
@@ -59,7 +59,7 @@ s32 func_ov010_02225f60(void) {
     if (func_ov010_02229bf4()) {
         func_ov010_02226060(0);
     }
-    func_ov010_02222c28(1);
+    VoiceChat_SetCodecMode(1);
     return 1;
 }
 
@@ -534,7 +534,7 @@ void func_ov010_022268f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  func_020e3580(arg1,arg2);
 }
 
-M2C_UNK func_ov010_02226908(M2C_UNK arg0, s32 arg1, s32 arg2) {
+M2C_UNK Ov010_FreeBlock(M2C_UNK arg0, s32 arg1, s32 arg2) {
  M2C_UNK HeapFreeBlock();
  if(arg1 == 0) return;
  HeapFreeBlock(arg1);
@@ -577,19 +577,82 @@ void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_ov010_022269f8(s32 a,s32 b,s32 c){MI_CpuCopy8(b,a+44,c);}
 
-void func_ov010_02226a10(void *a){volatile u32 saved;u32 temp;void *p;temp=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=0;p=M2C_FIELD(a,void **,0);saved=temp;while(p!=0){M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(a,void **,0);}M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;(void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}
+/* Free every queued packet node of the outbound queue `queue`, then reset its
+ * head, tail and count, with interrupts disabled so a producer cannot enqueue
+ * while the list is being unlinked. */
+void FreeOnlinePacketQueue(void *queue) {
+    volatile u32 saved;
+    u32 imeState;
+    void *node;
+
+    imeState = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = 0;
+    node = M2C_FIELD(queue, void **, ONLINE_QUEUE_HEAD);
+    saved = imeState;
+    while (node != NULL) {
+        M2C_FIELD(queue, void **, ONLINE_QUEUE_HEAD) = M2C_FIELD(node, void **, ONLINE_QUEUE_NODE_NEXT);
+        Ov010_FreeBlock(0, (s32)node, M2C_FIELD(node, s32 *, ONLINE_QUEUE_NODE_SIZE) + ONLINE_QUEUE_NODE_HEADER);
+        node = M2C_FIELD(queue, void **, ONLINE_QUEUE_HEAD);
+    }
+    M2C_FIELD(queue, s32 *, ONLINE_QUEUE_TAIL) = 0;
+    M2C_FIELD(queue, s32 *, ONLINE_QUEUE_HEAD) = 0;
+    M2C_FIELD(queue, s32 *, ONLINE_QUEUE_COUNT) = 0;
+    (void)*(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = saved;
+}
 
 void func_ov010_02226a88(void) {
 extern M2C_UNK gOv010OnlineSession,data_ov010_0222ef58,data_ov010_0222ef88,data_ov010_0222efb8;
 extern Ov010MemberCall data_ov010_0222c128[];
-volatile u32 saved;u32 temp;void *p;
+volatile Ov010MemberCall firstCopy, secondCopy;
+volatile u32 saved;
+volatile Ov010MemberCall firstCall, secondCall;
+u32 temp;void *p;
 temp=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=0;
 p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);saved=temp;
-while(p){M2C_FIELD(&gOv010OnlineSession,void **,0x60)=M2C_FIELD(p,void **,0);func_ov010_02226908(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);}
+while(p){M2C_FIELD(&gOv010OnlineSession,void **,0x60)=M2C_FIELD(p,void **,0);Ov010_FreeBlock(0,(s32)p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(&gOv010OnlineSession,void **,0x60);}
 M2C_FIELD(&gOv010OnlineSession,s32 *,0x64)=0;M2C_FIELD(&gOv010OnlineSession,s32 *,0x60)=0;M2C_FIELD(&gOv010OnlineSession,s32 *,0x68)=0;
 (void)*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;
-ov010CallArray((u8 *)&data_ov010_0222ef58,48,data_ov010_0222c128[2]);
-ov010CallArray((u8 *)&data_ov010_0222ef88,48,data_ov010_0222c128[1]);
+{
+    u8 *item = (u8 *)&data_ov010_0222ef58;
+    u8 *last = (u8 *)&data_ov010_0222ef88;
+    volatile Ov010MemberCall *call = &firstCall;
+    s32 adjustment = data_ov010_0222c128[2].adjustment;
+    s32 function = data_ov010_0222c128[2].function;
+    firstCopy.adjustment = adjustment;
+    firstCopy.function = function;
+    call->function = function;
+    call->adjustment = adjustment;
+    if (item != last) do {
+        u8 *object;
+        adjustment = call->adjustment;
+        object = item + (adjustment >> 1);
+        if ((adjustment & 1) == 0) function = call->function;
+        else function = *(s32 *)(*(u8 **)object + call->function);
+        ((void (*)(void *))function)(object);
+        item += 12;
+    } while (item != last);
+}
+{
+    u8 *item = (u8 *)&data_ov010_0222ef88;
+    u8 *last = (u8 *)&data_ov010_0222efb8;
+    volatile Ov010MemberCall *call = &secondCall;
+    s32 adjustment = data_ov010_0222c128[1].adjustment;
+    s32 function = data_ov010_0222c128[1].function;
+    secondCopy.adjustment = adjustment;
+    secondCopy.function = function;
+    call->function = function;
+    call->adjustment = adjustment;
+    if (item != last) do {
+        u8 *object;
+        adjustment = call->adjustment;
+        object = item + (adjustment >> 1);
+        if ((adjustment & 1) == 0) function = call->function;
+        else function = *(s32 *)(*(u8 **)object + call->function);
+        ((void (*)(void *))function)(object);
+        item += 12;
+    } while (item != last);
+}
 }
 
 #pragma cplusplus on
@@ -653,8 +716,8 @@ void TickOnlinePeerKeepAlive(void *link) {
 }
 
 void func_ov010_02226d74(void *arg0) {
-    M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
-    func_ov010_02226908(0, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
+    Ov010_FreeBlock(0, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
     M2C_FIELD(arg0, s32 *, 0x3C) = 0;
     M2C_FIELD(arg0, s32 *, 0x40) = 0;
 }

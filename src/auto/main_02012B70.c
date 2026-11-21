@@ -14,19 +14,23 @@ return bits;
 #pragma pop
 
 
-s32 func_02012b70(s32 arg0, void *arg1) {
+/* Queue WFC command 0x23: install `callback` as its completion handler (the ov009
+ * link overlay's link-event toggle), then send the 0x20-byte packet made of the
+ * 0x23 command word followed by the 0x1c-byte `payload`.  Returns the Wi-Fi result
+ * (2 once queued). */
+s32 WFC_SendCommand23(s32 callback, void *payload) {
 void *WFC_GetInfoBlock(); s32 WFC_CheckReady(void *); s32 WFC_SetChannelParam(s32,s32); void CpuFill(s32,void *,s32); void MIi_CpuCopy32(void *,void *,s32); s32 WFC_SendCommandPacket(void *,s32);
-u32 buf[8]; s32 r;
-r=WFC_CheckReady(WFC_GetInfoBlock()); if(r) return r;
-WFC_SetChannelParam(0x23,arg0); CpuFill(0,buf,0x20);
-*(u16 *)buf=0x23; MIi_CpuCopy32(arg1,&buf[1],0x1c);
-r=WFC_SendCommandPacket(buf,0x20); if(!r) r=2; return r;
+u32 packet[8]; s32 result;
+result=WFC_CheckReady(WFC_GetInfoBlock()); if(result) return result;
+WFC_SetChannelParam(0x23,callback); CpuFill(0,packet,0x20);
+*(u16 *)packet=0x23; MIi_CpuCopy32(payload,&packet[1],0x1c);
+result=WFC_SendCommandPacket(packet,0x20); if(!result) result=2; return result;
 }
 
 void func_02012be4(s32 arg0, s16 arg1) {
 void CpuFill(s32,void *,s32);
 u32 buf[7];
-CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; func_02012b70(arg0,buf);
+CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; WFC_SendCommand23(arg0,buf);
 }
 
 /* Queue a WFC data-send event for `len` bytes at `buf`: refuse when the link is
@@ -48,13 +52,16 @@ r=((s32 (*)(s32,s32,void *,u32,u16,u16,u16,s32,s32))WFC_SendCommand)(15,7,buf,le
 if(!r)r=2;return r;
 }
 
-s32 func_02012d64(s32 arg0) {
+/* Post WFC command 0x10 (only valid while the link is being torn down) with
+ * `callback` as its completion handler.  Returns 3 when the link is not tearing
+ * down, or the Wi-Fi result (2 once the command is queued). */
+s32 WFC_SendTeardownCommand(s32 callback) {
 void *WFC_GetInfoBlock(); s32 WFC_CheckChannelState(s32,s32); s32 DC_InvalidateRange(s32,s32); s32 WFC_SetChannelParam(s32,s32); s32 WFC_SendCommand(s32,s32);
-void *p; s32 r;
-p=WFC_GetInfoBlock(); r=((s32 (*)(s32,s32,s32))WFC_CheckChannelState)(2,9,10); if(r) return r;
-DC_InvalidateRange(M2C_FIELD(p,void **,4)+12,4);
-if(M2C_FIELD(M2C_FIELD(p,void **,4),s32 *,12)==0) return 3;
-WFC_SetChannelParam(16,arg0); r=WFC_SendCommand(16,0); if(!r) r=2; return r;
+void *info; s32 result;
+info=WFC_GetInfoBlock(); result=((s32 (*)(s32,s32,s32))WFC_CheckChannelState)(2,9,10); if(result) return result;
+DC_InvalidateRange(M2C_FIELD(info,void **,WFC_INFO_LINK)+WFC_LINK_TEARDOWN,4);
+if(M2C_FIELD(M2C_FIELD(info,void **,WFC_INFO_LINK),s32 *,WFC_LINK_TEARDOWN)==0) return 3;
+WFC_SetChannelParam(16,callback); result=WFC_SendCommand(16,0); if(!result) result=2; return result;
 }
 
 /* Send `length` bytes from `data` over the WFC data channel (command 17): refuse

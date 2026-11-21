@@ -324,7 +324,7 @@ void func_ov001_02189ad0(void) {
     void func_0200b118(void *);
     s32 RegisterArchiveName(void *, void *, s32);
     void func_0200b6a8(void *, s32, s32);
-    s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
+    s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
     s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
@@ -359,7 +359,7 @@ void func_ov001_02189ad0(void) {
         SystemHalt();
     }
     func_0200b6a8((u8 *)data_ov001_02193e2c + 0x88, (s32)func_ov001_02189d0c, 0x602);
-    if (!func_0200b2bc((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
+    if (!ConfigureArchiveLayout((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }
     dataSize = LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, 0, 0);

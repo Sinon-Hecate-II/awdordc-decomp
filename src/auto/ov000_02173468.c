@@ -10,7 +10,7 @@ typedef struct { s32 first, second, hp, ammo; StatsDigits1734 digits; s32 count,
 #pragma opt_if-conversion off
 void func_ov000_02173468(void *arg0) {
 s32 GetTerrainInfoContext(void *);
-s32 func_ov000_021724b8(s32,s32);
+s32 GetTerrainNameGraphicIndex(s32,s32);
 s32 GetTerrainKindFromInfoId(s32);
 void AddSprite(u16,u16,u16,void *,s32);
 u8 func_ov000_02173e6c(void *);
@@ -36,7 +36,7 @@ u8 *map;
 temp=GetTerrainInfoContext(arg0);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(!M2C_FIELD(arg0,u8 *,0x15)){
-if(func_ov000_021724b8(temp,M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0))!=-1)AddSprite(4,1,0xc144,data_ov000_021b8dfc,0);
+if(GetTerrainNameGraphicIndex(temp,M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,0))!=-1)AddSprite(4,1,0xc144,data_ov000_021b8dfc,0);
 AddSprite(135,25,(u16)(((164-M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,4))&1023)|0x6000),gSpriteDesc32x8,1);
 if(M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,8)){
 AddSprite(135,38,(u16)(((M2C_FIELD(M2C_FIELD(arg0,void **,0x18),s32 *,24)+128)&1023)|0x8000),gSpriteDesc8x8,1);
@@ -194,14 +194,14 @@ void func_ov000_02173f78(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_020822b8(M2C_UNK *);
+    M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK LoadFaceTexture(u8, s32, s32);
     M2C_UNK LoadFacePalette(u8, M2C_UNK, M2C_UNK, u16, s32);
     s32 func_020a7278();
     s32 func_020a7290();
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK CreateScreenTransitions(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK func_020af19c(M2C_UNK, M2C_UNK);
@@ -250,7 +250,7 @@ register s32 temp_r9;
     M2C_FIELD(arg0, s32 *, 8) = 1;
     sp4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020822b8(&data_ov000_021b8e50);
+    Apply3DSpriteLayout(&data_ov000_021b8e50);
     temp_r2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     sp1C = temp_r2;
     *sp1C = *sp1C & ~0x10;
@@ -301,9 +301,9 @@ register s32 temp_r9;
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ebc), M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14) + 0x3000);
     Load3DSpritePattern(0x800, 1, GetUiColor(9), 2);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
-    func_020a9a30(1, 0, 0, tiles + 0x1000);
+    LoadSpriteResource(1, 0, 0, tiles + 0x1000);
     tiles = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles;
-    func_020a9a30(1, 0, 2, tiles + 0x1180);
+    LoadSpriteResource(1, 0, 2, tiles + 0x1180);
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8ec8), (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x1400);
     LoadFileToAddress(&data_ov000_021b8ed4, (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->tiles + 0x2800);
     temp_r5 = func_020a7290() << 5;
@@ -316,9 +316,9 @@ register s32 temp_r9;
     LoadScenePanelPalette(0xF);
     LoadFileToSpriteBuffer(&data_ov000_021b8f00, 0x2C0, 0x20);
     palette = (s32)((SpriteEngine_02173f78 *)gCur3DSpriteEngine)->sprites;
-    func_020a9a30(1, 2, 1, palette + 0x300);
+    LoadSpriteResource(1, 2, 1, palette + 0x300);
     tiles = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30);
-    func_020a9a30(1, 2, 2, palette + 0x340);
+    LoadSpriteResource(1, 2, 2, palette + 0x340);
     LoadFileToSpriteBuffer(&data_ov000_021b8f0c, 0x360, 0x20);
     LoadFileToSpriteBuffer(&data_ov000_021b8f1c, 0x380, 0x20);
     LoadFileToSpriteBuffer(&data_ov000_021b8f2c, 0x3A0, 0x20);

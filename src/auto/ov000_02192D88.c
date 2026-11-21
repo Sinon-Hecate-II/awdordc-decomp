@@ -13,7 +13,7 @@ extern s8 gTerrainPropertyType[32];
 void BuildUnitMoveRange(void); void MarkAdjacentCells(s32);
 s32 IsAllyUnitAtCell(s16,s16); u8 IsPropertyTerrain(s32);
 s32 IsPropertyCell(s32,s32); s32 FindBestAdjacentDestination(s32,s32,s16 *);
-s32 func_ov000_0217bdb4(s32,s32);s32 func_ov000_0217bd44(s32,s32,s32,s32);
+s32 func_ov000_0217bdb4(s32,s32);s32 GetAiCargoDropDirection(s32,s32,s32,s32);
 s32 SetMapCursor(s16,s16,s32,s32,s32);
 s32 func_ov000_0217c08c(s32,s32,s32,s16 *);s32 IsTerrainOnUnitTeam(s32,s32);
 s32 x,y,bx,by,px,py,tx,ty,best,tie,score,value,id,kind;
@@ -45,7 +45,7 @@ best=score;tie=value;bx=x;by=y;px=pos[0];py=pos[1];
 if(best!=-1){M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)bx&63);
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)by<<26)>>20);
 {u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(bx+M2C_FIELD(*gCurrentMap+by*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
-value=func_ov000_0217bd44(px,py,bx,by);
+value=GetAiCargoDropDirection(px,py,bx,by);
 SetMapCursor((s16)px,(s16)py,8,(u8)value,0);}
 sy=-1;sx=sy;uy=sy;ux=sy;best=sy;tie=best+0x8000;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
@@ -75,7 +75,7 @@ if(best==-1)return;
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~63)|((u16)tx&63);
 M2C_FIELD(unit,u16 *,8)=(M2C_FIELD(unit,u16 *,8)&~0xfc0)|(((u32)(u16)ty<<26)>>20);
 {u8 *rec=(u8 *)*gCurrentMap+0x6c60+M2C_FIELD(*gCurrentMap+(tx+M2C_FIELD(*gCurrentMap+ty*2,u16 *,0x3758)),s8 *,0x1928)*6;rec[3]++;}
-value=func_ov000_0217bd44(ux,uy,sx,sy);
+value=GetAiCargoDropDirection(ux,uy,sx,sy);
 SetMapCursor((s16)ux,(s16)uy,8,(u8)value,0);
 }
 #pragma opt_strength_reduction off

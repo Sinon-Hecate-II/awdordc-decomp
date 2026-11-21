@@ -547,14 +547,14 @@ return base+offset;
 }
 #pragma optimization_level reset
 void StepDialogSequence(void *arg0) {
-    s32 func_02096064(void);
+    s32 TryStartDialogSkip(void);
     extern void *data_02102b50[];
     void **p;
     int temp;
     s32 (*fn)(void *);
     if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
     if (M2C_FIELD(arg0, u16 *, 0xC) != 0) {
-        if (func_02096064() != 0) temp = 0;
+        if (TryStartDialogSkip() != 0) temp = 0;
         else temp = M2C_FIELD(arg0, u16 *, 0xC) - 1;
         M2C_FIELD(arg0, u16 *, 0xC) = (u16) temp;
         if (M2C_FIELD(arg0, u16 *, 0xC) != 0) return;

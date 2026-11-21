@@ -26,7 +26,7 @@ void RollDamageVariance(M2C_UNK);
 void AddDamageVariance(void *,s32);
 
 void InitBattleUnit(void *p,s16 index) {
-s32 GetTerrainDefenseScore(); s32 func_020a3518();
+s32 GetTerrainDefenseScore(); s32 GetCoPowerMeterPoints();
 void *q,*m; register s32 stride=14;
 q=(void *)*gCurrentMap+0x59a4+index*stride;
 M2C_FIELD(p,void **,0)=q;
@@ -35,10 +35,10 @@ M2C_FIELD(p,s16 *,4)=M2C_FIELD(m+(M2C_FIELD(q,u8 *,1)+M2C_FIELD(m+M2C_FIELD(q,u8
 M2C_FIELD(p,s16 *,6)=GetTerrainDefenseScore(D068COwner(M2C_FIELD(p,void **,0)),D068CLow(M2C_FIELD(p,void **,0)),M2C_FIELD(p,s16 *,4));
 M2C_FIELD(p,s16 *,8)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<25)>>25;
 M2C_FIELD(p,s16 *,10)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<21)>>28;
-M2C_FIELD(p,s16 *,12)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));
+M2C_FIELD(p,s16 *,12)=GetCoPowerMeterPoints(D068COwner(M2C_FIELD(p,void **,0)));
 M2C_FIELD(p,s16 *,14)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<25)>>25;
 M2C_FIELD(p,s16 *,16)=(u32)(M2C_FIELD(M2C_FIELD(p,void **,0),u16 *,6)<<21)>>28;
-M2C_FIELD(p,s16 *,18)=func_020a3518(D068COwner(M2C_FIELD(p,void **,0)));
+M2C_FIELD(p,s16 *,18)=GetCoPowerMeterPoints(D068COwner(M2C_FIELD(p,void **,0)));
 M2C_FIELD(p,s16 *,30)=0;M2C_FIELD(p,s16 *,24)=0;M2C_FIELD(p,s16 *,26)=0;
 }
 
@@ -108,25 +108,28 @@ void ResolveUnitAttack(BattleUnit *a, BattleMapUnit **b, s32 distance, s32 isAgg
 }
 #pragma opt_propagation reset
 s32 func_020d0a08(M2C_UNK arg0,void *arg1) {
-s32 func_020a8204();
+s32 CanUnitUsePrimaryWeapon();
 s32 CalculateUnitDamage();
 u16 temp_r0,var_r6;
 var_r6=0;
-if(func_020a8204(arg0)!=0)var_r6=CalculateUnitDamage(arg0,(s32)D068CLow(arg1),0,(s32)D068CFlag(arg1));
+if(CanUnitUsePrimaryWeapon(arg0)!=0)var_r6=CalculateUnitDamage(arg0,(s32)D068CLow(arg1),0,(s32)D068CFlag(arg1));
 temp_r0=CalculateUnitDamage(arg0,(s32)D068CLow(arg1),1,(s32)D068CFlag(arg1));
 return var_r6!=0 || temp_r0!=0;
 }
 #pragma opt_common_subs reset
-s32 func_020d0a88(u8 *arg0,M2C_UNK arg1) {
+/* Whether `unit` can inflict damage on a target of `targetKind`: its primary
+ * weapon strikes (when the unit can fire it) or its secondary weapon has a
+ * nonzero damage percentage. */
+s32 CanUnitDamageKind(u8 *unit, M2C_UNK targetKind) {
  s32 GetDamageTargetIndex();
- s32 func_020a796c();
- s32 func_020a8204();
+ s32 GetKindWeaponDamagePercent();
+ s32 CanUnitUsePrimaryWeapon();
  s32 CalculateUnitDamage();
- u16 temp_r0,var_r4;
- var_r4=0;
- if(func_020a8204()!=0)var_r4=CalculateUnitDamage(arg0,GetDamageTargetIndex(arg1),0,0);
- temp_r0=func_020a796c((u32)(*arg0<<26)>>26,arg1,1);
- return var_r4!=0 || temp_r0!=0;
+ u16 secondaryPercent,primaryDamage;
+ primaryDamage=0;
+ if(CanUnitUsePrimaryWeapon(unit)!=0)primaryDamage=CalculateUnitDamage(unit,GetDamageTargetIndex(targetKind),0,0);
+ secondaryPercent=GetKindWeaponDamagePercent((u32)(*unit<<26)>>26,targetKind,1);
+ return primaryDamage!=0 || secondaryPercent!=0;
 }
 
 /* Applies one battle side's chosen weapon damage: scale its attack power by the
@@ -297,7 +300,7 @@ void func_020d1034(void *arg0) {
  * merge/counter pose (7) against transports (kinds 1-3) and the plain counter
  * pose (6) otherwise. */
 void func_020d1094(s32 participant, s32 opponent) {
-    void func_020b576c(void *);
+    void ExplodeUnit(void *);
     s32 func_020cd614(void);
     s32 func_020cd5d8(void);
     void func_020b5594(s32, s32, s32, s32);
@@ -307,7 +310,7 @@ void func_020d1094(s32 participant, s32 opponent) {
     M2C_FIELD(unit, u16 *, 6) = (M2C_FIELD(unit, u16 *, 6) & ~127) | (M2C_FIELD(participant, u16 *, 14) & 127);
     M2C_FIELD(unit, u16 *, 6) = (M2C_FIELD(unit, u16 *, 6) & ~0x780) | ((u32)(M2C_FIELD(participant, u16 *, 16) << 28) >> 21);
     if (M2C_FIELD(participant, s16 *, 14) <= 0) {
-        func_020b576c(unit);
+        ExplodeUnit(unit);
         return;
     }
     if (!opponent) return;

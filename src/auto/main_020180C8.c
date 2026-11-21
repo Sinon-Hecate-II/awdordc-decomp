@@ -178,7 +178,8 @@ s32 Mb_CopyImageRange(MbLoadQueue *queue, u32 offset, void *dest, s32 length) {
     return result;
 }
 
-void MbWorkerTask_Main(void *r7) {
+#pragma optimization_level 3
+void MbWorkerTask_Main(void *worker) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void SetThreadPriority(void *, s32);
@@ -186,61 +187,55 @@ void MbWorkerTask_Main(void *r7) {
     s32 GetThreadPriority(void *);
     void func_02005bbc(void);
 
-    s32 saved;
-    void *r4;
-    void (*r6)(void *);
+    void *task;
 
     while (1) {
-        saved = OS_DisableInterrupts();
-        if (*(void **)((u8 *)r7 + 0xc0) == (void *)0) {
+        s32 saved = OS_DisableInterrupts();
+        if (M2C_FIELD(worker, void *volatile *, 0xC0) == (void *)0) {
             do {
-                r6 = (void (*)(void *))0;
-                r4 = (void *)0;
-                SetThreadPriority(r7, 0);
+                SetThreadPriority(worker, 0);
                 OS_SleepThread(0);
-            } while (*(void **)((u8 *)r7 + 0xc0) == (void *)0);
+            } while (M2C_FIELD(worker, void *volatile *, 0xC0) == (void *)0);
         }
-        r4 = *(void **)((u8 *)r7 + 0xc0);
-        *(void **)((u8 *)r7 + 0xc0) = *(void **)((u8 *)r4 + 0x0);
-        SetThreadPriority(r7, (s32)(*(unsigned int *)((u8 *)r4 + 0x4) >> 1));
+        task = M2C_FIELD(worker, void *volatile *, 0xC0);
+        M2C_FIELD(worker, void *volatile *, 0xC0) = M2C_FIELD(M2C_FIELD(worker, void *volatile *, 0xC0), void **, 0);
+        SetThreadPriority(worker, (s32)(*(unsigned int *)((u8 *)task + 0x4) >> 1));
         OS_RestoreInterrupts(saved);
-        if (*(void **)((u8 *)r4 + 0x8) != (void *)0) {
-            ((void (*)(void *))(*(void **)((u8 *)r4 + 0x8)))(r4);
+        if (*(void **)((u8 *)task + 0x8) != (void *)0) {
+            ((void (*)(void *))(*(void **)((u8 *)task + 0x8)))(task);
         }
-        saved = OS_DisableInterrupts();
-        r6 = (void (*)(void *))(*(void **)((u8 *)r4 + 0xc));
         {
-            s32 val = GetThreadPriority(r7);
-            s32 adj;
-            void *p = *(void **)((u8 *)r7 + 0xc0);
-            if (p == (void *)0) {
-                adj = 0;
-            } else {
-                unsigned int half = *(unsigned int *)((u8 *)p + 0x4) >> 1;
-                if ((unsigned int)val < half) {
-                    adj = (s32)half;
+            s32 completionState = OS_DisableInterrupts();
+            void (*onComplete)(void *) = (void (*)(void *))(*(void **)((u8 *)task + 0xc));
+            {
+                s32 currentPriority = GetThreadPriority(worker);
+                s32 nextPriority;
+                if (M2C_FIELD(worker, void *volatile *, 0xC0) == 0) {
+                    nextPriority = 0;
+                } else if ((u32)currentPriority >= (M2C_FIELD(M2C_FIELD(worker, void *volatile *, 0xC0), u32 *, 4) >> 1)) {
+                    nextPriority = currentPriority;
                 } else {
-                    adj = val;
+                    nextPriority = M2C_FIELD(M2C_FIELD(worker, void *volatile *, 0xC0), u32 *, 4) >> 1;
+                }
+                if (nextPriority != currentPriority) {
+                    SetThreadPriority(worker, nextPriority);
                 }
             }
-            if (adj != val) {
-                SetThreadPriority(r7, adj);
+            *(void **)((u8 *)task + 0x0) = (void *)0;
+            *(unsigned int *)((u8 *)task + 0x4) = *(unsigned int *)((u8 *)task + 0x4) & ~1u;
+            if (onComplete != (void (*)(void *))0) {
+                onComplete(task);
             }
+            if (task != (void *)((u8 *)worker + 0xc4)) {
+                OS_RestoreInterrupts(completionState);
+                continue;
+            }
+            func_02005bbc();
+            return;
         }
-        *(void **)((u8 *)r4 + 0x0) = (void *)0;
-        *(unsigned int *)((u8 *)r4 + 0x4) = *(unsigned int *)((u8 *)r4 + 0x4) & ~1u;
-        if (r6 != (void (*)(void *))0) {
-            r6(r4);
-        }
-        if (r4 != (void *)((u8 *)r7 + 0xc4)) {
-            OS_RestoreInterrupts(saved);
-            continue;
-        }
-        func_02005bbc();
-        return;
     }
 }
-
+#pragma optimization_level reset
 /* Start the multiboot worker thread on `task`, once: remember it as the current
  * worker, empty its own job record, give it the rest of the work area as its
  * stack and wake it. */
@@ -680,7 +675,7 @@ void Mb_SetBootMode(s32 arg0) {
  * handler, send the boot parameters, then swap in the boot-complete handler,
  * start the multiboot task and register the channel-17 ready handler. */
 void Mb_BootInit(void) {
-    M2C_UNK func_02009d34();
+    M2C_UNK PXI_Init();
     s32 SetFifoMessageHandler(s32, M2C_UNK *);
     s32 IsFifoMessageReady(s32, s32);
     void Mb_InitBootState(void);
@@ -698,7 +693,7 @@ void Mb_BootInit(void) {
     gMbBootState.initialised = 1;
     Mb_InitBootState();
     gMbBootState.complete = 0;
-    func_02009d34();
+    PXI_Init();
     do {
 
     } while (IsFifoMessageReady(0xD, 1) == 0);

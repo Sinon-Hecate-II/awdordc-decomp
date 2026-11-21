@@ -1,5 +1,6 @@
 /* 2 functions from 0x02016934 to 0x02017158 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc_channel.h"
 typedef struct DispatchCtx169 { u8 pad0[0x40]; u8 buffer[0x4c4]; u32 value; u8 pad508[0x10]; u16 a; u16 b; u8 pad51c[0x10]; u16 flag; } DispatchCtx169;
 typedef struct DispatchWork169 { u8 pad[0x131c]; u32 active; u8 pad1320[0x1c8]; u32 entries[15]; } DispatchWork169;
 extern M2C_UNK gMbState;
@@ -82,22 +83,25 @@ default:M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25
 }
 #pragma opt_strength_reduction reset
 #pragma opt_propagation reset
-void func_020170e8(void *arg0) {
+/* Multiboot channel completion callback: drop an event whose result is nonzero,
+ * ignore the join/leave and send-completion commands, and forward a completed
+ * receive (command 21) to the manager's message callback as message 9. */
+void HandleMbChannelEvent(void *event) {
     extern M2C_UNK gMbState;
-    u16 temp_r0;
+    u16 command;
 
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, WFC_EVENT_RESULT) != 0) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, u16 *, 4);
-    switch ((s32) temp_r0) {
+    command = M2C_FIELD(event, u16 *, WFC_EVENT_COMMAND);
+    switch ((s32) command) {
     case 7:
     case 9:
     case 25:
     case 26:
         break;
     case 21:
-        M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), void (**)(s32, void *), 0x51C)(9, arg0);
+        M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), void (**)(s32, void *), 0x51C)(9, event);
         break;
     }
 }

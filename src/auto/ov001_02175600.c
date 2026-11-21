@@ -6,7 +6,7 @@ extern struct { u8 state; u8 pad[3]; void *ptr; } gOv001WirelessSetup;
 
 typedef struct { s32 x; u32 y; } Position;
 
-void func_ov001_02175600(int arg0) {
+void Ov001_KeypadCloseDone(int arg0) {
 extern void *gOv001Keypad;
 int i; unsigned int *ptr;
 Ov001_PostTaskMessage(0,arg0);

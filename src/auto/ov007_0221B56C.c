@@ -1,6 +1,7 @@
 /* 24 functions from 0x0221B56C to 0x0221C534 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 
 typedef struct { u8 pad[11]; u8 low : 4; u8 high : 4; } Unk_0221BC18;
 
@@ -58,22 +59,27 @@ s32 Map_GetCellTerrainOwner(s32 a,s32 b) {
  return 0;
 }
 
-s32 Map_IsWastelandTile(s32 arg0, s32 arg1) {
-    extern s32 *data_027e0058;
-    s32 p;
-    u16 t;
-    if (arg0 < 0 || arg1 < 0) {
-        goto ret0;
+/* Whether the map generator treats cell (x, y) as wasteland: the barren ground
+ * a destroyed property leaves behind.  Tiles of every terrain tileset that show
+ * such ground count as wasteland, and so does every cell off the map, so the
+ * generator never grows terrain into the border. */
+s32 Map_IsWastelandTile(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 map;
+    u16 tile;
+    if (x < 0 || y < 0) {
+        goto off_map;
     }
-    p = *data_027e0058;
-    if (arg0 < M2C_FIELD(p, u16 *, 0x5144) && arg1 < M2C_FIELD(p, u16 *, 0x5146)) {
-        goto in_bounds;
+    map = *gCurrentMap;
+    if (x < M2C_FIELD(map, u16 *, MAP_WIDTH) && y < M2C_FIELD(map, u16 *, MAP_HEIGHT)) {
+        goto on_map;
     }
+off_map:
     return 1;
-in_bounds:
-    t = M2C_FIELD(p + (arg0 + M2C_FIELD(p + arg1 * 2, u16 *, 0x3758)) * 2, u16 *, 0xA10);
-    switch (t) {
-        case 0x3:
+on_map:
+    tile = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)) * 2, u16 *, MAP_CELL_TILE_ID);
+    switch (tile) {
+        case 0x3:   /* wasteland and rubble tiles of the tilesets */
         case 0x7:
         case 0x22:
         case 0x24:
@@ -81,11 +87,8 @@ in_bounds:
         case 0x146:
         case 0x166:
         case 0x168:
-        case 0x199:
-        case 0x19A:
-        case 0x19B:
-        case 0x19C:
-        case 0x19D:
+        /* unowned, neutral and owned-destroyed property ruins */
+        case 0x199: case 0x19A: case 0x19B: case 0x19C: case 0x19D:
         case 0x1C4:
         case 0x1C9:
         case 0x1CE:
@@ -93,10 +96,8 @@ in_bounds:
         case 0x1D8:
             return 1;
         default:
-            goto ret0;
+            return 0;
     }
-ret0:
-    return 0;
 }
 
 /* Returns 1 if the map cell (x, y) holds a property tile -- a capturable
@@ -139,16 +140,18 @@ fail:
     return 0;
 }
 
-s32 func_ov007_0221bad0(s32 a,s32 b) {
- extern s32 *gCurrentMap; s32 p; u16 v;
- if(a<0||b<0)goto fail;
- p=*gCurrentMap;
- if(a>=M2C_FIELD(p,u16 *,0x5144)||b>=M2C_FIELD(p,u16 *,0x5146))goto fail;
+/* Map editor: whether the tile at (x, y) is one of the river/bridge tiles
+ * (0x23, 0x25) that the bridge brush (terrain kinds 13/14) may be painted over. */
+s32 Map_IsBridgeableTile(s32 x,s32 y) {
+ extern s32 *gCurrentMap; s32 map; u16 tile;
+ if(x<0||y<0)goto fail;
+ map=*gCurrentMap;
+ if(x>=M2C_FIELD(map,u16 *,MAP_WIDTH)||y>=M2C_FIELD(map,u16 *,MAP_HEIGHT))goto fail;
  goto valid;
  fail:return 0;
  valid:
- v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758))*2,u16 *,0xA10);
- switch(v) { case 0x23: case 0x25: return 1; default: return 0; }
+ tile=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS))*2,u16 *,MAP_CELL_TILE_ID);
+ switch(tile) { case 0x23: case 0x25: return 1; default: return 0; }
 }
 
 /* Check whether the map editor's current unit brush may be placed on cell (x, y):
@@ -198,12 +201,17 @@ s32 MapEditor_DestroyUnitAt(s32 a,s32 b) {
  DestroyUnit(id); return 1;
 }
 
-u8 Map_CanUnitKindStandOnCell(s32 a,s32 b,s32 c) {
- extern s32 *gCurrentMap;
- extern u8 gMovementCostTable[];
- extern u8 gMovementTypeTable[];
- s32 p=*gCurrentMap;
- return M2C_FIELD(M2C_FIELD(gMovementCostTable,s8 **,0x64)+gMovementTypeTable[c*0x70]*32,s8 *,M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=-1;
+/* True when a unit of `unitKind` may stand on the cell at (x, y): the terrain
+ * cost the kind's movement type gives that cell's terrain kind is not -1. */
+u8 Map_CanUnitKindStandOnCell(s32 x, s32 y, s32 unitKind) {
+    extern s32 *gCurrentMap;
+    extern u8 gMovementCostTable[];
+    extern u8 gMovementTypeTable[];
+    s32 map = *gCurrentMap;
+
+    return M2C_FIELD(M2C_FIELD(gMovementCostTable, s8 **, ARMY_DATA_MOVE_COSTS) +
+                     gMovementTypeTable[unitKind * UNIT_KIND_STATS_SIZE] * 32, s8 *,
+                     M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) != -1;
 }
 
 s32 MapEditor_GetUnitKindAt(s32 a,s32 b) {

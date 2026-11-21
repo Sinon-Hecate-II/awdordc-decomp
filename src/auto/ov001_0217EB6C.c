@@ -368,7 +368,7 @@ s32 IsCurrentSaveSlotValid(void) {
     return 1;
 }
 
-void func_ov001_0217f6cc(void){s32 func_ov001_02186648(void);M2C_UNK Ov001_PlaySound(s32);M2C_UNK func_ov001_02186604();M2C_UNK func_ov001_0218384c(s32);extern M2C_UNK gMapListState;extern M2C_UNK func_ov001_0217f70c;if(func_ov001_02186648())return;Ov001_PlaySound(6);func_ov001_02186604();func_ov001_0218384c(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,12));Ov001_SetStepCallback(&func_ov001_0217f70c);}
+void func_ov001_0217f6cc(void){s32 Ov001_GetRegionMenuSelection(void);M2C_UNK Ov001_PlaySound(s32);M2C_UNK Ov001_CloseRegionMenu();M2C_UNK func_ov001_0218384c(s32);extern M2C_UNK gMapListState;extern M2C_UNK func_ov001_0217f70c;if(Ov001_GetRegionMenuSelection())return;Ov001_PlaySound(6);Ov001_CloseRegionMenu();func_ov001_0218384c(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,12));Ov001_SetStepCallback(&func_ov001_0217f70c);}
 
 void func_ov001_0217f70c(void) {
     s32 Ov001_IsRegionMenuActive();
@@ -568,9 +568,9 @@ void func_ov001_0217fb48(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_0217fb68;
+    extern M2C_UNK Ov001_BeginOptionScreenExit;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_0217fb68);
+    Ov001_SetStepCallback(&Ov001_BeginOptionScreenExit);
 }
 

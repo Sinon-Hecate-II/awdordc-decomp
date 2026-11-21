@@ -41,7 +41,7 @@ void ClearTileRect(void *,int,int);
 void func_ov000_0216a30c(int,int,int);
 void DrawTextLine(int,int,int,void *,int,int);
 void DrawNumber(int,int,int,int,int,int);
-u64 func_020c53e4(int);
+u64 GetOwnFriendCode(int);
 extern u8 data_ov006_022186ec[],data_ov006_022186f8[],data_ov006_02218704[],data_ov006_02218710[],data_ov006_02218718[],data_ov006_02218720[];
 void func_ov006_02212184(void *arg0) {
 u8 *p=arg0,*save,*engine,*item;
@@ -188,7 +188,7 @@ DrawTextLine(20,21,1,data_ov006_02218718,0x7000,(u16)(tile+16));
 DrawTextLine(26,21,1,data_ov006_02218720,0x7000,(u16)(tile+24));
 }
 gCur3DSpriteEngine[70]|=2;
-id=func_020c53e4(0);
+id=GetOwnFriendCode(0);
 if(id) {
 FormatMapCodeString(digits,id);
 engine=M2C_FIELD(p,u8 **,0x44);engine[40]&=~0xe0;

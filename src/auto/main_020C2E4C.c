@@ -276,25 +276,29 @@ s32 func_020c3360(s32 arg0) {
     return arg0;
 }
 
-void *func_020c3374(void *arg0) {
+/* Release an occupation cut-in effect's sub-objects (CO data, panel sprite,
+ * two sprite effects and palette) and reset its vtable, without freeing the
+ * effect object itself.  Returns the effect. */
+void *DestroyOccupationEffect(void *arg0) {
     M2C_UNK MemFree();
     M2C_UNK HeapFreeBlock();
     extern M2C_UNK gOccupationEffectVTable;
+    OccupationEffect *effect = arg0;
     void *p;
-    M2C_FIELD(arg0, void **, 0) = &gOccupationEffectVTable;
-    p = M2C_FIELD(arg0, void **, 0x40);
+    M2C_FIELD(effect, void **, 0) = &gOccupationEffectVTable;
+    p = effect->co;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x3C);
+    p = effect->sprite;
     if (p != NULL) {
         M2C_FIELD(M2C_FIELD(p, void **, 0), void (**)(void *), 4)(p);
     }
-    p = M2C_FIELD(arg0, void **, 0x44);
+    p = effect->spriteA;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x48);
+    p = effect->spriteB;
     if (p != NULL) MemFree(p);
-    p = M2C_FIELD(arg0, void **, 0x4C);
+    p = effect->palette;
     if (p != NULL) HeapFreeBlock(p);
-    
+
     return arg0;
 }
 

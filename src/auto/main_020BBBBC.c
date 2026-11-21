@@ -3,23 +3,24 @@
 #include "battle_map.h"
 static inline s16 BC454Direction(s16 *p,s32 dir) { return p[dir*2]; }
 
-void func_020bbbbc(s16 arg0, s16 arg1, s32 arg2, s32 arg3, s32 arg4) {
+void CreateAttackTargetEffect(s16 targetX, s16 targetY, s32 sourceX, s32 sourceY, s32 owner) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
     extern M2C_UNK data_0212b00c;
-    void *temp_r0;
+    void *effect;
 
-    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    /* Count human attack actions, then create the target marker and aim its effect at the selected tile. */
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         AddRecordValue(0xD, 1);
     }
-    temp_r0 = CreateSpriteForOwner(&data_0212b00c, arg4);
-    M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg3;
-    M2C_FIELD(temp_r0, s16 *, 0x52) = 0x1E;
+    effect = CreateSpriteForOwner(&data_0212b00c, owner);
+    M2C_FIELD(effect, s16 *, 0x6C) = targetX;
+    M2C_FIELD(effect, s16 *, 0x6E) = targetY;
+    M2C_FIELD(effect, s32 *, 0x34) = sourceX;
+    M2C_FIELD(effect, s32 *, 0x38) = sourceY;
+    M2C_FIELD(effect, s16 *, 0x52) = 0x1E;
 }
 
 void func_020bbc2c(M2C_UNK arg0) {
@@ -36,27 +37,30 @@ void func_020bbc2c(M2C_UNK arg0) {
     RefreshMapView();
 }
 
-void func_020bbc74(void *arg0) {
+/* Unit-move task start: build the straight path from the task's unit to the
+ * task's target tile, begin its move sprite, then move the unit record along the
+ * path and mark the move-range tiles the path crosses. */
+void StartUnitMoveToTile(void *task) {
     M2C_UNK BuildMovePath(M2C_UNK *, s32, s32, M2C_UNK *);
-    M2C_UNK func_020a8050(M2C_UNK *, s16 *, s16 *, M2C_UNK *);
-    M2C_UNK func_020a83e4(M2C_UNK *, M2C_UNK *);
+    M2C_UNK MarkUnitMovePath(M2C_UNK *, s16 *, s16 *, M2C_UNK *);
+    M2C_UNK ApplyMovePath(M2C_UNK *, M2C_UNK *);
     M2C_UNK CreateUnitMoveForUnit(M2C_UNK *);
     M2C_UNK BeginUnitMove(M2C_UNK *);
-    s16 arr1[2];
-    s16 arr0[2];
-    M2C_UNK buf[5];
-    M2C_UNK *temp_r4;
+    s16 from[2];
+    s16 to[2];
+    M2C_UNK path[5];
+    M2C_UNK *unit;
 
-    temp_r4 = M2C_FIELD(arg0, M2C_UNK **, 0x54);
-    BuildMovePath(temp_r4, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), buf);
-    CreateUnitMoveForUnit(temp_r4);
-    BeginUnitMove(buf);
-    arr1[0] = M2C_FIELD(temp_r4, u8 *, 1);
-    arr1[1] = M2C_FIELD(temp_r4, u8 *, 2);
-    func_020a83e4(temp_r4, buf);
-    arr0[0] = M2C_FIELD(temp_r4, u8 *, 1);
-    arr0[1] = M2C_FIELD(temp_r4, u8 *, 2);
-    func_020a8050(temp_r4, arr1, arr0, buf);
+    unit = M2C_FIELD(task, M2C_UNK **, 0x54);
+    BuildMovePath(unit, M2C_FIELD(task, s32 *, 0x34), M2C_FIELD(task, s32 *, 0x38), path);
+    CreateUnitMoveForUnit(unit);
+    BeginUnitMove(path);
+    from[0] = M2C_FIELD(unit, u8 *, 1);
+    from[1] = M2C_FIELD(unit, u8 *, 2);
+    ApplyMovePath(unit, path);
+    to[0] = M2C_FIELD(unit, u8 *, 1);
+    to[1] = M2C_FIELD(unit, u8 *, 2);
+    MarkUnitMovePath(unit, from, to, path);
 }
 
 /* Create the marker sprite for the adjacent unit the map-cursor option in
@@ -88,15 +92,19 @@ void func_020bbd8c(void) {
     func_020cab8c();
 }
 
-void func_020bbd98(void) {
- extern s32 *gCurrentMap;
- void *p;u16 v,n;
- func_020c79c4();
- p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
- v=M2C_FIELD(p,u16 *,6);
- n=(u16)(((u32)(v<<21)>>28)+65535);
- M2C_FIELD(p,u16 *,6)=(v&~0x780)|((n&15)<<7);
- if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)))AddRecordValue(36,1);
+/* AI ammo action: create the action's effect sprite (func_020c79c4 takes the
+ * caller's target x/y from its registers), then spend one point of the cursor
+ * unit's ammo, counting a record entry when a human player is acting. */
+void AiDecrementUnitAmmo(void) {
+    extern s32 *gCurrentMap;
+    BattleMapUnit *unit;
+    u16 ammo,left;
+    func_020c79c4();
+    unit=M2C_FIELD(*gCurrentMap,BattleMapUnit **,MAP_CURSOR_UNIT);
+    ammo=M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO);
+    left=(u16)(((u32)(ammo<<21)>>28)+65535);
+    M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)=(ammo&~MAP_UNIT_AMMO_MASK)|((left&15)<<MAP_UNIT_AMMO_SHIFT);
+    if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)))AddRecordValue(36,1);
 }
 
 /* Begin acting with the cursor unit: show its tile's action effect, make it the

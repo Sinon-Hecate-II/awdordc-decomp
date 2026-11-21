@@ -1,5 +1,6 @@
 /* 8 functions from 0x02217C80 to 0x02218AD0 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ov007_map_editor.h"
 typedef struct MenuPosition { s8 kind; u8 x, y, unk3, unk4; } MenuPosition;
 typedef struct MenuList007 { s32 first, second; s8 a,b,c,d,e; u8 alpha, flag, alpha2; u16 count; u8 flag2, pad; void *buffer; u8 rest[12]; } MenuList007;
@@ -157,7 +158,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02089424();
     void *func_020896f0(void *);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
@@ -241,7 +242,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_FIELD(arg0, volatile s32 *, 0x5C) = 0;
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020a9a30(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
+    LoadSpriteResource(0, 2, 0x47, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x30) + 0x260);
     M2C_FIELD(arg0, void **, 0x44) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x44), 0, 0x35C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x44);
@@ -518,25 +519,27 @@ void func_ov007_0221863c(void *arg0) {
     gCur3DSpriteEngine=savedEngine;
 }
 #pragma opt_propagation reset
-void func_ov007_02218a60(void *arg0) {
+/* Free the palette panel's two list objects (each frees its heap buffer first)
+ * and re-apply the map's weather effects behind the closed panel. */
+void MapEditor_FreePaletteLists(void *panel) {
     M2C_UNK MemFree(void *);
     M2C_UNK ApplyWeatherEffects(u8);
     M2C_UNK HeapFreeBlock(s32);
     extern void **gCurrentMap;
-    void *temp_r4;
-    void *temp_r4_2;
+    void *entryList;
+    void *markerList;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x58);
-    if (temp_r4 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
-        MemFree(temp_r4);
+    entryList = M2C_FIELD(panel, void **, MAP_EDITOR_PANEL_ENTRY_LIST);
+    if (entryList != NULL) {
+        HeapFreeBlock(M2C_FIELD(entryList, s32 *, 0x14));
+        MemFree(entryList);
     }
-    M2C_FIELD(arg0, void **, 0x58) = NULL;
-    temp_r4_2 = M2C_FIELD(arg0, void **, 0x5C);
-    if (temp_r4_2 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4_2, s32 *, 0x14));
-        MemFree(temp_r4_2);
+    M2C_FIELD(panel, void **, MAP_EDITOR_PANEL_ENTRY_LIST) = NULL;
+    markerList = M2C_FIELD(panel, void **, MAP_EDITOR_PANEL_MARKER_LIST);
+    if (markerList != NULL) {
+        HeapFreeBlock(M2C_FIELD(markerList, s32 *, 0x14));
+        MemFree(markerList);
     }
-    M2C_FIELD(arg0, void **, 0x5C) = NULL;
-    ApplyWeatherEffects(M2C_FIELD(*gCurrentMap, u8 *, 0x5158));
+    M2C_FIELD(panel, void **, MAP_EDITOR_PANEL_MARKER_LIST) = NULL;
+    ApplyWeatherEffects(M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER));
 }

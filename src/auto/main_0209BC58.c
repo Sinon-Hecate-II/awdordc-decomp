@@ -1,5 +1,6 @@
 /* 34 functions from 0x0209BC58 to 0x0209CC04 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct { s16 value; s8 mode; u8 low:4; u8 high:4; } SpriteAttribute0209;
 typedef struct SpriteStateWord {
     u32 state : 3;
@@ -16,16 +17,20 @@ extern u8 gCarriedUnitIconTable[256];
 extern s32 data_0215d8a8[58];  // 232 bytes / 4
 extern s32 gSaveSlotSummary[2];   // 8 bytes / 4
 
-void func_0209bc58(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
+/* Draw one line of the text script `text` into the current screen engine's shared
+ * default text object (see DS3D_ENGINE_TEXT_STATE) at cell (x, y), with glyph
+ * palette `palette`, the layer's VRAM and tile addresses and the cell attributes,
+ * then create the sprite that renders the object. */
+void DrawScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, s32 layerVram, s32 layerTiles, s32 text, u16 attr, u16 tile) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK StopTextObject(s32);
     M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103300;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r4;
-    temp_r4 = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x54);
-    func_0209bdcc(temp_r4, arg0, arg1, arg2, arg3, arg4, arg5, (s32)arg6, (s32)arg7);
-    StopTextObject(temp_r4);
+    s32 textObject;
+    textObject = M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXT_STATE);
+    func_0209bdcc(textObject, x, y, palette, layerVram, layerTiles, text, (s32)attr, (s32)tile);
+    StopTextObject(textObject);
     CreateSpriteFromClass(&data_02103300, 7);
 }
 
@@ -164,26 +169,28 @@ s32 func_0209953c(s32,s32,s32,s32,u16,u16);
 func_0209953c(a,b,c,d,e,f);
 }
 
-void DrawTilemapNumber(s32 arg0, s32 arg1, s32 arg2, u32 arg3, u16 arg4, u16 arg5) {
-    u32 var_r3;
-    u16 var_r1;
-    s16 *var_r0;
+/* Writes an unsigned decimal number right to left from (rightX, y), using two tiles per digit. */
+void DrawTilemapNumber(s32 rightX, s32 y, s32 tiles, u32 value, u16 attrs, u16 variant) {
+    u32 remaining;
+    u16 firstTile;
+    s16 *entry;
 
-    var_r3 = arg3;
-    var_r0 = (s16 *)(arg2 + (arg0 * 2) + (arg1 << 6));
-    var_r1 = 0x10;
-    if (arg5 == 3) {
-        var_r1 += 0x1C;
+    remaining = value;
+    entry = (s16 *)(tiles + (rightX * 2) + (y << TILEMAP_GLYPH_ROW_SHIFT));
+    firstTile = TILEMAP_DIGIT_FIRST_TILE;
+    if (variant == TILEMAP_GLYPH_ALT_VARIANT) {
+        firstTile += TILEMAP_GLYPH_ALT_TILE_OFFSET;
     }
     do {
-        u32 rem;
+        u32 digit;
 
-        rem = var_r3 % 10;
-        *var_r0 = (s16)(arg4 | (var_r1 + (rem * 2)));
-        *(s16 *)((u8 *)var_r0 + 0x40) = (s16)(arg4 | ((var_r1 + (rem * 2)) + 1));
-        var_r0 = (s16 *)((u8 *)var_r0 - 2);
-        var_r3 = var_r3 / 10;
-    } while (var_r3 != 0);
+        digit = remaining % 10;
+        *entry = (s16)(attrs | (firstTile + (digit * 2)));
+        *(s16 *)((u8 *)entry + TILEMAP_GLYPH_ROW_BYTES) =
+            (s16)(attrs | ((firstTile + (digit * 2)) + 1));
+        entry = (s16 *)((u8 *)entry - 2);
+        remaining = remaining / 10;
+    } while (remaining != 0);
 }
 
 /* Write one symbol of the number font (a plus, minus, decimal point or comma
@@ -590,7 +597,7 @@ void func_0209c8d4(void) {
     M2C_UNK func_02086844(u16, M2C_UNK);
     M2C_UNK func_02086878(u16, M2C_UNK);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    s32 GetRatingRank();
+    s32 GetRatingRank(s32);
     M2C_UNK func_020bf814(u16);
     s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
@@ -603,18 +610,12 @@ void func_0209c8d4(void) {
     extern s32 data_0215d8a8[58];
     extern u16 gMapConfig;
     extern void **data_027e0058;
-    s32 temp_r0;
-    s32 temp_r0_2;
     s32 temp_r0_3;
-    s32 temp_r3;
-    s32 temp_r5;
-    s32 temp_r9;
     s32 var_r0;
-    s32 var_r0_2;
     s32 var_r5;
     s32 var_r7;
+    s32 temp_r9;
     u16 temp_r8;
-    u32 temp_r3_2;
     u32 var_r1;
     u8 temp_r11;
 
@@ -647,29 +648,29 @@ void func_0209c8d4(void) {
                 break;
             }
             if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
-                temp_r5 = data_0215d8a8[temp_r9];
-                if ((u32) M2C_FIELD(&gCoState, u16 *, 6) >= (u32) ((u32) (temp_r5 << 6) >> 0x17)) {
-                    temp_r3 = (((temp_r5 & ~0x78) | ((u32) (*(s32 *)((u8 *)&gCoPlayerSlots + (temp_r11 * 0xC)) << 0x1C) >> 0x19)) & 0xFC01FFFF) | ((u32) (M2C_FIELD(&gCoState, u16 *, 6) << 0x17) >> 6);
-                    data_0215d8a8[temp_r9] = temp_r3;
-                    temp_r3_2 = (temp_r3 & 0xFFFE007F) | ((u32) (M2C_FIELD(*data_027e0058, u16 *, 0x52A2) << 0x16) >> 0xF);
-                    data_0215d8a8[temp_r9] = (temp_r3_2 & ~0x1C000000) | ((u32) ((temp_r3_2 >> 0x1D) << 0x1D) >> 3);
-                    data_0215d8a8[temp_r9] = (data_0215d8a8[temp_r9] & ~0xE0000000) | (GetRatingRank() << 0x1D);
+                SpriteStateWord *records = (SpriteStateWord *)data_0215d8a8;
+                {
+                    u16 score = M2C_FIELD(&gCoState, u16 *, 6);
+                    if (score >= records[temp_r9].field17) {
+                        records[temp_r9].field3 = M2C_FIELD(&gCoPlayerSlots, u16 *, temp_r11 * CO_SLOT_STRIDE);
+                        records[temp_r9].field17 = score;
+                        records[temp_r9].field7 = M2C_FIELD(*data_027e0058, u16 *, 0x52A2);
+                        records[temp_r9].field26 = records[temp_r9].field29;
+                        records[temp_r9].field29 = GetRatingRank(score);
+                    }
+                    if (records[temp_r9].state < 3) {
+                        records[temp_r9].state = 3;
+                    } else {
+                        records[temp_r9].state = 4;
+                    }
                 }
-                temp_r0 = data_0215d8a8[temp_r9];
-                temp_r0_2 = temp_r0 & ~7;
-                if ((u32) ((u32) (temp_r0 << 0x1D) >> 0x1D) < 3U) {
-                    var_r0_2 = temp_r0_2 | 3;
-                } else {
-                    var_r0_2 = temp_r0_2 | 4;
-                }
-                data_0215d8a8[temp_r9] = var_r0_2;
                 func_020bf814(temp_r8);
                 if (func_020e4b54() != 0) {
                     var_r1 = (u32) (gSaveSlotSummary[0] << 8) >> 0x18;
                     if ((s32) var_r1 < 0xFF) {
                         var_r1 += 1;
                     }
-                    gSaveSlotSummary[0] = (gSaveSlotSummary[0] & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
+                    gSaveSlotSummary[0] = (*(volatile s32 *)gSaveSlotSummary & ~0xFF0000) | ((u32) (var_r1 << 0x18) >> 8);
                 }
                 switch (M2C_FIELD(&gCoState, u8 *, 3)) { /* switch 2 */
                 default:                            /* switch 2 */

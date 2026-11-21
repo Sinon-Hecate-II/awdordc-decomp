@@ -84,20 +84,20 @@ void func_0200ee28(M2C_UNK arg0) {
 }
 #pragma scheduling reset
 /* Unlinks a node from the global list rooted at data_0212fcd8. */
-void func_0200ee40(M2C_UNK node) {
+void PM_DeletePreSleepCallback(M2C_UNK node) {
     extern M2C_UNK data_0212fcd8;
     void (*unlinkNode)(M2C_UNK *, M2C_UNK) = func_0200eda0;
     unlinkNode(&data_0212fcd8, node);
 }
 #pragma peephole reset
 #pragma scheduling reset
-void func_0200ee58(M2C_UNK arg0) {
+void PM_DeletePostSleepCallback(M2C_UNK arg0) {
     void func_0200eda0(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212fce0;
     func_0200eda0(&data_0212fce0, arg0);
 }
-void func_0200ee70(void) {
-    M2C_UNK func_02009d34();
+void RTC_Init(void) {
+    M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK gRtcState;
@@ -111,76 +111,83 @@ void func_0200ee70(void) {
     M2C_FIELD(&gRtcState, s32 *, 0x20) = 0;
     M2C_FIELD(&gRtcState, s32 *, 0xC) = 0;
     M2C_FIELD(&gRtcState, s32 *, 0x10) = 0;
-    func_02009d34();
+    PXI_Init();
     do {
     } while (IsFifoMessageReady(4 + 1, 1) == 0);
     SetFifoMessageHandler(2 + 3, &func_0200f0e4);
 }
 
-s32 func_0200eedc(s32 arg0, s32 arg1, s32 arg2) {
+/* Start an RTC read of the current date (request kind 0): refuses while another
+ * request is in flight, marks the state busy, then stores the date result record,
+ * the completion callback and its argument and queues the RTC's read-date command.
+ * Returns 1 when busy, 0 once queued and 3 when it cannot be sent. */
+s32 StartRtcDateRead(s32 dateOut, s32 callback, s32 callbackArg) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gRtcState;
-    s32 func_0200f6dc(void);
-    s32 state;
-    state = OS_DisableInterrupts();
-    if (M2C_FIELD(&gRtcState, s32 *, 4) != 0) {
-        OS_RestoreInterrupts(state);
+    s32 interruptState;
+
+    interruptState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) != 0) {
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    M2C_FIELD(&gRtcState, s32 *, 4) = 1;
-    OS_RestoreInterrupts(state);
-    M2C_FIELD(&gRtcState, s32 *, 0x18) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0x1C) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0xC) = arg0;
-    M2C_FIELD(&gRtcState, s32 *, 8) = arg1;
-    M2C_FIELD(&gRtcState, s32 *, 0x14) = arg2;
-    if (func_0200f6dc() != 0) {
-        return 0;
-    }
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) = 1;
+    OS_RestoreInterrupts(interruptState);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_KIND) = RTC_KIND_DATE;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_STEP) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT0) = dateOut;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK) = callback;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK_ARG) = callbackArg;
+    if (SendRtcReadDateCommand() != 0) return 0;
     return 3;
 }
 
 s32 GetRtcDate(s32 arg0) {
-    s32 func_0200eedc(s32, s32, s32);
+    s32 StartRtcDateRead(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
     extern M2C_UNK gRtcState;
     s32 result;
-    result = func_0200eedc(arg0, (s32)func_0200f6a4, 0);
+    result = StartRtcDateRead(arg0, (s32)func_0200f6a4, 0);
     M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
     if (result == 0) func_0200f6b4();
     return M2C_FIELD(&gRtcState, s32 *, 0x24);
 }
 
-s32 func_0200ef84(s32 arg0, s32 arg1, s32 arg2) {
+/* Starts an RTC read of the current time (request kind 1): refuses while another
+ * request is in flight, marks the state busy, then stores the time result record,
+ * the completion callback and its argument and queues the RTC's read-time
+ * command. Returns 1 when busy, 0 once queued and 3 when it cannot be sent. */
+s32 StartRtcTimeRead(s32 timeOut, s32 callback, s32 callbackArg) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gRtcState;
-    s32 state;
-    state = OS_DisableInterrupts();
-    if (M2C_FIELD(&gRtcState, s32 *, 4) != 0) {
-        OS_RestoreInterrupts(state);
+    s32 interruptState;
+
+    interruptState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) != 0) {
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    M2C_FIELD(&gRtcState, s32 *, 4) = 1;
-    OS_RestoreInterrupts(state);
-    M2C_FIELD(&gRtcState, s32 *, 0x18) = 1;
-    M2C_FIELD(&gRtcState, s32 *, 0x1C) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0xC) = arg0;
-    M2C_FIELD(&gRtcState, s32 *, 8) = arg1;
-    M2C_FIELD(&gRtcState, s32 *, 0x14) = arg2;
-    if (func_0200f6ec() != 0) return 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) = 1;
+    OS_RestoreInterrupts(interruptState);
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_KIND) = RTC_KIND_TIME;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_STEP) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT0) = timeOut;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK) = callback;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK_ARG) = callbackArg;
+    if (SendRtcReadTimeCommand() != 0) return 0;
     return 3;
 }
 #pragma opt_common_subs reset
 s32 GetRtcTime(s32 arg0) {
-    s32 func_0200ef84(s32, s32, s32);
+    s32 StartRtcTimeRead(s32, s32, s32);
     void func_0200f6a4(s32);
     s32 func_0200f6b4(void);
     extern M2C_UNK gRtcState;
     s32 result;
-    result = func_0200ef84(arg0, (s32)func_0200f6a4, 0);
+    result = StartRtcTimeRead(arg0, (s32)func_0200f6a4, 0);
     M2C_FIELD(&gRtcState, s32 *, 0x24) = result;
     if (result == 0) func_0200f6b4();
     return M2C_FIELD(&gRtcState, s32 *, 0x24);
@@ -248,27 +255,27 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
   switch (M2C_FIELD(&gRtcState, u32 *, 0x18)) {
    case 0:
     out = M2C_FIELD(&gRtcState, s32 **, 0xc);
-    out[0] = func_0200f634((*(volatile u32 *)0x27ffde8 << 24) >> 24);
-    out[1] = func_0200f634((*(volatile u32 *)0x27ffde8 << 19) >> 27);
-    out[2] = func_0200f634((*(volatile u32 *)0x27ffde8 << 10) >> 26);
+    out[0] = RtcBcdToInt((*(volatile u32 *)0x27ffde8 << 24) >> 24);
+    out[1] = RtcBcdToInt((*(volatile u32 *)0x27ffde8 << 19) >> 27);
+    out[2] = RtcBcdToInt((*(volatile u32 *)0x27ffde8 << 10) >> 26);
     out[3] = func_0200fa50(out);
     break;
    case 1:
     out = M2C_FIELD(&gRtcState, s32 **, 0xc);
-    out[0] = func_0200f634((*(volatile u32 *)0x27ffdec << 26) >> 26);
-    out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 17) >> 25);
-    out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
+    out[0] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 26) >> 26);
+    out[1] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 17) >> 25);
+    out[2] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 9) >> 25);
     break;
    case 2:
     out = M2C_FIELD(&gRtcState, s32 **, 0xc);
-    out[0] = func_0200f634(*(volatile u32 *)0x27ffde8 & 255);
-    out[1] = func_0200f634((*(volatile u32 *)0x27ffde8 << 19) >> 27);
-    out[2] = func_0200f634((*(volatile u32 *)0x27ffde8 << 10) >> 26);
+    out[0] = RtcBcdToInt(*(volatile u32 *)0x27ffde8 & 255);
+    out[1] = RtcBcdToInt((*(volatile u32 *)0x27ffde8 << 19) >> 27);
+    out[2] = RtcBcdToInt((*(volatile u32 *)0x27ffde8 << 10) >> 26);
     out[3] = func_0200fa50(out);
     out = M2C_FIELD(&gRtcState, s32 **, 0x10);
-    out[0] = func_0200f634((*(volatile u32 *)0x27ffdec << 26) >> 26);
-    out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 17) >> 25);
-    out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
+    out[0] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 26) >> 26);
+    out[1] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 17) >> 25);
+    out[2] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 9) >> 25);
     break;
    case 6:
     out = M2C_FIELD(&gRtcState, s32 **, 0xc);
@@ -284,8 +291,8 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
    case 8:
     out = M2C_FIELD(&gRtcState, s32 **, 0xc);
     out[0] = (*(volatile u32 *)0x27ffdec << 29) >> 29;
-    out[1] = func_0200f634((*(volatile u32 *)0x27ffdec << 18) >> 26);
-    out[2] = func_0200f634((*(volatile u32 *)0x27ffdec << 9) >> 25);
+    out[1] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 18) >> 26);
+    out[2] = RtcBcdToInt((*(volatile u32 *)0x27ffdec << 9) >> 25);
     out[3] = 0;
     if ((*(volatile u32 *)0x27ffdec << 24) >> 31) out[3] += 1;
     if ((*(volatile u32 *)0x27ffdec << 16) >> 31) out[3] += 2;
@@ -340,34 +347,36 @@ void func_0200f0e4(s32 arg0, u32 arg1, s32 arg2) {
  }
 }
 
-s32 func_0200f634(u32 arg0) {
-    s32 var_ip;
-    s32 var_lr;
-    s32 var_r2;
-    s32 var_r3;
-    s32 var_r4;
-    s32 var_r5;
+/* Decodes a packed BCD value (8 nibbles, least significant digit first) into an
+ * integer; returns 0 when any nibble is not a decimal digit. */
+s32 RtcBcdToInt(u32 bcd) {
+    s32 value;
+    s32 place;
+    s32 digit;
+    s32 shift;
+    s32 decShift;
+    s32 i;
 
-    var_ip = 0;
-    var_r2 = 0;
-    var_r3 = 0;
+    value = 0;
+    digit = 0;
+    shift = 0;
 loop_1:
-    if ((u32) ((arg0 >> var_r3) & 0xF) >= 0xAU) {
+    if ((u32) ((bcd >> shift) & 0xF) >= 0xAU) {
         return 0;
     }
-    var_r2 += 1;
-    var_r3 += 4;
-    if (var_r2 >= 8) {
-        var_r5 = 0;
-        var_r4 = 0;
-        var_lr = 1;
+    digit += 1;
+    shift += 4;
+    if (digit >= 8) {
+        i = 0;
+        decShift = 0;
+        place = 1;
         do {
-            var_ip += var_lr * ((arg0 >> var_r4) & 0xF);
-            var_r5 += 1;
-            var_lr *= 0xA;
-            var_r4 += 4;
-        } while (var_r5 < 8);
-        return var_ip;
+            value += place * ((bcd >> decShift) & 0xF);
+            i += 1;
+            place *= 0xA;
+            decShift += 4;
+        } while (i < 8);
+        return value;
     }
     goto loop_1;
 }
@@ -390,11 +399,11 @@ s32 SendRtcReadDateTimeCommand(void) {
     return func_0200f70c(0x10);
 }
 
-s32 func_0200f6dc(void) {
+s32 SendRtcReadDateCommand(void) {
     return func_0200f70c(0x11);
 }
 
-s32 func_0200f6ec(void) {
+s32 SendRtcReadTimeCommand(void) {
     return func_0200f70c(0x12);
 }
 

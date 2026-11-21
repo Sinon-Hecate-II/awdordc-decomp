@@ -572,16 +572,19 @@ s32 GetCoZoneBonusIndex(s32 arg0, s32 arg1) {
     return var_r1 + ((arg0 - 1) * 2);
 }
 
-u8 func_020a27f8(s32 arg0,s32 arg1) {
+/* Whether the CO zone of `commander` boosts unit kind `kind`: the kind is
+ * covered only when the commander has a zone-bonus record and that record's
+ * per-kind flag is set. */
+u8 IsUnitKindInCoZone(s32 kind,s32 commander) {
 extern s32 *gCurrentMap;
 extern M2C_UNK gCoZoneKindEnabled;
-s32 index;
-u8 result;
-index=GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap+arg1*0x8C,s32 *,0x6810)<<24)>>24),0);
-if(index==-1)return 0;
-if(*(s8 *)(arg0+(index*0x48+(s32)&gCoZoneKindEnabled)))result=1;
-else result=0;
-return result;
+s32 row;
+u8 covered;
+row=GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap+commander*MAP_PLAYER_STRIDE,s32 *,PLAYER_REC_SPRITE+MAP_PLAYER_STATES)<<24)>>24),0);
+if(row==-1)return 0;
+if(*(s8 *)(kind+(row*CO_ZONE_RECORD_STRIDE+(s32)&gCoZoneKindEnabled)))covered=1;
+else covered=0;
+return covered;
 }
 
 /* Attack bonus the CO zone of `commander` gives unit kind `kind`: only kinds

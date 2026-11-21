@@ -227,8 +227,8 @@ void func_ov007_0221f220(void) {
 }
 
 void func_ov007_0221f22c(void) {
-    M2C_UNK func_ov007_0221e878();
-    func_ov007_0221e878();
+    M2C_UNK MapEditorInitScreen();
+    MapEditorInitScreen();
 }
 
 void func_ov007_0221f238(void) {

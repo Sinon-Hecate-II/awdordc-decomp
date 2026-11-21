@@ -47,7 +47,7 @@ u8 func_ov003_02202e94(s32 arg0, s32 arg1) {
     }
     return result;
 }
-#pragma opt_common_subs reset
+#pragma scheduling off
 void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 Divide(u8, M2C_UNK);
     s32 Modulo(u8, M2C_UNK);
@@ -57,8 +57,8 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     s32 Ov003_GetEntryValueTextId(u8, u8);
-    M2C_UNK func_ov003_02200dc8();
-    extern void *data_027e01d8;
+    M2C_UNK func_ov003_02200dc8(void *, u32);
+    extern void *gCur3DSpriteEngine;
     s32 temp_r2_2;
     s32 temp_r3;
     s32 temp_r4_2;
@@ -83,16 +83,19 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
     void *temp_r7;
 
     temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-    func_ov003_02200dc8();
+    func_ov003_02200dc8(M2C_FIELD(arg0, void **, 0x44), arg1);
     if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
         PlaySoundEffect(0x10019);
         temp_r7 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C);
         temp_r4_2 = GetUnitSpriteHeight(temp_r7);
-        temp_r3 = GetUnitSpriteWidth(temp_r7) & (-0x200U >> 0x17);
-        temp_r1 = M2C_FIELD(arg0, void **, 0x4C);
-        M2C_FIELD(temp_r1, s16 *, 0x34) = (s16) M2C_FIELD(temp_r7, s16 *, 0x34);
-        M2C_FIELD(temp_r1, s16 *, 0x36) = (s16) M2C_FIELD(temp_r7, s16 *, 0x36);
-        M2C_FIELD(temp_r1, s32 *, 0x40) = (s32) ((((M2C_FIELD(temp_r1, s32 *, 0x40) & ~0x1FF) | temp_r3) & 0xFFFC01FF) | ((u32) (temp_r4_2 << 0x17) >> 0xE));
+        temp_r3=GetUnitSpriteWidth(temp_r7);
+temp_r1=M2C_FIELD(arg0,void **,0x4c);
+{
+s16 y=M2C_FIELD(temp_r7,s16 *,0x36);s16 x=M2C_FIELD(temp_r7,s16 *,0x34);
+((SpriteFields3368 *)temp_r1)->x=x;((SpriteFields3368 *)temp_r1)->y=y;
+((SpriteFields3368 *)temp_r1)->width=temp_r3;
+((SpriteFields3368 *)temp_r1)->height=temp_r4_2;
+}
         if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
             var_r0 = 1;
         } else {
@@ -145,28 +148,24 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
         }
         if (var_r1 & 0xFF) {
             var_r0_2 = 1;
-            M2C_FIELD(arg0, u8 *, 0x39) = 1U;
-            if (1 != 1) {
-                var_r0_2 = 0;
-            }
-            if (var_r0_2 & 0xFF) {
-                var_r1_2 = 0;
-            } else {
-                var_r1_2 = 1;
-            }
-            M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = var_r1_2;
-            SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
+            M2C_FIELD(arg0, u8 *, 0x39) = var_r0_2;
+            if (M2C_FIELD(arg0,u8 *,0x39) == 1) var_r0_2 = 1; else var_r0_2 = 0;
+        if (var_r0_2 & 0xff) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = 0;
+        else M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = 1;
+            SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
             if (M2C_FIELD(arg0, u8 *, 0x39) == 1) {
                 var_r0_3 = 1;
             } else {
                 var_r0_3 = 0;
             }
             if (var_r0_3 & 0xFF) {
-                temp_r0_3 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-                temp_r4_3 = Modulo((u8) temp_r0_3, 4);
-                SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_3, 4) * 0x120) + ((temp_r4_3 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
+                temp_r0_3 = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
+                temp_r4_3 = Modulo(temp_r0_3, 4);
+                temp_r2_2 = Divide(temp_r0_3, 4);
+                temp_r4_3 = temp_r4_3 * 8 + 0x60;
+                SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);
             }
-            M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
+            M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
             return;
         }
         if (temp_r0_2 == 1) {
@@ -178,36 +177,32 @@ void func_ov003_02202ec0(void *arg0, u32 arg1) {
             return;
         }
         var_r0_5 = 0;
-        M2C_FIELD(arg0, u8 *, 0x39) = 0U;
-        if (0 == 1) {
-            var_r0_5 = 1;
-        }
-        if (var_r0_5 & 0xFF) {
-            var_r1_3 = 0;
-        } else {
-            var_r1_3 = 1;
-        }
-        M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = var_r1_3;
-        SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C), 0x20, 0x20, 0);
+        M2C_FIELD(arg0, u8 *, 0x39) = var_r0_5;
+        if (M2C_FIELD(arg0,u8 *,0x39) == 1) var_r0_5 = 1; else var_r0_5 = 0;
+        if (var_r0_5 & 0xff) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = 0;
+        else M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s8 *, 0x59) = 1;
+        SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
         if (M2C_FIELD(arg0, u8 *, 0x39) == 1) {
             var_r0_6 = 1;
         } else {
             var_r0_6 = 0;
         }
         if (var_r0_6 & 0xFF) {
-            temp_r0_4 = M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-            temp_r4_4 = Modulo((u8) temp_r0_4, 4);
-            SetTileRectPalette(M2C_FIELD(data_027e01d8, s32 *, 0x2C) + ((u32) (((Divide((u8) temp_r0_4, 4) * 0x120) + ((temp_r4_4 * 8) + 0x60)) << 0x10) >> 0xF), 8, 8, 1);
+            temp_r0_4 = (u8)M2C_FIELD(M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
+            temp_r4_4 = Modulo(temp_r0_4, 4);
+                temp_r2_2 = Divide(temp_r0_4, 4);
+                temp_r4_4 = temp_r4_4 * 8 + 0x60;
+                SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_4)<<16)>>15),8,8,1);
         }
-        M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
         return;
     }
     if (arg1 != 8) {
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(), 0x1C)();
+    ((void (***)(void *))arg0)[0][7](arg0);
 }
-
+#pragma scheduling reset
 void func_ov003_02203280(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
@@ -254,99 +249,102 @@ void func_ov003_02203280(void *arg0) {
 #pragma push
 #pragma opt_propagation off
 #pragma opt_common_subs off
-void func_ov003_02203368(void *arg0,u32 arg1) {
-s32 Divide(u8, M2C_UNK);
-s32 Modulo(u8, M2C_UNK);
-M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
-M2C_UNK SetTextById(s32, s32);
-M2C_UNK PlaySoundEffect(s32);
-s32 GetUnitSpriteWidth(void *);
-s32 GetUnitSpriteHeight(void *);
-s32 Ov003_GetEntryValueTextId(u8, u8);
-M2C_UNK func_ov003_02200dc8(void *,u32);
-extern void *gCur3DSpriteEngine;
-void *r5 = arg0;
-u8 temp_r4;
-s32 temp_r4_2;
-s32 temp_r3;
-void *temp_r6;
-void *temp_r1;
-void *temp_r2;
-u8 temp_r0;
-s32 temp_r2_2;
-s32 var_r0;
-s32 var_r0_2;
-s32 var_r0_3;
-s8 var_r1;
-u16 temp_r0_2;
-s32 temp_r4_3;
-temp_r4 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-func_ov003_02200dc8(M2C_FIELD(r5,void **,0x44),arg1);
-if (temp_r4 != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E)) {
+/* Applies a setup-menu entry change on the battle-setup scene `scene`: selects
+ * entry `entryIndex` in the scene's setup menu, and when the shown entry changed
+ * resizes its panel sprite to the entry sprite and rewrites the entry's value
+ * text, then hides the option-description panel. */
+void Ov003_RefreshSelectedEntry(void *scene,u32 entryIndex) {
+ s32 Divide(u8, M2C_UNK);
+ s32 Modulo(u8, M2C_UNK);
+ M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ M2C_UNK SetTextById(s32, s32);
+ M2C_UNK PlaySoundEffect(s32);
+ s32 GetUnitSpriteWidth(void *);
+ s32 GetUnitSpriteHeight(void *);
+ s32 Ov003_GetEntryValueTextId(u8, u8);
+ M2C_UNK func_ov003_02200dc8(void *,u32);
+ extern void *gCur3DSpriteEngine;
+ void *self = scene;
+ u8 oldEntry;
+ s32 entryHeight;
+ s32 entryWidth;
+ void *entry;
+ void *panelSprite;
+ void *menu;
+ u8 entryId;
+ s32 entryValue;
+ s32 stateIsOne;
+ s32 panelFlag;
+ s32 panelFlag2;
+ u16 entryId2;
+ s32 tileX;
+oldEntry = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(self, void **, 0x44), void **, SETUP_MENU_CURRENT), u16 *, 0x2E);
+func_ov003_02200dc8(M2C_FIELD(self,void **,0x44),entryIndex);
+if (oldEntry != (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(self, void **, 0x44), void **, SETUP_MENU_CURRENT), u16 *, 0x2E)) {
 PlaySoundEffect(0x10019);
-temp_r6 = M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C);
-temp_r4_2 = GetUnitSpriteHeight(temp_r6);
-temp_r3=GetUnitSpriteWidth(temp_r6);
-temp_r1=M2C_FIELD(r5,void **,0x4c);
+entry = M2C_FIELD(M2C_FIELD(self, void **, 0x44), void **, SETUP_MENU_CURRENT);
+entryHeight = GetUnitSpriteHeight(entry);
+entryWidth=GetUnitSpriteWidth(entry);
+panelSprite=M2C_FIELD(self,void **,0x4c);
 {
-s16 y=M2C_FIELD(temp_r6,s16 *,0x36);s16 x=M2C_FIELD(temp_r6,s16 *,0x34);
-((SpriteFields3368 *)temp_r1)->x=x;((SpriteFields3368 *)temp_r1)->y=y;
-((SpriteFields3368 *)temp_r1)->width=temp_r3;
-((SpriteFields3368 *)temp_r1)->height=temp_r4_2;
+s16 y=M2C_FIELD(entry,s16 *,0x36);s16 x=M2C_FIELD(entry,s16 *,0x34);
+((SpriteFields3368 *)panelSprite)->x=x;((SpriteFields3368 *)panelSprite)->y=y;
+((SpriteFields3368 *)panelSprite)->width=entryWidth;
+((SpriteFields3368 *)panelSprite)->height=entryHeight;
 }
-if (((u32)(M2C_FIELD(r5, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
-var_r0 = 1;
+if (((u32)(M2C_FIELD(self, u8 *, 0x3A) << 0x1A) >> 0x1A) == 1) {
+stateIsOne = 1;
 } else {
-var_r0 = 0;
+stateIsOne = 0;
 }
-if (!(var_r0 & 0xFF)) {
-temp_r2 = M2C_FIELD(r5, void **, 0x44);
-temp_r0 = (u8) M2C_FIELD(M2C_FIELD(temp_r2, void **, 0x10C), u16 *, 0x2E);
-temp_r2_2 = M2C_FIELD((((u8) temp_r0 * 0x18) + (s32) temp_r2), s32 *, 0xC);
-switch (temp_r0) {
+if (!(stateIsOne & 0xFF)) {
+menu = M2C_FIELD(self, void **, 0x44);
+entryId = (u8) M2C_FIELD(M2C_FIELD(menu, void **, SETUP_MENU_CURRENT), u16 *, 0x2E);
+entryValue = M2C_FIELD((((u8) entryId * 0x18) + (s32) menu), s32 *, 0xC);
+switch (entryId) {
 default: break;
-case 0: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000000); break;
-case 1: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
-case 2: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
-case 3: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x4700000B); break;
-case 4: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000014); break;
-case 5: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x4700000A); break;
-case 6: SetTextById(M2C_FIELD(r5, s32 *, 0x58), Ov003_GetEntryValueTextId(temp_r0, (u8) temp_r2_2)); break;
-case 7: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000015); break;
-case 8: SetTextById(M2C_FIELD(r5, s32 *, 0x58), 0x47000018); break;
+case 0: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x47000000); break;
+case 1: SetTextById(M2C_FIELD(self, s32 *, 0x58), Ov003_GetEntryValueTextId(entryId, (u8) entryValue)); break;
+case 2: SetTextById(M2C_FIELD(self, s32 *, 0x58), Ov003_GetEntryValueTextId(entryId, (u8) entryValue)); break;
+case 3: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x4700000B); break;
+case 4: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x47000014); break;
+case 5: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x4700000A); break;
+case 6: SetTextById(M2C_FIELD(self, s32 *, 0x58), Ov003_GetEntryValueTextId(entryId, (u8) entryValue)); break;
+case 7: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x47000015); break;
+case 8: SetTextById(M2C_FIELD(self, s32 *, 0x58), 0x47000018); break;
 }
 }
 }
-var_r0_2 = 0;
-M2C_FIELD(r5, u8 *, 0x39) = 0U;
-if (M2C_FIELD(r5,u8 *,0x39) == 1) var_r0_2 = 1;
-temp_r1=M2C_FIELD(r5,void **,0x4c);
-var_r1=1;if(var_r0_2&0xff)var_r1=0;
-M2C_FIELD(temp_r1,s8 *,0x59)=var_r1;
+panelFlag = 0;
+M2C_FIELD(self, u8 *, 0x39) = 0U;
+if (M2C_FIELD(self,u8 *,0x39) == 1) panelFlag = 1;
+if (panelFlag & 0xff) M2C_FIELD(M2C_FIELD(self, void **, 0x4c), s8 *, MENU_SPRITE_BASE) = 0;
+else M2C_FIELD(M2C_FIELD(self, void **, 0x4c), s8 *, MENU_SPRITE_BASE) = 1;
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0x20, 0x20, 0);
-if (M2C_FIELD(r5, u8 *, 0x39) == 1) var_r0_3 = 1; else var_r0_3 = 0;
-if (var_r0_3 & 0xFF) {
-temp_r0_2 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(r5, void **, 0x44), void **, 0x10C), u16 *, 0x2E);
-temp_r4_3 = Modulo(temp_r0_2, 4);
-temp_r2_2=Divide(temp_r0_2,4);
-temp_r4_3=temp_r4_3*8+0x60;
-SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((temp_r2_2*0x120+temp_r4_3)<<16)>>15),8,8,1);
+if (M2C_FIELD(self, u8 *, 0x39) == 1) panelFlag2 = 1; else panelFlag2 = 0;
+if (panelFlag2 & 0xFF) {
+entryId2 = (u8) M2C_FIELD(M2C_FIELD(M2C_FIELD(self, void **, 0x44), void **, SETUP_MENU_CURRENT), u16 *, 0x2E);
+tileX = Modulo(entryId2, 4);
+entryValue=Divide(entryId2,4);
+tileX=tileX*8+0x60;
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c)+((u32)((entryValue*0x120+tileX)<<16)>>15),8,8,1);
 }
 M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
 }
-#pragma pop
-void func_ov003_022035fc(void *arg0, s32 arg1) {
- s32 value,limit; void *p=(char *)arg0+(s32)arg1*24;
-#define F(o,t) (*(t *)((char *)arg0+(o)+arg1*24))
- s32 *valuePtr=&F(12,s32);
- *valuePtr-=M2C_FIELD(p,s32 *,24);
- if(F(28,u8)){
- if(F(12,s32)>F(16,s32)) do { M2C_FIELD(p,s32 *,12)-=M2C_FIELD(p,s32 *,16)-M2C_FIELD(p,s32 *,20)+1; } while(M2C_FIELD(p,s32 *,12)>M2C_FIELD(p,s32 *,16));
- if(F(12,s32)<F(20,s32)) { void *q=(char *)arg0+arg1*24; do { M2C_FIELD(q,s32 *,12)+=M2C_FIELD(q,s32 *,16)-M2C_FIELD(q,s32 *,20)+1; } while(M2C_FIELD(q,s32 *,12)<M2C_FIELD(q,s32 *,20)); }
+#pragma opt_common_subs on
+/* One D-pad press on the selected setup-menu row: subtract the row's step from its
+   value, then wrap between min/max if the row wraps, else clamp. */
+void Ov003_DecreaseSelectedEntry(void *menu, s32 row) {
+ s32 value,limit;
+#define F(o,t) (*(t *)((char *)menu+(o)+row*24))  /* field at byte offset o of the row */
+ ((Ov003MenuEntry *)((char *)menu+12))[row].value-=M2C_FIELD((unsigned)menu+row*24,s32 *,24);
+ if(F(28,u8)){                                    /* row->wrap */
+ if(F(12,s32)>F(16,s32)) { Ov003MenuRow *p=(Ov003MenuRow *)((char *)menu+row*24); do { p->value-=p->maximum-p->minimum+1; } while(p->value>p->maximum); }
+ if(F(12,s32)<F(20,s32)) { Ov003MenuRow *q=(Ov003MenuRow *)((char *)menu+row*24); do { q->value+=q->maximum-q->minimum+1; } while(q->value<q->minimum); }
  }else{limit=F(16,s32);value=F(12,s32);if(value<=limit){limit=F(20,s32);if(value>=limit)limit=value;}F(12,s32)=limit;}
  #undef F
 }
-
+#pragma opt_common_subs off
 u8 func_ov003_022036c8(void *arg0) {
     u8 var_r0;
 

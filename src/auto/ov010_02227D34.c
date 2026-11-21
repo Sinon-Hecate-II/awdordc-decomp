@@ -125,10 +125,32 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     }
 }
 
-void func_ov010_02227f14(void) {
- s32 GetActiveConnectionList(u8 **); s32 GetOnlineTransportPlayerId(void); void func_020445cc(u32,void *,s32); extern M2C_UNK gOv010OnlineSession;
- u8 *list; s32 n=GetActiveConnectionList(&list); s32 i; u32 id; u32 index;
- for(i=0;i<n;i++){id=list[i];if(id!=GetOnlineTransportPlayerId()){if(id<(u32)GetOnlineTransportPlayerId())index=id;else index=id-1;func_020445cc(id,M2C_FIELD(&gOv010OnlineSession,u8 **,0x3c)+index*0x5a0,0x5a0);}}
+/* Assigns a receive buffer to each connected peer, skipping the local player. */
+void Ov010Online_SetupPeerReceiveBuffers(void) {
+    s32 GetActiveConnectionList(u8 **);
+    s32 GetOnlineTransportPlayerId(void);
+    s32 SetTransferReceiveBuffer(u32, void *, s32);
+    extern M2C_UNK gOv010OnlineSession;
+    u8 *playerIds;
+    s32 playerCount = GetActiveConnectionList(&playerIds);
+    s32 i;
+    u32 playerId;
+    u32 bufferIndex;
+
+    for (i = 0; i < playerCount; i++) {
+        playerId = playerIds[i];
+        if (playerId != GetOnlineTransportPlayerId()) {
+            if (playerId < (u32)GetOnlineTransportPlayerId())
+                bufferIndex = playerId;
+            else
+                bufferIndex = playerId - 1;
+
+            SetTransferReceiveBuffer(playerId,
+                M2C_FIELD(&gOv010OnlineSession, u8 **, OV010_SESSION_PEER_RX_BUFFERS) +
+                    bufferIndex * OV010_PEER_RX_BUFFER_SIZE,
+                OV010_PEER_RX_BUFFER_SIZE);
+        }
+    }
 }
 
 void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
@@ -147,7 +169,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
     s32 PublishPlayerStatusLocation(void *, s32);
-    void func_ov010_02227f14(void);
+    void Ov010Online_SetupPeerReceiveBuffers(void);
     s32 func_ov010_02229a94(void);
     extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
@@ -160,7 +182,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
             SetOnlineSessionFlag(OV010_FLAG_RUNNING);
             M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_LOCAL_ID) = GetOnlineTransportPlayerId();
             PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
-            func_ov010_02227f14();
+            Ov010Online_SetupPeerReceiveBuffers();
             func_ov010_02229a94();
         } else {
             SetOnlineSessionFlag(OV010_FLAG_FAILED);
@@ -186,7 +208,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     s32 GetOnlineTransportPlayerId(void);
     s32 PublishPlayerStatusLocation(void *, s32);
-    void func_ov010_02227f14(void);
+    void Ov010Online_SetupPeerReceiveBuffers(void);
     s32 func_ov010_02229a94(void);
     extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
@@ -202,7 +224,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
             M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfb) =
                 (u8)GetOnlineTransportPlayerId();
             PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
-            func_ov010_02227f14();
+            Ov010Online_SetupPeerReceiveBuffers();
             func_ov010_02229a94();
             goto callback_call;
         }
@@ -254,7 +276,7 @@ void func_ov010_0222817c(void) {
 s32 func_ov010_02228180(void) {
     M2C_UNK IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
+    M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
     s32 func_02031d00(M2C_UNK);
     void func_02037680(s32, s32);
     M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
@@ -272,9 +294,9 @@ s32 func_ov010_02228180(void) {
     }
     statusBuffer = func_ov010_022268f4(0, 0x700, 0x20);
     status = func_02031d00(statusBuffer);
-    func_ov010_02226908(0, statusBuffer, 0x700);
+    Ov010_FreeBlock(0, statusBuffer, 0x700);
     if (status != 3) {
-        func_02037680((s32)func_ov010_022268f4, (s32)func_ov010_02226908);
+        func_02037680((s32)func_ov010_022268f4, (s32)Ov010_FreeBlock);
         workBlock = func_ov010_022268f4(0, 0x10e0, 0x20);
         M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = workBlock;
         DC_InvalidateRange(workBlock, 0x10e0);
@@ -415,12 +437,12 @@ void func_ov010_02228614(void) {
 
 s32 func_ov010_02228640(void) {
     s32 func_02037954();
-    M2C_UNK func_02037994();
+    M2C_UNK Wfc_UpdateConnection();
     if (func_02037954() != 0) {
         SetOnlineSessionFlag(1);
         return 0;
     }
-    func_02037994();
+    Wfc_UpdateConnection();
     return 1;
 }
 
@@ -430,11 +452,11 @@ M2C_UNK func_ov010_0222866c(M2C_UNK arg0) {
 }
 
 s32 func_ov010_02228678(M2C_UNK *arg0) {
-    M2C_UNK func_02037c1c(void);
+    M2C_UNK PollWfcMatchmakingHttp(void);
     s32 var_r4;
     u32 temp_r0;
     var_r4 = 1;
-    temp_r0 = func_02037c1c();
+    temp_r0 = PollWfcMatchmakingHttp();
     switch (temp_r0) {
     case 0:
         var_r4 = 0;
@@ -474,14 +496,14 @@ void func_ov010_022286f0(void *arg0) {
 }
 
 void func_ov010_02228714(void) {
-    M2C_UNK func_02037b1c();
-    func_02037b1c();
+    M2C_UNK Wfc_PollSessionEnd();
+    Wfc_PollSessionEnd();
 }
 
 s32 func_ov010_02228720(void) {
     s32 temp_r0;
 
-    temp_r0 = func_02037b1c();
+    temp_r0 = Wfc_PollSessionEnd();
     if (temp_r0 != 0) {
         Ov010Online_ClearStepFlag(1);
     }
@@ -529,7 +551,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     void func_ov010_02229498(M2C_UNK);
     void func_ov010_022294b0(M2C_UNK);
     void func_ov010_022294c8(M2C_UNK);
-    s32 func_ov000_0216a470(void);
+    s32 GetEarnedRecordTierTotal(void);
     s32 func_ov000_0216a564(void);
     s32 func_ov000_0216a76c(void);
     s32 func_ov000_0216a7c4(void);
@@ -590,7 +612,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     }
     dd=cc;
     func_ov010_022269dc(&gLocalPlayerStatus,GetLocalPlayerName());
-    func_ov000_0216a470();
+    GetEarnedRecordTierTotal();
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
     M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
@@ -811,11 +833,11 @@ void func_ov010_02228cd4(void) {
 
 void func_ov010_02228ce4(void) {
     M2C_UNK func_ov010_02226a88();
-    M2C_UNK func_ov010_02226908(M2C_UNK, s32, s32);
+    M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
     void func_ov010_0222826c(void);
     extern M2C_UNK gOv010OnlineSession;
     func_ov010_02226a88();
-    func_ov010_02226908(0, M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c), 0x10e0);
+    Ov010_FreeBlock(0, M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c), 0x10e0);
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x3c) = 0;
     func_ov010_0222826c();
 }

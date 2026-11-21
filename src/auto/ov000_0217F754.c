@@ -78,7 +78,7 @@ extern void **gCurrentMap;
 void SelectMapLayer(void*); void func_01ffc2e8(void*); void MarkAdjacentCells(s32);
 s32 func_020d27a4(s32,s32); s32 IsCellVisibleToCurrentTeam(s16,s16); s32 FindBestAdjacentTile(s32,s32,s16*);
 s32 func_ov000_02176e28(s32,s16*); s32 HasBetterAttackerNearby(void*);
-void SetMapCursor(s32,s32,s32,s32,s32); void func_ov000_0218d040(s32);
+void SetMapCursor(s32,s32,s32,s32,s32); void ChooseAiUnitMoveDestination(s32);
 s32 bestX=-1,bestY=-1,best=0,score,id=0;
 s32 x,y; s16 pos[2]; u8 *map,*unit,*other;
 s32 minX,maxY,n,ux,uy,minY,maxX,xx,yy,index;
@@ -137,13 +137,13 @@ if(best)SetMapCursor((s16)bestX,(s16)bestY,4,(u8)id,0);
 SelectMapLayer((u8*)*gCurrentMap+0x2338);
 func_01ffc2e8(arg0);
 SelectMapLayer((u8*)*gCurrentMap+0x1e30);
-func_ov000_0218d040(1);
+ChooseAiUnitMoveDestination(1);
 }
 #pragma opt_strength_reduction off
 void func_ov000_0217fe68(void *arg0) {
 extern void **gCurrentMap;extern u8 gUnitKindStats[];
 s32 GetUnitAttackRangeMax(void*); s32 func_020d27a4(s32,s32);s32 IsCellVisibleToCurrentTeam(s16,s16);s32 func_ov000_02176e28(s32,s16*);
-void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void func_01ffc2e8(void*);void func_ov000_0218d040(s32);
+void SetMapCursor(s32,s32,s32,s32,s32);void SelectMapLayer(void*);void func_01ffc2e8(void*);void ChooseAiUnitMoveDestination(s32);
 s32 best=0,id=0; s16 pos[2];s32 minX,minY,maxX,maxY,x,y,distance,score,index;u8 *unit,*map;
 pos[0]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1];pos[1]=M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2];
 minX=(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)))<0?0:(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1]-GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap,u8**,0x52d0)));
@@ -166,7 +166,7 @@ if(!score||score<best)continue;
 best=score;map=*gCurrentMap;id=map[x+M2C_FIELD(map+y*2,u16*,0x3758)];
 }
 if(best)SetMapCursor(M2C_FIELD(*gCurrentMap,u8**,0x52d0)[1],M2C_FIELD(*gCurrentMap,u8**,0x52d0)[2],4,(u8)id,0);
-SelectMapLayer((u8*)*gCurrentMap+0x2338);func_01ffc2e8(arg0);SelectMapLayer((u8*)*gCurrentMap+0x1e30);func_ov000_0218d040(1);
+SelectMapLayer((u8*)*gCurrentMap+0x2338);func_01ffc2e8(arg0);SelectMapLayer((u8*)*gCurrentMap+0x1e30);ChooseAiUnitMoveDestination(1);
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02180268(s32 x,s32 y){
@@ -240,7 +240,7 @@ void func_ov000_021804d4(void) {
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK PlanEnemyUnitAttackDestination();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK PlanEnemyHqAttackDestinationAlt();
@@ -258,7 +258,7 @@ void func_ov000_021804d4(void) {
         func_ov000_02186a18();
     }
     PlanEnemyUnitAttackDestination();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();
     PlanEnemyHqAttackDestinationAlt();
@@ -271,7 +271,7 @@ void func_ov000_0218053c(void) {
     M2C_UNK SelectAiMoveActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK PlanEnemyUnitAttackDestination();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK PlanEnemyHqAttackDestinationAlt();
@@ -288,7 +288,7 @@ void func_ov000_0218053c(void) {
         func_ov000_02186a18();
     }
     PlanEnemyUnitAttackDestination();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();
     PlanEnemyHqAttackDestinationAlt();
@@ -302,7 +302,7 @@ void func_ov000_021805a0(void) {
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK PlanEnemyHqAttackDestinationAlt();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK PlanEnemyUnitAttackDestination();
@@ -320,7 +320,7 @@ void func_ov000_021805a0(void) {
         func_ov000_02186a18();
     }
     PlanEnemyHqAttackDestinationAlt();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();
     PlanEnemyUnitAttackDestination();
@@ -334,7 +334,7 @@ void func_ov000_02180608(void) {
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_02195750();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK PlanEnemyUnitAttackDestination();
@@ -352,7 +352,7 @@ void func_ov000_02180608(void) {
         func_ov000_02186a18();
     }
     func_ov000_02195750();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();
     PlanEnemyUnitAttackDestination();
@@ -368,7 +368,7 @@ void func_ov000_02180670(void) {
     M2C_UNK PlanAiStep4Destination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK PlanEnemyUnitAttackDestination();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -386,7 +386,7 @@ void func_ov000_02180670(void) {
     PlanAiStep4Destination();
     SelectAttackMoveDestination();
     PlanEnemyUnitAttackDestination();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectPropertyAttackDestination();
     SelectPortDestination();
     FinishAiUnitAction();
@@ -398,7 +398,7 @@ void func_ov000_021806d8(void) {
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -414,7 +414,7 @@ void func_ov000_021806d8(void) {
         func_ov000_02186a18();
     }
     func_ov000_0219604c();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();

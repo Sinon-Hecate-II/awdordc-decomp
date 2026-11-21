@@ -27,7 +27,7 @@ typedef struct MbContext {
 } MbContext;
 extern MbState gMbState;
 extern M2C_UNK gMbParam;
-extern M2C_UNK data_02136c60;
+extern M2C_UNK gMbMatchProfile;
 typedef struct DispatchBlock171 { u32 words[32]; } DispatchBlock171;
 typedef struct DispatchRecord171 { u8 pad[0xca]; u8 id[6]; u8 padD0[0x26]; u16 value; DispatchBlock171 block; u8 end[8]; } DispatchRecord171;
 
@@ -37,7 +37,7 @@ typedef struct DispatchRecord171 { u8 pad[0xca]; u8 id[6]; u8 padD0[0x26]; u16 v
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
 void func_02017158(void *arg0) {
-    void func_020170e8(void *);
+    void HandleMbChannelEvent(void *);
     s32 Mb_CloseLink(void);
     s32 func_02013d4c(void *, u16, u16, u16, u16);
     s32 func_020124c4(void *, void *);
@@ -46,7 +46,7 @@ void func_02017158(void *arg0) {
     s32 func_02012a64(void *, s32, u16, void *, u16, u16, u16, s32, s32, s32, s32);
     s32 Mb_ReportPacketResult(s32, s32);
     s32 WFC_SetChannelHandler(s32, void *, s32);
-    s32 func_020167d0(void *);
+    s32 Mb_SelectNextPlayer(void *);
     s32 func_02016840(void);
     void Mb_CancelLink(void *);
     void DC_InvalidateRange(void *, s32);
@@ -76,7 +76,7 @@ void func_02017158(void *arg0) {
         M2C_FIELD(&gMbState,u8 *,0x2d)=255;
         M2C_FIELD(base,s32 *,0x5e4)=1;
         M2C_FIELD(base,s32 *,0x5e8)=1;
-        Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
+        Mb_ReportPacketResult(10,func_020124c4(func_02017158,&gMbMatchProfile)); return;
     case 10:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
         switch((s32)M2C_FIELD(event,u16 *,8)) {
@@ -111,14 +111,14 @@ void func_02017158(void *arg0) {
 found:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(4,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
-            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))Mb_CloseLink();
-            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
+            if(M2C_FIELD(base,s32 *,0x5e8) && !Mb_SelectNextPlayer(&gMbMatchProfile))Mb_CloseLink();
+            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&gMbMatchProfile)); return;
         }
         case 4:
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(5,event);
             if(!M2C_FIELD(base,s32 *,0x5e4))return;
-            if(M2C_FIELD(base,s32 *,0x5e8) && !func_020167d0(&data_02136c60))Mb_CloseLink();
-            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&data_02136c60)); return;
+            if(M2C_FIELD(base,s32 *,0x5e8) && !Mb_SelectNextPlayer(&gMbMatchProfile))Mb_CloseLink();
+            Mb_ReportPacketResult(10,func_020124c4(func_02017158,&gMbMatchProfile)); return;
         default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
         }
     case 11:
@@ -133,7 +133,7 @@ found:
             M2C_FIELD(base+0x500,u16 *,0xe2)=M2C_FIELD(event,u16 *,10);
             M2C_FIELD(base,void (**)(s32,void *),0x51c)(6,event);
             M2C_FIELD(base+0x500,u16 *,0x2a)=1;
-            if(WFC_SetChannelHandler(1,func_020170e8,0))return;
+            if(WFC_SetChannelHandler(1,HandleMbChannelEvent,0))return;
             {u32 flag;
             switch (M2C_FIELD(base+0x500,u16 *,0x2c)) {default: flag=0; break; case 0: flag=1; break;}
             Mb_ReportPacketResult(14,func_02012a64(func_02017158,M2C_FIELD(base,s32 *,0x504),M2C_FIELD(base+0x500,u16 *,0x1a),base+0x40,M2C_FIELD(base+0x500,u16 *,0x18),(u16)flag,0,0,0,1,1));}return;
@@ -176,7 +176,7 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     void CpuFill(s32, void *, s32);
     void FillU16(s32, void *, s32);
     void MI_CpuCopy8(void *, void *, s32);
-    u16 func_02012084(void);
+    u16 WM_GetNextTgid(void);
     s32 OS_DisableInterrupts(void);
     u32 func_02017984(void);
     u32 a, b, id;
@@ -193,7 +193,7 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     b = (a + 0x1e1f) & ~0x1f;
     id = arg3;
     if (arg3 == 0x10000)
-        id = func_02012084();
+        id = WM_GetNextTgid();
     t = OS_DisableInterrupts();
     M2C_FIELD(&gMbParam, u16 *, 6) = 0xffff;
     M2C_FIELD(&gMbParam, u16 *, 0) = 5;
@@ -250,14 +250,16 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 IsMultiBootParamValid(u32 arg0, u32 arg1, s32 arg2) {
-    if ((arg0 > 0x1FEU) || (arg0 < 0xE4U)) {
+/* Check the packet size limits and the parent work area required for all children. */
+s32 IsMultiBootParamValid(u32 parentPayloadSize, u32 childPayloadSize, s32 maxChildren) {
+    if ((parentPayloadSize > MB_PARENT_PAYLOAD_MAX) || (parentPayloadSize < MB_PARENT_PAYLOAD_MIN)) {
         return 0;
     }
-    if ((arg1 > 0x10U) || (arg1 < 8U)) {
+    if ((childPayloadSize > MB_CHILD_PAYLOAD_MAX) || (childPayloadSize < MB_CHILD_PAYLOAD_MIN)) {
         return 0;
     }
-    if ((s32) ((arg2 * (((arg1 + 0x20) * 4) + 0x70)) + (((arg0 + 0x26) * 4) + 0x14A)) < 0x15E0) {
+    if ((s32)(maxChildren * (((childPayloadSize + MB_CHILD_PACKET_OVERHEAD) * 4) + MB_PER_CHILD_BUFFER_OVERHEAD) +
+              (((parentPayloadSize + MB_PARENT_PACKET_OVERHEAD) * 4) + MB_PARENT_BUFFER_OVERHEAD)) < MB_LINK_BUFFER_LIMIT) {
         return 1;
     }
     return 0;

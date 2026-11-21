@@ -18,8 +18,8 @@ static inline void *Next021e8e8c(void *head, void *node) {
 #pragma opt_common_subs off
 #pragma scheduling off
 void func_ov002_021e8984(void *arg0){
-s32 func_ov002_021e79ac(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetGxPolygonAttr(s32,s32);void SetGxTextureParams(s32,s32,s32,s32,s32);void DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
-extern u16 **gCur3DSpriteEngine;extern u8 gScreenCountryAssets[],data_ov002_021f30e4[],data_ov002_021f3043[],data_ov002_021f303c[];
+s32 IsBattleSceneIntro(void *);s32 EaseInterpolate(s32,s32,s32,s32,s32);void SetGxPolygonAttr(s32,s32);void SetGxTextureParams(s32,s32,s32,s32,s32);void DrawTexturedQuadUVFlip(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);void DrawUnitModelTree(void *);void func_ov002_021e4b94(void *);
+extern u16 **gCur3DSpriteEngine;extern u8 gScreenCountryAssets[],gBattleSceneState[],data_ov002_021f3043[],data_ov002_021f303c[];
 s32 j,x,y,alpha,t,i,depth;u8 used,best;void *p;volatile s32 *matrix=(volatile s32 *)0x4000444;
 x=M2C_FIELD(arg0,s16 *,0x1e)+M2C_FIELD(arg0,s16 *,0x22);y=M2C_FIELD(arg0,s16 *,0x24);
 if(x||y){matrix[0]=0;if(!M2C_FIELD(arg0,u8 *,0x27)){Translate021e9014(x,y,0);}else{Translate021e9014(-x,y,0);}}
@@ -32,7 +32,7 @@ M2C_FIELD(*gCur3DSpriteEngine,volatile s16 *,0x3e)=x+M2C_FIELD(arg0,s16 *,0x20);
 }
 M2C_FIELD(*gCur3DSpriteEngine,volatile s16 *,0x46)=y;
 {void *engine=gCur3DSpriteEngine; u16 value=M2C_FIELD(M2C_FIELD(engine,void **,0),volatile u16 *,0x46);M2C_FIELD(M2C_FIELD(engine,void **,0),volatile u16 *,0x44)=value;}
-if(M2C_FIELD(M2C_FIELD(gScreenCountryAssets,void **,(s16)M2C_FIELD(arg0,u8 *,0x27)*24),s32 *,16)!=0&&!func_ov002_021e79ac(data_ov002_021f30e4)){
+if(M2C_FIELD(M2C_FIELD(gScreenCountryAssets,void **,(s16)M2C_FIELD(arg0,u8 *,0x27)*24),s32 *,16)!=0&&!IsBattleSceneIntro(gBattleSceneState)){
 t=M2C_FIELD(arg0,u8 *,0x29)&127;
 if(t<32)alpha=0;else if(t<64)alpha=(s16)EaseInterpolate(0,0,31,t-32,32);else if(t<96)alpha=31;else alpha=(s16)EaseInterpolate(0,31,0,t-96,32);
 if(alpha){SetGxPolygonAttr(31,alpha&255);
@@ -116,7 +116,7 @@ s32 func_ov002_021e8e7c(s32 arg0) {
 }
 
 /* Advance one unit's animation: tick its child lists, accumulate position deltas, and step its frame. */
-void func_ov002_021e8e8c(void *unit){
+void StepUnitModel(void *unit){
 void func_ov002_021e1844(void *);void func_ov002_021e2aa8(void *);void func_ov002_021e3e64(void *);
 extern u8 gEffectTable[],gEffectHasVariants[];
 void *node;

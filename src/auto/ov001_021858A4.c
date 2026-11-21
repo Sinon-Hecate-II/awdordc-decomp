@@ -464,13 +464,13 @@ if(c) M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,func_ov001_02186678,
 else M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_SlideRegionMenuIn,0,120);
 }
 #pragma scheduling reset
-void func_ov001_02186604(void) {
+void Ov001_CloseRegionMenu(void) {
 extern void *gOv001RegionMenu;void Ov001_RegionMenuCloseDelay();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
 Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,20));
 M2C_FIELD(gOv001RegionMenu,s32 *,20)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
 }
 
-s8 func_ov001_02186648(void) {
+s8 Ov001_GetRegionMenuSelection(void) {
     extern void *gOv001RegionMenu;
     return M2C_FIELD(gOv001RegionMenu, s8 *, 0x1B);
 }

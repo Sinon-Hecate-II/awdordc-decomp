@@ -23,7 +23,7 @@ typedef struct {
 } Unk0209Rect;
 
 void func_0209db48(void){
-void func_01ff883c(u16,u16,u16,s32);void func_01ff8930(s16,s16,u16,u16,u16,s32);
+void AppendSpriteDescToOam(u16,u16,u16,s32);void func_01ff8930(s16,s16,u16,u16,u16,s32);
 void func_01ff8a8c(u16,u16,u16,s32);void func_01ff8c0c(s16,s16,u16,u16,u16,s32);
 void func_0209daec(void);
 extern void *g3DSpriteEngineSub,*g3DSpriteEngineMain,*data_027e01d8;
@@ -39,7 +39,7 @@ if(((u32)((s32)raw<<28)>>28)==0)
 func_01ff8930(M2C_FIELD(cur,s16 *,8),M2C_FIELD(cur,s16 *,10),M2C_FIELD(cur,u16 *,12),M2C_FIELD(cur,u16 *,14),M2C_FIELD(cur,u16 *,16),M2C_FIELD(cur,s32 *,4));
 else func_01ff8c0c(M2C_FIELD(cur,s16 *,8),M2C_FIELD(cur,s16 *,10),M2C_FIELD(cur,u16 *,12),M2C_FIELD(cur,u16 *,14),M2C_FIELD(cur,u16 *,16),M2C_FIELD(cur,s32 *,4));
 }else{
-if((raw<<28>>28)==0)func_01ff883c(M2C_FIELD(cur,u16 *,12),M2C_FIELD(cur,u16 *,14),M2C_FIELD(cur,u16 *,16),M2C_FIELD(cur,s32 *,4));
+if((raw<<28>>28)==0)AppendSpriteDescToOam(M2C_FIELD(cur,u16 *,12),M2C_FIELD(cur,u16 *,14),M2C_FIELD(cur,u16 *,16),M2C_FIELD(cur,s32 *,4));
 else func_01ff8a8c(M2C_FIELD(cur,u16 *,12),M2C_FIELD(cur,u16 *,14),M2C_FIELD(cur,u16 *,16),M2C_FIELD(cur,s32 *,4));
 }
 cur=M2C_FIELD(cur,void **,0);
@@ -420,28 +420,31 @@ void UpdateScenePanelPalette(void *arg0) {
     if(q && p)M2C_FIELD(q,void**,0x60)=func_02097e84(p[0x58]);
 }
 
-M2C_UNK func_0209e5d0(void *arg0) {
-    void *func_020993d4(void *);
-    void func_02099310(void *, s32);
-    void func_02099318(void *, s32);
+/* Set up a scene panel's pair of CO faces: clear its flip flag, face state,
+ * layout, motion and the two half sprite sources, then create one face child per
+ * half and give the two faces their layout slots and variant flags. */
+M2C_UNK InitScenePanelFaces(void *panel) {
+    void *CreateFaceSprite(void *);
+    void SetFaceSpriteLayout(void *, s32);
+    void SetFaceSpriteVariant(void *, s32);
     s32 i;
     i = 0;
-    M2C_FIELD(arg0, u8 *, 0x5A) = 0;
-    M2C_FIELD(arg0, u8 *, 0x5B) = 0;
-    M2C_FIELD(arg0, u16 *, 0x5C) = 0;
-    M2C_FIELD(arg0, u16 *, 0x5E) = 0;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s32 *, 0x64) = 0;
-    M2C_FIELD(arg0, u8 *, 0x59) = 1;
-    M2C_FIELD(arg0, u8 *, 0x58) = 0;
+    M2C_FIELD(panel, u8 *, SCENE_PANEL_LAYOUT) = 0;
+    M2C_FIELD(panel, u8 *, SCENE_PANEL_MOTION) = 0;
+    M2C_FIELD(panel, u16 *, SCENE_PANEL_MOTION_X) = 0;
+    M2C_FIELD(panel, u16 *, SCENE_PANEL_MOTION_Y) = 0;
+    M2C_FIELD(panel, s32 *, SCENE_PANEL_HALF0) = 0;
+    M2C_FIELD(panel, s32 *, SCENE_PANEL_HALF1) = 0;
+    M2C_FIELD(panel, u8 *, SCENE_PANEL_FACE_STATE) = 1;
+    M2C_FIELD(panel, u8 *, SCENE_PANEL_FLIP) = 0;
     do {
-        void *p = func_020993d4(arg0);
-        ((void **)(arg0 + 0x68))[i] = p;
-        func_02099310(((void **)(arg0 + 0x68))[i], i);
+        void *face = CreateFaceSprite(panel);
+        ((void **)(panel + SCENE_PANEL_FACE0))[i] = face;
+        SetFaceSpriteLayout(((void **)(panel + SCENE_PANEL_FACE0))[i], i);
         i++;
     } while (i < 2);
-    func_02099318(M2C_FIELD(arg0, void **, 0x68), 1);
-    func_02099318(M2C_FIELD(arg0, void **, 0x6C), 0);
+    SetFaceSpriteVariant(M2C_FIELD(panel, void **, SCENE_PANEL_FACE0), 1);
+    SetFaceSpriteVariant(M2C_FIELD(panel, void **, SCENE_PANEL_FACE1), 0);
 }
 
 M2C_UNK func_0209e640(void *a){u8 v=M2C_FIELD(a,u32 *,0x40)>>26;if(v==16)return v;return Reset3DSpriteBankState(v);}
@@ -513,8 +516,8 @@ DrawSpriteActorAt(arg0,M2C_FIELD(arg0,s16 *,SPRITE_ACTOR_X)+128,M2C_FIELD(arg0,s
 }
 
 void func_0209e980(void) {
-    M2C_UNK func_0209e5d0();
-    func_0209e5d0();
+    M2C_UNK InitScenePanelFaces();
+    InitScenePanelFaces();
 }
 
 void func_0209e98c(void) {

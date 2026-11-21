@@ -135,7 +135,7 @@ void SelectAttackingUnit(void) {
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_02194370(void){
+void PlanProductionSiteDestination(void){
 s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
 s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);

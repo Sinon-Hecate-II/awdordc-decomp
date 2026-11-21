@@ -219,7 +219,7 @@ void func_020b0ccc(void) {
 
 /* Configures the audio/channel mix for a sound playback: picks amplitude and delegates to the audio driver helpers. */
 void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
-    M2C_UNK QueueVramCopy(s32, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK QueueMainOBJExtPaletteCopy(s32, M2C_UNK, s32, M2C_UNK);
     s32 func_020815bc(M2C_UNK, s32);
     M2C_UNK func_0208166c();
     M2C_UNK BlendPalette(s32, s32, M2C_UNK, M2C_UNK, s32);
@@ -232,17 +232,17 @@ void func_020b0cd0(M2C_UNK channel, M2C_UNK sound, s32 duration, u32 mode) {
     case 1:
         handle = func_020815bc(channel, duration);
         BlendPalette(handle, 0x7fff, 14, 2, duration);
-        QueueVramCopy(handle, sound, duration, 1);
+        QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
     case 2:
         handle = func_020815bc(channel, duration);
         BlendPalette(handle, 0x4000, 14, 2, duration);
-        QueueVramCopy(handle, sound, duration, 1);
+        QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
     case 3:
         handle = func_020815bc(channel, duration);
         BlendPalette(handle, 0x3ff, 14, 2, duration);
-        QueueVramCopy(handle, sound, duration, 1);
+        QueueMainOBJExtPaletteCopy(handle, sound, duration, 1);
         return;
     }
 }

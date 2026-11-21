@@ -69,7 +69,7 @@ void MarkUnitAttackRing(s32 x, s32 y, u8 *unit) {
     FillMapGridDiamond((s16)x, (s16)y, (s16)(*(&gUnitMinAttackRange + (((u32)(*unit << 26) >> 26) * 0x70)) - 1), -1);
 }
 
-void func_01ffc294(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
+void FloodFillUnitRangeForPlayer(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
     M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void **gCurrentMap;
     void *temp_r0;

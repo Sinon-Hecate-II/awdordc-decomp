@@ -28,6 +28,8 @@
 #define NETSTACK_MAX_PACKET 0x5e4 /* largest record the ring accepts */
 
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */
+#define NETSTACK_ALLOC    0x14 /* void *(*)(s32 size) packet buffer allocator */
+#define NETSTACK_FREE     0x40 /* void (*)(void *block) packet buffer release */
 #define NETSTACK_IP_ID    0x06 /* u16 IPv4 identification counter, bumped per packet */
 #define NETSTACK_LOCAL_IP 0x50 /* u32 local IPv4 address, host order */
 #define NETSTACK_DHCP_SERVER    0x20 /* u32 DHCP server identifier from the OFFER (option 54) */
@@ -53,6 +55,8 @@
  * ARP_RETRY_MS apart while the link is polled, for NETSTACK_ARP_TIMEOUT ticks. */
 #define ARP_RETRY_MS         100 /* milliseconds between the announcement packets */
 #define NETSTACK_ARP_TIMEOUT 23  /* (GetSystemTick >> 16) ticks the announcement waits before giving up */
+#define ARP_RESOLVE_ATTEMPTS 8   /* times ResolveArpMacAddress re-announces itself before giving up */
+#define ARP_RESOLVE_WAITS    20  /* ARP_RETRY_MS waits for a reply after each announcement */
 
 /* The IPv4 ARP cache (gArpCache): ARP_CACHE_COUNT entries mapping an address to
  * the hardware address learned for it, with the tick it was last refreshed. */
@@ -86,6 +90,9 @@
 
 /* IPv4 header fields (RFC 791) the transport layer reads; the 16-bit fields are
  * in network byte order in the packet. */
+#define IPH_VERSION_IHL 0x00 /* u8 version in the high nibble, header length in words in the low one */
+#define IPH_TOTAL_LENGTH 0x02 /* u16 total packet length, network byte order */
+#define IPH_PROTOCOL  0x09 /* u8 protocol of the payload */
 #define IPH_SRC_IP    0x0C /* u32 source IPv4 address */
 #define IPH_SRC_IP_HI 0x0C /* u16 high half of the source address */
 #define IPH_SRC_IP_LO 0x0E /* u16 low half of the source address */
@@ -113,6 +120,7 @@
 
 /* IPv4 protocol numbers used by the transport senders. */
 #define IP_PROTO_ICMP 1
+#define IP_PROTO_TCP  6
 #define IP_PROTO_UDP  17
 #define IP_PSEUDO_HEADER_SIZE 12 /* source/dest address, zero+protocol, transport length */
 #define UDP_HEADER_SIZE 8

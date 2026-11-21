@@ -1,5 +1,6 @@
 /* 7 functions from 0x0216FB7C to 0x02170830 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "md5.h"
 #pragma thumb on
 
 #pragma push
@@ -191,29 +192,41 @@ void func_ov001_0217073c(void *arg0) {
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_ov001_02170764(void *arg0,s32 arg1,u32 arg2){
-M2C_UNK func_ov001_02170830(void *,void *);
-M2C_UNK func_ov001_021710d0(void *,s32,u32);
-u32 offset,old,bits,total,used;
-offset=(M2C_FIELD(arg0,u32 *,0x10)>>3)&63;
-old=M2C_FIELD(arg0,u32 *,0x10);
-bits=arg2<<3;total=old+bits;
-M2C_FIELD(arg0,u32 *,0x10)=total;
-if(total<bits)M2C_FIELD(arg0,u32 *,0x14)++;
-M2C_FIELD(arg0,u32 *,0x14)+=arg2>>29;
-used=64-offset;
-if(arg2>=used){
-func_ov001_021710d0(arg0+24+offset,arg1,used);
-func_ov001_02170830(arg0,arg0+24);
-while(used+63<arg2){func_ov001_02170830(arg0,(void *)(arg1+used));used+=64;}
-offset=0;
-}else used=0;
-func_ov001_021710d0(arg0+24+offset,arg1+used,arg2-used);
+/* Add bytes to the MD5 message, transforming complete blocks and saving the remainder. */
+void Ov001_MD5_Update(void *state, s32 dataAddress, u32 byteCount) {
+    void Ov001_MD5_Transform(MD5Context *, const u8 *);
+    void Ov001_CopyBytes(u8 *, const u8 *, u32);
+    MD5Context *context = state;
+    const u8 *data = (const u8 *)dataAddress;
+    u32 bufferOffset, oldBitCount, inputBits, totalBits, bytesUsed;
+
+    bufferOffset = (context->count[0] >> 3) & (MD5_BLOCK_SIZE - 1);
+    oldBitCount = context->count[0];
+    inputBits = byteCount << 3;
+    totalBits = oldBitCount + inputBits;
+    context->count[0] = totalBits;
+    if (totalBits < inputBits) {
+        context->count[1]++;
+    }
+    context->count[1] += byteCount >> 29;
+    bytesUsed = MD5_BLOCK_SIZE - bufferOffset;
+    if (byteCount >= bytesUsed) {
+        Ov001_CopyBytes(context->buffer + bufferOffset, data, bytesUsed);
+        Ov001_MD5_Transform(context, context->buffer);
+        while (bytesUsed + (MD5_BLOCK_SIZE - 1) < byteCount) {
+            Ov001_MD5_Transform(context, data + bytesUsed);
+            bytesUsed += MD5_BLOCK_SIZE;
+        }
+        bufferOffset = 0;
+    } else {
+        bytesUsed = 0;
+    }
+    Ov001_CopyBytes(context->buffer + bufferOffset, data + bytesUsed, byteCount - bytesUsed);
 }
 
 #pragma thumb on
 void func_ov001_021707dc(void *arg0, void *arg1) {
-    void func_ov001_02170764(void *, s32, u32);
+    void Ov001_MD5_Update(void *, s32, u32);
     void func_ov001_02171078(u8 *, volatile u32 *, u32);
     void func_ov001_021710e8(s8 *, s32, u32);
     extern M2C_UNK data_ov001_0218fe68;
@@ -229,9 +242,9 @@ void func_ov001_021707dc(void *arg0, void *arg1) {
         } else {
             var_r2 = 0x78 - temp_r1;
         }
-        func_ov001_02170764(arg1, (s32)&data_ov001_0218fe68, (u32)var_r2);
+        Ov001_MD5_Update(arg1, (s32)&data_ov001_0218fe68, (u32)var_r2);
     }
-    func_ov001_02170764(arg1, (s32)sp0, 8);
+    Ov001_MD5_Update(arg1, (s32)sp0, 8);
     func_ov001_02171078((u8 *)arg0, (volatile u32 *)arg1, 0x10);
     func_ov001_021710e8((s8 *)arg1, 0, 0x58);
 }

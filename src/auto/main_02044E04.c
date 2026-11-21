@@ -14,7 +14,7 @@ typedef struct WebResponsePlayer {
 #include "ghttp.h"
 typedef struct { u32 words[4]; } CallbackRecord;
 
-s32 func_02044e04(void) {
+s32 BeginWebRequest(void) {
     M2C_UNK func_0204b378();
     extern M2C_UNK gHttpRequestList;
     func_0204b378();
@@ -22,7 +22,7 @@ s32 func_02044e04(void) {
     return 1;
 }
 
-s32 func_02044e28(void){extern M2C_UNK gHttpRequestList;void func_0204b3cc(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
+s32 EndWebRequest(void){extern M2C_UNK gHttpRequestList;void func_0204b3cc(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
 
 s32 func_02044e68(void) {
     s32 HasNetError();
@@ -192,20 +192,40 @@ void HttpRequestFree(void *node) {
     }
 }
 
+/* Free every request node left in gHttpRequestList, each one's body buffer
+ * first, and leave the list empty. */
 void HttpRequestFreeAll(void) {
- extern M2C_UNK gHttpRequestList;void HeapFree(s32,s32,s32);
- void *p=M2C_FIELD(&gHttpRequestList,void **,0),*q;
- while(p){q=p;p=M2C_FIELD(p,void **,24);if(M2C_FIELD(q,s32 *,16))HeapFree(4,M2C_FIELD(q,s32 *,16),0);HeapFree(4,(s32)q,0);}
- M2C_FIELD(&gHttpRequestList,void **,0)=0;
+    extern M2C_UNK gHttpRequestList;
+    void HeapFree(s32, s32, s32);
+    WebRequestNode *node = M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0);
+    WebRequestNode *doomed;
+
+    while (node) {
+        doomed = node;
+        node = doomed->next;
+        if (doomed->buffer) HeapFree(4, (s32)doomed->buffer, 0);
+        HeapFree(4, (s32)doomed, 0);
+    }
+    M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0) = 0;
 }
 
-s32 GetWebResponseHeader(s32 *a) {
- s32 HasNetError();s32 *func_02047928(s32 *);extern s32 gWebTransaction;
- s32 x; s32 *p;
- if(HasNetError())return 1;
- if(gWebTransaction!=5)return 16;
- p=func_02047928(&x);if(!x)return 17;
- a[0]=x;a[1]=*p++;a[2]=(s32)p;return 0;
+/* Reads the size, server status and record pointer from a completed web response. */
+s32 GetWebResponseHeader(s32 *header) {
+    s32 HasNetError(void);
+    s32 *GetWebResponseBody(s32 *);
+    extern s32 gWebTransaction;
+    s32 bodySize;
+    s32 *body;
+
+    if (HasNetError()) return WEB_RESPONSE_NETWORK_ERROR;
+    if (gWebTransaction != WEB_TXN_COMPLETE) return WEB_RESPONSE_NOT_COMPLETE;
+    body = GetWebResponseBody(&bodySize);
+    if (!bodySize) return WEB_RESPONSE_EMPTY;
+
+    header[WEB_RESPONSE_SIZE] = bodySize;
+    header[WEB_RESPONSE_STATUS] = *body++;
+    header[WEB_RESPONSE_RECORDS] = (s32)body;
+    return 0;
 }
 
 /* Validates a NAS web request: checks the network state and the request context,
@@ -262,7 +282,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     return 0;
 }
 
-s32 func_02045620(void){void func_020478b8(void);extern s32 gWebTransaction;func_020478b8();return gWebTransaction=0;}
+s32 func_02045620(void){void ResetWebRequest(void);extern s32 gWebTransaction;ResetWebRequest();return gWebTransaction=0;}
 
 /* Validate and send a put.asp web request: the record count and payload size
  * must be in range (a payload needs a size), then the put request is built and

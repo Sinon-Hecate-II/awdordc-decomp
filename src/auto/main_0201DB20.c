@@ -51,23 +51,27 @@ u32 SendNetPacket(s32 packet, s32 length) {
     return 0;
 }
 
-s32 func_0201dbb8(void) {
+/* Bytes waiting to be read on the current socket: for a TLS socket the TLS
+ * layer's own count, otherwise the bytes in the receive buffer.  Returns 0 when
+ * nothing is queued, -1 while a TCP socket is not established (a datagram socket
+ * is always readable, its byte being SOCK_KIND_UDP or SOCK_KIND_ICMP). */
+s32 GetSocketReceivedDataSize(void) {
     extern M2C_UNK gSocketManager;
     s32 TlsGetReceivedDataSize(void *);
-    void *p;
-    s32 n;
-    p = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (p) {
-        if (M2C_FIELD(p, u8 *, 9)) return TlsGetReceivedDataSize(p);
-        n = M2C_FIELD(p, s32 *, 0x44);
-        if (n != 0) goto done;
+    void *conn;
+    s32 size;
+    conn = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, SOCK_OBJECT_RAW);
+    if (conn) {
+        if (M2C_FIELD(conn, u8 *, SOCK_TLS_ACTIVE)) return TlsGetReceivedDataSize(conn);
+        size = M2C_FIELD(conn, s32 *, CONN_RX_POS);
+        if (size != 0) goto done;
         {
-            u8 c = M2C_FIELD(p, u8 *, 8);
-            if (c == 4) goto done;
-            if ((u8)(c + 246) > 1) goto fail;
+            u8 state = M2C_FIELD(conn, u8 *, SOCKET_STATE);
+            if (state == TCP_STATE_ESTABLISHED) goto done;
+            if ((u8)(state + 246) > 1) goto fail;
         }
     done:
-        return n;
+        return size;
     fail:
         return -1;
     }
@@ -400,7 +404,7 @@ s32 BuildDhcpRequest(s32 mode) {
 }
 s32 func_0201e404(s32 arg0, s32 arg1) {
     u64 GetSystemTick(void);
-    s32 func_0201dbb8(void);
+    s32 GetSocketReceivedDataSize(void);
     void func_0201a238(void);
     s32 func_0201d618(s32 *);
     s32 MacAddressesDiffer(u16 *, u16 *);
@@ -430,7 +434,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     goto timer_check;
 
 top_loop:
-    if (func_0201dbb8() == 0) {
+    if (GetSocketReceivedDataSize() == 0) {
         func_0201a238();
     } else {
         q = (u8 *)func_0201d618(&slots[1]);
@@ -516,17 +520,17 @@ final:
 }
 #pragma opt_common_subs reset
 s32 func_0201e754(void) {
-    M2C_UNK func_0201d164();
+    M2C_UNK OpenRawConnection();
     M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0201d1f0();
+    M2C_UNK ResetCurrentConnection();
     M2C_UNK func_0201d224();
     s32 BuildDhcpDiscover();
     s32 func_0201e404(s32, s32);
     s32 temp_r0;
     s32 var_r5;
 
-    func_0201d1f0();
-    func_0201d164();
+    ResetCurrentConnection();
+    OpenRawConnection();
     SetConnectionEndpoint(0x44, 0x43, -1);
     var_r5 = 0;
 loop_1:
@@ -554,8 +558,8 @@ s32 func_0201e7ac(u32 *out_size, s32 mode) {
     s32 attempt;
     u32 timeout;
 
-    func_0201d1f0();
-    func_0201d164();
+    ResetCurrentConnection();
+    OpenRawConnection();
     if (mode == 1) {
         SetConnectionEndpoint(0x44, 0x43, M2C_FIELD(&gNetStack, s32 *, 0x20));
     } else {
@@ -600,8 +604,8 @@ void func_0201e8a8(void) {
  extern u8 gDhcpPacketBuffer[];
  u8 *BuildDhcpPacket(u8 *,s32,s32);
  s32 p; s32 base;
- func_0201d1f0();
- func_0201d164();
+ ResetCurrentConnection();
+ OpenRawConnection();
  SetConnectionEndpoint(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
  base=(s32)gDhcpPacketBuffer;
  p=(s32)BuildDhcpPacket((u8 *)base,7,0);

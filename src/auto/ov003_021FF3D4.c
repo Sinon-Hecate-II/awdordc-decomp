@@ -167,7 +167,7 @@ void func_ov003_021ff7ac(void) {
 void *func_ov003_021ff7d4(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_ov003_021f1920(void);
@@ -224,7 +224,7 @@ void *func_ov003_021ff7d4(void *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     return obj;
 }
 
@@ -232,7 +232,7 @@ void *func_ov003_021ff7d4(void *obj) {
 void *func_ov003_021ff9dc(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_ov003_021f1920(void);
@@ -289,7 +289,7 @@ void *func_ov003_021ff9dc(void *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     MemFree(obj);
     return obj;
 }
@@ -298,7 +298,7 @@ void *func_ov003_021ff9dc(void *obj) {
 void *func_ov003_021ffbec(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
@@ -355,7 +355,7 @@ void *func_ov003_021ffbec(void *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     return obj;
 }
 
@@ -363,7 +363,7 @@ void *func_ov003_021ffbec(void *obj) {
 void *func_ov003_021ffdf4(void *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
@@ -420,7 +420,7 @@ void *func_ov003_021ffdf4(void *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     MemFree(obj);
     return obj;
 }
@@ -431,7 +431,7 @@ void *func_ov003_021ffdf4(void *obj) {
 void *Ov003Object_Destructor(Ov003Object *obj) {
     void DeleteSpriteObject(void *);
     void MemFree(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     void HeapFreeBlock(s32);
     void SetOv003SceneState(s32);
     void func_020af1e4(void);
@@ -484,7 +484,7 @@ void *Ov003Object_Destructor(Ov003Object *obj) {
         MemFree(sub);
     }
     SetOv003SceneState(4);
-    func_020c127c();
+    RemoveMapViewSprites();
     return obj;
 }
 

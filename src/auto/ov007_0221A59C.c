@@ -19,7 +19,7 @@ extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],gSpriteDesc64x32[];
 extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
-s32 GetCachedPlayerUnitCount(s32);s32 GetMapEditorMode(void);s32 GetMapEditorUnitOwner(void);s32 func_ov007_0221204c(void);
+s32 GetCachedPlayerUnitCount(s32);s32 GetMapEditorMode(void);s32 GetMapEditorUnitOwner(void);s32 MapEditor_GetPropertyCount(void);
 void DrawFrameRectBorder(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
 void DrawTileRow(u16,u8,u16,u16,s32);s32 MapEditor_PlayerHasTeam(s32);
 u8 sp[44];void *saved;s32 i,x,tile,mode,width,height;
@@ -45,13 +45,13 @@ case 0:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
 func_020a9774(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
-func_020a9774(sp,0x78,0x92,3,99-func_ov007_0221204c());
+func_020a9774(sp,0x78,0x92,3,99-MapEditor_GetPropertyCount());
 break;
 case 1:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
 func_020a9774(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
-func_020a9774(sp,0x78,0x92,4,99-func_ov007_0221204c());
+func_020a9774(sp,0x78,0x92,4,99-MapEditor_GetPropertyCount());
 break;
 }
 M2C_FIELD(sp,u16 *,18)=0x14c;sp[33]=3;
@@ -155,7 +155,7 @@ s32 Map_CanPlaceTile(s32 x, s32 y, s32 kind, s32 dir) {
 
 s32 Map_IsTerrainKindPlaceable(s32 x,s32 y,s32 kind) {
  s32 Map_IsWastelandTile(s32,s32);
- s32 func_ov007_0221bad0(s32,s32);
+ s32 Map_IsBridgeableTile(s32,s32);
  extern u8 data_ov007_0221f544[],data_ov007_0221f52c[],data_ov007_0221f514[];
  s32 i;
  u8 count,diagonal,mask;
@@ -166,7 +166,7 @@ s32 Map_IsTerrainKindPlaceable(s32 x,s32 y,s32 kind) {
  switch(kind) {
  case 13:case 14:
  if(Map_IsWastelandTile(x,y))return 1;
- return (u8)(func_ov007_0221bad0(x,y)!=0);
+ return (u8)(Map_IsBridgeableTile(x,y)!=0);
  case 10:case 12:
  all=*(const struct TileNeighbors_0221 *)data_ov007_0221f544;
  p=(u8 *)&all;
@@ -209,23 +209,27 @@ s32 Map_IsTerrainKindPlaceable(s32 x,s32 y,s32 kind) {
  return 1;
 }
 
-s32 MapEditor_CheckPlacementLimits(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Map editor placement limits: a terrain kind that is not one of the countable
+ * property kinds is always placeable; an HQ (0xF) is refused when its owner
+ * already has one; and once the map holds the property maximum (99) a new
+ * property may only replace an existing property tile.  Returns 0 when refused. */
+s32 MapEditor_CheckPlacementLimits(s32 x, s32 y, s32 kind, s32 owner) {
     s32 IsDestroyedPipeTile(s32);
     s32 Map_GetCellTerrainKind(s32, s32);
     s32 GetEditorUnitCategoryCount(s32, s32);
-    s32 func_ov007_0221204c(void);
-    if (IsDestroyedPipeTile(arg2) == 0) {
+    s32 MapEditor_GetPropertyCount(void);
+    if (IsDestroyedPipeTile(kind) == 0) {
         goto ret1;
     }
-    if (arg2 == 0xF) {
-        if (GetEditorUnitCategoryCount(0, arg3) > 0) {
+    if (kind == 0xF) {
+        if (GetEditorUnitCategoryCount(0, owner) > 0) {
             return 0;
         }
     }
-    if (func_ov007_0221204c() < 0x63) {
+    if (MapEditor_GetPropertyCount() < 0x63) {
         goto ret1;
     }
-    if (IsDestroyedPipeTile(Map_GetCellTerrainKind(arg0, arg1)) == 0) {
+    if (IsDestroyedPipeTile(Map_GetCellTerrainKind(x, y)) == 0) {
         return 0;
     }
 ret1:
@@ -243,7 +247,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
     void Map_SetTileAndRefresh(s32, s32, u16, u16);
     void Map_RefreshCellTile(s32, s32);
     s32 Map_IsWastelandTile(s32, s32);
-    s32 func_ov007_0221bad0(s32, s32);
+    s32 Map_IsBridgeableTile(s32, s32);
     extern void **gCurrentMap;
     extern u8 data_ov007_0221f574[];
 
@@ -275,7 +279,7 @@ s32 Map_PaintTile(s32 x, s32 y, s32 tile, s32 dir, u8 refresh) {
         }
         break;
     case 0x0d:
-        if (func_ov007_0221bad0(x, y) != 0) {
+        if (Map_IsBridgeableTile(x, y) != 0) {
             encodedTile = 0x0e;
             graphic = 0x25;
         }

@@ -280,37 +280,47 @@ void CreateWallpaperSprite(M2C_UNK layer, M2C_UNK palette, s32 set) {
     if ((u8)(gCur3DSpriteEngine == g3DSpriteEngineSub)) CreateSubWallpaperSprite(layer, palette, set);
 }
 
-s32 func_020af0d4(void) {
-extern u16 gMapConfig;
-switch((u32)(gMapConfig<<29)>>29) {
-case 0:return 0;
-case 1:return 4;
-case 2:return 6;
-case 3:return 4;
-case 4:case 6:case 7:return 5;
-default:return 0;
-}
+/* Return the wallpaper set (index into gWallpaperFileSets) shown behind the
+ * battle for the current map mode, the low three bits of gMapConfig. */
+s32 GetMapModeWallpaperSet(void) {
+    extern u16 gMapConfig;
+    switch ((u32)(gMapConfig << 29) >> 29) {
+    case 0:
+        return 0;
+    case 1:
+        return 4;
+    case 2:
+        return 6;
+    case 3:
+        return 4;
+    case 4:
+    case 6:
+    case 7:
+        return 5;
+    default:
+        return 0;
+    }
 }
 
 void func_020af144(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_020aed50(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020aed50(arg0, arg1, arg2, arg3, func_020af0d4());
+    func_020aed50(arg0, arg1, arg2, arg3, GetMapModeWallpaperSet());
 }
 
 void func_020af178(M2C_UNK arg0, M2C_UNK arg1) {
     
-    s32 func_020af0d4();
-    CreateMainWallpaperSprite(arg0, arg1, func_020af0d4());
+    s32 GetMapModeWallpaperSet();
+    CreateMainWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
 }
 
 void func_020af19c(M2C_UNK arg0, M2C_UNK arg1) {
     void CreateSubWallpaperSprite(M2C_UNK, M2C_UNK, s32);
-    CreateSubWallpaperSprite(arg0, arg1, func_020af0d4());
+    CreateSubWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
 }
 
 void func_020af1c0(M2C_UNK arg0, M2C_UNK arg1) {
     
-    CreateWallpaperSprite(arg0, arg1, func_020af0d4());
+    CreateWallpaperSprite(arg0, arg1, GetMapModeWallpaperSet());
 }
 
 void func_020af1e4(void) {

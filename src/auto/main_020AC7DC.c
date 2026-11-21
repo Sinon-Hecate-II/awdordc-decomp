@@ -7,12 +7,13 @@ s32 *func_020ad570(s32);
 void func_020ac7dc(void *arg0) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 v; s8 pos,neg;s32 saved,bank,i;u8 mode;
+s32 v; register s8 pos,neg;s32 saved,bank; register s32 i;u8 mode;
 M2C_FIELD(arg0,u16 *,0x38)++;
 v=EaseInterpolate(0,0,16,M2C_FIELD(arg0,u16 *,0x38),M2C_FIELD(arg0,u16 *,0x3a));
-i=0;
-pos=v;neg=-v;
+pos=v;
 saved=gCur3DSpriteEngine;
+i=0;
+neg=-v;
 do {
 if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
 gCur3DSpriteEngine=bank;
@@ -190,7 +191,7 @@ M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
     }
 }
 
-void func_020ace54(void) {
+void FinishCurrentScreenTransition(void) {
     s32 GetScreenFlag(u8);
     M2C_UNK ApplyScreenMode(M2C_UNK);
     extern s32 g3DSpriteEngineMain;
@@ -563,21 +564,23 @@ s32 func_020ad584(void) {
     return *func_020ad570();
 }
 
-s32 func_020ad594(s32 arg0) {
-    s32 func_020ad5dc();
-    s32 *func_020ad570(s32);
-    s32 temp;
-    s32 var_r4;
-    s32 temp_r0;
-
-    temp_r0 = func_020ad5dc();
-    for (var_r4 = 0; var_r4 < temp_r0; var_r4++) {
-        temp = M2C_FIELD(func_020ad570(var_r4), s32 *, 0);
-        if (temp == arg0) {
-            return var_r4;
-        }
+s32 func_020ad594(s32 arg0)
+{
+  s32 func_020ad5dc();
+  s32 *func_020ad570(s32);
+  s32 temp;
+  s32 var_r4;
+  temp = func_020ad5dc();
+  for (var_r4 = 0; var_r4 < temp; var_r4++)
+  {
+    temp = *((s32 *) (((s8 *) func_020ad570(var_r4)) + 0));
+    if (temp == arg0)
+    {
+      return var_r4;
     }
-    return -1;
+  }
+
+  return -1;
 }
 
 s32 func_020ad5dc(void) {

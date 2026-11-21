@@ -47,29 +47,29 @@ s32 func_ov010_02223114(void) {
 s32 func_ov010_022231d4(void) {
 M2C_UNK SendDataToPlayer(u8,s32,s32);
 s32 Link_BuildNextPacket(void);
-extern M2C_UNK data_ov010_0222c960, gLinkConfig;
+extern M2C_UNK gVoiceChatState, gLinkConfig;
 extern u8 data_ov010_0222be36[];
 s32 t,k,idx,i; u8 n;
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==0)return 1;
-if(M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)==0){
-t=Link_BuildNextPacket();M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=t;
-if(t && M2C_FIELD(&data_ov010_0222c960,s32*,0x18)) t=0; else t=1; return t;
+if(M2C_FIELD(&gVoiceChatState,s32*,0x20)==0)return 1;
+if(M2C_FIELD(&gVoiceChatState,s32*,0xF08)==0){
+t=Link_BuildNextPacket();M2C_FIELD(&gVoiceChatState,s32*,0xF08)=t;
+if(t && M2C_FIELD(&gVoiceChatState,s32*,0x18)) t=0; else t=1; return t;
 }
 n=1;
 if(M2C_FIELD(&gLinkConfig,s32*,0x10)==2){
-idx=M2C_FIELD(&data_ov010_0222c960,s32*,0xF10)++;
-n=(data_ov010_0222be36+M2C_FIELD(&data_ov010_0222c960,s32*,0xF14)*3)[idx];
+idx=M2C_FIELD(&gVoiceChatState,s32*,0xF10)++;
+n=(data_ov010_0222be36+M2C_FIELD(&gVoiceChatState,s32*,0xF14)*3)[idx];
 }
 i=0; goto test;
 loop: {
-u32 bits=M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C);
+u32 bits=M2C_FIELD(&gVoiceChatState,u32*,0xF0C);
 k=__CLZ(bits);if(k==32)goto done;
-M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C)=bits&~(0x80000000U>>k);
-SendDataToPlayer((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
-if(!M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)){
-M2C_FIELD(&data_ov010_0222c960,s32*,0xF00)++;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=0;
-M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)=0;
+M2C_FIELD(&gVoiceChatState,u32*,0xF0C)=bits&~(0x80000000U>>k);
+SendDataToPlayer((u8)(31-k),M2C_FIELD(&gVoiceChatState,s32*,0xF08),M2C_FIELD(&gVoiceChatState,s32*,12));
+if(!M2C_FIELD(&gVoiceChatState,s32*,0xF0C)){
+M2C_FIELD(&gVoiceChatState,s32*,0xF00)++;
+M2C_FIELD(&gVoiceChatState,s32*,0xF08)=0;
+M2C_FIELD(&gVoiceChatState,s32*,0xF0C)=0;
 goto done;
 }
 }i++; test: if(i<n)goto loop; done: return 1;
@@ -114,22 +114,24 @@ while(p) { void *old=p; p=M2C_FIELD(p,void **,8); Link_FreePacket(old); }
 for(i=0;i<3;i++) gLinkPendingCounts[i]=0;
 }
 
-s32 func_ov010_022233ac(void *a) {
-extern s32 gLinkPendingList;
-extern s32 gLinkPendingCounts[];
-if(gLinkPendingList==0) {
-gLinkPendingList=(s32)a;
-M2C_FIELD(a,s32 *,4)=0;
-M2C_FIELD((void *)gLinkPendingList,s32 *,8)=0;
-M2C_FIELD(&gLinkPendingList,s32 *,4)=gLinkPendingList;
-} else {
-M2C_FIELD(a,s32 *,4)=M2C_FIELD(&gLinkPendingList,s32 *,4);
-M2C_FIELD(a,s32 *,8)=0;
-M2C_FIELD((void *)M2C_FIELD(&gLinkPendingList,s32 *,4),void **,8)=a;
-M2C_FIELD(&gLinkPendingList,void **,4)=a;
-}
-gLinkPendingCounts[M2C_FIELD(a,u8 *,0x11)]++;
-return gLinkPendingCounts[M2C_FIELD(a,u8 *,0x11)];
+/* Append a packet to the tail of the pending-send list, increment its channel's
+ * queued-packet count and return that count. */
+s32 Link_AppendPendingPacket(void *packet) {
+    extern s32 gLinkPendingList;
+    extern s32 gLinkPendingCounts[];
+    if (gLinkPendingList == 0) {
+        gLinkPendingList = (s32)packet;
+        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = 0;
+        M2C_FIELD((void *)gLinkPendingList, s32 *, LINK_PACKET_NEXT) = 0;
+        M2C_FIELD(&gLinkPendingList, s32 *, 4) = gLinkPendingList;
+    } else {
+        M2C_FIELD(packet, s32 *, LINK_PACKET_PREV) = M2C_FIELD(&gLinkPendingList, s32 *, 4);
+        M2C_FIELD(packet, s32 *, LINK_PACKET_NEXT) = 0;
+        M2C_FIELD((void *)M2C_FIELD(&gLinkPendingList, s32 *, 4), void **, LINK_PACKET_NEXT) = packet;
+        M2C_FIELD(&gLinkPendingList, void **, 4) = packet;
+    }
+    gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)]++;
+    return gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)];
 }
 
 s32 func_ov010_02223420(void) {

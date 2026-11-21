@@ -1,6 +1,7 @@
 /* 23 functions from 0x021E1500 to 0x021E24E8 (ov002), found by ds-decomp. */
 #include "common.h"
 #include "ov002_panel.h"
+#include "gx.h"
 
 void func_ov002_021e1500(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
@@ -16,38 +17,38 @@ void func_ov002_021e1500(void) {
 }
 
 void func_ov002_021e152c(void) {
-    void func_020822b8(void *);
+    void Apply3DSpriteLayout(void *);
     void SetDemoBattleDefaults(void *);
     void InitBattleScene(void *);
     void InitBattleSpriteScene(void *);
-    extern M2C_UNK data_ov002_021ea680,gPlayerSettings,data_ov002_021f30e4,data_ov002_021f3014;
+    extern M2C_UNK data_ov002_021ea680,gPlayerSettings,gBattleSceneState,data_ov002_021f3014;
     extern u8 data_ov002_021f2f40;
     func_ov002_021e1500();
-    func_020822b8(&data_ov002_021ea680);
+    Apply3DSpriteLayout(&data_ov002_021ea680);
     if(data_ov002_021f2f40) SetDemoBattleDefaults(&gPlayerSettings);
-    InitBattleScene(&data_ov002_021f30e4);
+    InitBattleScene(&gBattleSceneState);
     InitBattleSpriteScene(&data_ov002_021f3014);
 }
 
 void func_ov002_021e157c(void) {
  M2C_UNK UpdateBattleScene(void *);
  M2C_UNK DrawBattleSceneUnitView(void *);
- extern M2C_UNK data_ov002_021f30e4;
- UpdateBattleScene(&data_ov002_021f30e4);
- DrawBattleSceneUnitView(&data_ov002_021f30e4);
+ extern M2C_UNK gBattleSceneState;
+ UpdateBattleScene(&gBattleSceneState);
+ DrawBattleSceneUnitView(&gBattleSceneState);
 }
 
 void func_ov002_021e1598(void) {
-    extern M2C_UNK data_ov002_021f30e4;
-    M2C_FIELD(&data_ov002_021f30e4, s8 *, 9) = 1;
+    extern M2C_UNK gBattleSceneState;
+    M2C_FIELD(&gBattleSceneState, s8 *, 9) = 1;
 }
 
 void func_ov002_021e15ac(void) {
     void func_ov002_021e3dd4(void *);
     void func_ov002_021e7970(void *);
-    extern M2C_UNK data_ov002_021f3014,data_ov002_021f30e4;
+    extern M2C_UNK data_ov002_021f3014,gBattleSceneState;
     func_ov002_021e3dd4(&data_ov002_021f3014);
-    func_ov002_021e7970(&data_ov002_021f30e4);
+    func_ov002_021e7970(&gBattleSceneState);
     *(volatile u16 *)0x4000304 &= ~0x8000;
 }
 
@@ -364,31 +365,35 @@ recurse:
     }
 }
 #pragma optimization_level reset
-void func_ov002_021e1c34(void *a,s32 b) {
+/* Effect-node class transform callback (vtable +0x0C): queue the node's
+ * translation into the geometry engine's matrix (x negated on the flipped side),
+ * then, unless its script scale is exactly 1.0, a uniform scale of it in the
+ * GX's 20.12 fixed point. */
+void SetEffectNodeMatrix(void *node, s32 flip) {
     s32 x,y,z;
     u16 scale;
     s32 value;
-    if(!b) {
-        z=M2C_FIELD(a,s16 *,0x40);
-        y=M2C_FIELD(a,s16 *,0x3e);
-        x=M2C_FIELD(a,s16 *,0x3c);
-        *(volatile s32 *)0x4000470=x;
-        *(volatile s32 *)0x4000470=y;
-        *(volatile s32 *)0x4000470=z;
+    if(!flip) {
+        z=M2C_FIELD(node,s16 *,FX_NODE_Z);
+        y=M2C_FIELD(node,s16 *,FX_NODE_Y);
+        x=M2C_FIELD(node,s16 *,FX_NODE_X);
+        REG_GX_MTX_TRANS=x;
+        REG_GX_MTX_TRANS=y;
+        REG_GX_MTX_TRANS=z;
     } else {
-        x=M2C_FIELD(a,s16 *,0x3c);
-        z=M2C_FIELD(a,s16 *,0x40);
-        y=M2C_FIELD(a,s16 *,0x3e);
-        *(volatile s32 *)0x4000470=-x;
-        *(volatile s32 *)0x4000470=y;
-        *(volatile s32 *)0x4000470=z;
+        x=M2C_FIELD(node,s16 *,FX_NODE_X);
+        z=M2C_FIELD(node,s16 *,FX_NODE_Z);
+        y=M2C_FIELD(node,s16 *,FX_NODE_Y);
+        REG_GX_MTX_TRANS=-x;
+        REG_GX_MTX_TRANS=y;
+        REG_GX_MTX_TRANS=z;
     }
-    scale=M2C_FIELD(a,u16 *,0x42);
-    if(scale==0x100) return;
+    scale=M2C_FIELD(node,u16 *,FX_NODE_SCRIPT_SCALE);
+    if(scale==FX_SCRIPT_SCALE_ONE) return;
     value=(s32)(scale<<12)>>8;
-    *(volatile s32 *)0x400046c=value;
-    *(volatile s32 *)0x400046c=value;
-    *(volatile s32 *)0x400046c=0x1000;
+    REG_GX_MTX_SCALE=value;
+    REG_GX_MTX_SCALE=value;
+    REG_GX_MTX_SCALE=GX_FX_ONE;
 }
 
 #pragma push

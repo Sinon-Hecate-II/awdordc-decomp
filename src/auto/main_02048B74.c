@@ -100,40 +100,47 @@ done:
     return table;
 }
 
-void func_02048dc4(s32 **arg0) {
+/* GameSpy hashtable.c TableFree: releases every bucket vector, then the bucket
+ * array and the table itself; a NULL table is an assertion failure. */
+void TableFree(HashTable *table) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     M2C_UNK Vector_Free(s32);
     M2C_UNK gpiFree(M2C_UNK);
-    extern M2C_UNK data_020fcd20;
+    extern M2C_UNK sTableFreeName;
     extern M2C_UNK gHashtableFileName;
     extern M2C_UNK sAssertTable;
-    s32 var_r4;
+    s32 i;
 
-    if (arg0 == NULL) {
-        AssertFailed(&sAssertTable, &gHashtableFileName, &data_020fcd20, 0x51);
+    if (table == NULL) {
+        AssertFailed(&sAssertTable, &gHashtableFileName, &sTableFreeName, 0x51);
     }
-    if (arg0 == NULL) {
+    if (table == NULL) {
         return;
     }
-    var_r4 = 0;
-    if (M2C_FIELD(arg0, s32 *, 4) > 0) {
+    i = 0;
+    if (table->nBuckets > 0) {
         do {
-            Vector_Free(M2C_FIELD(arg0, s32 **, 0)[var_r4]);
-            var_r4 += 1;
-        } while (var_r4 < M2C_FIELD(arg0, s32 *, 4));
+            Vector_Free(table->buckets[i]);
+            i += 1;
+        } while (i < table->nBuckets);
     }
-    gpiFree(M2C_FIELD(arg0, s32 **, 0));
-    gpiFree(arg0);
+    gpiFree(table->buckets);
+    gpiFree(table);
 }
 
-s32 func_02048e38(void *p) {
-extern M2C_UNK sAssertTable,gHashtableFileName,data_020fcd38;
-s32 Vector_GetCount(s32);
-s32 i, sum=0;
-if(!p)AssertFailed(&sAssertTable,&gHashtableFileName,&data_020fcd38,0x61);
-if(!p)return 0;
-for(i=0;i<M2C_FIELD(p,s32 *,4);i++)sum+=Vector_GetCount(M2C_FIELD(p,s32 **,0)[i]);
-return sum;
+/* GameSpy hashtable.c TableCount: returns how many elements the table holds, the
+ * sum of the element counts of its bucket vectors; a NULL table asserts and
+ * counts as empty. */
+s32 TableCount(HashTable *table) {
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
+    s32 Vector_GetCount(s32);
+    extern M2C_UNK sAssertTable, gHashtableFileName, sTableCountName;
+    s32 i, sum = 0;
+
+    if (!table) AssertFailed(&sAssertTable, &gHashtableFileName, &sTableCountName, 0x61);
+    if (!table) return 0;
+    for (i = 0; i < table->nBuckets; i++) sum += Vector_GetCount(table->buckets[i]);
+    return sum;
 }
 
 /* GameSpy hashtable TableEnter: hashes the element with the table's hash
@@ -185,27 +192,34 @@ s32 TableLookup(HashTable *table,s32 data) {
 }
 
 void Vector_ForEach(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020fcdc8,gHashtableFileName,data_020fcd5c;
+extern M2C_UNK sAssertFn,gHashtableFileName,sTableMapSafeName;
 void func_02048a9c(s32,s32,s32);
 s32 i;
-if(!a)AssertFailed(&data_020fcdc8,&gHashtableFileName,&data_020fcd5c,0xb6);
+if(!a)AssertFailed(&sAssertFn,&gHashtableFileName,&sTableMapSafeName,0xb6);
 for(i=0;i<M2C_FIELD(p,s32 *,4);i++)func_02048a9c(M2C_FIELD(p,s32 **,0)[i],a,b);
 }
 
-s32 func_02049104(void *p,s32 a,s32 b) {
-extern M2C_UNK data_020fcdc8,gHashtableFileName,data_020fcd6c;
-s32 func_02048afc(s32,s32,s32);
-s32 i,n;
-if(!a)AssertFailed(&data_020fcdc8,&gHashtableFileName,&data_020fcd6c,0xd3);
-for(i=0;i<M2C_FIELD(p,s32 *,4);i++){n=func_02048afc(M2C_FIELD(p,s32 **,0)[i],a,b);if(n)return n;}
-return 0;
+/* GameSpy hashtable.c TableMapSafe2: run `callback` over the elements of every
+ * bucket and return the first element it accepts (a nonzero result), or 0 when no
+ * element is accepted. */
+s32 TableMapSafe2(HashTable *table, s32 (*callback)(s32, s32), s32 userData) {
+    extern M2C_UNK sAssertFn, gHashtableFileName, sTableMapSafe2Name;
+    s32 Vector_Find(s32 *, s32 (*)(s32, s32), s32);
+    s32 i, found;
+
+    if (!callback) AssertFailed(&sAssertFn, &gHashtableFileName, &sTableMapSafe2Name, 0xd3);
+    for (i = 0; i < table->nBuckets; i++) {
+        found = Vector_Find(table->buckets[i], callback, userData);
+        if (found) return found;
+    }
+    return 0;
 }
 
 void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;int off=0;do {StringFormat(b+off,data_020fcdcc,a[i]);i++;off+=2;}while(i<16);}
 
 void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
 
-unsigned long long GetTickCountMs(void){int func_02006f8c(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(func_02006f8c()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
+unsigned long long GetTickCountMs(void){int IsSystemTickInitialized(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(IsSystemTickInitialized()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
 
 void gpiSleep(void) {
     M2C_UNK SleepMilliseconds();

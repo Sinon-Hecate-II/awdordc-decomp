@@ -17,4 +17,11 @@
 /* Heap signature (u32 at heap+0x00). */
 #define HEAP_SIGNATURE_EXP 0x45585048 /* 'EXPH' */
 
+/* Field offsets of an expanded heap's header (the object CreateExpHeap sets up). */
+#define HEAP_AREA_START 0x18 /* s32 first byte of the heap's memory area */
+#define HEAP_AREA_END   0x1c /* s32 last byte of the area */
+#define HEAP_FREE_LIST  0x24 /* void *head of the free-block list; +0x04 is its tail */
+#define HEAP_USED_LIST  0x2c /* void *head of the used-block list; +0x04 is its tail */
+#define HEAP_FLAGS      0x36 /* u16; bit 0: search the whole free list for the smallest block that fits */
+
 #endif

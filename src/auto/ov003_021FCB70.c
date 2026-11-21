@@ -314,7 +314,7 @@ void func_ov003_021fd1f0(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f152c(M2C_UNK);
     s32 func_ov003_021f153c();
-    M2C_UNK func_ov003_022006dc(M2C_UNK);
+    M2C_UNK Ov003_BroadcastPlayerSetup(M2C_UNK);
     M2C_UNK CreateMapTransferPanelStep1(void *);
     s32 var_r0;
 
@@ -334,7 +334,7 @@ void func_ov003_021fd1f0(void *arg0) {
     }
     func_ov003_021f152c(1);
     SetOv003SceneState(1);
-    func_ov003_022006dc(1);
+    Ov003_BroadcastPlayerSetup(1);
     CreateMapTransferPanelStep1(arg0);
 }
 

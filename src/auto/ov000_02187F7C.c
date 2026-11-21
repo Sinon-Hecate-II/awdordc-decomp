@@ -1,6 +1,7 @@
 /* 26 functions from 0x02187F7C to 0x02188D64 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 void func_ov000_02188688(void);
 u8 func_ov000_021889ac(void);
 
@@ -14,7 +15,7 @@ void func_ov000_02187f7c(void) {
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     s32 GetAiUnitSearchRange(void *);
-    s32 func_ov000_02187eac(s16 *);
+    s32 FindReachableProductionTile(s16 *);
     u8 IsUnitProductionTerrain(s32);
     void SelectMapLayer(void *);
     void FillMapCellLayer(void *, s32);
@@ -31,7 +32,7 @@ void func_ov000_02187f7c(void) {
     FloodFillUnitRange(cursor->x, cursor->y, cursor->kind, MAP_GRID_NO_UNIT_MAX, 0);
     FillMapCellLayer((u8 *)*gCurrentMap + 0x3250, 0);
 nextTile:
-    if (!func_ov000_02187eac(tile)) return;
+    if (!FindReachableProductionTile(tile)) return;
     {
         s32 x, y;
         SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_SCORE);
@@ -74,19 +75,24 @@ nextTile:
     }
 }
 #pragma opt_strength_reduction reset
-s32 func_ov000_021882c4(void) {
-    s32 CountUnusedCapturableProperties();
-    s32 flag, count, current;
-    if (func_ov000_02187e50() == 1) return 0;
-    flag = CountAiAttackTargetUnits();
-    if (flag) count = CountCapturableProperties();
-    else count = CountUnusedCapturableProperties();
-    if (count == 0) return 0;
-    current = CountActiveTeamFootUnits();
-    if (flag == 0) {
-        if (current < count + 1) return 1;
+/* Request more foot units for reachable properties unless the existing move target is in range. */
+s32 AiNeedsMoreFootUnitsInRange(void) {
+    s32 CountUnusedCapturableProperties(void);
+    s32 attackTargets, propertyScore, teamFootUnits;
+
+    if (AiRangeReachesAssignedMoveTarget() == 1) return 0;
+    attackTargets = CountAiAttackTargetUnits();
+    if (attackTargets) {
+        propertyScore = CountCapturableProperties();
     } else {
-        if (current < count + 2) return 1;
+        propertyScore = CountUnusedCapturableProperties();
+    }
+    if (propertyScore == 0) return 0;
+    teamFootUnits = CountActiveTeamFootUnits();
+    if (attackTargets == 0) {
+        if (teamFootUnits < propertyScore + AI_FOOT_UNIT_BUFFER_NO_TARGETS) return 1;
+    } else {
+        if (teamFootUnits < propertyScore + AI_FOOT_UNIT_BUFFER_WITH_TARGETS) return 1;
     }
     return 0;
 }
@@ -115,7 +121,7 @@ void func_ov000_02188370(void) {
     extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = func_ov000_021882c4;
+    data_ov000_021df64c = AiNeedsMoreFootUnitsInRange;
     data_ov000_021df648 = func_ov000_02188338;
     func_ov000_02187f7c();
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
@@ -142,11 +148,11 @@ u8 CanDoFootAiAction(s32 x, s32 y) {
 }
 
 u8 func_ov000_02188448(void) {
-    s32 func_ov000_02187e50();
+    s32 AiRangeReachesAssignedMoveTarget();
     s32 temp_r0;
     u8 var_r0;
 
-    if (func_ov000_02187e50() == 1) {
+    if (AiRangeReachesAssignedMoveTarget() == 1) {
         return 0U;
     }
     temp_r0 = CountAiAttackTargetUnits();
@@ -236,7 +242,7 @@ s32 AiRangeReachesEnemyHq(void) {
     extern void **gCurrentMap;
     s32 player, offset;
     void *base, *entry;
-    if (func_ov000_02187e50() == 1) return 0;
+    if (AiRangeReachesAssignedMoveTarget() == 1) return 0;
     for (player = 1, offset = MAP_PLAYER_STRIDE; player < 5; player++, offset += MAP_PLAYER_STRIDE) {
         if (IsPlayerActive(player) && !IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) && PlayerHasHq(player)) {
             base = *gCurrentMap;
@@ -336,7 +342,7 @@ u8 AiRangeReachesPlayerHq(void) {
     extern void **gCurrentMap;
     void *base, *entry;
     u8 result;
-    if (func_ov000_02187e50() == 1) return 0;
+    if (AiRangeReachesAssignedMoveTarget() == 1) return 0;
     if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 0) return 0;
     base = *gCurrentMap;
     entry = (u8 *)base + MAP_PLAYER_STATES + M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
@@ -382,7 +388,7 @@ u8 func_ov000_021889ac(void) {
     u8 result;
     base = *gCurrentMap;
     entry = (u8 *)base + 0x59A4 + M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xC) * 14;
-    if (func_ov000_02187e50() == 1) return 0;
+    if (AiRangeReachesAssignedMoveTarget() == 1) return 0;
     value = M2C_FIELD(entry, u16 *, 8);
     bank = M2C_FIELD((u8 *)*gCurrentMap + (((u32)(value << 20) >> 26) * 4), s8 **, 0x52E8);
     if (bank[((u32)(value << 26) >> 26)] > 0) result = 1;

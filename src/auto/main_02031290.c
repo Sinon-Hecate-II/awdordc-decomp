@@ -354,14 +354,14 @@ M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
 }
 #pragma pop
 void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
-    M2C_UNK func_0200c454(M2C_UNK *);
-    M2C_UNK func_0200c494(M2C_UNK *, M2C_UNK, M2C_UNK);
+    M2C_UNK MD5Init(M2C_UNK *);
+    M2C_UNK MD5Update(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0200c55c(M2C_UNK *, M2C_UNK *);
     void MI_CpuCopy8(void *, void *, u32);
     u8 digest[20];
     u8 ctx[88];
-    func_0200c454((M2C_UNK *)ctx);
-    func_0200c494((M2C_UNK *)ctx, (M2C_UNK)arg0, 0x18);
+    MD5Init((M2C_UNK *)ctx);
+    MD5Update((M2C_UNK *)ctx, (M2C_UNK)arg0, 0x18);
     func_0200c55c((M2C_UNK *)digest, (M2C_UNK *)ctx);
     MI_CpuCopy8(digest + 3, (void *)arg1, 0xD);
 }
@@ -405,25 +405,27 @@ void func_0203197c(u8 *src, u8 *dst) {
     }
 }
 
-s32 func_02031b28(u32 arg0) {
-    if (arg0 >= 0x41U && arg0 <= 0x5AU) {
-        return (s32)(arg0 - 0x41U);
+/* The 6-bit value of a base64 character (the standard alphabet A-Z, a-z, 0-9,
+ * '+' and '/', with '=' accepted as padding), or -1 when it is not one. */
+s32 Base64DecodeChar(u32 ch) {
+    if (ch >= 'A' && ch <= 'Z') {
+        return (s32)(ch - 'A');
     }
-    if (arg0 >= 0x61U && arg0 <= 0x7AU) {
-        s32 temp_r0 = (s32)(arg0 - 0x61U);
-        return temp_r0 + 0x1A;
+    if (ch >= 'a' && ch <= 'z') {
+        s32 digit = (s32)(ch - 'a');
+        return digit + 26;
     }
-    if (arg0 >= 0x30U && arg0 <= 0x39U) {
-        s32 temp_r0 = (s32)(arg0 - 0x30U);
-        return temp_r0 + 0x34;
+    if (ch >= '0' && ch <= '9') {
+        s32 digit = (s32)(ch - '0');
+        return digit + 52;
     }
-    if (arg0 == 0x2BU) {
-        return 0x3E;
+    if (ch == '+') {
+        return 62;
     }
-    if (arg0 == 0x2FU) {
-        return 0x3F;
+    if (ch == '/') {
+        return 63;
     }
-    if (arg0 == 0x3DU) {
+    if (ch == '=') {
         return 0;
     }
     return -1;
@@ -436,14 +438,14 @@ if((u32)capacity>=size){rem=n&3;full=n-rem;}else return -1;
 pos=0;
 if(full>0){block=0;do{
 val=0;j=0;in=src+pos;
-do{val|=func_02031b28(*in++)<<((3-j)*6);j++;}while(j<4);
+do{val|=Base64DecodeChar(*in++)<<((3-j)*6);j++;}while(j<4);
 j=0;word=val;out=dst+block*3;
 do{*out++=((u8 *)&word)[2-j];j++;}while(j<3);
 pos+=4;block++;
 }while(pos<full);}
 if(rem!=0){
 val=0;j=0;tail=0;
-if(rem>0){s32 accum=0;in=src+full;do{val|=func_02031b28(*in++)<<((3-j)*6);j++;accum|=val;}while(j<rem);tail=accum;}
+if(rem>0){s32 accum=0;in=src+full;do{val|=Base64DecodeChar(*in++)<<((3-j)*6);j++;accum|=val;}while(j<rem);tail=accum;}
 j=0;if(rem>0){out=dst+(full*3)/4;do{*out++=((u8 *)&tail)[2-j];j++;}while(j<rem);}
 }
 return size;
@@ -596,30 +598,33 @@ void func_02031ee4(M2C_UNK arg0) {
 }
 
 u64 func_02031f14(s32 arg0, s32 arg1) {
-    void func_02076698(u8 *, s32);
-    s32 func_02076810(u8 *, s32 *, s32);
+    void BuildCrc8Table(u8 *, s32);
+    s32 Crc8Block(u8 *, s32 *, s32);
     u8 buf[0x100];
     s32 in[2];
 
     in[0] = arg0;
     in[1] = arg1;
-    func_02076698(buf, 7);
-    return (u32) arg0 | ((u64) (func_02076810(buf, in, 8) & 0x7f) << 32);
+    BuildCrc8Table(buf, 7);
+    return (u32) arg0 | ((u64) (Crc8Block(buf, in, 8) & 0x7f) << 32);
 }
 
 void func_02031f58(void *arg0, u64 arg1) {
 s32 IsPlayerCodeValid(u64,s32);
 IsPlayerCodeValid(arg1,M2C_FIELD(arg0,s32 *,0x24));
 }
-s32 IsPlayerCodeValid(u64 arg0,s32 arg2) {
-void func_02076698(u8 *,s32);
-s32 func_02076810(u8 *,s32 *,s32);
-u8 buf[256]; s32 in[2]; s32 h;
-if(arg0 & 0x80000000ULL) return 0;
-in[0]=(s32)arg0; in[1]=arg2;
-func_02076698(buf,7);
-h=func_02076810(buf,in,8)&127;
-return (s64)h == (arg0>>32);
+/* Whether `code` is a valid player code for game id `gameId`: the code's low word
+ * must have bit 31 clear and its high word must hold the 7-bit CRC-8 check of the
+ * low word and the game id. */
+s32 IsPlayerCodeValid(u64 code,s32 gameId) {
+void BuildCrc8Table(u8 *,s32);
+s32 Crc8Block(u8 *,s32 *,s32);
+u8 table[256]; s32 data[2]; s32 check;
+if(code & 0x80000000ULL) return 0;
+data[0]=(s32)code; data[1]=gameId;
+BuildCrc8Table(table,7);
+check=Crc8Block(table,data,8)&127;
+return (s64)check == (code>>32);
 }
 
 #pragma opt_propagation off

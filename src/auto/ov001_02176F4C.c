@@ -139,7 +139,7 @@ void func_ov001_021771a4(void) {
     void func_ov001_021771f4(void);
     extern u8 gOv001WfcSettingsReset;
     s32 temp_r0;
-    temp_r0 = func_ov001_02186648();
+    temp_r0 = Ov001_GetRegionMenuSelection();
     switch (temp_r0) {
     case 1:
         Ov001_PlaySound(0xE);
@@ -150,7 +150,7 @@ void func_ov001_021771a4(void) {
         break;
     default: return;
     }
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021771f4);
 }
 
@@ -389,17 +389,20 @@ void func_ov001_021777e0(void) {
 
 void func_ov001_02177800(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern M2C_UNK func_ov001_02177850;
+    extern M2C_UNK Ov001_CloseMacAddressScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02177850);
+    Ov001_SetStepCallback(&Ov001_CloseMacAddressScreen);
 }
 
-void func_ov001_02177850(void) {
+/* Closes the MAC-address screen once both of its fades and its icon row have
+ * finished: releases the screen's page and option backgrounds, disables the
+ * visible planes and returns to the Wi-Fi option menu. */
+void Ov001_CloseMacAddressScreen(void) {
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);

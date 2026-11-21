@@ -75,13 +75,13 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
     DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= DS3D_DIRTY_LAYER0;
     bank = *(u16 **)gCur3DSpriteEngine;
     *bank = *bank & ~0x20;
-    func_020a9a30(1, 2, 0, (u8 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamBuffer + 0x2c0);
+    LoadSpriteResource(1, 2, 0, (u8 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamBuffer + 0x2c0);
     LoadDecompressedFileTo(data_ov005_02220a54, DS3D_ENGINE(gCur3DSpriteEngine)->textureAddr + 0x3b00);
     LoadFileToSpriteBuffer(data_ov005_02220a60, 0x2e0, 0x20);
     engine = gCur3DSpriteEngine;
-    func_020a9a30(4, 0, 0, DS3D_ENGINE(engine)->textureAddr + 0x4400);
+    LoadSpriteResource(4, 0, 0, DS3D_ENGINE(engine)->textureAddr + 0x4400);
     engine = gCur3DSpriteEngine;
-    func_020a9a30(5, 2, 0, (u8 *)DS3D_ENGINE(engine)->oamBuffer + 0x300);
+    LoadSpriteResource(5, 2, 0, (u8 *)DS3D_ENGINE(engine)->oamBuffer + 0x300);
     i = 0;
     if (func_020cfb94() > 0) {
         s32 tile = 0x270;
@@ -126,8 +126,8 @@ s32 func_020a7278(void);
 s32 func_020a72e8(s32);
 s32 func_020a8a84(s32);
 s32 GetDigitCount(s32);
-s32 func_ov000_0216ce10(s32);
-s32 func_ov000_0216ce84(s32);
+s32 GetArmyStateTiles(s32);
+s32 GetArmyIconPalette(s32);
 s32 GetTerrainTileData(s32);
 s32 GetTerrainPalette(s32,s32);
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain, **g3DSpriteEngineSub, **gCurrentMap;
@@ -177,8 +177,8 @@ saved2=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
 i=0;
 if(func_020cfb94()>0) { j=0x388; k=0; do {
 dst=M2C_FIELD(gCur3DSpriteEngine,u8 **,28)+((volatile s32)j<<5);
-MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x6857)),dst,0x80);
-CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
+MI_CpuCopy32(GetArmyStateTiles(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x6857)),dst,0x80);
+CopyToObjPaletteShadow(GetArmyIconPalette(M2C_FIELD((u8 *)*gCurrentMap+k,u8 *,0x684d)),(i+24)<<5,32);
 i++; j+=4; k+=0x8c;
 } while(i<func_020cfb94()); }
 gCur3DSpriteEngine=*(void ***)&g3DSpriteEngineMain;

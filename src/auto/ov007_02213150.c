@@ -1,5 +1,6 @@
 /* 22 functions from 0x02213150 to 0x02213E88 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 static inline void SyncSprite13554(s32 p) {
 s32 GetUnitSpriteWidth(s32);s32 GetUnitSpriteHeight(s32);
 void func_02087d84(s32,s32,s32,s32,s32,s32);
@@ -180,20 +181,24 @@ void func_ov007_02213458(void) {
     func_020c0634(&data_ov007_0221fa40, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
 }
 
-void func_ov007_022134b4(void *arg0) {
+/* Apply the map size chosen in the map-size panel (request->38 width,
+ * request->3C height): rebuild the editor map, refresh both views, center the
+ * map view on the new map and update the view's zoom colours. */
+void MapEditor_ApplyMapSize(void *request) {
     M2C_UNK LoadMapFromExport(s32, s32);
-    M2C_UNK func_0207b754(u32, u32);
-    M2C_UNK func_0207cfc0(void *);
+    M2C_UNK SetMapViewPositionToTileCentered(u32, u32);
+    M2C_UNK UpdateViewForZoom(void *);
     extern void **gCurrentMap;
-    void *p;
-    LoadMapFromExport(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
+    void *map;
+
+    LoadMapFromExport(M2C_FIELD(request, s32 *, 0x38), M2C_FIELD(request, s32 *, 0x3C));
     RefreshMapView();
     RefreshMapEditor();
     MapEditor_FitPreviewToMap();
     MapEditor_SetMapModified(1);
-    p = *gCurrentMap;
-    func_0207b754((u32)M2C_FIELD(p, u16 *, 0x5144) >> 1, (u32)M2C_FIELD(p, u16 *, 0x5146) >> 1);
-    func_0207cfc0((u8 *)*gCurrentMap + 0x6EF8);
+    map = *gCurrentMap;
+    SetMapViewPositionToTileCentered((u32)M2C_FIELD(map, u16 *, MAP_WIDTH) >> 1, (u32)M2C_FIELD(map, u16 *, MAP_HEIGHT) >> 1);
+    UpdateViewForZoom((u8 *)*gCurrentMap + MAP_VIEW_ZOOM);
     PlaySoundEffect(0x11D);
 }
 
@@ -217,9 +222,9 @@ void func_ov007_02213554(void *arg0) {
     void LoadFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_020896f0(M2C_UNK);
     void func_02089424(void*);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void *func_020ab1c4(M2C_UNK);
-    void InitUnitSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void InitUnitSprite(M2C_UNK, u8, u16, u8, u8);
     void func_02088e84(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetUnitSpriteWidth(M2C_UNK);
     M2C_UNK GetUnitSpriteHeight(M2C_UNK);
@@ -231,7 +236,9 @@ void func_ov007_02213554(void *arg0) {
     extern void **gCurrentMap;
 
     void *r4 = arg0;
-    s32 tile;
+    u16 tile;
+    s16 y,x;
+    s32 w, p;
 
     SetFileDirectory(&data_ov007_0221fdb0);
     M2C_FIELD(*(void **) gCur3DSpriteEngine, u16 *, 0x3A) = 0;
@@ -246,10 +253,60 @@ void func_ov007_02213554(void *arg0) {
     M2C_FIELD(r4, s32 *, 0x38) = M2C_FIELD(*gCurrentMap, u16 *, 0x5146);
     M2C_FIELD(r4, s32 *, 0x3C) = 0;
     func_02089424(func_020896f0(r4));
-    {void *engine=gCur3DSpriteEngine;func_020a9a30(1, 0, 3, M2C_FIELD(engine,s32*,0x1C)+0x6B80);}
-    {void *engine=gCur3DSpriteEngine;func_020a9a30(1, 2, 0, M2C_FIELD(engine,s32*,0x30)+0x360);}
-    tile=0x39c;{void *engine=gCur3DSpriteEngine;func_020a9a30(0, 2, 0x47, M2C_FIELD(engine,s32*,0x30)+0x260);}
-M2C_FIELD(r4,void**,64)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,64),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,64);func_02088e84(p,88,80,88,80);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=80;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,64),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,68)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,68),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,68);func_02088e84(p,88,112,88,112);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=112;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,68),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,72)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,72),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,72);func_02088e84(p,136,80,136,80);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=80;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,72),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,76)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,76),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,76);func_02088e84(p,136,112,136,112);SyncSprite13554(p);M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=112;SyncSprite13554(p);}func_020ab150(M2C_FIELD(r4,s32*,76),0);tile=(u16)(tile+8);{s32 p=(s32)func_020ab1c4(r4);InitUnitSprite(p,0,tile,3,0);func_02088e84(p,192,160,256,160);SyncSprite13554(p);func_020ab150(p,1);Show3DSpriteSlide(p);}{s32 p=(s32)func_020ab1c4(r4);InitUnitSprite(p,2,(u16)(tile+16),3,0);func_02088e84(p,224,160,256,160);SyncSprite13554(p);func_020ab150(p,2);Show3DSpriteSlide(p);}}
+    {void *engine=gCur3DSpriteEngine;LoadSpriteResource(1, 0, 3, M2C_FIELD(engine,s32*,0x1C)+0x6B80);}
+    {void *engine=gCur3DSpriteEngine;LoadSpriteResource(1, 2, 0, M2C_FIELD(engine,s32*,0x30)+0x360);}
+    tile=0x39c;{void *engine=gCur3DSpriteEngine;LoadSpriteResource(0, 2, 0x47, M2C_FIELD(engine,s32*,0x30)+0x260);}
+M2C_FIELD(r4,void**,64)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,64),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,64);func_02088e84(p,88,80,88,80);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=80;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }}func_020ab150(M2C_FIELD(r4,s32*,64),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,68)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,68),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,68);func_02088e84(p,88,112,88,112);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }M2C_FIELD(p,s16*,0x34)=88;M2C_FIELD(p,s16*,0x36)=112;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }}func_020ab150(M2C_FIELD(r4,s32*,68),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,72)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,72),8,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,72);func_02088e84(p,136,80,136,80);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=80;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }}func_020ab150(M2C_FIELD(r4,s32*,72),0);tile=(u16)(tile+8);M2C_FIELD(r4,void**,76)=func_020ab1c4(r4);InitUnitSprite(M2C_FIELD(r4,void**,76),9,tile,3,0);{s32 p=M2C_FIELD(r4,s32*,76);func_02088e84(p,136,112,136,112);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }M2C_FIELD(p,s16*,0x34)=136;M2C_FIELD(p,s16*,0x36)=112;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }}func_020ab150(M2C_FIELD(r4,s32*,76),0);tile=(u16)(tile+8);{p=(s32)func_020ab1c4(r4);InitUnitSprite(p,0,tile,3,0);func_02088e84(p,192,160,256,160);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }func_020ab150(p,1);Show3DSpriteSlide(p);}{p=(s32)func_020ab1c4(r4);InitUnitSprite(p,2,(u16)(tile+16),3,0);func_02088e84(p,224,160,256,160);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) {
+        y = M2C_FIELD(p,s16*,0x52);
+        x = M2C_FIELD(p,s16*,0x50);
+        w = GetUnitSpriteWidth(p);
+        func_02087d84(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
+    }func_020ab150(p,2);Show3DSpriteSlide(p);}}
 #pragma pop
 void func_ov007_02213cf4(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);

@@ -232,11 +232,12 @@ void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 a
     func_020c0634(arg0, arg1, arg2, arg3, arg4);
 }
 
+#pragma opt_instruction_scheduling off
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
 void ResetSpriteSlots(void); s32 CreateSpriteFromClass(s32 *,s32); void func_020d4704(void);
 extern s32 data_02129630;
 MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
-ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=0; offset=0;
+ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=n; offset=i;
 p->entries=(void *)entries;
 for(;;) {
 u8 *entry=((u8 *)p->entries)+offset;
@@ -247,8 +248,9 @@ p->status[n]=M2C_FIELD(entry,s32 (**)(void),4)();
 if(p->status[n]!=2){p->indices[n++]=i;height+=16;}
 offset+=40;i++;
 }
-p->count=n;p->total=i;
-if((s32)p->count-1<selection)selection=(u16)(p->count-1);
+p->count=n;
+p->total=i;
+if((u8)n-1<selection)selection=(u16)((u8)n-1);
 p->selection=selection;
 if(x+16+width>=256)x=256-(width+16);
 if(x<0)x=0;
@@ -258,7 +260,7 @@ if(y<0)y=0;
 p->x=x;p->y=y;
 func_020d4704();return (s32)p;
 }
-
+#pragma opt_instruction_scheduling reset
 void CreateMenuAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK PlaySoundEffect(s32);
     PlaySoundEffect(0x10017);
@@ -324,8 +326,8 @@ void func_020c0a04(M2C_UNK arg0) {
 
 void func_020c0a1c(s32 arg0) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
-    extern M2C_UNK data_0211e12c;
-    CopyToObjPaletteShadow(&data_0211e12c, arg0 << 5, 0x20);
+    extern M2C_UNK gUiSpritePalette;
+    CopyToObjPaletteShadow(&gUiSpritePalette, arg0 << 5, 0x20);
 }
 
 void func_020c0a3c(s32 arg0) {

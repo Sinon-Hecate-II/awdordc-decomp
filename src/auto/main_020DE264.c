@@ -35,7 +35,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     void LoadNarcFileDecompressed(void *, void *);
     void CloseNarcArchive(void);
     void AddTileRectPalette(void *, s32, s32, s32);
-    void func_0208e7ec(s32, s32);
+    void LoadTimerSpriteGraphics(s32, s32);
     void Show3DSpriteSlide(void *);
     void Hide3DSprite(void *);
     void SetTextById(void *, u32);
@@ -80,7 +80,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
 
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x1;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_0208e7ec(0x3c00, 0x7);
+    LoadTimerSpriteGraphics(0x3c00, 0x7);
 
     gCur3DSpriteEngine = savedEngine;
 

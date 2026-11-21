@@ -3,7 +3,7 @@
 
 typedef struct { s32 values[6]; } Table020a8b3c;
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
-extern const Table020a8b3c data_020f49e0;
+extern const Table020a8b3c sArmyStateMessageIds;
 
 s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
  s32 GetUnitDamageBonus(void *, u8, u8);
@@ -172,7 +172,7 @@ s32 func_020a8b2c(void) {
     return M2C_FIELD(MapData_GetRecord(), s32 *, 0x4C);
 }
 
-s32 func_020a8b3c(s32 a){s32 GetLocalizedText(s32);Table020a8b3c t=data_020f49e0;return GetLocalizedText(t.values[a]);}
+s32 GetArmyStateLabel(s32 a){s32 GetLocalizedText(s32);Table020a8b3c t=sArmyStateMessageIds;return GetLocalizedText(t.values[a]);}
 
 M2C_UNK *func_020a8b78(void) {
     extern M2C_UNK data_02126148;
@@ -264,10 +264,11 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  s32 y; s32 dy; s32 tileH; u16 index; s32 remaining; s32 x; s32 tileW; s32 dx;
  width=arg3;z=arg2;origin=arg0;
  if(width && (height=arg4)!=0) {
- remaining=width; index=arg6;
  y=arg1-(ScaleFixed8(height,arg9)>>1);
+ index=arg6;
  scaleX=arg8;flags=arg7;scaleY=arg9;
  do {
+ remaining=width;
  tileH=func_020a8cc0((u16)height);
  x=origin-(ScaleFixed8(width,scaleX)>>1);
  dy=(tileH*scaleY)>>8;
@@ -279,7 +280,7 @@ void func_020a8cf0(s32 arg0,s32 arg1,s32 arg2,s32 arg3,u16 arg4,s32 arg5,u16 arg
  index+=(tileW*tileH)>>6;
  x+=dx>>8;remaining-=tileW;
  }while(remaining);
- remaining=width;height-=tileH;y+=dy;
+ height-=tileH;y+=dy;
  }while(height);
  }
 }
@@ -367,18 +368,26 @@ void SpriteTween_Start(void *tween, u16 frames) {
     M2C_FIELD(tween, u16 *, 2) = (u16) M2C_FIELD(tween, u16 *, 4);
 }
 
+/* Advance an animation player by one frame: when the frame counter reaches the
+ * current segment's end frame, set up the next segment and move to the following
+ * frame-table entry (a -1 mode there marks the table ended); otherwise step the
+ * player's tween. */
 void StepAnimationFrames(void *arg0) {
-void UpdateSpriteAnimation(void *);
-void SpriteAnim_SetupFrame(void *);
-u8 *p;
-if(M2C_FIELD(arg0,u8 *,14)||M2C_FIELD(arg0,u8 *,15))return;
-M2C_FIELD(arg0,u16 *,12)++;
-if(M2C_FIELD(arg0,u16 *,12)>=M2C_FIELD(M2C_FIELD(arg0,void **,8),s16 *,0)){
-SpriteAnim_SetupFrame(arg0);
-p=M2C_FIELD(arg0,u8 **,8)+12;
-M2C_FIELD(arg0,u8 **,8)=p;
-if(M2C_FIELD(p,s32 *,4)==-1) M2C_FIELD(arg0,u8 *,15)=1;
-}else UpdateSpriteAnimation(M2C_FIELD(arg0,void **,0));
+    void UpdateSpriteAnimation(void *);
+    void SpriteAnim_SetupFrame(void *);
+    SpriteAnimPlayer *anim = arg0;
+    SpriteAnimFrame *next;
+
+    if (anim->done || anim->ended) return;
+    anim->index++;
+    if (anim->index >= anim->frame->endFrame) {
+        SpriteAnim_SetupFrame(anim);
+        next = anim->frame + 1;
+        anim->frame = next;
+        if (next->mode == -1) anim->ended = 1;
+    } else {
+        UpdateSpriteAnimation(anim->tween);
+    }
 }
 
 /* Configures an animation player's tween from the frame entry playing now: copies

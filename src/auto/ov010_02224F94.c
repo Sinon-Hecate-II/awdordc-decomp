@@ -68,23 +68,23 @@ void func_ov010_02225174(void) {
 #pragma opt_instruction_scheduling off
 s32 func_ov010_0222519c(s16 *a,u32 bytes){
 extern s32 data_ov010_0222d930;
-s32 input,v,acc,square;u32 n,i;s64 sum;
+s32 input,value,prev,square;u32 n,i;s64 sum;
 input=a[0]*(s16)0xe9f;
-v=(input+M2C_FIELD(&data_ov010_0222d930,s32 *,4)+M2C_FIELD(&data_ov010_0222d930,s32 *,16)*0xd3e)>>12;
-square=v*v;n=bytes>>1;
-M2C_FIELD(&data_ov010_0222d930,s32 *,16)=v;
-acc=-input;M2C_FIELD(&data_ov010_0222d930,s32 *,4)=acc;
+value=(input+M2C_FIELD(&data_ov010_0222d930,s32 *,4)+M2C_FIELD(&data_ov010_0222d930,s32 *,16)*0xd3e)>>12;
+square=value*value;n=bytes>>1;
+M2C_FIELD(&data_ov010_0222d930,s32 *,16)=value;
+prev=-input;M2C_FIELD(&data_ov010_0222d930,s32 *,4)=prev;
 sum=square;
 for(i=1;i<n;i++){
 input=a[i]*(s16)0xe9f;
-acc=input+acc+v*0xd3e;
-a[i-1]=v;
-v=acc>>12;
-square=v*v;sum+=square;acc=-input;
+prev=input+prev+value*0xd3e;
+a[i-1]=value;
+value=prev>>12;
+square=value*value;sum+=square;prev=-input;
 }
-M2C_FIELD(&data_ov010_0222d930,s32 *,4)=acc;
-M2C_FIELD(&data_ov010_0222d930,s32 *,16)=v;
-*(s16 *)((char *)a+n*2-2)=v;
+M2C_FIELD(&data_ov010_0222d930,s32 *,4)=prev;
+M2C_FIELD(&data_ov010_0222d930,s32 *,16)=value;
+*(s16 *)((char *)a+n*2-2)=value;
 *(volatile u16 *)0x4000280=1;
 *(volatile s64 *)0x4000290=sum;
 *(volatile u64 *)0x4000298=n;
@@ -332,23 +332,29 @@ if(!(++data_ov010_0222edb4 & 15))VoiceLink_CheckTimeout();
 if(func_ov010_022231d4())func_ov010_02223114();
 }
 
-s32 func_ov010_022257e4(s32 a,s32 b,s32 c) {
-s32 func_ov010_02225858(s32,s32,s32,s32 *);
-extern s32 data_ov010_0222edb4;
-s32 out[2];
-s32 result = func_ov010_02225858(a,b,c,out);
-switch(result){
-case 0:break;
-case 1:
-((void (*)(s32,s32,s32,s32))M2C_FIELD(&data_ov010_0222edb4,s32 *,16))(a,out[0],out[1],M2C_FIELD(&data_ov010_0222edb4,s32 *,20));
-return 1;
-case 2:return 0;
-}
-return 1;
+/* Feed one incoming voice-chat packet to the dispatcher; when it carried audio
+ * (dispatcher result 1) hand the decoded left/right samples to the registered
+ * stream callback.  Returns 0 for a packet with the wrong magic, 1 otherwise. */
+s32 VoiceChat_ReceivePacket(s32 peer, s32 packet, s32 length) {
+    s32 VoiceChat_DispatchPacket(s32, s32, s32, s32 *);
+    extern s32 data_ov010_0222edb4;
+    s32 samples[2];
+    s32 result = VoiceChat_DispatchPacket(peer, packet, length, samples);
+
+    switch (result) {
+    case 0:
+        break;
+    case 1:
+        ((void (*)(s32, s32, s32, s32))M2C_FIELD(&data_ov010_0222edb4, s32 *, 16))(peer, samples[0], samples[1], M2C_FIELD(&data_ov010_0222edb4, s32 *, 20));
+        return 1;
+    case 2:
+        return 0;
+    }
+    return 1;
 }
 
 #pragma opt_instruction_scheduling off
-s32 func_ov010_02225858(s32 a,s32 b,s32 c,s32 *out) {
+s32 VoiceChat_DispatchPacket(s32 a,s32 b,s32 c,s32 *out) {
 extern s32 data_ov010_0222edb4;
 u64 GetSystemTick(void);
 void func_ov010_02222f28(s32,s32,s32,u64);
@@ -460,13 +466,13 @@ s32 StartStreamedVoice(M2C_UNK *refillCallback, M2C_UNK lengthMs) {
 extern s32 gStreamVoiceState;
 extern s32 gStreamSoundPlayer;
 extern const u8 gStreamChannels[];
-void func_0200dd40(void);
+void Arm7TransferInit(void);
 void Arm7CommandInit(void);
 void func_0200e868(s32);
 void func_0200e880(s32);
 s32 AllocAlignedBuffer(s32,s32);
 void FreeBuffer(s32,s32);
-void func_0202b46c(void *);
+void Sound_InitPlayer(void *);
 void func_0202b4e4(void *,s32,u8 *);
 void func_0202b77c(void *,s32);
 void func_0202b7e8(void *,s32,s32);
@@ -479,7 +485,7 @@ s32 bufferSize;
 s32 result;
 s32 buffer2;
 u8 channel;
-func_0200dd40();Arm7CommandInit();func_0200e868(1);func_0200e880(3);
+Arm7TransferInit();Arm7CommandInit();func_0200e868(1);func_0200e880(3);
 sampleBytes=((u32)(lengthMs*8000)*2)/1000;
 bufferSize=sampleBytes*2;
 M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE)=sampleBytes*4;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE)=bufferSize;
@@ -496,7 +502,7 @@ if(buffer2==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER
 M2C_FIELD(&gStreamVoiceState,s32 *,0)=0;M2C_FIELD(&gStreamVoiceState,s32 *,0x20)=3;M2C_FIELD(&gStreamVoiceState,s32 *,0x24)=buffer2;M2C_FIELD(&gStreamVoiceState,s32 *,0x28)=M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE);M2C_FIELD(&gStreamVoiceState,s32 *,0x2c)=0x1040;M2C_FIELD(&gStreamVoiceState,s32 *,0x30)=1;channel=gStreamChannels[0];M2C_FIELD(&gStreamVoiceState,s32 *,0x34)=0;M2C_FIELD(&gStreamVoiceState,s32 *,0x38)=0;
 M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_ACTIVE)=0;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_PAUSED)=0;
 channelList[0]=channel;
-func_0202b46c(&gStreamSoundPlayer);
+Sound_InitPlayer(&gStreamSoundPlayer);
 func_0202b4e4(&gStreamSoundPlayer,1,channelList);
 func_0202b77c(&gStreamSoundPlayer,127);
 channelCursor=channelList;
@@ -633,6 +639,6 @@ void VoiceLink_HandleEvent(s32 unused, u32 event, VoiceLinkContext *context) {
 }
 
 void func_ov010_02225f54(void) {
-    M2C_UNK func_ov010_022257e4();
-    func_ov010_022257e4();
+    M2C_UNK VoiceChat_ReceivePacket();
+    VoiceChat_ReceivePacket();
 }

@@ -11,7 +11,7 @@ void func_02019e64(void *,s32,void *,s32,s32);void func_020c536c(s32,void *);
 void Configure3DSpriteLayer(s32,void *);void Clear3DSpriteLayer(s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);
 void func_02081340(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
-s32 func_020a9a30(s32,s32,s32,s32);void func_01ff9dd8(s32);void LoadScenePanelPalette(s32);
+s32 LoadSpriteResource(s32,s32,s32,s32);void func_01ff9dd8(s32);void LoadScenePanelPalette(s32);
 s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void func_01ffa920(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
 u32 func_020c5464(s16);
 void func_ov006_02215010(void);
@@ -43,16 +43,16 @@ CloseNarcArchive();func_02081340(data_ov006_02218764,160,0,32);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 Clear3DSpriteLayer(3);
-tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18);func_020a9a30(3,0,0,tile);
-tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0xe0;func_020a9a30(3,2,0,tile);
+tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18);LoadSpriteResource(3,0,0,tile);
+tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0xe0;LoadSpriteResource(3,2,0,tile);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c),32,24,7);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 Clear3DSpriteLayer(1);func_01ff9dd8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=2|M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46);
 LoadScenePanelPalette(6);
-tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x34c0;func_020a9a30(1,0,1,tile);
-func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x2c0);
-func_020a9a30(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x37c0);
+tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x34c0;LoadSpriteResource(1,0,1,tile);
+LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x2c0);
+LoadSpriteResource(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x37c0);
 Load3DSpritePattern(0x3e40,1,GetUiColor(9),2);
 Load3DSpritePattern(0x4240,1,GetUiColor(12),2);
 gCur3DSpriteEngine=savedEngine;
@@ -118,8 +118,8 @@ void func_ov006_02215034(void) {
 }
 
 void func_ov006_02215038(void) {
-    M2C_UNK func_ov006_02211314();
-    func_ov006_02211314();
+    M2C_UNK ShowFriendCodePrompt();
+    ShowFriendCodePrompt();
 }
 
 void func_ov006_02215044(void) {

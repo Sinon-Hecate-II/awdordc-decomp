@@ -256,11 +256,11 @@ void InitMapSelectScreen(s32 arg0) {
     s32 IsMapConfirmEnabled(void);
     void func_ov003_021f1bd4(void);
     void func_ov003_021f1be8(void);
-    void func_ov003_021f192c(void *);
+    void CreateScene3DSprite(void *);
     void func_ov003_021f18b4(void *);
     void ResetPlayerMask(void);
     s32 IsLinkSessionActive(void);
-    void func_020852a8(void);
+    void CreateSubScreenLinkIndicator(void);
     void func_ov003_021f1884(s32);
     void func_ov003_021f2e98(s32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain;
@@ -340,7 +340,7 @@ void InitMapSelectScreen(s32 arg0) {
     }
     M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),s32 *,4)=0x780;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x3c),u8 *,8)=0x1f;
-    func_ov003_021f192c(M2C_FIELD(arg0,void **,0x3c));
+    CreateScene3DSprite(M2C_FIELD(arg0,void **,0x3c));
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,0)=1;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,1)=2;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,2)=15;
@@ -350,7 +350,7 @@ void InitMapSelectScreen(s32 arg0) {
     func_ov003_021f18b4(M2C_FIELD(arg0,void **,0x38));
     ResetPlayerMask();
     if (IsLinkSessionActive() != 0) {
-        func_020852a8();
+        CreateSubScreenLinkIndicator();
     }
     func_ov003_021f1884(0x6E0);
     func_ov003_021f2e98(arg0);

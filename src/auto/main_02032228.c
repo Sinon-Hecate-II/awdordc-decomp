@@ -358,6 +358,7 @@ void Nas_GetResult(void *result) {
     }
 }
 
+#pragma optimization_level 2
 s32 NasConnect(s32 arg0){
 extern M2C_UNK gNasServer,data_020fb35c,gNasConnection,data_0213d120,gSocketManager;
 s32 StringCompare(void *,void *);s32 HttpClientInit(void *,void *);void GetWfcProfile(void *);s32 func_020334d8(void *,void *,void *);s32 HttpAppendConnectionHeaders(void *);s32 GetThreadPriority(s32);void HttpClientStartTask(void *,s32);
@@ -374,7 +375,7 @@ if(HttpAppendConnectionHeaders(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),vo
 HttpClientStartTask(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void **,0x1314),GetThreadPriority(M2C_FIELD(&gSocketManager,s32 *,4))-1);
 return 0;
 }
-
+#pragma optimization_level reset
 /* Task body for the Nintendo WFC authentication server (NAS) connection: drive the
    HTTP connect step, wait up to 5 s for it, then close and retry until the server
    answers or the retry budget is spent. */

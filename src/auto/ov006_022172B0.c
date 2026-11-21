@@ -170,7 +170,7 @@ void FinishMapOfferSearch(void *offer) {
 }
 
 void func_ov006_0221762c(void *arg0) {
-    void func_020c47e4(s32 *);
+    void GetServerDateTime(s32 *);
     M2C_UNK LoadMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK PackMapRecord(M2C_UNK, M2C_UNK);
     M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
@@ -201,7 +201,7 @@ void func_ov006_0221762c(void *arg0) {
 
     cell = (u32 *)M2C_FIELD(arg0, u32 *, 0x4C);
 
-    func_020c47e4(dateTime);
+    GetServerDateTime(dateTime);
     LoadMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x34), M2C_FIELD(arg0, M2C_UNK *, 0x48));
     PackMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48), M2C_FIELD(arg0, M2C_UNK *, 0x4C));
     ExpandMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x4C), M2C_FIELD(arg0, M2C_UNK *, 0x48));
@@ -414,7 +414,7 @@ void func_ov006_02217b24(void *arg0) {
     M2C_UNK func_0208999c(s32, M2C_UNK, s32);
     M2C_UNK TextLayer_AppendText(s32, M2C_UNK *);
     s32 CreateTextLayer();
-    M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020c8e40();
     extern M2C_UNK data_ov006_02218cd8;
     extern M2C_UNK func_ov003_021fef18;
@@ -425,7 +425,7 @@ void func_ov006_02217b24(void *arg0) {
     TextLayer_AppendText(temp_r0, &data_ov006_02218cd8);
     TextLayer_AppendText(temp_r0, M2C_FIELD(arg0, s32 *, 0x54) + 6);
     func_020c8e40();
-    func_0209ccb8(&func_ov003_021fef18, 6);
+    CreateQueuedSpriteTask(&func_ov003_021fef18, 6);
 }
 
 void func_ov006_02217b7c(M2C_UNK arg0) {
@@ -497,14 +497,18 @@ void func_ov006_02217cfc(s32 arg0) {
 
 s32 func_ov006_02217d0c(void) {extern s32 data_ov006_02218e2c;return (data_ov006_02218e2c*10)>>8;}
 
-void func_ov006_02217d28(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x54) = HeapAllocBlock(0x1EA0);
-    M2C_FIELD(arg0, s32 *, 0x44) = HeapAllocBlock(0x28);
-    M2C_FIELD(arg0, s32 *, 0x48) = HeapAllocBlock(0x14);
-    M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0xA);
-    M2C_FIELD(arg0, s32 *, 0x50) = HeapAllocBlock(6);
-    M2C_FIELD(arg0, s8 *, 0x3B) = 0;
-    func_020e36dc(arg0);
+/* Sets up the online map-list screen object: allocates its ten received player
+ * entries and the per-candidate player-id, map-id, status and joinable-id
+ * arrays, resets the code display, hides the shared 3D sprite and clears the
+ * map-confirm flag. */
+void InitMapListObject(void *object) {
+    M2C_FIELD(object, s32 *, MAP_LIST_ENTRIES) = HeapAllocBlock(MAP_LIST_MAX_ENTRIES * MAP_LIST_ENTRY_SIZE);
+    M2C_FIELD(object, s32 *, MAP_LIST_PLAYER_IDS) = HeapAllocBlock(MAP_LIST_MAX_ENTRIES * 4);
+    M2C_FIELD(object, s32 *, MAP_LIST_MAP_IDS) = HeapAllocBlock(MAP_LIST_MAX_ENTRIES * 2);
+    M2C_FIELD(object, s32 *, MAP_LIST_STATUS) = HeapAllocBlock(MAP_LIST_MAX_ENTRIES);
+    M2C_FIELD(object, s32 *, MAP_LIST_JOINABLE_IDS) = HeapAllocBlock(MAP_LIST_MAX_JOINABLE * 2);
+    M2C_FIELD(object, s8 *, MAP_LIST_DISPLAY_KIND) = 0;
+    func_020e36dc(object);
     LoadUiGraphicsBank(4);
     func_02089728();
     func_ov006_02217cfc(0);

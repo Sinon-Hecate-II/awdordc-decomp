@@ -315,7 +315,7 @@ u8 GsCryptByte(void *cipher, u8 data) {
     return state->d;
 }
 
-void func_0206006c(void *a,u8 *b,s32 n){u8 GsCryptByte(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=GsCryptByte(a,b[i]);}
+void GsCryptData(void *a,u8 *b,s32 n){u8 GsCryptByte(void *,u8);s32 i;for(i=0;i<n;i++)b[i]=GsCryptByte(a,b[i]);}
 
 void QueryQueue_Append(void *arg0, void *arg1) {
     void *temp_r2;

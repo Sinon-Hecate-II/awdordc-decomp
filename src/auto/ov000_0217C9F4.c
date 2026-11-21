@@ -160,17 +160,21 @@ SelectMapLayer((u8 *)map+MAP_CELL_ORDER);
 return 0;
 }
 #pragma opt_strength_reduction on
-void func_ov000_0217d3b8(s32 arg0) {
+/* Capture-order follow-up from SetMapCursor: when the order is a capture, the
+ * cursor unit is healthy and the capture will finish this turn, mark the unit
+ * as having its AI move target assigned so the AI keeps it on the property. */
+void MarkCaptureUnitHasTarget(s32 command) {
     s32 WillFinishCaptureThisTurn(void *);
     extern void **gCurrentMap;
     void *unit;
-    if (arg0 != 3) return;
-    unit = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (((u32)(M2C_FIELD(unit, u16 *, 6) << 25) >> 25) < 0x3DU) return;
+
+    if (command != 3) return;
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    if (((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25) < MAP_UNIT_HEALTH_HEALTHY) return;
     if (WillFinishCaptureThisTurn(unit) != 1) return;
-    unit = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    if (((u32)(M2C_FIELD(unit, u8 *, 0xB) << 28) >> 28) == 0) {
-        M2C_FIELD(unit, u8 *, 0xB) |= 0x20;
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 0) {
+        M2C_FIELD(unit, u8 *, MAP_UNIT_AI_STATE) |= MAP_UNIT_AI_HAS_TARGET;
     }
 }
 

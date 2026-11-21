@@ -26,7 +26,7 @@ s32 func_ov003_021e88a4(void *);u8 func_ov003_021e9cd0(s32);
 void HandleWaypointPanelCancel(void *,s32);s32 func_ov003_021e74a4(s32);
 void func_ov003_021ec780(s32,s32);void StepCounterDown(s32,s32,s32);
 s32 func_ov003_021e9e2c(void *);void ApplyWaypointMenuAction(void *,u32),func_ov003_021ed27c(void *,u8);
-void func_ov003_021e8354(s32,s32,s32);
+void StepCounterUp(s32,s32,s32);
 void Ov003_UpdateWaypointSlotButtons(s32);s32 func_ov003_021ed8a8(s32),func_ov003_021ed8c4(s32),func_ov003_021ed8cc(s32),func_ov003_021ed8e8(s32);
 void UpdateWaypointSelection(void *,u8),SetWaypointPanelState(void *,s32),func_ov003_021eccd4(void *),func_ov003_021ed8f0(void *,s32,u8);
 s32 InRange(s32,s32,s32);s32 func_0208eb68(void *);
@@ -117,7 +117,7 @@ StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),i,1);func_ov003_021ebb88(M2C_FIELD((u
 if(func_ov003_021e9e2c(arg0))ApplyWaypointMenuAction(arg0,(u8)(i+21));else func_ov003_021ed27c(arg0,(u8)(i+21));
 PlaySoundEffect(0x10011);ready=0;
 }else if(ready && func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56))){
-func_ov003_021e8354(M2C_FIELD(arg0,s32 *,0x6c),i,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56));
+StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),i,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56));
 if(func_ov003_021e9e2c(arg0))ApplyWaypointMenuAction(arg0,(u8)(i+21));else func_ov003_021ed27c(arg0,(u8)(i+21));
 PlaySoundEffect(0x10011);ready=0;
 }
@@ -148,7 +148,7 @@ else if(InRange(action,21,24)){StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),slot,1
 }else if(ready && (keys&256)){
 action=(s16)action;
 if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,24));PlaySoundEffect(0x10011);}
-else if(InRange(action,21,24)){func_ov003_021e8354(M2C_FIELD(arg0,s32 *,0x6c),slot,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,40));PlaySoundEffect(0x10011);}
+else if(InRange(action,21,24)){StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),slot,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,40));PlaySoundEffect(0x10011);}
 }
 }
 if(IsLinkSessionActive()){

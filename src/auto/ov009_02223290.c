@@ -3,23 +3,29 @@
 #include "ov009_link.h"
 #include "wfc_channel.h"
 
-s32 func_ov009_02223290(void) {
-    s32 WFC_SendConnectionData(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32, s32);
-    M2C_UNK SetConnectedPlayers(s32);
-    M2C_UNK func_ov009_02225480();
-    extern M2C_UNK data_ov009_02226a80, data_ov009_02226fe0, HandleLinkTaskEvent;
-    s32 state = GetLinkPhase();
-    switch (state) {
-    case 4:
-    case 5: return 1;
+/* Submit the Download Play connection data unless the link is already active. */
+s32 StartDownloadPlayLinkConnection(void) {
+    s32 WFC_SendConnectionData(s32, u16 *, void *, s32, u16);
+    s32 SetConnectedPlayers(s32);
+    s32 ClearLinkEventFlags();
+    void HandleLinkTaskEvent(void *);
+    extern s32 gLinkConnectionData, gLinkConnectionExtraData;
+    s32 phase = GetLinkPhase();
+    s32 result;
+
+    switch (phase) {
+    case LINK_PHASE_ACTIVE:
+    case LINK_PHASE_INGAME:
+        return 1;
     default:
-        SetLinkPhase(3);
-        if (WFC_SendConnectionData(&HandleLinkTaskEvent, &data_ov009_02226a80, &data_ov009_02226fe0, 1, 0) != 2) {
-            SignalLinkError();
+        SetLinkPhase(LINK_PHASE_PENDING);
+        result = WFC_SendConnectionData((s32)HandleLinkTaskEvent, (u16 *)&gLinkConnectionData, &gLinkConnectionExtraData, 1, 0);
+        if (result != LINK_TASK_QUEUED) {
+            SignalLinkError(result);
             return 0;
         }
         SetConnectedPlayers(1);
-        func_ov009_02225480();
+        ClearLinkEventFlags();
         return 1;
     }
 }
@@ -310,10 +316,10 @@ void HandleLinkChannelEvent(void *event) {
 }
 
 s32 func_ov009_02223b5c(void) {
-    s32 func_02012d64(M2C_UNK *);
+    s32 WFC_SendTeardownCommand(M2C_UNK *);
     extern M2C_UNK func_ov009_02223b8c;
     SetLinkPhase(3);
-    if (func_02012d64(&func_ov009_02223b8c) == 2) {
+    if (WFC_SendTeardownCommand(&func_ov009_02223b8c) == 2) {
         return 1;
     }
     SignalLinkError();
@@ -353,10 +359,10 @@ void func_ov009_02223be4(void *arg0) {
 }
 
 s32 func_ov009_02223c08(void) {
-    s32 func_02012d64(M2C_UNK *);
+    s32 WFC_SendTeardownCommand(M2C_UNK *);
     extern M2C_UNK func_ov009_02223c38;
     SetLinkPhase(3);
-    if (func_02012d64(&func_ov009_02223c38) == 2) {
+    if (WFC_SendTeardownCommand(&func_ov009_02223c38) == 2) {
         return 1;
     }
     SignalLinkError();
@@ -431,15 +437,18 @@ void func_ov009_02223da0(void *arg0) {
     SetLinkPhase(8);
 }
 
-s32 func_ov009_02223dc0(void) {
- extern M2C_UNK gLinkState,data_ov009_022269e0,func_ov009_02223e38;
+/* Submit the link's download-play data block: send the payload with the transfer
+ * code, the header's sequence word and the download flag; WFC results 2 and 3
+ * mean the request was queued. */
+s32 SubmitLinkDownloadData(void) {
+ extern M2C_UNK gLinkState,gLinkDownloadHeader,HandleLinkDownloadDataEvent;
  s32 WFC_SubmitDownloadData(M2C_UNK *,s32,u16,s32,u16,u8);
  s32 result;
- result=WFC_SubmitDownloadData(&func_ov009_02223e38,M2C_FIELD(&gLinkState,s32 *,0x100),M2C_FIELD(&data_ov009_022269e0,u16 *,4),M2C_FIELD(&gLinkState,s32 *,0x108),M2C_FIELD(&data_ov009_022269e0,u16 *,12),(u8)((M2C_FIELD(&gLinkState,u8 *,0x156)&2)!=0));
- switch(result) {case 2: case 3: break; default: SignalLinkError();return 0;} return 1;
+ result=WFC_SubmitDownloadData(&HandleLinkDownloadDataEvent,M2C_FIELD(&gLinkState,s32 *,LINK_STATE_DOWNLOAD_DATA),M2C_FIELD(&gLinkDownloadHeader,u16 *,LINK_DOWNLOAD_LENGTH),M2C_FIELD(&gLinkState,s32 *,LINK_STATE_DOWNLOAD_CODE),M2C_FIELD(&gLinkDownloadHeader,u16 *,LINK_DOWNLOAD_SEQUENCE),(u8)((M2C_FIELD(&gLinkState,u8 *,LINK_STATE_FLAGS)&LINK_STATE_FLAG_DOWNLOAD)!=0));
+ switch(result) {case LINK_TASK_QUEUED: case 3: break; default: SignalLinkError();return 0;} return 1;
 }
 
-void func_ov009_02223e38(void *arg0) {
+void HandleLinkDownloadDataEvent(void *arg0) {
     u16 temp_r0;
 
     temp_r0 = M2C_FIELD(arg0, u16 *, 2);
@@ -490,18 +499,18 @@ void func_ov009_02223f34(s32 a) { extern M2C_UNK gLinkState; M2C_FIELD(&gLinkSta
 void func_ov009_02223f44(s32 src,u32 size){
  M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
  M2C_UNK MI_CpuFill8(void*,M2C_UNK,s32);
- extern M2C_UNK data_ov009_02226fe0;
+ extern M2C_UNK gLinkConnectionExtraData;
  if(size>24)size=24;
- MI_CpuCopy8(src,(s32)&data_ov009_02226fe0,size);
- MI_CpuFill8((u8*)&data_ov009_02226fe0+size,0,24-size);
+ MI_CpuCopy8(src,(s32)&gLinkConnectionExtraData,size);
+ MI_CpuFill8((u8*)&gLinkConnectionExtraData+size,0,24-size);
 }
 
 void func_ov009_02223f7c(s32 a,s32 b){
  void func_ov009_0222140c(void*,s32,s32);
- extern M2C_UNK data_ov009_02226a20,gLinkState,data_ov009_022269e0;
+ extern M2C_UNK data_ov009_02226a20,gLinkState,gLinkDownloadHeader;
  func_ov009_0222140c(&data_ov009_02226a20,a,b);
  M2C_FIELD(&gLinkState,void**,0x100)=&data_ov009_02226a20;
- M2C_FIELD(&data_ov009_022269e0,u16*,4)=0x60;
+ M2C_FIELD(&gLinkDownloadHeader,u16*,4)=0x60;
 }
 
 s32 AnnounceLinkPlayer(void){

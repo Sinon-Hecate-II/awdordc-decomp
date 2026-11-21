@@ -1,10 +1,11 @@
 /* 44 functions from 0x0216CCE0 to 0x0216DBDC (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_room.h"
 #include "ov001_wh.h"
 extern M2C_UNK gWhConnTaskState;
 
 #pragma thumb on
-void func_ov001_0216cce0(s32 arg0, s32 arg1, s32 arg2) {
+void Ov001_SwapHalves(s32 arg0, s32 arg1, s32 arg2) {
     void Ov001MemCopy(s32, s32, s32);
     s32 half = arg1 / 2;
     Ov001MemCopy(arg2, arg0 + half, half);
@@ -141,27 +142,31 @@ s32 Ov001StringLength(s8 *arg0) {
 }
 
 #pragma thumb on
-u16 func_ov001_0216cf1c(void) {
+/* Return a fresh 16-bit random value for the room protocol: seed the room's
+ * random sequence once from the real-time clock, then step it and take its
+ * middle bits scaled to 0..0x7FFE. */
+u16 Ov001GetRandomSeed(void) {
     s32 GetRtcTime(void *);
     extern s32 gRoomState;
-    u32 t[3];
+    u32 rtcTime[3];
     u32 seed;
     u32 next;
-    if (M2C_FIELD(&gRoomState, s32 *, 8) == 0) {
+
+    if (M2C_FIELD(&gRoomState, s32 *, OV001_ROOM_RANDOM_READY) == 0) {
         seed = 0;
-        ((void (*)(void *, s32, s32))Ov001MemClear)(t, 0, 12);
-        if (GetRtcTime(t) == 0) {
-            seed += t[0] << 10;
-            seed += t[1] << 3;
-            seed += t[2];
+        ((void (*)(void *, s32, s32))Ov001MemClear)(rtcTime, 0, 12);
+        if (GetRtcTime(rtcTime) == 0) {
+            seed += rtcTime[0] << 10;
+            seed += rtcTime[1] << 3;
+            seed += rtcTime[2];
         }
-        M2C_FIELD(&gRoomState, u32 *, 0x18) = seed;
-        M2C_FIELD(&gRoomState, u32 *, 0x1C) = 0x5D588B65;
-        M2C_FIELD(&gRoomState, u32 *, 0x20) = 0x269EC3;
-        M2C_FIELD(&gRoomState, s32 *, 8) = 1;
+        M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_STATE) = seed;
+        M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_MUL) = OV001_ROOM_RANDOM_MULTIPLIER;
+        M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_ADD) = OV001_ROOM_RANDOM_INCREMENT;
+        M2C_FIELD(&gRoomState, s32 *, OV001_ROOM_RANDOM_READY) = 1;
     }
-    next = M2C_FIELD(&gRoomState, u32 *, 0x1C) * M2C_FIELD(&gRoomState, u32 *, 0x18) + M2C_FIELD(&gRoomState, u32 *, 0x20);
-    M2C_FIELD(&gRoomState, u32 *, 0x18) = next;
+    next = M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_MUL) * M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_STATE) + M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_ADD);
+    M2C_FIELD(&gRoomState, u32 *, OV001_ROOM_RANDOM_STATE) = next;
     return ((next >> 16) * 0x7FFF) >> 16;
 }
 void func_ov001_0216cf8c(void *arg0) {

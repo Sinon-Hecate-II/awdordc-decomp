@@ -1,5 +1,6 @@
 /* 16 functions from 0x020420A0 to 0x0204309C (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 
 #pragma opt_strength_reduction off
 /* Per-frame handler for the connection states that wait on the other peers:
@@ -101,7 +102,7 @@ s32 HandlePeerSyncNotice(s32 peerId,s32 notice,s32 value) {
 void *GetConnection(void);
 s32 GetNetSessionState(void);
 void SetConnectionState(s32);
-void func_02041dd4(s32);
+void ClosePeerConnection(s32);
 s32 SendPeerSyncNotice(s32,s32);
 u64 GetSystemTick(void);
 u64 U64Divide(u64,u64);
@@ -113,7 +114,7 @@ s32 idx,connectedPeers,i;
 if(GetNetSessionState()!=6)return 1;
 switch(notice){
 case PEER_SYNC_PREPARE:
-if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)!=CONN_STATE_SYNC_PREPARE){SetConnectionState(CONN_STATE_SYNC_PREPARE);func_02041dd4(value);}
+if(M2C_FIELD(GetConnection(),s32*,CONN_SESSION_STATE)!=CONN_STATE_SYNC_PREPARE){SetConnectionState(CONN_STATE_SYNC_PREPARE);ClosePeerConnection(value);}
 if(SendPeerSyncNotice(peerId,PEER_SYNC_ACK)==0)return 0;
 break;
 case PEER_SYNC_ACK:
@@ -198,9 +199,35 @@ u8 func_020427b4(void){extern u8 gSessionPlayers[];u8 i=0;do{if(gSessionPlayers[
 
 void ClearSessionPlayers(void){extern u8 gSessionPlayers[];void HeapFree(s32,s32,s32);void CpuFill(s32,void *,s32);s32 i=0;u8 *p=gSessionPlayers;do{if(M2C_FIELD(p,s32 *,4))HeapFree(4,M2C_FIELD(p,s32 *,4),0);i++;p+=12;}while(i<154);CpuFill(0,gSessionPlayers,0x738);}
 
-u8 func_0204284c(void){void *GetConnection(void);u8 i=0;s32 j;do{for(j=0;j<=M2C_FIELD(GetConnection(),u8 *,20);j++){if(i==M2C_FIELD((u8 *)GetConnection()+j,u8 *,0x2d0))break;}if(j>M2C_FIELD(GetConnection(),u8 *,20))break;i++;}while(i<32);return i;}
+/* Lowest player slot id (0..31, or 32 when all are taken) that no connected peer
+ * occupies in the connection's list of peer slot ids. */
+u8 FindUnusedPlayerSlot(void){
+void *GetConnection(void);
+u8 slot=0;
+s32 i;
+do{
+for(i=0;i<=M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_SLOT);i++){
+if(slot==M2C_FIELD((u8 *)GetConnection()+i,u8 *,CONN_SESSION_PEER_SLOTS))break;
+}
+if(i>M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_SLOT))break;
+slot++;
+}while(slot<32);
+return slot;
+}
 
-s32 IsConnectionMember(s32 a){void *GetConnection(void);s32 GetSessionPlayerId(u8);s32 i,v;if(!M2C_FIELD(GetConnection(),s32 *,0x2fc))return 0;for(i=0;i<M2C_FIELD(GetConnection(),s32 *,0x344);i++){v=GetSessionPlayerId(M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x304));if(v>0&&v==a)return 1;}return 0;}
+/* True when `playerId` is one of this connection's match players: walks the
+ * connection's player index list and compares each entry's session player id. */
+s32 IsConnectionMember(s32 playerId){
+void *GetConnection(void);
+s32 GetSessionPlayerId(u8);
+s32 i,sessionPlayerId;
+if(!M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PLAYER_RECORDS))return 0;
+for(i=0;i<M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PLAYER_LIST_COUNT);i++){
+sessionPlayerId=GetSessionPlayerId(M2C_FIELD((u8 *)GetConnection()+i,u8 *,CONN_SESSION_PLAYER_LIST));
+if(sessionPlayerId>0&&sessionPlayerId==playerId)return 1;
+}
+return 0;
+}
 
 s32 GetBrowsedServerPid(void *arg0) {
     s32 SBServerGetIntValue(void *, void *, s32);
@@ -255,7 +282,29 @@ s32 GetConnectedPlayerMask(s32 arg0) {
 
 void func_02042ad0(void){void *GetConnection(void);u64 GetSystemTick(void);void *p;M2C_FIELD(GetConnection(),u8 *,0x1ad)=0;p=GetConnection();M2C_FIELD(p,u64 *,0x1f8)=GetSystemTick();}
 
-void ResetConnectionSync(s32 a){u64 GetSystemTick(void);extern void *gConnectionMgr;u64 t;if(!gConnectionMgr||!M2C_FIELD(gConnectionMgr,u8 *,0))return;M2C_FIELD(gConnectionMgr,s32 *,8)=0;M2C_FIELD(gConnectionMgr,s32 *,12)=0;M2C_FIELD(gConnectionMgr,u8 *,2)=0;t=GetSystemTick();M2C_FIELD(gConnectionMgr,u64 *,24)=t;if(a)return;t=GetSystemTick();M2C_FIELD(gConnectionMgr,u64 *,16)=t;}
+/* Reset the match-sync bookkeeping: clear the peer answer masks and the retry
+ * counter and stamp the last-sync time.  With keepStartTick zero (a fresh sync
+ * phase) the phase start time is stamped too; when it is nonzero (a peer was
+ * added or the round timed out) the original phase start is kept. */
+void ResetConnectionSync(s32 keepStartTick) {
+    u64 GetSystemTick(void);
+    extern void *gConnectionMgr;
+    u64 now;
+
+    if (!gConnectionMgr || !M2C_FIELD(gConnectionMgr, u8 *, CONN_SYNC_ACTIVE)) {
+        return;
+    }
+    M2C_FIELD(gConnectionMgr, u32 *, CONN_SYNC_ANSWERED) = 0;
+    M2C_FIELD(gConnectionMgr, u32 *, CONN_SYNC_READY) = 0;
+    M2C_FIELD(gConnectionMgr, u8 *, CONN_SYNC_RETRIES) = 0;
+    now = GetSystemTick();
+    M2C_FIELD(gConnectionMgr, u64 *, CONN_SYNC_SENT_TICK) = now;
+    if (keepStartTick) {
+        return;
+    }
+    now = GetSystemTick();
+    M2C_FIELD(gConnectionMgr, u64 *, CONN_SYNC_START_TICK) = now;
+}
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -323,7 +372,35 @@ if(ReportConnectionCommandResult()) return;
 mgr=gConnectionMgr;M2C_FIELD(mgr,u64*,24)=GetSystemTick();M2C_FIELD(mgr,u8*,2)=1;
 }
 #pragma pop
-u32 ReportConnectionStatusResult(u32 a,u32 unused,u32 off){u32 ret=a;u32 code=ret;if(ret==0)return 0;switch(ret){case 1:code=9;off=code-10;break;case 2:code=9;off=code-11;break;case 3:code=6;off=code-16;break;case 4:code=6;off=code-26;break;}ReportConnectionError(code,off+0xfffec398);return ret;}
+/* Reports a failed connection status and returns the original result. */
+u32 ReportConnectionStatusResult(u32 result, u32 unused, u32 detailOffset) {
+    u32 status = result;
+    u32 errorCode = status;
+
+    if (status == 0) return 0;
+
+    switch (status) {
+    case 1:
+        errorCode = 9;
+        detailOffset = errorCode - 10;
+        break;
+    case 2:
+        errorCode = 9;
+        detailOffset = errorCode - 11;
+        break;
+    case 3:
+        errorCode = 6;
+        detailOffset = errorCode - 16;
+        break;
+    case 4:
+        errorCode = 6;
+        detailOffset = errorCode - 26;
+        break;
+    }
+
+    ReportConnectionError(errorCode, detailOffset + NET_SESSION_STATUS_DETAIL_BASE);
+    return status;
+}
 
 /* Reports a matchmaking-send result: maps the operation result (1..6) to a WFC
  * error class and a detail word for this call site, hands them to

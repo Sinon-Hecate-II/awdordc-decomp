@@ -93,9 +93,36 @@ void func_020bcdec(void *arg0) {
     func_0208f7d0();
 }
 
-void func_020bce04(s32 a){void PlaySoundAtTile(s32,u8,u8);void CreateEffectMapSprite(void *,u8,u8,s32,s32,s32,s32);extern u8 data_021293cc[];extern void **gCurrentMap;void *p=M2C_FIELD(*gCurrentMap,void **,0x52d0);PlaySoundAtTile(0x128,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2));p=M2C_FIELD(*gCurrentMap,void **,0x52d0);CreateEffectMapSprite(data_021293cc,M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0,0,0,a);}
+/* Play the special sound and spawn the "special" effect sprite at the tile of
+ * the unit under the map cursor, parented to `parent`. */
+void SpawnCursorUnitSpecialEffect(s32 parent) {
+    void PlaySoundAtTile(s32, u8, u8);
+    void CreateEffectMapSprite(void *, u8, u8, s32, s32, s32, s32);
+    extern u8 sSpecialSprite[];
+    extern void **gCurrentMap;
+    void *unit;
 
-void func_020bce74(void *a){extern void **gCurrentMap;extern u8 data_021261bc[];void func_020a3428(s32,s32);s32 x=M2C_FIELD(a,s32 *,0x5c),y=M2C_FIELD(a,s32 *,0x64);u32 v;func_020a3428(x,y);v=(u32)(M2C_FIELD((u8 *)*gCurrentMap+x*0x8c,s32 *,0x6810)<<24)>>24;(*(void (**)(s32,void *))(data_021261bc+v*0x9c+y*0x28))(x,a);}
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    PlaySoundAtTile(0x128, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2));
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    CreateEffectMapSprite(sSpecialSprite, M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 0, 0, 0, parent);
+}
+
+/* Select the sprite set stored at view+0x64 on the player record, then call the
+ * player's army handler that creates its unit-view sprite (the rotating display
+ * of that player's units). */
+void CreatePlayerUnitViewSprite(void *view) {
+    extern void **gCurrentMap;
+    extern u8 gArmyUnitViewCreate[];
+    void func_020a3428(s32, s32);
+    s32 player = M2C_FIELD(view, s32 *, 0x5c);
+    s32 spriteSet = M2C_FIELD(view, s32 *, 0x64);
+    u32 armyId;
+
+    func_020a3428(player, spriteSet);
+    armyId = (u32)(M2C_FIELD((u8 *)*gCurrentMap + player * 0x8c, s32 *, 0x6810) << 24) >> 24;
+    (*(void (**)(s32, void *))(gArmyUnitViewCreate + armyId * 0x9c + spriteSet * 0x28))(player, view);
+}
 
 void func_020bcee4(void *arg0) {
     M2C_UNK func_020a33f0(s32, M2C_UNK);

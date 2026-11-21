@@ -26,6 +26,19 @@ typedef struct UiNodeVTable {
 /* The army/CO info window state (gArmyInfoState, 0x24 bytes, built by
  * func_ov000_0216e178): per listed player a record index (+0x00), a CO face id
  * (+0x04) and an army colour (+0x08), then the selection and face animation. */
+typedef struct ArmyInfoSelection {
+    u8 playerRecords[4];
+    u8 commanderFaces[4];
+    u8 armyColors[4];
+    u8 count;
+    u8 selected;
+} ArmyInfoSelection;
+
+enum {
+    ARMY_INFO_STATE_LABEL_OFFSET = 0x3080,
+    ARMY_INFO_STATE_LABEL_WIDTH = 128
+};
+
 #define ARMY_INFO_COUNT     0x0C /* u8 players listed in the window */
 #define ARMY_INFO_SELECTED  0x0D /* u8 index of the selected player */
 #define ARMY_INFO_FACE_SUB  0x0E /* u8 selected player's CO face id on the sub screen, 0 = none */

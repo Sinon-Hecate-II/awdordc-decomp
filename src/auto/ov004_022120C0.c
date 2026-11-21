@@ -24,7 +24,7 @@ static inline s32 SpriteTile124(s32 tile) { extern s32 gCur3DSpriteEngine; retur
 
 #pragma opt_propagation off
 void func_ov004_022120c0(void *arg0) {
-    M2C_UNK func_020822b8();
+    M2C_UNK Apply3DSpriteLayout();
     M2C_UNK SetFileDirectory();
     M2C_UNK LoadDecompressedFileTo();
     M2C_UNK LoadFileToBGExtPltt();
@@ -40,7 +40,7 @@ void func_ov004_022120c0(void *arg0) {
     M2C_UNK func_0208ca14();
     M2C_UNK func_0208c79c();
     M2C_UNK func_0208c75c();
-    M2C_UNK func_0208c7b8();
+    M2C_UNK StartPaletteFadeIn();
     M2C_UNK func_020a8a84();
     M2C_UNK func_ov004_02212088();
 
@@ -96,7 +96,7 @@ void func_ov004_022120c0(void *arg0) {
         }
         gCur3DSpriteEngine = e;
         if (e == g3DSpriteEngineSub) {
-            func_020822b8(&tmp);
+            Apply3DSpriteLayout(&tmp);
             SetFileDirectory(&data_ov004_02218df8);
             LoadDecompressedFileTo(&data_ov004_02218e04, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
             LoadDecompressedFileTo(&data_ov004_02218e0c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c));
@@ -143,13 +143,13 @@ void func_ov004_022120c0(void *arg0) {
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x40), u8 *, 0x34) = 0;
             func_0208c79c(M2C_FIELD(arg0, void **, 0x40), 0);
             func_0208c75c(M2C_FIELD(arg0, void **, 0x40), 0);
-            func_0208c7b8(M2C_FIELD(arg0, void **, 0x40), 0);
+            StartPaletteFadeIn(M2C_FIELD(arg0, void **, 0x40), 0);
 
             M2C_FIELD(arg0, void **, 0x44) = (void *)func_0208ca14(arg0);
             M2C_FIELD((void *)M2C_FIELD(arg0, void **, 0x44), u8 *, 0x34) = 1;
             func_0208c79c(M2C_FIELD(arg0, void **, 0x44), 0);
             func_0208c75c(M2C_FIELD(arg0, void **, 0x44), 1);
-            func_0208c7b8(M2C_FIELD(arg0, void **, 0x44), 0);
+            StartPaletteFadeIn(M2C_FIELD(arg0, void **, 0x44), 0);
         }
         ++i;
     } while (i < 2);

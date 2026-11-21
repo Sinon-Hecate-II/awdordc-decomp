@@ -385,34 +385,37 @@ void func_02006644(void *arg0) {
     } while (M2C_FIELD(arg0, s32 *, 0x88) != 0);
 }
 
-s32 TryLockMutex(void *arg0) {
+/* Try to take an OS mutex for the running thread without blocking: take it when
+ * free, count another lock when the running thread already holds it, and return
+ * 0 when someone else owns it. */
+s32 TryLockMutex(void *mutex) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void AppendThreadMutex(void *, void *);
     extern M2C_UNK gSocketManager;
-    void *head;
-    void *cur;
-    s32 state;
-    s32 r6;
+    void *thread;
+    void *owner;
+    s32 irq;
+    s32 locked;
 
-    state = OS_DisableInterrupts();
-    head = M2C_FIELD(&gSocketManager, void **, 0x4);
-    cur = M2C_FIELD(arg0, void **, 0x8);
-    if (cur == NULL) {
-        u32 tmp;
-        M2C_FIELD(arg0, void **, 0x8) = head;
-        tmp = M2C_FIELD(arg0, u32 *, 0xC) + 1;
-        M2C_FIELD(arg0, u32 *, 0xC) = tmp;
-        AppendThreadMutex(head, arg0);
-        r6 = 1;
-    } else if (cur == head) {
-        M2C_FIELD(arg0, u32 *, 0xC) = M2C_FIELD(arg0, u32 *, 0xC) + 1;
-        r6 = 1;
+    irq = OS_DisableInterrupts();
+    thread = M2C_FIELD(&gSocketManager, void **, 0x4); /* the running thread */
+    owner = M2C_FIELD(mutex, void **, OSMUTEX_OWNER);
+    if (owner == NULL) {
+        u32 count;
+        M2C_FIELD(mutex, void **, OSMUTEX_OWNER) = thread;
+        count = M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) + 1;
+        M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) = count;
+        AppendThreadMutex(thread, mutex);
+        locked = 1;
+    } else if (owner == thread) {
+        M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) = M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) + 1;
+        locked = 1;
     } else {
-        r6 = 0;
+        locked = 0;
     }
-    OS_RestoreInterrupts(state);
-    return r6;
+    OS_RestoreInterrupts(irq);
+    return locked;
 }
 
 void AppendThreadMutex(void *arg0, void *arg1) {
@@ -462,12 +465,12 @@ void InitArenaTable(void);
     M2C_UNK func_020075b4();
     M2C_UNK GX_ResetBankOwners();
     M2C_UNK func_02008bb8();
-    M2C_UNK func_02009d34();
+    M2C_UNK PXI_Init();
     M2C_UNK Arm7CommandInit();
     M2C_UNK func_02010c14();
     M2C_UNK Mb_BootInit();
     InitArenaTable();
-    func_02009d34();
+    PXI_Init();
     func_02005288();
     func_020069a4();
     func_02004fe0();
@@ -606,15 +609,20 @@ void func_02006c58(void) {
     M2C_FIELD(&data_0212defc, s32 *, 4) = 0;
 }
 
+/* Install the module's exception handler at start-up: remember any handler the
+ * loader left in the main-RAM exception vector so the new handler can chain to
+ * it, and when the vector holds none, write this module's exception entry there
+ * and into the OS work area's vector.  The handler state's third word is then
+ * cleared. */
 void func_02006ce4(void) {
 extern u32 data_0212df04[3];
 void func_02006d54(void);
-u32 v=*(u32 *)0x27ffd9c;
-if(v>=0x2600000u && v<0x2800000u) data_0212df04[0]=v;
+u32 leftHandler=*(u32 *)0x27ffd9c;
+if(leftHandler>=0x2600000u && leftHandler<0x2800000u) data_0212df04[0]=leftHandler;
 else data_0212df04[0]=0;
 if(data_0212df04[0]==0) {
 *(u32 *)0x27ffd9c=(u32)func_02006d54;
-{u32 *base=(u32 *)0x27e3000; base[0x3f7]=(u32)func_02006d54;}
+{u32 *osArea=(u32 *)0x27e3000; osArea[0x3f7]=(u32)func_02006d54;}
 }
 data_0212df04[2]=0;
 }

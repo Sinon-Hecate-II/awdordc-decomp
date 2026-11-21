@@ -131,31 +131,43 @@ void func_020952c8(M2C_UNK arg0) {
     PlaySoundEffect();
 }
 
-void func_020952ec(s32 arg0,s32 arg1,s32 arg2) {
-u32 value=(u8)func_02091e44();
-if(func_0209600c())arg2=0;
-switch(arg0) {
-case 0:CreateScreenTransitions((u8)arg1,(u16)arg2,value,7);return;
-case 1:StartScreenFades((u8)arg1,(u16)arg2,value,7);return;
+/* Runs the screen transition a script asked for: `isFade` picks the brightness
+ * fade (1) or the plain transition (0), `mode` is the TRANSITION_MODE_* effect
+ * and `duration` its length in frames, on the screen the 3D-sprite target names.
+ * While the text/telop state is busy the transition is applied instantly. */
+void StartScriptedScreenTransition(s32 isFade,s32 mode,s32 duration) {
+u32 target=(u8)func_02091e44();
+if(func_0209600c())duration=0;
+switch(isFade) {
+case 0:CreateScreenTransitions((u8)mode,(u16)duration,target,7);return;
+case 1:StartScreenFades((u8)mode,(u16)duration,target,7);return;
 }
 }
 
-void func_0209535c(s32 arg0) {
-extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
-s32 saved,i,v;
-if(IsScreenFadeActive()) {
-if(!func_02096064())return;
-saved=gCur3DSpriteEngine;
-i=0;
-do {
-if(i==0)v=g3DSpriteEngineMain;else v=g3DSpriteEngineSub;
-gCur3DSpriteEngine=v;
-func_020ace54();
-i++;
-}while(i<2);
-gCur3DSpriteEngine=saved;
-}
-Sprite_ResumeAnimation(arg0);
+/* Resume the script after the fade ends or after skipping both screen transitions. */
+void WaitForScreenFadeOrSkip(void *scriptSprite) {
+    extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
+    s32 savedEngine, engineIndex, engine;
+
+    if (IsScreenFadeActive()) {
+        if (!TryStartDialogSkip()) {
+            return;
+        }
+        savedEngine = gCur3DSpriteEngine;
+        engineIndex = DS3D_TARGET_MAIN;
+        do {
+            if (engineIndex == DS3D_TARGET_MAIN) {
+                engine = g3DSpriteEngineMain;
+            } else {
+                engine = g3DSpriteEngineSub;
+            }
+            gCur3DSpriteEngine = engine;
+            FinishCurrentScreenTransition();
+            engineIndex++;
+        } while (engineIndex < DS3D_TARGET_SUB + 1);
+        gCur3DSpriteEngine = savedEngine;
+    }
+    Sprite_ResumeAnimation(scriptSprite);
 }
 
 void func_020953d0(void) {
@@ -179,10 +191,10 @@ u8 func_020953e8(void) {
 
 void func_0209540c(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 func_02096064();
+    s32 TryStartDialogSkip();
     s16 temp_r1;
 
-    if (func_02096064() != 0) {
+    if (TryStartDialogSkip() != 0) {
         Sprite_ResumeAnimation(arg0);
         return;
     }

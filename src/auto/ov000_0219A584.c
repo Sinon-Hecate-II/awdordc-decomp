@@ -58,24 +58,30 @@ s32 i=0; u8 *p=data_ov000_021df7e4; u8 zero=i;
 do { i++; *p++=zero; } while(i<64);
 }
 
-void SelectAiUnitSupplyState(void *arg0) {
-s32 IsUnitSelected(void); s32 UnitKindCanSupply(u32,u32); s32 Divide(s32,s32);
-u32 a,b;
-if ((s32)M2C_FIELD(gAiUnitTypeTuning,u8 *,4) > (s32)((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)) {
-M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
+/* Pick the need state of an AI unit that has none yet: a unit below its kind's
+ * health threshold, or a selected unit below AI_COUNTER_UNIT_MIN_HEALTH, needs
+ * repair; a kind that can shoot but has no ammo, or whose fuel is below its
+ * record's fuel-percent threshold, needs resupply. */
+void SelectAiUnitNeedState(void *arg0) {
+u8 IsUnitSelected(s32); s32 UnitKindCanSupply(u32,u32); s32 Divide(s32,s32);
+u32 kind,ammo;
+s32 health = (s32)((u32)(M2C_FIELD(arg0,u16 *,MAP_UNIT_HEALTH)<<25)>>25);
+s32 limit = (s32)M2C_FIELD(gAiUnitTypeTuning,u8 *,AI_UNIT_RECORD_HEALTH);
+if (health < limit) {
+M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)=(M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)&~MAP_UNIT_NEED_MASK)|MAP_UNIT_NEED_REPAIR; return;
 }
-if(IsUnitSelected() && ((u32)(M2C_FIELD(arg0,u16 *,6)<<25)>>25)<50) {
-M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x2000; return;
+if(IsUnitSelected((s32)arg0) && ((u32)(M2C_FIELD(arg0,u16 *,MAP_UNIT_HEALTH)<<25)>>25)<AI_COUNTER_UNIT_MIN_HEALTH) {
+M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)=(M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)&~MAP_UNIT_NEED_MASK)|MAP_UNIT_NEED_REPAIR; return;
 }
-a=(u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26;
-if(gUnitKindMaxAmmo[a*0x70]) {
-b=(u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28;
-if(b==0 && UnitKindCanSupply(a,b)==0) {
-M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000; return;
+kind=(u32)(M2C_FIELD(arg0,u8 *,MAP_UNIT_KIND)<<26)>>26;
+if(gUnitKindMaxAmmo[kind*UNIT_KIND_STATS_SIZE]) {
+ammo=(u32)(M2C_FIELD(arg0,u16 *,MAP_UNIT_AMMO)<<21)>>28;
+if(ammo==0 && UnitKindCanSupply(kind,ammo)==0) {
+M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)=(M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)&~MAP_UNIT_NEED_MASK)|MAP_UNIT_NEED_SUPPLY; return;
 }
 }
-if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,10)<<25)>>25)*100,gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70]) >= (u32)M2C_FIELD(gAiUnitTypeTuning,u8 *,3)) return;
-M2C_FIELD(arg0,u16 *,8)=(M2C_FIELD(arg0,u16 *,8)&~0x3000)|0x1000;
+if((u8)Divide(((u32)(M2C_FIELD(arg0,u8 *,MAP_UNIT_FUEL)<<25)>>25)*100,gUnitKindMaxFuel[((u32)(M2C_FIELD(arg0,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE]) >= (u32)M2C_FIELD(gAiUnitTypeTuning,u8 *,AI_UNIT_RECORD_FUEL_PERCENT)) return;
+M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)=(M2C_FIELD(arg0,u16 *,MAP_UNIT_NEED_STATE)&~MAP_UNIT_NEED_MASK)|MAP_UNIT_NEED_SUPPLY;
 }
 
 /* Re-check a unit's pending resupply need: keep it while the unit is out of ammo
@@ -122,7 +128,7 @@ void UpdateAiSupplyStates(void) {
         switch (state) {
             case 1: UpdateAiUnitSupplyState(unit); break;
             case 2: UpdateAiUnitRepairState(unit); break;
-            default: SelectAiUnitSupplyState(unit); break;
+            default: SelectAiUnitNeedState(unit); break;
         }
     }
 }

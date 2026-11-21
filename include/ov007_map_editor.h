@@ -26,6 +26,11 @@
 #define MAP_EDITOR_PANEL_OWNER   0x38 /* s8[2] owner/colour index per page */
 #define MAP_EDITOR_PANEL_ENTRY   0x3A /* s8[2] selected palette entry index per page */
 
+/* The palette panel's two list objects (each a MenuList007 built by
+ * func_ov007_0221863c): the page's entry grid and the page markers row. */
+#define MAP_EDITOR_PANEL_ENTRY_LIST  0x58 /* MenuList007 *the palette page's entry grid */
+#define MAP_EDITOR_PANEL_MARKER_LIST 0x5C /* MenuList007 *the page markers row */
+
 /* The editor's unit-count table: 5 player rows of 12 unit categories of units
  * on the map.  A second table caches one unit total per player. */
 #define MAP_EDITOR_UNIT_ROWS     5

@@ -102,7 +102,7 @@ s32 ghiFreeConnection(void *connection) {
     M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
     M2C_UNK func_020496cc(s32, M2C_UNK); M2C_UNK ghiCloseSocket(s32);
     void ghiFreeBuffer(void *); void ghiPostCleanup(void *);
-    s32 func_0204b688(void *); void func_0204b690(s32 *);
+    s32 func_0204b688(void *); void ghiPostFree(s32 *);
     GHIConnection *conn = (GHIConnection *)connection;
 
     if (!connection) AssertFailed(&data_020fd0a4, &ghiAssertFile, &data_020fd024, 0xb3);
@@ -130,7 +130,7 @@ s32 ghiFreeConnection(void *connection) {
     ghiFreeBuffer(&conn->bodyBuffer);
     if (conn->postItems) ghiPostCleanup(conn);
     if (conn->postData && func_0204b688(conn->postData)) {
-        func_0204b690(conn->postData);
+        ghiPostFree(conn->postData);
         conn->postData = 0;
     }
     if (conn->encryptor) {
@@ -212,17 +212,22 @@ void func_0204afd8(void *obj) {
     M2C_FIELD(obj, s32 *, 0x10C) = (s32) (M2C_FIELD(obj, s32 *, 0x10C) + 1);
 }
 
-void func_0204b0dc(void) {
- extern M2C_UNK gGhiConnectionList; s32 ghiFreeConnection(void *);
- void func_0204af74(M2C_UNK *);
- s32 i;
- if(M2C_FIELD(&gGhiConnectionList,void **,4)==NULL)return;
- func_0204af74((M2C_UNK *)ghiFreeConnection);
- for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) gpiFree(M2C_FIELD(&gGhiConnectionList,void ***,4)[i]);
- gpiFree(M2C_FIELD(&gGhiConnectionList,void **,4));
- M2C_FIELD(&gGhiConnectionList,void **,4)=NULL;
- M2C_FIELD(&gGhiConnectionList,s32 *,12)=0;
- M2C_FIELD(&gGhiConnectionList,s32 *,0)=0;
+/* GameSpy ghttp shutdown: release every connection still in use, then free the
+ * connection table and reset its counters. */
+void ghiCleanupConnections(void) {
+    extern M2C_UNK gGhiConnectionList;
+    s32 ghiFreeConnection(void *);
+    void func_0204af74(M2C_UNK *);
+    s32 slot;
+
+    if (M2C_FIELD(&gGhiConnectionList, void **, GHI_LIST_CONNECTIONS) == NULL) return;
+    func_0204af74((M2C_UNK *) ghiFreeConnection);
+    for (slot = 0; slot < M2C_FIELD(&gGhiConnectionList, s32 *, GHI_LIST_LENGTH); slot++)
+        gpiFree(M2C_FIELD(&gGhiConnectionList, void ***, GHI_LIST_CONNECTIONS)[slot]);
+    gpiFree(M2C_FIELD(&gGhiConnectionList, void **, GHI_LIST_CONNECTIONS));
+    M2C_FIELD(&gGhiConnectionList, void **, GHI_LIST_CONNECTIONS) = NULL;
+    M2C_FIELD(&gGhiConnectionList, s32 *, GHI_LIST_LENGTH) = 0;
+    M2C_FIELD(&gGhiConnectionList, s32 *, GHI_LIST_NUM_CONNECTIONS) = 0;
 }
 
 /* Map a finished request's HTTP status code to a GHTTPResult: 1xx-3xx are not
@@ -299,7 +304,7 @@ void func_0204b3cc(void) {
     M2C_UNK func_0204a60c();
     M2C_UNK ghiLockMutex();
     M2C_UNK ghiUnlockMutex();
-    void func_0204b0dc();
+    void ghiCleanupConnections();
     extern s32 gHttpServerOverride;
     extern s32 data_0213dcbc;
     s32 temp_r1;
@@ -308,7 +313,7 @@ void func_0204b3cc(void) {
     temp_r1 = data_0213dcbc - 1;
     data_0213dcbc = temp_r1;
     if (temp_r1 == 0) {
-        func_0204b0dc();
+        ghiCleanupConnections();
         if (gHttpServerOverride != 0) {
             gpiFree();
             gHttpServerOverride = 0;
@@ -391,7 +396,7 @@ s32 func_0204b688(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x10);
 }
 
-void func_0204b690(s32 *arg0) {
+void ghiPostFree(s32 *arg0) {
     M2C_UNK gpiFree(s32 *);
     M2C_UNK Vector_Free(s32);
     Vector_Free(*arg0);

@@ -137,7 +137,7 @@ void func_ov000_0218cfec(void) {
 }
 
 #pragma opt_strength_reduction off
-void func_ov000_0218d040(void *allowCurrentCell) {
+void ChooseAiUnitMoveDestination(void *allowCurrentCell) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     extern u8 *gAiUnitTypeTuning;

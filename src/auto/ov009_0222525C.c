@@ -132,12 +132,12 @@ void func_ov009_02225470(void) {
     CountBits();
 }
 
-void func_ov009_02225480(void) {
+void ClearLinkEventFlags(void) {
     extern M2C_UNK gLinkState;
     M2C_FIELD(&gLinkState, s16 *, 8) = 0;
 }
 
-u16 func_ov009_02225494(void) {
+u16 GetLinkEventFlags(void) {
     extern M2C_UNK gLinkState;
     return M2C_FIELD(&gLinkState, u16 *, 8);
 }
@@ -779,13 +779,13 @@ void func_ov009_02226148(void) {
 }
 
 void func_ov009_02226154(void) {
-    M2C_UNK func_020852a8();
+    M2C_UNK CreateSubScreenLinkIndicator();
     M2C_UNK func_020852e0();
     M2C_UNK EnableMapConfirm();
     s32 GetLinkPhase();
     if (GetLinkPhase() == 1) {
         EnableMapConfirm();
-        func_020852a8();
+        CreateSubScreenLinkIndicator();
         return;
     }
     DisableMapConfirm();

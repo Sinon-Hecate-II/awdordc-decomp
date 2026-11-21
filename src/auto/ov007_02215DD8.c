@@ -7,7 +7,7 @@ void *map=*gCurrentMap;
 return M2C_FIELD((u8*)map+(x+M2C_FIELD((u8*)map+y*2,u16 *,0x3758))*2,u16 *,0xa10);
 }
 
-s32 Map_PickRandomWastelandTile(s32 *x,s32 *y,s32 value){
+s32 Map_PickRandomSeaAreaTile(s32 *x,s32 *y,s32 value){
 s32 RandomIntRange(s32,s32);s32 Map_IsWastelandArea(s32,s32);extern void **gCurrentMap;
 s32 attempts=0; s32 minX=0,minY=0;
 do{
@@ -80,7 +80,7 @@ loop:
     goto loop;
 }
 
-void Map_GrowTerrain(s32 arg0, s32 arg1) {
+void Map_GrowTerrain(s32 grownTile, s32 sourceTile) {
     s32 Map_CountTileNeighbors(s32, s32, s32);
     s32 Map_RollTerrainGrowth(s32, s32);
     s32 Map_SetCellTile(s32, s32, s32);
@@ -88,46 +88,39 @@ void Map_GrowTerrain(s32 arg0, s32 arg1) {
     extern void **gCurrentMap;
     extern u8 gMapMarkerGrid[];
 
-    s32 sp0 = 0;
+    s32 passes = 0;
+    s32 x;
+    s32 y;
     s8 *row;
-    s32 r6;
-    s32 r7;
-    void *r0;
+    u8 *map;
 
-loop_outer:
-    r7 = 0;
-    r0 = *gCurrentMap;
-    if (M2C_FIELD(r0, u16 *, 0x5146) > 0) {
-        row = (s8*)gMapMarkerGrid;
-        do {
-            r6 = 0;
-            if (M2C_FIELD(r0, u16 *, 0x5144) > 0) {
-                do {
-                    if (row[r6] == 0 && arg1 == M2C_FIELD((r0 + ((r6 + M2C_FIELD((r0 + r7 * 2), u16 *, 0x3758)) * 2)), u16 *, 0xA10)) {
-                        s32 cnt = Map_CountTileNeighbors(r6, r7, arg0);
-                        if (Map_RollTerrainGrowth(cnt, arg0) != 1) {
-                            row[r6] = 1;
+    do {
+        map = *gCurrentMap;
+        y = 0;
+        if (y < M2C_FIELD(map, u16 *, 0x5146)) {
+            row = (s8 *)gMapMarkerGrid;
+            do {
+                for (x = 0; x < M2C_FIELD(map, u16 *, 0x5144); x++) {
+                    if (row[x] == 0 &&
+                        sourceTile == ((u16 *)(map + 0xA10))[x + ((u16 *)(map + 0x3758))[y]]) {
+                        s32 neighbors = Map_CountTileNeighbors(x, y, grownTile);
+                        if (Map_RollTerrainGrowth(neighbors, grownTile) == 1) {
+                            Map_SetCellTile(x, y, grownTile);
+                            row[x] = 2;
                         } else {
-                            Map_SetCellTile(r6, r7, arg0);
-                            row[r6] = 2;
+                            row[x] = 1;
                         }
                     }
-                    r6 += 1;
-                    r0 = *gCurrentMap;
-                } while (r6 < M2C_FIELD(r0, u16 *, 0x5144));
-            }
-            r7 += 1;
-            row += 0x1E;
-        } while (r7 < M2C_FIELD(r0, u16 *, 0x5146));
-    }
-    if (Map_MarkUnitsMoved() == 0) {
-        return;
-    }
-    sp0 += 1;
-    if (sp0 > 0x64) {
-        return;
-    }
-    goto loop_outer;
+                    map = *gCurrentMap;
+                }
+                ++y;
+                row += 30;
+            } while (y < M2C_FIELD(map, u16 *, 0x5146));
+        }
+        if (!Map_MarkUnitsMoved()) {
+            return;
+        }
+    } while (++passes <= 100);
 }
 
 /* Chooses two random endpoints, near the given points and within `radius`, for

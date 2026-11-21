@@ -16,7 +16,7 @@ SetEffectNodeTranslation kind:function(arm,size=0x10) addr:0x021e179c
 SetEffectScale kind:function(arm,size=0x8) addr:0x021e17ac
 SetEffectNodeFlash kind:function(arm,size=0x90) addr:0x021e17b4
 func_ov002_021e1844 kind:function(arm,size=0x3f0) addr:0x021e1844
-func_ov002_021e1c34 kind:function(arm,size=0x78) addr:0x021e1c34
+SetEffectNodeMatrix kind:function(arm,size=0x78) addr:0x021e1c34
 func_ov002_021e1cac kind:function(arm,size=0x24c) addr:0x021e1cac
 func_ov002_021e1ef8 kind:function(arm,size=0x30c) addr:0x021e1ef8
 func_ov002_021e2204 kind:function(arm,size=0x160) addr:0x021e2204
@@ -104,7 +104,7 @@ func_ov002_021e78a4 kind:function(arm,size=0x40) addr:0x021e78a4
 DrawBattleSceneUnitView kind:function(arm,size=0x78) addr:0x021e78e4
 EndBattleScene kind:function(arm,size=0x14) addr:0x021e795c
 func_ov002_021e7970 kind:function(arm,size=0x3c) addr:0x021e7970
-func_ov002_021e79ac kind:function(arm,size=0x18) addr:0x021e79ac
+IsBattleSceneIntro kind:function(arm,size=0x18) addr:0x021e79ac
 func_ov002_021e79c4 kind:function(arm,size=0x50) addr:0x021e79c4
 func_ov002_021e7a14 kind:function(arm,size=0x50) addr:0x021e7a14
 SetupPlayerSettings kind:function(arm,size=0x220) addr:0x021e7a64
@@ -124,7 +124,7 @@ func_ov002_021e86f8 kind:function(arm,size=0x40) addr:0x021e86f8
 func_ov002_021e8738 kind:function(arm,size=0x160) addr:0x021e8738
 func_ov002_021e8898 kind:function(arm,size=0x8) addr:0x021e8898
 func_ov002_021e88a0 kind:function(arm,size=0xc) addr:0x021e88a0
-func_ov002_021e88ac kind:function(arm,size=0x68) addr:0x021e88ac
+StepUnitViewShake kind:function(arm,size=0x68) addr:0x021e88ac
 StepUnitView kind:function(arm,size=0x70) addr:0x021e8914
 func_ov002_021e8984 kind:function(arm,size=0x320) addr:0x021e8984
 func_ov002_021e8ca4 kind:function(arm,size=0x60) addr:0x021e8ca4
@@ -132,7 +132,7 @@ func_ov002_021e8d04 kind:function(arm,size=0x8) addr:0x021e8d04
 func_ov002_021e8d0c kind:function(arm,size=0x64) addr:0x021e8d0c
 GetUnitRotationDelta kind:function(arm,size=0x10c) addr:0x021e8d70
 func_ov002_021e8e7c kind:function(arm,size=0x10) addr:0x021e8e7c
-func_ov002_021e8e8c kind:function(arm,size=0x164) addr:0x021e8e8c
+StepUnitModel kind:function(arm,size=0x164) addr:0x021e8e8c
 func_ov002_021e8ff0 kind:function(arm,size=0x10) addr:0x021e8ff0
 func_ov002_021e9000 kind:function(arm,size=0x8) addr:0x021e9000
 func_ov002_021e9008 kind:function(arm,size=0xc) addr:0x021e9008
@@ -142,7 +142,7 @@ FreeModelList2 kind:function(arm,size=0xf4) addr:0x021e95f0
 FreeModelList3 kind:function(arm,size=0xf4) addr:0x021e96e4
 func_ov002_021e97d8 kind:function(arm,size=0x174) addr:0x021e97d8
 func_ov002_021e994c kind:function(arm,size=0x30) addr:0x021e994c
-func_ov002_021e997c kind:function(arm,size=0x74) addr:0x021e997c
+InitUnitEffectNode kind:function(arm,size=0x74) addr:0x021e997c
 func_ov002_021e99f0 kind:function(arm,size=0x1d0) addr:0x021e99f0
 func_ov002_021e9bc0 kind:function(arm,size=0x24c) addr:0x021e9bc0
 SetupUnitMoveNode kind:function(arm,size=0x174) addr:0x021e9e0c
@@ -1232,7 +1232,7 @@ gAnimVariantD kind:data(any) addr:0x021f2e4c
 gAnimVariantC kind:data(any) addr:0x021f2e50
 gUnitActionTable kind:data(any) addr:0x021f2e54
 gAnimStateTable kind:data(any) addr:0x021f2e70
-data_ov002_021f2ef0 kind:data(any) addr:0x021f2ef0
+gUnitViewShakeOffsets kind:data(any) addr:0x021f2ef0
 data_ov002_021f2f1c kind:data(any) addr:0x021f2f1c
 data_ov002_021f2f40 kind:bss addr:0x021f2f40
 gEffectVariants kind:bss addr:0x021f2f44
@@ -1265,7 +1265,7 @@ data_ov002_021f304a kind:bss addr:0x021f304a
 data_ov002_021f304b kind:bss addr:0x021f304b
 data_ov002_021f304c kind:bss addr:0x021f304c
 data_ov002_021f306e kind:bss addr:0x021f306e
-data_ov002_021f30e4 kind:bss addr:0x021f30e4
+gBattleSceneState kind:bss addr:0x021f30e4
 gPlayerSettings kind:bss addr:0x021f30f0
 gEffectTable kind:bss addr:0x021f30f4
 gScreenCountryAssets kind:bss addr:0x021f30f8

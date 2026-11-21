@@ -238,6 +238,7 @@ p=p+len;
 if(rem<=0)return -4;
 goto search;
 }
+p=q+4;
 remaining=Ov001SwapEndian16(*(u16 *)(q+2));
 base=sp4+0x350*sp0;
 sp8=arg4;
@@ -245,18 +246,18 @@ spC=(sp0+3)<<7;
 sp10=base;
 sp10=sp10+8;
 do {
-switch(q[0]){
-case 3:result=Ov001UnpackPlayerStrings(q,sp10);flags|=1;break;
-case 4:result=Ov001UnpackPlayerStrings(q,base+0x138);flags|=2;break;
-case 5:result=Ov001UnpackPlayerRecord(q,base+0x268);flags|=4;break;
-case 6:result=Ov001UnpackPlayerRecord(q,base+0x2d8);flags|=8;break;
-case 10:result=func_ov001_0216c3d0(q,(void *)(sp8+spC));break;
+switch(p[0]){
+case 3:result=Ov001UnpackPlayerStrings(p,sp10);flags|=1;break;
+case 4:result=Ov001UnpackPlayerStrings(p,base+0x138);flags|=2;break;
+case 5:result=Ov001UnpackPlayerRecord(p,base+0x268);flags|=4;break;
+case 6:result=Ov001UnpackPlayerRecord(p,base+0x2d8);flags|=8;break;
+case 10:result=func_ov001_0216c3d0(p,(void *)(sp8+spC));break;
 default:result=-3;break;
 }
 if(result!=0)return result;
-len=Ov001SwapEndian16(*(u16 *)(q+2))+4;remaining=remaining-len;q=q+len;
+len=Ov001SwapEndian16(*(u16 *)(p+2))+4;remaining=remaining-len;p=p+len;
 }while(remaining>0);
-*(s32 *)(gRoomState+0x30)|=flags;
+{struct RoomFlags {u8 pad[0x30]; volatile s32 flags;}; struct RoomFlags *state=(struct RoomFlags *)gRoomState; state->flags=state->flags|flags;}
 return 0;
 }
 unsigned int func_ov001_0216c510(unsigned int x) { unsigned int result = 0; if (x & 0x10) result = 1; return result; }

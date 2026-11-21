@@ -71,7 +71,7 @@ void *GetPlayerConnectionSlot(s32 arg0) {
     return &gPlayerConnections + arg0;
 }
 
-void *func_02039140(s32 arg0, s32 arg1) {
+void *FindPlayerConnectionSlot(s32 arg0, s32 arg1) {
     extern void *gNetSession;
     s32 FindPlayerConnection(s32);
     u8 func_020390c4(void);
@@ -147,7 +147,7 @@ case 5:detail+=0xfffec398;ReportConnectionError(errCode,detail);break;
 case 4:detail+=0xfffeeaa8;break;
 default:detail+=0xfffe9c88;break;
 }
-func_0203accc(errCode,detail);return error;
+ReportMatchSessionError(errCode,detail);return error;
 }
 
 /* Reports a GameSpy GT2 socket result: turns the result code into a network
@@ -589,17 +589,33 @@ void func_02039e60(void) {
     M2C_FIELD(p, s32 *, 0x30) = 0;
 }
 
-u32 ReportNasError(u32 a, u32 unused, u32 off) {
-    u32 ret = a;
-    u32 code;
-    if (ret == 0) return 0;
-    switch (ret) {
-    case 1: code = 9; off = code - 0xa; break;
-    case 2: code = 9; off = code - 0xb; break;
-    case 3: code = 6; off = code - 0x10; break;
-    case 4: code = 6; off = code - 0x1a; break;
+/* Reports a GameSpy Presence failure during NAS login and returns the original result. */
+u32 ReportNasError(u32 result, u32 unused, u32 detailOffset) {
+    u32 status = result;
+    u32 errorCode;
+
+    if (status == GP_NO_ERROR) return GP_NO_ERROR;
+
+    switch (status) {
+    case GP_MEMORY_ERROR:
+        errorCode = 9;
+        detailOffset = errorCode - 10;
+        break;
+    case GP_PARAMETER_ERROR:
+        errorCode = 9;
+        detailOffset = errorCode - 11;
+        break;
+    case GP_NETWORK_ERROR:
+        errorCode = 6;
+        detailOffset = errorCode - 16;
+        break;
+    case GP_SERVER_ERROR:
+        errorCode = 6;
+        detailOffset = errorCode - 26;
+        break;
     }
-    ReportNasLoginError(code, off + 0xffff11b8);
-    return ret;
+
+    ReportNasLoginError(errorCode, detailOffset + NET_LOGIN_STATUS_DETAIL_BASE);
+    return status;
 }
 

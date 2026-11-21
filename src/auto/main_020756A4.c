@@ -80,23 +80,28 @@ OS_ReleaseLockID(handle);
 return ok?dest-start:0;
 }
 #pragma opt_common_subs reset
-s32 func_02075b58(M2C_UNK *arg0, s32 arg1) {
-    void *temp_ip;
-    s32 var_lr;
-    var_lr = 0;
-    if (M2C_FIELD(arg0,u8 *,0x2050)==0) return 0;
-    if (M2C_FIELD(arg0,u8 *,0x2052)==1) return 0;
-    while (arg1 != 0xFFFF) {
-        temp_ip = (void *)arg0 + arg1 * 12;
-        if (M2C_FIELD(temp_ip,u16 *,8) == 0xFFFF) {
-            arg1 = M2C_FIELD(temp_ip,u16 *,4) - 0x38;
+/* Total payload bytes of the saved-block chain whose head table entry is
+ * `index`: walk the index table's next links, adding each block's length minus
+ * its SAVE_ARCHIVE_HEADER_SIZE header (SAVE_ARCHIVE_ROOT_SIZE for a chain root).
+ * Returns 0 while the save manager is not usable. */
+s32 GetSaveBlockChainSize(M2C_UNK *manager, s32 index) {
+    void *entry;
+    s32 total;
+
+    total = 0;
+    if (M2C_FIELD(manager, u8 *, SAVE_MANAGER_ACTIVE) == 0) return 0;
+    if (M2C_FIELD(manager, u8 *, SAVE_MANAGER_STATE) == 1) return 0;
+    while (index != SAVE_ARCHIVE_LINK_NONE) {
+        entry = (void *)manager + index * SAVE_BLOCK_ENTRY_STRIDE;
+        if (M2C_FIELD(entry, u16 *, SAVE_BLOCK_ENTRY_PREV) == SAVE_ARCHIVE_LINK_NONE) {
+            index = M2C_FIELD(entry, u16 *, SAVE_BLOCK_ENTRY_LENGTH) - SAVE_ARCHIVE_ROOT_SIZE;
         } else {
-            arg1 = M2C_FIELD(temp_ip,u16 *,4) - 0x14;
+            index = M2C_FIELD(entry, u16 *, SAVE_BLOCK_ENTRY_LENGTH) - SAVE_ARCHIVE_HEADER_SIZE;
         }
-        var_lr += arg1;
-        arg1 = M2C_FIELD(temp_ip,u16 *,10);
+        total += index;
+        index = M2C_FIELD(entry, u16 *, SAVE_BLOCK_ENTRY_NEXT);
     }
-    return var_lr;
+    return total;
 }
 
 /* Applies the queued save-record requests to the (initialised) save list: runs
@@ -250,7 +255,7 @@ void LoadSaveRecord(M2C_UNK arg0, M2C_UNK arg1) {
 
 void GetSaveRecordSize(M2C_UNK arg0) {
     extern M2C_UNK gSaveManager;
-    func_02075b58(&gSaveManager, arg0);
+    GetSaveBlockChainSize(&gSaveManager, arg0);
 }
 
 void func_020761f8(void) {

@@ -105,12 +105,12 @@ return 1;
  * save-block initialiser on a temporary 0x700-byte scratch buffer. */
 void Ov001_InitCore(void) {
 extern u8 gOv001ScreenState;
-M2C_UNK func_02002490(); M2C_UNK func_02006f8c(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK func_0200d544(); M2C_UNK func_0200ee70(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK func_ov001_0218be2c(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
+M2C_UNK func_02002490(); M2C_UNK IsSystemTickInitialized(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK TP_Init(); M2C_UNK RTC_Init(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK Ov001_InstallVBlankHandler(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
 M2C_UNK scratch;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
-if(!func_02006f8c())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);func_0200d544();func_02002490(func_0200ee70());*(volatile u32 *)0x4001000&=~0x10000;
-GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));func_ov001_0218be2c();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
+if(!IsSystemTickInitialized())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);TP_Init();func_02002490(RTC_Init());*(volatile u32 *)0x4001000&=~0x10000;
+GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));Ov001_InstallVBlankHandler();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the
@@ -125,7 +125,7 @@ void Ov001_SetupDisplay(void) {
     void GX_SetMasterBrightness(void *, s32);
     void GX_SetBlendControl(s32, s32, s32);
     void func_02003124(s32);
-    void func_020031cc(s32);
+    void GX_SetBankForSubOBJ(s32);
     void GX_SetSubBgMode(s32);
     void Ov001_CreateTextContext(void);
     void Ov001_InitSpriteObjs(void);
@@ -154,7 +154,7 @@ void Ov001_SetupDisplay(void) {
     *(volatile u32 *)0x0400001c = 0;
     GX_SetBlendControl(0x04000050, 0x3f, 0x10);
     func_02003124(0x80);
-    func_020031cc(0x100);
+    GX_SetBankForSubOBJ(0x100);
     GX_SetSubBgMode(0);
 
     {
@@ -212,7 +212,7 @@ void func_ov001_02175d04(void) {
     M2C_UNK func_ov001_0218abb8();
     M2C_UNK func_ov001_0218b688();
     M2C_UNK Ov001_StopInput();
-    M2C_UNK func_ov001_0218bea0();
+    M2C_UNK Ov001_RemoveVBlankHandler();
     M2C_UNK func_ov001_0218c0b8();
     M2C_UNK func_ov001_0218c4c0();
     M2C_UNK func_ov001_0218c668();
@@ -221,7 +221,7 @@ void func_ov001_02175d04(void) {
     *(s32 *)0x04001000 &= ~0x10000;
     func_ov001_0218c668();
     Ov001_StopInput();
-    func_ov001_0218bea0();
+    Ov001_RemoveVBlankHandler();
     func_ov001_02184ff8();
     func_ov001_0218a01c();
     func_ov001_0218c0b8();
@@ -289,7 +289,7 @@ s32 Ov001_HasOptionFlag(s32 arg0) {
     return 0;
 }
 
-void func_ov001_02175e20(void) {
+void Ov001_RequestScreenExit(void) {
     extern u8 gOv001ScreenState;
     M2C_FIELD(&gOv001ScreenState, u8 *, 1) = 1;
 }
@@ -320,7 +320,7 @@ void func_ov001_02175e74(void) {
     M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60) = res;
 }
 
-void func_ov001_02175eb0(void) {
+void Ov001_FreeMessageArchiveQueue(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern M2C_UNK data_ov001_02193d4c;
     Ov001_FreeAlloc(&data_ov001_02193d4c);
@@ -345,7 +345,7 @@ M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
     return var_r4;
 }
 
-void func_ov001_02175f1c(M2C_UNK arg0) {
+void Ov001_ReleaseMessageArchive(M2C_UNK arg0) {
     M2C_UNK Ov001_FreeFile(M2C_UNK);
     M2C_UNK Ov001_QueuePush(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_02193d4c;

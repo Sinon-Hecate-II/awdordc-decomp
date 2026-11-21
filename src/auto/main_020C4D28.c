@@ -281,7 +281,7 @@ if(M2C_FIELD(p+arg0*0x28,u16 *,0)==0)return 0;
 return p+arg0*0x28;
 }
 
-void func_020c53e4(s32 arg0) {
+void GetOwnFriendCode(s32 arg0) {
     M2C_UNK func_02032604(s32);
     s32 func_020c4acc();
     s32 var_r0;

@@ -1,5 +1,6 @@
 /* 28 functions from 0x02057D80 to 0x02058CA4 (main), found by ds-decomp. */
 #include "common.h"
+#include "net_session.h"
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 
 /* Fields a GPI server's error reply leaves on its connection. */
@@ -110,14 +111,16 @@ if(pair.unk_0){p=gpiMalloc(4);if(!p){gpiSetErrorString((s32 *)a,(s32)&data_020ff
 func_02054484(a,b);return 0;
 }
 
-M2C_UNK StringCopyN(s32 a,s32 b,s32 n) {
+/* Copy up to `n` bytes of `src` into `dst`, NUL-terminating at dst[n-1], and
+ * return dst + n.  Both pointers are asserted non-null (the GameSpy strzcpy). */
+M2C_UNK StringCopyN(s32 dst,s32 src,s32 n) {
 void AssertFailed(void *,void *,void *,s32);void StringCopyPad(s32,s32,s32);
-extern M2C_UNK data_020ff2cc,sGpiUtilitySourceFile,data_020ff2a0,data_020ff2ec;
-if(!a)AssertFailed(&data_020ff2cc,&sGpiUtilitySourceFile,&data_020ff2a0,47);
-if(!b)AssertFailed(&data_020ff2ec,&sGpiUtilitySourceFile,&data_020ff2a0,48);
-StringCopyPad(a,b,n);
-M2C_FIELD(a+n,u8 *,-1)=0;
-return a+n;
+extern M2C_UNK sGpiAssertDestNotNull,sGpiUtilitySourceFile,sGpiStrZCpyName,sGpiAssertSrcNotNull;
+if(!dst)AssertFailed(&sGpiAssertDestNotNull,&sGpiUtilitySourceFile,&sGpiStrZCpyName,47);
+if(!src)AssertFailed(&sGpiAssertSrcNotNull,&sGpiUtilitySourceFile,&sGpiStrZCpyName,48);
+StringCopyPad(dst,src,n);
+M2C_FIELD(dst+n,u8 *,-1)=0;
+return dst+n;
 }
 
 void gpiLogMessage(s32 a, ...) {}
@@ -469,12 +472,14 @@ if(!a)AssertFailed(&sGpiAssertSet,&sGpiBucketSourceFile,&data_020ff3ec,0x153);
 buf[0]=b;return TableLookup(M2C_FIELD(a,s32 *,0),buf);
 }
 
+/* Closes the GPI info module's connection: shuts the socket down and closes it,
+ * then frees the module's profile list and receive buffer. */
 void gpiInfoCloseSocket(void){
-void func_020496cc(s32,s32);void ghiCloseSocket(s32);void func_0205954c(void);void gpiFree(void *);
+void func_020496cc(s32,s32);void ghiCloseSocket(s32);void gpiInfoFreeProfiles(void);void gpiFree(void *);
 if(gGpiInfoSocket!=-1){func_020496cc(gGpiInfoSocket,2);ghiCloseSocket(gGpiInfoSocket);}
 gGpiInfoSocket=-1;
-func_0205954c();
-if(M2C_FIELD(&gGpiInfoState,void **,12)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,12));M2C_FIELD(&gGpiInfoState,s32 *,12)=0;M2C_FIELD(&gGpiInfoState,s32 *,44)=0;M2C_FIELD(&gGpiInfoState,s32 *,0)=0;}
+gpiInfoFreeProfiles();
+if(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER)){gpiFree(M2C_FIELD(&gGpiInfoState,void **,GPI_INFO_RECV_BUFFER));M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_BUFFER)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_RECV_CAPACITY)=0;M2C_FIELD(&gGpiInfoState,s32 *,GPI_INFO_USED)=0;}
 }
 
 s32 func_02058c84(void) {

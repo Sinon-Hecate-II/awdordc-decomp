@@ -52,7 +52,7 @@ AddSprite((u16)((x+2)&mx1),(u8)(y+18),(u16)(((tile)>>((u32)(M2C_FIELD(M2C_FIELD(
 
 if((s8)GetCoZoneAttackBonus(v,unit,owner)>0){AddSprite((u16)((x+28)&mx2),(u8)(y+19),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt2)|0x6000),gSpriteDesc8x8,0);
 }
-if((s8)func_020a28f4(v,unit,owner)>0){AddSprite((u16)((x+28)&mx3),(u8)(y+28),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt3)|0x6000),gSpriteDesc8x8,0);
+if((s8)GetCoZoneDefenseBonus(v,unit,owner)>0){AddSprite((u16)((x+28)&mx3),(u8)(y+28),(u16)(((432)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt3)|0x6000),gSpriteDesc8x8,0);
 }
 t=(s8)GetCoZoneMoveBonus(v,unit,owner);
 if(t==1){AddSprite((u16)((x+47)&mx4),(u8)(y+19),(u16)(((433)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt4)|0x6000),gSpriteDesc16x8,0);
@@ -67,11 +67,11 @@ else if(t==2){AddSprite((u16)((x+47)&mx7),(u8)(y+28),(u16)(((435)>>((u32)(M2C_FI
 }
 }
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)func_ov000_0216d1c8();
+if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)ArmyInfo_RefreshStateIcon();
 x=EaseInterpolate(4,-235,13,M2C_FIELD(gArmyInfoState,s16 *,18),12);
 AddSprite((u16)((x)&511),(u8)(8),(u16)(((384)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&1023)|0x7000),gSpriteDesc16x16,0);
 
-if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)func_ov000_0216d23c();
+if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)ArmyInfo_RefreshStateLabel();
 x=EaseInterpolate(4,-214,34,M2C_FIELD(gArmyInfoState,s16 *,18),12);
 DrawTileRow((u16)(x&511),8,128,(u16)(((388>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30))&1023)|0x2000),0);
 if(M2C_FIELD(gArmyInfoState,s16 *,18)<=0)ArmyInfo_RefreshNameGraphic();

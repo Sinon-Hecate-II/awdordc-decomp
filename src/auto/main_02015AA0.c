@@ -7,7 +7,7 @@ typedef struct PacketBits { u8 low:2; u8 high:6; } PacketBits;
 typedef struct PacketSource165 { u8 pad[0x358]; u8 field358,pad359; u16 field35a,field35c; } PacketSource165;
 
 /* Builds a MemoryDescriptor describing a resource chunk: validates that src lies in a valid memory range, then either describes it in place (case 0) or copies it into the pool (case 1); case 2 is a fixed loader region. */
-void func_02015aa0(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
+void Mb_DescribeChunk(void *srcInfo, s32 *kind, MemoryDescriptor *out, u32 *pool) {
     s32 SystemHalt(void);
     s32 bad, copy;
     s32 start;
@@ -221,14 +221,19 @@ if(size!=M2C_FIELD(req,u32 *,FS_REQ_FILE_END)-M2C_FIELD(req,u32 *,FS_REQ_FILE_ST
 FileRead(req,buffer,size);CloseFileRequest(req);return 1;
 }
 
-void func_02016124(void *arg0,s32 arg1,s32 arg2,s16 arg3) {
-s32 i;u8 n=1;
-CopyU16(arg1,arg0+0x35e,0x14a);
-for(i=0;i<15;i++)if(arg2&(2<<i))n++;
-M2C_FIELD(arg0,u8 *,0x358)=n;
-M2C_FIELD(arg0,s16 *,0x35a)=arg2|1;
-M2C_FIELD(arg0,s16 *,0x35c)=arg3;
-M2C_FIELD(arg0,u8 *,0x4b4)++;
+/* Load the roster a download file is sent with: copy the 15 players' info blocks
+ * into the file record, set the player count and the mask of players to send it
+ * to (bit 0 is the sender), and bump the file's step counter. */
+void DownloadFileSetRoster(void *fileInfo, void *playerInfo, u32 pendingMask, u16 readyMask) {
+    s32 i;
+    u8 count = 1;
+    CopyU16(playerInfo, (u8 *)fileInfo + DL_FILE_PLAYER_INFO, DL_FILE_PLAYER_SLOTS * MB_PLAYER_INFO_SIZE);
+    for (i = 0; i < DL_FILE_PLAYER_SLOTS; i++)
+        if (pendingMask & (2 << i)) count++;
+    M2C_FIELD(fileInfo, u8 *, DL_FILE_PLAYER_COUNT) = count;
+    M2C_FIELD(fileInfo, u16 *, DL_FILE_PLAYER_MASK) = pendingMask | 1;
+    M2C_FIELD(fileInfo, u16 *, DL_FILE_READY_MASK) = readyMask;
+    M2C_FIELD(fileInfo, u8 *, DL_FILE_STEP)++;
 }
 
 #pragma dont_inline on
@@ -434,16 +439,19 @@ if(callback)callback(M2C_FIELD(M2C_FIELD(&gDownloadSendState,void **,0x1c),u32 *
 }
 }
 #pragma pop
-s32 func_020167d0(void *arg0) {
-s32 WFC_GetPlayerMask();s32 bits;u16 n,start,candidate;
-bits=WFC_GetPlayerMask();if(!bits)return 0;
-start=M2C_FIELD(arg0,u16 *,4);n=0;candidate=start;
+/* Advance the match profile to the next player present in the WFC player mask:
+ * scan the 16 slots cyclically from the profile's current slot, skipping it, and
+ * store the first present slot.  Returns 0 when the mask has no player at all. */
+s32 Mb_SelectNextPlayer(MbMatchProfile *profile) {
+s32 WFC_GetPlayerMask();s32 playerMask;u16 scanned,currentSlot,slot;
+playerMask=WFC_GetPlayerMask();if(!playerMask)return 0;
+currentSlot=profile->playerSlot;scanned=0;slot=currentSlot;
 do {
-if((bits&(1<<(candidate-1))) && start!=candidate) {
-M2C_FIELD(arg0,u16 *,4)=candidate;break;
+if((playerMask&(1<<(slot-1))) && currentSlot!=slot) {
+profile->playerSlot=slot;break;
 }
-n++;candidate=candidate==16?1:candidate+1;
-}while(n<16);
+scanned++;slot=slot==16?1:slot+1;
+}while(scanned<16);
 return 1;
 }
 

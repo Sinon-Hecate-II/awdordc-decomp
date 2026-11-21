@@ -288,12 +288,12 @@ s32 func_020922cc(void *arg0) {
 
 s32 func_02092324(void *arg0) {
     M2C_UNK func_0207b744(s16, s16);
-    M2C_UNK func_0207b754(s16, s16);
+    M2C_UNK SetMapViewPositionToTileCentered(s16, s16);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
     if (M2C_FIELD(temp_r1, s32 *, 0xC) != 0) {
-        func_0207b754(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+        SetMapViewPositionToTileCentered(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
     } else {
         func_0207b744(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
     }

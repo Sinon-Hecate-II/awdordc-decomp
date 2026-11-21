@@ -175,7 +175,7 @@ u8 func_02096038(void) {
     return var_r0;
 }
 
-s32 func_02096064(void) {
+s32 TryStartDialogSkip(void) {
     extern u16 *gKeyState;
     if (func_02096038() == 0) {
         return 0;

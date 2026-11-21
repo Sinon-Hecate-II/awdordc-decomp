@@ -6,6 +6,7 @@
 #define GT2_CONNECTION_PORT        0x04 /* u16 remote port */
 #define GT2_CONNECTION_SOCKET      0x08 /* void *owning socket */
 #define GT2_CONNECTION_SEND_BUFFER 0x50 /* u8 *ring buffer keeping sent command bytes until the peer acknowledges them */
+#define GT2_SEND_BUFFER_LEN        0x58 /* s32 bytes used in GT2_CONNECTION_SEND_BUFFER (its Gt2Buffer.len) */
 #define GT2_CONNECTION_PENDING_QUEUE 0x5C /* Vector *of received commands buffered until their sequence is due, sorted by sequence */
 /* One entry of GT2_CONNECTION_PENDING_QUEUE: where the command's bytes sit in the
  * receive buffer, its command id and its sequence number. */
@@ -25,6 +26,13 @@ typedef struct Gt2PendingCommand {
 #define GT2_CONNECTION_SEND_SEQUENCE 0x64 /* u16 sequence number the next sent command carries */
 #define GT2_CONNECTION_LAST_SENT   0x88 /* s32 tick of the last successful raw send */
 #define GT2_CONNECTION_START_TIME  0x8C /* s32 connection start time in milliseconds, set when a handshake command was sent */
+/* Set when received data still owes the peer an acknowledgement, and the tick it
+ * was set at (Gt2NoteDataReceived).  After GT2_ACK_DELAY ms the delayed
+ * acknowledgement (control message 100) is sent and the flag cleared; sending any
+ * command also carries the receive sequence and clears it. */
+#define GT2_CONNECTION_ACK_PENDING 0x90 /* s32 pending-acknowledgement flag */
+#define GT2_CONNECTION_ACK_TIME    0x94 /* u32 tick the flag was set at */
+#define GT2_ACK_DELAY              100  /* ms of silence before the delayed acknowledgement */
 #define GT2_CONNECTION_DATA        0x38 /* void *data to send with our handshake message */
 #define GT2_CONNECTION_DATA_LEN    0x3C /* s32 length of GT2_CONNECTION_DATA */
 #define GT2_CONNECTION_SEND_FILTERS 0x98 /* Vector of send filters (gti2SendFilterCallback) */
@@ -61,16 +69,22 @@ enum {
     GT2_RESPONSE_SIZE = 32,
     GT2_CONNECT_ACCEPT_SIZE = 64        /* challenge response + the server's challenge */
 };
+/* Challenge/response bytes are printable characters '!'..'}' (GTI2_CHALLENGE_BASE
+ * plus 0..GTI2_CHALLENGE_RANGE-1); the response's rolling weight advances by
+ * GTI2_RESPONSE_STEP at every position. */
+#define GTI2_CHALLENGE_BASE  33
+#define GTI2_CHALLENGE_RANGE 93
+#define GTI2_RESPONSE_STEP   0x4647
 /* Command ids of the short GT2 messages: the byte after the magic string. */
 enum {
-    GTI2_SERVER_CHALLENGE = 0, /* server -> client challenge */
-    GTI2_CLIENT_CHALLENGE = 1, /* client -> server challenge (CONNECT) */
-    GTI2_SERVER_RESPONSE  = 2, /* server: response plus its own challenge (CONNECT_ACCEPT) */
+    GTI2_DATA             = 0, /* application data command (dispatched to gti2HandleDataCommand) */
+    GTI2_CONNECT          = 1, /* client -> server challenge */
+    GTI2_CONNECT_ACCEPT   = 2, /* server: response plus its own challenge */
     GTI2_CLIENT_RESPONSE  = 3, /* client: response to the server's challenge plus data */
-    GTI2_ACCEPT           = 4, /* connection accepted */
+    GTI2_ACCEPT           = 4, /* connection accepted, no payload */
     GTI2_CLOSE            = 5, /* close request with a reason string */
-    GTI2_CLOSED           = 6, /* close acknowledgement */
-    GTI2_DATA             = 7  /* empty data message */
+    GTI2_CLOSED           = 6, /* close acknowledgement, no payload */
+    GTI2_PING             = 7  /* empty ping; its sequence acknowledgement answers it */
 };
 /* A GT2 byte buffer: the connection keeps one for received bytes and one for
  * sent bytes.  data holds size bytes, of which len are used. */

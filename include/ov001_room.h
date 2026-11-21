@@ -45,6 +45,15 @@
 #define OV001_TRANSFER_BUFFER 0x14 /* u8 *room transfer buffer, cleared before each request */
 #define OV001_REQUEST_MASK    0x2c /* u32 room groups this client asks for */
 
+/* gRoomState's random-value sequence: seeded once from the real-time clock,
+ * then one linear congruential step per random value the protocol needs. */
+#define OV001_ROOM_RANDOM_READY 0x08 /* s32: nonzero once the sequence is seeded */
+#define OV001_ROOM_RANDOM_STATE 0x18 /* u32: last value of the sequence */
+#define OV001_ROOM_RANDOM_MUL   0x1c /* u32: sequence multiplier */
+#define OV001_ROOM_RANDOM_ADD   0x20 /* u32: sequence increment */
+#define OV001_ROOM_RANDOM_MULTIPLIER 0x5D588B65
+#define OV001_ROOM_RANDOM_INCREMENT  0x269EC3
+
 /* Bytes cleared in the transfer buffer before a request is written. */
 #define OV001_TRANSFER_BYTES 0x5dc
 

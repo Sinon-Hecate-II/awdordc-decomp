@@ -164,20 +164,22 @@ extern u8 data_02120b20;extern u8 data_ov000_021b8712;
 return &data_02120b20+((arg1+(&data_ov000_021b8712)[arg0*3])<<5);
 }
 
-void *func_ov000_0216ce10(u32 arg0) {
- extern M2C_UNK data_02120d20;
- switch(arg0) {
- case 1:return (u8 *)&data_02120d20;
- case 2:return (u8 *)&data_02120d20+128;
- case 3:return (u8 *)&data_02120d20+256;
- case 4:return (u8 *)&data_02120d20+384;
- case 5:return (u8 *)&data_02120d20+512;
- case 0:return (u8 *)&data_02120d20+640;
- default:return 0;
- }
+/* Return the 0x80-byte face-icon tile graphic for an army state: states 1..5 use
+ * the first five blocks, state 0 (no army) the sixth, anything else has none. */
+void *GetArmyStateTiles(u32 armyState) {
+    extern M2C_UNK gArmyStateTiles;
+    switch (armyState) {
+    case 1: return (u8 *)&gArmyStateTiles;
+    case 2: return (u8 *)&gArmyStateTiles + ARMY_TILE_BYTES * 1;
+    case 3: return (u8 *)&gArmyStateTiles + ARMY_TILE_BYTES * 2;
+    case 4: return (u8 *)&gArmyStateTiles + ARMY_TILE_BYTES * 3;
+    case 5: return (u8 *)&gArmyStateTiles + ARMY_TILE_BYTES * 4;
+    case 0: return (u8 *)&gArmyStateTiles + ARMY_TILE_BYTES * 5;
+    default: return 0;
+    }
 }
 
-void *func_ov000_0216ce84(u32 arg0) {
+void *GetArmyIconPalette(u32 arg0) {
  extern M2C_UNK data_02120780;
  switch(arg0) {
  case 1:return (u8 *)&data_02120780;
@@ -270,27 +272,37 @@ void ArmyInfo_RefreshNameGraphic(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov000_0216d1c8(void) {
+/* Load the selected player's army-state icon graphic (from its record's army
+ * state byte) and that army's palette into the sub screen's texture VRAM, so the
+ * army info window shows the player's state icon. */
+void ArmyInfo_RefreshStateIcon(void) {
  void MI_CpuCopy32(void *,s32,s32);
  void CopyToObjPaletteShadow(void *,s32,s32);
  extern void *gArmyInfoState;
  extern s32 *gCurrentMap;
  extern void *g3DSpriteEngineSub;
- s32 p = *gCurrentMap + 0x67a4 + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140;
- s32 dest = M2C_FIELD(g3DSpriteEngineSub,volatile s32 *,28);
- MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(p,u8 *,39)),dest+0x3000,128);
- CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD(p,u8 *,29)),0x2e0,32);
+ s32 record = *gCurrentMap + MAP_PLAYER_STATES + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,ARMY_INFO_SELECTED))*MAP_PLAYER_STRIDE;
+ s32 dest = M2C_FIELD(g3DSpriteEngineSub,volatile s32 *,DS3D_ENGINE_TEXTURE);
+ MI_CpuCopy32(GetArmyStateTiles(M2C_FIELD(record,u8 *,PLAYER_REC_ARMY_STATE)),dest+0x3000,128);
+ CopyToObjPaletteShadow(GetArmyIconPalette(M2C_FIELD(record,u8 *,PLAYER_REC_ARMY_INDEX)),0x2e0,32);
 }
 
-void func_ov000_0216d23c(void) {
- s32 func_020a8b3c(s32);
- void ClearTextBitmap(s32,s32);
- void RenderTextToTiles(s32,s32);
- extern void *gArmyInfoState;
- extern s32 *gCurrentMap;
- extern void *g3DSpriteEngineSub;
- s32 val=func_020a8b3c(M2C_FIELD(*gCurrentMap + M2C_FIELD(gArmyInfoState,u8 *,M2C_FIELD(gArmyInfoState,u8 *,13))*140,u8 *,0x67cb));
- ClearTextBitmap(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,128);
- RenderTextToTiles(M2C_FIELD(g3DSpriteEngineSub,s32 *,28)+0x3080,val);
+/* Draw the selected player's army state label into the sub screen texture. */
+void ArmyInfo_RefreshStateLabel(void) {
+    s32 GetArmyStateLabel(s32);
+    void ClearTextBitmap(s32, s32);
+    s32 RenderTextToTiles(s32, s32);
+    extern void *gArmyInfoState;
+    extern s32 *gCurrentMap;
+    extern void *g3DSpriteEngineSub;
+    ArmyInfoSelection *selection = gArmyInfoState;
+    s32 label = GetArmyStateLabel(M2C_FIELD(
+        *gCurrentMap + selection->playerRecords[selection->selected] * MAP_PLAYER_STRIDE,
+        u8 *, PLAYER_ARMY_STATE_OFF));
+
+    ClearTextBitmap(DS3D_ENGINE(g3DSpriteEngineSub)->textureAddr + ARMY_INFO_STATE_LABEL_OFFSET,
+                    ARMY_INFO_STATE_LABEL_WIDTH);
+    RenderTextToTiles(DS3D_ENGINE(g3DSpriteEngineSub)->textureAddr + ARMY_INFO_STATE_LABEL_OFFSET,
+                      label);
 }
 

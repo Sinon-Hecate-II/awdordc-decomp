@@ -109,20 +109,20 @@ s32 GetStringInternTable(void) {
 
 void func_02060a20(void) {
     extern M2C_UNK gQr2ParseState;
-    s32 func_02048e38(s32);
-    M2C_UNK func_02048dc4(s32);
+    s32 TableCount(s32);
+    M2C_UNK TableFree(s32);
     if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) return;
-    if (func_02048e38(M2C_FIELD(&gQr2ParseState, s32 *, 8)) != 0) return;
-    func_02048dc4(M2C_FIELD(&gQr2ParseState, s32 *, 8));
+    if (TableCount(M2C_FIELD(&gQr2ParseState, s32 *, 8)) != 0) return;
+    TableFree(M2C_FIELD(&gQr2ParseState, s32 *, 8));
     M2C_FIELD(&gQr2ParseState, s32 *, 8) = 0;
 }
 
 void func_02060a60(void **arg0) {
-    M2C_UNK func_02048dc4(s32);
+    M2C_UNK TableFree(s32);
     void *temp_r4;
 
     temp_r4 = *arg0;
-    func_02048dc4(M2C_FIELD(temp_r4, s32 *, 0x18));
+    TableFree(M2C_FIELD(temp_r4, s32 *, 0x18));
     M2C_FIELD(temp_r4, s32 *, 0x18) = 0;
     gpiFree(temp_r4);
 }
@@ -194,7 +194,7 @@ u16 SBServerGetPort(void *arg0) {
     return (u16) ((u8) ((s32) temp_r0 >> 8) | ((temp_r0 << 8) & 0xFF00));
 }
 
-u16 func_02060c70(void *arg0) {
+u16 SBServerGetPortNBO(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 4);
 }
 
@@ -547,8 +547,8 @@ void SBServerListGetCount(s32 arg0) {
 }
 
 void SBServerListSort(s32 arg0) {
-    M2C_UNK func_020619c0(s32);
-    func_020619c0(arg0 + 0x4C);
+    M2C_UNK SBServerListSortServers(s32);
+    SBServerListSortServers(arg0 + 0x4C);
 }
 
 s32 func_020617b4(void *arg0) {

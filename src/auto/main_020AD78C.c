@@ -89,13 +89,13 @@ void DrawScreenTransition(void) {
 }
 #pragma opt_common_subs reset
 void func_020ad968(void) {
-    M2C_UNK func_020822b8(u16 *);
+    M2C_UNK Apply3DSpriteLayout(u16 *);
     typedef struct { u16 a, b, c, d, e, f; } T;
     extern T data_020f4d1c;
     T sp0;
 
     sp0 = data_020f4d1c;
-    func_020822b8((u16 *) &sp0);
+    Apply3DSpriteLayout((u16 *) &sp0);
 }
 
 #pragma push

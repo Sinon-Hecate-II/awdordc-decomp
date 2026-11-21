@@ -35,14 +35,14 @@ success:
     return 1;
 }
 
-void func_0204ba68(void *arg0) {
+void ghiPostStateCleanup(void *arg0) {
  M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
- void func_02064934(s32);
+ void CloseFileStream(s32);
  extern M2C_UNK data_020fd238, sAssertZero, sGhttpPostFile;
  s32 state = *M2C_FIELD(arg0, s32 **, 0);
  if(state == 0) return;
  if(state == 1) {
- if (M2C_FIELD(arg0,s32 *,8)) func_02064934(M2C_FIELD(arg0,s32 *,8));
+ if (M2C_FIELD(arg0,s32 *,8)) CloseFileStream(M2C_FIELD(arg0,s32 *,8));
  M2C_FIELD(arg0,s32 *,8)=0;
  return;
  }
@@ -57,7 +57,7 @@ s32 func_0204bad4(void *arg0) {
     void *Vector_GetItem(s32, s32);
     s32 ghiPostStateInit(void *);
     void Vector_AddItem(void *, void *);
-    void func_0204ba68(void *);
+    void ghiPostStateCleanup(void *);
     void Vector_Free(s32);
     s32 ghiPostGetContentLength(void *);
     extern M2C_UNK data_020fd440, sGhttpPostFile, data_020fd1fc, data_020fd454;
@@ -95,7 +95,7 @@ s32 func_0204bad4(void *arg0) {
             if (i >= 0) {
                 do {
                     void *e = Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x140), i);
-                    func_0204ba68(e);
+                    ghiPostStateCleanup(e);
                     i--;
                 } while (i >= 0);
             }
@@ -112,24 +112,30 @@ s32 func_0204bad4(void *arg0) {
     return 1;
 }
 
+/* Free a connection's POST upload state: clean up every per-part state of the
+ * working part list and free the list, then free the post source itself when
+ * the request owns it. */
 void ghiPostCleanup(void *arg0) {
- void Vector_Free(s32);
- s32 Vector_GetCount(s32);
- void *Vector_GetItem(s32,s32);
- void func_0204b690(void *);
- s32 i, count;
- void *p;
- if(M2C_FIELD(arg0,s32 *,0x140)) {
- count=Vector_GetCount(M2C_FIELD(arg0,s32 *,0x140));
- for(i=0;i<count;i++) func_0204ba68(Vector_GetItem(M2C_FIELD(arg0,s32 *,0x140),i));
- Vector_Free(M2C_FIELD(arg0,s32 *,0x140));
- M2C_FIELD(arg0,s32 *,0x140)=0;
- }
- p=M2C_FIELD(arg0,void **,0x13c);
- if(p && M2C_FIELD(p,s32 *,0x10)) {
- func_0204b690(p);
- M2C_FIELD(arg0,void **,0x13c)=0;
- }
+    GHIConnection *connection = (GHIConnection *)arg0;
+    GHIPost *post;
+    void Vector_Free(s32);
+    s32 Vector_GetCount(s32);
+    void *Vector_GetItem(s32, s32);
+    void ghiPostStateCleanup(void *);
+    void ghiPostFree(GHIPost *);
+    s32 i, count;
+
+    if (connection->postItems) {
+        count = Vector_GetCount(connection->postItems);
+        for (i = 0; i < count; i++) ghiPostStateCleanup(Vector_GetItem(connection->postItems, i));
+        Vector_Free(connection->postItems);
+        connection->postItems = 0;
+    }
+    post = (GHIPost *)connection->postData;
+    if (post && post->autoFree) {
+        ghiPostFree(post);
+        connection->postData = 0;
+    }
 }
 
 s32 ghiPostStringStateDoPosting(void *p,void *ctx) {

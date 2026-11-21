@@ -1,5 +1,6 @@
 /* 9 functions from 0x0221E004 to 0x0221EDA8 (ov007), found by ds-decomp. */
 #include "common.h"
+#include "mapedit.h"
 extern M2C_UNK gMapEditObjectList;
 int func_020194e0(const void *, const void *);
 static inline void SetTextIndex(void *p, s8 n) {
@@ -222,7 +223,12 @@ void func_ov007_0221e85c(void *arg0) {
     func_020b2140();
 }
 
-void func_ov007_0221e878(void *arg0) {
+/* Set up the map editor's entry-list screen: style the panel's text sprite, put
+ * the 3D sprite engine on the shared screen layout, load the softkey CG, the
+ * softkey_<region>.sc graphics named by the list's layout (looked up in
+ * gSoftKeyLayouts), the softkey palette and tiles, the wallpaper, panel palettes
+ * and the glyph pattern, then restore the engine that was current on entry. */
+void MapEditorInitScreen(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK func_01ff9dd8(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
@@ -232,74 +238,75 @@ void func_ov007_0221e878(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_020822b8(M2C_UNK *);
+    M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK SetTextSpriteValue(void *, M2C_UNK);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK GetUiColor(M2C_UNK);
     M2C_UNK CreateMainWallpaperSprite(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GetLocalizedFileNameDefault(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK gSoftKeyLayouts;
-    extern M2C_UNK data_ov007_02220d4c;
-    extern M2C_UNK data_ov007_02221980;
-    extern M2C_UNK data_ov007_0222198c;
-    extern M2C_UNK data_ov007_02221998;
-    extern M2C_UNK data_ov007_022219a8;
-    extern M2C_UNK data_ov007_022219b8;
-    extern M2C_UNK data_ov007_022219c8;
-    extern M2C_UNK data_ov007_022219d8;
-    volatile u16 *sp14;
-    volatile u16 *sp10;
-    volatile u16 *spC;
-    volatile u16 *sp8;
-    volatile u16 *sp4;
-    volatile u16 *sp0;
-    s32 var_r0;
-    s32 var_r2;
-    u16 *temp_r0;
-    u16 *temp_r0_2;
-    u16 *temp_r0_3;
-    u16 *temp_r0_4;
-    u16 *temp_r0_5;
-    u16 *temp_r0_6;
-    void *temp_lr;
-    void *temp_r1;
-    void *temp_r4;
+    extern M2C_UNK gMapEditScreenLayout;
+    extern M2C_UNK gMapEditScreenPath;
+    extern M2C_UNK gMapEditSoftKeyCgName;
+    extern M2C_UNK gMapEditSoftKeyNarcName;
+    extern M2C_UNK gMapEditSoftKeyJpName;
+    extern M2C_UNK gMapEditSoftKeyUsName;
+    extern M2C_UNK gMapEditSoftKeyEuName;
+    extern M2C_UNK gMapEditSoftKeyClName;
+    u16 *volatile flagsPtr10;
+    u16 *volatile flagsPtr20;
+    u16 *volatile flagsPtr40;
+    u16 *volatile flagsPtr80;
+    u16 *volatile flagsPtr100;
+    u16 *volatile flagsPtrC0;
+    u16 **engine;
+    s32 layoutMode;
+    s32 layoutIndex;
+    u16 *spriteA;
+    u16 *spriteB;
+    u16 *spriteC;
+    u16 *spriteD;
+    u16 *spriteE;
+    u16 *spriteF;
+    void *panelB;
+    void *panelA;
+    void *savedEngine;
 
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x16) = 2;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x14) = 8;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x17) = 8;
     SetTextSpriteValue(M2C_FIELD(arg0, void **, 0x44), 0);
-    temp_r1 = M2C_FIELD(arg0, void **, 0x44);
-    M2C_FIELD(temp_r1, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r1, u8 *, 0x20) & ~0xE0) | 0x40);
-    temp_lr = M2C_FIELD(arg0, void **, 0x44);
-    M2C_FIELD(temp_lr, u8 *, 0x28) = (u8) (M2C_FIELD(temp_lr, u8 *, 0x28) & ~0xE0);
+    panelA = M2C_FIELD(arg0, void **, 0x44);
+    M2C_FIELD(panelA, u8 *, 0x20) = (u8) ((M2C_FIELD(panelA, u8 *, 0x20) & ~0xE0) | 0x40);
+    panelB = M2C_FIELD(arg0, void **, 0x44);
+    M2C_FIELD(panelB, u8 *, 0x28) = (u8) (M2C_FIELD(panelB, u8 *, 0x28) & ~0xE0);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s16 *, 0x12) = 0x250;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s8 *, 0x21) = 0x16;
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020822b8(&data_ov007_02220d4c);
-    temp_r0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    sp14 = temp_r0;
-    *temp_r0 = *sp14 | 0x10;
-    temp_r0_2 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    sp10 = temp_r0_2;
-    *temp_r0_2 = *sp10 | 0x20;
-    temp_r0_3 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    spC = temp_r0_3;
-    *temp_r0_3 = *spC | 0x40;
-    temp_r0_4 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    sp8 = temp_r0_4;
-    *temp_r0_4 = *sp8 | 0x80;
-    temp_r0_5 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    sp4 = temp_r0_5;
-    *temp_r0_5 = *sp4 | 0x100;
-    temp_r0_6 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
-    sp0 = (volatile u16 *)(temp_r0_6 + 0x12);
-    M2C_FIELD(temp_r0_6, s16 *, 0x12) = (s16) (*sp0 & ~0xC0);
+    Apply3DSpriteLayout(&gMapEditScreenLayout);
+    spriteA = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtr10 = spriteA;
+    *flagsPtr10 = *flagsPtr10 | 0x10;
+    spriteB = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtr20 = spriteB;
+    *flagsPtr20 = *flagsPtr20 | 0x20;
+    spriteC = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtr40 = spriteC;
+    *flagsPtr40 = *flagsPtr40 | 0x40;
+    spriteD = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtr80 = spriteD;
+    *flagsPtr80 = *flagsPtr80 | 0x80;
+    spriteE = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtr100 = spriteE;
+    *flagsPtr100 = *flagsPtr100 | 0x100;
+    spriteF = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
+    flagsPtrC0 = (spriteF + 9);
+    *flagsPtrC0 = (s16) (*flagsPtrC0 & ~0xC0);
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x51) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x52) = 0;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s8 *, 0x53) = 0;
@@ -313,35 +320,35 @@ void func_ov007_0221e878(void *arg0) {
     func_01ff9dd8(1);
     func_01ff9dd8(0);
     func_01ff9dd8(3);
-    SetFileDirectory(&data_ov007_02221980);
-    LoadDecompressedFileTo(GetLocalizedFileNameDefault(&data_ov007_0222198c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
-    GetLocalizedFileNameDefault(&data_ov007_02221998);
+    SetFileDirectory(&gMapEditScreenPath);
+    LoadDecompressedFileTo(GetLocalizedFileNameDefault(&gMapEditSoftKeyCgName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
+    GetLocalizedFileNameDefault(&gMapEditSoftKeyNarcName);
     OpenNarcArchive();
-    var_r2 = 0;
+    layoutIndex = 0;
 loop_1:
-    if (M2C_FIELD(arg0, s32 *, 0x34) == *(&gSoftKeyLayouts + (var_r2 * 4))) {
-        var_r0 = var_r2 + 0x64;
+    if (M2C_FIELD(arg0, s32 *, 0x34) == (&gSoftKeyLayouts)[layoutIndex]) {
+        layoutMode = layoutIndex + SOFTKEY_MODE_US;
     } else {
-        var_r2 += 1;
-        if (var_r2 >= 3) {
-            var_r0 = 0x64;
+        layoutIndex += 1;
+        if (layoutIndex >= 3) {
+            layoutMode = SOFTKEY_MODE_US;
         } else {
             goto loop_1;
         }
     }
-    switch (var_r0) {                               /* irregular */
-    case 0x66:
-        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219a8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+    switch (layoutMode) {                               /* irregular */
+    case SOFTKEY_MODE_JP:
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gMapEditSoftKeyJpName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
-    case 0x64:
-        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219b8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+    case SOFTKEY_MODE_US:
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gMapEditSoftKeyUsName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
-    case 0x65:
-        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&data_ov007_022219c8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
+    case SOFTKEY_MODE_EU:
+        LoadNarcFileDecompressed(GetLocalizedFileNameDefault(&gMapEditSoftKeyEuName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24));
         break;
     }
     CloseNarcArchive();
-    LoadFileToSpriteBuffer(&data_ov007_022219d8, 0xA0, 0x60);
+    LoadFileToSpriteBuffer(&gMapEditSoftKeyClName, 0xA0, 0x60);
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x20, 0x18, 5);
     LoadScenePanelPalette(4);
     LoadScenePanelPalette(0x17);
@@ -349,10 +356,11 @@ loop_1:
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    func_020a9a30(1, 0, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x4A00);
-    func_020a9a30(1, 2, 0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x2C0);
+    LoadSpriteResource(1, 0, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x4A00);
+    engine = *(u16 **volatile *)&gCur3DSpriteEngine;
+    LoadSpriteResource(1, 2, 0, M2C_FIELD(engine, s32 *, 0x30) + 0x2C0);
     Load3DSpritePattern(0x1000, 1, GetUiColor(9), 2);
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = savedEngine;
     func_020b2178();
 }
 

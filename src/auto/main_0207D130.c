@@ -297,9 +297,9 @@ void func_0207da60(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 M2C_UNK func_0207dacc(s32 arg0,s32 arg1) {
-s32 func_020033cc(void);
+s32 GX_ReleaseBankForOBJExtPltt(void);
 void GX_SetBankForOBJExtPltt(s32);
-s32 state=func_020033cc();
+s32 state=GX_ReleaseBankForOBJExtPltt();
 u32 base=(u32)data_020ebddc[state>>4]<<12;
 data_0214c0c0[1]=state;
 data_0214c0c0[0]=base;

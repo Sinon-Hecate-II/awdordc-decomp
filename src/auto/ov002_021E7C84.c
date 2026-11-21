@@ -1,5 +1,6 @@
 /* 18 functions from 0x021E7C84 to 0x021E8984 (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ov002_panel.h"
 typedef struct { u8 kind:6; u8 side:2; u8 x,y,pad[3]; u16 health:7; u16 flags:9; u8 tail[6]; } Unit80;
 #pragma opt_common_subs off
 static inline s32 UnitIndex80(void *unit) { extern void **gCurrentMap; if(unit) return (s32)((u8 *)unit-((u8 *)*gCurrentMap+0x59a4))/14; return 0; }
@@ -256,7 +257,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     s32 GetCellTerrainId(u8, u8);
     s32 IsUnitSelected(void *);
     void IsCellInPlayerMoveRange(s32, u8, u8);
-    s32 func_020a27f8(s32, s32);
+    s32 IsUnitKindInCoZone(s32, s32);
     u8 *a;
     u8 *r7;
     void *r6;
@@ -362,7 +363,7 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
     if (ptr[0] != 0) {
         idx4=UnitOwner80(r7);
         low = ((Unit80 *)r7)->kind;
-        res = (u8)func_020a27f8(idx4, (s32)low);
+        res = (u8)IsUnitKindInCoZone(idx4, (s32)low);
         M2C_FIELD(a+r5,u8 *,0x17) = res;
     } else {
         M2C_FIELD(a+r5,u8 *,0x17) = 0;
@@ -439,7 +440,7 @@ void func_ov002_021e8738(void *view) {
 #pragma opt_common_subs off
     M2C_UNK MemAlloc(s32);
     void func_ov002_021e8d0c(void *, u8, u8);
-    void func_ov002_021e997c(void *);
+    void InitUnitEffectNode(void *);
     void func_ov002_021e8ff0(void *, s32, s32, s32);
     void func_ov002_021e9000(void *, u16);
     void ReplaceSlotSound(s32, s32);
@@ -470,7 +471,7 @@ void func_ov002_021e8738(void *view) {
             }
             M2C_FIELD((u8 *)view + i * 4, void **, 8) = unit;
             func_ov002_021e8d0c(unit, M2C_FIELD(view, u8 *, 0x27), (u8)i);
-            func_ov002_021e997c(M2C_FIELD((u8 *)view + i * 4, void **, 8));
+            InitUnitEffectNode(M2C_FIELD((u8 *)view + i * 4, void **, 8));
             positions = M2C_FIELD(M2C_FIELD((u8 *)&gPlayerSettings + M2C_FIELD(view, u8 *, 0x27) * 0x18, void **, 4), u8 **, 0x28);
             x = M2C_FIELD(positions + i * 8, s16 *, 0) - 128;
             y = M2C_FIELD(positions + i * 8, s16 *, 2);
@@ -495,28 +496,33 @@ void func_ov002_021e88a0(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x26) = 0;
 }
 
-void func_ov002_021e88ac(void *p) { extern s8 data_ov002_021f2ef0[]; s32 i; if(M2C_FIELD(p,s8 *,0x26)==-1)return;
- M2C_FIELD(p,s16 *,0x22)=data_ov002_021f2ef0[M2C_FIELD(p,s8 *,0x26)&~1];
- M2C_FIELD(p,s16 *,0x24)=data_ov002_021f2ef0[(M2C_FIELD(p,s8 *,0x26)&~1)+1];
+void StepUnitViewShake(void *p) { extern s8 gUnitViewShakeOffsets[]; s32 i; if(M2C_FIELD(p,s8 *,0x26)==-1)return;
+ M2C_FIELD(p,s16 *,0x22)=gUnitViewShakeOffsets[M2C_FIELD(p,s8 *,0x26)&~1];
+ M2C_FIELD(p,s16 *,0x24)=gUnitViewShakeOffsets[(M2C_FIELD(p,s8 *,0x26)&~1)+1];
  i=M2C_FIELD(p,s8 *,0x26)&~1;
- if(data_ov002_021f2ef0[i]==0 && data_ov002_021f2ef0[i+1]==0) M2C_FIELD(p,s8 *,0x26)=-1;
+ if(gUnitViewShakeOffsets[i]==0 && gUnitViewShakeOffsets[i+1]==0) M2C_FIELD(p,s8 *,0x26)=-1;
  else M2C_FIELD(p,s8 *,0x26)++;
 }
 
-void StepUnitView(void *arg0) {
+/* Step one side's battle unit view for a frame: count the frames once the
+ * scene's intro is over, advance each of the five unit models it draws, walk
+ * its screenshake back, tick the pose offset down while its effect is on and
+ * step the HP-gauge animation. */
+void StepUnitView(u8 *view) {
     void StepUnitViewGauge(void *);
-    s32 func_ov002_021e79ac(void *);
-    void func_ov002_021e8e8c(void *);
-    extern u8 data_ov002_021f30e4[];
+    s32 IsBattleSceneIntro(void *);
+    void StepUnitModel(void *);
+    extern u8 gBattleSceneState[];
     register s32 i;
-    if (func_ov002_021e79ac(data_ov002_021f30e4)==0) M2C_FIELD(arg0,u8 *,0x29)++;
-    i=0;
+
+    if (IsBattleSceneIntro(gBattleSceneState) == 0) M2C_FIELD(view, u8 *, UNIT_VIEW_FRAME)++;
+    i = 0;
     do {
-        if (((void **)arg0)[i+2]!=0) func_ov002_021e8e8c(((void **)arg0)[i+2]);
+        if (((void **)view)[i + 2] != 0) StepUnitModel(((void **)view)[i + 2]);
         i++;
-    } while(i<5);
-    func_ov002_021e88ac(arg0);
-    if(M2C_FIELD(arg0,u8 *,0x28)!=0) M2C_FIELD(arg0,s16 *,0x20)--;
-    StepUnitViewGauge(arg0);
+    } while (i < 5);
+    StepUnitViewShake(view);
+    if (M2C_FIELD(view, u8 *, 0x28) != 0) M2C_FIELD(view, s16 *, 0x20)--;
+    StepUnitViewGauge(view);
 }
 

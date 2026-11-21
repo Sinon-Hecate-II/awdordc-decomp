@@ -53,6 +53,15 @@ enum {
 #define WFC_HTTP_RESULT_OK      1 /* the status line answered 200 */
 #define WFC_HTTP_RESULT_ERROR   2 /* send failed, bad status line, or timed out */
 #define WFC_HTTP_RESULT_CONNECT 3 /* the TCP connect failed */
+#define WFC_HTTP_RESULT_NONE    4 /* UpdateWfcHttpConnection: no connection is open */
+
+/* Steps PollWfcHttpConnection (main_02037214) returns to the online overlay. */
+enum {
+    WFC_HTTP_STEP_NONE    = 0, /* no connection to poll */
+    WFC_HTTP_STEP_RUNNING = 1, /* the connection is still being opened or read */
+    WFC_HTTP_STEP_DONE    = 2, /* the server answered */
+    WFC_HTTP_STEP_FAILED  = 3  /* the connection failed and a network error was set */
+};
 
 #define WFC_HTTP_RESPONSE_SIZE 0x20 /* bytes of the status line being read */
 
@@ -100,6 +109,7 @@ enum {
 #define OV001_CONN_FLAG          0x1B94 /* u8 lobby-quit flag: 0 connected, 1 quitting, 2 quit */
 #define OV001_CONN_REQUIRED      0x1B95 /* u8 set when the profile list arrived before the game sent its own profile */
 #define OV001_CONN_HAS_PROFILE   0x1B96 /* u8 nonzero once the game sent its own profile to the server */
+#define OV001_WFC_SUCCESS_FRAMES 0xB4   /* frames the Wi-Fi success screen stays up (3 seconds) */
 
 /* The reply packet a WFC_SendRequestPacket callback receives, addressed as u16
  * words: the command of the request it answers, its result and the request's
@@ -126,7 +136,9 @@ enum {
 enum {
     WFC_CONN_IDLE      = 1, /* created; WFC_Init has not run yet */
     WFC_CONN_RUNNING   = 2, /* WFC_Init done; Wfc_ProcessStep drives the session */
+    WFC_CONN_CONNECTING = 3, /* func_02037954 set the state before polling the link */
     WFC_CONN_CONNECTED = 4, /* the session reports the link up */
+    WFC_CONN_CLOSING   = 5, /* the session is shutting down and Wfc_EndSession is polled */
     WFC_CONN_READY     = 6, /* the link settled: the game may use the connection */
     WFC_CONN_FAILED    = 7, /* WFC error, reported as network error 5 */
     WFC_CONN_FATAL     = 8  /* fatal WFC error, reported as network error 9 */
@@ -251,9 +263,28 @@ typedef struct WfcSendState {
 #define WFC_CMD_BLOCK_FREE  0x8000 /* bit 15 of a block's first u16: the firmware is done with it */
 
 /* Results of the command API; a caller retries when it gets NO_BUFFER. */
+/* ARM7 request to measure how busy a wireless channel is. */
+enum {
+    WFC_CMD_MEASURE_CHANNEL = 0x1E,
+    WFC_MEASURE_CHANNEL_IDLE_STATE = 2
+};
+
+typedef struct WfcMeasureChannelRequest {
+    s16 command;
+    s16 ccaMode;
+    s16 edThreshold;
+    s16 channel;
+    u16 measureTime;
+} WfcMeasureChannelRequest;
+
 #define WFC_CMD_OK         2 /* the command was posted, its completion arrives as an event */
 #define WFC_CMD_NO_BUFFER  8 /* no free block, or the FIFO refused the message */
 #define WFC_CMD_BAD_PARAM  6 /* the command's arguments are not acceptable */
+#define WFC_CMD_NOT_READY  3 /* WFC_CheckReady's result while the channel is not initialized */
+
+/* u16 the ARM7 firmware keeps in the shared work area; its bit 0 is the command
+ * channel's handshake flag, which the ARM9 clears once it has handled a packet. */
+#define WFC_SHARED_FLAG_WORD 0x027FFF96
 
 /* The WFC command channel's global state (gWfcChannelState).  The ARM9 allocates
  * one work area, splits it into buffers and keeps their pointers in the info block
@@ -336,6 +367,10 @@ typedef struct WfcSendState {
  * client object in its first WFC_MATCH_HTTP_SIZE bytes, then the match tail filled
  * by CreateWfcMatch and read by ProcessWfcMatchResponse. */
 #define WFC_MATCH_HTTP_SIZE    0x1c14 /* size of the embedded HTTP client object */
+/* Fields of that embedded HTTP client object. */
+#define WFC_MATCH_HTTP_STATUS  0x1020 /* s32 request status: 8 once the response has been read */
+#define WFC_MATCH_HTTP_DONE    8      /* WFC_MATCH_HTTP_STATUS value of a finished request */
+#define WFC_MATCH_HTTP_TASK    0x1b38 /* the task that drives the request */
 #define WFC_MATCH_ACTIVE       0x1c14 /* s32 1 while the match request is active */
 #define WFC_MATCH_URL          0x1c18 /* char[256] request path built from gNasServer */
 #define WFC_MATCH_READY        0x1ba4 /* s32 set once the request has completed */

@@ -30,7 +30,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094df0(M2C_UNK, s32, s32);
     M2C_UNK func_02095250(s32);
     M2C_UNK func_020952c8(s32);
-    M2C_UNK func_020952ec(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK StartScriptedScreenTransition(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020953d0();
     M2C_UNK func_0209544c(s32);
     M2C_UNK func_02095c58(M2C_UNK, s32, void *);
@@ -394,22 +394,22 @@ loop_1:
         default:
             break;
         case 0:
-            func_020952ec(0, 0, param);
+            StartScriptedScreenTransition(0, 0, param);
             break;
         case 1:
-            func_020952ec(1, 0, param);
+            StartScriptedScreenTransition(1, 0, param);
             break;
         case 2:
-            func_020952ec(0, 2, param);
+            StartScriptedScreenTransition(0, 2, param);
             break;
         case 3:
-            func_020952ec(1, 2, param);
+            StartScriptedScreenTransition(1, 2, param);
             break;
         case 4:
-            func_020952ec(0, 1, param);
+            StartScriptedScreenTransition(0, 1, param);
             break;
         case 5:
-            func_020952ec(1, 1, param);
+            StartScriptedScreenTransition(1, 1, param);
             break;
         }
         func_0209c418(arg0);

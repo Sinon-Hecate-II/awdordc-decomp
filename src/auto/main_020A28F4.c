@@ -5,40 +5,44 @@
 
 typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
 
-s32 func_020a28f4(s32 arg0, s32 arg1, s32 arg2) {
+/* Defense bonus the CO zone of `commander` gives unit kind `kind`: only kinds
+ * the commander's zone covers receive it. */
+s32 GetCoZoneDefenseBonus(s32 kind, s32 commander, s32 powerActive) {
     extern s32 *gCurrentMap;
     extern M2C_UNK gCoZoneKindEnabled;
     extern s16 gCoZoneDefensePct;
     s32 GetCoZoneBonusIndex(s32, s32);
-    s32 index;
+    s32 row;
 
-    index = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
-    if (index == -1) {
+    row = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + commander * MAP_PLAYER_STRIDE, s32 *, PLAYER_REC_SPRITE + MAP_PLAYER_STATES) << 24) >> 24), powerActive);
+    if (row == -1) {
         return 0;
     }
-    index *= 0x48;
-    if (!*(s8 *)(arg0 + ((s32)&gCoZoneKindEnabled + index))) {
+    row *= CO_ZONE_RECORD_STRIDE;
+    if (!*(s8 *)(kind + ((s32)&gCoZoneKindEnabled + row))) {
         return 0;
     }
-    return M2C_FIELD(&gCoZoneDefensePct, s16 *, index);
+    return M2C_FIELD(&gCoZoneDefensePct, s16 *, row);
 }
 
-s32 GetCoZoneMoveBonus(s32 arg0, s32 arg1, s32 arg2) {
+/* Bonus the CO zone of `commander` gives unit kind `kind`'s movement: only kinds
+ * the commander's zone covers receive it. */
+s32 GetCoZoneMoveBonus(s32 kind, s32 commander, s32 powerActive) {
     extern s32 *gCurrentMap;
     extern M2C_UNK gCoZoneKindEnabled;
     extern s8 gCoZoneMoveBonus;
     s32 GetCoZoneBonusIndex(s32, s32);
-    s32 index;
+    s32 row;
 
-    index = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + arg1 * 0x8C, s32 *, 0x6810) << 24) >> 24), arg2);
-    if (index == -1) {
+    row = GetCoZoneBonusIndex(((u32)(M2C_FIELD(*gCurrentMap + commander * MAP_PLAYER_STRIDE, s32 *, PLAYER_REC_SPRITE + MAP_PLAYER_STATES) << 24) >> 24), powerActive);
+    if (row == -1) {
         return 0;
     }
-    index *= 0x48;
-    if (!*(s8 *)(arg0 + ((s32)&gCoZoneKindEnabled + index))) {
+    row *= CO_ZONE_RECORD_STRIDE;
+    if (!*(s8 *)(kind + ((s32)&gCoZoneKindEnabled + row))) {
         return 0;
     }
-    return M2C_FIELD(&gCoZoneMoveBonus, s8 *, index);
+    return M2C_FIELD(&gCoZoneMoveBonus, s8 *, row);
 }
 
 /* Bonus the CO zone of `commander` gives unit kind `kind`'s maximum attack
@@ -117,7 +121,25 @@ s32 GetCoPowerMeterPointsPerStar(void) {
     return 0xA;
 }
 
-u8 IsPlayerCoPowerReady(s32 a){extern u16 gMapConfig;s32 GetPlayerArmyVariantIfSet(s32);s32 func_020a3518(s32);s32 GetCoPowerMeterCost(s32,s32);s32 t;u8 r;if(((u32)(gMapConfig<<19)>>31)==0)return 0;if(GetPlayerArmyVariantIfSet(a))return 0;if(!GetCoPowerMeterCost(a,2))return 0;t=func_020a3518(a);if(t>=GetCoPowerMeterCost(a,2))r=1;else r=0;return r;}
+/* Whether a player's CO power is charged: CO powers must be enabled for the map,
+ * the player must not be using a set army variant, and the player's CO power
+ * meter must have reached the CO power's star cost. */
+u8 IsPlayerCoPowerReady(s32 player) {
+    extern u16 gMapConfig;
+    s32 GetPlayerArmyVariantIfSet(s32);
+    s32 GetCoPowerMeterPoints(s32);
+    s32 GetCoPowerMeterCost(s32, s32);
+    s32 meter;
+    u8 ready;
+
+    if (((u32)(M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_FLAGS) << 19) >> 31) == 0) return 0;
+    if (GetPlayerArmyVariantIfSet(player)) return 0;
+    if (!GetCoPowerMeterCost(player, 2)) return 0;
+    meter = GetCoPowerMeterPoints(player);
+    if (meter >= GetCoPowerMeterCost(player, 2)) ready = 1;
+    else ready = 0;
+    return ready;
+}
 
 void func_020a2c58(void *arg0){RefreshPlayerArmyDisplay(M2C_FIELD(arg0,s32 *,0x5c));}
 
@@ -392,7 +414,7 @@ void func_020a34f4(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-s32 func_020a3518(s32 a) {
+s32 GetCoPowerMeterPoints(s32 a) {
     extern s32 *gCurrentMap;
     s32 p = *gCurrentMap + 0x67a4 + 140 * a;
     s32 *w = (s32 *)(p + 108);
@@ -451,7 +473,7 @@ s32 RefreshPlayerArmyDisplay(s32 a){
 
 s32 func_020a3684(s32 a, s32 b) {
   extern s32 *gCurrentMap;
-  s32 func_020a3518(s32);
+  s32 GetCoPowerMeterPoints(s32);
   s32 GetCoPowerMeterCost(s32, s32);
   void func_020a3550(s32, s32);
   s32 idx = (s32)((u32)(M2C_FIELD(*gCurrentMap + a * 0x8c, s32 *, 0x6810) << 24) >> 24);
@@ -459,7 +481,7 @@ s32 func_020a3684(s32 a, s32 b) {
     return a;
   }
   {
-    s32 t = func_020a3518(a);
+    s32 t = GetCoPowerMeterPoints(a);
     s32 x = GetCoPowerMeterCost(a, 2);
     s32 val = t + b;
     if (val < 0) val = 0;
@@ -495,7 +517,17 @@ s32 func_020a3790(s32 arg0) {
     return var_r0;
 }
 
-void func_020a379c(void *a){extern s32 *gCurrentMap;void (*cb)(u8,u8);M2C_FIELD(*gCurrentMap,u8 *,0x5158)=M2C_FIELD(a,s16 *,0x36);if(M2C_FIELD(a,s16 *,0x38))FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,0x52b8));cb=M2C_FIELD(gCurrentMap[1],void (**)(u8,u8),0x58);if(!cb)return;cb(M2C_FIELD(*gCurrentMap,u8 *,0x5158),M2C_FIELD(*gCurrentMap,u8 *,0x5157));}
+/* Apply a weather change to the map: store the change sprite's weather id in the
+ * map, refresh team A's sight bitmap when the sprite asks for it, then let the
+ * map-view controller re-apply the terrain for the new weather and tileset. */
+void ApplyWeatherChange(void *sprite){
+extern s32 *gCurrentMap;void (*cb)(u8,u8);
+M2C_FIELD(*gCurrentMap,u8 *,MAP_WEATHER)=M2C_FIELD(sprite,s16 *,0x36);
+if(M2C_FIELD(sprite,s16 *,0x38))FillTeamSightBitmap((u8)M2C_FIELD(*gCurrentMap,u16 *,MAP_TEAM_A_PLAYER));
+cb=M2C_FIELD(gCurrentMap[1],void (**)(u8,u8),MAPVIEW_SET_TERRAIN);
+if(!cb)return;
+cb(M2C_FIELD(*gCurrentMap,u8 *,MAP_WEATHER),M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET));
+}
 
 void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:PlaySoundEffect(0xd4);return;case 1:PlaySoundEffect(0xd6);return;case 2:PlaySoundEffect(0xd5);return;case 3:PlaySoundEffect(0xd7);return;default:return;}}
 

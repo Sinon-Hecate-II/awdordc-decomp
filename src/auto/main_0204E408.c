@@ -128,16 +128,18 @@ s32 gpiSetStatusInfo(void **connection, s32 status, s8 *statusString, s8 *locati
     return 0;
 }
 #pragma opt_common_subs reset
-s32 gpiSendTextToPlayer(void **arg0,s32 arg1,s32 arg2) {
-s32 gpiSendMessageToPlayer(void **,s32,s32,s32);
-M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
-extern M2C_UNK gGpiMsgDisconnected; extern M2C_UNK data_020fdb50;
-void *p;
-if(arg0==0 || (p=*arg0)==0)return 2;
-if(M2C_FIELD(p,s32 *,0x108)!=0)return 0;
-if(M2C_FIELD(p,s32 *,0x1d8)==4){gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
-if(arg2==0){gpiSetErrorString(arg0,&data_020fdb50);return 2;}
-return gpiSendMessageToPlayer(arg0,arg1,1,arg2);
+/* Queue a text message to a gpi player: report "Invalid message." when there is
+ * no text, fail on a disconnected session, and skip the send in simulation mode. */
+s32 gpiSendTextToPlayer(void **gpi,s32 playerId,s32 message) {
+    s32 gpiSendMessageToPlayer(void **,s32,s32,s32);
+    M2C_UNK gpiSetErrorString(void **,M2C_UNK *);
+    extern M2C_UNK gGpiMsgDisconnected; extern M2C_UNK gGpiMsgInvalidMessage;
+    void *session;
+    if(gpi==0 || (session=*gpi)==0)return 2;
+    if(M2C_FIELD(session,s32 *,GPI_CONN_SIMULATION)!=0)return 0;
+    if(M2C_FIELD(session,s32 *,GPI_CONN_STATE)==GPI_STATE_DISCONNECTED){gpiSetErrorString(gpi,&gGpiMsgDisconnected);return 2;}
+    if(message==0){gpiSetErrorString(gpi,&gGpiMsgInvalidMessage);return 2;}
+    return gpiSendMessageToPlayer(gpi,playerId,GPI_MSG_PLAYER_INFO,message);
 }
 
 /* Creates a GameSpy GPI connection: allocates and clears its state, stores the
@@ -157,7 +159,7 @@ func_0204926c();GetTickCountMs();SetRandSeed();*out=connection;return 0;}
 
 void gpiFreeConnection(void **arg0) {
     M2C_UNK gpiFree(void *);
-    M2C_UNK func_02048dc4(s32);
+    M2C_UNK TableFree(s32);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
     void *temp_r4;
 
@@ -165,7 +167,7 @@ void gpiFreeConnection(void **arg0) {
     gpiDisconnect(arg0, 1);
     gpiFree(M2C_FIELD(temp_r4, void **, 0x460));
     M2C_FIELD(temp_r4, void **, 0x460) = NULL;
-    func_02048dc4(M2C_FIELD(temp_r4, s32 *, 0x428));
+    TableFree(M2C_FIELD(temp_r4, s32 *, 0x428));
     gpiFree(temp_r4);
     *arg0 = NULL;
 }

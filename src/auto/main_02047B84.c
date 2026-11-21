@@ -1,5 +1,6 @@
 /* 25 functions from 0x02047B84 to 0x02048B74 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 typedef struct { u8 len, family; u16 port; s32 address; } SockAddr;
 extern M2C_UNK sWebGetPath;
 extern M2C_UNK gWebRequestState, data_020fca68;
@@ -226,17 +227,26 @@ s32 func_0204800c(u8 *a, u8 *b, s32 c, u32 d, u32 e, s32 f) {
     return 1;
 }
 
-s32 func_02048108(s32 a,s32 b,void *c) {
-s32 ghiInetAddr(s32); void *ghiResolveHostname(s32);
-u16 v=b; void *p;
-M2C_FIELD(c,u8 *,1)=2;
-M2C_FIELD(c,u16 *,2)=((u8)((s32)v>>8))|((v<<8)&0xff00);
-M2C_FIELD(c,s32 *,4)=ghiInetAddr(a);
-if(M2C_FIELD(c,s32 *,4)==-1) {
-p=ghiResolveHostname(a);if(!p)return 0;
-M2C_FIELD(c,s32 *,4)=**M2C_FIELD(p,s32 ***,12);
-}
-return 1;
+/* Fills the service-availability DNS query's socket address: family AF_INET,
+ * the port byte-swapped into network order, and the IPv4 address of `hostname`
+ * (parsed numerically first, else resolved through ghiResolveHostname, whose
+ * hostent gives h_addr_list[0]). Returns 0 when the name does not resolve. */
+s32 ResolveServiceHostAddress(char *hostname, s32 port, void *addrPtr) {
+    s32 ghiInetAddr(char *);
+    GhiHostEntry *ghiResolveHostname(char *);
+    GhiSocketAddress *addr = addrPtr;
+    u16 hostPort = port;
+    GhiHostEntry *hostEntry;
+
+    addr->family = 2;
+    M2C_FIELD(addr, u16 *, 2) = ((u8)((s32)hostPort >> 8)) | ((hostPort << 8) & 0xff00);
+    addr->addr = ghiInetAddr(hostname);
+    if (addr->addr == -1) {
+        hostEntry = ghiResolveHostname(hostname);
+        if (!hostEntry) return 0;
+        addr->addr = *(s32 *)*hostEntry->hostent;
+    }
+    return 1;
 }
 
 void func_0204817c(void) {
@@ -259,7 +269,7 @@ void InitServiceAvailabilityQuery(s8 *serviceName) {
     func_0204926c(&gDnsQueryState);
     hasOverride = M2C_FIELD(&gOverrideDnsName, s8 *, 0);
     if (!hasOverride) StringFormat(hostNameBuffer, &gServiceAvailabilityFormat, serviceName);
-    if (!func_02048108(hasOverride ? (s8 *)&gOverrideDnsName : hostNameBuffer, 0x6cfc, &gDnsPacketHeader)) return;
+    if (!ResolveServiceHostAddress(hasOverride ? (s8 *)&gOverrideDnsName : hostNameBuffer, 0x6cfc, &gDnsPacketHeader)) return;
     M2C_FIELD(&gDnsQueryState, s32 *, 4) = ghiSocket(2, 2, 0);
     if (M2C_FIELD(&gDnsQueryState, s32 *, 4) == -1) return;
     M2C_FIELD(&gDnsQueryState, s8 *, 0x10) = 9;
@@ -450,7 +460,7 @@ func_020484b8(a,b);Vector_RemoveAt(a,b);
 
 void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
 
-void func_020489c4(void *arg0, M2C_UNK arg1) {
+void Vector_Sort(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);
     func_02067610(M2C_FIELD(arg0, s32 *, 0x14), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, s32 *, 8), arg1);
 }
@@ -482,10 +492,12 @@ if(!b)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc5c,0x104);
 for(i=a[0]-1;i>=0;i--)b(Vector_GetItem(a,i),c);
 }
 
-s32 func_02048afc(s32 *a,s32 (*b)(s32,s32),s32 c) {
-s32 AssertFailed();s32 i,p;
-if(!b)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc84,0x121);
-for(i=a[0]-1;i>=0;i--){p=Vector_GetItem(a,i);if(!b(p,c))return p;}
+/* GameSpy darray ArrayFind: walk the items from the last one down, returning
+ * the first item for which the test callback returns 0, or 0 when none does. */
+s32 Vector_Find(s32 *array,s32 (*test)(s32,s32),s32 context) {
+s32 AssertFailed();s32 i,item;
+if(!test)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc84,0x121);
+for(i=M2C_FIELD(array,s32 *,VECTOR_COUNT)-1;i>=0;i--){item=Vector_GetItem(array,i);if(!test(item,context))return item;}
 return 0;
 }
 

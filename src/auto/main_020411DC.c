@@ -211,19 +211,22 @@ s32 StartMatchmaking(void) {
     return 0;
 }
 
-s32 func_02041dd4(s32 arg0) {
- s32 *func_02039140();
- s32 *p;
- M2C_FIELD(GetConnection(),s32*,0x20c)=arg0;
- p=func_02039140(arg0,M2C_FIELD(GetConnection(),u8*,0xd)+1);
- if(p!=0) {
- M2C_FIELD(GetConnection(),u8*,0x1a8)=2;
- GT2FailConnectionAttempt(*p);
- M2C_FIELD(GetConnection(),u8*,0x1a8)=0;
- return 1;
- }
- func_0203e088(arg0,M2C_FIELD(GetConnection(),u8*,0xd)+1);
- return 0;
+/* Force-close the connection of `playerId`: record it as the connection target,
+ * then close its live GT2 connection when one is registered, or drop the player
+ * from the peer list otherwise.  Returns 1 when a connection was closed. */
+s32 ClosePeerConnection(s32 playerId) {
+    s32 *FindPlayerConnectionSlot();
+    s32 *connectionSlot;
+    M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID) = playerId;
+    connectionSlot = FindPlayerConnectionSlot(playerId, M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) + 1);
+    if (connectionSlot != 0) {
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TEARDOWN) = 2;
+        GT2FailConnectionAttempt(*connectionSlot);
+        M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_TEARDOWN) = 0;
+        return 1;
+    }
+    RemovePlayerFromConnection(playerId, M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) + 1);
+    return 0;
 }
 
 void CloseGt2Connection(void) {

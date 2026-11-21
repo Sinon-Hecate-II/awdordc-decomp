@@ -106,12 +106,12 @@ return 0;
 s32 func_ov000_0219f968(void) {
 void BattleUpdateUnitCursor(void);
 void CreateTargetCursor(u8,u8);
-void func_020bbbbc(u8,u8,u8,u8,s32);
+void CreateAttackTargetEffect(u8,u8,u8,u8,s32);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 BattleUpdateUnitCursor();
 CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
-func_020bbbbc(gAiCommand[2],gAiCommand[3],gAiCommand[6],gAiCommand[7],7);
+CreateAttackTargetEffect(gAiCommand[2],gAiCommand[3],gAiCommand[6],gAiCommand[7],7);
 M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
 }
@@ -119,12 +119,12 @@ return 0;
 s32 func_ov000_0219f9c0(void) {
 void BattleUpdateUnitCursor(void);
 void CreateTargetCursor(u8,u8);
-void func_020bbd98(u8,u8,s32);
+void AiDecrementUnitAmmo(u8,u8,s32);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 BattleUpdateUnitCursor();
 CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
-func_020bbd98(gAiCommand[6],gAiCommand[7],0);
+AiDecrementUnitAmmo(gAiCommand[6],gAiCommand[7],0);
 M2C_FIELD(gAiCommandState,s8 *,1)=5;
 return 0;
 }
@@ -190,41 +190,48 @@ func_020cad00(((UnitId6 *)(base+index))->id,M2C_FIELD(*gCurrentMap,s16 *,0x52dc)
 func_020bb608(n);
 }}
 
-void func_ov000_0219fc64(void) {
+/* Submerge the unit under the cursor (hide it), splash in and, for a human
+ * player, count the dive in the battle record. */
+void SubmergeUnit(void) {
 void SpawnRippleIn(u32);
 s32 IsPlayerHuman(u16);
 M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
-SpawnRippleIn(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
-p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
-M2C_FIELD(p,u16 *,4)|=0x20;
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) AddRecordValue(0x26,1);
+SpawnRippleIn(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->id);
+p=M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT);
+M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)|=UNIT_FLAG_SUBMERGED;
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))) AddRecordValue(0x26,1);
 }
 
-void func_ov000_0219fcdc(void) {
+/* Surface the unit under the cursor (show it again), splash out and, for a human
+ * player, count the surfacing in the battle record. */
+void SurfaceUnit(void) {
 void SpawnRippleOut(u32);
 s32 IsPlayerHuman(u16);
 M2C_UNK AddRecordValue(M2C_UNK,M2C_UNK);
 extern void **gCurrentMap;
 void *p;
-SpawnRippleOut(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,0x52D0))->id);
-p=M2C_FIELD(*gCurrentMap,void **,0x52D0);
-M2C_FIELD(p,u16 *,4)&=~0x20;
-if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) AddRecordValue(0x25,1);
+SpawnRippleOut(((UnitId6 *)M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT))->id);
+p=M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT);
+M2C_FIELD(p,u16 *,MAP_UNIT_FLAGS)&=~UNIT_FLAG_SUBMERGED;
+if(IsPlayerHuman(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))) AddRecordValue(0x25,1);
 }
 
-void func_ov000_0219fd54(void) {
+/* Destroy the unit under the map cursor: unless the map's unit-destroyed map event
+ * handles it, play the unit's explosion effect and, for a human player, count the
+ * loss in the battle record. */
+void DestroyCursorUnit(void) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020b576c(s32);
+    M2C_UNK ExplodeUnit(s32);
     s32 IsPlayerHuman(u16);
     s32 func_ov000_0216aa44(M2C_UNK, s32);
     extern void **gCurrentMap;
-    if (func_ov000_0216aa44(0x31, M2C_FIELD(*gCurrentMap, s32 *, 0x52D0)) != 0) {
+    if (func_ov000_0216aa44(0x31, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0) {
         return;
     }
-    func_020b576c(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
-    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) == 0) {
+    ExplodeUnit(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 0) {
         return;
     }
     AddRecordValue(0x11, 1);

@@ -2,21 +2,24 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-void func_0208c830(void *arg0, s8 arg1) {
+/* Starts a 3D sprite object's palette fade to its `to` palette over `duration`
+ * frames; a zero duration applies the target palette at once instead. */
+void StartPaletteFade(void *arg0, s8 duration) {
     extern void *gCur3DSpriteEngine;
+    DS3DSpritePaletteFade *fade = (DS3DSpritePaletteFade *)arg0;
     s32 i;
     u16 *dest;
-    if (arg1 == 0) {
-        dest = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + ((M2C_FIELD(arg0, u8 *, 0x34) << 5) & ~1));
+    if (duration == 0) {
+        dest = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + ((fade->palette << 5) & ~1));
         for (i = 0; i < 15; i++) {
-            dest[i + 1] = ((u16 *)arg0)[i + 0x2B];
+            dest[i + 1] = fade->to[i];
         }
-        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_PALETTE;
         return;
     }
-    M2C_FIELD(arg0, s8 *, 0x36) = 0;
-    M2C_FIELD(arg0, s8 *, 0x37) = arg1;
-    M2C_FIELD(arg0, s8 *, 0x35) = 1;
+    fade->timer = 0;
+    fade->duration = duration;
+    fade->flags = DS3D_FADE_ACTIVE;
 }
 
 M2C_UNK func_0208c8a8(void *arg0) {

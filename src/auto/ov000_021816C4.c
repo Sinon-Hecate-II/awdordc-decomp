@@ -25,7 +25,7 @@ void RunAiRole2EmptyAction(void) {
         func_ov000_02186a18();
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 28) >> 28) == 8) {
-        func_ov000_021962f8();
+        PlanCaptureMoveDestination();
         FinishAiUnitAction();
         return;
     }
@@ -36,12 +36,15 @@ void RunAiRole2EmptyAction(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_021817c0(void) {
-extern void **gCurrentMap;
-if(IsAiMap175Player2Override()!=0)return;
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==6)return;
-BuildAiInfluenceMaps();
-if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u8 *,11)<<28)>>28)==8)func_ov000_021962f8();else func_ov000_0219234c();
+/* Role-2 action for a transport carrying a unit that has an AI step set: rebuild
+ * the influence maps, then run the capture step's planner or the carried unit's
+ * destination planner according to the acting unit's AI step. */
+void RunAiRole2CargoAction(void) {
+    extern void **gCurrentMap;
+    if (IsAiMap175Player2Override() != 0) return;
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == AI_STEP_ATTACK) return;
+    BuildAiInfluenceMaps();
+    if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == AI_STEP_CAPTURE) PlanCaptureMoveDestination(); else func_ov000_0219234c();
 }
 
 void func_ov000_02181838(void) {
@@ -63,7 +66,7 @@ void func_ov000_02181838(void) {
         func_ov000_02186a18();
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 28) >> 28) == 8) {
-        func_ov000_021962f8();
+        PlanCaptureMoveDestination();
     } else {
         func_ov000_02192d88();
     }
@@ -85,12 +88,12 @@ void RunAiRole2LoadedAction(void) {
     map = *gCurrentMap;
     if (M2C_FIELD(map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE)) func_ov000_02186a18();
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
-        func_ov000_021962f8();
+        PlanCaptureMoveDestination();
         FinishAiUnitAction();
         return;
     }
     func_ov000_021935c4();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) |= AI_ACTION_SKIP_REPLAN;
     func_ov000_02192d88();
     func_ov000_021935c4();
@@ -129,7 +132,7 @@ void RunAiRole5Action(void) {
         RunAiAttackAction();
     }
     if (((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 8) {
-        func_ov000_021962f8();
+        PlanCaptureMoveDestination();
         FinishAiUnitAction();
         return;
     }
@@ -178,18 +181,22 @@ p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
 SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
 }
 
+/* Run the AI's CO power action: skip it if the acting unit has an attack target;
+ * otherwise use the power when the AI settings' condition callback (default:
+ * the unit is below half health) agrees, then choose the unit's destination. */
 void RunAiCoPowerAction(void) {
 s32 AiUnitHasAttackTarget(void);
-s32 func_ov000_021aa3bc(void);
+s32 AiCoPowerUnitIsHurt(void);
+void ChooseAiUnitMoveDestination(s32);
 extern void *gAiSettings;
 extern void *gAiCommandState;
-s32 (*callback)(void);
+s32 (*useCoPower)(void);
 if(IsAiMap175Player2Override()!=0)return;
 BuildAiInfluenceMaps();
 if(AiUnitHasAttackTarget()!=0)return;
-callback=M2C_FIELD(gAiSettings,s32 (**)(void),4);
-if(callback==NULL) {if(!func_ov000_021aa3bc())return;} else {if(!callback())return;}
-M2C_FIELD(gAiCommandState,u16 *,8)|=0x100;
-func_ov000_0218d040(0);
+useCoPower=M2C_FIELD(gAiSettings,s32 (**)(void),AI_SETTINGS_USE_CO_POWER);
+if(useCoPower==NULL) {if(!AiCoPowerUnitIsHurt())return;} else {if(!useCoPower())return;}
+M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_ACTION_FLAGS)|=AI_ACTION_CO_POWER;
+ChooseAiUnitMoveDestination(0);
 }
 

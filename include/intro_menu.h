@@ -65,6 +65,8 @@ typedef struct IntroMenu011 {
 
 #define INTRO_MENU_TEXTURE_STRIDE 0x200
 #define INTRO_MENU_INITIAL_FRAME 5
+#define INTRO_MENU_ENTRY_TOUCH_RADIUS 18
+#define INTRO_MENU_ENTRY_FAST_SLIDE 2
 
 /* Position fields of the animated sprite object owned by each entry. */
 #define ANIMATED_SPRITE_X 0x34

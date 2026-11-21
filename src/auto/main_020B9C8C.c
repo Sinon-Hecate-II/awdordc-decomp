@@ -15,7 +15,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
  void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
- void PlaySoundEffect(s32); void func_020b9558(u8); void CreateMenuUnitSprite(void *);
+ void PlaySoundEffect(s32); void DrawProductionUnitPreview(u8); void CreateMenuUnitSprite(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
  extern M2C_UNK sProductionMenuCgName; extern M2C_UNK sProductionMenuScName; extern M2C_UNK sProductionMenuClName;
@@ -42,7 +42,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  func_020b9bec(); func_020b9c40();
  PlaySoundEffect(0x10017);
- func_020b9558(gProductionMenuState[8]);
+ DrawProductionUnitPreview(gProductionMenuState[8]);
  CreateMenuUnitSprite(screen);
 }
 
@@ -356,10 +356,10 @@ u8 IsSelectableUnitAt(s32 x,s32 y) {
 }
 
 #pragma opt_if-conversion off
-s32 func_020baa1c(s32 a,s32 b) {
+s32 IsMissileSiloCell(s32 a,s32 b) {
  extern void **data_027e0058;
  s32 p=(s32)*data_027e0058;
- switch(M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31){case 24:return 1;default:return 0;}
+ switch(M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31){case MAP_TERRAIN_SILO:return 1;default:return 0;}
 }
 #pragma opt_if-conversion on
 void ClearCursorUnitCapture(void) {

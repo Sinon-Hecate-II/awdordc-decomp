@@ -37,11 +37,11 @@ void MapEditor_StartMap(void *editor) {
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
- func_0207ce28((u8*)*gCurrentMap+0x6ef8);func_020d4b30();
+ func_0207ce28((u8*)*gCurrentMap+0x6ef8);InitBattleMapPresentation();
  map=*gCurrentMap;
  centerX=(u32)M2C_FIELD(map,u16*,MAP_WIDTH)>>1;
  centerY=(u32)M2C_FIELD(map,u16*,MAP_HEIGHT)>>1;
- SetMapCursorTargetTile((s16)centerX,(s16)centerY);func_0207b754(centerX,centerY);
+ SetMapCursorTargetTile((s16)centerX,(s16)centerY);SetMapViewPositionToTileCentered(centerX,centerY);
  SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
  RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
  M2C_FIELD(editor,u8*,0x34)=1;
@@ -596,7 +596,7 @@ s32 GetEditorUnitCategoryCount(M2C_UNK arg0, M2C_UNK arg1) {
     return GetUnitCategoryCount(&gEditorUnitCounts, arg0, arg1);
 }
 
-u8 func_ov007_0221204c(void) {
+u8 MapEditor_GetPropertyCount(void) {
     extern u8 gMapEditorState;
     return M2C_FIELD(&gMapEditorState, u8 *, 4);
 }

@@ -4,13 +4,16 @@
 typedef struct { u32 words[3]; } Record3A;
 typedef struct { u32 words[8]; } Record39;
 
+#pragma push
+#pragma scheduling off
 void NasConnectionResultCallback(M2C_UNK a,Record39 *b){
 extern M2C_UNK gNasLogin,data_020fc8a8,NasLoginInfoCallback;
 s32 SetGpiStatus(s32,s32,void *);s32 ReportNasError(void);s32 OpenGameSpySocket(void);s32 StartQr2Reporting(s32);
 void ReportNasLoginError(s32,s32);M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
 void *p;
 M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),s32 *,48)=0;
-if(b->words[0]==0){
+switch(b->words[0]) {
+case 0: {
 p=M2C_FIELD(&gNasLogin,void **,4);
 M2C_FIELD(p,Record39 *,0x260)=*b;
 if(M2C_FIELD(p,s32 *,4)==2){
@@ -27,9 +30,12 @@ if(StartQr2Reporting(b->words[1]))return;
 gpiGetInfo(a,b->words[1],0,0,&NasLoginInfoCallback,0);
 if(ReportNasError())return;
 }
-}else ReportNasError();
+break;
 }
-
+default: ReportNasError(); break;
+}
+}
+#pragma pop
 void NasLoginRequestCallback(M2C_UNK arg0, M2C_UNK arg1) {
     void StartNasGpiConnection(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void NasConnectionResultCallback(M2C_UNK, Record39 *);
@@ -413,7 +419,7 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATUS)=1;
 {void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);M2C_FIELD(p,u8 *,MATCH_SESSION_STEP)++;}
 }
 
-void func_0203accc(s32 a,s32 b) {
+void ReportMatchSessionError(s32 a,s32 b) {
 extern M2C_UNK gMatchSessionMgr;void SetNetError(s32,s32);void func_0203b128(void);
 void *p;
 if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!a)return;

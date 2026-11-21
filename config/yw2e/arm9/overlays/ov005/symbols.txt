@@ -11,7 +11,7 @@ HistoryTabAt kind:function(arm,size=0x1c) addr:0x02211a38
 func_ov005_02211a54 kind:function(arm,size=0x38) addr:0x02211a54
 func_ov005_02211a8c kind:function(arm,size=0xc0) addr:0x02211a8c
 func_ov005_02211b4c kind:function(arm,size=0xd8) addr:0x02211b4c
-func_ov005_02211c24 kind:function(arm,size=0x70) addr:0x02211c24
+CountTabRecords kind:function(arm,size=0x70) addr:0x02211c24
 func_ov005_02211c94 kind:function(arm,size=0x60) addr:0x02211c94
 UpdateMedalFlags kind:function(arm,size=0x424) addr:0x02211cf4
 HistoryScrollUp kind:function(arm,size=0x48) addr:0x02212118
@@ -96,7 +96,7 @@ func_ov005_02218db4 kind:function(arm,size=0x48) addr:0x02218db4
 func_ov005_02218dfc kind:function(arm,size=0x40) addr:0x02218dfc
 func_ov005_02218e3c kind:function(arm,size=0x18) addr:0x02218e3c
 GetCurrentCoFaceId kind:function(arm,size=0x88) addr:0x02218e54
-func_ov005_02218edc kind:function(arm,size=0x74) addr:0x02218edc
+GetResultSecondCoFaceId kind:function(arm,size=0x74) addr:0x02218edc
 GetCoQuoteTextId kind:function(arm,size=0x80) addr:0x02218f50
 func_ov005_02218fd0 kind:function(arm,size=0xa54) addr:0x02218fd0
 func_ov005_02219a24 kind:function(arm,size=0xc8) addr:0x02219a24
@@ -114,7 +114,7 @@ DrawAwardedMedals kind:function(arm,size=0x2cc) addr:0x0221a0c0
 PositionAwardPanelSprites kind:function(arm,size=0x84) addr:0x0221a38c
 AnimateAwardMedal3 kind:function(arm,size=0x88) addr:0x0221a410
 AnimateAwardMedal4 kind:function(arm,size=0x88) addr:0x0221a498
-func_ov005_0221a520 kind:function(arm,size=0x78) addr:0x0221a520
+AnimateAwardPanelSlide kind:function(arm,size=0x78) addr:0x0221a520
 func_ov005_0221a598 kind:function(arm,size=0xf0) addr:0x0221a598
 func_ov005_0221a688 kind:function(arm,size=0x16c) addr:0x0221a688
 func_ov005_0221a7f4 kind:function(arm,size=0x344) addr:0x0221a7f4
@@ -191,8 +191,8 @@ func_ov005_0221fe28 kind:function(arm,size=0x14) addr:0x0221fe28
 func_ov005_0221fe3c kind:function(arm,size=0x4) addr:0x0221fe3c
 func_ov005_0221fe40 kind:function(arm,size=0x14) addr:0x0221fe40
 func_ov005_0221fe54 kind:function(arm,size=0x4) addr:0x0221fe54
-func_ov005_0221fe58 kind:function(arm,size=0x74) addr:0x0221fe58
-func_ov005_0221fecc kind:function(arm,size=0x6c) addr:0x0221fecc
+ResultSpark_Delete kind:function(arm,size=0x74) addr:0x0221fe58
+ResultSpark_Destroy kind:function(arm,size=0x6c) addr:0x0221fecc
 func_ov005_0221ff38 kind:function(arm,size=0x34) addr:0x0221ff38
 func_ov005_0221ff6c kind:function(arm,size=0x2c) addr:0x0221ff6c
 func_ov005_0221ff98 kind:function(arm,size=0x2c) addr:0x0221ff98
@@ -353,7 +353,7 @@ data_ov005_02220f54 kind:data(any) addr:0x02220f54
 data_ov005_02220f68 kind:data(any) addr:0x02220f68
 data_ov005_02220f7c kind:data(any) addr:0x02220f7c
 data_ov005_02220f90 kind:data(any) addr:0x02220f90
-data_ov005_02220fa4 kind:data(any) addr:0x02220fa4
+gResultSparkVTable kind:data(any) addr:0x02220fa4
 data_ov005_02220fb8 kind:data(any) addr:0x02220fb8
 data_ov005_02220fcc kind:data(any) addr:0x02220fcc
 data_ov005_02220fe0 kind:data(any) addr:0x02220fe0

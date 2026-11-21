@@ -3,8 +3,8 @@
 #include "ov003_mapselect.h"
 static inline void loadBank3(s32 k,u32 m) {
 extern s32 gCur3DSpriteEngine;
-void func_020a9a30(s32,s32,s32,void *);
-func_020a9a30(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
+void LoadSpriteResource(s32,s32,s32,void *);
+LoadSpriteResource(2,2,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(m<<5));
 }
 
 s32 GetSceneSlideDirection(void) {
@@ -151,31 +151,53 @@ void func_ov003_021f1920(void) {
     func_020af1e4();
 }
 
-void func_ov003_021f192c(void *a) {
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
-extern u8 gOv003SceneState;extern M2C_UNK gSceneLayerConfig;
-void *func_0208931c(s32);s32 func_020aaf74(void *);
-void func_020a9a30(s32,s32,s32,void *);
-s32 old=gCur3DSpriteEngine,current;void *p; s32 i=0;u8 mode;s32 k,n;u32 m;
-do {
-if(i==0)current=g3DSpriteEngineMain;else current=g3DSpriteEngineSub;
-gCur3DSpriteEngine=current;mode=M2C_FIELD(a,u8 *,0);
-if(mode==0&&current!=g3DSpriteEngineMain)continue;
-if(mode==1&&current!=g3DSpriteEngineSub)continue;
-if(mode==3&&current!=old)continue;
-p=func_0208931c(9);
-M2C_FIELD(&gOv003SceneState,void **,16)=p;
-k=M2C_FIELD(a,u8 *,1);m=M2C_FIELD(a,u8 *,8);n=M2C_FIELD(a,u32 *,4);
-M2C_FIELD(p,u8 *,0x58)=k;
-func_020a9a30(2,0,k,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(n<<5));
-{void *engine=(void *)gCur3DSpriteEngine;func_020a9a30(2,2,k,(void *)((m<<5)+(u32)M2C_FIELD(engine,void **,0x30)));}
-M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
-M2C_FIELD(p,u16 *,0x3e)=n&0x7ffffff;
-M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((m<<24)>>6);
-M2C_FIELD(p,u16 *,0x3c)=0xc00;
-}while(++i<2);
-gCur3DSpriteEngine=old;
-M2C_FIELD(&gSceneLayerConfig,void **,0)=a;
+/* Create the scene's 3D sprite on each engine its definition asks for
+ * (DS3D_TARGET_*): load the definition's tile and palette into the asked
+ * sprite bank slot, make the sprite the scene sprite, and record which sprite
+ * sheet it uses before remembering the definition in the scene config. */
+void CreateScene3DSprite(void *definition) {
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain, g3DSpriteEngineSub;
+    extern u8 gOv003SceneState;
+    extern M2C_UNK gSceneLayerConfig;
+    void *Create3DSprite(s32);
+    s32 func_020aaf74(void *);
+    void LoadSpriteResource(s32, s32, s32, void *);
+    SceneSpriteDef *def = definition;
+    s32 savedEngine = gCur3DSpriteEngine;
+    s32 engine;
+    void *sprite;
+    s32 engineIndex = 0;
+    u8 screen;
+    s32 bank, tile;
+    u32 palette;
+
+    do {
+        if (engineIndex == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        screen = def->targetScreen;
+        if (screen == DS3D_TARGET_MAIN && engine != g3DSpriteEngineMain) continue;
+        if (screen == DS3D_TARGET_SUB && engine != g3DSpriteEngineSub) continue;
+        if (screen == DS3D_TARGET_ACTIVE && engine != savedEngine) continue;
+        sprite = Create3DSprite(9);
+        M2C_FIELD(&gOv003SceneState, void **, 16) = sprite;
+        bank = def->bank;
+        palette = def->palette;
+        tile = def->tile;
+        M2C_FIELD(sprite, u8 *, 0x58) = bank;
+        LoadSpriteResource(2, 0, bank, (u8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0x1c) + (tile << 5));
+        {
+            u8 *current = (u8 *)*(volatile s32 *)&gCur3DSpriteEngine;
+            LoadSpriteResource(2, 2, bank, &M2C_FIELD(current, u8 **, 0x30)[palette * 32]);
+        }
+        M2C_FIELD(sprite, s32 *, 0x44) = func_020aaf74(sprite);
+        M2C_FIELD(sprite, u16 *, 0x3e) = tile & 0x7ffffff;
+        M2C_FIELD(sprite, u32 *, 0x40) = (M2C_FIELD(sprite, u32 *, 0x40) & ~0x3fc0000) | ((palette << 24) >> 6);
+        M2C_FIELD(sprite, u16 *, 0x3c) = 0xc00;
+    } while (++engineIndex < 2);
+
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(&gSceneLayerConfig, void **, 0) = definition;
 }
 
 void DeleteOv003SceneSprite(void) {
@@ -191,7 +213,7 @@ void func_ov003_021f1a70(void) {
 }
 
 void func_ov003_021f1ab8(s32 arg0) {
-    M2C_UNK func_020822b8();
+    M2C_UNK Apply3DSpriteLayout();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK gSceneLayerConfig;
@@ -199,20 +221,20 @@ void func_ov003_021f1ab8(s32 arg0) {
 
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    func_020822b8();
+    Apply3DSpriteLayout();
     gCur3DSpriteEngine = temp_r4;
     M2C_FIELD(&gSceneLayerConfig, s32 *, 8) = arg0;
 }
 
 void func_ov003_021f1af8(s32 arg0) {
-    M2C_UNK func_020822b8();
+    M2C_UNK Apply3DSpriteLayout();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK gSceneLayerConfig;
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020822b8();
+    Apply3DSpriteLayout();
     gCur3DSpriteEngine = temp_r4;
     M2C_FIELD(&gSceneLayerConfig, s32 *, 12) = arg0;
 }

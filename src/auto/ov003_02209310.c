@@ -6,7 +6,7 @@
 void func_ov003_02209310(void *arg0) {
 void func_ov003_0220a6bc(void *);
 void func_ov003_0220bf98(void *);
-void func_ov003_0220ac58(void *);
+void Ov003_UpdateHelpPanelSlide(void *);
 void func_ov003_0220856c(void *,s32,s32);
 void func_02088e84(void *,s16,s32,s16,s32);
 s32 GetUnitSpriteWidth(void *);
@@ -35,7 +35,7 @@ func_ov003_0220a6bc(arg0);
 state=(u32)(M2C_FIELD(arg0,u8 *,0x36)<<24)>>28;
 if(state==1)boolean=1;else boolean=0;
 if(!(boolean&255)||!M2C_FIELD(arg0,u8 *,0x35))func_ov003_0220bf98(arg0);
-func_ov003_0220ac58(arg0);
+Ov003_UpdateHelpPanelSlide(arg0);
 func_ov003_0220856c(arg0,16,2);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 a=M2C_FIELD(M2C_FIELD(arg0,void **,0x58),s16 *,2);

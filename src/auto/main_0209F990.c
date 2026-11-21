@@ -18,7 +18,7 @@ s32 func_0209f990(void) {
     u8 IsSameTeam(s32, s32);
     void func_020d1690(s32, s32, void *);
     extern s32 *gCurrentMap;
-    extern void *data_0215be00;
+    extern void *gTargetList;
 
     s32 id;
     s32 visible;
@@ -72,7 +72,7 @@ next_cell:
             y++;
         } while (y < (s32)M2C_FIELD(obj, u16 *, 0x5146));
     }
-    return M2C_FIELD(&data_0215be00, s32 *, 8);
+    return M2C_FIELD(&gTargetList, s32 *, 8);
 }
 #pragma opt_common_subs off
 s32 func_0209fb70(void) {
@@ -82,10 +82,10 @@ s32 func_0209fb70(void) {
     void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
     s32 func_020d0a08(M2C_UNK, void *);
-    s32 func_020d0a88(u8 *, M2C_UNK);
+    s32 CanUnitDamageKind(u8 *, M2C_UNK);
     u8 IsSameTeam(s32, s32);
     extern s32 *gCurrentMap;
-    extern void *data_0215be00;
+    extern void *gTargetList;
 
     s32 id;
     s32 visible;
@@ -123,7 +123,7 @@ s32 func_0209fb70(void) {
                             }
                         }
                     }
-                    if (func_020d0a88((u8 *)M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), visible) != 0) {
+                    if (CanUnitDamageKind((u8 *)M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), visible) != 0) {
                         func_0209f8f8(x, y, 0, (s32)(u16)visible);
                     }
                 }
@@ -136,15 +136,15 @@ next_row:
         y++;
     } while (y < (s32)M2C_FIELD(obj, u16 *, 0x5146));
 done:
-    return M2C_FIELD(&data_0215be00, s32 *, 8);
+    return M2C_FIELD(&gTargetList, s32 *, 8);
 }
 #pragma opt_common_subs reset
-s32 func_0209fd2c(void) {
+s32 CollectCapturableProperties(void) {
     /* Walk the map grid; for every cell whose stored value is >= 0 and
        whose passability test succeeds, append (x, y, value) to the output
        list. Terminate the list with a -1 sentinel and return the count. */
     s32 GetTerrainPropertyFlagsAt(s32, s32);
-    extern void *data_0215be00;
+    extern void *gTargetList;
     extern s32 *gCurrentMap;
     s32 count;
     u8 *out;
@@ -153,7 +153,7 @@ s32 func_0209fd2c(void) {
     M2C_UNK *obj;
     u32 type;
 
-    out = data_0215be00;
+    out = gTargetList;
     obj = (M2C_UNK *)*gCurrentMap;
     count = 0;
     type = (u32)(M2C_FIELD(M2C_FIELD(obj, u8 **, 0x52D0), u8 *, 0) << 26) >> 26;
@@ -182,50 +182,49 @@ s32 func_0209fd2c(void) {
     return count;
 }
 
+/* Fills the shared target list (gTargetList) with every supply-target cell the
+ * cursor's player can reach: each entry keeps the cell's stored value in its id
+ * and the list ends with a 0 id. Returns the number of entries written. */
 s32 CollectSupplyTargets(void) {
     s32 IsSupplyTargetAt(s32, s32);
-    extern void *data_0215be00;
-    extern M2C_UNK *gCurrentMap;
-
-    u16 *out;
-    s32 y;
+    extern void *gTargetList;
+    extern s32 *gCurrentMap;
+    u8 *map;
+    MapTargetEntry *out;
     s32 x;
+    s32 y;
 
-    out = (u16 *)data_0215be00 + 2;
+    out = (MapTargetEntry *)M2C_FIELD(&gTargetList, u8 **, 4);
+    map = (u8 *)*gCurrentMap;
     y = 0;
-
-    if (M2C_FIELD(gCurrentMap, u16 *, 0x5146) == 0) goto done;
-
-    do {
-        x = 0;
-
-        if (M2C_FIELD(gCurrentMap, u16 *, 0x5144) == 0) goto next_row;
-
+    if ((s32)M2C_FIELD(map, u16 *, MAP_HEIGHT) > 0) {
         do {
-            if (M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52E8), s8 *, x) < 0) goto next_cell;
-            if (IsSupplyTargetAt(x, y) == 0) goto next_cell;
+            x = 0;
+            if ((s32)M2C_FIELD(map, u16 *, MAP_WIDTH) > 0) {
+                do {
+                    if (M2C_FIELD(map + y * 4, s8 **, MAP_GRID)[x] >= 0 && IsSupplyTargetAt(x, y)) {
+                        u8 *current = (u8 *)*gCurrentMap;
+                        u16 row = M2C_FIELD(current + y * 2, u16 *, MAP_ROW_OFFSETS);
+                        out->id = (current + x)[row];
+                        out += 1;
+                    }
+                    x++;
+                    map = (u8 *)*gCurrentMap;
+                } while (x < (s32)M2C_FIELD(map, u16 *, MAP_WIDTH));
+            }
+            y++;
+        } while (y < (s32)M2C_FIELD(map, u16 *, MAP_HEIGHT));
+    }
 
-            *out = *(u8 *)((u8 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, u16 *, 0x3758 + y * 2) + x);
-            out += 4;
-
-next_cell:
-            x++;
-        } while (x < M2C_FIELD(gCurrentMap, u16 *, 0x5144));
-
-next_row:
-        y++;
-    } while (y < M2C_FIELD(gCurrentMap, u16 *, 0x5146));
-
-done:
-    *out = 0;
-    return (out - ((u16 *)data_0215be00 + 2)) / 16;
+    out->id = 0;
+    return out - (MapTargetEntry *)M2C_FIELD(&gTargetList, u8 **, 4);
 }
 
-s32 func_0209ff34(void) {
-    /* Same as func_0209fd2c but using the secondary passability test
-       (func_020baa1c). */
-    s32 func_020baa1c(s32, s32);
-    extern void *data_0215be00;
+s32 CollectReachableMissileSilos(void) {
+    /* Same as CollectCapturableProperties but using the secondary passability test
+       (IsMissileSiloCell). */
+    s32 IsMissileSiloCell(s32, s32);
+    extern void *gTargetList;
     extern s32 *gCurrentMap;
     s32 count;
     u8 *out;
@@ -234,7 +233,7 @@ s32 func_0209ff34(void) {
     M2C_UNK *obj;
     u32 type;
 
-    out = data_0215be00;
+    out = gTargetList;
     obj = (M2C_UNK *)*gCurrentMap;
     count = 0;
     type = (u32)(M2C_FIELD(M2C_FIELD(obj, u8 **, 0x52D0), u8 *, 0) << 26) >> 26;
@@ -245,7 +244,7 @@ s32 func_0209ff34(void) {
             x = 0;
             if ((s32)M2C_FIELD(obj, u16 *, 0x5144) > 0) {
                 do {
-                    if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0 && func_020baa1c(x, y) == 1) {
+                    if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0 && IsMissileSiloCell(x, y) == 1) {
                         M2C_FIELD(out, u8 *, 0) = (u8)x;
                         M2C_FIELD(out, u8 *, 1) = (u8)y;
                         count++;
@@ -309,7 +308,7 @@ weather=GetPlayerArmyVariant(owner);
 }
 }
 #pragma optimization_level reset
-void func_020a01c0(s32 x,s32 y){
+void AppendMovePathStep(s32 x,s32 y){
 extern void *gUnitMovePath;extern s32 *gCurrentMap;
 void *map; void *player;void *path;s8 i;u32 id;s32 weather;s32 kind;s32 terrain;s8 *cost;u8 *unit;void *table;u16 row;u8 faction;
 M2C_FIELD(gUnitMovePath,s8 *,0x5b)++;
@@ -339,49 +338,50 @@ s32 func_020a0300(s32 x,s32 y) {
  return -1;
 }
 
-M2C_UNK func_020a0360(void) {
-    void func_020a01c0(s32, s32);
+/* Replays the map's cursor path arrows into the pending unit move path: each
+ * arrow appends the tile one step in that direction to gUnitMovePath, until a
+ * stop or empty marker ends the path. */
+void ReplayCursorPathSteps(void) {
+    void AppendMovePathStep(s32, s32);
     extern s32 *gCurrentMap;
     extern void *gUnitMovePath;
-    M2C_UNK *map;
-    volatile s8 *stream;
-    s8 cmd;
-    s8 *base;
-    s8 *q;
-
-    map = (M2C_UNK *)*gCurrentMap;
-    stream = (volatile s8 *)*((s32 *)map) + 0x388 + 0x5000;
-    cmd = *stream++;
-    base = (s8 *)gUnitMovePath;
-
-    switch (cmd + 1) {
-        case 0:
-        case 4:
+    s8 *cursor = (s8 *)*gCurrentMap + MAP_CURSOR_PATH;
+    s8 *movePath;
+    s8 *lastStep;
+    for (;;) {
+        switch (*cursor++ + 1) {
+        case MOVE_DIR_NONE + 1:
+        case MOVE_DIR_STOP + 1:
+            return;
+        case MOVE_DIR_LEFT + 1:
+            movePath = gUnitMovePath;
+            lastStep = movePath + movePath[UNIT_PATH_LENGTH];
+            AppendMovePathStep((s8)(lastStep[UNIT_PATH_X] - 1), lastStep[UNIT_PATH_Y]);
+            break;
+        case MOVE_DIR_RIGHT + 1:
+            movePath = gUnitMovePath;
+            lastStep = movePath + movePath[UNIT_PATH_LENGTH];
+            AppendMovePathStep((s8)(lastStep[UNIT_PATH_X] + 1), lastStep[UNIT_PATH_Y]);
+            break;
+        case MOVE_DIR_UP + 1:
+            movePath = gUnitMovePath;
+            lastStep = movePath + movePath[UNIT_PATH_LENGTH];
+            AppendMovePathStep(lastStep[UNIT_PATH_X], (s8)(lastStep[UNIT_PATH_Y] - 1));
+            break;
+        case MOVE_DIR_DOWN + 1:
+            movePath = gUnitMovePath;
+            lastStep = movePath + movePath[UNIT_PATH_LENGTH];
+            AppendMovePathStep(lastStep[UNIT_PATH_X], (s8)(lastStep[UNIT_PATH_Y] + 1));
+            break;
+        case 6:
         case 7:
         case 8:
         case 9:
         case 10:
         default:
             break;
-        case 1:
-        case 6:
-            q = base + base[0x5b];
-            func_020a01c0((s8)(q[0x36] - 1), (s8)q[0x42]);
-            break;
-        case 2:
-            q = base + base[0x5b];
-            func_020a01c0((s8)(q[0x36] + 1), (s8)q[0x42]);
-            break;
-        case 3:
-            q = base + base[0x5b];
-            func_020a01c0((s8)q[0x36], (s8)(q[0x42] - 1));
-            break;
-        case 5:
-            q = base + base[0x5b];
-            func_020a01c0((s8)q[0x36], (s8)(q[0x42] + 1));
-            break;
+        }
     }
-    return 0;
 }
 
 /* Turns the pending move path (gUnitMovePath) into the map's cursor path arrows:
@@ -417,17 +417,20 @@ void BuildMovePathDirections(void) {
     return;
 }
 
+/* Rebuild the cursor unit's move range from the last step of its pending move
+ * path: flood the unit kind's movement range from that step's cell for the unit's
+ * player, using the movement cost the unit has left there. */
 M2C_UNK BuildMoveRangeFromPathEnd(void) {
     extern void *gUnitMovePath; extern s32 *gCurrentMap;
-    void func_01ffc294(u16, s32, s32, u32, s32, s32);
-    s8 *p;
-    s8 *q;
+    void FloodFillUnitRangeForPlayer(u16, s32, s32, u32, s32, s32);
+    s8 *path;
+    s8 *lastStep;
     u8 *map;
 
-    p = gUnitMovePath;
-    q = p + p[0x5b];
+    path = gUnitMovePath;
+    lastStep = path + path[UNIT_PATH_LENGTH];
     map = (u8 *)*gCurrentMap;
-    func_01ffc294((u16)((map[0x52d4] >> 6) + 1), q[0x36], q[0x42], (u32)(M2C_FIELD(M2C_FIELD(map, u8 **, 0x52d0), u8 *, 0) << 26) >> 26, q[0x4e], 1);
+    FloodFillUnitRangeForPlayer((u16)((map[MAP_CURSOR_UNIT_ID] >> 6) + 1), lastStep[UNIT_PATH_X], lastStep[UNIT_PATH_Y], (u32)(M2C_FIELD(M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT), u8 *, 0) << 26) >> 26, lastStep[UNIT_PATH_STEP_COST], 1);
 }
 
 void func_020a05d8(M2C_UNK arg0, M2C_UNK arg1) {
@@ -437,7 +440,7 @@ extern s32 *gCurrentMap;
     func_020a0068(1);
     BuildMoveRangeFromPathEnd();
     func_01ffc4b8(arg0, arg1, *gCurrentMap + 0x5388);
-    func_020a0360();
+    ReplayCursorPathSteps();
 }
 
 /* Checks the pending move path for a repeated cell: returns 0 if any two steps
@@ -475,8 +478,7 @@ void StartUnitMovePath(s32 followInput) {
     extern void *gUnitMovePath;
     extern s32 *gCurrentMap;
     s32 GetUnitRemainingMoveRange(s32);
-    void func_020a01c0(s32, s32);
-    M2C_UNK func_020a0360(void);
+    void AppendMovePathStep(s32, s32);
     M2C_UNK func_020a0d18();
     void SetUnitPathCursor(u16, u16);
     void *unit;
@@ -484,9 +486,9 @@ void StartUnitMovePath(s32 followInput) {
     M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_LENGTH) = 0;
     func_020a0068(0);
     unit = M2C_FIELD((void *)*gCurrentMap, void **, MAP_CURSOR_UNIT);
-    func_020a01c0(M2C_FIELD(unit, s8 *, MAP_UNIT_X), M2C_FIELD(unit, s8 *, MAP_UNIT_Y));
+    AppendMovePathStep(M2C_FIELD(unit, s8 *, MAP_UNIT_X), M2C_FIELD(unit, s8 *, MAP_UNIT_Y));
     M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_STEP_COST) = M2C_FIELD(gUnitMovePath, s8 *, UNIT_PATH_START_COST);
-    if (followInput != 0) func_020a0360();
+    if (followInput != 0) ReplayCursorPathSteps();
     M2C_FIELD((void *)*gCurrentMap, u8 *, MAP_CURSOR_PATH) = MOVE_DIR_STOP;
     SetUnitPathCursor(0xffff, 0xffff); func_020a0d18();
 }

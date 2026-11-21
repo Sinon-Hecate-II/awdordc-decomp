@@ -41,7 +41,7 @@ s32 IsLinkSessionActive(void);u8 *GetLocalNetworkPlayerRecord(void);s32 GetReady
 u8 *GetNetworkPlayerRecord(s32); u8 GetLocalPlayerIdForOverlay(void);s32 GetPlayerTeam(s32);s32 GetPlayerArmyId(s32);
 s32 InRange(s16,s16,s16); void StepCounter(s32,s32,s32);
 void *func_020ab1c4(s32);s16 GetWaypointSlotX(u8);s32 Modulo(s32,s32);s32 Divide(s32,s32);
-void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void func_ov003_021e8354(s32,s32,s32);
+void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);void MI_CpuCopy8(void *,void *,s32);u16 func_ov003_021e6e28(u8);void StepCounterUp(s32,s32,s32);
 s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);
 u8 *p=arg0,*remote,*q;void *sprite;u16 bounds[4];u16 first;s16 x,y,w,h;s32 next;u8 i,j,k,tmp,n; s8 id; s32 mask;
 p[4]=func_020cfb94();p[5]=255;if(p[4]<2)p[4]=2;
@@ -86,7 +86,7 @@ if(!ov003_entries_differ(p)){StepCounter((s32)q+0x14,1,1);
 if(!ov003_entries_differ(p)){StepCounter((s32)q+0x14,1,1);
 if(!ov003_entries_differ(p)){StepCounter((s32)q+0x14,1,1);
 if(!ov003_entries_differ(p)){StepCounter((s32)q+0x14,1,1);
-if(!ov003_entries_differ(p))func_ov003_021e8354((s32)p,n,1);
+if(!ov003_entries_differ(p))StepCounterUp((s32)p,n,1);
 }}}}}
 }
 tmp=p[10+p[7]];p[9]=tmp;p[8]=tmp;
@@ -144,23 +144,80 @@ s32 InRange(s16,s16,s16);
 void StepCounter(s32,s32,s32);
 #pragma push
 #pragma opt_propagation off
-void func_ov003_021e8354(s32 arg0,s32 arg1,s32 arg2){register s32 n=M2C_FIELD(arg0+0x18,s32*,arg1*24)+1;
-if(InRange((s16)n,(s16)M2C_FIELD(arg0+0x20,s32*,arg1*24),(s16)M2C_FIELD(arg0+0x1c,s32*,arg1*24))||arg2){M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
-} else {
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
-}}else{
-if(n>M2C_FIELD(arg0+0x1c,s32*,arg1*24))n=M2C_FIELD(arg0+0x1c,s32*,arg1*24);else n=n<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):n;
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=n;if (((u8 (*)[24])arg0)[arg1][0x28]) {
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)-=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)>M2C_FIELD(p,s32*,0x1c));}
-if(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)) {s32 p=arg0+arg1*24; do {M2C_FIELD(p,s32*,0x18)+=M2C_FIELD(p,s32*,0x1c)-M2C_FIELD(p,s32*,0x20)+1;}while(M2C_FIELD(p,s32*,0x18)<M2C_FIELD(p,s32*,0x20));}
-} else {
-M2C_FIELD(arg0+0x18,s32*,arg1*24)=M2C_FIELD(arg0+0x18,s32*,arg1*24)>M2C_FIELD(arg0+0x1c,s32*,arg1*24)?M2C_FIELD(arg0+0x1c,s32*,arg1*24):(M2C_FIELD(arg0+0x18,s32*,arg1*24)<M2C_FIELD(arg0+0x20,s32*,arg1*24)?M2C_FIELD(arg0+0x20,s32*,arg1*24):M2C_FIELD(arg0+0x18,s32*,arg1*24));
-}}
-if(ov003_entries_differ(arg0))return;StepCounter(arg0+0x14+arg1*24,1,arg2);
-if(ov003_entries_differ(arg0))return;StepCounter(arg0+0x14+arg1*24,1,arg2);
-if(EntriesDiffer((void*)arg0))return;StepCounter(arg0+0x14+arg1*24,1,arg2);
-if(EntriesDiffer((void*)arg0))return;StepCounter(arg0+0x14+arg1*24,1,arg2);
-if(EntriesDiffer((void*)arg0))return;func_ov003_021e8354(arg0,arg1,arg2);}
+/* Increments option counter `index` by one (wrapping or clamping to its
+ * min/max at +0x1c/+0x20 when the wrap byte at +0x28 is set), then keeps
+ * stepping the sibling counter +1 and recurses while the entry group keeps
+ * changing. */
+void StepCounterUp(s32 counters, s32 index, s32 force) {
+    register s32 next = M2C_FIELD(counters + 0x18, s32 *, index * 24) + 1;
+    if (InRange((s16)next, (s16)M2C_FIELD(counters + 0x20, s32 *, index * 24), (s16)M2C_FIELD(counters + 0x1c, s32 *, index * 24)) || force) {
+        M2C_FIELD(counters + 0x18, s32 *, index * 24) = next;
+        if (((u8 (*)[24])counters)[index][0x28]) {
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) -= M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) > M2C_FIELD(entry, s32 *, 0x1c));
+            }
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) += M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) < M2C_FIELD(entry, s32 *, 0x20));
+            }
+        } else {
+            M2C_FIELD(counters + 0x18, s32 *, index * 24) = M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24) ? M2C_FIELD(counters + 0x1c, s32 *, index * 24) : (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : M2C_FIELD(counters + 0x18, s32 *, index * 24));
+        }
+    } else {
+        if (next > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) next = M2C_FIELD(counters + 0x1c, s32 *, index * 24); else next = next < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : next;
+        M2C_FIELD(counters + 0x18, s32 *, index * 24) = next;
+        if (((u8 (*)[24])counters)[index][0x28]) {
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) -= M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) > M2C_FIELD(entry, s32 *, 0x1c));
+            }
+            if (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24)) {
+                s32 entry = counters + index * 24;
+                do { M2C_FIELD(entry, s32 *, 0x18) += M2C_FIELD(entry, s32 *, 0x1c) - M2C_FIELD(entry, s32 *, 0x20) + 1; } while (M2C_FIELD(entry, s32 *, 0x18) < M2C_FIELD(entry, s32 *, 0x20));
+            }
+        } else {
+            M2C_FIELD(counters + 0x18, s32 *, index * 24) = M2C_FIELD(counters + 0x18, s32 *, index * 24) > M2C_FIELD(counters + 0x1c, s32 *, index * 24) ? M2C_FIELD(counters + 0x1c, s32 *, index * 24) : (M2C_FIELD(counters + 0x18, s32 *, index * 24) < M2C_FIELD(counters + 0x20, s32 *, index * 24) ? M2C_FIELD(counters + 0x20, s32 *, index * 24) : M2C_FIELD(counters + 0x18, s32 *, index * 24));
+        }
+    }
+    {
+        s32 rowCount;
+        u8 i;
+        s32 changed;
+        i = 0;
+        while (i < M2C_FIELD(counters, s8 *, 4) - 1) {
+            s32 row = counters + i * 24;
+            if (M2C_FIELD(row, s32 *, 0x18) != M2C_FIELD(row, s32 *, 0x30)) {
+                changed = 1;
+                goto check1;
+            }
+            ++i;
+        }
+        changed = 0;
+    check1:
+        if (changed) return;
+    }
+    StepCounter(counters + 0x14 + index * 24, 1, force);
+    {
+        s32 rowCount;
+        u8 i;
+        s32 changed;
+        i = 0;
+        while (i < M2C_FIELD(counters, s8 *, 4) - 1) {
+            s32 row = counters + i * 24;
+            if (M2C_FIELD(row, s32 *, 0x18) != M2C_FIELD(row, s32 *, 0x30)) {
+                changed = 1;
+                goto check2;
+            }
+            ++i;
+        }
+        changed = 0;
+    check2:
+        if (changed) return;
+    }
+    StepCounter(counters + 0x14 + index * 24, 1, force);
+    if (EntriesDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
+    if (EntriesDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
+    if (EntriesDiffer((void *)counters)) return; StepCounterUp(counters, index, force);
+}
 #pragma pop

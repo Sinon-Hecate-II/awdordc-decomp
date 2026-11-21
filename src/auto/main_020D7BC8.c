@@ -159,23 +159,29 @@ void func_020d867c(void) {
     if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 0) func_020d8540();
 }
 
-s32 func_020d8764(void) {
-    void MapTileToScreen(s16,s16,s32 *);
+/* Returns the cursor-cell display mode the cursor's target tile needs: which of
+ * the two screens the tile is projected onto (1 for the lower screen, 0 for the
+ * upper), or the mode already cached when the tile is not in the lower part of
+ * the view. */
+s32 GetCursorCellDisplayMode(void) {
+    void MapTileToScreen(s16, s16, s32 *);
     extern void **gCurrentMap;
-    s32 sp0[3];
-    void *temp_r0 = *gCurrentMap;
-    MapTileToScreen(M2C_FIELD(temp_r0,s16 *,0x52C2),M2C_FIELD(temp_r0,s16 *,0x52C4),sp0);
-    if (sp0[1] > 128) return sp0[0] < 128 ? 1 : 0;
-    return (u32)(M2C_FIELD(*gCurrentMap,u16 *,0x52E6) << 30) >> 30;
+    s32 screenPos[3];
+    void *map;
+
+    map = *gCurrentMap;
+    MapTileToScreen(M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y), screenPos);
+    if (screenPos[1] > 128) return screenPos[0] < 128 ? 1 : 0;
+    return (u32)(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_CELL_CACHE) << 30) >> 30;
 }
 
 void func_020d87d8(void) {
     void func_020d8594();
     void func_020d867c(void);
-    s32 func_020d8764();
+    s32 GetCursorCellDisplayMode();
     s32 temp_r0;
 
-    temp_r0 = func_020d8764();
+    temp_r0 = GetCursorCellDisplayMode();
     switch (temp_r0) {                              /* irregular */
     case 0:
         func_020d867c();
@@ -190,7 +196,7 @@ void UpdateCursorCellDisplayMode(void) {
     extern void **gCurrentMap;
     s32 temp_r0;
 
-    temp_r0 = func_020d8764();
+    temp_r0 = GetCursorCellDisplayMode();
     switch (temp_r0) {                              /* irregular */
     case 0:
         M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) = 0;

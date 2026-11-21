@@ -168,11 +168,11 @@ SendIpPacket(p,UDP_HEADER_SIZE,payload,dataLen,M2C_FIELD(conn,u32 *,SOCK_REMOTE_
    then advance the connection's sequence number past the segment. */
 void TcpSendSegment(void *payload,u32 dataLen,void *conn,u32 flags){
 u32 ChecksumAccumulate(void *,u32,u32);s32 ChecksumFinalize(s32);
-extern M2C_UNK gSocketManager,data_021374f8,data_021377a2,gNetStack;
+extern M2C_UNK gSocketManager,gNetReceiveThread,data_021377a2,gNetStack;
 void *seg;u32 hdrLen;s32 sum;u16 srcIpHi,srcIpLo,dstIpHi,dstIpLo,srcPort,dstPort,seqHi,seqLo,ackHi,ackLo,window,mssHi,mssLo,totalLen;
 if(!M2C_FIELD(conn,u8 *,8))return;
 /* No interface yet: write into the built-in scratch packet rather than the connection's buffer. */
-if(M2C_FIELD(&gSocketManager,void **,4)==&data_021374f8)seg=&data_021377a2;else seg=M2C_FIELD(conn,void **,0x4c)+0x22;
+if(M2C_FIELD(&gSocketManager,void **,4)==&gNetReceiveThread)seg=&data_021377a2;else seg=M2C_FIELD(conn,void **,0x4c)+0x22;
 hdrLen=(flags&2)?24:20;totalLen=hdrLen+dataLen;
 /* IP pseudo-header at seg-12: source IP, destination IP, zero+protocol, TCP length. */
 srcIpHi=M2C_FIELD(&gNetStack,u32 *,80)>>16;M2C_FIELD(seg,u16 *,-12)=((s32)srcIpHi>>8)|(srcIpHi<<8);

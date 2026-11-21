@@ -496,7 +496,7 @@ void func_ov002_021e7970(void) {
     func_020af79c();
 }
 
-u8 func_ov002_021e79ac(void *arg0) {
+u8 IsBattleSceneIntro(void *arg0) {
     u8 var_r0;
 
     if ((u32) M2C_FIELD(arg0, u8 *, 8) <= 1U) {

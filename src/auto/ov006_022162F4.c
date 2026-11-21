@@ -214,8 +214,8 @@ LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_022188b0),M2C_FIELD(gCu
 LoadFileToSpriteBuffer(data_ov006_022188bc,0,96);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x20),32,24,0);SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),32,24,0);func_01ff9dd8(3);
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
-func_020a9a30(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
-func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);
+LoadSpriteResource(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
+LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);
 Load3DSpritePattern(0x1000,1,GetUiColor(9),2);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
@@ -381,9 +381,9 @@ u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
 
 u8 func_ov006_02216e84(void) {
     s32 IsLinkSessionActive();
-    s32 func_0208485c();
+    s32 IsLocalSessionHost();
     s32 result;
-    if (IsLinkSessionActive() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
 }
@@ -414,17 +414,25 @@ void func_ov006_02216f30(void) {
     IsValueInRange(M2C_FIELD(*gCurrentMap, s16 *, 0x5142), 0xE1, 0x1A9);
 }
 
-void func_ov006_02216f5c(void *arg0) {
- M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32);
- M2C_UNK MI_CpuCopy32(s32,s32,s32);
- M2C_UNK func_02085724(void *,s32,s32,void *);
- M2C_UNK func_020c8e40();
- s32 base; u8 n;
- func_020c8e40();
- MI_CpuFill32(0,M2C_FIELD(arg0,s32 *,0x38)+0x1068,0x3138);
- n=M2C_FIELD(arg0,u8 *,0x4c);
- if(n) { base=M2C_FIELD(arg0,s32 *,0x38); MI_CpuCopy32(base,(s32)((s32 (*)[21])base+n*0x32),0x1068); }
- func_02085724(arg0+0x3c,M2C_FIELD(arg0+M2C_FIELD(arg0,u8 *,0x4c)*4,s32 *,0x3c),0x1068,arg0);
+/* Rebuild the campaign map headers, clear the other players' pages in the
+ * transfer panel, copy the fresh header page into the local player's slot and
+ * start the link exchange that gathers every player's page. */
+void SyncLinkCampaignMapPages(void *panel) {
+    M2C_UNK MI_CpuFill32(M2C_UNK, s32, s32);
+    M2C_UNK MI_CpuCopy32(s32, s32, s32);
+    M2C_UNK func_02085724(void *, s32, s32, void *);
+    M2C_UNK func_020c8e40();
+    s32 pageBase;
+    u8 local;
+
+    func_020c8e40();
+    MI_CpuFill32(0, M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0) + 0x1068, 0x3138);
+    local = M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_LOCAL);
+    if (local) {
+        pageBase = M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0);
+        MI_CpuCopy32(pageBase, (s32)((s32 (*)[21])pageBase + local * 0x32), 0x1068);
+    }
+    func_02085724((void *)((u8 *)panel + MAP_TRANSFER_PANEL_PAGES), M2C_FIELD((u8 *)panel + M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_LOCAL) * 4, s32 *, MAP_TRANSFER_PANEL_PAGES), 0x1068, panel);
 }
 
 /* Syncs the battle map chosen in a link/online session among the players: the map

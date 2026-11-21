@@ -3,6 +3,24 @@
 #ifndef OV003_MENU_H
 #define OV003_MENU_H
 
+#define OV003_MENU_HELP_PANEL 0x58 /* Ov003HelpPanel * in the menu object */
+
+enum {
+    OV003_HELP_PANEL_HIDE_STEP = 6,
+    OV003_HELP_PANEL_SHOW_STEP = -4
+};
+
+typedef struct Ov003HelpPanel {
+    u8 showLabels;
+    u8 slideFrame;
+    s16 y;
+    s16 targetY;
+    s16 stepY;
+    u8 labelCount;
+    u8 unk_09[3];
+    const void *labels[4];
+} Ov003HelpPanel;
+
 #define MENU_ACTION        0x34 /* u8 animation/action timer value */
 #define MENU_FLAGS         0x38 /* u8 MENU_FLAG_* */
 #define MENU_SELECTION     0x3C /* u8 *selection context: slots and current mode */

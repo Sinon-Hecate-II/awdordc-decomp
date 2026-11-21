@@ -29,6 +29,26 @@
 #define MAP_TRANSFER_PANEL_RECORDS 0x50 /* s32 received map-records buffer */
 #define MAP_TRANSFER_PANEL_CHOSEN  0x54 /* s32 chosen received map record */
 
+/* The ov006 map-list screen object: the online map-trade screen that lists the
+ * campaign maps it can join, and can show the player's own map code.  It keeps
+ * the buffered player entries and, per candidate map, the player id, map id and
+ * join result the list rows are built from. */
+#define MAP_LIST_PLAYER_COUNT  0x34 /* s32 number of received player entries */
+#define MAP_LIST_MAP_COUNT     0x38 /* u8 number of candidate map ids */
+#define MAP_LIST_JOINABLE_COUNT 0x39 /* u8 number of maps found joinable (max 3) */
+#define MAP_LIST_ROW_INDEX     0x3A /* u8 row the list builder is on */
+#define MAP_LIST_DISPLAY_KIND  0x3B /* u8 code display kind, 0 when the list is shown */
+#define MAP_LIST_CODE_LO       0x3C /* s32 low word of the 64-bit map code shown */
+#define MAP_LIST_CODE_HI       0x40 /* s32 high word of the map code shown */
+#define MAP_LIST_PLAYER_IDS    0x44 /* s32[10] player id of each list entry */
+#define MAP_LIST_MAP_IDS       0x48 /* u16[10] campaign map id of each candidate */
+#define MAP_LIST_STATUS        0x4C /* u8[10] per-candidate state: 1 joinable, 2 rejected */
+#define MAP_LIST_JOINABLE_IDS  0x50 /* u16[3] map ids that can be joined */
+#define MAP_LIST_ENTRIES       0x54 /* u8 *received player entries, PLAYER_ENTRY_SIZE each */
+#define MAP_LIST_MAX_ENTRIES   10
+#define MAP_LIST_MAX_JOINABLE  3
+#define MAP_LIST_ENTRY_SIZE    0x310
+
 /* Campaign map headers (gCampaignMapHeaders) are grouped in pages of this many
  * headers, one page per player on the transfer screen. */
 #define CAMPAIGN_PAGE_HEADERS 50

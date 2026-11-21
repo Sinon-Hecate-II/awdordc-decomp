@@ -108,14 +108,14 @@ void Ov001_LeaveFriendList(void) {
 
 void func_ov001_02180cf8(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_02180d24;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_02180d24);
 }
 
@@ -318,14 +318,14 @@ M2C_UNK Ov001_ShowMessage(s32,s32,s32,s32,s32);
 M2C_UNK LoadSaveSlot(u8);
 void Ov001_ShowSelectedSaveSlot(void),Ov001_ShowRegionIcon(void),func_ov001_021812c0(void);
 extern s8 data_ov001_0218fa74[];
-extern M2C_UNK func_ov001_02176578,func_ov001_02181824;
+extern M2C_UNK Ov001_FadeToShutdownScreen,Ov001_HandleEraseSaveSlotChoice;
 u8 region;
 s32 record, languageFrame;
 switch(Ov001_GetIconRowSelection()) {
 case 0:
 switch(Ov001_GetScreenLayout()) {
 case 0: Ov001_PlaySound(7); M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=2; break;
-case 1: Ov001_LockIconRow(); Ov001_SetStepCallback(&func_ov001_02176578); return;
+case 1: Ov001_LockIconRow(); Ov001_SetStepCallback(&Ov001_FadeToShutdownScreen); return;
 } goto done;
 case 1:
 M2C_FIELD(M2C_FIELD(&gOv001MenuRegion,void **,4),u8 *,0x1d)=1;
@@ -336,7 +336,7 @@ if(Ov001_GetSaveSlotStatus(record)==255) {Ov001_PlaySound(9);Ov001_SetIconRowSel
 Ov001_PlaySound(6);
 languageFrame = data_ov001_0218fa74[Ov001_GetLanguage()];
 Ov001_ShowMessage(70,0,1,languageFrame,record+1);
-Ov001_ShowSelectedSaveSlot();Ov001_LockIconRow();Ov001_SetStepCallback(&func_ov001_02181824);return;
+Ov001_ShowSelectedSaveSlot();Ov001_LockIconRow();Ov001_SetStepCallback(&Ov001_HandleEraseSaveSlotChoice);return;
 }
 if(region<=2)LoadSaveSlot(region);
 Ov001_PlaySound(6);Ov001_ShowRegionIcon();
@@ -481,37 +481,41 @@ void Ov001_ShowSelectedSaveSlot(void) {
     Ov001_SetSpritePalette(M2C_FIELD((u8 *)M2C_FIELD(&gOv001MenuRegion, void **, 4) + slot * 4, s32 *, 0x10), -1, 3);
 }
 
-void func_ov001_02181824(void) {
-s32 func_ov001_02186648(void);
+/* Handle the erase-save-slot dialog's answer for the save slot under the menu
+ * cursor (region 4..6): yes (1) erases the slot and shows its empty top-row
+ * icon in place of the middle-row one; no (0) restores the middle-row icon.
+ * Any other answer leaves the menu open. */
+void Ov001_HandleEraseSaveSlotChoice(void) {
+s32 Ov001_GetRegionMenuSelection(void);
 M2C_UNK Ov001_PlaySound(s32);
-void func_ov001_02184c70(s32);
+void Ov001_EraseSaveSlot(s32);
 s32 Ov001_GetSpriteObjEntry(s32,s32);
 void Ov001_LoadSpriteObjLayout(s32,s32,s32);
 void Ov001_MoveSpriteLayout(s32,s32,u16,u16);
 void Ov001_SetSpritePalette(s32,s32,s32);
 void Ov001_DestroySprite(s32);
-M2C_UNK func_ov001_02186604();
+M2C_UNK Ov001_CloseRegionMenu();
 void func_ov001_02181990(void);
-register s32 i=M2C_FIELD(&gOv001MenuRegion,u8 *,0)-4;
-switch(func_ov001_02186648()) {
+register s32 slot=((Ov001MenuRegion *)&gOv001MenuRegion)->index-4;
+switch(Ov001_GetRegionMenuSelection()) {
 case 1:
 Ov001_PlaySound(14);
-func_ov001_02184c70(i);
-Ov001_LoadSpriteObjLayout(0,86,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),0));
-Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,sOv001MenuSpriteX[i*2],sOv001MenuSpriteY[i*2]);
-Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,4),-1,3);
-Ov001_DestroySprite(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16));
-M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16)=0;
+Ov001_EraseSaveSlot(slot);
+Ov001_LoadSpriteObjLayout(0,86,Ov001_GetSpriteObjEntry((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot],0));
+Ov001_MoveSpriteLayout((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot],-1,((const u16 (*)[2])sOv001MenuSpriteX)[slot][0],((const u16 (*)[2])sOv001MenuSpriteY)[slot][0]);
+Ov001_SetSpritePalette((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->top[slot],-1,3);
+Ov001_DestroySprite((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot]);
+((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot]=0;
 break;
 case 0:
 Ov001_PlaySound(7);
-Ov001_LoadSpriteObjLayout(0,17,Ov001_GetSpriteObjEntry(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),0));
-Ov001_MoveSpriteLayout(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,sOv001MenuSpriteX[(i+3)*2],sOv001MenuSpriteY[(i+3)*2]);
-Ov001_SetSpritePalette(M2C_FIELD((char *)M2C_FIELD(&gOv001MenuRegion,void **,4)+i*4,s32 *,16),-1,3);
+Ov001_LoadSpriteObjLayout(0,17,Ov001_GetSpriteObjEntry((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot],0));
+Ov001_MoveSpriteLayout((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot],-1,((const u16 (*)[2])sOv001MenuSpriteX)[(slot+3)][0],((const u16 (*)[2])sOv001MenuSpriteY)[(slot+3)][0]);
+Ov001_SetSpritePalette((s32)((Ov001MenuRegion *)&gOv001MenuRegion)->sprites->middle[slot],-1,3);
 break;
 default:return;
 }
-func_ov001_02186604();
+Ov001_CloseRegionMenu();
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181990);
 }
 

@@ -237,16 +237,16 @@ s32 func_020847b8(void) {
     return 0;
 }
 #pragma opt_common_subs reset
-s32 func_020847f4(void){s32 a=GetActiveOverlay();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
+s32 IsSoftResetAllowed(void){s32 a=GetActiveOverlay();switch(a){case 1:case 2:return func_020847b8()==0;default:return 1;}}
 
 void func_02084824(void) {
-    M2C_UNK func_020847f4();
-    func_020847f4();
+    M2C_UNK IsSoftResetAllowed();
+    IsSoftResetAllowed();
 }
 
 s32 func_02084830(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,0x27)==0)return 1;return 0;}
 
-s32 func_0208485c(void) {
+s32 IsLocalSessionHost(void) {
     s32 IsLinkHost();
     s32 IsOnlineSessionHost();
     s32 temp_r0;
@@ -310,7 +310,7 @@ s32 GetReadyPlayerMask(void) {
     }
 }
 
-s32 func_0208492c(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(GetActiveOverlay()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
+s32 GetLocalPlayerSlot(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(GetActiveOverlay()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
 
 /* Bit mask of the player ids of every connected player: from the link
  * overlay's player slots, or from the online session's player records. */
@@ -368,14 +368,14 @@ s32 GetSessionPlayerCount(void) {
 }
 
 void ResetPlayerMask(void) {
-    M2C_UNK func_ov009_02225480();
+    M2C_UNK ClearLinkEventFlags();
     M2C_UNK func_ov010_02229a50();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        func_ov009_02225480();
+        ClearLinkEventFlags();
         return;
     case 2:
         func_ov010_02229a50();
@@ -384,14 +384,14 @@ void ResetPlayerMask(void) {
 }
 
 s32 GetOverlayEventFlags(void) {
-    s32 func_ov009_02225494();
+    s32 GetLinkEventFlags();
     s32 func_ov010_02229a64();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02225494();
+        return GetLinkEventFlags();
     case 2:
         return func_ov010_02229a64();
     default:
@@ -685,7 +685,7 @@ s32 Link_CreateMatchRequest(M2C_UNK names, M2C_UNK nameCount, M2C_UNK type, M2C_
     }
 }
 
-s32 func_02084fc0(M2C_UNK arg0) {
+s32 Link_SetMessageHandler(M2C_UNK arg0) {
     s32 func_ov009_02224c1c(M2C_UNK);
     s32 func_ov010_022294c8(M2C_UNK);
     s32 temp_r0;
@@ -772,30 +772,47 @@ void func_02085108(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x41) = 0;
 }
 
+#pragma optimization_level 3
 void func_02085118(void *p){
 s32 func_ov002_021e1624(void);
-void func_01ff883c(u16,u8,u16,void *);
+void AppendSpriteDescToOam(s32,s32,s32,u16 *);
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain;
 extern u8 gSpriteDesc16x16[];
-s32 n; s32 saved; s32 tile,shift;
+typedef struct { u8 prefix[0x34]; s32 x, y; u16 tile, palette; u8 mainEngine; } SpriteState;
+SpriteState *sprite = p;
+s32 n; s32 saved;
 if(!func_020847b8())return;
 n=func_020846e8();
-if(M2C_FIELD(p,u8 *,0x40)){
+if(sprite->mainEngine){
 if(!func_ov002_021e1624())return;
 saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
-tile=M2C_FIELD(p,u16 *,0x3c)+(n<<2);
-shift=(u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ff883c(M2C_FIELD(p,s32 *,0x34)&511,M2C_FIELD(p,s32 *,0x38),((tile>>shift)&1023)|((u32)(M2C_FIELD(p,u16 *,0x3e)<<28)>>16),gSpriteDesc16x16);
+{
+ u16 *header = M2C_FIELD(gCur3DSpriteEngine,u16 **,0);
+ s32 start = sprite->tile;
+ u32 mode = *header;
+ u32 palette = sprite->palette;
+ s32 x = sprite->x;
+ s32 y = sprite->y;
+ s32 attr = ((palette << 28) >> 16) | (((n * 4 + start) >> ((mode << 17) >> 30)) & 1023);
+ AppendSpriteDescToOam((u16)(x & 511), (u8)y, (u16)attr, (u16 *)gSpriteDesc16x16);
+}
 gCur3DSpriteEngine=saved;
 }else{
-tile=M2C_FIELD(p,u16 *,0x3c)+(n<<2);
-shift=(u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-func_01ff883c(M2C_FIELD(p,s32 *,0x34)&511,M2C_FIELD(p,s32 *,0x38),((tile>>shift)&1023)|((u32)(M2C_FIELD(p,u16 *,0x3e)<<28)>>16),gSpriteDesc16x16);
+{
+ u16 *header = M2C_FIELD(gCur3DSpriteEngine,u16 **,0);
+ s32 start = sprite->tile;
+ u32 mode = *header;
+ u32 palette = sprite->palette;
+ s32 x = sprite->x;
+ s32 y = sprite->y;
+ s32 attr = ((palette << 28) >> 16) | (((n * 4 + start) >> ((mode << 17) >> 30)) & 1023);
+ AppendSpriteDescToOam((u16)(x & 511), (u8)y, (u16)attr, (u16 *)gSpriteDesc16x16);
 }
 }
-
+}
+#pragma optimization_level reset
 s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *CreateSpriteFromClass(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=CreateSpriteFromClass(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=GetLinkMode();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
 
 void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
@@ -803,7 +820,7 @@ void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
     return (void)func_02085238(arg0, arg1, 0, 0);
 }
 
-void func_020852a8(void) {
+void CreateSubScreenLinkIndicator(void) {
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r4;

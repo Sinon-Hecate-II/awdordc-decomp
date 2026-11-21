@@ -20,7 +20,7 @@ case 5:code=6;detail=code-26;break;
 }
 switch(GetNetSessionState()){
 case NET_STATE_LOGIN:ReportNasLoginError(code,detail-0xfa00);break;
-case NET_STATE_MATCHMAKING:func_0203accc(code,detail+0xfffedef0);break;
+case NET_STATE_MATCHMAKING:ReportMatchSessionError(code,detail+0xfffedef0);break;
 case NET_STATE_SESSION:ReportConnectionError(code,detail+0xfffeb7e0);break;
 default:SetNetError(code,detail+0xfffe90d0);break;
 }

@@ -132,54 +132,68 @@ void Ov001KeypadMoveSelection(s32 direction) {
 }
 
 #pragma scheduling off
-void func_ov001_021753c8(M2C_UNK arg0) {
+/* First row of the keypad close animation: slide the bottom action row (clear and
+ * confirm) 12 pixels to the right each frame until it has left the screen, then
+ * hand the slide task to the number row above it. */
+void Ov001_KeypadCloseStep5(M2C_UNK task) {
     #pragma scheduling off
     M2C_UNK Ov001_SetSlideStep(M2C_UNK, void (*)(M2C_UNK));
-    void func_ov001_02175440(M2C_UNK);
+    void Ov001_KeypadCloseStep4(M2C_UNK);
     extern void *gOv001Keypad;
     Position pos;
-    s32 bits;
-    bits = *(s32 *)Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, 0x40), 0);
-    pos.y = (u32)(bits & 0x01ff0000) >> 16;
-    pos.x = (u8)bits + 12;
+    s32 packed;
+
+    packed = *(s32 *)Ov001_GetSpriteObjEntry(M2C_FIELD(gOv001Keypad, s32 *, KEYPAD_ACTION_SPRITES), 0);
+    pos.y = (u32)(packed & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)packed + 12;
     ((void(*)(s32,s32,u32))Ov001_PositionKeypadStep)(4, pos.x, pos.y);
-    if (*(volatile s32 *)&pos.x < 0xc0) return;
-    Ov001_SetSlideStep(arg0, func_ov001_02175440);
+    if (*(volatile s32 *)&pos.x < KPAD_ROW_HIDDEN_X) return;
+    Ov001_SetSlideStep(task, Ov001_KeypadCloseStep4);
 }
 #pragma scheduling reset
-void func_ov001_02175440(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_021754b0(M2C_UNK);extern void *gOv001Keypad;
+void Ov001_KeypadCloseStep4(M2C_UNK arg0) {
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void Ov001_KeypadCloseStep3(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x34);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))Ov001_PositionKeypadStep)(3);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_021754b0);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,Ov001_KeypadCloseStep3);
 }
 
-void func_ov001_021754b0(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175520(M2C_UNK);extern void *gOv001Keypad;
+void Ov001_KeypadCloseStep3(M2C_UNK arg0) {
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void Ov001_KeypadCloseStep2(M2C_UNK);extern void *gOv001Keypad;
 s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x28);
 Position pos;
 pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
 ((void(*)(s32))Ov001_PositionKeypadStep)(2);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175520);
+if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,Ov001_KeypadCloseStep2);
 }
 
-void func_ov001_02175520(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175590(M2C_UNK);extern void *gOv001Keypad;
-s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x1c);
-Position pos;
-pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))Ov001_PositionKeypadStep)(1);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175590);
+/* Keypad close step for the "4 5 6" number row: keep sliding the row 12 pixels right
+ * each frame; once its first key has left the screen, hand the slide task to the
+ * "7 8 9" row above it. */
+void Ov001_KeypadCloseStep2(M2C_UNK task) {
+    M2C_UNK Ov001_SetSlideStep(M2C_UNK, void (*)(M2C_UNK));
+    void Ov001_KeypadCloseStep1(M2C_UNK);
+    extern void *gOv001Keypad;
+    s32 packed = *M2C_FIELD(gOv001Keypad, s32 **, KEYPAD_KEY_SPRITE(3));
+    Position pos;
+    pos.y = (u32)(packed & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)packed + KPAD_SLIDE_STEP_X;
+    ((void(*)(s32))Ov001_PositionKeypadStep)(1);
+    if (*(volatile s32 *)&pos.x < KPAD_ROW_HIDDEN_X) return;
+    Ov001_SetSlideStep(task, Ov001_KeypadCloseStep1);
 }
 
-void func_ov001_02175590(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void func_ov001_02175600(M2C_UNK);extern void *gOv001Keypad;
-s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x10);
+/* Last step of the keypad close animation: slide the top number-key row (7 8 9)
+ * 12 pixels to the right each frame until it has left the screen, then finish
+ * the close. */
+void Ov001_KeypadCloseStep1(M2C_UNK task) {
+M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void Ov001_KeypadCloseDone(M2C_UNK);extern void *gOv001Keypad;
+s32 packed=*M2C_FIELD(gOv001Keypad,s32 **,KEYPAD_KEY_SPRITES);
 Position pos;
-pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
+pos.y=(u32)(packed&OV001_SPRITE_POS_Y_MASK)>>OV001_SPRITE_POS_Y_SHIFT;pos.x=(u8)packed+12;
 ((void(*)(s32))Ov001_PositionKeypadStep)(0);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,func_ov001_02175600);
+if(*(volatile s32*)&pos.x<KPAD_ROW_HIDDEN_X)return;Ov001_SetSlideStep(task,Ov001_KeypadCloseDone);
 }
 

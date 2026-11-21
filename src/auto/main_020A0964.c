@@ -162,12 +162,12 @@ void func_020a0d18(void) {
     M2C_UNK BuildMoveRangeFromPathEnd(void);
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
     M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020a0360(void);
+    M2C_UNK ReplayCursorPathSteps(void);
     M2C_UNK IsMovePathCellUnique(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
     s32 func_020a0300(s8, s8);
     void func_020a0068(s8);
-    void func_020a01c0(s8, s8);
+    void AppendMovePathStep(s8, s8);
     s32 GetPlayerArmyVariant(s32);
     extern s32 *gCurrentMap;
     extern s32 gUnitMovePath;
@@ -215,7 +215,7 @@ void func_020a0d18(void) {
         sx = x; sy = y;
         if (func_020a086c(&sx, &sy)) {
             func_01ffc4b8(sx, sy, (u8 *)*gCurrentMap + 0x5388);
-            func_020a0360();
+            ReplayCursorPathSteps();
             if (!IsMovePathCellUnique()) func_020a05d8(sx, sy);
         } else {
             SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
@@ -258,7 +258,7 @@ void func_020a0d18(void) {
         dy = (ctx + idx)[0x42] - y; if (dy < 0) dy = -dy;
         dx = (ctx + idx)[0x36] - x; if (dx < 0) dx = -dx;
         if (dx + dy == 1) {
-            func_020a01c0((s8)x, (s8)y);
+            AppendMovePathStep((s8)x, (s8)y);
             ctx = (s8 *)gUnitMovePath;
             ((u8 *)*gCurrentMap)[0x52d5] = ctx[0x5a] - (ctx + ctx[0x5b])[0x4e];
             return;
@@ -272,7 +272,7 @@ void func_020a0d18(void) {
         func_020a05d8(x, y);
     } else {
         func_01ffc4b8(x, y, base + 0x5388);
-        func_020a0360();
+        ReplayCursorPathSteps();
         if (!IsMovePathCellUnique()) func_020a05d8(x, y);
     }
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);

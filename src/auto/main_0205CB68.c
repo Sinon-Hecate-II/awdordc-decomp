@@ -30,9 +30,9 @@ s32 gti2ResendPendingCommand(void *a, s32 *b) {
 }
 
 void gti2Send(s32 a, s32 b, s32 c, s32 d) {
-    M2C_UNK func_0205c620();
+    M2C_UNK gti2SendReliableMessage();
     M2C_UNK gti2SendUnreliable();
-    if (d) { func_0205c620(); return; }
+    if (d) { gti2SendReliableMessage(); return; }
     gti2SendUnreliable();
 }
 
@@ -71,7 +71,7 @@ void MemSet(void *,s32,s32);
 s32 TableNew2(s32,s32,s32,void *,void *,s32);
 s32 Vector_New(s32,s32,void (*)(void *));
 s32 gpiFree(void *);
-M2C_UNK func_02048dc4(s32);
+M2C_UNK TableFree(s32);
 s32 Vector_Free(s32);
 s32 ghiSocket(s32,s32,s32);
 s32 ghiBind(s32,void *,s32);
@@ -96,16 +96,16 @@ M2C_FIELD(p,s32 *,0x24)=e;
 M2C_FIELD(p,s32 *,0xc)=TableNew2(4,0x20,2,func_0205cc3c,func_0205cc5c,0);
 if(!M2C_FIELD(p,s32 *,0xc)){gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0x10)=Vector_New(4,4,(void (*)(void *))func_0205cc90);
-if(!M2C_FIELD(p,s32 *,0x10)){func_02048dc4(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}
+if(!M2C_FIELD(p,s32 *,0x10)){TableFree(M2C_FIELD(p,s32 *,0xc));gpiFree(p);return 1;}
 M2C_FIELD(p,s32 *,0)=ghiSocket(2,2,0);
-if(M2C_FIELD(p,s32 *,0)==-1){func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;}
+if(M2C_FIELD(p,s32 *,0)==-1){TableFree(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;}
 swapped=((port>>8)&0xff)|((port<<8)&0xff00);
 { struct Packet_0205 pkt={0};
 pkt.b=2;
 pkt.d=addr;
 pkt.c=swapped;
 if(ghiBind(M2C_FIELD(p,s32 *,0),&pkt,8)==-1){
-ghiCloseSocket(M2C_FIELD(p,s32 *,0));func_02048dc4(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
+ghiCloseSocket(M2C_FIELD(p,s32 *,0));TableFree(M2C_FIELD(p,s32 *,0xc));Vector_Free(M2C_FIELD(p,s32 *,0x10));gpiFree(p);return 3;
 }
 len=8;ghiGetSockName(M2C_FIELD(p,s32 *,0),&pkt,&len);
 M2C_FIELD(p,s32 *,4)=pkt.d;
@@ -115,9 +115,9 @@ M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 }
 #pragma pop
 void gti2FreeSocket(void *arg0) {
-M2C_UNK gpiFree(void *);M2C_UNK func_02048dc4(s32);M2C_UNK func_02049270();M2C_UNK ghiCloseSocket(s32);
+M2C_UNK gpiFree(void *);M2C_UNK TableFree(s32);M2C_UNK func_02049270();M2C_UNK ghiCloseSocket(s32);
 if(M2C_FIELD(arg0,s32 *,0x1c)!=0){M2C_FIELD(arg0,s32 *,0x14)=1;return;}
-ghiCloseSocket(M2C_FIELD(arg0,s32 *,0));func_02048dc4(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
+ghiCloseSocket(M2C_FIELD(arg0,s32 *,0));TableFree(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
 }
 
 void gti2SocketSetConnectAttempt(void *arg0, s32 arg1) {
@@ -341,13 +341,13 @@ return 1;
 }
 
 s32 func_0205d428(void *arg0) {
-    s32 func_02049104(s32, s32 (*)(void **,void **), s32 *);
+    s32 TableMapSafe2(s32, s32 (*)(void **,void **), s32 *);
     s32 GetTickCountMs();
     s32 func_0205d3d0(void **,void **);
     s32 sp0;
 
     sp0 = GetTickCountMs();
-    if (func_02049104(M2C_FIELD(arg0, s32 *, 0xC), &func_0205d3d0, &sp0) == 0) {
+    if (TableMapSafe2(M2C_FIELD(arg0, s32 *, 0xC), &func_0205d3d0, &sp0) == 0) {
         return 1;
     }
     return 0;

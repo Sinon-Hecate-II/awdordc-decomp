@@ -316,16 +316,16 @@ s32 GetCoPowerMeterLevel(s32 player) {
     extern M2C_UNK gMapData;
     s32 GetPlayerArmyVariantIfSet(s32);
     s32 GetCoPowerMeterCost(s32, s32);
-    s32 func_020a3518(s32);
+    s32 GetCoPowerMeterPoints(s32);
     s32 meter;
     s32 level = 0;
 
     if ((((u32)M2C_FIELD(&gMapData, u16 *, MAPDATA_RULES) << 19) >> 31) == 0) return 0;
     if (GetPlayerArmyVariantIfSet(player)) return 0;
     if (!GetCoPowerMeterCost(player, 2)) return 0;
-    meter = func_020a3518(player);
+    meter = GetCoPowerMeterPoints(player);
     if (meter >= GetCoPowerMeterCost(player, 1)) level++;
-    meter = func_020a3518(player);
+    meter = GetCoPowerMeterPoints(player);
     if (meter >= GetCoPowerMeterCost(player, 2)) level++;
     return level;
 }
@@ -387,7 +387,10 @@ void PayPlayerIncome(s32 arg0) {
     func_020d2bc0(arg0, M2C_FIELD(base + arg0 * 0x8C, s32 *, 0x6000 + 0x7AC));
 }
 
-s32 FindFreeUnitRecord(s32 arg0) {
+/* Find the first free unit record in `player`'s group of the battle map: the
+ * records after the group's base id up to MAP_UNIT_GROUP_SCAN, whose kind byte
+ * is 0.  Returns the record, or 0 when the group has no free record left. */
+s32 FindFreeUnitRecord(s32 player) {
     extern u16 gPlayerUnitIdBase[];
     extern s32 *gCurrentMap;
     s32 val;
@@ -396,18 +399,18 @@ s32 FindFreeUnitRecord(s32 arg0) {
     u8 *base;
     u8 *p;
 
-    val = gPlayerUnitIdBase[arg0];
+    val = gPlayerUnitIdBase[player];
     i = val + 1;
-    end = val + 0x33;
+    end = val + MAP_UNIT_GROUP_SCAN;
     if (i < end) {
-        base = (u8 *)*gCurrentMap + 0x59A4;
-        p = base + i * 14;
+        base = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS;
+        p = base + i * MAP_UNIT_STRIDE;
         do {
             if (((u32)(*p << 26) >> 26) == 0) {
-                return (s32)(base + i * 14);
+                return (s32)(base + i * MAP_UNIT_STRIDE);
             }
             i++;
-            p += 14;
+            p += MAP_UNIT_STRIDE;
         } while (i < end);
     }
     return 0;
@@ -606,7 +609,7 @@ void func_020d33c4(void) {
     M2C_FIELD(&gMapData, s32 *, 8) = 0;
 }
 
-void func_020d33d8(void) {
+void EnableBattleTurnTimer(void) {
     extern M2C_UNK gMapData;
     M2C_FIELD(&gMapData, s32 *, 8) = 1;
 }

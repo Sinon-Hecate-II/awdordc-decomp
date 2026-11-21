@@ -19,31 +19,34 @@ typedef struct SystemUserProfile {
     u16 messageLength; /* +0x52 greeting length in characters */
 } SystemUserProfile;
 
-void func_02006f14(void) {
+/* Starts the system tick: TIMER0 is reset and left free-running with its
+ * overflow interrupt enabled, whose handler (SystemTickOverflowHandler) extends
+ * the 16-bit counter to the 64-bit tick SystemTickState.overflows holds. */
+void InitSystemTick(void) {
     void func_02006ef8(s32);
     void OS_SetIrqHandler(u32, void (*)(void));
     void OS_EnableIrqMask(u32);
-    void func_02006f9c(void);
+    void SystemTickOverflowHandler(void);
     extern u16 gSystemTickState;
-    if (gSystemTickState != 0) return;
-    gSystemTickState = 1;
+    if (M2C_FIELD(&gSystemTickState, u16 *, SYSTEM_TICK_INITIALIZED) != 0) return;
+    M2C_FIELD(&gSystemTickState, u16 *, SYSTEM_TICK_INITIALIZED) = 1;
     func_02006ef8(0);
-    M2C_FIELD(&gSystemTickState, u64 *, 8) = 0;
-    *(volatile u16 *)0x04000102 = 0;
-    *(volatile u16 *)0x04000100 = 0;
-    *(volatile u16 *)0x04000102 = 0xC1;
-    OS_SetIrqHandler(8, func_02006f9c);
+    M2C_FIELD(&gSystemTickState, u64 *, SYSTEM_TICK_OVERFLOW) = 0;
+    *(volatile u16 *)REG_TM0CNT = 0;
+    *(volatile u16 *)REG_TM0D = 0;
+    *(volatile u16 *)REG_TM0CNT = 0xC1;
+    OS_SetIrqHandler(8, SystemTickOverflowHandler);
     OS_EnableIrqMask(8);
-    M2C_FIELD(&gSystemTickState, s32 *, 4) = 0;
+    M2C_FIELD(&gSystemTickState, s32 *, SYSTEM_TICK_RELOAD) = 0;
 }
 
-u16 func_02006f8c(void) {
+u16 IsSystemTickInitialized(void) {
     extern u16 gSystemTickState;
     return gSystemTickState;
 }
 
 #pragma opt_propagation off
-void func_02006f9c(void) {
+void SystemTickOverflowHandler(void) {
 void func_02005154(u32,void (*)(void),u32); extern u16 gSystemTickState;
 ++M2C_FIELD(&gSystemTickState,u64 *,8);
 if (M2C_FIELD(&gSystemTickState,s32 *,4)) {
@@ -52,7 +55,7 @@ if (M2C_FIELD(&gSystemTickState,s32 *,4)) {
 *(volatile u16 *)0x04000102=0xc1;
 M2C_FIELD(&gSystemTickState,s32 *,4)=0;
 }
-func_02005154(0,func_02006f9c,0);
+func_02005154(0,SystemTickOverflowHandler,0);
 }
 #pragma opt_propagation reset
 /* The system tick: TIMER0's free-running 16-bit counter extended to 64 bits by
@@ -334,7 +337,7 @@ void func_02007598(void) {
 }
 
 void func_020075b4(void) {
-    M2C_UNK func_02009d34();
+    M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0212dfe4;
@@ -343,7 +346,7 @@ void func_020075b4(void) {
         return;
     }
     M2C_FIELD(&data_0212dfe4, u16 *, 2) = 1U;
-    func_02009d34();
+    PXI_Init();
     do {
 
     } while (IsFifoMessageReady(0xC, 1) == 0);
@@ -366,7 +369,7 @@ void func_0200763c(s32 arg0) {
 
 void func_02007668(s32 arg0) {
     M2C_UNK func_01ff81e4();
-    void func_0200519c(s32);
+    void OS_SetIrqEnableMask(s32);
     void OS_SetIrqMask(s32);
     s32 OS_GetLockID(void);
     void func_0200763c(s32);
@@ -384,7 +387,7 @@ void func_02007668(s32 arg0) {
         DmaStopChannel(1);
         DmaStopChannel(2);
         DmaStopChannel(3);
-        func_0200519c(0x40000);
+        OS_SetIrqEnableMask(0x40000);
         OS_SetIrqMask(0xFFFFFFFF);
     }
     *(s32 *)0x027FFC20 = arg0;
@@ -521,25 +524,29 @@ void DmaFill(s32 channel, s32 dst, u32 value, u32 size) {
     while (*control & DMA_CTRL_ENABLE) {}
 }
 
-void func_02007a04(s32 a,s32 b,s32 c,u32 n) {
- void func_01ff84c0(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
- volatile u32 *p;
- DmaValidateTransfer(a,b,n,0);
- if (!n) return;
- p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
- while (*p & 0x80000000) {}
- func_01ff84c0(a,b,c,(n>>2)|0x84000000);
- while (*p & 0x80000000) {}
+/* 32-bit DMA copy of `size` bytes from `src` to `dst` on `channel`: validate the
+ * range, wait for the channel, start the transfer, then wait for it to finish. */
+void DmaCopy(s32 channel, s32 src, s32 dst, u32 size) {
+    void DmaStartTransferLockedFlushed(s32, s32, s32, u32);
+    void DmaValidateTransfer(s32, s32, s32, s32);
+    volatile u32 *control;
+
+    DmaValidateTransfer(channel, src, size, 0);
+    if (!size) return;
+    control = (volatile u32 *)DMA_CHANNEL_CTRL(channel);
+    while (*control & DMA_CTRL_ENABLE) {}
+    DmaStartTransferLockedFlushed(channel, src, dst, DMA_COPY_CTRL(size));
+    while (*control & DMA_CTRL_ENABLE) {}
 }
 
 void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
- void func_01ff84c0(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
+ void DmaStartTransferLockedFlushed(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
  volatile u32 *p;
  if (!n) return;
  DmaValidateTransfer(a,b,n,0);
  p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
  while (*p & 0x80000000) {}
- func_01ff84c0(a,b,c,(n>>1)|0x80000000);
+ DmaStartTransferLockedFlushed(a,b,c,(n>>1)|0x80000000);
  while (*p & 0x80000000) {}
 }
 

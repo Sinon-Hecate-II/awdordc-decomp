@@ -6,32 +6,13 @@ typedef struct { u16 x,y; } TouchPair;
  * 0x027FFC80: two sampled raw touch points, each with the screen position it was
  * taken at. */
 typedef struct { u8 pad[0x58]; u16 rawX1,rawY1; u8 screenX1,screenY1; u16 rawX2,rawY2; u8 screenX2,screenY2; } TouchCalibrationPoints;
-typedef struct {
-    u32 unk0;                      /* +0x00 */
-    void (*callback)(s32,s32,s32); /* +0x04 */
-    u16 sample[4];                 /* +0x08 */
-    u16 index;                     /* +0x10 */
-    u16 pad12;                     /* +0x12 */
-    void *records;                 /* +0x14 */
-    u16 capacity;                  /* +0x18 */
-    u16 pad1A;                     /* +0x1A */
-    s32 calXOffset;                /* +0x1C calibration x offset */
-    s32 calXRange;                 /* +0x20 calibration x range */
-    s32 calXScale;                 /* +0x24 1<<28 divided by the x range */
-    s32 calYOffset;                /* +0x28 calibration y offset */
-    s32 calYRange;                 /* +0x2C calibration y range */
-    s32 calYScale;                 /* +0x30 1<<28 divided by the y range */
-    u16 calibrated;                /* +0x34 nonzero once calibration is set */
-    u16 state;                     /* +0x36 */
-    u16 flags38;                   /* +0x38 bit per touch command that failed */
-    u16 flags3a;                   /* +0x3A bit per touch command that finished */
-} TouchState;
+#include "touch_panel.h"
 extern HashDescriptor gSha1HashDescriptor;
 extern M2C_UNK gTouchDriverState;
 void Sha1Init(void *);
 void Sha1Update(void *, const void *, s32);
 void SHA1_Finalize(void *, void *);
-void func_0200d2c4(u32,u32,u32);
+void TP_OnFifoReceive(u32,u32,u32);
 typedef struct { u32 x:12; u32 y:12; u32 touch:1; u32 valid:2; u32 unused:5; } TouchPacket;
 typedef union { TouchPair pair; TouchPacket bits; } TouchSample;
 typedef struct { u16 x,y,touch,valid; } TouchResult;
@@ -182,7 +163,7 @@ void func_0200cfc8(u32 *state,const u8 *data,s32 len){
 
 #pragma push
 #pragma opt_global_reg off
-void func_0200d2c4(u32 unused,u32 value,u32 error){
+void TP_OnFifoReceive(u32 unused,u32 value,u32 error){
 u16 code=(u16)value;u16 command=(u16)((code&0x7f00)>>8);s32 status;
 TouchSample sample1,sample2;TouchResult *out; u8 touch,valid;u16 y,x;
 if(error){
@@ -230,20 +211,27 @@ default:SystemHalt();return;
 }
 }
 #pragma pop
-void func_0200d544(void) {
-void func_02009d34(void); s32 IsFifoMessageReady(s32,s32); void SetFifoMessageHandler(s32,void *);
-if(M2C_FIELD(&gTouchDriverState,u16 *,0)) return;
-M2C_FIELD(&gTouchDriverState,u16 *,0)=1;
-func_02009d34();
-M2C_FIELD(&gTouchDriverState,u16 *,0x10)=0;
-M2C_FIELD(&gTouchDriverState,u32 *,4)=0;
-M2C_FIELD(&gTouchDriverState,u32 *,0x14)=0;
-M2C_FIELD(&gTouchDriverState,u16 *,0x36)=0;
-M2C_FIELD(&gTouchDriverState,u16 *,0x34)=0;
-M2C_FIELD(&gTouchDriverState,u16 *,0x3a)=0;
-M2C_FIELD(&gTouchDriverState,u16 *,0x38)=0;
-while(!IsFifoMessageReady(6,1)) {}
-SetFifoMessageHandler(6,&func_0200d2c4);
+/* Initialize the touch panel driver and register its ARM7 FIFO callback once. */
+void TP_Init(void) {
+    void PXI_Init(void);
+    s32 IsFifoMessageReady(s32, s32);
+    void SetFifoMessageHandler(s32, void *);
+
+    if (((TouchState *)&gTouchDriverState)->initialized) {
+        return;
+    }
+    ((TouchState *)&gTouchDriverState)->initialized = 1;
+    PXI_Init();
+    ((TouchState *)&gTouchDriverState)->sampleIndex = 0;
+    ((TouchState *)&gTouchDriverState)->callback = NULL;
+    ((TouchState *)&gTouchDriverState)->sampleBuffer = NULL;
+    ((TouchState *)&gTouchDriverState)->samplingMode = 0;
+    ((TouchState *)&gTouchDriverState)->calibrated = 0;
+    ((TouchState *)&gTouchDriverState)->flags3a = 0;
+    ((TouchState *)&gTouchDriverState)->flags38 = 0;
+    while (!IsFifoMessageReady(PXI_FIFO_TAG_TOUCHPANEL, PXI_PROC_ARM7)) {
+    }
+    SetFifoMessageHandler(PXI_FIFO_TAG_TOUCHPANEL, &TP_OnFifoReceive);
 }
 
 #pragma opt_propagation off
@@ -314,7 +302,7 @@ TP_WaitBusy(1);if(M2C_FIELD(&gTouchDriverState,u16 *,0x38)&1)return 1;
 }
 
 #pragma opt_instruction_scheduling off
-void TP_Init(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
+void TP_RequestAutoSamplingStartAsync(s32 arg0, s32 arg1, s32 arg2, u32 arg3) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 SendFifoMessage(s32, u32, s32);

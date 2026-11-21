@@ -116,7 +116,7 @@ extern M2C_UNK data_ov001_0219174c;
 extern M2C_UNK data_ov001_02191770;
 s32 func_ov001_021881d0(void); s32 func_ov001_02188220(void); s32 func_ov001_021880d0(void); s32 func_ov001_02188100(void);
 s32 state=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
-if(state==1) {
+if((state == 1) ? 1 : 0) {
 void (*cb1)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); if(cb1) cb1(0x8000000,&data_ov001_0219174c);
 } else {
 void (*cb2)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); if(cb2) cb2(0x8000000,&data_ov001_02191770);
@@ -204,7 +204,7 @@ void Ov001_BeginProfileTransfer(void) {
 extern void *gOv001ProfileState;
 func_ov001_0218836c(M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_GROUP_ID));
 M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=1;
-M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)=func_02012084();
+M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)=WM_GetNextTgid();
 MI_CpuCopy8(M2C_FIELD(gOv001ProfileState,void **,PROFILE_SAVE_DATA),(u8 *)gOv001ProfileState+PROFILE_SAVE_COPY,0x40);
 M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_LINKED)=0;
 M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_LIST_TIMER)=0;

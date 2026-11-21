@@ -1,6 +1,7 @@
 /* 9 functions from 0x0216FC60 to 0x021707D8 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "sound.h"
+#include "ds3dsprite.h"
 
 extern u8 gScrollListTabDesc0[40];
 extern u8 gScrollListTabDesc1[40];
@@ -206,14 +207,14 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK func_020994e0(M2C_UNK);
     M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK DrawTilemapNumber(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
-    s32 func_020a8b3c(u8);
+    s32 GetArmyStateLabel(u8);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK CreateMenuUnitSprite(void *);
     M2C_UNK CreateMenuTextSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, void *, s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     s32 HeapAllocBlock(M2C_UNK);
-    s32 func_ov000_0216ce10(u8);
-    s32 func_ov000_0216ce84(u8);
+    s32 GetArmyStateTiles(u8);
+    s32 GetArmyIconPalette(u8);
     s16 CountCurrentPlayerUnits();
     M2C_UNK ScrollListRebuild(s16, s16);
     M2C_UNK ScrollListDrawRows(s16);
@@ -275,10 +276,10 @@ void func_ov000_02170110(void *arg0) {
     LoadFileToAddress(&data_ov000_021b8b64, M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x7780);
     LoadFileToSpriteBuffer(&data_ov000_021b8b78, 0x380, 0x20);
     p = (void *) (M2C_FIELD(g3DSpriteEngineMain, s32 *, 0x1C) + 0x3880);
-    MI_CpuCopy32(func_ov000_0216ce10(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
-    CopyToObjPaletteShadow(func_ov000_0216ce84(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
+    MI_CpuCopy32(GetArmyStateTiles(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
+    CopyToObjPaletteShadow(GetArmyIconPalette(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
     Load3DSpritePattern(0x6B80, 0xB, GetUiColor(0xC), 2);
-    func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), func_020a8b3c(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
+    func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), GetArmyStateLabel(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
     DrawTilemapNumber(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);
     ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
@@ -398,28 +399,30 @@ void func_ov000_021703e8(void *arg0) {
 }
 
 #pragma opt_common_subs off
-void func_ov000_0217074c(void) {
+/* Close the unit-list menu: free its sorted row buffer, clear the two 3D sprite
+ * layers it used, mark them dirty and redraw the map view. */
+void ScrollListClose(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
     M2C_UNK HeapFreeBlock(s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK gUnitListRows;
-    void *temp_r4;
-    void *next2;
-    s32 value;
+    void *savedEngine;
+    void *mainEngine;
+    s32 rowsBuffer;
 
-    temp_r4 = gCur3DSpriteEngine;
-    next2 = *(void *volatile *)&g3DSpriteEngineMain;
-    value = M2C_FIELD(&gUnitListRows, s32 *, 4);
-    gCur3DSpriteEngine = next2;
-    HeapFreeBlock(value);
+    savedEngine = gCur3DSpriteEngine;
+    mainEngine = *(void *volatile *)&g3DSpriteEngineMain;
+    rowsBuffer = M2C_FIELD(&gUnitListRows, s32 *, UNIT_LIST_ROWS_PTR);
+    gCur3DSpriteEngine = mainEngine;
+    HeapFreeBlock(rowsBuffer);
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     RefreshMapView();
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
 void func_ov000_021707c0(void) {

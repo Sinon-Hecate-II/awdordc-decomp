@@ -70,8 +70,8 @@ void func_020cbcc0(void *arg0) {
 }
 
 void func_020cbcd0(void *arg0) {
-    M2C_UNK func_020b576c(s32);
-    func_020b576c(M2C_FIELD(arg0, s32 *, 0x34));
+    M2C_UNK ExplodeUnit(s32);
+    ExplodeUnit(M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 void CreateFuelCrashEffect(s32 arg0) {
@@ -308,20 +308,21 @@ void func_020cc430(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3A) = 1;
 }
 
-void func_020cc490(void *arg0) {
-    M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020c127c();
-    M2C_UNK RefreshMapView();
+/* First step of hiding the map view: redraw the battle map, blank the map-view
+ * sprite layers (marking each dirty so the engine uploads it empty), delete the
+ * map view's preview panel sprites, then fade out over six frames. */
+void BeginMapViewClose(MapViewTask *task) {
     extern void *gCur3DSpriteEngine;
+
     RefreshMapView();
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    ((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerDirty |= 2;
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    ((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerDirty |= 4;
     Clear3DSpriteLayer(3);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
-    func_020c127c();
-    M2C_FIELD(arg0, s16 *, 0x34) = 6;
+    ((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerDirty |= 8;
+    RemoveMapViewSprites();
+    task->fadeTimer = 6;
 }
 
 /* One frame of the battle map fade-out: count the fade timer down, set the 3D

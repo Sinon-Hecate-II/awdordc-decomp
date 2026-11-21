@@ -4,6 +4,14 @@
 #ifndef OV001_MENU_H
 #define OV001_MENU_H
 
+/* BG1 highlight tilemaps begin with the Wi-Fi and AP screen layouts. */
+enum {
+    OV001_HIGHLIGHT_LAYOUT_WIFI = 0,
+    OV001_HIGHLIGHT_LAYOUT_AP = 1,
+    OV001_HIGHLIGHT_TILEMAP_BYTES = 192,
+    OV001_HIGHLIGHT_TILEMAP_ALIGNMENT = 4
+};
+
 #define OV001_MENU_ROWS       5    /* option rows the menu shows */
 #define OV001_MENU_HANDLES    7    /* s32 handles: the rows, then the slide task and a flag */
 #define OV001_MENU_TASK_SLOT  5    /* index of the slide task handle */
@@ -30,6 +38,14 @@
 
 /* Pixels a frame the column slides up when its menu opens. */
 #define OV001_REGION_OPEN_STEP 12
+
+/* The small ov001 message box (Ov001_ShowMessageBox): a text panel with the
+ * message drawn in this rectangle, in palette row 2, then closed again. */
+#define OV001_MESSAGE_BOX_X      13  /* pixels from the panel's left */
+#define OV001_MESSAGE_BOX_Y      40  /* pixels from the panel's top */
+#define OV001_MESSAGE_BOX_WIDTH  230 /* pixels */
+#define OV001_MESSAGE_BOX_HEIGHT 112 /* pixels */
+#define OV001_MESSAGE_BOX_COLOR  2   /* text palette row */
 
 /* gOv001RegionYs holds two u16 per region; the first is the y the region's open
  * column rests at, read at region * OV001_REGION_Y_STRIDE. */

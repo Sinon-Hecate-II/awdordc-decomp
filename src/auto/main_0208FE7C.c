@@ -18,31 +18,34 @@ s32 func_0208fe7c(s32 arg0, s32 arg1) {
 }
 
 s32 func_0208fea0(M2C_UNK arg0) {
-    M2C_UNK func_0208febc(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_0208febc(-1, arg0, 0);
+    M2C_UNK Sound_FadeEffectVolume(M2C_UNK, M2C_UNK, M2C_UNK);
+    Sound_FadeEffectVolume(-1, arg0, 0);
     return 1;
 }
 
-s32 func_0208febc(s32 arg0, s32 arg1, s32 arg2) {
+/* Fade the sound-effect player's volume to targetVolume over frames frames; a
+ * snapVolume other than -1 sets the volume at once before the fade starts.
+ * Returns 0 while the sound system is off or the player is not ready. */
+s32 Sound_FadeEffectVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157834;
-    u8 func_0208ff2c(void);
-    M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
+    extern M2C_UNK gSoundEffectPlayer;
+    u8 IsSoundPlayerReady(void);
+    M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (func_0208ff2c() == 0) {
+    if (IsSoundPlayerReady() == 0) {
         return 0;
     }
-    if (arg0 != -1) {
-        func_0202ad04(&data_02157834, arg0, 0);
+    if (snapVolume != -1) {
+        Sound_StartPlayerVolumeFade(&gSoundEffectPlayer, snapVolume, 0);
     }
-    func_0202ad04(&data_02157834, arg1, arg2);
+    Sound_StartPlayerVolumeFade(&gSoundEffectPlayer, targetVolume, frames);
     return 1;
 }
 
-u8 func_0208ff2c(void) {
+u8 IsSoundPlayerReady(void) {
     extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
@@ -59,7 +62,7 @@ u8 func_0208ff4c(s32 arg0) {
     extern s32 gFrameCounter;
     u8 var_r0;
 
-    if (func_0208ff2c() == 0) {
+    if (IsSoundPlayerReady() == 0) {
         return 0;
     }
     if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&gSoundDriverState, s32 *, 0x1C) + arg0)) {
@@ -72,17 +75,17 @@ u8 func_0208ff4c(s32 arg0) {
 
 s32 SetSoundEffectVolume(M2C_UNK arg0) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157834;
-    u8 func_0208ff2c(void);
+    extern M2C_UNK gSoundEffectPlayer;
+    u8 IsSoundPlayerReady(void);
     M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
-    if (func_0208ff2c() == 0) {
+    if (IsSoundPlayerReady() == 0) {
         return 0;
     }
-    func_0202ad90(&data_02157834, 0xFFFF, arg0);
+    func_0202ad90(&gSoundEffectPlayer, 0xFFFF, arg0);
     return 1;
 }
 
@@ -164,7 +167,7 @@ s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK data_02157850;
     u8 IsSlotSoundActive(s32);
-    M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
@@ -172,7 +175,7 @@ s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
-    func_0202ad04(&data_02157850 + arg0, arg1, arg2);
+    Sound_StartPlayerVolumeFade(&data_02157850 + arg0, arg1, arg2);
     return 1;
 }
 
@@ -232,7 +235,7 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     extern M2C_UNK data_02157838;
     u8 func_02090350(void);
     u8 func_02090370(void);
-    M2C_UNK func_0202ad04(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0202d960(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
@@ -240,9 +243,9 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     }
     if (func_02090350() != 0) {
         if (snapVolume != -1) {
-            func_0202ad04(&data_0215783c, snapVolume, 0);
+            Sound_StartPlayerVolumeFade(&data_0215783c, snapVolume, 0);
         }
-        func_0202ad04(&data_0215783c, targetVolume, frames);
+        Sound_StartPlayerVolumeFade(&data_0215783c, targetVolume, frames);
     }
     if (func_02090370() != 0) {
         if (snapVolume != -1) {

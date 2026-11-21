@@ -65,10 +65,20 @@ void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
 
 u8 IsMapOrderActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
 
-s32 func_020a4ce8(s32 a) {
-extern s32 *gCurrentMap;
-Unk020AEntry *p=(Unk020AEntry *)(*gCurrentMap+0x58a4);s32 n=0;
-while(p->type){if(p->type==a){if(IsMapOrderActive(p))n++;}p++;}return n!=0;
+/* Report whether the map's order queue holds an active order of type `type`
+ * (one of the MAPORDER_* values; 0 ends the queue). */
+s32 HasActiveMapOrderOfType(s32 type) {
+    extern s32 *gCurrentMap;
+    Unk020AEntry *order = (Unk020AEntry *)(*gCurrentMap + MAP_ORDERS);
+    s32 found = 0;
+
+    while (order->type) {
+        if (order->type == type) {
+            if (IsMapOrderActive(order)) found++;
+        }
+        order++;
+    }
+    return found != 0;
 }
 
 void func_020a4d58(void) {

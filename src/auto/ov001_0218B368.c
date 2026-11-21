@@ -4,7 +4,7 @@ void OS_EnableIrqMask(s32);
 extern s32 gOv001TilePools;
 
 typedef struct ListLink { struct ListLink *prev; struct ListLink *next; } ListLink;
-extern s32 data_ov001_02193e60[2];
+extern s32 gOv001SavedVBlankIrq[2];
 
 
 typedef struct InputXY { u16 x,y; } InputXY;
@@ -185,7 +185,7 @@ void Ov001_StartInput(void) {
     M2C_FIELD(&gOv001Input, s32 *, 4) = ((s32 (*)())Ov001_Alloc)(0x3a, 4);
     if (TP_GetFirmwareCalibration(calibration) == 0) SystemHalt();
     SetTouchCalibration(calibration);
-    TP_Init(0, 4, M2C_FIELD(&gOv001Input, s32 *, 4), 5);
+    TP_RequestAutoSamplingStartAsync(0, 4, M2C_FIELD(&gOv001Input, s32 *, 4), 5);
     TP_WaitBusy(2);
     if (TP_CheckBusy(2) != 0) SystemHalt();
     Ov001_UpdateInput();
@@ -217,11 +217,14 @@ void func_ov001_0218b860(void) {
     u16 keyin = *(volatile u16 *)0x4000130;
     u16 gval = *(volatile u16 *)0x27fffa8;
     u16 pressed = (u16)(((keyin | gval) ^ 0x2fff) & 0x2fff);
-    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32) =
-        (M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) ^ pressed) & pressed;
-    M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x36) =
-        M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) &
-        (M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) ^ pressed);
+    void *input = M2C_FIELD(&gOv001Input, void **, 4);
+    u16 previous;
+    M2C_FIELD(input, u16 *, 0x32) =
+        (M2C_FIELD(input, u16 *, 0x30) ^ pressed) & pressed;
+    previous = M2C_FIELD(input, u16 *, 0x30);
+    input = M2C_FIELD(&gOv001Input, void **, 4);
+    M2C_FIELD(input, u16 *, 0x36) =
+        previous & (previous ^ pressed);
     M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x30) = pressed;
     M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34) =
         M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x32);
@@ -232,9 +235,7 @@ void func_ov001_0218b860(void) {
             if (!(pressed & bit)) {
                 data_ov001_02193e50[i] = 0;
             } else {
-                u8 cnt = data_ov001_02193e50[i];
-                cnt = (u8)(cnt + 1);
-                data_ov001_02193e50[i] = cnt;
+                u8 cnt = ++data_ov001_02193e50[i];
                 if (cnt == 0x28) {
                     M2C_FIELD(M2C_FIELD(&gOv001Input, void **, 4), u16 *, 0x34) |= bit;
                 } else if (cnt == 0x2f) {
@@ -352,23 +353,38 @@ void Ov001_UpdateLidState(void) {
     }
 }
 
-void func_ov001_0218bedc(void);
-void func_ov001_0218be2c(void) {
-data_ov001_02193e60[1]=*(volatile u32 *)0x04000210;
-func_0200519c(0x40018);OS_EnableIrqMask(1);
-data_ov001_02193e60[0]=OS_GetIrqHandler(1);
-OS_SetIrqHandler(1,func_ov001_0218bedc);OS_SetIrqMask(1);
-{u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=1;func_02007508(1,old);}
+void Ov001_VBlankHandler(void);
+/* Hook the ov001 VBlank handler into the OS IRQ system: save the current IE
+ * mask and OS handler, route IRQ 1 (VBlank) to Ov001_VBlankHandler and enable
+ * the IRQ lines it relies on, then unmask interrupts. */
+void Ov001_InstallVBlankHandler(void) {
+    s32 OS_SetIrqEnableMask(s32);
+    s32 OS_GetIrqHandler(s32);
+    void OS_SetIrqHandler(s32, void (*)(void));
+    s32 OS_SetIrqMask(s32);
+    void func_02007508(s32, u16);
+
+    gOv001SavedVBlankIrq[1] = *(volatile u32 *)REG_IE;
+    OS_SetIrqEnableMask(0x40018);
+    OS_EnableIrqMask(IRQ_VBLANK);
+    gOv001SavedVBlankIrq[0] = OS_GetIrqHandler(IRQ_VBLANK);
+    OS_SetIrqHandler(IRQ_VBLANK, Ov001_VBlankHandler);
+    OS_SetIrqMask(IRQ_VBLANK);
+    {
+        u16 oldIme = *(volatile u16 *)0x04000208;
+        *(volatile u16 *)0x04000208 = 1;
+        func_02007508(1, oldIme);
+    }
 }
 
-void func_ov001_0218bea0(void) {
+void Ov001_RemoveVBlankHandler(void) {
 (void)*(volatile u16 *)0x04000208;
 *(volatile u16 *)0x04000208=0;
-func_0200519c(data_ov001_02193e60[1]);
-OS_SetIrqHandler(1,data_ov001_02193e60[0]);
+OS_SetIrqEnableMask(gOv001SavedVBlankIrq[1]);
+OS_SetIrqHandler(1,gOv001SavedVBlankIrq[0]);
 }
 
-void func_ov001_0218bedc(void) {
+void Ov001_VBlankHandler(void) {
     M2C_UNK func_ov001_0218c7d4(M2C_UNK);
     extern M2C_UNK gOsArea;
     func_ov001_0218c7d4(1);

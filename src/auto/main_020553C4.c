@@ -274,10 +274,10 @@ void func_02055cb4(M2C_UNK arg0, void *arg1) {
 }
 
 s32 func_02055cd0(void **arg0,s32 (*arg1)(s32,void *,void *),void *arg2) {
-s32 func_02049104(s32,void (*)(s32,void *),void *);
+s32 TableMapSafe2(s32,void (*)(s32,void *),void *);
 s32 data[3];void *p=*arg0;
 data[1]=(s32)arg1;data[2]=(s32)arg2;data[0]=(s32)arg0;
-return func_02049104(M2C_FIELD(p,s32 *,0x428),func_02055cb4,data)==0;
+return TableMapSafe2(M2C_FIELD(p,s32 *,0x428),func_02055cb4,data)==0;
 }
 
 s32 func_02055d10(s32 arg0,void *arg1,void *arg2) {

@@ -40,6 +40,15 @@
 #define DISPCNT_MODE_MASK    0x7
 #define DISPCNT_BG_VRAM_MASK 0x38000000
 #define DISPCNT_BG_VRAM_SHIFT 27
+
+/* Unshifted masks for the visible planes in DISPCNT bits 8..12. */
+enum {
+    GX_PLANEMASK_BG0 = 1 << 0,
+    GX_PLANEMASK_BG1 = 1 << 1,
+    GX_PLANEMASK_BG2 = 1 << 2,
+    GX_PLANEMASK_BG3 = 1 << 3,
+    GX_PLANEMASK_OBJ = 1 << 4
+};
 enum {
     GX_MODE_0 = 0, /* text backgrounds */
     GX_MODE_1,
@@ -206,6 +215,8 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
 #define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
 #define VRAM_BANKS_OBJ_PALETTE 0x10 /* banks assigned to the main engine OBJ extended palette (MST 5 area) */
+#define VRAM_BANKS_SUB_BG  0x12 /* banks assigned to the sub engine background */
+#define VRAM_BANKS_SUB_OBJ 0x14 /* banks assigned to the sub engine OBJ (sprite) area */
 #define VRAM_BANKS_BG_EXTPLTT_SUB 0x16 /* banks assigned to the sub engine background extended palette */
 #define VRAM_BANKS_OBJ_EXTPLTT_SUB 0x18 /* banks assigned to the sub engine OBJ extended palette */
 #define VRAM_BANKS_OBJ_CD  0x06 /* banks assigned to the OBJ area built from banks C/D */
@@ -261,6 +272,8 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_TEX_CODE_256    5
 #define GX_TEX_CODE_512    6
 #define GX_TEX_CODE_1024   7
+#define GX_TEXIMAGE_FORMAT_SHIFT 26 /* texture format code in bits 26..29 */
+#define GX_TEXIMAGE_SIZE_SHIFT   20 /* width code in bits 20..22, height code in bits 23..25 */
 #define GX_POLYGON_DEFAULT  0x001F0080 /* opaque, front faces rendered */
 
 #endif

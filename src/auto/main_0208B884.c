@@ -199,10 +199,10 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xC00000) | 0x400000);
 }
 
-void LoadCompressedSpriteAssets(void *obj, M2C_UNK a, M2C_UNK b, M2C_UNK *c,u32 value,u16 count,u8 flag){
+void LoadCompressedSpriteAssets(void *obj, M2C_UNK a, M2C_UNK b, register M2C_UNK *c,u32 value,register u16 count,u8 flag){
 s32 LoadFileToBuffer(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
-packed=(u16)((0x3ff&(value>>5))+(u16)(count<<12));
+packed=(u16)((0x3ff & (value >> 5)) + (u16)(count << 12));
 M2C_FIELD(obj,s32 *,0x54)=LoadFileToBuffer(b,1);
 if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
 sub=CreateSpriteAnim(M2C_FIELD(obj,s32 *,0x54),13,2);
@@ -492,20 +492,24 @@ void func_0208c79c(void *arg0, s16 arg1) {
     }
 }
 
-void func_0208c7b8(void *arg0, s8 arg1) {
+/* Start a 3D sprite object's palette fade in: the object fades forward from its
+ * `from` palette towards its `to` palette over `duration` frames; a zero duration
+ * applies the `from` palette at once instead. */
+void StartPaletteFadeIn(void *arg0, s8 duration) {
     extern void *gCur3DSpriteEngine;
+    DS3DSpritePaletteFade *fade = (DS3DSpritePaletteFade *)arg0;
     s32 i;
     u16 *dest;
-    if (arg1 == 0) {
-        dest = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + ((M2C_FIELD(arg0, u8 *, 0x34) << 5) & ~1));
+    if (duration == 0) {
+        dest = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + ((fade->palette << 5) & ~1));
         for (i = 0; i < 15; i++) {
-            dest[i + 1] = ((u16 *)arg0)[i + 0x1C];
+            dest[i + 1] = fade->from[i];
         }
-        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_PALETTE;
         return;
     }
-    M2C_FIELD(arg0, s8 *, 0x36) = 0;
-    M2C_FIELD(arg0, s8 *, 0x37) = arg1;
-    M2C_FIELD(arg0, s8 *, 0x35) = 3;
+    fade->timer = 0;
+    fade->duration = duration;
+    fade->flags = DS3D_FADE_ACTIVE | DS3D_FADE_FORWARD;
 }
 

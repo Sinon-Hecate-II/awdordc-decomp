@@ -16,12 +16,12 @@ void func_ov000_02171774(void *p) {
 #pragma scheduling off
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
  extern u8 data_ov000_021b8d60[],data_ov000_021b8d68[],data_ov000_021b8d7c[],data_ov000_021b8d8c[],data_ov000_021b8d9c[],data_ov000_021b8dac[],data_ov000_021b8db4[],data_ov000_021b8dc4[],data_ov000_021b8dd4[],data_ov000_021b8de4[];
- void *GetLocalizedFileName(void*);void *func_ov000_0216ce10(s32);void *func_ov000_0216ce84(s32);
+ void *GetLocalizedFileName(void*);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
  s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
  s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
  void MI_CpuCopy32(void*,void*,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
- void func_020a9a30(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
+ void LoadSpriteResource(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
  void *old=gCur3DSpriteEngine;
  s32 k;void *object=p;s32 i,idx,a,b,pal,t;void *dst;
  gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -40,16 +40,16 @@ void func_ov000_02171774(void *p) {
    idx=i-1;t=idx<<3;
    func_02080a14((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x80,8,6,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x680);
    dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+((idx*4+0x35c)<<5);
-   MI_CpuCopy32(func_ov000_0216ce10(a),dst,0x80);
+   MI_CpuCopy32(GetArmyStateTiles(a),dst,0x80);
    pal=(idx+0x1b)<<5;
-   CopyToObjPaletteShadow(func_ov000_0216ce84(b),pal,32);
+   CopyToObjPaletteShadow(GetArmyIconPalette(b),pal,32);
    if(IsPlayerActive(i))M2C_FIELD((u8*)object+i,u8*,0x34)=1;
    else{M2C_FIELD((u8*)object+i,u8*,0x34)=0;DimPalette((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+(pal&~1));}
   }
  i++;k+=140;}while(i<5);
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=4;
- func_020a9a30(1,0,3,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x6d80);
- func_020a9a30(1,2,0,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x3e0);
+ LoadSpriteResource(1,0,3,(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x6d80);
+ LoadSpriteResource(1,2,0,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x30)+0x3e0);
  SetFileDirectory(data_ov000_021b8dac);
  LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8db4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7400);
  LoadDecompressedFileTo(GetLocalizedFileName(data_ov000_021b8dc4),(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x7e00);
@@ -161,7 +161,7 @@ s32 func_ov000_021724a8(void *arg0, s32 arg1) {
     return M2C_FIELD(data_ov000_021add30, s32 *, arg1 << 5);
 }
 
-s16 func_ov000_021724b8(void *arg0, s32 arg1) {
+s16 GetTerrainNameGraphicIndex(void *arg0, s32 arg1) {
     extern u8 data_ov000_021add34[];
     return M2C_FIELD(data_ov000_021add34, s16 *, arg1 << 5);
 }
@@ -215,8 +215,8 @@ void func_ov000_021725e0(void *arg0) {
 }
 
 void func_ov000_02172648(void) {
-    M2C_UNK func_020c127c();
-    func_020c127c();
+    M2C_UNK RemoveMapViewSprites();
+    RemoveMapViewSprites();
 }
 
 /* Update an entry's state machine: handle pending states, refresh data, re-evaluate readiness. */
@@ -226,7 +226,7 @@ void func_ov000_02172654(void *entry) {
     case 0:
         break;
     case 1:
-        func_020c127c(entry);
+        RemoveMapViewSprites(entry);
         ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, void **, 0x24), 32, 32);
         func_ov000_02173290(entry);
         DrawMapInfoWindow(entry);

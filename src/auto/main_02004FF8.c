@@ -96,7 +96,7 @@ void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
  M2C_FIELD(&data_0212dc50, s32 *, offset) = 1;
 }
 #pragma optimization_level reset
-s32 func_0200519c(s32 arg0) {
+s32 OS_SetIrqEnableMask(s32 arg0) {
     s32 old;
     u16 ime;
     ime = *(volatile u16 *)0x04000208;
@@ -185,46 +185,51 @@ void func_020053a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_02005354(arg0, arg1, arg2, 0);
 }
 
-s32 func_020053b0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Release a lock word owned by lockId, running the optional cleanup with interrupts masked. */
+s32 OSi_DoUnlockByWord(s32 lockId, s32 lockAddress, s32 onUnlock, s32 maskFiq) {
     s32 OS_DisableInterrupts();
-    M2C_UNK func_02007548();
-    M2C_UNK func_0200755c(M2C_UNK);
-    M2C_UNK OS_RestoreInterrupts(M2C_UNK);
-    s32 old;
+    s32 OS_DisableInterrupts_IrqAndFiq();
+    s32 OS_RestoreInterrupts_IrqAndFiq(s32);
+    s32 OS_RestoreInterrupts(s32);
+    s32 interruptState;
 
-    if (arg0 != M2C_FIELD((void *)arg1, u16 *, 4)) return -2;
-    if (arg3 != 0) {
-        old = func_02007548();
-    } else {
-        old = OS_DisableInterrupts();
+    if (lockId != ((OSLockWord *)lockAddress)->ownerId) {
+        return OS_UNLOCK_NOT_OWNER;
     }
-    M2C_FIELD((void *)arg1, u16 *, 4) = 0;
-    if (arg2 != 0) ((void (*)(void))arg2)();
-    M2C_FIELD((void *)arg1, s32 *, 0) = 0;
-    if (arg3 != 0) {
-        func_0200755c(old);
+    if (maskFiq != 0) {
+        interruptState = OS_DisableInterrupts_IrqAndFiq();
     } else {
-        OS_RestoreInterrupts(old);
+        interruptState = OS_DisableInterrupts();
+    }
+    ((OSLockWord *)lockAddress)->ownerId = 0;
+    if (onUnlock != 0) {
+        ((void (*)(void))onUnlock)();
+    }
+    ((OSLockWord *)lockAddress)->lockFlag = 0;
+    if (maskFiq != 0) {
+        OS_RestoreInterrupts_IrqAndFiq(interruptState);
+    } else {
+        OS_RestoreInterrupts(interruptState);
     }
     return 0;
 }
 
 void func_02005424(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020053b0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020053b0(arg0, arg1, arg2, 0);
+    M2C_UNK OSi_DoUnlockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    OSi_DoUnlockByWord(arg0, arg1, arg2, 0);
 }
 
 s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 OS_DisableInterrupts();
-    M2C_UNK func_02007548();
-    M2C_UNK func_0200755c(M2C_UNK);
+    M2C_UNK OS_DisableInterrupts_IrqAndFiq();
+    M2C_UNK OS_RestoreInterrupts_IrqAndFiq(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(M2C_UNK);
     s32 func_020081c8(M2C_UNK, M2C_UNK);
     s32 old;
     s32 temp_r4;
 
     if (arg3 != 0) {
-        old = func_02007548();
+        old = OS_DisableInterrupts_IrqAndFiq();
     } else {
         old = OS_DisableInterrupts();
     }
@@ -234,7 +239,7 @@ s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
         M2C_FIELD((void *)arg1, s16 *, 4) = arg0;
     }
     if (arg3 != 0) {
-        func_0200755c(old);
+        OS_RestoreInterrupts_IrqAndFiq(old);
     } else {
         OS_RestoreInterrupts(old);
     }
@@ -242,9 +247,9 @@ s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 void func_020054a0(M2C_UNK arg0) {
-    M2C_UNK func_020053b0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK OSi_DoUnlockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_02005504(void);
-    func_020053b0(arg0, 0x027FFFE8, (M2C_UNK)func_02005504, 1);
+    OSi_DoUnlockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_02005504, 1);
 }
 
 void func_020054c0(M2C_UNK arg0) {
@@ -328,20 +333,25 @@ s32 func_020056b0(void){
 extern s32 gThreadManager;return ++M2C_FIELD(&gThreadManager,s32 *,32);
 }
 
-void func_020056c8(void *a,void *b){
-void *p=M2C_FIELD(a,void **,0);void *prev;
-while(p!=NULL && M2C_FIELD(p,u32 *,0x70)<=M2C_FIELD(b,u32 *,0x70)){
-if(p==b)return;p=M2C_FIELD(p,void **,0x80);
-}
-if(p==NULL){
-prev=M2C_FIELD(a,void **,4);
-if(prev==NULL)M2C_FIELD(a,void **,0)=b;else M2C_FIELD(prev,void **,0x80)=b;
-M2C_FIELD(b,void **,0x7C)=prev;M2C_FIELD(b,void **,0x80)=NULL;M2C_FIELD(a,void **,4)=b;
-}else{
-prev=M2C_FIELD(p,void **,0x7C);
-if(prev==NULL)M2C_FIELD(a,void **,0)=b;else M2C_FIELD(prev,void **,0x80)=b;
-M2C_FIELD(b,void **,0x7C)=prev;M2C_FIELD(b,void **,0x80)=p;M2C_FIELD(p,void **,0x7C)=b;
-}
+/* Insert `thread` into `queue` in run-priority order, keeping the queue's head
+ * and tail and the thread's queue links consistent; a thread that is already in
+ * the queue is left where it is. */
+void OS_EnqueueThread(OSThreadQueue *queue,Thread *thread) {
+    Thread *p=queue->head;
+    Thread *prev;
+    while(p!=NULL && (u32)p->priority<=(u32)thread->priority){
+        if(p==thread)return;
+        p=p->queueNext;
+    }
+    if(p==NULL){
+        prev=queue->tail;
+        if(prev==NULL)queue->head=thread;else prev->queueNext=thread;
+        thread->queuePrev=prev;thread->queueNext=NULL;queue->tail=thread;
+    }else{
+        prev=p->queuePrev;
+        if(prev==NULL)queue->head=thread;else prev->queueNext=thread;
+        thread->queuePrev=prev;thread->queueNext=p;p->queuePrev=thread;
+    }
 }
 
 void *func_02005740(void *arg0) {
@@ -593,7 +603,7 @@ M2C_UNK OS_SleepThread(void *a){
 extern M2C_UNK gThreadManager;
 s32 irq=OS_DisableInterrupts();
 void *p=M2C_FIELD(M2C_FIELD(&gThreadManager,void **,8),void **,0);
-if(a){M2C_FIELD(p,void **,0x78)=a;func_020056c8(a,p);}
+if(a){M2C_FIELD(p,void **,0x78)=a;OS_EnqueueThread(a,p);}
 M2C_FIELD(p,s32 *,0x64)=0;RescheduleThreads();OS_RestoreInterrupts(irq);
 }
 

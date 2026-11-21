@@ -539,7 +539,24 @@ void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void Show3DSpriteSli
 
 void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);func_02088e5c(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);Show3DSpriteSlide(p);}
 
-void Show3DSpriteSlide(void *p){if(!M2C_FIELD(p,u8 *,0x4e)){M2C_FIELD(p,s16 *,0x34)=M2C_FIELD(p,s16 *,0x50);M2C_FIELD(p,s16 *,0x36)=M2C_FIELD(p,s16 *,0x52);M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)&=~0xc0;Show3DSprite(p);return;}if(((u32)(M2C_FIELD(p,u8 *,0x48)<<24)>>30)==2)return;M2C_FIELD(p,s8 *,0x4c)=0;M2C_FIELD(p,s8 *,0x4d)=0;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0xc0)|0x80;}
+/* Show a 3D sprite by sliding it in: with no slide length, place it straight at
+ * its target and show it; otherwise start the forward slide (mode SPRITE_SLIDE_SHOW). */
+void Show3DSpriteSlide(void *sprite) {
+    if (!M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_SLIDE_LEN)) {
+        M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_X) = M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TARGET_X);
+        M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_Y) = M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TARGET_Y);
+        M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_DELAY) = 0;
+        M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) &= ~SPRITE_ACTOR_SLIDE_MODE_MASK;
+        Show3DSprite(sprite);
+        return;
+    }
+    if ((((u32)M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) << 24) >> 30) == SPRITE_SLIDE_SHOW) {
+        return;
+    }
+    M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_TIMER) = 0;
+    M2C_FIELD(sprite, s8 *, SPRITE_ACTOR_SLIDE_DELAY) = 0;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK) | 0x80);
+}
 
 void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
 

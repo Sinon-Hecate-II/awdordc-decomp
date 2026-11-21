@@ -1,21 +1,23 @@
 /* 4 functions from 0x0206CD20 to 0x0206CE00 (main), found by ds-decomp. */
 #include "common.h"
 
-s32 func_0206cd20(u16 *arg0, u32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+s32 StringFormatWideToBuffer(u16 *buffer, u32 bufferCapacity, M2C_UNK format, M2C_UNK arguments) {
     s32 func_0206ccb8(void *, M2C_UNK, s32);
     s32 func_0206c3c8(s32 (*)(void *, M2C_UNK, s32), void *, M2C_UNK, M2C_UNK);
-    struct { u16 *buffer; u32 size; s32 count; } state;
+    struct { u16 *buffer; u32 size; s32 count; } output;
     s32 result;
-    state.buffer = arg0;
-    state.size = arg1;
-    state.count = 0;
-    result = func_0206c3c8(func_0206ccb8, &state, arg2, arg3);
+
+    /* Format into a bounded UTF-16 buffer, always terminate it, and report truncation as -1. */
+    output.buffer = buffer;
+    output.size = bufferCapacity;
+    output.count = 0;
+    result = func_0206c3c8(func_0206ccb8, &output, format, arguments);
     if (result < 0) return result;
-    if ((u32)result < arg1) {
-        arg0[result] = 0;
+    if ((u32)result < bufferCapacity) {
+        buffer[result] = 0;
         return result;
     }
-    (arg0 + arg1)[-1] = 0;
+    (buffer + bufferCapacity)[-1] = 0;
     return -1;
 }
 

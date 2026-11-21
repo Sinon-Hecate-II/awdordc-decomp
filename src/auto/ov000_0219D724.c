@@ -93,7 +93,7 @@ void func_ov000_0219d848(void) {
 }
 
 void func_ov000_0219d960(void) {
-    /* Variant of func_ov000_0219d848 installing func_ov000_02181560. */
+    /* Variant of func_ov000_0219d848 installing RunAiRole6Action. */
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
@@ -101,7 +101,7 @@ void func_ov000_0219d960(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_02181560;
+    extern M2C_UNK RunAiRole6Action;
     s32 index;
     s32 stride;
     s8 *out;
@@ -133,7 +133,7 @@ void func_ov000_0219d960(void) {
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = &gAiUnitList;
-    gAiUnitAction = &func_ov000_02181560;
+    gAiUnitAction = &RunAiRole6Action;
     *gAiCommandState = 2;
 }
 
@@ -420,7 +420,7 @@ void SelectAiRole2Unit(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_021817c0;
+    extern M2C_UNK RunAiRole2CargoAction;
     s32 index;
     s32 stride;
     s8 *out;
@@ -459,7 +459,7 @@ void SelectAiRole2Unit(void) {
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = &gAiUnitList;
     ScoreAiUnitsByMoveRange(0);
-    gAiUnitAction = &func_ov000_021817c0;
+    gAiUnitAction = &RunAiRole2CargoAction;
     *gAiCommandState = 2;
 }
 

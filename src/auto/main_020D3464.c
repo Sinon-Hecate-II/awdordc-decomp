@@ -411,10 +411,10 @@ void func_020d3cec(void) {
     M2C_UNK ClearNameGraphicFiles();
     M2C_UNK LoadNameGraphicFiles();
     extern s32 data_0211fb58;
-    extern s32 data_0215be00;
+    extern s32 gTargetList;
     extern s32 gSelectionQueue;
     gSelectionQueue = data_0211fb58;
-    data_0215be00 = data_0211fb58;
+    gTargetList = data_0211fb58;
     LoadMapTileset();
     ClearNameGraphicFiles();
     LoadNameGraphicFiles();
@@ -427,7 +427,7 @@ void func_020d3d24(void) {
     M2C_UNK func_020ceea8();
     M2C_UNK func_020a23c4();
     M2C_UNK func_020cfd14();
-    M2C_UNK func_0207b6d0();
+    M2C_UNK CenterMapViewAtBattleStart();
     M2C_UNK BeginPlayerPhase();
     M2C_UNK InitPlayerTurnState();
     extern void **gCurrentMap;
@@ -437,68 +437,70 @@ void func_020d3d24(void) {
     func_020ceea8();
     func_020a23c4();
     func_020cfd14();
-    func_0207b6d0();
+    CenterMapViewAtBattleStart();
     BeginPlayerPhase();
     InitPlayerTurnState();
 }
 
-void func_020d3d68(void) {
+/* Set each player's stored map-cursor position (PLAYER_REC_CURSOR_X/Y) after a
+ * map loads: the selected unit's tile, else the player's HQ, else the first live
+ * unit of the player's group, else the middle of the map. */
+void InitPlayerCursorPositions(void) {
     u8 *GetPlayerSelectedUnit(s32);
     s32 PlayerHasHq(s32);
     extern void **gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
-    void *base;
-    u16 cols;
-    u16 rows;
-    s32 r4;
-    s32 r5;
-    s32 r6;
-    s32 r7;
-    s32 val;
-    s32 idx;
-    s32 end;
-    void *p;
-    void *rec;
-    u8 b0;
+    void *map;
+    u32 mapWidth;
+    u32 mapHeight;
+    s32 player;
+    s32 cursorX;
+    s32 cursorY;
+    s32 playerOffset;
+    s32 unitGroupBase;
+    s32 unitGroupEnd;
+    s32 unitId;
+    void *selectedUnit;
+    BattleMapUnitHead *unit;
 
-    base = *gCurrentMap;
-    cols = M2C_FIELD(base, u16 *, 0x5144);
-    rows = M2C_FIELD(base, u16 *, 0x5146);
-    r5 = cols >> 1;
-    r6 = rows >> 1;
-    r7 = 0x8C;
-    for (r4 = 1; r4 < 5; r4++) {
-        if (GetPlayerSelectedUnit(r4) != 0) {
-            p = GetPlayerSelectedUnit(r4);
-            r5 = M2C_FIELD(p, u8 *, 1);
-            r6 = M2C_FIELD(p, u8 *, 2);
+    for (player = 1, playerOffset = MAP_PLAYER_STRIDE; player < 5; player++) {
+        map = *gCurrentMap;
+        mapWidth = M2C_FIELD(map, u16 *, MAP_WIDTH);
+        mapHeight = M2C_FIELD(map, u16 *, MAP_HEIGHT);
+        cursorX = mapWidth >> 1;
+        cursorY = mapHeight >> 1;
+        if (GetPlayerSelectedUnit(player) != 0) {
+            selectedUnit = GetPlayerSelectedUnit(player);
+            cursorX = M2C_FIELD(selectedUnit, u8 *, MAP_UNIT_X);
+            cursorY = M2C_FIELD(selectedUnit, u8 *, MAP_UNIT_Y);
         } else {
-            if (PlayerHasHq(r4) != 0) {
-                base = *gCurrentMap;
-                r5 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67CF) & 0x7F;
-                r6 = M2C_FIELD((u8 *)base + r7, u8 *, 0x67D0) & 0x7F;
+            if (PlayerHasHq(player) != 0) {
+                map = *gCurrentMap;
+                cursorX = M2C_FIELD((u8 *)map + playerOffset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_X) & 0x7F;
+                cursorY = M2C_FIELD((u8 *)map + playerOffset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_HQ_Y) & 0x7F;
             } else {
-                val = gPlayerUnitIdBase[r4];
-                idx = val + 1;
-                end = val + 0x33;
-                for (; idx < end; idx++) {
-                    base = *gCurrentMap;
-                    rec = (u8 *)base + 0x59A4 + idx * 0x0E;
-                    b0 = M2C_FIELD(rec, u8 *, 0);
-                    b0 = (b0 << 26) >> 26;
-                    if (b0 != 0) {
-                        r5 = M2C_FIELD(rec, u8 *, 1);
-                        r6 = M2C_FIELD(rec, u8 *, 2);
-                        break;
-                    }
+                unitGroupBase = gPlayerUnitIdBase[player];
+                unitId = unitGroupBase + 1;
+                unitGroupEnd = unitGroupBase + MAP_UNIT_GROUP_SCAN;
+                if (unitId < unitGroupEnd) {
+                    map = *gCurrentMap;
+                    unit = (BattleMapUnitHead *)((u8 *)map + MAP_UNIT_RECORDS) + unitId;
+                    do {
+                        if (unit->kind != 0) {
+                            cursorX = unit->x;
+                            cursorY = unit->y;
+                            break;
+                        }
+                        unit++;
+                    } while (++unitId < unitGroupEnd);
                 }
             }
         }
-        base = *gCurrentMap;
-        M2C_FIELD((u8 *)base + r7, u8 *, 0x67D1) = (u8)r5;
-        base = *gCurrentMap;
-        M2C_FIELD((u8 *)base + r7, u8 *, 0x67D2) = (u8)r6;
-        r7 += 0x8C;
+        map = *gCurrentMap;
+        M2C_FIELD((u8 *)map + playerOffset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_CURSOR_X) = (u8)cursorX;
+        map = *gCurrentMap;
+        M2C_FIELD((u8 *)map + playerOffset, u8 *, MAP_PLAYER_STATES + PLAYER_REC_CURSOR_Y) = (u8)cursorY;
+        playerOffset += MAP_PLAYER_STRIDE;
     }
 }
 

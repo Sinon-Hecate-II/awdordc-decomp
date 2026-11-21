@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov000_unit_entry.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 static inline s32 DistanceUnitC4c8(u8 *p,s32 x,s32 y){s32 v=0;s32 a=p[1],b;s32 dx=a-x;if(dx<=0)dx=x-a;v+=dx;b=p[2];dx=b-y;if(dx<=0)dx=y-b;v+=dx;return v;}
 static inline s32 DistanceC4c8(s32 a,s32 b,s32 c,s32 d){s32 v=0;s32 dx=a-c;s32 dy;if(dx<=0)dx=c-a;v+=dx;dy=b-d;if(dy<=0)dy=d-b;v+=dy;return v;}
 extern void **gCurrentMap;
@@ -29,29 +30,30 @@ s32 func_ov000_0217bcf4(s32 arg0, s32 arg1, s32 arg2) {
     return func_ov000_0217b8f0(arg0, arg1, 0, arg2);
 }
 
-s32 func_ov000_0217bd44(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Encodes the drop tile relative to the transport, with a special code for a tile occupied by another unit. */
+s32 GetAiCargoDropDirection(s32 transportX, s32 transportY, s32 dropX, s32 dropY) {
     extern void **gCurrentMap;
-    u8 temp_lr;
-    void *temp_r4;
+    u8 occupantId;
+    u8 *map;
 
-    temp_r4 = *gCurrentMap;
-    temp_lr = M2C_FIELD((temp_r4 + (arg2 + M2C_FIELD((temp_r4 + (arg3 * 2)), u16 *, 0x3758))), u8 *, 0x508);
-    if ((temp_lr != 0) && (M2C_FIELD(temp_r4, u8 *, 0x52D4) != temp_lr)) {
-        return 5;
+    map = *gCurrentMap;
+    occupantId = M2C_FIELD(map + (dropX + M2C_FIELD(map + dropY * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+    if ((occupantId != 0) && (M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID) != occupantId)) {
+        return AI_CARGO_DROP_OCCUPIED;
     }
-    if (arg0 > arg2) {
-        return 4;
+    if (transportX > dropX) {
+        return AI_CARGO_DROP_LEFT;
     }
-    if (arg0 < arg2) {
-        return 2;
+    if (transportX < dropX) {
+        return AI_CARGO_DROP_RIGHT;
     }
-    if (arg1 > arg3) {
-        return 1;
+    if (transportY > dropY) {
+        return AI_CARGO_DROP_UP;
     }
-    if (arg1 < arg3) {
-        return 3;
+    if (transportY < dropY) {
+        return AI_CARGO_DROP_DOWN;
     }
-    return 0;
+    return AI_CARGO_DROP_NONE;
 }
 
 #pragma opt_propagation off

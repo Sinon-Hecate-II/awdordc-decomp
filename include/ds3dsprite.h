@@ -14,6 +14,13 @@
 #ifndef DS3DSPRITE_H
 #define DS3DSPRITE_H
 
+/* Tilemap glyphs use two consecutive tiles and a 32-entry row. */
+#define TILEMAP_GLYPH_ROW_SHIFT       6 /* log2 of the row size in bytes */
+#define TILEMAP_GLYPH_ROW_BYTES       (1 << TILEMAP_GLYPH_ROW_SHIFT)
+#define TILEMAP_DIGIT_FIRST_TILE      0x10
+#define TILEMAP_GLYPH_ALT_VARIANT     3
+#define TILEMAP_GLYPH_ALT_TILE_OFFSET 0x1C
+
 /* Byte of the bank copied to the display blend register (0..31). */
 #define DS3D_BANK_BLEND 0x53
 
@@ -42,6 +49,12 @@
 #define DS3D_BANK_OBJ_MAPPING_1D 0x0008 /* bit 3: 1D OBJ character VRAM mapping, clear for 2D */
 #define DS3D_BANK_OBJ_1D 0x1000
 #define DS3D_BANK_OBJ_BOUNDARY_MASK 0x6000
+#define DS3D_BANK_OBJ_BOUNDARY_SHIFT 13
+#define DS3D_BANK_OBJ_BOUNDARY_BITS 2
+
+/* OBJ attribute fields for wrapped coordinates and the hardware tile index. */
+#define DS3D_OBJ_X_MASK    0x1FF
+#define DS3D_OBJ_TILE_MASK 0x3FF
 #define DS3D_DISPLAY_GRAPHICS 1
 
 /* The four layer attribute words of the bank, one per layer (packed SpriteTile). */
@@ -84,6 +97,10 @@
  * quad offset: x at +0x38, y at +0x40 (see DS3DSpriteBank::corner). */
 #define DS3D_QUAD_X 0x38
 #define DS3D_QUAD_Y 0x40
+/* One layer's quad offset in a bank: x is corner[layer], y is corner[layer+4]
+ * (layer 0..3).  These are the byte offsets the code stores through. */
+#define DS3D_CORNER_X(layer) (DS3D_QUAD_X + (layer) * 2)
+#define DS3D_CORNER_Y(layer) (DS3D_QUAD_Y + (layer) * 2)
 
 /* Affine transform of the 3D sprite's layer grid, built by BuildSpriteTransform
  * from a DS3DSpriteTransform. The coefficients are 8.8 fixed point. */
@@ -187,6 +204,7 @@ typedef struct DS3DSpriteEngine {
 /* The engine's cached text (the object at +0x50): the strings it has already
  * rasterised into tiles, so a repeated string is drawn without re-rasterising. */
 #define DS3D_ENGINE_TEXT_CACHE 0x50 /* void *this engine's cached-text object */
+#define DS3D_ENGINE_TEXT_STATE 0x54 /* void *this screen's shared default text object (TextState, main_0209ACC4) */
 #define TEXT_CACHE_EMPTY     0x00 /* u8 1 when no string is cached */
 #define TEXT_CACHE_ENTRIES   0x200 /* 4 bytes per cached string: u16 tile, u8 width, u8 style */
 #define TEXT_CACHE_NEXT_TILE 0x300 /* u16 tile the next string is rasterised at */
@@ -194,7 +212,9 @@ typedef struct DS3DSpriteEngine {
 #define TEXT_GLYPH_TILES     0x700 /* bytes of one glyph tile set the text starts from */
 #define TEXT_GLYPH_OFFSET    16    /* tiles between the base tile and the glyph tiles */
 #define TEXT_FIRST_TILE      100   /* tiles between the base tile and the first string */
-#define DS3D_PALETTE_BYTES   0x20 /* bytes of one OBJ palette (16 colours, two bytes each) */
+#define DS3D_PALETTE_SHIFT   5    /* log2 of the byte size of a 16-colour palette */
+#define DS3D_PALETTE_BYTES   (1 << DS3D_PALETTE_SHIFT)
+#define DS3D_OBJ_PALETTE_BASE 16  /* OBJ slots follow the 16 BG slots in the palette shadow */
 #define DS3D_PALETTE_15      15   /* colours in a palette the fade code rewrites */
 
 /* One entry of gWallpaperFileSets: the files of a wallpaper in one language. */
@@ -328,7 +348,7 @@ enum {
     TRANSITION_MODE_SPLIT  = 2  /* split the screen into two sliding windows */
 };
 
-/* A queued 3D sprite task: a plain 3D sprite object created by func_0209ccb8
+/* A queued 3D sprite task: a plain 3D sprite object created by CreateQueuedSpriteTask
  * (main_0209CC04.c), which records the function the engine runs at +0x34.  The
  * copy/upload tasks in main_0207C2F0.c keep their arguments in the fields
  * below; the callback runs once and then the object is destroyed. */
@@ -338,6 +358,7 @@ enum {
 #define DS3D_TASK_SIZE        0x40 /* s32 bytes to copy or upload */
 #define DS3D_TASK_OFFSET      0x44 /* s32 destination offset of a VRAM/palette upload */
 #define DS3D_TASK_FREE_SOURCE 0x50 /* s32: free SOURCE when the task has run */
+#define DS3D_COPY_TASK_Z      0xFF02 /* sprite depth used by queued copies and uploads */
 
 /* A task sprite: a 3D sprite object that owns an OS thread, so that the thread
  * lives in a heap block freed with the object.  Creation allocates the thread

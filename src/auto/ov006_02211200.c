@@ -12,13 +12,13 @@ void CloseNarcArchive(void);
 void func_02081340(void *,s32,s32,s32);
 void SetTileRectPalette(s32,s32,s32,s32);
 void AddTileRectPalette(s32,s32,s32,s32);
-s32 func_020a9a30(s32,s32,s32,s32);
+s32 LoadSpriteResource(s32,s32,s32,s32);
 void LoadScenePanelPalette(s32);
 s32 GetUiColor(s32);
 void Load3DSpritePattern(s32,s32,s32,s32);
 void *GetLocalPlayerName(void);
 void DrawGlyphString(void *,s32,s32,s32,s32,s32,s32);
-void func_ov000_0216a470(void);
+void GetEarnedRecordTierTotal(void);
 void *func_ov000_0216a564(void);
 void func_ov000_0216a30c(void *,s32,s32);
 s32 func_ov000_0216a76c(void);
@@ -46,14 +46,15 @@ static inline u8 Visible02211388(void *p){return M2C_FIELD(M2C_FIELD(p,void **,0
 
 
 
+#pragma optimization_level 3
 void func_ov006_02211200(void *arg0) {
 M2C_UNK Apply3DSpriteBanks();
 M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
 M2C_UNK func_02003560();
-M2C_UNK func_020822b8(M2C_UNK *);
+M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
 M2C_UNK Set3DSpriteVramBanks();
-void *func_0208931c(M2C_UNK);
-M2C_UNK func_020a9a30(M2C_UNK,M2C_UNK,M2C_UNK,s32);
+void *Create3DSprite(M2C_UNK);
+M2C_UNK LoadSpriteResource(M2C_UNK,M2C_UNK,M2C_UNK,s32);
 s32 func_020aaf74(void *);
 M2C_UNK CreateMainWallpaperSprite(M2C_UNK,M2C_UNK,M2C_UNK);
 M2C_UNK CreateSubWallpaperSprite(M2C_UNK,M2C_UNK,M2C_UNK);
@@ -63,37 +64,46 @@ extern s32 gCur3DSpriteEngine;
 extern M2C_UNK data_ov006_022183c8;
 extern M2C_UNK data_ov006_022183d4;
 s32 saved; void *p;
+s32 engine, destination;
+s32 resource = 6;
 Set3DSpriteVramBanks();func_02003560();GX_SetBankForObjExtPalette(64);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-func_020822b8(&data_ov006_022183c8);CreateMainWallpaperSprite(2,15,5);
+Apply3DSpriteLayout(&data_ov006_022183c8);CreateMainWallpaperSprite(2,15,5);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_020822b8(&data_ov006_022183d4);CreateSubWallpaperSprite(2,15,5);
-p=M2C_FIELD(arg0,void **,0x38)=func_0208931c(9);
-M2C_FIELD(p,u8 *,0x58)=6;
-func_020a9a30(2,0,6,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4580);
-func_020a9a30(2,2,6,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0x320);
+Apply3DSpriteLayout(&data_ov006_022183d4);CreateSubWallpaperSprite(2,15,5);
+p=M2C_FIELD(arg0,void **,0x38)=Create3DSprite(9);
+M2C_FIELD(p,u8 *,0x58)=resource;
+engine = gCur3DSpriteEngine;
+destination = M2C_FIELD(engine,s32 *,0x1c) + 0x4580;
+LoadSpriteResource(2,0,resource,destination);
+engine = gCur3DSpriteEngine;
+destination = M2C_FIELD(engine,s32 *,0x30);
+LoadSpriteResource(2,2,resource,destination + 0x320);
 M2C_FIELD(p,s32 *,0x44)=func_020aaf74(p);
 M2C_FIELD(p,u16 *,0x3e)=0x22c;
 M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|0x640000;
 M2C_FIELD(p,u16 *,0x3c)=0xc00;
 gCur3DSpriteEngine=saved;Apply3DSpriteBanks();
 }
-
-void func_ov006_02211314(M2C_UNK arg0) {
+/* Draws the friend-code screen's prompt text on the main screen when the player
+ * has no friend code of their own yet (the code digits are shown instead once
+ * one is registered). */
+void ShowFriendCodePrompt(void *owner) {
     M2C_UNK RenderTextLayerMessage(void *, M2C_UNK, s32, s32);
-    void *CreateTextLayer(M2C_UNK);
-    s64 func_020c53e4(M2C_UNK);
+    void *CreateTextLayer(void *);
+    u64 GetOwnFriendCode(s32);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r4;
-    void *temp_r0;
-    if (func_020c53e4(0) == 0) {
-        temp_r4 = gCur3DSpriteEngine;
+    s32 savedEngine;
+    void *textLayer;
+
+    if (GetOwnFriendCode(0) == 0) {
+        savedEngine = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        temp_r0 = CreateTextLayer(arg0);
-        RenderTextLayerMessage(temp_r0, 2, 0x4640, 0x42000001);
-        M2C_FIELD(temp_r0, s32 *, 0x58) |= 0x1000;
-        gCur3DSpriteEngine = temp_r4;
+        textLayer = CreateTextLayer(owner);
+        RenderTextLayerMessage(textLayer, 2, 0x4640, 0x42000001);
+        M2C_FIELD(textLayer, s32 *, 0x58) |= 0x1000;
+        gCur3DSpriteEngine = savedEngine;
     }
 }
 
@@ -130,14 +140,14 @@ CloseNarcArchive();
 func_02081340(data_ov006_02218658,160,0,32);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,32),32,32,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(3);
-w=(void *)gCur3DSpriteEngine;func_020a9a30(3,0,0,M2C_FIELD(w,s32 *,24));
-w=(void *)gCur3DSpriteEngine;func_020a9a30(3,2,0,M2C_FIELD(w,s32 *,48)+224);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(3,0,0,M2C_FIELD(w,s32 *,24));
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(3,2,0,M2C_FIELD(w,s32 *,48)+224);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,44),32,32,7);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;Clear3DSpriteLayer(1);func_01ff9dd8(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;LoadScenePanelPalette(6);
-w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,1,M2C_FIELD(w,s32 *,28)+0x34c0);
-w=(void *)gCur3DSpriteEngine;func_020a9a30(1,2,0,M2C_FIELD(w,s32 *,48)+0x2c0);
-w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,5,M2C_FIELD(w,s32 *,28)+0x37c0);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,0,1,M2C_FIELD(w,s32 *,28)+0x34c0);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,2,0,M2C_FIELD(w,s32 *,48)+0x2c0);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,0,5,M2C_FIELD(w,s32 *,28)+0x37c0);
 Load3DSpritePattern(0x3e40,1,GetUiColor(9),2);
 Load3DSpritePattern(0x4240,1,GetUiColor(12),2);w=(void *)&gCur3DSpriteEngine;M2C_FIELD(w,s32 *,0)=g3DSpriteEngineSub;{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|16;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|32;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|64;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg&~128;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+0);*reg=*reg|256;}{u16 *volatile reg=(u16 *)((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18);*reg=*reg&~192;}
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x53)=0;
@@ -153,7 +163,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(1);
 func_01ff9dd8(1);LoadScenePanelPalette(7);
 a=2;w=(void *)M2C_FIELD(&gCur3DSpriteEngine,volatile s32 *,0);
 DrawGlyphString(GetLocalPlayerName(),M2C_FIELD(w,s32 *,16),M2C_FIELD(w,s32 *,36),7,6,4,a);
-a+=48;func_ov000_0216a470();func_ov000_0216a30c(func_ov000_0216a564(),0x4280,8);
+a+=48;GetEarnedRecordTierTotal();func_ov000_0216a30c(func_ov000_0216a564(),0x4280,8);
 if(func_ov000_0216a76c()!=-2 && func_ov000_0216a76c()!=-1){
 w=func_0209b26c(12,7,1,func_ov000_0216a77c(func_ov000_0216a76c()),0x7000,(u16)a);
 a+=M2C_FIELD(w,u16 *,76)-M2C_FIELD(w,u16 *,78)+2;
@@ -161,8 +171,8 @@ x=(s16)(M2C_FIELD(w,u8 *,74)+2);
 func_0209b26c(x,7,1,func_ov000_0216a7d4(func_ov000_0216a7c4()),0x7000,(u16)a);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
-w=(void *)gCur3DSpriteEngine;func_020a9a30(1,0,5,M2C_FIELD(w,s32 *,28)+0x3c00);
-w=(void *)gCur3DSpriteEngine;func_020a9a30(1,2,0,M2C_FIELD(w,s32 *,48)+0x2e0);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,0,5,M2C_FIELD(w,s32 *,28)+0x3c00);
+w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,2,0,M2C_FIELD(w,s32 *,48)+0x2e0);
 gCur3DSpriteEngine=saved;items=M2C_FIELD(arg0,void ***,60);
 Show3DSpriteSlide(items[0]);
 w=items[1];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;w=items[2];a=(u16)(((u32)(M2C_FIELD(w,u8 *,0x59)<<28)>>28)+2);M2C_FIELD(w,u32 *,0x40)=(M2C_FIELD(w,u32 *,0x40)&~0x3fc0000)|((u32)(a<<24)>>6);M2C_FIELD(w,u8 *,0x5a)=0;Show3DSpriteSlide(items[3]);Show3DSpriteSlide(items[4]);Show3DSpriteSlide(items[5]);}

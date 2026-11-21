@@ -123,21 +123,30 @@ void *func_0202c294(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCur
 
 void *GetSoundGroupRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
 
-s32 func_0202c35c(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
+s32 Sound_GetArchiveFileOffset(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
 
 s32 Sound_GetArchiveFileSize(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,16);}
 
-s32 Sound_ReadArchiveFile(u32 a,void *b,u32 n,u32 off) {
-extern s32 gCurrentArchive;s32 FileSeek(void *,u32,s32);s32 FileRead(void *,void *,u32);
-void *root=(void *)gCurrentArchive;void *p=M2C_FIELD(root,void **,0x84);
-if(a>=M2C_FIELD(p,u32 *,8))return -1;
-p=p+12+a*16;
-if(n>M2C_FIELD(p,u32 *,4)-off)n=M2C_FIELD(p,u32 *,4)-off;
-if(!FileSeek(root+52,M2C_FIELD(p,u32 *,0)+off,0))return -1;
-return FileRead(root+52,b,n);
+/* Read file `index` of the current sound archive into `buffer`: at most `size`
+ * bytes starting `offset` bytes into the file, clipped to the file's size.
+ * Returns the number of bytes read, or -1 when the file does not exist or the
+ * read could not be started. */
+s32 Sound_ReadArchiveFile(u32 index, void *buffer, u32 size, u32 offset) {
+    extern s32 gCurrentArchive;
+    s32 FileSeek(void *, u32, s32);
+    s32 FileRead(void *, void *, u32);
+    void *archive = (void *)gCurrentArchive;
+    SoundArchiveFileTable *table = (SoundArchiveFileTable *)M2C_FIELD(archive, void **, SOUND_ARCHIVE_TABLE);
+    SoundArchiveFileEntry *file;
+
+    if (index >= table->count) return -1;
+    file = &table->files[index];
+    if (size > file->size - offset) size = file->size - offset;
+    if (!FileSeek(archive + SOUND_ARCHIVE_FILE_REQUEST, file->offset + offset, 0)) return -1;
+    return FileRead(archive + SOUND_ARCHIVE_FILE_REQUEST, buffer, size);
 }
 
-void func_0202c424(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
+void Sound_GetArchiveFileRange(volatile u32 *p) {extern s32 gCurrentArchive;u32 a=M2C_FIELD(gCurrentArchive,volatile u32 *,0x7c),b=M2C_FIELD(gCurrentArchive,volatile u32 *,0x80);p[0]=a;p[1]=b;}
 
 s32 GetLoadedArchiveFile(u32 a) {extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,20);}
 
@@ -151,39 +160,40 @@ void func_0202c494(s32 a,s32 b,void *p) {M2C_FIELD(p,s32 *,0x84)=0;}
 
 void func_0202c4a0(s32 a,s32 b,void *p){M2C_FIELD(p,s32 *,0x88)=0;}
 
-u32 Sound_CreateHeap(s32 arg0, s32 arg1) {
-    s32 func_0202a638(s32, s32, M2C_UNK);
-    s32 func_0202c7b8(u32, s32);
-    s32 temp_r0_2;
-    u32 temp_r0;
-    u32 temp_r1;
-    u32 temp_r5;
+/* Aligns the buffer and creates a sound heap with its first allocation section. */
+u32 Sound_CreateHeap(s32 buffer, s32 size) {
+    s32 CreateFrameHeap(u32, u32, s32);
+    s32 Sound_InitHeap(u32, s32);
+    s32 frameHeap;
+    u32 bufferEnd;
+    u32 heapSize;
+    u32 heapStart;
 
-    temp_r0 = arg0 + arg1;
-    temp_r5 = (arg0 + 3) & ~3;
-    if (temp_r5 > temp_r0) {
+    bufferEnd = buffer + size;
+    heapStart = (buffer + (SOUND_HEAP_ALIGNMENT - 1)) & ~(SOUND_HEAP_ALIGNMENT - 1);
+    if (heapStart > bufferEnd) {
         return 0U;
     }
-    temp_r1 = temp_r0 - temp_r5;
-    if (temp_r1 < 0x10U) {
+    heapSize = bufferEnd - heapStart;
+    if (heapSize < SOUND_HEAP_HEADER_SIZE) {
         return 0U;
     }
-    temp_r0_2 = func_0202a638(temp_r5 + 0x10, temp_r1 - 0x10, 0);
-    if (temp_r0_2 == 0) {
+    frameHeap = CreateFrameHeap(heapStart + SOUND_HEAP_HEADER_SIZE, heapSize - SOUND_HEAP_HEADER_SIZE, 0);
+    if (frameHeap == 0) {
         return 0U;
     }
-    if (func_0202c7b8(temp_r5, temp_r0_2) != 0) {
-        return temp_r5;
+    if (Sound_InitHeap(heapStart, frameHeap) != 0) {
+        return heapStart;
     }
-    func_0202a670(temp_r0_2);
+    DestroyFrameHeap(frameHeap);
     return 0U;
 }
 
 void Sound_DestroyHeap(s32 *arg0) {
-    M2C_UNK func_0202a670(s32);
+    M2C_UNK DestroyFrameHeap(s32);
     M2C_UNK Sound_FreeAllBlocks();
     Sound_FreeAllBlocks();
-    func_0202a670(*arg0);
+    DestroyFrameHeap(*arg0);
 }
 
 /* Frees every block group of the sound player `player`: calls each block's
@@ -284,7 +294,7 @@ void func_0202c7a8(M2C_UNK arg0) {
     ListInit(arg0, 0);
 }
 
-s32 func_0202c7b8(u32 p,s32 a){s32 func_0202c7ec(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
+s32 Sound_InitHeap(u32 p,s32 a){s32 func_0202c7ec(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
 
 s32 func_0202c7ec(void *p){
 void *func_0202a67c(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);

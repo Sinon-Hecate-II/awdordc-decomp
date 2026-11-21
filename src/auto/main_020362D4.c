@@ -248,59 +248,63 @@ void func_02036ec0(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
  CreateWfcMatch(a,b,c,d,e,f,x);
 }
 
-s32 func_02036f14(void) {
+/* Poll the HTTP request that creates a WFC match: return NONE while no match
+ * request is active and RUNNING until its task finishes.  Once it has, turn a
+ * finished request into DONE or FAILED (recording a network error for every
+ * failure) and free the match session. */
+s32 PollWfcMatchRequest(void) {
     s32 TaskIsFinished(void *);
-    u32 func_0202f248();
+    u32 GetWfcFriendSlot();
     M2C_UNK HttpClientCleanup(void *);
     s32 ProcessWfcMatchResponse();
     M2C_UNK SetNetError(M2C_UNK, s32);
     extern void *gWfcMatchSession;
-    s32 tmp;
-    s32 var_r4;
-    u32 temp_r0;
-    u32 var_r2;
+    void *session = gWfcMatchSession;
+    s32 result;
+    u32 status;
+    u32 friendSlot;
 
-    if (gWfcMatchSession != 0) {
-        tmp = M2C_FIELD(gWfcMatchSession, s32 *, 0x1BA4);
-    }
-    if (tmp == 0) return 0;
-    if (TaskIsFinished(gWfcMatchSession + 0x1B38) != 1) return 1;
-    var_r2 = func_0202f248();
-    if (var_r2 > 0x63U) {
-        var_r2 = 0x63;
-    }
-    temp_r0 = M2C_FIELD(gWfcMatchSession, u32 *, 0x1020);
-    switch (temp_r0) {
-    case 8:
-        if (ProcessWfcMatchResponse() == 0) {
-            var_r4 = 3;
-        } else {
-            var_r4 = 2;
+    if (session == 0 || M2C_FIELD(session, s32 *, WFC_MATCH_READY) == 0) return WFC_HTTP_STEP_NONE;
+    if (TaskIsFinished(session + WFC_MATCH_HTTP_TASK) == 1) {
+        friendSlot = GetWfcFriendSlot();
+        if (friendSlot > 0x63U) {
+            friendSlot = 0x63;
         }
-        break;
-    case 2:
-        SetNetError(8, 0xFFFF347C - var_r2);
-        var_r4 = 3;
-        break;
-    case 3:
-    case 4:
-    case 6:
-        SetNetError(0x13, 0xFFFF7F0E);
-        var_r4 = 3;
-        break;
-    default:
-    case 0:
-    case 1:
-    case 5:
-    case 7:
-        SetNetError(0x13, 0xFFFF7EFA);
-        var_r4 = 3;
-        break;
+        status = M2C_FIELD(gWfcMatchSession, u32 *, WFC_MATCH_HTTP_STATUS);
+        switch (status) {
+        case WFC_MATCH_HTTP_DONE:
+            if (ProcessWfcMatchResponse() == 0) {
+                result = WFC_HTTP_STEP_FAILED;
+            } else {
+                result = WFC_HTTP_STEP_DONE;
+            }
+            break;
+        case 2:
+            SetNetError(8, 0xFFFF347C - friendSlot);
+            result = WFC_HTTP_STEP_FAILED;
+            break;
+        case 3:
+        case 4:
+        case 6:
+            SetNetError(0x13, 0xFFFF7F0E);
+            result = WFC_HTTP_STEP_FAILED;
+            break;
+        default:
+        case 0:
+        case 1:
+        case 5:
+        case 7:
+            SetNetError(0x13, 0xFFFF7EFA);
+            result = WFC_HTTP_STEP_FAILED;
+            break;
+        }
+    } else {
+        return WFC_HTTP_STEP_RUNNING;
     }
     HttpClientCleanup(gWfcMatchSession);
     HeapFree(0, gWfcMatchSession, 0);
     gWfcMatchSession = 0;
-    return var_r4;
+    return result;
 }
 
 /* Processes the match server's HTTP response: parses the Date header, checks the

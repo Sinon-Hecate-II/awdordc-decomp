@@ -88,34 +88,38 @@ out[9]=b[9]+(s32)(((s64)x*u+(s64)y*v+(s64)z*w)>>12);
 if(out==tmp.m)*(Matrix01148*)arg2=tmp;
 }
 
-void func_0200141c(s32 *arg0, s32 arg1, s32 *arg2, s32 *arg3) {
+/* Build the Q12 look-at view matrix `mtx` from eye position `camPos`, up vector
+ * `camUp` and the point `target`: normalize the forward (eye - target), right
+ * (up x forward) and true-up (forward x right) axes, store them as the rotation
+ * columns and set the translation from the eye position against each axis. */
+void MTX_LookAt(s32 *camPos, s32 *camUp, s32 *target, s32 *mtx) {
 #pragma opt_propagation on
     s32 sp18[3];
     s32 sp0c[3];
     s32 sp00[3];
-    s32 r5 = arg1;
-    s32 *r6 = arg0;
-    s32 *r4 = arg3;
+    s32 *up = camUp;
+    s32 *pos = camPos;
+    s32 *out = mtx;
 
-    sp18[0] = r6[0] - arg2[0];
-    sp18[1] = r6[1] - arg2[1];
-    sp18[2] = r6[2] - arg2[2];
-    func_020021c0(sp18);
-    Vec3CrossProduct(r5, sp18, sp0c);
-    func_020021c0(sp0c);
-    Vec3CrossProduct(r5, sp18, sp00);
-    r4[0] = sp0c[0];
-    r4[1] = sp0c[1];
-    r4[2] = sp18[0];
-    r4[3] = sp18[1];
-    r4[4] = sp18[2];
-    r4[5] = sp00[0];
-    r4[6] = sp00[1];
-    r4[7] = sp00[2];
-    r4[8] = sp18[2];
-    r4[9] = -Vec3DotProduct(r6, sp00);
-    r4[10] = -Vec3DotProduct(r6, sp18);
-    r4[11] = -Vec3DotProduct(r6, sp18);
+    sp18[0] = pos[0] - target[0];
+    sp18[1] = pos[1] - target[1];
+    sp18[2] = pos[2] - target[2];
+    func_020021c0(sp18, sp18);
+    Vec3CrossProduct(up, sp18, sp0c);
+    func_020021c0(sp0c, sp0c);
+    Vec3CrossProduct(sp18, sp0c, sp00);
+    out[0] = sp0c[0];
+    out[1] = sp00[0];
+    out[2] = sp18[0];
+    out[3] = sp0c[1];
+    out[4] = sp00[1];
+    out[5] = sp18[1];
+    out[6] = sp0c[2];
+    out[7] = sp00[2];
+    out[8] = sp18[2];
+    out[9] = -Vec3DotProduct(pos, sp0c);
+    out[10] = -Vec3DotProduct(pos, sp00);
+    out[11] = -Vec3DotProduct(pos, sp18);
 }
 
 void func_02001524(void *arg0,UnkVec3 *arg1) {

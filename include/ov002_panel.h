@@ -28,9 +28,11 @@
 #define UNIT_VIEW_EXPRESSION   0x04 /* s8 character expression, -1 = none */
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
+#define UNIT_VIEW_SLOTS        0x08 /* void *[5]: the unit models the view draws, 4 bytes apart */
+#define UNIT_VIEW_FRAME        0x29 /* u8 frames the view has been stepping, wraps at 128 */
 #define UNIT_VIEW_SIZE         0x2C
 
-/* The battle scene's shared state (data_ov002_021f30e4): the phase its per-frame
+/* The battle scene's shared state (gBattleSceneState): the phase its per-frame
  * step is in, a frame counter inside that phase, the delay before it ends and
  * whether it may be ended yet. */
 #define BATTLE_SCENE_FRAME     0x00 /* s32 frames elapsed in the current phase */

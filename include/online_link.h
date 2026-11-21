@@ -23,6 +23,15 @@
 #define ONLINE_SESSION_QUEUE_COUNT 0x68 /* u32 nodes currently queued */
 #define ONLINE_QUEUE_NODE_NEXT    0x00 /* node *: next queued packet */
 #define ONLINE_QUEUE_NODE_KIND    0x08 /* u8: packet kind (ONLINE_PACKET_*) */
+#define ONLINE_QUEUE_NODE_SIZE    0x0C /* u32: payload size of the queued packet */
+#define ONLINE_QUEUE_NODE_HEADER  0x10 /* bytes of a node before its payload */
+
+/* A bare outbound packet queue: the {head, tail, count} layout that also starts
+ * at ONLINE_SESSION_QUEUE in the online session and at every per-channel receive
+ * queue entry. */
+#define ONLINE_QUEUE_HEAD  0x00 /* node *: first queued node, NULL when empty */
+#define ONLINE_QUEUE_TAIL  0x04 /* node *: last queued node, NULL when empty */
+#define ONLINE_QUEUE_COUNT 0x08 /* u32: nodes currently queued */
 
 #ifdef ONLINE_USE_INTERRUPT_GUARD
 static inline u32 ov010DisableInterrupts(void) {

@@ -184,12 +184,12 @@ void func_0201a26c(void *arg0) {
     void TaskWake(s32);
     s32 func_0201a264(void);
     void func_0201a260(void);
-    void func_0201cfdc(void);
+    void NetReceiveThreadMain(void);
     void func_0201dd08(void);
     extern s32 gNetStack;
     extern s32 gLocalMacAddress;
     extern s32 data_020faf74;
-    extern s32 data_021374f8;
+    extern s32 gNetReceiveThread;
     extern s32 data_02138ac0;
     extern s32 data_02137438;
     extern s32 data_021382c0;
@@ -261,10 +261,10 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
 
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
     {
-        TaskCreate((void *)&data_021374f8, (void *)func_0201cfdc, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
+        TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
         TaskCreate((void *)&data_02137438, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
     }
-    TaskWake((s32)&data_021374f8);
+    TaskWake((s32)&gNetReceiveThread);
     TaskWake((s32)&data_02137438);
 }
 
@@ -287,15 +287,15 @@ void func_0201a4f8(s32 arg0) {
     M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
 }
 
-void func_0201a508(void){void *NetworkTaskIsFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,data_021374f8,gNetStack;NetworkTaskIsFinished();OS_JoinThread(&data_02137438);TerminateThread(&data_021374f8);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
+void func_0201a508(void){void *NetworkTaskIsFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,gNetReceiveThread,gNetStack;NetworkTaskIsFinished();OS_JoinThread(&data_02137438);TerminateThread(&gNetReceiveThread);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
 
 void func_0201a550(s32 arg0) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);
     extern s32 data_020faf74;
     extern M2C_UNK data_02137438;
-    extern M2C_UNK data_021374f8;
+    extern M2C_UNK gNetReceiveThread;
     data_020faf74 = arg0;
-    SetThreadPriority(&data_021374f8, arg0);
+    SetThreadPriority(&gNetReceiveThread, arg0);
     SetThreadPriority(&data_02137438, arg0);
 }
 
@@ -448,7 +448,7 @@ u8 *NetStackPeekFrame(s32 *out){
 }
 
 #pragma opt_strength_reduction off
-void func_0201ab8c(void){
+void NetStackConsumeFrame(void){
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gNetStack;
@@ -524,5 +524,26 @@ void SendArpRequest(s32 nodeId) {
     SendLinkFrame((u8 *)&packet, 42, 0, 0);
 }
 
-s32 ResolveArpMacAddress(s32 a){void SendArpRequest(s32);void SleepMilliseconds(s32);s32 FindArpMacAddress(s32);extern M2C_UNK gNetStack;u32 i,j;s32 r;for(i=0;i<8;i++){SendArpRequest(a);for(j=0;j<20;j++){if(!M2C_FIELD(&gNetStack,s32 *,80))return 0;SleepMilliseconds(100);r=FindArpMacAddress(a);if(r)return r;}}return 0;}
+/* Find the MAC address of the peer at `ip`: announce ourselves up to
+ * ARP_RESOLVE_ATTEMPTS times and, after each one, poll the ARP cache every
+ * ARP_RETRY_MS for ARP_RESOLVE_WAITS rounds.  Gives up (0) if the local
+ * address is torn down meanwhile or the peer never answers. */
+s32 ResolveArpMacAddress(s32 ip) {
+    void SendArpRequest(s32);
+    void SleepMilliseconds(s32);
+    s32 FindArpMacAddress(s32);
+    extern M2C_UNK gNetStack;
+    u32 attempt, wait;
+    s32 mac;
+    for (attempt = 0; attempt < ARP_RESOLVE_ATTEMPTS; attempt++) {
+        SendArpRequest(ip);
+        for (wait = 0; wait < ARP_RESOLVE_WAITS; wait++) {
+            if (!M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP)) return 0;
+            SleepMilliseconds(ARP_RETRY_MS);
+            mac = FindArpMacAddress(ip);
+            if (mac) return mac;
+        }
+    }
+    return 0;
+}
 

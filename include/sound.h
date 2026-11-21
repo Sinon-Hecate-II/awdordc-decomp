@@ -3,8 +3,16 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+#define SOUND_FLUSH_BLOCK           0x01 /* wait for space to submit the queued commands */
+
+/* The pre-sleep and post-sleep list nodes begin at the stop and release
+ * callbacks. Each node contains a callback, its argument and a next pointer. */
 #define SOUND_PLAYER_PLAY_MODE      0x20 /* s32 hardware play mode (0 = normal, 1 = half size) */
-#define SOUND_PLAYER_FLAGS          0x24 /* u32 bit 0: voice is playing */
+#define SOUND_PLAYER_FLAGS          0x24 /* u32 bit 0: voice is playing, bit 1: its channels are set up */
+#define SOUND_PLAYER_STOP_CB        0x08 /* void (*)(void *player): stops the voice's hardware channels */
+#define SOUND_PLAYER_STOP_DATA      0x0C /* void *argument the stop callback is called with */
+#define SOUND_PLAYER_RELEASE_CB     0x14 /* s32 (*)(void *player): ends its segments, then stops the channels */
+#define SOUND_PLAYER_RELEASE_DATA   0x18 /* void *argument the release callback is called with */
 #define SOUND_PLAYER_NOTE_BYTES     0x28 /* s32 sample bytes per note/channel */
 #define SOUND_PLAYER_SEGMENTS       0x2C /* s32 segments the samples are split into */
 #define SOUND_PLAYER_SEGMENT_CB     0x30 /* void (*)(s32 mode, s32 notes, s32 *offsets, s32 size, s32 arg, s32 arg2) */
@@ -17,6 +25,7 @@
 #define SOUND_PLAYER_NOTES          0x4C /* u8[] note/channel id list */
 
 #define SOUND_PLAYER_FLAG_PLAYING   0x0001 /* SOUND_PLAYER_FLAGS bit: voice is playing */
+#define SOUND_PLAYER_FLAG_CHANNELS  0x0002 /* SOUND_PLAYER_FLAGS bit: the voice's hardware channels are allocated */
 #define SOUND_PLAY_MODE_HALF        1      /* play mode that uses half the note bytes */
 
 /* The sound player handle: what Sound_StartPlayer (main_0202DBAC) fills in and
@@ -45,6 +54,10 @@
 #define SOUND_HANDLE_READ_CB       0x16C /* void (*)(void *player, void *dst, s32 bytes, s32 offset): read sample data */
 #define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
 #define SOUND_HANDLE_FILE_REQUEST  0x5C  /* the slot's file request, used to load its sample data */
+
+#define SOUND_HANDLE_SOURCE_BASE   0xA4 /* sample file offset or memory base address */
+#define SOUND_HANDLE_SOURCE_HEADER 0xA8 /* cached sample file header */
+#define SOUND_SOURCE_HEADER_SIZE   0x40
 
 /* The sound player slots (gSoundPlayerSlots), handed out by Sound_AcquirePlayer. */
 #define SOUND_PLAYER_SLOTS  4    /* player slots in the pool */
@@ -105,6 +118,23 @@
 #define SOUND_ARCHIVE_ENTRY_OFFSET 0    /* s32 offset in the file of the object's data */
 #define SOUND_ARCHIVE_ENTRY_DATA   8    /* void * the object's data (from ENTRY_OFFSET) */
 
+/* One file of a sound archive's file table (at SOUND_ARCHIVE_TABLE): where its
+ * data sits in the archive file and, once loaded, the pointer to it. */
+typedef struct SoundArchiveFileEntry {
+    s32 offset;    /* +0x00 offset in the archive file of the file's data */
+    u32 size;      /* +0x04 bytes of the file's data */
+    void *data;    /* +0x08 the file's data, 0 while it is not loaded */
+    s32 unknown0C; /* +0x0C */
+} SoundArchiveFileEntry; /* 16 bytes */
+
+/* The file table at SOUND_ARCHIVE_TABLE: the number of files at +8, then that
+ * many 16-byte entries. */
+typedef struct SoundArchiveFileTable {
+    u8 pad00[8];
+    u32 count;                      /* +0x08 number of files */
+    SoundArchiveFileEntry files[1]; /* +0x0C */
+} SoundArchiveFileTable;
+
 /* One entry of a loaded sound archive (12 bytes): the sound it names, the bank
  * it is played with, its volume, pan, priority, and the player channel it is
  * played on. */
@@ -120,8 +150,12 @@ typedef struct SoundArchiveEntry {
 /* One record of the sound archive's sequence table (GetSoundSequenceRecord):
  * the archive file holding the sequence and the bank it is played with. */
 typedef struct SoundSequenceRecord {
-    s32 fileId; /* +0x00 file id of the sequence in the archive */
-    u16 bankId; /* +0x04 sound bank the sequence is played with */
+    s32 fileId;   /* +0x00 file id of the sequence in the archive */
+    u16 bankId;   /* +0x04 sound bank the sequence is played with */
+    u8  volume;   /* +0x06 */
+    u8  pan;      /* +0x07 */
+    u8  priority; /* +0x08 priority of the playback */
+    u8  channel;  /* +0x09 player channel the sequence is played on */
 } SoundSequenceRecord;
 
 /* A sound group of the sound archive: a count and that many items, each saying
@@ -190,6 +224,10 @@ typedef struct PackedBankEntry {
  * the header and compute the links from that offset). */
 #define SOUND_LIST_COUNT       0x08 /* u16 nodes in the list */
 #define SOUND_LIST_NODE_OFFSET 0x0A /* u16 offset of the links inside a node */
+
+/* The sound heap header holds a frame heap handle followed by a section list. */
+#define SOUND_HEAP_HEADER_SIZE 0x10
+#define SOUND_HEAP_ALIGNMENT 4
 
 /* One voice of gVoicePool (16 voices, 0x44 bytes each).  gActiveVoices and
  * gFreeVoices both link the voices at SOUND_VOICE_LINKS; a playing voice is

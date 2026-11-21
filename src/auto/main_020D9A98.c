@@ -6,19 +6,19 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void func_02084fc0(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void func_02085414(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
+void Link_SetMessageHandler(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
-func_02084fc0(0);
+Link_SetMessageHandler(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
 if(!func_ov009_02224508(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
-func_02085414();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+Link_InstallCommandHandler();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 case 1:case 2:
 if(!IsOnlineSessionFlagSet(6)&&IsOnlineSessionFlagSet(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
-func_02085414();func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+Link_InstallCommandHandler();func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 }
 savedEngine=gCur3DSpriteEngine;
@@ -206,8 +206,33 @@ void func_020da1e8(void *arg0) {
     }
 }
 
-void func_020da22c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
+/* Moves the focus between the two options of a toggle widget on an up or down
+ * key repeat, wrapping from the first or last option only on a fresh press (not
+ * on auto-repeat), and focuses the newly selected option's sprite. */
+void HandleToggleOptionFocus(u8 *option) {
+    M2C_UNK FocusSpriteSlotById();
+    extern void *gKeyState;
+    u16 repeat;
+    u16 pressed;
+    u8 selection;
+    s32 next;
+
+    selection = *option;
+    repeat = M2C_FIELD(gKeyState, u16 *, 2);      /* KeyState::repeat */
+    next = selection;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);     /* KeyState::pressed */
+    if (repeat & KEY_UP) {
+        if (selection == 0) {
+            if (pressed & KEY_UP) next = 1;
+        } else next = selection - 1;
+    } else if (repeat & KEY_DOWN) {
+        if (selection == 1) {
+            if (pressed & KEY_DOWN) next = 0;
+        } else next = selection + 1;
+    }
+    if (next == selection) return;
+    FocusSpriteSlotById(next);
+}
 
 /* Two-option menu entry: draws its two 5-step bars with the selected one in the
    brighter palette, then mirrors the selection into bit 2 of the local player's
@@ -263,8 +288,32 @@ void func_020da3c8(void *arg0) {
     }
 }
 
-void func_020da40c(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){ if(temp_r3==0){if(temp_r2&0x40)var_r0=1;}else var_r0=temp_r3-1;}else if(temp_r1&0x80){if(temp_r3==1){if(temp_r2&0x80)var_r0=0;}else var_r0=temp_r3+1;} if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
+/* Key handler for a two-option list: up/down move the focus to the other option,
+ * wrapping past an end only on a fresh press; the option's sprite slot follows. */
+void HandleTwoOptionListInput(u8 *option) {
+    M2C_UNK FocusSpriteSlotById();
+    extern void *gKeyState;
+    u16 repeat;
+    u16 pressed;
+    u8 selection;
+    s32 next;
+
+    selection = *option;
+    repeat = M2C_FIELD(gKeyState, u16 *, 2);      /* KeyState::repeat */
+    next = selection;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);     /* KeyState::pressed */
+    if (repeat & KEY_UP) {
+        if (selection == 0) {
+            if (pressed & KEY_UP) next = 1;
+        } else next = selection - 1;
+    } else if (repeat & KEY_DOWN) {
+        if (selection == 1) {
+            if (pressed & KEY_DOWN) next = 0;
+        } else next = selection + 1;
+    }
+    if (next == selection) return;
+    FocusSpriteSlotById(next);
+}
 
 #pragma push
 #pragma opt_schedule off

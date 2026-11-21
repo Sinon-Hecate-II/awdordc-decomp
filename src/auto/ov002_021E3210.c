@@ -315,7 +315,7 @@ M2C_UNK SwapBattleScreenCapture(s32 *phase) {
     } else {
         REG_POWCNT1 &= ~POWCNT1_LCD_SWAP;
         func_020033e0();
-        func_020031cc(8);
+        GX_SetBankForSubOBJ(8);
         func_02003104(4);
         capture = DISPCAPCNT_CAPTURE_2D;
         REG_DISPCAPCNT = capture;

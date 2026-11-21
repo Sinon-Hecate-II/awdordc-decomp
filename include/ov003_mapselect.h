@@ -8,6 +8,7 @@
 #define OV003_MAPSELECT_H
 
 #include "common.h"
+#include "ds3dsprite.h"
 
 #define MAP_PICK_SLOTS 5      /* maps one side may pick */
 #define MAP_PICK_EMPTY 0xFFFF /* an empty slot of a side's pick list */
@@ -18,6 +19,18 @@
 #define MAP_CONFIRM_UNSET    0
 #define MAP_CONFIRM_ENABLED  1
 #define MAP_CONFIRM_DISABLED 2
+
+/* A scene sprite definition (one screen object keeps it at +0x3C): the engine
+ * it is drawn on and the sprite sheet tiles and palette its 3D sprite loads.
+ * The scene's 3D sprite is built from it. */
+typedef struct SceneSpriteDef {
+    u8  targetScreen; /* +0x00 DS3D_TARGET_* engine the sprite is drawn on */
+    u8  bank;         /* +0x01 sprite bank slot the tiles and palette load into */
+    u8  unknown02;    /* +0x02 */
+    u8  unknown03;    /* +0x03 */
+    u32 tile;         /* +0x04 tile index in the sprite sheet */
+    u8  palette;      /* +0x08 palette index in the sprite sheet */
+} SceneSpriteDef;
 
 typedef struct MapPickLists {
     u8  unknown0[8];   /* +0x00 */

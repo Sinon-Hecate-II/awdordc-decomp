@@ -9,7 +9,7 @@ static inline u32 HeadSize215a4(void) { u16 old=SwapIME215a4(0);u32 size=0;s32 p
 static inline u32 QueueSize215a4(void) { u16 old=SwapIME215a4(0);u32 size=0;if(!M2C_FIELD(gLinkState,s32*,0x64)){SwapIME215a4(old);return size;}size=HeadSize215a4();SwapIME215a4(old);return size; }
 
 
-void func_ov009_02221338(s32,s32);
+void FreeLinkBlock(s32,s32);
 static inline void PopQueue215a4(s32 packet) { s32 func_ov009_02224d30(s32,s32,u32,u32,s32,u32,u16);s32 p,next;u16 old;
 old=SwapIME215a4(0);
 p=M2C_FIELD(gLinkState,s32*,0x64);
@@ -19,7 +19,7 @@ func_ov009_02224d30(packet,M2C_FIELD(p,u8*,8),M2C_FIELD(p,PacketBits215a4*,9).lo
 next=M2C_FIELD(p,s32*,0);
 M2C_FIELD(gLinkState,s32*,0x64)=next;
 if(!next)M2C_FIELD(gLinkState,s32*,0x68)=0;
-func_ov009_02221338(p,M2C_FIELD(p,u32*,12)+16);
+FreeLinkBlock(p,M2C_FIELD(p,u32*,12)+16);
 M2C_FIELD(gLinkState,s32*,0x6c)--;
 }
 SwapIME215a4(old);
@@ -40,7 +40,7 @@ static inline u32 Size21ae8(u8 channel){u16 old=SwapIME215a4(0);u32 n=0;Queue21a
 static inline void Pop21ae8(u8 channel,s32 packet){s32 p,next;u32 old=SwapIME215a4(0);Queue21ae8 *q=&data_ov009_02226980[(s16)channel];p=q->head;if(!p){SwapIME215a4(old);return;}
 func_ov009_02224d30(packet,M2C_FIELD(p,u8 *,8),M2C_FIELD(p,PacketBits215a4 *,9).low,M2C_FIELD(p,PacketBits215a4 *,9).high,p+16,M2C_FIELD(p,u32 *,12),M2C_FIELD(p,u16 *,10));
 next=M2C_FIELD(p,s32 *,0);q->head=next;if(!next)q->tail=0;
-func_ov009_02221338(p,M2C_FIELD(p,u32 *,12)+16);q->count--;SwapIME215a4(old);}
+FreeLinkBlock(p,M2C_FIELD(p,u32 *,12)+16);q->count--;SwapIME215a4(old);}
 static inline void Push21ae8(Queue21ae8 *queue,s32 channel,s32 packet){s32 p;u32 old=SwapIME215a4(0);p=func_ov009_0222132c(M2C_FIELD(packet,u32 *,8)+16,32);if(!p){SwapIME215a4(old);return;}MI_CpuFill8(p,0,16);
 func_ov009_02224d30(p+4,M2C_FIELD(packet,u8 *,4),M2C_FIELD(packet,PacketBits215a4 *,5).low,M2C_FIELD(packet,PacketBits215a4 *,5).high,packet+12,M2C_FIELD(packet,u32 *,8),M2C_FIELD(packet,u16 *,6));
 if(!queue[channel].head){queue[channel].tail=p;queue[channel].head=p;}else {M2C_FIELD(p,s32 *,0)=queue[channel].head;queue[channel].head=p;}queue[channel].count++;SwapIME215a4(old);}
@@ -57,7 +57,7 @@ s32 func_ov009_0222132c(s32 size,s32 align) {
     return func_020e3580();
 }
 
-void func_ov009_02221338(s32 arg0, s32 arg1) {
+void FreeLinkBlock(s32 arg0, s32 arg1) {
     M2C_UNK HeapFreeBlock();
     if (arg0 == 0) {
         return;
@@ -158,7 +158,7 @@ void func_ov009_02221538(void *arg0) {
 }
 
 void func_ov009_02221580(void *arg0) {
-    func_ov009_02221338(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+    FreeLinkBlock(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
     M2C_FIELD(arg0, s32 *, 0x3C) = 0;
     M2C_FIELD(arg0, s32 *, 0x40) = 0;
 }

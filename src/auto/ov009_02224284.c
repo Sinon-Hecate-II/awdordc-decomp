@@ -51,7 +51,7 @@ s32 func_ov009_022242c8(void) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     void func_ov009_022213f0(M2C_UNK, M2C_UNK);
     void *GetLocalPlayerName(void);
-    M2C_UNK func_ov000_0216a470(void);
+    M2C_UNK GetEarnedRecordTierTotal(void);
     M2C_UNK func_ov000_0216a564(void);
     M2C_UNK func_ov000_0216a76c(void);
     M2C_UNK func_ov000_0216a7c4(void);
@@ -66,7 +66,7 @@ s32 func_ov009_022242c8(void) {
     M2C_UNK func_ov009_02224c1c(M2C_UNK);
     M2C_UNK func_ov009_02224b8c(M2C_UNK);
     M2C_UNK SetConnectedPlayers(M2C_UNK);
-    void func_ov009_02225480(void);
+    void ClearLinkEventFlags(void);
     s32 func_ov009_02222790(void);
     extern M2C_UNK gLinkState;
     extern M2C_UNK data_ov009_02226a20;
@@ -74,8 +74,8 @@ s32 func_ov009_022242c8(void) {
     extern M2C_UNK gLinkSession;
     extern M2C_UNK gLinkPlayers;
     extern M2C_UNK data_ov009_02226cc0;
-    extern M2C_UNK data_ov009_022269e0;
-    extern M2C_UNK data_ov009_02226fe0;
+    extern M2C_UNK gLinkDownloadHeader;
+    extern M2C_UNK gLinkConnectionExtraData;
 
     s32 stk[8];
     register u8 *end;
@@ -140,7 +140,7 @@ s32 func_ov009_022242c8(void) {
 
     func_ov009_022213f0((s32)&data_ov009_02226a20, (s32)GetLocalPlayerName());
 
-    func_ov000_0216a470();
+    GetEarnedRecordTierTotal();
     M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)func_ov000_0216a564();
     M2C_FIELD(&gLinkState, s8 *, 0x159) = (u8)func_ov000_0216a76c();
     M2C_FIELD(&gLinkState, s8 *, 0x15a) = (u8)func_ov000_0216a7c4();
@@ -156,12 +156,12 @@ s32 func_ov009_022242c8(void) {
     func_ov009_02224c1c(0);
     func_ov009_02224b8c(0);
     SetConnectedPlayers(1);
-    func_ov009_02225480();
+    ClearLinkEventFlags();
 
     M2C_FIELD(&gLinkState, s32 *, 0xc) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x100) = 0;
-    M2C_FIELD(&data_ov009_022269e0, u16 *, 0x4) = 0;
-    MI_CpuFill8(&data_ov009_02226fe0, 0, 0x18);
+    M2C_FIELD(&gLinkDownloadHeader, u16 *, 0x4) = 0;
+    MI_CpuFill8(&gLinkConnectionExtraData, 0, 0x18);
 
     if (func_ov009_02222790() != 0) {
         return 1;
@@ -219,7 +219,7 @@ extern "C" s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gLinkSession;
     extern M2C_UNK data_ov009_0222696e;
     extern M2C_UNK data_ov009_02226cc0;
-    extern M2C_UNK data_ov009_02226fe0;
+    extern M2C_UNK gLinkConnectionExtraData;
 
     s32 stk[8];
     u8 *end;
@@ -256,7 +256,7 @@ extern "C" s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     stk[1] = y;
 
     cur = (u8 *)&data_ov009_02226cc0;
-    end = (u8 *)&data_ov009_02226fe0;
+    end = (u8 *)&gLinkConnectionExtraData;
     goto test;
 next:
     (((Ov009LinkPeer *)cur)->*(*(Ov009PeerCallback *)sp18))();
@@ -313,12 +313,12 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
-    M2C_UNK func_ov009_02223290(void);
+    M2C_UNK StartDownloadPlayLinkConnection(void);
     void func_ov009_0222496c(void *);
     void *func_ov009_0222497c(void *);
     s32 GetGameGroupId(void);
     s32 func_ov009_02222ac4(void);
-    extern M2C_UNK data_ov009_022269e0;
+    extern M2C_UNK gLinkDownloadHeader;
     extern M2C_UNK data_ov009_02226a20;
     extern M2C_UNK gLinkState;
     extern M2C_UNK gLinkSession;
@@ -330,7 +330,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226714;
-    extern M2C_UNK data_ov009_02226a80;
+    extern M2C_UNK gLinkConnectionData;
 
     Ov009MemberPair stk[4];
     register s32 y, x;
@@ -394,20 +394,20 @@ test:
 
     M2C_FIELD(&gLinkState, s32 *, 0x24) = 0;
 
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0xc)=arg2;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0xc)=arg2;
     stk[0].first = x;
     stk[0].second = y;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x32)=arg3;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x18)=GetGameGroupId();
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x34)=0xc0;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x36)=0xc0;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x10)=arg4-1;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x16)=0;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x12)=0;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0xe)=1;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,0x14)=0;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x32)=arg3;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x18)=GetGameGroupId();
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x34)=0xc0;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x36)=0xc0;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x10)=arg4-1;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x16)=0;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x12)=0;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0xe)=1;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,0x14)=0;
     M2C_FIELD(&gLinkState,s32 *,0x100)=(s32)&data_ov009_02226a20;
-    M2C_FIELD(&data_ov009_022269e0,u16 *,4)=0x60;
+    M2C_FIELD(&gLinkDownloadHeader,u16 *,4)=0x60;
     ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_022266b0;
@@ -462,7 +462,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     void MI_CpuCopy8(s32, void *, s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02006804(void);
-    M2C_UNK func_ov009_02223290(void);
+    M2C_UNK StartDownloadPlayLinkConnection(void);
     void func_ov009_0222496c(void *);
     void *func_ov009_0222497c(void *);
     extern M2C_UNK gLinkState;
@@ -475,7 +475,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226714;
-    extern M2C_UNK data_ov009_02226a80;
+    extern M2C_UNK gLinkConnectionData;
 
     Ov009MemberPair stk[4];
     register s32 y, x;
@@ -562,10 +562,10 @@ test:
     }
 
     if (arg0 == 1) {
-        MI_CpuCopy8(arg2, &data_ov009_02226a80, 0xc0);
-        DC_FlushRange((s32)&data_ov009_02226a80, 0xc0);
+        MI_CpuCopy8(arg2, &gLinkConnectionData, 0xc0);
+        DC_FlushRange((s32)&gLinkConnectionData, 0xc0);
         func_02006804();
-        return func_ov009_02223290();
+        return StartDownloadPlayLinkConnection();
     }
     return 0;
 }
@@ -636,12 +636,12 @@ s32 func_ov009_02224c34(M2C_UNK arg0) {
 }
 
 s32 func_ov009_02224c70(void) {
-    s32 func_ov009_02223dc0();
+    s32 SubmitLinkDownloadData();
     s32 GetLinkRequestKind();
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
-    if (func_ov009_02223dc0() != 0) {
+    if (SubmitLinkDownloadData() != 0) {
         return 1;
     }
     SetLinkPhase(8);
@@ -678,8 +678,8 @@ void func_ov009_02224d0c(M2C_UNK arg0) {
 }
 
 void func_ov009_02224d1c(void *arg0) {
-    M2C_UNK func_ov009_02221338(void *, s32);
-    func_ov009_02221338(arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
+    M2C_UNK FreeLinkBlock(void *, s32);
+    FreeLinkBlock(arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
 }
 
 void *func_ov009_02224d30(void *arg0, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6) {
@@ -895,7 +895,7 @@ s32 func_ov009_022250f8(s32 arg0) {
 #pragma opt_strength_reduction off
 void *func_ov009_02225178(s32 arg0, void *arg1) {
     void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
-    M2C_UNK func_ov009_02221338(void *, s32);
+    M2C_UNK FreeLinkBlock(void *, s32);
     extern M2C_UNK data_ov009_022269b0;
     extern M2C_UNK data_ov009_022269b4;
     extern M2C_UNK data_ov009_022269b8;
@@ -934,7 +934,7 @@ void *func_ov009_02225178(s32 arg0, void *arg1) {
     if (next == (void *)0) {
         M2C_FIELD(&data_ov009_022269b4, void **, off) = (void *)0;
     }
-    func_ov009_02221338(entry, M2C_FIELD(entry, s32 *, 0xc) + 0x10);
+    FreeLinkBlock(entry, M2C_FIELD(entry, s32 *, 0xc) + 0x10);
     previous = saved;
     M2C_FIELD(&data_ov009_022269b8, s32 *, off) -= 1;
     result = (void *)(M2C_FIELD(arg1, s32 *, 8) + 0xc);

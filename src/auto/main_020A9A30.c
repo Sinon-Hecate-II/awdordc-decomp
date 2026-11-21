@@ -6,7 +6,7 @@ char *GetLocalizedFileName(void *);s32 StringFormat(char *,const char *,...);
 void LoadFileToAddress(void *,s32);void OpenNarcArchive(void *);void SetFileDirectory(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);void LoadDecompressedFileTo(void *,s32);
 
 
-int func_020a9a30(int a,int b,int c,int d){char name[256],path[256];char *base=data_02126bf0;u16 size;
+int LoadSpriteResource(int a,int b,int c,int d){char name[256],path[256];char *base=data_02126bf0;u16 size;
 switch(a){
 case 0:base=data_02126c00;switch(b){case 0:switch(c){case 0:StringFormat(name,GetLocalizedFileName(data_02126c18));break;
 case 1:StringFormat(name,GetLocalizedFileName(data_02126c24));break;

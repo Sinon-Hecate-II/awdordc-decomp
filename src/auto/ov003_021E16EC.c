@@ -26,13 +26,13 @@ extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 extern u8 data_ov003_0220f500[],data_ov003_0220f508[],data_ov003_0220f518[],data_ov003_0220f530[],data_ov003_0220f544[],data_ov003_0220f560[],data_ov003_0220f574[],data_ov003_0220f584[],data_ov003_0220f59c[],data_ov003_0220f5a4[],data_ov003_0220f5b4[],data_ov003_0220f5cc[],data_ov003_0220f5e0[],data_ov003_0220f5f4[];
 void func_ov003_021e3714(void*);void SetTextById(void*,s32);void SetFileDirectory(void*);void Clear3DSpriteLayer(s32);
 void *GetLocalizedFileName(void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void SetTileRectPalette(void*,s32,s32,s32);
-void func_020a9a30(s32,s32,s32,void*);void LoadScenePanelPalette(s32);void func_02091d6c(s32,s32);
+void LoadSpriteResource(s32,s32,s32,void*);void LoadScenePanelPalette(s32);void func_02091d6c(s32,s32);
 void *LoadFileToBuffer(void*,s32);void LoadGraphicsBlock(void*,void*);void HeapFreeBlock(void*);
 void DrawMapPreview(void*,void*,s32,s32);void *GetUiColor(s32);void Load3DSpritePattern(s32,s32,void*,s32);
-u8 func_ov003_02200b5c(u8);void *GetTerrainTileData(u8);void *GetTerrainPalette(s32,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
+u8 GetPreviewTerrainId(u8);void *GetTerrainTileData(u8);void *GetTerrainPalette(s32,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
 static inline u8 *MenuButton(void *menu,s32 index) {return M2C_FIELD(menu+index*4,u8**,12);}
 static inline void SetupLayer(void *engine,s32 layer,s32 bank,s32 slot,s32 field,s32 offset){
-u8 *base=M2C_FIELD(engine,u8**,field);func_020a9a30(layer,bank,slot,base+offset);
+u8 *base=M2C_FIELD(engine,u8**,field);LoadSpriteResource(layer,bank,slot,base+offset);
 }
 typedef struct {u32 width:9,height:9,tile:8,high:6;} SpriteGeometry;
 typedef struct {u8 low:2;u8 mode:2;u8 high:4;} MenuModeBits;
@@ -100,9 +100,9 @@ data=GetLocalizedFileName(data_ov003_0220f508);LoadDecompressedFileTo(data,M2C_F
 data=GetLocalizedFileName(data_ov003_0220f518);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x24));
 LoadFileToSpriteBuffer(data_ov003_0220f530,160,32);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x24),32,32,5);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
-Clear3DSpriteLayer(3);func_020a9a30(3,0,0,M2C_FIELD(gCur3DSpriteEngine,void**,0x18));
+Clear3DSpriteLayer(3);LoadSpriteResource(3,0,0,M2C_FIELD(gCur3DSpriteEngine,void**,0x18));
 LoadDecompressedFileTo(data_ov003_0220f544,M2C_FIELD(gCur3DSpriteEngine,void**,0x2c));
-func_020a9a30(3,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+192);
+LoadSpriteResource(3,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+192);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,void**,0x2c),32,32,6);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 Clear3DSpriteLayer(0);LoadScenePanelPalette(7);func_02091d6c(8,0);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
 data=LoadFileToBuffer(GetLocalizedFileName(data_ov003_0220f560),1);
@@ -110,9 +110,9 @@ LoadGraphicsBlock(data,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x2b80);
 LoadGraphicsBlock((u8*)data+0xb3c,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x5500);
 LoadGraphicsBlock((u8*)data+0xbcc,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x5900);HeapFreeBlock(data);
 LoadFileToSpriteBuffer(data_ov003_0220f574,0x2c0,64);LoadFileToSpriteBuffer(data_ov003_0220f584,0x340,32);
-func_020a9a30(1,0,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4380);
-func_020a9a30(1,0,4,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4680);
-func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x300);
+LoadSpriteResource(1,0,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4380);
+LoadSpriteResource(1,0,4,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4680);
+LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x300);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 SetFileDirectory(data_ov003_0220f59c);
 data=GetLocalizedFileName(data_ov003_0220f5a4);LoadDecompressedFileTo(data,M2C_FIELD(gCur3DSpriteEngine,void**,0x10));
@@ -125,17 +125,17 @@ M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;
 Load3DSpritePattern(0x5100,10,GetUiColor(10),1);
 data=LoadFileToBuffer(GetLocalizedFileName(data_ov003_0220f5e0),1);LoadGraphicsBlock(data,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x2800);HeapFreeBlock(data);
 LoadFileToSpriteBuffer(data_ov003_0220f5f4,0x2c0,32);
-func_020a9a30(1,0,4,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x6500);
-func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x360);
-func_020a9a30(1,0,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4b00);
-func_020a9a30(1,0,2,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4e00);
-func_020a9a30(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x320);
-for(i=0;i<=7;i++){u8 *dest=M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+((u16)((i<<3)+0x210)<<5);MI_CpuCopy32(GetTerrainTileData(func_ov003_02200b5c(i)),dest,256);}
+LoadSpriteResource(1,0,4,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x6500);
+LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x360);
+LoadSpriteResource(1,0,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4b00);
+LoadSpriteResource(1,0,2,M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+0x4e00);
+LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x320);
+for(i=0;i<=7;i++){u8 *dest=M2C_FIELD(gCur3DSpriteEngine,u8**,0x1c)+((u16)((i<<3)+0x210)<<5);MI_CpuCopy32(GetTerrainTileData(GetPreviewTerrainId(i)),dest,256);}
 CopyToObjPaletteShadow(GetTerrainPalette(15,0),0x2e0,32);CopyToObjPaletteShadow(GetTerrainPalette(15,0),0x300,32);
 DimPalette(M2C_FIELD(gCur3DSpriteEngine,u8**,0x30)+0x300);M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=16;
 gCur3DSpriteEngine=saved;
 }
-#pragma opt_common_subs reset
+#pragma optimization_level 3
 void func_ov003_021e2518(void *arg0) {
 M2C_UNK UpdateSpriteAnimation(s32); s32 GetSpriteAnimValue(s32);
 M2C_UNK Ov003_DrawPreviewUnitCategoryGrid(void *,s32,M2C_UNK);
@@ -146,16 +146,17 @@ s32 v; void **saved;
 if(M2C_FIELD(arg0,u8 *,0x39)==0)return;
 UpdateSpriteAnimation(M2C_FIELD(arg0,s32 *,0x3c));
 UpdateSpriteAnimation(M2C_FIELD(arg0,s32 *,0x40));
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
+{void ***current = &gCur3DSpriteEngine;saved=*current;*current=g3DSpriteEngineMain;}
 GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x3c));
 GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x40));
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3a)=-GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x3c));
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x42)=0;
 func_ov003_021e3ff8(arg0,(s16)(GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x3c))+6),40);
-gCur3DSpriteEngine=g3DSpriteEngineSub;
+{void ***source = &g3DSpriteEngineSub; gCur3DSpriteEngine = *source;}
 v=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x3c));
 func_ov003_021e3aec(arg0,v,0);Ov003_DrawPreviewUnitCategoryGrid(arg0,v,0);
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3e)=-44-v;
 M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0xffe9;
 gCur3DSpriteEngine=saved;
 }
+#pragma optimization_level reset

@@ -9,7 +9,7 @@ static inline void DrawMapParticleAtX(u8 x,MapEffectParticle *p,void *map) {
 
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
-void func_020a38f4(s32 a) {
+void SetWeatherChangeDelay(s32 a) {
  extern s32 *gCurrentMap;
  void *p;u32 index;
  switch(a){case 1:case 2:case 3:
@@ -34,21 +34,21 @@ void func_020a3934(s32 a,s32 b) {
  break;}
 }
 #pragma opt_instruction_scheduling reset
-void func_020a398c(s32 a) {
+void SetWeatherChangeDelayIfChanged(s32 a) {
  extern s32 *gCurrentMap;
  if(a==0)return;
  if(a==M2C_FIELD(*gCurrentMap,u8 *,0x5158))return;
- func_020a38f4(a);
+ SetWeatherChangeDelay(a);
 }
 
 void StartWeatherChange(M2C_UNK arg0) {
     s16 func_020a3790(M2C_UNK);
     void func_020a3934();
-    extern M2C_UNK data_021204f4;
+    extern M2C_UNK gWeatherTransitionSpriteClass;
     void *temp_r4;
 
     func_020a3934();
-    temp_r4 = CreateSpriteFromClass(&data_021204f4, 7);
+    temp_r4 = CreateSpriteFromClass(&gWeatherTransitionSpriteClass, 7);
     M2C_FIELD(temp_r4, s16 *, 0x36) = func_020a3790(arg0);
     M2C_FIELD(temp_r4, s16 *, 0x38) = 0;
 }
@@ -75,14 +75,19 @@ case 3:if(roll<30)weather=0;else if(roll<50)weather=2;else if(roll<70)weather=1;
 return weather;
 }
 
-void func_020a3b58(void) {
-extern s32 *gCurrentMap;extern M2C_UNK data_021204f4;
-void *p;
-func_020a398c(M2C_FIELD(*gCurrentMap,u8 *,0x515a));
-if(M2C_FIELD(*gCurrentMap,u8 *,0x5158)==M2C_FIELD(*gCurrentMap,u8 *,0x515a))return;
-p=CreateSpriteFromClass(&data_021204f4,7);
-M2C_FIELD(p,u16 *,0x36)=M2C_FIELD(*gCurrentMap,u8 *,0x515a);
-M2C_FIELD(p,u16 *,0x38)=1;
+/* Bring the map back to the weather it started with: if the start weather
+ * differs from the current one, first note the change for the acting player,
+ * then start a transition sprite towards the start weather. */
+void BeginWeatherResetTransition(void) {
+    extern s32 *gCurrentMap;
+    extern M2C_UNK gWeatherTransitionSpriteClass;
+    void *sprite;
+
+    SetWeatherChangeDelayIfChanged(M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_START));
+    if (M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER) == M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_START)) return;
+    sprite = CreateSpriteFromClass(&gWeatherTransitionSpriteClass, 7);
+    M2C_FIELD(sprite, u16 *, 0x36) = M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_START);
+    M2C_FIELD(sprite, u16 *, 0x38) = 1;
 }
 
 /* Sets up the clear-weather map effects: the four drifting records get random
@@ -273,7 +278,7 @@ void DrawSnowParticles(void) {
     } while (end > (s32)first);
 }
 #pragma scheduling on
-void func_020a434c(void) {
+void DrawSandstormParticles(void) {
     void DS3D_AddSpriteQuad(s32, s32, u32, u16 *);
     extern u8 data_0212049c[];
     extern s32 *gCurrentMap;
@@ -319,26 +324,45 @@ void func_020a434c(void) {
     } while (end > (s32)j);
 }
 #pragma scheduling reset
-void func_020a445c(void) {
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;extern s32 *gCurrentMap;
-void DrawSnowParticles(void);void func_020a434c(void);
-s32 old=gCur3DSpriteEngine;
-gCur3DSpriteEngine=g3DSpriteEngineMain;
-switch(M2C_FIELD(*gCurrentMap,u8 *,0x5158)){case 0:break;case 1:DrawRainParticles();break;case 2:DrawSnowParticles();break;case 3:func_020a434c();break;}
-gCur3DSpriteEngine=old;
+/* Draws the map's current weather particles on the main 3D sprite engine: the
+ * engine is switched to the main screen for the draw and restored afterwards,
+ * then the drawer chosen by MAP_WEATHER runs (nothing in clear weather). */
+void DrawWeatherEffects(void) {
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain;
+    extern s32 *gCurrentMap;
+    void DrawRainParticles(void);
+    void DrawSnowParticles(void);
+    void DrawSandstormParticles(void);
+    s32 savedEngine = gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    switch (M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER)) {
+    case MAP_WEATHER_CLEAR:
+        break;
+    case MAP_WEATHER_RAIN:
+        DrawRainParticles();
+        break;
+    case MAP_WEATHER_SNOW:
+        DrawSnowParticles();
+        break;
+    case MAP_WEATHER_SANDSTORM:
+        DrawSandstormParticles();
+        break;
+    }
+    gCur3DSpriteEngine = savedEngine;
 }
 
 #pragma scheduling reset
-void func_020a44d0(void) {
+void CreateWeatherEffectSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_021204d4;
-    CreateSpriteFromClass(&data_021204d4, 1);
+    extern M2C_UNK gWeatherEffectSpriteClass;
+    CreateSpriteFromClass(&gWeatherEffectSpriteClass, 1);
 }
 
 void func_020a44e8(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_021204d4;
-    DeleteSpriteObjectsOfClass(&data_021204d4);
+    extern M2C_UNK gWeatherEffectSpriteClass;
+    DeleteSpriteObjectsOfClass(&gWeatherEffectSpriteClass);
 }
 
 void func_020a44fc(M2C_UNK arg0, s32 arg1) {
@@ -386,22 +410,29 @@ while(orderType=order->type){s32 startX=order->x;s32 endX=startX+order->width; s
 if(x>=startX&&y>=startY&&x<endX&&y<endY){if(orderType==type)return order;}order++;}return 0;
 }
 
-u8 func_020a4700(s32 a,s32 b) {
-extern s32 *gCurrentMap;
-s16 pos[2];s32 p;void *q=FindMapOrderAtTile(a,b);
-if(!q)return 0;
-if(!func_020a488c(q,pos))return 0;
-p=*gCurrentMap;
-return M2C_FIELD(p+(pos[0]+M2C_FIELD(p+pos[1]*2,u16 *,0x3758)),s8 *,0x1e30)>=0;
+/* Returns 1 when the map order covering tile (x, y) has its effect position
+ * marked in the current cell layer: the tile lies in the order effect area
+ * (a commander power, a missile...) being shown on the map. */
+u8 IsCellInOrderEffectArea(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s16 pos[2];
+    s32 map;
+    MapOrder *order = FindMapOrderAtTile(x, y);
+    if (!order) return 0;
+    if (!GetMapOrderEffectPosition(order, pos)) return 0;
+    map = *gCurrentMap;
+    return M2C_FIELD(map + (pos[0] + M2C_FIELD(map + pos[1] * 2, u16 *, MAP_ROW_OFFSETS)), s8 *, MAP_CELL_ORDER) >= 0;
 }
 
-s32 FindMapFeatureAtTile(s32 a,s32 b) {
-s16 pos[2];void *p=FindMapOrderAtTile(a,b);
-if(!p)return 0;
-if(!func_020a488c(p,pos))return 0;
-if(pos[0]!=a||pos[1]!=b)return 0;
-if(!M2C_FIELD(p,u8 *,4))p=0;
-return (s32)p;
+/* The destructible map feature anchored exactly at tile (x, y), or NULL: the map
+ * order covering the tile must resolve to this tile and still have hit points left. */
+s32 FindMapFeatureAtTile(s32 x,s32 y) {
+s16 pos[2];void *order=FindMapOrderAtTile(x,y);
+if(!order)return 0;
+if(!func_020a488c(order,pos))return 0;
+if(pos[0]!=x||pos[1]!=y)return 0;
+if(!M2C_FIELD(order,u8 *,MAP_ORDER_VALUE))order=0;
+return (s32)order;
 }
 
 s32 func_020a47e0(s32 a,s32 b) {
@@ -420,7 +451,7 @@ if(value)result=1;
 return result;
 }
 #pragma scheduling reset
-s32 func_020a488c(void *arg0, void *arg1) {
+s32 GetMapOrderEffectPosition(void *arg0, void *arg1) {
     u32 temp_r2;
 
     temp_r2 = (u32) (M2C_FIELD(arg0, u16 *, 2) << 0x16) >> 0x1C;

@@ -6,14 +6,14 @@ void Ov001_CloseSaveSlotMenuStep(void) {
     void func_ov001_02182a88(void);
     void func_ov001_02182a8c(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     void func_ov001_02182a90(void);
     func_ov001_02182a88();
     func_ov001_02182a8c();
-    if (func_ov001_02186648() != 0) return;
+    if (Ov001_GetRegionMenuSelection() != 0) return;
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_PlaySound(6);
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182a90);
 }
@@ -102,18 +102,29 @@ void func_ov001_02182c28(void) {
 #pragma push
 #pragma opt_common_subs off
 void func_ov001_02182c2c(void) {
-void func_ov001_02182c68(void);
-Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,0x15,8);Ov001_SetStepCallback((M2C_UNK*)&func_ov001_02182c68);
+void Ov001_CloseSaveNameEntry(void);
+Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,0x15,8);Ov001_SetStepCallback((M2C_UNK*)&Ov001_CloseSaveNameEntry);
 }
 
-void func_ov001_02182c68(void) {
-s32 Ov001_IsFadeActive(M2C_UNK);M2C_UNK Ov001_FreeOptionBackground();
-M2C_UNK Ov001_SetNextScreenMode(M2C_UNK,M2C_UNK);M2C_UNK Ov001_SetNameEntryMode(M2C_UNK,M2C_UNK);
-M2C_UNK Ov001_FreePageBackground(M2C_UNK);M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK,M2C_UNK);
-extern M2C_UNK func_ov001_021828ac;
-if(Ov001_IsFadeActive(1)!=0)return;if(Ov001_IsFadeActive(0)!=0)return;
-Ov001_FreePageBackground(0);Ov001_FreeOptionBackground();Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,0x15);
-Ov001_SetNextScreenMode(0,0);Ov001_SetNameEntryMode(0,2);Ov001_SetStepCallback(&func_ov001_021828ac);
+void Ov001_CloseSaveNameEntry(void) {
+    s32 Ov001_IsFadeActive(M2C_UNK);
+    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
+    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
+    extern M2C_UNK Ov001_PrepareSaveSlotMenu;
+
+    /* Wait for both screen fades, then clear the name-entry UI and switch to save-slot selection. */
+    if (Ov001_IsFadeActive(1) != 0) return;
+    if (Ov001_IsFadeActive(0) != 0) return;
+    Ov001_FreePageBackground(0);
+    Ov001_FreeOptionBackground();
+    Ov001_DisableVisiblePlanes(1, 1);
+    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_SetNextScreenMode(0, 0);
+    Ov001_SetNameEntryMode(0, 2);
+    Ov001_SetStepCallback(&Ov001_PrepareSaveSlotMenu);
 }
 #pragma pop
 void func_ov001_02182cd8(void) {
@@ -514,14 +525,14 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
 
 void func_ov001_02183584(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_021835b0;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_021835b0);
 }
 
@@ -533,7 +544,7 @@ void func_ov001_021835b0(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
 }
 
-void func_ov001_021835d0(void){void func_ov001_0218362c(void);extern u8 gOv001WfcScreenState;switch(func_ov001_02186648()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}func_ov001_02186604();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218362c);}
+void func_ov001_021835d0(void){void func_ov001_0218362c(void);extern u8 gOv001WfcScreenState;switch(Ov001_GetRegionMenuSelection()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}Ov001_CloseRegionMenu();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218362c);}
 
 void func_ov001_0218362c(void) {
     M2C_UNK Ov001_UnlockIconRow();

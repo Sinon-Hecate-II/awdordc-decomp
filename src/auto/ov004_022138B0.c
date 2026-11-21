@@ -43,7 +43,10 @@ s32 func_ov004_0221395c(void) {
     return 0;
 }
 
-s32 func_ov004_022139a8(void) {
+/* Battle-script condition: true when the standing command sets a player's AI
+ * mode (kind 24) and the unit under the cursor stands on a temporary airfield
+ * owned by player 1. */
+s32 IsSetAiModeCommandOnPlayerOneTempAirfield(void) {
     extern void **gCurrentMap;
     extern u8 gAiCommand;
     u8 value;
@@ -51,12 +54,12 @@ s32 func_ov004_022139a8(void) {
     u8 *base;
     u8 x, y;
     base = *gCurrentMap;
-    p = M2C_FIELD(base, u8 **, 0x52D0);
-    x = p[1]; y = p[2];
-    if (gAiCommand == 24) {
-        p = base + (x + M2C_FIELD(base + y * 2, u16 *, 0x3758));
-        value = p[0x1420];
-        if (((s32)(value & 0xE0) >> 5) == 1 && (value & 0x1F) == 0x14) return 1;
+    p = M2C_FIELD(base, u8 **, MAP_CURSOR_UNIT);
+    x = p[MAP_UNIT_X]; y = p[MAP_UNIT_Y];
+    if (gAiCommand == AI_COMMAND_SET_AI_MODE) {
+        p = base + (x + M2C_FIELD(base + y * 2, u16 *, MAP_ROW_OFFSETS));
+        value = p[MAP_CELL_TERRAIN];
+        if (((s32)(value & MAP_TERRAIN_OWNER_MASK) >> MAP_PROPERTY_TILE_OWNER_SHIFT) == 1 && (value & MAP_TERRAIN_KIND_MASK) == MAP_TERRAIN_TEMP_AIRFIELD) return 1;
     }
     return 0;
 }
@@ -79,22 +82,45 @@ s32 CheckPlayerOneOpeningFormation(void) {
  return 1;
 }
 
-s32 func_ov004_02213ad8(void) {
+/* True (1) when player 2's unit group holds no units: counts the group's
+ * occupied records (ids gPlayerUnitIdBase[2]+1 .. +0x32). */
+s32 PlayerTwoHasNoUnits(void) {
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
+ s32 count; s32 i; u8 *unit; s32 end; u8 kind;
+ count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+MAP_UNIT_GROUP_SCAN;
+ if(i<end) {unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
+ do {kind=*unit; if((u32)(kind<<26)>>26) count++; i++; unit+=MAP_UNIT_STRIDE;}while(i<end);}
  if(count!=0)return 0; return 1;
 }
 
-s32 func_ov004_02213b48(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
- if(count!=0)return 0; return 1;
+/* Tests whether player 2 has any occupied unit records. */
+s32 Ov004_IsPlayerTwoArmyEmpty(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 unitCount;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+    u8 kindAndRank;
+
+    unitCount = 0;
+    unitId = gPlayerUnitIdBase[2] + 1;
+    endId = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kindAndRank = unit[MAP_UNIT_KIND];
+            if ((u32)(kindAndRank << 26) >> 26) {
+                unitCount++;
+            }
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    if (unitCount != 0) {
+        return 0;
+    }
+    return 1;
 }
 
 void func_ov004_02213bb8(void) {
@@ -172,13 +198,31 @@ u8 func_ov004_02213ed0(void) {
  if((n&3)==0)r=1;else r=0; return r;
 }
 
-s32 func_ov004_02213f08(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
- if(count!=0)return 0; return 1;
+/* Battle-script condition: true when player 2 has no units left on the map, i.e.
+ * none of its unit slots (base+1 .. base+MAP_UNIT_GROUP_SCAN) holds a live kind. */
+s32 IsPlayerTwoUnitGroupEmpty(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 count;
+    s32 i;
+    u8 *unit;
+    s32 end;
+    u8 kind;
+
+    count = 0;
+    i = gPlayerUnitIdBase[2] + 1;
+    end = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (i < end) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
+        do {
+            kind = *unit;
+            if ((u32)(kind << 26) >> 26) count++;
+            i++;
+            unit += MAP_UNIT_STRIDE;
+        } while (i < end);
+    }
+    if (count != 0) return 0;
+    return 1;
 }
 
 u8 func_ov004_02213f78(void) {
@@ -212,10 +256,10 @@ u8 func_ov004_02214010(void) {
 }
 
 u8 func_ov004_02214030(void) {
-    s32 func_020a3518(M2C_UNK);
+    s32 GetCoPowerMeterPoints(M2C_UNK);
     u8 var_r0;
 
-    if (func_020a3518(1) != 0) {
+    if (GetCoPowerMeterPoints(1) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -229,7 +273,7 @@ u8 func_ov004_02214050(void) {
     u8 var_r0;
 
     temp_r4 = GetCoPowerMeterCost(1, 2);
-    if ((temp_r4 - func_020a3518(1)) == 0) {
+    if ((temp_r4 - GetCoPowerMeterPoints(1)) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -237,12 +281,14 @@ u8 func_ov004_02214050(void) {
     return var_r0;
 }
 
-s32 func_ov004_02214080(void) {
+/* ov004 battle-script condition: true (1) when player 2's unit group holds no
+ * units (ids gPlayerUnitIdBase[2]+1 .. +0x32), false when any record is occupied. */
+s32 IsPlayerTwoGroupEmpty(void) {
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
+ s32 count; s32 i; u8 *unit; s32 end; u8 kind;
+ count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+MAP_UNIT_GROUP_SCAN;
+ if(i<end) {unit=(u8 *)*gCurrentMap+MAP_UNIT_RECORDS+i*MAP_UNIT_STRIDE;
+ do {kind=*unit; if((u32)(kind<<26)>>26) count++; i++; unit+=MAP_UNIT_STRIDE;}while(i<end);}
  if(count!=0)return 0; return 1;
 }
 
@@ -278,17 +324,17 @@ s32 func_ov004_022141bc(void) {
     s32 temp_r4;
 
     temp_r4 = GetCoPowerMeterCost(1, 2);
-    if ((temp_r4 == func_020a3518(1)) && (func_020a3518(1) > 0)) {
+    if ((temp_r4 == GetCoPowerMeterPoints(1)) && (GetCoPowerMeterPoints(1) > 0)) {
         return 1;
     }
     return 0;
 }
 
 u8 func_ov004_022141fc(void) {
-    s32 func_020a4ce8(M2C_UNK);
+    s32 HasActiveMapOrderOfType(M2C_UNK);
     u8 var_r0;
 
-    if (func_020a4ce8(4) == 0) {
+    if (HasActiveMapOrderOfType(4) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -340,13 +386,34 @@ s32 IsSelectedUnitAtScriptTile(void) {
  return cursorX==4 && cursorY==12;
 }
 
-s32 func_ov004_0221435c(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
- if(count!=0)return 0; return 1;
+/* Battle-script condition that succeeds when player 2 has no units. */
+s32 Ov004_IsPlayerTwoArmyEmpty_0221435C(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 unitCount;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+    u8 kindAndRank;
+
+    unitCount = 0;
+    unitId = gPlayerUnitIdBase[2] + 1;
+    endId = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kindAndRank = unit[MAP_UNIT_KIND];
+            if ((u32)(kindAndRank << 26) >> 26) {
+                unitCount++;
+            }
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    if (unitCount != 0) {
+        return 0;
+    }
+    return 1;
 }
 
 /* Battle-script condition: player 2 is defeated.  True when the player's lost
@@ -397,23 +464,59 @@ void func_ov004_022144b4(s32 arg0) {
  func_020c78e8(pos[0],pos[1],3,50,arg0);
 }
 
-s32 func_ov004_02214510(void) {
- extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
- s32 count; s32 i; u8 *p; s32 end; u8 v;
- count=0; i=gPlayerUnitIdBase[2]+1; end=gPlayerUnitIdBase[2]+0x33;
- if(i<end) {p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do {v=*p; if((u32)(v<<26)>>26) count++; i++; p+=14;}while(i<end);}
- if(count!=0)return 0; return 1;
+/* Battle-script condition that succeeds when player 2 has no units. */
+s32 Ov004_IsPlayerTwoArmyEmpty_02214510(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 unitCount;
+    s32 unitId;
+    u8 *unit;
+    s32 endId;
+    u8 kindAndRank;
+
+    unitCount = 0;
+    unitId = gPlayerUnitIdBase[2] + 1;
+    endId = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kindAndRank = unit[MAP_UNIT_KIND];
+            if ((u32)(kindAndRank << 26) >> 26) {
+                unitCount++;
+            }
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    if (unitCount != 0) {
+        return 0;
+    }
+    return 1;
 }
 
-s32 func_ov004_02214580(void) {
- extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];
- s32 count,i,end;u8 *p,v;
- count=0;
- i=gPlayerUnitIdBase[2]+1;end=gPlayerUnitIdBase[2]+0x33;
- if(i<end){p=(u8 *)*gCurrentMap+0x59A4+i*14;
- do{v=*p;if((u32)(v<<26)>>26)count++;i++;p+=14;}while(i<end);}
- if(count>3)return 0;return 1;
+/* ov004 battle-script condition: player 2 has at most three units.  It counts
+ * the non-empty records of player 2's unit group (base+1 .. base+MAP_UNIT_GROUP_SCAN). */
+s32 Ov004_IsPlayerTwoUnitCountAtMostThree(void) {
+    extern void **gCurrentMap;
+    extern u16 gPlayerUnitIdBase[];
+    s32 unitCount, unitId, endId;
+    u8 *unit;
+    u8 kindAndRank;
+
+    unitCount = 0;
+    unitId = gPlayerUnitIdBase[2] + 1;
+    endId = gPlayerUnitIdBase[2] + MAP_UNIT_GROUP_SCAN;
+    if (unitId < endId) {
+        unit = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE;
+        do {
+            kindAndRank = *unit;
+            if ((u32)(kindAndRank << 26) >> 26) unitCount++;
+            unitId++;
+            unit += MAP_UNIT_STRIDE;
+        } while (unitId < endId);
+    }
+    if (unitCount > 3) return 0;
+    return 1;
 }
 
 s32 func_ov004_022145f0(s8 *a) {
@@ -512,10 +615,10 @@ u8 func_ov004_022147b8(void) {
 u8 func_ov004_022147e0(void) {
     u8 var_r0;
 
-    if (func_020a4ce8(6) != 0) {
+    if (HasActiveMapOrderOfType(6) != 0) {
         return 0U;
     }
-    if (func_020a4ce8(7) == 0) {
+    if (HasActiveMapOrderOfType(7) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

@@ -11,7 +11,7 @@ void func_0200bda4(s32 arg0) {
     void func_0200b118(void *);
     s32 RegisterArchiveName(void *, M2C_UNK, M2C_UNK);
     void func_0200b6a8(void *, s32, s32);
-    s32 func_0200b2bc(void *, s32, s32, s32, s32, s32, void *, void *);
+    s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 func_0200bd9c(void);
     s32 func_0200bd94(void);
     s32 func_0200bd20(void);
@@ -38,7 +38,7 @@ void func_0200bda4(s32 arg0) {
         M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = -1;
         M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
         func_0200b6a8(&data_0212fc14, (s32)func_0200bd9c, -1);
-        func_0200b2bc(&data_0212fc14, 0, 0, 0, 0, 0,
+        ConfigureArchiveLayout(&data_0212fc14, 0, 0, 0, 0, 0,
                       (void *)func_0200bd94, (void *)func_0200bd20);
         return;
     }
@@ -50,7 +50,7 @@ void func_0200bda4(s32 arg0) {
         if (v0 != (u32)-1 && v0 != 0) {
             u32 v2 = base[0x82];
             if (v2 != (u32)-1 && v2 != 0) {
-                func_0200b2bc(&data_0212fc14, 0, (s32)v2, (s32)base[0x83], (s32)v0, (s32)base[0x81],
+                ConfigureArchiveLayout(&data_0212fc14, 0, (s32)v2, (s32)base[0x83], (s32)v0, (s32)base[0x81],
                               (void *)func_0200bcd8, (void *)func_0200bd20);
             }
         }
@@ -104,11 +104,11 @@ void BuildFileRange(u32 *arg0,void *arg1) {
 #pragma scheduling off
 s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u32 arg6, u32 arg7)
 {
-  void InitFileRequest(void *);
-  s32 OpenFileDirect(void *, s32, u32, u32, s32);
-  s32 FileRead(void *, void *, s32);
-  void CloseFileRequest(void *);
-  s32 OpenFileRange(void *, Unk0200FilePair);
+  void func_0200b774(void *);
+  s32 func_0200b99c(void *, s32, u32, u32, s32);
+  s32 func_0200bbe0(void *, void *, s32);
+  void func_0200ba9c(void *);
+  s32 func_0200b9e4(void *, Unk0200FilePair);
   u32 work[18];
   Unk0200FilePair pair;
   u32 size;
@@ -131,44 +131,45 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
   }
   arg2++;
   arg2--;
-  InitFileRequest(work);
-  if (new_var = !OpenFileDirect(work, arg3, base + shifted, base + size, -(shifted = 1)))
+  func_0200b774(work);
+  if (new_var = !func_0200b99c(work, arg3, base + shifted, base + size, -(shifted = 1)))
   {
     return 0;
   }
-  if (FileRead(work, arg0, 32) != 32)
+  if (func_0200bbe0(work, arg0, 32) != 32)
   {
-    CloseFileRequest(work);
+    func_0200ba9c(work);
     return 0;
   }
-  CloseFileRequest(work);
+  func_0200ba9c(work);
   arg0[8] = arg1;
-  BuildFileRange((u32 *) (&pair), arg0);
-  if (!OpenFileRange(work, pair))
+  func_0200bf64((u32 *) (&pair), arg0);
+  if (!func_0200b9e4(work, pair))
   {
     return 0;
   }
   arg0[9] = work[9];
   arg0[10] = work[10] - work[9];
-  CloseFileRequest(work);
+  func_0200ba9c(work);
   return 1;
 }
-#pragma scheduling reset
+#pragma opt_strength_reduction off
 s32 LoadFileHeader(u32 *arg0,s32 arg1,u32 arg2) {
 void InitFileRequest(void *);s32 OpenFileRange(void *,Unk0200FilePair);void CloseFileRequest(void *);void MI_CpuCopy8();
 extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
 u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
 if(p[0]){
-if(p[1]<=(arg2<<5))return 0;
-MI_CpuCopy8(p[0]+(arg2<<5),arg0,32);
+u32 offset = arg2 << 5;
+if(p[1] <= offset) return 0;
+MI_CpuCopy8((const void *)(offset + p[0]),arg0,32);
 arg0[8]=arg1;InitFileRequest(work);BuildFileRange((u32 *)&pair,arg0);
 if(!OpenFileRange(work,pair))return 0;
 arg0[9]=work[9];arg0[10]=work[10]-work[9];CloseFileRequest(work);return 1;
 }
 return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
 }
-#pragma optimization_level 4
+#pragma opt_strength_reduction on
 /* Verify that `message` carries the expected HMAC-SHA1 signature
  * (`expectedDigest`): sign it with the fixed archive key and compare the 20-byte
  * digest word by word.  Returns 1 when they match. */
@@ -189,6 +190,8 @@ s32 HmacSha1Verify(u32 expectedDigest, s32 message, s32 messageLength) {
     return i == SHA1_DIGEST_SIZE;
 }
 
+#pragma push
+#pragma opt_lifetimes off
 void CompleteFileLoad(void *arg0) {
     u32 func_0200bf0c(void *);
     s32 HmacSha1Verify(u32, s32, s32);
@@ -202,13 +205,11 @@ void CompleteFileLoad(void *arg0) {
     u32 r4;
     u32 top = 0;
     u32 idx = 0;
-    u8 *start;
     u8 *end;
+    u8 *start;
     s32 count = 0;
     void *p;
-    u32 rr4;
-    u32 rr5;
-    u32 pp;
+    s32 verified;
     u32 fn;
 
     r5 = arg0;
@@ -216,19 +217,21 @@ void CompleteFileLoad(void *arg0) {
 
     if (*(u16 *)0x27ffc40 == 2) {
         top = (u32)M2C_FIELD(r5, u32 *, 0x1c) >> 24;
+        verified = 0;
         if (top & 2) {
-            start = data_0212dbac;
             end = (u8 *)&data_0212dbc0;
+            start = data_0212dbac;
             idx = M2C_FIELD(r5, u32 *, 0x0);
             count = (s32)(end - start) / 20;
             if (idx < (u32)count) {
                 p = start + idx * 20;
-                if (HmacSha1Verify((u32)p, M2C_FIELD(r5, s32 *, 4), r4) == 0) {
-                    MI_CpuFill8(M2C_FIELD(r5, s32 *, 4), 0, r4);
-                    SystemHalt();
-                    return;
-                }
+                verified = HmacSha1Verify((u32)p, M2C_FIELD(r5, s32 *, 4), r4);
             }
+        }
+        if (verified == 0) {
+            MI_CpuFill8(M2C_FIELD(r5, s32 *, 4), 0, r4);
+            SystemHalt();
+            return;
         }
     }
 
@@ -237,17 +240,15 @@ void CompleteFileLoad(void *arg0) {
         func_02000970(M2C_FIELD(r5, s32 *, 4) + (s32)r4);
     }
     DC_FlushRange(M2C_FIELD(r5, M2C_UNK *, 4), M2C_FIELD(r5, M2C_UNK *, 8));
-    rr4 = M2C_FIELD(r5, u32 *, 0x10);
-    rr5 = M2C_FIELD(r5, u32 *, 0x14);
-    if (rr4 >= rr5) return;
-    pp = rr4;
-    while (pp < rr5) {
-        fn = *(u32 *)pp;
+    r4 = M2C_FIELD(r5, u32 *, 0x10);
+    r5 = M2C_FIELD(r5, void **, 0x14);
+    if (r4 < (u32)r5) do {
+        fn = *(u32 *)r4;
         if (fn) ((void (*)(void))fn)();
-        pp += 4;
-    }
+        r4 += 4;
+    } while (r4 < (u32)r5);
 }
-
+#pragma pop
 /* Run and unregister every exit function (a static destructor registered
  * through gExitFunctionList) that belongs to the module now occupying `header`'s
  * buffer: a node is taken out when its callback address, or its nonzero
@@ -332,7 +333,7 @@ s32 func_0200c3f8(void *range) {
 
 s32 func_0200c408(s32 arg0,s32 arg1) {s32 LoadFileHeader();u8 temp[44];if(!LoadFileHeader(temp,arg0,arg1) || !func_0200c3f8(temp)) return 0;return 1;}
 
-void func_0200c454(void *arg0) {
+void MD5Init(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
     M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
     M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
@@ -341,40 +342,41 @@ void func_0200c454(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
 
-void func_0200c494(void *arg0, void *arg1, u32 arg2) {
+/* Append length bytes of message data to an MD5 context: fill the pending
+ * block, compress every complete 64-byte block, and keep the tail buffered. */
+void MD5Update(void *context, void *data, u32 length) {
     void MI_CpuCopy8(void *, void *, u32);
-    void func_0200c614(void *);
-    u64 total = M2C_FIELD(arg0, u64 *, 0x10);
-    u32 rem = (u32)total & 0x3f;
-    u32 space = 0x40 - rem;
-    s32 n;
+    void MD5Transform(void *);
+    MD5Context *ctx = context;
+    u32 rem = ctx->count[0] & 0x3f;
+    u32 space = MD5_BLOCK_SIZE - rem;
+    const u8 *cursor;
+    s32 blocks;
 
-    M2C_FIELD(arg0, u64 *, 0x10) = total + arg2;
-    if (space > arg2) {
-        if (arg2 == 0) return;
-        MI_CpuCopy8(arg1, (u8 *)arg0 + 0x18 + rem, arg2);
+    *(u64 *)ctx->count += length;
+    if (space > length) {
+        if (length == 0) return;
+        MI_CpuCopy8(data, ctx->buffer + rem, length);
         return;
     }
-    MI_CpuCopy8(arg1, (u8 *)arg0 + 0x18 + rem, space);
-    func_0200c614(arg0);
-    arg2 -= space;
-    n = arg2 >> 6;
-    arg1 = (u8 *)arg1 + space;
-    while (n > 0) {
-        MI_CpuCopy8(arg1, (u8 *)arg0 + 0x18, 0x40);
-        arg1 = (u8 *)arg1 + 0x40;
-        func_0200c614(arg0);
-        n = n - 1;
-    }
-    if (arg2 & 0x3f)
-        MI_CpuCopy8(arg1, (u8 *)arg0 + 0x18, 0x3f & arg2);
+    MI_CpuCopy8(data, ctx->buffer + rem, space);
+    MD5Transform(ctx);
+    length -= space;
+    blocks = length >> 6;
+    cursor = (const u8 *)data + space;
+    if (blocks > 0) do {
+        MI_CpuCopy8((void *)cursor, ctx->buffer, MD5_BLOCK_SIZE);
+        cursor += MD5_BLOCK_SIZE;
+        MD5Transform(ctx);
+    } while (--blocks > 0);
+    if (length & 0x3f)
+        MI_CpuCopy8((void *)cursor, ctx->buffer, 0x3f & length);
 }
 
 void func_0200c55c(M2C_UNK arg0, void *arg1) {
-    void func_0200c494(void *, void *, u32);
-    void func_0200c614(void *);
-    s32 MI_CpuFill8();
-    void MI_CpuCopy8();
+    M2C_UNK func_02008048(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK func_0200c494(void *, M2C_UNK *, M2C_UNK);
+    M2C_UNK func_0200c614(void *);
     extern M2C_UNK data_020f522c;
     s32 temp_r6;
     s32 temp_r7;
@@ -389,22 +391,22 @@ void func_0200c55c(M2C_UNK arg0, void *arg1) {
     var_r3 = M2C_FIELD(arg1, u32 *, 0x10) & 0x3F;
     var_r2 = 0x40 - var_r3;
     if (var_r2 < 8U) {
-        MI_CpuFill8(arg1 + 0x18 + var_r3);
+        func_02007f8c(arg1 + 0x18 + var_r3);
         func_0200c614(arg1);
         var_r3 = 0;
         var_r2 = 0x40;
     }
     if (var_r2 > 8U) {
-        MI_CpuFill8(arg1 + 0x18 + var_r3, 0, var_r2 - 8);
+        func_02007f8c(arg1 + 0x18 + var_r3, 0, var_r2 - 8);
     }
     M2C_FIELD(arg1, s32 *, 0x50) = temp_r7;
     M2C_FIELD(arg1, s32 *, 0x54) = temp_r6;
     func_0200c614(arg1);
-    MI_CpuCopy8(arg1, arg0, 0x10);
-    MI_CpuFill8(arg1, 0, 0x58);
+    func_02008048(arg1, arg0, 0x10);
+    func_02007f8c(arg1, 0, 0x58);
 }
 
-void func_0200c614(void *arg0) {
+void MD5Transform(void *arg0) {
     extern u32 data_020f52f0[64];
     extern u32 data_020f5230[48];
     MD5Context *ctx = arg0;

@@ -319,7 +319,7 @@ s32 IsValidMoveCell(s32 x, s32 y) {
     s32 IsUnitSelected(void *);
     s32 func_ov000_02178e84(s32, s32);
     s32 GetKindAttackClass(s32);
-    s32 IsCellOwnedByOtherTeam(s32, s32, s32);
+    s32 IsCellOwnedByOtherArmy(s32, s32, s32);
     s32 func_ov000_02178778(s32, s32);
     s32 IsUnitProductionTerrain(s32);
     extern void **gCurrentMap;
@@ -363,7 +363,7 @@ u8 *m=(u8 *)*gCurrentMap;
 u16 rowOffset=*(u16 *)(m+y*2+0x3758);
 u8 terrain=(m+(x+rowOffset)+0x1000)[0x420]&0x1f;
 if(terrain==0x13 || terrain==0x15) {
-if(!IsCellOwnedByOtherTeam(m[0x52d4],x,y))return 0;
+if(!IsCellOwnedByOtherArmy(m[0x52d4],x,y))return 0;
 }
 }
 }

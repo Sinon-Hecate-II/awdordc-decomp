@@ -27,7 +27,7 @@ s32 WFC_InitSession(void *buffer, u32 size) {
     M2C_FIELD((void *)gWfcSession, u16 *, WFC_SESSION_ERROR) = 0;
     M2C_FIELD((void *)gWfcSession, u16 *, WFC_SESSION_RESULT) = 0;
     WFC_InitSessionStatus(); WFC_InitSendState();
-    if (!func_02006f8c()) func_02006f14();
+    if (!IsSystemTickInitialized()) InitSystemTick();
     if (!func_02007180()) func_02007140();
     InitTimer((void *)(gWfcSession + WFC_SESSION_TIMER));
     OS_RestoreInterrupts(irq); return 0;
@@ -48,7 +48,7 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
     s32 func_020120f8(void *);
     u16 WFC_GetPlayerMask(void);
     s32 WFC_ShutdownCommandChannel(void);
-    void func_0202830c(void);
+    void WFC_ProcessPeerStatusEvent(void);
     void WFC_OperationCallback(void);
     extern s32 gWfcSession;
     s32 irq = OS_DisableInterrupts();
@@ -100,7 +100,7 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
         OS_RestoreInterrupts(irq);
         return 5;
     }
-    if (func_020119dc((s32)func_0202830c) != 0) {
+    if (func_020119dc((s32)WFC_ProcessPeerStatusEvent) != 0) {
         WFC_SetState(11);
         OS_RestoreInterrupts(irq);
         return 7;

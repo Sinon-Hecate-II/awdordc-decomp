@@ -8,7 +8,7 @@ extern unsigned char data_ov010_0222f02c[];
 extern M2C_UNK gOv010OnlineSession;
 
 static inline void QueuePop26d9c(void *packet){
-void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
+void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
 u32 saved=*(volatile u16 *)0x4000208;u8 *node;
 *(volatile u16 *)0x4000208=0;
 node=M2C_FIELD(&gOv010OnlineSession,void **,0x60);
@@ -17,7 +17,7 @@ if(!node){u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;re
 func_ov010_0222959c(packet,h->kind,h->channel,h->flags,node+16,M2C_FIELD(node,u32 *,12),M2C_FIELD(node,u16 *,10));}
 {void *next=M2C_FIELD(node,void **,0);M2C_FIELD(&gOv010OnlineSession,void **,0x60)=next;
 if(!next)M2C_FIELD(&gOv010OnlineSession,void **,0x64)=0;}
-func_ov010_02226908(0,node,M2C_FIELD(node,u32 *,12)+16);
+Ov010_FreeBlock(0,node,M2C_FIELD(node,u32 *,12)+16);
 M2C_FIELD(&gOv010OnlineSession,u32 *,0x68)--;
 {u32 old=*(volatile u16 *)0x4000208;*(volatile u16 *)0x4000208=saved;}
 }
@@ -73,7 +73,7 @@ return result;
 
 static inline void RxQueuePop26d9c(u8 *entry,void *buf){
 extern u8 data_ov010_0222ef58[];
-void func_ov010_02226908(s32,void *,u32);
+void Ov010_FreeBlock(s32,void *,u32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
 Ov010Packet *h;
 void *node;
@@ -88,7 +88,7 @@ func_ov010_0222959c(buf,h->kind,h->channel,h->flags,(u8 *)node+0x10,h->size,h->i
 {void *next=M2C_FIELD(node,void **,0);
 M2C_FIELD(entry,void **,0)=next;
 if(!next)M2C_FIELD(entry,void **,4)=0;}
-func_ov010_02226908(0,node,h->size+0x10);
+Ov010_FreeBlock(0,node,h->size+0x10);
 M2C_FIELD(entry,s32 *,8)--;
 (void)*(volatile u16 *)0x4000208;
 *(volatile u16 *)0x4000208=saved;
@@ -112,7 +112,7 @@ M2C_FIELD(entry,u32 *,8)++;
 
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
-s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void func_ov010_02226908(s32,void *,u32);
+s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
 void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
@@ -199,7 +199,7 @@ void *func_ov010_02229568(u32);
 M2C_UNK func_ov010_02229580(s32);
 void func_ov010_0222959c(void *,u32,u32,u32,void *,u32,u32);
 void *func_ov010_022268f4(s32,u32,u32);
-void func_ov010_02226908(s32,void *,u32);
+void Ov010_FreeBlock(s32,void *,u32);
 s32 func_ov010_02229608(u8,void *,s32,u16);
 void func_ov010_02227f88(s32,void *);
 M2C_UNK func_ov010_02228cbc();

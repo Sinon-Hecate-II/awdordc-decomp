@@ -27,7 +27,7 @@ StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
 if(IsMapViewScrolling())return;
 func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
-RefreshMapCursorCellCache();func_020a3b58();func_020a694c();ApplyTurnRepairs();RefreshMapView();
+RefreshMapCursorCellCache();BeginWeatherResetTransition();func_020a694c();ApplyTurnRepairs();RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
@@ -103,16 +103,16 @@ void func_020d482c(void) {
 
 void func_020d4928(void) {
     M2C_UNK CreateSubScreenUi();
-    M2C_UNK func_020d4b30();
-    M2C_UNK func_020d3d68();
+    M2C_UNK InitBattleMapPresentation();
+    M2C_UNK InitPlayerCursorPositions();
     M2C_UNK LoadCurrentMap();
     M2C_UNK func_020d4ae8();
     M2C_UNK func_020b1ae0();
     func_020b1ae0();
     func_020d4ae8();
     LoadCurrentMap();
-    func_020d3d68();
-    func_020d4b30();
+    InitPlayerCursorPositions();
+    InitBattleMapPresentation();
     CreateSubScreenUi();
 }
 
@@ -175,7 +175,7 @@ void func_020d4a50(void) {
     CreateSpriteFromClass(&data_0212be0c, 7);
 }
 
-void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();ResumeSavedBattle(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();func_020d4b30();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
+void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();ResumeSavedBattle(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();InitBattleMapPresentation();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
 
 void func_020d4ac8(s16 arg0) {
     extern M2C_UNK data_0212bdcc;
@@ -185,32 +185,33 @@ void func_020d4ac8(s16 arg0) {
 int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x4c);if(cb)cb();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x50);if(cb)return cb();return (int)cb;}
 
 extern void CreateBattleMapViewSprites(void);
-extern void func_020a44d0(void);
-extern void func_020d33d8(void);
+extern void CreateWeatherEffectSprite(void);
+extern void EnableBattleTurnTimer(void);
 extern void RefreshMapCursorCellCache(void);
 extern int IsLinkSessionActive(void);
-extern void func_020852a8(void);
+extern void CreateSubScreenLinkIndicator(void);
 extern void PlaySlotScriptedSoundAtVolume(int, int, int, int);
-int func_020d4b30() {
+/* Set up the battle display and restart its turn timer and scripted audio. */
+int InitBattleMapPresentation(void) {
     extern void **gCurrentMap;
-    void (*callback)(void);
-    void *ptr;
+    void (*setupView)(void);
+    void *viewController;
 
-    ptr = (void *)gCurrentMap;
-    ptr = *(void **)((char *)ptr + 4);
-    callback = *(void (**)(void))((char *)ptr + 0x40);
+    viewController = (void *)gCurrentMap;
+    viewController = ((void **)viewController)[MAPVIEW_CONTROLLER_INDEX];
+    setupView = M2C_FIELD(viewController, void (**)(void), MAPVIEW_INIT_PRESENTATION);
 
-    if (callback != 0) {
-        callback();
+    if (setupView != 0) {
+        setupView();
     }
 
     CreateBattleMapViewSprites();
-    func_020a44d0();
-    func_020d33d8();
+    CreateWeatherEffectSprite();
+    EnableBattleTurnTimer();
     RefreshMapCursorCellCache();
 
     if (IsLinkSessionActive() == 1) {
-        func_020852a8();
+        CreateSubScreenLinkIndicator();
     }
 
     PlaySlotScriptedSoundAtVolume(1, -1, 0x108, 0);
@@ -219,7 +220,7 @@ int func_020d4b30() {
 
 int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();func_02090034(1,10);func_02090034(2,10);}
 
-M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();LoadScenePanelGraphicsOnBothEngines();func_020d4b30();RefreshMapView();}
+M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();LoadScenePanelGraphicsOnBothEngines();InitBattleMapPresentation();RefreshMapView();}
 
 void func_020d4c08(void) {
     M2C_UNK func_020d4ba4();
@@ -299,7 +300,7 @@ void CreateBattleMapViewSprites(void) {
     func_020d4cc8((void *)map);
     SetSpriteZ(CreateSpriteFromClass(&data_0212bdb4, 6), BATTLE_END_SPRITE_Z);
     SetSpriteZ(CreateSpriteFromClass(&data_0212bd9c, 10), BATTLE_END_SPRITE_Z);
-    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) func_020852a8();
+    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) CreateSubScreenLinkIndicator();
 }
 
 int func_020d4d78(void){s32 FindObjectByZ(s32);void *func_0209cce4(void (*)(void *),int);if(!FindObjectByZ(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
@@ -329,7 +330,7 @@ case 1:func_020d5068();break;
 case 2:UpdateAimingCursor();break;
 case 3:UpdateUnitSelectCursor();break;
 case 4:func_020d61ac();break;
-case 5:func_020d6208();break;
+case 5:UpdateMapTargetCursor();break;
 case 6:func_020d6310();break;
 case 7:func_020d6350();break;
 case 8:func_020d5430();break;
@@ -494,7 +495,7 @@ map=*gCurrentMap;
 unitId=M2C_FIELD(map,u8 *,M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_X)+M2C_FIELD((u8 *)map+M2C_FIELD(map,s16 *,MAP_CURSOR_TARGET_Y)*2,u16 *,MAP_ROW_OFFSETS));
 SetBattleCommand(0x10,unitId,0,0);
 M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT)=(u8 *)map+MAP_UNIT_RECORDS+unitId*MAP_UNIT_STRIDE;
-func_ov000_0219fd54();
+DestroyCursorUnit();
 } else CloseAimingCursor();
 }
 }

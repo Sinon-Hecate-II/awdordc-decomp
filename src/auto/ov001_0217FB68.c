@@ -3,7 +3,11 @@
 #include "wfc.h"
 #include "gx.h"
 
-void func_ov001_0217fb68(void) {
+/* First step of leaving the ov001 option screen: once the sub-screen fade has
+ * finished, slide the icon row out (unless the menu is exiting to the
+ * connection screen), fade the option screen out and hand over to
+ * Ov001_CloseOptionScreen. */
+void Ov001_BeginOptionScreenExit(void) {
     extern u8 gOv001OptionExitToConnection;
     extern M2C_UNK Ov001_CloseOptionScreen;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -84,14 +88,14 @@ void Ov001_HandleOptionPage1Choice(void) {
 
 void func_ov001_0217fd28(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_0217fd54;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_0217fd54);
 }
 
@@ -284,14 +288,14 @@ case 5: data_ov001_02193dbc=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMe
 
 void func_ov001_02180178(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_021801a4;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_021801a4);
 }
 
@@ -362,32 +366,34 @@ void func_ov001_021802e8(void) {
 }
 
 void func_ov001_021802ec(void) {
-    extern M2C_UNK func_ov001_02180328;
+    extern M2C_UNK Ov001_CloseMatchSetupForSave;
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02180328);
+    Ov001_SetStepCallback(&Ov001_CloseMatchSetupForSave);
 }
 
-void func_ov001_02180328(void) {
-    M2C_UNK Ov001_FreeOptionBackground();
-    M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    M2C_UNK Ov001_FreePageBackground(M2C_UNK);
-    M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021828ac;
-    if (Ov001_IsFadeActive(1) != 0) {
+/* Waits for both fades, clears the match setup display, and opens the save slot menu. */
+void Ov001_CloseMatchSetupForSave(void) {
+    M2C_UNK Ov001_FreeOptionBackground(void);
+    M2C_UNK Ov001_SetNextScreenMode(s32, s32);
+    void Ov001_SetNameEntryMode(s32, s32);
+    M2C_UNK Ov001_FreePageBackground(s32);
+    M2C_UNK Ov001_DisableVisiblePlanes(s32, s32);
+    void Ov001_PrepareSaveSlotMenu(void);
+
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     Ov001_FreePageBackground(0);
     Ov001_FreeOptionBackground();
-    Ov001_DisableVisiblePlanes(1, 1);
-    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_DisableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_DisableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetNextScreenMode(0, 0);
     Ov001_SetNameEntryMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_021828ac);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareSaveSlotMenu);
 }
 
 void func_ov001_02180398(void) {
@@ -519,25 +525,28 @@ void Ov001_OptionPage2ConfirmStep(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02180654;
+    extern M2C_UNK Ov001_OptionPage2FadeOutStep;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02180654);
+    Ov001_SetStepCallback(&Ov001_OptionPage2FadeOutStep);
 }
 
-void func_ov001_02180654(void) {
+/* Fade out the second option page and slide away the icon row when leaving for the friend list. */
+void Ov001_OptionPage2FadeOutStep(void) {
     extern u8 gOv001OptionPage2ExitToConnection;
     extern M2C_UNK Ov001_CloseOptionScreen2;
-    if (Ov001_IsFadeActive(1) != 0) {
+    const s32 fadeFrames = 8;
+
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     if (gOv001OptionPage2ExitToConnection == 0) {
         Ov001_StartIconRowSlideOut();
     }
     if (gOv001OptionPage2ExitToConnection == 0) {
-        Ov001_StartFade(3, 1, 1, 8);
+        Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, fadeFrames);
     }
-    Ov001_StartFade(3, 0, 0x14, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, fadeFrames);
     Ov001_SetStepCallback(&Ov001_CloseOptionScreen2);
 }
 
@@ -608,11 +617,11 @@ void Ov001_HandleOptionPage2Choice(void) {
 
 void Ov001_OptionPage2CancelStep(void) {
     extern M2C_UNK func_ov001_02180840;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_02180840);
 }
 

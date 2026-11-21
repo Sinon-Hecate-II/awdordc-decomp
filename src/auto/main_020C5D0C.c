@@ -357,15 +357,19 @@ s32 func_020c67bc(void) {
  return 0;
 }
 
-s32 func_020c6134(void) {
+/* Battle-command availability for Capture: 0 when the unit under the cursor can
+ * capture a property, 2 when it cannot.  Joining or loading another unit blocks
+ * the command; otherwise the move-range grid is cleared and the unit's own cell
+ * made passable, then the reachable enemy and neutral properties are counted. */
+s32 CanCapturePropertyAtCursor(void) {
     s32 CanJoinUnitAtCursor();
     s32 CanLoadUnitAtCursor();
     M2C_UNK FillMapLayer(s32);
-    s32 func_0209fd2c();
+    s32 CollectCapturableProperties();
     extern void **gCurrentMap;
     void *base;
-    s16 a;
-    s16 b;
+    s16 cursorY;
+    s16 cursorX;
 
     if (CanJoinUnitAtCursor() == 0) {
         return 2;
@@ -375,24 +379,28 @@ s32 func_020c6134(void) {
     }
     FillMapLayer(-1);
     base = *gCurrentMap;
-    a = M2C_FIELD(base, s16 *, 0x52DE);
-    b = M2C_FIELD(base, s16 *, 0x52DC);
-    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
-    if (func_0209fd2c() != 0) {
+    cursorY = M2C_FIELD(base, s16 *, MAP_CURSOR_Y);
+    cursorX = M2C_FIELD(base, s16 *, MAP_CURSOR_X);
+    M2C_FIELD(M2C_FIELD((s8 *)base + cursorY * 4, u8 **, MAP_GRID), u8 *, cursorX) = 0;
+    if (CollectCapturableProperties() != 0) {
         return 0;
     }
     return 2;
 }
 
-s32 func_020c61a4(void) {
+/* Availability of the Missile command: 0 when the unit under the cursor can
+ * reach a loaded missile silo this turn, 2 when it cannot.  Joining or loading
+ * another unit blocks the command; otherwise the move-range grid is cleared and
+ * the unit's own cell made passable, then the reachable silos are counted. */
+s32 CanLaunchMissileAtCursor(void) {
     s32 CanJoinUnitAtCursor();
     s32 CanLoadUnitAtCursor();
     M2C_UNK FillMapLayer(s32);
-    s32 func_0209ff34();
+    s32 CollectReachableMissileSilos();
     extern void **gCurrentMap;
     void *base;
-    s16 a;
-    s16 b;
+    s16 cursorY;
+    s16 cursorX;
 
     if (CanJoinUnitAtCursor() == 0) {
         return 2;
@@ -402,10 +410,10 @@ s32 func_020c61a4(void) {
     }
     FillMapLayer(-1);
     base = *gCurrentMap;
-    a = M2C_FIELD(base, s16 *, 0x52DE);
-    b = M2C_FIELD(base, s16 *, 0x52DC);
-    M2C_FIELD(M2C_FIELD((s8 *)base + a * 4, u8 **, 0x52E8), u8 *, b) = 0;
-    if (func_0209ff34() != 0) {
+    cursorY = M2C_FIELD(base, s16 *, MAP_CURSOR_Y);
+    cursorX = M2C_FIELD(base, s16 *, MAP_CURSOR_X);
+    M2C_FIELD(M2C_FIELD((s8 *)base + cursorY * 4, u8 **, MAP_GRID), u8 *, cursorX) = 0;
+    if (CollectReachableMissileSilos() != 0) {
         return 0;
     }
     return 2;

@@ -49,7 +49,7 @@ void func_0209cca8(void *arg0) {
  M2C_FIELD(arg0, void (**)(void *), 0x34)(arg0);
 }
 
-void func_0209ccb8(s32 arg0) {
+void CreateQueuedSpriteTask(s32 arg0) {
     void *CreateSpriteFromClass(M2C_UNK *);
     extern M2C_UNK data_0211e010;
     M2C_FIELD(CreateSpriteFromClass(&data_0211e010), s32 *, 0x34) = arg0;
@@ -424,99 +424,120 @@ s32 func_0209d3c8(void *arg0) {
     return 1;
 }
 
-s32 func_0209d3dc(void *arg0) {
+/* Sprite state handler: start a split-screen transition (TRANSITION_MODE_SPLIT)
+ * lasting the state's duration parameter.  The state data's low bits pick the
+ * screen it runs on (main, sub, both, else the active one) and bit 3 starts it
+ * on the sprite's children instead of the whole screen.  Advances the state. */
+s32 SpriteState_StartSplitTransition(void *sprite) {
     void CreateScreenTransitions(s32, u16, s32, void *);
     void CreateScreenTransitionChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) CreateScreenTransitionChildren(2, (u16)value, mode, arg0);
-    else CreateScreenTransitions(2, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) CreateScreenTransitionChildren(TRANSITION_MODE_SPLIT, (u16)duration, target, sprite);
+    else CreateScreenTransitions(TRANSITION_MODE_SPLIT, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d44c(void *arg0) {
+/* Sprite state handler: start a split-mode screen fade (TRANSITION_MODE_SPLIT)
+ * lasting the state's duration parameter.  The state data's low bits pick the
+ * screen it runs on (main, sub, both, else the active one) and bit 3 starts it
+ * on the sprite's children instead of the whole screen.  Advances the state. */
+s32 SpriteState_StartSplitFade(void *sprite) {
     void StartScreenFades(s32, u16, s32, void *);
     void StartScreenFadeChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) StartScreenFadeChildren(2, (u16)value, mode, arg0);
-    else StartScreenFades(2, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) StartScreenFadeChildren(TRANSITION_MODE_SPLIT, (u16)duration, target, sprite);
+    else StartScreenFades(TRANSITION_MODE_SPLIT, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d4bc(void *arg0) {
+/* Sprite state handler: start a darkening screen transition (TRANSITION_MODE_DARK)
+ * lasting the state's duration parameter.  The state data's low bits pick the
+ * screen it runs on (main, sub, both, else the active one) and bit 3 starts it
+ * on the sprite's children instead of the whole screen.  Advances the state. */
+s32 SpriteState_CreateDarkTransition(void *sprite) {
     void CreateScreenTransitions(s32, u16, s32, void *);
     void CreateScreenTransitionChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) CreateScreenTransitionChildren(0, (u16)value, mode, arg0);
-    else CreateScreenTransitions(0, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) CreateScreenTransitionChildren(TRANSITION_MODE_DARK, (u16)duration, target, sprite);
+    else CreateScreenTransitions(TRANSITION_MODE_DARK, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d52c(void *arg0) {
+s32 SpriteState_StartMainScreenFade(void *sprite) {
     void StartScreenFades(s32, u16, s32, void *);
     void StartScreenFadeChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) StartScreenFadeChildren(0, (u16)value, mode, arg0);
-    else StartScreenFades(0, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+
+    /* Start a main-screen fade (or fade the sprite's children) and advance this animation state. */
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) StartScreenFadeChildren(0, (u16)duration, target, sprite);
+    else StartScreenFades(0, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d59c(void *arg0) {
+/* Sprite state handler: start a brightening screen transition
+ * (TRANSITION_MODE_BRIGHT) lasting the state's duration parameter.  The state
+ * data's low bits pick the screen it runs on (main, sub, both, else the active
+ * one) and bit 3 starts it on the sprite's children instead of the whole screen.
+ * Advances the state. */
+s32 SpriteState_CreateBrightTransition(void *sprite) {
     void CreateScreenTransitions(s32, u16, s32, void *);
     void CreateScreenTransitionChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) CreateScreenTransitionChildren(1, (u16)value, mode, arg0);
-    else CreateScreenTransitions(1, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) CreateScreenTransitionChildren(TRANSITION_MODE_BRIGHT, (u16)duration, target, sprite);
+    else CreateScreenTransitions(TRANSITION_MODE_BRIGHT, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 
-s32 func_0209d60c(void *arg0) {
+s32 SpriteState_StartSubScreenFade(void *sprite) {
     void StartScreenFades(s32, u16, s32, void *);
     void StartScreenFadeChildren(s32, u16, s32, void *);
-    void *cmd = M2C_FIELD(arg0, void **, 8);
-    s32 mode = 3;
-    s32 flags = M2C_FIELD(cmd, s32 *, 4);
-    s16 value = M2C_FIELD(cmd, s16 *, 2);
-    if (flags & 1) mode = 0;
-    if (flags & 2) mode = 1;
-    if (flags & 4) mode = 2;
-    if (flags & 8) StartScreenFadeChildren(1, (u16)value, mode, arg0);
-    else StartScreenFades(1, (u16)value, mode, arg0);
-    M2C_FIELD(arg0, void **, 8) += 8;
+    void *state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    s32 target = DS3D_TARGET_ACTIVE;
+    s32 flags = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    s16 duration = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+
+    /* Start a sub-screen fade (or fade the sprite's children) and advance this animation state. */
+    if (flags & 1) target = DS3D_TARGET_MAIN;
+    if (flags & 2) target = DS3D_TARGET_SUB;
+    if (flags & 4) target = DS3D_TARGET_BOTH;
+    if (flags & 8) StartScreenFadeChildren(1, (u16)duration, target, sprite);
+    else StartScreenFades(1, (u16)duration, target, sprite);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 1;
 }
 

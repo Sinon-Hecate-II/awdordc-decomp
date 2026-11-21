@@ -82,15 +82,19 @@ s32 SocketListenTask(void *task) {
     return 0;
 }
 
-s32 SocketBind(void *arg0,s32 arg1) {
-s32 SocketIsUnregistered(); s32 SocketSubmitConnectTask(void *);s32 a;
-if(SocketIsUnregistered()!=0)return -28;
-a=0;if(arg0)a=(M2C_FIELD(arg0,volatile s16 *,0x70)&1)!=0;
-if(!a)return -39;
-if(M2C_FIELD(arg0,s16 *,0x70)&2)return -7;
-M2C_FIELD(arg0,s16 *,0x74)=arg1;
-if(M2C_FIELD(arg0,s8 *,0x73)!=1)return 0;
-return SocketSubmitConnectTask(arg0);
+/* Bind a local receive port to the socket and, when the socket is receive-only,
+ * start connecting it to its peer.  Fails with SOCK_ERROR when the network or the
+ * socket is unavailable, SOCK_NOT_READY when the socket is not initialised, and
+ * SOCK_ALREADY when a task is already running on it. */
+s32 SocketBind(void *sock,s32 port) {
+s32 SocketIsUnregistered(); s32 SocketSubmitConnectTask(void *);s32 ready;
+if(SocketIsUnregistered()!=0)return SOCK_ERROR;
+ready=0;if(sock)ready=(M2C_FIELD(sock,volatile s16 *,SOCK_FLAGS)&SOCK_FLAG_READY)!=0;
+if(!ready)return SOCK_NOT_READY;
+if(M2C_FIELD(sock,s16 *,SOCK_FLAGS)&SOCK_FLAG_BUSY)return SOCK_ALREADY;
+M2C_FIELD(sock,u16 *,SOCK_RECV_PORT)=port;
+if(M2C_FIELD(sock,s8 *,SOCK_STATE)!=SOCK_STATE_RECV_ONLY)return 0;
+return SocketSubmitConnectTask(sock);
 }
 
 /* Start a connect to the peer port and IPv4 address: refuse when the network
@@ -249,22 +253,28 @@ s32 SocketRecvLocked(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s
  return result;
 }
 
-s32 SocketRecvData(void *p,s32 b,s32 c,s32 d,s32 e,s32 flags) {
- s32 func_0201ffec(void *,s32,s32,s32,s32);
- s32 func_0201fe70(void *,s32,s32,u16 *,s32 *);
- s32 result;
- if(M2C_FIELD(p,s8 *,0x73)==4)return func_0201ffec(p,b,c,d,e);
- result=func_0201fe70(p,b,c,d,e);
- if(result!=-6)return result;
- if(!(flags&1))return result;
- return func_0201ffec(p,b,c,d,e);
+/* Receive up to len bytes from a duplex socket into buf.  A connected socket
+ * always runs the receive through a task; a socket that is still handshaking
+ * reads the transport's receive window first, and only when nothing is queued
+ * (SOCK_WOULD_BLOCK) and the caller asked to wait does it start the receive
+ * task, which sleeps until data arrives. */
+s32 SocketRecvData(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32 flags) {
+    s32 SocketStartRecvTask(void *, s32, s32, s32, s32);
+    s32 SocketRecvFromWindow(void *, s32, s32, u16 *, s32 *);
+    s32 result;
+
+    if (M2C_FIELD(sock, s8 *, SOCK_STATE) == SOCK_STATE_CONNECTED) return SocketStartRecvTask(sock, buf, len, peerPort, peerAddr);
+    result = SocketRecvFromWindow(sock, buf, len, peerPort, peerAddr);
+    if (result != SOCK_WOULD_BLOCK) return result;
+    if (!(flags & 1)) return result;
+    return SocketStartRecvTask(sock, buf, len, peerPort, peerAddr);
 }
 
-s32 func_0201fe70(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg4) {
+s32 SocketRecvFromWindow(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg4) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     M2C_UNK MI_CpuCopy8(s32, M2C_UNK, s32);
-    s32 func_0201ff78(void *, s32 *, u16 *, u16 *, s32 *);
+    s32 GetRecvWindowData(void *, s32 *, u16 *, u16 *, s32 *);
     s32 spC;
     s32 sp8;
     u16 sp6;
@@ -279,7 +289,7 @@ s32 func_0201fe70(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg4) {
 
     var_r7 = arg2;
     temp_r4 = OS_DisableInterrupts();
-    temp_r0 = func_0201ff78(arg0, &spC, &sp6, &sp4, &sp8);
+    temp_r0 = GetRecvWindowData(arg0, &spC, &sp6, &sp4, &sp8);
     if (temp_r0 != 0) {
         var_r5 = spC;
         if (var_r5 == 0) {
@@ -323,20 +333,26 @@ s32 func_0201fe70(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg4) {
     return var_r5;
 }
 
-s32 func_0201ff78(void *p,s32 *remaining,u16 *a,u16 *b,s32 *c) {
- void *q=M2C_FIELD(p,void **,0x64);
- void *entry=M2C_FIELD(q,void **,0xC4);
- s32 offset=M2C_FIELD(q,s32 *,0xF8);
- s32 n=M2C_FIELD(entry,s32 *,0x44)-offset;
- if(n>=0){
- *a=M2C_FIELD(entry,u16 *,0xA);*b=M2C_FIELD(entry,u16 *,0x18);
- *c=M2C_FIELD(entry,s32 *,0x1C);*remaining=n;
- if(n==0 && M2C_FIELD(entry,u8 *,8)!=4)return 0;
+/* Report the next unread bytes of a duplex socket's transport connection: return
+ * the connection's receive buffer advanced by the bytes already consumed (the raw
+ * connection's pending count), set *remaining to the bytes left (-1 when the
+ * pending count ran past it) and fill in the connection's local and remote
+ * endpoint.  When exactly caught up on a connection that is not established there
+ * is nothing to read and 0 is returned. */
+s32 GetRecvWindowData(void *sock,s32 *remaining,u16 *localPort,u16 *remotePort,s32 *remoteIp) {
+ void *raw=M2C_FIELD(sock,void **,SOCK_RAW);
+ void *conn=M2C_FIELD(raw,void **,0xC4); /* transport connection of the raw connection */
+ s32 pending=M2C_FIELD(raw,s32 *,CONN_RECV_PENDING);
+ s32 avail=M2C_FIELD(conn,s32 *,CONN_RX_POS)-pending;
+ if(avail>=0){
+ *localPort=M2C_FIELD(conn,u16 *,CONN_LOCAL_PORT);*remotePort=M2C_FIELD(conn,u16 *,CONN_REMOTE_PORT);
+ *remoteIp=M2C_FIELD(conn,s32 *,CONN_REMOTE_IP);*remaining=avail;
+ if(avail==0 && M2C_FIELD(conn,u8 *,CONN_STATE)!=CONN_STATE_ESTABLISHED)return 0;
  }else{*remaining=-1;return 0;}
- return M2C_FIELD(entry,s32 *,0x40)+offset;
+ return M2C_FIELD(conn,s32 *,CONN_RX_BUFFER)+pending;
 }
 
-s32 func_0201ffec(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 SocketStartRecvTask(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 s32 func_02020038(void *);
 void *p=SocketAllocTask(func_02020038,arg0,1);
 M2C_FIELD(p,s32 *,0x10)=arg1;
@@ -350,7 +366,7 @@ s32 func_02020038(void *arg0) {
     void *func_0201d618(u32 *);
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
-    s32 func_0201fe70(void *, M2C_UNK, s32, u16 *, s32 *);
+    s32 SocketRecvFromWindow(void *, M2C_UNK, s32, u16 *, s32 *);
     void func_0201d70c(s32);
     s32 func_020201e4(s32);
     u32 sp10;
@@ -405,7 +421,7 @@ loop_1:
     if (var_r0 == 0) {
         var_r4 = 0;
     } else {
-        var_r4 = func_0201fe70(temp_r7, spC, var_r10, sp8, sp4);
+        var_r4 = SocketRecvFromWindow(temp_r7, spC, var_r10, sp8, sp4);
     }
     if (var_r4 <= 0) {
         return var_r4;

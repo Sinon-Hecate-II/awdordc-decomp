@@ -24,7 +24,7 @@ static inline u64 NextPacketRandom64(void) {
    (high, low half) when outLen is 0, or fails with 2 when the name does not fit in
    outLen bytes.  A "name does not exist" answer gives -1, a timeout 0. */
 s32 DnsResolveName(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void SendNetPacket(void*,s32); s32 func_0201dbb8(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[2]=DNS_QUESTION_CLASS;packet[3]=0;label=qname;p=label;packet[4]=0;packet[5]=0;
@@ -40,7 +40,7 @@ ch=*name++;
 SendNetPacket(packet,p+5-(u8*)packet);
 result=0;start=(u32)(GetSystemTick()>>16);
 while(M2C_FIELD(&gNetStack,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(GetSystemTick()>>16)-start)<15){
-if(!func_0201dbb8()){func_0201a238();continue;}
+if(!GetSocketReceivedDataSize()){func_0201a238();continue;}
 p=func_0201d618(&size);
 if(size>12 && c==(u16)((M2C_FIELD(p,u16*,0)>>8)|(M2C_FIELD(p,u16*,0)<<8))){
 type=p[3]&DNS_ANSWER_TYPE_MASK;
@@ -106,15 +106,15 @@ s32 ParseIpAddress(u8 *text, s32 *address) {
 }
 
 s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    M2C_UNK func_0201d164();
+    M2C_UNK OpenRawConnection();
     M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_0201d1f0();
+    M2C_UNK ResetCurrentConnection();
     M2C_UNK func_0201d224();
     s32 DnsResolveName();
     s32 result;
     if (arg1 == 0) return -1;
-    func_0201d1f0();
-    func_0201d164();
+    ResetCurrentConnection();
+    OpenRawConnection();
     SetConnectionEndpoint(0, 0x35, arg1);
     result = DnsResolveName(arg0, 1, arg2, 0, 0);
     func_0201d224();
@@ -390,42 +390,46 @@ s32 SocketSubmitTask(void *arg0, void *arg1) {
     return SocketQueueTask(func_0201f230(arg0), arg1);
 }
 
-s32 func_0201f2a8(arg0, arg1)
-s32 arg0;
-void *arg1;
+/* Post a socket task to a connection's task queue and return its result.  When
+ * the task's caller wants to wait (TASK_WAIT), the task reports to a one-message
+ * queue whose address is stored in TASK_NOTIFY and this call blocks on it;
+ * otherwise the queueing call's own return value is the result. */
+s32 SocketPostTask(connection, task)
+s32 connection;
+void *task;
 {
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
-    u8 queue[0x20];
+    OSMessageQueue queue;
     s32 result;
     s32 message;
-    if (M2C_FIELD(arg1, s8 *, 0xD) == 1) {
-        OS_InitMessageQueue((s32)queue, (s32)&message, 1);
-        M2C_FIELD(arg1, void **, 8) = queue;
-        SocketQueueTask(arg0, arg1);
-        OS_ReceiveMessage((M2C_UNK *)queue, &result, 1);
+    if (M2C_FIELD(task, s8 *, TASK_WAIT) == 1) {
+        OS_InitMessageQueue((s32)&queue, (s32)&message, OS_MESSAGE_BLOCK);
+        M2C_FIELD(task, void **, TASK_NOTIFY) = &queue;
+        SocketQueueTask(connection, task);
+        OS_ReceiveMessage((M2C_UNK *)&queue, &result, OS_MESSAGE_BLOCK);
     } else {
-        M2C_FIELD(arg1, void **, 8) = NULL;
-        result = SocketQueueTask(arg0, arg1);
+        M2C_FIELD(task, void **, TASK_NOTIFY) = NULL;
+        result = SocketQueueTask(connection, task);
     }
     return result;
 }
 
 void func_0201f318(void *arg0) {
-    M2C_UNK func_0201f2a8();
-    func_0201f2a8(M2C_FIELD(arg0, s32 *, 0x64));
+    M2C_UNK SocketPostTask();
+    SocketPostTask(M2C_FIELD(arg0, s32 *, 0x64));
 }
 
 void SocketSubmitSendTask(void *arg0) {
-    func_0201f2a8(M2C_FIELD(arg0, s32 *, 0x68));
+    SocketPostTask(M2C_FIELD(arg0, s32 *, 0x68));
 }
 
 s32 func_0201f338(s32 arg0, s32 arg1) {
-    s32 func_0201f2a8();
-    return func_0201f2a8(func_0201f230(arg0), arg1);
+    s32 SocketPostTask();
+    return SocketPostTask(func_0201f230(arg0), arg1);
 }
 
-void func_0201f350(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
+void RunSocketWorker(s32 arg0) { s32 p,old,v; loop: OS_ReadMessage(arg0,&p,1); if(!p)goto done; v=M2C_FIELD(p,s32 (**)(s32),0)(p);
 old=OS_DisableInterrupts();
 OS_DisableScheduler();
 OS_ReceiveMessage(arg0,0,0);
@@ -437,34 +441,49 @@ s32 SocketCreateFromConfig(void) {
     s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0201f338(s32, s32);
     s32 func_0201f4b0();
-    extern M2C_UNK func_0201f43c;
+    extern M2C_UNK SocketInitTask;
     s32 temp_r0;
 
     temp_r0 = func_0201f4b0();
     if (temp_r0 == 0) {
         return -0x31;
     }
-    func_0201f338(temp_r0, SocketAllocTask(&func_0201f43c, temp_r0, 1));
+    func_0201f338(temp_r0, SocketAllocTask(&SocketInitTask, temp_r0, 1));
     return temp_r0;
 }
 
-s32 func_0201f43c(void *arg0) {
-M2C_UNK SetCurrentRawConnection(void *);
-M2C_UNK func_0201d164();
-M2C_UNK func_0201d1f0();
-M2C_UNK func_0201d244(s32);
-M2C_UNK SocketSetReceiveCallback(M2C_UNK *);
-extern M2C_UNK SocketQueueReceivedData;
-void *p=M2C_FIELD(arg0,void**,4);
-s32 v;
-SetCurrentRawConnection(p);
-v=M2C_FIELD(p,s32*,0x68);
-switch(M2C_FIELD(p,s8*,0x73)){
-case 0:case 4:func_0201d244(v+0x20);func_0201d1f0();break;
-case 1:func_0201d1f0();func_0201d164();SocketSetReceiveCallback(&SocketQueueReceivedData);break;
-case 2:func_0201d164();break;
-}
-M2C_FIELD(p,s16*,0x70)=1;return 0;
+/* Socket task run when a socket is created: make the socket the network stack's
+ * current one and open the directions its SOCK_STATE asks for, then mark it
+ * ready.  A duplex socket has its send connection attached as the stack
+ * socket; a receive-only socket also gets the record-queue callback, and either
+ * one-way state opens a raw connection.  Always returns 0. */
+s32 SocketInitTask(void *task) {
+ M2C_UNK SetCurrentRawConnection(void *);
+ M2C_UNK OpenRawConnection();
+ M2C_UNK ResetCurrentConnection();
+ M2C_UNK func_0201d244(s32);
+ M2C_UNK SocketSetReceiveCallback(M2C_UNK *);
+ extern M2C_UNK SocketQueueReceivedData;
+ void *sock = M2C_FIELD(task, void **, TASK_SOCKET);
+ s32 txConnection;
+ SetCurrentRawConnection(sock);
+ txConnection = M2C_FIELD(sock, s32 *, SOCK_TX_CONN);
+ switch (M2C_FIELD(sock, s8 *, SOCK_STATE)) {
+ case SOCK_STATE_IDLE: case SOCK_STATE_CONNECTED:
+     func_0201d244(txConnection + 0x20);
+     ResetCurrentConnection();
+     break;
+ case SOCK_STATE_RECV_ONLY:
+     ResetCurrentConnection();
+     OpenRawConnection();
+     SocketSetReceiveCallback(&SocketQueueReceivedData);
+     break;
+ case SOCK_STATE_SEND_ONLY:
+     OpenRawConnection();
+     break;
+ }
+ M2C_FIELD(sock, s16 *, SOCK_FLAGS) = SOCK_FLAG_READY;
+ return 0;
 }
 
 s32 func_0201f4b0(arg0)
@@ -528,7 +547,7 @@ s32 func_0201f5c0(void *dst, void *src) {
         M2C_FIELD(dst, void **, 0x64) = cur;
         M2C_FIELD(cur, u16 *, 0xFC) = M2C_FIELD(src, u16 *, 4);
         p = cur;
-        r0 = (void *)func_0201f6bc(func_0201f6bc(func_0201f6e4((s32)(cur + 0x114), (s32)cur, src + 0x10), dst + 0x3C, M2C_FIELD(src, u16 *, 2)), dst + 0x50, M2C_FIELD(src, u16 *, 8));
+        r0 = (void *)func_0201f6bc(func_0201f6bc(StartSocketWorker((s32)(cur + 0x114), (s32)cur, src + 0x10), dst + 0x3C, M2C_FIELD(src, u16 *, 2)), dst + 0x50, M2C_FIELD(src, u16 *, 8));
         cur = r0;
         M2C_FIELD(p + 0x100, u16 *, 0x0A) = M2C_FIELD(src, u16 *, 0x0E);
         M2C_FIELD(p, s32 *, 0x110) = 0;
@@ -539,7 +558,7 @@ s32 func_0201f5c0(void *dst, void *src) {
         M2C_FIELD(dst, void **, 0x68) = cur;
         q = cur;
         M2C_FIELD(cur, void **, 0x10C) = dst;
-        r0 = (void *)func_0201f6bc(func_0201f6bc(func_0201f6bc(func_0201f6e4((s32)(cur + 0x110), (s32)cur, src + 0x14), dst + 0x48, M2C_FIELD(src, u16 *, 6)), dst + 0x58, M2C_FIELD(src, u16 *, 0x0A)), cur + 0xF8, M2C_FIELD(src, u16 *, 0x0C));
+        r0 = (void *)func_0201f6bc(func_0201f6bc(func_0201f6bc(StartSocketWorker((s32)(cur + 0x110), (s32)cur, src + 0x14), dst + 0x48, M2C_FIELD(src, u16 *, 6)), dst + 0x58, M2C_FIELD(src, u16 *, 0x0A)), cur + 0xF8, M2C_FIELD(src, u16 *, 0x0C));
         cur = r0;
         M2C_FIELD(q, s32 *, 0x108) = 0;
         M2C_FIELD(q, s32 *, 0x104) = 0;
@@ -564,21 +583,23 @@ s32 func_0201f6bc(s32 arg0, void *arg1, s32 arg2) {
     return temp_r4 + AlignSize4(arg2);
 }
 
-s32 func_0201f6e4(s32 arg0, s32 arg1, void *arg2) {
+/* Start a socket worker and return the address after its queue storage and stack. */
+s32 StartSocketWorker(s32 storage, s32 worker, SocketConfigTask *config) {
     M2C_UNK TaskCreate(s32, M2C_UNK *, s32, s32, s32, s32);
     M2C_UNK TaskWake(s32);
     M2C_UNK OS_InitMessageQueue(s32, s32, s32);
     M2C_UNK InitMutex(s32);
     s32 GetSocketTaskBlockSize(void *);
-    void func_0201f350();
-    s32 temp_r4;
+    void RunSocketWorker();
+    s32 blockSize;
 
-    temp_r4 = GetSocketTaskBlockSize(arg2);
-    OS_InitMessageQueue(arg1, arg0, M2C_FIELD(arg2, u8 *, 3));
-    InitMutex(arg1 + 0xE0);
-    TaskCreate(arg1 + 0x20, (M2C_UNK *)&func_0201f350, arg1, arg0 + temp_r4, (s32) M2C_FIELD(arg2, u16 *, 0), (s32) M2C_FIELD(arg2, u8 *, 2));
-    TaskWake(arg1 + 0x20);
-    return arg0 + temp_r4;
+    blockSize = GetSocketTaskBlockSize(config);
+    OS_InitMessageQueue(worker, storage, config->messageCount);
+    InitMutex(worker + SOCKET_WORKER_MUTEX);
+    TaskCreate(worker + SOCKET_WORKER_THREAD, (M2C_UNK *)&RunSocketWorker, worker,
+               storage + blockSize, (s32)config->stackBytes, (s32)config->priority);
+    TaskWake(worker + SOCKET_WORKER_THREAD);
+    return storage + blockSize;
 }
 
 /* Check a socket is usable: the stack is registered, the socket is initialised,

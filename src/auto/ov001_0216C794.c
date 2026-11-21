@@ -84,11 +84,11 @@ void func_ov001_0216c938(int a,int b,int c,int d) {
 int Ov001_EncryptRoomData(int src,int dst,int length,signed char *checksum,void *seedOut,void *keyTail,int keyTailLength) {
  int func_ov001_0216ad54(int); void func_ov001_0216ad64(int);
  void Ov001Rc4Init(); void func_ov001_0216cb08();
- int func_ov001_0216cb74(int,int); short func_ov001_0216cf1c(void); void Ov001MemCopy();
+ int func_ov001_0216cb74(int,int); short Ov001GetRandomSeed(void); void Ov001MemCopy();
  int state; int cipher[4]; short seed;
  *checksum=func_ov001_0216cb74(src,length); state=func_ov001_0216ad54(length); cipher[2]=state;
  if(!state) return -1;
- seed=func_ov001_0216cf1c(); Ov001MemCopy(seedOut,&seed,2);
+ seed=Ov001GetRandomSeed(); Ov001MemCopy(seedOut,&seed,2);
  Ov001MemCopy(&gOv001CryptSeed,seedOut,2);
  Ov001MemCopy(gOv001CryptKeyTail,keyTail,keyTailLength);
  Ov001Rc4Init(cipher,&gOv001CryptSeed,keyTailLength+2,length);
@@ -146,27 +146,31 @@ unsigned int func_ov001_0216cb9c(unsigned int crc,unsigned char *p,int n,int rea
  return crc;
 }
 
-int func_ov001_0216cc0c(void *p,int n,void *key,int len) {
+/* Obfuscate the `size`-byte buffer `data` in place with a simple keyed two-round
+ * cipher (used on the 8-byte room session token): each round lays a half-buffer
+ * key mask into the first scratch buffer, XORs it into the second half of `data`
+ * and swaps the halves of `data`.  Returns 0, or -1 when an allocation fails. */
+int Ov001_ScrambleToken(void *data,int size,void *key,int keyLength) {
  int func_ov001_0216ad54(int);
  void func_ov001_0216ad64(int);
- void func_ov001_0216cce0();
- void func_ov001_0216cc88(int,signed char *,int,signed char *,int);
- void func_ov001_0216ccbc(signed char *,unsigned char *,int);
- int a; int b; int i;
- a=func_ov001_0216ad54(n/2);
- if(!a) return -1;
- b=func_ov001_0216ad54(n);
- if(!b) { func_ov001_0216ad64(a); return -1; }
- for(i=0;i<2;i++) {
- func_ov001_0216cc88(i,(signed char *)a,n,key,len);
- func_ov001_0216ccbc((signed char *)a,p,n);
- func_ov001_0216cce0(p,n,b);
+ void Ov001_SwapHalves();
+ void Ov001_BuildKeyMask(int,signed char *,int,signed char *,int);
+ void Ov001_XorSecondHalf(signed char *,unsigned char *,int);
+ int keyMask; int swapBuffer; int round;
+ keyMask=func_ov001_0216ad54(size/2);
+ if(!keyMask) return -1;
+ swapBuffer=func_ov001_0216ad54(size);
+ if(!swapBuffer) { func_ov001_0216ad64(keyMask); return -1; }
+ for(round=0;round<2;round++) {
+ Ov001_BuildKeyMask(round,(signed char *)keyMask,size,key,keyLength);
+ Ov001_XorSecondHalf((signed char *)keyMask,data,size);
+ Ov001_SwapHalves(data,size,swapBuffer);
  }
- func_ov001_0216ad64(a); func_ov001_0216ad64(b); return 0;
+ func_ov001_0216ad64(keyMask); func_ov001_0216ad64(swapBuffer); return 0;
 }
 
 #pragma thumb on
-void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) {
+void Ov001_BuildKeyMask(int a,signed char *out,int n,signed char *key,int len) {
  int half=n/2; int j=a%len; int i;
  for(i=0;i<half;i++) {
  out[i]=i; out[i]^=key[j]; j++;
@@ -174,7 +178,7 @@ void func_ov001_0216cc88(int a,signed char *out,int n,signed char *key,int len) 
  }
 }
 #pragma thumb on
-void func_ov001_0216ccbc(signed char *a,unsigned char *b,int n) {
+void Ov001_XorSecondHalf(signed char *a,unsigned char *b,int n) {
  int i; int half=n/2;
  for(i=0;i<half;i++) { b[half+i] ^= a[i]; }
 }

@@ -38,15 +38,37 @@
 #define SB_SLIST_SOCKET      0x4b0 /* s32 master-server socket, -1 when none */
 #define SB_SLIST_CRYPT       0x4bc /* GsCryptState of the session's GameSpy stream cipher (qr2.h) */
 #define SB_SLIST_QUERY_PORT  0x4b8 /* s32 port the master is queried on */
+#define SB_SLIST_DEFAULT_PORT 0x4a8 /* u16 port a server record uses when it carries none (from the connect reply) */
 #define SB_SLIST_CALLBACK    0x488 /* void (*)(list, event, server, instance) */
 #define SB_SLIST_INSTANCE    0x494 /* void *instance passed to SB_SLIST_CALLBACK */
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
+
+/* Sort kinds SBServerListSortServers accepts as its last argument: which
+ * comparator the key named in SB_SLIST_SORT_FIELD is sorted with. */
+enum {
+    SB_SORT_INT           = 0, /* numeric value (SBServerListCompareInt) */
+    SB_SORT_FLOAT         = 1, /* floating-point value (SBServerListCompareFloat) */
+    SB_SORT_STRING        = 2, /* string value, case sensitive (SBServerListCompareString) */
+    SB_SORT_STRING_NOCASE = 3  /* string value, case insensitive (SBServerListCompareStringNoCase) */
+};
 #define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
 #define SB_SLIST_CRYPT_KEY  0x74  /* u8[8] GameSpy cipher key derived from the session challenge */
 #define SB_SLIST_RECV_BUFFER 0x7c  /* char *reply buffer (SBServerListConnectAndQuery allocates it) */
 #define SB_SLIST_RECV_LENGTH 0x80  /* s32 bytes held in SB_SLIST_RECV_BUFFER */
+#define SB_SLIST_RECV_BUFFER_SIZE 0x1000 /* bytes SB_SLIST_RECV_BUFFER holds */
+#define SB_SLIST_CRYPT_STAGE 0x5c8 /* s32 crypt/connect handshake stage: 0 none, 1..4 in progress, 5 done */
 #define SB_SLIST_ERROR      0x4ac /* char *error message, NULL while none (SBServerListSetErrorString) */
+
+/* The server-browser master server: SBServerListOpenConnection builds the host
+ * name "%s.ms%d.gs.nintendowifi.net" from the list's game name and an index in
+ * 0..SB_MASTER_COUNT-1 (a hash of the game name), then connects to
+ * SB_MASTER_PORT.  The word after gSBServerListSorting, when nonzero, is a host
+ * name used instead of the computed one. */
+#define SB_MASTER_COUNT         20    /* master-server host-name indexes */
+#define SB_MASTER_PORT          28910 /* TCP port of the master server */
+#define SB_MASTER_PORT_NBO      0xEE70 /* SB_MASTER_PORT in network byte order */
+#define SB_SLIST_HOST_OVERRIDE  0x04  /* &gSBServerListSorting + this: char *host-name override */
 
 /* One entry of the list's key schema (SB_SLIST_KEY_LIST): a key the master or
  * game server announces, interned, together with the type of the values
@@ -95,8 +117,9 @@ typedef struct GpiPlayer {
 #define SB_LIST_EVENT_QUERY_ERROR    5 /* the master reported an error, see SB_SLIST_ERROR */
 
 /* SB_SLIST_STATE values. */
-#define SB_SLIST_STATE_IDLE     1 /* disconnected, ready for a new query */
-#define SB_SLIST_STATE_QUERYING 3 /* a query is in flight */
+#define SB_SLIST_STATE_IDLE      1 /* disconnected, ready for a new query */
+#define SB_SLIST_STATE_CONNECTED 2 /* connected: master replies are decrypted and parsed */
+#define SB_SLIST_STATE_QUERYING  3 /* a query/connect handshake is in flight */
 
 /* The QR2 reply parser's shared state (gQr2ParseState): wherever a reply is
  * split into backslash-separated fields, the tokenizer keeps its position here. */

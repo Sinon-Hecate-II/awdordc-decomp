@@ -35,13 +35,13 @@ void AwardVictoryToPlayer(s32 winner, M2C_UNK reason) {
 }
 
 void func_02096d0c(void) {
-    M2C_UNK func_020822b8(u16 *);
+    M2C_UNK Apply3DSpriteLayout(u16 *);
     typedef struct { u16 a, b, c, d, e, f; } T;
     extern T data_020f3644;
     T sp0;
 
     sp0 = data_020f3644;
-    func_020822b8((u16 *) &sp0);
+    Apply3DSpriteLayout((u16 *) &sp0);
 }
 
 void func_02096d5c(void) {
@@ -49,7 +49,7 @@ void func_02096d5c(void) {
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK func_02002ab8(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
-    M2C_UNK func_020031cc(M2C_UNK);
+    M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK func_02082c84();
@@ -57,7 +57,7 @@ void func_02096d5c(void) {
     GX_SetBankForBG(1);
     GX_SetBankForOBJ(2);
     func_02003124(4);
-    func_020031cc(8);
+    GX_SetBankForSubOBJ(8);
     func_02002ab8(0x10);
     GX_SetBankForObjExtPalette(0x20);
     GX_SetBankForBGExtPlttSub(0x80);
@@ -619,12 +619,24 @@ void ClearScenePanelRows(M2C_UNK arg0) {
     ClearTilemapRows(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
 }
 
-s32 func_02097be0(void) {
-s32 Is3DSpriteAnimating(s32);
-s32 i,p,j;
-i=0;do {p=FindScenePanel((u16)i);if(p) {
-if(Is3DSpriteAnimating(p))return 1;
-j=0;do {if(Is3DSpriteAnimating(Get3DSpriteChild(p,j)))return 1;j++;}while(j<2);
-}i++;}while(i<3);return 0;
+/* Returns nonzero while any of the three scene panels or their two child
+ * sprites is still animating. */
+s32 IsAnyScenePanelAnimating(void) {
+    s32 Is3DSpriteAnimating(s32);
+    s32 panelIndex, panel, childIndex;
+    panelIndex = 0;
+    do {
+        panel = FindScenePanel((u16)panelIndex);
+        if (panel) {
+            if (Is3DSpriteAnimating(panel)) return 1;
+            childIndex = 0;
+            do {
+                if (Is3DSpriteAnimating(Get3DSpriteChild(panel, childIndex))) return 1;
+                childIndex++;
+            } while (childIndex < 2);
+        }
+        panelIndex++;
+    } while (panelIndex < 3);
+    return 0;
 }
 

@@ -160,7 +160,7 @@ void UpdateTextObject(TextState *st) {
     void func_02095ff8(s8);
     s32 func_02096038(void);
     s32 HideAllScenePanels(void);
-    s32 func_02097be0(void);
+    s32 IsAnyScenePanelAnimating(void);
     s32 func_020999b8(void *);
     M2C_UNK StopTextObject(M2C_UNK);
     s32 DrawTextStep(void *);
@@ -186,7 +186,7 @@ void UpdateTextObject(TextState *st) {
     if (st->flags & 0x1) {
         if (FindObjectByClass(&data_02102eac) != 0) return;
         if (FindObjectByClass(&data_02102e74) != 0) return;
-        if (func_02097be0() != 0) return;
+        if (IsAnyScenePanelAnimating() != 0) return;
         if (func_020952a4() != 0) return;
         if (func_020953e8() != 0) return;
         if (func_0209546c() != 0) return;
@@ -289,8 +289,8 @@ skip8:
 
 void func_0209b190(M2C_UNK arg0) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    s32 func_02097be0();
-    if (func_02097be0() != 0) {
+    s32 IsAnyScenePanelAnimating();
+    if (IsAnyScenePanelAnimating() != 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);
@@ -544,11 +544,11 @@ void func_0209bbd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
 }
 
 void func_0209bc18(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
-    M2C_UNK func_0209bc58(M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
+    M2C_UNK DrawScreenTextLine(M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     void *temp_r5;
 
     temp_r5 = gCur3DSpriteEngine + (arg2 * 4);
-    func_0209bc58(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
+    DrawScreenTextLine(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
 }
 

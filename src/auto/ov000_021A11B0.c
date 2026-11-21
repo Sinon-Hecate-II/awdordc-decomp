@@ -177,12 +177,12 @@ s32 BuildAiKind6Unit(void) {
 
 s32 func_ov000_021a1ab8(void) {
  s32 func_ov000_021a64c4(); M2C_UNK func_ov000_021a7ac0(s32); s32 SelectUnitForTargetCandidate(s32); M2C_UNK CommitAiAction(s32);
- extern u8 data_ov000_021e00af[];
+ extern u8 gAiTargetCandidateStatus[];
  s32 x=func_ov000_021a64c4();
  if(x==-1) return 0;
  func_ov000_021a7ac0(x);
  if(SelectUnitForTargetCandidate(x)!=-1) {CommitAiAction(x); return 1;}
- data_ov000_021e00af[x*12]=253;
+ gAiTargetCandidateStatus[x*12]=253;
  return 0;
 }
 

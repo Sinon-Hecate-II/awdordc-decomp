@@ -45,7 +45,7 @@ M2C_FIELD(gBreakCutIn,s16*,0x1e)=22;
 M2C_FIELD(gBreakCutIn,s16*,0x22)=138;
 SetFileDirectory(data_0212a464);
 old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-func_020822b8(colors.half);
+Apply3DSpriteLayout(colors.half);
 {u16 * volatile p0=*gCur3DSpriteEngine+0;*p0=(*p0&~0)|16;}
 {u16 * volatile p1=*gCur3DSpriteEngine+0;*p1=(*p1&~0)|32;}
 {u16 * volatile p2=*gCur3DSpriteEngine+0;*p2=(*p2&~0)|64;}
@@ -184,14 +184,18 @@ s32 func_020c4798(void) {
  return var_r4;
 }
 
-void func_020c47e4(s32 *arg0) {
+/* Fill `dateTime` with the current server clock as a 4-word date followed by a
+ * 3-word time; nothing is written unless an online session (overlay 2) is up and
+ * the server time is known. */
+void GetServerDateTime(s32 *dateTime) {
  s32 GetActiveOverlay(void);
  s32 GetServerTime(s32 *,s32 *);
- s32 a[4];s32 b[3];
- if(GetActiveOverlay()!=2)return;
- if(!GetServerTime(a,b))return;
- arg0[0]=a[0];arg0[1]=a[1];arg0[2]=a[2];arg0[3]=a[3];
- arg0[4]=b[0];arg0[5]=b[1];arg0[6]=b[2];
+ s32 date[4];
+ s32 time[3];
+ if (GetActiveOverlay() != 2) return;
+ if (!GetServerTime(date, time)) return;
+ dateTime[0] = date[0]; dateTime[1] = date[1]; dateTime[2] = date[2]; dateTime[3] = date[3];
+ dateTime[4] = time[0]; dateTime[5] = time[1]; dateTime[6] = time[2];
 }
 
 long long GetElapsedSeconds(s32 arg0,s32 arg1,s32 arg2) {

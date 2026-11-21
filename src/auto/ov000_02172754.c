@@ -323,14 +323,23 @@ void func_ov000_02172e90(void *arg0) {
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void func_ov000_02173058(void *arg0) {
-s32 GetTerrainInfoContext();s32 func_ov000_021724b8(s32,s32);s32 GetNameGraphicFile(s32);void MI_CpuCopy32(s32,s32,u32);
-s32 base;void *saved;s32 index;
-saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
-index=func_ov000_021724b8(GetTerrainInfoContext(),*M2C_FIELD(arg0,s32 **,0x18));
-base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x2880;
-if(index!=-1)MI_CpuCopy32(GetNameGraphicFile(2)+(s16)index*0x4e0,base,0x4e0);
-gCur3DSpriteEngine=saved;
+/* Uploads the selected terrain's name graphic into the sub screen's name tile
+ * buffer. The graphic index comes from the terrain definition table; -1 means
+ * the terrain has no name graphic. */
+void DrawTerrainInfoNameGraphic(void *panel) {
+    s32 GetTerrainInfoContext();
+    s32 GetTerrainNameGraphicIndex(s32, s32);
+    s32 GetNameGraphicFile(s32);
+    void MI_CpuCopy32(s32, s32, u32);
+    s32 dest;
+    void *saved;
+    s32 index;
+    saved = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    index = GetTerrainNameGraphicIndex(GetTerrainInfoContext(), *M2C_FIELD(panel, s32 **, 0x18));
+    dest = M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x2880;
+    if (index != -1) MI_CpuCopy32(GetNameGraphicFile(2) + (s16)index * 0x4e0, dest, 0x4e0);
+    gCur3DSpriteEngine = saved;
 }
 
 #pragma opt_strength_reduction off
@@ -395,8 +404,8 @@ void DrawPlayerArmyList(void *info) {
 #pragma opt_strength_reduction reset
 void func_ov000_02173290(void *arg0) {
      void DrawTerrainInfoBanner(void *);
- void func_ov000_02173058();
- func_ov000_02173058();
+ void DrawTerrainInfoNameGraphic();
+ DrawTerrainInfoNameGraphic();
     if (M2C_FIELD(arg0, u8 *, 0x15) != 0) {
         return;
     }

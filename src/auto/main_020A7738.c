@@ -99,7 +99,7 @@ s32 GetWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
  return *(var_r1 + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
 }
 
-u8 func_020a796c(s32 arg0, s32 arg1, s32 arg2) {
+u8 GetKindWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2) {
  s32 GetDamageTargetIndex(s32);
  extern u8 data_ov000_021b5c13[];
  return *(GetDamageTargetIndex(arg1) + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
@@ -394,7 +394,7 @@ done:;
 
 #pragma push
 #pragma peephole on
-void func_020a8050(void *p,s16 *xy,s32 unused,s8 *dir){void func_020a7f48(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];func_020a7f48(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}func_020a7f48(p,x,y,1);}}
+void MarkUnitMovePath(void *p,s16 *xy,s32 unused,s8 *dir){void func_020a7f48(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];func_020a7f48(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}func_020a7f48(p,x,y,1);}}
 #pragma pop
 u8 func_020a80fc(s32 arg0, s32 arg1) {
     s32 temp_r4;
@@ -453,7 +453,7 @@ u8 func_020a81d0(M2C_UNK arg0) {
     return var_r0;
 }
 
-u8 func_020a8204(void *arg0) {
+u8 CanUnitUsePrimaryWeapon(void *arg0) {
     s32 func_020a8630(u32);
     u8 var_r0;
 
@@ -493,7 +493,7 @@ n--; if(step>0)*out++=MOVE_DIR_DOWN; if(step<0)*out++=MOVE_DIR_UP;
 }
 
 #pragma optimize_for_size on
-void func_020a83e4(u8 *p,s8 *dir){do{switch(*dir++){case 9:dir++;break;case -1:case 4:return;case 0:p[1]--;break;case 1:p[1]++;break;case 3:p[2]--;break;case 2:p[2]++;break;case 10:default:break;}}while(1);}
+void ApplyMovePath(u8 *p,s8 *dir){do{switch(*dir++){case 9:dir++;break;case -1:case 4:return;case 0:p[1]--;break;case 1:p[1]++;break;case 3:p[2]--;break;case 2:p[2]++;break;case 10:default:break;}}while(1);}
 #pragma optimize_for_size reset
 void func_020a8474(void) {
 

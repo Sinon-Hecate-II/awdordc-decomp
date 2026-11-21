@@ -25,15 +25,15 @@ void func_ov001_02171078(u8 *a,volatile u32 *b,u32 n){u32 i;for(i=0;i<n;i+=4){a[
 void func_ov001_021710a4(u32 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i+=4){*a++=b[i]|(b[i+1]<<8)|(b[i+2]<<16)|(b[i+3]<<24);}}
 
 #pragma thumb on
-void func_ov001_021710d0(u8 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
+void Ov001_CopyBytes(u8 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i++)a[i]=b[i];}
 #pragma thumb off
 
 #pragma thumb on
 void func_ov001_021710e8(s8 *a,s32 b,u32 n){u32 i;for(i=0;i<n;i++)*a++=(s8)b;}
 
 void func_ov001_02171100(M2C_UNK a,M2C_UNK b,M2C_UNK c){
- M2C_UNK func_ov001_0217073c(M2C_UNK *);M2C_UNK func_ov001_02170764(M2C_UNK *,M2C_UNK,M2C_UNK);M2C_UNK func_ov001_021707dc(M2C_UNK,M2C_UNK *);
- M2C_UNK p[22];func_ov001_0217073c(p);func_ov001_02170764(p,b,c);func_ov001_021707dc(a,p);
+ M2C_UNK func_ov001_0217073c(M2C_UNK *);M2C_UNK Ov001_MD5_Update(M2C_UNK *,M2C_UNK,M2C_UNK);M2C_UNK func_ov001_021707dc(M2C_UNK,M2C_UNK *);
+ M2C_UNK p[22];func_ov001_0217073c(p);Ov001_MD5_Update(p,b,c);func_ov001_021707dc(a,p);
 }
 
 void WhGetTime(void){u64 GetSystemTick(void);void U64Divide(u64,u64);U64Divide(GetSystemTick()<<6,0x82ea);}

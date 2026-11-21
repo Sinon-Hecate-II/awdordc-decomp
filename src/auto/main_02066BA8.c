@@ -75,7 +75,7 @@ u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, 
                 u16 *str;
                 args+=4;str=*(u16 **)(args-4);
                 if(!str)str=(u16 *)data_0210054c;
-                if((s32)func_0206512c(buffer,str,512)<0)goto invalid;
+                if((s32)WideStringToString(buffer,str,512)<0)goto invalid;
                 text=buffer;
             } else {args+=4;text=*(char **)(args-4);}
             if(!text)text=(char *)data_02100550;

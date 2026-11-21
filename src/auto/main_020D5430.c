@@ -358,8 +358,12 @@ void func_020d61f0(void) {
 }
 
 void func_020d6310(void);
-void func_020d6208(void) {
-    extern void *data_027e0058;
+/* MAP_MODE 5 update handler (the cursor settled on a tile): on a non-target tile
+ * it re-opens the map action menu when the cursor moved, restores the idle cursor,
+ * selects the transport's carried unit, or confirms the tile; on a unit-target tile
+ * it starts the AI's attack decision. */
+void UpdateMapTargetCursor(void) {
+    extern void *gCurrentMap;
     extern u8 data_02168f24;
 
     if (func_020d46cc() == 0) {
@@ -372,31 +376,29 @@ void func_020d6208(void) {
         RefreshMapView();
         if (data_02168f24 != 0) {
             func_ov000_021696d4();
-            M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 0;
+            M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 0;
             return;
         }
         {
-            void *base = M2C_FIELD(data_027e0058, void **, 0);
-            u8 idx;
-            u8 *region;
-            region = (u8 *)base + 0x5000;
-            idx = region[0x2d6];
-            if (idx != 0) {
-                void *elem = (u8 *)base + 0x59a4 + idx * 14;
-                u8 a = region[0x2d4];
-                u8 b = ((u8 *)elem)[0x0c];
-                u8 flag = (a != b) ? 1 : 0;
-                SelectCarriedUnit(elem, flag, 1);
+            void *map = M2C_FIELD(gCurrentMap, void **, 0);
+            u8 carrierId;
+            carrierId = M2C_FIELD(map, u8 *, MAP_CURSOR_CARRIER);
+            if (carrierId != 0) {
+                void *transport = (u8 *)map + MAP_UNIT_RECORDS + carrierId * MAP_UNIT_STRIDE;
+                u8 cursorUnitId = M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID);
+                u8 firstCargo = ((u8 *)transport)[MAP_UNIT_CARRIED];
+                u8 cargoSlot = (cursorUnitId != firstCargo) ? 1 : 0;
+                SelectCarriedUnit(transport, cargoSlot, 1);
                 return;
             }
             {
-                void *p2 = *(void **)(region + 0x2d0);
-                ConfirmCursorTile(((u8 *)p2)[1], ((u8 *)p2)[2], 1, 1, 1);
+                void *unit = M2C_FIELD(map, void **, MAP_CURSOR_UNIT);
+                ConfirmCursorTile(((u8 *)unit)[MAP_UNIT_X], ((u8 *)unit)[MAP_UNIT_Y], 1, 1, 1);
                 return;
             }
         }
     } else {
-        M2C_FIELD(M2C_FIELD(data_027e0058, void **, 0), s16 *, 0x52b4) = 6;
+        M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = 6;
         SetAiCommandPhase(3);
         func_ov000_0219c7d8(0);
         func_020d6310();

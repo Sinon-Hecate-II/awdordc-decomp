@@ -33,14 +33,14 @@ return code.value;
 
 #pragma opt_common_subs on
 s32 BuildWfcProfile(void *arg0) {
-void GetWfcProfile(void *);void func_0200ee70(void);s32 GetRtcDate(void *);s32 GetRtcTime(void *);long long MakeTime(void *,void *);u16 func_02006f8c(void);void GetMacAddress(void *);u64 GetSystemTick(void);
+void GetWfcProfile(void *);void RTC_Init(void);s32 GetRtcDate(void *);s32 GetRtcTime(void *);long long MakeTime(void *,void *);u16 IsSystemTickInitialized(void);void GetMacAddress(void *);u64 GetSystemTick(void);
 u8 *p=arg0;u8 sp[0x24];long long diff;long long seed;u32 state;u8 flag;u32 mac;
-GetWfcProfile(p);func_0200ee70();
+GetWfcProfile(p);RTC_Init();
 if(GetRtcDate(sp+0x14))return 0;
 if(GetRtcTime(sp+8))return 0;
 diff=MakeTime(sp+0x14,sp+8);if(diff<0)return 0;
 seed=diff;
-if(func_02006f8c()!=0)seed+=(u32)GetSystemTick;
+if(IsSystemTickInitialized()!=0)seed+=(u32)GetSystemTick;
 GetMacAddress(sp);
 state=(u32)seed*0x5d588b65+0x269ec3;
 flag=(((sp[0]<<16)|(sp[1]<<8)|sp[2])!=0x9bf);
@@ -71,11 +71,11 @@ s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u
 #pragma opt_common_subs off
 s32 func_0204712c(void *arg0) {
     void GetWfcProfile(void *);
-    void func_0200ee70(void);
+    void RTC_Init(void);
     s32 GetRtcDate(void *);
     s32 GetRtcTime(void *);
     long long MakeTime(void *, void *);
-    u16 func_02006f8c(void);
+    u16 IsSystemTickInitialized(void);
     void GetMacAddress(void *);
     u64 GetSystemTick(void);
     u64 EncodeWfcProfileCode(u32, u32, u32, u32);
@@ -98,13 +98,13 @@ register u32 tmp4, tmp3;
     { u8 *q=sp; q[0]=0;q[1]=0;q[2]=0;q[3]=0;q[4]=0;q[5]=0; }
 
     GetWfcProfile(p);
-    func_0200ee70();
+    RTC_Init();
     if (GetRtcDate(&sp[0x14]) != 0) return 0;
     if (GetRtcTime(&sp[0x8]) != 0) return 0;
 
     diff = MakeTime(&sp[0x14], &sp[0x8]);
     if (diff < 0) return 0;
-    if (func_02006f8c() != 0) diff += (u32)GetSystemTick;
+    if (IsSystemTickInitialized() != 0) diff += (u32)GetSystemTick;
 
     seed = (u32)diff;
     GetMacAddress(sp);
@@ -255,7 +255,7 @@ s32 EncodeWfcRequestBody(u8 *out, u8 *header, u32 headerLen, u8 *payload, u32 pa
 }
 
 #pragma scheduling off
-void func_02047750(s32 arg0) { M2C_UNK *p; extern M2C_UNK gWebRequestState,data_020fcad0,data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,8)=-1; M2C_FIELD(&gWebRequestState,s32 *,0x54)=0; M2C_FIELD(&gWebRequestState,s32 *,0x58)=0; p=arg0?&data_020fcad0:&data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,0x5c)=0; M2C_FIELD(&gWebRequestState,s32 *,0x60)=0; M2C_FIELD(&gWebRequestState,s32 *,0x64)=0; M2C_FIELD(&gWebRequestState,M2C_UNK **,0)=p; func_02044e04(0); M2C_FIELD(&gWebRequestState,s32 *,4)=3; }
+void func_02047750(s32 arg0) { M2C_UNK *p; extern M2C_UNK gWebRequestState,data_020fcad0,data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,8)=-1; M2C_FIELD(&gWebRequestState,s32 *,0x54)=0; M2C_FIELD(&gWebRequestState,s32 *,0x58)=0; p=arg0?&data_020fcad0:&data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,0x5c)=0; M2C_FIELD(&gWebRequestState,s32 *,0x60)=0; M2C_FIELD(&gWebRequestState,s32 *,0x64)=0; M2C_FIELD(&gWebRequestState,M2C_UNK **,0)=p; BeginWebRequest(0); M2C_FIELD(&gWebRequestState,s32 *,4)=3; }
 #pragma scheduling reset
 s32 func_020477ac(void) {
     extern M2C_UNK gWebRequestState;
@@ -307,9 +307,28 @@ s32 func_020477ac(void) {
 
 s32 func_020477ac(void);
 
-void func_020478b8(void) { extern M2C_UNK gWebRequestState; M2C_UNK HeapFree(s32,s32,s32); s32 p; p=M2C_FIELD(&gWebRequestState,s32 *,0x54);if(p) {HeapFree(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x54)=0;} p=M2C_FIELD(&gWebRequestState,s32 *,0x60);if(p) {HeapFree(0,p,0);M2C_FIELD(&gWebRequestState,s32 *,0x64)=0;M2C_FIELD(&gWebRequestState,s32 *,0x60)=0;} func_02044e28(); M2C_FIELD(&gWebRequestState,s32 *,4)=2; }
+/* Free the WFC web request's formatted request buffer and response payload and
+ * release its ghttp reference, returning the request to its idle phase. */
+void ResetWebRequest(void) {
+    extern M2C_UNK gWebRequestState;
+    M2C_UNK HeapFree(s32,s32,s32);
+    s32 buffer;
+    buffer = M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_BUFFER);
+    if (buffer) {
+        HeapFree(0, buffer, 0);
+        M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_BUFFER) = 0;
+    }
+    buffer = M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PAYLOAD);
+    if (buffer) {
+        HeapFree(0, buffer, 0);
+        M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PAYLOAD_SIZE) = 0;
+        M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PAYLOAD) = 0;
+    }
+    EndWebRequest();
+    M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = 2;
+}
 
-s32 func_02047928(s32 *arg0) {
+s32 GetWebResponseBody(s32 *arg0) {
     extern M2C_UNK gWebRequestState;
     *arg0 = M2C_FIELD(&gWebRequestState, s32 *, 0x64);
     return M2C_FIELD(&gWebRequestState, s32 *, 0x60);

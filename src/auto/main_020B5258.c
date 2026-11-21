@@ -111,20 +111,23 @@ void func_020b5504(void *arg0) {
     StepMapViewToTile(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
 }
 
-void ExplosionEffect_Start(void *arg0) {
+/* Start handler of the explosion effect: spawn the animated sprite for the
+ * effect's type on its tile, then hook up its per-frame update and its trigger. */
+void ExplosionEffect_Start(ExplosionEffect *effect) {
     void *CreateEffectMapSprite(void *, s32, s32, s32, s32, s32, void *);
-    s32 temp_r4;
-    void *temp_r0;
-    void *obj;
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    temp_r0 = GetExplosionSpriteName(temp_r4);
-    if (temp_r0 == 0) return;
-    obj = CreateEffectMapSprite(temp_r0, M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 0, 0, 0, arg0);
-    M2C_FIELD(obj, s32 *, 0x58) = 0;
-    M2C_FIELD(obj, s32 *, 0x5C) = temp_r4;
-    M2C_FIELD(obj, void (**)(void *), 0x6C) = ExplosionSprite_Update;
-    M2C_FIELD(obj, void (**)(void *), 0x70) = ExplosionSprite_Trigger;
-    M2C_FIELD(obj, u32 *, 0x44) = (M2C_FIELD(obj, u32 *, 0x44) & ~0x03000000) | 0x02000000;
+    s32 type;
+    void *name;
+    ExplosionEffect *sprite;
+
+    type = effect->type;
+    name = GetExplosionSpriteName(type);
+    if (name == 0) return;
+    sprite = CreateEffectMapSprite(name, effect->tileX, effect->tileY, 0, 0, 0, effect);
+    sprite->triggered = 0;
+    sprite->type = type;
+    sprite->update = ExplosionSprite_Update;
+    sprite->trigger = ExplosionSprite_Trigger;
+    sprite->flags = (sprite->flags & ~0x03000000) | 0x02000000;
 }
 
 M2C_UNK func_020b5594(s32 a,s32 b,s32 c,s32 d) {
@@ -187,7 +190,7 @@ M2C_FIELD(p,void (**)(void *),0x70)=(void (*)(void *))func_020b55c4;
 M2C_FIELD(p,u32 *,0x44)=(M2C_FIELD(p,u32 *,0x44)&~0x3000000)|0x2000000;
 }
 
-void func_020b576c(M2C_UNK arg0) {
+void ExplodeUnit(M2C_UNK arg0) {
     M2C_UNK func_020b567c(M2C_UNK, M2C_UNK);
     func_020b567c(arg0, 1);
 }
@@ -241,9 +244,9 @@ void func_020b57ac(void *obj) {
 }
 #pragma scheduling reset
 void func_020b5964(s32 a,s32 b) {
-void func_020a488c(s32,s16 *); void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
+void GetMapOrderEffectPosition(s32,s16 *); void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128c34;
 s16 xy[2]; void *p;
-func_020a488c(a,xy); p=CreateSpriteObject(&data_02128c34,b);
+GetMapOrderEffectPosition(a,xy); p=CreateSpriteObject(&data_02128c34,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0]; M2C_FIELD(p,s32 *,0x3c)=xy[1];
 }
 
@@ -251,6 +254,7 @@ void func_020b59a0(void *arg0) {
     func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
+#pragma scheduling off
 void func_020b59c0(void *arg0) {
     s32 x = M2C_FIELD(arg0, s32 *, 0x38);
     s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
@@ -365,9 +369,9 @@ void func_020b59c0(void *arg0) {
         break;
     }
     func_020a4a68();
-    RefreshMapView();
+    func_020cfd28();
 }
-
+#pragma scheduling reset
 void func_020b5d94(u8 *arg0,s32 arg1) {
 void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128bc4;
 void *p=CreateSpriteObject(&data_02128bc4,arg1);

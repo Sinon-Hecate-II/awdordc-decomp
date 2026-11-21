@@ -38,7 +38,7 @@ void func_020e4490(void) {
     M2C_UNK InitSound();
     M2C_UNK Init3DSpritePool();
     M2C_UNK func_020e4458();
-    M2C_UNK func_0200ee70();
+    M2C_UNK RTC_Init();
     M2C_UNK SeedRandomFromRtc();
     M2C_UNK SaveManager_Start();
     void ResetGameState(void);
@@ -87,7 +87,7 @@ void func_020e4490(void) {
     InitSound();
     Init3DSpritePool();
     func_020e4458();
-    func_0200ee70();
+    RTC_Init();
     SeedRandomFromRtc();
     SaveManager_Start();
     ResetGameState();

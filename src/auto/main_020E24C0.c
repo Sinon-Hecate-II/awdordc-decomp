@@ -17,7 +17,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
+void *Create3DSprite(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *saved; void *p; void *q;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -70,7 +70,7 @@ q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=16
 func_020aad18(M2C_FIELD(obj,void**,92));
 
 }
-M2C_FIELD(obj,void**,0x60)=func_0208931c(obj);p=M2C_FIELD(obj,void**,0x60);
+M2C_FIELD(obj,void**,0x60)=Create3DSprite(obj);p=M2C_FIELD(obj,void**,0x60);
 M2C_FIELD(p,s16*,0x34)=156;M2C_FIELD(p,s16*,0x36)=192;
 M2C_FIELD(p,MenuSpriteFlags*,0x40).x=64;
 M2C_FIELD(p,MenuSpriteFlags*,0x40).y=32;
@@ -90,7 +90,7 @@ void *CreateSpriteObject(void*,s32); void *MemAlloc(s32);
 void *func_020ab1c4(s32); s32 InitUnitSprite(void*,s32,s32,u8,s32);
 s32 func_02088e84(void*,s16,s16,s16,s32); s32 GetUnitSpriteWidth(void*); s32 GetUnitSpriteHeight(void*);
 s32 func_02087d84(void*,s32,s16,s16,s32,s32); s32 func_020aad18(void*);
-void *func_0208931c(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
+void *Create3DSprite(void*); void *func_0208bc24(void*); s32 SetSpriteText(void*,void*); s32 Hide3DSprite(void*); void func_020e4c64(void);
 void *obj=CreateSpriteObject(&data_0212c6a8,arg0); void *p; void *q; void *saved;
 if(!obj)return;
 M2C_FIELD(obj,void**,0)=&data_0212d1e8;
@@ -143,7 +143,7 @@ q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=16
 func_020aad18(M2C_FIELD(obj,void**,92));
 
 }
-p=func_0208931c(obj);M2C_FIELD(obj,void**,0x60)=p;
+p=Create3DSprite(obj);M2C_FIELD(obj,void**,0x60)=p;
 {s16 x=156,y=192;M2C_FIELD(p,s16*,0x34)=x;M2C_FIELD(p,s16*,0x36)=y;}
 M2C_FIELD(p,MenuSpriteFlags*,0x40).x=64;
 M2C_FIELD(p,MenuSpriteFlags*,0x40).y=32;

@@ -6,6 +6,7 @@
 #ifndef OV001_KEYPAD_H
 #define OV001_KEYPAD_H
 
+#define KEYPAD_ACTION_SPRITES 0x40 /* void *[2]: sprites of the clear and confirm keys */
 #define KEYPAD_CURSOR_SPRITE 0x58 /* void *: sprite that marks the selected key */
 #define KEYPAD_SLIDE_TASK   0x5c /* void *: task sliding the highlight between keys */
 #define KEYPAD_CODE        0x60 /* u8 code produced by the key under the finger */
@@ -47,5 +48,6 @@
 #define KPAD_ROW_REST_X2  0x7A /* resting x of the third (1 2 3) row */
 #define KPAD_ROW_REST_X3  0x91 /* resting x of the fourth (0) row */
 #define KPAD_ROW_REST_X4  0xAA /* resting x of the bottom action row */
+#define KPAD_SLIDE_STEP_X 12   /* pixels a key row travels each frame of the open/close animation */
 
 #endif

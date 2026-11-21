@@ -1,5 +1,6 @@
 /* 2 functions from 0x02226658 to 0x022273C8 (ov011), found by ds-decomp. */
 #include "common.h"
+#include "intro_menu.h"
 typedef struct { u8 active:1; u8 remaining:7; } TransitionFlags;
 
 #pragma opt_common_subs off
@@ -12,7 +13,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK DrawIntroMenuLabel(void *);
     M2C_UNK func_ov011_0222588c(void *);
     s32 func_ov011_02225a18(void *);
-    M2C_UNK func_ov011_02225a24(void *, u16, u16);
+    M2C_UNK IntroMenu_AccelerateTouchedEntry(void *, u16, u16);
     void func_ov011_02225a9c(void *, s32, s32, s32);
     extern u16 *gKeyState;
     extern void *gTouchState;
@@ -91,6 +92,7 @@ u32 func_ov011_02226658(void *arg0) {
     u16 *temp_r7_3;
     u16 *temp_r7_4;
     u32 temp_r0;
+    s32 fadeLimit = 30;
     u8 temp_r0_14;
     u8 temp_r0_16;
     u8 temp_r0_2;
@@ -157,7 +159,7 @@ u32 func_ov011_02226658(void *arg0) {
             *sp5C = (s16) (*sp5C & ~8);
             sp58 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp58 = (s16) ((*sp58 & ~0x10) | ((showLayer << 31) >> 27));
-            temp_r0_6 = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x37), 0x1E);
+            temp_r0_6 = EaseInterpolate(4, 0, 0x10, M2C_FIELD(arg0, u8 *, 0x37), fadeLimit);
             M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_6;
             sp54 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
             *sp54 = (s16) ((*sp54 & ~0xC0) | 0x40);
@@ -195,7 +197,7 @@ u32 func_ov011_02226658(void *arg0) {
                 *sp2C = (s16) (*sp2C | 0x1000);
                 sp28 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp28 = (s16) (*sp28 & ~0x2000);
-                temp_r0_14 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
+                temp_r0_14 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, fadeLimit);
                 M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_14;
                 sp24 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp24 = (s16) ((*sp24 & ~0xC0) | 0x40);
@@ -213,7 +215,7 @@ u32 func_ov011_02226658(void *arg0) {
                 *sp14 = (s16) (*sp14 & ~8);
                 sp10 = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *sp10 = (s16) ((*sp10 & ~0x10) | ((showLayer << 31) >> 27));
-                temp_r0_16 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, 0x1E);
+                temp_r0_16 = EaseInterpolate(4, 0x10, 0, M2C_FIELD(arg0, u8 *, 0x37) - 0xAA, fadeLimit);
                 M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_16;
                 spC = (u16 *)((u8 *)*gCur3DSpriteEngine + 0x12);
                 *spC = (s16) ((*spC & ~0xC0) | 0x40);
@@ -239,7 +241,7 @@ u32 func_ov011_02226658(void *arg0) {
     gCur3DSpriteEngine = temp_r4;
     if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
         gCur3DSpriteEngine = g3DSpriteEngineMain;
-        func_ov011_02225a24(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
+        IntroMenu_AccelerateTouchedEntry(arg0, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
         gCur3DSpriteEngine = temp_r4;
     }
     if ((u32) M2C_FIELD(arg0, u16 *, 0x3A) >= 0x28FAU) {
@@ -261,8 +263,8 @@ u32 func_ov011_02226658(void *arg0) {
                 var_r0 = g3DSpriteEngineSub;
             }
             gCur3DSpriteEngine = var_r0;
+            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u8 *, 0x50) = EaseInterpolate(0, 0, -0x10, M2C_FIELD(arg0, u8 *, 0x38), fadeLimit);
             var_r9 += 1;
-            M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), u8 *, 0x50) = EaseInterpolate(0, 0, -0x10, M2C_FIELD(arg0, u8 *, 0x38), 0x1E);
         } while (var_r9 < 2);
         gCur3DSpriteEngine = sp4;
     }
@@ -272,7 +274,7 @@ u32 func_ov011_02226658(void *arg0) {
     }
     temp_r0 = (u32) (M2C_FIELD(arg0, u8 *, 0x34) << 0x1F) >> 0x1F;
     if (temp_r0 == 0) {
-        return (u8) temp_r0;
+        return temp_r0;
     }
     var_r5 = 0;
     M2C_FIELD(arg0, u16 *, 0x3A) = 0x29CBU;

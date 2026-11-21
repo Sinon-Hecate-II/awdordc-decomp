@@ -26,6 +26,9 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_TASK_ABORT 0x1c10 /* s32 set to 1 to ask the task to stop */
 #define HTTP_SEND_BUFFER 0x19f8 /* s32[4] request send buffer: start, current write, end, size; its start holds the request line and headers */
 #define HTTP_SEND_BUFFER_START HTTP_SEND_BUFFER /* char *first byte of the send buffer */
+#define HTTP_USE_TLS   0x1130 /* s32 1 when the URL's scheme is https */
+#define HTTP_ENTROPY   0x19d4 /* u8[0x20] console entropy added to the RNG for the TLS handshake */
+#define HTTP_ENTROPY_SIZE 0x20
 
 #pragma push
 #pragma opt_common_subs on
@@ -116,7 +119,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     void *func_02029784(void);
     void *func_020297c8(void *);
     void DC_InvalidateRange(void *, s32);
-    u8 func_0202f248(void);
+    u8 GetWfcFriendSlot(void);
     void func_020317ac(void *, void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
@@ -179,7 +182,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     dst=(u8*)arg0+0x41;
     for(i=0;i<6;i++,dst+=2) func_0200563c(dst,gFmtHex02,((u8*)connInfo)[i]);
     {
-        u8 language = func_0202f248();
+        u8 language = GetWfcFriendSlot();
         StringFormatN((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
     }
     connData = func_020297c8(&connType);
@@ -304,19 +307,22 @@ void HttpClientAbort(void *arg0) {
     OS_JoinThread(arg0 + 0x1B38);
 }
 
-s32 func_02033f98(void *arg0) {
+/* One wait step of the HTTP client task: while the connection uses TLS, add
+ * console entropy to the RNG; then sleep 10 ms unless the task was asked to
+ * abort.  Returns 1 to keep the task running, 0 when it must stop. */
+s32 HttpClientTaskWait(void *client) {
     void SleepMilliseconds(s32);
     void GetConsoleEntropy(void *);
     void Random_AddEntropy(void *,s32);
-    if(M2C_FIELD(arg0,s32 *,0x1130)==1) {
-        GetConsoleEntropy(arg0+0x19d4);
-        Random_AddEntropy(arg0+0x19d4,0x20);
+    if(M2C_FIELD(client,s32 *,HTTP_USE_TLS)==1) {
+        GetConsoleEntropy(client+HTTP_ENTROPY);
+        Random_AddEntropy(client+HTTP_ENTROPY,HTTP_ENTROPY_SIZE);
     }
-    LockMutex(arg0+0x1bf8);
-    if(M2C_FIELD(arg0,s32 *,0x1c10)==1) {
-        UnlockMutex(arg0+0x1bf8); return 0;
+    LockMutex(client+HTTP_TASK_MUTEX);
+    if(M2C_FIELD(client,s32 *,HTTP_TASK_ABORT)==1) {
+        UnlockMutex(client+HTTP_TASK_MUTEX); return 0;
     }
-    UnlockMutex(arg0+0x1bf8);
+    UnlockMutex(client+HTTP_TASK_MUTEX);
     SleepMilliseconds(10);
     return 1;
 }

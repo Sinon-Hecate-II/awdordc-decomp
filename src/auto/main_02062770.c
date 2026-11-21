@@ -86,16 +86,19 @@ s32 func_020628c0(M2C_UNK context, void *data, s32 n) {
  return 1;
 }
 
-void func_020629bc(M2C_UNK a,u8 *b,s32 n,s32 *d,u16 *out) {
-u8 flag;
-if(n<5)return;
-flag=b[0];
-*(PairBytes *)d=*(PairBytes *)(b+1);
-*((PairBytes *)d+1)=*(PairBytes *)(b+3);
-if(flag&16){
-if(n-5<2)return;
-*(PairBytes *)out=*(PairBytes *)(b+5);
-}else *out=M2C_FIELD(a,u16 *,0x4a8);
+/* Read the address and port of the server a browser record describes: the 4-byte
+ * big-endian address at +1 and, when the record carries its own port (bit 4), the
+ * 2-byte port at +5, otherwise the list's default port. */
+void gpiReadServerAddress(M2C_UNK list,u8 *record,s32 length,s32 *address,u16 *port) {
+u8 flags;
+if(length<5)return;
+flags=record[0];
+*(PairBytes *)address=*(PairBytes *)(record+1);
+*((PairBytes *)address+1)=*(PairBytes *)(record+3);
+if(flags&GPI_REC_FLAG_SKIP){
+if(length-5<2)return;
+*(PairBytes *)port=*(PairBytes *)(record+5);
+}else *port=M2C_FIELD(list,u16 *,SB_SLIST_DEFAULT_PORT);
 }
 
 /* Decodes one gpi player record: stores the flags, the optional id/port/value fields
@@ -168,7 +171,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     if (ByteCompareN(data + 1, &data_021001a0, 4) == 0) {
         return -1;
     }
-    func_020629bc(context, data, size, &sp8, &sp4);
+    gpiReadServerAddress(context, data, size, &sp8, &sp4);
     handle = SBServerNew(context, sp8, sp4);
     if (func_02061168() != 0) {
         return -2;
@@ -182,13 +185,13 @@ void SBServerListSetError(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x4AC) = arg1;
 }
 
-s32 func_02062e30(void *a){
-s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void func_0206006c(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
+s32 SBServerListProcessConnectReply(void *a){
+s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void GsCryptData(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
 extern s32 sSbNoServer;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
 case 0:
-if(n<1)break;off=(p[0]^0xec)+2;if(n<off)break;len=p[off-1]^0xea;r=off+len;if(n<r)break;GsCryptSetKey(a,(s8 *)p+off,len);p+=r;n-=r;M2C_FIELD(a,s32 *,0x5c8)=1;func_0206006c((u8 *)a+0x4bc,p,n);
+if(n<1)break;off=(p[0]^0xec)+2;if(n<off)break;len=p[off-1]^0xea;r=off+len;if(n<r)break;GsCryptSetKey(a,(s8 *)p+off,len);p+=r;n-=r;M2C_FIELD(a,s32 *,0x5c8)=1;GsCryptData((u8 *)a+0x4bc,p,n);
 case 1:
 if(n<6)break;
 copy633((u8 *)a+0x4a0,p);

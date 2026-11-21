@@ -221,7 +221,7 @@ SendLinkCommand(gBattleCommand,0x14);
 #pragma opt_lifetimes reset
 void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void func_ov000_0217e798(M2C_UNK, M2C_UNK, u8 *, u8 *, u8 *);
-    void func_ov000_0217d3b8(s32);
+    void MarkCaptureUnitHasTarget(s32);
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
     void BuildUnitMoveRange(void *);
     void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
@@ -241,7 +241,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
 
     func_ov000_0217e798(arg0, arg1, &arg2, &arg3, &arg4);
 
-    func_ov000_0217d3b8(arg2);
+    MarkCaptureUnitHasTarget(arg2);
 
     unit = *(u8 **)((u8 *)*gCurrentMap + 0x52D0);
 

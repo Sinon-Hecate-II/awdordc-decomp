@@ -364,13 +364,19 @@ void MoveUnitToTile(void *unit, u8 x, u8 y) {
     func_ov000_02169998(u, (s32) *gCurrentMap + MAP_CURSOR_PATH);
 }
 
-s32 func_020936ec(void *arg0){
-extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
-void *base=*gCurrentMap;
-u32 index=M2C_FIELD((u8 *)base+ (M2C_FIELD(p,s16 *,8)+M2C_FIELD((u8 *)base+M2C_FIELD(p,s16 *,10)*2,u16 *,0x3758)),u8 *,0x508);
-if(index)func_020935ec((u8 *)base+0x59a4+index*14,M2C_FIELD(p,s32 *,4));
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script command: find the unit standing on the command's tile (operand 0
+ * is its x, operand 1 its y) and start moving it along the path the command
+ * points at in its +4 word, then advance the script to the next command. */
+s32 StartUnitMoveAtCell(void *script) {
+    extern void **gCurrentMap;
+    void *command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    void *map = *gCurrentMap;
+    u32 unitIndex = M2C_FIELD((u8 *)map + (M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) + M2C_FIELD((u8 *)map + M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1) * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+
+    if (unitIndex)
+        func_020935ec((u8 *)map + MAP_UNIT_RECORDS + unitIndex * MAP_UNIT_STRIDE, M2C_FIELD(command, s32 *, 4));
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 s32 func_0209375c(void *arg0) {
@@ -535,11 +541,11 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
 s32 func_02093c6c(void *arg0) {
-    M2C_UNK func_020952ec(s16, s16, s32);
+    M2C_UNK StartScriptedScreenTransition(s16, s16, s32);
     void *temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, void **, 4);
-    func_020952ec(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
+    StartScriptedScreenTransition(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }

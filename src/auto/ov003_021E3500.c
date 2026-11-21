@@ -225,7 +225,7 @@ void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
     void SetTextSpriteValue(void *, s32);
     void DrawTextSprite(void *);
     s32 GetUnitCategoryCount(void *, s32, s32);
-    s32 GetIconGridRecordIndex(u8);
+    s32 GetPropertyGridCountIndex(u8);
     void AddSprite(u16, u8, u16, void *, s32);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineSub;
@@ -249,7 +249,7 @@ void Ov003_DrawPreviewUnitCategoryGrid(void *panel, s16 originX, s16 originY) {
         cellX = (s16)(Modulo(cell, 3) * 0x16 + baseX);
         cellY = (s16)(Divide(cell, 3) * 0x1C + baseY);
         ptr = M2C_FIELD(panel, void **, OV003_PREVIEW_UNIT_GRID);
-        count = (s16)GetUnitCategoryCount((void *)((char *)ptr + 0x1C), GetIconGridRecordIndex((u8)cell), allBands);
+        count = (s16)GetUnitCategoryCount((void *)((char *)ptr + 0x1C), GetPropertyGridCountIndex((u8)cell), allBands);
         if (count != 0) {
             savedEngine = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineSub;

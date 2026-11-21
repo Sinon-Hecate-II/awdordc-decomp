@@ -213,17 +213,17 @@ s32 func_0207fa64(s32 arg0) {
 void func_0207fa74(s32 arg0) {
     M2C_UNK OS_SetIrqHandler(s32, s32);
     M2C_UNK OS_EnableIrqMask(s32);
-    M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     void func_0207fab8(void);
     OS_SetIrqHandler(2, arg0);
     OS_EnableIrqMask(2);
-    func_0209ccb8((M2C_UNK *)func_0207fab8, 2);
+    CreateQueuedSpriteTask((M2C_UNK *)func_0207fab8, 2);
 }
 
 void func_0207faa0(void) {
-    M2C_UNK func_0209ccb8(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     void func_0207fad4(void);
-    func_0209ccb8((M2C_UNK *)func_0207fad4, 2);
+    CreateQueuedSpriteTask((M2C_UNK *)func_0207fad4, 2);
 }
 
 void func_0207fab8(void) {

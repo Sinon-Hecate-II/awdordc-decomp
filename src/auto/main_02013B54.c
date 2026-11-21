@@ -3,7 +3,24 @@
 #include "wfc.h"
 typedef struct { u8 low:4; u8 high:4; } Packet14564;
 
-s32 func_02013b54(M2C_UNK a,u32 b,s32 c){ M2C_UNK DC_CleanRange(s32,M2C_UNK); s32 r=WFC_CheckChannelOpen(); if(r)return r;if(b>3)return 6;if(b){if(!c)return 6;DC_CleanRange(c,80);}WFC_SetChannelParam(20,a);r=WFC_SendCommand(20,2,b,c);if(!r)r=2;return r;}
+/* Submit the local player's user info to the WFC firmware as command 20 request
+ * 2: the user type (0..3) and, unless that type is 0, the 0x50-byte display name
+ * to announce. Refuses until the command channel is open, flushes the name out
+ * of the data cache, then posts the type and the name. Returns 2 once queued. */
+s32 WFC_SubmitUserInfo(M2C_UNK channelHandler, u32 userType, s32 name) {
+    M2C_UNK DC_CleanRange(s32, M2C_UNK);
+    s32 result = WFC_CheckChannelOpen();
+    if (result) return result;
+    if (userType > WFC_SESSION_MODE_MAX) return WFC_CMD_BAD_PARAM;
+    if (userType) {
+        if (!name) return WFC_CMD_BAD_PARAM;
+        DC_CleanRange(name, WFC_SESSION_NAME_LEN);
+    }
+    WFC_SetChannelParam(20, channelHandler);
+    result = WFC_SendCommand(20, 2, userType, name);
+    if (!result) result = WFC_CMD_OK;
+    return result;
+}
 
 /* Submit the local player's match settings (mode, sub-mode and display name) to
  * the WFC server as command 39 request 3: refuse unless the command channel is
@@ -79,18 +96,29 @@ s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) 
     return var_r0;
 }
 
-s32 func_02013dac(s32 arg0,s16 arg1,s16 arg2,s16 arg3,u16 arg4) {
- s32 WFC_SendCommandPacket(s16 *,s32);
- void WFC_GetInfoBlock();
- s16 packet[5]; s32 result;
- WFC_GetInfoBlock();
- result=WFC_CheckChannelState(1,2);
- if(result) return result;
- WFC_SetChannelParam(0x1e,arg0);
- packet[0]=0x1e; packet[1]=arg1; packet[2]=arg2; packet[3]=arg3; packet[4]=arg4;
- result=WFC_SendCommandPacket(packet,10);
- if(!result) result=2;
- return result;
+/* Queue a channel occupancy measurement while the wireless manager is idle. */
+s32 WFC_MeasureChannel(s32 callback, s16 ccaMode, s16 edThreshold, s16 channel, u16 measureTime) {
+    s32 WFC_SendCommandPacket(void *, s32);
+    s32 WFC_GetInfoBlock(void);
+    WfcMeasureChannelRequest request;
+    s32 result;
+
+    WFC_GetInfoBlock();
+    result = WFC_CheckChannelState(1, WFC_MEASURE_CHANNEL_IDLE_STATE);
+    if (result) {
+        return result;
+    }
+    WFC_SetChannelParam(WFC_CMD_MEASURE_CHANNEL, callback);
+    request.command = WFC_CMD_MEASURE_CHANNEL;
+    request.ccaMode = ccaMode;
+    request.edThreshold = edThreshold;
+    request.channel = channel;
+    request.measureTime = measureTime;
+    result = WFC_SendCommandPacket(&request, sizeof(request));
+    if (!result) {
+        result = WFC_CMD_OK;
+    }
+    return result;
 }
 
 s32 func_02013e24(M2C_UNK arg0, M2C_UNK arg1) {
@@ -198,7 +226,7 @@ M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 gMbWork;
-void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void func_02016124(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
+void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void DownloadFileSetRoster(); s32 func_02018390(); s32 func_020183a4(); s32 func_020183b8(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -234,7 +262,7 @@ case 28:
 for(i=0;i<16;i++){
 off=i*0x5d4;
 if(M2C_FIELD(gMbWork+off,u8*,0x1d52) && M2C_FIELD(gMbWork+off,u16*,0x1d50)){
-func_02016124(gMbWork+0x186c+off,gMbWork+0x1340,M2C_FIELD(gMbWork+off,u16*,0x1d4e),M2C_FIELD(gMbWork+off,u16*,0x1d50));
+DownloadFileSetRoster(gMbWork+0x186c+off,gMbWork+0x1340,M2C_FIELD(gMbWork+off,u16*,0x1d4e),M2C_FIELD(gMbWork+off,u16*,0x1d50));
 M2C_FIELD(gMbWork+off,u16*,0x1d50)=0;
 }}
 x=func_02018390(); y=func_020183a4(); z=func_020183b8(); DownloadSendStep(x,y,z); break;

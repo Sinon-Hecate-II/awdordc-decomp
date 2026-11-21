@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov005_results.h"
 #include "sprite_script.h"
+#include "ds3dsprite.h"
 typedef struct { u16 mode:3; u16 rest:13; } Ov005ModeBits;
 
 #pragma opt_strength_reduction off
@@ -14,7 +15,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     s32 CreateScriptedSprite(s32, u8, s32, s32, s32, s32, s32, void *);
     void DrawResultSpark(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
-    extern M2C_UNK data_ov005_02220d50, data_ov005_02220fa4, data_0211e058;
+    extern M2C_UNK data_ov005_02220d50, gResultSparkVTable, data_0211e058;
     void *spark;
     s32 screen;
     void *parent;
@@ -23,7 +24,7 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     parent = FindObjectByClass(&data_ov005_02220d50);
     spark = CreateSpriteFromClass(&data_0211e058, parent);
     if (!spark) return;
-    M2C_FIELD(spark, void **, 0) = &data_ov005_02220fa4;
+    M2C_FIELD(spark, void **, 0) = &gResultSparkVTable;
     savedEngine = gCur3DSpriteEngine;
     for (screen = 0; screen < 2; screen++) {
         if (screen == 0) engine = g3DSpriteEngineMain; else engine = g3DSpriteEngineSub;
@@ -139,18 +140,22 @@ void AnimateAwardMedal4(void *award) {
     Sprite_ResumeAnimation(award);
 }
 
-void func_ov005_0221a520(void *arg0) {
+/* Award-panel slide animation: move the panel's x position (AWARD_PANEL_X) from
+ * 0x1b0 to 0x58 over 32 frames, chime on the first frame and reposition its
+ * sprites every frame; on the last frame reset the counter and hand the award
+ * back to its sprite animation. */
+void AnimateAwardPanelSlide(void *award) {
 M2C_UNK PlaySoundEffect(s32);
 s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
 M2C_UNK Sprite_ResumeAnimation(void *);
 void PositionAwardPanelSprites(void **);
-M2C_FIELD(arg0,s32 *,0x40)++;
-if(M2C_FIELD(arg0,s32 *,0x40)==1) PlaySoundEffect(0xe8);
-M2C_FIELD(arg0,s32 *,0x3c)=EaseInterpolate(0,0x1b0,0x58,M2C_FIELD(arg0,s32 *,0x40),0x20);
-PositionAwardPanelSprites(arg0);
-if(M2C_FIELD(arg0,s32 *,0x40)!=0x20) return;
-M2C_FIELD(arg0,s32 *,0x40)=0;
-Sprite_ResumeAnimation(arg0);
+M2C_FIELD(award,s32 *,AWARD_MEDAL_FRAME)++;
+if(M2C_FIELD(award,s32 *,AWARD_MEDAL_FRAME)==1) PlaySoundEffect(0xe8);
+M2C_FIELD(award,s32 *,AWARD_PANEL_X)=EaseInterpolate(0,0x1b0,0x58,M2C_FIELD(award,s32 *,AWARD_MEDAL_FRAME),0x20);
+PositionAwardPanelSprites(award);
+if(M2C_FIELD(award,s32 *,AWARD_MEDAL_FRAME)!=0x20) return;
+M2C_FIELD(award,s32 *,AWARD_MEDAL_FRAME)=0;
+Sprite_ResumeAnimation(award);
 }
 
 #pragma opt_strength_reduction off
@@ -236,8 +241,9 @@ void func_ov005_0221a688(void *arg) {
     gCur3DSpriteEngine = saved;
 }
 
-M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
-    M2C_UNK EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+#pragma opt_propagation off
+void func_ov005_0221a7f4(M2C_UNK self) {
+    s32 EaseInterpolate(s32, s32, s32, s32, s32);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     extern s32 g3DSpriteEngineSub, gCur3DSpriteEngine;
     u16 *volatile sp38;
@@ -263,36 +269,36 @@ M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
     if (M2C_FIELD(self, s32 *, 0x40) == 1) {
         s32 v0;
         M2C_FIELD(self, s16 *, 0x4A) = 0x400;
-        sp38 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp38 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp38 = (*sp38 & ~0xC0) | 0x40;
-        sp34 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp34 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp34 = *sp34 & ~1;
-        sp30 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp30 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp30 = *sp30 & ~2;
-        sp2C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp2C = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp2C = *sp2C & ~4;
-        sp28 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp28 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp28 = *sp28 & ~8;
-        sp24 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp24 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp24 = *sp24 & ~0x10;
-        sp20 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp20 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp20 = *sp20 & ~0x20;
-        sp1C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp1C = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp1C = *sp1C & ~0x100;
-        sp18 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp18 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp18 = *sp18 & ~0x200;
-        sp14 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp14 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp14 = *sp14 & ~0x400;
-        sp10 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp10 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp10 = *sp10 | 0x800;
-        sp0C = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp0C = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp0C = *sp0C & ~0x1000;
-        sp08 = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        sp08 = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *sp08 = *sp08 & ~0x2000;
 
         v0 = EaseInterpolate(0, 0, 0x10, M2C_FIELD(self, s32 *, 0x40), 0x20);
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = (u8)(0x10 - v0);
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = (u8)v0;
+        DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = (u8)(0x10 - v0);
+        DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = (u8)v0;
         gCur3DSpriteEngine = saved;
         M2C_FIELD(self, s16 *, 0x4C) = (s16)(-EaseInterpolate(0, 0, 0x80, M2C_FIELD(self, s32 *, 0x40), 0x20) & 0x1FF);
         tmp = EaseInterpolate(0, 0, 0x30, M2C_FIELD(self, s32 *, 0x40), 0x20);
@@ -300,23 +306,22 @@ M2C_UNK func_ov005_0221a7f4(M2C_UNK self) {
         M2C_FIELD(self, s16 *, 0x56) = (s16)(tmp & 0xFF);
     }
 
-    if (M2C_FIELD(self, s32 *, 0x40) == 0x20) {
-        u16 *ptr;
+    tmp = M2C_FIELD(self, s32 *, 0x40);
+    if (tmp == 0x20) {
+        u16 *volatile ptr;
         s32 old = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineSub;
-        ptr = (u16 *)(*(u8 **)gCur3DSpriteEngine + 0x12);
+        ptr = &DS3D_BANK(gCur3DSpriteEngine)->oamAttr;
         *ptr = *ptr & ~0xC0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x51) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x52) = 0;
-        *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x53) = 0;
+        DS3D_BANK(gCur3DSpriteEngine)->rowsAbove = 0;
+        DS3D_BANK(gCur3DSpriteEngine)->rowsBelow = 0;
+        DS3D_BANK(gCur3DSpriteEngine)->filler_53 = 0;
         gCur3DSpriteEngine = old;
         M2C_FIELD(self, s32 *, 0x40) = 0;
         DeleteSpriteObject(self);
     }
-    return 0;
 }
-
-#pragma opt_strength_reduction reset
+#pragma opt_propagation reset
 void func_ov005_0221ab38(void) {
     void DrawAwardedMedals();
     DrawAwardedMedals();
@@ -333,8 +338,8 @@ void func_ov005_0221ab50(void) {
 }
 
 void func_ov005_0221ab5c(void) {
-    void func_ov005_0221a520();
-    func_ov005_0221a520();
+    void AnimateAwardPanelSlide();
+    AnimateAwardPanelSlide();
 }
 
 void func_ov005_0221ab68(void) {
@@ -353,7 +358,7 @@ void func_ov005_0221ab80(void) {
 }
 
 void func_ov005_0221ab8c(void) {
-    M2C_UNK func_ov005_0221a7f4();
+    void func_ov005_0221a7f4();
     func_ov005_0221a7f4();
 }
 

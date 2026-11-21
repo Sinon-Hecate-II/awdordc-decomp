@@ -1,5 +1,6 @@
 /* 33 functions from 0x020617BC to 0x02062770 (main), found by ds-decomp. */
 #include "common.h"
+#include "ghttp.h"
 #include "sb_serverlist.h"
 typedef struct Addr617BC { u8 len, family; u16 port; u32 addr; } Addr617BC;
 typedef struct Bytes617BC { u8 b[4]; } Bytes617BC;
@@ -18,18 +19,18 @@ extern u8 sSbReleaseStrName[];
 extern void *sSbQueryErrorPrefix;
 extern s32 sSbNoServer[2];
 
-s32 func_020617bc(s32 *arg0, s32 *arg1) {
+s32 SBServerListCompareInt(s32 *arg0, s32 *arg1) {
     s32 SBServerGetIntValue(s32, s32, M2C_UNK);
-    extern void *data_0213e4bc;
+    extern void *gSBServerListSorting;
     s32 temp_r4;
     s32 temp_r5;
     s32 var_r0;
 
     temp_r4 = *arg0;
     temp_r5 = *arg1;
-    temp_r4 = SBServerGetIntValue(temp_r4, M2C_FIELD(data_0213e4bc, s32 *, 0x498), 0);
-    var_r0 = temp_r4 - SBServerGetIntValue(temp_r5, M2C_FIELD(data_0213e4bc, s32 *, 0x498), 0);
-    if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
+    temp_r4 = SBServerGetIntValue(temp_r4, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), 0);
+    var_r0 = temp_r4 - SBServerGetIntValue(temp_r5, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), 0);
+    if (M2C_FIELD(gSBServerListSorting, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
     return var_r0;
@@ -42,7 +43,7 @@ s32 func_020617bc(s32 *arg0, s32 *arg1) {
 s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
     double SBServerGetFloatValue(void *, s32, double);
     double func_02070b70(double, double);
-    extern void *data_0213e4bc;
+    extern void *gSBServerListSorting;
     double valueA;
     double valueB;
     double diff;
@@ -50,10 +51,10 @@ s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
     s32 result;
 
     server = *serverB;
-    valueA = SBServerGetFloatValue((void *) *serverA, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), 0.0);
-    valueB = SBServerGetFloatValue((void *) server, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), 0.0);
+    valueA = SBServerGetFloatValue((void *) *serverA, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0.0);
+    valueB = SBServerGetFloatValue((void *) server, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0.0);
     diff = func_02070b70(valueA, valueB);
-    if (M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_DESC) == 0) {
+    if (M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_DESC) == 0) {
         diff = func_02070b70(0.0, diff);
     }
     if ((float)diff > 0.0f) return 1;
@@ -65,53 +66,56 @@ s32 SBServerListCompareFloat(s32 *serverA, s32 *serverB) {
 s32 SBServerListCompareString(s32 *serverA, s32 *serverB) {
     s32 SBServerGetStringValue(s32, s32, M2C_UNK *);
     s32 StringCompare(s32, s32);
-    extern void *data_0213e4bc;
+    extern void *gSBServerListSorting;
     extern M2C_UNK sSbEmptyString;
     s32 valueA;
     s32 result;
 
-    valueA = SBServerGetStringValue(*serverA, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString);
-    result = StringCompare(valueA, SBServerGetStringValue(*serverB, M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString));
-    if (M2C_FIELD(data_0213e4bc, s32 *, SB_SLIST_SORT_DESC) == 0) {
+    valueA = SBServerGetStringValue(*serverA, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString);
+    result = StringCompare(valueA, SBServerGetStringValue(*serverB, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString));
+    if (M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_DESC) == 0) {
         result = -result;
     }
     return result;
 }
 
-s32 func_02061958(s32 *arg0, s32 *arg1) {
+s32 SBServerListCompareStringNoCase(s32 *arg0, s32 *arg1) {
     s32 SBServerGetStringValue(s32, s32, M2C_UNK *);
     s32 func_0206f8ac(s32, s32);
-    extern void *data_0213e4bc;
+    extern void *gSBServerListSorting;
     extern M2C_UNK sSbEmptyString;
     s32 temp_r4;
     s32 var_r0;
 
-    temp_r4 = SBServerGetStringValue(*arg0, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString);
-    var_r0 = func_0206f8ac(temp_r4, SBServerGetStringValue(*arg1, M2C_FIELD(data_0213e4bc, s32 *, 0x498), &sSbEmptyString));
-    if (M2C_FIELD(data_0213e4bc, s32 *, 0x49C) == 0) {
+    temp_r4 = SBServerGetStringValue(*arg0, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), &sSbEmptyString);
+    var_r0 = func_0206f8ac(temp_r4, SBServerGetStringValue(*arg1, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), &sSbEmptyString));
+    if (M2C_FIELD(gSBServerListSorting, s32 *, 0x49C) == 0) {
         var_r0 = -var_r0;
     }
     return var_r0;
 }
 
-void func_020619c0(void *arg0, s32 arg1, s32 arg2, u32 arg3) {
+/* Sorts the server list's servers by key `field` with the comparator for
+ * `sortKind`, recording the key and direction on the list so the comparator can
+ * read them back, then sorting the servers vector. */
+void SBServerListSortServers(void *list, s32 descending, s32 field, u32 sortKind) {
     s32 SBServerListCompareFloat(s32 *, s32 *);
-    s32 func_02061958(s32 *, s32 *);
-    M2C_UNK func_020489c4(s32, s32 (*)(s32 *, s32 *));
-    extern void *data_0213e4bc;
-    s32 (*var_r3)(s32 *, s32 *);
+    s32 SBServerListCompareStringNoCase(s32 *, s32 *);
+    M2C_UNK Vector_Sort(s32, s32 (*)(s32 *, s32 *));
+    extern void *gSBServerListSorting;
+    s32 (*compare)(s32 *, s32 *);
 
-    switch (arg3) {
-    case 0: var_r3 = func_020617bc; break;
-    case 1: var_r3 = SBServerListCompareFloat; break;
-    case 2: var_r3 = SBServerListCompareString; break;
-    case 3: var_r3 = func_02061958; break;
-    default: var_r3 = func_02061958; break;
+    switch (sortKind) {
+    case SB_SORT_INT: compare = SBServerListCompareInt; break;
+    case SB_SORT_FLOAT: compare = SBServerListCompareFloat; break;
+    case SB_SORT_STRING: compare = SBServerListCompareString; break;
+    case SB_SORT_STRING_NOCASE: compare = SBServerListCompareStringNoCase; break;
+    default: compare = SBServerListCompareStringNoCase; break;
     }
-    M2C_FIELD(arg0, s32 *, 0x498) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x49C) = arg1;
-    data_0213e4bc = arg0;
-    func_020489c4(M2C_FIELD(arg0, s32 *, 4), var_r3);
+    M2C_FIELD(list, s32 *, SB_SLIST_SORT_FIELD) = field;
+    M2C_FIELD(list, s32 *, SB_SLIST_SORT_DESC) = descending;
+    gSBServerListSorting = list;
+    Vector_Sort(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), compare);
 }
 
 void SBServerListAddServer(void *arg0, s32 arg1) {
@@ -123,7 +127,9 @@ void SBServerListAddServer(void *arg0, s32 arg1) {
 
 s32 func_02061a74(void *a,s32 b){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 n,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){if(b==*Vector_GetItem(M2C_FIELD(a,s32 *,4),i))return i;}return -1;}
 
-s32 SBServerListFindByAddress(void *a,s32 b,s32 c){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 func_02060c70(s32);s32 n,p,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),i);if(b==SBServerGetIp(p)&&c==func_02060c70(p))return i;}return -1;}
+/* Index in `list` of the server whose address and network-order port both match,
+ * or -1 when no server does. */
+s32 SBServerListFindByAddress(void *list,s32 ip,s32 port){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 SBServerGetPortNBO(s32);s32 count,server,i;count=Vector_GetCount(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS));for(i=0;i<count;i++){server=*Vector_GetItem(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS),i);if(ip==SBServerGetIp(server)&&port==SBServerGetPortNBO(server))return i;}return -1;}
 
 void func_02061b38(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
 
@@ -184,18 +190,20 @@ void func_02061c8c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x5D0) = 0;
 }
 
-s32 StringIntern(s32 a,s32 b) {
+/* Intern `string` in `owner`'s string table: return the existing canonical copy,
+ * bumping its reference count, or add a duplicate with one reference. */
+s32 StringIntern(s32 owner,s32 string) {
 s32 GetStringInternTable(s32);
 s32 *TableLookup(s32,s32 *);
 s32 gpiStringDup(s32);
 void TableEnter(s32,s32 *);
-s32 pair[2]; s32 *p;
-pair[0]=b;
-p=TableLookup(GetStringInternTable(a),pair);
-if(p){p[1]++;return p[0];}
-pair[0]=gpiStringDup(b);pair[1]=1;
-TableEnter(GetStringInternTable(a),pair);
-return pair[0];
+InternedString entry; InternedString *record;
+entry.string=(char *)string;
+record=(InternedString *)TableLookup(GetStringInternTable(owner),(s32 *)&entry);
+if(record){record->refCount++;return (s32)record->string;}
+entry.string=(char *)gpiStringDup(string);entry.refCount=1;
+TableEnter(GetStringInternTable(owner),(s32 *)&entry);
+return (s32)entry.string;
 }
 
 /* Release one reference to an interned string: look the string up in the intern
@@ -272,7 +280,7 @@ s32 SBServerListCheckQueryError(void *list) {
     SBServerListDisconnect(list);
 }
 
-s32 func_02061fb8(void *arg0, s32 arg1) {
+s32 StringHashMod(void *arg0, s32 arg1) {
     extern volatile u8 data_020eac40[128];
     s64 U32DivideRem(s32, s32);
     s8 *p = (s8 *)arg0;
@@ -285,21 +293,58 @@ s32 func_02061fb8(void *arg0, s32 arg1) {
     return (s32)((U32DivideRem(h, arg1)) >> 32);
 }
 
-s32 SBServerListOpenConnection(void *p){
-s32 func_02061fb8(void*,s32);void StringCopy(void*,void*);void StringFormat(void*,void*,...);s32 ghiInetAddr(void*);void *ghiResolveHostname(void*);s32 ghiSocket(s32,s32,s32);s32 ghiConnect(s32,void*,s32);s32 ghiCloseSocket(s32);
-extern void *data_0213e4bc;extern u8 data_02100160[];
-u8 buf[128];Addr617BC addr;s32 n,fd;void *host;
-n=func_02061fb8((u8*)p+12,20);
-if(M2C_FIELD(&data_0213e4bc,void**,4))StringCopy(buf,M2C_FIELD(&data_0213e4bc,void**,4));
-else StringFormat(buf,data_02100160,(u8*)p+12,n);
-addr.family=2;addr.port=0xee70;addr.addr=ghiInetAddr(buf);
-if(addr.addr==-1){host=ghiResolveHostname(buf);if(!host)return 2;Copy617BC((u8*)&addr.addr,*M2C_FIELD(host,u8***,12));}
-fd=M2C_FIELD(p,s32*,0x4b0);
-if(fd==-1){fd=ghiSocket(2,1,0);M2C_FIELD(p,s32*,0x4b0)=fd;if(fd==-1)return 1;}
-if(ghiConnect(fd,&addr,8)==0)return 0;
-ghiCloseSocket(M2C_FIELD(p,s32*,0x4b0));M2C_FIELD(p,s32*,0x4b0)=-1;return 3;
-}
+#pragma push
+#pragma opt_propagation off
+/* Open the server list's connection to the Nintendo WFC master server: build
+ * the master host name from the list's game name (or use the host override),
+ * resolve it, create the list's socket if needed and connect to the master
+ * port.  Returns 0 on success, or 1..3 for a failed socket, host lookup or
+ * connect. */
+s32 SBServerListOpenConnection(void *list) {
+    s32 StringHashMod(void *, s32);
+    void StringCopy(void *, void *);
+    void StringFormat(void *, void *, ...);
+    s32 ghiInetAddr(void *);
+    void *ghiResolveHostname(void *);
+    s32 ghiSocket(s32, s32, s32);
+    s32 ghiConnect(s32, void *, s32);
+    s32 ghiCloseSocket(s32);
+    extern void *gSBServerListSorting;
+    extern u8 sSbMasterHostFormat[];
+    u8 hostName[128];
+    GhiSocketAddress addr;
+    s32 masterIndex, fd;
+    GhiHostEntry *host;
 
+    masterIndex = StringHashMod((u8 *)list + SB_SLIST_GAMENAME, SB_MASTER_COUNT);
+    if (M2C_FIELD(&gSBServerListSorting, void **, SB_SLIST_HOST_OVERRIDE))
+        StringCopy(hostName, M2C_FIELD(&gSBServerListSorting, void **, SB_SLIST_HOST_OVERRIDE));
+    else
+        StringFormat(hostName, sSbMasterHostFormat, (u8 *)list + SB_SLIST_GAMENAME, masterIndex);
+    addr.family = 2; /* AF_INET */
+    addr.port = SB_MASTER_PORT_NBO;
+    addr.addr = ghiInetAddr(hostName);
+    if (addr.addr == -1) {
+        host = ghiResolveHostname(hostName);
+        if (!host) return 2;
+        {
+            u8 *dst = (u8 *)&addr.addr;
+            u8 *src = *host->hostent;
+            *(Bytes617BC *)dst = *(Bytes617BC *)src;
+        }
+    }
+    fd = M2C_FIELD(list, s32 *, SB_SLIST_SOCKET);
+    if (fd == -1) {
+        fd = ghiSocket(2, 1, 0); /* AF_INET, SOCK_STREAM, 0 */
+        M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = fd;
+        if (fd == -1) return 1;
+    }
+    if (ghiConnect(fd, &addr, 8) == 0) return 0;
+    ghiCloseSocket(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET));
+    M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = -1;
+    return 3;
+}
+#pragma pop
 void AppendString(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
     M2C_UNK MemCopy(s32, M2C_UNK *, s32);
     s32 StringLength(M2C_UNK *);

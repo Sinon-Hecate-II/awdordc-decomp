@@ -87,7 +87,7 @@ void func_020b1810(void) {
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
-    M2C_UNK func_020031cc(M2C_UNK);
+    M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK func_02082c84();
     func_02082c84();
@@ -97,7 +97,7 @@ void func_020b1810(void) {
     GX_SetBankForOBJExtPltt(0x20);
     GX_SetBankForObjExtPalette(0x40);
     func_02003124(4);
-    func_020031cc(0x100);
+    GX_SetBankForSubOBJ(0x100);
     GX_SetBankForBGExtPlttSub(0x80);
 }
 
@@ -154,7 +154,7 @@ void func_020b19a8(s32 arg0, s32 arg1) {
  * entry - to the two palette rows of a player's army, swapping which row gets
  * which while the player's army icon is animating. */
 void func_020b19d0(s32 player, s32 colour) {
-    M2C_UNK QueueVramCopy(void *, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueMainOBJExtPaletteCopy(void *, s32, M2C_UNK, M2C_UNK);
     s32 func_020d1a74(void);
     extern u8 data_020f3c20[];
     extern void *gCurrentMap;
@@ -170,8 +170,8 @@ void func_020b19d0(s32 player, s32 colour) {
         row2 = 0;
     }
     playerOffset = player * MAP_PLAYER_STRIDE;
-    QueueVramCopy(data_020f3c20 + colour * 2, ((row1 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
-    QueueVramCopy(data_020f3c20, ((row2 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
+    QueueMainOBJExtPaletteCopy(data_020f3c20 + colour * 2, ((row1 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
+    QueueMainOBJExtPaletteCopy(data_020f3c20, ((row2 + (M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + playerOffset, u8 *, PLAYER_ARMY_INDEX_OFF) - 1)) << 5) + 0x121E, 2, 0);
 }
 
 void func_020b1a84(void) {
@@ -183,9 +183,9 @@ void func_020b1a88(void) {
 }
 
 void func_020b1a8c(s32 arg0) {
-    M2C_UNK QueueVramCopy(void *, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK QueueMainOBJExtPaletteCopy(void *, s32, M2C_UNK, M2C_UNK);
     extern u8 data_021206e0[];
-    QueueVramCopy(data_021206e0 + ((u32)((arg0 >> 2) << 28) >> 27), 0x1448, 2, 0);
+    QueueMainOBJExtPaletteCopy(data_021206e0 + ((u32)((arg0 >> 2) << 28) >> 27), 0x1448, 2, 0);
 }
 
 void func_020b1abc(void) {
@@ -217,23 +217,27 @@ u8 GetSpriteSlotState(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 3);
 }
 
+/* Deactivates the sprite slots and resets the manager's focus, screen and pause state. */
 void ResetSpriteSlots(void) {
-extern u8 gSpriteSlots[];
-extern void *gSpriteSlotManager;
-s32 i;
-u8 *p=gSpriteSlots;
-for(i=0;i<85;i++,p+=60) p[1]=0;
-M2C_FIELD(gSpriteSlotManager,s32 *,0)=8;
-M2C_FIELD(gSpriteSlotManager,s32 *,4)=0;
-M2C_FIELD(gSpriteSlotManager,s32 *,12)=0;
-M2C_FIELD(gSpriteSlotManager,u8 *,8)=0;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x24)=0;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x25)=0;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x26)=0;
-M2C_FIELD(gSpriteSlotManager,u8 *,0x27)=0;
+    extern u8 gSpriteSlots[];
+    extern void *gSpriteSlotManager;
+    s32 slotIndex;
+    u8 *slot = gSpriteSlots;
+
+    for (slotIndex = 0; slotIndex < SPRITE_SLOT_COUNT; slotIndex++, slot += SPRITE_SLOT_STRIDE)
+        slot[SPRITE_SLOT_VISIBLE] = 0;
+
+    M2C_FIELD(gSpriteSlotManager, s32 *, 0) = 8;
+    M2C_FIELD(gSpriteSlotManager, s32 *, 4) = 0;
+    M2C_FIELD(gSpriteSlotManager, s32 *, SPRITE_SLOT_MGR_FOCUS) = 0;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_FOCUS_ID) = 0;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_SCREEN) = DS3D_TARGET_MAIN;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_HAS_FOCUS) = 0;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_UPDATE_PAUSE_DEPTH) = 0;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH) = 0;
 }
 
-s32 func_020b1bb0(void) {
+s32 IsFocusedSpriteSlotInteractive(void) {
 extern void *gSpriteSlotManager;
 void *p=M2C_FIELD(gSpriteSlotManager,void **,12);
 if(!p || !M2C_FIELD(p,u8 *,1) || (u8)(M2C_FIELD(p,u8 *,4)+253)<=1) return 0;
@@ -260,8 +264,8 @@ M2C_FIELD(gSpriteSlotManager,s16 *,0x22)=b;
 
 s32 FocusSpriteSlotById(s32 arg0) {
     s32 FindSpriteSlotById(void);
-    M2C_UNK func_020b1ca0(u8 *, s32);
-    func_020b1ca0((u8 *)FindSpriteSlotById(), arg0);
+    M2C_UNK SetSpriteSlotFocus(u8 *, s32);
+    SetSpriteSlotFocus((u8 *)FindSpriteSlotById(), arg0);
 }
 
 s32 SelectSpriteSlot(void) {
@@ -275,23 +279,44 @@ s32 SelectSpriteSlot(void) {
 }
 
 void FocusSpriteSlot(u8 *arg0) {
-    M2C_UNK func_020b1ca0(u8 *, s32);
-    func_020b1ca0(arg0, *arg0);
+    M2C_UNK SetSpriteSlotFocus(u8 *, s32);
+    SetSpriteSlotFocus(arg0, *arg0);
 }
 
-M2C_UNK func_020b1ca0(u8 *arg0,s32 arg1) {
-extern void *gSpriteSlotManager;
-void func_020b2e60(void *);
-s32 changed;
-if(func_020b1bb0() && arg0 && M2C_FIELD(gSpriteSlotManager,void **,12)!=arg0) changed=1;
-else changed=0;
-M2C_FIELD(gSpriteSlotManager,void **,12)=arg0;
-M2C_FIELD(gSpriteSlotManager,u8 *,8)=arg1;
-if(changed) func_020b2e60(M2C_FIELD(gSpriteSlotManager,void **,12));
-return (M2C_UNK)M2C_FIELD(gSpriteSlotManager,void **,12);
+/* Stores the new focused slot and invokes its callback when focus moves from an interactive slot. */
+M2C_UNK SetSpriteSlotFocus(u8 *slot, s32 slotId) {
+    extern void *gSpriteSlotManager;
+    void InvokeSpriteSlotFocusCallback(void *);
+    s32 changed;
+
+    if (IsFocusedSpriteSlotInteractive() && slot &&
+        M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS) != slot)
+        changed = 1;
+    else
+        changed = 0;
+
+    M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS) = slot;
+    M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_FOCUS_ID) = slotId;
+    if (changed)
+        InvokeSpriteSlotFocusCallback(M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS));
+    return (M2C_UNK)M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS);
 }
 
-void func_020b1d14(void){extern void *gSpriteSlotManager,*gKeyState,*gTouchState;void *p;void (*f)(void *);if(!func_020b1bb0())return;p=M2C_FIELD(gSpriteSlotManager,void **,12);if(M2C_FIELD(p,u8 *,4)!=2)return;if(!M2C_FIELD(gKeyState,u16 *,2))return;if(M2C_FIELD(gTouchState,u8 *,18))return;f=M2C_FIELD(p,void (**)(void *),40);if(!f)return;f(p);}
+/* Runs the focused sprite slot's key handler: when the slot has finished its
+ * intro, a key is auto-repeating and no touch is down, call the slot's key
+ * callback with the slot. */
+void HandleFocusedSpriteSlotKey(void){
+extern void *gSpriteSlotManager,*gKeyState,*gTouchState;
+void *slot;void (*keyCallback)(void *);
+if(!IsFocusedSpriteSlotInteractive())return;
+slot=M2C_FIELD(gSpriteSlotManager,void **,SPRITE_SLOT_MGR_FOCUS);
+if(M2C_FIELD(slot,u8 *,SPRITE_SLOT_ANIM)!=SPRITE_SLOT_ANIM_READY)return;
+if(!((KeyState *)gKeyState)->repeat)return;
+if(M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))return;
+keyCallback=M2C_FIELD(slot,void (**)(void *),SPRITE_SLOT_KEY_CB);
+if(!keyCallback)return;
+keyCallback(slot);
+}
 
 #pragma push
 #pragma opt_common_subs on
@@ -301,7 +326,7 @@ s32 FindSpriteSlotById();
 void DrawFrameBorderPulse(s16,s16,s16,s16,u16,s32);
 void *p,*q; s32 x,y,r,b,d,v,n,out; s32 force; u16 flags;
 FocusSpriteSlotById(M2C_FIELD(gSpriteSlotManager,u8 *,8));
-if (!func_020b1bb0()) return;
+if (!IsFocusedSpriteSlotInteractive()) return;
 p=gSpriteSlotManager; q=M2C_FIELD(p,void **,12);
 x=M2C_FIELD(q,s16 *,20);y=M2C_FIELD(q,s16 *,22);
 b=y+M2C_FIELD(q,s16 *,26); r=x+M2C_FIELD(q,s16 *,24);
@@ -487,7 +512,7 @@ s32 func_020b2304(s32 x, s32 y, void *slot, void *desc, s32 id) {
  * callback and the focused-slot key handler. */
 void UpdateSpriteSlots(void) {
 s32 func_020b2714(void); s32 func_020b26b8(void); s32 TryFocusSpriteSlot(u8 *);
-void AnimateSpriteSlot(u8 *); s32 HandleSpriteSlotTouch(u8 *); void func_020b1d14(void);
+void AnimateSpriteSlot(u8 *); s32 HandleSpriteSlotTouch(u8 *); void HandleFocusedSpriteSlotKey(void);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;
 extern u8 gSpriteSlots[];
 s32 slotFocused=0; void *savedEngine; s32 pass; s32 i; u8 *slot;
@@ -528,7 +553,7 @@ void (*updateCallback)(void *)=*(void (**)(void *))(slot+SPRITE_SLOT_UPDATE_CB);
 if(updateCallback)updateCallback(slot);
 }
 }
-func_020b1d14();
+HandleFocusedSpriteSlotKey();
 }
 gCur3DSpriteEngine=savedEngine;
 }

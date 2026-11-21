@@ -93,16 +93,18 @@ Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x14);
 Build3DSpriteTransform(sSpriteTransformDefault,(u8 *)*gCur3DSpriteEngine+0x24);
 }
 
+/* Clear the quad corner offset of all four layers in the current 3D sprite
+ * engine's bank, so each layer sits on the bank origin. */
 void Reset3DSpriteCorners(void) {
     extern void **gCur3DSpriteEngine;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x38) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x40) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3A) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x42) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3C) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x44) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x3E) = 0;
-    M2C_FIELD(*gCur3DSpriteEngine, s16 *, 0x46) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_X(0)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_Y(0)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_X(1)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_Y(1)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_X(2)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_Y(2)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_X(3)) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_CORNER_Y(3)) = 0;
 }
 
 /* Clear every mode, layer-select and split-row setting of the current 3D
@@ -261,14 +263,14 @@ void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     M2C_UNK func_02003124(M2C_UNK);
-    M2C_UNK func_020031cc(M2C_UNK);
+    M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     func_02082c84();
     GX_SetBankForTex(1);
     GX_SetBankForBG(2);
     func_02003124(4);
-    func_020031cc(8);
+    GX_SetBankForSubOBJ(8);
     GX_SetBankForOBJ(0x10);
     GX_SetBankForOBJExtPltt(0x20);
     func_02002ab8(0x40);

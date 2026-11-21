@@ -107,9 +107,27 @@ if(n>=M2C_FIELD(p,u32 *,16))return 3;if(n>=M2C_FIELD(p,u32 *,12))return 2;
 if(n>=M2C_FIELD(p,u32 *,8)) r=1;else r=0;return r;
 }
 
-u16 func_ov000_0216a470(void) {
-s32 i,j; s32 p;u16 result=0;
-i=0;do {p=GetRecordDefinition(i,0);j=0;if(M2C_FIELD(p,s32 *,0)) {do {result+=GetRecordTier(i,j);p+=0x30;j++;}while(M2C_FIELD(p,s32 *,0));}i++;}while(i<3);return result;
+/* Sum the tier every listed record has reached across the three record groups. */
+u16 GetEarnedRecordTierTotal(void) {
+    s32 group;
+    s32 index;
+    s32 record;
+    u16 total = 0;
+
+    group = 0;
+    do {
+        record = GetRecordDefinition(group, 0);
+        index = 0;
+        if (M2C_FIELD(record, s32 *, 0)) {
+            do {
+                total += GetRecordTier(group, index);
+                record += RECORD_DEFINITION_SIZE;
+                index++;
+            } while (M2C_FIELD(record, s32 *, 0));
+        }
+        group++;
+    } while (group < RECORD_GROUP_COUNT);
+    return total;
 }
 
 /* Sums the player's record tiers over the three record groups: *earned receives

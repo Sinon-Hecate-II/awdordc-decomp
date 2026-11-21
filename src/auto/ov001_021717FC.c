@@ -1,10 +1,11 @@
 /* 30 functions from 0x021717FC to 0x021724C0 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_menu.h"
 void Ov001_FreeSpriteObjects(void);
-extern s32 data_ov001_02193d14;
-extern u8 data_ov001_021900e4[];
-extern u8 *data_ov001_02190094[];
+extern s32 sOv001HighlightTilemapBuffer;
+extern u8 sOv001HighlightTilesPath[];
+extern u8 *sOv001HighlightTilemapPaths[];
 extern Ov001WfcIcon *gOv001WfcIcon;
 extern const u8 gOv001WfcIconLayouts[];
 void Ov001_WfcIconUpdate(s32);
@@ -194,20 +195,23 @@ void func_ov001_02171e20(M2C_UNK arg0) {
     func_ov001_0217159c(arg0);
 }
 
-void Ov001_ShowMessageBox(M2C_UNK arg0) {
+/* Draws message `messageId` from the ov001 message archive into a fresh text
+ * panel and closes it again: the small one-shot message box. */
+void Ov001_ShowMessageBox(s32 messageId) {
     s32 Ov001_GetTextFontId();
-    s32 Ov001_GetMessageText(s32, M2C_UNK);
+    s32 Ov001_GetMessageText(s32, s32);
     s32 CreateTextPanel(M2C_UNK, M2C_UNK);
     M2C_UNK DrawPanelText(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK CloseTextPanel(s32);
     extern s32 gOv001MessageArchive;
-    s32 temp_r4;
-    s32 temp_r5;
+    s32 text;
+    s32 panel;
 
-    temp_r5 = CreateTextPanel(0, 0);
-    temp_r4 = Ov001_GetMessageText(gOv001MessageArchive, arg0);
-    DrawPanelText(temp_r5, 0xD, 0x28, 0xE6, 0x70, 2, Ov001_GetTextFontId(), temp_r4);
-    CloseTextPanel(temp_r5);
+    panel = CreateTextPanel(0, 0);
+    text = Ov001_GetMessageText(gOv001MessageArchive, messageId);
+    DrawPanelText(panel, OV001_MESSAGE_BOX_X, OV001_MESSAGE_BOX_Y, OV001_MESSAGE_BOX_WIDTH,
+        OV001_MESSAGE_BOX_HEIGHT, OV001_MESSAGE_BOX_COLOR, Ov001_GetTextFontId(), text);
+    CloseTextPanel(panel);
 }
 
 /* Builds the ov001 message panel showing message `messageId` and draws the
@@ -239,7 +243,7 @@ void func_ov001_02171fa0(void) {
  gOv001ChoiceFrameSprites=Ov001_Alloc(16,4);
 }
 
-void func_ov001_02171fc0(void) {
+void Ov001_FreeChoiceFrame(void) {
     void Ov001_FreeSpriteObjects();
     extern M2C_UNK gOv001ChoiceFrameSprites;
     Ov001_FreeSpriteObjects();
@@ -293,29 +297,36 @@ void Ov001_FreeSpriteObjects(void) {
  }
 }
 
-void func_ov001_021721c4(void) {
- void func_0200460c(s32,s32,s32);
- void func_020043cc(s32,s32,s32);
- s32 Ov001_GetScreenLayout(void);
- data_ov001_02193d14=Ov001_Alloc(192,4);
- Ov001_LoadAsset(data_ov001_021900e4,func_0200460c);
- switch(Ov001_GetScreenLayout()) {
- case 0: Ov001_LoadAsset(data_ov001_02190094[0],func_020043cc); return;
- case 1: Ov001_LoadAsset(data_ov001_02190094[1],func_020043cc); return;
- }
+/* Stage later highlight updates and load the initial BG1 tiles and tilemap. */
+void Ov001_InitHighlightBackground(void) {
+    void GX_LoadBG1Char(s32, s32, s32);
+    void GX_LoadBG1Scr(s32, s32, s32);
+    s32 Ov001_GetScreenLayout(void);
+
+    sOv001HighlightTilemapBuffer =
+        Ov001_Alloc(OV001_HIGHLIGHT_TILEMAP_BYTES, OV001_HIGHLIGHT_TILEMAP_ALIGNMENT);
+    Ov001_LoadAsset(sOv001HighlightTilesPath, GX_LoadBG1Char);
+    switch (Ov001_GetScreenLayout()) {
+    case OV001_HIGHLIGHT_LAYOUT_WIFI:
+        Ov001_LoadAsset(sOv001HighlightTilemapPaths[OV001_HIGHLIGHT_LAYOUT_WIFI], GX_LoadBG1Scr);
+        return;
+    case OV001_HIGHLIGHT_LAYOUT_AP:
+        Ov001_LoadAsset(sOv001HighlightTilemapPaths[OV001_HIGHLIGHT_LAYOUT_AP], GX_LoadBG1Scr);
+        return;
+    }
 }
 
-void func_ov001_0217223c(void) {
+void Ov001_FreeHighlightTilemap(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193d14;
-    Ov001_FreeAlloc(&data_ov001_02193d14);
+    extern M2C_UNK sOv001HighlightTilemapBuffer;
+    Ov001_FreeAlloc(&sOv001HighlightTilemapBuffer);
 }
 
 void func_ov001_021722dc(s32);
 M2C_UNK Ov001_LoadObjLayoutBlock(s32 a) {
  void MI_CpuCopy32(s32,s32,s32);
- s32 p=Ov001_LoadFile(Ov001_LocalizePath(data_ov001_02190094[a]),0,4);
- MI_CpuCopy32(p,data_ov001_02193d14,192);
+ s32 p=Ov001_LoadFile(Ov001_LocalizePath(sOv001HighlightTilemapPaths[a]),0,4);
+ MI_CpuCopy32(p,sOv001HighlightTilemapBuffer,192);
  Ov001_FreeFile(p);
  Ov001_AddTask(1,func_ov001_021722dc,0,120);
 }
@@ -331,10 +342,10 @@ void func_ov001_021722c4(void) {
 }
 
 void func_ov001_021722dc(s32 a) {
- void func_020043cc(s32,s32,s32);
+ void GX_LoadBG1Scr(s32,s32,s32);
  void Ov001_PostTaskMessage(s32,s32);
- DC_FlushRange(data_ov001_02193d14,192);
- func_020043cc(data_ov001_02193d14,0,192);
+ DC_FlushRange(sOv001HighlightTilemapBuffer,192);
+ GX_LoadBG1Scr(sOv001HighlightTilemapBuffer,0,192);
  Ov001_PostTaskMessage(1,a);
 }
 

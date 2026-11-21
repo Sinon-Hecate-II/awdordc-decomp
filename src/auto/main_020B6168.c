@@ -299,9 +299,9 @@ case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:c
 }}
 #pragma opt_propagation reset
 s32 CreateUnitPreviewSprite(s32 a,s32 b) {
-void func_020a488c(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK data_02128abc;
+void GetMapOrderEffectPosition(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK data_02128abc;
 s16 xy[2];s32 p;
-func_020a488c(a,xy);p=CreateSpriteObject(&data_02128abc,b);
+GetMapOrderEffectPosition(a,xy);p=CreateSpriteObject(&data_02128abc,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0];M2C_FIELD(p,s32 *,0x3c)=xy[1];
 M2C_FIELD(p,s16 *,0x6c)=(u32)(M2C_FIELD(a,u16 *,2)<<22)>>28;
 M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(a,u8 *,4);

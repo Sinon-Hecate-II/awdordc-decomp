@@ -18,7 +18,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK SBServerListAddServer(void *, s32);
     s32 SBServerListFindByAddress(void *, s32, u16);
     s32 SBServerListGetServerAt(void *, s32);
-    M2C_UNK func_020629bc(void *, M2C_UNK, s32, s32 *, u16 *);
+    M2C_UNK gpiReadServerAddress(void *, M2C_UNK, s32, s32 *, u16 *);
     s32 gpiProcessPlayerRecord(void *, s32, M2C_UNK, s32, s32);
     s32 entry;
     u16 kind;
@@ -28,7 +28,7 @@ s32 func_02063704(void *arg0, M2C_UNK arg1, s32 arg2) {
     if (arg2 < 5) {
         return 4;
     }
-    func_020629bc(arg0, arg1, arg2, &count, &kind);
+    gpiReadServerAddress(arg0, arg1, arg2, &count, &kind);
     found = SBServerListFindByAddress(arg0, count, kind);
     if (found == -1) {
         entry = SBServerNew(arg0, count, kind);
@@ -50,7 +50,7 @@ apply:
 }
 
 #pragma scheduling reset
-s32 func_020637fc(void *arg0) {
+s32 SBServerListProcessData(void *arg0) {
     s32 ghiSend(s32, void *, s32, s32);
     M2C_UNK SBServerListCheckQueryError(void *);
     s32 SBServerListParseKeyList(void *, u8 *, s32);
@@ -117,39 +117,43 @@ s32 func_020637fc(void *arg0) {
     return result;
 }
 #pragma scheduling off
-s32 func_020639c0(void *arg0) {
+/* Read whatever the master socket has received into the list's reply buffer,
+ * decrypt it, and hand it to the connect-reply or reply-message parser for the
+ * list's state.  Returns 0 when there is nothing (more) to do, 3 when the
+ * receive failed, or a parser's error code. */
+s32 SBServerListCheckForData(void *list) {
     s32 ghiSocketCanRecv(s32);
     s32 ghiRecv(s32, s32, s32, M2C_UNK);
-    M2C_UNK func_0206006c(void *, s32, s32);
+    M2C_UNK GsCryptData(void *, s32, s32);
     M2C_UNK SBServerListCheckQueryError(void *);
-    s32 func_02062e30(void *);
-    s32 func_020637fc(void *);
-    s32 temp_r0;
-    s32 var_r4;
-    s32 temp_r5;
+    s32 SBServerListProcessConnectReply(void *);
+    s32 SBServerListProcessData(void *);
+    s32 received;
+    s32 result;
+    s32 oldLength;
 
-    if (ghiSocketCanRecv(M2C_FIELD(arg0, s32 *, 0x4B0)) == 0) {
+    if (ghiSocketCanRecv(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET)) == 0) {
         return 0;
     }
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x80);
-    temp_r0 = ghiRecv(M2C_FIELD(arg0, s32 *, 0x4B0), M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, 0x1000 - temp_r5, 0);
-    if ((u32) (temp_r0 + 1) <= 1U) {
-        SBServerListCheckQueryError(arg0);
+    oldLength = M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH);
+    received = ghiRecv(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET), M2C_FIELD(list, s32 *, SB_SLIST_RECV_BUFFER) + oldLength, SB_SLIST_RECV_BUFFER_SIZE - oldLength, 0);
+    if ((u32) (received + 1) <= 1U) {
+        SBServerListCheckQueryError(list);
         return 3;
     }
-    var_r4 = 0;
-    M2C_FIELD(arg0, s32 *, 0x80) = M2C_FIELD(arg0, s32 *, 0x80) + temp_r0;
-    if (M2C_FIELD(arg0, s32 *, 0) != 2 && M2C_FIELD(arg0, s32 *, 0x5C8) > 0) {
-        func_0206006c((u8 *)arg0 + 0x4BC, M2C_FIELD(arg0, s32 *, 0x7C) + temp_r5, M2C_FIELD(arg0, s32 *, 0x80) - temp_r5);
+    result = 0;
+    M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH) = M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH) + received;
+    if (M2C_FIELD(list, s32 *, SB_SLIST_STATE) == SB_SLIST_STATE_CONNECTED || M2C_FIELD(list, s32 *, SB_SLIST_CRYPT_STAGE) > 0) {
+        GsCryptData((u8 *)list + SB_SLIST_CRYPT, M2C_FIELD(list, s32 *, SB_SLIST_RECV_BUFFER) + oldLength, M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH) - oldLength);
     }
-    if (M2C_FIELD(arg0, s32 *, 0) == 3) {
-        var_r4 = func_02062e30(arg0);
+    if (M2C_FIELD(list, s32 *, SB_SLIST_STATE) == SB_SLIST_STATE_QUERYING) {
+        result = SBServerListProcessConnectReply(list);
     }
-    if (var_r4 != 0) {
-        return var_r4;
+    if (result != 0) {
+        return result;
     }
-    if (M2C_FIELD(arg0, s32 *, 0) == 2 && M2C_FIELD(arg0, s32 *, 0x80) > 0) {
-        return func_020637fc(arg0);
+    if (M2C_FIELD(list, s32 *, SB_SLIST_STATE) == SB_SLIST_STATE_CONNECTED && M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH) > 0) {
+        return SBServerListProcessData(list);
     }
     return 0;
 }
@@ -235,7 +239,7 @@ s32 SBServerListProcessAdHocServers(void *list) {
 
 s32 func_02063dac(void *arg0) {
     void func_02061bdc(void *);
-    s32 func_020639c0(void *);
+    s32 SBServerListCheckForData(void *);
     s32 SBServerListProcessAdHocServers(void *);
     s32 temp_r0;
 
@@ -244,7 +248,7 @@ s32 func_02063dac(void *arg0) {
     switch (temp_r0) {
     case 2:
     case 3:
-        return func_020639c0(arg0);
+        return SBServerListCheckForData(arg0);
     case 0:
         return SBServerListProcessAdHocServers(arg0);
     case 1:
@@ -282,7 +286,7 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
     s32 TryLockMutex(void *);
     M2C_UNK LockMutex();
     M2C_UNK UnlockMutex();
-    M2C_UNK StreamClose(s32);
+    M2C_UNK FlushFileStream(s32);
     M2C_UNK func_020746f0(void);
     extern u8 gStreamMutexes[];
     extern M2C_UNK gSocketManager, gSocketEventState, gSocketEventCallbacks;
@@ -317,7 +321,7 @@ M2C_UNK FlushSocketCallbacks(M2C_UNK arg0) {
         M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB)();
         M2C_FIELD(&gSocketEventState, M2C_UNK (**)(void), SOCK_EVENT_FLUSH_CB) = 0;
     }
-    StreamClose(0);
+    FlushFileStream(0);
     func_020746f0();
 }
 #pragma opt_common_subs reset
@@ -329,11 +333,11 @@ void func_02063f90(void) {
 
 #pragma opt_strength_reduction off
 s32 func_02063fa8(void){
-s32 StreamClose(s32);extern u8 gStdinStream[];
+s32 FlushFileStream(s32);extern u8 gStdinStream[];
 u8 *p; s32 result; s32 i; u8 *base; s32 zero; s32 off;
 p=gStdinStream;result=0;i=1;zero=result;base=gStdinStream;
 do{u32 a; u32 v=M2C_FIELD(p,u32*,4);a=(u32)(v<<22)>>29;
-if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))StreamClose)(p,b,a))result=-1;}
+if(a && (((u32)(v<<25)>>30)&1)){u32 b=(u32)(M2C_FIELD(p,s32*,8)<<29)>>29;if(b==1 && ((s32 (*)(void*,u32,u32))FlushFileStream)(p,b,a))result=-1;}
 if(i<3){off=i*76;i++;p=base+off;}else p=0;
 }while(p);
 return result;}
@@ -342,12 +346,12 @@ return result;}
 #pragma opt_strength_reduction off
 #pragma peephole off
 s32 CloseStandardStreams(void) {
-s32 StreamClose(s32);
+s32 FlushFileStream(s32);
 extern u8 gStdinStream[];
 void *p; s32 result; s32 i; s32 offset;
 p=gStdinStream; result=0; i=1;
 do {
-if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && StreamClose((s32)p)) result=-1;
+if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && FlushFileStream((s32)p)) result=-1;
 if(i<3) {offset=i*0x4c; i++; p=gStdinStream+offset;} else p=NULL;
 }while(p);
 return result;

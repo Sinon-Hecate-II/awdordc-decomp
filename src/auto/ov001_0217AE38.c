@@ -157,18 +157,21 @@ if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),
 Ov001_PlaySound(8);func_ov001_0217b130();
 }
 
-void func_ov001_0217b2c8(void) {
+/* Page the map-select list up from its first row: when the list is already at
+ * its top play the no-move sound once per held key, otherwise start the
+ * scroll-up task. */
+void MapSelectList_PageUp(void) {
     M2C_UNK Ov001_PlaySound(s32);
     s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
     extern M2C_UNK gMapSelectState;
-    if (M2C_FIELD(&gMapSelectState, u16 *, 2) == 0) {
-        if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) != 0) return;
+    if (M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) == 0) {
+        if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_BUMP_LATCH) != 0) return;
         Ov001_PlaySound(9);
-        M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x59) = 1;
+        M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_BUMP_LATCH) = 1;
         return;
     }
     Ov001_PlaySound(0x13);
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 0x38) = Ov001_AddTask(0, MapSelectList_ScrollUp, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = Ov001_AddTask(0, MapSelectList_ScrollUp, 0, 0x78);
 }
 
 /* Page the map-select list down from its last row: when the list is already at
@@ -200,14 +203,14 @@ void func_ov001_0217b3c0(void) {
 
 void func_ov001_0217b3f0(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_0217b41c;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_0217b41c);
 }
 
@@ -397,7 +400,7 @@ void Ov001_HandleNameEntryResult(void) {
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
-    extern M2C_UNK func_ov001_0217ba1c;
+    extern M2C_UNK Ov001_CloseNameEntryScreen;
     extern M2C_UNK func_ov001_0217bc7c;
     extern M2C_UNK func_ov001_0217bf14;
     s32 modeMessages[2];
@@ -409,7 +412,7 @@ void Ov001_HandleNameEntryResult(void) {
     if (Ov001_IsMenuActive() != 0) return;
     result = M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT);
     if (result == 0) {
-        Ov001_SetStepCallback(&func_ov001_0217ba1c);
+        Ov001_SetStepCallback(&Ov001_CloseNameEntryScreen);
         return;
     }
     if (result == 2) {
@@ -422,9 +425,13 @@ void Ov001_HandleNameEntryResult(void) {
     Ov001_SetStepCallback(&func_ov001_0217bc7c);
 }
 
-#pragma optimization_level 4
-#pragma peephole off
-void func_ov001_0217ba1c(void) {
+#pragma merge_constants off
+/* Leave the name-entry screen once its keyboard and messages are done: free its
+ * background, cursor sprite and page, load the main OBJ palette and hide the
+ * planes, then pick the next screen from the saved entry mode and the entry's
+ * result - the map list for the no-argument mode, the map-select list after a
+ * cancelled entry, or the save-slot menu after an accepted name. */
+void Ov001_CloseNameEntryScreen(void) {
     M2C_UNK Ov001_FreeOptionBackground(void);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK Ov001_ReleaseSprite(M2C_UNK);
@@ -436,39 +443,39 @@ void func_ov001_0217ba1c(void) {
     s32 Ov001_SetStepCallback(s32 *);
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
     extern void *gNameEntryState;
-    extern void *data_ov001_02190758;
+    extern s32 data_ov001_02193d9c;
+    extern void *gOv001ObjMainPalettePath;
     extern void GX_LoadOBJPltt(void);
     extern void InitMapListScreen(void);
     extern void MapSelectList_Init(void);
-    extern void func_ov001_021828ac(void);
-    s32 sp4, sp0;
-    void *p;
+    extern void Ov001_PrepareSaveSlotMenu(void);
+    s32 entryMode, entryArg;
+
     Ov001_FreeOptionBackground();
-    Ov001_ReleaseSprite(M2C_FIELD(gNameEntryState, void **, 4));
+    Ov001_ReleaseSprite(M2C_FIELD(gNameEntryState, void **, NAME_ENTRY_CURSOR));
     Ov001_FreePageBackground(0);
-    Ov001_LoadAsset((M2C_UNK *)&data_ov001_02190758, (M2C_UNK *)&GX_LoadOBJPltt);
+    Ov001_LoadAsset((M2C_UNK *)&gOv001ObjMainPalettePath, (M2C_UNK *)&GX_LoadOBJPltt);
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
-    Ov001_GetNameEntryMode(&sp4, &sp0);
-    if (sp0 == 0) {
+    Ov001_GetNameEntryMode(&entryMode, (s32)&entryArg);
+    if (entryArg == 0) {
         Ov001_SetNextScreenMode(2, 1);
-        Ov001_SetNameEntryMode(0, sp4);
+        Ov001_SetNameEntryMode(0, entryMode);
         Ov001_SetStepCallback((s32 *)InitMapListScreen);
     } else {
-        if (M2C_FIELD(gNameEntryState, u8 *, 0x2A) == 0) {
+        if (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT) == 0) {
             Ov001_SetNextScreenMode(0, 1);
             Ov001_SetNameEntryMode(1, 0);
             Ov001_SetStepCallback((s32 *)MapSelectList_Init);
         } else {
             Ov001_SetNextScreenMode(0, 0);
             Ov001_SetNameEntryMode(0, 1);
-            Ov001_SetStepCallback((s32 *)func_ov001_021828ac);
+            Ov001_SetStepCallback((s32 *)Ov001_PrepareSaveSlotMenu);
         }
     }
-    p = sp0 ? (void *)&gNameEntryState : (void *)&gNameEntryState;
-    Ov001_FreeAlloc((M2C_UNK *)p);
+    Ov001_FreeAlloc(&data_ov001_02193d9c + 1);
 }
-#pragma peephole reset
+#pragma merge_constants reset
 /* Draws the entered name on the name-entry panel: one glyph per character in
  * two rows of 16, substituting a dash for spaces, then closes the panel. */
 void RedrawNameEntryText(void) {
@@ -513,13 +520,13 @@ void UpdateNameEntryCursor(void) {
 void func_ov001_0217bc7c(void) {
     extern void *gNameEntryState;
     extern M2C_UNK Ov001_FinishNameEntry;
-    M2C_FIELD(gNameEntryState, u8 *, 0x2A) = func_ov001_02186648();
+    M2C_FIELD(gNameEntryState, u8 *, 0x2A) = Ov001_GetRegionMenuSelection();
     switch (M2C_FIELD(gNameEntryState, u8 *, 0x2A)) {
     case 0: Ov001_PlaySound(7); break;
     case 1: Ov001_PlaySound(0xE); break;
     default: return;
     }
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&Ov001_FinishNameEntry);
 }
 
@@ -532,7 +539,7 @@ void Ov001_FinishNameEntry(void) {
     s32 Ov001_SetStepCallback(s32 *);
     void Ov001_GetNameEntryMode(s32 *, s32);
     void Ov001_OpenNameEntryKeyboard(void);
-    void func_ov001_0217ba1c(void);
+    void Ov001_CloseNameEntryScreen(void);
     extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
 
@@ -551,6 +558,6 @@ void Ov001_FinishNameEntry(void) {
     }
     Ov001_GetNameEntryMode(&mode, 0);
     ((void (*)(void *))acceptHandlers[mode])((u8 *)gNameEntryState + NAME_ENTRY_TEXT);
-    Ov001_SetStepCallback((s32 *)func_ov001_0217ba1c);
+    Ov001_SetStepCallback((s32 *)Ov001_CloseNameEntryScreen);
 }
 

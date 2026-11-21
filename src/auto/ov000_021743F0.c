@@ -238,7 +238,7 @@ void func_ov000_02174c88(void) {
     void func_ov000_02173f30(void *);
     M2C_UNK MemFree(s32);
     void DeleteSpriteObjectsOfClass(void *);
-    void func_020c127c(void);
+    void RemoveMapViewSprites(void);
     extern Ov000MenuState *gOv000InfoWindow;
     extern M2C_UNK data_ov000_021b8e5c;
     void *temp;
@@ -251,7 +251,7 @@ void func_ov000_02174c88(void) {
     }
     gOv000InfoWindow = 0;
     DeleteSpriteObjectsOfClass(&data_ov000_021b8e5c);
-    func_020c127c();
+    RemoveMapViewSprites();
 }
 
 void func_ov000_02174ce8(void) {
@@ -260,7 +260,7 @@ void func_ov000_02174ce8(void) {
     M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
 }
 
-void func_ov000_02174d10(s32 arg0, s32 arg1) {
+void Ov000_InfoWindow_ShowProductionUnit(s32 arg0, s32 arg1) {
     extern Ov000MenuState *gOv000InfoWindow;
     if (func_ov000_02174c0c() == 0) return;
     M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;

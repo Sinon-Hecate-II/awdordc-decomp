@@ -416,13 +416,33 @@ else{VoiceLink_SendControl(0);((VoiceLinkState *)&gVoiceLinkState)->lastActivity
 return 1;
 }
 
+/* Handle a voice-link packet whose header is shorter than a full packet: a
+ * connect packet is ignored; otherwise the sender's exchange context (or the
+ * scratch context when it has none) is released with a step-2 packet, and a
+ * reply is queued when the sender has a context. */
 s32 VoiceLink_HandleShortPacket(void *arg0, M2C_UNK arg1) {
-void VoiceLink_InitContext();extern M2C_UNK gVoiceLinkScratchContext;
-s32 *p;
-if(M2C_FIELD(arg0,u8 *,4)==255 && M2C_FIELD(arg0,u8 *,6)==4)return 0;
-p=VoiceLink_FindContext(M2C_FIELD(arg0,u8 *,8));
-if(p){M2C_FIELD(arg1,s32 *,0)=2;M2C_FIELD(arg1,s32 **,4)=p;*p=0;VoiceLink_SendPacket(p,2);return 1;}
-VoiceLink_InitContext(&gVoiceLinkScratchContext,M2C_FIELD(arg0,u8 *,8));VoiceLink_SendPacket(&gVoiceLinkScratchContext,2);return 0;
+    void VoiceLink_InitContext();
+    s32 *VoiceLink_FindContext(u8);
+    s32 VoiceLink_SendPacket(void *, s32);
+    extern M2C_UNK gVoiceLinkScratchContext;
+    VoiceLinkPacket *packet = (VoiceLinkPacket *) arg0;
+    VoiceLinkReply *reply = (VoiceLinkReply *) arg1;
+    s32 *context;
+
+    if (packet->kind == 0xFF && packet->subtype == 4) {
+        return 0;
+    }
+    context = VoiceLink_FindContext(packet->sender);
+    if (context) {
+        reply->type = 2;
+        reply->context = (VoiceLinkContext *) context;
+        *context = 0;
+        VoiceLink_SendPacket(context, 2);
+        return 1;
+    }
+    VoiceLink_InitContext(&gVoiceLinkScratchContext, packet->sender);
+    VoiceLink_SendPacket(&gVoiceLinkScratchContext, 2);
+    return 0;
 }
 
 /* Serve a voice-chat connect packet: set the reply's type and context for the

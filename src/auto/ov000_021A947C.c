@@ -408,7 +408,7 @@ s32 func_ov000_021aa398(s32 arg0, s32 arg1) {
  return 1;
 }
 
-u8 func_ov000_021aa3bc(void) {
+u8 AiCoPowerUnitIsHurt(void) {
     extern void **gCurrentMap;
     u8 var_r0;
 

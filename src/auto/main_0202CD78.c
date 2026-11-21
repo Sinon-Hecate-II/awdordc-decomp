@@ -293,15 +293,18 @@ s32 func_0202d330(M2C_UNK arg0, s32 arg1) {
     return Sound_PlaySequenceById(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, arg1);
 }
 
-s32 func_0202d378(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4) {
-void *GetSoundSequenceRecord(s32);
-s32 Sound_PlaySequenceById(s32,s32,s32,s32,void *,s32);
-void *p=GetSoundSequenceRecord(arg4);
-if(!p)return 0;
-if(arg3<0)arg3=M2C_FIELD(p,u8 *,8);
-if(arg2<0)arg2=M2C_FIELD(p,u16 *,4);
-if(arg1<0)arg1=M2C_FIELD(p,u8 *,9);
-return Sound_PlaySequenceById(arg0,arg1,arg2,arg3,p,arg4);
+/* Play sequence `sequenceId` of the current sound archive on `player`: a
+ * negative channel, bank or priority takes the sequence record's own value. */
+s32 Sound_PlaySequence(s32 player, s32 channel, s32 bankId, s32 priority, s32 sequenceId) {
+    void *GetSoundSequenceRecord(s32);
+    s32 Sound_PlaySequenceById(s32, s32, s32, s32, void *, s32);
+    SoundSequenceRecord *record = GetSoundSequenceRecord(sequenceId);
+
+    if (!record) return 0;
+    if (priority < 0) priority = record->priority;
+    if (bankId < 0) bankId = record->bankId;
+    if (channel < 0) channel = record->channel;
+    return Sound_PlaySequenceById(player, channel, bankId, priority, record, sequenceId);
 }
 
 /* Play entry `entryIndex` of sequence archive `archiveId` on `player`, using the
@@ -441,7 +444,7 @@ void Sound_StartWorker(M2C_UNK taskPriority, M2C_UNK heap) {
     M2C_UNK InitFileRequest(s32);
     M2C_UNK ListInit(M2C_UNK *, M2C_UNK);
     M2C_UNK ListAppend(M2C_UNK *, s32);
-    M2C_UNK func_0202b46c(s32);
+    M2C_UNK Sound_InitPlayer(s32);
     M2C_UNK InitSoundPlayerSlots(M2C_UNK);
     M2C_UNK CreateSoundWorkerTask(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gSoundWorkerState;
@@ -482,7 +485,7 @@ initSlot:
         player = (slot * SOUND_PLAYER_STRIDE) + slots;
         M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) = (s32) (M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) & ~(1 << SOUND_HANDLE_BIT_ACTIVE));
         InitFileRequest(player + SOUND_HANDLE_FILE_REQUEST);
-        func_0202b46c(player); /* install the slot's voice callbacks and clear its voice state */
+        Sound_InitPlayer(player); /* install the slot's voice callbacks and clear its voice state */
         M2C_FIELD(player, s32 *, SOUND_HANDLE_SLOT_INDEX) = slot;
         M2C_FIELD(player, s8 *, SOUND_HANDLE_MAX_CHANNELS) = 0;
         M2C_FIELD(player, s32 *, SOUND_HANDLE_SAMPLE_DATA) = 0;

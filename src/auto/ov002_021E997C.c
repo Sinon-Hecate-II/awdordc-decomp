@@ -14,17 +14,21 @@ M2C_FIELD(p,void **,0)=data_ov002_021ea704;
 M2C_FIELD(p,s32 *,8)=0;M2C_FIELD(p,s32 *,12)=0;return p;
 }
 
-void func_ov002_021e997c(void *arg0) {
+/* Assigns a freshly created unit-effect object's own node the resource for its
+ * effect (node+0x8C) and slot (node+0x8D): the effect record's first resource,
+ * its u16 sub-id, the slot's byte id and the effect's default variant byte.  An
+ * effect whose first resource is 0 leaves the node untouched. */
+void InitUnitEffectNode(void *node) {
 void func_ov002_021e16dc(void *,s32,u16,u8,s32);
 extern u8 data_ov002_021f3018[];
 extern u8 data_ov002_021f3030[];
 extern u8 data_ov002_021f3045[];
 extern u8 gEffectTable[];
-u8 index = M2C_FIELD(arg0,u8 *,0x8C);
-s32 offset = index*0x64;
-s32 value = M2C_FIELD(data_ov002_021f3018,s32 *,offset);
-if (!value) return;
-func_ov002_021e16dc(arg0,value,M2C_FIELD(data_ov002_021f3030,u16 *,offset),M2C_FIELD(data_ov002_021f3045+offset,u8 *,M2C_FIELD(arg0,u8 *,0x8D)*8),M2C_FIELD(M2C_FIELD(gEffectTable,void **,index*0x18),u8 *,0x38));
+u8 effectId = M2C_FIELD(node,u8 *,0x8C);
+s32 recordOfs = effectId*0x64;
+s32 resource = M2C_FIELD(data_ov002_021f3018,s32 *,recordOfs);
+if (!resource) return;
+func_ov002_021e16dc(node,resource,M2C_FIELD(data_ov002_021f3030,u16 *,recordOfs),M2C_FIELD(data_ov002_021f3045+recordOfs,u8 *,M2C_FIELD(node,u8 *,0x8D)*8),M2C_FIELD(M2C_FIELD(gEffectTable,void **,effectId*0x18),u8 *,0x38));
 }
 
 void func_ov002_021e99f0(void *arg0, s32 arg1) {

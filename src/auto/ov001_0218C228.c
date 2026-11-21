@@ -129,7 +129,7 @@ void func_ov001_0218c4c0(void) {
     void GX_SetBankForOBJExtPltt(s32);
     void GX_SetBankForTexExtPltt(s32);
     void func_02003124(s32);
-    void func_020031cc(s32);
+    void GX_SetBankForSubOBJ(s32);
     void GX_SetBankForBGExtPlttSub(s32);
     void GX_SetBankForOBJExtPlttSub(s32);
     s32 func_02003104(s32);
@@ -147,7 +147,7 @@ void func_ov001_0218c4c0(void) {
     GX_SetBankForOBJExtPltt(gVramBankGrants[5]);
     GX_SetBankForTexExtPltt(gVramBankGrants[6]);
     func_02003124(gVramBankGrants[7]);
-    func_020031cc(gVramBankGrants[8]);
+    GX_SetBankForSubOBJ(gVramBankGrants[8]);
     GX_SetBankForBGExtPlttSub(gVramBankGrants[9]);
     GX_SetBankForOBJExtPlttSub(gVramBankGrants[10]);
     func_02003104(gVramBankGrants[12]);
@@ -318,7 +318,7 @@ Ov001_ListRemove(p);
 Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
 }
 
-void func_ov001_0218c99c(s32 arg0, s8 arg1) {
+void Ov001_SetTaskGroupEnabled(s32 arg0, s8 arg1) {
     extern s32 gOv001Tasks;
     M2C_FIELD((gOv001Tasks + (arg0 << 6)), s8 *, 0x38) = arg1;
 }

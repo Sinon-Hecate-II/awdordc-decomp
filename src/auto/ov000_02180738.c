@@ -22,8 +22,8 @@ void func_ov000_02180778(void) {
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_0219619c();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanReachableAttackDestination();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -38,8 +38,8 @@ void func_ov000_02180778(void) {
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
     }
-    func_ov000_0219619c();
-    func_ov000_02194370();
+    PlanReachableAttackDestination();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
@@ -50,8 +50,8 @@ void func_ov000_021807d8(void) {
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_021962f8();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanCaptureMoveDestination();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -66,8 +66,8 @@ void func_ov000_021807d8(void) {
     if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
         func_ov000_02186a18();
     }
-    func_ov000_021962f8();
-    func_ov000_02194370();
+    PlanCaptureMoveDestination();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
@@ -77,8 +77,8 @@ void func_ov000_02180838(void) {
 M2C_UNK ClearAiInfluenceMaps();
 M2C_UNK SelectAiMoveActionTarget();
 M2C_UNK RunAiAttackAction();
-M2C_UNK func_ov000_0219619c();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanReachableAttackDestination();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPortDestination();
 M2C_UNK FinishAiUnitAction();
@@ -90,8 +90,8 @@ SelectAiMoveActionTarget();
 RunAiAttackAction();
 temp_r3 = *gCurrentMap;
 if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) { func_ov000_02186a18(); }
-func_ov000_0219619c();
-func_ov000_02194370();
+PlanReachableAttackDestination();
+PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPortDestination();
 FinishAiUnitAction();
@@ -104,7 +104,7 @@ M2C_UNK RunAiAttackAction();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK PlanEnemyHqAttackDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK PlanEnemyHqAttackDestinationAlt();
@@ -121,7 +121,7 @@ temp_r3 = *gCurrentMap;
 if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) { func_ov000_02186a18(); }
 PlanEnemyHqAttackDestination();
 PlanEnemyUnitAttackDestination();
-func_ov000_02194370();
+PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 PlanEnemyHqAttackDestinationAlt();
@@ -162,7 +162,7 @@ M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK PlanEnemyUnitAttackDestination();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK PlanEnemyHqAttackDestinationAlt();
@@ -178,7 +178,7 @@ map = *gCurrentMap;
 if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 PlanEnemyUnitAttackDestination();
-func_ov000_02194370();
+PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 PlanEnemyHqAttackDestinationAlt();
@@ -194,7 +194,7 @@ void RunAiRole3Step1Action(void) {
     M2C_UNK ClearAiInfluenceMaps();
     M2C_UNK SelectAiMoveActionTarget();
     M2C_UNK PlanEnemyUnitAttackDestination();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPropertyAttackDestination();
     M2C_UNK PlanEnemyHqAttackDestinationAlt();
@@ -211,7 +211,7 @@ void RunAiRole3Step1Action(void) {
         RunAiAttackAction();
     }
     PlanEnemyUnitAttackDestination();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPropertyAttackDestination();
     PlanEnemyHqAttackDestinationAlt();
@@ -228,7 +228,7 @@ M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK PlanEnemyHqAttackDestinationAlt();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
@@ -244,7 +244,7 @@ map = *gCurrentMap;
 if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 PlanEnemyHqAttackDestinationAlt();
-func_ov000_02194370();
+PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 PlanEnemyUnitAttackDestination();
@@ -262,7 +262,7 @@ M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK FindBestMoveTarget();
 M2C_UNK func_ov000_02195750();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
@@ -278,7 +278,7 @@ map = *gCurrentMap;
 if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) { RunAiAttackAction(); }
 FindBestMoveTarget();
 func_ov000_02195750();
-func_ov000_02194370();
+PlanProductionSiteDestination();
 SelectAttackMoveDestination();
 SelectPropertyAttackDestination();
 PlanEnemyUnitAttackDestination();
@@ -298,7 +298,7 @@ M2C_UNK FindBestMoveTarget();
 M2C_UNK PlanAiStep4Destination();
 M2C_UNK SelectAttackMoveDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK SelectPropertyAttackDestination();
 M2C_UNK SelectPortDestination();
 M2C_UNK FinishAiUnitAction();
@@ -314,18 +314,22 @@ FindBestMoveTarget();
 PlanAiStep4Destination();
 SelectAttackMoveDestination();
 PlanEnemyUnitAttackDestination();
-func_ov000_02194370();
+PlanProductionSiteDestination();
 SelectPropertyAttackDestination();
 SelectPortDestination();
 FinishAiUnitAction();
 }
 
-void func_ov000_02180b9c(void) {
+/* Role-3 AI step-5 action for a unit whose player has an HQ: like the step-0
+ * action, pick the unit's attack target and attack from where it stands when the
+ * map is foggy, the weather is snow or the unit is a mobile indirect, then plan
+ * the unit's move destination and finish its action. */
+void RunAiRole3Step5Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
     M2C_UNK func_ov000_0219604c();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -336,12 +340,12 @@ void func_ov000_02180b9c(void) {
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
+    if (M2C_FIELD(temp_r0, u8 *, MAP_FOG) != 0 || M2C_FIELD(temp_r0, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) {
         RunAiAttackAction();
     }
     FindBestMoveTarget();
     func_ov000_0219604c();
-    func_ov000_02194370();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
@@ -361,12 +365,15 @@ void func_ov000_02180c10(void) {
     SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
 
-void func_ov000_02180c74(void) {
+/* Role-3 AI step-7 action: pick the unit's attack target and attack from where
+ * it stands when the map is foggy, the weather is snow or the unit is a mobile
+ * indirect, then plan the unit's move destination and finish its action. */
+void RunAiRole3Step7Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_0219619c();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanReachableAttackDestination();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
@@ -377,64 +384,72 @@ void func_ov000_02180c74(void) {
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
+    if (M2C_FIELD(temp_r0, u8 *, MAP_FOG) != 0 || M2C_FIELD(temp_r0, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) {
         RunAiAttackAction();
     }
     FindBestMoveTarget();
-    func_ov000_0219619c();
-    func_ov000_02194370();
+    PlanReachableAttackDestination();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
 }
 
-void func_ov000_02180ce8(void) {
+/* Role-3 AI step-8 (capture) handler: rebuild the influence maps and pick the
+ * unit's action target, attacking from where it stands when the map is foggy,
+ * the weather is snow or the unit is a mobile indirect; then plan the capture
+ * move and finish the unit's action. */
+void RunAiRole3Step8Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_021962f8();
-    M2C_UNK func_ov000_02194370();
+    M2C_UNK PlanCaptureMoveDestination();
+    M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
     M2C_UNK RunAiAttackAction();
     s32 IsMobileIndirectUnitKind(u32);
     extern void **gCurrentMap;
-    void *temp_r0;
+    void *map;
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
-    temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) {
         RunAiAttackAction();
     }
     FindBestMoveTarget();
-    func_ov000_021962f8();
-    func_ov000_02194370();
+    PlanCaptureMoveDestination();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
 }
 
-void func_ov000_02180d5c(void) {
-    M2C_UNK ClearAiInfluenceMaps();
-    M2C_UNK SelectAiMoveActionTarget();
-    M2C_UNK func_ov000_0219619c();
-    M2C_UNK func_ov000_02194370();
-    M2C_UNK SelectAttackMoveDestination();
-    M2C_UNK SelectPortDestination();
-    M2C_UNK FinishAiUnitAction();
-    M2C_UNK RunAiAttackAction();
+/* Plans a role-3 unit's step 9 move, checking for attacks first in fog or snow or when the unit can move and fire indirectly. */
+void RunAiRole3Step9Action(void) {
+    M2C_UNK ClearAiInfluenceMaps(void);
+    M2C_UNK SelectAiMoveActionTarget(void);
+    M2C_UNK PlanReachableAttackDestination(void);
+    M2C_UNK PlanProductionSiteDestination(void);
+    M2C_UNK SelectAttackMoveDestination(void);
+    M2C_UNK SelectPortDestination(void);
+    M2C_UNK FinishAiUnitAction(void);
+    M2C_UNK RunAiAttackAction(void);
     s32 IsMobileIndirectUnitKind(u32);
     extern void **gCurrentMap;
-    void *temp_r0;
+    u8 *map;
+
     ClearAiInfluenceMaps();
     SelectAiMoveActionTarget();
-    temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2 || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x52D0), u8 *, 0) << 26) >> 26) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 ||
+        M2C_FIELD(map, u8 *, MAP_WEATHER) == WEATHER_SNOW ||
+        IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) != 0) {
         RunAiAttackAction();
     }
-    func_ov000_0219619c();
-    func_ov000_02194370();
+    PlanReachableAttackDestination();
+    PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
     FinishAiUnitAction();
@@ -445,11 +460,11 @@ void func_ov000_02180d5c(void) {
    weather is snow, or the unit is a mobile indirect; then runs the destination
    planners and finishes the unit's action. */
 void RunAiRole3Step10Action(void) {
- M2C_UNK BuildAiInfluenceMaps(); M2C_UNK SelectAiActionTarget(); M2C_UNK RunAiAttackAction(); M2C_UNK FindBestMoveTarget(); M2C_UNK PlanEnemyHqAttackDestination(); M2C_UNK PlanEnemyUnitAttackDestination(); M2C_UNK func_ov000_02194370(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK PlanEnemyHqAttackDestinationAlt(); M2C_UNK SelectPortDestination(); M2C_UNK FinishAiUnitAction();
+ M2C_UNK BuildAiInfluenceMaps(); M2C_UNK SelectAiActionTarget(); M2C_UNK RunAiAttackAction(); M2C_UNK FindBestMoveTarget(); M2C_UNK PlanEnemyHqAttackDestination(); M2C_UNK PlanEnemyUnitAttackDestination(); M2C_UNK PlanProductionSiteDestination(); M2C_UNK SelectAttackMoveDestination(); M2C_UNK SelectPropertyAttackDestination(); M2C_UNK PlanEnemyHqAttackDestinationAlt(); M2C_UNK SelectPortDestination(); M2C_UNK FinishAiUnitAction();
  s32 IsMobileIndirectUnitKind(u32); extern void **gCurrentMap; void *p;
  BuildAiInfluenceMaps(); SelectAiActionTarget(); p=*gCurrentMap;
  if(M2C_FIELD(p,u8 *,MAP_FOG)!=0 || M2C_FIELD(p,u8 *,MAP_WEATHER)==WEATHER_SNOW || IsMobileIndirectUnitKind((u32)(M2C_FIELD(M2C_FIELD(p,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26)!=0) RunAiAttackAction();
- FindBestMoveTarget(); PlanEnemyHqAttackDestination(); PlanEnemyUnitAttackDestination(); func_ov000_02194370(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); PlanEnemyHqAttackDestinationAlt(); SelectPortDestination(); FinishAiUnitAction();
+ FindBestMoveTarget(); PlanEnemyHqAttackDestination(); PlanEnemyUnitAttackDestination(); PlanProductionSiteDestination(); SelectAttackMoveDestination(); SelectPropertyAttackDestination(); PlanEnemyHqAttackDestinationAlt(); SelectPortDestination(); FinishAiUnitAction();
 }
 
 /* Role-1 capture action callback (installed by BuildAiRole1UnitList for the
@@ -522,7 +537,7 @@ M2C_UNK func_ov000_0218cfec();
 M2C_UNK func_ov000_0218f0ec();
 M2C_UNK func_ov000_0219137c();
 M2C_UNK RunAiAttackAction();
-M2C_UNK func_ov000_021962f8();
+M2C_UNK PlanCaptureMoveDestination();
 M2C_UNK func_ov000_02190f74();
 M2C_UNK SelectAiActionTarget();
 M2C_UNK SelectCaptureStayDestination();
@@ -531,7 +546,7 @@ M2C_UNK func_ov000_02186a18();
 M2C_UNK FindJoinTarget();
 M2C_UNK func_ov000_0218d908();
 M2C_UNK func_ov000_02190094();
-M2C_UNK func_ov000_02194370();
+M2C_UNK PlanProductionSiteDestination();
 M2C_UNK PlanEnemyUnitAttackDestination();
 M2C_UNK FinishAiUnitAction();
 s32 IsAiMap175Player2Override();
@@ -541,7 +556,7 @@ if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride();return;}
 BuildAiInfluenceMaps();map=*gCurrentMap;
 state=(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28;
 if(state==6){func_ov000_0218cfec();return;}
-if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();RunAiAttackAction();func_ov000_021962f8();return;}
+if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();RunAiAttackAction();PlanCaptureMoveDestination();return;}
 if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_02190f74();
 SelectAiActionTarget();SelectCaptureStayDestination();SelectAIDestination();
@@ -554,7 +569,7 @@ if(state==3 || (state==2 && ((u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UN
 RunAiAttackAction();FindJoinTarget();
 if(!handled){map=*gCurrentMap;if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=0)func_ov000_02186a18();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_0218d908();
-func_ov000_02190094();func_ov000_02194370();
+func_ov000_02190094();PlanProductionSiteDestination();
 M2C_FIELD(gAiCommandState,u16 *,8)|=0x20;
 func_ov000_02190094();PlanEnemyUnitAttackDestination();FinishAiUnitAction();
 }
@@ -625,38 +640,42 @@ void RunAiRole3Action(void) {
     case 2: if (HasEnemyPlayer() == 1) RunAiRole3Step2Action(); else RunAiRole3Step0Action(); return;
     case 3: RunAiRole3Step3Action(); return;
     case 4: RunAiRole3Step4Action(); return;
-    case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) func_ov000_02180b9c(); else RunAiRole3Step4Action(); return;
+    case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) RunAiRole3Step5Action(); else RunAiRole3Step4Action(); return;
     case 6: func_ov000_02180c10(); return;
-    case 7: func_ov000_02180c74(); return;
-    case 8: func_ov000_02180ce8(); return;
-    case 9: func_ov000_02180d5c(); return;
+    case 7: RunAiRole3Step7Action(); return;
+    case 8: RunAiRole3Step8Action(); return;
+    case 9: RunAiRole3Step9Action(); return;
     }
 }
 
-void func_ov000_02181560(void) {
+/* AI action for a role-6 unit: when a unit record is free, the player can afford
+ * the kind-17 structure, the acting unit has ammo and carries nothing, and its
+ * tile is a valid build site, issue the unit's in-place build/capture command
+ * (23) at that tile unless the tile's enemy threat exceeds the unit's health. */
+void RunAiRole6Action(void) {
 extern void **gCurrentMap;
 s32 FindFreeUnitRecord(u16);
 s32 GetUnitBuildCost(u16,s32);
 s32 func_ov000_02178e84(u8,u8);
-void *base,*unit;
+void *map,*unit;
 u16 player;
-s32 cost;u32 idx;
+s32 buildCost;u32 index;
 if(IsAiMap175Player2Override()!=0) return;
-if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))==0)return;
-base=*gCurrentMap;player=M2C_FIELD(base,u16 *,0x52a4);
-cost=GetUnitBuildCost(player,17)*10;
-if(cost>M2C_FIELD((u8 *)base+player*0x8c,s32 *,0x67a4)) return;
-base=*gCurrentMap;unit=M2C_FIELD(base,void **,0x52d0);
-if(((u32)(M2C_FIELD(unit,u16 *,6)<<21)>>28)==0)return;
-if(M2C_FIELD(unit,u8 *,13)!=0)return;
-idx=M2C_FIELD(unit,u8 *,12);
-if(idx!=0 && ((u32)(M2C_FIELD((u8 *)base+idx*14,u8 *,0x59a4)<<26)>>26)==17)return;
-if(func_ov000_02178e84(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2))==0)return;
+if(FindFreeUnitRecord(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))==0)return;
+map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
+buildCost=GetUnitBuildCost(player,17)*10;
+if(buildCost>M2C_FIELD((u8 *)map+player*MAP_PLAYER_STRIDE,s32 *,PLAYER_FUNDS_OFF)) return;
+map=*gCurrentMap;unit=M2C_FIELD(map,void **,MAP_CURSOR_UNIT);
+if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)<<21)>>28)==0)return;
+if(M2C_FIELD(unit,u8 *,MAP_UNIT_NEXT_CARRIED)!=0)return;
+index=M2C_FIELD(unit,u8 *,MAP_UNIT_FIRST_CARRIED);
+if(index!=0 && ((u32)(M2C_FIELD((u8 *)map+index*MAP_UNIT_STRIDE,u8 *,MAP_UNIT_RECORDS)<<26)>>26)==17)return;
+if(func_ov000_02178e84(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y))==0)return;
 BuildAiInfluenceMaps();
-base=*gCurrentMap;unit=M2C_FIELD(base,void **,0x52d0);
-idx=M2C_FIELD(unit,u8 *,1)+M2C_FIELD((u8 *)base+M2C_FIELD(unit,u8 *,2)*2,u16 *,0x3758);
-if(M2C_FIELD((u8 *)base+idx,u8 *,0x2840)+M2C_FIELD((u8 *)base+idx,u8 *,0x2d48)>=(s32)((u32)(M2C_FIELD(unit,u16 *,6)<<25)>>25))return;
-SetMapCursor(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),23,0,0);
+map=*gCurrentMap;unit=M2C_FIELD(map,void **,MAP_CURSOR_UNIT);
+index=M2C_FIELD(unit,u8 *,MAP_UNIT_X)+M2C_FIELD((u8 *)map+M2C_FIELD(unit,u8 *,MAP_UNIT_Y)*2,u16 *,MAP_ROW_OFFSETS);
+if((s32)((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_HEALTH)<<25)>>25)>M2C_FIELD((u8 *)map+index,u8 *,MAP_CELL_THREAT_DIRECT)+M2C_FIELD((u8 *)map+index,u8 *,MAP_CELL_THREAT_INDIRECT))
+SetMapCursor(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),23,0,0);
 }
 
 void RunAiKind13Action(void) {

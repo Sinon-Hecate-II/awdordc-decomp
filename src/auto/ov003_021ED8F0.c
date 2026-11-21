@@ -5,7 +5,7 @@ void HandleWaypointInput(void*,u8);s32 InRange(s16,s16,s16);void PlaySoundEffect
 s32 GetUnitSpriteHeight(void*);s32 GetUnitSpriteWidth(void*);s16 GetWaypointSlotX(u8);void SetTextById(void*,s32);
 typedef struct {u8 low:2,mode:2,state:4;} OptionsFlags;
 typedef struct {u8 enabled:1,other:7;} OptionsBits;
-void StepCounter(void*,s32,s32);void StepCounterDown(void*,u8,s32);void func_ov003_021e8354(void*,u8,s32);
+void StepCounter(void*,s32,s32);void StepCounterDown(void*,u8,s32);void StepCounterUp(void*,u8,s32);
 typedef struct {u8 frame:4,other:4;} OptionsButtonFlags;
 typedef struct {u32 low:18,tile:8,high:6;} OptionsGeometry;
 typedef struct {u32 width:9,height:9,rest:14;} OptionsSize;
@@ -121,7 +121,7 @@ if(!OptionsEntriesDiffer(menu)){
 StepCounter(menu+0x14+oldX*24,1,1);
 if(!OptionsEntriesDiffer(menu)){
 StepCounter(menu+0x14+oldX*24,1,1);
-if(!OptionsEntriesDiffer(menu))func_ov003_021e8354(menu,oldX,1);
+if(!OptionsEntriesDiffer(menu))StepCounterUp(menu,oldX,1);
 }}}}
 PressOption(M2C_FIELD(M2C_FIELD(p,u8**,0x64)+oldX*4,void**,56));
 PlaySoundEffect(0x10011);break;}

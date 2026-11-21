@@ -30,6 +30,17 @@
 #define UNIT_MOVE_Y           0x4e /* s16 y in 1/16-tile units */
 #define UNIT_MOVE_COMMANDS    0x58 /* s8[] copy of the movement command stream */
 
+/* Values of UNIT_MOVE_STATE: the controller's per-frame state machine.  Each
+ * state names its own entry in gUnitMoveStateHandlers. */
+enum {
+    UNIT_MOVE_STATE_NONE        = 0, /* detached: no per-frame work */
+    UNIT_MOVE_STATE_IDLE        = 1, /* attached, not yet stepping */
+    UNIT_MOVE_STATE_WALK        = 2, /* stepping toward the next tile */
+    UNIT_MOVE_STATE_HOLD        = 3, /* paused for the step timer */
+    UNIT_MOVE_STATE_WAIT_SCROLL = 4, /* resumes walking when the view stops scrolling */
+    UNIT_MOVE_STATE_WAIT_ATTACK = 5  /* resumes walking when the attack effect ends */
+};
+
 /* Footstep sound ids GetTerrainStepSound returns; the low 5 bits of the cell's
  * MAP_CELL_TERRAIN select them, and plain ground also depends on MAP_TILESET. */
 #define STEP_SOUND_PLAIN       0x40 /* plain ground, properties, tileset 0 */

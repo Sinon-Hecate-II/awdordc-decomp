@@ -3,6 +3,8 @@
 #include "gt2.h"
 typedef struct { u8 a,b; } Unk05Bytes;
 typedef struct { s32 a,b; s16 c,pad; s32 d; } Unk05Record;
+/* The first two words of a queued Gt2SentCommand, read as one 8-byte load:
+ * a = offset of the command's bytes in the send buffer, b = its byte size. */
 typedef union { struct { s32 a,b; }; u64 whole; } Unk05Pair;
 Unk05Pair *Vector_GetItem(s32,s32);
 
@@ -301,7 +303,21 @@ s32 func_0205c344(void *conn) {
     return 1;
 }
 #pragma optimization_level reset
-s32 gti2QueueSentCommand(void *p,s16 a,s32 b){Unk05Record s={0};s32 n;s.a=M2C_FIELD(p,s32 *,0x58);s.b=b;s.c=a;s.d=GetTickCountMs();n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Vector_AddItem(M2C_FIELD(p,s32 *,0x60),&s);return n+1==Vector_GetCount(M2C_FIELD(p,s32 *,0x60));}
+/* Queue a sent command on the connection's acknowledgement list: record where its
+ * bytes start in the send buffer, its length, its sequence number and when it was
+ * sent. Returns 1 when the list grew, 0 when the entry was not added. */
+s32 gti2QueueSentCommand(void *connection, s16 sequence, s32 size) {
+    Gt2SentCommand sent = {0};
+    s32 count;
+
+    sent.offset = M2C_FIELD(connection, s32 *, GT2_SEND_BUFFER_LEN);
+    sent.size = size;
+    sent.sequence = sequence;
+    sent.lastSent = GetTickCountMs();
+    count = Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
+    Vector_AddItem(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE), &sent);
+    return count + 1 == Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
+}
 
 /* Starts the next command in the connection's send buffer: queues the command's
  * acknowledgement record, then writes the GT2 magic, the command type, the
@@ -349,19 +365,42 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
 }
 
 #pragma scheduling off
-s32 gti2SendQueuedCommand(s32 p){extern M2C_UNK data_020ff81c,data_020ff824,data_020ff7f8;s32 n=Vector_GetCount(M2C_FIELD(p,s32 *,0x60));Unk05Pair *pair;s32 v;if(n<=0)AssertFailed(&data_020ff81c,&data_020ff824,&data_020ff7f8,0x475);pair=Vector_GetItem(M2C_FIELD(p,s32 *,0x60),n-1);if(gti2SendRaw(p,M2C_FIELD(p,s32 *,0x50)+pair->a,pair->b)){M2C_FIELD(p,s32 *,0x90)=0;v=1;}else v=0;return v;}
-#pragma scheduling reset
-s32 func_0205c620(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    s32 sp0;
+/* Send the command most recently queued on the connection's acknowledgement
+ * list: gti2BeginCommand queues each reliable command there, and this sends its
+ * bytes from the send buffer, which also clears the pending-acknowledgement
+ * flag.  Returns 1 when the command was sent, 0 otherwise. */
+s32 gti2EndReliableMessage(s32 connection) {
+    extern M2C_UNK gAssertExprAckLen, gAssertMessageFileName, gAssertNameEndReliableMessage;
+    s32 count = Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
+    Unk05Pair *command;
+    s32 sent;
 
-    if (gti2BeginCommand(arg0, 0, arg2 + 7, &sp0) == 0) {
+    if (count <= 0) AssertFailed(&gAssertExprAckLen, &gAssertMessageFileName, &gAssertNameEndReliableMessage, 0x475);
+    command = Vector_GetItem(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE), count - 1);
+    if (gti2SendRaw(connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_SEND_BUFFER) + command->a, command->b)) {
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_PENDING) = 0;
+        sent = 1;
+    } else {
+        sent = 0;
+    }
+    return sent;
+}
+#pragma scheduling reset
+/* Send an application message as a reliable GT2 data command: start the command
+ * with room for its 7-byte header, append the payload to the send buffer and
+ * queue it.  A command that could not be started ends the connection and still
+ * reports success. */
+s32 gti2SendReliableMessage(s32 connection, M2C_UNK message, s32 length) {
+    s32 status;
+
+    if (gti2BeginCommand(connection, GTI2_DATA, length + 7, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    gti2BufferWriteData(arg0 + 0x50, arg1, arg2);
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, message, length);
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;
@@ -378,7 +417,7 @@ s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
         return 1;
     }
     gti2BufferWriteData(arg0 + 0x50, arg1, 0x20);
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    if (gti2EndReliableMessage(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -394,7 +433,7 @@ s32 gti2SendConnectAccept(s32 connection, s32 response, s32 challenge) {
     if (status) return 1;
     gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, response, GT2_RESPONSE_SIZE);
     gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, challenge, GT2_RESPONSE_SIZE);
-    if (gti2SendQueuedCommand(connection) == 0) sent = 0;
+    if (gti2EndReliableMessage(connection) == 0) sent = 0;
     else {
         M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT);
         sent = 1;
@@ -416,7 +455,7 @@ s32 gti2SendClientResponse(s32 connection, s32 response, s32 data, s32 len) {
     }
     gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, response, GT2_RESPONSE_SIZE);
     gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, data, len);
-    if (gti2SendQueuedCommand(connection) != 0) {
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;
@@ -424,7 +463,7 @@ s32 gti2SendClientResponse(s32 connection, s32 response, s32 data, s32 len) {
 
 s32 func_0205c7f8(M2C_UNK arg0) {
     s32 gti2BeginCommand(M2C_UNK, M2C_UNK, M2C_UNK, s32 *);
-    s32 gti2SendQueuedCommand(M2C_UNK);
+    s32 gti2EndReliableMessage(M2C_UNK);
     s32 sp0;
 
     if (gti2BeginCommand(arg0, 4, 7, &sp0) == 0) {
@@ -433,23 +472,28 @@ s32 func_0205c7f8(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    if (gti2EndReliableMessage(arg0) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_0205c854(s32 arg0, M2C_UNK arg1, s32 arg2) {
-    s32 sp0;
+/* Send the CLOSE command carrying the reason string `reason` of `length` bytes:
+ * start a GTI2_CLOSE command with room for the seven-byte command header plus
+ * the reason, write the reason after the header and queue it for sending.
+ * Returns 0 when the connection was freed, 1 otherwise (a command with no room
+ * in the send buffer is dropped and *status stays 0). */
+s32 gti2SendClose(s32 connection, M2C_UNK reason, s32 length) {
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 5, arg2 + 7, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_CLOSE, length + 7, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    gti2BufferWriteData(arg0 + 0x50, arg1, arg2);
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, reason, length);
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;
@@ -464,7 +508,7 @@ s32 func_0205c8c8(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    if (gti2EndReliableMessage(arg0) != 0) {
         return 1;
     }
     return 0;
@@ -479,7 +523,7 @@ s32 func_0205c924(M2C_UNK arg0) {
     if (sp0 != 0) {
         return 1;
     }
-    if (gti2SendQueuedCommand(arg0) != 0) {
+    if (gti2EndReliableMessage(arg0) != 0) {
         return 1;
     }
     return 0;

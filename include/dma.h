@@ -29,4 +29,8 @@
 #define DMA_COPY_CTRL(size)     (((size) >> 2) | 0x84000000)
 /* The same copy with the channel's end-of-transfer interrupt enabled. */
 #define DMA_COPY_CTRL_IRQ(size) (((size) >> 2) | 0xC4000000)
+
+/* Control word the code leaves in channel 0 when it stops or flushes the channel:
+ * a one-word 16-bit transfer of 0 to 0, so the enabled channel does nothing. */
+#define DMA_CTRL_IDLE_CH0 0x81400001
 #endif

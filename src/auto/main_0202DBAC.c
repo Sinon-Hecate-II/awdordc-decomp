@@ -4,7 +4,7 @@
 void Sound_StopPlayer(void *);
 void Sound_ReleaseChannel(void *);
 void Sound_FreeRequest(M2C_UNK);
-void func_0202e02c(M2C_UNK,void *);
+void Sound_RemoveRequestsForPlayer(M2C_UNK,void *);
 
 /* Set up and start one sound/music player slot from a sample descriptor:
  * pick the slot, install its callbacks, derive its sample rate and channel
@@ -149,13 +149,13 @@ void Sound_StopPlayer(void *player) {
 }
 
 M2C_UNK Sound_ReleasePlayerResources(void *arg0) {
-void func_0202e02c(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
+void Sound_RemoveRequestsForPlayer(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
 extern M2C_UNK gSoundRequestQueue; extern M2C_UNK gSoundWorkerState;
 if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
 Sound_ReleaseChannel(arg0);
 M2C_FIELD(arg0,void (**)(void *),0x168)(arg0);
-func_0202e02c((M2C_UNK)&gSoundRequestQueue,arg0);
-if(M2C_FIELD(&gSoundWorkerState,void **,4)) func_0202e02c((M2C_UNK)((u8 *)M2C_FIELD(&gSoundWorkerState,void **,4)+0x4e0),arg0);
+Sound_RemoveRequestsForPlayer((M2C_UNK)&gSoundRequestQueue,arg0);
+if(M2C_FIELD(&gSoundWorkerState,void **,4)) Sound_RemoveRequestsForPlayer((M2C_UNK)((u8 *)M2C_FIELD(&gSoundWorkerState,void **,4)+0x4e0),arg0);
 Sound_ReleasePlayer(arg0);
 }
 
@@ -196,18 +196,28 @@ void CreateSoundWorkerTask(void *arg0, s32 arg1) {
     TaskWake(arg0);
 }
 
-void func_0202e02c(M2C_UNK arg0,void *arg1) {
-s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);
-void *ListNext(M2C_UNK,M2C_UNK); M2C_UNK ListRemove(M2C_UNK,void *);
-s32 saved; void *node,*next;
-saved=OS_DisableInterrupts();
-node=ListNext(arg0,0);
-while(node) {
-next=ListNext(arg0,(M2C_UNK)node);
-if(M2C_FIELD(node,void **,8)==arg1) {ListRemove(arg0,node);Sound_FreeRequest((M2C_UNK)node);}
-node=next;
-}
-OS_RestoreInterrupts(saved);
+/* Remove every queued sound-segment request for `player` from `list` and free
+ * it.  Interrupts are disabled so the sound task cannot pop a request from under
+ * the walk. */
+void Sound_RemoveRequestsForPlayer(M2C_UNK list, void *player) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    void *ListNext(M2C_UNK, M2C_UNK);
+    M2C_UNK ListRemove(M2C_UNK, void *);
+    s32 saved;
+    void *node, *next;
+
+    saved = OS_DisableInterrupts();
+    node = ListNext(list, 0);
+    while (node) {
+        next = ListNext(list, (M2C_UNK)node);
+        if (M2C_FIELD(node, void **, SOUND_REQUEST_PLAYER) == player) {
+            ListRemove(list, node);
+            Sound_FreeRequest((M2C_UNK)node);
+        }
+        node = next;
+    }
+    OS_RestoreInterrupts(saved);
 }
 
 void *func_0202e09c(M2C_UNK arg0) {

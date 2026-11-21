@@ -3,39 +3,41 @@
 #include "gt2.h"
 typedef struct { s32 v[4]; } Unk0205Copy;
 
+/* Build the 32-byte GTI2 challenge response for the challenge in `in_` (and
+ * return the same buffer): a valid challenge is mixed with the response key at
+ * every position except 0 and 13; an invalid challenge - and those two
+ * positions - get random printable characters. */
 u8 *gti2ComputeResponse(void *out_, void *in_)
 {
   u64 RuntimeIntDivMod(s32, s32);
   s32 StringLength(s32);
-  s32 func_02059a04(s8 *);
+  s32 gti2CheckChallenge(s8 *);
   s32 Rand(void);
   s32 Abs(s32);
-  extern s8 data_020ff548[];
-  s8 *in = in_;
-  u8 *out = out_;
-  s32 prev;
-  s32 n;
-  s32 step;
-  int new_var;
-  s32 v;
+  extern s8 gGti2ResponseKey[];
+  s32 valid;
+  s32 keyLength;
+  s32 keyStep;
+  s32 value;
   s32 i;
-  s32 flag;
-  s32 a;
-  s32 b;
-  n = StringLength((s32) data_020ff548);
-  flag = func_02059a04(in);
+  s32 prev;
+  u8 *out = out_;
+  s8 *in = in_;
+  s32 mix;
+  s32 keyByte;
+  keyLength = StringLength((s32) gGti2ResponseKey);
+  valid = gti2CheckChallenge(in);
   i = 0;
-  step = 0;
-  new_var = i == 14;
+  keyStep = 0;
   do
   {
-    if (((!flag) || (i == 0)) || (i == 13))
+    if (((!valid) || (i == 0)) || (i == 13))
     {
-      v = (Rand() % 93) + 33;
+      value = (Rand() % GTI2_CHALLENGE_RANGE) + GTI2_CHALLENGE_BASE;
     }
     else
     {
-      if ((i == 1) || new_var)
+      if ((i == 1) || (i == 14))
       {
         prev = in[i];
       }
@@ -43,18 +45,20 @@ u8 *gti2ComputeResponse(void *out_, void *in_)
       {
         prev = in[i - 1];
       }
-      v = *((u8 *) (((u32) in) + ((u32) i)));
-      a = (s32) (RuntimeIntDivMod(i + v, n) >> 32);
-      b = (s32) (RuntimeIntDivMod(prev * step, n) >> 32);
-      a = data_020ff548[a];
-      b = data_020ff548[b];
-      v = (Abs(b ^ ((u8 *) in)[(a + (i * v)) % 32]) % 93) + 33;
+      value = *((u8 *) (((u32) in) + ((u32) i)));
+      mix = (s32) (RuntimeIntDivMod(i + value, keyLength) >> 32);
+      keyByte = (s32) (RuntimeIntDivMod(prev * keyStep, keyLength) >> 32);
+      mix = gGti2ResponseKey[mix];
+      keyByte = gGti2ResponseKey[keyByte];
+      mix = ((u8 *)in)[(mix + i * value) % GT2_RESPONSE_SIZE];
+      mix ^= keyByte;
+      value = (Abs(mix) % GTI2_CHALLENGE_RANGE) + GTI2_CHALLENGE_BASE;
     }
-    *((u8 *) (((u32) out) + ((u32) i))) = v;
-    step += 0x4647;
+    *((u8 *) (((u32) out) + ((u32) i))) = value;
+    keyStep += GTI2_RESPONSE_STEP;
     i++;
   }
-  while (i < 32);
+  while (i < GT2_RESPONSE_SIZE);
   return out;
 }
 
@@ -397,9 +401,9 @@ func_0205c7f8(p);M2C_FIELD(p,s32 *,12)=5;if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q
 }
 
 void func_0205a994(void *p,s32 a,s32 b,...) {
-M2C_UNK gti2NormalizeMessage(s32 *,s32 *);M2C_UNK func_0205c854(void *,s32,s32);
+M2C_UNK gti2NormalizeMessage(s32 *,s32 *);M2C_UNK gti2SendClose(void *,s32,s32);
 M2C_FIELD(p,s32 *,20)=0;if(M2C_FIELD(p,s32 *,12)!=4)return;
-gti2NormalizeMessage(&a,&b);func_0205c854(p,a,b);M2C_FIELD(p,s32 *,12)=6;
+gti2NormalizeMessage(&a,&b);gti2SendClose(p,a,b);M2C_FIELD(p,s32 *,12)=6;
 }
 
 s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {

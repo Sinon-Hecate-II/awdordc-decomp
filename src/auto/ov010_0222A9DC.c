@@ -512,14 +512,14 @@ void func_ov010_0222b92c(void *arg0) {
 }
 
 void func_ov010_0222b998(void) {
-    M2C_UNK func_020852a8();
+    M2C_UNK CreateSubScreenLinkIndicator();
     M2C_UNK DisableMapConfirm();
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     M2C_UNK func_ov010_02228320();
     DisableMapConfirm();
     func_ov010_02228320();
     Ov010Online_ClearStepFlag(6);
-    func_020852a8();
+    CreateSubScreenLinkIndicator();
 }
 
 void func_ov010_0222b9b4(void) {

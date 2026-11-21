@@ -155,7 +155,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     void *MemAlloc(M2C_UNK);
     M2C_UNK func_02088e68(void *, M2C_UNK);
     M2C_UNK func_02088e7c(void *, M2C_UNK);
-    M2C_UNK func_020a9a30(M2C_UNK, M2C_UNK, u32, s32);
+    M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
     s32 func_020aae78(void *);
     s32 HeapAllocBlock(M2C_UNK);
@@ -178,13 +178,13 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, FlagsAAB *, 0x58).hidden = 0;
     M2C_FIELD(arg0, FlagsAAB *, 0x58).a = 0;
     { void *engine = *(void *volatile *)&gCur3DSpriteEngine;
-      func_020a9a30(0, 0, (u32) (M2C_FIELD(arg0, volatile u8 *, 0x58) << 0x19) >> 0x19,
+      LoadSpriteResource(0, 0, (u32) (M2C_FIELD(arg0, volatile u8 *, 0x58) << 0x19) >> 0x19,
                     M2C_FIELD(engine, s32 *, 0x1C) + ((u32) M2C_FIELD(arg0, u16 *, 0x5C) << 5)); }
     if (arg4 != 0) {
         u8 style = M2C_FIELD(arg0, volatile FlagsAAB *, 0x58).style;
         void *engine = *(void *volatile *)&gCur3DSpriteEngine;
         u32 kind = M2C_FIELD(arg0, FlagsAAB *, 0x58).kind;
-        func_020a9a30(0, 2, kind, M2C_FIELD(engine, s32 *, 0x30) + ((style + 16) << 5));
+        LoadSpriteResource(0, 2, kind, M2C_FIELD(engine, s32 *, 0x30) + ((style + 16) << 5));
     }
     M2C_FIELD(arg0, s32 *, 0x44) = func_020aae78(arg0);
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 & ~0xF8000000);

@@ -13,6 +13,12 @@
 
 /* Event record of a link completion task started with func_02012b08: like the
  * callback above it carries the status at +0x02, but its command word is at +0x04. */
+typedef struct LinkCompletionEvent {
+    u16 unk_00;
+    u16 status;
+    u16 command;
+} LinkCompletionEvent;
+
 #define LINK_TASK_EVENT_COMMAND 0x04 /* u16 command reported by a completion task */
 #define LINK_TASK_CMD_DATA_DONE 10   /* the task's data step finished; the link is up */
 
@@ -24,6 +30,15 @@
 /* gLinkState +0x14 and +0x34: byte lengths of the two link transfer buffers. */
 #define LINK_STATE_EXTRA_LEN    0x14 /* s32: bytes of gLinkTransferExtra */
 #define LINK_STATE_TRANSFER_LEN 0x34 /* s32: bytes of gLinkTransferData */
+
+/* The download-play data block SubmitLinkDownloadData hands to WFC. */
+#define LINK_STATE_DOWNLOAD_DATA 0x100 /* void *: the payload block to send */
+#define LINK_STATE_DOWNLOAD_CODE 0x108 /* s32: send code (transfer id) handed to WFC */
+#define LINK_STATE_FLAG_DOWNLOAD 0x02  /* LINK_STATE_FLAGS bit: the block uses the download transfer */
+
+/* Fields of gLinkDownloadHeader, the header block sent with that payload. */
+#define LINK_DOWNLOAD_LENGTH   0x04 /* u16: bytes of the payload block */
+#define LINK_DOWNLOAD_SEQUENCE 0x0C /* u16: sequence word sent with the block */
 
 /* General WFC event packet fields the link overlay's callback reads (the
  * WFC_CMD_GENERAL_EVENT packet, also handed to the per-channel callbacks). */
@@ -119,6 +134,11 @@ typedef struct LinkRequestRecord {
 #define LINK_STATE_SEND_QUEUE 0x64
 #define LINK_STATE_SEND_TAIL  0x68
 #define LINK_STATE_SEND_COUNT 0x6C
+/* Offsets inside a send-queue object (a pointer to its head is what the queue
+ * helpers take): the head and tail link packets through LINK_SEND_NEXT. */
+#define LINK_SEND_QUEUE_HEAD  0x00 /* void *first queued packet */
+#define LINK_SEND_QUEUE_TAIL  0x04 /* void *last queued packet */
+#define LINK_SEND_QUEUE_COUNT 0x08 /* s32 packets queued */
 #define LINK_SEND_NEXT    0x00 /* void *next packet in the queue */
 #define LINK_SEND_CHANNEL 0x08 /* u8 channel the packet is sent on */
 #define LINK_SEND_LENGTH  0x0C /* u32 payload length in bytes */

@@ -445,5 +445,27 @@ s32 func_ov011_02225a18(void *arg0) {
     return *M2C_FIELD(arg0, s32 **, 0x4C);
 }
 
-void func_ov011_02225a24(void *arg0,s32 arg1,s32 arg2){s16 x,y;s32 i;void *p;i=0;if((s32)((u32)(M2C_FIELD(arg0,u8 *,0x35)<<28)>>28)<=0)return;do{p=((void **)((u8 *)arg0+0x40))[i];x=M2C_FIELD(p,s16 *,0x38);if(x-18<=arg1&&arg1<x+18){y=M2C_FIELD(p,s16 *,0x3a);if(y-18<=arg2&&arg2<y+18)M2C_FIELD(p,u8 *,0x36)=2;}i++;}while(i<(s32)((u32)(M2C_FIELD(arg0,u8 *,0x35)<<28)>>28));}
+/* Double the slide speed of every intro menu entry under the touch point. */
+void IntroMenu_AccelerateTouchedEntry(void *menuObject, s32 touchX, s32 touchY) {
+    IntroMenu011 *menu = menuObject;
+    s16 x, y;
+    s32 entryIndex;
+    MenuEntry011 *entry;
+
+    entryIndex = 0;
+    if ((s32)((u32)(menu->entryCount << 28) >> 28) <= 0) {
+        return;
+    }
+    do {
+        entry = menu->entries[entryIndex];
+        x = entry->posX;
+        if (x - INTRO_MENU_ENTRY_TOUCH_RADIUS <= touchX && touchX < x + INTRO_MENU_ENTRY_TOUCH_RADIUS) {
+            y = entry->posY;
+            if (y - INTRO_MENU_ENTRY_TOUCH_RADIUS <= touchY && touchY < y + INTRO_MENU_ENTRY_TOUCH_RADIUS) {
+                entry->slideSpeed = INTRO_MENU_ENTRY_FAST_SLIDE;
+            }
+        }
+        entryIndex++;
+    } while (entryIndex < (s32)((u32)(menu->entryCount << 28) >> 28));
+}
 

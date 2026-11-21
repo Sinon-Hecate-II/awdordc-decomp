@@ -173,7 +173,11 @@ s32 WillFinishCaptureThisTurn(void *unit) {
     return GetUnitCaptureRateAtOwnTile(unit) + (s32)((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) << 16) >> 27) >= MAP_UNIT_CAPTURE_COMPLETE;
 }
 
-s32 GetCaptureTurnsLeft(void *a){s32 Divide(s32,s32);u32 v;s32 n,i,x;v=(u32)(M2C_FIELD(a,u16 *,6)<<25)>>25;if(!v)n=0;else n=Divide(v-1,10)+1;i=0;x=(u32)(M2C_FIELD(a,u16 *,6)<<16)>>27;if(n<=0)return 20;n=GetUnitCaptureRateAtOwnTile(a);while(x<20){x+=n;i++;}return i;}
+/* Turns left for `unit` to capture the property it stands on: the unit's HP (the
+ * low seven bits of its MAP_UNIT_CAPTURE word) must be nonzero, then its capture
+ * points are advanced by its capture rate each turn until they reach
+ * MAP_UNIT_CAPTURE_COMPLETE. */
+s32 GetCaptureTurnsLeft(void *unit){s32 Divide(s32,s32);u32 health;s32 rate,turns,points;health=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_CAPTURE)<<25)>>25;if(!health)rate=0;else rate=Divide(health-1,10)+1;turns=0;points=(u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_CAPTURE)<<16)>>27;if(rate<=0)return MAP_UNIT_CAPTURE_COMPLETE;rate=GetUnitCaptureRateAtOwnTile(unit);while(points<MAP_UNIT_CAPTURE_COMPLETE){points+=rate;turns++;}return turns;}
 
 #pragma opt_strength_reduction off
 s32 func_ov000_021a8be8(s32 x,s32 y,s32 radius){
@@ -290,11 +294,18 @@ u8 IsUnitProductionTerrain(s32 arg0) {
     return var_r0;
 }
 
-u8 IsCellOwnedByOtherTeam(s32 a,s32 b,s32 c){
-extern void **gCurrentMap;u8 *p=*gCurrentMap;
-u8 v=M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)>>5;
-u8 r;if(!v)return 0;
-if(M2C_FIELD(p+((a>>6)+1)*0x8c,u8 *,0x67ca)!=M2C_FIELD(p+v*0x8c,u8 *,0x67ca))r=1;else r=0;return r;}
+/* Whether the player owning cell (x,y) is from another army than the player
+ * that owns unit `unitId`.  The cell's terrain owner (the high 3 bits of its
+ * terrain byte) is looked up first; an unowned cell is never another army. */
+u8 IsCellOwnedByOtherArmy(s32 unitId, s32 x, s32 y) {
+ extern void **gCurrentMap;
+ u8 *map = *gCurrentMap;
+ u8 owner = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) >> 5;
+ u8 other;
+ if (!owner) return 0;
+ if (M2C_FIELD(map + (((unitId >> 6) + 1) * MAP_PLAYER_STRIDE), u8 *, PLAYER_ARMY_OFF) != M2C_FIELD(map + (owner * MAP_PLAYER_STRIDE), u8 *, PLAYER_ARMY_OFF)) other = 1; else other = 0;
+ return other;
+}
 
 u8 func_ov000_021a911c(s32 a,s32 b,s32 c){
 extern void **gCurrentMap;u8 *p=*gCurrentMap;s32 n=(a>>6)+1;u8 r;

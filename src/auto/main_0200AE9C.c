@@ -20,6 +20,9 @@ FileLink *next=head->next;
 while(next){head=next;next=next->next;}
 head->next=a;a->prev=head;a->next=0;
 }
+/* The source of a file-range request: words[0] is the archive to read from and
+ * words[1] the id of the file to open in it (the pair the path resolver and
+ * BuildFileRange fill in). */
 typedef struct { u32 words[2]; } Unk02BDFileRange;
 
 static inline s32 TestRequestFlag(void *a,s32 mask) { return (M2C_FIELD(a,volatile s32 *,12)&mask)?1:0; }
@@ -177,22 +180,29 @@ void ReleaseArchiveName(FSArchive *archive) {
     OS_RestoreInterrupts(key);
 }
 
-s32 func_0200b2bc(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,void *g,void *h) {
- extern M2C_UNK func_0200ac34,func_0200ac50;
- void *x,*y;
- M2C_FIELD(a,s32 *,0x28)=b;
- M2C_FIELD(a,s32 *,0x30)=d;
- M2C_FIELD(a,s32 *,0x2c)=M2C_FIELD(a,s32 *,0x3c)=c;
- M2C_FIELD(a,s32 *,0x38)=f;
- M2C_FIELD(a,s32 *,0x34)=M2C_FIELD(a,s32 *,0x40)=e;
- x=g;if(!x)x=&func_0200ac34;
- M2C_FIELD(a,void **,0x48)=x;
- y=h;if(!y)y=&func_0200ac50;
- M2C_FIELD(a,void **,0x4c)=y;
- M2C_FIELD(a,void **,0x50)=M2C_FIELD(a,void **,0x48);
- M2C_FIELD(a,s32 *,0x44)=0;
- M2C_FIELD(a,s32 *,0x1c)|=2;
- return 1;
+/* Give an archive its FAT/FNT layout: record the archive image and the byte
+ * position and size of the file allocation table (FAT) and file name table
+ * (FNT), install the callbacks that read and write the archive (defaulting to
+ * the in-memory image callbacks when none is given) and mark the layout as set.
+ * Always returns 1. */
+s32 ConfigureArchiveLayout(FSArchive *archive, void *image, s32 fatPos, s32 fatSize, s32 fntPos, s32 fntSize, void *readProc, void *writeProc) {
+    extern M2C_UNK ReadArchiveImage,WriteArchiveImage;
+    void *read, *write;
+    archive->image = image;
+    archive->fatSize = fatSize;
+    archive->fatPos = archive->fatBase = fatPos;
+    archive->fntSize = fntSize;
+    archive->fntPos = archive->fntBase = fntPos;
+    read = readProc;
+    if (!read) read = &ReadArchiveImage;
+    archive->readProc = read;
+    write = writeProc;
+    if (!write) write = &WriteArchiveImage;
+    archive->writeProc = write;
+    archive->proc = archive->readProc;
+    archive->pool = 0;
+    archive->state |= FS_ARCHIVE_LAYOUT;
+    return 1;
 }
 
 s32 func_0200b32c(void *a) {
@@ -303,7 +313,22 @@ s32 BeginFileOperation(void *file) {
     return wasFree;
 }
 
-s32 EndFileOperation(void *a){s32 OS_DisableInterrupts(void);M2C_UNK OS_RestoreInterrupts(s32);s32 p=0,key,r;key=OS_DisableInterrupts();r=((M2C_FIELD(a,s32 *,28)&8)?1:0)==0;if(!r){M2C_FIELD(a,s32 *,28)&=~8;p=GetNextFileRequest((s32)a);}OS_RestoreInterrupts(key);if(p)ProcessFileRequests((void *)p);return r;}
+/* Finish a file operation on `file`: if it was busy, clear the busy bit, take the
+ * next queued request and run it.  Returns 1 when the file was already free. */
+s32 EndFileOperation(void *file) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    s32 next = 0, key, wasFree;
+    key = OS_DisableInterrupts();
+    wasFree = ((M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_BUSY) ? 1 : 0) == 0;
+    if (!wasFree) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) &= ~FS_FILE_BUSY;
+        next = GetNextFileRequest((s32)file);
+    }
+    OS_RestoreInterrupts(key);
+    if (next) ProcessFileRequests((void *)next);
+    return wasFree;
+}
 
 void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
     s32 var_r1;
@@ -430,7 +455,11 @@ s32 OpenFileDirect(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return 1;
 }
 
-s32 OpenFileRange(s32 a,Unk02BDFileRange b){if(!b.words[0])return 0;M2C_FIELD(a,u32 *,8)=b.words[0];M2C_FIELD(a,u32 *,48)=b.words[0];M2C_FIELD(a,u32 *,52)=M2C_FIELD(&b,volatile u32 *,4);if(!SubmitFileRequest((void *)a,6))return 0;M2C_FIELD(a,s32 *,12)=(M2C_FIELD(a,s32 *,12)|16)&~32;return 1;}
+/* Open the file `range` names (the archive it lives in and its id in that
+ * archive's FAT) on request `request`: fill the request's file and open-by-id
+ * fields, submit the open-by-id command and mark the request open.  Returns 0
+ * when there is no archive or the command could not be started. */
+s32 OpenFileRange(s32 request,Unk02BDFileRange range){if(!range.words[0])return 0;M2C_FIELD(request,u32 *,FS_REQ_FILE)=range.words[0];M2C_FIELD(request,u32 *,FS_REQ_OPEN_START)=range.words[0];M2C_FIELD(request,u32 *,FS_REQ_OPEN_END)=M2C_FIELD(&range,volatile u32 *,4);if(!SubmitFileRequest((void *)request,6))return 0;M2C_FIELD(request,s32 *,FS_REQ_FLAGS)=(M2C_FIELD(request,s32 *,FS_REQ_FLAGS)|16)&~FS_REQ_DIRECTORY;return 1;}
 
 s32 OpenFileRequest(s32 a){s32 OpenFileRange(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&OpenFileRange(a,v))return 1;return 0;}
 

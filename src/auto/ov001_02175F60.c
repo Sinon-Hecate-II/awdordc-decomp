@@ -234,23 +234,27 @@ void func_ov001_0217656c(void) {
     func_ov001_0218b760();
 }
 
-void func_ov001_02176578(void) {
+void Ov001_FadeToShutdownScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021765b4;
+    extern M2C_UNK Ov001_ShutdownScreen;
     Ov001_StartFade(3, 1, 0x3F, 0x14);
     Ov001_StartFade(3, 0, 0x3F, 0x14);
-    Ov001_SetStepCallback(&func_ov001_021765b4);
+    Ov001_SetStepCallback(&Ov001_ShutdownScreen);
 }
 
-void func_ov001_021765b4(void) {
-    M2C_UNK func_ov001_02171fc0();
-    M2C_UNK func_ov001_0217223c();
-    M2C_UNK func_ov001_02175e20();
-    M2C_UNK func_ov001_02175eb0();
-    M2C_UNK func_ov001_02175f1c(s32);
-    M2C_UNK func_ov001_02184448();
-    M2C_UNK func_ov001_0218a534(M2C_UNK);
-    M2C_UNK func_ov001_0218c99c(M2C_UNK, M2C_UNK);
+/* Final step of the ov001 front end's shutdown: once both screens' fade-outs
+ * have finished, stop the task groups, release the character banks, the
+ * highlight tilemap, the choice-frame sprites, the message archive and its
+ * queue, and the save data, then ask the main loop to exit. */
+void Ov001_ShutdownScreen(void) {
+    M2C_UNK Ov001_FreeChoiceFrame();
+    M2C_UNK Ov001_FreeHighlightTilemap();
+    M2C_UNK Ov001_RequestScreenExit();
+    M2C_UNK Ov001_FreeMessageArchiveQueue();
+    M2C_UNK Ov001_ReleaseMessageArchive(s32);
+    M2C_UNK Ov001_FreeSaveData();
+    M2C_UNK Ov001_FreeCharBank(M2C_UNK);
+    M2C_UNK Ov001_SetTaskGroupEnabled(M2C_UNK, M2C_UNK);
     extern s32 gOv001MessageArchive;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -258,16 +262,16 @@ void func_ov001_021765b4(void) {
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    func_ov001_0218c99c(0, 0);
-    func_ov001_0218c99c(1, 0);
-    func_ov001_0218a534(1);
-    func_ov001_0218a534(0);
-    func_ov001_0217223c();
-    func_ov001_02171fc0();
-    func_ov001_02175f1c(gOv001MessageArchive);
-    func_ov001_02175eb0();
-    func_ov001_02184448();
-    func_ov001_02175e20();
+    Ov001_SetTaskGroupEnabled(0, 0);
+    Ov001_SetTaskGroupEnabled(1, 0);
+    Ov001_FreeCharBank(1);
+    Ov001_FreeCharBank(0);
+    Ov001_FreeHighlightTilemap();
+    Ov001_FreeChoiceFrame();
+    Ov001_ReleaseMessageArchive(gOv001MessageArchive);
+    Ov001_FreeMessageArchiveQueue();
+    Ov001_FreeSaveData();
+    Ov001_RequestScreenExit();
 }
 
 /* First step of the ov001 screen: initialise its subsystems, load the message
@@ -278,7 +282,7 @@ void Ov001_InitScreen(void) {
     void func_ov001_02184404(void);
     void func_ov001_02175e74(void);
     void func_ov001_02171fa0(void);
-    void func_ov001_021721c4(void);
+    void Ov001_InitHighlightBackground(void);
     void func_ov001_02171c10(void);
     u8 Ov001_GetLanguage(void);
     s32 Ov001_HasOptionFlag(s32);
@@ -319,7 +323,7 @@ void Ov001_InitScreen(void) {
     func_ov001_02184404();
     func_ov001_02175e74();
     func_ov001_02171fa0();
-    func_ov001_021721c4();
+    Ov001_InitHighlightBackground();
     func_ov001_02171c10();
     /* English has a separate US archive selected by option flag 2. */
     if (Ov001_GetLanguage() == 1 && Ov001_HasOptionFlag(2) != 0) {
@@ -358,33 +362,34 @@ void Ov001_InitScreen(void) {
 }
 
 void func_ov001_02176808(void) {
-    extern M2C_UNK func_ov001_02176844;
+    extern M2C_UNK Ov001_OpenInitialMenuAfterFade;
     Ov001_StartFade(2, 1, 2, 0x14);
     Ov001_StartFade(2, 0, 2, 0x14);
-    Ov001_SetStepCallback(&func_ov001_02176844);
+    Ov001_SetStepCallback(&Ov001_OpenInitialMenuAfterFade);
 }
 
-void func_ov001_02176844(void) {
+/* Wait for both screen fades, then open the initial menu selected by the layout. */
+void Ov001_OpenInitialMenuAfterFade(void) {
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
-    s32 Ov001_GetScreenLayout();
+    s32 Ov001_GetScreenLayout(void);
     extern M2C_UNK Ov001_OpenWifiMenu;
     extern M2C_UNK Ov001_OpenAccessPointMenu;
-    s32 temp_r0;
+    s32 layout;
 
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
-    temp_r0 = Ov001_GetScreenLayout();
-    switch (temp_r0) {                              /* irregular */
-    case 0:
-        Ov001_SetNextScreenMode(0, 1);
+    layout = Ov001_GetScreenLayout();
+    switch (layout) {                              /* irregular */
+    case OV001_LAYOUT_WIFI_MENU:
+        Ov001_SetNextScreenMode(0, OV001_SCREEN_CREATE_ICON_ROW);
         Ov001_SetStepCallback(&Ov001_OpenWifiMenu);
         return;
-    case 1:
-        Ov001_SetNextScreenMode(1, 1);
+    case OV001_LAYOUT_ACCESS_POINT_MENU:
+        Ov001_SetNextScreenMode(1, OV001_SCREEN_CREATE_ICON_ROW);
         Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);
         return;
     }
@@ -538,7 +543,7 @@ void func_ov001_02176c1c(void) {
     switch (temp_r0) {                              /* irregular */
     case 0:
         Ov001_PlaySound(7);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176578);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeToShutdownScreen);
         return;
     case 1:
         Ov001_PlaySound(6);
@@ -606,18 +611,21 @@ void Ov001_FinishWifiMenu(void) {
     }
 }
 
-void Ov001_MoveChoiceSelection(s32 arg0) {
+/* Left/right input for the two-option Wi-Fi menu: toggles the selected option,
+ * plays the move sound and re-lays the choice frame around the new option.  The
+ * vertical directions are ignored. */
+void Ov001_MoveChoiceSelection(s32 direction) {
     M2C_UNK Ov001_LayoutChoiceFrame(u16, u16, u16, u16);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     extern u16 gOv001ChoiceFrameLeft, gOv001ChoiceFrameTop, gOv001ChoiceFrameRight, gOv001ChoiceFrameBottom;
     extern u8 gOv001WifiMenuSelection;
-    s32 offset;
+    s32 frameOffset;
 
-    if ((arg0 != 1) && (arg0 != 3)) {
+    if ((direction != OV001_DIR_UP) && (direction != OV001_DIR_DOWN)) {
         gOv001WifiMenuSelection ^= 1;
         Ov001_PlaySound(8);
-        offset = gOv001WifiMenuSelection * 8;
-        Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameRight, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameTop, u16 *, offset), M2C_FIELD(&gOv001ChoiceFrameBottom, u16 *, offset));
+        frameOffset = gOv001WifiMenuSelection * 8;
+        Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001ChoiceFrameLeft, u16 *, frameOffset), M2C_FIELD(&gOv001ChoiceFrameRight, u16 *, frameOffset), M2C_FIELD(&gOv001ChoiceFrameTop, u16 *, frameOffset), M2C_FIELD(&gOv001ChoiceFrameBottom, u16 *, frameOffset));
     }
 }
 

@@ -15,7 +15,7 @@ void DrawMapPreview(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     func_020c1298(arg0, arg1, arg2, arg3);
 }
 
-void func_020c127c(void) {
+void RemoveMapViewSprites(void) {
  void func_0209cd00(void (*)(void)); void func_020c121c(void); void func_020c1d98(void); void func_020c1364(void);
  func_0209cd00(func_020c1364); func_020c121c(); func_020c1d98();
 }
@@ -300,16 +300,19 @@ void DrawFrameRectPattern(void *rect) {
  * only, or the engine that is active when the sprite is drawn). */
 void DrawFrameRectSprite(void *rect){extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine; s32 savedEngine,pass,engine,screen; savedEngine=gCur3DSpriteEngine;pass=0;do{if(pass==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;gCur3DSpriteEngine=engine;screen=M2C_FIELD(rect,s32 *,FRAME_RECT_SCREEN);if(((screen!=0)||(engine==g3DSpriteEngineMain))&&((screen!=1)||(engine==g3DSpriteEngineSub))&&((screen!=3)||(engine==savedEngine)))DrawFrameRectBorder(M2C_FIELD(rect,s32 *,FRAME_RECT_X),M2C_FIELD(rect,s32 *,FRAME_RECT_Y),M2C_FIELD(rect,s32 *,FRAME_RECT_TILE),M2C_FIELD(rect,s32 *,FRAME_RECT_PAL));pass++;}while(pass<2);gCur3DSpriteEngine=savedEngine;}
 
-void SetFrameRect(s32 a,s32 b,s32 c,s32 d) {
- void *CreateSpriteFromClass(void *,s32);
- extern M2C_UNK gFrameRectSpriteClass;
- extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain;
- void *p=CreateSpriteFromClass(&gFrameRectSpriteClass,7);
- M2C_FIELD(p,s32 *,0x38)=a;
- M2C_FIELD(p,s32 *,0x3c)=b;
- M2C_FIELD(p,s32 *,0x5c)=c;
- M2C_FIELD(p,s32 *,0x60)=d;
- M2C_FIELD(p,s32 *,0x64)=((u8)(gCur3DSpriteEngine==g3DSpriteEngineMain)!=1);
+/* Create a frame-rectangle sprite at (left, top) showing frame tile `tile` in
+ * OBJ palette `palette`, drawn on the sprite engine that is current now. */
+void SetFrameRect(s32 left, s32 top, s32 tile, s32 palette) {
+    void *CreateSpriteFromClass(void *, s32);
+    extern M2C_UNK gFrameRectSpriteClass;
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain;
+    void *rect = CreateSpriteFromClass(&gFrameRectSpriteClass, 7);
+
+    M2C_FIELD(rect, s32 *, FRAME_RECT_X) = left;
+    M2C_FIELD(rect, s32 *, FRAME_RECT_Y) = top;
+    M2C_FIELD(rect, s32 *, FRAME_RECT_TILE) = tile;
+    M2C_FIELD(rect, s32 *, FRAME_RECT_PAL) = palette;
+    M2C_FIELD(rect, s32 *, FRAME_RECT_SCREEN) = ((u8)(gCur3DSpriteEngine == g3DSpriteEngineMain) != 1);
 }
 
 void func_020c1d98(void) {

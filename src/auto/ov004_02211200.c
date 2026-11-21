@@ -1,5 +1,6 @@
 /* 27 functions from 0x02211200 to 0x022120C0 (ov004), found by ds-decomp. */
 #include "common.h"
+#include "ov004_effect.h"
 struct ScreenConfig1194 { u16 value[6]; };
 struct ScreenConfigFields1194 { u16 a,b,c,d,e,f; };
 
@@ -55,25 +56,28 @@ void func_ov004_022112b4(M2C_UNK arg0) {
     CreateSpriteObject(&data_ov004_02218be0, arg0);
 }
 
-void func_ov004_022112e8(void *arg0) {
-    M2C_UNK PlaySlotPendingSound(s32, s32, s32);
-    M2C_FIELD(arg0, s16 *, 0x34) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x36) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x38) = 0;
-    M2C_FIELD(arg0, s16 *, 0x3A) = 0;
-    M2C_FIELD(arg0, s16 *, 0x42) = 0;
-    M2C_FIELD(arg0, s16 *, 0x44) = 0;
-    M2C_FIELD(arg0, s16 *, 0x46) = 0;
-    M2C_FIELD(arg0, s16 *, 0x48) = 0;
-    M2C_FIELD(arg0, s16 *, 0x4A) = 0x80;
-    M2C_FIELD(arg0, s16 *, 0x4C) = 0x60;
-    M2C_FIELD(arg0, s16 *, 0x3C) = 2;
-    M2C_FIELD(arg0, s16 *, 0x3E) = 0;
-    M2C_FIELD(arg0, s16 *, 0x40) = 0x78;
-    M2C_FIELD(arg0, s16 *, 0x4E) = 0;
-    M2C_FIELD(arg0, s16 *, 0x50) = 0;
-    M2C_FIELD(arg0, s16 *, 0x52) = 0;
-    PlaySlotPendingSound(0, -1, 0xF7);
+/* Resets the aircraft effect's scale, bob and event timers, then starts its sound. */
+void Ov004_InitUraPlaneEffect(void *sprite) {
+    s32 PlaySlotPendingSound(s32, s32, s32);
+    Ov004UraPlaneEffect *effect = sprite;
+
+    effect->scaleStart = OV004_URA_PLANE_SCALE_ONE;
+    effect->scaleEnd = OV004_URA_PLANE_SCALE_ONE;
+    effect->scaleFrame = 0;
+    effect->scaleFrames = 0;
+    effect->bombFrame = 0;
+    effect->bombFrames = 0;
+    effect->burstFrame = 0;
+    effect->burstFrames = 0;
+    effect->centerX = 128;
+    effect->centerY = 96;
+    effect->bobAmplitude = 2;
+    effect->bobFrame = 0;
+    effect->bobPeriod = 120;
+    effect->offsetX = 0;
+    effect->offsetY = 0;
+    effect->scrollFrame = 0;
+    PlaySlotPendingSound(0, -1, OV004_URA_PLANE_START_SOUND);
 }
 
 void func_ov004_02211358(void) {
@@ -95,7 +99,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void *Build3DSpriteTransform(void *, void *);
     void func_0209dabc(s32, void *);
-    void *func_0208931c(void);
+    void *Create3DSprite(void);
     M2C_UNK func_02088f8c(void *, s32, s32, s32, s32, s32);
     void func_0208f998(s32, s32);
     s32 NextRandomValue(void);
@@ -163,7 +167,7 @@ M2C_UNK func_ov004_02211374(void *arg0) {
             M2C_FIELD(arg0, u16 *, 0x42) = M2C_FIELD(arg0, u16 *, 0x42) + 1;
             if (M2C_FIELD(arg0, u16 *, 0x42) == M2C_FIELD(arg0, u16 *, 0x44)) {
                 func_0209dabc(0x1E, arg0);
-                spr = func_0208931c();
+                spr = Create3DSprite();
                 M2C_FIELD(spr, u16 *, 0x3E) = 0x35C;
                 {
                     s32 uu = M2C_FIELD(spr, u32 *, 0x40);
@@ -292,7 +296,7 @@ void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0208161c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_020822b8(u16 *);
+    M2C_UNK Apply3DSpriteLayout(u16 *);
     s32 Get3DSpriteTargetMode();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
@@ -366,7 +370,7 @@ config[4]=e;config[5]=f;
         }
         gCur3DSpriteEngine = var_r0;
         if (((Get3DSpriteTargetMode() != 0) || (gCur3DSpriteEngine == g3DSpriteEngineMain)) && ((Get3DSpriteTargetMode() != 1) || (gCur3DSpriteEngine == g3DSpriteEngineSub)) && ((Get3DSpriteTargetMode() != 3) || (gCur3DSpriteEngine == temp_r8))) {
-            func_020822b8(config);
+            Apply3DSpriteLayout(config);
             SetFileDirectory(&data_ov004_02218cf8);
             OpenNarcArchive(&data_ov004_02218d00);
             LoadNarcFileDecompressed(&data_ov004_02218d10, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC));
@@ -459,8 +463,8 @@ config[4]=e;config[5]=f;
 }
 
 void func_ov004_02211ee8(void) {
-    void func_ov004_022112e8();
-    func_ov004_022112e8();
+    void Ov004_InitUraPlaneEffect();
+    Ov004_InitUraPlaneEffect();
 }
 
 void func_ov004_02211ef4(void) {

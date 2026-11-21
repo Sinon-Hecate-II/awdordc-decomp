@@ -352,7 +352,8 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     packet.id = M2C_FIELD(GetConnection(), u16 *, 0x1a);
     packet.value = M2C_FIELD(GetConnection(), s32 *, 0x1c);
     packet.state = M2C_FIELD(GetConnection(), s32 *, 0x200);
-    for (i = 0; i < 5; i++) {
+    i = 0;
+    do {
         context = GetConnection();
         result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
         if (result == 0) {
@@ -361,7 +362,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
         if (result != 2) {
             return result;
         }
-    }
+    } while (++i < 5);
     return result;
 }
 

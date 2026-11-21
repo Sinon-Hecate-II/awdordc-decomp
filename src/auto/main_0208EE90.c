@@ -525,14 +525,14 @@ void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){
 void InitSound(void) {
     void OpenSoundPlayer(void);
     void func_0208fc4c(void);
-    extern M2C_UNK data_0215783c, data_02157834, data_02157838, data_02157850, gSoundDriverState, gSoundFrameIds;
+    extern M2C_UNK data_0215783c, gSoundEffectPlayer, data_02157838, data_02157850, gSoundDriverState, gSoundFrameIds;
     extern s32 gFrameCounter;
     s32 i;
     u8 *handle;
 
     InitSoundDriver();
     func_0202acb0(&data_0215783c);
-    func_0202acb0(&data_02157834);
+    func_0202acb0(&gSoundEffectPlayer);
     func_0202d9c0(&data_02157838);
     for (handle = (u8 *)&data_02157850, i = 0; i < SOUND_SLOT_COUNT; i++, handle += 4) {
         func_0202acb0(handle);
@@ -595,7 +595,7 @@ void func_0208fce8(void) {
 void func_0208fd40(M2C_UNK *a,s32 b,u32 c){
  u32 hi=(c&0xffff0000)>>16;u32 lo=(u16)c;
  if(hi){Sound_PlayArchiveEntry(a,b,-1,-1,hi,lo);return;}
- func_0202d378(a,b,-1,-1,lo);
+ Sound_PlaySequence(a,b,-1,-1,lo);
 }
 
 void func_0208fd94(void) {
@@ -625,10 +625,10 @@ M2C_FIELD(&gSoundDriverState,u32*,SOUND_STATE_PLAYED_COUNT)=next;
 s32 PlaySoundEffect(s32 a){
  s32 Sound_ClaimPlaySlot(s32);
  void func_0208fd40(M2C_UNK*,s32,u32);
- extern M2C_UNK gSoundDriverState,data_02157834;
+ extern M2C_UNK gSoundDriverState,gSoundEffectPlayer;
  u8 enabled=M2C_FIELD(&gSoundDriverState,u8*,0);
  if(enabled==0)return 0;
  if(!Sound_ClaimPlaySlot(a))return 0;
- func_0208fd40(&data_02157834,-1,a);return 1;
+ func_0208fd40(&gSoundEffectPlayer,-1,a);return 1;
 }
 

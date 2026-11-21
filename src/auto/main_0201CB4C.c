@@ -4,7 +4,7 @@
 #include "tcp_socket.h"
 
 #pragma scheduling off
-void *func_0201cb4c(void *packet,s32 *done){
+void *IpReassemblePacket(void *packet,s32 *done){
 extern u8 data_021375b8[];extern s32 gNetStack;u64 GetSystemTick(void);void MI_CpuCopy8(void *,void *,u32);
 u16 id;u32 head;u8 *freeSlot=0,*slot;u32 covered;u32 offset,end,ip,finalEnd;u32 flags,len,i,count;u16 a,b,t;u32 first;
 *done=0;t=M2C_FIELD(packet,u16 *,6);flags=(u16)(((s32)t>>8)|(t<<8));
@@ -49,107 +49,120 @@ M2C_FIELD(freeSlot,u16 *,16)=((s32)t>>8)|(t<<8);
 M2C_FIELD(slot,u16 *,4)=0;*done=1;return freeSlot+14;
 }
 #pragma scheduling on
-void func_0201ce18(u8 *arg0, s32 arg1) {
+/* Receives one IPv4 packet (ipHeader, packetLength bytes) from the link layer:
+ * drops a packet whose destination is not this host, whose length or header
+ * checksum is wrong, refreshes the ARP cache for the sender, reassembles the
+ * fragments and hands the payload to the UDP, ICMP or TCP receive path. */
+void IpReceivePacket(u8 *ipHeader, s32 packetLength) {
     s32 Checksum(u8 *, u32);
-    s32 IsLocalDestinationAddress(void);
+    s32 IsLocalDestinationAddress(s32);
     M2C_UNK UpdateArpCache(void *, M2C_UNK, s32);
     M2C_UNK HandleIcmpPacket(void *, u8 *, M2C_UNK);
     M2C_UNK TcpReceiveSegment(void *, void *, s32);
     M2C_UNK UdpReceiveDatagram(void *, void *, s32);
-    void *func_0201cb4c(void *, s32 *);
+    void *IpReassemblePacket(void *, s32 *);
     extern M2C_UNK gNetStack;
 
-    u32 left;
-    u32 right;
+    u32 destAddr;
+    u32 srcAddr;
 
-    left = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0x10) >> 8) | (M2C_FIELD(arg0, u16 *, 0x10) << 8)) << 16) |
-           (u16)((M2C_FIELD(arg0, u16 *, 0x12) >> 8) | (M2C_FIELD(arg0, u16 *, 0x12) << 8));
-    right = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0xC) >> 8) | (M2C_FIELD(arg0, u16 *, 0xC) << 8)) << 16) |
-            (u16)((M2C_FIELD(arg0, u16 *, 0xE) >> 8) | (M2C_FIELD(arg0, u16 *, 0xE) << 8));
+    u16 srcLow = M2C_FIELD(ipHeader, volatile u16 *, IPH_SRC_IP_LO);
+    u16 srcHigh = M2C_FIELD(ipHeader, volatile u16 *, IPH_SRC_IP_HI);
+    u16 dstLow = M2C_FIELD(ipHeader, volatile u16 *, IPH_DST_IP_LO);
+    u16 dstHigh = M2C_FIELD(ipHeader, volatile u16 *, IPH_DST_IP_HI);
 
-    if (left != right) {
-        u16 t2;
-        u8 b0;
-        u32 dataA, dataB;
+    destAddr = ((u32)(u16)((dstHigh >> 8) | (dstHigh << 8)) << 16) |
+               (u16)((dstLow >> 8) | (dstLow << 8));
+    srcAddr = ((u32)(u16)((srcHigh >> 8) | (srcHigh << 8)) << 16) |
+              (u16)((srcLow >> 8) | (srcLow << 8));
 
-        if (IsLocalDestinationAddress() == 0) {
+    if (destAddr != srcAddr) {
+        u16 totalLength;
+        u8 versionIhl;
+        u32 destAddress, sourceAddress;
+
+        if (IsLocalDestinationAddress(destAddr) == 0) {
             return;
         }
-        t2 = M2C_FIELD(arg0, u16 *, 2);
-        if (arg1 < (s32)(u16)((t2 >> 8) | (t2 << 8))) {
+        totalLength = M2C_FIELD(ipHeader, u16 *, IPH_TOTAL_LENGTH);
+        if ((u32)packetLength < (u32)(u16)((totalLength >> 8) | (totalLength << 8))) {
             return;
         }
-        b0 = M2C_FIELD(arg0, u8 *, 0);
-        if (Checksum(arg0, (u32)(b0 << 0x1C) >> 0x1A) != 0xFFFF) {
+        versionIhl = M2C_FIELD(ipHeader, u8 *, IPH_VERSION_IHL);
+        if (Checksum(ipHeader, (u32)(versionIhl << 0x1C) >> 0x1A) != CHECKSUM_VALID) {
             return;
         }
-        dataA = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0x10) >> 8) | (M2C_FIELD(arg0, u16 *, 0x10) << 8)) << 16) |
-                (u16)((M2C_FIELD(arg0, u16 *, 0x12) >> 8) | (M2C_FIELD(arg0, u16 *, 0x12) << 8));
-        if (M2C_FIELD(&gNetStack, s32 *, 0x50) == (s32)dataA) {
-            dataB = ((u32)(u16)((M2C_FIELD(arg0, u16 *, 0xC) >> 8) | (M2C_FIELD(arg0, u16 *, 0xC) << 8)) << 16) |
-                    (u16)((M2C_FIELD(arg0, u16 *, 0xE) >> 8) | (M2C_FIELD(arg0, u16 *, 0xE) << 8));
-            UpdateArpCache(arg0 - 8, dataB, 1);
+        destAddress = ((u32)(u16)((M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_HI) >> 8) | (M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_HI) << 8)) << 16) |
+                      (u16)((M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_LO) >> 8) | (M2C_FIELD(ipHeader, u16 *, IPH_DST_IP_LO) << 8));
+        if (M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP) == (s32)destAddress) {
+            sourceAddress = ((u32)(u16)((M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_HI) >> 8) | (M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_HI) << 8)) << 16) |
+                            (u16)((M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_LO) >> 8) | (M2C_FIELD(ipHeader, u16 *, IPH_SRC_IP_LO) << 8));
+            /* the sender's hardware address sits ETH_HEADER_SIZE - ETH_SRC_MAC bytes before the IPv4 header */
+            UpdateArpCache(ipHeader - (ETH_HEADER_SIZE - ETH_SRC_MAC), sourceAddress, 1);
         }
     }
 
     {
-        s32 sp0;
-        void *rp;
-        u8 type;
-        u16 t2b;
-        u8 b0;
-        s32 off;
-        void *ptr;
-        s32 val;
+        s32 ownBuffer;
+        void *packet;
+        u8 protocol;
+        u16 packetTotalLength;
+        u8 versionIhl;
+        s32 headerSize;
+        void *payload;
+        s32 payloadLength;
 
-        rp = func_0201cb4c(arg0, &sp0);
-        if (rp == 0) {
+        packet = IpReassemblePacket(ipHeader, &ownBuffer);
+        if (packet == 0) {
             return;
         }
-        type = M2C_FIELD(rp, u8 *, 9);
-        t2b = M2C_FIELD(rp, u16 *, 2);
-        b0 = M2C_FIELD(rp, u8 *, 0);
-        off = (s32)((u32)(b0 << 0x1C) >> 0x1A);
-        ptr = (u8 *)rp + off;
-        val = (s32)(u16)((t2b >> 8) | (t2b << 8)) - off;
+        packetTotalLength = M2C_FIELD(packet, u16 *, IPH_TOTAL_LENGTH);
+        versionIhl = M2C_FIELD(packet, u8 *, IPH_VERSION_IHL);
+        headerSize = (s32)((u32)(versionIhl << 0x1C) >> 0x1A);
+        payload = (u8 *)packet + headerSize;
+        payloadLength = (s32)(u16)((packetTotalLength >> 8) | (packetTotalLength << 8)) - headerSize;
 
-        if (type == 0x11) {
-            UdpReceiveDatagram(rp, ptr, val);
-        } else if (M2C_FIELD(&gNetStack, s32 *, 0x50) != 0) {
-            if (type == 1) {
-                HandleIcmpPacket(rp, (u8 *)ptr, val);
-            } else if (type == 6) {
-                TcpReceiveSegment(rp, ptr, val);
+        protocol = M2C_FIELD(packet, u8 *, IPH_PROTOCOL);
+        if (protocol == IP_PROTO_UDP) {
+            UdpReceiveDatagram(packet, payload, payloadLength);
+        } else if (M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP) != 0) {
+            if (protocol == IP_PROTO_ICMP) {
+                HandleIcmpPacket(packet, (u8 *)payload, payloadLength);
+            } else if (protocol == IP_PROTO_TCP) {
+                TcpReceiveSegment(packet, payload, payloadLength);
             }
         }
 
-        if (sp0 != 0) {
-            M2C_FIELD(&gNetStack, M2C_UNK (**)(M2C_UNK), 0x40)((M2C_UNK)(rp - 0xE));
+        if (ownBuffer != 0) {
+            M2C_FIELD(&gNetStack, M2C_UNK (**)(M2C_UNK), NETSTACK_FREE)((M2C_UNK)((u8 *)packet - ETH_HEADER_SIZE));
         }
     }
 }
 
-void func_0201cfdc(void) {
+/* The network receive thread's body: take the next Ethernet frame from the
+ * stack's receive ring, hand an IPv4 or ARP frame to its handler, consume the
+ * record, forever. */
+void NetReceiveThreadMain(void) {
     u8 *NetStackPeekFrame(u32 *);
-    void func_0201ce18(u8 *, s32);
+    void IpReceivePacket(u8 *, s32);
     void HandleArpPacket(u8 *, s32);
-    void func_0201ab8c(void);
+    void NetStackConsumeFrame(void);
     u32 size;
 
     for (;;) {
         u8 *frame = NetStackPeekFrame(&size);
         if (size > 0x22) {
-            s32 type = M2C_FIELD(frame, u16 *, 0xC);
+            s32 type = M2C_FIELD(frame, u16 *, ETH_TYPE);
             switch ((u16)((type >> 8) | (type << 8))) {
-                case 0x800:
-                    func_0201ce18(frame + 0xE, size - 0xE);
+                case ETH_TYPE_IPV4:
+                    IpReceivePacket(frame + ETH_HEADER_SIZE, size - ETH_HEADER_SIZE);
                     break;
-                case 0x806:
-                    HandleArpPacket(frame + 0xE, size - 0xE);
+                case ETH_TYPE_ARP:
+                    HandleArpPacket(frame + ETH_HEADER_SIZE, size - ETH_HEADER_SIZE);
                     break;
             }
         }
-        func_0201ab8c();
+        NetStackConsumeFrame();
     }
 }
 
@@ -220,7 +233,7 @@ void ClearCurrentRawConnection(void) {
     M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = 0;
 }
 
-void func_0201d164(void) {
+void OpenRawConnection(void) {
     extern M2C_UNK gSocketManager;
     M2C_UNK *inner;
     M2C_UNK *q;
@@ -261,7 +274,7 @@ void SetConnectionEndpoint(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(q, s16 *, 0x0A) = func_0201d04c();
 }
 
-void func_0201d1f0(void) {
+void ResetCurrentConnection(void) {
     extern M2C_UNK gSocketManager;
     M2C_UNK *inner;
     M2C_UNK *q;

@@ -1,6 +1,7 @@
 /* 25 functions from 0x0202E470 to 0x0202F37C (main), found by ds-decomp. */
 #include "common.h"
 #include "sound.h"
+#include "fs.h"
 typedef struct { u8 pad[0xd0a];u8 a;u8 b:2;u8 padb:6;u8 c:4;u8 d:2;u8 padd:2; } Config0202ef;
 typedef struct { s32 unk_0; s32 unk_4; } Unk0202ed18;
 typedef struct {
@@ -335,16 +336,24 @@ void Sound_SetPlayerCallbacks(void *player,s32 soundId) {
  }
 }
 
-s32 Sound_OpenFileSource(void *arg0, s32 arg1) {
- s32 Sound_ReadArchiveFile(s32,void *,s32,s32);
- void func_0202c424(void *);
- s32 OpenFileRange(void *,Unk0202ed18);
- s32 func_0202c35c(s32);
- Unk0202ed18 sp0;
- if(Sound_ReadArchiveFile(arg1,arg0+0xA8,0x40,0)!=0x40)return 0;
- func_0202c424(&sp0);
- if(!OpenFileRange(arg0+0x5C,sp0))return 0;
- M2C_FIELD(arg0,s32 *,0xA4)=func_0202c35c(arg1);return 1;
+/* Reads the sample header and opens a separate file request for streaming its data. */
+s32 Sound_OpenFileSource(void *player, s32 fileId) {
+    s32 Sound_ReadArchiveFile(u32, void *, u32, u32);
+    void Sound_GetArchiveFileRange(FSFileRange *);
+    s32 OpenFileRange(void *, FSFileRange);
+    s32 Sound_GetArchiveFileOffset(u32);
+    FSFileRange archiveRange;
+
+    if (Sound_ReadArchiveFile(fileId, player + SOUND_HANDLE_SOURCE_HEADER, SOUND_SOURCE_HEADER_SIZE, 0)
+        != SOUND_SOURCE_HEADER_SIZE)
+        return 0;
+
+    Sound_GetArchiveFileRange(&archiveRange);
+    if (!OpenFileRange(player + SOUND_HANDLE_FILE_REQUEST, archiveRange))
+        return 0;
+
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_SOURCE_BASE) = Sound_GetArchiveFileOffset(fileId);
+    return 1;
 }
 
 void Sound_ReleaseFileSource(s32 arg0) {
@@ -516,7 +525,7 @@ s32 GetWfcSessionProgress(void) {
  return func_02030348(n);
 }
 
-u8 func_0202f248(void) {
+u8 GetWfcFriendSlot(void) {
     u32 Wfc_GetSessionState();
     extern M2C_UNK gWfcManager;
     u32 temp_r0;

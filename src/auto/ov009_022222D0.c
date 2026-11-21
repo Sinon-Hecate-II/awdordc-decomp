@@ -91,13 +91,9 @@ i++;p+=0xc8;
 if(freeIndex<0)return 0;
 offset=freeIndex*0xc8;
 MI_CpuCopy8(arg0,(u8 *)&data_ov009_02226cc0+offset,0xc0);
-{
-void *base = &data_ov009_02226d80;
-*(u16 *)((char *)base + offset) = 0x1e0;
-base = &data_ov009_02226d84;
-*(s32 *)((char *)base + offset) = 1;
-}
-return 1;
+*(u16 *)((u8 *)&data_ov009_02226d80 + offset) = 480;
+*(s32 *)((u8 *)&data_ov009_02226d84 + offset) = (equal = 1);
+return equal;
 }
 #pragma scheduling on
 s32 func_ov009_02222428(void *arg0) {
@@ -115,27 +111,39 @@ u32 func_ov009_02222440(void) {
     return M2C_FIELD(&gLinkState,u32 *,0x5C)=(u32)(temp*(temp+1))>>2;
 }
 
-void func_ov009_02222468(void *a) {
-M2C_UNK func_ov009_02221338(void *,s32);
-volatile u32 saved; u32 temp; void *p;
-temp=*(volatile u16 *)0x4000208;
-*(volatile u16 *)0x4000208=0;
-p=M2C_FIELD(a,void **,0); saved=temp;
-while(p!=0) {M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0);func_ov009_02221338(p,M2C_FIELD(p,s32 *,12)+16);p=M2C_FIELD(a,void **,0);}
-M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;M2C_FIELD(a,s32 *,8)=0;
-(void)*(volatile u16 *)0x4000208;
-*(volatile u16 *)0x4000208=saved;
+/* Empty a pending-send queue with interrupts held off: unlink and free every
+ * queued packet (its 16-byte header plus its payload), then reset the queue. */
+void ClearLinkSendQueue(void *queue) {
+    M2C_UNK FreeLinkBlock(void *, s32);
+    volatile u32 saved;
+    u32 previous;
+    void *packet;
+
+    previous = *(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = 0;
+    packet = M2C_FIELD(queue, void **, LINK_SEND_QUEUE_HEAD);
+    saved = previous;
+    while (packet != 0) {
+        M2C_FIELD(queue, void **, LINK_SEND_QUEUE_HEAD) = M2C_FIELD(packet, void **, LINK_SEND_NEXT);
+        FreeLinkBlock(packet, M2C_FIELD(packet, s32 *, LINK_SEND_LENGTH) + 16);
+        packet = M2C_FIELD(queue, void **, LINK_SEND_QUEUE_HEAD);
+    }
+    M2C_FIELD(queue, s32 *, LINK_SEND_QUEUE_TAIL) = 0;
+    M2C_FIELD(queue, s32 *, LINK_SEND_QUEUE_HEAD) = 0;
+    M2C_FIELD(queue, s32 *, LINK_SEND_QUEUE_COUNT) = 0;
+    (void)*(volatile u16 *)0x4000208;
+    *(volatile u16 *)0x4000208 = saved;
 }
 
 #pragma cplusplus on
 #pragma optimization_level 2
 #pragma opt_propagation off
 extern "C" void ResetLinkQueues(void) {
- s32 func_ov009_02221338(void *,s32);
+ s32 FreeLinkBlock(void *,s32);
  extern s32 gLinkState;
  extern s32 data_ov009_02226980;
  extern s32 data_ov009_022269b0;
- extern s32 data_ov009_022269e0;
+ extern s32 gLinkDownloadHeader;
  extern Ov009CallbackFn gLinkSession[];
  void *node;
  Ov009CallbackFn a,b;
@@ -145,7 +153,7 @@ extern "C" void ResetLinkQueues(void) {
  node=M2C_FIELD(&gLinkState,void **,0x64);
  if(node) do {
  M2C_FIELD(&gLinkState,void **,0x64)=M2C_FIELD(node,void **,0);
- func_ov009_02221338(node,M2C_FIELD(node,s32 *,12)+16);
+ FreeLinkBlock(node,M2C_FIELD(node,s32 *,12)+16);
  node=M2C_FIELD(&gLinkState,void **,0x64);
  } while(node);
  M2C_FIELD(&gLinkState,s32 *,0x68)=0;
@@ -157,7 +165,7 @@ extern "C" void ResetLinkQueues(void) {
  ov009Apply((u8 *)&data_ov009_02226980, (u8 *)&data_ov009_022269b0, bytes, Ov009Functor(a));
  bytes = 48;
  b=gLinkSession[2];
- ov009Apply((u8 *)&data_ov009_022269b0, (u8 *)&data_ov009_022269e0, 48, Ov009Functor(b));
+ ov009Apply((u8 *)&data_ov009_022269b0, (u8 *)&gLinkDownloadHeader, 48, Ov009Functor(b));
 }
 #pragma opt_propagation reset
 #pragma optimization_level 4
@@ -348,8 +356,8 @@ void HandleLinkAnnounceEvent(void *event) {
 }
 
 void RequestLinkPlayerAnnounce(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02013dac(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02013dac(arg0, 3, 0x11, arg1, 0x1E);
+    M2C_UNK WFC_MeasureChannel(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    WFC_MeasureChannel(arg0, 3, 0x11, arg1, 0x1E);
 }
 
 s32 __clz(u32);
@@ -372,10 +380,10 @@ done:return result;
 s32 func_ov009_02222ac4(void) {
     s32 WFC_StartDownloadPlay(M2C_UNK *, M2C_UNK *);
     void SignalLinkError();
-    extern M2C_UNK data_ov009_022269e0;
+    extern M2C_UNK gLinkDownloadHeader;
     extern M2C_UNK func_ov009_02222b04;
     SetLinkPhase(3);
-    if (WFC_StartDownloadPlay(&func_ov009_02222b04, &data_ov009_022269e0) == 2) return 1;
+    if (WFC_StartDownloadPlay(&func_ov009_02222b04, &gLinkDownloadHeader) == 2) return 1;
     SignalLinkError();
     SetLinkPhase(8);
     return 0;
@@ -397,7 +405,7 @@ void func_ov009_02222b04(void *arg0) {
 s32 func_ov009_02222b3c(void) {
     s32 func_02012474(M2C_UNK *);
     M2C_UNK SetConnectedPlayers(s32);
-    M2C_UNK func_ov009_02225480();
+    M2C_UNK ClearLinkEventFlags();
     void SignalLinkError();
     extern M2C_UNK func_ov009_02222b8c;
     s32 state = GetLinkPhase();
@@ -410,7 +418,7 @@ s32 func_ov009_02222b3c(void) {
             return 0;
         }
         SetConnectedPlayers(1);
-        func_ov009_02225480();
+        ClearLinkEventFlags();
         return 1;
     }
 }
@@ -507,33 +515,39 @@ if(func_02012b08(HandleLinkConnectTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&g
 SignalLinkError();return 0;
 }
 
-void HandleLinkConnectTaskEvent(void *arg0) {
- s8 GetLinkLocalPlayerId();
- extern M2C_UNK gLinkState;
- u16 state = M2C_FIELD(arg0,u16 *,2);
- if(state != 0) {
- SignalLinkEvent(state);
- SetLinkPhase(8);
- return;
- }
- switch(M2C_FIELD(arg0,u16 *,4)) {
- case 10:
- SetLinkPhase(4);
- M2C_FIELD(&gLinkState,u8 *,0x156) = M2C_FIELD(&gLinkState,u8 *,0x156) | 1;
- M2C_FIELD(&gLinkState,u8 *,0x157) = GetLinkLocalPlayerId();
- AnnounceLinkPlayer();
- return;
- case 11: return;
- case 12: return;
- case 13: return;
- default: return;
- }
+/* Report a connection error or announce the local player when the link comes up. */
+void HandleLinkConnectTaskEvent(void *event) {
+    s8 GetLinkLocalPlayerId();
+    extern M2C_UNK gLinkState;
+    u16 status = ((LinkCompletionEvent *)event)->status;
+    if (status != 0) {
+        SignalLinkEvent(status);
+        SetLinkPhase(LINK_PHASE_ERROR);
+        return;
+    }
+    switch (((LinkCompletionEvent *)event)->command) {
+    case LINK_TASK_CMD_DATA_DONE:
+        SetLinkPhase(LINK_PHASE_ACTIVE);
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) =
+            M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) | LINK_STATE_FLAG_LINKED;
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LOCAL_PLAYER) = GetLinkLocalPlayerId();
+        AnnounceLinkPlayer();
+        return;
+    case 11:
+        return;
+    case 12:
+        return;
+    case 13:
+        return;
+    default:
+        return;
+    }
 }
 
 #pragma scheduling off
 s32 func_ov009_02222f84(void) {
 s32 func_02011d58(void); s32 func_02011e98(void); s32 func_020124c4(void *,void *);
-extern M2C_UNK data_ov009_022268e0; extern M2C_UNK data_ov009_02226a80; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
+extern M2C_UNK data_ov009_022268e0; extern M2C_UNK gLinkConnectionData; extern M2C_UNK data_ov009_02226960; extern M2C_UNK func_ov009_02223078;
 s32 mask; s32 result;
 mask=func_02011d58();
 if(mask==0x8000) {func_ov009_022227d4(3);return 0;}
@@ -545,7 +559,7 @@ if(M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)>14) M2C_FIELD(&data_ov009_022268e0
 }while(!(mask&(1<<(M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)-1))));
 } else M2C_FIELD(&data_ov009_022268e0,u16 *,0x84)=M2C_FIELD(&data_ov009_022268e0,u16 *,6);
 M2C_FIELD(&data_ov009_022268e0,u16 *,0x86)=func_02011e98();
-M2C_FIELD(&data_ov009_022268e0,void **,0x80)=&data_ov009_02226a80;
+M2C_FIELD(&data_ov009_022268e0,void **,0x80)=&gLinkConnectionData;
 result=func_020124c4(&func_ov009_02223078,&data_ov009_02226960);
 if(result==2) return 1;
 func_ov009_022227d4(result);
@@ -575,8 +589,8 @@ void func_ov009_02223078(void *arg0) {
     s32 func_ov009_02222348(s32);
     extern Ov009CallbackFn gLinkSession[];
     extern M2C_UNK data_ov009_02226cc0;
-    extern M2C_UNK data_ov009_02226fe0;
-    extern M2C_UNK data_ov009_02226a80;
+    extern M2C_UNK gLinkConnectionExtraData;
+    extern M2C_UNK gLinkConnectionData;
     extern M2C_UNK gLinkState;
 
     s32 buf[8];
@@ -609,7 +623,7 @@ void func_ov009_02223078(void *arg0) {
         r6[1] = b;
     }
     r7 = (u8 *)&data_ov009_02226cc0;
-    r5 = (u8 *)&data_ov009_02226fe0;
+    r5 = (u8 *)&gLinkConnectionExtraData;
     goto test;
 loop: {
         x = (s32)r6[1];
@@ -645,11 +659,11 @@ test:
     t8 = M2C_FIELD(arg0, u16 *, 8);
     if(t8==3 || t8==4) goto done;
     if (t8 == 5) {
-        DC_InvalidateRange(&data_ov009_02226a80, 0xc0);
+        DC_InvalidateRange(&gLinkConnectionData, 0xc0);
         if (M2C_FIELD(&gLinkState, s32 *, 0x30) != 0 &&
-            IsConnectionDataValid(&data_ov009_02226a80) != 0) {
+            IsConnectionDataValid(&gLinkConnectionData) != 0) {
             cb = M2C_FIELD(&gLinkState, void (**)(void *), 0x4c);
-            if (cb != 0) cb(&data_ov009_02226a80);
+            if (cb != 0) cb(&gLinkConnectionData);
         } else {
             v36 = M2C_FIELD(arg0, u16 *, 0x36);
             cond = 0;
@@ -662,9 +676,9 @@ test:
                 if (M2C_FIELD(arg0, u32 *, 0x3c) == rhs) {
                     bb = M2C_FIELD(arg0, u8 *, 0x43);
                     if ((bb & 1) && !(bb & 2)) {
-                        func_ov009_02222348((s32)&data_ov009_02226a80);
+                        func_ov009_02222348((s32)&gLinkConnectionData);
                         cb2 = M2C_FIELD(&gLinkState, void (**)(void *), 0x4c);
-                        if (cb2 != 0) cb2(&data_ov009_02226a80);
+                        if (cb2 != 0) cb2(&gLinkConnectionData);
                     }
                 }
             }

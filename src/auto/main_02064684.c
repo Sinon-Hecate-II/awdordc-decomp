@@ -131,26 +131,28 @@ loop_21:
     return U32DivideRem(written, size);
 }
 #pragma pop
-s32 func_02064934(void *arg0) {
-s32 StreamClose(void *);
-s32 a,b,result;
-if(!arg0)return -1;
-if(((u32)(M2C_FIELD(arg0,s32 *,4)<<22)>>29)==0)return 0;
-b=StreamClose(arg0);
-a=M2C_FIELD(arg0,s32 (**)(s32),0x44)(M2C_FIELD(arg0,s32 *,0));
-result=0;
-M2C_FIELD(arg0,volatile s32 *,4)&=~0x380;
-M2C_FIELD(arg0,volatile s32 *,0)=0;
-if(((u32)(M2C_FIELD(arg0,volatile s32 *,8)<<28)>>31)!=0)return -1;
-if(b!=0||a!=0)result=1;
-return -result;
+/* Flushes and closes a file stream, returning -1 if either operation fails. */
+s32 CloseFileStream(void *stream) {
+    s32 FlushFileStream(void *);
+    s32 closeStatus, flushStatus, failed;
+
+    if (!stream) return -1;
+    if (FILE_STREAM_KIND(M2C_FIELD(stream, s32 *, FILE_STREAM_MODE)) == 0) return 0;
+
+    flushStatus = FlushFileStream(stream);
+    closeStatus = M2C_FIELD(stream, s32 (**)(s32), FILE_STREAM_CLOSE_CB)(
+        M2C_FIELD(stream, s32 *, FILE_STREAM_HANDLE));
+    failed = 0;
+    M2C_FIELD(stream, volatile s32 *, FILE_STREAM_MODE) &= ~FILE_STREAM_KIND_MASK;
+    M2C_FIELD(stream, volatile s32 *, FILE_STREAM_HANDLE) = 0;
+    if (FILE_STREAM_CLOSE_ERROR(M2C_FIELD(stream, volatile s32 *, FILE_STREAM_STATE)) != 0) return -1;
+    if (flushStatus != 0 || closeStatus != 0) failed = 1;
+    return -failed;
 }
 #pragma scheduling on
-/* Closes a GameSpy stream: a NULL stream closes the three standard streams; a
- * stream in an error state or not open fails, a write-only stream needs nothing,
- * a stream that is not open in state 1 is just reset, and an open one is flushed
- * before its state, write total and pending count are cleared. */
-s32 StreamClose(void *stream) {
+/* Flushes buffered writes and resets the stream's I/O state. Passing NULL
+ * flushes the standard streams. */
+s32 FlushFileStream(void *stream) {
     s32 CloseStandardStreams();
     s32 StreamFlush(void *, M2C_UNK);
     s32 temp_r0;
@@ -358,7 +360,7 @@ s32 func_02065074(s8 *arg0, s8 arg1) {
     return 1;
 }
 
-s32 func_02065088(s8 *a,u16 b) {
+s32 WideCharToMultibyte(s8 *a,u16 b) {
 extern u32 data_0210040c[];
 return (*(s32 (**)(s8 *,u16))(data_0210040c[2]+4))(a,b);
 }
@@ -393,7 +395,10 @@ u32 StringToWideString(s16 *out, char *in, u32 count) {
     return index;
 }
 
-u32 func_0206512c(s8 *out,u16 *in,u32 n) {
+/* Convert the wide string `in` to multibyte characters at `out`, converting each
+ * character with the locale's wctomb and terminating at the string's NUL; at most
+ * `maxBytes` bytes are written.  Returns the number of bytes written. */
+u32 WideStringToString(s8 *out,u16 *in,u32 maxBytes) {
 void StringCopyPad(void *,void *,u32);
 s8 buf[4];
 u32 used=0;
@@ -401,11 +406,11 @@ if(!out || !in) return 0;
 do {
 u32 len;
 if(!*in) {out[used]=0;break;}
-len=func_02065088(buf,*in++);
-if(used+len>n) break;
+len=WideCharToMultibyte(buf,*in++);
+if(used+len>maxBytes) break;
 StringCopyPad(out+used,buf,len);
 used+=len;
-} while(used<=n);
+} while(used<=maxBytes);
 return used;
 }
 

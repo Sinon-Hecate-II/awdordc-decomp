@@ -105,36 +105,40 @@ void func_ov001_021790ac(void) {
 }
 
 void func_ov001_021790d0(void) {
-    s32 func_ov001_02186648();
-    void func_ov001_021790f4(void);
-    if (func_ov001_02186648() == -2) {
+    s32 Ov001_GetRegionMenuSelection();
+    void Ov001_ProfileChoiceStep(void);
+    if (Ov001_GetRegionMenuSelection() == -2) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_021790f4);
+    Ov001_SetStepCallback(&Ov001_ProfileChoiceStep);
 }
 
-void func_ov001_021790f4(void) {
+/* Profile screen step that waits for the player's pick in the two-option menu:
+ * it records option 0 (with sound 7) or option 1 (sound 0xE), clears the profile
+ * screen callback, closes the region menu and hands the step to the fade-out. */
+void Ov001_ProfileChoiceStep(void) {
     void func_ov001_02179164(void);
     void func_ov001_02179168(void);
     void func_ov001_0217916c(void);
     extern s8 gOv001ProfileChoice;
-    s32 temp_r0;
+    s32 selection;
+
     func_ov001_02179164();
     func_ov001_02179168();
-    temp_r0 = func_ov001_02186648();
-    switch (temp_r0) {
+    selection = Ov001_GetRegionMenuSelection();
+    switch (selection) {
     case 0:
-        M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) = 0;
+        M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) = 0;
         Ov001_PlaySound(7);
         break;
     case 1:
-        M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) = 1;
+        M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) = 1;
         Ov001_PlaySound(0xE);
         break;
     default: return;
     }
     Ov001_SetProfileScreenCallback(0);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217916c);
 }
 
@@ -600,14 +604,14 @@ void func_ov001_02179bd0(void) {
 
 void func_ov001_02179bec(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    M2C_UNK func_ov001_02186604();
-    s32 func_ov001_02186648();
+    M2C_UNK Ov001_CloseRegionMenu();
+    s32 Ov001_GetRegionMenuSelection();
     extern M2C_UNK func_ov001_02179c18;
-    if (func_ov001_02186648() != 0) {
+    if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
-    func_ov001_02186604();
+    Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&func_ov001_02179c18);
 }
 
@@ -694,13 +698,16 @@ void func_ov001_02179dc4(void) {
 }
 
 void func_ov001_02179dc8(void) {
-    extern M2C_UNK func_ov001_02179e04;
+    extern M2C_UNK Ov001_CloseSaveScreen;
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02179e04);
+    Ov001_SetStepCallback(&Ov001_CloseSaveScreen);
 }
 
-void func_ov001_02179e04(void) {
+/* Final step of the ov001 save screen: once both of its fades have finished it
+ * releases the screen's page and option backgrounds, hides the visible planes
+ * and hands over to the step that commits the save and opens the save-slot menu. */
+void Ov001_CloseSaveScreen(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);

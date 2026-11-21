@@ -188,24 +188,32 @@ if ((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) return i;
 return -1;
 }
 
-s32 FindTargetCandidateByEnemyCount(s32 arg0) {
-extern u8 *gAiState;
-extern M2C_UNK gAiTargetCandidates;
-u8 *p;
-s32 i;
-s32 best;
-s32 result;
-u8 value;
-best=0;
-result=-1;
-p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12) {
-if ((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) {
-value=p[6];
-if(best < (s32)value) {best=value;result=i;}
-}
-}
-return result;
+/* Return the index of the usable target candidate of the given type with the most
+ * enemy units that can reach it (type AI_CANDIDATE_TYPE_ANY matches every type),
+ * or -1 when there is none. */
+s32 FindTargetCandidateByEnemyCount(s32 type) {
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *candidate;
+    s32 i;
+    s32 best;
+    s32 result;
+    u8 count;
+
+    best = 0;
+    result = -1;
+    candidate = (u8 *)&gAiTargetCandidates;
+    for (i = 0; i < gAiState[AI_STATE_TARGET_COUNT]; i++, candidate += AI_CANDIDATE_STRIDE) {
+        if (((u32)candidate[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED) &&
+            ((type == AI_CANDIDATE_TYPE_ANY) || (candidate[AI_CANDIDATE_TYPE] == type))) {
+            count = candidate[AI_PROPERTY_CANDIDATE_ENEMY_COUNT];
+            if (best < (s32)count) {
+                best = count;
+                result = i;
+            }
+        }
+    }
+    return result;
 }
 
 /* Picks the AI target candidate of targetType (AI_CANDIDATE_TYPE_ANY for any
@@ -444,7 +452,7 @@ s32 FindBasicUnitTargetCandidate(void) {
 s32 FindNavalThreatBuildCandidate(void) {
 void ReleaseAiTargetGroups(void);
 extern M2C_UNK gAiTargetGroups,gAiTargetCandidates;extern u8 *gAiState;extern void **data_027e0058;
-u8 *p=(u8 *)&gAiTargetGroups; s32 found,i,r;u8 *entry;void *map;
+u8 *p=(u8 *)&gAiTargetGroups; s32 found,i,r;u8 *entry;void *map;u8 *base;s32 offset;
 ReleaseAiTargetGroups();
 for(;;){
 found=-1;
@@ -455,8 +463,12 @@ if(found==-1)return -1;
 r=FindBestCandidateInGroup(1,found);
 if(r!=-1)r=FindAiTargetCandidateByEnemyDistanceAndGroup(1,found);
 if(r==-1)break;
-entry=(u8 *)&gAiTargetCandidates+r*12;map=*data_027e0058;
-map=map+entry[0]+M2C_FIELD(map+entry[1]*2,u16 *,0x3758)+0x2000;
+offset = r * 12;
+base = (u8 *)&gAiTargetCandidates;
+map = *data_027e0058;
+entry = base + offset;
+{u16 row = M2C_FIELD(map + entry[1] * 2, u16 *, 0x3758);map = map + base[offset] + row;}
+map = map + 0x2000;
 if(M2C_FIELD(map,u8 *,0x840)<50 && M2C_FIELD(map,u8 *,0xd48)<50)return r;
 p[1]=255;
 }

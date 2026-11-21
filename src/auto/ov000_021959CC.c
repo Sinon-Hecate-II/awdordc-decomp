@@ -106,6 +106,10 @@ s32 func_ov000_02195b80(s16 *out) {
 }
 #pragma opt_strength_reduction reset
 
+/* Chooses the selected AI unit's step-4 destination: an indirect unit looks for a
+ * tile to attack from (func_ov000_02195b80), anything else for a property to head
+ * to; a destination the unit may not end its move on is dropped, otherwise the
+ * move is planned to it. */
 void PlanAiStep4Destination(void) {
     s32 GetUnitAttackClass(u32);
     s32 func_ov000_02195b80(s16 *);
@@ -113,14 +117,14 @@ void PlanAiStep4Destination(void) {
     s32 func_ov000_0217e6bc(s16,s16);
     void PlanMoveDestination(s16,s16);
     extern void **gCurrentMap;
-    s16 sp0[2];
-    if (GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,0x52d0)<<26)>>26)==1) {
-        if (func_ov000_02195b80(sp0)==0) return;
+    s16 destination[2];
+    if (GetUnitAttackClass((u32)(*M2C_FIELD(*gCurrentMap,u8 **,MAP_CURSOR_UNIT)<<26)>>26)==UNIT_ATTACK_INDIRECT) {
+        if (func_ov000_02195b80(destination)==0) return;
     } else {
-        if (SelectPropertyDestination(sp0)==0) return;
+        if (SelectPropertyDestination(destination)==0) return;
     }
-    if (func_ov000_0217e6bc(sp0[0],sp0[1])==0) return;
-    PlanMoveDestination(sp0[0],sp0[1]);
+    if (func_ov000_0217e6bc(destination[0],destination[1])==0) return;
+    PlanMoveDestination(destination[0],destination[1]);
 }
 
 /* Return-to-HQ destination for the selected AI unit (AI state 5): marks the unit's
@@ -241,7 +245,7 @@ s32 func_ov000_02196084(s16 *arg0) {
     return 1;
 }
 
-void func_ov000_0219619c(void) {
+void PlanReachableAttackDestination(void) {
     s32 func_ov000_02196084(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
@@ -310,7 +314,7 @@ s32 func_ov000_021961d4(s16 *arg0) {
     return 1;
 }
 
-void func_ov000_021962f8(void) {
+void PlanCaptureMoveDestination(void) {
     s32 func_ov000_021961d4(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);

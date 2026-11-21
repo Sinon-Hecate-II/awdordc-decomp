@@ -231,51 +231,67 @@ void Ov001_KeyboardCloseStep5(void *task) {
     Ov001_SetSlideStep(task, &Ov001_KeyboardCloseStep4);
 }
 
-void Ov001_KeyboardCloseStep4(void *arg0) {
-Position pos;
-void *a=gOv001MenuState;
-u32 bits=*M2C_FIELD(a,u32**,0xc0);
-u8 b=M2C_FIELD(a,u8*,0x11d);
-pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-Ov001_LayoutKeyboardRow(b,3,pos.x,pos.y);
-if(*(volatile s32 *)&pos.x<192)return;
-Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep3);
+/* Slide the third letter row out, then switch the close task to the row above it. */
+void Ov001_KeyboardCloseStep4(void *task) {
+    Position pos;
+    Ov001KeyboardState *keyboard = gOv001MenuState;
+    u32 spritePosition = *(u32 *)keyboard->charKeys[KBD_THIRD_LETTER_ROW_KEY];
+    u8 page = keyboard->page;
+
+    pos.y = (spritePosition & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)spritePosition + KBD_ROW_CLOSE_STEP_PIXELS;
+    Ov001_LayoutKeyboardRow(page, KBD_ROW_THIRD_LETTERS, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < KBD_ROW_HIDDEN_X) {
+        return;
+    }
+    Ov001_SetSlideStep(task, Ov001_KeyboardCloseStep3);
 }
 
+/* Keyboard close animation, third step (the rows close from the top down): while
+ * the third key row is still on screen leave it; once it has slid off the right
+ * edge the animation moves on to the second row's step. */
 void Ov001_KeyboardCloseStep3(void *arg0) {
 Position pos;
-void *a=gOv001MenuState;
-u32 bits=*M2C_FIELD(a,u32**,0x90);
-u8 b=M2C_FIELD(a,u8*,0x11d);
-pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-Ov001_LayoutKeyboardRow(b,2,pos.x,pos.y);
-if(*(volatile s32 *)&pos.x<192)return;
+Ov001KeyboardState *state=(Ov001KeyboardState *)gOv001MenuState;
+u32 sprite=*(u32 *)state->charKeys[24];
+u8 page=state->page;
+pos.y=(sprite&0x01ff0000U)>>16;pos.x=(u8)sprite+12;
+Ov001_LayoutKeyboardRow(page,2,pos.x,pos.y);
+if(*(volatile s32 *)&pos.x<KBD_ROW_HIDDEN_X)return;
 Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep2);
 }
 
 #pragma opt_strength_reduction off
-void Ov001_KeyboardCloseStep2(void *arg0) {
-Position pos;
-void *a=gOv001MenuState;
-u32 bits=*M2C_FIELD(a,u32**,0x60);
-u8 b=M2C_FIELD(a,u8*,0x11d);
-pos.y=(bits&0x1ff0000)>>16;pos.x=(u8)bits+12;
-Ov001_LayoutKeyboardRow(b,1,pos.x,pos.y);
-if(*(volatile s32 *)&pos.x<192)return;
-Ov001_SetSlideStep(arg0,Ov001_KeyboardCloseStep1);
+/* Slide the first letter row out, then switch the close task to the number row. */
+void Ov001_KeyboardCloseStep2(void *task) {
+    Position pos;
+    Ov001KeyboardState *keyboard = gOv001MenuState;
+    u32 spritePosition = *(u32 *)keyboard->charKeys[KBD_FIRST_LETTER_KEY];
+    u8 page = keyboard->page;
+
+    pos.y = (spritePosition & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)spritePosition + KBD_ROW_CLOSE_STEP_PIXELS;
+    Ov001_LayoutKeyboardRow(page, KBD_ROW_FIRST_LETTERS, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < KBD_ROW_HIDDEN_X) {
+        return;
+    }
+    Ov001_SetSlideStep(task, Ov001_KeyboardCloseStep1);
 }
 #pragma opt_strength_reduction reset
+/* Keyboard close animation, first step: while the first key row is still on
+ * screen leave it where it is; once it has slid off the right edge
+ * (x >= KBD_ROW_HIDDEN_X) the animation is finished. */
 void Ov001_KeyboardCloseStep1(void *arg0) {
     void Ov001_SetSlideStep(void *, void *);
     void Ov001_LayoutKeyboardRow(u8, s32, s32, u32);
     Position pos;
-    void *a = gOv001MenuState;
-    u32 bits = *M2C_FIELD(a, u32 **, 0x30);
-    u8 b = M2C_FIELD(a, u8 *, 0x11d);
-    pos.y = (bits & 0x01ff0000U) >> 16;
-    pos.x = (u8)bits + 12;
-    Ov001_LayoutKeyboardRow(b, 0, pos.x, pos.y);
-    if (*(volatile s32 *)&pos.x < 0xc0) return;
+    Ov001KeyboardState *state = (Ov001KeyboardState *)gOv001MenuState;
+    u32 sprite = *(u32 *)state->charKeys[0];
+    u8 page = state->page;
+    pos.y = (sprite & 0x01ff0000U) >> 16;
+    pos.x = (u8)sprite + 12;
+    Ov001_LayoutKeyboardRow(page, 0, pos.x, pos.y);
+    if (*(volatile s32 *)&pos.x < KBD_ROW_HIDDEN_X) return;
     Ov001_SetSlideStep(arg0, &Ov001_KeyboardCloseDone);
 }
 

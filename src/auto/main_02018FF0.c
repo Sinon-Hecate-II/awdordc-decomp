@@ -15,7 +15,7 @@ void Mb_SendBootParams(void) {
     void func_02018df0(void *);
     void func_02018e80(M2C_UNK, void *);
     M2C_UNK func_02018ea4(M2C_UNK);
-    s32 func_0200519c(s32);
+    s32 OS_SetIrqEnableMask(s32);
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     M2C_UNK func_02007a74(s32, M2C_UNK, M2C_UNK, u32);
     void MIi_CpuCopy32(void *, void *, s32);
@@ -41,7 +41,7 @@ void Mb_SendBootParams(void) {
         return;
     }
 
-    old = func_0200519c(0x40000);
+    old = OS_SetIrqEnableMask(0x40000);
     saved_ie = *(volatile u16 *)0x4000208;
     *(volatile u16 *)0x4000208 = 1;
     func_02018e24(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
@@ -84,7 +84,7 @@ void Mb_SendBootParams(void) {
 
     (void)*(volatile u16 *)0x4000208;
     *(volatile u16 *)0x4000208 = saved_ie;
-    func_0200519c(old);
+    OS_SetIrqEnableMask(old);
 }
 
 void Mb_BootHandshakeHandler(s32 a,s32 b) {

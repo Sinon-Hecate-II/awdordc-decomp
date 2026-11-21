@@ -510,9 +510,9 @@ u8 func_ov003_021f400c(void) {
 
 u8 func_ov003_021f4038(void) {
     s32 IsLinkSessionActive();
-    s32 func_0208485c();
+    s32 IsLocalSessionHost();
     s32 result;
-    if (IsLinkSessionActive() && func_0208485c()) result = 1;
+    if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
 }

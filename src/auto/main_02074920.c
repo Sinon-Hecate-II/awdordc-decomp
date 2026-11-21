@@ -1,6 +1,9 @@
 /* 9 functions from 0x02074920 to 0x020756A4 (main), found by ds-decomp. */
 #include "common.h"
-typedef struct { u16 id; u8 kind; u8 active; s32 value; u8 data[32]; } Entry_02074920;
+#define SAVE_LIST_COUNT 128  /* records a save list holds */
+#define SAVE_LIST_PAYLOAD 32 /* bytes of payload a save record carries */
+
+typedef struct { u16 id; u8 kind; u8 active; s32 value; u8 data[SAVE_LIST_PAYLOAD]; } Entry_02074920;
 typedef struct { Entry_02074920 entries[128]; u32 count; } List_02074920;
 
 /* The save-chain table: 256 fixed 12-byte nodes plus a 2-bit rank for each
@@ -62,13 +65,23 @@ u32 i=0;
 for(;i<arg0->count;i++) arg0->entries[i].active=0;
 }
 
-void SaveList_AddRecord(List_02074920 *arg0,u16 a,u8 b,s32 c,void *data) {
-void MI_CpuCopy32(void *,void *,u32); void MI_CpuFill32(s32,void *,u32);
-u32 n=arg0->count; Entry_02074920 *p;
-if(n>=128) return;
-p=&arg0->entries[n]; p->id=a; p->kind=b; p->active=1; p->value=c;
-if(data) MI_CpuCopy32(data,p->data,32); else MI_CpuFill32(0,p->data,32);
-arg0->count++;
+/* Append a record (slot id, kind, value and an optional 32-byte payload) to the
+ * save list, unless the list is already full. */
+void SaveList_AddRecord(List_02074920 *list, u16 id, u8 kind, s32 value, void *data) {
+    void MI_CpuCopy32(void *, void *, u32);
+    void MI_CpuFill32(s32, void *, u32);
+    u32 n = list->count;
+    Entry_02074920 *entry;
+
+    if (n >= SAVE_LIST_COUNT) return;
+    entry = &list->entries[n];
+    entry->id = id;
+    entry->kind = kind;
+    entry->active = 1;
+    entry->value = value;
+    if (data) MI_CpuCopy32(data, entry->data, SAVE_LIST_PAYLOAD);
+    else MI_CpuFill32(0, entry->data, SAVE_LIST_PAYLOAD);
+    list->count++;
 }
 
 /* Removes the save record with the given slot id from the save list, moving the
