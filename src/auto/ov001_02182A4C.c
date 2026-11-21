@@ -590,7 +590,19 @@ void Ov001_ResumeConnectionWait(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateConnectionWait);
 }
 
-void InitMapPreview(void *a){extern void *gOv001MapPreview;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void FlushMapPreview(void);void *p=Ov001_Alloc(0x608,4);gOv001MapPreview=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(gOv001MapPreview,s32 *,0)=Ov001_AddTask(1,FlushMapPreview,0,120);}
+/* Allocate the ov001 map-preview buffer, copy the given 32x24 tilemap into it
+ * and start the task that flushes the tilemap to BG2. */
+void InitMapPreview(void *tilemap) {
+    extern void *gOv001MapPreview;
+    void *Ov001_Alloc(s32, s32);
+    void MI_CpuCopy32(void *, void *, s32);
+    s32 Ov001_AddTask(s32, void (*)(), s32, s32);
+    void FlushMapPreview(void);
+    Ov001MapPreview *preview = Ov001_Alloc(sizeof(Ov001MapPreview), 4);
+    gOv001MapPreview = preview;
+    MI_CpuCopy32(tilemap, preview->tiles, 0x600);
+    M2C_FIELD(gOv001MapPreview, s32 *, 0) = Ov001_AddTask(1, FlushMapPreview, 0, 120);
+}
 
 #pragma opt_propagation off
 void FreeMapPreview(void){extern void *gOv001MapPreview;extern void *gOv001Scrollbar;void func_ov001_0218c94c(s32,s32);void Ov001_FreeAlloc(void *);func_ov001_0218c94c(1,*(s32 *)*(s32 *)&gOv001MapPreview);Ov001_FreeAlloc(&gOv001Scrollbar-3);}

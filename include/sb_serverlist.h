@@ -10,6 +10,7 @@
 #define SB_LIST_REQUESTS    0x08  /* s32[3]: the pending-query list (head, tail, SB_LIST_PENDING) */
 #define SB_LIST_QUERY_LIMIT 0x04  /* s32 most detail queries allowed in flight at once */
 #define SB_LIST_WAITING     0x14  /* s32[3]: the waiting queries (head, tail, count at +0x1C) */
+#define SB_LIST_WAITING_COUNT 0x1C /* s32 queued queries still waiting to be sent */
 #define SB_LIST_ON_QUERY_DONE 0x44 /* void (*)(void *list, s32 event, void *server, void *instance): a pending query got its reply */
 #define SB_LIST_QUERY_DATA  0x48  /* void *instance passed to SB_LIST_ON_QUERY_DONE */
 #define SB_LIST_FIELDS      0x2C  /* u8[SB_LIST_MAX_FIELDS]: key ids asked of the master */
@@ -119,6 +120,7 @@ typedef struct QueryQueue {
 #define SB_SERVER_FLAG_TIMED_OUT   0x10 /* GpiPlayer.flags: the query ran into the timeout */
 #define SB_SERVER_FLAG_QUERY_MASK  0xD3 /* GpiPlayer.flags bits left once the query ends */
 #define SB_QUERY_STAGE_FAILED      1    /* SB_LIST_ON_QUERY_DONE stage of a query that got no reply */
+#define SB_QUERY_STAGE_COMPLETE    2    /* SB_LIST_ON_QUERY_DONE stage once every pending query has finished */
 
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */

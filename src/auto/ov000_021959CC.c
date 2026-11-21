@@ -175,7 +175,7 @@ s32 SelectHqDestination(s16 *out) {
     return 1;
 }
 
-void func_ov000_0219604c(void) {
+void PlanHqDestination(void) {
     s32 SelectHqDestination(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
@@ -190,7 +190,12 @@ void func_ov000_0219604c(void) {
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
-s32 func_ov000_02196084(s16 *arg0) {
+/* Resolve the selected AI unit's attack destination (AI steps 7 and 9): take the
+ * unit's assigned AI move target, or its own tile when it has none, and, once the
+ * tile is confirmed on the grid, move the position to a firing tile within range
+ * of it (FindAttackPosition); write the result to outPos and return 0 when no
+ * tile is found. */
+s32 SelectAttackDestination(s16 *outPos) {
     void GetAiUnitRange(void);
     void BuildAiUnitThreatRange(void);
     s32 FindAttackPosition(s16 *);
@@ -198,60 +203,60 @@ s32 func_ov000_02196084(s16 *arg0) {
 
     u8 *map;
     void *unit;
-    u16 f8;
-    s8 cell;
-    s16 sp0[2];
+    u16 target;
+    s8 gridValue;
+    s16 position[2];
 
     GetAiUnitRange();
     BuildAiUnitThreatRange();
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 0x08);
-    if (((u32)(f8 << 26) >> 26) == 0x3f) {
-        u8 v = *(u8 *)((u8 *)unit + 0x01);
-        f8 = (f8 & ~0x3f) | (v & 0x3f);
-        *(u16 *)((u8 *)unit + 0x08) = f8;
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    if (((u32)(target << 26) >> 26) == MAP_UNIT_TARGET_NONE) {
+        u8 value = *(u8 *)((u8 *)unit + MAP_UNIT_X);
+        target = (target & ~MAP_UNIT_TARGET_X_MASK) | (value & MAP_UNIT_TARGET_X_MASK);
+        *(u16 *)((u8 *)unit + MAP_UNIT_TARGET) = target;
+
+        map = (u8 *)*gCurrentMap;
+        unit = *(void **)(map + MAP_CURSOR_UNIT);
+        target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+        {
+            u8 value = *(u8 *)((u8 *)unit + MAP_UNIT_Y);
+            target = (target & ~MAP_UNIT_TARGET_Y_MASK) | (((u32)value << 26) >> 20);
+        }
+        *(u16 *)((u8 *)unit + MAP_UNIT_TARGET) = target;
     }
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 0x08);
-    {
-        u8 v = *(u8 *)((u8 *)unit + 0x02);
-        f8 = (f8 & ~0xfc0) | (((u32)v << 26) >> 20);
-    }
-    *(u16 *)((u8 *)unit + 0x08) = f8;
-
-    map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 0x08);
-    cell = ((s8 **)(map + 0x52e8))[((u32)(f8 << 20) >> 26)][((u32)(f8 << 26) >> 26)];
-    if (cell < 0) {
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    gridValue = ((s8 **)(map + MAP_GRID))[((u32)(target << 20) >> 26)][((u32)(target << 26) >> 26)];
+    if (gridValue < 0) {
         return 0;
     }
 
-    sp0[0] = (s16)(((u32)(f8 << 26) >> 26));
+    position[0] = (s16)(((u32)(target << 26) >> 26));
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 0x08);
-    sp0[1] = (s16)(((u32)(f8 << 20) >> 26));
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    position[1] = (s16)(((u32)(target << 20) >> 26));
 
-    if (FindAttackPosition(sp0) == 0) {
+    if (FindAttackPosition(position) == 0) {
         return 0;
     }
-    arg0[0] = sp0[0];
-    arg0[1] = sp0[1];
+    outPos[0] = position[0];
+    outPos[1] = position[1];
     return 1;
 }
 
 void PlanReachableAttackDestination(void) {
-    s32 func_ov000_02196084(s16 *);
+    s32 SelectAttackDestination(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
-    if (func_ov000_02196084(sp0) == 0) {
+    if (SelectAttackDestination(sp0) == 0) {
         return;
     }
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
@@ -260,67 +265,69 @@ void PlanReachableAttackDestination(void) {
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
-s32 func_ov000_021961d4(s16 *arg0) {
+/* For the selected AI unit (state 8): fill in its movement range, set its packed
+   MAP_UNIT_TARGET word to its own cell when it holds no target yet, and return the
+   target cell - x in bits 0..5, y in bits 6..11 - through outPos when the unit can
+   reach it.  Returns 0 when the target cell is unreachable. */
+s32 SelectAssignedMoveDestination(s16 *outPos) {
     s32 FloodFillUnitRange(u8, u8, u32, s32, s32);
     extern void **gCurrentMap;
 
     u8 *map;
     void *unit;
-    u16 f8;
-    s8 cell;
-    u32 low;
-    u32 kind;
+    u16 target;
+    s8 gridValue;
+    u32 targetX;
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    FloodFillUnitRange(*(u8 *)((u8 *)unit + 1), *(u8 *)((u8 *)unit + 2),
-                   (u32)(*(u8 *)((u8 *)unit) << 26) >> 26, 0x6e, 0);
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    FloodFillUnitRange(*(u8 *)((u8 *)unit + MAP_UNIT_X), *(u8 *)((u8 *)unit + MAP_UNIT_Y),
+                   (u32)(*(u8 *)((u8 *)unit + MAP_UNIT_KIND) << 26) >> 26, 0x6e, 0);
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 8);
-    if (((u32)(f8 << 26) >> 26) == 0x3f) {
-        u8 v = *(u8 *)((u8 *)unit + 1);
-        f8 = (f8 & ~0x3fu) | (v & 0x3fu);
-        *(u16 *)((u8 *)unit + 8) = f8;
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    if (((u32)(target << 26) >> 26) == MAP_UNIT_TARGET_NONE) {
+        u8 v = *(u8 *)((u8 *)unit + MAP_UNIT_X);
+        target = (target & ~MAP_UNIT_TARGET_X_MASK) | (v & MAP_UNIT_TARGET_X_MASK);
+        *(u16 *)((u8 *)unit + MAP_UNIT_TARGET) = target;
+
+        map = (u8 *)*gCurrentMap;
+        unit = *(void **)(map + MAP_CURSOR_UNIT);
+        target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+        {
+            u8 v = *(u8 *)((u8 *)unit + MAP_UNIT_Y);
+            target = (target & ~MAP_UNIT_TARGET_Y_MASK) | (((u32)v << 26) >> 20);
+        }
+        *(u16 *)((u8 *)unit + MAP_UNIT_TARGET) = target;
     }
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 8);
-    {
-        u8 v = *(u8 *)((u8 *)unit + 2);
-        f8 = (f8 & ~0xfc0u) | (((u32)v << 26) >> 20);
-    }
-    *(u16 *)((u8 *)unit + 8) = f8;
-
-    map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 8);
-    low = ((u32)f8 << 26) >> 26;
-    kind = ((u32)f8 << 20) >> 26;
-    cell = *(s8 *)((u8 *)*(void **)(map + 0x52e8 + kind * 4) + low);
-    if (cell < 0) {
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    gridValue = ((s8 **)(map + MAP_GRID))[((u32)(target << 20) >> 26)][((u32)(target << 26) >> 26)];
+    targetX = (u32)(target << 26) >> 26;
+    if (gridValue < 0) {
         return 0;
     }
 
-    arg0[0] = (s16)low;
+    outPos[0] = (s16)targetX;
 
     map = (u8 *)*gCurrentMap;
-    unit = *(void **)(map + 0x52d0);
-    f8 = *(u16 *)((u8 *)unit + 8);
-    arg0[1] = (s16)(((u32)f8 << 20) >> 26);
+    unit = *(void **)(map + MAP_CURSOR_UNIT);
+    target = *(u16 *)((u8 *)unit + MAP_UNIT_TARGET);
+    outPos[1] = (s16)(((u32)target << 20) >> 26);
 
     return 1;
 }
 
 void PlanCaptureMoveDestination(void) {
-    s32 func_ov000_021961d4(s16 *);
+    s32 SelectAssignedMoveDestination(s16 *);
     s32 func_ov000_0217e6bc(s16, s16);
     void PlanMoveDestination(s16, s16);
     s16 sp0[2];
 
-    if (func_ov000_021961d4(sp0) == 0) {
+    if (SelectAssignedMoveDestination(sp0) == 0) {
         return;
     }
     if (func_ov000_0217e6bc(sp0[0], sp0[1]) == 0) {
@@ -349,23 +356,26 @@ loop_1:
     goto loop_1;
 }
 
-s32 FindEnemyHqAttackPosition(s16 *arg0) {
+/* Plan an attack on the enemy HQ: refresh the current unit's move range and
+ * threat map, pick a destination next to the enemy HQ, and confirm the unit can
+ * attack from there; on success writes the position to outPos and returns 1. */
+s32 FindEnemyHqAttackPosition(s16 *outPos) {
     void GetAiUnitRange();
     void BuildAiUnitThreatRange();
     s32 SelectEnemyHqDestination(s16 *);
     s32 FindAttackPosition(s16 *);
-    s16 sp0[2];
+    s16 pos[2];
 
     GetAiUnitRange();
     BuildAiUnitThreatRange();
-    if (SelectEnemyHqDestination(sp0) == 0) {
+    if (SelectEnemyHqDestination(pos) == 0) {
         return 0;
     }
-    if (FindAttackPosition(sp0) == 0) {
+    if (FindAttackPosition(pos) == 0) {
         return 0;
     }
-    arg0[0] = sp0[0];
-    arg0[1] = sp0[1];
+    outPos[0] = pos[0];
+    outPos[1] = pos[1];
     return 1;
 }
 
@@ -396,8 +406,8 @@ s32 func_ov000_02196430(s16 *outPos) {
     s32 SelectPropertyDestination(s16 *);
     s32 PlayerHasHq(u16);
     s32 SelectHqDestination(s16 *);
-    s32 func_ov000_02196084(s16 *);
-    s32 func_ov000_021961d4(s16 *);
+    s32 SelectAttackDestination(s16 *);
+    s32 SelectAssignedMoveDestination(s16 *);
     s32 HasEnemySelectedUnit(void);
     s32 FindEnemyHqAttackPosition(s16 *);
     extern void **gCurrentMap;
@@ -454,12 +464,12 @@ s32 func_ov000_02196430(s16 *outPos) {
     }
     case 7:
     case 9:
-        if (func_ov000_02196084(outPos) == 0) {
+        if (SelectAttackDestination(outPos) == 0) {
             return 0;
         }
         break;
     case 8:
-        if (func_ov000_021961d4(outPos) == 0) {
+        if (SelectAssignedMoveDestination(outPos) == 0) {
             return 0;
         }
         break;

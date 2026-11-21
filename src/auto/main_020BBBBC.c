@@ -191,7 +191,7 @@ void func_020bc0e0(void) {
     void CreateBattleEffect(s32, s32, s32, s32, u8, u8);
     void func_020c32b0(s32, s32);
     void func_020cf2c8(void);
-    void func_0207ab24(s32, s32);
+    void CompletePropertyCapture(s32, s32);
 #define CURSOR_UNIT(map) M2C_FIELD((map), u8 **, MAP_CURSOR_UNIT)
 #define CURSOR_X(map) M2C_FIELD((map), s16 *, MAP_CURSOR_X)
 #define CURSOR_Y(map) M2C_FIELD((map), s16 *, MAP_CURSOR_Y)
@@ -270,7 +270,7 @@ updateCapture:
     }
     func_020cf2c8();
     map = (u8 *)*gCurrentMap;
-    func_0207ab24(CURSOR_X(map), CURSOR_Y(map));
+    CompletePropertyCapture(CURSOR_X(map), CURSOR_Y(map));
 #undef CAPTURE
 #undef CURSOR_INDEX
 #undef CURSOR_Y
@@ -408,9 +408,12 @@ s32 func_020bc910(void) {
     extern void *gKeyState;
 
     s32 *map = *gCurrentMap;
-    s16 x = M2C_FIELD(map, s16 *, 0x52C2);
-    s16 y = M2C_FIELD(map, s16 *, 0x52C4);
+    void *entry;
+    s32 y, x;
     u16 flags = M2C_FIELD(gKeyState, u16 *, 0);
+
+    x = M2C_FIELD(map, s16 *, 0x52C2);
+    y = M2C_FIELD(map, s16 *, 0x52C4);
 
     if (flags & 0x8) {
         func_020d549c((char *)map + 0x5200);
@@ -430,22 +433,22 @@ s32 func_020bc910(void) {
     }
     if (flags & 0x200) {
         u16 w = M2C_FIELD(map, u16 *, 0x52A4);
-        void *r6 = func_020d2e3c(w);
-        if (r6 != 0) {
+        entry = func_020d2e3c(w);
+        if (entry != 0) {
             PlaySoundEffect((void *)0x1001A);
-            return StepMapViewToTile(*(u8 *)((char *)r6 + 1), *(u8 *)((char *)r6 + 2));
+            return StepMapViewToTile(*(u8 *)((char *)entry + 1), *(u8 *)((char *)entry + 2));
         }
     }
 
     {
         u16 infoFlags = M2C_FIELD(gKeyState, u16 *, 0);
         if (infoFlags & 0x1) {
-            s32 res = ConfirmCursorTile(x, y, 1, 1, 0);
+            s32 res = ConfirmCursorTile((s16)x, (s16)y, 1, 1, 0);
             if (res != 0) {
                 return 1;
             }
         }
-        if (!(infoFlags & 0x2)) {
+        if (!(M2C_FIELD(gKeyState, u16 *, 0) & 0x2)) {
             return 0;
         }
     }

@@ -128,7 +128,7 @@ s32 FindCarrierTargetCandidate(s32 reserveFunds) {
 
 s32 func_ov000_021a7f1c(s32 arg0) {
 s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
-s32 func_ov000_021a484c(s32,s32);s32 FindAiTargetCandidate(u8);s32 func_ov000_021a4980(s8,s32);
+s32 IsUnitKindRatioSatisfied(s32,s32);s32 FindAiTargetCandidate(u8);s32 IsGroupUnitRatioOk(s8,s32);
 void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
 s32 CanReservePurchaseFunds(s32);s32 CountPlayerUnitsOfKindNotInAiState(s32,s32);
 extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
@@ -151,7 +151,7 @@ if(score<=v>>1){best=i;score=v>>1;}
 continue;
 }
 regular:
-if(GetUnitAttackClass((u8)i)==1 && (attr[19]&7) && func_ov000_021a484c(mode,i)==1)continue;
+if(GetUnitAttackClass((u8)i)==1 && (attr[19]&7) && IsUnitKindRatioSatisfied(mode,i)==1)continue;
 score=gUnitKindScores[i];best=i;
 next:;
 }
@@ -162,7 +162,7 @@ index=FindAiTargetCandidate(gUnitKindTargetClass[best]);
 if(index==-1)goto reject;
 if((attr[19]&7) && GetUnitAttackClass(chosen)==1){
 entry=gAiTargetCandidates+index*12;
-if(func_ov000_021a4980((s8)entry[4],best)){entry[3]=254;goto again;}
+if(IsGroupUnitRatioOk((s8)entry[4],best)){entry[3]=254;goto again;}
 func_ov000_021a0250();
 }else if((u8)(gUnitKindTargetClass[best]+254)<=1){
 entry=gAiTargetCandidates+index*12;

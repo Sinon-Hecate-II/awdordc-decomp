@@ -48,9 +48,28 @@ s32 Wfc_BuildFriendEntries(s32 source) {
     return state[WFC_STATE_ENTRY_COUNT];
 }
 
-s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK data_020ea84c;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&data_020ea84c,8))return 8;}return 0;}
+s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK sFreespotCode;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&sFreespotCode,8))return 8;}return 0;}
 
-s32 Wfc_BuildFriendCodeEntries(void *a){u8 Wfc_BuildSaveSlotRows(void *);void MI_CpuCopy8(void *,void *,s32);extern M2C_UNK data_020ea84c;u8 *p=(u8 *)a+0x300;u8 n=Wfc_BuildSaveSlotRows(a);u32 v;p+=n*36;v=(u32)(M2C_FIELD(a,u8 *,0xd0c)<<28)>>28;if(v==0||v==6){MI_CpuCopy8(&data_020ea84c,p+4,8);p[3]=8;p[1]=8;n++;}return n;}
+/* Builds the friend-list rows from the save slots and, when the list mode is ALL
+ * or FREESPOT, appends the built-in FREESPOT entry (friend id 8) after them.
+ * Returns the number of rows built. */
+s32 Wfc_BuildFriendCodeEntries(void *state) {
+u8 Wfc_BuildSaveSlotRows(void *);
+void MI_CpuCopy8(void *,void *,s32);
+extern M2C_UNK sFreespotCode;
+u8 *entry=(u8 *)state+WFC_STATE_ENTRIES;
+u8 rows=Wfc_BuildSaveSlotRows(state);
+u32 mode;
+entry+=rows*WFC_ENTRY_STRIDE;
+mode=(u32)(M2C_FIELD(state,u8 *,WFC_STATE_FLAGS)<<28)>>28;
+if(mode==WFC_LIST_MODE_ALL||mode==WFC_LIST_MODE_FREESPOT){
+MI_CpuCopy8(&sFreespotCode,entry+WFC_ENTRY_CODE,8);
+entry[WFC_ENTRY_CODE_LEN]=8;
+entry[WFC_ENTRY_ID]=WFC_FRIEND_ID_FREESPOT;
+rows++;
+}
+return rows;
+}
 
 /* Build the friend-list rows of the FREESPOT connection: after the rows of the
  * shared friend code (Wfc_BuildSaveSlotRows), append one row per enabled connection mode

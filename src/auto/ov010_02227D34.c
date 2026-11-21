@@ -552,9 +552,9 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     void func_ov010_022294b0(M2C_UNK);
     void func_ov010_022294c8(M2C_UNK);
     s32 GetEarnedRecordTierTotal(void);
-    s32 func_ov000_0216a564(void);
-    s32 func_ov000_0216a76c(void);
-    s32 func_ov000_0216a7c4(void);
+    s32 GetRecordRank(void);
+    s32 GetFavouriteRecordGroup(void);
+    s32 GetFavouriteRecordIndex(void);
     void *CreateSpriteFromClass(void *, s32);
     void MI_CpuFill8(void *, s32, s32);
     void InitNetSession(void *, void *, s32, void *, void *, s32, s32, void *, s32);
@@ -613,9 +613,9 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     dd=cc;
     func_ov010_022269dc(&gLocalPlayerStatus,GetLocalPlayerName());
     GetEarnedRecordTierTotal();
-    M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
-    M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
-    M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=GetRecordRank();
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=GetFavouriteRecordGroup();
+    M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=GetFavouriteRecordIndex();
     M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(r4,s32 *,0x54);
     StartNetLogin(&gLocalPlayerStatus,0,(void *)Ov010Online_StartSession,0);
     obj=CreateSpriteFromClass(&gOv010SessionStateClass,3);

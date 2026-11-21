@@ -29,8 +29,8 @@ static inline u16 StatusTile(u16 state) {
 static inline u8 IsSpriteReady(void *p) { return M2C_FIELD(p,s16 *,0x4e)==0; }
 static inline void DrawStatusIcon(s16 x,s16 y,u16 state) {
  extern u16 **gCur3DSpriteEngine; extern M2C_UNK gSpriteDesc16x16;
- M2C_UNK AppendSpriteDescToOam(u16,u8,u16,M2C_UNK *);
- AppendSpriteDescToOam((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),&gSpriteDesc16x16);
+ void AppendSpriteDescToOam(s32, s32, s32, u16 *);
+ AppendSpriteDescToOam((u16)(x&511),(u8)y,(u16)(1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30))),(u16 *)&gSpriteDesc16x16);
 }
 
 /* A small value interpolator (see UpdateSpriteAnimation/GetSpriteAnimValue). */
@@ -698,8 +698,8 @@ void func_02085ea4(void *arg0) {
     func_ov010_022260b8();
 }
 
+#pragma optimization_level 3
 void func_02085ebc(void *arg0) {
- M2C_UNK AppendSpriteDescToOam(u16,u8,u16,M2C_UNK *);
  s32 func_020847b8(); s32 func_ov002_021e1624(); s32 func_ov010_02225d8c(); s32 func_ov010_02225d9c();
  extern M2C_UNK gSpriteDesc16x16; extern u16 **g3DSpriteEngineMain; extern u16 **gCur3DSpriteEngine;
  s32 flag; u16 **saved; u16 v; u16 state=3;
@@ -713,21 +713,15 @@ void func_02085ebc(void *arg0) {
  if(!func_ov002_021e1624())return;
  saved=gCur3DSpriteEngine; gCur3DSpriteEngine=g3DSpriteEngineMain;
  {
- s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
- s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
- s32 y=M2C_FIELD(arg0,s16 *,0x36);
- AppendSpriteDescToOam((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
+ DrawStatusIcon(M2C_FIELD(arg0,s16 *,0x34), M2C_FIELD(arg0,s16 *,0x36), state);
  }
  gCur3DSpriteEngine=saved; return;
  }
  {
- s32 x=M2C_FIELD(arg0,s16 *,0x34)&511;
- s32 tile=1023&((s32)(state*4+32)>>((u32)(**gCur3DSpriteEngine<<17)>>30));
- s32 y=M2C_FIELD(arg0,s16 *,0x36);
- AppendSpriteDescToOam((u16)x,(u8)y,(u16)tile,&gSpriteDesc16x16);
+ DrawStatusIcon(M2C_FIELD(arg0,s16 *,0x34), M2C_FIELD(arg0,s16 *,0x36), state);
  }
 }
-
+#pragma optimization_level reset
 /* Push-to-talk voice chat: while Y is held the voice stream runs; incoming voice
  * ducks the game's channel-2 volume to 0x20, and it fades back to 0x7F when the
  * voice stops.  This updates the button state and drives the widget's fade. */

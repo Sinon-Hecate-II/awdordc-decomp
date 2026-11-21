@@ -499,13 +499,16 @@ s32 ghiPostGetHasFilesContentLength(void *obj) {
     return total + ghiPostLengthCache.endLength;
 }
 
-s32 ghiPostGetContentLength(void *arg0) {
+/* Byte length of the POST body this connection will send: the multipart
+ * form-data length when the post has file parts, otherwise the urlencoded length
+ * of its query string. */
+s32 ghiPostGetContentLength(void *connection) {
  s32 ghiPostGetHasFilesContentLength(void *); s32 ghiPostGetNoFilesContentLength(void *);
- extern M2C_UNK gGhttpAssertPost,sGhttpPostFile,data_020fd27c;
- void *p=M2C_FIELD(arg0,void **,0x13c);
- if(p==NULL)AssertFailed(&gGhttpAssertPost,&sGhttpPostFile,&data_020fd27c,0x20c);
- if(p==NULL)return 0;
- if(M2C_FIELD(p,s32 *,12)!=0)return ghiPostGetHasFilesContentLength(arg0);
- return ghiPostGetNoFilesContentLength(arg0);
+ extern M2C_UNK gGhttpAssertPost,sGhttpPostFile,sGhiPostGetContentLength;
+ GHIPost *post=M2C_FIELD(connection,GHIPost **,GHI_POST_DATA);
+ if(post==NULL)AssertFailed(&gGhttpAssertPost,&sGhttpPostFile,&sGhiPostGetContentLength,0x20c);
+ if(post==NULL)return 0;
+ if(post->hasFiles!=0)return ghiPostGetHasFilesContentLength(connection);
+ return ghiPostGetNoFilesContentLength(connection);
 }
 

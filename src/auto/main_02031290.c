@@ -446,14 +446,14 @@ if((u32)capacity>=size){rem=n&3;full=n-rem;}else return -1;
 pos=0;
 if(full>0){block=0;do{
 val=0;j=0;in=src+pos;
-do{val|=Base64DecodeChar(*in++)<<((3-j)*6);j++;}while(j<4);
+do{val|=func_02031b28(*in++)<<((3-j)*6);j++;}while(j<4);
 j=0;word=val;out=dst+block*3;
 do{*out++=((u8 *)&word)[2-j];j++;}while(j<3);
 pos+=4;block++;
 }while(pos<full);}
 if(rem!=0){
 val=0;j=0;tail=0;
-if(rem>0){s32 accum=0;in=src+full;do{val|=Base64DecodeChar(*in++)<<((3-j)*6);j++;accum|=val;}while(j<rem);tail=accum;}
+if(rem>0){s32 accum=0;in=src+full;do{val|=func_02031b28(*in++)<<((3-j)*6);j++;accum|=val;}while(j<rem);tail=accum;}
 j=0;if(rem>0){out=dst+(full*3)/4;do{*out++=((u8 *)&tail)[2-j];j++;}while(j<rem);}
 }
 return size;

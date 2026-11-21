@@ -271,67 +271,84 @@ void func_ov000_02187664(s32 arg0, s32 arg1) {
     }
 }
 #pragma pop
-void func_ov000_02187820(void) {
+#pragma push
+#pragma optimize_for_size on
+#pragma opt_strength_reduction off
+#pragma opt_common_subs off
+/* Choose the AI's move destination for the unit under the cursor: build the
+ * unit's move range, then scan the reachable cells for the one with the highest
+ * range value (a transport that can unload gets a bonus) and the lowest threat,
+ * breaking ties by the frame counter, and move the cursor there. */
+void SelectBestMoveCell(void) {
     extern void **gCurrentMap;
     extern u32 gFrameCounter;
     s32 IsAllyUnitAtCell(s16, s16);
     s32 CountAdjacentAccessibleCells(s32, s32);
     void BuildUnitMoveRange(void *);
-    void *selected;
+    void *map;
+    void *unit;
     s32 bestX = -1;
     s32 bestY = -1;
     s32 bestVal = 0;
     s32 bestSub = 0x7fff;
-    s32 x;
     s32 y;
-    s32 value;
-    s32 extra;
-    s32 ret;
+    s32 x;
+    s32 score;
+    s32 threat;
+    s32 adjacent;
 
-    selected = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    BuildUnitMoveRange(selected);
-    for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
-        for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
-            if (((s8 **)((u8 *)*gCurrentMap + 0x52E8))[y][x] < 0) {
+    BuildUnitMoveRange(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT));
+    map = *gCurrentMap;
+    y = bestVal;
+    if (y < M2C_FIELD(map, u16 *, MAP_HEIGHT)) do {
+        x = 0;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH)) do {
+            if (M2C_FIELD(M2C_FIELD(map + y * 4, s8 **, MAP_GRID), s8 *, x) < 0) {
                 continue;
             }
             if (IsAllyUnitAtCell((s16)x, (s16)y) != 0) {
                 continue;
             }
-            if (M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), s8 *, 0x3250) == 0) {
+            map = *gCurrentMap;
+            if (M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), s8 *, 0x3250) == 0) {
                 continue;
             }
-            ret = CountAdjacentAccessibleCells(x, y);
-            if (ret == 0) {
+            adjacent = CountAdjacentAccessibleCells(x, y);
+            if (adjacent == 0) {
                 continue;
             }
-            selected = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-            value = M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x3250);
-            if (M2C_FIELD(selected, u8 *, 0xD) != 0 && ret >= 2) {
-                value |= 0x100;
+            map = *gCurrentMap;
+            unit = M2C_FIELD(map, void **, MAP_CURSOR_UNIT);
+            score = M2C_FIELD(map + x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, 0x3250);
+            if (M2C_FIELD(unit, u8 *, 0xD) != 0 && adjacent >= 2) {
+                score |= 0x100;
             }
-            if (bestVal > value) {
+            if (bestVal > score) {
                 continue;
             }
-            extra = M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x2840)
-                  + M2C_FIELD(*gCurrentMap + x + M2C_FIELD(*gCurrentMap + y * 2, u16 *, 0x3758), u8 *, 0x2D48) * 2;
-            if (bestVal == value && bestSub < extra) {
+            {
+                u8 *cell = (u8 *)map + x;
+                threat = M2C_FIELD(cell + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_THREAT_DIRECT)
+                  + M2C_FIELD(cell + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS), u8 *, MAP_CELL_THREAT_INDIRECT) * 2;
+            }
+            if (bestVal == score && bestSub < threat) {
                 continue;
             }
-            if (bestVal == value && bestSub == extra && (gFrameCounter & 1) != 0) {
+            if (bestVal == score && bestSub == threat && (gFrameCounter & 1) != 0) {
                 continue;
             }
             bestX = x;
             bestY = y;
-            bestVal = value;
-            bestSub = extra;
-        }
-    }
+            bestVal = score;
+            bestSub = threat;
+        } while (map = *gCurrentMap, ++x < M2C_FIELD(map, u16 *, MAP_WIDTH));
+    } while (++y < M2C_FIELD(map, u16 *, MAP_HEIGHT));
     if (bestVal == 0) {
         return;
     }
     func_ov000_02187664(bestX, bestY);
 }
+#pragma pop
 
 #pragma push
 #pragma opt_strength_reduction off
@@ -433,7 +450,7 @@ void func_ov000_02187c3c(void) {
 }
 #pragma opt_strength_reduction reset
 void func_ov000_02187e20(void) {
-func_ov000_02187820();
+SelectBestMoveCell();
 if(data_ov000_021df648==func_ov000_02188338) ChooseMoveDestination();
 func_ov000_02187c3c();
 }

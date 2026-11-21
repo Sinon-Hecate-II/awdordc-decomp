@@ -366,12 +366,15 @@ void CountTabRecords(s32 tabId) {
     }
 }
 
-void func_ov005_02211c94(void) {
+/* Fill the records menu's summary: the localized names of the player's favourite
+   record group and best record, and the rank icon/text the earned tier total
+   reaches. */
+void HistoryMenu_InitSummary(void) {
 extern s32 gHistoryMenu;
-M2C_FIELD(gHistoryMenu,s32 *,0x34)=func_ov000_0216a77c(func_ov000_0216a76c());
-M2C_FIELD(gHistoryMenu,s32 *,0x38)=func_ov000_0216a7d4(func_ov000_0216a7c4());
-M2C_FIELD(gHistoryMenu,u8 *,0x32)=func_ov000_0216a564(GetEarnedRecordTierTotal());
-M2C_FIELD(gHistoryMenu,s32 *,0x3c)=func_ov000_0216a59c(func_ov000_0216a564(GetEarnedRecordTierTotal()));
+((HistoryMenu *)gHistoryMenu)->favouriteGroupTextId=GetFavouriteGroupTextId(GetFavouriteRecordGroup());
+((HistoryMenu *)gHistoryMenu)->favouriteRecordTextId=GetFavouriteRecordTextId(GetFavouriteRecordIndex());
+((HistoryMenu *)gHistoryMenu)->rankIcon=(u8)GetRecordRank(GetEarnedRecordTierTotal());
+((HistoryMenu *)gHistoryMenu)->rankTextId=GetRecordRankTextId(GetRecordRank(GetEarnedRecordTierTotal()));
 }
 
 #pragma opt_strength_reduction off

@@ -370,7 +370,7 @@ s32 func_02059640(void *arg0, s32 arg1) {
     return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x20), arg1);
 }
 
-s32 func_02059670(void *arg0, s32 arg1) {
+s32 gpiGetPlayerId(void *arg0, s32 arg1) {
  s32 *Vector_GetItem(s32, s32);
  extern M2C_UNK gGpiInfoState;
  void *var_r0;
@@ -458,27 +458,27 @@ void func_02059890(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK gpiGetOrCreateInt(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff52c;
+    extern M2C_UNK gGpiPlayerKeyFormat;
     char sp4[64];
-    StringFormat(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp4, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
     gpiGetOrCreateInt(arg0, sp4, arg2, arg3, arg4);
 }
 
-void func_02059948(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
+void gpiSetPlayerDouble(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
     s64 gpiGetOrCreateDouble(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff52c;
+    extern M2C_UNK gGpiPlayerKeyFormat;
     char sp8[64];
-    StringFormat(sp8, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp8, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
     gpiGetOrCreateDouble(arg0, sp8, arg2, arg3, arg4);
 }
 
 void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_02059778(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff52c;
+    extern M2C_UNK gGpiPlayerKeyFormat;
     char sp4[64];
-    StringFormat(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
+    StringFormat(sp4, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
     func_02059778(arg0, sp4, arg2, arg3, arg4);
 }
 

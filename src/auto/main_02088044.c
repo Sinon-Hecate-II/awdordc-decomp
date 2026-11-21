@@ -220,27 +220,27 @@ void func_0208853c(s32 arg0) {
     p = (u8 *)&gResourceDependencyMasks;
     i = 0;
     do {
-        if ((*p & ((u8 *)&gResourceDependencyMasks)[arg0]) && func_0208858c((u8)i) != 0) func_020884f8(i);
+        if ((*p & ((u8 *)&gResourceDependencyMasks)[arg0]) && IsResourceLoaded((u8)i) != 0) func_020884f8(i);
         i++;
         p++;
     } while (i < 12);
 }
 
-s32 func_0208858c(s32 arg0) {
+s32 IsResourceLoaded(s32 arg0) {
     extern M2C_UNK gResourceLoaded;
     return M2C_FIELD(&gResourceLoaded, u8 *, arg0);
 }
 
-void func_0208859c(void){if(func_0208858c(0)!=0)return;func_0208853c(0);LoadResource(0);}
+void func_0208859c(void){if(IsResourceLoaded(0)!=0)return;func_0208853c(0);LoadResource(0);}
 
-void func_020885c4(void){if(func_0208858c(2)!=0)return;func_0208853c(2);LoadResource(2);}
+void func_020885c4(void){if(IsResourceLoaded(2)!=0)return;func_0208853c(2);LoadResource(2);}
 
 void func_020885ec(void) {
     func_020884f8(2);
 }
 
 void func_020885fc(void) {
-    if (func_0208858c(3) != 0) {
+    if (IsResourceLoaded(3) != 0) {
         return;
     }
     func_0208853c(3);
@@ -252,7 +252,7 @@ void func_02088624(void) {
 }
 
 void func_02088634(void) {
-    if (func_0208858c(4) != 0) {
+    if (IsResourceLoaded(4) != 0) {
         return;
     }
     func_0208853c(4);
@@ -260,7 +260,7 @@ void func_02088634(void) {
 }
 
 void func_0208865c(void) {
-    if (func_0208858c(5) != 0) {
+    if (IsResourceLoaded(5) != 0) {
         return;
     }
     func_0208853c(5);
@@ -268,7 +268,7 @@ void func_0208865c(void) {
 }
 
 void func_02088684(void) {
-    if (func_0208858c(6) != 0) {
+    if (IsResourceLoaded(6) != 0) {
         return;
     }
     func_0208853c(6);
@@ -276,7 +276,7 @@ void func_02088684(void) {
 }
 
 void func_020886ac(void) {
-    if (func_0208858c(7) != 0) {
+    if (IsResourceLoaded(7) != 0) {
         return;
     }
     func_0208853c(7);
@@ -284,7 +284,7 @@ void func_020886ac(void) {
 }
 
 void func_020886d4(void) {
-    if (func_0208858c(9) != 0) {
+    if (IsResourceLoaded(9) != 0) {
         return;
     }
     func_0208853c(9);
@@ -292,7 +292,7 @@ void func_020886d4(void) {
 }
 
 void func_020886fc(void) {
-    if (func_0208858c(0xA) != 0) {
+    if (IsResourceLoaded(0xA) != 0) {
         return;
     }
     func_0208853c(0xA);
@@ -300,7 +300,7 @@ void func_020886fc(void) {
 }
 
 void func_02088724(void) {
-    if (func_0208858c(1) != 0) {
+    if (IsResourceLoaded(1) != 0) {
         return;
     }
     func_0208853c(1);
@@ -308,7 +308,7 @@ void func_02088724(void) {
 }
 
 void func_0208874c(void) {
-    if (func_0208858c(0xB) != 0) {
+    if (IsResourceLoaded(0xB) != 0) {
         return;
     }
     func_0208853c(0xB);
@@ -321,8 +321,8 @@ void func_02088774(s32 a){void CopyU16(void *,s32,s32);extern u8 data_021577c0[]
 void DrawSpriteActorAt(void *p,s32 a,s32 b,s32 c,s32 d){void func_020887ec(void *);s32 x=M2C_FIELD(p,s16 *,0x34),y=M2C_FIELD(p,s16 *,0x36),z=M2C_FIELD(p,s8 *,0x49),w=M2C_FIELD(p,s32 *,0x44);M2C_FIELD(p,s16 *,0x34)=a;M2C_FIELD(p,s16 *,0x36)=b;M2C_FIELD(p,s8 *,0x49)=c;M2C_FIELD(p,s32 *,0x44)=d;func_020887ec(p);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,s8 *,0x49)=z;M2C_FIELD(p,s32 *,0x44)=w;}
 
 void func_020887ec(void *p){
-s32 func_01ff8f90(s32,s32,s32);void AddSprite(u16,u16,u16,s32,s32);
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;
+s32 func_01ff8f90(s32,s32,s32);void func_01ffaacc(u16,u16,u16,s32,s32);
+extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
 void *saved,*bank; s32 i;u32 mode,flags;u16 x,y,attr,pal;u32 shift,tile,part;
 if(M2C_FIELD(p,s32 *,0x44)==0)return;
 if((M2C_FIELD(p,u32 *,0x40)>>26)==0)return;
@@ -330,9 +330,9 @@ if(((u32)(M2C_FIELD(p,u8 *,0x48)<<31)>>31)==0)return;
 if(!func_01ff8f90(M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38),M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a),M2C_FIELD(p,s32 *,0x44)))return;
 saved=gCur3DSpriteEngine;
 for(i=0;i<2;i++){
-if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
+if(i==0)bank=data_027e00c8;else bank=data_027e00c4;
 gCur3DSpriteEngine=bank;mode=(u32)(M2C_FIELD(p,u8 *,0x48)<<28)>>29;
-if((mode!=0||bank==g3DSpriteEngineMain)&&(mode!=1||bank==g3DSpriteEngineSub)&&(mode!=3||bank==saved)){
+if((mode!=0||bank==data_027e00c8)&&(mode!=1||bank==data_027e00c4)&&(mode!=3||bank==saved)){
 shift=(u32)(M2C_FIELD(M2C_FIELD(bank,void **,0),u16 *,0)<<17)>>30;
 flags=M2C_FIELD(p,u32 *,0x40);
 tile=M2C_FIELD(p,u16 *,0x3e);
@@ -343,7 +343,7 @@ attr=(u16)(part|M2C_FIELD(p,u16 *,0x3c));
 
 y=(M2C_FIELD(p,s16 *,0x36)+M2C_FIELD(p,s16 *,0x3a))&255;
 if((flags>>26)!=16)y|=0x400;
-AddSprite((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,attr,M2C_FIELD(p,s32 *,0x44),M2C_FIELD(p,s8 *,0x49));
+func_01ffaacc((u16)((M2C_FIELD(p,s16 *,0x34)+M2C_FIELD(p,s16 *,0x38))&0x1ff),y,attr,M2C_FIELD(p,s32 *,0x44),M2C_FIELD(p,s8 *,0x49));
 }}gCur3DSpriteEngine=saved;
 }
 

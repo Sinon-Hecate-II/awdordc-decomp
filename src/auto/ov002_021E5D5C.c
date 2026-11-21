@@ -34,7 +34,7 @@ M2C_FIELD(country,u16 *,36)=tiles;resource=M2C_FIELD(M2C_FIELD(settings,void **,
 M2C_FIELD(country,u16 *,38)=tiles;
 if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=ComparePlayerGauges(state);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=LoadFaceGraphics(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dc4);}
 M2C_FIELD(country,u16 *,40)=tiles;
-if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=func_ov002_021e41ac(state,0);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=LoadFaceGraphics(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dcc);}
+if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=CompareUnitViewGauges(state,0);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=LoadFaceGraphics(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dcc);}
 func_02004cf0();func_02004d3c();
 resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24]*4,void **,0);palette=HeapAllocBlock(128);
 if(resource)ReadFileSection(M2C_FIELD(resource,void **,8),(s32)palette,settings[25]<<7,128);else MI_CpuFill32(0,palette,128);

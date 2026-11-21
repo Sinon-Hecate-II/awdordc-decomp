@@ -42,6 +42,10 @@ enum {
 /* Pixels a frame the column slides up when its menu opens. */
 #define OV001_REGION_OPEN_STEP 12
 
+/* Blend level (OV001_REGION_BLEND) the region menu's open fade steps down to and
+ * its close fade steps back up from; a negative BLDY fades through the backdrop. */
+#define OV001_REGION_FADE_LEVEL (-12)
+
 /* The small ov001 message box (Ov001_ShowMessageBox): a text panel with the
  * message drawn in this rectangle, in palette row 2, then closed again. */
 #define OV001_MESSAGE_BOX_X      13  /* pixels from the panel's left */

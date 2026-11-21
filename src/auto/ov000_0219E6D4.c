@@ -123,7 +123,7 @@ s32 ShouldSkipAiActionView(void) {
  * step themselves and return 0 once the AI has to wait for the screen. */
 s32 ProcessAiCommandStep(void) {
     s32 func_ov000_0219e9f4();
-    s32 func_ov000_0219efa4();
+    s32 RunAiCommandMoveStep();
     s32 func_ov000_0219f0d8();
     s32 ProcessAiCommandDelay();
     s32 func_ov000_0219f918();
@@ -141,7 +141,7 @@ s32 ProcessAiCommandStep(void) {
             continues = func_ov000_0219e9f4();
             break;
         case 1:
-            continues = func_ov000_0219efa4();
+            continues = RunAiCommandMoveStep();
             break;
         case 2:
             continues = func_ov000_0219f0d8();
@@ -340,7 +340,12 @@ s32 func_ov000_0219e9f4(void)
     return (u8)(scrolling == 0);
 }
 #pragma pop
-s32 func_ov000_0219efa4(void) {
+/* AI command step 1: clear the old cursor sprites, restore the command's path
+ * onto the map and line the acting unit up for its move, then work out whether
+ * the path ends in an attack (which records a battle command).  Starts the unit
+ * move, advances the command to step 2 and returns 1 when the path is already at
+ * its destination (MOVE_DIR_STOP), so the command machine can carry on at once. */
+s32 RunAiCommandMoveStep(void) {
     void func_020d61f0(void);
     void *CreateUnitMoveForUnit(void *);
     void RefreshMapView(void);
@@ -352,28 +357,29 @@ s32 func_ov000_0219efa4(void) {
     extern void **gCurrentMap;
     extern u8 gCommandPath[];
     extern u8 gAiCommand[];
+    extern s8 *gAiCommandState;
 
-    s32 result;
+    s32 attack;
 
     func_020d61f0();
-    CreateUnitMoveForUnit(*(void **)((u8 *)*gCurrentMap + 0x52d0));
+    CreateUnitMoveForUnit(*(void **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT));
     RefreshMapView();
-    func_020844a0(gCommandPath, (u8 *)*gCurrentMap + 0x5388);
-    result = ResolvePathAttack(
-        *(s16 *)((u8 *)*gCurrentMap + 0x52d8),
-        *(s16 *)((u8 *)*gCurrentMap + 0x52da),
-        ((u8 *)*(void **)((u8 *)*gCurrentMap + 0x52d0))[0] & 0x3f,
-        (u8 *)*gCurrentMap + 0x5388,
+    func_020844a0(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
+    attack = ResolvePathAttack(
+        *(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_X),
+        *(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_Y),
+        (*(BattleMapUnitHead **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT))->kind,
+        (u8 *)*gCurrentMap + MAP_CURSOR_PATH,
         4);
-    if (result != 0) {
-        if (func_020d1a1c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4)) != 0) {
-            SetBattleCommand(0xf, *(u8 *)((u8 *)*gCurrentMap + 0x52d4), 0, 0);
+    if (attack != 0) {
+        if (func_020d1a1c(*(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER)) != 0) {
+            SetBattleCommand(0xf, *(u8 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT_ID), 0, 0);
         }
-        gCommandPath[0] = 2;
+        gAiCommand[AI_COMMAND_KIND] = 2;
     }
-    func_020a64ec((u8 *)*gCurrentMap + 0x5388);
-    *(u8 *)(*(void **)gAiCommand + 1) = 2;
-    return (*(s8 *)((u8 *)*gCurrentMap + 0x5388) == 4) ? 1 : 0;
+    func_020a64ec((u8 *)*gCurrentMap + MAP_CURSOR_PATH);
+    gAiCommandState[AI_COMMAND_STATE_STEP] = 2;
+    return (*(s8 *)((u8 *)*gCurrentMap + MAP_CURSOR_PATH) == MOVE_DIR_STOP) ? 1 : 0;
 }
 
 #pragma opt_common_subs off
@@ -391,7 +397,7 @@ s32 func_ov000_0219f0d8(void) {
     void ApplyWeatherCommand(void);
     u8 AiMoveCursorToCommandTile(void);
     u8 AiMoveCursorToCommandPoint(void);
-    void func_020bb458(void);
+    void LoadUnitIntoTransport(void);
     void func_ov000_0219fabc(s32);
     void func_020bb768(void);
     void func_020bbac8(void);
@@ -458,7 +464,7 @@ s32 func_ov000_0219f0d8(void) {
     case 9:
         return AiMoveCursorToCommandPoint();
     case 10:
-        func_020bb458();
+        LoadUnitIntoTransport();
         BattleUpdateUnitCursor();
         break;
     case 11:

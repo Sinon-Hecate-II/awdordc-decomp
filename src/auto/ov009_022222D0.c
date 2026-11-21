@@ -231,9 +231,9 @@ s32 func_ov009_02222790(void) {
     s32 func_02012218(M2C_UNK *, M2C_UNK *, M2C_UNK);
     void SignalLinkError();
     extern M2C_UNK data_ov009_022277a0;
-    extern M2C_UNK func_ov009_0222281c;
+    extern M2C_UNK HandleLinkStartResult;
     SetLinkPhase(3);
-    if (func_02012218(&data_ov009_022277a0, &func_ov009_0222281c, 2) == 2) {
+    if (func_02012218(&data_ov009_022277a0, &HandleLinkStartResult, 2) == 2) {
         return 1;
     }
     SignalLinkError();
@@ -255,22 +255,26 @@ s32 arg0;
     M2C_FIELD(state,void (**)(s32,s32),0x2C)(arg0,0);
 }
 
-void func_ov009_0222281c(void *arg0) {
-    s32 func_020119dc(M2C_UNK *);
-    M2C_UNK func_ov009_022244d4(M2C_UNK);
+/* Completion callback of the WFC command that prepares the link channel: a reported
+ * failure aborts the link; otherwise it installs the overlay's general WFC event
+ * handler, resets the per-slot link-result flags and moves the link to the ready
+ * phase. */
+void HandleLinkStartResult(void *event) {
+    s32 WFC_SetGeneralHandler(M2C_UNK *);
+    M2C_UNK SetLinkResultFlagMask(M2C_UNK);
     void HandleLinkWfcEvent(void *);
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) != 0) {
         SignalLinkEvent();
-        SetLinkPhase(9);
+        SetLinkPhase(LINK_PHASE_ABORTED);
         return;
     }
-    if (func_020119dc((M2C_UNK *)HandleLinkWfcEvent) != 0) {
-        SignalLinkEvent(M2C_FIELD(arg0, u16 *, 2));
-        SetLinkPhase(9);
+    if (WFC_SetGeneralHandler((M2C_UNK *)HandleLinkWfcEvent) != 0) {
+        SignalLinkEvent(M2C_FIELD(event, u16 *, LINK_EVENT_STATE));
+        SetLinkPhase(LINK_PHASE_ABORTED);
         return;
     }
-    func_ov009_022244d4(0);
-    SetLinkPhase(1);
+    SetLinkResultFlagMask(0);
+    SetLinkPhase(LINK_PHASE_READY);
 }
 
 /* Ask the next player slot to announce itself: queue the player-announcement

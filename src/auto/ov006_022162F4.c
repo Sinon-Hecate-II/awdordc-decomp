@@ -354,26 +354,31 @@ void *FreeMapCodeEntryPanel(void *panel) {
     return panel;
 }
 
-void *DestroyMapCodeEntryPanel(void *arg0) {
- M2C_UNK MemFree(void *);
- M2C_UNK HeapFreeBlock(s32);
- extern M2C_UNK gMapCodeEntryPanelVTable;
- void *temp_r4;
- void *temp_r0;
- M2C_FIELD(arg0, void **, 0) = &gMapCodeEntryPanelVTable;
- temp_r4 = M2C_FIELD(arg0, void **, 0x40);
- if (temp_r4 != NULL) {
- HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
- MemFree(temp_r4);
- }
- temp_r0 = M2C_FIELD(arg0, void **, 0x44);
- if (temp_r0 != NULL) {
- M2C_FIELD(M2C_FIELD(temp_r0, void **, 0), void (**)(void *), 4)(temp_r0);
- }
- temp_r0 = M2C_FIELD(arg0, void **, 0x48);
- if (temp_r0 != NULL) MemFree(temp_r0);
- 
- return arg0;
+/* The map-code entry panel's destroy method: reset its vtable, free its grid child
+ * and the glyph heap block the grid owns, destroy its sub-panel and free its
+ * sprite child, then hand the panel back (FreeMapCodeEntryPanel also frees the
+ * panel itself). */
+void *DestroyMapCodeEntryPanel(void *panel) {
+    M2C_UNK MemFree(void *);
+    M2C_UNK HeapFreeBlock(s32);
+    extern M2C_UNK gMapCodeEntryPanelVTable;
+    void *child;
+    void *sub;
+
+    M2C_FIELD(panel, void **, 0) = &gMapCodeEntryPanelVTable;
+    child = M2C_FIELD(panel, void **, MAP_CODE_PANEL_GRID);
+    if (child != NULL) {
+        HeapFreeBlock(M2C_FIELD(child, s32 *, 0x14));
+        MemFree(child);
+    }
+    sub = M2C_FIELD(panel, void **, MAP_CODE_PANEL_SUBPANEL);
+    if (sub != NULL) {
+        M2C_FIELD(M2C_FIELD(sub, void **, 0), void (**)(void *), 4)(sub);
+    }
+    sub = M2C_FIELD(panel, void **, MAP_CODE_PANEL_SPRITE);
+    if (sub != NULL) MemFree(sub);
+
+    return panel;
 }
 
 u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {

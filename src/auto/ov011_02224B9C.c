@@ -119,7 +119,19 @@ void func_ov011_02224f7c(void) {
 
 }
 
-void func_ov011_02224f80(void) { u32 v=*(u16 *)0x04000006 & 255; u8 a=0; u8 b; if(v<160) a=8-(s32)(v*8)/160; b=16-a; *(u16 *)0x04000052=(a&31)|((b&31)<<8); }
+/* VCOUNT interrupt handler for the intro's scanline fade: each line it writes
+   BLDALPHA so the blended layer fades out over the top 160 scanlines, from a
+   half mix (EVA 8, EVB 8) down to layer B alone (EVA 0, EVB 16). */
+void IntroFadeScanlineHandler(void) {
+    u32 scanline = *(u16 *)GX_VCOUNT & 255;
+    u8 eva = 0;
+    u8 evb;
+    if (scanline < 160) {
+        eva = 8 - (s32)(scanline * 8) / 160;
+    }
+    evb = 16 - eva;
+    *(u16 *)GX_BLDALPHA_MAIN = (eva & 31) | ((evb & 31) << 8);
+}
 
 void func_ov011_02224fe0(M2C_UNK arg0) {
     func_ov011_022216d8(arg0, 1, 1, 0);
@@ -168,8 +180,8 @@ void func_ov011_02225074(M2C_UNK arg0) {
 
 void func_ov011_0222508c(void) {
     M2C_UNK func_0207fa74(void (*)(void));
-    void func_ov011_02224f80(void);
-    func_0207fa74(&func_ov011_02224f80);
+    void IntroFadeScanlineHandler(void);
+    func_0207fa74(&IntroFadeScanlineHandler);
 }
 
 void func_ov011_022250a0(void) {
@@ -366,11 +378,16 @@ void func_ov011_02225604(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x48) = (s32) (M2C_FIELD(arg0, s32 *, 0x48) + M2C_FIELD(arg0, u8 *, 0x36));
 }
 
-void func_ov011_02225624(void *arg0) {
- M2C_UNK DeleteSpriteObject(void *); void DrawMenuEntryHighlight();
-if(M2C_FIELD(arg0,s32 *,0x50))DrawMenuEntryHighlight(arg0);
- IntroMenu_UpdateEntrySlide(arg0,M2C_FIELD(arg0,s16 *,0x3c),M2C_FIELD(arg0,s16 *,0x3e),M2C_FIELD(arg0,s16 *,0x40),M2C_FIELD(arg0,s16 *,0x42),120);
- if(M2C_FIELD(arg0,u32 *,0x44)<199)return; DeleteSpriteObject(arg0);
+/* Per-frame update of one intro-menu entry: draw its label's highlight if it has
+ * one, advance its slide from its from-point to its to-point, and delete the entry
+ * once it has lived INTRO_MENU_ENTRY_LIFETIME updates. */
+void UpdateIntroMenuEntry(MenuEntry011 *entry) {
+    M2C_UNK DeleteSpriteObject(void *);
+    void DrawMenuEntryHighlight();
+    if (entry->labelId) DrawMenuEntryHighlight(entry);
+    IntroMenu_UpdateEntrySlide(entry, entry->slideFromX, entry->slideFromY, entry->slideToX, entry->slideToY, INTRO_MENU_ENTRY_SLIDE_FRAMES);
+    if ((u32) entry->age < INTRO_MENU_ENTRY_LIFETIME) return;
+    DeleteSpriteObject(entry);
 }
 
 /* Initialise the intro-menu object before it starts walking the menu script:
@@ -424,19 +441,19 @@ gCur3DSpriteEngine=savedEngine;
 
 #pragma opt_common_subs off
 void func_ov011_0222588c(void *a) {
-extern s32 gIntroMenuTextureOffset;
+extern s32 data_ov011_02228cec;
 s32 func_ov011_02225a18(void *); void *func_ov011_02227ea4(void *);
-s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y,c;
-gIntroMenuTextureOffset=0; ((MenuCount011 *)a)->count=0;
+s32 values[3],labels[3]; s32 i,n; register u32 k; s32 *p; s32 v,l; u8 y;
+data_ov011_02228cec=0; ((MenuCount011 *)a)->count=0;
 while(func_ov011_02225a18(a)==2 && (k=((MenuCount011 *)a)->count)<3) {
 p=M2C_FIELD(a,s32 **,0x4c); v=p[2];l=p[3]; M2C_FIELD(a,s32 **,0x4c)+=4;
-values[k]=v;labels[k]=l; c=((MenuCount011 *)a)->count; ((MenuCount011 *)a)->count=(u8)(c+1);
+values[k]=v;labels[k]=l; ((MenuCount011 *)a)->count=(u8)(((MenuCount011 *)a)->count+1);
 }
 for(i=0,n=((MenuCount011 *)a)->count;i<n;i++,n=((MenuCount011 *)a)->count) {
 ((void **)((u8 *)a+0x40))[i]=func_ov011_02227ea4(a);
 func_ov011_02225420(((void **)((u8 *)a+0x40))[i],labels[i]);
 func_ov011_02225408(((void **)((u8 *)a+0x40))[i],(u8)i);
-InitIntroMenuEntry(((void **)((u8 *)a+0x40))[i]);
+func_ov011_02225238(((void **)((u8 *)a+0x40))[i]);
 y=60+(128/n)*(i+1)-128/(n*2);
 func_ov011_022253f0(((void **)((u8 *)a+0x40))[i],-16,y,272,y);
 func_ov011_02225418(((void **)((u8 *)a+0x40))[i],values[i]);

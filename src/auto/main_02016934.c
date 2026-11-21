@@ -17,7 +17,7 @@ void Mb_ReportPacketResult(int, void *);
 void WaitCycles(int);
 void SystemHalt(void);
 void WFC_SetChannelHandler(int,int,int);
-void func_020119dc(int);
+void WFC_SetGeneralHandler(int);
 
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
@@ -67,7 +67,7 @@ if(M2C_FIELD(M2C_FIELD(&gMbState,void **,12),u32 *,0x1320)==0){
 if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;}
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)=0; M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)=0;Mb_ReportPacketResult(2,WFC_EndLink(func_02016934));return;
 }
-WFC_SetChannelHandler(1,0,0);func_020119dc(0);
+WFC_SetChannelHandler(1,0,0);WFC_SetGeneralHandler(0);
 case 2:if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)=0;M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);}else Mb_CancelLink(arg0);return;
 case 13:if(M2C_FIELD(arg0,u16 *,2)==0)M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)&=~M2C_FIELD(arg0,u16 *,10);return;
 case 128:switch(M2C_FIELD(arg0,u16 *,4)){

@@ -124,7 +124,7 @@ s32 Ov002_GetEffectScriptDuration(void *node) {
  * initial translation offset. */
 void Ov002_CreateEffectNode(void *tmpl, s32 variant, s32 side) {
 void *MemAlloc(M2C_UNK);
-M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);
+M2C_UNK SetEffectNodeResourceCore(void *,s32,s16,s8,u8);
 register void *node;
 void *link;
 if(M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD)) {
@@ -138,7 +138,7 @@ M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD)=((node=MemAlloc(0x54)) ? init_021e2848
 node=M2C_FIELD(tmpl,void **,FX_TEMPLATE_CHILD);
 func_ov002_021e16bc(node,M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_PALETTE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_TABLE_INDEX));
 SetEffectNodeTranslation(node,0,0,(s16)side);
-((M2C_UNK (*)(void *,s32,u16,u8,s32))func_ov002_021e16dc)(node,M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_SOURCE_ID),M2C_FIELD(tmpl,u16 *,FX_TEMPLATE_SHAPE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_KIND),variant);
+((M2C_UNK (*)(void *,s32,u16,u8,s32))SetEffectNodeResourceCore)(node,M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_SOURCE_ID),M2C_FIELD(tmpl,u16 *,FX_TEMPLATE_SHAPE),M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_KIND),variant);
 M2C_FIELD(node,s32 *,FX_NODE_GRAPHIC_X)=M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_X);
 M2C_FIELD(node,s32 *,FX_NODE_GRAPHIC_Y)=M2C_FIELD(tmpl,s32 *,FX_TEMPLATE_Y);
 M2C_FIELD(node,u8 *,FX_NODE_COLOUR)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_COLOUR_BLEND);
@@ -208,52 +208,64 @@ void InitEffectNode(void *node) {
     M2C_FIELD(node, s16 *, FX_NODE_MODE_86) = 0;
 }
 
-void SetEffectNodeResource(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);func_ov002_021e16dc(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
+void SetEffectNodeResource(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK SetEffectNodeResourceCore(void *,s32,s16,s8,u8);SetEffectNodeResourceCore(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
 
-void func_ov002_021e2aa8(void *arg0) {
+/* Per-frame update of an effect node.  While it is alive, advance its lifetime
+ * and integrate its motion (position += velocity, velocity += acceleration, scale
+ * += scale step).  A node that moves while scaling (FX_NODE_MODE_86) finishes
+ * after FX_NODE_DURATION ticks, otherwise once it leaves the screen; before that
+ * its scale eases from FX_NODE_SCALE_FROM to FX_NODE_SCALE_TO.  The node's script
+ * and children are updated last. */
+void UpdateEffectNode(void *node) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
     void ClearEffectNode(void *);
-    void func_ov002_021e1790(void *, s32, s32);
+    void SetEffectNodeXY(void *, s32, s32);
     void func_ov002_021e1844(void *);
     void func_ov002_021e299c(void *, s32);
     s32 IsEffectNodeOffScreen(void *);
-    s32 t;
-    if (M2C_FIELD(arg0, s32 *, 0x6C) >= 0) {
-        M2C_FIELD(arg0, s32 *, 0x6C) = M2C_FIELD(arg0, s32 *, 0x6C) + 1;
-        if (M2C_FIELD(arg0, u16 *, 0x86) == 0) {
-            if (M2C_FIELD(arg0, s32 *, 0x6C) > M2C_FIELD(arg0, s32 *, 0x70)) {
-                M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) + M2C_FIELD(arg0, s32 *, 0x5C);
-                M2C_FIELD(arg0, s32 *, 0x58) = M2C_FIELD(arg0, s32 *, 0x58) + M2C_FIELD(arg0, s32 *, 0x60);
-                M2C_FIELD(arg0, s32 *, 0x5C) = M2C_FIELD(arg0, s32 *, 0x5C) + M2C_FIELD(arg0, s32 *, 0x64);
-                M2C_FIELD(arg0, s32 *, 0x60) = M2C_FIELD(arg0, s32 *, 0x60) + M2C_FIELD(arg0, s32 *, 0x68);
-                t = (s32)M2C_FIELD(arg0, s16 *, 0x7E) + (s32)M2C_FIELD(arg0, u16 *, 0x78);
-                if (t < 0) t = 0;
-                M2C_FIELD(arg0, u16 *, 0x78) = (u16)t;
-                func_ov002_021e1790(arg0, (s32)(M2C_FIELD(arg0, s32 *, 0x54) << 8) >> 16, (s32)(M2C_FIELD(arg0, s32 *, 0x58) << 8) >> 16);
-                if (IsEffectNodeOffScreen(arg0) != 0) {
-                    ClearEffectNode(arg0);
-                    M2C_FIELD(arg0, s32 *, 0x6C) = -1;
+    s32 scale;
+    if (M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) >= 0) {
+        M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) + 1;
+        if (M2C_FIELD(node, u16 *, FX_NODE_MODE_86) == 0) {
+            if (M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) > M2C_FIELD(node, s32 *, FX_NODE_DURATION)) {
+                M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) = M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) + M2C_FIELD(node, s32 *, FX_NODE_VX);
+                M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) = M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) + M2C_FIELD(node, s32 *, FX_NODE_VY);
+                M2C_FIELD(node, s32 *, FX_NODE_VX) = M2C_FIELD(node, s32 *, FX_NODE_VX) + M2C_FIELD(node, s32 *, FX_NODE_AX);
+                M2C_FIELD(node, s32 *, FX_NODE_VY) = M2C_FIELD(node, s32 *, FX_NODE_VY) + M2C_FIELD(node, s32 *, FX_NODE_AY);
+                {
+                s16 step = M2C_FIELD(node, volatile s16 *, FX_NODE_SCALE_STEP);
+                scale = M2C_FIELD(node, volatile u16 *, FX_NODE_SCALE) + step;
+                }
+                if (scale < 0) scale = 0;
+                M2C_FIELD(node, u16 *, FX_NODE_SCALE) = (u16)scale;
+                SetEffectNodeXY(node, (s32)(M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) << 8) >> 16, (s32)(M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) << 8) >> 16);
+                if (IsEffectNodeOffScreen(node) != 0) {
+                    ClearEffectNode(node);
+                    M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = -1;
                 }
             } else {
-                M2C_FIELD(arg0, u16 *, 0x78) = (u16)EaseInterpolate(0, M2C_FIELD(arg0, s16 *, 0x7A), M2C_FIELD(arg0, s16 *, 0x7C), M2C_FIELD(arg0, s32 *, 0x6C), M2C_FIELD(arg0, s32 *, 0x70));
+                M2C_FIELD(node, u16 *, FX_NODE_SCALE) = (u16)EaseInterpolate(0, M2C_FIELD(node, s16 *, FX_NODE_SCALE_FROM), M2C_FIELD(node, s16 *, FX_NODE_SCALE_TO), M2C_FIELD(node, s32 *, FX_NODE_LIFETIME), M2C_FIELD(node, s32 *, FX_NODE_DURATION));
             }
         } else {
-            M2C_FIELD(arg0, s32 *, 0x54) = M2C_FIELD(arg0, s32 *, 0x54) + M2C_FIELD(arg0, s32 *, 0x5C);
-            M2C_FIELD(arg0, s32 *, 0x58) = M2C_FIELD(arg0, s32 *, 0x58) + M2C_FIELD(arg0, s32 *, 0x60);
-            M2C_FIELD(arg0, s32 *, 0x5C) = M2C_FIELD(arg0, s32 *, 0x5C) + M2C_FIELD(arg0, s32 *, 0x64);
-            M2C_FIELD(arg0, s32 *, 0x60) = M2C_FIELD(arg0, s32 *, 0x60) + M2C_FIELD(arg0, s32 *, 0x68);
-            t = (s32)M2C_FIELD(arg0, s16 *, 0x7E) + (s32)M2C_FIELD(arg0, u16 *, 0x78);
-            if (t < 0) t = 0;
-            M2C_FIELD(arg0, u16 *, 0x78) = (u16)t;
-            func_ov002_021e1790(arg0, (s32)(M2C_FIELD(arg0, s32 *, 0x54) << 8) >> 16, (s32)(M2C_FIELD(arg0, s32 *, 0x58) << 8) >> 16);
-            if (M2C_FIELD(arg0, s32 *, 0x6C) >= M2C_FIELD(arg0, s32 *, 0x70)) {
-                func_ov002_021e299c(arg0, 6);
-                ClearEffectNode(arg0);
-                M2C_FIELD(arg0, s32 *, 0x6C) = -1;
+            M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) = M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) + M2C_FIELD(node, s32 *, FX_NODE_VX);
+            M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) = M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) + M2C_FIELD(node, s32 *, FX_NODE_VY);
+            M2C_FIELD(node, s32 *, FX_NODE_VX) = M2C_FIELD(node, s32 *, FX_NODE_VX) + M2C_FIELD(node, s32 *, FX_NODE_AX);
+            M2C_FIELD(node, s32 *, FX_NODE_VY) = M2C_FIELD(node, s32 *, FX_NODE_VY) + M2C_FIELD(node, s32 *, FX_NODE_AY);
+            {
+                s16 step = M2C_FIELD(node, volatile s16 *, FX_NODE_SCALE_STEP);
+                scale = M2C_FIELD(node, volatile u16 *, FX_NODE_SCALE) + step;
+                }
+            if (scale < 0) scale = 0;
+            M2C_FIELD(node, u16 *, FX_NODE_SCALE) = (u16)scale;
+            SetEffectNodeXY(node, (s32)(M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) << 8) >> 16, (s32)(M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) << 8) >> 16);
+            if (M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) >= M2C_FIELD(node, s32 *, FX_NODE_DURATION)) {
+                func_ov002_021e299c(node, 6);
+                ClearEffectNode(node);
+                M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = -1;
             }
         }
     }
-    func_ov002_021e1844(arg0);
+    func_ov002_021e1844(node);
 }
 
 /* Effect-node class transform callback (vtable +0x0C), run by DrawEffectNode just

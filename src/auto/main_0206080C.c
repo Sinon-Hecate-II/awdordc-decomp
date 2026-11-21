@@ -36,30 +36,35 @@ loop_3:
     goto loop_3;
 }
 
-void func_0206089c(void *arg0) {
+/* Start waiting detail queries while fewer than SB_LIST_QUERY_LIMIT are in flight,
+ * taking each one off the waiting queue and sending it. */
+void Qr2Query_SendWaitingQueries(void *list) {
     M2C_UNK QueryQueue_Pop(void *);
     M2C_UNK Qr2Query_SendQuery(void *, void *);
 
-    while ((s32) M2C_FIELD(arg0, s32 *, 0x10) < (s32) M2C_FIELD(arg0, s32 *, 4) && (s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0) {
-        Qr2Query_SendQuery(arg0, QueryQueue_Pop(arg0 + 0x14));
+    while ((s32) M2C_FIELD(list, s32 *, SB_LIST_PENDING) < (s32) M2C_FIELD(list, s32 *, SB_LIST_QUERY_LIMIT) && (s32) M2C_FIELD(list, s32 *, SB_LIST_WAITING_COUNT) > 0) {
+        Qr2Query_SendQuery(list, QueryQueue_Pop(list + SB_LIST_WAITING));
     }
 }
 
-void func_020608dc(void *arg0) {
+/* One tick of a pending QR2 query list: read whatever replies have arrived, give
+ * up on queries that have timed out, start waiting queries while there is room,
+ * and once nothing is pending report the query as complete. */
+void Qr2Query_Update(void *list) {
     M2C_UNK func_02060678(void *, s32);
 
-    if (M2C_FIELD(arg0, s32 *, 0x10) == 0) {
+    if (M2C_FIELD(list, s32 *, SB_LIST_PENDING) == 0) {
         return;
     }
-    func_02060678(arg0, 0);
-    Qr2Query_ExpireTimeouts(arg0);
-    if (M2C_FIELD(arg0, s32 *, 0x1C) > 0) {
-        func_0206089c(arg0);
+    func_02060678(list, 0);
+    Qr2Query_ExpireTimeouts(list);
+    if (M2C_FIELD(list, s32 *, SB_LIST_WAITING_COUNT) > 0) {
+        Qr2Query_SendWaitingQueries(list);
     }
-    if (M2C_FIELD(arg0, s32 *, 0x10) != 0) {
+    if (M2C_FIELD(list, s32 *, SB_LIST_PENDING) != 0) {
         return;
     }
-    M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, M2C_UNK), 0x44)(arg0, 2, 0, M2C_FIELD(arg0, M2C_UNK *, 0x48));
+    M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, M2C_UNK), SB_LIST_ON_QUERY_DONE)(list, SB_QUERY_STAGE_COMPLETE, 0, M2C_FIELD(list, M2C_UNK *, SB_LIST_QUERY_DATA));
 }
 
 void AddServerListField(void *arg0, u8 arg1) {
@@ -307,7 +312,11 @@ len=BoundedStringLength(p,n);if(len<0)return;value=p;p+=len;n-=len;gpiPlayerSetS
 p++;n--;
 for(pass=0;pass<2;pass++){
 if(n<2)return;
-CopyPair60E((u8 *)&packet.count,(u8 *)p);p+=2;start=p;n-=2;
+{ volatile u8 *dst=(volatile u8 *)&packet.count;
+const u8 *src=(const u8 *)p;
+u8 first=src[0],second=src[1];
+p+=2;dst[0]=first;dst[1]=second; }
+start=p;n-=2;
 packet.count=(u8)(packet.count>>8)|((packet.count<<8)&0xff00);
 fields=0;while(*p){len=BoundedStringLength(p,n);if(len<0)return;if(len>100)return;p+=len;fields++;n-=len;}
 p++;n--;
@@ -533,7 +542,7 @@ void SBServerListRemoveServer(s32 arg0){
 s32 SBServerListThink(s32 arg0) {
     s32 func_02063dac(s32);
 
-    func_020608dc((void *) arg0);
+    Qr2Query_Update((void *) arg0);
     return func_02063dac(arg0 + 0x4C);
 }
 

@@ -1,6 +1,7 @@
 /* 13 functions from 0x020BAC24 to 0x020BBBBC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;u8 unk8[4];u8 cargo1,cargo2; } UnitBac24;
 
 /* Per-frame update of the battle cursor and of the unit under it: the unit and the units it
@@ -111,7 +112,7 @@ void func_020bb110(void) {
     s32 func_020cd5d8(void);
     void CreateBattleEffectPending(u8, u8, u8, u8, u8, u8);
     void func_020c32bc(s32);
-    void func_0207ab24(s16, s16);
+    void CompletePropertyCapture(s16, s16);
     void ScheduleBattleEndCheck(void);
     u8 *map;
     BattleMapUnitHead *unit;
@@ -202,64 +203,64 @@ storeCapture:
                 M2C_FIELD(players + player * 0x8c, u16 *, 0x22) += value;
             }
         }
-        func_0207ab24(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
+        CompletePropertyCapture(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
                       M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
     }
     ScheduleBattleEndCheck();
 }
 
-void func_020bb458(void) {
+/* Load the cursor's unit into the transport visible on the cursor's tile: record
+ * the human action, append the unit to the transport's carry chain, mark the
+ * transport as carrying and the unit as loaded, refresh the movement-path
+ * preview, and play the load sound when the unit is infantry or a mech. */
+void LoadUnitIntoTransport(void) {
     s32 IsPlayerHuman(u16);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK ClearCursorUnitCapture(void);
     M2C_UNK RevealUnitsAroundCursor(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MarkPathThreatRange(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK PlaySoundAtTile(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
 
-    u8 *unit;
+    u8 *transport;
 
-    if (IsPlayerHuman(M2C_FIELD(*data_027e0058, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         AddRecordValue(0x13, 1);
     }
-    unit = (u8 *)*data_027e0058 + 0x59A4 +
-        ((u8 *)*data_027e0058)[
-            M2C_FIELD(*data_027e0058, s16 *, 0x52DE) * 0 +
-            M2C_FIELD(*data_027e0058, s16 *, 0x52DC) +
-            M2C_FIELD(*data_027e0058, u16 *, 0x3758 + M2C_FIELD(*data_027e0058, s16 *, 0x52DE) * 2)
-        ] * 0xE;
-    /* simplify: reset cy term 0 */
-    /* Actually the above *0 is wrong; fix below by recompute */
+    transport = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS +
+        ((u8 *)*gCurrentMap)[
+            M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X) +
+            M2C_FIELD((u16 *)*gCurrentMap + M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y), u16 *, MAP_ROW_OFFSETS)
+        ] * MAP_UNIT_STRIDE;
     ClearCursorUnitCapture();
-    if (unit[0xC] != 0) {
-        unit[0xD] = M2C_FIELD(*data_027e0058, u8 *, 0x52D4);
+    if (transport[MAP_UNIT_FIRST_CARRIED] != 0) {
+        transport[MAP_UNIT_NEXT_CARRIED] = M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID);
     } else {
-        unit[0xC] = M2C_FIELD(*data_027e0058, u8 *, 0x52D4);
+        transport[MAP_UNIT_FIRST_CARRIED] = M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID);
     }
-    M2C_FIELD(M2C_FIELD(*data_027e0058, u8 **, 0x52D0), u16 *, 0x4) =
-        (u16)(M2C_FIELD(M2C_FIELD(*data_027e0058, u8 **, 0x52D0), u16 *, 0x4) | 0x8);
+    M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_FLAGS) =
+        (u16)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT), u16 *, MAP_UNIT_FLAGS) | UNIT_FLAG_LOADED);
     {
-        u16 h = * (u16 *)(unit + 4);
-        * (u16 *)(unit + 4) = (u16)(h | 0x10);
+        u16 h = * (u16 *)(transport + MAP_UNIT_FLAGS);
+        * (u16 *)(transport + MAP_UNIT_FLAGS) = (u16)(h | UNIT_FLAG_CARRYING);
     }
     RevealUnitsAroundCursor(
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E0),
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*data_027e0058 + 0x5388));
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X),
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y),
+        (M2C_UNK)((u8 *)*gCurrentMap + MAP_CURSOR_PATH));
     MarkPathThreatRange(
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E0),
-        M2C_FIELD(*data_027e0058, s16 *, 0x52E2),
-        (M2C_UNK)((u8 *)*data_027e0058 + 0x5388));
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_X),
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_PATH_Y),
+        (M2C_UNK)((u8 *)*gCurrentMap + MAP_CURSOR_PATH));
     {
-        u8 *p = M2C_FIELD(*data_027e0058, u8 *, 0x52D0);
-        s32 k = (u32)p[0];
-        k = (k << 26) >> 26;
-        if (k != 1 && k != 2) return;
+        BattleMapUnitHead *selected = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
+        u32 k = selected->kind;
+        if (k != UNIT_KIND_INFANTRY && k != UNIT_KIND_MECH) return;
     }
     PlaySoundAtTile(
         0x7B,
-        M2C_FIELD(*data_027e0058, s16 *, 0x52DC),
-        M2C_FIELD(*data_027e0058, s16 *, 0x52DE));
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X),
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
 }
 
 void func_020bb5c0(void *arg0) {
@@ -276,54 +277,57 @@ void func_020bb5c0(void *arg0) {
     func_020c98d8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 1);
 }
 
-void func_020bb608(s32 arg0) {
+/* Drop the unit carried in `cargoSlot` (0 = first carried unit, 1 = second) from
+ * the transport under the cursor: mark it unloaded and stand it on the neighbour
+ * tile the cursor points at, unlink it from the transport's carry chain (promoting
+ * the second carried unit when the first was dropped) and clear the transport's
+ * carrying flag once no cargo is left. */
+void DropCarriedUnit(s32 cargoSlot) {
     M2C_UNK IsPlayerHuman(u16);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     extern s32 gMapCursorOptionValue;
-    extern s16 data_0212923c[];
+    extern s16 gMapCursorOptionStep[];
 
-    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         AddRecordValue(0x14, 1);
-        {
-            u8 *sel;
-            u8 kind;
-            u8 *u;
-            u16 f;
-            s32 idx;
-            u8 d;
-            sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-            kind = sel[arg0 + 0xC];
-            u = (u8 *)*gCurrentMap + 0x59A4 + kind * 0xE;
-            f = M2C_FIELD(u, u16 *, 0x4);
-            f = (u16)(f & ~0x8);
-            M2C_FIELD(u, u16 *, 0x4) = f;
-            f = M2C_FIELD(u, u16 *, 0x4);
-            f = (u16)(f & ~0x2);
-            M2C_FIELD(u, u16 *, 0x4) = f;
-            idx = gMapCursorOptionValue;
-            u[0x1] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, 0x52DC) + data_0212923c[idx * 2]);
-            u[0x2] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, 0x52DE) + data_0212923c[idx * 2 + 1]);
-            sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-            sel[arg0 + 0xC] = 0;
-            if (arg0 == 0) {
-                sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-                d = sel[0xD];
-                if (d != 0) {
-                    sel[0xC] = d;
-                    sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-                    sel[0xD] = 0;
-                }
+    }
+    {
+        u8 *transport;
+        u8 cargoId;
+        u8 *cargo;
+        u16 flags;
+        u8 nextCargoId;
+        transport = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+        cargoId = (transport + cargoSlot)[MAP_UNIT_FIRST_CARRIED];
+        cargo = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + cargoId * MAP_UNIT_STRIDE;
+        flags = M2C_FIELD(cargo, u16 *, MAP_UNIT_FLAGS);
+        flags = (u16)(flags & ~UNIT_FLAG_LOADED);
+        M2C_FIELD(cargo, u16 *, MAP_UNIT_FLAGS) = flags;
+        flags = M2C_FIELD(cargo, u16 *, MAP_UNIT_FLAGS);
+        flags = (u16)(flags & ~UNIT_FLAG_CARRIED);
+        M2C_FIELD(cargo, u16 *, MAP_UNIT_FLAGS) = flags;
+        cargo[MAP_UNIT_X] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X) + gMapCursorOptionStep[gMapCursorOptionValue * MAP_CURSOR_OPTION_STRIDE]);
+        cargo[MAP_UNIT_Y] = (s8)(M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y) + gMapCursorOptionStep[gMapCursorOptionValue * MAP_CURSOR_OPTION_STRIDE + 1]);
+        transport = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+            (transport + cargoSlot)[MAP_UNIT_FIRST_CARRIED] = 0;
+        if (cargoSlot == 0) {
+            transport = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+            nextCargoId = transport[MAP_UNIT_NEXT_CARRIED];
+            if (nextCargoId != 0) {
+                transport[MAP_UNIT_FIRST_CARRIED] = nextCargoId;
+                transport = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+                transport[MAP_UNIT_NEXT_CARRIED] = 0;
             }
         }
     }
     {
-        u8 *sel = M2C_FIELD(*gCurrentMap, u8 *, 0x52D0);
-        u8 kind = sel[0xC];
-        if (kind == 0) {
-            u16 h = M2C_FIELD(sel, u16 *, 0x4);
-            h = (u16)(h & ~0x10);
-            M2C_FIELD(sel, u16 *, 0x4) = h;
+        u8 *transport = M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT);
+        u8 cargoId = transport[MAP_UNIT_FIRST_CARRIED];
+        if (cargoId == 0) {
+        u16 flags = M2C_FIELD(transport, u16 *, MAP_UNIT_FLAGS);
+            flags = (u16)(flags & ~UNIT_FLAG_CARRYING);
+        M2C_FIELD(transport, u16 *, MAP_UNIT_FLAGS) = flags;
         }
     }
 }

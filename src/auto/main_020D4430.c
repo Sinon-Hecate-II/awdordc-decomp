@@ -175,7 +175,22 @@ void func_020d4a50(void) {
     CreateSpriteFromClass(&data_0212be0c, 7);
 }
 
-void func_020d4a68(void *arg0){extern void **gCurrentMap;void (*cb)(void);ResetBattleMap();ResumeSavedBattle(M2C_FIELD(arg0,s16*,0x34));func_020d1c38();func_020b1ae0();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);if(cb)cb();InitBattleMapPresentation();func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_020d93a8();}
+/* Start callback of the saved-battle loading sprite: reset the battle map, resume
+ * the save type stored in the sprite (+0x34), restore the view controller and
+ * rebuild the battle presentation, its UI and the current player's music. */
+void ResumeSavedBattleView(void *sprite) {
+extern void **gCurrentMap;
+void (*callback)(void);
+ResetBattleMap();
+ResumeSavedBattle(M2C_FIELD(sprite,s16*,0x34));
+func_020d1c38();
+func_020b1ae0();
+callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);
+if(callback)callback();
+InitBattleMapPresentation();
+func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
+func_020d93a8();
+}
 
 void func_020d4ac8(s16 arg0) {
     extern M2C_UNK data_0212bdcc;
@@ -240,8 +255,8 @@ void func_020d4ca4(void *);
 void func_020d4c28(void *arg0){G3X_Reset();func_02077c10();func_020d4ca4(arg0);}
 
 void func_020d4c44(void) {
-    M2C_UNK func_020d3b24();
-    func_020d3b24();
+    M2C_UNK StepBattleMap();
+    StepBattleMap();
 }
 
 void *func_020d4cd4(void);

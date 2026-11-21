@@ -9,7 +9,7 @@ extern u8 data_02101f0c[],gSpriteDesc8x8[],data_ov005_02220486[];
 extern s16 data_ov005_02220048[8],data_ov005_02220484,gSinCosTable[];
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 
-s32 func_ov005_022141cc(void) {
+s32 RecordsMenu_ScrollDown(void) {
 extern M2C_UNK gRecordsMenuState;
 s16 n=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98);
 s32 next=n+6;
@@ -18,7 +18,7 @@ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)++;
 PlaySoundEffect(0x10019);return 1;
 }
 
-s16 func_ov005_02214210(void) {
+s16 RecordsMenu_PageDown(void) {
     extern M2C_UNK gRecordsMenuState;
     s16 temp_r3;
     s32 temp_r1;
@@ -150,32 +150,32 @@ void RecordsMenu_AdvanceFadeRecord(s32 enabled) {
 }
 
 void func_ov005_02214b98(void) {
-extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
-extern M2C_UNK gRecordsMenuState,data_ov005_02220658,data_ov005_02220670,data_ov005_02220688,data_ov005_022206a0,data_ov005_022206b8;
-extern s16 gRecordMainBgId[];
-void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
-void CloseNarcArchive(void);void SetFileDirectory(void *);void func_ov005_022140e4(void);
-void *BuildMapBackgroundNarcName(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
-void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&g3DSpriteEngineMain; void *p=M2C_FIELD(&gRecordsMenuState,void **,8);s32 id;
+extern void *gCur3DSpriteEngine,*data_027e00c8;
+extern M2C_UNK data_ov005_02221304,data_ov005_02220658,data_ov005_02220670,data_ov005_02220688,data_ov005_022206a0,data_ov005_022206b8;
+extern s16 data_ov005_02220572[];
+void func_020814e4(void *);void func_02081590(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
+void func_02081528(void);void func_0200bc5c(void *);void func_ov005_022140e4(void);
+void *func_020ad460(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
+void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&data_027e00c8; void *p=M2C_FIELD(&data_ov005_02221304,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
-if(M2C_FIELD(p,s16 *,2)==-1 || (id=gRecordMainBgId[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
-OpenNarcArchive(&data_ov005_02220658);
-LoadNarcFileDecompressed(&data_ov005_02220670,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
+if(M2C_FIELD(p,s16 *,2)==-1 || (id=data_ov005_02220572[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
+func_020814e4(&data_ov005_02220658);
+func_02081590(&data_ov005_02220670,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
 func_020816a4(&data_ov005_02220688,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c),0,0);
-func_0208161c(&data_ov005_022206a0,3,0,0x200);CloseNarcArchive();
+func_0208161c(&data_ov005_022206a0,3,0,0x200);func_02081528();
 } else {
-SetFileDirectory(&data_ov005_022206b8);
-OpenNarcArchive(BuildMapBackgroundNarcName(id));
-LoadNarcFileDecompressed(func_020ad4a0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
-LoadNarcFileDecompressed(func_020ad4e0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
-func_0208161c(func_020ad520(id),3,0,0x200);CloseNarcArchive();
+func_0200bc5c(&data_ov005_022206b8);
+func_020814e4(func_020ad460(id));
+func_02081590(func_020ad4a0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
+func_02081590(func_020ad4e0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
+func_0208161c(func_020ad520(id),3,0,0x200);func_02081528();
 func_ov005_022140e4();
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
 gCur3DSpriteEngine=saved;
 }
 
-#pragma scheduling off
+#pragma schedule off
 void func_ov005_02214cdc(void) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
@@ -199,14 +199,14 @@ void func_ov005_02214cdc(void) {
     *(void *volatile *)&gCur3DSpriteEngine = engine;
     selected = M2C_FIELD(p, s16 *, 2);
     none = -1;
-    if (selected == none) {
+    if ((u16)selected == (u16)none) {
         OpenNarcArchive(&data_ov005_022206c0);
         LoadNarcFileDecompressed(&data_ov005_022206d8, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
         func_020816a4(&data_ov005_022206ec, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), 0, 0);
         func_0208161c(&data_ov005_02220700, 3, 0, 512);
         CloseNarcArchive();
     } else {
-        s32 id = gRecordSubBgId[M2C_FIELD(p + M2C_FIELD(p, s16 *, 2) * 2, s16 *, 6) * 2];
+        s32 id = gRecordSubBgId[M2C_FIELD(p + selected * 2, s16 *, 6) * 2];
         SetFileDirectory(&data_ov005_02220714);
         OpenNarcArchive(BuildMapBackgroundNarcName(id));
         LoadNarcFileDecompressed(func_020ad4a0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
@@ -218,7 +218,7 @@ void func_ov005_02214cdc(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
     gCur3DSpriteEngine = saved;
 }
-#pragma scheduling reset
+#pragma schedule on
 /* Rebuilds the records screen's shuffled list of available records: collects the
    indices of every available, enabled record, shuffles them, and, when firstRecord
    is not -1, moves that record to the front; then resets the list cursor. */

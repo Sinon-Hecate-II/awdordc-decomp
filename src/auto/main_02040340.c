@@ -73,8 +73,10 @@ s32 func_0204063c(s32 arg0, s32 arg1, u16 arg2) {
     M2C_FIELD((u8 *)p + (M2C_FIELD(q, u8 *, 0x14) + 1), u8 *, 0x2d0) = FindUnusedPlayerSlot();
     loc[0] = arg0;
     p = GetConnection();
-    loc[1] = M2C_FIELD((u8 *)p + (M2C_FIELD(GetConnection(), u8 *, 0x14) + 1), u8 *, 0x2d0);
-    for (i = loc[1] - loc[1] + 1; i <= (s32)M2C_FIELD(GetConnection(), u8 *, 0x14); i++) {
+    q = GetConnection();
+    i = 1;
+    loc[1] = M2C_FIELD((u8 *)p + (M2C_FIELD(q, u8 *, 0x14) + i), u8 *, 0x2d0);
+    for (i = 1; i <= (s32)M2C_FIELD(GetConnection(), u8 *, 0x14); i++) {
         p = GetConnection();
         q = GetConnection();
         r = SendConnectionCommand(7, M2C_FIELD((u8 *)p + (i << 2), s32 *, 0xf4), M2C_FIELD((u8 *)q + (i << 2), s32 *, 0x24), M2C_FIELD((u8 *)GetConnection() + (i << 1), u16 *, 0xa4), (s32)loc, 2);

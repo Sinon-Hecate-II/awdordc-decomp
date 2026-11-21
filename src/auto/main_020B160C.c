@@ -442,11 +442,14 @@ void func_020b2268(void) {
     } while (i < 0x55);
 }
 
-s32 AddSpriteSlot(s32 a,s32 b,void *c,s32 d) {
-s32 func_020b2304(s32,s32,void *,void *,s32);
+/* Find the first free sprite slot and initialise it from `desc` at (x, y) with
+ * id `id`.  Returns the new slot, or 0 when every slot is in use.  The scan
+ * stops one short of SPRITE_SLOT_COUNT: the last slot is left reserved. */
+s32 AddSpriteSlot(s32 x,s32 y,void *desc,s32 id) {
+s32 InitSpriteSlotFromDef(s32,s32,void *,void *,s32);
 extern u8 gSpriteSlots[];
-u8 *p=gSpriteSlots; s32 i=0;
-do { if(p[1]==0) return func_020b2304(a,b,gSpriteSlots+i*0x3c,c,d); i++;p+=0x3c; } while(i<0x54);
+u8 *slot=gSpriteSlots; s32 i=0;
+do { if(slot[SPRITE_SLOT_VISIBLE]==0) return InitSpriteSlotFromDef(x,y,gSpriteSlots+i*SPRITE_SLOT_STRIDE,desc,id); i++;slot+=SPRITE_SLOT_STRIDE; } while(i<0x54);
 return 0;
 }
 
@@ -455,7 +458,7 @@ return 0;
    palette at +8..+0xE, six extra dwords at +0x10..+0x24); arg4 is the slot's id.
    The slot is marked visible (byte 1) and gSpriteSlotManager records which screen it
    was created on.  Returns the slot. */
-s32 func_020b2304(s32 x, s32 y, void *slot, void *desc, s32 id) {
+s32 InitSpriteSlotFromDef(s32 x, s32 y, void *slot, void *desc, s32 id) {
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     extern void *gSpriteSlotManager;

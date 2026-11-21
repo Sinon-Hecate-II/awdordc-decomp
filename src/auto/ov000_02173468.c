@@ -164,7 +164,7 @@ Ov000InfoMenu *Ov000_InfoWindow_Init(Ov000InfoMenu *menu) {
     return menu;
 }
 
-void *func_ov000_02173f30(void *arg0) {
+void *Ov000_InfoWindow_FreePanels(void *arg0) {
     M2C_UNK MemFree(s32);
     M2C_UNK func_ov000_021725c8(s32);
     M2C_UNK func_ov000_0217519c(s32);

@@ -17,14 +17,14 @@ typedef struct { u8 unk_0 : 6; u8 unk_6 : 2; } Unk020cbc88;
    from the saved index and find the first one worth marking - a transport (kind 21/23)
    whose cargo has a cost or a value, or a unit a friendly supply unit can refill -
    highlight its tile and save the next index; at the end of the list retire the task. */
-void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 func_020cb6a4(void *);M2C_UNK Sprite_ResumeAnimation(void *);
+void MarkSupplyUnitTiles(void *state){extern void **gCurrentMap;s32 func_020c98b4(void *);s32 MarkTransportCargo(void *);s32 CanBeSupplied(void *);s32 RefillSuppliedUnit(void *);M2C_UNK Sprite_ResumeAnimation(void *);
 u16 i;void *p,*q;u32 k;
 if(func_020c98b4(state))return;
 for(i=M2C_FIELD(state,u16 *,0x50);i<51;i++){
 p=*gCurrentMap;q=(u8 *)p+0x59a4+(M2C_FIELD(p,u16 *,0x52a8)+i)*14;
 k=((UnkCBUnit *)q)->kind;if(!k)continue;if(M2C_FIELD(q,u16 *,4)&8)continue;
 if(k==23||k==21){if(MarkTransportCargo(q)){M2C_FIELD(state,u16 *,0x50)=i+1;break;}}
-if(CanBeSupplied(q)&&func_020cb6a4(q)){M2C_FIELD(state,u16 *,0x50)=i+1;break;}
+if(CanBeSupplied(q)&&RefillSuppliedUnit(q)){M2C_FIELD(state,u16 *,0x50)=i+1;break;}
 }if(i==51)Sprite_ResumeAnimation(state);
 }
 

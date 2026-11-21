@@ -224,8 +224,8 @@ void Write3DSpriteOamEntries(s32 start, s32 end) {
     if (same == 1) base = (void *)0x7000000; else base = (void *)0x7000400;
     limit = 0x80 - start;
     if (n > limit) n = limit;
-    dst = (u16 *)((u8 *)base + start * 8);
     i = 0;
+    dst = (u16 *)((u8 *)base + start * 8);
     if (n > 0) {
         a = 0; b = 1; c = 2;
         do {

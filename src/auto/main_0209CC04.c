@@ -631,22 +631,25 @@ void TextLayer_ShowMessage(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_FIELD(arg0, s32 *, 0x58) |= 0x1000;
 }
 
-s32 func_0209d858(void *arg0) {
+/* 3D-sprite state handler: create the sprite's text panel and draw the localized
+ * message named by the state's data at the row in its parameter, marking the
+ * panel hidden behind a configured screen window. */
+s32 SpriteState_ShowTextPanel(void *sprite) {
     void *func_0208b520(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
-    s32 id;
-    s16 value;
-    void *cmd;
-    void *obj;
-    cmd = M2C_FIELD(arg0, void **, 8);
-    id = M2C_FIELD(cmd, s32 *, 4);
-    value = M2C_FIELD(cmd, s16 *, 2);
-    if (IsMessageTextIdValid(id) != 0) {
-        obj = func_0208b520(arg0);
-        TextLayer_ShowMessage(obj, 0, id, value);
-        M2C_FIELD(obj, s32 *, 0x58) = M2C_FIELD(obj, s32 *, 0x58) | 0xC00;
+    s32 textId;
+    s16 row;
+    void *state;
+    void *panel;
+    state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (IsMessageTextIdValid(textId) != 0) {
+        panel = func_0208b520(sprite);
+        TextLayer_ShowMessage(panel, 0, textId, row);
+        M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) = M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) | (TEXT_LAYER_PANEL_WINDOW_MASK | TEXT_LAYER_PANEL_HIDDEN);
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 
@@ -672,60 +675,69 @@ s32 SpriteState_CreateHiddenTextPanel(void *sprite) {
     return 0;
 }
 
-s32 func_0209d91c(void *arg0) {
+/* 3D-sprite state handler: create the sprite's text panel and draw the localized
+ * message named by the state's data at the row in its parameter, in text mode 2
+ * with the panel's screen window enabled. */
+s32 SpriteState_ShowTextPanelMode2(void *sprite) {
     void *CreateTextLayer(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
-    s32 id;
-    s16 value;
-    void *cmd;
-    void *obj;
-    cmd = M2C_FIELD(arg0, void **, 8);
-    id = M2C_FIELD(cmd, s32 *, 4);
-    value = M2C_FIELD(cmd, s16 *, 2);
-    if (IsMessageTextIdValid(id) != 0) {
-        obj = CreateTextLayer(arg0);
-        TextLayer_ShowMessage(obj, 2, id, value);
-        M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
+    s32 textId;
+    s16 row;
+    void *state;
+    void *panel;
+    state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (IsMessageTextIdValid(textId) != 0) {
+        panel = CreateTextLayer(sprite);
+        TextLayer_ShowMessage(panel, 2, textId, row);
+        M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) |= TEXT_LAYER_PANEL_WINDOW_MASK;
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 
-s32 func_0209d97c(void *arg0) {
+/* 3D-sprite state handler: create the sprite's text panel and draw the localized
+ * message named by the state's data at the row in its parameter, in text mode 1
+ * with the panel's screen window enabled. */
+s32 SpriteState_ShowTextPanelMode1(void *sprite) {
     void *CreateTextLayer(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
-    s32 id;
-    s16 value;
-    void *cmd;
-    void *obj;
-    cmd = M2C_FIELD(arg0, void **, 8);
-    id = M2C_FIELD(cmd, s32 *, 4);
-    value = M2C_FIELD(cmd, s16 *, 2);
-    if (IsMessageTextIdValid(id) != 0) {
-        obj = CreateTextLayer(arg0);
-        TextLayer_ShowMessage(obj, 1, id, value);
-        M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
+    s32 textId;
+    s16 row;
+    void *state;
+    void *panel;
+    state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (IsMessageTextIdValid(textId) != 0) {
+        panel = CreateTextLayer(sprite);
+        TextLayer_ShowMessage(panel, 1, textId, row);
+        M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) |= TEXT_LAYER_PANEL_WINDOW_MASK;
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 
-s32 func_0209d9dc(void *arg0) {
+/* 3D-sprite state handler: create the sprite's text panel and draw the localized
+ * message named by the state's data at the row in its parameter, in text mode 3
+ * with the panel's screen window enabled. */
+s32 SpriteState_ShowTextPanelMode3(void *sprite) {
     void *CreateTextLayer(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
-    s32 id;
-    s16 value;
-    void *cmd;
-    void *obj;
-    cmd = M2C_FIELD(arg0, void **, 8);
-    id = M2C_FIELD(cmd, s32 *, 4);
-    value = M2C_FIELD(cmd, s16 *, 2);
-    if (IsMessageTextIdValid(id) != 0) {
-        obj = CreateTextLayer(arg0);
-        TextLayer_ShowMessage(obj, 3, id, value);
-        M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
+    s32 textId;
+    s16 row;
+    void *state;
+    void *panel;
+    state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (IsMessageTextIdValid(textId) != 0) {
+        panel = CreateTextLayer(sprite);
+        TextLayer_ShowMessage(panel, 3, textId, row);
+        M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) |= TEXT_LAYER_PANEL_WINDOW_MASK;
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 

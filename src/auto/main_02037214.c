@@ -40,10 +40,12 @@ s32 Base64EncodeUrl(void *arg0,u32 arg1,s8 *arg2,u32 arg3){
  MI_CpuFill8(buf,0,3);
  MI_CpuCopy8(src,buf,n);
  dst[0]=gBase64AlphabetUrl[buf[0]>>2];
- if(count<2)c=42;else {a=buf[0];b=buf[1];c=gBase64AlphabetUrl[((a<<4)&63)|(b>>4)];}dst[1]=c;
- if(count<3)c=42;else {a=buf[1];b=buf[2];c=gBase64AlphabetUrl[((a<<2)&63)|(b>>6)];}dst[2]=c;
+ if(count<2)c=42;else {b=buf[1]; a=buf[0]; c=gBase64AlphabetUrl[(b>>4)|((a<<4)&63)];}dst[1]=c;
+ if(count<3)c=42;else {b=buf[2]; a=buf[1]; c=gBase64AlphabetUrl[(b>>6)|((a<<2)&63)];}dst[2]=c;
  if(count<4)c=42;else {a=buf[2];c=gBase64AlphabetUrl[a&63];}
- src+=n;dst[3]=c;dst+=4;
+ dst[3]=c;
+ src+=n;
+ dst+=4;
  }
  return dst-arg2;
 }

@@ -318,14 +318,18 @@ s32 Arm7EnterSleepMode(s32 flags, s32 wakeWord) {
     return 0;
 }
 
-s32 Arm7SetPowerState(u32 arg0, s32 arg1, s32 arg2) {
+/* Send the ARM7 its power-state command (0x63): bits 16..23 of powerArg form the
+ * command's argument byte and its low 16 bits the argument word, with callback
+ * and user remembered for the reply.  Returns 1 when a command is already
+ * outstanding, 0 once it has been sent. */
+s32 Arm7SetPowerState(u32 powerArg, s32 callback, s32 user) {
     void Arm7SendCommand(s32);
     extern M2C_UNK gArm7CommandState;
     if (Arm7CommandAcquire() == 0) return 1;
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x1C) = arg1;
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x20) = arg2;
-    Arm7SendCommand((u8)(arg0 >> 16) | 0x02006300);
-    Arm7SendCommand(0x01010000 | (u16)arg0);
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_CALLBACK) = callback;
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_USER) = user;
+    Arm7SendCommand(ARM7_CMD_WORD(ARM7_CMD_SET_POWER, powerArg >> 16));
+    Arm7SendCommand(ARM7_CMD_ARG_WORD(powerArg));
     return 0;
 }
 
@@ -355,23 +359,27 @@ s32 func_0200e5c4(M2C_UNK arg0, M2C_UNK arg1) {
     return sp0;
 }
 
-s32 func_0200e5ec(s32 arg0, M2C_UNK arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
+/* Send the ARM7 a sound-amplifier parameter (command 0x64): the selector byte
+ * picks the parameter and the 16-bit value its new setting, with the reply
+ * callback and user remembered for when the ARM7 answers.  Returns 1 when a
+ * command is already outstanding, 0 once it has been sent. */
+s32 Arm7SetAmpParam(s32 param, M2C_UNK value, void (*callback)(s32, s32 *), s32 *user) {
     void Arm7SendCommand(s32);
     extern M2C_UNK gArm7CommandState;
     if (Arm7CommandAcquire() == 0) return 1;
-    M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), 0x1C) = arg2;
-    M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg3;
-    Arm7SendCommand((u8)arg0 | 0x02006400);
-    Arm7SendCommand(0x01010000 | (u16)arg1);
+    M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), ARM7_CMD_CALLBACK) = callback;
+    M2C_FIELD(&gArm7CommandState, s32 **, ARM7_CMD_USER) = user;
+    Arm7SendCommand(ARM7_CMD_WORD(ARM7_CMD_SET_AMP, param));
+    Arm7SendCommand(ARM7_CMD_ARG_WORD(value));
     return 0;
 }
 
 s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
     void func_0200e270(void);
-    s32 func_0200e5ec(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
+    s32 Arm7SetAmpParam(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
-    result = func_0200e5ec(arg0, arg1, func_0200e2b0, &sp0);
+    result = Arm7SetAmpParam(arg0, arg1, func_0200e2b0, &sp0);
     if (result != 0) return result;
     func_0200e270();
     return sp0;

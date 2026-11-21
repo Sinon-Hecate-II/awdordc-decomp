@@ -7,8 +7,8 @@ extern M2C_UNK gWebRequestState, data_020fca68;
 extern M2C_UNK gWebRequestState, data_020fca68;
 extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, data_020fcba0, sWebEmptySuffix, sWebRequestFormat;
 extern u8 data_020fca88[56];
-extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
-extern M2C_UNK data_020fcc4c,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
+extern M2C_UNK sDarrayAssertFn, sArrayMapBackwardsName, sArrayMapBackwardName;
+extern M2C_UNK sArrayReplaceAtName,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
 extern M2C_UNK sVectorIndexCheck, data_020fcc2c, sAssertArray, sArrayFreeName, sArrayNthName, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
@@ -304,8 +304,9 @@ s32 ParseServiceAvailabilityReply(s8 *packet, s32 length, void *source, u32 *sta
     return 0;
 }
 
+#pragma schedule off
 s32 func_0204837c(void) {
-s32 ghiSocketCanRecv(void);
+s32 ghiSocketCanRecv(s32);
 s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *);
 s32 ghiCloseSocket(s32);
 s32 GetTickCountMs(void);
@@ -313,12 +314,14 @@ s8 buffer[64];
 u8 address[8];
 s32 len;
 u32 flags;
+s32 socket;
 len=8;
-if(gDnsQueryState[1]==-1){
+socket=gDnsQueryState[1];
+if(socket==-1){
 gDnsQueryState[0]=1;
 return 1;
 }
-if(ghiSocketCanRecv() && ParseServiceAvailabilityReply(buffer,ghiRecvFrom(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
+if(ghiSocketCanRecv(socket) && ParseServiceAvailabilityReply(buffer,ghiRecvFrom(gDnsQueryState[1],buffer,64,0,address,&len),address,&flags)==0){
 ghiCloseSocket(gDnsQueryState[1]);
 if(flags&1)gDnsQueryState[0]=2;
 else if(flags&2)gDnsQueryState[0]=3;
@@ -337,7 +340,7 @@ gDnsQueryState[22]=n;}
 }
 return 0;
 }
-
+#pragma schedule reset
 void Vector_ReleaseItem(void *a,s32 b) {
 s32 Vector_GetItem(void *,s32);
 if(!M2C_FIELD(a,void (**)(),16))return;
@@ -469,7 +472,14 @@ if(b<0||b>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc2c,
 Vector_ReleaseItem(a,b);Vector_RemoveAt(a,b);
 }
 
-void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc4c,0xd3);Vector_ReleaseItem(a,c);Vector_SetItem(a,b,c);}
+/* GameSpy darray ArrayReplaceAt: replace the item at `index` with `item`,
+   asserting that the index is in range and releasing the old item first. */
+void Vector_ReplaceItem(s32 *array, s32 item, s32 index) {
+    s32 AssertFailed();
+    if (index < 0 || index >= array[0]) AssertFailed(&sVectorIndexCheck, &sDarrayFileName, &sArrayReplaceAtName, 0xd3);
+    Vector_ReleaseItem(array, index);
+    Vector_SetItem(array, item, index);
+}
 
 void Vector_Sort(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);
@@ -497,17 +507,19 @@ s32 Vector_Search(void *array, s32 item, s32 compare, s32 startIndex, s32 isSort
     return RuntimeIntDivMod(offset - M2C_FIELD(array, s32 *, 20), M2C_FIELD(array, s32 *, 8));
 }
 
-void ArrayForEach(s32 *a,void (*b)(s32,s32),s32 c) {
+/* GameSpy darray ArrayMapBackwards: calls fn(item, context) for every item of
+ * the array, from the last item down to the first. */
+void Vector_MapBackwards(s32 *array, void (*fn)(s32,s32), s32 context) {
 s32 AssertFailed();s32 i;
-if(!b)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc5c,0x104);
-for(i=a[0]-1;i>=0;i--)b(Vector_GetItem(a,i),c);
+if(!fn)AssertFailed(&sDarrayAssertFn,&sDarrayFileName,&sArrayMapBackwardsName,0x104);
+for(i=M2C_FIELD(array,s32 *,VECTOR_COUNT)-1;i>=0;i--)fn(Vector_GetItem(array,i),context);
 }
 
 /* GameSpy darray ArrayFind: walk the items from the last one down, returning
  * the first item for which the test callback returns 0, or 0 when none does. */
 s32 Vector_Find(s32 *array,s32 (*test)(s32,s32),s32 context) {
 s32 AssertFailed();s32 i,item;
-if(!test)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc84,0x121);
+if(!test)AssertFailed(&sDarrayAssertFn,&sDarrayFileName,&sArrayMapBackwardName,0x121);
 for(i=M2C_FIELD(array,s32 *,VECTOR_COUNT)-1;i>=0;i--){item=Vector_GetItem(array,i);if(!test(item,context))return item;}
 return 0;
 }

@@ -40,11 +40,11 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK DrawGlyphString(s32, s32, s32, M2C_UNK, s32, s32, s32);
     M2C_UNK LoadRankIconGraphics(s32, s32, M2C_UNK);
     M2C_UNK GetEarnedRecordTierTotal();
-    s32 func_ov000_0216a564();
-    s32 func_ov000_0216a76c();
-    s32 func_ov000_0216a77c();
-    M2C_UNK func_ov000_0216a7c4();
-    s32 func_ov000_0216a7d4();
+    s32 GetRecordRank();
+    s32 GetFavouriteRecordGroup();
+    s32 GetFavouriteGroupTextId();
+    M2C_UNK GetFavouriteRecordIndex();
+    s32 GetFavouriteRecordTextId();
     s32 GetTerrainTileData(u8);
     s32 GetTerrainPalette(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f1b38(M2C_UNK, M2C_UNK *);
@@ -168,14 +168,14 @@ void func_ov003_021e5118(void *arg0) {
     temp_r6_2 = data_027e01d8;
     DrawGlyphString(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
     GetEarnedRecordTierTotal();
-    LoadRankIconGraphics(func_ov000_0216a564(), 0x5F80, 9);
-    if ((func_ov000_0216a76c() != -2) && (func_ov000_0216a76c() != -1)) {
-        func_ov000_0216a76c();
-        temp_r0_2 = func_0209b26c(0xC, 7, 0, func_ov000_0216a77c(), 0x7000, 0x320000U >> 0x10);
+    LoadRankIconGraphics(GetRecordRank(), 0x5F80, 9);
+    if ((GetFavouriteRecordGroup() != -2) && (GetFavouriteRecordGroup() != -1)) {
+        GetFavouriteRecordGroup();
+        temp_r0_2 = func_0209b26c(0xC, 7, 0, GetFavouriteGroupTextId(), 0x7000, 0x320000U >> 0x10);
         temp_r4_5 = (M2C_FIELD(temp_r0_2, u16 *, 0x4C) - M2C_FIELD(temp_r0_2, u16 *, 0x4E)) + 2 + 0x32;
         temp_r6_3 = M2C_FIELD(temp_r0_2, u8 *, 0x4A) + 2;
-        func_ov000_0216a7c4();
-        func_0209b26c(temp_r6_3, 7, 0, func_ov000_0216a7d4(), 0x7000, (u32) temp_r4_5);
+        GetFavouriteRecordIndex();
+        func_0209b26c(temp_r6_3, 7, 0, GetFavouriteRecordTextId(), 0x7000, (u32) temp_r4_5);
     }
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 8);
     M2C_FIELD(data_027e01d8, u8 *, 0x46) = (u8) (M2C_FIELD(data_027e01d8, u8 *, 0x46) | 1);
@@ -236,54 +236,70 @@ func_ov003_021e5e24(a,scroll2,0);Ov003_DrawUnitCategoryGrid(a,scroll2,0);
 M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x3e)=-44-scroll2;M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x46)=0xffe9;gCur3DSpriteEngine=old;
 }
 
-void func_ov003_021e5b18(void *arg0) {
+#pragma cplusplus on
+/* Confirm input handler of the ov003 map-info scene: update its option sprite
+ * every frame and, while the option is enabled (or a B press arrives), play the
+ * confirm sound, step the sprite's press animation and invoke the scene's
+ * virtual confirm method. */
+extern "C" void Ov003_MapInfoConfirmInput(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MenuSpriteUpdate(void *);
     extern u16 *gKeyState;
     extern void *gTouchState;
-    register u8 temp_r4;
-    s32 var_r0;
-    u16 temp_r5;
-    unsigned int var_r3;
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r1;
-    void *temp_r2;
+    struct MapInfoScene {
+        virtual void Slot00();
+        virtual void Slot04();
+        virtual void Slot08();
+        virtual void Slot0C();
+        virtual void Slot10();
+        virtual void Slot14();
+        virtual void Slot18();
+        virtual void Slot1C();
+        virtual void Slot20();
+    };
+    register u8 touchActive;
+    s32 check;
+    u16 keys;
+    unsigned int optionEnabled;
+    void *sprite;
+    void *sprite2;
+    void *owner;
+    void *optionSprite;
 
-    temp_r4 = M2C_FIELD(gTouchState, u8 *, 0x12);
-    temp_r5 = *gKeyState;
+    touchActive = M2C_FIELD(gTouchState, u8 *, TOUCH_ACTIVE);
+    keys = *gKeyState;
     MenuSpriteUpdate(*M2C_FIELD(arg0, void ***, 0x48));
-    var_r3 = 1;
-    temp_r2 = *M2C_FIELD(arg0, void ***, 0x48);
-    temp_r1 = M2C_FIELD(temp_r2, void **, 0x64);
-    var_r0 = M2C_FIELD(temp_r1, s8 *, 0xB);
-    if ((var_r0 != 1) && ((var_r0 = (u32) ((u32) (M2C_FIELD(temp_r2, u8 *, 0x59) << 0x1B) >> 0x1F), (!var_r0)) || (var_r0 = M2C_FIELD(temp_r1, s8 *, 0xC), (var_r0 != 1)))) {
-        var_r3 = 0;
+    optionEnabled = 1;
+    optionSprite = *M2C_FIELD(arg0, void ***, 0x48);
+    owner = M2C_FIELD(optionSprite, void **, 0x64);
+    check = M2C_FIELD(owner, s8 *, 0xB);
+    if ((check != 1) && ((check = (u32) ((u32) (M2C_FIELD(optionSprite, u8 *, MENU_SPRITE_BASE) << 0x1B) >> 0x1F), (!check)) || (check = M2C_FIELD(owner, s8 *, 0xC), (check != 1)))) {
+        optionEnabled = 0;
     }
-    if (var_r3 & 0xFF) {
+    if (optionEnabled & 0xFF) {
         PlaySoundEffect(0x1000F);
-        temp_r0 = *M2C_FIELD(arg0, void ***, 0x48);
-        if (M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
-            M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-            M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
+        sprite = *M2C_FIELD(arg0, void ***, 0x48);
+        if (M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) >= 0) {
+            M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+            M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = 0xC;
         }
-        CallSlot20(arg0);
+        ((MapInfoScene *)arg0)->Slot20();
     }
-    if (temp_r4 != 0) {
+    if (touchActive != 0) {
         return;
     }
-    if (!(temp_r5 & 2)) {
+    if (!(keys & KEY_B)) {
         return;
     }
     PlaySoundEffect(0x1000F);
-    temp_r0_2 = *M2C_FIELD(arg0, void ***, 0x48);
-    if ((s32) M2C_FIELD(temp_r0_2, s8 *, 0x5A) >= 0) {
-        M2C_FIELD(temp_r0_2, s32 *, (unsigned)0x40) = (s32) ((M2C_FIELD(temp_r0_2, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0_2, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-        M2C_FIELD(temp_r0_2, s8 *, 0x5A) = 0xC;
+    sprite2 = *M2C_FIELD(arg0, void ***, 0x48);
+    if ((s32) M2C_FIELD(sprite2, s8 *, MENU_SPRITE_TIMER) >= 0) {
+        M2C_FIELD(sprite2, s32 *, (unsigned)MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite2, s32 *, MENU_SPRITE_FRAME) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(sprite2, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+        M2C_FIELD(sprite2, s8 *, MENU_SPRITE_TIMER) = 0xC;
     }
-    CallSlot20(arg0);
+    ((MapInfoScene *)arg0)->Slot20();
 }
-
+#pragma cplusplus off
 void func_ov003_021e5c68(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
     SetOv003SceneState(2);

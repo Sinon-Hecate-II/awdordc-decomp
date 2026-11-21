@@ -160,20 +160,21 @@ void LoadWallpaperGraphics(void *wallpaperSprite, s32 layerIndex, s32 paletteInd
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x10;
     *(u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 1 << layerIndex;
 }
-#pragma opt_common_subs reset
-M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
+#pragma optimization_level 3
+void func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
     extern M2C_UNK gWallpaperSpriteClass, gWallpaperSpriteVtbl;
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK GetWallpaperFileSet(s32);
     /* LoadWallpaperGraphics is defined above. */
-    void *saved = gCur3DSpriteEngine;
+    void **engine = &gCur3DSpriteEngine;
+    void *saved = *engine;
     void *p;
-    void *saved2;
 
-    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    *engine = g3DSpriteEngineMain;
     p = CreateSpriteFromClass(&gWallpaperSpriteClass, 1);
     if (p) {
+        void *saved2;
         M2C_FIELD(p, void **, 0) = &gWallpaperSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x34) = e;
         M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
@@ -197,6 +198,7 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     p = CreateSpriteFromClass(&gWallpaperSpriteClass, 1);
     if (p) {
+        void *saved2;
         M2C_FIELD(p, void **, 0) = &gWallpaperSpriteVtbl;
         M2C_FIELD(p, u8 *, 0x34) = e;
         M2C_FIELD(p, s32 *, 0x38) = GetWallpaperFileSet(e);
@@ -216,10 +218,9 @@ M2C_UNK func_020aed50(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d, s32 e) {
         gCur3DSpriteEngine = saved2;
         M2C_FIELD(p, s16 *, 0x4a) = 0;
     }
-    saved2 = (void *)saved2;
     gCur3DSpriteEngine = saved;
 }
-
+#pragma optimization_level reset
 /* Create the main-screen wallpaper sprite for wallpaper set `set` on sprite layer
  * `layer` with palette `palette`: take the set's two position offsets, then load
  * the set's graphics and palette into the sprite. */
@@ -303,8 +304,8 @@ s32 GetMapModeWallpaperSet(void) {
 }
 
 void func_020af144(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_020aed50(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020aed50(arg0, arg1, arg2, arg3, GetMapModeWallpaperSet());
+    s32 wallpaperSet = GetMapModeWallpaperSet();
+    func_020aed50(arg0, arg1, arg2, arg3, wallpaperSet);
 }
 
 void func_020af178(M2C_UNK arg0, M2C_UNK arg1) {

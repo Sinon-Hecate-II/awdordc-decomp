@@ -258,8 +258,8 @@ p=((InputGlobal *)&gOv001Input)->state;
 *(InputXY *)((u8 *)p+0x2c)=*(InputXY *)((u8 *)p+0x28);
 for(i=active;i<4;) {
 sp=(u8 *)((InputGlobal *)&gOv001Input)->state->samples;
-sp+=index*8;
-if(M2C_FIELD(sp,u16 *,4)==1) if(M2C_FIELD(sp,u16 *,6)==0) {
+sp+= (index << 3);
+if(M2C_FIELD(sp,u16 *,4)==1 && !M2C_FIELD(sp,u16 *,6)) {
 active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&gOv001Input)->state->field_0x28);break;
 }
 i++;index=HardwareDivideRemainder(index+4,5);

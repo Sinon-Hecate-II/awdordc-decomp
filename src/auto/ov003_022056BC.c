@@ -1,6 +1,7 @@
 /* 81 functions from 0x022056BC to 0x022066A8 (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ov003_menu.h"
+#include "ov003_scene.h"
 #include "battle_map.h"
 
 extern void **gCurrentMap;
@@ -37,7 +38,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_02210544;
-    extern M2C_UNK data_ov003_02210754;
+    extern M2C_UNK gSceneDisplayGroupVTable;
     extern M2C_UNK data_ov003_02210764;
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
@@ -124,7 +125,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     temp_r0_5 = MemAlloc(0x34);
     if (temp_r0_5 != NULL) {
         var_r3 = 0;
-        *temp_r0_5 = &data_ov003_02210754;
+        *temp_r0_5 = &gSceneDisplayGroupVTable;
         do {
             M2C_FIELD(temp_r0_5 + var_r3, s32 *, 0x14) = 0;
             M2C_FIELD(temp_r0_5 + var_r3, s32 *, 0x24) = 0;
@@ -191,7 +192,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_02210544;
-    extern M2C_UNK data_ov003_02210754;
+    extern M2C_UNK gSceneDisplayGroupVTable;
     extern M2C_UNK data_ov003_02210764;
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
@@ -273,7 +274,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
         temp_r0_5 = MemAlloc(0x34);
         if (temp_r0_5 != NULL) {
             var_r3 = 0;
-            *temp_r0_5 = &data_ov003_02210754;
+            *temp_r0_5 = &gSceneDisplayGroupVTable;
             do {
                 M2C_FIELD(temp_r0_5 + var_r3, s32 *, 0x14) = 0;
                 M2C_FIELD(temp_r0_5 + var_r3, s32 *, 0x24) = 0;
@@ -407,27 +408,31 @@ void *ShutdownOv003SceneObject(void *obj) {
     return obj;
 }
 
-M2C_UNK **func_ov003_02205e34(M2C_UNK **arg0) {
+/* Deleting destructor of the scene display's sprite group (the object at
+ * SCENE_DISPLAY_GROUP, class gSceneDisplayGroupVTable): restore its class
+ * vtable, delete its second and third runs of four sprites and free it.  The
+ * first run is owned elsewhere. */
+SceneDisplayGroup *DestroySceneDisplayGroup(SceneDisplayGroup *group) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020990c0();
     M2C_UNK MemFree();
-    extern M2C_UNK data_ov003_02210754;
-    register s32 var_r4;
+    extern M2C_UNK gSceneDisplayGroupVTable;
+    register s32 i;
 
-    *arg0 = &data_ov003_02210754;
+    group->vtable = &gSceneDisplayGroupVTable;
     func_020990c0();
-    var_r4 = 0;
+    i = 0;
     do {
-        if (arg0[var_r4 + 5] != 0) {
-            DeleteSpriteObject();
+        if (group->sprites[i + 4] != 0) {
+            DeleteSpriteObject(group->sprites[i + 4]);
         }
-        if (arg0[var_r4 + 9] != 0) {
-            DeleteSpriteObject();
+        if (group->sprites[i + 8] != 0) {
+            DeleteSpriteObject(group->sprites[i + 8]);
         }
-        var_r4 += 1;
-    } while (var_r4 < 4);
-    MemFree(arg0);
-    return arg0;
+        i += 1;
+    } while (i < 4);
+    MemFree(group);
+    return group;
 }
 
 /* Deleting destructor of the ov003 options object (vtable slot 1): restores the
@@ -542,13 +547,13 @@ void *DestroyOv003SceneObject(void *obj) {
     return obj;
 }
 #pragma opt_common_subs reset
-M2C_UNK **func_ov003_0220607c(M2C_UNK **arg0) {
+M2C_UNK **SceneDisplayGroup_Destructor(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK func_020990c0();
-    extern M2C_UNK data_ov003_02210754;
+    extern M2C_UNK gSceneDisplayGroupVTable;
     register s32 var_r4;
 
-    *arg0 = &data_ov003_02210754;
+    *arg0 = &gSceneDisplayGroupVTable;
     func_020990c0();
     var_r4 = 0;
     do {

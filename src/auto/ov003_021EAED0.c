@@ -21,7 +21,7 @@ u8 func_ov003_021ebc90(s32,s32);void func_ov003_021ebca4(s32,s32,s32);
 s32 func_ov003_021e73bc(s32,s32);s8 GetWaypointSlotCoIcon(void *,s32);
 void func_ov003_021e82f0(s32,s32,s32);u8 GetWaypointSlotIndex(s32);
 void func_ov003_021ebde8(void *,s8,s8);
-void func_ov003_021e9804(void *),func_ov003_021ebe60(void *);
+void func_ov003_021e9804(void *),UpdateWaypointSelectSprites(void *);
 s32 func_ov003_021e88a4(void *);u8 func_ov003_021e9cd0(s32);
 void HandleWaypointPanelCancel(void *,s32);s32 func_ov003_021e74a4(s32);
 void func_ov003_021ec780(s32,s32);void StepCounterDown(s32,s32,s32);
@@ -95,7 +95,7 @@ if((u32)(M2C_FIELD(arg0,u8 *,0x39)<<30)>>31)return;
 if(func_ov003_021e9c08(arg0) && M2C_FIELD(packet,s32 *,24)){
 if(!func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9804(M2C_FIELD(arg0,void **,0x58));
-func_ov003_021ebe60(M2C_FIELD(arg0,void **,0x64));
+UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
 if(func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0))){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));}
 if(M2C_FIELD(gTouchState,u8 *,0x12))return;
 if(!(*gKeyState&2))return;
@@ -103,7 +103,7 @@ func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWay
 }else if(func_ov003_021e6d28() && func_ov003_021e9c30(arg0))return;
 }
 touch=M2C_FIELD(gTouchState,u8 *,0x12);ready=1;keys=gKeyState[0];held=gKeyState[1];
-func_ov003_021ebe60(M2C_FIELD(arg0,void **,0x64));
+UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
 if(func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0))){
 func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
 }
@@ -366,16 +366,18 @@ void CloseWaypointPanel(void *panel) {
     SendWaypointPanelClosed(panel);
 }
 
-void func_ov003_021ebe60(void *arg0) {
+/* Animate every sprite of a waypoint player-select set: its two slide sprites and
+ * the sprite each of the four player columns holds in all four rows. */
+void UpdateWaypointSelectSprites(void *sprites) {
  M2C_UNK MenuSpriteUpdate(s32);
  u8 i;
- MenuSpriteUpdate(M2C_FIELD(arg0,s32 *,0));
- MenuSpriteUpdate(M2C_FIELD(arg0,s32 *,4));
+ MenuSpriteUpdate(M2C_FIELD(sprites,s32 *,WAYPOINT_SELECT_SLIDE));
+ MenuSpriteUpdate(M2C_FIELD(sprites,s32 *,WAYPOINT_SELECT_SLIDE_ALT));
  for(i=0;(u32)i<4U;i++) {
-  MenuSpriteUpdate(((s32 *)(arg0+8))[i]);
-  MenuSpriteUpdate(((s32 *)(arg0+0x18))[i]);
-  MenuSpriteUpdate(((s32 *)(arg0+0x28))[i]);
-  MenuSpriteUpdate(((s32 *)(arg0+0x38))[i]);
+  MenuSpriteUpdate(((s32 *)(sprites+WAYPOINT_SELECT_TILE))[i]);
+  MenuSpriteUpdate(((s32 *)(sprites+WAYPOINT_SELECT_TILE_ALT))[i]);
+  MenuSpriteUpdate(((s32 *)(sprites+WAYPOINT_SELECT_ROW_2))[i]);
+  MenuSpriteUpdate(((s32 *)(sprites+WAYPOINT_SELECT_ROW_3))[i]);
  }
 }
 

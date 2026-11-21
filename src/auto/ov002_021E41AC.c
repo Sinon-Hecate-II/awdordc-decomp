@@ -5,8 +5,8 @@
 
 
 /* Compares two entries (index temp_r0 vs its counterpart) and returns 0/1/2. */
-s32 func_ov002_021e41ac(void *entry, s32 flag) {
-    extern u8 data_ov002_021f3105[];
+s32 CompareUnitViewGauges(void *entry, s32 flag) {
+    extern u8 gVersusPlayerCoIndex[];
     extern u8 gVersusGaugeHp[];
     extern u8 gVersusPlayerStates[];
     u32 idx;
@@ -14,7 +14,7 @@ s32 func_ov002_021e41ac(void *entry, s32 flag) {
     s32 alt;
 
     idx = (u32)(((u8 *)entry)[3] << 0x1C) >> 0x1C;
-    if (data_ov002_021f3105[idx * 0x18] == 0) {
+    if (gVersusPlayerCoIndex[idx * 0x18] == 0) {
         return 0;
     }
     val0 = gVersusGaugeHp[idx * 0x18];

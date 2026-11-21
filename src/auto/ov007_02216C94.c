@@ -437,21 +437,21 @@ void func_ov007_02217a5c(void) {
     Map_ScatterWastelandDebris();
 }
 
-s8 *func_ov007_02217b64(s32 arg0) {
+s8 *MapEditor_GetPaletteEntries(s32 arg0) {
  extern s8 *data_ov007_0221f500[2];
  s8 *arr[2];
  arr[0]=data_ov007_0221f500[0];arr[1]=data_ov007_0221f500[1];
  return arr[arg0];
 }
 
-s32 func_ov007_02217b90(s32 a,s32 b){s8 *p=func_ov007_02217b64(a);s32 i=0;while(*p>=0){if(*p==b)return i;p+=5;i++;}return -1;}
+s32 func_ov007_02217b90(s32 a,s32 b){s8 *p=MapEditor_GetPaletteEntries(a);s32 i=0;while(*p>=0){if(*p==b)return i;p+=5;i++;}return -1;}
 
 s32 MapEditor_GetPaletteKind(s32 a,s32 b){
- s8 *func_ov007_02217b64(s32);
- return func_ov007_02217b64(a)[b*5];
+ s8 *MapEditor_GetPaletteEntries(s32);
+ return MapEditor_GetPaletteEntries(a)[b*5];
 }
 
-u8 MapEditor_GetPaletteOwner(s32 a,s32 b,s32 c){extern u8 data_ov007_0221fdf0;u8 *p=(u8 *)func_ov007_02217b64(a)+b*5;if(p[4]==1)return (&data_ov007_0221fdf0)[c];return 0;}
+u8 MapEditor_GetPaletteOwner(s32 a,s32 b,s32 c){extern u8 data_ov007_0221fdf0;u8 *p=(u8 *)MapEditor_GetPaletteEntries(a)+b*5;if(p[4]==1)return (&data_ov007_0221fdf0)[c];return 0;}
 
 s32 func_ov007_02217c1c(s32 arg0) {
     extern u8 data_ov007_0221fdf0;

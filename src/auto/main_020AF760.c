@@ -166,13 +166,15 @@ if(M2C_FIELD((u8 *)*(void **)((u8 *)&gEffectTable+(slot==0?1:0)*24)+*((u8 *)&gEf
 PlaySlotSound(slot,M2C_FIELD((u8 *)M2C_FIELD(*(void **)((u8 *)&gEffectTable+slot*24),void **,0x34)+variant*4,s32 *,0x14));
 }
 
-void func_020afb34(s32 a){extern M2C_UNK gEffectTable;switch(M2C_FIELD(*(void **)((u8 *)&gEffectTable+a*24),u8 *,0x3d)){case 2:PlaySlotSound(a,0x2000b);return;case 3:PlaySlotSound(a,0x2000c);return;default:PlaySlotSound(a,0x2000a);return;}}
+/* Plays the sound for effect slot `slot`'s current phase: phases 2 and 3 each
+ * have their own effect sound, every other phase gets the default one. */
+void PlaySlotPhaseSound(s32 slot){extern M2C_UNK gEffectTable;EffectSet *effect=M2C_FIELD(&gEffectTable,EffectSet **,slot*24);switch(effect->phase){case 2:PlaySlotSound(slot,0x2000b);return;case 3:PlaySlotSound(slot,0x2000c);return;default:PlaySlotSound(slot,0x2000a);return;}}
 
 void func_020afb94(s32 arg0) {
 extern M2C_UNK gEffectTable;
-void func_020afb34(s32);
+void PlaySlotPhaseSound(s32);
 s32 v=M2C_FIELD(M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*24),void **,0x34),s32 *,0x1c);
-if(v){PlaySlotSound(arg0,v);return;}func_020afb34(arg0);
+if(v){PlaySlotSound(arg0,v);return;}PlaySlotPhaseSound(arg0);
 }
 
 void func_020afbcc(void) {

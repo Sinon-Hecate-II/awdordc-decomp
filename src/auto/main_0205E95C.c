@@ -190,52 +190,55 @@ end:
     *dst = 0;
 }
 
-void Qr2CryptStateString(void *arg0, s32 arg1, void *arg2, s32 arg3) {
+/* The GameSpy QR2 stream cipher: build a 256-byte permutation from `keySeed`,
+ * then XOR `dataBuffer` with the keystream it generates (the same step encrypts
+ * and decrypts).  Used on the state string of a state reply, keyed by the
+ * connection's secret key. */
+void Qr2CryptStateString(void *keySeed, s32 keyLength, void *dataBuffer, s32 dataLength) {
     unsigned long long RuntimeIntDivMod(s32, s32);
-    u8 S[256];
+    u8 sbox[256];
     u8 *key;
     u8 *data;
     s32 keyLen;
     s32 dataLen;
     s16 i;
+    u8 keyIndex;
     u8 j;
-    u8 idx;
-    u8 k;
-    u8 t;
-    u8 *p;
+    s16 dataIndex;
+    u8 dataJ, dataK;
+    u8 streamIndex;
+    u8 *sboxPtr;
 
-    key = (u8 *)arg0;
-    data = (u8 *)arg2;
-    keyLen = arg1;
-    dataLen = arg3;
+    key = (u8 *)keySeed;
+    data = (u8 *)dataBuffer;
+    keyLen = keyLength;
+    dataLen = dataLength;
 
     for (i = 0; i < 256; i++) {
-        S[i] = (u8)i;
+        sbox[i] = (u8)i;
     }
 
-    idx = 0;
+    keyIndex = 0;
     j = 0;
-    p = S;
+    sboxPtr = sbox;
     for (i = 0; i < 256; i++) {
-        j = (u8)((j + *p + key[idx]) % 256);
-        idx = (u8)(RuntimeIntDivMod(idx + 1, keyLen) >> 32);
-        SwapBytes(p, S + j);
-        p++;
+        j = (u8)((*sboxPtr + key[keyIndex] + j) % 256);
+        keyIndex = (u8)(RuntimeIntDivMod(keyIndex + 1, keyLen) >> 32);
+        SwapBytes(sboxPtr, sbox + j);
+        sboxPtr++;
     }
 
-    if (dataLen <= 0) {
-        return;
-    }
-    j = 0;
-    k = 0;
-    for (i = 0; i < dataLen; ) {
-        j = (u8)((j + data[i] + 1) % 256);
-        k = (u8)((k + S[j]) % 256);
-        SwapBytes(S + j, S + k);
-        t = (u8)((S[j] + S[k]) % 256);
-        data[i] = (u8)(data[i] ^ S[t]);
-        i++;
-    }
+    dataJ = 0;
+    dataK = 0;
+    dataIndex = 0;
+    if (dataIndex < dataLen) do {
+        dataJ = (u8)((dataJ + data[dataIndex] + 1) % 256);
+        dataK = (u8)((sbox[dataJ] + dataK) % 256);
+        SwapBytes(sbox + dataJ, sbox + dataK);
+        streamIndex = (u8)((sbox[dataJ] + sbox[dataK]) % 256);
+        data[dataIndex] ^= sbox[streamIndex];
+        dataIndex++;
+    } while (dataIndex < dataLen);
 }
 
 void Qr2InitQuery(u8 *a,s8 b,ByteQuad *c){a[0]=b;*(ByteQuad *)(a+1)=*c;M2C_FIELD(a,s32 *,0x800)=5;}
@@ -452,56 +455,55 @@ void Qr2_AppendFinalQuery(M2C_UNK qr2, void *query) {
 }
 
 #pragma opt_strength_reduction off
-void Qr2_HandlePeerPacket(void *arg0, void *arg1, s32 arg2) {
-    volatile u8 key[6];
-    u32 buffer;
+/* Handle the body of a peer-relayed QR2 message (a QR2_TYPE_PEER packet after
+ * its 4-byte id): when it starts with the 6-byte connect-target magic followed by
+ * a network-order IPv4 address, deliver that address (converted to host order)
+ * to the state-changed callback; any other body goes to the receive-state
+ * callback. */
+void Qr2_HandlePeerPacket(void *qr2, void *packet, s32 bytes) {
+    u8 targetMagic[6] = {0xfd, 0xfc, 0x1e, 0x66, 0x6a, 0xb2};
+    u32 wireAddress;
     
-    volatile u8 *kp=key;
-    s32 match;
     s32 i;
-    u32 val;
-    u32 tmp;
-    M2C_UNK (*cb0)(M2C_UNK, M2C_UNK);
-    M2C_UNK (*cb4)(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 isConnectTarget;
+    u8 *magicByte=targetMagic;
+    u32 targetAddress;
+    u32 wireValue;
+    M2C_UNK (*cbTarget)(M2C_UNK, M2C_UNK);
+    M2C_UNK (*cbReceive)(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    key[0] = sQr2ConnectTargetMagic[0];
-    key[1] = sQr2ConnectTargetMagic[1];
-    key[2] = sQr2ConnectTargetMagic[2];
-    key[3] = sQr2ConnectTargetMagic[3];
-    key[4] = sQr2ConnectTargetMagic[4];
-    key[5] = sQr2ConnectTargetMagic[5];
 
-    match = 1;
-    if (arg2 >= 10) {
-        for (i = 0; i < 6; i++,kp++) {
-            if (*kp != ((u8 *)arg1)[i]) {
-                match = 0;
+    isConnectTarget = 1;
+    if (bytes >= 10) {
+        for (i = 0; i < 6; i++,magicByte++) {
+            if (*magicByte != ((u8 *)packet)[i]) {
+                isConnectTarget = 0;
                 break;
             }
         }
-    } else { match=0; }
+    } else { isConnectTarget=0; }
 
-    if (!match) goto no_match;
+    if (!isConnectTarget) goto not_connect_target;
 
-    { u8 *bp=(u8 *)&buffer; u8 a=((u8 *)arg1)[6], b=((u8 *)arg1)[7]; bp[0]=a; bp[1]=b; a=((u8 *)arg1)[8]; b=((u8 *)arg1)[9]; bp[3]=b; bp[2]=a; }
+    { u8 *wireBytes=(u8 *)&wireAddress; u8 a=((u8 *)packet)[6], b=((u8 *)packet)[7]; wireBytes[0]=a; wireBytes[1]=b; a=((u8 *)packet)[8]; b=((u8 *)packet)[9]; wireBytes[3]=b; wireBytes[2]=a; }
 
-    cb0 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK), 0xa0);
-    if (cb0 == NULL) return;
+    cbTarget = M2C_FIELD(qr2, M2C_UNK (**)(M2C_UNK, M2C_UNK), QR2_CB_STATE_CHANGED);
+    if (cbTarget == NULL) return;
     {
-    tmp = buffer;
-    val = ((tmp >> 24) & 0xFFU) |
-          ((tmp >> 8) & 0xFF00U) |
-          ((tmp << 8) & 0xFF0000U) |
-          ((tmp << 24) & 0xFF000000U);
+    wireValue = wireAddress;
+    targetAddress = ((wireValue >> 24) & 0xFFU) |
+          ((wireValue >> 8) & 0xFF00U) |
+          ((wireValue << 8) & 0xFF0000U) |
+          ((wireValue << 24) & 0xFF000000U);
 
-        cb0(val, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
+        cbTarget(targetAddress, M2C_FIELD(qr2, M2C_UNK *, QR2_CTX));
     }
     return;
 
-no_match:
-    cb4 = M2C_FIELD(arg0, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK), 0xa4);
-    if (cb4 != NULL) {
-        cb4(arg1, arg2, M2C_FIELD(arg0, M2C_UNK *, 0x10c));
+not_connect_target:
+    cbReceive = M2C_FIELD(qr2, M2C_UNK (**)(M2C_UNK, M2C_UNK, M2C_UNK), QR2_CB_RECEIVE_STATE);
+    if (cbReceive != NULL) {
+        cbReceive(packet, bytes, M2C_FIELD(qr2, M2C_UNK *, QR2_CTX));
     }
 }
 #pragma opt_strength_reduction reset

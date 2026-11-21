@@ -185,23 +185,26 @@ void PlanEnemyUnitAttackDestination(void) {
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
-s32 FindEnemyHqAttackPositionAlt(s16 *arg0) {
+/* Plan an attack on the enemy HQ: refresh the current unit's move range and
+ * threat map, pick a destination next to the enemy HQ, and confirm the unit can
+ * attack from there; on success writes the position to outPos and returns 1. */
+s32 FindEnemyHqAttackPositionAlt(s16 *outPos) {
     void GetAiUnitRange();
     void BuildAiUnitThreatRange();
     s32 SelectEnemyHqDestination(s16 *);
     s32 FindAttackPosition(s16 *);
-    s16 sp0[2];
+    s16 pos[2];
 
     GetAiUnitRange();
     BuildAiUnitThreatRange();
-    if (SelectEnemyHqDestination(sp0) == 0) {
+    if (SelectEnemyHqDestination(pos) == 0) {
         return 0;
     }
-    if (FindAttackPosition(sp0) == 0) {
+    if (FindAttackPosition(pos) == 0) {
         return 0;
     }
-    arg0[0] = sp0[0];
-    arg0[1] = sp0[1];
+    outPos[0] = pos[0];
+    outPos[1] = pos[1];
     return 1;
 }
 

@@ -433,14 +433,21 @@ s32 gpiProcessPeerState(M2C_UNK manager, void *peer) {
     return result;
 }
 
-M2C_UNK gpiFreePeer(void **a,void *b) {
- M2C_UNK Vector_Free(s32);
- func_020496cc(M2C_FIELD(b,s32 *,8),2);
- ghiCloseSocket(M2C_FIELD(b,s32 *,8));
- gpiFree(M2C_FIELD(b,void **,24));M2C_FIELD(b,void **,24)=NULL;
- gpiFree(M2C_FIELD(b,void **,40));M2C_FIELD(b,void **,40)=NULL;
- if(M2C_FIELD(b,s32 *,56)) {Vector_Free(M2C_FIELD(b,s32 *,56));M2C_FIELD(b,s32 *,56)=0;}
- gpiFree(b);
+/* Free a gpi peer: shut its socket down, release its receive and send buffers and
+   its callback vector, then the peer record itself. */
+M2C_UNK gpiFreePeer(void **manager, void *peer) {
+    M2C_UNK Vector_Free(s32);
+    func_020496cc(M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET), 2);
+    ghiCloseSocket(M2C_FIELD(peer, s32 *, GPI_PEER_SOCKET));
+    gpiFree(M2C_FIELD(peer, void **, GPI_PEER_RX_BUFFER));
+    M2C_FIELD(peer, void **, GPI_PEER_RX_BUFFER) = NULL;
+    gpiFree(M2C_FIELD(peer, void **, GPI_PEER_TX_BUFFER));
+    M2C_FIELD(peer, void **, GPI_PEER_TX_BUFFER) = NULL;
+    if (M2C_FIELD(peer, s32 *, GPI_PEER_CALLBACKS)) {
+        Vector_Free(M2C_FIELD(peer, s32 *, GPI_PEER_CALLBACKS));
+        M2C_FIELD(peer, s32 *, GPI_PEER_CALLBACKS) = 0;
+    }
+    gpiFree(peer);
 }
 
 /* Unlinks an entry from a manager's 0x434 singly-linked list and releases its children. */

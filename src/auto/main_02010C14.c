@@ -210,7 +210,8 @@ s32 func_02011060(s32 arg0, s32 arg1, s32 arg2) {
         ((s32 *)((u8 *)M2C_FIELD(&gWfcChannelState, void **, 4) + 0x10c))[i] = 0;
     }
     OS_InitMessageQueue(&gWfcFreeBufferQueue, &data_02130688, 10);
-    buf = (u8 *)&data_02130700;
+    p = &data_02130700;
+    buf = (u8 *)p;
     for (j = 0; j < 10; j++) {
         *(u16 *)(buf + j * 256) = 0x8000;
         DC_CleanRange(buf + j * 256, 2);
@@ -486,7 +487,7 @@ u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInte
 
 s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK DC_InvalidateRange();extern M2C_UNK gWfcChannelState;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&gWfcChannelState,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);DC_InvalidateRange(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
 
-s32 func_020119dc(s32 arg0) {
+s32 WFC_SetGeneralHandler(s32 arg0) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_CheckReady();

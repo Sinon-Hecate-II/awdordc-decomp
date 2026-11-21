@@ -12,7 +12,7 @@ typedef struct EngineBits3ff8 { u16 low:13; u16 shift:2; u16 high:1; } EngineBit
 void func_ov003_021e3500(void *arg0) {
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK RenderTextLayerMessage(void *, M2C_UNK, s32, s32);
-    M2C_UNK func_0208ae88(void *, M2C_UNK);
+    M2C_UNK SetPanelChoice(void *, M2C_UNK);
     void *CreateTextLayer(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020c9100(void *);
@@ -66,13 +66,13 @@ void func_ov003_021e3500(void *arg0) {
                 temp_r6 = CreateTextLayer(r5);
                 RenderTextLayerMessage(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000023);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
-                func_0208ae88(temp_r6, 0);
+                SetPanelChoice(temp_r6, 0);
                 break;
             case 1:
                 temp_r6 = CreateTextLayer(r5);
                 RenderTextLayerMessage(temp_r6, 3, func_ov003_021f1894() << 5, 0x47000024);
                 M2C_FIELD(temp_r6, s32 *, 0x58) = M2C_FIELD(temp_r6, s32 *, 0x58) | 0x400;
-                func_0208ae88(temp_r6, 1);
+                SetPanelChoice(temp_r6, 1);
                 break;
             }
             i = (u8)(i + 1);

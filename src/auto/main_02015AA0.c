@@ -480,12 +480,12 @@ s32 Mb_LinkExchangeReady(void) {
 }
 
 void func_020168a0(void) {
-    s32 func_020119dc(M2C_UNK *);
+    s32 WFC_SetGeneralHandler(M2C_UNK *);
     s32 WFC_SubmitConnectRequest(M2C_UNK *, u16, u16, u16, s32);
     M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
     extern M2C_UNK gMbParam;
     extern M2C_UNK func_02016934;
-    Mb_ReportPacketResult(0x80, func_020119dc(&func_02016934));
+    Mb_ReportPacketResult(0x80, WFC_SetGeneralHandler(&func_02016934));
     Mb_ReportPacketResult(0x1D, WFC_SubmitConnectRequest(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
 }
 

@@ -293,7 +293,7 @@ void Ov001_InitScreen(void) {
     s32 Ov001_GetScreenLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_LoadMessageArchive(M2C_UNK);
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     void Ov001_LoadCharBank(s32, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
@@ -312,7 +312,7 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK gOv001BottomObjMapPath;
     extern M2C_UNK gOv001TopScreenPath;
     extern M2C_UNK gOv001TopStep1Path;
-    extern M2C_UNK func_0200466c;
+    extern M2C_UNK GX_LoadBG1CharSub;
     extern M2C_UNK func_02004108;
     extern M2C_UNK func_02004314;
     extern M2C_UNK func_020041b8;
@@ -320,7 +320,7 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK func_020042bc;
     extern M2C_UNK GX_LoadOBJPltt;
-    extern M2C_UNK func_0200442c;
+    extern M2C_UNK GX_LoadBG1ScrSub;
     extern M2C_UNK func_ov001_02176808;
 
     /* Bring up the screen's subsystems. */
@@ -336,9 +336,9 @@ void Ov001_InitScreen(void) {
         gOv001MessageArchive = Ov001_LoadMessageArchive((M2C_UNK)gOv001MessageFilePaths[Ov001_GetLanguage()]);
     }
     /* Character banks: 1 = top screen, 0 = bottom screen. */
-    Ov001_LoadCharBank(1, Ov001_LocalizePath(&gOv001TopCharPath));
-    Ov001_LoadCharBank(0, Ov001_LocalizePath(&gOv001BottomCharPath));
-    Ov001_LoadAsset(&gOv001TopBgTilesPath, &func_0200466c);
+    Ov001_LoadCharBank(1, Ov001_GetLocalizedFileName(&gOv001TopCharPath));
+    Ov001_LoadCharBank(0, Ov001_GetLocalizedFileName(&gOv001BottomCharPath));
+    Ov001_LoadAsset(&gOv001TopBgTilesPath, &GX_LoadBG1CharSub);
     Ov001_LoadAsset(&gOv001TopBgMapPath, &func_02004108);
     Ov001_LoadAsset(&gOv001TopObjTilesPath, &func_02004314);
     Ov001_LoadAsset(&gOv001ObjMapPath, &func_020041b8);
@@ -349,10 +349,10 @@ void Ov001_InitScreen(void) {
     /* The top screen's layout depends on the screen variant. */
     switch (Ov001_GetScreenLayout()) {
     case 0:
-        Ov001_LoadAsset(&gOv001TopScreenPath, &func_0200442c);
+        Ov001_LoadAsset(&gOv001TopScreenPath, &GX_LoadBG1ScrSub);
         break;
     case 1:
-        Ov001_LoadAsset(&gOv001TopStep1Path, &func_0200442c);
+        Ov001_LoadAsset(&gOv001TopStep1Path, &GX_LoadBG1ScrSub);
         break;
     }
     /* Both screens' BG1 use priority 3; the main screen's is written twice to
@@ -428,7 +428,7 @@ void Ov001_OpenWifiMenu(void) {
 
 /* Loads the step-screen background NCL file and registers its rendering callbacks, then selects VRAM banks 3 for the displays. */
 void Ov001_LoadWifiMenuBackground(void) {
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gOv001WifiMenuLayoutPath;
@@ -444,7 +444,7 @@ void Ov001_LoadWifiMenuBackground(void) {
     Ov001_LoadAsset(&gOv001WifiMenuBgPalettePath, &GX_LoadBGPltt);
     Ov001_LoadAsset(&gOv001WifiMenuBgMapPath, &GX_LoadBG2Scr);
     Ov001_LoadAsset(&gOv001WifiMenuBgTilesPath, &GX_LoadBG2Char);
-    M2C_FIELD(&gOv001WifiMenuSelection, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&text), 0, 4);
+    M2C_FIELD(&gOv001WifiMenuSelection, s32 *, 4) = Ov001_LoadFile(Ov001_GetLocalizedFileName(&text), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;

@@ -252,7 +252,7 @@ s32 IsDirectUnitRatioOk(void) {
     return 1;
 }
 
-s32 func_ov000_021a4704(void) {
+s32 IsKind12UnitRatioOk(void) {
     s32 func_ov000_021a43e8(s32);
     s32 GetUnitAttackClass(s32);
     extern void **gCurrentMap;
@@ -313,13 +313,17 @@ s32 func_ov000_021a4704(void) {
     return 1;
 }
 
-s32 func_ov000_021a484c(s32 arg0, s32 arg1) {
+/* Army-composition gate for the AI's unit-kind chooser: report whether a unit of
+ * `kind` already has enough of its category in the current army (1 = skip it).
+ * The indirect (10), submarine (26), 11 and 12 kinds each have their own ratio
+ * rule; every other kind reports satisfied. */
+s32 IsUnitKindRatioSatisfied(s32 mode, s32 kind) {
     s32 IsIndirectUnitRatioOk();
     s32 IsSubmarineRatioOk();
     s32 IsDirectUnitRatioOk();
-    s32 func_ov000_021a4704();
+    s32 IsKind12UnitRatioOk();
 
-    switch (arg1) {
+    switch (kind) {
     case 10:
         return IsIndirectUnitRatioOk();
     case 26:
@@ -327,12 +331,12 @@ s32 func_ov000_021a484c(s32 arg0, s32 arg1) {
     case 11:
         return IsDirectUnitRatioOk();
     case 12:
-        return func_ov000_021a4704();
+        return IsKind12UnitRatioOk();
     }
     return 1;
 }
 
-u8 func_ov000_021a48ac(s32 arg0) {
+u8 IsGroupIndirectUnitRatioOk(s32 arg0) {
     extern u8 gAiGroupDirectUnits[];
     extern u8 gAiGroupIndirectUnits[];
     u8 var_r0;
@@ -345,7 +349,7 @@ u8 func_ov000_021a48ac(s32 arg0) {
     return var_r0;
 }
 
-u8 func_ov000_021a48dc(s32 arg0) {
+u8 IsGroupSubmarineRatioOk(s32 arg0) {
     extern u8 gAiGroupDirectUnits[];
     extern u8 gAiGroupIndirectUnits[];
     s32 temp_r0;
@@ -362,7 +366,7 @@ u8 func_ov000_021a48dc(s32 arg0) {
     return var_r0;
 }
 
-s32 func_ov000_021a4908(s32 arg0) {
+s32 IsGroupDirectUnitRatioOk(s32 arg0) {
     extern u8 gAiGroupDirectUnits[];
     extern u8 gAiGroupIndirectUnits[];
     extern u8 gAiGroupKind26Units[];
@@ -405,21 +409,24 @@ s32 func_ov000_021a4944(s32 arg0) {
     return 1;
 }
 #pragma opt_propagation reset
-s32 func_ov000_021a4980(s32 arg0, s32 arg1) {
-    u8 func_ov000_021a48ac(s32);
-    u8 func_ov000_021a48dc(s32);
-    s32 func_ov000_021a4908(s32);
+/* Check whether AI target group `groupIndex` may build `unitKind` given the
+ * direct and indirect units already committed to that group: kinds 10, 26, 11
+ * and 12 each have their own composition rule, every other kind is allowed. */
+s32 IsGroupUnitRatioOk(s32 groupIndex, s32 unitKind) {
+    u8 IsGroupIndirectUnitRatioOk(s32);
+    u8 IsGroupSubmarineRatioOk(s32);
+    s32 IsGroupDirectUnitRatioOk(s32);
     s32 func_ov000_021a4944(s32);
 
-    switch (arg1) {
+    switch (unitKind) {
     case 10:
-        return func_ov000_021a48ac(arg0);
+        return IsGroupIndirectUnitRatioOk(groupIndex);
     case 26:
-        return func_ov000_021a48dc(arg0);
+        return IsGroupSubmarineRatioOk(groupIndex);
     case 11:
-        return func_ov000_021a4908(arg0);
+        return IsGroupDirectUnitRatioOk(groupIndex);
     case 12:
-        return func_ov000_021a4944(arg0);
+        return func_ov000_021a4944(groupIndex);
     }
     return 1;
 }

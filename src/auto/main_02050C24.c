@@ -230,7 +230,7 @@ s32 func_020511dc(void *a, void *b) {
     u32 StringLength(void *);
     M2C_UNK Md5Hex(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK StringFormat(M2C_UNK, M2C_UNK, ...);
-    M2C_UNK func_02055c68(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
+    M2C_UNK gpiFindBuddyByNickEmail(void **, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK gpiAppendStringField(void **, void *, M2C_UNK *);
     M2C_UNK gpiAppendIntField(void **, void *, M2C_UNK);
     extern M2C_UNK data_020fe434, data_020fe43c, data_020fe44c, data_020fe480, data_020fe488, data_020fe494, gGsKeyUniqueNick, data_020fe4b0, data_020fe4b8, data_020fe4bc, data_020fe4c8, data_020fe4d4, data_020fe4e0, data_020fe4ec, gGsKeyProductId, gGsKeyGameName, gGsKeyNamespaceId, gGsKeyId1, gGsKeyFinal, gServiceNameBuffer;
@@ -260,7 +260,7 @@ s32 func_020511dc(void *a, void *b) {
     length = StringLength(response);
     Md5Hex((M2C_UNK)response, length, (M2C_UNK)digest);
     if (*((M2C_UNK *)((char *)session + 0x100)) != 0) {
-        func_02055c68(pa, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144), (M2C_UNK *)&sp10);
+        gpiFindBuddyByNickEmail(pa, (M2C_UNK)((char *)session + 0x110), (M2C_UNK)((char *)session + 0x144), (M2C_UNK *)&sp10);
         if (sp10 != 0) {
             M2C_FIELD(session, M2C_UNK *, 0x19c) = M2C_FIELD(sp10, M2C_UNK *, 0x4);
             M2C_FIELD(session, M2C_UNK *, 0x1a0) = M2C_FIELD(sp10, M2C_UNK *, 0x0);

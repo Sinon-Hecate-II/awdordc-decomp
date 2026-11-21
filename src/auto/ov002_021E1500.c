@@ -114,23 +114,26 @@ void func_ov002_021e16bc(void *arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(arg0, s8 *, 0x47) = arg2;
 }
 
-void func_ov002_021e16dc(void *a,s32 b,s16 c,s8 d,u8 e) {
-    s32 p;
-    M2C_FIELD(a,s32 *,4)=b;
-    M2C_FIELD(a,s16 *,0x38)=c;
-    M2C_FIELD(a,s8 *,0x3a)=d;
-    M2C_FIELD(a,s32 *,0x10)=b+M2C_FIELD(M2C_FIELD(a,s32 *,4),s32 *,0);
-    p=b+M2C_FIELD(M2C_FIELD(a,s32 *,4)+e*4,s32 *,4);
-    M2C_FIELD(a,s32 *,0x18)=p;
-    M2C_FIELD(a,s32 *,0x1c)=p;
-    M2C_FIELD(a,u8 *,0x46)=e;
-    M2C_FIELD(a,s32 *,0x30)=0;
-    M2C_FIELD(a,s32 *,0x34)=0;
-    M2C_FIELD(a,u8 *,0x4d)=0;
-    M2C_FIELD(a,s32 *,0x14)=0;
-    M2C_FIELD(a,u8 *,0x4f)=0;
-    M2C_FIELD(a,u8 *,0x51)=0;
-    M2C_FIELD(a,u8 *,0x52)=0;
+/* Point an effect node at a resource and one of its scripts: store the resource
+ * id, shape and kind, the resource's frame-offset table and the selected script's
+ * start/next command, and clear the node's timers, frame data and motion flags. */
+void SetEffectNodeResourceCore(void *node,s32 resource,s16 shape,s8 kind,u8 script) {
+    s32 command;
+    M2C_FIELD(node,s32 *,FX_NODE_ID)=resource;
+    M2C_FIELD(node,s16 *,FX_NODE_SHAPE)=shape;
+    M2C_FIELD(node,s8 *,FX_NODE_KIND)=kind;
+    M2C_FIELD(node,s32 *,FX_NODE_FRAME_OFFSETS)=resource+M2C_FIELD(M2C_FIELD(node,s32 *,FX_NODE_ID),s32 *,0);
+    command=resource+M2C_FIELD(M2C_FIELD(node,s32 *,FX_NODE_ID)+script*4,s32 *,4);
+    M2C_FIELD(node,s32 *,FX_NODE_SCRIPT_START)=command;
+    M2C_FIELD(node,s32 *,FX_NODE_SCRIPT_NEXT)=command;
+    M2C_FIELD(node,u8 *,FX_NODE_SCRIPT_INDEX)=script;
+    M2C_FIELD(node,s32 *,FX_NODE_FRAME_TICKS)=0;
+    M2C_FIELD(node,s32 *,FX_NODE_SCRIPT_TICKS)=0;
+    M2C_FIELD(node,u8 *,FX_NODE_POLYGON_SLOT)=0;
+    M2C_FIELD(node,s32 *,FX_NODE_FRAME_DATA)=0;
+    M2C_FIELD(node,u8 *,0x4F)=0;
+    M2C_FIELD(node,u8 *,FX_NODE_FLAG_51)=0;
+    M2C_FIELD(node,u8 *,FX_NODE_FLASH_CHILD)=0;
 }
 
 void func_ov002_021e173c(void *arg0, s8 arg1) {
@@ -156,7 +159,7 @@ void ClearEffectNode(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
 
-void func_ov002_021e1790(void *arg0, s16 arg1, s16 arg2) {
+void SetEffectNodeXY(void *arg0, s16 arg1, s16 arg2) {
     M2C_FIELD(arg0, s16 *, 0x3C) = arg1;
     M2C_FIELD(arg0, s16 *, 0x3E) = arg2;
 }
@@ -208,7 +211,7 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK Ov002_ClearEffectNodesWithScript(void *, M2C_UNK);
     M2C_UNK PlaySlotVolumeSound(M2C_UNK);
     M2C_UNK PlaySlotVariantSound(M2C_UNK);
-    M2C_UNK func_020afb34(M2C_UNK);
+    M2C_UNK PlaySlotPhaseSound(M2C_UNK);
     M2C_UNK func_020afb94(M2C_UNK);
     if (M2C_FIELD(arg0, void **, 4) == NULL) goto recurse;
     M2C_FIELD(arg0, s16 *, 0x3c) = (s16)(M2C_FIELD(arg0, s16 *, 0x3c) + M2C_FIELD(arg0, s8 *, 0x44));
@@ -320,7 +323,7 @@ void func_ov002_021e1844(void *arg0) {
             PlaySlotVariantSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 35:
-            func_020afb34(M2C_FIELD(arg0, u8 *, 0x53));
+            PlaySlotPhaseSound(M2C_FIELD(arg0, u8 *, 0x53));
             break;
         case 36:
             func_020afb94(M2C_FIELD(arg0, u8 *, 0x53));
@@ -591,11 +594,12 @@ next_child:
     }
     SetGxPolygonAttr(0, 0x1F);
 }
-#pragma pop
+#pragma opt_common_subs off
 void func_ov002_021e2204(void *arg0) {
     M2C_UNK SetGxTextureParams(M2C_UNK, u16, u16, s32, s32);
     M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);
     void func_ov002_021e1cac(void *, M2C_UNK, M2C_UNK, void *, void *, u8, M2C_UNK, M2C_UNK);
+    void *var_r5;
     u8 *p20;
     u8 temp_r5;
     u16 temp_r6_2;
@@ -605,8 +609,7 @@ void func_ov002_021e2204(void *arg0) {
     u32 temp_r9;
     u8 temp_r0;
     u8 temp_r6;
-    u8 var_r2;
-    void *var_r5;
+    s32 var_r2;
 
     if (M2C_FIELD(arg0, void **, 0x14) == NULL) {
         return;
@@ -621,18 +624,16 @@ void func_ov002_021e2204(void *arg0) {
         do {
             temp_r0 = M2C_FIELD(var_r5, u8 *, 6);
             temp_r6 = M2C_FIELD(var_r5, u8 *, 7);
-            temp_r6_2 = ((u32) (temp_r0 << 0x1C) >> 0x1C) * 8;
             temp_r7 = ((u32) (temp_r0 << 0x18) >> 0x1C) * 8;
             temp_r8 = (u32) (temp_r6 << 0x1B) >> 0x1F;
             temp_r9 = (u32) (temp_r6 << 0x1A) >> 0x1F;
-            if (M2C_FIELD(arg0, u8 *, 0x48) != 0) {
-                if (M2C_FIELD(arg0, u8 *, 0x49) == 0) {
-                    var_r2 = M2C_FIELD(arg0, u8 *, 0x3B);
-                } else {
-                    var_r2 = M2C_FIELD(arg0, u8 *, 0x3A);
-                }
-                SetGxTextureParams(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
+            temp_r6_2 = ((u32) (temp_r0 << 0x1C) >> 0x1C) * 8;
+            if (M2C_FIELD(arg0, u8 *, 0x48) && !M2C_FIELD(arg0, u8 *, 0x49)) {
+                var_r2 = M2C_FIELD(arg0, u8 *, 0x3B);
+            } else {
+                var_r2 = M2C_FIELD(arg0, u8 *, 0x3A);
             }
+            SetGxTextureParams(3, temp_r6_2, temp_r7, M2C_FIELD(arg0, u16 *, 0x38) + var_r3, M2C_FIELD(arg0, u8 *, 0x51) + (var_r2 + ((u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x1C) >> 0x1C)));
             DrawTexturedQuadUVFlip(M2C_FIELD(var_r5, s16 *, 0), M2C_FIELD(var_r5, s16 *, 2), (u32) (M2C_FIELD(var_r5, u8 *, 7) << 0x18) >> 0x1E, temp_r6_2, (s32) temp_r7, 0, 0, (s32) temp_r6_2, (s32) temp_r7, temp_r8, temp_r9);
             var_r5 = (u8 *) var_r5 + 8;
             var_r3 = M2C_FIELD(var_r5, u16 *, 4);
@@ -640,7 +641,7 @@ void func_ov002_021e2204(void *arg0) {
     }
     *(s32 *)0x04000448 = 1;
 }
-
+#pragma opt_common_subs reset
 void func_ov002_021e2364(void *arg0) {
     M2C_UNK SetGxTextureParams(M2C_UNK, u16, u16, s32, s32);
     M2C_UNK DrawTexturedQuadUVFlip(s16, s16, u32, u16, s32, s32, s32, s32, s32, u32, u32);

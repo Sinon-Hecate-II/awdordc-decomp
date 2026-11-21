@@ -11,6 +11,10 @@
 #define NET_OVERLAY_LINK   1 /* ov009 single-card (Download Play) link */
 #define NET_OVERLAY_ONLINE 2 /* ov010 online (Nintendo WFC) session */
 
+/* Resource indices of the two network overlays in gResourceLoaded/gResourceFileIds. */
+#define NET_RESOURCE_LINK   9  /* ov009 link overlay */
+#define NET_RESOURCE_ONLINE 10 /* ov010 online overlay */
+
 /* Event record passed to the registered link task callback. */
 #define LINK_EVENT_STATE   0x02 /* u16 phase/status reported by the task */
 #define LINK_EVENT_COMMAND 0x08 /* u16 command reported by the task */

@@ -247,9 +247,9 @@ s32 func_020036b8(void) {
     return (((s32) (*(u16 *)0x04001008 & 0x1F00) >> 8) << 0xB) + 0x06200000;
 }
 
-s32 func_020036d8(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x38000000)>>27;b=(b&0x1f00)>>8;return (a<<16)+0x6000000+(b<<11);}
+s32 GX_GetBG1ScrPtr(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x38000000)>>27;b=(b&0x1f00)>>8;return (a<<16)+0x6000000+(b<<11);}
 
-s32 func_0200370c(void) {
+s32 GX_GetBG1ScrPtrSub(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x1F00) >> 8) << 0xB) + 0x06200000;
 }
 
@@ -277,21 +277,21 @@ u32 index=(b&BGCNT_SCR_BASE_MASK)>>BGCNT_SCR_BASE_SHIFT;
 s32 r;
 switch(mode){case GX_MODE_0:case GX_MODE_1:case GX_MODE_2:return base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);case GX_MODE_3:case GX_MODE_4:case GX_MODE_5:if(b&BGCNT_BITMAP_DIRECT)r=(index<<BG_BITMAP_BLOCK_SHIFT)+GX_MAIN_VRAM_BASE;else r=base+GX_MAIN_VRAM_BASE+(index<<BG_SCR_BLOCK_SHIFT);return r;case GX_MODE_6:return 0;default:return 0;}}
 
-s32 func_02003834(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
+s32 GX_GetBG0CharPtr(void){s32 b=*(volatile u16 *)0x4000008;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
 
-s32 func_02003868(void) {
+s32 GX_GetBG0CharPtrSub(void) {
     return (((s32) (*(u16 *)0x04001008 & 0x3C) >> 2) << 0xE) + 0x06200000;
 }
 
-s32 func_02003888(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
+s32 GX_GetBG1CharPtr(void){s32 b=*(volatile u16 *)0x400000a;u32 a=(*(volatile u32 *)0x4000000&0x7000000)>>24;b=(b&0x3c)>>2;return (a<<16)+0x6000000+(b<<14);}
 
-s32 func_020038bc(void) {
+s32 GX_GetBG1CharPtrSub(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x3C) >> 2) << 0xE) + 0x06200000;
 }
 
-s32 func_020038dc(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000c;if(mode<5 || !(b&0x80)){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
+s32 GX_GetBG2CharPtr(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000c;if(mode<5 || !(b&0x80)){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
 
-s32 func_0200392c(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000e;if(mode<3 || (mode<6 && !(b&0x80))){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
+s32 GX_GetBG3CharPtr(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000e;if(mode<3 || (mode<6 && !(b&0x80))){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
 
 void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);

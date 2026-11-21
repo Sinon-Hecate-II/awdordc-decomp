@@ -413,7 +413,7 @@ void func_ov001_0218ace0(M2C_UNK arg0) {
     Ov001_QueuePush((void *)M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x670), arg0);
 }
 
-#pragma opt_propagation off
+#pragma optimization_level 3
 void *CreateTextPanel(s32 arg0,s32 arg1) {
 void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 func_02003684(void);
@@ -423,7 +423,7 @@ extern M2C_UNK gOv001TextContext; extern u8 data_ov001_0218fd18[],data_ov001_021
 void *base;
 void *p=(u8*)(void*)gOv001TextContext+0x610+arg0*0x30;
 u32 a=*(u16*)(data_ov001_0218fd1a+arg0*4);
-u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero;
+u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero, stride;
 *(void**)((u8*)p+0x28)=Ov001_Alloc((b*a)<<5,32);
 if(arg0==1) { *(volatile u16*)0x4001008 &= ~0x40; *(volatile u16*)0x4001008=(*(volatile u16*)0x4001008&0x43)|0xc00; }
 else { *(volatile u16*)0x4000008 &= ~0x40; *(volatile u16*)0x4000008=(*(volatile u16*)0x4000008&0x43)|0xc00; }
@@ -435,16 +435,17 @@ base=(void*)gOv001TextContext;
 if(arg0==1) v=func_020036b8(); else v=func_02003684();
 zero=0;
 c=*(volatile u16*)(data_ov001_0218fd14+arg0*2);
-func_ov001_0216a230(v,b,a,zero,zero,32,c,15);
+stride=32;
+func_ov001_0216a230(v,b,a,zero,zero,stride,c,15);
 TextPanel_ClearText(p,0);
 *(void**)((u8*)p+0x2c)=Ov001_AddTask(1,(M2C_UNK)Ov001_UploadTextPanelTiles,(u8*)(void*)gOv001TextContext+0x67c+arg0,200);
 return p;
 }
-#pragma opt_propagation reset
+#pragma optimization_level reset
 void Ov001_UploadTextPanelTiles(M2C_UNK taskArg, void *uploadPendingFlag) {
     void DC_FlushRange(M2C_UNK, s32);
-    void func_0200454c(M2C_UNK, s32, u32);
-    void func_020045ac(M2C_UNK, s32, u32);
+    void GX_LoadBG0Char(M2C_UNK, s32, u32);
+    void GX_LoadBG0CharSub(M2C_UNK, s32, u32);
     extern M2C_UNK gOv001TextContext;
 
     /* Uploads a dirty text panel's cached tiles to its background character VRAM. */
@@ -453,10 +454,10 @@ void Ov001_UploadTextPanelTiles(M2C_UNK taskArg, void *uploadPendingFlag) {
     }
     if (uploadPendingFlag == (void *)((u8 *)gOv001TextContext + OV001_CTX_PANEL_UPLOAD_FLAGS)) {
         DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL0_TILE_BUFFER), 0x6000);
-        func_0200454c(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL0_TILE_BUFFER), 0, 0x6000);
+        GX_LoadBG0Char(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL0_TILE_BUFFER), 0, 0x6000);
     } else {
         DC_FlushRange(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL1_TILE_BUFFER), 0x3000);
-        func_020045ac(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL1_TILE_BUFFER), 0x3000, 0x3000);
+        GX_LoadBG0CharSub(M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL1_TILE_BUFFER), 0x3000, 0x3000);
     }
     *(u8 *)uploadPendingFlag = 0;
 }
@@ -469,9 +470,9 @@ M2C_UNK Ov001_FreePanelBackground(s32 panel) {
     M2C_UNK temp_r0;
     func_ov001_0218c94c(1, M2C_FIELD((void *)panel, M2C_UNK *, OV001_PANEL_REFRESH_TASK));
     if (panel == (M2C_UNK)gOv001TextContext + OV001_CTX_SCREEN_PANELS) {
-        temp_r0 = FillU16(0, func_02003834(), OV001_PANEL0_VRAM_BYTES);
+        temp_r0 = FillU16(0, GX_GetBG0CharPtr(), OV001_PANEL0_VRAM_BYTES);
     } else {
-        temp_r0 = FillU16(0, func_02003834(), OV001_PANEL1_VRAM_BYTES);
+        temp_r0 = FillU16(0, GX_GetBG0CharPtr(), OV001_PANEL1_VRAM_BYTES);
     }
     return Ov001_FreeAlloc((u8 *)panel + 0x28);
 }

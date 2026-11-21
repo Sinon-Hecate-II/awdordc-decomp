@@ -27,9 +27,9 @@ void func_02089d30(void *arg0) {
     s32 maxLength,offset,index,length,rows,width,height,state,mode;
     u32 flags,packed;
     s32 measuredKind;
-    void func_0208ae88(void *,s32);
+    void SetPanelChoice(void *,s32);
     void func_0208989c(void *);
-    void func_0208ad48(void *);
+    void UpdatePanelLinkedIcons(void *);
     void func_02089784(void *);
     void StartWindowOpen(void *);
     void *end,*entry;
@@ -190,7 +190,7 @@ case 3:
             func_020aad18(sprite4);
 flags=(M2C_FIELD(arg0,u32 *,0x58)&~0x38000)|0x10000;
 M2C_FIELD(arg0,u32 *,0x58)=flags;
-if((s32)(flags<<24)>>30 < 0)func_0208ae88(arg0,1);
+if((s32)(flags<<24)>>30 < 0)SetPanelChoice(arg0,1);
 
 break;
 case 0:M2C_FIELD(arg0,u32 *,0x58)=flags&~0x38000;break;
@@ -200,7 +200,7 @@ M2C_FIELD(arg0,void **,0x60)=sprite4;
 }
 gCur3DSpriteEngine=previousEngine;
 if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))func_0208989c(arg0);
-func_0208ad48(arg0);func_02089784(arg0);StartWindowOpen(arg0);
+UpdatePanelLinkedIcons(arg0);func_02089784(arg0);StartWindowOpen(arg0);
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset

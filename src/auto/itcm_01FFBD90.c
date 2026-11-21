@@ -123,9 +123,9 @@ void ClearAdjacentMoveDirs(s32 x, s32 y) {
  * left/right), picks the direction with the lowest cost and breaks ties with a
  * random pick, records it in dirPath, and advances. Stops when the current cell's
  * direction is 0; then reverses the recorded turn list and caps it with 4
- * (func_01ffc718). The starting cell's direction is also copied to map+0x52d5. */
+ * (ReverseMovePath). The starting cell's direction is also copied to map+0x52d5. */
 void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
-    void func_01ffc718(s8 *, s8 *);
+    void ReverseMovePath(s8 *, s8 *);
     extern void **gCurrentMap;
     s32 NextRandomValue(void);
     s8 *start;
@@ -170,13 +170,15 @@ void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
         map = (s32)*gCurrentMap;
         row = M2C_FIELD(map + (y << 2), s8 **, 0x52e8) + x;
     }
-    func_01ffc718(start, dirPath);
+    ReverseMovePath(start, dirPath);
 }
-void func_01ffc718(s8 *arg0, s8 *arg1) {
+/* Reverse the MOVE_DIR_* step list [path, end) in place and terminate it with a
+ * MOVE_DIR_STOP (the path tracer builds the list back-to-front). */
+void ReverseMovePath(s8 *path, s8 *end) {
  s8 buf[20]; s32 i=0,j; s8 c;
- if(arg1!=arg0) {do {buf[i++]=*--arg1;} while(arg1!=arg0);}
- buf[i]=4; j=0;
+ if(end!=path) {do {buf[i++]=*--end;} while(end!=path);}
+ buf[i]=MOVE_DIR_STOP; j=0;
 loop:
- c=buf[j++]; *arg0=c; if(c!=4) {arg0++; goto loop;}
+ c=buf[j++]; *path=c; if(c!=MOVE_DIR_STOP) {path++; goto loop;}
 }
 

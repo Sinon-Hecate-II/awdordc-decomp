@@ -209,23 +209,27 @@ case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
 }
 }
 
-void MapEditor_PickTerrain(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK SpawnSoundEffectAtTile(s32, M2C_UNK, M2C_UNK, s32);
+/* Map editor terrain pick tool: copies the terrain kind and owner of cell (x, y)
+ * into the editor's brush, refreshes the editor and its graphics, and plays the
+ * pick sound. */
+void MapEditor_PickTerrain(M2C_UNK editor, s32 x, s32 y) {
+    M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     void SetMapEditorTerrainKind(s32);
     void SetMapEditorTerrainOwner(s32);
     void RefreshMapEditor(void);
     M2C_UNK MapEditor_RefreshGraphics();
-    s32 Map_GetCellTerrainKind(M2C_UNK, M2C_UNK);
-    s32 Map_GetCellTerrainOwner(M2C_UNK, M2C_UNK);
-    s32 temp_r4;
-    s32 temp_r5;
-    temp_r5 = Map_GetCellTerrainKind(arg1, arg2);
-    temp_r4 = Map_GetCellTerrainOwner(arg1, arg2);
-    SetMapEditorTerrainKind(temp_r5);
-    SetMapEditorTerrainOwner(temp_r4);
+    s32 Map_GetCellTerrainKind(s32, s32);
+    s32 Map_GetCellTerrainOwner(s32, s32);
+    s32 terrainOwner;
+    s32 terrainKind;
+
+    terrainKind = Map_GetCellTerrainKind(x, y);
+    terrainOwner = Map_GetCellTerrainOwner(x, y);
+    SetMapEditorTerrainKind(terrainKind);
+    SetMapEditorTerrainOwner(terrainOwner);
     RefreshMapEditor();
     MapEditor_RefreshGraphics();
-    SpawnSoundEffectAtTile(0x11B, arg1, arg2, 1);
+    SpawnSoundEffectAtTile(0x11B, x, y, 1);
 }
 
 /* Terrain-page erase tool: repaints the cell under the cursor as plain ground,

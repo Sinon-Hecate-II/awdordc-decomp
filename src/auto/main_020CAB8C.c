@@ -325,16 +325,19 @@ if(!cost)return 0;
 return func_020c98d8(unit[1],unit[2],2);
 }
 #pragma opt_propagation reset
-u8 func_020cb6a4(void *arg0) {
+/* Refills a supplied unit: tops up its ammo (unless its kind can supply itself)
+ * and its fuel, then marks its tile with the refill marker when anything was
+ * added.  Returns whether anything was refilled. */
+u8 RefillSuppliedUnit(void *unit) {
 s32 UnitKindCanSupply(u32);
 u8 func_020c98d8(u8,u8,s32);
 s32 RefillUnitAmmo(void *,s32);
 s32 RefillUnitFuel(void *,s32);
-s32 n=0;
-if(UnitKindCanSupply((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)==0) n+=RefillUnitAmmo(arg0,0);
-n+=RefillUnitFuel(arg0,0);
-if(n==0) return n;
-return func_020c98d8(M2C_FIELD(arg0,u8 *,1),M2C_FIELD(arg0,u8 *,2),2);
+s32 added=0;
+if(UnitKindCanSupply((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)==0) added+=RefillUnitAmmo(unit,0);
+added+=RefillUnitFuel(unit,0);
+if(added==0) return added;
+return func_020c98d8(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),2);
 }
 
 #pragma opt_instruction_scheduling off
@@ -385,7 +388,7 @@ if (gMapCursorOptionValue & ((u8 *)gMapCursorDirs)[offset]) {
     u8 *mapColumn = m + M2C_FIELD(m, s16 *, 0x52dc);
     u16 rowOffset = M2C_FIELD(m + row * 2, u16 *, 0x3758);
     u8 unitId = M2C_FIELD(rowOffset + ((s8)q[2] + mapColumn), u8 *, 0x508);
-    func_020cb6a4((m + 0x59a4) + 14 * unitId);
+    RefillSuppliedUnit((m + 0x59a4) + 14 * unitId);
 }
 M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;

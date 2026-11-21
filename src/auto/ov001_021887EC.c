@@ -45,9 +45,9 @@ return 0;
 }
 
 void func_ov001_02188858(void *arg0){
-s32 func_020119dc(void *);
+s32 WFC_SetGeneralHandler(void *);
 if(M2C_FIELD(arg0,u16 *,2)){SetWhError();SetWhStatus(10);return;}
-if(func_020119dc((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(10);return;}
+if(WFC_SetGeneralHandler((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(10);return;}
 SetWhStatus(1);
 }
 

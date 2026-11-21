@@ -88,6 +88,13 @@ typedef struct Ov003BattleSetupMenu {
 #define SCENE_DISPLAY_TEXT         0x54 /* void *: text sprite */
 #define SCENE_DISPLAY_SPRITE       0x58 /* s32: sprite hidden together with the display */
 
+/* The scene display's sprite group (the object SCENE_DISPLAY_GROUP points at,
+ * class gSceneDisplayGroupVTable): three runs of four 3D-sprite handles. */
+typedef struct SceneDisplayGroup {
+    void *vtable;    /* +0x00 gSceneDisplayGroupVTable */
+    s32 sprites[12]; /* +0x04 the three runs of four handles (+0x04, +0x14, +0x24) */
+} SceneDisplayGroup;
+
 /* Map-transfer panel object used by the battle setup scene. */
 typedef struct Ov003MapTransferPanel {
     u8 pad00[0x3C];

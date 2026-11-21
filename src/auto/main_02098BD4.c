@@ -1,7 +1,9 @@
 /* 52 functions from 0x02098BD4 to 0x02099B18 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
-typedef union { u32 word; u16 half[2]; u8 byte[4]; } Unk996Row;
+/* Four glyph pixels expanded to 8 bits each: `word` shifts them by one pixel
+ * per 4 bits, `half` is the two tilemap entries one row writes. */
+typedef union { u32 word; u16 half[2]; u8 byte[4]; } GlyphPixelWord;
 
 typedef struct { s32 values[12]; } Unk02098BD4Table;
 extern Unk02098BD4Table data_020f36bc;
@@ -496,26 +498,30 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-s32 func_020996d0(s32 a,u8 width,M2C_UNK d,M2C_UNK shift,s32 pal) {
-u8 *src=(u8 *)a;u16 *dst=(u16 *)d;
-Unk996Row buf[2];u16 *out; s32 clear1,clear2,offset; s32 left,right,i,j,n;u32 b;u8 byte;u8 *p;
+/* Draw one 16-pixel-tall glyph of `width` 4bpp pixels (two pixels per byte of
+ * glyphBitmap) into the 4bpp tilemap `tilemap`, shifted right by `shift` pixels
+ * and with `palette` added to every nonzero pixel; a glyph that runs past the
+ * eight-pixel cell also writes the neighbouring tile.  Returns the width. */
+s32 DrawGlyphTiles(s32 glyphBitmap,u8 width,M2C_UNK tilemap,M2C_UNK shift,s32 palette) {
+u8 *src=(u8 *)glyphBitmap;u16 *dst=(u16 *)tilemap;
+GlyphPixelWord buf[2];u16 *out; s32 clear,offset; s32 shiftLeft,shiftRight,row,col,byteCount;u32 pixelByte;u8 byte;u8 *p;
 shift&=7;
-if(shift<=1){for(clear1=0;clear1<32;clear1++)dst[clear1]=0;}
-if(shift+width>8){offset=((shift+width)&8)<<2;for(clear2=0;clear2<32;clear2++)dst[clear2+offset]=0;}
+if(shift<=1){for(clear=0;clear<32;clear++)dst[clear]=0;}
+if(shift+width>8){offset=((shift+width)&8)<<2;for(clear=0;clear<32;clear++)dst[clear+offset]=0;}
 if(width!=0){
-n=(width+1)>>1;left=shift*4;right=(8-shift)*4;
-for(i=0;i<16;i++){
+byteCount=(width+1)>>1;shiftLeft=shift*4;shiftRight=(8-shift)*4;
+for(row=0;row<16;row++){
 buf[1].word=0;buf[0].word=0;
-for(j=0;j<n;j++){
-b=*src;
+for(col=0;col<byteCount;col++){
+pixelByte=*src;
+if(pixelByte&15)pixelByte+=palette;
 src=src+1;
-if(b&15)b+=pal;
-if(b&240)b+=pal<<4;
-buf[0].byte[j]=buf[1].byte[j]=b;
+if(pixelByte&240)pixelByte+=palette<<4;
+buf[0].byte[col]=buf[1].byte[col]=pixelByte;
 }
-buf[0].word<<=left;
+buf[0].word<<=shiftLeft;
 dst[0]|=buf[0].half[0];dst[1]|=buf[0].half[1];
-buf[1].word>>=right;
+buf[1].word>>=shiftRight;
 if(buf[1].word){dst[32]|=buf[1].half[0];dst[33]|=buf[1].half[1];}
 dst+=2;
 }
@@ -524,18 +530,19 @@ return width;
 }
 #pragma scheduling on
 u8 func_02099818(s32 arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3) {
- M2C_UNK func_020996d0(s32,u8,M2C_UNK,M2C_UNK,s32);
+ M2C_UNK DrawGlyphTiles(s32,u8,M2C_UNK,M2C_UNK,s32);
  extern u8 gGlyphWidthTable[];
  extern s32 data_ov000_021b7f7c[];
- func_020996d0(data_ov000_021b7f7c[arg0],gGlyphWidthTable[arg0],arg1,arg2,arg3);
+ DrawGlyphTiles(data_ov000_021b7f7c[arg0],gGlyphWidthTable[arg0],arg1,arg2,arg3);
  return gGlyphWidthTable[arg0];
 }
 
 #pragma opt_common_subs off
 void func_02099854(void *arg0,s32 arg1,s32 arg2,s32 arg3){
+
 extern u8 data_0211dcf0[];
-u16 *dst; s32 offset,row,col; u16 *src; u16 a=arg3*16,b=a*16,c=b*16,t,x,y,z,w;u8 key,index;void *node;
-index=M2C_FIELD(arg0,u8 *,1);key=M2C_FIELD(arg0,u8 *,0);
+u16 *dst; s32 row,offset,col; u16 *src; u16 a=arg3*16,b=a*16,c=b*16,t,x,y,z,w;u8 key,index;void *node;
+key=M2C_FIELD(arg0,u8 *,0);index=M2C_FIELD(arg0,u8 *,1);
 if(index<0x40U){key=0x96;index=0xb2;}
 retry:
 node=M2C_FIELD(data_0211dcf0+index*4,void **,-0x100);
@@ -549,12 +556,15 @@ if(node!=0)goto scan;
 if(node==0){key=0x81;index=0x48;goto retry;}
 src=node+6;
 if(arg2){func_020996d0(src,7,arg1,arg2,arg3);return;}
-row=0;offset=0;
-do{dst=(u16 *)(arg1+offset);col=0;
-do{t=*src++;col++;x=t&15;y=t&0xf0;z=t&0xf00;w=t&0xf000;
-if(x)x+=arg3;if(y)y+=a;if(z)z+=b;if(w)w+=c;
+for(row=0,offset=0;row<2;row++,offset+=32){
+ dst=(u16 *)(arg1+offset);
+ for(col=0;col<16;col++){t=*src;x=t&15;y=t&0xf0;z=t&0xf00;w=t&0xf000;
+if(x)x+=arg3;
+src++;
+if(y)y+=a;if(z)z+=b;if(w)w+=c;
 *dst++=w|(z|(x|y));
-}while(col<16);row++;offset+=32;}while(row<2);
+}
+ }
 }
 #pragma opt_common_subs reset
 u8 func_020999b8(void *arg0) {

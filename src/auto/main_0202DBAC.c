@@ -164,8 +164,8 @@ Sound_ReleasePlayer(player);
 }
 
 s32 Sound_AcquireChannel(void *arg0,s32 arg1,s32 arg2) {
-s32 func_0202b4e4(void *,s32,s32);
-if(M2C_FIELD(arg0,s32 *,0x120)==0 && func_0202b4e4(arg0,arg1,arg2)==0) return 0;
+s32 Sound_AssignPlayerChannels(void *,s32,s32);
+if(M2C_FIELD(arg0,s32 *,0x120)==0 && Sound_AssignPlayerChannels(arg0,arg1,arg2)==0) return 0;
 M2C_FIELD(arg0,s32 *,0x120)++; return 1;
 }
 

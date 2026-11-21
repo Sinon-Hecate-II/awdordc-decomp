@@ -211,7 +211,7 @@ Ov001_EndIconRowSelection kind:function(arm,size=0xf0) addr:0x02171b20
 func_ov001_02171c10 kind:function(arm,size=0x14) addr:0x02171c10
 Ov001_ShowMessagePanel kind:function(arm,size=0xd4) addr:0x02171c24
 Ov001_FreeOptionBackground kind:function(arm,size=0x38) addr:0x02171cf8
-Ov001_LocalizePath kind:function(arm,size=0x60) addr:0x02171d30
+Ov001_GetLocalizedFileName kind:function(arm,size=0x60) addr:0x02171d30
 Ov001_LoadAsset kind:function(arm,size=0x40) addr:0x02171d90
 Ov001_OpenMenuForMode kind:function(arm,size=0x50) addr:0x02171dd0
 func_ov001_02171e20 kind:function(arm,size=0x38) addr:0x02171e20
@@ -497,9 +497,9 @@ Ov001_SlideOutProfileIconRow kind:function(arm,size=0x80) addr:0x02179524
 func_ov001_021795a4 kind:function(arm,size=0xf8) addr:0x021795a4
 func_ov001_0217969c kind:function(arm,size=0x5c) addr:0x0217969c
 func_ov001_021796f8 kind:function(arm,size=0x20) addr:0x021796f8
-func_ov001_02179718 kind:function(arm,size=0x60) addr:0x02179718
+Ov001_OpenWirelessScreen kind:function(arm,size=0x60) addr:0x02179718
 Ov001_LoadWirelessSetupBg kind:function(arm,size=0xa8) addr:0x02179778
-func_ov001_02179820 kind:function(arm,size=0x54) addr:0x02179820
+Ov001_FadeInWirelessScreen kind:function(arm,size=0x54) addr:0x02179820
 func_ov001_02179874 kind:function(arm,size=0x3c) addr:0x02179874
 func_ov001_021798b0 kind:function(arm,size=0x48) addr:0x021798b0
 func_ov001_021798f8 kind:function(arm,size=0xd4) addr:0x021798f8
@@ -930,7 +930,7 @@ Ov001_ShowMessage kind:function(arm,size=0x32c) addr:0x021862d8
 Ov001_CloseRegionMenu kind:function(arm,size=0x44) addr:0x02186604
 Ov001_GetRegionMenuSelection kind:function(arm,size=0x14) addr:0x02186648
 Ov001_IsRegionMenuActive kind:function(arm,size=0x1c) addr:0x0218665c
-func_ov001_02186678 kind:function(arm,size=0x60) addr:0x02186678
+Ov001_RegionMenuFadeInStep kind:function(arm,size=0x60) addr:0x02186678
 Ov001_SlideRegionMenuIn kind:function(arm,size=0xd4) addr:0x021866d8
 Ov001_UpdateRegionMenuInput kind:function(arm,size=0x15c) addr:0x021867ac
 Ov001_RegionMenuEmptyTimeout kind:function(arm,size=0x6c) addr:0x02186908
@@ -1166,7 +1166,7 @@ gOv001IconRowCount kind:data(any) addr:0x0218f2a8
 data_ov001_0218f2c0 kind:data(any) addr:0x0218f2c0
 gOv001NameTextX kind:data(any) addr:0x0218f2dc
 gOv001NameTextY kind:data(any) addr:0x0218f2de
-data_ov001_0218f2f8 kind:data(any) addr:0x0218f2f8
+gOv001LanguageCode kind:data(any) addr:0x0218f2f8
 gOv001ChoiceFrameRowTiles kind:data(any) addr:0x0218f300
 gOv001WfcIconLayouts kind:data(any) addr:0x0218f30c
 data_ov001_0218f314 kind:data(any) addr:0x0218f314
@@ -1625,7 +1625,7 @@ data_ov001_021934c4 kind:bss addr:0x021934c4
 gOv001AnimSprite kind:bss addr:0x02193cc4
 gOv001IconRow kind:bss addr:0x02193cc8
 gOv001MessagePanelActive kind:bss addr:0x02193ccc
-data_ov001_02193cd0 kind:bss addr:0x02193cd0
+gOv001LocalizedPath kind:bss addr:0x02193cd0
 gOv001ChoiceFrameSprites kind:bss addr:0x02193d10
 sOv001HighlightTilemapBuffer kind:bss addr:0x02193d14
 gOv001WfcIcon kind:bss addr:0x02193d18

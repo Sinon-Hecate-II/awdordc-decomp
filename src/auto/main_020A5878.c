@@ -137,61 +137,68 @@ return 1;
 }
 
 #pragma opt_dead_code off
-u8 func_020a5d2c(s32 a,s32 b){extern s32 *gCurrentMap;u8 *p=(u8 *)*gCurrentMap;s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);u8 r;if(!v)return 0;if(M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67c3)&2)r=1;else r=0;return r;}
+u8 IsCellUnitOnTeamB(s32 a,s32 b){extern s32 *gCurrentMap;u8 *p=(u8 *)*gCurrentMap;s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);u8 r;if(!v)return 0;if(M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67c3)&2)r=1;else r=0;return r;}
 #pragma opt_dead_code reset
-s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
+/* Whether the (possibly submerged) unit record `unitPtr` standing on tile
+ * (tileX, tileY) is revealed in the current view.  A unit that is not a submerged
+ * submarine is always revealed; a submerged one when its owner, the owner of the
+ * terrain under it, or the owner of a unit on one of its four neighbouring cells
+ * is a team-B (always-seeing) player. */
+s32 IsUnitInSightAt(s32 unitPtr, u8 tileX, u8 tileY) {
     extern s32 *gCurrentMap;
     s32 IsUnitSubmerged(Unit5B *);
-    u8 func_020a5d2c(s32, s32);
-    s32 r4;
-    s32 r6 = arg1;
-    s32 r5 = arg2;
-    s32 r7;
+    u8 IsCellUnitOnTeamB(s32, s32);
+    s32 acc;
+    s32 x = tileX;
+    s32 y = tileY;
+    s32 unitIndex;
 
-    r4 = 0;
-    if (arg0 == 0) {
-        r7 = r4;
+    acc = 0;
+    if (unitPtr == 0) {
+        unitIndex = acc;
     } else {
-        r7 = (u16)((arg0 - ((s32)*gCurrentMap + 0x59a4)) / 14);
+        unitIndex = (unitPtr - ((s32)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
     }
-    if (arg0 == 0) {
+    unitIndex = (u16)unitIndex;
+    if (unitPtr == 0) {
         return 1;
     }
-    if (!IsUnitSubmerged((Unit5B *)arg0)) {
+    if (!IsUnitSubmerged((Unit5B *)unitPtr)) {
         return 1;
     }
-    if (*((u8 *)*gCurrentMap + ((r7 >> 6) + 1) * 0x8c + 0x67c3) & 0x2) {
+    if (*((u8 *)*gCurrentMap + ((unitIndex >> 6) + 1) * MAP_PLAYER_STRIDE + PLAYER_SIDE_OFF) & SIDE_TEAM_B) {
         return 1;
     }
     {
-        s32 row = *(u16 *)((u8 *)*gCurrentMap + r5 * 2 + 0x3758);
-        u8 tile = *((u8 *)*gCurrentMap + (r6 + row) + 0x1420);
-        s32 k = (tile & 0xe0) >> 5;
-        if (*((u8 *)*gCurrentMap + k * 0x8c + 0x67c3) & 0x2) {
+        s32 row = *(u16 *)((u8 *)*gCurrentMap + y * 2 + MAP_ROW_OFFSETS);
+        u8 terrain = *((u8 *)*gCurrentMap + (x + row) + MAP_CELL_TERRAIN);
+        s32 owner = (terrain & 0xe0) >> 5;
+        if (*((u8 *)*gCurrentMap + owner * MAP_PLAYER_STRIDE + PLAYER_SIDE_OFF) & SIDE_TEAM_B) {
             return 1;
         }
     }
 
-    if (r6 > 0) {
-        r4 = (u16)(r4 + func_020a5d2c((s16)(r6 - 1), r5));
+    if (x > 0) {
+        acc += IsCellUnitOnTeamB((s16)(x - 1), y);
+        acc = (u16)acc;
     }
-    if (r5 > 0) {
-        r4 = (u16)(r4 + func_020a5d2c(r6, (s16)(r5 - 1)));
+    if (y > 0) {
+        acc = (u16)(acc + IsCellUnitOnTeamB(x, (s16)(y - 1)));
     }
     {
-        s32 maxw = *(u16 *)((u8 *)*gCurrentMap + 0x5144);
-        if (r6 < maxw - 1) {
-            r4 = (u16)(r4 + func_020a5d2c((s16)(r6 + 1), r5));
+        s32 mapWidth = *(u16 *)((u8 *)*gCurrentMap + MAP_WIDTH);
+        if (x < mapWidth - 1) {
+            acc = (u16)(acc + IsCellUnitOnTeamB((s16)(x + 1), y));
         }
     }
     {
-        s32 maxh = *(u16 *)((u8 *)*gCurrentMap + 0x5146);
-        if (r5 < maxh - 1) {
-            r4 = (u16)(r4 + func_020a5d2c(r6, (s16)(r5 + 1)));
+        s32 mapHeight = *(u16 *)((u8 *)*gCurrentMap + MAP_HEIGHT);
+        if (y < mapHeight - 1) {
+            acc = (u16)(acc + IsCellUnitOnTeamB(x, (s16)(y + 1)));
         }
     }
 
-    if (r4 != 0) {
+    if (acc != 0) {
         return 1;
     }
     return 0;
@@ -199,12 +206,12 @@ s32 func_020a5d8c(s32 arg0, u8 arg1, u8 arg2) {
 
 #pragma opt_propagation off
 void IsMapUnitRevealed(s32 arg0) {
-    M2C_UNK func_020a5d8c(s32, u8, u8);
+    M2C_UNK IsUnitInSightAt(s32, u8, u8);
     extern s32 *gCurrentMap;
     s32 mul = 14;
     u8 *base = (u8 *)(*gCurrentMap + 0x1a4);
     u8 *entry = base + 0x5800 + mul * arg0;
-    func_020a5d8c((s32)entry, entry[1], entry[2]);
+    IsUnitInSightAt((s32)entry, entry[1], entry[2]);
 }
 #pragma opt_propagation reset
 /* Whether map cell (x, y) holds a unit of the current team that the player can
@@ -223,7 +230,11 @@ s32 IsCellUnitOnCurrentTeamVisible(s32 x, s32 y) {
     return IsUnitOnCurrentTeam(unitId);
 }
 
-s32 IsUnitInSight(s32 arg0) {
+/* Whether the unit with id `unitId` is in sight of the current player: a unit
+ * that is not a submerged submarine is always shown, and a submerged one when it
+ * is flagged visible, is on the current team, stands on ground owned by that team,
+ * or has a visible teammate on one of its four neighbouring cells. */
+s32 IsUnitInSight(s32 unitId) {
     extern s32 *gCurrentMap;
     extern s16 gPlayerUnitIdBase[];
     s32 IsUnitSubmerged(Unit5B *);
@@ -231,10 +242,11 @@ s32 IsUnitInSight(s32 arg0) {
     s32 IsTerrainOnUnitTeam(s32, s32);
     s32 IsCellUnitOnCurrentTeamVisible(s32, s32);
 
-    u8 x;
-    Unit5B *unit = (Unit5B *)((u8 *)*gCurrentMap + 0x59a4 + arg0 * 14);
-    u16 acc = 0;
-    u8 y;
+    s32 y;
+    s32 acc = 0;
+    Unit5B *unit = (Unit5B *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE);
+    s32 x;
+    s32 idx;
 
     if (unit == 0) {
         return 1;
@@ -242,7 +254,7 @@ s32 IsUnitInSight(s32 arg0) {
     if (!IsUnitSubmerged(unit)) {
         return 1;
     }
-    if (unit->flags & 0x40) {
+    if (unit->flags & UNIT_FLAG_VISIBLE) {
         return 1;
     }
 
@@ -250,41 +262,44 @@ s32 IsUnitInSight(s32 arg0) {
     y = unit->y;
 
     if (unit != 0) {
-        u8 *base = (u8 *)*gCurrentMap;
-        s32 idx = (s32)((u8 *)unit - (base + 0x59a4)) / 14;
-        if (IsUnitOnCurrentTeam(idx)) {
-            return 1;
-        }
+        u8 *map = (u8 *)*gCurrentMap;
+        idx = (s32)((u8 *)unit - (map + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+    } else {
+        idx = acc;
+    }
+    if (IsUnitOnCurrentTeam(idx)) {
+        return 1;
     }
 
     {
-        u8 *base = (u8 *)*gCurrentMap;
-        u16 rowOff = *(u16 *)(base + y * 2 + 0x3758);
-        u16 w = *(u16 *)(base + 0x52a4);
-        u8 tile = *(u8 *)(x + rowOff + base + 0x1420);
-        s16 val = gPlayerUnitIdBase[w];
-        if (IsTerrainOnUnitTeam(val, tile)) {
+        u8 *map = (u8 *)*gCurrentMap;
+        u16 rowOffset = *(u16 *)(map + y * 2 + MAP_ROW_OFFSETS);
+        u16 player = *(u16 *)(map + MAP_CURRENT_PLAYER);
+        u8 terrain = *(u8 *)(x + rowOffset + map + MAP_CELL_TERRAIN);
+        s16 groupBase = gPlayerUnitIdBase[player];
+        if (IsTerrainOnUnitTeam(groupBase, terrain)) {
             return 1;
         }
     }
 
     if (x > 0) {
-        acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible((s16)(x - 1), y));
+        acc += IsCellUnitOnCurrentTeamVisible((s16)(x - 1), y);
+        acc = (u16)acc;
     }
     if (y > 0) {
         acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible(x, (s16)(y - 1)));
     }
     {
-        u8 *base = (u8 *)*gCurrentMap;
-        s32 maxw = *(u16 *)(base + 0x5144);
-        if (x < maxw - 1) {
+        u8 *map = (u8 *)*gCurrentMap;
+        s32 mapWidth = *(u16 *)(map + MAP_WIDTH);
+        if (x < mapWidth - 1) {
             acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible((s16)(x + 1), y));
         }
     }
     {
-        u8 *base = (u8 *)*gCurrentMap;
-        s32 maxh = *(u16 *)(base + 0x5146);
-        if (y < maxh - 1) {
+        u8 *map = (u8 *)*gCurrentMap;
+        s32 mapHeight = *(u16 *)(map + MAP_HEIGHT);
+        if (y < mapHeight - 1) {
             acc = (u16)(acc + IsCellUnitOnCurrentTeamVisible(x, (s16)(y + 1)));
         }
     }
@@ -302,13 +317,13 @@ s32 IsUnitInSight(s32 arg0) {
  * whose flags bit 0x80 is set; a unit of the human side counts while its
  * visible flag is still set. */
 s32 IsUnitVisible(void *arg0){
-s32 func_020a5d8c(s32,u8,u8);extern s32 *gCurrentMap;
+s32 IsUnitInSightAt(s32,u8,u8);extern s32 *gCurrentMap;
 u8 *p=arg0;u16 flags;u8 y,x;u8 *base;u32 idx;u8 seen;u16 player;u8 side;
 flags=*(u16 *)(p+MAP_UNIT_FLAGS);if(flags&4)return 0;
 y=p[MAP_UNIT_Y];base=(u8 *)*gCurrentMap;x=p[MAP_UNIT_X];
 idx=x+M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS);
 seen=M2C_FIELD(base+(idx>>3),u8 *,MAP_CELL_BITMAP)&(1u<<(idx&7));
-if(seen){if(func_020a5d8c((s32)p,x,y)!=0)goto ret1;}
+if(seen){if(IsUnitInSightAt((s32)p,x,y)!=0)goto ret1;}
 flags=*(u16 *)(p+MAP_UNIT_FLAGS);if(flags&128)return 1;
 base=*gCurrentMap;
 player=M2C_FIELD(base,u16 *,MAP_CURRENT_PLAYER);

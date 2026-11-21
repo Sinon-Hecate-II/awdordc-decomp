@@ -20,7 +20,7 @@ void func_02001148(void *,void *,void *);void MTX_Copy43(void *,void *);void fun
 void SetGxPolygonAttr(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);void ResetGxTextureParams(void);
 void DrawGxLine(s32,s32,s32,s32,s32,s32);void DrawGxRectFrame(s32,s32,s32,s32,s32,s32);
-void func_02087a08(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
+void DrawTexturedQuadCorners(s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_0200112c(void *,s32,s32);void SetGxTextureParams(s32,s32,s32,s32,s32);void func_02003aa8(void *);s32 GetDigitCount(s32);
 s32 qp[12],qr[12],q2[12],q1[12],qt[12],qs[12],qm[12],q0[12],pivot[12],tr[12],sz[12],rot[12],mat[12],p2[12],p1[12],p0[12],d[12],c[12],b[12],a[12];s32 j,k,n,value,spacing,tex,flags,cx,cy,amount;void *link,*node; s32 scale,i,x,y,h,w,bottom,top;void *entry;
 volatile u32 *gx=(volatile u32 *)0x04000440;
@@ -65,15 +65,15 @@ if(entry){w=M2C_FIELD(arg0,s16 *,76)/2;h=M2C_FIELD(arg0,s16 *,78)/2;x=M2C_FIELD(
 if(w>0||h>0){SetGxPolygonAttr(0,31);ResetGxTextureParams();if(M2C_FIELD(arg0,s32 *,64)==4096)DrawGxRectFrame(x-w,y-h,x+w,y+h,1,32767);else DrawGxRectFrame(x-w,y-h,x+w-1,y+h-1,1,32767);}
 gx[0]=3;gx[1]=0;{u16 phase=M2C_FIELD(arg0,u16 *,60);gx[5]=0;gx[12]=-((u32)((phase>>2)<<24)>>8);gx[12]=(u32)((phase>>3)<<24)>>8;gx[12]=0;}
 if(M2C_FIELD(arg0,u8 *,57)){SetGxPolygonAttr(4,4);func_020870dc(3,256,256,6144,17,1,0,1);top=y-h;
-func_02087a08(0,0,512,0,0,top,512,top,4,0,0,512,top);bottom=y+h+1;
-func_02087a08(0,bottom,512,bottom,0,304,512,304,4,0,bottom,512,304);
-func_02087a08(0,top,x-w,top,0,bottom,x-w,bottom,4,0,top,x-w,bottom);
-func_02087a08(x+w+1,top,512,top,x+w+1,bottom,512,bottom,4,x+w+1,top,512,bottom);
+DrawTexturedQuadCorners(0,0,512,0,0,top,512,top,4,0,0,512,top);bottom=y+h+1;
+DrawTexturedQuadCorners(0,bottom,512,bottom,0,304,512,304,4,0,bottom,512,304);
+DrawTexturedQuadCorners(0,top,x-w,top,0,bottom,x-w,bottom,4,0,top,x-w,bottom);
+DrawTexturedQuadCorners(x+w+1,top,512,top,x+w+1,bottom,512,bottom,4,x+w+1,top,512,bottom);
 }else{SetGxPolygonAttr(4,16);func_020870dc(3,256,256,5120,16,1,0,0);top=y-h;
-func_02087a08(0,0,512,0,0,top,512,top,4,0,0,512,top);bottom=y+h+1;
-func_02087a08(0,bottom,512,bottom,0,304,512,304,4,0,bottom,512,304);
-func_02087a08(0,top,x-w,top,0,bottom,x-w,bottom,4,0,top,x-w,bottom);
-func_02087a08(x+w+1,top,512,top,x+w+1,bottom,512,bottom,4,x+w+1,top,512,bottom);
+DrawTexturedQuadCorners(0,0,512,0,0,top,512,top,4,0,0,512,top);bottom=y+h+1;
+DrawTexturedQuadCorners(0,bottom,512,bottom,0,304,512,304,4,0,bottom,512,304);
+DrawTexturedQuadCorners(0,top,x-w,top,0,bottom,x-w,bottom,4,0,top,x-w,bottom);
+DrawTexturedQuadCorners(x+w+1,top,512,top,x+w+1,bottom,512,bottom,4,x+w+1,top,512,bottom);
 }
 *(volatile u32 *)0x04000448=1;gx[0]=2;SetGxPolygonAttr(5,12);ResetGxTextureParams();
 {

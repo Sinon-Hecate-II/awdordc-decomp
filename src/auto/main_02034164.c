@@ -267,7 +267,7 @@ s32 func_020346d0(Unk02034164 *obj, char *name, s32 a, s32 b) {
   if (ctr == 0) fmtstr = (char *)&data_020fb680;
   else fmtstr = (char *)&data_020fb684;
 
-  *(s32 *)((u8 *)obj + 0x19f4) = ctr + 1;
+  *(s32 *)((u8 *)obj + 0x19f4) += 1;
 
   first = Base64EncodeUrl(a, b, (void *)0, 0);
 

@@ -112,7 +112,7 @@ M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHis
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)CountTabRecords(j);
 func_ov005_02211b4c();GetRecordTierTotals((u8 *)gHistoryMenu+0x2e,(u8 *)gHistoryMenu+0x30);
-func_ov005_02211c94();UpdateMedalFlags();
+HistoryMenu_InitSummary();UpdateMedalFlags();
 save=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(&a);
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q & ~16;}
 {u16 *volatile q=(u16 *)*(void **)gCur3DSpriteEngine;*q=*q | 32;}
@@ -385,7 +385,7 @@ s32 func_ov005_02214120(s32 arg0) {
     return IsMapBackgroundSeen(arg0);
 }
 
-s32 func_ov005_02214148(void) {
+s32 RecordsMenu_ScrollUp(void) {
     extern M2C_UNK gRecordsMenuState;
     s16 temp_r1;
 
@@ -398,7 +398,7 @@ s32 func_ov005_02214148(void) {
     return 1;
 }
 
-s16 func_ov005_02214184(void) {
+s16 RecordsMenu_PageUp(void) {
     extern M2C_UNK gRecordsMenuState;
     s16 temp_r3;
     temp_r3 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);

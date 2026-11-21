@@ -118,28 +118,34 @@ void DrawTexturedQuadUV(s32 x, s32 y, s32 z, s32 width, s32 height, s32 u0, s32 
 
 #pragma push
 #pragma optimization_level 4
-void func_02087a08(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 z,s32 t0,s32 t1,s32 t2,s32 t3) {
-u16 vA,v9,vC,vB;
-s32 vt3=t3;
-s16 bb=(s16)b,aa=(s16)a,ff=(s16)f,ee=(s16)e,zz=(s16)z,hh=(s16)h,gg=(s16)g,dd=(s16)d,cc=(s16)c;
-vA=(u16)((s32)(((t1<<12)+0x800)<<8)>>16);
-v9=(u16)((s32)(((t0<<12)+0x800)<<8)>>16);
-vC=(u16)((s32)(((vt3<<12)+0x800)<<8)>>16);
-vB=(u16)((s32)(((t2<<12)+0x800)<<8)>>16);
-*(volatile u32*)0x4000500=1;
-*(volatile u32*)0x4000488=v9|((u32)vA<<16);
-*(volatile u32*)0x400048c=(u16)aa|((u32)(u16)bb<<16);
-*(volatile u32*)0x400048c=(u16)zz;
-*(volatile u32*)0x4000488=v9|((u32)vC<<16);
-*(volatile u32*)0x400048c=(u16)ee|((u32)(u16)ff<<16);
-*(volatile u32*)0x400048c=(u16)zz;
-*(volatile u32*)0x4000488=vB|((u32)vC<<16);
-*(volatile u32*)0x400048c=(u16)gg|((u32)(u16)hh<<16);
-*(volatile u32*)0x400048c=(u16)zz;
-*(volatile u32*)0x4000488=vB|((u32)vA<<16);
-*(volatile u32*)0x400048c=(u16)cc|((u32)(u16)dd<<16);
-*(volatile u32*)0x400048c=(u16)zz;
-*(volatile u32*)0x4000504=0;
+/* Draws one textured quad from four explicit corners: (x0, y0) and (x1, y1)
+ * form the top edge, (x2, y2) and (x3, y3) the bottom edge, at depth z, sampling
+ * the texture rectangle (u0, v0) to (u1, v1); the texel coordinates are rounded
+ * into GX's 1/16-texel fixed-point texture coordinates. */
+void DrawTexturedQuadCorners(s32 x0, s32 y0, s32 x1, s32 y1, s32 x2, s32 y2, s32 x3, s32 y3,
+                             s32 z, s32 u0, s32 v0, s32 u1, s32 v1) {
+    s16 v0fx = (s16)(((v0 << 12) + GX_FX_HALF) >> 8);
+    u16 v0u = (u16) v0fx;
+    s16 u0fx = (s16)(((u0 << 12) + GX_FX_HALF) >> 8);
+    s16 v1fx = (s16)(((v1 << 12) + GX_FX_HALF) >> 8);
+    s16 u1fx = (s16)(((u1 << 12) + GX_FX_HALF) >> 8);
+    s16 y0s = (s16) y0, x0s = (s16) x0, y2s = (s16) y2, x2s = (s16) x2,
+        zs = (s16) z, y3s = (s16) y3, x3s = (s16) x3, y1s = (s16) y1, x1s = (s16) x1;
+
+    REG_GX_BEGIN_VTXS = GX_PRIM_QUADS;
+    REG_GX_TEX_COORD = (u16) u0fx | ((u32) v0u << 16);
+    REG_GX_VTX_16 = (u16) x0s | ((u32)(u16) y0s << 16);
+    REG_GX_VTX_16 = (u16) zs;
+    REG_GX_TEX_COORD = (u16) u0fx | ((u32)(u16) v1fx << 16);
+    REG_GX_VTX_16 = (u16) x2s | ((u32)(u16) y2s << 16);
+    REG_GX_VTX_16 = (u16) zs;
+    REG_GX_TEX_COORD = (u16) u1fx | ((u32)(u16) v1fx << 16);
+    REG_GX_VTX_16 = (u16) x3s | ((u32)(u16) y3s << 16);
+    REG_GX_VTX_16 = (u16) zs;
+    REG_GX_TEX_COORD = (u16) u1fx | ((u32) v0u << 16);
+    REG_GX_VTX_16 = (u16) x1s | ((u32)(u16) y1s << 16);
+    REG_GX_VTX_16 = (u16) zs;
+    REG_GX_END_VTXS = 0;
 }
 #pragma pop
 void DrawTexturedQuadUV(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8);

@@ -101,7 +101,7 @@ OS_RestoreInterrupts(key);
 return FinishFileRequest(req);
 }
 
-void func_0200b118(void *arg0) {
+void InitArchive(void *arg0) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     MI_CpuFill8(arg0, 0, 0x5C);
     M2C_FIELD(arg0, s32 *, 0x10) = 0;
@@ -330,7 +330,7 @@ s32 EndFileOperation(void *file) {
     return wasFree;
 }
 
-void func_0200b6a8(void *arg0, s32 arg1, s32 arg2) {
+void SetArchiveProc(void *arg0, s32 arg1, s32 arg2) {
     s32 var_r1;
     s32 var_r2;
 
@@ -373,7 +373,7 @@ M2C_UNK FileOperationCompleted(M2C_UNK file, s32 result) {
     OS_RestoreInterrupts(key);
 }
 
-void func_0200b74c(s32 a){void func_0200bda4(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;func_0200bda4(a);}
+void func_0200b74c(s32 a){void InitCardArchive(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;InitCardArchive(a);}
 
 void InitFileRequest(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0) = 0;

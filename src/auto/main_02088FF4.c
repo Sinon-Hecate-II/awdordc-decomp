@@ -425,9 +425,10 @@ M2C_UNK **func_0208996c(M2C_UNK **arg0) {
  TextLayer_FreeText();func_02089cec(arg0);MemFree(arg0);return arg0;
 }
 
+void RenderTextLayer(M2C_UNK, M2C_UNK, u32, s32);
+
 void func_0208999c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetLocalizedText(M2C_UNK);
-    M2C_UNK RenderTextLayer(M2C_UNK, M2C_UNK, s32, s32);
     RenderTextLayer(arg0, arg1, 0x4B80, GetLocalizedText(arg2));
 }
 
@@ -435,32 +436,32 @@ void RenderTextLayerMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK ar
     RenderTextLayer(arg0, arg1, arg2, GetLocalizedText(arg3));
 }
 
-M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
+void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
     extern void *gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;
-    u8 func_0208ae88(M2C_UNK, s32);
+    u8 SetPanelChoice(M2C_UNK, s32);
     M2C_UNK GetUiColor(s32);
     M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
     void func_02091c98(void);
     void LoadScenePanelPalette(s32);
     void func_02089b18(M2C_UNK, M2C_UNK);
 
+    s32 low3;
+    u32 spriteIndex;
     void *savedBank;
+    s32 i;
     void *bank;
     u32 mode;
-    u16 spriteIndex;
-    s32 i;
-    s32 low3;
     s32 tmp;
     M2C_UNK t1;
     M2C_UNK t2;
 
     savedBank = gCur3DSpriteEngine;
-    spriteIndex = (u16)(arg2 >> 5);
+    spriteIndex = arg2 >> 5;
     i = 0;
+    tmp = -99;
     low3 = (s32)arg1 & 7;
-    tmp = ~0x62;
     do {
         if (i == 0) {
             bank = (void *)g3DSpriteEngineMain;
@@ -475,8 +476,8 @@ M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
             M2C_FIELD(entity, u16 *, 0x3E) = spriteIndex;
             M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~7) | low3;
             M2C_FIELD(entity, s32 *, 0x58) = (M2C_FIELD(entity, s32 *, 0x58) & ~0xE0000000) | (low3 << 29);
-            M2C_FIELD(entity, u8 *, 0x49) = (u8)tmp;
-            func_0208ae88(entity, tmp + 0x62);
+            M2C_FIELD(entity, s8 *, 0x49) = tmp;
+            SetPanelChoice(entity, tmp + 0x62);
             t1 = GetUiColor(0xD);
             t2 = GetUiColor(0xE);
             DrawUiGradient(0x1400, 1, t1, t2);
@@ -487,7 +488,6 @@ M2C_UNK RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, s32 arg2, s32 arg3) {
         i++;
     } while (i < 2);
     gCur3DSpriteEngine = savedBank;
-    return 0;
 }
 
 void func_02089b18(M2C_UNK arg0, M2C_UNK arg1) {

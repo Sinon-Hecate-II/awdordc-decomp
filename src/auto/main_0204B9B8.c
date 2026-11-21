@@ -56,16 +56,16 @@ void ghiPostStateCleanup(void *arg0) {
 }
 
 s32 func_0204bad4(void *arg0) {
-    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    s32 Vector_GetCount(s32);
-    void *Vector_New(s32, s32, s32);
-    void *Vector_GetItem(s32, s32);
-    s32 ghiPostStateInit(void *);
-    void Vector_AddItem(void *, void *);
-    void ghiPostStateCleanup(void *);
-    void Vector_Free(s32);
-    s32 ghiPostGetContentLength(void *);
-    extern M2C_UNK data_020fd440, sGhttpPostFile, data_020fd1fc, data_020fd454;
+    M2C_UNK func_020640a8(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    s32 func_02048688(s32);
+    void *func_02048558(s32, s32, s32);
+    void *func_02048690(s32, s32);
+    s32 func_0204b9b8(void *);
+    void func_020486f8(void *, void *);
+    void func_0204ba68(void *);
+    void func_0204861c(s32);
+    s32 func_0204b958(void *);
+    extern M2C_UNK data_020fd440, data_020fd334, data_020fd1fc, data_020fd454;
 
     s32 i;
     s32 count;
@@ -73,7 +73,7 @@ s32 func_0204bad4(void *arg0) {
     s32 buf[4];
 
     if (M2C_FIELD(arg0, void **, 0x13c) == 0) {
-        AssertFailed(&data_020fd440, &sGhttpPostFile, &data_020fd1fc, 0x278);
+        func_020640a8(&data_020fd440, &data_020fd334, &data_020fd1fc, 0x278);
     }
     if (M2C_FIELD(arg0, void **, 0x13c) == 0) {
         return 0;
@@ -83,37 +83,35 @@ s32 func_0204bad4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x14c) = 0;
     M2C_FIELD(arg0, s32 *, 0x150) = M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 4);
     M2C_FIELD(arg0, s32 *, 0x154) = M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 8);
-    count = Vector_GetCount(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0));
-    M2C_FIELD(arg0, s32 *, 0x140) = (s32)Vector_New(0x10, count, 0);
+    count = func_02048688(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0));
+    M2C_FIELD(arg0, s32 *, 0x140) = (s32)func_02048558(0x10, count, 0);
     if (M2C_FIELD(arg0, s32 *, 0x140) == 0) {
         return 0;
     }
     for (i = 0; i < count; i++) {
-        s32 v = (s32)Vector_GetItem(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0), i);
-        *(volatile s32 *)&buf[0] = 0;
-        buf[0] = v;
+        buf[0] = (s32)func_02048690(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0), i);
         buf[1] = zero;
         buf[2] = zero;
         buf[3] = zero;
-        if (ghiPostStateInit(buf) == 0) {
+        if (func_0204b9b8(buf) == 0) {
             i--;
             if (i >= 0) {
                 do {
-                    void *e = Vector_GetItem(M2C_FIELD(arg0, s32 *, 0x140), i);
-                    ghiPostStateCleanup(e);
+                    void *e = func_02048690(M2C_FIELD(arg0, s32 *, 0x140), i);
+                    func_0204ba68(e);
                     i--;
                 } while (i >= 0);
             }
-            Vector_Free(M2C_FIELD(arg0, s32 *, 0x140));
+            func_0204861c(M2C_FIELD(arg0, s32 *, 0x140));
             M2C_FIELD(arg0, s32 *, 0x140) = 0;
             return 0;
         }
-        Vector_AddItem(M2C_FIELD(arg0, s32 *, 0x140), buf);
+        func_020486f8(M2C_FIELD(arg0, s32 *, 0x140), buf);
     }
-    if (Vector_GetCount(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0)) != Vector_GetCount(M2C_FIELD(arg0, s32 *, 0x140))) {
-        AssertFailed(&data_020fd454, &sGhttpPostFile, &data_020fd1fc, 0x2b1);
+    if (func_02048688(M2C_FIELD(M2C_FIELD(arg0, void **, 0x13c), s32 *, 0)) != func_02048688(M2C_FIELD(arg0, s32 *, 0x140))) {
+        func_020640a8(&data_020fd454, &data_020fd334, &data_020fd1fc, 0x2b1);
     }
-    M2C_FIELD(arg0, s32 *, 0x14c) = ghiPostGetContentLength(arg0);
+    M2C_FIELD(arg0, s32 *, 0x14c) = func_0204b958(arg0);
     return 1;
 }
 

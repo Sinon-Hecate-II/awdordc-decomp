@@ -135,7 +135,7 @@ if(cnt)buf[cnt]++;
 }
 outCount=0;dst=out;
 primCount=outCount;
-do {
+for (;;) {
 maxCount=0;chosen=-1;
 for(t=0;t<27;t++){
 if(buf[t]==0)continue;
@@ -147,8 +147,11 @@ if(wt<func_020a7bbc(chosen))continue;
 maxCount=buf[t];chosen=t;
 }
 if(chosen==-1)break;
-buf[(u8)chosen]=0;primCount++;*dst++=chosen;outCount++;
-} while(primCount<3);
+buf[(u8)chosen]=0;
+*dst++=chosen;
+++outCount;
+if (++primCount >= 3) break;
+}
 if(maxCount!=0){u8 *end=out+outCount;for(i=0;i<27;i++){if(maxCount==buf[i]){*end++=i;outCount++;}}}
 if(outCount){i=RandomIntRange(0,outCount-1);func_02086930(0,out[i]);}
 else func_02086930(0,0);

@@ -175,7 +175,7 @@ u8 IsMapViewScrolling(void) {
     return var_r0;
 }
 
-void func_0207b7e8(M2C_UNK arg0) {
+void CreateMapViewScrollHold(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02100bf8;
     CreateSpriteObject(&data_02100bf8, arg0);
@@ -251,7 +251,7 @@ void Init3DSpriteLayers2D(void) {
 
 /* Convert a tile type into the movement/collision result used by callers. */
 u32 func_0207b9f4(s32 tileX, s32 tileY, u32 tileType) {
-    u32 func_0207badc(s32, s32, M2C_UNK);
+    u32 GetMapCellSpriteVariant(s32, s32, M2C_UNK);
     s32 IsOwnedProductionSite(s32, s32);
     M2C_UNK probeResult;
     u32 result;
@@ -266,22 +266,22 @@ u32 func_0207b9f4(s32 tileX, s32 tileY, u32 tileType) {
         } else {
             probeResult = 0;
         }
-        result = func_0207badc(tileX, tileY, probeResult);
+        result = GetMapCellSpriteVariant(tileX, tileY, probeResult);
         break;
     case 1:
-        result = func_0207badc(tileX, tileY, 0);
+        result = GetMapCellSpriteVariant(tileX, tileY, 0);
         break;
     case 2:
         result = 0x10;
         break;
     case 3:
-        result = func_0207badc(tileX, tileY, 4);
+        result = GetMapCellSpriteVariant(tileX, tileY, 4);
         break;
     case 4:
-        result = func_0207badc(tileX, tileY, 8);
+        result = GetMapCellSpriteVariant(tileX, tileY, 8);
         break;
     case 5:
-        result = func_0207badc(tileX, tileY, 0xC);
+        result = GetMapCellSpriteVariant(tileX, tileY, 0xC);
         break;
     case 6:
         result = 0x11;
@@ -303,11 +303,14 @@ u32 func_0207b9f4(s32 tileX, s32 tileY, u32 tileType) {
     return result;
 }
 
-u32 func_0207badc(s32 arg0, s32 arg1, M2C_UNK arg2) {
+/* Return the sprite script for a map cell drawn at the 1/16-cell coordinates
+ * (tileX, tileY): project the cell to screen space and add the quadrant it falls
+ * in (0..3) to the four-script group based at `baseScript`. */
+u32 GetMapCellSpriteVariant(s32 tileX, s32 tileY, M2C_UNK baseScript) {
     void func_02079c90(s32, s32, s32 *);
     s32 pos[3];
-    s32 result = arg2;
-    func_02079c90(arg0 * 0x30, arg1 * 0x30, pos);
+    s32 result = baseScript;
+    func_02079c90(tileX * 0x30, tileY * 0x30, pos);
     if (pos[0] >= 0xC0) {
         if (pos[1] >= 0x80) result += 2;
         else result += 1;

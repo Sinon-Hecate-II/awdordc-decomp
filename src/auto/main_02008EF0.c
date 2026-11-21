@@ -166,11 +166,11 @@ if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
 do {Sound_DequeueCommand(1);} while(((State09100*)&gSoundCommandQueueState)->pending>=8);
 if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
 }
-DC_FlushRange((M2C_UNK)gSoundCommandNodes,0x1800);
+DC_FlushRange((M2C_UNK)&gSoundCommandNodes,0x1800);
 if(SendFifoMessage(7,((State09100*)&gSoundCommandQueueState)->unk8,0)<0){
 u8 *buf;
 if(!(flags&1)){OS_RestoreInterrupts(irq);return 0;}
-buf=gSoundCommandNodes;
+buf=&gSoundCommandNodes[0];
 goto retry;
 again: {
 OS_RestoreInterrupts(irq);
@@ -235,11 +235,25 @@ s32 Sound_CountInFlightCommands(void) {
     return (0x100 - temp_r4) - func_020095b0();
 }
 
-void func_02009608(int unused,int arg1) {
+void Sound_CommandChannelHandler(int unused,int arg1) {
 s32 OS_DisableInterrupts(void);s32 s=OS_DisableInterrupts();func_020097bc(arg1);OS_RestoreInterrupts(s);
 }
 
-void InitSoundCommandLink(void){M2C_UNK WaitCycles(M2C_UNK);s32 Sound_IsCommandChannelReady();M2C_UNK SetFifoMessageHandler(M2C_UNK,M2C_UNK *);s32 IsFifoMessageReady(M2C_UNK,M2C_UNK);extern void func_02009608(int,int);SetFifoMessageHandler(7,(M2C_UNK *)&func_02009608);if(!Sound_IsCommandChannelReady())return;if(IsFifoMessageReady(7,1))return;do{WaitCycles(100);}while(!IsFifoMessageReady(7,1));}
+/* Ready the ARM7 sound command channel: install its FIFO message handler and,
+ * when the channel is usable, wait until the ARM7 firmware reports it ready. */
+void InitSoundCommandLink(void) {
+    M2C_UNK WaitCycles(M2C_UNK);
+    s32 Sound_IsCommandChannelReady();
+    M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
+    s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
+    extern void Sound_CommandChannelHandler(int, int);
+    SetFifoMessageHandler(SND_CMD_FIFO_TAG, (M2C_UNK *)&Sound_CommandChannelHandler);
+    if (!Sound_IsCommandChannelReady()) return;
+    if (IsFifoMessageReady(SND_CMD_FIFO_TAG, 1)) return;
+    do {
+        WaitCycles(SND_CMD_LINK_POLL_DELAY);
+    } while (!IsFifoMessageReady(SND_CMD_FIFO_TAG, 1));
+}
 
 void Sound_SignalArm7(void) {
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);

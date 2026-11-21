@@ -369,15 +369,18 @@ s32 GetOccupationBackgroundName(s32 arg0) {
  return gOccupationBackgroundNames[n];
 }
 
-u16 GetCOPortraitOffset(u32 arg0) {
- switch(arg0) {
- case 0:return 0xffff;
- case 1:arg0=0;break;
- case 2:arg0=1;break;
- case 3:arg0=3;break;
- case 4:arg0=2;break;
+/* First sprite tile of CO `coId`'s portrait strip, or CO_PORTRAIT_TILE_NONE when
+ * the CO has no portrait; the slot order is the sheet's, where ids 3 and 4 are
+ * swapped. */
+u16 GetCOPortraitOffset(u32 coId) {
+ switch(coId) {
+ case 0:return CO_PORTRAIT_TILE_NONE;
+ case 1:coId=0;break;
+ case 2:coId=1;break;
+ case 3:coId=3;break;
+ case 4:coId=2;break;
  }
- return arg0*4+0x4ec;
+ return coId*CO_PORTRAIT_TILE_STRIDE+CO_PORTRAIT_TILE_BASE;
 }
 
 s32 GetCOFaceIndex(u32 a) { s32 GetUiColor(s32); switch(a){case 1:return GetUiColor(2);case 2:return GetUiColor(4);case 3:return GetUiColor(5);case 4:return GetUiColor(0);case 0:default:return 0;}}

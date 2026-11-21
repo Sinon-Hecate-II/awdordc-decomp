@@ -124,82 +124,92 @@ s32 IsPrivateIpAddress(u32 *addr) {
     return 0;
 }
 
-s32 func_0204968c(s32 a, s32 b) { extern M2C_UNK data_0213dc60; if(a<0){M2C_FIELD(&data_0213dc60,s32 *,4)=a;a=b;} return a; }
+s32 ghiRecordSocketError(s32 a, s32 b) { extern M2C_UNK data_0213dc60; if(a<0){M2C_FIELD(&data_0213dc60,s32 *,4)=a;a=b;} return a; }
 
 void ghiSocket(void) {
     s32 func_02021500();
-    M2C_UNK func_0204968c(s32, M2C_UNK);
-    func_0204968c(func_02021500(), -1);
+    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
+    ghiRecordSocketError(func_02021500(), -1);
 }
 
 void ghiCloseSocket(void) {
     s32 func_0202175c();
-    func_0204968c(func_0202175c(), -1);
+    ghiRecordSocketError(func_0202175c(), -1);
 }
 
 void func_020496cc(void) {
     s32 func_02021750();
-    func_0204968c(func_02021750(), -1);
+    ghiRecordSocketError(func_02021750(), -1);
 }
 
-s32 ghiBind(int a,UnkSocketAddress *b,u8 c){s32 func_0202152c(int,UnkSocketAddress *);UnkSocketAddress addr;if(*(u16 *)(b->bytes+2)==0)return 0;addr=*b;addr.bytes[0]=c;return func_0204968c(func_0202152c(a,&addr),-1);}
+/* ghiBind: binds `socket` to `address`, whose length byte is replaced with the
+ * caller's `length`; a zero port binds nothing and returns 0.  A failed bind
+ * returns -1 after recording the socket error. */
+s32 ghiBind(int socket,UnkSocketAddress *address,u8 length){
+s32 func_0202152c(int,UnkSocketAddress *);
+UnkSocketAddress addr;
+if(*(u16 *)(address->bytes+2)==0)return 0;
+addr=*address;
+addr.bytes[0]=length;
+return ghiRecordSocketError(func_0202152c(socket,&addr),-1);
+}
 
-s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 func_02021558(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return func_0204968c(func_02021558(a,&addr),-1);}
+s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 func_02021558(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return ghiRecordSocketError(func_02021558(a,&addr),-1);}
 
 void ghiListen(void) {
     s32 func_02021960();
-    func_0204968c(func_02021960(), -1);
+    ghiRecordSocketError(func_02021960(), -1);
 }
 
 void func_020497a0(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
     s32 SocketAccept(M2C_UNK);
-    M2C_UNK func_0204968c(s32, M2C_UNK);
+    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
     s32 temp_r0;
 
     *arg1 = (u8) *arg2;
     temp_r0 = SocketAccept(arg0);
     *arg2 = (s32) *arg1;
-    func_0204968c(temp_r0, -1);
+    ghiRecordSocketError(temp_r0, -1);
 }
 
 void ghiRecv(void) {
     s32 func_020215d4();
-    func_0204968c(func_020215d4(), -1);
+    ghiRecordSocketError(func_020215d4(), -1);
 }
 
-void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 SocketRecvFromAddress(int,int,int,int,u8 *);s32 r;*e=*f;r=SocketRecvFromAddress(a,b,c,d,e);*f=*e;func_0204968c(r,-1);}
+void ghiRecvFrom(int a,int b,int c,int d,u8 *e,s32 *f){s32 SocketRecvFromAddress(int,int,int,int,u8 *);s32 r;*e=*f;r=SocketRecvFromAddress(a,b,c,d,e);*f=*e;ghiRecordSocketError(r,-1);}
 
 void ghiSend(void) {
     s32 func_020216a8();
-    M2C_UNK func_0204968c(s32, M2C_UNK);
-    func_0204968c(func_020216a8(), -1);
+    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
+    ghiRecordSocketError(func_020216a8(), -1);
 }
 
 s32 ghiSendTo(int a,int b,int c,int d,UnkSocketAddress *e,int f) {
 s32 func_020216cc(int,int,int,int,UnkSocketAddress *);
 UnkSocketAddress addr; addr=*(UnkSocketAddress const *)e;
 addr.bytes[0]=f;
-return func_0204968c(func_020216cc(a,b,c,d,&addr),-1);
+return ghiRecordSocketError(func_020216cc(a,b,c,d,&addr),-1);
 }
 
 s32 func_0204987c(s32 a,s32 b,s32 c,s32 d,s32 *e) {
 M2C_UNK MI_CpuFill8(s32,s32,s32);
-MI_CpuFill8(d,0,*e);return func_0204968c(0,-1);
+MI_CpuFill8(d,0,*e);return ghiRecordSocketError(0,-1);
 }
 
 void func_020498a4(void) {
-    func_0204968c(0, -1);
+    ghiRecordSocketError(0, -1);
 }
 
 void ghiGetSockName(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
     s32 SocketGetSockName(M2C_UNK);
-    M2C_UNK func_0204968c(s32, M2C_UNK);
+    M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
     s32 temp_r0;
 
     *arg1 = (u8) *arg2;
     temp_r0 = SocketGetSockName(arg0);
     *arg2 = (s32) *arg1;
-    func_0204968c(temp_r0, -1);
+    ghiRecordSocketError(temp_r0, -1);
 }
 
 s32 ghiInetAddr(M2C_UNK arg0) {

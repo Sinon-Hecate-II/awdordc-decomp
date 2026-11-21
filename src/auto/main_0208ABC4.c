@@ -1,6 +1,7 @@
 /* 24 functions from 0x0208ABC4 to 0x0208B884 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "sound.h"
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
 typedef struct {
@@ -14,57 +15,61 @@ typedef struct { u32 width:9; u32 height:9; u32 rest:14; } WindowSize0208;
 typedef struct { u16 low:6; u16 window:2; u16 high:8; } WindowControl0208;
 u8 IsTextLayerActive(void);
 
-/* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
-M2C_UNK func_0208abc4(M2C_UNK arg0) {
-    void func_0208ad48(void *);
+/* Per-frame input of a text-layer panel.  Ignore input while the panel is
+ * animating open or closed.  A panel showing text (kind 1 or 2) is dismissed by
+ * A or B with the confirm sound; the two-option panel (kind 3) switches its
+ * highlighted choice with left/right, accepts with A (setting the map-confirm
+ * flag) and cancels with B, then closes with the matching menu sound. */
+void UpdateTextLayerPanel(M2C_UNK arg0) {
+    void UpdatePanelLinkedIcons(void *);
     void StartWindowClose(void *);
-    u8 func_0208ae88(Unk0208ABC4 *, s32);
+    u8 SetPanelChoice(Unk0208ABC4 *, s32);
     M2C_UNK PlaySoundEffect(s32);
     void EnableMapConfirm(void);
     void DisableMapConfirm(void);
     extern u16 *gKeyState;
-    register u32 mode asm("r0");
+    u32 panelKind;
 
-    if (((u32)(M2C_FIELD(arg0, u8 *, 0x48) << 26) >> 30) != 0) {
+    if (((u32)(M2C_FIELD(arg0, u8 *, TEXT_LAYER_PANEL_MODE) << 26) >> 30) != 0) {
         return;
     }
-    func_0208ad48(arg0);
-    mode = (u8)((u32)(M2C_FIELD(arg0, s32 *, 0x58) << 29) >> 29);
-    switch (mode) {
+    UpdatePanelLinkedIcons(arg0);
+    panelKind = (u8)((u32)(M2C_FIELD(arg0, s32 *, TEXT_LAYER_PANEL_STATE) << 29) >> 29);
+    switch (panelKind) {
     case 1:
-        if ((*(u16 *)gKeyState) & 3) {
-            PlaySoundEffect(0x1000d);
+        if ((*(u16 *)gKeyState) & (KEY_A | KEY_B)) {
+            PlaySoundEffect(SOUND_MENU_CONFIRM);
             StartWindowClose(arg0);
         }
         return;
     case 2:
-        if ((*(u16 *)gKeyState) & 3) {
-            PlaySoundEffect(0x1000d);
+        if ((*(u16 *)gKeyState) & (KEY_A | KEY_B)) {
+            PlaySoundEffect(SOUND_MENU_CONFIRM);
             StartWindowClose(arg0);
         }
         return;
     case 3:
-        if (((*(u16 *)gKeyState) & 0x20) && func_0208ae88((Unk0208ABC4 *)arg0, 0)) {
-            PlaySoundEffect(0x10010);
+        if (((*(u16 *)gKeyState) & KEY_LEFT) && SetPanelChoice((Unk0208ABC4 *)arg0, 0)) {
+            PlaySoundEffect(SOUND_MENU_MOVE);
         }
-        if (((*(u16 *)gKeyState) & 0x10) && func_0208ae88((Unk0208ABC4 *)arg0, 1)) {
-            PlaySoundEffect(0x10010);
+        if (((*(u16 *)gKeyState) & KEY_RIGHT) && SetPanelChoice((Unk0208ABC4 *)arg0, 1)) {
+            PlaySoundEffect(SOUND_MENU_MOVE);
         }
-        if ((*(u16 *)gKeyState) & 1) {
-            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 0) {
+        if ((*(u16 *)gKeyState) & KEY_A) {
+            if (((M2C_FIELD(arg0, s32 *, TEXT_LAYER_PANEL_STATE) << 24) >> 30) == 0) {
                 EnableMapConfirm();
-                PlaySoundEffect(0x1000d);
+                PlaySoundEffect(SOUND_MENU_CONFIRM);
             }
-            if (((M2C_FIELD(arg0, s32 *, 0x58) << 24) >> 30) == 1) {
+            if (((M2C_FIELD(arg0, s32 *, TEXT_LAYER_PANEL_STATE) << 24) >> 30) == 1) {
                 DisableMapConfirm();
-                PlaySoundEffect(0x1000f);
+                PlaySoundEffect(SOUND_MENU_CANCEL);
             }
             StartWindowClose(arg0);
             return;
         }
-        if ((*(u16 *)gKeyState) & 2) {
+        if ((*(u16 *)gKeyState) & KEY_B) {
             DisableMapConfirm();
-            PlaySoundEffect(0x1000f);
+            PlaySoundEffect(SOUND_MENU_CANCEL);
             StartWindowClose(arg0);
         }
         return;
@@ -72,7 +77,7 @@ M2C_UNK func_0208abc4(M2C_UNK arg0) {
     return;
 }
 
-void func_0208ad48(void *entity) {
+void UpdatePanelLinkedIcons(void *entity) {
     unsigned flagRight;
     unsigned flagLeft;
     void *objLeft;
@@ -110,7 +115,7 @@ void func_0208ad48(void *entity) {
     M2C_FIELD(objRight, s32 *, 0x40) = (s32) ((M2C_FIELD(objRight, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(objRight, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
 }
 
-u8 func_0208ae88(Unk0208ABC4 *arg0, s32 arg1) {
+u8 SetPanelChoice(Unk0208ABC4 *arg0, s32 arg1) {
     s32 var_r3;
     var_r3 = arg0->unk_0x58_6 != arg1;
     arg0->unk_0x58_6 = arg1;
@@ -248,9 +253,8 @@ void func_0208b508(void) {
     func_02089d30();
 }
 
-void func_0208b514(void) {
-    M2C_UNK func_0208abc4();
-    func_0208abc4();
+void func_0208b514(M2C_UNK window) {
+    UpdateTextLayerPanel(window);
 }
 
 void func_0208b520(s32 arg0) {

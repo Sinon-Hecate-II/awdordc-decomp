@@ -19,12 +19,12 @@ void Load3DSpritePattern(s32,s32,s32,s32);
 void *GetLocalPlayerName(void);
 void DrawGlyphString(void *,s32,s32,s32,s32,s32,s32);
 void GetEarnedRecordTierTotal(void);
-void *func_ov000_0216a564(void);
+void *GetRecordRank(void);
 void LoadRankIconGraphics(void *,s32,s32);
-s32 func_ov000_0216a76c(void);
-void *func_ov000_0216a77c(s32);
-s32 func_ov000_0216a7c4(void);
-void *func_ov000_0216a7d4(s32);
+s32 GetFavouriteRecordGroup(void);
+void *GetFavouriteGroupTextId(s32);
+s32 GetFavouriteRecordIndex(void);
+void *GetFavouriteRecordTextId(s32);
 void *func_0209b26c(s32,s32,s32,void *,s32,s32);
 void Show3DSpriteSlide(void *);
 static inline void Bits02211388(s32 offset,u16 set,u16 clear){
@@ -163,12 +163,12 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;Clear3DSpriteLayer(1);
 func_01ff9dd8(1);LoadScenePanelPalette(7);
 a=2;w=(void *)M2C_FIELD(&gCur3DSpriteEngine,volatile s32 *,0);
 DrawGlyphString(GetLocalPlayerName(),M2C_FIELD(w,s32 *,16),M2C_FIELD(w,s32 *,36),7,6,4,a);
-a+=48;GetEarnedRecordTierTotal();LoadRankIconGraphics(func_ov000_0216a564(),0x4280,8);
-if(func_ov000_0216a76c()!=-2 && func_ov000_0216a76c()!=-1){
-w=func_0209b26c(12,7,1,func_ov000_0216a77c(func_ov000_0216a76c()),0x7000,(u16)a);
+a+=48;GetEarnedRecordTierTotal();LoadRankIconGraphics(GetRecordRank(),0x4280,8);
+if(GetFavouriteRecordGroup()!=-2 && GetFavouriteRecordGroup()!=-1){
+w=func_0209b26c(12,7,1,GetFavouriteGroupTextId(GetFavouriteRecordGroup()),0x7000,(u16)a);
 a+=M2C_FIELD(w,u16 *,76)-M2C_FIELD(w,u16 *,78)+2;
 x=(s16)(M2C_FIELD(w,u8 *,74)+2);
-func_0209b26c(x,7,1,func_ov000_0216a7d4(func_ov000_0216a7c4()),0x7000,(u16)a);
+func_0209b26c(x,7,1,GetFavouriteRecordTextId(GetFavouriteRecordIndex()),0x7000,(u16)a);
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 w=(void *)gCur3DSpriteEngine;LoadSpriteResource(1,0,5,M2C_FIELD(w,s32 *,28)+0x3c00);

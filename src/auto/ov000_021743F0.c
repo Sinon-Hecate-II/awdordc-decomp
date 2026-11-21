@@ -205,7 +205,7 @@ void func_ov000_02174c00(void) {
     func_020af1e4();
 }
 
-u8 func_ov000_02174c0c(void) {
+u8 Ov000_InfoWindow_Exists(void) {
     extern Ov000MenuState *gOv000InfoWindow;
     u8 var_r0;
     if (gOv000InfoWindow != 0) {
@@ -220,7 +220,7 @@ void func_ov000_02174c2c(void) {
     s32 *MemAlloc(M2C_UNK);
     void *Ov000_InfoWindow_Init(void *);
     M2C_UNK CreateSpriteFromClass(void *, s32);
-    extern M2C_UNK data_ov000_021b8e5c;
+    extern M2C_UNK gOv000InfoWindowSpriteClass;
     extern Ov000MenuState *gOv000InfoWindow;
     void *var_r0;
     var_r0 = MemAlloc(0x20);
@@ -228,46 +228,49 @@ void func_ov000_02174c2c(void) {
         var_r0 = Ov000_InfoWindow_Init(var_r0);
     }
     gOv000InfoWindow = var_r0;
-    CreateSpriteFromClass(&data_ov000_021b8e5c, 8);
+    CreateSpriteFromClass(&gOv000InfoWindowSpriteClass, 8);
 }
 
 void func_ov000_02174c64(void) {
     void Ov000_InfoWindow_Update(Ov000MenuState *);
     extern Ov000MenuState *gOv000InfoWindow;
-    if (func_ov000_02174c0c() == 0) return;
+    if (Ov000_InfoWindow_Exists() == 0) return;
     Ov000_InfoWindow_Update(gOv000InfoWindow);
 }
 
-void func_ov000_02174c88(void) {
+/* Tear down the ov000 map info window: free its two panels and the window
+ * itself, forget it, and delete the info window's and the map view's sprites.
+ * Does nothing when no window is open. */
+void Ov000_InfoWindow_Destroy(void) {
     void func_ov000_021743ec(void *);
-    void func_ov000_02173f30(void *);
+    void Ov000_InfoWindow_FreePanels(void *);
     M2C_UNK MemFree(s32);
     void DeleteSpriteObjectsOfClass(void *);
     void RemoveMapViewSprites(void);
-    extern Ov000MenuState *gOv000InfoWindow;
-    extern M2C_UNK data_ov000_021b8e5c;
-    void *temp;
-    if (func_ov000_02174c0c() == 0) return;
+    extern Ov000InfoMenu *gOv000InfoWindow;
+    extern M2C_UNK gOv000InfoWindowSpriteClass;
+    void *window;
+    if (Ov000_InfoWindow_Exists() == 0) return;
     func_ov000_021743ec(gOv000InfoWindow);
-    temp = gOv000InfoWindow;
-    if (temp != 0) {
-        func_ov000_02173f30(temp);
-        MemFree((s32)temp);
+    window = gOv000InfoWindow;
+    if (window != 0) {
+        Ov000_InfoWindow_FreePanels(window);
+        MemFree((s32)window);
     }
     gOv000InfoWindow = 0;
-    DeleteSpriteObjectsOfClass(&data_ov000_021b8e5c);
+    DeleteSpriteObjectsOfClass(&gOv000InfoWindowSpriteClass);
     RemoveMapViewSprites();
 }
 
 void func_ov000_02174ce8(void) {
     extern Ov000MenuState *gOv000InfoWindow;
-    if (func_ov000_02174c0c() == 0) return;
+    if (Ov000_InfoWindow_Exists() == 0) return;
     M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
 }
 
 void Ov000_InfoWindow_ShowProductionUnit(s32 arg0, s32 arg1) {
     extern Ov000MenuState *gOv000InfoWindow;
-    if (func_ov000_02174c0c() == 0) return;
+    if (Ov000_InfoWindow_Exists() == 0) return;
     M2C_FIELD(gOv000InfoWindow, u8 *, 0x11) = 1;
     ((void (*)())func_ov000_02174a68)(gOv000InfoWindow, arg0, arg1);
 }
@@ -275,7 +278,7 @@ void Ov000_InfoWindow_ShowProductionUnit(s32 arg0, s32 arg1) {
 s32 func_ov000_02174d50(void) {
     extern Ov000MenuState *gOv000InfoWindow;
     s32 result;
-    if (func_ov000_02174c0c() != 0) {
+    if (Ov000_InfoWindow_Exists() != 0) {
         result = M2C_FIELD(gOv000InfoWindow, u8 *, 0x13);
     } else {
         result = 0;
@@ -286,7 +289,7 @@ s32 func_ov000_02174d50(void) {
 s32 func_ov000_02174d78(void) {
     void Ov000_InfoWindow_TogglePanel(void *);
     extern Ov000MenuState *gOv000InfoWindow;
-    if (func_ov000_02174c0c() == 0) return 0;
+    if (Ov000_InfoWindow_Exists() == 0) return 0;
     Ov000_InfoWindow_TogglePanel(gOv000InfoWindow);
     return 1;
 }

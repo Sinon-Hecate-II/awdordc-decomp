@@ -313,11 +313,11 @@ func_02018254(10); p=&gMbState;
 if(!M2C_FIELD(M2C_FIELD(p,void **,12),s32 *,0x1320)) {
 do { v=func_02012218(M2C_FIELD(&gMbState,s32 *,4),M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x508),M2C_FIELD(&gMbState,u16 *,0)); } while(v==4);
 if(v!=2)return 8;
-func_020119dc(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x508));
+WFC_SetGeneralHandler(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),s32 *,0x508));
 M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d)=1;
 return 0;
 }
-func_020119dc(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,0x508));
+WFC_SetGeneralHandler(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,0x508));
 M2C_FIELD(M2C_FIELD(p,void **,8),u8 *,0x50d)=1;
 func_020168a0(); return 0;
 }

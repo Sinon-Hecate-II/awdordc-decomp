@@ -7,7 +7,7 @@ typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
 #define GPI_ERROR_CODE    0x418 /* s32: code the last error reply carried */
 #define GPI_ERROR_MESSAGE 0x000 /* char[256]: text of the last error reply */
 
-extern M2C_UNK data_020ff3ec, gGpiInfoState;
+extern M2C_UNK sGpiBucketFindName, gGpiInfoState;
 extern s32 gGpiInfoSocket;
 extern M2C_UNK data_0213dcd0, sGpiAssertSet, sGpiBucketSourceFile, sGpiBucketNewName;
 
@@ -168,7 +168,8 @@ if(r>0){if(rejected){gpiLogMessage(conn,&gpiLogConnectionRejected);*state=4;retu
 *state=0;return 0;
 }
 
-s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
+#pragma opt_propagation off
+s32 func_02058450(void **arg0, s8 *arg1, s32 *arg2, void *arg3, void *arg4) {
     void AssertFailed(void *, void *, void *, s32);
     void gpiSetError(void **, s32, M2C_UNK);
     void gpiCallErrorCallback(void *, s32, s32);
@@ -176,7 +177,6 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
     s32 idx;
     s8 *p;
     s8 *dstA;
-    s8 *cursor;
     s32 cnt;
     s8 ch;
     s8 *dstB;
@@ -195,36 +195,33 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
         AssertFailed(&sGpiAssertValueNotNull, &sGpiUtilitySourceFile, &data_020ff2b8, 0x19b);
     }
     idx = *arg2;
-    p = (s8 *)arg1 + idx;
-    if (*p != 0x5c) {
+    if (arg1[idx] != 0x5c) {
         gpiSetError(arg0, 1, (s32)&data_020ff3dc);
         gpiCallErrorCallback(arg0, 3, 1);
         return 3;
     }
-    cursor = p + 2;
-    cnt = 0;
+    p = arg1 + idx;
     ch = p[1];
-    if (ch != 0x5c) {
+    arg1 = p + 2;
+    cnt = 0;
+    while (ch != 0x5c) {
         if (ch == 0) {
             gpiSetError(arg0, 1, (s32)&data_020ff3dc);
             gpiCallErrorCallback(arg0, 3, 1);
             return 3;
         }
-        do {
-            if (cnt == 0x1ff) {
+        if (cnt == 0x1ff) {
                 gpiSetError(arg0, 1, (s32)&data_020ff3dc);
                 gpiCallErrorCallback(arg0, 3, 1);
                 return 3;
             }
-            *dstA++ = ch;
-            ch = *cursor++;
-            cnt++;
-        } while (ch != 0x5c);
+        *dstA++ = ch;
+        ch = *arg1++;
+        cnt++;
     }
     *dstA = 0;
     cnt2 = 0;
-    ch2 = *cursor++;
-    do {
+    while ((ch2 = *arg1++) != 0x5c && ch2 != 0) {
         if (cnt2 == 0x1ff) {
             gpiSetError(arg0, 1, (s32)&data_020ff3dc);
             gpiCallErrorCallback(arg0, 3, 1);
@@ -232,13 +229,12 @@ s32 func_02058450(void **arg0, s32 arg1, s32 *arg2, void *arg3, void *arg4) {
         }
         *dstB++ = ch2;
         cnt2++;
-        ch2 = *cursor++;
-    } while (ch2 != 0x5c && ch2 != 0);
+    }
     *dstB = 0;
-    *arg2 = idx + (s32)(cursor - p - 1);
+    *arg2 += arg1 - p - 1;
     return 0;
 }
-
+#pragma opt_propagation reset
 void gpiSetError(void **arg0, s32 arg1, M2C_UNK arg2) {
     void *temp_r4;
 
@@ -464,12 +460,17 @@ void *BucketValue(void *arg0) {
     return arg0 + 0xC;
 }
 
-void *BucketFind(void *a,s32 b){
-void AssertFailed(void *,void *,void *,s32);void *TableLookup(s32,void *);
-s32 buf[5];
-if(!a)a=M2C_FIELD(&data_0213dcd0,void **,4);
-if(!a)AssertFailed(&sGpiAssertSet,&sGpiBucketSourceFile,&data_020ff3ec,0x153);
-buf[0]=b;return TableLookup(M2C_FIELD(a,s32 *,0),buf);
+/* gbucket.c BucketFind: look up the entry for `key` in bucket `store` (or the
+   module's default store, kept at data_0213dcd0+4, when store is null) and
+   return its value, or 0 when there is no such entry. */
+void *BucketFind(void *store, s32 key) {
+    void AssertFailed(void *, void *, void *, s32);
+    void *TableLookup(s32, void *);
+    s32 keyBuf[5];
+    if (!store) store = M2C_FIELD(&data_0213dcd0, void **, 4);
+    if (!store) AssertFailed(&sGpiAssertSet, &sGpiBucketSourceFile, &sGpiBucketFindName, 0x153);
+    keyBuf[0] = key;
+    return TableLookup(M2C_FIELD(store, s32 *, 0), keyBuf);
 }
 
 /* Closes the GPI info module's connection: shuts the socket down and closes it,

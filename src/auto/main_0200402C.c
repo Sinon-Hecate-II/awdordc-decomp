@@ -138,49 +138,58 @@ void GX_LoadBG0ScrSub(M2C_UNK src, s32 offset, u32 size) {
     CopyU16(src, base + offset, size);
 }
 
-void GX_LoadBG1Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    s32 func_020036d8();
+/* Copy `size` bytes of background-map data into the main screen's BG1 map at
+ * `offset`: through the GX DMA channel when one is owned and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadBG1Scr(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG1ScrPtr();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    s32 temp_ip;
+    s32 screenBase;
 
-    temp_ip = func_020036d8();
-    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+    screenBase = GX_GetBG1ScrPtr();
+    if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
+        DmaCopy16(gGxDmaChannel, src, screenBase + offset, size);
         return;
     }
-    CopyU16(arg0, temp_ip + arg1, arg2);
+    CopyU16(src, screenBase + offset, size);
 }
 
-void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    s32 func_0200370c();
+/* Copy `size` bytes of background-map data into the sub screen's BG1 map at
+ * `offset`: through the GX DMA channel when one is owned and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadBG1ScrSub(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG1ScrPtrSub();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    s32 temp_ip;
+    s32 screenBase;
 
-    temp_ip = func_0200370c();
-    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+    screenBase = GX_GetBG1ScrPtrSub();
+    if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
+        DmaCopy16(gGxDmaChannel, src, screenBase + offset, size);
         return;
     }
-    CopyU16(arg0, temp_ip + arg1, arg2);
+    CopyU16(src, screenBase + offset, size);
 }
 
-void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of background-map data into the main screen's BG2 map at
+ * `offset`: through the GX DMA channel when one is owned and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadBG2Scr(M2C_UNK src, s32 offset, u32 size) {
     s32 GX_GetBG2ScrPtr();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    s32 temp_ip;
+    s32 screenBase;
 
-    temp_ip = GX_GetBG2ScrPtr();
-    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+    screenBase = GX_GetBG2ScrPtr();
+    if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
+        DmaCopy16(gGxDmaChannel, src, screenBase + offset, size);
         return;
     }
-    CopyU16(arg0, temp_ip + arg1, arg2);
+    CopyU16(src, screenBase + offset, size);
 }
 
 /* Copy `size` bytes of BG3 map data from `src` into BG3's screen area at `offset`.
@@ -201,52 +210,112 @@ void GX_LoadBG3Scr(M2C_UNK src, s32 offset, u32 size) {
     CopyU16(src, screenBase + offset, size);
 }
 
-void func_0200454c(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_02003834(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_02003834();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the main screen's
+ * BG0 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG0Char(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG0CharPtr();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG0CharPtr();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
-void func_020045ac(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_02003868(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_02003868();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the sub screen's
+ * BG0 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG0CharSub(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG0CharPtrSub();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG0CharPtrSub();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
-void GX_LoadBG1Char(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_02003888(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_02003888();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the main screen's
+ * BG1 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG1Char(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG1CharPtr();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG1CharPtr();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
-void func_0200466c(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_020038bc(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_020038bc();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the sub screen's
+ * BG1 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG1CharSub(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG1CharPtrSub();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG1CharPtrSub();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
-void GX_LoadBG2Char(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_020038dc(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_020038dc();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the main screen's
+ * BG2 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG2Char(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG2CharPtr();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG2CharPtr();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
-void func_0200472c(M2C_UNK arg0,s32 arg1,u32 arg2) {
- s32 func_0200392c(); M2C_UNK DmaCopy(s32,M2C_UNK,s32,u32); M2C_UNK MIi_CpuCopy32(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel; s32 temp_ip;
- temp_ip=func_0200392c();
- if(gGxDmaChannel!=-1 && arg2>0x30U){DmaCopy(gGxDmaChannel,arg0,temp_ip+arg1,arg2);return;}
- MIi_CpuCopy32(arg0,temp_ip+arg1,arg2);
+/* Copy `size` bytes of background character (tile) data into the main screen's
+ * BG3 character area at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadBG3Char(M2C_UNK src, s32 offset, u32 size) {
+    s32 GX_GetBG3CharPtr();
+    M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
+    M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    s32 charBase;
+
+    charBase = GX_GetBG3CharPtr();
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, charBase + offset, size);
+        return;
+    }
+    MIi_CpuCopy32(src, charBase + offset, size);
 }
 
 /* Begins a main-engine background extended-palette load: releases the palette's

@@ -391,10 +391,10 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     s32 count;
     s32 i;
 
-    p = (WfcFriendSlot *)((u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS);
-    emptyCode = data_ov001_0218fb64;
-    *arg0 = p;
     count = 0;
+    p = (WfcFriendSlot *)((u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS);
+    *arg0 = p;
+    emptyCode = data_ov001_0218fb64;
     for (i = 0; i < WFC_FRIEND_SLOT_COUNT; i++) {
         if (ByteCompareN((M2C_UNK)p->code, (M2C_UNK)emptyCode, sizeof(p->code)) != 0) {
             count = count + 1;

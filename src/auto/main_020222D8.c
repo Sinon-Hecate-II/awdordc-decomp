@@ -126,7 +126,7 @@ void TlsProcessServerHello(s32 channel, u8 *body) {
     M2C_FIELD(channel, u8 *, TLS_STATE) = 2;
 }
 #pragma opt_propagation reset
-s32 func_02022dbc(u8 *p,s32 n,s32 stride,s32 target) {
+s32 TlsListContainsSuite(u8 *p,s32 n,s32 stride,s32 target) {
 s32 i,v;
 for(i=0;i<n;i++,p+=stride) {
 v=p[0]; v=(v<<8)+p[1];
@@ -136,11 +136,15 @@ if(v==target)return 1;
 return 0;
 }
 
-s32 TlsPickCipherSuite(u8 *arg0,s32 arg1,s32 arg2) {
+/* Picks the first cipher suite this build prefers (gTlsCipherSuites) that the
+ * peer's offered list, `count` entries of `stride` bytes each, also contains;
+ * returns the chosen suite (which the handshake then records as its hash
+ * algorithm) or 0 when none of the preferred suites is offered. */
+s32 TlsPickCipherSuite(u8 *list,s32 count,s32 stride) {
 extern u16 gTlsCipherSuites[];
 u32 i=0;
 do {
-if(func_02022dbc(arg0,arg1,arg2,gTlsCipherSuites[i]))return gTlsCipherSuites[i];
+if(TlsListContainsSuite(list,count,stride,gTlsCipherSuites[i]))return gTlsCipherSuites[i];
 i++;
 }while(i<2);
 return 0;

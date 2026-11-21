@@ -127,6 +127,10 @@ void func_ov001_02180d24(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
 }
 
+/* Opens the ov001 Wi-Fi access-point (region) menu: allocate its sprite state,
+ * clear its chosen flag, load the menu graphics and object layout, show the
+ * "select a region" prompt, build the menu, save-slot sprites and cursor, and
+ * hand over to the menu's input step. */
 void Ov001_OpenAccessPointMenu(void) {
     void *Ov001_Alloc(s32, s32);
     void Ov001_LoadAccessPointMenuGraphics(void);
@@ -137,10 +141,11 @@ void Ov001_OpenAccessPointMenu(void) {
     void Ov001_ShowMessagePanel(s32, s32, s32);
     void Ov001_OpenMenuForMode(s32);
     extern M2C_UNK gOv001MenuRegion;
-    void *temp_r0;
-    temp_r0 = Ov001_Alloc(0x20, 4);
-    M2C_FIELD(&gOv001MenuRegion, void **, 4) = temp_r0;
-    M2C_FIELD(temp_r0, u8 *, 0x1D) = 0;
+    Ov001MenuSprites *sprites;
+
+    sprites = Ov001_Alloc(0x20, 4);
+    ((Ov001MenuRegion *)&gOv001MenuRegion)->sprites = sprites;
+    sprites->mode = 0;
     Ov001_LoadAccessPointMenuGraphics();
     Ov001_LoadObjLayoutBlock(1);
     Ov001_ShowMessagePanel(0x2F, -1, 0);
@@ -152,7 +157,7 @@ void Ov001_OpenAccessPointMenu(void) {
 
 /* Load the access-point menu palettes, tiles and tilemap, and set its background priorities. */
 void Ov001_LoadAccessPointMenuGraphics(void) {
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     void Ov001_EnableVisiblePlanes(s32, s32);
@@ -161,7 +166,7 @@ void Ov001_LoadAccessPointMenuGraphics(void) {
     Ov001_LoadAsset(&gOv001Step1TilesPath, &GX_LoadBG2Char);
     Ov001_LoadAsset(&gOv001Step1PalettePath, &GX_LoadBGPltt);
     Ov001_LoadAsset(&gOv001AccessPointTilemapPath, &GX_LoadBG2Scr);
-    *M2C_FIELD(&gOv001MenuRegion, s32 **, 4) = Ov001_LoadFile(Ov001_LocalizePath(&palettePath), 0, 4);
+    *M2C_FIELD(&gOv001MenuRegion, s32 **, 4) = Ov001_LoadFile(Ov001_GetLocalizedFileName(&palettePath), 0, 4);
     Ov001_EnableVisiblePlanes(1, 16);
     REG_SUB_BG0CNT = (REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3;
     REG_SUB_BG1CNT = (REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3;

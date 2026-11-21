@@ -251,20 +251,28 @@ void gpiFreeBuddyList(void **arg0) {
     TableRemove(M2C_FIELD(*arg0, s32 *, 0x428));
 }
 
-s32 func_02055c08(s32 arg0,void *arg1,void *arg2) {
-s32 StringCompare(s32,s32);
-void *p=M2C_FIELD(arg1,void **,12);
-if(p && StringCompare(M2C_FIELD(arg2,s32 *,0),M2C_FIELD(p,s32 *,0))==0 && StringCompare(M2C_FIELD(arg2,s32 *,4),M2C_FIELD(p,s32 *,8))==0){
-*M2C_FIELD(arg2,void ***,8)=arg1;M2C_FIELD(arg2,s32 *,12)=1;return 0;
-}
-return 1;
+/* Table-walk callback of gpiFindBuddyByNickEmail: when this buddy record has a
+   cached profile whose nick and email equal the search's two keys, store the
+   record in the search's result slot, set its found flag, and stop the walk
+   (return 0); otherwise let the walk continue (return 1). */
+s32 gpiMatchBuddyNickEmail(s32 connection, void *entry, void *search) {
+    s32 StringCompare(s32, s32);
+    GpiInfoResponse *info = M2C_FIELD(entry, GpiInfoResponse **, 0xc);
+    if (info != NULL
+        && StringCompare(M2C_FIELD(search, s32 *, 0), (s32)info->nick) == 0
+        && StringCompare(M2C_FIELD(search, s32 *, 4), (s32)info->email) == 0) {
+        *M2C_FIELD(search, void ***, 8) = entry;
+        M2C_FIELD(search, s32 *, 12) = 1;
+        return 0;
+    }
+    return 1;
 }
 
-s32 func_02055c68(void **arg0,s32 arg1,s32 arg2,s32 *arg3) {
+s32 gpiFindBuddyByNickEmail(void **arg0,s32 arg1,s32 arg2,s32 *arg3) {
 s32 func_02055cd0(void **,s32 (*)(s32,void *,void *),void *);
 s32 data[4];
 data[0]=arg1;data[1]=arg2;data[3]=0;data[2]=(s32)arg3;
-func_02055cd0(arg0,func_02055c08,data);
+func_02055cd0(arg0,gpiMatchBuddyNickEmail,data);
 if(!data[3])*arg3=0;
 return 0;
 }

@@ -96,7 +96,7 @@ void InitBattleScene(void *state) {
     void SetupPlayerSettings(void *);
     void func_ov002_021e3890(void *);
     void PlayerPanels_Init(void *);
-    void func_ov002_021e85e8(void *);
+    void InitBattleUnitView(void *);
     void func_ov002_021e6cdc(void *);
     void func_020af7ac(void);
     void func_020af760(void);
@@ -118,7 +118,7 @@ void InitBattleScene(void *state) {
         s32 side = 0;
         void *unitView = &gUnitViews;
         do {
-            func_ov002_021e85e8(unitView);
+            InitBattleUnitView(unitView);
             side++;
             unitView = (u8 *)unitView + 0x2C;
         } while (side < 2);

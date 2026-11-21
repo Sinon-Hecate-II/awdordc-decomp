@@ -53,9 +53,9 @@ s32 func_ov009_022242c8(void) {
     void func_ov009_022213f0(M2C_UNK, M2C_UNK);
     void *GetLocalPlayerName(void);
     M2C_UNK GetEarnedRecordTierTotal(void);
-    M2C_UNK func_ov000_0216a564(void);
-    M2C_UNK func_ov000_0216a76c(void);
-    M2C_UNK func_ov000_0216a7c4(void);
+    M2C_UNK GetRecordRank(void);
+    M2C_UNK GetFavouriteRecordGroup(void);
+    M2C_UNK GetFavouriteRecordIndex(void);
     M2C_UNK func_ov009_022241c4(M2C_UNK);
     M2C_UNK func_ov009_02224718(M2C_UNK);
     M2C_UNK func_ov009_02224140(M2C_UNK);
@@ -142,9 +142,9 @@ s32 func_ov009_022242c8(void) {
     func_ov009_022213f0((s32)&gLinkLocalPlayerInfo, (s32)GetLocalPlayerName());
 
     GetEarnedRecordTierTotal();
-    M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)func_ov000_0216a564();
-    M2C_FIELD(&gLinkState, s8 *, 0x159) = (u8)func_ov000_0216a76c();
-    M2C_FIELD(&gLinkState, s8 *, 0x15a) = (u8)func_ov000_0216a7c4();
+    M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)GetRecordRank();
+    M2C_FIELD(&gLinkState, s8 *, 0x159) = (u8)GetFavouriteRecordGroup();
+    M2C_FIELD(&gLinkState, s8 *, 0x15a) = (u8)GetFavouriteRecordIndex();
 
     func_ov009_022241c4(0);
     func_ov009_02224718(0);
@@ -175,7 +175,7 @@ void ClearLinkResultFlags(void) {
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 0;
 }
 
-void func_ov009_022244d4(s32 arg0) {
+void SetLinkResultFlagMask(s32 arg0) {
     extern M2C_UNK gLinkState;
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 1 << arg0;
 }

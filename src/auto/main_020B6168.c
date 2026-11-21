@@ -136,43 +136,48 @@ void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
     PanMapViewToTile(arg0, arg1);
 }
 
-void func_020b6444(void *arg0) {
+/* Spawn the unit flare effect over the unit the task points at (its +0x5C):
+ * take the unit's tile and owner, shift the flare left or right of the tile by
+ * the owner's facing byte, then load the flare sheet, place the flare sprite on
+ * the tile and play the hit sound there. */
+void SpawnUnitFlareEffect(void *task) {
     void ResetEffectSpritePool(void);
     void LoadEffectSpriteSheet(M2C_UNK *, s32);
     void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     extern void **gCurrentMap;
-    extern M2C_UNK data_02128ebc;
-    extern M2C_UNK data_02128ec4;
-    u8 *u;
-    s32 n, x, y;
+    extern M2C_UNK gUnitFlareName;
+    extern M2C_UNK gUnitFlareSprite;
+    u8 *unit;
+    s32 owner, x, y;
 
-    u = M2C_FIELD(arg0, u8 **, 0x5c);
-    x = u[1] << 4;
-    y = u[2] << 4;
-    if (u) {
-        if (!u) n = 0;
-        else n = ((s32)u - (s32)((u8 *)*gCurrentMap + 0x59a4)) / 14;
-        n = (n >> 6) + 1;
+    unit = M2C_FIELD(task, u8 **, 0x5c);
+    x = unit[MAP_UNIT_X] << 4;
+    y = unit[MAP_UNIT_Y] << 4;
+    if (unit) {
+        if (!unit) owner = 0;
+        else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+        owner = (owner >> 6) + 1;
     } else {
-        n = 0;
+        owner = 0;
     }
-    y = y - 2;
-    if (*((u8 *)*gCurrentMap + n * 140 + 0x67cc) != 0) {
+    if (*((u8 *)*gCurrentMap + owner * MAP_PLAYER_STRIDE + MAP_PLAYER_STATES + 0x28) != 0) {
         x = x + 6;
+        y -= 2;
     } else {
         x = x - 6;
+        y -= 2;
     }
     ResetEffectSpritePool();
-    LoadEffectSpriteSheet(&data_02128ebc, 0);
+    LoadEffectSpriteSheet(&gUnitFlareName, 0);
     {
-        void *p = CreateEffectMapSprite(&data_02128ec4, x, y, 0x30, 0, 0, arg0);
-        SetAnimatedSpriteFrame(p, 0);
+        void *flare = CreateEffectMapSprite(&gUnitFlareSprite, x, y, 0x30, 0, 0, task);
+        SetAnimatedSpriteFrame(flare, 0);
     }
     {
-        u8 *uu = M2C_FIELD(arg0, u8 **, 0x5c);
-        PlaySoundAtTile(0x12f, uu[1], uu[2]);
+        u8 *unit2 = M2C_FIELD(task, u8 **, 0x5c);
+        PlaySoundAtTile(0x12f, unit2[MAP_UNIT_X], unit2[MAP_UNIT_Y]);
     }
 }
 
@@ -187,9 +192,9 @@ void CreateUnitFlareSprite(s32 arg0) {
 #pragma opt_propagation off
 void UpdateSmallFlareSprite(void *arg0) {
 s32 EaseInterpolate(s32,s32,s32,u16,s32);M2C_UNK func_0208c0d0(void *,u8);
-u32 bits=M2C_FIELD(arg0,u32 *,0x48);
-u32 high=bits>>21;
-u16 top=(u16)high,bottom=(u16)((bits<<11)>>21);
+s32 bits=M2C_FIELD(arg0,u32 *,0x48);
+u32 high=(u32)bits>>21;
+u16 top=(u16)high,bottom=(u16)(((u32)bits<<11)>>21);
 s32 a=EaseInterpolate(4,31,0,top,bottom);
 s32 b=EaseInterpolate(4,0,0x40000,top,bottom);
 func_0208c0d0(arg0,(u8)a);M2C_FIELD(arg0,s32 *,0x40)=b;
@@ -536,15 +541,18 @@ void func_020b6ff4(void *arg0) {
     PlaySoundAtTile(0x105, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_020b7050(void *arg0) {
-    M2C_UNK func_0207b7e8(s32);
-    extern M2C_UNK data_02128f54;
-    extern M2C_UNK data_02128f64;
-    s32 temp_r4;
+/* Spawns the "gas_ball_down" gas effect over the task's tile: places the animated
+ * sprite, pans the map view onto the tile and holds the view there until the
+ * effect finishes. */
+void CreateGasBallDownSprite(void *task) {
+    M2C_UNK CreateMapViewScrollHold(s32);
+    extern M2C_UNK gGasBallDownName;
+    extern M2C_UNK gGasBallDownSprite;
+    s32 sprite;
 
-    temp_r4 = CreateAnimatedMapSprite(&data_02128f64, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, LoadEffectSpriteSheet(&data_02128f54, 1), 1, arg0);
-    PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
-    func_0207b7e8(temp_r4);
+    sprite = CreateAnimatedMapSprite(&gGasBallDownSprite, M2C_FIELD(task, s32 *, 0x3C), M2C_FIELD(task, s32 *, 0x40), 0x10, LoadEffectSpriteSheet(&gGasBallDownName, 1), 1, task);
+    PanMapViewToTile(M2C_FIELD(task, s32 *, 0x3C), M2C_FIELD(task, s32 *, 0x40));
+    CreateMapViewScrollHold(sprite);
 }
 
 void func_020b70b0(void *arg0) {

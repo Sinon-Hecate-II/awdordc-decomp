@@ -121,14 +121,14 @@ s32 func_ov002_021e8e7c(s32 arg0) {
 
 /* Advance one unit's animation: tick its child lists, accumulate position deltas, and step its frame. */
 void StepUnitModel(void *unit){
-void func_ov002_021e1844(void *);void func_ov002_021e2aa8(void *);void func_ov002_021e3e64(void *);
+void func_ov002_021e1844(void *);void UpdateEffectNode(void *);void func_ov002_021e3e64(void *);
 extern u8 gEffectTable[],gEffectHasVariants[];
 void *node;
 func_ov002_021e1844(unit);
 node=0;
 while((node=Next021e8e8c(unit+0x54,node))!=0){func_ov002_021e1844(M2C_FIELD(node,void **,0));}
 node=0;
-while((node=Next021e8e8c(unit+0x5c,node))!=0){func_ov002_021e2aa8(M2C_FIELD(node,void **,0));}
+while((node=Next021e8e8c(unit+0x5c,node))!=0){UpdateEffectNode(M2C_FIELD(node,void **,0));}
 node=0;
 while((node=Next021e8e8c(unit+0x64,node))!=0){func_ov002_021e3e64(M2C_FIELD(node,void **,0));}
 M2C_FIELD(unit,s32 *,0x74)+=M2C_FIELD(unit,s16 *,0x88);

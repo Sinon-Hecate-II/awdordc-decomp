@@ -144,13 +144,15 @@ if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y-1]]==3
 if(((Map14E24 *)*gCurrentMap)->cells[x+((Map14E24 *)*gCurrentMap)->rows[y+1]]==34 && Map_IsWastelandTile(x,y-1)==1)n++;
 return n;default:return -1;}}
 
-s32 Map_IsWastelandArea(s32 x,s32 y) {
- s32 Map_IsWastelandTile(s32,s32);
- s32 i,j;
- for(j=y-1;j<=y+1;j++)
- for(i=x-1;i<=x+1;i++)
- if(!Map_IsWastelandTile(i,j)) return 0;
- return 1;
+/* Whether every cell of the 3x3 block centred on (x,y) is a wasteland tile. */
+s32 Map_IsWastelandArea(s32 x, s32 y) {
+    s32 Map_IsWastelandTile(s32, s32);
+    s32 i, j;
+    for (j = y - 1; j <= y + 1; j++)
+        for (i = x - 1; i <= x + 1; i++)
+            if (!Map_IsWastelandTile(i, j))
+                return 0;
+    return 1;
 }
 
 /* Places value 36 at (x,y) if it sits in an open straight corridor

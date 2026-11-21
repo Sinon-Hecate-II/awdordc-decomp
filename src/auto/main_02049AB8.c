@@ -87,13 +87,15 @@ s32 ghiInitFixedBuffer(void *connection, s32 *buffer, void *userBuffer, s32 size
     return 1;
 }
 
-void ghiFreeBuffer(s32 *p) {
-void gpiFree(s32);
-extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce28;
-if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce28,0x9b);
-if(!p || !p[1])return;
-if(!p[7])gpiFree(p[1]);
-MemSet(p,0,0x24);
+/* Free a GHIBuffer: release its storage unless it is caller-owned (dontFree) and
+ * clear the whole structure. */
+void ghiFreeBuffer(GHIBuffer *buffer) {
+    void gpiFree(s32);
+    extern M2C_UNK sAssertBuffer, gGhttpBufferFileName, data_020fce28;
+    if (!buffer) AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &data_020fce28, 0x9b);
+    if (!buffer || !buffer->data) return;
+    if (!buffer->dontFree) gpiFree((s32)buffer->data);
+    MemSet(buffer, 0, sizeof(GHIBuffer));
 }
 
 /* Append data to a GHIBuffer, growing it if needed; when the buffer is encrypted

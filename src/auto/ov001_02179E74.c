@@ -59,7 +59,7 @@ void MapSelectList_Init(void) {
  * the step-31 background tiles into VRAM, upload the tilemap, then point the
  * layered background control registers at the new layers. */
 void InitMapSelectGraphics(void) {
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     M2C_UNK InitMapPreview(M2C_UNK);
@@ -75,11 +75,11 @@ void InitMapSelectGraphics(void) {
     BgStep31Path bgStep31Path = *(BgStep31Path *)&sYbBgStep31NclPath;
     Ov001_LoadAsset(&sJb4ApListNscPath, &GX_LoadBG3Scr);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4) =
-        Ov001_LoadFile(Ov001_LocalizePath(&listBackPath), 0, 4);
+        Ov001_LoadFile(Ov001_GetLocalizedFileName(&listBackPath), 0, 4);
     InitMapPreview(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4));
     RequestMapPreviewUpdate();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 8) =
-        Ov001_LoadFile(Ov001_LocalizePath(&bgStep31Path), 0, 4);
+        Ov001_LoadFile(Ov001_GetLocalizedFileName(&bgStep31Path), 0, 4);
     /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;

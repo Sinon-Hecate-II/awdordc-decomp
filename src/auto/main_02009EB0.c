@@ -84,82 +84,87 @@ void FifoReceiveHandler(void) {
 
 void CompleteFileRequest(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 OS_WakeupThread(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;OS_WakeupThread((u8 *)p+24);OS_RestoreInterrupts(k);}
 
-s32 ExecuteFileCommand(void *a, s32 b) {
+/* Run one file command of a request: when the file's callback is armed for the
+ * command it runs first (reporting 8 falls back to the default handler), then the
+ * default per-command handler runs; a command still in progress (6) makes a
+ * caller that waits sleep on the file's operation queue, and the finished result
+ * is either handed back to the request or delivered through CompleteFileRequest. */
+s32 ExecuteFileCommand(void *request, s32 command) {
     s32 OS_DisableInterrupts(void);
     s32 OS_RestoreInterrupts(s32);
     M2C_UNK OS_SleepThread(void *);
     extern s32 (*gFileCommandHandlers[])(void *);
     void CompleteFileRequest(void *, s32);
 
-    s32 e;
-    void *c = M2C_FIELD(a, void **, 0x8);
-    u32 d = (u32)1 << b;
-    s32 flag = 1;
-    s32 has200;
-    s32 outer;
+    s32 result;
+    void *file = M2C_FIELD(request, void **, FS_REQ_FILE);
+    u32 eventMask = (u32)1 << command;
+    s32 callerWaits = 1;
+    s32 blocking;
+    s32 waitsForResult;
     s32 zero = 0;
     s32 one = 1;
 
-    if (!(M2C_FIELD(a, s32 *, 0xc) & 0x4)) {
-        flag = 0;
+    if (!(M2C_FIELD(request, s32 *, FS_REQ_FLAGS) & FS_REQ_COMPLETED)) {
+        callerWaits = 0;
     }
-    if (flag) {
-        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) | 0x200;
+    if (callerWaits) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = M2C_FIELD(file, s32 *, FS_FILE_STATE) | FS_FILE_OP_BLOCKING;
     } else {
-        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) | 0x100;
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = M2C_FIELD(file, s32 *, FS_FILE_STATE) | FS_FILE_OP_NONBLOCKING;
     }
-    if (M2C_FIELD(c, u32 *, 0x58) & d) {
-        s32 (*cb)(void *, s32) = M2C_FIELD(c, s32 (**)(void *, s32), 0x54);
-        e = cb(a, b);
-        switch (e) {
+    if (M2C_FIELD(file, u32 *, FS_FILE_EVENTS) & eventMask) {
+        s32 (*cb)(void *, s32) = M2C_FIELD(file, s32 (**)(void *, s32), FS_FILE_CALLBACK);
+        result = cb(request, command);
+        switch (result) {
         case 0:
         case 1:
         case 4:
-            M2C_FIELD(a, s32 *, 0x14) = e;
+            M2C_FIELD(request, s32 *, FS_REQ_RESULT) = result;
             break;
         case 8:
-            M2C_FIELD(c, u32 *, 0x58) = M2C_FIELD(c, u32 *, 0x58) & ~d;
-            e = 7;
+            M2C_FIELD(file, u32 *, FS_FILE_EVENTS) = M2C_FIELD(file, u32 *, FS_FILE_EVENTS) & ~eventMask;
+            result = 7;
             break;
         }
     } else {
-        e = 7;
+        result = 7;
     }
-    if (e == 7) {
-        e = gFileCommandHandlers[b](a);
+    if (result == 7) {
+        result = gFileCommandHandlers[command](request);
     }
-    if (e == 6) {
-        outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
-        if (outer != 0) {
-            b = OS_DisableInterrupts();
-            has200 = (M2C_FIELD(c, s32 *, 0x1c) & 0x200) ? 1 : 0;
-            if (has200 != 0) {
+    if (result == 6) {
+        waitsForResult = (M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_COMPLETED) ? 1 : 0;
+        if (waitsForResult != 0) {
+            command = OS_DisableInterrupts();
+            blocking = (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_OP_BLOCKING) ? 1 : 0;
+            if (blocking != 0) {
                 do {
-                    OS_SleepThread((u8 *)c + 0xc);
-                    if (M2C_FIELD(c, s32 *, 0x1c) & 0x200) {
-                        has200 = one;
+                    OS_SleepThread((u8 *)file + FS_FILE_OP_QUEUE);
+                    if (M2C_FIELD(file, s32 *, FS_FILE_STATE) & FS_FILE_OP_BLOCKING) {
+                        blocking = one;
                     } else {
-                        has200 = zero;
+                        blocking = zero;
                     }
-                } while (has200 != 0);
-                e = M2C_FIELD(a, s32 *, 0x14);
-                OS_RestoreInterrupts(b);
-                goto done;
+                } while (blocking != 0);
             }
+            result = M2C_FIELD(request, s32 *, FS_REQ_RESULT);
+            OS_RestoreInterrupts(command);
+            goto done;
         } else {
             goto done;
         }
     }
-    outer = (M2C_FIELD(a, s32 *, 0xc) & 0x4) ? 1 : 0;
-    if (outer == 0) {
-        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x100;
-        CompleteFileRequest(a, e);
+    waitsForResult = (M2C_FIELD(request, volatile s32 *, FS_REQ_FLAGS) & FS_REQ_COMPLETED) ? 1 : 0;
+    if (waitsForResult == 0) {
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_FILE_OP_NONBLOCKING;
+        CompleteFileRequest(request, result);
     } else {
-        M2C_FIELD(c, s32 *, 0x1c) = M2C_FIELD(c, s32 *, 0x1c) & ~0x200;
-        M2C_FIELD(a, s32 *, 0x14) = e;
+        M2C_FIELD(file, s32 *, FS_FILE_STATE) = M2C_FIELD(file, s32 *, FS_FILE_STATE) & ~FS_FILE_OP_BLOCKING;
+        M2C_FIELD(request, s32 *, FS_REQ_RESULT) = result;
     }
 done:
-    return e;
+    return result;
 }
 
 s32 CompareNamesNoCase(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}

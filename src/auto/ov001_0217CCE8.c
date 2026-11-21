@@ -282,7 +282,7 @@ void InitMapListScreen(void) {
  * sets and the list-background tilemaps into VRAM, create the background list
  * objects and point the layered background control registers at them. */
 void InitMapListGraphics(void) {
-    M2C_UNK Ov001_LocalizePath(void *);
+    M2C_UNK Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     M2C_UNK Ov001_LoadFile(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK InitMapPreview(M2C_UNK);
@@ -292,7 +292,7 @@ void InitMapListGraphics(void) {
     extern u8 sYbBgStep21NclPath[];
     extern M2C_UNK sYbObjKbPath, sJbBgStep2NcgPath, sJbBgStep21NcgPath, sJb3ListNscPath;
     extern M2C_UNK gMapListState;
-    extern M2C_UNK GX_LoadOBJPltt, func_0200472c, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG3Scr;
+    extern M2C_UNK GX_LoadOBJPltt, GX_LoadBG3Char, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG3Scr;
     typedef struct { u8 bytes[23]; } ListBackPath;
     typedef struct { u8 bytes[21]; } BgStep2Path;
     typedef struct { u8 bytes[22]; } BgStep21Path;
@@ -305,19 +305,19 @@ void InitMapListGraphics(void) {
         (M2C_FIELD((void *)0x0400000C, volatile u16 *, 0) & 0x43) | 0x218 | 0xC00;
 
     Ov001_LoadAsset(&sYbObjKbPath, &GX_LoadOBJPltt);      /* UI palette */
-    Ov001_LoadAsset(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
+    Ov001_LoadAsset(&sJbBgStep2NcgPath, &GX_LoadBG3Char); /* background tiles, step 2 */
     Ov001_LoadAsset(&sJbBgStep21NcgPath, &GX_LoadBG2Char);/* background tiles, step 21 */
     Ov001_LoadAsset((void *)&bgStep2Path, &GX_LoadBGPltt);   /* background palette, step 2 */
     Ov001_LoadAsset(&sJb3ListNscPath, &GX_LoadBG3Scr);   /* list tilemap */
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
-        Ov001_LoadFile(Ov001_LocalizePath((void *)&listBackPath), 0, 4);
+        Ov001_LoadFile(Ov001_GetLocalizedFileName((void *)&listBackPath), 0, 4);
     InitMapPreview(M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8));
     RequestMapPreviewUpdate();
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 12) =
-        Ov001_LoadFile(Ov001_LocalizePath((void *)&bgStep2Path), 0, 4);
+        Ov001_LoadFile(Ov001_GetLocalizedFileName((void *)&bgStep2Path), 0, 4);
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 16) =
-        Ov001_LoadFile(Ov001_LocalizePath((void *)&bgStep21Path), 0, 4);
+        Ov001_LoadFile(Ov001_GetLocalizedFileName((void *)&bgStep21Path), 0, 4);
 
     /* sub BG0/BG1 and main BG0/BG1: 256-colour tiled layers */
     M2C_FIELD((void *)0x04001008, volatile u16 *, 0) = (M2C_FIELD((void *)0x04001008, volatile u16 *, 0) & ~3) | 3;

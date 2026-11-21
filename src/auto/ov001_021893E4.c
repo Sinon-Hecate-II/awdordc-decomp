@@ -331,9 +331,9 @@ void func_ov001_02189ad0(void) {
     s32 OS_GetLockID(void);
     void FileRead(void *, void *, s32);
     void CloseFileRequest(void *);
-    void func_0200b118(void *);
+    void InitArchive(void *);
     s32 RegisterArchiveName(void *, void *, s32);
-    void func_0200b6a8(void *, s32, s32);
+    void SetArchiveProc(void *, s32, s32);
     s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 LoadArchiveIndex(void *, s32, s32);
     s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
@@ -364,11 +364,11 @@ void func_ov001_02189ad0(void) {
     FileRead(request, hi, 8);
     FileRead(request, lo, 8);
     CloseFileRequest(request);
-    func_0200b118((u8 *)gOv001UtilityState + 0x88);
+    InitArchive((u8 *)gOv001UtilityState + 0x88);
     if (!RegisterArchiveName((u8 *)gOv001UtilityState + 0x88, data_ov001_0218fd04, 3)) {
         SystemHalt();
     }
-    func_0200b6a8((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
+    SetArchiveProc((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
     if (!ConfigureArchiveLayout((u8 *)gOv001UtilityState + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }

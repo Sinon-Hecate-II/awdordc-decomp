@@ -109,9 +109,10 @@ if((u8)flag){StepMapSelectAnimations(a);return;}
 UpdateSpriteAnimation(M2C_FIELD(a,s32 *,0x50));
 i=0;if((s32)*M2C_FIELD(a,u8 **,0x44)<=0)return;
 offset=0;do {
-void *p=(u8 *)M2C_FIELD(a,void **,0x48)+offset;
 u32 x,y;
 s32 value,limit,delta,v;
+u32 address = (u32)M2C_FIELD(a,void **,0x48);
+void *p = (void *)(offset + address);
 x=M2C_FIELD(p,u8 *,0x11);y=M2C_FIELD(p,u8 *,0x12);
 if(x==y){
  value=M2C_FIELD(p,s8 *,0x13);delta=M2C_FIELD(p,s8 *,0x15);

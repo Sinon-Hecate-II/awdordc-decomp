@@ -16,8 +16,8 @@ void func_ov001_02181a84(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK);
     extern M2C_UNK gOv001IconMenuState;
     extern M2C_UNK data_ov001_0218fb38;
-    extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218fafa;
+    extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218faf8;
     extern M2C_UNK data_ov001_0218fafc;
     extern void func_ov001_02181c94(void);
@@ -44,41 +44,38 @@ void func_ov001_02181a84(void) {
         if ((s8)M2C_FIELD(&gOv001IconMenuState, u8 *, 0) == 2) {
             M2C_FIELD(&gOv001IconMenuState, u8 *, 0) = 1;
         }
-        func_ov001_02181ba8();
-        Ov001_LoadSaveSlotObjLayout();
-        r5 = Ov001_GetLanguage();
-        {
-            u8 u = (u8)M2C_FIELD((void *)r4, u8 *, 0xF4);
-            s8 d = (s8)M2C_FIELD(&data_ov001_0218fb38, s8 *, r5);
-            Ov001_ShowMessagePanel(0x32, d, u + 1);
-        }
-        Ov001_OpenMenuForMode(1);
     }
+    func_ov001_02181ba8();
+    Ov001_LoadSaveSlotObjLayout();
+    r5 = Ov001_GetLanguage();
+    Ov001_ShowMessagePanel(0x32, M2C_FIELD(&data_ov001_0218fb38, s8 *, r5),
+                          M2C_FIELD((void *)r4, u8 *, 0xF4) + 1);
+    Ov001_OpenMenuForMode(1);
 
     r6 = Ov001_HasOptionFlag(1);
     r5 = Ov001_HasOptionFlag(1);
     r4 = Ov001_HasOptionFlag(1);
     r3 = Ov001_HasOptionFlag(1);
 
-    r12p = (M2C_UNK)((u8 *)&data_ov001_0218faf6 + r6 * 32);
+    r12p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r6 * 32);
     rowByte = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
-    r1p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r5 * 32);
+    r1p = (M2C_UNK)((u8 *)&data_ov001_0218faf6 + r5 * 32);
     r2p = (M2C_UNK)((u8 *)&data_ov001_0218faf8 + r4 * 32);
     r5 = rowByte * 8;
     r3p = (M2C_UNK)((u8 *)&data_ov001_0218fafc + r3 * 32);
 
     Ov001_LayoutChoiceFrame(
-        *(u16 *)((u8 *)r12p + r5),
-        *(u16 *)((u8 *)r1p + r5),
-        *(u16 *)((u8 *)r2p + r5),
-        *(u16 *)((u8 *)r3p + r5)
+        *(u16 *)(r5 + r12p),
+        *(u16 *)(r5 + r1p),
+        *(u16 *)(r5 + r2p),
+        *(u16 *)(r5 + r3p)
     );
 
     Ov001_SetStepCallback((M2C_UNK)&func_ov001_02181c94);
 }
 
 void func_ov001_02181ba8(void) {
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     s32 Ov001_LoadFile(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK data_ov001_0218fa80;
@@ -94,7 +91,7 @@ void func_ov001_02181ba8(void) {
     Ov001_LoadAsset(&data_ov001_02190a0c, &GX_LoadBG2Char);
     Ov001_LoadAsset(&data_ov001_02190a24, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190a3c, &GX_LoadBG2Scr);
-    M2C_FIELD(&gOv001IconMenuState, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&pathBuffer), 0, 4);
+    M2C_FIELD(&gOv001IconMenuState, s32 *, 4) = Ov001_LoadFile(Ov001_GetLocalizedFileName(&pathBuffer), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -258,7 +255,7 @@ void Ov001_FadeOutMenu(void) {
  * path (case 3). */
 void Ov001_MenuConfirm(void){
 extern M2C_UNK gOv001IconMenuState;
-extern M2C_UNK Ov001_OpenAccessPointMenu,Ov001_OpenFriendListScreen,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
+extern M2C_UNK Ov001_OpenAccessPointMenu,Ov001_OpenFriendListScreen,Ov001_OpenWirelessScreen,func_ov001_021803ec,InitMapListScreen;
 s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
@@ -268,7 +265,7 @@ Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
 if(!M2C_FIELD(&gOv001IconMenuState,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);return;}
 switch(M2C_FIELD(&gOv001IconMenuState,s8 *,1)){
 case 0:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);return;
-case 1:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02179718);return;
+case 1:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenWirelessScreen);return;
 case 2:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
 case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);SetMapListMode(1);Ov001_SetStepCallback(&InitMapListScreen);return;
 }

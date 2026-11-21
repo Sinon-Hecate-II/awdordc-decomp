@@ -209,7 +209,7 @@ return 0;
 #pragma opt_strength_reduction reset
 s32 func_ov000_021a8d7c(s32 x,s32 y,s32 radius){
 extern void **gCurrentMap;u8 IsCurrentPlayerUnit(s32);
-s32 i,j,right,left,top,bottom,d;void *base;
+s32 i,j,right,left,top,bottom,d,dy,negDy;void *base;
 left=x-radius;if(left<0)left=0;
 top=y-radius;if(top<0)top=0;
 base=*gCurrentMap;
@@ -217,12 +217,19 @@ right=M2C_FIELD(base,u16 *,0x5144)-1;
 if(x+radius<right)right=x+radius;
 bottom=M2C_FIELD(base,u16 *,0x5146)-1;
 if(y+radius<bottom)bottom=y+radius;
-for(j=top;j<=bottom;j++)for(i=left;i<=right;i++){
-d=0;if(x-i>0)d+=x-i;else d+=i-x;if(y-j>0)d+=y-j;else d+=j-y;
+j=top;
+if(j<=bottom)do {
+i=left;
+if(i<=right){dy=y-j;negDy=j-y;do {
+d=0;if(x-i>0)d+=x-i;else d+=i-x;if(dy>0)d+=dy;else d+=negDy;
 if(d>=0&&d<=radius){base=*gCurrentMap;
 d=*((u8 *)base+i+M2C_FIELD((u8 *)base+((u32)j<<1),u16 *,0x3758));
 if(d&&IsCurrentPlayerUnit(d)!=1)return 1;
-}}
+}
+i++;
+}while(i<=right);}
+j++;
+}while(j<=bottom);
 return 0;
 }
 
@@ -233,14 +240,22 @@ if(minx<0)minx=0;
 y=b-c;if(y<0)y=0;
 maxx=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(a+c<maxx)maxx=a+c;
 maxy=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(b+c<maxy)maxy=b+c;
-for(;y<=maxy;y++)for(x=minx;x<=maxx;x++){
+if (y<=maxy) do {
+x=minx;
+if (x<=maxx) {
+dy1=b-y; dy2=y-b;
+do {
 d=0;if(a-x>0)d+=a-x;else d+=x-a;
-if(b-y>0)d+=b-y;else d+=y-b;
+if(dy1>0)d+=dy1;else d+=dy2;
 if(d>=0&&d<=c){
 p=*gCurrentMap;
 v=M2C_FIELD((u8 *)((u32)x+(u32)(p+M2C_FIELD(p+((u32)y<<1),u16 *,0x3758))),u8 *,0x1420);
 if((v&31)==17&&M2C_FIELD(p,u16 *,0x52a6)==(v&224))return 1;
-}}
+}
+x++;
+} while(x<=maxx);
+}
+} while (++y<=maxy);
 return 0;
 }
 

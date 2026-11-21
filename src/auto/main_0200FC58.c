@@ -311,19 +311,22 @@ s32 func_02010438(void) {
     return M2C_FIELD(gSaveDeviceState, s32 *, 0x1C);
 }
 
+#pragma opt_common_subs off
+#pragma opt_copy_propagation off
 s32 SaveDevice_Configure(s32 arg0) {
 extern void *gSaveDeviceState;extern M2C_UNK gSocketManager;
 void func_02000b9c(s32);s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);void OS_SleepThread(void *);void OS_WakeupThread(void *);void TaskWake(void *);void func_0200fe94(s32);void func_02010d14(void *,s32,s32);M2C_UNK SystemHalt();
-void *p=&gSaveDeviceState; s32 state,state2;s32 value;void (*callback)(s32);
+void *p=&gSaveDeviceState; u32 state,state2;s32 value;void (*callback)(s32);
 func_02000b9c(0x2000bc4);
 if(arg0==0)SystemHalt();
 func_0200fd78();
 state=OS_DisableInterrupts();
 while(M2C_FIELD(p,u32 *,0x114)&4)OS_SleepThread(p+0x10c);
 {
-s32 zero=0;
-M2C_FIELD(p,u32 *,0x114)|=4;
-M2C_FIELD(p,s32 *,0x38)=zero;M2C_FIELD(p,s32 *,0x3c)=zero;
+    u32 flags=M2C_FIELD(p,u32 *,0x114);
+    M2C_FIELD(p,u32 *,0x114)=4 | flags;
+    M2C_FIELD(p,s32 *,0x38)=0;
+    M2C_FIELD(p,s32 *,0x3c)=0;
 }
 OS_RestoreInterrupts(state);
 func_0200fe94(arg0);
@@ -342,7 +345,8 @@ OS_RestoreInterrupts(state2);
 if(callback)callback(value);
 return **(s32 **)p==0;
 }
-
+#pragma opt_copy_propagation reset
+#pragma opt_common_subs reset
 void func_02010584(void) {
     M2C_UNK func_0200fda0();
     func_0200fda0();
@@ -366,12 +370,23 @@ M2C_FIELD(p,u32*,0x1c)=a;M2C_FIELD(p,u32*,0x20)=b;M2C_FIELD(p,u32*,0x24)=c;
 }return M2C_FIELD(p,volatile u32*,0x24)!=0;
 }
 #pragma optimization_level 4
-void func_02010628(u32 arg0,u32 arg1) {
- volatile u8 *p=(volatile u8 *)0x040001A1;
- while (*(volatile u32 *)0x040001A4 & 0x80000000) {}
- p[0]=0xC0;
- p[7]=arg0>>24; p[8]=arg0>>16; p[9]=arg0>>8; p[10]=arg0;
- p[11]=arg1>>24; p[12]=arg1>>16; p[13]=arg1>>8; p[14]=arg1;
+/* Loads a raw card command into the command registers once the card is idle:
+   byte 0 gets the transfer mode, then the opcode (in the top byte of `command`)
+   and the four address bytes are written big-endian, the address split across
+   `command`'s low bits and `address`.  The caller starts the transfer by writing
+   CARD_REG_ROMCTRL. */
+void CARD_SetCommand(u32 command, u32 address) {
+    volatile u8 *regs = (volatile u8 *)CARD_REG_COMMAND;
+    while (*(volatile u32 *)CARD_REG_ROMCTRL & 0x80000000) {}
+    regs[0] = CARD_COMMAND_MODE;
+    regs[7] = command >> 24;
+    regs[8] = command >> 16;
+    regs[9] = command >> 8;
+    regs[10] = command;
+    regs[11] = address >> 24;
+    regs[12] = address >> 16;
+    regs[13] = address >> 8;
+    regs[14] = address;
 }
 
 #pragma opt_propagation off
@@ -384,7 +399,7 @@ void func_02010688(void)
   u32 *q = data_02130420;
   p = (u32 *) (&data_0212fde0);
   func_02008538(p[10], (void *) 0x04100010, p[8], 512);
-  func_02010628((p[7] >> 8) | 0xB7000000, p[7] << 24);
+  CARD_SetCommand((p[7] >> 8) | 0xB7000000, p[7] << 24);
   *((volatile u32 *) 0x040001A4) = q[1];
 }
 #pragma opt_propagation on
@@ -520,7 +535,7 @@ s32 func_020107ac(void *command) {
 }
 
 void SaveDevice_TransferRom(void *arg0) {
-    void func_02010628(u32, u32);
+    void CARD_SetCommand(u32, u32);
     s32 SaveDevice_TransferChunk(void *);
     extern void *gSaveDeviceState;
     void *state = &gSaveDeviceState;
@@ -544,7 +559,7 @@ retry:
             dst = (u32 *)((u8 *)arg0 + 0x20);
         }
 
-        func_02010628((aligned >> 8) | 0xB7000000, aligned << 24);
+        CARD_SetCommand((aligned >> 8) | 0xB7000000, aligned << 24);
         index = 0;
         bytes = 0;
         *control = M2C_FIELD(arg0, u32 *, 0x4);
@@ -574,16 +589,15 @@ retry:
 #pragma opt_propagation off
 s32 SaveDevice_ReadChipId(void) {
     extern void *data_020f553c;
-    register u32 mask;
     u32 control;
-    volatile u32 *const romControl = (volatile u32 *)0x040001A4;
+    register u32 mask;
 
-    func_02010628(0xB8000000, 0);
-    mask = 0x2000;
-    control = M2C_FIELD(data_020f553c, u32 *, 0x60);
+    CARD_SetCommand(0xB8000000, 0);
+    mask = sizeof(u32) * 2048;
+    control = M2C_FIELD(data_020f553c, volatile u32 *, 0x60);
     control &= ~0x07000000;
     control |= 0xA7000000;
-    *romControl = control & -mask;
+    *(volatile u32 *)0x040001A4 = control & -mask;
     while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {
     }
     return *(volatile s32 *)0x04100010;

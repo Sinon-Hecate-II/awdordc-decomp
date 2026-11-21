@@ -509,13 +509,24 @@ if(flags&SOUND_LOAD_SEQUENCE){result=LoadSoundSequenceFile(sequenceId,pool,creat
 if(out)*out=result;return 0;
 }
 
-s32 LoadSoundSequenceArchive(s32 a,s32 flags,s32 b,s32 c,s32 out) {
-s32 LoadSoundSequenceArchiveFile(s32,s32,s32);
-void *p=GetSoundSequenceArchiveRecord(a);s32 r;
-if(!p)return 3;
-a=M2C_FIELD(p,s32 *,0);
-if(flags&8){r=LoadSoundSequenceArchiveFile(a,b,c);if(!r)return 7;}else r=GetLoadedArchiveFile(a);
-if(out)*(s32 *)out=r;return 0;
+/* Loads the sequence archive named by archiveId: reads its file when the
+   SOUND_LOAD_SEQUENCE_ARCHIVE flag is set, otherwise reuses the already loaded
+   archive, and stores it in *out when out is set.  Returns 0 on success, 3 when
+   the archive has no record, or 7 when its file fails to load. */
+s32 LoadSoundSequenceArchive(s32 archiveId, s32 flags, s32 pool, s32 create, s32 *out) {
+    s32 LoadSoundSequenceArchiveFile(s32, s32, s32);
+    SoundSequenceArchiveRecord *record = GetSoundSequenceArchiveRecord(archiveId);
+    s32 result;
+    if (!record) return 3;
+    archiveId = record->fileId;
+    if (flags & SOUND_LOAD_SEQUENCE_ARCHIVE) {
+        result = LoadSoundSequenceArchiveFile(archiveId, pool, create);
+        if (!result) return 7;
+    } else {
+        result = GetLoadedArchiveFile(archiveId);
+    }
+    if (out) *out = result;
+    return 0;
 }
 
 /* Loads a sound-archive bank: resolves its bank record, loads the bank file

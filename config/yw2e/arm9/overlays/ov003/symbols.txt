@@ -50,7 +50,7 @@ func_ov003_021e50d0 kind:function(arm,size=0x10) addr:0x021e50d0
 func_ov003_021e50e0 kind:function(arm,size=0x38) addr:0x021e50e0
 func_ov003_021e5118 kind:function(arm,size=0x724) addr:0x021e5118
 func_ov003_021e583c kind:function(arm,size=0x2dc) addr:0x021e583c
-func_ov003_021e5b18 kind:function(arm,size=0x150) addr:0x021e5b18
+Ov003_MapInfoConfirmInput kind:function(arm,size=0x150) addr:0x021e5b18
 func_ov003_021e5c68 kind:function(arm,size=0x24) addr:0x021e5c68
 func_ov003_021e5c8c kind:function(arm,size=0xc) addr:0x021e5c8c
 Ov003_DrawUnitCategoryGrid kind:function(arm,size=0x18c) addr:0x021e5c98
@@ -163,7 +163,7 @@ func_ov003_021ebca4 kind:function(arm,size=0xc0) addr:0x021ebca4
 GetWaypointSlotCoIcon kind:function(arm,size=0x84) addr:0x021ebd64
 func_ov003_021ebde8 kind:function(arm,size=0xc) addr:0x021ebde8
 CloseWaypointPanel kind:function(arm,size=0x6c) addr:0x021ebdf4
-func_ov003_021ebe60 kind:function(arm,size=0x60) addr:0x021ebe60
+UpdateWaypointSelectSprites kind:function(arm,size=0x60) addr:0x021ebe60
 HandleWaypointPanelCancel kind:function(arm,size=0x10c) addr:0x021ebec0
 ToggleWaypointPanelMode kind:function(arm,size=0x518) addr:0x021ebfcc
 RestoreWaypointOption kind:function(arm,size=0x98) addr:0x021ec4e4
@@ -348,7 +348,7 @@ func_ov003_021fd1d8 kind:function(arm,size=0xc) addr:0x021fd1d8
 func_ov003_021fd1e4 kind:function(arm,size=0xc) addr:0x021fd1e4
 BeginLinkMapTransfer kind:function(arm,size=0x60) addr:0x021fd1f0
 func_ov003_021fd250 kind:function(arm,size=0x20) addr:0x021fd250
-func_ov003_021fd270 kind:function(arm,size=0x60) addr:0x021fd270
+IsMapSubmenuKind kind:function(arm,size=0x60) addr:0x021fd270
 func_ov003_021fd2d0 kind:function(arm,size=0x160) addr:0x021fd2d0
 func_ov003_021fd430 kind:function(arm,size=0x14) addr:0x021fd430
 func_ov003_021fd444 kind:function(arm,size=0xc) addr:0x021fd444
@@ -445,7 +445,7 @@ func_ov003_02202454 kind:function(arm,size=0x54) addr:0x02202454
 func_ov003_022024a8 kind:function(arm,size=0x2d4) addr:0x022024a8
 func_ov003_0220277c kind:function(arm,size=0x3ec) addr:0x0220277c
 func_ov003_02202b68 kind:function(arm,size=0x48) addr:0x02202b68
-func_ov003_02202bb0 kind:function(arm,size=0x114) addr:0x02202bb0
+Ov003_CancelSetupPanel kind:function(arm,size=0x114) addr:0x02202bb0
 func_ov003_02202cc4 kind:function(arm,size=0x104) addr:0x02202cc4
 Ov003_IncreaseSelectedEntry kind:function(arm,size=0xcc) addr:0x02202dc8
 func_ov003_02202e94 kind:function(arm,size=0x2c) addr:0x02202e94
@@ -480,10 +480,10 @@ func_ov003_022056b0 kind:function(arm,size=0xc) addr:0x022056b0
 func_ov003_022056bc kind:function(arm,size=0x314) addr:0x022056bc
 func_ov003_022059d0 kind:function(arm,size=0x318) addr:0x022059d0
 ShutdownOv003SceneObject kind:function(arm,size=0x14c) addr:0x02205ce8
-func_ov003_02205e34 kind:function(arm,size=0x60) addr:0x02205e34
+DestroySceneDisplayGroup kind:function(arm,size=0x60) addr:0x02205e34
 DestroyOv003OptionsObject kind:function(arm,size=0x94) addr:0x02205e94
 DestroyOv003SceneObject kind:function(arm,size=0x154) addr:0x02205f28
-func_ov003_0220607c kind:function(arm,size=0x58) addr:0x0220607c
+SceneDisplayGroup_Destructor kind:function(arm,size=0x58) addr:0x0220607c
 Ov003OptionsObject_Destructor kind:function(arm,size=0x8c) addr:0x022060d4
 func_ov003_02206160 kind:function(arm,size=0x14) addr:0x02206160
 func_ov003_02206174 kind:function(arm,size=0x28) addr:0x02206174
@@ -808,7 +808,7 @@ data_ov003_022104b4 kind:data(any) addr:0x022104b4
 data_ov003_022104c8 kind:data(any) addr:0x022104c8
 data_ov003_022104fa kind:data(any) addr:0x022104fa
 data_ov003_02210544 kind:data(any) addr:0x02210544
-data_ov003_02210754 kind:data(any) addr:0x02210754
+gSceneDisplayGroupVTable kind:data(any) addr:0x02210754
 data_ov003_02210764 kind:data(any) addr:0x02210764
 data_ov003_02210774 kind:data(any) addr:0x02210774
 data_ov003_0221079c kind:data(any) addr:0x0221079c

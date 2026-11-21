@@ -179,13 +179,20 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, FlagsAAB *, 0x58).hidden = 0;
     M2C_FIELD(arg0, FlagsAAB *, 0x58).a = 0;
     { void *engine = *(void *volatile *)&gCur3DSpriteEngine;
-      LoadSpriteResource(0, 0, (u32) (M2C_FIELD(arg0, volatile u8 *, 0x58) << 0x19) >> 0x19,
-                    M2C_FIELD(engine, s32 *, 0x1C) + ((u32) M2C_FIELD(arg0, u16 *, 0x5C) << 5)); }
+      u32 kind = M2C_FIELD(arg0, volatile u8 *, 0x58) << 0x19;
+      u32 index = M2C_FIELD(arg0, u16 *, 0x5C);
+      s32 resource = M2C_FIELD(engine, volatile s32 *, 0x1C) + (index << 5);
+      LoadSpriteResource(0, 0, kind >> 0x19, resource); }
     if (arg4 != 0) {
-        u8 style = M2C_FIELD(arg0, volatile FlagsAAB *, 0x58).style;
-        void *engine = *(void *volatile *)&gCur3DSpriteEngine;
-        u32 kind = M2C_FIELD(arg0, FlagsAAB *, 0x58).kind;
-        LoadSpriteResource(0, 2, kind, M2C_FIELD(engine, s32 *, 0x30) + ((style + 16) << 5));
+        s32 resource;
+        u32 kind;
+        void *engine;
+        u8 style;
+        style = M2C_FIELD(arg0, volatile FlagsAAB *, 0x58).style;
+        engine = *(void *volatile *)&gCur3DSpriteEngine;
+        kind = M2C_FIELD(arg0, u8 *, 0x58) << 0x19;
+        resource = M2C_FIELD(engine, volatile s32 *, 0x30) + ((style + 16) << 5);
+        LoadSpriteResource(0, 2, kind >> 0x19, resource);
     }
     M2C_FIELD(arg0, s32 *, 0x44) = func_020aae78(arg0);
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 & ~0xF8000000);
@@ -195,18 +202,20 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     func_02088e7c(arg0, 6);
     temp_r0 = MemAlloc(0x24);
     if (temp_r0 != NULL) {
+        s32 unset = -1;
+        u32 full = 0xFF;
         M2C_FIELD(temp_r0, s16 *, 0x10) = 1;
         M2C_FIELD(temp_r0, s8 *, 0x12) = 0;
         M2C_FIELD(temp_r0, s32 *, 0) = 0;
         M2C_FIELD(temp_r0, s32 *, 4) = 0;
-        M2C_FIELD(temp_r0, s8 *, 8) = -1;
-        M2C_FIELD(temp_r0, s8 *, 9) = -1;
-        M2C_FIELD(temp_r0, s8 *, 0xA) = -1;
-        M2C_FIELD(temp_r0, s8 *, 0xB) = -1;
-        M2C_FIELD(temp_r0, u8 *, 0xD) = 0xFF;
-        M2C_FIELD(temp_r0, s8 *, 0xC) = -1;
+        M2C_FIELD(temp_r0, s8 *, 8) = unset;
+        M2C_FIELD(temp_r0, s8 *, 9) = unset;
+        M2C_FIELD(temp_r0, s8 *, 0xA) = unset;
+        M2C_FIELD(temp_r0, s8 *, 0xB) = unset;
+        M2C_FIELD(temp_r0, u8 *, 0xD) = full;
+        M2C_FIELD(temp_r0, s8 *, 0xC) = unset;
         M2C_FIELD(temp_r0, s8 *, 0xE) = 0;
-        M2C_FIELD(temp_r0, u8 *, 0xF) = 0xFF;
+        M2C_FIELD(temp_r0, u8 *, 0xF) = full;
         temp_r0_2 = HeapAllocBlock(0xC);
         M2C_FIELD(temp_r0, s32 *, 0x14) = temp_r0_2;
         MI_CpuFill8(temp_r0_2, 0, 0xC);
@@ -336,7 +345,7 @@ void UpdateUnitSpriteAnimation(void *task) {
     s32 func_01ffa14c(void *);s32 Is3DSpriteAnimating(void *);s32 func_02089080(void *);
     s32 IsScreenFadeActive(void);u8 func_020ab2a4(void);
     void MenuSpriteUpdate(void *);void UpdateUnitSpriteFrame(void *);
-    u16 GetSpriteButtonMask(void *);void func_020819e8(u16);
+    u16 GetSpriteButtonMask(void *);void InjectKeyPress(u16);
     void *GetUnitSpriteDef(u32);
     extern volatile u16 *gKeyState;
     void *sprite=M2C_FIELD(task,void **,0x34);
@@ -365,7 +374,7 @@ void UpdateUnitSpriteAnimation(void *task) {
             M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME)=(bits&~0x03fc0000)|((frame<<24)>>6);
             M2C_FIELD(sprite,s8 *,MENU_SPRITE_TIMER)=12;
         }
-        if(GetSpriteButtonMask(sprite)!=0)func_020819e8(GetSpriteButtonMask(sprite));
+        if(GetSpriteButtonMask(sprite)!=0)InjectKeyPress(GetSpriteButtonMask(sprite));
         return;
     }
     if(GetSpriteButtonMask(sprite)==0)return;

@@ -82,7 +82,7 @@ loop_15:
 /* Spawns the beam attack effect on a tile: a beam sprite whose task extends it
  * in the facing direction, plus a charge sprite and the cursor move. */
 void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) {
- M2C_UNK PanMapViewToTile(u32,u32); M2C_UNK func_0207b7e8(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
+ M2C_UNK PanMapViewToTile(u32,u32); M2C_UNK CreateMapViewScrollHold(void *); M2C_UNK PlaySoundAtTile(M2C_UNK,u32,u32);
  u32 GetFacingOffset(u32);
  void *CreateEffectMapSprite(M2C_UNK *,s32,s32,s32,s32,s32,void *);
  void ResetEffectSpritePool(void); s32 GetEffectSpritePoolOffset(void);
@@ -100,7 +100,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
  switch(facing) {case 0:offsetX=-12;offsetY=12;break;case 1:offsetX=0;offsetY=16;break;case 2:offsetX=12;offsetY=offsetX;break;case 3:offsetX=0;offsetY=12;break;default:break;}
  charge=CreateEffectMapSprite(&sBeamChargeSprite,offsetX+tileX*16,offsetY+tileY*16,32,chargeColor,1,parent);
  if(charge) {PlaySoundAtTile(0x103,tileX,tileY+2); ((SpriteTile *)charge)->tile=(u16)facingTile;}
- PanMapViewToTile(tileX,tileY+2);func_0207b7e8(charge);
+ PanMapViewToTile(tileX,tileY+2);CreateMapViewScrollHold(charge);
 }
 
 #pragma push

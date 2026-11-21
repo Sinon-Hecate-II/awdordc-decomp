@@ -300,11 +300,12 @@ s32 IsMapListChoiceAvailable(u32 choice) {
 void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
     s32 func_ov001_0217ee24(s32);
     M2C_UNK Ov001_LoadSpriteObjLayout(M2C_UNK);
-    extern M2C_UNK data_ov001_0218f8ee;
+    extern u8 data_ov001_0218f8ee[][3];
     extern M2C_UNK gMapListState;
     u16 sp[5];
     void **var_r4;
     s32 *temp_r2;
+    u8 *row;
 
     sp[0] = 0xCC;
     sp[1] = 0xC0;
@@ -319,14 +320,20 @@ void func_ov001_0217e67c(s32 arg0, s32 arg1, s32 arg2) {
             var_r4 = M2C_FIELD(&gMapListState, void **, 8) + 0x30;
         }
     }
+    row = data_ov001_0218f8ee[arg0];
     temp_r2 = (s32 *) *var_r4;
-    if (((u8 *) arg1)[(s32) &data_ov001_0218f8ee + arg0 * 3] != 0) {
+    if (row[arg1] != 0) {
         Ov001_LoadSpriteObjLayout(0);
-        M2C_FIELD(*var_r4, s32 *, 0) = (s32) (((u32) (sp[arg0] << 0x17) >> 7) | (M2C_FIELD(*var_r4, s32 *, 0) & 0xFE00FF00));
+        {
+            u16 tile = sp[arg0];
+            u32 *attr = *var_r4;
+            u32 keep = 0xFE00FF00;
+            *attr = (keep & *attr) | ((u32)tile << 23 >> 7);
+        }
         M2C_FIELD(*var_r4, u16 *, 4) = (u16) ((M2C_FIELD(*var_r4, u16 *, 4) & ~0xC00) | 0xC00);
         return;
     }
-    M2C_FIELD(temp_r2, s32 *, 0) = (s32) ((M2C_FIELD(temp_r2, s32 *, 0) & 0xFE00FF00) | 0x01000000);
+    M2C_FIELD(temp_r2, s32 *, 0) = (s32) ((0xFE00FF00 & M2C_FIELD(temp_r2, s32 *, 0)) | 0x01000000);
 }
 
 /* Draws a map name on the map-list info panel, wrapping onto a second line 12

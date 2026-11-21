@@ -389,15 +389,19 @@ s32 func_ov001_021796f8(void) {
     return 0;
 }
 
-void func_ov001_02179718(void) {
+/* Opens the local wireless (multi-card) setup screen: resets the connection timer,
+ * loads the setup background and the save-slot object layout, draws the setup
+ * message panel and message box, opens the icon menu, initialises the wireless
+ * session and installs the fade-in step. */
+void Ov001_OpenWirelessScreen(void) {
     extern u8 gOv001WirelessState;
     void Ov001_LoadWirelessSetupBg(void);
-    void func_ov001_02179820(void);
+    void Ov001_FadeInWirelessScreen(void);
     M2C_UNK Ov001_LoadSaveSlotObjLayout();
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
     M2C_UNK Ov001_InitWirelessSetup();
-    M2C_FIELD(&gOv001WirelessState, u16 *, 2) = 0;
+    M2C_FIELD(&gOv001WirelessState, u16 *, OV001_WIRELESS_TIMER) = 0;
     Ov001_LoadWirelessSetupBg();
     Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessagePanel(0x36, -1, 0);
@@ -406,7 +410,7 @@ void func_ov001_02179718(void) {
     Ov001_CreateAnimSprite(0);
     Ov001_InitWirelessSetup();
     Ov001_PlaySound(0xB);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179820);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWirelessScreen);
 }
 
 /* Loads the local wireless (multi-card) setup screen's background: tile
@@ -426,7 +430,7 @@ void Ov001_LoadWirelessSetupBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_02179820(void) {
+void Ov001_FadeInWirelessScreen(void) {
     extern M2C_UNK func_ov001_02179874;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);

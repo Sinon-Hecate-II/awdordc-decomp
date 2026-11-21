@@ -11,7 +11,7 @@ s32 GetLanguage(void);
 s32 RandomIntRange(s32,s32);
 void func_ov002_021e497c(s32,s32,s32,s32);
 
-extern u8 data_ov002_021f30fd[],gVersusGaugeHp[],data_ov002_021f3107[],data_ov002_021f3105[],data_ov002_021f3106[];
+extern u8 data_ov002_021f30fd[],gVersusGaugeHp[],data_ov002_021f3107[],gVersusPlayerCoIndex[],data_ov002_021f3106[];
 extern u8 data_ov002_021f303e[],data_ov002_021f3040[],data_ov002_021f3042[],data_ov002_021f3044[],data_ov002_021f3018[];
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
 void ResetGxTextureParams(void);
@@ -32,7 +32,7 @@ width=EaseInterpolate(0,data_ov002_021f30fd[((u32)(p[3]<<28)>>28)*24],gVersusGau
 y=166-(s8)p[2];ResetGxTextureParams();DrawSolidQuad(0,y,10,256,20,0x1cc2);
 offset=((u32)(p[3]<<28)>>28)*24;
 color=data_ov002_021f3107[offset]?M2C_FIELD(p,u16 *,6):0x7fff;
-if(data_ov002_021f3105[offset]){
+if(gVersusPlayerCoIndex[offset]){
 if(data_ov002_021f3106[offset]!=2){
 y=168-(s8)p[2];ResetGxTextureParams();a=91;b=82;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
@@ -42,7 +42,7 @@ y=169-(s8)p[2];ResetGxTextureParams();a=84;b=76;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+14,b,y+14,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+14,256,y+14,8,color,1);
-if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
+if(gVersusPlayerCoIndex[((u32)(p[3]<<28)>>28)*24]){
 y=167-(s8)p[2];
 tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
 if((u8)((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtSmallFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);
@@ -57,7 +57,7 @@ y=155-(s8)p[2];ResetGxTextureParams();a=90;b=74;
 if(((u32)(p[3]<<28)>>28)==1)func_ov002_021e5974(&a,&b);
 if(((u32)(p[3]<<28)>>28)==0)DrawGradientQuad(0,y,a,y,0,y+28,b,y+28,8,color,0);
 else DrawGradientQuad(256-a,y,256,y,256-b,y+28,256,y+28,8,color,1);
-if(data_ov002_021f3105[((u32)(p[3]<<28)>>28)*24]){
+if(gVersusPlayerCoIndex[((u32)(p[3]<<28)>>28)*24]){
 y=119-(s8)p[2];
 tiles=M2C_FIELD((AreUnitViewGaugesDone()?data_ov002_021f3040:data_ov002_021f303e)+((u32)(p[3]<<28)>>28)*100,u16 *,0);
 if((u8)((u32)(p[3]<<28)>>28)==0)DrawVersusPanelArtFlipped(0,y,0,tiles,data_ov002_021f3044[((u32)(p[3]<<28)>>28)*100]);

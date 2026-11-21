@@ -10,7 +10,7 @@
 void func_ov005_02216518(u32 arg0){
 extern u16 *gKeyState;
 M2C_UNK PlaySoundEffect(s32);void LockInactiveSpriteSlots(void);void func_020b2268(void);void Sprite_ResumeAnimation(u32);
-void RecordsMenu_HandlePick(s16);void RecordsMenu_SelectPrevious(s16);void RecordsMenu_SelectNext(s16);s32 RecordsMenu_IsRecordAvailable(s32);void RecordsMenu_ShuffleList(s32);void func_ov005_02214148(void);void func_ov005_022141cc(void);
+void RecordsMenu_HandlePick(s16);void RecordsMenu_SelectPrevious(s16);void RecordsMenu_SelectNext(s16);s32 RecordsMenu_IsRecordAvailable(s32);void RecordsMenu_ShuffleList(s32);void RecordsMenu_ScrollUp(void);void RecordsMenu_ScrollDown(void);
 
 extern M2C_UNK gRecordsMenuState;
 extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*gCur3DSpriteEngine;
@@ -78,8 +78,8 @@ if(!(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1))return;
 if(M2C_FIELD(gKeyState,u16 *,0)&0x800){s32 index=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x94);if(RecordsMenu_IsRecordAvailable(index)){u8 *marks=(u8 *)M2C_FIELD(&gRecordsMenuState,void **,8)+0xa2;
 marks[index]=!marks[index];RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));RecordsMenu_ShuffleList(-1);}}
 {void *state=M2C_FIELD(&gRecordsMenuState,void **,8);
-{void *p=M2C_FIELD(state,void * *,0x174);void *anim=M2C_FIELD(p,void **,0x64);u8 done=1;if(M2C_FIELD(anim,s8 *,0xb)!=1 && (!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31) || M2C_FIELD(anim,s8 *,0xc)!=1))done=0;if(done & 0xff){func_ov005_02214148();return;}}
-{void *p=M2C_FIELD(state,void * *,0x178);void *anim=M2C_FIELD(p,void **,0x64);u8 done=1;if(M2C_FIELD(anim,s8 *,0xb)!=1 && (!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31) || M2C_FIELD(anim,s8 *,0xc)!=1))done=0;if(done & 0xff)func_ov005_022141cc();}
+{void *p=M2C_FIELD(state,void * *,0x174);void *anim=M2C_FIELD(p,void **,0x64);u8 done=1;if(M2C_FIELD(anim,s8 *,0xb)!=1 && (!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31) || M2C_FIELD(anim,s8 *,0xc)!=1))done=0;if(done & 0xff){RecordsMenu_ScrollUp();return;}}
+{void *p=M2C_FIELD(state,void * *,0x178);void *anim=M2C_FIELD(p,void **,0x64);u8 done=1;if(M2C_FIELD(anim,s8 *,0xb)!=1 && (!((u32)(M2C_FIELD(p,u8 *,0x59)<<27)>>31) || M2C_FIELD(anim,s8 *,0xc)!=1))done=0;if(done & 0xff)RecordsMenu_ScrollDown();}
 }
 }
 #pragma opt_common_subs reset

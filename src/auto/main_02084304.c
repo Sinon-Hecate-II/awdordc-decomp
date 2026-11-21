@@ -131,17 +131,21 @@ SendLinkCommand(gBattleCommand,20);
 void SendBattleCommandPacket(s32 a,s32 b,s32 c,s32 d){void SendLinkCommand(void *,s32);u8 *q=(u8 *)&gLinkAiCommandStage;void **p=gCurrentMap;u32 v; u32 x;q[4]=a;x=M2C_FIELD(*p,s16 *,0x52dc);v=M2C_FIELD(gAiCommand,s32 *,8);q[6]=x;q[7]=M2C_FIELD(*p,s16 *,0x52de);q[8]=M2C_FIELD(*p,s16 *,0x52d8);q[9]=M2C_FIELD(*p,s16 *,0x52da);q[5]=b;*(s32 *)(q+12)=v;q[10]=c;q[11]=d;q[22]=gAiCommand[18];UnpackCursorPath((u8 *)*p+0x5388,data_02156e5c);SendLinkCommand(gBattleCommand,20);}
 
 s32 GetLinkMode(void) {
-    s32 func_0208858c(M2C_UNK);
-    if (func_0208858c(9) != 0) {
+    s32 IsResourceLoaded(M2C_UNK);
+    if (IsResourceLoaded(9) != 0) {
         return 1;
     }
-    if (func_0208858c(0xA) != 0) {
+    if (IsResourceLoaded(0xA) != 0) {
         return 2;
     }
     return 0;
 }
 
-s32 GetActiveOverlay(void){s32 func_0208858c(s32);s32 GetLinkPhase(void);s32 IsOnlineSessionFlagSet(s32);s32 b;if(func_0208858c(9)){if(GetLinkPhase())b=1;else b=0;if(b)return 1;}else if(func_0208858c(10)&&IsOnlineSessionFlagSet(0))return 2;return 0;}
+/* Which network overlay is running, as the battle code asks for it: NET_OVERLAY_LINK
+ * for the ov009 single-card (Download Play) link once its phase has come up,
+ * NET_OVERLAY_ONLINE for the ov010 online (WFC) session once its flag is set, else
+ * NET_OVERLAY_NONE.  Each counts only while its overlay resource is loaded. */
+s32 GetActiveOverlay(void){s32 IsResourceLoaded(s32);s32 GetLinkPhase(void);s32 IsOnlineSessionFlagSet(s32);s32 linkUp;if(IsResourceLoaded(NET_RESOURCE_LINK)){if(GetLinkPhase())linkUp=1;else linkUp=0;if(linkUp)return NET_OVERLAY_LINK;}else if(IsResourceLoaded(NET_RESOURCE_ONLINE)&&IsOnlineSessionFlagSet(0))return NET_OVERLAY_ONLINE;return NET_OVERLAY_NONE;}
 
 s32 IsLinkSessionActive(void) {
     s32 GetLinkPhase();

@@ -466,7 +466,7 @@ void Ov001_InitOptionMenu(void) {
  * palette over the profile colours while no Wi-Fi profile exists, uploads the
  * palette, frees the temporary files and puts BG1/BG2 on priority 3. */
 void Ov001_LoadOptionMenuBg(void) {
-    s32 Ov001_LocalizePath(void *);
+    s32 Ov001_GetLocalizedFileName(void *);
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
     void *Ov001_LoadFile(s32, s32, s32);
     M2C_UNK GetWfcProfile(void *);
@@ -483,8 +483,8 @@ void Ov001_LoadOptionMenuBg(void) {
     register void *palette;
     Ov001_LoadAsset(&gOv001OptionBgTilesPath, &GX_LoadBG2Char);
     Ov001_LoadAsset(&gOv001OptionMenuMapPath, &GX_LoadBG2Scr);
-    M2C_FIELD(&gOv001OptionMenuState, void **, 4) = Ov001_LoadFile(Ov001_LocalizePath(&layoutPath), 0, 4);
-    palette = Ov001_LoadFile(Ov001_LocalizePath(&palettePath), 0, 4);
+    M2C_FIELD(&gOv001OptionMenuState, void **, 4) = Ov001_LoadFile(Ov001_GetLocalizedFileName(&layoutPath), 0, 4);
+    palette = Ov001_LoadFile(Ov001_GetLocalizedFileName(&palettePath), 0, 4);
     GetWfcProfile(&profile);
     if (profile.value == 0) {
         for (i = 0, dst = (u8 *)palette + OV001_PALETTE_PROFILE, src = (u8 *)palette + OV001_PALETTE_NO_PROFILE; i < 2; i++, dst += 32, src += 32)

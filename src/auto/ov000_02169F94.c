@@ -151,9 +151,9 @@ s32 group,index,record,tier;group=0;*earned=0;*possible=0;
 do {record=GetRecordDefinition(group,0);index=0;if(M2C_FIELD(record,s32 *,0)){do {tier=GetRecordTier(group,index);index++;*earned+=tier;*possible+=3;record+=0x30;}while(M2C_FIELD(record,s32 *,0));}group++;}while(group<3);
 }
 
-s8 func_ov000_0216a564(u32 a) { extern M2C_UNK data_ov000_021b67cc; s32 i=0; do {if(a>=((A564Entry *)&data_ov000_021b67cc)[i].threshold)return (s8)i;i++;}while(i<20);return 19; }
+s8 GetRecordRank(u32 a) { extern M2C_UNK data_ov000_021b67cc; s32 i=0; do {if(a>=((A564Entry *)&data_ov000_021b67cc)[i].threshold)return (s8)i;i++;}while(i<20);return 19; }
 
-s32 func_ov000_0216a59c(s32 i) {
+s32 GetRecordRankTextId(s32 i) {
 extern M2C_UNK data_ov000_021b67cc;
 return *(s32 *)((u8 *)&data_ov000_021b67cc+i*8);
 }
@@ -229,22 +229,22 @@ s32 GetFavouriteRecord(s32 byGroup) {
     return empty ? -1 : (s8)bestIndex;
 }
 
-void func_ov000_0216a76c(void) {
+void GetFavouriteRecordGroup(void) {
     M2C_UNK GetFavouriteRecord(M2C_UNK);
     GetFavouriteRecord(0);
 }
 
-s32 func_ov000_0216a77c(s32 a) {
+s32 GetFavouriteGroupTextId(s32 a) {
 A77cTable table;
 if(a==-1)return 0xc0000021;
 table=data_ov000_021aabb0;return table.values[a];
 }
 
-void func_ov000_0216a7c4(void) {
+void GetFavouriteRecordIndex(void) {
     GetFavouriteRecord(1);
 }
 
-s32 func_ov000_0216a7d4(s32 a) {
+s32 GetFavouriteRecordTextId(s32 a) {
 if(a==-1)return 0xc0000025;
 return M2C_FIELD(GetRecordDefinition(1,a),s32 *,0x14);
 }

@@ -165,25 +165,33 @@ s32 WriteFormatBuffer(void *arg0, M2C_UNK arg1, s32 arg2) {
     return 1;
 }
 
-s32 func_0206743c(s32 format, ...) {
-extern u8 gStdoutStream[],data_0213e664[],gStreamLockOwner[],gStreamLockDepth[],gSocketManager[];
-s32 func_0206ad4c(void *,s32);s32 TryLockMutex(void *);u32 FormatString();
-s32 result;char *args;
-if(func_0206ad4c(gStdoutStream,-1)>=0)return -1;
-if(!TryLockMutex(data_0213e664)){
-M2C_FIELD(gStreamLockOwner,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
-M2C_FIELD(gStreamLockDepth,s32 *,12)=1;
-}else if(M2C_FIELD(gStreamLockOwner,s32 *,12)==M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c)){
-M2C_FIELD(gStreamLockDepth,s32 *,12)=M2C_FIELD(gStreamLockDepth,s32 *,12)+1;
-}else{
-LockMutex(data_0213e664);
-M2C_FIELD(gStreamLockOwner,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,4),s32 *,0x6c);
-M2C_FIELD(gStreamLockDepth,s32 *,12)=1;
-}
-args=(char *)(((u32)&format&~3U)+4);
-result=FormatString(func_020673cc,gStdoutStream,format,args);
-if(--M2C_FIELD(gStreamLockDepth,s32 *,12)==0)UnlockMutex(data_0213e664);
-return result;
+/* printf to the game's stdout stream: take the stdout lock (a recursive GsiMutex
+ * keyed by the running thread's id), format the arguments into the stream and
+ * release the lock once the write is done.  Returns the write result, or -1 when
+ * stdout is in an error state. */
+s32 StdoutPrintf(char *format, ...) {
+    extern u8 gStdoutStream[], gSocketManager[], gStreamMutexStdout[];
+    extern s32 gStreamLockOwner[], gStreamLockDepth[];
+    s32 func_0206ad4c(void *, s32);
+    s32 TryLockMutex(void *);
+    u32 FormatString();
+    s32 result;
+    char *args;
+    if (func_0206ad4c(gStdoutStream, -1) >= 0) return -1;
+    if (!TryLockMutex(gStreamMutexStdout)) {
+        gStreamLockOwner[STREAM_LOCK_STDOUT] = M2C_FIELD(M2C_FIELD(gSocketManager, void **, 4), s32 *, STREAM_THREAD_ID);
+        gStreamLockDepth[STREAM_LOCK_STDOUT] = 1;
+    } else if (gStreamLockOwner[STREAM_LOCK_STDOUT] == M2C_FIELD(M2C_FIELD(gSocketManager, void **, 4), s32 *, STREAM_THREAD_ID)) {
+        gStreamLockDepth[STREAM_LOCK_STDOUT]++;
+    } else {
+        LockMutex(gStreamMutexStdout);
+        gStreamLockOwner[STREAM_LOCK_STDOUT] = M2C_FIELD(M2C_FIELD(gSocketManager, void **, 4), s32 *, STREAM_THREAD_ID);
+        gStreamLockDepth[STREAM_LOCK_STDOUT] = 1;
+    }
+    args = (char *)(((u32)&format & ~3U) + 4);
+    result = FormatString(func_020673cc, gStdoutStream, format, args);
+    if (--gStreamLockDepth[STREAM_LOCK_STDOUT] == 0) UnlockMutex(gStreamMutexStdout);
+    return result;
 }
 
 /* Formats `format` with the argument list `args` into `buffer`, writing at most

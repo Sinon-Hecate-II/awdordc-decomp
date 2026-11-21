@@ -1,5 +1,6 @@
 /* 11 functions from 0x02215168 to 0x02215664 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 
@@ -102,71 +103,76 @@ void func_ov005_022153d4(u8 *arg0) {
  FocusSpriteSlotById(value);
 }
 
-void func_ov005_022153fc(u8 *a) {
+/* D-pad navigation of the records screen's list: move the row cursor up or down
+ * (wrapping at the ends and scrolling/paging the six-row window with left and
+ * right), then focus the new row and store it as the cursor row. `selected`
+ * points at the current row index. */
+void RecordsMenu_HandleDPad(u8 *selected) {
     s32 FindSpriteSlotById(s32);
     M2C_UNK FocusSpriteSlotById(s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_ov005_02214148(void);
-    s32 func_ov005_022141cc(void);
-    s16 func_ov005_02214184(void);
-    s16 func_ov005_02214210(void);
+    s32 RecordsMenu_ScrollUp(void);
+    s32 RecordsMenu_ScrollDown(void);
+    s16 RecordsMenu_PageUp(void);
+    s16 RecordsMenu_PageDown(void);
     extern M2C_UNK gRecordsMenuState;
     extern u16 *gKeyState;
 
     s32 max, pos, delta;
-    void *p = M2C_FIELD(&gRecordsMenuState, void **, 8);
-    s32 n = *a;
-    max = M2C_FIELD(p, s16 *, 0x9a);
-    pos = M2C_FIELD(p, s16 *, 0x98);
+    u16 *keys;
+    RecordsScreen *screen = M2C_FIELD(&gRecordsMenuState, RecordsScreen **, 8);
+    s32 row = *selected;
+    max = screen->count;
+    pos = screen->scroll;
     max -= 6;
     if (max < 0) max = 0;
 
-    if (pos == 0 && n == 0) {
-        if (gKeyState[0] & 0x40) {
-            M2C_FIELD(p, s16 *, 0x98) = (s16)max;
-            n = 5;
+    if (pos == 0 && row == 0) {
+        if ((keys = gKeyState)[KEY_HELD] & KEY_UP) {
+            screen->scroll = (s16)max;
+            row = 5;
             goto done;
         }
-    } else if (gKeyState[1] & 0x40) {
-        if (n >= 2) n--;
-        else if (!func_ov005_02214148() && n) n--;
+    } else if ((keys = gKeyState)[KEY_PRESSED] & KEY_UP) {
+        if (row >= 2) row--;
+        else if (!RecordsMenu_ScrollUp() && row) row--;
         goto done;
     }
 
-    if (pos == max && n == 5) {
-        if (gKeyState[0] & 0x80) {
-            n = 0;
-            M2C_FIELD(p, s16 *, 0x98) = 0;
+    if (pos == max && row == 5) {
+        if (keys[KEY_HELD] & KEY_DOWN) {
+            row = 0;
+            screen->scroll = 0;
             goto done;
         }
-    } else if (gKeyState[1] & 0x80) {
-        if (n < 4) {
-            if (FindSpriteSlotById(n + 1)) n++;
-        } else if (!func_ov005_022141cc()) {
-            if (FindSpriteSlotById(n + 1)) n++;
+    } else if (keys[KEY_PRESSED] & KEY_DOWN) {
+        if (row < 4) {
+            if (FindSpriteSlotById(row + 1)) row++;
+        } else if (!RecordsMenu_ScrollDown()) {
+            if (FindSpriteSlotById(row + 1)) row++;
         }
         goto done;
     }
 
-    if (gKeyState[1] & 0x20) {
-        delta = func_ov005_02214184();
-        n -= delta + 6;
-        if (n < 0) n = 0;
+    if (keys[KEY_PRESSED] & KEY_LEFT) {
+        delta = RecordsMenu_PageUp();
+        row -= delta + 6;
+        if (row < 0) row = 0;
         if (delta != 0) {
-            if (n == *a) PlaySoundEffect(0x10019);
+            if (row == *selected) PlaySoundEffect(SOUND_MENU_SELECT);
         }
-    } else if (gKeyState[1] & 0x10) {
-        delta = func_ov005_02214210();
-        n += 6 - delta;
-        if (n >= 6) n = 5;
+    } else if (keys[KEY_PRESSED] & KEY_RIGHT) {
+        delta = RecordsMenu_PageDown();
+        row += 6 - delta;
+        if (row >= 6) row = 5;
         if (delta != 0) {
-            if (n == *a) PlaySoundEffect(0x10019);
+            if (row == *selected) PlaySoundEffect(SOUND_MENU_SELECT);
         }
     }
 
 done:
-    if (n != *a) FocusSpriteSlotById(n);
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94) = n;
+    if (row != *selected) FocusSpriteSlotById(row);
+    RECORDS_SCREEN->cursorRow = row;
 }
 
 void func_ov005_02215594(u8 *arg0) {

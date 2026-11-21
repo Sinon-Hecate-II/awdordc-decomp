@@ -1,5 +1,6 @@
 /* 28 functions from 0x02011BB0 to 0x02012B70 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 #include "wfc_channel.h"
 typedef struct {u8 kind,length; u16 pad; u8 *data;} ParsedItem;
 typedef struct {u8 count; u8 pad[3]; ParsedItem items[16];} ParsedItems;
@@ -193,9 +194,23 @@ u16 WM_GetNextTgid(void) {
     return (u16)sTgid;
 }
 
-s32 func_020120f8(M2C_UNK a){
-s32 WFC_CheckChannelState(s32,s32); void *WFC_GetInfoBlock();s32 r;void *p;
-r=WFC_CheckChannelState(1,0);if(r)return r;WFC_SetChannelParam(3,a);p=WFC_GetInfoBlock();r=WFC_SendCommand(3,3,M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,4),M2C_FIELD(p,s32 *,16));if(!r)r=2;return r;
+/* Opens the WFC link (command 3): once the link is idle, installs
+ * `commandHandler` as the command's callback and hands the firmware the info
+ * block's three work buffers (first buffer, connection-data block and command
+ * packet).  Returns 0 on success (2 once queued), 8 when no command block was
+ * free, or a Wi-Fi error code. */
+s32 WFC_OpenLink(s32 commandHandler) {
+    s32 WFC_CheckChannelState(s32, s32);
+    void *WFC_GetInfoBlock();
+    s32 result;
+    void *info;
+    result = WFC_CheckChannelState(1, 0);
+    if (result) return result;
+    WFC_SetChannelParam(3, commandHandler);
+    info = WFC_GetInfoBlock();
+    result = WFC_SendCommand(3, 3, M2C_FIELD(info, s32 *, WFC_CMD_INFO_BUFFER0), M2C_FIELD(info, s32 *, WFC_CMD_INFO_DATA), M2C_FIELD(info, s32 *, WFC_CMD_INFO_PACKET));
+    if (!result) result = WFC_CMD_OK;
+    return result;
 }
 
 s32 func_02012158(M2C_UNK arg0) {

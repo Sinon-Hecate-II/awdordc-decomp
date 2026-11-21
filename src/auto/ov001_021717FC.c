@@ -12,8 +12,8 @@ void Ov001_WfcIconUpdate(s32);
 s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
 extern s32 gOv001ChoiceFrameSprites;
 extern s8 gOv001MessagePanelActive;
-extern u8 data_ov001_02193cd0[64];
-extern const u8 data_ov001_0218f2f8[8];
+extern u8 gOv001LocalizedPath[64];
+extern const u8 gOv001LanguageCode[8];
 
 /* Frame task that slides the shared icon row into view: lift it four pixels a
  * frame, and when it reaches its resting y clamp it there and switch to the
@@ -162,16 +162,21 @@ s32 Ov001_FreeOptionBackground(void) {
  return 1;
 }
 
-void *Ov001_LocalizePath(u8 *arg0) {
+/* Copy the asset path template `pathTemplate` into the shared localized-path
+ * buffer and substitute the current language's code at the template's language
+ * character (index 5).  A OV001_PATH_LANG_ALL template is returned unchanged;
+ * a OV001_PATH_LANG_NONJP template is returned unchanged unless the console is
+ * Japanese. */
+void *Ov001_GetLocalizedFileName(u8 *pathTemplate) {
  void StringCopyPad(void *,void *,s32);
  s32 Ov001_GetLanguage(s32);
- s32 value;
- StringCopyPad(data_ov001_02193cd0,arg0,63);
- if(arg0[5]==120) return data_ov001_02193cd0;
- value=Ov001_GetLanguage(arg0[5]);
- if(arg0[5]==121 && value!=0) return data_ov001_02193cd0;
- data_ov001_02193cd0[5]=data_ov001_0218f2f8[value];
- return data_ov001_02193cd0;
+ s32 language;
+ StringCopyPad(gOv001LocalizedPath,pathTemplate,63);
+ if(pathTemplate[OV001_PATH_LANGUAGE_CHAR]==OV001_PATH_LANG_ALL) return gOv001LocalizedPath;
+ language=Ov001_GetLanguage(pathTemplate[OV001_PATH_LANGUAGE_CHAR]);
+ if(pathTemplate[OV001_PATH_LANGUAGE_CHAR]==OV001_PATH_LANG_NONJP && language!=0) return gOv001LocalizedPath;
+ gOv001LocalizedPath[OV001_PATH_LANGUAGE_CHAR]=gOv001LanguageCode[language];
+ return gOv001LocalizedPath;
 }
 
 void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
@@ -179,7 +184,7 @@ void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
  s32 Ov001_LoadFile(void *,s32 *,s32);
  void Ov001_FreeFile(s32);
  s32 size;
- s32 p=Ov001_LoadFile(Ov001_LocalizePath(arg0),&size,4);
+ s32 p=Ov001_LoadFile(Ov001_GetLocalizedFileName(arg0),&size,4);
  DC_FlushRange(p,size);
  arg1(p,0,size);
  Ov001_FreeFile(p);
@@ -333,7 +338,7 @@ void Ov001_FreeHighlightTilemap(void) {
 void func_ov001_021722dc(s32);
 M2C_UNK Ov001_LoadObjLayoutBlock(s32 a) {
  void MI_CpuCopy32(s32,s32,s32);
- s32 p=Ov001_LoadFile(Ov001_LocalizePath(sOv001HighlightTilemapPaths[a]),0,4);
+ s32 p=Ov001_LoadFile(Ov001_GetLocalizedFileName(sOv001HighlightTilemapPaths[a]),0,4);
  MI_CpuCopy32(p,sOv001HighlightTilemapBuffer,192);
  Ov001_FreeFile(p);
  Ov001_AddTask(1,func_ov001_021722dc,0,120);

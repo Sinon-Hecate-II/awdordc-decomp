@@ -17,7 +17,12 @@ temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
 SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
 
-void func_ov000_02180778(void) {
+/* Role-4/6 AI step-7 handler (case 7 of the func_ov000_021812a8 dispatcher for
+ * a unit that acts in place): build the influence maps and pick the acting unit's
+ * action target, run the attack, flag the action plan when the owning player's AI
+ * mode is not 0, then plan the reachable-attack, production-site, attack-move and
+ * port destinations and finish the unit's action. */
+void RunAiRole4Or6Step7Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -29,13 +34,13 @@ void func_ov000_02180778(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanReachableAttackDestination();
@@ -45,7 +50,12 @@ void func_ov000_02180778(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_021807d8(void) {
+/* Role-4/6 AI step-8 (capture) handler (case 8 of the func_ov000_021812a8
+ * dispatcher for a unit that acts in place): build the influence maps and pick the
+ * acting unit's action target, run the attack, flag the action plan when the
+ * owning player's AI mode is not 0, then plan the capture move, production-site,
+ * attack-move and port destinations and finish the unit's action. */
+void RunAiRole4Or6Step8Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -57,13 +67,13 @@ void func_ov000_021807d8(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanCaptureMoveDestination();
@@ -332,7 +342,7 @@ void RunAiRole3Step5Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_0219604c();
+    M2C_UNK PlanHqDestination();
     M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
@@ -348,7 +358,7 @@ void RunAiRole3Step5Action(void) {
         RunAiAttackAction();
     }
     FindBestMoveTarget();
-    func_ov000_0219604c();
+    PlanHqDestination();
     PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();
@@ -608,9 +618,9 @@ case 1: RunAiUnitActionStep1(); return;
 case 2: if(HasEnemyPlayer()==1)RunAiRole4Or6Step2Action(); else RunAiAttackAndPlanStep(); return;
 case 3: RunAiUnitActionStep3(); return;
 case 4: RunAiRole4Or6Step4Action(); return;
-case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else RunAiRole4Or6Step4Action(); return;
-case 7: func_ov000_02180778(); return;
-case 8: func_ov000_021807d8(); return;
+case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)RunAiRole4Or6Step5Action(); else RunAiRole4Or6Step4Action(); return;
+case 7: RunAiRole4Or6Step7Action(); return;
+case 8: RunAiRole4Or6Step8Action(); return;
 case 9: func_ov000_02180838(); return;
 case 6: func_ov000_02180738(); return;
 case 10: RunAiRole4Or6Step10Action(); return;

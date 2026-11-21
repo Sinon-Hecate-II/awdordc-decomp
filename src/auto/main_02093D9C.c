@@ -268,25 +268,28 @@ s32 func_02094214(void *arg0) {
  return 1;
 }
 
-s32 func_020942b0(void *arg0) {
+/* Map-script command: while a message box is up, seek forward command by command
+ * to the next message command (MAP_SCRIPT_OP_MESSAGE) or to the end of the script
+ * (MAP_SCRIPT_OP_END); with no message box up, just advance one command. */
+s32 ScriptCmd_SkipToNextMessage(void *script) {
     M2C_UNK IsMessageBoxActive();
-    s32 temp_r0;
+    s32 opcode;
 
     if (IsMessageBoxActive() != 0) {
         do {
-            temp_r0 = *M2C_FIELD(arg0, s32 **, 4);
-            switch (temp_r0) {
-            case 0x6B:
+            opcode = *M2C_FIELD(script, s32 **, MAP_SCRIPT_STATE_IP);
+            switch (opcode) {
+            case MAP_SCRIPT_OP_MESSAGE:
                 return 1;
-            case 7:
+            case MAP_SCRIPT_OP_END:
                 return 1;
             default:
-                M2C_FIELD(arg0, s32 **, 4) += 4;
+                M2C_FIELD(script, s32 **, MAP_SCRIPT_STATE_IP) += 4;
                 break;
             }
         } while (1);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

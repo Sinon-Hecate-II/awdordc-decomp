@@ -29,10 +29,17 @@
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
 #define UNIT_VIEW_SLOTS        0x08 /* void *[5]: the unit models the view draws, 4 bytes apart */
+#define UNIT_VIEW_SCALE        0x1C /* u16 8.8 scale applied to the view's 3D sprite (0x100 = 1.0) */
+#define UNIT_VIEW_X            0x1E /* s16 x of the gauge/effect sprite */
+#define UNIT_VIEW_SPRITE_X     0x20 /* s16 x added to the sprite's 3D position */
 #define UNIT_VIEW_SHAKE_X      0x22 /* s16 horizontal screenshake offset */
 #define UNIT_VIEW_SHAKE_Y      0x24 /* s16 vertical screenshake offset */
 #define UNIT_VIEW_SHAKE_INDEX  0x26 /* s8 index into gUnitViewShakeOffsets, -1 = no shake */
+#define UNIT_VIEW_SIDE         0x27 /* u8 effect side: 0 for gUnitViews, 1 for gUnitViewsP2 */
+#define UNIT_VIEW_EFFECT_ON    0x28 /* u8 nonzero while the side's CO effect is displayed */
 #define UNIT_VIEW_FRAME        0x29 /* u8 frames the view has been stepping, wraps at 128 */
+#define UNIT_VIEW_CO_EFFECT    0x2A /* u8 nonzero when the side shows its single zoomed CO-effect unit */
+#define UNIT_VIEW_EFFECT_FRAME 0x2B /* u8 effect frame (tens of HP) handed to ReplaceSlotSound */
 #define UNIT_VIEW_SIZE         0x2C
 
 /* The battle scene's shared state (gBattleSceneState): the phase its per-frame
@@ -56,7 +63,7 @@ enum {
 #define VERSUS_DATA_COUNTRY 0x01 /* u8 country/army id that picks the player's screen assets */
 
 /* Effect node (ov002 effect system), 0x88 bytes; built by Ov002_AddEffectNode
- * and animated by func_ov002_021e2aa8. */
+ * and animated by UpdateEffectNode. */
 #define FX_NODE_RESOURCE    0x00 /* void *resource/particle the node draws */
 #define FX_NODE_ID          0x04 /* s32 resource id */
 #define FX_NODE_CHILD       0x08 /* void *first child node */

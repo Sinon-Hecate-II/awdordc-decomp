@@ -83,30 +83,31 @@ void StoreLinkMatchSetup(u8 *setup) {
     CommitSaveSlot();
 }
 
+#pragma scheduling on
 void func_ov001_02184b50(u8 *src){
-extern s32 gSaveData;
-M2C_UNK MI_CpuFill8(void*,s32,s32);M2C_UNK MI_CpuCopy8(void*,void*,s32);
-u8 flags; u8 *p=(u8*)gSaveData+0x400;
-MI_CpuFill8(p,0,0xef);
-MI_CpuCopy8(src+0,p+209,5);
-MI_CpuCopy8(src+6,p+214,5);
-MI_CpuCopy8(src+12,p+219,5);
-MI_CpuCopy8(src+18,p+224,5);
-MI_CpuCopy8(src+24,p+96,32);
-MI_CpuCopy8(src+57,p+128,13);
-MI_CpuCopy8(src+71,p+144,13);
-MI_CpuCopy8(src+85,p+160,13);
-MI_CpuCopy8(src+99,p+176,13);
-MI_CpuCopy8(src+113,p+64,32);
+extern s32 data_ov001_02193e04;
+M2C_UNK func_02007f8c(void*,s32,s32);M2C_UNK func_02008048(void*,void*,s32);
+u8 flags; u8 *p=(u8*)data_ov001_02193e04+0x400;
+func_02007f8c(p,0,0xef);
+func_02008048(src+0,p+209,5);
+func_02008048(src+6,p+214,5);
+func_02008048(src+12,p+219,5);
+func_02008048(src+18,p+224,5);
+func_02008048(src+24,p+96,32);
+func_02008048(src+57,p+128,13);
+func_02008048(src+71,p+144,13);
+func_02008048(src+85,p+160,13);
+func_02008048(src+99,p+176,13);
+func_02008048(src+113,p+64,32);
 flags=p[0xe6];
 p[0xe7]=1;
 p[0xe6]=(flags&~3)|2;
 p[0xe6]&=~0xfc;
-MI_CpuFill8(p+0xf0,0,4);
+func_02007f8c(p+0xf0,0,4);
 p[0xf5]=1;p[0xf6]=1;
-CommitSaveSlot();
+func_ov001_02184960();
 }
-
+#pragma scheduling reset
 s32 GetSaveData(void) {
     extern s32 gSaveData;
     return gSaveData;
@@ -127,41 +128,45 @@ i=0;offset=0;do{MI_CpuCopy8(code,(void *)(gSaveData+offset+SAVE_SLOT_CODE),SAVE_
 for(i=0;i<4;i++)UpdateSaveChecksums(i);
 }
 
-#pragma push
 #pragma opt_propagation off
 #pragma opt_strength_reduction off
-void UpdateSaveChecksums(s32 a) {
+/* Recompute and upload the CRC16 of the save slots.  Slot `slotIndex` is always
+ * refreshed; for the first three slots, a change between erased and written also
+ * updates the bitmap of written slots kept at SAVE_SLOT_FLAGS in the first two
+ * slot images and refreshes slots 0 and 1. */
+void UpdateSaveChecksums(s32 slotIndex) {
  M2C_UNK MI_CpuFill8(void *, s32, s32);
  u16 Crc16Block(void *, void *, s32);
  s32 FifoUploadSelectedBlocks(s32, s32 *, s32);
  s32 Ov001_Alloc(s32, s32);
  M2C_UNK Ov001_FreeAlloc(void *);
  extern s32 gSaveData;
- s32 arr[4], ptr, one=1, value, flag=0, idx, off, v;
- value=((u8 *)gSaveData+(a<<8))[0xe7];
- MI_CpuFill8(arr,0,16);
- v=one & 1; arr[a]=v;
- if(a<=2){
- if(((u8 *)gSaveData)[0xef] & (one<<a)) flag=v;
- if(value==255 && flag){
- ((u8 *)gSaveData)[0xef]&=~(one<<a);
- ((u8 *)gSaveData)[0x1ef]&=~(one<<a);
- arr[1]=1; arr[0]=1;
- }else if(value!=255 && !flag){
- ((u8 *)gSaveData)[0xef]|=one<<a;
- ((u8 *)gSaveData)[0x1ef]|=one<<a;
- arr[1]=1; arr[0]=1;
+ s32 blocks[4], readback, one=1, status, inUse=0, i, offset, v;
+ status=((u8 *)gSaveData+(slotIndex<<8))[SAVE_SLOT_STATUS_REL];
+ MI_CpuFill8(blocks,0,16);
+ blocks[slotIndex]=1;
+ if(slotIndex<=2){
+ if(((u8 *)gSaveData)[SAVE_SLOT_FLAGS] & (one<<slotIndex)) inUse=1;
+ if(status==SAVE_SLOT_STATUS_ERASED && inUse){
+ ((u8 *)gSaveData)[SAVE_SLOT_FLAGS]&=~(one<<slotIndex);
+ ((u8 *)gSaveData)[SAVE_SLOT_SIZE+SAVE_SLOT_FLAGS]&=~(one<<slotIndex);
+ blocks[1]=1; blocks[0]=1;
+ }else if(status!=SAVE_SLOT_STATUS_ERASED && !inUse){
+ ((u8 *)gSaveData)[SAVE_SLOT_FLAGS]|=one<<slotIndex;
+ ((u8 *)gSaveData)[SAVE_SLOT_SIZE+SAVE_SLOT_FLAGS]|=one<<slotIndex;
+ blocks[1]=1; blocks[0]=1;
  }}
- idx=0; off=0; do {
- if(arr[idx]){
- u16 res=Crc16Block((u8 *)gSaveData+0x4f8,(u8 *)gSaveData+off,254);
- *(u16 *)((u8 *)gSaveData+(idx<<8)+254)=res;
- } idx++; off+=256; }while(idx<4);
- ptr=Ov001_Alloc(256,32);
- FifoUploadSelectedBlocks(gSaveData,arr,ptr);
- Ov001_FreeAlloc(&ptr);
+ i=0; offset=0; do {
+ if(blocks[i]){
+ u16 res=Crc16Block((u8 *)gSaveData+SAVE_CRC_TABLE,(u8 *)gSaveData+offset,SAVE_SLOT_CRC_SIZE);
+ *(u16 *)((u8 *)gSaveData+(i<<8)+SAVE_SLOT_CRC)=res;
+ } i++; offset+=SAVE_SLOT_SIZE; }while(i<4);
+ readback=Ov001_Alloc(SAVE_SLOT_SIZE,32);
+ FifoUploadSelectedBlocks(gSaveData,blocks,readback);
+ Ov001_FreeAlloc(&readback);
 }
-#pragma pop
+#pragma opt_propagation reset
+#pragma opt_strength_reduction reset
 /* Parse a 12-character player code into its four 3-character groups (values
  * [0..3]): each group is copied into a buffer whose leading zero bytes are
  * turned into spaces so the number parser stops there, then parsed. */

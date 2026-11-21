@@ -171,6 +171,12 @@ typedef struct SoundSequenceRecord {
     u8  channel;  /* +0x09 player channel the sequence is played on */
 } SoundSequenceRecord;
 
+/* One record of the sound archive's sequence-archive table
+ * (GetSoundSequenceArchiveRecord): the archive file it names. */
+typedef struct SoundSequenceArchiveRecord {
+    s32 fileId;   /* +0x00 file id of the sequence archive in the archive */
+} SoundSequenceArchiveRecord;
+
 /* A sound group of the sound archive: a count and that many items, each saying
  * which kind of sound resource it names and the load flags its loader gets. */
 typedef struct SoundGroupItem {

@@ -135,13 +135,13 @@ s32 IsWfcProfileEmpty(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b=
 
 u32 Base64EncodedLength(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
 
-void func_020473a8(void) {
+void WebRequestProgress(void) {
 
 }
 
 #pragma push
 #pragma opt_propagation on
-void func_020473ac(void *arg0, u32 arg1, s32 arg2) {
+void WebRequestComplete(void *arg0, u32 arg1, s32 arg2) {
     void MemCopy(void *, const void *, s32);
     void func_02076658(u8 *, u8 *, s32);
     s32 StringLength(const void *);
@@ -257,55 +257,61 @@ s32 EncodeWfcRequestBody(u8 *out, u8 *header, u32 headerLen, u8 *payload, u32 pa
 #pragma scheduling off
 void func_02047750(s32 arg0) { M2C_UNK *p; extern M2C_UNK gWebRequestState,data_020fcad0,data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,8)=-1; M2C_FIELD(&gWebRequestState,s32 *,0x54)=0; M2C_FIELD(&gWebRequestState,s32 *,0x58)=0; p=arg0?&data_020fcad0:&data_020fcaf8; M2C_FIELD(&gWebRequestState,s32 *,0x5c)=0; M2C_FIELD(&gWebRequestState,s32 *,0x60)=0; M2C_FIELD(&gWebRequestState,s32 *,0x64)=0; M2C_FIELD(&gWebRequestState,M2C_UNK **,0)=p; BeginWebRequest(0); M2C_FIELD(&gWebRequestState,s32 *,4)=3; }
 #pragma scheduling reset
-s32 func_020477ac(void) {
+/* Advance the WFC web request one step and return its phase: send the put.asp
+   request (WEB_REQ_PUT_SEND) and wait for its reply (WEB_REQ_PUT_WAIT), then send
+   the follow-up get.asp request (WEB_REQ_GET_SEND) and wait for its reply
+   (WEB_REQ_GET_WAIT); the reply handlers move the phase on.  A request that fails
+   to start or a network error falls back to WEB_REQ_FAILED. */
+s32 StepWebRequest(void) {
     extern M2C_UNK gWebRequestState;
-    void func_020473a8(void);
-    void func_020473ac(void *, u32, s32);
+    void WebRequestProgress(void);
+    void WebRequestComplete(void *, u32, s32);
     M2C_UNK HttpGetStart(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02044e68(void);
+    s32 PumpWebRequest(void);
 
-    switch (M2C_FIELD(&gWebRequestState, s32 *, 4)) {
-    case 5:
+    switch (M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE)) {
+    case WEB_REQ_PUT_SEND:
         {
-            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
-                          (M2C_UNK)func_020473a8, (M2C_UNK)func_020473ac, (M2C_UNK)0);
-            M2C_FIELD(&gWebRequestState, M2C_UNK *, 8) = r;
+            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, WEB_REQ_BUFFER), (M2C_UNK)0, (M2C_UNK)0,
+                          (M2C_UNK)WebRequestProgress, (M2C_UNK)WebRequestComplete, (M2C_UNK)0);
+            M2C_FIELD(&gWebRequestState, M2C_UNK *, WEB_REQ_RESULT) = r;
             if ((s32)r >= 0) {
-                M2C_FIELD(&gWebRequestState, s32 *, 4) = 5;
+                M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_PUT_WAIT;
             } else {
-                M2C_FIELD(&gWebRequestState, s32 *, 4) = 1;
+                M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_FAILED;
             }
         }
         break;
-    case 6:
-        if (func_02044e68() == 0) {
-            M2C_FIELD(&gWebRequestState, s32 *, 4) = 1;
+    case WEB_REQ_PUT_WAIT:
+        if (PumpWebRequest() == 0) {
+            M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_FAILED;
         }
         break;
-    case 7:
+    case WEB_REQ_GET_SEND:
         {
-            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, 0x54), (M2C_UNK)0, (M2C_UNK)0,
-                          (M2C_UNK)func_020473a8, (M2C_UNK)func_020473ac, (M2C_UNK)0);
-            M2C_FIELD(&gWebRequestState, M2C_UNK *, 8) = r;
+            M2C_UNK r = HttpGetStart(M2C_FIELD(&gWebRequestState, M2C_UNK *, WEB_REQ_BUFFER), (M2C_UNK)0, (M2C_UNK)0,
+                          (M2C_UNK)WebRequestProgress, (M2C_UNK)WebRequestComplete, (M2C_UNK)0);
+            M2C_FIELD(&gWebRequestState, M2C_UNK *, WEB_REQ_RESULT) = r;
             if ((s32)r >= 0) {
-                M2C_FIELD(&gWebRequestState, s32 *, 4) = 7;
+                M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_GET_WAIT;
             } else {
-                M2C_FIELD(&gWebRequestState, s32 *, 4) = 1;
+                M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_FAILED;
             }
         }
         break;
-    case 8:
-        if (func_02044e68() == 0) {
-            M2C_FIELD(&gWebRequestState, s32 *, 4) = 1;
+    case WEB_REQ_GET_WAIT:
+        if (PumpWebRequest() == 0) {
+            M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE) = WEB_REQ_FAILED;
         }
         break;
+    case WEB_REQ_DONE:
     default:
         break;
     }
-    return M2C_FIELD(&gWebRequestState, s32 *, 4);
+    return M2C_FIELD(&gWebRequestState, s32 *, WEB_REQ_PHASE);
 }
 
-s32 func_020477ac(void);
+s32 StepWebRequest(void);
 
 /* Free the WFC web request's formatted request buffer and response payload and
  * release its ghttp reference, returning the request to its idle phase. */

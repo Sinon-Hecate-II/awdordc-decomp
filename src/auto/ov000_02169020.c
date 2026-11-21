@@ -51,7 +51,11 @@ void func_ov000_02169070(void *p) {
  M2C_FIELD(p,u16 *,0x48)=0;
 }
 #pragma peephole reset
-void UnitMove_ReadCommand(void *p) {
+/* Read movement commands from the controller's stream until one changes its state:
+   a MOVE_DIR_* step sets the facing and walks on, 5..8 face a direction without
+   animating, 9 holds for the frames the next byte gives, MOVE_DIR_ATTACK fires at
+   the unit's cell, MOVE_DIR_STOP finishes the move and MOVE_DIR_NONE deletes it. */
+void UnitMove_ReadCommand(void *move) {
 void func_020c98d8(s32,s32,s32);
 s32 IsPlayerHuman(u32);
 void AddRecordValue(s32,s32);
@@ -63,33 +67,35 @@ void SetSpriteAnimFrame(s32,s32);
 extern s32 *gCurrentMap;
 s8 ReadMovementCommand(void *);
 s16 command;
-command=ReadMovementCommand(p);
+for (;;) {
+command=ReadMovementCommand(move);
 switch(command){
-default: break;
+default: continue;
 case 9:
-M2C_FIELD(p,s16*,0x48)=ReadMovementCommand(p);
-M2C_FIELD(p,u8*,0x41)=3;break;
-case 10:
-M2C_FIELD(p,u8*,0x41)=5;
-func_020c98d8(M2C_FIELD(p,s16*,0x4c)>>4,M2C_FIELD(p,s16*,0x4e)>>4,0);
-if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,0x52a4)))AddRecordValue(14,1);
-break;
-case 4:func_ov000_02169740(p);break;
-case -1:DeleteUnitMoveObject(p);RefreshMapView();break;
-case 0:case 1:case 2:case 3:
-StepUnitMoveSound(p);
-if(command!=M2C_FIELD(p,s8*,0x44)){
-SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x34),command);
-SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x38),command+4);
-M2C_FIELD(p,s8*,0x44)=command;M2C_FIELD(p,u8*,0x41)=2;
-}break;
+M2C_FIELD(move,s16*,UNIT_MOVE_PHASE)=ReadMovementCommand(move);
+M2C_FIELD(move,u8*,UNIT_MOVE_STATE)=UNIT_MOVE_STATE_HOLD;return;
+case MOVE_DIR_ATTACK:
+M2C_FIELD(move,u8*,UNIT_MOVE_STATE)=UNIT_MOVE_STATE_WAIT_ATTACK;
+func_020c98d8(M2C_FIELD(move,s16*,UNIT_MOVE_X)>>4,M2C_FIELD(move,s16*,UNIT_MOVE_Y)>>4,0);
+if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,MAP_CURRENT_PLAYER)))AddRecordValue(14,1);
+return;
+case MOVE_DIR_STOP:func_ov000_02169740(move);return;
+case MOVE_DIR_NONE:DeleteUnitMoveObject(move);RefreshMapView();return;
+case MOVE_DIR_LEFT:case MOVE_DIR_RIGHT:case MOVE_DIR_DOWN:case MOVE_DIR_UP:
+StepUnitMoveSound(move);
+if(command!=M2C_FIELD(move,s8*,UNIT_MOVE_DIRECTION)){
+SetSpriteAnimFrame(M2C_FIELD(move,s32*,UNIT_MOVE_SPRITE),command);
+SetSpriteAnimFrame(M2C_FIELD(move,s32*,UNIT_MOVE_SPRITE2),command+4);
+M2C_FIELD(move,s8*,UNIT_MOVE_DIRECTION)=command;M2C_FIELD(move,u8*,UNIT_MOVE_STATE)=UNIT_MOVE_STATE_WALK;
+}return;
 case 5:case 6:case 7:case 8:
 command-=5;
-if(command!=M2C_FIELD(p,s8*,0x44)){
-SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x34),command);
-SetSpriteAnimFrame(M2C_FIELD(p,s32*,0x38),command+4);
-M2C_FIELD(p,s8*,0x44)=command;
-}break;
+if(command!=M2C_FIELD(move,s8*,UNIT_MOVE_DIRECTION)){
+SetSpriteAnimFrame(M2C_FIELD(move,s32*,UNIT_MOVE_SPRITE),command);
+SetSpriteAnimFrame(M2C_FIELD(move,s32*,UNIT_MOVE_SPRITE2),command+4);
+M2C_FIELD(move,s8*,UNIT_MOVE_DIRECTION)=command;
+}continue;
+}
 }
 }
 #pragma optimization_level reset
@@ -421,7 +427,7 @@ void DrawUnitMoveSprite(void *move) {
  * fog (the owner's fog flag) or a visible cell the unit is allowed on.  While the
  * move is in its walking state, keeps the view centred on the unit. */
 s32 UnitMove_CanStepOntoCell(void *p) {
-    s32 func_020a5d8c(s32, s32, s32);
+    s32 IsUnitInSightAt(s32, s32, s32);
     void ScrollMapViewToPoint(s32, s32);
     s32 cx;
     s32 cy;
@@ -441,7 +447,7 @@ s32 UnitMove_CanStepOntoCell(void *p) {
     if (!(fogFlags & 2)) {
         idx = cx + M2C_FIELD(base + cy * 2 + 0x3700, u16 *, 0x58);
         hit = M2C_FIELD(base + (idx >> 3) + 0x5000, u8 *, 0x201) & (1 << (idx & 7));
-        if (!hit || func_020a5d8c(unit, (s16)cx, (s16)cy) == 0) {
+        if (!hit || IsUnitInSightAt(unit, (s16)cx, (s16)cy) == 0) {
             visible = 0;
         }
     }

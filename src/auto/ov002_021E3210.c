@@ -196,7 +196,7 @@ for(entry=panel+PANEL_ENTRIES,i=0;i<5;i++,entry+=4)M2C_FIELD(entry,u8 *,2)&=~7;
 {void *q; s32 j;for(q=panel+PANEL_ENTRIES+4,j=1;j<5;j++,q+=4)M2C_FIELD(q,s16 *,0)=-1;}
 }
 
-s32 func_ov002_021e377c(void *arg0) {
+s32 GetPanelGaugeLength(void *arg0) {
     extern u8 gEffectTable;
     extern u8 gEffectDefaultVariant;
     u8 *p;
@@ -473,35 +473,39 @@ void func_ov002_021e3f28(void) {
 
 }
 
-void func_ov002_021e3f2c(void *arg0, s32 arg1) {
+/* Initialise a battle unit view's gauge layer: flag the view's side, take its
+   gauge length from that side's panel, reset the gauge frame, screenshake, y offset
+   and animation nibble, then pick the character expression from the gauge
+   comparison and the CO's expression row. */
+void InitUnitViewGauge(void *view, s32 side) {
     extern u8 gEffectVariants[];
-    extern u8 data_ov002_021f3105[];
-    extern s8 data_ov002_021f2d4c[];
-    s32 func_ov002_021e377c(void *);
-    s32 func_ov002_021e41ac(void *, s32);
+    extern u8 gVersusPlayerCoIndex[];
+    extern s8 gCoExpressionTable[];
+    s32 GetPanelGaugeLength(void *);
+    s32 CompareUnitViewGauges(void *, s32);
     s32 RandomIntRange(s32, s32);
-    s8 t;
+    s8 expr;
 
-    M2C_FIELD(arg0, u8 *, 3) = (M2C_FIELD(arg0, u8 *, 3) & ~0xF) | ((u8)arg1 & 0xF);
-    M2C_FIELD(arg0, s8 *, 1) = func_ov002_021e377c((s32)gEffectVariants + arg1 * 0x68);
-    M2C_FIELD(arg0, s8 *, 0) = 0;
-    M2C_FIELD(arg0, s8 *, 5) = 0x10;
-    M2C_FIELD(arg0, s8 *, 2) = 0;
-    M2C_FIELD(arg0, u8 *, 3) = M2C_FIELD(arg0, u8 *, 3) & ~0xF0;
-    M2C_FIELD(arg0, s8 *, 4) = func_ov002_021e41ac(arg0, 1);
-    t = M2C_FIELD(arg0, s8 *, 4);
-    switch (t) {
+    M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) = (M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) & ~0xF) | ((u8)side & 0xF);
+    M2C_FIELD(view, s8 *, UNIT_VIEW_GAUGE_LENGTH) = GetPanelGaugeLength((s32)gEffectVariants + side * 0x68);
+    M2C_FIELD(view, s8 *, UNIT_VIEW_GAUGE_FRAME) = 0;
+    M2C_FIELD(view, s8 *, UNIT_VIEW_SHAKE) = 0x10;
+    M2C_FIELD(view, s8 *, UNIT_VIEW_Y) = 0;
+    M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) = M2C_FIELD(view, u8 *, UNIT_VIEW_FLAGS) & ~0xF0;
+    M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION) = CompareUnitViewGauges(view, 1);
+    expr = M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION);
+    switch (expr) {
     case 0:
-        M2C_FIELD(arg0, s8 *, 4) = -1;
+        M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION) = -1;
         return;
     case 1:
-        M2C_FIELD(arg0, s8 *, 4) = data_ov002_021f2d4c[data_ov002_021f3105[arg1 * 0x18] * 3 + RandomIntRange(0, 1)];
+        M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION) = gCoExpressionTable[gVersusPlayerCoIndex[side * VERSUS_DATA_STRIDE] * 3 + RandomIntRange(0, 1)];
         return;
     case 2:
-        M2C_FIELD(arg0, s8 *, 4) = data_ov002_021f2d4c[data_ov002_021f3105[arg1 * 0x18] * 3 + 2];
+        M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION) = gCoExpressionTable[gVersusPlayerCoIndex[side * VERSUS_DATA_STRIDE] * 3 + 2];
         return;
     default:
-        M2C_FIELD(arg0, s8 *, 4) = -1;
+        M2C_FIELD(view, s8 *, UNIT_VIEW_EXPRESSION) = -1;
         return;
     }
 }
@@ -512,7 +516,7 @@ void func_ov002_021e3f2c(void *arg0, s32 arg1) {
 s32 ComparePlayerGauges(void *arg0) {
     extern u8 data_ov002_021f30fd[];
     extern u8 gVersusPlayerStates[];
-    extern u8 data_ov002_021f3105[];
+    extern u8 gVersusPlayerCoIndex[];
     u32 slot;
     s32 ofs;
     u8 alive;
@@ -520,7 +524,7 @@ s32 ComparePlayerGauges(void *arg0) {
 
     ofs = ((u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C) * 0x18;
     slot = (u32)(M2C_FIELD(arg0, u8 *, 3) << 0x1C) >> 0x1C;
-    if (data_ov002_021f3105[ofs] == 0) {
+    if (gVersusPlayerCoIndex[ofs] == 0) {
         return 0;
     }
     alive = gVersusPlayerStates[ofs];

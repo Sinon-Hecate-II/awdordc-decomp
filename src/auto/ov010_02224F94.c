@@ -388,72 +388,83 @@ func_ov010_02224f28();
 M2C_FIELD(&gStreamVoiceState,s32 *,16)=0;
 }
 
-void func_ov010_02225964(void *a0, s32 count, void **arr, s32 size, s32 unused, s32 arg4) {
+/* Segment callback of the streaming voice player (installed by
+ * StartStreamedVoice).  On the voice's very first segment it only silences every
+ * note's sample buffer.  On each later segment it flips between the two sample
+ * buffers of the voice, fills the one being played with the next received link
+ * packet, sends the finished buffer back over the link, and flushes the written
+ * buffers and invalidates the one it hands to the link.  `altBuffer` is the
+ * callback's SOUND_PLAYER_CB_ARG, the voice's alternate sample buffer. */
+void RefillStreamedVoiceSegment(s32 mode, s32 noteCount, s32 *noteOffsets, s32 segmentBytes, s32 playMode, s32 altBuffer) {
     extern s32 gStreamVoiceState;
     extern s32 data_ov010_0222edf8;
     void func_ov010_02225934(void);
     void MI_CpuFill8(void *, u32, u32);
     void Arm7TransferStart(void *, void *, u32);
     s32 func_0200dfa8(void);
-    void *func_ov010_02222b0c(void *, s32, s32);
-    void func_ov010_022227b0(s32, s32);
+    void *VoiceStream_ReceiveAudio(void *, s32, s32);
+    void VoiceStream_SendAudio(s32, s32);
     void DC_FlushRange(void *, s32);
     void DC_InvalidateRange(s32, s32);
 
     s32 pos;
+    u32 elapsed;
     s32 changed;
     s32 i;
+    s32 zero;
 
-    if (a0 == 0) {
+    if (mode == 0) {
         i = 0;
-        if (count <= 0) {
+        if (noteCount <= 0) {
             return;
         }
+        zero = i;
         do {
-            MI_CpuFill8(arr[i], 0, size);
+            MI_CpuFill8((void *)noteOffsets[i], zero, segmentBytes);
             i++;
-        } while (i < count);
+        } while (i < noteCount);
         return;
     }
 
-    if (M2C_FIELD(&gStreamVoiceState, s32 *, 4) != 0) {
-        if (M2C_FIELD(&gStreamVoiceState, s32 *, 0x10) == 0) {
+    if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) != 0) {
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_PAUSED) == 0) {
             Arm7TransferStart(&data_ov010_0222edf8, (void *)func_ov010_02225934, 0);
-            M2C_FIELD(&gStreamVoiceState, s32 *, 4) = 0;
+            M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_ACTIVE) = 0;
         }
     }
 
-    pos = arg4;
+    pos = *(volatile s32 *)&altBuffer;
+    elapsed = (u32)func_0200dfa8() - (u32)pos;
     changed = 0;
-    if ((u32)func_0200dfa8() - (u32)pos < (u32)size) {
-        if (M2C_FIELD(&gStreamVoiceState, s32 *, 8) != 0) {
-            M2C_FIELD(&gStreamVoiceState, s32 *, 8) = 0;
-            pos += size;
+    if ((u32)elapsed < (u32)segmentBytes) {
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_FLIP) != 0) {
+            M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_FLIP) = changed;
+            pos += segmentBytes;
             changed = 1;
         }
     } else {
-        if (M2C_FIELD(&gStreamVoiceState, s32 *, 8) != 1) {
+        if (M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_FLIP) != 1) {
             changed = 1;
-            M2C_FIELD(&gStreamVoiceState, s32 *, 8) = 1;
+            M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_FLIP) = 1;
         }
     }
 
-    M2C_FIELD(&gStreamVoiceState, s32 *, 0) = (s32)func_ov010_02222b0c(arr[0], size, 0);
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_DATA_READY) = (s32)VoiceStream_ReceiveAudio((void *)noteOffsets[0], segmentBytes, 0);
 
     if (changed) {
-        func_ov010_022227b0(pos, size);
+        VoiceStream_SendAudio(pos, segmentBytes);
     }
 
-    if (count > 0) {
-        i = 0;
+    i = 0;
+    if (i < noteCount) {
         do {
-            DC_FlushRange(arr[i], size);
+            DC_FlushRange((void *)noteOffsets[i], segmentBytes);
             i++;
-        } while (i < count);
+        } while (i < noteCount);
     }
 
     if (changed) {
-        DC_InvalidateRange(pos, size);
+        DC_InvalidateRange(pos, segmentBytes);
     }
 }
 
@@ -473,7 +484,7 @@ void func_0200e880(s32);
 s32 AllocAlignedBuffer(s32,s32);
 void FreeBuffer(s32,s32);
 void Sound_InitPlayer(void *);
-void func_0202b4e4(void *,s32,u8 *);
+void Sound_AssignPlayerChannels(void *,s32,u8 *);
 void Sound_SetPlayerVolume(void *,s32);
 void func_0202b7e8(void *,s32,s32);
 s32 Sound_StartVoice(void *,s32,s32,s32,s32,s32,void *,s32);
@@ -503,7 +514,7 @@ M2C_FIELD(&gStreamVoiceState,s32 *,0)=0;M2C_FIELD(&gStreamVoiceState,s32 *,0x20)
 M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_ACTIVE)=0;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_PAUSED)=0;
 channelList[0]=channel;
 Sound_InitPlayer(&gStreamSoundPlayer);
-func_0202b4e4(&gStreamSoundPlayer,1,channelList);
+Sound_AssignPlayerChannels(&gStreamSoundPlayer,1,channelList);
 Sound_SetPlayerVolume(&gStreamSoundPlayer,127);
 channelCursor=channelList;
 channelIndex=0;do {func_0202b7e8(&gStreamSoundPlayer,*channelCursor++,0);channelIndex++;}while(channelIndex<1);
@@ -514,7 +525,7 @@ return result;
 #pragma pop
 void func_ov010_02225cd8(void) {
     M2C_UNK StartStreamedVoice(M2C_UNK *, M2C_UNK);
-    StartStreamedVoice((void *)&func_ov010_02225964, 0x44);
+    StartStreamedVoice((void *)&RefillStreamedVoiceSegment, 0x44);
 }
 
 s32 IsVoiceDataReady(void) {

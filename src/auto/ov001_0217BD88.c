@@ -72,6 +72,7 @@ void func_ov001_0217bf40(void) {
     Ov001_SetStepCallback(&Ov001_OpenNameEntryKeyboard);
 }
 
+#pragma peephole off
 void func_ov001_0217bf84(void) {
 void *Ov001_Alloc(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
 void *CreateTextPanel(s32,s32);void *Ov001_CreateSpriteFromLayout(s32,s32);
@@ -91,6 +92,7 @@ M2C_FIELD(gOv001FriendCodeState,void**,4)=Ov001_CreateSpriteFromLayout(0,63);
 M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)&~0xc00)|0xc00;
 func_ov001_0217c8ac();func_ov001_0217c7e8();Ov001_SetStepCallback((s32*)func_ov001_0217c1b4);
 }
+#pragma peephole reset
 /* Load the code-entry screen's OBJ palette, background tiles, palette and
  * tilemap, and set its background layers' priorities: the sub BG0/BG1 and main
  * BG1/BG2 layers lowest (3), the main BG0 layer above them (2). */
@@ -343,8 +345,8 @@ extern void *gOv001FriendCodeState; extern M2C_UNK data_ov001_0218f888;
 void *obj=gOv001FriendCodeState;
 s32 index=M2C_FIELD(obj,u8*,0x14);
 u32 *p=M2C_FIELD(obj,u32**,4);
-if(index<=3) {} else index=3;
-*p=(*p&0xFE00FF00)|0x28|(((u32)M2C_FIELD(&data_ov001_0218f888,u8*,index*3+2)<<23)>>7);
+index = (index > 3) ? 3 : index;
+{ u32 x = M2C_FIELD(&data_ov001_0218f888,u8*,index*3+2); *p = (0x28 | (*p & 0xFE00FF00)) | ((x << 23) >> 7); }
 }
 #pragma scheduling on
 void func_ov001_0217c900(void) {

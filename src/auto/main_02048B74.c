@@ -198,10 +198,10 @@ s32 TableLookup(HashTable *table,s32 data) {
  * bucket; a NULL callback is an assertion failure. */
 void TableMapSafe(HashTable *table, void (*callback)(s32, s32), s32 userData) {
 extern M2C_UNK sAssertFn,gHashtableFileName,sTableMapSafeName;
-void ArrayForEach(s32 *, void (*)(s32, s32), s32);
+void Vector_MapBackwards(s32 *, void (*)(s32, s32), s32);
 s32 i;
 if(!callback)AssertFailed(&sAssertFn,&gHashtableFileName,&sTableMapSafeName,0xb6);
-for(i=0;i<table->nBuckets;i++)ArrayForEach((s32 *)table->buckets[i],callback,userData);
+for(i=0;i<table->nBuckets;i++)Vector_MapBackwards((s32 *)table->buckets[i],callback,userData);
 }
 
 /* GameSpy hashtable.c TableMapSafe2: run `callback` over the elements of every

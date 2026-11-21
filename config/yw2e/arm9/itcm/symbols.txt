@@ -105,4 +105,4 @@ BuildUnitMoveRange kind:function(arm,size=0x40) addr:0x01ffc328
 MarkUnitAttackRingCells kind:function(arm,size=0x80) addr:0x01ffc368
 ClearAdjacentMoveDirs kind:function(arm,size=0xd0) addr:0x01ffc3e8
 func_01ffc4b8 kind:function(arm,size=0x260) addr:0x01ffc4b8
-func_01ffc718 kind:function(arm,size=0x60) addr:0x01ffc718
+ReverseMovePath kind:function(arm,size=0x60) addr:0x01ffc718

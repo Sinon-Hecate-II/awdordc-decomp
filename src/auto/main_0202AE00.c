@@ -301,7 +301,22 @@ void Sound_InitPlayer(void *a) {
     M2C_FIELD(a, u32 *, SOUND_PLAYER_FLAGS) &= ~SOUND_PLAYER_FLAG_CHANNELS;
 }
 
-s32 func_0202b4e4(void *a,s32 n,u8 *p){s32 func_0202aa64(s32);s32 bits=0; s32 i;for(i=0;i<n;i++){M2C_FIELD(a+i,u8 *,76)=p[i];bits|=1<<p[i];}if(!func_0202aa64(bits))return 0;M2C_FIELD(a,s32 *,72)=n;M2C_FIELD(a,s32 *,68)=bits;return 1;}
+/* Give the player the `count` hardware channels listed in `channels`: store them
+   as its note list, build their bit mask and reserve it with the sound driver.
+   Returns 0 (leaving the player unchanged) when a channel is already taken. */
+s32 Sound_AssignPlayerChannels(void *player, s32 count, u8 *channels) {
+    s32 Sound_ReserveChannels(s32);
+    s32 mask = 0;
+    s32 i;
+    for (i = 0; i < count; i++) {
+        M2C_FIELD(player + i, u8 *, SOUND_PLAYER_NOTES) = channels[i];
+        mask |= 1 << channels[i];
+    }
+    if (!Sound_ReserveChannels(mask)) return 0;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT) = count;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK) = mask;
+    return 1;
+}
 
 void Sound_StopVoices(void *arg0) {
     M2C_UNK func_0202aaac();

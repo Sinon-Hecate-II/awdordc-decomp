@@ -147,11 +147,11 @@ void ResetBattleMap(void) {
 
 void func_020ced08(void) {
     extern void **gCurrentMap;
-    extern s8 gTerrainPropertyFlags[];
+    extern s8 data_ov000_021b56c0[];
     extern u16 data_ov000_021aeee8[];
     void func_020cf2c8(void);
-    s32 IsPlayerPresent(s32);
-    void SetPropertyOwnerTile(s32, s32, u8);
+    s32 func_020d1980(s32);
+    void func_0207ab84(s32, s32, u8);
     register u8 tile;
     register s32 i;
     register s32 offset;
@@ -161,9 +161,9 @@ void func_020ced08(void) {
     s32 counter;
 
     func_020cf2c8();
+    offset = 0;
     counter = 0;
     found = 0;
-    offset = 0;
     do {
         void *p = *gCurrentMap;
         tile = ((u8 *)p)[offset + 0x6C60];
@@ -172,14 +172,14 @@ void func_020ced08(void) {
         if (tile == 0xFF) {
             return;
         }
-        if (gTerrainPropertyFlags[tile & 0x1F] != 0) {
+        if (data_ov000_021b56c0[tile & 0x1F] != 0) {
             u16 *rowTable = (u16 *)((u8 *)p + 0x3758);
             u16 row = rowTable[yc];
             u8 posTile = ((u8 *)p + xc)[row + 0x1420];
             if ((posTile & 0xE0) != 0) {
                 found = 0;
                 for (i = 1; i < 5; i++) {
-                    if (IsPlayerPresent(i) != 0) {
+                    if (func_020d1980(i) != 0) {
                         void *p2 = *gCurrentMap;
                         u16 *rt2 = (u16 *)((u8 *)p2 + 0x3758);
                         u16 row2 = rt2[yc];
@@ -206,7 +206,7 @@ void func_020ced08(void) {
                         u16 *rt4 = (u16 *)((u8 *)p4 + 0x3758);
                         u16 row4 = rt4[yc];
                         ((u8 *)p4 + xc)[row4 + 0x1420] = tile;
-                        SetPropertyOwnerTile(xc, yc, 0);
+                        func_0207ab84(xc, yc, 0);
                     }
                 }
             }
@@ -349,44 +349,62 @@ LoadMapTileset();
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
 }
 
-void func_020cf2c8(void) {
-    extern void **gCurrentMap;
-    extern s8 gTerrainPropertyFlags[];
-    void SelectMapLayer(void *);
-    void FillMapLayer(s32);
-    s32 count;
-    s32 i;
-    s32 x;
-    s32 y;
-    s32 k;
-    s32 a;
-    s32 tile; void *base; u32 row;
+void func_020cf2c8(void)
+{
+  extern void **gCurrentMap;
+  void **new_var2;
+  extern s8 gTerrainPropertyFlags[];
+  void SelectMapLayer(void *);
+  void FillMapLayer(s32);
+  s32 count;
+  void *new_var;
+  s32 i;
+  s32 recordOffset = 0;
+  s32 x;
+  s32 y;
+  s32 k;
+  s32 a;
+  s32 tile;
+  u8 *base;
+  u16 row;
+  count = 0;
+  SelectMapLayer(((u8 *) (*gCurrentMap)) + 0x1928);
+  FillMapLayer(-1);
+  for (i = 0; i < 5; i++)
+  {
+    *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + (i * 0x8c))) + 0x67bc)) = 0;
+  }
 
-    count = 0;
-    SelectMapLayer((u8 *)*gCurrentMap + 0x1928);
-    FillMapLayer(-1);
-    for (i = 0; i < 5; i++)
-        M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67bc) = 0;
-    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
-        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
-            base = *gCurrentMap;
-            row = M2C_FIELD((u8 *)base + (y << 1), u16 *, 0x3758);
-            tile = M2C_FIELD(row + ((u8 *)base + x), u8 *, 0x1420);
-            k = tile & 0x1f;
-            a = gTerrainPropertyFlags[k];
-            if (a != 0 && k != 0x14 && k != 0x15)
-                M2C_FIELD((u8 *)*gCurrentMap + ((tile & 0xe0) >> 5) * 0x8c, u8 *, 0x67bc) += 1;
-            if (a != 0 || k == 0x18) {
-                M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD((u8 *)*gCurrentMap + (y << 1), u16 *, 0x3758) + x, u8 *, 0x1928) = (u8)count;
-                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = (u8)k;
-                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c61) = (u8)x;
-                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c62) = (u8)y;
-                M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c63) = 0;
-                count++;
-            }
-        }
+  for (y = 0; y < ((s32) (*((u16 *) (((s8 *) (*gCurrentMap)) + 0x5146)))); y++)
+  {
+    for (x = 0; x < ((s32) (*((u16 *) (((s8 *) (*gCurrentMap)) + 0x5144)))); x++)
+    {
+      base = *gCurrentMap;
+      row = *((u16 *) (((s8 *) (((u8 *) base) + (y * (sizeof(u16))))) + 0x3758));
+      tile = *((u8 *) (((s8 *) (row + (((u8 *) base) + x))) + 0x1420));
+      k = tile & 0x1f;
+      a = gTerrainPropertyFlags[k];
+      new_var = *gCurrentMap;
+      if (((a != 0) && (k != 0x14)) && (k != 0x15))
+      {
+        *((u8 *) (((s8 *) (((u8 *) new_var) + (((tile & 0xe0) >> 5) * 0x8c))) + 0x67bc)) += 1;
+      }
+      if ((a != 0) || (k == 0x18))
+      {
+        new_var2 = gCurrentMap;
+        *((u8 *) (((s8 *) ((*((u16 *) (((s8 *) (((u8 *) (*new_var2)) + (y * (sizeof(u16))))) + 0x3758))) + (((u8 *) (*new_var2)) + x))) + 0x1928)) = (u8) count;
+        *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + recordOffset)) + 0x6c60)) = (u8) k;
+        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c61)) = (u8) x;
+        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c62)) = (u8) y;
+        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c63)) = 0;
+        count++;
+        recordOffset += 6;
+      }
     }
-    M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = 0xff;
+
+  }
+
+  *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + (count * 6))) + 0x6c60)) = 0xff;
 }
 
 void SetMapCursorTargetTile(s16 arg0, s16 arg1) {

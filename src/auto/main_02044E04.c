@@ -24,7 +24,7 @@ s32 BeginWebRequest(void) {
 
 s32 EndWebRequest(void){extern M2C_UNK gHttpRequestList;void func_0204b3cc(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
 
-s32 func_02044e68(void) {
+s32 PumpWebRequest(void) {
     s32 HasNetError();
     M2C_UNK func_0204b674();
     if (HasNetError() != 0) {
@@ -396,11 +396,11 @@ s32 SendWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
  * otherwise 0. */
 s32 PollWebTransaction(void) {
     s32 HasNetError();
-    s32 func_020477ac();
+    s32 StepWebRequest();
     extern s32 gWebTransaction;
     if (HasNetError()) return 1;
     if (gWebTransaction != WEB_TXN_PUT_SENT && gWebTransaction != WEB_TXN_GET_SENT && gWebTransaction != WEB_TXN_SYNC_SENT) return 14;
-    switch (func_020477ac()) {
+    switch (StepWebRequest()) {
         case 1:
             gWebTransaction = WEB_TXN_FAILED;
             break;

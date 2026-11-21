@@ -131,8 +131,8 @@ void Ov003_ShowMapInfoScene(void *scene) {
 }
 
 void func_ov003_021e6404(void) {
-    M2C_UNK func_ov003_021e5b18();
-    func_ov003_021e5b18();
+    M2C_UNK Ov003_MapInfoConfirmInput();
+    Ov003_MapInfoConfirmInput();
 }
 
 void func_ov003_021e6410(void **arg0) {

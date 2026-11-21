@@ -353,23 +353,25 @@ u8 func_ov003_021fd250(void *arg0) {
     return var_r0;
 }
 
-u8 func_ov003_021fd270(void *arg0) {
-    s32 a, b, c, result;
-    u32 value;
-    s32 either;
-    result = 1;
-    either = 1;
-    value = (u32)(M2C_FIELD(arg0, u8 *, 0x3B) << 28) >> 28;
-    if (value == 6) a = 1; else a = 0;
-    if (!(a & 0xFF)) {
-        if (value == 7) b = 1; else b = 0;
-        if (!(b & 0xFF)) either = 0;
+/* True when the entity's menu kind is one of the three kinds that open an ov006
+ * map sub-panel: the campaign map list (6) and the two map-pick lists (7, 8). */
+u8 IsMapSubmenuKind(void *entity) {
+    s32 isKind6, isKind7, isKind8, isSubmenuKind;
+    u32 menuKind;
+    s32 isKind67;
+    isSubmenuKind = 1;
+    isKind67 = 1;
+    menuKind = (u32)(M2C_FIELD(entity, u8 *, MENU_ENTITY_MODE) << 28) >> 28;
+    if (menuKind == MENU_KIND_CAMPAIGN) isKind6 = 1; else isKind6 = 0;
+    if (!(isKind6 & 0xFF)) {
+        if (menuKind == MENU_KIND_MAP_PICK_7) isKind7 = 1; else isKind7 = 0;
+        if (!(isKind7 & 0xFF)) isKind67 = 0;
     }
-    if (either == 0) {
-        if (value == 8) c = 1; else c = 0;
-        if (!(c & 0xFF)) result = 0;
+    if (isKind67 == 0) {
+        if (menuKind == MENU_KIND_MAP_PICK_8) isKind8 = 1; else isKind8 = 0;
+        if (!(isKind8 & 0xFF)) isSubmenuKind = 0;
     }
-    return result;
+    return isSubmenuKind;
 }
 
 /* Clears the low state bits of an entity, switches it to state 4 handling, and updates its display lists/palette. */

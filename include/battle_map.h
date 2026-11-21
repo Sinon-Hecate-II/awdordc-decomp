@@ -397,6 +397,10 @@ typedef struct MapOrder {
 #define MAP_CURSOR_DIR_DX   2
 #define MAP_CURSOR_DIR_DY   3
 
+/* The (dx, dy) step of each cursor option, gMapCursorOptionStep: two s16 per
+ * MAP_CURSOR_OPTION_* in gMapCursorDirs order (up, right, down, left). */
+#define MAP_CURSOR_OPTION_STRIDE 2
+
 /* The task object that drives a directional map-cursor option (the arrows that
  * pick a neighbouring cell): the directions that may be chosen, the option
  * chosen so far, and, for a cargo drop, the carried-unit slot it acts on. */
@@ -432,6 +436,14 @@ typedef struct MapSettingsPlayer {
 #define CO_ID_RANDOM      0
 #define CO_ICON_RANDOM    12
 #define CO_ICON_NONE      0xFF /* returned for a CO id outside the icon strip */
+
+/* CO portrait strips in the occupation screen's sprite sheet (GetCOPortraitOffset):
+ * each portrait is a 32x8 strip of CO_PORTRAIT_TILE_STRIDE tiles, and the slots of
+ * CO ids 3 and 4 come in the opposite order to the ids.  CO_PORTRAIT_TILE_NONE is
+ * the tile value that means "no portrait to draw". */
+#define CO_PORTRAIT_TILE_BASE   0x4EC
+#define CO_PORTRAIT_TILE_STRIDE 4
+#define CO_PORTRAIT_TILE_NONE   0xFFFF
 
 /* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
  * flags word followed by the battle setting, value limits and per-player mask. */
@@ -547,10 +559,12 @@ typedef struct MapTargetEntry {
 
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_ACTED      0x0001 /* the unit has acted this turn (HasUnitActed) */
+#define UNIT_FLAG_CARRIED    0x0002 /* the unit is carried in a transport: it stands on no map cell */
 #define UNIT_FLAG_MOVING     0x0004 /* the unit is playing its move animation: it is drawn even out of sight and the sight pass leaves its cell entry alone */
 #define UNIT_FLAG_REPAIR     0x0100 /* unit is flagged for repair/resupply (drives a status icon) */
 #define UNIT_FLAG_REPAIR_TMP 0x8000 /* scratch bit marking a repair neighbour during the repair pass */
 #define UNIT_FLAG_LOADED     0x0008 /* unit is loaded in a transport (turn passes skip it) */
+#define UNIT_FLAG_CARRYING   0x0010 /* the unit carries a unit: its carry chain is nonempty */
 #define UNIT_FLAG_SUBMERGED  0x0020 /* a submarine is created with it and IsUnitSubmerged reads it: the unit is hidden (the same bit as UNIT_FLAG_FOG) */
 #define UNIT_FLAG_TURN_MASK  0x0081 /* action bits cleared for every unit of the acting player at turn start */
 
@@ -591,6 +605,35 @@ typedef struct MapTargetEntry {
 #define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
+
+/* Steps of the battle-map state machine (MAP_STATE), one run per frame by the
+ * battle-map state dispatcher in main_020D3464.  15 and 17 are unused. */
+enum {
+    MAP_STATE_TURN_LIMIT       = 1,  /* check the day limit, then schedule the next turn */
+    MAP_STATE_ADVANCE_TURN     = 2,  /* advance the turn to the next active player */
+    MAP_STATE_BEGIN_PHASE      = 3,  /* start the player's phase (BeginPlayerPhase) */
+    MAP_STATE_TURN_START_WAIT  = 4,  /* wait for the turn-start transition to finish */
+    MAP_STATE_TURN_START_SETUP = 5,  /* turn-start setup before the banner */
+    MAP_STATE_TURN_START       = 6,  /* start-of-turn repairs and weather change */
+    MAP_STATE_TURN_BANNER      = 7,  /* build the army-info window, pick the intro path */
+    MAP_STATE_TURN_INTRO1      = 8,  /* first turn-intro sprite step */
+    MAP_STATE_TURN_INTRO2      = 9,  /* second turn-intro sprite step */
+    MAP_STATE_TURN_INTRO3      = 10, /* third turn-intro sprite step */
+    MAP_STATE_TURN_INTRO_WAIT  = 11, /* wait out the turn intro, then begin the turn */
+    MAP_STATE_PLAYER_TURN      = 12, /* begin the current player's turn (BeginPlayerTurn) */
+    MAP_STATE_MAP_INPUT        = 13, /* run the map's input mode (UpdateMapMode) */
+    MAP_STATE_AI_TURN          = 14, /* run the CPU turn (UpdateAiTurn) */
+    MAP_STATE_RETURN           = 16, /* go back to MAP_RETURN_STATE */
+    MAP_STATE_BATTLE_FINISH    = 18, /* finish the battle */
+    MAP_STATE_LINK_TURN        = 19, /* replay another console's battle commands (UpdateLinkAiCommand) */
+    MAP_STATE_RESUME_INPUT     = 20, /* resume the map's input mode */
+    MAP_STATE_END_TURN         = 21, /* end the current player's turn */
+    MAP_STATE_END_TURN_STEP    = 22, /* end-player-turn step (EndPlayerTurn) */
+    MAP_STATE_OVERLAY_RESULT   = 23, /* show the overlay's (link/network) result sprites */
+    MAP_STATE_AFTER_OVERLAY    = 24, /* resume the map after an overlay event */
+    MAP_STATE_OVERLAY_CLEANUP  = 25, /* create the overlay-cleanup sprite */
+    MAP_STATE_FINISH           = 26  /* wrap up the battle */
+};
 
 /* The map's interaction state as the battle HUD asks for it: whether the local
  * human player is driving the map and which kind of cursor is up. */
@@ -654,6 +697,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_SCRIPT_COMMAND_OPCODE 0x00 /* s32 opcode of a command */
 #define MAP_SCRIPT_OP_END       7  /* terminator command: the block ends here */
 #define MAP_SCRIPT_OP_LABEL     29 /* label command: names a jump target in MAP_SCRIPT_OPERAND2 */
+#define MAP_SCRIPT_OP_MESSAGE   0x6B /* a message command: the script-skip command seeks to the next one, or to the end */
 #define MAP_SCRIPT_PARAM        0x04 /* opcode-specific word of the current command (a callback or a sprite class) */
 #define MAP_SCRIPT_STATE_IP     0x04
 #define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
@@ -777,6 +821,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAPVIEW_SET_TERRAIN     0x58 /* void (*)(u8 weather, u8 tileset): apply the map's current
                                       * weather (MAP_WEATHER) and tileset (MAP_TILESET) to the view */
 #define MAPVIEW_INIT_PRESENTATION 0x40 /* void (*)(void): prepare the map view before creating its sprites */
+#define MAPVIEW_FRAME_CB        0x30 /* void (*)(void): run once per frame by the battle-map state dispatcher */
 #define MAPVIEW_CONTROLLER_INDEX 1   /* index into gCurrentMap */
 #define MAP_CURSOR_KIND_TARGET 2 /* cursor selector the target-cursor updater (main_020CBACC) passes */
 

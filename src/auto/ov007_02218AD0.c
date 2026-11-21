@@ -161,16 +161,16 @@ void func_ov007_02218ad0(void *arg0) {
 }
 #pragma pop
 void func_ov007_02218d8c(void *arg0) {
-    M2C_UNK AddSprite(u16, s32, u16, M2C_UNK *, s32);
+    M2C_UNK func_01ffaacc(u16, s32, u16, M2C_UNK *, s32);
     s32 func_ov007_02217c50();
     extern M2C_UNK data_02101f5c;
     extern u16 **data_027e01d8;
-    extern M2C_UNK gSpriteDesc16x16;
+    extern M2C_UNK data_027e0064;
     void *sp4;
+    s32 temp_r7;
     u32 var_r10;
     long var_r8;
     s32 var_r9;
-    s32 temp_r7;
 
     sp4 = arg0;
     temp_r7 = func_ov007_02217c50();
@@ -180,7 +180,7 @@ void func_ov007_02218d8c(void *arg0) {
             var_r9 = 0x39C;
             var_r10 = 8;
             do {
-                AddSprite((u16) (var_r10 & 0x1FF), 0x58C, (u16) (0x3FF & (var_r9 >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))), &gSpriteDesc16x16, 0xF);
+                func_01ffaacc((u16) (var_r10 & 0x1FF), 0x58C, (u16) (0x3FF & (var_r9 >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))), &data_027e0064, 0xF);
                 var_r8 += 1;
                 var_r9 += 4;
                 var_r10 += 0x18;
@@ -190,11 +190,11 @@ void func_ov007_02218d8c(void *arg0) {
     if (M2C_FIELD(sp4, u16 *, 0x40) <= 0x10U) {
         return;
     }
-    AddSprite(0x480U, 0x58C, (u16) (0x3FF & (0x3B0 >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))), &data_02101f5c, 0xF);
+    func_01ffaacc(0x480U, 0x58C, (u16) (0x3FF & (0x3B0 >> ((u32) (**data_027e01d8 << 0x11) >> 0x1E))), &data_02101f5c, 0xF);
 }
 
 M2C_UNK func_ov007_02218e98(void *arg0) {
-    u8 *func_ov007_02217b64(s32);
+    u8 *MapEditor_GetPaletteEntries(s32);
     void func_ov007_02218ad0(void *);
     void func_ov007_02218d8c(void *);
     M2C_UNK AddSprite(u16, s32, u16, M2C_UNK *, s32);
@@ -215,7 +215,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
     tile = 0x3dc;
     player = panel[0x37];
     selected = M2C_FIELD(panel + player, u8 *, 0x3a);
-    entries = func_ov007_02217b64(player);
+    entries = MapEditor_GetPaletteEntries(player);
 
     func_ov007_02218ad0(panel);
     func_ov007_02218d8c(panel);
@@ -286,11 +286,11 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
 }
 
 M2C_UNK func_ov007_02219230(void *arg) {
-void func_ov007_02217cd0(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void SetSpriteAnimation(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void func_02088044(void *);
+void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void SetSpriteAnimation(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void func_02088044(void *);
 extern u16 *gKeyState;
 u32 keys; void *p; void *q; s32 v; s32 selected;
 keys=*gKeyState;
-if(keys&1) {func_ov007_02217cd0(arg);return;}
+if(keys&1) {MapEditor_ConfirmPaletteEntry(arg);return;}
 if(keys&0x400) {func_ov007_02219bb4(arg,func_ov007_02217c80(arg));return;}
 if(keys&0x800) {func_ov007_02219bb4(arg,func_ov007_02217ca8(arg));return;}
 if(keys&0x304) {SetSpriteAnimation(arg,1);return;}
@@ -304,12 +304,13 @@ v=q?M2C_FIELD(q,u16 *,8):-1;
 PlaySoundEffect(0x10019);
 M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x3a)=v;
 }
-if((u8)(M2C_FIELD(M2C_FIELD(arg,void **,0x58),s8 *,11)>=0)) {func_ov007_02217cd0(arg);return;}
+if((u8)(M2C_FIELD(M2C_FIELD(arg,void **,0x58),s8 *,11)>=0)) {MapEditor_ConfirmPaletteEntry(arg);return;}
 func_02088044(M2C_FIELD(arg,void **,0x5c));
 p=M2C_FIELD(arg,void **,0x5c);
 if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
 q=M2C_FIELD(p,void **,0);
-v=q?M2C_FIELD(q,u16 *,8):-1;
+v=-1;
+if(q) v=M2C_FIELD(q,u16 *,8);
 selected=M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x38);
 if(v!=selected) func_ov007_02219bb4(arg,v);
 }

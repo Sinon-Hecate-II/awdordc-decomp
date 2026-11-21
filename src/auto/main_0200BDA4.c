@@ -5,62 +5,72 @@
 #include "fs.h"
 typedef struct { u32 first, second; } Unk0200FilePair;
 
-void func_0200bda4(s32 arg0) {
+#pragma opt_propagation off
+/* One-time setup of the game's "rom" card archive.  It records the card device
+ * (-1 for the default) and takes the card ROM lock, clears the archive and
+ * registers it under the name "rom": a card boot then points its FAT and FNT at
+ * the copy in the ROM header and serves reads through the card, while a Download
+ * Play (multiboot) boot has no card to read and gets stub callbacks and an empty
+ * layout instead.  The two file-header image overrides at +0x08..+0x14 (the
+ * loader's data_0212fc04/data_0212fc0c pairs) are left empty, or marked invalid
+ * in multiboot, so file headers come from the ROM overlay table. */
+void InitCardArchive(s32 device) {
     s32 OS_GetLockID(void);
     void SaveDevice_Init(void);
-    void func_0200b118(void *);
+    void InitArchive(void *);
     s32 RegisterArchiveName(void *, M2C_UNK, M2C_UNK);
-    void func_0200b6a8(void *, s32, s32);
+    void SetArchiveProc(void *, s32, s32);
     s32 ConfigureArchiveLayout(void *, s32, s32, s32, s32, s32, void *, void *);
     s32 func_0200bd9c(void);
     s32 func_0200bd94(void);
     s32 func_0200bd20(void);
     s32 CardArchiveCommand(s32, s32);
     s32 func_0200bcd8(s32, s32, s32, s32);
-    extern M2C_UNK gCardArchiveWork;
-    extern M2C_UNK data_0212fc14;
-    extern u32 data_020f5220;
-    register u32 *base = (u32 *)0x27ffc40;
+    extern FSCardArchiveWork gCardArchiveWork;
+    extern M2C_UNK gCardArchive;
+    extern u32 gCardArchiveName;
+    u32 *base;
 
-    M2C_FIELD(&gCardArchiveWork, s32 *, 4) = arg0;
-    M2C_FIELD(&gCardArchiveWork, s32 *, 0) = OS_GetLockID();
+    gCardArchiveWork.device = device;
+    gCardArchiveWork.lockId = OS_GetLockID();
     M2C_FIELD(&gCardArchiveWork, s32 *, 8) = 0;
     M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
     M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = 0;
     M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
     SaveDevice_Init();
-    func_0200b118(&data_0212fc14);
-    RegisterArchiveName(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
+    InitArchive(&gCardArchive);
+    RegisterArchiveName(&gCardArchive, (M2C_UNK)&gCardArchiveName, 3);
 
-    if (M2C_FIELD(base, u16 *, 0) == 2) {
+    base = (u32 *)0x27ffc40; /* boot flag word; the ROM header follows at +0x200 */
+    if (M2C_FIELD(base, u16 *, 0) == 2) { /* Download Play boot: no card archive */
         M2C_FIELD(&gCardArchiveWork, s32 *, 8) = -1;
         M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
         M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = -1;
         M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
-        func_0200b6a8(&data_0212fc14, (s32)func_0200bd9c, -1);
-        ConfigureArchiveLayout(&data_0212fc14, 0, 0, 0, 0, 0,
+        SetArchiveProc(&gCardArchive, (s32)func_0200bd9c, -1);
+        ConfigureArchiveLayout(&gCardArchive, 0, 0, 0, 0, 0,
                       (void *)func_0200bd94, (void *)func_0200bd20);
         return;
     }
 
-    func_0200b6a8(&data_0212fc14, (s32)CardArchiveCommand, 0x602);
+    SetArchiveProc(&gCardArchive, (s32)CardArchiveCommand, 0x602);
 
     {
-        u32 v0 = base[0x80];
-        if (v0 != (u32)-1 && v0 != 0) {
-            u32 v2 = base[0x82];
-            if (v2 != (u32)-1 && v2 != 0) {
-                ConfigureArchiveLayout(&data_0212fc14, 0, (s32)v2, (s32)base[0x83], (s32)v0, (s32)base[0x81],
+        u32 fnt = base[0x80]; /* ROM header FNT offset */
+        if (fnt != (u32)-1 && fnt != 0) {
+            u32 fat = base[0x82]; /* ROM header FAT offset */
+            if (fat != (u32)-1 && fat != 0) {
+                ConfigureArchiveLayout(&gCardArchive, 0, (s32)fat, (s32)base[0x83], (s32)fnt, (s32)base[0x81],
                               (void *)func_0200bcd8, (void *)func_0200bd20);
             }
         }
     }
 }
-
+#pragma opt_propagation reset
 void func_0200beec(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK LoadArchiveIndex(M2C_UNK *, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0212fc14;
-    LoadArchiveIndex(&data_0212fc14, arg0, arg1);
+    extern M2C_UNK gCardArchive;
+    LoadArchiveIndex(&gCardArchive, arg0, arg1);
 }
 
 #pragma opt_strength_reduction off
@@ -91,9 +101,9 @@ void ClearFileBss(void *arg0) {
 }
 
 void BuildFileRange(u32 *arg0,void *arg1) {
-    extern M2C_UNK data_0212fc14;
+    extern M2C_UNK gCardArchive;
     volatile u32 tmp[2];
-    u32 base = (u32)&data_0212fc14;
+    u32 base = (u32)&gCardArchive;
     u32 x = M2C_FIELD(arg1,u32 *,24);
     tmp[1] = x;
     arg0[0] = base;
@@ -156,7 +166,7 @@ s32 func_0200bf8c(u32 *arg0, s32 arg1, u32 arg2, s32 arg3, u32 arg4, u32 arg5, u
 #pragma opt_strength_reduction off
 s32 LoadFileHeader(u32 *arg0,s32 arg1,u32 arg2) {
 void InitFileRequest(void *);s32 OpenFileRange(void *,Unk0200FilePair);void CloseFileRequest(void *);void MI_CpuCopy8();
-extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK data_0212fc14;
+extern u32 data_0212fc04[2],data_0212fc0c[2];extern M2C_UNK gCardArchive;
 u32 work[18];Unk0200FilePair pair;u32 *p;
 p=arg1==0?data_0212fc04:data_0212fc0c;
 if(p[0]){
@@ -167,7 +177,7 @@ arg0[8]=arg1;InitFileRequest(work);BuildFileRange((u32 *)&pair,arg0);
 if(!OpenFileRange(work,pair))return 0;
 arg0[9]=work[9];arg0[10]=work[10]-work[9];CloseFileRequest(work);return 1;
 }
-return func_0200bf8c(arg0,arg1,arg2,(s32)&data_0212fc14,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
+return func_0200bf8c(arg0,arg1,arg2,(s32)&gCardArchive,*(u32 *)0x27ffe50,*(u32 *)0x27ffe54,*(u32 *)0x27ffe58,*(u32 *)0x27ffe5c);
 }
 #pragma opt_strength_reduction on
 /* Verify that `message` carries the expected HMAC-SHA1 signature

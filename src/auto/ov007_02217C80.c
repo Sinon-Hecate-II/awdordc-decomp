@@ -31,24 +31,27 @@ s32 func_ov007_02217ca8(void *arg0) {
     return result;
 }
 
-void func_ov007_02217cd0(void *arg0) {
-    s8 *func_ov007_02217b64(u8);
+/* Confirm the palette entry the panel cursor points at: arm it so closing the
+ * panel applies it and play the confirm animation.  A neutral-owned headquarters
+ * entry cannot be picked, so confirming it does nothing. */
+void MapEditor_ConfirmPaletteEntry(void *editor) {
+    s8 *MapEditor_GetPaletteEntries(u8);
     void SetSpriteAnimation(void *, s32);
-    u8 index;
-    s8 *table;
-    u8 mode;
-    index = M2C_FIELD(arg0 + M2C_FIELD(arg0, u8 *, 0x37), u8 *, 0x3A);
-    table = func_ov007_02217b64(M2C_FIELD(arg0, u8 *, 0x37));
-    mode = M2C_FIELD(arg0, u8 *, 0x37);
-    switch (mode) {
+    u8 entry;
+    s8 *entries;
+    u8 page;
+    entry = M2C_FIELD(editor + M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE), u8 *, MAP_EDITOR_PANEL_ENTRY);
+    entries = MapEditor_GetPaletteEntries(M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE));
+    page = M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PAGE);
+    switch (page) {
     case 0:
-        if (table[index * 5] == 15 && M2C_FIELD(arg0 + mode, u8 *, 0x38) == 4) return;
+        if (entries[entry * MAP_EDITOR_PALETTE_ENTRY_SIZE] == MAP_TERRAIN_HQ && M2C_FIELD(editor + page, u8 *, MAP_EDITOR_PANEL_OWNER) == MAP_EDITOR_OWNER_NEUTRAL) return;
         break;
     case 1:
         break;
     }
-    M2C_FIELD(arg0, u8 *, 0x36) = 1;
-    SetSpriteAnimation(arg0, 2);
+    M2C_FIELD(editor, u8 *, MAP_EDITOR_PANEL_PENDING) = 1;
+    SetSpriteAnimation(editor, 2);
 }
 
 #pragma push
@@ -56,7 +59,7 @@ void func_ov007_02217cd0(void *arg0) {
 #pragma opt_propagation off
 #pragma opt_common_subs off
 s32 func_ov007_02217d30(void *arg0) {
-    s8 *func_ov007_02217b64(u8);
+    s8 *MapEditor_GetPaletteEntries(u8);
     extern u32 *gKeyState;
     u16 *g;
     s32 idx;
@@ -69,7 +72,7 @@ s32 func_ov007_02217d30(void *arg0) {
     s32 flags;
 
     mode = M2C_FIELD(arg0, u8 *, 0x37);
-    table = (u8 *)func_ov007_02217b64(mode);
+    table = (u8 *)MapEditor_GetPaletteEntries(mode);
     mode=M2C_FIELD(arg0,u8 *,0x37);
     indices = (u8 *)arg0 + 0x3A;
     g = (u16 *)gKeyState;
@@ -408,7 +411,7 @@ void MapEditor_ApplyPaletteSelection(void *editor) {
 
 #pragma opt_propagation off
 void func_ov007_0221863c(void *arg0) {
-    s8 *func_ov007_02217b64(u8);
+    s8 *MapEditor_GetPaletteEntries(u8);
     M2C_UNK MapEditor_GetPaletteOwner(M2C_UNK, s32, u8);
     s32 func_ov007_02217c50(void *);
     void *MemAlloc(s32);
@@ -464,7 +467,7 @@ void func_ov007_0221863c(void *arg0) {
     s32 tile=0x3dc;
     s8 *table;
     s32 offset, i, selected;
-    table = func_ov007_02217b64(M2C_FIELD(arg0,u8 *,0x37));
+    table = MapEditor_GetPaletteEntries(M2C_FIELD(arg0,u8 *,0x37));
     i=0;
     switch(M2C_FIELD(arg0,u8 *,0x37)) {
     case 0:

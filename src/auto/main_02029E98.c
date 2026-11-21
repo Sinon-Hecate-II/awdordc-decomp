@@ -476,7 +476,7 @@ s32 func_0202a7b4(void *arg0) {
  * file lookups use. Returns 0 on a bad archive or a failed registration. */
 s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     s32 RegisterArchiveName(void *, M2C_UNK, s32);
-    M2C_UNK func_0200b118(void *);
+    M2C_UNK InitArchive(void *);
     s32 ConfigureArchiveLayout(void *, void *, s32, s32, s32, s32, s32, s32);
     s32 StringLength(M2C_UNK);
     void *fat;
@@ -515,7 +515,7 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
             block += M2C_FIELD(block, s32 *, 4);
         } while (blockIndex < (s32) blockCount);
     }
-    func_0200b118(archive);
+    InitArchive(archive);
     M2C_FIELD(archive, void **, 0x5C) = data;
     M2C_FIELD(archive, void **, 0x60) = fat;
     imageData = image + 8;
@@ -608,7 +608,7 @@ void func_0202aa58(void) {
     func_0202bc7c();
 }
 
-s32 func_0202aa64(s32 arg0) {
+s32 Sound_ReserveChannels(s32 arg0) {
  M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
  extern M2C_UNK data_0213b2a0;
  if (!arg0) return 1;

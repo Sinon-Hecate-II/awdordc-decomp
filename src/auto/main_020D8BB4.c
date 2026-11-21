@@ -225,8 +225,8 @@ void func_020d9284(void) {
 }
 
 void func_020d9290(void) {
-    M2C_UNK func_ov000_02174c88();
-    func_ov000_02174c88();
+    M2C_UNK Ov000_InfoWindow_Destroy();
+    Ov000_InfoWindow_Destroy();
 }
 
 void func_020d929c(void){void func_020ae1e8(s32);extern void *gUiMode;func_020ae1e8(M2C_FIELD(gUiMode,s32 *,8));}

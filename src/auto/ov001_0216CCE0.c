@@ -247,9 +247,8 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  else if(M2C_FIELD(p,s32 *,40)==16)M2C_FIELD(&data_ov001_021926e0,u8 *,0)=3;
  else return -1;
  packet=(u8 *)&data_ov001_021926e0;
- offset=ready*20+2;
  packet[1]=ready;
- MI_CpuCopy8((s32)((u8 *)p+44),(s32)(packet+offset),M2C_FIELD(p,s32 *,40));
+ MI_CpuCopy8((s32)((u8 *)p+44),(s32)&packet[2+20*ready],M2C_FIELD(p,s32 *,40));
  func_02029220();
  if(func_ov001_0216d8e4(0,(u8 *)p+4,M2C_FIELD(p,s32 *,0),0x30bffe)){
  tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
@@ -257,14 +256,15 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  do {
  OS_ReceiveMessage(&data_ov001_02192600,&msg,1);
  switch(msg){
- case 18:if(!ready){active=0;}
- case 19:goto test;
+ case 19:goto bottom;
+ case 18:if(ready)goto test;
+ active=0;
+ bottom:continue;
  case 5:if(ready)break;
  CancelTimer(timer);
  if(func_ov001_0216d8a0((s32)&data_ov001_02192620,1)!=1){active=0;break;}
  func_ov001_0216d02c(p,&data_ov001_02192620);
- rx=(u16 *)&data_ov001_02192620;
- i=0;bound=rx[5];for(;i<bound;i++){}
+ i=0;bound=*(u16 *)((s32)&data_ov001_02192620 + 10);for(;i<bound;i++){}
  if(!WhConnTaskStartConnection((s32)&data_ov001_02192620,(s32)&data_ov001_021926e0,flags)){active=0;break;}
  ready=1;break;
  case 10:

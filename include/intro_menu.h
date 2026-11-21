@@ -65,6 +65,8 @@ typedef struct IntroMenu011 {
 
 #define INTRO_MENU_TEXTURE_STRIDE 0x200
 #define INTRO_MENU_INITIAL_FRAME 5
+#define INTRO_MENU_ENTRY_SLIDE_FRAMES 120 /* frames an entry slides from its from-point to its to-point */
+#define INTRO_MENU_ENTRY_LIFETIME 199 /* updates after which a finished entry deletes itself */
 #define INTRO_MENU_ENTRY_TOUCH_RADIUS 18
 #define INTRO_MENU_ENTRY_FAST_SLIDE 2
 

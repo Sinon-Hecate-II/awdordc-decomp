@@ -83,10 +83,11 @@ s32 DecimalShouldRoundUp(u8 *p, s32 i) {
 #pragma optimization_level 3
 void DecimalIncrementDigits(u8 *p,s32 n) {
  u8 *start=p+5; u8 *q=start+n-1;
- again: {
- if(*q<9) { ++*q; return; }
- if (q == start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
- *q--=0; goto again;
+ for (;;) {
+ u8 digit = *q;
+ if(digit < 9) { *q = digit + 1; return; }
+ if(q == start) { *q = 1; ++M2C_FIELD(p,s16 *,2); return; }
+ *q-- = 0;
  }
 }
 #pragma optimization_level reset

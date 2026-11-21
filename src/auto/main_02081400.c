@@ -290,14 +290,19 @@ void func_0208184c(void) {
         M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), u16 *, 6);
 }
 
-void func_020819e8(s32 arg0) {
- extern M2C_UNK gKeyState;
- extern M2C_UNK gInputBlockState;
- if (M2C_FIELD(&gInputBlockState,u8 *,3) != 0) return;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,0) |= arg0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,2) |= arg0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,4) |= arg0;
-M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0),u16 *,6) |= arg0;
+/* Inject a virtual key mask (the touch-screen button a menu sprite stands for)
+ * into this frame's key state: unless injected presses are blocked, OR it into
+ * the newly-pressed, both auto-repeat and held masks so the game reads it as a
+ * real button press. */
+void InjectKeyPress(s32 keys) {
+    extern M2C_UNK gKeyState;
+    extern M2C_UNK gInputBlockState;
+
+    if (((InputBlockState *)&gInputBlockState)->keyInjectBlocked != 0) return;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->pressed |= keys;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat |= keys;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat2 |= keys;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->held |= keys;
 }
 
 #pragma scheduling off

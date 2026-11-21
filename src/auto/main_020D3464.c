@@ -298,7 +298,10 @@ void func_020d3b18(void) {
     func_020d4614();
 }
 
-void func_020d3b24(void) {
+/* Per-frame step of the battle-map state machine: run the map view controller's
+ * frame callback, give the overlay result, turn timer and busy checks a chance to
+ * hold the map for this frame, then run the handler of the current MAP_STATE. */
+void StepBattleMap(void) {
     M2C_UNK UpdatePlayerBattleTime();
     M2C_UNK HandleOverlayResult();
     M2C_UNK UpdateTurnTimer();
@@ -335,10 +338,10 @@ void func_020d3b24(void) {
     UpdatePlayerBattleTime();
 
     {
-        void *ctl = M2C_FIELD(gCurrentMap, void **, 4);
-        void (*cb)(void) = M2C_FIELD(ctl, void (**)(void), 0x30);
-        if (cb != 0) {
-            cb();
+        void *viewController = gCurrentMap[MAPVIEW_CONTROLLER_INDEX];
+        void (*frameCallback)(void) = M2C_FIELD(viewController, void (**)(void), MAPVIEW_FRAME_CB);
+        if (frameCallback != 0) {
+            frameCallback();
         }
     }
 
@@ -349,63 +352,61 @@ void func_020d3b24(void) {
     if (IsUnitMoveActive() != 0) return;
 
     {
-        void *mainBase = *gCurrentMap;
-        u8 *p = (u8 *)mainBase + 0x5200;
-        
-        
-        switch (*(u16 *)(p + 0xb0)) {
-        case 1:
+        void **map = gCurrentMap;
+        u8 *stateBlock = (u8 *)map[0] + 0x5200;
+        switch (*(u16 *)(stateBlock + 0xb0)) {
+        case MAP_STATE_TURN_LIMIT:
             CheckTurnLimitStep();
             return;
-        case 2:
+        case MAP_STATE_ADVANCE_TURN:
             AdvanceTurnStep();
             return;
-        case 3:
+        case MAP_STATE_BEGIN_PHASE:
             func_020d422c();
             return;
-        case 4:
+        case MAP_STATE_TURN_START_WAIT:
             func_020d4400();
             return;
-        case 5:
+        case MAP_STATE_TURN_START_SETUP:
             func_020d4430();
             return;
-        case 6:
+        case MAP_STATE_TURN_START:
             func_020d447c();
             return;
-        case 7:
+        case MAP_STATE_TURN_BANNER:
             func_020d457c();
             return;
-        case 8:
+        case MAP_STATE_TURN_INTRO1:
             func_020d4280();
             return;
-        case 9:
+        case MAP_STATE_TURN_INTRO2:
             func_020d42a8();
             return;
-        case 10:
+        case MAP_STATE_TURN_INTRO3:
             func_020d42d0();
             return;
-        case 11:
+        case MAP_STATE_TURN_INTRO_WAIT:
             func_020d42f8();
             return;
-        case 12:
+        case MAP_STATE_PLAYER_TURN:
             BeginPlayerTurn();
             return;
-        case 13:
+        case MAP_STATE_MAP_INPUT:
             UpdateMapMode();
             return;
-        case 14:
-            if (func_020d1a1c(*(u16 *)(p+0xa4))) { UpdateAiTurn(); return; }
+        case MAP_STATE_AI_TURN:
+            if (func_020d1a1c(M2C_FIELD(map[0], u16 *, MAP_CURRENT_PLAYER))) { UpdateAiTurn(); return; }
             UpdateLinkAiCommand(); return;
-        case 19: UpdateLinkAiCommand(); return;
-        case 16: func_020d45d8(); return;
-        case 18: func_020d4614(); return;
-        case 20: func_020d466c(); return;
-        case 21: func_020d35d8(); return;
-        case 22: func_020d3628(); return;
-        case 23: func_020d3830(); return;
-        case 24: AdvanceAfterOverlayEvent(); return;
-        case 25: func_020d3ae4(); return;
-        case 26: func_020d3b18(); return;
+        case MAP_STATE_LINK_TURN: UpdateLinkAiCommand(); return;
+        case MAP_STATE_RETURN: func_020d45d8(); return;
+        case MAP_STATE_BATTLE_FINISH: func_020d4614(); return;
+        case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
+        case MAP_STATE_END_TURN: func_020d35d8(); return;
+        case MAP_STATE_END_TURN_STEP: func_020d3628(); return;
+        case MAP_STATE_OVERLAY_RESULT: func_020d3830(); return;
+        case MAP_STATE_AFTER_OVERLAY: AdvanceAfterOverlayEvent(); return;
+        case MAP_STATE_OVERLAY_CLEANUP: func_020d3ae4(); return;
+        case MAP_STATE_FINISH: func_020d3b18(); return;
         default: return;
         }
     }

@@ -358,25 +358,29 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
     }
 }
 #pragma pop
-void func_0207ab24(s32 arg0, s32 arg1) {
- M2C_UNK SetPropertyOwnerTile(s32,s32,u8);
- M2C_UNK RefreshMapView(void);
- M2C_UNK func_020cf2c8(void);
- M2C_UNK func_020d2470(void);
- extern void *gCurrentMap;
- s32 temp_ip;
- s32 temp_r3_2;
- u8 *temp_lr;
- void *temp_r3;
- temp_r3 = M2C_FIELD(gCurrentMap,void **,0);
- temp_lr = (u8 *)temp_r3 + 0x1420;
- temp_ip = arg0 + M2C_FIELD((u8 *)temp_r3 + arg1*2,u16 *,0x3758);
- temp_r3_2 = M2C_FIELD(temp_r3,u16 *,0x52a6) + (temp_lr[temp_ip] & 0x1f);
- temp_lr[temp_ip] = temp_r3_2;
- SetPropertyOwnerTile(arg0,arg1,(u8)(temp_r3_2 & 0xe0));
- RefreshMapView();
- func_020cf2c8();
- func_020d2470();
+/* Finishes a property capture at cell (x, y): give the cell's terrain the current
+ * player's owner bits while keeping its terrain kind, recolour the property tile
+ * for that owner and refresh the map view. */
+void CompletePropertyCapture(s32 x, s32 y) {
+    M2C_UNK SetPropertyOwnerTile(s32, s32, u8);
+    M2C_UNK RefreshMapView(void);
+    M2C_UNK func_020cf2c8(void);
+    M2C_UNK func_020d2470(void);
+    extern void *gCurrentMap;
+    s32 index;
+    s32 value;
+    u8 *terrain;
+    void *map;
+
+    map = M2C_FIELD(gCurrentMap, void **, 0);
+    terrain = (u8 *)map + MAP_CELL_TERRAIN;
+    index = x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    value = M2C_FIELD(map, u16 *, MAP_CURRENT_OWNER) + (terrain[index] & MAP_TERRAIN_KIND_MASK);
+    terrain[index] = value;
+    SetPropertyOwnerTile(x, y, (u8)(value & MAP_TERRAIN_OWNER_MASK));
+    RefreshMapView();
+    func_020cf2c8();
+    func_020d2470();
 }
 
 /* Recolour the property at (x, y) for a new owner: find which row of

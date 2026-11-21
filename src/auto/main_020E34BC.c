@@ -106,7 +106,7 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
 
 s32 func_020e3580(s32 arg0,s32 arg1) {
 #pragma push
-#pragma opt_global_reg off
+#pragma opt_global_reg on
 extern s32 data_02168fe4;
 s32 result;
 volatile u32 saved;
@@ -119,9 +119,9 @@ saved=temp;
     result = func_0202a468(block, arg0, direction);
 }
 {
-    u32 restored = saved;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = restored;
+    volatile u16 *ime = (volatile u16 *)0x04000208;
+    u16 restored = saved;
+    *ime = ((void)*ime, restored);
 }
 return result;
 #pragma pop

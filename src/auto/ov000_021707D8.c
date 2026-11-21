@@ -104,18 +104,45 @@ i++;tile+=4;}while(i<func_020cfb94());}
 func_ov000_021707d8();M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;gCur3DSpriteEngine=oldEngine;
 }
 #pragma opt_strength_reduction reset
-void func_ov000_02170ea4(void){
-extern u16 *gKeyState;extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;extern M2C_UNK gSpriteDesc16x16;
-s32 func_020cfb94(void);void AddSprite(s32,s32,u16,void *,s32);
-void *old; s32 i;u8 *p;u32 bits;
-if(*gKeyState&2){func_ov000_02170ca0();return;}
-old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-for(i=0;i<func_020cfb94();i++){
-p=(u8 *)*gCurrentMap+i*140+0x67a4;
-if(p[0xaa]&&!p[0xa5]){bits=(u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
-AddSprite(16,(46+i*24)&255,(u16)((((0x35c+i*4)>>bits)&1023)|(u16)((i+11)<<12)),&gSpriteDesc16x16,0);}
-}
-gCur3DSpriteEngine=old;
+void func_ov000_02170ea4(void) {
+    extern u16 *gKeyState;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain;
+    extern void **gCurrentMap;
+    extern M2C_UNK gSpriteDesc16x16;
+    s32 func_020cfb94(void);
+    void AddSprite(s32,s32,u16,void *,s32);
+    void *old;
+    s32 i, offset, tile, x;
+    u8 *p;
+
+    if (*gKeyState & 2) {
+        func_ov000_02170ca0();
+        return;
+    }
+    old = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    i = 0;
+    if (func_020cfb94() > 0) {
+        offset = 0;
+        tile = 0x35c;
+        x = 46;
+        for (;;) {
+        p = (u8 *)*gCurrentMap + offset + 0x67a4;
+        if (p[0xaa] && !p[0xa5]) {
+            u32 palette = ((i + 11) & 15) << 12;
+            u32 format = (u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30;
+            void *desc = &gSpriteDesc16x16;
+            u8 y = x;
+            AddSprite(16, y, (u16)(palette | (1023 & (tile >> format))), desc, 0);
+        }
+        ++i;
+        x += 24;
+        offset += 140;
+        tile += 4;
+            if (i >= func_020cfb94()) break;
+        }
+    }
+    gCur3DSpriteEngine = old;
 }
 #pragma opt_common_subs reset
 /* Leave the map-situation screen: on the main engine clear the situation's two
@@ -143,7 +170,7 @@ void func_ov000_02171028(void) {
     CreateSpriteFromClass(&data_ov000_021b8b88, 7);
 }
 
-#pragma opt_common_subs off
+#pragma optimization_level 2
 void func_ov000_02171040(void *p){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK data_ov000_021b8c58,data_ov000_021b8c60,data_ov000_021b8c70,data_ov000_021b8c7c,data_ov000_021b8c88;
@@ -168,7 +195,7 @@ AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x28),v,0x3000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 CreateMenuUnitSprite(p);gCur3DSpriteEngine=old;
 }
-#pragma opt_common_subs reset
+#pragma optimization_level 4
 void func_ov000_021711a4(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
@@ -204,7 +231,7 @@ s32 func_02084b08(s32);void LoadRankIconGraphics(s32,s32,s32);
 void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
 void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);
 s32 func_02084ac0(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
-s32 func_02084b58(s32);s32 func_02084ba8(s32);s32 func_ov000_0216a77c(s32);s32 func_ov000_0216a7d4(s32);s32 GetLocalizedText(s32);
+s32 func_02084b58(s32);s32 func_02084ba8(s32);s32 GetFavouriteGroupTextId(s32);s32 GetFavouriteRecordTextId(s32);s32 GetLocalizedText(s32);
 void func_0209b32c(s32,s16,s32,s32,s32,u16,u16);
 s32 i=arg0-1,off;u8 *p=(u8 *)*gCurrentMap+0x67a4+arg0*140;
 s32 n=i*5,a=p[0x27],b=p[0x1d],t,color;void *dst,*engine;
@@ -221,8 +248,8 @@ CopyToObjPaletteShadow(GetArmyIconPalette(b),off,32);
 if(!IsPlayerActive(arg0))DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
 color=IsPlayerActive(arg0)?0:3;off=(i<<7)+16;engine=*(void * volatile *)&gCur3DSpriteEngine;
 DrawGlyphString(func_02084ac0(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
-func_0209b32c(13,(s16)(n+3),1,GetLocalizedText(func_ov000_0216a77c(func_02084b58(i))),0,(u16)color,(u16)(off+80));
-func_0209b32c(19,(s16)(n+3),1,GetLocalizedText(func_ov000_0216a7d4(func_02084ba8(i))),0,(u16)color,(u16)(off+96));
+func_0209b32c(13,(s16)(n+3),1,GetLocalizedText(GetFavouriteGroupTextId(func_02084b58(i))),0,(u16)color,(u16)(off+80));
+func_0209b32c(19,(s16)(n+3),1,GetLocalizedText(GetFavouriteRecordTextId(func_02084ba8(i))),0,(u16)color,(u16)(off+96));
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;
 }
 #pragma pop

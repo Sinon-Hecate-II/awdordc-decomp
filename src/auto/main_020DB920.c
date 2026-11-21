@@ -237,7 +237,7 @@ void func_020dbeb0(void *arg0) {
 #pragma opt_lifetimes off
 M2C_UNK func_020dbebc(void *arg0) {
 extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-extern M2C_UNK data_0212d358, data_0212d360, data_0212d370, data_0212c658;
+extern M2C_UNK data_0212d358, data_0212d360, data_0212d370, gVersusRankRowTemplate;
 M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
 s32 GetLocalizedFileName(void *);
 M2C_UNK OpenNarcArchive(void), CloseNarcArchive(void);
@@ -275,7 +275,7 @@ if(FindSpriteSlotById(0)==0) test=1; else test=0;
 if(test) {
 i=0; x=0;
 do {
-p=AddSpriteSlot(0,x,&data_0212c658,i);
+p=AddSpriteSlot(0,x,&gVersusRankRowTemplate,i);
 i++;
 M2C_FIELD(p,void **,0x10)=arg0;
 x+=40;
@@ -327,9 +327,13 @@ M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
 }
 M2C_FIELD(arg0,u16 *,0x48)&=~4;
 }
-#pragma pop
-M2C_UNK func_020dc250(arg0)
-void *arg0;
+#pragma opt_instruction_scheduling off
+/* Set up the versus-rank player-list menu: load its graphics from the
+ * matching.narc archive into the main 3D sprite engine's layer 1, build the two
+ * list rows, highlight the selected row's bar and reset the row sprites' press
+ * animation.  Returns the menu's state word with its bit 2 cleared. */
+M2C_UNK SetupVersusRankMenu(entity)
+void *entity;
 {
     M2C_UNK Clear3DSpriteLayer(s32), SetFileDirectory(void *);
     s32 GetLocalizedFileName(void *);
@@ -342,86 +346,95 @@ void *arg0;
     M2C_UNK Show3DSpriteSlide(void *), SetTextById(void *,s32);
     s32 GetSpriteAnimValue(s32);
     extern void **gCur3DSpriteEngine, **g3DSpriteEngineMain;
-    extern M2C_UNK data_0212d380, data_0212d388, data_0212d398, data_0212c658;
-    void **saved;
-    void *sp4;
-    void **sp0;
-    s32 i, x, test;
-    s32 i2;
-    void *item;
-    s32 y, end;
-    s32 color;
-    s32 selected;
-    void *p;
-    saved=gCur3DSpriteEngine;
+    extern M2C_UNK gVersusRankPath, gVersusRankNarcName, gVersusRankScName, gVersusRankRowTemplate;
+    void **savedEngine;
+    void *panel;
+    void **savedBarEngine;
+    s32 row, rowX, hasRows;
+    s32 bar;
+    void *selectedRow;
+    s32 barX, barEnd;
+    s32 barColor;
+    s32 selectedId;
+    void *sprite;
+    savedEngine=gCur3DSpriteEngine;
     gCur3DSpriteEngine=g3DSpriteEngineMain;
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-    SetFileDirectory(&data_0212d380);
-    GetLocalizedFileName(&data_0212d388);
+    SetFileDirectory(&gVersusRankPath);
+    GetLocalizedFileName(&gVersusRankNarcName);
     OpenNarcArchive();
-    LoadNarcFileDecompressed(GetLocalizedFileName(&data_0212d398),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20));
+    LoadNarcFileDecompressed(GetLocalizedFileName(&gVersusRankScName),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20));
     CloseNarcArchive();
     AddTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),32,24,5);
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
-    gCur3DSpriteEngine=saved;
-    M2C_FIELD(arg0,u16 *,0x48)|=32;
-    if(FindSpriteSlotById(0)==0) test=1; else test=0;
-    if(test) {
-        i=0; x=0;
+    gCur3DSpriteEngine=savedEngine;
+    M2C_FIELD(entity,u16 *,0x48)|=32;
+    if(FindSpriteSlotById(0)==0) hasRows=1; else hasRows=0;
+    if(hasRows) {
+        row=0; rowX=0;
         do {
-            p=AddSpriteSlot(0,x,&data_0212c658,i);
-            i++;
-            M2C_FIELD(p,void **,0x10)=arg0;
-            x+=40;
-        } while(i<2);
+            sprite=AddSpriteSlot(0,rowX,&gVersusRankRowTemplate,row);
+            row++;
+            M2C_FIELD(sprite,void **,0x10)=entity;
+            rowX+=40;
+        } while(row<2);
     }
-    item=SelectSpriteSlot(M2C_FIELD(arg0,s32 *,0x3c));
-    if(item) {
-        sp4=M2C_FIELD(item,void **,0x10);
-        sp0=gCur3DSpriteEngine;
-        y=10;
+    selectedRow=SelectSpriteSlot(M2C_FIELD(entity,s32 *,0x3c));
+    if(selectedRow) {
+        panel=M2C_FIELD(selectedRow,void **,0x10);
+        savedBarEngine=gCur3DSpriteEngine;
+        barX=10;
         gCur3DSpriteEngine=g3DSpriteEngineMain;
-        end=14; i2=0;
+        barEnd=14; bar=0;
         do {
-            if(M2C_FIELD(item,u8 *,0)!=i2) color=7; else color=8;
-            SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20)+8+(y<<6),24,(u16)(end-y),(u16)color);
-            i2++; y=(s16)(y+5); end=(s16)(end+5);
-        } while(i2<2);
+            if(M2C_FIELD(selectedRow,u8 *,0)!=bar) barColor=7; else barColor=8;
+            SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20)+8+(barX<<6),24,(u16)(barEnd-barX),(u16)barColor);
+            bar++; barX=(s16)(barX+5); barEnd=(s16)(barEnd+5);
+        } while(bar<2);
         M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
-        gCur3DSpriteEngine=sp0;
-        selected=M2C_FIELD(item,u8 *,0);
-        if(selected!=M2C_FIELD(sp4,s32 *,0x3c)) {
-            M2C_FIELD(sp4,s32 *,0x3c)=selected;
+        gCur3DSpriteEngine=savedBarEngine;
+        selectedId=M2C_FIELD(selectedRow,u8 *,0);
+        if(selectedId!=M2C_FIELD(panel,s32 *,0x3c)) {
+            M2C_FIELD(panel,s32 *,0x3c)=selectedId;
             PlaySoundEffect(0x10019);
         }
     }
     SetSpriteSlotScroll(0,0);
-    p=M2C_FIELD(arg0,void **,0x50);
-    Show3DSpriteSlide(p);
-    p=M2C_FIELD(arg0,void **,0x50);
-    func_020dbe00(p);
-    M2C_FIELD(p,u8 *,0x5a)=0;
-    p=M2C_FIELD(arg0,void **,0x58);
-    Show3DSpriteSlide(p);
-    p=M2C_FIELD(arg0,void **,0x58);
-    func_020dbe10(p);
-    M2C_FIELD(p,u8 *,0x5a)=0;
-    func_020dbe20(M2C_FIELD(arg0,void **,0x50));
-    SetTextById(M2C_FIELD(arg0,void **,0x64),0x4400000e);
-    Show3DSpriteSlide(M2C_FIELD(arg0,void **,0x64));
-    if(GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68))) {
-        s32 result=GetSpriteAnimValue(M2C_FIELD(arg0,s32 *,0x68));
-        p=M2C_FIELD(arg0,void **,0x68);
-        M2C_FIELD(p,u16 *,0xe)=result;
-        M2C_FIELD(p,u16 *,0x10)=0;
-        M2C_FIELD(p,u16 *,0xc)=12;
-        M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,4);
+    sprite=M2C_FIELD(entity,void **,0x50);
+    Show3DSpriteSlide(sprite);
+    sprite=M2C_FIELD(entity,void **,0x50);
+    func_020dbe00(sprite);
+    M2C_FIELD(sprite,u8 *,MENU_SPRITE_TIMER)=0;
+    sprite=M2C_FIELD(entity,void **,0x58);
+    Show3DSpriteSlide(sprite);
+    sprite=M2C_FIELD(entity,void **,0x58);
+    {
+        u32 base = (u32)(M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 28) >> 28;
+        s32 next = base + 2;
+        s32 active;
+        u32 frame;
+        if (next != (u16)((u32)(M2C_FIELD(sprite,s32 *,MENU_SPRITE_FRAME) << 6) >> 24)) active = 1; else active = 0;
+        if (active & 255) frame = base << 16; else frame = next << 16;
+        M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME) = (M2C_FIELD(sprite,u32 *,MENU_SPRITE_FRAME) & ~0x3fc0000) | (((frame >> 16) << 24) >> 6);
+        M2C_FIELD(sprite,u8 *,MENU_SPRITE_TIMER) = (u8)((u64)(u32)next << 32);
     }
-    M2C_FIELD(arg0,u16 *,0x48)&=~4;
-    return 0;
+    func_020dbe20(M2C_FIELD(entity,void **,0x50));
+    SetTextById(M2C_FIELD(entity,void **,0x64),0x4400000e);
+    Show3DSpriteSlide(M2C_FIELD(entity,void **,0x64));
+    if(GetSpriteAnimValue(M2C_FIELD(entity,s32 *,0x68))) {
+        s32 result=GetSpriteAnimValue(M2C_FIELD(entity,s32 *,0x68));
+        sprite=M2C_FIELD(entity,void **,0x68);
+        M2C_FIELD(sprite,u16 *,0xe)=result;
+        M2C_FIELD(sprite,u16 *,0x10)=0;
+        M2C_FIELD(sprite,u16 *,0xc)=12;
+        M2C_FIELD(sprite,u16 *,2)=M2C_FIELD(sprite,u16 *,4);
+    }
+    { u32 flags = M2C_FIELD(entity,u16 *,0x48) & ~4;
+      M2C_FIELD(entity,u16 *,0x48) = flags;
+      return flags; }
 }
-
+#pragma opt_instruction_scheduling reset
 void func_020dc5e4(void *arg0) {
     M2C_UNK func_020dbebc(void *);
     func_020dbebc(arg0);
@@ -432,12 +445,12 @@ void func_020dc5f0(void *arg0) {
 }
 
 void func_020dc5fc(void) {
-    M2C_UNK func_020dc250();
-    func_020dc250();
+    M2C_UNK SetupVersusRankMenu();
+    SetupVersusRankMenu();
 }
 
 void func_020dc608(void) {
-    func_020dc250();
+    SetupVersusRankMenu();
 }
 
 /* Input handler of a menu screen: updates its sprites and turns the A/B presses

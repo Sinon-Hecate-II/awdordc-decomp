@@ -1,8 +1,24 @@
 /* 24 functions from 0x02201E88 to 0x02202DC8 (ov003), found by ds-decomp. */
 #include "common.h"
 #include "coordinate_bits.h"
+#include "sound.h"
 static inline void E1E88Apply(void *p,u8 v) { s32 flag; s8 a; if(v==1)flag=1;else flag=0; M2C_FIELD(p,u8 *,0x39)=v; if(flag&255)a=0;else a=1; M2C_FIELD(M2C_FIELD(p,void **,0x4C),s8 *,0x59)=a; }
-static inline void E1E88Virtual(void *p) { M2C_FIELD(M2C_FIELD(p,void **,0),void (**)(void *),32)(p); }
+#pragma cplusplus on
+struct SetupPanel {
+    virtual void Slot00();
+    virtual void Slot04();
+    virtual void Slot08();
+    virtual void Slot0C();
+    virtual void Slot10();
+    virtual void Slot14();
+    virtual void Slot18();
+    virtual void Slot1C();
+    virtual void Slot20();
+ };
+extern "C" static inline void E1E88Virtual(void *p) {
+    ((SetupPanel *)p)->Slot20();
+}
+#pragma cplusplus off
 static inline u8 E1E88IsZero(u8 v) { return v == 0; }
 static inline u8 E1E88IsOne(u8 v) { return v == 1; }
 static inline void E1E88Set(void *p, u8 v) { M2C_FIELD(p,s8*,0x59)=v; }
@@ -358,7 +374,7 @@ void func_ov003_0220277c(void *arg0) {
     M2C_UNK func_ov003_021e88a4(M2C_UNK);
     M2C_UNK func_ov003_021ebb88(M2C_UNK);
     u8 func_ov003_022021d8(void *);
-    void func_ov003_02202bb0();
+    void Ov003_CancelSetupPanel();
     void Ov003_IncreaseSelectedEntry(void *, s32);
     u8 func_ov003_02202e94(s32, s32);
     void Ov003_UpdateSelectedEntryText(void *);
@@ -392,7 +408,7 @@ void func_ov003_0220277c(void *arg0) {
     func_ov003_02202b68(M2C_FIELD(arg0, void **, 0x40));
     if (func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0)) != 0) {
         func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0));
-        func_ov003_02202bb0(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
+        Ov003_CancelSetupPanel(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
         r7 = 0;
     }
 
@@ -454,7 +470,7 @@ void func_ov003_0220277c(void *arg0) {
             r7 = 0;
         }
         if (r7 != 0 && (r6 & 0x2)) {
-            func_ov003_02202bb0(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
+            Ov003_CancelSetupPanel(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
             r7 = 0;
         }
         if (r9 & 0x40) {
@@ -507,22 +523,37 @@ void func_ov003_02202b68(void *p) {
  }
 }
 
-void func_ov003_02202bb0(void *p){
- s32 Divide(u8,s32); s32 Modulo(u8,s32); void SetTileRectPalette(s32,s32,s32,s32); s32 PlaySoundEffect(s32); extern void *gCur3DSpriteEngine;
- s32 flag; s8 a; u8 id; s32 x; u8 v=0;
- PlaySoundEffect(0x1000F);
- if(E1E88IsZero(M2C_FIELD(p,u8 *,0x39))) {E1E88Virtual(p);return;}
- M2C_FIELD(p,u8 *,0x39)=0;
- if(M2C_FIELD(p,u8 *,0x39)==1)flag=1;else flag=0;
- if(flag&255) E1E88Set(M2C_FIELD(p,void **,0x4C),0); else E1E88Set(M2C_FIELD(p,void **,0x4C),1);
- SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c),32,32,0);
- flag=E1E88IsOne(M2C_FIELD(p,u8*,0x39));
- if(flag){
- id=M2C_FIELD(M2C_FIELD(M2C_FIELD(p,void**,0x44),void**,0x10c),u16*,0x2e);
- x=Modulo(id,4);
- { s32 y=Divide(id,4); x=(x*8+0x60); SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x2c)+((u32)((y*0x120+x)<<16)>>15),8,8,1); }
- }
- M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
+/* Cancel the setup panel: play the cancel sound; if the panel is already closed,
+ * leave the screen through its interface, otherwise close the panel, clear the
+ * tile-rect palette behind it and re-highlight the selected entry's cell. */
+void Ov003_CancelSetupPanel(void *panel) {
+    s32 Divide(u8, s32);
+    s32 Modulo(u8, s32);
+    void SetTileRectPalette(s32, s32, s32, s32);
+    s32 PlaySoundEffect(s32);
+    extern void *gCur3DSpriteEngine;
+    s32 open;
+    u8 entryIndex;
+    s32 tileX;
+
+    PlaySoundEffect(SOUND_MENU_CANCEL);
+    if (E1E88IsZero(M2C_FIELD(panel, u8 *, SETUP_PANEL_STATE))) { E1E88Virtual(panel); return; }
+    M2C_FIELD(panel, u8 *, SETUP_PANEL_STATE) = SETUP_PANEL_CLOSED;
+    if (M2C_FIELD(panel, u8 *, SETUP_PANEL_STATE) == SETUP_PANEL_OPEN) open = 1; else open = 0;
+    if (open & 255) E1E88Set(M2C_FIELD(panel, void **, SETUP_PANEL_HIGHLIGHT), 0);
+    else E1E88Set(M2C_FIELD(panel, void **, SETUP_PANEL_HIGHLIGHT), 1);
+    SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c), 32, 32, 0);
+    open = E1E88IsOne(M2C_FIELD(panel, u8 *, SETUP_PANEL_STATE));
+    if (open) {
+        entryIndex = M2C_FIELD(M2C_FIELD(M2C_FIELD(panel, void **, SETUP_PANEL_MENU), void **, SETUP_MENU_CURRENT), u16 *, 0x2e);
+        tileX = Modulo(entryIndex, 4);
+        {
+            s32 tileY = Divide(entryIndex, 4);
+            tileX = (tileX * 8 + 0x60);
+            SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2c) + ((u32)((tileY * 0x120 + tileX) << 16) >> 15), 8, 8, 1);
+        }
+    }
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 8;
 }
 
 void func_ov003_02202cc4(void *arg0) {

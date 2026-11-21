@@ -6,6 +6,9 @@ typedef struct { u8 pad[5]; u8 player:3; u8 rest:5; } Unk020APlayer;
 typedef struct { u8 x,y; u16 a:3; u16 b:3; u16 type:4; u16 rest:6; u8 value; u8 player:3; u8 enabled:1; u8 mode:4; u8 extra,last; } Unk020ABaseEntry;
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
 
+/* s16 cursor into the selection queue held by an order-effect sprite. */
+#define ORDER_SPRITE_QUEUE_CURSOR 0x54
+
 /* Append an order record to the map's order queue (entries at map+0x58A4, the
    first one with type 0 is free): tile (a,b), counts c/d, order type e, player f,
    enabled flag g and value h.  Returns the new record. */
@@ -174,23 +177,35 @@ count++;
 if(count)return;
 ClearSelectionQueue();
 }
+#pragma opt_strength_reduction off
+void SelectLineOrderTargets(Unk020ABaseEntry *a) {
+    extern s32 *gCurrentMap;
+    void SelectMapLayer(s32);
+    void FillMapLayer(s32);
+    void FillMapLine(s32,s32,s32,s32);
+    s32 found = 0, x, y, p;
+    s32 start = found;
+    u8 id;
+    SelectMapLayer(*gCurrentMap + 0x1e30);
+    FillMapLayer(-1);
+    FillMapLine(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,found);
+    p = *gCurrentMap;
+    for (y = found; y < M2C_FIELD(p,u16 *,0x5146); y++) {
+        x = start;
+        if (x < M2C_FIELD(p,u16 *,0x5144)) do {
+            if (M2C_FIELD(M2C_FIELD(p + (y << 2) + 0x5000, s8 **, 0x2e8), s8 *, x) >= 0) {
+                id = M2C_FIELD(M2C_FIELD(p + (y << 1) + 0x3700,u16 *,0x58) + (p + x), u8 *, 0x508);
+                if (id) {
+                    AppendSelectionEntry((u16)x,(u16)y,id,M2C_FIELD(a,s8 *,7));
+                    found = 1;
+                }
+            }
+            p = *gCurrentMap;
+        } while (++x < M2C_FIELD(p,u16 *,0x5144));
+    }
+    if (!found) ClearSelectionQueue();
+}
 #pragma opt_strength_reduction reset
-void SelectLineOrderTargets(Unk020ABaseEntry *a){
-extern s32 *gCurrentMap;void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapLine(s32,s32,s32,s32);
-s32 found=0,x,y,p;u8 id;
-SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);FillMapLine(a->x,a->y,(u32)(M2C_FIELD(a,u16 *,2)<<16)>>30,0);
-for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
-for(x=0;x<M2C_FIELD(*gCurrentMap,u16 *,0x5144);x++){
-p=*gCurrentMap;
-if(M2C_FIELD(((s8 **)(p+0x52e8))[y],s8 *,x)>=0){
-id=M2C_FIELD(((u16 *)(p+0x3758))[y]+(p+x),u8 *,0x508);
-if(id){AppendSelectionEntry((u16)x,(u16)y,id,M2C_FIELD(a,s8 *,7));found=1;}
-}
-}}
-if(!found)ClearSelectionQueue();
-}
-
-#pragma opt_lifetimes off
 void SelectPointOrderTargets(Unk020ABaseEntry *p) {
 extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
 s16 pos[2];s32 map; s32 centerY;register s32 right;register s32 yy;register s32 xx;register s32 zero;register u32 cy;register s32 bottom;s32 left,top,dist;
@@ -203,7 +218,7 @@ centerY=pos[1];top=centerY-2;if(top<0)top=0;
 right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(pos[0]+2<right)right=pos[0]+2;
 bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(centerY+2<bottom)bottom=centerY+2;
 for(yy=top;yy<=bottom;yy++){xx=left;if(xx<=right){cy=(u16)yy;zero=0;do{
-dist=zero;if(pos[0]-xx>0)dist+=pos[0]-xx;else dist+=xx-pos[0];
+dist=0;if(pos[0]-xx>0)dist+=pos[0]-xx;else dist+=xx-pos[0];
 if(pos[1]-yy>0)dist+=pos[1]-yy;else dist+=yy-pos[1];
 if(dist>=0 && dist<=2){u8 c;s32 mm=*gCurrentMap;c=M2C_FIELD(((u16 *)mm)[yy+0x1bac]+(mm+xx),u8 *,0x508);if(c)AppendSelectionEntry((u16)xx,cy,c,M2C_FIELD(p,s8 *,7));}
 xx++;}while(xx<=right);}}
@@ -237,24 +252,39 @@ void func_020a54c4(void *arg0) {
 
 void func_020a54d0(void *a) {void DeleteSpriteObject();extern s32 gSelectionQueueCount;if(M2C_FIELD(a,s16 *,84)!=gSelectionQueueCount)return;DeleteSpriteObject(a);}
 
-void func_020a54f4(void *a){
-M2C_UNK SetSpriteAnimation(void *,s32);void *FindMapOrderAtTile(s16,s16);
-M2C_UNK func_020b6f98(s16,s16,s32,void *);M2C_UNK func_020b7138(s16,s16,s16,s16,s32,void *);M2C_UNK SpawnBeamEffect(s16,s16,u32,s32,void *);
-extern Unk020APosition *gSelectionQueue;
-Unk020APosition *base=gSelectionQueue,*p,*q; s32 i=0;s16 n,m;void *entry;
-while(base[i].a==0)i++;
-n=M2C_FIELD(a,s16 *,0x54);if(base[n].a)return;p=(Unk020APosition *)((u8 *)base+i);
-switch(p->b){
-default:break;
-case 4:func_020b6f98((s16)p->c,(s16)p->d,n+1,a);break;
-case 6:case 7:
-entry=FindMapOrderAtTile((s16)p->c,(s16)p->d);
-m=M2C_FIELD(a,s16 *,0x54);q=&base[m];
-SpawnBeamEffect((s16)q->c,(s16)q->d,(u32)(M2C_FIELD(entry,u16 *,2)<<16)>>30,m+1,a);break;
-case 5:q=&base[n+1];func_020b7138((s16)p->c,(s16)p->d,(s16)q->c,(s16)q->d,n+2,a);
-M2C_FIELD(a,s16 *,0x54)++;break;
-}
-M2C_FIELD(a,s16 *,0x54)++;SetSpriteAnimation(a,0);
+/* Step of an order-effect sprite: at each queued order's own cell, play that
+ * order's attack visual (area burst, beam or point strike) on the order's tile,
+ * then advance to the next queue entry and restart the sprite animation. */
+void PlayOrderEffectStep(void *sprite) {
+    M2C_UNK SetSpriteAnimation(void *, s32);
+    void *FindMapOrderAtTile(s16, s16);
+    M2C_UNK func_020b6f98(s16, s16, s32, void *);
+    M2C_UNK func_020b7138(s16, s16, s16, s16, s32, void *);
+    M2C_UNK SpawnBeamEffect(s16, s16, u32, s32, void *);
+    extern Unk020APosition *gSelectionQueue;
+    Unk020APosition *queue = gSelectionQueue, *order, *target;
+    s32 firstTarget = 0;
+    s16 slot, nextSlot;
+    void *orderTile;
+    while (queue[firstTarget].a == 0) firstTarget++;
+    slot = M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR);
+    if (queue[slot].a) return;
+    order = &queue[slot];
+    switch (order->b) {
+    default: break;
+    case 4: func_020b6f98((s16)order->c, (s16)order->d, slot + 1, sprite); break;
+    case 6: case 7:
+        orderTile = FindMapOrderAtTile((s16)order->c, (s16)order->d);
+        nextSlot = M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR);
+        target = &queue[nextSlot];
+        SpawnBeamEffect((s16)target->c, (s16)target->d, (u32)(M2C_FIELD(orderTile, u16 *, 2) << 16) >> 30, nextSlot + 1, sprite); break;
+    case 5:
+        target = &queue[slot + 1];
+        func_020b7138((s16)order->c, (s16)order->d, (s16)target->c, (s16)target->d, slot + 2, sprite);
+        M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++; break;
+    }
+    M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++;
+    SetSpriteAnimation(sprite, 0);
 }
 
 void func_020a561c(void *arg0) {

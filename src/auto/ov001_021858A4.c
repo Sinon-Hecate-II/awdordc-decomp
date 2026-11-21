@@ -96,19 +96,19 @@ s32 Ov001_IsMenuLayoutReady(void) {
 }
 
 void Ov001_LoadMenuResource(s32 arg0) {
-    s32 Ov001_LocalizePath(s32);
+    s32 Ov001_GetLocalizedFileName(s32);
     s32 Ov001_LoadFile(s32, s32, s32);
     void func_ov001_02185ba8(s32);
     extern s32 data_ov001_02190be4[];
     extern s32 gOv001MenuLayout;
-    gOv001MenuLayout = Ov001_LoadFile(Ov001_LocalizePath(data_ov001_02190be4[arg0]), 0, 4);
+    gOv001MenuLayout = Ov001_LoadFile(Ov001_GetLocalizedFileName(data_ov001_02190be4[arg0]), 0, 4);
     Ov001_AddTask(1, func_ov001_02185ba8, 0, 0x78);
 }
 
 void func_ov001_02185ba8(s32 arg0) {
     extern s32 gOv001MenuLayout;
     DC_FlushRange(gOv001MenuLayout, 0x600);
-    func_0200442c(gOv001MenuLayout, 0, 0x600);
+    GX_LoadBG1ScrSub(gOv001MenuLayout, 0, 0x600);
     Ov001_FreeFile(gOv001MenuLayout);
     Ov001_PostTaskMessage(1, arg0);
 }
@@ -421,7 +421,7 @@ s32 CreatePooledTextPanel(s32,s32,s32,s32,s32*,s32);s32 Ov001_AllocSpriteBlock(s
 s32 Ov001_GetTextFontId(void);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void*);
 void Ov001_DrawTextPanelToSprite(s32,s32,s32,s32,s32);void func_ov001_0218b4dc(s32,s32,s32,s32);
 void SetWindowRect(s32,s32,const void*);s32 Ov001_SetRegionMenuY(s32);
-s32 Ov001_AddTask(s32,void(*)(),s32,s32);void func_ov001_02186678();void Ov001_SlideRegionMenuIn();
+s32 Ov001_AddTask(s32,void(*)(),s32,s32);void Ov001_RegionMenuFadeInStep();void Ov001_SlideRegionMenuIn();
 extern const u8 data_ov001_0218fc40[],data_ov001_0218fcf4[],data_ov001_0218fc66[],data_ov001_0218fc4a[];
 extern u8 gOv001RegionItemCount[];
 extern const u16 data_ov001_0218fc86[],data_ov001_0218fc84[];
@@ -460,7 +460,7 @@ func_ov001_0218b4dc(0,3,31,1);
 SetWindowRect(0,1,data_ov001_0218fc4a);
 Ov001_SetRegionMenuY(192);
 *(volatile u32*)0x4000000=(*(volatile u32*)0x4000000&~0xe000)|0x6000;
-if(c) M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,func_ov001_02186678,0,120);
+if(c) M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_RegionMenuFadeInStep,0,120);
 else M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_SlideRegionMenuIn,0,120);
 }
 #pragma scheduling reset
@@ -483,11 +483,15 @@ s32 Ov001_IsRegionMenuActive(void) {
     return 0;
 }
 
-void func_ov001_02186678(s32 a) {
-extern void *gOv001RegionMenu;void Ov001_SlideRegionMenuIn();
-M2C_FIELD(gOv001RegionMenu,s8 *,26)--;
-GX_SetBlendY(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
-if(M2C_FIELD(gOv001RegionMenu,s8 *,26)<=-12)Ov001_SetSlideStep(a,Ov001_SlideRegionMenuIn);
+/* First step of opening the region column menu when it will later fade out:
+ * lower its blend level one a frame, fading through the backdrop, until it
+ * reaches OV001_REGION_FADE_LEVEL, then hand the task to the slide-in step. */
+void Ov001_RegionMenuFadeInStep(s32 task) {
+    extern void *gOv001RegionMenu;
+    void Ov001_SlideRegionMenuIn();
+    M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND)--;
+    GX_SetBlendY(GX_BLDCNT_MAIN, M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND));
+    if (M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND) <= OV001_REGION_FADE_LEVEL) Ov001_SetSlideStep(task, Ov001_SlideRegionMenuIn);
 }
 
 /* Open step of the ov001 region-column menu: slide the column up from the bottom

@@ -387,8 +387,8 @@ void func_ov002_021e80c8(void *arg0, s32 idx, void *arg2, s32 arg3) {
 void func_ov002_021e8470(u8 *p,u8 *a,u8 *b,s32 c,s32 d){
 extern void **data_027e0058;
 void func_ov002_021e80c8(void*,s32,void*,s32);
-s32 IsUnitSubmerged(void*);
-
+s32 func_020a7d38(void*);
+void func_ov002_021e7d34(void*,s32,u32,u32,s32);
 p[1]=(a==M2C_FIELD(*data_027e0058,u8**,0x52d0));
 p[0]=!p[1];
 switch(M2C_FIELD(*data_027e0058,u8*,0x5157)){
@@ -399,8 +399,8 @@ default:p[3]=0;break;
 }
 func_ov002_021e80c8(p,0,a,c);
 func_ov002_021e80c8(p,1,b,d);
-SetBattleUnitAnimation(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,IsUnitSubmerged(a));
-SetBattleUnitAnimation(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,IsUnitSubmerged(b));
+func_ov002_021e7d34(p,0,(u32)(a[0]<<26)>>26,(u32)(b[0]<<26)>>26,func_020a7d38(a));
+func_ov002_021e7d34(p,1,(u32)(b[0]<<26)>>26,(u32)(a[0]<<26)>>26,func_020a7d38(b));
 }
 
 void SetupBattleAnimation(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
@@ -409,26 +409,29 @@ void SetupBattleAnimation(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     func_ov002_021e8470(&gPlayerSettings, arg0, arg1, arg2, arg3);
 }
 
-void func_ov002_021e85e8(void *p) {
-    M2C_UNK func_ov002_021e3f2c(void *, u8);
+/* Initialise one side's battle unit view `view`: derive the side from whether it
+   is player 1's view, clear the five unit-model slots, take the side's CO-effect
+   mode and effect frame, reset its scale, offsets, screenshake and frame counter,
+   and record whether the side's CO effect is displayed. */
+void InitBattleUnitView(void *view) {
+    M2C_UNK InitUnitViewGauge(void *, u8);
     extern M2C_UNK gUnitViews;
     extern u8 data_ov002_021f2fa9[], data_ov002_021f30fd[];
     extern u8 *gEffectTable[];
     s32 i;
-    u8 flag;
-    if (p != &gUnitViews) flag = 1; else flag = 0;
-    M2C_FIELD(p, u8 *, 0x27) = flag;
-    for (i = 0; i < 5; i++) ((ObjectSlots *)p)->slots[i] = 0;
-    M2C_FIELD(p, u8 *, 0x2A) = data_ov002_021f2fa9[M2C_FIELD(p, u8 *, 0x27) * 104];
-    M2C_FIELD(p, u8 *, 0x2B) = (((data_ov002_021f30fd[M2C_FIELD(p, u8 *, 0x27) * 24] + 9) / 10 + 1) & ~1U) >> 1;
-    if (M2C_FIELD(p, u8 *, 0x2A) && M2C_FIELD(p, u8 *, 0x2B)) M2C_FIELD(p, u8 *, 0x2B) = 1;
-    M2C_FIELD(p, u16 *, 0x1C) = 256;
-    M2C_FIELD(p, u16 *, 0x1E) = 0; M2C_FIELD(p, u16 *, 0x20) = 0; M2C_FIELD(p, u16 *, 0x22) = 0; M2C_FIELD(p, u16 *, 0x24) = 0;
-    M2C_FIELD(p, s8 *, 0x26) = -1;
-    if (M2C_FIELD(*(u8 **)((u8 *)gEffectTable + M2C_FIELD(p, u8 *, 0x27) * 24), u8 *, 0x3D) != 2)
-    M2C_FIELD(p, u8 *, 0x28) = 0; else M2C_FIELD(p, u8 *, 0x28) = 1;
-    M2C_FIELD(p, u8 *, 0x29) = 0;
-    func_ov002_021e3f2c(p, M2C_FIELD(p, u8 *, 0x27));
+    if (view == &gUnitViews) M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE) = 0;
+    else M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE) = 1;
+    for (i = 0; i < 5; i++) ((ObjectSlots *)view)->slots[i] = 0;
+    M2C_FIELD(view, u8 *, UNIT_VIEW_CO_EFFECT) = data_ov002_021f2fa9[M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE) * 104];
+    M2C_FIELD(view, u8 *, UNIT_VIEW_EFFECT_FRAME) = (((data_ov002_021f30fd[M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE) * VERSUS_DATA_STRIDE] + 9) / 10 + 1) & ~1U) >> 1;
+    if (M2C_FIELD(view, u8 *, UNIT_VIEW_CO_EFFECT) && M2C_FIELD(view, u8 *, UNIT_VIEW_EFFECT_FRAME)) M2C_FIELD(view, u8 *, UNIT_VIEW_EFFECT_FRAME) = 1;
+    M2C_FIELD(view, u16 *, UNIT_VIEW_SCALE) = 256;
+    M2C_FIELD(view, u16 *, UNIT_VIEW_X) = 0; M2C_FIELD(view, u16 *, UNIT_VIEW_SPRITE_X) = 0; M2C_FIELD(view, u16 *, UNIT_VIEW_SHAKE_X) = 0; M2C_FIELD(view, u16 *, UNIT_VIEW_SHAKE_Y) = 0;
+    M2C_FIELD(view, s8 *, UNIT_VIEW_SHAKE_INDEX) = -1;
+    if (M2C_FIELD(*(u8 **)((u8 *)gEffectTable + M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE) * 24), u8 *, 0x3D) != 2)
+    M2C_FIELD(view, u8 *, UNIT_VIEW_EFFECT_ON) = 0; else M2C_FIELD(view, u8 *, UNIT_VIEW_EFFECT_ON) = 1; /* 0x3D = EffectSet.phase */
+    M2C_FIELD(view, u8 *, UNIT_VIEW_FRAME) = 0;
+    InitUnitViewGauge(view, M2C_FIELD(view, u8 *, UNIT_VIEW_SIDE));
 }
 
 #pragma opt_strength_reduction off

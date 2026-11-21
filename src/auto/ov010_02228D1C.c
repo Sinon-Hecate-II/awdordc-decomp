@@ -64,9 +64,9 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
     s32 GetEarnedRecordTierTotal(void);
-    s32 func_ov000_0216a564(void);
-    s32 func_ov000_0216a76c(void);
-    s32 func_ov000_0216a7c4(void);
+    s32 GetRecordRank(void);
+    s32 GetFavouriteRecordGroup(void);
+    s32 GetFavouriteRecordIndex(void);
     void *GetProfileSaveBlock(void);
     M2C_UNK PublishPlayerStatusLocation(M2C_UNK *, s32);
     s8 func_0203bf80(u32, s32, s32);
@@ -117,9 +117,9 @@ volatile Ov010CallbackFn d;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x107) = 0;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x108) = (u8)arg0;
     GetEarnedRecordTierTotal();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)func_ov000_0216a564();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)func_ov000_0216a76c();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)GetRecordRank();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)GetFavouriteRecordGroup();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)GetFavouriteRecordIndex();
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x100) = M2C_FIELD(GetProfileSaveBlock(), s32 *, 0x54);
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa) = 2 | M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
     PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
@@ -159,9 +159,9 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s32 func_ov010_02229438(s32);
     void func_ov010_02229a50(void);
     s32 GetEarnedRecordTierTotal(void);
-    s32 func_ov000_0216a564(void);
-    s32 func_ov000_0216a76c(void);
-    s32 func_ov000_0216a7c4(void);
+    s32 GetRecordRank(void);
+    s32 GetFavouriteRecordGroup(void);
+    s32 GetFavouriteRecordIndex(void);
     void *GetProfileSaveBlock(void);
     M2C_UNK PublishPlayerStatusLocation(M2C_UNK *, s32);
     s8 func_0203bf80(u32, s32, s32);
@@ -212,9 +212,9 @@ volatile Ov010CallbackFn d;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x107) = 1;
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0x108) = (u8)arg0;
     GetEarnedRecordTierTotal();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)func_ov000_0216a564();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)func_ov000_0216a76c();
-    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)func_ov000_0216a7c4();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x104) = (u8)GetRecordRank();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x105) = (u8)GetFavouriteRecordGroup();
+    M2C_FIELD(&gOv010OnlineSession, u8 *, 0x106) = (u8)GetFavouriteRecordIndex();
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x100) = M2C_FIELD(GetProfileSaveBlock(), s32 *, 0x54);
     M2C_FIELD(&gOv010OnlineSession, u8 *, 0xfa) = 2 | M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
     PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
@@ -235,6 +235,12 @@ volatile Ov010CallbackFn d;
     func_020388d8(0,60,(u8)arg1,arg2,(s32)Ov010Online_OnHostJoinEvent,arg4,(s32)func_ov010_02228050,arg3);
 #pragma opt_dead_assignments reset
 }
+#pragma cplusplus on
+#pragma optimization_level 2
+#pragma opt_dead_code off
+#pragma opt_common_subs on
+#pragma opt_propagation off
+#pragma opt_dead_assignments off
 extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
  void func_ov010_02229a50(void);
@@ -242,9 +248,9 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
  s32 GetEarnedRecordTierTotal(void);
- s32 func_ov000_0216a564(void);
- s32 func_ov000_0216a76c(void);
- s32 func_ov000_0216a7c4(void);
+ s32 GetRecordRank(void);
+ s32 GetFavouriteRecordGroup(void);
+ s32 GetFavouriteRecordIndex(void);
  void *GetProfileSaveBlock(void);
  M2C_UNK PublishPlayerStatusLocation(M2C_UNK *,s32);
  void StartServingMatchSession(s32,void *,s32,void *,s32);
@@ -255,7 +261,8 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  extern u8 data_ov010_0222f1dc[];
  extern u16 gOv010OnlineSession;
  extern M2C_UNK gLocalPlayerStatus;
- Ov010CallbackFn a,b,c,d;
+ Ov010CallbackFn c, a, b;
+ volatile Ov010CallbackFn d;
  u8 *p;
  func_ov010_02226a88();
  Ov010Online_ClearStepFlag(3);
@@ -267,20 +274,21 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  b = a;
  c = b;
  for(p=(u8 *)&gOv010PlayerRecords;p!=data_ov010_0222f1dc;p+=0x6c) {
-  (((Ov010Callback *)p)->*a)();
+  (((Ov010Callback *)p)->*c)();
  }
- d=a;
+ d=c;
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x107)=1;
  M2C_FIELD(&gOv010OnlineSession,u8 *,0x108)=arg0;
  GetEarnedRecordTierTotal();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=GetRecordRank();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=GetFavouriteRecordGroup();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=GetFavouriteRecordIndex();
  M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(GetProfileSaveBlock(),s32 *,0x54);
- M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa)|=2;
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa)=2 | M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
  PublishPlayerStatusLocation(&gLocalPlayerStatus,0x6c);
  StartServingMatchSession(arg1&255,func_ov010_0222807c,arg3,func_ov010_0222815c,arg5);
 }
+#pragma opt_dead_assignments reset
 extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5) {
  void func_ov010_02226a88(void);
  void func_ov010_02229a50(void);
@@ -288,9 +296,9 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  s32 func_ov010_02229480(s32);
  void Ov010Online_ClearStepFlag(s32);
  s32 GetEarnedRecordTierTotal(void);
- s32 func_ov000_0216a564(void);
- s32 func_ov000_0216a76c(void);
- s32 func_ov000_0216a7c4(void);
+ s32 GetRecordRank(void);
+ s32 GetFavouriteRecordGroup(void);
+ s32 GetFavouriteRecordIndex(void);
  void *GetProfileSaveBlock(void);
  M2C_UNK PublishPlayerStatusLocation(M2C_UNK *,s32);
  void StartMatch(s32,void *,s32,void *,s32);
@@ -319,9 +327,9 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  *(volatile u8 *)((u8 *)&gOv010OnlineSession + 0x107) = 1;
  *(volatile u8 *)((u8 *)&gOv010OnlineSession + 0x108) = (u8)arg0;
  GetEarnedRecordTierTotal();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=func_ov000_0216a564();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=func_ov000_0216a76c();
- M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=func_ov000_0216a7c4();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x104)=GetRecordRank();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x105)=GetFavouriteRecordGroup();
+ M2C_FIELD(&gOv010OnlineSession,u8 *,0x106)=GetFavouriteRecordIndex();
  M2C_FIELD(&gOv010OnlineSession,s32 *,0x100)=M2C_FIELD(GetProfileSaveBlock(),s32 *,0x54);
 M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa)=2|M2C_FIELD(&gOv010OnlineSession,u8 *,0xfa);
 PublishPlayerStatusLocation(&gLocalPlayerStatus,0x6c);
@@ -446,23 +454,28 @@ s32 QueueOnlineLinkPacket(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     extern u16 gOv010OnlineSession;
     QueueNode *node;
     s32 mode;
-    s32 saved;
-    void *force;
+    u32 saved;
+    u32 previous;
     s32 ret;
+    u32 result;
 
     if (IsOnlineSessionFlagSet(3) == 0) return 0;
     arg3 &= GetOnlinePeerMask();
     arg3 = (u16)(arg3 & (-1 ^ (1 << GetOnlineTransportPlayerId())));
     mode = GetOnlineTransportPlayerId();
-    saved = *(volatile u16 *)0x04000208;
+    previous = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
-    force = &saved;
+    saved = previous;
     node = (QueueNode *)func_ov010_022268f4(0, arg2 + 0x10, 0x20);
     if (node == NULL) {
-        (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = saved;
+        volatile u16 *ime = (volatile u16 *)0x04000208;
+        u32 restore = *(volatile u32 *)&saved;
+        u32 ignored = *ime;
+        *ime = restore;
+        (void)ignored;
         ret = 0;
     } else {
+        s32 queued;
         MI_CpuFill8(node, 0, 0x10);
         Ov010Online_InitPacketHeader((u8 *)node + 4, arg0, mode, 0, (s32)arg1, arg2, arg3);
         if (M2C_FIELD(&gOv010OnlineSession, QueueNode **, 0x64) == NULL) {
@@ -472,13 +485,16 @@ s32 QueueOnlineLinkPacket(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
             M2C_FIELD(M2C_FIELD(&gOv010OnlineSession, QueueNode **, 0x64), QueueNode **, 0) = node;
             M2C_FIELD(&gOv010OnlineSession, QueueNode **, 0x64) = node;
         }
-        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x68)++;
+        previous = *(volatile u32 *)&saved;
+        queued = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x68);
+        M2C_FIELD(&gOv010OnlineSession, s32 *, 0x68) = queued + 1;
         (void)*(volatile u16 *)0x04000208;
-        *(volatile u16 *)0x04000208 = saved;
         ret = 1;
+        *(volatile u16 *)0x04000208 = previous;
     }
-    (void)force;
-    return ret != 0;
+    result = ret;
+    if (result == 0) return 0;
+    return 1;
 }
 
 s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {

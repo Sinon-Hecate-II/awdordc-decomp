@@ -176,14 +176,16 @@ void BuildRangeThreatMap(void) {
     M2C_FIELD(*gCurrentMap, u16 *, MAP_ACTIVE_PLAYER) = savedPlayer;
 }
 
-s32 FindAiTargetOfType(s32 arg0) {
+/* Return the index of the first usable AI target candidate of `type`
+ * (AI_CANDIDATE_TYPE_ANY matches every type), or -1 when there is none. */
+s32 FindAiTargetOfType(s32 type) {
 extern u8 *gAiState;
 extern M2C_UNK gAiTargetCandidates;
-u8 *p;
+u8 *candidate;
 s32 i;
-p = (u8 *)&gAiTargetCandidates;
-for (i=0; i<*gAiState; i++,p+=12) {
-if ((u32)p[3]<0xFCU && (arg0==4 || p[2]==arg0)) return i;
+candidate = (u8 *)&gAiTargetCandidates;
+for (i = 0; i < *gAiState; i++, candidate += AI_CANDIDATE_STRIDE) {
+if ((u32)candidate[AI_CANDIDATE_STATUS] < AI_CANDIDATE_REJECTED && (type == AI_CANDIDATE_TYPE_ANY || candidate[AI_CANDIDATE_TYPE] == type)) return i;
 }
 return -1;
 }

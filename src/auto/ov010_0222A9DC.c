@@ -6,7 +6,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK func_0208ae88(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK SetSpriteAnimation(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -32,7 +32,7 @@ if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000015);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
-func_0208ae88(created,1);
+SetPanelChoice(created,1);
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,10);return;}
 if(!func_020c4b88(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
@@ -56,7 +56,7 @@ if(mode==1&&bank!=g3DSpriteEngineSub)continue;
 if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(arg0);RenderTextLayerMessage(created,3,M2C_FIELD(arg0,u16 *,0x36)<<5,0x42000014);
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
-func_0208ae88(created,0);
+SetPanelChoice(created,0);
 }while(++i<2);gCur3DSpriteEngine=savedBank;}SetSpriteAnimation(arg0,9);
 }
 
@@ -381,7 +381,7 @@ void func_ov010_0222b418(void *layer) {
  * for (0 = main engine, 1 = sub engine, 3 = the active engine) and moves the
  * entity to animation 14. */
 void func_ov010_0222b520(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK func_0208ae88(void *,s32);
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetSpriteAnimation(s32,s32);M2C_UNK SetPanelChoice(void *,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -395,7 +395,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(entity);
 RenderTextLayerMessage(created,3,M2C_FIELD(entity,u16 *,TEXT_LAYER_VALUE)<<5,0x4200001a);
 M2C_FIELD(created,s32 *,0x58)|=0x1000;
-func_0208ae88(created,1);
+SetPanelChoice(created,1);
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }
@@ -445,7 +445,7 @@ if(mode==3&&bank!=savedBank)continue;
 created=CreateTextLayer(entity);
 RenderTextLayerMessage(created,3,M2C_FIELD(entity,u16 *,TEXT_LAYER_VALUE)<<5,0x42000018);
 M2C_FIELD(created,s32 *,0x58)|=0x1000;
-func_0208ae88(created,1);
+SetPanelChoice(created,1);
 }while(++i<2);
 gCur3DSpriteEngine=savedBank;
 }

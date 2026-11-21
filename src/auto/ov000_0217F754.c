@@ -414,28 +414,33 @@ void RunAiRole4Or6Step4Action(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_021806d8(void) {
+/* Role-4/6 AI step-5 action: build the influence maps and pick the acting unit's
+ * attack target, run the in-place attack when the owning player's AI mode calls
+ * for it, then plan the HQ, production-site and attack/port destinations and
+ * finish the unit's action. */
+void RunAiRole4Or6Step5Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
     M2C_UNK FindBestMoveTarget();
-    M2C_UNK func_ov000_0219604c();
+    M2C_UNK PlanHqDestination();
     M2C_UNK PlanProductionSiteDestination();
     M2C_UNK SelectAttackMoveDestination();
     M2C_UNK SelectPortDestination();
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
+
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
-    func_ov000_0219604c();
+    PlanHqDestination();
     PlanProductionSiteDestination();
     SelectAttackMoveDestination();
     SelectPortDestination();

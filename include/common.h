@@ -433,6 +433,12 @@ enum {
 #define MENU_MAP_PAGE_SIZE    0x200 /* bytes per map-list page */
 #define MENU_MAP_ENTRY_OFFSET 0x2e /* u16 map id per row within a page */
 
+/* ov003 map-list menu kinds (MENU_ENTITY_MODE low nibble) that open an ov006
+ * map sub-panel: the campaign map list (6) and the two map-pick lists (7, 8). */
+#define MENU_KIND_CAMPAIGN   6
+#define MENU_KIND_MAP_PICK_7 7
+#define MENU_KIND_MAP_PICK_8 8
+
 /* ov003 map-select screen: six preview rows of three animations each. */
 typedef struct MapSelectRow {
     u8 pad[0x18];
@@ -523,6 +529,15 @@ typedef struct WaypointSlotGroup {
  * +0x44, a trailing label at +0x74, the main sprite at +0x78 and one ready flag
  * per slot at +0x7C) and the WAYPOINT_LIST_* waypoint list above. */
 #define WAYPOINT_PANEL_SELECT_SPRITES 0x64 /* void *[4]: player-select sprite objects */
+/* The player-select sprite set at WAYPOINT_PANEL_SELECT_SPRITES (0x48 bytes): two
+ * slide sprites and a sprite per player column in each of four rows.  The whole
+ * set is animated each frame by UpdateWaypointSelectSprites. */
+#define WAYPOINT_SELECT_SLIDE     0x00 /* s32 slide sprite */
+#define WAYPOINT_SELECT_SLIDE_ALT 0x04 /* s32 alternate slide sprite */
+#define WAYPOINT_SELECT_TILE      0x08 /* void *[4]: first row of per-player-column sprites */
+#define WAYPOINT_SELECT_TILE_ALT  0x18 /* void *[4]: second row */
+#define WAYPOINT_SELECT_ROW_2     0x28 /* void *[4]: third row */
+#define WAYPOINT_SELECT_ROW_3     0x38 /* void *[4]: fourth row */
 #define WAYPOINT_PANEL_GROUP          0x68 /* the sprite group */
 #define WAYPOINT_PANEL_LIST           0x6C /* the waypoint list */
 #define WAYPOINT_PANEL_ICON_RECORD    0x40 /* CO panel record the icon refresh updates */
@@ -541,6 +556,16 @@ typedef struct WaypointSlotGroup {
 #define SETUP_MENU_SLOTS      0xE8 /* void *[9]: the entry sprites */
 #define SETUP_MENU_SLOT_COUNT 9
 #define SETUP_MENU_CURRENT    0x10C /* void *: sprite of the selected entry */
+
+/* The scene object that owns the setup menu above: it holds the menu at
+ * SETUP_PANEL_MENU and its SETUP_PANEL_STATE byte says whether the panel is open
+ * on the selected entry; SETUP_PANEL_HIGHLIGHT is the cursor-frame sprite the
+ * panel's highlight sits on. */
+#define SETUP_PANEL_STATE     0x39 /* u8: SETUP_PANEL_CLOSED or SETUP_PANEL_OPEN */
+#define SETUP_PANEL_CLOSED    0
+#define SETUP_PANEL_OPEN      1
+#define SETUP_PANEL_MENU      0x44 /* void *: the setup menu object */
+#define SETUP_PANEL_HIGHLIGHT 0x4C /* void *: cursor-frame sprite of the panel highlight */
 
 /* Per-row animation targets of a MapSelectRow (the tween fields in front of its
  * three animation pointers). Ov003_ApplyRowSelectionAnimations stores the first
@@ -671,7 +696,11 @@ typedef struct HistoryMenu {
     HistoryMenuTab tabs[3]; /* +0x10 */
     u16 recordTierEarned; /* +0x2E: sum of the record tiers the player has reached */
     u16 recordTierTotal;  /* +0x30: highest tier sum obtainable, 3 per listed record */
-    u8 unk32[0x0E];
+    u8 rankIcon;          /* +0x32: rank icon index for the player's earned tiers */
+    u8 pad33[0x01];
+    s32 favouriteGroupTextId;  /* +0x34: localized text id of the favourite record group */
+    s32 favouriteRecordTextId; /* +0x38: localized text id of the player's best record */
+    s32 rankTextId;       /* +0x3C: localized text id of the rank the earned tiers reach */
     u8 medals[8];        /* +0x40: medals earned, one flag each (drawn on the records screen) */
     void *sprite48;     /* +0x48 */
     void *sprite4C;     /* +0x4C */
@@ -916,6 +945,7 @@ typedef struct SpriteAnimPlayer {
 
 /* Streaming voice state (the ov010 gStreamVoiceState object).  The voice reads from
  * two sample buffers that the stream callback refills. */
+#define STREAM_VOICE_DATA_READY      0x00 /* s32 set when the segment callback received a voice packet (IsVoiceDataReady) */
 #define STREAM_VOICE_ACTIVE          0x04 /* s32 voice started */
 #define STREAM_VOICE_FLIP            0x08 /* s32 which buffer is being filled */
 #define STREAM_VOICE_BUFFER1         0x0C /* first sample buffer */
@@ -1741,6 +1771,7 @@ typedef struct MbCommand {
 #define CARD_REG_DATA       0x04100010 /* u32: data port the read command fills */
 #define CARD_HEADER_CONTROL 0x027FFE60 /* u32: card control word kept in the header window */
 #define CARD_READ_OPCODE    0xB7 /* u8 command byte that starts a read */
+#define CARD_COMMAND_MODE   0xC0 /* command register byte 0: raw-command transfer mode */
 #define CARD_PAGE_SIZE      0x200 /* bytes one read command fetches */
 
 /* One chunk of a multiboot program image as the sender describes it: where the
@@ -1822,6 +1853,16 @@ enum {
     OV001_LAYOUT_ACCESS_POINT_MENU = 1
 };
 #define OV001_SCREEN_CREATE_ICON_ROW 1 /* next-screen argument that enables icon row creation */
+
+/* Asset path templates handed to Ov001_GetLocalizedFileName carry the language
+ * character at index OV001_PATH_LANGUAGE_CHAR.  A OV001_PATH_LANG_ALL template
+ * is used unchanged by every language; a OV001_PATH_LANG_NONJP template is used
+ * unchanged except in Japanese, which needs its own 'j' file; any other
+ * template is the Japanese name, and the character is replaced with the current
+ * language's code from gOv001LanguageCode. */
+#define OV001_PATH_LANGUAGE_CHAR 5
+#define OV001_PATH_LANG_ALL      'x'
+#define OV001_PATH_LANG_NONJP    'y'
 
 /* Positions compared by ConvergeSyncedPositions are Q12 fixed-point pixels
  * (0x1000 is one pixel).  Each call moves a position by at most one map cell
@@ -2090,6 +2131,11 @@ typedef struct Ov001IconMenuState {
 #define SAVE_SLOT_INDEX_REL    0xF4 /* offset within one slot image of SAVE_SLOT_INDEX */
 #define SAVE_SLOT_EMPTY_A      0xF5 /* offset within one slot image of SAVE_EXTRA_EMPTY_A */
 #define SAVE_SLOT_EMPTY_B      0xF6 /* offset within one slot image of SAVE_EXTRA_EMPTY_B */
+#define SAVE_SLOT_FLAGS        0xEF /* u8: bitmap of written slots (bit n = slot n), mirrored in the first two slot images */
+#define SAVE_SLOT_CRC          0xFE /* offset within one slot image of its trailing 2-byte CRC16 */
+#define SAVE_SLOT_CRC_SIZE     0xFE /* bytes of a slot image covered by that CRC16 (everything before it) */
+#define SAVE_SLOT_STATUS_ERASED 0xFF /* SAVE_SLOT_STATUS value of an erased slot */
+#define SAVE_CRC_TABLE         0x4F8 /* u16[256]: CRC16 lookup table (built by func_02076710) */
 
  /* The link-match setup sent before a saved battle (the 0xE8-byte state that
   * Ov001_CopyLinkMatchSetup copies out of the receive buffer): the map name, the
@@ -2432,9 +2478,11 @@ typedef struct Ov001WfcIcon {
 } Ov001WfcIcon;   /* 0x0C bytes */
 
 /* Blend control registers the ov001 screen fades write: the main engine's and
- * the sub engine's BLDCNT, with BLDY at +4. */
+ * the sub engine's BLDCNT, with BLDALPHA and BLDY at +2 and +4. */
 #define GX_BLDCNT_MAIN 0x04000050
 #define GX_BLDCNT_SUB  0x04001050
+#define GX_BLDALPHA_MAIN 0x04000052 /* u16: EVA (bits 0-4) and EVB (bits 8-12) coefficients */
+#define GX_VCOUNT        0x04000006 /* u16: current scanline, read by per-scanline effects */
 
 /* Window range registers of the main engine; the sub engine's sit at +0x1000.
  * WIN0 and WIN1 each have a horizontal and a vertical range, packed as high
@@ -3172,6 +3220,18 @@ enum {
 #define VOICE_CHAT_ADPCM_PREDICTOR   0x10 /* s16 predicted sample */
 #define VOICE_CHAT_ADPCM_STEP_INDEX  0x12 /* u8 index into gAdpcmStepTable */
 #define VOICE_CHAT_CODEC_MODE        0x1C /* s32 VOICE_CODEC_* */
+#define VOICE_CHAT_STREAM_TICK       0x00 /* u16 stream tick taken when the stream starts */
+#define VOICE_CHAT_CONTEXT_MASK      0x04 /* u32 mask of the attached contexts' peers */
+#define VOICE_CHAT_ACTIVE            0x14 /* s32 nonzero once the voice stream runs */
+#define VOICE_CHAT_CONTEXT_COUNT     0x20 /* s32 voice-exchange contexts attached (0..VOICE_CHAT_CONTEXT_MAX) */
+#define VOICE_CHAT_CONTEXT_MAX       3    /* contexts the chat tracks at once, one per link channel */
+#define VOICE_CHAT_STREAM_STATS      0xF00 /* s32[6] stream statistics cleared when the stream starts */
+
+/* The 4-byte ADPCM codec header at the start of a voice audio packet, which is
+ * also the codec's state: the predictor, the step-table index and a zero byte. */
+#define VOICE_ADPCM_PREDICTOR   0x00 /* s16 predicted sample */
+#define VOICE_ADPCM_STEP_INDEX  0x02 /* u8 index into gAdpcmStepTable */
+#define VOICE_ADPCM_RESERVED    0x03 /* u8 always 0 */
 
 /* Header of a voice-chat link packet (magic 0x5F564354). */
 #define VOICE_LINK_PACKET_SIZE 0x10 /* bytes in every voice-link packet and in its header */
@@ -3368,6 +3428,21 @@ typedef struct Ov001TilePool {
 #define WEB_REQ_PAYLOAD      0x60 /* void * payload of the last request */
 #define WEB_REQ_PAYLOAD_SIZE 0x64 /* s32 its size in bytes */
 
+/* Phases of the WFC web request state machine (gWebRequestState's WEB_REQ_PHASE,
+ * stepped by AdvanceWebRequest): build the put.asp request, send it and wait for
+ * its reply, send the follow-up get.asp request carrying that reply's hash, wait
+ * for that reply, then the exchange is done. */
+enum {
+    WEB_REQ_FAILED     = 1, /* the exchange failed; the transaction reports failure */
+    WEB_REQ_IDLE       = 2, /* reset, no exchange in flight */
+    WEB_REQ_REGISTERED = 3, /* request registered, the put.asp body is being built */
+    WEB_REQ_PUT_SEND   = 4, /* the put.asp request is ready to send */
+    WEB_REQ_PUT_WAIT   = 5, /* put.asp sent, waiting for its reply */
+    WEB_REQ_GET_SEND   = 6, /* the follow-up get.asp request is ready to send */
+    WEB_REQ_GET_WAIT   = 7, /* follow-up sent, waiting for its reply */
+    WEB_REQ_DONE       = 8  /* the exchange completed */
+};
+
 /* GetWebResponseHeader (src/auto/main_02044E04.c) reports the received response
  * as three words: these are their indices. */
 #define WEB_RESPONSE_SIZE    0 /* body size in bytes */
@@ -3440,6 +3515,10 @@ typedef struct Ov001TilePool {
 #define TEXT_LAYER_PANEL_FRAME      0x4B /* s8 frame counter */
 #define TEXT_LAYER_PANEL_ANIM_OPEN  0x08 /* TEXT_LAYER_PANEL_STATE animation mode */
 #define TEXT_LAYER_PANEL_ANIM_CLOSE 0x18
+
+/* TEXT_LAYER_PANEL_STATE bits 0..2 are the panel kind the layer was rendered as
+ * (1/2 is a text panel that any A/B press dismisses, 3 a two-option panel); bits
+ * 6..7 are its selected choice (0 = left/accept, 1 = right/cancel). */
 
 /* The ov011 opening-sequence state object, advanced by the ov011_02223CB8 code. */
 #define INTRO_TIMER     0x34 /* u16 frames spent in the current state */
@@ -3608,6 +3687,15 @@ typedef struct FifoMessage {
 #define ARM7_CMD_VALUE_PTR 0x24 /* s32 *: where the reply to command 0x67 is stored */
 #define ARM7_CMD_DONE_NOTIFY 0x04 /* s32: nonzero once the ARM7 answered command 0x60 */
 #define ARM7_CMD_DONE_SLEEP  0x08 /* s32: nonzero once the ARM7 answered command 0x62 */
+#define ARM7_CMD_SET_POWER   0x63 /* Arm7SetPowerState: switch the ARM7 power state */
+#define ARM7_CMD_SET_AMP     0x64 /* command 0x64: set a sound-amplifier parameter */
+
+/* An ARM7 command is sent as one or two FIFO words: the command word names the
+ * command byte and carries an extra argument byte, a command with a 16-bit
+ * value sends that as a following argument word. */
+#define ARM7_CMD_WORD(cmd, arg) ((u32)0x02000000 | ((u32)(cmd) << 8) | (u8)(arg))
+#define ARM7_CMD_ARG_WORD(value) ((u32)0x01010000 | (u16)(value))
+
 #define ARM7_POWER_INVALID   0xFFFF /* Arm7SetBacklight/SendPowerCommand: no matching power state */
 
 /* The FIFO block-transfer state (gFifoBlockTransfer) of the save/profile upload in
@@ -3696,6 +3784,15 @@ typedef struct MicTestScreen {
 #define OV001_MAP_LIST_ROW        0x02 /* u8: selected row within the visible rows */
 #define OV001_MAP_LIST_OBJECT     0x08 /* void *: the screen's 0x48-byte object */
 #define OV001_MAP_LIST_ROW_HEIGHT 29   /* pixels of one list row; five are visible */
+
+/* The ov001 map-preview buffer (gOv001MapPreview): the allocated object holding
+ * the 32x24 BG2 tilemap the map preview is drawn into.  A task flushes it to
+ * BG2 whenever its dirty flag is set. */
+typedef struct Ov001MapPreview {
+    s32 task;          /* +0x00 id of the task that flushes the tilemap */
+    u16 tiles[0x300];  /* +0x04 the 32x24 BG2 tilemap, 0x600 bytes */
+    u8  dirty;         /* +0x604 nonzero: the tilemap must be flushed */
+} Ov001MapPreview;     /* 0x608 bytes */
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
 #define OV001_MAP_LIST_TASK       0x38 /* object: s32 id of the running scroll task, 0 while idle */
@@ -3770,10 +3867,12 @@ enum {
 #define FILE_STREAM_KIND(mode)  ((u32)((mode) << 22) >> 29)
 #define FILE_STREAM_CLOSE_ERROR(state) ((u32)((state) << 28) >> 31) /* bit 3 forces a close error */
 
-/* Stream locking shared by ReadFileData, GetFilePosition and SetFilePosition.
- * gStreamMutexes holds one GsiMutex per stream class; the running thread object
- * (gSocketManager+0x04) carries its id at +0x6C, which gStreamLockOwner records
- * while it holds the mutex and gStreamLockDepth counts its reentrant nesting. */
+/* Stream locking shared by the stdio file helpers and the stdout printf.
+ * gStreamMutexes holds one GsiMutex per stream class (its symbol
+ * covers the first three; gStreamMutexStdout holds the stdout one); the running
+ * thread object (gSocketManager+0x04) carries its id at +0x6C, which
+ * gStreamLockOwner records while it holds the mutex and gStreamLockDepth counts
+ * its reentrant nesting. */
 #define STREAM_LOCK_STDIN  2    /* gStreamMutexes index for stdin */
 #define STREAM_LOCK_STDOUT 3    /* ... for stdout */
 #define STREAM_LOCK_STDERR 4    /* ... for stderr */
@@ -3964,6 +4063,12 @@ typedef struct DialogSequence {
 } DialogSequence;
 #define DIALOG_SEQUENCE_COUNT 8
 #define DIALOG_SEQUENCE_STRIDE 0x18 /* one DialogSequence record */
+
+/* The ARM7 sound command channel: InitSoundCommandLink installs the channel's
+ * handler under this IPC FIFO tag and waits for the ARM7 firmware to report it
+ * ready, polling every SND_CMD_LINK_POLL_DELAY cycles. */
+#define SND_CMD_FIFO_TAG       7
+#define SND_CMD_LINK_POLL_DELAY 100 /* WaitCycles between link-ready polls */
 
 /* The ARM7 sound driver's shared command-argument buffer (gSoundCommandBuffer,
  * 640 bytes): two handshake counters the ARM9 polls, then 16 argument entries —
