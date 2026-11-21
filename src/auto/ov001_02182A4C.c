@@ -421,16 +421,33 @@ void func_ov001_02183318(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02183338;
+    extern M2C_UNK Ov001_StartConnectionFadeOut;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02183338);
+    Ov001_SetStepCallback(&Ov001_StartConnectionFadeOut);
 }
 
-void func_ov001_02183338(void){extern u8 gOv001WfcScreenState;extern M2C_UNK func_ov001_021833a4;M2C_UNK Ov001_StartIconRowSlideOut();if(Ov001_IsFadeActive(1))return;Ov001_StartIconRowSlideOut();if((u8)(gOv001WfcScreenState+254)<=1)Ov001_StartFade(3,1,1,8);Ov001_StartFade(3,0,21,8);Ov001_SetStepCallback(&func_ov001_021833a4);}
+/* Fade the Wi-Fi connection screen out: slide the icon row away and fade both
+ * engines; the sub engine only fades when its status message is up, that is
+ * when the connection was lost or nobody joined. */
+void Ov001_StartConnectionFadeOut(void) {
+    extern u8 gOv001WfcScreenState;
+    extern M2C_UNK Ov001_CloseConnectionScreen;
+    M2C_UNK Ov001_StartIconRowSlideOut();
+
+    if (Ov001_IsFadeActive(OV001_FADE_SUB)) return;
+    Ov001_StartIconRowSlideOut();
+    /* Adding 254 is subtracting 2 in 8 bits: only states 2 and 3 pass. */
+    if ((u8)(gOv001WfcScreenState + 254) <= 1) {
+        Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    }
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN,
+                    OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_SetStepCallback(&Ov001_CloseConnectionScreen);
+}
 
 /* Sets up the overlay 001 mode based on the selected slot/state, runs init hooks, then schedules render callbacks. */
-void func_ov001_021833a4(void) {
+void Ov001_CloseConnectionScreen(void) {
     M2C_UNK Ov001_FreeOptionSprites(void);
     s32 Ov001_IsIconRowIdle(void);
     M2C_UNK Ov001_FreeOptionBackground(void);

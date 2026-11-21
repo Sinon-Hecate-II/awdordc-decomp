@@ -574,6 +574,13 @@ typedef struct MapTargetEntry {
 #define MAP_CELL_ORDER      0x1e30 /* s8 per cell: working order/overlay layer */
 #define MAP_CELL_THREAT_DIRECT   0x2840 /* u8 per cell: threat from direct attackers */
 #define MAP_CELL_THREAT_INDIRECT 0x2d48 /* u8 per cell: threat from indirect attackers */
+/* gMapCellCornerColors: one u8 corner-colour code per map cell, stored
+ * column-major ([x][y], MAP_CORNER_COLOR_STRIDE rows per column).  The map
+ * renderer picks a cell corner's colour from the code; the terrain overlay pass
+ * (func_02076980) leaves a cell alone once its code is MAP_CORNER_COLOR_RESERVED,
+ * which PinMapCellCorners writes to reserve the corners of an effect cell. */
+#define MAP_CORNER_COLOR_STRIDE   42 /* rows (cells) per column of gMapCellCornerColors */
+#define MAP_CORNER_COLOR_RESERVED 7  /* corner code the overlay pass skips */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
@@ -617,6 +624,15 @@ enum {
 /* Action flags shared by map keyboard and stylus input. */
 enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_PREVIEW_UNIT_TILE_BASE 19 /* gTileGfxRowOffset index of the first unit-marker tile row */
+
+/* gMapPreviewPalettes: staging data for the map preview, three 16-colour
+ * palettes (u16[16] each, 0x20 bytes apart).  The first is copied into the OBJ
+ * palette slot the preview was last drawn with (gMapPreviewPaletteSlot); the
+ * third is the cursor colour ramp, one colour per animation frame, whose
+ * current entry replaces colour 14 of that slot. */
+#define MAP_PREVIEW_PALETTE     0x00 /* u16[16] the preview's own palette */
+#define MAP_PREVIEW_CURSOR_RAMP 0x40 /* u16[16] per-frame cursor colours */
+#define MAP_PREVIEW_CURSOR_COLOR 14  /* colour of the preview palette the ramp rewrites */
 
 /* The battle map's per-player states: five 0x8c-byte records at map+0x67a4.
  * Player 0 is team A's base player and player 1 team B's; the remaining players

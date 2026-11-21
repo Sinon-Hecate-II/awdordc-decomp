@@ -206,19 +206,21 @@ s32 func_020c6088(void) {
     return 2;
 }
 
+/* Whether the unit under the cursor can join (merge with) the unit on the cell it
+ * points at: 0 when it can, 2 when the cell is empty or the two cannot join. */
 s32 CanJoinUnitAtCursor(void) {
     s32 CanUnitsJoin(s32, s32);
     extern void **gCurrentMap;
-    void *base = *gCurrentMap;
-    s16 a = M2C_FIELD(base, s16 *, 0x52DE);
-    s16 b = M2C_FIELD(base, s16 *, 0x52DC);
-    u16 c = M2C_FIELD((u8 *)base + a * 2, u16 *, 0x3758);
-    u8 d = M2C_FIELD(base, u8 *, b + c);
+    void *map = *gCurrentMap;
+    s16 cursorY = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
+    s16 cursorX = M2C_FIELD(map, s16 *, MAP_CURSOR_X);
+    u16 rowOffset = M2C_FIELD((u8 *)map + cursorY * 2, u16 *, MAP_ROW_OFFSETS);
+    u8 unitId = M2C_FIELD(map, u8 *, cursorX + rowOffset);
 
-    if (d == 0) {
+    if (unitId == 0) {
         return 2;
     }
-    if (CanUnitsJoin(M2C_FIELD(base, s32 *, 0x52D0), (s8 *)base + 0x59A4 + d * 0xE) == 0) {
+    if (CanUnitsJoin(M2C_FIELD(map, s32 *, MAP_CURSOR_UNIT), (s8 *)map + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE) == 0) {
         return 2;
     }
     return 0;

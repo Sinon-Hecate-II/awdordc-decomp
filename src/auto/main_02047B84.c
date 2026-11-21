@@ -9,7 +9,7 @@ extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, 
 extern u8 data_020fca88[56];
 extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
 extern M2C_UNK data_020fcc4c,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
-extern M2C_UNK sVectorIndexCheck, data_020fcc2c, data_020fccb0, data_020fcbf8, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
+extern M2C_UNK sVectorIndexCheck, data_020fcc2c, sAssertArray, sArrayFreeName, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
 extern M2C_UNK data_020fcc98, sDarrayFileName, data_020fcc04;
@@ -338,7 +338,7 @@ gDnsQueryState[22]=n;}
 return 0;
 }
 
-void func_020484b8(void *a,s32 b) {
+void Vector_ReleaseItem(void *a,s32 b) {
 s32 Vector_GetItem(void *,s32);
 if(!M2C_FIELD(a,void (**)(),16))return;
 M2C_FIELD(a,void (**)(s32),16)(Vector_GetItem(a,b));
@@ -364,7 +364,7 @@ s32 *Vector_New(s32 elemSize, s32 capacity, s32 userData) {
 s32 gpiMalloc(s32); s32 AssertFailed();
 extern M2C_UNK data_020fcbec,data_020fccb8;
 s32 *p=gpiMalloc(24);
-if(!p)AssertFailed(&data_020fccb0,&sDarrayFileName,&data_020fcbec,0x52);
+if(!p)AssertFailed(&sAssertArray,&sDarrayFileName,&data_020fcbec,0x52);
 if(!elemSize)AssertFailed(&data_020fccb8,&sDarrayFileName,&data_020fcbec,0x53);
 if(!capacity)capacity=8;
 p[0]=0;p[1]=capacity;p[2]=elemSize;p[3]=capacity;p[4]=userData;
@@ -375,11 +375,20 @@ if(!p[5])AssertFailed(&data_020fcc98,&sDarrayFileName,&data_020fcbec,0x5e);
 return p;
 }
 
+/* GameSpy darray ArrayFree: release every item through the array's per-item
+ * release callback, then free the item slots and the array itself. */
 void Vector_Free(s32 *a) {
-s32 AssertFailed();s32 gpiFree();s32 i;
-if(!a)AssertFailed(&data_020fccb0,&sDarrayFileName,&data_020fcbf8,0x69);
-for(i=0;i<a[0];i++)func_020484b8(a,i);
-gpiFree(a[5]);gpiFree(a);
+    s32 AssertFailed();
+    s32 gpiFree();
+    s32 i;
+    Vector *vector = (Vector *)a;
+
+    if (!vector)
+        AssertFailed(&sAssertArray, &sDarrayFileName, &sArrayFreeName, 0x69);
+    for (i = 0; i < vector->count; i++)
+        Vector_ReleaseItem(vector, i);
+    gpiFree(vector->items);
+    gpiFree(vector);
 }
 
 s32 Vector_GetCount(s32 *arg0) {
@@ -398,9 +407,9 @@ void Vector_AddItem(s32 *arg0, M2C_UNK arg1) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_020fcc10;
     extern M2C_UNK sDarrayFileName;
-    extern M2C_UNK data_020fccb0;
+    extern M2C_UNK sAssertArray;
     if (arg0 == NULL) {
-        AssertFailed(&data_020fccb0, &sDarrayFileName, &data_020fcc10, 0xA0);
+        AssertFailed(&sAssertArray, &sDarrayFileName, &data_020fcc10, 0xA0);
     }
     if (arg0 == NULL) {
         return;
@@ -455,10 +464,10 @@ s32 Vector_RemoveAt(s32 *array, s32 index) {
 void Vector_RemoveItem(s32 *a,s32 b) {
 s32 Vector_RemoveAt();s32 AssertFailed();
 if(b<0||b>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc2c,0xca);
-func_020484b8(a,b);Vector_RemoveAt(a,b);
+Vector_ReleaseItem(a,b);Vector_RemoveAt(a,b);
 }
 
-void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc4c,0xd3);func_020484b8(a,c);Vector_SetItem(a,b,c);}
+void Vector_ReplaceItem(s32 *a,s32 b,s32 c){s32 AssertFailed();if(c<0||c>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc4c,0xd3);Vector_ReleaseItem(a,c);Vector_SetItem(a,b,c);}
 
 void Vector_Sort(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02067610(s32, s32, s32, M2C_UNK);
@@ -486,7 +495,7 @@ s32 Vector_Search(void *array, s32 item, s32 compare, s32 startIndex, s32 isSort
     return RuntimeIntDivMod(offset - M2C_FIELD(array, s32 *, 20), M2C_FIELD(array, s32 *, 8));
 }
 
-void func_02048a9c(s32 *a,void (*b)(s32,s32),s32 c) {
+void ArrayForEach(s32 *a,void (*b)(s32,s32),s32 c) {
 s32 AssertFailed();s32 i;
 if(!b)AssertFailed(&data_020fcd10,&sDarrayFileName,&data_020fcc5c,0x104);
 for(i=a[0]-1;i>=0;i--)b(Vector_GetItem(a,i),c);

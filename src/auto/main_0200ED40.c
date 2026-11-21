@@ -96,25 +96,27 @@ void PM_DeletePostSleepCallback(M2C_UNK arg0) {
     extern M2C_UNK data_0212fce0;
     func_0200eda0(&data_0212fce0, arg0);
 }
+/* Bring the RTC service up once: mark the state initialised, clear the pending
+ * request, then install the reply handler on the RTC command FIFO. */
 void RTC_Init(void) {
     M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
     extern M2C_UNK gRtcState;
     extern M2C_UNK func_0200f0e4;
-    if (M2C_FIELD(&gRtcState, u16 *, 0) != 0) {
+    if (M2C_FIELD(&gRtcState, u16 *, RTC_STATE_READY) != 0) {
         return;
     }
-    M2C_FIELD(&gRtcState, u16 *, 0) = 1;
-    M2C_FIELD(&gRtcState, s32 *, 4) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 8) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0x20) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0xC) = 0;
-    M2C_FIELD(&gRtcState, s32 *, 0x10) = 0;
+    M2C_FIELD(&gRtcState, u16 *, RTC_STATE_READY) = 1;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_BUSY) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_CALLBACK) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_HANDLER) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT0) = 0;
+    M2C_FIELD(&gRtcState, s32 *, RTC_STATE_OUT1) = 0;
     PXI_Init();
     do {
-    } while (IsFifoMessageReady(4 + 1, 1) == 0);
-    SetFifoMessageHandler(2 + 3, &func_0200f0e4);
+    } while (IsFifoMessageReady(RTC_FIFO_TAG, 1) == 0);
+    SetFifoMessageHandler(RTC_FIFO_TAG, &func_0200f0e4);
 }
 
 /* Start an RTC read of the current date (request kind 0): refuses while another

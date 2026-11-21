@@ -102,10 +102,10 @@ void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 void CopyMainOBJExtPaletteWordsTask(void *arg0) {
     M2C_UNK func_02004d3c();
-    M2C_UNK func_02004d70(s32, s32, s32);
+    M2C_UNK GX_LoadTexPltt(s32, s32, s32);
     M2C_UNK func_02004ddc();
     func_02004d3c();
-    func_02004d70(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
+    GX_LoadTexPltt(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
     func_02004ddc();
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
         return;

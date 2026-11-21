@@ -335,7 +335,7 @@ MapTargetEntry *target=GetTargetPosition(firstTarget);
 x=unit[MAP_UNIT_X]; y=unit[MAP_UNIT_Y];
 DamageUnitAtTile(x,y,target->value);
 M2C_FIELD((void *)CreateAnimatedMapSprite(&gDamageSpriteName,x,y,16,graphicOffset,tileIndex,(void *)7),s32 *,0x3c)=0x8c1;
-func_02076910(x,y);
+PinMapCellCorners(x,y);
 sx+=x; sy+=y; n++;
 }
 func_02080750(1,20,0); func_02080358(4,0,2,0);

@@ -146,18 +146,21 @@ s32 VoiceLink_HandlePacket(s32 peerId, VoiceLinkPacket *packet, s32 size, M2C_UN
     return VoiceLink_HandleControlPacket(packet, reply);
 }
 
-void *VoiceLink_AllocContext(u32 arg0) {
+/* Take an idle exchange context off the link's free list, initialise it for peer
+ * `peerId` and push it onto the active list. Returns NULL when the peer id is out
+ * of range, is our own id, or no context is free. */
+void *VoiceLink_AllocContext(u32 peerId) {
 void VoiceLink_InitContext(); extern M2C_UNK gLinkConfig,gVoiceLinkState;
-void *p;
-if(arg0>=32)return 0;
-if(arg0==M2C_FIELD(&gLinkConfig,u8 *,0))return 0;
-p=M2C_FIELD(&gVoiceLinkState,void **,16);
-if(!p)return 0;
-M2C_FIELD(&gVoiceLinkState,void **,16)=M2C_FIELD(p,void **,20);
-VoiceLink_InitContext(p,arg0);
-M2C_FIELD(p,void **,20)=M2C_FIELD(&gVoiceLinkState,void **,20);
-M2C_FIELD(&gVoiceLinkState,void **,20)=p;
-return p;
+VoiceLinkContext *context;
+if(peerId>=32)return 0;
+if(peerId==M2C_FIELD(&gLinkConfig,u8 *,LINK_CONFIG_LOCAL_ID))return 0;
+context=((VoiceLinkState *)&gVoiceLinkState)->freeList;
+if(!context)return 0;
+((VoiceLinkState *)&gVoiceLinkState)->freeList=context->next;
+VoiceLink_InitContext(context,peerId);
+context->next=((VoiceLinkState *)&gVoiceLinkState)->activeList;
+((VoiceLinkState *)&gVoiceLinkState)->activeList=context;
+return context;
 }
 
 s32 func_ov010_0222441c(void *arg0, M2C_UNK arg1) {

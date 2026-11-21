@@ -191,10 +191,10 @@ void func_02077c10(void) {
 }
 
 void func_02077c64(void) {
-    M2C_UNK func_02003bd0();
+    M2C_UNK G3X_Reset();
     void func_02077720();
     M2C_UNK func_02078828();
-    func_02003bd0();
+    G3X_Reset();
     func_02078828();
     func_02077720();
 }

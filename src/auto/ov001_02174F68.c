@@ -151,22 +151,36 @@ void Ov001_KeypadCloseStep5(M2C_UNK task) {
     Ov001_SetSlideStep(task, Ov001_KeypadCloseStep4);
 }
 #pragma scheduling reset
-void Ov001_KeypadCloseStep4(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void Ov001_KeypadCloseStep3(M2C_UNK);extern void *gOv001Keypad;
-s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x34);
-Position pos;
-pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))Ov001_PositionKeypadStep)(3);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,Ov001_KeypadCloseStep3);
+/* Keypad close step for the "0" number row: keep sliding the key 12 pixels to
+ * the right each frame; once it has left the screen, hand the slide task to the
+ * "1 2 3" row above it. */
+void Ov001_KeypadCloseStep4(M2C_UNK task) {
+    M2C_UNK Ov001_SetSlideStep(M2C_UNK, void (*)(M2C_UNK));
+    void Ov001_KeypadCloseStep3(M2C_UNK);
+    extern void *gOv001Keypad;
+    s32 packed = *M2C_FIELD(gOv001Keypad, s32 **, KEYPAD_KEY_SPRITE(9));
+    Position pos;
+    pos.y = (u32)(packed & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)packed + KPAD_SLIDE_STEP_X;
+    ((void(*)(s32))Ov001_PositionKeypadStep)(3);
+    if (*(volatile s32 *)&pos.x < KPAD_ROW_HIDDEN_X) return;
+    Ov001_SetSlideStep(task, Ov001_KeypadCloseStep3);
 }
 
-void Ov001_KeypadCloseStep3(M2C_UNK arg0) {
-M2C_UNK Ov001_SetSlideStep(M2C_UNK,void(*)(M2C_UNK));void Ov001_KeypadCloseStep2(M2C_UNK);extern void *gOv001Keypad;
-s32 bits=*M2C_FIELD(gOv001Keypad,s32 **,0x28);
-Position pos;
-pos.y=(u32)(bits&0x01ff0000)>>16;pos.x=(u8)bits+12;
-((void(*)(s32))Ov001_PositionKeypadStep)(2);
-if(*(volatile s32*)&pos.x<192)return;Ov001_SetSlideStep(arg0,Ov001_KeypadCloseStep2);
+/* Keypad close step for the "1 2 3" number row: keep sliding the row 12
+ * pixels to the right each frame; once its first key has left the screen, hand
+ * the slide task to the "4 5 6" row above it. */
+void Ov001_KeypadCloseStep3(M2C_UNK task) {
+    M2C_UNK Ov001_SetSlideStep(M2C_UNK, void (*)(M2C_UNK));
+    void Ov001_KeypadCloseStep2(M2C_UNK);
+    extern void *gOv001Keypad;
+    s32 packed = *M2C_FIELD(gOv001Keypad, s32 **, KEYPAD_KEY_SPRITE(6));
+    Position pos;
+    pos.y = (u32)(packed & OV001_SPRITE_POS_Y_MASK) >> OV001_SPRITE_POS_Y_SHIFT;
+    pos.x = (u8)packed + KPAD_SLIDE_STEP_X;
+    ((void(*)(s32))Ov001_PositionKeypadStep)(2);
+    if (*(volatile s32 *)&pos.x < KPAD_ROW_HIDDEN_X) return;
+    Ov001_SetSlideStep(task, Ov001_KeypadCloseStep2);
 }
 
 /* Keypad close step for the "4 5 6" number row: keep sliding the row 12 pixels right

@@ -2,73 +2,84 @@
 #include "common.h"
 #include "sound.h"
 
-s32 LoadSoundSequenceArchiveFile(M2C_UNK arg0, s32 arg1, s32 arg2) {
+/* Load and cache sound sequence-archive file `fileId`: if it is already loaded
+ * return that block, otherwise read it from `pool` with the sequence free
+ * callback and, when `create` is set, record the loaded block.  Returns the
+ * block, or 0 on failure. */
+s32 LoadSoundSequenceArchiveFile(s32 fileId, s32 pool, s32 create) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d01c;
-    s32 var_r2;
-    s32 var_r4;
+    s32 freeArg;
+    s32 block;
 
-    var_r4 = GetLoadedArchiveFile();
-    if (var_r4 == 0) {
-        if (arg2 == 0) {
-            var_r2 = 0;
+    block = GetLoadedArchiveFile(fileId);
+    if (block == 0) {
+        if (create == 0) {
+            freeArg = 0;
         } else {
-            var_r2 = Sound_GetCurrentArchive();
+            freeArg = Sound_GetCurrentArchive();
         }
-        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d01c, var_r2, arg0, arg1);
-        if ((arg2 != 0) && (var_r4 != 0)) {
-            SetLoadedArchiveFile(arg0, var_r4);
+        block = Sound_LoadArchiveFile(fileId, &func_0202d01c, freeArg, fileId, pool);
+        if ((create != 0) && (block != 0)) {
+            SetLoadedArchiveFile(fileId, block);
         }
     }
-    return var_r4;
+    return block;
 }
 
-s32 func_0202cde4(M2C_UNK arg0, s32 arg1, s32 arg2) {
+/* Loads the sound-archive bank file `fileId` into a fresh block of `pool` unless
+ * it is already loaded, and records it in the archive's file table when `create`
+ * is set; returns the loaded bank archive, or 0 when it could not be loaded. */
+s32 LoadSoundBankArchiveFile(M2C_UNK fileId, s32 pool, s32 create) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
-    extern M2C_UNK func_0202d044;
-    s32 var_r2;
-    s32 var_r4;
+    extern M2C_UNK FreeBankArchiveFile;
+    s32 freeArg;
+    s32 archive;
 
-    var_r4 = GetLoadedArchiveFile();
-    if (var_r4 == 0) {
-        if (arg2 == 0) {
-            var_r2 = 0;
+    archive = GetLoadedArchiveFile();
+    if (archive == 0) {
+        if (create == 0) {
+            freeArg = 0;
         } else {
-            var_r2 = Sound_GetCurrentArchive();
+            freeArg = Sound_GetCurrentArchive();
         }
-        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d044, var_r2, arg0, arg1);
-        if ((arg2 != 0) && (var_r4 != 0)) {
-            SetLoadedArchiveFile(arg0, var_r4);
+        archive = Sound_LoadArchiveFile(fileId, &FreeBankArchiveFile, freeArg, fileId, pool);
+        if ((create != 0) && (archive != 0)) {
+            SetLoadedArchiveFile(fileId, archive);
         }
     }
-    return var_r4;
+    return archive;
 }
 
-s32 LoadWaveArchiveFile(M2C_UNK arg0, s32 arg1, s32 arg2) {
-    s32 GetLoadedArchiveFile();
+/* Load wave archive `fileId` from block pool `pool`: read it into a new block
+ * (freed by FreeWaveArchiveFile and owned by the current archive when `cache` is
+ * set) and, if `cache` is set, register the block in the archive's file table.
+ * Returns the block, or the cached block when it was already loaded. */
+s32 LoadWaveArchiveFile(s32 fileId, s32 pool, s32 cache) {
+    s32 GetLoadedArchiveFile(s32);
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
-    extern M2C_UNK func_0202d074;
-    s32 var_r2;
-    s32 var_r4;
+    extern M2C_UNK FreeWaveArchiveFile;
+    s32 archive;
+    s32 block;
 
-    var_r4 = GetLoadedArchiveFile();
-    if (var_r4 == 0) {
-        if (arg2 == 0) {
-            var_r2 = 0;
+    block = GetLoadedArchiveFile(fileId);
+    if (block == 0) {
+        if (cache == 0) {
+            archive = 0;
         } else {
-            var_r2 = Sound_GetCurrentArchive();
+            archive = Sound_GetCurrentArchive();
         }
-        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d074, var_r2, arg0, arg1);
-        if ((arg2 != 0) && (var_r4 != 0)) {
-            SetLoadedArchiveFile(arg0, var_r4);
+        block = Sound_LoadArchiveFile(fileId, &FreeWaveArchiveFile, archive, fileId, pool);
+        if ((cache != 0) && (block != 0)) {
+            SetLoadedArchiveFile(fileId, block);
         }
     }
-    return var_r4;
+    return block;
 }
 
 M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 arg0, s32 arg1, s32 arg2) {
@@ -150,7 +161,7 @@ void func_0202d01c(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     func_02008e90(arg0, arg0 + arg1);
 }
 
-void func_0202d044(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void FreeBankArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02008eb0(s32, s32);
     M2C_UNK Link_ClearSlotOwners(s32);
     func_0202cfc4(arg0, arg2, arg3);
@@ -158,7 +169,7 @@ void func_0202d044(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     Link_ClearSlotOwners(arg0);
 }
 
-void func_0202d074(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+void FreeWaveArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02008ed0(s32, s32);
     M2C_UNK func_02009aa4(s32);
     func_0202cfc4(arg0, arg2, arg3);

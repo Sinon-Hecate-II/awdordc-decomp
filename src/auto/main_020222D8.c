@@ -280,7 +280,7 @@ MD5_Final(session+TLS_MD5_CTX,out);
 }
 #pragma opt_strength_reduction off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
-s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void func_020221ec(void*,u8*,s32);
+s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void AppendCommaSeparatedName(void*,u8*,s32);
 u32 ParseAsn1Time(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
 u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
@@ -327,9 +327,9 @@ p+=len;break;
 case 12:case 19:case 20:case 22:
 if(mode!=2){
 if(M2C_FIELD(ctx,u8*,0x5ac)){
-func_020221ec((u8*)ctx+0x6b0,p,len);
+AppendCommaSeparatedName((u8*)ctx+0x6b0,p,len);
 if(M2C_FIELD(ctx,u8*,0x5ae)==5 && len<=79){MI_CpuCopy8(p,(u8*)ctx+0x7b0,len);M2C_FIELD((u8*)ctx+len,u8*,0x7b0)=0;}
-}else func_020221ec((u8*)ctx+0x5b0,p,len);
+}else AppendCommaSeparatedName((u8*)ctx+0x5b0,p,len);
 }
 M2C_FIELD(ctx,u8*,0x5ae)=0;p+=len;break;
 case 23:case 24:

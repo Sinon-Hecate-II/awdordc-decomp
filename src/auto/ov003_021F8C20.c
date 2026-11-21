@@ -349,7 +349,7 @@ void func_ov003_021f92f4(void *obj) {
         LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103b8),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
         AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
     } else {
-        func_020c12f8(M2C_FIELD(gCur3DSpriteEngine,void **,12),M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*322+1,5);
+        DrawMapPreviewLayer(M2C_FIELD(gCur3DSpriteEngine,void **,12),M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)*322+1,5);
         M2C_FIELD(obj,u8 *,0x3b)=(M2C_FIELD(obj,u8 *,0x3b)&~0x80)|((u8)!(((u32)M2C_FIELD(obj,u8 *,0x3b)<<24)>>31)<<7);
     }
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;

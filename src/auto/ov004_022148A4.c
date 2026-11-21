@@ -15,8 +15,8 @@ static inline void *Selected149(void *base){s32 i;u8 *cursor=base;void *p;for(i=
 
 
 void func_ov004_022148a4(void) {
-    M2C_UNK func_02003bd0();
-    func_02003bd0();
+    M2C_UNK G3X_Reset();
+    G3X_Reset();
     *(u16 *)0x04000060 = (*(u16 *)0x04000060 & ~0x3000) | 8;
     M2C_FIELD((void *)0x040004C8, s32 *, 0) = 0x1FF00000;
     M2C_FIELD((void *)0x040004C8, s32 *, 4) = 0x7FFF;

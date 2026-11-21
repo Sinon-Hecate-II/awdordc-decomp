@@ -69,14 +69,14 @@ if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CO
  * the descriptor to CreateNasConnection. */
 void StartNasRequest(void *a,s32 b){
 extern M2C_UNK gNasLogin;
-u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 func_020322ec(void *); void InitNasLoginKey(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void CreateNasConnection(void *,s32);void MI_CpuFill8(void *,s32,s32);
+u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 IsLocalPlayerCode(void *); void InitNasLoginKey(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 func_020376a4(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void CreateNasConnection(void *,s32);void MI_CpuFill8(void *,s32,s32);
 u8 buf[72];void *p; s32 n;
 MI_CpuFill8(buf,0,72);M2C_FIELD(&gNasLogin,void **,8)=a;M2C_FIELD(&gNasLogin,s32 *,0)=b;
 if(func_02032370(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),void **,28))){
 p=M2C_FIELD(&gNasLogin,void **,4);FormatNasId(M2C_FIELD(p,u8 **,28)+16,M2C_FIELD(M2C_FIELD(p,void **,28),s32 *,36),(u8 *)p+0x248);
 }else{
 if(!func_02032358((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x3c)){
-if(func_020322ec(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),u8 **,28)+4)){
+if(IsLocalPlayerCode(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),u8 **,28)+4)){
 p=M2C_FIELD(&gNasLogin,void **,4);M2C_FIELD(p,Record3A *,0x3c)=M2C_FIELD(M2C_FIELD(p,void **,28),Record3A *,4);
 }else InitNasLoginKey((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x3c);
 }else{

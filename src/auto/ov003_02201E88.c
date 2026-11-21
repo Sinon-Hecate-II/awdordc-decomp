@@ -158,12 +158,14 @@ u8 func_ov003_022021d8(void *arg0) {
     return (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x10C), u16 *, 0x2E);
 }
 
-void func_ov003_022021e8(void *arg0) {
+/* Place the setup screen's target cursor over the preview unit sprite, sized to
+ * that unit's sprite. */
+void Ov003_PlaceSetupCursor(void *panel) {
 s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);
-s32 a,b;void *q;
-q=M2C_FIELD(M2C_FIELD(arg0,void**,0x44),void**,0x10c);
-b=GetUnitSpriteHeight(q);a=GetUnitSpriteWidth(q);
-E9638Set(M2C_FIELD(arg0,void**,0x4c),M2C_FIELD(q,s16*,0x34),M2C_FIELD(q,s16*,0x36),a,b);
+s32 width,height;void *unit;
+unit=M2C_FIELD(M2C_FIELD(panel,void**,0x44),void**,SETUP_MENU_CURRENT);
+height=GetUnitSpriteHeight(unit);width=GetUnitSpriteWidth(unit);
+E9638Set(M2C_FIELD(panel,void**,0x4c),M2C_FIELD(unit,s16*,SPRITE_ACTOR_X),M2C_FIELD(unit,s16*,SPRITE_ACTOR_Y),width,height);
 }
 
 /* Point the panel's value-text label at the message for the entry it has

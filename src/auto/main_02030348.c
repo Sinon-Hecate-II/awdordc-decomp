@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 func_02030348(void){void *Wfc_GetWorkBlock(s32);s32 func_0202f57c(void);s32 func_02030400(void *);void *p; s32 r;p=Wfc_GetWorkBlock(1);r=func_0202f57c();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
+s32 Wfc_GetConnectionErrorCode(void){void *Wfc_GetWorkBlock(s32);s32 Wfc_GetResultCode(void);s32 func_02030400(void *);void *p; s32 r;p=Wfc_GetWorkBlock(1);r=Wfc_GetResultCode();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
 
 s32 func_02030398(u32 a){switch(a){case 1:return -9;case 0:return -10;case 2:return -8;case 3:return -7;default:return 0;}}
 

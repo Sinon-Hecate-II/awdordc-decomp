@@ -174,6 +174,14 @@ typedef struct FSArchiveList {
     s32 unk0C;        /* +0x0C */
 } FSArchiveList;
 
+/* The card archive's device work area: the OS lock id the archive takes the
+ * card ROM lock with, and the card device its transfers run on (-1 for the
+ * default). */
+typedef struct FSCardArchiveWork {
+    s32 lockId; /* +0x00 OS_GetLockID() id passed to CARD_LockRom/CARD_UnlockRom */
+    s32 device; /* +0x04 card device index for the transfer, -1 for the default */
+} FSCardArchiveWork; /* 8 bytes */
+
 /* FSArchive::state bits. */
 #define FS_ARCHIVE_NAMED      1 /* registered under a name */
 #define FS_ARCHIVE_LAYOUT     2 /* FAT/FNT layout set by ConfigureArchiveLayout */

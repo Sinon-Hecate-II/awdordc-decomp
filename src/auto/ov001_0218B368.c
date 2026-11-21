@@ -299,36 +299,56 @@ s32 KeyReleased(s32 a) {
     return a == t;
 }
 
-s32 TouchRectReleased(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);
-if(M2C_FIELD(p,TouchFlags *,0x38).active==0)return 0;
-if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
-return a[3]>=M2C_FIELD(p,u16 *,0x2a);
+/* Touch hit test: return 1 when the current touch point is inside rectangle
+ * `rect` (left, top, right, bottom) and the input state's active flag is set,
+ * i.e. the screen is being touched.  The four TouchRect* predicates share the
+ * rectangle check and differ only in which touch flag they read. */
+s32 TouchRectReleased(u16 *rect) {
+    extern M2C_UNK gOv001Input;
+    void *state = M2C_FIELD(&gOv001Input, void **, 4);
+    if (M2C_FIELD(state, TouchFlags *, 0x38).active == 0) return 0;
+    if (rect[0] > M2C_FIELD(state, u16 *, 0x28)) return 0;
+    if (rect[2] < M2C_FIELD(state, u16 *, 0x28)) return 0;
+    if (rect[1] > M2C_FIELD(state, u16 *, 0x2a)) return 0;
+    return rect[3] >= M2C_FIELD(state, u16 *, 0x2a);
 }
 
-s32 TouchRectPressed(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
-if((x<<30>>31)==0)return 0;
-if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
-return a[3]>=M2C_FIELD(p,u16 *,0x2a);
+/* True while the current touch point lies inside rect (left, top, right, bottom)
+ * and the touch was just pressed. */
+s32 TouchRectPressed(u16 *rect){
+extern M2C_UNK gOv001Input;
+InputState *input=M2C_FIELD(&gOv001Input,InputState **,4);
+if(!input->flags.pressed)return 0;
+if(rect[0]>M2C_FIELD(input,u16 *,0x28))return 0;
+if(rect[2]<M2C_FIELD(input,u16 *,0x28))return 0;
+if(rect[1]>M2C_FIELD(input,u16 *,0x2a))return 0;
+return rect[3]>=M2C_FIELD(input,u16 *,0x2a);
 }
 
-s32 TouchRectPressOrRepeat(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
-if((x<<29>>31)==0)return 0;
-if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
-return a[3]>=M2C_FIELD(p,u16 *,0x2a);
+/* True while the current touch point lies inside rect (left, top, right, bottom)
+ * and the touch is pressed or auto-repeating (repeat bit of the touch flags). */
+s32 TouchRectPressOrRepeat(u16 *rect){
+extern M2C_UNK gOv001Input;
+InputState *input=M2C_FIELD(&gOv001Input,InputState **,4);
+if(!input->flags.released)return 0;
+if(rect[0]>M2C_FIELD(input,u16 *,0x28))return 0;
+if(rect[2]<M2C_FIELD(input,u16 *,0x28))return 0;
+if(rect[1]>M2C_FIELD(input,u16 *,0x2a))return 0;
+return rect[3]>=M2C_FIELD(input,u16 *,0x2a);
 }
 
-s32 TouchRectHeld(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u32 x=M2C_FIELD(p,u8 *,0x38);
-if((x<<28>>31)==0)return 0;
-if(a[0]>M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[2]<M2C_FIELD(p,u16 *,0x28))return 0;
-if(a[1]>M2C_FIELD(p,u16 *,0x2a))return 0;
-return a[3]>=M2C_FIELD(p,u16 *,0x2a);
+/* Return 1 when the touch point is inside rectangle `rect` (left, top, right,
+ * bottom) and the touch state's flag bit 3 is set; the four TouchRect*
+ * predicates share the rectangle check and differ only in the flag bit. */
+s32 TouchRectHeld(u16 *rect) {
+    extern M2C_UNK gOv001Input;
+    void *state = M2C_FIELD(&gOv001Input, void **, 4);
+    u32 flags = M2C_FIELD(state, u8 *, 0x38);
+    if ((flags << 28 >> 31) == 0) return 0;
+    if (rect[0] > M2C_FIELD(state, u16 *, 0x28)) return 0;
+    if (rect[2] < M2C_FIELD(state, u16 *, 0x28)) return 0;
+    if (rect[1] > M2C_FIELD(state, u16 *, 0x2a)) return 0;
+    return rect[3] >= M2C_FIELD(state, u16 *, 0x2a);
 }
 
 s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return TouchRectPressed(box);}

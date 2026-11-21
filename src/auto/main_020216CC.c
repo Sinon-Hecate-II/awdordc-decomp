@@ -79,14 +79,16 @@ s32 func_020218bc(void) {
     return ((temp_r0 << 0x18) & 0xFF000000) | (((temp_r0 << 8) & 0xFF0000) | ((u8) (temp_r0 >> 0x18) | ((temp_r0 >> 8) & 0xFF00)));
 }
 
-void func_020218f4(u32 *arg0, u32 *arg1) {
-    M2C_UNK func_02021230(s32, s32);
-    u32 temp_ip;
-    u32 temp_r0;
+/* Set the two DNS server addresses from host-order IPv4 values: byte-swap each
+ * one to network order and store it for DnsLookupAddress. */
+void SetDnsServerAddressesFromHostOrder(u32 *server0, u32 *server1) {
+    M2C_UNK SetDnsServerAddresses(s32, s32);
+    u32 value1;
+    u32 value0;
 
-    temp_ip = *arg1;
-    temp_r0 = *arg0;
-    func_02021230(((temp_r0 << 0x18) & 0xFF000000) | (((temp_r0 << 8) & 0xFF0000) | ((u8) (temp_r0 >> 0x18) | ((temp_r0 >> 8) & 0xFF00))), ((temp_ip << 0x18) & 0xFF000000) | (((temp_ip << 8) & 0xFF0000) | ((u8) (temp_ip >> 0x18) | ((temp_ip >> 8) & 0xFF00))));
+    value1 = *server1;
+    value0 = *server0;
+    SetDnsServerAddresses(((value0 << 0x18) & 0xFF000000) | (((value0 << 8) & 0xFF0000) | ((u8) (value0 >> 0x18) | ((value0 >> 8) & 0xFF00))), ((value1 << 0x18) & 0xFF000000) | (((value1 << 8) & 0xFF0000) | ((u8) (value1 >> 0x18) | ((value1 >> 8) & 0xFF00))));
 }
 
 void func_02021960(void) {
@@ -378,11 +380,14 @@ if(v&0x80){n=v&0x7f;v=0;while(n--){if(v&0xff000000)return -1;v=*q+++(v<<8);}}
 *p=q;return v;
 }
 
-void func_020221ec(s8 *p,s8 *q,s32 n){
-s8 *start=p;
-if(*p){while(*++p){}if(p-start>=255)return;p[0]=',';p[1]=' ';p+=2;}
-while(n-- && p-start<255)*p++=*q++;
-*p=0;
+/* Append `length` bytes of `name` to the comma-separated name list in `list`
+ * (adding ", " first when the list is not empty), truncating the list to 255
+ * bytes and terminating it with NUL. */
+void AppendCommaSeparatedName(s8 *list,s8 *name,s32 length){
+s8 *start=list;
+if(*list){while(*++list){}if(list-start>=255)return;list[0]=',';list[1]=' ';list+=2;}
+while(length-- && list-start<255)*list++=*name++;
+*list=0;
 }
 
 /* Parses an ASN.1 time ("YYMMDD..." for UTCTime, "YYYYMMDD..." for

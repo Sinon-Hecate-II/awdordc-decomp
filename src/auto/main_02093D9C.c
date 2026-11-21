@@ -192,29 +192,32 @@ s32 func_02094110(void *arg0) {
     return 1;
 }
 
-s32 func_02094130(void *arg0) {
+/* Map-script command: show the UI message whose text id is at +0x0C of the
+ * command, in the message-box style at +0x08 (0..2), unless a message box is
+ * already active; then advance the script. */
+s32 ScriptCmd_ShowMessage(void *script) {
     M2C_UNK ShowUiMessage(s32);
     M2C_UNK func_02096b6c(s32);
     M2C_UNK func_02096b88(s32);
-    s16 temp_r0;
-    void *temp_r1;
+    s16 style;
+    void *command;
 
-    if (func_0209600c() == 0) {
-        temp_r1 = M2C_FIELD(arg0, void **, 4);
-        temp_r0 = M2C_FIELD(temp_r1, s16 *, 8);
-        switch (temp_r0) {                          /* irregular */
+    if (IsMessageBoxActive() == 0) {
+        command = M2C_FIELD(script, void **, 4);
+        style = M2C_FIELD(command, s16 *, 8);
+        switch (style) {                          /* irregular */
         case 0:
-            ShowUiMessage(M2C_FIELD(temp_r1, s32 *, 0xC));
+            ShowUiMessage(M2C_FIELD(command, s32 *, 0xC));
             break;
         case 1:
-            func_02096b6c(M2C_FIELD(temp_r1, s32 *, 0xC));
+            func_02096b6c(M2C_FIELD(command, s32 *, 0xC));
             break;
         case 2:
-            func_02096b88(M2C_FIELD(temp_r1, s32 *, 0xC));
+            func_02096b88(M2C_FIELD(command, s32 *, 0xC));
             break;
         }
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 0;
 }
 
@@ -255,10 +258,10 @@ s32 func_02094214(void *arg0) {
 }
 
 s32 func_020942b0(void *arg0) {
-    M2C_UNK func_0209600c();
+    M2C_UNK IsMessageBoxActive();
     s32 temp_r0;
 
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         do {
             temp_r0 = *M2C_FIELD(arg0, s32 **, 4);
             switch (temp_r0) {
@@ -282,24 +285,24 @@ s32 func_02094310(void *arg0) {
 }
 
 s32 func_02094324(void *arg0) {
-    if (func_0209600c() != 0) {
-        func_02095ff8(0);
+    if (IsMessageBoxActive() != 0) {
+        SetMessageBoxState(0);
     }
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
 
 s32 func_02094354(void *arg0) {
-    if (func_0209600c() == 0) {
-        func_02095ff8(0);
+    if (IsMessageBoxActive() == 0) {
+        SetMessageBoxState(0);
     }
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
 
 s32 func_02094384(void *arg0) {
-    M2C_UNK func_02095ff8(M2C_UNK);
-    func_02095ff8(3);
+    M2C_UNK SetMessageBoxState(M2C_UNK);
+    SetMessageBoxState(3);
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -610,9 +613,9 @@ void UpdateDialogSequences(void) {
 }
 
 void func_02094a74(M2C_UNK arg0) {
-    s32 func_0209600c();
+    s32 IsMessageBoxActive();
     M2C_UNK ShowScenePanel(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     ShowScenePanel(arg0);
@@ -623,7 +626,7 @@ void func_02094a94(s32 arg0) {
     M2C_UNK HideScenePanel(s32);
     s32 var_r4;
 
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         var_r4 = 0;
         do {
             if (M2C_FIELD(GetScenePanelState(var_r4), s16 *, 8) != 0) {
@@ -640,16 +643,16 @@ void func_02094a94(s32 arg0) {
 }
 
 void func_02094af8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02097214(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    M2C_UNK SetScenePanelFace(M2C_UNK, M2C_UNK, M2C_UNK);
+    if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_02097214(arg0, arg1, arg2);
+    SetScenePanelFace(arg0, arg1, arg2);
 }
 
 void func_02094b28(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02097aa8(M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_02097aa8(arg0, arg1);
@@ -657,7 +660,7 @@ void func_02094b28(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_02094b50(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02097178(M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_02097178(arg0, arg1);
@@ -665,7 +668,7 @@ void func_02094b50(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_020971c0(M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_020971c0(arg0, arg1);
@@ -673,7 +676,7 @@ void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
 
 void func_02094ba0(M2C_UNK arg0) {
     M2C_UNK ClearScenePanelRows(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     ClearScenePanelRows(arg0);
@@ -681,7 +684,7 @@ void func_02094ba0(M2C_UNK arg0) {
 
 void func_02094bc0(M2C_UNK arg0) {
     M2C_UNK ShowPanelFace(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     ShowPanelFace(arg0);
@@ -689,7 +692,7 @@ void func_02094bc0(M2C_UNK arg0) {
 
 void func_02094be0(M2C_UNK arg0) {
     M2C_UNK HidePanelFace(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     HidePanelFace(arg0);
@@ -697,7 +700,7 @@ void func_02094be0(M2C_UNK arg0) {
 
 void func_02094c00(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02097410(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_02097410(arg0, arg1, arg2, arg3);
@@ -705,7 +708,7 @@ void func_02094c00(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
 void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02097414(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_02097414(arg0, arg1, arg2);
@@ -713,7 +716,7 @@ void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_0209747c(M2C_UNK, M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_0209747c(arg0, arg1);
@@ -722,10 +725,10 @@ void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
 /* Builds a battle action entry for the given slot and submits it. */
 void func_02094c90(s32 slot, s32 arg1) {
  extern s32 gCur3DSpriteEngine;
- s32 func_0209600c(); s32 HighlightScenePanel(); s32 GetMenuCursor(); s32 func_02091e70();
+ s32 IsMessageBoxActive(); s32 HighlightScenePanel(); s32 GetMenuCursor(); s32 func_02091e70();
  void *GetScenePanelState(s32);
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
- if(func_0209600c()!=0)return;
+ if(IsMessageBoxActive()!=0)return;
  if(HighlightScenePanel(slot)!=1)return;
  HideMenuCursor(GetMenuCursor());
  if(GetMenuCursor()<0)return;

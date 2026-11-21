@@ -311,10 +311,13 @@ u8 func_ov000_021a911c(s32 a,s32 b,s32 c){
 extern void **gCurrentMap;u8 *p=*gCurrentMap;s32 n=(a>>6)+1;u8 r;
 if(n==(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)>>5))r=1;else r=0;return r;}
 
-u8 IsCellUnitOnSameArmy(s32 a,s32 b,s32 c){
-extern void **gCurrentMap;u8 *p=*gCurrentMap;
-s32 v=M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x508);u8 r;if(!v)return 0;
-if(M2C_FIELD(p+a*0x8c,u8 *,0x67ca)==M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67ca))r=1;else r=0;return r;}
+/* Whether the unit standing on cell (x, y) belongs to player `player`: both are
+ * compared by their army (nation) id, so allied players count as the same army.
+ * False when the cell is empty. */
+u8 IsCellUnitOnSameArmy(s32 player,s32 x,s32 y){
+extern void **gCurrentMap;u8 *map=*gCurrentMap;
+s32 unitId=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_UNIT_ID);u8 same;if(!unitId)return 0;
+if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF)==M2C_FIELD(map+((unitId>>6)+1)*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF))same=1;else same=0;return same;}
 
 s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case 22:return 1;default:return 0;}}
 

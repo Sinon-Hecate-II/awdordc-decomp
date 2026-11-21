@@ -15,35 +15,35 @@ void func_0200bda4(s32 arg0) {
     s32 func_0200bd9c(void);
     s32 func_0200bd94(void);
     s32 func_0200bd20(void);
-    s32 func_0200bd28(s32, s32);
+    s32 CardArchiveCommand(s32, s32);
     s32 func_0200bcd8(s32, s32, s32, s32);
-    extern M2C_UNK data_0212fbfc;
+    extern M2C_UNK gCardArchiveWork;
     extern M2C_UNK data_0212fc14;
     extern u32 data_020f5220;
     register u32 *base = (u32 *)0x27ffc40;
 
-    M2C_FIELD(&data_0212fbfc, s32 *, 4) = arg0;
-    M2C_FIELD(&data_0212fbfc, s32 *, 0) = OS_GetLockID();
-    M2C_FIELD(&data_0212fbfc, s32 *, 8) = 0;
-    M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
-    M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = 0;
-    M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
+    M2C_FIELD(&gCardArchiveWork, s32 *, 4) = arg0;
+    M2C_FIELD(&gCardArchiveWork, s32 *, 0) = OS_GetLockID();
+    M2C_FIELD(&gCardArchiveWork, s32 *, 8) = 0;
+    M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
+    M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = 0;
+    M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
     func_02010c14();
     func_0200b118(&data_0212fc14);
     RegisterArchiveName(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
 
     if (M2C_FIELD(base, u16 *, 0) == 2) {
-        M2C_FIELD(&data_0212fbfc, s32 *, 8) = -1;
-        M2C_FIELD(&data_0212fbfc, s32 *, 0xc) = 0;
-        M2C_FIELD(&data_0212fbfc, s32 *, 0x10) = -1;
-        M2C_FIELD(&data_0212fbfc, s32 *, 0x14) = 0;
+        M2C_FIELD(&gCardArchiveWork, s32 *, 8) = -1;
+        M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
+        M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = -1;
+        M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
         func_0200b6a8(&data_0212fc14, (s32)func_0200bd9c, -1);
         ConfigureArchiveLayout(&data_0212fc14, 0, 0, 0, 0, 0,
                       (void *)func_0200bd94, (void *)func_0200bd20);
         return;
     }
 
-    func_0200b6a8(&data_0212fc14, (s32)func_0200bd28, 0x602);
+    func_0200b6a8(&data_0212fc14, (s32)CardArchiveCommand, 0x602);
 
     {
         u32 v0 = base[0x80];

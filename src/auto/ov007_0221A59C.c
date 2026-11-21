@@ -105,7 +105,7 @@ void MapEditor_FitPreviewToMap(void) {
 
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Clear3DSpriteLayer(2);
-    func_020c12f8(DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[2], DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[2], 1, 14);
+    DrawMapPreviewLayer(DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[2], DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[2], 1, 14);
     map = *gCurrentMap;
     width = M2C_FIELD(map, u16 *, MAP_WIDTH);
     height = M2C_FIELD(map, u16 *, MAP_HEIGHT);

@@ -59,6 +59,8 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
+#define WH_CONN_USER_INFO_CB 0x13AC /* s32 (*)(void *userInfo, void *connection): fills the user-info block and returns the WFC user type */
+#define WH_CONN_USER_INFO    0x13C0 /* user-info block handed to WFC_SubmitUserInfo */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
 #define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */
 #define WH_CHILD_RATIO  0x5e /* u16: best (lowest) ratio a child scan reported so far, 101 = none */

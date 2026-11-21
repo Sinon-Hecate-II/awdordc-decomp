@@ -334,30 +334,33 @@ s32 TlsAppendRecordMac(void *channel, u8 *msg) {
     return length + 5;
 }
 
-s32 ReceiveExactBytes(s32 arg0, u32 arg1, M2C_UNK arg2) {
+/* Read exactly `length` bytes from `connection` into `dest`: copy each received
+ * chunk (no more than is still missing), consume it and repeat; returns -1 when
+ * the connection stops delivering data. */
+s32 ReceiveExactBytes(s32 dest, u32 length, M2C_UNK connection) {
     M2C_UNK MI_CpuCopy8(s32, s32, u32);
     s32 PeekReceivedData(u32 *, M2C_UNK);
     M2C_UNK ConsumeReceivedData(u32, M2C_UNK);
-    u32 sp0;
-    s32 temp_r0;
-    s32 var_r7;
-    u32 var_r6;
+    u32 available;
+    s32 chunk;
+    s32 writePtr;
+    u32 remaining;
 
-    var_r7 = arg0;
-    var_r6 = arg1;
+    writePtr = dest;
+    remaining = length;
 loop_1:
-    temp_r0 = PeekReceivedData(&sp0, arg2);
-    if (sp0 == 0) {
+    chunk = PeekReceivedData(&available, connection);
+    if (available == 0) {
         return -1;
     }
-    if (sp0 > var_r6) {
-        sp0 = var_r6;
+    if (available > remaining) {
+        available = remaining;
     }
-    MI_CpuCopy8(temp_r0, var_r7, sp0);
-    ConsumeReceivedData(sp0, arg2);
-    var_r6 -= sp0;
-    var_r7 += sp0;
-    if ((s32) var_r6 <= 0) {
+    MI_CpuCopy8(chunk, writePtr, available);
+    ConsumeReceivedData(available, connection);
+    remaining -= available;
+    writePtr += available;
+    if ((s32) remaining <= 0) {
         return 0;
     }
     goto loop_1;

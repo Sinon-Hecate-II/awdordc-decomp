@@ -29,41 +29,41 @@ void func_02004078(s32 arg0,s32 arg1) {
 }
 
 void GX_LoadBGPltt(M2C_UNK arg0,s32 arg1,u32 arg2) {
- M2C_UNK func_02007a74(s32,M2C_UNK,s32,u32);
+ M2C_UNK DmaCopy16(s32,M2C_UNK,s32,u32);
  M2C_UNK CopyU16(M2C_UNK,s32,u32);
  extern s32 gGxDmaChannel;
- if(gGxDmaChannel!=-1&&arg2>0x1CU){func_02007a74(gGxDmaChannel,arg0,arg1+0x05000000,arg2);return;}
+ if(gGxDmaChannel!=-1&&arg2>0x1CU){DmaCopy16(gGxDmaChannel,arg0,arg1+0x05000000,arg2);return;}
  CopyU16(arg0,arg1+0x05000000,arg2);
 }
 
 void func_02004108(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000400, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000400, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000400, arg2);
 }
 
 void GX_LoadOBJPltt(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000200, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000200, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000200, arg2);
 }
 
 void func_020041b8(M2C_UNK arg0, s32 arg1, u32 arg2) {
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        func_02007a74(gGxDmaChannel, arg0, arg1 + 0x05000600, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000600, arg2);
         return;
     }
     CopyU16(arg0, arg1 + 0x05000600, arg2);
@@ -122,14 +122,14 @@ void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036b8();
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_020036b8();
     if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -137,14 +137,14 @@ void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void GX_LoadBG1Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_020036d8();
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_020036d8();
     if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -152,14 +152,14 @@ void GX_LoadBG1Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 func_0200370c();
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = func_0200370c();
     if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -167,14 +167,14 @@ void func_0200442c(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 GX_GetBG2ScrPtr();
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = GX_GetBG2ScrPtr();
     if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -182,14 +182,14 @@ void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
 
 void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
     s32 GX_GetBG3ScrPtr();
-    M2C_UNK func_02007a74(s32, M2C_UNK, s32, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     s32 temp_ip;
 
     temp_ip = GX_GetBG3ScrPtr();
     if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        func_02007a74(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
         return;
     }
     CopyU16(arg0, temp_ip + arg1, arg2);
@@ -400,7 +400,7 @@ void GX_EndLoadOBJExtPlttSub(void) {
 void func_02004b54(void) {
     s32 func_020033b8(void);
     extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
-    extern M2C_UNK data_0212dbfc;
+    extern M2C_UNK gGxTexLoad;
     s32 idx;
     u32 a, b, c;
 
@@ -408,10 +408,10 @@ void func_02004b54(void) {
     a = *(volatile u16 *)(data_020e9b40 + idx * 6);
     b = *(volatile u16 *)(data_020e9b42 + idx * 6);
     c = *(volatile u16 *)(data_020e9b44 + idx * 6);
-    M2C_FIELD(&data_0212dbfc, s32 *, 0x14) = idx;
-    M2C_FIELD(&data_0212dbfc, s32 *, 4) = a << 12;
-    M2C_FIELD(&data_0212dbfc, s32 *, 0x18) = b << 12;
-    M2C_FIELD(&data_0212dbfc, s32 *, 0x1c) = c << 12;
+    M2C_FIELD(&gGxTexLoad, s32 *, 0x14) = idx;
+    M2C_FIELD(&gGxTexLoad, s32 *, 4) = a << 12;
+    M2C_FIELD(&gGxTexLoad, s32 *, 0x18) = b << 12;
+    M2C_FIELD(&gGxTexLoad, s32 *, 0x1c) = c << 12;
 }
 
 /* Copy `size` bytes from `src` to the texture-bank region at byte `offset`.
@@ -422,9 +422,9 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK data_0212dbfc;
+    extern M2C_UNK gGxTexLoad;
 
-    M2C_UNK *bank = &data_0212dbfc;
+    M2C_UNK *bank = &gGxTexLoad;
     s32 base2 = M2C_FIELD(bank, s32 *, 0x18);
     u32 ofs = offset;
     u32 n = size;
@@ -468,49 +468,53 @@ void func_02004cf0(void) {
     M2C_UNK GX_SetBankForTex(s32);
     M2C_UNK DmaWaitChannel(s32);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK data_0212dbfc;
+    extern M2C_UNK gGxTexLoad;
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForTex(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14));
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x1C) = 0;
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x18) = 0;
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x4) = 0;
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x14) = 0;
+    GX_SetBankForTex(M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x14));
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x1C) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x18) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x4) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x14) = 0;
 }
 
 void func_02004d3c(void) {
- s32 GX_ReleaseBankForOBJExtPltt(); extern M2C_UNK data_020e9b30; extern M2C_UNK data_0212dbfc;
+ s32 GX_ReleaseBankForOBJExtPltt(); extern M2C_UNK data_020e9b30; extern M2C_UNK gGxTexLoad;
  s32 state=GX_ReleaseBankForOBJExtPltt();
  u32 base=((u16*)&data_020e9b30)[state>>4];
- M2C_FIELD(&data_0212dbfc,s32*,12)=state;
- M2C_FIELD(&data_0212dbfc,u32*,8)=base<<12;
+ M2C_FIELD(&gGxTexLoad,s32*,12)=state;
+ M2C_FIELD(&gGxTexLoad,u32*,8)=base<<12;
 }
 
-void func_02004d70(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Copy `size` bytes of texture-palette data from `src` into the main-engine 3D
+ * texture palette at byte `offset`.  GX_BeginLoadTexPltt left the palette area's
+ * VRAM base in gGxTexLoad; the copy runs through the GX DMA channel when one is
+ * owned and on the CPU otherwise. */
+void GX_LoadTexPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK data_0212dbfc;
-    s32 v8 = M2C_FIELD(&data_0212dbfc, s32 *, 0x8);
+    extern M2C_UNK gGxTexLoad;
+    s32 paletteBase = M2C_FIELD(&gGxTexLoad, s32 *, GX_TEXLOAD_TEXPLTT_BASE);
     if (gGxDmaChannel != -1) {
-        DmaCopyAsync(gGxDmaChannel, arg0, v8 + (s32)arg1, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, src, paletteBase + (s32)offset, size, 0, 0);
         return;
     }
-    MIi_CpuCopy32(arg0, v8 + (s32)arg1, (u32)arg2);
+    MIi_CpuCopy32(src, paletteBase + (s32)offset, (u32)size);
 }
 
 void func_02004ddc(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     extern s32 gGxDmaChannel;
-    extern M2C_UNK data_0212dbfc;
+    extern M2C_UNK gGxTexLoad;
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForOBJExtPltt(M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc));
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0xc) = 0;
-    M2C_FIELD(&data_0212dbfc, M2C_UNK *, 0x8) = 0;
+    GX_SetBankForOBJExtPltt(M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0xc));
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0xc) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x8) = 0;
 }
 
 typedef u32 Block3[3];

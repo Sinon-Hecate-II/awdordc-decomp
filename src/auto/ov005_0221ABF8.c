@@ -152,25 +152,27 @@ void ResultScoreRow_CountUp(void *row) {
 void func_ov005_0221b000(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
-    extern M2C_UNK data_ov005_02220d50;
-    func_020aad18(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38));
+    extern M2C_UNK gResultsScreenClass;
+    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38));
 }
 
-void func_ov005_0221b01c(void *arg0) {
+/* Results-screen dismiss step: once the player presses A, play the dismiss
+ * sound, hide the results page sprite's OAM cell and resume the animation. */
+void ResultScreenDismissStep(void *sprite) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK RemoveSpriteCell(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
-    extern M2C_UNK data_ov005_02220d50;
-    void *object;
-    u8 active;
-    if (!(*gKeyState & 1)) return;
+    extern M2C_UNK gResultsScreenClass;
+    void *unitSprite;
+    u8 visible;
+    if (!(*gKeyState & KEY_A)) return;
     PlaySoundEffect(0x1000D);
-    object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
-    active = M2C_FIELD(object, u8 *, 0x12) != 0;
-    if (active) RemoveSpriteCell(object, 1);
-    Sprite_ResumeAnimation(arg0);
+    unitSprite = M2C_FIELD(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), void **, 0x38), void **, 0x64);
+    visible = M2C_FIELD(unitSprite, u8 *, 0x12) != 0;
+    if (visible) RemoveSpriteCell(unitSprite, 1);
+    Sprite_ResumeAnimation(sprite);
 }
 
 /* Slides a results-screen score row back out to the right over
@@ -279,27 +281,32 @@ void func_ov005_0221b430(void) {
     ResultScoreRow_CountUp();
 }
 
-void func_ov005_0221b43c(s32 arg0) {
+/* Create the result screen's slide transition object: a slide of the slide class
+ * under the owner's parent, with the slide vtable and a back pointer to the owner
+ * (whose child count it raises), its timer/Y/active fields set, and the page
+ * sprite it slides taken from the results screen.  Does nothing when the sprite
+ * cannot be allocated. */
+void CreateResultSlideObject(void *owner) {
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK IncrementSpriteChildCount(s32);
-    s32 func_01ffaa7c();
-    extern M2C_UNK data_ov005_02220b00;
-    extern M2C_UNK data_ov005_02220d50;
-    extern M2C_UNK data_ov005_02220fb8;
-    void *temp_r0;
+    u32 GetSpriteParent(void *);
+    extern M2C_UNK gResultSlideAnimScript;
+    extern M2C_UNK gResultsScreenClass;
+    extern M2C_UNK gResultSlideSpriteVtbl;
+    void *slide;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov005_02220b00, func_01ffaa7c());
-    if (temp_r0 == NULL) {
+    slide = CreateSpriteFromClass(&gResultSlideAnimScript, GetSpriteParent(owner));
+    if (slide == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov005_02220fb8;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    IncrementSpriteChildCount(arg0);
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = 0x20;
-    M2C_FIELD(temp_r0, s8 *, 0x44) = 1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38);
+    M2C_FIELD(slide, M2C_UNK **, DS3D_SPRITE_CLASS) = &gResultSlideSpriteVtbl;
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_OWNER) = (s32) owner;
+    IncrementSpriteChildCount(owner);
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_TIMER) = 0;
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_Y) = 0x20;
+    M2C_FIELD(slide, s8 *, RESULT_SLIDE_ACTIVE) = 1;
+    M2C_FIELD(slide, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38);
 }
 
 void func_ov005_0221b4a8(void) {
@@ -308,8 +315,8 @@ void func_ov005_0221b4a8(void) {
 }
 
 void func_ov005_0221b4b4(void) {
-    void func_ov005_0221b01c();
-    func_ov005_0221b01c();
+    void ResultScreenDismissStep();
+    ResultScreenDismissStep();
 }
 
 void func_ov005_0221b4c0(void) {

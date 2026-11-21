@@ -35,19 +35,24 @@ success:
     return 1;
 }
 
+/* Free what ghiPostStateInit set up for one POST part: a disk-file part closes
+ * its open file handle and clears it.  String and in-memory parts need nothing,
+ * and any other part kind trips the assertion. */
 void ghiPostStateCleanup(void *arg0) {
- M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
- void CloseFileStream(s32);
- extern M2C_UNK data_020fd238, sAssertZero, sGhttpPostFile;
- s32 state = *M2C_FIELD(arg0, s32 **, 0);
- if(state == 0) return;
- if(state == 1) {
- if (M2C_FIELD(arg0,s32 *,8)) CloseFileStream(M2C_FIELD(arg0,s32 *,8));
- M2C_FIELD(arg0,s32 *,8)=0;
- return;
- }
- if(state == 2) return;
- AssertFailed(&sAssertZero,&sGhttpPostFile,&data_020fd238,0x269); return;
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+    void CloseFileStream(s32);
+    extern M2C_UNK sGhiPostStateCleanup, sAssertZero, sGhttpPostFile;
+    GHIPostState *part = (GHIPostState *)arg0;
+    s32 type = part->data->type;
+    if (type == GHIString) return;
+    if (type == GHIFile) {
+        if (part->file) CloseFileStream((s32)part->file);
+        part->file = 0;
+        return;
+    }
+    if (type == GHIFileMemory) return;
+    AssertFailed(&sAssertZero, &sGhttpPostFile, &sGhiPostStateCleanup, 0x269);
+    return;
 }
 
 s32 func_0204bad4(void *arg0) {

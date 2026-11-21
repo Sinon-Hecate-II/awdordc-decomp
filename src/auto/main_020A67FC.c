@@ -59,15 +59,17 @@ void func_020a694c(void) {
 
 }
 
-void MarkRepairNeighbour(s32 arg0, s32 arg1) {
+/* Mark the unit standing on map cell (x, y) as a repair neighbour by setting the
+ * repair scratch bit in its record; cells off the map are ignored. */
+void MarkRepairNeighbour(s32 x, s32 y) {
     extern void **gCurrentMap;
-    void *base;
-    void *p;
-    if (arg0 >= 0 && arg1 >= 0) {
-        base = *gCurrentMap;
-        if (arg0 < M2C_FIELD(base, u16 *, 0x5144) && arg1 < M2C_FIELD(base, u16 *, 0x5146)) {
-            p = (u8 *)base + 0x59A4 + M2C_FIELD(base, u8 *, arg0 + M2C_FIELD((u8 *)base + arg1 * 2, u16 *, 0x3758)) * 14;
-            if (p != 0) M2C_FIELD(p, u16 *, 4) |= 0x8000;
+    void *map;
+    void *unit;
+    if (x >= 0 && y >= 0) {
+        map = *gCurrentMap;
+        if (x < M2C_FIELD(map, u16 *, MAP_WIDTH) && y < M2C_FIELD(map, u16 *, MAP_HEIGHT)) {
+            unit = (u8 *)map + MAP_UNIT_RECORDS + M2C_FIELD(map, u8 *, x + M2C_FIELD((u8 *)map + y * 2, u16 *, MAP_ROW_OFFSETS)) * MAP_UNIT_STRIDE;
+            if (unit != 0) M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS) |= UNIT_FLAG_REPAIR_TMP;
         }
     }
 }

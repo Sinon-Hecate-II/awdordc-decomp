@@ -170,15 +170,18 @@ void RunAiKind5Action(void) {
     TagAiKind5TargetCells();
 }
 
-void func_ov000_02181ba4(void) {
+/* AI action for the selected unit: unless the map-175 override applies or the
+ * player's map flags forbid acting, put the cursor on the unit and issue AI
+ * command 22, which makes it produce its kind-17 cargo unit. */
+void RunAiProduceCargoAction(void) {
 extern void **gCurrentMap;
 M2C_UNK SetMapCursor(u8,u8,s32,s32,s32);
 void *p;
 if(IsAiMap175Player2Override()!=0)return;
 p=*gCurrentMap;
-if(func_020a8a14(M2C_FIELD(p,u16 *,0x5142),M2C_FIELD(p,u16 *,0x52a4)) & 0x40)return;
-p=M2C_FIELD(*gCurrentMap,void **,0x52d0);
-SetMapCursor(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),0x16,0,0);
+if(GetMapPlayerFlags(M2C_FIELD(p,u16 *,MAP_ID),M2C_FIELD(p,u16 *,MAP_CURRENT_PLAYER)) & 0x40)return;
+p=M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT);
+SetMapCursor(M2C_FIELD(p,u8 *,MAP_UNIT_X),M2C_FIELD(p,u8 *,MAP_UNIT_Y),0x16,0,0);
 }
 
 /* Run the AI's CO power action: skip it if the acting unit has an attack target;

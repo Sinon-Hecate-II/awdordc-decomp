@@ -133,7 +133,7 @@ void func_ov010_02226130(void) {
 s32 SubmitWebRegisterRequest(void) {
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     void ClearWebRequestError(void);
-    u8 *func_020c4acc();
+    u8 *GetProfileSaveBlock();
     s32 RegisterWebRequest(M2C_UNK *, u8 *);
     M2C_UNK SetWebRequestError(M2C_UNK);
     M2C_UNK **CreateSpriteFromClass(M2C_UNK *, s32);
@@ -148,7 +148,7 @@ s32 SubmitWebRegisterRequest(void) {
     success = 1;
     if (IsOnlineSessionFlagSet(5) != 0) return 1;
     ClearWebRequestError();
-    status = RegisterWebRequest(&sOv010NasRegisterRequest, func_020c4acc() + 4);
+    status = RegisterWebRequest(&sOv010NasRegisterRequest, GetProfileSaveBlock() + 4);
     switch (status) {
     case 0:
         break;
@@ -442,55 +442,63 @@ void func_ov010_02226738(void) {
     func_02045a88();
 }
 
-s32 func_ov010_02226744(void) {
- s32 GetWebResponsePlayerTotal(s32 *);
- s32 sp0, temp_r0, var_r4;
- var_r4 = -1;
- temp_r0 = GetWebResponsePlayerTotal(&sp0);
- switch(temp_r0) {
- case 0: var_r4 = sp0; break;
- case 1: break;
- case 2: break;
- case 15: break;
- case 16: break;
- case 17: break;
- }
- if(temp_r0 != 0) SetWebRequestError(temp_r0);
- return var_r4;
+/* Number of online players (the player records) reported by the last web
+ * response; -1 when the response is not usable, and its status is then recorded
+ * as the web error. */
+s32 GetOnlinePlayerTotal(void) {
+    s32 GetWebResponsePlayerTotal(s32 *);
+    s32 total, status, result;
+    result = -1;
+    status = GetWebResponsePlayerTotal(&total);
+    switch (status) {
+    case 0: result = total; break;
+    case 1: break;
+    case 2: break;
+    case 15: break;
+    case 16: break;
+    case 17: break;
+    }
+    if (status != 0) SetWebRequestError(status);
+    return result;
 }
 
-s32 func_ov010_022267b0(M2C_UNK arg0, M2C_UNK arg1) {
+/* Read player record `index` of the last get.asp reply into `entry`: returns 1
+ * when it was read, 0 otherwise, recording any nonzero status as the web error. */
+s32 Ov010_GetWebPlayerEntry(s32 index, s32 *entry) {
  s32 GetWebResponsePlayer(M2C_UNK, M2C_UNK);
- s32 temp_r0, var_r4;
- var_r4 = 0;
- temp_r0 = GetWebResponsePlayer(arg1,arg0);
- switch(temp_r0) {
- case 0: var_r4 = 1; break;
+ s32 status, found;
+ found = 0;
+ status = GetWebResponsePlayer(entry,index);
+ switch(status) {
+ case 0: found = 1; break;
  case 1: break;
  case 2: break;
  case 15: break;
  case 16: break;
  case 17: break;
  }
- if(temp_r0 != 0) SetWebRequestError(temp_r0);
- return var_r4;
+ if(status != 0) SetWebRequestError(status);
+ return found;
 }
 
-s32 func_ov010_0222681c(void) {
+/* Read the number of players online from the current web response: return the
+ * count when the read succeeds (status 0), otherwise -1, recording the read's
+ * status as the web error. */
+s32 GetOnlinePlayerCount(void) {
  s32 func_02045c34(s32 *);
- s32 sp0, temp_r0, var_r4;
- var_r4 = -1;
- temp_r0 = func_02045c34(&sp0);
- switch(temp_r0) {
- case 0: var_r4 = sp0; break;
+ s32 count, status, result;
+ result = -1;
+ status = func_02045c34(&count);
+ switch(status) {
+ case 0: result = count; break;
  case 1: break;
  case 2: break;
  case 15: break;
  case 16: break;
  case 17: break;
  }
- if(temp_r0 != 0) SetWebRequestError(temp_r0);
- return var_r4;
+ if(status != 0) SetWebRequestError(status);
+ return result;
 }
 
 s32 func_ov010_02226888(void) {

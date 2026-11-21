@@ -262,7 +262,7 @@ void InitBattleMapConfig(void) {
     extern void **gCurrentMap;
     extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
-    s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 func_020a8a14(s32,s32);
+    s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 GetMapPlayerFlags(s32,s32);
     void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
     s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 func_020a89a4(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
     void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
@@ -276,7 +276,7 @@ void InitBattleMapConfig(void) {
         value = func_020a8a30(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         fieldA = func_020a8a68(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         fieldB = func_020a8a4c(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
-        playerFlags = func_020a8a14(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        playerFlags = GetMapPlayerFlags(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         switch (value) {
         case 0: SetPlayerCoId(player, 0); break;
         case 15: break;

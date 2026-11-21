@@ -157,7 +157,7 @@ void UpdateTextObject(TextState *st) {
     s32 func_020952a4(void);
     s32 func_020953e8(void);
     s32 func_0209546c(void);
-    void func_02095ff8(s8);
+    void SetMessageBoxState(s8);
     s32 func_02096038(void);
     s32 HideAllScenePanels(void);
     s32 IsAnyScenePanelAnimating(void);
@@ -193,7 +193,7 @@ void UpdateTextObject(TextState *st) {
     }
 
     if (st->speed >= 1 && func_02096038()) {
-        if (actionMask & 0x400) func_02095ff8(1);
+        if (actionMask & 0x400) SetMessageBoxState(1);
         if ((actionMask & 0x30) && st->linePixel != st->lineStart)
             StopTextObject((s32)st);
     }
@@ -239,8 +239,8 @@ void UpdateTextObject(TextState *st) {
 }
 
 void func_0209b084(void *entity) {
-    s32 func_02095fe8(void);
-    void func_02095ff8(s8);
+    s32 GetMessageBoxState(void);
+    void SetMessageBoxState(s8);
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     void Clear3DSpriteLayer(u8);
     void func_02095fc0(void);
@@ -251,10 +251,10 @@ void func_0209b084(void *entity) {
     s32 saved;
     s32 i;
 
-    if (func_02095fe8() == 3) {
-        func_02095ff8(0);
-        if (func_02095fe8() == 2) {
-            func_02095ff8(0);
+    if (GetMessageBoxState() == 3) {
+        SetMessageBoxState(0);
+        if (GetMessageBoxState() == 2) {
+            SetMessageBoxState(0);
         }
     }
     DeleteSpriteObjectsOfClass(&data_02102eac);

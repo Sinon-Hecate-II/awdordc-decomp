@@ -97,8 +97,16 @@ typedef struct GpiPlayer {
     u16 pad16;
     s32 keyValues;  /* +0x18 table of the record's interned key/value strings */
     s32 ping;       /* +0x1C while queued the time the query was sent, then the round-trip time in ms */
-    s32 next;       /* +0x20 next removed server on the browser's free list */
+    struct GpiPlayer *next; /* +0x20 query-queue link, or next removed server on the browser's free list */
 } GpiPlayer; /* 0x24 bytes */
+
+/* A queue of GpiPlayer records chained through GpiPlayer.next: the browser's
+ * lists of in-flight (SB_LIST_REQUESTS) and waiting (SB_LIST_WAITING) queries. */
+typedef struct QueryQueue {
+    GpiPlayer *head; /* +0x00 first queued record */
+    GpiPlayer *tail; /* +0x04 last queued record */
+    s32 count;       /* +0x08 records queued */
+} QueryQueue;
 
 /* The in-flight detail queries are kept in the SB_LIST_REQUESTS queue (a
  * GpiPlayer chain through GpiPlayer.next) while their reply is awaited.  A query

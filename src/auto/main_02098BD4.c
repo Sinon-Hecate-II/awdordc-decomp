@@ -258,7 +258,7 @@ void SetFaceSpriteActive(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5C) = arg1;
 }
 
-void func_020991fc(void *arg0, s8 arg1) {
+void SetFaceSpritePalette(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x5D) = arg1;
 }
 
@@ -558,10 +558,10 @@ if(x)x+=arg3;if(y)y+=a;if(z)z+=b;if(w)w+=c;
 }
 #pragma opt_common_subs reset
 u8 func_020999b8(void *arg0) {
-    s32 func_0209600c();
+    s32 IsMessageBoxActive();
     u8 var_r0;
 
-    if (func_0209600c() == 0) {
+    if (IsMessageBoxActive() == 0) {
         return 0U;
     }
     if (M2C_FIELD(arg0, u8 *, 0x5C) & 1) {

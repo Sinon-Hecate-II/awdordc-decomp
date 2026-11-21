@@ -50,7 +50,7 @@ void func_02017158(void *arg0) {
     s32 func_02016840(void);
     void Mb_CancelLink(void *);
     void DC_InvalidateRange(void *, s32);
-    void func_02007a74(u16, void *, void *, s32);
+    void DmaCopy16(u16, void *, void *, s32);
     void CopyU16(void *, void *, s32);
     void *event;
     u8 *base;
@@ -96,7 +96,7 @@ void func_02017158(void *arg0) {
                     M2C_FIELD(records+i*0x180,u16 *,0xf6)=M2C_FIELD(event,u16 *,0x36);
                     M2C_FIELD(records+i*0x180,DispatchBlock171 *,0xf8)=M2C_FIELD(event,DispatchBlock171 *,0x38);
                     DC_InvalidateRange(base+0x600+i*0x180,0xc0);
-                    func_02007a74(M2C_FIELD(&gMbState,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
+                    DmaCopy16(M2C_FIELD(&gMbState,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
                     M2C_FIELD(base,s32 *,0x5ec)=i;
                     goto found;
                 }
@@ -105,7 +105,7 @@ void func_02017158(void *arg0) {
                 M2C_FIELD(base+0x500,u16 *,0xe0)=i+1;
                 CopyU16(event,records+i*0x180+0xc0,0xb8);
                 DC_InvalidateRange(base+0x600+i*0x180,0xc0);
-                func_02007a74(M2C_FIELD(&gMbState,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
+                DmaCopy16(M2C_FIELD(&gMbState,u16 *,0),base+0x440,base+0x600+i*0x180,0xc0);
                 M2C_FIELD(base,s32 *,0x5ec)=i;
             }
 found:

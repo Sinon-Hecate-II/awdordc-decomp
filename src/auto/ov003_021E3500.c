@@ -135,7 +135,7 @@ void func_ov003_021e3714(void *arg0) {
     void ClearTileRect(u16 *, s32, s32);
     void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     void Clear3DSpriteLayer(void);
-    void func_020c12f8(s32, M2C_UNK, s32, s32);
+    void DrawMapPreviewLayer(s32, M2C_UNK, s32, s32);
     s32 func_020c1878(void *);
 
     extern void **gCurrentMap;
@@ -203,7 +203,7 @@ void func_ov003_021e3714(void *arg0) {
 
     b1 = *(u8 *)((u8 *)arg0 + 0x60);
     mul = (((u32)(b1 << 28) >> 30) * 0x142) + 1;
-    func_020c12f8(M2C_FIELD(eng,s32 *,0x0c), M2C_FIELD(eng,s32 *,0x20), mul, 5);
+    DrawMapPreviewLayer(M2C_FIELD(eng,s32 *,0x0c), M2C_FIELD(eng,s32 *,0x20), mul, 5);
 
     ((PreviewBits *)((u8 *)arg0+0x60))->bank = (u8)(!((PreviewBits *)((u8 *)arg0+0x60))->bank);
 

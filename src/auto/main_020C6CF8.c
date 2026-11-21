@@ -56,7 +56,7 @@ void func_020c6dec(void) {
 s32 CanSelectCursorUnit(void) {
 extern void **gCurrentMap; extern u16 gMapConfig;
 s32 IsUnitSelected(void *);s32 func_020cf908(s32,s32,s32,s32);
-s32 func_020a8a14(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
+s32 GetMapPlayerFlags(s32,s32);s32 GetPlayerSelectedUnit(s32);s32 func_020a3150(s32);
 s32 func_020a88e8(s32);s32 GetPlayerCommanderId(s32);s32 func_020a735c(void *);
 s32 func_020a2788(s32,s32);s32 GetUnitActionCost(s32,s32);
 u8 *map; s32 value; s32 unitKind; s32 player;
@@ -67,7 +67,7 @@ if(IsUnitSelected(M2C_FIELD(map,void **,MAP_CURSOR_UNIT)))return 2;
 map=*gCurrentMap;
 if(!func_020cf908(M2C_FIELD(map,s16 *,MAP_CURSOR_X),M2C_FIELD(map,s16 *,MAP_CURSOR_Y),M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER),(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,0)<<26)>>26))return 2;
 map=*gCurrentMap;
-if(func_020a8a14(M2C_FIELD(map,u16 *,MAP_ID),M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))&64)return 2;
+if(GetMapPlayerFlags(M2C_FIELD(map,u16 *,MAP_ID),M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))&64)return 2;
 map=*gCurrentMap;player=M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER);
 if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,Bits020a8c10 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE).value==0)return 2;
 if(GetPlayerSelectedUnit(player))return 2;

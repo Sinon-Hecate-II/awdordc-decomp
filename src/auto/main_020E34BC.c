@@ -230,7 +230,7 @@ void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 void FillOnlinePlayerListFirstEntry(void *list) {
     s32 func_ov010_02226738(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 func_ov010_022267b0(s32, s32 *);
+    s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
     s32 entry[7];
     u8 *record;
@@ -241,7 +241,7 @@ void FillOnlinePlayerListFirstEntry(void *list) {
     }
 
     record = M2C_FIELD(list, u8 **, LIST_FIRST);
-    if (func_ov010_022267b0(0, entry) == 0) {
+    if (Ov010_GetWebPlayerEntry(0, entry) == 0) {
         return;
     }
 
@@ -324,9 +324,9 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
 void func_020e39d8(void *list) {
     s32 func_ov010_02226738(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 func_ov010_0222681c(void);
-    s32 func_ov010_02226744(void);
-    s32 func_ov010_022267b0(s32, s32 *);
+    s32 GetOnlinePlayerCount(void);
+    s32 GetOnlinePlayerTotal(void);
+    s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
     extern s32 gOnlinePlayerCount;
@@ -341,14 +341,14 @@ void func_020e39d8(void *list) {
         return;
     }
 
-    gOnlinePlayerCount = func_ov010_0222681c();
-    total = func_ov010_02226744();
+    gOnlinePlayerCount = GetOnlinePlayerCount();
+    total = GetOnlinePlayerTotal();
     count = 0;
     i = 0;
     node = M2C_FIELD(list, u8 **, 0x34);
 
     for (; i < total; i++) {
-        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
+        if (Ov010_GetWebPlayerEntry(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
             M2C_FIELD(node, s32 *, 0) = entry[0];
             M2C_FIELD(node, s32 *, 0x4) = entry[1];
             M2C_FIELD(node, s32 *, 0x8) = entry[2];
@@ -435,9 +435,9 @@ void CreateOnlinePlayerListUpToLimitNode(void *records, s32 limit, s32 *countPtr
 void func_020e3bf0(void *list) {
     s32 func_ov010_02226738(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 func_ov010_0222681c(void);
-    s32 func_ov010_02226744(void);
-    s32 func_ov010_022267b0(s32, s32 *);
+    s32 GetOnlinePlayerCount(void);
+    s32 GetOnlinePlayerTotal(void);
+    s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     s32 GetOnlineLocalPlayerId(void);
     void MI_CpuCopy8(s32, void *, s32);
     extern s32 gOnlinePlayerCount;
@@ -452,14 +452,14 @@ void func_020e3bf0(void *list) {
         return;
     }
 
-    gOnlinePlayerCount = func_ov010_0222681c();
-    total = func_ov010_02226744();
+    gOnlinePlayerCount = GetOnlinePlayerCount();
+    total = GetOnlinePlayerTotal();
     count = 0;
     i = 0;
     node = M2C_FIELD(list, u8 **, 0x34);
 
     for (; i < total; i++) {
-        if (func_ov010_022267b0(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
+        if (Ov010_GetWebPlayerEntry(i, entry) != 0 && entry[1] != GetOnlineLocalPlayerId()) {
             M2C_FIELD(node, s32 *, 0) = entry[0];
             M2C_FIELD(node, s32 *, 0x4) = entry[1];
             M2C_FIELD(node, s32 *, 0x8) = entry[2];
@@ -540,8 +540,8 @@ void CreateOnlinePlayerListNoLimitNode(void *records, s32 *countPtr, s32 owner) 
 void func_020e3e04(void *arg0) {
     s32 func_ov010_02226738(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 func_ov010_02226744(void);
-    s32 func_ov010_022267b0(s32, s32 *);
+    s32 GetOnlinePlayerTotal(void);
+    s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
     s32 sp[7];
     s32 total;
@@ -554,12 +554,12 @@ void func_020e3e04(void *arg0) {
         return;
     }
 
-    total = func_ov010_02226744();
+    total = GetOnlinePlayerTotal();
     count = 0;
     node_ptr = M2C_FIELD(arg0, u8 **, 0x34);
 
     for (i = 0; i < total; i++) {
-        if (func_ov010_022267b0(i, sp) != 0 && check_val(arg0, sp)) {
+        if (Ov010_GetWebPlayerEntry(i, sp) != 0 && check_val(arg0, sp)) {
             M2C_FIELD(node_ptr, s32 *, 0) = sp[0];
             M2C_FIELD(node_ptr, s32 *, 0x4) = sp[1];
             M2C_FIELD(node_ptr, s32 *, 0x8) = sp[2];
@@ -724,7 +724,7 @@ void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
 
 void func_020e4208(void *arg0) {
     s32 func_ov010_02226738(void);
-    s32 func_ov010_0222681c(void);
+    s32 GetOnlinePlayerCount(void);
     M2C_UNK SetSpriteAnimation(void *, s32);
     extern s32 gOnlinePlayerCount;
 
@@ -732,7 +732,7 @@ void func_020e4208(void *arg0) {
         SetSpriteAnimation(arg0, 1);
         return;
     }
-    gOnlinePlayerCount = func_ov010_0222681c();
+    gOnlinePlayerCount = GetOnlinePlayerCount();
 }
 
 /* Online player list refresh handler: when the server already told us how many

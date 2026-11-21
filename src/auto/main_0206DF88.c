@@ -62,12 +62,22 @@ void func_0206e2d8(void) {
     func_0206ce00();
 }
 
-s32 func_0206e2e4(u8 *p,s32 i) {
- u8 *q=p+5+i; u8 *end;
- if(*q>5) return 1; if(*q<5) return -1;
- q++; end=p+5+p[4];
- while(q<end) { if(*q!=0)return 1; q++; }
- i--; if(M2C_FIELD(p+i,u8 *,5)&1)return 1; return -1;
+/* Decide whether rounding a DecimalNumber at digit `i` rounds up (1) or down
+ * (-1): a digit above 5 rounds up and below 5 rounds down, while an exact 5
+ * rounds to even (up only when the preceding digit is odd), after checking that
+ * every following digit is zero. */
+s32 DecimalShouldRoundUp(u8 *p, s32 i) {
+    DecimalNumber *number = (DecimalNumber *)p;
+    u8 *q = number->digits + i;
+    u8 *end;
+    if (*q > 5) return 1;
+    if (*q < 5) return -1;
+    q++;
+    end = number->digits + number->length;
+    while (q < end) { if (*q != 0) return 1; q++; }
+    i--;
+    if (number->digits[i] & 1) return 1;
+    return -1;
 }
 
 #pragma opt_dead_code on
@@ -88,7 +98,7 @@ void func_0206e39c(void) {
 void RoundDecimalToDigits(u8 *p,s32 n) {
  s32 r;
  if(n<=0)return; if(n>=p[4])return;
- r=func_0206e2e4(p,n); p[4]=n; if(r<0)return;
+ r=DecimalShouldRoundUp(p,n); p[4]=n; if(r<0)return;
  DecimalIncrementDigits(p,n);
 }
 

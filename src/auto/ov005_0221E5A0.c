@@ -288,11 +288,11 @@ void func_ov005_0221f038(M2C_UNK arg0) {
     s32 func_02081070(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220a44;
     extern M2C_UNK data_ov005_02220a6c;
-    extern M2C_UNK data_ov005_02220d50;
+    extern M2C_UNK gResultsScreenClass;
     extern M2C_UNK data_ov005_02220fe0;
     void *temp_r0;
 
-    temp_r0 = CreateSpriteObject(&data_ov005_02220d50, arg0);
+    temp_r0 = CreateSpriteObject(&gResultsScreenClass, arg0);
     if (temp_r0 == NULL) {
         return;
     }

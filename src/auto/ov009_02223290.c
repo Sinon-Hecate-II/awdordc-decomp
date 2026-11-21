@@ -211,7 +211,7 @@ s8 GetLinkLocalPlayerId(void);
 void func_ov009_02224fec(s32,s32,s32,s32,u32,s32);
 void *func_ov009_0222132c(u32,s32);
 M2C_UNK MI_CpuFill8(void *,s32,s32);
-void func_ov009_02224d30(void *,u8,u8,u8,s32,u32,u16);
+void WriteLinkPacketHeader(void *,u8,u8,u8,s32,u32,u16);
 extern M2C_UNK gLinkActorClass,gLinkState,data_ov009_02226980,data_ov009_022269b0;
 u8 buffer[12]; void *task; u8 *p;s32 mask;u8 type;u32 size;u16 all;
 M2C_UNK (*callback)(u8,s32,u16);
@@ -239,7 +239,7 @@ node=func_ov009_0222132c(size+16,32);
 if(node==0){u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=irq;}
 else{
 MI_CpuFill8(node,0,16);
-func_ov009_02224d30(node+4,type,low,high,payload,size,all);
+WriteLinkPacketHeader(node+4,type,low,high,payload,size,all);
 if(M2C_FIELD(list,void **,4)==0){M2C_FIELD(list,void **,4)=node;M2C_FIELD(list,void **,0)=node;}
 else{M2C_FIELD(M2C_FIELD(list,void **,4),void **,0)=node;M2C_FIELD(list,void **,4)=node;}
 M2C_FIELD(list,s32 *,8)++;
@@ -252,7 +252,7 @@ node=func_ov009_0222132c(size+16,32);
 if(node==0){u16 old=*(volatile u16 *)0x04000208;*(volatile u16 *)0x04000208=irq;}
 else{
 MI_CpuFill8(node,0,16);
-func_ov009_02224d30(node+4,type,low,high,payload,size,all);
+WriteLinkPacketHeader(node+4,type,low,high,payload,size,all);
 if(M2C_FIELD(list,void **,4)==0){M2C_FIELD(list,void **,4)=node;M2C_FIELD(list,void **,0)=node;}
 else{M2C_FIELD(M2C_FIELD(list,void **,4),void **,0)=node;M2C_FIELD(list,void **,4)=node;}
 M2C_FIELD(list,s32 *,8)++;

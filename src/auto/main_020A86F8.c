@@ -136,7 +136,7 @@ u8 func_020a8a04(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 0x10);
 }
 
-u8 func_020a8a14(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,60);}
+u8 GetMapPlayerFlags(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,60);}
 
 u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,28);}
 

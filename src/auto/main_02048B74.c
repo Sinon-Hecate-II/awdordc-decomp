@@ -191,12 +191,14 @@ s32 TableLookup(HashTable *table,s32 data) {
  return Vector_GetItem(table->buckets[i],n);
 }
 
-void Vector_ForEach(void *p,s32 a,s32 b) {
+/* GameSpy hashtable.c TableMapSafe: run callback over every element of every
+ * bucket; a NULL callback is an assertion failure. */
+void TableMapSafe(HashTable *table, void (*callback)(s32, s32), s32 userData) {
 extern M2C_UNK sAssertFn,gHashtableFileName,sTableMapSafeName;
-void func_02048a9c(s32,s32,s32);
+void ArrayForEach(s32 *, void (*)(s32, s32), s32);
 s32 i;
-if(!a)AssertFailed(&sAssertFn,&gHashtableFileName,&sTableMapSafeName,0xb6);
-for(i=0;i<M2C_FIELD(p,s32 *,4);i++)func_02048a9c(M2C_FIELD(p,s32 **,0)[i],a,b);
+if(!callback)AssertFailed(&sAssertFn,&gHashtableFileName,&sTableMapSafeName,0xb6);
+for(i=0;i<table->nBuckets;i++)ArrayForEach((s32 *)table->buckets[i],callback,userData);
 }
 
 /* GameSpy hashtable.c TableMapSafe2: run `callback` over the elements of every

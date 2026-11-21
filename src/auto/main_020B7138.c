@@ -24,7 +24,7 @@ void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
 /* Rasterize a mode-selected line into the path grid, install its endpoint as
  * the next path cell, and spawn the entities along it. */
 void UpdateBeamEffect(void *task) {
-    M2C_UNK func_02076910(u32, u32);
+    M2C_UNK PinMapCellCorners(u32, u32);
     M2C_UNK PanMapViewToTile(u32, u32);
     M2C_UNK PlaySoundAtTile(M2C_UNK, u32, u32);
     s32 LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
@@ -49,7 +49,7 @@ void UpdateBeamEffect(void *task) {
     case 3:
 loop_8:
         if (y < (u32) M2C_FIELD(*gCurrentMap, u16 *, 0x5146)) {
-            func_02076910(x, y);
+            PinMapCellCorners(x, y);
             y += 1;
             goto loop_8;
         }
@@ -57,7 +57,7 @@ loop_8:
     case 0:
 loop_11:
         if ((x != 0) && (y < (u32) M2C_FIELD(*gCurrentMap, u16 *, 0x5146))) {
-            func_02076910(x, y);
+            PinMapCellCorners(x, y);
             x -= 1;
             y += 1;
             goto loop_11;
@@ -67,7 +67,7 @@ loop_11:
 loop_15:
         temp_r0 = *gCurrentMap;
         if ((x < (u32) M2C_FIELD(temp_r0, u16 *, 0x5144)) && (y < (u32) M2C_FIELD(temp_r0, u16 *, 0x5146))) {
-            func_02076910(x, y);
+            PinMapCellCorners(x, y);
             x += 1;
             y += 1;
             goto loop_15;

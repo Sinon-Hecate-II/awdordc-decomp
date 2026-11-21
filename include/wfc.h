@@ -19,6 +19,18 @@ enum {
     WFC_CALLBACKS_SIZE = 12,
     WFC_FRIENDS_SIZE = 3352
 };
+/* The WFC control block (Wfc_GetWorkBlock(WFC_WORK_CONTROL)) records the progress
+ * and result of one connection attempt: the session state, the result of the last
+ * step, the network check's outcome and the friend it was made for. */
+#define WFC_CONTROL_MASK         0x08 /* u8 bits of the handlers currently enabled */
+#define WFC_CONTROL_STATE        0x09 /* u8 session state published by Wfc_PublishState */
+#define WFC_CONTROL_STEP_STATE   0x0A /* u8 session state saved by Wfc_SetResultCode */
+#define WFC_CONTROL_RESULT       0x0C /* s32 result code of the last step */
+#define WFC_CONTROL_NET_RESULT   0x10 /* s32 result code the network check produced */
+#define WFC_CONTROL_RECORD_RESULT 0x14 /* u8 copy of the selected record's connection result */
+#define WFC_CONTROL_SLOT         0x15 /* u8 save slot of the friend the result is for */
+#define WFC_CONTROL_STATE_MAX    0x16 /* u8 highest session state reached */
+
 typedef struct WfcAllocationState {
     void *(*allocate)(s32 tag, s32 size);
     void (*freeBlock)(s32 tag, void *block, s32 size);
@@ -85,6 +97,16 @@ enum {
 #define WFC_PROFILE_CODE_SHIFT  3    /* the profile code starts 3 bits into its 6-byte window */
 #define WFC_PROFILE_ID_SHIFT    6    /* the id starts 6 bits into its 2-byte window */
 #define WFC_PROFILE_ID10_MASK   0x3ff /* ten bits of id */
+
+/* What GetWfcProfileIds copies out of the profile record: the console's friend
+ * code (first) and the generated profile code (second), then a flag that is
+ * nonzero when the friend code exists.  Kept as word pairs so the 20-byte
+ * record stays word-aligned like the original. */
+typedef struct WfcProfileIds {
+    u32 friendCode[2];   /* +0x00 WFC_PROFILE_FRIEND_CODE (u64) */
+    u32 profileCode[2];  /* +0x08 WFC_PROFILE_CODE (u64) */
+    s32 hasFriendCode;   /* +0x10 nonzero while friendCode is set */
+} WfcProfileIds;
 
 /* The packed blob is cut into symbols at its five-byte boundary: gWfcProfileCode
  * holds its first five bytes, data_0213db39 the sixth, data_0213db3a the seventh
@@ -187,6 +209,9 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
 #define WFC_PLAYER_SLOT_COUNT 13
 #define WFC_SESSION_DATA_LOCK 0x226A /* u8 nonzero while incoming player records are discarded */
 #define WFC_SESSION_ABORT    0x226B /* u8 link failed / session has to shut down */
+/* The same state and abort bytes addressed from the WFC library's +0x2000 block. */
+#define WFC_SESSION_BLOCK_STATE (WFC_SESSION_STATE - WFC_SESSION_PLAYER_BLOCK) /* 0x260 */
+#define WFC_SESSION_BLOCK_ABORT (WFC_SESSION_ABORT - WFC_SESSION_PLAYER_BLOCK) /* 0x26b */
 #define WFC_SESSION_REQUEST  0x226C /* u32 queued send request: kind in the low 2 bits, buffer at +0x2270/+0x2274, field at +0x2278, callback at +0x227C */
 #define WFC_SESSION_SUBSTATE 0x2280 /* u16 substep reported with the state */
 #define WFC_SESSION_ERROR    0x2282 /* u16 error code of the last link request */
@@ -515,6 +540,8 @@ typedef struct NasLoginParameters {
 #define NAS_ID_CODE_BITS      43 /* player code: high 11 bits of word0 plus word1 */
 #define NAS_ID_CHECK_BITS     32 /* check word, the record's word2 */
 #define NAS_ID_KEY_TYPE_BYTES 4  /* key kind inserted as four characters */
+#define BASE32_DIGIT_BITS     5  /* bits per base32 digit */
+#define BASE32_DIGIT_MASK     31 /* value & mask yields the next digit */
 
 /* The key record's check word at +8 is the high half of one 64-bit LCG step over
  * a console-entropy seed; StartNasRequest uses the same generator to refresh the
@@ -560,6 +587,9 @@ enum {
 #define WFC_NET_CHECK_TASK           0x111C /* thread object used by the HTTP worker */
 #define WFC_NET_CHECK_TASK_ID        0x1188 /* s32 TaskCreate id, zero before creation */
 #define WFC_NET_CHECK_TASK_PRIORITY  0x10   /* priority used for the worker */
+/* Status the HTTP worker publishes, and reads back, under the network state's mutex. */
+#define WFC_NET_CHECK_STATE          0x1000 /* s32 step code; 11 once the server answered */
+#define WFC_NET_CHECK_RESULT         0x1004 /* s32 result code of the check, negative on error */
 
 /* Status the connection reports at NAS_CONN_STATUS: 0x4E20 (NAS_STATUS_BASE)
  * plus the NAS result code.  Codes below NAS_STATUS_ERROR_MIN report a step of

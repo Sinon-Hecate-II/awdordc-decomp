@@ -153,7 +153,7 @@ void Ov010Online_SetupPeerReceiveBuffers(void) {
     }
 }
 
-void func_ov010_02227f88(s32 arg0, M2C_UNK arg1) {
+void SetOnlinePlayerRecord(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222f02c;
     MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &data_ov010_0222f02c);
@@ -170,7 +170,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
     s32 GetOnlineTransportPlayerId(void);
     s32 PublishPlayerStatusLocation(void *, s32);
     void Ov010Online_SetupPeerReceiveBuffers(void);
-    s32 func_ov010_02229a94(void);
+    s32 PublishLocalPlayerStatus(void);
     extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
     s32 netError;
@@ -183,7 +183,7 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
             M2C_FIELD(&gOv010OnlineSession, u8 *, OV010_SESSION_LOCAL_ID) = GetOnlineTransportPlayerId();
             PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
             Ov010Online_SetupPeerReceiveBuffers();
-            func_ov010_02229a94();
+            PublishLocalPlayerStatus();
         } else {
             SetOnlineSessionFlag(OV010_FLAG_FAILED);
         }
@@ -209,7 +209,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
     s32 GetOnlineTransportPlayerId(void);
     s32 PublishPlayerStatusLocation(void *, s32);
     void Ov010Online_SetupPeerReceiveBuffers(void);
-    s32 func_ov010_02229a94(void);
+    s32 PublishLocalPlayerStatus(void);
     extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
 
@@ -225,7 +225,7 @@ void func_ov010_0222807c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 a
                 (u8)GetOnlineTransportPlayerId();
             PublishPlayerStatusLocation(&gLocalPlayerStatus, 0x6c);
             Ov010Online_SetupPeerReceiveBuffers();
-            func_ov010_02229a94();
+            PublishLocalPlayerStatus();
             goto callback_call;
         }
 
@@ -540,7 +540,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK data_ov010_0222c3a8;
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     void func_ov010_0222791c(M2C_UNK);
-    void *func_020c4acc(void);
+    void *GetProfileSaveBlock(void);
     void *GetBattleSaveBlock(void);
     M2C_UNK func_ov010_02228b20(M2C_UNK);
     M2C_UNK func_ov010_02228b38(M2C_UNK);
@@ -577,7 +577,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     Ov010Online_ClearStepFlag(2);
     func_ov010_0222791c(a);
     func_ov010_02226a88();
-    r4=func_020c4acc();
+    r4=GetProfileSaveBlock();
     obj=GetBattleSaveBlock();
     InitNetSession(&data_ov010_0222f1dc,(u8 *)r4+4,0x2b96,&data_ov010_0222c3f0,&data_ov010_0222c3fc,0,0,(u8 *)obj+4,60);
     func_ov010_02228b20(b);

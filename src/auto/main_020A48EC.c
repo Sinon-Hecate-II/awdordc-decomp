@@ -63,7 +63,19 @@ void func_020a4c30(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
     AddMapOrderEx(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
 }
 
-u8 IsMapOrderActive(Unk020AEntry *p) {if(!p)return 0;switch(p->type){case 4:case 6:case 7:return p->value!=0;case 0:return 0;default:return 1;}}
+/* Whether an order in the map's order queue is still doing something: attack
+ * orders are active only while their value is nonzero, a free slot (type 0) never
+ * is, and every other order type is active. */
+u8 IsMapOrderActive(Unk020AEntry *order) {
+if(!order)return 0;
+switch(order->type){
+case MAPORDER_ATTACK_AREA:
+case MAPORDER_ATTACK_LINE:
+case MAPORDER_ATTACK_LINE_FACING:return order->value!=0;
+case MAPORDER_NONE:return 0;
+default:return 1;
+}
+}
 
 /* Report whether the map's order queue holds an active order of type `type`
  * (one of the MAPORDER_* values; 0 ends the queue). */

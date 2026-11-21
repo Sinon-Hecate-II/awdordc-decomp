@@ -115,6 +115,15 @@ typedef struct InternedString {
 #define VECTOR_USER_DATA 0x10 /* s32 per-item release callback, 0 when none */
 #define VECTOR_ITEMS     0x14 /* void *the item slots */
 
+typedef struct Vector {
+    s32 count;     /* +0x00 items in use */
+    s32 capacity;  /* +0x04 slots allocated */
+    s32 elemSize;  /* +0x08 bytes per item */
+    s32 grow;      /* +0x0C slots added when the array is full */
+    s32 userData;  /* +0x10 per-item release callback, 0 when none */
+    void *items;   /* +0x14 the item slots */
+} Vector;
+
 /* A 16-bit pixel rectangle (position and size) handed to the sprite widget code. */
 typedef struct WidgetRect {
     u16 x, y, w, h;
@@ -732,6 +741,12 @@ typedef struct RecordDefinition {
 #define RECORD_DEFINITION_SIZE 0x30 /* bytes per RecordDefinition */
 #define RECORD_GROUP_STRIDE    0x750 /* bytes per group of the table (39 entries) */
 #define RECORD_GROUP_COUNT     3    /* groups in gRecordTable */
+
+/* Counter blocks of gRecordValues, one per record group: a record of group N
+ * counts at gRecordValues[record->id + RECORD_VALUE_GROUP_N_BASE]. */
+#define RECORD_VALUE_GROUP0_BASE 0x00
+#define RECORD_VALUE_GROUP1_BASE 0x28
+#define RECORD_VALUE_GROUP2_BASE 0x43 /* the per-unit-kind counters, RECORD_UNIT_KIND_BASE */
 
 /* Base of the per-unit-kind counters in gRecordValues: the count for a unit kind
  * is at gRecordValues[RECORD_UNIT_KIND_BASE + kind]. */
@@ -1784,6 +1799,7 @@ typedef struct NetError {
 #define ONLINE_LABEL_MATCH_COUNT 0x40 /* s32: number of matches the query returned (0..7) */
 
 /* An ov010 online player record, 0x6c bytes each. */
+#define ONLINE_PLAYER_RECORD_SIZE 0x6C
 #define ONLINE_PLAYER_FLAGS 0x1a /* u8: bit 0 set while the record holds a connected peer */
 #define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as */
 
@@ -1794,6 +1810,7 @@ typedef struct NetError {
 #define NET_PLAYER_CO_ICON      0x0D /* u8: CO icon index of the player's own waypoint slot */
 #define NET_PLAYER_SLOT_OPTIONS 0x0E /* u8[4]: CO option chosen for each waypoint slot */
 #define NET_PLAYER_SLOT_ICONS   0x12 /* u8[4]: CO icon index chosen for each waypoint slot */
+#define NET_PLAYER_DATA         0x18 /* s32: nonzero once the player's panel record has been filled in */
 
 /* Fields of the ov010 online session the match event handlers touch. */
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
@@ -1991,7 +2008,7 @@ enum {
 #define SAVE_ARCHIVE_LINK_NONE  0xFFFF /* no previous/next block */
 
 /* The local player's profile save block (the object main_020C3D34's
- * func_020c4acc returns): the save magic, a 0x40-byte profile-id block and then
+ * GetProfileSaveBlock returns): the save magic, a 0x40-byte profile-id block and then
  * the profile's own fields. */
 #define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (InitProfileIdBlock) */
 #define PROFILE_ID_BLOCK_SIZE 0x40
@@ -2337,6 +2354,15 @@ enum {
 enum {
     OV001_FADE_INVERT = 0x01, /* value = 16 - ramp, so 16 fades down to 0 */
     OV001_FADE_NEGATE = 0x10  /* value = -value, fading through the backdrop */
+};
+
+/* gOv001WfcScreenState: outcome of the Wi-Fi connection screen, picked by
+ * Ov001_HandleConnectionStatus and read by its fade-out and closing steps. */
+enum {
+    OV001_WFC_SCREEN_NONE        = 0, /* no status reported yet */
+    OV001_WFC_SCREEN_CONNECTED   = 1, /* every player is online */
+    OV001_WFC_SCREEN_DISCONNECTED = 2, /* the connection was lost */
+    OV001_WFC_SCREEN_NO_PLAYERS  = 3  /* no player joined the connection */
 };
 
 /* One running screen fade (Ov001FadeStates::sub / ::main). */
@@ -3418,6 +3444,7 @@ typedef struct FifoMessage {
 /* The FIFO block-transfer state (gFifoBlockTransfer) of the save/profile upload in
  * main_02045D94: the reply to the last FIFO command, whether it arrived, and the
  * ARM7 address the current block is copied to.  Blocks are 0x100 bytes. */
+#define FIFO_BLOCK_TAG    4    /* IPC FIFO handler index of the block-transfer service */
 #define FIFO_XFER_REPLY   0x00 /* u16 reply value, nonzero = the command failed */
 #define FIFO_XFER_DONE    0x04 /* s32 1 once the reply arrived */
 #define FIFO_XFER_ADDRESS 0x08 /* s32 ARM7 destination address of the first block */
@@ -3506,6 +3533,7 @@ typedef struct MicTestScreen {
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the background scroll needs refreshing */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 set when the list background must be scrolled */
 #define OV001_MAP_LIST_BG_DIRTY   0x44 /* object: u8 nonzero when the list moved and the background scroll must follow */
+#define OV001_MAP_LIST_EMPTY_B    0x43 /* object: u8 cached copy of the record's SAVE_SLOT_EMPTY_B flag */
 #define OV001_MAP_LIST_SCROLL_STEP 6   /* pixels the scroll animation moves per step */
 #define OV001_MAP_LIST_SCROLL_MAX  145 /* scroll range in pixels */
 #define OV001_MAP_LIST_HANDLE_TRAVEL 55 /* pixels the scroll-bar handle travels over the range */
@@ -3734,6 +3762,9 @@ typedef struct RtcTime {
 #define RTC_STATE_STEP         0x1C /* s32 step/retry flag of a multi-frame operation */
 #define RTC_STATE_HANDLER      0x20 /* void (*)(void) handler for a command-0x30 reply */
 #define RTC_STATE_RESULT       0x24 /* s32 result of the last completed request */
+
+/* IPC FIFO tag and the ARM7 processor id of the RTC command channel. */
+#define RTC_FIFO_TAG 5
 
 /* Values of RTC_STATE_KIND. */
 #define RTC_KIND_DATE      0 /* read the date into RTC_STATE_OUT0 */

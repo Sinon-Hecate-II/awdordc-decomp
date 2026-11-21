@@ -145,7 +145,7 @@ void func_0201dd08(void) {
     void ClearCurrentRawConnection(void);
     void SendArpRequest(s32);
     void func_020251b8(u32);
-    void func_0201e8a8(void);
+    void SendDhcpRelease(void);
     void TaskWake(void *);
 
     s32 state;
@@ -279,7 +279,7 @@ void func_0201dd08(void) {
             ((void (*)(void))M2C_FIELD(&gNetStack, u32 *, 0x3c))();
         }
     }
-    if (!(M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) && state != 3) func_0201e8a8();
+    if (!(M2C_FIELD(&gNetStack, u32 *, 0x10) & 1) && state != 3) SendDhcpRelease();
     ClearCurrentRawConnection();
 }
 
@@ -599,20 +599,26 @@ loop_4:
     return 0;
 }
 
-void func_0201e8a8(void) {
- extern M2C_UNK gNetStack;
- extern u8 gDhcpPacketBuffer[];
- u8 *BuildDhcpPacket(u8 *,s32,s32);
- s32 p; s32 base;
- ResetCurrentConnection();
- OpenRawConnection();
- SetConnectionEndpoint(0x44,0x43,M2C_FIELD(&gNetStack,s32 *,0x20));
- base=(s32)gDhcpPacketBuffer;
- p=(s32)BuildDhcpPacket((u8 *)base,7,0);
- M2C_FIELD(p,u8 *,0)=0xff; p++;
- p=PadPacket(0,300,(s32)p,p-base);
- SendNetPacket((s32)base,p-base);
- func_0201d224();
+/* Send a DHCP RELEASE to the server this host took its address from: open a raw
+ * connection to the DHCP server, build the release packet, end its options, pad
+ * it to the minimum packet size and send it, then close the connection. */
+void SendDhcpRelease(void) {
+    extern M2C_UNK gNetStack;
+    extern u8 gDhcpPacketBuffer[];
+    u8 *BuildDhcpPacket(u8 *, s32, s32);
+    s32 p;
+    s32 base;
+
+    ResetCurrentConnection();
+    OpenRawConnection();
+    SetConnectionEndpoint(DHCP_CLIENT_PORT, DHCP_SERVER_PORT, M2C_FIELD(&gNetStack, s32 *, NETSTACK_DHCP_SERVER));
+    base = (s32)gDhcpPacketBuffer;
+    p = (s32)BuildDhcpPacket((u8 *)base, DHCP_MSG_RELEASE, 0);
+    M2C_FIELD(p, u8 *, 0) = DHCP_OPTION_END;
+    p++;
+    p = PadPacket(0, DHCP_PACKET_MIN, (s32)p, p - base);
+    SendNetPacket((s32)base, p - base);
+    func_0201d224();
 }
 
 u8 *DnsSkipName(u8 *p) {

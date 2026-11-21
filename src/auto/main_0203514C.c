@@ -20,7 +20,7 @@ void Wfc_AbortNetworkSession(void) {
     M2C_FIELD(gWfcNet, s32 *, 0x1004) = -7;
 }
 
-s32 func_020352ac(void) {
+s32 Wfc_GetNetCheckState(void) {
     M2C_UNK LockMutex(void *);
     M2C_UNK UnlockMutex(void *);
     extern void *gWfcNet;
@@ -31,7 +31,7 @@ s32 func_020352ac(void) {
     return result;
 }
 
-s32 func_020352ec(void) {
+s32 Wfc_GetNetResultCode(void) {
     extern void *gWfcNet;
     return M2C_FIELD(gWfcNet, s32 *, 0x1004);
 }

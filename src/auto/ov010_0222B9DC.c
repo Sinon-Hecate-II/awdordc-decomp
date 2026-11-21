@@ -152,18 +152,21 @@ void func_ov010_0222bbe4(void) {
 
 }
 
-void *func_ov010_0222bbe8(void *arg0, void *arg1) {
-    void *func_ov010_0222bc88(void *, M2C_UNK, u32, void *);
+/* Assign the stored text string `src` to the stored string `dst`: when both are
+ * small (inline) strings the 12-byte value is copied whole, otherwise src's text
+ * replaces all of dst's contents. */
+void *StringStorageAssign(void *dst, void *src) {
+    void *StringStorageReplaceWith(void *, M2C_UNK, u32, void *);
     typedef struct { u32 words[3]; } Copy;
-    s32 var_r1;
-    u32 var_r2;
-    var_r1 = ((u32)(M2C_FIELD(arg0, s32 *, 0) << 31) >> 31) != 0;
-    if (var_r1 == 0 && ((u32)(M2C_FIELD(arg1, s32 *, 0) << 31) >> 31) == 0) {
-        *(Copy *)arg0 = *(Copy *)arg1;
-        return arg0;
+    s32 dstIsLarge;
+    u32 removeLength;
+    dstIsLarge = ((u32)(M2C_FIELD(dst, s32 *, 0) << 31) >> 31) != 0;
+    if (dstIsLarge == 0 && ((u32)(M2C_FIELD(src, s32 *, 0) << 31) >> 31) == 0) {
+        *(Copy *)dst = *(Copy *)src;
+        return dst;
     }
-    var_r2 = var_r1 ? M2C_FIELD(arg0, u32 *, 4) : (u32)(M2C_FIELD(arg0, u8 *, 0) << 24) >> 25;
-    return func_ov010_0222bc88(arg0, 0, var_r2, arg1);
+    removeLength = dstIsLarge ? M2C_FIELD(dst, u32 *, 4) : (u32)(M2C_FIELD(dst, u8 *, 0) << 24) >> 25;
+    return StringStorageReplaceWith(dst, 0, removeLength, src);
 }
 
 void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
@@ -177,7 +180,7 @@ void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
     func_ov010_0222bcd8(arg0, 0, var_r2, arg1);
 }
 
-void *func_ov010_0222bc88(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
+void *StringStorageReplaceWith(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
     void *StringStorageReplace(void *, M2C_UNK, u32, void *, void *, Flag);
     u32 len;
     u8 *start;

@@ -13,11 +13,11 @@ typedef struct SpriteBatch {
     s32 tileOffset[10]; /* +0x14 running tile offset of each placed sprite */
     u8 kind[10];        /* +0x3C tile kind of each placed sprite, 0 = empty */
     u8 selected[10];    /* +0x46 selection state of each placed sprite */
-    s32 paletteBase;    /* +0x50 first palette id of the batch's sprites (GetBatchTile) */
+    s32 paletteBase;    /* +0x50 first palette id of the batch's sprites (GetBatchPalette) */
     s32 count;          /* +0x54 sprites placed */
     s32 field58;        /* +0x58 */
     s32 field5C;        /* +0x5C */
-    s32 tileStride;     /* +0x60 tiles between two placed sprites (func_0207bd88) */
+    s32 tileStride;     /* +0x60 tiles between two placed sprites (GetBatchSpriteTile) */
     s32 field64;        /* +0x64 kind drawn with the alternate palette */
 } SpriteBatch;
 
@@ -406,29 +406,32 @@ if(arg0>=9)return;
 M2C_FIELD(gSpriteBatch+(arg0+1)*4,s32 *,0x14)=arg1+M2C_FIELD(gSpriteBatch+arg0*4,s32 *,0x14);
 }
 
-s32 func_0207bd88(s32 arg0) {
+s32 GetBatchSpriteTile(s32 arg0) {
 s32 GetBatchTileOffset(s32); extern s32 gSpriteBatch;
 s32 base=gSpriteBatch;
 s32 index=GetBatchTileOffset(arg0);
 return M2C_FIELD(base,s32 *,0x10)+M2C_FIELD(base,s32 *,0x60)*index;
 }
 
-s32 GetBatchTile(s32 arg0) {
+s32 GetBatchPalette(s32 arg0) {
 extern s32 gSpriteBatch;
 return M2C_FIELD(gSpriteBatch,s32 *,0x50)+arg0;
 }
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_0207bdc4(void) {
-    s32 GetBatchTile(s32);
+/* Load the current sprite batch's graphics: copy its palette bank, open the menu
+ * NARC matching the first placed sprite's source width, then decompress every
+ * placed sprite's own file into its tile index. */
+void LoadSpriteBatchGraphics(void) {
+    s32 GetBatchPalette(s32);
     void CopyToObjPaletteShadow(void *, s32, s32);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK GetLocalizedFileName(M2C_UNK *);
     void OpenNarcArchive(M2C_UNK *);
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, M2C_UNK);
     void CloseNarcArchive(void);
-    s32 func_0207bd88(s32);
+    s32 GetBatchSpriteTile(s32);
     extern s32 gSpriteBatch;
     extern u8 gSpriteKindWidths[];
     extern u8 gSpriteKindFileNames[];
@@ -438,35 +441,35 @@ void func_0207bdc4(void) {
     extern M2C_UNK sMenu01NarcFile;
     extern M2C_UNK sMenu02NarcFile;
 
-    s32 i;
+    s32 sprite;
     u8 kind;
-    s32 r4;
-    s32 tile;
-    s32 base;
-    s8 *p;
+    s32 width;
+    s32 palette;
+    s32 batch;
+    s8 *kindCursor;
 
-    tile = GetBatchTile(0);
-    r4 = 0;
-    CopyToObjPaletteShadow(&gUiSpritePalette, tile << 5, 0x60);
+    palette = GetBatchPalette(0);
+    width = 0;
+    CopyToObjPaletteShadow(&gUiSpritePalette, palette << 5, 0x60);
 
-    base = gSpriteBatch;
-    i = r4;
-    if (M2C_FIELD(base, s32 *, 0x54) > 0) {
-        p = (s8 *)base;
+    batch = gSpriteBatch;
+    sprite = width;
+    if (M2C_FIELD(batch, s32 *, 0x54) > 0) {
+        kindCursor = (s8 *)batch;
         do {
-            kind = M2C_FIELD(p, u8 *, 0x3C);
+            kind = M2C_FIELD(kindCursor, u8 *, 0x3C);
             if (kind != 0) {
-                r4 = gSpriteKindWidths[kind << 3];
+                width = gSpriteKindWidths[kind << 3];
                 break;
             }
-            ++i;
-            ++p;
-        } while (i < M2C_FIELD(base, s32 *, 0x54));
+            ++sprite;
+            ++kindCursor;
+        } while (sprite < M2C_FIELD(batch, s32 *, 0x54));
     }
 
     SetFileDirectory(&sSpriteBatchDir);
 
-    switch (r4) {
+    switch (width) {
     case 0x60:
         OpenNarcArchive(GetLocalizedFileName(&sMenu00NarcFile));
         break;
@@ -478,14 +481,14 @@ void func_0207bdc4(void) {
         break;
     }
 
-    for (i = 0; i < M2C_FIELD(gSpriteBatch, s32 *, 0x54); i++) {
-        base = gSpriteBatch;
-        kind = M2C_FIELD(base + i, u8 *, 0x3C);
+    for (sprite = 0; sprite < M2C_FIELD(gSpriteBatch, s32 *, 0x54); sprite++) {
+        batch = gSpriteBatch;
+        kind = M2C_FIELD(batch + sprite, u8 *, 0x3C);
         if (kind != 0) {
-            M2C_UNK ptr = M2C_FIELD(&gSpriteKindFileNames, M2C_UNK *, kind << 3);
-            M2C_UNK res = GetLocalizedFileName(ptr);
-            s32 idx = func_0207bd88(i);
-            LoadNarcFileDecompressed(res, idx);
+            M2C_UNK fileName = M2C_FIELD(&gSpriteKindFileNames, M2C_UNK *, kind << 3);
+            M2C_UNK localizedName = GetLocalizedFileName(fileName);
+            s32 tileIndex = GetBatchSpriteTile(sprite);
+            LoadNarcFileDecompressed(localizedName, tileIndex);
         }
     }
 
@@ -539,11 +542,11 @@ void DrawSpriteBatch(void) {
         selected = SPRITE_BATCH->selected[sprite];
         if (kind) {
             if (SPRITE_BATCH->field64 != kind)
-                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(0) << 28) >> 16);
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchPalette(0) << 28) >> 16);
             else
-                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(1) << 28) >> 16);
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchPalette(1) << 28) >> 16);
             if (selected == 1)
-                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchTile(2) << 28) >> 16);
+                tile = GetBatchTileOffset(sprite) | ((u32)(GetBatchPalette(2) << 28) >> 16);
             for (row = 0; row < GetBatchSpriteRows(sprite); row++) {
                 rowY = totalRows + y + row;
                 for (col = 0; col < GetBatchSpriteCols(sprite); col++) {
@@ -614,7 +617,7 @@ void SeedRandomFromRtc(void) {
     gRandomSeed = 0x12345678;
 }
 
-void func_0207c2d0(s32 arg0) {
+void SetRandomSeed(s32 arg0) {
     extern s32 gRandomSeed;
     gRandomSeed = arg0;
 }

@@ -36,4 +36,8 @@
 #define DHCP_PACKET_MIN 300 /* smallest BOOTP/DHCP packet size */
 #define DHCP_HWADDR_LEN 6
 
+/* UDP ports the DHCP client and server use. */
+#define DHCP_CLIENT_PORT 68
+#define DHCP_SERVER_PORT 67
+
 #endif

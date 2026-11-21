@@ -289,33 +289,35 @@ M2C_UNK **ResultSpark_Delete(M2C_UNK **spark) {
 #pragma opt_strength_reduction reset
 
 #pragma opt_strength_reduction off
-M2C_UNK **ResultSpark_Destroy(M2C_UNK **arg0) {
+/* Destroy the results-screen spark without freeing it: restore its vtable and
+ * delete the sprite it created on each screen. */
+M2C_UNK **ResultSpark_Destroy(M2C_UNK **spark) {
     M2C_UNK DeleteSpriteObject(s32);
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern u16 **gCur3DSpriteEngine;
     extern M2C_UNK gResultSparkVTable;
-    u16 **temp_r8;
-    u16 **var_r0;
-    s32 var_r9;
-    *arg0 = &gResultSparkVTable;
-    temp_r8 = gCur3DSpriteEngine;
-    var_r9 = 0;
+    u16 **savedEngine;
+    u16 **engine;
+    s32 screen;
+    *spark = &gResultSparkVTable;
+    savedEngine = gCur3DSpriteEngine;
+    screen = 0;
     do {
-        if (var_r9 == 0) var_r0 = g3DSpriteEngineMain;
-        else var_r0 = g3DSpriteEngineSub;
-        gCur3DSpriteEngine = var_r0;
-        DeleteSpriteObject(M2C_FIELD((arg0 + var_r9), s32 *, 0x34));
-        var_r9 += 1;
-    } while (var_r9 < 2);
-    gCur3DSpriteEngine = temp_r8;
-    return arg0;
+        if (screen == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        DeleteSpriteObject(M2C_FIELD((spark + screen), s32 *, 0x34));
+        screen += 1;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
+    return spark;
 }
 
 void *func_ov005_0221ff38(void *arg0) {
     M2C_UNK func_01ffaa6c();
-    extern M2C_UNK data_ov005_02220fb8;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fb8;
+    extern M2C_UNK gResultSlideSpriteVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultSlideSpriteVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) func_01ffaa6c();
     MemFree(arg0);
     return arg0;
@@ -323,8 +325,8 @@ void *func_ov005_0221ff38(void *arg0) {
 
 void *func_ov005_0221ff6c(void *arg0) {
     M2C_UNK func_01ffaa6c();
-    extern M2C_UNK data_ov005_02220fb8;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov005_02220fb8;
+    extern M2C_UNK gResultSlideSpriteVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultSlideSpriteVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
         func_01ffaa6c();
     }

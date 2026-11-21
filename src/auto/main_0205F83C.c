@@ -357,7 +357,31 @@ void *QueryQueue_Pop(void *arg0) {
     return temp_r2;
 }
 
-s32 Qr2Query_RemoveRequest(void *a,void *b){void *p=M2C_FIELD(a,void **,0),*prev=0;while(p){if(p==b){if(prev)M2C_FIELD(prev,void **,32)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,0)==p)M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,32);if(M2C_FIELD(a,void **,4)==p)M2C_FIELD(a,void **,4)=prev;M2C_FIELD(a,s32 *,8)--;return 1;}prev=p;p=M2C_FIELD(p,void **,32);}return 0;}
+/* Take `request` off a server-browser query queue (a GpiPlayer chain through
+ * GpiPlayer.next): unlink it from its neighbours, fix up the head and tail when
+ * it was either end, and decrement the count.  Returns 1 when it was queued. */
+s32 Qr2Query_RemoveRequest(void *queuePtr, void *requestPtr) {
+    QueryQueue *queue = queuePtr;
+    GpiPlayer *request = requestPtr;
+    GpiPlayer *entry = queue->head;
+    GpiPlayer *prev = NULL;
+
+    while (entry) {
+        if (entry == request) {
+            if (prev)
+                prev->next = entry->next;
+            if (queue->head == entry)
+                queue->head = entry->next;
+            if (queue->tail == entry)
+                queue->tail = prev;
+            queue->count--;
+            return 1;
+        }
+        prev = entry;
+        entry = entry->next;
+    }
+    return 0;
+}
 
 void func_020601a4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;

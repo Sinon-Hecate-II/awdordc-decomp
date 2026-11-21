@@ -51,7 +51,7 @@ void func_ov003_021ee8b8(void *arg0) {
     s16 GetSpriteAnimValue(void *);
     
     s32 InRange(u8, M2C_UNK, M2C_UNK);
-    s32 func_ov003_021e6cfc();
+    s32 IsSessionHost();
     s32 func_ov003_021e6d28();
     M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
 
@@ -136,7 +136,7 @@ void func_ov003_021ee8b8(void *arg0) {
         player=-1;
 foundPlayer:
         M2C_FIELD(sp0,u8 *,0xd)=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+(u8)player,u8 *,0xa);
-        if(func_ov003_021e6cfc()){
+        if(IsSessionHost()){
             for(i=0;i<count;i=(u8)(i+1)){p=M2C_FIELD(arg0,void **,0x6c)+i;if((u8)(M2C_FIELD(p,u8 *,0x74)==255))M2C_FIELD((u8 *)sp0+i,u8 *,0x12)=M2C_FIELD(p,u8 *,0xa);}
             ready=Ov003PlayersReady();
             if(ready){
@@ -147,7 +147,7 @@ foundPlayer:
         }
     }
     if((u8)((((u32)M2C_FIELD(arg0,u8 *,0x39)<<28)>>30)==1)){
-        if(func_ov003_021e6cfc()){
+        if(IsSessionHost()){
             p=M2C_FIELD(arg0,void **,0x58);if(!M2C_FIELD(p,u8 *,0x59))M2C_FIELD(p,u8 *,0x59)=1;
             for(i=0;i<count;i++)M2C_FIELD((u8 *)(u8 *)sp0+i,u8 *,0xe)=M2C_FIELD(M2C_FIELD(arg0,void **,0x6c)+i*0x18,s32 *,0x18);
         }
@@ -289,7 +289,7 @@ foundPlayer:
         }
         p=M2C_FIELD(arg0,void **,0x6c);
         if(local==M2C_FIELD(p+i,u8 *,0x74))continue;
-        if(func_ov003_021e6cfc()){
+        if(IsSessionHost()){
             p=M2C_FIELD(arg0,void **,0x6c);
             if((u8)(M2C_FIELD(p+i,u8 *,0x74)==255))continue;
         }

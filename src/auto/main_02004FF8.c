@@ -172,12 +172,12 @@ func_020053a0(0x7f,0x027ffff0,0);
 
 M2C_UNK func_02005354(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     void WaitByLoop(s32);
-    M2C_UNK func_02005434(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK OSi_DoLockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (func_02005434(arg0, arg1, arg2, arg3) <= 0) return;
+    if (OSi_DoLockByWord(arg0, arg1, arg2, arg3) <= 0) return;
     do {
         WaitByLoop(0x400);
-    } while (func_02005434(arg0, arg1, arg2, arg3) > 0);
+    } while (OSi_DoLockByWord(arg0, arg1, arg2, arg3) > 0);
 }
 
 void func_020053a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -219,31 +219,34 @@ void func_02005424(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     OSi_DoUnlockByWord(arg0, arg1, arg2, 0);
 }
 
-s32 func_02005434(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Take the lock word at `lockAddress` for `lockId`: mask interrupts, atomically swap
+ * the word, and when it was free store the owner id and run the onLock callback.
+ * Returns 0 when the lock was taken, otherwise the word that was already there. */
+s32 OSi_DoLockByWord(s32 lockId, s32 lockAddress, M2C_UNK onLock, s32 maskFiq) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_DisableInterrupts_IrqAndFiq();
     M2C_UNK OS_RestoreInterrupts_IrqAndFiq(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(M2C_UNK);
     s32 func_020081c8(M2C_UNK, M2C_UNK);
-    s32 old;
-    s32 temp_r4;
+    s32 interruptState;
+    s32 result;
 
-    if (arg3 != 0) {
-        old = OS_DisableInterrupts_IrqAndFiq();
+    if (maskFiq != 0) {
+        interruptState = OS_DisableInterrupts_IrqAndFiq();
     } else {
-        old = OS_DisableInterrupts();
+        interruptState = OS_DisableInterrupts();
     }
-    temp_r4 = func_020081c8(arg0, arg1);
-    if (temp_r4 == 0) {
-        if (arg2 != 0) ((void (*)(void))arg2)();
-        M2C_FIELD((void *)arg1, s16 *, 4) = arg0;
+    result = func_020081c8(lockId, lockAddress);
+    if (result == 0) {
+        if (onLock != 0) ((void (*)(void))onLock)();
+        ((OSLockWord *)lockAddress)->ownerId = lockId;
     }
-    if (arg3 != 0) {
-        OS_RestoreInterrupts_IrqAndFiq(old);
+    if (maskFiq != 0) {
+        OS_RestoreInterrupts_IrqAndFiq(interruptState);
     } else {
-        OS_RestoreInterrupts(old);
+        OS_RestoreInterrupts(interruptState);
     }
-    return temp_r4;
+    return result;
 }
 
 void func_020054a0(M2C_UNK arg0) {
@@ -258,9 +261,9 @@ void func_020054c0(M2C_UNK arg0) {
 }
 
 void func_020054cc(M2C_UNK arg0) {
-    M2C_UNK func_02005434(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK OSi_DoLockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020054ec(void);
-    func_02005434(arg0, 0x027FFFE8, (M2C_UNK)func_020054ec, 1);
+    OSi_DoLockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_020054ec, 1);
 }
 
 void func_020054ec(void) {

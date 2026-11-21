@@ -619,7 +619,7 @@ void GetLocalNetworkPlayerRecord(void) {
 
 void Link_FlushSend(void) {
     M2C_UNK AnnounceLinkPlayer();
-    M2C_UNK func_ov010_02229a94();
+    M2C_UNK PublishLocalPlayerStatus();
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -628,7 +628,7 @@ void Link_FlushSend(void) {
         AnnounceLinkPlayer();
         return;
     case 2:
-        func_ov010_02229a94();
+        PublishLocalPlayerStatus();
         return;
     }
 }

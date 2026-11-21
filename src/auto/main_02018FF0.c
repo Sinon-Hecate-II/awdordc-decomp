@@ -17,7 +17,7 @@ void Mb_SendBootParams(void) {
     M2C_UNK func_02018ea4(M2C_UNK);
     s32 OS_SetIrqEnableMask(s32);
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02007a74(s32, M2C_UNK, M2C_UNK, u32);
+    M2C_UNK DmaCopy16(s32, M2C_UNK, M2C_UNK, u32);
     void MIi_CpuCopy32(void *, void *, s32);
     void func_02006774(void);
     void WaitByLoop(s32);
@@ -52,7 +52,7 @@ void Mb_SendBootParams(void) {
     hw = *(volatile u16 *)0x4000204;
     *(volatile u16 *)0x4000204 = hw & ~0x8000;
     DC_InvalidateRange((M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
-    func_02007a74(1, (M2C_UNK)0x8000080, (M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
+    DmaCopy16(1, (M2C_UNK)0x8000080, (M2C_UNK)((s32)&data_02136cc0 + 0x80), 0x40);
 
     hw = *(volatile u16 *)0x4000204;
     *(volatile u16 *)0x4000204 = (hw & ~0x8000) | (carry << 15);

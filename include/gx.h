@@ -185,6 +185,17 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_EXTPLTT_LOAD_BG_GRANT      0x14 /* grant of the main-engine BG extended palette */
 #define GX_EXTPLTT_LOAD_SUB_OBJ_GRANT 0x18 /* grant of the sub-engine OBJ extended palette */
 
+/* The texture and texture-palette loaders (GX_BeginLoadTex/TexPltt,
+ * GX_LoadTex/TexPltt, GX_EndLoadTex/TexPltt) keep their state in gGxTexLoad:
+ * the VRAM base of each area, the grant it was taken from, and the second base
+ * and split offset a texture area spanning two banks copies across. */
+#define GX_TEXLOAD_TEX_BASE       0x04 /* main-engine 3D texture VRAM base */
+#define GX_TEXLOAD_TEXPLTT_BASE   0x08 /* main-engine 3D texture-palette VRAM base */
+#define GX_TEXLOAD_TEXPLTT_GRANT  0x0c /* grant of the 3D texture-palette area */
+#define GX_TEXLOAD_TEX_GRANT      0x14 /* grant of the 3D texture area */
+#define GX_TEXLOAD_TEX_BASE2      0x18 /* VRAM base of the area's second bank (0 when one bank) */
+#define GX_TEXLOAD_TEX_OFFSET     0x1c /* offset in the first bank where the second bank begins */
+
 /* VRAM base the main-engine BG extended palette is loaded at, keyed by the bank
  * grant GX_SetBankForBGExtPltt gave it (banks E, F and G).  G shares bank F's
  * base and sits GX_BGEXTPLTT_OFFSET_G further in. */

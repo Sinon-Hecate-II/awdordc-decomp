@@ -1,6 +1,7 @@
 /* 11 functions from 0x02218FD0 to 0x02219FA0 (ov005), found by ds-decomp. */
 #include "common.h"
 #include "sprite_script.h"
+#include "ov005_results.h"
 
 /* A result-screen spark (SpawnResultSpark in ov005_02219FA0.c): a two-screen
  * particle that drifts towards the top-right corner and is deleted once it has
@@ -11,11 +12,6 @@
 #define RESULT_SPARK_VARIANT 0x44 /* s32 sprite/motion variant */
 #define RESULT_SPARK_END_X   0x108 /* x at which the spark has left the right edge */
 #define RESULT_SPARK_END_Y   (-8)  /* y at which the spark has left the top edge */
-
-/* The result-screen slide object (AnimateResultSlide and its draw callback). */
-#define RESULT_SLIDE_TIMER  0x3C /* s32: frames the slide has run (0..16) */
-#define RESULT_SLIDE_Y      0x40 /* s32: y position the slide has reached */
-#define RESULT_SLIDE_ACTIVE 0x44 /* u8: nonzero while the slide band is shown */
 
 #pragma scheduling off
 void func_ov005_02218fd0(void *arg0) {

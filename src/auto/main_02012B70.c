@@ -95,31 +95,34 @@ s32 WFC_SubmitRequest(s32 requestId,void *header,void *data,u32 length) {
  if(!result)result=2;return result;
 }
 
-s32 WFC_SubmitLinkRequest(M2C_UNK arg0) {
-    M2C_UNK DC_InvalidateRange(s32, M2C_UNK);
-    M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
-    s32 WFC_SendCommand(M2C_UNK, M2C_UNK);
+/* Submit the WFC link request: check the channel is in the linking state, verify
+ * the link can take a request, store `requestId` as the command's parameter and
+ * post command 19 with no payload. */
+s32 WFC_SubmitLinkRequest(s32 requestId) {
+    s32 DC_InvalidateRange(s32, s32);
+    s32 WFC_SetChannelParam(s32, s32);
+    s32 WFC_SendCommand(s32, s32);
     void *WFC_GetInfoBlock();
-    s32 WFC_CheckChannelState(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
-    s32 var_r0;
-    void *temp_r4;
+    s32 WFC_CheckChannelState(s32, s32);
+    s32 result;
+    s32 commandResult;
+    void *info;
 
-    temp_r4 = WFC_GetInfoBlock();
-    temp_r0 = WFC_CheckChannelState(1, 0xB);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    info = WFC_GetInfoBlock();
+    result = WFC_CheckChannelState(1, 0xB);
+    if (result != 0) {
+        return result;
     }
-    DC_InvalidateRange(M2C_FIELD(temp_r4, void **, 4) + 0x10, 4);
-    if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 4), s32 *, 0x10) == 0) {
+    DC_InvalidateRange(M2C_FIELD(info, void **, WFC_INFO_LINK) + 0x10, 4);
+    if (M2C_FIELD(M2C_FIELD(info, void **, WFC_INFO_LINK), s32 *, 0x10) == 0) {
         return 3;
     }
-    WFC_SetChannelParam(0x13, arg0);
-    var_r0 = WFC_SendCommand(0x13, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(0x13, requestId);
+    commandResult = WFC_SendCommand(0x13, 0);
+    if (commandResult == 0) {
+        commandResult = 2;
     }
-    return var_r0;
+    return commandResult;
 }
 
 #pragma push

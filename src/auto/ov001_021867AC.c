@@ -43,14 +43,18 @@ for (i = 0; i < gOv001RegionItemCount[M2C_FIELD(gOv001RegionMenu, u8 *, 0x1c)]; 
 M2C_FIELD(gOv001RegionMenu, s8 *, 0x1b) = -1;
 }
 
-void Ov001_RegionMenuEmptyTimeout(s32 arg0) {
-s32 Ov001_AddTask(s32,void (*)(s32),s32,s32);
-void Ov001_RegionMenuCloseDelay(s32);
-M2C_FIELD(gOv001RegionMenu,s8 *,0x1b)=-1;
-M2C_FIELD(gOv001RegionMenu,u16 *,0x18)++;
-if(M2C_FIELD(gOv001RegionMenu,u16 *,0x18)<120U)return;
-Ov001_PostTaskMessage(0,arg0);
-M2C_FIELD(gOv001RegionMenu,s32 *,0x14)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
+/* Per-frame task for a region whose menu has no items: keep the selection
+ * cleared, count frames towards OV001_REGION_EMPTY_TIMEOUT, then report the
+ * timeout and schedule Ov001_RegionMenuCloseDelay that many frames later. */
+void Ov001_RegionMenuEmptyTimeout(s32 task) {
+    s32 Ov001_AddTask(s32, void (*)(s32), s32, s32);
+    void Ov001_RegionMenuCloseDelay(s32);
+    void Ov001_PostTaskMessage(s32, s32);
+    M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_SELECTED) = -1;
+    M2C_FIELD(gOv001RegionMenu, u16 *, OV001_REGION_TIMER)++;
+    if (M2C_FIELD(gOv001RegionMenu, u16 *, OV001_REGION_TIMER) < OV001_REGION_EMPTY_TIMEOUT) return;
+    Ov001_PostTaskMessage(0, task);
+    M2C_FIELD(gOv001RegionMenu, s32 *, OV001_REGION_TASK) = Ov001_AddTask(1, Ov001_RegionMenuCloseDelay, 0, OV001_REGION_EMPTY_TIMEOUT);
 }
 
 /* Slide the selected region's menu column to vertical position topY: move the

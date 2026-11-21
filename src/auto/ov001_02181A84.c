@@ -413,20 +413,23 @@ void Ov001_StartWfcConnect(void) {
     Ov001_AddTask(0, (void *)Ov001_WfcConnectStep, 0, 0x78);
 }
 
+/* Start the Wi-Fi connect screen's fade-in: fade in the main screen's plane set
+ * and, when no name was just entered, the second screen's too, then wait for the
+ * fade to finish. */
 void Ov001_FadeInWfcConnectScreen(void) {
-    void func_ov001_02182474(void);
-    s32 sp0;
+    void Ov001_WaitWfcConnectFadeIn(void);
+    s32 nameEntryArg;
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 == 0) {
+    Ov001_GetNameEntryMode(0, &nameEntryArg);
+    if (nameEntryArg == 0) {
         Ov001_StartFade(2, 1, 1, 8);
         Ov001_EnableVisiblePlanes(1, 1);
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182474);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectFadeIn);
 }
 
-void func_ov001_02182474(void) {
+void Ov001_WaitWfcConnectFadeIn(void) {
     extern M2C_UNK func_ov001_021824a8;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -458,7 +461,7 @@ void func_ov001_021824c4(void) {
 
 }
 
-void func_ov001_021824c8(void) {
+void Ov001_FadeOutWfcConnectScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK func_ov001_021824f0;
     Ov001_StartFade(3, 0, 0x15, 8);
@@ -508,8 +511,13 @@ void Ov001_CloseWfcConnectScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *) &Ov001_ShowWfcSuccessScreen);
 }
 
-void Ov001_WfcConnectStep(s32 arg0) {
+/* Wi-Fi connection step task: advance the WFC session; once it finishes, stop
+ * the connecting icon and sound, flag a successful connection (or record the
+ * failure progress) with its sound, then fade the screen out and finish the task. */
+void Ov001_WfcConnectStep(s32 task) {
     s32 Wfc_ProcessStep(void);
+    s32 GetWfcSessionProgress(void);
+    void Ov001_SetWfcErrorCode(s32);
     extern s8 gOv001WfcConnected;
     s32 result = Wfc_ProcessStep();
     if (result == 0) return;
@@ -519,12 +527,11 @@ void Ov001_WfcConnectStep(s32 arg0) {
         gOv001WfcConnected = 1;
         Ov001_PlaySound(0x11);
     } else {
-        GetWfcSessionProgress();
-        func_ov001_0217d260();
+        Ov001_SetWfcErrorCode(GetWfcSessionProgress());
         Ov001_PlaySound(0x12);
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021824c8);
-    Ov001_PostTaskMessage(0, arg0);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutWfcConnectScreen);
+    Ov001_PostTaskMessage(0, task);
 }
 
 void func_ov001_02182614(s32 arg0, s32 arg1) {
@@ -539,24 +546,26 @@ void func_ov001_02182628(s32 arg0, s32 arg1) {
 
 void Ov001_ShowWfcSuccessScreen(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
-    void func_ov001_02182668();
+    void Ov001_LoadWfcSuccessBackground();
     extern u8 gOv001WfcSuccessFrames;
     extern M2C_UNK func_ov001_021826d4;
     gOv001WfcSuccessFrames = 0;
-    func_ov001_02182668();
+    Ov001_LoadWfcSuccessBackground();
     Ov001_ShowMessageBox(0x2D);
     Ov001_SetStepCallback(&func_ov001_021826d4);
 }
 
-void func_ov001_02182668(void) {
+/* Load the WFC success screen's background map into BG2 and give the sub- and
+ * main-engine background layers it uses priority 3. */
+void Ov001_LoadWfcSuccessBackground(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190a94;
+    extern M2C_UNK gOv001WfcSuccessBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190a94, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16)((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16)((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001WfcSuccessBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_021826d4(void) {
@@ -665,27 +674,30 @@ void Ov001_PrepareSaveSlotMenu(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     M2C_UNK CommitSaveSlot(void);
-    void func_ov001_02182904(void);
+    void Ov001_LoadSaveSlotMenuBg(void);
     void func_ov001_02182970(void);
     s32 sp0;
     func_ov001_02183fa0();
     Ov001_GetNameEntryMode(0, &sp0);
-    func_ov001_02182904();
+    Ov001_LoadSaveSlotMenuBg();
     Ov001_ShowMessagePanel(0x31, -1, 0);
     if (sp0 != 2) Ov001_LoadSaveSlotObjLayout();
     if (sp0 == 1) CommitSaveSlot();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);
 }
 
-void func_ov001_02182904(void) {
+/* Load the save slot menu's background map and lower the priority of the sub
+ * engine's BG0/BG1 and the main engine's BG1/BG2. */
+void Ov001_LoadSaveSlotMenuBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190aa8;
+    extern M2C_UNK gOv001SaveSlotMenuBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190aa8, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001SaveSlotMenuBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02182970(void) {

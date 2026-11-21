@@ -2,13 +2,17 @@
 #include "common.h"
 #include "battle_map.h"
 
-void func_020d5430(void) {
+/* MAP_MODE 8 handler: after a tile was selected, play the cursor sound and step
+ * the cursor toward it; once the input that selected it is released, hide the
+ * touch cursor, centre the view on the selected tile and return to normal cursor
+ * mode. */
+void UpdateMapSelectionCursor(void) {
  extern void *gCurrentMap;
  func_020cf850(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
  if(!func_020bcac0())return;
  if(!func_020bd650())return;
  HideTouchCursor();func_ov000_021696d4();RefreshMapView();func_0207a768();
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
+ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,MAP_MODE)=MAP_MODE_CURSOR;
 }
 
 void func_020d549c(void) {

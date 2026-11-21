@@ -568,15 +568,15 @@ s32 func_020ad594(s32 arg0)
 {
   s32 func_020ad5dc();
   s32 *func_020ad570(s32);
-  s32 temp;
-  s32 var_r4;
-  temp = func_020ad5dc();
-  for (var_r4 = 0; var_r4 < temp; var_r4++)
+  s32 new_var[2];
+  s32 temp_r0;
+  temp_r0 = func_020ad5dc();
+  for (new_var[1] = 0; new_var[1] < temp_r0; new_var[1]++)
   {
-    temp = *((s32 *) (((s8 *) func_020ad570(var_r4)) + 0));
-    if (temp == arg0)
+    new_var[0] = *((s32 *) (((s8 *) func_020ad570(new_var[1])) + 0));
+    if (new_var[0] == arg0)
     {
-      return var_r4;
+      return new_var[1];
     }
   }
 

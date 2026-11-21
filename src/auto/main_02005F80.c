@@ -460,7 +460,7 @@ void func_02006858(void) {
     M2C_UNK func_02005968();
     void func_02006838(void);
 void InitArenaTable(void);
-    void func_02006ce4();
+    void InstallExceptionHandler();
     M2C_UNK func_020074c0();
     M2C_UNK func_020075b4();
     M2C_UNK GX_ResetBankOwners();
@@ -475,7 +475,7 @@ void InitArenaTable(void);
     func_020069a4();
     func_02004fe0();
     func_02005254();
-    func_02006ce4();
+    InstallExceptionHandler();
     func_02008bb8();
     func_020074c0();
     GX_ResetBankOwners();
@@ -491,37 +491,37 @@ void InitArenaTable(void);
    range, as the current boot's memory map gives them (arena 2 stays empty). */
 void InitArenaTable(void) {
     s32 func_02006a38(s32);
-    void func_02006bc4(s32, s32);
+    void SetArenaHi(s32, s32);
     s32 GetArenaBottom(s32);
-    void func_02006bd8(s32, s32);
+    void SetArenaLo(s32, s32);
     extern M2C_UNK data_0212defc;
 
     if (M2C_FIELD(&data_0212defc, s32 *, 0) != 0) {
         return;
     }
     M2C_FIELD(&data_0212defc, s32 *, 0) = 1;
-    func_02006bc4(0, func_02006a38(0));
-    func_02006bd8(0, GetArenaBottom(0));
-    func_02006bd8(2, 0);
-    func_02006bc4(2, 0);
-    func_02006bc4(3, func_02006a38(3));
-    func_02006bd8(3, GetArenaBottom(3));
-    func_02006bc4(4, func_02006a38(4));
-    func_02006bd8(4, GetArenaBottom(4));
-    func_02006bc4(5, func_02006a38(5));
-    func_02006bd8(5, GetArenaBottom(5));
-    func_02006bc4(6, func_02006a38(6));
-    func_02006bd8(6, GetArenaBottom(6));
+    SetArenaHi(0, func_02006a38(0));
+    SetArenaLo(0, GetArenaBottom(0));
+    SetArenaLo(2, 0);
+    SetArenaHi(2, 0);
+    SetArenaHi(3, func_02006a38(3));
+    SetArenaLo(3, GetArenaBottom(3));
+    SetArenaHi(4, func_02006a38(4));
+    SetArenaLo(4, GetArenaBottom(4));
+    SetArenaHi(5, func_02006a38(5));
+    SetArenaLo(5, GetArenaBottom(5));
+    SetArenaHi(6, func_02006a38(6));
+    SetArenaLo(6, GetArenaBottom(6));
 }
 
-s32 func_02006a10(s32 arg0) {
+s32 GetArenaHi(s32 arg0) {
     u32 a = arg0 * 4;
     a = a + 0x02700000;
     a = a + 0x000FF000;
     return M2C_FIELD(a, s32 *, 0xDC4);
 }
 
-s32 func_02006a24(s32 arg0) {
+s32 GetArenaLo(s32 arg0) {
     u32 a = arg0 * 4;
     a = a + 0x02700000;
     a = a + 0x000FF000;
@@ -574,34 +574,37 @@ extended:
     }
 }
 
-void func_02006bc4(s32 arg0, s32 arg1) {
+void SetArenaHi(s32 arg0, s32 arg1) {
     M2C_FIELD((((u32)arg0 * 4) + (s32)0x027FF000), s32 *, 0xDC4) = arg1;
 }
 
-void func_02006bd8(s32 arg0, s32 arg1) {
+void SetArenaLo(s32 arg0, s32 arg1) {
     M2C_FIELD(((arg0 * 4) + (unsigned)0x027FF000), s32 *, 0xDA0) = arg1;
 }
 
-s32 func_02006bec(s32 arg0, s32 arg1, s32 arg2) {
-    s32 temp_r0;
-    s32 temp_r2;
-    s32 temp_r4;
-    s32 temp;
-    u32 temp_r5;
+/* Allocate size bytes with the given alignment from an arena: align the arena's
+ * low bound up, align the end of the block up too, and fail when that end would
+ * pass the arena's high bound.  Returns the aligned block address. */
+s32 AllocFromArena(s32 arena, s32 size, s32 alignment) {
+    s32 lo;
+    s32 alignMask;
+    s32 start;
+    s32 end;
+    u32 alignedEnd;
 
-    temp_r0 = func_02006a24(arg0);
-    if (temp_r0 == 0) {
+    lo = GetArenaLo(arena);
+    if (lo == 0) {
         return 0;
     }
-    temp_r2 = ~(arg2 - 1);
-    temp_r4 = temp_r2 & ((temp_r0 + arg2) - 1);
-    temp = temp_r4 + arg1;
-    temp_r5 = temp_r2 & ((temp + arg2) - 1);
-    if (temp_r5 > (u32)func_02006a10(arg0)) {
+    alignMask = ~(alignment - 1);
+    start = alignMask & ((lo + alignment) - 1);
+    end = start + size;
+    alignedEnd = alignMask & ((end + alignment) - 1);
+    if (alignedEnd > (u32)GetArenaHi(arena)) {
         return 0;
     }
-    func_02006bd8(arg0, temp_r5);
-    return temp_r4;
+    SetArenaLo(arena, alignedEnd);
+    return start;
 }
 
 void func_02006c58(void) {
@@ -614,17 +617,17 @@ void func_02006c58(void) {
  * it, and when the vector holds none, write this module's exception entry there
  * and into the OS work area's vector.  The handler state's third word is then
  * cleared. */
-void func_02006ce4(void) {
-extern u32 data_0212df04[3];
+void InstallExceptionHandler(void) {
+extern u32 gExceptionHandlerState[3];
 void func_02006d54(void);
 u32 leftHandler=*(u32 *)0x27ffd9c;
-if(leftHandler>=0x2600000u && leftHandler<0x2800000u) data_0212df04[0]=leftHandler;
-else data_0212df04[0]=0;
-if(data_0212df04[0]==0) {
+if(leftHandler>=0x2600000u && leftHandler<0x2800000u) gExceptionHandlerState[0]=leftHandler;
+else gExceptionHandlerState[0]=0;
+if(gExceptionHandlerState[0]==0) {
 *(u32 *)0x27ffd9c=(u32)func_02006d54;
 {u32 *osArea=(u32 *)0x27e3000; osArea[0x3f7]=(u32)func_02006d54;}
 }
-data_0212df04[2]=0;
+gExceptionHandlerState[2]=0;
 }
 
 #pragma optimization_level 4

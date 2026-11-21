@@ -4,7 +4,7 @@
 typedef struct { s32 x,y,z; } Vec02086dfc;
 extern const Vec02086dfc gSpriteSceneCameraEye, gSpriteSceneCameraUp;
 extern void (*data_02168fe8)(void);
-extern u8 data_02157718[4];
+extern u8 gEventFlagsLow[4];
 
 /* Push-to-talk voice-chat widget (same fields as the definition in main_020852F4). */
 typedef struct VoiceChatWidget {
@@ -397,16 +397,16 @@ s32 func_02086a30(s32 arg0) {
 
 void func_02086a50(s32 arg0,s32 arg1) {
  s32 shift; s32 mask;
- if(arg1) {shift=arg0&7;mask=1<<shift;data_02157718[arg0>>3]|=mask;}
- else {shift=arg0&7;mask=-1^(1<<shift);data_02157718[arg0>>3]&=mask;}
+ if(arg1) {shift=arg0&7;mask=1<<shift;gEventFlagsLow[arg0>>3]|=mask;}
+ else {shift=arg0&7;mask=-1^(1<<shift);gEventFlagsLow[arg0>>3]&=mask;}
 }
 
 s32 func_02086aa0(s32 arg0) {
- s32 shift=arg0&7;u8 value=data_02157718[arg0>>3];return (u8)(value&(1<<shift));
+ s32 shift=arg0&7;u8 value=gEventFlagsLow[arg0>>3];return (u8)(value&(1<<shift));
 }
 
 void func_02086ac0(void) {
- s32 i=0;u8 *p=data_02157718;u8 zero=i;
+ s32 i=0;u8 *p=gEventFlagsLow;u8 zero=i;
  do{i++;*p++=zero;}while(i<4);
 }
 
@@ -531,13 +531,13 @@ void SetDefault3DLightMaterial(void) {
  * default polygon attribute, place the look-at camera, set the default light and
  * material, then start a new projection matrix and write a straight normal. */
 void SetupSprite3DScene(void) {
- void func_02003bd0(void);
+ void G3X_Reset(void);
  void func_0200402c(Vec02086dfc *,Vec02086dfc *,Vec02086dfc *,s32,s32);
  void SetDefault3DLightMaterial(void);
  Vec02086dfc eye=gSpriteSceneCameraEye;
  Vec02086dfc center={0,0,0};
  Vec02086dfc up=gSpriteSceneCameraUp;
- func_02003bd0();func_0200402c(&eye,&up,&center,1,0);SetDefault3DLightMaterial();
+ G3X_Reset();func_0200402c(&eye,&up,&center,1,0);SetDefault3DLightMaterial();
  REG_GX_MTX_PUSH=0;REG_GX_MTX_MODE=3;
  REG_GX_MTX_IDENTITY=0;REG_GX_MTX_MODE=2;
  REG_GX_NORMAL=0x20000000;

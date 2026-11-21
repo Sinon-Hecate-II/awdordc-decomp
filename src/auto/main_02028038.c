@@ -75,8 +75,8 @@ M2C_UNK WFC_RearmStateTimer(void) {
 
 void WFC_StateTimerCallback(void) {
     M2C_UNK WFC_RearmStateTimer();
-    M2C_UNK func_02029714();
-    func_02029714();
+    M2C_UNK WFC_SendConnDataRequest();
+    WFC_SendConnDataRequest();
     WFC_RearmStateTimer();
 }
 

@@ -522,7 +522,7 @@ void func_01ffaa6c(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x31) = (u8) (M2C_FIELD(arg0, u8 *, 0x31) - 1);
 }
 
-u32 func_01ffaa7c(void *arg0) {
+u32 GetSpriteParent(void *arg0) {
     u32 var_r0;
 
     var_r0 = M2C_FIELD(arg0, u32 *, 0x18);

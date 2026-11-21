@@ -129,11 +129,15 @@ u8 func_020d1a74(void) {
     return var_r0;
 }
 
+/* Return 1 when the turn after the current player's begins a new day.  It scans
+ * for the next active player (1..MAX_PLAYERS-1, wrapping) past the current one;
+ * when that scan passes the end of the roster the turn order starts over, so the
+ * next player's index is below the current one. */
 u8 WillNextTurnStartNewDay(void) {
- extern void **gCurrentMap;
- u16 n=M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
- do { n++; if(n==5)n=1; } while(!IsPlayerActive(n));
- return n<M2C_FIELD(*gCurrentMap,u16 *,0x52a4);
+    extern void **gCurrentMap;
+    u16 nextPlayer = M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
+    do { nextPlayer++; if (nextPlayer == MAX_PLAYERS) nextPlayer = 1; } while (!IsPlayerActive(nextPlayer));
+    return nextPlayer < M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
 }
 
 s32 HasActiveHumanPlayer(void) {

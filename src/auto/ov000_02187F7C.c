@@ -268,22 +268,24 @@ void func_ov000_02188688(void) {
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
 }
 
-void CanDoAiAction2(s32 arg0, s32 arg1) {
+/* AI action check for unit AI state 2: flood-fill the acting unit's movement
+ * range from (x, y), then run the objective check that rejects the action when
+ * an enemy HQ lies inside it. */
+void CanDoAiAction2(s32 x, s32 y) {
     s32 AiRangeReachesEnemyHq(void);
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
-    s32 current, offset;
-    u8 result;
-    void *base, *table;
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
+    s32 unitOffset;
+    void *map, *unitRecords;
+    map = *gCurrentMap;
+    unitRecords = (u8 *)map + MAP_UNIT_RECORDS;
+    unitOffset = M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(unitRecords, u8 *, unitOffset) << 26) >> 26, GetAiUnitSearchRange((u8 *)unitRecords + unitOffset), 0);
 
     AiRangeReachesEnemyHq();
 }
 
-u8 func_ov000_02188744(void) {
+u8 AiPropertiesOutnumberAttackUnits(void) {
     s32 CountAiAttackTargetUnits();
     s32 temp_r4;
     u8 var_r0;
@@ -313,24 +315,25 @@ void func_ov000_02188790(void) {
     extern void *gAiCommandState;
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))func_ov000_02188744;
+    data_ov000_021df64c = (s32 (*)(void))AiPropertiesOutnumberAttackUnits;
     data_ov000_021df648 = func_ov000_02188778;
     func_ov000_02187f7c();
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_021884e4();
 }
 
-void CanDoAiAction34(s32 arg0, s32 arg1) {
+/* AI action kind 34: flood-fill the cursor unit's search range from (x, y), then
+ * check whether the team's capturable properties outnumber its attack units. */
+void CanDoAiAction34(s32 x, s32 y) {
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
-    s32 current, offset;
-    u8 result;
-    void *base, *table;
-    base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
-    func_ov000_02188744();
+    s32 unitOffset;
+    void *map, *units;
+    map = *gCurrentMap;
+    units = (u8 *)map + MAP_UNIT_RECORDS;
+    unitOffset = M2C_FIELD(M2C_FIELD(map, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_NEXT_CARRIED) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(units, u8 *, unitOffset) << 26) >> 26, GetAiUnitSearchRange((u8 *)units + unitOffset), 0);
+    AiPropertiesOutnumberAttackUnits();
 }
 
 /* Returns 1 when the HQ cell of the current player (the side whose turn it is)
@@ -366,16 +369,18 @@ void func_ov000_021888ec(void) {
     func_ov000_021884e4();
 }
 
-void CanDoAiAction5(s32 arg0, s32 arg1) {
+/* Whether AI action 5 is possible from (x, y): flood-fill the cursor unit's search
+ * range, using its own kind and range, then test that range against the player's HQ. */
+void CanDoAiAction5(s32 x, s32 y) {
     s32 GetAiUnitSearchRange(void *);
     extern void **gCurrentMap;
-    s32 current, offset;
-    u8 result;
+    s32 offset;
     void *base, *table;
+
     base = *gCurrentMap;
-    table = (u8 *)base + 0x59A4;
-    offset = M2C_FIELD(M2C_FIELD(base, void **, 0x52D0), u8 *, 0xD) * 14;
-    FloodFillUnitRange(arg0, arg1, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
+    table = (u8 *)base + MAP_UNIT_RECORDS;
+    offset = M2C_FIELD(M2C_FIELD(base, void **, MAP_CURSOR_UNIT), u8 *, 0xD) * MAP_UNIT_STRIDE;
+    FloodFillUnitRange(x, y, (u32)(M2C_FIELD(table, u8 *, offset) << 26) >> 26, GetAiUnitSearchRange((u8 *)table + offset), 0);
     AiRangeReachesPlayerHq();
 }
 

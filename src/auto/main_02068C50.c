@@ -137,17 +137,19 @@ s32 StringSpanUntil(u8 *string, u8 *accept) {
     return q-string-1;
 }
 
-u8 *StringFind(u8 *a,u8 *b) {
-u8 first,c,x,y;
-u8 *p,*q,*r;
-if(!b || !(first=*b)) return a;
-c=*a;
-p=a+1;
+/* strstr: return a pointer to the first occurrence of `needle` in `text`, or
+ * NULL when it does not occur.  An empty needle matches the start of `text`. */
+u8 *StringFind(u8 *text,u8 *needle) {
+u8 first,c,wanted,found;
+u8 *p,*scan,*q;
+if(!needle || !(first=*needle)) return text;
+c=*text;
+p=text+1;
 while(c) {
 if(c==first) {
-q=p;r=b+1;
-do {y=*r++;x=*q++;} while(x==y && x);
-if(!y) return p-1;
+scan=p;q=needle+1;
+do {wanted=*q++;found=*scan++;} while(found==wanted && found);
+if(!wanted) return p-1;
 }
 c=*p++;
 }

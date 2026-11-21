@@ -277,56 +277,59 @@ s32 func_020b4264(u8 *arg0) {
 }
 #pragma opt_strength_reduction reset
 /* Save the battle prefix into `record`: the random seed, the 32 low event flags
- * (data_02157718) and the saved battle-view state, then let func_020b3c48 fill
+ * (gEventFlagsLow) and the saved battle-view state, then let func_020b3c48 fill
  * in the map and unit data behind them. */
 void SaveBattleToRecord(void *record) {
     s32 GetRandomSeed();
-    extern u8 data_02157718;
-    extern M2C_UNK data_02168f68;
+    extern u8 gEventFlagsLow;
+    extern M2C_UNK gBattleViewState;
     s32 i;
     u8 *p;
     u8 flagByte;
 
     M2C_FIELD(record, s32 *, 0) = GetRandomSeed();
-    p = &data_02157718;
+    p = &gEventFlagsLow;
     i = 0;
     do {
         flagByte = *p++;
         M2C_FIELD(record + i, u8 *, 4) = flagByte;
         i++;
     } while (i < 4);
-    M2C_FIELD(record, s16 *, 8) = M2C_FIELD(&data_02168f68, s16 *, 0);
-    M2C_FIELD(record, s16 *, 10) = M2C_FIELD(&data_02168f68, s16 *, 2);
-    M2C_FIELD(record, s16 *, 12) = M2C_FIELD(&data_02168f68, s16 *, 4);
-    M2C_FIELD(record, s16 *, 14) = M2C_FIELD(&data_02168f68, s16 *, 6);
-    M2C_FIELD(record, s32 *, 16) = M2C_FIELD(&data_02168f68, s32 *, 8);
+    M2C_FIELD(record, s16 *, 8) = M2C_FIELD(&gBattleViewState, s16 *, 0);
+    M2C_FIELD(record, s16 *, 10) = M2C_FIELD(&gBattleViewState, s16 *, 2);
+    M2C_FIELD(record, s16 *, 12) = M2C_FIELD(&gBattleViewState, s16 *, 4);
+    M2C_FIELD(record, s16 *, 14) = M2C_FIELD(&gBattleViewState, s16 *, 6);
+    M2C_FIELD(record, s32 *, 16) = M2C_FIELD(&gBattleViewState, s32 *, 8);
     func_020b3c48(record);
 }
 
-void RestoreBattleFromRecord(void *arg0) {
-    M2C_UNK func_0207c2d0(s32);
+/* Restore the battle prefix from a save `record` (the inverse of SaveBattleToRecord):
+ * rebuild the map, reseed the random generator, then put back the 32 low event
+ * flags and the saved battle-view state. */
+void RestoreBattleFromRecord(void *record) {
+    M2C_UNK SetRandomSeed(s32);
     M2C_UNK func_020b4264();
-    extern u8 data_02157718;
-    extern M2C_UNK data_02168f68;
-    s32 var_r1;
-    u8 *var_r2;
-    u8 temp_r0;
+    extern u8 gEventFlagsLow;
+    extern M2C_UNK gBattleViewState;
+    s32 index;
+    u8 *flagPtr;
+    u8 flagByte;
 
     func_020b4264();
-    func_0207c2d0(M2C_FIELD(arg0, s32 *, 0));
-    var_r2 = &data_02157718;
-    var_r1 = 0;
+    SetRandomSeed(M2C_FIELD(record, s32 *, 0));
+    flagPtr = &gEventFlagsLow;
+    index = 0;
     do {
-        temp_r0 = M2C_FIELD((arg0 + var_r1), u8 *, 4);
-        var_r1 += 1;
-        *var_r2 = temp_r0;
-        var_r2 += 1;
-    } while (var_r1 < 4);
-    M2C_FIELD(&data_02168f68, s16 *, 0) = (s16) M2C_FIELD(arg0, s16 *, 8);
-    M2C_FIELD(&data_02168f68, s16 *, 2) = (s16) M2C_FIELD(arg0, s16 *, 0xA);
-    M2C_FIELD(&data_02168f68, s16 *, 4) = (s16) M2C_FIELD(arg0, s16 *, 0xC);
-    M2C_FIELD(&data_02168f68, s16 *, 6) = (s16) M2C_FIELD(arg0, s16 *, 0xE);
-    M2C_FIELD(&data_02168f68, s32 *, 8) = (s32) M2C_FIELD(arg0, s32 *, 0x10);
+        flagByte = M2C_FIELD((record + index), u8 *, 4);
+        index += 1;
+        *flagPtr = flagByte;
+        flagPtr += 1;
+    } while (index < 4);
+    M2C_FIELD(&gBattleViewState, s16 *, 0) = (s16) M2C_FIELD(record, s16 *, 8);
+    M2C_FIELD(&gBattleViewState, s16 *, 2) = (s16) M2C_FIELD(record, s16 *, 0xA);
+    M2C_FIELD(&gBattleViewState, s16 *, 4) = (s16) M2C_FIELD(record, s16 *, 0xC);
+    M2C_FIELD(&gBattleViewState, s16 *, 6) = (s16) M2C_FIELD(record, s16 *, 0xE);
+    M2C_FIELD(&gBattleViewState, s32 *, 8) = (s32) M2C_FIELD(record, s32 *, 0x10);
 }
 
 void func_020b4b20(void) {

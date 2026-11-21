@@ -508,7 +508,7 @@ void func_020c0f18(void) {
 M2C_UNK DrawCarriedUnitListBatch(void *p) {
 extern u8 data_02163f30[];
 void SetCurrentSpriteBatch(void *);void InitSpriteBatch(s32,s32,s32,s32);
-void AddSpriteToBatch(u8,u8);void func_0207bdc4(void);void DrawSpriteBatchAt(s32,s32);
+void AddSpriteToBatch(u8,u8);void LoadSpriteBatchGraphics(void);void DrawSpriteBatchAt(s32,s32);
 MenuC0634 *list=(MenuC0634 *)p;
 s32 i;u16 icon;
 SetCurrentSpriteBatch(data_02163f30);
@@ -517,7 +517,7 @@ for(i=0;i<list->count;i++) {
 icon=((MenuRowC0634 *)GetCarriedUnitListEntry(p,i))->icon;
 AddSpriteToBatch((u8)icon,(u8)GetCarriedUnitListEntryStatus((s32)p,i));
 }
-func_0207bdc4();
+LoadSpriteBatchGraphics();
 DrawSpriteBatchAt(list->x,list->y);
 }
 
@@ -544,7 +544,7 @@ func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
 func_020ab150(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
 }
 
-void func_020c1078(void) {
+void RefreshPlayerColorIndices(void) {
     s8 GetPlayerIdForSlot(s32);
     extern s8 gPlayerColorIndex;
     s32 var_r4;
@@ -589,8 +589,8 @@ void func_020c1190(void) {
 
 void func_020c1194(void *arg0) {
     M2C_UNK DrawMapUnitMarkers(s32);
-    M2C_UNK func_020c15ec(s32);
-    M2C_UNK func_020c1768(s32);
+    M2C_UNK CopyMapPreviewTopHalf(s32);
+    M2C_UNK CopyMapPreviewBottomHalf(s32);
     s16 temp_r2;
     s32 temp_r1;
 
@@ -599,10 +599,10 @@ void func_020c1194(void *arg0) {
     temp_r1 = temp_r2 & 0x3F;
     switch (temp_r1) {                              /* irregular */
     case 0:
-        func_020c15ec(M2C_FIELD(arg0, s32 *, 0x34));
+        CopyMapPreviewTopHalf(M2C_FIELD(arg0, s32 *, 0x34));
         return;
     case 1:
-        func_020c1768(M2C_FIELD(arg0, s32 *, 0x34));
+        CopyMapPreviewBottomHalf(M2C_FIELD(arg0, s32 *, 0x34));
         return;
     case 22:
         DrawMapUnitMarkers(M2C_FIELD(arg0, s32 *, 0x34));

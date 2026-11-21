@@ -24,7 +24,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK func_020abbfc(void *);
     s32 func_ov003_021e6cc4(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     s32 func_ov003_021e6d28();
-    s32 func_ov003_021e6e40();
+    s32 IsMapListCategory3();
     M2C_UNK GetWaypointOptionTextId(s8);
     M2C_UNK func_ov003_021ef210(void *, s32, s32, M2C_UNK);
     M2C_UNK func_ov003_021ef758(void *, s32);
@@ -256,7 +256,7 @@ after_56:
             AddSprite(0xC0, (u8) (s16) (((temp_r3_3 << 5) / 98) + 0xA0), (u16) ((0x3FF & (0x660 >> ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x11) >> 0x1E))) | 0x8000), &gSpriteDesc64x32, 0xB);
         }
     }
-    if ((func_ov003_021e6e40() != 0) && (IsLinkSessionActive() != 0)) {
+    if ((IsMapListCategory3() != 0) && (IsLinkSessionActive() != 0)) {
         temp_r1_3 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x4C)) - 0x5E;
         temp_r3_4 = ((temp_r1_3 * 0xA) / 98);
         temp_r1_4 = M2C_FIELD(arg0, void **, 0x60);

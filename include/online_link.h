@@ -7,6 +7,7 @@
 #define ONLINE_PEER_IDLE_FRAMES 0x38 /* s32[4] frames since each peer's last packet */
 #define ONLINE_PEER_COUNT 4
 #define ONLINE_PACKET_HEARTBEAT 1
+#define ONLINE_PACKET_PLAYER_STATUS 7 /* broadcast the sender's online player record to the peers */
 #define ONLINE_HEARTBEAT_INTERVAL_MS 4000
 #define ONLINE_PEER_TIMEOUT_NUMERATOR 1800000
 #define ONLINE_MILLISECONDS_PER_SECOND 1000
@@ -53,5 +54,20 @@ public:
 };
 #pragma cplusplus off
 #endif
+
+/* An online packet as queued and sent on the link: a 12-byte header followed
+ * immediately by `size` payload bytes.  In a queued node the payload therefore
+ * starts at ONLINE_QUEUE_NODE_HEADER (0x10), after the 4-byte link pointer.
+ * The magic tags a header as valid when a raw buffer is parsed. */
+#define ONLINE_PACKET_MAGIC       0x5F57464D /* 'MFW_' */
+#define ONLINE_PACKET_HEADER_SIZE 0x0C       /* bytes before the payload */
+typedef struct Ov010Packet {
+    u32 magic;        /* +0x00: ONLINE_PACKET_MAGIC when valid */
+    u8  kind;         /* +0x04: packet kind (ONLINE_PACKET_*) */
+    u8  channel : 4;  /* +0x05 low nibble: target channel */
+    u8  flags : 4;    /* +0x05 high nibble */
+    u16 id;           /* +0x06: packet id */
+    u32 size;         /* +0x08: payload byte count */
+} Ov010Packet;        /* 0x0C bytes; payload follows */
 
 #endif

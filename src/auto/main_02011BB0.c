@@ -479,7 +479,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     void CpuFill(s32, void *, s32);
     void MIi_CpuCopy32(void *, void *, s32);
     s32 WFC_SendCommandPacket(void *, s32);
-    s32 func_02011b44();
+    s32 MultiBoot_GetMinSendTag();
     u32 packet[16];
     s32 rc;
     void *ctx;
@@ -496,7 +496,7 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     DC_InvalidateRange(ctx + 0x9C, 2);
     if (!M2C_FIELD(ctx, u16 *, 0x9C)) {
         if (payloadSize < MultiBoot_GetMinPayloadSize()) return 6;
-        if ((s32)tag < func_02011b44()) return 6;
+        if ((s32)tag < MultiBoot_GetMinSendTag()) return 6;
     }
     WFC_SetChannelParam(14, index);
     CpuFill(0, packet, 64);

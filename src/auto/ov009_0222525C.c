@@ -301,15 +301,19 @@ M2C_UNK func_ov009_022257d4(s32 arg0) {
     return func_ov009_02224024();
 }
 
-s32 func_ov009_022257f8(s32 arg0) {
+/* Whether this console's connected-players request is still waiting: the request
+ * slot must hold a record that has been sent, the link must be in an active
+ * phase (4 or 5) and this console must not be the host; the error and abort
+ * phases always stop it waiting.  The actor argument is unused. */
+s32 IsConnectRequestPending(s32 actor) {
     extern M2C_UNK gLinkState;
-    s32 var_r4 = 0;
-    if (M2C_FIELD(&gLinkState, u8 **, 0x24) != NULL &&
-        *M2C_FIELD(&gLinkState, u8 **, 0x24) != 0) var_r4 = 1;
-    if (GetLinkPhase() != 4 && GetLinkPhase() != 5) var_r4 = 0;
-    if (IsLinkHost() != 0) var_r4 = 0;
-    if (GetLinkPhase() == 8 || GetLinkPhase() == 9) var_r4 = 0;
-    return var_r4;
+    s32 pending = 0;
+    if (M2C_FIELD(&gLinkState, void **, LINK_STATE_CONNECT_REQUEST) != NULL &&
+        M2C_FIELD(M2C_FIELD(&gLinkState, void **, LINK_STATE_CONNECT_REQUEST), u8 *, LINK_REQUEST_SENT) != 0) pending = 1;
+    if (GetLinkPhase() != LINK_PHASE_ACTIVE && GetLinkPhase() != LINK_PHASE_INGAME) pending = 0;
+    if (IsLinkHost() != 0) pending = 0;
+    if (GetLinkPhase() == LINK_PHASE_ERROR || GetLinkPhase() == LINK_PHASE_ABORTED) pending = 0;
+    return pending;
 }
 
 void func_ov009_02225864() {
@@ -323,8 +327,8 @@ void func_ov009_02225878(s32 arg0) {
 }
 
 void func_ov009_02225888(s32 arg0) {
-    M2C_UNK func_ov009_022257f8(s32);
-    func_ov009_022257f8(arg0 + 0x34);
+    M2C_UNK IsConnectRequestPending(s32);
+    IsConnectRequestPending(arg0 + 0x34);
 }
 
 void func_ov009_02225898(s32 arg0) {
@@ -637,19 +641,23 @@ void func_ov009_02225db4(void) {
     DeleteSpriteObject();
 }
 
-void func_ov009_02225dd4(void *arg0) {
+/* Start the split-screen fade on each screen whose earlier split transition has
+ * finished: bits 1 and 2 of the sprite's flags mark the main and sub screens
+ * that are waiting for it, and each fade starts once GetScreenFlag says that
+ * screen's transition is no longer running. */
+void StartLinkSplitFades(void *sprite) {
     s32 GetScreenFlag(M2C_UNK);
     M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        StartScreenFadeChildren(2, 8, 0, arg0);
+    if ((M2C_FIELD(sprite, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
+        StartScreenFadeChildren(2, 8, 0, sprite);
     }
-    if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
+    if (!(M2C_FIELD(sprite, u8 *, 0x34) & 2)) {
         return;
     }
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, sprite);
 }
 
 /* Redraws a link status-text layer: looks up its localized text and style,
@@ -694,17 +702,21 @@ void func_ov009_02225f44(void) {
 
 }
 
-void func_ov009_02225f48(void *arg0) {
+/* Create the split-screen transition on each screen whose transition flag is
+ * currently set, and set that screen's bit (1 main, 2 sub) in the sprite's
+ * flags so StartLinkSplitFades knows to start its split fade once the
+ * transition has finished. */
+void StartLinkSplitTransitions(void *sprite) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        CreateScreenTransitionChildren(2, 8, 0, arg0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
+        CreateScreenTransitionChildren(2, 8, 0, sprite);
+        M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 1, arg0);
-    M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
+    CreateScreenTransitionChildren(2, 8, 1, sprite);
+    M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 2);
 }
 
 /* Creates the link overlay's status-text label for `owner`: it shows the
@@ -731,17 +743,20 @@ M2C_UNK CreateLinkStatusLabel(s8 engine, u16 textValue, s32 status, void *owner)
     M2C_FIELD(label, s32 *, LINK_LAYER_STYLE) = 2;
 }
 
-void func_ov009_02226034(void *arg0) {
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        StartScreenFadeChildren(2, 8, 0, arg0);
+/* Link-status screen update: start the split-screen fade on each screen whose
+ * earlier split transition has finished.  Bits 1 and 2 of the sprite's flags
+ * mark the main and sub screens that are waiting for the fade. */
+void StartLinkStatusSplitFades(void *sprite) {
+    if ((M2C_FIELD(sprite, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
+        StartScreenFadeChildren(2, 8, 0, sprite);
     }
-    if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
+    if (!(M2C_FIELD(sprite, u8 *, 0x34) & 2)) {
         return;
     }
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, sprite);
 }
 
 void func_ov009_022260a0(void *arg0) {
@@ -761,16 +776,19 @@ void func_ov009_022260d8(void) {
 
 }
 
-void func_ov009_022260dc(void *arg0) {
+/* Link-status screen update: create the split-screen transition on each screen
+ * whose transition flag is set, and set that screen's bit (1 main, 2 sub) in the
+ * sprite's flags so StartLinkStatusSplitFades starts its fade afterwards. */
+void StartLinkStatusSplitTransitions(void *sprite) {
     if (GetScreenFlag(0) == 1) {
-        CreateScreenTransitionChildren(2, 8, 0, arg0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
+        CreateScreenTransitionChildren(2, 8, 0, sprite);
+        M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 1, arg0);
-    M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
+    CreateScreenTransitionChildren(2, 8, 1, sprite);
+    M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 2);
 }
 
 void func_ov009_02226148(void) {

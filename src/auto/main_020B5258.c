@@ -195,7 +195,7 @@ void ExplodeUnit(M2C_UNK arg0) {
     func_020b567c(arg0, 1);
 }
 
-void func_020b577c(M2C_UNK arg0) {
+void RemoveUnitWithEffect(M2C_UNK arg0) {
     M2C_UNK func_020b567c(M2C_UNK, M2C_UNK);
     func_020b567c(arg0, 0);
 }
@@ -514,7 +514,7 @@ void StepMissileStrike(MissileEffect *effect) {
 }
 
 void func_020b6124(void *arg0) {
-    M2C_UNK func_02076910(s32, s32);
+    M2C_UNK PinMapCellCorners(s32, s32);
     M2C_UNK DamageUnitAtTile(s32, s32, s32);
     s32 temp_r4;
     s32 temp_r5;
@@ -526,7 +526,7 @@ void func_020b6124(void *arg0) {
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x5C);
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
     temp_r6 = M2C_FIELD(arg0, s32 *, 0x60);
-    func_02076910(temp_r4, temp_r5);
+    PinMapCellCorners(temp_r4, temp_r5);
     DamageUnitAtTile(temp_r4, temp_r5, temp_r6);
 }
 

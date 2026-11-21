@@ -123,27 +123,32 @@ void InitIntroLogo(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x38) = 2U;
 }
 
-void func_ov011_0222166c(void *arg0) {
+/* Pick the intro logo's next state and animation from its presentation mode:
+ * in stage 0 mode 1 goes to the title (state 2, animation 2), any other mode
+ * except 2 to the opening (state 1), and mode 2 to the stage sequence (state 3,
+ * animation 6); on the later stages only mode 2 does anything, playing
+ * animation 4. */
+void AdvanceIntroLogo(void *logo) {
     M2C_UNK SetSpriteAnimation(void *, s32);
-    s32 temp_r1;
-    if (M2C_FIELD(arg0, u8 *, 0x39) == 0) {
-        temp_r1 = M2C_FIELD(arg0, s32 *, 0x3C);
-        if (temp_r1 == 1) {
-            M2C_FIELD(arg0, u8 *, 0x38) = 2;
-            M2C_FIELD(arg0, s16 *, 0x34) = 0x10;
-            SetSpriteAnimation(arg0, 2);
+    s32 mode;
+    if (M2C_FIELD(logo, u8 *, INTRO_STAGE) == 0) {
+        mode = M2C_FIELD(logo, s32 *, INTRO_MODE);
+        if (mode == 1) {
+            M2C_FIELD(logo, u8 *, INTRO_STATE) = 2;
+            M2C_FIELD(logo, s16 *, INTRO_TIMER) = 0x10;
+            SetSpriteAnimation(logo, 2);
             return;
         }
-        if (temp_r1 != 2) {
-            M2C_FIELD(arg0, u8 *, 0x38) = 1;
+        if (mode != 2) {
+            M2C_FIELD(logo, u8 *, INTRO_STATE) = 1;
             return;
         }
-        M2C_FIELD(arg0, u8 *, 0x38) = 3;
-        SetSpriteAnimation(arg0, 6);
+        M2C_FIELD(logo, u8 *, INTRO_STATE) = 3;
+        SetSpriteAnimation(logo, 6);
         return;
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 2) return;
-    SetSpriteAnimation(arg0, 4);
+    if (M2C_FIELD(logo, s32 *, INTRO_MODE) != 2) return;
+    SetSpriteAnimation(logo, 4);
 }
 
 void func_ov011_022216d8(void *arg0, void *arg1, s32 arg2, s32 arg3) {

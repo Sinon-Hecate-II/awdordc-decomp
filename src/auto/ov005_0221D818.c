@@ -137,9 +137,9 @@ void func_ov005_0221e1e8(void) {
 
 void func_ov005_0221e1f4(M2C_UNK arg0) {
     M2C_UNK func_02086344();
-    M2C_UNK func_02095ff8(M2C_UNK);
+    M2C_UNK SetMessageBoxState(M2C_UNK);
     M2C_UNK func_ov005_02218fd0(M2C_UNK);
-    func_02095ff8(3);
+    SetMessageBoxState(3);
     func_02086344();
     func_ov005_02218fd0(arg0);
 }

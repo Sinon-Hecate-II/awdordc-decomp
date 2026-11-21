@@ -173,11 +173,11 @@ s32 func_020931fc(void *arg0) {
 
 s32 func_02093250(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_0209600c();
+    s32 IsMessageBoxActive();
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
-    if (func_0209600c() == 0) {
+    if (IsMessageBoxActive() == 0) {
         PlaySoundEffect(temp_r4);
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -189,7 +189,7 @@ s32 func_02093288(void *arg0) {
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
-    if (func_0209600c() == 0) {
+    if (IsMessageBoxActive() == 0) {
         PlaySlotPendingSound(0, -1, temp_r4);
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -201,7 +201,7 @@ s32 func_020932c8(void *arg0) {
     s32 var_r4;
 
     var_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         var_r4 = 0;
     }
     func_02090034(0, var_r4);
@@ -212,7 +212,7 @@ s32 func_020932c8(void *arg0) {
 s32 func_02093304(void *arg0) {
 s32 v;
 s32 temp=M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,12);
-if(func_0209600c()!=0) v=1;
+if(IsMessageBoxActive()!=0) v=1;
 else {PlayMusicTrack(temp);v=0;}
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }
@@ -271,7 +271,7 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 s32 func_02093458(void *arg0) {
 extern void **gCurrentMap;
 s32 GetPlayerMusicTrack(s32);
-if(func_0209600c()==0) {
+if(IsMessageBoxActive()==0) {
 s32 v=func_0208f770();
 if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8c4();
 }
@@ -476,15 +476,20 @@ M2C_FIELD(ctx,s32 *,4)+=MAP_SCRIPT_COMMAND_SIZE;
 return 1;
 }
 
-s32 func_02093aa0(void *arg0) {
-extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
-s32 y=M2C_FIELD(p,s16 *,10);
-s32 x=M2C_FIELD(p,s16 *,8);
-void *base=*gCurrentMap;
-u8 id=M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758)),u8 *,0x508);
-if(id) {func_020b577c((u8 *)base+0x59A4+id*14);}
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script command: play the unit-removal effect for the unit standing on the
+ * command's tile (operand 0 is its x, operand 1 its y), then advance the script. */
+s32 MapScriptRemoveUnitAtCell(void *script) {
+    extern void **gCurrentMap;
+    void *command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    s32 tileY = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1);
+    s32 tileX = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0);
+    void *map = *gCurrentMap;
+    u8 unitId = M2C_FIELD((u8 *)map + (tileX + M2C_FIELD((u8 *)map + tileY * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+    if (unitId) {
+        RemoveUnitWithEffect((u8 *)map + MAP_UNIT_RECORDS + unitId * MAP_UNIT_STRIDE);
+    }
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 void func_02093b0c(void *arg0) {

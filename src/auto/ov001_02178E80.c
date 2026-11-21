@@ -648,25 +648,28 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
 
 void func_ov001_02179cb4(void) {
 extern u8 data_ov001_02193d94;
-void func_ov001_02179cf0(void);
+void Ov001_LoadSaveScreenBg(void);
 void func_ov001_02179d5c(void);
 data_ov001_02193d94=0;
-func_ov001_02179cf0();
+Ov001_LoadSaveScreenBg();
 Ov001_LoadSaveSlotObjLayout();
 Ov001_ShowMessageBox(0x23);
 Ov001_PlaySound(0x10);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179d5c);
 }
 
-void func_ov001_02179cf0(void) {
+/* Load the ov001 save screen's background map and lower the priority of the sub
+ * engine's BG0/BG1 and the main engine's BG1/BG2. */
+void Ov001_LoadSaveScreenBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_021906d4;
+    extern M2C_UNK gOv001SaveScreenBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_021906d4, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+
+    Ov001_LoadAsset(&gOv001SaveScreenBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02179d5c(void) {

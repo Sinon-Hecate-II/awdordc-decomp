@@ -15,16 +15,19 @@ extern s8 gOv001MessagePanelActive;
 extern u8 data_ov001_02193cd0[64];
 extern const u8 data_ov001_0218f2f8[8];
 
-void Ov001_IconRow_SlideOut(s32 a){
+/* Frame task that slides the shared icon row into view: lift it four pixels a
+ * frame, and when it reaches its resting y clamp it there and switch to the
+ * intro step that flashes the bars before the row takes input. */
+void Ov001_IconRow_SlideOut(s32 task){
 extern void *gOv001IconRow;
 void Ov001_IconRow_IntroStep(s32);
 void Ov001_GetSpritePosition(s32,s32,s32 *,s32 *);
 void Ov001_IconRow_Layout(s32);
-s32 pos[2];
-Ov001_GetSpritePosition(M2C_FIELD(gOv001IconRow,s32 *,8),0,&pos[1],&pos[0]);
-pos[0]-=4;Ov001_IconRow_Layout(pos[0]);
-if(pos[0]>168)return;
-Ov001_IconRow_Layout(168);Ov001_SetSlideStep(a,(M2C_UNK *)Ov001_IconRow_IntroStep);
+s32 pos[2]; /* [0] y, [1] x */
+Ov001_GetSpritePosition((s32)((Ov001IconRow *)gOv001IconRow)->backdrop,0,&pos[1],&pos[0]);
+pos[0]-=OV001_ICON_ROW_STEP;Ov001_IconRow_Layout(pos[0]);
+if(pos[0]>OV001_ICON_ROW_REST_Y)return;
+Ov001_IconRow_Layout(OV001_ICON_ROW_REST_Y);Ov001_SetSlideStep(task,(M2C_UNK *)Ov001_IconRow_IntroStep);
 }
 
 void Ov001_IconRow_IntroStep(M2C_UNK arg0) {

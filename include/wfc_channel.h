@@ -17,6 +17,7 @@
 /* Link state object fields (u16 unless noted). */
 #define WFC_LINK_STATE            0x00  /* link state; 9/10/11 carry the status value below */
 #define WFC_LINK_TEARDOWN         0x0C  /* s32 1 while the link is being torn down */
+#define WFC_LINK_SEND_SEQUENCE    0x3C  /* u16 sequence the link is sending from; a multiboot packet tag must be at least this, rounded up to 32 */
 #define WFC_LINK_BLOCK_WORDS      0x3E  /* one player's transfer block, in 16-bit words */
 #define WFC_LINK_STATUS_VALUE     0xBC  /* status value the +0xBC link-status getter reports (states 9-11) */
 #define WFC_LINK_PLAYERS          0xF8  /* players taking part in the transfer */

@@ -525,15 +525,17 @@ void ApplySepiaToPalette(u16 *arg0, s32 arg1) {
     }
 }
 
-u16 func_020ae6bc(u16 a) {
-u16 r=a&31,g=(a&0x3e0)>>5,b=(a&0x7c00)>>10;
-u16 v=(r*299+g*587+b*114)/1000;
-s32 c=v&31;
-return c|(c<<5)|(c<<10);
+/* Convert an RGB555 palette colour to its weighted luminance and replicate that
+ * grey level over the three channels. */
+u16 ConvertRgb555ToGrayscale(u16 color) {
+u16 red=color&GX_RGB_CHANNEL_MASK,green=(color&GX_RGB_GREEN_MASK)>>GX_RGB_GREEN_SHIFT,blue=(color&GX_RGB_BLUE_MASK)>>GX_RGB_BLUE_SHIFT;
+u16 luminance=(red*299+green*587+blue*114)/1000;
+s32 gray=luminance&GX_RGB_CHANNEL_MASK;
+return gray|(gray<<GX_RGB_GREEN_SHIFT)|(gray<<GX_RGB_BLUE_SHIFT);
 }
 
 void ApplyGrayscaleToPalette(u16 *arg0, s32 arg1) {
-    u16 func_020ae6bc(u16);
+    u16 ConvertRgb555ToGrayscale(u16);
     s32 i;
     u16 *ptr;
     arg1 /= 2;
@@ -541,7 +543,7 @@ void ApplyGrayscaleToPalette(u16 *arg0, s32 arg1) {
     i = 0;
     if (arg1 > 0) {
         for (; i < arg1; i++) {
-            *ptr = func_020ae6bc(*ptr);
+            *ptr = ConvertRgb555ToGrayscale(*ptr);
             ptr++;
         }
     }

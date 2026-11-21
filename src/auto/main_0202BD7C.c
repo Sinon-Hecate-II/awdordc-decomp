@@ -380,10 +380,10 @@ if(out)*(s32 *)out=r;return 0;
  * wave archives the bank references.  Returns 0 or a nonzero error code
  * (4 = no bank record, 5 = no wave archive record, 8/9 = load failed). */
 s32 LoadSoundBank(s32 bankId,s32 flags,s32 pool,s32 create,s32 out) {
-s32 func_0202cde4(s32,s32,s32);s32 LoadBankWaveArchiveEntries(s32,s32,s32,s32,s32);
+s32 LoadSoundBankArchiveFile(s32,s32,s32);s32 LoadBankWaveArchiveEntries(s32,s32,s32,s32,s32);
 void *bankRecord;void *waveRecord;s32 bank;s32 i;s32 loadWaveArchives;s32 result;s32 waveObject;
 bankRecord=GetSoundBankRecord(bankId);if(!bankRecord)return 4;
-if(flags&2){bank=func_0202cde4(M2C_FIELD(bankRecord,s32 *,0),pool,create);if(!bank)return 8;}
+if(flags&2){bank=LoadSoundBankArchiveFile(M2C_FIELD(bankRecord,s32 *,0),pool,create);if(!bank)return 8;}
 else bank=GetLoadedArchiveFile(M2C_FIELD(bankRecord,u32 *,0));
 loadWaveArchives=flags&4;
 for(i=0;i<4;i++){
@@ -428,26 +428,30 @@ s32 Sound_LoadArchiveFile(s32 fileId, M2C_UNK *freeCallback, s32 freeArg, s32 fr
     return (s32)block;
 }
 
-s32 LoadSoundSequenceFile(M2C_UNK arg0, s32 arg1, s32 arg2) {
+/* Load and cache the sound sequence file `fileId`: if it is already loaded return
+ * that block, otherwise read it from `pool` with the sequence free callback and,
+ * when `create` is set, record the loaded block.  Returns the block, or 0 on
+ * failure. */
+s32 LoadSoundSequenceFile(s32 fileId, s32 pool, s32 create) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
     extern M2C_UNK func_0202d01c;
-    s32 var_r2;
-    s32 var_r4;
+    s32 freeArg;
+    s32 block;
 
-    var_r4 = GetLoadedArchiveFile();
-    if (var_r4 == 0) {
-        if (arg2 == 0) {
-            var_r2 = 0;
+    block = GetLoadedArchiveFile();
+    if (block == 0) {
+        if (create == 0) {
+            freeArg = 0;
         } else {
-            var_r2 = Sound_GetCurrentArchive();
+            freeArg = Sound_GetCurrentArchive();
         }
-        var_r4 = Sound_LoadArchiveFile(arg0, &func_0202d01c, var_r2, arg0, arg1);
-        if ((arg2 != 0) && (var_r4 != 0)) {
-            SetLoadedArchiveFile(arg0, var_r4);
+        block = Sound_LoadArchiveFile(fileId, &func_0202d01c, freeArg, fileId, pool);
+        if ((create != 0) && (block != 0)) {
+            SetLoadedArchiveFile(fileId, block);
         }
     }
-    return var_r4;
+    return block;
 }
 

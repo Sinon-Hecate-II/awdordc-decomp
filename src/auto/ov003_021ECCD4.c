@@ -24,7 +24,7 @@ void func_ov003_021eccd4(void *arg0) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
-    s32 func_ov003_021e6cfc();
+    s32 IsSessionHost();
     s32 func_ov003_021e6d28();
     M2C_UNK SetWaypointListLayout(void *, M2C_UNK);
     s16 GetWaypointSlotX(u8);
@@ -92,7 +92,7 @@ void func_ov003_021eccd4(void *arg0) {
         if (!(var_r0 & 0xFF)) {
             return;
         }
-        if (func_ov003_021e6cfc() == 0) {
+        if (IsSessionHost() == 0) {
             return;
         }
         temp_r0_2 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x64), void **, 4);
@@ -255,9 +255,9 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     s32 InRange(u8, M2C_UNK, M2C_UNK);
-    s32 func_ov003_021e6cfc();
-    s32 func_ov003_021e6e08(u32);
-    M2C_UNK func_ov003_021e6e18(u32);
+    s32 IsSessionHost();
+    s32 GetWaypointGroupFirstSlot(u32);
+    M2C_UNK GetWaypointGroupCount(u32);
     M2C_UNK HandleWaypointInput(void *, u32);
     s16 GetWaypointSlotX(u8);
     M2C_UNK Ov003_SetPanelPlayerFlagTile(M2C_UNK, u8);
@@ -303,11 +303,11 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     if (IsLinkSessionActive() == 0) {
         var_r0 = 1;
     } else {
-        temp_r5 = func_ov003_021e6e08(arg1);
-        func_ov003_021e6e18(arg1);
+        temp_r5 = GetWaypointGroupFirstSlot(arg1);
+        GetWaypointGroupCount(arg1);
         if(temp_r5==0||temp_r5==25||temp_r5==8)var_r0=1;
         else if(temp_r5==4)var_r0=0;
-        else if(func_ov003_021e6cfc()!=0 && temp_r5==21)var_r0=1;else var_r0=0;
+        else if(IsSessionHost()!=0 && temp_r5==21)var_r0=1;else var_r0=0;
     }
     if (var_r0 == 0) {
         return;

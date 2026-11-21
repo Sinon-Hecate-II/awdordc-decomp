@@ -2,10 +2,23 @@
 #include "common.h"
 static inline void Window7fafc(s32 *dst,s32 start,s32 end) { *dst=(start&511)|((end&511)<<16); }
 
+/* The current tile offset of one animated terrain kind, in pixels. */
 typedef struct {
-    s16 unk0;
-    s16 unk2;
-} Unk0207F9F4;
+    s16 x;
+    s16 y;
+} TerrainAnimOffset;
+
+/* One frame of a terrain kind's animation: how many frames it lasts and the tile
+ * offset it shows.  Lists of these end with a zero duration. */
+typedef struct {
+    u8 duration;
+    s8 x;
+    s8 y;
+} TerrainAnimFrame;
+
+#define TERRAIN_ANIM_KIND_COUNT 6 /* animated kinds in gTerrainAnimFrames */
+
+
 
 s32 TerrainByteToTileId(s32 id) {
     switch (id) {                                 /* irregular */
@@ -144,7 +157,7 @@ s32 TerrainByteToTileId(s32 id) {
     }
 }
 
-s32 func_0207f974(u8 *arg0) {
+s32 TerrainAnimTotalFrames(u8 *arg0) {
     s32 var_r1;
     u8 *var_r0;
     u8 var_r2;
@@ -162,7 +175,7 @@ s32 func_0207f974(u8 *arg0) {
     return var_r1;
 }
 
-s32 func_0207f99c(u8 *arg0) {
+s32 GetTerrainAnimFrame(u8 *arg0) {
     s64 U32DivideRem(s32, s32);
     extern s32 gFrameCounter;
     s32 var_r1;
@@ -171,7 +184,7 @@ s32 func_0207f99c(u8 *arg0) {
     u8 var_r0;
     var_r5 = arg0;
     var_r4 = 0;
-    var_r1 = U32DivideRem(gFrameCounter, func_0207f974(arg0)) >> 32;
+    var_r1 = U32DivideRem(gFrameCounter, TerrainAnimTotalFrames(arg0)) >> 32;
     var_r0 = *var_r5;
     while (var_r0 != 0) {
         if (var_r1 <= var_r0) return var_r4;
@@ -184,30 +197,33 @@ s32 func_0207f99c(u8 *arg0) {
 }
 
 #pragma scheduling off
-void func_0207f9f4(void) {
-    extern u8 *data_0210188c[];
-    extern s32 data_0214c0c8[];
+/* Refresh the current tile offsets of the six animated terrain kinds: for each
+ * kind with a frame list, pick the frame gFrameCounter falls in and copy that
+ * frame's x/y offset out. */
+void UpdateTerrainAnimOffsets(void) {
+    extern u8 *gTerrainAnimFrames[];
+    extern s32 gTerrainAnimOffsets[];
     s32 i = 0;
     s32 zero = i;
-    u8 *entry;
-    u8 *selected;
+    u8 *frameList;
+    u8 *frame;
 
-    for (; i < 6; i++) {
-        entry = data_0210188c[i];
-        if (entry != 0) {
-            selected = entry + func_0207f99c(entry) * 3;
-            ((Unk0207F9F4 *)data_0214c0c8)[i].unk0 = (s8)selected[1];
-            ((Unk0207F9F4 *)data_0214c0c8)[i].unk2 = (s8)selected[2];
+    for (; i < TERRAIN_ANIM_KIND_COUNT; i++) {
+        frameList = gTerrainAnimFrames[i];
+        if (frameList != 0) {
+            frame = frameList + GetTerrainAnimFrame(frameList) * 3;
+            ((TerrainAnimOffset *)gTerrainAnimOffsets)[i].x = (s8)frame[1];
+            ((TerrainAnimOffset *)gTerrainAnimOffsets)[i].y = (s8)frame[2];
         } else {
-            ((Unk0207F9F4 *)data_0214c0c8)[i].unk0 = zero;
-            ((Unk0207F9F4 *)data_0214c0c8)[i].unk2 = zero;
+            ((TerrainAnimOffset *)gTerrainAnimOffsets)[i].x = zero;
+            ((TerrainAnimOffset *)gTerrainAnimOffsets)[i].y = zero;
         }
     }
 }
 #pragma scheduling reset
-s32 func_0207fa64(s32 arg0) {
-    extern s32 data_0214c0c8[];
-    return data_0214c0c8[arg0];
+s32 GetTerrainAnimOffset(s32 arg0) {
+    extern s32 gTerrainAnimOffsets[];
+    return gTerrainAnimOffsets[arg0];
 }
 
 void func_0207fa74(s32 arg0) {

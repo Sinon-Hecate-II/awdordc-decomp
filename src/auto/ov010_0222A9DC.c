@@ -211,19 +211,22 @@ void func_ov010_0222b08c(M2C_UNK arg0) {
     SetSpriteAnimation(arg0, 0x12);
 }
 
-void func_ov010_0222b0b0(void *arg0) {
+/* Online match name-label update: start the split-screen fade on each screen
+ * whose earlier split transition has finished.  Bits 2 and 4 of the label's
+ * flags mark the main and sub screens that are waiting for the fade. */
+void StartOnlineMatchLabelSplitFades(void *label) {
     s32 GetScreenFlag(M2C_UNK);
     M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 2) && (GetScreenFlag(0) == 0)) {
-        StartScreenFadeChildren(2, 8, 0, arg0);
+    if ((M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & 2) && (GetScreenFlag(0) == 0)) {
+        StartScreenFadeChildren(2, 8, 0, label);
     }
-    if (!(M2C_FIELD(arg0, u8 *, 0x34) & 4)) {
+    if (!(M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & 4)) {
         return;
     }
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, label);
 }
 
 void func_ov010_0222b11c(M2C_UNK arg0) {
@@ -498,17 +501,21 @@ void func_ov010_0222b91c(M2C_UNK arg0) {
     SetSpriteAnimation(arg0, 1);
 }
 
-void func_ov010_0222b92c(void *arg0) {
+/* Online-match label update: create the split-screen transition on each screen
+ * whose transition flag is set, and set that screen's bit (2 main, 4 sub) in the
+ * label's flags byte so StartOnlineMatchLabelSplitFades starts its fade once the
+ * transition has finished. */
+void StartOnlineMatchLabelSplitTransitions(void *label) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        CreateScreenTransitionChildren(2, 8, 0, arg0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
+        CreateScreenTransitionChildren(2, 8, 0, label);
+        M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) = (u8) (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) | ONLINE_LABEL_FLAG_SPLIT_MAIN);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 1, arg0);
-    M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 4);
+    CreateScreenTransitionChildren(2, 8, 1, label);
+    M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) = (u8) (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) | ONLINE_LABEL_FLAG_SPLIT_SUB);
 }
 
 void func_ov010_0222b998(void) {

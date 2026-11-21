@@ -36,6 +36,9 @@ enum {
 /* The region with no items just waits before closing instead of taking input. */
 #define OV001_REGION_EMPTY 5
 
+/* Frames an empty region's menu stays up before it closes. */
+#define OV001_REGION_EMPTY_TIMEOUT 120U
+
 /* Pixels a frame the column slides up when its menu opens. */
 #define OV001_REGION_OPEN_STEP 12
 
@@ -50,5 +53,11 @@ enum {
 /* gOv001RegionYs holds two u16 per region; the first is the y the region's open
  * column rests at, read at region * OV001_REGION_Y_STRIDE. */
 #define OV001_REGION_Y_STRIDE 2
+
+/* The shared icon row starts off the bottom edge of the screen, rises four
+ * pixels a frame, and stops at its resting y once it has slid in. */
+#define OV001_ICON_ROW_HIDDEN_Y 192 /* y the row waits at below the screen */
+#define OV001_ICON_ROW_REST_Y   168 /* y the row rests at once in view */
+#define OV001_ICON_ROW_STEP     4   /* pixels the row moves each frame */
 
 #endif

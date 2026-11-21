@@ -507,7 +507,25 @@ s32 FileRead(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return func_0200b8e0(arg0, arg1, arg2, 0);
 }
 
-s32 FileSeek(void *a,s32 b,s32 c){s32 v;switch(c){case 0:b+=M2C_FIELD(a,volatile s32 *,36);break;case 1:b+=M2C_FIELD(a,volatile s32 *,44);break;case 2:b+=M2C_FIELD(a,volatile s32 *,40);break;default:return 0;}v=M2C_FIELD(a,volatile s32 *,36);if(b<v)b=v;v=M2C_FIELD(a,volatile s32 *,40);if(b>v)b=v;M2C_FIELD(a,s32 *,44)=b;return 1;}
+/* Move the file request's read window to `offset`, relative to the window start
+ * (origin 0), the current position (1) or the window end (2).  The new position is
+ * clamped to the window and stored as the stream position; 0 for an unknown origin. */
+s32 FileSeek(void *request, s32 offset, s32 origin) {
+    s32 limit;
+
+    switch (origin) {
+    case 0: offset += M2C_FIELD(request, volatile s32 *, FS_REQ_RANGE_START); break;
+    case 1: offset += M2C_FIELD(request, volatile s32 *, FS_REQ_RANGE_POS); break;
+    case 2: offset += M2C_FIELD(request, volatile s32 *, FS_REQ_RANGE_END); break;
+    default: return 0;
+    }
+    limit = M2C_FIELD(request, volatile s32 *, FS_REQ_RANGE_START);
+    if (offset < limit) offset = limit;
+    limit = M2C_FIELD(request, volatile s32 *, FS_REQ_RANGE_END);
+    if (offset > limit) offset = limit;
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS) = offset;
+    return 1;
+}
 
 s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record gFileCurrentDirectory;InitFileRequest(buf);if(!SubmitPathRequest(buf,a,0,(s32)&v))return 0;gFileCurrentDirectory=v;return 1;}
 
@@ -524,13 +542,33 @@ void func_0200bcb4(M2C_UNK arg0) {
     FileOperationCompleted(arg0, var_r1);
 }
 
-s32 func_0200bcd8(s32 a,s32 b,s32 c,s32 d){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern M2C_UNK data_0212fbfc;func_02010b1c(M2C_FIELD(&data_0212fbfc,s32 *,4),c,b,d,(s32)func_0200bcb4,(void *)a,1);return 6;}
+s32 func_0200bcd8(s32 a,s32 b,s32 c,s32 d){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern FSCardArchiveWork gCardArchiveWork;func_02010b1c(M2C_FIELD(&gCardArchiveWork,s32 *,4),c,b,d,(s32)func_0200bcb4,(void *)a,1);return 6;}
 
 s32 func_0200bd20(void) {
     return 1;
 }
 
-s32 func_0200bd28(s32 a,s32 b){void CARD_LockRom(u16);void CARD_UnlockRom(u16);extern s32 data_0212fbfc;switch(b){case 9:CARD_LockRom((u16)data_0212fbfc);return 0;case 10:CARD_UnlockRom((u16)data_0212fbfc);return 0;case 1:return 4;default:return 8;}}
+/* Command callback of the card archive, installed for its request and idle
+ * events: locks the card ROM while a transfer request is in flight, unlocks it
+ * when the archive goes idle, and reports its own event 1 as handled (0/4).  Any
+ * other command returns 8, letting the generic file command handler take it. */
+s32 CardArchiveCommand(void *request, s32 command) {
+    void CARD_LockRom(u16);
+    void CARD_UnlockRom(u16);
+    extern FSCardArchiveWork gCardArchiveWork;
+    switch (command) {
+    case FS_EVENT_REQUEST:
+        CARD_LockRom((u16)gCardArchiveWork.lockId);
+        return 0;
+    case FS_EVENT_IDLE:
+        CARD_UnlockRom((u16)gCardArchiveWork.lockId);
+        return 0;
+    case 1:
+        return 4;
+    default:
+        return 8;
+    }
+}
 
 s32 func_0200bd94(void) {
     return 1;

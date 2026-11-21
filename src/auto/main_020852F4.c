@@ -346,7 +346,7 @@ void func_02085788(s32 arg0) {
     temp_r0_2 = M2C_FIELD(temp_r0, s8 *, 0x27);
     switch (temp_r0_2) {                            /* irregular */
     case 0:
-        temp_r5 = func_020c4acc();
+        temp_r5 = GetProfileSaveBlock();
         var_r7 = 0;
 loop_10:
         if ((var_r7 != GetOnlineTransportPlayerId()) && (temp_r10 & (1 << var_r7)) && (temp_r0_3 = GetOnlinePlayerRecord(var_r7), (temp_r0_3 != NULL))) {
@@ -448,7 +448,7 @@ void func_020859b4(M2C_UNK arg0) {
     temp_r1 = M2C_FIELD(temp_r0, s8 *, 0x27);
     switch (temp_r1) {                              /* switch 1; irregular */
     case 0:                                         /* switch 1 */
-        temp_r6 = func_020c4acc();
+        temp_r6 = GetProfileSaveBlock();
         values=(u8 *)&data_02157634;
         coords[0]=M2C_FIELD(values,s32 *,12);coords[1]=M2C_FIELD(values,s32 *,8);
         temp_r0_2 = GetPlayerResultAgainst(values[1] + 1, values[4] + 1);
@@ -531,20 +531,20 @@ void func_020859b4(M2C_UNK arg0) {
 #pragma pop
 void func_02085c04(void) {
     M2C_UNK GetServerDateTime(s32);
-    GetServerDateTime(func_020c4acc() + 0x58);
+    GetServerDateTime(GetProfileSaveBlock() + 0x58);
 }
 
 s32 func_02085c18(void) {
-    s32 func_020c4acc();
-    return func_020c4acc() + 0x58;
+    s32 GetProfileSaveBlock();
+    return GetProfileSaveBlock() + 0x58;
 }
 
 void func_02085c28(void) {
-    GetServerDateTime(func_020c4acc() + 0x74);
+    GetServerDateTime(GetProfileSaveBlock() + 0x74);
 }
 
 s32 func_02085c3c(void) {
-    return func_020c4acc() + 0x74;
+    return GetProfileSaveBlock() + 0x74;
 }
 
 void func_02085c4c(void) {

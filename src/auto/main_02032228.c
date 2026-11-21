@@ -28,13 +28,15 @@ void InitNasLoginKey(void *record) {
     func_02031e94(record, 1);
 }
 
-s32 func_020322ec(void *a) {
+/* True when a NAS player record's code is this console's own: its friend code
+ * when the local WFC profile has one, otherwise its generated profile code. */
+s32 IsLocalPlayerCode(void *record) {
 void GetWfcProfileIds(void *);
 u64 GetNasPlayerCode(void *);
-u32 s[5];
-GetWfcProfileIds(s);
-if(s[4]) return *(u64 *)&s[0]==GetNasPlayerCode(a);
-return *(u64 *)&s[2]==GetNasPlayerCode(a);
+WfcProfileIds ids;
+GetWfcProfileIds(&ids);
+if(ids.hasFriendCode) return *(u64 *)&ids.friendCode[0]==GetNasPlayerCode(record);
+return *(u64 *)&ids.profileCode[0]==GetNasPlayerCode(record);
 }
 
 s32 func_02032358(s32 a) {

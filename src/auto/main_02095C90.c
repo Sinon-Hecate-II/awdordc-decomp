@@ -138,22 +138,22 @@ void *Get3DSpriteManager(void);
 M2C_FIELD(Get3DSpriteManager(),s8 *,0x46)=0;
 }
 
-u8 func_02095fe8(void) {
+u8 GetMessageBoxState(void) {
     void *Get3DSpriteManager();
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x46);
 }
 
-void func_02095ff8(s8 arg0) {
+void SetMessageBoxState(s8 arg0) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x46) = arg0;
 }
 
-u8 func_0209600c(void) {
+u8 IsMessageBoxActive(void) {
     u8 var_r0;
 
-    if (func_02095fe8() == 1) {
+    if (GetMessageBoxState() == 1) {
         return 1U;
     }
-    if (func_02095fe8() == 2) {
+    if (GetMessageBoxState() == 2) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -164,10 +164,10 @@ u8 func_0209600c(void) {
 u8 func_02096038(void) {
     u8 var_r0;
 
-    if (func_02095fe8() == 3) {
+    if (GetMessageBoxState() == 3) {
         return 0U;
     }
-    if (func_02095fe8() == 0) {
+    if (GetMessageBoxState() == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -180,13 +180,13 @@ s32 TryStartDialogSkip(void) {
     if (func_02096038() == 0) {
         return 0;
     }
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return 0;
     }
     if (!(*gKeyState & 8)) {
         return 0;
     }
-    func_02095ff8(1);
+    SetMessageBoxState(1);
     return 1;
 }
 
@@ -214,29 +214,33 @@ LayerOffsetToPixel(M2C_FIELD(arg0,s32 *,0x4c),M2C_FIELD((u8 *)gCur3DSpriteEngine
 func_02097c50(GetMenuCursor(),pos[0]+M2C_FIELD(arg0,s16 *,0x4a),pos[1]);
 }
 
-void func_0209614c(void *arg0) {
+/* Per-frame input of a scene-panel message widget: while the text is idle the
+ * Start key begins it; any of Start, A or B (or a screen touch) then plays the
+ * confirm blip, hides the menu cursor and runs the widget's callback, and
+ * resumes the widget's sprite animation. */
+void UpdateMessageWidget(void *widget) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK GetMenuCursor();
     M2C_UNK HideMenuCursor();
     s32 func_0209dc48();
     s32 GetScreenTouchConfirm();
-    s32 temp_r4;
-    u16 temp_r4_2;
+    s32 keyAction;
+    u16 actions;
 
-    temp_r4 = func_0209dc48();
-    temp_r4_2 = temp_r4 | GetScreenTouchConfirm();
-    if ((func_02096038() != 0) && (temp_r4_2 & 0x400)) {
+    keyAction = func_0209dc48();
+    actions = keyAction | GetScreenTouchConfirm();
+    if ((func_02096038() != 0) && (actions & PANEL_INPUT_SKIP)) {
         func_02095ff8(1);
     }
-    if (!(temp_r4_2 & 0x430)) {
+    if (!(actions & (PANEL_INPUT_SKIP | PANEL_INPUT_CONFIRM | PANEL_INPUT_CANCEL))) {
         return;
     }
     PlaySoundEffect(0x10012);
     GetMenuCursor();
     HideMenuCursor();
-    M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
-    Sprite_ResumeAnimation(arg0);
+    M2C_FIELD(widget, M2C_UNK (**)(), 0x44)();
+    Sprite_ResumeAnimation(widget);
 }
 
 /* Lay out the two-state widget p: turn the address of its selected-half tile in the

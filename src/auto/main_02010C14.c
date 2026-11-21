@@ -534,21 +534,24 @@ s32 func_02011af8(s32 arg0) {
     return 0;
 }
 
-s32 func_02011b44(void) {
+/* Smallest multiboot packet tag the link accepts right now: 0 while the channel
+ * is not in state 7 or 8 or the link is being torn down, otherwise the link's
+ * send sequence (link + 0x3C) rounded up to a multiple of 32. */
+s32 MultiBoot_GetMinSendTag(void) {
     s32 WFC_CheckChannelState(s32,...);
-    void *temp_r1;
-    void *temp_r4;
+    void *info;
+    void *link;
 
-    temp_r4 = WFC_GetInfoBlock();
+    info = WFC_GetInfoBlock();
     if (WFC_CheckChannelState(2, 7, 8) != 0) {
         return 0;
     }
-    DC_InvalidateRange(M2C_FIELD(temp_r4, void **, 4) + 0xC, 4);
-    temp_r1 = M2C_FIELD(temp_r4, void **, 4);
-    if (M2C_FIELD(temp_r1, s32 *, 0xC) == 1) {
+    DC_InvalidateRange(M2C_FIELD(info, void **, 4) + 0xC, 4);
+    link = M2C_FIELD(info, void **, 4);
+    if (M2C_FIELD(link, s32 *, 0xC) == 1) {
         return 0;
     }
-    DC_InvalidateRange(temp_r1 + 0x3C, 4);
-    return (M2C_FIELD(M2C_FIELD(temp_r4, void **, 4), u16 *, 0x3C) + 0x1F) & ~0x1F;
+    DC_InvalidateRange(link + 0x3C, 4);
+    return (M2C_FIELD(M2C_FIELD(info, void **, 4), u16 *, 0x3C) + 0x1F) & ~0x1F;
 }
 

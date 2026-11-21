@@ -68,7 +68,7 @@ void HandleWaypointPanelCancel(void *panel, u32 selection) {
 #pragma opt_propagation on
 void ToggleWaypointPanelMode(void *p) {
  void PlaySoundEffect(u32); s32 IsLinkSessionActive(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32);
- s32 func_ov003_021e6cfc(void); s32 func_ov003_021e6d28(void);
+ s32 IsSessionHost(void); s32 func_ov003_021e6d28(void);
  void Show3DSprite(void*); void Hide3DSprite(void*); void Show3DSpriteSlide(s32); void Hide3DSpriteSlide(s32);
  s16 GetSpriteAnimValue(void*); void SetWaypointListLayout(void*,s32); s32 GetUnitSpriteHeight(void*); s32 GetUnitSpriteWidth(void*); s16 GetWaypointSlotX(u8); s32 SetTextById(s32,s32); s32 InRange(u8,s32,s32);
  u8 buf[36]; u32 mode; u8 flag,i,j; u32 n; s32 *entries,*entries2; s32 count; void *s,*unit,*dst; s32 y,x; u8 state;
@@ -79,12 +79,12 @@ void ToggleWaypointPanelMode(void *p) {
   flag=mode==0;
   if(flag){
    if(M2C_FIELD(buf,s32*,24)){M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);return;}
-   if(!func_ov003_021e6cfc())return;
+   if(!IsSessionHost())return;
    M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);
    {void *self=p;M2C_FIELD(M2C_FIELD(self,void**,0),void(**)(void*),0x20)(self);}return;
   }
   flag=mode==1;if(!flag)return;
-  if(!func_ov003_021e6cfc())return;
+  if(!IsSessionHost())return;
   buf[8]=0;M2C_FIELD(buf,s32*,24)=0;M2C_FIELD(M2C_FIELD(p,void**,0x58),u8*,0x59)=1;Link_SendPacket(buf,0x24);return;
  }
  if(((u32)(M2C_FIELD(p,u8*,0x39)<<28)>>30)==1){
@@ -127,13 +127,13 @@ void ToggleWaypointPanelMode(void *p) {
  * slot for another player, or the option itself is not a usable CO choice. */
 void RestoreWaypointOption(u8 *list) {
     s32 GetLocalPlayerIdForOverlay(void);
-    s32 func_ov003_021e6cfc(void);
+    s32 IsSessionHost(void);
     s32 func_ov003_021e6d28(void);
     s32 IsWaypointOptionValid(u8);
     u8 pending = M2C_FIELD(list, u8 *, WAYPOINT_LIST_PENDING_OPTION);
     u8 owner;
 
-    if (func_ov003_021e6cfc() != 0) {
+    if (IsSessionHost() != 0) {
         owner = M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_IDS);
         if (owner != GetLocalPlayerIdForOverlay()) {
             if ((u8)(M2C_FIELD(list + M2C_FIELD(list, u8 *, WAYPOINT_LIST_SELECTED), u8 *, WAYPOINT_LIST_IDS) == 255) == 0) goto update;
@@ -368,18 +368,21 @@ void ApplyWaypointMenuAction(void *arg0, u32 arg1) {
     PlaySoundEffect(0x1000D);
 }
 
-s32 CanUseWaypointAction(M2C_UNK a,M2C_UNK b) {
+/* Whether the waypoint panel may run `action`: every action is allowed without a
+ * link session; in one, the groups 0-3, 8-20 and 25 are open to everyone, 21-24
+ * only to the session host, and 4-7 to nobody. */
+s32 CanUseWaypointAction(M2C_UNK panel,M2C_UNK action) {
 s32 IsLinkSessionActive(void);
-s32 func_ov003_021e6cfc(void);
-s32 func_ov003_021e6e08(M2C_UNK);
-M2C_UNK func_ov003_021e6e18(M2C_UNK);
-s32 t;
+s32 IsSessionHost(void);
+s32 GetWaypointGroupFirstSlot(M2C_UNK);
+M2C_UNK GetWaypointGroupCount(M2C_UNK);
+s32 groupFirstSlot;
 if(IsLinkSessionActive()==0)return 1;
-t=func_ov003_021e6e08(b);
-func_ov003_021e6e18(b);
-if(t==0||t==25||t==8)return 1;
-if(t==4)return 0;
-if(func_ov003_021e6cfc()!=0 && t==21)return 1;
+groupFirstSlot=GetWaypointGroupFirstSlot(action);
+GetWaypointGroupCount(action);
+if(groupFirstSlot==WAYPOINT_GROUP_0_FIRST||groupFirstSlot==WAYPOINT_GROUP_4_FIRST||groupFirstSlot==WAYPOINT_GROUP_2_FIRST)return 1;
+if(groupFirstSlot==WAYPOINT_GROUP_1_FIRST)return 0;
+if(IsSessionHost()!=0 && groupFirstSlot==WAYPOINT_GROUP_3_FIRST)return 1;
 return 0;
 }
 

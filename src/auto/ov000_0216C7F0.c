@@ -99,15 +99,19 @@ s32 GetCellPropertyArmy(s32 arg0, s32 arg1) {
  return Map_GetPropertyOwnerArmy(M2C_FIELD(temp_r2 + (arg0 + M2C_FIELD(temp_r2 + arg1 * 2, u16 *, 0x3758)), u8 *, 0x1420));
 }
 
-s32 GetCellTerrainDefense(s32 arg0, s32 arg1) {
- s32 GetTerrainDefenseScore(s32,s32,s32);
- s32 Divide(s32,s32);
- extern s32 *gCurrentMap;
- s32 base = *gCurrentMap;
- s32 result = Divide(GetTerrainDefenseScore(M2C_FIELD(base,u16 *,0x52A4),0,M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1*2,u16 *,0x3758)),u8 *,0x1420)&31),10);
- if(result>4) return 4;
- if(result<0) return 0;
- return result;
+/* The terrain defense stars of the cell at (x, y): the terrain kind's star count plus
+ * the current player's defense bonus, in tenths of a star, divided into whole stars
+ * and clamped to 0..4. */
+s32 GetCellTerrainDefense(s32 x, s32 y) {
+    s32 GetTerrainDefenseScore(s32, s32, s32);
+    s32 Divide(s32, s32);
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    s32 defense = Divide(GetTerrainDefenseScore(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), 0, M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK), 10);
+
+    if (defense > 4) return 4;
+    if (defense < 0) return 0;
+    return defense;
 }
 
 u32 GetUnitKind(u8 *arg0) {

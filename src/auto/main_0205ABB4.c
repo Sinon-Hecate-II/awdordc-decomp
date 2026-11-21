@@ -4,7 +4,7 @@
 
 s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
     s32 gti2CheckTimeout();
-    s32 func_0205aad8(M2C_UNK, M2C_UNK);
+    s32 gti2ResendTimedOutCommands(M2C_UNK, M2C_UNK);
     s32 func_0205ab44(M2C_UNK, M2C_UNK);
     s32 func_0205ab80(M2C_UNK, M2C_UNK);
     if (gti2CheckTimeout() == 0) {
@@ -13,7 +13,7 @@ s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
     if (func_0205ab80(arg0, arg1) == 0) {
         return 0;
     }
-    if (func_0205aad8(arg0, arg1) == 0) {
+    if (gti2ResendTimedOutCommands(arg0, arg1) == 0) {
         return 0;
     }
     if (func_0205ab44(arg0, arg1) != 0) {
@@ -138,11 +138,11 @@ void func_0205afdc(s32 *arg0) {
 
 void GT2NotifyConnectionClosed(void *a) {
 extern s32 data_0213e110;
-void Vector_ForEach(s32,void (*)(s32 *),s32);
+void TableMapSafe(s32,void (*)(s32 *),s32);
 void func_0205afdc(s32 *);
 if(data_0213e110==1)return;
 data_0213e110=1;
-Vector_ForEach(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
+TableMapSafe(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
 data_0213e110=0;
 }
 
@@ -343,7 +343,24 @@ s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
 
 s32 func_0205b6a0(void *a) {s32 Gt2ConnectionCallCallback();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(Gt2ConnectionCallCallback(a,0,0,0))return 1;return 0;}
 
-s32 func_0205b6ec(void *a,s32 b,s32 c) {s32 Gt2ConnectionCallCallback();s32 gti2SendClosed();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;}gti2MarkConnectionClosed(a);if(!gti2SendClosed(a))return 0;if(Gt2ConnectionCallCallback(a,2,b,c))return 1;return 0;}
+/* GT2 command 5 handler (GTI2_CLOSE): the peer asked to close. A connection
+ * still waiting for the server's ACCEPT is torn down normally; otherwise it is
+ * marked closed, the peer's CLOSED is sent back, and the closure is reported to
+ * the connection callback with the reason the peer gave. Returns 0 when the
+ * callback freed the connection. */
+s32 gti2HandleClose(void *connection, s32 reason, s32 length) {
+s32 Gt2ConnectionCallCallback();
+s32 gti2SendClosed();
+s32 closed;
+if (M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)!=GT2_STATE_AWAIT_SERVER_ACCEPT) {
+if (Gt2CloseConnection(connection)) closed=1; else closed=0;
+return closed;
+}
+gti2MarkConnectionClosed(connection);
+if (!gti2SendClosed(connection)) return 0;
+if (Gt2ConnectionCallCallback(connection,2,reason,length)) return 1;
+return 0;
+}
 
 #pragma push
 #pragma opt_propagation off
@@ -366,7 +383,7 @@ s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
     else if (command == 2) { if (!gti2HandleConnectAccept(object, (void *)param_a, param_b)) return 0; }
     else if (command == 3) { if (!gti2HandleClientResponse(object, param_a, param_b)) return 0; }
     else if (command == 4) { if (!func_0205b6a0(object)) return 0; }
-    else if (command == 5) { if (!func_0205b6ec(object, param_a, param_b)) return 0; }
+    else if (command == 5) { if (!gti2HandleClose(object, param_a, param_b)) return 0; }
     else if (command == 6) { if (!func_0205b758(object)) return 0; }
     return 1;
 }

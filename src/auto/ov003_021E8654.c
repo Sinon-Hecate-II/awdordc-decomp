@@ -120,7 +120,7 @@ buffer[0]=1;
 Link_SendPacket(buffer,0x24);
 }
 
-void func_ov003_021e891c(void) {
+void SendWaypointPanelClosed(void) {
 s32 Link_ReceivePacket(s32 *,M2C_UNK);
 M2C_UNK Link_SendPacket(s32 *,M2C_UNK);
 s32 buffer[9];
@@ -148,7 +148,7 @@ void func_ov003_021e8958(void *arg0) {
     void *func_0208bc24(void *);
     void func_ov003_021e9810(void *, s32);
     void func_ov003_021e9818(void *, s32);
-    s32 func_ov003_021e6e40(void);
+    s32 IsMapListCategory3(void);
     void *func_0208ed64(void *);
     void func_0208eb30(void *, s32, s32);
     void func_0208eb60(void *, s32);
@@ -221,7 +221,7 @@ void func_ov003_021e8958(void *arg0) {
     func_ov003_021e9818(M2C_FIELD(arg0, void **, 0x54), 7);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x54));
     gCur3DSpriteEngine = t1;
-    if (func_ov003_021e6e40()) {
+    if (IsMapListCategory3()) {
         t2 = gCur3DSpriteEngine;
         gCur3DSpriteEngine = g3DSpriteEngineMain;
         M2C_FIELD(arg0, void **, 0x60) = func_0208ed64(arg0);

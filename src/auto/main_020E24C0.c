@@ -379,9 +379,9 @@ s32 GetNameGraphicFile(s32 arg0) {
 }
 
 void func_020e3448(void) {
-    s32 func_02006a10(M2C_UNK);
-    s32 func_02006a24(M2C_UNK);
-    s32 func_02006bec(M2C_UNK, s32, M2C_UNK);
+    s32 GetArenaHi(M2C_UNK);
+    s32 GetArenaLo(M2C_UNK);
+    s32 AllocFromArena(M2C_UNK, s32, M2C_UNK);
     s32 func_0202a424(s32, s32, M2C_UNK);
     M2C_UNK func_0202a4d4(s32, M2C_UNK);
     extern s32 data_02168fe4;
@@ -389,9 +389,9 @@ void func_020e3448(void) {
     s32 temp_r4;
     s32 temp_r4_2;
 
-    temp_r4 = func_02006a24(0);
-    temp_r4_2 = (func_02006a10(0) - temp_r4) & ~7;
-    temp_r0 = func_0202a424(func_02006bec(0, temp_r4_2, 8), temp_r4_2, 0);
+    temp_r4 = GetArenaLo(0);
+    temp_r4_2 = (GetArenaHi(0) - temp_r4) & ~7;
+    temp_r0 = func_0202a424(AllocFromArena(0, temp_r4_2, 8), temp_r4_2, 0);
     data_02168fe4 = temp_r0;
     func_0202a4d4(temp_r0, 0);
 }

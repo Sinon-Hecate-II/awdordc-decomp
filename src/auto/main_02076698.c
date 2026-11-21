@@ -1,5 +1,6 @@
 /* 17 functions from 0x02076698 to 0x02077624 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u8 values[128]; } ColorTable;
 extern const ColorTable data_020eb2e0, data_020eb360, data_020eb3e0, data_020eb460;
 
@@ -83,22 +84,25 @@ void ClearMapRenderBuffers(void) {
 }
 
 #pragma opt_propagation off
-void func_02076910(s32 x,s32 y) {
+/* Reserve the corner colours of the 2x2 cell block whose top-left cell is (x,y)
+ * for a map effect (a beam or an impact): write the reserved corner code there
+ * so the terrain overlay pass leaves those corners alone. */
+void PinMapCellCorners(s32 x,s32 y) {
  extern void *gCurrentMap;
  extern M2C_UNK gMapCellCornerColors;
- void *p;
- s32 a,b;
- s32 v;
+ u8 *dimensions;
+ s32 column0,column1;
+ s32 code;
  if(x<0 || y<0) return;
- p=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x5120;
- if(x>=M2C_FIELD(p,u16 *,0x24) || y>=M2C_FIELD(p,u16 *,0x26)) return;
- v=7;
- a=(s32)&gMapCellCornerColors+x*42;
- b=(s32)&gMapCellCornerColors+(x+1)*42;
- M2C_FIELD(y+0,u8 *,a)=v;
- M2C_FIELD(y+0,u8 *,b)=v;
- M2C_FIELD(y+1,u8 *,a)=v;
- M2C_FIELD(y+1,u8 *,b)=v;
+ dimensions=(u8 *)M2C_FIELD(gCurrentMap,void **,0)+0x5120;
+ if(x>=M2C_FIELD(dimensions,u16 *,0x24) || y>=M2C_FIELD(dimensions,u16 *,0x26)) return;
+ code=MAP_CORNER_COLOR_RESERVED;
+ column0=(s32)&gMapCellCornerColors+x*MAP_CORNER_COLOR_STRIDE;
+ column1=(s32)&gMapCellCornerColors+(x+1)*MAP_CORNER_COLOR_STRIDE;
+ M2C_FIELD(y+0,u8 *,column0)=code;
+ M2C_FIELD(y+0,u8 *,column1)=code;
+ M2C_FIELD(y+1,u8 *,column0)=code;
+ M2C_FIELD(y+1,u8 *,column1)=code;
 }
 #pragma opt_strength_reduction off
 #pragma opt_propagation off

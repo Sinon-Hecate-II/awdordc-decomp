@@ -529,24 +529,27 @@ void Ov001_CloseWfcEraseScreen(void) {
 }
 
 void func_ov001_021789d8(void) {
-    void func_ov001_02178a08(void);
+    void Ov001_LoadProfileResultBg(void);
     extern s8 data_ov001_02193d7c;
     extern M2C_UNK func_ov001_02178a74;
     data_ov001_02193d7c = 0;
-    func_ov001_02178a08();
+    Ov001_LoadProfileResultBg();
     Ov001_ShowMessageBox(0x21);
     Ov001_SetStepCallback(&func_ov001_02178a74);
 }
 
-void func_ov001_02178a08(void) {
+/* Load the shared Multi map background ("char/yb5Multi.nsc.l") for the WFC
+ * profile-result screen and give the background planes the lowest priority so
+ * the screen's sprites and text draw over it. */
+void Ov001_LoadProfileResultBg(void) {
     M2C_UNK Ov001_LoadAsset(M2C_UNK *, M2C_UNK *);
-    extern M2C_UNK data_ov001_02190640;
+    extern M2C_UNK gOv001ProfileResultBgMapPath;
     extern M2C_UNK GX_LoadBG2Scr;
-    Ov001_LoadAsset(&data_ov001_02190640, &GX_LoadBG2Scr);
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16)((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16)((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16)((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+    Ov001_LoadAsset(&gOv001ProfileResultBgMapPath, &GX_LoadBG2Scr);
+    REG_SUB_BG0CNT = (u16)((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16)((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG1CNT = (u16)((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_02178a74(void) {

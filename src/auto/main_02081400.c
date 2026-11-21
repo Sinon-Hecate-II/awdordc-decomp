@@ -22,12 +22,12 @@ typedef struct DS3DSpritePresetFlagRef {
 } DS3DSpritePresetFlagRef;
 
 void func_02081400(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_0207da60(s32, M2C_UNK, M2C_UNK);
+    M2C_UNK CopyMainOBJExtPalette(s32, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = LoadFileToBuffer(arg0, 0);
     DC_FlushRange(temp_r0, arg2);
-    func_0207da60(temp_r0, arg1, arg2);
+    CopyMainOBJExtPalette(temp_r0, arg1, arg2);
     HeapFreeBlock(temp_r0);
 }
 

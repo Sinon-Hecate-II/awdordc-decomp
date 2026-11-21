@@ -382,15 +382,18 @@ void G3X_Init(void) {
 }
 
 void G3X_ResetMatrixStack(void);
-void func_02003bd0(void){
-while(*(volatile u32 *)0x4000600 & 0x8000000){}
-*(volatile u32 *)0x4000600 |=0x8000;
-*(volatile u16 *)0x4000060 |=0x2000;
-*(volatile u16 *)0x4000060 |=0x1000;
+/* NitroSDK G3X_Reset: wait for the geometry engine, clear its stack error and
+ * the display's overflow/underflow flags, reset the matrix stacks and put the
+ * polygon and texture registers back to their defaults. */
+void G3X_Reset(void){
+while(REG_GXSTAT & GXSTAT_GEOMETRY_BUSY){}
+REG_GXSTAT |= GXSTAT_STACK_ERROR;
+REG_DISP3DCNT |= DISP3DCNT_OVERFLOW;
+REG_DISP3DCNT |= DISP3DCNT_UNDERFLOW;
 G3X_ResetMatrixStack();
-((volatile u32 *)0x40004a4)[0]=0x1f0080;
-((volatile u32 *)0x40004a4)[1]=0;
-((volatile u32 *)0x40004a4)[2]=0;
+REG_GX_POLYGON_ATTR=GX_POLYGON_DEFAULT;
+REG_GX_TEXIMAGE_PARAM=0;
+REG_GX_TEXPLTT_BASE=0;
 }
 
 void G3X_ClearFifo(void){

@@ -179,7 +179,7 @@ s32 ProcessAiCommandStep(void) {
 #pragma opt_common_subs off
 s32 func_ov000_0219e9f4(void)
 {
-    s32 func_0207c2d0(s32);
+    s32 SetRandomSeed(s32);
     s32 StepMapViewToTile(u8, u8);
     void func_020844a0(u8 *, u8 *);
     void func_020d61f0(void);
@@ -204,7 +204,7 @@ s32 func_ov000_0219e9f4(void)
     s32 visible;
     s32 scrolling;
 
-    func_0207c2d0(M2C_FIELD(gAiCommand, s32 *, AI_COMMAND_SEED));
+    SetRandomSeed(M2C_FIELD(gAiCommand, s32 *, AI_COMMAND_SEED));
     kind = gAiCommand[AI_COMMAND_KIND];
     if (kind == 20) {
         gAiCommandState[AI_COMMAND_STATE_STEP] = 2;

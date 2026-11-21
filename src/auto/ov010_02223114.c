@@ -4,7 +4,7 @@
 s32 func_ov010_02223114(void) {
     s32 func_ov010_02223420(void);
     s32 func_ov010_02223430(s32);
-    M2C_UNK func_ov010_022223e8(void *, void *, s32);
+    M2C_UNK VoiceChat_DecodePacket(void *, void *, s32);
     void *func_ov010_02223440(s32);
     M2C_UNK Link_UnlinkPendingPacket(void *);
     void func_ov010_022235a4();
@@ -28,7 +28,7 @@ s32 func_ov010_02223114(void) {
             item = func_ov010_02223440(id);
             type = M2C_FIELD(item, s32 *, 0xC);
             if (type >= 2) {
-                func_ov010_022223e8(M2C_FIELD(item, void **, 0x474), (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
+                VoiceChat_DecodePacket(M2C_FIELD(item, void **, 0x474), (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
             } else {
                 old = M2C_FIELD(item, void **, 0x474);
                 if (type == 1) func_ov010_022235a4(old, (s8 *)item + 0x1C);
@@ -297,25 +297,27 @@ void *Link_PeekPacket(s32 arg0) {
     return NULL;
 }
 
-s32 Link_PopPacket(s32 arg0) {
+/* Remove the first packet from `channel`'s link queue with interrupts disabled and
+ * return how many packets the queue still holds. */
+s32 Link_PopPacket(s32 channel) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern s32 gLinkQueueIrq;
     extern s32 gLinkQueueHead[];
     extern s32 gLinkQueueCount[];
-    void *temp;
+    void *packet;
     gLinkQueueIrq = OS_DisableInterrupts();
-    temp = (void *)gLinkQueueHead[arg0];
-    if (temp != NULL) {
-        void *next = M2C_FIELD(temp, void **, 8);
-        gLinkQueueHead[arg0] = (s32)next;
-        gLinkQueueCount[arg0] = gLinkQueueCount[arg0] - 1;
+    packet = (void *)gLinkQueueHead[channel];
+    if (packet != NULL) {
+        void *next = M2C_FIELD(packet, void **, LINK_PACKET_NEXT);
+        gLinkQueueHead[channel] = (s32)next;
+        gLinkQueueCount[channel] = gLinkQueueCount[channel] - 1;
         if (next != NULL) {
-            M2C_FIELD(next, s32 *, 4) = 0;
+            M2C_FIELD(next, s32 *, LINK_PACKET_PREV) = 0;
         }
     }
     OS_RestoreInterrupts(gLinkQueueIrq);
-    return gLinkQueueCount[arg0];
+    return gLinkQueueCount[channel];
 }
 
 s32 Link_GetQueueCount(s32 arg0) {

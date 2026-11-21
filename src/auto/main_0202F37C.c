@@ -77,7 +77,7 @@ void Wfc_SetResultCode(s32 arg0) {
     M2C_FIELD(temp_r0, s8 *, 0xA) = Wfc_GetSessionState();
 }
 
-s32 func_0202f57c(void) {
+s32 Wfc_GetResultCode(void) {
  extern M2C_UNK gWfcManager;
  return M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), s32 *, 0xC);
 }

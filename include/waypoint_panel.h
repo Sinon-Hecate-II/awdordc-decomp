@@ -40,4 +40,14 @@ enum {
 /* Action 27 selects the current player slot rather than an option cell. */
 enum { WAYPOINT_ACTION_CURRENT_SLOT = 27 };
 
+/* First slot of each of the five groups of the waypoint list (see
+ * WaypointSlotGroup): 0-3, 4-7, 8-20, 21-24 and 25. */
+enum {
+    WAYPOINT_GROUP_0_FIRST = 0,
+    WAYPOINT_GROUP_1_FIRST = 4,
+    WAYPOINT_GROUP_2_FIRST = 8,
+    WAYPOINT_GROUP_3_FIRST = 21,
+    WAYPOINT_GROUP_4_FIRST = 25
+};
+
 #endif

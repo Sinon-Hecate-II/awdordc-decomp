@@ -17,6 +17,21 @@
 #define RESULT_ROW_SLIDE_FRAMES 0x20 /* frames one slide takes */
 #define RESULT_ROW_SLIDE_END    0x100 /* x offset of a row that has slid all the way out */
 
+/* The results screen object (gResultsScreenClass): the page sprite and the two
+ * marker sprites it owns. */
+#define RESULTS_SCREEN_PAGE  0x38 /* void *page sprite of the results screen */
+#define RESULTS_SCREEN_LEFT  0x3c /* void *left marker sprite */
+#define RESULTS_SCREEN_RIGHT 0x40 /* void *right marker sprite */
+
+/* The result screen's slide transition (SpawnResultSlide in ov005_0221ABF8.c,
+ * AnimateResultSlide and DrawResultSlideBand in ov005_02218FD0.c): a band that
+ * slides down over the page while the page background changes.  Its +0x34 sprite
+ * is the page being slid. */
+#define RESULT_SLIDE_OWNER  0x38 /* void *: sprite that owns the slide, its child count rises while it lives */
+#define RESULT_SLIDE_TIMER  0x3c /* s32: frames the slide has run (0..16) */
+#define RESULT_SLIDE_Y      0x40 /* s32: y position the slide has reached */
+#define RESULT_SLIDE_ACTIVE 0x44 /* u8: nonzero while the slide band is shown */
+
 /* Sprite layer the score digits of every row are drawn on. */
 #define RESULT_SCORE_LAYER 2
 

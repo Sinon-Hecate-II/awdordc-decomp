@@ -460,12 +460,12 @@ void func_ov001_021804f0(void) {
 
 void func_ov001_02180544(void) {
 void func_ov001_02180584(void);
-M2C_UNK func_ov001_021763cc(void);
+M2C_UNK Ov001_OpenOptionPage(void);
 M2C_UNK func_ov001_02171e20(M2C_UNK);
 s32 Ov001_IsFadeActive(s32);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
-func_ov001_021763cc();
+Ov001_OpenOptionPage();
 func_ov001_02171e20(1);
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180584);
 }

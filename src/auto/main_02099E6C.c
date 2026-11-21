@@ -530,9 +530,9 @@ void func_0209ac6c(void *arg0, void *arg1) {
 }
 
 void func_0209ac9c(void *arg0) {
-    s8 func_02095fe8();
+    s8 GetMessageBoxState();
     M2C_UNK Build3DSpriteScene(void *);
     M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 1);
-    M2C_FIELD(arg0, s8 *, 0x5B) = func_02095fe8();
+    M2C_FIELD(arg0, s8 *, 0x5B) = GetMessageBoxState();
     Build3DSpriteScene(arg0);
 }

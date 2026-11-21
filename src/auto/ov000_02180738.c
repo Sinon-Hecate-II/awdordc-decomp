@@ -97,36 +97,40 @@ SelectPortDestination();
 FinishAiUnitAction();
 }
 
-void func_ov000_02180894(void) {
-M2C_UNK BuildAiInfluenceMaps();
-M2C_UNK SelectAiActionTarget();
-M2C_UNK RunAiAttackAction();
-M2C_UNK FindBestMoveTarget();
-M2C_UNK PlanEnemyHqAttackDestination();
-M2C_UNK PlanEnemyUnitAttackDestination();
-M2C_UNK PlanProductionSiteDestination();
-M2C_UNK SelectAttackMoveDestination();
-M2C_UNK SelectPropertyAttackDestination();
-M2C_UNK PlanEnemyHqAttackDestinationAlt();
-M2C_UNK SelectPortDestination();
-M2C_UNK FinishAiUnitAction();
-M2C_UNK func_ov000_02186a18();
-extern void **gCurrentMap;
-void *temp_r3;
-BuildAiInfluenceMaps();
-SelectAiActionTarget();
-RunAiAttackAction();
-FindBestMoveTarget();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) { func_ov000_02186a18(); }
-PlanEnemyHqAttackDestination();
-PlanEnemyUnitAttackDestination();
-PlanProductionSiteDestination();
-SelectAttackMoveDestination();
-SelectPropertyAttackDestination();
-PlanEnemyHqAttackDestinationAlt();
-SelectPortDestination();
-FinishAiUnitAction();
+/* Role-4/6 AI step-10 action: build the influence maps and pick the acting
+ * unit's action target, run the in-place attack when the owning player's AI
+ * mode calls for it, then plan the HQ, enemy-unit, production-site and
+ * property/port destinations and finish the unit's action. */
+void RunAiRole4Or6Step10Action(void) {
+    M2C_UNK BuildAiInfluenceMaps();
+    M2C_UNK SelectAiActionTarget();
+    M2C_UNK RunAiAttackAction();
+    M2C_UNK FindBestMoveTarget();
+    M2C_UNK PlanEnemyHqAttackDestination();
+    M2C_UNK PlanEnemyUnitAttackDestination();
+    M2C_UNK PlanProductionSiteDestination();
+    M2C_UNK SelectAttackMoveDestination();
+    M2C_UNK SelectPropertyAttackDestination();
+    M2C_UNK PlanEnemyHqAttackDestinationAlt();
+    M2C_UNK SelectPortDestination();
+    M2C_UNK FinishAiUnitAction();
+    M2C_UNK func_ov000_02186a18();
+    extern void **gCurrentMap;
+    void *map;
+    BuildAiInfluenceMaps();
+    SelectAiActionTarget();
+    RunAiAttackAction();
+    FindBestMoveTarget();
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) { func_ov000_02186a18(); }
+    PlanEnemyHqAttackDestination();
+    PlanEnemyUnitAttackDestination();
+    PlanProductionSiteDestination();
+    SelectAttackMoveDestination();
+    SelectPropertyAttackDestination();
+    PlanEnemyHqAttackDestinationAlt();
+    SelectPortDestination();
+    FinishAiUnitAction();
 }
 
 void func_ov000_02180900(void) {
@@ -606,7 +610,7 @@ case 7: func_ov000_02180778(); return;
 case 8: func_ov000_021807d8(); return;
 case 9: func_ov000_02180838(); return;
 case 6: func_ov000_02180738(); return;
-case 10: func_ov000_02180894(); return;
+case 10: RunAiRole4Or6Step10Action(); return;
 }
 }
 

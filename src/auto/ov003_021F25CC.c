@@ -257,7 +257,7 @@ void InitMapSelectScreen(s32 arg0) {
     void func_ov003_021f1bd4(void);
     void func_ov003_021f1be8(void);
     void CreateScene3DSprite(void *);
-    void func_ov003_021f18b4(void *);
+    void ApplySceneLayers(void *);
     void ResetPlayerMask(void);
     s32 IsLinkSessionActive(void);
     void CreateSubScreenLinkIndicator(void);
@@ -347,7 +347,7 @@ void InitMapSelectScreen(s32 arg0) {
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,3)=1;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,4)=2;
     M2C_FIELD(M2C_FIELD(arg0,void **,0x38),u8 *,5)=15;
-    func_ov003_021f18b4(M2C_FIELD(arg0,void **,0x38));
+    ApplySceneLayers(M2C_FIELD(arg0,void **,0x38));
     ResetPlayerMask();
     if (IsLinkSessionActive() != 0) {
         CreateSubScreenLinkIndicator();

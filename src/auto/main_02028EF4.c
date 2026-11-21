@@ -217,7 +217,7 @@ s32 func_02029348(void *arg0) {
  * discards player records or the record is already marked as gone. */
 void WFC_StorePlayerRecord(void *record, u16 slot) {
     void *GetSession(void);
-    void *func_02029528(s32);
+    void *WFC_FindPlayerById(s32);
     void *WFC_AllocPlayerNode(void);
     s32 func_020294f8(void);
     void WFC_TouchPlayerNode(void *);
@@ -228,7 +228,7 @@ void WFC_StorePlayerRecord(void *record, u16 slot) {
     session = GetSession();
     if (!session) return;
     if (M2C_FIELD(session, u8 *, WFC_SESSION_DATA_LOCK) || M2C_FIELD(record, u16 *, 0x3c)) return;
-    node = func_02029528((s32)record + WFC_PLAYER_RECORD_ID);
+    node = WFC_FindPlayerById((s32)record + WFC_PLAYER_RECORD_ID);
     if (!node) node = WFC_AllocPlayerNode();
     if (!node && M2C_FIELD(session, u32 *, 0x2278) == 1) node = (void *)func_020294f8();
     if (!node) return;
@@ -314,33 +314,35 @@ s32 func_020294f8(void) {
     return 0;
 }
 
-void *func_02029528(s32 arg0) {
-    s32 func_02029aac(s32, s32);
-    void *temp_r0;
-    void *temp_r0_2;
-    void *temp_r1;
-    void *var_r4;
+/* Find the session player-list node whose record carries the 6-byte id `playerId`,
+ * or NULL when the list is empty or no node matches. */
+void *WFC_FindPlayerById(s32 playerId) {
+    s32 WFC_PlayerIdEqual(s32, s32);
+    void *session;
+    void *block;
+    void *list;
+    void *node;
 
-    temp_r0 = GetSession();
-    temp_r0_2 = temp_r0 + 0x2000;
-    var_r4 = NULL;
-    temp_r1 = M2C_FIELD(temp_r0, void **, 0x2270);
-    if (arg0 == 0) {
+    session = GetSession();
+    block = session + WFC_SESSION_PLAYER_BLOCK;
+    node = NULL;
+    list = M2C_FIELD(session, void **, WFC_SESSION_PLAYER_LIST);
+    if (playerId == 0) {
         return NULL;
     }
-    if ((temp_r1 != NULL) && ((u32) M2C_FIELD(temp_r0_2, u32 *, 0x274) > 0xCU)) {
-        var_r4 = M2C_FIELD(temp_r1, void **, 4);
-        if (var_r4 != NULL) {
+    if ((list != NULL) && ((u32) M2C_FIELD(block, u32 *, WFC_PLAYER_LIST_CAP_OFFSET) > WFC_PLAYER_LIST_HEADER_SIZE)) {
+        node = M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD);
+        if (node != NULL) {
 loop_5:
-            if (func_02029aac(var_r4 + 0x14, arg0) == 0) {
-                var_r4 = M2C_FIELD(var_r4, void **, 0xC);
-                if (var_r4 != NULL) {
+            if (WFC_PlayerIdEqual(node + WFC_PLAYER_NODE_RECORD + WFC_PLAYER_RECORD_ID, playerId) == 0) {
+                node = M2C_FIELD(node, void **, WFC_PLAYER_NODE_NEXT);
+                if (node != NULL) {
                     goto loop_5;
                 }
             }
         }
     }
-    return var_r4;
+    return node;
 }
 
 void *func_02029594(void *arg0) {
@@ -439,24 +441,27 @@ void func_020296e0(void *arg0) {
 }
 
 #pragma opt_common_subs off
-void func_02029714(void) {
+/* State-timer tick while the session is linking: send the local player's
+ * connection data to the peer through the send lock. A send already in flight
+ * leaves the lock to its completion callback. */
+void WFC_SendConnDataRequest(void) {
     s32 GetSession(void);
-    s32 func_02029a24(void *);
+    s32 WFC_TryLockSend(void *);
     s32 WFC_SubmitRequest(s32, void *, void *, u32);
-    void func_02029a10(void);
-    s32 func_02029a74(M2C_UNK *);
+    void WFC_OnSendRequestComplete(void);
+    s32 WFC_UnlockSend(M2C_UNK *);
     extern M2C_UNK gWfcSendLock;
-    void *base;
-    s32 res;
+    void *session;
+    s32 result;
 
-    base = (void *)GetSession();
-    if (base == 0) return;
-    if (M2C_FIELD((s8 *)base + 0x2000, s32 *, 0x260) != 9) return;
-    if (M2C_FIELD((s8 *)base + 0x2000, u8 *, 0x26b) == 1) return;
-    if (func_02029a24(&gWfcSendLock) == 0) return;
-    res = WFC_SubmitRequest((s32)func_02029a10, (s8 *)base + 0x2144, (s8 *)base + 0xf00, 0);
-    if (res == 2) return;
-    func_02029a74(&gWfcSendLock);
+    session = (void *)GetSession();
+    if (session == 0) return;
+    if (M2C_FIELD((s8 *)session + WFC_SESSION_PLAYER_BLOCK, s32 *, WFC_SESSION_BLOCK_STATE) != WFC_SESSION_STATE_LINKING) return;
+    if (M2C_FIELD((s8 *)session + WFC_SESSION_PLAYER_BLOCK, u8 *, WFC_SESSION_BLOCK_ABORT) == 1) return;
+    if (WFC_TryLockSend(&gWfcSendLock) == 0) return;
+    result = WFC_SubmitRequest((s32)WFC_OnSendRequestComplete, (s8 *)session + WFC_SESSION_CONN_DATA + WFC_PLAYER_RECORD_ID, (s8 *)session + WFC_SESSION_SEND_BUFFER, 0);
+    if (result == WFC_CMD_OK) return;
+    WFC_UnlockSend(&gWfcSendLock);
 }
 #pragma opt_common_subs reset
 void *func_02029784(void) {
@@ -605,13 +610,13 @@ if(M2C_FIELD(arg0,u16 *,2)==0) WFC_RearmStateTimer();
 OS_WakeupThread(&gWfcSendThread);
 }
 
-void func_02029a10(void) {
-    M2C_UNK func_02029a74(M2C_UNK *);
+void WFC_OnSendRequestComplete(void) {
+    M2C_UNK WFC_UnlockSend(M2C_UNK *);
     extern M2C_UNK gWfcSendLock;
-    func_02029a74(&gWfcSendLock);
+    WFC_UnlockSend(&gWfcSendLock);
 }
 
-s32 func_02029a24(void *arg0) {
+s32 WFC_TryLockSend(void *arg0) {
     extern M2C_UNK func_01ff8000;
     M2C_UNK *temp_r2;
 
@@ -628,7 +633,7 @@ s32 func_02029a24(void *arg0) {
     return 1;
 }
 
-s32 func_02029a74(M2C_UNK *arg0) {
+s32 WFC_UnlockSend(M2C_UNK *arg0) {
     void OS_WakeupThread(void *);
     extern M2C_UNK func_01ff8000;
 
@@ -644,7 +649,7 @@ s32 func_02029a74(M2C_UNK *arg0) {
     return;
 }
 
-s32 func_02029aac(s32 a, s32 b) {
+s32 WFC_PlayerIdEqual(s32 a, s32 b) {
     u8 *p0 = (u8 *)a;
     u8 *p1 = (u8 *)b;
     s32 i = 0;

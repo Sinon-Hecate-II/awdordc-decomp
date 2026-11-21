@@ -143,6 +143,16 @@ typedef struct LinkRequestRecord {
 #define LINK_SEND_CHANNEL 0x08 /* u8 channel the packet is sent on */
 #define LINK_SEND_LENGTH  0x0C /* u32 payload length in bytes */
 
+/* The 12-byte link packet header WriteLinkPacketHeader writes (at +4 of a queued
+ * packet node; its payload follows at +0x0C). */
+#define LINK_PACKET_MAGIC      0x00 /* u32: tag LINK_PACKET_TAG */
+#define LINK_PACKET_TAG        0x5F574C4D /* s32 "MLW_": marks a link packet */
+#define LINK_PACKET_TYPE       0x04 /* u8: message id (LINK_MSG_*) */
+#define LINK_PACKET_FLAGS      0x05 /* u8: two 4-bit flags; low nibble, then high nibble */
+#define LINK_PACKET_RECIPIENTS 0x06 /* u16: bit per player slot the packet is addressed to */
+#define LINK_PACKET_LENGTH     0x08 /* u32: payload byte count */
+#define LINK_PACKET_PAYLOAD    0x0C /* payload bytes copied in behind the header */
+
 /* The link overlay's status-text layer (generic text-layer fields at 0x34..0x36
  * are in ds3dsprite.h): it shows a localized message while the link result is
  * on screen. */

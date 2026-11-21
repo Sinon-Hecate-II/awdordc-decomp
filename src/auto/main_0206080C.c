@@ -144,16 +144,22 @@ void gpiPlayerSetInt(M2C_UNK a,M2C_UNK *b){
  gpiPlayerSetString(a,b,(M2C_UNK *)buf);
 }
 
-s32 SBServerGetStringValue(void *arg0,s32 arg1,s32 arg2){
- void *TableLookup(s32,s32 *);
- M2C_UNK AssertFailed(void *,void *,void *,s32);
- extern M2C_UNK data_02100064,data_0210006c,data_02100048;
- s32 sp0[2]; void *temp_r0;
- if(!arg0)AssertFailed(&data_02100064,&data_0210006c,&data_02100048,0x97);
- if(!arg0)return 0;
- sp0[0]=arg1;temp_r0=TableLookup(M2C_FIELD(arg0,s32 *,0x18),sp0);
- if(temp_r0)arg2=M2C_FIELD(temp_r0,s32 *,4);
- return arg2;
+/* GameSpy SBServerGetStringValue: look up the interned key `key` in the server's
+ * key/value table and return its value, or `def` when the key is absent (0 when
+ * the server itself is NULL). */
+s32 SBServerGetStringValue(GpiPlayer *server, s32 key, s32 def) {
+    void *TableLookup(s32, s32 *);
+    M2C_UNK AssertFailed(void *, void *, void *, s32);
+    extern M2C_UNK sSbServerAssertServer, sSbServerSourceFile, sSbServerGetStringValueAName;
+    s32 keyBuf[2];
+    void *entry;
+
+    if (!server) AssertFailed(&sSbServerAssertServer, &sSbServerSourceFile, &sSbServerGetStringValueAName, 0x97);
+    if (!server) return 0;
+    keyBuf[0] = key;
+    entry = TableLookup(server->keyValues, keyBuf);
+    if (entry) def = M2C_FIELD(entry, s32 *, 4);
+    return def;
 }
 
 s32 SBServerGetIntValue(GpiPlayer *server, s32 key, s32 defaultVal) {

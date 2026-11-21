@@ -150,7 +150,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK SetTextById(void *, s32);
     M2C_UNK IsWaypointOptionValid(u8);
     M2C_UNK func_ov003_021e6cc4(s16, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021e6cfc(void);
+    M2C_UNK IsSessionHost(void);
     M2C_UNK func_ov003_021e6d28(void);
     M2C_UNK InRange(s32, s32, s32);
     M2C_UNK func_ov003_021f153c(void);
@@ -225,7 +225,7 @@ void func_ov003_021efb74(void *arg0) {
                     Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x38));
                 }
             } else {
-                if (func_ov003_021e6cfc() != 0) {
+                if (IsSessionHost() != 0) {
 
                     Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x28));
                     Show3DSprite(M2C_FIELD((char *)playerSprites + slot * 4, s32 *, 0x38));

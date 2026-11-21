@@ -149,7 +149,7 @@ y0=ClampRenderCoord(rawy,(u16*)(*gCurrentMap+0x5120),19);
 x1=ClampRenderCoord(rawx1,(u16*)(*gCurrentMap+0x5120),18);
 y1=ClampRenderCoord(rawy1,(u16*)(*gCurrentMap+0x5120),19);
 func_0207750c();BuildMapCellCodes(x0,y0,x1,y1);BuildMapCellShades(x0,y0,x1,y1);
-UpdateMapWaveHeight();Map_UpdateOwnerColorBands();func_0207863c();func_0207f9f4();
+UpdateMapWaveHeight();Map_UpdateOwnerColorBands();func_0207863c();UpdateTerrainAnimOffsets();
 for(i=0;i<32;i++)counts[i]=0;
 *(volatile u32*)0x40004a8=0x6f600000;
 for(y=y0;y<=y1;y++)for(x=x0;x<=x1;x++){
@@ -299,7 +299,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
    context, draws the body and then the status icons on either side of it. */
 void RenderUnitSprite(Vec3 *origin,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
 s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 Divide(s32,s32);
-void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void func_020796b0(Vec3 *,UnitRenderContext *);
+void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void DrawUnitHpIcon(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
 Vec3 pos;UnitRenderContext ctx; s32 spriteVariant;
 pos=*origin;
@@ -314,7 +314,7 @@ ctx.side=unit->side;
 ctx.color=M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_FLIP_OFF);
 ctx.extra=extra;ctx.mode=mode;
 ctx.hp=unit->hp==0?0:Divide(unit->hp-1,10)+1;
-func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;func_020796b0(&pos,&ctx);
+func_020793f0(&ctx);pos.x-=192;DrawUnitStatusIcon(&pos,&ctx);pos.x+=384;DrawUnitHpIcon(&pos,&ctx);
 }
 /* Submit the terrain quads of one map cell: the terrain class's flags say whether
  * the cell has a visible top (bit 3) and/or a side face (bit 4); a property adds

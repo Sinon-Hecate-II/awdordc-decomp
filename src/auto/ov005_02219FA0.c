@@ -15,13 +15,13 @@ void SpawnResultSpark(s32 x, s32 y, s32 variant) {
     s32 CreateScriptedSprite(s32, u8, s32, s32, s32, s32, s32, void *);
     void DrawResultSpark(void *);
     extern s32 g3DSpriteEngineSub, g3DSpriteEngineMain, gCur3DSpriteEngine;
-    extern M2C_UNK data_ov005_02220d50, gResultSparkVTable, data_0211e058;
+    extern M2C_UNK gResultsScreenClass, gResultSparkVTable, data_0211e058;
     void *spark;
     s32 screen;
     void *parent;
     s32 savedEngine, engine;
 
-    parent = FindObjectByClass(&data_ov005_02220d50);
+    parent = FindObjectByClass(&gResultsScreenClass);
     spark = CreateSpriteFromClass(&data_0211e058, parent);
     if (!spark) return;
     M2C_FIELD(spark, void **, 0) = &gResultSparkVTable;

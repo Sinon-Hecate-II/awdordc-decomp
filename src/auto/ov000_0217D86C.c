@@ -165,11 +165,11 @@ Candidate7DE *best,*cur,*out=gAiTargetCandidates;
 s32 count=0,p,i,j,n,diff,delta,score;
 Unit7DE *unit;
 u8 *wanted,*types,*cell;
-if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
+if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 if(((Unit7DE *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->hp<=60)return 0;
 for(entry=(u8 *)*gCurrentMap+0x6c60;entry[0]!=255;entry+=6){
 if(entry[0]==15){
-if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)continue;
+if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)continue;
 if(IsTerrainOnUnitTeam(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),M2C_FIELD((u8 *)*gCurrentMap+(entry[1])+M2C_FIELD((u8 *)*gCurrentMap+(entry[2]*2),u16 *,0x3758),u8 *,0x1420))==0)goto terrain;
 goto next;
 }else if(!data_ov000_021b5500[entry[0]])continue;

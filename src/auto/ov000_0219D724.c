@@ -234,7 +234,7 @@ void SelectBestAiUnit(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern s8 gAiUnitList;
-    extern M2C_UNK func_ov000_02181ba4;
+    extern M2C_UNK RunAiProduceCargoAction;
     s8 *cursor;
     s8 unitId;
 
@@ -247,7 +247,7 @@ void SelectBestAiUnit(void) {
     }
     *gAiUnitListCursor = AI_UNIT_LIST_END;
     gAiUnitListCursor = &gAiUnitList;
-    gAiUnitAction = &func_ov000_02181ba4;
+    gAiUnitAction = &RunAiProduceCargoAction;
     *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 

@@ -566,12 +566,12 @@ s32 GetCurrentMapRecord(void) {
     return gSaveData + 0x400;
 }
 
-void func_ov001_02184470(s8 arg0) {
+void Ov001_SetSaveExtraEmptyA(s8 arg0) {
     extern s32 gSaveData;
     M2C_FIELD((void *)gSaveData, s8 *, 0x4f5) = arg0;
 }
 
-void func_ov001_02184484(s8 arg0) {
+void Ov001_SetSaveExtraEmptyB(s8 arg0) {
     extern s32 gSaveData;
     M2C_FIELD((void *)gSaveData, s8 *, 0x4f6) = arg0;
 }

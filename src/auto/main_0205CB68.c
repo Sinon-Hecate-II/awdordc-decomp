@@ -18,14 +18,19 @@ s32 func_0205cb68(s32 a, s32 b, s32 c) {
     return func_0205d228((void *)a, b, c, p, 3) != 0;
 }
 #pragma pop
-s32 gti2ResendPendingCommand(void *a, s32 *b) {
+/* Resend one queued sent command the peer has not acknowledged: write the
+ * current receive sequence into the command's bytes, send them raw and record
+ * the send time.  When the command was our CONNECT_ACCEPT, restart the
+ * connection's start-time clock.  Returns 0 when the send fails. */
+s32 gti2ResendPendingCommand(void *connection, Gt2SentCommand *command) {
     void func_0205b0ec(void *, s32, u16);
     s32 gti2SendRaw(void *, void *, s32);
-    func_0205b0ec(M2C_FIELD(a, void **, 0x50), b[0] + 5, M2C_FIELD(a, u16 *, 0x66));
-    if (!gti2SendRaw(a, M2C_FIELD(a, u8 **, 0x50) + b[0], b[1])) return 0;
-    b[3] = M2C_FIELD(a, s32 *, 0x88);
-    if (M2C_FIELD(a, u8 **, 0x50)[b[0] + 2] == 2)
-        M2C_FIELD(a, s32 *, 0x8c) = M2C_FIELD(a, s32 *, 0x88);
+    func_0205b0ec(M2C_FIELD(connection, void **, GT2_CONNECTION_SEND_BUFFER), command->offset + 5,
+                  M2C_FIELD(connection, u16 *, GT2_RECV_SEQUENCE));
+    if (!gti2SendRaw(connection, M2C_FIELD(connection, u8 **, GT2_CONNECTION_SEND_BUFFER) + command->offset, command->size)) return 0;
+    command->lastSent = M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT);
+    if (M2C_FIELD(connection, u8 **, GT2_CONNECTION_SEND_BUFFER)[command->offset + 2] == GTI2_CONNECT_ACCEPT)
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME) = M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT);
     return 1;
 }
 

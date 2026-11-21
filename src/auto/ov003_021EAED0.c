@@ -12,7 +12,7 @@ s32 Link_ReceivePacket(void *,s32);void *GetLocalNetworkPlayerRecord();s32 GetLo
 s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
 s32 func_ov003_021e9c08(void *),func_ov003_021e9c30(void *);
 u8 func_ov003_021eba24(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
-s32 func_ov003_021eba74(void);s32 func_ov003_021eaeb0(void *);
+s32 AreNetworkPlayerRecordsReady(void);s32 func_ov003_021eaeb0(void *);
 u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),func_ov003_021ebb88(void *);
 u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
 void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
@@ -41,15 +41,15 @@ count=func_ov003_021e9c24(arg0);
 func_ov003_021ea4a8(arg0,(u32)(M2C_FIELD(arg0,u8 *,0x3a)<<31)>>31);
 if(func_ov003_021e9c08(arg0)){
 packet[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),func_ov003_021eba24(M2C_FIELD(arg0,void **,0x6c)));
-if(func_ov003_021e6cfc()){
+if(IsSessionHost()){
 for(j=0;j<count;j++){if(func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),j))packet[j+18]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),j);}
-if(((s32(*)(void *))func_ov003_021eba74)(arg0)){
+if(((s32(*)(void *))AreNetworkPlayerRecordsReady)(arg0)){
 if(func_ov003_021eaeb0(arg0)){M2C_FIELD(*(void **)arg0,s32 (**)(void *),0x1c)(arg0);return;}
 packet[8]=1;
 }
 }
 if(((u32)(M2C_FIELD(arg0,u8 *,0x39)<<30)>>31) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
-if(func_ov003_021e6e40() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
+if(IsMapListCategory3() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021e6d28() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021e9e58(arg0) && !func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(M2C_FIELD(remote,u8 *,8)==1){
@@ -59,7 +59,7 @@ M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 }
 }
 if(func_ov003_021e9c30(arg0)){
-if(func_ov003_021e6cfc()){
+if(IsSessionHost()){
 if(!func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9e4c(M2C_FIELD(arg0,void **,0x58));
 for(j=0;j<count;j++)packet[j+14]=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),j);
 }
@@ -78,7 +78,7 @@ current=func_ov003_021ebc90(M2C_FIELD(arg0,s32 *,0x6c),i);desired=M2C_FIELD((u8 
 if(current!=desired){PlaySoundEffect(0x10011);func_ov003_021ebca4(M2C_FIELD(arg0,s32 *,0x6c),i,desired);}
 }
 if(player==func_ov003_021e73bc(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
-if(func_ov003_021e6cfc() && func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
+if(IsSessionHost() && func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),i))continue;
 {s32 co=(s8)func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),i);
 desired=GetWaypointSlotCoIcon(arg0,i);
 if(co!=desired){
@@ -156,7 +156,7 @@ if(!Link_ReceivePacket(send,36))return;
 send[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),func_ov003_021eba24(M2C_FIELD(arg0,void **,0x6c)));
 Link_SendPacket(send,36);
 }
-if(!func_ov003_021e6e40())return;
+if(!IsMapListCategory3())return;
 if(!IsLinkSessionActive())return;
 if(!func_0208eb68(M2C_FIELD(arg0,void **,0x60)))return;
 ApplyWaypointMenuAction(arg0,25);M2C_FIELD(arg0,u8 *,0x39)|=2;
@@ -178,23 +178,26 @@ done:
  return (u8)result;
 }
 
-s32 func_ov003_021eba74(void) {
- s32 IsLinkSessionActive();
- s32 GetReadyPlayerMask();
- void *GetNetworkPlayerRecord(s32);
- s8 i;
- s32 mask;
- void *p;
- if(IsLinkSessionActive()==0) return 0;
- mask=GetReadyPlayerMask();
- for(i=0;i<4;i++) {
-  if(mask & (1<<i)) {
-   p=GetNetworkPlayerRecord(i);
-   if(p==NULL) return 0;
-   if(M2C_FIELD(p,s32 *,0x18)==0) return 0;
-  }
- }
- return 1;
+/* Whether every ready player has a network player record whose data field is set;
+ * the host gates starting the match on this. */
+s32 AreNetworkPlayerRecordsReady(void) {
+    s32 IsLinkSessionActive();
+    s32 GetReadyPlayerMask();
+    void *GetNetworkPlayerRecord(s32);
+    s8 i;
+    s32 mask;
+    void *record;
+
+    if (IsLinkSessionActive() == 0) return 0;
+    mask = GetReadyPlayerMask();
+    for (i = 0; i < 4; i++) {
+        if (mask & (1 << i)) {
+            record = GetNetworkPlayerRecord(i);
+            if (record == NULL) return 0;
+            if (M2C_FIELD(record, s32 *, NET_PLAYER_DATA) == 0) return 0;
+        }
+    }
+    return 1;
 }
 
 /* Opens the waypoint panel: marks it active, plays the open sound, advances the
@@ -217,7 +220,7 @@ void OpenWaypointPanel(void *panel) {
     SetOv003SceneState(2);
     M2C_FIELD(panel, s8 *, 0x38) = 0;
     Sprite_ResumeAnimation(panel);
-    if (func_ov003_021e6cfc() == 0) {
+    if (IsSessionHost() == 0) {
         return;
     }
     func_ov003_021e88e0(panel);
@@ -335,28 +338,32 @@ void func_ov003_021ebde8(void *arg0, s8 arg1, s8 arg2) {
     M2C_FIELD(arg0, s8 *, 0x11) = arg2;
 }
 
-void func_ov003_021ebdf4(void *arg0) {
+/* Close the waypoint panel: mark it closed, play the cancel sound, hide its
+ * target cursor and slot marker and return the setup scene to its idle state.
+ * The host then tells the other player the panel is closed, except on maps of
+ * map-list category 3. */
+void CloseWaypointPanel(void *panel) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_ov003_021e6cfc();
-    s32 func_ov003_021e6e40();
-    M2C_UNK func_ov003_021e891c(void *);
+    s32 IsSessionHost();
+    s32 IsMapListCategory3();
+    M2C_UNK SendWaypointPanelClosed(void *);
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    M2C_FIELD(arg0, u8 *, 0x3A) = (u8) (M2C_FIELD(arg0, u8 *, 0x3A) & ~0x80);
+    M2C_FIELD(panel, u8 *, 0x3A) = (u8) (M2C_FIELD(panel, u8 *, 0x3A) & ~0x80);
     PlaySoundEffect(0x1000F);
-    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x5C));
+    Hide3DSprite(M2C_FIELD(panel, s32 *, 0x58));
+    Hide3DSprite(M2C_FIELD(panel, s32 *, 0x5C));
     SetOv003SceneState(2);
-    M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    Sprite_ResumeAnimation(arg0);
-    if (func_ov003_021e6cfc() == 0) {
+    M2C_FIELD(panel, s8 *, 0x38) = 0;
+    Sprite_ResumeAnimation(panel);
+    if (IsSessionHost() == 0) {
         return;
     }
-    if (func_ov003_021e6e40() != 0) {
+    if (IsMapListCategory3() != 0) {
         return;
     }
-    func_ov003_021e891c(arg0);
+    SendWaypointPanelClosed(panel);
 }
 
 void func_ov003_021ebe60(void *arg0) {

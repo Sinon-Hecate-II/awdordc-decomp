@@ -229,9 +229,9 @@ u8 CanUnitKindStandAt(s32 unitKind, s32 mapX, s32 mapY) {
 
 u8 func_ov000_021a9b84(void) {
  extern void **gCurrentMap;
- s32 func_020a8a14(u16,u16);
+ s32 GetMapPlayerFlags(u16,u16);
  u8 result;
- if(!(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&1)) result=1; else result=0;
+ if(!(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&1)) result=1; else result=0;
  return result;
 }
 

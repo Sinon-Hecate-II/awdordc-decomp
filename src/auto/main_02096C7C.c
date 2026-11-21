@@ -189,7 +189,14 @@ void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(Ge
 
 void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)SetFaceSpriteFace(r,0);else SetFaceSpriteFace(r,M2C_FIELD(q,u8 *,0x58));UpdateScenePanelPalette(p); }
 
-void func_02097214(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+5,1);SetFaceSpriteFace(r,b);UpdateScenePanelPalette(p); }
+/* Give face slot 0 of scene panel panelIndex the face id and expression a
+ * message-box script asks for, then refresh the panel's palette. */
+void SetScenePanelFace(s32 panelIndex, s32 faceId, s32 expression) {
+s32 func_02091e04(void); void SetFaceSpritePalette(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 panel,faceChild;void *face;
+panel=FindScenePanel((u16)panelIndex);if(!panel)return;
+face=Get3DSpriteChild(panel,0);faceChild=M2C_FIELD(face,s32 *,FACE_SPRITE_CHILD);
+SetFaceSpritePalette(face,(u8)func_02091e04());func_020990fc(face,faceId,expression+5,1);SetFaceSpriteFace(faceChild,faceId);UpdateScenePanelPalette(panel);
+}
 
 /* ShowPanelFace: shows face slot faceIndex (0 or 1) of the scene panel — the
    slot's 3D sprite slides in from the side over eight frames, or snaps when the
@@ -270,7 +277,7 @@ void func_02097410(void) {
 
 }
 
-void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void func_020991fc(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);func_020991fc(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);SetFaceSpriteFace(r,b); }
+void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void SetFaceSpritePalette(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);SetFaceSpritePalette(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);SetFaceSpriteFace(r,b); }
 
 void func_0209747c(M2C_UNK arg0, s32 arg1) {
     s32 temp_r0;

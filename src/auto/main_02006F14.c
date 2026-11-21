@@ -539,15 +539,19 @@ void DmaCopy(s32 channel, s32 src, s32 dst, u32 size) {
     while (*control & DMA_CTRL_ENABLE) {}
 }
 
-void func_02007a74(s32 a,s32 b,s32 c,u32 n) {
- void DmaStartTransferLockedFlushed(s32,s32,s32,u32); void DmaValidateTransfer(s32,s32,s32,s32);
- volatile u32 *p;
- if (!n) return;
- DmaValidateTransfer(a,b,n,0);
- p=(volatile u32 *)(0x040000B0+(a*3+2)*4);
- while (*p & 0x80000000) {}
- DmaStartTransferLockedFlushed(a,b,c,(n>>1)|0x80000000);
- while (*p & 0x80000000) {}
+/* 16-bit DMA copy of `size` bytes from `src` to `dst` on `channel`: validate the
+ * range, wait for the channel, start the transfer, then wait for it to finish. */
+void DmaCopy16(s32 channel, s32 src, s32 dst, u32 size) {
+    void DmaStartTransferLockedFlushed(s32, s32, s32, u32);
+    void DmaValidateTransfer(s32, s32, s32, s32);
+    volatile u32 *control;
+
+    if (!size) return;
+    DmaValidateTransfer(channel, src, size, 0);
+    control = (volatile u32 *)DMA_CHANNEL_CTRL(channel);
+    while (*control & DMA_CTRL_ENABLE) {}
+    DmaStartTransferLockedFlushed(channel, src, dst, DMA_COPY16_CTRL(size));
+    while (*control & DMA_CTRL_ENABLE) {}
 }
 
 /* Starts a fill of `size` bytes at `dst` with the 32-bit value `fillValue` on DMA

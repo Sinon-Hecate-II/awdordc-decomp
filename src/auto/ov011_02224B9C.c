@@ -139,8 +139,8 @@ void func_ov011_02225034(void) {
 }
 
 void func_ov011_02225040(void) {
-    M2C_UNK func_ov011_0222166c();
-    func_ov011_0222166c();
+    M2C_UNK AdvanceIntroLogo();
+    AdvanceIntroLogo();
 }
 
 void func_ov011_0222504c(void) {
@@ -200,10 +200,10 @@ void func_ov011_02225114(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UN
 /* Initialize the DS 3D graphics hardware: reset the geometry engine, configure the LCD display control mode,
    program the viewport/projection matrix blocks, and set up the 3D command and capture registers. */
 void func_ov011_0222513c(void) {
-    M2C_UNK func_02003bd0();
+    M2C_UNK G3X_Reset();
     M2C_UNK GX_SetClearColor(M2C_UNK, M2C_UNK, s32, M2C_UNK, s32);
     M2C_UNK GX_SetOrthoProjection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32);
-    func_02003bd0();
+    G3X_Reset();
     *(u16 *)0x04000060 = (*(u16 *)0x04000060 & ~0x3000) | 8;
     GX_SetClearColor(0, 0, 0x7FFF, 0x3F, 0);
     M2C_FIELD((void *)0x040004C8, s32 *, 0) = 0x1FF00000;

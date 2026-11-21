@@ -1,5 +1,6 @@
 /* 36 functions from 0x02224284 to 0x0222525C (ov009), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 typedef struct { s32 first, second; } Ov009MemberPair;
 static inline void ov009SaveInterrupts(u32 *saved) {
     *saved = *(volatile u16 *)0x04000208;
@@ -682,16 +683,19 @@ void func_ov009_02224d1c(void *arg0) {
     FreeLinkBlock(arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
 }
 
-void *func_ov009_02224d30(void *arg0, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6) {
- void MI_CpuCopy8(s32, void *, s32);
- M2C_FIELD(arg0,s32 *,0) = 0x5F574C4D;
- M2C_FIELD(arg0,s8 *,4) = arg1;
- M2C_FIELD(arg0,u8 *,5) = (M2C_FIELD(arg0,u8 *,5) & ~0xF) | (arg2 & 0xF);
- M2C_FIELD(arg0,u8 *,5) = (M2C_FIELD(arg0,u8 *,5) & ~0xF0) | ((arg3 & 0xF) << 4);
- M2C_FIELD(arg0,u16 *,6) = arg6;
- M2C_FIELD(arg0,s32 *,8) = arg5;
- if (arg4 != 0 && arg5 != 0) MI_CpuCopy8(arg4,(u8 *)arg0 + 0xC,arg5);
- return arg0;
+/* Fill in the 12-byte link packet header at `packet` (tag, message id, the two
+ * 4-bit flags, recipient mask and payload length) and copy the payload in behind
+ * it; returns `packet`. */
+void *WriteLinkPacketHeader(void *packet, s8 type, s32 flagsLow, s32 flagsHigh, s32 payload, s32 size, u16 recipients) {
+    void MI_CpuCopy8(s32, void *, s32);
+    M2C_FIELD(packet, s32 *, LINK_PACKET_MAGIC) = LINK_PACKET_TAG;
+    M2C_FIELD(packet, s8 *, LINK_PACKET_TYPE) = type;
+    M2C_FIELD(packet, u8 *, LINK_PACKET_FLAGS) = (M2C_FIELD(packet, u8 *, LINK_PACKET_FLAGS) & ~0xF) | (flagsLow & 0xF);
+    M2C_FIELD(packet, u8 *, LINK_PACKET_FLAGS) = (M2C_FIELD(packet, u8 *, LINK_PACKET_FLAGS) & ~0xF0) | ((flagsHigh & 0xF) << 4);
+    M2C_FIELD(packet, u16 *, LINK_PACKET_RECIPIENTS) = recipients;
+    M2C_FIELD(packet, s32 *, LINK_PACKET_LENGTH) = size;
+    if (payload != 0 && size != 0) MI_CpuCopy8(payload, (u8 *)packet + LINK_PACKET_PAYLOAD, size);
+    return packet;
 }
 
 #pragma push
@@ -703,7 +707,7 @@ s32 QueueHostLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
-    void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
+    void *WriteLinkPacketHeader(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
     volatile u32 saved;
@@ -736,7 +740,7 @@ s32 QueueHostLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))func_ov009_02224d30)((u8 *)ptr + 4, arg0, r5, 0, arg1, arg2, arg3);
+    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))WriteLinkPacketHeader)((u8 *)ptr + 4, arg0, r5, 0, arg1, arg2, arg3);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
@@ -762,7 +766,7 @@ s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
-    void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
+    void *WriteLinkPacketHeader(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
     volatile u32 saved;
@@ -795,7 +799,7 @@ s32 QueueLinkPacket(s8 arg0, s32 arg1, s32 arg2, s32 arg3) {
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))func_ov009_02224d30)((u8 *)ptr + 4, arg0, r5, 1, arg1, arg2, arg3);
+    ((void *(*)(void *, s8, s32, s32, s32, s32, s32))WriteLinkPacketHeader)((u8 *)ptr + 4, arg0, r5, 1, arg1, arg2, arg3);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
@@ -822,7 +826,7 @@ extern "C" s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, s32 si
     M2C_UNK GetLinkLocalPlayerId(void);
     M2C_UNK func_ov009_0222132c(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
-    void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
+    void *WriteLinkPacketHeader(void *, s8, s32, s32, s32, s32, u16);
     extern M2C_UNK gLinkState;
 
     register u32 mask = arg5;
@@ -844,7 +848,7 @@ extern "C" s32 func_ov009_02224fec(s8 arg0, s32 arg1, s32 arg2, s32 arg3, s32 si
     }
 
     MI_CpuFill8(ptr, 0, 0x10);
-    func_ov009_02224d30((u8 *)ptr + 4, arg0, arg1, arg2, arg3, size, recipients);
+    WriteLinkPacketHeader((u8 *)ptr + 4, arg0, arg1, arg2, arg3, size, recipients);
 
     if (M2C_FIELD(&gLinkState, void **, 0x68) == 0) {
         M2C_FIELD(&gLinkState, void **, 0x68) = ptr;
@@ -894,7 +898,7 @@ s32 func_ov009_022250f8(s32 arg0) {
 #pragma push
 #pragma opt_strength_reduction off
 void *func_ov009_02225178(s32 arg0, void *arg1) {
-    void *func_ov009_02224d30(void *, s8, s32, s32, s32, s32, u16);
+    void *WriteLinkPacketHeader(void *, s8, s32, s32, s32, s32, u16);
     M2C_UNK FreeLinkBlock(void *, s32);
     extern M2C_UNK data_ov009_022269b0;
     extern M2C_UNK data_ov009_022269b4;
@@ -928,7 +932,7 @@ void *func_ov009_02225178(s32 arg0, void *arg1) {
     aval = M2C_FIELD(entry, volatile u16 *, 0xa);
     b9 = M2C_FIELD(entry, volatile u8 *, 9);
     b8 = M2C_FIELD(entry, volatile u8 *, 8);
-    ((void *(*)(void *, u32, u32, u32, s32, s32, u16))func_ov009_02224d30)(arg1, b8, (b9 << 28) >> 28, (b9 << 24) >> 28, (s32)p10, cval, aval);
+    ((void *(*)(void *, u32, u32, u32, s32, s32, u16))WriteLinkPacketHeader)(arg1, b8, (b9 << 28) >> 28, (b9 << 24) >> 28, (s32)p10, cval, aval);
     next = M2C_FIELD(entry, void **, 0);
     M2C_FIELD(&data_ov009_022269b0, void **, off) = next;
     if (next == (void *)0) {

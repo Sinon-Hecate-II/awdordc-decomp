@@ -15,7 +15,7 @@ extern const u8 gTerrainClassFlags[];
 
 extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc[], data_020ed6bc[], data_020edabc[], data_020ec2bc[];
 extern u32 data_0214c0c0[2];
-extern const u16 data_020ebddc[8];
+extern const u16 gVramBankBaseTable[8];
 
 extern s16 gSinCosTable[2048];
 extern s16 data_02101834[4][4][2];
@@ -267,40 +267,43 @@ void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     func_02004cf0();
 }
 
-void func_0207da60(s32 arg0, s32 arg1, s32 arg2) {
+/* Upload `size` bytes from `src` into the main OBJ extended palette at byte
+ * `offset`: unaligned ranges are written halfword by halfword, aligned ones with
+ * the palette's word copy. */
+void CopyMainOBJExtPalette(s32 src, s32 offset, s32 size) {
     M2C_UNK func_02004d3c();
-    M2C_UNK func_02004d70(s32, s32, s32);
+    M2C_UNK GX_LoadTexPltt(s32, s32, s32);
     M2C_UNK func_02004ddc();
-    M2C_UNK func_0207dacc(s32, s32);
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
+    M2C_UNK CopyMainOBJExtPaletteHalfword(s32, s32);
+    s32 remaining;
+    s32 vramOffset;
+    s32 source;
 
-    var_r6 = arg0;
-    var_r5 = arg1;
-    var_r4 = arg2;
-    if ((var_r6 & 2) || (var_r5 & 2) || (var_r4 & 2)) {
-        if (var_r4 == 0) {
+    source = src;
+    vramOffset = offset;
+    remaining = size;
+    if ((source & 2) || (vramOffset & 2) || (remaining & 2)) {
+        if (remaining == 0) {
             return;
         }
         do {
-            func_0207dacc(var_r6, var_r5);
-            var_r6 += 2;
-            var_r5 += 2;
-            var_r4 -= 2;
-        } while (var_r4 != 0);
+            CopyMainOBJExtPaletteHalfword(source, vramOffset);
+            source += 2;
+            vramOffset += 2;
+            remaining -= 2;
+        } while (remaining != 0);
         return;
     }
     func_02004d3c();
-    func_02004d70(var_r6, var_r5, var_r4);
+    GX_LoadTexPltt(source, vramOffset, remaining);
     func_02004ddc();
 }
 
-M2C_UNK func_0207dacc(s32 arg0,s32 arg1) {
+M2C_UNK CopyMainOBJExtPaletteHalfword(s32 arg0,s32 arg1) {
 s32 GX_ReleaseBankForOBJExtPltt(void);
 void GX_SetBankForOBJExtPltt(s32);
 s32 state=GX_ReleaseBankForOBJExtPltt();
-u32 base=(u32)data_020ebddc[state>>4]<<12;
+u32 base=(u32)gVramBankBaseTable[state>>4]<<12;
 data_0214c0c0[1]=state;
 data_0214c0c0[0]=base;
 *(u16 *)(base+(arg1&~1))=*(u16 *)arg0;

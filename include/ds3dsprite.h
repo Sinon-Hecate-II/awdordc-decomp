@@ -408,6 +408,7 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
+#define DS3D_SPRITE_CELLS        0x64 /* void *the object's SpriteCellList (see sprite_grid.h) */
 #define DS3D_CLASS_DESTROY       0x00 /* method at DS3D_SPRITE_CLASS +0x00: destroys the object it is given */
 
 /* One entry of an object's animation state cursor (DS3D_SPRITE_ANIM).  The state
@@ -522,7 +523,8 @@ enum {
     PANEL_INPUT_LEFT    = 0x04, /* left key, or a touch on the widget's left half */
     PANEL_INPUT_RIGHT   = 0x08, /* right key, or a touch on the widget's right half */
     PANEL_INPUT_CONFIRM = 0x10, /* A key, or a touch release on the touched half */
-    PANEL_INPUT_CANCEL  = 0x20  /* B key */
+    PANEL_INPUT_CANCEL  = 0x20, /* B key */
+    PANEL_INPUT_SKIP    = 0x400 /* Start key: skip or advance a message */
 };
 
 /* Text layer of a 3D sprite object: the object shows `values[palette]` through
@@ -534,6 +536,11 @@ enum {
 
 /* TEXT_LAYER_FLAGS bits. */
 #define TEXT_LAYER_FLAG_CONFIRMED 0x01 /* the screen choice was confirmed */
+
+/* TEXT_LAYER_FLAGS bits of the online-match label sprites: the confirmed bit
+ * above is theirs too, so their split transitions use the next two bits. */
+#define ONLINE_LABEL_FLAG_SPLIT_MAIN 0x02 /* main screen's split transition started */
+#define ONLINE_LABEL_FLAG_SPLIT_SUB  0x04 /* sub screen's split transition started */
 
 /* The text renderer's bitmap: TEXT_BITMAP_ROW_BYTES-byte pixel rows, eight rows
  * to a TEXT_BITMAP_BLOCK_BYTES-byte block whose upper and lower halves are kept

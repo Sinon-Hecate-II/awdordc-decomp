@@ -5,6 +5,7 @@
 typedef struct { s32 values[3]; } A77cTable;
 typedef struct { u32 value, threshold; } A564Entry;
 extern const A77cTable data_ov000_021aabb0;
+extern u32 gRecordValues[];
 
 #pragma opt_strength_reduction off
 void PlayUnitMoveSound(void *p) { s32 func_020a7298(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
@@ -95,10 +96,16 @@ s32 GetRecordDefinition(s32 arg0, s32 arg1) {
     return (arg1 * 0x30) + ((arg0 * 0x750) + (s32) &gRecordTable);
 }
 
-u32 GetRecordValue(s32 a,s32 b) {
-extern u32 gRecordValues[];
-s32 p=GetRecordDefinition(a,b);
-switch(a){case 0:return gRecordValues[M2C_FIELD(p,u16 *,4)];case 1:return gRecordValues[M2C_FIELD(p,u16 *,4)+0x28];case 2:return gRecordValues[M2C_FIELD(p,u16 *,4)+0x43];default:return 0;}
+/* The value the player has accumulated for record (group, index): the record
+ * entry's id picks a counter in gRecordValues, offset by the group's block. */
+u32 GetRecordValue(s32 group, s32 index) {
+RecordDefinition *record = (RecordDefinition *)GetRecordDefinition(group, index);
+switch (group) {
+case 0: return gRecordValues[record->id + RECORD_VALUE_GROUP0_BASE];
+case 1: return gRecordValues[record->id + RECORD_VALUE_GROUP1_BASE];
+case 2: return gRecordValues[record->id + RECORD_VALUE_GROUP2_BASE];
+default: return 0;
+}
 }
 
 u16 GetRecordTier(s32 a,s32 b) {

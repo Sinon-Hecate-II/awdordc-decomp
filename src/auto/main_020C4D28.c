@@ -25,32 +25,42 @@ void func_020c4d28(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-M2C_UNK func_020c4d64(s32 arg0, s32 arg1) {
-void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-void *CreateSpriteObject(M2C_UNK *, s32);
-extern M2C_UNK data_0212a65c, data_0212a53c;
-s32 var_r5;
-void *temp_r0;
-void *temp_r0_2;
-var_r5=arg0;
-if(var_r5==0) var_r5=GetBattleSaveBlock();
-if(arg1!=0) {
-temp_r0=CreateSpriteObject(&data_0212a65c,arg1);
-if(temp_r0==NULL) return;
-M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a53c;
-M2C_FIELD(temp_r0,s32 *,0x34)=var_r5;
-return;
-}
-temp_r0_2=CreateSpriteFromClass(&data_0212a65c,3);
-if(temp_r0_2!=NULL) {
-M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a53c;
-M2C_FIELD(temp_r0_2,s32 *,0x34)=var_r5;
-}
+/* Create the battle-save screen sprite for the new-game path: the sprite of
+ * gBattleSaveSpriteClass is owned by `owner` when it is nonzero (a child of that
+ * owner) or else is a layer-3 object, and the battle save block is bound to it at
+ * +0x34.  A zero `saveBlock` means the local battle save block. */
+M2C_UNK CreateBattleSaveSprite(s32 saveBlock, s32 owner) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK gBattleSaveSpriteVtbl;
+    extern M2C_UNK gBattleSaveSpriteClass;
+    s32 block;
+    void *sprite;
+    void *sprite2;
+
+    block = saveBlock;
+    if (block == 0) {
+        block = GetBattleSaveBlock();
+    }
+    if (owner != 0) {
+        sprite = CreateSpriteObject(&gBattleSaveSpriteClass, owner);
+        if (sprite == NULL) {
+            return;
+        }
+        M2C_FIELD(sprite, M2C_UNK **, 0) = &gBattleSaveSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, 0x34) = block;
+        return;
+    }
+    sprite2 = CreateSpriteFromClass(&gBattleSaveSpriteClass, 3);
+    if (sprite2 != NULL) {
+        M2C_FIELD(sprite2, M2C_UNK **, 0) = &gBattleSaveSpriteVtbl;
+        M2C_FIELD(sprite2, s32 *, 0x34) = block;
+    }
 }
 
 void func_020c4dd0(M2C_UNK arg0) {
-    M2C_UNK func_020c4d64(M2C_UNK, M2C_UNK);
-    func_020c4d64(0, arg0);
+    M2C_UNK CreateBattleSaveSprite(M2C_UNK, M2C_UNK);
+    CreateBattleSaveSprite(0, arg0);
 }
 
 #pragma push
@@ -143,32 +153,36 @@ void func_020c4ff4(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_020c5030(s32 arg0, s32 arg1) {
+/* Create the profile display sprite for the load/continue path: the sprite of
+ * gProfileLoadSpriteClass is owned by `owner` when it is nonzero (a child of that
+ * owner) or else is a layer-3 object, and the profile save block is bound to it at
+ * +0x34.  A zero `profileBlock` means the local player's profile save block. */
+void CreateProfileLoadSprite(s32 profileBlock, s32 owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, s32);
-    extern M2C_UNK data_0212a500;
-    extern M2C_UNK data_0212a55c;
-    s32 var_r5;
-    void *temp_r0;
-    void *temp_r0_2;
+    extern M2C_UNK gProfileLoadSpriteVtbl;
+    extern M2C_UNK gProfileLoadSpriteClass;
+    s32 block;
+    void *sprite;
+    void *sprite2;
 
-    var_r5 = arg0;
-    if (var_r5 == 0) {
-        var_r5 = func_020c4acc();
+    block = profileBlock;
+    if (block == 0) {
+        block = GetProfileSaveBlock();
     }
-    if (arg1 != 0) {
-        temp_r0 = CreateSpriteObject(&data_0212a55c, arg1);
-        if (temp_r0 == NULL) {
+    if (owner != 0) {
+        sprite = CreateSpriteObject(&gProfileLoadSpriteClass, owner);
+        if (sprite == NULL) {
             return;
         }
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_0212a500;
-        M2C_FIELD(temp_r0, s32 *, 0x34) = var_r5;
+        M2C_FIELD(sprite, M2C_UNK **, 0) = &gProfileLoadSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, 0x34) = block;
         return;
     }
-    temp_r0_2 = CreateSpriteFromClass(&data_0212a55c, 3);
-    if (temp_r0_2 != NULL) {
-        M2C_FIELD(temp_r0_2, M2C_UNK **, 0) = &data_0212a500;
-        M2C_FIELD(temp_r0_2, s32 *, 0x34) = var_r5;
+    sprite2 = CreateSpriteFromClass(&gProfileLoadSpriteClass, 3);
+    if (sprite2 != NULL) {
+        M2C_FIELD(sprite2, M2C_UNK **, 0) = &gProfileLoadSpriteVtbl;
+        M2C_FIELD(sprite2, s32 *, 0x34) = block;
     }
 }
 
@@ -205,32 +219,42 @@ void func_020c5230(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-M2C_UNK func_020c526c(s32 arg0, s32 arg1) {
-void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-void *CreateSpriteObject(M2C_UNK *, s32);
-extern M2C_UNK data_0212a594, data_0212a528;
-s32 var_r5;
-void *temp_r0;
-void *temp_r0_2;
-var_r5=arg0;
-if(var_r5==0) var_r5=GetBattleSaveBlock();
-if(arg1!=0) {
-temp_r0=CreateSpriteObject(&data_0212a594,arg1);
-if(temp_r0==NULL) return;
-M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a528;
-M2C_FIELD(temp_r0,s32 *,0x34)=var_r5;
-return;
-}
-temp_r0_2=CreateSpriteFromClass(&data_0212a594,3);
-if(temp_r0_2!=NULL) {
-M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a528;
-M2C_FIELD(temp_r0_2,s32 *,0x34)=var_r5;
-}
+/* Create the battle-save display sprite for the load/continue path: the sprite of
+ * gBattleLoadSpriteClass is owned by `owner` when it is nonzero (a child of that
+ * owner) or else is a layer-3 object, and the battle save block is bound to it at
+ * +0x34.  A zero `saveBlock` means the local player's battle save block. */
+M2C_UNK CreateBattleLoadSprite(s32 saveBlock, s32 owner) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK gBattleLoadSpriteVtbl;
+    extern M2C_UNK gBattleLoadSpriteClass;
+    s32 block;
+    void *sprite;
+    void *sprite2;
+
+    block = saveBlock;
+    if (block == 0) {
+        block = GetBattleSaveBlock();
+    }
+    if (owner != 0) {
+        sprite = CreateSpriteObject(&gBattleLoadSpriteClass, owner);
+        if (sprite == NULL) {
+            return;
+        }
+        M2C_FIELD(sprite, M2C_UNK **, 0) = &gBattleLoadSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, 0x34) = block;
+        return;
+    }
+    sprite2 = CreateSpriteFromClass(&gBattleLoadSpriteClass, 3);
+    if (sprite2 != NULL) {
+        M2C_FIELD(sprite2, M2C_UNK **, 0) = &gBattleLoadSpriteVtbl;
+        M2C_FIELD(sprite2, s32 *, 0x34) = block;
+    }
 }
 
 void func_020c52d8(M2C_UNK arg0) {
-    M2C_UNK func_020c526c(M2C_UNK, M2C_UNK);
-    func_020c526c(0, arg0);
+    M2C_UNK CreateBattleLoadSprite(M2C_UNK, M2C_UNK);
+    CreateBattleLoadSprite(0, arg0);
 }
 
 s32 GetBattleSlotSummary(s32 arg0) {
@@ -283,12 +307,12 @@ return p+arg0*0x28;
 
 void GetOwnFriendCode(s32 arg0) {
     M2C_UNK func_02032604(s32);
-    s32 func_020c4acc();
+    s32 GetProfileSaveBlock();
     s32 var_r0;
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_02032604(var_r0 + 4);
 }
@@ -296,7 +320,7 @@ void GetOwnFriendCode(s32 arg0) {
 void CopyLocalPlayerRecord(M2C_UNK arg0) {
     M2C_UNK IsPlayerRecordPresent(M2C_UNK);
     M2C_UNK func_02032670(s32, M2C_UNK);
-    func_02032670(func_020c4acc() + 4, arg0);
+    func_02032670(GetProfileSaveBlock() + 4, arg0);
     IsPlayerRecordPresent(arg0);
 }
 
@@ -328,7 +352,7 @@ void func_020c5464(void) {
 
 void func_020c5474(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK func_02031f58(s32, M2C_UNK, M2C_UNK);
-    func_02031f58(func_020c4acc() + 4, arg0, arg1);
+    func_02031f58(GetProfileSaveBlock() + 4, arg0, arg1);
 }
 
 s32 FormatMapCodeString(s32 arg0) {

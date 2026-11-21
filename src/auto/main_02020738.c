@@ -535,31 +535,31 @@ s32 func_020211e4(s32 arg0) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 DnsLookupAddress(s32);
-    extern M2C_UNK data_021372f0;
+    extern M2C_UNK gDnsServerAddresses;
     s32 temp_r4;
     s32 temp_r5;
     s32 temp_r6;
     s32 temp_r7;
     temp_r5 = OS_DisableInterrupts();
-    temp_r6 = M2C_FIELD(&data_021372f0, s32 *, 0);
-    temp_r7 = M2C_FIELD(&data_021372f0, s32 *, 4);
-    M2C_FIELD(&data_021372f0, s32 *, 0) = 0;
-    M2C_FIELD(&data_021372f0, s32 *, 4) = 0;
+    temp_r6 = M2C_FIELD(&gDnsServerAddresses, s32 *, 0);
+    temp_r7 = M2C_FIELD(&gDnsServerAddresses, s32 *, 4);
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = 0;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = 0;
     temp_r4 = DnsLookupAddress(arg0);
-    M2C_FIELD(&data_021372f0, s32 *, 0) = temp_r6;
-    M2C_FIELD(&data_021372f0, s32 *, 4) = temp_r7;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = temp_r6;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = temp_r7;
     OS_RestoreInterrupts(temp_r5);
     return temp_r4;
 }
 
-s32 func_02021230(s32 arg0, s32 arg1) {
+s32 SetDnsServerAddresses(s32 arg0, s32 arg1) {
     s32 GetLocalIpAddress();
-    extern M2C_UNK data_021372f0;
+    extern M2C_UNK gDnsServerAddresses;
     if (GetLocalIpAddress() == 0) {
         return -0x27;
     }
-    M2C_FIELD(&data_021372f0, s32 *, 0) = arg0;
-    M2C_FIELD(&data_021372f0, s32 *, 4) = arg1;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = arg0;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = arg1;
     return 0;
 }
 

@@ -8,7 +8,7 @@ extern s8 data_ov000_021b5580[],gTerrainPropertyType[],data_ov000_021b5500[],gAi
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
-s32 func_020a8a14(u16,u16); s32 IsTerrainOnUnitTeam(s16,u8);
+s32 GetMapPlayerFlags(u16,u16); s32 IsTerrainOnUnitTeam(s16,u8);
 s32 func_ov000_021a8d7c(s32,s32,s32);
 s32 IsSameTeam(u16,s32); s32 IsPlayerActive(s32);
 s32 IsFootUnitKind(s32); s32 IsMidActionStep(s32);
@@ -17,12 +17,12 @@ u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
 s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 CanUnitKindStandAt(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 GetUnitBuildCost(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
 count=0;out=&gAiTargetCandidates;
-if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
+if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 
 entry=(u8 *)*gCurrentMap+0x6c60;
 while(entry[0]!=255){
 if(entry[0]==15){
-if(func_020a8a14(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)goto nextEntry;
+if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&2)goto nextEntry;
 map=*gCurrentMap;
 if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)))goto nextEntry;
 }else{

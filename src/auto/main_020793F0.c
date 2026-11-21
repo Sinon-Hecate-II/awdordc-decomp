@@ -55,20 +55,23 @@ vx=(s16)vx;vy=(s16)vy;ex=(s16)ex;y=(s16)y;z=(s16)z;
 *(volatile u32 *)0x4000504=0;
 }
 #pragma opt_propagation reset
-void func_020796b0(M2C_UNK arg0, void *arg1) {
+/* Draw the hit-point counter icon of the unit whose render context is given: the
+ * icon number is the unit's hit points (1..9), moved to the zoomed icon row when
+ * the view is zoomed in and mirrored when the sprite faces the other way. */
+void DrawUnitHpIcon(Vec3 *pos, UnitRenderContext *ctx) {
     void func_020799dc(void *, void *, void *, u32);
-    extern M2C_UNK data_020eb4e0;
+    extern M2C_UNK gUnitStatusIconTable;
     s32 ptr;
-    s32 index;
+    s32 icon;
     s32 flip;
-    if (M2C_FIELD(arg1, u8 *, 0x30) == 1) return;
-    if (M2C_FIELD(arg1, s32 *, 0x20) < 1) return;
-    if (M2C_FIELD(arg1, s32 *, 0x20) >= 10) return;
-    index = M2C_FIELD(arg1, u32 *, 0x20);
-    if (M2C_FIELD(arg1, s32 *, 0x14) == 0x18) index += 0x1A;
-    ptr = index * 14 + (s32)&data_020eb4e0;
-    flip = (s32)(M2C_FIELD(arg1, s32 *, 0x18) & 7) >= 4;
-    func_020799dc((void *)arg0, (void *)ptr, (void *)(ptr + 6), (flip << 5) + 0x1400);
+    if (ctx->mode == 1) return;
+    if (ctx->hp < 1) return;
+    if (ctx->hp >= 10) return;
+    icon = M2C_FIELD(ctx, u32 *, 0x20);
+    if (ctx->frame == 0x18) icon += 0x1A;
+    ptr = icon * 14 + (s32)&gUnitStatusIconTable;
+    flip = (ctx->variant & 7) >= 4;
+    func_020799dc((void *)pos, (void *)ptr, (void *)(ptr + 6), (flip << 5) + 0x1400);
 }
 
 #pragma opt_propagation off
@@ -80,7 +83,7 @@ void DrawUnitStatusIcon(Vec3 *pos, UnitRenderContext *ctx) {
     extern Mode0207 gMapConfig;
     extern M2C_UNK gFrameCounter;
     extern M2C_UNK data_020eb4ec;
-    extern M2C_UNK data_020eb4e0;
+    extern M2C_UNK gUnitStatusIconTable;
     s32 mode2Icons[16];
     s32 flagIcons[16];
     void *unit;
@@ -150,7 +153,7 @@ chosen:
     frame = ctx->frame;
     if (frame == 0x18) icon += 0x1A;
     offset = icon * 0x0E;
-    iconPtr = (u8 *)&data_020eb4e0 + offset;
+    iconPtr = (u8 *)&gUnitStatusIconTable + offset;
     style = ((u8 *)&data_020eb4ec)[offset];
 
     switch (style) {
@@ -288,7 +291,7 @@ void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, signed int a5) 
     extern u16 data_020eb1a8[];
     extern u16 data_020eb1d0[];
     extern u16 data_020eb1e0[];
-    s32 func_0207fa64(s32);
+    s32 GetTerrainAnimOffset(s32);
     volatile s16 offsets[2];
     volatile u16 raw[2];
     s32 mode = 0;
@@ -309,7 +312,7 @@ void Map_SubmitCellQuads(s32 a0, s32 a1, s32 a2, s32 a3, s32 a4, signed int a5) 
 
     low = flags & 0xffff;
     if (k != 0) {
-        u32 v = func_0207fa64(k);
+        u32 v = GetTerrainAnimOffset(k);
         u16 offsetX, offsetY;
         raw[0] = v;
         raw[1] = v >> 16;

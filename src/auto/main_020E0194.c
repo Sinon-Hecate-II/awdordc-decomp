@@ -457,37 +457,37 @@ void func_020e0dc0(void *entity) {
 
 void func_020e0dcc(M2C_UNK arg0) {
     M2C_UNK func_02084ea0(s32, M2C_UNK);
-    M2C_UNK func_ov010_02229a94();
-    func_ov010_02229a94();
+    M2C_UNK PublishLocalPlayerStatus();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 
 void func_020e0dec(M2C_UNK arg0) {
-    func_ov010_02229a94();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 
 void func_020e0e0c(M2C_UNK arg0) {
-    func_ov010_02229a94();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 
 void func_020e0e2c(M2C_UNK arg0) {
-    func_ov010_02229a94();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 
 void func_020e0e4c(M2C_UNK arg0) {
     M2C_UNK func_02084ea0(s32, M2C_UNK);
-    M2C_UNK func_ov010_02229a94();
-    func_ov010_02229a94();
+    M2C_UNK PublishLocalPlayerStatus();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 
 void func_020e0e6c(M2C_UNK arg0) {
     M2C_UNK func_02084ea0(s32, M2C_UNK);
-    M2C_UNK func_ov010_02229a94();
-    func_ov010_02229a94();
+    M2C_UNK PublishLocalPlayerStatus();
+    PublishLocalPlayerStatus();
     func_02084ea0(0x56434854, arg0);
 }
 

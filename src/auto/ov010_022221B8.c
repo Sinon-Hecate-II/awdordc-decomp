@@ -35,21 +35,24 @@ packed|=Encode2BitSample(in[3],arg3)<<6;
 }while(i<n);
 }
 #pragma pop
-void func_ov010_022223e8(void *arg0,s32 arg1,s32 arg2,s32 arg3) {
-void func_ov010_02221fa0(void *,s32,s32,UnkOv010Header *);
-void func_ov010_02221600(void *,s32,s32,UnkOv010Header *);
+/* Decode one voice-chat packet: read the ADPCM codec state from the packet's
+ * 4-byte header (predicted sample at +0x00, step-table index at +0x02) and decode
+ * the payload after it with the codec named by `codecMode` (VOICE_CODEC_*). */
+void VoiceChat_DecodePacket(void *packet,s32 samples,s32 payloadBytes,s32 codecMode) {
+void DecodeAdpcm2Bit(void *,s32,s32,UnkOv010Header *);
+void DecodeAdpcm3Bit(void *,s32,s32,UnkOv010Header *);
 void DecodeAdpcm4Bit(void *,s32,s32,UnkOv010Header *);
-UnkOv010Header header;
-header.unk0=M2C_FIELD(arg0,s16 *,0);
-header.unk2=M2C_FIELD(arg0,u8 *,2);
-switch(arg3) {
-case 2: func_ov010_02221fa0((u8 *)arg0+4,arg1,arg2-4,&header); return;
-case 3: func_ov010_02221600((u8 *)arg0+4,arg1,arg2-4,&header); return;
-case 4: DecodeAdpcm4Bit((u8 *)arg0+4,arg1,arg2-4,&header); return;
+UnkOv010Header codecState;
+codecState.unk0=M2C_FIELD(packet,s16 *,0);
+codecState.unk2=M2C_FIELD(packet,u8 *,2);
+switch(codecMode) {
+case VOICE_CODEC_ADPCM2: DecodeAdpcm2Bit((u8 *)packet+4,samples,payloadBytes-4,&codecState); return;
+case VOICE_CODEC_ADPCM3: DecodeAdpcm3Bit((u8 *)packet+4,samples,payloadBytes-4,&codecState); return;
+case VOICE_CODEC_ADPCM4: DecodeAdpcm4Bit((u8 *)packet+4,samples,payloadBytes-4,&codecState); return;
 }
 }
 
-void func_ov010_02222454(void *arg0,s32 arg1,s32 arg2,void *arg3,s32 arg4) {
+void VoiceChat_EncodePacket(void *arg0,s32 arg1,s32 arg2,void *arg3,s32 arg4) {
 void func_ov010_022221b8(void *,s32,s32,void *);
 void func_ov010_02221a94(void *,s32,s32,void *);
 void func_ov010_02221474(void *,s32,s32,void *);
@@ -379,7 +382,7 @@ packetFlags=packet[5];M2C_FIELD(&gVoiceChatState,s32 *,0x14)=0;packet[5]=packetF
 }
 if(mode>=2){
 if(packet[5]&0x80){M2C_FIELD(&gVoiceChatState,s16 *,0x10)=0;M2C_FIELD(&gVoiceChatState,u8 *,0x12)=0;}
-func_ov010_02222454(payload-4,(s32)payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1,&gLinkCodecState,mode);
+VoiceChat_EncodePacket(payload-4,(s32)payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1,&gLinkCodecState,mode);
 }else if(mode==1){
 func_ov010_022234f8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
 }else if(mode==0){

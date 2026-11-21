@@ -125,7 +125,7 @@ s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
 #pragma opt_strength_reduction off
 #pragma peephole off
 s32 DnsLookupAddress(s32 arg0) {
-extern M2C_UNK data_021372f0;
+extern M2C_UNK gDnsServerAddresses;
 extern M2C_UNK gNetStack;
 u8 flags[2]; s32 out; u16 rnd[2];
 u64 state, mul, inc; s32 i,j; u8 *p;
@@ -147,7 +147,7 @@ flags[0]=1; flags[1]=1;
 for(i=0;i<3;i++){
 for(j=0,p=flags;j<2;j++,p++){
 if(*p){
-out=func_0201ecbc(arg0,M2C_FIELD(&data_021372f0,s32*,j*4),rnd[j]);
+out=func_0201ecbc(arg0,M2C_FIELD(&gDnsServerAddresses,s32*,j*4),rnd[j]);
 if(out!=0 && out!=-1) goto done;
 if(out==-1)*p=0;
 }
@@ -255,7 +255,7 @@ void func_0201eed4(void) {
 void func_0201f030(void) {
     extern s32 gNetAllocator;
     extern s32 gLocalIpAddress, data_021372ac, data_021372bc;
-    extern M2C_UNK data_021372f0;
+    extern M2C_UNK gDnsServerAddresses;
     extern M2C_UNK data_02138ac0;
     s32 *src;
     s32 *dst;
@@ -266,7 +266,7 @@ void func_0201f030(void) {
     *dst = src[2];
     dst = &data_021372bc;
     *dst = src[3];
-    dst = (s32 *)&data_021372f0;
+    dst = (s32 *)&gDnsServerAddresses;
     dst[0] = src[4];
     dst[1] = src[5];
     dst = (s32 *)&data_02138ac0;

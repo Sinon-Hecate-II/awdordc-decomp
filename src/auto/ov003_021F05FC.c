@@ -689,7 +689,7 @@ void func_ov003_021f1480(s8 arg0) {
     M2C_FIELD(&gOv003SceneState, s8 *, 6) = arg0;
 }
 
-u8 func_ov003_021f1490(void) {
+u8 GetMapListCategory(void) {
     extern M2C_UNK gOv003SceneState;
     return M2C_FIELD(&gOv003SceneState, u8 *, 6);
 }

@@ -62,7 +62,7 @@ void func_ov003_021e6234(void *obj) {
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK ResetMapUnits();
     M2C_UNK SetTextSpriteValue(s32, s32);
-    M2C_UNK func_020c12f8(s32, s32, s32, M2C_UNK);
+    M2C_UNK DrawMapPreviewLayer(s32, s32, s32, M2C_UNK);
     M2C_UNK func_020c1878(s32);
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020cf278(M2C_UNK);
@@ -85,7 +85,7 @@ void func_ov003_021e6234(void *obj) {
     DrawTextLine(0, 0, 3, GetMapName(0xE1), 0x9000, 0x11);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
     Clear3DSpriteLayer(0);
-    func_020c12f8(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x143, 5);
+    DrawMapPreviewLayer(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x20), 0x143, 5);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
     gCur3DSpriteEngine = savedContext;
     SetTextSpriteValue(M2C_FIELD(obj, s32 *, 0x58), func_ov006_02217d0c());
@@ -600,7 +600,7 @@ s32 func_ov003_021e6cc4(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-u8 func_ov003_021e6cfc(void) {
+u8 IsSessionHost(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
     s32 result;
@@ -644,7 +644,7 @@ u8 *GetWaypointSlotGroup(s32 slot) {
     return (u8 *) &gWaypointSlotGroups[group];
 }
 
-u8 func_ov003_021e6e08(void) {
+u8 GetWaypointGroupFirstSlot(void) {
     u8 *GetWaypointSlotGroup();
     return *GetWaypointSlotGroup();
 }

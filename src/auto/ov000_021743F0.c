@@ -117,21 +117,26 @@ void Ov000_InfoWindow_ClearUnitFlags(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), s8 *, 0xC) = 0;
 }
 
-void Ov000_InfoWindow_OpenCell(void *arg0, s32 arg1, s32 arg2) {
+/* Open the info window's panel for the cell under the map cursor: with no unit
+ * there (or bit 0x8000 of the game settings forcing the terrain panel) show the
+ * terrain description, otherwise fill the unit panel and switch to the stats
+ * state. */
+void Ov000_InfoWindow_OpenCell(void *menuPtr, s32 unit, s32 terrainId) {
     void Ov000_InfoWindow_ShowTerrain(void *, s32);
-    M2C_UNK FillUnitInfo(s32);
+    void FillUnitInfo(void *, void *);
     extern Ov000Flags data_0215d9b8;
-    extern Ov000MenuState *gOv000InfoWindow;
-    if (arg1 == 0) {
-        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, arg2);
+    extern Ov000InfoMenu *gOv000InfoWindow;
+    Ov000InfoMenu *menu = (Ov000InfoMenu *)menuPtr;
+    if (unit == 0) {
+        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, terrainId);
         return;
     }
     if (((u32)(M2C_FIELD(&data_0215d9b8, u16 *, 6) << 16) >> 31) == 1) {
-        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, arg2);
+        Ov000_InfoWindow_ShowTerrain(gOv000InfoWindow, terrainId);
         return;
     }
-    FillUnitInfo(M2C_FIELD(arg0, s32 *, 0));
-    M2C_FIELD(arg0, s32 *, 0xC) = 4;
+    FillUnitInfo(menu->statsWindow, (void *)unit);
+    menu->pendingState = OV000_INFO_UNIT_STATS;
 }
 
 void func_ov000_02174a68(void *arg0) {

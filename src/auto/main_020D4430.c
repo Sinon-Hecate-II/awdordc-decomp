@@ -237,7 +237,7 @@ void func_020d4c18(void) {
 }
 
 void func_020d4ca4(void *);
-void func_020d4c28(void *arg0){func_02003bd0();func_02077c10();func_020d4ca4(arg0);}
+void func_020d4c28(void *arg0){G3X_Reset();func_02077c10();func_020d4ca4(arg0);}
 
 void func_020d4c44(void) {
     M2C_UNK func_020d3b24();
@@ -333,7 +333,7 @@ case 4:func_020d61ac();break;
 case 5:UpdateMapTargetCursor();break;
 case 6:func_020d6310();break;
 case 7:func_020d6350();break;
-case 8:func_020d5430();break;
+case 8:UpdateMapSelectionCursor();break;
 case 9:func_020d54b4();break;
 case 10:func_020d54b8();break;
 }

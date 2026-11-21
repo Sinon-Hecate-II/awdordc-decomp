@@ -159,16 +159,20 @@ fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);
 if(fp==0){M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)=1;return;}fp(2);return;
 tail:Ov001_PostTaskMessage(0,(M2C_UNK)arg0);Ov001_FreeAlloc((M2C_UNK*)&data_ov001_02193d50);done:return;}
 #pragma pop
-void func_ov001_021763cc(void) {
+/* Open the ov001 option page: allocate its 12-byte state block, start the overlay's
+ * Wi-Fi session with the page's state/alloc/cleanup callbacks (0x800-byte packet
+ * buffer) and wait briefly for it to come up. */
+void Ov001_OpenOptionPage(void) {
     s32 Ov001_Alloc(s32, s32);
     s32 func_ov001_021711e0(s32, s32, void *, void *, void *, s32);
-    void func_ov001_02176544(void *);
-    void func_ov001_0217655c(s32);
+    void Ov001_StoreOptionPageState(void *);
+    void Ov001_AllocWhBuffer(s32);
     void func_ov001_0217656c(void);
     extern M2C_UNK gOv001OptionPageState;
-    s32 v = 0xC;
-    gOv001OptionPageState = Ov001_Alloc(v, v - 0x10);
-    if (func_ov001_021711e0(0xF, 0x40, func_ov001_02176544, func_ov001_0217655c, func_ov001_0217656c, 0x800) != 1) {
+    s32 stateSize = 0xC;
+
+    gOv001OptionPageState = Ov001_Alloc(stateSize, stateSize - 0x10);
+    if (func_ov001_021711e0(0xF, 0x40, Ov001_StoreOptionPageState, Ov001_AllocWhBuffer, func_ov001_0217656c, 0x800) != 1) {
         SystemHalt();
     }
     SleepMilliseconds(0xA);
@@ -218,13 +222,13 @@ void Ov001_StoreMatchSetup(void) {
  StoreLinkMatchSetup(state);
 }
 
-void func_ov001_02176544(void *arg0) {
+void Ov001_StoreOptionPageState(void *arg0) {
  typedef struct { s32 values[3]; } State;
  extern M2C_UNK gOv001OptionPageState;
  *(State *)gOv001OptionPageState = *(State *)arg0;
 }
 
-void func_ov001_0217655c(M2C_UNK arg0) {
+void Ov001_AllocWhBuffer(M2C_UNK arg0) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
     Ov001_Alloc(arg0, 0x20);
 }

@@ -102,7 +102,7 @@ s32 IsValidTextChar(u8 *arg0) {
 }
 
 #pragma opt_propagation off
-s32 func_02046158(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
+s32 FifoTransferCommand(s32 arg0,s32 arg1,s32 arg2,s32 arg3){
 M2C_UNK DC_InvalidateRange(M2C_UNK,...);
 u64 GetSystemTick(void);
 u64 U64Divide(u64,u64);
@@ -194,11 +194,11 @@ fail:return state;
 }
 #pragma opt_propagation reset
 s32 FifoReadBlock(s32 arg0,s32 arg1,M2C_UNK arg2) {
-M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 func_02046158(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK HandleFifoMessage;
+M2C_UNK DC_InvalidateRange(M2C_UNK,...); s32 IsFifoMessageReady(s32,s32); M2C_UNK SetFifoMessageHandler(s32,M2C_UNK *); s32 FifoTransferCommand(s32,s32,s32,s32); M2C_UNK WaitByLoop(s32); extern M2C_UNK HandleFifoMessage;
 register u16 len;
 DC_InvalidateRange(arg2); do {}while(!IsFifoMessageReady(4,1));SetFifoMessageHandler(4,&HandleFifoMessage);
 len=(u16)arg1;
-loop: if(func_02046158(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
+loop: if(FifoTransferCommand(1,arg0,len,arg2)!=1) {WaitByLoop(0x40000);goto loop;}DC_InvalidateRange(arg2,arg1);return 1; }
 
 /* Send `size` bytes of `data` from the ARM9 to the ARM7 address `address` over
  * the FIFO: wait for the channel, hand it the reply handler, clean the cache for
@@ -207,7 +207,7 @@ void FifoWriteBlock(s32 address, s32 size, s32 data) {
     s32 IsFifoMessageReady(s32, s32);
     M2C_UNK SetFifoMessageHandler(s32, M2C_UNK *);
     M2C_UNK DC_CleanRange(s32, s32);
-    s32 func_02046158(s32, s32, s32, s32);
+    s32 FifoTransferCommand(s32, s32, s32, s32);
     M2C_UNK WaitByLoop(s32);
     extern M2C_UNK HandleFifoMessage;
 
@@ -216,7 +216,7 @@ void FifoWriteBlock(s32 address, s32 size, s32 data) {
     SetFifoMessageHandler(4, (M2C_UNK *)&HandleFifoMessage);
     DC_CleanRange(data, size);
  loop:
-    if (func_02046158(2, address, size, data) != 1) {
+    if (FifoTransferCommand(2, address, size, data) != 1) {
         WaitByLoop(0x40000);
         goto loop;
     }
@@ -233,18 +233,21 @@ s32 FifoVerifyBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     return 0;
 }
 
+/* Finish the save/profile block transfer: wait for the block-transfer FIFO
+ * channel, install the shared reply handler, then keep sending the finish command
+ * until the ARM7 acknowledges it. */
 s32 FifoFinishTransfer(void) {
     M2C_UNK WaitByLoop(M2C_UNK);
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
-    s32 func_02046158(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 FifoTransferCommand(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK HandleFifoMessage;
     do {
 
-    } while (IsFifoMessageReady(4, 1) == 0);
-    SetFifoMessageHandler(4, &HandleFifoMessage);
+    } while (IsFifoMessageReady(FIFO_BLOCK_TAG, 1) == 0);
+    SetFifoMessageHandler(FIFO_BLOCK_TAG, &HandleFifoMessage);
 loop_3:
-    if (func_02046158(7, 0, 0, 0) != 1) {
+    if (FifoTransferCommand(7, 0, 0, 0) != 1) {
         WaitByLoop(0x40000);
         goto loop_3;
     }

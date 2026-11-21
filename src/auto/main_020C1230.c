@@ -22,55 +22,59 @@ void RemoveMapViewSprites(void) {
 
 M2C_UNK func_020c1298(s32 arg0,M2C_UNK arg1,s32 arg2,M2C_UNK arg3) {
  M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
- M2C_UNK func_020c1078();
+ M2C_UNK RefreshPlayerColorIndices();
  void func_020c13a8(M2C_UNK);
- M2C_UNK func_020c13c0(M2C_UNK,s32);
- extern M2C_UNK data_0211e18c; extern s32 data_02163f98;
- data_02163f98=arg3;
- func_020c1078();
- CopyToObjPaletteShadow(&data_0211e18c,arg3<<5,0x20);
+ M2C_UNK FillMapPreviewTilemap(M2C_UNK,s32);
+ extern M2C_UNK gMapPreviewPalettes; extern s32 gMapPreviewPaletteSlot;
+ gMapPreviewPaletteSlot=arg3;
+ RefreshPlayerColorIndices();
+ CopyToObjPaletteShadow(&gMapPreviewPalettes,arg3<<5,0x20);
  func_020c13a8(arg0+(arg2<<5));
- return func_020c13c0(arg1,(arg2&0x3ff)|(u16)(arg3<<12));
+ return FillMapPreviewTilemap(arg1,(arg2&0x3ff)|(u16)(arg3<<12));
 }
 
-void func_020c12f8(s32 arg0, M2C_UNK arg1, s32 arg2, s32 arg3) {
+/* Draw the current map into one layer of a 3D sprite map preview: refresh the
+ * player colour indices, load the preview palette into OBJ palette slot
+ * `palette`, copy the map's tile graphics into the layer's VRAM starting at
+ * tile `tile`, and fill the layer's tilemap with those tiles in that palette. */
+void DrawMapPreviewLayer(s32 layerVram, M2C_UNK layerTilemap, s32 tile, s32 palette) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_020c1078();
-    M2C_UNK func_020c13c0(M2C_UNK, s32);
-    extern M2C_UNK data_0211e18c;
-    extern s32 data_02163f98;
-    s32 temp_r4;
+    M2C_UNK RefreshPlayerColorIndices();
+    M2C_UNK FillMapPreviewTilemap(M2C_UNK, s32);
+    extern M2C_UNK gMapPreviewPalettes;
+    extern s32 gMapPreviewPaletteSlot;
+    s32 vramOffset;
 
-    data_02163f98 = arg3;
-    func_020c1078();
-    CopyToObjPaletteShadow(&data_0211e18c, arg3 << 5, 0x20);
-    temp_r4 = arg0 + (arg2 << 5);
-    func_020c15ec(temp_r4);
-    func_020c1768(temp_r4);
-    func_020c13c0(arg1, (arg2 & 0x3FF) | (u16) (arg3 << 0xC));
+    gMapPreviewPaletteSlot = palette;
+    RefreshPlayerColorIndices();
+    CopyToObjPaletteShadow(&gMapPreviewPalettes, palette << 5, 0x20);
+    vramOffset = layerVram + (tile << 5);
+    CopyMapPreviewTopHalf(vramOffset);
+    CopyMapPreviewBottomHalf(vramOffset);
+    FillMapPreviewTilemap(layerTilemap, (tile & 0x3FF) | (u16) (palette << 0xC));
 }
 
 void func_020c1364(void) {
     M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
-    extern s32 data_0211e18c;
-    extern s32 data_02163f98;
+    extern s32 gMapPreviewPalettes;
+    extern s32 gMapPreviewPaletteSlot;
     extern s32 gFrameCounter;
     
     func_01ff9e78(
-        (char *)&data_0211e18c + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
-        (data_02163f98 << 5) + 0x1C,
+        (char *)&gMapPreviewPalettes + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
+        (gMapPreviewPaletteSlot << 5) + 0x1C,
         2
     );
 }
 
 void func_020c13a8(M2C_UNK arg0) {
-    M2C_UNK func_020c15ec();
-    M2C_UNK func_020c1768(M2C_UNK);
-    func_020c15ec();
-    func_020c1768(arg0);
+    M2C_UNK CopyMapPreviewTopHalf();
+    M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK);
+    CopyMapPreviewTopHalf();
+    CopyMapPreviewBottomHalf(arg0);
 }
 
-M2C_UNK func_020c13c0(M2C_UNK arg0,s32 arg1) {
+M2C_UNK FillMapPreviewTilemap(M2C_UNK arg0,s32 arg1) {
  extern void **data_027e0058;
  s32 index=0,y=index,x,row;
  void *base=*data_027e0058;
@@ -112,7 +116,7 @@ void DrawMapUnitMarkers(u16 *dst) {
 }
 
 #pragma opt_common_subs off
-M2C_UNK func_020c15ec(s32 arg){
+M2C_UNK CopyMapPreviewTopHalf(s32 arg){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 a[2],b[2],half,w,h,mode,x,y,sum;u16 *src,*out; s32 index;u16 *dst=(u16 *)arg;
@@ -131,7 +135,7 @@ out[0]=src[0];out[2]=src[2];out[4]=src[4];out[6]=src[6];
 }
 }
 #pragma opt_common_subs reset
-M2C_UNK func_020c1768(M2C_UNK p){
+M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK p){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
 s32 x,y,w,z,h;u16 *src,*dst;void *base;z=func_020d4dac();base=*gCurrentMap;
@@ -142,11 +146,11 @@ for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPrevi
 
 void func_020c183c(void *arg0) {
     M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
-    extern s32 data_0211e18c;
+    extern s32 gMapPreviewPalettes;
     extern s32 gFrameCounter;
     
     func_01ff9e78(
-        (char *)&data_0211e18c + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
+        (char *)&gMapPreviewPalettes + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
         (M2C_FIELD(arg0, s16 *, 0x5A) << 5) + 0x1C,
         2
     );

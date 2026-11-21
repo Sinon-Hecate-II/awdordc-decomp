@@ -88,12 +88,14 @@ if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&gAsse
 M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
 }
 
-void gti2AddShortToBuffer(void *p,s32 a) {
-extern M2C_UNK data_020ff5fc,gAssertFileNameBuffer,data_020ff5bc;
+/* Append the 16-bit value `value` to `buffer` as two big-endian bytes,
+ * asserting that both fit. */
+void gti2AddShortToBuffer(Gt2Buffer *buffer, s32 value) {
+extern M2C_UNK gAssertExprBufferShortFits,gAssertFileNameBuffer,gAssertNameBufferWriteUShort;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)+2>M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5fc,&gAssertFileNameBuffer,&data_020ff5bc,46);
-M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a>>8;
-M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
+if(M2C_FIELD(buffer,s32 *,8)+2>M2C_FIELD(buffer,s32 *,4))AssertFailed(&gAssertExprBufferShortFits,&gAssertFileNameBuffer,&gAssertNameBufferWriteUShort,46);
+M2C_FIELD(buffer,u8 **,0)[M2C_FIELD(buffer,s32 *,8)++]=value>>8;
+M2C_FIELD(buffer,u8 **,0)[M2C_FIELD(buffer,s32 *,8)++]=value;
 }
 
 /* Append `len` bytes from `data` to the GT2 buffer `buffer` (all of `data`'s
@@ -448,10 +450,20 @@ s32 gti2CheckTimeout(void *connection, u32 now) {
     return 1;
 }
 
-s32 func_0205aad8(void *p,u32 t) {
+/* Walk the connection's acknowledgement queue and resend every sent command the
+ * peer has left unacknowledged for longer than GT2_RESEND_TIMEOUT.  Returns 0
+ * once a resend fails (the socket may have been freed), 1 otherwise. */
+s32 gti2ResendTimedOutCommands(void *connection,u32 now) {
 s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 gti2ResendPendingCommand(void *,void *);
-s32 i,n;n=Vector_GetCount(M2C_FIELD(p,s32 *,96));
-for(i=0;i<n;i++){void *q=Vector_GetItem(M2C_FIELD(p,s32 *,96),i);if(t-M2C_FIELD(q,u32 *,12)>1000){if(!gti2ResendPendingCommand(p,q))return 0;}}return 1;
+s32 i,count;void *command;
+count=Vector_GetCount(M2C_FIELD(connection,s32 *,GT2_CONNECTION_ACK_QUEUE));
+for(i=0;i<count;i++){
+command=Vector_GetItem(M2C_FIELD(connection,s32 *,GT2_CONNECTION_ACK_QUEUE),i);
+if(now-M2C_FIELD(command,u32 *,GT2_SENT_COMMAND_LAST_SENT)>GT2_RESEND_TIMEOUT){
+if(!gti2ResendPendingCommand(connection,command))return 0;
+}
+}
+return 1;
 }
 
 s32 func_0205ab44(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}

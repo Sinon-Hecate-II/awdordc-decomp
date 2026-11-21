@@ -242,32 +242,36 @@ if ((u32)(M2C_FIELD(p, s32 *, 0x40) - 9) > 1) M2C_FIELD(p, s32 *, 0x54) = arg0;
 
 s32 func_ov001_02187bb0(void) {
 s32 WFC_StartDownloadPlay(void *, void *);
-void func_ov001_02187bf4(void *);
+void Ov001_HandleDownloadPlayStartResult(void *);
 extern M2C_UNK gWhWork;
 SetWhStatus(3);
-if (WFC_StartDownloadPlay((void *)func_ov001_02187bf4, M2C_FIELD(&gWhWork, void **, 4)) == 2) return 1;
+if (WFC_StartDownloadPlay((void *)Ov001_HandleDownloadPlayStartResult, M2C_FIELD(&gWhWork, void **, 4)) == 2) return 1;
 SetWhError();
 SetWhStatus(9);
 return 0;
 }
 
-void func_ov001_02187bf4(void *arg0) {
-s32 func_ov001_02187c60();
-s32 func_ov001_02187cfc();
+/* Completion callback of the download-play start request: when it reported an
+ * error, record it and fail the connection; otherwise submit the player's user
+ * info if the connection has a user-info callback, then start listening for child
+ * indications. A failed follow-up step also fails the connection. */
+void Ov001_HandleDownloadPlayStartResult(void *event) {
+s32 Ov001_SubmitUserInfo();
+s32 Ov001_StartChildIndicate();
 extern M2C_UNK gWhWork;
-if (M2C_FIELD(arg0,u16 *,2)) {
-SetWhError(M2C_FIELD(arg0,u16 *,2));
-SetWhStatus(9); return;
+if (M2C_FIELD(event,u16 *,WH_EVENT_STATUS)) {
+SetWhError(M2C_FIELD(event,u16 *,WH_EVENT_STATUS));
+SetWhStatus(WH_STATUS_PARENT_START); return;
 }
-if (M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x13AC)) {
-if (func_ov001_02187c60()) return;
-SetWhStatus(9); return;
+if (M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,WH_CONN_USER_INFO_CB)) {
+if (Ov001_SubmitUserInfo()) return;
+SetWhStatus(WH_STATUS_PARENT_START); return;
 }
-if (func_ov001_02187cfc()) return;
-SetWhStatus(9);
+if (Ov001_StartChildIndicate()) return;
+SetWhStatus(WH_STATUS_PARENT_START);
 }
 
-s32 func_ov001_02187c60(void) {
+s32 Ov001_SubmitUserInfo(void) {
 extern M2C_UNK gWhWork;
 void func_ov001_02187cc4(void *);
 s32 WFC_SubmitUserInfo(void *,s32,void *);
@@ -281,19 +285,19 @@ SetWhError(); SetWhStatus(9); return 0;
 }
 
 void func_ov001_02187cc4(void *arg0) {
-    s32 func_ov001_02187cfc();
+    s32 Ov001_StartChildIndicate();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetWhError();
         SetWhStatus(9);
         return;
     }
-    if (func_ov001_02187cfc() != 0) {
+    if (Ov001_StartChildIndicate() != 0) {
         return;
     }
     SetWhStatus(9);
 }
 
-s32 func_ov001_02187cfc(void) {
+s32 Ov001_StartChildIndicate(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK HandleChildIndicate;
 s32 func_02012474(void *);

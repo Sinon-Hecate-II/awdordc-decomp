@@ -1,5 +1,7 @@
 /* 14 functions from 0x0221BB70 to 0x0221CAA0 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "ov005_results.h"
+#include "sprite_grid.h"
 static inline void SetBlendAlpha(u8 a,u8 b) {
 extern void *gCur3DSpriteEngine;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=a;
@@ -49,25 +51,31 @@ void StartCoVictoryQuote(M2C_UNK screen) {
 M2C_UNK func_ov005_0221bc28(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK func_020aad18(s32);
-    extern M2C_UNK data_ov005_02220d50;
-    func_020aad18(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38));
+    extern M2C_UNK gResultsScreenClass;
+    func_020aad18(M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38));
 }
 
-void func_ov005_0221bc44(M2C_UNK arg0) {
+/* Duplicate of ResultScreenDismissStep (ov005_0221ABF8.c): once the player presses
+ * A, play the dismiss sound, remove the results page sprite's OAM cell and resume
+ * the animation. */
+void ResultScreenDismissStepCopy(M2C_UNK sprite) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK RemoveSpriteCell(void *, s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     extern u16 *gKeyState;
-    extern M2C_UNK data_ov005_02220d50;
-    void *object;
-    u8 active;
-    if (!(*gKeyState & 1)) return;
+    extern M2C_UNK gResultsScreenClass;
+    void *pageSprite;
+    void *cells;
+    u8 visible;
+
+    if (!(*gKeyState & KEY_A)) return;
     PlaySoundEffect(0x1000D);
-    object = M2C_FIELD(M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), void **, 0x38), void **, 0x64);
-    active = M2C_FIELD(object, u8 *, 0x12) != 0;
-    if (active) RemoveSpriteCell(object, 1);
-    Sprite_ResumeAnimation(arg0);
+    pageSprite = M2C_FIELD(FindObjectByClass(&gResultsScreenClass), void **, RESULTS_SCREEN_PAGE);
+    cells = M2C_FIELD(pageSprite, void **, DS3D_SPRITE_CELLS);
+    visible = M2C_FIELD(cells, u8 *, SPRITE_CELL_LIST_USED) != 0;
+    if (visible) RemoveSpriteCell(cells, 1);
+    Sprite_ResumeAnimation(sprite);
 }
 
 #pragma scheduling on
@@ -287,27 +295,32 @@ void func_ov005_0221c9e4(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_ov005_0221ca04(s32 arg0) {
+/* Create the results-screen slide band that AnimateResultSlide animates and
+ * DrawResultSlideBand draws: it is inserted in the layer of `owner`, linked to
+ * `owner` as its parent (RESULT_SLIDE_OWNER) with the owner's child count raised,
+ * its timer cleared, its y started at 0x20 and marked active, and it slides the
+ * results screen's page sprite (found through its class) kept at +0x34. */
+void CreateResultSlideSprite(void *owner) {
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK IncrementSpriteChildCount(s32);
-    s32 func_01ffaa7c();
-    extern M2C_UNK data_ov005_02220b00;
-    extern M2C_UNK data_ov005_02220d50;
-    extern M2C_UNK data_ov005_02220fb8;
-    void *temp_r0;
+    u32 GetSpriteParent(void *);
+    extern M2C_UNK gResultSlideAnimScript;
+    extern M2C_UNK gResultsScreenClass;
+    extern M2C_UNK gResultSlideSpriteVtbl;
+    void *slide;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov005_02220b00, func_01ffaa7c());
-    if (temp_r0 == NULL) {
+    slide = CreateSpriteFromClass(&gResultSlideAnimScript, GetSpriteParent(owner));
+    if (slide == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov005_02220fb8;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    IncrementSpriteChildCount(arg0);
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = 0x20;
-    M2C_FIELD(temp_r0, s8 *, 0x44) = 1;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&data_ov005_02220d50), s32 *, 0x38);
+    M2C_FIELD(slide, M2C_UNK **, DS3D_SPRITE_CLASS) = &gResultSlideSpriteVtbl;
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_OWNER) = (s32) owner;
+    IncrementSpriteChildCount(owner);
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_TIMER) = 0;
+    M2C_FIELD(slide, s32 *, RESULT_SLIDE_Y) = 0x20;
+    M2C_FIELD(slide, s8 *, RESULT_SLIDE_ACTIVE) = 1;
+    M2C_FIELD(slide, s32 *, 0x34) = (s32) M2C_FIELD(FindObjectByClass(&gResultsScreenClass), s32 *, 0x38);
 }
 
 void func_ov005_0221ca70(void) {
@@ -316,8 +329,8 @@ void func_ov005_0221ca70(void) {
 }
 
 void func_ov005_0221ca7c(void) {
-    void func_ov005_0221bc44();
-    func_ov005_0221bc44();
+    void ResultScreenDismissStepCopy();
+    ResultScreenDismissStepCopy();
 }
 
 void func_ov005_0221ca88(void *arg0) {

@@ -10,12 +10,12 @@ static inline u32 QueueSize215a4(void) { u16 old=SwapIME215a4(0);u32 size=0;if(!
 
 
 void FreeLinkBlock(s32,s32);
-static inline void PopQueue215a4(s32 packet) { s32 func_ov009_02224d30(s32,s32,u32,u32,s32,u32,u16);s32 p,next;u16 old;
+static inline void PopQueue215a4(s32 packet) { s32 WriteLinkPacketHeader(s32,s32,u32,u32,s32,u32,u16);s32 p,next;u16 old;
 old=SwapIME215a4(0);
 p=M2C_FIELD(gLinkState,s32*,0x64);
 if(!p){SwapIME215a4(old);return;}
 {
-func_ov009_02224d30(packet,M2C_FIELD(p,u8*,8),M2C_FIELD(p,PacketBits215a4*,9).low,M2C_FIELD(p,PacketBits215a4*,9).high,p+16,M2C_FIELD(p,u32*,12),M2C_FIELD(p,u16*,10));
+WriteLinkPacketHeader(packet,M2C_FIELD(p,u8*,8),M2C_FIELD(p,PacketBits215a4*,9).low,M2C_FIELD(p,PacketBits215a4*,9).high,p+16,M2C_FIELD(p,u32*,12),M2C_FIELD(p,u16*,10));
 next=M2C_FIELD(p,s32*,0);
 M2C_FIELD(gLinkState,s32*,0x64)=next;
 if(!next)M2C_FIELD(gLinkState,s32*,0x68)=0;
@@ -32,17 +32,17 @@ typedef struct Descriptor21ae8 {u32 word;u8 type;PacketBits215a4 flags;u16 mask;
 typedef struct Receive21ae8 {u8 pad[0x34];struct {u32 offset;s32 packet;} channels[4];} Receive21ae8;
 extern Queue21ae8 data_ov009_02226980[],data_ov009_022269b0[];
 s32 func_ov009_0222132c(s32,s32);
-s32 func_ov009_02224d30(s32,s32,u32,u32,s32,u32,u16);
+s32 WriteLinkPacketHeader(s32,s32,u32,u32,s32,u32,u16);
 #pragma opt_propagation off
 #pragma opt_common_subs off
 static inline u32 Head21ae8(Queue21ae8 *q){u16 old=SwapIME215a4(0);u32 n=0;s32 p=q->head;if(!p){SwapIME215a4(old);return n;}n=M2C_FIELD(p,u32 *,12);SwapIME215a4(old);return n;}
 static inline u32 Size21ae8(u8 channel){u16 old=SwapIME215a4(0);u32 n=0;Queue21ae8 *q=&data_ov009_02226980[(s16)channel];if(!q->head){SwapIME215a4(old);return n;}n=Head21ae8(q)+12;SwapIME215a4(old);return n;}
 static inline void Pop21ae8(u8 channel,s32 packet){s32 p,next;u32 old=SwapIME215a4(0);Queue21ae8 *q=&data_ov009_02226980[(s16)channel];p=q->head;if(!p){SwapIME215a4(old);return;}
-func_ov009_02224d30(packet,M2C_FIELD(p,u8 *,8),M2C_FIELD(p,PacketBits215a4 *,9).low,M2C_FIELD(p,PacketBits215a4 *,9).high,p+16,M2C_FIELD(p,u32 *,12),M2C_FIELD(p,u16 *,10));
+WriteLinkPacketHeader(packet,M2C_FIELD(p,u8 *,8),M2C_FIELD(p,PacketBits215a4 *,9).low,M2C_FIELD(p,PacketBits215a4 *,9).high,p+16,M2C_FIELD(p,u32 *,12),M2C_FIELD(p,u16 *,10));
 next=M2C_FIELD(p,s32 *,0);q->head=next;if(!next)q->tail=0;
 FreeLinkBlock(p,M2C_FIELD(p,u32 *,12)+16);q->count--;SwapIME215a4(old);}
 static inline void Push21ae8(Queue21ae8 *queue,s32 channel,s32 packet){s32 p;u32 old=SwapIME215a4(0);p=func_ov009_0222132c(M2C_FIELD(packet,u32 *,8)+16,32);if(!p){SwapIME215a4(old);return;}MI_CpuFill8(p,0,16);
-func_ov009_02224d30(p+4,M2C_FIELD(packet,u8 *,4),M2C_FIELD(packet,PacketBits215a4 *,5).low,M2C_FIELD(packet,PacketBits215a4 *,5).high,packet+12,M2C_FIELD(packet,u32 *,8),M2C_FIELD(packet,u16 *,6));
+WriteLinkPacketHeader(p+4,M2C_FIELD(packet,u8 *,4),M2C_FIELD(packet,PacketBits215a4 *,5).low,M2C_FIELD(packet,PacketBits215a4 *,5).high,packet+12,M2C_FIELD(packet,u32 *,8),M2C_FIELD(packet,u16 *,6));
 if(!queue[channel].head){queue[channel].tail=p;queue[channel].head=p;}else {M2C_FIELD(p,s32 *,0)=queue[channel].head;queue[channel].head=p;}queue[channel].count++;SwapIME215a4(old);}
 
 #pragma opt_common_subs reset
@@ -169,7 +169,7 @@ void func_ov009_022215a4(void *arg0){
 s32 GetLinkPhase(void);
 s32 GetLinkLocalPlayerId(void);
 s32 func_ov009_02224d0c(u32);
-s32 func_ov009_02224d30(s32,s32,u32,u32,s32,u32,u16);
+s32 WriteLinkPacketHeader(s32,s32,u32,u32,s32,u32,u16);
 s32 p,packet,count,i,me;
 u32 length;
 u16 old;
@@ -190,14 +190,14 @@ length=M2C_FIELD(M2C_FIELD(arg0,s32*,0x38),u32*,8)-M2C_FIELD(arg0,u32*,0x34);
 if(length>180)length=180;
 packet=func_ov009_02224d0c(length+12);
 p=M2C_FIELD(arg0,s32*,0x38);
-func_ov009_02224d30(packet,9,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,p+12+M2C_FIELD(arg0,u32*,0x34),length,M2C_FIELD(p,u16*,6));
+WriteLinkPacketHeader(packet,9,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,p+12+M2C_FIELD(arg0,u32*,0x34),length,M2C_FIELD(p,u16*,6));
 M2C_FIELD(arg0,u32*,0x34)+=length;
 M2C_FIELD(arg0,s32*,0x3c)=packet;
 M2C_FIELD(arg0,u32*,0x40)=M2C_FIELD(packet,u32*,8)+12;
 }else{
 packet=func_ov009_02224d0c(12);
 p=M2C_FIELD(arg0,s32*,0x38);
-func_ov009_02224d30(packet,10,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,0,0,M2C_FIELD(p,u16*,6));
+WriteLinkPacketHeader(packet,10,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,0,0,M2C_FIELD(p,u16*,6));
 M2C_FIELD(arg0,s32*,0x3c)=packet;
 M2C_FIELD(arg0,u32*,0x40)=M2C_FIELD(packet,u32*,8)+12;
 M2C_FIELD(arg0,u32*,0x34)=0;
@@ -221,7 +221,7 @@ M2C_FIELD(arg0,u32*,0x34)=0;
 M2C_FIELD(arg0,s32*,0x38)=p;
 packet=func_ov009_02224d0c(24);
 p=M2C_FIELD(arg0,s32*,0x38);
-func_ov009_02224d30(packet,8,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,p,12,M2C_FIELD(p,u16*,6));
+WriteLinkPacketHeader(packet,8,M2C_FIELD(p,PacketBits215a4*,5).low,M2C_FIELD(p,PacketBits215a4*,5).high,p,12,M2C_FIELD(p,u16*,6));
 M2C_FIELD(arg0,s32*,0x3c)=packet;
 M2C_FIELD(arg0,u32*,0x40)=M2C_FIELD(packet,u32*,8)+12;
 }
@@ -304,7 +304,7 @@ if(p){M2C_FIELD(p,u8 *,0)=1;M2C_FIELD(M2C_FIELD(gLinkState,s32 *,0x24),u16 *,2)=
 case 7:SetConnectedPlayers(M2C_FIELD(packet,u16 *,12));break;
 case 8:
 func_ov009_02224ca4();MI_CpuCopy8(packet+12,&desc,12);p=func_ov009_02224d0c(desc.length+12);
-func_ov009_02224d30(p,desc.type,desc.flags.low,desc.flags.high,0,desc.length,desc.mask);
+WriteLinkPacketHeader(p,desc.type,desc.flags.low,desc.flags.high,0,desc.length,desc.mask);
 state->channels[channel].offset=0;state->channels[channel].packet=p;break;
 case 9:
 n=M2C_FIELD(packet,u32 *,8);p=state->channels[channel].packet;

@@ -129,12 +129,12 @@ func_ov005_0221ab8c kind:function(arm,size=0xc) addr:0x0221ab8c
 func_ov005_0221ab98 kind:function(arm,size=0x60) addr:0x0221ab98
 ResultScoreRow_CountUp kind:function(arm,size=0x408) addr:0x0221abf8
 func_ov005_0221b000 kind:function(arm,size=0x1c) addr:0x0221b000
-func_ov005_0221b01c kind:function(arm,size=0x6c) addr:0x0221b01c
+ResultScreenDismissStep kind:function(arm,size=0x6c) addr:0x0221b01c
 ResultScoreRow_SlideOut kind:function(arm,size=0x8c) addr:0x0221b088
 func_ov005_0221b114 kind:function(arm,size=0x310) addr:0x0221b114
 func_ov005_0221b424 kind:function(arm,size=0xc) addr:0x0221b424
 func_ov005_0221b430 kind:function(arm,size=0xc) addr:0x0221b430
-func_ov005_0221b43c kind:function(arm,size=0x6c) addr:0x0221b43c
+CreateResultSlideObject kind:function(arm,size=0x6c) addr:0x0221b43c
 func_ov005_0221b4a8 kind:function(arm,size=0xc) addr:0x0221b4a8
 func_ov005_0221b4b4 kind:function(arm,size=0xc) addr:0x0221b4b4
 func_ov005_0221b4c0 kind:function(arm,size=0xc) addr:0x0221b4c0
@@ -143,14 +143,14 @@ Tick3DSpriteAnimation kind:function(arm,size=0x37c) addr:0x0221b4d8
 TickCoVictorySplit kind:function(arm,size=0x31c) addr:0x0221b854
 StartCoVictoryQuote kind:function(arm,size=0xb8) addr:0x0221bb70
 func_ov005_0221bc28 kind:function(arm,size=0x1c) addr:0x0221bc28
-func_ov005_0221bc44 kind:function(arm,size=0x6c) addr:0x0221bc44
+ResultScreenDismissStepCopy kind:function(arm,size=0x6c) addr:0x0221bc44
 func_ov005_0221bcb0 kind:function(arm,size=0x4a0) addr:0x0221bcb0
 func_ov005_0221c150 kind:function(arm,size=0x870) addr:0x0221c150
 func_ov005_0221c9c0 kind:function(arm,size=0xc) addr:0x0221c9c0
 func_ov005_0221c9cc kind:function(arm,size=0xc) addr:0x0221c9cc
 func_ov005_0221c9d8 kind:function(arm,size=0xc) addr:0x0221c9d8
 func_ov005_0221c9e4 kind:function(arm,size=0x20) addr:0x0221c9e4
-func_ov005_0221ca04 kind:function(arm,size=0x6c) addr:0x0221ca04
+CreateResultSlideSprite kind:function(arm,size=0x6c) addr:0x0221ca04
 func_ov005_0221ca70 kind:function(arm,size=0xc) addr:0x0221ca70
 func_ov005_0221ca7c kind:function(arm,size=0xc) addr:0x0221ca7c
 func_ov005_0221ca88 kind:function(arm,size=0xc) addr:0x0221ca88
@@ -320,7 +320,7 @@ data_ov005_02220a90 kind:data(any) addr:0x02220a90
 data_ov005_02220a9c kind:data(any) addr:0x02220a9c
 data_ov005_02220aa8 kind:data(any) addr:0x02220aa8
 data_ov005_02220ad0 kind:data(any) addr:0x02220ad0
-data_ov005_02220b00 kind:data(any) addr:0x02220b00
+gResultSlideAnimScript kind:data(any) addr:0x02220b00
 data_ov005_02220b38 kind:data(any) addr:0x02220b38
 data_ov005_02220b70 kind:data(any) addr:0x02220b70
 data_ov005_02220b80 kind:data(any) addr:0x02220b80 ambiguous
@@ -329,7 +329,7 @@ data_ov005_02220bf0 kind:data(any) addr:0x02220bf0
 data_ov005_02220c38 kind:data(any) addr:0x02220c38
 data_ov005_02220c88 kind:data(any) addr:0x02220c88
 gCoStoryMapQuoteTextIds kind:data(any) addr:0x02220ce8
-data_ov005_02220d50 kind:data(any) addr:0x02220d50
+gResultsScreenClass kind:data(any) addr:0x02220d50
 data_ov005_02220db8 kind:data(any) addr:0x02220db8
 data_ov005_02220e30 kind:data(any) addr:0x02220e30
 data_ov005_02220e3c kind:data(any) addr:0x02220e3c
@@ -354,7 +354,7 @@ data_ov005_02220f68 kind:data(any) addr:0x02220f68
 data_ov005_02220f7c kind:data(any) addr:0x02220f7c
 data_ov005_02220f90 kind:data(any) addr:0x02220f90
 gResultSparkVTable kind:data(any) addr:0x02220fa4
-data_ov005_02220fb8 kind:data(any) addr:0x02220fb8
+gResultSlideSpriteVtbl kind:data(any) addr:0x02220fb8
 data_ov005_02220fcc kind:data(any) addr:0x02220fcc
 data_ov005_02220fe0 kind:data(any) addr:0x02220fe0
 data_ov005_02220fec kind:data(any) addr:0x02220fec

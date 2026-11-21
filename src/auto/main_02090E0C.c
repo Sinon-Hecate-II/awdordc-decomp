@@ -2,6 +2,7 @@
 #include "common.h"
 #include "sprite.h"
 #include "battle_map.h"
+#include "sprite_script.h"
 
 extern u8 gSpritePaletteCycle[];
 static inline s32 spriteValid02091110(void *p) { if (p != 0 && *(s32 *)p != 0) return 1; return 0; }
@@ -94,30 +95,33 @@ M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y,
 
 void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK CreateScriptedSprite(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=func_02081070(a,1);CreateScriptedSprite(r,b,c,d,e,f,1,g);}
 
-void *func_02090f0c(void *arg0) {
+/* Delete a scripted sprite: reset its vtable, tear down its player list and its
+ * auxiliary sprite list, run its optional dispose callback, then free the
+ * animation script (when the object owns it) and the object itself. */
+void *DeleteScriptedSprite(void *sprite) {
     M2C_UNK func_02090894();
     M2C_UNK Sprite_DestroyAuxList();
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK MemFree();
     extern M2C_UNK gScriptedSpriteVtbl;
-    M2C_UNK (*temp_r1)(void *);
+    M2C_UNK (*dispose)(void *);
 
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
+    if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_PLAYER_LIST) != 0) {
         func_02090894();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+    if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_AUX_LIST) != 0) {
         Sprite_DestroyAuxList();
     }
-    temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x34);
-    if (temp_r1 != NULL) {
-        temp_r1(arg0);
+    dispose = M2C_FIELD(sprite, M2C_UNK (**)(void *), SPRITE_OWNER_DISPOSE);
+    if (dispose != NULL) {
+        dispose(sprite);
     }
-    if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
-        HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x40));
+    if (M2C_FIELD(sprite, u8 *, SPRITE_OWNER_OWNS_SCRIPT) != 0) {
+        HeapFreeBlock(M2C_FIELD(sprite, s32 *, SPRITE_OWNER_SCRIPT));
     }
-    MemFree(arg0);
-    return arg0;
+    MemFree(sprite);
+    return sprite;
 }
 
 void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gScriptedSpriteVtbl;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&gScriptedSpriteVtbl;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}

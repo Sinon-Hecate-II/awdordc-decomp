@@ -43,11 +43,11 @@ return temp_r0;
 
 M2C_UNK func_ov010_02229d9c(s32 arg0) {
     s32 GetOnlineTransportPlayerId();
-    s8 func_ov010_02229a94();
+    s8 PublishLocalPlayerStatus();
     extern M2C_UNK gOv010OnlineSession;
     if (IsOnlineSessionFlagSet(3) == 0) return;
     M2C_FIELD(arg0, u16 *, 2) = 1 << GetOnlineTransportPlayerId();
-    M2C_FIELD(arg0, u8 *, 0) = func_ov010_02229a94();
+    M2C_FIELD(arg0, u8 *, 0) = PublishLocalPlayerStatus();
     M2C_FIELD(&gOv010OnlineSession, s32 *, 0x24) = arg0;
 }
 
@@ -338,33 +338,36 @@ u8 func_ov010_0222a298(void) {
     return var_r0;
 }
 
-void func_ov010_0222a2b4(void *arg0) {
+/* Online match screen update: start the split-screen fade on each screen whose
+ * earlier split transition has finished.  Bits 1 and 2 of the sprite's flags
+ * byte mark the main and sub screens that are waiting for their fade. */
+void StartOnlineMatchSplitFades(void *sprite) {
     s32 GetScreenFlag(M2C_UNK);
     M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        StartScreenFadeChildren(2, 8, 0, arg0);
+    if ((M2C_FIELD(sprite, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
+        StartScreenFadeChildren(2, 8, 0, sprite);
     }
-    if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
+    if (!(M2C_FIELD(sprite, u8 *, 0x34) & 2)) {
         return;
     }
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, sprite);
 }
 
 #pragma opt_common_subs off
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void func_ov010_0222bbe8(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void func_ov010_0222bc54(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
 func_ov010_0222bc54((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
 StringStorageConcat(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
 StringStorageConcat(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));
 StringStorageConcat(sp,sp+0xc,sp+0x24);
-func_ov010_0222bbe8((u8 *)a+0x44,sp);func_0206fa14(sp);func_0206fa14(sp+0xc);func_0206fa14(sp+0x18);
+StringStorageAssign((u8 *)a+0x44,sp);func_0206fa14(sp);func_0206fa14(sp+0xc);func_0206fa14(sp+0x18);
 if(!M2C_FIELD(a,s32 *,0x38))return;
 switch(M2C_FIELD(a,s32 *,0x40)){
 case 0:case 1:func_ov010_0222a238();return;
@@ -415,17 +418,20 @@ default:func_ov010_0222a238();return;}}
 #pragma scheduling reset
 void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return;v=M2C_FIELD(arg0,u32 *,0x40);switch(v){case 0:case 1:case 2:func_ov010_0222a258();return;default:func_ov010_0222a258();return;case 3:case 4:case 5:case 6:case 7:return;}}
 
-void func_ov010_0222a6e4(void *arg0) {
+/* Online net-error screen update: create the split-screen transition on each
+ * screen whose transition flag is set, and set that screen's bit (1 main, 2 sub)
+ * in the sprite's flags so the split fade starts once the transition finishes. */
+void StartNetErrorSplitTransitions(void *sprite) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        CreateScreenTransitionChildren(2, 8, 0, arg0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
+        CreateScreenTransitionChildren(2, 8, 0, sprite);
+        M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 1, arg0);
-    M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
+    CreateScreenTransitionChildren(2, 8, 1, sprite);
+    M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 2);
 }
 
 /* Builds the text string `out` as `first` (a stored text string, inline or on the
@@ -477,19 +483,22 @@ void CreateNetErrorSprite(s8 engine, u16 value, s32 errorCode, s32 errorParam, u
  for (i = 0; i < 3; i++) extra[i] = 0;
 }
 
-void func_ov010_0222a880(void *arg0) {
+/* Net-error sprite update: start the split-screen fade on each screen whose
+ * earlier split transition has finished.  Bits 1 and 2 of the sprite's flags
+ * byte mark the main and sub screens that are waiting for their fade. */
+void StartNetErrorSplitFades(void *sprite) {
     s32 GetScreenFlag(M2C_UNK);
     M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    if ((M2C_FIELD(arg0, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
-        StartScreenFadeChildren(2, 8, 0, arg0);
+    if ((M2C_FIELD(sprite, u8 *, 0x34) & 1) && (GetScreenFlag(0) == 0)) {
+        StartScreenFadeChildren(2, 8, 0, sprite);
     }
-    if (!(M2C_FIELD(arg0, u8 *, 0x34) & 2)) {
+    if (!(M2C_FIELD(sprite, u8 *, 0x34) & 2)) {
         return;
     }
     if (GetScreenFlag(1) != 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 1, arg0);
+    StartScreenFadeChildren(2, 8, 1, sprite);
 }
 
 /* Show the network error held by an online screen object (+0x38 code, +0x3C
@@ -506,16 +515,20 @@ void func_ov010_0222a96c(void) {
 
 }
 
-void func_ov010_0222a970(void *arg0) {
+/* Online match screen update: create the split-screen transition on each screen
+ * whose transition flag is set, and set that screen's bit (1 main, 2 sub) in the
+ * sprite's flags so the split fade (StartOnlineMatchSplitFades) starts once the
+ * transition finishes. */
+void StartOnlineMatchSplitTransitions(void *sprite) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     if (GetScreenFlag(0) == 1) {
-        CreateScreenTransitionChildren(2, 8, 0, arg0);
-        M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 1);
+        CreateScreenTransitionChildren(2, 8, 0, sprite);
+        M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 1);
     }
     if (GetScreenFlag(1) != 1) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 1, arg0);
-    M2C_FIELD(arg0, u8 *, 0x34) = (u8) (M2C_FIELD(arg0, u8 *, 0x34) | 2);
+    CreateScreenTransitionChildren(2, 8, 1, sprite);
+    M2C_FIELD(sprite, u8 *, 0x34) = (u8) (M2C_FIELD(sprite, u8 *, 0x34) | 2);
 }
 

@@ -1,6 +1,7 @@
 /* 17 functions from 0x021707D8 to 0x02171774 (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 
 
 #pragma opt_strength_reduction off
@@ -267,17 +268,20 @@ AddSprite(8,(row*40+14)&255,(u16)(((row*12+0x364)>>((u32)(M2C_FIELD(M2C_FIELD(gC
 gCur3DSpriteEngine=oldEngine;
 }
 
-void func_ov000_021716c0(void) {
+/* Unload the player-name entry screen: drop the two layers it drew (1 and 2),
+ * mark them dirty, reset the second layer's corner, release the screen's shared
+ * resource and play the close sound. */
+void UnloadUsernameScreen(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020e4ca0();
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
-    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x3a) = 0;
-    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_X(1)) = 0;
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_Y(1)) = 0;
     func_020e4ca0();
     PlaySoundEffect(0x10018);
 }

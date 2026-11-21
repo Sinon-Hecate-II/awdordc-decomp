@@ -160,9 +160,9 @@ void func_020c4764(M2C_UNK arg0) {
 }
 
 s32 GetRecordProfileId(s32 arg0) {
- M2C_UNK *func_020c4acc(void);
+ M2C_UNK *GetProfileSaveBlock(void);
  s32 GetPlayerRecordId(void *,s32);
- return GetPlayerRecordId((u8 *)func_020c4acc()+4,arg0);
+ return GetPlayerRecordId((u8 *)GetProfileSaveBlock()+4,arg0);
 }
 
 s32 func_020c4798(void) {
@@ -205,9 +205,9 @@ long long GetElapsedSeconds(s32 arg0,s32 arg1,s32 arg2) {
 }
 
 void func_020c488c(void *arg0) {
-    M2C_UNK func_020c4d64(s32, void *);
-    func_020c4c70(M2C_FIELD(arg0, s32 *, 0x34), arg0);
-    func_020c4d64(M2C_FIELD(arg0, s32 *, 0x38), arg0);
+    M2C_UNK CreateBattleSaveSprite(s32, void *);
+    CreateProfileSaveSprite(M2C_FIELD(arg0, s32 *, 0x34), arg0);
+    CreateBattleSaveSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
 }
 
 void func_020c48b0(void *arg0) {
@@ -220,10 +220,10 @@ void func_020c48b0(void *arg0) {
 }
 
 void func_020c48ec(void *arg0) {
-    M2C_UNK func_020c5030(s32, void *);
-    M2C_UNK func_020c526c(s32, void *);
-    func_020c5030(M2C_FIELD(arg0, s32 *, 0x34), arg0);
-    func_020c526c(M2C_FIELD(arg0, s32 *, 0x38), arg0);
+    M2C_UNK CreateProfileLoadSprite(s32, void *);
+    M2C_UNK CreateBattleLoadSprite(s32, void *);
+    CreateProfileLoadSprite(M2C_FIELD(arg0, s32 *, 0x34), arg0);
+    CreateBattleLoadSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
 }
 
 void func_020c4910(void) {
@@ -284,13 +284,13 @@ return 1;
 }
 
 s32 func_020c4a74(void *arg0) {
- M2C_UNK *func_020c4acc(void);
+ M2C_UNK *GetProfileSaveBlock(void);
  void func_020323a4(void *,u32);
  s32 GetBattleSlotSummary(s32);
  void func_02031ee4(void);
  void func_0203287c(void *);
  s32 i;
- if(arg0==0)arg0=func_020c4acc();
+ if(arg0==0)arg0=GetProfileSaveBlock();
  func_020323a4((u8*)arg0+4,0x5957324a);
  i=0;
  do {
@@ -301,7 +301,7 @@ s32 func_020c4a74(void *arg0) {
  return 1;
 }
 
-M2C_UNK *func_020c4acc(void) {
+M2C_UNK *GetProfileSaveBlock(void) {
     extern M2C_UNK data_02164098;
     return &data_02164098;
 }
@@ -345,7 +345,7 @@ s32 func_020c4b6c(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_020323b0(var_r0 + 4);
 }
@@ -356,7 +356,7 @@ void func_020c4b88(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_02032424(var_r0 + 4);
 }
@@ -367,7 +367,7 @@ void func_020c4ba4(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_020323f4(var_r0 + 4);
 }
@@ -378,7 +378,7 @@ void func_020c4bc0(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_020324e4(var_r0 + 4);
 }
@@ -389,7 +389,7 @@ void func_020c4bdc(s32 arg0) {
 
     var_r0 = arg0;
     if (var_r0 == 0) {
-        var_r0 = func_020c4acc();
+        var_r0 = GetProfileSaveBlock();
     }
     func_02032508(var_r0 + 4);
 }
@@ -418,21 +418,42 @@ void func_020c4c34(M2C_UNK arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-M2C_UNK func_020c4c70(s32 arg0,s32 arg1) {
-void *CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
-M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
-extern M2C_UNK data_0212a614,data_0212a550;
-s32 var_r5; void *temp_r0; void *temp_r0_2;
-var_r5=arg0;
-if(var_r5==0)var_r5=(s32)func_020c4acc();
-if(arg1!=0){temp_r0=(void *)CreateSpriteObject(&data_0212a614,arg1);if(temp_r0==NULL)return;
-M2C_FIELD(temp_r0,M2C_UNK **,0)=&data_0212a550;M2C_FIELD(temp_r0,s32*,0x34)=var_r5;return;}
-temp_r0_2=CreateSpriteFromClass(&data_0212a614,3);if(temp_r0_2!=NULL){M2C_FIELD(temp_r0_2,M2C_UNK **,0)=&data_0212a550;M2C_FIELD(temp_r0_2,s32*,0x34)=var_r5;}
+/* Create the profile-save screen sprite for the new-game path: the sprite of
+ * gProfileSaveSpriteClass is owned by `owner` when it is nonzero (a child of that
+ * owner) or else is a layer-3 object, and the profile save block is bound to it
+ * at +0x34.  A zero `saveBlock` means the local player's profile save block. */
+M2C_UNK CreateProfileSaveSprite(s32 saveBlock, s32 owner) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK gProfileSaveSpriteVtbl;
+    extern M2C_UNK gProfileSaveSpriteClass;
+    s32 block;
+    void *sprite;
+    void *sprite2;
+
+    block = saveBlock;
+    if (block == 0) {
+        block = (s32)GetProfileSaveBlock();
+    }
+    if (owner != 0) {
+        sprite = (void *)CreateSpriteObject(&gProfileSaveSpriteClass, owner);
+        if (sprite == NULL) {
+            return;
+        }
+        M2C_FIELD(sprite, M2C_UNK **, 0) = &gProfileSaveSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, 0x34) = block;
+        return;
+    }
+    sprite2 = CreateSpriteFromClass(&gProfileSaveSpriteClass, 3);
+    if (sprite2 != NULL) {
+        M2C_FIELD(sprite2, M2C_UNK **, 0) = &gProfileSaveSpriteVtbl;
+        M2C_FIELD(sprite2, s32 *, 0x34) = block;
+    }
 }
 
 void func_020c4cdc(M2C_UNK arg0) {
-    M2C_UNK func_020c4c70(M2C_UNK, M2C_UNK);
-    func_020c4c70(0, arg0);
+    M2C_UNK CreateProfileSaveSprite(M2C_UNK, M2C_UNK);
+    CreateProfileSaveSprite(0, arg0);
 }
 
 void func_020c4cf0(void *arg0) {

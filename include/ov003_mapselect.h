@@ -38,4 +38,14 @@ typedef struct MapPickLists {
     u16 second[5];     /* +0x12 maps the second side picked, MAP_PICK_NONE = empty */
 } MapPickLists;
 
+/* The shared 6-byte scene layer descriptor (gSceneLayerConfig+4), also the block
+ * a map-select entry keeps at +0x38: which screens show a wallpaper and on which
+ * sprite layer and palette. */
+#define SCENE_LAYER_MAIN_ON      0 /* u8: nonzero to set up the main screen */
+#define SCENE_LAYER_MAIN_LAYER   1 /* u8: main-screen wallpaper sprite layer */
+#define SCENE_LAYER_MAIN_PALETTE 2 /* u8: main-screen wallpaper palette */
+#define SCENE_LAYER_SUB_ON       3 /* u8: nonzero to set up the sub screen */
+#define SCENE_LAYER_SUB_LAYER    4 /* u8: sub-screen wallpaper sprite layer */
+#define SCENE_LAYER_SUB_PALETTE  5 /* u8: sub-screen wallpaper palette */
+
 #endif

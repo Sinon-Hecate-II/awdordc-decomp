@@ -24,12 +24,12 @@ extern s32 gSaveSlotSummary[2];   // 8 bytes / 4
 void DrawScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, s32 layerVram, s32 layerTiles, s32 text, u16 attr, u16 tile) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK StopTextObject(s32);
-    M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
+    M2C_UNK InitTextObject(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
     extern M2C_UNK data_02103300;
     extern s32 gCur3DSpriteEngine;
     s32 textObject;
     textObject = M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXT_STATE);
-    func_0209bdcc(textObject, x, y, palette, layerVram, layerTiles, text, (s32)attr, (s32)tile);
+    InitTextObject(textObject, x, y, palette, layerVram, layerTiles, text, (s32)attr, (s32)tile);
     StopTextObject(textObject);
     CreateSpriteFromClass(&data_02103300, 7);
 }
@@ -49,17 +49,20 @@ s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
 CreateMessageSprite(a,b,c,d,e,GetLocalizedText(f),g,h);
 }
 
-s32 CreateMessageSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, u16 arg6, u16 arg7) {
+/* Create a message-box text sprite and set it up to draw the text script `text`
+ * at cell (x, y) with glyph palette `palette`, the layer's VRAM and tile
+ * addresses and the cell attributes. */
+s32 CreateMessageSprite(s32 x, s32 y, s32 palette, s32 layerVram, s32 layerTiles, s32 text, u16 attr, u16 tile) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
-    M2C_UNK func_0209bdcc(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
-    extern M2C_UNK data_02103328;
+    M2C_UNK InitTextObject(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
+    extern M2C_UNK gMessageSpriteClass;
     s32 temp_r0;
-    temp_r0 = CreateSpriteFromClass(&data_02103328, 7);
-    func_0209bdcc(temp_r0, arg0, arg1, arg2, arg3, arg4, arg5, (s32)arg6, (s32)arg7);
+    temp_r0 = CreateSpriteFromClass(&gMessageSpriteClass, 7);
+    InitTextObject(temp_r0, x, y, palette, layerVram, layerTiles, text, (s32)attr, (s32)tile);
     return temp_r0;
 }
 
-s32 func_0209bdcc(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,u16 h,u16 i) {
+s32 InitTextObject(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,u16 h,u16 i) {
 void func_0209be10(void *,s32,s32,s32,s32,s32,s32,u16,u16,u16);
 func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
 }
@@ -118,12 +121,12 @@ M2C_FIELD(a,u8 *,0x4b)=(u8)c;
 
 u8 func_0209bf28(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02103328;
+    extern M2C_UNK gMessageSpriteClass;
     extern M2C_UNK data_021032d8;
     extern M2C_UNK data_02103300;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02103328) != 0) {
+    if (FindObjectByClass(&gMessageSpriteClass) != 0) {
         return 1U;
     }
     if (FindObjectByClass(&data_021032d8) != 0) {
@@ -139,8 +142,8 @@ u8 func_0209bf28(void) {
 
 void func_0209bf7c(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02103328, data_021032d8, data_02103300;
-    DeleteSpriteObjectsOfClass(&data_02103328);
+    extern M2C_UNK gMessageSpriteClass, data_021032d8, data_02103300;
+    DeleteSpriteObjectsOfClass(&gMessageSpriteClass);
     DeleteSpriteObjectsOfClass(&data_021032d8);
     DeleteSpriteObjectsOfClass(&data_02103300);
 }
@@ -155,8 +158,8 @@ void func_0209bfa8(void) {
 
 void func_0209bfc8(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02103328;
-    FindObjectByClass(&data_02103328);
+    extern M2C_UNK gMessageSpriteClass;
+    FindObjectByClass(&gMessageSpriteClass);
 }
 
 void func_0209bfdc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {

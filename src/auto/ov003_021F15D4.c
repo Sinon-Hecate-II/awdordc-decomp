@@ -127,23 +127,27 @@ void func_ov003_021f18a4(void) {
     SetOv003SceneState(3);
 }
 
-void func_ov003_021f18b4(u8 *arg0) {
+/* Set up the scene's wallpaper sprites from its 6-byte layer descriptor and
+ * remember that descriptor in the shared scene config: create the main-screen
+ * sprite when the descriptor enables it, the sub-screen one likewise, or both. */
+void ApplySceneLayers(u8 *layers) {
     void func_020af144(u8, u8, u8, u8);
     void func_020af178(u8, u8);
     void func_020af19c(u8, u8);
     extern M2C_UNK gSceneLayerConfig;
-    u8 temp_r0;
-    u8 temp_r1;
-    temp_r1 = arg0[3];
-    temp_r0 = arg0[0];
-    if (temp_r0 & temp_r1) {
-        func_020af144(arg0[1], arg0[2], arg0[4], arg0[5]);
-    } else if (temp_r0 != 0) {
-        func_020af178(arg0[1], arg0[2]);
-    } else if (temp_r1 != 0) {
-        func_020af19c(arg0[4], arg0[5]);
+    u8 mainOn;
+    u8 subOn;
+
+    subOn = layers[SCENE_LAYER_SUB_ON];
+    mainOn = layers[SCENE_LAYER_MAIN_ON];
+    if (mainOn & subOn) {
+        func_020af144(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE], layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
+    } else if (mainOn != 0) {
+        func_020af178(layers[SCENE_LAYER_MAIN_LAYER], layers[SCENE_LAYER_MAIN_PALETTE]);
+    } else if (subOn != 0) {
+        func_020af19c(layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
     }
-    M2C_FIELD(&gSceneLayerConfig, u8 **, 4) = arg0;
+    M2C_FIELD(&gSceneLayerConfig, u8 **, 4) = layers;
 }
 
 void func_ov003_021f1920(void) {

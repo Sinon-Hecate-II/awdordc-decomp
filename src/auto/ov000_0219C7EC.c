@@ -156,30 +156,32 @@ p++;q++;count++;
 SortAiUnitsWorstFirst(count);
 }
 
+/* Score every unit in gAiUnitList by the maximum attack range of its kind, into the
+ * parallel score array, then order the list worst-first. */
 void ScoreAiUnitsByAttackRange(void) {
     void SortAiUnitsWorstFirst(s32);
     s8 GetUnitKindMaxAttackRange(u32);
     extern s32 *gCurrentMap;
     extern u8 gAiUnitList;
     extern s8 gAiUnitScores;
-    s32 var_r4;
-    u8 *var_r5;
-    s8 *var_r6;
-    u8 temp_r1;
+    s32 count;
+    u8 *units;
+    s8 *scores;
+    u8 unit;
 
-    var_r5 = &gAiUnitList;
-    var_r6 = &gAiUnitScores;
-    var_r4 = 0;
+    units = &gAiUnitList;
+    scores = &gAiUnitScores;
+    count = 0;
 loop_1:
-    temp_r1 = *var_r5;
-    if (temp_r1 != 0) {
-        *var_r6 = GetUnitKindMaxAttackRange((u32) (M2C_FIELD(((temp_r1 * 0xE) + *gCurrentMap), u8 *, 0x59A4) << 0x1A) >> 0x1A);
-        var_r6 += 1;
-        ++var_r5;
-        ++var_r4;
+    unit = *units;
+    if (unit != 0) {
+        *scores = GetUnitKindMaxAttackRange((u32) (M2C_FIELD((unit * MAP_UNIT_STRIDE) + *gCurrentMap, u8 *, MAP_UNIT_RECORDS) << 0x1A) >> 0x1A);
+        scores += 1;
+        ++units;
+        ++count;
         goto loop_1;
     }
-    SortAiUnitsWorstFirst(var_r4);
+    SortAiUnitsWorstFirst(count);
 }
 
 /* Score every unit in gAiUnitList by the weather-aware move score of its own

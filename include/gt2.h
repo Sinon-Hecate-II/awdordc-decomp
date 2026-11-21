@@ -98,7 +98,10 @@ typedef struct Gt2Buffer {
 /* One entry of GT2_CONNECTION_ACK_QUEUE: where the command's bytes sit in
  * GT2_CONNECTION_SEND_BUFFER, the sequence it was sent with and when it was
  * last sent. */
-#define GT2_SENT_COMMAND_SEQUENCE 0x08 /* u16 sequence of a queued sent command */
+#define GT2_SENT_COMMAND_SEQUENCE    0x08 /* u16 sequence of a queued sent command */
+#define GT2_SENT_COMMAND_LAST_SENT   0x0C /* s32 tick the command was last sent at */
+/* A sent command the peer has not acknowledged for this many ms is resent. */
+#define GT2_RESEND_TIMEOUT 1000
 typedef struct Gt2SentCommand {
     s32 offset;   /* +0x00 offset in GT2_CONNECTION_SEND_BUFFER */
     s32 size;     /* +0x04 byte length */

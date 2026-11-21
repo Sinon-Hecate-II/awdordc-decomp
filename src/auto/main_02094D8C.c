@@ -7,9 +7,9 @@ static inline u8 IsMain094df0(void) { extern s32 gCur3DSpriteEngine,g3DSpriteEng
 static inline void *SpriteBufferAt094df0(s32 buffer,s32 offset) { return (u8*)buffer+offset; }
 
 void func_02094d8c(M2C_UNK arg0) {
-    s32 func_0209600c();
+    s32 IsMessageBoxActive();
     M2C_UNK HighlightScenePanelFace(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     HighlightScenePanelFace(arg0);
@@ -20,7 +20,7 @@ void func_02094dac(void) {
     M2C_UNK HighlightScenePanel(M2C_UNK);
     s32 temp_r0;
 
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     temp_r0 = Get3DSpriteCount();
@@ -43,7 +43,7 @@ extern M2C_UNK data_02102d0c;
 s32 saved, i, bank, engine;
 s32 amount, buffer;
 u16 *volatile p28; u16 *volatile p24; u16 *volatile p20; u16 *volatile p1c; u16 *volatile p18; u16 *volatile p14; u16 *volatile p10;
-if(func_0209600c())return;
+if(IsMessageBoxActive())return;
 saved=gCur3DSpriteEngine;
 i=0;
 do {
@@ -100,7 +100,7 @@ gCur3DSpriteEngine=saved;
 }
 void func_02095250(s32 arg0) {
 extern M2C_UNK data_02102aa8;
-if(func_0209600c())return;
+if(IsMessageBoxActive())return;
 switch(arg0) {
 case 100:func_0208f890();return;
 case 101:CreateSpriteFromClass(&data_02102aa8,7);return;
@@ -124,7 +124,7 @@ u8 func_020952a4(void) {
 void func_020952c8(M2C_UNK arg0) {
     M2C_UNK PlaySoundEffect();
     M2C_UNK func_020ad560(M2C_UNK);
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     func_020ad560(arg0);
@@ -137,7 +137,7 @@ void func_020952c8(M2C_UNK arg0) {
  * While the text/telop state is busy the transition is applied instantly. */
 void StartScriptedScreenTransition(s32 isFade,s32 mode,s32 duration) {
 u32 target=(u8)func_02091e44();
-if(func_0209600c())duration=0;
+if(IsMessageBoxActive())duration=0;
 switch(isFade) {
 case 0:CreateScreenTransitions((u8)mode,(u16)duration,target,7);return;
 case 1:StartScreenFades((u8)mode,(u16)duration,target,7);return;
@@ -431,7 +431,7 @@ void func_02095c58(s32 arg0, s32 arg1, M2C_UNK arg2) {
     extern M2C_UNK data_02102ae8;
     void *temp_r0;
 
-    if (func_0209600c() != 0) {
+    if (IsMessageBoxActive() != 0) {
         return;
     }
     temp_r0 = CreateSpriteObject(&data_02102ae8, arg2);

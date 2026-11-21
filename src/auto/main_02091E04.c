@@ -119,8 +119,8 @@ void (*func_02091fb4(u32 arg0))(void) {
 }
 
 s32 func_02092018(void *arg0) {
-    s32 func_0209600c();
-    if (func_0209600c() == 0) {
+    s32 IsMessageBoxActive();
+    if (IsMessageBoxActive() == 0) {
         M2C_FIELD(arg0, s16 *, 0xC) = (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -189,7 +189,7 @@ s32 func_02092160(void *arg0) {
 
 s32 func_02092180(void *arg0) {
     s32 func_02092048(void *);
-    if (func_0209600c() == 0) {
+    if (IsMessageBoxActive() == 0) {
         return func_02092048(arg0);
     }
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
@@ -268,12 +268,12 @@ void OnMapScrollDone(void *arg0) {
 }
 
 s32 func_020922cc(void *arg0) {
-    s32 func_0209600c();
+    s32 IsMessageBoxActive();
     M2C_UNK StepMapViewToTile(s16, s16);
     M2C_UNK PanMapViewToTile(s16, s16);
     void *temp_r1;
 
-    if (func_0209600c() == 0) {
+    if (IsMessageBoxActive() == 0) {
         temp_r1 = M2C_FIELD(arg0, void **, 4);
         if (M2C_FIELD(temp_r1, s32 *, 0xC) != 0) {
             PanMapViewToTile(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
@@ -305,7 +305,7 @@ s32 func_02092324(void *arg0) {
  * player's group (kind 0 matches any unit).  The view pans unless the command's
  * third word asks for an immediate step; the command then waits for the scroll. */
 s32 MoveMapViewToPlayerUnit(void *ctx) {
-    s32 func_0209600c(void);
+    s32 IsMessageBoxActive(void);
     s32 PanMapViewToTile(s16, s16);
     s32 StepMapViewToTile(s16, s16);
     s32 i;
@@ -314,7 +314,7 @@ s32 MoveMapViewToPlayerUnit(void *ctx) {
     u8 *unit;
     u32 kind;
 
-    if (!func_0209600c()) {
+    if (!IsMessageBoxActive()) {
         cmd = M2C_FIELD(ctx, void **, 4);
         for (i = gPlayerUnitIdBase[M2C_FIELD(cmd, s16 *, 8)] + 1; i < gPlayerUnitIdBase[M2C_FIELD(cmd, s16 *, 8)] + MAP_UNIT_GROUP_SCAN; i++) {
             units = (void *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS);
@@ -463,7 +463,7 @@ M2C_FIELD(arg0,s32 *,4)+=16;return 0;
  * current 3D-sprite target requires. Returns 1 when the text could not be set up. */
 s32 ShowMessageText(s32 textId) {
  s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
- s32 func_02099dcc(s32); void func_02095ff8(s32); s32 func_0209600c(void);
+ s32 func_02099dcc(s32); void SetMessageBoxState(s32); s32 IsMessageBoxActive(void);
  u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK MarkSpriteLayer1Dirty(void);
@@ -471,7 +471,7 @@ s32 ShowMessageText(s32 textId) {
  s32 text; void *savedEngine; s32 screen,style; void *managerA,*managerB,*layerA,*layerB,*layerC,*sprite; u32 attr;
  text=GetLocalizedText(textId);
  func_02099e10(); func_020943e0(); Reset3DSpriteEngines();
- if(func_02099dcc(text)==0){func_02095ff8(3);} if(func_0209600c()!=0)goto abort;
+ if(func_02099dcc(text)==0){SetMessageBoxState(3);} if(IsMessageBoxActive()!=0)goto abort;
  savedEngine=gCur3DSpriteEngine;
  for(screen=0;screen<2;screen++){
  if(screen==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -521,9 +521,9 @@ void func_02092908(M2C_UNK arg0) {
 }
 
 s32 func_02092918(void *arg0) {
-s32 func_0209600c();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK MarkSpriteLayer1Dirty();
+s32 IsMessageBoxActive();M2C_UNK ClearScenePanelRows(M2C_UNK);M2C_UNK MarkSpriteLayer1Dirty();
 s32 v;
-if(func_0209600c()!=0)v=1;
+if(IsMessageBoxActive()!=0)v=1;
 else {ClearScenePanelRows(3);MarkSpriteLayer1Dirty();v=0;}
 M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }

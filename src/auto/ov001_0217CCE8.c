@@ -4,7 +4,7 @@ extern M2C_UNK gMapListState;
 extern const u8 data_ov001_0218f9bc[];
 void func_ov001_0217f6cc(void);
 void func_ov001_0217ded8(void);
-void func_ov001_0217dbd8(s32);
+void MapListSetExtraEmptyA(s32);
 void func_ov001_0217dc44(s32);
 
 void *GetCurrentMapRecord();
@@ -199,7 +199,7 @@ void Ov001_LeaveWfcErrorScreen(void) {
     Ov001_SetStepCallback(&InitMapListScreen);
 }
 
-void func_ov001_0217d260(s32 arg0) {
+void Ov001_SetWfcErrorCode(s32 arg0) {
     extern s32 gOv001WfcErrorCode;
     gOv001WfcErrorCode = arg0;
 }
@@ -506,7 +506,7 @@ s32 HandleMapListTouchChoice(void) {
 s32 DispatchMapListChoice(u32 a){
 if(IsMapListChoiceAvailable()==0){Ov001_PlaySound(9);return;}
 switch(a){
-case 2:case 3:Ov001_PlaySound(6);func_ov001_0217dbd8(((a-2)^1)!=0);return;
+case 2:case 3:Ov001_PlaySound(6);MapListSetExtraEmptyA(((a-2)^1)!=0);return;
 case 7:case 8:Ov001_PlaySound(6);func_ov001_0217dc44(((a-7)^1)!=0);return;
 case 0:case 1:case 4:case 5:case 6:break;
 }
@@ -522,35 +522,40 @@ else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_
 Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
 }
 
-void func_ov001_0217dbd8(s32 arg0) {
+/* Set whether the current map's first optional player code is absent
+ * (SAVE_SLOT_EMPTY_A) in the working save slot.  When the flag is cleared, the
+ * record's second flag is taken back into the screen's cached copy; the cached
+ * copy is written back either way, and the info panel is redrawn. */
+void MapListSetExtraEmptyA(s32 empty) {
     M2C_UNK MapListRedrawInfoPanel();
-    M2C_UNK func_ov001_02184470(s32);
-    M2C_UNK func_ov001_02184484(s32);
+    M2C_UNK Ov001_SetSaveExtraEmptyA(s32);
+    M2C_UNK Ov001_SetSaveExtraEmptyB(s32);
     extern M2C_UNK gMapListState;
-    s32 var_r5;
-    void *temp_r0;
-    temp_r0 = GetCurrentMapRecord();
-    if (M2C_FIELD(temp_r0, u8 *, 0xF5) == arg0) return;
-    if (arg0 != 0) {
-        var_r5 = M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) != 0;
+    s32 emptyB;
+    void *record;
+
+    record = GetCurrentMapRecord();
+    if (M2C_FIELD(record, u8 *, SAVE_SLOT_EMPTY_A) == empty) return;
+    if (empty != 0) {
+        emptyB = M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_EMPTY_B) != 0;
     } else {
-        var_r5 = 0;
-        M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = M2C_FIELD(temp_r0, u8 *, 0xF6);
+        emptyB = 0;
+        M2C_FIELD(M2C_FIELD(&gMapListState, void **, OV001_MAP_LIST_OBJECT), u8 *, OV001_MAP_LIST_EMPTY_B) = M2C_FIELD(record, u8 *, SAVE_SLOT_EMPTY_B);
     }
-    func_ov001_02184470(arg0);
-    func_ov001_02184484(var_r5);
+    Ov001_SetSaveExtraEmptyA(empty);
+    Ov001_SetSaveExtraEmptyB(emptyB);
     MapListRedrawInfoPanel();
 }
 
 void func_ov001_0217dc44(s32 arg0) {
     M2C_UNK MapListRedrawInfoPanel();
-    M2C_UNK func_ov001_02184484(s32);
+    M2C_UNK Ov001_SetSaveExtraEmptyB(s32);
     extern M2C_UNK gMapListState;
     s32 current;
     current = M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF6);
     if (current == arg0) return;
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), u8 *, 0x43) = arg0;
-    func_ov001_02184484(arg0);
+    Ov001_SetSaveExtraEmptyB(arg0);
     MapListRedrawInfoPanel();
 }
 

@@ -32,7 +32,7 @@ s32 Wfc_StepMatch(void) {
             state = func_02031480();
             break;
         case 4:                                 /* switch 1 */
-            state = func_020314ac(ctx);
+            state = Wfc_StepHttp(ctx);
             break;
         case 5:                                 /* switch 1 */
             state = func_02031518(ctx);
@@ -116,25 +116,29 @@ s32 func_02031480(void) {
     return 0x11;
 }
 
-s32 func_020314ac(void *arg0) {
+/* HTTP matchmaking step: poll the network-check worker. While it is still running
+ * stay in state 0xE; once it finishes, keep its result code when it was taken for the
+ * selected friend's save slot, release the network and return 0xF on success, or mark
+ * the selected record's result and fall back to 0xB. */
+s32 Wfc_StepHttp(void *state) {
     s32 Wfc_FriendIdToSlot(u8);
     M2C_UNK Wfc_ReleaseNetwork();
-    s32 func_020352ac();
-    s32 func_020352ec();
-    s32 temp_r0;
-    void *temp_r4;
+    s32 Wfc_GetNetCheckState();
+    s32 Wfc_GetNetResultCode();
+    s32 checkState;
+    void *control;
 
-    temp_r4 = (void *)Wfc_GetWorkBlock(1);
-    temp_r0 = func_020352ac();
-    if (temp_r0 != 0) {
-        if (M2C_FIELD(temp_r4, u8 *, 0x15) == Wfc_FriendIdToSlot(M2C_FIELD(arg0, u8 *, 0xD0D))) {
-            M2C_FIELD(temp_r4, s32 *, 0x10) = func_020352ec();
+    control = (void *)Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    checkState = Wfc_GetNetCheckState();
+    if (checkState != 0) {
+        if (M2C_FIELD(control, u8 *, WFC_CONTROL_SLOT) == Wfc_FriendIdToSlot(M2C_FIELD(state, u8 *, WFC_STATE_RESULT_ID))) {
+            M2C_FIELD(control, s32 *, WFC_CONTROL_NET_RESULT) = Wfc_GetNetResultCode();
         }
         Wfc_ReleaseNetwork();
-        if (temp_r0 == 0xB) {
+        if (checkState == 0xB) {
             return 0xF;
         }
-        M2C_FIELD((arg0 + (M2C_FIELD(arg0, u8 *, 0xD13) * 4)), s8 *, 0x444) = 1;
+        M2C_FIELD((state + (M2C_FIELD(state, u8 *, WFC_STATE_RECORD_INDEX) * 4)), s8 *, WFC_STATE_RECORD_RESULT) = 1;
         return 0xB;
     }
     return 0xE;
@@ -221,7 +225,7 @@ s32 Wfc_EncodeCodeMask(s32 arg0) {
 
 #pragma opt_strength_reduction off
 void func_020316c4(void *arg0) {
-    void func_020218f4(M2C_UNK *, M2C_UNK *);
+    void SetDnsServerAddressesFromHostOrder(M2C_UNK *, M2C_UNK *);
     s32 Wfc_FriendIdToSlot(u8);
     s32 Wfc_EncodePlayerCode(void *);
     s32 sp4;
@@ -245,7 +249,7 @@ void func_020316c4(void *arg0) {
     }
     sp4 = Wfc_EncodePlayerCode(p + 0xC8);
     sp0 = Wfc_EncodePlayerCode(p + 0xCC);
-    func_020218f4(&sp4, &sp0);
+    SetDnsServerAddressesFromHostOrder(&sp4, &sp0);
 }
 #pragma opt_strength_reduction reset
 s32 Wfc_IsSharedApCode(M2C_UNK arg0) {
@@ -668,25 +672,29 @@ u64 ParseFriendCodeDigits(void *text)
   return value;
 }
 #pragma opt_strength_reduction reset
-void Base32Encode(u64 value, s32 arg2, char *arg3) {
- extern u8 gBase32Alphabet[];
- char *end;
- s32 c;
- s32 i;
- s8 *table=(s8 *)gBase32Alphabet;
- s32 count=(arg2+4)/5;
- i=0;
- if(count>0) {
- end=arg3+count;
- end--;
- do {
- c=table[value&31];
- *(end-i)=c;
- value>>=5;
- i++;
- }while(i<count);
- }
- arg3[count]=0;
+/* Render `value` in base 32 (the 0-9a-v alphabet), least significant digit last:
+ * write one digit per BASE32_DIGIT_BITS of `bitCount` from the end of `out`, then
+ * terminate the string. */
+void Base32Encode(u64 value, s32 bitCount, char *out) {
+    extern u8 gBase32Alphabet[];
+    char *end;
+    s32 digit;
+    s32 index;
+    s8 *alphabet = (s8 *)gBase32Alphabet;
+    s32 length = (bitCount + BASE32_DIGIT_BITS - 1) / BASE32_DIGIT_BITS;
+
+    index = 0;
+    if (length > 0) {
+        end = out + length;
+        end--;
+        do {
+            digit = alphabet[value & BASE32_DIGIT_MASK];
+            *(end - index) = digit;
+            value >>= BASE32_DIGIT_BITS;
+            index++;
+        } while (index < length);
+    }
+    out[length] = 0;
 }
 
 /* Render a NAS player/key record as the text id the server exchanges: the 43-bit
