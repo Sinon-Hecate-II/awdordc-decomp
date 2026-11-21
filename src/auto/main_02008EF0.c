@@ -199,14 +199,18 @@ if(flags&2)Sound_SignalArm7();
 return 1;
 }
 #pragma opt_common_subs reset
-void Sound_WaitForCommand(int a) {
+/* Block until the ARM7 sound driver has processed every command queued up to
+ * the counter `mark`: drop commands still only queued, wake the ARM7, then wait
+ * for its completion counter to reach the mark.  Returns at once if it already
+ * has. */
+void Sound_WaitForCommand(int mark) {
 void Sound_SignalArm7(void);
-if(func_02009524(a))return;
+if(Sound_IsCommandReached(mark))return;
 while(Sound_DequeueCommand(0)){}
-if(func_02009524(a))return;
+if(Sound_IsCommandReached(mark))return;
 Sound_SignalArm7();
-if(func_02009524(a))return;
-do {Sound_DequeueCommand(1);}while(!func_02009524(a));
+if(Sound_IsCommandReached(mark))return;
+do {Sound_DequeueCommand(1);}while(!Sound_IsCommandReached(mark));
 }
 
 s32 Sound_GetCommandCounter(void) {
@@ -216,7 +220,7 @@ if(M2C_FIELD(&gSoundCommandQueueState,s32 *,8)==0)r=M2C_FIELD(&gSoundCommandQueu
 OS_RestoreInterrupts(s);return r;
 }
 
-s32 func_02009524(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&gSoundCommandQueueState,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
+s32 Sound_IsCommandReached(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&gSoundCommandQueueState,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
 
 s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 

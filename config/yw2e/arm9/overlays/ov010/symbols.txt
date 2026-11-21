@@ -149,13 +149,13 @@ IsOnlinePacketKindQueued kind:function(arm,size=0x80) addr:0x02226be8
 TickOnlinePeerKeepAlive kind:function(arm,size=0x10c) addr:0x02226c68
 func_ov010_02226d74 kind:function(arm,size=0x28) addr:0x02226d74
 func_ov010_02226d9c kind:function(arm,size=0x4c8) addr:0x02226d9c
-func_ov010_02227264 kind:function(arm,size=0x68) addr:0x02227264
+Ov010Connection_FinishSend kind:function(arm,size=0x68) addr:0x02227264
 func_ov010_022272cc kind:function(arm,size=0x650) addr:0x022272cc
 func_ov010_0222791c kind:function(arm,size=0x18) addr:0x0222791c
 func_ov010_02227934 kind:function(arm,size=0x20) addr:0x02227934
 func_ov010_02227954 kind:function(arm,size=0x274) addr:0x02227954
 DisconnectOnlinePeer kind:function(arm,size=0xc) addr:0x02227bc8
-func_ov010_02227bd4 kind:function(arm,size=0x68) addr:0x02227bd4
+Ov010Online_OnPeerConnectionLost kind:function(arm,size=0x68) addr:0x02227bd4
 func_ov010_02227c3c kind:function(arm,size=0x20) addr:0x02227c3c
 func_ov010_02227c5c kind:function(arm,size=0xd8) addr:0x02227c5c
 func_ov010_02227d34 kind:function(arm,size=0xc4) addr:0x02227d34
@@ -221,9 +221,9 @@ func_ov010_022294e0 kind:function(arm,size=0xc) addr:0x022294e0
 func_ov010_022294ec kind:function(arm,size=0x40) addr:0x022294ec
 func_ov010_0222952c kind:function(arm,size=0x3c) addr:0x0222952c
 func_ov010_02229568 kind:function(arm,size=0x18) addr:0x02229568
-func_ov010_02229580 kind:function(arm,size=0x1c) addr:0x02229580
+Ov010Online_FreePacket kind:function(arm,size=0x1c) addr:0x02229580
 Ov010Online_InitPacketHeader kind:function(arm,size=0x6c) addr:0x0222959c
-func_ov010_02229608 kind:function(arm,size=0x124) addr:0x02229608
+QueueOnlineLinkPacket kind:function(arm,size=0x124) addr:0x02229608
 QueueOnlinePacket kind:function(arm,size=0x124) addr:0x0222972c
 Ov010Online_IsSendQueueEmpty kind:function(arm,size=0x50) addr:0x02229850
 Ov010Online_GetQueuedPacketSize kind:function(arm,size=0x80) addr:0x022298a0
@@ -245,7 +245,7 @@ func_ov010_02229b90 kind:function(arm,size=0x18) addr:0x02229b90
 func_ov010_02229ba8 kind:function(arm,size=0x34) addr:0x02229ba8
 IsOnlineSessionHost kind:function(arm,size=0x18) addr:0x02229bdc
 func_ov010_02229bf4 kind:function(arm,size=0x18) addr:0x02229bf4
-func_ov010_02229c0c kind:function(arm,size=0x68) addr:0x02229c0c
+Ov010Online_SubmitStartRecord kind:function(arm,size=0x68) addr:0x02229c0c
 Ov010Online_IsStartAcknowledged kind:function(arm,size=0x98) addr:0x02229c74
 func_ov010_02229d0c kind:function(arm,size=0x14) addr:0x02229d0c
 func_ov010_02229d20 kind:function(arm,size=0x14) addr:0x02229d20
@@ -377,7 +377,7 @@ data_ov010_0222c1b8 kind:data(any) addr:0x0222c1b8
 data_ov010_0222c218 kind:data(any) addr:0x0222c218
 data_ov010_0222c250 kind:data(any) addr:0x0222c250
 data_ov010_0222c288 kind:data(any) addr:0x0222c288
-data_ov010_0222c2c0 kind:data(any) addr:0x0222c2c0
+gOnlineMatchRequestClass kind:data(any) addr:0x0222c2c0
 gOv010PacketAssemblyClass kind:data(any) addr:0x0222c2f8
 gOv010ConnectionClass kind:data(any) addr:0x0222c330
 data_ov010_0222c380 kind:data(any) addr:0x0222c380
@@ -385,7 +385,7 @@ data_ov010_0222c394 kind:data(any) addr:0x0222c394
 data_ov010_0222c3a8 kind:data(any) addr:0x0222c3a8
 data_ov010_0222c3bc kind:data(any) addr:0x0222c3bc
 data_ov010_0222c3d0 kind:data(any) addr:0x0222c3d0
-data_ov010_0222c3e4 kind:data(any) addr:0x0222c3e4
+gOnlineMatchRequestVtbl kind:data(any) addr:0x0222c3e4
 data_ov010_0222c3f0 kind:data(any) addr:0x0222c3f0
 data_ov010_0222c3fc kind:data(any) addr:0x0222c3fc
 data_ov010_0222c404 kind:data(any) addr:0x0222c404
@@ -460,6 +460,6 @@ data_ov010_0222ef90 kind:bss addr:0x0222ef90
 data_ov010_0222efb8 kind:bss addr:0x0222efb8
 gLocalPlayerStatus kind:bss addr:0x0222efc0
 data_ov010_0222efec kind:bss addr:0x0222efec
-data_ov010_0222f02c kind:bss addr:0x0222f02c
+gOv010PlayerRecords kind:bss addr:0x0222f02c
 data_ov010_0222f1dc kind:bss addr:0x0222f1dc
 data_ov010_0222f6c8 kind:bss addr:0x0222f6c8 ambiguous

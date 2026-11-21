@@ -7,6 +7,11 @@
  * MapListCategoryToDataCategory maps a map-list slot to one of these. */
 #define MAP_DATA_CATEGORY_CUSTOM 6
 
+/* Map icon kinds (GetMapListIconTile): the built-in map-data categories use
+ * kinds 1 to 6, and a custom map uses MAP_KIND_CUSTOM, or that kind plus the
+ * map's player count when its record is playable. */
+#define MAP_KIND_CUSTOM 7
+
 /* A map category occupies 0x200 bytes; its last two bytes hold category and count. */
 typedef struct MapSelectionCategory {
     u16 mapIds[255];

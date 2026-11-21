@@ -31,7 +31,7 @@ if (!resource) return;
 func_ov002_021e16dc(node,resource,M2C_FIELD(data_ov002_021f3030,u16 *,recordOfs),M2C_FIELD(data_ov002_021f3045+recordOfs,u8 *,M2C_FIELD(node,u8 *,0x8D)*8),M2C_FIELD(M2C_FIELD(gEffectTable,void **,effectId*0x18),u8 *,0x38));
 }
 
-void func_ov002_021e99f0(void *arg0, s32 arg1) {
+void SetupUnitPoseNode(void *arg0, s32 arg1) {
     void *MemAlloc(s32);
     void func_ov002_021e16bc(void *, u8, u8);
     void func_ov002_021e16dc(void *, s32, u16, u8, s32);
@@ -104,7 +104,7 @@ void func_ov002_021e99f0(void *arg0, s32 arg1) {
 }
 
 #pragma opt_common_subs off
-void func_ov002_021e9bc0(void *arg0,s32 arg1) {
+void SetupUnitEffectNode(void *arg0,s32 arg1) {
 void *MemAlloc(s32);
 void SetEffectScale(void *,u32);void InitEffectNode(void *,u8,u8);
 void SetEffectNodeResource(void *,s32,u16,u8,s32);
@@ -309,17 +309,20 @@ void func_ov002_021ea5b8(void) {
     FreeModelNode();
 }
 
-void func_ov002_021ea5c4(void *arg0) {
-    void func_ov002_021e99f0(void *,s32);
-    void func_ov002_021e9bc0(void *,s32);
+/* ov002 unit model: rebuild the model's pose and effect nodes for the effect
+ * variant it is on, then step to the next variant; an effect with no timed
+ * variants keeps the default variant. */
+void AdvanceUnitEffectVariant(void *model) {
+    void SetupUnitPoseNode(void *,s32);
+    void SetupUnitEffectNode(void *,s32);
     extern u8 gEffectHasVariants[];
-    if (gEffectHasVariants[M2C_FIELD(arg0,u8 *,0x8C)*0x2C]) {
-        func_ov002_021e99f0(arg0,M2C_FIELD(arg0,s32 *,0x84));
-        func_ov002_021e9bc0(arg0,M2C_FIELD(arg0,s32 *,0x84));
-        M2C_FIELD(arg0,s32 *,0x84)++;
+    if (gEffectHasVariants[M2C_FIELD(model,u8 *,UNIT_MODEL_COUNTRY)*0x2C]) {
+        SetupUnitPoseNode(model,M2C_FIELD(model,s32 *,UNIT_MODEL_EFFECT_VARIANT));
+        SetupUnitEffectNode(model,M2C_FIELD(model,s32 *,UNIT_MODEL_EFFECT_VARIANT));
+        M2C_FIELD(model,s32 *,UNIT_MODEL_EFFECT_VARIANT)++;
     } else {
-        func_ov002_021e99f0(arg0,-1);
-        func_ov002_021e9bc0(arg0,-1);
+        SetupUnitPoseNode(model,-1);
+        SetupUnitEffectNode(model,-1);
     }
 }
 

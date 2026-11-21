@@ -21,7 +21,7 @@ void SelectAttackMoveDestination(void) {
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void MarkAdjacentCells(s8);
     s32 func_020a47e0(s32, s32);
-    s32 func_ov000_021a9bc0(void);
+    s32 MapOrder_IsEnemyOwned(void);
     s32 func_ov000_0217aa2c(s32, s32);
     s32 FindAttackPosition(void *);
     s32 func_ov000_0217e6bc(s32, s32);
@@ -69,7 +69,7 @@ void SelectAttackMoveDestination(void) {
                 goto next;
             }
             if (!func_020a47e0(x, y)) goto next;
-            if (!func_ov000_021a9bc0()) goto next;
+            if (!MapOrder_IsEnemyOwned()) goto next;
 evaluate:
             {
                 s32 score = func_ov000_0217aa2c(x, y);

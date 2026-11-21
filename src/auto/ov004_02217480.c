@@ -1,6 +1,6 @@
 /* 5 functions from 0x02217480 to 0x02217F5C (ov004), found by ds-decomp. */
 #include "common.h"
-extern u32 data_0215d8a8[];
+extern u32 gMapProgressRecords[];
 typedef struct Flags175 { u32 low:3; u32 middle:23; u32 previous:3; u32 current:3; } Flags175;
 extern u8 data_ov004_0223c678[], data_ov004_0223c63c[];
 static inline void *Entry175(void *base, s32 i) { if(i<0)return 0; if(i>=64)return 0; return (u8 *)base+i*32; }
@@ -9,28 +9,31 @@ static inline u8 Available175(void *p) { return Flag175(p,4)?0:1; }
 static inline void *Child175(void *p) { void *q; s32 i; for(i=0;i<4;i++){q=M2C_FIELD((u8 *)p+i*4,void **,16);if(q && Available175(q))return q;}return 0; }
 static inline void *Selected175(void *base) { void *q;u8 *cursor=base;s32 i;for(i=0;i<64;i++,cursor+=32){if(i<0)q=0;else if(i>=64)q=0;else q=cursor;if(Flag175(q,2))return q;}return 0; }
 
-/* Updates the zoom state: toggles between 1.0 (0x1000) and 0.5 (0x800) scale,
-   recomputes the clipped target position, and clamps the source rectangle. */
-void func_ov004_02217480(void *state) {
+/* Start the map-progress reveal on the first map-grid entry whose progress
+ * record has an unacknowledged rating change (its previous rank differs from its
+ * current one): reset the phase and timer, remember that entry in the view and
+ * aim at its position.  When no map changed, hand over to func_01ffa8c4. */
+void BeginMapRankReveal(void *state) {
 void func_01ffa8c4(void *, s32);
-void *entry; s32 i, offset; void *base; u32 flags; s16 x,y;
-i=0;
+void *entry; s32 index, offset; void *base; s16 x,y;
+index=0;
 M2C_FIELD(state,u8 *,0x36)=0;
 M2C_FIELD(state,u8 *,0x35)=0;
 base=M2C_FIELD(state,void **,0x5c);
 offset=0;
 do {
-if(i<0) entry=0; else if(i>=64) entry=0; else entry=base+offset;
-flags=data_0215d8a8[M2C_FIELD(entry,u8 *,7)];
-if((flags>>29)!=((flags<<3)>>29)){
-M2C_FIELD(state,u8 *,0x37)=i;
+if(index<0) entry=0; else if(index>=64) entry=0; else entry=base+offset;
+{ const Flags175 *record = (const Flags175 *)&gMapProgressRecords[M2C_FIELD(entry,u8 *,7)];
+if(record->previous!=record->current){
+M2C_FIELD(state,u8 *,0x37)=index;
 if(entry==0)return;
 y=M2C_FIELD(entry,s16 *,2); x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(state,s16 *,0x48)=x;M2C_FIELD(state,s16 *,0x4a)=y;
 return;
 }
-i++;offset+=32;
-}while(i<64);
+}
+index++;offset+=32;
+}while(index<64);
 func_01ffa8c4(state,1);
 }
 
@@ -60,7 +63,7 @@ M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;
 M2C_FIELD(sprite,s32 *,0x40)=FX_Div(4096,M2C_FIELD(state,s32 *,0x40));
 M2C_FIELD(sprite,u32 *,0x44)=(M2C_FIELD(sprite,u32 *,0x44)&~0x3000000)|0x2000000;
-M2C_FIELD(entry,u8 *,5)=data_0215d8a8[M2C_FIELD(entry,u8 *,7)]>>29;
+M2C_FIELD(entry,u8 *,5)=gMapProgressRecords[M2C_FIELD(entry,u8 *,7)]>>29;
 M2C_FIELD(state,u8 *,0x36)=0;M2C_FIELD(state,u8 *,0x35)=2;return;
 case 2: { s32 i;
 M2C_FIELD(state,u8 *,0x35)=5;
@@ -94,20 +97,20 @@ M2C_FIELD(state,s16 *,0x4c)=0;M2C_FIELD(state,s16 *,0x4e)=0;PlaySoundEffect(240)
 }
 M2C_FIELD(state,u8 *,0x36)=0;M2C_FIELD(state,u8 *,0x35)=5;return;
 case 5:
-old=(data_0215d8a8[M2C_FIELD(entry,u8 *,7)]<<3)>>29;
-for(i=0;i<4;i++){q=M2C_FIELD((u8 *)entry+i*4,void **,16);if(q && (((Flags175 *)data_0215d8a8)[M2C_FIELD(q,u8 *,7)].low)==0){
-data_0215d8a8[M2C_FIELD(q,u8 *,7)]=(data_0215d8a8[M2C_FIELD(q,u8 *,7)]&~7)|1;
+old=(gMapProgressRecords[M2C_FIELD(entry,u8 *,7)]<<3)>>29;
+for(i=0;i<4;i++){q=M2C_FIELD((u8 *)entry+i*4,void **,16);if(q && (((Flags175 *)gMapProgressRecords)[M2C_FIELD(q,u8 *,7)].low)==0){
+gMapProgressRecords[M2C_FIELD(q,u8 *,7)]=(gMapProgressRecords[M2C_FIELD(q,u8 *,7)]&~7)|1;
 id=M2C_FIELD(q,u8 *,7);value=MapData_GetCategory(id+161);selected=Flag175(q,2);
 M2C_FIELD(q,u8 *,4)=0;
 if(value==2)M2C_FIELD(q,u8 *,4)|=4;
-if((((Flags175 *)data_0215d8a8)[id].low)!=0)M2C_FIELD(q,u8 *,4)|=1;
-if((((Flags175 *)data_0215d8a8)[id].low)==1)M2C_FIELD(q,u8 *,4)|=16;
-if((((Flags175 *)data_0215d8a8)[id].low)==3)M2C_FIELD(q,u8 *,4)|=8;
+if((((Flags175 *)gMapProgressRecords)[id].low)!=0)M2C_FIELD(q,u8 *,4)|=1;
+if((((Flags175 *)gMapProgressRecords)[id].low)==1)M2C_FIELD(q,u8 *,4)|=16;
+if((((Flags175 *)gMapProgressRecords)[id].low)==3)M2C_FIELD(q,u8 *,4)|=8;
 if(selected)M2C_FIELD(q,u8 *,4)|=2;
-M2C_FIELD(q,u8 *,5)=(data_0215d8a8[id]<<3)>>29;
+M2C_FIELD(q,u8 *,5)=(gMapProgressRecords[id]<<3)>>29;
 }}
 id=M2C_FIELD(entry,u8 *,7);
-((Flags175 *)data_0215d8a8)[id].previous=((Flags175 *)data_0215d8a8)[id].current;
+((Flags175 *)gMapProgressRecords)[id].previous=((Flags175 *)gMapProgressRecords)[id].current;
 if(M2C_FIELD(entry,u8 *,7)+161==186 && old==0)PlaySoundEffect(286);
 SetSpriteAnimation(state,3);return;
 default:Sprite_ResumeAnimation(state);return;
@@ -215,10 +218,10 @@ void func_ov004_02217f34(void) {
     M2C_UNK func_0209cd00(M2C_UNK *);
     M2C_UNK func_020ab200();
     M2C_UNK func_ov003_021ff3ac();
-    extern M2C_UNK func_ov004_022148a4;
+    extern M2C_UNK InitMapView3DRendering;
     extern M2C_UNK func_ov004_02214904;
     func_ov003_021ff3ac();
     func_020ab200();
-    func_0209cd00(&func_ov004_022148a4);
+    func_0209cd00(&InitMapView3DRendering);
     func_0209cd00(&func_ov004_02214904);
 }

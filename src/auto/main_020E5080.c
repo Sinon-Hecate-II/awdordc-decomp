@@ -12,7 +12,7 @@ void OpenNarcArchive(void);void Clear3DSpriteLayer(s32);
 void LoadNarcFileDecompressed(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);
 void SetTileRectPalette(void*,s32,s32,s32);void CloseNarcArchive(void);
 void *func_020ab1c4(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
-void func_02088e84(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);
+void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s32,s32,u16,u16);void func_020aad18(void*);
 void *Create3DSprite(void*);void LoadSpriteResource(s32,s32,s32,void*);s32 func_020aaf74(void*);
 void Apply3DSpriteBanks(void);M2C_UNK func_02090640(M2C_UNK,M2C_UNK);
@@ -39,7 +39,7 @@ SetTileRectPalette(M2C_FIELD((void*)gCur3DSpriteEngine,void **,0x20),0x20,0x18,5
 M2C_FIELD((void*)gCur3DSpriteEngine,u8 *,0x46)|=1;CloseNarcArchive();
 M2C_FIELD(arg0,void **,0x38)=func_020ab1c4(arg0);
 InitUnitSprite(M2C_FIELD(arg0,void **,0x38),2,0x140,3,1);
-obj=M2C_FIELD(arg0,void **,0x38);func_02088e84(obj,0xe0,0xa0,0xe0,0xa0);
+obj=M2C_FIELD(arg0,void **,0x38);Set3DSpriteSlideTargetAndStart(obj,0xe0,0xa0,0xe0,0xa0);
 if((u8)(M2C_FIELD(M2C_FIELD(obj,void **,0x64),u8 *,0x12)!=0)){
 y=M2C_FIELD(obj,s16 *,0x52);x=M2C_FIELD(obj,s16 *,0x50);
 w=GetUnitSpriteWidth(obj);h=GetUnitSpriteHeight(obj);

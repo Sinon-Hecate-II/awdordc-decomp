@@ -467,7 +467,7 @@ void InitArenaTable(void);
     M2C_UNK func_02008bb8();
     M2C_UNK PXI_Init();
     M2C_UNK Arm7CommandInit();
-    M2C_UNK func_02010c14();
+    M2C_UNK SaveDevice_Init();
     M2C_UNK Mb_BootInit();
     InitArenaTable();
     PXI_Init();
@@ -482,7 +482,7 @@ void InitArenaTable(void);
     func_02005968();
     func_020075b4();
     Mb_BootInit();
-    func_02010c14();
+    SaveDevice_Init();
     Arm7CommandInit();
     func_02006838();
 }

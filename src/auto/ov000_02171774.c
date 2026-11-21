@@ -1,5 +1,6 @@
 /* 22 functions from 0x02171774 to 0x02172754 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline void InitEntry724dc(void *q) {
 s32 j;void *t;
 M2C_FIELD(q,s32 *,0)=0; M2C_FIELD(q,s32 *,4)=0; M2C_FIELD(q,s32 *,8)=0; M2C_FIELD(q,s32 *,12)=0;
@@ -198,20 +199,23 @@ void *func_ov000_021725c8(void *arg0) {
     return arg0;
 }
 
-void func_ov000_021725e0(void *arg0) {
+/* Start a redraw of the info panel: clear the sub screen's three 3D sprite
+   layers so the panel is rebuilt from scratch, mark layer 1 dirty and put the
+   panel into its redraw state (2) with its counter cleared. */
+void Ov000_InfoPanel_Refresh(void *panel) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    void *savedEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Clear3DSpriteLayer(2);
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(0);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(arg0, s32 *, 4) = 2;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    gCur3DSpriteEngine = temp_r4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
+    M2C_FIELD(panel, s32 *, 4) = 2;
+    M2C_FIELD(panel, s32 *, 8) = 0;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02172648(void) {

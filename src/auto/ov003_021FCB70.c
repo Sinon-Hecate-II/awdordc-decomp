@@ -44,7 +44,7 @@ void SetupEntityDisplay(void *entity) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Show3DSprite(void *);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Show3DSpriteSlide(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
@@ -136,7 +136,7 @@ void SetupEntityDisplay(void *entity) {
         Show3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 4));
         Hide3DSprite(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0));
         part0 = M2C_FIELD(M2C_FIELD(entity, void **, 0x68), void **, 0);
-        func_02088e84(part0, 0xC0, 0xC0, 0xC0, 0xC0);
+        Set3DSpriteSlideTargetAndStart(part0, 0xC0, 0xC0, 0xC0, 0xC0);
         if (M2C_FIELD(M2C_FIELD(part0, void **, 0x64), u8 *, 0x12) != 0) {
             hasSubflag = 1;
         } else {
@@ -309,21 +309,25 @@ void func_ov003_021fd1e4(void) {
     func_ov003_021f8c20();
 }
 
-void func_ov003_021fd1f0(void *arg0) {
+/* Starts the link map transfer from the map-list menu: once the menu entity is
+ * in its list mode and a link session is running with no scene transition in
+ * progress, broadcast this console's player setup and open the map-transfer
+ * panel. */
+void BeginLinkMapTransfer(void *entity) {
     s32 IsLinkSessionActive();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f152c(M2C_UNK);
     s32 func_ov003_021f153c();
     M2C_UNK Ov003_BroadcastPlayerSetup(M2C_UNK);
     M2C_UNK CreateMapTransferPanelStep1(void *);
-    s32 var_r0;
+    s32 isMapList;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x3B) << 0x1C) >> 0x1C) == 0) {
-        var_r0 = 1;
+    if (((u32) (M2C_FIELD(entity, u8 *, MENU_ENTITY_MODE) << 0x1C) >> 0x1C) == 0) {
+        isMapList = 1;
     } else {
-        var_r0 = 0;
+        isMapList = 0;
     }
-    if (!(var_r0 & 0xFF)) {
+    if (!(isMapList & 0xFF)) {
         return;
     }
     if (IsLinkSessionActive() == 0) {
@@ -335,7 +339,7 @@ void func_ov003_021fd1f0(void *arg0) {
     func_ov003_021f152c(1);
     SetOv003SceneState(1);
     Ov003_BroadcastPlayerSetup(1);
-    CreateMapTransferPanelStep1(arg0);
+    CreateMapTransferPanelStep1(entity);
 }
 
 u8 func_ov003_021fd250(void *arg0) {

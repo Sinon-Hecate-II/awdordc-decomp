@@ -28,7 +28,7 @@ void func_020d54b4(void) {
 
 void func_020d54b8(void) {
  extern void *gCurrentMap;
- func_020cf80c();func_0207a7a4(1,8);
+ UpdateMapCursorInput();func_0207a7a4(1,8);
  if(!IsMapCursorIdle())return;
  if(!func_020bcc04())return;
  if(!func_020bdcd0())return;

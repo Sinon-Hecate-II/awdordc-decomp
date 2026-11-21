@@ -28,7 +28,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Show3DSpriteSlide(void *);
     M2C_UNK func_020994e0();
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
@@ -67,7 +67,7 @@ void func_ov004_02217f5c(void *arg0) {
     extern M2C_UNK data_ov004_0223c654;
     extern M2C_UNK data_ov004_0223c660;
     extern M2C_UNK data_ov004_0223c66c;
-    extern M2C_UNK func_ov004_022148a4;
+    extern M2C_UNK InitMapView3DRendering;
     extern M2C_UNK func_ov004_02214904;
     u16 *volatile sp2C;
     u16 *volatile sp28;
@@ -192,7 +192,7 @@ void func_ov004_02217f5c(void *arg0) {
     InitUnitSprite(temp_r0_3, 2, 0x140, 3, 0);
     func_020ab150(temp_r0_3, 2);
     M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x800;
-    func_02088e84(temp_r0_3, 0xE0, 0x9C, 0xE0, 0xBC);
+    Set3DSpriteSlideTargetAndStart(temp_r0_3, 0xE0, 0x9C, 0xE0, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_3, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
@@ -210,7 +210,7 @@ void func_ov004_02217f5c(void *arg0) {
     InitUnitSprite(temp_r0_4, 6, 0x150, 3, 0);
     func_020ab150(temp_r0_4, 0x100);
     M2C_FIELD(temp_r0_4, s16 *, 0x3C) = 0x800;
-    func_02088e84(temp_r0_4, 0xC0, 0x9C, 0xC0, 0xBC);
+    Set3DSpriteSlideTargetAndStart(temp_r0_4, 0xC0, 0x9C, 0xC0, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_4, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_2 = 1;
     } else {
@@ -228,7 +228,7 @@ void func_ov004_02217f5c(void *arg0) {
     InitUnitSprite(temp_r0_5, 0x12, 0x160, 3, 0);
     M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x800;
     func_020ab150(temp_r0_5, 8);
-    func_02088e84(temp_r0_5, 0x80, 0x9C, 0x80, 0xBC);
+    Set3DSpriteSlideTargetAndStart(temp_r0_5, 0x80, 0x9C, 0x80, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_5, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_3 = 1;
     } else {
@@ -244,7 +244,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_020aad18(temp_r0_5);
     gCur3DSpriteEngine = temp_r5;
     func_ov003_021fef58(arg0);
-    func_0209cce4(&func_ov004_022148a4, 4);
+    func_0209cce4(&InitMapView3DRendering, 4);
     func_0209cce4(&func_ov004_02214904, 0xA);
     temp_r0_6 = M2C_FIELD(arg0, s32 *, 0x40);
     if ((temp_r0_6 != 0x800) && (temp_r0_6 != 0x1000)) {

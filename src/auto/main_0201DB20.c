@@ -406,7 +406,7 @@ s32 func_0201e404(s32 arg0, s32 arg1) {
     u64 GetSystemTick(void);
     s32 GetSocketReceivedDataSize(void);
     void func_0201a238(void);
-    s32 func_0201d618(s32 *);
+    s32 PeekSocketReceivedData(s32 *);
     s32 MacAddressesDiffer(u16 *, u16 *);
     void func_0201d70c(s32);
     extern M2C_UNK gNetStack;
@@ -437,7 +437,7 @@ top_loop:
     if (GetSocketReceivedDataSize() == 0) {
         func_0201a238();
     } else {
-        q = (u8 *)func_0201d618(&slots[1]);
+        q = (u8 *)PeekSocketReceivedData(&slots[1]);
         if ((u32)slots[1] <= 0xF0) goto fail;
         if (q[0] != 2) goto fail;
         if (!PacketTransactionMatches((u16 *)(q+4), (u32 *)slots)) goto fail;
@@ -523,7 +523,7 @@ s32 func_0201e754(void) {
     M2C_UNK OpenRawConnection();
     M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK ResetCurrentConnection();
-    M2C_UNK func_0201d224();
+    M2C_UNK CloseRawConnection();
     s32 BuildDhcpDiscover();
     s32 func_0201e404(s32, s32);
     s32 temp_r0;
@@ -541,7 +541,7 @@ loop_1:
             goto loop_1;
         }
     }
-    func_0201d224();
+    CloseRawConnection();
     if (temp_r0 == 1) {
         return 1;
     }
@@ -574,7 +574,7 @@ loop_4:
             goto loop_4;
         }
     }
-    func_0201d224();
+    CloseRawConnection();
     if (result == 2) {
         *out_size = (u32) M2C_FIELD(&gNetStack, u32 *, 0x4C) >> 1;
         M2C_FIELD(&gNetStack, u32 *, 0x38) = (u32) ((u32) (M2C_FIELD(&gNetStack, u32 *, 0x4C) * 3) >> 3);
@@ -618,7 +618,7 @@ void SendDhcpRelease(void) {
     p++;
     p = PadPacket(0, DHCP_PACKET_MIN, (s32)p, p - base);
     SendNetPacket((s32)base, p - base);
-    func_0201d224();
+    CloseRawConnection();
 }
 
 u8 *DnsSkipName(u8 *p) {

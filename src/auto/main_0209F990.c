@@ -11,7 +11,7 @@ extern u8 gMovementTypeTable[];
 s32 func_0209f990(void) {
     void func_0209f8c0(void);
     void func_0209f8f8(s32, s32, s32, s32);
-    s32 func_020a4828(s32, s32);
+    s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
     void func_020d166c(s32, s32, void *);
@@ -38,7 +38,7 @@ s32 func_0209f990(void) {
                 do {
                     if (M2C_FIELD(M2C_FIELD(obj + y * 4, s8 **, 0x52E8), s8 *, x) >= 0) {
                         id = M2C_FIELD(obj, u8 *, x + M2C_FIELD(obj + y * 2, u16 *, 0x3758));
-                        visible = func_020a4828(x, y);
+                        visible = GetTileTargetKind(x, y);
                         if (id != 0) {
                             if (func_020d27a4(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                                 func_020d166c(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id, (void *)((u8 *)*gCurrentMap + 0x52dc));
@@ -78,7 +78,7 @@ next_cell:
 s32 func_0209fb70(void) {
     void func_0209f8c0(void);
     void func_0209f8f8(s32, s32, s32, s32);
-    s32 func_020a4828(s32, s32);
+    s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
     s32 func_020d0a08(M2C_UNK, void *);
@@ -105,7 +105,7 @@ s32 func_0209fb70(void) {
         do {
             if (M2C_FIELD(M2C_FIELD((u8 *)obj + y * 4, s8 **, 0x52E8), s8 *, x) < 0) goto next_cell;
             id = M2C_FIELD(obj, u8 *, x + M2C_FIELD((u8 *)obj + y * 2, u16 *, 0x3758));
-            visible = func_020a4828(x, y);
+            visible = GetTileTargetKind(x, y);
             if (id != 0) {
                 if (func_020d27a4(M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                     if (func_020d0a08(M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), (u8 *)(M2C_UNK *)*gCurrentMap + 0x59a4 + id * 14) != 0) {

@@ -436,18 +436,23 @@ if(month>=3 && !(year&3)) days++;
 return year*365+days+((year+3)>>2);
 }
 
-s32 func_0200f7c8(void *arg0) {
+s32 RtcTimeToSeconds(void *arg0) {
     return (((M2C_FIELD(arg0, s32 *, 0) * 0x3C) + M2C_FIELD(arg0, s32 *, 4)) * 0x3C) + M2C_FIELD(arg0, s32 *, 8);
 }
 
 #pragma opt_propagation off
-s64 MakeTime(void *arg0, void *arg1) {
-    s32 func_0200f7c8(void *);
-    s32 days=RtcDateToDays(arg0); s32 seconds;
-    if(days==-1) return -1;
-    seconds=func_0200f7c8(arg1);
-    if(seconds==-1) return -1;
-    return (s64)days*86400LL+seconds;
+/* Combine an RTC date record (days since 2000/01/01, via RtcDateToDays) and a
+ * time record (seconds within the day, via RtcTimeToSeconds) into the seconds
+ * elapsed since 2000/01/01, or -1 when either record is out of range. */
+s64 MakeTime(void *date, void *time) {
+    s32 RtcTimeToSeconds(void *);
+    s32 days = RtcDateToDays(date);
+    s32 secondsOfDay;
+
+    if (days == -1) return -1;
+    secondsOfDay = RtcTimeToSeconds(time);
+    if (secondsOfDay == -1) return -1;
+    return (s64)days * RTC_SECONDS_PER_DAY + secondsOfDay;
 }
 /* Convert a count of days since 2000/01/01 into the RTC date record: year at
  * +0, month at +4, day at +8 and weekday (0 = Sunday) at +0xC.  The count is

@@ -130,7 +130,7 @@ void ExplosionEffect_Start(ExplosionEffect *effect) {
     sprite->flags = (sprite->flags & ~0x03000000) | 0x02000000;
 }
 
-M2C_UNK func_020b5594(s32 a,s32 b,s32 c,s32 d) {
+M2C_UNK CreateExplosionEffect(s32 a,s32 b,s32 c,s32 d) {
 void *CreateSpriteForOwner(M2C_UNK *,s32); extern M2C_UNK data_02128c6c;
 void *p=CreateSpriteForOwner(&data_02128c6c,d);
 M2C_FIELD(p,s32 *,0x38)=a; M2C_FIELD(p,s32 *,0x3c)=b; M2C_FIELD(p,s32 *,0x5c)=c;
@@ -201,8 +201,8 @@ void RemoveUnitWithEffect(M2C_UNK arg0) {
 }
 
 void func_020b578c(void *arg0) {
-    M2C_UNK func_020b5594(s32, s32, M2C_UNK, M2C_UNK);
-    func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
+    M2C_UNK CreateExplosionEffect(s32, s32, M2C_UNK, M2C_UNK);
+    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
 #pragma scheduling off
@@ -251,7 +251,7 @@ M2C_FIELD(p,s32 *,0x38)=xy[0]; M2C_FIELD(p,s32 *,0x3c)=xy[1];
 }
 
 void func_020b59a0(void *arg0) {
-    func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
+    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
 #pragma scheduling off
@@ -379,7 +379,7 @@ M2C_FIELD(p,s32 *,0x38)=arg0[0]; M2C_FIELD(p,s32 *,0x3c)=arg0[1]; M2C_FIELD(p,vo
 }
 
 void func_020b5dc0(void *arg0) {
-    func_020b5594(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 8, 7);
+    CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 8, 7);
 }
 
 void func_020b5de0(void *arg0) {
@@ -425,15 +425,19 @@ void SpawnMissileEffect(MissileEffect *effect) {
     PlaySoundAtTile(0x94, effect->tileX, effect->tileY);
 }
 
-void func_020b5edc(void *arg0) {
+/* Drives the missile effect's launch climb: advance the frame counter and ease
+ * the missile sprite from the effect's start height towards its end height, then
+ * resume the effect's task once the climb is done. */
+void StepMissileLaunch(MissileEffect *effect) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(M2C_UNK, s32, s32, s16, s32);
-    M2C_FIELD(arg0, s16 *, 0x48) = (s16) (M2C_FIELD(arg0, s16 *, 0x48) + 1);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x60), s32 *, 0x38) = EaseInterpolate(0, M2C_FIELD(arg0, s32 *, 0x54), M2C_FIELD(arg0, s32 *, 0x58), M2C_FIELD(arg0, s16 *, 0x48), (s32) M2C_FIELD(arg0, s16 *, 0x4A));
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x48) < (s32) M2C_FIELD(arg0, s16 *, 0x4A)) {
+
+    effect->frame = (s16) (effect->frame + 1);
+    effect->missile->y = EaseInterpolate(0, effect->from, effect->to, effect->frame, (s32) effect->duration);
+    if ((s32) effect->frame < (s32) effect->duration) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(effect);
 }
 
 void func_020b5f3c(s16 arg0, s16 arg1, M2C_UNK arg2) {

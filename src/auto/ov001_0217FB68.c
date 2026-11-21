@@ -121,8 +121,8 @@ void func_ov001_0217fd94(void) {
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     void Ov001_LoadXb4MultiBackground(void);
     void func_ov001_0217fe50(void);
-    extern u8 data_ov001_02193dbc;
-    data_ov001_02193dbc = 0;
+    extern u8 gOv001MatchSetupStored;
+    gOv001MatchSetupStored = 0;
     Ov001_LoadXb4MultiBackground();
     Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessageBox(0x2A);
@@ -217,24 +217,27 @@ void func_ov001_0217ff60(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_0217ff80;
+    extern M2C_UNK Ov001_FadeOutMatchSetup;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_0217ff80);
+    Ov001_SetStepCallback(&Ov001_FadeOutMatchSetup);
 }
 
-void func_ov001_0217ff80(void) {
+/* Fade the match-setup page out: once the sub-screen fade is idle, slide the icon
+ * row out, fade both screens to white - the sub-screen fade only when the edited
+ * setup was not stored - then hand over to Ov001_CloseMatchSetupScreen. */
+void Ov001_FadeOutMatchSetup(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern u8 data_ov001_02193dbc;
+    extern u8 gOv001MatchSetupStored;
     extern M2C_UNK Ov001_CloseMatchSetupScreen;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    if (data_ov001_02193dbc == 0) {
-        Ov001_StartFade(3, 1, 1, 8);
+    if (gOv001MatchSetupStored == 0) {
+        Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
     }
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseMatchSetupScreen);
 }
 
@@ -250,20 +253,20 @@ void Ov001_CloseMatchSetupScreen(void) {
     M2C_UNK Ov001_FreeOptionPage(void);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern u8 data_ov001_02193dbc;
+    extern u8 gOv001MatchSetupStored;
     extern M2C_UNK Ov001_AdvanceMatchSetup;
     extern M2C_UNK func_ov001_02181a84;
     if (Ov001_IsFadeActive(0) != 0) return;
-    if ((data_ov001_02193dbc == 0) && (Ov001_IsFadeActive(1) != 0)) return;
+    if ((gOv001MatchSetupStored == 0) && (Ov001_IsFadeActive(1) != 0)) return;
     if (Ov001_IsIconRowIdle() == 0) return;
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    if (data_ov001_02193dbc == 0) {
+    if (gOv001MatchSetupStored == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_FreeOptionPage();
-    if (data_ov001_02193dbc == 0) {
+    if (gOv001MatchSetupStored == 0) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);
         return;
@@ -275,15 +278,15 @@ void Ov001_CloseMatchSetupScreen(void) {
 /* Second page of the ov001 download-play setup wizard: on selection 3 it stores
  * the edited match setup (Ov001_StoreMatchSetup) and advances; on selection 4 or
  * 5 it cancels - stop the sound, play the cancel sound, show the matching message
- * and lock the icon row. data_ov001_02193dbc records the branch for the fade-out
+ * and lock the icon row. gOv001MatchSetupStored records the branch for the fade-out
  * that follows. */
 void Ov001_HandleMatchSetupPage2Choice(void) {
 s32 Ov001_GetOptionChoice(void); M2C_UNK Ov001_PlaySound(M2C_UNK); M2C_UNK Ov001_StopSound(void); M2C_UNK Ov001_StoreMatchSetup(void); M2C_UNK Ov001_ShowMessage(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32); M2C_UNK Ov001_LockIconRow(void);
-extern u8 data_ov001_02193dbc; void func_ov001_0217ff60(void); void func_ov001_02180178(void);
+extern u8 gOv001MatchSetupStored; void func_ov001_0217ff60(void); void func_ov001_02180178(void);
 switch(Ov001_GetOptionChoice()){
-case 3: data_ov001_02193dbc=1;Ov001_StopSound();Ov001_StoreMatchSetup();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);return;
-case 4: data_ov001_02193dbc=0;Ov001_StopSound();Ov001_PlaySound(9);Ov001_ShowMessage(13,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
-case 5: data_ov001_02193dbc=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMessage(14,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
+case 3: gOv001MatchSetupStored=1;Ov001_StopSound();Ov001_StoreMatchSetup();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);return;
+case 4: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(9);Ov001_ShowMessage(13,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
+case 5: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMessage(14,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
 }}
 
 void func_ov001_02180178(void) {
@@ -633,27 +636,30 @@ void func_ov001_02180840(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_OptionPage2ConfirmStep);
 }
 
-void func_ov001_02180860(void) {
-extern u8 gOv001FriendListState;
-extern M2C_UNK func_ov001_02180970;
-void Ov001_LoadFriendListBg(void);
-M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
-M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
-M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
-M2C_UNK func_ov001_02183f6c(void);
-M2C_UNK Ov001_OpenFriendRoster(void);
-M2C_FIELD(&gOv001FriendListState,u16 *,2)=0;
-gOv001FriendListState=0;
-Ov001_LoadFriendListBg();
-Ov001_ShowMessagePanel(0x33,-1,0);
-Ov001_LoadSaveSlotObjLayout();
-Ov001_OpenMenuForMode(2);
-Ov001_ShowMessageBox(0x33);
-Ov001_CreateAnimSprite(0);
-func_ov001_02183f6c();
-Ov001_OpenFriendRoster();
-Ov001_PlaySound(10);
-Ov001_SetStepCallback(&func_ov001_02180970);
+/* Opens the ov001 Wi-Fi friend-list screen: resets the friend-list state, loads
+ * the screen's background, message panel and menu, allocates the friend roster,
+ * starts the roster fetch and fades the screen in. */
+void Ov001_OpenFriendListScreen(void) {
+    extern u8 gOv001FriendListState;
+    extern M2C_UNK Ov001_FadeInFriendListScreen;
+    void Ov001_LoadFriendListBg(void);
+    M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
+    M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
+    M2C_UNK Ov001_AllocFriendRoster(void);
+    M2C_UNK Ov001_OpenFriendRoster(void);
+    M2C_FIELD(&gOv001FriendListState, u16 *, OV001_FRIEND_LIST_TIMER) = 0;
+    M2C_FIELD(&gOv001FriendListState, u8 *, OV001_FRIEND_LIST_STATE) = 0;
+    Ov001_LoadFriendListBg();
+    Ov001_ShowMessagePanel(OV001_MSG_FRIEND_LIST, -1, 0);
+    Ov001_LoadSaveSlotObjLayout();
+    Ov001_OpenMenuForMode(2);
+    Ov001_ShowMessageBox(OV001_MSG_FRIEND_LIST);
+    Ov001_CreateAnimSprite(0);
+    Ov001_AllocFriendRoster();
+    Ov001_OpenFriendRoster();
+    Ov001_PlaySound(10);
+    Ov001_SetStepCallback(&Ov001_FadeInFriendListScreen);
 }
 
 /* Loads the friend-list screen's background: tile graphics, palette and map,
@@ -673,7 +679,7 @@ void Ov001_LoadFriendListBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_02180970(void) {
+void Ov001_FadeInFriendListScreen(void) {
     extern M2C_UNK func_ov001_021809c4;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);

@@ -1,10 +1,12 @@
 /* 53 functions from 0x020C0254 to 0x020C1230 (main), found by ds-decomp. */
 #include "common.h"
 #include "sprite_slot.h"
+#include "ds3dsprite.h"
+#include "battle_map.h"
 /* A row of the caller-supplied 0x28-byte entry table a carried-unit list menu is
  * built from; only the fields the menu reads are named. */
 typedef struct { u8 pad00[0x24]; u16 slot; u16 icon; } MenuRowC0634;
-/* The carried-unit list menu func_020c0634 builds and func_020c04fc drives: the
+/* The carried-unit list menu func_020c0634 builds and OpenListMenu drives: the
  * caller's entry table, a status and an entry index per visible row, the row
  * counts, the chosen row and the panel's screen position. */
 typedef struct {
@@ -20,8 +22,8 @@ typedef struct {
     s16 x, y;         /* +0x54 panel screen position */
 } MenuC0634;
 typedef struct { u8 pad[0x1420]; u8 tiles[0x2338]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0xb9]; u8 visible[0x200]; } MapC10;
-extern void *data_02163eec;
-extern u8 data_02163ef0[];
+extern void *gCarriedUnitMenuStackPtr;
+extern u8 gCarriedUnitMenuStateStack[];
 typedef struct { s8 x,y,index,flag; s32 value; } CEntry;
 
 u8 func_020c0254(void) {
@@ -98,7 +100,7 @@ s8 GetCarriedUnitListEntryStatus(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), s8 *, 0x38);
 }
 
-void func_020c03e0(void *arg0, s32 arg1) {
+void HighlightListMenuRow(void *arg0, s32 arg1) {
     void func_0207bc80(u16);
     void DrawSpriteBatch(void);
     s32 temp_r0;
@@ -111,7 +113,7 @@ void func_020c03e0(void *arg0, s32 arg1) {
     temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
 }
 
-void func_020c0424(void *arg0, s32 arg1) {
+void DrawListMenuRowIcon(void *arg0, s32 arg1) {
     s32 temp_r0;
     void (*temp_r3)(s32, u8, u8);
     temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
@@ -147,57 +149,61 @@ void func_020c04b4(void *arg0, s32 arg1) {
     callback(entry, (u8)arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
 }
 
-void func_020c04e4(void) {
-    s32 func_020c05b0(void);
+void UpdateListMenu(void) {
+    s32 GetCarriedUnitMenu(void);
     void DrawCarriedUnitList();
-    if (func_020c05b0() == 0) return;
+    if (GetCarriedUnitMenu() == 0) return;
     DrawCarriedUnitList();
 }
 
-void func_020c04fc(void *arg0) {
+/* Lay out and show the list menu: draw the row batch and the preview unit
+   sprite, let every visible row draw its own icon, highlight the selected row,
+   create one sprite slot per row, then register the per-frame redraw task. */
+void OpenListMenu(void *arg0) {
     M2C_UNK func_0209cce4(void (*)(void), M2C_UNK);
-    void func_020c03e0(void *, s32);
-    void func_020c0424(void *, s32);
+    void HighlightListMenuRow(void *, s32);
+    void DrawListMenuRowIcon(void *, s32);
     M2C_UNK CreateCarriedUnitRowSlots(void *);
     M2C_UNK DrawCarriedUnitListBatch();
     void *CreateMenuUnitSprite(void *);
 
-    void func_020c04e4(void);
-    s32 var_r4;
+    void UpdateListMenu(void);
+    MenuC0634 *menu = (MenuC0634 *)arg0;
+    s32 row;
 
     DrawCarriedUnitListBatch();
     CreateMenuUnitSprite(arg0);
-    var_r4 = 0;
-    if ((s32) M2C_FIELD(arg0, u8 *, 0x4D) > 0) {
+    row = 0;
+    if ((s32) menu->count > 0) {
         do {
-            func_020c0424(arg0, var_r4);
-            var_r4 += 1;
-        } while (var_r4 < (s32) M2C_FIELD(arg0, u8 *, 0x4D));
+            DrawListMenuRowIcon(arg0, row);
+            row += 1;
+        } while (row < (s32) menu->count);
     }
-    func_020c03e0(arg0, M2C_FIELD(arg0, u8 *, 0x4E));
+    HighlightListMenuRow(arg0, menu->selection);
     CreateCarriedUnitRowSlots(arg0);
-    func_0209cce4(&func_020c04e4, 9);
+    func_0209cce4(&UpdateListMenu, 9);
 }
 
 void func_020c0564(void *arg0) {
     M2C_UNK func_0209cd00(void (*)(void));
-    void func_020c04e4(void);
+    void UpdateListMenu(void);
     void func_020c0f18();
-    void func_020c095c(void);
+    void ResetMapViewLayers(void);
     M2C_UNK func_0207a668();
     M2C_UNK func_020d472c();
     extern void *gCurrentMap;
     void (*callback)(void);
-    func_0209cd00(func_020c04e4);
+    func_0209cd00(UpdateListMenu);
     func_020c0f18(arg0);
-    func_020c095c();
+    ResetMapViewLayers();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 4);
     if (callback != NULL) callback();
     func_0207a668();
     func_020d472c();
 }
 
-s32 func_020c05b0(void) {
+s32 GetCarriedUnitMenu(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
     return FindObjectByClass(&data_02129630);
@@ -292,25 +298,33 @@ else {if(row==y+h-1)t=FRAME_TILE_FLIP_V|FRAME_TILE_EDGE_H;else if(row==y)t=FRAME
 }
 }
 
-void func_020c08f8(s32 a,s32 b,s32 c,s32 d,u8 e) {
-extern s32 gCur3DSpriteEngine; extern void *gCurrentMap;
-void DrawFrameTiles(s32,s32,s32,s32,s32,s32,u8);
-void (*cb)(void);
-DrawFrameTiles(a,b,c,d,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),3,e);
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x48);
-if(cb)cb();
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
+/* Stamp a filled window frame at tile (x, y), width x height, into the current
+ * 3D-sprite engine's layer-2 tile map in palette 3; then run the map-view
+ * controller's frame callback and mark layer 2 dirty so it uploads. */
+void DrawWindowFrame(s32 x, s32 y, s32 width, s32 height, u8 striped) {
+    extern s32 gCur3DSpriteEngine;
+    extern void *gCurrentMap;
+    void DrawFrameTiles(s32, s32, s32, s32, s32, s32, u8);
+    void (*callback)(void);
+    DrawFrameTiles(x, y, width, height, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_LAYER2_TILES), 3, striped);
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 0x48);
+    if (callback) callback();
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
 }
 
-void func_020c095c(void) {
-extern s32 gCur3DSpriteEngine;extern void *gCurrentMap;
-void (*cb)(void);
-Clear3DSpriteLayer(2);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-Clear3DSpriteLayer(1);
-M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
-cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);
-if(cb)cb();
+/* Clear the map view's unit and terrain sprite layers, mark both dirty so they
+ * upload again, then run the view controller's presentation-setup callback. */
+void ResetMapViewLayers(void) {
+    extern s32 gCur3DSpriteEngine;
+    extern void *gCurrentMap;
+    void (*callback)(void);
+
+    Clear3DSpriteLayer(2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
+    Clear3DSpriteLayer(1);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), MAPVIEW_INIT_PRESENTATION);
+    if (callback) callback();
 }
 
 void func_020c09c0(s32 arg0) {
@@ -346,36 +360,40 @@ void func_020c0a88(void) {
 }
 
 void func_020c0a98(void) {
-CEntry *p=(CEntry *)data_02163ef0; s32 i;
-data_02163eec=p;
+CEntry *p=(CEntry *)gCarriedUnitMenuStateStack; s32 i;
+gCarriedUnitMenuStackPtr=p;
 for(i=0;i<8;i++){p[i].x=0;p[i].y=0;p[i].index=0;p[i].flag=0;p[i].value=0;}
 }
 
-void func_020c0adc(void) {
-void *p=(void *)func_020c05b0();
-if(!p)return;
-M2C_FIELD(data_02163eec,s32 *,4)=M2C_FIELD(p,s32 *,0x34);
-M2C_FIELD(data_02163eec,s8 *,2)=M2C_FIELD(p,u8 *,0x4e);
-M2C_FIELD(data_02163eec,s8 *,0)=M2C_FIELD(p,s16 *,0x54);
-M2C_FIELD(data_02163eec,s8 *,1)=M2C_FIELD(p,s16 *,0x56);
-M2C_FIELD(data_02163eec,s8 *,3)=M2C_FIELD(p,u8 *,0x4f);
-data_02163eec+=8;
+/* Saves the current carried-unit list menu onto the menu-state stack: copies its
+ * entry table, chosen row, position and width into the next free 8-byte state and
+ * advances the stack cursor by one.  Does nothing when no menu is open. */
+void PushCarriedUnitMenuState(void) {
+    MenuC0634 *menu = (MenuC0634 *)GetCarriedUnitMenu();
+
+    if (menu == NULL) return;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s32 *, 4) = menu->entries;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 2) = menu->selection;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 0) = menu->x;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 1) = menu->y;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 3) = menu->width;
+    gCarriedUnitMenuStackPtr += 8;
 }
 
 #pragma opt_instruction_scheduling off
-void func_020c0b40(void) {
+void PopCarriedUnitMenuState(void) {
 M2C_UNK func_020c0634(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);
-if(data_02163eec==data_02163ef0)return;
-data_02163eec-=8;
-func_020c0634(M2C_FIELD(data_02163eec,s32 *,4),M2C_FIELD(data_02163eec,s8 *,0),M2C_FIELD(data_02163eec,s8 *,1),M2C_FIELD(data_02163eec,s8 *,2),M2C_FIELD(data_02163eec,s8 *,3));
+if(gCarriedUnitMenuStackPtr==gCarriedUnitMenuStateStack)return;
+gCarriedUnitMenuStackPtr-=8;
+func_020c0634(M2C_FIELD(gCarriedUnitMenuStackPtr,s32 *,4),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,0),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,1),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2),M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,3));
 }
 #pragma opt_instruction_scheduling reset
 void func_020c0b88(s8 arg0) {
-    extern void *data_02163eec;
-    M2C_FIELD(data_02163eec, s8 *, 2) = arg0;
+    extern void *gCarriedUnitMenuStackPtr;
+    M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 2) = arg0;
 }
 
-s8 func_020c0b9c(void) {extern void *data_02163eec;return M2C_FIELD(data_02163eec,s8 *,2);}
+s8 func_020c0b9c(void) {extern void *gCarriedUnitMenuStackPtr;return M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2);}
 
 /* Draws the cargo list of the unit under the cursor: one row per carried-unit
  * slot (the row's +0x24 slot, 0xFFFF when empty), with the carried unit's icon
@@ -468,7 +486,7 @@ func_0209bfa8();PlaySoundEffect(0x10018);func_020c04b4(p,index);return 1;
 void func_020c0e38(void *arg0) {
 u8 index=M2C_FIELD(arg0,u8 *,0); void *p=M2C_FIELD(arg0,void **,0x10);
 if(!IsCarriedUnitListOpen())return;
-PlaySoundEffect(0x10019); func_020c03e0(p,index);
+PlaySoundEffect(0x10019); HighlightListMenuRow(p,index);
 }
 
 void func_020c0e6c(void *arg0) {
@@ -527,14 +545,14 @@ DrawSpriteBatchAt(list->x,list->y);
 void *CreateMenuUnitSprite(void *owner) {
 void *func_020ab1c4(s32);
 void InitUnitSprite(void *,s32,s32,s32,s32);
-void func_02088e84(void *,s16,s16,s16,s32);
+void Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s32);
 u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s32,s32,u16,u16);
 void func_020ab150(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
 void *unit; s16 y; s16 x; u32 width,height; u32 visible;
 unit=func_020ab1c4((s32)owner);
 InitUnitSprite(unit,2,0x120,3,1);
-func_02088e84(unit,0xe0,0xa0,0x100,0xa0);
+Set3DSpriteSlideTargetAndStart(unit,0xe0,0xa0,0x100,0xa0);
 visible=M2C_FIELD(M2C_FIELD(unit,void **,0x64),u8 *,0x12)!=0?1:0;
 if(visible & 0xff){
 y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);

@@ -136,7 +136,7 @@ void func_ov003_021e3714(void *arg0) {
     void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     void Clear3DSpriteLayer(void);
     void DrawMapPreviewLayer(s32, M2C_UNK, s32, s32);
-    s32 func_020c1878(void *);
+    s32 CountMapProperties(void *);
 
     extern void **gCurrentMap;
     extern u16 **gCur3DSpriteEngine;
@@ -213,7 +213,7 @@ void func_ov003_021e3714(void *arg0) {
     gCur3DSpriteEngine = savedEngine;
 
     p5c = *(void **)((u8 *)arg0 + 0x5C);
-    func_020c1878((u8 *)p5c + 0x1C);
+    CountMapProperties((u8 *)p5c + 0x1C);
 }
 #pragma pop
 /* Draws the map-preview panel's unit-category grid: eight cells in a

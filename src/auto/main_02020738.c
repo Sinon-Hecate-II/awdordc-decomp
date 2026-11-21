@@ -302,7 +302,7 @@ return 0;
 s32 SocketCloseTask(void *request) {
     M2C_UNK func_0201d484();
     M2C_UNK WaitForTlsCloseNotify();
-    M2C_UNK func_0201d224();
+    M2C_UNK CloseRawConnection();
     M2C_UNK ClearCurrentRawConnection();
     M2C_UNK SocketQueueTask(s32, s32);
     void SocketRemoveFromActiveList(M2C_UNK);
@@ -321,7 +321,7 @@ s32 SocketCloseTask(void *request) {
         OS_JoinThread(M2C_FIELD(socket, s32 *, SOCK_TX_CONN) + 0x20); /* the send connection's thread */
         func_0201d484();
         WaitForTlsCloseNotify();
-        func_0201d224();
+        CloseRawConnection();
     }
     ClearCurrentRawConnection();
     M2C_FIELD(socket, s16 *, SOCK_FLAGS) &= ~(SOCK_FLAG_BUSY | SOCK_FLAG_DONE);
@@ -429,10 +429,10 @@ s32 NetworkShutdown(void) {
     s32 NetworkFreeTaskPool();
     extern void *gNetAllocator;
     extern s32 gLocalIpAddress;
-    extern s32 data_02138ac4;
+    extern s32 gNetSavedLocalIp;
     extern M2C_UNK gNetStackState;
     s32 result;
-    if (data_02138ac4 == 0) { data_02138ac4 = gLocalIpAddress; }
+    if (gNetSavedLocalIp == 0) { gNetSavedLocalIp = gLocalIpAddress; }
     if (NetworkPollClosing() == SOCK_BUSY) {
         do { SleepMilliseconds(0x64); } while (NetworkPollClosing() == SOCK_BUSY);
     }
@@ -563,18 +563,22 @@ s32 SetDnsServerAddresses(s32 arg0, s32 arg1) {
     return 0;
 }
 
+/* Return the local IPv4 address the network stack was configured with.  While it
+ * is not known yet, wait briefly for the WFC init callback as long as
+ * initialisation is still pending (gNetInitStatus == 1) and we are not running in
+ * IRQ mode; once the address is known, latch a copy the first time. */
 s32 GetLocalIpAddress(void) {
     M2C_UNK SleepMilliseconds(M2C_UNK);
     s32 GetProcessorMode();
     extern s32 gLocalIpAddress;
-    extern s32 data_02138ac4;
-    extern s32 data_02138ac8;
+    extern s32 gNetSavedLocalIp;
+    extern s32 gNetInitStatus;
     if (gLocalIpAddress == 0) {
-        if (((data_02138ac8 & 3) == 1) && (GetProcessorMode() != 0x12)) {
+        if (((gNetInitStatus & 3) == 1) && (GetProcessorMode() != 0x12)) {
             SleepMilliseconds(0xA);
         }
-    } else if (data_02138ac4 == 0) {
-        data_02138ac4 = gLocalIpAddress;
+    } else if (gNetSavedLocalIp == 0) {
+        gNetSavedLocalIp = gLocalIpAddress;
     }
     return gLocalIpAddress;
 }
@@ -634,7 +638,7 @@ s32 AlignSize4(s32 arg0) {
     return (arg0 + 3) & ~3;
 }
 
-void func_020213f0(void *arg0) {
+void RegisterActiveSocket(void *arg0) {
     void func_02021408(void **, void *);
     extern M2C_UNK gActiveSocketList;
     func_02021408((void **)&gActiveSocketList, arg0);

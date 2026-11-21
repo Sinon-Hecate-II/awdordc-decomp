@@ -84,7 +84,7 @@ void func_ov001_0216ce04(M2C_UNK arg0, s32 *arg1, M2C_UNK arg2, M2C_UNK arg3, s3
     PollSockets(&sp0, 1, temp);
 }
 
-void func_ov001_0216ce58(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s8 *arg4, s32 arg5) {
+void Ov001_SendToAddress(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s8 *arg4, s32 arg5) {
     M2C_UNK func_020216cc(s32, s32, s32, s32, s8 *);
     *arg4 = (s8) arg5;
     func_020216cc(arg0, arg1, arg2, arg3, arg4);
@@ -116,7 +116,7 @@ s32 Ov001SwapEndian32(s32 arg0) {
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 
-u16 func_ov001_0216ceb0(s32 arg0) {
+u16 Ov001SwapEndian16Alt(s32 arg0) {
     return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
 }
 
@@ -322,7 +322,7 @@ loop_2:
     return temp_r0;
 }
 
-s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==5 && func_02027518(0,0,0)==3){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=4;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+s32 func_ov001_0216d9d4(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==5 && WFC_ProcessConnectOrMatch(0,0,0)==3){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=4;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
 
 s32 func_ov001_0216da10(void) {
     s32 OS_DisableInterrupts();

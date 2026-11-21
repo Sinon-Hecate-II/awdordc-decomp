@@ -175,7 +175,7 @@ s32 WFC_StartWirelessStep(void) {
     return 3;
 }
 
-void func_02027518(s32 a,s32 b){s32 WFC_ProcessConnectStep(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)WFC_ProcessConnectStep();else WFC_SubmitMatchRequest();}
+void WFC_ProcessConnectOrMatch(s32 a,s32 b){s32 WFC_ProcessConnectStep(void); s32 WFC_SubmitMatchRequest(); if(a==0 || b==0)WFC_ProcessConnectStep();else WFC_SubmitMatchRequest();}
 
 void WFC_ProcessCallback(void);
 /* Fills the local player's match request from the friend code, name and status
@@ -233,7 +233,7 @@ s32 WFC_StartConnection(void *connData, void *settings, s32 flags) {
     u32 WFC_SetStatusBits(u32);
     void WFC_SetState(s32);
     void WFC_OperationCallback(void);
-    s32 func_02013d4c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16);
+    s32 WFC_SubmitConnectRequest(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16);
     s32 irq = OS_DisableInterrupts();
     void *session = (void *)gWfcSession;
     s32 state;
@@ -285,7 +285,7 @@ s32 WFC_StartConnection(void *connData, void *settings, s32 flags) {
         OS_RestoreInterrupts(irq);
         return 1;
     }        {
-            s32 result = func_02013d4c((M2C_UNK)WFC_OperationCallback, (M2C_UNK)0xffff, 0x50, 0xffff, (u16)0xffff);
+            s32 result = WFC_SubmitConnectRequest((M2C_UNK)WFC_OperationCallback, (M2C_UNK)0xffff, 0x50, 0xffff, (u16)0xffff);
             switch (result) {
             case 2:
                 WFC_SetState(8);

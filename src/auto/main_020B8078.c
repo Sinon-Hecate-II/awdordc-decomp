@@ -35,7 +35,7 @@ extern M2C_UNK data_02129094;
 extern M2C_UNK data_021290a4;
 extern M2C_UNK func_020b7c4c;
 extern M2C_UNK func_020b7c5c;
-extern M2C_UNK func_020b7ef0;
+extern M2C_UNK Reset3DSpriteBankSplit;
 register void *effect asm("r4");
 register u8 player asm("r5");
 u8 armyIndex;
@@ -58,7 +58,7 @@ M2C_FIELD(effect,s32 *,0x3C)=0;
 M2C_FIELD(effect,s32 *,0x44)=(s32)(M2C_FIELD(effect,s32 *,0x44)|0x300000);
 M2C_FIELD(effect,M2C_UNK **,0x68)=&func_020b7c4c;
 M2C_FIELD(effect,M2C_UNK **,0x6C)=&func_020b7c5c;
-M2C_FIELD(effect,M2C_UNK **,0x70)=&func_020b7ef0;
+M2C_FIELD(effect,M2C_UNK **,0x70)=&Reset3DSpriteBankSplit;
 SetFileDirectory(&data_0212906c);
 armyIndex=M2C_FIELD((u8 *)*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF);
 switch(armyIndex){
@@ -347,7 +347,7 @@ void func_020b8970(void *arg0) {
     void AddTileRectPalette(void *, s32, s32, s32);
     void LoadDecompressedFileTo(void *, void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
-    void func_02088e84(void *, s32, s32, s32, s32);
+    void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     void Show3DSpriteSlide(void *);
     void Load3DSpritePattern(void *, s32, s32, s32);
     void func_020994e0(s32);
@@ -410,7 +410,7 @@ void func_020b8970(void *arg0) {
     CreateMenuTextSprite((u8 *) arg0 + 0x4c, 0x82, 0x8b, 0xb, 0x3a4, 3, -1, arg0, 0);
     CreateMenuTextSprite((u8 *) arg0 + 0x50, 0xc0, 0xa0, 0, 0x3ac, 3, 1, arg0, 0);
     temp_r5 = M2C_FIELD(arg0, void **, 0x50);
-    func_02088e84(temp_r5, 0xc0, 0xa0, 0x100, 0xa0);
+    Set3DSpriteSlideTargetAndStart(temp_r5, 0xc0, 0xa0, 0x100, 0xa0);
     if ((u8) (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0)) {
         temp_r6 = M2C_FIELD(temp_r5, s16 *, 0x52);
         temp_r7 = M2C_FIELD(temp_r5, s16 *, 0x50);

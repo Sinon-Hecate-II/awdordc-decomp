@@ -1,5 +1,6 @@
 /* 28 functions from 0x021E9638 to 0x021EA57C (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 typedef struct {u8 pad[0x14];void *sprites[12];void *labels[12];void *last;void *main;} SpriteGroup9638;
 static inline u8 E9638Mode(void *p, u32 n) { return ((u32)(M2C_FIELD(p,u8*,0x39)<<24)>>28)==n; }
 static inline u8 E9638Toggle(void *p) { return ((u32)(M2C_FIELD(p,volatile u8*,0x3a)<<30)>>31)==0; }
@@ -13,7 +14,7 @@ static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
    all allocated on the sub engine. */
 void CreateWaypointPanelSprites(SpriteGroup9638 *group,void *panel) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;extern u8 data_ov003_0220f896[];
-void *CreateFaceSprite(void *);void *Create3DSprite(void *);void func_020990d4(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void func_020990fc(void *,s32,s32,s32);
+void *CreateFaceSprite(void *);void *Create3DSprite(void *);void func_020990d4(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void SetFaceSpritePose(void *,s32,s32,s32);
 void *savedEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 group->main=CreateFaceSprite(panel);
@@ -25,7 +26,7 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(slot=0;slot<12;slot++){
 group->sprites[slot]=CreateFaceSprite(panel);
 func_020990d4(group->sprites[slot],0x5c00+slot*2*GetFaceLayoutSize(0),(u16)slot);
-func_020990fc(group->sprites[slot],slot+1,0,0);
+SetFaceSpritePose(group->sprites[slot],slot+1,0,0);
 SetFaceSpriteActive(group->sprites[slot],1);
 M2C_FIELD(group->sprites[slot],u16 *,0x3c)=0x400;
 Hide3DSprite(group->sprites[slot]);
@@ -432,7 +433,7 @@ void func_ov003_021ea134(s32 arg0) {
  * then flip the text palette colour for the next frame. */
 void DrawWaypointOption(void *p){
 extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub;
-void Clear3DSpriteLayer(s32); s32 GetWaypointOptionCoId(u8); void Hide3DSprite(void*); void Show3DSprite(void*); void func_020990fc(void*,s32,s32,s32); void *GetWaypointOptionTextId(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
+void Clear3DSpriteLayer(s32); s32 GetWaypointOptionCoId(u8); void Hide3DSprite(void*); void Show3DSprite(void*); void SetFaceSpritePose(void*,s32,s32,s32); void *GetWaypointOptionTextId(s32); void *GetLocalizedText(void*); void DrawTextLine(s32,s32,s32,void*,s32,u16);
 void *savedEngine; s8 optionIndex,iconIndex; u8 paletteBit;
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;
 Clear3DSpriteLayer(3);
@@ -441,7 +442,7 @@ iconIndex=GetWaypointOptionCoId((u8)optionIndex);
 if(!iconIndex)Hide3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
 else {
 if(((u32)(M2C_FIELD(p,u8*,0x3a)<<31)>>31))Show3DSprite(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78));
-func_020990fc(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),iconIndex,8,0);
+SetFaceSpritePose(M2C_FIELD(M2C_FIELD(p,void**,0x68),void**,0x78),iconIndex,8,0);
 DrawTextLine(1,8,3,GetLocalizedText(GetWaypointOptionTextId(optionIndex)),0x2000,(u16)(1+224*((u32)(M2C_FIELD(p,u8*,0x3a)<<30)>>31)));
 }
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;gCur3DSpriteEngine=savedEngine;
@@ -458,14 +459,17 @@ void func_ov003_021ea294(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     LoadSpriteResource(arg0, 2, arg1, arg2);
 }
 
-void func_ov003_021ea2ac(void) {
+/* Reset the display state of the current 3D sprite engine's bank: clear the
+ * OBJ priority bits so the sprite draws on top, un-split the cell grid and
+ * clear the display blend. */
+void Reset3DSpriteBankDisplay(void) {
     extern void *gCur3DSpriteEngine;
-    u16 *volatile p;
-    p = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
-    *p = (u16)(*p & ~0xC0);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x51) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x52) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x53) = 0;
+    u16 *volatile oamAttr;
+    oamAttr = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + DS3D_BANK_OAMATTR);
+    *oamAttr = (u16)(*oamAttr & ~DS3D_BANK_OAMATTR_PRIORITY);
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_ABOVE) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_BELOW) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_BLEND) = 0;
 }
 
 /* Link (overlay 9/10) side of the wireframe/cutscene sync: mark the local side

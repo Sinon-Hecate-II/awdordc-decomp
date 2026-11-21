@@ -47,17 +47,20 @@ s32 ScriptCmd_RestoreMapView(void *script) {
     return 1;
 }
 
-s32 func_02093e2c(void *arg0) {
+/* Map-script command: queue a pulsating target-area rectangle (MAPORDER_EFFECT_AREA)
+ * on the command's tile (s16 at +0x08, x in the low byte) with its size (s16 at
+ * +0x0A, width in the low byte) and value (+0x0C), then advance the script. */
+s32 ScriptCmd_AddEffectArea(void *script) {
     M2C_UNK AddMapOrder(u8, u8, u8, u8, s32, s32, s32, s32);
-    s16 temp_ip;
-    s16 temp_r2;
-    void *temp_lr;
+    s16 wh;
+    s16 xy;
+    void *command;
 
-    temp_lr = M2C_FIELD(arg0, void **, 4);
-    temp_ip = M2C_FIELD(temp_lr, s16 *, 0xA);
-    temp_r2 = M2C_FIELD(temp_lr, s16 *, 8);
-    AddMapOrder((u8) temp_r2, (u8) (temp_r2 >> 8), (u8) temp_ip, (u8) (temp_ip >> 8), 3, 0, 0, M2C_FIELD(temp_lr, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, 4);
+    wh = M2C_FIELD(command, s16 *, 0xA);
+    xy = M2C_FIELD(command, s16 *, 8);
+    AddMapOrder((u8) xy, (u8) (xy >> 8), (u8) wh, (u8) (wh >> 8), MAPORDER_EFFECT_AREA, 0, 0, M2C_FIELD(command, s32 *, 0xC));
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
@@ -124,45 +127,53 @@ s32 func_02093fb8(void *arg0) {
     return 1;
 }
 
-s32 func_02093fe8(void *arg0) {
- M2C_UNK func_020a4b48(u8,u8,s32,u8,u8);
- M2C_UNK func_020a4b94(u8,u8,s32,u8,u8);
- s16 temp_ip, temp_r2;
- void *temp_lr;
- u8 t0,t1,t2,t3;
+/* Map-script command: queue a point-attack area (MAPORDER_ATTACK_POINT) on the
+ * command's tile (s16 at +0x08, x in the low byte) with its size (s16 at +0x0A,
+ * width in the low byte) and value (+0x0C); the word at +0x04 picks the
+ * player-facing variant.  Then advance the script. */
+s32 ScriptCmd_AddPointAttackArea(void *script) {
+ M2C_UNK AddPointAttackOrder(u8,u8,s32,u8,u8);
+ M2C_UNK AddFacingPointAttackOrder(u8,u8,s32,u8,u8);
+ s16 size, tile;
+ void *command;
+ u8 x,y,w,h;
  s32 val;
- temp_lr=M2C_FIELD(arg0,void **,4);
- temp_ip=M2C_FIELD(temp_lr,s16 *,0xA);
- temp_r2=M2C_FIELD(temp_lr,s16 *,8);
- t1=(u8)(temp_r2>>8);
- t2=(u8)temp_ip;
- t0=(u8)temp_r2;
- t3=(u8)(temp_ip>>8);
- val=M2C_FIELD(temp_lr,s32 *,0xC);
- if(M2C_FIELD(temp_lr,s32 *,4)==0) func_020a4b48(t0,t1,val,t2,t3);
- else func_020a4b94(t0,t1,val,t2,t3);
- M2C_FIELD(arg0,void **,4)+=0x10;
+ command=M2C_FIELD(script,void **,4);
+ size=M2C_FIELD(command,s16 *,0xA);
+ tile=M2C_FIELD(command,s16 *,8);
+ y=(u8)(tile>>8);
+ w=(u8)size;
+ x=(u8)tile;
+ h=(u8)(size>>8);
+ val=M2C_FIELD(command,s32 *,0xC);
+ if(M2C_FIELD(command,s32 *,4)==0) AddPointAttackOrder(x,y,val,w,h);
+ else AddFacingPointAttackOrder(x,y,val,w,h);
+ M2C_FIELD(script,void **,4)+=0x10;
  return 1;
 }
 
-s32 func_02094050(void *arg0) {
- M2C_UNK func_020a4be0(u8,u8,s32,u8,u8);
- M2C_UNK func_020a4c30(u8,u8,s32,u8,u8);
- s16 temp_ip, temp_r2;
- void *temp_lr;
- u8 t0,t1,t2,t3;
+/* Map-script command: queue a line-attack area on the command's tile (s16 at
+ * +0x08, x in the low byte) with its size (s16 at +0x0A, width in the low byte)
+ * and value (+0x0C); the word at +0x04 picks the player-facing variant.  Then
+ * advance the script. */
+s32 ScriptCmd_AddLineAttackArea(void *script) {
+ M2C_UNK AddLineAttackOrder(u8,u8,s32,u8,u8);
+ M2C_UNK AddFacingLineAttackOrder(u8,u8,s32,u8,u8);
+ s16 size, tile;
+ void *command;
+ u8 x,y,w,h;
  s32 val;
- temp_lr=M2C_FIELD(arg0,void **,4);
- temp_ip=M2C_FIELD(temp_lr,s16 *,0xA);
- temp_r2=M2C_FIELD(temp_lr,s16 *,8);
- t1=(u8)(temp_r2>>8);
- t2=(u8)temp_ip;
- t0=(u8)temp_r2;
- t3=(u8)(temp_ip>>8);
- val=M2C_FIELD(temp_lr,s32 *,0xC);
- if(M2C_FIELD(temp_lr,s32 *,4)==0) func_020a4be0(t0,t1,val,t2,t3);
- else func_020a4c30(t0,t1,val,t2,t3);
- M2C_FIELD(arg0,void **,4)+=0x10;
+ command=M2C_FIELD(script,void **,4);
+ size=M2C_FIELD(command,s16 *,0xA);
+ tile=M2C_FIELD(command,s16 *,8);
+ y=(u8)(tile>>8);
+ w=(u8)size;
+ x=(u8)tile;
+ h=(u8)(size>>8);
+ val=M2C_FIELD(command,s32 *,0xC);
+ if(M2C_FIELD(command,s32 *,4)==0) AddLineAttackOrder(x,y,val,w,h);
+ else AddFacingLineAttackOrder(x,y,val,w,h);
+ M2C_FIELD(script,void **,4)+=0x10;
  return 1;
 }
 
@@ -434,10 +445,10 @@ s32 IsDialogActive(void) {
 }
 
 u8 func_02094704(void) {
-    s32 func_02094724();
+    s32 FindDialogSequence();
     u8 var_r0;
 
-    if (func_02094724() != -1) {
+    if (FindDialogSequence() != -1) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -445,7 +456,7 @@ u8 func_02094704(void) {
     return var_r0;
 }
 
-s32 func_02094724(s32 value) {
+s32 FindDialogSequence(s32 value) {
  extern M2C_UNK gDialogSequences;
  s32 i;
  u8 *p;
@@ -486,9 +497,9 @@ u8 IsTouchInputDisabled(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x47);
 }
 
-void func_020947d0(s32 *arg0) {
+void EndDialogSequence(s32 *arg0) {
     s32 IsDialogActive();
-    void func_02094860(void);
+    void StartNextQueuedDialog(void);
     M2C_UNK func_02095fd4();
     M2C_UNK func_020d472c();
     if (*arg0 == 0) {
@@ -498,15 +509,15 @@ void func_020947d0(s32 *arg0) {
     if (IsDialogActive() == 0) {
         func_020947ac();
         func_02095fd4();
-        func_02094860();
+        StartNextQueuedDialog();
     }
     func_020d472c();
 }
 
-void func_02094808(s32 value) {
-   void *func_020948c4(s32);
+void QueueDialogSequence(s32 value) {
+   void *StartDialogSequence(s32);
    s32 i;
-   if(!IsDialogActive()) {func_020948c4(value);return;}
+   if(!IsDialogActive()) {StartDialogSequence(value);return;}
    for(i=0;i<8;i++) {
    if(!M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)) {
    M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=value;
@@ -514,29 +525,31 @@ void func_02094808(s32 value) {
    }}
 }
 
-void func_02094860(void) {
-   void *func_020948c4(s32);
- s32 i;
- void *p;
- if(!M2C_FIELD(Get3DSpriteManager(),s32 *,0x24)) return;
- func_020948c4(M2C_FIELD(Get3DSpriteManager(),s32 *,0x24));
- i=0;
+/* Starts the script at the head of the 3D sprite manager's pending-dialog queue,
+ * then shifts the rest of the queue down and clears its last slot. */
+void StartNextQueuedDialog(void) {
+   void *StartDialogSequence(s32);
+ s32 slot;
+ void *manager;
+ if(!M2C_FIELD(Get3DSpriteManager(),s32 *,DS3D_MANAGER_DIALOG_QUEUE)) return;
+ StartDialogSequence(M2C_FIELD(Get3DSpriteManager(),s32 *,DS3D_MANAGER_DIALOG_QUEUE));
+ slot=0;
  do {
- p=Get3DSpriteManager();
- M2C_FIELD(p+((u32)i*4),s32 *,0x24)=M2C_FIELD(Get3DSpriteManager()+((u32)(i+1)*4),s32 *,0x24);
- i++;
- }while(i<7);
- M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=0;
+ manager=Get3DSpriteManager();
+ M2C_FIELD(manager+((u32)slot*4),s32 *,DS3D_MANAGER_DIALOG_QUEUE)=M2C_FIELD(Get3DSpriteManager()+((u32)(slot+1)*4),s32 *,DS3D_MANAGER_DIALOG_QUEUE);
+ slot++;
+ }while(slot<DS3D_DIALOG_QUEUE_COUNT-1);
+ M2C_FIELD(Get3DSpriteManager()+((u32)slot*4),s32 *,DS3D_MANAGER_DIALOG_QUEUE)=0;
 }
 
 #pragma optimization_level 2
-void *func_020948c4(s32 arg0) {
-s32 func_02094724(s32);
+void *StartDialogSequence(s32 arg0) {
+s32 FindDialogSequence(s32);
 void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
 M2C_UNK func_02095fd4(void);void func_02094798(void);void func_020d4704(void);
 extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
-index=func_02094724(0);
+index=FindDialogSequence(0);
 if(index==-1)return NULL;
 SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
 func_02095fd4();func_02094798();func_020d4704();
@@ -621,25 +634,27 @@ void func_02094a74(M2C_UNK arg0) {
     ShowScenePanel(arg0);
 }
 
-void func_02094a94(s32 arg0) {
+/* Close the scene panel `panelIndex`.  While a message box is up, close every
+ * open panel instead, so the box is not left over panel contents. */
+void CloseScenePanel(s32 panelIndex) {
     void *GetScenePanelState(s32);
     M2C_UNK HideScenePanel(s32);
-    s32 var_r4;
+    s32 index;
 
     if (IsMessageBoxActive() != 0) {
-        var_r4 = 0;
+        index = 0;
         do {
-            if (M2C_FIELD(GetScenePanelState(var_r4), s16 *, 8) != 0) {
-                HideScenePanel(var_r4);
+            if (((ScenePanelState *) GetScenePanelState(index))->contentHeight != 0) {
+                HideScenePanel(index);
             }
-            var_r4 += 1;
-        } while (var_r4 < 3);
+            index += 1;
+        } while (index < SCENE_PANEL_CURRENT);
         return;
     }
-    if (M2C_FIELD(GetScenePanelState(arg0), s16 *, 8) == 0) {
+    if (((ScenePanelState *) GetScenePanelState(panelIndex))->contentHeight == 0) {
         return;
     }
-    HideScenePanel(arg0);
+    HideScenePanel(panelIndex);
 }
 
 void func_02094af8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -707,11 +722,11 @@ void func_02094c00(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02097414(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelFaceSlot(M2C_UNK, M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_02097414(arg0, arg1, arg2);
+    SetScenePanelFaceSlot(arg0, arg1, arg2);
 }
 
 void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {

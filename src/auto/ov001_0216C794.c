@@ -39,12 +39,12 @@ extern unsigned char gOv001CryptKeyTail[118];
 void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out, int b) {
  int Ov001_EncryptRoomData();
  void Ov001MemCopy();
- short func_ov001_0216ceb0(unsigned short);
+ short Ov001SwapEndian16Alt(unsigned short);
  extern unsigned char data_ov001_02192560[8];
  if(mode == 1) {
  *out = 1;
  Ov001_EncryptRoomData(a,p+4,*n,b,p+2,data_ov001_02192560,8);
- *(short *)p = func_ov001_0216ceb0((unsigned short)*n);
+ *(short *)p = Ov001SwapEndian16Alt((unsigned short)*n);
  *n += 4;
  return;
  }
@@ -52,28 +52,32 @@ void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out
 }
 
 void func_ov001_0216c8e0(unsigned short *p,int a,int b,int c,signed char d,signed char e,void *f) {
- short func_ov001_0216ceb0(unsigned short);
+ short Ov001SwapEndian16Alt(unsigned short);
  void Ov001MemCopy();
- p[0]=func_ov001_0216ceb0(1); p[1]=0; p[2]=0;
- p[3]=func_ov001_0216ceb0((unsigned short)a); p[4]=0;
- p[5]=func_ov001_0216ceb0((unsigned short)b);
- p[6]=func_ov001_0216ceb0((unsigned short)c);
+ p[0]=Ov001SwapEndian16Alt(1); p[1]=0; p[2]=0;
+ p[3]=Ov001SwapEndian16Alt((unsigned short)a); p[4]=0;
+ p[5]=Ov001SwapEndian16Alt((unsigned short)b);
+ p[6]=Ov001SwapEndian16Alt((unsigned short)c);
  ((signed char *)p)[14]=d; ((signed char *)p)[15]=e;
  Ov001MemCopy(p+8,f,8);
 }
 
-void func_ov001_0216c938(int a,int b,int c,int d) {
+/* Sends a room transfer to the room's host: builds the host's 8-byte socket
+   address (AF_INET, the fixed room port, and the host's address - or none when the
+   player is unset or the host address has not been received) and posts the
+   transfer to it. */
+void Ov001_SendRoomTransfer(int transfer,int length,int player,int context) {
  void Ov001MemClear();
- void func_ov001_0216ce58();
+ void Ov001_SendToAddress();
  int Ov001SwapEndian32(int);
- short func_ov001_0216ceb0(unsigned short);
- int packet[2];
- Ov001MemClear(packet,0,8);
- ((char *)packet)[1]=2;
- ((short *)packet)[1]=func_ov001_0216ceb0(0x5790);
- packet[1]=Ov001SwapEndian32(*(int *)(gRoomState+0x34));
- if(c==255 || data_ov001_02191820[0x1c]==0) packet[1]=-1;
- func_ov001_0216ce58(d,a,b,0,packet,8);
+ short Ov001SwapEndian16Alt(unsigned short);
+ int addr[2];
+ Ov001MemClear(addr,0,8);
+ ((char *)addr)[1]=OV001_ADDR_FAMILY_INET;
+ ((short *)addr)[1]=Ov001SwapEndian16Alt(OV001_ROOM_PORT);
+ addr[1]=Ov001SwapEndian32(M2C_FIELD(gRoomState,int *,OV001_ROOM_HOST_ADDR));
+ if(player==255 || data_ov001_02191820[0x1c]==0) addr[1]=-1;
+ Ov001_SendToAddress(context,transfer,length,0,addr,8);
 }
 
 #pragma thumb on

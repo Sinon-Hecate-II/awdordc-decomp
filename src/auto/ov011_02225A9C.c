@@ -7,39 +7,47 @@ extern u8 data_ov011_02228a3c[],data_ov011_02228b54[],data_ov011_02228b5c[],data
 static inline void Clear25d(s32 offset,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p= *p & ~mask;}
 static inline void Set25d(s32 offset,u32 mask){u16 * volatile p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p= *p | mask;}
 static inline void Priority25d(s32 offset,s32 n){u16 *p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+offset);*p=(*p&~3)|n;}
+static inline void Set25dBlendMode(s32 mode) {
+    u16 *volatile p = (u16 *)(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0) + 0x12);
+    *p = (*p & ~0xC0) | (mode << 6);
+}
 typedef struct Mode25d {u16 mode:3;u16 rest:13;} Mode25d;
 
-void func_ov011_02225a9c(void *arg0,s32 arg1,s32 arg2,s32 arg3){
+/* Per-frame update of one ending background panel (effect layer name "ed_bg%02d"
+   loaded onto layer 2): on the panel's start frame record its x/y and load the
+   layer, then for 620 frames slide the layer's offset and fade it in over the
+   first 120 frames and out from frame 500, on the current 3D sprite screen. */
+void UpdateOv011BackgroundPanel(void *panel,s32 startX,s32 startY,s32 index){
 void StringFormat(void *,void *,...);
 void LoadOv011EffectLayer(s32,s32);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-extern u8 data_ov011_02228b48[];
-char buf[8];s32 start;u8 alpha;
-StringFormat(buf,data_ov011_02228b48,arg3);
-switch(arg3){case 0:start=600;break;case 1:start=1600;break;case 2:start=2600;break;case 3:start=3600;break;case 4:start=4600;break;case 5:start=5600;break;case 6:start=6600;break;case 7:start=7600;break;case 8:start=8600;break;case 9:start=9600;break;}
-if(M2C_FIELD(arg0,u16 *,0x3a)==start){
-M2C_FIELD(arg0,u16 *,0x3c)=arg1;
-M2C_FIELD(arg0,u16 *,0x3e)=arg2;
-LoadOv011EffectLayer((s32)buf,2);
+extern u8 sOv011EffectNameFormat[];
+char name[8];s32 startFrame;u8 alpha;
+u16 offsetY;
+StringFormat(name,sOv011EffectNameFormat,index);
+switch(index){case 0:startFrame=600;break;case 1:startFrame=1600;break;case 2:startFrame=2600;break;case 3:startFrame=3600;break;case 4:startFrame=4600;break;case 5:startFrame=5600;break;case 6:startFrame=6600;break;case 7:startFrame=7600;break;case 8:startFrame=8600;break;case 9:startFrame=9600;break;}
+if(M2C_FIELD(panel,u16 *,0x3a)==startFrame){
+M2C_FIELD(panel,u16 *,0x3c)=startX;
+M2C_FIELD(panel,u16 *,0x3e)=startY;
+LoadOv011EffectLayer((s32)name,2);
 }
-if(M2C_FIELD(arg0,u16 *,0x3a)<start)return;
-if(M2C_FIELD(arg0,u16 *,0x3a)>start+620)return;
+if(M2C_FIELD(panel,u16 *,0x3a)<startFrame)return;
+if(M2C_FIELD(panel,u16 *,0x3a)>startFrame+620)return;
 Set25d(0,16);Clear25d(0,32);Set25d(0,64);Set25d(0,128);Clear25d(0,256);
-M2C_FIELD(arg0,u16 *,0x3e)=EaseInterpolate(0,0,64,M2C_FIELD(arg0,u16 *,0x3a)-start,740);
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=M2C_FIELD(arg0,u16 *,0x3c);
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=M2C_FIELD(arg0,u16 *,0x3e);
-if(M2C_FIELD(arg0,u16 *,0x3a)<=start+120){
-u16 *volatile p;
-M2C_FIELD(arg0,u8 *,0x36)=EaseInterpolate(4,0,16,M2C_FIELD(arg0,u16 *,0x3a)-start,120);
-alpha=M2C_FIELD(arg0,u8 *,0x36);
-p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
+M2C_FIELD(panel,u16 *,0x3e)=EaseInterpolate(0,0,64,M2C_FIELD(panel,u16 *,0x3a)-startFrame,740);
+offsetY = M2C_FIELD(panel, u16 *, 0x3e);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=M2C_FIELD(panel,u16 *,0x3c);
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=offsetY;
+if(M2C_FIELD(panel,u16 *,0x3a)<=startFrame+120){
+M2C_FIELD(panel,u8 *,0x36)=EaseInterpolate(4,0,16,M2C_FIELD(panel,u16 *,0x3a)-startFrame,120);
+alpha=M2C_FIELD(panel,u8 *,0x36);
+Set25dBlendMode(1);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=alpha;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=16-alpha;
-}else if(M2C_FIELD(arg0,u16 *,0x3a)>=start+500){
-u16 *volatile p;
-M2C_FIELD(arg0,u8 *,0x36)=EaseInterpolate(1,0,16,M2C_FIELD(arg0,u16 *,0x3a)-(start+500),120);
-alpha=M2C_FIELD(arg0,u8 *,0x36);
-p=(u16 *)(M2C_FIELD(gCur3DSpriteEngine,s32 *,0)+18);*p=(*p&~192)|64;
+}else if(M2C_FIELD(panel,u16 *,0x3a)>=startFrame+500){
+M2C_FIELD(panel,u8 *,0x36)=EaseInterpolate(1,0,16,M2C_FIELD(panel,u16 *,0x3a)-(startFrame+500),120);
+alpha=M2C_FIELD(panel,u8 *,0x36);
+Set25dBlendMode(1);
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x51)=16-alpha;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 }

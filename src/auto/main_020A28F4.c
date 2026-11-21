@@ -114,7 +114,7 @@ s32 GetPlayerArmyVariantIfSet(s32);
 extern u16 gMapConfig;
 if(((u32)(gMapConfig<<19)>>31)==0)return;
 if(GetPlayerArmyVariantIfSet(a)!=0)return;
-func_020a3684(a,b);
+AddCoPowerMeterPoints(a,b);
 }
 
 s32 GetCoPowerMeterPointsPerStar(void) {
@@ -409,8 +409,8 @@ void func_020a34a8(s32 a){u32 v;u32 n;extern s32 *gCurrentMap;s32 p;p=*gCurrentM
 #pragma opt_common_subs reset
 void func_020a34f4(M2C_UNK arg0) {
     s32 GetCoPowerMeterCost(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020a3684(M2C_UNK, s32);
-    func_020a3684(arg0, 0 - GetCoPowerMeterCost(arg0, 2));
+    M2C_UNK AddCoPowerMeterPoints(M2C_UNK, s32);
+    AddCoPowerMeterPoints(arg0, 0 - GetCoPowerMeterCost(arg0, 2));
 }
 
 #pragma opt_common_subs off
@@ -422,7 +422,7 @@ s32 GetCoPowerMeterPoints(s32 a) {
     return (u32)*w >> 21;
 }
 #pragma opt_common_subs reset
-void func_020a3550(s32 a,s32 b){
+void SetCoPowerMeterPoints(s32 a,s32 b){
  extern s32 *gCurrentMap;
  s32 *p;
  if(b<0)b=0;
@@ -471,22 +471,25 @@ s32 RefreshPlayerArmyDisplay(s32 a){
  RefreshMapView();
 }
 
-s32 func_020a3684(s32 a, s32 b) {
+/* Add `points` to a player's CO power meter, clamped between zero and the
+ * player's dual-power meter cost; a player with no commander (army id 0) has no
+ * meter to charge and is returned unchanged. */
+s32 AddCoPowerMeterPoints(s32 player, s32 points) {
   extern s32 *gCurrentMap;
   s32 GetCoPowerMeterPoints(s32);
   s32 GetCoPowerMeterCost(s32, s32);
-  void func_020a3550(s32, s32);
-  s32 idx = (s32)((u32)(M2C_FIELD(*gCurrentMap + a * 0x8c, s32 *, 0x6810) << 24) >> 24);
-  if (idx == 0) {
-    return a;
+  void SetCoPowerMeterPoints(s32, s32);
+  s32 armyId = (s32)((u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24);
+  if (armyId == 0) {
+    return player;
   }
   {
-    s32 t = GetCoPowerMeterPoints(a);
-    s32 x = GetCoPowerMeterCost(a, 2);
-    s32 val = t + b;
-    if (val < 0) val = 0;
-    if (val > x) val = x;
-    func_020a3550(a, val);
+    s32 current = GetCoPowerMeterPoints(player);
+    s32 max = GetCoPowerMeterCost(player, CO_POWER_LEVEL_DUAL);
+    s32 meter = current + points;
+    if (meter < 0) meter = 0;
+    if (meter > max) meter = max;
+    SetCoPowerMeterPoints(player, meter);
   }
 }
 

@@ -3,7 +3,7 @@
 typedef struct { u32 magic; u8 kind; u8 channel:4; u8 flags:4; u16 id; u32 size; } Ov010Packet;
 typedef struct { u8 bytes[26]; u16 count0, count1, count2; s8 state0, state1, state2; u8 pad[5]; } Ov010Entry;
 typedef struct { u8 pad[0x2d4]; Ov010Entry entries[1]; } Ov010State;
-extern unsigned char data_ov010_0222f02c[];
+extern unsigned char gOv010PlayerRecords[];
 
 extern M2C_UNK gOv010OnlineSession;
 
@@ -112,7 +112,7 @@ M2C_FIELD(entry,u32 *,8)++;
 
 #pragma opt_common_subs off
 void func_ov010_02226d9c(void *a){
-s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK func_ov010_02229580(s32);void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
+s32 IsOnlineSessionFlagSet(s32);s32 GetOnlineTransportPlayerId();s32 GetOnlinePeerMask();s32 CanStartSend(u8); void *func_ov010_02229568(u32);M2C_UNK Ov010Online_FreePacket(s32);void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);void Ov010_FreeBlock(s32,void *,u32);
 void func_ov010_02227934(s32,s32);void func_ov010_02227954(s32,void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 extern M2C_UNK gOv010OnlineSession;
 u32 n; s32 i,self; register u32 one; Ov010Packet *p;
@@ -137,7 +137,7 @@ p=func_ov010_02229568(12);
 {Ov010Packet *h=M2C_FIELD(a,void **,0x38);
 Ov010Online_InitPacketHeader(p,6,h->channel,h->flags,0,0,h->id); }
 M2C_FIELD(a,void **,0x3c)=p;M2C_FIELD(a,u32 *,0x40)=p->size+12;M2C_FIELD(a,u32 *,0x34)=0;
-if(M2C_FIELD(a,void **,0x38)){func_ov010_02229580(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
+if(M2C_FIELD(a,void **,0x38)){Ov010Online_FreePacket(M2C_FIELD(a,void **,0x38));M2C_FIELD(a,void **,0x38)=0;}
 }
 }else{
 M2C_FIELD(a,u16 *,0x44)=QueueMask26d9c();
@@ -164,27 +164,33 @@ M2C_FIELD(a,u16 *,0x44)&=~0U ^ (one<<self);
 if(M2C_FIELD(a,u16 *,0x44)){
 switch(((Ov010Packet *)M2C_FIELD(a,void **,0x3c))->flags){
 case 0:SendTransferToPlayers(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));Sprite_ResumeAnimation(a);return;
-case 1:SendDataToPlayers(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
+case 1:SendDataToPlayers(M2C_FIELD(a,u16 *,0x44),M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,s32 *,0x40));Ov010Online_FreePacket(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;return;
 default:return;
 }}
-func_ov010_02229580(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;
+Ov010Online_FreePacket(M2C_FIELD(a,void **,0x3c));M2C_FIELD(a,void **,0x3c)=0;M2C_FIELD(a,u32 *,0x40)=0;
 }
 #pragma opt_common_subs reset
-void func_ov010_02227264(void *arg0) {
-M2C_UNK Sprite_ResumeAnimation(void *);
-s32 CanStartSend(u8);
-M2C_UNK func_ov010_02229580(s32);
-s32 GetOnlinePeerMask();
-s32 i;
-u16 mask;
-mask = GetOnlinePeerMask() & M2C_FIELD(arg0,u16 *,0x44);
-for (i=0;i<4;i++) {
-if ((1 << i) & mask) { if (!CanStartSend((u8)i)) return; }
-}
-func_ov010_02229580(M2C_FIELD(arg0,s32 *,0x3c));
-M2C_FIELD(arg0,s32 *,0x3c)=0;
-M2C_FIELD(arg0,s32 *,0x40)=0;
-Sprite_ResumeAnimation(arg0);
+/* Finish an ov010 connection send once its chunk has gone out: while any peer the
+ * packet is addressed to is still busy the send waits, then the sent packet is
+ * released and the connection's animation resumes. */
+void Ov010Connection_FinishSend(void *connection) {
+    M2C_UNK Sprite_ResumeAnimation(void *);
+    s32 CanStartSend(u8);
+    M2C_UNK Ov010Online_FreePacket(s32);
+    s32 GetOnlinePeerMask();
+    s32 peer;
+    u16 pending;
+
+    pending = GetOnlinePeerMask() & M2C_FIELD(connection, u16 *, OV010_CONNECTION_RECIPIENTS);
+    for (peer = 0; peer < 4; peer++) {
+        if ((1 << peer) & pending) {
+            if (!CanStartSend((u8)peer)) return;
+        }
+    }
+    Ov010Online_FreePacket(M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET));
+    M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET) = 0;
+    M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET_SIZE) = 0;
+    Sprite_ResumeAnimation(connection);
 }
 
 #pragma opt_common_subs off
@@ -196,11 +202,11 @@ s32 func_ov010_02229b48(s32);
 unsigned int Ov010Online_GetQueuedPacketSize(unsigned int);
 s32 func_ov010_02229920(s32,void *);
 void *func_ov010_02229568(u32);
-M2C_UNK func_ov010_02229580(s32);
+M2C_UNK Ov010Online_FreePacket(s32);
 void Ov010Online_InitPacketHeader(void *,u32,u32,u32,void *,u32,u32);
 void *func_ov010_022268f4(s32,u32,u32);
 void Ov010_FreeBlock(s32,void *,u32);
-s32 func_ov010_02229608(u8,void *,s32,u16);
+s32 QueueOnlineLinkPacket(u8,void *,s32,u16);
 void SetOnlinePlayerRecord(s32,void *);
 M2C_UNK func_ov010_02228cbc();
 void MI_CpuCopy8(void *,void *,u32);
@@ -231,13 +237,13 @@ switch(hp->kind){
 case 2:
 if(IsOnlineSessionHost()){
 s=M2C_FIELD(state,void **,0x18);
-if(s&&M2C_FIELD(s,s32 *,0)==M2C_FIELD(p,s32 *,0xc))func_ov010_02229608(2,s,8,(u16)(1<<chan));
+if(s&&M2C_FIELD(s,s32 *,0)==M2C_FIELD(p,s32 *,0xc))QueueOnlineLinkPacket(2,s,8,(u16)(1<<chan));
 }else{
 s=M2C_FIELD(state,void **,0x18);
 if(s&&M2C_FIELD(s,s32 *,0)==M2C_FIELD(p,s32 *,0xc)){
-func_ov010_02229608(3,s,8,(u16)(1<<chan));
+QueueOnlineLinkPacket(3,s,8,(u16)(1<<chan));
 }else{
-func_ov010_02229608(2,(u8 *)p+0xc,8,(u16)(1<<chan));
+QueueOnlineLinkPacket(2,(u8 *)p+0xc,8,(u16)(1<<chan));
 }
 }
 break;
@@ -272,13 +278,13 @@ else RxQueuePush26d9c(hb,chan,data_ov010_0222ef88);
 M2C_FIELD((u8 *)arg0+chan*8,u32 *,0x34)=0;
 node=M2C_FIELD((u8 *)arg0+chan*8,void **,0x38);
 if(node){
-func_ov010_02229580((s32)node);
+Ov010Online_FreePacket((s32)node);
 M2C_FIELD((u8 *)arg0+chan*8,void **,0x38)=0;
 }
 break;
 case 7:
 SetOnlinePlayerRecord((u8)chan,(u8 *)p+0xc);
-func_ov010_02229608(8,(void *)func_ov010_02229b48(GetOnlineTransportPlayerId()),0x6c,(u16)(1<<chan));
+QueueOnlineLinkPacket(8,(void *)func_ov010_02229b48(GetOnlineTransportPlayerId()),0x6c,(u16)(1<<chan));
 break;
 case 8:
 SetOnlinePlayerRecord((u8)chan,(u8 *)p+0xc);
@@ -292,7 +298,7 @@ break;
 {s32 (*cb)(u8,void *)=M2C_FIELD(state,s32 (**)(u8,void *),0x1c);
 if(cb)keep=cb((u8)chan,p);}
 if(!keep)continue;
-func_ov010_02229580(p);
+Ov010Online_FreePacket(p);
 }
 state=(u8 *)&gOv010OnlineSession;
 if(!M2C_FIELD(state,void **,0x50))return;
@@ -310,7 +316,7 @@ chan2=((Ov010Packet *)p2)->channel;
 {s32 (*cb)(u8,void *)=M2C_FIELD(state,s32 (**)(u8,void *),0x50);
 if(cb)keep2=cb((u8)chan2,p2);}
 if(!keep2)continue;
-func_ov010_02229580(p2);
+Ov010Online_FreePacket(p2);
 }
 }
 }
@@ -410,24 +416,27 @@ void DisconnectOnlinePeer(void) {
 }
 
 #pragma opt_common_subs off
-void func_ov010_02227bd4(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f) {
+/* Handles a peer's connection ending: clears the peer's connected flag in its
+ * online player record, sets the peer's bit in the session's changed-player
+ * mask, then forwards the event to the installed session callback. */
+void Ov010Online_OnPeerConnectionLost(s32 error, s32 wasConnected, s32 pending, s32 playerId, s32 playerSlot, s32 arg) {
     extern M2C_UNK gOv010OnlineSession;
-    extern u8 data_ov010_0222f02c[];
+    extern u8 gOv010PlayerRecords[];
     void (*cb)(s32,s32,s32,s32,s32,s32);
-    u8 *p;
-    u8 byte;
-    u16 flags;
-    u16 newFlags;
-    p = &data_ov010_0222f02c[d*0x6c];
-    byte = M2C_FIELD(p,u8 *,0x1a);
-    flags = M2C_FIELD(&gOv010OnlineSession,u16 *,0);
-    byte = byte & ~1;
-    newFlags = (u16)(flags | (1 << d));
-    M2C_FIELD(p,u8 *,0x1a) = byte;
-    M2C_FIELD(&gOv010OnlineSession,u16 *,0) = newFlags;
-    cb = M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32,s32,s32,s32),0x34);
+    u8 *record;
+    u8 recordFlags;
+    u16 changedPlayers;
+    u16 newChangedPlayers;
+    record = &gOv010PlayerRecords[playerId*ONLINE_PLAYER_RECORD_SIZE];
+    recordFlags = M2C_FIELD(record,u8 *,ONLINE_PLAYER_FLAGS);
+    changedPlayers = M2C_FIELD(&gOv010OnlineSession,u16 *,OV010_SESSION_CHANGED_PLAYERS);
+    recordFlags = recordFlags & ~1;
+    newChangedPlayers = (u16)(changedPlayers | (1 << playerId));
+    M2C_FIELD(record,u8 *,ONLINE_PLAYER_FLAGS) = recordFlags;
+    M2C_FIELD(&gOv010OnlineSession,u16 *,OV010_SESSION_CHANGED_PLAYERS) = newChangedPlayers;
+    cb = M2C_FIELD(&gOv010OnlineSession,void (**)(s32,s32,s32,s32,s32,s32),OV010_SESSION_PEER_CALLBACK);
     if (!cb) return;
-    cb(a,b,c,d,e,f);
+    cb(error,wasConnected,pending,playerId,playerSlot,arg);
 }
 #pragma opt_common_subs reset
 void func_ov010_02227c3c(s32 a,s32 b) {

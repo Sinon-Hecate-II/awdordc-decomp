@@ -351,14 +351,14 @@ s32 func_020c4b6c(s32 arg0) {
 }
 
 void func_020c4b88(s32 arg0) {
-    M2C_UNK func_02032424(s32);
+    M2C_UNK IsLocalProfileRecord(s32);
     s32 var_r0;
 
     var_r0 = arg0;
     if (var_r0 == 0) {
         var_r0 = GetProfileSaveBlock();
     }
-    func_02032424(var_r0 + 4);
+    IsLocalProfileRecord(var_r0 + 4);
 }
 
 void func_020c4ba4(s32 arg0) {

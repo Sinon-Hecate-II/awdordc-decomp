@@ -93,7 +93,7 @@ M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y,
     return (M2C_UNK)object;
 }
 
-void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK CreateScriptedSprite(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=func_02081070(a,1);CreateScriptedSprite(r,b,c,d,e,f,1,g);}
+void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 LoadDecompressedFile(M2C_UNK,M2C_UNK);M2C_UNK CreateScriptedSprite(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=LoadDecompressedFile(a,1);CreateScriptedSprite(r,b,c,d,e,f,1,g);}
 
 /* Delete a scripted sprite: reset its vtable, tear down its player list and its
  * auxiliary sprite list, run its optional dispose callback, then free the
@@ -124,7 +124,33 @@ void *DeleteScriptedSprite(void *sprite) {
     return sprite;
 }
 
-void *func_02090f78(void *a) {M2C_UNK func_02090894();M2C_UNK Sprite_DestroyAuxList();M2C_UNK HeapFreeBlock(s32);extern M2C_UNK gScriptedSpriteVtbl;M2C_UNK (*cb)(void *);M2C_FIELD(a,M2C_UNK **,0)=&gScriptedSpriteVtbl;if(M2C_FIELD(a,s32 *,0x38))func_02090894();if(M2C_FIELD(a,s32 *,0x3c))Sprite_DestroyAuxList();cb=M2C_FIELD(a,M2C_UNK (**)(void *),0x34);if(cb)cb(a);if(M2C_FIELD(a,u8 *,0x44))HeapFreeBlock(M2C_FIELD(a,s32 *,0x40));return a;}
+/* Tear down a scripted sprite (its out-of-line destructor): reset its vtable,
+   destroy its script-player and auxiliary lists and run its dispose callback,
+   then free the animation script it owns.  The object itself stays allocated
+   (DeleteScriptedSprite releases it). */
+void *DestroyScriptedSprite(void *sprite) {
+    M2C_UNK func_02090894();
+    M2C_UNK Sprite_DestroyAuxList();
+    M2C_UNK HeapFreeBlock(s32);
+    extern M2C_UNK gScriptedSpriteVtbl;
+    M2C_UNK (*dispose)(void *);
+
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
+    if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_PLAYER_LIST) != 0) {
+        func_02090894();
+    }
+    if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_AUX_LIST) != 0) {
+        Sprite_DestroyAuxList();
+    }
+    dispose = M2C_FIELD(sprite, M2C_UNK (**)(void *), SPRITE_OWNER_DISPOSE);
+    if (dispose) {
+        dispose(sprite);
+    }
+    if (M2C_FIELD(sprite, u8 *, SPRITE_OWNER_OWNS_SCRIPT) != 0) {
+        HeapFreeBlock(M2C_FIELD(sprite, s32 *, SPRITE_OWNER_SCRIPT));
+    }
+    return sprite;
+}
 
 #pragma opt_propagation off
 /* One frame of a child-sprite wrapper: draw the sprite it holds at the wrapper's

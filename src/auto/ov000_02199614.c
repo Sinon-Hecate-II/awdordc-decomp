@@ -447,12 +447,21 @@ void func_ov000_0219a370(void) {
     } while (var_r1 < 0x63);
 }
 
-s32 CountPlayerProperties(s32 n) {
-extern s32 *gCurrentMap;
-u8 *p=(u8 *)*gCurrentMap+0x67a4+n*0x8c;
-s32 sum=0;
-sum+=p[0x11]; sum+=p[0x10]; sum+=p[0x12]; sum+=p[0x13]; sum+=p[0x14]; sum+=p[0x15]; sum+=p[0x16]; sum+=p[0x17];
-return sum+1;
+/* Count player `player`'s properties from the eight per-kind counters in the
+ * player's map record, plus one; the AI weighs the enemy total with it. */
+s32 CountPlayerProperties(s32 player) {
+    extern s32 *gCurrentMap;
+    u8 *record = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    s32 sum = 0;
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 1];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 0];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 2];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 3];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 4];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 5];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 6];
+    sum += record[PLAYER_REC_PROPERTY_COUNTS + 7];
+    return sum + 1;
 }
 
 #pragma push

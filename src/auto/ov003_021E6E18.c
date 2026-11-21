@@ -118,21 +118,24 @@ u8 GetWaypointSlotIndex(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 7);
 }
 
-s32 IsWaypointSlotLocalPlayer(s32 arg0, s32 arg1) {
+/* Whether the waypoint list's slot belongs to the local player: the slot's owner
+ * must be the local player, or (for the session host only) the slot must still be
+ * empty.  Always 0 outside a link session. */
+s32 IsWaypointSlotLocalPlayer(s32 list, s32 slot) {
     s32 IsLinkSessionActive();
     s32 GetLocalPlayerIdForOverlay();
     s32 IsSessionHost();
-    u8 *temp_r4;
-    u8 temp_r5;
-    s32 var_r0;
+    u8 *owners;
+    u8 owner;
+    s32 noOwner;
     if (IsLinkSessionActive() == 0) return 0;
-    temp_r4 = (u8 *)(arg0 + 0x74);
-    temp_r5 = temp_r4[arg1];
-    if (temp_r5 == GetLocalPlayerIdForOverlay()) return 1;
+    owners = (u8 *)(list + WAYPOINT_LIST_IDS);
+    owner = owners[slot];
+    if (owner == GetLocalPlayerIdForOverlay()) return 1;
     if (IsSessionHost() != 0) {
-        if (temp_r4[arg1] == 0xFF) var_r0 = 1;
-        else var_r0 = 0;
-        if (var_r0 & 0xFF) return 1;
+        if (owners[slot] == WAYPOINT_NO_PLAYER) noOwner = 1;
+        else noOwner = 0;
+        if (noOwner & 0xFF) return 1;
     }
     return 0;
 }

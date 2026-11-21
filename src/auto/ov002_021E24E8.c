@@ -146,7 +146,17 @@ M2C_FIELD(node,u8 *,FX_NODE_ACTIVE)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_ACTIVE);
 M2C_FIELD(node,u8 *,FX_NODE_FLAG_51)=M2C_FIELD(tmpl,u8 *,FX_TEMPLATE_FLAG_51);
 }
 
-void func_ov002_021e2928(void *a,s32 b){void func_ov002_021e1780(void *);void **p=0;while((p=p?M2C_FIELD(p,void ***,4):(M2C_FIELD(a,s32 *,8)==0?0:(void **)((u8 *)a+8)))!=0){func_ov002_021e2928(*p,b);if(b==M2C_FIELD(*p,u8 *,0x46))func_ov002_021e1780(*p);}}
+/* Clear every effect node below `node` whose selected script is `scriptIndex`:
+ * detach its resource and current frame so it stops drawing. */
+void Ov002_ClearEffectNodesWithScript(void *node, s32 scriptIndex) {
+    void ClearEffectNode(void *);
+    void **link = 0;
+    while ((link = link ? M2C_FIELD(link, void ***, FX_LINK_NEXT)
+                       : (M2C_FIELD(node, s32 *, FX_NODE_CHILD) == 0 ? 0 : (void **)((u8 *)node + FX_NODE_CHILD))) != 0) {
+        Ov002_ClearEffectNodesWithScript(*link, scriptIndex);
+        if (scriptIndex == M2C_FIELD(*link, u8 *, FX_NODE_SCRIPT_INDEX)) ClearEffectNode(*link);
+    }
+}
 
 void func_ov002_021e298c(void) {
 
@@ -174,33 +184,35 @@ void func_ov002_021e29f8(void *arg0,s32 a,s32 b) {
  func_ov002_021ea4bc(M2C_FIELD((u8 *)&data_ov002_021f312c+M2C_FIELD(arg0,u8 *,0x53)*44,s32 *,M2C_FIELD(arg0,u8 *,0x47)*4),a,b);
 }
 
-void InitEffectNode(void *arg0) {
+/* Reset an effect node's script selection and clear its motion, scale ramp and
+ * screen-drift state. */
+void InitEffectNode(void *node) {
     M2C_UNK func_ov002_021e16bc();
     func_ov002_021e16bc();
-    M2C_FIELD(arg0, s32 *, 0x54) = 0;
-    M2C_FIELD(arg0, s32 *, 0x58) = 0;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s32 *, 0x64) = 0;
-    M2C_FIELD(arg0, s32 *, 0x68) = 0;
-    M2C_FIELD(arg0, s16 *, 0x78) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x7A) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x7C) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x7E) = 0;
-    M2C_FIELD(arg0, s32 *, 0x6C) = -1;
-    M2C_FIELD(arg0, s32 *, 0x70) = 0;
-    M2C_FIELD(arg0, s32 *, 0x74) = 0;
-    M2C_FIELD(arg0, s16 *, 0x80) = 0;
-    M2C_FIELD(arg0, s16 *, 0x82) = 0;
-    M2C_FIELD(arg0, s16 *, 0x84) = 0x100;
-    M2C_FIELD(arg0, s16 *, 0x86) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_VX) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_VY) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_AX) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_AY) = 0;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE) = 0x100;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_FROM) = 0x100;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_TO) = 0x100;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_STEP) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_LIFETIME) = -1;
+    M2C_FIELD(node, s32 *, FX_NODE_DURATION) = 0;
+    M2C_FIELD(node, s32 *, FX_NODE_TARGET) = 0;
+    M2C_FIELD(node, s16 *, FX_NODE_SCREEN_X) = 0;
+    M2C_FIELD(node, s16 *, FX_NODE_SCREEN_Y) = 0;
+    M2C_FIELD(node, s16 *, FX_NODE_SCREEN_S) = 0x100;
+    M2C_FIELD(node, s16 *, FX_NODE_MODE_86) = 0;
 }
 
 void SetEffectNodeResource(void *a,s32 b,s16 c,s8 d,u8 e){M2C_UNK func_ov002_021e16dc(void *,s32,s16,s8,u8);func_ov002_021e16dc(a,b,c,d,e);M2C_FIELD(a,s32 *,0x6c)=0;}
 
 void func_ov002_021e2aa8(void *arg0) {
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    void func_ov002_021e1780(void *);
+    void ClearEffectNode(void *);
     void func_ov002_021e1790(void *, s32, s32);
     void func_ov002_021e1844(void *);
     void func_ov002_021e299c(void *, s32);
@@ -219,7 +231,7 @@ void func_ov002_021e2aa8(void *arg0) {
                 M2C_FIELD(arg0, u16 *, 0x78) = (u16)t;
                 func_ov002_021e1790(arg0, (s32)(M2C_FIELD(arg0, s32 *, 0x54) << 8) >> 16, (s32)(M2C_FIELD(arg0, s32 *, 0x58) << 8) >> 16);
                 if (IsEffectNodeOffScreen(arg0) != 0) {
-                    func_ov002_021e1780(arg0);
+                    ClearEffectNode(arg0);
                     M2C_FIELD(arg0, s32 *, 0x6C) = -1;
                 }
             } else {
@@ -236,7 +248,7 @@ void func_ov002_021e2aa8(void *arg0) {
             func_ov002_021e1790(arg0, (s32)(M2C_FIELD(arg0, s32 *, 0x54) << 8) >> 16, (s32)(M2C_FIELD(arg0, s32 *, 0x58) << 8) >> 16);
             if (M2C_FIELD(arg0, s32 *, 0x6C) >= M2C_FIELD(arg0, s32 *, 0x70)) {
                 func_ov002_021e299c(arg0, 6);
-                func_ov002_021e1780(arg0);
+                ClearEffectNode(arg0);
                 M2C_FIELD(arg0, s32 *, 0x6C) = -1;
             }
         }

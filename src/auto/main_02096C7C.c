@@ -192,10 +192,10 @@ void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a
 /* Give face slot 0 of scene panel panelIndex the face id and expression a
  * message-box script asks for, then refresh the panel's palette. */
 void SetScenePanelFace(s32 panelIndex, s32 faceId, s32 expression) {
-s32 func_02091e04(void); void SetFaceSpritePalette(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 panel,faceChild;void *face;
+s32 GetFacePaletteStyle(void); void SetFaceSpritePalette(void *,u32);void SetFaceSpritePose(void *,s32,s32,s32);s32 panel,faceChild;void *face;
 panel=FindScenePanel((u16)panelIndex);if(!panel)return;
 face=Get3DSpriteChild(panel,0);faceChild=M2C_FIELD(face,s32 *,FACE_SPRITE_CHILD);
-SetFaceSpritePalette(face,(u8)func_02091e04());func_020990fc(face,faceId,expression+5,1);SetFaceSpriteFace(faceChild,faceId);UpdateScenePanelPalette(panel);
+SetFaceSpritePalette(face,(u8)GetFacePaletteStyle());SetFaceSpritePose(face,faceId,expression+5,1);SetFaceSpriteFace(faceChild,faceId);UpdateScenePanelPalette(panel);
 }
 
 /* ShowPanelFace: shows face slot faceIndex (0 or 1) of the scene panel — the
@@ -277,7 +277,23 @@ void func_02097410(void) {
 
 }
 
-void func_02097414(s32 a,s32 b,s32 c) { s32 func_02091e04(void); void SetFaceSpritePalette(void *,u32);void func_020990fc(void *,s32,s32,s32);s32 p,r;void *q;p=FindScenePanel(2);if(!p)return;q=Get3DSpriteChild(p,a);r=M2C_FIELD(q,s32 *,0x60);SetFaceSpritePalette(q,(u8)func_02091e04());func_020990fc(q,b,c+8,1);SetFaceSpriteFace(r,b); }
+/* Set face slot `faceSlot` of the bottom scene panel to face `faceId` in the
+ * second expression set (`expression` + 8), using the current face palette
+ * style, and set the slot's linked face child to the same face. */
+void SetScenePanelFaceSlot(s32 faceSlot, s32 faceId, s32 expression) {
+    s32 GetFacePaletteStyle(void);
+    void SetFaceSpritePalette(void *,u32);
+    void SetFaceSpritePose(void *,s32,s32,s32);
+    s32 panel,faceChild;
+    void *face;
+    panel=FindScenePanel(SCENE_PANEL_BOTTOM);
+    if(!panel)return;
+    face=Get3DSpriteChild(panel,faceSlot);
+    faceChild=M2C_FIELD(face,s32 *,FACE_SPRITE_CHILD);
+    SetFaceSpritePalette(face,(u8)GetFacePaletteStyle());
+    SetFaceSpritePose(face,faceId,expression+8,1);
+    SetFaceSpriteFace(faceChild,faceId);
+}
 
 void func_0209747c(M2C_UNK arg0, s32 arg1) {
     s32 temp_r0;
@@ -449,7 +465,7 @@ s32 ShowScenePanel(s32 panelIndex) {
             break;
         }
         panelState = (ScenePanelState *) GetScenePanelState(panelIndex);
-        panelState->unk_08 = (u16) func_02091f08();
+        panelState->contentHeight = (u16) func_02091f08();
         LoadScenePanelPalette(panelState->palette);
         if (GetMenuCursor() < 0) {
             SetMenuCursor(panelIndex);

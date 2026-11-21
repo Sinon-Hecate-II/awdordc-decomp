@@ -36,30 +36,33 @@ s32 Vector_SearchLinear(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(
     return 0;
 }
 
-s32 Vector_SearchSorted(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(s32, M2C_UNK), s32 *arg5) {
-    s32 var_r4;
-    s32 var_r5;
-    s32 temp_r6;
-    s32 temp_r0;
+/* GameSpy darray ArraySearchSorted: binary-search `item` among the `count`
+   elemSize-byte elements at `base` with compare(element, item), set *found when
+   an equal element was seen, and return the address where `item` belongs. */
+s32 Vector_SearchSorted(M2C_UNK item, s32 base, s32 count, s32 elemSize, s32 (*compare)(s32, M2C_UNK), s32 *found) {
+    s32 low;
+    s32 high;
+    s32 mid;
+    s32 order;
 
-    var_r4 = 0;
-    *arg5 = 0;
-    var_r5 = arg2 - 1;
-    if (var_r5 >= 0) {
+    low = 0;
+    *found = 0;
+    high = count - 1;
+    if (high >= 0) {
         do {
-            temp_r6 = (s32) (var_r4 + var_r5) >> 1;
-            temp_r0 = arg4(temp_r6 * arg3 + arg1, arg0);
-            if (temp_r0 == 0) {
-                *arg5 = 1;
+            mid = (s32) (low + high) >> 1;
+            order = compare(mid * elemSize + base, item);
+            if (order == 0) {
+                *found = 1;
             }
-            if (temp_r0 < 0) {
-                var_r4 = temp_r6 + 1;
+            if (order < 0) {
+                low = mid + 1;
             } else {
-                var_r5 = temp_r6 - 1;
+                high = mid - 1;
             }
-        } while (var_r4 <= var_r5);
+        } while (low <= high);
     }
-    return var_r4 * arg3 + arg1;
+    return low * elemSize + base;
 }
 
 void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
@@ -221,7 +224,7 @@ void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;i
 
 void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
 
-unsigned long long GetTickCountMs(void){int IsSystemTickInitialized(void);unsigned long long GetSystemTick(void);extern char data_020fcdf0[],data_020fce10[],data_020fcde0[];if(IsSystemTickInitialized()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
+unsigned long long GetTickCountMs(void){int IsSystemTickInitialized(void);unsigned long long GetSystemTick(void);extern char sAssertTickAvailable[],sNonportFileName[],data_020fcde0[];if(IsSystemTickInitialized()!=1)AssertFailed(sAssertTickAvailable,sNonportFileName,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
 
 void gpiSleep(void) {
     M2C_UNK SleepMilliseconds();

@@ -82,62 +82,63 @@ s32 LoadWaveArchiveFile(s32 fileId, s32 pool, s32 cache) {
     return block;
 }
 
-M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 arg0, s32 arg1, s32 arg2) {
+#pragma opt_common_subs off
+/* Loads the wave archive `fileId` whose own file carries its entry table, unless it
+ * is already cached.  The file's header sizes the two tables the block keeps: a
+ * table of per-entry data pointers (cleared so the entries load lazily) followed by
+ * the entry-offset table copied out of the file.  The block is freed by
+ * func_0202d0a4 and, when `cache` is set, owned by and registered with the current
+ * archive.  Returns the block, or 0 when it could not be loaded. */
+M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 fileId, s32 pool, s32 cache) {
     void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
     s32 Sound_ReadArchiveFile(s32, void *, s32, s32);
     M2C_UNK DC_CleanRange(M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 Sound_GetCurrentArchive();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, M2C_UNK);
-    s32 GetLoadedArchiveFile();
-    extern M2C_UNK data_0213c254;
+    s32 GetLoadedArchiveFile(s32);
+    static s32 header[WAVE_ARCHIVE_ENTRIES / sizeof(s32)];
     extern M2C_UNK func_0202d0a4;
-    s32 r9 = arg0;
-    s32 r8 = arg1;
-    s32 r7 = arg2;
-    M2C_UNK *r5;
-    s32 r6;
-    s32 r4;
-    s32 r3;
-    void *temp_r0;
+    s32 bothTablesBytes;
+    M2C_UNK *block;
+    s32 tableBytes;
+    s32 owner;
 
-    r5 = (M2C_UNK *)GetLoadedArchiveFile();
-    if (r5 == NULL) {
+    block = (M2C_UNK *)GetLoadedArchiveFile(fileId);
+    if (block == NULL) {
+        if (Sound_ReadArchiveFile(fileId, header, WAVE_ARCHIVE_ENTRIES, 0) != WAVE_ARCHIVE_ENTRIES) {
+            return NULL;
+        }
+        tableBytes = M2C_FIELD(header, s32 *, WAVE_ARCHIVE_COUNT) * 4;
+        bothTablesBytes = tableBytes * 2;
+        if (pool == 0) {
+            return NULL;
+        }
+        if (cache == 0) {
+            owner = 0;
+        } else {
+            owner = Sound_GetCurrentArchive();
+        }
+        block = (M2C_UNK *)Sound_AllocDataBlock((s32 *)pool, bothTablesBytes + 0x5C, (s32)&func_0202d0a4, owner, fileId);
+        if (block == NULL) {
+            return NULL;
+        }
+        {
+            s32 readSize = Sound_ReadArchiveFile(fileId, block, tableBytes + WAVE_ARCHIVE_ENTRIES, 0);
+            if (readSize != tableBytes + WAVE_ARCHIVE_ENTRIES) {
+                return NULL;
+            }
+        }
+        MI_CpuCopy8((M2C_UNK)((u8 *)block + WAVE_ARCHIVE_ENTRIES), (M2C_UNK)((u8 *)block + WAVE_ARCHIVE_ENTRIES + M2C_FIELD(block, s32 *, WAVE_ARCHIVE_COUNT) * 4), tableBytes);
+        MI_CpuFill8((M2C_UNK)((u8 *)block + WAVE_ARCHIVE_ENTRIES), 0, tableBytes);
+        DC_CleanRange(block, bothTablesBytes + WAVE_ARCHIVE_ENTRIES);
+        if (cache != 0) {
+            SetLoadedArchiveFile(fileId, block);
+        }
     }
-    if (r5 != NULL) {
-        return r5;
-    }
-    if (Sound_ReadArchiveFile(r9, &data_0213c254, 0x3C, 0) != 0x3C) {
-        return NULL;
-    }
-    r6 = M2C_FIELD(&data_0213c254, s32 *, 0x38) * 4;
-    r4 = r6 * 2;
-    if (r8 == 0) {
-        return NULL;
-    }
-    if (r7 == 0) {
-        r3 = 0;
-    } else {
-        r3 = Sound_GetCurrentArchive();
-    }
-    r5 = (M2C_UNK *)Sound_AllocDataBlock(r8, r4 + 0x5C, (s32)&func_0202d0a4, r3, r9);
-    if (r5 == NULL) {
-        return NULL;
-    }
-    if (Sound_ReadArchiveFile(r9, r5, r6 + 0x3C, 0) != (r6 + 0x3C)) {
-        return NULL;
-    }
-    temp_r0 = r5 + 0x3C; /* cast ignored? */
-    MI_CpuCopy8((M2C_UNK)((u8 *)r5 + 0x3C), (M2C_UNK)((u8 *)r5 + 0x3C + (M2C_FIELD(r5, s32 *, 0x38) * 4)), r6);
-    MI_CpuFill8((M2C_UNK)((u8 *)r5 + 0x3C), 0, r6);
-    DC_CleanRange(r5, r4 + 0x3C);
-    if (r7 != 0) {
-        SetLoadedArchiveFile(r9, r5);
-    }
-    return r5;
+    return block;
 }
-
+#pragma opt_common_subs reset
 s32 func_0202cfc4(s32 arg0,s32 arg1,s32 arg2) {
 s32 OS_DisableInterrupts();
 s32 func_0202c014(s32);
@@ -292,7 +293,7 @@ if(!Sound_CreateChannelHeap(i,saved,rec->heapSize))return 0;
 return 1;
 }
 
-s32 func_0202d330(M2C_UNK arg0, s32 arg1) {
+s32 Sound_PlaySequenceRecord(M2C_UNK arg0, s32 arg1) {
     void *GetSoundSequenceRecord(s32);
     s32 Sound_PlaySequenceById(M2C_UNK, s32, s32, s32, void *, s32);
     void *temp_r0;
@@ -511,7 +512,7 @@ checkSlots:
 #pragma opt_strength_reduction reset
 s32 InitSoundPlayerSlots(s32 heap)
 {
-    u8 *func_0202c294(s32);
+    u8 *GetSoundPlayerRecord(s32);
     void *Sound_AllocDataBlock(s32 *, s32, s32, s32, s32);
     void Sound_StopPlayer();
     extern u8 gSoundPlayerSlots[];
@@ -521,7 +522,7 @@ s32 InitSoundPlayerSlots(s32 heap)
     const s32 callback = (s32)&Sound_OnDataBlockFreed;
     s32 slot = 0;
     do {
-        u8 *entry = func_0202c294(slot);
+        u8 *entry = GetSoundPlayerRecord(slot);
         if (entry) {
             s32 channel = zero;
             player[0x124] = entry[0];
@@ -549,7 +550,7 @@ s32 InitSoundPlayerSlots(s32 heap)
     return 1;
 }
 
-s32 func_0202d8a0(s32 a,s32 b,s32 c){void *func_0202c1cc(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=func_0202c1cc(b);if(!p)return 0;return Sound_StartPlayer(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
+s32 func_0202d8a0(s32 a,s32 b,s32 c){void *GetSoundRecord(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=GetSoundRecord(b);if(!p)return 0;return Sound_StartPlayer(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
 
 s32 func_0202d8fc(s32 arg) {
 void * volatile *arg0=(void * volatile *)arg;
@@ -559,7 +560,7 @@ p=*arg0;
 return M2C_FIELD(p,s32 *,0x110)|=4;
 }
 
-s32 func_0202d91c(M2C_UNK arg0) {
+s32 Sound_StartArchiveSound(M2C_UNK arg0) {
     s32 func_0202d8a0();
     M2C_UNK func_0202d8fc(M2C_UNK);
     if (func_0202d8a0() == 0) {
@@ -577,7 +578,7 @@ func_0202de1c(*arg0,arg1);
 
 void func_0202d960(void *volatile *a,s32 b){void func_0202eed8(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;func_0202eed8(p+0xe8,b<<8);}
 
-void func_0202d994(volatile s32 *a,s32 b,s32 c){extern s16 data_020e9ca0[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,data_020e9ca0[c]);}
+void func_0202d994(volatile s32 *a,s32 b,s32 c){extern s16 gSoundVoiceVolumeTable[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,gSoundVoiceVolumeTable[c]);}
 
 void func_0202d9c0(s32 *arg0) {
     *arg0 = 0;
@@ -593,33 +594,34 @@ void Sound_ClearPlayerHandle(void **arg0) {
     }
 }
 
+#pragma opt_instruction_scheduling off
 void func_0202d9e4(void) {
-void func_0202b70c(void *); void func_0202b77c(void *,s32); void Sound_StopPlayer(void *);
-s32 GetFadeValue(void *); void AdvanceFade(void *); s32 IsFadeDone(void *);
-extern u8 gSoundPlayerSlots[]; extern s16 data_020e9ca0[];
-s32 i; s16 a; s32 b; u8 *p; p=gSoundPlayerSlots; i=0;
+void func_0202b70c(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
+s32 func_0202ef00(void *); void func_0202ef34(void *); s32 func_0202ef4c(void *);
+extern u8 data_0213c92c[]; extern s16 data_020e9ca0[];
+s32 i; s16 a; s32 b; u8 *p; p=data_0213c92c; i=0;
 do {
 s32 flags=M2C_FIELD(p,s32 *,0x110);
 if((flags<<31)>>31) {
-if(!M2C_FIELD(p,s32 *,0x114))Sound_StopPlayer(p);
+if(!M2C_FIELD(p,s32 *,0x114))func_0202de74(p);
 else {
 if(((flags<<29)>>31) && M2C_FIELD(p,s32 *,0x118)) {
 func_0202b70c(p);
 M2C_FIELD(p,s32 *,0x110)=(M2C_FIELD(p,s32 *,0x110)|2)&~4;
 }
 if((M2C_FIELD(p,s32 *,0x110)<<30)>>31) {
-AdvanceFade(p+0xe8);
+func_0202ef34(p+0xe8);
 a=data_020e9ca0[M2C_FIELD(p,s32 *,0x154)];
-b=data_020e9ca0[M2C_FIELD(p,s32 *,0x158)]+(data_020e9ca0[GetFadeValue(p+0xe8)>>8]+a);
+b=data_020e9ca0[M2C_FIELD(p,s32 *,0x158)]+(data_020e9ca0[func_0202ef00(p+0xe8)>>8]+a);
 if(b!=M2C_FIELD(p,s32 *,0x15c)){func_0202b77c(p,b); M2C_FIELD(p,s32 *,0x15c)=b;}
-if(((M2C_FIELD(p,s32 *,0x110)<<28)>>31) && IsFadeDone(p+0xe8))Sound_StopPlayer(p);
+if(((M2C_FIELD(p,s32 *,0x110)<<28)>>31) && func_0202ef4c(p+0xe8))func_0202de74(p);
 }
 }
 }
 i++;p+=0x174;
 }while(i<4);
 }
-
+#pragma opt_instruction_scheduling reset
 /* Takes the sound player slot at slotIndex for the caller, storing it in *handle
  * (after detaching whatever slot that handle held). The slot is usable only when
  * it has sample data; when it is already active, the sound in it is stopped and

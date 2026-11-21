@@ -123,7 +123,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
  * the tolerance widened by RATING_TOLERANCE_STEP each update, then the match
  * quality, which falls by one point per rating point of difference. */
 s32 GetPeerRatingMatchQuality(s32 playerId, void *scene) {
-    s32 func_0203c0b0(s32, s32 *, s32);
+    s32 GetBrowsedServerValue(s32, s32 *, s32);
     void *GetLocalPlayerStatus(void);
     extern M2C_UNK data_0212c5d8;
     s32 saved, absDiff, tolerance, quality;
@@ -133,7 +133,7 @@ s32 GetPeerRatingMatchQuality(s32 playerId, void *scene) {
     status = GetLocalPlayerStatus();
     if (!(M2C_FIELD(status, u8 *, LOCAL_STATUS_OPTIONS) & LOCAL_OPTION_ONLINE)) return -1;
     saved = M2C_FIELD(status, s32 *, 0x20); /* the local player's rating, Q12 */
-    diff = (saved >> 12) - (func_0203c0b0(playerId, &data_0212c5d8, RATING_DEFAULT) >> 12);
+    diff = (saved >> 12) - (GetBrowsedServerValue(playerId, &data_0212c5d8, RATING_DEFAULT) >> 12);
     if (diff < 0) absDiff = -diff; else absDiff = diff;
     tolerance = M2C_FIELD(scene, u16 *, 0x4a);
     if (tolerance < absDiff) {
@@ -150,17 +150,17 @@ s32 GetPeerRatingMatchQuality(s32 playerId, void *scene) {
 }
 
 s32 func_020de5b0(M2C_UNK arg0) {
-    M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK GetBrowsedServerValue(M2C_UNK, M2C_UNK *, s32);
     void *GetLocalPlayerStatus();
     extern M2C_UNK data_0212c5e0;
     extern M2C_UNK data_0212c5d0;
     if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
         return -1;
     }
-    if (func_0203c0b0(arg0, &data_0212c5e0, 1) != 1) {
+    if (GetBrowsedServerValue(arg0, &data_0212c5e0, 1) != 1) {
         return -1;
     }
-    func_0203c0b0(arg0, &data_0212c5d0, 0x5DC000);
+    GetBrowsedServerValue(arg0, &data_0212c5d0, 0x5DC000);
     return 0x7FFFFF;
 }
 
@@ -225,13 +225,13 @@ void func_020de868(s32 arg0, s32 arg1, void *arg2) {
 }
 
 s32 func_020de884(M2C_UNK arg0) {
-    M2C_UNK func_0203c0b0(M2C_UNK, M2C_UNK *, s32);
+    M2C_UNK GetBrowsedServerValue(M2C_UNK, M2C_UNK *, s32);
     void *GetLocalPlayerStatus();
     extern M2C_UNK data_0212c5c8;
     if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
         return -1;
     }
-    func_0203c0b0(arg0, &data_0212c5c8, 0x5DC000);
+    GetBrowsedServerValue(arg0, &data_0212c5c8, 0x5DC000);
     return 0x7FFFFF;
 }
 

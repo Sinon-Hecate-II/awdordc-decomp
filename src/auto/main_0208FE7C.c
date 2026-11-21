@@ -57,7 +57,7 @@ u8 IsSoundPlayerReady(void) {
     return var_r0;
 }
 
-u8 func_0208ff4c(s32 arg0) {
+u8 Sound_WasPlayedWithin(s32 arg0) {
     extern M2C_UNK gSoundDriverState;
     extern s32 gFrameCounter;
     u8 var_r0;
@@ -189,40 +189,44 @@ s32 PlaySlotScriptedSoundAtVolume(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 
     return 1;
 }
 
-s32 func_020901e0(s32 arg0) {
+/* Starts music track `trackId`: an id with bit 0x10000 names a sound-archive
+ * entry played on the streamed music player, any other id a music sequence
+ * played on the sequence player.  Returns 0 while the sound system is off or the
+ * player could not start, 1 once it started. */
+s32 StartMusicTrack(s32 trackId) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157838;
-    extern M2C_UNK data_0215783c;
-    s32 func_0202d91c(M2C_UNK, M2C_UNK, s32);
-    s32 func_0202d330(M2C_UNK, s32);
-    
-    s32 var_r4;
-    u16 val;
+    extern M2C_UNK gMusicSoundPlayer;
+    extern M2C_UNK gMusicSequencePlayer;
+    s32 Sound_StartArchiveSound(M2C_UNK player, M2C_UNK soundId, s32 arg);
+    s32 Sound_PlaySequenceRecord(M2C_UNK player, s32 sequenceId);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    s32 started;
+    u16 id;
+
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    val = (u16) arg0;
-    if (arg0 & 0x10000) {
-        var_r4 = func_0202d91c(&data_02157838, val, 0) & 0xFF;
+    id = (u16) trackId;
+    if (trackId & 0x10000) {
+        started = Sound_StartArchiveSound(&gMusicSoundPlayer, id, 0) & 0xFF;
         func_02090574();
     } else {
-        var_r4 = func_0202d330(&data_0215783c, val) & 0xFF;
+        started = Sound_PlaySequenceRecord(&gMusicSequencePlayer, id) & 0xFF;
     }
-    if (var_r4 == 0) {
+    if (started == 0) {
         return 0;
     }
     return 1;
 }
 
 s32 func_02090248(s32 arg0) {
-extern M2C_UNK gSoundDriverState, data_0215783c, data_02157838;
+extern M2C_UNK gSoundDriverState, gMusicSequencePlayer, gMusicSoundPlayer;
 u8 func_02090350(void); u8 func_02090370(void);
 M2C_UNK func_0202ac60(M2C_UNK,M2C_UNK);
 void func_0202d944(M2C_UNK,s32);
 if(M2C_FIELD(&gSoundDriverState,u8 *,0)==0) return 0;
-if(func_02090350()!=0) func_0202ac60(&data_0215783c,arg0);
-if(func_02090370()!=0) func_0202d944(&data_02157838,arg0);
+if(func_02090350()!=0) func_0202ac60(&gMusicSequencePlayer,arg0);
+if(func_02090370()!=0) func_0202d944(&gMusicSoundPlayer,arg0);
 return 1;
 }
 
@@ -231,8 +235,8 @@ return 1;
  * other than -1 sets the volume to it at once before the fade starts. */
 s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_0215783c;
-    extern M2C_UNK data_02157838;
+    extern M2C_UNK gMusicSequencePlayer;
+    extern M2C_UNK gMusicSoundPlayer;
     u8 func_02090350(void);
     u8 func_02090370(void);
     M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -243,15 +247,15 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     }
     if (func_02090350() != 0) {
         if (snapVolume != -1) {
-            Sound_StartPlayerVolumeFade(&data_0215783c, snapVolume, 0);
+            Sound_StartPlayerVolumeFade(&gMusicSequencePlayer, snapVolume, 0);
         }
-        Sound_StartPlayerVolumeFade(&data_0215783c, targetVolume, frames);
+        Sound_StartPlayerVolumeFade(&gMusicSequencePlayer, targetVolume, frames);
     }
     if (func_02090370() != 0) {
         if (snapVolume != -1) {
-            func_0202d960(&data_02157838, snapVolume, 0);
+            func_0202d960(&gMusicSoundPlayer, snapVolume, 0);
         }
-        func_0202d960(&data_02157838, targetVolume, frames);
+        func_0202d960(&gMusicSoundPlayer, targetVolume, frames);
     }
     return 1;
 }
@@ -396,13 +400,13 @@ s32 func_0209051c(void) {
 
 void func_02090574(void) {
 extern M2C_UNK gSoundDriverState;
-extern M2C_UNK data_02157838;
+extern M2C_UNK gMusicSoundPlayer;
 s32 func_020904c4(void);
 void func_0202d994(volatile s32 *, s32, s32);
 if(M2C_FIELD(&gSoundDriverState,s32 *,8)!=0) {
 s32 value=func_020904c4();
-func_0202d994(&data_02157838,0,value);
-func_0202d994(&data_02157838,1,value);
+func_0202d994(&gMusicSoundPlayer,0,value);
+func_0202d994(&gMusicSoundPlayer,1,value);
 }
 }
 
@@ -563,31 +567,32 @@ void SpritePlayer_SetListPosition(void *arg0, s32 arg1, s32 arg2) {
     }
 }
 
-void func_02090830(void *arg0) {
+/* Unlink a script player from its owner's list and free it. */
+void SpritePlayer_Remove(void *player) {
     M2C_UNK MemFree();
-    void *temp_r2;
-    void *temp_r2_2;
-    void *temp_r2_3;
+    void *prev;
+    void *next;
+    void *newHead;
 
-    temp_r2 = M2C_FIELD(arg0, void **, 4);
-    if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, void **, 8) = (void *) M2C_FIELD(arg0, void **, 8);
-        temp_r2_2 = M2C_FIELD(arg0, void **, 8);
-        if (temp_r2_2 != NULL) {
-            M2C_FIELD(temp_r2_2, void **, 4) = (void *) M2C_FIELD(arg0, void **, 4);
+    prev = M2C_FIELD(player, void **, SPRITE_PLAYER_PREV);
+    if (prev != NULL) {
+        M2C_FIELD(prev, void **, SPRITE_PLAYER_NEXT) = (void *) M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+        next = M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+        if (next != NULL) {
+            M2C_FIELD(next, void **, SPRITE_PLAYER_PREV) = (void *) M2C_FIELD(player, void **, SPRITE_PLAYER_PREV);
         }
-        if (arg0 == NULL) {
+        if (player == NULL) {
             return;
         }
         MemFree();
         return;
     }
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), void **, 0x38) = (void *) M2C_FIELD(arg0, void **, 8);
-    temp_r2_3 = M2C_FIELD(arg0, void **, 8);
-    if (temp_r2_3 != NULL) {
-        M2C_FIELD(temp_r2_3, void **, 4) = NULL;
+    M2C_FIELD(M2C_FIELD(player, void **, SPRITE_PLAYER_OWNER), void **, SPRITE_OWNER_PLAYER_LIST) = (void *) M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+    newHead = M2C_FIELD(player, void **, SPRITE_PLAYER_NEXT);
+    if (newHead != NULL) {
+        M2C_FIELD(newHead, void **, SPRITE_PLAYER_PREV) = NULL;
     }
-    if (arg0 == NULL) {
+    if (player == NULL) {
         return;
     }
     MemFree();
@@ -619,7 +624,7 @@ void func_02090894(void **arg0) {
    a child player) and arming the next wait from a delay entry - then recurses
    into the next player in the list. */
 void func_020908dc(void *player) {
-    void func_02090830(void *);
+    void SpritePlayer_Remove(void *);
     void SpritePlayer_SpawnChild(void *, void *, s32);
     void *MemAlloc(s32);
     u8 *cursor;
@@ -636,7 +641,7 @@ void func_020908dc(void *player) {
             switch (M2C_FIELD(M2C_FIELD(player, u8 **, 0x10), u8 *, 2)) {
             case 0:
             case 0xFF:
-                func_02090830(player);
+                SpritePlayer_Remove(player);
                 goto done;
             case 1:
                 M2C_FIELD(player, u8 **, 0x10) = (u8 *)M2C_FIELD(player, s32 **, 0xC)

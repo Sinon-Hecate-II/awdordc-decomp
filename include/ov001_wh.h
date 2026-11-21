@@ -53,6 +53,7 @@ typedef struct Ov001DeviceNameRecord {
 /* Fields of gWhWork: the log callback the overlay reports through, then the
  * connection object at +4 (WH_LINK_STATUS and friends). */
 #define WH_WORK_LOG    0x00 /* void (*)(u32 level, const char *text, s32 value): WH logging hook, 0 when none */
+#define WH_WORK_CONNECTION 0x04 /* void * the WH connection object (fields below, WH_LINK_STATUS and friends) */
 #define WH_LOG_STATUS 0x08000000 /* log level of a WH status change */
 
 /* Connection object fields (gWhWork+4). */
@@ -62,6 +63,7 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_CONN_USER_INFO_CB 0x13AC /* s32 (*)(void *userInfo, void *connection): fills the user-info block and returns the WFC user type */
 #define WH_CONN_USER_INFO    0x13C0 /* user-info block handed to WFC_SubmitUserInfo */
 #define WH_CHILD_PICKED 0x5c /* u16: child picked, one-based, 0 = none */
+#define WH_CHILD_CONNECTED 0x52 /* u16: one bit per connected child, bit 0 = this console */
 #define WH_CHILD_BITS   0x60 /* u16: one bit per child still wanted */
 #define WH_CHILD_RATIO  0x5e /* u16: best (lowest) ratio a child scan reported so far, 101 = none */
 #define WH_CHILD_RATIO_NONE 0x65 /* no child reported a ratio yet */
@@ -108,6 +110,16 @@ enum {
 };
 #define OV001_OPTION_COUNT 3
 
+/* The ov001 wireless (multi-card) setup screen's state (gOv001WirelessState). */
+#define OV001_WIRELESS_CONNECTED 0x00 /* u8: set once the local player's connection was accepted */
+#define OV001_WIRELESS_TIMER     0x02 /* u16: counts up to OV001_WIRELESS_TIMEOUT before the screen moves on */
+#define OV001_WIRELESS_TASK      0x04 /* s32: id of the connection task to cancel */
+#define OV001_WIRELESS_TIMEOUT   0x438 /* frames the setup screen waits for the connection (1080) */
+
+/* The ov001 Wi-Fi settings screen's two-choice message popup (gOv001MessageState). */
+#define OV001_MESSAGE_SHOWN  0x00 /* u8: nonzero while the popup is on screen */
+#define OV001_MESSAGE_OPTION 0x01 /* u8: the option the player picked (0 = the first one) */
+
 /* What the ov001 option menu's icon row reports: the shared row has a back icon
  * and a confirm icon, and the menu latches a touch or key press as one of them
  * (see Ov001_GetIconRowSelection). */
@@ -125,6 +137,10 @@ enum {
  * checksum over header and payload. */
 #define WH_PACKET_FIELDS 0x08 /* bytes from gWhPacket to its first field */
 #define WH_PACKET_HEADER 0x06 /* outer header bytes before the payload */
+#define WH_PACKET_TYPE   0x00 /* u16 big-endian type, at the start of the header */
+#define WH_PACKET_LENGTH 0x02 /* u16 big-endian payload byte count */
+/* Packet words are big-endian: the high byte is stored first. */
+#define WH_READ_BE16(value) ((u16)((u8)((s32)(value) >> 8) | (0xff00 & ((value) << 8))))
 
 /* The WH packet/settings block at gWhPacketInfo: +0x00 points at the first
  * field of gWhPacket, +0x08 is the packet buffer size, +0x0C the matchmaking

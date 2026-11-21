@@ -111,13 +111,13 @@ return 0;
 }
 void func_ov001_0216bc0c(s32 n,void *p,M2C_UNK *src) {
 M2C_UNK Ov001MemCopy(void *,M2C_UNK *,s32);
-u16 func_ov001_0216ceb0(u16);
+u16 Ov001SwapEndian16Alt(u16);
 u16 Ov001GetRandomSeed(void);
 s32 i;
 for(i=0;i<n;i++,p=(u8 *)p+8) {
 Ov001MemCopy(p,src,6);
 M2C_FIELD(p,u16 *,6)=Ov001GetRandomSeed();
-M2C_FIELD(p,u16 *,6)=func_ov001_0216ceb0(M2C_FIELD(p,u16 *,6));
+M2C_FIELD(p,u16 *,6)=Ov001SwapEndian16Alt(M2C_FIELD(p,u16 *,6));
 }
 }
 

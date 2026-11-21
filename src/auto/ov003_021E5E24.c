@@ -1,5 +1,6 @@
 /* 35 functions from 0x021E5E24 to 0x021E6E18 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_scene.h"
 typedef struct { u32 played:1;u32 rest:31; } MapPlayedFlag;
 typedef struct {u32 first:8;u32 second:6;u32 third:6;u32 rest:12;} MapStampCounts;
 
@@ -63,7 +64,7 @@ void func_ov003_021e6234(void *obj) {
     M2C_UNK ResetMapUnits();
     M2C_UNK SetTextSpriteValue(s32, s32);
     M2C_UNK DrawMapPreviewLayer(s32, s32, s32, M2C_UNK);
-    M2C_UNK func_020c1878(s32);
+    M2C_UNK CountMapProperties(s32);
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020cf278(M2C_UNK);
     s32 GetMapName(M2C_UNK);
@@ -78,7 +79,7 @@ void func_ov003_021e6234(void *obj) {
     LoadBattleMap(0xE1);
     M2C_FIELD(obj, s16 *, 0x62) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5144) * 4);
     M2C_FIELD(obj, s16 *, 0x64) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5146) * 4);
-    func_020c1878(M2C_FIELD(obj, s32 *, 0x68) + 4);
+    CountMapProperties(M2C_FIELD(obj, s32 *, 0x68) + 4);
     savedContext = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     ClearTileRect(M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x2C), 9, 2);
@@ -177,7 +178,10 @@ u8 func_ov003_021e647c(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 0x60);
 }
 
-void func_ov003_021e64a8(M2C_UNK arg0) {
+/* Build an ov003 scene object (class gOv003SceneClass): install the base and
+ * ov003 scene vtables, then attach its three slide tweens, a one-sprite holder,
+ * four number labels and the 0x40-byte map-list child. */
+void CreateOv003Scene(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK func_020e4c64();
@@ -185,211 +189,219 @@ void func_ov003_021e64a8(M2C_UNK arg0) {
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220f650;
+    extern M2C_UNK gOv003SceneClass;
     extern M2C_UNK data_ov003_0220f6f8;
     extern M2C_UNK data_ov003_0220f700;
     extern M2C_UNK data_ov003_0220f710;
     extern M2C_UNK gOv003SceneVTable;
     extern M2C_UNK gOv003SceneIfaceVTable;
-    M2C_UNK **temp_ip;
-    M2C_UNK **temp_ip_2;
-    M2C_UNK **temp_r0_10;
-    M2C_UNK **temp_r0_2;
-    M2C_UNK **temp_r0_3;
-    M2C_UNK **temp_r0_4;
-    M2C_UNK **temp_r0_5;
-    M2C_UNK **temp_r0_6;
-    M2C_UNK **temp_r0_7;
-    M2C_UNK **temp_r0_8;
-    M2C_UNK **temp_r0_9;
-    M2C_UNK **temp_r2;
-    M2C_UNK **temp_r2_2;
-    M2C_UNK **temp_r2_3;
-    M2C_UNK **temp_r2_4;
-    void *temp_r0;
+    M2C_UNK **label50Flags2;
+    M2C_UNK **label50Flags;
+    M2C_UNK **label54;
+    M2C_UNK **mapList;
+    M2C_UNK **tween3C;
+    M2C_UNK **tween40;
+    M2C_UNK **tween44;
+    M2C_UNK **spriteHolder;
+    M2C_UNK **label4C;
+    M2C_UNK **label50;
+    M2C_UNK **label58;
+    M2C_UNK **label4CFlags;
+    M2C_UNK **label4CFlags2;
+    M2C_UNK **label58Flags;
+    M2C_UNK **label54Flags;
+    void *scene;
 
-    SetOv003SceneClass(&data_ov003_0220f650);
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220f650, arg0);
-    if (temp_r0 == NULL) {
+    SetOv003SceneClass(&gOv003SceneClass);
+    scene = CreateSpriteFromClass(&gOv003SceneClass, arg0);
+    if (scene == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gOv003SceneVTable;
-    M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gOv003SceneIfaceVTable;
-    M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x39) = 0;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x40) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x44) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x48) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x50) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x54) = NULL;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x58) = NULL;
-    M2C_FIELD(temp_r0, s32 *, 0x5C) = 0;
-    M2C_FIELD(temp_r0, s8 *, 0x60) = 0;
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x68) = NULL;
+    M2C_FIELD(scene, M2C_UNK **, 0) = &gSceneBaseVTable;
+    M2C_FIELD(scene, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
+    M2C_FIELD(scene, M2C_UNK **, 0) = &gOv003SceneVTable;
+    M2C_FIELD(scene, M2C_UNK **, 0x34) = &gOv003SceneIfaceVTable;
+    M2C_FIELD(scene, s8 *, 0x38) = 0;
+    M2C_FIELD(scene, s8 *, 0x39) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x3C) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x40) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x44) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x48) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x4C) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x50) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x54) = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x58) = NULL;
+    M2C_FIELD(scene, s32 *, 0x5C) = 0;
+    M2C_FIELD(scene, s8 *, 0x60) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x68) = NULL;
     func_020e4c64();
-    temp_r0_2 = MemAlloc(0x40);
-    if (temp_r0_2 != NULL) {
-        *temp_r0_2 = &data_ov003_0220f710;
+    mapList = MemAlloc(0x40);
+    if (mapList != NULL) {
+        *mapList = &data_ov003_0220f710;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x68) = temp_r0_2;
-    temp_r0_3 = MemAlloc(0x12);
-    if (temp_r0_3 != NULL) {
-        M2C_FIELD(temp_r0_3, s8 *, 0) = 4;
-        M2C_FIELD(temp_r0_3, s8 *, 1) = 0;
-        M2C_FIELD(temp_r0_3, u16 *, 2) = 0U;
-        M2C_FIELD(temp_r0_3, u16 *, 4) = 0U;
-        M2C_FIELD(temp_r0_3, s16 *, 6) = 1;
-        M2C_FIELD(temp_r0_3, s16 *, 8) = 0;
-        M2C_FIELD(temp_r0_3, s16 *, 0xA) = 1;
-        M2C_FIELD(temp_r0_3, s16 *, 0xC) = 1;
-        M2C_FIELD(temp_r0_3, s16 *, 0xE) = 0;
-        M2C_FIELD(temp_r0_3, s16 *, 0x10) = 0;
-        M2C_FIELD(temp_r0_3, u16 *, 2) = (u16) M2C_FIELD(temp_r0_3, u16 *, 4);
+    M2C_FIELD(scene, M2C_UNK ***, 0x68) = mapList;
+    tween3C = MemAlloc(0x12);
+    if (tween3C != NULL) {
+        M2C_FIELD(tween3C, s8 *, 0) = 4;
+        M2C_FIELD(tween3C, s8 *, 1) = 0;
+        M2C_FIELD(tween3C, u16 *, 2) = 0U;
+        M2C_FIELD(tween3C, u16 *, 4) = 0U;
+        M2C_FIELD(tween3C, s16 *, 6) = 1;
+        M2C_FIELD(tween3C, s16 *, 8) = 0;
+        M2C_FIELD(tween3C, s16 *, 0xA) = 1;
+        M2C_FIELD(tween3C, s16 *, 0xC) = 1;
+        M2C_FIELD(tween3C, s16 *, 0xE) = 0;
+        M2C_FIELD(tween3C, s16 *, 0x10) = 0;
+        M2C_FIELD(tween3C, u16 *, 2) = (u16) M2C_FIELD(tween3C, u16 *, 4);
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x3C) = temp_r0_3;
-    temp_r0_4 = MemAlloc(0x12);
-    if (temp_r0_4 != NULL) {
-        M2C_FIELD(temp_r0_4, s8 *, 0) = 4;
-        M2C_FIELD(temp_r0_4, s8 *, 1) = 0;
-        M2C_FIELD(temp_r0_4, u16 *, 2) = 0U;
-        M2C_FIELD(temp_r0_4, u16 *, 4) = 0U;
-        M2C_FIELD(temp_r0_4, s16 *, 6) = 1;
-        M2C_FIELD(temp_r0_4, s16 *, 8) = 0;
-        M2C_FIELD(temp_r0_4, s16 *, 0xA) = 1;
-        M2C_FIELD(temp_r0_4, s16 *, 0xC) = 1;
-        M2C_FIELD(temp_r0_4, s16 *, 0xE) = 0;
-        M2C_FIELD(temp_r0_4, s16 *, 0x10) = 0;
-        M2C_FIELD(temp_r0_4, u16 *, 2) = (u16) M2C_FIELD(temp_r0_4, u16 *, 4);
+    M2C_FIELD(scene, M2C_UNK ***, 0x3C) = tween3C;
+    tween40 = MemAlloc(0x12);
+    if (tween40 != NULL) {
+        M2C_FIELD(tween40, s8 *, 0) = 4;
+        M2C_FIELD(tween40, s8 *, 1) = 0;
+        M2C_FIELD(tween40, u16 *, 2) = 0U;
+        M2C_FIELD(tween40, u16 *, 4) = 0U;
+        M2C_FIELD(tween40, s16 *, 6) = 1;
+        M2C_FIELD(tween40, s16 *, 8) = 0;
+        M2C_FIELD(tween40, s16 *, 0xA) = 1;
+        M2C_FIELD(tween40, s16 *, 0xC) = 1;
+        M2C_FIELD(tween40, s16 *, 0xE) = 0;
+        M2C_FIELD(tween40, s16 *, 0x10) = 0;
+        M2C_FIELD(tween40, u16 *, 2) = (u16) M2C_FIELD(tween40, u16 *, 4);
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x40) = temp_r0_4;
-    temp_r0_5 = MemAlloc(0x12);
-    if (temp_r0_5 != NULL) {
-        M2C_FIELD(temp_r0_5, s8 *, 0) = 4;
-        M2C_FIELD(temp_r0_5, s8 *, 1) = 0;
-        M2C_FIELD(temp_r0_5, u16 *, 2) = 0U;
-        M2C_FIELD(temp_r0_5, u16 *, 4) = 0U;
-        M2C_FIELD(temp_r0_5, s16 *, 6) = 1;
-        M2C_FIELD(temp_r0_5, s16 *, 8) = 0;
-        M2C_FIELD(temp_r0_5, s16 *, 0xA) = 1;
-        M2C_FIELD(temp_r0_5, s16 *, 0xC) = 1;
-        M2C_FIELD(temp_r0_5, s16 *, 0xE) = 0;
-        M2C_FIELD(temp_r0_5, s16 *, 0x10) = 0;
-        M2C_FIELD(temp_r0_5, u16 *, 2) = (u16) M2C_FIELD(temp_r0_5, u16 *, 4);
+    M2C_FIELD(scene, M2C_UNK ***, 0x40) = tween40;
+    tween44 = MemAlloc(0x12);
+    if (tween44 != NULL) {
+        M2C_FIELD(tween44, s8 *, 0) = 4;
+        M2C_FIELD(tween44, s8 *, 1) = 0;
+        M2C_FIELD(tween44, u16 *, 2) = 0U;
+        M2C_FIELD(tween44, u16 *, 4) = 0U;
+        M2C_FIELD(tween44, s16 *, 6) = 1;
+        M2C_FIELD(tween44, s16 *, 8) = 0;
+        M2C_FIELD(tween44, s16 *, 0xA) = 1;
+        M2C_FIELD(tween44, s16 *, 0xC) = 1;
+        M2C_FIELD(tween44, s16 *, 0xE) = 0;
+        M2C_FIELD(tween44, s16 *, 0x10) = 0;
+        M2C_FIELD(tween44, u16 *, 2) = (u16) M2C_FIELD(tween44, u16 *, 4);
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x44) = temp_r0_5;
-    temp_r0_6 = MemAlloc(4);
-    if (temp_r0_6 != NULL) {
-        *temp_r0_6 = NULL;
+    M2C_FIELD(scene, M2C_UNK ***, 0x44) = tween44;
+    spriteHolder = MemAlloc(4);
+    if (spriteHolder != NULL) {
+        *spriteHolder = NULL;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x48) = temp_r0_6;
-    temp_r0_7 = MemAlloc(0x2C);
-    if (temp_r0_7 != NULL) {
-        M2C_FIELD(temp_r0_7, M2C_UNK **, 0) = &gHeapObjectVTable;
-        M2C_FIELD(temp_r0_7, s8 *, 4) = 0;
-        M2C_FIELD(temp_r0_7, s16 *, 0x12) = 0;
-        M2C_FIELD(temp_r0_7, s8 *, 0x14) = 8;
-        M2C_FIELD(temp_r0_7, s8 *, 0x15) = 8;
-        M2C_FIELD(temp_r0_7, s8 *, 0x16) = 1;
-        M2C_FIELD(temp_r0_7, s8 *, 0x17) = 8;
-        M2C_FIELD(temp_r0_7, s8 *, 0x18) = 8;
-        M2C_FIELD(temp_r0_7, u8 *, 0x20) = (u8) (((u8) ((u8) (M2C_FIELD(temp_r0_7, u8 *, 0x20) & ~1) & ~0x1E) & ~0xE0) | 0x40);
-        M2C_FIELD(temp_r0_7, s8 *, 0x21) = 0;
-        M2C_FIELD(temp_r0_7, s32 *, 0x24) = 0;
-        M2C_FIELD(temp_r0_7, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_7, u8 *, 0x28) & ~0xE0);
-        M2C_FIELD(temp_r0_7, s8 *, 0x29) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x48) = spriteHolder;
+    label4C = MemAlloc(0x2C);
+    if (label4C != NULL) {
+        M2C_FIELD(label4C, M2C_UNK **, 0) = &gHeapObjectVTable;
+        M2C_FIELD(label4C, s8 *, 4) = 0;
+        M2C_FIELD(label4C, s16 *, 0x12) = 0;
+        M2C_FIELD(label4C, s8 *, 0x14) = 8;
+        M2C_FIELD(label4C, s8 *, 0x15) = 8;
+        M2C_FIELD(label4C, s8 *, 0x16) = 1;
+        M2C_FIELD(label4C, s8 *, 0x17) = 8;
+        M2C_FIELD(label4C, s8 *, 0x18) = 8;
+        ((SceneViewLabel *)label4C)->flags.first = 0;
+        ((SceneViewLabel *)label4C)->flags.second = 0;
+        ((SceneViewLabel *)label4C)->flags.third = 2;
+        M2C_FIELD(label4C, s8 *, 0x21) = 0;
+        M2C_FIELD(label4C, s32 *, 0x24) = 0;
+        M2C_FIELD(label4C, u8 *, 0x28) = (u8) (M2C_FIELD(label4C, u8 *, 0x28) & ~0xE0);
+        M2C_FIELD(label4C, s8 *, 0x29) = 0;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C) = temp_r0_7;
-    M2C_FIELD(temp_r0_7, s8 *, 0x16) = 2;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C), s8 *, 0x14) = 8;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C), s8 *, 0x17) = 8;
-    SetTextSpriteValue(M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C), 0);
-    temp_r2 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C);
-    M2C_FIELD(temp_r2, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r2, u8 *, 0x20) & ~0xE0) | 0x40);
-    temp_r2_2 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x4C);
-    M2C_FIELD(temp_r2_2, u8 *, 0x28) = (u8) ((M2C_FIELD(temp_r2_2, u8 *, 0x28) & ~0xE0) | 0x20);
-    temp_r0_8 = MemAlloc(0x2C);
-    if (temp_r0_8 != NULL) {
-        M2C_FIELD(temp_r0_8, M2C_UNK **, 0) = &gHeapObjectVTable;
-        M2C_FIELD(temp_r0_8, s8 *, 4) = 0;
-        M2C_FIELD(temp_r0_8, s16 *, 0x12) = 0;
-        M2C_FIELD(temp_r0_8, s8 *, 0x14) = 8;
-        M2C_FIELD(temp_r0_8, s8 *, 0x15) = 8;
-        M2C_FIELD(temp_r0_8, s8 *, 0x16) = 1;
-        M2C_FIELD(temp_r0_8, s8 *, 0x17) = 8;
-        M2C_FIELD(temp_r0_8, s8 *, 0x18) = 8;
-        M2C_FIELD(temp_r0_8, u8 *, 0x20) = (u8) (((u8) ((u8) (M2C_FIELD(temp_r0_8, u8 *, 0x20) & ~1) & ~0x1E) & ~0xE0) | 0x40);
-        M2C_FIELD(temp_r0_8, s8 *, 0x21) = 0;
-        M2C_FIELD(temp_r0_8, s32 *, 0x24) = 0;
-        M2C_FIELD(temp_r0_8, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_8, u8 *, 0x28) & ~0xE0);
-        M2C_FIELD(temp_r0_8, s8 *, 0x29) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x4C) = label4C;
+    M2C_FIELD(label4C, s8 *, 0x16) = 2;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x4C), s8 *, 0x14) = 8;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x4C), s8 *, 0x17) = 8;
+    SetTextSpriteValue(M2C_FIELD(scene, M2C_UNK ***, 0x4C), 0);
+    label4CFlags = M2C_FIELD(scene, M2C_UNK ***, 0x4C);
+    M2C_FIELD(label4CFlags, u8 *, 0x20) = (u8) ((M2C_FIELD(label4CFlags, u8 *, 0x20) & ~0xE0) | 0x40);
+    label4CFlags2 = M2C_FIELD(scene, M2C_UNK ***, 0x4C);
+    M2C_FIELD(label4CFlags2, u8 *, 0x28) = (u8) ((M2C_FIELD(label4CFlags2, u8 *, 0x28) & ~0xE0) | 0x20);
+    label50 = MemAlloc(0x2C);
+    if (label50 != NULL) {
+        M2C_FIELD(label50, M2C_UNK **, 0) = &gHeapObjectVTable;
+        M2C_FIELD(label50, s8 *, 4) = 0;
+        M2C_FIELD(label50, s16 *, 0x12) = 0;
+        M2C_FIELD(label50, s8 *, 0x14) = 8;
+        M2C_FIELD(label50, s8 *, 0x15) = 8;
+        M2C_FIELD(label50, s8 *, 0x16) = 1;
+        M2C_FIELD(label50, s8 *, 0x17) = 8;
+        M2C_FIELD(label50, s8 *, 0x18) = 8;
+        ((SceneViewLabel *)label50)->flags.first = 0;
+        ((SceneViewLabel *)label50)->flags.second = 0;
+        ((SceneViewLabel *)label50)->flags.third = 2;
+        M2C_FIELD(label50, s8 *, 0x21) = 0;
+        M2C_FIELD(label50, s32 *, 0x24) = 0;
+        M2C_FIELD(label50, u8 *, 0x28) = (u8) (M2C_FIELD(label50, u8 *, 0x28) & ~0xE0);
+        M2C_FIELD(label50, s8 *, 0x29) = 0;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x50) = temp_r0_8;
-    M2C_FIELD(temp_r0_8, s8 *, 0x16) = 2;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x50), s8 *, 0x14) = 8;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x50), s8 *, 0x17) = 8;
-    SetTextSpriteValue(M2C_FIELD(temp_r0, M2C_UNK ***, 0x50), 0);
-    temp_ip = M2C_FIELD(temp_r0, M2C_UNK ***, 0x50);
-    M2C_FIELD(temp_ip, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_ip, u8 *, 0x20) & ~0xE0) | 0x40);
-    temp_ip_2 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x50);
-    M2C_FIELD(temp_ip_2, u8 *, 0x28) = (u8) (M2C_FIELD(temp_ip_2, u8 *, 0x28) & ~0xE0);
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x50), s16 *, 0x12) = 0x270;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x50), s8 *, 0x21) = 9;
-    temp_r0_9 = MemAlloc(0x2C);
-    if (temp_r0_9 != NULL) {
-        M2C_FIELD(temp_r0_9, M2C_UNK **, 0) = &gHeapObjectVTable;
-        M2C_FIELD(temp_r0_9, s8 *, 4) = 0;
-        M2C_FIELD(temp_r0_9, s16 *, 0x12) = 0;
-        M2C_FIELD(temp_r0_9, s8 *, 0x14) = 8;
-        M2C_FIELD(temp_r0_9, s8 *, 0x15) = 8;
-        M2C_FIELD(temp_r0_9, s8 *, 0x16) = 1;
-        M2C_FIELD(temp_r0_9, s8 *, 0x17) = 8;
-        M2C_FIELD(temp_r0_9, s8 *, 0x18) = 8;
-        M2C_FIELD(temp_r0_9, u8 *, 0x20) = (u8) (((u8) ((u8) (M2C_FIELD(temp_r0_9, u8 *, 0x20) & ~1) & ~0x1E) & ~0xE0) | 0x40);
-        M2C_FIELD(temp_r0_9, s8 *, 0x21) = 0;
-        M2C_FIELD(temp_r0_9, s32 *, 0x24) = 0;
-        M2C_FIELD(temp_r0_9, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_9, u8 *, 0x28) & ~0xE0);
-        M2C_FIELD(temp_r0_9, s8 *, 0x29) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x50) = label50;
+    M2C_FIELD(label50, s8 *, 0x16) = 2;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x50), s8 *, 0x14) = 8;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x50), s8 *, 0x17) = 8;
+    SetTextSpriteValue(M2C_FIELD(scene, M2C_UNK ***, 0x50), 0);
+    label50Flags = M2C_FIELD(scene, M2C_UNK ***, 0x50);
+    M2C_FIELD(label50Flags, u8 *, 0x20) = (u8) ((M2C_FIELD(label50Flags, u8 *, 0x20) & ~0xE0) | 0x40);
+    label50Flags2 = M2C_FIELD(scene, M2C_UNK ***, 0x50);
+    M2C_FIELD(label50Flags2, u8 *, 0x28) = (u8) (M2C_FIELD(label50Flags2, u8 *, 0x28) & ~0xE0);
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x50), s16 *, 0x12) = 0x270;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x50), s8 *, 0x21) = 9;
+    label58 = MemAlloc(0x2C);
+    if (label58 != NULL) {
+        M2C_FIELD(label58, M2C_UNK **, 0) = &gHeapObjectVTable;
+        M2C_FIELD(label58, s8 *, 4) = 0;
+        M2C_FIELD(label58, s16 *, 0x12) = 0;
+        M2C_FIELD(label58, s8 *, 0x14) = 8;
+        M2C_FIELD(label58, s8 *, 0x15) = 8;
+        M2C_FIELD(label58, s8 *, 0x16) = 1;
+        M2C_FIELD(label58, s8 *, 0x17) = 8;
+        M2C_FIELD(label58, s8 *, 0x18) = 8;
+        ((SceneViewLabel *)label58)->flags.first = 0;
+        ((SceneViewLabel *)label58)->flags.second = 0;
+        ((SceneViewLabel *)label58)->flags.third = 2;
+        M2C_FIELD(label58, s8 *, 0x21) = 0;
+        M2C_FIELD(label58, s32 *, 0x24) = 0;
+        M2C_FIELD(label58, u8 *, 0x28) = (u8) (M2C_FIELD(label58, u8 *, 0x28) & ~0xE0);
+        M2C_FIELD(label58, s8 *, 0x29) = 0;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x58) = temp_r0_9;
-    M2C_FIELD(temp_r0_9, s16 *, 0x12) = 0x1E8;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x16) = 0x10;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x14) = 0x1A;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x15) = 0x20;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x17) = 0x22;
-    temp_r2_3 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x58);
-    M2C_FIELD(temp_r2_3, u8 *, 0x20) = (u8) (M2C_FIELD(temp_r2_3, u8 *, 0x20) & ~0xE0);
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x21) = 7;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s8 *, 0x29) = 2;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), s16 *, 8) = 0x80;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x58), M2C_UNK **, 0x24) = &data_ov003_0220f700;
-    temp_r0_10 = MemAlloc(0x2C);
-    if (temp_r0_10 != NULL) {
-        M2C_FIELD(temp_r0_10, M2C_UNK **, 0) = &gHeapObjectVTable;
-        M2C_FIELD(temp_r0_10, s8 *, 4) = 0;
-        M2C_FIELD(temp_r0_10, s16 *, 0x12) = 0;
-        M2C_FIELD(temp_r0_10, s8 *, 0x14) = 8;
-        M2C_FIELD(temp_r0_10, s8 *, 0x15) = 8;
-        M2C_FIELD(temp_r0_10, s8 *, 0x16) = 1;
-        M2C_FIELD(temp_r0_10, s8 *, 0x17) = 8;
-        M2C_FIELD(temp_r0_10, s8 *, 0x18) = 8;
-        M2C_FIELD(temp_r0_10, u8 *, 0x20) = (u8) (((u8) ((u8) (M2C_FIELD(temp_r0_10, u8 *, 0x20) & ~1) & ~0x1E) & ~0xE0) | 0x40);
-        M2C_FIELD(temp_r0_10, s8 *, 0x21) = 0;
-        M2C_FIELD(temp_r0_10, s32 *, 0x24) = 0;
-        M2C_FIELD(temp_r0_10, u8 *, 0x28) = (u8) (M2C_FIELD(temp_r0_10, u8 *, 0x28) & ~0xE0);
-        M2C_FIELD(temp_r0_10, s8 *, 0x29) = 0;
+    M2C_FIELD(scene, M2C_UNK ***, 0x58) = label58;
+    M2C_FIELD(label58, s16 *, 0x12) = 0x1E8;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x16) = 0x10;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x14) = 0x1A;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x15) = 0x20;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x17) = 0x22;
+    label58Flags = M2C_FIELD(scene, M2C_UNK ***, 0x58);
+    M2C_FIELD(label58Flags, u8 *, 0x20) = (u8) (M2C_FIELD(label58Flags, u8 *, 0x20) & ~0xE0);
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x21) = 7;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s8 *, 0x29) = 2;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), s16 *, 8) = 0x80;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x58), M2C_UNK **, 0x24) = &data_ov003_0220f700;
+    label54 = MemAlloc(0x2C);
+    if (label54 != NULL) {
+        M2C_FIELD(label54, M2C_UNK **, 0) = &gHeapObjectVTable;
+        M2C_FIELD(label54, s8 *, 4) = 0;
+        M2C_FIELD(label54, s16 *, 0x12) = 0;
+        M2C_FIELD(label54, s8 *, 0x14) = 8;
+        M2C_FIELD(label54, s8 *, 0x15) = 8;
+        M2C_FIELD(label54, s8 *, 0x16) = 1;
+        M2C_FIELD(label54, s8 *, 0x17) = 8;
+        M2C_FIELD(label54, s8 *, 0x18) = 8;
+        ((SceneViewLabel *)label54)->flags.first = 0;
+        ((SceneViewLabel *)label54)->flags.second = 0;
+        ((SceneViewLabel *)label54)->flags.third = 2;
+        M2C_FIELD(label54, s8 *, 0x21) = 0;
+        M2C_FIELD(label54, s32 *, 0x24) = 0;
+        M2C_FIELD(label54, u8 *, 0x28) = (u8) (M2C_FIELD(label54, u8 *, 0x28) & ~0xE0);
+        M2C_FIELD(label54, s8 *, 0x29) = 0;
     }
-    M2C_FIELD(temp_r0, M2C_UNK ***, 0x54) = temp_r0_10;
-    M2C_FIELD(temp_r0_10, s16 *, 0x12) = 0x1B4;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x54), s8 *, 0x16) = 4;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x54), s8 *, 0x14) = 0x10;
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x54), s8 *, 0x17) = 0xB;
-    temp_r2_4 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x54);
-    M2C_FIELD(temp_r2_4, u8 *, 0x20) = (u8) ((M2C_FIELD(temp_r2_4, u8 *, 0x20) & ~0xE0) | 0x40);
-    M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x54), M2C_UNK **, 0x24) = &data_ov003_0220f6f8;
+    M2C_FIELD(scene, M2C_UNK ***, 0x54) = label54;
+    M2C_FIELD(label54, s16 *, 0x12) = 0x1B4;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x54), s8 *, 0x16) = 4;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x54), s8 *, 0x14) = 0x10;
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x54), s8 *, 0x17) = 0xB;
+    label54Flags = M2C_FIELD(scene, M2C_UNK ***, 0x54);
+    M2C_FIELD(label54Flags, u8 *, 0x20) = (u8) ((M2C_FIELD(label54Flags, u8 *, 0x20) & ~0xE0) | 0x40);
+    M2C_FIELD(M2C_FIELD(scene, M2C_UNK ***, 0x54), M2C_UNK **, 0x24) = &data_ov003_0220f6f8;
 }
 
 /* The ov003 scene's destructor slot: install the destruction vtables, release the

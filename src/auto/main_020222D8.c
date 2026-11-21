@@ -278,13 +278,13 @@ MD5_Update(session+TLS_MD5_CTX,session,TLS_MASTER_SECRET_SIZE);
 MD5_Update(session+TLS_MD5_CTX,sha1,20);
 MD5_Final(session+TLS_MD5_CTX,out);
 }
-#pragma opt_strength_reduction off
+#pragma scheduling off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
 s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void AppendCommaSeparatedName(void*,u8*,s32);
 u32 ParseAsn1Time(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
 u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
-if(len<0 || len>2000)return 1;
+if (!(len >= 0 && len <= 2000)) return 1;
 sw=tag&31;
 switch(sw){
 case 2:
@@ -356,7 +356,6 @@ break;
 }
 *input=p;return 0;
 }
-#pragma opt_strength_reduction reset
 /* Verify the RSA signature carried in the current TLS handshake message: exponentiate it with
  * the named public key, then check the recovered PKCS#1 v1.5 block (00 01 ff..ff 00 30 ...)
  * ends in the handshake digest. Returns 0 when it verifies, 2 when the key or signature is

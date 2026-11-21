@@ -21,7 +21,7 @@ if(M2C_FIELD((u8 *)state+M2C_FIELD(state,u16 *,0x52a4)*0x8c,u8 *,0x67bd)){
 M2C_FIELD(state,u16 *,0x52b0)=1;return;
 }
 func_020994e0(0);
-if(func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
+if(IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap,u16 *,0x52a4))){
 state=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c;
 StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
@@ -58,7 +58,7 @@ void func_020d472c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,0x
 
 void func_020d4754(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,0x52aa)=0;}
 
-u8 func_020d4774(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ab);}
+u8 IsUnitMoveActive(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ab);}
 
 void func_020d4790(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u8*,0x52ab)=1;}
 

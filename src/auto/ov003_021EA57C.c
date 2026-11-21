@@ -17,7 +17,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK Hide3DSprite(void *);
     M2C_UNK FillFaceTileMap(M2C_UNK, s32, M2C_UNK, s32, u32, u32, s32);
     M2C_UNK LoadFacePalette(s8, M2C_UNK, u8, u32, s32);
-    M2C_UNK func_020990fc(void *, s8, M2C_UNK, M2C_UNK);
+    M2C_UNK SetFaceSpritePose(void *, s8, M2C_UNK, M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK UpdateSpriteAnimation(s32);
     s32 GetSpriteAnimValue(s32);
@@ -94,7 +94,7 @@ void func_ov003_021ea57c(void *arg0) {
             if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1F) >> 0x1F) != 0) {
                 Show3DSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78));
             }
-            func_020990fc(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), temp_r4, 8, 0);
+            SetFaceSpritePose(M2C_FIELD(M2C_FIELD(arg0, void **, 0x68), void **, 0x78), temp_r4, 8, 0);
             GetWaypointOptionTextId(temp_r5);
             DrawTextLine(1, 8, 3, GetLocalizedText(), 0x2000, (s32) (u16) ((((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1E) >> 0x1F) * 0xE0) + 1));
         }

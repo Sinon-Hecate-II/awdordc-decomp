@@ -33,7 +33,19 @@ M2C_FIELD(p,s32 *,0x5c)=M2C_FIELD(*gCurrentMap,s32 *,0x52d0);
 M2C_FIELD(p,s32 *,0x60)=a;M2C_FIELD(p,s32 *,0x34)=0;M2C_FIELD(p,s32 *,0x38)=x;M2C_FIELD(p,s32 *,0x3c)=y;
 }
 
-void func_0209ebe0(void *p){extern M2C_UNK gBattleEndState;extern void **gCurrentMap;u32 v;if(M2C_FIELD(&gBattleEndState,u8 *,0)){if(M2C_FIELD(&gBattleEndState,u8 *,0))v=M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=19;else v=0;if(!(v&255))return;}StepMapViewToTile(M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
+/* Battle-preview panel step: keep the map view scrolled onto the tile the panel
+ * previews, except while the battle-end screen is up (the battle has ended and
+ * the map is in MAP_STATE 19). */
+void StepBattlePreviewPanel(void *panel) {
+    extern M2C_UNK gBattleEndState;
+    extern void **gCurrentMap;
+    u32 scrollEnabled;
+    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) {
+        if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) scrollEnabled = M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) != 19; else scrollEnabled = 0;
+        if (!(scrollEnabled & 0xFF)) return;
+    }
+    StepMapViewToTile(M2C_FIELD(panel, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(panel, s32 *, BATTLE_PREVIEW_Y));
+}
 
 /* Gives the battle preview panel its graphic: the sprite of the unit under the
  * cursor when it previews a unit, otherwise the sprite of the tile itself.

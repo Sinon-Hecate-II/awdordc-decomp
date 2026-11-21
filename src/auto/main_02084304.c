@@ -101,14 +101,14 @@ void RunLinkAiCommand(void) {
  * turn only steps the command. */
 void UpdateLocalPlayerInput(void) {
     void func_0207a7a4(s32, s32);
-    void func_020cf80c(void);
+    void UpdateMapCursorInput(void);
     void *map;
 
     map = *gCurrentMap;
     if (M2C_FIELD((M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE) + map, u8 *, PLAYER_CONTROL_OFF) == PLAYER_CONTROL_CPU) {
         return;
     }
-    func_020cf80c();
+    UpdateMapCursorInput();
     func_0207a7a4(1, 4);
 }
 
@@ -180,39 +180,42 @@ s32 func_020846e8(void) {
     }
 }
 
-s32 func_0208471c(void) {
+/* True when the active network session has failed: a single-card link whose
+ * phase is LINK_PHASE_ERROR or LINK_PHASE_ABORTED, or an online session with a
+ * nonzero network error code. */
+s32 IsSessionInError(void) {
     s32 GetNetErrorCode();
-    s32 temp_r0;
-    s32 var_r0;
+    s32 overlay;
+    s32 result;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        if ((GetLinkPhase() == 8) || (GetLinkPhase() == 9)) {
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        if ((GetLinkPhase() == LINK_PHASE_ERROR) || (GetLinkPhase() == LINK_PHASE_ABORTED)) {
             return 1;
         }
         return 0;
-    case 2:
+    case NET_OVERLAY_ONLINE:
         if (GetNetErrorCode() != 0) {
-            var_r0 = 1;
+            result = 1;
         } else {
-            var_r0 = 0;
+            result = 0;
         }
-        return var_r0;
+        return result;
     default:
         return 0;
     }
 }
 
 s32 func_0208477c(void) {
-    s32 func_ov009_02224508(M2C_UNK);
+    s32 IsLinkResultFlagSet(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02224508(1);
+        return IsLinkResultFlagSet(1);
     case 2:
         return IsOnlineSessionFlagSet(6);
     default:
@@ -491,31 +494,40 @@ s8 func_02084ba8(M2C_UNK arg0) {
     }
 }
 
-s32 Link_BroadcastMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Send one link message to every player (recipient mask 0xFFFF): through the
+ * single-card link overlay when it is active, or through the online overlay.
+ * Arguments are the per-overlay queue helpers' message id, payload pointer and
+ * payload size.  Returns the overlay's result, or 0 while neither session runs. */
+s32 Link_BroadcastMessage(M2C_UNK message, M2C_UNK payload, M2C_UNK payloadSize) {
     s32 QueueHostLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 temp_r0;
+    s32 QueueOnlineLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return QueueHostLinkPacket(arg0, arg1, arg2, 0xFFFF);
-    case 2:
-        return func_ov010_02229608(arg0, arg1, arg2, 0xFFFF);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return QueueHostLinkPacket(message, payload, payloadSize, 0xFFFF);
+    case NET_OVERLAY_ONLINE:
+        return QueueOnlineLinkPacket(message, payload, payloadSize, 0xFFFF);
     default:
         return 0;
     }
 }
 
-s32 Link_SendMessage(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Send one link message to the players named by `recipients` (a bit per player
+ * slot): through the single-card link overlay when it is active, or through the
+ * online overlay.  Parameter meanings match the per-overlay queue helpers:
+ * message id, payload pointer, payload size and recipient mask.  Returns the
+ * overlay's result, or 0 while neither session is running. */
+s32 Link_SendMessage(M2C_UNK message, M2C_UNK payload, M2C_UNK payloadSize, M2C_UNK recipients) {
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
-    case 1:
-        return QueueHostLinkPacket(arg0, arg1, arg2, arg3);
-    case 2:
-        return func_ov010_02229608(arg0, arg1, arg2, arg3);
+    case NET_OVERLAY_LINK:
+        return QueueHostLinkPacket(message, payload, payloadSize, recipients);
+    case NET_OVERLAY_ONLINE:
+        return QueueOnlineLinkPacket(message, payload, payloadSize, recipients);
     default:
         return 0;
     }
@@ -702,16 +714,16 @@ s32 Link_SetMessageHandler(M2C_UNK arg0) {
 }
 
 void func_02085000(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02085c4c();
-    M2C_UNK func_ov009_0222617c(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK ClearLinkCommandQueues();
+    M2C_UNK CreateLinkNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK CreateOnlineNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
-    func_02085c4c();
+    ClearLinkCommandQueues();
     temp_r0 = GetLinkMode();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        func_ov009_0222617c(arg0, arg1, arg2);
+        CreateLinkNameLabel(arg0, arg1, arg2);
         return;
     case 2:
         CreateOnlineNameLabel(arg0, arg1, arg2);

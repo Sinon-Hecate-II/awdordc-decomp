@@ -1,6 +1,7 @@
 /* 48 functions from 0x020D2470 to 0x020D3464 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u8 kind:6; u8 flags:2; } SelectionKind;
 typedef struct { SelectionKind kind; u8 pad[3]; u16 flags; u8 tail[8]; } SelectionUnit;
 
@@ -152,16 +153,20 @@ s32 IsPropertyOwnedByTeam(s32 arg0, s32 arg1, s32 arg2) {
     return IsSameTeam(arg0, byte >> 5);
 }
 
-s32 Map_ShowsCargoForUnit(s32 arg0,s32 arg1,s32 arg2) {
-extern s32 *gCurrentMap;
-extern u8 gUnitKindCargoCount[];
-void *base=*gCurrentMap;
-if(M2C_FIELD(base,u8 *,0x5156)!=0 || M2C_FIELD(base,u8 *,0x5158)==2) {
-if(!(M2C_FIELD((u8 *)base+arg2*0x8c,u8 *,0x67c3)&2)) {
-if(gUnitKindCargoCount[arg0*0x70]!=0) return 1;
-}
-}
-return 0;
+/* Whether a map unit of `kind` that carries units should show its cargo marker:
+ * only while fog of war is on or the weather is snow, and only for a unit whose
+ * owner's side does not carry the SIDE_TEAM_B bit, when the kind has cargo slots. */
+s32 Map_ShowsCargoForUnit(s32 kind, s32 currentPlayer, s32 player) {
+    extern s32 *gCurrentMap;
+    extern u8 gUnitKindCargoCount[];
+    void *base = *gCurrentMap;
+
+    if (M2C_FIELD(base, u8 *, MAP_FOG) != 0 || M2C_FIELD(base, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW) {
+        if (!(M2C_FIELD((u8 *)base + player * MAP_PLAYER_STRIDE, u8 *, PLAYER_SIDE_OFF) & SIDE_TEAM_B)) {
+            if (gUnitKindCargoCount[kind * UNIT_KIND_STATS_SIZE] != 0) return 1;
+        }
+    }
+    return 0;
 }
 
 /* After a player is defeated, give every other player of an army that still has
@@ -215,31 +220,34 @@ void func_020d2958(void) {
 }
 
 s32 IsPlayerRouted(M2C_UNK arg0) {
- s32 func_020d2a00(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
+ s32 PlayerHasNoUnits(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
  if (!IsPlayerActive()) return 1;
- if (func_020d2a00(arg0)) {
+ if (PlayerHasNoUnits(arg0)) {
  if (func_020d303c(arg0)) return 1;
  if (func_020d2a6c(arg0)) return 1;
  }
  return 0;
 }
 
-s32 func_020d2a00(s32 arg0) {
+/* Whether `player` has no units left on the map: 1 when every record of the
+ * player's unit group (ids base+1 .. base+MAP_UNIT_GROUP_SCAN) has kind 0, 0 as
+ * soon as one slot holds a unit. */
+s32 PlayerHasNoUnits(s32 player) {
     extern u16 gPlayerUnitIdBase[];
     extern s32 *gCurrentMap;
     s32 end;
     s32 i;
 
-    i = gPlayerUnitIdBase[arg0] + 1;
-    end = gPlayerUnitIdBase[arg0] + 0x33;
+    i = gPlayerUnitIdBase[player] + 1;
+    end = gPlayerUnitIdBase[player] + MAP_UNIT_GROUP_SCAN;
     if (i < end) {
-        u8 *p = (u8 *)*gCurrentMap + 0x59A4 + i * 14;
+        u8 *slot = (u8 *)*gCurrentMap + MAP_UNIT_RECORDS + i * MAP_UNIT_STRIDE;
         do {
-            if (((u32)(*p << 26) >> 26) != 0) {
+            if (((u32)(*slot << 26) >> 26) != 0) {
                 return 0;
             }
             i++;
-            p += 14;
+            slot += MAP_UNIT_STRIDE;
         } while (i < end);
     }
     return 1;
@@ -619,15 +627,19 @@ void func_020d33ec(void) {
     M2C_FIELD(&gMapData, s32 *, 8) = 0;
 }
 
-void func_020d3400(void){
-extern M2C_UNK gMapData; extern s32 *gCurrentMap;
-s32 IsTouchInputDisabled(void); s32 IsBattleEffectActive(void); void IncrementCounter(void *);
-u8 *p; s32 q;
-if(M2C_FIELD(&gMapData,s32 *,8)==0)return;
-if(IsTouchInputDisabled()!=0)return;
-if(IsBattleEffectActive()!=0)return;
-p=(u8 *)*gCurrentMap;
-q=(s32)p+0x67a4+M2C_FIELD(p,u16 *,0x52a4)*0x8c;
-IncrementCounter((u8 *)q+0x84);
+/* Adds one frame to the current player's accumulated battle time while the
+ * battle's turn timer is running and the player can act: pausing for a menu or
+ * touch lock, or while a battle effect plays, does not count.  The counter
+ * saturates instead of wrapping. */
+void UpdatePlayerBattleTime(void) {
+    extern M2C_UNK gMapData; extern s32 *gCurrentMap;
+    s32 IsTouchInputDisabled(void); s32 IsBattleEffectActive(void); void IncrementCounter(void *);
+    u8 *map; s32 rec;
+    if (M2C_FIELD(&gMapData, u32 *, MAPDATA_TURN_TIMER) == 0) return;
+    if (IsTouchInputDisabled() != 0) return;
+    if (IsBattleEffectActive() != 0) return;
+    map = (u8 *)*gCurrentMap;
+    rec = (s32)map + MAP_PLAYER_STATES + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
+    IncrementCounter((u8 *)rec + PLAYER_REC_TOTAL_TIME);
 }
 

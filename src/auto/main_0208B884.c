@@ -82,13 +82,13 @@ void func_0208bc18(void) {
 }
 
 void func_0208bc24(M2C_UNK arg0) {
-    void *func_0208b630();
+    void *InitScrollingTextSprite();
     extern M2C_UNK data_02102760;
     void *var_r0;
 
     var_r0 = CreateSpriteFromClass(&data_02102760, arg0);
     if (var_r0 != NULL) {
-        var_r0 = func_0208b630();
+        var_r0 = InitScrollingTextSprite();
     }
     M2C_FIELD(var_r0, u8 *, 0x48) = (u8) ((M2C_FIELD(var_r0, u8 *, 0x48) & ~0xE) | 2);
 }
@@ -172,7 +172,7 @@ void LoadCompressedSpriteAssetsFromNarc(M2C_UNK sprite, M2C_UNK assetName, s32 d
 /* Set up a display object's buffers from three prepared lists. */
 void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK list3, s32 value, u16 count, u8 flag) {
     s32 LoadFileToBuffer(M2C_UNK, M2C_UNK);
-    s32 func_02081070(M2C_UNK, M2C_UNK);
+    s32 LoadDecompressedFile(M2C_UNK, M2C_UNK);
     M2C_UNK func_0208143c(M2C_UNK, s32, M2C_UNK);
     void *CreateSpriteAnim(s32, M2C_UNK, M2C_UNK);
 
@@ -183,7 +183,7 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     size = count << 5;
     M2C_FIELD(obj, s32 *, 0x54) = LoadFileToBuffer(list2, 1);
     if (flag != 0) {
-        M2C_FIELD(obj, s32 *, 0x50) = func_02081070(list1, 1);
+        M2C_FIELD(obj, s32 *, 0x50) = LoadDecompressedFile(list1, 1);
         func_0208143c(list3, size, 0x20);
     }
     sub = CreateSpriteAnim(M2C_FIELD(obj, s32 *, 0x54), 0xD, 6);
@@ -200,11 +200,11 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
 }
 
 void LoadCompressedSpriteAssets(void *obj, M2C_UNK a, M2C_UNK b, register M2C_UNK *c,u32 value,register u16 count,u8 flag){
-s32 LoadFileToBuffer(M2C_UNK,M2C_UNK);s32 func_02081070(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
+s32 LoadFileToBuffer(M2C_UNK,M2C_UNK);s32 LoadDecompressedFile(M2C_UNK,M2C_UNK);M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *,s32,M2C_UNK);void *CreateSpriteAnim(s32,M2C_UNK,M2C_UNK);
 u16 packed;void *sub,*ptr;
 packed=(u16)((0x3ff & (value >> 5)) + (u16)(count << 12));
 M2C_FIELD(obj,s32 *,0x54)=LoadFileToBuffer(b,1);
-if(flag){M2C_FIELD(obj,s32 *,0x50)=func_02081070(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
+if(flag){M2C_FIELD(obj,s32 *,0x50)=LoadDecompressedFile(a,1);LoadFileToSpriteBuffer(c,(count+16)<<5,32);}
 sub=CreateSpriteAnim(M2C_FIELD(obj,s32 *,0x54),13,2);
 M2C_FIELD(obj,void **,0x4c)=sub;SetSpriteAnimFrame(sub,0);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x30)=M2C_FIELD(obj,s32 *,0x50);
@@ -305,24 +305,28 @@ if(!DrawSprite2D(M2C_FIELD(obj,s32 *,0x4c),spriteX,spriteY)) {DeleteSpriteObject
 gCur3DSpriteEngine=savedEngine; ++g->elapsed;
 }
 
-s32 func_0208c49c(void *arg0) {
+/* Release the animated sprite object's resources: clear its sprite-animation
+ * handle, free its decompressed and file buffers, unregister it from the map when
+ * it is on screen and then run its release callback. */
+s32 ReleaseAnimatedSpriteObject(void *obj) {
     void Sprite_ClearHandle(s32 *);
     s32 func_02094770();
     M2C_UNK func_020d472c();
     M2C_UNK HeapFreeBlock(s32);
-    s32 (*temp_r1)(void *);
-    s32 var_r0;
-    if (M2C_FIELD(arg0, s32 *, 0x4C) != 0) Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x4C));
-    if (M2C_FIELD(arg0, s32 *, 0x50) != 0) HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
-    if (M2C_FIELD(arg0, s32 *, 0x54) != 0) HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
-    var_r0 = (u32)(M2C_FIELD(arg0, u32 *, 0x44) << 12) >> 31;
-    if (var_r0 != 0) {
+    s32 (*releaseCb)(void *);
+    s32 result;
+
+    if (M2C_FIELD(obj, s32 *, SPRITE_OBJ_ANIM) != 0) Sprite_ClearHandle(M2C_FIELD(obj, s32 *, SPRITE_OBJ_ANIM));
+    if (M2C_FIELD(obj, s32 *, SPRITE_OBJ_DECOMP_BUF) != 0) HeapFreeBlock(M2C_FIELD(obj, s32 *, SPRITE_OBJ_DECOMP_BUF));
+    if (M2C_FIELD(obj, s32 *, SPRITE_OBJ_FILE_BUF) != 0) HeapFreeBlock(M2C_FIELD(obj, s32 *, SPRITE_OBJ_FILE_BUF));
+    result = (u32)(M2C_FIELD(obj, u32 *, SPRITE_OBJ_FLAGS) << 12) >> 31;
+    if (result != 0) {
         func_020d472c();
-        var_r0 = func_02094770();
+        result = func_02094770();
     }
-    temp_r1 = M2C_FIELD(arg0, s32 (**)(void *), 0x70);
-    if (temp_r1 == NULL) return var_r0;
-    return temp_r1(arg0);
+    releaseCb = M2C_FIELD(obj, s32 (**)(void *), SPRITE_OBJ_RELEASE_CB);
+    if (releaseCb == NULL) return result;
+    return releaseCb(obj);
 }
 
 void func_0208c504(void) {
@@ -331,8 +335,8 @@ void func_0208c504(void) {
 }
 
 void func_0208c510(void) {
-    M2C_UNK func_0208c49c();
-    func_0208c49c();
+    M2C_UNK ReleaseAnimatedSpriteObject();
+    ReleaseAnimatedSpriteObject();
 }
 
 void func_0208c51c(void) {

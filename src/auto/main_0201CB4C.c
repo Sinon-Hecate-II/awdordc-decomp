@@ -290,7 +290,7 @@ void ResetCurrentConnection(void) {
     M2C_FIELD(q, s32 *, 0x38) = 0;
 }
 
-void func_0201d224(void) {
+void CloseRawConnection(void) {
     extern M2C_UNK gSocketManager;
     void *x = M2C_FIELD(&gSocketManager, void **, 4);
     s32 *q = M2C_FIELD(x, s32 **, 0xa4);
@@ -448,7 +448,7 @@ done:
     M2C_FIELD(rawConnection, u8 *, TCP_SOCK_STATE) = 0;
 }
 
-s32 func_0201d548(s32 *arg0, void *arg1) {
+s32 PeekDatagramReceivedData(s32 *arg0, void *arg1) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
@@ -499,29 +499,35 @@ s32 PeekReceivedData(u32 *sizeOut, M2C_UNK connection) {
     return 0;
 }
 
-s32 func_0201d618(s32 *arg0) {
-    s32 func_0201d548(s32 *, void *);
+/* Peek at the current socket's received data without consuming it: a datagram
+ * (UDP/ICMP) raw connection waits for and returns its pending datagram, a TLS
+ * connection returns its pending record, and anything else returns its
+ * established TCP receive window.  The byte count goes to sizeOut; a socket with
+ * no current connection reports sizeOut 0 and returns 0. */
+s32 PeekSocketReceivedData(s32 *sizeOut) {
+    s32 PeekDatagramReceivedData(s32 *, void *);
     s32 PeekReceivedData(u32 *, M2C_UNK);
     s32 TlsPeekReceivedData(s32 *, void *);
     extern M2C_UNK gSocketManager;
-    void *inner;
-    void *q;
-    u8 v;
+    void *socket;
+    void *connection;
+    u8 datagramState;
 
-    inner = M2C_FIELD(&gSocketManager, void **, 0x4);
-    q = M2C_FIELD(inner, void **, 0xA4);
-    if (q == 0) goto fail;
-    v = (u8)(((u8 *)q)[8] + 0xF6);
-    if (v <= 1) {
-        return func_0201d548(arg0, q);
+    socket = M2C_FIELD(&gSocketManager, void **, 0x4);
+    connection = M2C_FIELD(socket, void **, SOCK_OBJECT_RAW);
+    if (connection == 0) goto fail;
+    /* CONN_STATE 10 (raw/UDP) or 11 (ICMP): a datagram connection */
+    datagramState = (u8)(M2C_FIELD(connection, u8 *, CONN_STATE) + 0xF6);
+    if (datagramState <= 1) {
+        return PeekDatagramReceivedData(sizeOut, connection);
     }
-    if (((u8 *)q)[9] != 0) {
-        return TlsPeekReceivedData(arg0, q);
+    if (M2C_FIELD(connection, u8 *, SOCK_TLS_ACTIVE) != 0) {
+        return TlsPeekReceivedData(sizeOut, connection);
     }
-    return PeekReceivedData((u32 *)arg0, (M2C_UNK)q);
+    return PeekReceivedData((u32 *)sizeOut, (M2C_UNK)connection);
 
 fail:
-    *arg0 = 0;
+    *sizeOut = 0;
     return 0;
 }
 

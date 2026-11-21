@@ -226,7 +226,7 @@ s32 gpiStartConnection(void **conn, s8 *nick, s8 *uniqnick, s8 *email, s8 *passw
 #pragma opt_common_subs off
 #pragma opt_propagation off
 s32 func_020511dc(void *a, void *b) {
-    M2C_UNK func_02050bbc(M2C_UNK, M2C_UNK);
+    M2C_UNK GenerateRandomString(M2C_UNK, M2C_UNK);
     u32 StringLength(void *);
     M2C_UNK Md5Hex(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK StringFormat(M2C_UNK, M2C_UNK, ...);
@@ -244,7 +244,7 @@ s32 func_020511dc(void *a, void *b) {
     char response[0x200];
     char buf1[0x52];
     char *identity;
-    func_02050bbc((M2C_UNK)(r5 + 0x80), 0x20);
+    GenerateRandomString((M2C_UNK)(r5 + 0x80), 0x20);
     r7 = r5[0x1c2] ? r5 + 0x1c2 : (char *)session + 0x177;
     length = StringLength(r7);
     Md5Hex((M2C_UNK)r7, length, (M2C_UNK)(r5 + 0xa1));

@@ -183,7 +183,7 @@ s32 func_0204e830(void *arg0, void *arg1) {
 /* Reset a gpi connection to its initial state: free its receive, message, send
  * and two queue buffers, drop the pending operations and clear the cached status
  * and location strings. */
-s32 gpiResetConnection(void **a){void func_02054484(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
+s32 gpiResetConnection(void **a){void gpiRemoveOperation(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
 p->unk110=0;p->unk12f=0;p->unk144=0;
 p->socket=-1;p->state=0;
 p->recvBuffer.len=0;p->recvBuffer.pos=0;p->recvBuffer.size=0;
@@ -197,7 +197,7 @@ gpiFree(p->unk440.data);p->unk440.data=0;
 p->unk450.len=0;p->unk450.pos=0;p->unk450.size=0;
 gpiFree(p->unk450.data);p->unk450.data=0;
 p->unk204=-1;p->unk20c=2;
-while(p->unk424)func_02054484(a,p->unk424);
+while(p->unk424)gpiRemoveOperation(a,p->unk424);
 p->unk424=0;p->unk430=0;
 func_02055cd0(a,&func_0204e830);
 p->unk19c=0;p->unk1a0=0;p->unk198=0;p->unk210=0;p->unk41c=0;p->unk434=0;
@@ -304,7 +304,7 @@ s32 gpiHandleServerData(void *ctx) {
    error code is returned to stop. */
 s32 gpiThink(void **connection, s32 waitId) {
     void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 gpiRemoveCallbacks(void **,s32);
-    s32 gpiCheckConnect(void **); void gpiFinishOperation(void **); void func_02054484(void **,void *);
+    s32 gpiCheckConnect(void **); void gpiFinishOperation(void **); void gpiRemoveOperation(void **,void *);
     s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
     void AssertFailed(void *,void *,void *,s32);
@@ -336,7 +336,7 @@ s32 gpiThink(void **connection, s32 waitId) {
     pending=M2C_FIELD(session,void **,0x424);next=pending;
     if(pending)do {
         if(M2C_FIELD(pending,s32 *,0x1c)==0)next=M2C_FIELD(pending,void **,0x20);
-        else {gpiFinishOperation(connection);pending=next;next=M2C_FIELD(pending,void **,0x20);func_02054484(connection,pending);}
+        else {gpiFinishOperation(connection);pending=next;next=M2C_FIELD(pending,void **,0x20);gpiRemoveOperation(connection,pending);}
         pending=next;
     }while(pending);
     code=gpiRemoveCallbacks(connection,waitId);

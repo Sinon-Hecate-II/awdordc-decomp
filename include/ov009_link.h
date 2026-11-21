@@ -6,12 +6,17 @@
 
 #include "ds3dsprite.h"
 
+/* Active network overlay, as GetActiveOverlay (main_02084304) reports it. */
+#define NET_OVERLAY_NONE   0 /* no link or online session running */
+#define NET_OVERLAY_LINK   1 /* ov009 single-card (Download Play) link */
+#define NET_OVERLAY_ONLINE 2 /* ov010 online (Nintendo WFC) session */
+
 /* Event record passed to the registered link task callback. */
 #define LINK_EVENT_STATE   0x02 /* u16 phase/status reported by the task */
 #define LINK_EVENT_COMMAND 0x08 /* u16 command reported by the task */
 #define LINK_EVENT_VALUE   0x0a /* u16 command argument */
 
-/* Event record of a link completion task started with func_02012b08: like the
+/* Event record of a link completion task started with MultiBoot_StartLinkTask: like the
  * callback above it carries the status at +0x02, but its command word is at +0x04. */
 typedef struct LinkCompletionEvent {
     u16 unk_00;
@@ -61,6 +66,13 @@ enum {
     LINK_PHASE_ABORTED = 9
 };
 
+/* A console's announce of its own player record (LINK_PLAYER_ANNOUNCE_SIZE bytes,
+ * the record kept in gLinkLocalPlayerInfo) and the reply that carries the
+ * answering console's record. */
+#define LINK_MSG_PLAYER_ANNOUNCE       11
+#define LINK_MSG_PLAYER_ANNOUNCE_REPLY 12
+#define LINK_PLAYER_ANNOUNCE_SIZE      0x60
+
 /* Result code signalled when a link step completes. */
 #define LINK_EVENT_COMPLETE 0x15
 
@@ -82,6 +94,19 @@ enum {
 /* A gLinkPlayers slot: one per player slot, 0x60 bytes. */
 #define LINK_PLAYER_FLAGS 0x16 /* u8: bit 0 set while the slot holds a connected player */
 #define LINK_PLAYER_ID    0x17 /* s8: the player id the slot plays as, -1 when unset */
+
+/* The link's per-peer connection-data slots (gLinkPeerSlots): four 0xC8-byte slots,
+ * each holding the 0xC0-byte block a peer sent, a validity timer and an in-use
+ * flag.  A slot carries a usable unit record once its block holds enough transfer
+ * data and the record type word says it is a unit. */
+#define LINK_PEER_SLOT_COUNT   4
+#define LINK_PEER_SLOT_STRIDE  0xC8
+#define LINK_PEER_DATA_LENGTH  0x3C /* u16 in the block: bytes of transfer data, 0 when empty */
+#define LINK_PEER_DATA_TYPE    0x40 /* u16 in the block: LINK_PEER_TYPE_UNIT for a unit record */
+#define LINK_PEER_SLOT_TIMER   0xC0 /* s16: frames left before the slot is released */
+#define LINK_PEER_SLOT_IN_USE  0xC4 /* s32: nonzero while the slot holds a peer */
+#define LINK_PEER_MIN_DATA     0x10 /* fewest bytes of transfer data a unit record needs */
+#define LINK_PEER_TYPE_UNIT    1    /* LINK_PEER_DATA_TYPE of a unit record */
 
 /* gLinkState +0x28: u16 * mask of the player announcement in flight; the actor
  * stores its own bit there until every connected peer has answered. */

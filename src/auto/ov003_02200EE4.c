@@ -7,10 +7,10 @@ s32 func_ov003_021e9810();
 s32 func_ov003_021e9818();
 s32 CreateMainWallpaperSprite();
 s32 Apply3DSpriteBanks();
-s32 func_ov003_021ea2ac();
+s32 Reset3DSpriteBankDisplay();
 s32 func_ov003_021e9830();
 s32 func_ov003_02201e88();
-void *func_020896f0();
+void *CreateFrameBorderSprite();
 s32 func_020893f4();
 s32 func_ov003_021e97bc();
 s32 Sync3DSpriteToTarget();
@@ -102,12 +102,12 @@ func_ov003_021f1b38(2,data_ov003_0221045c);
 CreateMainWallpaperSprite(2,15,6);
 func_ov003_0220153c(0,0,1,1,1);
 }
-Apply3DSpriteBanks();func_ov003_021ea2ac();
+Apply3DSpriteBanks();Reset3DSpriteBankDisplay();
 func_ov003_021e9830(M2C_FIELD(p,void**,0x48),-32);
 func_ov003_02201620(M2C_FIELD(p,void**,0x44),p);
 CreatePanelSprites(M2C_FIELD(p,void**,0x40),p);
 if(func_ov003_02201500(p))func_ov003_02201e88(M2C_FIELD(p,void**,0x50),p);
-M2C_FIELD(p,void**,0x4c)=func_020896f0(p);
+M2C_FIELD(p,void**,0x4c)=CreateFrameBorderSprite(p);
 func_020893f4(M2C_FIELD(p,void**,0x4c),0x2d80,1);
 func_ov003_021e97bc(M2C_FIELD(p,void**,0x4c),112,164,58,58);
 Sync3DSpriteToTarget(M2C_FIELD(p,void**,0x4c));
@@ -173,7 +173,7 @@ LoadGraphicsBlock((u8 *)res+0x67c,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c
 HeapFreeBlock(res);
 func_ov003_021ea27c(4,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+0x3000);
 func_ov003_021ea294(5,0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void**,0x30)+0x2c0);
-func_ov003_021ea2ac();gCur3DSpriteEngine=saved2;
+Reset3DSpriteBankDisplay();gCur3DSpriteEngine=saved2;
 }
 u8 func_ov003_02201500(void *arg0) {
     u8 var_r0;
@@ -217,7 +217,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
     s32 Divide(s32, s32);
     void *func_020ab1c4(s32);
     void InitUnitSprite(void *, s32, s32, s32, s32);
-    void func_02088e84(void *, s32, s32, s32, s32);
+    void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
     void *func_02087d84(void *, s32, s16, s16, s32, s32);
@@ -364,7 +364,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
         InitUnitSprite(M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8), 0x47, 0x16c, 0, 0);
         result = (u32)M2C_FIELD((u8 *)arg0 + i * 4, void **, 0xe8);
 #define sprite ((void *)result)
-        func_02088e84(sprite, r6, r5, r6, r5);
+        Set3DSpriteSlideTargetAndStart(sprite, r6, r5, r6, r5);
         {
             s32 b1;
             s32 a1, c1;
@@ -433,7 +433,7 @@ void func_ov003_02201620(void *arg0, s32 arg1) {
 void CreatePanelSprites(void *panel, s32 screen) {
     void *func_02087d84(void *, s32, s16, s16, s32, s32);
     void Hide3DSprite(void *);
-    void func_02088e84(void *, s32, s32, s32, s32);
+    void Set3DSpriteSlideTargetAndStart(void *, s32, s32, s32, s32);
     void InitUnitSprite(void *, s32, s32, s32, s32);
     u16 GetUnitSpriteWidth(void *);
     u16 GetUnitSpriteHeight(void *);
@@ -462,7 +462,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
     M2C_FIELD(panel, void **, 0) = func_020ab1c4(screen);
     InitUnitSprite(M2C_FIELD(panel, void **, 0), 2, 0x14C, 3, 1);
     sprite = M2C_FIELD(panel, void **, 0);
-    func_02088e84(sprite, 0xE0, 0xA0, 0xE0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(sprite, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(sprite, void **, 0x64), u8 *, 0x12) != 0) {
         hasFrame = 1;
     } else {
@@ -480,7 +480,7 @@ void CreatePanelSprites(void *panel, s32 screen) {
     M2C_FIELD(panel, void **, 4) = func_020ab1c4(screen);
     InitUnitSprite(M2C_FIELD(panel, void **, 4), 0x20, 0x140, 3, 0);
     sprite2 = M2C_FIELD(panel, void **, 4);
-    func_02088e84(sprite2, 0x70, 0xA4, 0x70, 0xC0);
+    Set3DSpriteSlideTargetAndStart(sprite2, 0x70, 0xA4, 0x70, 0xC0);
     if (M2C_FIELD(M2C_FIELD(sprite2, void **, 0x64), u8 *, 0x12) != 0) {
         hasFrame2 = 1;
     } else {

@@ -90,7 +90,7 @@ d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[8]>d)p[8]=d;
 void UpdateAiCandidateCosts(void){
 extern void *gAiState;extern u8 gAiTargetCandidates[];extern void **gCurrentMap;
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
-s32 IsCurrentPlayerUnit(s16);s32 IsCaptureKind(s32);s32 CanKindAttack(s32,s32);
+s32 IsCurrentPlayerUnit(s16);s32 IsCaptureKind(s32);s32 CanKindLoad(s32,s32);
 s32 i;u8 *p; s32 id,d;Map16E8 *map;Unit16E8 *unit;s32 x,y;
 /* For every AI target candidate, flood-fill its movement range and record the
    cheapest current-player capture unit (candidate[9]) and the cheapest unit
@@ -110,7 +110,7 @@ unit=(Unit16E8 *)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS)+id;
 if(IsCaptureKind(unit->kind)){
 d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[9]>d)p[9]=d;
 }
-if(CanKindAttack(24,unit->kind)&&unit->state==2){
+if(CanKindLoad(24,unit->kind)&&unit->state==2){
 d=((Map16E8 *)*gCurrentMap)->grid[y][x];if(p[10]>d)p[10]=d;
 }
 }
@@ -175,15 +175,25 @@ s32 BuildAiKind6Unit(void) {
     return 1;
 }
 
-s32 func_ov000_021a1ab8(void) {
- s32 func_ov000_021a64c4(); M2C_UNK func_ov000_021a7ac0(s32); s32 SelectUnitForTargetCandidate(s32); M2C_UNK CommitAiAction(s32);
- extern u8 gAiTargetCandidateStatus[];
- s32 x=func_ov000_021a64c4();
- if(x==-1) return 0;
- func_ov000_021a7ac0(x);
- if(SelectUnitForTargetCandidate(x)!=-1) {CommitAiAction(x); return 1;}
- gAiTargetCandidateStatus[x*12]=253;
- return 0;
+/* AI turn-plan build phase: take the target candidate with the best unit
+ * balance, score the unit kinds for it and build the best affordable kind
+ * against it.  When no kind can be chosen the candidate is skipped this turn. */
+s32 BuildAiUnitForBestTarget(void) {
+    s32 FindTargetCandidateByUnitBalance(void);
+    s32 SelectUnitForTargetCandidate(s32);
+    M2C_UNK ScoreUnitKindsForTargetCandidate(s32);
+    M2C_UNK CommitAiAction(s32);
+    extern u8 gAiTargetCandidateStatus[];
+    s32 candidate = FindTargetCandidateByUnitBalance();
+
+    if (candidate == -1) return 0;
+    ScoreUnitKindsForTargetCandidate(candidate);
+    if (SelectUnitForTargetCandidate(candidate) != -1) {
+        CommitAiAction(candidate);
+        return 1;
+    }
+    gAiTargetCandidateStatus[candidate * AI_CANDIDATE_STRIDE] = AI_CANDIDATE_SKIPPED;
+    return 0;
 }
 
 /* Build the AI's counter unit (kind AI_COUNTER_UNIT_KIND): allowed by its command

@@ -362,15 +362,18 @@ void func_ov005_0221ab8c(void) {
     func_ov005_0221a7f4();
 }
 
-void func_ov005_0221ab98(void *arg0) {
+/* Slides a results-screen score row in from the left over
+ * RESULT_ROW_SLIDE_FRAMES frames; once it has arrived, the row resets its
+ * counter and hands itself back to its sprite animation. */
+void ResultScoreRow_SlideIn(void *row) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     s32 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
-    M2C_FIELD(arg0, s32 *, 0x38) = EaseInterpolate(4, -0x100, 0, M2C_FIELD(arg0, s32 *, 0x34), 0x20);
-    if (M2C_FIELD(arg0, s32 *, 0x34) != 0x20) {
+    M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) = (s32) (M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) + 1);
+    M2C_FIELD(row, s32 *, RESULT_ROW_SLIDE_X) = EaseInterpolate(EASE_OUT_QUAD, RESULT_ROW_SLIDE_START, 0, M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED), RESULT_ROW_SLIDE_FRAMES);
+    if (M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) != RESULT_ROW_SLIDE_FRAMES) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x34) = 0;
-    Sprite_ResumeAnimation(arg0);
+    M2C_FIELD(row, s32 *, RESULT_ROW_ELAPSED) = 0;
+    Sprite_ResumeAnimation(row);
 }
 

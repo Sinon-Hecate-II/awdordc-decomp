@@ -257,27 +257,45 @@ s32 GetBrowsedServerPid(void *arg0) {
     return r0;
 }
 
-u8 FindPeerSlot(s32 a,s32 b){void *GetConnection(void);s32 i=b==0?1:0;if(i<=M2C_FIELD(GetConnection(),u8 *,13)){do{void *p=GetConnection();if(a==M2C_FIELD((u8 *)p+((u32)i*4),s32 *,0xf4))return M2C_FIELD((u8 *)GetConnection()+i,u8 *,0x2d0);i++;}while(i<=M2C_FIELD(GetConnection(),u8 *,13));}return 255;}
-
-s32 GetConnectedPlayerMask(s32 arg0) {
-    void *GetConnection();
-    s32 var_r5;
-    s32 var_r6;
-    u8 temp_r0;
-
-    var_r5 = 0;
-    if (arg0 != 0) {
-        return M2C_FIELD(GetConnection(), s32 *, 0x2F0) & ~1;
-    }
-    var_r6 = 1;
-    if ((s32) M2C_FIELD(GetConnection(), u8 *, 0xD) >= 1) {
+/* Slot id (an entry of CONN_SESSION_PEER_SLOTS) of the connected peer whose id is
+ * `peerId`, searched from slot 1, or from slot 0 when `includeSlotZero` is set;
+ * CONN_SESSION_NO_PEER_SLOT when no peer has that id. */
+u8 FindPeerSlot(s32 peerId, s32 includeSlotZero) {
+    void *GetConnection(void);
+    s32 i = includeSlotZero == 0 ? 1 : 0;
+    if (i <= M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT)) {
         do {
-            temp_r0 = M2C_FIELD((GetConnection() + var_r6), u8 *, 0x2D0);
-            var_r6 += 1;
-            var_r5 |= 1 << temp_r0;
-        } while (var_r6 <= (s32) M2C_FIELD(GetConnection(), u8 *, 0xD));
+            void *conn = GetConnection();
+            if (peerId == M2C_FIELD((u8 *)conn + (u32)i * 4, s32 *, CONN_SESSION_PEER_IDS))
+                return M2C_FIELD((u8 *)GetConnection() + i, u8 *, CONN_SESSION_PEER_SLOTS);
+            i++;
+        } while (i <= M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT));
     }
-    return var_r5;
+    return CONN_SESSION_NO_PEER_SLOT;
+}
+
+/* The player slots of this session's peers as a bitmask: with `fromSessionMask`
+ * set, the session's present-player mask minus the local player (slot 0);
+ * otherwise one bit per connected peer, taken from each peer's assigned slot. */
+s32 GetConnectedPlayerMask(s32 fromSessionMask) {
+    void *GetConnection();
+    s32 mask;
+    s32 slot;
+    u8 peerSlot;
+
+    mask = 0;
+    if (fromSessionMask != 0) {
+        return M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PLAYER_MASK) & ~1;
+    }
+    slot = 1;
+    if ((s32) M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) >= 1) {
+        do {
+            peerSlot = M2C_FIELD((GetConnection() + slot), u8 *, CONN_SESSION_PEER_SLOTS);
+            slot += 1;
+            mask |= 1 << peerSlot;
+        } while (slot <= (s32) M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT));
+    }
+    return mask;
 }
 
 void func_02042ad0(void){void *GetConnection(void);u64 GetSystemTick(void);void *p;M2C_FIELD(GetConnection(),u8 *,0x1ad)=0;p=GetConnection();M2C_FIELD(p,u64 *,0x1f8)=GetSystemTick();}

@@ -9,7 +9,7 @@ extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, 
 extern u8 data_020fca88[56];
 extern M2C_UNK data_020fcd10, data_020fcc5c, data_020fcc84;
 extern M2C_UNK data_020fcc4c,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
-extern M2C_UNK sVectorIndexCheck, data_020fcc2c, sAssertArray, sArrayFreeName, data_020fcbe0, sArrayInsertAtArgCheck, sArrayInsertAtName;
+extern M2C_UNK sVectorIndexCheck, data_020fcc2c, sAssertArray, sArrayFreeName, sArrayNthName, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
 extern M2C_UNK data_020fcc98, sDarrayFileName, data_020fcc04;
@@ -395,11 +395,13 @@ s32 Vector_GetCount(s32 *arg0) {
     return *arg0;
 }
 
-s32 Vector_GetItem(void *a,s32 b) {
+/* GameSpy darray ArrayNth: the address of item `index` in the Vector, asserting
+   that the index is in range (and returning 0 when assertions are disabled). */
+s32 Vector_GetItem(void *array,s32 index) {
 s32 AssertFailed();
-if(b<0||b>=M2C_FIELD(a,s32 *,0))AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcbe0,0x94);
-if(b<0||b>=M2C_FIELD(a,s32 *,0))return 0;
-return M2C_FIELD(a,s32 *,20)+M2C_FIELD(a,s32 *,8)*b;
+if(index<0||index>=M2C_FIELD(array,s32 *,VECTOR_COUNT))AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&sArrayNthName,0x94);
+if(index<0||index>=M2C_FIELD(array,s32 *,VECTOR_COUNT))return 0;
+return M2C_FIELD(array,s32 *,VECTOR_ITEMS)+M2C_FIELD(array,s32 *,VECTOR_ELEM_SIZE)*index;
 }
 
 void Vector_AddItem(s32 *arg0, M2C_UNK arg1) {

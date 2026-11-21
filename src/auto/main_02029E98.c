@@ -377,7 +377,7 @@ void DestroyFrameHeap(void) {
     func_02029f14();
 }
 
-void func_0202a67c(void *arg0, s32 arg1, s32 arg2) {
+void Sound_HeapAlloc(void *arg0, s32 arg1, s32 arg2) {
     void *func_0202a544(void *, M2C_UNK, M2C_UNK);
     u32 func_0202a5a0(void *, s32, s32);
     if (arg1 == 0) {
@@ -577,13 +577,13 @@ void InitSoundDriver(void) {
 void func_0202a9f0(void) {
     s32 Sound_DequeueCommand(M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
-    M2C_UNK func_0202aeb4();
+    M2C_UNK Sound_UpdateVoices();
     M2C_UNK UpdateStreamVoiceVolume();
     M2C_UNK func_0202d9e4();
     do {
 
     } while (Sound_DequeueCommand(0) != 0);
-    func_0202aeb4();
+    Sound_UpdateVoices();
     UpdateStreamVoiceVolume();
     func_0202d9e4();
     Sound_FlushCommands(0);

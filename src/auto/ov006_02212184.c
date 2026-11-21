@@ -30,7 +30,7 @@ extern u16 data_ov006_022183e0[];
 int FX_Div(int,int);
 void DrawFrameBorder(int,int,int,int,int,int,int);
 void DrawFrameBorderPulse(int,int,int,int,int,int);
-void func_02088e84(void *,int,int,int,int);
+void Set3DSpriteSlideTargetAndStart(void *,int,int,int,int);
 int GetUnitSpriteWidth(void *);
 int GetUnitSpriteHeight(void *);
 void func_02087d84(void *,int,int,int,int,int);
@@ -38,7 +38,7 @@ void AddSprite32x16(int,int,int,int);
 void *func_020c5328(int);
 int func_020c5464(int);
 void ClearTileRect(void *,int,int);
-void func_ov000_0216a30c(int,int,int);
+void LoadRankIconGraphics(int,int,int);
 void DrawTextLine(int,int,int,void *,int,int);
 void DrawNumber(int,int,int,int,int,int);
 u64 GetOwnFriendCode(int);
@@ -128,7 +128,7 @@ a=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 DrawFrameBorderPulse((s16)(x+M2C_FIELD(record,s16 *,14)),M2C_FIELD(record,s16 *,16),record[6],record[7],(u16)((((art-32)>>a)&0x3ff)|0x1000),0);
 pos=(s16)(x+94);
 widget=M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,4);
-func_02088e84(widget,pos,142,pos,142);
+Set3DSpriteSlideTargetAndStart(widget,pos,142,pos,142);
 if(Unk02212184Visible(widget)) {
 yy=M2C_FIELD(widget,s16 *,0x52);xx=M2C_FIELD(widget,s16 *,0x50);
 width=GetUnitSpriteWidth(widget);height=GetUnitSpriteHeight(widget);
@@ -142,7 +142,7 @@ func_02087d84(M2C_FIELD(widget,void **,0x64),1,xx,yy,(u16)width,(u16)height);
 }
 pos=(s16)(x+130);
 widget=M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,8);
-func_02088e84(widget,pos,142,pos,142);
+Set3DSpriteSlideTargetAndStart(widget,pos,142,pos,142);
 if(Unk02212184Visible(widget)) {
 yy=M2C_FIELD(widget,s16 *,0x52);xx=M2C_FIELD(widget,s16 *,0x50);
 width=GetUnitSpriteWidth(widget);height=GetUnitSpriteHeight(widget);
@@ -170,7 +170,7 @@ ClearTileRect(M2C_FIELD(gCur3DSpriteEngine,u8 **,36)+0x572,4,2);
 if(item && func_020c5464(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))==3) {
 if(M2C_FIELD(item,s8 *,32)!=-1) {
 i=(u16)((((*(u32 *)0x027ffc3c)&1)<<3)+0x21c);
-func_ov000_0216a30c(M2C_FIELD(item,s8 *,32),i<<5,8);
+LoadRankIconGraphics(M2C_FIELD(item,s8 *,32),i<<5,8);
 a=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite32x16(64,168,(u16)(((i>>a)&0x3ff)|0x8000),11);
 DrawTextLine(8,21,1,data_ov006_022186ec,0x7000,(u16)tile);

@@ -67,7 +67,7 @@ void func_020c5db4(void) {
 
 void func_020c5dc4(void) {
     M2C_UNK func_020b9140(M2C_UNK);
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020d464c();
     func_020b9140(0);
@@ -506,17 +506,17 @@ s32 CanFireFlare(void) {
 }
 
 void func_020c6968(void) {
-    M2C_UNK func_020c0adc();
+    M2C_UNK PushCarriedUnitMenuState();
     M2C_UNK func_020c757c();
     M2C_UNK DeleteMapMenuSprites();
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020c757c();
 }
 
 void func_020c697c(void) {
     extern M2C_UNK data_0212a6c4;
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020d464c();
     CreateSpriteFromClass(&data_0212a6c4, 7);
@@ -525,7 +525,7 @@ void func_020c697c(void) {
 void func_020c69a0(void) {
     M2C_UNK func_020d464c();
     M2C_UNK func_ov000_02171028();
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020d464c();
     func_ov000_02171028();
@@ -561,7 +561,7 @@ void func_020c69e8(void) {
 
 void func_020c69f8(void) {
     M2C_UNK func_ov000_021707c0();
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020d464c();
     func_ov000_021707c0();

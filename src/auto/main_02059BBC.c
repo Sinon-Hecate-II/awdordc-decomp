@@ -466,7 +466,7 @@ if(!gti2ResendPendingCommand(connection,command))return 0;
 return 1;
 }
 
-s32 func_0205ab44(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}
+s32 gti2CheckDelayedAck(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}
 
-s32 func_0205ab80(void *p,u32 t) {s32 func_0205c924(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!func_0205c924(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
+s32 gti2CheckPing(void *p,u32 t) {s32 func_0205c924(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!func_0205c924(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
 

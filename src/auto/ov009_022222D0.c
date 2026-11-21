@@ -72,9 +72,9 @@ void SendLinkPlayerInfo(s32 channel) {
 s32 func_ov009_02222348(s32 arg0) {
 M2C_UNK MI_CpuCopy8(s32,void *,s32);
 s32 ByteCompareN(s32,void *,s32);
-extern M2C_UNK data_ov009_02226cc0, data_ov009_02226d80, data_ov009_02226d84;
+extern M2C_UNK gLinkPeerSlots, data_ov009_02226d80, data_ov009_02226d84;
 s32 freeIndex; s32 i; u8 *p; s32 offset; s32 equal;
-freeIndex=-1;i=0;p=(u8 *)&data_ov009_02226cc0;
+freeIndex=-1;i=0;p=(u8 *)&gLinkPeerSlots;
 do {
 if(M2C_FIELD(p,s32*,0xc4)==0) { if(freeIndex<0)freeIndex=i; }
 else {
@@ -90,7 +90,7 @@ i++;p+=0xc8;
 }while(i<4);
 if(freeIndex<0)return 0;
 offset=freeIndex*0xc8;
-MI_CpuCopy8(arg0,(u8 *)&data_ov009_02226cc0+offset,0xc0);
+MI_CpuCopy8(arg0,(u8 *)&gLinkPeerSlots+offset,0xc0);
 *(u16 *)((u8 *)&data_ov009_02226d80 + offset) = 480;
 *(s32 *)((u8 *)&data_ov009_02226d84 + offset) = (equal = 1);
 return equal;
@@ -504,14 +504,14 @@ s32 StartLinkSession(void) {
 void HandleLinkChannelEvent(void *); void HandleLinkConnectTaskEvent(void *);
 s32 GetLinkPhase(void); M2C_UNK SetLinkPhase(s32);
 s32 WFC_SetChannelHandler(s32,void (*)(void *),s32);
-s32 func_02012b08(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
+s32 MultiBoot_StartLinkTask(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
 extern M2C_UNK gLinkState,gLinkTransferData,gLinkTransferExtra;
 s32 phase=GetLinkPhase();switch(phase){case 4:case 5:return 1;default:break;}
 if(WFC_SetChannelHandler(4,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 if(WFC_SetChannelHandler(12,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 M2C_FIELD(&gLinkState,u8 *,0)=0;
 SetLinkPhase(4);
-if(func_02012b08(HandleLinkConnectTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
+if(MultiBoot_StartLinkTask(HandleLinkConnectTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
 SignalLinkError();return 0;
 }
 
@@ -588,7 +588,7 @@ void func_ov009_02223078(void *arg0) {
     s32 func_ov009_02222f84(void);
     s32 func_ov009_02222348(s32);
     extern Ov009CallbackFn gLinkSession[];
-    extern M2C_UNK data_ov009_02226cc0;
+    extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkConnectionExtraData;
     extern M2C_UNK gLinkConnectionData;
     extern M2C_UNK gLinkState;
@@ -622,7 +622,7 @@ void func_ov009_02223078(void *arg0) {
         r6[0] = a;
         r6[1] = b;
     }
-    r7 = (u8 *)&data_ov009_02226cc0;
+    r7 = (u8 *)&gLinkPeerSlots;
     r5 = (u8 *)&gLinkConnectionExtraData;
     goto test;
 loop: {

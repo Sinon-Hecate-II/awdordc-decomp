@@ -138,7 +138,7 @@ void func_ov003_021e8958(void *arg0) {
     void Apply3DSpriteBanks(void);
     void func_ov003_021e771c(void *, void *);
     void CreateWaypointPanelSprites(void *, void *);
-    void *func_020896f0(void *);
+    void *CreateFrameBorderSprite(void *);
     void func_020893f4(void *, s32, s32);
     void func_ov003_021e97bc(void *, s32, s32, s32, s32);
     void Sync3DSpriteToTarget(void *);
@@ -180,7 +180,7 @@ void func_ov003_021e8958(void *arg0) {
     void HeapFreeBlock(void *);
     void LoadDecompressedFileTo(void *, s32);
     void LoadFileToSpriteBuffer(void *, s32, s32);
-    void func_ov003_021ea2ac(void);
+    void Reset3DSpriteBankDisplay(void);
     void SetTileRectPalette(s32, s32, s32, s32);
     void LoadScenePanelPalette(s32);
     s32 t1;
@@ -201,13 +201,13 @@ void func_ov003_021e8958(void *arg0) {
     func_ov003_021e771c(M2C_FIELD(arg0, void **, 0x6c), arg0);
     func_ov003_021e8f98(M2C_FIELD(arg0, void **, 0x64), arg0);
     CreateWaypointPanelSprites(M2C_FIELD(arg0, void **, 0x68), arg0);
-    M2C_FIELD(arg0, void **, 0x58) = func_020896f0(arg0);
+    M2C_FIELD(arg0, void **, 0x58) = CreateFrameBorderSprite(arg0);
     func_020893f4(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x58), 1);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
-    M2C_FIELD(arg0, void **, 0x5c) = func_020896f0(arg0);
+    M2C_FIELD(arg0, void **, 0x5c) = CreateFrameBorderSprite(arg0);
     func_020893f4(M2C_FIELD(arg0, void **, 0x5c), 0xb400, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x5c), 0x38, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
@@ -279,7 +279,7 @@ void func_ov003_021e8958(void *arg0) {
     HeapFreeBlock(h);
     LoadDecompressedFileTo(data_ov003_0220fbc0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0xbc00);
     LoadFileToSpriteBuffer(data_ov003_0220fbd0, 0x300, 0x40);
-    func_ov003_021ea2ac();
+    Reset3DSpriteBankDisplay();
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     SetFileDirectory(data_ov003_0220fbe4);
     Clear3DSpriteLayer(0);
@@ -295,7 +295,7 @@ void func_ov003_021e8958(void *arg0) {
     HeapFreeBlock(h);
     LoadDecompressedFileTo(data_ov003_0220fc50, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1c) + 0x2c00);
     LoadFileToSpriteBuffer(data_ov003_0220fc60, 0x2c0, 0x20);
-    func_ov003_021ea2ac();
+    Reset3DSpriteBankDisplay();
     gCur3DSpriteEngine = t3;
 }
 
@@ -308,7 +308,7 @@ void func_ov003_021e8f80(void *arg0, s32 arg1) {
 void func_ov003_021e8f98(void *arg0, M2C_UNK arg1) {
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK func_02088da8(void *);
-    M2C_UNK func_02088e84(void *, s32, M2C_UNK, s32, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s32, M2C_UNK, s32, s32);
     M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
     u32 func_020aae10(void *);
@@ -316,6 +316,6 @@ void func_ov003_021e8f98(void *arg0, M2C_UNK arg1) {
     void *func_020ab1c4(M2C_UNK);
     s32 GetWaypointSlotX(u8);
 u8 i; s32 pos, left; s32 hidden; 
-M2C_FIELD(arg0,void**,0)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,0),2,344,3,1);{ void *p=M2C_FIELD(arg0,void**,0);func_02088e84(p,224,160,224,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,0));func_02088da8(M2C_FIELD(arg0,void**,0)); }M2C_FIELD(arg0,void**,4)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,4),31,320,3,0);{ void *p=M2C_FIELD(arg0,void**,4);func_02088e84(p,96,164,96,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,4));func_02088da8(M2C_FIELD(arg0,void**,4)); }hidden=-32;i=0;do{pos=GetWaypointSlotX(i);{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,8)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,8),23,360,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,8);left=(s16)(pos-1);func_02088e84(p,left,72,left,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=left;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,8)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,24)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,24),24,364,3,0);pos=(s16)(pos+40);{ void *p=M2C_FIELD(arg0+i*4,void**,24);func_02088e84(p,pos,72,pos,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=pos;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,24)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,40)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,40),8,368,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,40);func_02088e84(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,40)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,56)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,56),9,376,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,56);func_02088e84(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,56)); }i++;}while(i<4);}
+M2C_FIELD(arg0,void**,0)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,0),2,344,3,1);{ void *p=M2C_FIELD(arg0,void**,0);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,0));func_02088da8(M2C_FIELD(arg0,void**,0)); }M2C_FIELD(arg0,void**,4)=func_020ab1c4(arg1);func_020aab24(M2C_FIELD(arg0,void**,4),31,320,3,0);{ void *p=M2C_FIELD(arg0,void**,4);Set3DSpriteSlideTargetAndStart(p,96,164,96,192);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_020aad18(M2C_FIELD(arg0,void**,4));func_02088da8(M2C_FIELD(arg0,void**,4)); }hidden=-32;i=0;do{pos=GetWaypointSlotX(i);{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,8)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,8),23,360,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,8);left=(s16)(pos-1);Set3DSpriteSlideTargetAndStart(p,left,72,left,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=left;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,8)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,24)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,24),24,364,3,0);pos=(s16)(pos+40);{ void *p=M2C_FIELD(arg0+i*4,void**,24);Set3DSpriteSlideTargetAndStart(p,pos,72,pos,72);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=pos;M2C_FIELD(p,s16*,0x36)=72;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,24)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,40)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,40),8,368,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,40);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,40)); }{ void *created=func_020ab1c4(arg1);M2C_FIELD(arg0+i*4,void**,56)=created; }func_020aab24(M2C_FIELD(arg0+i*4,void**,56),9,376,3,0);{ void *p=M2C_FIELD(arg0+i*4,void**,56);Set3DSpriteSlideTargetAndStart(p,hidden,0,hidden,0);if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }M2C_FIELD(p,s16*,0x34)=hidden;M2C_FIELD(p,s16*,0x36)=0;if ((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)) { s32 y=M2C_FIELD(p,s16*,0x52); s32 x=M2C_FIELD(p,s16*,0x50); u32 w=func_020aae10(p); func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)func_020aae44(p)); }func_02088da8(M2C_FIELD(arg0+i*4,void**,56)); }i++;}while(i<4);}
 #pragma opt_common_subs reset
 #pragma opt_propagation reset

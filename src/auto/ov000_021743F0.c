@@ -12,7 +12,7 @@ void Ov000_InfoWindow_Update(Ov000MenuState *menu) {
 extern void **gCurrentMap; extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineSub; extern Ov000MenuState *gOv000InfoWindow; extern u8 gProductionMenuScreenClass[];
 int GetMapInputState(void); int FindObjectByClass(void *); s32 GetCellTerrainId(s32,s32);
 void Ov000_InfoWindow_SetUnitFlags(void *); void Ov000_InfoWindow_ClearUnitFlags(void *); void Ov000_InfoWindow_ShowTerrain(void *,s32); void Ov000_InfoWindow_OpenCell(void *,s32,s32);
-void func_ov000_021725e0(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void Ov000_StatsWindow_Reset(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
+void Ov000_InfoPanel_Refresh(void *); void func_ov000_02172654(void *); void func_ov000_02172648(void *); void Ov000_StatsWindow_Reset(void *); void func_ov000_02175234(void *); void func_ov000_02175230();
 s32 x=M2C_FIELD(*gCurrentMap,s16 *,0x52c2), y=M2C_FIELD(*gCurrentMap,s16 *,0x52c4);
 void *saved=gCur3DSpriteEngine; s32 mode;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -76,7 +76,7 @@ case 1:
 if(menu->pendingState!=0&&menu->pendingState!=1){menu->state=menu->pendingState;menu->pendingState=0;menu->refresh=1;}break;
 case 2:
 M2C_FIELD(menu->panel,u8 *,0x15)=0;
-if(menu->refresh){menu->refresh=0;func_ov000_021725e0(menu->panel);}
+if(menu->refresh){menu->refresh=0;Ov000_InfoPanel_Refresh(menu->panel);}
 func_ov000_02172654(menu->panel);
 if(menu->pendingState){
 if(menu->pendingState==OV000_INFO_NO_TERRAIN){menu->state=menu->pendingState;menu->pendingState=0;M2C_FIELD(menu->panel,s32 *,4)=1;}
@@ -84,7 +84,7 @@ else if(menu->pendingState==OV000_INFO_UNIT_STATS){menu->state=menu->pendingStat
 }break;
 case 3:
 M2C_FIELD(menu->panel,u8 *,0x15)=1;
-if(menu->refresh){menu->refresh=0;func_ov000_021725e0(menu->panel);}
+if(menu->refresh){menu->refresh=0;Ov000_InfoPanel_Refresh(menu->panel);}
 func_ov000_02172654(menu->panel);
 if(menu->pendingState){
 if(menu->pendingState==OV000_INFO_TERRAIN){menu->state=menu->pendingState;menu->pendingState=0;M2C_FIELD(menu->panel,s32 *,4)=1;}
@@ -195,9 +195,9 @@ break; }
 }
 
 void func_ov000_02174be8(void) {
-    M2C_UNK func_ov000_02173f78(void *);
+    M2C_UNK Ov000_InfoWindow_LoadAssets(void *);
     extern Ov000MenuState *gOv000InfoWindow;
-    func_ov000_02173f78(gOv000InfoWindow);
+    Ov000_InfoWindow_LoadAssets(gOv000InfoWindow);
 }
 
 void func_ov000_02174c00(void) {

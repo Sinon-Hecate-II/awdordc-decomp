@@ -39,7 +39,7 @@ typedef struct DispatchRecord171 { u8 pad[0xca]; u8 id[6]; u8 padD0[0x26]; u16 v
 void func_02017158(void *arg0) {
     void HandleMbChannelEvent(void *);
     s32 Mb_CloseLink(void);
-    s32 func_02013d4c(void *, u16, u16, u16, u16);
+    s32 WFC_SubmitConnectRequest(void *, u16, u16, u16, u16);
     s32 func_020124c4(void *, void *);
     s32 WFC_SendConnectionData(void *, s32, s32, s32, s32);
     s32 WFC_EndLink(void *);
@@ -47,7 +47,7 @@ void func_02017158(void *arg0) {
     s32 Mb_ReportPacketResult(s32, s32);
     s32 WFC_SetChannelHandler(s32, void *, s32);
     s32 Mb_SelectNextPlayer(void *);
-    s32 func_02016840(void);
+    s32 Mb_LinkExchangeReady(void);
     void Mb_CancelLink(void *);
     void DC_InvalidateRange(void *, s32);
     void DmaCopy16(u16, void *, void *, s32);
@@ -61,7 +61,7 @@ void func_02017158(void *arg0) {
     case 0:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
         M2C_FIELD(base,void (**)(s32,void *),0x51c)(21,event);
-        Mb_ReportPacketResult(29,func_02013d4c(func_02017158,M2C_FIELD(&gMbParam,u16 *,6),M2C_FIELD(&gMbParam,u16 *,2),M2C_FIELD(&gMbParam,u16 *,0),M2C_FIELD(&gMbParam,u16 *,4)));
+        Mb_ReportPacketResult(29,WFC_SubmitConnectRequest(func_02017158,M2C_FIELD(&gMbParam,u16 *,6),M2C_FIELD(&gMbParam,u16 *,2),M2C_FIELD(&gMbParam,u16 *,0),M2C_FIELD(&gMbParam,u16 *,4)));
         return;
     case 29:
         if (M2C_FIELD(event,u16 *,2)) { M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event); return; }
@@ -143,7 +143,7 @@ found:
         }
     case 14:
         switch((s32)M2C_FIELD(event,u16 *,4)){
-        case 10: M2C_FIELD(base+0x500,u16 *,0x28)=1;if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
+        case 10: M2C_FIELD(base+0x500,u16 *,0x28)=1;if(Mb_LinkExchangeReady())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
         case 12:return;case 13:return;
         default:M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
         }
@@ -161,7 +161,7 @@ found:
         Mb_ReportPacketResult(2,WFC_EndLink(func_02017158));return;
     case 2:
         if(M2C_FIELD(event,u16 *,2)){M2C_FIELD(base+0x500,u16 *,0x26)=0;M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;}Mb_CancelLink(event);return;
-    case 21: if(func_02016840())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
+    case 21: if(Mb_LinkExchangeReady())M2C_FIELD(base,void (**)(s32,void *),0x51c)(25,0);return;
     case 128: switch((s32)M2C_FIELD(event,u16 *,4)){case 22:SystemHalt();return;case 23:return;}return;
     default: M2C_FIELD(base,void (**)(s32,void *),0x51c)(0x100,event);return;
     }
@@ -169,7 +169,26 @@ found:
 #pragma opt_strength_reduction reset
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-u32 func_02017984(void){u8 buf[6];s32 i;u32 sum;u8 *p;GetMacAddress(buf);i=0;p=&buf[i];sum=0;do{sum+=*p++;i++;}while(i<6);return ((sum+*(u32 *)0x27ffc3c)*7)%20;}
+/* This console's download-play game group id, as an index below MB_GROUP_ID_COUNT:
+ * the sum of the six MAC address bytes and the shared frame counter, times seven,
+ * reduced modulo MB_GROUP_ID_COUNT.  Callers add MB_GROUP_ID_FIRST. */
+u32 GetGameGroupIdIndex(void) {
+    void GetMacAddress(u8 *);
+    u8 mac[6];
+    s32 i;
+    u32 sum;
+    u8 *p;
+
+    GetMacAddress(mac);
+    i = 0;
+    p = &mac[i];
+    sum = 0;
+    do {
+        sum += *p++;
+        i++;
+    } while (i < 6);
+    return ((sum + *(u32 *)SHARED_FRAME_COUNTER) * 7) % MB_GROUP_ID_COUNT;
+}
 
 #pragma opt_common_subs off
 s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
@@ -178,7 +197,7 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     void MI_CpuCopy8(void *, void *, s32);
     u16 WM_GetNextTgid(void);
     s32 OS_DisableInterrupts(void);
-    u32 func_02017984(void);
+    u32 GetGameGroupIdIndex(void);
     u32 a, b, id;
     u16 *d, *p, *s, *e;
     void *g;
@@ -240,7 +259,7 @@ s32 MultiBoot_StartParent(u32 arg0, u8 *arg1, s32 arg2, u32 arg3, u32 arg4) {
     M2C_FIELD(a, u16 *, 0x14) = 0;
     M2C_FIELD(a, s32 *, 8) = arg2;
     M2C_FIELD(a, u16 *, 0xc) = id;
-    M2C_FIELD(a, u16 *, 0x18) = func_02017984() + 0xc8;
+    M2C_FIELD(a, u16 *, 0x18) = GetGameGroupIdIndex() + 0xc8;
     M2C_FIELD(a, u16 *, 0x10) = 0xf;
     M2C_FIELD(a, u8 *, 0x50c) = 0;
     M2C_FIELD(a, u8 *, 0x50d) = 0;

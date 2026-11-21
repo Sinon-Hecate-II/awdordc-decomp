@@ -69,7 +69,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     case 18: func_ov003_021fe3b4(entry); return;
     case 19: func_ov003_021fe780(entry); return;
     case 20: func_ov003_021feb4c(entry); return;
-    case 21: func_ov003_021e64a8(entry); return;
+    case 21: CreateOv003Scene(entry); return;
     default: return;
     }
 }

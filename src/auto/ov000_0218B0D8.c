@@ -90,7 +90,7 @@ int SelectDirectAttackAction(void *arg0) {
  map=*gCurrentMap;
  if(((s8 **)(map+0x52e8))[y][x]<0) continue;
  p=func_020a47e0(x,y);
- if(p && func_ov000_021a9bc0(p)) { hp=p[4]; kind=((AiPropertyB0 *)p)->kind; goto repair; }
+ if(p && MapOrder_IsEnemyOwned(p)) { hp=p[4]; kind=((AiPropertyB0 *)p)->kind; goto repair; }
  if(((AiFlagsB0 *)gAiCommandState)->enabled) {
  kind=1;
  map=*gCurrentMap;

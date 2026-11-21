@@ -29,6 +29,9 @@
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
 #define UNIT_VIEW_SLOTS        0x08 /* void *[5]: the unit models the view draws, 4 bytes apart */
+#define UNIT_VIEW_SHAKE_X      0x22 /* s16 horizontal screenshake offset */
+#define UNIT_VIEW_SHAKE_Y      0x24 /* s16 vertical screenshake offset */
+#define UNIT_VIEW_SHAKE_INDEX  0x26 /* s8 index into gUnitViewShakeOffsets, -1 = no shake */
 #define UNIT_VIEW_FRAME        0x29 /* u8 frames the view has been stepping, wraps at 128 */
 #define UNIT_VIEW_SIZE         0x2C
 

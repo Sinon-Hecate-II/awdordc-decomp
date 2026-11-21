@@ -82,29 +82,32 @@ void func_0206095c(void *arg0, M2C_UNK arg1) {
     Qr2Query_RemoveRequest(arg0 + 0x14, arg1);
 }
 
-void func_02060988(s8 **arg0, s32 arg1) {
+void HashInternedString(s8 **arg0, s32 arg1) {
     s32 func_02060fe8(s8 *, s32);
 
     func_02060fe8(*arg0, arg1);
 }
 
-void func_02060998(s32 *arg0, s32 *arg1) {
-    M2C_UNK func_0206f8ac(s32, s32);
-    func_0206f8ac(*arg0, *arg1);
+void CompareInternedStrings(s32 *arg0, s32 *arg1) {
+    M2C_UNK StringCompareNoCase(s32, s32);
+    StringCompareNoCase(*arg0, *arg1);
 }
 
-void func_020609ac(s32 *arg0) {
+void FreeInternedString(s32 *arg0) {
     M2C_UNK gpiFree(s32);
     gpiFree(*arg0);
 }
 
+/* The QR2 parser's shared string-intern table, built on first use: 100 buckets of
+ * 8-byte InternedString elements, keyed by a case-insensitive comparison of their
+ * string, whose key string is freed when the element is removed. */
 s32 GetStringInternTable(void) {
     extern M2C_UNK gQr2ParseState;
     s32 TableNew2(s32, s32, s32, void *, void *, void *);
-    if (M2C_FIELD(&gQr2ParseState, s32 *, 8) == 0) {
-        M2C_FIELD(&gQr2ParseState, s32 *, 8) = TableNew2(8, 0x64, 2, func_02060988, func_02060998, func_020609ac);
+    if (M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE) == 0) {
+        M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE) = TableNew2(8, 0x64, 2, HashInternedString, CompareInternedStrings, FreeInternedString);
     }
-    return M2C_FIELD(&gQr2ParseState, s32 *, 8);
+    return M2C_FIELD(&gQr2ParseState, s32 *, SB_QR2_PARSE_INTERN_TABLE);
 }
 
 void func_02060a20(void) {
@@ -239,17 +242,30 @@ s32 Qr2_IsServerField(M2C_UNK *arg0){
  return 1;
 }
 
-M2C_UNK *Qr2_NextField(s32 input,s32 arg1){
- extern M2C_UNK gQr2ParseState;
- s8 *arg0=(s8 *)input;
- s32 c; s8 *p;
- if(arg0)M2C_FIELD(&gQr2ParseState,s8 **,0)=arg0;
- arg0=M2C_FIELD(&gQr2ParseState,s8 **,0);p=arg0;
- while((c=*p)!=0 && c!=arg1){p++;M2C_FIELD(&gQr2ParseState,s8 **,0)=p;}
- if(p==arg0)arg0=0;
- if(c==0)return arg0;
- {s8 *next=M2C_FIELD(&gQr2ParseState,s8 **,0);*p=0;M2C_FIELD(&gQr2ParseState,s8 **,0)=next+1;}
- return arg0;
+/* QR2 reply field tokenizer: `input`, when nonzero, restarts the shared parse
+ * cursor at that text. Scans to `delimiter`, replacing it with a NUL and moving
+ * the cursor past it. Returns the field's text, NULL for an empty field and NULL
+ * at the end of the text. */
+M2C_UNK *Qr2_NextField(s32 input, s32 delimiter) {
+    extern M2C_UNK gQr2ParseState;
+    s8 *field = (s8 *)input;
+    s32 c;
+    s8 *p;
+    if (field) M2C_FIELD(&gQr2ParseState, s8 **, SB_QR2_PARSE_CURSOR) = field;
+    field = M2C_FIELD(&gQr2ParseState, s8 **, SB_QR2_PARSE_CURSOR);
+    p = field;
+    while ((c = *p) != 0 && c != delimiter) {
+        p++;
+        M2C_FIELD(&gQr2ParseState, s8 **, SB_QR2_PARSE_CURSOR) = p;
+    }
+    if (p == field) field = 0;
+    if (c == 0) return field;
+    {
+        s8 *next = M2C_FIELD(&gQr2ParseState, s8 **, SB_QR2_PARSE_CURSOR);
+        *p = 0;
+        M2C_FIELD(&gQr2ParseState, s8 **, SB_QR2_PARSE_CURSOR) = next + 1;
+    }
+    return field;
 }
 
 /* Splits a QR2 reply's text into backslash-separated key/value pairs and stores
@@ -322,7 +338,7 @@ void HashServerKey(s8 **arg0, s32 arg1) {
 }
 
 void CompareServerKeys(s32 *arg0, s32 *arg1) {
-    func_0206f8ac(*arg0, *arg1);
+    StringCompareNoCase(*arg0, *arg1);
 }
 
 s32 SBServerGetPing(void *arg0) {

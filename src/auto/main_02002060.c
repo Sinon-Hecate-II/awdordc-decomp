@@ -62,23 +62,23 @@ void func_020022d8(void) {
  * matrices to identity (0x100 = 1.0 in 8.8 fixed point). */
 void GX_InitDisplay(void) {
 void GX_ResetBankState(void); s32 OS_GetLockID(void); void SystemHalt(void); void DmaFill(s32,void *,s32,s32); void CpuFill(s32,void *,s32);
-extern s16 data_0212dbc0; extern s16 data_020f5200;
+extern s16 gGxDisplayStatus; extern s16 gGxDisplayConfig;
 s32 resourceId;
 *(volatile u16 *)0x4000304 |= 0x8000;                      /* POWCNT1: LCD on */
 *(volatile u16 *)0x4000304 = (*(volatile u16 *)0x4000304 & ~0x20e)|0x20e;
 *(volatile u16 *)0x4000304 |= 1;
 GX_ResetBankState();
-while(M2C_FIELD(&data_0212dbc0,u16 *,2)==0) {
+while(M2C_FIELD(&gGxDisplayStatus,u16 *,2)==0) {
 resourceId=OS_GetLockID();
 if(resourceId==-3) SystemHalt();                        /* no id free: hang */
-M2C_FIELD(&data_0212dbc0,u16 *,2)=resourceId;
+M2C_FIELD(&gGxDisplayStatus,u16 *,2)=resourceId;
 }
 *(volatile u16 *)0x4000004=0;                              /* DISPSTAT */
 *(volatile u32 *)0x4000000=0;                              /* DISPCNT */
-if(M2C_FIELD(&data_020f5200,s32 *,4)!=-1) {
-DmaFill(M2C_FIELD(&data_020f5200,s32 *,4),(void *)0x4000008,0,0x60);   /* main BG/BG2-3 regs */
+if(M2C_FIELD(&gGxDisplayConfig,s32 *,4)!=-1) {
+DmaFill(M2C_FIELD(&gGxDisplayConfig,s32 *,4),(void *)0x4000008,0,0x60);   /* main BG/BG2-3 regs */
 *(volatile u16 *)0x400006c=0;
-DmaFill(M2C_FIELD(&data_020f5200,s32 *,4),(void *)0x4001000,0,0x70);   /* sub engine regs */
+DmaFill(M2C_FIELD(&gGxDisplayConfig,s32 *,4),(void *)0x4001000,0,0x70);   /* sub engine regs */
 } else {
 CpuFill(0,(void *)0x4000008,0x60);
 *(volatile u16 *)0x400006c=0;
@@ -109,21 +109,21 @@ return v;
 }
 
 void func_02002490(void) {
-    extern s16 data_020f5200;
-    extern s16 data_0212dbc0;
+    extern s16 gGxDisplayConfig;
+    extern s16 gGxDisplayStatus;
     s32 temp_ip;
 
     temp_ip = *(s32 *)0x04000000;
-    data_020f5200 = 0;
-    data_0212dbc0 = (s16) ((u32) (temp_ip & 0x30000) >> 0x10);
+    gGxDisplayConfig = 0;
+    gGxDisplayStatus = (s16) ((u32) (temp_ip & 0x30000) >> 0x10);
     *(s32 *)0x04000000 = temp_ip & ~0x30000;
 }
 
 void GX_TurnOnDisplay(void) {
- extern s16 data_020f5200, data_0212dbc0;
+ extern s16 gGxDisplayConfig, gGxDisplayStatus;
  u16 v;
- data_020f5200 = 1;
- v = data_0212dbc0;
+ gGxDisplayConfig = 1;
+ v = gGxDisplayStatus;
  if (v != 0) {
   *(volatile u32 *)0x4000000 = (*(volatile u32 *)0x4000000 & ~0x30000) | ((u32)v << 16);
   return;
@@ -131,14 +131,18 @@ void GX_TurnOnDisplay(void) {
  *(volatile u32 *)0x4000000 |= 0x10000;
 }
 
-void GX_ConfigureDisplay(u32 a,u32 b,u32 c) {
-extern s16 data_020f5200,data_0212dbc0;
-u32 flag=(u16)data_020f5200;
-u32 old=*(volatile u32 *)0x4000000;
-data_0212dbc0=a;
-if(!flag)a=0;
-*(volatile u32 *)0x4000000=(old&0xfff0fff0)|(a<<16)|b|(c<<3);
-if(!*(u16 *)&data_0212dbc0)data_020f5200=0;
+/* Set the main display's mode: rewrite DISPCNT's video-mode and BG0-enable bits
+ * from videoMode/bg0Enable and its display-mode bits from displayMode, keeping
+ * the rest.  The mode is forced off while the display is off, and the display-on
+ * flag follows it down when the mode becomes 0. */
+void GX_ConfigureDisplay(u32 displayMode, u32 videoMode, u32 bg0Enable) {
+    extern s16 gGxDisplayConfig, gGxDisplayStatus;
+    u32 on = (u16)gGxDisplayConfig;
+    u32 old = REG_DISPCNT;
+    gGxDisplayStatus = displayMode;
+    if (!on) displayMode = 0;
+    REG_DISPCNT = (old & DISPCNT_CONFIG_MASK) | (displayMode << 16) | videoMode | (bg0Enable << 3);
+    if (!*(u16 *)&gGxDisplayStatus) gGxDisplayConfig = 0;
 }
 
 void GX_SetSubBgMode(s32 arg0) {
@@ -157,21 +161,24 @@ void GX_SetMasterBrightness(s16 *arg0, s32 arg1) {
     *arg0 = (0 - arg1) | 0x8000;
 }
 
+/* Reset the VRAM bank allocator: clear every bank-assignment field of
+ * gVramBankState and put the hardware bank control registers (VRAM A..I at
+ * 0x04000240) back to 0x00. */
 void GX_ResetBankState(void) {
     extern M2C_UNK gVramBankState;
-    M2C_FIELD(&gVramBankState, s16 *, 0) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 2) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 4) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 6) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 8) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0xA) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0xC) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0xE) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0x10) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0x12) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0x14) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0x16) = 0;
-    M2C_FIELD(&gVramBankState, s16 *, 0x18) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_PENDING) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_BG) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_OBJ) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_OBJ_CD) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_TEX) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_OBJ_EXTPLTT) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_TEX_EXTPLTT) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_BG_EXTPLTT) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_OBJ_PALETTE) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_SUB_BG) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_SUB_OBJ) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_BG_EXTPLTT_SUB) = 0;
+    M2C_FIELD(&gVramBankState, s16 *, VRAM_BANKS_OBJ_EXTPLTT_SUB) = 0;
     M2C_FIELD((void *)0x04000240, s32 *, 0) = 0;
     M2C_FIELD((void *)0x04000240, s8 *, 4) = 0;
     M2C_FIELD((void *)0x04000240, s8 *, 5) = 0;

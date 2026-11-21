@@ -64,8 +64,8 @@ void func_ov004_0221310c(void) {
 }
 
 void func_ov004_02213118(void) {
-    M2C_UNK func_ov004_022128b8();
-    func_ov004_022128b8();
+    M2C_UNK WaitForInputOrTimeout();
+    WaitForInputOrTimeout();
 }
 
 void func_ov004_02213124(M2C_UNK arg0) {

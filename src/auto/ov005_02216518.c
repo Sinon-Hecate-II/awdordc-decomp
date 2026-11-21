@@ -88,22 +88,22 @@ void func_ov005_0221720c(void) {
 s32 func_020b2714(void);
 void func_020b2738(void);
 void func_020842d4(void);
-void func_020b2178(void);
+void HideAllSpriteSlots(void);
 void HeapFreeBlock(void *);
 void FreeUiGraphicsBank(s32);
 void func_02082014(void);
-void func_020901e0(s32);
+void StartMusicTrack(s32);
 extern M2C_UNK gRecordsMenuState;
 if (func_020b2714()) func_020b2738();
 func_020842d4();
-func_020b2178();
+HideAllSpriteSlots();
 if (M2C_FIELD(&gRecordsMenuState, void **, 8)) {
 HeapFreeBlock(M2C_FIELD(&gRecordsMenuState, void **, 8));
 M2C_FIELD(&gRecordsMenuState, void **, 8) = 0;
 }
 FreeUiGraphicsBank(7);
 func_02082014();
-func_020901e0(4);
+StartMusicTrack(4);
 }
 
 void func_ov005_02217264(M2C_UNK arg0) {

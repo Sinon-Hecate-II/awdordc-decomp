@@ -311,7 +311,7 @@ for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)g
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov000_021a7ac0(s32 index) {
+void ScoreUnitKindsForTargetCandidate(s32 index) {
 extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
 extern u8 *gAiSettings;
 extern u8 gAiTargetCandidates[],data_ov000_021e00ad[],gUnitKindStats[];

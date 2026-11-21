@@ -79,20 +79,22 @@ s32 SBServerListCompareString(s32 *serverA, s32 *serverB) {
     return result;
 }
 
-s32 SBServerListCompareStringNoCase(s32 *arg0, s32 *arg1) {
+/* Case-insensitive server-list sort callback for a string key: compare the two
+ * servers' values of the list's sort key, negated when the list sorts ascending. */
+s32 SBServerListCompareStringNoCase(s32 *serverA, s32 *serverB) {
     s32 SBServerGetStringValue(s32, s32, M2C_UNK *);
-    s32 func_0206f8ac(s32, s32);
+    s32 StringCompareNoCase(s32, s32);
     extern void *gSBServerListSorting;
     extern M2C_UNK sSbEmptyString;
-    s32 temp_r4;
-    s32 var_r0;
+    s32 valueA;
+    s32 result;
 
-    temp_r4 = SBServerGetStringValue(*arg0, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), &sSbEmptyString);
-    var_r0 = func_0206f8ac(temp_r4, SBServerGetStringValue(*arg1, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), &sSbEmptyString));
-    if (M2C_FIELD(gSBServerListSorting, s32 *, 0x49C) == 0) {
-        var_r0 = -var_r0;
+    valueA = SBServerGetStringValue(*serverA, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString);
+    result = StringCompareNoCase(valueA, SBServerGetStringValue(*serverB, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), &sSbEmptyString));
+    if (M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_DESC) == 0) {
+        result = -result;
     }
-    return var_r0;
+    return result;
 }
 
 /* Sorts the server list's servers by key `field` with the comparator for
@@ -466,23 +468,38 @@ if(!M2C_FIELD(slist,s32*,0x7c)){M2C_FIELD(slist,s32*,0x7c)=gpiMalloc(4096);if(!M
 return 0;
 }
 #pragma pop
-void func_0206262c(void *a) {void StringInternRelease(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)StringInternRelease(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
+void SBServerListFreeKeyNames(void *a) {void StringInternRelease(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)StringInternRelease(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
 
-void SBServerListFreeKeyList(void *a) {
-s32 Vector_GetCount(s32);s32 *Vector_GetItem();void StringInternRelease(void *,s32);s32 Vector_Free();
-s32 i; s32 p=M2C_FIELD(a,s32 *,8);
-if(!p)return;
-for(i=0;i<Vector_GetCount(M2C_FIELD(a,s32 *,8));i++)StringInternRelease(a,*Vector_GetItem(M2C_FIELD(a,s32 *,8),i));
-Vector_Free(M2C_FIELD(a,s32 *,8));M2C_FIELD(a,s32 *,8)=0;
+/* Free the list's key schema (SB_SLIST_KEY_LIST): release the interned name of
+ * every SBServerListKey entry, free the schema vector and clear the pointer. */
+void SBServerListFreeKeyList(void *list) {
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem();
+    void StringInternRelease(void *, s32);
+    s32 Vector_Free();
+    s32 i;
+    s32 schema = M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST);
+    if (!schema) return;
+    for (i = 0; i < Vector_GetCount(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST)); i++)
+        StringInternRelease(list, *Vector_GetItem(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST), i));
+    Vector_Free(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST));
+    M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST) = 0;
 }
 
-s32 SBServerListDisconnect(void *a) {
-s32 gpiFree();s32 ghiCloseSocket();
-if(M2C_FIELD(a,s32 *,0x7c))gpiFree(M2C_FIELD(a,s32 *,0x7c));
-M2C_FIELD(a,s32 *,0x7c)=0;M2C_FIELD(a,s32 *,0x80)=0;
-if(M2C_FIELD(a,s32 *,0x4b0)!=-1)ghiCloseSocket(M2C_FIELD(a,s32 *,0x4b0));
-M2C_FIELD(a,s32 *,0x4b0)=-1;M2C_FIELD(a,s32 *,0)=1;
-SBServerListFreeKeyList(a);M2C_FIELD(a,s32 *,0x484)=-1;func_0206262c(a);
+/* GameSpy SBServerListDisconnect: free the reply buffer and the interned key
+ * names, close the master socket, return the list to its idle state and release
+ * the key schema. */
+s32 SBServerListDisconnect(void *list) {
+    s32 gpiFree(); s32 ghiCloseSocket();
+    if (M2C_FIELD(list, s32 *, SB_SLIST_RECV_BUFFER)) gpiFree(M2C_FIELD(list, s32 *, SB_SLIST_RECV_BUFFER));
+    M2C_FIELD(list, s32 *, SB_SLIST_RECV_BUFFER) = 0;
+    M2C_FIELD(list, s32 *, SB_SLIST_RECV_LENGTH) = 0;
+    if (M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) != -1) ghiCloseSocket(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET));
+    M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = -1;
+    M2C_FIELD(list, s32 *, SB_SLIST_STATE) = SB_SLIST_STATE_IDLE;
+    SBServerListFreeKeyList(list);
+    M2C_FIELD(list, s32 *, SB_SLIST_PENDING_KEY_COUNT) = -1;
+    SBServerListFreeKeyNames(list);
 }
 
 void func_02062738(void *arg0) {

@@ -271,20 +271,25 @@ if (Ov001_StartChildIndicate()) return;
 SetWhStatus(WH_STATUS_PARENT_START);
 }
 
+/* Submit the player's user info: let the connection's WH_CONN_USER_INFO_CB fill
+ * the user-info block and report the WFC user type, hand both to
+ * WFC_SubmitUserInfo (which continues asynchronously through
+ * Ov001_HandleUserInfoResult), and fail the connection when the submit does not
+ * start (result 2). */
 s32 Ov001_SubmitUserInfo(void) {
 extern M2C_UNK gWhWork;
-void func_ov001_02187cc4(void *);
+void Ov001_HandleUserInfoResult(void *);
 s32 WFC_SubmitUserInfo(void *,s32,void *);
-void *p;
-s32 value;
-SetWhStatus(3);
-p=M2C_FIELD(&gWhWork,void **,4);
-value=M2C_FIELD(p,s32 (**)(void *,void *),0x13AC)((u8 *)p+0x13C0,p);
-if(WFC_SubmitUserInfo((void *)func_ov001_02187cc4,value,(u8 *)M2C_FIELD(&gWhWork,void **,4)+0x13C0)==2) return 1;
-SetWhError(); SetWhStatus(9); return 0;
+void *connection;
+s32 userType;
+SetWhStatus(WH_STATUS_BUSY);
+connection=M2C_FIELD(&gWhWork,void **,WH_WORK_CONNECTION);
+userType=M2C_FIELD(connection,s32 (**)(void *,void *),WH_CONN_USER_INFO_CB)((u8 *)connection+WH_CONN_USER_INFO,connection);
+if(WFC_SubmitUserInfo((void *)Ov001_HandleUserInfoResult,userType,(u8 *)M2C_FIELD(&gWhWork,void **,WH_WORK_CONNECTION)+WH_CONN_USER_INFO)==2) return 1;
+SetWhError(); SetWhStatus(WH_STATUS_PARENT_START); return 0;
 }
 
-void func_ov001_02187cc4(void *arg0) {
+void Ov001_HandleUserInfoResult(void *arg0) {
     s32 Ov001_StartChildIndicate();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetWhError();
@@ -297,14 +302,18 @@ void func_ov001_02187cc4(void *arg0) {
     SetWhStatus(9);
 }
 
+/* Queue the DWC child-indication task that delivers child connect/disconnect
+   events: unless the connection already reached the connected/data/key-sharing
+   statuses, start the task (and fail the connection on error) and reset the child
+   state, leaving only this console's bit in the connected-child bitmap. */
 s32 Ov001_StartChildIndicate(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK HandleChildIndicate;
 s32 func_02012474(void *);
-if((u32)(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40)-4)<=2) return 1;
+if((u32)(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,WH_LINK_STATUS)-4)<=2) return 1;
 if(func_02012474(&HandleChildIndicate)!=2) {SetWhError();return 0;}
 M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,0x50)=0;
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,0x52)=1;
+M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,WH_CHILD_CONNECTED)=1;
 return 1;
 }
 
@@ -364,7 +373,7 @@ break;
 s32 Ov001_StartParent(void) {
     extern M2C_UNK gWhWork;
     extern M2C_UNK HandleParentStartResult;
-    s32 func_02012b08(void *, void *, u16, void *, u16, s32);
+    s32 MultiBoot_StartLinkTask(void *, void *, u16, void *, u16, s32);
     void *connection;
 
     if ((u32)(M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS) - 4) <= 2) return 1;
@@ -372,7 +381,7 @@ s32 Ov001_StartParent(void) {
     connection = M2C_FIELD(&gWhWork, void **, 4);
     /* the task carries two buffers of the connection object: +0x1060 of length
      * +0x12A4 and +0xF80 of length +0x12A0 */
-    if (func_02012b08(&HandleParentStartResult, (u8 *)connection + 0x1060, (u16)M2C_FIELD(connection, s32 *, 0x12A4), (u8 *)connection + 0xF80, (u16)M2C_FIELD(connection, s32 *, 0x12A0), 1) == 2) return 1;
+    if (MultiBoot_StartLinkTask(&HandleParentStartResult, (u8 *)connection + 0x1060, (u16)M2C_FIELD(connection, s32 *, 0x12A4), (u8 *)connection + 0xF80, (u16)M2C_FIELD(connection, s32 *, 0x12A0), 1) == 2) return 1;
     SetWhError();
     return 0;
 }
@@ -550,7 +559,7 @@ void func_ov001_0218836c(s32 arg0) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 8) = arg0;
 }
 
-u16 func_ov001_02188380(void) {
+u16 Ov001_GetConnectedChildren(void) {
 extern M2C_UNK gWhWork;
 return M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x52);
 }

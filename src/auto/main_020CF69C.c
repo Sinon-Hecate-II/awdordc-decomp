@@ -46,7 +46,7 @@ void StepMapCursorAndNotifyOffset(s32 arg0, s32 arg1) {
     cb(sp6, sp4, arg1 + 8);
 }
 
-void func_020cf80c(void) {
+void UpdateMapCursorInput(void) {
     M2C_UNK MoveMapCursorWithKeys();
     M2C_UNK UpdateMapCursorFromTouch();
     s32 IsMapCursorIdle();
@@ -101,31 +101,32 @@ u8 IsOwnedProductionSite(s32 x, s32 y) {
  * the tracked/booted flags, a road/bridge class (18, 19). */
 u8 func_020cf908(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 void func_020d0538(void);
-u8 func_020d04d4(s32,s32);
+u8 IsTerrainKind(s32,s32);
 extern u8 gUnitKindFlags[];
 void *p=(void *)*gCurrentMap;
 s32 index=arg0+M2C_FIELD(p+arg1*2,u16*,0x3758);
 u8 value=M2C_FIELD(p+index,u8*,0x1420);
 s32 offset;
 if(arg2!=((s32 (*)(s32))func_020d0538)(value))return 0;
-if(func_020d04d4(value,15))return 1;
+if(IsTerrainKind(value,15))return 1;
 offset=arg3*0x70;
-if(gUnitKindFlags[offset]&7) {if(func_020d04d4(value,17))return 1;}
-if(gUnitKindFlags[offset]&16) {if(func_020d04d4(value,18))return 1;}
-if(gUnitKindFlags[offset]&32) {if(func_020d04d4(value,19))return 1;}
+if(gUnitKindFlags[offset]&7) {if(IsTerrainKind(value,17))return 1;}
+if(gUnitKindFlags[offset]&16) {if(IsTerrainKind(value,18))return 1;}
+if(gUnitKindFlags[offset]&32) {if(IsTerrainKind(value,19))return 1;}
 return 0;
 }
 
-u8 IsPlainOrShoalTerrain(s32 arg0,s32 arg1) {
- u8 func_020d04d4(s32,s32);
- extern s32 *gCurrentMap;
- void *p=(void *)*gCurrentMap;
- s32 index=arg0+M2C_FIELD(p+arg1*2,u16 *,0x3758);
- u8 value=M2C_FIELD(p+index,u8 *,0x1420);
- u8 result;
- if(func_020d04d4(value,1)!=0) return 1;
- if(func_020d04d4(value,9)!=0) result=1; else result=0;
- return result;
+/* Whether the map cell at (x, y) is plain ground or shoal. */
+u8 IsPlainOrShoalTerrain(s32 x, s32 y) {
+    u8 IsTerrainKind(s32, s32);
+    extern s32 *gCurrentMap;
+    void *map = (void *)*gCurrentMap;
+    s32 cell = x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS);
+    u8 terrain = M2C_FIELD(map + cell, u8 *, MAP_CELL_TERRAIN);
+    u8 result;
+    if (IsTerrainKind(terrain, MAP_TERRAIN_PLAIN) != 0) return 1;
+    if (IsTerrainKind(terrain, MAP_TERRAIN_SHOAL) != 0) result = 1; else result = 0;
+    return result;
 }
 
 /* Load the decoded tile-graphics block for id into gMapData.  Ids in
@@ -420,7 +421,7 @@ s32 GetMoveRangeCommanderId(M2C_UNK arg0) {
 
 s32 func_020d048c(u8 a,s32 b){void func_020d0538(void);extern s8 data_ov000_021b5580[];u8 n=a&31;s32 v=b;if(v!=((s32 (*)(void))func_020d0538)())return 0;if(n!=16){if(data_ov000_021b5580[n&31])return 1;}return 0;}
 
-u8 func_020d04d4(s32 arg0, s32 arg1) {
+u8 IsTerrainKind(s32 arg0, s32 arg1) {
     u8 var_r0;
 
     if ((arg0 & 0x1F) == arg1) {
@@ -433,7 +434,7 @@ u8 func_020d04d4(s32 arg0, s32 arg1) {
 
 u8 func_020d04ec(s32 arg0,s32 arg1,s32 arg2) {
  void *p=(void *)*gCurrentMap;
- return func_020d04d4(M2C_FIELD(p+(arg0+M2C_FIELD(p+arg1*2,u16 *,0x3758)),u8 *,0x1420),arg2);
+ return IsTerrainKind(M2C_FIELD(p+(arg0+M2C_FIELD(p+arg1*2,u16 *,0x3758)),u8 *,0x1420),arg2);
 }
 
 s32 func_020d0528(s32 arg0) {
@@ -459,13 +460,16 @@ s32 func_020d0548(s32 arg0,s32 arg1) {
  return 1;
 }
 
-u8 func_020d0590(s32 arg0) {
- s32 IsPlayerHuman(s32);
- u8 result;
- if(IsPlayerHuman(arg0)!=0) return 1;
- if(M2C_FIELD(&gMapData,u8 *,4)!=0) return 0;
- if(M2C_FIELD((void *)*gCurrentMap+arg0*0x8C,u8 *,0x67C3)&2) result=1; else result=0;
- return result;
+/* Whether the local console places this player's map cursor: always for a human
+ * player, never for anyone else in a link battle (their own console draws it),
+ * and otherwise when the player's side carries SIDE_TEAM_B. */
+u8 IsPlayerCursorOwner(s32 player) {
+  s32 IsPlayerHuman(s32);
+  u8 result;
+  if(IsPlayerHuman(player)!=0) return 1;
+  if(M2C_FIELD(&gMapData,u8 *,MAPDATA_LINK_BATTLE)!=0) return 0;
+  if(M2C_FIELD((void *)*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF)&SIDE_TEAM_B) result=1; else result=0;
+  return result;
 }
 
 s32 GetTerrainDefenseScore(s32 a,s32 b,s32 c){

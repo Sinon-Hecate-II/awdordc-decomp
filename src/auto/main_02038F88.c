@@ -26,27 +26,30 @@ s32 OpenGameSpySocket(void){
  return result;
 }
 
-s32 FindPlayerConnection(s32 arg0) {
-    void *func_0205b094();
+/* Search the game's 32 player connection slots for the one whose peer record has
+ * id `peerId`, returning that connection slot, or NULL when there is no session or
+ * no player matches. */
+s32 FindPlayerConnection(s32 peerId) {
+    void *GetConnectionPeer();
     extern void *gNetSession;
     extern M2C_UNK gPlayerConnections;
     s32 i;
     if (gNetSession == NULL) return 0;
     for (i = 0; i < 32; i++) {
-        if ((&gPlayerConnections)[i] != 0 && arg0 == M2C_FIELD(func_0205b094((&gPlayerConnections)[i]), u8 *, 1))
+        if ((&gPlayerConnections)[i] != 0 && peerId == ((PlayerPeer *)GetConnectionPeer((&gPlayerConnections)[i]))->peerId)
             return (&gPlayerConnections)[i];
     }
     return 0;
 }
 
 u8 GetConnectionPlayerId(void) {
-    void *func_0205b094();
-    return M2C_FIELD(func_0205b094(), u8 *, 1);
+    void *GetConnectionPeer();
+    return M2C_FIELD(GetConnectionPeer(), u8 *, 1);
 }
 
-u8 func_020390c4(void) {
-    void *func_0205b094();
-    return M2C_FIELD(func_0205b094(), u8 *, 0);
+u8 GetCurrentConnectionIndex(void) {
+    void *GetConnectionPeer();
+    return M2C_FIELD(GetConnectionPeer(), u8 *, 0);
 }
 
 s32 FindFreePlayerSlot(void) {
@@ -71,22 +74,25 @@ void *GetPlayerConnectionSlot(s32 arg0) {
     return &gPlayerConnections + arg0;
 }
 
-void *FindPlayerConnectionSlot(s32 arg0, s32 arg1) {
+/* Returns the connection slot of the player whose GT2 socket id is `socketId`,
+ * searching the first `playerCount` entries of the session's player table, or
+ * NULL when no player matches. */
+void *FindPlayerConnectionSlot(s32 socketId, s32 playerCount) {
     extern void *gNetSession;
     s32 FindPlayerConnection(s32);
-    u8 func_020390c4(void);
+    u8 GetCurrentConnectionIndex(void);
     void *GetPlayerConnectionSlot(s32);
-    u8 i;
-    for (i = 0; i < arg1; i++) {
-        if (arg0 == ((u32 *)((u8 *)gNetSession + 0x468))[i]) {
+    u8 index;
+    for (index = 0; index < playerCount; index++) {
+        if (socketId == ((u32 *)((u8 *)gNetSession + NET_SESSION_PLAYER_SOCKETS))[index]) {
             break;
         }
     }
-    if (i >= arg1) {
+    if (index >= playerCount) {
         return 0;
     }
-    FindPlayerConnection(*((u8 *)gNetSession + i + 0x644));
-    return GetPlayerConnectionSlot(func_020390c4());
+    FindPlayerConnection(*((u8 *)gNetSession + NET_SESSION_PLAYER_IDS + index));
+    return GetPlayerConnectionSlot(GetCurrentConnectionIndex());
 }
 
 void *GetPlayerPeer(s32 arg0) {
@@ -95,12 +101,12 @@ void *GetPlayerPeer(s32 arg0) {
 }
 
 s32 HasPlayerConnection(s32 arg0) {
-    void *func_0205b094(void *);
+    void *GetConnectionPeer(void *);
     extern M2C_UNK gPlayerConnections;
     s32 i;
     for (i = 0; i < 32; i++) {
         if ((&gPlayerConnections)[i] != 0) {
-            if (M2C_FIELD(func_0205b094((void *)(&gPlayerConnections)[i]), u8 *, 1) == arg0) {
+            if (M2C_FIELD(GetConnectionPeer((void *)(&gPlayerConnections)[i]), u8 *, 1) == arg0) {
                 return 1;
             }
         }
@@ -120,7 +126,7 @@ void SetNetState(s32 arg0) {
 
 s32 func_02039224(s32 arg0) { s32 RemoveConnectionPeer(s32,s32); s32 func_0203e338(u8 **); u8 *p,*q; s32 n,i; n=func_0203e338(&p); i=0; if(n>0) { q=p; do { if(arg0==*q)break; i++; q++; }while(i<n); } if(i==n)return 0; return RemoveConnectionPeer(i,n); }
 
-u32 func_02039284(u8 *src, s32 n) {
+u32 MaskPlayerIds(u8 *src, s32 n) {
 u32 acc=0; u32 i=0;
 if(n>0) { u32 bit=1; do {acc |= bit << (u32)src[i]; i++;}while((s32)i<n);}
 return acc;
@@ -199,49 +205,57 @@ if(v!=4)SetNetState(v);
 M2C_FIELD(gNetSession,void (**)(s32,s32,s32),0x78)(arg0,arg1,M2C_FIELD(gNetSession,s32 *,0x7c));
 }
 
-void DispatchMatchEvent(s32 arg0, s32 arg1, s32 arg2, s32 arg3, M2C_UNK arg4) {
+/* Match event callback installed with the connection layer: keeps the session
+ * state and the connected-player mask in step with the event, then reports it to
+ * the app's match callback (the wide six-argument one while the session serves the
+ * match).  A clean close returns to the lobby, a start moves to the match and
+ * records this console's own player id; an error only refreshes the players. */
+void DispatchMatchEvent(s32 status, s32 closed, s32 targetCleared, s32 serving, M2C_UNK slot) {
     extern void *gNetSession;
     s32 func_0203dcf4(void);
     void SetNetState(s32);
-    u32 func_02039284(u8 *, s32);
+    u32 MaskPlayerIds(u8 *, s32);
     void UpdateConnectedPlayerCount(void);
 
-    if (arg0 == 0 && arg1 != 0) {
+    if (status == 0 && closed != 0) {
         if (M2C_FIELD(gNetSession, s32 *, 0x514) == 0) {
             func_0203dcf4();
-            SetNetState(3);
+            SetNetState(NET_STATE_READY);
         }
-    } else if (arg0 == 0) {
-        SetNetState(6);
-        {
-            void *p = gNetSession;
-            if (M2C_FIELD(p, u8 *, 0x381) >= 0) {
-                s32 i;
-                for (i = 0; i <= M2C_FIELD(p, volatile u8 *, 0x381); i++) {
-                    if (M2C_FIELD(p, s32 *, 0x64) == ((u32 *)((u8 *)p + 0x468))[i]) {
-                        ((u8 *)gNetSession)[0x2c] = ((u8 *)gNetSession + i)[0x644];
-                        goto L;
-                    }
-                }
-                M2C_FIELD(gNetSession, u32 *, 0x664) =
-                    func_02039284(((u8 *)gNetSession) + 0x244 + 0x400, M2C_FIELD(gNetSession, u8 *, 0x381) + 1);
-                UpdateConnectedPlayerCount();
-            L:;
+        goto refreshPlayers;
+    }
+    if (status != 0) {
+        goto refreshPlayers;
+    }
+
+    SetNetState(NET_STATE_MATCH);
+    {
+        void *session = gNetSession;
+        s32 i;
+        for (i = 0; i <= M2C_FIELD(session, volatile u8 *, NET_SESSION_LAST_PLAYER); i++) {
+            if (M2C_FIELD(session, s32 *, NET_SESSION_LOCAL_SOCKET) == ((u32 *)((u8 *)session + NET_SESSION_PLAYER_SOCKETS))[i]) {
+                M2C_FIELD(gNetSession, u8 *, NET_SESSION_LOCAL_PLAYER_ID) = M2C_FIELD((u8 *)gNetSession + i, u8 *, NET_SESSION_PLAYER_IDS);
+                break;
             }
         }
     }
 
-    if (M2C_FIELD(gNetSession, u8 *, 0x389) == 2 || M2C_FIELD(gNetSession, volatile u8 *, 0x389) == 3) {
-        ((void (*)(s32, s32, s32, s32, M2C_UNK, s32))M2C_FIELD(gNetSession, void **, 0x88))(
-            arg0, arg1, arg2, arg3, arg4, M2C_FIELD(gNetSession, s32 *, 0x8c));
+refreshPlayers:
+    M2C_FIELD(gNetSession, u32 *, NET_SESSION_CONNECTED_MASK) =
+        MaskPlayerIds((u8 *)gNetSession + NET_SESSION_PLAYER_IDS, M2C_FIELD(gNetSession, u8 *, NET_SESSION_LAST_PLAYER) + 1);
+    UpdateConnectedPlayerCount();
+
+    if (M2C_FIELD(gNetSession, u8 *, NET_SESSION_MODE) == 2 || M2C_FIELD(gNetSession, volatile u8 *, NET_SESSION_MODE) == 3) {
+        ((void (*)(s32, s32, s32, s32, M2C_UNK, s32))M2C_FIELD(gNetSession, void **, NET_SESSION_EVENT_CALLBACK5))(
+            status, closed, targetCleared, serving, slot, M2C_FIELD(gNetSession, s32 *, NET_SESSION_EVENT_DATA5));
     } else {
-        ((void (*)(s32, s32, s32))M2C_FIELD(gNetSession, void **, 0x80))(
-            arg0, arg1, M2C_FIELD(gNetSession, s32 *, 0x84));
+        ((void (*)(s32, s32, s32))M2C_FIELD(gNetSession, void **, NET_SESSION_EVENT_CALLBACK))(
+            status, closed, M2C_FIELD(gNetSession, s32 *, NET_SESSION_EVENT_DATA));
     }
 
-    if (arg0 != 0 && gNetSession != 0) {
-        if (M2C_FIELD(gNetSession, s32 *, 0x24) == 5) {
-            SetNetState(3);
+    if (status != 0 && gNetSession != 0) {
+        if (M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE) == NET_STATE_STARTING) {
+            SetNetState(NET_STATE_READY);
         }
     }
 }
@@ -291,7 +305,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     extern u32 gEmptyString;
 
     s32 func_0203e558(void);
-    void *func_0205b094();
+    void *GetConnectionPeer();
     void ResetTransferSlot();
     s32 func_02039224(s32);
     M2C_UNK func_0203dee8();
@@ -334,7 +348,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     }
 
     if (r8 == 0) {
-        u8 *peer = func_0205b094(arg0v);
+        u8 *peer = GetConnectionPeer(arg0v);
         if (peer == NULL) return;
         r4 = peer[1];
         {

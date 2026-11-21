@@ -2,6 +2,7 @@
 #include "common.h"
 #include "sprite_grid.h"
 #include "unit_sprite.h"
+#include "list_widget.h"
 
 /* Tile id of the sprite cell a cell list points at, -1 when it points at none. */
 static inline u32 GetSpriteCellTile(void *cells) {
@@ -502,17 +503,22 @@ s16 GetScrollLimit(void *arg0) {
     return n;
 }
 #pragma opt_propagation reset
-void ScrollListTo(void *arg0,s16 arg1,s32 arg2){
+/* Move the scrolling list's cursor to `item` and start its window slide: record
+ * the item, turn its row index into a pixel offset (row height x row), park the
+ * window's x offset at 0 and aim its y slide at the negated offset, then restart
+ * the vertical scroll tween from there.  With `snap` set the tween's start and
+ * end are both the target offset. */
+void ScrollListTo(void *list,s16 item,s32 snap){
  s32 Divide(s16,s16);s32 GetSpriteAnimValue(void *);
- s32 mul;s16 r6,r7,v;
- M2C_FIELD(arg0,s16 *,12)=arg1;
- mul=M2C_FIELD(arg0,u8 *,10)*(s16)Divide(M2C_FIELD(arg0,s16 *,12),M2C_FIELD(arg0,s16 *,8));
- M2C_FIELD(arg0,s16 *,40)=0;M2C_FIELD(arg0,s16 *,42)=-mul;
- r6=M2C_FIELD(arg0,s16 *,42);r7=M2C_FIELD(arg0,s16 *,60);
- M2C_FIELD(arg0,s16 *,62)=GetSpriteAnimValue((u8 *)arg0+48);
- M2C_FIELD(arg0,s16 *,64)=r6;M2C_FIELD(arg0,s16 *,60)=r7;
- M2C_FIELD(arg0,u16 *,50)=M2C_FIELD(arg0,u16 *,52);
- if(arg2==1){v=M2C_FIELD(arg0,s16 *,42);M2C_FIELD(arg0,s16 *,64)=v;M2C_FIELD(arg0,s16 *,62)=v;}
+ s32 offset;s16 from,savedFrames,v;
+ M2C_FIELD(list,s16 *,LIST_WIDGET_CURSOR)=item;
+ offset=M2C_FIELD(list,u8 *,LIST_WIDGET_ROW_HEIGHT)*(s16)Divide(M2C_FIELD(list,s16 *,LIST_WIDGET_CURSOR),M2C_FIELD(list,s16 *,LIST_WIDGET_ITEMS_PER_ROW));
+ M2C_FIELD(list,s16 *,LIST_WIDGET_OFFSET_X)=0;M2C_FIELD(list,s16 *,LIST_WIDGET_SLIDE_TARGET_Y)=-offset;
+ from=M2C_FIELD(list,s16 *,LIST_WIDGET_SLIDE_TARGET_Y);savedFrames=M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_FRAMES);
+ M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_FROM)=GetSpriteAnimValue((u8 *)list+LIST_WIDGET_SCROLL_TWEEN);
+ M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_TO)=from;M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_FRAMES)=savedFrames;
+ M2C_FIELD(list,u16 *,LIST_WIDGET_SCROLL_CURRENT)=M2C_FIELD(list,u16 *,LIST_WIDGET_SCROLL_START);
+ if(snap==1){v=M2C_FIELD(list,s16 *,LIST_WIDGET_SLIDE_TARGET_Y);M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_TO)=v;M2C_FIELD(list,s16 *,LIST_WIDGET_SCROLL_FROM)=v;}
 }
 
 #pragma opt_common_subs off

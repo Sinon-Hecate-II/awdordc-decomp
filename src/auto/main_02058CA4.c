@@ -104,11 +104,14 @@ s32 SocketHasPendingData(s32 a) {
     return ghiSocketCanRecv(a);
 }
 
-s8 *gpiFindInfoMessageTerminator(s8 *arg0, s32 arg1) {
-    s32 length = arg1 - 6;
-    s8 *p = arg0;
-    while (p - arg0 < length) {
-        if (p[0] == 0x5c && p[1] == 'f' && p[2] == 'i' && p[3] == 'n' && p[4] == 'a' && p[5] == 'l' && p[6] == 0x5c) return p;
+/* Find the "\final\" terminator of a GameSpy gpi info message in a buffer of
+   `size` bytes: return a pointer to its first backslash, or NULL when the
+   buffer holds no terminator. */
+s8 *gpiFindInfoMessageTerminator(s8 *buffer, s32 size) {
+    s32 limit = size - 6;
+    s8 *p = buffer;
+    while (p - buffer < limit) {
+        if (p[0] == GPI_FIELD_DELIMITER && p[1] == 'f' && p[2] == 'i' && p[3] == 'n' && p[4] == 'a' && p[5] == 'l' && p[6] == GPI_FIELD_DELIMITER) return p;
         p++;
     }
     return NULL;
@@ -377,16 +380,20 @@ s32 func_02059670(void *arg0, s32 arg1) {
  return *Vector_GetItem(M2C_FIELD(var_r0, s32 *, 0x1c), arg1);
 }
 
-M2C_UNK func_020596a0(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
+/* Read the integer value the gpi key/value store holds under `key`, creating the
+ * entry as an int with `value` when no such key exists yet, and return it.
+ * `gpi` overrides the logged-in session's store; `lookup` finds an existing
+ * entry and returns NULL when the key is absent. */
+s32 gpiGetOrCreateInt(void *gpi, void *key, M2C_UNK lookup, M2C_UNK value, s32 unused) {
  s32 *BucketNew(s32, void *, s32, M2C_UNK *);
  extern M2C_UNK gGpiInfoState;
  s32 *result;
- void *obj = arg0;
- if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
- if (obj == NULL) result = &arg3;
+ void *object = gpi;
+ if (object == NULL) object = M2C_FIELD(&gGpiInfoState, void **, GPI_INFO_SESSION);
+ if (object == NULL) result = (s32 *)&value;
  else {
- result = ((s32 *(*)(s32, void *, M2C_UNK *))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, &arg3);
- if (result == NULL) result = BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 0, &arg3);
+ result = ((s32 *(*)(s32, void *, M2C_UNK *))lookup)(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, (s32 *)&value);
+ if (result == NULL) result = BucketNew(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, GPI_BUCKET_INT, (s32 *)&value);
  }
  return *result;
 }
@@ -422,12 +429,12 @@ s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) 
 }
 
 void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_020596a0(void *, void *, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK gpiGetOrCreateInt(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff524;
     char sp4[64];
     StringFormat(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
-    func_020596a0(arg0, sp4, arg2, arg3, arg4);
+    gpiGetOrCreateInt(arg0, sp4, arg2, arg3, arg4);
 }
 
 void func_02059830(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
@@ -449,12 +456,12 @@ void func_02059890(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg
 }
 
 void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_020596a0(void *, void *, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK gpiGetOrCreateInt(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK data_020ff52c;
     char sp4[64];
     StringFormat(sp4, &data_020ff52c, arg1, func_02059670(arg0, arg4));
-    func_020596a0(arg0, sp4, arg2, arg3, arg4);
+    gpiGetOrCreateInt(arg0, sp4, arg2, arg3, arg4);
 }
 
 void func_02059948(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {

@@ -8,7 +8,7 @@ void func_ov003_0220a6bc(void *);
 void func_ov003_0220bf98(void *);
 void Ov003_UpdateHelpPanelSlide(void *);
 void func_ov003_0220856c(void *,s32,s32);
-void func_02088e84(void *,s16,s32,s16,s32);
+void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
 s32 GetUnitSpriteWidth(void *);
 s32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s16,s16,u16,u16);
@@ -51,7 +51,7 @@ if(state==1)boolean=1;else boolean=0;
 if(!(boolean&255)){if(state==2)boolean=1;else boolean=0;}
 if(boolean&255){
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,0);
-func_02088e84(sprite,224,160,224,160);
+Set3DSpriteSlideTargetAndStart(sprite,224,160,224,160);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
 func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
@@ -139,7 +139,7 @@ if(func_02089080(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),vo
 obj=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),void **,0);index=((obj?M2C_FIELD(obj,u16 *,8):-1)-11)&255;
 y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,4);
-func_02088e84(sprite,129,y,129,y);
+Set3DSpriteSlideTargetAndStart(sprite,129,y,129,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
 func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}
@@ -153,7 +153,7 @@ if(func_02089080(sprite)){Show3DSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x68),vo
 obj=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),void **,0);index=((obj?M2C_FIELD(obj,u16 *,8):-1)-11)&255;
 y=(index-2)*30+62;
 sprite=M2C_FIELD(M2C_FIELD(arg0,void **,0x68),void **,8);
-func_02088e84(sprite,223,y,223,y);
+Set3DSpriteSlideTargetAndStart(sprite,223,y,223,y);
 if(M2C_FIELD(M2C_FIELD(sprite,void **,0x64),u8 *,0x12)!=0)boolean=1;else boolean=0;
 if(boolean&255){sy=M2C_FIELD(sprite,s16 *,0x52);sx=M2C_FIELD(sprite,s16 *,0x50);width=GetUnitSpriteWidth(sprite);
 func_02087d84(M2C_FIELD(sprite,void **,0x64),1,sx,sy,(u16)width,(u16)GetUnitSpriteHeight(sprite));}

@@ -7,12 +7,12 @@ static inline u8 PlayerMode02180738(PlayerRecord02180738 *players, s32 index) { 
 
 void func_ov000_02180738(void) {
 M2C_UNK ClearAiInfluenceMaps();
-M2C_UNK func_ov000_0218cfec();
+M2C_UNK SelectUnitAttackTarget();
 M2C_UNK SetMapCursor(u8, u8, s32, s32, s32);
 extern void **gCurrentMap;
 void *temp_r1;
 ClearAiInfluenceMaps();
-func_ov000_0218cfec();
+SelectUnitAttackTarget();
 temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
 SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
@@ -150,10 +150,10 @@ void func_ov000_02180914(void) {
 }
 
 void func_ov000_02180924(void) {
-    M2C_UNK func_ov000_0218cfec();
+    M2C_UNK SelectUnitAttackTarget();
     M2C_UNK ClearAiInfluenceMaps();
     ClearAiInfluenceMaps();
-    func_ov000_0218cfec();
+    SelectUnitAttackTarget();
 }
 
 /* Role-3 AI action for a unit in AI step 0 (also the fallback for a step-2 unit
@@ -355,18 +355,21 @@ void RunAiRole3Step5Action(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180c10(void) {
-    M2C_UNK func_ov000_0218cfec();
+/* Role-3 AI step-6 action: while the battlefield is hidden (fog of war or snow)
+ * pick the acting unit's attack target, then put the map cursor on the unit the
+ * cursor is over. */
+void RunAiRole3Step6Action(void) {
+    M2C_UNK SelectUnitAttackTarget();
     M2C_UNK SetMapCursor(u8, u8, s32, s32, s32);
     extern void **gCurrentMap;
-    void *temp_r0;
-    void *temp_r1;
-    temp_r0 = *gCurrentMap;
-    if (M2C_FIELD(temp_r0, u8 *, 0x5156) != 0 || M2C_FIELD(temp_r0, u8 *, 0x5158) == 2) {
-        func_ov000_0218cfec();
+    void *map;
+    void *unit;
+    map = *gCurrentMap;
+    if (M2C_FIELD(map, u8 *, MAP_FOG) != 0 || M2C_FIELD(map, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW) {
+        SelectUnitAttackTarget();
     }
-    temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
-    SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
+    unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
+    SetMapCursor(M2C_FIELD(unit, u8 *, MAP_UNIT_X), M2C_FIELD(unit, u8 *, MAP_UNIT_Y), 2, 0, 0);
 }
 
 /* Role-3 AI step-7 action: pick the unit's attack target and attack from where
@@ -537,7 +540,7 @@ if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52d0),u16 *,6)<<25)>>25)>60
 void RunAIUnitAction(void) {
 M2C_UNK BuildAiInfluenceMaps();
 M2C_UNK RunAiMap175MoveOverride();
-M2C_UNK func_ov000_0218cfec();
+M2C_UNK SelectUnitAttackTarget();
 M2C_UNK func_ov000_0218f0ec();
 M2C_UNK func_ov000_0219137c();
 M2C_UNK RunAiAttackAction();
@@ -559,7 +562,7 @@ void *map; PlayerRecord02180738 *playerRecord; u32 state; s32 handled;
 if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride();return;}
 BuildAiInfluenceMaps();map=*gCurrentMap;
 state=(u32)(M2C_FIELD(M2C_FIELD(map,void **,MAP_CURSOR_UNIT),u8 *,MAP_UNIT_AI_STATE)<<28)>>28;
-if(state==6){func_ov000_0218cfec();return;}
+if(state==6){SelectUnitAttackTarget();return;}
 if(state==8){func_ov000_0218f0ec();func_ov000_0219137c();RunAiAttackAction();PlanCaptureMoveDestination();return;}
 if(M2C_FIELD((u8 *)map+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE,u8 *,MAP_PLAYER_STATES+PLAYER_REC_AI_MODE)!=3){func_ov000_0218f0ec();func_ov000_0219137c();}
 if(((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_HEALTH)<<25)>>25)<=60)func_ov000_02190f74();
@@ -600,12 +603,12 @@ void *state;
 if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride(); return;}
 state=*gCurrentMap;
 switch((u32)(M2C_FIELD(M2C_FIELD(state,void **,0x52d0),u8 *,11)<<28)>>28) {
-case 0: func_ov000_021804d4(); return;
-case 1: func_ov000_0218053c(); return;
-case 2: if(HasEnemyPlayer()==1)func_ov000_021805a0(); else func_ov000_021804d4(); return;
-case 3: func_ov000_02180608(); return;
-case 4: func_ov000_02180670(); return;
-case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else func_ov000_02180670(); return;
+case 0: RunAiAttackAndPlanStep(); return;
+case 1: RunAiUnitActionStep1(); return;
+case 2: if(HasEnemyPlayer()==1)RunAiRole4Or6Step2Action(); else RunAiAttackAndPlanStep(); return;
+case 3: RunAiUnitActionStep3(); return;
+case 4: RunAiRole4Or6Step4Action(); return;
+case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)func_ov000_021806d8(); else RunAiRole4Or6Step4Action(); return;
 case 7: func_ov000_02180778(); return;
 case 8: func_ov000_021807d8(); return;
 case 9: func_ov000_02180838(); return;
@@ -645,7 +648,7 @@ void RunAiRole3Action(void) {
     case 3: RunAiRole3Step3Action(); return;
     case 4: RunAiRole3Step4Action(); return;
     case 5: if (PlayerHasHq(M2C_FIELD(state, u16 *, 0x52a4)) == 1) RunAiRole3Step5Action(); else RunAiRole3Step4Action(); return;
-    case 6: func_ov000_02180c10(); return;
+    case 6: RunAiRole3Step6Action(); return;
     case 7: RunAiRole3Step7Action(); return;
     case 8: RunAiRole3Step8Action(); return;
     case 9: RunAiRole3Step9Action(); return;

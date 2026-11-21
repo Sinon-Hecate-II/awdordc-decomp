@@ -44,8 +44,8 @@ void MapEditor_StartMap(void *editor) {
  SetMapCursorTargetTile((s16)centerX,(s16)centerY);SetMapViewPositionToTileCentered(centerX,centerY);
  SetMapEditorMode(0);SetMapEditorTool(0);SetMapEditorUnitKind(1);SetMapEditorUnitOwner(1);SetMapEditorUnitFlags(0);SetMapEditorTerrainKind(1);SetMapEditorTerrainOwner(0);
  RefreshMapEditor();func_ov007_02212da0();func_ov007_02213150();func_ov007_0221ab20();MapEditor_SetMapModified(0);
- M2C_FIELD(editor,u8*,0x34)=1;
- func_ov007_022121e4();
+ M2C_FIELD(editor,u8*,MAP_EDITOR_INPUT_LATCH)=1;
+func_ov007_022121e4();
 }
 
 void func_ov007_0221142c(M2C_UNK arg0) {
@@ -67,14 +67,14 @@ void func_ov007_0221142c(M2C_UNK arg0) {
 void func_ov007_02211480(void) {
     M2C_UNK FreeUiGraphicsBank(M2C_UNK);
     M2C_UNK func_0208c748();
-    M2C_UNK func_020b2178();
+    M2C_UNK HideAllSpriteSlots();
     M2C_UNK MapSettings_CopyFromGameSettings(M2C_UNK);
     M2C_UNK func_020d4c08();
     M2C_UNK func_ov007_02212db8();
     M2C_UNK func_ov007_0221ab38();
     FreeUiGraphicsBank(4);
     func_ov007_02212db8();
-    func_020b2178();
+    HideAllSpriteSlots();
     func_ov007_0221ab38();
     func_020d4c08();
     func_0208c748();
@@ -181,7 +181,7 @@ void MapEditor_EraseUnit(M2C_UNK editor, s32 x, s32 y, s32 sound) {
     PlaySoundEffect(0x1001D);
 }
 
-void func_ov007_022116a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void MapEditor_SelectCell(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     M2C_UNK PlaySoundEffect(s32);
     s32 func_ov007_02214718(M2C_UNK, M2C_UNK);
     if (func_ov007_02214718(arg1, arg2) != 0) {
@@ -209,7 +209,7 @@ case 0:if(sound==0)return;PlaySoundEffect(0x1001d);break;
 }
 }
 
-void func_ov007_022117e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void MapEditor_PickTerrain(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK SpawnSoundEffectAtTile(s32, M2C_UNK, M2C_UNK, s32);
     void SetMapEditorTerrainKind(s32);
     void SetMapEditorTerrainOwner(s32);
@@ -291,7 +291,7 @@ void MapEditor_TryPaintTerrain(M2C_UNK unused, s32 x, s32 y, s32 playErrorSound)
 }
 
 /* Returns 0 if cell (x,y) is usable for the current action, else a nonzero status code (4/5). */
-s32 func_ov007_02211990(s32 x, s32 y) {
+s32 MapEditor_GetCursorType(s32 x, s32 y) {
     extern void **gCurrentMap;
     u8 GetMapEditorMode(void); u8 GetMapEditorTool(void);
     s32 GetMapEditorUnitKind(void); s32 GetMapEditorUnitOwner(void); s32 GetMapEditorUnitFlags(void);
@@ -341,15 +341,20 @@ s32 func_ov007_02211990(s32 x, s32 y) {
     return 0;
 }
 
-void func_ov007_02211ae8(M2C_UNK arg0) {
-    extern void *gKeyState;
-    extern void *gTouchState;
+#pragma optimization_level 3
+/* Per-frame map editor handler: folds the touch screen into the key state, steps
+ * the map cursor toward the cell it points at, opens the menus bound to R (map
+ * menu), L (palette panel), START (options) and SELECT, and, while the cursor is
+ * idle, applies the active tool to the cursor's cell on the terrain or unit page. */
+void MapEditor_Update(M2C_UNK editor) {
+    extern KeyState *gKeyState;
+    extern u8 *gTouchState;
     extern void **gCurrentMap;
     s32 func_020d46e8(void);
     s32 func_020ab240(void);
     void func_020cf828(s32);
     void func_0207a7a4(s32, s32);
-    s32 func_ov007_02211990(s32, s32);
+    s32 MapEditor_GetCursorType(s32, s32);
     void MapCursor_StepTowardTarget(s32);
     void CreateMapMenu(void);
     void func_ov007_02219418(void);
@@ -360,112 +365,116 @@ void func_ov007_02211ae8(M2C_UNK arg0) {
     void MapEditor_PlaceSelectedUnit(M2C_UNK, s32, s32, s32);
     void PaintMapTerrain(M2C_UNK, s32, s32, s32);
     void MapEditor_PickUnit(M2C_UNK, s32, s32, s32);
-    void func_ov007_022117e0(M2C_UNK, M2C_UNK, M2C_UNK);
+    void MapEditor_PickTerrain(M2C_UNK, M2C_UNK, M2C_UNK);
     void MapEditor_EraseUnit(M2C_UNK, s32, s32, s32);
     void MapEditor_EraseTerrain(M2C_UNK, s32, s32, s32);
-    void func_ov007_022116a0(M2C_UNK, s32, s32, s32);
+    void MapEditor_SelectCell(M2C_UNK, s32, s32, s32);
     void MapEditor_TryPaintTerrain(M2C_UNK, s32, s32, s32);
-    s32 r4;
-    s32 r5;
-    void *q;
-    s32 r6;
-    s32 r7;
-    s16 val;
-    s32 t;
-    u8 f;
+    s32 keyPressed;
+    s32 keyHeld;
+    u8 *touch;
+    s32 cursorX;
+    s32 cursorY;
+    s16 cursorType;
+    s32 tool;
+    u8 page;
     s32 mask;
-    r4 = *(u16 *)gKeyState;
-    r5 = *(u16 *)((u8 *)gKeyState + 6);
+    keyPressed = gKeyState->pressed;
+    keyHeld = gKeyState->held;
     if (func_020d46e8()) {
-        ((u8 *)arg0)[0x34] = 1;
+        M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH) = 1;
         return;
     }
-    q = gTouchState;
-    if (((u8 *)q)[0x12]) r5 |= 1;
-    if (((u8 *)q)[0x14]) r4 |= 1;
-    if (((u8 *)arg0)[0x34]) {
-        r5 = r4;
-        if (r4) ((u8 *)arg0)[0x34] = 0;
+    touch = gTouchState;
+    if (touch[TOUCH_ACTIVE]) keyHeld |= KEY_A;
+    if (touch[TOUCH_STARTED]) keyPressed |= KEY_A;
+    if (M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH)) {
+        keyHeld = keyPressed;
+        if (keyPressed) M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH) = 0;
     }
     if (!func_020ab240()) {
         func_020cf828(0x1001b);
         func_0207a7a4(1, 4);
-        r6 = *(s16 *)((u8 *)*gCurrentMap + 0x52c2);
-        r7 = *(s16 *)((u8 *)*gCurrentMap + 0x52c4);
-        val = func_ov007_02211990(r6, r7);
-        MapCursor_StepTowardTarget(val);
     }
-    if (r4 & 0x100) { CreateMapMenu(); return; }
-    if (r4 & 0x200) { func_ov007_02219418(); return; }
-    if (r4 & 0x8) { func_ov007_022144ec(); return; }
-    if (r4 & 0x4) { func_ov007_0221330c(); return; }
-    if (!((u8 *)gTouchState)[0x12]) goto L_b4c;
+    cursorX = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X);
+    cursorY = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y);
+    cursorType = MapEditor_GetCursorType(cursorX, cursorY);
+    MapCursor_StepTowardTarget(cursorType);
+
+    if (keyPressed & KEY_R) { CreateMapMenu(); return; }
+    if (keyPressed & KEY_L) { func_ov007_02219418(); return; }
+    if (keyPressed & KEY_START) { func_ov007_022144ec(); return; }
+    if (keyPressed & KEY_SELECT) { func_ov007_0221330c(); return; }
+    if (!gTouchState[TOUCH_ACTIVE]) goto L_b4c;
     if (func_020ab240()) return;
-    t = GetMapEditorTool();
-    switch (t) {
-    case 0:
-        if (!(r5 & 1)) return;
-        f = GetMapEditorMode();
-        if (f == 0) goto L_c0;
-        if (f != 1) return;
-        MapEditor_PlaceSelectedUnit(arg0, r6, r7, r4 & 1);
+    tool = GetMapEditorTool();
+    switch (tool) {
+    case MAP_EDITOR_TOOL_PAINT:
+        if (!(keyHeld & KEY_A)) return;
+        page = GetMapEditorMode();
+        if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_c0;
+        if (page != MAP_EDITOR_PAGE_UNIT) return;
+        MapEditor_PlaceSelectedUnit(editor, cursorX, cursorY, keyPressed & KEY_A);
         return;
     L_c0:
-        PaintMapTerrain(arg0, r6, r7, r4 & 1);
+        PaintMapTerrain(editor, cursorX, cursorY, keyPressed & KEY_A);
         return;
-    case 1:
-        if (!(r4 & 1)) return;
-        r4 &= 1;
-        f = GetMapEditorMode();
-        if (f == 0) goto L_c1;
-        if (f != 1) return;
-        MapEditor_PickUnit(arg0, r6, r7, r4);
+    case MAP_EDITOR_TOOL_PICK:
+        if (!(keyPressed & KEY_A)) return;
+        keyPressed &= KEY_A;
+        page = GetMapEditorMode();
+        if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_c1;
+        if (page != MAP_EDITOR_PAGE_UNIT) return;
+        MapEditor_PickUnit(editor, cursorX, cursorY, keyPressed);
         return;
     L_c1:
-        ((void (*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))func_ov007_022117e0)(arg0, r6, r7, r4);
+        ((void (*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))MapEditor_PickTerrain)(editor, cursorX, cursorY, keyPressed);
         return;
-    case 2:
-        if (!(r5 & 1)) return;
-        f = GetMapEditorMode();
-        if (f == 0) goto L_c2;
-        if (f != 1) return;
-        MapEditor_EraseUnit(arg0, r6, r7, r4 & 1);
+    case MAP_EDITOR_TOOL_ERASE:
+        if (!(keyHeld & KEY_A)) return;
+        page = GetMapEditorMode();
+        if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_c2;
+        if (page != MAP_EDITOR_PAGE_UNIT) return;
+        MapEditor_EraseUnit(editor, cursorX, cursorY, keyPressed & KEY_A);
         return;
     L_c2:
-        MapEditor_EraseTerrain(arg0, r6, r7, r4 & 1);
+        MapEditor_EraseTerrain(editor, cursorX, cursorY, keyPressed & KEY_A);
         return;
-    case 3:
-        if (!(r4 & 1)) return;
-        r4 &= 1;
-        f = GetMapEditorMode();
-        if (f == 0) goto L_c3;
-        if (f != 1) return;
-        func_ov007_022116a0(arg0, r6, r7, r4);
+    case MAP_EDITOR_TOOL_SELECT:
+        if (!(keyPressed & KEY_A)) return;
+        keyPressed &= KEY_A;
+        page = GetMapEditorMode();
+        if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_c3;
+        if (page != MAP_EDITOR_PAGE_UNIT) return;
+        MapEditor_SelectCell(editor, cursorX, cursorY, keyPressed);
         return;
     L_c3:
-        MapEditor_TryPaintTerrain(arg0, r6, r7, r4);
+        MapEditor_TryPaintTerrain(editor, cursorX, cursorY, keyPressed);
         return;
     }
+    goto Done;
 L_b4c:
-    f = GetMapEditorMode();
-    if (f == 0) goto L_be4;
-    if (f != 1) return;
-    if (r5 & 1) { MapEditor_PlaceSelectedUnit(arg0, r6, r7, r4 & 1); return; }
-    mask = r4 & 2;
-    if (mask) { MapEditor_PickUnit(arg0, r6, r7, mask); return; }
-    if (*(u16 *)((u8 *)gKeyState + 6) & 0x400) { MapEditor_EraseUnit(arg0, r6, r7, r4 & 0x400); return; }
-    mask = r4 & 0x800;
-    if (mask) { func_ov007_022116a0(arg0, r6, r7, mask); return; }
+    page = GetMapEditorMode();
+    if (page == MAP_EDITOR_PAGE_TERRAIN) goto L_be4;
+    if (page != MAP_EDITOR_PAGE_UNIT) return;
+    if (keyHeld & KEY_A) { MapEditor_PlaceSelectedUnit(editor, cursorX, cursorY, keyPressed & KEY_A); return; }
+    mask = keyPressed & KEY_B;
+    if (mask) { MapEditor_PickUnit(editor, cursorX, cursorY, mask); return; }
+    if (gKeyState->held & KEY_X) { MapEditor_EraseUnit(editor, cursorX, cursorY, keyPressed & KEY_X); return; }
+    mask = keyPressed & KEY_Y;
+    if (mask) { MapEditor_SelectCell(editor, cursorX, cursorY, mask); return; }
     return;
 L_be4:
-    if (r5 & 1) { PaintMapTerrain(arg0, r6, r7, r4 & 1); return; }
-    mask = r4 & 2;
-    if (mask) { func_ov007_022117e0(arg0, r6, r7); return; }
-    if (r5 & 0x400) { MapEditor_EraseTerrain(arg0, r6, r7, r4 & 0x400); return; }
-    mask = r4 & 0x800;
-    if (mask) { MapEditor_TryPaintTerrain(arg0, r6, r7, mask); return; }
+    if (keyHeld & KEY_A) { PaintMapTerrain(editor, cursorX, cursorY, keyPressed & KEY_A); return; }
+    mask = keyPressed & KEY_B;
+    if (mask) { ((void (*)(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK))MapEditor_PickTerrain)(editor, cursorX, cursorY, mask); return; }
+    if (keyHeld & KEY_X) { MapEditor_EraseTerrain(editor, cursorX, cursorY, keyPressed & KEY_X); return; }
+    mask = keyPressed & KEY_Y;
+    if (mask) { MapEditor_TryPaintTerrain(editor, cursorX, cursorY, mask); return; }
+Done:
+    return;
 }
-
+#pragma optimization_level reset
 void func_ov007_02211e6c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov007_0221f5f8;
@@ -584,10 +593,10 @@ s32 GetCachedPlayerUnitCount(s32 arg0) {
 }
 
 void CountEditorUnits(void) {
-    s8 func_020c1878(M2C_UNK *);
+    s8 CountMapProperties(M2C_UNK *);
     extern M2C_UNK gEditorUnitCounts;
     extern u8 gMapEditorState;
-    M2C_FIELD(&gMapEditorState, u8 *, 4) = func_020c1878(&gEditorUnitCounts);
+    M2C_FIELD(&gMapEditorState, u8 *, 4) = CountMapProperties(&gEditorUnitCounts);
 }
 
 s32 GetEditorUnitCategoryCount(M2C_UNK arg0, M2C_UNK arg1) {

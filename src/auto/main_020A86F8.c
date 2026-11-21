@@ -5,21 +5,25 @@ typedef struct { s32 values[6]; } Table020a8b3c;
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 extern const Table020a8b3c sArmyStateMessageIds;
 
-s32 CalculateUnitDamage(u8 *arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Damage `unit` deals against a target of `targetKind` with weapon `weaponIndex`
+   (0 primary, 1 secondary), given the target's `targetFlags`: the unit's attack
+   power (100 + its damage bonus) times the weapon's damage percent, over 100,
+   never below 1.  Returns 0 when that weapon's damage percent is 0. */
+s32 CalculateUnitDamage(u8 *unit, s32 targetKind, s32 weaponIndex, s32 targetFlags) {
  s32 GetUnitDamageBonus(void *, u8, u8);
  s32 GetWeaponDamagePercent(u32, s32, s32, s32);
  s32 Divide();
- s32 temp_r0;
- u32 temp_r4;
- s32 var_r0;
- s32 temp_r5;
- temp_r4 = (u32)(arg0[0] << 26) >> 26;
- temp_r5 = GetUnitDamageBonus(arg0, arg0[1], arg0[2]) + 100;
- temp_r0 = GetWeaponDamagePercent(temp_r4, arg1, arg2, arg3);
- if (temp_r0 == 0) return 0;
- var_r0 = Divide(temp_r5 * temp_r0, 100);
- if (var_r0 <= 1) var_r0 = 1;
- return var_r0;
+ s32 percent;
+ u32 attackerKind;
+ s32 damage;
+ s32 attackPower;
+ attackerKind = (u32)(unit[0] << 26) >> 26;
+ attackPower = GetUnitDamageBonus(unit, unit[1], unit[2]) + 100;
+ percent = GetWeaponDamagePercent(attackerKind, targetKind, weaponIndex, targetFlags);
+ if (percent == 0) return 0;
+ damage = Divide(attackPower * percent, 100);
+ if (damage <= 1) damage = 1;
+ return damage;
 }
 
 s32 GetUnitAttackPower(void *arg0) {
@@ -313,7 +317,28 @@ u16 func_020a8f4c(s32 arg0) {
     return (u16) (arg0 - (GetLocalPlayerIdForOverlay() * 0x32));
 }
 
-void UpdateSpriteAnimation(void *a){s16 v;if(M2C_FIELD(a,u8 *,1))return;switch(M2C_FIELD(a,u8 *,0)){case 1:case 3:case 4:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);v=M2C_FIELD(a,s16 *,12);if(M2C_FIELD(a,u16 *,2)>v)M2C_FIELD(a,u16 *,2)=v;return;case 0:M2C_FIELD(a,u16 *,2)+=M2C_FIELD(a,u16 *,6);return;case 2:return;}}
+/* Advance a tween's frame counter by its per-update step: the linear and eased
+ * curves stop once the counter reaches the duration, the constant curve keeps
+ * counting, and a tween marked done is left alone. */
+void UpdateSpriteAnimation(void *arg0) {
+    SpriteTween *tween = arg0;
+    s16 limit;
+    if (tween->done) return;
+    switch (tween->mode) {
+    case SPRITE_TWEEN_LINEAR:
+    case SPRITE_TWEEN_EASE_IN:
+    case SPRITE_TWEEN_EASE_OUT:
+        tween->current += tween->step;
+        limit = tween->duration;
+        if (tween->current > limit) tween->current = limit;
+        return;
+    case SPRITE_TWEEN_SINE:
+        tween->current += tween->step;
+        return;
+    case SPRITE_TWEEN_CONSTANT:
+        return;
+    }
+}
 
 /* Evaluate a sprite tween at its current time: mode selects the curve, base and
  * amplitude shape the value between from and to over duration. */

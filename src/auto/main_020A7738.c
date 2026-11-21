@@ -347,7 +347,7 @@ u8 IsSupplyUnitKind(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_02
  * selected-unit slot is cleared and, when `clearState` is set, the selection
  * state is cleared too; a human player's selection is counted in the records. */
 void ClearPlayerSelectedUnit(s32 unit,s32 clearState){
-s32 func_020a3550(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
+s32 SetCoPowerMeterPoints(s32,s32);void func_020a3128(s32);s32 IsPlayerHuman(s32);void AddRecordValue(s32,s32);
 extern void **gCurrentMap;
 s32 player;u8 *map,*record;
 if(!unit)return;
@@ -359,7 +359,7 @@ if(!((u32)(*(s32 *)(record+PLAYER_REC_SPRITE)<<24)>>24))return;
 if(unit!=(s32)(map+MAP_UNIT_RECORDS+record[PLAYER_REC_SELECTED_UNIT]*MAP_UNIT_STRIDE))return;
 record[PLAYER_REC_SELECTED_UNIT]=0;
 if(clearState){
-func_020a3550(player,0);func_020a3128(player);
+SetCoPowerMeterPoints(player,0);func_020a3128(player);
 }
 if(!IsPlayerHuman(player))return;
 AddRecordValue(28,1);
@@ -371,68 +371,88 @@ u32 func_020a7f38(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x10) >> 0x1B;
 }
 
-void func_020a7f48(void *unit,s32 x,s32 y,s32 mode) {
-extern void **data_027e0058;
-void InitAreaScan(void *,s32,s32,s32,s32,s32);s32 NextAreaTile(void *);
-u8 func_020a8478(s32,s32);u8 func_020a80fc(s32,s32);u8 func_020a8164(s32,s32);void func_020a7f18(void *,u32);
-s32 iter[8];void *map;void *base; s32 idx;
-map=*data_027e0058;
-InitAreaScan(iter,mode,x,y,M2C_FIELD(map,u16 *,0x5144),M2C_FIELD(map,u16 *,0x5146));
-for(;;){
-if(!NextAreaTile(iter))return;
-if(func_020a8478(iter[4],iter[5])){
-map=*data_027e0058;
-idx=M2C_FIELD(M2C_FIELD(map+2*iter[5],u16 *,0x3758)+(map+iter[4]),u8 *,0x508);
-base=map+0x59a4;
-if(!func_020a80fc((s32)unit,(s32)(base+idx*14)))goto done;
-func_020a7f18(base+idx*14,1);
-if(func_020a8164((s32)unit,(s32)(base+idx*14)))func_020a7f18(unit,1);
-}
-}
-done:;
+/* Mark enemy units in the scanned area, and mark the moving unit when
+ * a scanned unit belongs to an opposing team. */
+void func_020a7f48(void *unit, s32 x, s32 y, s32 mode) {
+    extern void **gCurrentMap;
+    void InitAreaScan(void *, s32, s32, s32, s32, s32);
+    s32 NextAreaTile(void *);
+    u8 func_020a8478(s32, s32);
+    u8 IsEnemyUnit(s32, s32);
+    u8 AreUnitsEnemies(s32, s32);
+    void func_020a7f18(void *, u32);
+    s32 iter[8];
+    void *map;
+    void *units;
+    s32 unitIndex;
+
+    map = *gCurrentMap;
+    InitAreaScan(iter, mode, x, y, M2C_FIELD(map, u16 *, 0x5144),
+        M2C_FIELD(map, u16 *, 0x5146));
+    for (;;) {
+        if (!NextAreaTile(iter)) {
+            return;
+        }
+        if (func_020a8478(iter[4], iter[5])) {
+            map = *gCurrentMap;
+            unitIndex = M2C_FIELD(M2C_FIELD(map + 2 * iter[5], u16 *, MAP_ROW_OFFSETS) +
+                (map + iter[4]), u8 *, MAP_CELL_UNIT_ID);
+            units = map + MAP_UNIT_RECORDS;
+            if (IsEnemyUnit((s32)unit, (s32)(units + unitIndex * MAP_UNIT_STRIDE))) {
+                func_020a7f18(units + unitIndex * MAP_UNIT_STRIDE, 1);
+            }
+            if (AreUnitsEnemies((s32)unit, (s32)(units + unitIndex * MAP_UNIT_STRIDE))) {
+                func_020a7f18(unit, 1);
+            }
+        }
+    }
 }
 
 #pragma push
 #pragma peephole on
 void MarkUnitMovePath(void *p,s16 *xy,s32 unused,s8 *dir){void func_020a7f48(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];func_020a7f48(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}func_020a7f48(p,x,y,1);}}
 #pragma pop
-u8 func_020a80fc(s32 arg0, s32 arg1) {
-    s32 temp_r4;
-    u8 var_r0;
+/* Whether `other` is a unit that `unit` may affect (an enemy): 0 when there is no
+ * other unit, otherwise 1 when the two belong to different teams.  A null `unit`
+ * counts as affecting any valid other unit. */
+u8 IsEnemyUnit(s32 unit, s32 other) {
+    s32 owner;
+    u8 result;
 
-    if ((arg1 == 0) || (func_020a81c8(arg1) == 0)) {
+    if ((other == 0) || (func_020a81c8(other) == 0)) {
         return 0U;
     }
-    if (arg0 == 0) {
+    if (unit == 0) {
         return 1U;
     }
-    temp_r4 = GetUnitOwner(arg0);
-    if (IsSameTeam(temp_r4, GetUnitOwner(arg1)) == 0) {
-        var_r0 = 1;
+    owner = GetUnitOwner(unit);
+    if (IsSameTeam(owner, GetUnitOwner(other)) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_020a8164(s32 arg0, s32 arg1) {
-    s32 IsSameTeam(s32, s32);
-    s32 temp_r4;
-    u8 var_r0;
+/* Whether `unit` and `other` both exist and belong to different teams.  Unlike
+ * IsEnemyUnit, a null `unit` does not count as affecting any unit. */
+u8 AreUnitsEnemies(s32 unit, s32 other) {
+    s32 owner;
+    u8 result;
 
-    if ((arg0 == 0) || (func_020a81c8() == 0)) {
+    if ((unit == 0) || (func_020a81c8(unit) == 0)) {
         return 0U;
     }
-    if (arg1 == 0) {
+    if (other == 0) {
         return 0U;
     }
-    temp_r4 = GetUnitOwner(arg0);
-    if (IsSameTeam(temp_r4, GetUnitOwner(arg1)) == 0) {
-        var_r0 = 1;
+    owner = GetUnitOwner(unit);
+    if (IsSameTeam(owner, GetUnitOwner(other)) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 s32 func_020a81c8(void) {

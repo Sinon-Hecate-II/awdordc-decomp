@@ -12,7 +12,7 @@ typedef struct Map972e0 { u8 pad[0x5144]; volatile u16 width; u16 height; } Map9
 u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
     extern void **gCurrentMap;
     extern u8 gAiRangeBitmap[];
-    s32 func_020ce0ec(s32, s32);
+    s32 IsTerrainExcludedForPlayer(s32, s32);
 
     u32 result = 0;
     u8 hasFlag = 0;
@@ -64,7 +64,7 @@ u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
             if (terrainVal != 0) {
                 prop = M2C_FIELD((u8 *)*gCurrentMap + col + rowOffset, u8 *, 0x1420);
                 if (prop & 0xe0) hasFlag = 1;
-                funcRes = func_020ce0ec((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), prop);
+                funcRes = IsTerrainExcludedForPlayer((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), prop);
                 if (funcRes != 0) result += 0x1000000; else result += 0x100000;
                 linear = row * M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH) + col;
                 if ((u8)(gAiRangeBitmap[linear >> 3] & (1 << (linear & 7)))) result += 0x10000;
@@ -85,7 +85,7 @@ u32 ScoreMapCellNear(s32 xOrig, s32 yOrig) {
     finalIdx = xOrig + rowOffsetOrig;
     result <<= 2;
     if (!(u8)(M2C_FIELD(((u8 *)*gCurrentMap) + (finalIdx >> 3), u8 *, MAP_CELL_BITMAP_TEAM_A) & (1 << (finalIdx & 7)))) {
-        funcRes = func_020ce0ec((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), M2C_FIELD(((u8 *)*gCurrentMap) + finalIdx, u8 *, 0x1420));
+        funcRes = IsTerrainExcludedForPlayer((s32)(M2C_FIELD(((u8 *)*gCurrentMap), u16 *, 0x52a4) & 0xff), M2C_FIELD(((u8 *)*gCurrentMap) + finalIdx, u8 *, 0x1420));
         if (funcRes != 0) {
             rowPtr0 = M2C_FIELD((u8 *)*gCurrentMap + yOrig * 4, s8 **, 0x52e8);
             terrain0 = rowPtr0[xOrig];

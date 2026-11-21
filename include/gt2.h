@@ -69,6 +69,9 @@ enum {
     GT2_RESPONSE_SIZE = 32,
     GT2_CONNECT_ACCEPT_SIZE = 64        /* challenge response + the server's challenge */
 };
+/* Bytes of a CONNECT command: its 7-byte command header plus the client's
+ * 32-byte challenge (the size gti2BeginCommand is given for it). */
+#define GT2_CONNECT_SIZE (7 + GT2_RESPONSE_SIZE)
 /* Challenge/response bytes are printable characters '!'..'}' (GTI2_CHALLENGE_BASE
  * plus 0..GTI2_CHALLENGE_RANGE-1); the response's rolling weight advances by
  * GTI2_RESPONSE_STEP at every position. */

@@ -188,7 +188,8 @@ void CreateUnitFlareSprite(s32 arg0) {
 void UpdateSmallFlareSprite(void *arg0) {
 s32 EaseInterpolate(s32,s32,s32,u16,s32);M2C_UNK func_0208c0d0(void *,u8);
 u32 bits=M2C_FIELD(arg0,u32 *,0x48);
-u16 top=(u16)(bits>>21),bottom=(u16)((bits<<11)>>21);
+u32 high=bits>>21;
+u16 top=(u16)high,bottom=(u16)((bits<<11)>>21);
 s32 a=EaseInterpolate(4,31,0,top,bottom);
 s32 b=EaseInterpolate(4,0,0x40000,top,bottom);
 func_0208c0d0(arg0,(u8)a);M2C_FIELD(arg0,s32 *,0x40)=b;
@@ -290,31 +291,34 @@ void func_020b67e0(s16 arg0, s16 arg1, M2C_UNK arg2) {
 
 #pragma opt_propagation off
 void func_020b6814(void *p){
-s32 func_020b5594(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 func_020b5964(s32,void*);s32 func_020b5d94(s32,void*);
+s32 CreateExplosionEffect(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 func_020b5964(s32,void*);s32 func_020b5d94(s32,void*);
 s32 a=M2C_FIELD(p,s32*,0x34);
-if(M2C_FIELD(p,s16*,0x6e)>0){func_020b5594(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),0);return;}
+if(M2C_FIELD(p,s16*,0x6e)>0){CreateExplosionEffect(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),0);return;}
 switch(M2C_FIELD(p,s16*,0x6c)){
 case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);return;
 case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
 s32 CreateUnitPreviewSprite(s32 a,s32 b) {
-void GetMapOrderEffectPosition(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK data_02128abc;
+void GetMapOrderEffectPosition(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK gMapPreviewSpriteClass;
 s16 xy[2];s32 p;
-GetMapOrderEffectPosition(a,xy);p=CreateSpriteObject(&data_02128abc,b);
+GetMapOrderEffectPosition(a,xy);p=CreateSpriteObject(&gMapPreviewSpriteClass,b);
 M2C_FIELD(p,s32 *,0x38)=xy[0];M2C_FIELD(p,s32 *,0x3c)=xy[1];
 M2C_FIELD(p,s16 *,0x6c)=(u32)(M2C_FIELD(a,u16 *,2)<<22)>>28;
 M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(a,u8 *,4);
 M2C_FIELD(p,s32 *,0x34)=a;return p;
 }
 
-s32 CreateTilePreviewSprite(s32 a,s32 b,s32 c) {
-extern M2C_UNK data_02128abc;extern void **data_027e0058;void *CreateSpriteObject();
-s32 p=CreateSpriteObject(&data_02128abc,c);
+/* Spawn the tile-preview sprite for map cell (x, y) under `parent`: record the
+ * cell, give it sprite mode 1 and its tile index from the cell's terrain-HP byte,
+ * and store 0 in its link field. */
+s32 CreateTilePreviewSprite(s32 x,s32 y,s32 parent) {
+extern M2C_UNK gMapPreviewSpriteClass;extern void **gCurrentMap;void *CreateSpriteObject();
+s32 p=CreateSpriteObject(&gMapPreviewSpriteClass,parent);
 void *base;
-M2C_FIELD(p,s32 *,0x38)=a;M2C_FIELD(p,s32 *,0x3c)=b;
-M2C_FIELD(p,s16 *,0x6c)=1;base=*data_027e0058;
-M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(base+(a+M2C_FIELD(base+b*2,u16 *,0x3758)),u8 *,0x539c)&127;
+M2C_FIELD(p,s32 *,0x38)=x;M2C_FIELD(p,s32 *,0x3c)=y;
+M2C_FIELD(p,s16 *,0x6c)=1;base=*gCurrentMap;
+M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(base+(x+M2C_FIELD(base+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN_HP)&127;
 M2C_FIELD(p,s32 *,0x34)=0;return p;
 }
 

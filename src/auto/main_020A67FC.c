@@ -1,10 +1,11 @@
 /* 34 functions from 0x020A67FC to 0x020A7738 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 #include "ov000_unit_entry.h"
 static inline s32 unitHealth7074(UnkStruct_ov000_021A860C *p) { s32 Divide(s32,s32);s32 h=p->unk6;if(h==0)return 0;return Divide(h-1,10)+1; }
-extern u8 data_ov000_021b5c6a[], data_ov000_021b5c5e[],gUnitKindCargoCount[],data_ov000_021b5c5d[];
+extern u8 data_ov000_021b5c6a[], gUnitKindLoadMask[],gUnitKindCargoCount[],gUnitKindLoadClass[];
 extern void **gCurrentMap;
 
 s32 ProduceUnit(s32 a, s32 b, s32 c) {
@@ -213,7 +214,24 @@ void func_020a6fcc(void) {
 }
 
 #pragma scheduling off
-s32 func_020a6fe4(u8 *p,s32 n){s32 type,index,enabled;index=((u32)(p[0]<<26)>>26)*0x70;type=gUnitKindCargoCount[index];enabled=((u8 *)((s32)data_ov000_021b5c5e+n*0x70))[data_ov000_021b5c5d[index]];if(!type)return 0;if(!enabled)return 0;if(type==2&&p[13])return 0;if(type==1&&p[12])return 0;return 1;}
+/* Whether the transport unit `unit` can load a unit of kind `kind`: the unit's
+ * kind must have a free cargo slot (its capacity is 1 or 2) and the load table
+ * must allow a carrier of the unit's load class to carry that kind. */
+s32 CanUnitLoadKind(u8 *unit, s32 kind) {
+    s32 capacity, index, allowed;
+    index = ((u32)(unit[MAP_UNIT_KIND] << 26) >> 26) * UNIT_KIND_STATS_SIZE;
+    capacity = gUnitKindCargoCount[index];
+    {
+        u32 loadClass = gUnitKindLoadClass[index];
+        u8 *row = gUnitKindLoadMask + kind * UNIT_KIND_STATS_SIZE;
+        allowed = loadClass[row];
+    }
+    if (!capacity) return 0;
+    if (!allowed) return 0;
+    if (capacity == 2 && unit[MAP_UNIT_FIRST_CARRIED + 1]) return 0;
+    if (capacity == 1 && unit[MAP_UNIT_FIRST_CARRIED]) return 0;
+    return 1;
+}
 #pragma scheduling reset
 /* Whether `unit` may join (merge with) `target`: same unit kind and owner, neither
    is already carrying a unit, the target has lost HP (so the merge actually heals)
@@ -265,12 +283,12 @@ s32 func_020a7290(void) {
     return 0x78;
 }
 
-s32 func_020a7298(s32 a,u8 b){return ((u8 *)b)[(s32)data_ov000_021b5c6a+a*0x70];}
+s32 GetUnitVariantIndex(s32 a,u8 b){return ((u8 *)b)[(s32)data_ov000_021b5c6a+a*0x70];}
 
 s32 func_020a72b0(s32 arg0, M2C_UNK arg1) {
-    s32 func_020a7298(M2C_UNK, u8);
+    s32 GetUnitVariantIndex(M2C_UNK, u8);
     extern void **gCurrentMap;
-    return func_020a7298(arg1, M2C_FIELD(((arg0 * 0x8C) + (s32)*gCurrentMap), u8 *, 0x67CD)) * 4;
+    return GetUnitVariantIndex(arg1, M2C_FIELD(((arg0 * 0x8C) + (s32)*gCurrentMap), u8 *, 0x67CD)) * 4;
 }
 
 void *func_020a72e8(s32 arg0) {

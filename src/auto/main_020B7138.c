@@ -1,5 +1,6 @@
 /* 17 functions from 0x020B7138 to 0x020B8078 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 void *GetLocalizedFileName(void *);
 void LoadCompressedSpriteGraphics(void *,s32,s32);
 void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
@@ -105,7 +106,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void func_02088e84(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
+s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -120,7 +121,7 @@ palette=Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,v
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x3c)=0;M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0x44)=0;
 M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);InitUnitSprite(M2C_FIELD(a,void **,0x38),1,0x120,3,1);
-p=M2C_FIELD(a,void **,0x38);func_02088e84(p,0xe0,0xa0,0x100,0xa0);
+p=M2C_FIELD(a,void **,0x38);Set3DSpriteSlideTargetAndStart(p,0xe0,0xa0,0x100,0xa0);
 flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
 if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=GetUnitSpriteWidth(p);n=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
 func_020ab150(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));Show3DSpriteSlide(M2C_FIELD(a,void **,0x38));
@@ -162,7 +163,7 @@ void func_020b7860(void *arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_020b78ac(void) {
+void CreateTurnStartPanel(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02128d2c;
     CreateSpriteFromClass(&data_02128d2c, 7);
@@ -257,18 +258,21 @@ inline void func_020b7b54_clear(u16 &r) {
     r &= ~0xC0;
 }
 #pragma cplusplus on
-extern "C" void func_020b7b54(void) {
+/* Reset the display state of the current 3D sprite engine's bank: clear the OBJ
+ * priority bits so the sprite draws on top, un-split the cell grid and clear the
+ * display blend. */
+extern "C" void Reset3DSpriteBankDisplayMain(void) {
     extern void *gCur3DSpriteEngine;
-    u16 *volatile p;
-    p = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
-    *p = (u16)(*p & ~0xC0);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x51) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x52) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x53) = 0;
+    u16 *volatile oamAttr;
+    oamAttr = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + DS3D_BANK_OAMATTR);
+    *oamAttr = (u16)(*oamAttr & ~DS3D_BANK_OAMATTR_PRIORITY);
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_ABOVE) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_BELOW) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_BLEND) = 0;
 }
 #pragma cplusplus off
 void func_020b7bbc(void) {
-void *CreateAnimatedSpriteObject(M2C_UNK); void func_020b78c4(void *); void func_020b7b54(void);
+void *CreateAnimatedSpriteObject(M2C_UNK); void func_020b78c4(void *); void Reset3DSpriteBankDisplayMain(void);
 extern M2C_UNK data_02128ffc,data_02129004;
 void *p; void *resource;
 p=CreateAnimatedSpriteObject(7);
@@ -276,7 +280,7 @@ LoadCompressedSpriteGraphics(GetLocalizedFileName(&data_02128ffc),0x6B80,11);
 LoadCompressedSpriteAssetsFromNarc(p,GetLocalizedFileName(&data_02129004),0x6B80,11,0);
 M2C_FIELD(p,s32 *,0x44)|=0x380000;
 M2C_FIELD(p,void (**)(void *),0x6C)=func_020b78c4;
-M2C_FIELD(p,void (**)(void),0x70)=func_020b7b54;
+M2C_FIELD(p,void (**)(void),0x70)=Reset3DSpriteBankDisplayMain;
 PlaySoundEffect(0x127);
 }
 
@@ -351,51 +355,63 @@ void func_020b7c5c(void *arg0) {
 }
 
 #pragma cplusplus on
-extern "C" void func_020b7ef0(void) {
+/* Map-clear effect finish callback: drop the 3D sprite bank's OBJ priority and
+ * clear the split row display and blend level left behind by the fade. */
+extern "C" void Reset3DSpriteBankSplit(void) {
     extern void *gCur3DSpriteEngine;
-    u16 *volatile p;
-    p = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + 0x12);
-    *p = (u16)(*p & ~0xC0);
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x51) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x52) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, 0x53) = 0;
+    u16 *volatile oamAttr;
+    oamAttr = (u16 *)((s8 *)M2C_FIELD(gCur3DSpriteEngine, void **, 0) + DS3D_BANK_OAMATTR);
+    *oamAttr = (u16)(*oamAttr & ~DS3D_BANK_OAMATTR_PRIORITY);
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_ABOVE) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_ROWS_BELOW) = 0;
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u8 *, DS3D_BANK_BLEND) = 0;
 }
 #pragma cplusplus off
 
+/* Creates the map-clear WIN result object and loads its localized sprite
+ * graphics and its assets, returning the object. */
 s32 CreateMapClearWinObject(void) {
     void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
     s32 func_0208c54c();
     void LoadCompressedSpriteGraphics(void *,s32,s32);
     void *GetLocalizedFileName(void *);
-    extern M2C_UNK data_0212900c;
-    extern M2C_UNK data_0212901c;
-    s32 temp_r4;
+    extern M2C_UNK sMapClearWinGfxName;
+    extern M2C_UNK sMapClearWinAssetName;
+    s32 object;
 
-    temp_r4 = func_0208c54c();
-    LoadCompressedSpriteGraphics(GetLocalizedFileName(&data_0212900c), 0x6B80, 0xB);
-    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212901c), 0x6B80, 0xB, 0);
-    return temp_r4;
+    object = func_0208c54c();
+    LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearWinGfxName), 0x6B80, 0xB);
+    LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearWinAssetName), 0x6B80, 0xB, 0);
+    return object;
 }
 
+/* Creates the map-clear LOSE result object and loads its localized sprite
+ * graphics and its assets, returning the object. */
 s32 CreateMapClearLoseObject(void) {
-    extern M2C_UNK data_0212902c;
-    extern M2C_UNK data_0212903c;
-    s32 temp_r4;
+    void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
+    s32 func_0208c54c();
+    void LoadCompressedSpriteGraphics(void *,s32,s32);
+    void *GetLocalizedFileName(void *);
+    extern M2C_UNK sMapClearLoseGfxName;
+    extern M2C_UNK sMapClearLoseAssetName;
+    s32 object;
 
-    temp_r4 = func_0208c54c();
-    LoadCompressedSpriteGraphics(GetLocalizedFileName(&data_0212902c), 0x6B80, 0xB);
-    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212903c), 0x6B80, 0xB, 0);
-    return temp_r4;
+    object = func_0208c54c();
+    LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearLoseGfxName), 0x6B80, 0xB);
+    LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearLoseAssetName), 0x6B80, 0xB, 0);
+    return object;
 }
 
+/* Creates the map-clear DRAW result object and loads its localized sprite
+ * graphics and its assets, returning the object. */
 s32 CreateMapClearDrawObject(void) {
-    extern M2C_UNK data_0212904c;
-    extern M2C_UNK data_0212905c;
-    s32 temp_r4;
+    extern M2C_UNK sMapClearDrawGfxName;
+    extern M2C_UNK sMapClearDrawAssetName;
+    s32 object;
 
-    temp_r4 = func_0208c54c();
-    LoadCompressedSpriteGraphics(GetLocalizedFileName(&data_0212904c), 0x6B80, 0xB);
-    LoadCompressedSpriteAssetsFromNarc((void *)temp_r4, GetLocalizedFileName(&data_0212905c), 0x6B80, 0xB, 0);
-    return temp_r4;
+    object = func_0208c54c();
+    LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearDrawGfxName), 0x6B80, 0xB);
+    LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearDrawAssetName), 0x6B80, 0xB, 0);
+    return object;
 }
 

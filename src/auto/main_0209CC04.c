@@ -592,14 +592,14 @@ s32 func_0209d750(void *arg0) {
 }
 
 s32 func_0209d790(void *arg0) {
-    s32 func_020866fc(s32);
+    s32 IsMessageTextIdValid(s32);
     M2C_UNK ShowMessageText(s32);
     M2C_UNK func_02092888(void *);
     M2C_UNK ResetDialogUI();
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4);
-    if (func_020866fc(temp_r4) != 0) {
+    if (IsMessageTextIdValid(temp_r4) != 0) {
         ResetDialogUI();
         ShowMessageText(temp_r4);
         func_02092888(arg0);
@@ -623,7 +623,7 @@ s32 func_0209d7d8(void *arg0) {
     return 1;
 }
 
-void func_0209d818(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void TextLayer_ShowMessage(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
     void func_0208999c(void *, u8, s32);
     void RenderTextLayerMessage(void *, u8, s32, s32);
     if (arg3 < 0) func_0208999c(arg0, (u8)arg1, arg2);
@@ -633,7 +633,7 @@ void func_0209d818(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 
 s32 func_0209d858(void *arg0) {
     void *func_0208b520(void *);
-    void func_0209d818(void *, s32, s32, s32);
+    void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 id;
     s16 value;
     void *cmd;
@@ -641,37 +641,40 @@ s32 func_0209d858(void *arg0) {
     cmd = M2C_FIELD(arg0, void **, 8);
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
-    if (func_020866fc(id) != 0) {
+    if (IsMessageTextIdValid(id) != 0) {
         obj = func_0208b520(arg0);
-        func_0209d818(obj, 0, id, value);
+        TextLayer_ShowMessage(obj, 0, id, value);
         M2C_FIELD(obj, s32 *, 0x58) = M2C_FIELD(obj, s32 *, 0x58) | 0xC00;
     }
     M2C_FIELD(arg0, void **, 8) += 8;
     return 0;
 }
 
-s32 func_0209d8b8(void *arg0) {
+/* 3D-sprite state handler: create the sprite's text panel, draw the localized
+ * message named by the state's data at the row in its parameter, and hide the
+ * panel (no screen window). */
+s32 SpriteState_CreateHiddenTextPanel(void *sprite) {
     void *func_0208b520(void *);
-    void func_0209d818(void *, s32, s32, s32);
-    s32 id;
-    s16 value;
-    void *cmd;
-    void *obj;
-    cmd = M2C_FIELD(arg0, void **, 8);
-    id = M2C_FIELD(cmd, s32 *, 4);
-    value = M2C_FIELD(cmd, s16 *, 2);
-    if (func_020866fc(id) != 0) {
-        obj = func_0208b520(arg0);
-        func_0209d818(obj, 0, id, value);
-        M2C_FIELD(obj, s32 *, 0x58) = (M2C_FIELD(obj, s32 *, 0x58) | 0x800) & ~0x400;
+    void TextLayer_ShowMessage(void *, s32, s32, s32);
+    s32 textId;
+    s16 row;
+    void *state;
+    void *panel;
+    state = M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM);
+    textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
+    row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
+    if (IsMessageTextIdValid(textId) != 0) {
+        panel = func_0208b520(sprite);
+        TextLayer_ShowMessage(panel, 0, textId, row);
+        M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) = (M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) | TEXT_LAYER_PANEL_HIDDEN) & ~TEXT_LAYER_PANEL_WINDOW_MASK;
     }
-    M2C_FIELD(arg0, void **, 8) += 8;
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 
 s32 func_0209d91c(void *arg0) {
     void *CreateTextLayer(void *);
-    void func_0209d818(void *, s32, s32, s32);
+    void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 id;
     s16 value;
     void *cmd;
@@ -679,9 +682,9 @@ s32 func_0209d91c(void *arg0) {
     cmd = M2C_FIELD(arg0, void **, 8);
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
-    if (func_020866fc(id) != 0) {
+    if (IsMessageTextIdValid(id) != 0) {
         obj = CreateTextLayer(arg0);
-        func_0209d818(obj, 2, id, value);
+        TextLayer_ShowMessage(obj, 2, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
     M2C_FIELD(arg0, void **, 8) += 8;
@@ -690,7 +693,7 @@ s32 func_0209d91c(void *arg0) {
 
 s32 func_0209d97c(void *arg0) {
     void *CreateTextLayer(void *);
-    void func_0209d818(void *, s32, s32, s32);
+    void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 id;
     s16 value;
     void *cmd;
@@ -698,9 +701,9 @@ s32 func_0209d97c(void *arg0) {
     cmd = M2C_FIELD(arg0, void **, 8);
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
-    if (func_020866fc(id) != 0) {
+    if (IsMessageTextIdValid(id) != 0) {
         obj = CreateTextLayer(arg0);
-        func_0209d818(obj, 1, id, value);
+        TextLayer_ShowMessage(obj, 1, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
     M2C_FIELD(arg0, void **, 8) += 8;
@@ -709,7 +712,7 @@ s32 func_0209d97c(void *arg0) {
 
 s32 func_0209d9dc(void *arg0) {
     void *CreateTextLayer(void *);
-    void func_0209d818(void *, s32, s32, s32);
+    void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 id;
     s16 value;
     void *cmd;
@@ -717,9 +720,9 @@ s32 func_0209d9dc(void *arg0) {
     cmd = M2C_FIELD(arg0, void **, 8);
     id = M2C_FIELD(cmd, s32 *, 4);
     value = M2C_FIELD(cmd, s16 *, 2);
-    if (func_020866fc(id) != 0) {
+    if (IsMessageTextIdValid(id) != 0) {
         obj = CreateTextLayer(arg0);
-        func_0209d818(obj, 3, id, value);
+        TextLayer_ShowMessage(obj, 3, id, value);
         M2C_FIELD(obj, s32 *, 0x58) |= 0x400;
     }
     M2C_FIELD(arg0, void **, 8) += 8;

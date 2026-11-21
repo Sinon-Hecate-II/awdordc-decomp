@@ -350,7 +350,7 @@ s32 func_ov000_021a93a8(void) {
     return 0;
 }
 
-s32 func_ov000_021a93b0(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 func_020ce0ec(u8,u8);void *p=*gCurrentMap;return func_020ce0ec(a,M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420));}
+s32 func_ov000_021a93b0(s32 a,s32 b,s32 c){extern void **gCurrentMap;s32 IsTerrainExcludedForPlayer(u8,u8);void *p=*gCurrentMap;return IsTerrainExcludedForPlayer(a,M2C_FIELD((u8 *)p+(b+M2C_FIELD((u8 *)p+c*2,u16 *,0x3758)),u8 *,0x1420));}
 
 /* Whether the current team can see tile (x, y): a unit standing there must be in
  * sight, and the tile must be marked in the first team's sight bitmap. */

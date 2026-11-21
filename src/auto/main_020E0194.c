@@ -211,11 +211,11 @@ void func_020e048c(void *entity) {
 }
 
 M2C_UNK func_020e0580(s32 arg0) {
- s32 GetLocalPlayerIdForOverlay(); s16 GetReadyPlayerMask(); M2C_UNK func_02085724();
+ s32 GetLocalPlayerIdForOverlay(); s16 GetReadyPlayerMask(); M2C_UNK CreateLinkPlayerDataListener();
  extern u16 *gLinkPlayerMasks[];
  s32 i=GetLocalPlayerIdForOverlay();
  *gLinkPlayerMasks[i]=GetReadyPlayerMask();
- return func_02085724(gLinkPlayerMasks,gLinkPlayerMasks[GetLocalPlayerIdForOverlay()],2,arg0);
+ return CreateLinkPlayerDataListener(gLinkPlayerMasks,gLinkPlayerMasks[GetLocalPlayerIdForOverlay()],2,arg0);
 }
 
 /* For each linked player whose session mask differs from the local player's, set
@@ -491,11 +491,11 @@ void func_020e0e6c(M2C_UNK arg0) {
     func_02084ea0(0x56434854, arg0);
 }
 
-M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK func_020b2178();
+M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK HideAllSpriteSlots();
 M2C_UNK SetSpriteSlotScroll();
 func_ov010_022294ec();
 func_ov010_02228c88(arg0);
-func_020b2178();
+HideAllSpriteSlots();
 return SetSpriteSlotScroll(0,0);
 }
 

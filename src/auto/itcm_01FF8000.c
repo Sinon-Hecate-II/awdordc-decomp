@@ -185,20 +185,23 @@ void DmaStartTransfer(s32 a,s32 b,s32 c,s32 d) {
 }
 
 #pragma optimization_level 2
-void DmaStartTransferFlushed(s32 a, s32 b, s32 c, s32 d) {
-    volatile u32 *p = (volatile u32 *)(0x40000b0 + a * 12);
-    p[0] = b;
-    p[1] = c;
-    p[2] = d;
-    (void)*(volatile u32 *)0x40000b0;
-    (void)*(volatile u32 *)0x40000b0;
-    if (a == 0) {
-        p[0] = 0;
-        p[1] = 0;
-        p[2] = 0x81400001;
+/* Starts a DMA transfer on `channel` and flushes channel 0's registers: channel 0
+ * is left in its idle state, and the two reads of DMA0's source register let the
+ * queued register writes settle. */
+void DmaStartTransferFlushed(s32 channel, s32 src, s32 dst, s32 control) {
+    volatile u32 *regs = (volatile u32 *)DMA_CHANNEL_BASE(channel);
+    regs[0] = src;
+    regs[1] = dst;
+    regs[2] = control;
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
+    if (channel == 0) {
+        regs[0] = 0;
+        regs[1] = 0;
+        regs[2] = DMA_CTRL_IDLE_CH0;
     }
-    (void)*(volatile u32 *)0x40000b0;
-    (void)*(volatile u32 *)0x40000b0;
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
+    (void)*(volatile u32 *)DMA_CHANNEL_BASE(0);
 }
 void AddToU16Array(u16 *p,s32 size,s32 add){u16 n=size>>1;u16 *q;u16 v;if(!n)return;do{q=p;v=*p++;*q=v+add;n--;}while(n);}
 
@@ -522,13 +525,16 @@ void func_01ff8c0c(s32 p0, s32 p1, s32 p2, s32 p3, u16 p4, u16 *p5) {
     } while (count);
 }
 
-void SetSpriteQuad(s32 a,s16 b,s16 c,s16 d,s16 e) {
- extern void *gCur3DSpriteEngine;
- s32 n=a*16;
- ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+3]=b;
- ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+7]=c;
- ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+11]=d;
- ((s16 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x34))[n+15]=e;
+/* Set the four affine matrix parameters (PA, PB, PC, PD) of the sprite quad in
+ * OAM slot `slot`: the parameters are the fourth halfword of the four OAM
+ * entries the slot's parameter block covers. */
+void SetSpriteQuad(s32 slot, s16 pa, s16 pb, s16 pc, s16 pd) {
+    extern void *gCur3DSpriteEngine;
+    s32 n = slot * 16;
+    ((s16 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamEntries)[n + 3] = pa;
+    ((s16 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamEntries)[n + 7] = pb;
+    ((s16 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamEntries)[n + 11] = pc;
+    ((s16 *)DS3D_ENGINE(gCur3DSpriteEngine)->oamEntries)[n + 15] = pd;
 }
 
 /* Returns the 3D sprite quad template for a width x height sprite among the

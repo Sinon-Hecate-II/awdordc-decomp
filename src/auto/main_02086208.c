@@ -169,7 +169,7 @@ void Init3DSpriteScene(void) {
     CreateSpriteFromClass(&data_02102210, 7);
 }
 
-s32 func_02086520(s32 arg0) {
+s32 IsUiGraphicsBankInUse(s32 arg0) {
     switch (arg0) {                                 /* irregular */
     case 39:
     case 0:
@@ -186,7 +186,7 @@ s32 func_02086520(s32 arg0) {
 }
 
 void func_02086574(void) {
-    void func_020865a0(void);
+    void ReloadUiGraphicsBanks(void);
     extern M2C_UNK gUiGraphicsBanks[];
     s32 i;
     i = 0;
@@ -194,39 +194,42 @@ void func_02086574(void) {
         gUiGraphicsBanks[i] = 0;
         i = i + 1;
     } while (i < 0x28);
-    func_020865a0();
+    ReloadUiGraphicsBanks();
 }
 
-void func_020865a0(void) {
+/* Reload the localized UI text banks after a language change: free each bank
+   that is in use and still loaded, then load every in-use bank again. */
+void ReloadUiGraphicsBanks(void) {
     void LoadUiGraphicsBank(u8);
     void FreeUiGraphicsBank(u8);
     extern M2C_UNK gUiGraphicsBanks[];
-    s32 var_r4;
-    s32 var_r5;
-    var_r5 = 0;
+    s32 unloadBank;
+    s32 loadBank;
+
+    unloadBank = 0;
     do {
-        if ((func_02086520((u8)var_r5) != 0) && (((s32 *)&gUiGraphicsBanks)[var_r5] != 0)) {
-            FreeUiGraphicsBank((u8)var_r5);
+        if ((IsUiGraphicsBankInUse((u8)unloadBank) != 0) && (((s32 *)&gUiGraphicsBanks)[unloadBank] != 0)) {
+            FreeUiGraphicsBank((u8)unloadBank);
         }
-        var_r5 += 1;
-    } while (var_r5 < 0x28);
-    var_r4 = 0;
+        unloadBank += 1;
+    } while (unloadBank < TEXT_BANK_COUNT);
+    loadBank = 0;
     do {
-        if (func_02086520((u8)var_r4) != 0) {
-            LoadUiGraphicsBank((u8)var_r4);
+        if (IsUiGraphicsBankInUse((u8)loadBank) != 0) {
+            LoadUiGraphicsBank((u8)loadBank);
         }
-        var_r4 += 1;
-    } while (var_r4 < 0x28);
+        loadBank += 1;
+    } while (loadBank < TEXT_BANK_COUNT);
 }
 
 void LoadUiGraphicsBank(u8 arg0) {
  s32 GetLocalizedFileName(s32);
  void StringFormat(void *, void *, s32);
- s32 func_02081070(void *, s32);
+ s32 LoadDecompressedFile(void *, s32);
  extern M2C_UNK data_0210244c, data_02102250, gUiGraphicsBanks[];
  u8 sp0[0x20];
  StringFormat(sp0, &data_02102250, GetLocalizedFileName(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
- ((s32 *)&gUiGraphicsBanks)[arg0] = func_02081070(sp0, 1);
+ ((s32 *)&gUiGraphicsBanks)[arg0] = LoadDecompressedFile(sp0, 1);
 }
 
 void FreeUiGraphicsBank(u8 arg0) {
@@ -255,7 +258,7 @@ s32 GetLocalizedText(u32 textId) {
  return 0;
 }
 
-s32 func_020866fc(s32 arg0) {
+s32 IsMessageTextIdValid(s32 arg0) {
     s32 var_r0;
 
     var_r0 = arg0;
@@ -286,10 +289,10 @@ void func_02086740(u32 arg0, s32 arg1) {
     M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3) = (byte & ~mask) | (mask * arg1);
 }
 
-void func_02086774(u32 arg0, s32 arg1) {
- extern M2C_UNK data_02157724;
+void SetMapBackgroundSeenFlag(u32 arg0, s32 arg1) {
+ extern M2C_UNK gSeenMapBackgroundFlags;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_02157724, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157724, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
 void func_020867a8(u32 arg0, s32 arg1) {
@@ -368,9 +371,9 @@ s32 IsEventFlagHighSet(s32 arg0) {
     return (u8)(M2C_FIELD(&gEventFlagsHigh,u8 *, (u32)arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
-u8 func_020869c0(u32 arg0) {
-    extern M2C_UNK data_02157724;
-    return (u8) (M2C_FIELD(&data_02157724, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+u8 IsMapBackgroundSeenFlagSet(u32 arg0) {
+    extern M2C_UNK gSeenMapBackgroundFlags;
+    return (u8) (M2C_FIELD(&gSeenMapBackgroundFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 func_020869e0(u32 arg0) {
@@ -484,7 +487,7 @@ void func_02086b9c(void) {
     } while (var_r5_3 < 0xA0);
     var_r5_4 = 0;
     do {
-        func_02086774(var_r5_4, 0);
+        SetMapBackgroundSeenFlag(var_r5_4, 0);
         var_r5_4 += 1;
     } while (var_r5_4 < 0x80);
     var_r5_5 = 0;

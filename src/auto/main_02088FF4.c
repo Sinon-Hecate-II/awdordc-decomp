@@ -199,22 +199,25 @@ void Create3DSprite(M2C_UNK arg0)
 }
 
 
-void *func_02089340(void *arg0) {
+/* Resets a new frame-border sprite to the plain 3D sprite actor state and gives
+ * it this class's vtable: it starts with no rectangle, an animated highlight and
+ * its position still to be synced. */
+void *InitFrameBorderSprite(void *sprite) {
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK data_021025fc;
+    extern M2C_UNK gFrameBorderSpriteVtable;
     Init3DSpriteActor();
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021025fc;
-    M2C_FIELD(arg0, s8 *, 0x58) = 1;
-    M2C_FIELD(arg0, s8 *, 0x59) = 1;
-    M2C_FIELD(arg0, s8 *, 0x5A) = 1;
-    M2C_FIELD(arg0, s32 *, 0x40) &= ~0x1FF;
-    M2C_FIELD(arg0, s32 *, 0x40) &= 0xFFFC01FF;
-    M2C_FIELD(arg0, s16 *, 0x5E) = 0;
-    M2C_FIELD(arg0, s16 *, 0x60) = 0;
-    M2C_FIELD(arg0, s16 *, 0x62) = 0;
-    M2C_FIELD(arg0, s16 *, 0x64) = 0;
-    M2C_FIELD(arg0, s16 *, 0x5C) = 0;
-    return arg0;
+    M2C_FIELD(sprite, M2C_UNK **, 0) = &gFrameBorderSpriteVtable;
+    M2C_FIELD(sprite, s8 *, FRAME_ACTOR_HIGHLIGHT) = 1;
+    M2C_FIELD(sprite, s8 *, FRAME_ACTOR_PULSE) = 1;
+    M2C_FIELD(sprite, s8 *, FRAME_ACTOR_SYNC) = 1;
+    M2C_FIELD(sprite, s32 *, 0x40) &= ~0x1FF;
+    M2C_FIELD(sprite, s32 *, 0x40) &= 0xFFFC01FF;
+    M2C_FIELD(sprite, s16 *, FRAME_ACTOR_X) = 0;
+    M2C_FIELD(sprite, s16 *, FRAME_ACTOR_Y) = 0;
+    M2C_FIELD(sprite, s16 *, FRAME_ACTOR_WIDTH) = 0;
+    M2C_FIELD(sprite, s16 *, FRAME_ACTOR_HEIGHT) = 0;
+    M2C_FIELD(sprite, s16 *, FRAME_ACTOR_COLOR) = 0;
+    return sprite;
 }
 
 void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
@@ -255,7 +258,7 @@ void Sync3DSpriteToTarget(void *arg0) {
 #pragma opt_strength_reduction off
 void func_0208946c(void *p) {
 extern void *gCur3DSpriteEngine;extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain;
-s32 func_0208b5a8(void);
+s32 IsTextLayerActive(void);
 void DrawFrameBorderPulse(s16,s16,s16,s16,u16,s32);
 void DrawFrameBorder(s16,s16,s16,s16,u16,s32,s32);
 s32 d,a,b,screen;s32 attr;s32 *engineA,*engineB;u16 tile;void *old;s32 i,priority,drawMode;u32 target,delta;void *cur;
@@ -272,7 +275,7 @@ if(delta>1)target=b+(delta>>1);M2C_FIELD(p,s16 *,0x62)=target;
 target=(u32)(M2C_FIELD(p,s32 *,0x40)<<14)>>23;b=M2C_FIELD(p,s16 *,0x64);delta=target-b;
 if(delta>1)target=b+(delta>>1);M2C_FIELD(p,s16 *,0x64)=target;
 if(!M2C_FIELD(p,u8 *,0x58))tile=(u16)(tile+(0x3ff&(32>>((u32)(M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))));
-if(func_0208b5a8())return;
+if(IsTextLayerActive())return;
 old=gCur3DSpriteEngine;engineA=&g3DSpriteEngineSub;engineB=&g3DSpriteEngineMain;drawMode=2;
 for(i=0;i<2;i++){
 cur=(void *)(i==0?*engineB:*engineA);gCur3DSpriteEngine=cur;
@@ -292,29 +295,29 @@ void func_020896e4(void) {
     func_0208946c();
 }
 
-void func_020896f0(M2C_UNK arg0) {
+void CreateFrameBorderSprite(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102678;
-    void *ptr = CreateSpriteFromClass(&data_02102678, arg0);
+    extern M2C_UNK gFrameBorderSpriteClass;
+    void *ptr = CreateSpriteFromClass(&gFrameBorderSpriteClass, arg0);
     if (ptr == NULL) return;
-    func_02089340(ptr);
+    InitFrameBorderSprite(ptr);
 }
 
-s32 func_02089714(void) {
+s32 FindFrameBorderSprite(void) {
     M2C_UNK FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102678;
-    return FindObjectByClass(&data_02102678);
+    extern M2C_UNK gFrameBorderSpriteClass;
+    return FindObjectByClass(&gFrameBorderSpriteClass);
 }
 
-void func_02089728(void) {
+void HideFrameBorderSprite(void) {
  M2C_UNK Hide3DSprite();
- if (func_02089714() == 0) return;
+ if (FindFrameBorderSprite() == 0) return;
  Hide3DSprite();
 }
 
-void func_02089740(void) {
+void ShowFrameBorderSprite(void) {
  M2C_UNK Show3DSprite();
- if (func_02089714() == 0) return;
+ if (FindFrameBorderSprite() == 0) return;
  Show3DSprite();
 }
 
@@ -396,7 +399,7 @@ void *InitTextLayer(void *layer) {
     M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_WINDOW_MASK;
     M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~0x1000;
     M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_NESTED;
-    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~0x4000;
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) &= ~TEXT_LAYER_PANEL_LINK_SOUND;
     M2C_FIELD(layer, s32 *, TEXT_LAYER_LEFT_ICON) = 0;
     M2C_FIELD(layer, s32 *, TEXT_LAYER_RIGHT_ICON) = 0;
     M2C_FIELD(layer, s32 *, TEXT_LAYER_STRING) = 0;

@@ -18,7 +18,7 @@ s32 gpiProcessSearches(void **connection) {
     void gpiSetErrorString(s32 *, s32);
     void AssertFailed(void *, void *, void *, s32);
     s32 func_020562d0(void **, void *);
-    void func_02054484(void **, void *);
+    void gpiRemoveOperation(void **, void *);
     extern M2C_UNK gGpiSearchMsgOutOfMemory, data_020ff208, gGpiSearchSourceFile, data_020fee20;
     void *connectionInfo = *connection;
     void **list;
@@ -51,7 +51,7 @@ s32 gpiProcessSearches(void **connection) {
             void *search = M2C_FIELD(list[i], void **, 4);
             M2C_FIELD(search, s32 *, 0x13c) = 0;
             if (M2C_FIELD(search, s32 *, 0x140)) {
-                func_02054484(connection, list[i]);
+                gpiRemoveOperation(connection, list[i]);
             }
         }
         gpiFree(list);
@@ -101,14 +101,14 @@ gpiSendTransferReply(gpi,&x,peer,GPI_XFER_RESULT_UNSUPPORTED,NULL);
    request is simply finished.  Returns 0 or an error code. */
 s32 gpiProcessLoginReply(void **a,void *b,s32 c) {
 s32 gpiProcessErrorReply(void **,s32,s32);void gpiSetError(void **,s32,s32);void gpiSetErrorString(s32 *,s32);
-s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void gpiRemoveOperation(void **,void *);
 extern M2C_UNK gGsKeyRoomName,data_020ff260,data_020ff290;
 Unk02050838Pair pair;s32 *p;s32 r;
 if(gpiProcessErrorReply(a,c,1))return 4;
 if(StringCompareN(c,&gGsKeyRoomName,4)){gpiSetError(a,1,(s32)&data_020ff260);gpiCallErrorCallback(a,3,1);return 3;}
 pair=*(Unk02050838Pair *)((u8 *)b+12);
 if(pair.unk_0){p=gpiMalloc(4);if(!p){gpiSetErrorString((s32 *)a,(s32)&data_020ff290);return 1;}*p=0;r=gpiAddCallback(a,pair,p,b,0);if(r)return r;}
-func_02054484(a,b);return 0;
+gpiRemoveOperation(a,b);return 0;
 }
 
 /* Copy up to `n` bytes of `src` into `dst`, NUL-terminating at dst[n-1], and

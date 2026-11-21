@@ -151,7 +151,7 @@ void func_ov002_021e173c(void *arg0, s8 arg1) {
     }
 }
 
-void func_ov002_021e1780(void *arg0) {
+void ClearEffectNode(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 0x14) = 0;
 }
@@ -197,7 +197,7 @@ next:
 
 #pragma optimization_level 3
 void func_ov002_021e1844(void *arg0) {
-    void func_ov002_021e1780(void *);
+    void ClearEffectNode(void *);
     M2C_UNK func_ov002_021e299c(void *, M2C_UNK);
     M2C_UNK func_ov002_021e29d8(void *);
     M2C_UNK func_ov002_021e29f8(void *, M2C_UNK, M2C_UNK);
@@ -205,7 +205,7 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK func_ov002_021e2724(void *);
     M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
     void Ov002_CreateEffectNode(void *, s32, s32);
-    M2C_UNK func_ov002_021e2928(void *, M2C_UNK);
+    M2C_UNK Ov002_ClearEffectNodesWithScript(void *, M2C_UNK);
     M2C_UNK PlaySlotVolumeSound(M2C_UNK);
     M2C_UNK PlaySlotVariantSound(M2C_UNK);
     M2C_UNK func_020afb34(M2C_UNK);
@@ -238,7 +238,7 @@ void func_ov002_021e1844(void *arg0) {
         case 2: {
             void **vt = *(void ***)arg0;
             (*(void (*)(void *))vt[0])(arg0);
-            func_ov002_021e1780(arg0);
+            ClearEffectNode(arg0);
             goto recurse;
         }
         case 3: {
@@ -311,7 +311,7 @@ void func_ov002_021e1844(void *arg0) {
             M2C_FIELD(arg0, u8 *, 0x52) = 1;
             break;
         case 31:
-            func_ov002_021e2928(arg0, (M2C_UNK)((s32)M2C_FIELD(current, s16 *, 0x8) & 0xff));
+            Ov002_ClearEffectNodesWithScript(arg0, (M2C_UNK)((s32)M2C_FIELD(current, s16 *, 0x8) & 0xff));
             break;
         case 32:
             PlaySlotVolumeSound(M2C_FIELD(arg0, u8 *, 0x53));
@@ -339,7 +339,7 @@ void func_ov002_021e1844(void *arg0) {
             }
             current = M2C_FIELD(arg0, void **, 0x1c);
             if (M2C_FIELD(current, u8 *, 1) == 0xff) {
-                func_ov002_021e1780(arg0);
+                ClearEffectNode(arg0);
                 goto recurse;
             }
             M2C_FIELD(arg0, void **, 0x1c) = (u8 *)current + 0xc;

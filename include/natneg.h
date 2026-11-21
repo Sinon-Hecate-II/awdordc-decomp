@@ -77,4 +77,19 @@ enum {
 #define NATNEG_PKT_ACK_VALUE 0x0D /* u8 low byte of the peer's NATNEG_PEER_VALUE */
 #define NATNEG_PKT_ACK_LEN   0x15 /* bytes of a connect ack */
 
+/* The BSD-style host record GetLocalAddressList hands back for the console's own
+ * interfaces.  h_addr_list is a NULL-terminated array of pointers to 4-byte IPv4
+ * addresses held in network byte order. */
+typedef struct GsHostent {
+    void  *h_name;      /* +0x00 official host name */
+    void **h_aliases;   /* +0x04 alias list */
+    u16    h_addrtype;  /* +0x08 AF_INET = 2 */
+    u16    h_length;    /* +0x0A address length in bytes, 4 */
+    void **h_addr_list; /* +0x0C interface addresses, NULL-terminated */
+} GsHostent;
+
+/* 127.0.0.1 as its four network-order bytes read as a little-endian ARM9 word
+ * (0x7F000001 in host order). */
+#define IP_LOOPBACK_NET 0x0100007Fu
+
 #endif

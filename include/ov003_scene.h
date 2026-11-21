@@ -29,14 +29,17 @@ typedef struct Ov003Object {
 
 /* Battle-setup controller; distinct from the scene object's interface layout above. */
 typedef struct Ov003BattleSetup {
-    void *vtable;
+    void *vtable;          /* +0x00 gOv003BattleSetupVTable */
     u8 pad04[0x30];
-    u8 state;
+    u8 state;              /* +0x34 screen state */
     u8 pad35[3];
-    void *buffer38;
-    void *buffer3C;
-    void *menu;
-    u8 pending;
+    void *buffer38;        /* +0x38 */
+    void *buffer3C;        /* +0x3C */
+    void *menu;            /* +0x40 Ov003BattleSetupMenu * */
+    u8 pending;            /* +0x44 a state change is pending */
+    u8 linkResultReceived; /* +0x45 a link result/status panel is due */
+    u8 mapUnavailable;     /* +0x46 the highlighted map cannot be used */
+    u8 firstUpdate;        /* +0x47 set at creation; the first update skips its checks */
 } Ov003BattleSetup;
 
 typedef struct Ov003BattleSetupMenu {

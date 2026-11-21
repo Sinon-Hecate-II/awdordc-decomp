@@ -349,16 +349,18 @@ OS_RestoreInterrupts(state); Mb_RemovePlayer(i);
 }
 }
 
-s32 func_ov001_021873ec(void) {
-s32 func_02013f1c(u16);
-u16 i;
-if(M2C_FIELD(gOv001LinkWork,u16 *,2)==0)return 0;
-for(i=1;i<16;i++){
-if(M2C_FIELD(gOv001LinkWork,u16 *,2)&(1<<i)){
-if(!func_02013f1c(i))return 0;
-}
-}
-return 1;
+/* Whether every joined download-play player has completed its multiboot setup:
+ * false when no player has joined, or when any joined player is not yet ready. */
+s32 Ov001_AreJoinedPlayersReady(void) {
+    s32 Mb_IsPlayerReady(u16);
+    u16 player;
+    if (M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) == 0) return 0;
+    for (player = 1; player < 16; player++) {
+        if (M2C_FIELD(gOv001LinkWork, u16 *, OV001_LINK_JOINED) & (1 << player)) {
+            if (!Mb_IsPlayerReady(player)) return 0;
+        }
+    }
+    return 1;
 }
 
 /* For each ready player (bit in +10), drop those failing the connection check; set state 7 if none remain, else 4. */

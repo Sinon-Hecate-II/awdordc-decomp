@@ -213,17 +213,20 @@ void func_ov000_02175878(void *arg0) {
     gCur3DSpriteEngine = saved;
 }
 #pragma pop
-void func_ov000_021759b8(s32 *arg0) {
+/* Fill the 9x9 tile frame around the unit's portrait on the sub engine: tile 0x52
+ * when the entry's flag is set, plain tile 1 otherwise. */
+void DrawInfoPanelUnitFrame(s32 *entry) {
     M2C_UNK FillTileRect(s32, s32, s32, u16, s32);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *saved;
-    s32 base;
-    saved = gCur3DSpriteEngine;
+    void *savedEngine;
+    s32 tileBase;
+
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    base = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x24);
-    FillTileRect(base + 0xC6, 9, 9, (u16)(*arg0 ? 0x52 : 1), 0xC);
-    gCur3DSpriteEngine = saved;
+    tileBase = M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x24);
+    FillTileRect(tileBase + 0xC6, 9, 9, (u16)(M2C_FIELD(entry, s32 *, 0) ? 0x52 : 1), 0xC);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02175ed8(void *arg0) {

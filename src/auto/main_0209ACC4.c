@@ -238,6 +238,7 @@ void UpdateTextObject(TextState *st) {
     gCur3DSpriteEngine = savedEngine;
 }
 
+#pragma optimization_level 3
 void func_0209b084(void *entity) {
     s32 GetMessageBoxState(void);
     void SetMessageBoxState(s8);
@@ -253,9 +254,9 @@ void func_0209b084(void *entity) {
 
     if (GetMessageBoxState() == 3) {
         SetMessageBoxState(0);
-        if (GetMessageBoxState() == 2) {
-            SetMessageBoxState(0);
-        }
+    }
+    if (GetMessageBoxState() == 2) {
+        SetMessageBoxState(0);
     }
     DeleteSpriteObjectsOfClass(&data_02102eac);
     DeleteSpriteObjectsOfClass(&data_02102e74);
@@ -280,13 +281,12 @@ void func_0209b084(void *entity) {
         gCur3DSpriteEngine = saved;
     }
 
-    if (!(M2C_FIELD(entity, u8 *, 0x5c) & 0x8)) goto skip8;
-    func_02095fc0();
-    func_02097768();
-skip8:
-    return;
+    if (M2C_FIELD(entity, u8 *, 0x5c) & 0x8) {
+        func_02095fc0();
+        func_02097768();
+    }
 }
-
+#pragma optimization_level reset
 void func_0209b190(M2C_UNK arg0) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 IsAnyScenePanelAnimating();

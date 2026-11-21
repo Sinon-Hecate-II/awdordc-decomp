@@ -45,10 +45,10 @@ void func_ov001_02176f88(void) {
 void func_ov001_02176fb0(void) {
     void func_ov001_02176fc4(void);
     void func_ov001_02176ffc(void);
-    void func_ov001_02177000(void);
+    void Ov001_HandleWfcSettingsChoice(void);
     func_ov001_02176fc4();
     func_ov001_02176ffc();
-    func_ov001_02177000();
+    Ov001_HandleWfcSettingsChoice();
 }
 
 void func_ov001_02176fc4(void) {
@@ -65,18 +65,21 @@ void func_ov001_02176ffc(void) {
 
 }
 
-void func_ov001_02177000(void) {
-    void func_ov001_02177068(void);
+/* WFC-settings screen choice: BACK locks the row and closes the screen without
+ * changes; CONFIRM plays the confirm sound, shows message 0x18 and opens the
+ * region-selection menu. */
+void Ov001_HandleWfcSettingsChoice(void) {
+    void Ov001_WfcSettingsExit(void);
     void func_ov001_021771a4(void);
-    s32 temp_r0;
-    temp_r0 = Ov001_GetIconRowSelection();
-    switch (temp_r0) {
-    case 0:
-        Ov001_PlaySound(7);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177068);
+    s32 choice;
+    choice = Ov001_GetIconRowSelection();
+    switch (choice) {
+    case OV001_CHOICE_BACK:
+        Ov001_PlaySound(OV001_SOUND_CANCEL);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsExit);
         return;
-    case 1:
-        Ov001_PlaySound(6);
+    case OV001_CHOICE_CONFIRM:
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
         Ov001_ShowMessage(0x18, 0, 1, -1, 0);
         Ov001_LockIconRow();
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021771a4);
@@ -84,17 +87,20 @@ void func_ov001_02177000(void) {
     }
 }
 
-void func_ov001_02177068(void) {
+void Ov001_WfcSettingsExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02177088;
+    extern M2C_UNK Ov001_FadeOutWfcSettings;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02177088);
+    Ov001_SetStepCallback(&Ov001_FadeOutWfcSettings);
 }
 
-void func_ov001_02177088(void) {
+/* Fade out the Wi-Fi settings screen: wait for the icon row's fade-in, slide the
+ * row out, start the screen fades (keeping the option background when the player
+ * chose to reset the WFC settings), then move on to closing the screen. */
+void Ov001_FadeOutWfcSettings(void) {
     extern u8 gOv001WfcSettingsReset;
     extern M2C_UNK Ov001_CloseWfcSettingsScreen;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -159,7 +165,7 @@ void func_ov001_021771f4(void) {
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177068);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsExit);
 }
 
 void func_ov001_02177214(void) {
@@ -610,17 +616,20 @@ void Ov001_OptionMenuExit(void) {
     Ov001_SetStepCallback(&Ov001_FadeOutOptionMenu);
 }
 
+/* Leave the ov001 option menu: once the sub-screen fade is idle, slide the icon
+ * row out when the option palette was loaded, fade both screens to white, then
+ * hand over to Ov001_OptionMenuClose. */
 void Ov001_FadeOutOptionMenu(void) {
     extern M2C_UNK gOv001OptionMenuState;
     extern M2C_UNK Ov001_OptionMenuClose;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (M2C_FIELD(&gOv001OptionMenuState, u8 *, 1) != 0) {
+    if (((Ov001OptionMenuState *)&gOv001OptionMenuState)->paletteLoaded != 0) {
         Ov001_StartIconRowSlideOut();
     }
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x14, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_OptionMenuClose);
 }
 

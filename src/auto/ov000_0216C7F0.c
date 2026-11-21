@@ -143,9 +143,9 @@ return GetNameGraphicFile(1)+((&data_ov000_021b5c69)[arg0*0x70]<<8);
 }
 
 void *GetUnitIconTiles(void) {
- s32 func_020a7298();
+ s32 GetUnitVariantIndex();
  extern M2C_UNK data_02121e08;
- return (u8 *)&data_02121e08 + (func_020a7298() << 7);
+ return (u8 *)&data_02121e08 + (GetUnitVariantIndex() << 7);
 }
 
 void *GetArmyPalette(s32 arg0) {
@@ -183,14 +183,16 @@ void *GetArmyStateTiles(u32 armyState) {
     }
 }
 
-void *GetArmyIconPalette(u32 arg0) {
- extern M2C_UNK data_02120780;
- switch(arg0) {
- case 1:return (u8 *)&data_02120780;
- case 2:return (u8 *)&data_02120780+32;
- case 3:return (u8 *)&data_02120780+64;
- case 4:return (u8 *)&data_02120780+96;
- case 0:return (u8 *)&data_02120780+128;
+/* Return the army icon palette for an army id: ids 1..4 use the first four
+ * 16-colour palettes, id 0 (no army) the last one, anything else has none. */
+void *GetArmyIconPalette(u32 armyId) {
+ extern M2C_UNK gArmyIconPalettes;
+ switch(armyId) {
+ case 1:return (u8 *)&gArmyIconPalettes;
+ case 2:return (u8 *)&gArmyIconPalettes+DS3D_PALETTE_BYTES*1;
+ case 3:return (u8 *)&gArmyIconPalettes+DS3D_PALETTE_BYTES*2;
+ case 4:return (u8 *)&gArmyIconPalettes+DS3D_PALETTE_BYTES*3;
+ case 0:return (u8 *)&gArmyIconPalettes+DS3D_PALETTE_BYTES*4;
  default:return 0;
  }
 }

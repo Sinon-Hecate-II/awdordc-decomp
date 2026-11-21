@@ -129,8 +129,8 @@ void func_020807d0(void) {
 #pragma opt_common_subs off
 void DrawTilemapBlock(u8 *a,u16 *b,s32 c,s32 d) {
 u16 v=(c&0x3ff)|((d&15)<<12);
-s32 h=a[1]; register s32 w=a[0]; register u16 *p=(u16 *)(a+2); s32 x,y;
-for(y=0;y<h;y++)for(x=0;x<w;x++) b[y*32+x]=v+*p++;
+s32 h=a[1]; s32 w=a[0]; u16 *p=(u16 *)(a+2); s32 x,y;
+for(y=0;y<h;y++)for(x=0;x<w;x++) b[y*32+x]=v+*(p++);
 }
 #pragma opt_common_subs on
 /* Fill a width x height rectangle of the 32-tile-wide `tilemap` with
@@ -144,9 +144,15 @@ void FillTileRect(u16 *tilemap, s32 width, s32 height, u32 startTile, u16 palett
             tilemap[y * 32 + x] = tile++;
 }
 
-void SetTileRectPalette(u16 *p,s32 w,s32 h,u32 pal) {
- s32 x,y;
- for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=(p[y*32+x]&0xfff)|((pal&15)<<12);
+/* Replace the palette bank of every tile in a width x height rectangle of the
+ * 32-tile-wide tilemap, keeping each tile's number and flip flags. */
+void SetTileRectPalette(u16 *tilemap, s32 width, s32 height, u32 palette) {
+    s32 x, y;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+            tilemap[y * TILEMAP_ROW_TILES + x] =
+                (tilemap[y * TILEMAP_ROW_TILES + x] & TILEMAP_ENTRY_INDEX_MASK) |
+                ((palette & TILEMAP_PALETTE_MASK) << TILEMAP_PALETTE_SHIFT);
 }
 
 /* Add (palette & 15) to the palette index of every tile in a width x height
@@ -409,7 +415,7 @@ CloseFileRequest(req);HeapFreeBlock((s32)buf);if(outSize)*(s32 *)outSize=size;
 return output;
 }
 
-void func_02081070(M2C_UNK arg0, M2C_UNK arg1) {
+void LoadDecompressedFile(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK LoadDecompressedFileBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     LoadDecompressedFileBuffer(arg0, arg1, 0);
 }

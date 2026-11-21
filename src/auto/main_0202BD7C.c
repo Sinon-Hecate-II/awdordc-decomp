@@ -107,21 +107,161 @@ s32 Sound_GetCurrentArchive(void) {
     return gCurrentArchive;
 }
 
-void *GetSoundSequenceRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,8);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Return the sound archive's sequence-table record `index`, or NULL when the
+ * archive has no such record. */
+void *GetSoundSequenceRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *section;
+    s32 offset;
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_SEQUENCE);
+    section = offset == 0 ? 0 : dataBlock + offset;
+    if (!section) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(section, u32 *, 0)) return 0;
+    offset = M2C_FIELD(section + index*4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
-void *GetSoundSequenceArchiveRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0xc);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Return the sound archive's sequence-archive record `index`, or NULL when the
+ * archive has no such record. */
+void *GetSoundSequenceArchiveRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *section;
+    s32 offset;
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_SEQUENCE_ARCHIVE);
+    section = offset == 0 ? 0 : dataBlock + offset;
+    if (!section) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(section, u32 *, 0)) return 0;
+    offset = M2C_FIELD(section + index*4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
-void *GetSoundBankRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x10);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Resolves an index to its sound-bank record in the current archive's loaded data
+ * block: the bank table at SOUND_DATA_BANK is a {count, offset[count]} section
+ * whose offsets are relative to the block, so the record sits at the index's
+ * offset from the block.  Returns NULL for an out-of-range index or a zero
+ * offset. */
+void *GetSoundBankRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *table;
+    s32 offset;
 
-void *GetWaveArchiveRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x14);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_BANK);
+    table = offset == 0 ? 0 : dataBlock + offset;
+    if (!table) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(table, u32 *, 0)) return 0;
+    offset = M2C_FIELD(table + index * 4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
-void *func_0202c1cc(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x24);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Return the sound archive's wave-archive record `index`, or NULL when the
+ * archive has no such record. */
+void *GetWaveArchiveRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *section;
+    s32 offset;
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_WAVE_ARCHIVE);
+    section = offset == 0 ? 0 : dataBlock + offset;
+    if (!section) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(section, u32 *, 0)) return 0;
+    offset = M2C_FIELD(section + index*4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
-void *GetSoundArchiveChannelRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x18);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Return the sound archive's sound record `index`, or NULL when the archive has
+ * no such record. */
+void *GetSoundRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *section;
+    s32 offset;
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_SOUND);
+    section = offset == 0 ? 0 : dataBlock + offset;
+    if (!section) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(section, u32 *, 0)) return 0;
+    offset = M2C_FIELD(section + index*4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
-void *func_0202c294(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x20);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+/* Resolves an index to its channel record in the current archive's loaded data
+ * block: the channel table at SOUND_DATA_CHANNEL is a {count, offset[count]}
+ * section whose offsets are relative to the block, so the record sits at the
+ * index's offset from the block.  Returns NULL for an out-of-range index or a
+ * zero offset. */
+void *GetSoundArchiveChannelRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *table;
+    s32 offset;
 
-void *GetSoundGroupRecord(s32 arg0){extern s32 gCurrentArchive;void *root=(void *)gCurrentArchive;void *base,*p; s32 off;base=M2C_FIELD(root,void **,0x8c);off=M2C_FIELD(base,s32 *,0x1c);p=off==0?0:base+off;if(!p)return 0;if(arg0<0)return 0;if((u32)arg0>=M2C_FIELD(p,u32 *,0))return 0;off=M2C_FIELD(p+arg0*4,s32 *,0x4);base=M2C_FIELD(root,void * volatile *,0x8c);return off==0?0:base+off;}
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_CHANNEL);
+    table = offset == 0 ? 0 : dataBlock + offset;
+    if (!table) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(table, u32 *, 0)) return 0;
+    offset = M2C_FIELD(table + index * 4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
+
+/* Resolves an index to its player record in the current archive's loaded data
+ * block: the player table at SOUND_DATA_PLAYER_CHANNELS is a {count, offset[count]}
+ * section whose offsets are relative to the block, so the record sits at the
+ * index's offset from the block.  Returns NULL for an out-of-range index or a
+ * zero offset. */
+void *GetSoundPlayerRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *table;
+    s32 offset;
+
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_PLAYER_CHANNELS);
+    table = offset == 0 ? 0 : dataBlock + offset;
+    if (!table) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(table, u32 *, 0)) return 0;
+    offset = M2C_FIELD(table + index * 4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
+
+/* Return the sound archive's sound-group record `index`, or NULL when the archive
+ * has no such record. */
+void *GetSoundGroupRecord(s32 index) {
+    extern s32 gCurrentArchive;
+    void *archive = (void *)gCurrentArchive;
+    void *dataBlock, *section;
+    s32 offset;
+    dataBlock = M2C_FIELD(archive, void **, SOUND_ARCHIVE_DATA_BLOCK);
+    offset = M2C_FIELD(dataBlock, s32 *, SOUND_DATA_GROUP);
+    section = offset == 0 ? 0 : dataBlock + offset;
+    if (!section) return 0;
+    if (index < 0) return 0;
+    if ((u32)index >= M2C_FIELD(section, u32 *, 0)) return 0;
+    offset = M2C_FIELD(section + index*4, s32 *, 0x4);
+    dataBlock = M2C_FIELD(archive, void * volatile *, SOUND_ARCHIVE_DATA_BLOCK);
+    return offset == 0 ? 0 : dataBlock + offset;
+}
 
 s32 Sound_GetArchiveFileOffset(u32 a){extern s32 gCurrentArchive;void *p=M2C_FIELD(gCurrentArchive,void **,0x84);if(a>=M2C_FIELD(p,u32 *,8))return 0;return M2C_FIELD(p+a*16,s32 *,12);}
 
@@ -216,10 +356,13 @@ ListRemove(player+4,group);group=(void *)ListPrev(player+4,0);
 func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return func_0202c7ec(player);
 }
 
-void *Sound_AllocDataBlock(s32 *arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 ListPrev(void *,M2C_UNK);M2C_UNK ListAppend(s32,void *);void *func_0202a67c(s32,s32,M2C_UNK);register unsigned int temp_r0_2;void *temp_r0;
-temp_r0=func_0202a67c(*arg0,((arg1+31)&~31)+32,32);if(!temp_r0)return 0;
-temp_r0_2=ListPrev(arg0+1,0);M2C_FIELD(temp_r0,s32 *,8)=arg1;M2C_FIELD(temp_r0,s32 *,12)=arg2;M2C_FIELD((u32)temp_r0,s32 *,16)=arg3;M2C_FIELD(temp_r0,s32 *,20)=arg4;ListAppend(temp_r0_2,temp_r0);return temp_r0+32;
+/* Take a `size`-byte data block from the sound heap in `pool` (32-byte aligned,
+ * with the block header in front), record its free callback, argument and index,
+ * and link it into the pool's block list.  Returns the payload, or NULL. */
+void *Sound_AllocDataBlock(s32 *pool,s32 size,s32 freeCallback,s32 freeArg,s32 index){
+s32 ListPrev(void *,M2C_UNK);M2C_UNK ListAppend(s32,void *);void *Sound_HeapAlloc(s32,s32,M2C_UNK);register unsigned int blockList;void *block;
+block=Sound_HeapAlloc(*pool,((size+31)&~31)+32,32);if(!block)return 0;
+blockList=ListPrev(pool+1,0);M2C_FIELD(block,s32 *,SOUND_BLOCK_SIZE)=size;M2C_FIELD(block,s32 *,SOUND_BLOCK_FREE)=freeCallback;M2C_FIELD((u32)block,s32 *,SOUND_BLOCK_FREE_ARG)=freeArg;M2C_FIELD(block,s32 *,SOUND_BLOCK_INDEX)=index;ListAppend(blockList,block);return block+SOUND_BLOCK_DATA;
 }
 
 s32 func_0202c658(void *arg0) {
@@ -297,8 +440,8 @@ void func_0202c7a8(M2C_UNK arg0) {
 s32 Sound_InitHeap(u32 p,s32 a){s32 func_0202c7ec(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
 
 s32 func_0202c7ec(void *p){
-void *func_0202a67c(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);
-void *q=func_0202a67c(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);ListAppend((s32)(p+4),q);return 1;
+void *Sound_HeapAlloc(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);
+void *q=Sound_HeapAlloc(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);ListAppend((s32)(p+4),q);return 1;
 }
 
 void Sound_FlushAndWait(void) {

@@ -1,5 +1,6 @@
 /* 16 functions from 0x021E8984 to 0x021E997C (ov002), found by ds-decomp. */
 #include "common.h"
+#include "ov002_effects.h"
 static inline void Translate021e9014(s32 x,s32 y,s32 z) {
  volatile s32 *p=(volatile s32 *)0x4000444;
  p[11]=x;p[11]=y;p[11]=z;
@@ -74,25 +75,28 @@ void func_ov002_021e8d04(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0x1C) = arg1;
 }
 
-void func_ov002_021e8d0c(void *arg0, s8 arg1, s8 arg2) {
+/* Set up a battle-scene unit model: reset its effect script and mark it and its
+ * children active, clear the transform and animation state, stagger the animation
+ * frame by the slot variant, and record the country and variant it plays. */
+void InitUnitModel(void *model, s8 country, s8 variant) {
     M2C_UNK func_ov002_021e16bc();
     M2C_UNK func_ov002_021e26d4(void *);
-    func_ov002_021e16bc();
-    func_ov002_021e26d4(arg0);
-    M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = 0;
-    M2C_FIELD(arg0, s16 *, 0x70) = 0;
-    M2C_FIELD(arg0, s16 *, 0x72) = 0x100;
-    M2C_FIELD(arg0, s32 *, 0x74) = 0;
-    M2C_FIELD(arg0, s32 *, 0x78) = 0;
-    M2C_FIELD(arg0, s16 *, 0x88) = 0;
-    M2C_FIELD(arg0, s16 *, 0x8A) = 0;
-    M2C_FIELD(arg0, s16 *, 0x7C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x7E) = 0;
-    M2C_FIELD(arg0, s32 *, 0x80) = (s32) (arg2 * 0x10);
-    M2C_FIELD(arg0, s32 *, 0x84) = 0;
-    M2C_FIELD(arg0, s8 *, 0x8C) = arg1;
-    M2C_FIELD(arg0, s8 *, 0x8D) = arg2;
+    func_ov002_021e16bc(model, country, variant);
+    func_ov002_021e26d4(model);
+    M2C_FIELD(model, s16 *, UNIT_MODEL_X) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_Y) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_Z) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_SCALE) = 0x100;
+    M2C_FIELD(model, s32 *, UNIT_MODEL_ROT_X) = 0;
+    M2C_FIELD(model, s32 *, UNIT_MODEL_ROT_Y) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_STEP_X) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_STEP_Y) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_ROCK_X) = 0;
+    M2C_FIELD(model, s16 *, UNIT_MODEL_ROCK_Y) = 0;
+    M2C_FIELD(model, s32 *, UNIT_MODEL_FRAME) = (s32)(variant * 0x10);
+    M2C_FIELD(model, s32 *, UNIT_MODEL_UNUSED_84) = 0;
+    M2C_FIELD(model, s8 *, UNIT_MODEL_COUNTRY) = country;
+    M2C_FIELD(model, s8 *, UNIT_MODEL_VARIANT) = variant;
 }
 
 /* Per-frame step of a unit model's rocking rotation (+0x7E): a fixed curve

@@ -479,7 +479,7 @@ void Ov001_CloseNameEntryScreen(void) {
 /* Draws the entered name on the name-entry panel: one glyph per character in
  * two rows of 16, substituting a dash for spaces, then closes the panel. */
 void RedrawNameEntryText(void) {
-extern void *gNameEntryState; extern u8 gNameEntryColumnStride[];
+extern void *gNameEntryState; extern u8 gNameEntryColumnX[];
 void TextPanel_ClearText(s32,s32);void DrawPanelText(s32,s32,s32,s32,s32,s32,s32,void *);void CloseTextPanel(s32);
 u16 glyphs[6]; u16 *rect; s32 column,i; u8 c;
 rect=&glyphs[2];rect[1]=0;rect[2]=0;rect[3]=0;rect[0]=0;
@@ -490,31 +490,35 @@ do {
 if(i==16){column=0;glyphs[3]=49;}
 c=M2C_FIELD((u8 *)gNameEntryState+i,u8 *,NAME_ENTRY_TEXT);
 if(c==32)glyphs[0]=0xe01d;else glyphs[0]=c;
-glyphs[2]=gNameEntryColumnStride[column];
+glyphs[2]=gNameEntryColumnX[column];
 DrawPanelText(M2C_FIELD(gNameEntryState,s32 *,NAME_ENTRY_PANEL),glyphs[2],glyphs[3],glyphs[4],glyphs[5],2,0x480,glyphs);
 i++;column++;
 }while(i<32);
 CloseTextPanel(M2C_FIELD(gNameEntryState,s32 *,NAME_ENTRY_PANEL));
 }
 
+/* Places the name-entry cursor under the next free character: the text column is
+   the character count's low nibble and the row its high nibble, clamped to the
+   last cell of the second row once all 32 characters are used. */
 void UpdateNameEntryCursor(void) {
     extern void *gNameEntryState;
-    extern u8 data_ov001_0218f834[];
-    extern u8 gNameEntryColumnStride[];
+    extern u8 gNameEntryRowY[];
+    extern u8 gNameEntryColumnX[];
     void *obj;
-    s32 *slot;
-    u8 value;
-    s32 index, high;
+    s32 *cursor;
+    u8 length;
+    s32 column, row;
+
     obj = gNameEntryState;
-    value = M2C_FIELD(obj, u8 *, 0x29);
-    slot = M2C_FIELD(obj, s32 **, 4);
-    index = value & 0xF;
-    high = value >> 4;
-    if (value >= 0x20) {
-        high = 1;
-        index = 0xF;
+    length = M2C_FIELD(obj, u8 *, NAME_ENTRY_LENGTH);
+    cursor = M2C_FIELD(obj, s32 **, NAME_ENTRY_CURSOR);
+    column = length & 0xF;
+    row = length >> 4;
+    if (length >= NAME_ENTRY_MAX_LENGTH) {
+        row = 1;
+        column = 0xF;
     }
-    *slot = (*slot & 0xFE00FF00) | data_ov001_0218f834[high] | ((u32)gNameEntryColumnStride[index] << 0x17 >> 7);
+    *cursor = (*cursor & NAME_ENTRY_CURSOR_POS_MASK) | gNameEntryRowY[row] | ((u32)gNameEntryColumnX[column] << 0x17 >> 7);
 }
 
 void func_ov001_0217bc7c(void) {

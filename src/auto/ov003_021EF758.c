@@ -5,7 +5,7 @@
 u32 func_ov003_021ef758(void *arg0, u32 arg1) {
     M2C_UNK AddSprite(u16, M2C_UNK, u16, M2C_UNK *, s32);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
-    M2C_UNK func_02088e84(void *, s16, M2C_UNK, s16, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, M2C_UNK, s16, s32);
     s16 GetSpriteAnimValue(void *);
     M2C_UNK GetUnitSpriteWidth(void *);
     M2C_UNK GetUnitSpriteHeight(void *);
@@ -45,7 +45,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
         temp_r9 = temp_r4 + GetWaypointSlotX(var_r8);
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x28);
         temp_r7 = temp_r9 + 0xD;
-        func_02088e84(temp_r5, temp_r7, 0x70, temp_r7, 0x70);
+        Set3DSpriteSlideTargetAndStart(temp_r5, temp_r7, 0x70, temp_r7, 0x70);
         if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0 = 1;
         } else {
@@ -71,7 +71,7 @@ u32 func_ov003_021ef758(void *arg0, u32 arg1) {
             func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, spriteX, spriteY, (u16) temp_r4, (u16) GetUnitSpriteHeight(temp_r5));
         }
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 0x38);
-        func_02088e84(temp_r5, temp_r9 + 0xD, 0x90, temp_r9 + 0xD, 0x90);
+        Set3DSpriteSlideTargetAndStart(temp_r5, temp_r9 + 0xD, 0x90, temp_r9 + 0xD, 0x90);
         if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_3 = 1;
         } else {

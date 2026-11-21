@@ -441,29 +441,39 @@ if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=29)return 0;
 }
 
 #pragma scheduling off
-s32 func_020a4828(s32 a,s32 b) {
+/* The battle-preview target kind of tile (x, y): 1 when the tile has destructible
+ * terrain hit points left, otherwise the type of the attack order anchored on it,
+ * or 0 when the tile holds neither. */
+s32 GetTileTargetKind(s32 x, s32 y) {
 extern s32 *gCurrentMap;
-s32 q=FindMapFeatureAtTile(a,b);s32 p=*gCurrentMap; s32 result=0;u32 value;
+s32 feature = FindMapFeatureAtTile(x, y);
+s32 map = *gCurrentMap;
+s32 targetKind = 0;
+u32 terrainHp;
 
-value=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x539c)&127;
-if(q)result=(u32)(M2C_FIELD(q,u16 *,2)<<22)>>28;
-if(value)result=1;
-return result;
+terrainHp = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN_HP) & MAP_CELL_TERRAIN_HP_MASK;
+if (feature) targetKind = (u32)(M2C_FIELD(feature, u16 *, MAP_ORDER_TYPE) << 22) >> 28;
+if (terrainHp) targetKind = 1;
+return targetKind;
 }
 #pragma scheduling reset
-s32 GetMapOrderEffectPosition(void *arg0, void *arg1) {
-    u32 temp_r2;
+/* Writes the tile a map order's effect plays at into out: a line attack (or a
+ * player-facing line) plays on the order's own tile, a radius-5 area attack one
+ * tile right and two rows below its rectangle origin.  Returns 0 for an order
+ * with no fixed effect tile. */
+s32 GetMapOrderEffectPosition(MapOrder *order, s16 *out) {
+    u32 type;
 
-    temp_r2 = (u32) (M2C_FIELD(arg0, u16 *, 2) << 0x16) >> 0x1C;
-    switch (temp_r2) {                              /* irregular */
-    case 6:
-    case 7:
-        M2C_FIELD(arg1, s16 *, 0) = (s16) M2C_FIELD(arg0, u8 *, 0);
-        M2C_FIELD(arg1, s16 *, 2) = (s16) M2C_FIELD(arg0, u8 *, 1);
+    type = (u32) (M2C_FIELD(order, u16 *, MAP_ORDER_TYPE) << 0x16) >> 0x1C;
+    switch (type) {                                 /* irregular */
+    case MAPORDER_ATTACK_LINE:
+    case MAPORDER_ATTACK_LINE_FACING:
+        out[0] = M2C_FIELD(order, u8 *, 0);
+        out[1] = M2C_FIELD(order, u8 *, 1);
         return 1;
-    case 4:
-        M2C_FIELD(arg1, s16 *, 0) = (s16) (M2C_FIELD(arg0, u8 *, 0) + 1);
-        M2C_FIELD(arg1, s16 *, 2) = (s16) (M2C_FIELD(arg0, u8 *, 1) + 2);
+    case MAPORDER_ATTACK_AREA:
+        out[0] = (s16) (M2C_FIELD(order, u8 *, 0) + 1);
+        out[1] = (s16) (M2C_FIELD(order, u8 *, 1) + 2);
         return 1;
     default:
         return 0;

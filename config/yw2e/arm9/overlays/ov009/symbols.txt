@@ -11,7 +11,7 @@ func_ov009_02221580 kind:function(arm,size=0x24) addr:0x02221580
 func_ov009_022215a4 kind:function(arm,size=0x4f0) addr:0x022215a4
 func_ov009_02221a94 kind:function(arm,size=0x54) addr:0x02221a94
 func_ov009_02221ae8 kind:function(arm,size=0x790) addr:0x02221ae8
-func_ov009_02222278 kind:function(arm,size=0x24) addr:0x02222278
+SetLinkPlayerRecord kind:function(arm,size=0x24) addr:0x02222278
 func_ov009_0222229c kind:function(arm,size=0x34) addr:0x0222229c
 SendLinkPlayerInfo kind:function(arm,size=0x78) addr:0x022222d0
 func_ov009_02222348 kind:function(arm,size=0xe0) addr:0x02222348
@@ -74,8 +74,8 @@ func_ov009_02223e5c kind:function(arm,size=0x4c) addr:0x02223e5c
 func_ov009_02223ea8 kind:function(arm,size=0x20) addr:0x02223ea8
 func_ov009_02223ec8 kind:function(arm,size=0x4c) addr:0x02223ec8
 func_ov009_02223f14 kind:function(arm,size=0x20) addr:0x02223f14
-func_ov009_02223f34 kind:function(arm,size=0x10) addr:0x02223f34
-func_ov009_02223f44 kind:function(arm,size=0x38) addr:0x02223f44
+SetLinkDownloadCode kind:function(arm,size=0x10) addr:0x02223f34
+SetLinkPlayerName kind:function(arm,size=0x38) addr:0x02223f44
 func_ov009_02223f7c kind:function(arm,size=0x40) addr:0x02223f7c
 AnnounceLinkPlayer kind:function(arm,size=0x68) addr:0x02223fbc
 func_ov009_02224024 kind:function(arm,size=0x40) addr:0x02224024
@@ -92,7 +92,7 @@ GetConnectedPlayers kind:function(arm,size=0x10) addr:0x02224174
 SetLinkPhaseRaw kind:function(arm,size=0x10) addr:0x02224184
 GetLinkPhase kind:function(arm,size=0x10) addr:0x02224194
 GetLinkRequestKind kind:function(arm,size=0x10) addr:0x022241a4
-func_ov009_022241b4 kind:function(arm,size=0x10) addr:0x022241b4
+GetLinkResultCode kind:function(arm,size=0x10) addr:0x022241b4
 func_ov009_022241c4 kind:function(arm,size=0x18) addr:0x022241c4
 func_ov009_022241dc kind:function(arm,size=0xa8) addr:0x022241dc
 func_ov009_02224284 kind:function(arm,size=0x18) addr:0x02224284
@@ -100,13 +100,13 @@ func_ov009_0222429c kind:function(arm,size=0x2c) addr:0x0222429c
 func_ov009_022242c8 kind:function(arm,size=0x1f8) addr:0x022242c8
 ClearLinkResultFlags kind:function(arm,size=0x14) addr:0x022244c0
 func_ov009_022244d4 kind:function(arm,size=0x18) addr:0x022244d4
-func_ov009_022244ec kind:function(arm,size=0x1c) addr:0x022244ec
-func_ov009_02224508 kind:function(arm,size=0x20) addr:0x02224508
-func_ov009_02224528 kind:function(arm,size=0x24) addr:0x02224528
+SetLinkResultFlag kind:function(arm,size=0x1c) addr:0x022244ec
+IsLinkResultFlagSet kind:function(arm,size=0x20) addr:0x02224508
+ClearLinkResultFlag kind:function(arm,size=0x24) addr:0x02224528
 func_ov009_0222454c kind:function(arm,size=0x14) addr:0x0222454c
 func_ov009_02224560 kind:function(arm,size=0x128) addr:0x02224560
-func_ov009_02224688 kind:function(arm,size=0x24) addr:0x02224688
-func_ov009_022246ac kind:function(arm,size=0x6c) addr:0x022246ac
+AdvanceLinkRequestToPending kind:function(arm,size=0x24) addr:0x02224688
+GetLinkPlayerUnit kind:function(arm,size=0x6c) addr:0x022246ac
 func_ov009_02224718 kind:function(arm,size=0x18) addr:0x02224718
 func_ov009_02224730 kind:function(arm,size=0x23c) addr:0x02224730
 func_ov009_0222496c kind:function(arm,size=0x10) addr:0x0222496c
@@ -120,7 +120,7 @@ func_ov009_02224bec kind:function(arm,size=0x18) addr:0x02224bec
 func_ov009_02224c04 kind:function(arm,size=0x18) addr:0x02224c04
 func_ov009_02224c1c kind:function(arm,size=0x18) addr:0x02224c1c
 func_ov009_02224c34 kind:function(arm,size=0x3c) addr:0x02224c34
-func_ov009_02224c70 kind:function(arm,size=0x34) addr:0x02224c70
+PublishLinkPlayerRecord kind:function(arm,size=0x34) addr:0x02224c70
 func_ov009_02224ca4 kind:function(arm,size=0x34) addr:0x02224ca4
 func_ov009_02224cd8 kind:function(arm,size=0x34) addr:0x02224cd8
 func_ov009_02224d0c kind:function(arm,size=0x10) addr:0x02224d0c
@@ -199,7 +199,7 @@ func_ov009_02225cbc kind:function(arm,size=0x10) addr:0x02225cbc
 func_ov009_02225ccc kind:function(arm,size=0x14) addr:0x02225ccc
 func_ov009_02225ce0 kind:function(arm,size=0x34) addr:0x02225ce0
 func_ov009_02225d14 kind:function(arm,size=0xc) addr:0x02225d14
-func_ov009_02225d20 kind:function(arm,size=0x68) addr:0x02225d20
+HandleLinkErrorResult kind:function(arm,size=0x68) addr:0x02225d20
 func_ov009_02225d88 kind:function(arm,size=0x2c) addr:0x02225d88
 func_ov009_02225db4 kind:function(arm,size=0x20) addr:0x02225db4
 StartLinkSplitFades kind:function(arm,size=0x6c) addr:0x02225dd4
@@ -213,7 +213,7 @@ func_ov009_022260d8 kind:function(arm,size=0x4) addr:0x022260d8
 StartLinkStatusSplitTransitions kind:function(arm,size=0x6c) addr:0x022260dc
 func_ov009_02226148 kind:function(arm,size=0xc) addr:0x02226148
 func_ov009_02226154 kind:function(arm,size=0x28) addr:0x02226154
-func_ov009_0222617c kind:function(arm,size=0x68) addr:0x0222617c
+CreateLinkNameLabel kind:function(arm,size=0x68) addr:0x0222617c
 func_ov009_022261e4 kind:function(arm,size=0x30) addr:0x022261e4
 func_ov009_02226214 kind:function(arm,size=0x54) addr:0x02226214
 func_ov009_02226268 kind:function(arm,size=0x28) addr:0x02226268
@@ -252,7 +252,7 @@ data_ov009_02226728 kind:data(any) addr:0x02226728
 gLinkStatusLabelVTable kind:data(any) addr:0x0222673c
 data_ov009_02226750 kind:data(any) addr:0x02226750
 data_ov009_0222675c kind:data(any) addr:0x0222675c
-data_ov009_02226784 kind:data(any) addr:0x02226784
+gLinkNameLabelClass kind:data(any) addr:0x02226784
 data_ov009_022267b4 kind:data(any) addr:0x022267b4
 gLinkStatusLabelClass kind:data(any) addr:0x0222682c
 data_ov009_02226874 kind:data(any) addr:0x02226874
@@ -265,11 +265,11 @@ data_ov009_022269b0 kind:bss addr:0x022269b0
 data_ov009_022269b4 kind:bss addr:0x022269b4
 data_ov009_022269b8 kind:bss addr:0x022269b8
 gLinkDownloadHeader kind:bss addr:0x022269e0
-data_ov009_02226a20 kind:bss addr:0x02226a20
+gLinkLocalPlayerInfo kind:bss addr:0x02226a20
 data_ov009_02226a40 kind:bss addr:0x02226a40
 gLinkConnectionData kind:bss addr:0x02226a80
 gLinkPlayers kind:bss addr:0x02226b40
-data_ov009_02226cc0 kind:bss addr:0x02226cc0
+gLinkPeerSlots kind:bss addr:0x02226cc0
 data_ov009_02226d80 kind:bss addr:0x02226d80
 data_ov009_02226d84 kind:bss addr:0x02226d84
 gLinkConnectionExtraData kind:bss addr:0x02226fe0

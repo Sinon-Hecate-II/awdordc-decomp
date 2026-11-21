@@ -214,29 +214,31 @@ void ApplyCounterDamage(BattleUnit *striker, BattleUnit *counter) {
     ApplyCounterHit(striker, counter);
 }
 
-void ResolveBattleTie(void *arg0, void *arg1) {
-    s16 temp_r2;
-    s16 temp_r3;
+/* Settles a fight in which both participants are at or below 0 HP: the side with
+ * the higher remaining HP survives with 1, otherwise negative HP is clamped to 0. */
+void ResolveBattleTie(BattleUnit *attacker, BattleUnit *defender) {
+    s16 attackerHealth;
+    s16 defenderHealth;
 
-    temp_r3 = M2C_FIELD(arg0, s16 *, 0xE);
-    if ((s32) temp_r3 <= 0) {
-        temp_r2 = M2C_FIELD(arg1, s16 *, 0xE);
-        if ((s32) temp_r2 <= 0) {
-            if ((s32) temp_r3 < (s32) temp_r2) {
-                M2C_FIELD(arg1, s16 *, 0xE) = 1;
-                M2C_FIELD(arg0, s16 *, 0xE) = 0;
+    attackerHealth = attacker->health;
+    if ((s32) attackerHealth <= 0) {
+        defenderHealth = defender->health;
+        if ((s32) defenderHealth <= 0) {
+            if ((s32) attackerHealth < (s32) defenderHealth) {
+                defender->health = 1;
+                attacker->health = 0;
                 return;
             }
-            M2C_FIELD(arg0, s16 *, 0xE) = 1;
-            M2C_FIELD(arg1, s16 *, 0xE) = 0;
+            attacker->health = 1;
+            defender->health = 0;
             return;
         }
     }
-    if ((s32) temp_r3 < 0) {
-        M2C_FIELD(arg0, s16 *, 0xE) = 0;
+    if ((s32) attackerHealth < 0) {
+        attacker->health = 0;
     }
-    if ((s32) M2C_FIELD(arg1, s16 *, 0xE) < 0) {
-        M2C_FIELD(arg1, s16 *, 0xE) = 0;
+    if ((s32) defender->health < 0) {
+        defender->health = 0;
     }
 }
 
@@ -271,27 +273,30 @@ void RunBattle(s16 attacker,s16 defender,s16 *destination) {
  M2C_FIELD(*gCurrentMap+attacker*MAP_UNIT_STRIDE,u8 *,0x59a6)=oldY;
 }
 
-void func_020d1034(void *arg0) {
+/* Credits the funds of a battle participant's owner for the HP its unit lost:
+ * the difference between the map unit's pre-battle health level and the
+ * participant's remaining health level is added as unit value. */
+void AwardBattleDamageValue(BattleUnit *participant) {
     s32 Divide(s32, M2C_UNK);
     M2C_UNK AddPlayerUnitValue(void *, s32);
-    s16 temp_r0;
-    s32 var_r1;
-    s32 var_r5;
-    u32 temp_r0_2;
+    s16 health;
+    s32 mapHealth;
+    s32 healthLevel;
+    u32 unitHealth;
 
-    temp_r0 = M2C_FIELD(arg0, s16 *, 0xE);
-    if (temp_r0 == 0) {
-        var_r5 = 0;
+    health = participant->health;
+    if (health == 0) {
+        healthLevel = 0;
     } else {
-        var_r5 = Divide(temp_r0 - 1, 0xA) + 1;
+        healthLevel = Divide(health - 1, 0xA) + 1;
     }
-    temp_r0_2 = (u32) (M2C_FIELD(M2C_FIELD(arg0, void **, 0), u16 *, 6) << 0x19) >> 0x19;
-    if (temp_r0_2 == 0) {
-        var_r1 = 0;
+    unitHealth = (u32) (M2C_FIELD(participant->unit, u16 *, 6) << 0x19) >> 0x19;
+    if (unitHealth == 0) {
+        mapHealth = 0;
     } else {
-        var_r1 = Divide(temp_r0_2 - 1, 0xA) + 1;
+        mapHealth = Divide(unitHealth - 1, 0xA) + 1;
     }
-    AddPlayerUnitValue(M2C_FIELD(arg0, void **, 0), var_r1 - var_r5);
+    AddPlayerUnitValue(participant->unit, mapHealth - healthLevel);
 }
 
 /* Writes a battle participant's displayed HP and ammo back to its unit record,
@@ -303,7 +308,7 @@ void func_020d1094(s32 participant, s32 opponent) {
     void ExplodeUnit(void *);
     s32 func_020cd614(void);
     s32 func_020cd5d8(void);
-    void func_020b5594(s32, s32, s32, s32);
+    void CreateExplosionEffect(s32, s32, s32, s32);
     void *unit = M2C_FIELD(participant, void **, 0);
     s32 kind;
 
@@ -324,10 +329,10 @@ void func_020d1094(s32 participant, s32 opponent) {
     if (kind == 3) goto counter;
     goto plain;
 counter:
-    func_020b5594(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 7, 7);
+    CreateExplosionEffect(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 7, 7);
     return;
 plain:
-    func_020b5594(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 6, 7);
+    CreateExplosionEffect(M2C_FIELD(unit, u8 *, 1), M2C_FIELD(unit, u8 *, 2), 6, 7);
 }
 
 /* Records the destruction of a unit for the records screen: adds one to the
@@ -366,8 +371,8 @@ record=(void*)(*gCurrentMap+0x6ed8);
 func_020d18fc(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),D068CLow(M2C_FIELD(record,void**,0)));
 if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)RecordDestroyedUnit(M2C_FIELD(*gCurrentMap,u8**,0x6ed8));
 }
-((void (*)())func_020d1034)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
-((void (*)())func_020d1034)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
+((void (*)())AwardBattleDamageValue)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
+((void (*)())AwardBattleDamageValue)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
 ((void (*)())func_020d1094)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
 ((void (*)())func_020d1094)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec4)!=M2C_FIELD(*gCurrentMap,s16*,0x6eca)){

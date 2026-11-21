@@ -227,39 +227,43 @@ s32 CountPlayerAttackUnits(u8 arg0) {
     return count;
 }
 
+/* Count the deployed foot units (infantry and mech) of every active player on the
+ * current player's team. */
 s32 CountActiveTeamFootUnits(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     s32 CountPlayerFootUnits(u8);
     extern void **gCurrentMap;
     s32 count = 0;
-    s32 i;
+    s32 player;
 
-    i = 1;
+    player = 1;
     do {
-        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
-            count += CountPlayerFootUnits(i);
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) != 0 && IsPlayerActive(player) != 0) {
+            count += CountPlayerFootUnits(player);
         }
-        i += 1;
-    } while (i < 5);
+        player += 1;
+    } while (player < 5);
     return count;
 }
 
+/* Counts the attack-capable units (CountPlayerAttackUnits) of every active player
+   that is on the current player's team. */
 s32 CountTeamAttackUnits(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     s32 CountPlayerAttackUnits(u8);
     extern void **gCurrentMap;
     s32 count = 0;
-    s32 i;
+    s32 player;
 
-    i = 1;
+    player = 1;
     do {
-        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), i) != 0 && IsPlayerActive(i) != 0) {
-            count += CountPlayerAttackUnits(i);
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) != 0 && IsPlayerActive(player) != 0) {
+            count += CountPlayerAttackUnits(player);
         }
-        i += 1;
-    } while (i < 5);
+        player += 1;
+    } while (player < 5);
     return count;
 }
 

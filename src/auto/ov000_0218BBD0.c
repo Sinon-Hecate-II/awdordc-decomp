@@ -21,7 +21,7 @@ int SelectIndirectAttackAction(void *arg0) {
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
-    s32 func_ov000_021a9bc0(void);
+    s32 MapOrder_IsEnemyOwned(void);
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
@@ -70,7 +70,7 @@ int SelectIndirectAttackAction(void *arg0) {
             if (dy <= 0) dy = y - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
             if (i+dy < gUnitKindStats[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
             unit = func_020a47e0(x, y);
-            if (unit != 0 && func_ov000_021a9bc0() != 0) {
+            if (unit != 0 && MapOrder_IsEnemyOwned() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
             } else if ((((u32)M2C_FIELD(gAiCommandState, u8 *, 7) << 0x1d) >> 0x1f) != 0) {
@@ -149,7 +149,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
     u8 *func_020a47e0(s32, s32);
-    s32 func_ov000_021a9bc0(void);
+    s32 MapOrder_IsEnemyOwned(void);
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
     s32 func_ov000_02178268(s32, s32, s16 *);
@@ -181,7 +181,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
             if (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x] < 0) continue;
             unit = func_020a47e0(x, y);
-            if (unit != 0 && func_ov000_021a9bc0() != 0) {
+            if (unit != 0 && MapOrder_IsEnemyOwned() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
             } else if ((((u32)M2C_FIELD(gAiCommandState, u8 *, 7) << 0x1d) >> 0x1f) != 0) {

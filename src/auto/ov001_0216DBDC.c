@@ -5,22 +5,26 @@ typedef struct { volatile s32 count; s32 index; } ScanCounters;
 
 #pragma thumb on
 
+/* Runs the WFC step of the WH connection's current phase: the connect step from
+ * the idle phase, the connecting (data-sharing) step, or the link (measure-
+ * channel) step.  Returns 1 when that step was queued, 0 when the phase has no
+ * step to run or its step failed. */
 s32 WhAdvanceConnectionState(void) {
-    s32 func_02027518(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 WFC_ProcessConnectOrMatch(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 WFC_ProcessLinkStep();
     M2C_UNK WFC_ConnectStep(void *, void (*)(void));
     void func_ov001_0216dbdc(void);
     extern M2C_UNK gWhState;
 
-    switch (M2C_FIELD(&gWhState, u32 *, 0x2C)) {
-    case 5:
-        if (func_02027518(0, 0, 0) != 3) return 0;
+    switch (M2C_FIELD(&gWhState, u32 *, WH_STATE_PHASE)) {
+    case 5: /* connecting: advance the WFC connect step */
+        if (WFC_ProcessConnectOrMatch(0, 0, 0) != WH_WFC_STEP_QUEUED) return 0;
         break;
-    case 7:
-        if (WFC_ProcessLinkStep() != 3) return 0;
+    case 7: /* link: advance the WFC link step */
+        if (WFC_ProcessLinkStep() != WH_WFC_STEP_QUEUED) return 0;
         break;
-    case 1:
-        if (WFC_ConnectStep(M2C_FIELD(&gWhState, void **, 0x8), func_ov001_0216dbdc) != 3) return 0;
+    case 1: /* idle: start connecting */
+        if (WFC_ConnectStep(M2C_FIELD(&gWhState, void **, 0x8), func_ov001_0216dbdc) != WH_WFC_STEP_QUEUED) return 0;
         break;
     case 0:
     case 2:
@@ -490,18 +494,29 @@ void func_ov001_0216ea48(s32,s32,s32);
 func_ov001_0216ea48(a,b,c);
 }
 
-void *func_ov001_0216ea90(u8 *p,s32 *a,s32 *b) {
-u16 v=*(u16 *)p;
-u32 sum=0;u16 n,w;u8 *q,*end;
-*a=(u16)((u8)((s32)v>>8)|(0xff00&(v<<8)));
-v=*(u16 *)(p+2);
-n=(u16)((u8)((s32)v>>8)|(0xff00&(v<<8)));
-*b=n;
-end=p+6+n;q=p;
-while(q<end){sum+=*q++;}
-w=*(u16 *)end;
-if((u16)sum!=(u16)((u8)((s32)w>>8)|(0xff00&(w<<8))))return 0;
-return p+6;
+/* Verify a wrapped WH packet and return its payload: read the big-endian type and
+ * payload length from the 6-byte header, compare the byte sum of header and
+ * payload with the trailing big-endian checksum, and return the payload pointer
+ * (0 when the checksum does not match).  The type and length go out through the
+ * two pointer parameters. */
+void *WhPacket_Unwrap(u8 *packet, s32 *typeOut, s32 *lengthOut) {
+    u16 word = *(u16 *)packet;
+    u32 byteSum = 0;
+    u16 payloadLength;
+    u16 checksum;
+    u8 *cur;
+    u8 *checksumPos;
+
+    *typeOut = WH_READ_BE16(word);
+    word = *(u16 *)(packet + WH_PACKET_LENGTH);
+    payloadLength = WH_READ_BE16(word);
+    *lengthOut = payloadLength;
+    checksumPos = packet + WH_PACKET_HEADER + payloadLength;
+    cur = packet;
+    while (cur < checksumPos) { byteSum += *cur++; }
+    checksum = *(u16 *)checksumPos;
+    if ((u16)byteSum != WH_READ_BE16(checksum)) return 0;
+    return packet + WH_PACKET_HEADER;
 }
 
 #pragma thumb on

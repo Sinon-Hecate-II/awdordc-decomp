@@ -137,7 +137,7 @@ void SelectAttackingUnit(void) {
 #pragma opt_strength_reduction off
 void PlanProductionSiteDestination(void){
 s32 IsPlayerHuman(s32);s32 GetUnitAttackClass(u32);
-s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindAttack(u32,u32);
+s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKindLoad(u32,u32);
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
 s32 IsMidActionStep(u32);s32 CanUnitAttackKind(u8*,u32);
@@ -148,11 +148,11 @@ u32 mode;u8 *unit;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16*,10)<<26)>>29)&4))return;
 if(!IsPlayerHuman(M2C_FIELD(MAP,u16*,0x52a4))&&GetUnitAttackClass(KIND(SEL))==1){
 if(KIND(SEL)!=26)return;
-if(!HasAiOptionalUnitBuildFlag()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
 }
+if(!HasAiOptionalUnitBuildFlag()&&!CountPlayerUnitsOfKind(24)&&!CountPlayerUnitsOfKind(25))return;
 if((u32)(SEL[11]<<24)>>31)return;
 if(((u32)(M2C_FIELD(SEL,u16*,6)<<25)>>25)<61)return;
-if(!CanKindAttack(24,KIND(SEL)))return;
+if(!CanKindLoad(24,KIND(SEL)))return;
 if(func_ov000_0217d86c()==1)return;
 SelectAttackingUnit();
 mode=(u8)(GetUnitAttackClass(KIND(SEL))==2);
@@ -165,13 +165,14 @@ SelectMapLayer(MAP+0x1e30);
 SelectMapLayer(MAP+0x2338);FillMapLayer(127);SelectMapLayer(MAP+0x1e30);
 found=0;
 index=gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+1;
-if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){offset=index*14;
-for(;index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
+if(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51){
+offset=index*14;
+do {
 unit=(u8*)(MAP+0x59a4)+offset;
-if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||IsMidActionStep((u32)(unit[11]<<28)>>28)||!CanUnitAttackKind(unit,KIND(SEL)))continue;
+if(!KIND(unit)||!(INFO[KIND(unit)*112+19]&32)||IsMidActionStep((u32)(unit[11]<<28)>>28)||!CanUnitAttackKind(unit,KIND(SEL)))goto nextUnit;
 if(unit[12]){
-if(mode==1)continue;
-if(COST(unit[1],unit[2],0x3250)<0)continue;
+if(mode==1)goto nextUnit;
+if(COST(unit[1],unit[2],0x3250)<0)goto nextUnit;
 }
 FloodFillUnitRange(unit[1],unit[2],KIND(unit),110,0);
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
@@ -179,10 +180,13 @@ if(PATH(x,y)<0||!IsUnitProductionTerrain(CELL(x,y,0x1420)))continue;
 {void *base=MAP;u16 row=M2C_FIELD(base+y*2,u16*,0x3758);u8 *cell=(u8*)base+x+row;
 distance=M2C_FIELD(base+y*4,s8**,0x52e8)[x];
 if(distance>=M2C_FIELD(cell,s8*,0x2338))continue;
-if(!mode&&M2C_FIELD(cell,s8*,0x3250)<0)continue;
+if(!mode){ if(M2C_FIELD(cell,s8*,0x3250)<0)continue; }
 M2C_FIELD(cell+0x2000,s8*,0x338)=distance;found=1;}
 }}
-}
+nextUnit:
+index++;
+offset+=14;
+} while(index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51);
 }
 FloodFillUnitRange(SEL[1],SEL[2],KIND(SEL),110,0);
 if(!found){
@@ -195,8 +199,8 @@ if(bestX==-1)return;PlanMoveDestination(bestX,bestY);return;
 }
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(PATH(x,y)<0||!IsUnitProductionTerrain(CELL(x,y,0x1420)))continue;
-distance=COST(x,y,0x2338);if(distance==127)continue;
-distance+=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
+{s32 cost=COST(x,y,0x2338);if(cost==127)continue;
+distance=PATH(x,y);distance+=cost;}if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}
 if(bestX==-1)return;PlanMoveDestination(bestX,bestY);
 }

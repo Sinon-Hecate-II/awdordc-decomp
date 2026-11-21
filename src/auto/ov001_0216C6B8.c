@@ -43,10 +43,10 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     void Ov001_SetRoomError(int);
     void func_ov001_0216c88c(int, unsigned char *, int, short *, short *, int);
     void func_ov001_0216c8e0(unsigned short *, int, int, int, signed char, signed char, void *);
-    void func_ov001_0216c938(int, int, int, int);
+    void Ov001_SendRoomTransfer(int, int, int, int);
     int Ov001_ScrambleToken(void *, int, void *, int);
     int Ov001SwapEndian32(int);
-    short func_ov001_0216ceb0(u16);
+    short Ov001SwapEndian16Alt(u16);
     void Ov001MemClear();
     void Ov001MemCopy();
     struct {
@@ -63,7 +63,7 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     Ov001MemClear(buffer, 0, OV001_TRANSFER_BYTES);
     packet.work.type = 2;
     packet.work.zero = 0;
-    packet.work.recordLen = func_ov001_0216ceb0(4);
+    packet.work.recordLen = Ov001SwapEndian16Alt(4);
     packet.work.value = M2C_FIELD(gRoomState, int *, OV001_REQUEST_MASK);
     packet.work.value = Ov001SwapEndian32(packet.work.value);
     packet.work.length = 8;
@@ -76,6 +76,6 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     }
     func_ov001_0216c8e0((unsigned short *)buffer, OV001_CMD_ROOM_REQUEST, packet.work.length, packet.work.flags, packet.work.status, OV001_PKT_KIND_ROOM, packet.token);
     packet.work.length += OV001_PKT_HEADER;
-    func_ov001_0216c938((int)buffer, packet.work.length, 0, context);
+    Ov001_SendRoomTransfer((int)buffer, packet.work.length, 0, context);
     return 0;
 }

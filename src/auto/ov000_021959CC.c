@@ -329,20 +329,21 @@ void PlanCaptureMoveDestination(void) {
     PlanMoveDestination(sp0[0], sp0[1]);
 }
 
-s32 func_ov000_02196330(void) {
+/* Returns 1 when an active player on the opposing team has a unit selected. */
+s32 HasEnemySelectedUnit(void) {
     s32 GetPlayerSelectedUnit(s32);
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     extern void **gCurrentMap;
-    s32 var_r5;
+    s32 player;
 
-    var_r5 = 1;
+    player = 1;
 loop_1:
-    if ((IsPlayerActive(var_r5) != 0) && (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), var_r5) == 0) && (GetPlayerSelectedUnit(var_r5) != 0)) {
+    if ((IsPlayerActive(player) != 0) && (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0) && (GetPlayerSelectedUnit(player) != 0)) {
         return 1;
     }
-    var_r5 += 1;
-    if (var_r5 >= 5) {
+    player += 1;
+    if (player >= MAX_PLAYERS) {
         return 0;
     }
     goto loop_1;
@@ -397,7 +398,7 @@ s32 func_ov000_02196430(s16 *outPos) {
     s32 SelectHqDestination(s16 *);
     s32 func_ov000_02196084(s16 *);
     s32 func_ov000_021961d4(s16 *);
-    s32 func_ov000_02196330(void);
+    s32 HasEnemySelectedUnit(void);
     s32 FindEnemyHqAttackPosition(s16 *);
     extern void **gCurrentMap;
     struct Nib { unsigned char lo : 4; unsigned char hi : 4; };
@@ -467,7 +468,7 @@ s32 func_ov000_02196430(s16 *outPos) {
         outPos[1] = (s16)(((u8 *)*(void **)(((u8 *)*gCurrentMap) + MAP_CURSOR_UNIT))[MAP_UNIT_Y]);
         break;
     case 10:
-        if (func_ov000_02196330() == 1) {
+        if (HasEnemySelectedUnit() == 1) {
             if (FindEnemyHqAttackPosition(outPos) == 0) {
                 return 0;
             }
@@ -520,11 +521,11 @@ PlanMoveDestination(target[0],target[1]);
 }
 #pragma opt_strength_reduction reset
 void SelectPortDestination(void) {
-s32 CanKindAttack(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
+s32 CanKindLoad(u32,u32); void GetAiUnitRange(void);void BuildAiUnitThreatRange(void);s32 func_ov000_0217e6bc(s16,s16);void PlanMoveDestination(s16,s16);
 extern void **gCurrentMap;extern u8 **gAiCommandState;
 s32 best=0x7fff; s16 sx,sy; s32 cols,t,x,y; s16 row;u8 *base; s8 *grid,*p;
 if(!(((u32)(M2C_FIELD(gAiCommandState,u16 *,10)<<29)>>29)&4))return;
-if(!CanKindAttack(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
+if(!CanKindLoad(24,((UnitKind959 *)M2C_FIELD(*gCurrentMap,void **,0x52d0))->kind))return;
 GetAiUnitRange();BuildAiUnitThreatRange();
 base=*gCurrentMap;
 y=0; if((s32)M2C_FIELD(base,u16 *,0x5146)>0) do {

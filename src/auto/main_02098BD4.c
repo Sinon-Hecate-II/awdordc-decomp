@@ -220,7 +220,7 @@ void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
     Hide3DSprite();
 }
 
-void func_020990fc(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
+void SetFaceSpritePose(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 u8 func_02097ce4(s32);
 u8 func_02099320(void *);
 void func_020985b0(s32, s32, s32);

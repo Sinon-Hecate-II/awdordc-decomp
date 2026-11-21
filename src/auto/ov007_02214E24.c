@@ -92,16 +92,16 @@ if(roll<=stage)return 1;break;
 return 0;
 }
 
-void Map_SetCellTile(s32 arg0, s32 arg1, s32 arg2) {
+/* Set the tile id of the map cell at (x,y) and refresh its terrain value from that tile. */
+void Map_SetCellTile(s32 x, s32 y, s32 tile) {
     s8 GetTerrainValueForTile(s32);
-    extern s32 *gCurrentMap;
-    s32 temp_ip;
-    s32 temp_r6;
+    s32 map;
+    s32 map2;
 
-    temp_ip = *gCurrentMap;
-    M2C_FIELD((temp_ip + ((arg0 + M2C_FIELD((temp_ip + (arg1 * 2)), u16 *, 0x3758)) * 2)), s16 *, 0xA10) = arg2;
-    temp_r6 = *gCurrentMap;
-    M2C_FIELD((temp_r6 + (arg0 + M2C_FIELD((temp_r6 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1420) = GetTerrainValueForTile(arg2);
+    map = *gCurrentMap;
+    M2C_FIELD((map + ((x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS)) * 2)), s16 *, MAP_CELL_TILE_ID) = tile;
+    map2 = *gCurrentMap;
+    M2C_FIELD((map2 + (x + M2C_FIELD((map2 + (y * 2)), u16 *, MAP_ROW_OFFSETS))), s8 *, MAP_CELL_TERRAIN) = GetTerrainValueForTile(tile);
 }
 
 s32 Map_ScoreNeighborPattern(s32 x,s32 y){

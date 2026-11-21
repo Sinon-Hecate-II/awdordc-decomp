@@ -1,8 +1,8 @@
 /* 37 functions from 0x02028EF4 to 0x02029E98 (main), found by ds-decomp. */
 #include "common.h"
 #include "wfc.h"
+#include "exp_heap.h"
 
-typedef struct ListLinks { void *next; void *prev; } ListLinks;
 
 extern u8 gWfcSignalSampleCount;
 extern u8 gWfcSignalSamples[16];
@@ -777,7 +777,7 @@ void ListAppend(void *arg0, void *arg1) {
     M2C_FIELD(arg0, u16 *, 8) = (u16)(M2C_FIELD(arg0, u16 *, 8) + 1);
 }
 
-void func_02029cc8(void *arg0, void *arg1) {
+void ListPrepend(void *arg0, void *arg1) {
     void ListAddFirst(void *, void *);
     u16 off;
 
@@ -793,19 +793,23 @@ void func_02029cc8(void *arg0, void *arg1) {
     M2C_FIELD(arg0, u16 *, 8) = (u16)(M2C_FIELD(arg0, u16 *, 8) + 1);
 }
 
-void func_02029d18(void *arg0, void *arg1, void *arg2) {
-void ListAppend(void *,void *); void func_02029cc8(void *,void *);
-ListLinks *link; void *oldNext; u16 off;
-if(!arg1) {ListAppend(arg0,arg2);return;}
-if(arg1==M2C_FIELD(arg0,void **,0)) {func_02029cc8(arg0,arg2);return;}
-off=M2C_FIELD(arg0,u16 *,10);
-link=(ListLinks *)((char *)arg2+off);
-oldNext=M2C_FIELD(arg1,void **,off);
-link->next=oldNext;
-link->prev=arg1;
-((ListLinks *)((char *)oldNext+off))->prev=arg2;
-M2C_FIELD(arg1,s32 *,M2C_FIELD(arg0,u16 *,10))=(s32)arg2;
-M2C_FIELD(arg0,u16 *,8)++;
+/* Inserts `node` into the doubly-linked list `list` before the node `before`: a
+ * NULL `before` appends at the tail and the current head prepends.  The list keeps
+ * its head at +0, its tail at +4, its node count at +8 and the byte offset of each
+ * node's links at +0xA (first word the previous node, second the next). */
+void ListInsertBefore(void *list, void *before, void *node) {
+void ListAppend(void *,void *); void ListPrepend(void *,void *);
+void *link; void *oldPrev; u16 off;
+if(!before) {ListAppend(list,node);return;}
+if(before==M2C_FIELD(list,void **,0)) {ListPrepend(list,node);return;}
+off=M2C_FIELD(list,u16 *,10);
+link=(char *)node+off;
+oldPrev=M2C_FIELD(before,void**,off);
+M2C_FIELD(link,void **,0)=oldPrev;
+M2C_FIELD(link,void **,4)=before;
+M2C_FIELD((char *)oldPrev+off,void **,4)=node;
+M2C_FIELD(before,s32*,M2C_FIELD(list,u16*,10))=(s32)node;
+M2C_FIELD(list,u16 *,8)++;
 }
 
 void ListRemove(void *arg0, void *arg1) {
@@ -849,28 +853,31 @@ s32 ListPrev(void *arg0, s32 arg1) {
     return M2C_FIELD((arg1 + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 0);
 }
 
-M2C_UNK FindHeapForAddress(M2C_UNK *arg0, M2C_UNK arg1) {
+/* Find the heap whose memory area covers `address`, walking the heap list `list`
+ * and descending into the child list (HEAP_CHILD_LIST) of any heap that covers
+ * the address.  Returns the containing heap header, or NULL when none covers it. */
+M2C_UNK FindHeapForAddress(M2C_UNK *list, M2C_UNK address) {
     s32 ListNext(void *, s32);
-    M2C_UNK orig = (M2C_UNK)arg0;
-    M2C_UNK key = arg1;
-    M2C_UNK cur;
-    M2C_UNK r;
+    M2C_UNK listStart = (M2C_UNK)list;
+    M2C_UNK key = address;
+    M2C_UNK node;
+    M2C_UNK found;
 
-    cur = ListNext((void *)arg0, 0);
-    while (cur != 0) {
-        if (M2C_FIELD((void *)cur, u32 *, 0x18) > (u32)key) {
+    node = ListNext((void *)list, 0);
+    while (node != 0) {
+        if (M2C_FIELD((void *)node, u32 *, HEAP_AREA_START) > (u32)key) {
             goto advance;
         }
-        if ((u32)key >= M2C_FIELD((void *)cur, u32 *, 0x1c)) {
+        if ((u32)key >= M2C_FIELD((void *)node, u32 *, HEAP_AREA_END)) {
             goto advance;
         }
-        r = FindHeapForAddress((M2C_UNK *)((s8 *)(void *)cur + 0xc), key);
-        if (r != 0) {
-            return r;
+        found = FindHeapForAddress((M2C_UNK *)((s8 *)(void *)node + HEAP_CHILD_LIST), key);
+        if (found != 0) {
+            return found;
         }
-        return cur;
+        return node;
     advance:
-        cur = ListNext((void *)orig, cur);
+        node = ListNext((void *)listStart, node);
     }
     return 0;
 }

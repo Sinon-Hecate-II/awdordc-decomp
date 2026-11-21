@@ -153,13 +153,13 @@ player++;recordOffset+=MAP_PLAYER_STRIDE;
  * map's overlay grid (0 marks a reachable attack tile, -1 the dead zone closer
  * than an indirect unit's minimum range). */
 void MarkAttackRangeCells(s32 originX,s32 originY,s16 radius,s32 gridValue){
-extern void **gCurrentMap;s32 func_020a4828(s32,s32);void func_020d1690(s32,s32,void *);s32 func_020d27a4(s32,s32);void func_020d166c(s32,s32,void *);
+extern void **gCurrentMap;s32 GetTileTargetKind(s32,s32);void func_020d1690(s32,s32,void *);s32 func_020d27a4(s32,s32);void func_020d166c(s32,s32,void *);
 s32 negDy,y,dy,x;s32 targetId;void *map;
 for(dy=(s16)-radius,y=(s16)(originY-radius);y<=originY+radius;y=(s16)(y+1),dy=(s16)(dy+1)){
 if(y<0||y>=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT))continue;
 for(x=(s16)(originX-radius+(dy<0?-dy:dy)),negDy=-dy;x<=originX+radius-(dy<0?negDy:dy);x=(s16)(x+1)){
 if(x<0||x>=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH))continue;
-targetId=func_020a4828(x,y);
+targetId=GetTileTargetKind(x,y);
 if(targetId){map=*gCurrentMap;func_020d1690(M2C_FIELD(map,u8 *,MAP_CURSOR_UNIT_ID),targetId,map+MAP_CURSOR_X);
 if(M2C_FIELD(*gCurrentMap,s16 *,MAP_BATTLE_WINNER))M2C_FIELD(*gCurrentMap+y*4,s8 **,MAP_GRID)[x]=(s8)gridValue;
 }else{
@@ -216,19 +216,27 @@ void func_020cdfec(s32 unit, s32 x, s32 y) {
     }
 }
 
-s32 func_020ce0ec(s32 a,s32 b) {
-s32 IsSameTeam(s32,s32);
-extern s8 data_ov000_021b5540[],gTerrainPropertyFlags[];
-s32 i=b&31,v;
-if(data_ov000_021b5540[i])return 1;
-if(gTerrainPropertyFlags[i]){v=(b&224)>>5;if(!v)return 1;if(!IsSameTeam(v,a))return 1;}
-return 0;
+/* Whether player `player`'s terrain marks leave out the cell whose terrain byte
+ * is `terrain`: true for the special terrain kinds in data_ov000_021b5540, and
+ * for an ownable property that is unowned or held by another team.  Plain ground
+ * and the player's own properties are not excluded. */
+s32 IsTerrainExcludedForPlayer(s32 player, s32 terrain) {
+    s32 IsSameTeam(s32, s32);
+    extern s8 data_ov000_021b5540[], gTerrainPropertyFlags[];
+    s32 kind = terrain & MAP_TERRAIN_KIND_MASK, owner;
+    if (data_ov000_021b5540[kind]) return 1;
+    if (gTerrainPropertyFlags[kind]) {
+        owner = (terrain & MAP_TERRAIN_OWNER_MASK) >> 5;
+        if (!owner) return 1;
+        if (!IsSameTeam(owner, player)) return 1;
+    }
+    return 0;
 }
 
 #pragma push
 #pragma opt_common_subs off
 void MarkThreatCells(s32 a,s32 b,s32 c,u8 d,s32 e,s32 f) {
-s32 func_020ce0ec(s32,s32);
+s32 IsTerrainExcludedForPlayer(s32,s32);
 s32 func_020a8528(s32);
 extern void **gCurrentMap;
 extern s8 data_ov000_021b5680[];
@@ -271,7 +279,7 @@ absrow=rowdist<0?negdist:rowdist;
 distance=x-a;if(distance<0)distance=-distance;
 if(distance+absrow<=1){
 if(f!=1)goto mark;
-if(!func_020ce0ec(e,M2C_FIELD(row+(map+x),u8 *,0x1420)))goto mark;
+if(!IsTerrainExcludedForPlayer(e,M2C_FIELD(row+(map+x),u8 *,0x1420)))goto mark;
 }
 map=*gCurrentMap;
 unit=M2C_FIELD(map+x+M2C_FIELD(map+y*2,u16 *,0x3758),u8 *,0x508);

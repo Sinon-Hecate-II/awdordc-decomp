@@ -57,7 +57,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
     s32 Divide(u8, M2C_UNK);
     s32 Modulo(u8, M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s32, s32, s32, s32);
-    M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     M2C_UNK SetTextSpriteValue(void *, s32);
     M2C_UNK DrawTextSprite(void *);
     s32 GetUnitSpriteWidth(void *);
@@ -105,7 +105,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
         temp_r10 = temp_r5 - 0x10;
         temp_r9 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x40) + (var_r4 * 4)), void **, 8);
         temp_r11 = temp_r6 + 0xC;
-        func_02088e84(temp_r9, temp_r11, temp_r10, temp_r11, (s32) temp_r10);
+        Set3DSpriteSlideTargetAndStart(temp_r9, temp_r11, temp_r10, temp_r11, (s32) temp_r10);
         if (M2C_FIELD(M2C_FIELD(temp_r9, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0 = 1;
         } else {
@@ -133,7 +133,7 @@ void func_ov003_0220501c(void *arg0, s32 arg1, s32 arg2) {
         temp_r10 = temp_r5 + 0x10;
         temp_r9 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x40) + (var_r4 * 4)), void **, 0x28);
         temp_r1 = temp_r6 + 0xC;
-        func_02088e84(temp_r9, temp_r1, temp_r10, temp_r1, (s32) temp_r10);
+        Set3DSpriteSlideTargetAndStart(temp_r9, temp_r1, temp_r10, temp_r1, (s32) temp_r10);
         if (M2C_FIELD(M2C_FIELD(temp_r9, void **, 0x64), u8 *, 0x12) != 0) {
             var_r0_3 = 1;
         } else {

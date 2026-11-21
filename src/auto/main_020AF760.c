@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+#include "ov002_effects.h"
 typedef struct { s32 x,y,z; } VecAff;
 typedef struct { u8 pad[4]; s32 unk4; } Unk020af860_Sub;
 typedef struct { u8 pad[0x34]; Unk020af860_Sub *unk34; } Unk020af860_Unit;
@@ -71,23 +72,26 @@ void PlaySlotSound(s32 arg0, s32 arg1) {
     SetSoundEffectVolume(0x7F);
 }
 
-void ReplaceSlotSound(s32 arg0, s32 arg1) {
+/* Replaces effect `slot`'s sound with the effect's intensity sound, panned left
+ * for the first slot and right for the second, then refreshes the slot's variant
+ * sound for the effect's current `frame`. */
+void ReplaceSlotSound(s32 slot, s32 frame) {
     M2C_UNK PlaySlotPendingSound(s32, s32, s32);
     M2C_UNK PlaySlotSoundEffect(s32, s32);
-    void func_020af8c8(s32, s32);
+    void UpdateSlotEffectSound(s32, s32);
     extern M2C_UNK gEffectTable;
-    s32 v = M2C_FIELD(M2C_FIELD(*(void **)((u8 *)&gEffectTable + arg0 * 0x18), void **, 0x34), s32 *, 4);
-    if (v == 0) return;
-    PlaySlotPendingSound(arg0, -1, v);
-    if (arg0 == 0) PlaySlotSoundEffect(arg0, -0x80);
-    else PlaySlotSoundEffect(arg0, 0x7F);
-    func_020af8c8(arg0, arg1);
+    s32 soundId = ((EffectSounds *)M2C_FIELD(*(void **)((u8 *)&gEffectTable + slot * 0x18), void **, 0x34))->intensity;
+    if (soundId == 0) return;
+    PlaySlotPendingSound(slot, -1, soundId);
+    if (slot == 0) PlaySlotSoundEffect(slot, -0x80);
+    else PlaySlotSoundEffect(slot, 0x7F);
+    UpdateSlotEffectSound(slot, frame);
 }
 
 /* Pick the variant of effect `effect` that shows at frame `frame`: set the
  * effect's frame window (ticked through func_020900a4) and play the sound of
  * the level it falls on. */
-void func_020af8c8(s32 effect, s32 frame) {
+void UpdateSlotEffectSound(s32 effect, s32 frame) {
     M2C_UNK SetSlotSoundPending(s32, s32, M2C_UNK);
     M2C_UNK PlaySlotScriptedSound(s32, u8, M2C_UNK);
     extern u8 gSoundLevelVolumes[];
@@ -143,7 +147,9 @@ if(arg2==0 && M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*0x18),u8 *,0x3d)==3)r
 func_02090034(arg0,arg1);
 }
 
-void PlaySlotVolumeSound(s32 a){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 gSlotVolumeSoundDelay[];u32 n=*((u8 *)&gEffectDefaultVariant+a*24);void *p=*(void **)((u8 *)&gEffectTable+a*24);if(M2C_FIELD((u8 *)p+n,u8 *,0x3e)==1){if((gSlotVolumeSoundDelay)[a])return;(gSlotVolumeSoundDelay)[a]=4;}PlaySlotSound(a,M2C_FIELD((u8 *)M2C_FIELD(p,void **,0x34)+n*4,s32 *,8));}
+/* Plays effect `slot`'s volume sound for the effect's default variant, throttled
+ * to at most once every four frames while that variant is showing. */
+void PlaySlotVolumeSound(s32 slot){extern M2C_UNK gEffectTable;extern u8 gEffectDefaultVariant;extern u8 gSlotVolumeSoundDelay[];u32 variant=*((u8 *)&gEffectDefaultVariant+slot*24);void *effect=*(void **)((u8 *)&gEffectTable+slot*24);if(M2C_FIELD((u8 *)effect+variant,u8 *,0x3e)==1){if((gSlotVolumeSoundDelay)[slot])return;(gSlotVolumeSoundDelay)[slot]=4;}PlaySlotSound(slot,M2C_FIELD((u8 *)M2C_FIELD(effect,void **,0x34)+variant*4,s32 *,8));}
 
 void func_020afa64(s32 a) {
     extern M2C_UNK gEffectTable;
@@ -297,18 +303,22 @@ void func_020b00e8(void) {
 
 }
 
+/* Sets the current 3D sprite engine's four layer rotation modes to the alternate
+   permutation (display layers 0-3 sample texture layers 3/0/1/2). */
 void Set3DSpriteLayerModesAlt(void) { extern void *gCur3DSpriteEngine;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)&~3)|3;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)&~3)|0;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|1;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|2;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE0)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE0)&~DS3D_LAYER_MODE_MASK)|3;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE1)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE1)&~DS3D_LAYER_MODE_MASK)|0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE2)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE2)&~DS3D_LAYER_MODE_MASK)|1;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE3)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE3)&~DS3D_LAYER_MODE_MASK)|2;
 }
 
+/* Set the 2-bit rotation mode of the current 3D sprite engine's four layers:
+ * 1, 0, 2 and 3 for layers 0 to 3, the map-view arrangement. */
 void Set3DSpriteLayerModes(void) { extern void *gCur3DSpriteEngine;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,6)&~3)|1;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,8)&~3)|0;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,10)&~3)|2;
-M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,12)&~3)|3;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE0)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE0)&~DS3D_LAYER_MODE_MASK)|1;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE1)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE1)&~DS3D_LAYER_MODE_MASK)|0;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE2)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE2)&~DS3D_LAYER_MODE_MASK)|2;
+M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE3)=(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,DS3D_BANK_LAYER_TILE3)&~DS3D_LAYER_MODE_MASK)|3;
 }
 
 /* Configure the current 3D sprite engine for a map view: set the four layer

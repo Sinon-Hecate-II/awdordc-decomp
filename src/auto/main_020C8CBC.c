@@ -297,7 +297,15 @@ if(M2C_FIELD(map+x,u8 *,MAP_CELL_UNIT_ID)) dir=5;
 return dir;
 }
 
-s32 GetHeldMapDirections(void) { extern M2C_UNK gMapCursorDirs;s32 v=0;if(GetHeldDirection(0))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(0)-1)*4);if(GetHeldDirection(1))v|=M2C_FIELD(&gMapCursorDirs,u8 *,(GetHeldDirection(1)-1)*4);return v;}
+/* Combine the MAP_DIR_* bits of the directions currently held on the two cursor
+ * input channels, read from the gMapCursorDirs direction table. */
+s32 GetHeldMapDirections(void) {
+    extern u8 gMapCursorDirs[][4];
+    s32 mask = 0;
+    if (GetHeldDirection(0)) mask |= gMapCursorDirs[GetHeldDirection(0) - 1][MAP_CURSOR_DIR_MASK];
+    if (GetHeldDirection(1)) mask |= gMapCursorDirs[GetHeldDirection(1) - 1][MAP_CURSOR_DIR_MASK];
+    return mask;
+}
 
 s32 func_020c9550(s32 a) {
 s32 v=0;

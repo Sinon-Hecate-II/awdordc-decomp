@@ -268,9 +268,9 @@ void func_020c752c(void) {
 
 void func_020c7568(void) {
     M2C_UNK func_020994e0(M2C_UNK);
-    M2C_UNK func_020c0b40();
+    M2C_UNK PopCarriedUnitMenuState();
     func_020994e0(0);
-    func_020c0b40();
+    PopCarriedUnitMenuState();
 }
 
 void func_020c757c(void) {

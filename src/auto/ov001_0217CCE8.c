@@ -292,7 +292,7 @@ void InitMapListGraphics(void) {
     extern u8 sYbBgStep21NclPath[];
     extern M2C_UNK sYbObjKbPath, sJbBgStep2NcgPath, sJbBgStep21NcgPath, sJb3ListNscPath;
     extern M2C_UNK gMapListState;
-    extern M2C_UNK GX_LoadOBJPltt, func_0200472c, GX_LoadBG2Char, GX_LoadBGPltt, func_020044ec;
+    extern M2C_UNK GX_LoadOBJPltt, func_0200472c, GX_LoadBG2Char, GX_LoadBGPltt, GX_LoadBG3Scr;
     typedef struct { u8 bytes[23]; } ListBackPath;
     typedef struct { u8 bytes[21]; } BgStep2Path;
     typedef struct { u8 bytes[22]; } BgStep21Path;
@@ -308,7 +308,7 @@ void InitMapListGraphics(void) {
     Ov001_LoadAsset(&sJbBgStep2NcgPath, &func_0200472c); /* background tiles, step 2 */
     Ov001_LoadAsset(&sJbBgStep21NcgPath, &GX_LoadBG2Char);/* background tiles, step 21 */
     Ov001_LoadAsset((void *)&bgStep2Path, &GX_LoadBGPltt);   /* background palette, step 2 */
-    Ov001_LoadAsset(&sJb3ListNscPath, &func_020044ec);   /* list tilemap */
+    Ov001_LoadAsset(&sJb3ListNscPath, &GX_LoadBG3Scr);   /* list tilemap */
 
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), M2C_UNK *, 8) =
         Ov001_LoadFile(Ov001_LocalizePath((void *)&listBackPath), 0, 4);

@@ -288,6 +288,10 @@ typedef struct WfcSendState {
 #define WFC_CMD_BLOCK_FREE  0x8000 /* bit 15 of a block's first u16: the firmware is done with it */
 
 /* Results of the command API; a caller retries when it gets NO_BUFFER. */
+/* ARM7 request to open the WFC connection to the match: the four connection
+ * parameters the firmware is given (see WFC_StartConnection). */
+#define WFC_CMD_CONNECT 0x1D
+
 /* ARM7 request to measure how busy a wireless channel is. */
 enum {
     WFC_CMD_MEASURE_CHANNEL = 0x1E,
@@ -425,7 +429,7 @@ enum {
 };
 
 /* The friend roster the ov001 Wi-Fi screens fetch from the WFC server
- * (gWfcFriendRoster, 0x1E60 bytes, allocated by func_ov001_02183f6c): the
+ * (gWfcFriendRoster, 0x1E60 bytes, allocated by Ov001_AllocFriendRoster): the
  * request packet plus the 20 friend slots the server's answer is parsed into. */
 #define WFC_FRIEND_ROSTER_SIZE 0x1E60
 #define WFC_FRIEND_SLOTS       0x1300 /* 20 slots, WFC_FRIEND_SLOT_STRIDE bytes each */
@@ -484,6 +488,7 @@ enum {
 #define OV001_MSG_FRIEND_UNAVAILABLE 14
 #define OV001_MSG_NO_FRIENDS         15
 #define OV001_MSG_CONNECTING         0x31 /* "connecting" panel of the ov001 WFC connect screens */
+#define OV001_MSG_FRIEND_LIST        0x33 /* panel and message box text of the ov001 friend-list screen */
 
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */
@@ -581,6 +586,11 @@ enum {
 #define NAS_CONN_MUTEX       0x13D8 /* mutex guarding the connection */
 #define NAS_CONN_ABORT       0x13F0 /* s32 set to 1 to drop the attempt at the task's next step */
 
+/* The WFC network-check state (gWfcNet): the worker context at +0 and the HTTP
+ * client the check runs on at +0x14. */
+#define WFC_NET_CONTEXT              0x00   /* void *worker context (the fields below) */
+#define WFC_NET_HTTP_CLIENT          0x14   /* void *HTTP client, 0 when none is open */
+
 /* The WFC network-check context's worker thread and stack. */
 #define WFC_NET_CHECK_STACK          0x1000 /* worker stack and task argument block */
 #define WFC_NET_CHECK_STACK_SIZE     0x1000 /* worker stack size in bytes */
@@ -590,6 +600,7 @@ enum {
 /* Status the HTTP worker publishes, and reads back, under the network state's mutex. */
 #define WFC_NET_CHECK_STATE          0x1000 /* s32 step code; 11 once the server answered */
 #define WFC_NET_CHECK_RESULT         0x1004 /* s32 result code of the check, negative on error */
+#define WFC_NET_CHECK_ABORTED        (-7)   /* WFC_NET_CHECK_RESULT when the check was aborted */
 
 /* Status the connection reports at NAS_CONN_STATUS: 0x4E20 (NAS_STATUS_BASE)
  * plus the NAS result code.  Codes below NAS_STATUS_ERROR_MIN report a step of

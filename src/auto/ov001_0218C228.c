@@ -5,6 +5,7 @@ typedef struct RuntimeRangeNode { struct RuntimeRangeNode *prev, *next; u16 star
 typedef struct { u8 pad[0x180]; RuntimeRangeNode head, tail; s32 unk198, heap; } RuntimeRangePool;
 typedef struct { s32 a; u8 pad[4]; s32 b; u8 rest[52]; } RuntimePair64;
 
+#pragma scheduling off
 RuntimeRangeNode *func_ov001_0218c228(s32 n,s32 size,s32 forward,s32 *out) {
 s32 Ov001_QueuePop(s32);
 s32 OS_DisableIrqMask(s32);
@@ -20,7 +21,8 @@ node->size=units;
 old=OS_DisableIrqMask(1);
 if(forward) {
 p=&((RuntimeRangePool *)gOv001TilePools)[(u32)n].head;
-if(p!=&((RuntimeRangePool *)gOv001TilePools)[n].tail) do {
+if (p != &((RuntimeRangePool *)gOv001TilePools)[n].tail) {
+do {
 RuntimeRangeNode *next=p->next;
 s32 pos=p->start+p->size;
 if(pos+units<=next->start) {
@@ -28,12 +30,14 @@ node->start=pos;
 Ov001_ListInsertBefore(next,node);
 break;
 }
-p=next;
-} while(p!=(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x18c));
+p = next;
+} while (p != (RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x18c));
+}
 if(p==(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x18c)) SystemHalt();
 } else {
 p=&((RuntimeRangePool *)gOv001TilePools)[(u32)n].tail;
-if(p!=&((RuntimeRangePool *)gOv001TilePools)[n].head) do {
+if (p != &((RuntimeRangePool *)gOv001TilePools)[n].head) {
+do {
 RuntimeRangeNode *prev=p->prev;
 s32 pos=p->start-units;
 if(pos>=prev->start+prev->size) {
@@ -41,15 +45,16 @@ node->start=pos;
 Ov001_ListInsertBefore(p,node);
 break;
 }
-p=prev;
-} while(p!=(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x180));
+p = prev;
+} while (p != (RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x180));
+}
 if(p==(RuntimeRangeNode *)(gOv001TilePools+n*0x1a0+0x180)) SystemHalt();
 }
 *out=node->start;
 OS_EnableIrqMask(old);
 return node;
 }
-
+#pragma scheduling reset
 void func_ov001_0218c3a0(u32 arg0) {
     M2C_UNK Ov001_QueuePush(s32, u32);
     M2C_UNK Ov001_ListRemove();

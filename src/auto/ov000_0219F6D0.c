@@ -136,20 +136,25 @@ M2C_FIELD(gAiCommandState, s8 *, 1) = 0;
 return 0;
 }
 
-s32 func_ov000_0219fa30(void) {
-s32 func_020d4774(void);
-void func_ov000_021696f8(void *);
-void BattleUpdateUnitCursor(void);
-extern s32 gAiCommandTimer;
-extern void *gAiCommandState;
-if(func_020d4774()==0) {
-if(M2C_FIELD(&gAiCommandTimer,void **,4)) func_ov000_021696f8(M2C_FIELD(&gAiCommandTimer,void **,4));
-if(M2C_FIELD(&gAiCommandTimer,void **,8)) func_ov000_021696f8(M2C_FIELD(&gAiCommandTimer,void **,8));
-BattleUpdateUnitCursor();
-M2C_FIELD(gAiCommandState,u8 *,0)=2;
-M2C_FIELD(gAiCommandState,u8 *,1)=0;
-}
-return 0;
+/* AI command step 8: once the action's unit-move animation has ended, delete the
+ * two unit-move objects it created, restore the battle cursor and go back to
+ * picking the next action. */
+s32 FinishAiUnitMove(void) {
+    s32 IsUnitMoveActive(void);
+    void DeleteUnitMoveObject(void *);
+    void BattleUpdateUnitCursor(void);
+    extern s32 gAiCommandTimer;
+    extern void *gAiCommandState;
+    if (IsUnitMoveActive() == 0) {
+        if (M2C_FIELD(&gAiCommandTimer, void **, AI_COMMAND_MOVE_OBJECT_0))
+            DeleteUnitMoveObject(M2C_FIELD(&gAiCommandTimer, void **, AI_COMMAND_MOVE_OBJECT_0));
+        if (M2C_FIELD(&gAiCommandTimer, void **, AI_COMMAND_MOVE_OBJECT_1))
+            DeleteUnitMoveObject(M2C_FIELD(&gAiCommandTimer, void **, AI_COMMAND_MOVE_OBJECT_1));
+        BattleUpdateUnitCursor();
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_PHASE) = AI_COMMAND_PHASE_PICK_ACTION;
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_STEP) = 0;
+    }
+    return 0;
 }
 
 s32 func_ov000_0219fa98(void) {
@@ -246,7 +251,7 @@ void ProcessAiTurnPlan(void) {
     void InitAiTurn(void);
     void BuildThreatMapAgainstKind6(void);
     s32 BuildAiKind6Unit(void);
-    s32 func_ov000_021a1ab8(void);
+    s32 BuildAiUnitForBestTarget(void);
     s32 BuildAiCounterUnit(void);
     s32 func_ov000_021a1c24(void);
     s32 func_ov000_021a1d08(void);
@@ -287,7 +292,7 @@ void ProcessAiTurnPlan(void) {
                 state[AI_STATE_PHASE]++;
                 break;
             }
-            if (func_ov000_021a1ab8()) return;
+            if (BuildAiUnitForBestTarget()) return;
             gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;

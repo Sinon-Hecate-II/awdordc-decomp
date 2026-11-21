@@ -474,7 +474,7 @@ s32 AllocAlignedBuffer(s32,s32);
 void FreeBuffer(s32,s32);
 void Sound_InitPlayer(void *);
 void func_0202b4e4(void *,s32,u8 *);
-void func_0202b77c(void *,s32);
+void Sound_SetPlayerVolume(void *,s32);
 void func_0202b7e8(void *,s32,s32);
 s32 Sound_StartVoice(void *,s32,s32,s32,s32,s32,void *,s32);
 u8 channelList[1];
@@ -504,7 +504,7 @@ M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_ACTIVE)=0;M2C_FIELD(&gStreamVoic
 channelList[0]=channel;
 Sound_InitPlayer(&gStreamSoundPlayer);
 func_0202b4e4(&gStreamSoundPlayer,1,channelList);
-func_0202b77c(&gStreamSoundPlayer,127);
+Sound_SetPlayerVolume(&gStreamSoundPlayer,127);
 channelCursor=channelList;
 channelIndex=0;do {func_0202b7e8(&gStreamSoundPlayer,*channelCursor++,0);channelIndex++;}while(channelIndex<1);
 result=Sound_StartVoice(&gStreamSoundPlayer,1,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),bufferSize,0x41,2,refillCallback,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2));

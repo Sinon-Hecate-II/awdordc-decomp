@@ -1,6 +1,7 @@
 /* 30 functions from 0x0205CB68 to 0x0205DA30 (main), found by ds-decomp. */
 #include "common.h"
 #include "gt2.h"
+#include "natneg.h"
 struct BytePair_0205 { u8 v[2]; };
 struct Packet_0205 { u8 a,b; u16 c; s32 d; };
 struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
@@ -13,8 +14,11 @@ s32 func_0205cb68(s32 a, s32 b, s32 c) {
     u8 v[3];
     struct BytePair_0205 *p = (struct BytePair_0205 *)v;
 
-    v[2] = 0x68;
-    *p = *(struct BytePair_0205 *)gGt2Magic;
+    const struct BytePair_0205 *header = (const struct BytePair_0205 *)gGt2Magic;
+    u8 lo = header->v[0], hi = header->v[1];
+    v[2] = 'h';
+    p->v[0] = lo;
+    p->v[1] = hi;
     return func_0205d228((void *)a, b, c, p, 3) != 0;
 }
 #pragma pop
@@ -340,7 +344,7 @@ success:
 
 s32 func_0205d3d0(void **a,void **b) {
 void *p=*a;void *q=*b;
-if(M2C_FIELD(p,s32 *,12)!=7) {if(!func_0205abb4(p,q))return 0;}
+if(M2C_FIELD(p,s32 *,12)!=7) {if(!gti2ThinkConnection(p,q))return 0;}
 if(M2C_FIELD(p,s32 *,12)==7 && M2C_FIELD(p,s32 *,20)==0 && M2C_FIELD(p,s32 *,36)==0)gti2RemoveConnection((s32)p);
 return 1;
 }
@@ -504,17 +508,21 @@ void gti2NormalizeMessage(M2C_UNK **arg0, s32 *arg1) {
     *arg1 = StringLength(temp_r2) + 1;
 }
 
-void *FindNatNegPeer(s32 a) {
-s32 Vector_GetCount(s32);
-s32 *Vector_GetItem(s32,s32);
-extern M2C_UNK gNatNegManager;
-s32 i; s32 *p;
-if (!M2C_FIELD(&gNatNegManager,s32 *,0x10)) return 0;
-for(i=0;i<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,0x10));i++) {
-p=Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,0x10),i);
-if (p[2]==a) return p;
-}
-return 0;
+/* Find the NAT-negotiation peer record with the given address in the manager's
+ * peer vector, or NULL when no peer has it. */
+void *FindNatNegPeer(s32 address) {
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem(s32, s32);
+    extern M2C_UNK gNatNegManager;
+    s32 i;
+    s32 *peer;
+
+    if (!M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS)) return 0;
+    for (i = 0; i < Vector_GetCount(M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS)); i++) {
+        peer = Vector_GetItem(M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS), i);
+        if (M2C_FIELD(peer, s32 *, NATNEG_PEER_ADDRESS) == address) return peer;
+    }
+    return 0;
 }
 
 void func_0205d7c4(void *p) {
@@ -533,13 +541,14 @@ Vector_AddItem(M2C_FIELD(&data_0213e144,s32 *,16),data);
 return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
 
-void NatNeg_FreePeer(s32 *p) {
+/* Removes a peer from the NAT-negotiation manager's peer list. */
+void NatNeg_FreePeer(s32 *peer) {
 extern M2C_UNK gNatNegManager;
 s32 Vector_GetCount(s32); s32 *Vector_GetItem(s32,s32);
-s32 i=0;
-for(;i<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,16));i++) {
-if(p==Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,16),i)) {
-Vector_RemoveAt(M2C_FIELD(&gNatNegManager,s32 *,16),i);return;
+s32 index=0;
+for(;index<Vector_GetCount(M2C_FIELD(&gNatNegManager,s32 *,NATNEG_PEERS));index++) {
+if(peer==Vector_GetItem(M2C_FIELD(&gNatNegManager,s32 *,NATNEG_PEERS),index)) {
+Vector_RemoveAt(M2C_FIELD(&gNatNegManager,s32 *,NATNEG_PEERS),index);return;
 }
 }
 }
@@ -573,19 +582,27 @@ p.c=c;p.b=2;
 ghiSendTo(a,d,e,0,&p,8);
 }
 #pragma scheduling reset
-s32 func_0205d998(s32 a) {
-void *func_02049584(s32);
-s32 i;void *q;void *p;s32 result=0;p=func_02049584(a);
-if(!p)return result;
-for(i=0;;i++) {
-q=M2C_FIELD(p,void ***,12)[i];
-if(!q)break;
-if(M2C_FIELD((s32)q,s32 *,0)!=0x100007f) {
-result=M2C_FIELD(q,s32 *,0);
-if(IsPrivateIpAddress(q))return result;
-}
-}
-return result;
+/* Return the first private LAN address (10/8, 172.16/12 or 192.168/16) among the
+ * console's local interface addresses, skipping the loopback address 127.0.0.1;
+ * when none is private, the last non-loopback address, or 0 when there is none. */
+s32 GetPreferredLocalIp(void) {
+    void *GetLocalHostAddresses(void);
+    s32 i;
+    void *address;
+    void *hostent;
+    s32 result = 0;
+
+    hostent = GetLocalHostAddresses();
+    if (!hostent) return result;
+    for (i = 0; ; i++) {
+        address = M2C_FIELD(hostent, void ***, 12)[i];
+        if (!address) break;
+        if (M2C_FIELD((s32)address, s32 *, 0) != IP_LOOPBACK_NET) {
+            result = M2C_FIELD(address, s32 *, 0);
+            if (IsPrivateIpAddress(address)) return result;
+        }
+    }
+    return result;
 }
 
 s32 func_0205d9fc(s32 a) {

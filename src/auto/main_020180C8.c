@@ -129,18 +129,32 @@ void Mb_InitLoadQueue(M2C_UNK arg0) {
     MI_CpuFill8(arg0, 0, 0x70);
 }
 
-void Mb_AddImageBlock(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4){
-s32 OS_DisableInterrupts();void OS_RestoreInterrupts(s32);void SystemHalt();
-u32 end; s32 saved; u32 p;
-saved=OS_DisableInterrupts();p=arg0+0x30;end=arg0+0x70;
-for(;;){
-if(p>=end)SystemHalt();
-if(M2C_FIELD(p,s32 *,12)==0){
-M2C_FIELD(p,s32 *,0)=arg1;M2C_FIELD(p,s32 *,4)=arg2;M2C_FIELD(p,s32 *,8)=arg3;M2C_FIELD(p,s32 *,12)=arg4;break;
-}
-p+=16;
-}
-OS_RestoreInterrupts(saved);
+/* Adds a block to a multiboot load queue's block cache under an interrupt
+ * lock: the first free slot records the block's image offset, size, buffer and
+ * state; the system halts when every slot is in use. */
+void Mb_AddImageBlock(MbLoadQueue *queue, u32 offset, u32 size, u8 *data, s32 state) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    void SystemHalt();
+    MbLoadBlock *end;
+    s32 saved;
+    MbLoadBlock *block;
+
+    saved = OS_DisableInterrupts();
+    block = &queue->blocks[0];
+    end = &queue->blocks[MB_LOAD_BLOCK_COUNT];
+    for (;;) {
+        if (block >= end) SystemHalt();
+        if (block->state == 0) {
+            block->offset = offset;
+            block->size = size;
+            block->data = data;
+            block->state = state;
+            break;
+        }
+        block++;
+    }
+    OS_RestoreInterrupts(saved);
 }
 
 /* Serves one read of the multiboot download image from the queue's cache: finds

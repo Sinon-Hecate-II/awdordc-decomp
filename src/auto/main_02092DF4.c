@@ -104,14 +104,14 @@ s32 func_020930e0(void *arg0) {
 }
 
 s32 func_02093100(void *arg0) {
-    s32 func_02091ecc(s16);
+    s32 MapScriptResolvePlayer(s16);
     M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
-    temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
+    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     AwardVictoryToPlayer(temp_r0, 0x80);
@@ -121,14 +121,14 @@ s32 func_02093100(void *arg0) {
 }
 
 s32 func_02093154(void *arg0) {
-    s32 func_02091ecc(s16);
+    s32 MapScriptResolvePlayer(s16);
     M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
-    temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
+    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     AwardVictoryToPlayer(temp_r0, 0x80);
@@ -138,14 +138,14 @@ s32 func_02093154(void *arg0) {
 }
 
 s32 func_020931a8(void *arg0) {
-    s32 func_02091ecc(s16);
+    s32 MapScriptResolvePlayer(s16);
     M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
-    temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
+    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     UpdateTeamRecords(temp_r0, 0x80);
@@ -155,14 +155,14 @@ s32 func_020931a8(void *arg0) {
 }
 
 s32 func_020931fc(void *arg0) {
-    s32 func_02091ecc(s16);
+    s32 MapScriptResolvePlayer(s16);
     M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
     s32 temp_r0;
     s32 temp_r5;
 
-    temp_r0 = func_02091ecc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
+    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
     temp_r5 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     UpdateTeamRecords(temp_r0, 0x80);
@@ -286,23 +286,27 @@ if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-s32 func_02093504(void *arg0) {
+/* Map-script command: skip the next OPERAND2 commands when the army id of the
+ * player named by operand 0 differs from operand 1.  The resolved player index is
+ * left in r0 for func_020a8c10 (the map player record's army id) to consume.
+ * Always advances one command and keeps running. */
+s32 MapScriptSkipIfArmyDiffers(void *script) {
     s32 func_020a8c10();
-    s16 temp_r5;
-    s32 var_r6;
-    void *temp_r1;
+    s16 army;
+    s32 skipCount;
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    temp_r5 = M2C_FIELD(temp_r1, s16 *, 0xA);
-    var_r6 = M2C_FIELD(temp_r1, s32 *, 0xC);
-    func_02091ecc((s16) M2C_FIELD(temp_r1, s16 *, 8) >> 1);
-    if ((temp_r5 != func_020a8c10()) && (var_r6 > 0)) {
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    army = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1);
+    skipCount = M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
+    MapScriptResolvePlayer((s16) M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) >> 1);
+    if ((army != func_020a8c10()) && (skipCount > 0)) {
         do {
-            var_r6 -= 1;
-            M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
-        } while (var_r6 > 0);
+            skipCount -= 1;
+            M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
+        } while (skipCount > 0);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

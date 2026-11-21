@@ -1,5 +1,6 @@
 /* 6 functions from 0x0216D2B4 to 0x0216E178 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "ov000_ui.h"
 typedef struct { u8 bytes[6]; } UnitPaletteLookup;
 static inline void ArmyInfo_LoadTile(s32 tile, u32 resource, s32 palette) {
  void func_0209b26c(s32,s32,s32,u32,s32,s32);
@@ -183,22 +184,27 @@ void func_ov000_0216e0d0(u8 *arg0) {
     func_ov000_0216e054();
 }
 
-void func_ov000_0216e110(void) {
+/* Creates one selectable sprite slot per listed player, then focuses the
+ * selected player's slot. */
+void ArmyInfo_CreatePlayerSlots(void) {
     extern void *gArmyInfoState;
-    extern M2C_UNK data_ov000_021b8790;
-    M2C_UNK AddSpriteSlot(s32, M2C_UNK, M2C_UNK *, s32);
-    M2C_UNK SelectSpriteSlot(u8);
+    extern u8 gArmyInfoPlayerSlotDef[];
+
+    void AddSpriteSlot(s32 x, s32 y, void *desc, s32 id);
+    void SelectSpriteSlot(s32 index);
+
     s32 i;
     s32 x;
+
     i = 0;
-    if (i < M2C_FIELD(gArmyInfoState, u8 *, 0xC)) {
+    if (i < M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_COUNT)) {
         x = 0x50;
         do {
-            AddSpriteSlot(x, 0xA8, &data_ov000_021b8790, i);
+            AddSpriteSlot(x, 0xA8, gArmyInfoPlayerSlotDef, i);
             i++;
             x += 0x18;
-        } while (i < M2C_FIELD(gArmyInfoState, u8 *, 0xC));
+        } while (i < M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_COUNT));
     }
-    SelectSpriteSlot(M2C_FIELD(gArmyInfoState, u8 *, 0xD));
+    SelectSpriteSlot(M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_SELECTED));
 }
 

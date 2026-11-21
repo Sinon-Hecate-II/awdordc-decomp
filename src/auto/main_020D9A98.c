@@ -6,13 +6,13 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void Link_SetMessageHandler(s32);s32 func_ov009_02224508(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void func_020b2178(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
+void Link_SetMessageHandler(s32);s32 IsLinkResultFlagSet(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void HideAllSpriteSlots(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 Link_SetMessageHandler(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
-if(!func_ov009_02224508(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
+if(!IsLinkResultFlagSet(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 Link_InstallCommandHandler();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 case 1:case 2:
@@ -32,7 +32,7 @@ bank100=(u16 *)*gCur3DSpriteEngine;*bank100=*bank100|0x100;
 oamAttr=(u16 *)((u8 *)*gCur3DSpriteEngine+0x12);*oamAttr=*oamAttr&~0xc0;
 M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x51)=0;M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x52)=0;M2C_FIELD(*gCur3DSpriteEngine,u8 *,0x53)=0;
 }
-gCur3DSpriteEngine=savedEngine;func_020b2178();
+gCur3DSpriteEngine=savedEngine;HideAllSpriteSlots();
 if(M2C_FIELD(a,s32 *,0x50)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x50));M2C_FIELD(a,s32 *,0x50)=0;}
 if(M2C_FIELD(a,s32 *,0x54)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x54));M2C_FIELD(a,s32 *,0x54)=0;}
 if(M2C_FIELD(a,s32 *,0x58)){DeleteSpriteObject(M2C_FIELD(a,s32 *,0x58));M2C_FIELD(a,s32 *,0x58)=0;}
@@ -87,13 +87,27 @@ void func_020d9d80(void *entry) {
     }
 }
 
-void func_020d9e7c(void *arg0){extern s32 gUnitSlotIds[]; s32 temp_r2; u16 temp_r3; void *temp_r4;
-temp_r4=M2C_FIELD(arg0,void**,0x10); temp_r3=M2C_FIELD(temp_r4,u16*,0x48);
-if(temp_r3&0x20)return; temp_r2=temp_r3&2; if(temp_r2!=0)return;
-if(gUnitSlotIds[M2C_FIELD(arg0,u8*,0)]<0)return; if(temp_r2!=0)return;
-M2C_FIELD(temp_r4,u16*,0x48)=temp_r3&~1;
-M2C_FIELD(temp_r4,u16*,0x48)=M2C_FIELD(temp_r4,u16*,0x48)|2;
-PlaySoundEffect(0x1000D); Sprite_ResumeAnimation(temp_r4);}
+/* Takes the menu's first option: while the menu is idle and the unit in the
+ * entry's slot exists, clear the second-option bit, mark the menu as chosen, and
+ * play the confirm sound with the menu's close animation. */
+void ConfirmFirstMenuOption(void *entry) {
+    extern s32 gUnitSlotIds[];
+    s32 chosen;
+    u16 state;
+    void *menu;
+
+    menu = M2C_FIELD(entry, void **, 0x10);
+    state = M2C_FIELD(menu, u16 *, MENU_STATE);
+    if (state & MENU_STATE_ACCEPTED) return;
+    chosen = state & MENU_STATE_CHOSEN;
+    if (chosen != 0) return;
+    if (gUnitSlotIds[M2C_FIELD(entry, u8 *, 0)] < 0) return;
+    if (chosen != 0) return;
+    M2C_FIELD(menu, u16 *, MENU_STATE) = state & ~MENU_STATE_OPTION;
+    M2C_FIELD(menu, u16 *, MENU_STATE) = M2C_FIELD(menu, u16 *, MENU_STATE) | MENU_STATE_CHOSEN;
+    PlaySoundEffect(0x1000D); /* SOUND_MENU_CONFIRM */
+    Sprite_ResumeAnimation(menu);
+}
 
 void func_020d9ee4(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
 temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
@@ -454,16 +468,16 @@ void func_020da480(void *arg0) {
     DisableMapConfirm();
 }
 #pragma pop
-void func_020da8e4(s32,void *);
+void HandleLinkResult(s32,void *);
 void HandleOnlineLinkResult(s32,M2C_UNK,u32,void *);
 /* Dispatch an entity's driver based on its type field (+0x34) and sub-state (+0x38). */
 void func_020da7e8(void *entity) {
-    void func_020da8e4(s32, void *);
+    void HandleLinkResult(s32, void *);
     void HandleOnlineLinkResult(s32, M2C_UNK, u32, void *);
 
     switch (M2C_FIELD(entity, s32 *, 0x34)) {
     case 0:
-        func_ov009_02225d88(func_020da8e4, entity);
+        func_ov009_02225d88(HandleLinkResult, entity);
         switch (M2C_FIELD(entity, s32 *, 0x38)) {
         case 0: SetSpriteAnimation(entity, 6); break;
         case 1: SetSpriteAnimation(entity, 7); break;
@@ -486,22 +500,26 @@ void func_020da7e8(void *entity) {
     }
 }
 
-void func_020da8e4(s32 arg0, void *arg1) {
+/* Single-card link result callback (the ov009 twin of HandleOnlineLinkResult):
+ * while the menu state no longer allows the link (or a screen fade is running)
+ * clear the link step flag; otherwise, when a result code was reported, show the
+ * link status label, disable the map confirm and start the entity's animation. */
+void HandleLinkResult(s32 resultCode, void *entity) {
     s32 GetScreenFlag(u8);
     s32 IsScreenFadeActive();
     M2C_UNK DisableMapConfirm();
     M2C_UNK CreateLinkStatusLabel(s8, u16, s32, void *);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
-    if ((GetScreenFlag(M2C_FIELD(arg1, u8 *, 0x44)) == 1) || (IsScreenFadeActive() != 0)) {
+    if ((GetScreenFlag(M2C_FIELD(entity, u8 *, 0x44)) == 1) || (IsScreenFadeActive() != 0)) {
         Ov010Online_ClearStepFlag(6);
         return;
     }
-    if (arg0 == 0) {
+    if (resultCode == 0) {
         return;
     }
-    CreateLinkStatusLabel((s8) M2C_FIELD(arg1, u8 *, 0x44), M2C_FIELD(arg1, u16 *, 0x46), arg0, arg1);
+    CreateLinkStatusLabel((s8) M2C_FIELD(entity, u8 *, 0x44), M2C_FIELD(entity, u16 *, 0x46), resultCode, entity);
     DisableMapConfirm();
-    SetSpriteAnimation(arg1, 1);
+    SetSpriteAnimation(entity, 1);
 }
 
 /* Online session result callback: when the menu state no longer allows the link
@@ -512,7 +530,7 @@ void func_020da8e4(s32 arg0, void *arg1) {
 void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, void *entity) {
     s32 GetScreenFlag(u8);
     s32 IsScreenFadeActive(void);
-    M2C_UNK func_ov009_02224528(M2C_UNK);
+    M2C_UNK ClearLinkResultFlag(M2C_UNK);
     void func_ov010_02228320(void);
     M2C_UNK CreateNetErrorSprite(s8, u16, s32, M2C_UNK, u32, void *);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
@@ -520,7 +538,7 @@ void HandleOnlineLinkResult(s32 netError, M2C_UNK errorParam, u32 errorClass, vo
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
 
     if (GetScreenFlag(M2C_FIELD(entity, u8 *, 0x44)) == 1 || IsScreenFadeActive() != 0) {
-        func_ov009_02224528(1); return;
+        ClearLinkResultFlag(1); return;
     }
     if (netError == 0) return;
     CreateNetErrorSprite(M2C_FIELD(entity, s8 *, 0x44), M2C_FIELD(entity, u16 *, 0x46), netError, errorParam, errorClass, entity);

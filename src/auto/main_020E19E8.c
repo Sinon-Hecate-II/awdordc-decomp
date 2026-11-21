@@ -5,7 +5,7 @@ static inline void MenuSetResource(void *p,void *resource) { M2C_FIELD(p,void**,
 typedef struct { u8 low:4; u8 high:4; } MenuNibble;
 typedef struct { u32 x:9; u32 y:9; u32 layer:8; u32 rest:6; } MenuSpriteFlags;
 
-static inline void InitSpriteE19(void *p,s16 x,s16 y,u16 w,u16 h){s32 func_02088e84(void *,s16,s16,s16,s32);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~511)|(w&511);M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fe00)|((h&511)<<9);func_02088e84(p,x,160,x,y); }
+static inline void InitSpriteE19(void *p,s16 x,s16 y,u16 w,u16 h){s32 Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s32);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~511)|(w&511);M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fe00)|((h&511)<<9);Set3DSpriteSlideTargetAndStart(p,x,160,x,y); }
 typedef struct { u32 width:9,height:9,rest:14; } SpriteSizeE19;
 static inline void SetSpriteSizeE19(void *p,u16 x,u16 y){ M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x1ff)|(x&0x1ff); M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fe00)|((y&0x1ff)<<9); }
 
@@ -15,7 +15,7 @@ void func_020e19e8(M2C_UNK arg0) {
     void *func_02082028(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
     void *func_0208bc24(void *);
@@ -109,7 +109,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x50) = func_020ab1c4(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x50), 0, 0x340, 3, 1);
     temp_r6 = M2C_FIELD(temp_r0, void **, 0x50);
-    func_02088e84(temp_r6, 0xC0, 0xA0, 0xC0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r6, 0xC0, 0xA0, 0xC0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
@@ -131,7 +131,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x54) = func_020ab1c4(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x54), 1, 0x350, 3, 0);
     temp_r6_2 = M2C_FIELD(temp_r0, void **, 0x54);
-    func_02088e84(temp_r6_2, 0xC0, 0xA0, 0xC0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r6_2, 0xC0, 0xA0, 0xC0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r6_2, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_2 = 1;
     } else {
@@ -153,7 +153,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x58) = func_020ab1c4(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x58), 2, 0x360, 3, 0);
     temp_r6_3 = M2C_FIELD(temp_r0, void **, 0x58);
-    func_02088e84(temp_r6_3, 0xE0, 0xA0, 0xE0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r6_3, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r6_3, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_3 = 1;
     } else {
@@ -172,7 +172,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, void **, 0x5C) = func_020ab1c4(temp_r0);
     InitUnitSprite(M2C_FIELD(temp_r0, void **, 0x5C), 0x2A, 0x370, 3, 0);
     temp_r6_4 = M2C_FIELD(temp_r0, void **, 0x5C);
-    func_02088e84(temp_r6_4, 0x60, 0xA4, -0x9F, 0xA4);
+    Set3DSpriteSlideTargetAndStart(temp_r6_4, 0x60, 0xA4, -0x9F, 0xA4);
     if (M2C_FIELD(M2C_FIELD(temp_r6_4, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_4 = 1;
     } else {
@@ -194,7 +194,7 @@ void func_020e19e8(M2C_UNK arg0) {
     M2C_FIELD(temp_r0_3, s16 *, 0x36) = 0xC0;
     *(u32 *)(temp_r0_3+0x40) = (M2C_FIELD(temp_r0_3, s32 *, 0x40) & ~0x1FF) | 0x40;
     M2C_FIELD(temp_r0_3, s32 *, 0x40) = (M2C_FIELD(temp_r0_3, s32 *, 0x40) & 0xFFFC01FF) | 0x4000;
-    func_02088e84(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, 0xC0);
+    Set3DSpriteSlideTargetAndStart(M2C_FIELD(temp_r0, void **, 0x60), 0x9C, 0xA0, 0x9C, 0xC0);
     M2C_FIELD(M2C_FIELD(temp_r0, void **, 0x60), s16 *, 0x3C) = 0;
     temp_r1_7 = M2C_FIELD(temp_r0, void **, 0x60);
     M2C_FIELD(temp_r1_7, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r1_7, s32 *, 0x40) & ~0x03FC0000) | 0x180000);
@@ -218,7 +218,7 @@ void func_020e1f54(s32 arg0) {
     void *func_02082028(M2C_UNK);
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088e84(void *, s16, s16, s16, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     void *Create3DSprite(void *);
     M2C_UNK SetSpriteText(void *, M2C_UNK *);
     void *func_0208bc24(void *);
@@ -250,7 +250,7 @@ saved=gCur3DSpriteEngine;gCur3DSpriteEngine=data_027e00c8;
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,80)=func_020ab1c4(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,80),0,832,3,1);
-p=M2C_FIELD(obj,void**,80);func_02088e84(p,192,160,192,192);
+p=M2C_FIELD(obj,void**,80);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
 if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
@@ -260,7 +260,7 @@ q=M2C_FIELD(obj,void**,80);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,84)=func_020ab1c4(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,84),1,848,3,0);
-p=M2C_FIELD(obj,void**,84);func_02088e84(p,192,160,192,192);
+p=M2C_FIELD(obj,void**,84);Set3DSpriteSlideTargetAndStart(p,192,160,192,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
 if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,s16*,0x34)=192;M2C_FIELD(q,s16*,0x36)=192;
@@ -270,7 +270,7 @@ q=M2C_FIELD(obj,void**,84);M2C_FIELD(q,u32*,0x40)=(M2C_FIELD(q,u32*,0x40)&~0x3fc
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,88)=func_020ab1c4(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,88),2,864,3,0);
-p=M2C_FIELD(obj,void**,88);func_02088e84(p,224,160,224,192);
+p=M2C_FIELD(obj,void**,88);Set3DSpriteSlideTargetAndStart(p,224,160,224,192);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
 if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,88);M2C_FIELD(q,s16*,0x34)=224;M2C_FIELD(q,s16*,0x36)=192;
@@ -280,7 +280,7 @@ func_020aad18(M2C_FIELD(obj,void**,88));
 {void *p,*q; s16 y,x; s32 w,v;
 M2C_FIELD(obj,void**,92)=func_020ab1c4(obj);
 InitUnitSprite(M2C_FIELD(obj,void**,92),42,880,3,0);
-p=M2C_FIELD(obj,void**,92);func_02088e84(p,96,164,-159,164);
+p=M2C_FIELD(obj,void**,92);Set3DSpriteSlideTargetAndStart(p,96,164,-159,164);
 if(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12))v=1;else v=0;
 if(v&255){ y=M2C_FIELD(p,s16*,0x52);x=M2C_FIELD(p,s16*,0x50);w=GetUnitSpriteWidth(p);func_02087d84(M2C_FIELD(p,void**,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));}
 q=M2C_FIELD(obj,void**,92);M2C_FIELD(q,s16*,0x34)=-159;M2C_FIELD(q,s16*,0x36)=164;
@@ -291,7 +291,7 @@ M2C_FIELD(obj,void**,0x60)=Create3DSprite(obj);p=M2C_FIELD(obj,void**,0x60);
 M2C_FIELD(p,s16*,0x34)=156;M2C_FIELD(p,s16*,0x36)=192;
 M2C_FIELD(p,MenuSpriteFlags*,0x40).x=64;
 M2C_FIELD(p,MenuSpriteFlags*,0x40).y=32;
-func_02088e84(M2C_FIELD(obj,void**,0x60),156,160,156,192);
+Set3DSpriteSlideTargetAndStart(M2C_FIELD(obj,void**,0x60),156,160,156,192);
 M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3c)=0;
 q=M2C_FIELD(obj,void**,0x60);M2C_FIELD(q,MenuSpriteFlags*,0x40).layer=6;
 M2C_FIELD(M2C_FIELD(obj,void**,0x60),u16*,0x3e)=0x388;M2C_FIELD(M2C_FIELD(obj,void**,0x60),void**,0x44)=&gSpriteDesc64x32;

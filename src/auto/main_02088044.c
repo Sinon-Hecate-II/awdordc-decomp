@@ -515,7 +515,7 @@ void Show3DSpriteFade(void *p,s32 a){void Show3DSprite(void *);if(!a){Show3DSpri
 
 void Hide3DSpriteFade(void *p,s32 a){void Hide3DSprite(void *);if(!a){Hide3DSprite(p);M2C_FIELD(p,u32 *,0x40)&=~0xfc000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x20;}
 
-void func_02088e5c(void *arg0, s32 arg1, s32 arg2) {
+void Set3DSpriteSlideTarget(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x50) = arg1;
     M2C_FIELD(arg0, s16 *, 0x52) = arg2;
 }
@@ -524,7 +524,7 @@ void func_02088e68(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s8 *, 0x4E) = arg1;
 }
 
-void func_02088e70(void *arg0, s16 arg1, s32 arg2) {
+void Set3DSpriteSlideStart(void *arg0, s16 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x54) = arg1;
     M2C_FIELD(arg0, s16 *, 0x56) = arg2;
 }
@@ -533,11 +533,11 @@ void func_02088e7c(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s8 *, 0x4F) = arg1;
 }
 
-void func_02088e84(void *p,s16 a,s16 b,s16 c,s32 d){func_02088e5c(p,a,b);func_02088e70(p,c,d);}
+void Set3DSpriteSlideTargetAndStart(void *p,s16 a,s16 b,s16 c,s32 d){Set3DSpriteSlideTarget(p,a,b);Set3DSpriteSlideStart(p,c,d);}
 
-void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void Show3DSpriteSlide(void *);func_02088e5c(p,c,d);func_02088e70(p,a,b);func_02088e68(p,e);Show3DSpriteSlide(p);}
+void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,c,d);Set3DSpriteSlideStart(p,a,b);func_02088e68(p,e);Show3DSpriteSlide(p);}
 
-void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);func_02088e5c(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);Show3DSpriteSlide(p);}
+void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);Show3DSpriteSlide(p);}
 
 /* Show a 3D sprite by sliding it in: with no slide length, place it straight at
  * its target and show it; otherwise start the forward slide (mode SPRITE_SLIDE_SHOW). */
@@ -558,7 +558,7 @@ void Show3DSpriteSlide(void *sprite) {
     M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (u8)((M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_SLIDE_MODE_MASK) | 0x80);
 }
 
-void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);func_02088e5c(p,a,b);func_02088e70(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
+void func_02088f8c(void *p,s32 a,s32 b,s16 c,s32 d,s32 e){void Hide3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,a,b);Set3DSpriteSlideStart(p,c,d);func_02088e7c(p,e);Hide3DSpriteSlide(p);}
 
-void Start3DSpriteSlideOut(void *p,s8 a){void Hide3DSpriteSlide(void *);func_02088e70(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
+void Start3DSpriteSlideOut(void *p,s8 a){void Hide3DSpriteSlide(void *);Set3DSpriteSlideStart(p,M2C_FIELD(p,s16 *,0x54),M2C_FIELD(p,s16 *,0x56));func_02088e7c(p,a);Hide3DSpriteSlide(p);}
 

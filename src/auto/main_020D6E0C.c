@@ -71,7 +71,7 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
     extern u16 data_02120700[16], data_02120720[16], data_02120740[16], data_02120760[16];
     extern M2C_UNK gSpriteDesc32x8, gSpriteDesc32x16;
     s32 EaseInterpolate(s32, s32, s32, s32, s32);
-    s32 func_020a4828(s32, s32);
+    s32 GetTileTargetKind(s32, s32);
     void func_020d166c(s32, s32, void *);
     void func_020d1690(s32, s32, void *);
     void func_01ff9e78(const void *, s32, s32);
@@ -106,7 +106,7 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
         color = EaseInterpolate(1, 15, 0, PULSE_PHASE - 16, 16);
     map = *gCurrentMap;
     unitId = M2C_FIELD(map, u8 *, targetX + M2C_FIELD(map + 2*targetY, u16 *, MAP_ROW_OFFSETS));
-    terrainTarget = func_020a4828(targetX, targetY);
+    terrainTarget = GetTileTargetKind(targetX, targetY);
     if (unitId) {
         func_020d166c(M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), unitId, position);
         map = *gCurrentMap;

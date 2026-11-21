@@ -96,19 +96,21 @@ void *DecodeExceptionValue(u8 *cursor,u32 *out) {
     *out=(first>>3)<<24 | second<<16 | third<<8 | cursor[3]; return cursor+4;
 }
 #pragma opt_common_subs reset
-void *FindExceptionTableEntry(u32 *p,s32 n,u32 addr) {
-s32 mid;
-u32 *q;
-s32 lo=0;
-s32 hi=n-1;
-while(lo<=hi) {
-mid=(lo+hi)>>1;
-q=(u32 *)((u8 *)p+mid*12);
-if(addr<q[0]) hi=mid-1;
-else if(addr>q[0]+(q[1]&~1U)) lo=mid+1;
-else return q;
-}
-return 0;
+/* Binary-search the sorted C++ exception table of `count` entries for the entry
+ * whose [start, start + (range & ~1)] covers `addr`; returns it, or NULL. */
+void *FindExceptionTableEntry(u32 *table,s32 count,u32 addr) {
+    s32 mid;
+    CppExceptionEntry *entry;
+    s32 lo=0;
+    s32 hi=count-1;
+    while(lo<=hi) {
+        mid=(lo+hi)>>1;
+        entry=(CppExceptionEntry *)((u8 *)table+mid*EXC_TABLE_ENTRY_SIZE);
+        if(addr<entry->start) hi=mid-1;
+        else if(addr>entry->start+(entry->range&~1U)) lo=mid+1;
+        else return entry;
+    }
+    return 0;
 }
 
 /* Find the exception table entry that covers the program counter `pc` and resolve

@@ -322,7 +322,7 @@ void func_02001748(void *arg0, void *arg1, void *arg2) {
 u64 func_02001fd4(void);
 #pragma push
 #pragma opt_strength_reduction off
-void func_02001dac(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p) {
+void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p) {
     s64 t1;
     s64 q1;
     s64 t2;

@@ -23,7 +23,7 @@ s32 Wfc_StepMatch(void) {
         default:                                /* switch 1 */
             break;
         case 0:                                 /* switch 1 */
-            state = func_0203138c(ctx);
+            state = Wfc_StepStartHost(ctx);
             break;
         case 2:                                 /* switch 1 */
             state = Wfc_StepFriendConnect(ctx);
@@ -62,18 +62,22 @@ s32 Wfc_StepMatch(void) {
     return state;
 }
 
-s32 func_0203138c(M2C_UNK arg0) {
+/* WFC session step 0xA: build the host configuration (WFC work block
+ * WFC_WORK_AUX) from the control block and the selected friend's save-slot player
+ * codes, then start the network host.  Returns 0xC (the friend-connect step) when
+ * the host started, or 0x11 (error, result code 2) when it would not. */
+s32 Wfc_StepStartHost(M2C_UNK state) {
     s32 func_02021a90(s32);
     void Wfc_BuildHostConfig(M2C_UNK, M2C_UNK, M2C_UNK);
     extern s32 data_02138ac0;
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 config;
+    s32 control;
 
-    temp_r5 = Wfc_GetWorkBlock(1);
-    temp_r0 = Wfc_GetWorkBlock(4);
-    Wfc_BuildHostConfig(temp_r5, arg0, temp_r0);
+    control = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    config = Wfc_GetWorkBlock(WFC_WORK_AUX);
+    Wfc_BuildHostConfig(control, state, config);
     data_02138ac0 = 4;
-    if (func_02021a90(temp_r0) == 0) {
+    if (func_02021a90(config) == 0) {
         return 0xC;
     }
     Wfc_SetResultCode(2);
@@ -455,28 +459,33 @@ j=0;if(rem>0){out=dst+(full*3)/4;do{*out++=((u8 *)&tail)[2-j];j++;}while(j<rem);
 return size;
 }
 #pragma opt_strength_reduction on
-s32 func_02031d00(M2C_UNK arg0)
+/* Check the save block and make sure the console has a WFC profile: verify the
+ * save data, and when the profile is empty build one from the save.  Returns 3
+ * when the save is bad and no profile could be made, 2 when the save is bad but a
+ * profile was made, 1 when the save is good and a profile was made, 0 when both
+ * were already fine. */
+s32 CheckSaveAndWfcProfile(M2C_UNK arg0)
 {
   M2C_UNK func_02000b9c(s32);
-  s32 func_02046884(M2C_UNK);
-  M2C_UNK func_02047098(M2C_UNK);
-  s32 func_02047320();
-  u32 temp_r4;
-  s32 var_r5;
-  var_r5 = 0;
+  s32 VerifySaveBlock(M2C_UNK);
+  M2C_UNK CreateWfcProfile(M2C_UNK);
+  s32 IsWfcProfileEmpty();
+  u32 saveStatus;
+  s32 profileCreated;
+  profileCreated = 0;
   func_02000b9c(0x02000C34);
-  temp_r4 = (u32) func_02046884(arg0);
-  if (func_02047320() != 0)
+  saveStatus = (u32) VerifySaveBlock(arg0);
+  if (IsWfcProfileEmpty() != 0)
   {
     if (1)
     {
-      func_02047098(arg0);
+      CreateWfcProfile(arg0);
     }
-    var_r5 = 1;
+    profileCreated = 1;
   }
-  if ((s32) temp_r4 < 0)
+  if ((s32) saveStatus < 0)
   {
-    if (var_r5 != 0)
+    if (profileCreated != 0)
     {
       return 2;
     }
@@ -485,7 +494,7 @@ s32 func_02031d00(M2C_UNK arg0)
       return 3;
     }
   }
-  if (var_r5 != 0)
+  if (profileCreated != 0)
   {
     return 1;
   }

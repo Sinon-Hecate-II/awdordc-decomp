@@ -7,7 +7,7 @@ void func_ov001_02183a20(void) {
     s32 Ov001_HitScrollbarPart(void);
     void func_ov001_02183cec(s8);
     s32 func_ov001_02183e0c(void);
-    void func_ov001_02183d18(void);
+    void Ov001_ScrollbarJumpToTouch(void);
     void Ov001_UpdateScrollbarDrag(void);
     void Ov001_PlaySound(s32);
     void Ov001_SetScrollDragSoundLevel(s32);
@@ -43,7 +43,7 @@ void func_ov001_02183a20(void) {
                     func_ov001_02183cec(3);
                     return;
                 case 4:
-                    func_ov001_02183d18();
+                    Ov001_ScrollbarJumpToTouch();
                     return;
             }
             return;
@@ -166,29 +166,31 @@ void func_ov001_02183cec(s8 arg0) {
 }
 
 #pragma peephole off
-void func_ov001_02183d18(void) {
+/* A tap on the scrollbar track: move the handle so its middle sits under the
+ * touch y, clamped into the track, and report the bar-scroll event. */
+void Ov001_ScrollbarJumpToTouch(void) {
 void Ov001_ReadTouchPoint(M2C_UNK *);
 void Ov001_SetScrollbarHandlePos(s32);
 extern void *gOv001Scrollbar;
 extern u8 gOv001ScrollbarHandleLengths[];
-M2C_UNK sp0;
-u32 arrval;
-u16 field12,sp_half;
-s32 v; u8 field19; s32 lim;
-Ov001_ReadTouchPoint(&sp0);
-arrval=gOv001ScrollbarHandleLengths[M2C_FIELD(gOv001Scrollbar,u8 *,0x1b)];
-field12=M2C_FIELD(gOv001Scrollbar,u16 *,0x12);
-sp_half=M2C_FIELD(&sp0,u16 *,2);
-v=(s32)sp_half-(s32)field12;
-v-=(s32)(arrval>>1);
-if(v<0) v=0;
+M2C_UNK touch;
+u32 handleLength;
+u16 trackY,touchY;
+s32 pos; u8 trackLength; s32 maxPos;
+Ov001_ReadTouchPoint(&touch);
+handleLength=gOv001ScrollbarHandleLengths[M2C_FIELD(gOv001Scrollbar,u8 *,OV001_SCROLLBAR_KIND)];
+trackY=M2C_FIELD(gOv001Scrollbar,u16 *,OV001_SCROLLBAR_Y);
+touchY=M2C_FIELD(&touch,u16 *,2);
+pos=(s32)touchY-(s32)trackY;
+pos-=(s32)(handleLength>>1);
+if(pos<0) pos=0;
 else {
-field19=M2C_FIELD(gOv001Scrollbar,u8 *,0x19);
-lim=(s32)field19-(s32)arrval;
-if(v>=lim) v=lim;
+trackLength=M2C_FIELD(gOv001Scrollbar,u8 *,OV001_SCROLLBAR_TRACK);
+maxPos=(s32)trackLength-(s32)handleLength;
+if(pos>=maxPos) pos=maxPos;
 }
-Ov001_SetScrollbarHandlePos(v);
-M2C_FIELD(gOv001Scrollbar,u8 *,0x1d)=3;
+Ov001_SetScrollbarHandlePos(pos);
+M2C_FIELD(gOv001Scrollbar,u8 *,OV001_SCROLLBAR_EVENT)=3;
 }
 #pragma peephole reset
 /* Which part of the friend roster's scrollbar the stylus tapped: the handle, the
@@ -296,7 +298,7 @@ void Ov001_SetScrollbarHandlePos(s32 arg0) {
     M2C_FIELD(gOv001Scrollbar, s8 *, 0x1A) = (s8)arg0;
 }
 
-void func_ov001_02183f6c(void) {
+void Ov001_AllocFriendRoster(void) {
     s32 Ov001_Alloc(s32, M2C_UNK);
     extern s32 gWfcFriendRoster;
     if (gWfcFriendRoster != 0) {
@@ -402,28 +404,32 @@ s32 Ov001_GetFriendSlots(void **arg0) {
     return count;
 }
 
-void Ov001_HandleFriendRosterReply(u16 *p) {
+/* Completion callback of the friend-roster request: ignore a failed reply, then,
+ * unless the roster link is closing, answer the server's operation - a profile
+ * list is parsed into the roster slots and polling continues, the accepted "next"
+ * operation just polls again, and any other operation halts the system. */
+void Ov001_HandleFriendRosterReply(u16 *reply) {
     s32 Ov001_SendFriendRosterRequest(void);
-    void func_ov001_02184230(u16 *);
+    void Ov001_ParseFriendRosterReply(u16 *);
     void SystemHalt(u16 *);
     extern s32 gWfcFriendRoster;
     u8 *q;
 
-    if (p[1]) {
+    if (reply[WFC_REPLY_RESULT]) {
         return;
     }
     q = (u8 *)gWfcFriendRoster + 0x1000;
-    if (q[0xe5c] == 0 && p[0] == 0x26) {
-        switch (p[4]) {
-            case 5:
-                func_ov001_02184230(p);
+    if (q[WFC_FRIEND_CLOSING - 0x1000] == 0 && reply[WFC_REPLY_COMMAND] == WFC_REQUEST_COMMAND) {
+        switch (reply[WFC_REPLY_OP]) {
+            case WFC_REQUEST_OP_PROFILE_LIST:
+                Ov001_ParseFriendRosterReply(reply);
                 Ov001_SendFriendRosterRequest();
                 break;
-            case 4:
+            case WFC_REQUEST_OP_NEXT:
                 Ov001_SendFriendRosterRequest();
                 break;
             default:
-                SystemHalt(p);
+                SystemHalt(reply);
                 break;
         }
     }
@@ -431,7 +437,7 @@ void Ov001_HandleFriendRosterReply(u16 *p) {
 
 #pragma opt_lifetimes off
 #pragma opt_loop_invariants off
-void func_ov001_02184230(u16 *arg0) {
+void Ov001_ParseFriendRosterReply(u16 *arg0) {
     void DC_InvalidateRange(void *, s32);
     void MI_CpuCopy8(void *, void *, u32);
     s32 ByteCompareN(M2C_UNK, M2C_UNK, s32);

@@ -287,13 +287,16 @@ void DrawFrameBorderPulse(s32 x, s32 y, s32 width, s32 height, u16 tile, s32 pri
  DrawFrameBorder((s16)(x-pulse),(s16)(y-pulse),(s16)(width+pulse*2),(s16)(height+pulse*2),tile,priority,FRAME_BORDER_OUTSIDE);
 }
 
-void func_0208e054(s32 arg0, s32 arg1, s16 arg2) {
+/* Load the colour-pattern graphics block into the 3D sprite engine's texture area
+ * at `textureOffset`, write `color` as entry 15 of OBJ palette `paletteSlot`, and
+ * mark the palette dirty. */
+void Load3DSpritePatternColor(s32 textureOffset, s32 paletteSlot, s16 color) {
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
-    extern M2C_UNK data_0211e0e4;
+    extern M2C_UNK g3DSpritePatternColorGraphics;
     extern void *gCur3DSpriteEngine;
-    LoadGraphicsBlock(&data_0211e0e4, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg0);
-    M2C_FIELD((M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + (((arg1 + 0x10) << 5) & ~1)), s16 *, 0x1E) = arg2;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
+    LoadGraphicsBlock(&g3DSpritePatternColorGraphics, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + textureOffset);
+    M2C_FIELD((M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + (((paletteSlot + 0x10) << 5) & ~1)), s16 *, 0x1E) = color;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_PALETTE);
 }
 
 void func_0208e0b8(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {

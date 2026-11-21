@@ -41,6 +41,27 @@ typedef struct DecompressState {
 #define STRING_ZERO_BIAS 0xfefefeffu /* the word minus 0x01010101 */
 #define STRING_ZERO_MASK 0x80808080u /* the top bit of every byte */
 
+/* State of the bounded string writer of the game's formatter (StringFormatBounded
+ * and WriteFormatBuffer in main_02066BA8.c): the output buffer, its capacity and
+ * how much of it has been written. */
+typedef struct FormatBuffer {
+    char *buffer;  /* +0x00 output buffer */
+    u32   size;    /* +0x04 capacity in bytes */
+    u32   position;/* +0x08 bytes written so far */
+} FormatBuffer;
+
+/* The game's block allocator (HeapAlloc/HeapFree and the WFC library's callbacks):
+ * every block carries a 0x20-byte header with a magic word and its user-data size. */
+#define HEAP_BLOCK_HEADER 0x20   /* bytes in front of the user data */
+#define HEAP_BLOCK_MAGIC  0x4457434D /* u32 at +0x00: block tag "MCWD" */
+#define HEAP_BLOCK_SIZE   0x04   /* s32 at +0x04: bytes of user data */
+#define HEAP_ALIGN_DEFAULT 0x20  /* alignment HeapAlloc asks for */
+
+typedef struct HeapCallbacks {
+    void (*freeBlock)(s32 heap, void *blockHeader, s32 size); /* +0x00 */
+    void *(*allocate)(s32 heap, s32 size, s32 align);         /* +0x04 */
+} HeapCallbacks; /* 8 bytes */
+
 
 /* What machine drafts (m2c) use for what they can't tell yet: autopilot tries them as they are. */
 #ifndef M2C_DEFINES
@@ -305,6 +326,17 @@ enum {
 #define TLS_MAC_KEY_IN     0x1d4 /* void * key of the incoming record MAC */
 #define TLS_RC4_KEY_IN     0x1d8 /* void * key of the incoming RC4 state */
 #define TLS_RC4_IN         0x1e0 /* RC4 state of incoming records */
+
+/* RC4 keystream state: the two S-box indices and the 256-byte permutation. */
+#define RC4_INDEX_I 0x00 /* u8 i, advanced by one for every byte */
+#define RC4_INDEX_J 0x01 /* u8 j, advanced by the S-box entry i names */
+#define RC4_SBOX    0x02 /* u8[256] the permutation */
+
+typedef struct RC4State {
+    u8 i;            /* +0x00 RC4_INDEX_I */
+    u8 j;            /* +0x01 RC4_INDEX_J */
+    u8 sbox[256];    /* +0x02 RC4_SBOX */
+} RC4State;          /* 0x102 bytes */
 #define TLS_SEQ_IN         0x2e4 /* u8[8] incoming sequence number, hashed in the MAC */
 #define TLS_SHA1_CTX       0x348 /* SHA1 context of the record being handled */
 #define TLS_MD5_CTX        0x3fc /* MD5 context of the record being handled */
@@ -520,11 +552,11 @@ typedef struct WaypointSlotGroup {
 #define MAP_SELECT_ROW_ANIM_LEVEL   0x14 /* s8 level tween target (2 selected, 5 idle) */
 #define MAP_SELECT_ROW_ANIM_MODE    0x15 /* s8 row animation mode (3 selected, 1 idle) */
 
-/* ov003 map-info screen: the unit-category count grid filled by
- * func_020c1878 (5 player bands of 12 unit categories, the grid starting at
- * +4 of the block) and the text sprite that prints one category's total. */
-#define OV003_UNIT_COUNT_GRID 0x68 /* u8 *: 5x12 per-category unit counts, grid at +4 */
-#define OV003_UNIT_COUNT_TEXT 0x50 /* void *: text sprite for a category's total */
+/* ov003 map-info screen: the per-owner property count grid filled by
+ * CountMapProperties (5 player bands of 12 property columns, the grid starting at
+ * +4 of the block) and the text sprite that prints one column's total. */
+#define OV003_UNIT_COUNT_GRID 0x68 /* u8 *: 5x12 per-owner property counts, grid at +4 */
+#define OV003_UNIT_COUNT_TEXT 0x50 /* void *: text sprite for a column's total */
 
 /* ov003 map-preview panel: the unit-category count block (its grid starts at
  * +0x1C and holds one 12-byte record per player band) and the text sprite that
@@ -544,6 +576,14 @@ typedef struct WaypointSlotGroup {
 #define MAPSELECT_ROW_OBJS_B    0x24 /* void *[MAPSELECT_ROWS] map names */
 #define MAPSELECT_ROW_TILE      0x04 /* u16 of a row sprite object: tile id in the low ten bits */
 #define MAPSELECT_ROWS          5    /* rows shown at once */
+#define MAPSELECT_ROW_OBJS_A_INDEX  (MAPSELECT_ROW_OBJS_A / 4) /* void* index of the row label objects */
+#define MAPSELECT_ROW_OBJS_B_INDEX  (MAPSELECT_ROW_OBJS_B / 4) /* void* index of the map-name objects */
+#define MAPSELECT_LABEL_TILES_INDEX (MAPSELECT_LABEL_TILES / 2) /* u16 index of the label tile table */
+#define MAPSELECT_NAME_TILES_INDEX  (MAPSELECT_NAME_TILES / 2)  /* u16 index of the name tile table */
+#define MAPSELECT_LABEL_TILES_COUNT 3    /* label tile variants */
+#define MAPSELECT_NAME_TILES_COUNT  4    /* map-name tile variants */
+#define MAPSELECT_ROW_LABEL_SPRITE  0x2e /* sprite layout of a row's label */
+#define MAPSELECT_ROW_NAME_SPRITE   0x18 /* sprite layout of a row's map name */
 #define MAPSELECT_ROW_UNITS     0x1c /* scroll units of one list row */
 #define MAPSELECT_COUNT         0x51 /* u8 number of maps in the list */
 #define MAPSELECT_INDEX         0x52 /* u8 selected row */
@@ -591,6 +631,14 @@ typedef struct WaypointSlotGroup {
  * magic once the defaults have been filled in; code that reads the settings
  * re-initialises them when the magic is missing. */
 #define GAME_SETTINGS_MAGIC 0x20070810
+
+/* The saved option halfword (inside data_0215d990, stored as the save file's
+ * settingsHalfword): a 3-bit map-view zoom field (GAME_OPTION_ZOOM_MASK), 0 while
+ * the view is zoomed in and GAME_OPTION_ZOOM_OUT while zoomed out, among the other
+ * option bits InitDefaultGameSettings clears. */
+#define GAME_OPTIONS_WORD     0x2E
+#define GAME_OPTION_ZOOM_MASK 0x0380
+#define GAME_OPTION_ZOOM_OUT  0x0080
 
 /* NitroSDK NARC archive header and block tags. A block holds its tag at +0 and
  * its byte size at +4; the header's u16 at +0x0C is the offset of the block
@@ -720,6 +768,17 @@ typedef struct RecordsScreen {
     s16 listCount;       /* +0xE4: number of entries in that list */
     s16 list[1];         /* +0xE6: shuffled record indices */
 } RecordsScreen;
+
+/* One entry of the records screen's music list (gRecordTracks, RECORD_TRACK_SIZE
+ * bytes per entry): the track to play, the colour of its list row and how long
+ * it lasts.  A zeroed entry terminates the table. */
+typedef struct RecordTrack {
+    s32 trackId;    /* +0x00: packed track id: low 16 bits the sound, 0x10000 an archive sound */
+    u32 color;      /* +0x04: colour of the record's list row */
+    s32 length;     /* +0x08: length of the track in frames */
+} RecordTrack;
+
+#define RECORD_TRACK_SIZE 0x0C /* bytes per RecordTrack */
 
 /* One entry of the records/achievements table (gRecordTable): 3 groups of 39
  * entries of 0x30 bytes.  The entry names the thing a record counts and the
@@ -1256,6 +1315,14 @@ typedef struct GpiStringListData {
 #define GPI_CONN_UPDATE_UI_BUFFER  0x450 /* GPIBuffer: accumulated "updateui" fields */
 #define GPI_CONN_UPDATE_UI_LEN     0x458 /* s32: bytes pending in it (the buffer's len) */
 
+/* The rest of a gpi connection's login identity and message buffers: the user id
+ * and profile id from the login reply are the keys its buddy-status records are
+ * looked up by (the "\userid\" and "\profileid\" fields). */
+#define GPI_CONN_USER_ID     0x19C /* s32 user id from the login reply */
+#define GPI_CONN_PROFILE_ID  0x1A0 /* s32 profile id from the login reply */
+#define GPI_CONN_RECV_BUFFER 0x1DC /* GPIBuffer: raw data received from the server */
+#define GPI_CONN_MSG_BUFFER  0x1EC /* void *parsed message copied out of the receive buffer */
+
 /* A gpi connection's error state and callback queue. */
 #define GPI_CONN_ERROR_CALLBACK 0x1A4 /* s32 registered error callback function */
 #define GPI_CONN_ERROR_DATA     0x1A8 /* s32 parameter passed to it */
@@ -1340,6 +1407,7 @@ enum {
 #define CONN_SESSION_SYNC_EXCESS  0x1B2 /* u16 worst overrun of the sync deadline */
 #define CONN_SESSION_SYNC_RETRY   0x1AC /* u8 retry counter for the sync-measure notices */
 #define CONN_SESSION_PEER_SLOTS   0x2D0 /* u8 slot id per connected peer, indexed from 1 */
+#define CONN_SESSION_NO_PEER_SLOT 0xFF /* FindPeerSlot result when no connected peer has the wanted id */
 #define CONN_SESSION_PEER_DATA    0x24  /* s32 per slot: peer player id exchanged in connection packets */
 #define CONN_SESSION_PEER_DATA_PORT 0xA4 /* u16 per slot: peer port exchanged in connection packets */
 #define CONN_SESSION_PEER_IPS     0x210 /* s32 per slot: peer IPv4 address */
@@ -1457,6 +1525,10 @@ typedef struct PeerAddress {
 #define CONN_SESSION_GAME_NAME    0x2F4 /* s32 game name string given to QR2 */
 #define CONN_SESSION_PLAYER_NAME  0x2F8 /* s32 player name string given to QR2 */
 
+/* The live online-match session context (the MATCH_SESSION_* block), held by
+ * gMatchSessionMgr; NULL when no session is running. */
+#define MATCH_SESSION_MGR_SESSION  0x08 /* void * current match session, or NULL */
+
 /* Fields of the online-match session context (the pointer held at
  * gMatchSessionMgr + 8). */
 #define MATCH_SESSION_STATUS       0x00 /* s32 0 idle, 1 running, 2 finished */
@@ -1533,6 +1605,7 @@ typedef struct MbCommand {
 } MbCommand;
 #define MB_PLAYER_STATE     0x14E4 /* s32 per-player state, 4 bytes each, indexed from 1 */
 #define MB_PLAYER_STATE_GROUPED 5 /* the player has joined a group; the group's battle can start */
+#define MB_PLAYER_STATE_READY   7 /* the player's setup is complete; the link's ready check and the phase-3 acknowledge look for this */
 #define MB_PLAYER_GROUP     0x1525 /* s8 per-player group id, 1 byte each, indexed from 1 */
 #define MB_GROUP_STARTED    0x1524 /* u8 nonzero once the players have been grouped */
 #define MB_GROUPS           0x1788 /* 16 group records, MB_GROUP_STRIDE bytes each */
@@ -1589,7 +1662,10 @@ typedef struct MbCommand {
 #define MB_LINK_BUFFER_LIMIT         0x15E0
 
 #define MB_LINK_STARTED     0x50D /* u8 1 once the link has started (IsMultiBootLinkStarted) */
+#define MB_LINK_SEND_PENDING 0x50C /* u8 nonzero while a link send is queued and not yet done */
 #define MB_LINK_CLOSING     0x526 /* u16 nonzero once the link shutdown has begun */
+#define MB_LINK_EXCHANGE    0x528 /* u16 1 while the group match-data exchange is under way */
+#define MB_LINK_PLAYERS     0x52A /* u16 bit per player slot still in the link, 0 when none */
 #define MB_LINK_ALIVE       0x5E4 /* s32 1 while the link keeps running; cleared when it closes */
 
 /* The DS Download Play send queue the WFC download channel drains
@@ -1798,10 +1874,13 @@ typedef struct NetError {
 #define ONLINE_LABEL_MATCHED 0x3C /* u8: nonzero once the query matched the local player's name */
 #define ONLINE_LABEL_MATCH_COUNT 0x40 /* s32: number of matches the query returned (0..7) */
 
-/* An ov010 online player record, 0x6c bytes each. */
+/* An ov010 online player record, 0x6c bytes each: a 0x1a-byte name area, the
+ * connected flag and player id, a status word, the GameSpy skill rating, five
+ * per-slot state bytes, then the 0x40-byte network panel record (NET_PLAYER_*). */
 #define ONLINE_PLAYER_RECORD_SIZE 0x6C
 #define ONLINE_PLAYER_FLAGS 0x1a /* u8: bit 0 set while the record holds a connected peer */
-#define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as */
+#define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as, -1 when unset */
+#define ONLINE_PLAYER_RATING 0x20 /* s32: GameSpy skill rating (RATING_DEFAULT for a new player) */
 
 /* A connected player's network record, the block GetNetworkPlayerRecord returns
  * (0x20 bytes into an ov009 link player slot, 0x2C into an ov010 online player
@@ -1813,6 +1892,8 @@ typedef struct NetError {
 #define NET_PLAYER_DATA         0x18 /* s32: nonzero once the player's panel record has been filled in */
 
 /* Fields of the ov010 online session the match event handlers touch. */
+#define OV010_SESSION_CHANGED_PLAYERS 0x00 /* u16: one bit per player whose connection changed (set when its record's connected flag is cleared) */
+#define OV010_SESSION_PEER_CALLBACK 0x34 /* void (*)(s32 error, s32 wasConnected, s32 pending, s32 playerId, s32 playerSlot, s32 arg): peer connection event forwarded by the net layer */
 #define OV010_SESSION_START_RECORD 0x18 /* void *: record of the match being started (see OV010_START_RECORD_*) */
 #define OV010_START_RECORD_ID      0x00 /* s32 match id both sides compare */
 #define OV010_START_RECORD_ACKS    0x04 /* u16 one bit per player that acknowledged the start request */
@@ -1823,6 +1904,27 @@ typedef struct NetError {
 #define OV010_SESSION_PEER_RX_BUFFERS 0x3c /* u8 *: receive buffers indexed by peer, skipping the local player */
 #define OV010_PEER_RX_BUFFER_SIZE 0x5a0
 #define OV010_SESSION_LOCAL_ID 0xfb /* u8 this console's transport player id, stored when the match starts */
+
+/* The ov010 online connection object (gOv010ConnectionClass): a stream of data
+ * being chunked out to the peers and the packet currently on the wire.  The send
+ * step advances the stream offset, builds each packet and records it at PACKET
+ * with its size and the peers it is addressed to; the finish step releases the
+ * packet once every addressed peer can accept a transfer again. */
+#define OV010_CONNECTION_STREAM_OFFSET 0x34 /* u32: bytes of the stream already sent */
+#define OV010_CONNECTION_STREAM 0x38 /* Ov010Packet *: the stream being chunked, 0 when idle */
+#define OV010_CONNECTION_PACKET 0x3c /* Ov010Packet *: packet currently being sent */
+#define OV010_CONNECTION_PACKET_SIZE 0x40 /* u32: its total byte count */
+#define OV010_CONNECTION_RECIPIENTS 0x44 /* u16: one bit per peer the packet is addressed to */
+
+/* A match-request node (a 3D sprite Link_CreateMatchRequest has the active link
+ * overlay create): the arguments of the search it runs, read back when the node
+ * is stepped (func_ov010_02229f98).  The online runner hands slots TYPE/TIMEOUT
+ * and TIMEOUT/FLAGS to Ov010_RequestWfcMatch as its timeout and flags-out. */
+#define MATCH_REQUEST_NAMES      0x34 /* s32: player-name text the query looks up */
+#define MATCH_REQUEST_NAME_COUNT 0x38 /* s32: number of names in the table */
+#define MATCH_REQUEST_TYPE       0x3C /* s32: game type the query asks for */
+#define MATCH_REQUEST_TIMEOUT    0x40 /* s32: query timeout */
+#define MATCH_REQUEST_FLAGS      0x44 /* s32: caller's search result/flags buffer */
 
 /* A match player's info record (0x210 bytes), filled by gpGetBuddyStatus from
  * the GameSpy buddy list (gp.c's GPBuddyStatus). The key/value string holds the
@@ -1942,6 +2044,17 @@ enum {
     OV001_DIR_DOWN  = 3
 };
 
+/* The ov001 icon menu's selection state: the highlighted entry, the entry to
+ * return to when a move is cancelled, whether the choice was confirmed rather
+ * than cancelled, and the loaded menu graphics file. */
+typedef struct Ov001IconMenuState {
+    s8   savedSelection; /* +0x00 selection restored when a move is cancelled */
+    s8   selection;      /* +0x01 highlighted entry */
+    u8   confirmed;      /* +0x02 nonzero once the player confirmed the choice */
+    u8   pad03;
+    void *file;          /* +0x04 loaded menu graphics file */
+} Ov001IconMenuState;
+
 /* The ov001 save data (gSaveData, 0x6f8 bytes): four 0x100-byte save slots from
  * +0 and the working copy of the current slot at +0x400.  Name data lives at the
  * same slot-relative offsets the StorePlayerName helper uses on the working slot. */
@@ -2053,6 +2166,10 @@ enum {
  * per-transfer parameters (callback, retries, unit size). */
 #define SAVE_DEVICE_RESPONSE      0x00 /* s32 *: reply block from the ARM7; word 0 is the transfer status */
 #define SAVE_DEVICE_STATE         0x04 /* s32: device state, SAVE_DEVICE_STATE_READY once configured */
+#define SAVE_DEVICE_ADDRESS       0x1C /* u32: source (backup-chip) address of the transfer */
+#define SAVE_DEVICE_DEST          0x20 /* u32: destination RAM address of the transfer */
+#define SAVE_DEVICE_LENGTH        0x24 /* u32: bytes of the transfer still to move */
+#define SAVE_DEVICE_DMA_CHANNEL   0x28 /* s32: DMA channel the transfer runs on */
 #define SAVE_DEVICE_CALLBACK      0x38 /* void (*)(s32): called once the transfer ends */
 #define SAVE_DEVICE_CALLBACK_ARG  0x3C /* s32: argument of that callback */
 #define SAVE_DEVICE_TASK          0x44 /* task the transfer runs in when it is asynchronous */
@@ -2389,6 +2506,7 @@ typedef struct Ov001FadeStates {
 #define NAME_ENTRY_LENGTH  0x29 /* u8 number of characters entered */
 #define NAME_ENTRY_RESULT  0x2a /* u8 result: 0 cancelled, 1 accepted, 2 rejected */
 #define NAME_ENTRY_CURSOR_MASK 0xC1FFFCFF /* cursor attribute bits a cancelled entry clears */
+#define NAME_ENTRY_CURSOR_POS_MASK 0xFE00FF00 /* cursor attribute bits the x/y position update replaces */
 
 /* The name-entry screen's configuration (gOv001NameEntryConfig), one entry per
  * entry mode: the message panel shown while typing, the message shown once the
@@ -2507,6 +2625,29 @@ enum {
 #define SPRITE_ACTOR_TILE        0x3c /* u16 first tile index of the actor's graphics */
 #define SPRITE_ACTOR_TEXT_WIDTH  0x58 /* s16 width in pixels of the text the actor drew */
 
+/* A frame-border sprite actor (CreateFrameBorderSprite in main_02088FF4.c; its
+ * draw callback outlines the rectangle below with DrawFrameBorder, or with
+ * DrawFrameBorderPulse while the highlight pulses): the rectangle it outlines,
+ * whether it uses the highlight tiles, and the position left for the next draw
+ * to sync. */
+#define FRAME_ACTOR_HIGHLIGHT 0x58 /* u8 nonzero: draw the highlight tile row */
+#define FRAME_ACTOR_PULSE     0x59 /* u8 nonzero with HIGHLIGHT: animate the pulsing highlight */
+#define FRAME_ACTOR_SYNC      0x5A /* u8 nonzero: copy the target position and size before drawing */
+#define FRAME_ACTOR_COLOR     0x5C /* s16 colour the highlight pattern was loaded with */
+#define FRAME_ACTOR_X         0x5E /* s16 left edge, synced from SPRITE_ACTOR_X */
+#define FRAME_ACTOR_Y         0x60 /* s16 top edge, synced from SPRITE_ACTOR_Y */
+#define FRAME_ACTOR_WIDTH     0x62 /* s16 width, synced from bits 0..8 of SPRITE_ACTOR_SPLIT */
+#define FRAME_ACTOR_HEIGHT    0x64 /* s16 height, synced from bits 9..17 of SPRITE_ACTOR_SPLIT */
+
+/* A scrolling text sprite: a sprite actor whose string is rendered by
+ * SetSpriteText and drawn as a horizontal strip by func_0208b884, scrolling one
+ * pixel per SPRITE_TEXT_SCROLL_PERIOD frames while the text is wider than the
+ * sprite (the initialiser is next to the other text-sprite helpers). */
+#define SPRITE_TEXT_SCROLL        0x5A /* s16 horizontal scroll offset in pixels */
+#define SPRITE_TEXT_SCROLL_TIMER  0x5C /* u8 frames since the last scroll step */
+#define SPRITE_TEXT_SCROLL_PERIOD 0x5D /* u8 frames between scroll steps */
+#define SPRITE_TEXT_HANDLE        0x60 /* void *handle sprite that draws the banner */
+
 /* A number-display sprite: a sprite actor that draws a 64-bit decimal value as a
  * row of digit sprites and lets the d-pad select a digit and change it.  Its own
  * fields come after the sprite actor's (SPRITE_ACTOR_X/Y are the position). */
@@ -2587,6 +2728,16 @@ enum {
 #define UNIT_PATH_START_COST 0x5a /* s8 movement cost at the unit's tile */
 #define UNIT_PATH_LENGTH    0x5b /* s8 index of the last step, 0 = empty */
 #define UNIT_PATH_MAX_STEPS 12
+
+/* The side of a move-path step the path leaves through or enters through, used to
+ * index gPathArrowTiles as (outgoing, incoming): UnitPath_GetOutgoingDir returns
+ * the side the path leaves through, UnitPath_GetIncomingDir the side it enters
+ * through.  PATH_EDGE_NONE means the step has no neighbour on the path. */
+#define PATH_EDGE_NONE   0
+#define PATH_EDGE_RIGHT  1
+#define PATH_EDGE_BOTTOM 2
+#define PATH_EDGE_LEFT   3
+#define PATH_EDGE_TOP    4
 
 /* Direction codes of a movement path (gUnitMovePath / MAP_CURSOR_PATH), one byte per
  * grid step.  MOVE_DIR_STOP and MOVE_DIR_NONE end the list; MOVE_DIR_ATTACK replaces
@@ -3145,6 +3296,10 @@ typedef struct Ov001TextPanel {
 #define OV001_CTX_PANEL_QUEUE        0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
 #define OV001_CTX_SIZE               0x680 /* bytes of the text context allocation */
 #define OV001_CTX_PANEL_BUFFER       0x010 /* first of the 32 pooled text panels */
+#define OV001_CTX_SCREEN_PANELS      0x610 /* Ov001TextPanel[2]: the fixed full-screen panels (index 0 main, 1 sub), 0x30 bytes each, whose tile buffers live in the context */
+#define OV001_PANEL_REFRESH_TASK     0x2C  /* fixed panels: s32 tile-refresh task handle (a queued panel stores its u16 tileCount there instead) */
+#define OV001_PANEL0_VRAM_BYTES      0x6000 /* character VRAM bytes cleared for screen 0's panel */
+#define OV001_PANEL1_VRAM_BYTES      0x3000 /* character VRAM bytes cleared for screen 1's panel */
 #define OV001_TEXT_PANEL_COUNT       32    /* pooled panels CreatePooledTextPanel may hand out */
 #define OV001_TEXT_PANEL_SIZE        0x30  /* bytes per pooled text panel */
 #define OV001_CTX_FONT_FILES         0x674 /* s32[2]: file handles of the two loaded font sets */
@@ -3266,11 +3421,25 @@ typedef struct Ov001TilePool {
 #define TEXT_LAYER_PANEL_CHOICE_MASK    0x000000C0u
 #define TEXT_LAYER_PANEL_POSITION_MASK  0x00000300u /* center, top or bottom */
 #define TEXT_LAYER_PANEL_WINDOW_MASK    0x00000400u /* configure the screen window */
+#define TEXT_LAYER_PANEL_HIDDEN         0x00000800u /* the panel is drawn but not shown */
 #define TEXT_LAYER_PANEL_NESTED         0x00002000u /* another text layer already existed */
 #define TEXT_LAYER_PANEL_ICON_COUNT     0x00038000u
 #define TEXT_LAYER_PANEL_LINE_COUNT     0x003C0000u
 #define TEXT_LAYER_PANEL_REFRESH_TIMER  0x1FC00000u
 #define TEXT_LAYER_PANEL_SAVED_MODE     0xE0000000u
+#define TEXT_LAYER_PANEL_LINK_SOUND     0x00004000u /* the panel queued its link-session sound on slot 0 */
+
+/* The window open/close animation the panel sprites play (the open and close
+ * starters in main_0208ABC4): the mode byte at +0x48 holds the direction in
+ * bits 4..5, +0x4A the frames it runs and +0x4B its frame counter. */
+#define TEXT_LAYER_PANEL_MODE       0x48 /* u8 open/close mode and display bits */
+#define TEXT_LAYER_PANEL_MODE_MASK  0x30
+#define TEXT_LAYER_PANEL_MODE_OPEN  0x10
+#define TEXT_LAYER_PANEL_MODE_CLOSE 0x20
+#define TEXT_LAYER_PANEL_FRAMES     0x4A /* s8 frames the animation runs */
+#define TEXT_LAYER_PANEL_FRAME      0x4B /* s8 frame counter */
+#define TEXT_LAYER_PANEL_ANIM_OPEN  0x08 /* TEXT_LAYER_PANEL_STATE animation mode */
+#define TEXT_LAYER_PANEL_ANIM_CLOSE 0x18
 
 /* The ov011 opening-sequence state object, advanced by the ov011_02223CB8 code. */
 #define INTRO_TIMER     0x34 /* u16 frames spent in the current state */
@@ -3610,6 +3779,8 @@ enum {
 #define STREAM_LOCK_STDERR 4    /* ... for stderr */
 #define STREAM_LOCK_FILE   5    /* ... for every other stream */
 #define STREAM_THREAD_ID   0x6C /* s32 thread id inside the running thread object */
+#define STD_STREAM_COUNT   3    /* standard streams: stdin, stdout, stderr */
+#define STD_STREAM_STRIDE  0x4C /* bytes between the standard stream objects at gStdinStream */
 
 /* The console's menu language (gLanguage, read by GetLanguage).  The localized
  * file name built by GetLocalizedFileName takes the matching gFileNameFormat*
@@ -3634,6 +3805,7 @@ typedef struct LocalizedTextBank {
     const char *file; /* +0x04 localized file name of the bank, 0 at the end of the table */
 } LocalizedTextBank;
 #define TEXT_BANK_INDEX_MASK 0xFFFFFF /* low bits of a text id: index in the bank's offset table */
+#define TEXT_BANK_COUNT 0x28 /* slots in gTextBankTable / loaded banks in gUiGraphicsBanks */
 
 /* One thread of the cooperative scheduler.  gThreadManager (a void * with
  * gSocketManager straight after it) holds the running thread at
@@ -3641,6 +3813,13 @@ typedef struct LocalizedTextBank {
  * through Thread::next, at THREAD_MANAGER_READY. */
 #define THREAD_MANAGER_CURRENT 0x28 /* Thread *: the thread that is running */
 #define THREAD_MANAGER_READY   0x2c /* Thread *: first thread of the ready list */
+
+/* Thread::state values. */
+enum {
+    THREAD_STATE_WAITING  = 0, /* asleep on a queue */
+    THREAD_STATE_READY    = 1, /* runnable, on the ready list */
+    THREAD_STATE_FINISHED = 2  /* finished; the scheduler skips it */
+};
 
 typedef struct Thread {
     u8 pad00[0x64];
@@ -3784,6 +3963,7 @@ typedef struct DialogSequence {
     u8   pad10[8];
 } DialogSequence;
 #define DIALOG_SEQUENCE_COUNT 8
+#define DIALOG_SEQUENCE_STRIDE 0x18 /* one DialogSequence record */
 
 /* The ARM7 sound driver's shared command-argument buffer (gSoundCommandBuffer,
  * 640 bytes): two handshake counters the ARM9 polls, then 16 argument entries —

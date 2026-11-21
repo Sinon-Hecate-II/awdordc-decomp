@@ -172,19 +172,21 @@ void Ov001_ProfileScreenCallback(s32 event) {
 
 void func_ov001_02178250(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
-    void func_ov001_02178270(void);
+    void Ov001_LowerBackgroundPriorities(void);
     extern M2C_UNK func_ov001_021782d8;
-    func_ov001_02178270();
+    Ov001_LowerBackgroundPriorities();
     Ov001_ShowMessageBox(0x1F);
     Ov001_SetStepCallback(&func_ov001_021782d8);
 }
 
-void func_ov001_02178270(void) {
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+/* Put background planes 0-2 on both engines at the lowest priority, so the
+ * screen's sprites and text draw over them. */
+void Ov001_LowerBackgroundPriorities(void) {
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_021782d8(void) {
@@ -276,19 +278,21 @@ void func_ov001_0217842c(void) {
 }
 
 void func_ov001_02178460(void) {
-    void func_ov001_02178480(void);
+    void Ov001_ResetBackgroundPriorities(void);
     extern M2C_UNK func_ov001_021784e8;
-    func_ov001_02178480();
+    Ov001_ResetBackgroundPriorities();
     Ov001_ShowMessageBox(0x1A);
     Ov001_SetStepCallback(&func_ov001_021784e8);
 }
 
-void func_ov001_02178480(void) {
-    M2C_FIELD((void *)0x04001008, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x04001008, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3);
-    *(u16 *)0x04000008 = (*(u16 *)0x04000008 & ~3) | 3;
-    M2C_FIELD((void *)0x0400000A, u16 *, 0) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3);
-    M2C_FIELD((void *)0x0400000A, u16 *, 2) = (u16) ((M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3);
+/* Put background planes 0-2 on both engines at the lowest priority, so the
+   message box and sprites of this WFC step draw over them. */
+void Ov001_ResetBackgroundPriorities(void) {
+    REG_SUB_BG0CNT = (u16) ((REG_SUB_BG0CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_SUB_BG1CNT = (u16) ((REG_SUB_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG0CNT = (REG_BG0CNT & ~BG_PRIORITY_MASK) | 3;
+    REG_BG1CNT = (u16) ((REG_BG1CNT & ~BG_PRIORITY_MASK) | 3);
+    REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
 void func_ov001_021784e8(void) {
@@ -481,13 +485,16 @@ void func_ov001_0217889c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_021788bc;
+    extern M2C_UNK Ov001_FadeOutWfcEraseScreen;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_021788bc);
+    Ov001_SetStepCallback(&Ov001_FadeOutWfcEraseScreen);
 }
 
-void func_ov001_021788bc(void) {
+/* Fade the Wi-Fi data-erase screen out once the icon row's selection is locked:
+ * slide the icon row out (and fade its own panel too when the erase was not
+ * confirmed), fade out the erase screen, and continue to Ov001_CloseWfcEraseScreen. */
+void Ov001_FadeOutWfcEraseScreen(void) {
     extern u8 gOv001WfcEraseConfirmed;
     extern M2C_UNK Ov001_CloseWfcEraseScreen;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -584,14 +591,17 @@ void func_ov001_02178ae8(void) {
 
 }
 
-void func_ov001_02178aec(void) {
-    extern M2C_UNK func_ov001_02178b28;
+void Ov001_FadeOutProfileResultScreen(void) {
+    extern M2C_UNK Ov001_CloseProfileResultScreen;
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02178b28);
+    Ov001_SetStepCallback(&Ov001_CloseProfileResultScreen);
 }
 
-void func_ov001_02178b28(void) {
+/* Close the WFC profile-result screen once its fades have finished: release the
+ * result screen's background and panel, lower the visible planes, and return to
+ * the Wi-Fi option menu. */
+void Ov001_CloseProfileResultScreen(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     extern M2C_UNK Ov001_InitOptionMenu;
     if (Ov001_IsFadeActive(1) != 0) {
@@ -610,21 +620,21 @@ void func_ov001_02178b28(void) {
 
 void func_ov001_02178b8c(void) {
     extern s8 data_ov001_02193d7c;
-    void func_ov001_02178aec(void);
+    void Ov001_FadeOutProfileResultScreen(void);
     M2C_FIELD(&data_ov001_02193d7c,u8 *,0) = M2C_FIELD(&data_ov001_02193d7c,u8 *,0) + 1;
     if ((u32)M2C_FIELD(&data_ov001_02193d7c,u8 *,0) < 120U) return;
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178aec);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutProfileResultScreen);
 }
 
 void func_ov001_02178bc0(void) {
     s8 Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_LoadProfileReturnBg(void);
     extern s8 gOv001MessageState;
-    extern M2C_UNK func_ov001_02178c7c;
+    extern M2C_UNK Ov001_FadeInProfileReturnScreen;
     Ov001_LoadProfileReturnBg();
     Ov001_ShowMessageBox(0x20);
     gOv001MessageState = Ov001_ShowMessagePanel(0x3C, -1, 0);
-    Ov001_SetStepCallback(&func_ov001_02178c7c);
+    Ov001_SetStepCallback(&Ov001_FadeInProfileReturnScreen);
 }
 
 /* Reload the shared Multi map background ("char/yb5Multi.nsc.l") when the profile
@@ -642,19 +652,21 @@ void Ov001_LoadProfileReturnBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02178c7c(void) {
+/* Fade in the profile-return background and, when the message panel is on screen,
+ * the message window; then install the step that waits for the fades to finish. */
+void Ov001_FadeInProfileReturnScreen(void) {
     extern s8 gOv001MessageState;
-    void func_ov001_02178ce4(void);
+    void Ov001_WaitProfileReturnFadeIn(void);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
     if ((u8)gOv001MessageState != 0) {
         Ov001_StartFade(2, 1, 1, 8);
         Ov001_EnableVisiblePlanes(1, 1);
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178ce4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitProfileReturnFadeIn);
 }
 
-void func_ov001_02178ce4(void) {
+void Ov001_WaitProfileReturnFadeIn(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
     void func_ov001_02178d20(void);
@@ -723,13 +735,17 @@ void func_ov001_02178dfc(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02178e1c;
+    extern M2C_UNK Ov001_FadeOutMessageScreen;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02178e1c);
+    Ov001_SetStepCallback(&Ov001_FadeOutMessageScreen);
 }
 
-void func_ov001_02178e1c(void) {
+/* Fade the Wi-Fi settings screen's two-choice message popup out once the top
+ * screen's fade has finished: slide the icon row out (also fading its own panel
+ * when the first option was picked), fade out the settings screen, and continue
+ * to Ov001_CloseMessageScreen. */
+void Ov001_FadeOutMessageScreen(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_StartIconRowSlideOut(void);
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -739,7 +755,7 @@ void func_ov001_02178e1c(void) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    if (M2C_FIELD(&gOv001MessageState, u8 *, 1) == 0) {
+    if (M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);

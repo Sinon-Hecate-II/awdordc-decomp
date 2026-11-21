@@ -1,7 +1,7 @@
 /* 16 functions from 0x020251B8 to 0x02026164 (main), found by ds-decomp. */
 #include "common.h"
 #include "md5.h"
-void func_020258ac(void *, u32 *, u32);
+void StoreWordsBigEndian(void *, u32 *, u32);
 
 void func_020251b8(s32 now) {
 void OS_DisableInterrupts(void);void OS_RestoreInterrupts(void);void TaskWake(void *);
@@ -30,7 +30,7 @@ void func_02025298(void) {
     MI_CpuFill8(&gTlsSessionCache, 0, 0x170);
 }
 
-void func_020252b4(M2C_UNK *arg0, void *arg1, u32 arg2) {
+void CopyDigestBytes(M2C_UNK *arg0, void *arg1, u32 arg2) {
     void MI_CpuCopy8(s32, void *, u32);
     MI_CpuCopy8(arg1, arg0, arg2);
 }
@@ -133,23 +133,26 @@ void MD5_Update(void *context, s32 input, u32 length) {
 }
 
 
-void MD5_Final(void *arg0, M2C_UNK *arg1) {
-    void func_020252b4(M2C_UNK *, void *, u32);
+/* Finish an MD5 digest: write the 64-bit message length into the digest output,
+ * append the 0x80 padding and that length to the message, then copy the 16-byte
+ * chaining state to the output as the digest. */
+void MD5_Final(void *context, M2C_UNK *out) {
+    void CopyDigestBytes(M2C_UNK *, void *, u32);
     void MD5_Update(void *, s32, u32);
-    extern M2C_UNK data_020fb0a4;
-    s32 temp_r0;
-    s32 var_r2;
+    extern M2C_UNK gMd5Padding;
+    s32 index;
+    s32 padLength;
 
-    func_020252b4(arg1, arg0 + 0x10, 8);
-    temp_r0 = ((u32) M2C_FIELD(arg0, u32 *, 0x10) >> 3) & 0x3F;
-    if (temp_r0 < 0x38) {
-        var_r2 = 0x38 - temp_r0;
+    CopyDigestBytes(out, ((MD5Context *)context)->count, MD5_LENGTH_BYTES);
+    index = ((u32)((MD5Context *)context)->count[0] >> 3) & 0x3F;
+    if (index < MD5_PAD_LIMIT) {
+        padLength = MD5_PAD_LIMIT - index;
     } else {
-        var_r2 = 0x78 - temp_r0;
+        padLength = MD5_BLOCK_SIZE + MD5_PAD_LIMIT - index;
     }
-    MD5_Update(arg0, &data_020fb0a4, var_r2);
-    MD5_Update(arg0, arg1, 8);
-    func_020252b4(arg1, arg0, 0x10);
+    MD5_Update(context, &gMd5Padding, padLength);
+    MD5_Update(context, out, MD5_LENGTH_BYTES);
+    CopyDigestBytes(out, context, MD5_DIGEST_SIZE);
 }
 
 s32 func_02025868(s32 arg0, u32 *arg1) {
@@ -161,7 +164,7 @@ s32 func_02025868(s32 arg0, u32 *arg1) {
     return result;
 }
 
-void func_020258ac(void *arg0, u32 *arg1, u32 arg2) {
+void StoreWordsBigEndian(void *arg0, u32 *arg1, u32 arg2) {
     u8 *out = arg0;
     
     u32 i = 0;
@@ -300,27 +303,30 @@ void SHA1_Update(TlsSha1Context *ctx, void *data, u32 length) {
     MI_CpuCopy8((s32)(u8 *)data + count, ctx->block + index, length - count);
 }
 #pragma opt_strength_reduction reset
-void SHA1_Final(void *arg0, M2C_UNK *arg1) {
-    extern M2C_UNK data_020fb1e4;
-    s32 temp_r0;
-    s32 var_r2;
+/* Finish a SHA1 hash: write the 64-bit message bit count into the output buffer
+ * big-endian, feed the 0x80 padding block and then that count into the hash, and
+ * finally store the 20-byte digest over the output buffer. */
+void SHA1_Final(void *ctx, M2C_UNK *digest) {
+    extern u8 gSha1Padding;
+    s32 index;
+    s32 pad;
 
-    func_020258ac(arg1, arg0 + 0x14, 8);
-    temp_r0 = ((u32) M2C_FIELD(arg0, u32 *, 0x18) >> 3) & 0x3F;
-    if (temp_r0 < 0x38) {
-        var_r2 = 0x38 - temp_r0;
+    StoreWordsBigEndian(digest, ctx + 0x14, 8);
+    index = ((u32) M2C_FIELD(ctx, u32 *, 0x18) >> 3) & 0x3F;
+    if (index < 0x38) {
+        pad = 0x38 - index;
     } else {
-        var_r2 = 0x78 - temp_r0;
+        pad = 0x78 - index;
     }
-    SHA1_Update(arg0, &data_020fb1e4, var_r2);
-    SHA1_Update(arg0, arg1, 8);
-    func_020258ac(arg1, arg0, 0x14);
+    SHA1_Update(ctx, &gSha1Padding, pad);
+    SHA1_Update(ctx, digest, 8);
+    StoreWordsBigEndian(digest, ctx, 0x14);
 }
 
 void func_02026134(M2C_UNK arg0, M2C_UNK arg1) {
-    void func_020258ac(void *, u32 *, u32);
+    void StoreWordsBigEndian(void *, u32 *, u32);
     extern M2C_UNK data_020fb1e5;
     SHA1_Update(arg0, &data_020fb1e5, 0x2C);
-    func_020258ac(arg1, arg0, 0x14);
+    StoreWordsBigEndian(arg1, arg0, 0x14);
 }
 

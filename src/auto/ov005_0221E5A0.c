@@ -285,7 +285,7 @@ useSpecialTheme:
 void func_ov005_0221f038(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    s32 func_02081070(M2C_UNK *, M2C_UNK);
+    s32 LoadDecompressedFile(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov005_02220a44;
     extern M2C_UNK data_ov005_02220a6c;
     extern M2C_UNK gResultsScreenClass;
@@ -298,7 +298,7 @@ void func_ov005_0221f038(M2C_UNK arg0) {
     }
     M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov005_02220fe0;
     SetFileDirectory(&data_ov005_02220a44);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = func_02081070(&data_ov005_02220a6c, 1);
+    M2C_FIELD(temp_r0, s32 *, 0x34) = LoadDecompressedFile(&data_ov005_02220a6c, 1);
 }
 
 #pragma peephole off
@@ -315,7 +315,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK Set3DSpriteVramBanks();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK LoadScenePanelGraphicsOnBothEngines();
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
@@ -410,7 +410,7 @@ void func_ov005_0221f084(void *arg0) {
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x34), 1, 0x120, 3, 1);
     {
     void *temp_r4 = M2C_FIELD(arg0, void **, 0x34);
-    func_02088e84(temp_r4, 0xE0, 0xA0, 0xE0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r4, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r4, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_2 = 1;
     } else {
@@ -430,23 +430,26 @@ void func_ov005_0221f084(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x38) = 0;
 }
 #pragma peephole reset
-void func_ov005_0221f3e8(void *arg0) {
+/* Per-frame handler of the results screen: once the player presses an action
+ * key (A/B/START/X/Y) or starts a touch, hand the sprite back to its animation;
+ * until then count the waiting frames at +0x38, capped at 0x84. */
+void WaitForResultsInput(void *sprite) {
     M2C_UNK Sprite_ResumeAnimation();
     extern u16 *gKeyState;
     extern void *gTouchState;
-    s32 temp_r1;
+    s32 waitFrames;
 
-    if (*gKeyState & 0xC0B) {
+    if (*gKeyState & (KEY_A | KEY_B | KEY_START | KEY_X | KEY_Y)) {
         Sprite_ResumeAnimation();
         return;
     }
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) != 0) {
         Sprite_ResumeAnimation();
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0x38);
-    if (temp_r1 < 0x84) {
-        M2C_FIELD(arg0, s32 *, 0x38) = (s32) (temp_r1 + 1);
+    waitFrames = M2C_FIELD(sprite, s32 *, 0x38);
+    if (waitFrames < 0x84) {
+        M2C_FIELD(sprite, s32 *, 0x38) = (s32) (waitFrames + 1);
     }
 }
 

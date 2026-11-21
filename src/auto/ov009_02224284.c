@@ -47,7 +47,7 @@ u16 func_ov009_0222429c(void) {
 
 #pragma scheduling off
 s32 func_ov009_022242c8(void) {
-    s32 func_ov009_02224508(s32);
+    s32 IsLinkResultFlagSet(s32);
     M2C_UNK ResetLinkQueues(void);
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
     void func_ov009_022213f0(M2C_UNK, M2C_UNK);
@@ -70,11 +70,11 @@ s32 func_ov009_022242c8(void) {
     void ClearLinkEventFlags(void);
     s32 func_ov009_02222790(void);
     extern M2C_UNK gLinkState;
-    extern M2C_UNK data_ov009_02226a20;
+    extern M2C_UNK gLinkLocalPlayerInfo;
     extern M2C_UNK data_ov009_02226a40;
     extern M2C_UNK gLinkSession;
     extern M2C_UNK gLinkPlayers;
-    extern M2C_UNK data_ov009_02226cc0;
+    extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkDownloadHeader;
     extern M2C_UNK gLinkConnectionExtraData;
 
@@ -88,7 +88,7 @@ s32 func_ov009_022242c8(void) {
     s32 r4v;
     s32 r0v;
 
-    if (func_ov009_02224508(0) != 0) {
+    if (IsLinkResultFlagSet(0) != 0) {
         return 1;
     }
     M2C_FIELD(&gLinkState, s32 *, 0x14) = 0;
@@ -99,7 +99,7 @@ s32 func_ov009_022242c8(void) {
     M2C_FIELD(&gLinkState, s32 *, 0x20) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x28) = 0;
     M2C_FIELD(&gLinkState, s32 *, 0x24) = 0;
-    MI_CpuFill8(&data_ov009_02226a20, 0, 0x16);
+    MI_CpuFill8(&gLinkLocalPlayerInfo, 0, 0x16);
 
     M2C_FIELD(&gLinkState, s8 *, 0x156) = 0;
     r4v = z - 1;
@@ -125,7 +125,7 @@ s32 func_ov009_022242c8(void) {
 
     sp18 = &stk[6];
     cur = (u8 *)&gLinkPlayers;
-    end = (u8 *)&data_ov009_02226cc0;
+    end = (u8 *)&gLinkPeerSlots;
     for (;cur != end;) {
         s32 val = sp18[1];
         u8 *obj = cur + (val >> 1);
@@ -139,7 +139,7 @@ s32 func_ov009_022242c8(void) {
     stk[0] = stk[6];
     stk[1] = stk[7];
 
-    func_ov009_022213f0((s32)&data_ov009_02226a20, (s32)GetLocalPlayerName());
+    func_ov009_022213f0((s32)&gLinkLocalPlayerInfo, (s32)GetLocalPlayerName());
 
     GetEarnedRecordTierTotal();
     M2C_FIELD(&gLinkState, s8 *, 0x158) = (u8)func_ov000_0216a564();
@@ -180,13 +180,13 @@ void func_ov009_022244d4(s32 arg0) {
     M2C_FIELD(&gLinkState, s32 *, 0x50) = 1 << arg0;
 }
 
-void func_ov009_022244ec(s32 arg0) {
+void SetLinkResultFlag(s32 arg0) {
     extern M2C_UNK gLinkState;
     M2C_FIELD(&gLinkState, s32 *, (unsigned)0x50) =
         (M2C_FIELD(&gLinkState, s32 *, 0x50) | (1 << arg0));
 }
 
-s32 func_ov009_02224508(s32 arg0) {
+s32 IsLinkResultFlagSet(s32 arg0) {
     extern M2C_UNK gLinkState;
     s32 var_r2 = 1;
     if (!(M2C_FIELD(&gLinkState, s32 *, 0x50) & (1 << arg0))) {
@@ -195,7 +195,7 @@ s32 func_ov009_02224508(s32 arg0) {
     return var_r2;
 }
 
-void func_ov009_02224528(s32 arg0) {
+void ClearLinkResultFlag(s32 arg0) {
     extern M2C_UNK gLinkState;
     s32 v;
     v = M2C_FIELD(&gLinkState, s32 *, 0x50);
@@ -219,7 +219,7 @@ extern "C" s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK data_ov009_02226968;
     extern M2C_UNK gLinkSession;
     extern M2C_UNK data_ov009_0222696e;
-    extern M2C_UNK data_ov009_02226cc0;
+    extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkConnectionExtraData;
 
     s32 stk[8];
@@ -256,7 +256,7 @@ extern "C" s32 func_ov009_02224560(s32 arg0, s32 arg1, s32 arg2) {
     stk[0] = x;
     stk[1] = y;
 
-    cur = (u8 *)&data_ov009_02226cc0;
+    cur = (u8 *)&gLinkPeerSlots;
     end = (u8 *)&gLinkConnectionExtraData;
     goto test;
 next:
@@ -275,7 +275,7 @@ test:
     return 0;
 }
 #pragma cplusplus off
-s32 func_ov009_02224688(void) {
+s32 AdvanceLinkRequestToPending(void) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     if (GetLinkPhase() != 2) {
         return 0;
@@ -285,14 +285,19 @@ s32 func_ov009_02224688(void) {
 }
 
 #pragma cplusplus on
-extern "C" s32 func_ov009_022246ac(s32 arg0) {
-extern M2C_UNK data_ov009_02226cc0;
-Ov009InterruptGuard guard;
-s32 result = (s32)&data_ov009_02226cc0 + arg0 * 0xc8;
-if (M2C_FIELD(result, s32 *, 0xc4) == 0 ||
-    M2C_FIELD(result, u16 *, 0x3c) < 0x10U ||
-    M2C_FIELD(result, u16 *, 0x40) != 1) result = 0;
-return result;
+/* Return the unit record a Download Play peer slot carries, or 0 when the slot is
+ * free, its block holds no usable transfer, or the record is not a unit. */
+extern "C" s32 GetLinkPlayerUnit(s32 slot) {
+    extern M2C_UNK gLinkPeerSlots;
+    Ov009InterruptGuard guard;
+    s32 unit = (s32)&gLinkPeerSlots + slot * LINK_PEER_SLOT_STRIDE;
+
+    if (M2C_FIELD(unit, s32 *, LINK_PEER_SLOT_IN_USE) == 0 ||
+        M2C_FIELD(unit, u16 *, LINK_PEER_DATA_LENGTH) < LINK_PEER_MIN_DATA ||
+        M2C_FIELD(unit, u16 *, LINK_PEER_DATA_TYPE) != LINK_PEER_TYPE_UNIT) {
+        unit = 0;
+    }
+    return unit;
 }
 #pragma cplusplus off
 s32 func_ov009_02224718(s32 arg0) {
@@ -320,11 +325,11 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     s32 GetGameGroupId(void);
     s32 func_ov009_02222ac4(void);
     extern M2C_UNK gLinkDownloadHeader;
-    extern M2C_UNK data_ov009_02226a20;
+    extern M2C_UNK gLinkLocalPlayerInfo;
     extern M2C_UNK gLinkState;
     extern M2C_UNK gLinkSession;
     extern M2C_UNK gLinkPlayers;
-    extern M2C_UNK data_ov009_02226cc0;
+    extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022266b0;
     extern M2C_UNK data_ov009_02226638;
@@ -376,7 +381,7 @@ loop:
         base = (s32 *)((u8 *)base + 0x60);
     }
 test:
-    if (base != (s32 *)&data_ov009_02226cc0) goto loop;
+    if (base != (s32 *)&gLinkPeerSlots) goto loop;
 
 
     x = stk[3].first;
@@ -407,7 +412,7 @@ test:
     M2C_FIELD(&gLinkDownloadHeader,u16 *,0x12)=0;
     M2C_FIELD(&gLinkDownloadHeader,u16 *,0xe)=1;
     M2C_FIELD(&gLinkDownloadHeader,u16 *,0x14)=0;
-    M2C_FIELD(&gLinkState,s32 *,0x100)=(s32)&data_ov009_02226a20;
+    M2C_FIELD(&gLinkState,s32 *,0x100)=(s32)&gLinkLocalPlayerInfo;
     M2C_FIELD(&gLinkDownloadHeader,u16 *,4)=0x60;
     ptr = CreateSpriteFromClass((s32)&gLinkActorClass, 3);
     if (ptr != 0) {
@@ -469,7 +474,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gLinkState;
     extern M2C_UNK gLinkSession;
     extern M2C_UNK gLinkPlayers;
-    extern M2C_UNK data_ov009_02226cc0;
+    extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022266b0;
     extern M2C_UNK data_ov009_02226638;
@@ -520,7 +525,7 @@ loop:
         base = (s32 *)((u8 *)base + 0x60);
     }
 test:
-    if (base != (s32 *)&data_ov009_02226cc0) goto loop;
+    if (base != (s32 *)&gLinkPeerSlots) goto loop;
 
 
     {
@@ -636,7 +641,7 @@ s32 func_ov009_02224c34(M2C_UNK arg0) {
     return 0;
 }
 
-s32 func_ov009_02224c70(void) {
+s32 PublishLinkPlayerRecord(void) {
     s32 SubmitLinkDownloadData();
     s32 GetLinkRequestKind();
     if (GetLinkRequestKind() != 0) {

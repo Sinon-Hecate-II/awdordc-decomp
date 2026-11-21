@@ -14,7 +14,7 @@ void func_ov001_02181a84(void) {
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK);
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     extern M2C_UNK data_ov001_0218fb38;
     extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218fafa;
@@ -33,16 +33,16 @@ void func_ov001_02181a84(void) {
     M2C_UNK rowByte;
 
     r4 = GetCurrentMapRecord();
-    M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) = 0;
-    if ((s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) == 0) {
-        M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) = 1;
+    M2C_FIELD(&gOv001IconMenuState, u8 *, 2) = 0;
+    if ((s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 0) == 0) {
+        M2C_FIELD(&gOv001IconMenuState, s8 *, 0) = 1;
     }
     if (Ov001_GetLanguage() != 0) {
-        if ((s8)M2C_FIELD(&data_ov001_02193dd4, u8 *, 1) == 2) {
-            M2C_FIELD(&data_ov001_02193dd4, u8 *, 1) = 0;
+        if ((s8)M2C_FIELD(&gOv001IconMenuState, u8 *, 1) == 2) {
+            M2C_FIELD(&gOv001IconMenuState, u8 *, 1) = 0;
         }
-        if ((s8)M2C_FIELD(&data_ov001_02193dd4, u8 *, 0) == 2) {
-            M2C_FIELD(&data_ov001_02193dd4, u8 *, 0) = 1;
+        if ((s8)M2C_FIELD(&gOv001IconMenuState, u8 *, 0) == 2) {
+            M2C_FIELD(&gOv001IconMenuState, u8 *, 0) = 1;
         }
         func_ov001_02181ba8();
         Ov001_LoadSaveSlotObjLayout();
@@ -61,7 +61,7 @@ void func_ov001_02181a84(void) {
     r3 = Ov001_HasOptionFlag(1);
 
     r12p = (M2C_UNK)((u8 *)&data_ov001_0218faf6 + r6 * 32);
-    rowByte = (s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 1);
+    rowByte = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
     r1p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r5 * 32);
     r2p = (M2C_UNK)((u8 *)&data_ov001_0218faf8 + r4 * 32);
     r5 = rowByte * 8;
@@ -85,7 +85,7 @@ void func_ov001_02181ba8(void) {
     extern M2C_UNK data_ov001_02190a0c;
     extern M2C_UNK data_ov001_02190a24;
     extern M2C_UNK data_ov001_02190a3c;
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     extern M2C_UNK GX_LoadBGPltt;
     extern M2C_UNK GX_LoadBG2Scr;
     extern M2C_UNK GX_LoadBG2Char;
@@ -94,7 +94,7 @@ void func_ov001_02181ba8(void) {
     Ov001_LoadAsset(&data_ov001_02190a0c, &GX_LoadBG2Char);
     Ov001_LoadAsset(&data_ov001_02190a24, &GX_LoadBGPltt);
     Ov001_LoadAsset(&data_ov001_02190a3c, &GX_LoadBG2Scr);
-    M2C_FIELD(&data_ov001_02193dd4, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&pathBuffer), 0, 4);
+    M2C_FIELD(&gOv001IconMenuState, s32 *, 4) = Ov001_LoadFile(Ov001_LocalizePath(&pathBuffer), 0, 4);
     M2C_FIELD((void *)0x04001008, u16 *, 0) = (M2C_FIELD((void *)0x04001008, u16 *, 0) & ~3) | 3;
     M2C_FIELD((void *)0x04001008, u16 *, 2) = (M2C_FIELD((void *)0x04001008, u16 *, 2) & ~3) | 3;
     M2C_FIELD((void *)0x0400000A, u16 *, 0) = (M2C_FIELD((void *)0x0400000A, u16 *, 0) & ~3) | 3;
@@ -160,7 +160,7 @@ void func_ov001_02181d60(void) {
     extern M2C_UNK data_ov001_0218faf8;
     extern M2C_UNK data_ov001_0218fafa;
     extern M2C_UNK data_ov001_0218fafc;
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
 
     u32 index;
     u8 *entry;
@@ -172,13 +172,13 @@ void func_ov001_02181d60(void) {
         entry = (u8 *)&data_ov001_0218fab6 + Ov001_HasOptionFlag(1) * 32 + index * 8;
         if (TouchRectPressed(entry) != 0) {
             Ov001_LatchIconRowSelection(1);
-            M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = (s8)index;
+            M2C_FIELD(&gOv001IconMenuState, s8 *, 1) = (s8)index;
             r6 = Ov001_HasOptionFlag(1);
             r5 = Ov001_HasOptionFlag(1);
             r4 = Ov001_HasOptionFlag(1);
             r3 = Ov001_HasOptionFlag(1);
             r12p = (M2C_UNK)((u8 *)&data_ov001_0218faf6 + r6 * 32);
-            rowByte = (s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 1);
+            rowByte = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
             r1p = (M2C_UNK)((u8 *)&data_ov001_0218fafa + r5 * 32);
             r2p = (M2C_UNK)((u8 *)&data_ov001_0218faf8 + r4 * 32);
             r5 = rowByte * 8;
@@ -210,13 +210,13 @@ void func_ov001_02181ee8(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void func_ov001_021821e4(void);
     void func_ov001_02181f3c(void);
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
         func_ov001_021821e4();
-        M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) = 1;
+        M2C_FIELD(&gOv001IconMenuState, u8 *, 2) = 1;
         break;
     default: return;
     }
@@ -227,24 +227,27 @@ void func_ov001_02181f3c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02181f5c;
+    extern M2C_UNK Ov001_FadeOutMenu;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02181f5c);
+    Ov001_SetStepCallback(&Ov001_FadeOutMenu);
 }
 
-void func_ov001_02181f5c(void) {
+/* Fade out the ov001 icon menu after its choice was locked: slide the icon row
+ * out when the choice was confirmed (not cancelled), fade the screen, and hand
+ * over to Ov001_MenuConfirm. */
+void Ov001_FadeOutMenu(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     extern M2C_UNK Ov001_MenuConfirm;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (M2C_FIELD(&data_ov001_02193dd4, u8 *, 2) != 0) {
+    if (((Ov001IconMenuState *) &gOv001IconMenuState)->confirmed != 0) {
         Ov001_StartIconRowSlideOut();
     }
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x14, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_MenuConfirm);
 }
 
@@ -254,17 +257,17 @@ void func_ov001_02181f5c(void) {
  * mode, the region menu (when the menu flag is set) or the map-list/name-entry
  * path (case 3). */
 void Ov001_MenuConfirm(void){
-extern M2C_UNK data_ov001_02193dd4;
-extern M2C_UNK Ov001_OpenAccessPointMenu,func_ov001_02180860,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
+extern M2C_UNK gOv001IconMenuState;
+extern M2C_UNK Ov001_OpenAccessPointMenu,Ov001_OpenFriendListScreen,func_ov001_02179718,func_ov001_021803ec,InitMapListScreen;
 s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
 if(!Ov001_IsIconRowIdle())return;
-Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();Ov001_FreeFile(M2C_FIELD(&data_ov001_02193dd4,void **,4));
+Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();Ov001_FreeFile(M2C_FIELD(&gOv001IconMenuState,void **,4));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,20);
-if(!M2C_FIELD(&data_ov001_02193dd4,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);return;}
-switch(M2C_FIELD(&data_ov001_02193dd4,s8 *,1)){
-case 0:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02180860);return;
+if(!M2C_FIELD(&gOv001IconMenuState,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&Ov001_OpenAccessPointMenu);return;}
+switch(M2C_FIELD(&gOv001IconMenuState,s8 *,1)){
+case 0:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);return;
 case 1:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02179718);return;
 case 2:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
 case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);SetMapListMode(1);Ov001_SetStepCallback(&InitMapListScreen);return;
@@ -275,7 +278,7 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     extern M2C_UNK data_ov001_0218fa96;
     extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218fafa;
@@ -290,7 +293,7 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     s32 r6, r5, temp_r4b, r3;
     M2C_UNK a, b, c, d;
 
-    temp_r4 = (s8)M2C_FIELD(&data_ov001_02193dd4, s8 *, 1);
+    temp_r4 = (s8)M2C_FIELD(&gOv001IconMenuState, s8 *, 1);
     temp_idx = Ov001_HasOptionFlag(1);
     temp_offset = (s32)&data_ov001_0218fa96 + temp_idx * 16 + temp_r4 * 4;
     temp_val = M2C_FIELD(arg0, s8 *, temp_offset);
@@ -298,20 +301,20 @@ void func_ov001_021820f0(M2C_UNK arg0) {
         return;
     }
     if (temp_val == 0) {
-        M2C_FIELD(&data_ov001_02193dd4, s8 *, 0) = temp_r4;
+        M2C_FIELD(&gOv001IconMenuState, s8 *, 0) = temp_r4;
     }
     if (temp_val != -2) {
-        M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = temp_val;
+        M2C_FIELD(&gOv001IconMenuState, s8 *, 1) = temp_val;
         return;
     }
 
-    M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) = M2C_FIELD(&data_ov001_02193dd4, s8 *, 0);
+    M2C_FIELD(&gOv001IconMenuState, s8 *, 1) = M2C_FIELD(&gOv001IconMenuState, s8 *, 0);
     Ov001_PlaySound(8);
     r6 = Ov001_HasOptionFlag(1);
     r5 = Ov001_HasOptionFlag(1);
     temp_r4b = Ov001_HasOptionFlag(1);
     r3 = Ov001_HasOptionFlag(1);
-    row = M2C_FIELD(&data_ov001_02193dd4, s8 *, 1) * 8;
+    row = M2C_FIELD(&gOv001IconMenuState, s8 *, 1) * 8;
 
     a = *(u16 *)((u8 *)&data_ov001_0218faf6 + r6 * 32 + row);
     b = *(u16 *)((u8 *)&data_ov001_0218fafa + r5 * 32 + row);
@@ -325,10 +328,10 @@ void func_ov001_021821e4(void) {
     M2C_UNK Ov001_LoadObjTile(s32, u8, u8);
     struct Table { u8 values[4]; };
     extern struct Table data_ov001_0218fa7c;
-    extern M2C_UNK data_ov001_02193dd4;
+    extern M2C_UNK gOv001IconMenuState;
     struct Table table = data_ov001_0218fa7c;
-    u8 value = table.values[M2C_FIELD(&data_ov001_02193dd4, s8 *, 1)];
-    Ov001_LoadObjTile(M2C_FIELD(&data_ov001_02193dd4, s32 *, 4), value, value);
+    u8 value = table.values[M2C_FIELD(&gOv001IconMenuState, s8 *, 1)];
+    Ov001_LoadObjTile(M2C_FIELD(&gOv001IconMenuState, s32 *, 4), value, value);
 }
 
 /* Entry step of the online match's WFC connect screen: load its background, show

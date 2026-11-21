@@ -94,13 +94,15 @@ i++;
 gCur3DSpriteEngine=saved;
 }
 
-void func_ov011_02224f00(M2C_UNK arg0) {
+/* Load the intro's fourth stage: asset sets 7 and 8 onto screen buffers 0 and 1,
+ * set 4 on screen 0, then submit the stage's 2D sprite quad. */
+void LoadIntroStage4Assets(M2C_UNK entry) {
     M2C_UNK LoadOpeningScreenAssets(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    func_ov011_022216d8(arg0, 7, 0, 3);
-    func_ov011_022216d8(arg0, 8, 1, 3);
-    LoadOpeningScreenAssets(arg0, 4, 0);
-    G3_SubmitSpriteQuad(arg0, 2, 2, 0x80, 0x20);
+    func_ov011_022216d8(entry, 7, 0, 3);
+    func_ov011_022216d8(entry, 8, 1, 3);
+    LoadOpeningScreenAssets(entry, 4, 0);
+    G3_SubmitSpriteQuad(entry, 2, 2, 0x80, 0x20);
 }
 
 void func_ov011_02224f64(void) {

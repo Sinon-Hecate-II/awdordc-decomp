@@ -113,23 +113,26 @@ s8 func_0203bf80(s8 arg0, s32 arg1, s32 arg2) {
     return var_r7;
 }
 #pragma pop
-s32 func_0203c0b0(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Read the integer value of `key` from the server at `index` in the current
+ * connection's browsed server list, falling back to `defaultValue` when there is
+ * no connection, the network is in error, or no server has that index. */
+s32 GetBrowsedServerValue(s32 index, void *key, s32 defaultValue) {
     s32 HasNetError();
     void *GetConnection();
     s32 SBServerGetIntValue(s32, M2C_UNK, s32);
     s32 SBServerListGetServer(s32, M2C_UNK);
-    s32 temp_r0;
-    s32 var_r4;
+    s32 server;
+    s32 value;
 
-    var_r4 = arg2;
+    value = defaultValue;
     if ((GetConnection() == NULL) || (HasNetError() != 0)) {
-        return var_r4;
+        return value;
     }
-    temp_r0 = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, 0xE4), arg0);
-    if (temp_r0 != 0) {
-        var_r4 = SBServerGetIntValue(temp_r0, arg1, var_r4);
+    server = SBServerListGetServer(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SERVER_BROWSER), index);
+    if (server != 0) {
+        value = SBServerGetIntValue(server, key, value);
     }
-    return var_r4;
+    return value;
 }
 
 /* Initialises the network connection object and makes it the active one: stores

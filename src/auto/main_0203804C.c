@@ -400,7 +400,23 @@ s32 LeaveNetMatch(void) {
     return 0;
 }
 
-s32 DisconnectPeerSlot(s32 a){extern void *gNetSession;s32 HasNetError(void);void *FindPlayerConnection(s32);void GT2FailConnectionAttempt(void *);s32 state;void *p;if(!gNetSession || HasNetError() || ((state=M2C_FIELD(gNetSession,s32 *,0x24))!=5 && state!=6))return -1;p=FindPlayerConnection(a);if(!p)return -2;GT2FailConnectionAttempt(p);return 0;}
+/* Fail the connection of the player with `playerId` while a match is being set
+ * up or already running: -1 when no session is up or no match is active, -2
+ * when the player has no connection, 0 once its connection attempt is failed. */
+s32 DisconnectPeerSlot(s32 playerId) {
+    extern void *gNetSession;
+    s32 HasNetError(void);
+    void *FindPlayerConnection(s32);
+    void GT2FailConnectionAttempt(void *);
+    s32 state;
+    void *connection;
+
+    if (!gNetSession || HasNetError() || ((state = M2C_FIELD(gNetSession, s32 *, NET_SESSION_STATE)) != NET_STATE_STARTING && state != NET_STATE_MATCH)) return -1;
+    connection = FindPlayerConnection(playerId);
+    if (!connection) return -2;
+    GT2FailConnectionAttempt(connection);
+    return 0;
+}
 
 s32 func_02038e4c(void){extern void *gNetSession;s32 func_0203e2c4(void);s32 func_0203e2a4(void);if(!gNetSession)return 0;if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e2c4()+1;return func_0203e2a4()+1;}
 
@@ -414,7 +430,7 @@ u8 GetLocalPlayerId(void) {
 
 s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayerSlots(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return GetActivePlayerSlots(a);return func_0203e338(a);}
 
-s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 func_02039284(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return func_02039284(a,b);}
+s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 MaskPlayerIds(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return MaskPlayerIds(a,b);}
 
 s32 IsConnectionActive(s32 a){extern void *gNetSession;s32 HasPlayerConnection(s32);if(!gNetSession)return 0;if(!(M2C_FIELD(gNetSession,u32 *,0x664)&(1<<a)))return 0;return HasPlayerConnection(a);}
 

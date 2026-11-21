@@ -18,7 +18,7 @@ static inline void boxBounds(s32 x,s32 y,u32 w,u32 h,void *p) { boxPosition(p,x,
 void *FindObjectByClass(void*);
 void Sprite_ResumeAnimation(void*);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-void func_02088e84(void*,s32,s16,s32,s32);
+void Set3DSpriteSlideTargetAndStart(void*,s32,s16,s32,s32);
 s32 GetUnitSpriteWidth(void*);
 s32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s16,s16,s32,s32);
@@ -73,7 +73,7 @@ void ResultsScreenAnimate(void *arg0) {
   panelY=(s16)M2C_FIELD(arg0,s32*,0x44);
   /* the two marker sprites of the scene, at display object offsets 0x3c and 0x40 */
   leftSprite=M2C_FIELD(FindObjectByClass(gResultsScreenClass),void**,60);
-  func_02088e84(leftSprite,160,panelY,160,panelY);
+  Set3DSpriteSlideTargetAndStart(leftSprite,160,panelY,160,panelY);
   if((u8)(M2C_FIELD(M2C_FIELD(leftSprite,void**,0x64),u8*,18)!=0)){
   spriteY=M2C_FIELD(leftSprite,s16*,0x52); spriteX=M2C_FIELD(leftSprite,s16*,0x50);
   width=GetUnitSpriteWidth(leftSprite); height=GetUnitSpriteHeight(leftSprite);
@@ -86,7 +86,7 @@ void ResultsScreenAnimate(void *arg0) {
   { void *rightSprite; s16 spriteY2,spriteX2,panelY2; s32 width2,height2;
   panelY2=(s16)M2C_FIELD(arg0,s32*,0x44);
   rightSprite=M2C_FIELD(FindObjectByClass(gResultsScreenClass),void**,64);
-  func_02088e84(rightSprite,224,panelY2,224,panelY2);
+  Set3DSpriteSlideTargetAndStart(rightSprite,224,panelY2,224,panelY2);
   if((u8)(M2C_FIELD(M2C_FIELD(rightSprite,void**,0x64),u8*,18)!=0)){
   spriteY2=M2C_FIELD(rightSprite,s16*,0x52); spriteX2=M2C_FIELD(rightSprite,s16*,0x50);
   width2=GetUnitSpriteWidth(rightSprite); height2=GetUnitSpriteHeight(rightSprite);
@@ -111,23 +111,23 @@ void ResultsScreenAnimate(void *arg0) {
 }
 
 void func_ov005_0221cff8(void *arg0) {
-void *FindObjectByClass(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 GetUiColor();
-extern u8 gResultsScreenClass[];
+void *func_01ffa770(void*);void *func_020896f0(void*);s32 func_020cfb94();s32 func_020ae22c();
+extern u8 data_ov005_02220d50[];
 s32 i,y;void *sprite,*p;u32 width,height;
-func_020aad18(M2C_FIELD(FindObjectByClass(gResultsScreenClass),s32*,0x38));
-func_020aad18(M2C_FIELD(FindObjectByClass(gResultsScreenClass),s32*,0x3c));
-func_020aad18(M2C_FIELD(FindObjectByClass(gResultsScreenClass),s32*,0x40));
+func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x38));
+func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x3c));
+func_020aad18(M2C_FIELD(func_01ffa770(data_ov005_02220d50),s32*,0x40));
 i=0;
 if(func_020cfb94()>0){y=79;do{
-AddSpriteCell(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
+func_02087d18(M2C_FIELD(arg0,void**,0x34),(s16)y,170,16,16,(u16)(i+3),12);
 i++;y+=20;
 }while(i<func_020cfb94());}
 func_02087f00(M2C_FIELD(arg0,void**,0x34),3);
 M2C_FIELD(arg0,void**,0x38)=func_020896f0(arg0);
-func_020893a8(M2C_FIELD(arg0,void**,0x38),4096,1,GetUiColor(9));
+func_020893a8(M2C_FIELD(arg0,void**,0x38),4096,1,func_020ae22c(9));
 sprite=M2C_FIELD(arg0,void**,0x38);p=*(void**)M2C_FIELD(arg0,void**,0x34);
 boxBounds(boxX(p)-1,boxY(p)-1,boxWidth(p)+2,boxHeight(p)+2,sprite);
-Sync3DSpriteToTarget(M2C_FIELD(arg0,void**,0x38));
+func_02089438(M2C_FIELD(arg0,void**,0x38));
 }
 
 extern u8 *gTouchState;

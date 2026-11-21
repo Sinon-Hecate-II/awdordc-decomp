@@ -298,7 +298,7 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
    the owner's army index plus the acted/selected flags, fills the shared render
    context, draws the body and then the status icons on either side of it. */
 void RenderUnitSprite(Vec3 *origin,RenderUnit *unit,s32 player,s32 flags,s32 extra,u8 mode){
-s32 func_020a7298(s32,u8);s32 GetViewZoom(s32);s32 Divide(s32,s32);
+s32 GetUnitVariantIndex(s32,u8);s32 GetViewZoom(s32);s32 Divide(s32,s32);
 void func_020793f0(UnitRenderContext *);void DrawUnitStatusIcon(Vec3 *,UnitRenderContext *);void DrawUnitHpIcon(Vec3 *,UnitRenderContext *);
 extern s32 *gCurrentMap;
 Vec3 pos;UnitRenderContext ctx; s32 spriteVariant;
@@ -307,7 +307,7 @@ spriteVariant=M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_I
 if(flags&0x200)spriteVariant+=4;
 if(flags&0x400)spriteVariant+=8;
 ctx.pos=pos;ctx.unit=unit;
-ctx.kind=func_020a7298(unit->kind,M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+ctx.kind=GetUnitVariantIndex(unit->kind,M2C_FIELD(*gCurrentMap+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
 ctx.frame=GetViewZoom(*gCurrentMap+MAP_VIEW_ZOOM)<=0?16:24;
 ctx.variant=spriteVariant;ctx.flags=flags;
 ctx.side=unit->side;

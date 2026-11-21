@@ -168,7 +168,7 @@ return p->handle!=0;
    it with the profile id; the packet is otherwise ignored. */
 s32 gpiProcessNewPlayer(void **connection,void *request,s32 command) {
 s32 gpiProcessErrorReply(void **,s32,s32);void gpiSetError(void **,s32,s32);s32 gpiSetErrorString(s32,s32 *);
-s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void func_02054484(void **,void *);
+s32 StringCompareN(s32,void *,s32);void gpiCallErrorCallback(void *,s32,s32);void *gpiMalloc(s32);s32 gpiAddCallback(void *,Unk02050838Pair,s32 *,void *,s32);void gpiRemoveOperation(void **,void *);
 s32 gpiValueForKey(s32,void *,void *,s32);s32 ParseInt(void *);
 extern M2C_UNK gGpiNewPlayerTag,gGpiMsgUnexpectedData,gGpiProfileIdKey,gGpiNewPlayerMsgOutOfMemory;
 char idText[16];Unk02050838Pair callback;s32 *data;s32 result;s32 profileId;
@@ -178,7 +178,7 @@ if(!gpiValueForKey(command,&gGpiProfileIdKey,idText,16)){gpiSetError(connection,
 profileId=ParseInt(idText);
 callback=*(Unk02050838Pair *)((u8 *)request+12);
 if(callback.unk_0){data=gpiMalloc(8);if(!data){gpiSetErrorString((s32)connection,(s32 *)&gGpiNewPlayerMsgOutOfMemory);return 1;}data[1]=profileId;data[0]=0;result=gpiAddCallback(connection,callback,data,request,0);if(result)return result;}
-func_02054484(connection,request);return 0;
+gpiRemoveOperation(connection,request);return 0;
 }
 
 /* Get the buddy status record of player `playerId`, creating an empty (zeroed)

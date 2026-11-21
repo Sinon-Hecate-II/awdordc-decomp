@@ -68,7 +68,7 @@ func_ov003_021e6430 kind:function(arm,size=0x14) addr:0x021e6430
 func_ov003_021e6444 kind:function(arm,size=0x2c) addr:0x021e6444
 func_ov003_021e6470 kind:function(arm,size=0xc) addr:0x021e6470
 func_ov003_021e647c kind:function(arm,size=0x2c) addr:0x021e647c
-func_ov003_021e64a8 kind:function(arm,size=0x530) addr:0x021e64a8
+CreateOv003Scene kind:function(arm,size=0x530) addr:0x021e64a8
 Ov003Scene_Destructor kind:function(arm,size=0x118) addr:0x021e69d8
 func_ov003_021e6af0 kind:function(arm,size=0x14) addr:0x021e6af0
 func_ov003_021e6b04 kind:function(arm,size=0x4) addr:0x021e6b04
@@ -142,7 +142,7 @@ func_ov003_021ea134 kind:function(arm,size=0x20) addr:0x021ea134
 DrawWaypointOption kind:function(arm,size=0x128) addr:0x021ea154
 func_ov003_021ea27c kind:function(arm,size=0x18) addr:0x021ea27c
 func_ov003_021ea294 kind:function(arm,size=0x18) addr:0x021ea294
-func_ov003_021ea2ac kind:function(arm,size=0x68) addr:0x021ea2ac
+Reset3DSpriteBankDisplay kind:function(arm,size=0x68) addr:0x021ea2ac
 Ov003_SyncLinkSlots kind:function(arm,size=0xe0) addr:0x021ea314
 WaypointPanel_RefreshPlayerReady kind:function(arm,size=0xb4) addr:0x021ea3f4
 func_ov003_021ea4a8 kind:function(arm,size=0xd4) addr:0x021ea4a8
@@ -207,7 +207,7 @@ func_ov003_021f05fc kind:function(arm,size=0x3e0) addr:0x021f05fc
 ShutdownBattleObject kind:function(arm,size=0x3f0) addr:0x021f09dc
 func_ov003_021f0dcc kind:function(arm,size=0x14) addr:0x021f0dcc
 func_ov003_021f0de0 kind:function(arm,size=0x50) addr:0x021f0de0
-func_ov003_021f0e30 kind:function(arm,size=0x64) addr:0x021f0e30
+DestroyBattleSetup kind:function(arm,size=0x64) addr:0x021f0e30
 DestroyBattleObject kind:function(arm,size=0x3f8) addr:0x021f0e94
 func_ov003_021f128c kind:function(arm,size=0x48) addr:0x021f128c
 func_ov003_021f12d4 kind:function(arm,size=0x5c) addr:0x021f12d4
@@ -285,7 +285,7 @@ func_ov003_021f2848 kind:function(arm,size=0x18) addr:0x021f2848
 func_ov003_021f2860 kind:function(arm,size=0x18) addr:0x021f2860
 func_ov003_021f2878 kind:function(arm,size=0x224) addr:0x021f2878
 func_ov003_021f2a9c kind:function(arm,size=0xec) addr:0x021f2a9c
-func_ov003_021f2b88 kind:function(arm,size=0x68) addr:0x021f2b88
+ShowMapUnavailableMessage kind:function(arm,size=0x68) addr:0x021f2b88
 InitMapSelectScreen kind:function(arm,size=0x2a8) addr:0x021f2bf0
 func_ov003_021f2e98 kind:function(arm,size=0x640) addr:0x021f2e98
 func_ov003_021f34d8 kind:function(arm,size=0xc) addr:0x021f34d8
@@ -346,7 +346,7 @@ func_ov003_021fd1a0 kind:function(arm,size=0x2c) addr:0x021fd1a0
 func_ov003_021fd1cc kind:function(arm,size=0xc) addr:0x021fd1cc
 func_ov003_021fd1d8 kind:function(arm,size=0xc) addr:0x021fd1d8
 func_ov003_021fd1e4 kind:function(arm,size=0xc) addr:0x021fd1e4
-func_ov003_021fd1f0 kind:function(arm,size=0x60) addr:0x021fd1f0
+BeginLinkMapTransfer kind:function(arm,size=0x60) addr:0x021fd1f0
 func_ov003_021fd250 kind:function(arm,size=0x20) addr:0x021fd250
 func_ov003_021fd270 kind:function(arm,size=0x60) addr:0x021fd270
 func_ov003_021fd2d0 kind:function(arm,size=0x160) addr:0x021fd2d0
@@ -668,7 +668,7 @@ data_ov003_0220f60a kind:data(any) addr:0x0220f60a
 data_ov003_0220f60c kind:data(any) addr:0x0220f60c
 data_ov003_0220f60e kind:data(any) addr:0x0220f60e
 data_ov003_0220f61c kind:data(any) addr:0x0220f61c
-data_ov003_0220f650 kind:data(any) addr:0x0220f650
+gOv003SceneClass kind:data(any) addr:0x0220f650
 data_ov003_0220f6f8 kind:data(any) addr:0x0220f6f8
 data_ov003_0220f700 kind:data(any) addr:0x0220f700
 data_ov003_0220f710 kind:data(any) addr:0x0220f710

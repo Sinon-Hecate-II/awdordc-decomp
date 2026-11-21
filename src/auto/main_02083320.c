@@ -60,28 +60,31 @@ void ResetTextLabelSlotsPartial(void) {
  }while(slot<13);
 }
 
-void func_02083464(void) {
+void ClearTextChars(void) {
  extern void *data_02101fd4;
  s32 i;
  M2C_FIELD(data_02101fd4,u8 *,17)&=~1;
  for(i=0;i<14;i++) M2C_FIELD(data_02101fd4,u8 *,i)=0;
 }
 
-void func_0208349c(s32 arg0) {
+void SetTextMode(s32 arg0) {
  extern void *data_02101fd4;
  ((Unk0208349c *)data_02101fd4)->high=(u8)arg0;
 }
 
-void func_020834c4(void) {
+/* Reset the two text states: the first loses its text, its mode and its flag
+ * bits; the second loses its text and gets its cursor fields (16, 16) and its
+ * last byte cleared. */
+void ResetTextState(void) {
  extern void *data_02101fd4;
- s32 i;
+ s32 charIndex;
  M2C_FIELD(data_02101fd4,u8 *,17)=0;
- func_0208349c(0); func_02083464();
+ SetTextMode(0); ClearTextChars();
  M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,15)=0;
  M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,16)=16;
  M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,17)=16;
  M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,18)=0;
- for(i=0;i<15;i++) M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,i)=0;
+ for(charIndex=0;charIndex<15;charIndex++) M2C_FIELD(M2C_FIELD(&data_02101fd4,void **,4),u8 *,charIndex)=0;
 }
 
 #pragma push

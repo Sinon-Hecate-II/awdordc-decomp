@@ -519,7 +519,7 @@ s32 func_020107ac(void *command) {
     return started;
 }
 
-void func_02010938(void *arg0) {
+void SaveDevice_TransferRom(void *arg0) {
     void func_02010628(u32, u32);
     s32 SaveDevice_TransferChunk(void *);
     extern void *gSaveDeviceState;
@@ -574,15 +574,16 @@ retry:
 #pragma opt_propagation off
 s32 SaveDevice_ReadChipId(void) {
     extern void *data_020f553c;
-    u32 control;
     register u32 mask;
+    u32 control;
+    volatile u32 *const romControl = (volatile u32 *)0x040001A4;
 
     func_02010628(0xB8000000, 0);
     mask = 0x2000;
-    control = M2C_FIELD(*(void *volatile *)&data_020f553c, u32 *, 0x60);
+    control = M2C_FIELD(data_020f553c, u32 *, 0x60);
     control &= ~0x07000000;
     control |= 0xA7000000;
-    *(volatile u32 *)0x040001A4 = control & -mask;
+    *romControl = control & -mask;
     while (!(*(volatile u32 *)0x040001A4 & 0x800000)) {
     }
     return *(volatile s32 *)0x04100010;

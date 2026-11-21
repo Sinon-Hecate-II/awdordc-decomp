@@ -140,10 +140,10 @@ void func_ov010_0222aef8(M2C_UNK arg0) {
 }
 
 void func_ov010_0222af18(void) {
-    M2C_UNK func_02085c4c();
+    M2C_UNK ClearLinkCommandQueues();
     M2C_UNK func_ov010_02228760(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
     func_ov010_02228760(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-    func_02085c4c();
+    ClearLinkCommandQueues();
 }
 
 void func_ov010_0222af58(M2C_UNK arg0) {

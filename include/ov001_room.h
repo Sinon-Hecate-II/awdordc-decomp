@@ -44,6 +44,11 @@
 /* gRoomState fields of the room session used by the request builders. */
 #define OV001_TRANSFER_BUFFER 0x14 /* u8 *room transfer buffer, cleared before each request */
 #define OV001_REQUEST_MASK    0x2c /* u32 room groups this client asks for */
+#define OV001_ROOM_HOST_ADDR  0x34 /* s32 host-order IPv4 address of the room's host */
+#define OV001_ROOM_PORT       0x5790 /* u16 UDP port the room protocol sends to */
+
+/* Family byte of the socket address the room transfers are sent to. */
+#define OV001_ADDR_FAMILY_INET 2
 
 /* gRoomState's random-value sequence: seeded once from the real-time clock,
  * then one linear congruential step per random value the protocol needs. */

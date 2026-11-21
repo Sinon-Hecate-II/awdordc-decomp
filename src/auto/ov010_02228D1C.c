@@ -77,7 +77,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
-    extern M2C_UNK data_ov010_0222f02c;
+    extern M2C_UNK gOv010PlayerRecords;
     extern u8 data_ov010_0222f1dc[];
     extern u16 gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
@@ -110,7 +110,7 @@ volatile Ov010CallbackFn d;
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
     c = b;
-    for (p = (u8 *)&data_ov010_0222f02c; p != (u8 *)data_ov010_0222f1dc; p += 0x6c) {
+    for (p = (u8 *)&gOv010PlayerRecords; p != (u8 *)data_ov010_0222f1dc; p += 0x6c) {
         (((Ov010Callback *)p)->*c)();
     }
     d = c;
@@ -172,7 +172,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
-    extern M2C_UNK data_ov010_0222f02c;
+    extern M2C_UNK gOv010PlayerRecords;
     extern u8 data_ov010_0222f1dc[];
     extern u16 gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
@@ -205,7 +205,7 @@ volatile Ov010CallbackFn d;
     a = *(Ov010CallbackFn *)&data_ov010_0222c128;
     b = a;
     c = b;
-    for (p = (u8 *)&data_ov010_0222f02c; p != (u8 *)data_ov010_0222f1dc; p += 0x6c) {
+    for (p = (u8 *)&gOv010PlayerRecords; p != (u8 *)data_ov010_0222f1dc; p += 0x6c) {
         (((Ov010Callback *)p)->*c)();
     }
     d = c;
@@ -251,7 +251,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  void func_ov010_0222807c(void);
  void func_ov010_0222815c(void);
  extern Ov010Member data_ov010_0222c128;
- extern M2C_UNK data_ov010_0222f02c;
+ extern M2C_UNK gOv010PlayerRecords;
  extern u8 data_ov010_0222f1dc[];
  extern u16 gOv010OnlineSession;
  extern M2C_UNK gLocalPlayerStatus;
@@ -266,7 +266,7 @@ extern "C" void func_ov010_02229190(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
  c = b;
- for(p=(u8 *)&data_ov010_0222f02c;p!=data_ov010_0222f1dc;p+=0x6c) {
+ for(p=(u8 *)&gOv010PlayerRecords;p!=data_ov010_0222f1dc;p+=0x6c) {
   (((Ov010Callback *)p)->*a)();
  }
  d=a;
@@ -297,7 +297,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  void func_ov010_0222807c(void);
  void func_ov010_0222815c(void);
  extern Ov010Member data_ov010_0222c128;
- extern M2C_UNK data_ov010_0222f02c;
+ extern M2C_UNK gOv010PlayerRecords;
  extern u8 data_ov010_0222f1dc[];
  extern u16 gOv010OnlineSession;
  extern M2C_UNK gLocalPlayerStatus;
@@ -312,7 +312,7 @@ extern "C" void func_ov010_022292e4(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4
  a = *(Ov010CallbackFn *)&data_ov010_0222c128;
  b = a;
  c = b;
- for(p=(u8 *)&data_ov010_0222f02c;p!=data_ov010_0222f1dc;p+=0x6c) {
+ for(p=(u8 *)&gOv010PlayerRecords;p!=data_ov010_0222f1dc;p+=0x6c) {
   (((Ov010Callback *)p)->*c)();
  }
  d = c;
@@ -417,7 +417,7 @@ void func_ov010_02229568(M2C_UNK arg0) {
     func_ov010_022268f4(0, arg0, 0x20);
 }
 
-void func_ov010_02229580(void *arg0) {
+void Ov010Online_FreePacket(void *arg0) {
     M2C_UNK Ov010_FreeBlock(M2C_UNK, void *, s32);
     Ov010_FreeBlock(0, arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
 }
@@ -437,7 +437,7 @@ Ov010Packet *Ov010Online_InitPacketHeader(void *packet, u8 kind, s32 channel, s3
     return h;
 }
 
-s32 func_ov010_02229608(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
+s32 QueueOnlineLinkPacket(u8 arg0, void *arg1, s32 arg2, u16 arg3) {
     s32 IsOnlineSessionFlagSet(s32);
     u16 GetOnlinePeerMask();
     s32 GetOnlineTransportPlayerId();
@@ -635,7 +635,7 @@ if(!PublishPlayerStatusLocation(&gLocalPlayerStatus,ONLINE_PLAYER_RECORD_SIZE))r
 }
 if(IsOnlineSessionFlagSet(OV010_FLAG_RUNNING)) {
 SetOnlinePlayerRecord(GetOnlineTransportPlayerId(),&gLocalPlayerStatus);
-func_ov010_02229608(ONLINE_PACKET_PLAYER_STATUS,&gLocalPlayerStatus,ONLINE_PLAYER_RECORD_SIZE,0xffff);
+QueueOnlineLinkPacket(ONLINE_PACKET_PLAYER_STATUS,&gLocalPlayerStatus,ONLINE_PLAYER_RECORD_SIZE,0xffff);
 }
 return 1;
 }
@@ -646,17 +646,17 @@ M2C_UNK *GetLocalPlayerStatus(void) {
 }
 
 s32 GetOnlinePlayerRecord(s32 a) {
-extern M2C_UNK data_ov010_0222f02c;
+extern M2C_UNK gOv010PlayerRecords;
 s32 p;
 if(!(GetOnlinePeerMask()&(1<<a)))return 0;
-p=(s32)&data_ov010_0222f02c+a*0x6c;
+p=(s32)&gOv010PlayerRecords+a*0x6c;
 if(!(M2C_FIELD(p,u8 *,0x1a)&1))p=0;
 return p;
 }
 
 s32 func_ov010_02229b48(s32 arg0) {
-    extern M2C_UNK data_ov010_0222f02c;
-    return (0x6C * arg0) + (s32) &data_ov010_0222f02c;
+    extern M2C_UNK gOv010PlayerRecords;
+    return (0x6C * arg0) + (s32) &gOv010PlayerRecords;
 }
 
 s32 func_ov010_02229b5c(s32 arg0, M2C_UNK arg1) {
@@ -697,14 +697,17 @@ s32 func_ov010_02229bf4(void) {
     return 0;
 }
 
-void func_ov010_02229c0c(void *p,s32 a) {
-extern u16 gOv010OnlineSession;
-if(!IsOnlineSessionFlagSet(3))return;
-M2C_FIELD(p,s32 *,0)=a;
-M2C_FIELD(p,s16 *,4)=1<<GetOnlineTransportPlayerId();
-M2C_FIELD(&gOv010OnlineSession,void **,0x18)=p;
-if(!IsOnlineSessionHost())return;
-func_ov010_02229608(2,M2C_FIELD(&gOv010OnlineSession,void **,0x18),8,0xffff);
+/* Fills the online match-start record for match `matchId`: marks this console's
+ * acknowledgement bit, records it as the session's start record and, when this
+ * console is the host, sends the start request to the peers. */
+void Ov010Online_SubmitStartRecord(void *record, s32 matchId) {
+    extern u16 gOv010OnlineSession;
+    if (!IsOnlineSessionFlagSet(OV010_FLAG_RUNNING)) return;
+    M2C_FIELD(record, s32 *, OV010_START_RECORD_ID) = matchId;
+    M2C_FIELD(record, u16 *, OV010_START_RECORD_ACKS) = 1 << GetOnlineTransportPlayerId();
+    M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_START_RECORD) = record;
+    if (!IsOnlineSessionHost()) return;
+    QueueOnlineLinkPacket(ONLINE_PACKET_START_REQUEST, M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_START_RECORD), 8, 0xffff);
 }
 
 /* Reports whether the online match-start request has been acknowledged by every
@@ -731,7 +734,7 @@ s32 Ov010Online_IsStartAcknowledged(void) {
     if (netError) acknowledged = 0;
     if (!(peerMask & 1)) acknowledged = 0;
     if (acknowledged == 0 && IsOnlineSessionHost() != 0)
-        func_ov010_02229608(3, M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_START_RECORD), 8, 0xFFFF);
+        QueueOnlineLinkPacket(3, M2C_FIELD(&gOv010OnlineSession, void **, OV010_SESSION_START_RECORD), 8, 0xFFFF);
     return acknowledged;
 }
 

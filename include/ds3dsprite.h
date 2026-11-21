@@ -14,6 +14,13 @@
 #ifndef DS3DSPRITE_H
 #define DS3DSPRITE_H
 
+/* One entry of a 32-tile-wide tilemap: the low 12 bits hold the tile number and
+ * its flip flags, bits 12..15 the 16-colour palette bank. */
+#define TILEMAP_ROW_TILES          32
+#define TILEMAP_ENTRY_INDEX_MASK   0x0FFF
+#define TILEMAP_PALETTE_MASK       0x000F
+#define TILEMAP_PALETTE_SHIFT      12
+
 /* Tilemap glyphs use two consecutive tiles and a 32-entry row. */
 #define TILEMAP_GLYPH_ROW_SHIFT       6 /* log2 of the row size in bytes */
 #define TILEMAP_GLYPH_ROW_BYTES       (1 << TILEMAP_GLYPH_ROW_SHIFT)
@@ -62,6 +69,26 @@
 #define DS3D_BANK_LAYER_TILE1 0x08
 #define DS3D_BANK_LAYER_TILE2 0x0A
 #define DS3D_BANK_LAYER_TILE3 0x0C
+#define DS3D_BANK_LAYER_TILES 0x06 /* u16[4]: the four layer tile words above */
+/* Bits 0..1 of a layer tile word: that layer's 2-bit rotation mode. */
+#define DS3D_LAYER_MODE_MASK  0x0003
+
+/* Bits 2..5 of a layer tile word name the VRAM bank the layer's texture sits in
+ * (the packed SpriteTile f2 field). */
+#define DS3D_TILE_BANK_MASK  0x003C
+#define DS3D_TILE_BANK_SHIFT 2
+
+/* Bits 0..1 of a layer tile word: the layer's 2-bit rotation mode (which of the
+ * four texture layers this display layer samples). */
+#define DS3D_LAYER_MODE_MASK 0x0003
+
+/* Each engine uploads layer textures into its own VRAM: the main engine's banks
+ * start at 0x06000000, the sub engine's at 0x06200000, one 0x4000-byte bank
+ * after another. */
+#define DS3D_VRAM_MAIN       0x06000000
+#define DS3D_VRAM_SUB        0x06200000
+#define DS3D_VRAM_BANK_SIZE  0x4000
+#define DS3D_VRAM_BANK(bank) ((bank) << 14)
 
 /* The flags word at bank+0x02 holds two 3-bit fields, which
  * Reset3DSpriteLayerRegisters clears. */
@@ -194,6 +221,9 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_BANK(enginePtr) ((DS3DSpriteBank *)(*(void **)(enginePtr)))
 
 /* Engine fields code reaches through a void *gCur3DSpriteEngine. */
+#define DS3D_ENGINE_LAYER_VRAM 0x0C /* u32[4] VRAM address each layer's texture is decompressed to */
+#define DS3D_ENGINE_LAYER_TILES 0x20 /* void *[4] RAM buffer holding each layer's tile data */
+#define DS3D_ENGINE_LAYER2_TILES 0x28 /* void *RAM buffer holding layer 2's tile data (LAYER_TILES[2]) */
 #define DS3D_ENGINE_OAM      0x34 /* void *OAM shadow of this engine, 0x400 bytes */
 #define DS3D_ENGINE_SRC      0x38 /* u16 *quads queued for the next flush, four u16 each */
 #define DS3D_ENGINE_COUNT    0x48 /* u8 OAM entries in use */
@@ -279,6 +309,18 @@ typedef struct SpriteTimer {
     u32 duration:11; /* total frames of the eased fade */
     u32 elapsed:11;  /* frames since the fade started */
 } SpriteTimer;
+
+/* Resource fields of the animated sprite object built by CreateAnimatedSpriteObject
+ * (main_0208B884.c).  Its control word is the SpriteFlags at +0x44; the optional
+ * callbacks at +0x68/+0x6C/+0x70 run on the object's first update, every frame and
+ * as it is released. */
+#define SPRITE_OBJ_FLAGS      0x44 /* u32 SpriteFlags control word */
+#define SPRITE_OBJ_ANIM       0x4C /* void *sprite-animation handle (CreateSpriteAnim) */
+#define SPRITE_OBJ_DECOMP_BUF 0x50 /* s32 decompressed data buffer (LoadDecompressedFile) */
+#define SPRITE_OBJ_FILE_BUF   0x54 /* s32 file buffer (LoadFileToBuffer) */
+#define SPRITE_OBJ_INIT_CB    0x68 /* void (*)(void *): once, when the object is first updated */
+#define SPRITE_OBJ_UPDATE_CB  0x6C /* void (*)(void *): run every frame */
+#define SPRITE_OBJ_RELEASE_CB 0x70 /* void (*)(void *): run as the object is released */
 
 /* Easing curves of EaseInterpolate(mode, from, to, t, duration). */
 enum {
@@ -513,9 +555,17 @@ typedef struct ScenePanelState {
     u16 tileAttr;      /* +0x04 tile attributes passed to the text renderer */
     u8 palette;        /* +0x06 OBJ palette slot */
     u8 mode;           /* +0x07 */
-    u16 unk_08;        /* +0x08 */
+    s16 contentHeight; /* +0x08 pixel height of the panel's text content, 0 while empty */
     u8 unk_0A[2];
 } ScenePanelState;
+
+/* Get3DSpriteManager() starts with DS3D_MANAGER_PANEL_COUNT ScenePanelState
+ * records, then the pending-dialog queue: DS3D_DIALOG_QUEUE_COUNT s32 script
+ * pointers (0 = empty) queued by QueueDialogSequence and started, one per free
+ * DialogSequence slot, by StartNextQueuedDialog. */
+#define DS3D_MANAGER_PANEL_COUNT 3
+#define DS3D_MANAGER_DIALOG_QUEUE 0x24 /* s32[DS3D_DIALOG_QUEUE_COUNT] */
+#define DS3D_DIALOG_QUEUE_COUNT 8
 
 /* Input action flags of the scene-panel widgets, returned for the buttons and
  * for the stylus. */

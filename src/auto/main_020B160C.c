@@ -404,7 +404,7 @@ void func_020b216c(void *arg0) {
     M2C_FIELD(arg0, s8 *, 1) = 0;
 }
 
-void func_020b2178(void){extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;u8 zero=i;do{i++;p[1]=zero;p+=60;}while(i<85);}
+void HideAllSpriteSlots(void){extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;u8 zero=i;do{i++;p[1]=zero;p+=60;}while(i<85);}
 
 void func_020b21a0(void) {
 extern u8 gSpriteSlots[];

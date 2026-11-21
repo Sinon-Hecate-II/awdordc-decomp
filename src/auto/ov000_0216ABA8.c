@@ -24,7 +24,7 @@ static inline ScriptPlayer16 *ScriptPlayerAt16(s32 n) { extern s32 *gCurrentMap;
  * skipped with SkipToNextConditionGroup; when applyEffects is set the action commands
  * of a satisfied group are also executed. */
 s32 EvalScriptConditions(u8 *cmd, u8 *unit, u8 *target, s32 teamId, u8 applyEffects) {
-u8 *SkipToNextConditionGroup(u8*); s32 IsEventFlagSet(); void func_02086ae4(); void func_02094808(); s32 IsUnitSelected(); s32 GetPlayerSelectedUnit();
+u8 *SkipToNextConditionGroup(u8*); s32 IsEventFlagSet(); void func_02086ae4(); void QueueDialogSequence(); s32 IsUnitSelected(); s32 GetPlayerSelectedUnit();
 extern s32 *gCurrentMap;
 s32 (*conditionFn)(); s32 matched=0; s32 turnMatches;
 while(cmd[0]!=34) {
@@ -38,7 +38,7 @@ if(!turnMatches)cmd=SkipToNextConditionGroup(cmd);break;
 case 23:case 24:case 25:
 if(cmd[1]!=255 && IsEventFlagSet(cmd[1])){cmd=SkipToNextConditionGroup(cmd);break;}
 if(!applyEffects){matched=1;break;}
-if(*(s32*)(cmd+4)){func_02094808(*(s32*)(cmd+4));matched=1;}
+if(*(s32*)(cmd+4)){QueueDialogSequence(*(s32*)(cmd+4));matched=1;}
 if(cmd[1]!=255)func_02086ae4(cmd[1],1);
 break;
 case 15:case 16:case 17:conditionFn=*(s32(**)())(cmd+4);if(conditionFn()!=1)cmd=SkipToNextConditionGroup(cmd);break;

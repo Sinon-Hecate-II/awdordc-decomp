@@ -108,7 +108,7 @@ s32 HandleOverlayResult(void) {
  M2C_UNK IsAiCommandTaskRunning();
  M2C_UNK GetActiveOverlay();
  M2C_UNK GetLinkPhase();
- void func_ov009_022244ec(M2C_UNK);
+ void SetLinkResultFlag(M2C_UNK);
  M2C_UNK GetNetErrorCode();
  M2C_UNK func_ov010_02228314(M2C_UNK *,M2C_UNK *);
  void SetOnlineSessionFlag(M2C_UNK);
@@ -126,7 +126,7 @@ s32 HandleOverlayResult(void) {
  switch(GetActiveOverlay()){
  case 1:
  if(GetLinkPhase()==8 || GetLinkPhase()==9){
- func_ov009_022244ec(1); overlayResult=1;
+ SetLinkResultFlag(1); overlayResult=1;
  } break;
  case 2:
  if(GetNetErrorCode()!=0 ? 1 : overlayResult){
@@ -158,9 +158,9 @@ s32 HandleOverlayResult(void) {
 
 void func_020d3830(void) {
     M2C_UNK UpdateMapMode();
-    M2C_UNK func_0208b5a8();
+    M2C_UNK IsTextLayerActive();
     M2C_UNK GetActiveOverlay();
-    M2C_UNK func_ov009_022241b4();
+    M2C_UNK GetLinkResultCode();
     void CreateLinkStatusLabel(M2C_UNK, M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
     void CreateNetErrorSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, void *);
@@ -174,17 +174,18 @@ void func_020d3830(void) {
         UpdateMapMode();
         return;
     }
-    if (func_0208b5a8() != 0) {
+    if (IsTextLayerActive() != 0) {
         return;
     }
     switch (GetActiveOverlay()) {
     case 1:
-        CreateLinkStatusLabel(0, 0x25c, func_ov009_022241b4(), (void *)7);
+        CreateLinkStatusLabel(0, 0x25c, GetLinkResultCode(), (void *)7);
         M2C_FIELD(&gMapData, u8 *, 7) = 0;
         func_02081fec();
         M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 0x19;
         break;
     case 2: {
+        void **current;
         s32 result;
         s32 spare;
         s32 ret = func_ov010_02228314(&result, &spare);
@@ -195,9 +196,9 @@ void func_020d3830(void) {
         case 1:
         case 2:
             Ov010Online_ClearStepFlag(6);
+            current = *(void **volatile *)&gCurrentMap;
             M2C_FIELD(&gMapData, u8 *, 5) = 0;
-            { u16 t = M2C_FIELD(*gCurrentMap, u16 *, 0x52B2);
-              M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = t; }
+            M2C_FIELD(*current, u16 *, 0x52B0) = M2C_FIELD(*current, u16 *, 0x52B2);
             break;
         case 3:
         case 4:
@@ -250,22 +251,26 @@ void func_020d39f4(s32 arg0) {
     }
 }
 
-void func_020d3a3c(void) {
+/* Battle-map state-machine step (state 24) that resumes the map after an
+ * overlay event rather than a match result: once the cursor mode is back and no
+ * text layer is up, clear the event sprites, advance to the result-text state
+ * and create the overlay-cleanup sprite. */
+void AdvanceAfterOverlayEvent(void) {
     M2C_UNK UpdateMapMode();
-    M2C_UNK func_0208b5a8();
+    M2C_UNK IsTextLayerActive();
     M2C_UNK func_02081fec();
     void CreateSpriteFromClass(void *, s32);
     extern void **gCurrentMap;
     extern char data_0212ba7c[];
-    if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) != 0) {
         UpdateMapMode();
         return;
     }
-    if (func_0208b5a8() != 0) {
+    if (IsTextLayerActive() != 0) {
         return;
     }
     func_02081fec();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 25;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = 25;
     CreateSpriteFromClass(data_0212ba7c, 7);
 }
 
@@ -294,14 +299,14 @@ void func_020d3b18(void) {
 }
 
 void func_020d3b24(void) {
-    M2C_UNK func_020d3400();
+    M2C_UNK UpdatePlayerBattleTime();
     M2C_UNK HandleOverlayResult();
     M2C_UNK UpdateTurnTimer();
     M2C_UNK IsUiModeSwitchBusy();
     M2C_UNK func_020d46e8();
-    M2C_UNK func_020d4774();
+    M2C_UNK IsUnitMoveActive();
     void CheckTurnLimitStep();
-    void func_020d41c4();
+    void AdvanceTurnStep();
     void func_020d422c();
     void func_020d4400();
     void func_020d4430();
@@ -322,12 +327,12 @@ void func_020d3b24(void) {
     void func_020d35d8();
     void func_020d3628();
     void func_020d3830();
-    void func_020d3a3c();
+    void AdvanceAfterOverlayEvent();
     void func_020d3ae4();
     void func_020d3b18();
     extern void **gCurrentMap;
 
-    func_020d3400();
+    UpdatePlayerBattleTime();
 
     {
         void *ctl = M2C_FIELD(gCurrentMap, void **, 4);
@@ -341,7 +346,7 @@ void func_020d3b24(void) {
     if (UpdateTurnTimer() != 0) return;
     if (IsUiModeSwitchBusy() != 0) return;
     if (func_020d46e8() != 0) return;
-    if (func_020d4774() != 0) return;
+    if (IsUnitMoveActive() != 0) return;
 
     {
         void *mainBase = *gCurrentMap;
@@ -353,7 +358,7 @@ void func_020d3b24(void) {
             CheckTurnLimitStep();
             return;
         case 2:
-            func_020d41c4();
+            AdvanceTurnStep();
             return;
         case 3:
             func_020d422c();
@@ -398,7 +403,7 @@ void func_020d3b24(void) {
         case 21: func_020d35d8(); return;
         case 22: func_020d3628(); return;
         case 23: func_020d3830(); return;
-        case 24: func_020d3a3c(); return;
+        case 24: AdvanceAfterOverlayEvent(); return;
         case 25: func_020d3ae4(); return;
         case 26: func_020d3b18(); return;
         default: return;
@@ -623,7 +628,7 @@ s32 IsCpuOnlyBattle(void) {
     return 1;
 }
 
-void func_020d4110(void) {
+void EndCpuOnlyBattle(void) {
     M2C_UNK ResolvePropertyCountVictory();
     void CreateSpriteFromClass(void *, s32);
     extern M2C_UNK gMapData;
@@ -657,15 +662,19 @@ same:
     ResolvePropertyCountVictory();
 }
 
-void func_020d41c4(void) {
- M2C_UNK AdvancePlayerTurn(); M2C_UNK HumanPlayersOnDifferentArmies(); M2C_UNK func_020b78ac(); M2C_UNK IsCpuOnlyBattle(); void func_020d4110(void); extern void **gCurrentMap;
- void (*cb)(void)=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x40);
+/* Battle-map state 2: run the view controller's presentation setup, advance the
+ * turn to the next active player and queue the player-phase step (state 3).
+ * When human players share the console on different armies, show the turn-start
+ * panel instead of revealing the map; in a CPU-only battle, end it. */
+void AdvanceTurnStep(void) {
+ M2C_UNK AdvancePlayerTurn(); M2C_UNK HumanPlayersOnDifferentArmies(); void CreateTurnStartPanel(); M2C_UNK IsCpuOnlyBattle(); void EndCpuOnlyBattle(); extern void **gCurrentMap;
+ void (*cb)(void)=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),MAPVIEW_INIT_PRESENTATION);
  if(cb) cb();
  AdvancePlayerTurn();
- M2C_FIELD(*gCurrentMap,u16*,0x52B0)=3;
- if(HumanPlayersOnDifferentArmies()!=0){func_020b78ac();return;}
+ M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=3;
+ if(HumanPlayersOnDifferentArmies()!=0){CreateTurnStartPanel();return;}
  if(IsCpuOnlyBattle()==0)return;
- func_020d4110();
+ EndCpuOnlyBattle();
 }
 
 void func_020d422c(void) {

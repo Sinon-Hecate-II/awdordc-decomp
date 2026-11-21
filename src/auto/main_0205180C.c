@@ -26,7 +26,7 @@ void MemSet(void *,s32,s32);
 void StringCopyN(void *,void *,s32);
 s32 gpiAddCallback(void **,Callback518,void *,void *,s32);
 M2C_UNK gpiSetErrorString(M2C_UNK,M2C_UNK *);
-M2C_UNK func_02054484();
+M2C_UNK gpiRemoveOperation();
 Response518 work;
 void *q;
 void *p=*a;
@@ -94,7 +94,7 @@ StringCopyN((char *)q+8,work.token,21);
 result=gpiAddCallback(a,callback,q,b,0);
 if(result)return result;
 }
-func_02054484(a,b);
+gpiRemoveOperation(a,b);
 break;
 }
 return 0;
@@ -159,68 +159,71 @@ extern u32 gGsKeyFinal;
 extern u32 data_020fe668;
 extern u32 data_020fe67c;
 extern s32 gpiReleaseBuddyStatusRecord(void **, void *);
-void gpiDisconnect(void **arg0, s32 arg1) {
-    s32 v;
-    void *temp_r4;
-    s32 temp_r2;
-    s32 temp_r0;
-    s32 temp_r0_2;
-    void *var_r6;
-    u32 sp8;
+/* Tear down a gpi connection: when asked to and still logged in, send the logout
+ * command, close the server and local sockets, then free every buffer, pending
+ * operation and peer and drop all the connection's buddy-status records. */
+void gpiDisconnect(void **arg0, s32 sendLogout) {
+    void *operation;
+    void *connection;
+    s32 state;
+    s32 socket;
+    s32 localSocket;
+    void *peer;
+    u32 closed;
 
-    temp_r4 = *arg0;
-    temp_r2 = *(s32 *)((char *)temp_r4 + 0x1D8);
-    if (temp_r2 == 4) {
+    connection = *arg0;
+    state = *(s32 *)((char *)connection + GPI_CONN_STATE);
+    if (state == GPI_STATE_DISCONNECTED) {
         return;
     }
-    if (temp_r2 != 0) {
-        if ((arg1 != 0) && (temp_r2 == 3)) {
-            gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &data_020fe668);
-            gpiAppendIntField(arg0, (char *)temp_r4 + 0x1F4, *(s32 *)((char *)temp_r4 + 0x198));
-            gpiAppendStringField(arg0, (char *)temp_r4 + 0x1F4, &gGsKeyFinal);
+    if (state != GPI_STATE_IDLE) {
+        if ((sendLogout != 0) && (state == GPI_STATE_LOGGED_IN)) {
+            gpiAppendStringField(arg0, (char *)connection + GPI_CONN_OUTPUT_BUFFER, &data_020fe668);
+            gpiAppendIntField(arg0, (char *)connection + GPI_CONN_OUTPUT_BUFFER, *(s32 *)((char *)connection + GPI_CONN_SESSION_KEY));
+            gpiAppendStringField(arg0, (char *)connection + GPI_CONN_OUTPUT_BUFFER, &gGsKeyFinal);
         }
-        gpiSendFromBuffer(arg0, *(s32 *)((char *)temp_r4 + 0x1D4), (char *)temp_r4 + 0x1F4, &sp8, 1, &data_020fe67c);
-        temp_r0 = *(s32 *)((char *)temp_r4 + 0x1D4);
-        if (temp_r0 != -1) {
-            func_020496cc(temp_r0, 2);
-            ghiCloseSocket(*(s32 *)((char *)temp_r4 + 0x1D4));
-            *(s32 *)((char *)temp_r4 + 0x1D4) = -1;
+        gpiSendFromBuffer(arg0, *(s32 *)((char *)connection + GPI_CONN_SOCKET), (char *)connection + GPI_CONN_OUTPUT_BUFFER, &closed, 1, &data_020fe67c);
+        socket = *(s32 *)((char *)connection + GPI_CONN_SOCKET);
+        if (socket != -1) {
+            func_020496cc(socket, 2);
+            ghiCloseSocket(*(s32 *)((char *)connection + GPI_CONN_SOCKET));
+            *(s32 *)((char *)connection + GPI_CONN_SOCKET) = -1;
         }
-        temp_r0_2 = *(s32 *)((char *)temp_r4 + 0x204);
-        if (temp_r0_2 != -1) {
-            func_020496cc(temp_r0_2, 2);
-            ghiCloseSocket(*(s32 *)((char *)temp_r4 + 0x204));
-            *(s32 *)((char *)temp_r4 + 0x204) = -1;
+        localSocket = *(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET);
+        if (localSocket != -1) {
+            func_020496cc(localSocket, 2);
+            ghiCloseSocket(*(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET));
+            *(s32 *)((char *)connection + GPI_CONN_LOCAL_SOCKET) = -1;
         }
-        *(s32 *)((char *)temp_r4 + 0x1D8) = 4;
-        *(s32 *)((char *)temp_r4 + 0x19C) = 0;
-        *(s32 *)((char *)temp_r4 + 0x1A0) = 0;
+        *(s32 *)((char *)connection + GPI_CONN_STATE) = GPI_STATE_DISCONNECTED;
+        *(s32 *)((char *)connection + GPI_CONN_USER_ID) = 0;
+        *(s32 *)((char *)connection + GPI_CONN_PROFILE_ID) = 0;
     }
-    gpiFree(*(s32 *)((char *)temp_r4 + 0x1DC));
-    *(s32 *)((char *)temp_r4 + 0x1DC) = 0;
-    gpiFree(*(s32 *)((char *)temp_r4 + 0x1EC));
-    *(s32 *)((char *)temp_r4 + 0x1EC) = 0;
-    gpiFree(*(s32 *)((char *)temp_r4 + 0x1F4));
-    *(s32 *)((char *)temp_r4 + 0x1F4) = 0;
-    gpiFree(*(s32 *)((char *)temp_r4 + 0x440));
-    *(s32 *)((char *)temp_r4 + 0x440) = 0;
-    gpiFree(*(s32 *)((char *)temp_r4 + 0x450));
-    *(s32 *)((char *)temp_r4 + 0x450) = 0;
-    v = *(s32 *)((char *)temp_r4 + 0x424);
-    while (v != 0) {
-        func_02054484(arg0);
-        v = *(s32 *)((char *)temp_r4 + 0x424);
+    gpiFree(*(s32 *)((char *)connection + GPI_CONN_RECV_BUFFER));
+    *(s32 *)((char *)connection + GPI_CONN_RECV_BUFFER) = 0;
+    gpiFree(*(s32 *)((char *)connection + GPI_CONN_MSG_BUFFER));
+    *(s32 *)((char *)connection + GPI_CONN_MSG_BUFFER) = 0;
+    gpiFree(*(s32 *)((char *)connection + GPI_CONN_OUTPUT_BUFFER));
+    *(s32 *)((char *)connection + GPI_CONN_OUTPUT_BUFFER) = 0;
+    gpiFree(*(s32 *)((char *)connection + GPI_CONN_UPDATE_PRO_BUFFER));
+    *(s32 *)((char *)connection + GPI_CONN_UPDATE_PRO_BUFFER) = 0;
+    gpiFree(*(s32 *)((char *)connection + GPI_CONN_UPDATE_UI_BUFFER));
+    *(s32 *)((char *)connection + GPI_CONN_UPDATE_UI_BUFFER) = 0;
+    operation = M2C_FIELD(connection, void **, GPI_CONN_OPERATIONS);
+    while (operation != NULL) {
+        gpiRemoveOperation(arg0, operation);
+        operation = M2C_FIELD(connection, void **, GPI_CONN_OPERATIONS);
     }
-    *(s32 *)((char *)temp_r4 + 0x424) = 0;
-    var_r6 = *(void **)((char *)temp_r4 + 0x434);
-    if (var_r6 != NULL) {
+    *(s32 *)((char *)connection + GPI_CONN_OPERATIONS) = 0;
+    peer = *(void **)((char *)connection + GPI_CONN_PEER_HEAD);
+    if (peer != NULL) {
         do {
-            void *t = var_r6;
-            var_r6 = *(void **)((char *)var_r6 + 0x3C);
-            func_02054fa8(arg0, t);
-        } while (var_r6 != NULL);
+            void *t = peer;
+            peer = *(void **)((char *)peer + GPI_PEER_NEXT);
+            gpiFreePeer(arg0, t);
+        } while (peer != NULL);
     }
-    *(s32 *)((char *)temp_r4 + 0x434) = 0;
+    *(s32 *)((char *)connection + GPI_CONN_PEER_HEAD) = 0;
     while (func_02055cd0(arg0, gpiReleaseBuddyStatusRecord, 0) == 0) {
     }
 }

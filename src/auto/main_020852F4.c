@@ -157,9 +157,9 @@ void func_020854b8(M2C_UNK arg0) {
 }
 
 void func_020854d0(void *arg0) {
-    s32 func_0208471c();
+    s32 IsSessionInError();
     s32 GetOverlayEventFlags();
-    if ((func_0208471c() != 0) || (GetOverlayEventFlags() != 0)) {
+    if ((IsSessionInError() != 0) || (GetOverlayEventFlags() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
@@ -218,13 +218,13 @@ void func_020855f0(M2C_UNK arg0) {
 
 u8 func_02085608(void *a) {
     s32 GetReadyPlayerMask(void);
-    s32 func_0208471c(void);
+    s32 IsSessionInError(void);
     s32 first, second;
     s32 result;
     first=GetReadyPlayerMask();
     second=GetReadyPlayerMask();
     result=first!=(M2C_FIELD(a,u16 *,0x44)&second);
-    if(func_0208471c()) result=0;
+    if(IsSessionInError()) result=0;
     return (u8)result;
 }
 
@@ -274,18 +274,22 @@ s32 Link_HandlePlayerDataMessage(u32 arg0, void *message) {
     return result;
 }
 
-void func_02085724(s32 a,s32 b,s32 c,s32 d) {
-    void *CreateSpriteForOwner(M2C_UNK *,M2C_UNK);
+/* Creates the link listener that gathers the players' data blocks: it takes over
+ * the link layer's message handler (remembering the previous one), keeps the
+ * per-player block pointers, this player's own block and the size of one block,
+ * and marks this player's block as already received. */
+void CreateLinkPlayerDataListener(void **playerDataPtrs, void *ownData, s32 dataSize, void *owner) {
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     s32 GetLocalPlayerIdForOverlay(void);
-    extern M2C_UNK gLinkPlayerDataClass, data_0210219c;
-    void *p=CreateSpriteForOwner(&gLinkPlayerDataClass,d);
-    if(!p) return;
-    M2C_FIELD(p,void **,0)=&data_0210219c;
-    M2C_FIELD(p,s32 *,0x34)=Link_SetMessageHandler((M2C_UNK *)&Link_HandlePlayerDataMessage);
-    M2C_FIELD(p,s32 *,0x38)=a;
-    M2C_FIELD(p,s32 *,0x3c)=b;
-    M2C_FIELD(p,s32 *,0x40)=c;
-    M2C_FIELD(p,u16 *,0x44)=1<<GetLocalPlayerIdForOverlay();
+    extern M2C_UNK gLinkPlayerDataClass, gLinkPlayerDataVtbl;
+    void *p = CreateSpriteForOwner(&gLinkPlayerDataClass, owner);
+    if (!p) return;
+    M2C_FIELD(p, void **, 0) = &gLinkPlayerDataVtbl;
+    M2C_FIELD(p, s32 *, LINK_PLAYER_DATA_PREV_HANDLER) = Link_SetMessageHandler((M2C_UNK *)&Link_HandlePlayerDataMessage);
+    M2C_FIELD(p, void **, LINK_PLAYER_DATA_PTRS) = playerDataPtrs;
+    M2C_FIELD(p, void **, LINK_PLAYER_OWN_DATA) = ownData;
+    M2C_FIELD(p, s32 *, LINK_PLAYER_DATA_SIZE) = dataSize;
+    M2C_FIELD(p, u16 *, LINK_PLAYER_DATA_RECEIVED) = 1 << GetLocalPlayerIdForOverlay();
 }
 
 #pragma push
@@ -298,7 +302,7 @@ void func_02085788(s32 arg0) {
     M2C_UNK func_020c4cdc(s32);
     M2C_UNK func_020c4dd0(s32);
     void *func_020c5328();
-    s32 func_020c5708(s32);
+    s32 FindBattleSaveSlotByProfileId(s32);
     M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     s8 GetOnlineTransportPlayerId();
@@ -393,7 +397,7 @@ loop_10:
                 if (temp_r6_2 != GetPlayerArmyId(var_r9 + 1)) {
                     temp_r0_4 = GetOnlinePlayerRecord(var_r9);
                     if (temp_r0_4 != NULL) {
-                        temp_r0_5 = func_020c5708(M2C_FIELD(temp_r0_4, s32 *, 0x1C));
+                        temp_r0_5 = FindBattleSaveSlotByProfileId(M2C_FIELD(temp_r0_4, s32 *, 0x1C));
                         if (temp_r0_5 >= 0) {
                             M2C_FIELD((out + var_r9), s8 *, 4) = (s8) temp_r0_5;
                             temp_r0_6 = func_020c5328();
@@ -547,7 +551,7 @@ s32 func_02085c3c(void) {
     return GetProfileSaveBlock() + 0x74;
 }
 
-void func_02085c4c(void) {
+void ClearLinkCommandQueues(void) {
     void func_02085e50(void *);
     extern M2C_UNK gLinkCommandQueues;
     s32 i;
@@ -569,16 +573,16 @@ void func_02085ca8(void) {
 
 void *func_02085cac(void *arg0) {
     M2C_UNK MemFree(void *);
-    extern M2C_UNK data_0210219c;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0210219c;
+    extern M2C_UNK gLinkPlayerDataVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
     Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     MemFree(arg0);
     return arg0;
 }
 
 void *func_02085cd8(void *arg0) {
-    extern M2C_UNK data_0210219c;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_0210219c;
+    extern M2C_UNK gLinkPlayerDataVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
     Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
@@ -625,27 +629,29 @@ void func_02085d7c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-s32 AppendLinkCommand(void *arg0, M2C_UNK arg1, u16 arg2, s16 arg3) {
+/* Append a copy of a command's data (with its extra s16) as a new entry on a
+ * link command queue's tail; returns 0 when the entry could not be allocated. */
+s32 AppendLinkCommand(void *queue, M2C_UNK data, u16 size, s16 unk22) {
     M2C_UNK MI_CpuCopy8();
     void *HeapAllocBlock(M2C_UNK);
-    void *temp_r0;
-    void *temp_r0_2;
+    LinkCommandEntry *entry;
+    LinkCommandEntry *tail;
 
-    temp_r0 = HeapAllocBlock(0x28);
-    if (temp_r0 == NULL) {
+    entry = HeapAllocBlock(sizeof(LinkCommandEntry));
+    if (entry == NULL) {
         return 0;
     }
-    MI_CpuCopy8(arg1, temp_r0, arg2);
-    M2C_FIELD(temp_r0, s16 *, 0x20) = arg2;
-    M2C_FIELD(temp_r0, s16 *, 0x22) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x24) = 0;
-    temp_r0_2 = M2C_FIELD(arg0, void **, 4);
-    if (temp_r0_2 == NULL) {
-        M2C_FIELD(arg0, void **, 4) = temp_r0;
-        M2C_FIELD(arg0, void **, 0) = temp_r0;
+    MI_CpuCopy8(data, entry, size);
+    entry->payloadSize = size;
+    entry->unk_22 = unk22;
+    entry->next = NULL;
+    tail = ((LinkCommandQueue *) queue)->tail;
+    if (tail == NULL) {
+        ((LinkCommandQueue *) queue)->tail = entry;
+        ((LinkCommandQueue *) queue)->head = entry;
     } else {
-        M2C_FIELD(temp_r0_2, void **, 0x24) = temp_r0;
-        M2C_FIELD(arg0, void **, 4) = temp_r0;
+        tail->next = entry;
+        ((LinkCommandQueue *) queue)->tail = entry;
     }
     return 1;
 }

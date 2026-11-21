@@ -263,7 +263,7 @@ M2C_UNK *GetWfcProfileCode(void) {
     return &gWfcProfileCode;
 }
 
-s32 func_02046884(void *arg0) {
+s32 VerifySaveBlock(void *arg0) {
     void func_02046d0c(s32, s32);
     void FillU16(s32, s32, s32);
     s32 MI_CpuCopy8(M2C_UNK, M2C_UNK *, M2C_UNK);

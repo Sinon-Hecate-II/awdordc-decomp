@@ -563,19 +563,23 @@ void func_ov010_02226920(void *arg0) {
     MI_CpuFill8(arg0 + 0x2C, 0, 0x40);
 }
 
-void *InitOnlinePlayerRecord(void *arg0) {
-    M2C_FIELD(arg0, s8 *, 0x1A) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1B) = -1;
-    M2C_FIELD(arg0, s32 *, 0x1C) = -1;
-    M2C_FIELD(arg0, s32 *, 0x20) = 0x5DC000;
-    M2C_FIELD(arg0, s8 *, 0x24) = -1;
-    M2C_FIELD(arg0, s8 *, 0x25) = -2;
-    M2C_FIELD(arg0, s8 *, 0x26) = -2;
-    M2C_FIELD(arg0, s8 *, 0x27) = -1;
-    M2C_FIELD(arg0, s8 *, 0x28) = -1;
-    MI_CpuFill8(arg0, 0, 0x1A);
-    MI_CpuFill8(arg0 + 0x2C, 0, 0x40);
-    return arg0;
+/* Prepare a 0x6C-byte online player record for a new player: mark it not
+ * connected with no player id, default its skill rating to RATING_DEFAULT, set
+ * the per-slot state bytes to their unset values, and clear the name area and
+ * the network panel record that follows it. */
+void *InitOnlinePlayerRecord(void *record) {
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_FLAGS) = 0;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_ID) = -1;
+    M2C_FIELD(record, s32 *, 0x1C) = -1;
+    M2C_FIELD(record, s32 *, ONLINE_PLAYER_RATING) = RATING_DEFAULT;
+    M2C_FIELD(record, s8 *, 0x24) = -1;
+    M2C_FIELD(record, s8 *, 0x25) = -2;
+    M2C_FIELD(record, s8 *, 0x26) = -2;
+    M2C_FIELD(record, s8 *, 0x27) = -1;
+    M2C_FIELD(record, s8 *, 0x28) = -1;
+    MI_CpuFill8(record, 0, 0x1A);
+    MI_CpuFill8(record + 0x2C, 0, 0x40);
+    return record;
 }
 
 void func_ov010_022269dc(M2C_UNK arg0, M2C_UNK arg1) {

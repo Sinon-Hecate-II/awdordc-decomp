@@ -2,12 +2,14 @@
 #include "common.h"
 #include "net_session.h"
 
-s32 GetSessionPlayerSlot(s32 a) {
+/* Return the player slot whose profile id is `profileId`, or -1 when there is no
+ * match session or no player with that id. */
+s32 GetSessionPlayerSlot(s32 profileId) {
  extern M2C_UNK gMatchSessionMgr; s32 GetSessionPlayerId(s32);
- s32 i;
- if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!a)return -1;
- for(i=0;i<M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x14);i++) {
- if(a==GetSessionPlayerId(i))return i;
+ s32 slot;
+ if(!M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION)||!profileId)return -1;
+ for(slot=0;slot<M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION),s32 *,MATCH_SESSION_PLAYER_COUNT);slot++) {
+ if(profileId==GetSessionPlayerId(slot))return slot;
  }return -1;
 }
 

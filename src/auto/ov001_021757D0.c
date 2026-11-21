@@ -105,12 +105,12 @@ return 1;
  * save-block initialiser on a temporary 0x700-byte scratch buffer. */
 void Ov001_InitCore(void) {
 extern u8 gOv001ScreenState;
-M2C_UNK func_02002490(); M2C_UNK IsSystemTickInitialized(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK TP_Init(); M2C_UNK RTC_Init(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK Ov001_InstallVBlankHandler(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK func_02046884();
+M2C_UNK func_02002490(); M2C_UNK IsSystemTickInitialized(); M2C_UNK func_02007180(); M2C_UNK SystemHalt(); void GX_SetVBlankIrq(s32); M2C_UNK func_020022d8(); M2C_UNK func_0200b74c(); M2C_UNK TP_Init(); M2C_UNK RTC_Init(); M2C_UNK GxReleaseAllBankGrants(); M2C_UNK func_ov001_0218b648(); M2C_UNK Ov001_InstallVBlankHandler(); M2C_UNK Ov001_InitTasks(); M2C_UNK func_ov001_02189ad0(); M2C_UNK Ov001_StartInput(); M2C_UNK Ov001_InitFades(); M2C_UNK Ov001_Alloc(M2C_UNK,M2C_UNK); M2C_UNK VerifySaveBlock();
 M2C_UNK scratch;
 *(volatile u16 *)0x4000208; *(volatile u16 *)0x4000208=0;
 func_02002490(0);*(volatile u32 *)0x4001000&=~0x10000;
 if(!IsSystemTickInitialized())SystemHalt();if(!func_02007180())SystemHalt();GX_SetVBlankIrq(0);func_020022d8();func_0200b74c(-1);TP_Init();func_02002490(RTC_Init());*(volatile u32 *)0x4001000&=~0x10000;
-GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));Ov001_InstallVBlankHandler();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);func_02046884();Ov001_FreeAlloc(&scratch);
+GxReleaseAllBankGrants();func_ov001_0218b648(M2C_FIELD(&gOv001ScreenState,M2C_UNK *,4));Ov001_InstallVBlankHandler();Ov001_InitTasks();func_ov001_02189ad0();Ov001_StartInput();Ov001_InitFades();scratch=Ov001_Alloc(0x700,0x20);VerifySaveBlock();Ov001_FreeAlloc(&scratch);
 }
 
 /* Initialise the display for overlay 001: allocate VRAM banks for the

@@ -323,7 +323,7 @@ void func_ov002_021e749c(void *arg0) {
     void func_ov002_021e97d8(void *, s32, s32, s32);
     void func_ov002_021e42b0(void *);
     void func_020afa64(s32);
-    void func_020af8c8(s32, s32);
+    void UpdateSlotEffectSound(s32, s32);
     BattleEffectEvent *event;
     s32 side, i;
     u8 *variants;
@@ -407,7 +407,7 @@ void func_ov002_021e749c(void *arg0) {
                 func_ov002_021e97d8(view->units[event->unit], 2,
                                    (s8)event->effect, (s8)event->flag);
                 if (event->flag) {
-                    func_020af8c8(side, --view->remaining);
+                    UpdateSlotEffectSound(side, --view->remaining);
                 }
             }
             i++;

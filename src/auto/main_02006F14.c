@@ -180,17 +180,20 @@ void InsertTimer(void *timer, u64 due) {
         }
     }
 }
-void ScheduleTimer(void *arg0, u64 delay, s32 arg3, volatile s32 arg4) {
+/* Arm an OS timer node and queue it: clear its repeat period (a one-shot), store
+ * its callback and argument, then insert it into the deadline-sorted timer queue
+ * to fire `delay` ticks from now.  Halts when the node is NULL or already armed. */
+void ScheduleTimer(void *node, u64 delay, s32 callback, volatile s32 arg) {
  M2C_UNK SystemHalt(); u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32); void InsertTimer(void *, u64);
  u32 state; u64 time;
- if(arg0==0 || M2C_FIELD(arg0,s32 *,0)!=0)SystemHalt();
+ if(node==0 || M2C_FIELD(node,s32 *,TIMER_NODE_CALLBACK)!=0)SystemHalt();
  state=OS_DisableInterrupts();
- M2C_FIELD(arg0,s32 *,0x1c)=0;
- M2C_FIELD(arg0,s32 *,0x20)=0;
- M2C_FIELD(arg0,volatile s32 *,0)=arg3;
- M2C_FIELD(arg0,s32 *,4)=arg4;
+ M2C_FIELD(node,s32 *,TIMER_NODE_PERIOD)=0;
+ M2C_FIELD(node,s32 *,TIMER_NODE_PERIOD+4)=0;
+ M2C_FIELD(node,volatile s32 *,TIMER_NODE_CALLBACK)=callback;
+ M2C_FIELD(node,s32 *,TIMER_NODE_ARG)=arg;
  time=delay+GetSystemTick();
- InsertTimer(arg0,time); OS_RestoreInterrupts(state);
+ InsertTimer(node,time); OS_RestoreInterrupts(state);
 }
 #pragma opt_common_subs reset
 /* Take a timer off the OS timer queue: unlink it from the deadline-sorted list
@@ -614,15 +617,21 @@ void DmaCopyAsync(s32 channel, s32 src, s32 dst, u32 size, void (*handler)(s32),
     DmaStartTransferLocked(channel, src, dst, DMA_COPY_CTRL(size));
 }
 
-void DmaWaitChannel(s32 a) {
- u32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(u32);
- u32 state=OS_DisableInterrupts();
- while (*(volatile u32 *)(0x040000B0 + (a*3+2)*4) & 0x80000000) {}
- if (a==0) {
- volatile u32 *p=(volatile u32 *)(0x040000B0+a*12);
- p[0]=0;p[1]=0;p[2]=0x81400001;
- }
- OS_RestoreInterrupts(state);
+/* Waits for DMA channel `channel` to finish (its control word's enable bit to
+ * clear), then, for channel 0, resets its source, destination and control
+ * registers to the idle one-word transfer.  Interrupts are held off throughout. */
+void DmaWaitChannel(s32 channel) {
+    u32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(u32);
+    u32 state = OS_DisableInterrupts();
+    while (*(volatile u32 *)DMA_CHANNEL_CTRL(channel) & DMA_CTRL_ENABLE) {}
+    if (channel == 0) {
+        volatile u32 *regs = (volatile u32 *)DMA_CHANNEL_BASE(channel);
+        regs[0] = 0;
+        regs[1] = 0;
+        regs[2] = DMA_CTRL_IDLE_CH0;
+    }
+    OS_RestoreInterrupts(state);
 }
 
 /* Stops DMA channel `channel`: with interrupts held off, clears the transfer-mode

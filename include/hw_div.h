@@ -9,6 +9,7 @@
 #define REG_DIV_NUMER   (*(volatile s32 *)0x04000290)
 #define REG_DIV_DENOM   (*(volatile s64 *)0x04000298)
 #define REG_DIV_RESULT  (*(volatile s32 *)0x040002A0)
+#define REG_DIVREM_RESULT (*(volatile s32 *)0x040002A8)
 #define DIVCNT_BUSY     0x8000
 
 #endif

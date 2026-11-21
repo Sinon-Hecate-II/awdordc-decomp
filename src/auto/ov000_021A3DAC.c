@@ -259,54 +259,55 @@ s32 func_ov000_021a4704(void) {
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
     u8 *entries;
-    s32 count5 = 0;
-    s32 count6 = 0;
-    s32 count11 = 0;
-    s32 count7 = 0;
-    s32 count8 = 0;
+    s32 direct = 0;
+    s32 indirect = 0;
+    s32 kind26 = 0;
+    s32 kind6 = 0;
+    s32 kind12 = 0;
     s32 i;
     s32 idx;
     void *base = *gCurrentMap;
-    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, 0x52A4)];
+    u16 start = gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)];
 
     i = start + 1;
-    if (i < (s32)(start + 0x33)) {
-        idx = i * 0xE;
-        entries = (u8 *)base + 0x59A4;
+    if (i < start + MAP_UNIT_GROUP_SCAN) {
+        idx = i * MAP_UNIT_STRIDE;
         do {
+            entries = (u8 *)base + MAP_UNIT_RECORDS;
             if (((u32)((entries[idx]) << 0x1A) >> 0x1A) != 0) {
                 if (func_ov000_021a43e8(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 0) {
-                    if (gUnitKindStats[((u32)((entries[idx]) << 0x1A) >> 0x1A) * 0x70 + 0x13] & 7) {
+                    if (gUnitKindStats[((u32)((entries[idx]) << 0x1A) >> 0x1A) * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_FLAGS] & 7) {
                         if (((u32)((entries[idx]) << 0x1A) >> 0x1A) == 0x1A) {
-                            count11 += 1;
+                            kind26 += 1;
                         } else {
-                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 0) {
-                                count5 += 1;
+                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == UNIT_ATTACK_DIRECT) {
+                                direct += 1;
                             }
-                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == 1) {
-                                count6 += 1;
+                            if (GetUnitAttackClass(((u32)((entries[idx]) << 0x1A) >> 0x1A)) == UNIT_ATTACK_INDIRECT) {
+                                indirect += 1;
                             }
                         }
                         if (((u32)((entries[idx]) << 0x1A) >> 0x1A) == 6) {
-                            count7 += 1;
+                            kind6 += 1;
                         }
                         if (((u32)((entries[idx]) << 0x1A) >> 0x1A) == 0xC) {
-                            count8 += 1;
+                            kind12 += 1;
                         }
                     }
                 }
             }
             i += 1;
             idx += 0xE;
-        } while (i < (s32)(gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)] + 0x33));
+            base = *gCurrentMap;
+        } while (i < gPlayerUnitIdBase[M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
     }
-    if (count7 <= (count8 << 1)) {
+    if (kind6 <= (kind12 << 1)) {
         return 1;
     }
-    if (count6 != 0) {
-        count6 += count11 >> 1;
+    if (indirect != 0) {
+        indirect += kind26 >> 1;
     }
-    if (count5 > (count6 << 1)) {
+    if (direct > (indirect << 1)) {
         return 0;
     }
     return 1;

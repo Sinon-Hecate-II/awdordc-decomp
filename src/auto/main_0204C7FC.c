@@ -301,22 +301,25 @@ s32 ghiDeliverFileData(void *p,s32 data,s32 length) {
  ghiCallProgressCallback(connection,deliveredData,deliveredLen); return 1;
 }
 
-s32 ghiParseChunkSize(void *arg0) {
+/* Parse the hexadecimal chunk size held in the connection's chunk-size line and
+   return it, or -1 when the line will not parse. */
+s32 ghiParseChunkSize(void *p) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     s32 StringScanf(void *, M2C_UNK *, ...);
     extern M2C_UNK gGhiParseChunkSizeName;
     extern M2C_UNK gGhttpProcessFileName;
     extern M2C_UNK gGhttpAssertLen;
     extern M2C_UNK gGhttpFormatHex;
-    s32 sp0;
+    GHIConnection *connection = p;
+    s32 size;
 
-    if (M2C_FIELD(arg0, s32 *, 0x120) == 0) {
+    if (connection->chunkHeaderLen == 0) {
         AssertFailed(&gGhttpAssertLen, &gGhttpProcessFileName, &gGhiParseChunkSizeName, 0x321);
     }
-    if (StringScanf(arg0 + 0x114, &gGhttpFormatHex, &sp0) != 1) {
+    if (StringScanf(connection->chunkHeader, &gGhttpFormatHex, &size) != 1) {
         return -1;
     }
-    return sp0;
+    return size;
 }
 
 /* Append n bytes of a chunk-size line to the request's chunk-header text, keeping

@@ -228,13 +228,17 @@ void func_ov000_021804b0(void) {
 }
 
 void func_ov000_021804c4(void) {
-    M2C_UNK func_ov000_0218cfec();
+    M2C_UNK SelectUnitAttackTarget();
     M2C_UNK ClearAiInfluenceMaps();
     ClearAiInfluenceMaps();
-    func_ov000_0218cfec();
+    SelectUnitAttackTarget();
 }
 
-void func_ov000_021804d4(void) {
+/* One step of an AI unit's action: build the influence maps, pick and run an
+ * attack, find a move target, and - when the current player's AI mode is on -
+ * pick an enemy attack destination; then plan every destination kind and finish
+ * the unit's action. */
+void RunAiAttackAndPlanStep(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -248,13 +252,14 @@ void func_ov000_021804d4(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
+
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanEnemyUnitAttackDestination();
@@ -266,7 +271,10 @@ void func_ov000_021804d4(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_0218053c(void) {
+/* AI unit action step 1: clear and rebuild the influence maps, pick the acting
+ * unit's move action and run its attack, let an AI-controlled player refine it,
+ * then plan every destination kind and finish the unit's action. */
+void RunAiUnitActionStep1(void) {
     M2C_UNK ClearAiInfluenceMaps();
     M2C_UNK SelectAiMoveActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -279,12 +287,13 @@ void func_ov000_0218053c(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
+
     ClearAiInfluenceMaps();
     SelectAiMoveActionTarget();
     RunAiAttackAction();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanEnemyUnitAttackDestination();
@@ -296,7 +305,10 @@ void func_ov000_0218053c(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_021805a0(void) {
+/* Role-4/6 AI unit at step 2: rebuild the influence maps and pick the acting
+ * unit's action, then run this step's destination planners.  When the current
+ * player is AI-controlled, pick an attack position first. */
+void RunAiRole4Or6Step2Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -310,13 +322,13 @@ void func_ov000_021805a0(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanEnemyHqAttackDestinationAlt();
@@ -328,7 +340,11 @@ void func_ov000_021805a0(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180608(void) {
+/* AI unit action pipeline for AI step 3: rebuild the influence maps and the
+   action target, run the attack it chose, find a move target, let players with
+   an AI behaviour mode refine it, then plan the production-site, attack,
+   property, enemy-unit and port destinations and finish the action. */
+void RunAiUnitActionStep3(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -342,13 +358,14 @@ void func_ov000_02180608(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
+
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((u8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     func_ov000_02195750();
@@ -360,7 +377,11 @@ void func_ov000_02180608(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180670(void) {
+/* Role-4/6 AI step-4 action: build the influence maps, pick the unit's attack
+ * target and run its attack, find the best move target, look for an indirect
+ * attack tile when the current player is in an aggressive AI mode, then plan the
+ * step-4 move and the unit's attack/property/port destinations and finish. */
+void RunAiRole4Or6Step4Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
     M2C_UNK RunAiAttackAction();
@@ -374,13 +395,14 @@ void func_ov000_02180670(void) {
     M2C_UNK FinishAiUnitAction();
     M2C_UNK func_ov000_02186a18();
     extern void **gCurrentMap;
-    void *temp_r3;
+    void *map;
+
     BuildAiInfluenceMaps();
     SelectAiActionTarget();
     RunAiAttackAction();
     FindBestMoveTarget();
-    temp_r3 = *gCurrentMap;
-    if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) {
+    map = *gCurrentMap;
+    if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) {
         func_ov000_02186a18();
     }
     PlanAiStep4Destination();

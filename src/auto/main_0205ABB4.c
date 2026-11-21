@@ -2,21 +2,25 @@
 #include "common.h"
 #include "gt2.h"
 
-s32 func_0205abb4(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 gti2CheckTimeout();
-    s32 gti2ResendTimedOutCommands(M2C_UNK, M2C_UNK);
-    s32 func_0205ab44(M2C_UNK, M2C_UNK);
-    s32 func_0205ab80(M2C_UNK, M2C_UNK);
-    if (gti2CheckTimeout() == 0) {
+/* Advance one GT2 connection: give up on a handshake that timed out, ping a
+ * peer we have not sent to for a while, resend commands the peer has not
+ * acknowledged, and send the delayed acknowledgement for received data.
+ * Returns 0 when a callback freed the connection, 1 to keep thinking it. */
+s32 gti2ThinkConnection(void *connection, u32 now) {
+    s32 gti2CheckTimeout(void *, u32);
+    s32 gti2ResendTimedOutCommands(void *, u32);
+    s32 gti2CheckDelayedAck(void *, u32);
+    s32 gti2CheckPing(void *, u32);
+    if (gti2CheckTimeout(connection, now) == 0) {
         return 0;
     }
-    if (func_0205ab80(arg0, arg1) == 0) {
+    if (gti2CheckPing(connection, now) == 0) {
         return 0;
     }
-    if (gti2ResendTimedOutCommands(arg0, arg1) == 0) {
+    if (gti2ResendTimedOutCommands(connection, now) == 0) {
         return 0;
     }
-    if (func_0205ab44(arg0, arg1) != 0) {
+    if (gti2CheckDelayedAck(connection, now) != 0) {
         return 1;
     }
     return 0;
@@ -93,22 +97,23 @@ void func_0205adc0(void) {
     func_0205a994();
 }
 
+#pragma scheduling off
 s32 func_0205adcc(s32 a,void **b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h){
-void gpiSleep(s32);s32 func_0205a830(s32,void **);s32 gti2StartConnectionAttempt(void *,s32,s32,s32);void gti2RemoveConnection(s32);s32 gt2StringToAddress(s32,u32 *,u16 *);
+void func_02049260(s32);s32 func_0205a830(s32,void **);s32 func_0205a890(void *,s32,s32,s32);void func_0205d164(s32);s32 func_0205d588(s32,u32 *,u16 *);
 void *p;u32 ip;u16 port;s32 result,done;
-if(!gt2StringToAddress(c,&ip,&port)||!ip||!port)return 4;
+if(!func_0205d588(c,&ip,&port)||!ip||!port)return 4;
 if(((((ip<<24)&0xff000000)|(((ip<<8)&0xff0000)|((u8)(ip>>24)|((ip>>8)&0xff00))))&0xe0000000)==0xe0000000)return 4;
 result=func_0205a830(a,&p);if(result)return result;
 M2C_FIELD(p,s32 *,32)=f;
-result=gti2StartConnectionAttempt(p,d,e,g);if(result){gti2RemoveConnection((s32)p);return result;}
+result=func_0205a890(p,d,e,g);if(result){func_0205d164((s32)p);return result;}
 if(!h){if(b)*b=p;return 0;}
 M2C_FIELD(p,s32 *,36)++;
-do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)gpiSleep(1);}while(!done);
+do{func_0205ad78(a);if(M2C_FIELD(p,s32 *,12)>=5)done=1;else done=0;if(!done)func_02049260(1);}while(!done);
 M2C_FIELD(p,s32 *,36)--;
 if(M2C_FIELD(p,s32 *,12)==5)*b=p;
 return M2C_FIELD(p,s32 *,24);
 }
-
+#pragma scheduling reset
 /* Send a message on a connected GT2 peer, starting with the first send filter when present. */
 void gt2Send(void *connection, const u8 *message, s32 length, s32 reliable) {
     s32 Vector_GetCount(s32 *);
@@ -169,7 +174,7 @@ if(!a)AssertFailed(&data_020ff7ec,&data_020ff7e0,&data_020ff7b0,0x1a3);
 M2C_FIELD(a,s32 *,0x40)=b;
 }
 
-s32 func_0205b094(void *arg0) {
+s32 GetConnectionPeer(void *arg0) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
     extern M2C_UNK data_020ff7c8;
     extern M2C_UNK data_020ff7e0;

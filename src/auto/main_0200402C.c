@@ -120,19 +120,22 @@ void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
 }
 #pragma pop
 
-void func_0200436c(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of background-map data into the sub screen's BG0 map at
+ * `offset`: through the GX DMA channel when one is free and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadBG0ScrSub(M2C_UNK src, s32 offset, u32 size) {
     s32 func_020036b8();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    s32 temp_ip;
+    s32 base;
 
-    temp_ip = func_020036b8();
-    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+    base = func_020036b8();
+    if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
+        DmaCopy16(gGxDmaChannel, src, base + offset, size);
         return;
     }
-    CopyU16(arg0, temp_ip + arg1, arg2);
+    CopyU16(src, base + offset, size);
 }
 
 void GX_LoadBG1Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
@@ -180,19 +183,22 @@ void GX_LoadBG2Scr(M2C_UNK arg0, s32 arg1, u32 arg2) {
     CopyU16(arg0, temp_ip + arg1, arg2);
 }
 
-void func_020044ec(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of BG3 map data from `src` into BG3's screen area at `offset`.
+ * The copy runs through the GX DMA channel when one is owned and on the CPU
+ * otherwise. */
+void GX_LoadBG3Scr(M2C_UNK src, s32 offset, u32 size) {
     s32 GX_GetBG3ScrPtr();
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    s32 temp_ip;
+    s32 screenBase;
 
-    temp_ip = GX_GetBG3ScrPtr();
-    if ((gGxDmaChannel != -1) && (arg2 > 0x1CU)) {
-        DmaCopy16(gGxDmaChannel, arg0, temp_ip + arg1, arg2);
+    screenBase = GX_GetBG3ScrPtr();
+    if ((gGxDmaChannel != -1) && (size > 0x1CU)) {
+        DmaCopy16(gGxDmaChannel, src, screenBase + offset, size);
         return;
     }
-    CopyU16(arg0, temp_ip + arg1, arg2);
+    CopyU16(src, screenBase + offset, size);
 }
 
 void func_0200454c(M2C_UNK arg0,s32 arg1,u32 arg2) {
@@ -313,17 +319,21 @@ store_6890:
     return;
 }
 
-void GX_LoadOBJExtPltt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Copy `size` bytes of extended OBJ-palette data from `src` into the main-engine
+ * OBJ extended palette area at `offset`.  GX_BeginLoadOBJExtPltt put the area's
+ * VRAM base in gGxExtPlttLoad; the copy runs through the GX DMA channel when one
+ * is owned and on the CPU otherwise. */
+void GX_LoadOBJExtPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     extern M2C_UNK gGxExtPlttLoad;
-    M2C_UNK field = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4);
+    M2C_UNK paletteBase = M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_BASE);
     if (gGxDmaChannel != -1) {
-        DmaCopyAsync(gGxDmaChannel, arg0, field + (s32)arg1, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, src, paletteBase + (s32)offset, size, 0, 0);
         return;
     }
-    MIi_CpuCopy32(arg0, field + (s32)arg1, (u32)arg2);
+    MIi_CpuCopy32(src, paletteBase + (s32)offset, (u32)size);
 }
 
 void GX_EndLoadOBJExtPltt(void) {
@@ -345,15 +355,18 @@ void GX_BeginLoadBGExtPlttSub(void) {
     gGxExtPlttLoad = func_02003408();
 }
 
-void GX_LoadBGExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Copy `size` bytes of extended background-palette data from `src` into the
+ * sub-engine BG extended palette area at `offset`.  The copy runs through the GX
+ * DMA channel when one is owned and on the CPU otherwise. */
+void GX_LoadBGExtPlttSub(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1) {
-        DmaCopyAsync(gGxDmaChannel, arg0, (s32)arg1 + 0x6898000, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, src, (s32)offset + GX_SUB_BG_EXTPLTT_VRAM_BASE, size, 0, 0);
         return;
     }
-    MIi_CpuCopy32(arg0, (s32)arg1 + 0x6898000, (u32)arg2);
+    MIi_CpuCopy32(src, (s32)offset + GX_SUB_BG_EXTPLTT_VRAM_BASE, (u32)size);
 }
 
 void GX_EndLoadBGExtPlttSub(void) {
@@ -374,15 +387,18 @@ void GX_BeginLoadOBJExtPlttSub(void) {
     M2C_FIELD(&gGxExtPlttLoad, s32 *, 0x18) = func_02003430();
 }
 
-void GX_LoadOBJExtPlttSub(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Copy `size` bytes of extended OBJ-palette data from `src` into the sub-engine
+ * OBJ extended palette area at `offset`.  The copy runs through the GX DMA
+ * channel when one is owned and on the CPU otherwise. */
+void GX_LoadOBJExtPlttSub(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     M2C_UNK DmaCopyAsync(M2C_UNK, M2C_UNK, s32, s32, void (*)(s32), s32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
     if (gGxDmaChannel != -1) {
-        DmaCopyAsync(gGxDmaChannel, arg0, (s32)arg1 + 0x68a0000, arg2, 0, 0);
+        DmaCopyAsync(gGxDmaChannel, src, (s32)offset + GX_SUB_OBJ_EXTPLTT_VRAM_BASE, size, 0, 0);
         return;
     }
-    MIi_CpuCopy32(arg0, (s32)arg1 + 0x68a0000, (u32)arg2);
+    MIi_CpuCopy32(src, (s32)offset + GX_SUB_OBJ_EXTPLTT_VRAM_BASE, (u32)size);
 }
 
 void GX_EndLoadOBJExtPlttSub(void) {

@@ -356,7 +356,7 @@ void func_ov003_021f92f4(void *obj) {
     gCur3DSpriteEngine=saved;
     if((!IsLinkSessionActive() && (u8)IsUnavailable92(id)) || (IsLinkSessionActive() && !func_ov003_021f400c() && (u32)id>=225 && (u32)id<425 && !func_020a8ef8(id)))
         MI_CpuFill8((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830,0,60);
-    else func_020c1878((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830);
+    else CountMapProperties((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830);
     kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;
     if((u8)(kind==2)) return;
     value=IsUnavailable92(MapId92(obj));

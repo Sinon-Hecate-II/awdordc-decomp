@@ -589,7 +589,28 @@ src/auto/main_020AB884.c:
     .text start:0x020ab884 end:0x020ac7dc
 
 src/auto/main_020AC7DC.c:
-    .text start:0x020ac7dc end:0x020ad78c
+    .text start:0x020ac7dc end:0x020ad4a0
+
+src/auto/main_020AD4A0.c:
+    .text start:0x020ad4a0 end:0x020ad584
+
+src/auto/main_020AD584.c:
+    .text start:0x020ad584 end:0x020ad594
+
+src/auto/main_020AD594.c:
+    .text start:0x020ad594 end:0x020ad604
+
+src/auto/main_020AD604.c:
+    .text start:0x020ad604 end:0x020ad61c
+
+src/auto/main_020AD61C.c:
+    .text start:0x020ad61c end:0x020ad67c
+
+src/auto/main_SETSCREENTRANSITIONDIRECTORY.c:
+    .text start:0x020ad67c end:0x020ad74c
+
+src/auto/main_020AD74C.c:
+    .text start:0x020ad74c end:0x020ad78c
 
 src/auto/main_020AD78C.c:
     .text start:0x020ad78c end:0x020ae768

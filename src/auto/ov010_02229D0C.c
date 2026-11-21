@@ -12,8 +12,8 @@ M2C_FIELD(&gOv010OnlineSession, void **, 0x18) = NULL;
 }
 
 void func_ov010_02229d20(void *arg0) {
-    M2C_UNK func_ov010_02229c0c(void *, s32);
-    func_ov010_02229c0c(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
+    M2C_UNK Ov010Online_SubmitStartRecord(void *, s32);
+    Ov010Online_SubmitStartRecord(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 void func_ov010_02229d34(s32 arg0) {
@@ -157,25 +157,28 @@ void func_ov010_02229fcc(void) {
 
 }
 
-void *CreateOnlineMatchRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern M2C_UNK data_ov010_0222c2c0;
-    extern M2C_UNK data_ov010_0222c3e4;
-    void *temp_r0;
+/* Creates the online overlay's match-request node, a 3D sprite that searches WFC
+ * for a hosted game when it is stepped.  Returns NULL unless the WFC connection is
+ * up or the node cannot be made; `owner` is the sprite it is parented to. */
+void *CreateOnlineMatchRequest(s32 names, s32 nameCount, s32 type, s32 timeout, s32 flags, s32 owner) {
+    extern M2C_UNK gOnlineMatchRequestClass;
+    extern M2C_UNK gOnlineMatchRequestVtbl;
+    void *request;
 
-    if (IsOnlineSessionFlagSet(1) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED) == 0) {
         return NULL;
     }
-    temp_r0 = CreateSpriteObject(&data_ov010_0222c2c0, arg5);
-    if (temp_r0 == NULL) {
-        return temp_r0;
+    request = CreateSpriteObject(&gOnlineMatchRequestClass, owner);
+    if (request == NULL) {
+        return request;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov010_0222c3e4;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = arg4;
-    return temp_r0;
+    M2C_FIELD(request, M2C_UNK **, 0) = &gOnlineMatchRequestVtbl;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_NAMES) = names;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_NAME_COUNT) = nameCount;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_TYPE) = type;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_TIMEOUT) = timeout;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_FLAGS) = flags;
+    return request;
 }
 
 void func_ov010_0222a038(void) {
@@ -189,9 +192,9 @@ s32 func_ov010_0222a03c(s32 arg0) {
 }
 
 void *func_ov010_0222a050(void *arg0) {
-    M2C_UNK func_ov010_02229580();
+    M2C_UNK Ov010Online_FreePacket();
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        func_ov010_02229580();
+        Ov010Online_FreePacket();
         M2C_FIELD(arg0, s32 *, 0x38) = 0;
     }
     return arg0;
@@ -199,7 +202,7 @@ void *func_ov010_0222a050(void *arg0) {
 
 void *func_ov010_0222a078(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        func_ov010_02229580();
+        Ov010Online_FreePacket();
         M2C_FIELD(arg0, s32 *, 0x38) = 0;
     }
     MemFree(arg0);

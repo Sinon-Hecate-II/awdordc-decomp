@@ -345,16 +345,32 @@ return result;}
 
 #pragma opt_strength_reduction off
 #pragma peephole off
+/* Flush each open standard stream (stdin, stdout and stderr, STD_STREAM_STRIDE
+ * bytes apart at gStdinStream) and return -1 when any of the flushes fails. */
 s32 CloseStandardStreams(void) {
-s32 FlushFileStream(s32);
-extern u8 gStdinStream[];
-void *p; s32 result; s32 i; s32 offset;
-p=gStdinStream; result=0; i=1;
-do {
-if (((u32)(M2C_FIELD(p,u32 *,4)<<22)>>29)!=0 && FlushFileStream((s32)p)) result=-1;
-if(i<3) {offset=i*0x4c; i++; p=gStdinStream+offset;} else p=NULL;
-}while(p);
-return result;
+    s32 FlushFileStream(s32);
+    extern u8 gStdinStream[];
+    void *stream;
+    s32 result;
+    s32 index;
+    s32 offset;
+
+    stream = gStdinStream;
+    result = 0;
+    index = 1;
+    do {
+        if (FILE_STREAM_KIND(M2C_FIELD(stream, u32 *, FILE_STREAM_MODE)) != 0 && FlushFileStream((s32)stream)) {
+            result = -1;
+        }
+        if (index < STD_STREAM_COUNT) {
+            offset = index * STD_STREAM_STRIDE;
+            index++;
+            stream = gStdinStream + offset;
+        } else {
+            stream = NULL;
+        }
+    } while (stream);
+    return result;
 }
 #pragma peephole reset
 #pragma opt_strength_reduction reset

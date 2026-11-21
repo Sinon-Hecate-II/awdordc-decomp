@@ -26,7 +26,7 @@ u8 *state=(u8*)&gWfcNet;
 u32 code;
 void *(*alloc)(void*,s32)=M2C_FIELD(gWfcNet,void*(**)(void*,s32),0x1108);
 void (*freefn)(void*,void*,s32)=M2C_FIELD(gWfcNet,void(**)(void*,void*,s32),0x110c);
-u8 *first=0,*second=0,*result=0;void *text,*urlcopy,*callback;u8 auth[452],response[148];u8 clock[20];
+u8 *first=0,*second=0,*result=0;void *requestText,*urlText,*callback;u8 auth[452],response[148];u8 clock[20];
 s32 retry=0,status,n1,n2,n3,delay,length;char statusText[4];
 for(;;){
 SetNetConfig(data_020fb7b4,1,4096,(void*)alloc,(void*)freefn,20000);M2C_FIELD(gWfcNet,s32*,0x1004)=-2;
@@ -39,7 +39,7 @@ default:HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(3);goto done;
 case 8:break;
 }
 if(ParseHttpResponse(NetHandle(),0)!=1){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
-text=FindHttpHeader(NetHandle(),data_020fb8c8);code=ParseInt(text);
+requestText=FindHttpHeader(NetHandle(),data_020fb8c8);code=ParseInt(requestText);
 if(gErrno==34){Wfc_SetNetCheckState(2);goto done;}
 switch(code){
 case 200:M2C_FIELD(state,s32*,8)=M2C_FIELD(NetHandle(),s32*,0x112c);break;
@@ -51,7 +51,7 @@ callback=gNasServer;SetNetConfig(callback,0,512,(void*)alloc,(void*)freefn,20000
 if(StringCompare(callback,data_020fb8d4))M2C_FIELD(&gWfcNet,s32*,0x2c)=1;
 if(HttpClientInit(NetHandle(),data_0213d150)){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(1);goto done;}
 if(!func_020336c0(response)||!func_02033988(NetHandle(),response,1)){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
-if(func_020346d0(NetHandle(),data_020fb8f4,data_020fb8fc,7)||(text=M2C_FIELD(gWfcNet,void**,0x1118),length=StringLength(text),func_020346d0(NetHandle(),data_020fb904,text,length))){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
+if(func_020346d0(NetHandle(),data_020fb8f4,data_020fb8fc,7)||(requestText=M2C_FIELD(gWfcNet,void**,0x1118),length=StringLength(requestText),func_020346d0(NetHandle(),data_020fb904,requestText,length))){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
 freefn(data_020fb82c,M2C_FIELD(gWfcNet,void**,0x1118),0);M2C_FIELD(gWfcNet,void**,0x1118)=0;
 if(HttpAppendConnectionHeaders(NetHandle())){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(1);goto done;}
 WaitRequest();
@@ -61,16 +61,16 @@ default:HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(3);goto done;
 case 8:HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(7);goto done;
 }
 }
-text=M2C_FIELD(NetHandle(),void**,0x1a08);if(!text){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
-length=StringLength(text)+1;M2C_FIELD(gWfcNet,void**,0x1114)=alloc(data_020fb860,length);
-urlcopy=M2C_FIELD(gWfcNet,void**,0x1114);if(!urlcopy){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(4);goto done;}
-StringCopyPad(urlcopy,text,StringLength(text));break;
+urlText=M2C_FIELD(NetHandle(),void**,0x1a08);if(!urlText){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
+length=StringLength(urlText)+1;M2C_FIELD(gWfcNet,void**,0x1114)=alloc(data_020fb860,length);
+requestText=M2C_FIELD(gWfcNet,void**,0x1114);if(!requestText){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(4);goto done;}
+StringCopyPad(requestText,urlText,StringLength(urlText));break;
 default:HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(10);goto done;
 }
 HttpClientCleanup(NetHandle());GetWfcProfile(&clock);
 if(M2C_FIELD(clock,u64*,0)==0){
 M2C_FIELD(gWfcNet,s32*,0x1004)=-3;M2C_FIELD(state,u16*,0x34)=0;state[0x68]=0;
-text=gWfcNet;M2C_FIELD(state,void**,0x74)=M2C_FIELD(text,void**,0x1108);M2C_FIELD(state,void**,0x78)=M2C_FIELD(text,void**,0x110c);
+requestText=gWfcNet;M2C_FIELD(state,void**,0x74)=M2C_FIELD(requestText,void**,0x1108);M2C_FIELD(state,void**,0x78)=M2C_FIELD(requestText,void**,0x110c);
 if(CreateNasConnection(data_0213d16c,NetHandle())){Wfc_SetNetCheckState(5);goto done;}
 func_02032b68();
 if(func_02032b98()!=21){
@@ -90,7 +90,7 @@ callback=gNasServer;SetNetConfig(callback,0,4096,(void*)alloc,(void*)freefn,4000
 if(StringCompare(callback,data_020fb8d4))M2C_FIELD(state,s32*,0x2c)=1;
 if(HttpClientInit(NetHandle(),data_0213d150)){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(1);goto done;}
 if(!func_020336c0(response)||!func_02033988(NetHandle(),response,1)){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
-if(func_020346d0(NetHandle(),data_020fb8f4,data_020fb914,5)||(text=M2C_FIELD(gWfcNet,void**,0x1114),length=StringLength(text),func_020346d0(NetHandle(),data_020fb91c,text,length))){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
+if(func_020346d0(NetHandle(),data_020fb8f4,data_020fb914,5)||(requestText=M2C_FIELD(gWfcNet,void**,0x1114),length=StringLength(requestText),func_020346d0(NetHandle(),data_020fb91c,requestText,length))){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(8);goto done;}
 freefn(data_020fb810,M2C_FIELD(gWfcNet,void**,0x1114),0);M2C_FIELD(gWfcNet,void**,0x1114)=0;
 if(HttpAppendConnectionHeaders(NetHandle())){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(1);goto done;}
 WaitRequest();
@@ -134,10 +134,10 @@ default:HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(3);goto done;
 case 8:break;
 }
 if(ParseHttpResponse(NetHandle(),1)!=1){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
-text=M2C_FIELD(NetHandle(),void**,0x1a08);if(!text){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
-M2C_FIELD(gWfcNet,void**,0x1118)=alloc(data_020fb8a8,StringLength(text)+1);
-urlcopy=M2C_FIELD(gWfcNet,void**,0x1118);if(!urlcopy){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(4);goto done;}
-StringCopyPad(urlcopy,text,StringLength(text));HttpClientCleanup(NetHandle());SleepMilliseconds(delay);
+requestText=M2C_FIELD(NetHandle(),void**,0x1a08);if(!requestText){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(2);goto done;}
+M2C_FIELD(gWfcNet,void**,0x1118)=alloc(data_020fb8a8,StringLength(requestText)+1);
+urlText=M2C_FIELD(gWfcNet,void**,0x1118);if(!urlText){HttpClientCleanup(NetHandle());Wfc_SetNetCheckState(4);goto done;}
+StringCopyPad(urlText,requestText,StringLength(requestText));HttpClientCleanup(NetHandle());SleepMilliseconds(delay);
 }
 done:
 if(first)freefn(data_020fb944,first,0);if(second)freefn(data_020fb950,second,0);if(result)freefn(data_020fb95c,result,0);

@@ -117,7 +117,7 @@ void func_ov006_0221747c(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0x2AC);
     func_020e36dc(arg0);
     LoadUiGraphicsBank(4);
-    func_02089728();
+    HideFrameBorderSprite();
     DisableMapConfirm();
 }
 
@@ -127,7 +127,7 @@ void func_ov006_022174d0(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
     FreeUiGraphicsBank(4);
-    func_02089740();
+    ShowFrameBorderSprite();
 }
 
 void func_ov006_02217504(void *arg0) {
@@ -233,7 +233,7 @@ void func_ov006_0221762c(void *arg0) {
 }
 
 void func_ov006_02217794(void *arg0) {
-    if ((M2C_FIELD(arg0, s32 *, 0x38) != 0) && (func_0208471c() == 0)) {
+    if ((M2C_FIELD(arg0, s32 *, 0x38) != 0) && (IsSessionInError() == 0)) {
         return;
     }
     DisableMapConfirm();
@@ -246,9 +246,9 @@ void func_ov006_022177c8(s32 arg0) {
 }
 
 void func_ov006_022177e4(void) {
-    M2C_UNK func_02089728();
+    M2C_UNK HideFrameBorderSprite();
     LoadUiGraphicsBank(4);
-    func_02089728();
+    HideFrameBorderSprite();
     if (func_02086a30(0x21) == 0) {
         SetUiMessageText(0x46000026);
         func_02086740(0x21, 1);
@@ -258,9 +258,9 @@ void func_ov006_022177e4(void) {
 }
 
 void func_ov006_0221782c(void) {
-    M2C_UNK func_02089740();
+    M2C_UNK ShowFrameBorderSprite();
     FreeUiGraphicsBank(4);
-    func_02089740();
+    ShowFrameBorderSprite();
 }
 
 void func_ov006_02217840(M2C_UNK arg0) {
@@ -279,7 +279,7 @@ void InitMapTransferObject(void *object) {
     M2C_FIELD(object, s32 *, MAP_TRANSFER_CHOSEN) = 0;
     func_020e36dc(object);
     LoadUiGraphicsBank(4);
-    func_02089728();
+    HideFrameBorderSprite();
     DisableMapConfirm();
     if (IsCampaignMapRecordValid(M2C_FIELD(object, s32 *, MAP_TRANSFER_MAP_ID))) {
         switch (M2C_FIELD(object, s32 *, MAP_TRANSFER_MODE)) {
@@ -299,28 +299,32 @@ void func_ov006_0221791c(void *arg0) {
     M2C_UNK func_020e36f4();
     func_020e36f4();
     FreeUiGraphicsBank(4);
-    func_02089740();
+    ShowFrameBorderSprite();
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
 }
 
-void func_ov006_02217948(void *arg0) {
+/* Rebuild the map-transfer object's received-player list for its transfer mode:
+ * reset the collected count to MAP_TRANSFER_SLOTS and build the online-player list
+ * node that fills MAP_TRANSFER_ENTRIES -- mode 0 caps it at 100 players, mode 1
+ * has no cap, mode 2 keeps only the ids named in MAP_TRANSFER_SOURCE. */
+void BuildMapTransferPlayerList(void *transfer) {
     M2C_UNK CreateOnlinePlayerListUpToLimitNode(M2C_UNK, M2C_UNK, void *, void *);
     M2C_UNK CreateOnlinePlayerListNoLimitNode(M2C_UNK, void *, void *);
     M2C_UNK CreateOnlinePlayerListWithIdsNode(void *, M2C_UNK, void *, void *);
-    s32 temp_r0;
+    s32 mode;
 
-    M2C_FIELD(arg0, s32 *, 0x3C) = 10;
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x38);
-    switch (temp_r0) {
+    M2C_FIELD(transfer, s32 *, MAP_TRANSFER_COUNT) = MAP_TRANSFER_SLOTS;
+    mode = M2C_FIELD(transfer, s32 *, MAP_TRANSFER_MODE);
+    switch (mode) {
     case 0:
-        CreateOnlinePlayerListUpToLimitNode(M2C_FIELD(arg0, s32 *, 0x4C), 0x64, arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListUpToLimitNode(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_ENTRIES), 0x64, transfer + MAP_TRANSFER_COUNT, transfer);
         return;
     case 1:
-        CreateOnlinePlayerListNoLimitNode(M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListNoLimitNode(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_ENTRIES), transfer + MAP_TRANSFER_COUNT, transfer);
         return;
     case 2:
-        CreateOnlinePlayerListWithIdsNode(arg0 + 0x48, M2C_FIELD(arg0, s32 *, 0x4C), arg0 + 0x3C, arg0);
+        CreateOnlinePlayerListWithIdsNode(transfer + MAP_TRANSFER_SOURCE, M2C_FIELD(transfer, s32 *, MAP_TRANSFER_ENTRIES), transfer + MAP_TRANSFER_COUNT, transfer);
         return;
     }
 }
@@ -429,9 +433,9 @@ void func_ov006_02217b24(void *arg0) {
 }
 
 void func_ov006_02217b7c(M2C_UNK arg0) {
-    s32 func_0208471c();
+    s32 IsSessionInError();
     M2C_UNK DisableMapConfirm();
-    if (func_0208471c() == 0) {
+    if (IsSessionInError() == 0) {
         return;
     }
     DisableMapConfirm();
@@ -510,7 +514,7 @@ void InitMapListObject(void *object) {
     M2C_FIELD(object, s8 *, MAP_LIST_DISPLAY_KIND) = 0;
     func_020e36dc(object);
     LoadUiGraphicsBank(4);
-    func_02089728();
+    HideFrameBorderSprite();
     func_ov006_02217cfc(0);
     DisableMapConfirm();
 }
@@ -523,7 +527,7 @@ void func_ov006_02217d9c(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
     func_020e36f4(arg0);
     FreeUiGraphicsBank(4);
-    func_02089740();
+    ShowFrameBorderSprite();
 }
 
 /* Start the map-code screen's digit display, which shows and edits the 64-bit

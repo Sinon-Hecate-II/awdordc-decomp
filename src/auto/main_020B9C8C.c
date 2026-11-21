@@ -312,12 +312,12 @@ void CanDropSecondCarriedUnit(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 
 u8 func_020ba790(s32 x,s32 y){
 extern void **gCurrentMap;extern u8 gMovementTypeTable[];extern s8 gUnitProductionTerrain[];extern M2C_UNK gMovementCostTable;
-s32 func_020a6fe4(void *,s32);
+s32 CanUnitLoadKind(void *,s32);
 u8 *base=*gCurrentMap,*units=base+0x59a4;s32 offset,kind,tile;u8 *selected;u8 id;
 id=base[x+M2C_FIELD(base+y*2,u16 *,0x3758)];offset=(s16)id*(s16)14;
 if(!id)return 0;
 if((id&0xc0)!=(M2C_FIELD(base,u8 *,0x52d4)&0xc0))return 0;
-if(!func_020a6fe4(units+offset,(u32)(M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0)<<26)>>26))return 0;
+if(!CanUnitLoadKind(units+offset,(u32)(M2C_FIELD(M2C_FIELD(base,u8 **,0x52d0),u8 *,0)<<26)>>26))return 0;
 base=*gCurrentMap;selected=M2C_FIELD(base,u8 **,0x52d0);
 if(selected[1]==x&&selected[2]==y)return 0;
 kind=gMovementTypeTable[((u32)(units[offset]<<26)>>26)*112];

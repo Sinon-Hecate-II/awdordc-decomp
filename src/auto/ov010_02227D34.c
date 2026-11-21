@@ -77,7 +77,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 GetLastNasError(void);
     void func_ov010_02227934(void);
     void func_ov010_02227954(void);
-    void func_ov010_02227bd4(void);
+    void Ov010Online_OnPeerConnectionLost(void);
     void func_ov010_02227c3c(void);
     void func_ov010_02227c5c(void);
     void func_ov010_02227df8(void);
@@ -104,7 +104,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
 
     Transfer_SetStartCallback((s32)func_ov010_02227934);
     Transfer_SetEndCallback((s32)func_ov010_02227954);
-    func_02038d14((s32)func_ov010_02227bd4, 0);
+    func_02038d14((s32)Ov010Online_OnPeerConnectionLost, 0);
     func_0203a9a4((s32)func_ov010_02227c3c, 0);
 
     StartMatchMaking(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
@@ -155,8 +155,8 @@ void Ov010Online_SetupPeerReceiveBuffers(void) {
 
 void SetOnlinePlayerRecord(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
-    extern M2C_UNK data_ov010_0222f02c;
-    MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &data_ov010_0222f02c);
+    extern M2C_UNK gOv010PlayerRecords;
+    MI_CpuCopy8(arg1, (arg0 * 0x6C) + (s32) &gOv010PlayerRecords);
 }
 
 /* Host/join match event callback: with no network error and the event not
@@ -277,7 +277,7 @@ s32 func_ov010_02228180(void) {
     M2C_UNK IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK func_ov010_022268f4(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
-    s32 func_02031d00(M2C_UNK);
+    s32 CheckSaveAndWfcProfile(M2C_UNK);
     void func_02037680(s32, s32);
     M2C_UNK DC_InvalidateRange(M2C_UNK, s32);
     M2C_UNK func_ov010_02226a88();
@@ -293,7 +293,7 @@ s32 func_ov010_02228180(void) {
         return 0;
     }
     statusBuffer = func_ov010_022268f4(0, 0x700, 0x20);
-    status = func_02031d00(statusBuffer);
+    status = CheckSaveAndWfcProfile(statusBuffer);
     Ov010_FreeBlock(0, statusBuffer, 0x700);
     if (status != 3) {
         func_02037680((s32)func_ov010_022268f4, (s32)Ov010_FreeBlock);
@@ -533,7 +533,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     extern M2C_UNK gLocalPlayerStatus;
     extern M2C_UNK data_ov010_0222efec;
     extern M2C_UNK data_ov010_0222c128;
-    extern M2C_UNK data_ov010_0222f02c;
+    extern M2C_UNK gOv010PlayerRecords;
     extern M2C_UNK gOv010SessionStateClass;
     extern M2C_UNK data_ov010_0222c3bc;
     extern M2C_UNK gOv010ConnectionClass;
@@ -607,7 +607,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     aa=*(Ov010CallbackFn *)&data_ov010_0222c128;
     bb=aa;
     cc=bb;
-    for(p=(u8 *)&data_ov010_0222f02c;p!=(u8 *)&data_ov010_0222f1dc;p+=0x6c) {
+    for(p=(u8 *)&gOv010PlayerRecords;p!=(u8 *)&data_ov010_0222f1dc;p+=0x6c) {
         (((Ov010Callback *)p)->*cc)();
     }
     dd=cc;
@@ -646,9 +646,9 @@ void func_ov010_02228a38(void *arg0) {
 }
 
 void *func_ov010_02228a48(void *arg0) {
-    M2C_UNK func_ov010_02229580();
+    M2C_UNK Ov010Online_FreePacket();
     if (M2C_FIELD(arg0, s32 *, 4) != 0) {
-        func_ov010_02229580();
+        Ov010Online_FreePacket();
         M2C_FIELD(arg0, s32 *, 4) = 0;
     }
     return arg0;
@@ -809,9 +809,9 @@ end:
 }
 
 void func_ov010_02228c88(M2C_UNK arg0) {
-    M2C_UNK func_ov010_02229608(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK QueueOnlineLinkPacket(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_ov010_0222c140;
-    func_ov010_02229608(9, 0, 0, 0xFFFF);
+    QueueOnlineLinkPacket(9, 0, 0, 0xFFFF);
     CreateSpriteObject(&data_ov010_0222c140, arg0);
 }
 

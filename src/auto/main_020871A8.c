@@ -87,40 +87,33 @@ px=qx;py=qy;}}else {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>2);i++){func_
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 px=qx;py=qy;}}*(volatile u32*)0x4000504=0;*(volatile u32*)0x4000480=0x7fff;}
 #pragma pop
-void DrawTexturedQuadUV(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
-    u16 temp_r0;
-    u16 temp_r10;
-    u16 temp_r6;
-    u16 temp_lr;
-    u16 temp_r7;
-    u16 temp_r4;
-    u16 temp_r5;
-    u16 temp_r2;
-    u16 temp_r1;
+/* Draws one textured quad spanning (x, y) to (x + width, y + height) at depth z,
+ * sampling the texture rectangle (u0, v0) to (u1, v1): the texel coordinates are
+ * rounded into GX's 1/16-texel fixed-point texture coordinates. */
+void DrawTexturedQuadUV(s32 x, s32 y, s32 z, s32 width, s32 height, s32 u0, s32 v0, s32 u1, s32 v1) {
+    u16 y0 = (u16) (s16) y;
+    u16 x0 = (u16) (s16) x;
+    s16 top = (s16)(((v0 << 12) + GX_FX_HALF) >> 8);
+    s16 left = (s16)(((u0 << 12) + GX_FX_HALF) >> 8);
+    s16 bottom = (s16)(((v1 << 12) + GX_FX_HALF) >> 8);
+    u16 y1 = (u16) (s16) (y + height);
+    s16 right = (s16)(((u1 << 12) + GX_FX_HALF) >> 8);
+    u16 x1 = (u16) (s16) (x + width);
 
-    *(volatile u32 *) 0x4000500 = 1;
-    temp_r0 = (u16) ((s32) (((arg6 << 0xC) + 0x800) << 8) >> 0x10);
-    temp_r10 = (u16) ((s32) (((arg5 << 0xC) + 0x800) << 8) >> 0x10);
-    temp_r6 = (u16) ((s32) (((arg8 << 0xC) + 0x800) << 8) >> 0x10);
-    temp_lr = (u16) ((s32) (((arg7 << 0xC) + 0x800) << 8) >> 0x10);
-    temp_r7 = (u16) (s16) arg1;
-    temp_r4 = (u16) (s16) arg0;
-    temp_r5 = (u16) (s16) (arg1 + arg4);
-    temp_r2 = (u16) (s16) (arg0 + arg3);
-    *(volatile u32 *) 0x4000488 = temp_r10 | ((u32) temp_r0 << 0x10);
-    *(volatile u32 *) 0x400048C = temp_r4 | ((u32) temp_r7 << 0x10);
-    temp_r1 = (u16) (s16) arg2;
-    *(volatile u32 *) 0x400048C = (u32) temp_r1;
-    *(volatile u32 *) 0x4000488 = temp_r10 | ((u32) temp_r6 << 0x10);
-    *(volatile u32 *) 0x400048C = temp_r4 | ((u32) temp_r5 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) temp_r1;
-    *(volatile u32 *) 0x4000488 = temp_lr | ((u32) temp_r6 << 0x10);
-    *(volatile u32 *) 0x400048C = temp_r2 | ((u32) temp_r5 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) temp_r1;
-    *(volatile u32 *) 0x4000488 = temp_lr | ((u32) temp_r0 << 0x10);
-    *(volatile u32 *) 0x400048C = temp_r2 | ((u32) temp_r7 << 0x10);
-    *(volatile u32 *) 0x400048C = (u32) temp_r1;
-    *(volatile u32 *) 0x4000504 = 0;
+    REG_GX_BEGIN_VTXS = GX_PRIM_QUADS;
+    REG_GX_TEX_COORD = (u32)(u16)left | ((u32)(u16)top << 0x10);
+    REG_GX_VTX_16 = x0 | ((u32) y0 << 0x10);
+    REG_GX_VTX_16 = (u16) (s16) z;
+    REG_GX_TEX_COORD = (u32)(u16)left | ((u32)(u16)bottom << 0x10);
+    REG_GX_VTX_16 = x0 | ((u32) y1 << 0x10);
+    REG_GX_VTX_16 = (u16) (s16) z;
+    REG_GX_TEX_COORD = (u32)(u16)right | ((u32)(u16)bottom << 0x10);
+    REG_GX_VTX_16 = x1 | ((u32) y1 << 0x10);
+    REG_GX_VTX_16 = (u16) (s16) z;
+    REG_GX_TEX_COORD = (u32)(u16)right | ((u32)(u16)top << 0x10);
+    REG_GX_VTX_16 = x1 | ((u32) y0 << 0x10);
+    REG_GX_VTX_16 = (u16) (s16) z;
+    REG_GX_END_VTXS = 0;
 }
 
 #pragma push
@@ -187,14 +180,26 @@ void DrawGxLine(s32 x0,s32 y0,s32 x1,s32 y1,s32 z,u16 color) {
 }
 
 #pragma opt_strength_reduction off
-void AddSpriteCell(void *p,s32 a,s32 b,s32 c,u16 d,u16 e,u16 f) {
- u16 *q=M2C_FIELD(p,u16 **,0x14); s32 i; s32 n=M2C_FIELD(p,u16 *,0x10);
- for(i=0;i<n;i++,q+=6) {
- if(q[5]==0) {
- q[0]=a; q[1]=b; q[2]=c; q[3]=d; q[4]=e; q[5]=f;
- M2C_FIELD(p,u8 *,0x12)++; return;
- }
- }
+/* Adds one cell to a sprite-cell block: it fills the first free cell (attr 0)
+ * with the given rectangle and graphic, bumps the block's used-cell count, and
+ * does nothing when every cell is taken. */
+void AddSpriteCell(void *list, s32 x, s32 y, s32 width, u16 height, u16 tile, u16 attr) {
+    u16 capacity = M2C_FIELD(list, u16 *, SPRITE_CELL_LIST_CAPACITY);
+    SpriteCell *cell = M2C_FIELD(list, SpriteCell **, SPRITE_CELL_LIST_CELLS);
+    s32 i;
+
+    for (i = 0; i < (s32) capacity; i++, cell++) {
+        if (cell->attr == 0) {
+            cell->x = (s16) x;
+            cell->y = (s16) y;
+            cell->width = (s16) width;
+            cell->height = (s16) height;
+            cell->tile = tile;
+            cell->attr = attr;
+            M2C_FIELD(list, u8 *, SPRITE_CELL_LIST_USED)++;
+            return;
+        }
+    }
 }
 #pragma opt_strength_reduction reset
 void func_02087d84(void *a,s32 b,s32 c,s32 d,u16 e,u16 f) {void *func_02087e68(void *,s32);u16 *p=func_02087e68(a,(s16)b);p[0]=c;p[1]=d;p[2]=e;p[3]=f;}

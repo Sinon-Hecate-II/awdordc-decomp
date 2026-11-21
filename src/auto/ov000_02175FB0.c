@@ -109,7 +109,7 @@ void func_ov000_021769dc(void *arg0) {
  * and the unit's stats, then mark layers 0..2 dirty. */
 void Ov000Info_DrawFullPanel(M2C_UNK arg0) {
     M2C_UNK DrawInfoPanelBackdrop(M2C_UNK);
-    M2C_UNK func_ov000_021759b8(M2C_UNK);
+    M2C_UNK DrawInfoPanelUnitFrame(M2C_UNK);
     M2C_UNK Ov000Info_DrawUnitPanel(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
@@ -119,7 +119,7 @@ void Ov000Info_DrawFullPanel(M2C_UNK arg0) {
     DS3D_BANK(gCur3DSpriteEngine)->corner[0] = 2;
     DS3D_BANK(gCur3DSpriteEngine)->corner[4] = 1;
     DrawInfoPanelBackdrop(arg0);
-    func_ov000_021759b8(arg0);
+    DrawInfoPanelUnitFrame(arg0);
     Ov000Info_DrawUnitPanel(arg0);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;

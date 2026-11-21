@@ -29,6 +29,17 @@
 #define MAP_TRANSFER_PANEL_RECORDS 0x50 /* s32 received map-records buffer */
 #define MAP_TRANSFER_PANEL_CHOSEN  0x54 /* s32 chosen received map record */
 
+/* The map-code entry panel (class gMapCodeEntryPanelVTable): the code-entry
+ * screen that types a campaign map's code, built by CreateMapCodeEntryPanel.
+ * Its destructor tears down three heap children. */
+#define MAP_CODE_PANEL_ENTRY    0x34 /* s32 entry slot being edited */
+#define MAP_CODE_PANEL_CURSOR   0x38 /* s8 cursor position in the code */
+#define MAP_CODE_PANEL_X        0x3A /* s16 panel x, -0x8000 before it is placed */
+#define MAP_CODE_PANEL_Y        0x3C /* s16 panel y, -0x8000 before it is placed */
+#define MAP_CODE_PANEL_GRID     0x40 /* void *sprite-grid child; its +0x14 is the glyph heap block it owns */
+#define MAP_CODE_PANEL_SUBPANEL 0x44 /* void *heap sub-panel child, freed through its own vtable */
+#define MAP_CODE_PANEL_SPRITE   0x48 /* void *sprite child */
+
 /* The ov006 map-list screen object: the online map-trade screen that lists the
  * campaign maps it can join, and can show the player's own map code.  It keeps
  * the buffered player entries and, per candidate map, the player id, map id and

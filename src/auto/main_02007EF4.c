@@ -696,22 +696,25 @@ void func_02008cc8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     SendArm7Message(0xC, arg0, arg1, arg2, arg3);
 }
 
-void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 arg2, s32 arg3) {
+/* Send the ARM7 "stop channels" command (id 0xD) for the channels selected by
+ * channelMask, first bumping the in-flight command counter of each selected
+ * channel so Sound_WaitForCommand can tell when the ARM7 has processed it. */
+void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 channelMask, s32 arg3) {
     M2C_UNK func_0200976c(s32);
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    s32 var_r4;
-    u32 var_r5;
+    s32 channel;
+    u32 mask;
 
-    var_r5 = arg2;
-    var_r4 = 0;
-    while (var_r4 < 8 && var_r5 != 0) {
-        if (var_r5 & 1) {
-            func_0200976c(var_r4);
+    mask = channelMask;
+    channel = 0;
+    while (channel < 8 && mask != 0) {
+        if (mask & 1) {
+            func_0200976c(channel);
         }
-        var_r4 += 1;
-        var_r5 = var_r5 >> 1;
+        channel += 1;
+        mask = mask >> 1;
     }
-    SendArm7Message(0xD, arg0, arg1, arg2, arg3);
+    SendArm7Message(0xD, arg0, arg1, channelMask, arg3);
 }
 
 void func_02008d54(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {

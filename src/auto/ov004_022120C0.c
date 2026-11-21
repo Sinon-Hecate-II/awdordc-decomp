@@ -219,19 +219,21 @@ void func_ov004_0221285c(void) {
     gCur3DSpriteEngine = temp_r7;
 }
 
-void func_ov004_022128b8(void *arg0) {
+/* Per-frame wait: once a button or the touch screen is pressed, or after 900
+ * frames, resume the object's sprite animation. */
+void WaitForInputOrTimeout(void *state) {
     M2C_UNK Sprite_ResumeAnimation();
     extern u16 *gKeyState;
     extern void *gTouchState;
-    u16 temp_r1;
+    u16 frames;
 
     if ((*gKeyState & 0xC0B) || (M2C_FIELD(gTouchState, u8 *, 0x14) != 0)) {
         Sprite_ResumeAnimation();
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, u16 *, 0x38);
-    if ((u32) temp_r1 < 0x384U) {
-        M2C_FIELD(arg0, u16 *, 0x38) = (u16) (temp_r1 + 1);
+    frames = M2C_FIELD(state, u16 *, 0x38);
+    if ((u32) frames < 0x384U) {
+        M2C_FIELD(state, u16 *, 0x38) = (u16) (frames + 1);
         return;
     }
     Sprite_ResumeAnimation();

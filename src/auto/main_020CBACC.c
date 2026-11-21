@@ -32,7 +32,7 @@ void func_020cbbac(void) {
  extern void **gCurrentMap;
  void *p;
  void *q;
- if (!func_020d0590(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) return;
+ if (!IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) return;
  p=*gCurrentMap;
  q=(u8 *)p+0x67A4+M2C_FIELD(p,u16 *,0x52A4)*0x8C;
  StepMapViewToTile(M2C_FIELD(q,u8 *,0x2D),M2C_FIELD(q,u8 *,0x2E));
@@ -45,14 +45,19 @@ void func_020cbc08(void) {
 }
 
 #pragma opt_common_subs off
-void func_020cbc20(void *arg0) {
+/* Unit-removal effect: play a type-5 explosion on the unit's tile, then destroy
+ * the unit and refresh the map. */
+void UnitRemovalEffect_Start(void *effect) {
  extern void **gCurrentMap;
- void *p=M2C_FIELD(arg0,void **,0x34);
- s32 n;
- func_020b5594(M2C_FIELD(p,u8 *,1),M2C_FIELD(p,u8 *,2),5,arg0);
- if (!p) n=0;
- else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;
- DestroyUnit(n);
+ M2C_UNK CreateExplosionEffect(s32,s32,s32,s32);
+ void DestroyUnit(s32);
+ s32 RefreshMapView(void);
+ void *unit=M2C_FIELD(effect,void **,0x34);
+ s32 unitIndex;
+ CreateExplosionEffect(M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),5,effect);
+ if (!unit) unitIndex=0;
+ else unitIndex=((s32)unit-(s32)((u8 *)*gCurrentMap+MAP_UNIT_RECORDS))/MAP_UNIT_STRIDE;
+ DestroyUnit(unitIndex);
  RefreshMapView();
 }
 #pragma opt_common_subs reset
@@ -290,22 +295,27 @@ void MapFadeInStep(u8 *fade) {
     Sprite_ResumeAnimation(fade);
 }
 
-void func_020cc430(void *arg0) {
+/* The map view's interactive step: keep the cursor driven by input and the map
+ * view scrolling at speed 8; once the cursor settles, a confirm or cancel key
+ * plays the close sound and finishes the task, otherwise note that the view must
+ * recentre the cursor when it closes. */
+void MapViewCursorStep(MapViewTask *task) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020cf80c();
+    M2C_UNK UpdateMapCursorInput();
     extern u16 *gKeyState;
-    func_020cf80c();
+
+    UpdateMapCursorInput();
     func_0207a7a4(1, 8);
     if (IsMapCursorIdle() != 0) {
-        if (!(*gKeyState & 0xB)) {
+        if (!(*gKeyState & (KEY_A | KEY_B | KEY_START))) {
             return;
         }
         PlaySoundEffect(0x10018);
-        Sprite_ResumeAnimation(arg0);
+        Sprite_ResumeAnimation(task);
         return;
     }
-    M2C_FIELD(arg0, s16 *, 0x3A) = 1;
+    task->unk3A = 1;
 }
 
 /* First step of hiding the map view: redraw the battle map, blank the map-view

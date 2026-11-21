@@ -80,20 +80,23 @@ s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 func_02013d4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) {
-    s32 temp_r0;
-    s32 var_r0;
+/* Post the WFC connection request (command WFC_CMD_CONNECT, request 4) with its
+ * four connection parameters. Refuses until the command channel is open; returns
+ * the channel's error, or WFC_CMD_OK once the request is queued. */
+s32 WFC_SubmitConnectRequest(M2C_UNK channelHandler, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, u16 arg4) {
+    s32 error;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelOpen();
-    if (temp_r0 != 0) {
-        return temp_r0;
+    error = WFC_CheckChannelOpen();
+    if (error != 0) {
+        return error;
     }
-    WFC_SetChannelParam(0x1D, arg0);
-    var_r0 = WFC_SendCommand(0x1D, 4, arg1, arg2, arg3, (s32) arg4);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(WFC_CMD_CONNECT, channelHandler);
+    result = WFC_SendCommand(WFC_CMD_CONNECT, 4, arg1, arg2, arg3, (s32) arg4);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* Queue a channel occupancy measurement while the wireless manager is idle. */
@@ -164,7 +167,7 @@ void *MultiBoot_GetPlayerInfo(s32 player) {
     return 0;
 }
 #pragma opt_strength_reduction reset
-s32 func_02013f1c(s32 arg0) {
+s32 Mb_IsPlayerReady(s32 arg0) {
  extern s32 gMbWork;
  s32 Mb_IsValidPlayer();
  if(gMbWork && Mb_IsValidPlayer(arg0)) {

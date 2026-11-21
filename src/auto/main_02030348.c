@@ -303,14 +303,22 @@ s32 Wfc_StepSession(void) {
 
 void Wfc_MarkFriendId(u32 a){void *Wfc_GetWorkBlock(s32);u8 *p=Wfc_GetWorkBlock(16);u32 v;p+=0xd00;if(a>13)a=13;v=M2C_FIELD(p,u16 *,22);a--;M2C_FIELD(p,u16 *,22)=v|(1<<a);}
 
-s8 func_02030b30(s32 a) {
- void *Wfc_GetWorkBlock(s32);
- u16 mask=M2C_FIELD(Wfc_GetWorkBlock(16),u16 *,0xd16);
- u8 i,n;
- if(!mask)return -1;
- i=0;n=0;
- do {if(mask&(1<<i)){if(n==a)return (s8)i;n++;}i++;}while((u32)i<13U);
- return -1;
+/* Friend id (bit 0..12 of WFC_STATE_FRIEND_MASK) of the `index`-th friend taking
+ * part in the friend connection, or -1 when the mask has no such friend. */
+s8 Wfc_GetNthFriendId(s32 index) {
+    void *Wfc_GetWorkBlock(s32);
+    u16 mask = M2C_FIELD(Wfc_GetWorkBlock(WFC_WORK_FRIENDS), u16 *, WFC_STATE_FRIEND_MASK);
+    u8 id, found;
+    if (!mask) return -1;
+    id = 0; found = 0;
+    do {
+        if (mask & (1 << id)) {
+            if (found == index) return (s8)id;
+            found++;
+        }
+        id++;
+    } while ((u32)id < WFC_FRIEND_ID_COUNT);
+    return -1;
 }
 
 /* Friend-connection states 3..5: restarts the timeout and submits one message to
@@ -410,7 +418,7 @@ Wfc_SubmitMessage((s32)(state+0x474+offset),(s32)(state+0x47c+offset),M2C_FIELD(
 
 /* WFC friend-connection state 5: sends the friend-list entries one at a time,
    clearing each entry's mark as it goes and advancing WFC_STATE_WORK_INDEX; at the
-   end of the list it picks the next friend with func_02030b30.  When no friend is
+   end of the list it picks the next friend with Wfc_GetNthFriendId.  When no friend is
    left it asks Wfc_NextFriendStep for the next state.  Returns the state to use. */
 s32 Wfc_SendFriendEntries(void *state){
 void Wfc_SubmitMessage(s32,s32,s32,s32);u64 GetSystemTick(void);u64 U64Divide(u64,u64);extern u8 data_020ea758[];
@@ -419,7 +427,7 @@ M2C_FIELD(state+WFC_STATE_ENTRIES,u8 *,(s16)M2C_FIELD(state,u8 *,WFC_STATE_WORK_
 M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)++;
 if(M2C_FIELD(state,u8 *,WFC_STATE_ENTRY_COUNT)<=M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)){
 M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY)++;M2C_FIELD(state,u8 *,WFC_STATE_WORK_INDEX)=0;
-M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)=func_02030b30(M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY));
+M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)=Wfc_GetNthFriendId(M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY));
 }
 if(M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)<0){M2C_FIELD(state,u8 *,WFC_STATE_CONN_RETRY)=0;return Wfc_NextFriendStep(state,5);}
 M2C_FIELD(state,u64 *,WFC_STATE_TIMER)=GetSystemTick();
@@ -509,21 +517,25 @@ start_link:
     return result;
 }
 
-s32 Wfc_SelectNextFriend(void *arg0) {
+/* Select the next friend-connection source: when friends are taking part, rebuild
+ * the FREESPOT rows and point WFC_STATE_FRIEND_ID at the first one, at the
+ * friend-entries step; otherwise, once a pass has already been made, go straight
+ * to the friend-results step; on the first pass ask Wfc_NextFriendPass. */
+s32 Wfc_SelectNextFriend(void *state) {
     s32 Wfc_BuildFriendEntries(M2C_UNK);
-    s8 func_02030b30(M2C_UNK);
+    s8 Wfc_GetNthFriendId(M2C_UNK);
     s32 Wfc_NextFriendPass(void *);
-    if ((M2C_FIELD(arg0, u16 *, 0xD16) != 0) && (Wfc_BuildFriendEntries(2) != 0)) {
-        M2C_FIELD(arg0, s8 *, 0xD11) = func_02030b30(0);
-        return 5;
+    if ((M2C_FIELD(state, u16 *, WFC_STATE_FRIEND_MASK) != 0) && (Wfc_BuildFriendEntries(WFC_ENTRY_SOURCE_FREESPOT) != 0)) {
+        M2C_FIELD(state, s8 *, WFC_STATE_FRIEND_ID) = Wfc_GetNthFriendId(0);
+        return WFC_STEP_FRIEND_ENTRIES;
     }
-    if ((u32) ((u32) (M2C_FIELD(arg0, u8 *, 0xD0B) << 0x18) >> 0x1C) >= 1U) {
-        return 6;
+    if ((u32) ((u32) (M2C_FIELD(state, u8 *, WFC_STATE_CONN_FLAGS) << 0x18) >> 0x1C) >= 1U) {
+        return WFC_STEP_FRIEND_RESULTS;
     }
-    return Wfc_NextFriendPass(arg0);
+    return Wfc_NextFriendPass(state);
 }
 
-void Wfc_SubmitMessage(s32 a,s32 b,s32 c,s32 d){void func_02027518(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;func_02027518(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
+void Wfc_SubmitMessage(s32 a,s32 b,s32 c,s32 d){void WFC_ProcessConnectOrMatch(s32,s32,s32);extern M2C_UNK data_020ea860;if(c>12)c=12;WFC_ProcessConnectOrMatch(a,b,d|M2C_FIELD(&data_020ea860,s32 *,c*4));}
 
 /* First step of a WFC friend connection: while the session has only started,
  * rebuild the friend-list rows from the save slots and ask the WFC engine to

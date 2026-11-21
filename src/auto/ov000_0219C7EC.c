@@ -88,11 +88,14 @@ loop:unitId=*listCursor;if(unitId!=0){s32 unit=unitId*MAP_UNIT_STRIDE+(*mapSlot+
 SortAiUnitsBestFirst(count);
 }
 #pragma opt_common_subs reset
+/* Score each AI unit in gAiUnitList by its current HP (0..100, read from its
+ * map record's MAP_UNIT_HEALTH field) into the parallel score array, then sort
+ * the list best-first. */
 void ScoreAiUnitsByHp(void){
 void SortAiUnitsBestFirst(s32);extern s32 *gCurrentMap;extern u8 gAiUnitList;extern s8 gAiUnitScores;
-u8 *p; s8 *q; s32 *base; s32 n;u8 x;
-base=gCurrentMap;p=&gAiUnitList;q=&gAiUnitScores;n=0;
-loop:x=*p;if(x!=0){p++;(*q)=(u8)((u32)(M2C_FIELD(*base+x*14,u16 *,0x59aa)<<25)>>25);q++;n++;goto loop;}SortAiUnitsBestFirst(n);
+u8 *units; s8 *scores; s32 *map; s32 count;u8 unitId;
+map=gCurrentMap;units=&gAiUnitList;scores=&gAiUnitScores;count=0;
+loop:unitId=*units;if(unitId!=0){units++;(*scores)=(u8)((u32)(M2C_FIELD(*map+unitId*MAP_UNIT_STRIDE,u16 *,MAP_UNIT_RECORDS+MAP_UNIT_HEALTH)<<25)>>25);scores++;count++;goto loop;}SortAiUnitsBestFirst(count);
 }
 
 void ScoreAiUnitsByMoveRange(s32 arg0) {
@@ -136,7 +139,7 @@ done:
  * kind-14 unit plus one, a kind-15 unit as a kind-14 unit plus two, everything else
  * as its own kind; sea and air kinds not loaded on a transport lose ten points more.
  * The scored unit-id list is then sorted best-first. */
-void func_ov000_0219caac(void) {
+void ScoreAiUnitsByMoveType(void) {
 u8 GetUnitKindMoveRange(s32);void SortAiUnitsWorstFirst(s32);
 extern u8 gAiUnitList;extern s8 gAiUnitScores;extern s32 *gCurrentMap;extern u8 gUnitKindStats[];
 s32 count;u8 *entry;u8 *p;u8 *q;u8 unit;u32 kind;
@@ -430,7 +433,11 @@ void BuildScoredAiRole1UnitList(void) {
 }
 
 #pragma scheduling off
-void func_ov000_0219d220(void) {
+/* Collect the current player's role-1 units that have not acted yet and are
+ * either waiting (AI step 0) or mid-action (attack or capture), store their ids
+ * in gAiUnitList (0-terminated), score and sort that list, then install the
+ * general AI unit action and move the command to phase 2. */
+void BuildScoredAiRole1ResumeList(void) {
     extern s32 *gCurrentMap;
     extern u16 gPlayerUnitIdBase[];
     extern u8 gUnitKindStats[];
@@ -450,18 +457,18 @@ void func_ov000_0219d220(void) {
     void *obj;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
     obj = *gCurrentMap;
-    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
+    baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, MAP_CURRENT_PLAYER)];
     index = baseIndex + 1;
-    if (index < baseIndex + 0x33) {
-        stride = index * 14;
+    if (index < baseIndex + MAP_UNIT_GROUP_SCAN) {
+        stride = index * MAP_UNIT_STRIDE;
         do {
-            table = (u8 *)obj + 0x59A4;
+            table = (u8 *)obj + MAP_UNIT_RECORDS;
             type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
             if (type != 0) {
-                if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1)
-                    && gUnitKindStats[type * 0x70 + 0x14] == 1) {
-                    u32 nibble = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, 0xB) << 0x1C) >> 0x1C;
-                    if (nibble != 0 && IsMidActionStep((s32)nibble) != 0) {
+                if (!(M2C_FIELD((u8 *)table + stride, u16 *, MAP_UNIT_FLAGS) & 1)
+                    && gUnitKindStats[type * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 1) {
+                    u32 aiStep = (u32)(M2C_FIELD((u8 *)table + stride, u8 *, MAP_UNIT_AI_STATE) << 0x1C) >> 0x1C;
+                    if (aiStep == 0 || IsMidActionStep((s32)aiStep) != 0) {
                         out = gAiUnitListCursor;
                         gAiUnitListCursor = out + 1;
                         *out = index;
@@ -470,14 +477,14 @@ void func_ov000_0219d220(void) {
             }
             index++;
             obj = *gCurrentMap;
-            stride += 14;
-        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+            stride += MAP_UNIT_STRIDE;
+        } while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
     }
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
     ScoreAiUnitsByHpAndTarget();
     gAiUnitAction = &RunAIUnitAction;
-    *gAiCommandState = 2;
+    gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 #pragma scheduling on
 /* Collect the player's ready units whose kind has AI role 4, order them (by HP,
@@ -531,7 +538,11 @@ gAiUnitAction = &RunAiRole4Or6Action;
 *gAiCommandState = 2;
 }
 
-void func_ov000_0219d4b4(void) {
+/* AI turn phase starter for role-4 units: collect the current player's ready
+   ones into gAiUnitList, order them by their weather-aware move score (or by
+   movement type in clear weather), put the chosen unit last and install the
+   role-4/6 action callback. */
+void SelectAiRole4UnitByWeather(void) {
 extern s32 *gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
 extern u8 gUnitKindStats[];
@@ -541,39 +552,37 @@ extern s8 *gAiUnitListCursor;
 extern u8 gAiUnitList;
 extern M2C_UNK func_ov000_021812a8;
 void ScoreAiUnitsByWeatherMove(void);
-void func_ov000_0219caac(void);
+void ScoreAiUnitsByMoveType(void);
 void MoveSelectedAiUnitLast(void);
-s32 index; s32 stride; s8 *out; u16 baseIndex; u32 type; void *table; void *obj;
+s32 unitId; s32 unitOffset; s8 *listOut; u16 firstUnitId; u32 kind; void *unitTable; void *map;
 gAiUnitListCursor = &gAiUnitList;
-obj = *gCurrentMap;
-baseIndex = gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)];
-index = baseIndex + 1;
-if (index < baseIndex + 0x33) {
-stride = index * 14;
+map = *gCurrentMap;
+firstUnitId = gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)];
+unitId = firstUnitId + 1;
+if (unitId < firstUnitId + MAP_UNIT_GROUP_SCAN) {
+unitOffset = unitId * MAP_UNIT_STRIDE;
 do {
-table = (u8 *)obj + 0x59A4;
-type = (u32)(M2C_FIELD(table, u8 *, stride) << 26) >> 26;
-if (type != 0) {
-if (!(M2C_FIELD((u8 *)table + stride, u16 *, 4) & 1) && gUnitKindStats[type * 0x70 + 0x14] == 4) {
-out = gAiUnitListCursor;
-gAiUnitListCursor = out + 1;
-*out = index;
+unitTable = (u8 *)map + MAP_UNIT_RECORDS;
+kind = (u32)(M2C_FIELD(unitTable, u8 *, unitOffset) << 26) >> 26;
+if (kind != 0) {
+if (!(M2C_FIELD((u8 *)unitTable + unitOffset, u16 *, MAP_UNIT_FLAGS) & 1) && gUnitKindStats[kind * UNIT_KIND_STATS_SIZE + UNIT_KIND_STATS_AI_ROLE] == 4) {
+listOut = gAiUnitListCursor;
+gAiUnitListCursor = listOut + 1;
+*listOut = unitId;
 }}
-index++;
-obj = *gCurrentMap;
-stride += 14;
-} while (index < gPlayerUnitIdBase[M2C_FIELD(obj, u16 *, 0x52A4)] + 0x33);
+unitId++;
+map = *gCurrentMap;
+unitOffset += MAP_UNIT_STRIDE;
+} while (unitId < gPlayerUnitIdBase[M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER)] + MAP_UNIT_GROUP_SCAN);
 }
 *gAiUnitListCursor = 0;
 gAiUnitListCursor = &gAiUnitList;
-if (M2C_FIELD(*gCurrentMap, u8 *, 0x5156) != 0) goto do_caac;
-if (M2C_FIELD(*gCurrentMap, u8 *, 0x5158) == 2) {
-ScoreAiUnitsByWeatherMove();
+if (M2C_FIELD(*gCurrentMap, u8 *, MAP_FOG) != 0 ||
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER) == MAP_WEATHER_SNOW) {
+    ScoreAiUnitsByWeatherMove();
+} else {
+    ScoreAiUnitsByMoveType();
 }
-goto skip;
-do_caac:
-func_ov000_0219caac();
-skip:
 MoveSelectedAiUnitLast();
 gAiUnitAction = &func_ov000_021812a8;
 *gAiCommandState = 2;

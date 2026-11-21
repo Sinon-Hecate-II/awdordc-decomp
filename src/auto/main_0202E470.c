@@ -397,7 +397,7 @@ void Sound_CloseMemorySource(void) {
 }
 
 #pragma opt_common_subs off
-void func_0202ee30(void *arg0) {
+void Sound_WorkerThread(void *arg0) {
 void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *func_0202e09c(void *);void func_0202e470(void *);void Sound_FreeRequest(void *);
 void *p;char *base=(char*)arg0; base+=0xc8;
 for(;;){OS_SleepThread((char*)arg0+0x4c0);for(;;){

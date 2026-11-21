@@ -158,15 +158,17 @@ void *ghiRequestToConnection(s32 request) {
  ghiUnlockMutex(); return conn;
 }
 
-void func_0204af74(M2C_UNK *arg0) {
+/* Run callback(conn) for every connection slot currently in use, holding the
+ * connection-list mutex; does nothing until the first connection is created. */
+void ghiForEachConnection(M2C_UNK *callback) {
  extern M2C_UNK gGhiConnectionList;
  M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
- s32 i; void *p;
- if(M2C_FIELD(&gGhiConnectionList,s32 *,0)<=0) return;
+ s32 i; GHIConnection *conn;
+ if(((GHIConnectionList *)&gGhiConnectionList)->numConnections<=0) return;
  ghiLockMutex();
- for(i=0;i<M2C_FIELD(&gGhiConnectionList,s32 *,12);i++) {
- p=M2C_FIELD(&gGhiConnectionList,void ***,4)[i];
- if(M2C_FIELD(p,s32 *,0)!=0) ((void (*)(void *))arg0)(p);
+ for(i=0;i<((GHIConnectionList *)&gGhiConnectionList)->length;i++) {
+ conn=((GHIConnectionList *)&gGhiConnectionList)->connections[i];
+ if(conn->inUse!=0) ((void (*)(GHIConnection *))callback)(conn);
  }
  ghiUnlockMutex();
 }
@@ -217,11 +219,11 @@ void func_0204afd8(void *obj) {
 void ghiCleanupConnections(void) {
     extern M2C_UNK gGhiConnectionList;
     s32 ghiFreeConnection(void *);
-    void func_0204af74(M2C_UNK *);
+    void ghiForEachConnection(M2C_UNK *);
     s32 slot;
 
     if (M2C_FIELD(&gGhiConnectionList, void **, GHI_LIST_CONNECTIONS) == NULL) return;
-    func_0204af74((M2C_UNK *) ghiFreeConnection);
+    ghiForEachConnection((M2C_UNK *) ghiFreeConnection);
     for (slot = 0; slot < M2C_FIELD(&gGhiConnectionList, s32 *, GHI_LIST_LENGTH); slot++)
         gpiFree(M2C_FIELD(&gGhiConnectionList, void ***, GHI_LIST_CONNECTIONS)[slot]);
     gpiFree(M2C_FIELD(&gGhiConnectionList, void **, GHI_LIST_CONNECTIONS));
@@ -387,9 +389,9 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
 }
 
 void func_0204b674(void) {
-    void func_0204af74(M2C_UNK *);
+    void ghiForEachConnection(M2C_UNK *);
     s32 func_0204b210(void *);
-    func_0204af74((M2C_UNK *)func_0204b210);
+    ghiForEachConnection((M2C_UNK *)func_0204b210);
 }
 
 s32 func_0204b688(void *arg0) {
@@ -403,27 +405,30 @@ void ghiPostFree(s32 *arg0) {
     gpiFree(arg0);
 }
 
-M2C_UNK *GetContentType(void *arg0) {
+/* The Content-Type a POST request needs: multipart/form-data when its source
+ * carries files, application/x-www-form-urlencoded otherwise, or the empty
+ * string when the connection has no post source (which it must not). */
+M2C_UNK *GetContentType(void *connection) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_020fd264;
+    extern M2C_UNK gGhiPostGetContentTypeName;
     extern M2C_UNK sGhttpPostFile;
-    extern M2C_UNK data_020fd384;
-    extern M2C_UNK data_020fd38c;
-    extern M2C_UNK data_020fd390;
-    extern M2C_UNK data_020fd3d4;
-    void *temp_r4;
+    extern M2C_UNK gGhttpAssertPost;
+    extern M2C_UNK sGhttpEmptyContentType;
+    extern M2C_UNK sGhttpMultipartContentType;
+    extern M2C_UNK sGhttpUrlencodedContentType;
+    GHIPost *post;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x13C);
-    if (temp_r4 == NULL) {
-        AssertFailed(&data_020fd384, &sGhttpPostFile, &data_020fd264, 0x192);
+    post = M2C_FIELD(connection, void **, GHI_POST_DATA);
+    if (post == NULL) {
+        AssertFailed(&gGhttpAssertPost, &sGhttpPostFile, &gGhiPostGetContentTypeName, 0x192);
     }
-    if (temp_r4 == NULL) {
-        return &data_020fd38c;
+    if (post == NULL) {
+        return &sGhttpEmptyContentType;
     }
-    if (M2C_FIELD(temp_r4, s32 *, 0xC) != 0) {
-        return &data_020fd390;
+    if (post->hasFiles != 0) {
+        return &sGhttpMultipartContentType;
     }
-    return &data_020fd3d4;
+    return &sGhttpUrlencodedContentType;
 }
 
 /* Byte length of a query-string POST body (a POST with no file parts): for every
@@ -496,9 +501,9 @@ s32 ghiPostGetHasFilesContentLength(void *obj) {
 
 s32 ghiPostGetContentLength(void *arg0) {
  s32 ghiPostGetHasFilesContentLength(void *); s32 ghiPostGetNoFilesContentLength(void *);
- extern M2C_UNK data_020fd384,sGhttpPostFile,data_020fd27c;
+ extern M2C_UNK gGhttpAssertPost,sGhttpPostFile,data_020fd27c;
  void *p=M2C_FIELD(arg0,void **,0x13c);
- if(p==NULL)AssertFailed(&data_020fd384,&sGhttpPostFile,&data_020fd27c,0x20c);
+ if(p==NULL)AssertFailed(&gGhttpAssertPost,&sGhttpPostFile,&data_020fd27c,0x20c);
  if(p==NULL)return 0;
  if(M2C_FIELD(p,s32 *,12)!=0)return ghiPostGetHasFilesContentLength(arg0);
  return ghiPostGetNoFilesContentLength(arg0);

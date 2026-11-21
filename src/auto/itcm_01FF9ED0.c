@@ -170,21 +170,24 @@ void InsertSpriteInParent(void *arg0, void *arg1) {
     M2C_FIELD(arg0, void **, 0x18) = arg1;
 }
 
-void func_01ffa2cc(void *p) {
- extern s32 g3DSpriteLayerLists[];
- void *n=M2C_FIELD(p,void **,0x20);
- u32 parent;
- if(n)M2C_FIELD(n,void **,0x24)=M2C_FIELD(p,void **,0x24);
- n=M2C_FIELD(p,void **,0x24);
- if(n)M2C_FIELD(n,void **,0x20)=M2C_FIELD(p,void **,0x20);
- parent=M2C_FIELD(p,u32 *,0x18);
- if(parent>12) {
- if(M2C_FIELD(parent,void **,0x1C)==p)M2C_FIELD(parent,void **,0x1C)=M2C_FIELD(p,void **,0x24);
- } else {
- if(M2C_FIELD(g3DSpriteLayerLists,void **,parent*4)==p)g3DSpriteLayerLists[parent]=M2C_FIELD(p,s32 *,0x24);
- }
- M2C_FIELD(p,s32 *,0x20)=0;
- M2C_FIELD(p,s32 *,0x24)=0;
+/* Unlink `sprite` from the sibling list it is in - one of the twelve per-layer
+ * lists when its parent field is a layer index, otherwise its parent's child
+ * list - and clear its sibling links. */
+void RemoveSpriteFromOwner(void *sprite) {
+    extern s32 g3DSpriteLayerLists[];
+    void *sibling = M2C_FIELD(sprite, void **, DS3D_SPRITE_PREV);
+    u32 owner;
+    if (sibling) M2C_FIELD(sibling, void **, DS3D_SPRITE_NEXT) = M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT);
+    sibling = M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT);
+    if (sibling) M2C_FIELD(sibling, void **, DS3D_SPRITE_PREV) = M2C_FIELD(sprite, void **, DS3D_SPRITE_PREV);
+    owner = M2C_FIELD(sprite, u32 *, DS3D_SPRITE_PARENT);
+    if (owner > 12) {
+        if (M2C_FIELD(owner, void **, DS3D_SPRITE_CHILD) == sprite) M2C_FIELD(owner, void **, DS3D_SPRITE_CHILD) = M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT);
+    } else {
+        if (M2C_FIELD(g3DSpriteLayerLists, void **, owner * 4) == sprite) g3DSpriteLayerLists[owner] = M2C_FIELD(sprite, s32 *, DS3D_SPRITE_NEXT);
+    }
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_PREV) = 0;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_NEXT) = 0;
 }
 
 /* Creates a sprite object of `spriteClass` on engine `engine`, owned by `owner` (a
@@ -293,7 +296,7 @@ void Delete3DSpriteTree(void *obj) {
 
 #pragma push
 #pragma optimization_level 2
-void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; func_01ffa2cc(arg0);func_01ffa468(arg0);Delete3DSpriteTree(arg0);func_01ffa4a0(arg0); } while(0); }
+void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; RemoveSpriteFromOwner(arg0);func_01ffa468(arg0);Delete3DSpriteTree(arg0);func_01ffa4a0(arg0); } while(0); }
 #pragma pop
 /* One frame of a 3D sprite object tree: walk the sibling chain, then, unless the
  * object has children, run its state update (or the UPDATE_CB override), point
@@ -380,7 +383,7 @@ void *FindObjectByClass(s32 arg0) {
  return 0;
 }
 
-void *func_01ffa7b4(s32 arg0) {
+void *Find3DSpriteById(s32 arg0) {
  extern void **g3DSpriteOrderCursor;
  extern void *g3DSpriteSortOrder[];
  extern s32 gCur3DSpriteEngine;

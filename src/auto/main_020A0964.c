@@ -278,56 +278,60 @@ void func_020a0d18(void) {
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 }
 #pragma pop
-s32 UnitPath_GetIncomingDir(s32 arg0) {
+/* The side the move path enters step `step` through: compare the step's cell to
+ * the previous step's and return a PATH_EDGE_* index into gPathArrowTiles, or 0
+ * for step 0 or when the two cells do not differ. */
+s32 UnitPath_GetIncomingDir(s32 step) {
     extern s32 gUnitMovePath;
-    s8 temp_r0;
-    s8 temp_r0_2;
-    s8 temp_r1;
-    s8 temp_r1_2;
-    void *temp_r2;
-    void *temp_r3;
+    void *cur;
+    void *prev;
+    s8 curPos;
+    s8 prevPos;
 
-    if (arg0 == 0) {
+    if (step == 0) {
         return 0;
     }
-    temp_r3 = gUnitMovePath + arg0;
-    temp_r2 = gUnitMovePath + (arg0 - 1);
-    temp_r1 = M2C_FIELD(temp_r3, s8 *, 0x36);
-    temp_r0 = M2C_FIELD(temp_r2, s8 *, 0x36);
-    if ((s32) temp_r0 < (s32) temp_r1) {
-        return 3;
+    cur = gUnitMovePath + step;
+    prev = gUnitMovePath + (step - 1);
+    curPos = M2C_FIELD(cur, s8 *, UNIT_PATH_X);
+    prevPos = M2C_FIELD(prev, s8 *, UNIT_PATH_X);
+    if ((s32) prevPos < (s32) curPos) {
+        return PATH_EDGE_LEFT;
     }
-    if ((s32) temp_r0 > (s32) temp_r1) {
-        return 1;
+    if ((s32) prevPos > (s32) curPos) {
+        return PATH_EDGE_RIGHT;
     }
-    temp_r1_2 = M2C_FIELD(temp_r3, s8 *, 0x42);
-    temp_r0_2 = M2C_FIELD(temp_r2, s8 *, 0x42);
-    if ((s32) temp_r0_2 < (s32) temp_r1_2) {
-        return 4;
+    curPos = M2C_FIELD(cur, s8 *, UNIT_PATH_Y);
+    prevPos = M2C_FIELD(prev, s8 *, UNIT_PATH_Y);
+    if ((s32) prevPos < (s32) curPos) {
+        return PATH_EDGE_TOP;
     }
-    if ((s32) temp_r0_2 > (s32) temp_r1_2) {
-        return 2;
+    if ((s32) prevPos > (s32) curPos) {
+        return PATH_EDGE_BOTTOM;
     }
     return 0;
 }
 
-s32 UnitPath_GetOutgoingDir(s32 arg0) {
+/* The side the move path leaves step `step` through: compare the step's cell to
+ * the next step's and return a PATH_EDGE_* index into gPathArrowTiles, or 0 when
+ * step is the last one or the two cells do not differ. */
+s32 UnitPath_GetOutgoingDir(s32 step) {
     extern s32 gUnitMovePath;
-    void *temp_r2;
-    void *temp_r3;
-    s8 a, b;
-    temp_r2 = gUnitMovePath;
-    if (arg0 == M2C_FIELD(temp_r2, s8 *, 0x5B)) return 0;
-    temp_r3 = (s32)temp_r2 + (arg0 + 1);
-    temp_r2 = (s32)temp_r2 + arg0;
-    b = M2C_FIELD(temp_r3, s8 *, 0x36);
-    a = M2C_FIELD(temp_r2, s8 *, 0x36);
-    if (a < b) return 1;
-    if (a > b) return 3;
-    b = M2C_FIELD(temp_r3, s8 *, 0x42);
-    a = M2C_FIELD(temp_r2, s8 *, 0x42);
-    if (a < b) return 2;
-    if (a > b) return 4;
+    void *cur;
+    void *next;
+    s8 curPos, nextPos;
+    cur = gUnitMovePath;
+    if (step == M2C_FIELD(cur, s8 *, UNIT_PATH_LENGTH)) return 0;
+    next = (s32)cur + (step + 1);
+    cur = (s32)cur + step;
+    nextPos = M2C_FIELD(next, s8 *, UNIT_PATH_X);
+    curPos = M2C_FIELD(cur, s8 *, UNIT_PATH_X);
+    if (curPos < nextPos) return PATH_EDGE_RIGHT;
+    if (curPos > nextPos) return PATH_EDGE_LEFT;
+    nextPos = M2C_FIELD(next, s8 *, UNIT_PATH_Y);
+    curPos = M2C_FIELD(cur, s8 *, UNIT_PATH_Y);
+    if (curPos < nextPos) return PATH_EDGE_BOTTOM;
+    if (curPos > nextPos) return PATH_EDGE_TOP;
     return 0;
 }
 

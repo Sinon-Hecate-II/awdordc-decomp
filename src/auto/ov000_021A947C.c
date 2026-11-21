@@ -170,10 +170,10 @@ s32 GetKindAttackClass(s32 arg0) {
     return 2;
 }
 
-s32 CanKindAttack(s32 a,s32 b) {
- extern u8 data_ov000_021b5c5e[];extern u8 data_ov000_021b5c5d[];
- u8 *p=&data_ov000_021b5c5e[b*0x70];
- return p[data_ov000_021b5c5d[a*0x70]];
+s32 CanKindLoad(s32 a,s32 b) {
+ extern u8 gUnitKindLoadMask[];extern u8 gUnitKindLoadClass[];
+ u8 *p=&gUnitKindLoadMask[b*0x70];
+ return p[gUnitKindLoadClass[a*0x70]];
 }
 
 /* Whether `unit` can attack a unit of `targetKind`: its kind must have cargo
@@ -184,7 +184,7 @@ u8 CanUnitAttackKind(u8 *unit, s32 targetKind) {
     u8 result;
 
     if (!gUnitKindCargoCount[unitKind * 0x70]) return 0;
-    if (!CanKindAttack(unitKind, targetKind)) return 0;
+    if (!CanKindLoad(unitKind, targetKind)) return 0;
     if (M2C_FIELD(unit + (gUnitKindCargoCount[((u32)(*unit << 26) >> 26) * 0x70] - 1), u8 *, MAP_UNIT_FIRST_CARRIED) == 0) result = 1;
     else result = 0;
     return result;
@@ -235,29 +235,34 @@ u8 func_ov000_021a9b84(void) {
  return result;
 }
 
-s32 func_ov000_021a9bc0(void *arg0) {
- extern void **gCurrentMap;
- s32 IsSameTeam(u16,s32);
- u32 owner=(u32)(M2C_FIELD(arg0,u8 *,5)<<29);
- s32 i;
- if(M2C_FIELD(arg0,u8 *,4)==0)return 0;
- for(i=1;i<5;i++){
- if(IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)!=0 && i==(owner>>29))return 0;
- }
- return 1;
+/* Whether a map order belongs to a player on the enemy team: it must be in effect
+ * (nonzero value) and no player on the current team may be its owner. */
+s32 MapOrder_IsEnemyOwned(void *arg0) {
+    extern void **gCurrentMap;
+    s32 IsSameTeam(u16, s32);
+    MapOrder *order = arg0;
+    u32 owner = (u32)(M2C_FIELD(order, u8 *, 5) << 29);
+    s32 player;
+    if (order->value == 0) return 0;
+    for (player = 1; player < 5; player++) {
+        if (IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) != 0 && player == (owner >> 29)) return 0;
+    }
+    return 1;
 }
 
+/* True when a player of another team is in the game and owns an HQ: the AI's
+ * enemy-directed steps only run against such a player. */
 s32 HasEnemyPlayer(void) {
- extern void **gCurrentMap;
- s32 IsPlayerActive(s32);
- s32 IsSameTeam(u16,s32);
- s32 PlayerHasHq(s32);
- s32 i=1;
+    extern void **gCurrentMap;
+    s32 IsPlayerActive(s32);
+    s32 IsSameTeam(u16, s32);
+    s32 PlayerHasHq(s32);
+    s32 player = 1;
 loop:
- if(IsPlayerActive(i)!=0 && IsSameTeam(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),i)==0 && PlayerHasHq(i)==1)return 1;
- i++;
- if(i>=5)return 0;
- goto loop;
+    if (IsPlayerActive(player) != 0 && IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), player) == 0 && PlayerHasHq(player) == 1) return 1;
+    player++;
+    if (player >= MAX_PLAYERS) return 0;
+    goto loop;
 }
 
 s32 func_ov000_021a9c90(s32 x,s32 y) {

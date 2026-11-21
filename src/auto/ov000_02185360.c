@@ -19,22 +19,34 @@ extern void **gCurrentMap;
 extern u8 data_ov000_021e0550[];
 extern s8 gAiRangeLayer[];
 
-void func_ov000_02185360(s32 x,s32 y,s32 unit,s32 radius){
-s32 left,xx,yy,right,bottom,top,dist;
-s32 func_020ce0ec(u8,u8);
-left=x-radius;if(left<0)left=0;
-top=y-radius;if(top<0)top=0;
-right=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;if(x+radius<right)right=x+radius;
-bottom=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;if(y+radius<bottom)bottom=y+radius;
+/* Mark every cell within `range` Manhattan tiles of (x, y) in the AI range layer
+   for a unit of `player`: the cell itself and its neighbours are always marked,
+   farther cells only when their terrain is not excluded for that player.  The
+   scanned window is clamped to the map. */
+void MarkAiThreatRange(s32 x,s32 y,s32 player,s32 range){
+s32 left,bottom,xx;
+u8 *cell;
+s32 dy,yy,top,right,dist;
+s32 IsTerrainExcludedForPlayer(u8,u8);
+left=x-range;if(left<0)left=0;
+top=y-range;if(top<0)top=0;
+right=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)-1;if(x+range<right)right=x+range;
+bottom=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)-1;if(y+range<bottom)bottom=y+range;
 for(yy=top;yy<=bottom;yy++){
-xx=left; while(xx<=right){
+xx=left;
+if (xx <= right) {
+dy = y - yy;
+cell = &gAiRangeLayer[xx];
+do {
 dist=0;
 if(x-xx>0)dist+=x-xx;else dist+=xx-x;
-if(y-yy>0)dist+=y-yy;else dist+=yy-y;
-if(dist>=0 && dist<=radius){
-if(dist<=1 || !func_020ce0ec(unit,M2C_FIELD((u8 *)*gCurrentMap+xx+((u16 *)*gCurrentMap)[yy+0x1bac],u8 *,0x1420)))gAiRangeLayer[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=1;
+if(dy>0)dist+=dy;else dist+=yy-y;
+if(dist>=0 && dist<=range){
+if(dist<=1 || !IsTerrainExcludedForPlayer(player,M2C_FIELD((u8 *)*gCurrentMap+xx+((u16 *)*gCurrentMap)[yy+MAP_ROW_OFFSETS_WORD],u8 *,MAP_CELL_TERRAIN)))cell[yy*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=1;
 }
+cell++;
 xx++;
+} while(xx<=right);
 }
 }
 }
@@ -44,10 +56,10 @@ extern void **gCurrentMap; extern u8 data_ov000_021e0550[];
 s32 left,right,xx,yy,bottom,top,dist,width,height;
 left=offset+(x-radius); if(left<0) left=0;
 top=offset+(y-radius); if(top<0) top=0;
-width=M2C_FIELD(*gCurrentMap,u16 *,0x5144)-1;
-right=offset+(x+radius);
-if(right>width) right=width;
-height=M2C_FIELD(*gCurrentMap,u16 *,0x5146)-1;
+width=offset+(x+radius);
+right=M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)-1;
+right=width<right ? width : right;
+height=M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)-1;
 bottom=height;
 if(offset+(y+radius)<bottom) bottom=offset+(y+radius);
 for(yy=top;yy<=bottom;yy++){
@@ -55,7 +67,7 @@ for(xx=left;xx<=right;xx++){
 dist=0;
 if(x-xx>0) dist+=x-xx; else dist+=xx-x;
 if(y-yy>0) dist+=y-yy; else dist+=yy-y;
-if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,0x5144)]=255;
+if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)]=255;
 }
 }
 }
@@ -105,7 +117,7 @@ MI_CpuFill8(gAiRangeLayer,0,1288);
 FloodFillUnitRangeForPlayer((u16)n,unit[1],unit[2],(u32)(unit[0]<<26)>>26,GetUnitMoveRange(n,(u32)(unit[0]<<26)>>26),4);
 M2C_FIELD((u8*)*gCurrentMap+unit[2]*4,s8**,0x52e8)[unit[1]]=-1;
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(*gCurrentMap,u16*,0x5144);x++){
-if(M2C_FIELD((u8*)*gCurrentMap+(u32)y*4,s8**,0x52e8)[x]>=0)func_ov000_02185360(x,y,n,radius);
+if(M2C_FIELD((u8*)*gCurrentMap+(u32)y*4,s8**,0x52e8)[x]>=0)MarkAiThreatRange(x,y,n,radius);
 }
 for(sy=0;sy<M2C_FIELD(*gCurrentMap,u16*,0x5146);sy++)for(sx=0;sx<M2C_FIELD(*gCurrentMap,u16*,0x5144);sx++){
 if((s8)gAiRangeLayer[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)] && (data_ov000_021e0550[sx+sy*M2C_FIELD(*gCurrentMap,u16*,0x5144)]&127)!=127)

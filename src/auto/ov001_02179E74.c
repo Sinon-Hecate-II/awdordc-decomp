@@ -23,7 +23,7 @@ void MapSelectList_Init(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     void Ov001_OpenMenuForMode(M2C_UNK);
     void MapSelectList_InitScrollBar(void);
-    void func_ov001_0217a17c(void);
+    void MapSelectList_InitRows(void);
     M2C_UNK CreateTextPanel(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void MapSelectList_Redraw(void);
@@ -46,7 +46,7 @@ void MapSelectList_Init(void) {
     Ov001_ShowMessagePanel((M2C_UNK)0x34, (M2C_UNK)(0x34 - 0x35), (M2C_UNK)0);
     Ov001_OpenMenuForMode((M2C_UNK)2);
     MapSelectList_InitScrollBar();
-    func_ov001_0217a17c();
+    MapSelectList_InitRows();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_TEXT_PANEL) = (s32)CreateTextPanel((M2C_UNK)0, (M2C_UNK)0);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_TASK) =
         (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
@@ -67,13 +67,13 @@ void InitMapSelectGraphics(void) {
     extern M2C_UNK sXb4ApListBackNscPath;
     extern M2C_UNK sYbBgStep31NclPath;
     extern M2C_UNK sJb4ApListNscPath;
-    extern M2C_UNK func_020044ec;
+    extern M2C_UNK GX_LoadBG3Scr;
     extern M2C_UNK gMapSelectState;
     typedef struct { u8 bytes[25]; } ListBackPath;
     typedef struct { u8 bytes[22]; } BgStep31Path;
     ListBackPath listBackPath = *(ListBackPath *)&sXb4ApListBackNscPath;
     BgStep31Path bgStep31Path = *(BgStep31Path *)&sYbBgStep31NclPath;
-    Ov001_LoadAsset(&sJb4ApListNscPath, &func_020044ec);
+    Ov001_LoadAsset(&sJb4ApListNscPath, &GX_LoadBG3Scr);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4) =
         Ov001_LoadFile(Ov001_LocalizePath(&listBackPath), 0, 4);
     InitMapPreview(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), s32 *, 4));
@@ -121,36 +121,36 @@ void MapSelectList_InitScrollBar(void) {
 }
 
 #pragma opt_common_subs off
-void func_ov001_0217a17c(void) {
+/* Create the map-select list's row sprites: up to MAPSELECT_ROWS row-label and
+ * map-name objects, into whose first one the label and name tile sets are loaded;
+ * the resulting tile words fill the list's label and name tile tables, and every
+ * created row gets its priority bits set. */
+void MapSelectList_InitRows(void) {
 void *Ov001_CreateSpriteFromLayout(M2C_UNK, M2C_UNK);
 void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, M2C_UNK);
 extern M2C_UNK gMapSelectState;
 extern u8 data_ov001_0218f814[];
 extern u8 data_ov001_0218f818[];
-s32 cnt = *(u8 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4)) + 0x51);
+s32 rowCount = *(u8 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ)) + MAPSELECT_COUNT);
 s32 i = 0;
-if (cnt > 5) cnt = 5;
-if (cnt > 0) {
-    i = 0;
-    do {
-        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4 + i] = Ov001_CreateSpriteFromLayout(0, 0x2e);
-        ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9 + i] = Ov001_CreateSpriteFromLayout(0, 0x18);
-        i++;
-    } while (i < cnt);
+if (rowCount > MAPSELECT_ROWS) rowCount = MAPSELECT_ROWS;
+for (i = 0; i < rowCount; i++) {
+        ((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_A_INDEX + i] = Ov001_CreateSpriteFromLayout(0, MAPSELECT_ROW_LABEL_SPRITE);
+        ((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_B_INDEX + i] = Ov001_CreateSpriteFromLayout(0, MAPSELECT_ROW_NAME_SPRITE);
 }
-for (i = 0; (u32)i < 3; i++) {
-Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f814[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4]);
-((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4)))[0x21 + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4] + 4) & 0x3ff;
+for (i = 0; (u32)i < MAPSELECT_LABEL_TILES_COUNT; i++) {
+Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f814[i], ((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_A_INDEX]);
+((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ)))[MAPSELECT_LABEL_TILES_INDEX + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_A_INDEX] + MAPSELECT_ROW_TILE) & 0x3ff;
 }
-for (i = 0; (u32)i < 4; i++) {
-Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f818[i], ((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9]);
-((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4)))[0x24 + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9] + 4) & 0x3ff;
+for (i = 0; (u32)i < MAPSELECT_NAME_TILES_COUNT; i++) {
+Ov001_LoadSpriteObjLayout(0, (M2C_UNK)data_ov001_0218f818[i], ((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_B_INDEX]);
+((u16 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ)))[MAPSELECT_NAME_TILES_INDEX + i] = *(u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_B_INDEX] + MAPSELECT_ROW_TILE) & 0x3ff;
 }
-for (i = 0; i < cnt; i++) {
-u16 *p = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[4 + i] + 4);
-*p = (*p & ~0xc00) | 0xc00;
-p = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, 4))[9 + i] + 4);
-*p = (*p & ~0xc00) | 0xc00;
+for (i = 0; i < rowCount; i++) {
+u16 *tile = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_A_INDEX + i] + MAPSELECT_ROW_TILE);
+*tile = (*tile & ~0xc00) | 0xc00;
+tile = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ))[MAPSELECT_ROW_OBJS_B_INDEX + i] + MAPSELECT_ROW_TILE);
+*tile = (*tile & ~0xc00) | 0xc00;
 }
 }
 #pragma opt_common_subs reset
@@ -395,7 +395,7 @@ void MapSelectList_FadeOut(void) {
  * the match, or the cancel path. */
 void MapSelectList_Leave(void) {
 extern s32 gMapSelectState,data_ov001_02193d9c;
-extern s32 func_ov001_02181a84,func_ov001_02180860,InitNameEntryScreen,Ov001_PrepareSaveSlotMenu;
+extern s32 func_ov001_02181a84,Ov001_OpenFriendListScreen,InitNameEntryScreen,Ov001_PrepareSaveSlotMenu;
 s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);void *GetCurrentMapRecord(void);
 s32 i; void *obj;
 if(Ov001_IsFadeActive(1))return;
@@ -406,7 +406,7 @@ for(i=0;i<MAPSELECT_ROWS;i++){
 obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_A);if(obj)Ov001_ReleaseSprite(obj);
 obj=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4)+i*4,void **,MAPSELECT_ROW_OBJS_B);if(obj)Ov001_ReleaseSprite(obj);
 }
-func_ov001_0218af0c(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
+Ov001_FreePanelBackground(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,12));
 func_ov001_02183980();Ov001_FreeSpriteObjects();Ov001_FreeOptionBackground();FreeMapPreview();
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,4));
 Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
@@ -415,7 +415,7 @@ Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,29);
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,MAPSELECT_CHOSEN)==0){
 func_ov001_02183fa0();LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xf4));Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
 }else if(M2C_FIELD(&gMapSelectState,u8 *,0)==4){
-func_ov001_02183fa0();Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&func_ov001_02180860);
+func_ov001_02183fa0();Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);
 }else{
 obj=M2C_FIELD(&gMapSelectState,void **,4);
 func_ov001_02184498(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE);

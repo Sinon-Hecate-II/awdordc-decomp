@@ -149,14 +149,14 @@ void func_ov003_0220c0e8(void *arg0) {
 void func_ov003_0220c10c(void *arg0) {
 void func_ov003_0220c0e8(void *);
 void *q=**(void ***)((u8 *)arg0+0x5c);
-s32 v;
-u8 idx,k,b;
-if(q)v=*(u16 *)((u8 *)q+8);else v=-1;
-k=*(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
-idx=v-11;
+s32 v,b;
+u8 idx,k;
+v = q ? *(u16 *)((u8 *)q+8) : -1;
+idx = v - 11;
+k = *(u8 *)(*(u8 **)((u8 *)arg0+0x3c)+15);
 b=0;
-if((u8)(k==8))b|=(idx==0);
-if(b || (u8)((u8)(k==8) && idx==1))func_ov003_0220c0e8(arg0);
+if((u8)(k==8))b=(idx==0)?1:b;
+if((b & 0xff) || (u8)((u8)(k==8) && idx==1))func_ov003_0220c0e8(arg0);
 }
 #pragma opt_propagation reset
 
@@ -213,7 +213,7 @@ void RunPendingMenuAction(void *arg0) {
     s32 IsMapConfirmEnabled(void);
     void DrawMapSelectLabel(void *);
     void Ov003_ConfirmRowValue(void *, s32);
-    void func_02083464(void);
+    void ClearTextChars(void);
     extern void **gCur3DSpriteEngine;
 
     u8 *obj = (u8 *)arg0;
@@ -315,7 +315,7 @@ void RunPendingMenuAction(void *arg0) {
             return;
         }
         case 3: {
-            func_02083464();
+            ClearTextChars();
             return;
         }
         }

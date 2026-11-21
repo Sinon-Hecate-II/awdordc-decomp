@@ -14,7 +14,7 @@ u32 func_ov011_02226658(void *arg0) {
     M2C_UNK func_ov011_0222588c(void *);
     s32 func_ov011_02225a18(void *);
     M2C_UNK IntroMenu_AccelerateTouchedEntry(void *, u16, u16);
-    void func_ov011_02225a9c(void *, s32, s32, s32);
+    void UpdateOv011BackgroundPanel(void *, s32, s32, s32);
     extern u16 *gKeyState;
     extern void *gTouchState;
     extern u16 **g3DSpriteEngineSub;
@@ -225,16 +225,16 @@ u32 func_ov011_02226658(void *arg0) {
         }
     }
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_ov011_02225a9c(arg0, -0x68, 0, 0);
-    func_ov011_02225a9c(arg0, 0, 0, 1);
-    func_ov011_02225a9c(arg0, -0x68, 0, 2);
-    func_ov011_02225a9c(arg0, 0, 0, 3);
-    func_ov011_02225a9c(arg0, -0x68, 0, 4);
-    func_ov011_02225a9c(arg0, 0, 0, 5);
-    func_ov011_02225a9c(arg0, -0x68, 0, 6);
-    func_ov011_02225a9c(arg0, 0, 0, 7);
-    func_ov011_02225a9c(arg0, -0x68, 0, 8);
-    func_ov011_02225a9c(arg0, 0, 0, 9);
+    UpdateOv011BackgroundPanel(arg0, -0x68, 0, 0);
+    UpdateOv011BackgroundPanel(arg0, 0, 0, 1);
+    UpdateOv011BackgroundPanel(arg0, -0x68, 0, 2);
+    UpdateOv011BackgroundPanel(arg0, 0, 0, 3);
+    UpdateOv011BackgroundPanel(arg0, -0x68, 0, 4);
+    UpdateOv011BackgroundPanel(arg0, 0, 0, 5);
+    UpdateOv011BackgroundPanel(arg0, -0x68, 0, 6);
+    UpdateOv011BackgroundPanel(arg0, 0, 0, 7);
+    UpdateOv011BackgroundPanel(arg0, -0x68, 0, 8);
+    UpdateOv011BackgroundPanel(arg0, 0, 0, 9);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);

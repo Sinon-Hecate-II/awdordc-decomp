@@ -128,7 +128,7 @@ if(a==0)return;if(a>=15)return;
 ((SaveFlags *)&gCoUnlocked)[a].mode=(u8)b;
 }
 
-void func_020bf930(M2C_UNK arg0) {
+void ApplyViewZoomOption(M2C_UNK arg0) {
     M2C_UNK func_0207cfb0(M2C_UNK, M2C_UNK);
     extern M2C_UNK data_0215d990;
     u32 temp_r1;
@@ -148,12 +148,15 @@ void func_020bf930(M2C_UNK arg0) {
 }
 
 #pragma opt_common_subs off
-void func_020bf97c(void) {
+/* Saves the map view's zoom into the game-options word: 0 while the view is
+ * zoomed in, GAME_OPTION_ZOOM_OUT while it is zoomed out.  The view whose zoom is
+ * read arrives as the (otherwise unused) argument of the GetViewZoom call. */
+void SaveViewZoomOption(void) {
 s32 GetViewZoom(void);extern M2C_UNK data_0215d990;
 switch(GetViewZoom()){
-case 0:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380);return;
-case 128:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
-default:M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|128;return;
+case 0:M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)=(M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)&~GAME_OPTION_ZOOM_MASK);return;
+case 0x80:M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)=(M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)&~GAME_OPTION_ZOOM_MASK)|GAME_OPTION_ZOOM_OUT;return;
+default:M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)=(M2C_FIELD(&data_0215d990,u16 *,GAME_OPTIONS_WORD)&~GAME_OPTION_ZOOM_MASK)|GAME_OPTION_ZOOM_OUT;return;
 }
 }
 #pragma opt_common_subs reset

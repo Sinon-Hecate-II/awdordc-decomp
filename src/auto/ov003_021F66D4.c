@@ -62,7 +62,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     void UpdateSpriteAnimation(void *);
     void func_020ab2c4(void *);
     s16 GetSpriteAnimValue(void *);
-    void func_02088e84(void *, s16, s16, s16, s32);
+    void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     void func_02087d84(void *, s32, s32, s32, u16, u16);
@@ -248,7 +248,7 @@ L3:
             if ((s16) M2C_FIELD(arg0->f60, s32 *, 0x10) != 0) {
                 temp_r6 = M2C_FIELD(arg0->f68, void **, 0x10);
                 temp_r4 = (s16) (temp_r5 + 4);
-                func_02088e84(temp_r6, 0x38, temp_r4, 0x38, temp_r4);
+                Set3DSpriteSlideTargetAndStart(temp_r6, 0x38, temp_r4, 0x38, temp_r4);
                 if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
                     var_r0 = 1;
                 } else {
@@ -274,7 +274,7 @@ L3:
                     func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) GetUnitSpriteHeight(temp_r6));
                 }
                 temp_r6 = M2C_FIELD(arg0->f68, void **, 0x14);
-                func_02088e84(temp_r6, 0xA8, temp_r4, 0xA8, temp_r4);
+                Set3DSpriteSlideTargetAndStart(temp_r6, 0xA8, temp_r4, 0xA8, temp_r4);
                 if (M2C_FIELD(M2C_FIELD(temp_r6, void **, 0x64), u8 *, 0x12) != 0) {
                     var_r0_3 = 1;
                 } else {

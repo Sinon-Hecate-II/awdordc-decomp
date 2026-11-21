@@ -18,7 +18,7 @@
 #define SOUND_PLAYER_SEGMENT_CB     0x30 /* void (*)(s32 mode, s32 notes, s32 *offsets, s32 size, s32 arg, s32 arg2) */
 #define SOUND_PLAYER_CB_ARG         0x34 /* s32 argument passed to the segment callback */
 #define SOUND_PLAYER_CURRENT_SEGMENT 0x38 /* s32 segment being played */
-#define SOUND_PLAYER_CHANNEL        0x3C /* s32 hardware channel wire number */
+#define SOUND_PLAYER_VOLUME         0x3C /* s32 player volume the channel volumes are based on */
 #define SOUND_PLAYER_HW_CHANNEL     0x40 /* s32 allocated hardware channel index */
 #define SOUND_PLAYER_CHANNEL_MASK   0x44 /* u32 mask of the hardware channels in use */
 #define SOUND_PLAYER_NOTE_COUNT     0x48 /* s32 number of notes/channels */
@@ -117,6 +117,19 @@
 #define SOUND_ARCHIVE_ENTRY_SIZE   16
 #define SOUND_ARCHIVE_ENTRY_OFFSET 0    /* s32 offset in the file of the object's data */
 #define SOUND_ARCHIVE_ENTRY_DATA   8    /* void * the object's data (from ENTRY_OFFSET) */
+
+/* The resource tables inside the archive's loaded data block
+ * (SOUND_ARCHIVE_DATA_BLOCK): each is a {u32 count; s32 offset[count];} section
+ * whose offsets are relative to the block, and the GetSound*Record accessors
+ * return the record at an index. */
+#define SOUND_DATA_SEQUENCE         0x08 /* sequence table */
+#define SOUND_DATA_SEQUENCE_ARCHIVE 0x0C /* sequence-archive table */
+#define SOUND_DATA_BANK             0x10 /* sound-bank table */
+#define SOUND_DATA_WAVE_ARCHIVE     0x14 /* wave-archive table */
+#define SOUND_DATA_CHANNEL          0x18 /* channel table */
+#define SOUND_DATA_GROUP            0x1C /* sound-group table */
+#define SOUND_DATA_PLAYER_CHANNELS  0x20 /* per-player-slot channel assignment records: {u8 count; u8 channels[count]} */
+#define SOUND_DATA_SOUND            0x24 /* sound table (GetSoundRecord) */
 
 /* One file of a sound archive's file table (at SOUND_ARCHIVE_TABLE): where its
  * data sits in the archive file and, once loaded, the pointer to it. */
@@ -237,11 +250,28 @@ typedef struct PackedBankEntry {
 #define SOUND_VOICE_CHANNEL_BASE 0x04 /* void * the gSoundChannels entry whose voice list holds the voice */
 #define SOUND_VOICE_HEAP     0x08 /* void * channel heap block the voice plays from (its SOUND_CHANNEL_HEAP_OWNER points back) */
 #define SOUND_VOICE_LINKS    0x14 /* the {prev, next} pair of the voice lists */
+#define SOUND_VOICE_ENVELOPE 0x1C /* 16-byte volume envelope state (func_0202eec0/eed8, AdvanceFade/GetFadeValue/IsFadeDone) */
 #define SOUND_VOICE_STATE    0x2C /* u8 0 = free, 1 = keyed on, 2 = playing */
+#define SOUND_VOICE_STARTED  0x2D /* u8 set once the voice's start command has been processed by the ARM7 */
+#define SOUND_VOICE_STOP_PENDING 0x2F /* u8 set while the channel-stop command still has to be sent */
+#define SOUND_VOICE_START_MARK   0x30 /* s32 ARM7 command counter the start command was queued at */
 #define SOUND_VOICE_CHANNEL  0x3C /* u8 hardware channel the voice plays on */
 #define SOUND_VOICE_PRIORITY 0x3D /* u8 priority: a request of lower priority cannot take this voice's place */
+#define SOUND_VOICE_LAST_VOLUME  0x3E /* s16 hardware channel volume written last, so it is only resent when it changes */
+#define SOUND_VOICE_VOLUME   0x40 /* u8 voice volume level, 0..127 */
+#define SOUND_VOICE_EXPRESSION 0x41 /* u8 second volume level (expression), 0..127 */
 #define SOUND_VOICE_COUNT    16
 #define SOUND_PLAYER_VOICE   0x00 /* void * driver voice currently attached to a player, NULL when none */
+
+/* A data block a Sound_AllocDataBlock call takes from a sound heap: a 0x20-byte
+ * header (its +0/+4 links put it on the pool's block list) in front of the
+ * payload.  When the block is freed its callback gets the payload, the payload
+ * size and the two fields below. */
+#define SOUND_BLOCK_SIZE      0x08 /* s32 payload bytes the block was allocated for */
+#define SOUND_BLOCK_FREE      0x0C /* void (*)(void *payload, s32 size, s32 arg, s32 index) */
+#define SOUND_BLOCK_FREE_ARG  0x10 /* s32 argument passed to the free callback (the block's owner) */
+#define SOUND_BLOCK_INDEX     0x14 /* s32 index passed to the free callback */
+#define SOUND_BLOCK_DATA      0x20 /* payload start, right after the header */
 
 /* One channel of gSoundChannels (32 channels, 0x24 bytes each): the voices and
  * the sequences playing through it, its voice limit and its volume. */
@@ -314,9 +344,11 @@ typedef struct SoundChannelRecord {
 /* The sound task (gSoundWorker): the worker's thread object with its stack
  * inside it, the wait queue the worker sleeps on and the queue of segment
  * requests.  The worker fills each request's note buffers, then frees it. */
-#define SOUND_TASK_WAIT_QUEUE    0x4C0 /* thread wait queue the worker sleeps on */
-#define SOUND_TASK_LOCK          0x4C8 /* OSMutex guarding the request queue */
-#define SOUND_TASK_REQUEST_QUEUE 0x4E0 /* list of pending segment requests, links at +0 */
+#define SOUND_TASK_WAIT_QUEUE      0x4C0 /* OSThreadQueue the worker sleeps on: head at +0, tail at SOUND_TASK_WAIT_QUEUE_TAIL */
+#define SOUND_TASK_WAIT_QUEUE_TAIL 0x4C4 /* tail of the worker's wait queue */
+#define SOUND_TASK_LOCK            0x4C8 /* OSMutex guarding the request queue */
+#define SOUND_TASK_REQUEST_QUEUE   0x4E0 /* list of pending segment requests, links at +0 */
+#define SOUND_WORKER_STACK_SIZE    0x400 /* bytes of stack the worker thread is given inside gSoundWorker */
 
 /* The sound task's global state (gSoundWorkerState): whether the task exists,
  * the task a sound's first segment is queued on (NULL = gSoundWorker) and the
@@ -331,6 +363,13 @@ typedef struct SoundChannelRecord {
 #define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
 #define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
 #define SOUND_MENU_TAB     0x10020 /* the active tab changed */
+
+/* The text window's sounds: the open one plays from NotifyWindowOpened, the
+ * close one from func_0208a714; a window opened during a link session plays
+ * SOUND_WINDOW_LINK on sound slot 0 instead of the open sound. */
+#define SOUND_WINDOW_OPEN  0x125
+#define SOUND_WINDOW_CLOSE 0x124
+#define SOUND_WINDOW_LINK  0x10013
 
 /* Battle music tracks: the CO-power theme that replaces the map's music while a
  * player's CO power is active (GetCoPowerMusicTrack).  Armies 1..7 use the first,

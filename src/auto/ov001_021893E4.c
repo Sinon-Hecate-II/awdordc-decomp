@@ -1,5 +1,6 @@
 /* 27 functions from 0x021893E4 to 0x0218A384 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "fs.h"
 /* The ov001 profile / download-play setup state (gOv001ProfileState). */
 #define PROFILE_STATE      0xA90 /* u8 current screen state */
 #define PROFILE_PREV_STATE 0xA91 /* u8 state before the last change */
@@ -13,12 +14,17 @@
 #define PROFILE_ENTRY_SIZE 0x44   /* bytes per slot entry */
 #define PROFILE_ENTRY_VALID 0x208 /* s32 per slot: its entry holds a received slot */
 #define PROFILE_LINKED     0xA93 /* u8: the download-play link is connected */
+#define PROFILE_LOCAL_BYTE 0xA92 /* u8: id this console advertises in the data-sharing connect entry */
+#define PROFILE_SEND_ENTRY 0xAB0 /* void *: the outgoing data-sharing entry being built */
 #define PROFILE_LINK_TICKS 0xA94 /* s32: link ticks, a list move every other one */
 #define PROFILE_CURSOR_MARK 0x202 /* u16 cursor id pushed to the connected players */
 #define PROFILE_ROW_COUNT  0x24   /* rows in a profile list round */
 #define PROFILE_ID_ROW     0x10   /* entry id: the row is selected */
 #define PROFILE_ID_CONNECT 0xBC   /* entry id: wait for a connection */
 #define PROFILE_ID_JOIN    0xBD   /* entry id: the joining player said yes */
+/* The ov001 DWC utility state: the archive of
+ * "rom:/dwc/utility.bin" and the lock id it takes the card ROM lock with. */
+#define UTILITY_LOCK_ID    0xE4   /* u16 OS lock id CARD_LockRom/CARD_UnlockRom take */
 /* One allocated run of 8-byte sprite object entries in a pool: the run's list
  * links, the address of its first entry (+0x08) and its entry count (+0x0C). */
 typedef struct Ov001SpriteBlock { struct Ov001SpriteBlock *prev; struct Ov001SpriteBlock *next; s32 start; u8 size; u8 pad[3]; } Ov001SpriteBlock;
@@ -36,7 +42,7 @@ void Ov001_UpdateLinkState(void) {
     s32 Ov001_GetLinkStatus(void);
     s32 Ov001_GetLinkInfo(s32);
     void func_ov001_02186fa0(M2C_UNK, M2C_UNK);
-    s32 func_ov001_021873ec(void);
+    s32 Ov001_AreJoinedPlayersReady(void);
     void func_ov001_02187454(void);
     void func_ov001_0218754c(void);
     s32 Ov001_GetTaskStep(void);
@@ -67,7 +73,7 @@ void Ov001_UpdateLinkState(void) {
         return;
     }
     case 3: {
-        s32 ready = func_ov001_021873ec();
+        s32 ready = Ov001_AreJoinedPlayersReady();
         if (ready != 0) {
             func_ov001_02187454();
             return;
@@ -129,7 +135,7 @@ void func_ov001_0218959c(void) {
 void Ov001_UpdateProfileTask(void) {
     s32 Ov001_GetTaskStep(void);
     void func_ov001_021888a8(s32, u16, u16, s32);
-    void func_ov001_0218986c(s32, s32, void *);
+    void Ov001_StepProfileSharing(s32, s32, void *);
     void Ov001_UpdateProfileLink(void);
     u16 Ov001_ReadInputCode(void);
     extern void *gOv001ProfileState;
@@ -149,7 +155,7 @@ void Ov001_UpdateProfileTask(void) {
         void *listBase = *(void **)((u8 *)gOv001ProfileState + PROFILE_LIST_BASE);
         u32 index = row % 16;
         void *entry = (u8 *)listBase + (index << 6);
-        func_ov001_0218986c(0, row, entry);
+        Ov001_StepProfileSharing(0, row, entry);
         Ov001_UpdateProfileLink();
         if (*(u8 *)((u8 *)gOv001ProfileState + PROFILE_STATE) == 0x1b) break;
         if (*(u32 *)((u8 *)gOv001ProfileState + PROFILE_LIST_TIMER) > 0x1e0) {
@@ -223,50 +229,54 @@ M2C_UNK func_ov001_02189828(void) {
  return (s32)p;
 }
 
-void func_ov001_0218986c(s32 arg0, s32 arg1, void *arg2) {
+/* One step of the download-play profile data sharing: while the link is up send
+ * the selected profile entry (id, row, 0x40-byte payload) to the children, else
+ * count frames and advertise this console's connect id; once the exchange step
+ * reports progress, collect the children's entries into this console's two profile
+ * slots, or leave the list when not both children replied. */
+void Ov001_StepProfileSharing(s32 entryId, s32 row, void *entry) {
     M2C_UNK Ov001_GetTaskStep(void);
     M2C_UNK DWCi_MOV_WH_StepDataSharing(void *);
-    M2C_UNK func_ov001_02188380(void);
-    M2C_UNK func_ov001_02188a34(s32);
+    M2C_UNK Ov001_GetConnectedChildren(void);
+    M2C_UNK Ov001_GetPlayerData(s32);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     extern void *gOv001ProfileState;
     u16 i;
 
-    if (*(u8 *)((u8 *)gOv001ProfileState + 0xa93) == 1) {
-        *(u16 *)*(void **)((u8 *)gOv001ProfileState + 0xab0) = (u16)arg0;
-        *(u16 *)((u8 *)*(void **)((u8 *)gOv001ProfileState + 0xab0) + 2) = (u16)arg1;
-        MI_CpuCopy8(arg2, (u8 *)*(void **)((u8 *)gOv001ProfileState + 0xab0) + 4, 0x40);
-        return;
+    if (M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_LINKED) == 1) {
+        *(u16 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY) = (u16)entryId;
+        *(u16 *)((u8 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY) + 2) = (u16)row;
+        MI_CpuCopy8(entry, (u8 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY) + 4, 0x40);
+    } else {
+        M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LIST_TIMER) += 1;
+        *(u16 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY) = PROFILE_ID_CONNECT;
+        ((u8 *)M2C_FIELD(gOv001ProfileState, void **, PROFILE_SEND_ENTRY))[4] = M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_LOCAL_BYTE);
     }
-
-    *(u32 *)((u8 *)gOv001ProfileState + 0x204) += 1;
-    *(u16 *)*(void **)((u8 *)gOv001ProfileState + 0xab0) = 0xbc;
-    ((u8 *)*(void **)((u8 *)gOv001ProfileState + 0xab0))[4] = *(u8 *)((u8 *)gOv001ProfileState + 0xa92);
 
     if (Ov001_GetTaskStep() != 5) {
         return;
     }
     if (DWCi_MOV_WH_StepDataSharing(gOv001ProfileState) == 0) {
-        *(u32 *)((u8 *)gOv001ProfileState + 0x204) += 4;
+        M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LIST_TIMER) += 4;
         return;
     }
-    if (*(u8 *)((u8 *)gOv001ProfileState + 0xa93) == 0) {
-        *(u32 *)((u8 *)gOv001ProfileState + 0x204) += 1;
+    if (M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_LINKED) == 0) {
+        M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LIST_TIMER) += 1;
     } else {
-        *(u32 *)((u8 *)gOv001ProfileState + 0x204) = 0;
-        if (func_ov001_02188380() != 3) {
-            *(u8 *)((u8 *)gOv001ProfileState + 0xa90) = 0x1b;
+        M2C_FIELD(gOv001ProfileState, u32 *, PROFILE_LIST_TIMER) = 0;
+        if (Ov001_GetConnectedChildren() != 3) {
+            M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 0x1b;
             return;
         }
     }
 
     for (i = 0; i < 2; i = (u16)(i + 1)) {
-        void *src = func_ov001_02188a34(i);
-        if (src == 0) {
-            *(s32 *)((u8 *)gOv001ProfileState + 0x208 + i * 4) = 0;
+        void *src = Ov001_GetPlayerData(i);
+        if (src != 0) {
+            MI_CpuCopy8(src, (u8 *)gOv001ProfileState + PROFILE_ENTRY_BASE + i * PROFILE_ENTRY_SIZE, PROFILE_ENTRY_SIZE);
+            M2C_FIELD((u8 *)gOv001ProfileState + i * 4, s32 *, PROFILE_ENTRY_VALID) = 1;
         } else {
-            MI_CpuCopy8(src, (u8 *)gOv001ProfileState + 0x100 + i * 0x44, 0x44);
-            *(s32 *)((u8 *)gOv001ProfileState + 0x208 + i * 4) = 1;
+            M2C_FIELD((u8 *)gOv001ProfileState + i * 4, s32 *, PROFILE_ENTRY_VALID) = 0;
         }
     }
 }
@@ -329,11 +339,11 @@ void func_ov001_02189ad0(void) {
     s32 Ov001_QueueCreateFromBuffer(s32, s32, s32);
     void func_0200563c(void *, void *, ...);
     void SetFileDirectory(void *);
-    extern void *data_ov001_02193e2c;
+    extern void *gOv001UtilityState;
     extern char data_ov001_02191794[];
     extern char data_ov001_0218fd04[];
     extern char data_ov001_021917ac[];
-    s32 func_ov001_02189d0c(s32, s32);
+    s32 Ov001_UtilityArchiveCommand(s32, s32);
     s32 func_ov001_02189d70(void *, M2C_UNK, s32,s32);
     s32 func_ov001_02189dc0(void);
 
@@ -344,29 +354,29 @@ void func_ov001_02189ad0(void) {
     void *data;
     s32 dataSize;
 
-    data_ov001_02193e2c = (void *)Ov001_Alloc(0xE8, 4);
+    gOv001UtilityState = (void *)Ov001_Alloc(0xE8, 4);
     InitFileRequest(request);
     if (!OpenFileRequest(request, data_ov001_02191794)) {
         SystemHalt();
     }
-    M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4) = (u16)OS_GetLockID();
+    M2C_FIELD(gOv001UtilityState, u16 *, 0xE4) = (u16)OS_GetLockID();
     fileSize = *(s32 *)(request + 0x24);
     FileRead(request, hi, 8);
     FileRead(request, lo, 8);
     CloseFileRequest(request);
-    func_0200b118((u8 *)data_ov001_02193e2c + 0x88);
-    if (!RegisterArchiveName((u8 *)data_ov001_02193e2c + 0x88, data_ov001_0218fd04, 3)) {
+    func_0200b118((u8 *)gOv001UtilityState + 0x88);
+    if (!RegisterArchiveName((u8 *)gOv001UtilityState + 0x88, data_ov001_0218fd04, 3)) {
         SystemHalt();
     }
-    func_0200b6a8((u8 *)data_ov001_02193e2c + 0x88, (s32)func_ov001_02189d0c, 0x602);
-    if (!ConfigureArchiveLayout((u8 *)data_ov001_02193e2c + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
+    func_0200b6a8((u8 *)gOv001UtilityState + 0x88, (s32)Ov001_UtilityArchiveCommand, 0x602);
+    if (!ConfigureArchiveLayout((u8 *)gOv001UtilityState + 0x88, fileSize, lo[0], lo[1], hi[0], hi[1], (void *)func_ov001_02189d70, (void *)func_ov001_02189dc0)) {
         SystemHalt();
     }
-    dataSize = LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, 0, 0);
+    dataSize = LoadArchiveIndex((u8 *)gOv001UtilityState + 0x88, 0, 0);
     data = (void *)Ov001_Alloc(dataSize, 4);
-    *(void **)data_ov001_02193e2c = data;
-    LoadArchiveIndex((u8 *)data_ov001_02193e2c + 0x88, (s32)*(void **)data_ov001_02193e2c, dataSize);
-    M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84) = (s32)Ov001_QueueCreateFromBuffer(0x20, (s32)((u8 *)data_ov001_02193e2c + 4), 4);
+    *(void **)gOv001UtilityState = data;
+    LoadArchiveIndex((u8 *)gOv001UtilityState + 0x88, (s32)*(void **)gOv001UtilityState, dataSize);
+    M2C_FIELD(gOv001UtilityState, s32 *, 0x84) = (s32)Ov001_QueueCreateFromBuffer(0x20, (s32)((u8 *)gOv001UtilityState + 4), 4);
     func_0200563c(dirName, data_ov001_021917ac, data_ov001_0218fd04);
     SetFileDirectory(dirName);
 }
@@ -375,33 +385,37 @@ void func_ov001_02189c80(void) {
 extern void *data_ov001_021917b4[2];
 extern void *data_ov001_02193e2c;
 void func_0200bc5c(void *);
-void UnloadArchiveIndex(void *);
+void func_0200b510(void *);
 void func_0200b32c(void *);
-void ReleaseArchiveName(void *);
-void OS_ReleaseLockID(u16);
-void Ov001_FreeAlloc(void *);
+void func_0200b238(void *);
+void func_020055f4(u16);
+void func_ov001_0218b71c(void *);
 func_0200bc5c(data_ov001_021917b4);
-UnloadArchiveIndex((u8 *)data_ov001_02193e2c+0x88);
+func_0200b510((u8 *)data_ov001_02193e2c+0x88);
 func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
-ReleaseArchiveName((u8 *)data_ov001_02193e2c+0x88);
-OS_ReleaseLockID(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
+func_0200b238((u8 *)data_ov001_02193e2c+0x88);
+func_020055f4(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
 M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4)=0;
-Ov001_FreeAlloc(data_ov001_02193e2c);
+func_ov001_0218b71c(data_ov001_02193e2c);
 M2C_FIELD(data_ov001_02193e2c,u32 *,0)=0;
-Ov001_FreeAlloc((void *)0x02193e2c);
+func_ov001_0218b71c((void *)0x02193e2c);
 }
 
-s32 func_ov001_02189d0c(s32 arg0, s32 arg1) {
-    M2C_UNK CARD_LockRom(u16);
-    M2C_UNK CARD_UnlockRom(u16);
-    extern void *data_ov001_02193e2c;
-    
-    switch (arg1) {
-    case 9:
-        CARD_LockRom(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
+/* Card-archive command callback of the ov001 DWC utility archive: locks the card
+ * ROM while a transfer request is in flight and unlocks it when the archive goes
+ * idle; its own event 1 is acknowledged as handled (4) and any other command
+ * returns 8 to the generic file command handler. */
+s32 Ov001_UtilityArchiveCommand(s32 request, s32 command) {
+    void CARD_LockRom(u16);
+    void CARD_UnlockRom(u16);
+    extern void *gOv001UtilityState;
+
+    switch (command) {
+    case FS_EVENT_REQUEST:
+        CARD_LockRom(M2C_FIELD(gOv001UtilityState, u16 *, UTILITY_LOCK_ID));
         return 0;
-    case 10:
-        CARD_UnlockRom(M2C_FIELD(data_ov001_02193e2c, u16 *, 0xE4));
+    case FS_EVENT_IDLE:
+        CARD_UnlockRom(M2C_FIELD(gOv001UtilityState, u16 *, UTILITY_LOCK_ID));
         return 0;
     case 1:
         return 4;
@@ -442,14 +456,14 @@ void CloseFileRequest(void *);
 void Ov001_DecompressBuffer(void *, void *);
 void Ov001_FreeAlloc(void *);
 s32 Ov001_Alloc(s32, s32);
-extern void *data_ov001_02193e2c;
+extern void *gOv001UtilityState;
 extern s32 data_ov001_021917bc;
 void *raw;
 u32 request[18];
 u32 size;
 s32 align;
 void *out;
-Ov001_QueuePop(M2C_FIELD(data_ov001_02193e2c, s32 *, 0x84));
+Ov001_QueuePop(M2C_FIELD(gOv001UtilityState, s32 *, 0x84));
 InitFileRequest(request); if (!OpenFileRequest(request, path)) SystemHalt();
 size = request[10] - request[9]; if (outSize) *outSize = size;
 if (Ov001_FileHasSuffix(path, (s32)&data_ov001_021917bc, 2)) align = -4; else align = alignment;
@@ -461,9 +475,9 @@ out = (void *)Ov001_Alloc(size, alignment); Ov001_DecompressBuffer(raw, out); Ov
 }
 
 void Ov001_FreeFile(s32 arg0, ...) {
- M2C_UNK Ov001_QueuePush(s32,void*); void Ov001_FreeAlloc(void*); extern void *data_ov001_02193e2c;
+ M2C_UNK Ov001_QueuePush(s32,void*); void Ov001_FreeAlloc(void*); extern void *gOv001UtilityState;
  Ov001_FreeAlloc(&arg0);
- Ov001_QueuePush(M2C_FIELD(data_ov001_02193e2c,s32*,0x84),(void*)arg0);
+ Ov001_QueuePush(M2C_FIELD(gOv001UtilityState,s32*,0x84),(void*)arg0);
 }
 
 s32 Ov001_FileHasSuffix(void *arg0, s32 arg1, s32 arg2) {

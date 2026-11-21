@@ -6,7 +6,7 @@ typedef struct DispatchWork169 { u8 pad[0x131c]; u32 active; u8 pad1320[0x1c8]; 
 extern M2C_UNK gMbState;
 extern M2C_UNK gMbParam;
 void func_020168a0(void);
-int func_02016840(void);
+int Mb_LinkExchangeReady(void);
 void Mb_CancelLink(void *);
 void *WFC_StartDownloadPlay(void *, void *);
 void *func_02012418(void *, void *);
@@ -40,7 +40,7 @@ if(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x528)==0 && M2C_FIELD(&gMbSta
 M2C_FIELD(&gMbState,DispatchWork169 **,12)->active=1;
 {u32 flag=(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52c)==0); void *ctx=M2C_FIELD(&gMbState,void * volatile *,8);Mb_ReportPacketResult(14,func_02012a64(func_02016934,M2C_FIELD(ctx,u32 *,0x504),M2C_FIELD(ctx,u16 *,0x51a),(char*)ctx+0x40,M2C_FIELD(ctx,u16 *,0x518),(u16)flag,0,0,0,1,1));}return;
 }
-if(func_02016840()){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25,0);}return;
+if(Mb_LinkExchangeReady()){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(25,0);}return;
 case 9: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x52a)&=~(1<<M2C_FIELD(arg0,u16 *,16)); M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(1,arg0);return;
 case 2: if(M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u16 *,0x526)==1)return; M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(28,arg0);return;
 case 26: return;

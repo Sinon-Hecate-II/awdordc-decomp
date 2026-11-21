@@ -55,7 +55,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK data_0215771c, data_02157724, data_02157734, gListRowFlags;
+    extern M2C_UNK data_0215771c, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
     extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
     SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
     s32 i;
@@ -79,7 +79,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
         save->records[i].stamp = records[i].stamp;
     }
     save->listHeader = *(SaveBytes8 *)&data_0215771c;
-    save->listSelection = *(SaveBytes16 *)&data_02157724;
+    save->listSelection = *(SaveBytes16 *)&gSeenMapBackgroundFlags;
     save->listState = *(SaveBytes8 *)&data_02157734;
     save->listRowFlags = *(SaveBytes8 *)&gListRowFlags;
     save->listData[0] = *(SaveBytes35 *)&data_02157744;
@@ -99,7 +99,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK data_0215771c, data_02157724, data_02157734, gListRowFlags;
+    extern M2C_UNK data_0215771c, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
     extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
     s32 i;
 
@@ -122,7 +122,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
         ((SaveRecordBlock *)&data_0215dba4)[i].stamp = save->records[i].stamp;
     }
     *(SaveBytes8 *)&data_0215771c = save->listHeader;
-    *(SaveBytes16 *)&data_02157724 = save->listSelection;
+    *(SaveBytes16 *)&gSeenMapBackgroundFlags = save->listSelection;
     *(SaveBytes8 *)&data_02157734 = save->listState;
     *(SaveBytes8 *)&gListRowFlags = save->listRowFlags;
     *(SaveBytes35 *)&data_02157744 = save->listData[0];

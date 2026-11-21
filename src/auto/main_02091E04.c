@@ -4,7 +4,7 @@
 extern u16 gPlayerUnitIdBase[];
 extern void **gCurrentMap;
 
-u8 func_02091e04(void) {
+u8 GetFacePaletteStyle(void) {
     void *Get3DSpriteManager();
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4E);
 }
@@ -54,7 +54,7 @@ s32 func_02091e70(s32 arg0) {
     return 0;
 }
 
-u16 func_02091ecc(u16 arg0) {
+u16 MapScriptResolvePlayer(u16 arg0) {
     extern void **gCurrentMap;
     if (arg0 != 5) {
         return arg0;
@@ -81,39 +81,43 @@ s32 GetScenePanelState(s32 arg0) {
     return (var_r4 * 0xC) + Get3DSpriteManager();
 }
 
-void func_02091f40(void) {
+void Mark3DSpriteLayer0Dirty(void) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
 }
 
-void func_02091f5c(void) {
+void Mark3DSpriteLayer1Dirty(void) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }
 
-void func_02091f78(void) {
+void Mark3DSpriteLayer2Dirty(void) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
 }
 
-void func_02091f94(void) {
+void Mark3DSpriteLayer3Dirty(void) {
     extern void *gCur3DSpriteEngine;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8)(M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 8);
 }
 
-void func_02091fb0(void) {
+void Mark3DSpriteLayerNoneDirty(void) {
 
 }
 
-void (*func_02091fb4(u32 arg0))(void) {
-    void func_02091f5c(void);
-    void func_02091f78(void);
-    switch (arg0) {
-    case 0: return func_02091f40;
-    case 1: return func_02091f5c;
-    case 2: return func_02091f78;
-    case 3: return func_02091f94;
-    case 4: return func_02091fb0;
+/* Return the marker for 3D sprite layer `layer`: Mark3DSpriteLayer<N>Dirty for
+ * layers 0..3, the no-op Mark3DSpriteLayerNoneDirty for layer 4, and NULL for any
+ * other layer.  The marker flags the layer's data changed when the layer is
+ * rewritten in place. */
+void (*Get3DSpriteLayerDirtyMarker(u32 layer))(void) {
+    void Mark3DSpriteLayer1Dirty(void);
+    void Mark3DSpriteLayer2Dirty(void);
+    switch (layer) {
+    case 0: return Mark3DSpriteLayer0Dirty;
+    case 1: return Mark3DSpriteLayer1Dirty;
+    case 2: return Mark3DSpriteLayer2Dirty;
+    case 3: return Mark3DSpriteLayer3Dirty;
+    case 4: return Mark3DSpriteLayerNoneDirty;
     default: return 0;
     }
 }
@@ -197,8 +201,8 @@ s32 func_02092180(void *arg0) {
 }
 
 s32 func_020921b4(void) {
-    M2C_UNK func_020947d0();
-    func_020947d0();
+    M2C_UNK EndDialogSequence();
+    EndDialogSequence();
     return 0;
 }
 
@@ -350,53 +354,57 @@ s32 func_02092460(void *arg0) {
     return 1;
 }
 
-s32 func_02092494(void *arg0) {
-    s32 func_01ffa7b4(s32);
+/* Map-script command: wait until no 3D sprite of the command's class is left on
+ * the main screen.  Returns 0 while one remains, 1 once it is gone. */
+s32 WaitForMain3DSpriteRemoved(void *script) {
+    s32 Find3DSpriteById(s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void *temp_r5;
-    u8 var_r1;
+    void *savedEngine;
+    u8 found;
 
-    temp_r5 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    if (func_01ffa7b4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
-        var_r1 = 1;
+    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM)) != 0) {
+        found = 1;
     } else {
-        var_r1 = 0;
+        found = 0;
     }
-    gCur3DSpriteEngine = temp_r5;
-    if (var_r1 != 0) {
+    gCur3DSpriteEngine = savedEngine;
+    if (found != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020924f8(void *arg0) {
-    s32 func_01ffa7b4(s32);
+/* Script command: look the command's 3D sprite id up in the sub engine and stay
+   on the command until that sprite has gone, then advance the script. */
+s32 Wait3DSpriteSubGone(void *ctx) {
+    s32 Find3DSpriteById(s32);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r5;
-    u8 var_r1;
+    void *savedEngine;
+    u8 found;
 
-    temp_r5 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_01ffa7b4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
-        var_r1 = 1;
+    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(ctx, void **, 4), s32 *, 4)) != 0) {
+        found = 1;
     } else {
-        var_r1 = 0;
+        found = 0;
     }
-    gCur3DSpriteEngine = temp_r5;
-    if (var_r1 != 0) {
+    gCur3DSpriteEngine = savedEngine;
+    if (found != 0) {
         return 0;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(ctx, void **, 4) = (void *) (M2C_FIELD(ctx, void **, 4) + 0x10);
     return 1;
 }
 
 s32 func_0209255c(void *arg0) {
-    s32 func_01ffa7b4(s32);
-    if (func_01ffa7b4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
+    s32 Find3DSpriteById(s32);
+    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
         return 0;
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -449,13 +457,15 @@ s32 func_02092674(void *arg0) {
     return 1;
 }
 
-s32 func_02092694(void *arg0) {
+/* Dialog-script command: end every dialog sequence except this one, so it runs
+ * alone, then advance to the next command and keep running. */
+s32 EndOtherDialogSequences(void *sequence) {
 extern M2C_UNK gDialogSequences;
-s32 func_020947d0();
-s32 n=((s32)arg0-(s32)&gDialogSequences)/24;
-u8 i=0;
-do {if(i!=n)func_020947d0((u8 *)&gDialogSequences+i*24);i++;}while(i<8);
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+s32 EndDialogSequence();
+s32 self=((s32)sequence-(s32)&gDialogSequences)/DIALOG_SEQUENCE_STRIDE;
+u8 slot=0;
+do {if(slot!=self)EndDialogSequence((u8 *)&gDialogSequences+slot*DIALOG_SEQUENCE_STRIDE);slot++;}while(slot<DIALOG_SEQUENCE_COUNT);
+M2C_FIELD(sequence,s32 *,4)+=16;return 0;
 }
 
 /* Open a full-screen message box showing the localized text `textId`: reset the

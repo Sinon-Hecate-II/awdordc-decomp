@@ -17,6 +17,14 @@
 /* Heap signature (u32 at heap+0x00). */
 #define HEAP_SIGNATURE_EXP 0x45585048 /* 'EXPH' */
 
+/* Heap-containment links of an expanded heap's header.  InitHeapHead starts the
+ * heap's child list at +0x0C and links the heap into the list of the heap that
+ * contains it through +0x04 (next) and +0x08 (previous); the link offset those
+ * lists use is 4, so the list nodes are the heaps themselves. */
+#define HEAP_LINK_NEXT  0x04 /* void *next heap in the list that contains this one */
+#define HEAP_LINK_PREV  0x08 /* void *previous heap */
+#define HEAP_CHILD_LIST 0x0c /* list header of the heaps contained in this one */
+
 /* Field offsets of an expanded heap's header (the object CreateExpHeap sets up). */
 #define HEAP_AREA_START 0x18 /* s32 first byte of the heap's memory area */
 #define HEAP_AREA_END   0x1c /* s32 last byte of the area */

@@ -7,7 +7,7 @@ typedef struct { TerrainOffset7E52 values[4]; } TerrainNeighbors7E52;
 #pragma opt_lifetimes off
 #pragma opt_instruction_scheduling off
 s32 func_0207e52c(s32 x,s32 y) {
-s32 GetTerrainDualVariant(s32,s32);s32 GetTerrainConnectionVariant(s32,s32);s32 GetTerrainEdgeVariant(s32,s32);s32 func_0207e338(s32,s32);s32 func_0207e39c(s32,s32);s32 func_0207e400(s32,s32);s32 func_0207e464(s32,s32);s32 func_0207e4c8(s32,s32);
+s32 GetTerrainDualVariant(s32,s32);s32 GetTerrainConnectionVariant(s32,s32);s32 GetTerrainEdgeVariant(s32,s32);s32 GetTerrainVariant1(s32,s32);s32 GetTerrainVariant7(s32,s32);s32 GetTerrainVariant53(s32,s32);s32 GetTerrainVariant220(s32,s32);s32 GetTerrainVariant224(s32,s32);
 extern TerrainVariants7E52 data_020ebe04,data_020ebe14,data_020ebe24;
 extern TerrainNeighbors7E52 gTerrainNeighborOffsets;
 extern void **gCurrentMap;
@@ -27,11 +27,11 @@ row=M2C_FIELD(map+y*2,u16 *,0x3758);
 index=row+x;
 tile=lookup[M2C_FIELD(map+index*2,u16 *,0xa10)];
 switch(tile){
-case 1:return func_0207e338(x,y);
-case 7:return func_0207e39c(x,y);
-case 53:return func_0207e400(x,y);
-case 220:return func_0207e464(x,y);
-case 224:return func_0207e4c8(x,y);
+case 1:return GetTerrainVariant1(x,y);
+case 7:return GetTerrainVariant7(x,y);
+case 53:return GetTerrainVariant53(x,y);
+case 220:return GetTerrainVariant220(x,y);
+case 224:return GetTerrainVariant224(x,y);
 case 56:
 adjacent0=gTerrainNeighborOffsets;
 for(i=0;i<4;i++){
@@ -169,12 +169,12 @@ default:return tile;
 s32 func_0207ef5c(s32 arg0, s32 arg1, s32 arg2) {
     s32 GetTerrainConnectionVariant(s32, s32);
     s32 GetTerrainEdgeVariant(s32, s32);
-    s32 func_0207e338(s32, s32);
+    s32 GetTerrainVariant1(s32, s32);
     extern M2C_UNK gTerrainClassFlags;
     u16 flags;
     flags = (u16)M2C_FIELD(&gTerrainClassFlags, u32 *, arg2 * 8);
     if (arg2 == 0x34) return 5;
-    if (flags & 1) return func_0207e338(arg0, arg1);
+    if (flags & 1) return GetTerrainVariant1(arg0, arg1);
     if (flags & 2) return GetTerrainConnectionVariant(arg0, arg1);
     if (!(flags & 4)) return 0;
     return GetTerrainEdgeVariant(arg0, arg1);

@@ -56,7 +56,7 @@ bank=0;
 p28=*(u16**)engine; *p28 = *p28 & ~0x40;
 p24=*(u16**)gCur3DSpriteEngine; *p24 = *p24 & ~0x80;
 SetFileDirectory(&data_02102d0c);
-func_020ad460(arg2);OpenNarcArchive();
+BuildMapBackgroundNarcName(arg2);OpenNarcArchive();
 if(arg2==0x4a){
 func_020ad4a0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0xc));
 func_020ad4e0(arg2);LoadNarcFileDecompressed(GetLocalizedFileName(),M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20));
@@ -72,13 +72,13 @@ case 0x100:
 amount=(u8)(bank*6+4); bank=amount<<5;
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+arg1),u16*,0)&=~0x80;
 LoadNarcFileToSpriteBuffer(func_020ad520(arg2),bank,0xc0);
-func_020ae768((u8)func_02091e04(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&~1),0xc0);
+func_020ae768((u8)GetFacePaletteStyle(),M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+(bank&~1),0xc0);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((amount&15)<<12));
 break;
 case 0x200:
 M2C_FIELD((s32)(*(u16**)gCur3DSpriteEngine+3+(u32)arg1),u16*,0)|=0x80;
 buffer=func_020815bc(func_020ad520(arg2),0x200);
-func_020ae768((u8)func_02091e04(),buffer,0x200);
+func_020ae768((u8)GetFacePaletteStyle(),buffer,0x200);
 QueueBGExtPaletteUpload(buffer,arg1,bank<<9,0x200,1);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine+arg1*4,s32*,0x20),(u16)Get3DSpriteLayerSize((u8)((*(SpriteControl094df0**)gCur3DSpriteEngine)->mode),(u8)arg1),(u16)((bank&15)<<12));
 break;
@@ -93,7 +93,7 @@ case 2:p18=*(u16**)gCur3DSpriteEngine;*p18=*p18|0x40;break;
 case 3:p14=*(u16**)gCur3DSpriteEngine;*p14=*p14|0x80;break;
 case 4:p10=*(u16**)gCur3DSpriteEngine;*p10=*p10|0x100;break;
 }
-func_020ad604(arg2);CloseNarcArchive();
+MarkMapBackgroundSeen(arg2);CloseNarcArchive();
 end:i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;
@@ -104,7 +104,7 @@ if(IsMessageBoxActive())return;
 switch(arg0) {
 case 100:func_0208f890();return;
 case 101:CreateSpriteFromClass(&data_02102aa8,7);return;
-default:PlayMusicTrack(func_020ad584(arg0));return;
+default:PlayMusicTrack(RecordsMenu_GetRecordTrack(arg0));return;
 }
 }
 

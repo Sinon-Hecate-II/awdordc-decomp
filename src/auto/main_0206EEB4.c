@@ -157,7 +157,7 @@ s32 func_0206f844(u8 *a,u8 *b) {
  return 0;
 }
 #pragma opt_if_conversion reset
-void func_0206f8ac(void) {
+void StringCompareNoCase(void) {
     M2C_UNK func_0206f844();
     func_0206f844();
 }

@@ -54,9 +54,9 @@ void func_ov006_02218200(void *entity) {
 
 void func_ov006_02218300(M2C_UNK arg0) {
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
-    s32 func_0208471c();
+    s32 IsSessionInError();
     M2C_UNK DisableMapConfirm();
-    if (func_0208471c() == 0) {
+    if (IsSessionInError() == 0) {
         return;
     }
     DisableMapConfirm();

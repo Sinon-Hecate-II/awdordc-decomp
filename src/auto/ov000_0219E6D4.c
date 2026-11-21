@@ -130,7 +130,7 @@ s32 ProcessAiCommandStep(void) {
     s32 func_ov000_0219f968();
     s32 func_ov000_0219f9c0();
     s32 func_ov000_0219fa0c();
-    s32 func_ov000_0219fa30();
+    s32 FinishAiUnitMove();
     s32 func_ov000_0219fa98();
     extern s8 *gAiCommandState;
     s32 continues;
@@ -162,7 +162,7 @@ s32 ProcessAiCommandStep(void) {
             continues = ProcessAiCommandDelay();
             break;
         case 8:
-            continues = func_ov000_0219fa30();
+            continues = FinishAiUnitMove();
             break;
         case 9:
             continues = func_ov000_0219fa98();

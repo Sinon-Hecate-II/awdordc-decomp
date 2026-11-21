@@ -25,7 +25,7 @@ void func_ov003_021f35d8(void *arg0) {
 
 void func_ov003_021f35f8(void *arg0) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
-    s32 func_0208471c();
+    s32 IsSessionInError();
     s32 func_0208477c();
     s32 IsMapConfirmEnabled();
     M2C_UNK func_ov003_021f1bd4();
@@ -35,7 +35,7 @@ void func_ov003_021f35f8(void *arg0) {
         return;
     }
     func_ov003_021f1be8();
-    if ((func_0208471c() == 0) && (func_0208477c() == 0)) {
+    if ((IsSessionInError() == 0) && (func_0208477c() == 0)) {
         return;
     }
     SetSpriteAnimation(arg0, 5);

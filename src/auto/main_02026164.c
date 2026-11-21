@@ -14,30 +14,32 @@ if(ii>=keylen)ii=0;S[k]=sj;S[jj]=sk;
 k++;}while(k<256);
 }
 #pragma scheduling reset
+/* Run the RC4 keystream over len bytes: advance both S-box indices, swap the two
+ * S-box entries, and XOR each byte with the entry their sum names. */
 void RC4_Crypt(u8 *state, u8 *data, s32 len) {
     s32 n;
-    u8 j;
     u8 i;
-    u8 *S;
+    u8 j;
+    u8 *sbox;
 
-    S = state + 2;
-    j = state[0];
-    i = state[1];
+    sbox = state + RC4_SBOX;
+    i = state[RC4_INDEX_I];
+    j = state[RC4_INDEX_J];
     for (n = 0; n < len; n++) {
         u8 si;
         u8 sj;
         u8 k;
-        j = (u8)((j + 1) & 0xff);
-        si = S[j];
-        i = (u8)((i + si) & 0xff);
-        sj = S[i];
-        S[j] = sj;
-        S[i] = si;
+        i = (u8)((i + 1) & 0xff);
+        si = sbox[i];
+        j = (u8)((j + si) & 0xff);
+        sj = sbox[j];
+        sbox[i] = sj;
+        sbox[j] = si;
         k = (u8)((si + sj) & 0xff);
-        data[n] ^= S[k];
+        data[n] ^= sbox[k];
     }
-    state[0] = j;
-    state[1] = i;
+    state[RC4_INDEX_I] = i;
+    state[RC4_INDEX_J] = j;
 }
 
 s32 BigNumLen(u16 *arr, s32 n) {
@@ -87,13 +89,16 @@ void BigNumAdd(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     }
 }
 
+/* dst = src + carry over `len` 16-bit limbs: add the small carry into the low
+ * limbs, stopping as soon as it is absorbed, then copy the untouched higher
+ * limbs from src (the copy is skipped when dst aliases src). */
 void BigNumAddCarry(u16 *dst, u16 *src, u32 carry, s32 len) {
     s32 i = 0;
-    u32 s;
+    u32 sum;
     for (; i < len; i++) {
-        s = carry + src[i];
-        dst[i] = (u16)s;
-        carry = s >> 16;
+        sum = carry + src[i];
+        dst[i] = (u16)sum;
+        carry = sum >> 16;
         if (carry == 0) break;
     }
     if (dst == src) return;
@@ -145,6 +150,9 @@ void BigNumSub(u16 *dst, u16 *src1, u16 *src2, s32 len) {
     }
 }
 
+/* dst = src - borrow over `len` 16-bit limbs: subtract the incoming borrow
+ * (0 or 1) and propagate its borrow upwards, then copy the untouched high limbs
+ * unless dst aliases src. */
 void BigNumSubBorrow(u16 *dst, u16 *src, u32 borrow, s32 len) {
     s32 i = 0;
     u32 s;

@@ -51,32 +51,55 @@ if(func_020119dc((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(10);retu
 SetWhStatus(1);
 }
 
-s32 func_ov001_021888a8(s32 a,s32 b,s32 c){
-s32 func_ov001_02187bb0();
-do{
-if(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,64)!=1){
-SystemHalt();
-}
-}while(0);
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,4772)=384;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,4768)=224;
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_0219166c,M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,4772));
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_02191684,M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,4768));
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,68)=a;SetWhStatus(3);
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,12)=b;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,50)=c;
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,24)=GetGameGroupId();
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,52)=208;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,54)=68;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,16)=2;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,22)=0;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,18)=0;M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,14)=1;
-M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u16 *,20)=a==2;
-if(a==0||a==2||a==4)return func_ov001_02187bb0();
-if(M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0))M2C_FIELD(&gWhWork,void (**)(s32,void *,s32),0)(0x8000000,&data_ov001_021916cc,a);
-return 0;
-}
+#pragma peephole off
+s32 func_ov001_021888a8(s32 mode, s32 option, s32 channel) {
+    s32 func_ov001_02187bb0(void);
+    if (M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS) != WH_STATUS_IDLE) {
+        SystemHalt();
+    }
 
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x12A4) = 0x180;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x12A0) = 0xE0;
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)) {
+        M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(
+            WH_LOG_STATUS, &data_ov001_0219166c,
+            M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x12A4));
+    }
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)) {
+        M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(
+            WH_LOG_STATUS, &data_ov001_02191684,
+            M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x12A0));
+    }
+
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x44) = mode;
+    SetWhStatus(WH_STATUS_BUSY);
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x0C) = option;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x32) = channel;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x18) = GetGameGroupId();
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x34) = 0xD0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x36) = 0x44;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x10) = 2;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x16) = 0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x12) = 0;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x0E) = 1;
+    M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x14) = mode == 2;
+
+    if (mode == 0 || mode == 2 || mode == 4) {
+        return func_ov001_02187bb0();
+    }
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)) {
+        M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(
+            WH_LOG_STATUS, &data_ov001_021916cc, mode);
+    }
+    return 0;
+}
+#pragma peephole reset
 void func_ov001_02188a20(s32 arg0) {
     extern M2C_UNK gWhWork;
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x4C) = arg0;
 }
 
-void func_ov001_02188a34(s32 arg0) {
+void Ov001_GetPlayerData(s32 arg0) {
 extern M2C_UNK gWhWork;
 void func_02013aa8(void *, void *, s32);
 func_02013aa8((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x13E0,(u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x1C00,arg0);

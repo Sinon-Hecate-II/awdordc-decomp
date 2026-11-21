@@ -115,12 +115,12 @@ void HandleLinkTaskEvent(void *event) {
 s32 StartLinkTransfer(void) {
 void HandleLinkChannelEvent(void *); void HandleLinkTransferTaskEvent(void *);
 s32 WFC_SetChannelHandler(s32,void (*)(void *),s32);
-s32 func_02012b08(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
+s32 MultiBoot_StartLinkTask(void (*)(void *),M2C_UNK *,u16,M2C_UNK *,u16,s32);
 extern M2C_UNK gLinkState,gLinkTransferData,gLinkTransferExtra;
 if(WFC_SetChannelHandler(4,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 if(WFC_SetChannelHandler(12,HandleLinkChannelEvent,0)!=0) {SignalLinkError();return 0;}
 M2C_FIELD(&gLinkState,u8 *,0)=0;
-if(func_02012b08(HandleLinkTransferTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
+if(MultiBoot_StartLinkTask(HandleLinkTransferTaskEvent,&gLinkTransferData,(u16)M2C_FIELD(&gLinkState,u32 *,0x34),&gLinkTransferExtra,(u16)M2C_FIELD(&gLinkState,u32 *,0x14),1)==2)return 1;
 SignalLinkError();return 0;
 }
 
@@ -494,9 +494,9 @@ void func_ov009_02223f14(void *arg0) {
     SetLinkPhase(8);
 }
 
-void func_ov009_02223f34(s32 a) { extern M2C_UNK gLinkState; M2C_FIELD(&gLinkState,s32 *,0x108)=a; }
+void SetLinkDownloadCode(s32 a) { extern M2C_UNK gLinkState; M2C_FIELD(&gLinkState,s32 *,0x108)=a; }
 
-void func_ov009_02223f44(s32 src,u32 size){
+void SetLinkPlayerName(s32 src,u32 size){
  M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
  M2C_UNK MI_CpuFill8(void*,M2C_UNK,s32);
  extern M2C_UNK gLinkConnectionExtraData;
@@ -507,24 +507,27 @@ void func_ov009_02223f44(s32 src,u32 size){
 
 void func_ov009_02223f7c(s32 a,s32 b){
  void func_ov009_0222140c(void*,s32,s32);
- extern M2C_UNK data_ov009_02226a20,gLinkState,gLinkDownloadHeader;
- func_ov009_0222140c(&data_ov009_02226a20,a,b);
- M2C_FIELD(&gLinkState,void**,0x100)=&data_ov009_02226a20;
+ extern M2C_UNK gLinkLocalPlayerInfo,gLinkState,gLinkDownloadHeader;
+ func_ov009_0222140c(&gLinkLocalPlayerInfo,a,b);
+ M2C_FIELD(&gLinkState,void**,0x100)=&gLinkLocalPlayerInfo;
  M2C_FIELD(&gLinkDownloadHeader,u16*,4)=0x60;
 }
 
+/* Announce this console's player record to the link: the host first publishes its
+ * record as the download data, then, once the link is up, the local player's
+ * record is stored in its slot and broadcast as LINK_MSG_PLAYER_ANNOUNCE. */
 s32 AnnounceLinkPlayer(void){
  s32 IsLinkHost(void);
- s32 func_ov009_02224c70(void);
+ s32 PublishLinkPlayerRecord(void);
  s32 GetLinkPhase(void);
  s8 GetLinkLocalPlayerId(void);
- void func_ov009_02222278(s32,void*);
+ void SetLinkPlayerRecord(s32,void*);
  M2C_UNK QueueHostLinkPacket(s32,s32,s32,s32);
- extern M2C_UNK data_ov009_02226a20;
- if(IsLinkHost()){if(!func_ov009_02224c70())return 0;}
- if(GetLinkPhase()==4 || GetLinkPhase()==5){
- func_ov009_02222278(GetLinkLocalPlayerId(),&data_ov009_02226a20);
- QueueHostLinkPacket(11,(s32)&data_ov009_02226a20,0x60,0xffff);
+ extern M2C_UNK gLinkLocalPlayerInfo;
+ if(IsLinkHost()){if(!PublishLinkPlayerRecord())return 0;}
+ if(GetLinkPhase()==LINK_PHASE_ACTIVE || GetLinkPhase()==LINK_PHASE_INGAME){
+ SetLinkPlayerRecord(GetLinkLocalPlayerId(),&gLinkLocalPlayerInfo);
+ QueueHostLinkPacket(LINK_MSG_PLAYER_ANNOUNCE,(s32)&gLinkLocalPlayerInfo,LINK_PLAYER_ANNOUNCE_SIZE,0xffff);
  }return 1;
 }
 
@@ -542,8 +545,8 @@ void func_ov009_02224024(void) {
 }
 
 M2C_UNK *func_ov009_02224064(void) {
-    extern M2C_UNK data_ov009_02226a20;
-    return &data_ov009_02226a20;
+    extern M2C_UNK gLinkLocalPlayerInfo;
+    return &gLinkLocalPlayerInfo;
 }
 
 s32 GetActiveLinkPlayerSlot(s32 a){
@@ -622,7 +625,7 @@ s32 GetLinkPhase(void) {
 
 s32 GetLinkRequestKind(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,0x38);}
 
-s32 func_ov009_022241b4(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,12);}
+s32 GetLinkResultCode(void){extern M2C_UNK gLinkState;return M2C_FIELD(&gLinkState,s32*,12);}
 
 s32 func_ov009_022241c4(s32 arg0) {
     extern M2C_UNK gLinkState;

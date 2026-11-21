@@ -8,6 +8,8 @@
 
 #define MD5_BLOCK_SIZE  64 /* bytes of message per digest block */
 #define MD5_DIGEST_SIZE 16 /* bytes of a finished digest */
+#define MD5_LENGTH_BYTES 8 /* bytes of the message bit count appended after the padding */
+#define MD5_PAD_LIMIT   0x38 /* most message bytes that can share the last block with the count */
 
 typedef struct MD5Context {
     u32 state[4];   /* +0x00 chaining words a, b, c and d */

@@ -2,6 +2,15 @@
 #include "common.h"
 #include "ds3dsprite.h"
 typedef struct { s16 value; s8 mode; u8 low:4; u8 high:4; } SpriteAttribute0209;
+/* One map's progress record in gMapProgressRecords, indexed by mapId - 0xA1.
+ * Each field name gives its bit offset, low end first:
+ *   state (0-2)    "new" marker: 0 none, 1 newly unlocked, 2 seen,
+ *                  3 best score improved, 4 improvement acknowledged
+ *   field3 (3-6)   player slot the record was set for
+ *   field7 (7-16)  map/turn word
+ *   field17 (17-25) best score
+ *   field26 (26-28) rating rank before the last update
+ *   field29 (29-31) current rating rank (record >> 29) */
 typedef struct SpriteStateWord {
     u32 state : 3;
     u32 field3 : 4;
@@ -14,7 +23,7 @@ typedef struct SpriteStateWord {
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain;
 extern u8 gCarriedUnitIconTable[256];
-extern s32 data_0215d8a8[58];  // 232 bytes / 4
+extern s32 gMapProgressRecords[58];  // 232 bytes / 4
 extern s32 gSaveSlotSummary[2];   // 8 bytes / 4
 
 /* Draw one line of the text script `text` into the current screen engine's shared
@@ -69,7 +78,7 @@ func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
 
 #pragma scheduling on
 void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
-    void (*func_02091fb4(u32))(void);
+    void (*Get3DSpriteLayerDirtyMarker(u32))(void);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
 
@@ -89,7 +98,7 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x4b) = (u8)(arg2 & 0xFF);
     M2C_FIELD(arg0, u8 *, 0x54) = (s8)-1;
     M2C_FIELD(arg0, u8 *, 0x55) = 2;
-    M2C_FIELD(arg0, s32 *, 0x50) = (s32)func_02091fb4((u32)arg3);
+    M2C_FIELD(arg0, s32 *, 0x50) = (s32)Get3DSpriteLayerDirtyMarker((u32)arg3);
     {
         u32 temp_r0 = gCur3DSpriteEngine == g3DSpriteEngineMain ? 1u : 0u;
         temp_r0 = (s32)(u8)temp_r0;
@@ -564,34 +573,43 @@ void DrawCarriedUnitIcon(s32 slot, s32 x, s32 y, s32 tileBase, s32 priority) {
 }
 
 #pragma opt_propagation off
-void func_0209c7fc(void) {
- s32 i;
- SpriteStateWord *p;
- p=(SpriteStateWord *)data_0215d8a8; i=0;
- do {
- p->state=0;
- p->field3=0;
- p->field7=0;
- p->field17=0;
- p->field26=0;
- p->field29=0;
- p++; i++;
- } while(i<64);
- *(s32 *)((u8 *)&gSaveSlotSummary+8)=(*(s32 *)((u8 *)&gSaveSlotSummary+8)&~7)|1;
+/* Clears every map progress record back to its initial zero state and sets the
+ * low three bits of the save-slot summary status word (gSaveSlotSummary + 8) to
+ * 1, marking the progress as freshly reset. */
+void ResetMapProgress(void) {
+    s32 i;
+    SpriteStateWord *record;
+    record = (SpriteStateWord *) gMapProgressRecords;
+    i = 0;
+    do {
+        record->state = 0;
+        record->field3 = 0;
+        record->field7 = 0;
+        record->field17 = 0;
+        record->field26 = 0;
+        record->field29 = 0;
+        record++;
+        i++;
+    } while (i < 64);
+    *(s32 *) ((u8 *) &gSaveSlotSummary + 8) = (*(s32 *) ((u8 *) &gSaveSlotSummary + 8) & ~7) | 1;
 }
 #pragma opt_propagation reset
-void func_0209c868(void) {
-s32 i;
-SpriteStateWord *p;
-p=(SpriteStateWord *)data_0215d8a8;
-i=0;
-do {
-i++;
-if(p->state==1)p->state=2;
-if(p->state==3)p->state=4;
-p->field26=p->field29;
-p++;
-}while(i<64);
+/* When a map's view is closed, mark this session's map progress as seen: every
+ * record's "newly unlocked" state (1) and "score improved" state (3) advance to
+ * 2 and 4, and the current rating rank is latched into the previous-rank slot
+ * (field26 <- field29) so the map list stops flagging the change. */
+void AcknowledgeMapProgress(void) {
+    s32 i;
+    SpriteStateWord *record;
+    record = (SpriteStateWord *) gMapProgressRecords;
+    i = 0;
+    do {
+        i++;
+        if (record->state == 1) record->state = 2;
+        if (record->state == 3) record->state = 4;
+        record->field26 = record->field29;
+        record++;
+    } while (i < 64);
 }
 
 void func_0209c8d4(void) {
@@ -610,7 +628,7 @@ void func_0209c8d4(void) {
     extern M2C_UNK gCoState;
     extern M2C_UNK gCoPlayerSlots;
     extern s32 gSaveSlotSummary[2];
-    extern s32 data_0215d8a8[58];
+    extern s32 gMapProgressRecords[58];
     extern u16 gMapConfig;
     extern void **data_027e0058;
     s32 temp_r0_3;
@@ -651,7 +669,7 @@ void func_0209c8d4(void) {
                 break;
             }
             if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF)) {
-                SpriteStateWord *records = (SpriteStateWord *)data_0215d8a8;
+                SpriteStateWord *records = (SpriteStateWord *)gMapProgressRecords;
                 {
                     u16 score = M2C_FIELD(&gCoState, u16 *, 6);
                     if (score >= records[temp_r9].field17) {

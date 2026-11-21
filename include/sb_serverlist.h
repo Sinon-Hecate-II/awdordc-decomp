@@ -32,6 +32,9 @@
 #define SB_SLIST_STATE       0x00  /* s32: SB_SLIST_STATE_* */
 #define SB_SLIST_SERVERS     0x04  /* Vector *servers found so far */
 #define SB_SLIST_KEY_LIST    0x08  /* Vector *of SBServerListKey: the announced key schema */
+#define SB_SLIST_KEY_NAMES         0x84  /* s32[]: interned key names of the reply being parsed */
+#define SB_SLIST_KEY_NAME_COUNT    0x480 /* s32 entries used in SB_SLIST_KEY_NAMES */
+#define SB_SLIST_PENDING_KEY_COUNT 0x484 /* s32 keys the reply being parsed announced, -1 when none */
 #define SB_SLIST_GAMENAME    0x0c  /* char[] game name reported to the master */
 #define SB_SLIST_SECRETKEY   0x30  /* char[] secret key sent in the connect packet */
 #define SB_SLIST_GAMEVERSION 0x54  /* char[] game version reported to the master */
@@ -132,5 +135,6 @@ typedef struct QueryQueue {
 /* The QR2 reply parser's shared state (gQr2ParseState): wherever a reply is
  * split into backslash-separated fields, the tokenizer keeps its position here. */
 #define SB_QR2_PARSE_CURSOR 0x00 /* char *next character the field tokenizer reads */
+#define SB_QR2_PARSE_INTERN_TABLE 0x08 /* HashTable *the string intern table (GetStringInternTable) */
 
 #endif

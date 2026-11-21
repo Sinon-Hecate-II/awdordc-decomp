@@ -7,10 +7,6 @@
 #define OV001_CHOICE_CONFIRMED 0x00 /* u8: set once the player has confirmed an option */
 #define OV001_CHOICE_OPTION    0x01 /* u8: the option the player picked (0 or 1) */
 
-/* The Wi-Fi settings screen's two-choice message popup (gOv001MessageState). */
-#define OV001_MESSAGE_SHOWN  0x00 /* u8: nonzero while the popup is on screen */
-#define OV001_MESSAGE_OPTION 0x01 /* u8: the option the player picked (0 = the first one) */
-
 /* Step that leaves the Wi-Fi settings screen after its two-choice message popup:
  * once both fades and the icon row are idle it frees the page background, hides
  * the screen's planes (and, when the first option was picked, also frees the
@@ -394,14 +390,14 @@ s32 func_ov001_021796f8(void) {
 }
 
 void func_ov001_02179718(void) {
-    extern u8 data_ov001_02193d8c;
+    extern u8 gOv001WirelessState;
     void Ov001_LoadWirelessSetupBg(void);
     void func_ov001_02179820(void);
     M2C_UNK Ov001_LoadSaveSlotObjLayout();
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
     M2C_UNK Ov001_InitWirelessSetup();
-    M2C_FIELD(&data_ov001_02193d8c, u16 *, 2) = 0;
+    M2C_FIELD(&gOv001WirelessState, u16 *, 2) = 0;
     Ov001_LoadWirelessSetupBg();
     Ov001_LoadSaveSlotObjLayout();
     Ov001_ShowMessagePanel(0x36, -1, 0);
@@ -456,9 +452,9 @@ void func_ov001_021798b0(void) {
     s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
     void func_ov001_02179bd0(void);
     extern M2C_UNK func_ov001_021798f8;
-    extern u8 data_ov001_02193d8c;
+    extern u8 gOv001WirelessState;
     if (Ov001_GetIconRowSelection() == -2) return;
-    M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = Ov001_AddTask(1, &func_ov001_02179bd0, 0, 0x78);
+    M2C_FIELD(&gOv001WirelessState, s32 *, 4) = Ov001_AddTask(1, &func_ov001_02179bd0, 0, 0x78);
     Ov001_SetStepCallback(&func_ov001_021798f8);
 }
 
@@ -475,7 +471,7 @@ void func_ov001_021798f8(void) {
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     M2C_UNK Ov001_PlaySound(s32);
     M2C_UNK Ov001_LockIconRow(void);
-    extern u8 data_ov001_02193d8c;
+    extern u8 gOv001WirelessState;
     s32 pending;
     func_ov001_021799cc();
     func_ov001_02179a04();
@@ -484,22 +480,22 @@ void func_ov001_021798f8(void) {
     case 0:
         return;
     case 1:
-        pending = M2C_FIELD(&data_ov001_02193d8c, s32 *, 4);
+        pending = M2C_FIELD(&gOv001WirelessState, s32 *, 4);
         if (!pending) return;
-        M2C_FIELD(&data_ov001_02193d8c, u8 *, 0) = 1;
+        M2C_FIELD(&gOv001WirelessState, u8 *, 0) = 1;
         func_ov001_0218c94c(1, pending);
-        M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = 0;
+        M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179c38);
         return;
     case 2:
-        pending = M2C_FIELD(&data_ov001_02193d8c, s32 *, 4);
-        if (!M2C_FIELD(&data_ov001_02193d8c, s32 *, 4)) return;
+        pending = M2C_FIELD(&gOv001WirelessState, s32 *, 4);
+        if (!M2C_FIELD(&gOv001WirelessState, s32 *, 4)) return;
         Ov001_StopSound();
         Ov001_ShowMessage(12, 1, 1, -1, 0);
         Ov001_PlaySound(9);
         Ov001_LockIconRow();
-        func_ov001_0218c94c(1, M2C_FIELD(&data_ov001_02193d8c, s32 *, 4));
-        M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = 0;
+        func_ov001_0218c94c(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
+        M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
         Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179bec);
         return;
     }
@@ -521,68 +517,72 @@ void func_ov001_02179a04(void) {
 }
 
 void func_ov001_02179a08(void) {
-    extern u8 data_ov001_02193d8c;
+    extern u8 gOv001WirelessState;
     extern M2C_UNK func_ov001_02179c84;
     if (Ov001_GetIconRowSelection() != 0) return;
-    if (M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) == 0) return;
-    Ov001_PostTaskMessage(1, M2C_FIELD(&data_ov001_02193d8c, s32 *, 4));
-    M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) = 0;
+    if (M2C_FIELD(&gOv001WirelessState, s32 *, 4) == 0) return;
+    Ov001_PostTaskMessage(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
+    M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
     Ov001_LockIconRow();
     Ov001_SetStepCallback(&func_ov001_02179c84);
 }
 
 void func_ov001_02179a54(void) {
-    extern u8 data_ov001_02193d8c;
-    void func_ov001_02179a90(void);
+    extern u8 gOv001WirelessState;
+    void Ov001_FadeOutWirelessScreen(void);
     Ov001_LockIconRow();
-    if (M2C_FIELD(&data_ov001_02193d8c, s32 *, 4) != 0) {
-        func_ov001_0218c94c(1, M2C_FIELD(&data_ov001_02193d8c, s32 *, 4));
+    if (M2C_FIELD(&gOv001WirelessState, s32 *, 4) != 0) {
+        func_ov001_0218c94c(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
     }
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a90);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutWirelessScreen);
 }
 
-void func_ov001_02179a90(void) {
+/* Fade the local wireless (multi-card) setup screen out once the icon row's
+ * selection is locked: slide the icon row out (and fade its own panel too when no
+ * connection was made), fade out the setup screen, and continue to
+ * Ov001_CloseWirelessScreen. */
+void Ov001_FadeOutWirelessScreen(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern u8 data_ov001_02193d8c;
-    extern M2C_UNK func_ov001_02179af4;
+    extern u8 gOv001WirelessState;
+    extern M2C_UNK Ov001_CloseWirelessScreen;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    if (data_ov001_02193d8c == 0) {
+    if (M2C_FIELD(&gOv001WirelessState, u8 *, OV001_WIRELESS_CONNECTED) == 0) {
         Ov001_StartFade(3, 1, 1, 8);
     }
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_02179af4);
+    Ov001_SetStepCallback(&Ov001_CloseWirelessScreen);
 }
 
-void func_ov001_02179af4(void) {
-    extern u8 data_ov001_02193d8c;
+void Ov001_CloseWirelessScreen(void) {
+    extern u8 gOv001WirelessState;
     extern void func_ov001_02181a84(void);
     extern void func_ov001_02179cb4(void);
 
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
-    if (data_ov001_02193d8c == 0 && Ov001_IsFadeActive(1) != 0) {
+    if (gOv001WirelessState == 0 && Ov001_IsFadeActive(1) != 0) {
         return;
     }
     if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
 
-    func_ov001_021757d0(data_ov001_02193d8c != 0);
+    func_ov001_021757d0(gOv001WirelessState != 0);
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
 
-    if (data_ov001_02193d8c == 0) {
+    if (gOv001WirelessState == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
 
-    if (data_ov001_02193d8c == 0) {
+    if (gOv001WirelessState == 0) {
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(func_ov001_02181a84);
     } else {
@@ -626,12 +626,12 @@ void func_ov001_02179c18(void) {
 }
 
 void func_ov001_02179c38(void) {
-extern u8 data_ov001_02193d8c;
+extern u8 gOv001WirelessState;
 u8 *p;
 func_ov001_021799cc();
 func_ov001_02179a04();
 func_ov001_02179a08();
-p=&data_ov001_02193d8c;
+p=&gOv001WirelessState;
 M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,2)+1;
 if(M2C_FIELD(p,u16 *,2)<0x438U) return;
 Ov001_StopSound();
@@ -639,10 +639,10 @@ Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
 }
 
 void func_ov001_02179c84(void) {
-extern u8 data_ov001_02193d8c;
+extern u8 gOv001WirelessState;
 Ov001_StopSound();
 Ov001_PlaySound(7);
-data_ov001_02193d8c=0;
+gOv001WirelessState=0;
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
 }
 

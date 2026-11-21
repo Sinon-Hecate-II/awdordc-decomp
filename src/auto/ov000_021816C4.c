@@ -119,7 +119,7 @@ void RunAiRole5Action(void) {
     unit = M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT);
     if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_AI_STATE) << 28) >> 28) == 6) {
         if (((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26) == 25) {
-            func_ov000_0218cfec();
+            SelectUnitAttackTarget();
         }
         return;
     }

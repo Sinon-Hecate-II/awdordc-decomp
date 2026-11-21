@@ -167,8 +167,8 @@ void func_ov006_0221661c(void *spriteList) {
 void func_ov006_0221679c(void *arg0) {
  M2C_UNK func_02087e34(s32);
  M2C_UNK func_020b2140();
- M2C_UNK func_020b2178();
- func_020b2178();
+ M2C_UNK HideAllSpriteSlots();
+ HideAllSpriteSlots();
  func_02087e34(M2C_FIELD(arg0, s32 *, 0x40));
  func_020b2140();
 }
@@ -221,7 +221,7 @@ gCur3DSpriteEngine=g3DSpriteEngineSub;
 M2C_FIELD(arg0,void**,0x4c)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(arg0,void**,0x4c),u16*,0x3e)=320;
 w=M2C_FIELD(arg0,void**,0x4c);M2C_FIELD(w,u32*,0x40)=(M2C_FIELD(w,u32*,0x40)&~0x3fc0000)|0x180000;
-SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);Show3DSpriteSlide(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;func_020b2178();
+SetTextById(M2C_FIELD(arg0,void**,0x4c),0x4400000f);Show3DSpriteSlide(M2C_FIELD(arg0,void**,0x4c));gCur3DSpriteEngine=saved;HideAllSpriteSlots();
 }
 #pragma pop
 void func_ov006_02216bac(void) {
@@ -262,14 +262,14 @@ void CreateMapCodeEntryPanel(s32 selectedUnit) {
     void MI_CpuFill8(void *, s32, u32);
     void *MemAlloc(u32);
     void *HeapAllocBlock(u32);
-    extern M2C_UNK gHeapObjectVTable, data_ov006_022187f0, data_ov006_022188f8;
+    extern M2C_UNK gHeapObjectVTable, data_ov006_022187f0, gMapCodeEntryPanelVTable;
     void *obj, *child;
 
     obj = ((void *(*)(void *)) CreateSpriteObject)(&data_ov006_022187f0);
     if (obj == NULL) {
         return;
     }
-    M2C_FIELD(obj, void **, 0) = &data_ov006_022188f8;
+    M2C_FIELD(obj, void **, 0) = &gMapCodeEntryPanelVTable;
     M2C_FIELD(obj, s32 *, 0x34) = selectedUnit;
     M2C_FIELD(obj, u8 *, 0x38) = 0;
     M2C_FIELD(obj, s16 *, 0x3a) = -0x8000;
@@ -328,35 +328,39 @@ void CreateMapCodeEntryPanel(s32 selectedUnit) {
     M2C_FIELD(obj, void **, 0x48) = child;
 }
 
-void *func_ov006_02216da4(void *arg0) {
- M2C_UNK MemFree(void *);
- M2C_UNK HeapFreeBlock(s32);
- extern M2C_UNK data_ov006_022188f8;
- void *temp_r4;
- void *temp_r0;
- M2C_FIELD(arg0, void **, 0) = &data_ov006_022188f8;
- temp_r4 = M2C_FIELD(arg0, void **, 0x40);
- if (temp_r4 != NULL) {
- HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
- MemFree(temp_r4);
- }
- temp_r0 = M2C_FIELD(arg0, void **, 0x44);
- if (temp_r0 != NULL) {
- M2C_FIELD(M2C_FIELD(temp_r0, void **, 0), void (**)(void *), 4)(temp_r0);
- }
- temp_r0 = M2C_FIELD(arg0, void **, 0x48);
- if (temp_r0 != NULL) MemFree(temp_r0);
- MemFree(arg0);
- return arg0;
+/* The map-code entry panel's vtable free method: reset the vtable, free its grid
+ * child and the glyph heap block the grid owns, destroy its sub-panel, free its
+ * sprite and then free the panel itself. */
+void *FreeMapCodeEntryPanel(void *panel) {
+    M2C_UNK MemFree(void *);
+    M2C_UNK HeapFreeBlock(s32);
+    extern M2C_UNK gMapCodeEntryPanelVTable;
+    void *child;
+    void *sub;
+
+    M2C_FIELD(panel, void **, 0) = &gMapCodeEntryPanelVTable;
+    child = M2C_FIELD(panel, void **, MAP_CODE_PANEL_GRID);
+    if (child != NULL) {
+        HeapFreeBlock(M2C_FIELD(child, s32 *, 0x14));
+        MemFree(child);
+    }
+    sub = M2C_FIELD(panel, void **, MAP_CODE_PANEL_SUBPANEL);
+    if (sub != NULL) {
+        M2C_FIELD(M2C_FIELD(sub, void **, 0), void (**)(void *), 4)(sub);
+    }
+    sub = M2C_FIELD(panel, void **, MAP_CODE_PANEL_SPRITE);
+    if (sub != NULL) MemFree(sub);
+    MemFree(panel);
+    return panel;
 }
 
-void *func_ov006_02216e0c(void *arg0) {
+void *DestroyMapCodeEntryPanel(void *arg0) {
  M2C_UNK MemFree(void *);
  M2C_UNK HeapFreeBlock(s32);
- extern M2C_UNK data_ov006_022188f8;
+ extern M2C_UNK gMapCodeEntryPanelVTable;
  void *temp_r4;
  void *temp_r0;
- M2C_FIELD(arg0, void **, 0) = &data_ov006_022188f8;
+ M2C_FIELD(arg0, void **, 0) = &gMapCodeEntryPanelVTable;
  temp_r4 = M2C_FIELD(arg0, void **, 0x40);
  if (temp_r4 != NULL) {
  HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
@@ -420,7 +424,7 @@ void func_ov006_02216f30(void) {
 void SyncLinkCampaignMapPages(void *panel) {
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, s32);
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
-    M2C_UNK func_02085724(void *, s32, s32, void *);
+    M2C_UNK CreateLinkPlayerDataListener(void *, s32, s32, void *);
     M2C_UNK func_020c8e40();
     s32 pageBase;
     u8 local;
@@ -432,7 +436,7 @@ void SyncLinkCampaignMapPages(void *panel) {
         pageBase = M2C_FIELD(panel, s32 *, MAP_TRANSFER_PANEL_PAGE0);
         MI_CpuCopy32(pageBase, (s32)((s32 (*)[21])pageBase + local * 0x32), 0x1068);
     }
-    func_02085724((void *)((u8 *)panel + MAP_TRANSFER_PANEL_PAGES), M2C_FIELD((u8 *)panel + M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_LOCAL) * 4, s32 *, MAP_TRANSFER_PANEL_PAGES), 0x1068, panel);
+    CreateLinkPlayerDataListener((void *)((u8 *)panel + MAP_TRANSFER_PANEL_PAGES), M2C_FIELD((u8 *)panel + M2C_FIELD(panel, u8 *, MAP_TRANSFER_PANEL_LOCAL) * 4, s32 *, MAP_TRANSFER_PANEL_PAGES), 0x1068, panel);
 }
 
 /* Syncs the battle map chosen in a link/online session among the players: the map

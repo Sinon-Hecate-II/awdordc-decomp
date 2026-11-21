@@ -369,10 +369,13 @@ s32 FindBestCandidateInGroup(s32 targetType, s32 targetGroup) {
     return bestIndex;
 }
 
-s32 func_ov000_021a64c4(void) { extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates; 
-u8 *p; s32 i; s32 best; s32 result; s8 value;
-best=0; result=-1; p=(u8 *)&gAiTargetCandidates;
-for(i=0;i<*gAiState;i++,p+=12) { if((u32)p[3]<0xFCU ) { value=(s8)p[5]; if(best < (s32)value) {best=value;result=i;} } } return result; }
+/* Return the index of the usable AI target candidate with the highest
+   AI_CANDIDATE_UNIT_BALANCE (friendly minus enemy units that can reach its tile),
+   or -1 when no candidate has a positive balance. */
+s32 FindTargetCandidateByUnitBalance(void) { extern u8 *gAiState; extern M2C_UNK gAiTargetCandidates;
+u8 *candidate; s32 i; s32 best; s32 result; s8 balance;
+best=0; result=-1; candidate=(u8 *)&gAiTargetCandidates;
+for(i=0;i<*gAiState;i++,candidate+=AI_CANDIDATE_STRIDE) { if((u32)candidate[AI_CANDIDATE_STATUS]<AI_CANDIDATE_REJECTED) { balance=(s8)candidate[AI_CANDIDATE_UNIT_BALANCE]; if(best < (s32)balance) {best=balance;result=i;} } } return result; }
 
 #pragma opt_lifetimes off
 /* Pick a target candidate of `type` (4 = any type) from the AI's best-scoring

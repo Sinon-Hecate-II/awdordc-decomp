@@ -36,10 +36,14 @@ void Sound_InitVoices(void) {
     }
 }
 
-void func_0202aeb4(void) {
+/* Per-frame driver voice update (func_0202a9f0): start each pending voice once
+ * its start command has been processed by the ARM7, drop voices whose hardware
+ * channel the ARM7 no longer reports, fold the channel, voice and envelope levels
+ * into each voice's channel volume and release the voices whose fade-out ended. */
+void Sound_UpdateVoices(void) {
     s32 func_02009800(void);
     void *ListNext(void *, s32);
-    s32 func_02009524(void *);
+    s32 Sound_IsCommandReached(void *);
     M2C_UNK func_02008c38(u8, s32);
     void func_02008c18(u8);
     void Sound_RecycleVoice(void *);
@@ -48,69 +52,65 @@ void func_0202aeb4(void) {
     s32 IsFadeDone(void *);
     void Sound_ReleaseVoice(void *);
     extern M2C_UNK gActiveVoices;
-    extern s16 data_020e9ca0[];
-    s32 r11;
-    void *r6;
-    void *r7;
-    s32 r4;
-    r11 = func_02009800();
-    r6 = ListNext(&gActiveVoices, 0);
-    if (r6 == 0) {
+    extern s16 gSoundVoiceVolumeTable[];
+    s32 channelStatus;
+    void *voice;
+    void *nextVoice;
+    s32 volumeFloor;
+    channelStatus = func_02009800();
+    voice = ListNext(&gActiveVoices, 0);
+    if (voice == 0) {
         return;
     }
-    r4 = -0x8000;
+    volumeFloor = -0x8000;
     do {
-        r7 = ListNext(&gActiveVoices, r6);
-        if (*(u8 *)((u8 *)r6 + 0x2D) == 0) {
-            if (func_02009524(*(void **)((u8 *)r6 + 0x30))) {
-                *(u8 *)((u8 *)r6 + 0x2D) = 1;
+        nextVoice = ListNext(&gActiveVoices, voice);
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STARTED) == 0) {
+            if (Sound_IsCommandReached(M2C_FIELD(voice, void **, SOUND_VOICE_START_MARK))) {
+                M2C_FIELD(voice, u8 *, SOUND_VOICE_STARTED) = 1;
             }
-            if (*(u8 *)((u8 *)r6 + 0x2D) == 0) {
-                goto tail;
-            }
-            if (r11 & (1 << *(u8 *)((u8 *)r6 + 0x3C))) {
-                goto tail;
-            }
-            Sound_RecycleVoice(r6);
+        }
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STARTED) != 0 &&
+            !(channelStatus & (1 << M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL)))) {
+            Sound_RecycleVoice(voice);
             goto next;
         }
-        AdvanceFade((u8 *)r6 + 0x1C);
+        AdvanceFade((u8 *)voice + SOUND_VOICE_ENVELOPE);
         {
-            void *four = *(void **)((u8 *)r6 + 0x04);
-            u8 v41 = *(u8 *)((u8 *)r6 + 0x41);
-            u8 fi  = *(u8 *)((u8 *)four + 0x20);
-            u8 v40 = *(u8 *)((u8 *)r6 + 0x40);
-            s32 r8v = data_020e9ca0[v41];
-            s32 r10 = data_020e9ca0[fi];
-            s32 r9v = data_020e9ca0[v40];
-            s32 ef = GetFadeValue((u8 *)r6 + 0x1C);
-            s32 r89 = r9v + r8v;
-            s32 pef = data_020e9ca0[ef >> 8];
-            s32 r10r = r10 + r89;
-            s32 r8final = pef + r10r;
-            if (r8final < r4) {
-                r8final = r4;
-            } else if (r8final > 0x7FFF) {
-                r8final = 0x7FFF;
+            void *channelBase = M2C_FIELD(voice, void **, SOUND_VOICE_CHANNEL_BASE);
+            u8 expression = M2C_FIELD(voice, u8 *, SOUND_VOICE_EXPRESSION);
+            u8 channelVolume = M2C_FIELD(channelBase, u8 *, SOUND_CHANNEL_VOLUME);
+            u8 volume = M2C_FIELD(voice, u8 *, SOUND_VOICE_VOLUME);
+            s32 expressionValue = gSoundVoiceVolumeTable[expression];
+            s32 volumeValue = gSoundVoiceVolumeTable[volume];
+            s32 channelValue = gSoundVoiceVolumeTable[channelVolume];
+            s32 envelope = GetFadeValue((u8 *)voice + SOUND_VOICE_ENVELOPE);
+            s32 voiceValue = volumeValue + expressionValue;
+            s32 envelopeValue = gSoundVoiceVolumeTable[envelope >> 8];
+            s32 total = channelValue + voiceValue;
+            s32 newVolume = envelopeValue + total;
+            if (newVolume < volumeFloor) {
+                newVolume = volumeFloor;
+            } else if (newVolume > 0x7FFF) {
+                newVolume = 0x7FFF;
             }
-            if (r8final != *(s16 *)((u8 *)r6 + 0x3E)) {
-                func_02008c38(*(u8 *)((u8 *)r6 + 0x3C), r8final);
-                *(s16 *)((u8 *)r6 + 0x3E) = (s16) r8final;
-            }
-        }
-        if (*(u8 *)((u8 *)r6 + 0x2C) == 2) {
-            if (IsFadeDone((u8 *)r6 + 0x1C)) {
-                Sound_ReleaseVoice(r6);
+            if (newVolume != M2C_FIELD(voice, s16 *, SOUND_VOICE_LAST_VOLUME)) {
+                func_02008c38(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), newVolume);
+                M2C_FIELD(voice, s16 *, SOUND_VOICE_LAST_VOLUME) = (s16) newVolume;
             }
         }
-    tail:
-        if (*(u8 *)((u8 *)r6 + 0x2F)) {
-            func_02008c18(*(u8 *)((u8 *)r6 + 0x3C));
-            *(u8 *)((u8 *)r6 + 0x2F) = 0;
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) == 2) {
+            if (IsFadeDone((u8 *)voice + SOUND_VOICE_ENVELOPE)) {
+                Sound_ReleaseVoice(voice);
+            }
+        }
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING)) {
+            func_02008c18(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
+            M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING) = 0;
         }
     next:
-        r6 = r7;
-    } while (r7 != 0);
+        voice = nextVoice;
+    } while (nextVoice != 0);
 }
 
 /* Gives a player a driver voice on one of its channels: detaches the voice the
@@ -156,7 +156,7 @@ func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_F
 func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
 }
 
-void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void func_0202b40c(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}func_0202eed8(a+28,0,b);func_0202b40c(a,0);M2C_FIELD(a,u8 *,44)=2;}
+void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void Sound_SetVoicePriority(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}func_0202eed8(a+28,0,b);Sound_SetVoicePriority(a,0);M2C_FIELD(a,u8 *,44)=2;}
 
 void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *ListNext();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=ListNext(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
 
@@ -174,9 +174,9 @@ void func_0202b1ac(void *arg0) {
     func_0202eed8(arg0 + 0x1C, 0x7F00, 1);
 }
 
-M2C_UNK Sound_InsertChannelVoice(M2C_UNK *a,void *b){void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}func_02029d18(a,p,b);M2C_FIELD(b,void **,4)=a;}
+M2C_UNK Sound_InsertChannelVoice(M2C_UNK *a,void *b){void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}ListInsertBefore(a,p,b);M2C_FIELD(b,void **,4)=a;}
 
-M2C_UNK func_0202b244(void *a){extern M2C_UNK gActiveVoices;void *ListNext();M2C_UNK func_02029d18();void *p=ListNext(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(&gActiveVoices,p);}func_02029d18(&gActiveVoices,p,a);}
+M2C_UNK Sound_InsertActiveVoice(void *a){extern M2C_UNK gActiveVoices;void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(&gActiveVoices,p);}ListInsertBefore(&gActiveVoices,p,a);}
 
 void Sound_ReleaseVoice(void *arg0) {
     M2C_UNK func_02008bd0(u8);
@@ -188,7 +188,27 @@ void Sound_ReleaseVoice(void *arg0) {
     Sound_RecycleVoice(arg0);
 }
 
-void *Sound_AllocVoice(s32 a){void *ListNext();M2C_UNK ListRemove();M2C_UNK func_0202b244(void *);extern M2C_UNK gFreeVoices,gActiveVoices;void *p=ListNext(&gFreeVoices,0);if(!p){p=ListNext(&gActiveVoices,0);if(a<M2C_FIELD(p,u8 *,61))return 0;Sound_ReleaseVoice(p);}ListRemove(&gFreeVoices,p);M2C_FIELD(p,u8 *,61)=a;func_0202b244(p);return p;}
+/* Take a voice of at least `priority`: the first free voice, or the lowest-priority
+ * active voice when none is free (which is released for reuse).  Returns the voice
+ * with its priority set, or NULL when every active voice outranks the request. */
+void *Sound_AllocVoice(s32 priority) {
+    void *ListNext();
+    M2C_UNK ListRemove();
+    M2C_UNK Sound_InsertActiveVoice(void *);
+    void Sound_ReleaseVoice(void *);
+    extern M2C_UNK gFreeVoices, gActiveVoices;
+    void *voice = ListNext(&gFreeVoices, 0);
+
+    if (!voice) {
+        voice = ListNext(&gActiveVoices, 0);
+        if (priority < M2C_FIELD(voice, u8 *, SOUND_VOICE_PRIORITY)) return 0;
+        Sound_ReleaseVoice(voice);
+    }
+    ListRemove(&gFreeVoices, voice);
+    M2C_FIELD(voice, u8 *, SOUND_VOICE_PRIORITY) = priority;
+    Sound_InsertActiveVoice(voice);
+    return voice;
+}
 
 /* Detaches a driver voice from its player and channel and returns it to the
  * free voice list, marked free: the player forgets the voice, the voice leaves
@@ -235,23 +255,26 @@ void Sound_FreeChannelHeap(void *arg0) {
     ListRemove((M2C_FIELD(arg0, s32 *, 0x10) * 0x24) + (s32) &gSoundChannels + 0xC, arg0);
 }
 
-void func_0202b40c(void *arg0, s8 arg1) {
+/* Give a voice a new priority: detach it from its channel's voice list and the
+ * active-voice list, store the priority, then re-insert it into both lists in
+ * priority order. */
+void Sound_SetVoicePriority(void *voice, s8 priority) {
     M2C_UNK Sound_InsertChannelVoice(M2C_UNK *, void *);
-    M2C_UNK func_0202b244(void *);
+    M2C_UNK Sound_InsertActiveVoice(void *);
     extern M2C_UNK gActiveVoices;
-    M2C_UNK *temp_r4;
+    M2C_UNK *channel;
 
-    temp_r4 = M2C_FIELD(arg0, M2C_UNK **, 4);
-    if (temp_r4 != NULL) {
-        ListRemove(temp_r4, arg0);
-        M2C_FIELD(arg0, M2C_UNK **, 4) = NULL;
+    channel = M2C_FIELD(voice, M2C_UNK **, SOUND_VOICE_CHANNEL_BASE);
+    if (channel != NULL) {
+        ListRemove(channel, voice);
+        M2C_FIELD(voice, M2C_UNK **, SOUND_VOICE_CHANNEL_BASE) = NULL;
     }
-    ListRemove(&gActiveVoices, arg0);
-    M2C_FIELD(arg0, s8 *, 0x3D) = arg1;
-    if (temp_r4 != NULL) {
-        Sound_InsertChannelVoice(temp_r4, arg0);
+    ListRemove(&gActiveVoices, voice);
+    M2C_FIELD(voice, s8 *, SOUND_VOICE_PRIORITY) = priority;
+    if (channel != NULL) {
+        Sound_InsertChannelVoice(channel, voice);
     }
-    func_0202b244(arg0);
+    Sound_InsertActiveVoice(voice);
 }
 
 /* Initialise a sound player object: set up the playing-voice list on first use,
@@ -360,7 +383,7 @@ s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelByte
     M2C_FIELD(player, s32 *, SOUND_PLAYER_SEGMENT_CB) = segmentCallback;
     M2C_FIELD(player, s32 *, SOUND_PLAYER_CB_ARG) = callbackArg;
     M2C_FIELD(player, s32 *, SOUND_PLAYER_CURRENT_SEGMENT) = 0;
-    M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL) = 0;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_VOLUME) = 0;
     M2C_FIELD(player, u32 *, SOUND_PLAYER_FLAGS) = (M2C_FIELD(player, u32 *, SOUND_PLAYER_FLAGS) & ~1u) | 1u;
 
     irqState = OS_DisableInterrupts();
@@ -394,7 +417,24 @@ s32 func_0202b70c(void *arg0) {
 
 void Sound_StopIfPlaying(void *a){void Sound_StopVoice(void *);if(((s32)(M2C_FIELD(a,u32 *,36)<<31)>>31)==0)return;Sound_StopVoice(a);}
 
-void func_0202b77c(void *a,s32 b){s32 SND_CalcVolume(s32);s32 ch;s32 r,i;M2C_FIELD(a,s32 *,60)=b;i=0;if(M2C_FIELD(a,s32 *,72)<=0)return;do{ch=M2C_FIELD(a+i,u8 *,76);r=SND_CalcVolume(M2C_FIELD(a,s32 *,60)+gSoundChannelSampleState[ch*2+1]);func_02008dfc(1<<ch,r&255,r>>8);i++;}while(i<M2C_FIELD(a,s32 *,72));}
+/* Set the player's volume and write it to each of the player's channels: compute
+ * each channel's hardware volume from the player volume plus the channel's own
+ * level and send it to the ARM7. */
+void Sound_SetPlayerVolume(void *player, s32 volume) {
+    s32 SND_CalcVolume(s32);
+    s32 channel;
+    s32 value;
+    s32 i;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_VOLUME) = volume;
+    i = 0;
+    if (M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT) <= 0) return;
+    do {
+        channel = M2C_FIELD(player + i, u8 *, SOUND_PLAYER_NOTES);
+        value = SND_CalcVolume(M2C_FIELD(player, s32 *, SOUND_PLAYER_VOLUME) + gSoundChannelSampleState[channel * 2 + 1]);
+        func_02008dfc(1 << channel, value & 255, value >> 8);
+        i++;
+    } while (i < M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT));
+}
 
 #pragma opt_common_subs off
 void func_0202b7e8(void *a,register s32 b,s32 c){

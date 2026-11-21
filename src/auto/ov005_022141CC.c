@@ -76,7 +76,7 @@ gCur3DSpriteEngine=saved;
  * the 2x2 icon that marks a completed record. */
 void RecordsMenu_DrawRow(s32 row,s32 record) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK gRecordsMenuState;
-s32 RecordsMenu_IsRecordAvailable(s32); void *func_020ad570(s32);
+s32 RecordsMenu_IsRecordAvailable(s32); void *RecordsMenu_GetRecord(s32);
 void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
 void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
 void FillTileRect(void *,s32,s32,u16,s32);
@@ -84,7 +84,7 @@ s32 mode; u32 color; s32 barTile; void *saved; u16 iconTile;
 barTile=(row+1)*50+0x134;saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(RecordsMenu_IsRecordAvailable(record)) {
-color=M2C_FIELD(func_020ad570(record),u32 *,4);
+color=M2C_FIELD(RecordsMenu_GetRecord(record),u32 *,4);
 if(RECORDS_SCREEN->highlighted==record)mode=9;else mode=0;
 } else {color=0x43000000; mode=3;}
 DrawTilemapNumber(3,(s16)(row+3),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),record+1,0x2000,mode);
@@ -155,7 +155,7 @@ extern M2C_UNK gRecordsMenuState,data_ov005_02220658,data_ov005_02220670,data_ov
 extern s16 gRecordMainBgId[];
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void func_020816a4(void *,s32,s32,s32);void func_0208161c(void *,s32,s32,s32);
 void CloseNarcArchive(void);void SetFileDirectory(void *);void func_ov005_022140e4(void);
-void *func_020ad460(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
+void *BuildMapBackgroundNarcName(s32);void *func_020ad4a0(s32);void *func_020ad4e0(s32);void *func_020ad520(s32);
 void *saved=(unsigned short)gCur3DSpriteEngine; void *engine=*(void *volatile *)&g3DSpriteEngineMain; void *p=M2C_FIELD(&gRecordsMenuState,void **,8);s32 id;
 gCur3DSpriteEngine=engine;
 if(M2C_FIELD(p,s16 *,2)==-1 || (id=gRecordMainBgId[M2C_FIELD((u8 *)p+M2C_FIELD(p,s16 *,2)*2,s16 *,6)*2])==-1) {
@@ -165,7 +165,7 @@ func_020816a4(&data_ov005_02220688,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c),0,0)
 func_0208161c(&data_ov005_022206a0,3,0,0x200);CloseNarcArchive();
 } else {
 SetFileDirectory(&data_ov005_022206b8);
-OpenNarcArchive(func_020ad460(id));
+OpenNarcArchive(BuildMapBackgroundNarcName(id));
 LoadNarcFileDecompressed(func_020ad4a0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18));
 LoadNarcFileDecompressed(func_020ad4e0(id),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c));
 func_0208161c(func_020ad520(id),3,0,0x200);CloseNarcArchive();
@@ -186,7 +186,7 @@ void func_ov005_02214cdc(void) {
     void func_020816a4(void *, s32, s32, s32);
     void func_0208161c(void *, s32, s32, s32);
     void SetFileDirectory(void *);
-    void *func_020ad460(s32);
+    void *BuildMapBackgroundNarcName(s32);
     void *func_020ad4a0(s32);
     void *func_020ad4e0(s32);
     void *func_020ad520(s32);
@@ -208,7 +208,7 @@ void func_ov005_02214cdc(void) {
     } else {
         s32 id = gRecordSubBgId[M2C_FIELD(p + M2C_FIELD(p, s16 *, 2) * 2, s16 *, 6) * 2];
         SetFileDirectory(&data_ov005_02220714);
-        OpenNarcArchive(func_020ad460(id));
+        OpenNarcArchive(BuildMapBackgroundNarcName(id));
         LoadNarcFileDecompressed(func_020ad4a0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
         LoadNarcFileDecompressed(func_020ad4e0(id), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
         func_0208161c(func_020ad520(id), 3, 0, 512);
@@ -247,13 +247,13 @@ RECORDS_SCREEN->listCursor=0;
 }
 
 void func_ov005_02214f80(s32 a) {
-void *func_020ad570(s32);
+void *RecordsMenu_GetRecord(s32);
 extern M2C_UNK gRecordsMenuState;
-func_020901e0(M2C_FIELD(func_020ad570(a),s32 *,0));
+StartMusicTrack(M2C_FIELD(RecordsMenu_GetRecord(a),s32 *,0));
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=a;
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)==0)
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=-1;
-else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=M2C_FIELD(func_020ad570(a),s32 *,8)+0x258;
+else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)=M2C_FIELD(RecordsMenu_GetRecord(a),s32 *,8)+0x258;
 RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));
 }
 

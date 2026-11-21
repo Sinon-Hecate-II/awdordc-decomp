@@ -4,7 +4,7 @@
 typedef struct { u16 values[6]; } SetupParams12;
 
 void func_020d8bb4(void) {
-M2C_UNK func_0208349c(u32);
+M2C_UNK SetTextMode(u32);
 s32 func_020bee64();
 s32 func_020bf054(s32,s32);
 M2C_UNK func_020ceec8();
@@ -18,7 +18,7 @@ u16 flags; u32 mode;
 flags=data_02168f14;
 mode=M2C_FIELD(&data_0215d9b8,u16 *,6)&15;
 data_02168f14=(flags&~7)|3;
-func_0208349c(mode);
+SetTextMode(mode);
 func_020ceec8();
 i=0;p=&data_02168f2c;
 do {i++;*p=0;p+=1;}while(i<59);
@@ -64,34 +64,38 @@ void func_020d8cfc(void) {
 
 u8 func_020d8d00(void) {
     s32 FindObjectByClass(void *);
-    extern M2C_UNK data_0212c534;
+    extern M2C_UNK gSubScreenUiClass;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *temp_r4;
     u8 var_r0;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (FindObjectByClass(&data_0212c534) != 0) var_r0 = 1;
+    if (FindObjectByClass(&gSubScreenUiClass) != 0) var_r0 = 1;
     else var_r0 = 0;
     gCur3DSpriteEngine = temp_r4;
     return var_r0;
 }
 
-void func_020d8d48(M2C_UNK arg0, M2C_UNK arg1) {
+/* Starts the sub-screen UI (UI mode 3) for the requested mode: record the mode and
+ * its parameter, clear the previous and current mode, create the sub-screen's
+ * sprite on the sub engine and put the old engine back. */
+void StartSubScreenUi(M2C_UNK mode, M2C_UNK param) {
     M2C_UNK CreateSpriteFromClass(void *, s32);
     extern void *gUiMode;
-    extern M2C_UNK data_0212c534;
+    extern M2C_UNK gSubScreenUiClass;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    M2C_FIELD(gUiMode, s32 *, 8) = arg1;
-    temp_r4 = gCur3DSpriteEngine;
+    void *savedEngine;
+
+    ((UiModeState *)gUiMode)->param = param;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    M2C_FIELD(gUiMode, s16 *, 0) = 0;
-    M2C_FIELD(gUiMode, s16 *, 2) = 0;
-    M2C_FIELD(gUiMode, s16 *, 4) = arg0;
-    CreateSpriteFromClass(&data_0212c534, 8);
-    gCur3DSpriteEngine = temp_r4;
+    ((UiModeState *)gUiMode)->previous = 0;
+    ((UiModeState *)gUiMode)->current = 0;
+    ((UiModeState *)gUiMode)->requested = mode;
+    CreateSpriteFromClass(&gSubScreenUiClass, 8);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 /* Whether the UI mode switch is still in progress: busy while the screen change
@@ -115,7 +119,7 @@ u8 IsUiModeSwitchBusy(void) {
     return busy;
 }
 
-void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK data_0212c534;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&data_0212c534);gCur3DSpriteEngine=p;}
+void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK gSubScreenUiClass;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&gSubScreenUiClass);gCur3DSpriteEngine=p;}
 
 void func_020d8e70(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;M2C_FIELD(gUiMode,s16 *,6)=M2C_FIELD(gUiMode,s16 *,2);p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(3,M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
 
@@ -255,13 +259,13 @@ CreateSpriteObject(*(M2C_UNK **)((u8*)&data_0212c4f8+M2C_FIELD(gUiMode,s16 *,2)*
 }
 
 void CreateSubScreenUi(void) {
-    void func_020d8d48(M2C_UNK, M2C_UNK);
-    func_020d8d48(1, 0);
+    void StartSubScreenUi(M2C_UNK, M2C_UNK);
+    StartSubScreenUi(1, 0);
 }
 
 void func_020d93a8(void) {
 extern void *gUiMode;
-func_020d8d48(M2C_FIELD(gUiMode,s16 *,2),M2C_FIELD(gUiMode,s32 *,8));
+StartSubScreenUi(M2C_FIELD(gUiMode,s16 *,2),M2C_FIELD(gUiMode,s32 *,8));
 }
 
 void func_020d93c8(void) {

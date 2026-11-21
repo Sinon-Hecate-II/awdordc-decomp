@@ -337,7 +337,7 @@ void GX_SetBlendY(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s16 *, 4) = (s16) arg1;
 }
 
-void func_02003a54(s32 a){void func_02004e44(s32);*(volatile s32 *)0x4000400=0x16;func_02004e44(a);}
+void GX_LoadMatrix4x4(s32 a){void func_02004e44(s32);*(volatile s32 *)0x4000400=0x16;func_02004e44(a);}
 
 void func_02003a70(s32 a) {
 void func_02004e20(s32);
@@ -489,13 +489,17 @@ void func_02003f24(s32 arg0) {
     *(s32 *)0x04000010 = arg0;
 }
 
-void GX_SetOrthoProjection(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,s32 *p){
-void func_02001dac(s32,s32,s32,s32,s32,s32,s32,s32*);
-s32 tmp[16];
-if(!p)p=tmp;
-func_02001dac(a,b,c,d,e,f,g,p);
-if(!h)return;
-*(volatile s32*)0x4000440=0;
-func_02003a54((s32)p);
+/* Builds the orthographic projection matrix for the given top/bottom, left/right
+ * and near/far bounds, scaled by the 12.12 factor `scale`, and, when `load` is
+ * set, loads it into the geometry engine's projection matrix stack (matrix mode
+ * 0).  A NULL `matrix` uses a scratch buffer. */
+void GX_SetOrthoProjection(s32 top,s32 bottom,s32 left,s32 right,s32 near,s32 far,s32 scale,s32 load,s32 *matrix){
+void GX_BuildOrthoMatrix(s32,s32,s32,s32,s32,s32,s32,s32*);
+s32 tempMatrix[16];
+if(!matrix)matrix=tempMatrix;
+GX_BuildOrthoMatrix(top,bottom,left,right,near,far,scale,matrix);
+if(!load)return;
+REG_GX_MTX_MODE = 0;
+GX_LoadMatrix4x4((s32)matrix);
 }
 

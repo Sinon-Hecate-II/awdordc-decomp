@@ -119,10 +119,10 @@ void func_ov003_021f2860(s32 arg0) {
 #pragma optimization_level 2
 void func_ov003_021f2878(s32 entry) {
     s32 IsLinkSessionActive(void);
-    s32 func_0208471c(void);
+    s32 IsSessionInError(void);
     s32 GetActiveOverlay(void);
-    void func_ov009_022244ec(M2C_UNK);
-    s32 func_ov009_02224508(M2C_UNK);
+    void SetLinkResultFlag(M2C_UNK);
+    s32 IsLinkResultFlagSet(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     void SetOnlineSessionFlag(M2C_UNK);
     M2C_UNK func_ov010_02228314(M2C_UNK *, M2C_UNK *);
@@ -151,11 +151,11 @@ void func_ov003_021f2878(s32 entry) {
     }
 ready:
     if (M2C_FIELD(entry,u8 *,0x45) || M2C_FIELD(entry,u8 *,0x46)) return;
-    if (func_0208471c() != 0) {
+    if (IsSessionInError() != 0) {
         s32 sw = GetActiveOverlay();
         switch (sw) { case 1:
-            if (func_ov009_02224508(1) == 0) {
-                func_ov009_022244ec(1);
+            if (IsLinkResultFlagSet(1) == 0) {
+                SetLinkResultFlag(1);
                 M2C_FIELD(entry, u8 *, 0x45) = 1;
             }
         break; case 2:
@@ -183,9 +183,9 @@ tail:
 /* Attempt to start a contextual action (overlay-dependent); returns 1 if one was started. */
 s32 func_ov003_021f2a9c(s32 entry) {
     s32 IsLinkSessionActive(void);
-    s32 func_0208b5a8(void);
+    s32 IsTextLayerActive(void);
     s32 GetActiveOverlay(void);
-    s32 func_ov009_022241b4(void);
+    s32 GetLinkResultCode(void);
     void CreateLinkStatusLabel(s32, s32, s32, void *);
     s32 func_ov010_02228314(s32 *, s32 *);
     void CreateNetErrorSprite(s32, s32, s32, s32, s32, void *);
@@ -199,12 +199,12 @@ s32 func_ov003_021f2a9c(s32 entry) {
     if (!M2C_FIELD(entry, u8 *, 0x45)) {
         return 0;
     }
-    if (func_0208b5a8()) {
+    if (IsTextLayerActive()) {
         return 0;
     }
     switch (GetActiveOverlay()) {
     case 1:
-        CreateLinkStatusLabel(0, 0x6e0, func_ov009_022241b4(), (void *)entry);
+        CreateLinkStatusLabel(0, 0x6e0, GetLinkResultCode(), (void *)entry);
         break;
     case 2:
         CreateNetErrorSprite(0, 0x6e0, func_ov010_02228314(&result, &spare), result, spare, (void *)entry);
@@ -227,16 +227,20 @@ s32 func_ov003_021f2a9c(s32 entry) {
     return 1;
 }
 
-s32 func_ov003_021f2b88(s32 a) {
+/* In a link session, when the highlighted map cannot be used (mapUnavailable)
+ * and no link-result panel is due, create the notice text layer and report that
+ * the action was started. */
+s32 ShowMapUnavailableMessage(s32 arg0) {
+    Ov003BattleSetup *entry = (Ov003BattleSetup *)arg0;
     s32 IsLinkSessionActive(void);
-    s32 func_0208b5a8(void);
-    s32 CreateTextLayer(s32);
-    void RenderTextLayerMessage(s32,s32,s32,u32);
-    if(!IsLinkSessionActive()) return 0;
-    if(M2C_FIELD(a,u8 *,0x45)) return 0;
-    if(!M2C_FIELD(a,u8 *,0x46)) return 0;
-    if(func_0208b5a8()) return 0;
-    RenderTextLayerMessage(CreateTextLayer(a),2,0xdc00,0x44000001);
+    s32 IsTextLayerActive(void);
+    void *CreateTextLayer(s32);
+    void RenderTextLayerMessage(void *, s32, s32, u32);
+    if (!IsLinkSessionActive()) return 0;
+    if (entry->linkResultReceived) return 0;
+    if (!entry->mapUnavailable) return 0;
+    if (IsTextLayerActive()) return 0;
+    RenderTextLayerMessage(CreateTextLayer(arg0), 2, 0xdc00, 0x44000001);
     return 1;
 }
 
@@ -368,7 +372,7 @@ void func_ov003_021f2e98(s32 entry) {
  s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
- if(func_ov003_021f2a9c(entry)||func_ov003_021f2b88(entry)) {
+ if(func_ov003_021f2a9c(entry)||ShowMapUnavailableMessage(entry)) {
  func_ov003_021f17e0(); SetSpriteAnimation(entry,5); return;
  }
  if(M2C_FIELD(entry,u8 *,0x45)||M2C_FIELD(entry,u8 *,0x46)) return;
@@ -452,9 +456,9 @@ void func_ov003_021f3564(M2C_UNK arg0) {
     M2C_UNK func_ov003_021f17e0();
     void func_ov003_021f2878();
     s32 func_ov003_021f2a9c(M2C_UNK);
-    s32 func_ov003_021f2b88(M2C_UNK);
+    s32 ShowMapUnavailableMessage(M2C_UNK);
     func_ov003_021f2878();
-    if ((func_ov003_021f2a9c(arg0) == 0) && (func_ov003_021f2b88(arg0) == 0)) {
+    if ((func_ov003_021f2a9c(arg0) == 0) && (ShowMapUnavailableMessage(arg0) == 0)) {
         return;
     }
     func_ov003_021f17e0();

@@ -7,6 +7,13 @@
 #define QR2_QUERY_SIZE   0x800 /* bytes of key/value text in the query buffer */
 #define QR2_QUERY_COUNT  0x800 /* s32 length written at the end of the buffer */
 
+/* The final query Qr2_AppendFinalQuery builds for the master starts at a bare '\',
+ * lists the three key groups and ends with sQr2FinalQueryTrailer
+ * ("final\\queryid\1.1"); its length at QR2_QUERY_COUNT excludes the NUL. */
+#define QR2_KEY_MODE_PLAIN    0 /* plain key=value pairs */
+#define QR2_KEY_MODE_INDEXED1 1 /* one entry per repeat, callback QR2_CB_APPEND_IDX1 */
+#define QR2_KEY_MODE_INDEXED2 2 /* one entry per repeat, callback QR2_CB_APPEND_IDX2 */
+
 /* Replies from the master are received into a 256-byte buffer: at most 255
  * datagram bytes so that the last byte can always be the terminating NUL. */
 #define QR2_RECV_MAX     255
@@ -48,6 +55,7 @@
 #define QR2_REQUEST_ID    0xCC  /* 8-byte socket address of the master server: the destination of every query (and the buffer the resolve fills in) */
 #define QR2_CB_ASCII      0xD4  /* void (*)(const char *text, s32 length, void *address): ';' console line from the master */
 #define QR2_RECENT_IDS    0xD8  /* s32[10] request ids handled recently (a ring for dropping repeats) */
+#define QR2_RECENT_ID_COUNT 10  /* entries in QR2_RECENT_IDS */
 #define QR2_RECENT_INDEX  0x100 /* s32 next slot in QR2_RECENT_IDS */
 #define QR2_PUBLIC_IP     0x104 /* s32 public IPv4 address */
 #define QR2_PUBLIC_PORT   0x108 /* u16 public port */

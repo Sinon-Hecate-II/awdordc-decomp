@@ -24,7 +24,7 @@ static inline u64 NextPacketRandom64(void) {
    (high, low half) when outLen is 0, or fails with 2 when the name does not fit in
    outLen bytes.  A "name does not exist" answer gives -1, a timeout 0. */
 s32 DnsResolveName(M2C_UNK a,s32 b,M2C_UNK c,s32 d,u32 e) {
-void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *func_0201d618(u32*); void func_0201d70c(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
+void SendNetPacket(void*,s32); s32 GetSocketReceivedDataSize(void); void func_0201a238(void); u8 *PeekSocketReceivedData(u32*); void func_0201d70c(u32); u8 *DnsSkipName(u8*); u64 GetSystemTick(void); void MI_CpuCopy8(void*,void*,u32);
 extern M2C_UNK gNetStack;
 u8 qname[48]; u16 packet[6]; u32 size; u8 *name=(u8*)a; s32 result; u32 start;u8 *label,*p,*end; s32 n; u8 ch; s32 questions; u16 len,type,v1,v2;
 packet[0]=(c>>8)|(c<<8);if(b!=32)packet[1]=1;else packet[1]=0x1001;packet[2]=DNS_QUESTION_CLASS;packet[3]=0;label=qname;p=label;packet[4]=0;packet[5]=0;
@@ -41,7 +41,7 @@ SendNetPacket(packet,p+5-(u8*)packet);
 result=0;start=(u32)(GetSystemTick()>>16);
 while(M2C_FIELD(&gNetStack,s32 (**)(void),0x48)()!=0 && result==0 && (s32)((u32)(GetSystemTick()>>16)-start)<15){
 if(!GetSocketReceivedDataSize()){func_0201a238();continue;}
-p=func_0201d618(&size);
+p=PeekSocketReceivedData(&size);
 if(size>12 && c==(u16)((M2C_FIELD(p,u16*,0)>>8)|(M2C_FIELD(p,u16*,0)<<8))){
 type=p[3]&DNS_ANSWER_TYPE_MASK;
 if(type==DNS_ANSWER_NXDOMAIN)result=-1;
@@ -105,19 +105,22 @@ s32 ParseIpAddress(u8 *text, s32 *address) {
     return 1;
 }
 
-s32 func_0201ecbc(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+/* Query one DNS server: point a fresh raw connection at `serverAddress` on the
+ * DNS port, send the A-record query for `host` with the given query id, and
+ * return DnsResolveName's result (1 an address, -1 no such name, 0 timeout). */
+s32 DnsQueryServer(M2C_UNK host, s32 serverAddress, M2C_UNK queryId) {
     M2C_UNK OpenRawConnection();
     M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, s32);
     M2C_UNK ResetCurrentConnection();
-    M2C_UNK func_0201d224();
+    M2C_UNK CloseRawConnection();
     s32 DnsResolveName();
     s32 result;
-    if (arg1 == 0) return -1;
+    if (serverAddress == 0) return -1;
     ResetCurrentConnection();
     OpenRawConnection();
-    SetConnectionEndpoint(0, 0x35, arg1);
-    result = DnsResolveName(arg0, 1, arg2, 0, 0);
-    func_0201d224();
+    SetConnectionEndpoint(0, DNS_SERVER_PORT, serverAddress);
+    result = DnsResolveName(host, DNS_ANSWER_ADDRESS, queryId, 0, 0);
+    CloseRawConnection();
     return result;
 }
 
@@ -147,7 +150,7 @@ flags[0]=1; flags[1]=1;
 for(i=0;i<3;i++){
 for(j=0,p=flags;j<2;j++,p++){
 if(*p){
-out=func_0201ecbc(arg0,M2C_FIELD(&gDnsServerAddresses,s32*,j*4),rnd[j]);
+out=DnsQueryServer(arg0,M2C_FIELD(&gDnsServerAddresses,s32*,j*4),rnd[j]);
 if(out!=0 && out!=-1) goto done;
 if(out==-1)*p=0;
 }
@@ -440,11 +443,11 @@ SocketFreeTask(p);OS_EnableScheduler();OS_RestoreInterrupts(old); goto loop; don
 s32 SocketCreateFromConfig(void) {
     s32 SocketAllocTask(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK func_0201f338(s32, s32);
-    s32 func_0201f4b0();
+    s32 AllocSocketObject();
     extern M2C_UNK SocketInitTask;
     s32 temp_r0;
 
-    temp_r0 = func_0201f4b0();
+    temp_r0 = AllocSocketObject();
     if (temp_r0 == 0) {
         return -0x31;
     }
@@ -486,16 +489,28 @@ s32 SocketInitTask(void *task) {
  return 0;
 }
 
-s32 func_0201f4b0(arg0)
-void *arg0;
-{
-extern s32 gNetAllocator;
-s32 p,old,size;
-size=GetSocketConfigSize(arg0);
-old=OS_DisableInterrupts();
-p=M2C_FIELD(gNetAllocator,s32 (**)(s32),0x18)(size);
-if(p){MI_CpuFill8(p,0,size);func_0201f5c0(p,arg0);func_020213f0(p);}
-OS_RestoreInterrupts(old);return p;
+/* Allocate a zeroed socket object for config, initialize its buffers and worker
+ * tasks and put it on the active-socket list. */
+s32 AllocSocketObject(void *config) {
+    s32 GetSocketConfigSize(SocketConfigTemplate *);
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 InitSocketFromConfig(void *, void *);
+    void RegisterActiveSocket(void *);
+    extern s32 gNetAllocator;
+    s32 socket;
+    s32 irq;
+    s32 size = GetSocketConfigSize(config);
+    irq = OS_DisableInterrupts();
+    socket = M2C_FIELD(gNetAllocator, s32 (**)(s32), NET_ALLOC_ALLOC)(size);
+    if (socket) {
+        MI_CpuFill8(socket, 0, size);
+        InitSocketFromConfig((void *)socket, config);
+        RegisterActiveSocket((void *)socket);
+    }
+    OS_RestoreInterrupts(irq);
+    return socket;
 }
 
 /* Bytes of the socket object SocketCreateFromConfig allocates for a socket
@@ -532,7 +547,7 @@ s32 GetSocketTaskBlockSize(void *arg0) {
 }
 
 /* Duplicate the sprite/frame data referenced by `src` into `dst`, advancing the cursor. */
-s32 func_0201f5c0(void *dst, void *src) {
+s32 InitSocketFromConfig(void *dst, void *src) {
     extern void *gClosingSocket;
     void *p;
     void *q;

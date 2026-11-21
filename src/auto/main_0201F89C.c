@@ -270,6 +270,7 @@ s32 SocketRecvData(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr, s32
     return SocketStartRecvTask(sock, buf, len, peerPort, peerAddr);
 }
 
+#pragma optimize_for_speed off
 s32 SocketRecvFromWindow(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg4) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
@@ -332,7 +333,7 @@ s32 SocketRecvFromWindow(void *arg0, M2C_UNK arg1, s32 arg2, u16 *arg3, s32 *arg
     OS_RestoreInterrupts(temp_r4);
     return var_r5;
 }
-
+#pragma optimize_for_speed reset
 /* Report the next unread bytes of a duplex socket's transport connection: return
  * the connection's receive buffer advanced by the bytes already consumed (the raw
  * connection's pending count), set *remaining to the bytes left (-1 when the
@@ -363,7 +364,7 @@ func_0201f318(arg0,p);
 }
 
 s32 func_02020038(void *arg0) {
-    void *func_0201d618(u32 *);
+    void *PeekSocketReceivedData(u32 *);
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 SocketRecvFromWindow(void *, M2C_UNK, s32, u16 *, s32 *);
@@ -390,7 +391,7 @@ s32 func_02020038(void *arg0) {
     sp8 = M2C_FIELD(arg0, u16 **, 0x18);
     sp4 = M2C_FIELD(arg0, s32 **, 0x1C);
 loop_1:
-    var_r0 = func_0201d618(&sp10);
+    var_r0 = PeekSocketReceivedData(&sp10);
     if ((var_r0 != 0) && ((s32) (sp10 - temp_r9) <= 0)) {
         temp_r0 = M2C_FIELD(temp_r7, s8 *, 0x73);
         var_r1 = 1;

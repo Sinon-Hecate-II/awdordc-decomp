@@ -10,7 +10,7 @@ char *func_02066444(double,char *,HexFormat);
 char *func_02065e44(double,char *,HexFormat);
 extern u8 data_0210054c[],data_02100550[];
 #pragma opt_strength_reduction off
-u32 func_02066ba8(s32 (*writer)(void *,const char *,s32), void *state, char *p, char *args) {
+u32 FormatString(s32 (*writer)(void *,const char *,s32), void *state, char *p, char *args) {
     char buffer[512];
     HexFormat f;
     char pad=' ', space;
@@ -148,7 +148,7 @@ s32 func_020673cc(s32 arg0, M2C_UNK arg1, s32 arg2) {
     return var_r5;
 }
 
-s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
+s32 WriteFormatBuffer(void *arg0, M2C_UNK arg1, s32 arg2) {
     M2C_UNK MemCopy(s32, M2C_UNK, s32);
     s32 temp_r3;
     s32 var_r5;
@@ -167,7 +167,7 @@ s32 func_020673f8(void *arg0, M2C_UNK arg1, s32 arg2) {
 
 s32 func_0206743c(s32 format, ...) {
 extern u8 gStdoutStream[],data_0213e664[],gStreamLockOwner[],gStreamLockDepth[],gSocketManager[];
-s32 func_0206ad4c(void *,s32);s32 TryLockMutex(void *);u32 func_02066ba8();
+s32 func_0206ad4c(void *,s32);s32 TryLockMutex(void *);u32 FormatString();
 s32 result;char *args;
 if(func_0206ad4c(gStdoutStream,-1)>=0)return -1;
 if(!TryLockMutex(data_0213e664)){
@@ -181,39 +181,43 @@ M2C_FIELD(gStreamLockOwner,s32 *,12)=M2C_FIELD(M2C_FIELD(gSocketManager,void **,
 M2C_FIELD(gStreamLockDepth,s32 *,12)=1;
 }
 args=(char *)(((u32)&format&~3U)+4);
-result=func_02066ba8(func_020673cc,gStdoutStream,format,args);
+result=FormatString(func_020673cc,gStdoutStream,format,args);
 if(--M2C_FIELD(gStreamLockDepth,s32 *,12)==0)UnlockMutex(data_0213e664);
 return result;
 }
 
-u32 func_02067554(char *arg0, u32 arg1, s32 arg2, void *arg3) {
-    u32 func_02066ba8();
-    struct { char *buffer; u32 size; u32 position; } state;
+/* Formats `format` with the argument list `args` into `buffer`, writing at most
+ * `size` bytes: the output is truncated at `size`, a nonzero `size` keeps a NUL
+ * terminator in the last byte when it overflows, and a null buffer is not
+ * written.  Returns the length the whole formatted string would need. */
+u32 StringFormatBounded(char *buffer, u32 size, s32 format, void *args) {
+    u32 FormatString();
+    FormatBuffer state;
     u32 result;
-    state.buffer = arg0;
-    state.size = arg1;
+    state.buffer = buffer;
+    state.size = size;
     state.position = 0;
-    result = func_02066ba8(func_020673f8, &state, arg2, arg3);
-    if (arg0 == 0) return result;
-    if (result < arg1) {
-        arg0[result] = 0;
+    result = FormatString(WriteFormatBuffer, &state, format, args);
+    if (buffer == 0) return result;
+    if (result < size) {
+        buffer[result] = 0;
         return result;
     }
-    if (arg1 != 0) (arg0 + arg1)[-1] = 0;
+    if (size != 0) (buffer + size)[-1] = 0;
     return result;
 }
 
 void func_020675bc(s32 arg0, s32 arg1, s32 arg2, ...) {
     char *args;
     args = (char *)(((u32)&arg2 & ~3U) + 4);
-    func_02067554(arg0, arg1, arg2, args);
+    StringFormatBounded(arg0, arg1, arg2, args);
 
 }
 
 void StringFormat(s32 arg0, s32 arg1, ...) {
     char *args;
     args = (char *)(((u32)&arg1 & ~3U) + 4);
-    func_02067554((char *)arg0, -1, arg1, args);
+    StringFormatBounded((char *)arg0, -1, arg1, args);
 }
 
 void func_02067610(s8 *base,u32 count,u32 size,s32 (*compare)(const void*,const void*)) {

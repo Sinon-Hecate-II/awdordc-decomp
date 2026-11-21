@@ -2,16 +2,44 @@
 #include "common.h"
 #include "wfc.h"
 
-void func_02010c14(void){extern u8 gSaveDeviceState[],data_02130400[];M2C_UNK *func_02010c84(void);void func_0200fc58();void func_02010e68();u8 *p=gSaveDeviceState;u8 *q;s32 zero,minus,one;if(M2C_FIELD(p,s32 *,276))return;q=data_02130400;zero=0;minus=zero-1;one=1;M2C_FIELD(p,s32 *,276)=one;M2C_FIELD(p,s32 *,36)=zero;M2C_FIELD(p,s32 *,32)=zero;M2C_FIELD(p,s32 *,28)=zero;M2C_FIELD(p,s32 *,40)=minus;M2C_FIELD(p,s32 *,56)=zero;M2C_FIELD(p,s32 *,60)=zero;M2C_FIELD(q,s32 *,0)=zero;func_0200fc58();M2C_FIELD(data_02130400,s32 *,32)=(s32)func_02010c84();func_02010e68();}
+/* One-time save-chip device setup: return when the device is already up, then mark
+ * it ready, clear the transfer parameters, run the device task and ARM7 interface
+ * setup (func_0200fc58), install the ROM transfer routine in the transfer command
+ * block and the ARM7 shutdown FIFO handler (func_02010e68). */
+void SaveDevice_Init(void) {
+    extern u8 gSaveDeviceState[], data_02130400[];
+    M2C_UNK *SaveDevice_GetTransferHandler(void);
+    void func_0200fc58();
+    void func_02010e68();
+    u8 *p = gSaveDeviceState;
+    u8 *q;
+    s32 zero, minus, one;
+    if (M2C_FIELD(p, s32 *, SAVE_DEVICE_FLAGS)) return;
+    q = data_02130400;
+    zero = 0;
+    minus = zero - 1;
+    one = 1;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_FLAGS) = one;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_LENGTH) = zero;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_DEST) = zero;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_ADDRESS) = zero;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_DMA_CHANNEL) = minus;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_CALLBACK) = zero;
+    M2C_FIELD(p, s32 *, SAVE_DEVICE_CALLBACK_ARG) = zero;
+    M2C_FIELD(q, s32 *, 0) = zero;
+    func_0200fc58();
+    M2C_FIELD(data_02130400, s32 *, 0x20) = (s32)SaveDevice_GetTransferHandler(); /* the transfer command block's handler */
+    func_02010e68();
+}
 
 void func_02010c78(void) {
     M2C_UNK func_0200fda0();
     func_0200fda0();
 }
 
-M2C_UNK *func_02010c84(void) {
-    extern M2C_UNK func_02010938;
-    return &func_02010938;
+M2C_UNK *SaveDevice_GetTransferHandler(void) {
+    extern M2C_UNK SaveDevice_TransferRom;
+    return &SaveDevice_TransferRom;
 }
 
 void func_02010c90(s32 a,s32 b,s32 c){extern u8 gSaveDeviceState[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(gSaveDeviceState,s32 *,260);M2C_FIELD(gSaveDeviceState,s32 *,276)&=~32;TaskWake(v);}

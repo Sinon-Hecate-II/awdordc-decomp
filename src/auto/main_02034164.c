@@ -34,14 +34,14 @@ void HttpClientTask(Unk02034164 *client) {
     void func_02025188(s32);
     void SetConnectionEndpoint(s32, s32, s32);
     s32 ConnectTransport(void);
-    void func_0201d224(void);
+    void CloseRawConnection(void);
     void ClearCurrentRawConnection(void);
     s32 SendNetPacket(s32, s32);
     void func_0201dc28(void);
     s32 HttpClientTaskWait(Unk02034164 *);
     u64 GetSystemTick(void);
     s32 GetSocketReceivedDataSize(void);
-    void *func_0201d618(s32 *);
+    void *PeekSocketReceivedData(s32 *);
     void MI_CpuCopy8(s32, s32, s32);
     void LockMutex(void *);
     void UnlockMutex(void *);
@@ -96,7 +96,7 @@ void HttpClientTask(Unk02034164 *client) {
     SetConnectionEndpoint(0, client->port, host);
     if (ConnectTransport() != 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 3;
-        func_0201d224();
+        CloseRawConnection();
         ClearCurrentRawConnection();
         return;
     }
@@ -127,7 +127,7 @@ void HttpClientTask(Unk02034164 *client) {
         if (received < 0) break;
         if (received > 0) {
             progress = GetSystemTick();
-            packet = func_0201d618(&received);
+            packet = PeekSocketReceivedData(&received);
             if (!packet) break;
             destination = recv->current;
             remaining = recv->end - 1 - destination;
@@ -164,7 +164,7 @@ void HttpClientTask(Unk02034164 *client) {
 
     func_0201d484();
     WaitForTlsCloseNotify();
-    func_0201d224();
+    CloseRawConnection();
     ClearCurrentRawConnection();
     M2C_FIELD(client, s32 *, 0x1020) = 8;
     return;
@@ -172,7 +172,7 @@ void HttpClientTask(Unk02034164 *client) {
 cleanup:
     func_0201d484();
     WaitForTlsCloseNotify();
-    func_0201d224();
+    CloseRawConnection();
     ClearCurrentRawConnection();
 }
 

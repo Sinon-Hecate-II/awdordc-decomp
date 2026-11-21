@@ -461,22 +461,25 @@ void Ov001_UploadTextPanelTiles(M2C_UNK taskArg, void *uploadPendingFlag) {
     *(u8 *)uploadPendingFlag = 0;
 }
 
-M2C_UNK func_ov001_0218af0c(s32 arg0) {
+/* Free a fixed full-screen text panel's page background: tear down its tile
+ * refresh task, clear its screen's character VRAM (0x6000 bytes for the main
+ * screen, 0x3000 for the sub screen) and free the panel's tile buffer. */
+M2C_UNK Ov001_FreePanelBackground(s32 panel) {
     extern M2C_UNK gOv001TextContext;
     M2C_UNK temp_r0;
-    func_ov001_0218c94c(1, M2C_FIELD((void *)arg0, M2C_UNK *, 0x2C));
-    if (arg0 == (M2C_UNK)gOv001TextContext + 0x610) {
-        temp_r0 = FillU16(0, func_02003834(), 0x6000);
+    func_ov001_0218c94c(1, M2C_FIELD((void *)panel, M2C_UNK *, OV001_PANEL_REFRESH_TASK));
+    if (panel == (M2C_UNK)gOv001TextContext + OV001_CTX_SCREEN_PANELS) {
+        temp_r0 = FillU16(0, func_02003834(), OV001_PANEL0_VRAM_BYTES);
     } else {
-        temp_r0 = FillU16(0, func_02003834(), 0x3000);
+        temp_r0 = FillU16(0, func_02003834(), OV001_PANEL1_VRAM_BYTES);
     }
-    return Ov001_FreeAlloc((u8 *)arg0 + 0x28);
+    return Ov001_FreeAlloc((u8 *)panel + 0x28);
 }
 
 void Ov001_FreePageBackground(s32 arg0) {
-    M2C_UNK func_ov001_0218af0c(s32);
+    M2C_UNK Ov001_FreePanelBackground(s32);
     extern s32 gOv001TextContext;
-    func_ov001_0218af0c((0x30 * arg0) + (gOv001TextContext + 0x610));
+    Ov001_FreePanelBackground((0x30 * arg0) + (gOv001TextContext + 0x610));
 }
 
 /* Draw an anchored text block on a text panel: choose the run direction from the

@@ -26,7 +26,7 @@ void CloseLinkChannel(void) {
 void RestartLinkSession(void) {
     s32 GetLinkPhase();
     s32 GetLinkRequestKind();
-    s32 func_ov009_02224688();
+    s32 AdvanceLinkRequestToPending();
     s32 func_ov009_02223b5c();
     s32 func_ov009_02223c08();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
@@ -35,7 +35,7 @@ void RestartLinkSession(void) {
     s32 phase = GetLinkPhase();
     if (phase == LINK_PHASE_READY) return;
     if (phase == LINK_PHASE_REQUEST) {
-        if (func_ov009_02224688() != 0) return;
+        if (AdvanceLinkRequestToPending() != 0) return;
         CloseLinkChannel();
         return;
     }
@@ -596,28 +596,31 @@ void func_ov009_02225d14(void) {
     func_01ffaa8c();
 }
 
-void func_ov009_02225d20(void *arg0) {
+/* Link's error/abort outcome: on the ERROR or ABORTED phase, show the link status
+ * message once (bit 1 of the result flags) and hand the link result code plus the
+ * object's stored value to the completion callback at +0x34. */
+void HandleLinkErrorResult(void *object) {
     M2C_UNK GetLocalizedText(s32);
-    s32 func_ov009_022241b4();
-    M2C_UNK func_ov009_022244ec(M2C_UNK);
-    s32 func_ov009_02224508(M2C_UNK);
-    M2C_UNK (*temp_r2)(s32, s32);
-    s32 temp_r4;
+    s32 GetLinkResultCode();
+    M2C_UNK SetLinkResultFlag(M2C_UNK);
+    s32 IsLinkResultFlagSet(M2C_UNK);
+    M2C_UNK (*callback)(s32, s32);
+    s32 resultCode;
 
-    if ((GetLinkPhase() != 8) && (GetLinkPhase() != 9)) {
+    if ((GetLinkPhase() != LINK_PHASE_ERROR) && (GetLinkPhase() != LINK_PHASE_ABORTED)) {
         return;
     }
-    temp_r4 = func_ov009_022241b4();
-    if (func_ov009_02224508(1) != 0) {
+    resultCode = GetLinkResultCode();
+    if (IsLinkResultFlagSet(1) != 0) {
         return;
     }
-    GetLocalizedText(0x4400000A);
-    func_ov009_022244ec(1);
-    temp_r2 = M2C_FIELD(arg0, M2C_UNK (**)(s32, s32), 0x34);
-    if (temp_r2 == NULL) {
+    GetLocalizedText(LINK_STATUS_TEXT);
+    SetLinkResultFlag(1);
+    callback = M2C_FIELD(object, M2C_UNK (**)(s32, s32), 0x34);
+    if (callback == NULL) {
         return;
     }
-    temp_r2(temp_r4, M2C_FIELD(arg0, s32 *, 0x18));
+    callback(resultCode, M2C_FIELD(object, s32 *, 0x18));
 }
 
 void func_ov009_02225d88(s32 arg0) {
@@ -810,28 +813,32 @@ void func_ov009_02226154(void) {
     func_020852e0();
 }
 
-void func_ov009_0222617c(s32 arg0, s32 arg1, void *arg2) {
+/* Link-mode player name label: while the link is idle, announce the local player's
+ * name over the download-play link and create the label sprite; once a link is
+ * under way, only enable the map-confirm prompt.  The online variant's x/y are
+ * unused here. */
+void CreateLinkNameLabel(s32 unusedX, s32 unusedY, void *owner) {
     void *CreateSpriteForOwner(void *, void *);
     s32 GetLocalPlayerName();
-    M2C_UNK func_02085c4c();
-    M2C_UNK func_ov009_02223f34(s32);
-    M2C_UNK func_ov009_02223f44(s32, M2C_UNK);
+    M2C_UNK ClearLinkCommandQueues();
+    M2C_UNK SetLinkDownloadCode(s32);
+    M2C_UNK SetLinkPlayerName(s32, M2C_UNK);
     s32 func_ov009_022242c8();
-    M2C_UNK func_ov009_02224528(M2C_UNK);
+    M2C_UNK ClearLinkResultFlag(M2C_UNK);
     M2C_UNK func_ov009_0222454c();
-    extern M2C_UNK data_ov009_02226784;
-    if (GetLinkPhase() != 0) {
+    extern M2C_UNK gLinkNameLabelClass;
+    if (GetLinkPhase() != LINK_PHASE_IDLE) {
         EnableMapConfirm();
         return;
     }
     DisableMapConfirm();
-    func_ov009_02224528(1);
+    ClearLinkResultFlag(1);
     if (func_ov009_022242c8() == 0) return;
     func_ov009_0222454c();
-    func_ov009_02223f34(0x654);
-    func_ov009_02223f44(GetLocalPlayerName(), 0x14);
-    func_02085c4c();
-    CreateSpriteForOwner(&data_ov009_02226784, arg2);
+    SetLinkDownloadCode(0x654);
+    SetLinkPlayerName(GetLocalPlayerName(), 0x14);
+    ClearLinkCommandQueues();
+    CreateSpriteForOwner(&gLinkNameLabelClass, owner);
 }
 
 void func_ov009_022261e4(M2C_UNK arg0, u16 arg1, void *arg2) {

@@ -172,10 +172,10 @@ void func_ov007_022142d4(void) {
 
 void func_ov007_022142ec(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_020c0adc();
+    M2C_UNK PushCarriedUnitMenuState();
     M2C_UNK RefreshMapView();
     extern void *gCur3DSpriteEngine;
-    func_020c0adc();
+    PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
@@ -261,13 +261,17 @@ u8 func_ov007_02214448(void) {
     return var_r0;
 }
 
-void func_ov007_0221446c(void) {
+/* Opens the map editor's menu: hides the current menu sprites, clears the editor's
+   sprite layer and refreshes the map view, then labels it with whether the map has
+   unsaved changes and creates the menu. */
+void OpenMapEditorMenu(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
     M2C_UNK SetUiMessageText(M2C_UNK);
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov007_0221f780;
+    extern M2C_UNK gMapEditorMenuClass;
+
     DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
@@ -277,7 +281,7 @@ void func_ov007_0221446c(void) {
     } else {
         SetUiMessageText(0x46000005);
     }
-    CreateSpriteFromClass(&data_ov007_0221f780, 7);
+    CreateSpriteFromClass(&gMapEditorMenuClass, 7);
 }
 
 void func_ov007_022144d4(void) {

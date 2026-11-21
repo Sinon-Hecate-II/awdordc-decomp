@@ -439,7 +439,7 @@ s32 func_ov002_021e86f8(s32 arg0,s32 arg1) { s32 result=20; s32 i=0; do { if(i!=
 void func_ov002_021e8738(void *view) {
 #pragma opt_common_subs off
     M2C_UNK MemAlloc(s32);
-    void func_ov002_021e8d0c(void *, u8, u8);
+    void InitUnitModel(void *, u8, u8);
     void InitUnitEffectNode(void *);
     void func_ov002_021e8ff0(void *, s32, s32, s32);
     void func_ov002_021e9000(void *, u16);
@@ -470,7 +470,7 @@ void func_ov002_021e8738(void *view) {
                 M2C_FIELD(unit, s32 *, 0x68) = 0;
             }
             M2C_FIELD((u8 *)view + i * 4, void **, 8) = unit;
-            func_ov002_021e8d0c(unit, M2C_FIELD(view, u8 *, 0x27), (u8)i);
+            InitUnitModel(unit, M2C_FIELD(view, u8 *, 0x27), (u8)i);
             InitUnitEffectNode(M2C_FIELD((u8 *)view + i * 4, void **, 8));
             positions = M2C_FIELD(M2C_FIELD((u8 *)&gPlayerSettings + M2C_FIELD(view, u8 *, 0x27) * 0x18, void **, 4), u8 **, 0x28);
             x = M2C_FIELD(positions + i * 8, s16 *, 0) - 128;
@@ -496,12 +496,16 @@ void func_ov002_021e88a0(void *arg0) {
     M2C_FIELD(arg0, s8 *, 0x26) = 0;
 }
 
-void StepUnitViewShake(void *p) { extern s8 gUnitViewShakeOffsets[]; s32 i; if(M2C_FIELD(p,s8 *,0x26)==-1)return;
- M2C_FIELD(p,s16 *,0x22)=gUnitViewShakeOffsets[M2C_FIELD(p,s8 *,0x26)&~1];
- M2C_FIELD(p,s16 *,0x24)=gUnitViewShakeOffsets[(M2C_FIELD(p,s8 *,0x26)&~1)+1];
- i=M2C_FIELD(p,s8 *,0x26)&~1;
- if(gUnitViewShakeOffsets[i]==0 && gUnitViewShakeOffsets[i+1]==0) M2C_FIELD(p,s8 *,0x26)=-1;
- else M2C_FIELD(p,s8 *,0x26)++;
+/* Advances a unit view's screenshake by one pair of offsets: writes the pair
+ * selected by the shake index from gUnitViewShakeOffsets into the view's x and y
+ * offsets, then moves to the next pair, or stops (index -1) on the table's
+ * terminating zero pair. */
+void StepUnitViewShake(void *view) { extern s8 gUnitViewShakeOffsets[]; s32 step; if(M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)==-1)return;
+ M2C_FIELD(view,s16 *,UNIT_VIEW_SHAKE_X)=gUnitViewShakeOffsets[M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)&~1];
+ M2C_FIELD(view,s16 *,UNIT_VIEW_SHAKE_Y)=gUnitViewShakeOffsets[(M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)&~1)+1];
+ step=M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)&~1;
+ if(gUnitViewShakeOffsets[step]==0 && gUnitViewShakeOffsets[step+1]==0) M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)=-1;
+ else M2C_FIELD(view,s8 *,UNIT_VIEW_SHAKE_INDEX)++;
 }
 
 /* Step one side's battle unit view for a frame: count the frames once the

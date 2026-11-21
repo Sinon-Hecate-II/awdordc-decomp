@@ -225,7 +225,7 @@ void InitPlayerTurnState(void) {
     void func_020d2d80(s32);  /* clears the player's unit-sprite state bits 8..9 */
     void func_020d2d60(s32);  /* re-enables selection while the player has none */
     void PayPlayerIncome(s32);
-    s32 func_020d0590(s32);   /* nonzero when the map cursor belongs to the player */
+    s32 IsPlayerCursorOwner(s32);   /* nonzero when the map cursor belongs to the player */
     void SetMapCursorTargetTile(s16, s16);
     void LoadPlayerPalettes(void);
     u8 *p; /* the player's record at MAP_PLAYER_STATES */
@@ -234,7 +234,7 @@ void InitPlayerTurnState(void) {
     func_020d2d80(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     func_020d2d60(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     PayPlayerIncome(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
-    if (func_020d0590(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+    if (IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         p = *gCurrentMap;
         p = p + MAP_PLAYER_STATES + M2C_FIELD(p, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE;
         SetMapCursorTargetTile(p[PLAYER_REC_CURSOR_X], p[PLAYER_REC_CURSOR_Y]);
@@ -308,7 +308,7 @@ void func_020d1f2c(void) {
     s32 func_020a8bd8(s32, s32);
     s32 GetPlayerCoId(s32);
     s32 func_020a2390(s32);
-    void func_020a3550(s32, s32);
+    void SetCoPowerMeterPoints(s32, s32);
     s32 GetPlayerArmyId(s32);
     s32 GetPlayerOwnerGroup(s32);
     s32 IsCampaignBattleRules(void);
@@ -354,7 +354,7 @@ void func_020d1f2c(void) {
                 func_020a8bd8(r8, GetPlayerCoId(r8));
             }
 
-            func_020a3550(r8, func_020a2390(r8));
+            SetCoPowerMeterPoints(r8, func_020a2390(r8));
 
             r10 = (u8 *)*gCurrentMap + 0x67a4 + r9;
             r10[0x26] = (u8)GetPlayerArmyId(r8);
@@ -414,7 +414,7 @@ void func_020d2168(void) {
  * the per-unit-kind counters, then builds the derived per-player data. */
 void InitPlayerStates(void){
 extern void **gCurrentMap;extern M2C_UNK gMapData;
-void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void func_020a3550(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
+void func_020a338c(s32,s32);void func_020a3428(s32,s32);void func_020a33f0(s32,s32);void SetCoPowerMeterPoints(s32,s32);void SetPlayerSelectedUnit(s32,s32);void SetPlayerGaveUp(s32,u8);void SetPlayerLost(s32,s32);void func_020d2d60(s32);void func_020d33c4(void);
 s32 playerOffset; s32 player;
 s32 unitKind;player=1;playerOffset=140;
 do{
@@ -437,7 +437,7 @@ M2C_FIELD((*gCurrentMap+playerOffset),s32*,0x6824)=0;
 M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~255;
 func_020a338c(player,0);func_020a3428(player,0);func_020a33f0(player,0);
 M2C_FIELD((*gCurrentMap+0x67a4)+playerOffset,u32*,0x6c)&=~0x3c000;
-func_020a3550(player,0);SetPlayerSelectedUnit(player,0);
+SetCoPowerMeterPoints(player,0);SetPlayerSelectedUnit(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67ca)=player;M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67cb)=0;
 SetPlayerGaveUp(player,0);SetPlayerLost(player,0);
 M2C_FIELD((*gCurrentMap+playerOffset),u8*,0x67d5)=0;

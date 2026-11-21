@@ -1,19 +1,14 @@
 /* 11 functions from 0x02215168 to 0x02215664 (ov005), found by ds-decomp. */
 #include "common.h"
 
-typedef struct {
-    u8 unk_0x0[0xa2];
-    u8 unk_0xa2[1];
-} UnkOv005Selection;
-
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 
 /* Records screen D-pad down.  On tab 0 (the full list) move the highlight one
  * record down, skipping locked records and wrapping at the end of the record
- * table returned by func_020ad570; tabs 1 and 2 step their enabled-only and
+ * table returned by RecordsMenu_GetRecord; tabs 1 and 2 step their enabled-only and
  * shuffled lists instead. */
 void RecordsMenu_SelectNext(s16 record) {
- void *func_020ad570(s32);
+ void *RecordsMenu_GetRecord(s32);
  s32 RecordsMenu_IsRecordAvailable(s32);
  void RecordsMenu_BeginAction(s32,s32);
  void RecordsMenu_SelectNextEnabled(s16);
@@ -24,7 +19,7 @@ void RecordsMenu_SelectNext(s16 record) {
  RECORDS_SCREEN->highlighted = record;
  do {
  record++;
- if (*(s32 *)func_020ad570(record) == 0) {
+ if (*(s32 *)RecordsMenu_GetRecord(record) == 0) {
  record = RECORDS_SCREEN->highlighted;
  break;
  }
@@ -187,17 +182,19 @@ void func_ov005_022155c0(u8 *arg0) {
     PlaySoundEffect(0x10019);
 }
 
-void func_ov005_022155e8(u8 *arg0) {
+/* Toggle the enabled flag of the record shown in the touched row and refresh the
+ * records list and its shuffled enabled list. */
+void RecordsMenu_ToggleRecordEnabled(u8 *row) {
  s32 RecordsMenu_IsRecordAvailable(s32);
  void RecordsMenu_DrawList(s32);
  void RecordsMenu_ShuffleList(s32);
  extern M2C_UNK gRecordsMenuState;
- u8 *flags;
- s32 i=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0;
- if (!RecordsMenu_IsRecordAvailable(i)) return;
- flags=((UnkOv005Selection *)M2C_FIELD(&gRecordsMenuState,void **,8))->unk_0xa2;
- flags[i] = flags[i] == 0 ? 1 : 0;
- RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));
+ u8 *enabled;
+ s32 record=RECORDS_SCREEN->scroll+*row;
+ if (!RecordsMenu_IsRecordAvailable(record)) return;
+ enabled=RECORDS_SCREEN->enabled;
+ enabled[record] = enabled[record] == 0 ? 1 : 0;
+ RecordsMenu_DrawList(RECORDS_SCREEN->scrollGoal);
  RecordsMenu_ShuffleList(-1);
 }
 

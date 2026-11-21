@@ -13,7 +13,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_020943bc(s32);
     M2C_UNK func_02094410(s32);
     M2C_UNK func_02094a74();
-    M2C_UNK func_02094a94();
+    M2C_UNK CloseScenePanel();
     M2C_UNK func_02094af8(s32, s32, s32);
     M2C_UNK func_02094b28(s32, u8);
     M2C_UNK func_02094b50(s32, s32);
@@ -266,7 +266,7 @@ loop_1:
                     func_0209c428(arg0);
                     break;
                 case 11:
-                    func_02094a94();
+                    CloseScenePanel();
                     func_0209c418(arg0);
                     func_0209c418(arg0);
                     func_0209c428(arg0);

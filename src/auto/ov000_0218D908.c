@@ -30,7 +30,7 @@ void func_ov000_0218d908(void) {
     extern u8 gUnitKindStats[], gAiRangeBitmap[];
     s32 AiUnitCanAct(void);
     M2C_UNK BuildUnitMoveRange(s32);
-    s32 CanKindAttack(s32, s32);
+    s32 CanKindLoad(s32, s32);
     s32 IsCurrentPlayerUnit(s16);
     s32 CanUnitAttackKind(void *, s32);
     s32 IsCaptureTargetAt(void *, s32, s32);
@@ -65,7 +65,7 @@ void func_ov000_0218d908(void) {
                         goto nextTile;
                     }
                 }
-                if (!(flags & 0x101) && CanKindAttack(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
+                if (!(flags & 0x101) && CanKindLoad(21, (u32)(M2C_FIELD(M2C_FIELD(map, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
                     map = *gCurrentMap;
                     unit = (u8 *)map + 0x59a4 + (s16)M2C_FIELD((u8 *)map + x + M2C_FIELD((u8 *)map + y * 2, u16 *, 0x3758), u8 *, 0) * 14;
                     if (unit && IsCurrentPlayerUnit((s16)(unit ? (unit - ((u8 *)map + 0x59a4)) / 14 : 0)) && ((u32)(unit[0] << 26) >> 26) == 21 && CanUnitAttackKind(unit, (u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52d0), u8 *, 0) << 26) >> 26)) {
@@ -121,7 +121,7 @@ nextTile:
     if (useTransport) SetMapCursor((s16)bestX, (s16)bestY, 7, 0, 0);
     else SetMapCursor((s16)bestX, (s16)bestY, 2, 0, 0);
 }
-#pragma opt_strength_reduction reset
+#pragma opt_loop_invariants off
 void func_ov000_0218dda4(void) {
     M2C_UNK BuildUnitMoveRange(s32);
     M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
@@ -148,11 +148,11 @@ void func_ov000_0218dda4(void) {
     var_r3 = 0;
     owner=gCurrentMap;
     temp_r7 = *owner;
-    if ((s32) M2C_FIELD(temp_r7, u16 *, 0x5146) > 0) {
+    if (((volatile u16 *)((u8 *)temp_r7 + 0x5100))[0x23] != 0) {
         temp_ip = M2C_FIELD(temp_r7, u16 *, 0x5144);
         do {
             var_r2 = 0;
-            if ((s32) temp_ip > 0) {
+            if (temp_ip != 0) {
                 temp_r8 = M2C_FIELD((temp_r7 + ((u32)var_r3 << 2)), s8 **, 0x52E8);
                 var_lr = temp_r8;
                 do {
@@ -171,8 +171,7 @@ void func_ov000_0218dda4(void) {
                     var_lr += 1;
                 } while (var_r2 < (s32) temp_ip);
             }
-            var_r3 += 1;
-        } while (var_r3 < (s32) ScanHeight(temp_r7));
+            } while (++var_r3 < (s32) ((volatile u16 *)((u8 *)temp_r7 + 0x5100))[0x23]);
     }
     if (var_r6 == -1) {
         return;
@@ -184,8 +183,6 @@ void func_ov000_0218dda4(void) {
     }
     SetMapCursor((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);
 }
-
-#pragma opt_strength_reduction off
 void func_ov000_0218df00(void){
 #pragma opt_strength_reduction off
 

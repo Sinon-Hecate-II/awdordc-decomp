@@ -48,7 +48,7 @@ obj->frame=(u16)frame;obj->phase=0;
 void HistoryMenu_HandleDPad(u8 *selected){
     extern void *gHistoryMenu;extern u16 *gKeyState;
     void *HistoryTabAt(s32);s32 HistoryScrollUp(void);s32 HistoryScrollDown(void);s32 HistoryPageUp(void);s32 HistoryPageDown(void);
-    s32 FindSpriteSlotById(s32);void FocusSpriteSlotById(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK func_ov005_02211a8c();
+    s32 FindSpriteSlotById(s32);void FocusSpriteSlotById(s32);M2C_UNK PlaySoundEffect(s32);M2C_UNK HistoryMenu_SetRecordText();
     s32 row = *selected;
     HistoryMenuTab *tab = (HistoryMenuTab *)HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1));
     s32 lastRow = tab->count - 7;
@@ -86,15 +86,15 @@ void HistoryMenu_HandleDPad(u8 *selected){
 done:
     if (row != *selected) FocusSpriteSlotById(row);
     M2C_FIELD(gHistoryMenu, u8 *, 2) = row;
-    func_ov005_02211a8c();
+    HistoryMenu_SetRecordText();
 }
 
 void func_ov005_0221339c(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_ov005_02211a8c();
+    M2C_UNK HistoryMenu_SetRecordText();
     extern void *gHistoryMenu;
     M2C_FIELD(gHistoryMenu, u8 *, 2) = (u8) *arg0;
-    func_ov005_02211a8c();
+    HistoryMenu_SetRecordText();
     PlaySoundEffect(0x10019);
 }
 
@@ -102,7 +102,7 @@ void func_ov005_0221339c(u8 *arg0) {
 #pragma opt_common_subs on
 #pragma opt_instruction_scheduling on
 void func_ov005_022133c8(void *arg0) {
-void func_ov005_02212ef0(void);void LoadScenePanelGraphicsOnBothEngines(void);void *Create3DSprite(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
+void HistoryMenu_RefreshTab(void);void LoadScenePanelGraphicsOnBothEngines(void);void *Create3DSprite(void *);void *func_0208bc24(void *);s32 func_020aaf74(void *);void *HeapAllocBlock(s32);void *HistoryTabAt(s32);void *GetLocalizedFileName(void *);void *func_020a7278(void);void *func_020a72e8(s32);s32 func_020a7290(void);s32 GetUiColor(s32);
 MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
@@ -192,7 +192,7 @@ M2C_FIELD(gHistoryMenu,void **,0x48)=func_0208bc24(arg0);
 M2C_FIELD(M2C_FIELD(gHistoryMenu,void **,0x48),u16 *,0x3e)=0xdc;
 ((MenuAnimSprite *)M2C_FIELD(gHistoryMenu,void **,0x48))->frame=7;
 Show3DSpriteSlide(M2C_FIELD(gHistoryMenu,void **,0x48));
-CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;LoadScenePanelGraphicsOnBothEngines();func_ov005_02212ef0();
+CreateSubWallpaperSprite(3,15,6);gCur3DSpriteEngine=save;LoadScenePanelGraphicsOnBothEngines();HistoryMenu_RefreshTab();
 }
 #pragma opt_instruction_scheduling reset
 #pragma opt_strength_reduction reset
@@ -242,7 +242,7 @@ loop:
  * then handles confirm and tab-switch input. */
 void HistoryMenu_Update(void *widget) {
   void *HistoryTabAt(s32);
-  int func_ov005_0221298c(s16);
+  int HistoryMenu_DrawList(s16);
   s32 HistoryScrollUp(void);
   s32 HistoryScrollDown(void);
   M2C_UNK MenuSpriteUpdate(M2C_UNK);
@@ -250,7 +250,7 @@ void HistoryMenu_Update(void *widget) {
   void LockInactiveSpriteSlots(void);
   void func_020b2268(void);
   M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-  void func_ov005_02212ef0(void);
+  void HistoryMenu_RefreshTab(void);
   extern void *gHistoryMenu;
   extern u16 *gKeyState;
 
@@ -279,7 +279,7 @@ void HistoryMenu_Update(void *widget) {
       else M2C_FIELD(tab,s16 *,0)+=r2;
     }
     M2C_FIELD(tab, s16 *, 4) = 1;
-    func_ov005_0221298c(M2C_FIELD(tab, s16 *, 0));
+    HistoryMenu_DrawList(M2C_FIELD(tab, s16 *, 0));
   } else {
     M2C_FIELD(tab, s16 *, 4) = 0;
   }
@@ -333,7 +333,7 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
     if (nextTab == 2) nextTab = 0; else nextTab = nextTab+1;
     M2C_FIELD(menu, s8 *, 1) = nextTab;
     PlaySoundEffect(0x10020);
-    func_ov005_02212ef0();
+    HistoryMenu_RefreshTab();
     return;
   }
   if (buttons & 0x200) {
@@ -341,19 +341,19 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
     if (nextTab == 0) nextTab = 2; else nextTab = nextTab-1;
     M2C_FIELD(menu, s8 *, 1) = nextTab;
     PlaySoundEffect(0x10020);
-    func_ov005_02212ef0();
+    HistoryMenu_RefreshTab();
     return;
   }
 }
 void func_ov005_02214094(void) {
     M2C_UNK func_020af1e4();
     M2C_UNK func_020842d4();
-    M2C_UNK func_020b2178();
+    M2C_UNK HideAllSpriteSlots();
     M2C_UNK HeapFreeBlock();
     extern void *gHistoryMenu;
     func_020af1e4();
     func_020842d4();
-    func_020b2178();
+    HideAllSpriteSlots();
     if (gHistoryMenu == NULL) return;
     HeapFreeBlock();
     gHistoryMenu = NULL;
@@ -379,10 +379,10 @@ s32 RecordsMenu_IsRecordAvailable(s32 arg0) {
 }
 
 s32 func_ov005_02214120(s32 arg0) {
-    s32 func_020ad61c(s32);
+    s32 IsMapBackgroundSeen(s32);
     extern M2C_UNK gRecordsMenuState;
     if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;
-    return func_020ad61c(arg0);
+    return IsMapBackgroundSeen(arg0);
 }
 
 s32 func_ov005_02214148(void) {

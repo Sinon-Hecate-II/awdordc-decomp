@@ -84,15 +84,19 @@ s32 func_020323f4(void *arg0) {
     return 0;
 }
 
-s32 func_02032424(void *a) {
-s32 GetPlayerRecordKind(void *);
-void GetWfcProfileIds(void *);
-u64 GetNasPlayerCode(void *);
-u32 s[5];
-if(GetPlayerRecordKind((u8 *)a+0x10)==0)return 1;
-GetWfcProfileIds(s);
-if(s[4]==0)return 0;
-return *(u64 *)&s[0]==GetNasPlayerCode((u8 *)a+0x10);
+/* True when the profile record `record` has no player code yet, or its player
+ * code (at +0x10) is this console's friend code; false when it belongs to
+ * another console or this one has no friend code. */
+s32 IsLocalProfileRecord(void *record) {
+    s32 GetPlayerRecordKind(void *);
+    void GetWfcProfileIds(void *);
+    u64 GetNasPlayerCode(void *);
+    WfcProfileIds ids;
+
+    if (GetPlayerRecordKind((u8 *)record + 0x10) == 0) return 1;
+    GetWfcProfileIds(&ids);
+    if (ids.hasFriendCode == 0) return 0;
+    return *(u64 *)&ids.friendCode[0] == GetNasPlayerCode((u8 *)record + 0x10);
 }
 
 void SetNasProfileKey(void *a,Unk032Record *b,s32 c) {
@@ -509,7 +513,7 @@ s32 Nas_UpdateRequest(void) {
     s32 ParseHttpResponse(u32, u32, void *);
     s32 func_02033210(void);
     s32 func_020470dc(void *, void *);
-    void func_02047098(void *);
+    void CreateWfcProfile(void *);
     void func_0204712c(void *);
 
     u8 *work = *(u8 **)((u8 *)&gNasConnection + 8);
@@ -555,7 +559,7 @@ s32 Nas_UpdateRequest(void) {
                     *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                     return 17;
                 }
-                func_02047098((void *)(((u32)buffer + 0x1f) & ~0x1fu));
+                CreateWfcProfile((void *)(((u32)buffer + 0x1f) & ~0x1fu));
                 freefn((void *)&gFreeTagBmWork, buffer, 0);
                 *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e8c;
                 return 17;

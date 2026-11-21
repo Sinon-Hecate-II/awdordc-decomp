@@ -63,6 +63,12 @@
 #define AI_COMMAND_STATE_ATTACKER   0x0C /* u8 kind of the unit the AI is evaluating an attack with */
 #define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */
 
+/* The AI action's two unit-move objects are kept in the pointer slots just past
+ * gAiCommandTimer (the same slots as data_ov000_021e146c[0] and [1]).  The step
+ * that finishes an action deletes them once their movement is over. */
+#define AI_COMMAND_MOVE_OBJECT_0 0x04 /* void * first unit-move object */
+#define AI_COMMAND_MOVE_OBJECT_1 0x08 /* void * second unit-move object */
+
 /* Fields of the command record gAiCommand (filled by the cursor code and the AI). */
 #define AI_COMMAND_KIND    0x00 /* u8 kind of the command */
 #define AI_COMMAND_ACTOR   0x01 /* u8 id of the unit giving the command */
@@ -103,6 +109,9 @@ enum AiCargoDropDirection {
 
 /* Layout of one unit-kind record in gUnitKindStats. */
 #define UNIT_KIND_STATS_SIZE   112 /* bytes per unit kind */
+#define UNIT_KIND_STATS_CARGO_COUNT 0x60 /* u8 number of units the kind can carry (its cargo slots) */
+#define UNIT_KIND_STATS_LOAD_CLASS  0x61 /* u8 the kind's carry class, a column in the load mask below */
+#define UNIT_KIND_STATS_LOAD_MASK   0x62 /* u8 per load class: nonzero when the kind may be carried by a kind of that class */
 #define UNIT_KIND_STATS_MOVE   0x08 /* u8 base movement range */
 #define UNIT_KIND_STATS_AMMO   0x09 /* u8 maximum ammo (0 = the kind cannot attack) */
 #define UNIT_KIND_STATS_MAX_RANGE 0x0D /* u8 base maximum attack range: 0 cannot attack, 1 direct, above 1 indirect */

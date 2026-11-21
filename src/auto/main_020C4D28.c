@@ -473,34 +473,36 @@ result=1;
 return result;
 }
 #pragma opt_common_subs reset
-s32 func_020c5708(s32 arg0) {
+/* Return the index of the battle-save slot whose summary carries this profile
+ * id, or -1 when there is no battle save block or no slot has the player. */
+s32 FindBattleSaveSlotByProfileId(s32 profileId) {
     s32 GetRecordProfileId(s32);
-    s32 temp_r0;
-    s32 var_r4;
-    s32 var_r5;
-    s32 var_r6;
+    s32 block;
+    s32 result;
+    s32 slot;
+    s32 summary;
 
-    var_r4 = -1;
-    if (arg0 < 0) {
+    result = -1;
+    if (profileId < 0) {
         return -1;
     }
-    temp_r0 = GetBattleSaveBlock();
-    if (temp_r0 == 0) {
+    block = GetBattleSaveBlock();
+    if (block == 0) {
         return -1;
     }
-    var_r6 = temp_r0 + 4;
-    var_r5 = 0;
-loop_5:
-    if ((IsPlayerRecordPresent(var_r6) != 0) && (arg0 == GetRecordProfileId(var_r6))) {
-        var_r4 = var_r5;
+    summary = block + SAVE_SUMMARIES_OFFSET;
+    slot = 0;
+loop:
+    if ((IsPlayerRecordPresent(summary) != 0) && (profileId == GetRecordProfileId(summary))) {
+        result = slot;
     } else {
-        var_r5 += 1;
-        var_r6 += 0xC;
-        if (var_r5 < 0x3C) {
-            goto loop_5;
+        slot += 1;
+        summary += SAVE_SLOT_SUMMARY_SIZE;
+        if (slot < SAVE_SLOT_COUNT) {
+            goto loop;
         }
     }
-    return var_r4;
+    return result;
 }
 
 double func_0206e2d8(double, double);
@@ -616,10 +618,10 @@ M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(&gBattleHelpPanel,s16 *,4);
 
 #pragma opt_common_subs off
 M2C_UNK func_020c5b98(s32 a) {
- void func_020c08f8(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void func_0209b26c(s32,s32,s32,s32,s32,u16);
+ void DrawWindowFrame(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void func_0209b26c(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK gBattleHelpPanel;
  s32 tile; s16 index;
- func_020c08f8(7,18,18,6,1);
+ DrawWindowFrame(7,18,18,6,1);
  func_0209bfa8();
  ClearTileRect((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x24)+0x48e,18,6);
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=0;

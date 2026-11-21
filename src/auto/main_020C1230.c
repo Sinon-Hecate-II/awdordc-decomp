@@ -74,19 +74,23 @@ void func_020c13a8(M2C_UNK arg0) {
     CopyMapPreviewBottomHalf(arg0);
 }
 
-M2C_UNK FillMapPreviewTilemap(M2C_UNK arg0,s32 arg1) {
- extern void **data_027e0058;
+/* Fills a map-preview tilemap with consecutive tile ids starting at firstTile:
+ * the preview is 32 entries per row, using (map width + 1) / 2 entries for each
+ * of the (map height + 1) / 2 rows that make up the preview. */
+M2C_UNK FillMapPreviewTilemap(M2C_UNK tilemap,s32 firstTile) {
+ extern void **gCurrentMap;
  s32 index=0,y=index,x,row;
- void *base=*data_027e0058;
- s32 height=M2C_FIELD(base,volatile u16 *,0x5146);
- s32 width=M2C_FIELD(base,volatile u16 *,0x5144);
+ void *base=*gCurrentMap;
+ s32 height=M2C_FIELD(base,volatile u16 *,MAP_HEIGHT);
+ s32 width=M2C_FIELD(base,volatile u16 *,MAP_WIDTH);
+ width++;
  height=(((height+1)&~1)>>1)<<4;
- width=(width+1)&~1;
+ width&=~1;
  if(height<=0) return;
  row=0;
  width>>=1;
  do {
- for(x=0;x<width;x++) { ((u16 *)arg0)[row+x]=arg1+index++; }
+ for(x=0;x<width;x++) { ((u16 *)tilemap)[row+x]=firstTile+index++; }
  y+=16; row+=32;
  } while(y<height);
 }
@@ -115,14 +119,17 @@ void DrawMapUnitMarkers(u16 *dst) {
     }
 }
 
-#pragma opt_common_subs off
+#pragma opt_global_reg off
 M2C_UNK CopyMapPreviewTopHalf(s32 arg){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
-s32 a[2],b[2],half,w,h,mode,x,y,sum;u16 *src,*out; s32 index;u16 *dst=(u16 *)arg;
+s32 a[2],b[2],half,w,h,mode,x,y,sum; u8 *map; s32 width,height;u16 *src,*out; s32 index;u16 *dst=(u16 *)arg;
 mode=func_020d4dac();
-w=(M2C_FIELD(*gCurrentMap,u16 *,0x5144)+1)&~1;
-h=(M2C_FIELD(*gCurrentMap,u16 *,0x5146)+1)&~1;
+map=*gCurrentMap;
+width=M2C_FIELD(map,u16 *,0x5144);
+height=M2C_FIELD(map,u16 *,0x5146);
+w=(width+1)&~1;
+h=(height+1)&~1;
 half=h>>1;
 a[0]=1;a[1]=15;b[0]=8;b[1]=w*8-8;
 {s32 i=0,s=0;for(;i<w;i++){gPreviewColumnOffset[i]=s;s+=a[i&1];}}
@@ -134,7 +141,7 @@ out=dst+gPreviewColumnOffset[x]+index;
 out[0]=src[0];out[2]=src[2];out[4]=src[4];out[6]=src[6];
 }
 }
-#pragma opt_common_subs reset
+#pragma opt_global_reg reset
 M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK p){
 u32 func_020d4dac(void);u16 *func_020c10a4(s32,s32,s32);
 extern void **gCurrentMap;extern u16 gPreviewColumnOffset[],gPreviewRowOffset[];
@@ -156,8 +163,13 @@ void func_020c183c(void *arg0) {
     );
 }
 
-s32 func_020c1878(u8 *dst) {
-    s32 GetDestroyedPipeTile(s32);
+#pragma opt_strength_reduction off
+/* Tally the map's properties: clear the per-owner count grid (MAP_PROPERTY_GRID_BANDS
+ * bands of MAP_PROPERTY_GRID_COLUMNS columns, one column per property kind), then
+ * walk every cell and bump, for its owner band, the count of the cell's terrain
+ * kind.  Returns how many properties were counted. */
+s32 CountMapProperties(u8 *dst) {
+    s32 GetPropertyCountColumn(s32);
     extern void **gCurrentMap;
     u8 *base;
     s32 count = 0;
@@ -168,46 +180,44 @@ s32 func_020c1878(u8 *dst) {
     u16 cell;
 
     {
+        s32 rowIndex = 0;
+        s32 colIndex;
         u8 *row = dst;
-        for (y = 0; y < 5; y++, row += 12) {
-            for (x = 0; x < 12; x++) {
-                row[x] = 0;
+        for (; rowIndex < MAP_PROPERTY_GRID_BANDS; rowIndex++, row += MAP_PROPERTY_GRID_COLUMNS) {
+            for (colIndex = 0; colIndex < MAP_PROPERTY_GRID_COLUMNS; colIndex++) {
+                row[colIndex] = 0;
             }
         }
     }
 
     base = (u8 *)*gCurrentMap;
-    if (M2C_FIELD(base, u16 *, 0x5146) > 0) {
-        for (y = 0; y < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5146); y++) {
-            for (x = 0; x < M2C_FIELD((u8 *)*gCurrentMap, u16 *, 0x5144); x++) {
-                base = (u8 *)*gCurrentMap;
+    for (y = 0; y < M2C_FIELD(base, u16 *, MAP_HEIGHT); y++) {
+        for (x = 0; x < M2C_FIELD(base, u16 *, MAP_WIDTH); x++) {
                 {
                     u8 *p = base + y * 2 + 0x3700;
-                    rowOff = *(volatile u16 *)(p + 0x58);
+                    rowOff = *(volatile u16 *)(p + 0x58); /* MAP_ROW_OFFSETS[y] */
                 }
                 {
                     u8 *q = base + (x + rowOff) * 2 + 0xA00;
-                    cell = *(volatile u16 *)(q + 0x10);
+                    cell = *(volatile u16 *)(q + 0x10); /* MAP_CELL_TILE_ID[x + rowOff] */
                 }
                 {
                     u8 *r = base + cell + 0x6000;
-                    val = *(volatile u8 *)(r + 0xA60);
+                    val = *(volatile u8 *)(r + 0xA60); /* MAP_TILE_TERRAIN[tileId] */
                 }
-                band = (val & 0xE0) >> 5;
-                slot = GetDestroyedPipeTile(val);
+                band = (val & MAP_TERRAIN_OWNER_MASK) >> 5;
+                slot = GetPropertyCountColumn(val);
                 if (slot >= 0) {
-                    u8 *pp = dst + band * 12;
+                    u8 *pp = dst + band * MAP_PROPERTY_GRID_COLUMNS;
                     pp[slot]++;
                     count++;
                 }
                 base = (u8 *)*gCurrentMap;
-            }
         }
     }
     return count;
 }
-
-#pragma opt_strength_reduction off
+#pragma opt_strength_reduction reset
 s32 GetUnitCategoryCount(s32 offset,u8 *base,s32 index) {
  s32 sum=0;
  if(index<0) {
@@ -220,7 +230,7 @@ s32 GetUnitCategoryCount(s32 offset,u8 *base,s32 index) {
 /* Map a cell's terrain kind (the low five bits of its terrain byte) to the slot
  * it occupies in the per-player 12-entry terrain tally, or -1 when the kind is
  * not tallied. */
-s32 GetDestroyedPipeTile(s32 terrain) {
+s32 GetPropertyCountColumn(s32 terrain) {
     switch ((u32)(terrain & 31)) {
     case 15: return 0;
     case 16: return 1;
@@ -240,10 +250,10 @@ s32 GetDestroyedPipeTile(s32 terrain) {
 }
 
 u8 IsDestroyedPipeTile(void) {
-    s32 GetDestroyedPipeTile();
+    s32 GetPropertyCountColumn();
     u8 var_r0;
 
-    if (GetDestroyedPipeTile() >= 0) {
+    if (GetPropertyCountColumn() >= 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

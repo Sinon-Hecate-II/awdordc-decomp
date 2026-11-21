@@ -113,7 +113,7 @@ void func_0201a134(s32 arg0) {
     u8 *p;
     void (*fp)(u32);
     u32 val;
-    old = M2C_FIELD(&gNetStack, s32 *, 0x50);
+    old = M2C_FIELD(&gNetStack, s32 *, 0x50) != 0;
     M2C_FIELD(&gNetStack, s32 *, 0x0C) = arg0;
     M2C_FIELD(&gNetStack, s32 *, 0x50) = 0;
     M2C_FIELD(&gNetStack, s32 *, 0x1C) = 0;

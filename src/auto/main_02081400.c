@@ -1,5 +1,6 @@
 /* 62 functions from 0x02081400 to 0x02082340 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 
 typedef struct DS3DSpritePreset {
     u8 mode;
@@ -54,7 +55,7 @@ void func_02081474(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     s32 temp_r0;
 
-    temp_r0 = func_02081070(arg0, 0);
+    temp_r0 = LoadDecompressedFile(arg0, 0);
     DrawTilemapBlock(temp_r0, arg1, arg2, arg3);
     HeapFreeBlock(temp_r0);
 }
@@ -102,8 +103,8 @@ s32 LoadNarcFileDecompressed(void *arg0, void *arg1) {
 }
 
 void LoadNarcMemberToBuffer(void) {
-    M2C_UNK func_02081070(s32, M2C_UNK);
-    func_02081070(BuildNarcPath(), 1);
+    M2C_UNK LoadDecompressedFile(s32, M2C_UNK);
+    LoadDecompressedFile(BuildNarcPath(), 1);
 }
 
 s32 func_020815bc(void *arg0, void *arg1) {
@@ -558,16 +559,30 @@ u8 func_02082078(void) {
 
 u16 GetLocalPlayerNameLength(void){extern u8 data_0214c1b8;return M2C_FIELD(&data_0214c1b8,u16 *,0x1a);}
 
-void Set3DSpriteLayerBank(u32 arg0,u32 arg1) {
-extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain;
-u8 b; u32 base; u32 index; void *engine; u32 bits; u16 *p; u32 old;
-if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;
-if(b==1)base=0x06000000;else base=0x06200000;
-M2C_FIELD((u8 *)gCur3DSpriteEngine+arg0*4,u32 *,12)=base+(arg1<<14);
-engine=gCur3DSpriteEngine; index=arg0*2;
-p=(u16 *)((u8 *)M2C_FIELD(engine,void **,0)+6);
-bits=arg1<<28; old=*(u16 *)((u8 *)p+index);
-*(u16 *)((u8 *)p+index)=(old&~0x3c)|(bits>>26);
+/* Point one 3D sprite layer at a VRAM bank: store that bank's VRAM address for the
+ * layer and record the bank number in bits 2..5 of the layer's packed tile word. */
+void Set3DSpriteLayerBank(u32 layer, u32 bank) {
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineMain;
+    u8 onMain;
+    u32 vramBase;
+    u32 index;
+    void *engine;
+    u32 bits;
+    u16 *tile;
+    u32 old;
+
+    if (gCur3DSpriteEngine == g3DSpriteEngineMain) onMain = 1; else onMain = 0;
+    if (onMain == 1) vramBase = DS3D_VRAM_MAIN; else vramBase = DS3D_VRAM_SUB;
+    M2C_FIELD((u8 *)gCur3DSpriteEngine + layer * 4, u32 *, DS3D_ENGINE_LAYER_VRAM) =
+        vramBase + DS3D_VRAM_BANK(bank);
+    engine = gCur3DSpriteEngine;
+    index = layer * 2;
+    tile = (u16 *)((u8 *)M2C_FIELD(engine, void **, 0) + DS3D_BANK_LAYER_TILES);
+    bits = bank << 28; /* only its low 4 bits survive, into bits 2..5 */
+    old = *(u16 *)((u8 *)tile + index);
+    *(u16 *)((u8 *)tile + index) =
+        (old & ~DS3D_TILE_BANK_MASK) | (bits >> 26);
 }
 
 void Set3DSpriteLayerPalette(u32 arg0,u32 arg1) {

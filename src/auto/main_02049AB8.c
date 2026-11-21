@@ -440,14 +440,18 @@ s32 ghiSocketSend(GHIConnection *connection, const void *data, s32 len) {
     return sent;
 }
 
-s32 ghiSendData(void *p,s32 a,s32 b) {
-s32 n=0;
-if(M2C_FIELD(p,s32 *,0x5c)==0){
-n=ghiSocketSend(p,a,b);
-if(n==-1)return 0;
-if(n==b)return 1;
+/* Send len bytes of data on a connection: when its request buffer is empty, try
+   the socket directly (returning 1 if all the bytes went out); whatever is left
+   is appended to the request buffer, and the call reports 2 when only part of the
+   data was sent.  Returns 0 when the send failed and the request should stop. */
+s32 ghiSendData(GHIConnection *connection,const void *data,s32 len) {
+s32 sent=0;
+if(M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN)==0){
+sent=ghiSocketSend(connection,data,len);
+if(sent==-1)return 0;
+if(sent==len)return 1;
 }
-if(!ghiAppendDataToBuffer((s32)p+0x50,(s32 *)(a+n),b-n))return 0;
+if(!ghiAppendDataToBuffer((s32)connection+0x50,(s32 *)((const u8 *)data+sent),len-sent))return 0;
 return 2;
 }
 

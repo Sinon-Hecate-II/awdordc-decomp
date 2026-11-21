@@ -287,9 +287,12 @@ u8 result;
 switch(arg0){case 0:return 1;case 1:case 3:if(arg1<=2)result=1;else result=0;return result;case 2:case 4:case 5:if(arg1<=1)result=1;else result=0;return result;default:return 0;}
 }
 
-u8 Is3DSpriteSplitLayer(s32 arg0,s32 arg1) {
-u8 a,b,c;
-switch(arg0){case 1:if(arg1==3)a=1;else a=0;return a;case 2:if((u32)(u8)(arg1+0xfe)<=1)b=1;else b=0;return b;case 4:if(arg1==2)c=1;else c=0;return c;default:return 0;}
+/* True when `layer` of the 3D sprite bank in layout `bankMode` is a split layer:
+ * in mode 1 layer 3 is split, in mode 2 layers 1 and 2, in mode 4 layer 2.  The
+ * other layers, and every layer of the other modes, are whole layers. */
+u8 Is3DSpriteSplitLayer(s32 bankMode,s32 layer) {
+u8 split;
+switch(bankMode){case 1:if(layer==3)split=1;else split=0;return split;case 2:if((u32)(u8)(layer+0xfe)<=1)split=1;else split=0;return split;case 4:if(layer==2)split=1;else split=0;return split;default:return 0;}
 }
 
 /* Byte size of the tile buffer of sprite layer `layer` in the current engine,

@@ -275,7 +275,7 @@ void func_ov009_02221ae8(Receive21ae8 *state){
 s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
 s32 IsLinkHost(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
 s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
-M2C_UNK MI_CpuCopy8();void func_ov009_02222278(s32,M2C_UNK);
+M2C_UNK MI_CpuCopy8();void SetLinkPlayerRecord(s32,M2C_UNK);
 s32 GetLinkLocalPlayerId(void);s32 func_ov009_022240ac(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 SendLinkPlayerInfo(u8);
 u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
 s32 i,packet,channel,n,value,keep;u8 *p;u32 size;Descriptor21ae8 desc;s32 (*callback)(u8,s32);
@@ -315,9 +315,9 @@ if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae
 state->channels[channel].offset=0;p=state->channels[channel].packet;
 if(p){func_ov009_02224d1c(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
 case 11:
-func_ov009_02222278((u8)channel,packet+12);GetLinkLocalPlayerId();p=func_ov009_022240ac();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
+SetLinkPlayerRecord((u8)channel,packet+12);GetLinkLocalPlayerId();p=func_ov009_022240ac();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
 case 12:
-func_ov009_02222278((u8)channel,packet+12);p=M2C_FIELD(gLinkState,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
+SetLinkPlayerRecord((u8)channel,packet+12);p=M2C_FIELD(gLinkState,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
 case 13:
 if(GetBattleSaveBlock()){value=func_020c5640(packet+12);if(value>=0)func_020c536c(value,packet+24);SendLinkPlayerInfo((u8)channel);}
 else QueueHostLinkPacket(14,0,0,0xffff);break;
@@ -340,7 +340,7 @@ callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x54);if(callback)keep=callback((
 }
 }
 #pragma opt_lifetimes reset
-void func_ov009_02222278(s32 arg0, M2C_UNK arg1) {
+void SetLinkPlayerRecord(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32);
     extern M2C_UNK gLinkPlayers;
     MI_CpuCopy8(arg1, (arg0 * 0x60) + (s32) &gLinkPlayers);

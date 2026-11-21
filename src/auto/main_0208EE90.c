@@ -207,26 +207,29 @@ void func_0208f5d8(void) {
     PlayMusicTrack(4);
 }
 
+/* The console's language as an index the front end supports: the six localized
+ * languages map to themselves, anything else (unset or Korean) falls back to
+ * English. */
 s32 GetLanguageIndex(void) {
     u32 GetLanguage();
-    u32 temp_r0;
+    u32 language;
 
-    temp_r0 = GetLanguage();
-    switch (temp_r0) {
-    case 0:
-        return 0;
-    case 1:
-        return 1;
-    case 2:
-        return 2;
-    case 3:
-        return 3;
-    case 4:
-        return 4;
-    case 5:
-        return 5;
+    language = GetLanguage();
+    switch (language) {
+    case LANGUAGE_UNSET:
+        return LANGUAGE_UNSET;
+    case LANGUAGE_ENGLISH:
+        return LANGUAGE_ENGLISH;
+    case LANGUAGE_FRENCH:
+        return LANGUAGE_FRENCH;
+    case LANGUAGE_GERMAN:
+        return LANGUAGE_GERMAN;
+    case LANGUAGE_ITALIAN:
+        return LANGUAGE_ITALIAN;
+    case LANGUAGE_SPANISH:
+        return LANGUAGE_SPANISH;
     default:
-        return 1;
+        return LANGUAGE_ENGLISH;
     }
 }
 
@@ -306,13 +309,13 @@ s32 func_0208f770(void) {
 M2C_UNK PlayMusicTrack(s32 arg0) {
 extern s32 data_02102910;
 void func_0208f904(void);
-void func_020901e0(s32);
+void StartMusicTrack(s32);
 void func_020ad594(s32);
 void func_020ad640(void);
 s32 current=data_02102910;
 if(current==arg0) return current;
 func_0208f904();
-func_020901e0(arg0);
+StartMusicTrack(arg0);
 data_02102910=arg0;
 func_020ad594(arg0);
 func_020ad640();
@@ -525,15 +528,15 @@ void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){
 void InitSound(void) {
     void OpenSoundPlayer(void);
     void func_0208fc4c(void);
-    extern M2C_UNK data_0215783c, gSoundEffectPlayer, data_02157838, data_02157850, gSoundDriverState, gSoundFrameIds;
+    extern M2C_UNK gMusicSequencePlayer, gSoundEffectPlayer, gMusicSoundPlayer, data_02157850, gSoundDriverState, gSoundFrameIds;
     extern s32 gFrameCounter;
     s32 i;
     u8 *handle;
 
     InitSoundDriver();
-    func_0202acb0(&data_0215783c);
+    func_0202acb0(&gMusicSequencePlayer);
     func_0202acb0(&gSoundEffectPlayer);
-    func_0202d9c0(&data_02157838);
+    func_0202d9c0(&gMusicSoundPlayer);
     for (handle = (u8 *)&data_02157850, i = 0; i < SOUND_SLOT_COUNT; i++, handle += 4) {
         func_0202acb0(handle);
     }

@@ -148,15 +148,19 @@ void Sound_StopPlayer(void *player) {
     UnlockMutex(M2C_FIELD(&gSoundWorkerState, s32 *, SOUND_TASK_STATE_TASK) + SOUND_TASK_LOCK);
 }
 
-M2C_UNK Sound_ReleasePlayerResources(void *arg0) {
+/* Release everything a sound player slot still owns: return its hardware channel,
+ * run its release callback, drop its queued segment requests from the global
+ * request queue and from the worker task's queue, and detach the player.  Does
+ * nothing unless the slot is active. */
+M2C_UNK Sound_ReleasePlayerResources(void *player) {
 void Sound_RemoveRequestsForPlayer(M2C_UNK,void *); void Sound_ReleasePlayer(void *);
 extern M2C_UNK gSoundRequestQueue; extern M2C_UNK gSoundWorkerState;
-if((M2C_FIELD(arg0,s32 *,0x110)<<31)>>31==0) return;
-Sound_ReleaseChannel(arg0);
-M2C_FIELD(arg0,void (**)(void *),0x168)(arg0);
-Sound_RemoveRequestsForPlayer((M2C_UNK)&gSoundRequestQueue,arg0);
-if(M2C_FIELD(&gSoundWorkerState,void **,4)) Sound_RemoveRequestsForPlayer((M2C_UNK)((u8 *)M2C_FIELD(&gSoundWorkerState,void **,4)+0x4e0),arg0);
-Sound_ReleasePlayer(arg0);
+if(SOUND_HANDLE_FLAG_IS_SET(M2C_FIELD(player,s32 *,SOUND_HANDLE_FLAGS),SOUND_HANDLE_BIT_ACTIVE)==0) return;
+Sound_ReleaseChannel(player);
+M2C_FIELD(player,void (**)(void *),SOUND_HANDLE_RELEASE_CB)(player);
+Sound_RemoveRequestsForPlayer((M2C_UNK)&gSoundRequestQueue,player);
+if(M2C_FIELD(&gSoundWorkerState,void **,SOUND_TASK_STATE_TASK)) Sound_RemoveRequestsForPlayer((M2C_UNK)((u8 *)M2C_FIELD(&gSoundWorkerState,void **,SOUND_TASK_STATE_TASK)+SOUND_TASK_REQUEST_QUEUE),player);
+Sound_ReleasePlayer(player);
 }
 
 s32 Sound_AcquireChannel(void *arg0,s32 arg1,s32 arg2) {
@@ -182,18 +186,21 @@ void Sound_ReleaseChannel(void *arg0) {
     Sound_StopVoices();
 }
 
-void CreateSoundWorkerTask(void *arg0, s32 arg1) {
+/* Create the sound worker thread inside `worker`: give it `priority`, a
+ * SOUND_WORKER_STACK_SIZE-byte stack in the block, the Sound_WorkerThread body
+ * and an empty segment-request list and mutex; clear its wait queue and wake it. */
+void CreateSoundWorkerTask(void *worker, s32 priority) {
     M2C_UNK TaskCreate(void *, M2C_UNK *, void *, s32, s32, s32);
     M2C_UNK TaskWake(void *);
     M2C_UNK InitMutex(void *);
     M2C_UNK ListInit(void *, M2C_UNK);
-    extern M2C_UNK func_0202ee30;
-    TaskCreate(arg0, &func_0202ee30, arg0, arg0 + 0x4C0, 0x400, arg1);
-    ListInit(arg0 + 0x4E0, 0);
-    InitMutex(arg0 + 0x4C8);
-    M2C_FIELD(arg0, s32 *, 0x4C4) = 0;
-    M2C_FIELD(arg0, s32 *, 0x4C0) = 0;
-    TaskWake(arg0);
+    extern M2C_UNK Sound_WorkerThread;
+    TaskCreate(worker, &Sound_WorkerThread, worker, worker + SOUND_TASK_WAIT_QUEUE, SOUND_WORKER_STACK_SIZE, priority);
+    ListInit(worker + SOUND_TASK_REQUEST_QUEUE, 0);
+    InitMutex(worker + SOUND_TASK_LOCK);
+    M2C_FIELD(worker, s32 *, SOUND_TASK_WAIT_QUEUE_TAIL) = 0;
+    M2C_FIELD(worker, s32 *, SOUND_TASK_WAIT_QUEUE) = 0;
+    TaskWake(worker);
 }
 
 /* Remove every queued sound-segment request for `player` from `list` and free
@@ -348,7 +355,7 @@ void Sound_QueueSegment(s32 mode, s32 noteCount, u8 **buffers, s32 size, s32 pla
  * recomputes the samples left.  Gives up if the callback or the sound is
  * missing, or if the restart changed the sound kind or the sample rate. */
 void Sound_RequestNextSegment(void *player) {
-    s32 *func_0202c1cc(s32);
+    s32 *GetSoundRecord(s32);
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     u64 U64Divide(u64, u64);
     s32 *sample;
@@ -363,7 +370,7 @@ void Sound_RequestNextSegment(void *player) {
     if (M2C_FIELD(player, s32 (**)(M2C_UNK, s32 *, s32 *, s32), SOUND_HANDLE_SEGMENT_CB)(0, &segment[2], &segment[0], M2C_FIELD(player, s32 *, SOUND_HANDLE_SEGMENT_ARG)) == 0) {
         return;
     }
-    sample = func_0202c1cc(segment[0]);
+    sample = GetSoundRecord(segment[0]);
     if (sample == 0) {
         return;
     }

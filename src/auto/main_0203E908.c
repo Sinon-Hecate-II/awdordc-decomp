@@ -124,14 +124,17 @@ s32 SendMatchmakingParameter(s32 value) {
     return result;
 }
 
-void FormatMatchmakingMessage(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Format the description of why a match-making parameter was rejected into
+ * `text`: the reported player id, session capacity and connection mode against
+ * the server's expected dwc_mver/dwc_pid/dwc_mtype/dwc_mresv key values. */
+void FormatMatchmakingMessage(M2C_UNK text, s32 playerId, s32 capacity, s32 mode) {
     M2C_UNK StringFormatN(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *, s32, M2C_UNK *, s32, s32, s32, M2C_UNK *, s32, M2C_UNK *, M2C_UNK *);
     extern M2C_UNK sDwcKeyPid;
     extern M2C_UNK sDwcKeyMType;
     extern M2C_UNK sDwcKeyMResv;
     extern M2C_UNK sDwcKeyMVer;
     extern M2C_UNK sDwcFormatMismatch;
-    StringFormatN(arg0, 0x100, &sDwcFormatMismatch, &sDwcKeyMVer, 3, &sDwcKeyPid, arg1, arg2, arg2, &sDwcKeyMType, arg3, &sDwcKeyMResv, &sDwcKeyPid);
+    StringFormatN(text, 0x100, &sDwcFormatMismatch, &sDwcKeyMVer, 3, &sDwcKeyPid, playerId, capacity, capacity, &sDwcKeyMType, mode, &sDwcKeyMResv, &sDwcKeyPid);
 }
 
 s32 func_0203ecb0(s32 mode, s32 sessionId, s32 data) {

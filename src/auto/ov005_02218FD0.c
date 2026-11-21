@@ -35,7 +35,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02082c84();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
     M2C_UNK func_02091d4c(M2C_UNK);
     M2C_UNK func_02098b94(s32, s32, M2C_UNK, M2C_UNK);
@@ -192,7 +192,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_FIELD(arg0, void **, 0x38) = func_020ab1c4(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x38), 1, 0x158, 4, 1);
     temp_r5 = M2C_FIELD(arg0, void **, 0x38);
-    func_02088e84(temp_r5, 0, 0xC0, 0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r5, 0, 0xC0, 0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
@@ -229,7 +229,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_FIELD(arg0, void **, 0x3C) = func_020ab1c4(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x3C), 0xE, 0x168, 4, 1);
     temp_r5_2 = M2C_FIELD(arg0, void **, 0x3C);
-    func_02088e84(temp_r5_2, 0, 0xC0, 0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r5_2, 0, 0xC0, 0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r5_2, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_2 = 1;
     } else {
@@ -266,7 +266,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_FIELD(arg0, void **, 0x40) = func_020ab1c4(7);
     func_020aab24(M2C_FIELD(arg0, void **, 0x40), 0xF, 0x170, 4, 1);
     temp_r5_3 = M2C_FIELD(arg0, void **, 0x40);
-    func_02088e84(temp_r5_3, 0, 0xC0, 0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r5_3, 0, 0xC0, 0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r5_3, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_3 = 1;
     } else {
@@ -450,7 +450,7 @@ M2C_FIELD(p,s32 *,0x3c)++;
 M2C_FIELD(p,s32 *,0x40)=EaseInterpolate(4,32,0,M2C_FIELD(p,s32 *,0x3c),16);
 y=(s16)(M2C_FIELD(p,s32 *,0x40)+160);
 q=M2C_FIELD(p,void **,0x34);
-func_02088e84(q,224,y,224,y);
+Set3DSpriteSlideTargetAndStart(q,224,y,224,y);
 if(M2C_FIELD(M2C_FIELD(q,void **,0x64),u8 *,0x12)!=0) t=1; else t=0;
 if(t&255){a=M2C_FIELD(q,s16 *,0x52);b=M2C_FIELD(q,s16 *,0x50);u=GetUnitSpriteWidth(q);func_02087d84(M2C_FIELD(q,void **,0x64),1,b,a,(u16)u,(u16)GetUnitSpriteHeight(q));}
 M2C_FIELD(q,s16 *,0x34)=224;M2C_FIELD(q,s16 *,0x36)=y;

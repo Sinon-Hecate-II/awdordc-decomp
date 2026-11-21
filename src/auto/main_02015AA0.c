@@ -455,35 +455,38 @@ scanned++;slot=slot==16?1:slot+1;
 return 1;
 }
 
-s32 func_02016840(void) {
+/* Whether the multiboot link can run its match-data exchange: the exchange is
+ * under way, no send is still pending, the link is not shutting down and at
+ * least one player is still in it. */
+s32 Mb_LinkExchangeReady(void) {
     extern M2C_UNK gMbState;
-    s32 var_r0;
-    s32 var_r2;
-    s32 var_r3;
+    s32 ready;
+    s32 notClosing;
+    s32 exchangeStarted;
 
-    var_r0 = 0;
-    var_r3 = 0;
-    var_r2 = 0;
-    if ((M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0x528) == 1) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, 0x50C) == 0)) {
-        var_r3 = 1;
+    ready = 0;
+    exchangeStarted = 0;
+    notClosing = 0;
+    if ((M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_LINK_EXCHANGE) == 1) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, MB_LINK_SEND_PENDING) == 0)) {
+        exchangeStarted = 1;
     }
-    if ((var_r3 != 0) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0x526) == 0)) {
-        var_r2 = 1;
+    if ((exchangeStarted != 0) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_LINK_CLOSING) == 0)) {
+        notClosing = 1;
     }
-    if ((var_r2 != 0) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0x52A) != 0)) {
-        var_r0 = 1;
+    if ((notClosing != 0) && (M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, MB_LINK_PLAYERS) != 0)) {
+        ready = 1;
     }
-    return var_r0;
+    return ready;
 }
 
 void func_020168a0(void) {
     s32 func_020119dc(M2C_UNK *);
-    s32 func_02013d4c(M2C_UNK *, u16, u16, u16, s32);
+    s32 WFC_SubmitConnectRequest(M2C_UNK *, u16, u16, u16, s32);
     M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);
     extern M2C_UNK gMbParam;
     extern M2C_UNK func_02016934;
     Mb_ReportPacketResult(0x80, func_020119dc(&func_02016934));
-    Mb_ReportPacketResult(0x1D, func_02013d4c(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
+    Mb_ReportPacketResult(0x1D, WFC_SubmitConnectRequest(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
 }
 
 void Mb_CancelLink(s32 arg0) {

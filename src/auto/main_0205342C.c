@@ -345,7 +345,7 @@ s32 gpiAppendInfoRequest(void **connection, s32 profileId, s32 operationId) {
  * callbackArg are delivered on completion, and doFinish waits for the result. */
 s32 gpiGetInfoInternal(void **connection,s32 profileId,s32 useLocal,s32 doFinish,s32 callback,s32 callbackArg) {
 s32 gpiFindBuddyStatus(void **,s32,void **);void *gpiMalloc(s32);M2C_UNK gpiSetErrorString(void **,M2C_UNK *);void gpiCopyInfo(void *,void *);
-s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void func_02054484(void **,void *);s32 gpiThink(void **,s32);
+s32 gpiAddCallback(void **,RequestPair534,void *,void *,s32);void gpiRemoveOperation(void **,void *);s32 gpiThink(void **,s32);
 extern M2C_UNK data_020fe824;
 register void *buffer; register s32 operationId; register s32 finish=doFinish; register s32 value=profileId;
 void *cachedInfo,*operation; void *session=*connection; s32 useCache,rc;RequestPair534 pair;
@@ -360,7 +360,7 @@ pair.a=callback;pair.b=callbackArg;
 rc=gpiAddOperation(connection,2,0,&operation,1,callback,callbackArg);if(rc)return rc;
 operationId=M2C_FIELD(operation,s32 *,24);
 rc=gpiAddCallback(connection,pair,buffer,operation,0);if(rc)return rc;
-func_02054484(connection,operation);
+gpiRemoveOperation(connection,operation);
 }else{
 rc=gpiAddOperation(connection,2,0,&operation,doFinish,callback,callbackArg);if(rc)return rc;
 operationId=M2C_FIELD(operation,s32 *,24);rc=gpiAppendInfoRequest(connection,profileId,operationId);if(rc)return rc;

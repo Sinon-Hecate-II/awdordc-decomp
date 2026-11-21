@@ -2,22 +2,26 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_unit_move.h"
+#include "ds3dsprite.h"
 typedef struct { s32 values[3]; } A77cTable;
 typedef struct { u32 value, threshold; } A564Entry;
 extern const A77cTable data_ov000_021aabb0;
 extern u32 gRecordValues[];
 
 #pragma opt_strength_reduction off
-void PlayUnitMoveSound(void *p) { s32 func_020a7298(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
+void PlayUnitMoveSound(void *p) { s32 GetUnitVariantIndex(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
 #pragma opt_strength_reduction reset
 void UpdateMoveSoundPan(void *);
-void StepUnitMoveSound(void *p) {
-s32 func_020a7298(u8,u8);
+/* When a unit starts a step, a walker plays the terrain's footstep sound (its
+ * variant's move-sound record says so); every other unit instead has a looping
+ * move sound, which is re-panned to the tile the unit is entering. */
+void StepUnitMoveSound(void *move) {
+s32 GetUnitVariantIndex(u8,u8);
 void PlayUnitStepSound(void *);
 extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;
-s32 idx=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd));
-if(*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)==0x8000){PlayUnitStepSound(p);return;}
-((void (*)(void *))UpdateMoveSoundPan)(p);
+s32 variant=GetUnitVariantIndex(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(*gCurrentMap+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+if(*(s32 *)((u8 *)&gUnitMoveSoundSpecials+variant*UNIT_MOVE_SOUND_RECORD_SIZE)==UNIT_MOVE_SOUND_FOOTSTEP){PlayUnitStepSound(move);return;}
+((void (*)(void *))UpdateMoveSoundPan)(move);
 }
 
 /* Returns the footstep sound id for the terrain at map cell (x, y): most kinds
@@ -41,10 +45,10 @@ default:return 0;
  * terrain's footstep sound, a hidden submarine a fixed sound, every other kind
  * its own movement sound; then pan the sound to the unit's tile. */
 void PlayUnitStepSound(void *move){
-s32 func_020a7298(u8,u8);void PlaySoundAtTile(s32,s32,s32);void PlaySoundEffectOnChannel0(s32);
+s32 GetUnitVariantIndex(u8,u8);void PlaySoundAtTile(s32,s32,s32);void PlaySoundEffectOnChannel0(s32);
 extern s32 *gCurrentMap;extern s32 gUnitMoveSounds;
 s32 soundIndex,x,y;u16 sound;
-soundIndex=func_020a7298(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(*gCurrentMap+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+soundIndex=GetUnitVariantIndex(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(*gCurrentMap+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
 x=M2C_FIELD(move,s16 *,UNIT_MOVE_X)+8;y=M2C_FIELD(move,s16 *,UNIT_MOVE_Y)+8;x/=16;y/=16;
 switch(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND)){
 case 1:case 2:
@@ -69,20 +73,23 @@ x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;
 PlaySlotSoundEffect(0,func_0208fa78(x/16,y/16));
 }
 
-void func_ov000_0216a30c(s32 arg0, s32 arg1, s32 arg2) {
-    M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
-    s32 func_02081070(M2C_UNK *, M2C_UNK);
-    M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK HeapFreeBlock(s32);
+/* Copy one 0x100-byte block of the rank icon tiles from /window/rank.cg into
+ * sprite texture memory at destOffset, and the icon palette from
+ * /window/rank.cl into sprite palette slot palette. */
+void LoadRankIconGraphics(s32 icon, s32 destOffset, s32 palette) {
+    s32 LoadDecompressedFile(s32, s32);
+    void MI_CpuCopy32(s32, s32, s32);
+    void HeapFreeBlock(s32);
+    s32 LoadFileToSpriteBuffer(s32, s32, s32);
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov000_021b7e5c;
-    extern M2C_UNK data_ov000_021b7e6c;
-    s32 temp_r0;
+    extern const char gRankIconGfxFile[];
+    extern const char gRankIconPaletteFile[];
+    s32 gfx;
 
-    temp_r0 = func_02081070(&data_ov000_021b7e5c, 0);
-    MI_CpuCopy32(temp_r0 + (arg0 << 8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg1, 0x100);
-    HeapFreeBlock(temp_r0);
-    LoadFileToSpriteBuffer(&data_ov000_021b7e6c, (arg2 + 0x10) << 5, 0x20);
+    gfx = LoadDecompressedFile((s32)gRankIconGfxFile, 0);
+    MI_CpuCopy32(gfx + (icon << 8), M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + destOffset, 0x100);
+    HeapFreeBlock(gfx);
+    LoadFileToSpriteBuffer((s32)gRankIconPaletteFile, (palette + DS3D_OBJ_PALETTE_BASE) << DS3D_PALETTE_SHIFT, DS3D_PALETTE_BYTES);
 }
 
 void AddSprite32x16(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {

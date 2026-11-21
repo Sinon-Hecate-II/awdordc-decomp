@@ -44,8 +44,8 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,12)=(M2C_FIELD(*(void**)gCur3DSpriteE
 #pragma opt_strength_reduction reset
 #pragma opt_instruction_scheduling reset
 void func_ov000_0216ea10(void) {
-    M2C_UNK func_ov000_0216e110();
-    func_ov000_0216e110();
+    M2C_UNK ArmyInfo_CreatePlayerSlots();
+    ArmyInfo_CreatePlayerSlots();
 }
 
 /* Handles up/down/LR input while a unit list menu is open. */

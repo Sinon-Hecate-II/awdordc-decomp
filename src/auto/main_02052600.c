@@ -27,7 +27,7 @@ s32 func_02052600(void **arg0, void *arg1, char *arg2) {
     s32 gpiIntToDate(void **, s32, s32 *, s32 *, s32 *);
     M2C_UNK gpiCopyInfo(s8 **, void *);
     M2C_UNK func_02053e40(void **, void *, s8 **);
-    M2C_UNK func_02054484(void **, void *);
+    M2C_UNK gpiRemoveOperation(void **, void *);
     void *func_02055aa0(void **, s32);
     M2C_UNK gpiFindBuddyStatus(void **, s32, void **);
     s32 gpiProcessErrorReply(void **, char *, s32);
@@ -278,7 +278,7 @@ block_41:
             return temp_r0;
         }
     }
-    func_02054484(arg0, arg1);
+    gpiRemoveOperation(arg0, arg1);
     return 0;
 }
 }

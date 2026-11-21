@@ -12,7 +12,7 @@ typedef struct SelectionMenu {
     s16 progress;   /* +0x70: animation/step counter */
 } SelectionMenu;
 
-/* The player-defeat presentation sprite (class gPlayerDefeatSpriteClass): the
+/* The player-defeat presentation sprite (class gPlayerDefeatClass): the
    player being defeated, the victory-rule flag that defeated them, and the
    slot of their unit group the presentation has reached. */
 typedef struct PlayerDefeatSprite {
@@ -140,12 +140,12 @@ void RemoveDefeatedPlayerUnits(PlayerDefeatSprite *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_020c9e94(u16 arg0, u16 arg1) {
+void CreatePlayerDefeatSprite(u16 arg0, u16 arg1) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0212b304;
+    extern M2C_UNK gPlayerDefeatClass;
     void *temp_r0;
 
-    temp_r0 = CreateSpriteFromClass(&data_0212b304, 7);
+    temp_r0 = CreateSpriteFromClass(&gPlayerDefeatClass, 7);
     M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
     M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
 }
@@ -175,29 +175,34 @@ void MarkPlayerDefeated(s32 player, s32 reason) {
     AddRecordValue(0x16, 1);
 }
 
-void func_020c9f74(s32 arg0) {
+void ShowArmyDefeatMessage(s32 arg0) {
     typedef struct { s32 entries[4]; } Table;
     M2C_UNK ShowUiMessage(s32);
     extern void **gCurrentMap;
-    extern Table data_020f4e68;
+    extern Table gArmyDefeatMessageIds;
     Table sp0;
-    sp0 = data_020f4e68;
+    sp0 = gArmyDefeatMessageIds;
     ShowUiMessage(sp0.entries[M2C_FIELD((u8 *)*gCurrentMap + arg0 * 0x8C, u8 *, 0x67C1) - 1]);
 }
 
-void StartPlayerDefeat(s32 arg0, s32 arg1) {
+/* Starts the defeat presentation of `player`, who was removed for `reason` (a
+ * PLAYER_DEFEAT_* victory-rule flag): shows the army's defeat message, creates
+ * the presentation sprite and records the defeat, ends the turn when the
+ * defeated player was the current one, and on a lost HQ schedules the battle-end
+ * check. */
+void StartPlayerDefeat(s32 player, s32 reason) {
     void ScheduleBattleEndCheck(void);
     void func_020a3498(void);
     void EndPlayerTurn(void);
     extern void **gCurrentMap;
-    func_020c9f74(arg0);
-    func_020c9e94((u16)arg0, (u16)arg1);
-    MarkPlayerDefeated(arg0, arg1);
-    if (M2C_FIELD(*gCurrentMap, u16 *, 0x52A4) == arg0) {
+    ShowArmyDefeatMessage(player);
+    CreatePlayerDefeatSprite((u16)player, (u16)reason);
+    MarkPlayerDefeated(player, reason);
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) == player) {
         func_020a3498();
         EndPlayerTurn();
     }
-    if (arg1 != 2) return;
+    if (reason != PLAYER_DEFEAT_LOST) return;
     ScheduleBattleEndCheck();
 }
 

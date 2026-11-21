@@ -64,6 +64,9 @@
 #define SOCK_NEXT_PEER_PORT 0x1a /* u16 staged peer port */
 #define SOCK_NEXT_PEER_ADDR 0x20 /* s32 staged peer IPv4 address */
 
+/* The well-known UDP port of a DNS server. */
+#define DNS_SERVER_PORT 53
+
 /* Raw connection receive queue. */
 #define CONN_RECV_TAIL   0x100 /* void *newest queued record */
 #define CONN_RECV_HEAD   0x104 /* void *oldest queued record */

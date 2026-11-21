@@ -19,7 +19,7 @@ extern u16 gIntroAnimState[6];
 
 /* Handles an entry's per-frame update across both screen buffers for states 2 and 3. */
 void func_ov011_02223cb8(void *entry){
-void LoadOpeningScreenAssets(void *,s32,s32);void func_ov011_02224f00(void *);void func_0208f7d0(s32);
+void LoadOpeningScreenAssets(void *,s32,s32);void LoadIntroStage4Assets(void *);void func_0208f7d0(s32);
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain,g3DSpriteEngineSub;
 u8 color[2]={0};
 s32 savedEngine,bufIndex,screenEngine;
@@ -72,7 +72,7 @@ u16 *volatile p0;u16 *volatile p1;u16 *volatile p2;u16 *volatile p3;u16 *volatil
 func_ov011_02224aac(entry,5);
 G3_SubmitSpriteQuad(entry,2,3,0x80,0x60);
 G3_UpdateIntroTiles(entry,0,0,0,color);
-func_ov011_02224f00(entry);
+LoadIntroStage4Assets(entry);
 savedEngine=gCur3DSpriteEngine;bufIndex=0;
 do{
 if(bufIndex==0)screenEngine=g3DSpriteEngineMain;else screenEngine=g3DSpriteEngineSub;

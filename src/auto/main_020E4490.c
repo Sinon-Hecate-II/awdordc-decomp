@@ -201,7 +201,7 @@ void ResetGameState(void) {
     M2C_UNK Apply3DSpriteBanks();
     M2C_UNK func_0207b800();
     M2C_UNK ResetTextLabelSlots();
-    M2C_UNK func_020834c4();
+    M2C_UNK ResetTextState();
     M2C_UNK ResetDialogUI();
     M2C_UNK func_020960b4();
     M2C_UNK func_0209f87c();
@@ -222,7 +222,7 @@ void ResetGameState(void) {
     InitDefaultGameSettings();
     ResetDialogUI();
     ResetSpriteSlots();
-    func_020834c4();
+    ResetTextState();
     ResetTextLabelSlots();
     ClearCampaignMapHeaders();
     func_020abf94();
@@ -278,7 +278,7 @@ void func_020e4870(s32 arg0) {
     extern void **gCurrentMap;
     extern u8 data_0215dba4[];
     extern u8 data_0215dbac[];
-    extern M2C_UNK data_0215d8a8;
+    extern M2C_UNK gMapProgressRecords;
     extern u8 data_0215dcac[];
     extern M2C_UNK gEventFlagsHigh;
     extern u8 data_0215dcb4[];
@@ -318,17 +318,17 @@ void func_020e4870(s32 arg0) {
     dest = (u32 *)(data_0215dba4 + offset);
     dest[0] = word;
     dest[1] = summary[1];
-    *(SaveProgressWords *)(data_0215dbac + offset) = *(SaveProgressWords *)&data_0215d8a8;
+    *(SaveProgressWords *)(data_0215dbac + offset) = *(SaveProgressWords *)&gMapProgressRecords;
     *(SaveProgressFlags *)(data_0215dcac + offset) = *(SaveProgressFlags *)&gEventFlagsHigh;
     *(SaveProgressFlags *)(data_0215dcb4 + offset) = *(SaveProgressFlags *)&gEventValues;
 }
 #pragma peephole reset
 void func_020e49ec(void) {
     M2C_UNK func_02086ae4(s32, M2C_UNK);
-    M2C_UNK func_0209c7fc();
+    M2C_UNK ResetMapProgress();
     s32 var_r5;
 
-    func_0209c7fc();
+    ResetMapProgress();
     var_r5 = 0x60;
     do {
         func_02086ae4(var_r5, 0);
@@ -347,7 +347,7 @@ void LoadSaveSlotProgress(s32 slot)
   s32 GetSaveRecordBuffer(void);
   s32 LoadNewestSaveRecord(s32, s32);
   extern M2C_UNK gSaveSlotSummary;
-  extern M2C_UNK data_0215d8a8;
+  extern M2C_UNK gMapProgressRecords;
   extern M2C_UNK gEventFlagsHigh;
   extern M2C_UNK gEventValues;
   extern M2C_UNK data_0215d9b8;
@@ -368,7 +368,7 @@ void LoadSaveSlotProgress(s32 slot)
     ((volatile u32 *) (&gSaveSlotSummary))[0] = word0;
     ((volatile u32 *) (&gSaveSlotSummary))[1] = word1;
   }
-  *((SaveProgressWords *) (&data_0215d8a8)) = *((SaveProgressWords *) (((u8 *) slotRecord) + 0x28c));
+  *((SaveProgressWords *) (&gMapProgressRecords)) = *((SaveProgressWords *) (((u8 *) slotRecord) + 0x28c));
   *((SaveProgressFlags *) (&gEventFlagsHigh)) = *((SaveProgressFlags *) (((u8 *) (saveBuffer + offset)) + 0x38c));
   *((SaveProgressFlags *) (&gEventValues)) = *((SaveProgressFlags *) (((u8 *) (saveBuffer + offset)) + 0x394));
   for (i = 0; i < 3; i++)
@@ -415,7 +415,7 @@ return first;
 }
 #pragma opt_propagation reset
 void func_020e4c64(void) {
-    s32 func_02081070(M2C_UNK *, M2C_UNK);
+    s32 LoadDecompressedFile(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212da20;
     extern M2C_UNK data_02168fec;
     u8 temp_r2;
@@ -425,7 +425,7 @@ void func_020e4c64(void) {
     if (temp_r2 != 0) {
         return;
     }
-    M2C_FIELD(&data_02168fec, s32 *, 4) = func_02081070(&data_0212da20, 1);
+    M2C_FIELD(&data_02168fec, s32 *, 4) = LoadDecompressedFile(&data_0212da20, 1);
 }
 
 void func_020e4ca0(void) {M2C_UNK HeapFreeBlock(s32);extern M2C_UNK data_02168fec;u32 n=M2C_FIELD(&data_02168fec,u8 *,0)-1;M2C_FIELD(&data_02168fec,u8 *,0)=n;if(n&255)return;HeapFreeBlock(M2C_FIELD(&data_02168fec,s32 *,4));M2C_FIELD(&data_02168fec,s32 *,4)=0;}

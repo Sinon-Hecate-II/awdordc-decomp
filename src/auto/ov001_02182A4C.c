@@ -244,13 +244,16 @@ void func_ov001_02182f5c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern M2C_UNK func_ov001_02182f7c;
+    extern M2C_UNK Ov001_StartCloseWfcMenu;
     Ov001_LockIconRow();
     func_ov001_0218aa24(8);
-    Ov001_SetStepCallback(&func_ov001_02182f7c);
+    Ov001_SetStepCallback(&Ov001_StartCloseWfcMenu);
 }
 
-void func_ov001_02182f7c(void) {
+/* WFC menu closing step: wait for the top-screen fade to finish, slide the icon
+   row out, fade both screens out (the top screen only when the player did not
+   choose to connect to Nintendo WFC) and move on to Ov001_CloseWfcMenuScreen. */
+void Ov001_StartCloseWfcMenu(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
     extern u8 gOv001WfcConnectChosen;
     extern M2C_UNK Ov001_CloseWfcMenuScreen;
@@ -383,13 +386,13 @@ void func_ov001_02183254(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern M2C_UNK func_ov001_0218327c;
+    extern M2C_UNK Ov001_UpdateConnectionWait;
     if (Ov001_GetIconRowSelection() == -2) return;
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_0218327c);
+    Ov001_SetStepCallback(&Ov001_UpdateConnectionWait);
 }
 
-void func_ov001_0218327c(void) {
+void Ov001_UpdateConnectionWait(void) {
     void func_ov001_02183290(void);
     void func_ov001_021832c8(void);
     void func_ov001_021832cc(void);
@@ -415,9 +418,9 @@ void func_ov001_021832c8(void) {
 
 }
 
-void func_ov001_021832cc(void){void func_ov001_02183318(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);}
+void func_ov001_021832cc(void){void Ov001_StartConnectionClose(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);}
 
-void func_ov001_02183318(void) {
+void Ov001_StartConnectionClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
@@ -507,7 +510,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001WfcScreenState;
     void func_ov001_02183584(void);
-    void func_ov001_02183318(void);
+    void Ov001_StartConnectionClose(void);
     void func_ov001_021835d0(void);
 
     if (gOv001WfcScreenState != 0) {
@@ -524,7 +527,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     case 1:
         gOv001WfcScreenState = 1;
         Ov001_StopSound();
-        return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
+        return Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);
     case 2:
         Ov001_StopSound();
         Ov001_SetConnectionStatusCallback(0);
@@ -535,7 +538,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
         gOv001WfcScreenState = 2;
         Ov001_StopSound();
         Ov001_PlaySound(9);
-        return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
+        return Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);
     }
     return status;
 }
@@ -558,29 +561,33 @@ void func_ov001_021835b0(void) {
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);
 }
 
-void func_ov001_021835d0(void){void func_ov001_0218362c(void);extern u8 gOv001WfcScreenState;switch(Ov001_GetRegionMenuSelection()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}Ov001_CloseRegionMenu();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218362c);}
+void func_ov001_021835d0(void){void Ov001_ResumeConnectionWait(void);extern u8 gOv001WfcScreenState;switch(Ov001_GetRegionMenuSelection()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}Ov001_CloseRegionMenu();Ov001_SetStepCallback((M2C_UNK *)&Ov001_ResumeConnectionWait);}
 
-void func_ov001_0218362c(void) {
+/* Step after the region menu closes on the Wi-Fi connection screen: when the
+   connection is already complete, go straight to the screen's closing step;
+   otherwise re-arm the connection status callback and go back to the step that
+   waits for the other players. */
+void Ov001_ResumeConnectionWait(void) {
     M2C_UNK Ov001_UnlockIconRow();
     void Ov001_SetConnectionStatusCallback(s32);
     extern u8 gOv001WfcScreenState;
-    void func_ov001_0218327c(void);
+    void Ov001_UpdateConnectionWait(void);
           M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK);
       if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    if (gOv001WfcScreenState == 1) {
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183318);
+    if (gOv001WfcScreenState == OV001_WFC_SCREEN_CONNECTED) {
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);
         return;
     }
     Ov001_PlaySound(0xB);
     Ov001_UnlockIconRow();
-    gOv001WfcScreenState = 0;
+    gOv001WfcScreenState = OV001_WFC_SCREEN_NONE;
     Ov001_SetConnectionStatusCallback((M2C_UNK)&Ov001_HandleConnectionStatus);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0218327c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateConnectionWait);
 }
 
 void InitMapPreview(void *a){extern void *gOv001MapPreview;void *Ov001_Alloc(s32,s32);void MI_CpuCopy32(void *,void *,s32);s32 Ov001_AddTask(s32,void (*)(),s32,s32);void FlushMapPreview(void);void *p=Ov001_Alloc(0x608,4);gOv001MapPreview=p;MI_CpuCopy32(a,(u8 *)p+4,0x600);M2C_FIELD(gOv001MapPreview,s32 *,0)=Ov001_AddTask(1,FlushMapPreview,0,120);}

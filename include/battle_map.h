@@ -153,6 +153,7 @@ typedef struct DirectionMarker {
 } DirectionMarker;
 #define MAP_CELL_BITMAP     0x5201 /* u8[0xA1] the second team's bitmap of the cells it can see or threaten */
 #define MAP_CELL_BITMAP_TEAM_A 0x5160 /* u8[0xA1] the first team's bitmap of the cells it can see or threaten */
+#define MAP_CELL_BITMAP_SIZE 0xA1 /* bytes in one team's cell bitmap; the two bitmaps sit back to back */
 #define MAP_WIDTH           0x5144 /* u16 map width in cells */
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
 #define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
@@ -265,6 +266,11 @@ enum {
     MAP_PROPERTY_COUNT_RADAR = 9,
     MAP_PROPERTY_COUNT_NONE = -1
 };
+
+/* Shape of the per-owner property count grid filled by CountMapProperties: one
+ * band per player/owner and one column per MAP_PROPERTY_COUNT_* kind. */
+#define MAP_PROPERTY_GRID_BANDS   5
+#define MAP_PROPERTY_GRID_COLUMNS 12
 
 /* The property tile ids (gPropertyTileIds): nine rows of
  * MAP_PROPERTY_TILE_OWNERS tile ids, one row per capturable property kind in
@@ -648,6 +654,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_SCRIPT_COMMAND_OPCODE 0x00 /* s32 opcode of a command */
 #define MAP_SCRIPT_OP_END       7  /* terminator command: the block ends here */
 #define MAP_SCRIPT_OP_LABEL     29 /* label command: names a jump target in MAP_SCRIPT_OPERAND2 */
+#define MAP_SCRIPT_PARAM        0x04 /* opcode-specific word of the current command (a callback or a sprite class) */
 #define MAP_SCRIPT_STATE_IP     0x04
 #define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
 #define MAP_SCRIPT_OPERAND1     0x0A /* s16 second operand */
@@ -658,6 +665,14 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_INCOME  0x08 /* s32 funds the player's properties pay it per turn */
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */
+/* The player's CO power meter is packed into bits 21..31 of PLAYER_REC_SPRITE:
+ * GetCoPowerMeterPoints reads it and SetCoPowerMeterPoints writes it; charging it adds
+ * points clamped to the player's dual-power cost. */
+#define PLAYER_CO_METER_SHIFT 21 /* bits 21..31 of PLAYER_REC_SPRITE: CO power meter points */
+/* Power selector for GetCoPowerMeterCost: which of a commander's powers' star cost to read. */
+#define CO_POWER_LEVEL_NONE 0
+#define CO_POWER_LEVEL_CO   1
+#define CO_POWER_LEVEL_DUAL 2
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
 #define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
 /* Per-kind property counters of a player record, recounted with
@@ -700,6 +715,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_REC_ATTACK_COUNT  0x78 /* s32 number of attacks this player made */
 #define PLAYER_REC_KILL_DAMAGE   0x7C /* s32 damage of attacks that left the target at 0 HP */
 #define PLAYER_REC_BATTLE_COUNT  0x80 /* s32 number of fights this player took part in */
+#define PLAYER_REC_TOTAL_TIME    0x84 /* u32 saturating total frames this player's clock has run while the turn timer is enabled */
 #define PLAYER_DAMAGE_DEALT_OFF (MAP_PLAYER_STATES + PLAYER_REC_DAMAGE_DEALT)
 #define PLAYER_ATTACK_COUNT_OFF (MAP_PLAYER_STATES + PLAYER_REC_ATTACK_COUNT)
 #define PLAYER_BATTLE_COUNT_OFF (MAP_PLAYER_STATES + PLAYER_REC_BATTLE_COUNT)
@@ -712,7 +728,7 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_ARMY_STATE_OFF (MAP_PLAYER_STATES + PLAYER_REC_ARMY_STATE) /* u8 */
 #define PLAYER_TURN_TIME_OFF (MAP_PLAYER_STATES + PLAYER_REC_TURN_TIME) /* u32 elapsed turn time in frames */
 #define PLAYER_REC_FLIP        0x28 /* u8 nonzero when this player's unit sprites are mirrored horizontally */
-#define PLAYER_REC_SPRITE_STATE 0x29 /* u8 cached 0/1 state that picks the unit sprite variant (func_020a7298) */
+#define PLAYER_REC_SPRITE_STATE 0x29 /* u8 cached 0/1 state that picks the unit sprite variant (GetUnitVariantIndex) */
 #define PLAYER_FLIP_OFF (MAP_PLAYER_STATES + PLAYER_REC_FLIP) /* u8 */
 #define PLAYER_SPRITE_STATE_OFF (MAP_PLAYER_STATES + PLAYER_REC_SPRITE_STATE) /* u8 */
 #define MAP_TEAM_A_PLAYER  0x52b8 /* s16 id of the player team A's army belongs to */
@@ -820,6 +836,12 @@ enum {
  * decorations); the screen counts as up once a sprite at this Z exists. */
 #define BATTLE_END_SPRITE_Z 0xFF03
 
+/* The battle-preview panel sprite (gBattlePreviewPanelDef, the class function
+ * func_0209eaf4 creates): the unit it previews and the tile it was opened on. */
+#define BATTLE_PREVIEW_UNIT 0x34 /* void *unit record, 0 when it previews the tile */
+#define BATTLE_PREVIEW_X    0x38 /* s32 tile x */
+#define BATTLE_PREVIEW_Y    0x3C /* s32 tile y */
+
 /* Player control kind (PLAYER_CONTROL_OFF). */
 enum {
     PLAYER_CONTROL_NONE  = 0, /* no player here */
@@ -847,6 +869,7 @@ enum {
 #define MAPDATA_HEIGHT  0x01 /* u8 map height in cells */
 #define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
 #define MAPDATA_LINK_BATTLE 0x04 /* u8 nonzero when the battle runs over a link/online session (its overlay is polled) */
+#define MAPDATA_TURN_TIMER 0x08 /* u32 nonzero while the battle's per-frame time accumulation runs (EnableBattleTurnTimer) */
 #define MAPDATA_RULES   0x0C /* u16 packed battle rule flags; bit 12 (0x1000) is CO powers enabled, cleared when the map forbids them, bit 13 (0x2000) selects army-specific movement costs instead of army 0's */
 #define MAPDATA_DAY_LIMIT 0x0F /* u8 day limit: when a new day starts on this day (MAP_TURN) the battle ends, 0 = unlimited */
 #define MAPDATA_TURN_TIME 0x10 /* u16 configured per-turn time limit in frames, 0 = untimed */
@@ -923,7 +946,7 @@ typedef struct MapViewTask {
     s16 fadeTimer; /* +0x34 fade-in/fade-out frame counter */
     s16 viewX;     /* +0x36 saved map view scroll x (MAP_VIEW_X) */
     s16 viewY;     /* +0x38 saved map view scroll y (MAP_VIEW_Y) */
-    s16 unk3A;     /* +0x3A */
+    s16 unk3A;     /* +0x3A nonzero: recentre the cursor on the view's middle when it closes */
 } MapViewTask;
 
 /* Drawing a map cell with the 3D sprite engine.  The cell's

@@ -1,6 +1,7 @@
 /* 9 functions from 0x0221E004 to 0x0221EDA8 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "mapedit.h"
+#include "ds3dsprite.h"
 extern M2C_UNK gMapEditObjectList;
 int func_020194e0(const void *, const void *);
 static inline void SetTextIndex(void *p, s8 n) {
@@ -84,8 +85,8 @@ return PlaySoundEffect(0x1000d);
 }
 
 void func_ov007_0221e568(u8 *arg0) {
-    M2C_UNK Divide(u8, M2C_UNK);
-    M2C_UNK Modulo(u8, M2C_UNK);
+    s32 Divide(s32, s32);
+    s32 Modulo(s32, s32);
     M2C_UNK FocusSpriteSlotById(u8);
     extern u16 *gKeyState;
     M2C_UNK MapEditorTypeCharacter(void *arg0);
@@ -93,12 +94,10 @@ void func_ov007_0221e568(u8 *arg0) {
     u16 temp_r5;
     u16 temp_r6;
     u8 var_r7;
-    u8 *ptr;
 
+    var_r7 = *arg0;
     temp_r5 = gKeyState[0];
     temp_r6 = gKeyState[1];
-    var_r7 = *arg0;
-    ptr = arg0;
     if (temp_r5 & 1) {
         MapEditorTypeCharacter(arg0);
         return;
@@ -145,7 +144,7 @@ block_15:
             }
         }
     }
-    if (*ptr == var_r7) {
+    if (*arg0 == var_r7) {
         return;
     }
     FocusSpriteSlotById(var_r7);
@@ -217,8 +216,8 @@ void MapEditorInitGlyphKeyboard(void *editor) {
 void func_ov007_0221e85c(void *arg0) {
     M2C_UNK func_02087e34(s32);
     M2C_UNK func_020b2140();
-    M2C_UNK func_020b2178();
-    func_020b2178();
+    M2C_UNK HideAllSpriteSlots();
+    HideAllSpriteSlots();
     func_02087e34(M2C_FIELD(arg0, s32 *, 0x38));
     func_020b2140();
 }
@@ -361,7 +360,7 @@ loop_1:
     LoadSpriteResource(1, 2, 0, M2C_FIELD(engine, s32 *, 0x30) + 0x2C0);
     Load3DSpritePattern(0x1000, 1, GetUiColor(9), 2);
     gCur3DSpriteEngine = savedEngine;
-    func_020b2178();
+    HideAllSpriteSlots();
 }
 
 void func_ov007_0221ec34(void) {
@@ -372,39 +371,45 @@ void func_ov007_0221ec34(void) {
 extern u16 **g3DSpriteEngineMain;
 extern u16 **data_027e01d8;
 extern u16 **gCur3DSpriteEngine;
-void func_ov007_0221ec40(void *arg0) {
+/* Draw the map editor's entry list onto the main 3D sprite engine: a pulsing
+ * highlight frame at the list's scroll position and then every object-name entry
+ * of gMapEditObjectList as a centred tile row, eight pixels apart. */
+void DrawMapEditList(MapEditList *list) {
     M2C_UNK DrawFrameBorderPulse(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
-    u16 RenderTextToTiles(s32, M2C_UNK *);
+    s32 RenderTextToTiles(s32, M2C_UNK *);
     M2C_UNK DrawTileRow(u16, M2C_UNK, u16, u16, s32);
     s32 MeasureStringWidth(M2C_UNK *);
     extern u16 **gCur3DSpriteEngine;
     extern u16 **g3DSpriteEngineMain;
     extern M2C_UNK gMapEditRecords;
     extern M2C_UNK gMapEditObjectList;
-    u16 **sp8;
-    M2C_UNK *var_r10;
-    s16 var_r6;
-    s32 var_r8;
-    s32 var_r9;
-    u16 temp_r5;
+    u16 **savedEngine;
+    s16 rowY;
+    M2C_UNK *entries;
+    s32 tileOffset;
+    s32 index;
+    M2C_UNK *entry;
+    s32 hasEntries;
 
-    sp8 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    DrawFrameBorderPulse(M2C_FIELD(arg0, s16 *, 0x3E), M2C_FIELD(arg0, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**g3DSpriteEngineMain << 0x11) >> 0x1E))) | 0x1000), 0);
-    var_r6 = 0x10;
-    var_r8 = 0x4D00;
-    var_r9 = 0;
-    if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
-        var_r10 = &gMapEditObjectList;
+    DrawFrameBorderPulse(M2C_FIELD(list, s16 *, 0x3E), M2C_FIELD(list, s16 *, 0x40), 8, 0x10, (s32) (u16) ((0x3FF & (0x80 >> ((u32) (**g3DSpriteEngineMain << 0x11) >> 0x1E))) | 0x1000), 0);
+    hasEntries = M2C_FIELD(&gMapEditRecords, s32 *, 4);
+    rowY = 0x10;
+    entries = &gMapEditObjectList;
+    tileOffset = 0x4D00;
+    index = 0;
+    if (hasEntries != 0) {
+        entry = entries;
         do {
-            temp_r5 = RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + var_r8, var_r10);
-            DrawTileRow((u16) (var_r6 + ((u32) (8 - MeasureStringWidth(var_r10)) >> 1)), 0x10, temp_r5, (u16) ((0x3FF & ((s32) (var_r8 >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
-            var_r8 = (s32) (u16) (var_r8 + (((u32) (((u32) (temp_r5 + 7) >> 3) + 3) >> 2) << 8));
-            var_r9 = var_r9 + 1;
-            var_r6 = var_r6 + 8;
-            var_r10 = &var_r10[1];
-        } while (*(&gMapEditObjectList + (var_r9 * 4)) != 0);
+            s32 width = RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + tileOffset, entry);
+            DrawTileRow((u16) (rowY + ((u32) (8 - MeasureStringWidth(entry)) >> 1)), 0x10, (u16)width, (u16) ((0x3FF & ((s32) (tileOffset >> 5) >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), 0);
+            tileOffset = (s32) (u16) (tileOffset + (((u32) (((u32) (width + 7) >> 3) + 3) >> 2) << 8));
+            index = index + 1;
+            rowY = rowY + 8;
+            entry = &entry[1];
+        } while (entries[index] != 0);
     }
-    gCur3DSpriteEngine = sp8;
+    gCur3DSpriteEngine = savedEngine;
 }
 

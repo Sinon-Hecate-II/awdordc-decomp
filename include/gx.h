@@ -65,6 +65,26 @@ enum {
 #define DISPCNT_BG_EXT_PALETTE  0x40000000
 #define DISPCNT_OBJ_EXT_PALETTE 0x80000000
 
+/* DISPCNT bits GX_ConfigureDisplay rewrites: the video-mode and BG0-enable
+ * nibble (bits 0..3) and the display-mode nibble (bits 16..19). */
+#define DISPCNT_CONFIG_MASK 0xFFF0FFF0
+
+/* The display state the GX display functions share.  gGxDisplayConfig is the
+ * compiled-in part: the display-on flag and, at +4, the main/sub register init
+ * table GX_InitDisplay copies in (-1 when none is installed).  gGxDisplayStatus
+ * is the runtime part: the display mode saved from DISPCNT bits 16..17 (0 when
+ * the display is off) and the OS lock id GX_InitDisplay takes once. */
+typedef struct GxDisplayConfig {
+    u16 on;        /* +0x00 nonzero while the display is on */
+    u16 pad02;
+    s32 initTable; /* +0x04 register init table, -1 when none is installed */
+} GxDisplayConfig;
+
+typedef struct GxDisplayStatus {
+    u16 mode;   /* +0x00 display mode, DISPCNT bits 16..17; 0 when off */
+    u16 lockId; /* +0x02 OS lock id taken by GX_InitDisplay */
+} GxDisplayStatus;
+
 /* Interrupt master enable: code saves it, writes 0 to keep interrupts off while
  * it reads shared WFC / queue state, then restores the saved value. */
 #define REG_IME (*(volatile u16 *)0x04000208)
@@ -203,6 +223,8 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_MAIN_BG_VRAM_SIZE    0x00040000
 #define GX_MAIN_BG_EXTPLTT_VRAM_BASE 0x06880000 /* main-engine background extended palettes */
 #define GX_MAIN_BG_EXTPLTT_VRAM_SIZE 0x00024000
+#define GX_SUB_BG_EXTPLTT_VRAM_BASE  0x06898000 /* sub-engine background extended palettes */
+#define GX_SUB_OBJ_EXTPLTT_VRAM_BASE 0x068A0000 /* sub-engine OBJ extended palettes */
 #define GX_MAIN_OBJ_OAM_BASE    0x07000000 /* main-engine 3D sprite OAM */
 #define GX_SUB_OBJ_OAM_BASE     0x07000400 /* sub-engine 3D sprite OAM */
 #define GX_OAM_SIZE             0x400
@@ -224,6 +246,7 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define VRAM_BANKS_OBJ     0x04 /* banks assigned to the main engine OBJ (sprite) area */
 #define VRAM_BANKS_TEX     0x08 /* banks assigned to the 3D texture area */
 #define VRAM_BANKS_TEX_EXTPLTT 0x0C /* banks assigned to the 3D texture extended palette */
+#define VRAM_BANKS_BG_EXTPLTT 0x0E /* banks assigned to the main engine background extended palette (E/F/G) */
 #define VRAM_BANKS_OBJ_EXTPLTT 0x0A /* banks assigned to the OBJ extended palette */
 #define VRAM_BANKS_OBJ_PALETTE 0x10 /* banks assigned to the main engine OBJ extended palette (MST 5 area) */
 #define VRAM_BANKS_SUB_BG  0x12 /* banks assigned to the sub engine background */

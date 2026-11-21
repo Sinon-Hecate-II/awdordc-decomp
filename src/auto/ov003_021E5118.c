@@ -22,7 +22,7 @@ void func_ov003_021e5118(void *arg0) {
     s32 GetLocalPlayerName();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Hide3DSprite(void *);
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void *func_0208bc24(void *);
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
@@ -38,7 +38,7 @@ void func_ov003_021e5118(void *arg0) {
     M2C_UNK *GetLocalizedFileName(M2C_UNK *);
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK DrawGlyphString(s32, s32, s32, M2C_UNK, s32, s32, s32);
-    M2C_UNK func_ov000_0216a30c(s32, s32, M2C_UNK);
+    M2C_UNK LoadRankIconGraphics(s32, s32, M2C_UNK);
     M2C_UNK GetEarnedRecordTierTotal();
     s32 func_ov000_0216a564();
     s32 func_ov000_0216a76c();
@@ -107,7 +107,7 @@ void func_ov003_021e5118(void *arg0) {
     *temp_r4 = func_020ab1c4(arg0);
     InitUnitSprite(*temp_r4, 2, 0x1A4, 3, 0);
     temp_r5 = *temp_r4;
-    func_02088e84(temp_r5, 0xE0, 0xA0, 0xE0, 0xC0);
+    Set3DSpriteSlideTargetAndStart(temp_r5, 0xE0, 0xA0, 0xE0, 0xC0);
     if (M2C_FIELD(M2C_FIELD(temp_r5, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0 = 1;
     } else {
@@ -168,7 +168,7 @@ void func_ov003_021e5118(void *arg0) {
     temp_r6_2 = data_027e01d8;
     DrawGlyphString(GetLocalPlayerName(), M2C_FIELD(temp_r6_2, s32 *, 0xC), M2C_FIELD(temp_r6_2, s32 *, 0x20), 7, 6, 4, 2);
     GetEarnedRecordTierTotal();
-    func_ov000_0216a30c(func_ov000_0216a564(), 0x5F80, 9);
+    LoadRankIconGraphics(func_ov000_0216a564(), 0x5F80, 9);
     if ((func_ov000_0216a76c() != -2) && (func_ov000_0216a76c() != -1)) {
         func_ov000_0216a76c();
         temp_r0_2 = func_0209b26c(0xC, 7, 0, func_ov000_0216a77c(), 0x7000, 0x320000U >> 0x10);

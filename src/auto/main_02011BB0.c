@@ -471,7 +471,7 @@ r=WFC_SendCommandPacket(packet,40);if(!r)r=2;return r;
  * 7 = profile not in the block's list). */
 s32 func_0201280c(s32 a,u32 b){s32 WFC_CheckChannelState();void *WFC_GetInfoBlock();void DC_InvalidateRange(void *,s32);void *p=WFC_GetInfoBlock();void *q;s32 r=WFC_CheckChannelState(5,7,9,8,10,11);if(r)return r;q=M2C_FIELD(p,void **,4);if(M2C_FIELD(q,u16 *,0)==7 || M2C_FIELD(q,u16 *,0)==9){if(b<1 || b>15)return 6;DC_InvalidateRange((u8 *)q+0x182,2);if(!(M2C_FIELD(M2C_FIELD(p,void **,4),u16 *,0x182)&(1<<b)))return 7;}else if(b)return 6;WFC_SetChannelParam(13,a);r=WFC_SendCommand(13,1,1<<b);if(!r)r=2;return r;}
 
-s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void *data) {
+s32 MultiBoot_SubmitLinkTask(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void *data) {
     /* Register a pending uplink packet: validates camera/module state, builds packet header in a 64-byte buffer, returns status. */
     s32 WFC_CheckChannelState();
     void *WFC_GetInfoBlock();
@@ -512,10 +512,20 @@ s32 func_020128f4(s32 index, s32 peer, s32 payloadSize, s32 param, u16 tag, void
     return rc;
 }
 
-void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void CpuFill();PacketParams_02012a64 x;CpuFill(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} func_020128f4(a,b,c,d,e,&x);}
+void func_02012a64(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f,u16 g,s32 h,s32 i,s32 j,s32 k){void CpuFill();PacketParams_02012a64 x;CpuFill(0,&x,16); x.g=k;x.e=h;x.f=i;x.flags=0x1e03;x.d=g;x.a=f;x.b=f;if(j && f){x.flags|=4;x.c=f;} MultiBoot_SubmitLinkTask(a,b,c,d,e,&x);}
 
-void func_02012b08(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,u16 f){
-void CpuFill();s32 func_020128f4(s32,s32,s32,s32,u16,void *);u32 x[4];
-CpuFill(0,x,16);x[0]=3;M2C_FIELD(x,u16 *,4)=f;M2C_FIELD(x,u16 *,6)=f;func_020128f4(a,b,c,d,e,x);
+/* Queue a multiboot link task over a data buffer and an extra buffer, with
+ * `flag` set in the 16-byte task spec; `handler` receives its completion
+ * events.  Returns the submit result (2 once queued). */
+s32 MultiBoot_StartLinkTask(s32 handler, void *data, s32 dataSize, void *extraData, u16 extraSize, u16 flag) {
+    void CpuFill();
+    s32 MultiBoot_SubmitLinkTask(s32, s32, s32, s32, u16, void *);
+    u32 taskSpec[4];
+
+    CpuFill(0, taskSpec, 16);
+    taskSpec[0] = 3;
+    M2C_FIELD(taskSpec, u16 *, 4) = flag;
+    M2C_FIELD(taskSpec, u16 *, 6) = flag;
+    return MultiBoot_SubmitLinkTask(handler, (s32)data, dataSize, (s32)extraData, extraSize, taskSpec);
 }
 typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } Packet_02012a64;

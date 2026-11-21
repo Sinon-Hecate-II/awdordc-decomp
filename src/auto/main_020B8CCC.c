@@ -1,6 +1,7 @@
 /* 21 functions from 0x020B8CCC to 0x020B9C8C (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 typedef struct { u8 value; u8 flag; } Unk020BChoice;
 typedef struct UiB8ccc {u8 pad[0x40];u32 a:18;u32 tile:8;u32 b:6;u8 pad44[0x15];u8 mode:4;u8 active:1;u8 c:3;u8 reset;u8 pad5b[9];s8 *state;} UiB8ccc;
 
@@ -43,7 +44,26 @@ DrawFrameBorder(248,(v>>12)+40,2,t,((pal+0xa3)&(pal>>((u32)(M2C_FIELD(M2C_FIELD(
 gCur3DSpriteEngine=old;
 }
 #pragma optimization_level 4
-void func_020b90d8(void) {M2C_UNK Clear3DSpriteLayer(M2C_UNK,s32);void RefreshMapView();void func_020d472c();extern void *gCur3DSpriteEngine;extern void *g3DSpriteEngineMain;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;((M2C_UNK (*)())Clear3DSpriteLayer)(1);((M2C_UNK (*)())Clear3DSpriteLayer)(2);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;RefreshMapView();func_020d472c();gCur3DSpriteEngine=old;}
+/* Close the current sub-screen and return to the map: switch to the main 3D
+ * sprite engine, clear its two overlay layers, mark them dirty, redraw the map
+ * view and release the map's overlay, then restore the previous engine. */
+void ReturnToMapView(void) {
+    M2C_UNK Clear3DSpriteLayer(M2C_UNK, s32);
+    void RefreshMapView();
+    void func_020d472c();
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineMain;
+    void *old = gCur3DSpriteEngine;
+
+    gCur3DSpriteEngine = g3DSpriteEngineMain;
+    ((M2C_UNK (*)())Clear3DSpriteLayer)(1);
+    ((M2C_UNK (*)())Clear3DSpriteLayer)(2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
+    RefreshMapView();
+    func_020d472c();
+    gCur3DSpriteEngine = old;
+}
 
 void func_020b9140(s32 arg0) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
@@ -185,7 +205,7 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
     M2C_UNK PlaySoundEffect(s32);
     void func_02096b6c(u32);
     void *FindObjectByClass(M2C_UNK *);
-    M2C_UNK func_020b2178();
+    M2C_UNK HideAllSpriteSlots();
     M2C_UNK func_01ffa9bc(M2C_UNK *);
     void CreateProductionMenuRow(s32, s32);
     extern void **gCurrentMap;
@@ -205,17 +225,17 @@ void ProductionMenu_ConfirmSelection(u8 *selection) {
         void *screen = FindObjectByClass(&gProductionMenuScreenClass);
         CreateProductionMenuRow(gProductionChoices[index * 2], (s32)screen);
     }
-    func_020b2178();
+    HideAllSpriteSlots();
     func_01ffa9bc(&gProductionMenuScreenClass);
 }
 
 void func_020b9778(void) {
     M2C_UNK func_01ffa9bc(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_020b2178();
+    M2C_UNK HideAllSpriteSlots();
     extern M2C_UNK gProductionMenuScreenClass;
     PlaySoundEffect(0x10018);
-    func_020b2178();
+    HideAllSpriteSlots();
     func_01ffa9bc(&gProductionMenuScreenClass);
 }
 
@@ -350,7 +370,7 @@ i++;y+=16;
 }while(i<7);
 }
 #pragma opt_instruction_scheduling reset
-void func_020b9bac(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK func_020c08f8(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);func_020c08f8(a,b,16,16,1);func_020b99ac(a,b,c);}
+void func_020b9bac(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK DrawWindowFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);DrawWindowFrame(a,b,16,16,1);func_020b99ac(a,b,c);}
 
 void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void SelectSpriteSlot(s32);extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}SelectSpriteSlot(0);}
 

@@ -63,7 +63,7 @@ while(*(u64 *)(p+8)==0){
 }
 return 1;
 }
-s32 func_02047098(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
+s32 CreateWfcProfile(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
 
 s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
 
@@ -131,7 +131,7 @@ register u32 tmp4, tmp3;
 #pragma opt_common_subs reset
 void GetWfcProfileIds(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
 
-s32 func_02047320(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
+s32 IsWfcProfileEmpty(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
 
 u32 Base64EncodedLength(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
 

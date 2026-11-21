@@ -49,8 +49,8 @@ func_ov006_02216bc4 kind:function(arm,size=0x38) addr:0x02216bc4
 func_ov006_02216bfc kind:function(arm,size=0x14) addr:0x02216bfc
 func_ov006_02216c10 kind:function(arm,size=0x14) addr:0x02216c10
 CreateMapCodeEntryPanel kind:function(arm,size=0x180) addr:0x02216c24
-func_ov006_02216da4 kind:function(arm,size=0x68) addr:0x02216da4
-func_ov006_02216e0c kind:function(arm,size=0x60) addr:0x02216e0c
+FreeMapCodeEntryPanel kind:function(arm,size=0x68) addr:0x02216da4
+DestroyMapCodeEntryPanel kind:function(arm,size=0x60) addr:0x02216e0c
 IsValueInRange kind:function(arm,size=0x18) addr:0x02216e6c
 func_ov006_02216e84 kind:function(arm,size=0x2c) addr:0x02216e84
 func_ov006_02216eb0 kind:function(arm,size=0x20) addr:0x02216eb0
@@ -89,7 +89,7 @@ func_ov006_0221782c kind:function(arm,size=0x14) addr:0x0221782c
 func_ov006_02217840 kind:function(arm,size=0x18) addr:0x02217840
 InitMapTransferObject kind:function(arm,size=0xc4) addr:0x02217858
 func_ov006_0221791c kind:function(arm,size=0x2c) addr:0x0221791c
-func_ov006_02217948 kind:function(arm,size=0x6c) addr:0x02217948
+BuildMapTransferPlayerList kind:function(arm,size=0x6c) addr:0x02217948
 func_ov006_022179b4 kind:function(arm,size=0x154) addr:0x022179b4
 func_ov006_02217b08 kind:function(arm,size=0x1c) addr:0x02217b08
 func_ov006_02217b24 kind:function(arm,size=0x58) addr:0x02217b24
@@ -163,7 +163,7 @@ data_ov006_022188b0 kind:data(any) addr:0x022188b0
 data_ov006_022188bc kind:data(any) addr:0x022188bc
 data_ov006_022188cc kind:data(any) addr:0x022188cc
 data_ov006_022188dc kind:data(any) addr:0x022188dc
-data_ov006_022188f8 kind:data(any) addr:0x022188f8
+gMapCodeEntryPanelVTable kind:data(any) addr:0x022188f8
 gMapTransferPanelVtable kind:data(any) addr:0x0221890c
 gMapTransferPanelStateClass kind:data(any) addr:0x02218918
 data_ov006_02218a48 kind:data(any) addr:0x02218a48

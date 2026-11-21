@@ -118,20 +118,23 @@ AddSprite(16,(46+i*24)&255,(u16)((((0x35c+i*4)>>bits)&1023)|(u16)((i+11)<<12)),&
 gCur3DSpriteEngine=old;
 }
 #pragma opt_common_subs reset
-void func_ov000_02170fc4(void) {
+/* Leave the map-situation screen: on the main engine clear the situation's two
+ * overlay layers and mark them dirty, redraw the map view, then restore the
+ * engine that was active. */
+void UnloadSituationScreen(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    void *savedEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     RefreshMapView();
-    gCur3DSpriteEngine = temp_r4;
+    gCur3DSpriteEngine = savedEngine;
 }
 
 void func_ov000_02171028(void) {
@@ -197,7 +200,7 @@ s32 func_ov000_0217122c(s32 arg0) {
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern M2C_UNK data_ov000_021b8cdc;
 s32 IsPlayerPresent(s32);s32 IsPlayerCpu(s32);s32 IsPlayerActive(s32);
 void *GetLocalizedFileName(void *);void LoadNarcFileDecompressed(void *,void *);
-s32 func_02084b08(s32);void func_ov000_0216a30c(s32,s32,s32);
+s32 func_02084b08(s32);void LoadRankIconGraphics(s32,s32,s32);
 void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
 void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);
 s32 func_02084ac0(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
@@ -210,7 +213,7 @@ if(IsPlayerCpu(arg0))return 0;
 LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8cdc),(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x28)+(n<<6));
 t=i*12;off=t+0x35c;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-func_ov000_0216a30c(func_02084b08(i),off<<5,11);
+LoadRankIconGraphics(func_02084b08(i),off<<5,11);
 dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void * volatile *,0x1c)+((t+0x364)<<5);
 MI_CpuCopy32(GetArmyStateTiles(a),dst,128);
 off=(i+28)<<5;

@@ -35,7 +35,7 @@ void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
     gpiFree(operation);
 }
 
-void func_02054484(void **a,void *b) {
+void gpiRemoveOperation(void **a,void *b) {
  void *base=*a; void *prev=NULL; void *p=M2C_FIELD(base,void **,0x424);
  while(p) {if(p==b) {if(!prev) M2C_FIELD(base,void **,0x424)=M2C_FIELD(p,void **,32); else M2C_FIELD(prev,void **,32)=M2C_FIELD(b,void **,32); gpiFreeOperation(a,b); return;} prev=p; p=M2C_FIELD(p,void **,32);}
 }
@@ -433,7 +433,7 @@ s32 gpiProcessPeerState(M2C_UNK manager, void *peer) {
     return result;
 }
 
-M2C_UNK func_02054fa8(void **a,void *b) {
+M2C_UNK gpiFreePeer(void **a,void *b) {
  M2C_UNK Vector_Free(s32);
  func_020496cc(M2C_FIELD(b,s32 *,8),2);
  ghiCloseSocket(M2C_FIELD(b,s32 *,8));
@@ -449,7 +449,7 @@ void func_02055008(void **manager, void *entry) {
     void *Vector_GetItem(s32, M2C_UNK);
     M2C_UNK Vector_RemoveItem(s32, M2C_UNK);
     M2C_UNK gpiSendMessageToServer(void **, s32, s32, s32);
-    M2C_UNK func_02054fa8(void **, void *);
+    M2C_UNK gpiFreePeer(void **, void *);
     M2C_UNK gpiLogMessage(void **, M2C_UNK *, ...);
     extern M2C_UNK data_020feab4;
     extern M2C_UNK data_020fec08;
@@ -499,7 +499,7 @@ block_9:
             Vector_RemoveItem(M2C_FIELD(entry, s32 *, 0x38), 0);
         } while (Vector_GetCount(M2C_FIELD(entry, s32 *, 0x38)) != 0);
     }
-    func_02054fa8(manager, entry);
+    gpiFreePeer(manager, entry);
 }
 
 /* Configure a freshly accepted gpi peer socket: request the receive and send
@@ -606,22 +606,24 @@ void *gpiCreatePeer(void **manager, s32 playerId, s32 initiator) {
  return peer;
 }
 
-s32 gpiStartPeerChallenge(M2C_UNK arg0, void *arg1) {
+/* Queue a challenge for a gpi peer: start a profile-info (GET_INFO) operation
+ * on the connection and send the peer's info request, then mark the peer as
+ * challenged. Returns the error of the step that failed, 0 when queued. */
+s32 gpiStartPeerChallenge(M2C_UNK connection, void *peer) {
     s32 gpiAppendInfoRequest(M2C_UNK, s32, s32);
     s32 gpiAddOperation(M2C_UNK, M2C_UNK, M2C_UNK, void **, s32, s32, s32);
-    void *spC;
-    s32 temp_r0;
-    s32 var_r0;
+    GPIOperation *operation;
+    s32 result;
 
-    temp_r0 = gpiAddOperation(arg0, 2, 0, &spC, 0, 0, 0);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = gpiAddOperation(connection, GPI_OP_GET_INFO, 0, (void **)&operation, 0, 0, 0);
+    if (result != 0) {
+        return result;
     }
-    var_r0 = gpiAppendInfoRequest(arg0, M2C_FIELD(arg1, s32 *, 0xC), M2C_FIELD(spC, s32 *, 0x18));
-    if (var_r0 == 0) {
-        M2C_FIELD(arg1, s32 *, 0) = 0x65;
-        var_r0 = 0;
+    result = gpiAppendInfoRequest(connection, M2C_FIELD(peer, s32 *, GPI_PEER_PLAYER_ID), operation->id);
+    if (result == 0) {
+        M2C_FIELD(peer, s32 *, GPI_PEER_STATE) = GPI_PEER_STATE_CHALLENGED;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 

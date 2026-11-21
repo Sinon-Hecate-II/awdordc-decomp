@@ -45,7 +45,7 @@ static inline void PressSprite(void *p) {if(M2C_FIELD(p,s8 *,0x5a)>=0)SetSpriteF
    that unit. */
 void UnitPreviewMenuInput(void *arg0) {
 void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
-s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
+s32 func_020b212c(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
 if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
@@ -55,7 +55,7 @@ keys=*gKeyState;
 M2C_FIELD(arg0,u16 *,0x48)&=~32;
 /* the back button closes the 3D view */
 if((SpritePressed(M2C_FIELD(arg0,void **,0x58)) || (keys&2)) && !(M2C_FIELD(arg0,u16 *,0x48)&2)){
-func_ov009_02224688();
+AdvanceLinkRequestToPending();
 PressSprite(M2C_FIELD(arg0,void **,0x58));
 DisableMapConfirm();SetSpriteAnimation(arg0,1);PlaySoundEffect(0x1000f);return;
 }
@@ -67,7 +67,7 @@ M2C_FIELD(arg0,s8 *,0x41)=M2C_FIELD(arg0,s8 *,0x42);
 if(func_020b212c()<4){
 /* the unit of the slot under the cursor: the cursor sprite shows it as available or not */
 s32 unitId=(&gUnitSlotIds)[M2C_FIELD(arg0,s8 *,0x43)];
-if(unitId<0)unitId=0;else unitId=func_ov009_022246ac(unitId);
+if(unitId<0)unitId=0;else unitId=GetLinkPlayerUnit(unitId);
 if(unitId){void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite),0);}
 else {void *cursorSprite=M2C_FIELD(arg0,void **,0x50);if(SpriteAvailable(cursorSprite))SetSpriteFrame(cursorSprite,SpriteBase(cursorSprite)+2,0);}
 cursorSprite=M2C_FIELD(arg0,void **,0x50);if(!SpriteAvailable(cursorSprite))return;
@@ -99,7 +99,7 @@ void func_020dd97c(void) {
  * and confirming picks that unit. */
 void UnitDeployMenuInput(void *arg0) {
 void MenuSpriteUpdate(void *);void DisableMapConfirm(void);void SetSpriteAnimation(void *,s32);void PlaySoundEffect(s32);void Sprite_ResumeAnimation(void *);
-s32 func_020b212c(void);M2C_UNK func_ov009_02224688(void);s32 func_ov009_022246ac(s32);
+s32 func_020b212c(void);M2C_UNK AdvanceLinkRequestToPending(void);s32 GetLinkPlayerUnit(s32);
 extern u16 *gKeyState;extern M2C_UNK gUnitSlotIds;
 u16 keys;void *cursorSprite;
 if(M2C_FIELD(arg0,void **,0x50))MenuSpriteUpdate(M2C_FIELD(arg0,void **,0x50));
@@ -187,74 +187,82 @@ void func_020dde90(void) {
     func_020dde30();
 }
 
-M2C_UNK func_020dde9c(void *arg0) {
-    M2C_UNK func_ov009_02224688();
-    M2C_UNK func_020b2178();
+/* Hides the unit preview menu: deactivates every sprite slot, centres the slot
+   scroll, slides the cursor, back, confirm and unit sprites out, restarts the
+   panel's tween from its current value down to -0xFF, then advances a staged
+   link request to its pending phase. */
+M2C_UNK HideUnitPreviewScene(UnitMenu *menu) {
+    M2C_UNK AdvanceLinkRequestToPending();
+    M2C_UNK HideAllSpriteSlots();
     M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s16 temp_r0;
-    void *temp_r2;
-    u16 value;
+    s16 animValue;
+    SpriteTween *tween;
+    u16 start;
 
-    func_020b2178();
+    HideAllSpriteSlots();
     SetSpriteSlotScroll(0, 0);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x5C));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-    temp_r2 = M2C_FIELD(arg0, void **, 0x68);
-    M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
-    M2C_FIELD(temp_r2, s16 *, 0x10) = -0xFF;
-    M2C_FIELD(temp_r2, s16 *, 0xC) = 0xC;
-    value = M2C_FIELD(temp_r2, u16 *, 4);
-    M2C_FIELD(temp_r2, u16 *, 2) = value;
-    return func_ov009_02224688();
+    Hide3DSpriteSlide((s32)menu->cursorSprite);
+    Hide3DSpriteSlide((s32)menu->backSprite);
+    Hide3DSpriteSlide((s32)menu->confirmSprite);
+    Hide3DSpriteSlide((s32)menu->unitSprite);
+    animValue = GetSpriteAnimValue(menu->animSprite);
+    tween = menu->animSprite;
+    tween->from = animValue;
+    tween->to = -0xFF;
+    tween->duration = 0xC;
+    start = tween->start;
+    tween->current = start;
+    return AdvanceLinkRequestToPending();
 }
 
 void func_020ddf04(void) {
 
 }
 
-M2C_UNK func_020ddf08(void *arg0) {
-    M2C_UNK func_020b2178();
+/* Hide the ov009 unit deploy menu: deactivate every sprite slot, centre the slot
+ * scroll, slide the cursor, back, confirm and unit sprites out, and restart the
+ * unit sprite's tween from its current value down to -0xFF over 12 frames.
+ * Returns the tween's reset start value. */
+M2C_UNK HideUnitDeployScene(UnitMenu *menu) {
+    M2C_UNK HideAllSpriteSlots();
     M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s16 temp_r0;
-    void *temp_r2;
-    u16 value;
+    s16 animValue;
+    SpriteTween *tween;
+    u16 start;
 
-    func_020b2178();
+    HideAllSpriteSlots();
     SetSpriteSlotScroll(0, 0);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x5C));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-    temp_r2 = M2C_FIELD(arg0, void **, 0x68);
-    M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
-    M2C_FIELD(temp_r2, s16 *, 0x10) = -0xFF;
-    M2C_FIELD(temp_r2, s16 *, 0xC) = 0xC;
-    value = M2C_FIELD(temp_r2, u16 *, 4);
-    M2C_FIELD(temp_r2, u16 *, 2) = value;
-    return value;
+    Hide3DSpriteSlide((s32)menu->cursorSprite);
+    Hide3DSpriteSlide((s32)menu->backSprite);
+    Hide3DSpriteSlide((s32)menu->confirmSprite);
+    Hide3DSpriteSlide((s32)menu->unitSprite);
+    animValue = GetSpriteAnimValue(menu->animSprite);
+    tween = menu->animSprite;
+    tween->from = animValue;
+    tween->to = -0xFF;
+    tween->duration = 0xC;
+    start = tween->start;
+    tween->current = start;
+    return start;
 }
 
 void func_020ddf6c(void) {
-    M2C_UNK func_020ddf08();
-    func_020ddf08();
+    M2C_UNK HideUnitDeployScene();
+    HideUnitDeployScene();
 }
 
 void func_020ddf78(void) {
-    M2C_UNK func_020dde9c();
-    func_020dde9c();
+    M2C_UNK HideUnitPreviewScene();
+    HideUnitPreviewScene();
 }
 
 void func_020ddf84(void) {
-    M2C_UNK func_020dde9c();
-    func_020dde9c();
+    M2C_UNK HideUnitPreviewScene();
+    HideUnitPreviewScene();
 }
 
 void func_020ddf90(void) {
@@ -266,13 +274,13 @@ void func_020ddf9c(void) {
 }
 
 void func_020ddfa8(void) {
-    M2C_UNK func_020ddf08();
-    func_020ddf08();
+    M2C_UNK HideUnitDeployScene();
+    HideUnitDeployScene();
 }
 
 void func_020ddfb4(void) {
-    M2C_UNK func_020ddf08();
-    func_020ddf08();
+    M2C_UNK HideUnitDeployScene();
+    HideUnitDeployScene();
 }
 
 void func_020ddfc0(void) {
@@ -300,7 +308,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     s16 GetSpriteAnimValue(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     s32 func_ov009_0222429c();
-    s32 func_ov009_022246ac(s32);
+    s32 GetLinkPlayerUnit(s32);
     M2C_UNK func_ov009_02224730(M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK func_ov009_022249a4(M2C_UNK, M2C_UNK, s32);
     extern M2C_UNK data_0212d3f0;
@@ -384,7 +392,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
         func_ov009_02224730(0, side, id, func_ov009_0222429c(), (u8)layout2);
         return;
     }
-    unitId = func_ov009_022246ac(*(&gUnitSlotIds + menu->slot));
+    unitId = GetLinkPlayerUnit(*(&gUnitSlotIds + menu->slot));
     if (unitId == 0) {
         return;
     }

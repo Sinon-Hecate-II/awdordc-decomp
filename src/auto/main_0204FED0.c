@@ -526,10 +526,13 @@ s32 gpiRemoveCallbacks(void **connectionRef, s32 operationId) {
     return 0;
 }
 
-void func_02050bbc(s8 *p,s32 n) {
-u32 Rand(void);extern s8 data_020fe250[];
-s32 i=0;
-for(;i<n;i++)p[i]=data_020fe250[Rand()%62U];
-p[i]=0;
+/* Fill `dst` with `length` random characters from the base62 alphabet
+ * ("A-Za-z0-9") and NUL-terminate it. */
+void GenerateRandomString(s8 *dst, s32 length) {
+    u32 Rand(void);
+    extern s8 gBase62Alphabet[];
+    s32 i = 0;
+    for (; i < length; i++) dst[i] = gBase62Alphabet[Rand() % 62U];
+    dst[i] = 0;
 }
 

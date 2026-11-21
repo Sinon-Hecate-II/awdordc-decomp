@@ -6,7 +6,7 @@ static inline u8 *Unk021F9FE0Page(u8 *base,u8 page) { return base+page*512; }
 static inline u32 Unk021F9FE0Bit(u8 *p) { return (u32)(M2C_FIELD(p,s32 *,56)<<31)>>31; }
 static inline u8 Unk021F9FE0Eq(int a,int b) { return a==b; }
 extern u8 data_ov003_0220fdf2[];
-extern u8 gSpriteDesc16x16[],data_0215d8a8[],data_ov003_0220f202[];
+extern u8 gSpriteDesc16x16[],gMapProgressRecords[],data_ov003_0220f202[];
 extern u32 g3DSpriteEngineSub;
 
 extern u16 data_ov003_0220feac[64];
@@ -102,7 +102,7 @@ n=(u16)(M2C_FIELD(p,u16 *,60)-161);x=b+64;
 for(i=0;i<3;i++) {
 switch(i) {
 case 0:
-kind=(u8)(M2C_FIELD(data_0215d8a8,u32 *,n*4)>>29);
+kind=(u8)(M2C_FIELD(gMapProgressRecords,u32 *,n*4)>>29);
 if(kind) {
 r=data_ov003_0220f202+(((u32)(p[58]<<25)>>27)*2);
 switch(kind) {case 1:rowkind=3;break;case 2:rowkind=2;break;case 3:rowkind=1;break;case 4:rowkind=0;break;}
@@ -114,13 +114,13 @@ shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite(drawX,40,(u16)(((tile>>shift)&1023)|(paletteBits>>16)|0x800),gSpriteDesc16x16,17);
 }break;
 case 1:
-v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<6)>>23;
+v=((u32)M2C_FIELD(gMapProgressRecords,u32 *,n*4)<<6)>>23;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 SetTextSpriteValue(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=59;
 DrawTextSprite(M2C_FIELD(p,void **,84));gCur3DSpriteEngine=saved;break;
 case 2:
-v=((u32)M2C_FIELD(data_0215d8a8,u32 *,n*4)<<15)>>22;
+v=((u32)M2C_FIELD(gMapProgressRecords,u32 *,n*4)<<15)>>22;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(void *)g3DSpriteEngineSub;
 SetTextSpriteValue(M2C_FIELD(p,void **,84),v);
 q=M2C_FIELD(p,u8 **,84);M2C_FIELD(q,s16 *,6)=x;M2C_FIELD(q,s16 *,8)=69;

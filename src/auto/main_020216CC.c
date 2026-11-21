@@ -311,15 +311,29 @@ M2C_FIELD(best,u32 *,0x50)=now; best[0x5A]=1; M2C_FIELD(best,s32 *,0x54)=addr;M2
 OS_RestoreInterrupts(state);
 }
 
-void TlsSessionCacheDiscard(void *p) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 ByteCompareN(void *,void *,s32);
-extern M2C_UNK gTlsSessionCache;
-s32 i; s32 old;void *q;old=OS_DisableInterrupts();q=&gTlsSessionCache;i=0;
-do{
-if(M2C_FIELD(q,u8 *,0x5a)&&!ByteCompareN(q,p+0x74,32)){M2C_FIELD(q,u8 *,0x5a)=0;break;}
-i++;q+=92;
-}while(i<4);
-OS_RestoreInterrupts(old);
+/* Invalidate the TLS session-resumption cache entry whose session id matches the
+ * channel's, so a session from an aborted handshake is not restored later.  Runs
+ * with interrupts disabled. */
+void TlsSessionCacheDiscard(void *channel) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 ByteCompareN(void *, void *, s32);
+    extern M2C_UNK gTlsSessionCache;
+    s32 i;
+    s32 old;
+    void *entry;
+    old = OS_DisableInterrupts();
+    entry = &gTlsSessionCache;
+    i = 0;
+    do {
+        if (M2C_FIELD(entry, u8 *, TLS_CACHE_VALID) && !ByteCompareN(entry, (u8 *)channel + TLS_SESSION_ID, TLS_RANDOM_SIZE)) {
+            M2C_FIELD(entry, u8 *, TLS_CACHE_VALID) = 0;
+            break;
+        }
+        i++;
+        entry = (u8 *)entry + TLS_CACHE_ENTRY_SIZE;
+    } while (i < TLS_CACHE_ENTRIES);
+    OS_RestoreInterrupts(old);
 }
 
 s32 GetUnixTime(void){

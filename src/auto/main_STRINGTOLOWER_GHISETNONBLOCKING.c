@@ -97,7 +97,7 @@ s32 func_0204955c(M2C_UNK arg0) {
     return 0;
 }
 
-void *func_02049584(void){extern M2C_UNK data_0213dc60;extern M2C_UNK data_020fce1c,data_0213dc8c,data_0213dc78,data_0213dc68;
+void *GetLocalHostAddresses(void){extern M2C_UNK data_0213dc60;extern M2C_UNK data_020fce1c,data_0213dc8c,data_0213dc78,data_0213dc68;
 M2C_FIELD(&data_0213dc60,void **,8)=&data_020fce1c;
 M2C_FIELD(&data_0213dc60,void **,12)=(void *)0x0213dc60;
 M2C_FIELD(&data_0213dc60,u16 *,16)=2;
@@ -217,14 +217,18 @@ s32 ghiGetLastSocketError(void) {
     return M2C_FIELD(&data_0213dc60, s32 *, 4);
 }
 
+/* GameSpy nonport.c time(): assert the system tick is available, then return the
+ * tick count scaled to the millisecond time base the peer protocol deadlines use. */
 void gpiGetTime(int *out) {
-int IsSystemTickInitialized(void); unsigned long long GetSystemTick(void);
-unsigned long long U64Divide(unsigned long long, unsigned long long);
-extern char data_020fcdf0[],data_020fce10[],data_020fcdd8[];
-unsigned int v;
-if(IsSystemTickInitialized()!=1)AssertFailed(data_020fcdf0,data_020fce10,data_020fcdd8,0x667);
-v=U64Divide(GetSystemTick()<<6,0x1ff6210);
-if(out)*out=v;
+    int IsSystemTickInitialized(void);
+    unsigned long long GetSystemTick(void);
+    unsigned long long U64Divide(unsigned long long, unsigned long long);
+    extern char sAssertTickAvailable[], sNonportFileName[], sTimeName[];
+    unsigned int timeMs;
+
+    if (IsSystemTickInitialized() != 1) AssertFailed(sAssertTickAvailable, sNonportFileName, sTimeName, 0x667);
+    timeMs = U64Divide(GetSystemTick() << 6, 0x1ff6210);
+    if (out) *out = timeMs;
 }
 
 s32 func_02049974(s32 x) {

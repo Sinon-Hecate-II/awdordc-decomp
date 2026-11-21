@@ -1,5 +1,6 @@
 /* 24 functions from 0x0208ABC4 to 0x0208B884 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 extern void *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 
 typedef struct {
@@ -11,7 +12,7 @@ typedef struct {
 
 typedef struct { u32 width:9; u32 height:9; u32 rest:14; } WindowSize0208;
 typedef struct { u16 low:6; u16 window:2; u16 high:8; } WindowControl0208;
-u8 func_0208b5a8(void);
+u8 IsTextLayerActive(void);
 
 /* Updates the linked left/right objects' orientation fields when the entity is in state 3. */
 M2C_UNK func_0208abc4(M2C_UNK arg0) {
@@ -116,20 +117,22 @@ u8 func_0208ae88(Unk0208ABC4 *arg0, s32 arg1) {
     return var_r3;
 }
 
-void func_0208aebc(void *arg0) {
+/* Start a window opening: enter the opening animation mode, hide its two child
+ * sprites, and hand off to the opened-window notification. */
+void StartWindowOpen(void *window) {
     M2C_UNK Hide3DSprite();
-    M2C_UNK func_0208a6b0(void *);
-    M2C_FIELD(arg0, s32 *, 0x58) = (s32) ((M2C_FIELD(arg0, s32 *, 0x58) & ~0x38) | 8);
-    M2C_FIELD(arg0, u8 *, 0x48) = (u8) ((M2C_FIELD(arg0, u8 *, 0x48) & ~0x30) | 0x10);
-    M2C_FIELD(arg0, s8 *, 0x4B) = 0;
-    M2C_FIELD(arg0, s8 *, 0x4A) = 6;
-    if (M2C_FIELD(arg0, s32 *, 0x5C) != 0) {
+    M2C_UNK NotifyWindowOpened(void *);
+    M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) = (s32) ((M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_ANIMATION_MASK) | TEXT_LAYER_PANEL_ANIM_OPEN);
+    M2C_FIELD(window, u8 *, TEXT_LAYER_PANEL_MODE) = (u8) ((M2C_FIELD(window, u8 *, TEXT_LAYER_PANEL_MODE) & ~TEXT_LAYER_PANEL_MODE_MASK) | TEXT_LAYER_PANEL_MODE_OPEN);
+    M2C_FIELD(window, s8 *, TEXT_LAYER_PANEL_FRAME) = 0;
+    M2C_FIELD(window, s8 *, TEXT_LAYER_PANEL_FRAMES) = 6;
+    if (M2C_FIELD(window, s32 *, TEXT_LAYER_LEFT_ICON) != 0) {
         Hide3DSprite();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x60) != 0) {
+    if (M2C_FIELD(window, s32 *, TEXT_LAYER_RIGHT_ICON) != 0) {
         Hide3DSprite();
     }
-    func_0208a6b0(arg0);
+    NotifyWindowOpened(window);
 }
 
 /* Start closing a window sprite: a sprite with no animation state is deleted
@@ -256,7 +259,7 @@ void func_0208b520(s32 arg0) {
     extern M2C_UNK data_021027f0;
     s32 temp_r4;
     void *var_r0;
-    temp_r4 = func_0208b5a8();
+    temp_r4 = IsTextLayerActive();
     var_r0 = CreateSpriteFromClass(&data_021027f0, arg0);
     if (var_r0 != 0) var_r0 = InitTextLayer();
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
@@ -268,13 +271,13 @@ void CreateTextLayer(s32 arg0) {
     extern M2C_UNK data_021027f0;
     s32 temp_r4;
     void *var_r0;
-    temp_r4 = func_0208b5a8();
+    temp_r4 = IsTextLayerActive();
     var_r0 = CreateSpriteForOwner(&data_021027f0, arg0);
     if (var_r0 != 0) var_r0 = InitTextLayer();
     M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
 }
 
-u8 func_0208b5a8(void) {
+u8 IsTextLayerActive(void) {
     u8 var_r0;
     if (FindTextLayer() != 0) var_r0 = 1;
     else var_r0 = 0;
@@ -306,22 +309,26 @@ void *func_0208b610(s32 arg0) {
     return p;
 }
 
-void *func_0208b630(void *arg0) {
-    M2C_UNK func_02088e84(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+/* Constructor of the scrolling text sprite: run the sprite actor's shared base
+   initialiser, install the scrolling text class, reset the rendered width, the
+   scroll position and timer (one pixel every 60 frames), then start the sprite
+   just below the screen and slide it up to y = 0xA0. */
+void *InitScrollingTextSprite(void *sprite) {
+    M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Init3DSpriteActor();
-    extern M2C_UNK data_021025e8;
+    extern M2C_UNK gScrollingTextSpriteClass;
     Init3DSpriteActor();
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021025e8;
-    M2C_FIELD(arg0, s16 *, 0x58) = 0;
-    M2C_FIELD(arg0, s16 *, 0x5A) = 0;
-    M2C_FIELD(arg0, s8 *, 0x5C) = 0;
-    M2C_FIELD(arg0, s8 *, 0x5D) = 0x3C;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s16 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x34) = 0;
-    M2C_FIELD(arg0, s16 *, 0x36) = 0xC0;
-    func_02088e84(arg0, 0, 0xA0, 0, 0xC0);
-    return arg0;
+    M2C_FIELD(sprite, M2C_UNK **, DS3D_SPRITE_CLASS) = &gScrollingTextSpriteClass;
+    M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TEXT_WIDTH) = 0;
+    M2C_FIELD(sprite, s16 *, SPRITE_TEXT_SCROLL) = 0;
+    M2C_FIELD(sprite, s8 *, SPRITE_TEXT_SCROLL_TIMER) = 0;
+    M2C_FIELD(sprite, s8 *, SPRITE_TEXT_SCROLL_PERIOD) = 0x3C;
+    M2C_FIELD(sprite, s32 *, SPRITE_TEXT_HANDLE) = 0;
+    M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_TILE) = 0;
+    M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_X) = 0;
+    M2C_FIELD(sprite, s16 *, SPRITE_ACTOR_Y) = 0xC0;
+    Set3DSpriteSlideTargetAndStart(sprite, 0, 0xA0, 0, 0xC0);
+    return sprite;
 }
 
 /* Render `text` into a sprite actor's text texture on every display engine the

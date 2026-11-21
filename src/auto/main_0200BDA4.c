@@ -7,7 +7,7 @@ typedef struct { u32 first, second; } Unk0200FilePair;
 
 void func_0200bda4(s32 arg0) {
     s32 OS_GetLockID(void);
-    void func_02010c14(void);
+    void SaveDevice_Init(void);
     void func_0200b118(void *);
     s32 RegisterArchiveName(void *, M2C_UNK, M2C_UNK);
     void func_0200b6a8(void *, s32, s32);
@@ -28,7 +28,7 @@ void func_0200bda4(s32 arg0) {
     M2C_FIELD(&gCardArchiveWork, s32 *, 0xc) = 0;
     M2C_FIELD(&gCardArchiveWork, s32 *, 0x10) = 0;
     M2C_FIELD(&gCardArchiveWork, s32 *, 0x14) = 0;
-    func_02010c14();
+    SaveDevice_Init();
     func_0200b118(&data_0212fc14);
     RegisterArchiveName(&data_0212fc14, (M2C_UNK)&data_020f5220, 3);
 
@@ -200,7 +200,7 @@ void CompleteFileLoad(void *arg0) {
     void func_02000970(s32);
     M2C_UNK DC_FlushRange(M2C_UNK, M2C_UNK);
     extern u8 data_0212dbac[];
-    extern s16 data_0212dbc0;
+    extern s16 gGxDisplayStatus;
     void *r5;
     u32 r4;
     u32 top = 0;
@@ -219,7 +219,7 @@ void CompleteFileLoad(void *arg0) {
         top = (u32)M2C_FIELD(r5, u32 *, 0x1c) >> 24;
         verified = 0;
         if (top & 2) {
-            end = (u8 *)&data_0212dbc0;
+            end = (u8 *)&gGxDisplayStatus;
             start = data_0212dbac;
             idx = M2C_FIELD(r5, u32 *, 0x0);
             count = (s32)(end - start) / 20;

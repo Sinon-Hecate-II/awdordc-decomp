@@ -114,7 +114,7 @@ M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
 M2C_UNK func_0209b2dc(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
 M2C_UNK DrawNumber(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
-s32 func_020a7298(u16,M2C_UNK);
+s32 GetUnitVariantIndex(u16,M2C_UNK);
 void *GetRecordDefinition(M2C_UNK);
 u32 GetRecordValue(M2C_UNK,M2C_UNK);
 s32 GetRecordTier(M2C_UNK,M2C_UNK);
@@ -124,7 +124,7 @@ void *p;u32 money;s32 t,last;u32 saved;
 p=GetRecordDefinition(1);money=GetRecordValue(1,arg1);t=GetRecordTier(1,arg1);
 last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_ov005_02211a54(1,last)==0){
-FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
+FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
 DrawNumber(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
@@ -138,7 +138,7 @@ M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
 M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
 M2C_UNK func_0209b2dc(s32,s16,s32,s32,s32,s32,s32);
 M2C_UNK DrawNumber(s32,s16,s32,u32,s32,s32);
-s32 func_020a7298(u16,s32);
+s32 GetUnitVariantIndex(u16,s32);
 void *GetRecordDefinition(s32);
 u32 GetRecordValue(s32,s32);s32 GetRecordTier(s32,s32);s32 func_ov005_02211a54(s32,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
@@ -148,7 +148,7 @@ p=GetRecordDefinition(2);value=GetRecordValue(2,arg1);status=GetRecordTier(2,arg
 position=(arg0+1)*46+0x144;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(!func_ov005_02211a54(2,index)){
-FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(func_020a7298(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
+FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
 func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
 DrawNumber(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
@@ -168,7 +168,7 @@ void func_ov005_02212944(s32 arg0,s32 arg1) {
 }
 
 #pragma optimization_level 2
-void func_ov005_0221298c(s16 arg0) {
+void HistoryMenu_DrawList(s16 arg0) {
 s16 *HistoryTabAt(s8);
 void func_ov005_02212944(s32,s32);
 void ClearTileRect(void *,s32,s32);
@@ -248,12 +248,15 @@ ClearTextBitmap((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,0x60);
 RenderLocalizedTextToTiles((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,M2C_FIELD(gHistoryMenu,s32 *,0x34));
 ClearTextBitmap((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,0x60);
 RenderLocalizedTextToTiles((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1780,M2C_FIELD(gHistoryMenu,s32 *,0x38));
-func_ov000_0216a30c(M2C_FIELD(gHistoryMenu,s8 *,0x32),0x1a80,9);
+LoadRankIconGraphics(M2C_FIELD(gHistoryMenu,s8 *,0x32),0x1a80,9);
 M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
 }
 #pragma pop
-void func_ov005_02212db8(void) {
+/* Load the history menu's page-0 background: point the file system at
+ * /record/history, open historyBG.narc, copy history_main01.sc into the main
+ * sprite engine's layer-2 tile buffer and mark that layer dirty. */
+void LoadHistoryMenuPage0Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
@@ -261,16 +264,19 @@ void func_ov005_02212db8(void) {
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
- extern M2C_UNK data_ov005_022202ac, data_ov005_022202bc, data_ov005_022202cc;
- SetFileDirectory(&data_ov005_022202ac);
- GetLocalizedFileName(&data_ov005_022202bc);
+ extern M2C_UNK gHistoryMenuDir, gHistoryMenuArchive, gHistoryMenuPage0Sc;
+ SetFileDirectory(&gHistoryMenuDir);
+ GetLocalizedFileName(&gHistoryMenuArchive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_022202cc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage0Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 
-void func_ov005_02212e20(void) {
+/* Load the history menu's page-1 background: point the file system at
+ * /record/history, open historyBG.narc, copy history_main02.sc into the main
+ * sprite engine's layer-2 tile buffer and mark that layer dirty. */
+void LoadHistoryMenuPage1Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
@@ -278,16 +284,19 @@ void func_ov005_02212e20(void) {
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
- extern M2C_UNK data_ov005_022202e0, data_ov005_022202f0, data_ov005_02220300;
- SetFileDirectory(&data_ov005_022202e0);
- GetLocalizedFileName(&data_ov005_022202f0);
+ extern M2C_UNK gHistoryMenuPage1Dir, gHistoryMenuPage1Archive, gHistoryMenuPage1Sc;
+ SetFileDirectory(&gHistoryMenuPage1Dir);
+ GetLocalizedFileName(&gHistoryMenuPage1Archive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220300),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage1Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 
-void func_ov005_02212e88(void) {
+/* Load the history menu's page-2 background: point the file system at
+ * /record/history, open historyBG.narc, copy history_main03.sc into the main
+ * sprite engine's layer-2 tile buffer and mark that layer dirty. */
+void LoadHistoryMenuPage2Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
@@ -295,39 +304,42 @@ void func_ov005_02212e88(void) {
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
- extern M2C_UNK data_ov005_02220314, data_ov005_02220324, data_ov005_02220334;
- SetFileDirectory(&data_ov005_02220314);
- GetLocalizedFileName(&data_ov005_02220324);
+ extern M2C_UNK gHistoryMenuPage2Dir, gHistoryMenuPage2Archive, gHistoryMenuPage2Sc;
+ SetFileDirectory(&gHistoryMenuPage2Dir);
+ GetLocalizedFileName(&gHistoryMenuPage2Archive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220334),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage2Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
 
-void func_ov005_02212ef0(void) {
+/* Reload the history menu for its current tab (gHistoryMenu +1): load that tab's
+ * background page, redraw the list at the tab's scroll position, and refresh the
+ * selected record's text. */
+void HistoryMenu_RefreshTab(void) {
     s16 *HistoryTabAt(s8);
-    M2C_UNK func_ov005_02211a8c();
+    M2C_UNK HistoryMenu_SetRecordText();
 
-    void func_ov005_02212db8();
-    void func_ov005_02212e20();
-    void func_ov005_02212e88();
+    void LoadHistoryMenuPage0Bg();
+    void LoadHistoryMenuPage1Bg();
+    void LoadHistoryMenuPage2Bg();
     extern void *gHistoryMenu;
-    s8 temp_r0;
+    s8 tabIndex;
 
-    temp_r0 = M2C_FIELD(gHistoryMenu, s8 *, 1);
-    switch (temp_r0) {                              /* irregular */
+    tabIndex = M2C_FIELD(gHistoryMenu, s8 *, 1);
+    switch (tabIndex) {                             /* irregular */
     case 0:
-        func_ov005_02212db8();
+        LoadHistoryMenuPage0Bg();
         break;
     case 1:
-        func_ov005_02212e20();
+        LoadHistoryMenuPage1Bg();
         break;
     case 2:
-        func_ov005_02212e88();
+        LoadHistoryMenuPage2Bg();
         break;
     }
-    func_ov005_0221298c(*HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1)));
-    func_ov005_02211a8c();
+    HistoryMenu_DrawList(*HistoryTabAt(M2C_FIELD(gHistoryMenu, s8 *, 1)));
+    HistoryMenu_SetRecordText();
 }
 
 #pragma opt_common_subs off

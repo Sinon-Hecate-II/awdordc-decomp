@@ -357,7 +357,7 @@ void OS_EnqueueThread(OSThreadQueue *queue,Thread *thread) {
     }
 }
 
-void *func_02005740(void *arg0) {
+void *DequeueThread(void *arg0) {
     void *temp_r1;
     void *temp_r2;
 
@@ -439,42 +439,42 @@ M2C_FIELD(&gThreadManager,void **,0x28)=next;
 func_02006270((s32)next);
 }
 
-#pragma peephole off
+#pragma scheduling off
 void func_02005968(void) {
-extern M2C_UNK gThreadManager,data_0212dca8,data_0212dd74,gOsArea,gSocketManager,gIdleThread,data_0212defc;
+extern M2C_UNK data_0212dc80,data_0212dca8,data_0212dd74,data_027e0000,data_0212dca4,data_0212dcb4,data_0212defc;
 extern char data_00000000[],data_00000800[]; void func_02006120(void);
-void TaskCreate(void *,void *,s32,u8 *,u32,s32);
+void func_02005ac0(void *,void *,s32,u8 *,u32,s32);
 s32 size;u8 *end,*start;
-if(M2C_FIELD(&gThreadManager,s32 *,12))return;
-M2C_FIELD(&gThreadManager,s32 *,12)=1;
-M2C_FIELD(&gThreadManager,void **,8)=&data_0212dca8;
-M2C_FIELD(&gThreadManager,s32 *,356)=16;
-M2C_FIELD(&gThreadManager,s32 *,352)=0;
-M2C_FIELD(&gThreadManager,s32 *,344)=1;
-M2C_FIELD(&gThreadManager,s32 *,348)=0;
-M2C_FIELD(&gThreadManager,s32 *,360)=0;
-M2C_FIELD(&gThreadManager,void **,44)=&data_0212dd74;
-M2C_FIELD(&gThreadManager,void **,40)=&data_0212dd74;
+if(M2C_FIELD(&data_0212dc80,s32 *,12))return;
+M2C_FIELD(&data_0212dc80,s32 *,12)=1;
+M2C_FIELD(&data_0212dc80,void **,8)=&data_0212dca8;
+M2C_FIELD(&data_0212dc80,s32 *,356)=16;
+M2C_FIELD(&data_0212dc80,s32 *,352)=0;
+M2C_FIELD(&data_0212dc80,s32 *,344)=1;
+M2C_FIELD(&data_0212dc80,s32 *,348)=0;
+M2C_FIELD(&data_0212dc80,s32 *,360)=0;
+M2C_FIELD(&data_0212dc80,void **,44)=&data_0212dd74;
+M2C_FIELD(&data_0212dc80,void **,40)=&data_0212dd74;
 size=(s32)data_00000000;
-if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&gOsArea+0x3f80-(s32)data_00000800;
+if(size<=0)start=(u8 *)0x027e15e0;else start=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
 start-=size;
-end=(u8 *)&gOsArea+0x3f80-(s32)data_00000800;
-M2C_FIELD(&gThreadManager,void **,392)=end;
-M2C_FIELD(&gThreadManager,void **,388)=start;
-M2C_FIELD(&gThreadManager,s32 *,396)=0;
+end=(u8 *)&data_027e0000+0x3f80-(s32)data_00000800;
+M2C_FIELD(&data_0212dc80,void **,392)=end;
+M2C_FIELD(&data_0212dc80,void **,388)=start;
+M2C_FIELD(&data_0212dc80,s32 *,396)=0;
 *(u32 *)(end-4)=0xfddb597d;
-*M2C_FIELD(&gThreadManager,u32 **,388)=0x7bf9dd5b;
-M2C_FIELD(&gThreadManager,s32 *,404)=0;
-M2C_FIELD(&gThreadManager,s32 *,400)=0;
-M2C_FIELD(&gThreadManager,u16 *,36)=0;
-M2C_FIELD(&gThreadManager,u16 *,38)=0;
-*(void **)0x027fffa0=&gSocketManager;
+*M2C_FIELD(&data_0212dc80,u32 **,388)=0x7bf9dd5b;
+M2C_FIELD(&data_0212dc80,s32 *,404)=0;
+M2C_FIELD(&data_0212dc80,s32 *,400)=0;
+M2C_FIELD(&data_0212dc80,u16 *,36)=0;
+M2C_FIELD(&data_0212dc80,u16 *,38)=0;
+*(void **)0x027fffa0=&data_0212dca4;
 func_020060f8(0);
-TaskCreate(&gIdleThread,func_02006120,0,(u8 *)&data_0212defc,200,31);
-M2C_FIELD(&gThreadManager,s32 *,164)=32;
-M2C_FIELD(&gThreadManager,s32 *,152)=1;
+func_02005ac0(&data_0212dcb4,func_02006120,0,(u8 *)&data_0212defc,200,31);
+M2C_FIELD(&data_0212dc80,s32 *,164)=32;
+M2C_FIELD(&data_0212dc80,s32 *,152)=1;
 }
-#pragma peephole reset
+#pragma scheduling reset
 s32 func_02005ab0(void) {
     extern s32 data_0212dc8c;
     return data_0212dc8c;
@@ -610,15 +610,27 @@ if(a){M2C_FIELD(p,void **,0x78)=a;OS_EnqueueThread(a,p);}
 M2C_FIELD(p,s32 *,0x64)=0;RescheduleThreads();OS_RestoreInterrupts(irq);
 }
 
-M2C_UNK OS_WakeupThread(void *a){
-s32 irq=OS_DisableInterrupts();
-if(M2C_FIELD(a,s32 *,0)){
-while(M2C_FIELD(a,s32 *,0)){
-void *p=func_02005740(a);
-M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x78)=0;M2C_FIELD(p,s32 *,0x80)=0;M2C_FIELD(p,s32 *,0x7c)=0;
-}
-M2C_FIELD(a,s32 *,4)=0;M2C_FIELD(a,s32 *,0)=0;RescheduleThreads();
-}OS_RestoreInterrupts(irq);
+/* Wake every thread asleep on the queue with interrupts disabled: pop each one,
+ * mark it ready and clear its queue links, then reschedule. */
+M2C_UNK OS_WakeupThread(void *a) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    void *DequeueThread(void *);
+    OSThreadQueue *queue = (OSThreadQueue *)a;
+    s32 irq = OS_DisableInterrupts();
+    if (queue->head != NULL) {
+        while (queue->head != NULL) {
+            Thread *thread = (Thread *)DequeueThread(a);
+            thread->state = THREAD_STATE_READY;
+            thread->waitQueue = NULL;
+            thread->queueNext = NULL;
+            thread->queuePrev = NULL;
+        }
+        queue->tail = NULL;
+        queue->head = NULL;
+        RescheduleThreads();
+    }
+    OS_RestoreInterrupts(irq);
 }
 
 void TaskWake(void *arg0) {

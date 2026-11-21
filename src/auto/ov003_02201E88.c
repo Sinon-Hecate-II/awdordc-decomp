@@ -526,23 +526,23 @@ void func_ov003_02202bb0(void *p){
 }
 
 void func_ov003_02202cc4(void *arg0) {
-    M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_UNK Hide3DSprite(s32);
-    M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK DisableMapConfirm();
-    M2C_UNK SetOv003SceneState(M2C_UNK);
+    M2C_UNK func_01ffa6fc(void *);
+    M2C_UNK func_02088da8(s32);
+    M2C_UNK func_0208fe30(s32);
+    M2C_UNK func_020d47f0();
+    M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_UNK func_ov003_021f1be8();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
-    extern u16 gMapConfig;
+    extern u16 data_02168f14;
     s32 temp_r6;
     s32 var_r0;
     u8 var_r7;
     void **temp_r0_2;
     void *temp_r0;
 
-    PlaySoundEffect(0x1000F);
-    DisableMapConfirm();
+    func_0208fe30(0x1000F);
+    func_020d47f0();
     temp_r0 = *M2C_FIELD(arg0, void ***, 0x40);
     if ((s32) M2C_FIELD(temp_r0, s8 *, 0x5A) >= 0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
@@ -562,12 +562,12 @@ void func_ov003_02202cc4(void *arg0) {
             M2C_FIELD(*temp_r0_2, M2C_UNK (**)(void **, s32), 0x1C)(temp_r0_2, M2C_FIELD(((var_r7 * 0x18) + temp_r6), s32 *, 0xC));
             var_r7 += 1;
         } while ((u32) var_r7 < 8U);
-        gMapConfig |= 0x2000;
+        data_02168f14 |= 0x2000;
     }
-    Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
-    SetOv003SceneState(2);
+    func_02088da8(M2C_FIELD(arg0, s32 *, 0x4C));
+    func_ov003_021f140c(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
-    Sprite_ResumeAnimation(arg0);
+    func_01ffa6fc(arg0);
     if (func_ov003_02200c7c() == 0) {
         return;
     }

@@ -80,17 +80,16 @@ s32 DecimalShouldRoundUp(u8 *p, s32 i) {
     return -1;
 }
 
-#pragma opt_dead_code on
+#pragma optimization_level 3
 void DecimalIncrementDigits(u8 *p,s32 n) {
  u8 *start=p+5; u8 *q=start+n-1;
  again: {
  if(*q<9) { ++*q; return; }
- if(q==start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
- *q--=0;
- goto again;
+ if (q == start) { *q=1; M2C_FIELD(p,s16 *,2) += 1; return; }
+ *q--=0; goto again;
  }
 }
-#pragma opt_dead_code reset
+#pragma optimization_level reset
 void func_0206e39c(void) {
 
 }

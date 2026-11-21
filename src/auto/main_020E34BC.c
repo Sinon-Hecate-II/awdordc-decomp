@@ -105,18 +105,26 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
 }
 
 s32 func_020e3580(s32 arg0,s32 arg1) {
+#pragma push
+#pragma opt_global_reg off
 extern s32 data_02168fe4;
 s32 result;
 volatile u32 saved;
 u32 temp=*(volatile u16*)0x04000208;
 *(volatile u16*)0x04000208=0;
 saved=temp;
-result=func_0202a468(data_02168fe4,arg0,-arg1);
 {
-    volatile u16 *ime = (volatile u16 *)0x04000208;
-    *(volatile u16 *)((temp=saved, (void)*ime), ime) = temp;
+    s32 direction = -arg1;
+    s32 block = data_02168fe4;
+    result = func_0202a468(block, arg0, direction);
+}
+{
+    u32 restored = saved;
+    (void)*(volatile u16 *)0x04000208;
+    *(volatile u16 *)0x04000208 = restored;
 }
 return result;
+#pragma pop
 }
 #pragma push
 #pragma opt_propagation off
@@ -136,10 +144,10 @@ temp=saved; arg0=temp;
 #pragma pop
 void func_020e3610(M2C_UNK arg0) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    s32 func_0208471c();
+    s32 IsSessionInError();
     s32 func_0208477c();
     s32 func_ov010_02226364();
-    if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
+    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
@@ -151,7 +159,7 @@ void func_020e3610(M2C_UNK arg0) {
 
 void func_020e3654(M2C_UNK arg0) {
     s32 func_ov010_02226560();
-    if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
+    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
@@ -163,7 +171,7 @@ void func_020e3654(M2C_UNK arg0) {
 
 void func_020e3698(M2C_UNK arg0) {
     s32 func_ov010_022266ec();
-    if ((func_0208471c() != 0) || (func_0208477c() != 0)) {
+    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
@@ -559,7 +567,7 @@ void func_020e3e04(void *arg0) {
     node_ptr = M2C_FIELD(arg0, u8 **, 0x34);
 
     for (i = 0; i < total; i++) {
-        if (Ov010_GetWebPlayerEntry(i, sp) != 0 && check_val(arg0, sp)) {
+        if (Ov010_GetWebPlayerEntry(i, sp) != 0 && check_val(sp, arg0)) {
             M2C_FIELD(node_ptr, s32 *, 0) = sp[0];
             M2C_FIELD(node_ptr, s32 *, 0x4) = sp[1];
             M2C_FIELD(node_ptr, s32 *, 0x8) = sp[2];

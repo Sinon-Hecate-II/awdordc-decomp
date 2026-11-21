@@ -14,7 +14,26 @@
 #define MAP_EDITOR_UNIT_FLAGS    0x06 /* u8 low 4 bits of the placed unit's record byte 0x0b */
 #define MAP_EDITOR_UNIT_OWNER    0x07 /* u8 1-based owner the unit brush places */
 #define MAP_EDITOR_UNIT_KIND     0x08 /* u8 unit kind the unit brush places */
-#define MAP_EDITOR_TOOL          0x09 /* u8 the active editor tool (0..3) */
+#define MAP_EDITOR_TOOL          0x09 /* u8 the active editor tool (MAP_EDITOR_TOOL_*) */
+
+/* The tool the editor applies to the cursor's cell (MAP_EDITOR_TOOL). */
+enum {
+    MAP_EDITOR_TOOL_PAINT  = 0, /* unit page: place the unit brush; terrain page: paint with the terrain brush */
+    MAP_EDITOR_TOOL_PICK   = 1, /* copy the cell's unit/terrain into the brush */
+    MAP_EDITOR_TOOL_ERASE  = 2, /* clear the cell's unit or terrain */
+    MAP_EDITOR_TOOL_SELECT = 3  /* unit page: open the cell's menu; terrain page: paint the cell's region */
+};
+
+/* Page the palette shows (MAP_EDITOR_MODE). */
+enum {
+    MAP_EDITOR_PAGE_TERRAIN = 0,
+    MAP_EDITOR_PAGE_UNIT    = 1
+};
+
+/* The editor scene object's one-frame input latch: set while the editor opens or
+ * is suspended by a map menu; while set the update ignores keys that were already
+ * held and clears the latch on the first fresh press. */
+#define MAP_EDITOR_INPUT_LATCH   0x34 /* u8 */
 
 /* The palette-panel object (the ov007 panel object GetPanelObject returns): the
  * palette page it shows and, in two parallel arrays indexed by that page, the

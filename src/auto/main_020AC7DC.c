@@ -2,57 +2,62 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-s32 *func_020ad570(s32);
+s32 *RecordsMenu_GetRecord(s32);
 
-void func_020ac7dc(void *arg0) {
+/* Per-frame update of a screen-fade transition sprite: advances its elapsed
+ * frames and, on each screen it selected, eases its bank brightness (modes 0/1)
+ * or split windows (mode 2); once the duration is reached it applies the new
+ * screen mode and lets the sprite's animation finish. */
+void ScreenFadeSprite_Update(void *fade) {
 extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
-s32 v; register s8 pos,neg;s32 saved,bank; register s32 i;u8 mode;
-M2C_FIELD(arg0,u16 *,0x38)++;
-v=EaseInterpolate(0,0,16,M2C_FIELD(arg0,u16 *,0x38),M2C_FIELD(arg0,u16 *,0x3a));
-pos=v;
-saved=gCur3DSpriteEngine;
+s32 amount; register s8 pos,neg;s32 savedEngine,engine; register s32 i;u8 screenMode;
+M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_ELAPSED)++;
+amount=EaseInterpolate(0,0,16,M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_ELAPSED),M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_LENGTH));
+
+savedEngine=gCur3DSpriteEngine;
 i=0;
-neg=-v;
+
 do {
-if(i==0)bank=g3DSpriteEngineMain;else bank=g3DSpriteEngineSub;
-gCur3DSpriteEngine=bank;
-mode=M2C_FIELD(arg0,u8 *,0x3c);
-if(mode==0 && bank!=g3DSpriteEngineMain)goto next;
-if(mode==1 && bank!=g3DSpriteEngineSub)goto next;
-if(mode==3 && bank!=saved)goto next;
-switch(M2C_FIELD(arg0,s32 *,0x34)){
-case 0:M2C_FIELD(M2C_FIELD(bank,void **,0),s8 *,0x50)=neg;break;
-case 1:M2C_FIELD(M2C_FIELD(bank,void **,0),s8 *,0x50)=pos;break;
-case 2:UpdateSplitTransition(M2C_FIELD(arg0,u16 *,0x3a)-M2C_FIELD(arg0,u16 *,0x38));break;
+if(i==0)engine=g3DSpriteEngineMain;else engine=g3DSpriteEngineSub;
+gCur3DSpriteEngine=engine;
+screenMode=M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN);
+if(screenMode==0 && engine!=g3DSpriteEngineMain)goto next;
+if(screenMode==1 && engine!=g3DSpriteEngineSub)goto next;
+if(screenMode==3 && engine!=savedEngine)goto next;
+switch(M2C_FIELD(fade,s32 *,TRANSITION_SPRITE_MODE)){
+case 0:M2C_FIELD(M2C_FIELD(engine,void **,0),s8 *,0x50)=(s8)-amount;break;
+case 1:M2C_FIELD(M2C_FIELD(engine,void **,0),s8 *,0x50)=(s8)amount;break;
+case 2:UpdateSplitTransition(M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_LENGTH)-M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_ELAPSED));break;
 }
-if(M2C_FIELD(arg0,u16 *,0x38)>=M2C_FIELD(arg0,u16 *,0x3a)){
-ApplyScreenMode((u8)M2C_FIELD(arg0,s32 *,0x34));
-Sprite_ResumeAnimation(arg0);
+if(M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_ELAPSED)>=M2C_FIELD(fade,u16 *,TRANSITION_SPRITE_LENGTH)){
+ApplyScreenMode((u8)M2C_FIELD(fade,s32 *,TRANSITION_SPRITE_MODE));
+Sprite_ResumeAnimation(fade);
 }
 next: i++;
 }while(i<2);
-gCur3DSpriteEngine=saved;
-if(M2C_FIELD(arg0,s32 *,0x18)==1)func_020ac598(M2C_FIELD(arg0,u8 *,0x3c));
+gCur3DSpriteEngine=savedEngine;
+if(M2C_FIELD(fade,s32 *,0x18)==1)func_020ac598(M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN));
 }
 
-s32 func_020ac924(M2C_UNK arg0, s32 arg1) {
- s32 func_01ffa860(M2C_UNK *, M2C_UNK);
- extern M2C_UNK gScreenTransitionClass, gScreenFadeClass;
- switch(arg1) {
- case 0: return func_01ffa860(&gScreenTransitionClass,arg0);
- case 1: return func_01ffa860(&gScreenFadeClass,arg0);
- default: return 0;
- }
+s32 func_020ac924(M2C_UNK parent, s32 type) {
+    s32 func_01ffa860(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gScreenTransitionClass, gScreenFadeClass;
+    switch (type) {
+    case 0:
+        return func_01ffa860(&gScreenTransitionClass, parent);
+    case 1:
+        return func_01ffa860(&gScreenFadeClass, parent);
+    default:
+        return 0;
+    }
 }
 
-void DeleteScreenTransitionSprites(M2C_UNK arg0) {
-    M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020ac924(M2C_UNK, M2C_UNK);
-    func_020ac924(arg0, 0);
-    DeleteSpriteObject();
-    func_020ac924(arg0, 1);
-    DeleteSpriteObject();
+void DeleteScreenTransitionSprites(M2C_UNK parent) {
+    void DeleteSpriteObject(M2C_UNK);
+    s32 func_020ac924(M2C_UNK, s32);
+    DeleteSpriteObject(func_020ac924(parent, 0));
+    DeleteSpriteObject(func_020ac924(parent, 1));
 }
 
 void SetScreenMode(s32 mode) {
@@ -194,24 +199,11 @@ M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
 void FinishCurrentScreenTransition(void) {
     s32 GetScreenFlag(u8);
     M2C_UNK ApplyScreenMode(M2C_UNK);
-    extern s32 g3DSpriteEngineMain;
-    extern s32 gCur3DSpriteEngine;
-    u8 var_r0;
-    u8 var_r0_2;
-
-    if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-        var_r0 = 1;
-    } else {
-        var_r0 = 0;
-    }
-    if (var_r0 != 1) {
-        var_r0_2 = 1;
-    } else {
-        var_r0_2 = 0;
-    }
-    if (GetScreenFlag(var_r0_2) != 1) {
+    extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
+    u8 main = gCur3DSpriteEngine == g3DSpriteEngineMain;
+    u8 other = main != 1;
+    if (GetScreenFlag(other) != 1)
         return;
-    }
     ApplyScreenMode(3);
 }
 
@@ -490,7 +482,7 @@ u8 IsScreenFadeActive(void) {
     return var_r0;
 }
 
-M2C_UNK func_020ad42c(s32 arg0, M2C_UNK *arg1) {
+M2C_UNK LocalizeMapBackgroundFileName(s32 arg0, M2C_UNK *arg1) {
     u8 GetLanguage(void);
     M2C_UNK *GetLocalizedFileName(s32);
 
@@ -505,176 +497,15 @@ done:
     return (M2C_UNK) arg1;
 }
 
-void func_020ad460(s32 arg0) {
+/* Build a map background's ".narc" archive name: copy the background's base name,
+ * append the extension and localize the result. */
+void BuildMapBackgroundNarcName(s32 background) {
  M2C_UNK StringCopy(M2C_UNK *, s32);
  M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
- M2C_UNK func_020ad42c(s32, M2C_UNK *);
- extern s32 data_021278a4[];
- extern M2C_UNK data_021279d8, data_0215c3c8;
- StringCopy(&data_0215c3c8, data_021278a4[arg0]);
- StringAppend(&data_0215c3c8, &data_021279d8);
- func_020ad42c(arg0, &data_0215c3c8);
+ M2C_UNK LocalizeMapBackgroundFileName(s32, M2C_UNK *);
+ extern s32 gMapBackgroundNames[];
+ extern M2C_UNK gNarcFileExtension, gMapBackgroundNarcName;
+ StringCopy(&gMapBackgroundNarcName, gMapBackgroundNames[background]);
+ StringAppend(&gMapBackgroundNarcName, &gNarcFileExtension);
+ LocalizeMapBackgroundFileName(background, &gMapBackgroundNarcName);
 }
-
-void func_020ad4a0(s32 arg0) {
- M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
- M2C_UNK func_020ad42c(s32, M2C_UNK *);
- extern s32 data_021278a4[];
- extern M2C_UNK data_021279e0, data_0215c3e8;
- StringCopy(&data_0215c3e8, data_021278a4[arg0]);
- StringAppend(&data_0215c3e8, &data_021279e0);
- func_020ad42c(arg0, &data_0215c3e8);
-}
-
-void func_020ad4e0(s32 arg0) {
- M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
- M2C_UNK func_020ad42c(s32, M2C_UNK *);
- extern s32 data_021278a4[];
- extern M2C_UNK data_021279e4, data_0215c408;
- StringCopy(&data_0215c408, data_021278a4[arg0]);
- StringAppend(&data_0215c408, &data_021279e4);
- func_020ad42c(arg0, &data_0215c408);
-}
-
-void func_020ad520(s32 arg0) {
- M2C_UNK StringCopy(M2C_UNK *, s32);
- M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
- M2C_UNK func_020ad42c(s32, M2C_UNK *);
- extern s32 data_021278a4[];
- extern M2C_UNK data_021279e8, data_0215c3a8;
- StringCopy(&data_0215c3a8, data_021278a4[arg0]);
- StringAppend(&data_0215c3a8, &data_021279e8);
- func_020ad42c(arg0, &data_0215c3a8);
-}
-
-s32 func_020ad560(s32 arg0) {
-    extern s32 data_02127884[];
-    return data_02127884[arg0];
-}
-
-s32 *func_020ad570(s32 arg0) {
-    extern M2C_UNK data_020f4ab8;
-    return (s32 *) ((0xC * arg0) + (s32) &data_020f4ab8);
-}
-
-s32 func_020ad584(void) {
-    s32 *func_020ad570();
-    return *func_020ad570();
-}
-
-s32 func_020ad594(s32 arg0)
-{
-  s32 func_020ad5dc();
-  s32 *func_020ad570(s32);
-  s32 new_var[2];
-  s32 temp_r0;
-  temp_r0 = func_020ad5dc();
-  for (new_var[1] = 0; new_var[1] < temp_r0; new_var[1]++)
-  {
-    new_var[0] = *((s32 *) (((s8 *) func_020ad570(new_var[1])) + 0));
-    if (new_var[0] == arg0)
-    {
-      return new_var[1];
-    }
-  }
-
-  return -1;
-}
-
-s32 func_020ad5dc(void) {
-    s32 var_r4;
-
-    var_r4 = 0;
-loop_1:
-    if (M2C_FIELD(func_020ad570(var_r4), s32 *, 8) != 0) {
-        var_r4 += 1;
-        goto loop_1;
-    }
-    return var_r4;
-}
-
-void func_020ad604(s32 arg0) {
-    M2C_UNK func_02086774(s32, M2C_UNK);
-    if (arg0 < 0) {
-        return;
-    }
-    func_02086774(arg0, 1);
-}
-
-s32 func_020ad61c(s32 arg0) {
-    s32 func_020869c0();
-    if ((arg0 >= 0) && (func_020869c0() != 0)) {
-        return 1;
-    }
-    return 0;
-}
-
-void func_020ad640(s32 arg0) {
-    M2C_UNK func_020867a8(s32, M2C_UNK);
-    if (arg0 < 0) {
-        return;
-    }
-    func_020867a8(arg0, 1);
-}
-
-s32 func_020ad658(s32 arg0) {
-    s32 func_020869e0();
-    if ((arg0 >= 0) && (func_020869e0() != 0)) {
-        return 1;
-    }
-    return 0;
-}
-
-void SetScreenTransitionDirectory(void) {
-    M2C_UNK SetFileDirectory(M2C_UNK *);
-    extern M2C_UNK data_02127d78;
-    SetFileDirectory(&data_02127d78);
-}
-
-s32 GetScreenTransitionSide(void) {
-extern s16 *gScreenTransition;
-return gScreenTransition[2] != 0;
-}
-
-s32 GetScreenTransitionCgTarget(void) {
-    s32 GetScreenTransitionSide();
-    extern s32 g3DSpriteEngineSub;
-    return M2C_FIELD((g3DSpriteEngineSub + (GetScreenTransitionSide() * 4)), s32 *, 0xC);
-}
-
-s32 GetScreenTransitionScTarget(void) {
- s32 GetScreenTransitionSide();
- extern s32 g3DSpriteEngineSub;
- return M2C_FIELD(g3DSpriteEngineSub + GetScreenTransitionSide()*4, s32 *, 0x20);
-}
-
-void SetScreenTransitionDone(void) {
-    extern s16 *gScreenTransition;
-    *gScreenTransition |= 1;
-}
-
-void func_020ad70c(void) {
-extern s16 *gScreenTransition;
-*gScreenTransition &= ~1;
-}
-
-u8 IsScreenTransitionDone(void) {
- extern s16 *gScreenTransition;
- u8 result;
- if (gScreenTransition[0] & 1) result=1; else result=0;
- return result;
-}
-
-void FlipScreenTransition(void) {
- extern s16 *gScreenTransition;
- s32 GetScreenTransitionSide();
- void Clear3DSpriteLayer(u8);
- void DrawScreenTransition(void);
- gScreenTransition[2]=1-gScreenTransition[2];
- Clear3DSpriteLayer((u8)GetScreenTransitionSide());
- DrawScreenTransition();
- gScreenTransition[3]=0;
-}
-

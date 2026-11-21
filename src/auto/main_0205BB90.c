@@ -406,18 +406,20 @@ s32 gti2SendReliableMessage(s32 connection, M2C_UNK message, s32 length) {
     return 0;
 }
 
-s32 gti2SendConnect(s32 arg0, M2C_UNK arg1) {
+/* Client side of the GT2 handshake: send the CONNECT command carrying our 32-byte
+ * challenge.  Returns 0 when the connection was freed, 1 otherwise. */
+s32 gti2SendConnect(s32 connection, M2C_UNK challenge) {
     M2C_UNK gti2BufferWriteData(s32, M2C_UNK, M2C_UNK);
-    s32 sp0;
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 1, 0x27, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_CONNECT, GT2_CONNECT_SIZE, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    gti2BufferWriteData(arg0 + 0x50, arg1, 0x20);
-    if (gti2EndReliableMessage(arg0) != 0) {
+    gti2BufferWriteData(connection + GT2_CONNECTION_SEND_BUFFER, challenge, GT2_RESPONSE_SIZE);
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;

@@ -112,8 +112,7 @@ void func_ov011_022273c8(void *arg0) {
         DrawTileRow((u16) ((0x82 - temp_r9) & 0x1FF), 0x49E, temp_r6, (u16) ((0x3FF & (0x1C0 >> ((u32) (*M2C_FIELD(data_027e01d8, u16 **, 0) << 0x11) >> 0x1E))) | 0xE800), 0x11);
         temp_r1 = M2C_FIELD(arg0, u16 *, 0x3A);
         if ((u32) temp_r1 <= 0x2A08U) {
-            temp_r0_7 = EaseInterpolate(4, 0, 0x10, temp_r1 - 0x29CC, 0x3C);
-            M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_7;
+            temp_r0_7 = (M2C_FIELD(arg0, u8 *, 0x36) = EaseInterpolate(4, 0, 0x10, temp_r1 - 0x29CC, 0x3C));
             sp7C = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
             *sp7C = (u16) ((*sp7C & ~0xC0) | 0x40);
             M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), u8 *, 0x51) = temp_r0_7;
@@ -190,8 +189,7 @@ void func_ov011_022273c8(void *arg0) {
         AddSprite(0, 0x50, 0, &data_02101f78, 0);
         temp_r1_16 = M2C_FIELD(arg0, u16 *, 0x3A);
         if ((u32) temp_r1_16 < 0x2A44U) {
-            temp_r0_20 = EaseInterpolate(4, 0, 0x10, temp_r1_16 - 0x29CC, 0x78);
-            M2C_FIELD(arg0, u8 *, 0x36) = temp_r0_20;
+            temp_r0_20 = (M2C_FIELD(arg0, u8 *, 0x36) = EaseInterpolate(4, 0, 0x10, temp_r1_16 - 0x29CC, 0x78));
             sp10 = (u16 *) ((u8 *) *data_027e01d8 + 0x12);
             *sp10 = (u16) ((*sp10 & ~0xC0) | 0x40);
             M2C_FIELD(M2C_FIELD(data_027e01d8, u16 **, 0), u8 *, 0x51) = temp_r0_20;

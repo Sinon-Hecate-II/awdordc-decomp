@@ -117,8 +117,8 @@ M2C_FIELD(a,s32 *,0x800)+=n;
 
 #pragma opt_common_subs off
 void RefreshLocalIps(void) {
-void *func_02049584(void);
-void *p=func_02049584();
+void *GetLocalHostAddresses(void);
+void *p=GetLocalHostAddresses();
 s32 i;volatile u8 *s;u32 x,y;
 
 if(!p)return;gLocalIpCount=0;
@@ -435,17 +435,20 @@ void Qr2AppendKeys(M2C_UNK qr2Record, void *query, M2C_UNK mode) {
     } while (i < keyList.count);
 }
 
-void Qr2_AppendFinalQuery(M2C_UNK arg0, void *arg1) {
+/* Build the final query for the master: start the buffer at a bare '\', append the
+ * three key groups, then the sQr2FinalQueryTrailer marker.  The stored length at
+ * QR2_QUERY_COUNT is left excluding the terminating NUL. */
+void Qr2_AppendFinalQuery(M2C_UNK qr2, void *query) {
     void Qr2AppendString(void *, M2C_UNK *);
-                      void Qr2AppendKeys(M2C_UNK, void *, M2C_UNK);
-    extern M2C_UNK data_020ffa74;
-    M2C_FIELD(arg1, s32 *, 0x800) = 1;
-    M2C_FIELD(arg1, s8 *, 0) = 0x5C;
-    Qr2AppendKeys(arg0, arg1, 0);
-    Qr2AppendKeys(arg0, arg1, 1);
-    Qr2AppendKeys(arg0, arg1, 2);
-    Qr2AppendString(arg1, &data_020ffa74);
-    M2C_FIELD(arg1, s32 *, 0x800) = (s32) (M2C_FIELD(arg1, s32 *, 0x800) - 1);
+    void Qr2AppendKeys(M2C_UNK, void *, M2C_UNK);
+    extern M2C_UNK sQr2FinalQueryTrailer;
+    M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) = 1;
+    M2C_FIELD(query, s8 *, 0) = '\\';
+    Qr2AppendKeys(qr2, query, QR2_KEY_MODE_PLAIN);
+    Qr2AppendKeys(qr2, query, QR2_KEY_MODE_INDEXED1);
+    Qr2AppendKeys(qr2, query, QR2_KEY_MODE_INDEXED2);
+    Qr2AppendString(query, &sQr2FinalQueryTrailer);
+    M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) = (s32) (M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) - 1);
 }
 
 #pragma opt_strength_reduction off
@@ -502,16 +505,19 @@ no_match:
     }
 }
 #pragma opt_strength_reduction reset
-s32 Qr2_RememberRequest(void *a,s32 b) {
+/* Remembers the request id of a just-received QR2 message: 1 when one of the
+ * last QR2_RECENT_ID_COUNT ids is already `id` (a duplicate the caller drops),
+ * 0 when the id was added to the ring at the next slot instead. */
+s32 Qr2_RememberRequest(void *qr2,s32 id) {
  s32 i=0;
 loop:
- if(M2C_FIELD((u8 *)a+((u32)i<<2),s32 *,0xd8)==b)return 1;
+ if(M2C_FIELD((u8 *)qr2+((u32)i<<2),s32 *,QR2_RECENT_IDS)==id)return 1;
  i++;
- if(i<10)goto loop;
- M2C_FIELD(a,s32 *,0x100)=(M2C_FIELD(a,s32 *,0x100)+1)%10;
- i=M2C_FIELD(a,s32 *,0x100);
- M2C_FIELD(a,s32 *,0x100)=i;
- M2C_FIELD((u8 *)a+((u32)i<<2),s32 *,0xd8)=b;
+ if(i<QR2_RECENT_ID_COUNT)goto loop;
+ M2C_FIELD(qr2,s32 *,QR2_RECENT_INDEX)=(M2C_FIELD(qr2,s32 *,QR2_RECENT_INDEX)+1)%QR2_RECENT_ID_COUNT;
+ i=M2C_FIELD(qr2,s32 *,QR2_RECENT_INDEX);
+ M2C_FIELD(qr2,s32 *,QR2_RECENT_INDEX)=i;
+ M2C_FIELD((u8 *)qr2+((u32)i<<2),s32 *,QR2_RECENT_IDS)=id;
  return 0;
 }
 

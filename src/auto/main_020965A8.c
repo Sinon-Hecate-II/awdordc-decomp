@@ -101,7 +101,7 @@ void func_02096b24(void) {
     M2C_UNK SetUiMessageText();
     extern M2C_UNK data_02102e14;
     SetUiMessageText();
-    func_020948c4(&data_02102e14);
+    StartDialogSequence(&data_02102e14);
 }
 
 void func_02096b3c(void) {

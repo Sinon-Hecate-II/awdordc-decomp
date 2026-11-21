@@ -398,14 +398,18 @@ u8 func_020cd728(void) {
 
 #pragma push
 #pragma opt_common_subs off
-void FillTeamSightBitmap(s32 arg0) {
+/* Fills a team's cell-sight bitmap with every cell visible when the map has no
+ * fog and no snow, and clears it otherwise: the team sees the whole map or
+ * nothing. */
+void FillTeamSightBitmap(s32 team) {
     extern s32 *gCurrentMap;
     void MI_CpuFill8(s32, s32, s32);
-    s32 base = *gCurrentMap;
-    if (M2C_FIELD(base, u8 *, 0x5156) == 0 && M2C_FIELD(base, u8 *, 0x5158) != 2) {
-        MI_CpuFill8(base + 0x5160 + 0xA1 * arg0, 255, 0xA1);
+    s32 map = *gCurrentMap;
+
+    if (M2C_FIELD(map, u8 *, MAP_FOG) == 0 && M2C_FIELD(map, u8 *, MAP_WEATHER) != MAP_WEATHER_SNOW) {
+        MI_CpuFill8(map + MAP_CELL_BITMAP_TEAM_A + MAP_CELL_BITMAP_SIZE * team, 255, MAP_CELL_BITMAP_SIZE);
     } else {
-        MI_CpuFill8(base + 0x5160 + 0xA1 * arg0, 0, 0xA1);
+        MI_CpuFill8(map + MAP_CELL_BITMAP_TEAM_A + MAP_CELL_BITMAP_SIZE * team, 0, MAP_CELL_BITMAP_SIZE);
     }
 }
 #pragma pop

@@ -1,15 +1,20 @@
 /* 16 functions from 0x0201BDE0 to 0x0201CB4C (main), found by ds-decomp. */
 #include "common.h"
+#include "tcp_socket.h"
+#include "net_socket.h"
 
-void *TcpFindConnection(s32 a,s32 b) {
+/* Finds the active connection behind a socket-manager entry whose local/remote
+ * ports and peer address match this received segment, so the segment can be
+ * routed to its socket.  Returns the raw connection, or NULL when none matches. */
+void *TcpFindConnection(s32 ipHeader,s32 seg) {
  s32 TcpConnectionMatchesSegment(s32,s32,void *);
  extern M2C_UNK gSocketManager;
- void *q;
- void *p=M2C_FIELD(&gSocketManager,void **,8);
- while(p) {
- q=M2C_FIELD(p,void **,0xa4);
- if(q && M2C_FIELD(q,s32 *,0) && TcpConnectionMatchesSegment(a,b,q))return q;
- p=M2C_FIELD(p,void **,0x68);
+ void *entry;
+ void *node=M2C_FIELD(&gSocketManager,void **,SOCKMGR_SOCKETS);
+ while(node) {
+ entry=M2C_FIELD(node,void **,SOCK_OBJECT_RAW);
+ if(entry && M2C_FIELD(entry,s32 *,CONN_ID) && TcpConnectionMatchesSegment(ipHeader,seg,entry))return entry;
+ node=M2C_FIELD(node,void **,SOCK_OBJECT_NEXT);
  }
  return NULL;
 }

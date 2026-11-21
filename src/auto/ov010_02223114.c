@@ -43,37 +43,39 @@ s32 func_ov010_02223114(void) {
     return count;
 }
 
+int __clz(unsigned int);
 #pragma intrinsic on
 s32 func_ov010_022231d4(void) {
-M2C_UNK SendDataToPlayer(u8,s32,s32);
-s32 Link_BuildNextPacket(void);
-extern M2C_UNK gVoiceChatState, gLinkConfig;
+M2C_UNK func_020444cc(u8,s32,s32);
+s32 func_ov010_02222cac(void);
+extern M2C_UNK data_ov010_0222c960, data_ov010_0222edc0;
 extern u8 data_ov010_0222be36[];
 s32 t,k,idx,i; u8 n;
-if(M2C_FIELD(&gVoiceChatState,s32*,0x20)==0)return 1;
-if(M2C_FIELD(&gVoiceChatState,s32*,0xF08)==0){
-t=Link_BuildNextPacket();M2C_FIELD(&gVoiceChatState,s32*,0xF08)=t;
-if(t && M2C_FIELD(&gVoiceChatState,s32*,0x18)) t=0; else t=1; return t;
+if(M2C_FIELD(&data_ov010_0222c960,s32*,0x20)==0)return 1;
+if(M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)==0){
+t=func_ov010_02222cac();M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=t;
+if(t && M2C_FIELD(&data_ov010_0222c960,s32*,0x18)) t=0; else t=1; return t;
 }
 n=1;
-if(M2C_FIELD(&gLinkConfig,s32*,0x10)==2){
-idx=M2C_FIELD(&gVoiceChatState,s32*,0xF10)++;
-n=(data_ov010_0222be36+M2C_FIELD(&gVoiceChatState,s32*,0xF14)*3)[idx];
+if(M2C_FIELD(&data_ov010_0222edc0,s32*,0x10)==2){
+idx=M2C_FIELD(&data_ov010_0222c960,s32*,0xF10)++;
+n=(data_ov010_0222be36+M2C_FIELD(&data_ov010_0222c960,s32*,0xF14)*3)[idx];
 }
 i=0; goto test;
 loop: {
-u32 bits=M2C_FIELD(&gVoiceChatState,u32*,0xF0C);
-k=__CLZ(bits);if(k==32)goto done;
-M2C_FIELD(&gVoiceChatState,u32*,0xF0C)=bits&~(0x80000000U>>k);
-SendDataToPlayer((u8)(31-k),M2C_FIELD(&gVoiceChatState,s32*,0xF08),M2C_FIELD(&gVoiceChatState,s32*,12));
-if(!M2C_FIELD(&gVoiceChatState,s32*,0xF0C)){
-M2C_FIELD(&gVoiceChatState,s32*,0xF00)++;
-M2C_FIELD(&gVoiceChatState,s32*,0xF08)=0;
-M2C_FIELD(&gVoiceChatState,s32*,0xF0C)=0;
+u32 bits=M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C);
+k=__builtin_clz(bits);if(k==32)goto done;
+M2C_FIELD(&data_ov010_0222c960,u32*,0xF0C)=bits&~(0x80000000U>>k);
+func_020444cc((u8)(31-k),M2C_FIELD(&data_ov010_0222c960,s32*,0xF08),M2C_FIELD(&data_ov010_0222c960,s32*,12));
+if(!M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)){
+M2C_FIELD(&data_ov010_0222c960,s32*,0xF00)++;
+M2C_FIELD(&data_ov010_0222c960,s32*,0xF08)=0;
+M2C_FIELD(&data_ov010_0222c960,s32*,0xF0C)=0;
 goto done;
 }
 }i++; test: if(i<n)goto loop; done: return 1;
 }
+#pragma intrinsic reset
 void func_ov010_022232e0(void) {
     extern s32 gLinkPendingList;
     extern s32 gLinkPendingCounts[];

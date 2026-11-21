@@ -56,7 +56,7 @@ void func_020c98d8(s32,s32,s32);
 s32 IsPlayerHuman(u32);
 void AddRecordValue(s32,s32);
 void func_ov000_02169740(void *);
-void func_ov000_021696f8(void *);
+void DeleteUnitMoveObject(void *);
 void RefreshMapView(void);
 void StepUnitMoveSound(void *);
 void SetSpriteAnimFrame(s32,s32);
@@ -75,7 +75,7 @@ func_020c98d8(M2C_FIELD(p,s16*,0x4c)>>4,M2C_FIELD(p,s16*,0x4e)>>4,0);
 if(IsPlayerHuman(M2C_FIELD((void*)*gCurrentMap,u16*,0x52a4)))AddRecordValue(14,1);
 break;
 case 4:func_ov000_02169740(p);break;
-case -1:func_ov000_021696f8(p);RefreshMapView();break;
+case -1:DeleteUnitMoveObject(p);RefreshMapView();break;
 case 0:case 1:case 2:case 3:
 StepUnitMoveSound(p);
 if(command!=M2C_FIELD(p,s8*,0x44)){
@@ -249,15 +249,15 @@ void *func_ov000_021696b0(s32 a,s32 b,s32 c,s32 d,s32 e) {
 
 void func_ov000_021696d4(void) {
  s32 FindObjectByClass(M2C_UNK *);
- void func_ov000_021696f8(void *);
+ void DeleteUnitMoveObject(void *);
  extern M2C_UNK gUnitMoveClass;
  void *p=(void *)FindObjectByClass(&gUnitMoveClass);
  if(!p)return;
- func_ov000_021696f8(p);
+ DeleteUnitMoveObject(p);
  func_ov000_021696d4();
 }
 
-void func_ov000_021696f8(void *arg0) {
+void DeleteUnitMoveObject(void *arg0) {
  void DeleteSpriteObject(void *);
  M2C_UNK func_020d47b0();
  void *p=M2C_FIELD(arg0,void **,0x3C);
@@ -488,11 +488,11 @@ void func_ov000_02169cd4(void *arg0) {
 
 s32 LoadUnitMoveGfx(M2C_UNK arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_02081070(s32, M2C_UNK);
+    M2C_UNK LoadDecompressedFile(s32, M2C_UNK);
     s32 func_ov000_02169ec0(M2C_UNK);
     extern M2C_UNK data_ov000_021aeee0;
     SetFileDirectory(&data_ov000_021aeee0);
-    func_02081070(func_ov000_02169ec0(arg0), 1);
+    LoadDecompressedFile(func_ov000_02169ec0(arg0), 1);
 }
 
 s32 LoadUnitMoveAnim(void *arg0) {
@@ -540,27 +540,27 @@ if(scrollDone)scrollDone();
 }
 #pragma pop
 s32 func_ov000_02169ec0(M2C_UNK p) {
- s32 func_020a7298(s32,s32);
+ s32 GetUnitVariantIndex(s32,s32);
  extern s32 data_ov000_021aec88[];
- return M2C_FIELD(data_ov000_021aec88,s32 *,func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD))*20);
+ return M2C_FIELD(data_ov000_021aec88,s32 *,GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD))*20);
 }
 
 s32 func_ov000_02169f08(void *p) {
- s32 func_020a7298(s32,s32);
+ s32 GetUnitVariantIndex(s32,s32);
  s32 IsFastAnimation(void);
  extern M2C_UNK data_ov000_021aec90;
  s32 value;
  void *base=M2C_FIELD(gCurrentMap,void **,0);
- s32 index=func_020a7298(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(base+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD));
+ s32 index=GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(base+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD));
  value=M2C_FIELD(&data_ov000_021aec90,u8 *,index*20);
  if(IsFastAnimation()!=0)value<<=1;
  return (s16)value;
 }
 
 s32 func_ov000_02169f64(u8 arg0) {
- s32 func_020a7298(s32,s32);
+ s32 GetUnitVariantIndex(s32,s32);
  extern M2C_UNK data_ov000_021aec8c;
- return M2C_FIELD(&data_ov000_021aec8c,s32 *,func_020a7298(arg0,1)*20);
+ return M2C_FIELD(&data_ov000_021aec8c,s32 *,GetUnitVariantIndex(arg0,1)*20);
 }
 
 void StepUnitMove(void) {

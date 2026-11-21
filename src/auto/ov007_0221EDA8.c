@@ -222,8 +222,8 @@ block_82:
 }
 #pragma pop
 void func_ov007_0221f220(void) {
-    M2C_UNK func_ov007_0221ec40();
-    func_ov007_0221ec40();
+    M2C_UNK DrawMapEditList();
+    DrawMapEditList();
 }
 
 void func_ov007_0221f22c(void) {

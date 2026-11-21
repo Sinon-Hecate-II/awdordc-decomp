@@ -1,11 +1,14 @@
 /* 43 functions from 0x0207C2F0 to 0x0207D130 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "hw_div.h"
 typedef struct { s32 x,y,z; } Vec0207;
 extern Vec0207 gMapViewUpVector;
 
 typedef struct Unk0207Color { u32 words[4]; } Unk0207Color;
-Unk0207Color func_0207cbd0(s32);
+#define VIEW_PRESET_WIDTH  0x0C /* u8 at +0xC: view width in tiles */
+#define VIEW_PRESET_HEIGHT 0x0D /* u8 at +0xD: view height in tiles */
+Unk0207Color GetViewZoomPreset(s32);
 typedef struct { u16 mode:3; u16 rest:13; } Mode0207;
 extern Mode0207 gMapConfig;
 extern Unk0207Color data_021017f4[4];
@@ -333,14 +336,16 @@ s32 Modulo(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A8;
 }
 
-void DivMod(s32 arg0, s32 arg1, s32 *arg2, s32 *arg3) {
-    *(volatile u16 *)0x04000280 = 0;
-    *(volatile s32 *)0x04000290 = arg0;
-    *(volatile s64 *)0x04000298 = (u32)arg1;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    *arg2 = *(volatile s32 *)0x040002A0;
-    while (*(volatile u16 *)0x04000280 & 0x8000) {}
-    *arg3 = *(volatile s32 *)0x040002A8;
+/* Hardware 32-bit divide: start the ARM9 divider with the numerator and
+   denominator, then read the quotient and the remainder. */
+void DivMod(s32 numerator, s32 denominator, s32 *quotient, s32 *remainder) {
+    REG_DIVCNT = 0;
+    REG_DIV_NUMER = numerator;
+    REG_DIV_DENOM = (u32)denominator;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    *quotient = REG_DIV_RESULT;
+    while (REG_DIVCNT & DIVCNT_BUSY) {}
+    *remainder = REG_DIVREM_RESULT;
 }
 
 s32 func_0207c9c8(s32 arg0, s32 arg1) {
@@ -406,7 +411,7 @@ void func_0207cbb0(void) {
 }
 
 #pragma opt_if-conversion off
-Unk0207Color func_0207cbd0(s32 index) {
+Unk0207Color GetViewZoomPreset(s32 index) {
     Unk0207Color v = data_021017f4[(u8)gMapConfig.mode != 2 ? index : (index + 2)];
     u8 *base;
     s32 limit;
@@ -481,9 +486,9 @@ void func_0207cddc(s32 arg0, M2C_UNK arg1) {
 
 void func_0207ce28(M2C_UNK arg0) {
     M2C_UNK UpdateViewForZoom(M2C_UNK);
-    M2C_UNK func_020bf930(M2C_UNK);
+    M2C_UNK ApplyViewZoomOption(M2C_UNK);
     InitMapViewCameraVectors(arg0, 0, 0, 0);
-    func_020bf930(arg0);
+    ApplyViewZoomOption(arg0);
     UpdateViewForZoom(arg0);
 }
 
@@ -502,22 +507,26 @@ M2C_UNK func_0207ce60(void *arg0) {
 void SetViewZoom(void *arg0, s16 arg1) {
     void func_0207cfb0(void *, s16);
     M2C_UNK UpdateViewForZoom(M2C_UNK);
-    void func_020bf97c(void *);
+    void SaveViewZoomOption(void *);
     func_0207cfb0(arg0, arg1);
     UpdateViewForZoom((M2C_UNK)arg0);
-    func_020bf97c(arg0);
+    SaveViewZoomOption(arg0);
 }
 
-void GetViewHeightForZoom(s32 arg0) {
- Unk0207Color a = func_0207cbd0(0);
- Unk0207Color b = func_0207cbd0(1);
- EaseInterpolate(0,((u8 *)&a)[13],((u8 *)&b)[13],arg0,0x80);
+/* The map view's tile height at zoom fraction zoom (0 = zoomed in, 0x80 = zoomed
+ * out): the height bytes of the two zoom presets eased between. */
+void GetViewHeightForZoom(s32 zoom) {
+    Unk0207Color zoomedIn = GetViewZoomPreset(0);
+    Unk0207Color zoomedOut = GetViewZoomPreset(1);
+    EaseInterpolate(EASE_LINEAR, ((u8 *)&zoomedIn)[VIEW_PRESET_HEIGHT], ((u8 *)&zoomedOut)[VIEW_PRESET_HEIGHT], zoom, 0x80);
 }
 
-void GetViewWidthForZoom(s32 arg0) {
- Unk0207Color a = func_0207cbd0(0);
- Unk0207Color b = func_0207cbd0(1);
- EaseInterpolate(0,((u8 *)&a)[12],((u8 *)&b)[12],arg0,0x80);
+/* The map view's tile width at zoom fraction zoom (0 = zoomed in, 0x80 = zoomed
+   out): the width bytes of the two zoom presets eased between. */
+s32 GetViewWidthForZoom(s32 zoom) {
+    Unk0207Color zoomedIn = GetViewZoomPreset(0);
+    Unk0207Color zoomedOut = GetViewZoomPreset(1);
+    return EaseInterpolate(EASE_LINEAR, ((u8 *)&zoomedIn)[VIEW_PRESET_WIDTH], ((u8 *)&zoomedOut)[VIEW_PRESET_WIDTH], zoom, 0x80);
 }
 
 void func_0207cfb0(void *arg0, s16 arg1) {
@@ -531,8 +540,8 @@ s16 GetViewZoom(void *arg0) {
 /* Interpolate the two preset colors (indices 0 and 1) by t/128 and store the result in p. */
 M2C_UNK UpdateViewForZoom(M2C_UNK arg) {
     void *p = (void *)arg;
-    Unk0207Color colorA = func_0207cbd0(0);
-    Unk0207Color colorB = func_0207cbd0(1);
+    Unk0207Color colorA = GetViewZoomPreset(0);
+    Unk0207Color colorB = GetViewZoomPreset(1);
     s32 t = GetViewZoom(p);
 
     M2C_FIELD(p, s32 *, 0) = EaseInterpolate(0, colorA.words[0], colorB.words[0], t, 128);

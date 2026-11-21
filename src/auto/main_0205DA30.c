@@ -600,7 +600,7 @@ void Qr2_ReadPackets(void *qr2) {
 #pragma opt_propagation off
 #pragma scheduling on
 void NatNeg_SendInitRequests(void *arg0) {
-s32 func_0205d998(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
+s32 GetPreferredLocalIp(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,gNatNegManager;
@@ -618,7 +618,7 @@ p->value=M2C_FIELD(arg0,s32 *,12);
 ip=M2C_FIELD(arg0,u32 *,8);
 p->ip=((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000);
 p->flag=M2C_FIELD(arg0,s32 *,4)!=(s32)(p->length-1);
-a=func_0205d998();b=func_0205d998();c=func_0205d998();d=func_0205d998();
+a=GetPreferredLocalIp();b=GetPreferredLocalIp();c=GetPreferredLocalIp();d=GetPreferredLocalIp();
 ip=((c>>24)&255)|((d>>8)&0xff00)|((b<<8)&0xff0000)|((a<<24)&0xff000000);
 packet.bytes[15]=ip>>24;packet.bytes[16]=ip>>16;packet.bytes[17]=ip>>8;packet.bytes[18]=ip;
 packet.bytes[19]=0;packet.bytes[20]=0;

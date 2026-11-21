@@ -272,8 +272,8 @@ M2C_UNK func_ov005_0221b114(void *arg0) {
 }
 
 void func_ov005_0221b424(void) {
-    M2C_UNK func_ov005_0221ab98();
-    func_ov005_0221ab98();
+    M2C_UNK ResultScoreRow_SlideIn();
+    ResultScoreRow_SlideIn();
 }
 
 void func_ov005_0221b430(void) {

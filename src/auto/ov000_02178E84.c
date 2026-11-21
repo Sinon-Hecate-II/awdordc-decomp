@@ -154,7 +154,7 @@ if(IsFootUnitKind(id)&&M2C_FIELD(gAiCommandState,u8 *,5)<4U)value=4;else value=G
 if(((u32)(M2C_FIELD(arg0,u8 *,11)<<27)>>31)!=0)scale=M2C_FIELD(gAiSettings,u8 *,15);else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale; if(value>110) { value=110; } else { value=value; } return value;
 }
-#pragma opt_propagation reset
+#pragma optimization_level 3
 s32 GetAiUnitRange(u8 *arg0,void *arg1,u32 arg2) {
 s32 IsFootUnitKind(u32);
 extern void **data_027e0058;
@@ -173,7 +173,7 @@ if(((u32)(M2C_FIELD(M2C_FIELD(*data_027e0058,void **,0x52d0),u8 *,11)<<27)>>31)!
 else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale;if(value>110)value=110;return value;
 }
-
+#pragma optimization_level reset
 s32 GetAiUnitSearchRange(u8 *arg0) {
     s32 GetAiUnitRange(u8 *, void *, u32);
     extern void **gCurrentMap;

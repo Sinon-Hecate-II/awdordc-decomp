@@ -7,6 +7,8 @@
 #define ONLINE_PEER_IDLE_FRAMES 0x38 /* s32[4] frames since each peer's last packet */
 #define ONLINE_PEER_COUNT 4
 #define ONLINE_PACKET_HEARTBEAT 1
+#define ONLINE_PACKET_START_REQUEST 2 /* the host asks the peers to start the match, payload is the start record */
+#define ONLINE_PACKET_START_ACK     3 /* a peer acknowledges a start request */
 #define ONLINE_PACKET_PLAYER_STATUS 7 /* broadcast the sender's online player record to the peers */
 #define ONLINE_HEARTBEAT_INTERVAL_MS 4000
 #define ONLINE_PEER_TIMEOUT_NUMERATOR 1800000

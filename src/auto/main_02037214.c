@@ -198,73 +198,77 @@ void SetNetError(s32 arg0, s32 arg1) {
     }
 }
 
-s32 func_02037650(s32 arg0) {
+s32 GetHeapBlockHeader(s32 arg0) {
     return arg0 - 0x20;
 }
 
-void *func_02037658(void *arg0, s32 arg1) {
+void *InitHeapBlock(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0) = 0x4457434D;
     M2C_FIELD(arg0, s32 *, 4) = arg1;
     return arg0 + 0x20;
 }
 
-s32 func_02037670(s32 arg0) {
+s32 GetHeapBlockSize(s32 arg0) {
     s32 *p;
     s32 dummy;
-    p = (s32 *)func_02037650(arg0);
+    p = (s32 *)GetHeapBlockHeader(arg0);
     (void)dummy;
     return p[1];
 }
 
 void func_02037680(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_0213d1d4;
-    M2C_FIELD(&data_0213d1d4, s32 *, 4) = arg0;
-    M2C_FIELD(&data_0213d1d4, s32 *, 0) = arg1;
+    extern M2C_UNK gHeapCallbacks;
+    M2C_FIELD(&gHeapCallbacks, s32 *, 4) = arg0;
+    M2C_FIELD(&gHeapCallbacks, s32 *, 0) = arg1;
 }
 
 void HeapAlloc(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020376a4(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020376a4(arg0, arg1, 0x20);
+    M2C_UNK HeapAllocAligned(M2C_UNK, M2C_UNK, M2C_UNK);
+    HeapAllocAligned(arg0, arg1, 0x20);
 }
 
-M2C_UNK func_020376a4(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
-    extern M2C_UNK data_0213d1d4;
+M2C_UNK HeapAllocAligned(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+    extern M2C_UNK gHeapCallbacks;
     void *temp_r0;
-    temp_r0 = M2C_FIELD(&data_0213d1d4, void *(**)(M2C_UNK, s32, M2C_UNK), 4)(arg0, arg1 + 0x20, arg2);
+    temp_r0 = M2C_FIELD(&gHeapCallbacks, void *(**)(M2C_UNK, s32, M2C_UNK), 4)(arg0, arg1 + 0x20, arg2);
     if (temp_r0 == NULL) {
         return 0;
     }
-    return (s32)func_02037658(temp_r0, arg1);
+    return (s32)InitHeapBlock(temp_r0, arg1);
 }
 
 void HeapFree(M2C_UNK a, M2C_UNK b, M2C_UNK c) {
-    extern M2C_UNK data_0213d1d4;
+    extern M2C_UNK gHeapCallbacks;
     if (b == 0) {
         return;
     }
-    M2C_FIELD(&data_0213d1d4, void (**)(s32, s32, s32), 0)(
-        a, func_02037650(b), c);
+    M2C_FIELD(&gHeapCallbacks, void (**)(s32, s32, s32), 0)(
+        a, GetHeapBlockHeader(b), c);
 }
 
 M2C_UNK func_02037714(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02037728(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    M2C_UNK HeapReallocAligned(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 dummy = 0;
     (void)dummy;
-    return func_02037728(arg0, arg1, arg2, arg3, 0x20);
+    return HeapReallocAligned(arg0, arg1, arg2, arg3, 0x20);
 }
 
-M2C_UNK func_02037728(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK size,s32 align){
-void MI_CpuCopy8(void *,void *,u32);
-s32 p; u32 n;
-p=func_020376a4(a,size,align);
-if(!p)return 0;
-if(b){
-unused=func_02037670(b);
-if((u32)unused<=(u32)size)size=unused;
-MI_CpuCopy8(b,p,size);
-HeapFree(a,b,unused);
-}
-return p;
+/* Reallocate a heap block: allocate a new aligned block of size bytes, copy the old
+ * block's contents up to the smaller of the two sizes, free the old block and
+ * return the new one, or 0 when the allocation failed. */
+M2C_UNK HeapReallocAligned(M2C_UNK heap, M2C_UNK block, M2C_UNK oldSize, M2C_UNK size, s32 align) {
+    void MI_CpuCopy8(void *, void *, u32);
+    s32 newBlock;
+
+    newBlock = HeapAllocAligned(heap, size, align);
+    if (!newBlock) return 0;
+    if (block) {
+        oldSize = GetHeapBlockSize(block);
+        if ((u32)oldSize <= (u32)size) size = oldSize;
+        MI_CpuCopy8(block, newBlock, size);
+        HeapFree(heap, block, oldSize);
+    }
+    return newBlock;
 }
 
 void gpiMalloc(M2C_UNK arg0) {

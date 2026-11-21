@@ -1,5 +1,6 @@
 /* 5 functions from 0x02089D30 to 0x0208ABC4 (main), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 static inline void SetPanelRefresh(void *p) { s32 value=M2C_FIELD(p,s32*,0x58); if(((u32)(value<<18)>>31)&255) M2C_FIELD(p,s32*,0x58)=(value&~0x1fc00000)|0x1000000; }
 static inline u32 PanelWidth(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<23)>>23; }
 static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<14)>>23; }
@@ -14,7 +15,7 @@ void func_02089d30(void *arg0) {
     s32 func_0209c690(void *);
     void *func_020ab1c4(s32);
     void InitUnitSprite(void *,s32,s32,s32,s32);
-    void func_02088e84(void *,s16,s32,s16,s32);
+    void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
     void func_02087d84(void *,s32,s16,s16,u16,u16);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
@@ -30,7 +31,7 @@ void func_02089d30(void *arg0) {
     void func_0208989c(void *);
     void func_0208ad48(void *);
     void func_02089784(void *);
-    void func_0208aebc(void *);
+    void StartWindowOpen(void *);
     void *end,*entry;
     s32 w1,w2,w3,w4,w5,w6,w7,w8;
     void *sprite4,*sprite1;
@@ -97,7 +98,7 @@ case 1:
             InitUnitSprite(sprite1,31,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-64)/2+0;
-            func_02088e84(sprite1,x1,y1,x1,y1);
+            Set3DSpriteSlideTargetAndStart(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean1=1;else boolean1=0;
             if(boolean1&255){
                 sy1=M2C_FIELD(sprite1,s16 *,0x52);sx1=M2C_FIELD(sprite1,s16 *,0x50);
@@ -121,7 +122,7 @@ case 2:
             InitUnitSprite(sprite1,32,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+0;
-            func_02088e84(sprite1,x1,y1,x1,y1);
+            Set3DSpriteSlideTargetAndStart(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean3=1;else boolean3=0;
             if(boolean3&255){
                 sy3=M2C_FIELD(sprite1,s16 *,0x52);sx3=M2C_FIELD(sprite1,s16 *,0x50);
@@ -145,7 +146,7 @@ case 3:
             InitUnitSprite(sprite1,33,256,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+-32;
-            func_02088e84(sprite1,x1,y1,x1,y1);
+            Set3DSpriteSlideTargetAndStart(sprite1,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite1,void **,0x64),u8 *,0x12))boolean5=1;else boolean5=0;
             if(boolean5&255){
                 sy5=M2C_FIELD(sprite1,s16 *,0x52);sx5=M2C_FIELD(sprite1,s16 *,0x50);
@@ -168,7 +169,7 @@ case 3:
             InitUnitSprite(sprite4,34,268,3,0);
             y1=M2C_FIELD(arg0,s16 *,0x36)+PanelHeight(arg0)-32;
             x1=M2C_FIELD(arg0,s16 *,0x34)+((s32)PanelWidth(arg0)-32)/2+32;
-            func_02088e84(sprite4,x1,y1,x1,y1);
+            Set3DSpriteSlideTargetAndStart(sprite4,x1,y1,x1,y1);
             if(M2C_FIELD(M2C_FIELD(sprite4,void **,0x64),u8 *,0x12))boolean7=1;else boolean7=0;
             if(boolean7&255){
                 sy7=M2C_FIELD(sprite4,s16 *,0x52);sx7=M2C_FIELD(sprite4,s16 *,0x50);
@@ -199,39 +200,43 @@ M2C_FIELD(arg0,void **,0x60)=sprite4;
 }
 gCur3DSpriteEngine=previousEngine;
 if((u8)((M2C_FIELD(arg0,u32 *,0x58)<<20)>>31))func_0208989c(arg0);
-func_0208ad48(arg0);func_02089784(arg0);func_0208aebc(arg0);
+func_0208ad48(arg0);func_02089784(arg0);StartWindowOpen(arg0);
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-u32 func_0208a6b0(void *arg0) {
+/* Text-layer window-open notification: play the window's open sound (unless one
+ * just played), and, when the panel is a plain one inside an active link session,
+ * queue the link-session sound on sound slot 0 and flag the panel so the close
+ * step (func_0208a714) stops that slot again.  Returns the panel kind when set. */
+u32 NotifyWindowOpened(void *window) {
     u32 IsLinkSessionActive(void);
     u32 PlaySoundEffect(M2C_UNK);
-    u32 func_0208ff4c(M2C_UNK);
+    u32 Sound_WasPlayedWithin(M2C_UNK);
     M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
-    u32 temp_r0;
-    u32 temp_r0_2;
-    u32 temp_r0_3;
+    u32 flags;
+    u32 sessionActive;
+    u32 panelKind;
 
-    if (func_0208ff4c(4) == 0) {
-        PlaySoundEffect(0x125);
+    if (Sound_WasPlayedWithin(4) == 0) {
+        PlaySoundEffect(SOUND_WINDOW_OPEN);
     }
-    temp_r0_3 = (u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x1D) >> 0x1D;
-    if (temp_r0_3 != 0) {
-        return temp_r0_3;
+    panelKind = (u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x1D) >> 0x1D;
+    if (panelKind != 0) {
+        return panelKind;
     }
-    temp_r0_2 = IsLinkSessionActive();
-    if (temp_r0_2 == 0) {
-        return temp_r0_2;
+    sessionActive = IsLinkSessionActive();
+    if (sessionActive == 0) {
+        return sessionActive;
     }
-    PlaySlotPendingSound(0, -1, 0x10013);
-    temp_r0 = M2C_FIELD(arg0, u32 *, 0x58) | 0x4000;
-    M2C_FIELD(arg0, u32 *, 0x58) = temp_r0;
-    return temp_r0;
+    PlaySlotPendingSound(0, -1, SOUND_WINDOW_LINK);
+    flags = M2C_FIELD(window, u32 *, TEXT_LAYER_PANEL_STATE) | TEXT_LAYER_PANEL_LINK_SOUND;
+    M2C_FIELD(window, u32 *, TEXT_LAYER_PANEL_STATE) = flags;
+    return flags;
 }
 
 u32 func_0208a714(void *arg0) {
     u32 PlaySoundEffect(M2C_UNK);
-    u32 func_0208ff4c(M2C_UNK);
+    u32 Sound_WasPlayedWithin(M2C_UNK);
     M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
     u32 temp_r0;
     u32 temp_r0_2;
@@ -241,7 +246,7 @@ u32 func_0208a714(void *arg0) {
         return temp_r0_2;
     }
     func_02090034(0, 0);
-    temp_r0 = func_0208ff4c(4);
+    temp_r0 = Sound_WasPlayedWithin(4);
     if (temp_r0 != 0) {
         return temp_r0;
     }

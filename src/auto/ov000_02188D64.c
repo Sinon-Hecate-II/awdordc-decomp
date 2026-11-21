@@ -198,7 +198,7 @@ return 1;
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
  extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *gAiCommandState;
- void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindAttack();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void ChooseCaptureDestination();
+ void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindLoad();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void ChooseCaptureDestination();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
  bestx=-1;besty=bestx;best=bestx+0x8000;
@@ -212,7 +212,7 @@ void func_ov000_021895bc(void){
  n=(u32)(unit[0]<<26)>>26;if(!n)goto next;
  if(M2C_FIELD(unit,u16 *,4)&8)goto next;
  if(M2C_FIELD(M2C_FIELD(map+unit[2]*4,s8 **,0x52e8),s8 *,unit[1])<0)goto next;
- if(!CanKindAttack((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
+ if(!CanKindLoad((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
  if((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30!=2)goto next;
  if(data_ov000_021df7e4[index&63])goto next;
  if(!FindAdjacentPassableTile(unit[1],unit[2],out))goto next;

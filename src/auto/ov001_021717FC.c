@@ -83,18 +83,23 @@ void Ov001_HandleIconRowTouch(void) {
     ((Ov001IconRow *)gOv001IconRow)->selected = -1;
 }
 
-void func_ov001_02171a44(s32 a){
+/* Frame task that slides the shared icon row back down out of view: drop the
+ * backdrop four pixels a frame and, once it is below the screen, tear the row
+ * down. */
+void Ov001_IconRow_Dismiss(s32 task){
 extern void *gOv001IconRow;
-void func_ov001_02171aa8(s32);
-s32 pos[2];
-Ov001_GetSpritePosition(M2C_FIELD(gOv001IconRow,s32 *,8),0,&pos[1],&pos[0]);
-pos[0]+=4;Ov001_IconRow_Layout(pos[0]);
-if(pos[0]<192)return;
-Ov001_SetSlideStep(a,(M2C_UNK *)func_ov001_02171aa8);
+void Ov001_IconRow_Destroy(s32);
+void Ov001_GetSpritePosition(s32,s32,s32 *,s32 *);
+void Ov001_IconRow_Layout(s32);
+s32 pos[2]; /* [0] y, [1] x */
+Ov001_GetSpritePosition((s32)((Ov001IconRow *)gOv001IconRow)->backdrop,0,&pos[1],&pos[0]);
+pos[0]+=OV001_ICON_ROW_STEP;Ov001_IconRow_Layout(pos[0]);
+if(pos[0]<OV001_ICON_ROW_HIDDEN_Y)return;
+Ov001_SetSlideStep(task,(M2C_UNK *)Ov001_IconRow_Destroy);
 }
 
 #pragma optimize_for_size on
-void func_ov001_02171aa8(s32 a){
+void Ov001_IconRow_Destroy(s32 a){
 extern void *gOv001IconRow;
 void Ov001_PostTaskMessage(s32,s32);
 void Ov001_DestroySprite(s32);
@@ -138,11 +143,11 @@ void func_ov001_02171c10(void) {
  * `index` into its text, unless one is already on screen.  Returns 1 when the
  * panel was built, 0 when it was already showing. */
 s32 Ov001_ShowMessagePanel(s32 messageId,s32 value,s32 index){
-extern u8 data_ov001_0218feb0[];extern s32 gOv001MessageArchive;void func_0200436c(s32,s32,s32);
+extern u8 data_ov001_0218feb0[];extern s32 gOv001MessageArchive;void GX_LoadBG0ScrSub(s32,s32,s32);
 void Ov001_LoadAsset(u8 *,void (*)(s32,s32,s32));s32 CreateTextPanel(s32,s32);s32 func_ov001_02175f60(s32,s32,s32,s32);s32 Ov001_GetTextFontId(void);s32 DrawPanelText(s32,s32,s32,s32,s32,s32,s32,s32);s32 CloseTextPanel(s32);
 s32 panel,text;
 if(*(u8 *)&gOv001MessagePanelActive)return 0;
-Ov001_LoadAsset(data_ov001_0218feb0,func_0200436c);
+Ov001_LoadAsset(data_ov001_0218feb0,GX_LoadBG0ScrSub);
 *(volatile u32 *)0x4001010=0x1920000;
 panel=CreateTextPanel(1,0);text=func_ov001_02175f60(gOv001MessageArchive,messageId,value,index);
 DrawPanelText(panel,20,0,216,64,2,Ov001_GetTextFontId(),text);CloseTextPanel(panel);
