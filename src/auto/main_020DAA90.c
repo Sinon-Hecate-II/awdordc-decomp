@@ -267,7 +267,7 @@ void func_020db1a0(void *arg0) {
  M2C_UNK SetSpriteSlotScroll(s32,M2C_UNK);M2C_UNK ClearTileRect(u16 *,s32,s32);
  M2C_UNK DrawGlyphString(u16 *,u32,u32,u32,u16,u16,u32);
  M2C_UNK StringFormat(void *,const char *,...);M2C_UNK DrawTextLine(s32,s32,s32,void *,s32,s32);
- s32 func_ov009_02224064(void);s32 GetLinkPlayerUnit(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 GetLinkResultCode(void);s32 GetActiveLinkPlayerSlot(s32);
+ s32 GetLinkLocalPlayerInfo(void);s32 GetLinkPlayerUnit(s32);s32 func_ov009_02225470(void);s32 GetLinkPhase(void);s32 GetLinkResultCode(void);s32 GetActiveLinkPlayerSlot(s32);
  extern void **gCur3DSpriteEngine,**g3DSpriteEngineMain;
  extern s32 gUnitSlotIds[];
  extern s8 data_0212d2ac[],data_0212d2b0[],data_0212d2c0[],data_0212d2c4[];
@@ -286,7 +286,7 @@ void func_020db1a0(void *arg0) {
  M2C_FIELD(*gCur3DSpriteEngine,u16 *,0x40)=0;
  x=(*(s32 *)0x027ffc3c&1)*0x180+0x124;
  if(M2C_FIELD(arg0,u16 *,0x48)&1) {
- unit=(void *)func_ov009_02224064();count=M2C_FIELD(unit,u8 *,0x1c);glyphA=M2C_FIELD(unit,u8 *,0x1b);
+ unit=(void *)GetLinkLocalPlayerInfo();count=M2C_FIELD(unit,u8 *,0x1c);glyphA=M2C_FIELD(unit,u8 *,0x1b);
  ClearTileRect((u16 *)(M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24)+0x86),20,2);
  DrawGlyphString(unit,M2C_FIELD(gCur3DSpriteEngine,u32 *,0x10),M2C_FIELD(gCur3DSpriteEngine,u32 *,0x24),9,3,2,x);
  StringFormat(buf0,data_0212d2b4,data_0212d2b0[0],data_0212d2ac[1]+glyphA,data_0212d2b0[0],data_0212d2ac[1]+count);

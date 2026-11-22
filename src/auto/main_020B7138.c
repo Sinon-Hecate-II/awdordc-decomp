@@ -372,14 +372,14 @@ extern "C" void Reset3DSpriteBankSplit(void) {
  * graphics and its assets, returning the object. */
 s32 CreateMapClearWinObject(void) {
     void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
-    s32 func_0208c54c();
+    s32 CreateEffectSpriteObject();
     void LoadCompressedSpriteGraphics(void *,s32,s32);
     void *GetLocalizedFileName(void *);
     extern M2C_UNK sMapClearWinGfxName;
     extern M2C_UNK sMapClearWinAssetName;
     s32 object;
 
-    object = func_0208c54c();
+    object = CreateEffectSpriteObject();
     LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearWinGfxName), 0x6B80, 0xB);
     LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearWinAssetName), 0x6B80, 0xB, 0);
     return object;
@@ -389,14 +389,14 @@ s32 CreateMapClearWinObject(void) {
  * graphics and its assets, returning the object. */
 s32 CreateMapClearLoseObject(void) {
     void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
-    s32 func_0208c54c();
+    s32 CreateEffectSpriteObject();
     void LoadCompressedSpriteGraphics(void *,s32,s32);
     void *GetLocalizedFileName(void *);
     extern M2C_UNK sMapClearLoseGfxName;
     extern M2C_UNK sMapClearLoseAssetName;
     s32 object;
 
-    object = func_0208c54c();
+    object = CreateEffectSpriteObject();
     LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearLoseGfxName), 0x6B80, 0xB);
     LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearLoseAssetName), 0x6B80, 0xB, 0);
     return object;
@@ -409,7 +409,7 @@ s32 CreateMapClearDrawObject(void) {
     extern M2C_UNK sMapClearDrawAssetName;
     s32 object;
 
-    object = func_0208c54c();
+    object = CreateEffectSpriteObject();
     LoadCompressedSpriteGraphics(GetLocalizedFileName(&sMapClearDrawGfxName), 0x6B80, 0xB);
     LoadCompressedSpriteAssetsFromNarc((void *)object, GetLocalizedFileName(&sMapClearDrawAssetName), 0x6B80, 0xB, 0);
     return object;

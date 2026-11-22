@@ -125,33 +125,36 @@ if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) MI_CpuFill8(ptr,0,val); }
 OS_RestoreInterrupts(state);
 }
 
-s32 func_02029274(void) {
+/* Number of player records in the session's player list, read with interrupts
+ * disabled: the list's insert count (its header's first word), or 0 when there
+ * is no session or no list buffer big enough to hold a node. */
+s32 WFC_GetPlayerListCount(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void *GetSession(void);
     s32 state;
-    void *base;
-    void *r0;
-    void *r1;
-    s32 result;
+    void *session;
+    void *listBase;
+    void *list;
+    s32 count;
 
     state = OS_DisableInterrupts();
-    base = GetSession();
-    result = 0;
-    if (base == NULL) {
+    session = GetSession();
+    count = 0;
+    if (session == NULL) {
         OS_RestoreInterrupts(state);
-        return result;
+        return count;
     }
-    r0 = (void *)((s8 *)base + 0x2000);
-    r1 = M2C_FIELD(r0, void **, 0x270);
-    if (r1 != NULL) {
-        u32 v = M2C_FIELD(r0, u32 *, 0x274);
-        if (v > 0xCU) {
-            result = M2C_FIELD(r1, s32 *, 0);
+    listBase = (void *)((s8 *)session + WFC_SESSION_PLAYER_BLOCK);
+    list = M2C_FIELD(listBase, void **, WFC_PLAYER_LIST_BLOCK_OFFSET);
+    if (list != NULL) {
+        u32 capacity = M2C_FIELD(listBase, u32 *, WFC_PLAYER_LIST_CAP_OFFSET);
+        if (capacity > WFC_PLAYER_LIST_HEADER_SIZE) {
+            count = M2C_FIELD(list, s32 *, WFC_PLAYER_LIST_COUNT);
         }
     }
     OS_RestoreInterrupts(state);
-    return result;
+    return count;
 }
 
 #pragma push
@@ -186,27 +189,28 @@ s32 WFC_SetDataLock(s32 locked) {
     return result;
 }
 #pragma pop
-s32 func_02029348(void *arg0) {
+/* Return the connection-data record for a player-list index while interrupts are disabled. */
+s32 WFC_GetPlayerRecordByIndex(u16 playerIndex) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void *GetSession(void);
-    void *func_02029594(void *);
-    s32 state;
-    void *base;
-    void *result;
+    void *WFC_FindPlayerNodeByIndex(void *);
+    s32 interruptState;
+    void *session;
+    void *node;
 
-    state = OS_DisableInterrupts();
-    base = GetSession();
-    if (base == NULL) {
-        OS_RestoreInterrupts(state);
+    interruptState = OS_DisableInterrupts();
+    session = GetSession();
+    if (session == NULL) {
+        OS_RestoreInterrupts(interruptState);
         return 0;
     }
-    if ((result = func_02029594(arg0)) == NULL) {
-        OS_RestoreInterrupts(state);
+    if ((node = WFC_FindPlayerNodeByIndex((void *)playerIndex)) == NULL) {
+        OS_RestoreInterrupts(interruptState);
         return 0;
     }
-    OS_RestoreInterrupts(state);
-    return (s32)result + 0x10;
+    OS_RestoreInterrupts(interruptState);
+    return (s32)node + 0x10;
 }
 
 /* Store the connection-data record `record` received for WFC player slot `slot`
@@ -345,7 +349,7 @@ loop_5:
     return node;
 }
 
-void *func_02029594(void *arg0) {
+void *WFC_FindPlayerNodeByIndex(void *arg0) {
  void *base=GetSession(); void *block=(u8 *)base+0x2000; void *head=M2C_FIELD(block,void **,0x270); void *p=0;
  if(head!=0 && M2C_FIELD(block,u32 *,0x274)>12){p=M2C_FIELD(head,void **,4);if(p!=0){do {if(M2C_FIELD(p,void **,4)==arg0)break;p=M2C_FIELD(p,void **,12);}while(p!=0);}}
  return p;

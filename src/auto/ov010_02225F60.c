@@ -2,6 +2,7 @@
 #include "common.h"
 #define ONLINE_USE_INTERRUPT_GUARD
 #include "online_link.h"
+#include "ghttp.h"
 typedef struct Ov010MemberCall { s32 function; s32 adjustment; } Ov010MemberCall;
 static inline void ov010CallMember(void *object, Ov010MemberCall *call) {
 s32 adj=call->adjustment;
@@ -92,13 +93,13 @@ s32 VoiceChat_ConnectPeer(s32 peerId) {
 
 void func_ov010_022260b8(void) {
     void func_ov010_02225d38();
-    void func_ov010_02225db8();
+    void StopStreamedVoice();
     void func_ov010_02228b50(s32);
     void func_ov010_02225778();
     void FreeBuffer();
     extern M2C_UNK gVoiceChatLink;
     func_ov010_02225d38();
-    func_ov010_02225db8();
+    StopStreamedVoice();
     func_ov010_02228b50(0);
     func_ov010_02225778();
     FreeBuffer(M2C_FIELD(&gVoiceChatLink, s32 *, 0), M2C_FIELD(&gVoiceChatLink, s32 *, 0x1C));
@@ -226,31 +227,35 @@ s32 SubmitWebPutRequest(s32 playerId, s32 field2, s32 field3, s32 payload, s32 p
     return result;
 }
 
-s32 func_ov010_022262e0(void) {
-    M2C_UNK func_02085c04();
-    s32 var_r4;
-    u32 temp_r0;
+/* Poll the web transaction of a profile PUT upload: report 1 while the put is
+ * still in flight (WEB_TXN_PUT_SENT); when it completes, record the server's
+ * date/time as the profile's sync time.  An idle, failed or other-request
+ * transaction reports 0. */
+s32 CompleteWebPutRequest(void) {
+    M2C_UNK SaveProfileSyncTime();
+    s32 inFlight;
+    u32 status;
 
-    var_r4 = 1;
-    temp_r0 = func_02045a88();
-    switch (temp_r0) {
+    inFlight = 1;
+    status = GetWebTransactionStatus();
+    switch (status) {
     default:
         break;
-    case 5:
-        func_02085c04();
-        var_r4 = 0;
+    case WEB_TXN_COMPLETE:
+        SaveProfileSyncTime();
+        inFlight = 0;
         break;
-    case 6:
-        var_r4 = 0;
+    case WEB_TXN_FAILED:
+        inFlight = 0;
         break;
-    case 0:
-    case 1:
-    case 3:
-    case 4:
-        var_r4 = 0;
+    case WEB_TXN_IDLE:
+    case WEB_TXN_READY:
+    case WEB_TXN_GET_SENT:
+    case WEB_TXN_SYNC_SENT:
+        inFlight = 0;
         break;
     }
-    return var_r4;
+    return inFlight;
 }
 
 s32 func_ov010_02226334(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, void *arg5) {
@@ -298,31 +303,35 @@ if(status!=0)SetWebRequestError(status);
 return ok;
 }
 
-s32 func_ov010_022264e4(void) {
-    M2C_UNK func_02085c28();
-    s32 var_r4;
-    u32 temp_r0;
+/* Step of the get.asp request sprite: returns 1 while the request is still on its
+ * way (status GET_SENT) and 0 once it has completed or failed.  On completion it
+ * records the current server date/time in the profile save block, so the elapsed
+ * age of the stored snapshot can be measured before the next request. */
+s32 IsWebGetRequestPending(void) {
+    M2C_UNK StoreGetRequestServerTime();
+    s32 pending;
+    u32 status;
 
-    var_r4 = 1;
-    temp_r0 = func_02045a88();
-    switch (temp_r0) {
+    pending = 1;
+    status = GetWebTransactionStatus();
+    switch (status) {
     default:
         break;
-    case 5:
-        func_02085c28();
-        var_r4 = 0;
+    case WEB_TXN_COMPLETE:
+        StoreGetRequestServerTime();
+        pending = 0;
         break;
-    case 6:
-        var_r4 = 0;
+    case WEB_TXN_FAILED:
+        pending = 0;
         break;
-    case 0:
-    case 1:
-    case 2:
-    case 4:
-        var_r4 = 0;
+    case WEB_TXN_IDLE:
+    case WEB_TXN_READY:
+    case WEB_TXN_PUT_SENT:
+    case WEB_TXN_SYNC_SENT:
+        pending = 0;
         break;
     }
-    return var_r4;
+    return pending;
 }
 
 s32 SubmitWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -386,30 +395,34 @@ s32 SubmitWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
     return result;
 }
 
-s32 func_ov010_02226670(void) {
-    s32 var_r4;
-    u32 temp_r0;
+/* Poll the web transaction of a record sync request: report 1 while the sync is
+ * still in flight (WEB_TXN_SYNC_SENT); when it completes, record the server's
+ * date/time as the profile's sync time.  An idle, failed or other-request
+ * transaction reports 0. */
+s32 CompleteWebSyncRequest(void) {
+    s32 inFlight;
+    u32 status;
 
-    var_r4 = 1;
-    temp_r0 = func_02045a88();
-    switch (temp_r0) {
+    inFlight = 1;
+    status = GetWebTransactionStatus();
+    switch (status) {
     default:
         break;
-    case 5:
-        func_02085c04();
-        var_r4 = 0;
+    case WEB_TXN_COMPLETE:
+        SaveProfileSyncTime();
+        inFlight = 0;
         break;
-    case 6:
-        var_r4 = 0;
+    case WEB_TXN_FAILED:
+        inFlight = 0;
         break;
-    case 0:
-    case 1:
-    case 2:
-    case 3:
-        var_r4 = 0;
+    case WEB_TXN_IDLE:
+    case WEB_TXN_READY:
+    case WEB_TXN_PUT_SENT:
+    case WEB_TXN_GET_SENT:
+        inFlight = 0;
         break;
     }
-    return var_r4;
+    return inFlight;
 }
 
 s32 func_ov010_022266c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -442,8 +455,8 @@ s32 func_ov010_022266ec(void) {
 }
 
 void func_ov010_02226738(void) {
-    M2C_UNK func_02045a88();
-    func_02045a88();
+    M2C_UNK GetWebTransactionStatus();
+    GetWebTransactionStatus();
 }
 
 /* Number of online players (the player records) reported by the last web
@@ -505,30 +518,34 @@ s32 GetOnlinePlayerCount(void) {
  return result;
 }
 
-s32 func_ov010_02226888(void) {
+/* Tear down a submitted NAS player registration: if online step 5 is not
+ * pending, report it done; otherwise free the pending web request, drop the
+ * waiting-indicator sprite, record any teardown error and clear the step.
+ * Returns 1 on success, 0 when tearing the request down failed. */
+s32 FinishWebRegisterRequest(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    s32 func_02045620();
+    s32 FinishWebRequest();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK sOv010RegisterSpriteClass;
-    s32 temp_r0;
-    s32 var_r5;
+    s32 error;
+    s32 result;
 
-    if (IsOnlineSessionFlagSet(5) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_REGISTERING) == 0) {
         return 1;
     }
-    temp_r0 = func_02045620();
-    if (temp_r0 == 0) {
-        var_r5 = 1;
+    error = FinishWebRequest();
+    if (error == 0) {
+        result = 1;
     } else {
-        var_r5 = 0;
+        result = 0;
     }
     DeleteSpriteObjectsOfClass(&sOv010RegisterSpriteClass);
-    if (temp_r0 != 0) {
-        SetWebRequestError(temp_r0);
+    if (error != 0) {
+        SetWebRequestError(error);
     }
-    Ov010Online_ClearStepFlag(5);
-    return var_r5;
+    Ov010Online_ClearStepFlag(OV010_FLAG_REGISTERING);
+    return result;
 }
 
 void func_ov010_022268dc(void) {

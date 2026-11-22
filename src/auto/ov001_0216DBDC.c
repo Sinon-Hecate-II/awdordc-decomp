@@ -40,22 +40,22 @@ s32 WhAdvanceConnectionState(void) {
 
 s32 func_ov001_0216df50(s32 arg0, s32 arg1) {
     M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
-    s32 func_02029274();
+    s32 WFC_GetPlayerListCount();
     M2C_UNK WFC_SetDataLock(M2C_UNK);
-    s32 func_02029348(u16);
+    s32 WFC_GetPlayerRecordByIndex(u16);
     s32 temp_r0;
     s32 var_r4;
     s32 var_r5;
 
     var_r5 = arg0;
     WFC_SetDataLock(1);
-    temp_r0 = func_02029274();
+    temp_r0 = WFC_GetPlayerListCount();
     if (temp_r0 > 0) {
         var_r4 = 0;
         if (temp_r0 > 0) {
 loop_2:
             if (var_r4 < arg1) {
-                MIi_CpuCopy32(func_02029348((u16) var_r4), var_r5, 0xC0);
+                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) var_r4), var_r5, 0xC0);
                 var_r4 += 1;
                 var_r5 += 0xC0;
                 if (var_r4 < temp_r0) {

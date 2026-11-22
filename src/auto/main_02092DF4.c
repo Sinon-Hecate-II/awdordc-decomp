@@ -42,23 +42,27 @@ s32 MapScriptSetPlayerTeam(void *state) {
  return 1;
 }
 
-s32 func_02092ea8(void *arg0) {
+s32 MapScriptSetBattleRules(void *arg0) {
     extern void **gCurrentMap;
     M2C_FIELD(*gCurrentMap, s8 *, 0x5155) = (s8) M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
 
-s32 func_02092edc(void *arg0) {
- extern void **gCurrentMap;
- extern s32 g3DSpriteEngineSub, gCur3DSpriteEngine;
- s32 temp_ip;
- temp_ip=gCur3DSpriteEngine;
- gCur3DSpriteEngine=g3DSpriteEngineSub;
- M2C_FIELD(*gCurrentMap,s8 *,0x5155) = M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
- gCur3DSpriteEngine=temp_ip;
- M2C_FIELD(arg0,void **,4) = M2C_FIELD(arg0,void **,4)+0x10;
- return 1;
+/* Map-script command: set the map's battle-rule flags from the command's first
+ * operand, with the sub screen's 3D sprite engine selected while it runs, then
+ * advance the script one command and keep running. */
+s32 MapScriptSetBattleRulesSub(void *state) {
+    extern void **gCurrentMap;
+    extern s32 g3DSpriteEngineSub, gCur3DSpriteEngine;
+    s32 savedEngine;
+
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_BATTLE_RULES) = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 s32 func_02092f30(void *arg0){
@@ -110,71 +114,85 @@ s32 func_020930e0(void *arg0) {
     return 0;
 }
 
-s32 func_02093100(void *arg0) {
+/* Map-script opcode: award the battle to the player named by the command's first
+ * operand, drawing the defeat effects on the main screen (by pointing
+ * gCur3DSpriteEngine at the main engine for the call), then advance the script
+ * and keep running. */
+s32 MapScriptAwardVictoryToPlayerMain(void *state) {
     s32 MapScriptResolvePlayer(s16);
     M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 winner;
+    s32 savedEngine;
 
-    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
-    temp_r5 = gCur3DSpriteEngine;
+    winner = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0));
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    AwardVictoryToPlayer(temp_r0, 0x80);
-    gCur3DSpriteEngine = temp_r5;
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    AwardVictoryToPlayer(winner, 0x80);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02093154(void *arg0) {
+/* Map-script opcode: award the battle to the player named by the command's first
+ * operand, drawing the victory effects on the sub screen (by pointing
+ * gCur3DSpriteEngine at the sub engine for the call), then advance the script and
+ * keep running. */
+s32 MapScriptAwardVictoryToPlayerSub(void *state) {
     s32 MapScriptResolvePlayer(s16);
     M2C_UNK AwardVictoryToPlayer(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 winner;
+    s32 savedEngine;
 
-    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
-    temp_r5 = gCur3DSpriteEngine;
+    winner = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0));
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    AwardVictoryToPlayer(temp_r0, 0x80);
-    gCur3DSpriteEngine = temp_r5;
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    AwardVictoryToPlayer(winner, 0x80);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020931a8(void *arg0) {
+/* Map-script opcode: redraw the team records of the player named by the command's
+ * first operand, with gCur3DSpriteEngine pointed at the main screen's engine so the
+ * records are laid out there, then advance the script and keep running. */
+s32 MapScriptUpdateTeamRecordsMain(void *state) {
     s32 MapScriptResolvePlayer(s16);
     M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 player;
+    s32 savedEngine;
 
-    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
-    temp_r5 = gCur3DSpriteEngine;
+    player = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0));
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    UpdateTeamRecords(temp_r0, 0x80);
-    gCur3DSpriteEngine = temp_r5;
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    UpdateTeamRecords(player, 0x80);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_020931fc(void *arg0) {
+/* Map-script opcode: redraw the team records of the player named by the command's
+ * first operand, with gCur3DSpriteEngine pointed at the sub screen's engine so the
+ * records are laid out there, then advance the script and keep running. */
+s32 MapScriptUpdateTeamRecordsSub(void *state) {
     s32 MapScriptResolvePlayer(s16);
     M2C_UNK UpdateTeamRecords(s32, M2C_UNK);
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 player;
+    s32 savedEngine;
 
-    temp_r0 = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8));
-    temp_r5 = gCur3DSpriteEngine;
+    player = MapScriptResolvePlayer(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0));
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    UpdateTeamRecords(temp_r0, 0x80);
-    gCur3DSpriteEngine = temp_r5;
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    UpdateTeamRecords(player, 0x80);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

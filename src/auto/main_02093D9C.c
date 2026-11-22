@@ -178,11 +178,11 @@ s32 ScriptCmd_AddLineAttackArea(void *script) {
 }
 
 s32 func_020940b8(void *arg0) {
-    M2C_UNK func_020d2bc0(s16, s32);
+    M2C_UNK AddPlayerFunds(s16, s32);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
-    func_020d2bc0(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s32 *, 0xC));
+    AddPlayerFunds(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -517,15 +517,22 @@ void EndDialogSequence(s32 *arg0) {
     func_020d472c();
 }
 
-void QueueDialogSequence(s32 value) {
-   void *StartDialogSequence(s32);
-   s32 i;
-   if(!IsDialogActive()) {StartDialogSequence(value);return;}
-   for(i=0;i<8;i++) {
-   if(!M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)) {
-   M2C_FIELD(Get3DSpriteManager()+((u32)i*4),s32 *,0x24)=value;
-   return;
-   }}
+/* Queue a dialog script: run it at once when no dialog sequence is active,
+ * otherwise store it in the 3D sprite manager's first free pending-dialog slot. */
+void QueueDialogSequence(s32 script) {
+    void *StartDialogSequence(s32);
+    s32 slot;
+
+    if (!IsDialogActive()) {
+        StartDialogSequence(script);
+        return;
+    }
+    for (slot = 0; slot < DS3D_DIALOG_QUEUE_COUNT; slot++) {
+        if (!M2C_FIELD(Get3DSpriteManager() + (u32)slot * 4, s32 *, DS3D_MANAGER_DIALOG_QUEUE)) {
+            M2C_FIELD(Get3DSpriteManager() + (u32)slot * 4, s32 *, DS3D_MANAGER_DIALOG_QUEUE) = script;
+            return;
+        }
+    }
 }
 
 /* Starts the script at the head of the 3D sprite manager's pending-dialog queue,
@@ -733,11 +740,11 @@ void func_02094c38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0209747c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelFaceHidden(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_0209747c(arg0, arg1);
+    SetScenePanelFaceHidden(arg0, arg1);
 }
 
 /* Builds a battle action entry for the given slot and submits it. */

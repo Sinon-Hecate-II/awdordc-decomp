@@ -90,10 +90,10 @@ void Ov001_HandleWfcSettingsChoice(void) {
 void Ov001_WfcSettingsExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcSettings;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcSettings);
 }
 
@@ -253,10 +253,10 @@ void func_ov001_02177378(void) {
 void func_ov001_021773a0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_021773c0;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_021773c0);
 }
 
@@ -287,12 +287,12 @@ void Ov001_OpenMacAddressScreen(void) {
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void Ov001_LoadMacAddressBackground(void);
     M2C_UNK DrawMacAddressPanel();
-    extern M2C_UNK func_ov001_021776c8;
+    extern M2C_UNK Ov001_FadeInMacAddressScreen;
     Ov001_LoadMacAddressBackground();
     Ov001_LoadObjLayoutBlock(0x11);
     Ov001_ShowMessagePanel(0x3A, -1, 0);
     DrawMacAddressPanel();
-    Ov001_SetStepCallback(&func_ov001_021776c8);
+    Ov001_SetStepCallback(&Ov001_FadeInMacAddressScreen);
 }
 
 /* Loads the MAC-address/info screen's background map and gives the main and
@@ -330,12 +330,15 @@ DrawPanelText(panel,8,120,240,28,2,1152,text);
 CloseTextPanel(panel);
 }
 
-void func_ov001_021776c8(void) {
+/* Fades in the ov001 MAC-address/info screen: start the sub and main fades
+ * from white, enable its background and object planes, then move on to the
+ * step that opens its icon row. */
+void Ov001_FadeInMacAddressScreen(void) {
     extern M2C_UNK func_ov001_0217771c;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&func_ov001_0217771c);
 }
 
@@ -386,10 +389,10 @@ void func_ov001_021777b8(void) {
 void func_ov001_021777e0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_02177800;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_02177800);
 }
 
@@ -499,16 +502,19 @@ void Ov001_LoadOptionMenuBg(void) {
     M2C_FIELD((void *)0x0400000a, u16 *, 2) = (M2C_FIELD((void *)0x0400000a, u16 *, 2) & ~3) | 3;
 }
 
+/* Fade the option menu in: fade both engines in from white, make the menu's
+ * background and sprite planes visible, then hand over to the step that runs once
+ * the fade completes. */
 void Ov001_FadeInOptionMenu(void) {
-    extern M2C_UNK func_ov001_02177b78;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
-    Ov001_SetStepCallback(&func_ov001_02177b78);
+    extern M2C_UNK Ov001_OptionMenuFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, OV001_BLEND_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_OptionMenuFadeDone);
 }
 
-void func_ov001_02177b78(void) {
+void Ov001_OptionMenuFadeDone(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_02177bb4;
@@ -612,7 +618,7 @@ void Ov001_OptionMenuConfirm(void) {
 void Ov001_OptionMenuExit(void) {
     extern M2C_UNK Ov001_FadeOutOptionMenu;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutOptionMenu);
 }
 

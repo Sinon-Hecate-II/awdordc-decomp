@@ -139,33 +139,37 @@ M2C_UNK *LoadWaveArchiveFileWithEntryTable(s32 fileId, s32 pool, s32 cache) {
     return block;
 }
 #pragma opt_common_subs reset
-s32 func_0202cfc4(s32 arg0,s32 arg1,s32 arg2) {
-s32 OS_DisableInterrupts();
-s32 func_0202c014(s32);
-s32 GetLoadedArchiveFile(s32);
-s32 SetLoadedArchiveFile(s32,s32);
-void OS_RestoreInterrupts(s32);
-s32 handle;
-s32 saved;
-if(!arg1)return;
-saved=OS_DisableInterrupts();
-handle=func_0202c014(arg1);
-if(arg0==GetLoadedArchiveFile(arg2))SetLoadedArchiveFile(arg2,0);
-func_0202c014(handle);
-OS_RestoreInterrupts(saved);
+/* Clear, in the archive `owner`'s loaded-file table, the cache slot for `fileId`
+ * when the block being released is the one it holds.  The table is read through the
+ * current-archive global, so the owner is installed around the lookup and the
+ * previous archive put back afterwards; interrupts are masked meanwhile. */
+s32 Sound_UntrackArchiveFile(s32 block, s32 owner, s32 fileId) {
+    s32 OS_DisableInterrupts();
+    s32 Sound_SetCurrentArchive(s32);
+    s32 GetLoadedArchiveFile(s32);
+    s32 SetLoadedArchiveFile(s32, s32);
+    void OS_RestoreInterrupts(s32);
+    s32 handle;
+    s32 saved;
+    if (!owner) return;
+    saved = OS_DisableInterrupts();
+    handle = Sound_SetCurrentArchive(owner);
+    if (block == GetLoadedArchiveFile(fileId)) SetLoadedArchiveFile(fileId, 0);
+    Sound_SetCurrentArchive(handle);
+    OS_RestoreInterrupts(saved);
 }
 
 void func_0202d01c(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02008e90(s32, s32);
-    M2C_UNK func_0202cfc4(s32, M2C_UNK, M2C_UNK);
-    func_0202cfc4(arg0, arg2, arg3);
+    M2C_UNK Sound_UntrackArchiveFile(s32, M2C_UNK, M2C_UNK);
+    Sound_UntrackArchiveFile(arg0, arg2, arg3);
     func_02008e90(arg0, arg0 + arg1);
 }
 
 void FreeBankArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02008eb0(s32, s32);
     M2C_UNK Link_ClearSlotOwners(s32);
-    func_0202cfc4(arg0, arg2, arg3);
+    Sound_UntrackArchiveFile(arg0, arg2, arg3);
     func_02008eb0(arg0, arg0 + arg1);
     Link_ClearSlotOwners(arg0);
 }
@@ -173,14 +177,14 @@ void FreeBankArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
 void FreeWaveArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
     M2C_UNK func_02008ed0(s32, s32);
     M2C_UNK func_02009aa4(s32);
-    func_0202cfc4(arg0, arg2, arg3);
+    Sound_UntrackArchiveFile(arg0, arg2, arg3);
     func_02008ed0(arg0, arg0 + arg1);
     func_02009aa4(arg0);
 }
 
 void func_0202d0a4(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
 s32 func_02009aa4(s32);
-func_0202cfc4(arg0,arg2,arg3);
+Sound_UntrackArchiveFile(arg0,arg2,arg3);
 func_02009aa4(arg0);
 }
 
@@ -575,12 +579,12 @@ s32 Sound_StartArchiveSound(M2C_UNK arg0) {
 }
 
 void func_0202d944(volatile s32 *arg0,s32 arg1) {
-void func_0202de1c(s32,s32);
+void Sound_FadeOutPlayer(s32,s32);
 if(*arg0==0)return;
-func_0202de1c(*arg0,arg1);
+Sound_FadeOutPlayer(*arg0,arg1);
 }
 
-void func_0202d960(void *volatile *a,s32 b){void func_0202eed8(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;func_0202eed8(p+0xe8,b<<8);}
+void func_0202d960(void *volatile *a,s32 b){void Sound_StartFade(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;Sound_StartFade(p+0xe8,b<<8);}
 
 void func_0202d994(volatile s32 *a,s32 b,s32 c){extern s16 gSoundVoiceVolumeTable[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,gSoundVoiceVolumeTable[c]);}
 
@@ -600,7 +604,7 @@ void Sound_ClearPlayerHandle(void **arg0) {
 
 #pragma opt_instruction_scheduling off
 void func_0202d9e4(void) {
-void func_0202b70c(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
+void Sound_StartPlayerChannels(void *); void func_0202b77c(void *,s32); void func_0202de74(void *);
 s32 func_0202ef00(void *); void func_0202ef34(void *); s32 func_0202ef4c(void *);
 extern u8 data_0213c92c[]; extern s16 data_020e9ca0[];
 s32 i; s16 a; s32 b; u8 *p; p=data_0213c92c; i=0;
@@ -610,7 +614,7 @@ if((flags<<31)>>31) {
 if(!M2C_FIELD(p,s32 *,0x114))func_0202de74(p);
 else {
 if(((flags<<29)>>31) && M2C_FIELD(p,s32 *,0x118)) {
-func_0202b70c(p);
+Sound_StartPlayerChannels(p);
 M2C_FIELD(p,s32 *,0x110)=(M2C_FIELD(p,s32 *,0x110)|2)&~4;
 }
 if((M2C_FIELD(p,s32 *,0x110)<<30)>>31) {

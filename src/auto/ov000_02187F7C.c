@@ -3,17 +3,17 @@
 #include "battle_map.h"
 #include "ov000_ai.h"
 void func_ov000_02188688(void);
-u8 func_ov000_021889ac(void);
+u8 AiAssignedTargetInMovementRange(void);
 
 u8 AiRangeReachesPlayerHq(void);
 
 
 #pragma opt_strength_reduction off
-void func_ov000_02187f7c(void) {
+void AiScoreProductionTiles(void) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
     s32 GetAiUnitSearchRange(void *);
     s32 FindReachableProductionTile(s16 *);
     u8 IsUnitProductionTerrain(s32);
@@ -37,8 +37,8 @@ nextTile:
         s32 x, y;
         SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_SCORE);
         FloodFillUnitRange(tile[0], tile[1], (u32)(M2C_FIELD((u8 *)table, u8 *, offset) << 26) >> 26, range, 0);
-        if (data_ov000_021df64c() == 1) {
-            s32 score = data_ov000_021df648();
+        if (gAiPriorityPredicate() == 1) {
+            s32 score = gAiPriorityScore();
             map = *gCurrentMap;
             for (y = 0; y < M2C_FIELD(map, u16 *, MAP_HEIGHT); y++) {
                 for (x = 0; x < M2C_FIELD(map, u16 *, MAP_WIDTH); x++) {
@@ -119,12 +119,12 @@ s32 func_ov000_02188338(void) {
 
 void func_ov000_02188370(void) {
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = AiNeedsMoreFootUnitsInRange;
-    data_ov000_021df648 = func_ov000_02188338;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = AiNeedsMoreFootUnitsInRange;
+    gAiPriorityScore = func_ov000_02188338;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
 }
 
 /* Whether the AI may still act with the foot unit at (x, y): flood-fill that
@@ -147,7 +147,7 @@ u8 CanDoFootAiAction(s32 x, s32 y) {
     return result;
 }
 
-u8 func_ov000_02188448(void) {
+u8 AiNeedsMoreAttackUnits(void) {
     s32 AiRangeReachesAssignedMoveTarget();
     s32 temp_r0;
     u8 var_r0;
@@ -203,14 +203,18 @@ s32 AiAttackUnitBalanceScore(void) {
     return magnitude | flag;
 }
 
-void func_ov000_021884e4(void) {
+/* Run the AI's attack-unit production priority, then the enemy-HQ one: install
+ * the priority's predicate (attack units still needed) and score (attack-unit
+ * balance), score the reachable production tiles, finalize the best move when
+ * the pass improved a tile's score, and continue with the enemy-HQ priority. */
+void AiPrioritiseAttackUnitProduction(void) {
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))func_ov000_02188448;
-    data_ov000_021df648 = AiAttackUnitBalanceScore;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = (s32 (*)(void))AiNeedsMoreAttackUnits;
+    gAiPriorityScore = AiAttackUnitBalanceScore;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) & AI_ACTION_PRODUCTION_IMPROVED) FinalizeAiProductionMove();
     func_ov000_02188688();
 }
 
@@ -264,12 +268,12 @@ s32 func_ov000_02188680(void) {
 void func_ov000_02188688(void) {
     s32 AiRangeReachesEnemyHq(void);
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = AiRangeReachesEnemyHq;
-    data_ov000_021df648 = func_ov000_02188680;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = AiRangeReachesEnemyHq;
+    gAiPriorityScore = func_ov000_02188680;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
 }
 
 /* AI action check for unit AI state 2: flood-fill the acting unit's movement
@@ -306,7 +310,7 @@ u8 AiPropertiesOutnumberAttackUnits(void) {
     return var_r0;
 }
 
-s32 func_ov000_02188778(void) {
+s32 AiPropertyCaptureScore(void) {
     s32 CountCapturableProperties();
     s32 CountTeamAttackUnits();
     s32 temp_r4;
@@ -315,15 +319,20 @@ s32 func_ov000_02188778(void) {
     return temp_r4 - CountTeamAttackUnits();
 }
 
-void func_ov000_02188790(void) {
+/* AI action planner (unit AI states 3/4, and state 5 without an HQ): enter the
+ * property-capture option by installing the "capturable properties outnumber
+ * attack units" priority predicate and its score, search the production tiles
+ * for a usable move and, when one is found, choose that move's destination; then
+ * let the attack-unit planner add its own option too. */
+void AiPrioritisePropertyCapture(void) {
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))AiPropertiesOutnumberAttackUnits;
-    data_ov000_021df648 = func_ov000_02188778;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
-    func_ov000_021884e4();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = (s32 (*)(void))AiPropertiesOutnumberAttackUnits;
+    gAiPriorityScore = AiPropertyCaptureScore;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
+    AiPrioritiseAttackUnitProduction();
 }
 
 /* AI action kind 34: flood-fill the cursor unit's search range from (x, y), then
@@ -358,19 +367,23 @@ u8 AiRangeReachesPlayerHq(void) {
     return result;
 }
 
-s32 func_ov000_021888e4(void) {
+s32 AiReachPlayerHqScore(void) {
     return 1;
 }
 
-void func_ov000_021888ec(void) {
+/* AI production priority for reaching the current player's HQ: installs the
+ * reach-player-HQ predicate and its constant score, scores the reachable
+ * production tiles, finalizes the best move when a tile's score improved, and
+ * continues with the attack-unit priority. */
+void AiPrioritiseReachPlayerHq(void) {
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))AiRangeReachesPlayerHq;
-    data_ov000_021df648 = func_ov000_021888e4;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
-    func_ov000_021884e4();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = (s32 (*)(void))AiRangeReachesPlayerHq;
+    gAiPriorityScore = AiReachPlayerHqScore;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) & AI_ACTION_PRODUCTION_IMPROVED) FinalizeAiProductionMove();
+    AiPrioritiseAttackUnitProduction();
 }
 
 /* Whether AI action 5 is possible from (x, y): flood-fill the cursor unit's search
@@ -389,7 +402,7 @@ void CanDoAiAction5(s32 x, s32 y) {
 }
 
 #pragma opt_lifetimes off
-u8 func_ov000_021889ac(void) {
+u8 AiAssignedTargetInMovementRange(void) {
     extern void **gCurrentMap;
     u16 value;
     s8 *bank;
@@ -409,15 +422,19 @@ s32 func_ov000_02188a30(void) {
     return 1;
 }
 
-void func_ov000_02188a38(void) {
+/* AI action planner (unit AI states 7..9): install the "assigned move target is
+ * in movement range" priority predicate and its constant score, search the
+ * production tiles for a usable move and, when one is found, choose that move's
+ * destination; then let the attack-unit planner add its own option too. */
+void AiPrioritiseAssignedMoveTarget(void) {
     extern void *gAiCommandState;
-    extern s32 (*data_ov000_021df64c)(void);
-    extern s32 (*data_ov000_021df648)(void);
-    data_ov000_021df64c = (s32 (*)(void))func_ov000_021889ac;
-    data_ov000_021df648 = func_ov000_02188a30;
-    func_ov000_02187f7c();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
-    func_ov000_021884e4();
+    extern s32 (*gAiPriorityPredicate)(void);
+    extern s32 (*gAiPriorityScore)(void);
+    gAiPriorityPredicate = (s32 (*)(void))AiAssignedTargetInMovementRange;
+    gAiPriorityScore = func_ov000_02188a30;
+    AiScoreProductionTiles();
+    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
+    AiPrioritiseAttackUnitProduction();
 }
 
 /* For AI states 7..9: checks that the acting unit has an assigned move target

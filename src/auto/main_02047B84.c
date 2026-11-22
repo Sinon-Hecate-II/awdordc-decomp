@@ -9,7 +9,7 @@ extern M2C_UNK sWebParamData, sWebHashPlaceholder, sWebParamHash, sWebParamPid, 
 extern u8 data_020fca88[56];
 extern M2C_UNK sDarrayAssertFn, sArrayMapBackwardsName, sArrayMapBackwardName;
 extern M2C_UNK sArrayReplaceAtName,sArrayInsertSortedComparator,sArrayInsertSortedName,sArrayRemoveAtName;
-extern M2C_UNK sVectorIndexCheck, data_020fcc2c, sAssertArray, sArrayFreeName, sArrayNthName, sArrayInsertAtArgCheck, sArrayInsertAtName;
+extern M2C_UNK sVectorIndexCheck, sArrayDeleteAtName, sAssertArray, sArrayFreeName, sArrayNthName, sArrayInsertAtArgCheck, sArrayInsertAtName;
 extern M2C_UNK data_0213db90, sServiceReplyPrefix;
 extern s32 gDnsQueryState[];
 extern M2C_UNK data_020fcc98, sDarrayFileName, data_020fcc04;
@@ -250,13 +250,13 @@ s32 ResolveServiceHostAddress(char *hostname, s32 port, void *addrPtr) {
 }
 
 void func_0204817c(void) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     M2C_UNK ghiSendTo(s32, M2C_UNK *, s32, M2C_UNK, M2C_UNK *, s32);
     extern s32 gDnsQueryState[];
     extern M2C_UNK gDnsPacketHeader;
     extern M2C_UNK data_0213db94;
     ghiSendTo(M2C_FIELD(&gDnsQueryState, s32 *, 4), &data_0213db94, M2C_FIELD(&gDnsQueryState, s32 *, 0x50), 0, &gDnsPacketHeader, 8);
-    M2C_FIELD(&gDnsQueryState, s32 *, 0x54) = GetTickCountMs();
+    M2C_FIELD(&gDnsQueryState, s32 *, 0x54) = GetSystemTickMilliseconds();
 }
 
 /* Sets up a DNS query for service availability for the given service name. */
@@ -309,7 +309,7 @@ s32 func_0204837c(void) {
 s32 ghiSocketCanRecv(s32);
 s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *);
 s32 ghiCloseSocket(s32);
-s32 GetTickCountMs(void);
+s32 GetSystemTickMilliseconds(void);
 s8 buffer[64];
 u8 address[8];
 s32 len;
@@ -328,7 +328,7 @@ else if(flags&2)gDnsQueryState[0]=3;
 else gDnsQueryState[0]=1;
 return gDnsQueryState[0];
 }
-if((u32)GetTickCountMs()>M2C_FIELD(&gDnsQueryState,u32 *,0x54)+2000){
+if((u32)GetSystemTickMilliseconds()>M2C_FIELD(&gDnsQueryState,u32 *,0x54)+2000){
 if(gDnsQueryState[22]==1){
 ghiCloseSocket(gDnsQueryState[1]);
 gDnsQueryState[0]=1;
@@ -347,12 +347,19 @@ if(!M2C_FIELD(a,void (**)(),16))return;
 M2C_FIELD(a,void (**)(s32),16)(Vector_GetItem(a,b));
 }
 
-void Vector_GrowCapacity(void *a) {
-s32 gpiRealloc(s32,s32);
-M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
-M2C_FIELD(a,s32 *,4)+=M2C_FIELD(a,s32 *,12);
-M2C_FIELD(a,s32 *,20)=gpiRealloc(M2C_FIELD(a,s32 *,20),M2C_FIELD(a,s32 *,4)*M2C_FIELD(a,s32 *,8));
-if(!M2C_FIELD(a,s32 *,20))AssertFailed(&data_020fcc98,&sDarrayFileName,&data_020fcc04,65);
+/* GameSpy darray ArrayGrow: enlarge the array by its growth step, then
+ * reallocate the item slots to the new capacity times the item size, asserting
+ * that the reallocation succeeded. */
+void Vector_GrowCapacity(void *array) {
+    s32 gpiRealloc(s32, s32);
+    M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, s32);
+
+    M2C_FIELD(array, s32 *, VECTOR_CAPACITY) += M2C_FIELD(array, s32 *, VECTOR_GROW);
+    M2C_FIELD(array, s32 *, VECTOR_ITEMS) = gpiRealloc(
+        M2C_FIELD(array, s32 *, VECTOR_ITEMS),
+        M2C_FIELD(array, s32 *, VECTOR_CAPACITY) * M2C_FIELD(array, s32 *, VECTOR_ELEM_SIZE));
+    if (!M2C_FIELD(array, s32 *, VECTOR_ITEMS))
+        AssertFailed(&data_020fcc98, &sDarrayFileName, &data_020fcc04, 65);
 }
 
 void Vector_SetItem(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -466,10 +473,14 @@ s32 Vector_RemoveAt(s32 *array, s32 index) {
     return --M2C_FIELD(array, s32 *, VECTOR_COUNT);
 }
 
-void Vector_RemoveItem(s32 *a,s32 b) {
-s32 Vector_RemoveAt();s32 AssertFailed();
-if(b<0||b>=a[0])AssertFailed(&sVectorIndexCheck,&sDarrayFileName,&data_020fcc2c,0xca);
-Vector_ReleaseItem(a,b);Vector_RemoveAt(a,b);
+/* GameSpy darray ArrayDeleteAt: release the item at `index` through the array's
+   release callback, then remove it by shifting the later items down a slot. */
+void Vector_RemoveItem(s32 *array, s32 index) {
+    s32 Vector_RemoveAt(); s32 AssertFailed();
+    if (index < 0 || index >= M2C_FIELD(array, s32 *, VECTOR_COUNT))
+        AssertFailed(&sVectorIndexCheck, &sDarrayFileName, &sArrayDeleteAtName, 0xca);
+    Vector_ReleaseItem(array, index);
+    Vector_RemoveAt(array, index);
 }
 
 /* GameSpy darray ArrayReplaceAt: replace the item at `index` with `item`,

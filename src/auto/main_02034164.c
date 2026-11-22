@@ -485,7 +485,20 @@ return 1;
 #pragma opt_propagation on
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-s32 FindHttpHeader(void *a,s32 b){s32 StringCompare(s32,s32);s32 i=0;loop:if(M2C_FIELD(((s32)a+i*8),s32 *,0x1a38)!=0){if(StringCompare(b,M2C_FIELD(((s32)a+i*8),s32 *,0x1a38))==0)return M2C_FIELD(((s32)a+i*8),s32 *,0x1a3c);i++;if(i<32)goto loop;}return 0;}
+/* Finds the value of the response header named by `name` in the client's parsed
+ * header table (32 name/value pairs); returns 0 when the header is absent. */
+s32 FindHttpHeader(void *a,s32 name){
+s32 StringCompare(s32,s32);
+Unk02034164 *client=(Unk02034164 *)a;
+s32 i=0;
+loop:
+if(client->headers[i].first!=0){
+if(StringCompare(name,client->headers[i].first)==0)return client->headers[i].second;
+i++;
+if(i<32)goto loop;
+}
+return 0;
+}
 #pragma optimize_ifs off
 #pragma scheduling off
 s32 ReadHttpHeader(void *a,s32 b,u8 *c,u32 d){

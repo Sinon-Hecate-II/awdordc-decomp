@@ -88,13 +88,13 @@ s32 func_020e34f4(s32 arg0) {
 #pragma pop
 s32 func_020e352c(s32 arg0, s32 arg1) {
     M2C_UNK func_0202a468(s32, s32, s32);
-    extern s32 data_02168fe4;
+    extern s32 gGameHeap;
     volatile u32 saved;
     u32 temp;
     void *p;
     temp = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
-    p = (void *)data_02168fe4;
+    p = (void *)gGameHeap;
     saved = temp;
     func_0202a468((s32)p, arg0, arg1);
     {
@@ -107,7 +107,7 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
 s32 func_020e3580(s32 arg0,s32 arg1) {
 #pragma push
 #pragma opt_global_reg on
-extern s32 data_02168fe4;
+extern s32 gGameHeap;
 s32 result;
 volatile u32 saved;
 u32 temp=*(volatile u16*)0x04000208;
@@ -115,7 +115,7 @@ u32 temp=*(volatile u16*)0x04000208;
 saved=temp;
 {
     s32 direction = -arg1;
-    s32 block = data_02168fe4;
+    s32 block = gGameHeap;
     result = func_0202a468(block, arg0, direction);
 }
 {
@@ -130,13 +130,13 @@ return result;
 #pragma opt_propagation off
 void HeapFreeBlock(s32 arg0) {
 void func_0202a498(s32,s32);
-extern s32 data_02168fe4;
+extern s32 gGameHeap;
 volatile u32 saved;
 u32 temp;
 temp=*(volatile u16*)0x04000208;
 *(volatile u16*)0x04000208=0;
 saved=temp;
-func_0202a498(data_02168fe4,arg0);
+func_0202a498(gGameHeap,arg0);
 temp=saved; arg0=temp;
 (void)*(volatile u16*)0x04000208;
 *(volatile u16*)0x04000208=arg0;
@@ -189,9 +189,9 @@ void func_020e36dc(void) {
 }
 
 void func_020e36f4(void) {
-   s32 func_ov010_02226888(void);
+   s32 FinishWebRegisterRequest(void);
    void func_020e4304();
-   if (func_ov010_02226888() == 0) return;
+   if (FinishWebRegisterRequest() == 0) return;
    func_020e4304();
 }
 
@@ -215,20 +215,24 @@ void func_020e3738(void *arg0) {
     SetSpriteAnimation(arg0, 1);
 }
 
-void func_020e3788(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
- void *CreateSpriteForOwner(void *, s32);
- extern s32 data_0212d950;
- extern s32 gOnlinePlayerListVtable;
- void *temp_r0;
- temp_r0 = CreateSpriteForOwner(&data_0212d950, arg3);
- if (temp_r0 == NULL) return;
- M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
- M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
- M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
- M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
- M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
- M2C_FIELD(temp_r0, s32 *, 0x44) = 0;
- M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
+/* Creates an online-player-list node over a caller-owned array of player records:
+ * the list starts with `count` entries, may hold any number of them, and stores
+ * the answering request's count in *countOut.  The list keeps no id array. */
+void CreateOnlinePlayerListCountedNode(void *records, s32 count, s32 *countOut, s32 owner) {
+    void *CreateSpriteForOwner(void *, s32);
+    extern s32 gOnlinePlayerListCountedClass;
+    extern s32 gOnlinePlayerListVtable;
+    void *node;
+
+    node = CreateSpriteForOwner(&gOnlinePlayerListCountedClass, owner);
+    if (node == NULL) return;
+    M2C_FIELD(node, s32 **, LIST_VTABLE) = &gOnlinePlayerListVtable;
+    M2C_FIELD(node, s32 *, LIST_FIRST) = (s32)records;
+    M2C_FIELD(node, s32 *, LIST_COUNT) = count;
+    M2C_FIELD(node, s32 *, LIST_LIMIT) = 0;
+    M2C_FIELD(node, s32 *, LIST_CAPACITY) = (s32)countOut;
+    M2C_FIELD(node, s32 *, LIST_IDS) = 0;
+    M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
 }
 
 /* Update step of the online-player list: once the web request has completed

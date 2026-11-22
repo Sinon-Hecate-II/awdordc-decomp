@@ -388,11 +388,11 @@ void func_ov001_0217f73c(void) {
     M2C_UNK Ov001_LoadSaveSlotObjLayout();
     void MapList_LoadBackground();
     M2C_UNK CommitSaveSlot();
-    extern M2C_UNK func_ov001_0217f7f0;
+    extern M2C_UNK Ov001_FadeInMapListScreen;
     MapList_LoadBackground();
     Ov001_LoadSaveSlotObjLayout();
     CommitSaveSlot();
-    Ov001_SetStepCallback(&func_ov001_0217f7f0);
+    Ov001_SetStepCallback(&Ov001_FadeInMapListScreen);
 }
 
 /* Reload what the map-list screen draws behind its list: the background's
@@ -412,12 +412,15 @@ void MapList_LoadBackground(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_0217f7f0(void) {
+/* Fades in the ov001 map-list screen: start the sub and main fades from white,
+ * enable its background and object planes, then move on to the step that shows
+ * the connect message. */
+void Ov001_FadeInMapListScreen(void) {
     extern M2C_UNK func_ov001_0217f844;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&func_ov001_0217f844);
 }
 
@@ -571,10 +574,10 @@ void func_ov001_0217fb1c(void) {
 void func_ov001_0217fb48(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_BeginOptionScreenExit;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_BeginOptionScreenExit);
 }
 

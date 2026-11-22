@@ -68,11 +68,11 @@ void func_020323a4(void) {
 }
 
 s32 func_020323b0(void *a) {
-void func_02076794(void *,u32);
-u32 func_02076860(void *,void *,u32);
+void BuildCrc32Table(void *,u32);
+u32 Crc32Block(void *,void *,u32);
 u32 table[256]; u32 crc;
-func_02076794(table,0xedb88320);
-crc=func_02076860(table,a,0x3c);
+BuildCrc32Table(table,0xedb88320);
+crc=Crc32Block(table,a,0x3c);
 if(crc==M2C_FIELD(a,u32 *,0x3c)) return 1;
 return 0;
 }
@@ -99,15 +99,19 @@ s32 IsLocalProfileRecord(void *record) {
     return *(u64 *)&ids.friendCode[0] == GetNasPlayerCode((u8 *)record + 0x10);
 }
 
-void SetNasProfileKey(void *a,Unk032Record *b,s32 c) {
-void func_02076794(void *,u32);
-u32 func_02076860(void *,void *,u32);
-u32 table[256];
-*(Unk032Record *)((u8 *)a+0x10)=*b;
-M2C_FIELD(a,s32 *,0x1c)=c;
-func_02076794(table,0xedb88320);
-M2C_FIELD(a,u32 *,0x3c)=func_02076860(table,a,0x3c);
-M2C_FIELD(a,u32 *,0x20)|=1;
+/* Store the NAS player key of a just-verified login in the profile-id block,
+ * with the GameSpy profile id it resolved to, then mark the block's key as set
+ * and refresh its CRC32. */
+void SetNasProfileKey(void *block, Unk032Record *key, s32 profileId) {
+    void BuildCrc32Table(void *, u32);
+    u32 Crc32Block(void *, void *, u32);
+    u32 table[256];
+
+    *(Unk032Record *)((u8 *)block + PROFILE_ID_BLOCK_KEY) = *key;
+    M2C_FIELD(block, s32 *, PROFILE_ID_BLOCK_ID) = profileId;
+    BuildCrc32Table(table, CRC32_POLYNOMIAL);
+    M2C_FIELD(block, u32 *, PROFILE_ID_BLOCK_CRC) = Crc32Block(table, block, PROFILE_ID_BLOCK_CRC);
+    M2C_FIELD(block, u32 *, PROFILE_ID_BLOCK_KEY_SET) |= 1;
 }
 
 void func_020324e4(void) {
@@ -128,12 +132,12 @@ void func_02032508(void) {
 }
 
 s32 func_02032514(void *a) {
-void func_02076794(void *,u32);
-u32 func_02076860(void *,void *,u32);
+void BuildCrc32Table(void *,u32);
+u32 Crc32Block(void *,void *,u32);
 u32 table[256];
 M2C_FIELD(a,u32 *,0x20)&=~1;
-func_02076794(table,0xedb88320);
-M2C_FIELD(a,u32 *,0x3c)=func_02076860(table,a,0x3c);
+BuildCrc32Table(table,0xedb88320);
+M2C_FIELD(a,u32 *,0x3c)=Crc32Block(table,a,0x3c);
 }
 
 u64 func_02032558(void *a) {
@@ -310,14 +314,21 @@ if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_TASK_ID))retur
 OS_JoinThread(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
+/* Tear down the open NAS connection: clean up the HTTP client it runs on,
+ * release the connection block with the request's free function, and clear
+ * the slot. Does nothing when no connection is open. */
 void FreeNasConnection(void) {
-M2C_UNK HttpClientCleanup(s32); extern M2C_UNK gNasConnection; extern M2C_UNK data_020fb34c;
-void (*callback)(void *,void *,s32);
-if(!M2C_FIELD(&gNasConnection,void **,8))return;
-callback=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),void (**)(void *,void *,s32),0x1210);
-if(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314))HttpClientCleanup(M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1314));
-callback(&data_020fb34c,M2C_FIELD(&gNasConnection,void **,8),0);
-M2C_FIELD(&gNasConnection,void **,8)=0;
+    M2C_UNK HttpClientCleanup(M2C_UNK);
+    extern M2C_UNK gNasConnection;
+    extern char gFreeTagDwcAuth[];
+    void (*freefn)(void *, void *, s32);
+
+    if (!M2C_FIELD(&gNasConnection, void **, 8)) return;
+    freefn = M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), void (**)(void *, void *, s32), NAS_CONN_FREE);
+    if (M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, NAS_CONN_HANDLE))
+        HttpClientCleanup(M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, NAS_CONN_HANDLE));
+    freefn(&gFreeTagDwcAuth, M2C_FIELD(&gNasConnection, void **, 8), 0);
+    M2C_FIELD(&gNasConnection, void **, 8) = 0;
 }
 
 void func_02032b68(void) {

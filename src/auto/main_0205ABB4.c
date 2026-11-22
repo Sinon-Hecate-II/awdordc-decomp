@@ -97,8 +97,8 @@ void func_0205adb4(void) {
 }
 
 void func_0205adc0(void) {
-    M2C_UNK func_0205a994();
-    func_0205a994();
+    M2C_UNK gti2RejectConnection();
+    gti2RejectConnection();
 }
 
 #pragma scheduling off
@@ -338,7 +338,7 @@ M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)=GT2_STATE_AWAIT_SERVER_ACCEPT;r
 
 /* Validate an incoming client's response and pass its payload to the connection-attempt callback. */
 s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
-    s32 gti2CheckResponse(void *, void *); s32 gti2SendClosed(void *); s32 GetTickCountMs(void); s32 Gt2InvokeConnectAttempt(void *, void *, s32, u16, s32, s32, s32);
+    s32 gti2CheckResponse(void *, void *); s32 gti2SendClosed(void *); s32 GetSystemTickMilliseconds(void); s32 Gt2InvokeConnectAttempt(void *, void *, s32, u16, s32, s32, s32);
     if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_AWAIT_CLIENT_RESPONSE) return Gt2CloseConnection((s32)connection) != 0;
     if (length < GT2_RESPONSE_SIZE) return Gt2CloseConnection((s32)connection) != 0;
     if (!gti2CheckResponse((void *)message, connection + GT2_CONNECTION_RESPONSE)) return Gt2CloseConnection((s32)connection) != 0;
@@ -347,7 +347,7 @@ s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
         gti2MarkConnectionClosed(connection); return 1;
     }
     M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_AWAIT_ACCEPT;
-    return Gt2InvokeConnectAttempt(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), GetTickCountMs() - M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME), message + GT2_RESPONSE_SIZE, length - GT2_RESPONSE_SIZE) != 0;
+    return Gt2InvokeConnectAttempt(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), GetSystemTickMilliseconds() - M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME), message + GT2_RESPONSE_SIZE, length - GT2_RESPONSE_SIZE) != 0;
 }
 
 s32 func_0205b6a0(void *a) {s32 Gt2ConnectionCallCallback();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(Gt2ConnectionCallCallback(a,0,0,0))return 1;return 0;}
@@ -455,11 +455,11 @@ restart:
 }
 
 void Gt2NoteDataReceived(void *arg0) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     if (M2C_FIELD(arg0, s32 *, 0x90) != 0) {
         return;
     }
     M2C_FIELD(arg0, s32 *, 0x90) = 1;
-    M2C_FIELD(arg0, s32 *, 0x94) = GetTickCountMs();
+    M2C_FIELD(arg0, s32 *, 0x94) = GetSystemTickMilliseconds();
 }
 

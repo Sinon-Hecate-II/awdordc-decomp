@@ -16,11 +16,11 @@ void func_01ff8000(void) {
 
 void func_01ff81e4(void) {
     M2C_UNK LoadCardImage();
-    extern volatile u16 data_0212dfe4;
+    extern volatile u16 gArm7BootSync;
     M2C_UNK func_01ff8218();
     do {
 
-    } while (data_0212dfe4 == 0);
+    } while (gArm7BootSync == 0);
     *(s16 *)0x04000208 = 0;
     LoadCardImage();
     func_01ff8218();
@@ -283,7 +283,27 @@ void Upload3DSpriteOam(void) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_01ff87e4(void){extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;void Write3DSpriteOamEntries(s32,s32);void *saved=gCur3DSpriteEngine;void *p;s32 i=0;do{p=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;gCur3DSpriteEngine=p;Write3DSpriteOamEntries(M2C_FIELD(p,u8 *,0x4b),M2C_FIELD(p,u8 *,0x4c));i++;}while(i<2);gCur3DSpriteEngine=saved;}
+/* Blank the OAM entries the last OAM upload added, on both 3D sprite engines
+ * (main engine first).  Writing the engine's last range again with no queued
+ * quads fills that range with disabled entries.  The engine that was current
+ * when the function was called is current again afterwards. */
+void ClearLast3DSpriteOamEntries(void) {
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
+    void Write3DSpriteOamEntries(s32, s32);
+    void *saved = gCur3DSpriteEngine;
+    void *engine;
+    s32 i = 0;
+    do {
+        engine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        Write3DSpriteOamEntries(M2C_FIELD(engine, u8 *, DS3D_ENGINE_LAST_OAM_START),
+                                M2C_FIELD(engine, u8 *, DS3D_ENGINE_LAST_OAM_COUNT));
+        i++;
+    } while (i < 2);
+    gCur3DSpriteEngine = saved;
+}
 
 /* Draw a run of sprites from src into the current 3D sprite engine bank. */
 void AppendSpriteDescToOam(s32 x, s32 y, s32 attr, u16 *src) {

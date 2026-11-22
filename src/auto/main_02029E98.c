@@ -255,7 +255,7 @@ s32 func_0202a334(void *freeList, HeapRange *range)
     return 1;
 }
 
-void *func_0202a424(u32 arg0, u32 arg1, s32 arg2) {
+void *CreateExpHeapInRange(u32 arg0, u32 arg1, s32 arg2) {
     u32 end = (arg1 + arg0) & ~3;
     u32 start = (arg0 + 3) & ~3;
     if (start > end || end - start < 0x4C) return NULL;
@@ -288,7 +288,7 @@ void func_0202a498(s32 arg0, s32 arg1) {
 }
 
 #pragma opt_propagation off
-s32 func_0202a4d4(void *arg0,u32 arg1) {
+s32 SetHeapFlags(void *arg0,u32 arg1) {
 u32 old; u32 bit;
 old=M2C_FIELD(arg0,u16 *,0x36);
 bit=old&1;
@@ -331,23 +331,28 @@ void *AllocFromFrameHeapHead(void *heap, s32 size, s32 alignment) {
     return (void *)aligned;
 }
 
-u32 AllocFromFrameHeapTail(void *arg0, s32 arg1, s32 arg2) {
+/* Frame-heap allocation from the tail: lower the heap's tail by `size`, rounded
+ * down to `alignment`; fail when that would cross the heap's head (returns 0),
+ * zero-fill the newly claimed bytes when the heap asks for it, and store the new
+ * tail.  Returns the aligned payload address. */
+u32 AllocFromFrameHeapTail(void *heapPtr, s32 size, s32 alignment) {
     M2C_UNK CpuFill(M2C_UNK, u32, s32);
-    u32 temp_r3;
-    u32 temp_r5;
+    FrameHeap *heap = (FrameHeap *)heapPtr;
+    u32 tail;
+    u32 aligned;
     u32 diff;
 
-    temp_r3 = M2C_FIELD(arg0, u32 *, 4);
-    temp_r5 = (u32)(~(arg2 - 1)) & (temp_r3 - arg1);
-    if (temp_r5 < (u32)M2C_FIELD(arg0, u32 *, 0)) {
+    tail = heap->tail;
+    aligned = (u32)(~(alignment - 1)) & (tail - size);
+    if (aligned < heap->head) {
         return 0U;
     }
-    diff = temp_r3 - temp_r5;
-    if ((u8)M2C_FIELD(arg0, s32 *, -4) & 1) {
-        CpuFill(0, temp_r5, diff);
+    diff = tail - aligned;
+    if ((u8)M2C_FIELD(heap, s32 *, FRAME_HEAP_ATTRIBUTE) & FRAME_HEAP_ATTR_ZERO_FILL) {
+        CpuFill(0, aligned, diff);
     }
-    M2C_FIELD(arg0, u32 *, 4) = temp_r5;
-    return temp_r5;
+    heap->tail = aligned;
+    return aligned;
 }
 
 void func_0202a5f8(void *arg0) {
@@ -550,8 +555,8 @@ s32 func_0202a940(M2C_UNK arg0) {
  * (-1 = none) and state are left at their start values. */
 void InitSoundDriver(void) {
     M2C_UNK func_02008fcc(M2C_UNK);
-    M2C_UNK func_0200ee10(M2C_UNK);
-    M2C_UNK func_0200ee28(M2C_UNK);
+    M2C_UNK PM_AddPreSleepCallback(M2C_UNK);
+    M2C_UNK PM_AddPostSleepCallback(M2C_UNK);
     void func_0202ab60(void);
     M2C_UNK func_0202ba8c(void);
     M2C_UNK Sound_InitVoices(void);
@@ -569,8 +574,8 @@ void InitSoundDriver(void) {
     M2C_FIELD(&gSoundInitState, s32 *, 0x14) = 0;
     M2C_FIELD(&gSoundInitState, void **, SOUND_INIT_SILENCE) = (void *)func_0202aa58;
     M2C_FIELD(&gSoundInitState, s32 *, 0x20) = 0;
-    func_0200ee10((M2C_UNK)&data_02138eb0);
-    func_0200ee28((M2C_UNK)&data_02138ebc);
+    PM_AddPreSleepCallback((M2C_UNK)&data_02138eb0);
+    PM_AddPostSleepCallback((M2C_UNK)&data_02138ebc);
     func_0202ab60();
     func_0202ba8c();
     Sound_InitVoices();
@@ -763,9 +768,9 @@ void Sound_SetVoiceVolume(void **arg0, s8 arg1) {
 #pragma optimizewithasm off
 #pragma peephole off
 void Sound_StartPlayerVolumeFade(void * volatile *arg0, s32 arg1, s32 arg2) {
- M2C_UNK func_0202eed8(void *, s32, s32);
+ M2C_UNK Sound_StartFade(void *, s32, s32);
  void *p;
- if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) func_0202eed8((u8 *)p+0x1C,arg1<<8,arg2); }
+ if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) Sound_StartFade((u8 *)p+0x1C,arg1<<8,arg2); }
 }
 #pragma pop
 void Sound_SetChannelPan(void * volatile *arg0, s32 arg1) {
@@ -786,7 +791,7 @@ void func_0202ad70(void *arg0, s32 arg1, s32 arg2) {
     func_02008c68(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);
 }
 
-void func_0202ad90(void *arg0, s32 arg1, s32 arg2) {
+void Sound_SetPlayerPan(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK func_02008c84(u8, s32, s32);
     if (M2C_FIELD(arg0, s32 *, 0) == 0) return;
     func_02008c84(M2C_FIELD(M2C_FIELD(arg0, void **, 0), u8 *, 0x3C), arg1, arg2);

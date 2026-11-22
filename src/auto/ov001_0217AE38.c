@@ -238,7 +238,7 @@ void InitNameEntryScreen(void) {
 extern void *gOv001NameEntryConfig; extern void *gNameEntryState;
 void *Ov001_Alloc(s32,s32);void Ov001_GetNameEntryMode(s32 *,s32);
 s32 StringLengthUpTo(void *,s32);void *CreateTextPanel(s32,s32);void *Ov001_CreateSpriteFromLayout(s32,s32);
-void func_ov001_0217b634(void);
+void Ov001_FadeInNameEntryScreen(void);
 u8 modeMessages[2]={M2C_FIELD(&gOv001NameEntryConfig,u8 *,0),M2C_FIELD(&gOv001NameEntryConfig,u8 *,1)};s32 mode,variant;
 gNameEntryState=Ov001_Alloc(44,4);
 Ov001_GetNameEntryMode(&mode,(s32)&variant);
@@ -249,7 +249,7 @@ Ov001_OpenMenuForMode(2);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_PANEL)=CreateTextPanel(0,0);
 M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR)=Ov001_CreateSpriteFromLayout(0,62);
 M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)=(M2C_FIELD(M2C_FIELD(gNameEntryState,void **,NAME_ENTRY_CURSOR),u16 *,4)&~0xc00)|0xc00;
-UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)func_ov001_0217b634);
+UpdateNameEntryCursor();RedrawNameEntryText();Ov001_SetStepCallback((s32 *)Ov001_FadeInNameEntryScreen);
 }
 
 /* Load the name-entry screen's graphics: keyboard OBJ palette, BG2 tiles,
@@ -276,7 +276,9 @@ void Ov001_LoadNameEntryGraphics(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_0217b634(void) {
+/* Fade in the name-entry screen's panel and screen and show its planes, then open
+ * the on-screen keyboard in the next step. */
+void Ov001_FadeInNameEntryScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_OpenNameEntryKeyboard;
@@ -375,9 +377,9 @@ void func_ov001_0217b8f4(void) {
 
 void func_ov001_0217b8f8(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_0217b914;
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_0217b914);
 }
 

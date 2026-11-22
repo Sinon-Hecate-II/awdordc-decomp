@@ -19,6 +19,16 @@ enum {
     WFC_CALLBACKS_SIZE = 12,
     WFC_FRIENDS_SIZE = 3352
 };
+/* The WFC network manager (gWfcManager): the work blocks Wfc_GetWorkBlock
+ * hands out, one per WFC_WORK_* tag, kept in reverse tag order. */
+typedef struct WfcManager {
+    void *friends;    /* +0x00 WFC_WORK_FRIENDS */
+    void *session;    /* +0x04 WFC_WORK_SESSION */
+    void *aux;        /* +0x08 WFC_WORK_AUX */
+    void *callbacks;  /* +0x0C WFC_WORK_CALLBACKS */
+    void *control;    /* +0x10 WFC_WORK_CONTROL */
+} WfcManager;
+
 /* The WFC control block (Wfc_GetWorkBlock(WFC_WORK_CONTROL)) records the progress
  * and result of one connection attempt: the session state, the result of the last
  * step, the network check's outcome and the friend it was made for. */
@@ -589,6 +599,8 @@ enum {
 #define NAS_CONN_STATUS      0x1008 /* s32 head of the status block */
 #define NAS_CONN_STATUS_SIZE 0x1C4  /* bytes of the status block shared with the caller */
 #define NAS_CONN_REQUEST     0x11CC /* NasRequest descriptor copied from the caller */
+#define NAS_CONN_ALLOC       0x120C /* void *request's allocator (NasRequest::alloc), also handed to the HTTP client */
+#define NAS_CONN_FREE        0x1210 /* void (*)(void *, void *, s32) request's free function (NasRequest::free) */
 #define NAS_CONN_HANDLE      0x1314 /* void *network handle the HTTP runs on */
 #define NAS_CONN_TASK        0x1318 /* task that drives the connection */
 #define NAS_CONN_TASK_ID     0x1384 /* s32 id TaskCreate gave that task, 0 before it exists */

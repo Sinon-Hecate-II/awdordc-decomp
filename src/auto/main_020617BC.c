@@ -135,7 +135,7 @@ s32 func_02061a74(void *a,s32 b){s32 Vector_GetCount(s32);s32 *Vector_GetItem();
  * or -1 when no server does. */
 s32 SBServerListFindByAddress(void *list,s32 ip,s32 port){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 SBServerGetIp(s32);s32 SBServerGetPortNBO(s32);s32 count,server,i;count=Vector_GetCount(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS));for(i=0;i<count;i++){server=*Vector_GetItem(M2C_FIELD(list,s32 *,SB_SLIST_SERVERS),i);if(ip==SBServerGetIp(server)&&port==SBServerGetPortNBO(server))return i;}return -1;}
 
-void func_02061b38(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
+void SBServerListRetireServer(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
 
 void func_02061b6c(void *a,s32 b) {
 s32 *Vector_GetItem();
@@ -143,7 +143,7 @@ void Vector_RemoveItem(s32,s32);
 s32 p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),b);
 M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,2,p,M2C_FIELD(a,s32 *,0x494));
 Vector_RemoveItem(M2C_FIELD(a,s32 *,4),b);
-func_02061b38(a,p);
+SBServerListRetireServer(a,p);
 }
 
 #pragma scheduling off
@@ -181,13 +181,20 @@ void SBServerListFreeRemovedServers(void *list) {
     M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS) = 0;
 }
 
-s32 func_02061c34(void *a) {
-s32 Vector_GetCount(s32);s32 *Vector_GetItem();void func_02048b74(s32);
-s32 i,n;
-n=Vector_GetCount(M2C_FIELD(a,s32 *,4));
-for(i=0;i<n;i++)func_02061b38(a,*Vector_GetItem(M2C_FIELD(a,s32 *,4),i));
-func_02048b74(M2C_FIELD(a,s32 *,4));
-SBServerListFreeRemovedServers(a);
+/* Retire each server in the list, clear the server vector, then free the removed-server chain. */
+s32 SBServerListClearRemovedServers(void *serverList) {
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem();
+    void func_02048b74(s32);
+    s32 i;
+    s32 serverCount;
+
+    serverCount = Vector_GetCount(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS));
+    for (i = 0; i < serverCount; i++) {
+        SBServerListRetireServer(serverList, *Vector_GetItem(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS), i));
+    }
+    func_02048b74(M2C_FIELD(serverList, s32 *, SB_SLIST_SERVERS));
+    SBServerListFreeRemovedServers(serverList);
 }
 
 void func_02061c8c(void *arg0) {
@@ -240,7 +247,7 @@ s32 BoundedStringLength(s8 *a,s32 b){s32 i;for(i=0;i<b;i++){if(!a[i])return i+1;
    not ready, so a list is only created while networking is up. */
 void SBServerListInit(void *list,void *gameName,void *secretKey,void *gameVersion,s32 queryPort,s32 force,s32 callback,s32 instance){
 extern u8 sSbAssertSlistNotNull[],sSbServerListInitName[],sSbAssertCallbackNotNull[];extern s32 gDnsQueryState[];extern M2C_UNK sSbEmptyString;
-void AssertFailed(void*,void*,void*,s32);s32 GetStringInternTable(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetTickCountMs(void);void SetRandSeed(s32);void func_0204926c(void);
+void AssertFailed(void*,void*,void*,s32);s32 GetStringInternTable(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetSystemTickMilliseconds(void);void SetRandSeed(s32);void func_0204926c(void);
 if(!list)AssertFailed(sSbAssertSlistNotNull,sSbFileName,sSbServerListInitName,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
 M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);GetStringInternTable((s32)list);
@@ -253,7 +260,7 @@ M2C_FIELD(list,s32*,0x7c)=0;M2C_FIELD(list,s32*,0x80)=0;M2C_FIELD(list,s32*,8)=0
 M2C_FIELD(list,s32*,0x484)=-1;M2C_FIELD(list,s32*,0x480)=0;
 M2C_FIELD(list,s32*,0x4a4)=0;M2C_FIELD(list,s32*,SB_SLIST_QUERY_PORT)=queryPort;
 SBServerListSetError(list,&sSbEmptyString);M2C_FIELD(list,s32*,0x5cc)=0;
-SetRandSeed(GetTickCountMs());func_0204926c();
+SetRandSeed(GetSystemTickMilliseconds());func_0204926c();
 }
 
 /* Check the master server's reply sitting in the list's receive buffer: when it
@@ -509,10 +516,10 @@ s32 SBServerListDisconnect(void *list) {
 void func_02062738(void *arg0) {
     M2C_UNK Vector_Free();
     M2C_UNK func_02060a20(void *);
-    M2C_UNK func_02061c34(void *);
+    M2C_UNK SBServerListClearRemovedServers(void *);
     M2C_UNK SBServerListDisconnect();
     SBServerListDisconnect();
-    func_02061c34(arg0);
+    SBServerListClearRemovedServers(arg0);
     func_02060a20(arg0);
     if (M2C_FIELD(arg0, s32 *, 4) != 0) {
         Vector_Free();

@@ -298,22 +298,22 @@ s32 func_ov001_0216d56c(s32 a){extern s32 (*data_ov001_021925e0)(s32);void (*f)(
 
 s32 func_ov001_0216d8a0(s32 arg0, s32 arg1) {
     M2C_UNK MIi_CpuCopy32(s32, s32, M2C_UNK);
-    s32 func_02029274();
+    s32 WFC_GetPlayerListCount();
     M2C_UNK WFC_SetDataLock(M2C_UNK);
-    s32 func_02029348(u16);
+    s32 WFC_GetPlayerRecordByIndex(u16);
     s32 temp_r0;
     s32 var_r4;
     s32 var_r5;
 
     var_r5 = arg0;
     WFC_SetDataLock(1);
-    temp_r0 = func_02029274();
+    temp_r0 = WFC_GetPlayerListCount();
     if (temp_r0 > 0) {
         var_r4 = 0;
         if (temp_r0 > 0) {
 loop_2:
             if (var_r4 < arg1) {
-                MIi_CpuCopy32(func_02029348((u16) var_r4), var_r5, 0xC0);
+                MIi_CpuCopy32(WFC_GetPlayerRecordByIndex((u16) var_r4), var_r5, 0xC0);
                 var_r4 += 1;
                 var_r5 += 0xC0;
                 if (var_r4 < temp_r0) {
@@ -345,7 +345,30 @@ s32 func_ov001_0216da10(void) {
     return 0;
 }
 
-s32 func_ov001_0216da48(void){s32 t=OS_DisableInterrupts();if(M2C_FIELD(&gWhConnTaskState,s32 *,0x18)==3){if(WFC_StartWirelessStep()!=3){OS_RestoreInterrupts(t);return 0;}M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}if(WhConnTaskAdvance()==1){M2C_FIELD(&gWhConnTaskState,s32 *,0x18)=2;OS_RestoreInterrupts(t);return 1;}OS_RestoreInterrupts(t);return 0;}
+/* WH connection-task start step: while the connection phase is ready to connect,
+ * start the wireless (WM) step; otherwise advance the task's current connection
+ * state.  On success the phase moves to 2, so the started step is not begun
+ * again, and 1 is returned; 0 while it still has to be retried. */
+s32 WhConnTaskBeginConnection(void) {
+    s32 interruptState = OS_DisableInterrupts();
+
+    if (M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) == WH_PHASE_READY_TO_CONNECT) {
+        if (WFC_StartWirelessStep() != WH_WFC_STEP_QUEUED) {
+            OS_RestoreInterrupts(interruptState);
+            return 0;
+        }
+        M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) = WH_PHASE_STEP_QUEUED;
+        OS_RestoreInterrupts(interruptState);
+        return 1;
+    }
+    if (WhConnTaskAdvance() == 1) {
+        M2C_FIELD(&gWhConnTaskState, s32 *, WH_TASK_PHASE) = WH_PHASE_STEP_QUEUED;
+        OS_RestoreInterrupts(interruptState);
+        return 1;
+    }
+    OS_RestoreInterrupts(interruptState);
+    return 0;
+}
 
 /* Stage the host descriptor and connection settings for the WH connection task,
  * then queue the connection or the prerequisite step it waits for: 1 once a step

@@ -429,7 +429,18 @@ void NetStackQueuePacket(s32 srcLink, s32 dstLink, s32 frame, s32 frameLen, s32 
     M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_WRITE) = nextWrite;
 }
 
-void func_0201aa74(s32 a,s32 b,s32 c,s32 d){void NetStackQueuePacket(s32,s32,s32,s32,s32,s32);s32 TaskIsFinished(s32);void TaskWake(s32);extern M2C_UNK gNetStack;NetStackQueuePacket(a,b,c,d,0,0);if(!M2C_FIELD(&gNetStack,volatile s32 *,84))return;if(TaskIsFinished(M2C_FIELD(&gNetStack,volatile s32 *,84)))return;TaskWake(M2C_FIELD(&gNetStack,volatile s32 *,84));}
+/* Queue a network packet and wake the waiting sender task if it is still active. */
+void NetStackQueueAndWakeSender(s32 sourceLink, s32 destinationLink, s32 frame, s32 frameLength) {
+    void NetStackQueuePacket(s32, s32, s32, s32, s32, s32);
+    s32 TaskIsFinished(s32);
+    void TaskWake(s32);
+    extern M2C_UNK gNetStack;
+
+    NetStackQueuePacket(sourceLink, destinationLink, frame, frameLength, 0, 0);
+    if (!M2C_FIELD(&gNetStack, volatile s32 *, NETSTACK_RING_WAITER)) return;
+    if (TaskIsFinished(M2C_FIELD(&gNetStack, volatile s32 *, NETSTACK_RING_WAITER))) return;
+    TaskWake(M2C_FIELD(&gNetStack, volatile s32 *, NETSTACK_RING_WAITER));
+}
 
 /* Wait until a frame record is queued in the network stack's transmit ring,
    then return a pointer to its Ethernet frame (past the u16 record length) and

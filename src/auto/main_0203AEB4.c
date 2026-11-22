@@ -139,13 +139,19 @@ void func_0203b3c4(void) {
 }
 
 #pragma opt_propagation off
-void MatchSession_ClearPlayerRecord(u8 *a,u32 b,u32 c) {
-extern M2C_UNK gMatchSessionMgr;void MI_CpuFill8(void*,s32,u32);
-void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
-if(!p)return;
-MI_CpuFill8(a+b*12,0,12);
-p=M2C_FIELD(&gMatchSessionMgr,void **,8);
-if(M2C_FIELD(p,void (**)(u32,u32,u32),0x3c))M2C_FIELD(p,void (**)(u32,u32,u32),0x3c)(b,c,M2C_FIELD(p,u32*,0x40));
+/* Clear the record of player slot `slot` and fold that player's battle stats
+ * into the record of slot `targetSlot` through the session's stats callback.
+ * Does nothing while no match session is running. */
+void MatchSession_ClearPlayerRecord(u8 *playerRecords, u32 slot, u32 targetSlot) {
+    extern M2C_UNK gMatchSessionMgr;
+    void MI_CpuFill8(void *, s32, u32);
+    void *p = M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION);
+
+    if (!p) return;
+    MI_CpuFill8(playerRecords + slot * 12, 0, 12);
+    p = M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION);
+    if (M2C_FIELD(p, void (**)(u32, u32, u32), MATCH_SESSION_STATS_CB))
+        M2C_FIELD(p, void (**)(u32, u32, u32), MATCH_SESSION_STATS_CB)(slot, targetSlot, M2C_FIELD(p, u32 *, MATCH_SESSION_STATS_DATA));
 }
 #pragma opt_propagation reset
 /* Look for the player `profileId` among the session's player records before

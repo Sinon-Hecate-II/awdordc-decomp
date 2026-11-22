@@ -11,12 +11,12 @@ static inline u16 SwapPair60E(u16 v) { return (u8)(v>>8)|((v<<8)&0xff00); }
  * timeout as its ping, drop the query's flags, report the failed query through
  * the list's query callback and take the server off the pending list. */
 void Qr2Query_ExpireTimeouts(void *list) {
-    u32 GetTickCountMs();
+    u32 GetSystemTickMilliseconds();
     M2C_UNK QueryQueue_Pop(void *);
     u32 now;
     GpiPlayer *server;
 
-    now = GetTickCountMs();
+    now = GetSystemTickMilliseconds();
     if (M2C_FIELD(list, GpiPlayer **, SB_LIST_REQUESTS) == NULL) {
         return;
     }
@@ -559,9 +559,9 @@ M2C_UNK func_0206171c(void *p){
 
 void ResetSessionList(s32 arg0) {
     M2C_UNK func_0206171c();
-    M2C_UNK func_02061c34(s32);
+    M2C_UNK SBServerListClearRemovedServers(s32);
     func_0206171c();
-    func_02061c34(arg0 + 0x4C);
+    SBServerListClearRemovedServers(arg0 + 0x4C);
 }
 
 s32 func_02061750(void *arg0){

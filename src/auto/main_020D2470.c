@@ -219,12 +219,15 @@ void func_020d2958(void) {
     } while (i < 5);
 }
 
-s32 IsPlayerRouted(M2C_UNK arg0) {
- s32 PlayerHasNoUnits(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 func_020d303c(M2C_UNK);
+/* Whether a player has been routed by losing its units: 1 when the player is not
+ * active, or when it has no units left while either it still owns units in its
+ * per-kind counts or none of the marked unit kinds are left on the field. */
+s32 IsPlayerRouted(M2C_UNK player) {
+ s32 PlayerHasNoUnits(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 CountPlayerUnits(M2C_UNK);
  if (!IsPlayerActive()) return 1;
- if (PlayerHasNoUnits(arg0)) {
- if (func_020d303c(arg0)) return 1;
- if (func_020d2a6c(arg0)) return 1;
+ if (PlayerHasNoUnits(player)) {
+  if (CountPlayerUnits(player)) return 1;
+  if (func_020d2a6c(player)) return 1;
  }
  return 0;
 }
@@ -289,20 +292,21 @@ if(*((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE)+1)>P
 *((s32 *)((u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE)+1)=PLAYER_FUNDS_SPENT_MAX;
 }
 
-void func_020d2bc0(s32 arg0, s32 arg1) {
+/* Add `amount` to `player`'s funds, saturating at PLAYER_FUNDS_MAX. */
+void AddPlayerFunds(s32 player, s32 amount) {
     extern s32 *gCurrentMap;
     s32 off;
     s32 *base;
-    s32 *p;
+    s32 *funds;
 
-    off = arg0 * 0x8C;
+    off = player * MAP_PLAYER_STRIDE;
     base = *gCurrentMap;
-    p = (s32 *)((u8 *)base + 0x67A4 + off);
-    *p += arg1;
+    funds = (s32 *)((u8 *)base + PLAYER_FUNDS_OFF + off);
+    *funds += amount;
     base = *gCurrentMap;
-    p = (s32 *)((u8 *)base + 0x67A4 + off);
-    if (*p > 0xF423F) {
-        *p = 0xF423F;
+    funds = (s32 *)((u8 *)base + PLAYER_FUNDS_OFF + off);
+    if (*funds > PLAYER_FUNDS_MAX) {
+        *funds = PLAYER_FUNDS_MAX;
     }
 }
 
@@ -385,14 +389,14 @@ void func_020d2d80(M2C_UNK arg0) {
 
 void PayPlayerIncome(s32 arg0) {
     extern s32 *gCurrentMap;
-    void func_020d2bc0(s32, s32);
+    void AddPlayerFunds(s32, s32);
     s32 base = *gCurrentMap;
     s32 v = M2C_FIELD(base, u16 *, 0x52A2);
 
     if (v <= 0) {
         return;
     }
-    func_020d2bc0(arg0, M2C_FIELD(base + arg0 * 0x8C, s32 *, 0x6000 + 0x7AC));
+    AddPlayerFunds(arg0, M2C_FIELD(base + arg0 * 0x8C, s32 *, 0x6000 + 0x7AC));
 }
 
 /* Find the first free unit record in `player`'s group of the battle map: the
@@ -489,7 +493,7 @@ p+=b;
 return p[0x67d7];
 }
 
-s32 func_020d303c(s32 arg0) {
+s32 CountPlayerUnits(s32 arg0) {
     extern s32 *gCurrentMap;
     s32 i;
     s32 acc;
@@ -589,12 +593,18 @@ M2C_FIELD(a*0x8c+*gCurrentMap,u8 *,0x67d4)=b;
 
 u8 HasPlayerLost(s32 a){extern s32 *gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67d4]!=0;}
 
-u8 IsPlayerHqIntact(s32 a){
-extern s32 *gCurrentMap;u8 result;
-if(!(((u8 *)*gCurrentMap)[0x5155]&2))return 1;
-if(IsPlayerActive(a)==0)return 0;
-if(HasPlayerLost(a)==0)result=1;else result=0;
-return result;
+/* Return whether the player remains undefeated under the map's HQ-loss rule. */
+u8 IsPlayerHqIntact(s32 player) {
+    extern s32 *gCurrentMap;
+    s32 IsPlayerActive(s32);
+    u8 HasPlayerLost(s32);
+    u8 result;
+
+    if (!(((u8 *)*gCurrentMap)[MAP_BATTLE_RULES] & MAP_RULE_DEFEAT_BY_HQ)) return 1;
+    if (IsPlayerActive(player) == 0) return 0;
+    if (HasPlayerLost(player) == 0) result = 1;
+    else result = 0;
+    return result;
 }
 
 u8 IsPlayerStillFighting(s32 a){
@@ -604,11 +614,14 @@ if(IsPlayerRouted(a)==0)result=1;else result=0;
 return result;
 }
 
-u8 IsHumanPlayerStillFighting(s32 a){
+/* Whether a human player `player` is still fighting: a non-human player always
+ * is, and a human one is unless the battle rules make the unit-loss defeat apply
+ * to humans (bit 0x10 of MAP_BATTLE_RULES) and their army has been routed. */
+u8 IsHumanPlayerStillFighting(s32 player){
 extern s32 *gCurrentMap; s32 IsPlayerHuman(s32); u8 result;
-if(IsPlayerHuman(a)==0)return 1;
-if(!(((u8 *)*gCurrentMap)[0x5155]&16))return 1;
-if(IsPlayerRouted(a)==0)result=1;else result=0;
+if(IsPlayerHuman(player)==0)return 1;
+if(!(((u8 *)*gCurrentMap)[MAP_BATTLE_RULES]&16))return 1;
+if(IsPlayerRouted(player)==0)result=1;else result=0;
 return result;
 }
 

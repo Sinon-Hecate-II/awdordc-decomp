@@ -2,6 +2,19 @@
 #include "common.h"
 #include "ds3dsprite.h"
 typedef struct { s16 value; s8 mode; u8 low:4; u8 high:4; } SpriteAttribute0209;
+
+/* The fields of a text object (TextState, main_0209ACC4.c) that this file touches. */
+typedef struct TextState0209 {
+    u8  filler_00[0x4a];
+    u8  cellX;      /* +0x4A current cell x offset in the line */
+    u8  cellY;      /* +0x4B current cell y offset in the line */
+    u16 linePixel;  /* +0x4C pixel offset of the current line */
+    u16 lineStart;  /* +0x4E pixel offset the line starts at */
+    void (*callback)(void); /* +0x50 redraw callback */
+    s8  delay;      /* +0x54 frames left before the next step */
+    s8  speed;      /* +0x55 frames per step */
+    u8  column;     /* +0x56 pixel offset inside the current cell (0..7) */
+} TextState0209;
 /* One map's progress record in gMapProgressRecords, indexed by mapId - 0xA1.
  * Each field name gives its bit offset, low end first:
  *   state (0-2)    "new" marker: 0 none, 1 newly unlocked, 2 seen,
@@ -225,22 +238,25 @@ void DrawTilemapSymbol(s32 x, s32 y, s32 tiles, s32 symbol, u16 attrs, u16 varia
     *(s16 *)((u8 *)x + 0x40) = (s16)((tile + 1) | attrs);
 }
 
-s32 func_0209c168(void *arg0, s32 arg1) {
+/* Advances a text object's current glyph column (0..7) by `delta`; each full cell
+ * moves the line one cell on (two pixels) and the drawing cursor with it. Returns
+ * nonzero while the column is part-way through a cell. */
+s32 AdvanceTextColumn(TextState0209 *text, s32 delta) {
     s32 sum;
-    u32 mod;
+    u32 column;
 
-    sum = M2C_FIELD(arg0, u8 *, 0x56) + arg1;
-    mod = sum & 0xFF;
-    M2C_FIELD(arg0, u8 *, 0x56) = (u8)sum;
-    if (mod >= 8) {
+    sum = text->column + delta;
+    column = sum & 0xFF;
+    text->column = (u8)sum;
+    if (column >= 8) {
         do {
-            M2C_FIELD(arg0, u8 *, 0x56) = (u8)(M2C_FIELD(arg0, u8 *, 0x56) - 8);
-            M2C_FIELD(arg0, u16 *, 0x4C) = (u16)(M2C_FIELD(arg0, u16 *, 0x4C) + 2);
-            M2C_FIELD(arg0, u8 *, 0x4A) = (u8)(M2C_FIELD(arg0, u8 *, 0x4A) + 1);
-            mod = M2C_FIELD(arg0, u8 *, 0x56);
-        } while (mod >= 8);
+            text->column = (u8)(text->column - 8);
+            text->linePixel = (u16)(text->linePixel + 2);
+            text->cellX = (u8)(text->cellX + 1);
+            column = text->column;
+        } while (column >= 8);
     }
-    if (mod != 0) {
+    if (column != 0) {
         return 1;
     }
     return 0;

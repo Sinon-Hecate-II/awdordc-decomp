@@ -1,24 +1,27 @@
 /* 9 functions from 0x02226214 to 0x022262EC (ov009), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 
-void func_ov009_02226214(M2C_UNK arg0) {
+/* During an active link game, re-announce the local player when its stored slot
+ * no longer matches the local player record (both are 0x60-byte announce
+ * records).  `owner` is the sprite object the announce hangs off. */
+void RefreshLinkPlayerAnnounce(M2C_UNK owner) {
     s32 ByteCompareN(s32, s32, M2C_UNK);
-    s32 func_ov009_02224064();
-    s32 func_ov009_022240ac();
+    s32 GetLinkLocalPlayerInfo();
+    s32 GetLinkPlayerSlot(s32);
     s32 GetLinkPhase();
     M2C_UNK GetLinkLocalPlayerId();
-    M2C_UNK func_ov009_022257ac(M2C_UNK);
-    s32 temp_r4;
+    M2C_UNK SpawnLinkPlayerAnnounce(M2C_UNK);
+    s32 localRecord;
 
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return;
     }
-    temp_r4 = func_ov009_02224064();
-    GetLinkLocalPlayerId();
-    if (ByteCompareN(temp_r4, func_ov009_022240ac(), 0x60) == 0) {
+    localRecord = GetLinkLocalPlayerInfo();
+    if (ByteCompareN(localRecord, GetLinkPlayerSlot(GetLinkLocalPlayerId()), LINK_PLAYER_ANNOUNCE_SIZE) == 0) {
         return;
     }
-    func_ov009_022257ac(arg0);
+    SpawnLinkPlayerAnnounce(owner);
 }
 
 void func_ov009_02226268(M2C_UNK arg0) {

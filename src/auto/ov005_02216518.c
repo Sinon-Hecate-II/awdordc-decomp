@@ -18,7 +18,7 @@ extern M2C_UNK data_ov005_022204e0;
 void func_ov005_02214b98(void); void func_ov005_02214cdc(void);
 M2C_UNK FadeOutMusic(s32);void RecordsMenu_SelectNextEnabled(s16);void RecordsMenu_SelectNextInList(s32);
 void RecordsMenu_DrawList(s32);void Show3DSprite(void *);void Hide3DSprite(void *);
-s32 func_020b2714(void);void func_020b2738(void);void func_020b26f8(void);
+s32 IsSpriteDrawPaused(void);void ResumeSpriteDraw(void);void PauseSpriteDraw(void);
 void LoadSpriteResource(s32,s32,u8,s32);s32 FindObjectByClass(void *);
 void MenuSpriteUpdate(void *);
 s32 mode; void *saved;
@@ -38,8 +38,8 @@ M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=beta;
 {void *state=M2C_FIELD(&gRecordsMenuState,void **,8);gCur3DSpriteEngine=saved;if(M2C_FIELD(state,s16 *,0x88)==8)func_ov005_02214cdc();}}
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)>=0)M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)--;if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0x25b)FadeOutMusic(600);if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0){s32 v=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)){case 0:break;case 1:RecordsMenu_SelectNextEnabled((s16)v);break;case 2:RecordsMenu_SelectNextInList(v);break;}}}
 {void *p=M2C_FIELD(&gRecordsMenuState,void **,8);if(M2C_FIELD(p,s16 *,0x9e)==0){s32 goal=M2C_FIELD(p,s16 *,0x98);s32 current=M2C_FIELD(p,s16 *,0x96);if(current!=goal*2){s32 d=goal*2-current;s16 step;if(d<0)d=-d;step=d>>1;if(step==0)step=1;M2C_FIELD(p,s16 *,0x96)=current>goal*2?M2C_FIELD(p,s16 *,0x96)-step:M2C_FIELD(p,s16 *,0x96)+step;M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9e)=1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));}}else M2C_FIELD(p,s16 *,0x9e)=0;}
-if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1){u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a|0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b|0x40;Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(func_020b2714())func_020b2738();}
-else {u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a&~0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b&~0x40;Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(!func_020b2714())func_020b26f8();}
+if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1){u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a|0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b|0x40;Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(IsSpriteDrawPaused())ResumeSpriteDraw();}
+else {u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a&~0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b&~0x40;Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(!IsSpriteDrawPaused())PauseSpriteDraw();}
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8c)){mode=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)==-1?2:48;saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;LoadSpriteResource(0,0,(u8)mode,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x3700);M2C_FIELD(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x180),s16 *,0x3e)=0x1b8;gCur3DSpriteEngine=saved;}
 M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8c)=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)==0){void *p=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174);u32 frame=((u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28)+2;{M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0x3fc0000)|((u32)((u16)frame<<24)>>6);M2C_FIELD(p,u8 *,0x5a)=0;}}
@@ -84,26 +84,31 @@ marks[index]=!marks[index];RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMen
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-void func_ov005_0221720c(void) {
-s32 func_020b2714(void);
-void func_020b2738(void);
-void func_020842d4(void);
-void HideAllSpriteSlots(void);
-void HeapFreeBlock(void *);
-void FreeUiGraphicsBank(s32);
-void func_02082014(void);
-void StartMusicTrack(s32);
-extern M2C_UNK gRecordsMenuState;
-if (func_020b2714()) func_020b2738();
-func_020842d4();
-HideAllSpriteSlots();
-if (M2C_FIELD(&gRecordsMenuState, void **, 8)) {
-HeapFreeBlock(M2C_FIELD(&gRecordsMenuState, void **, 8));
-M2C_FIELD(&gRecordsMenuState, void **, 8) = 0;
-}
-FreeUiGraphicsBank(7);
-func_02082014();
-StartMusicTrack(4);
+/* Tear down the records screen: release the sprite draw pause it may hold,
+ * delete the sub-screen sprite objects, hide the touch slots, free the menu
+ * state and its graphics bank, clear the pending screen-off request and
+ * restart the menu music. */
+void RecordsMenu_Close(void) {
+    s32 IsSpriteDrawPaused(void);
+    void ResumeSpriteDraw(void);
+    void func_020842d4(void);
+    void HideAllSpriteSlots(void);
+    void HeapFreeBlock(void *);
+    void FreeUiGraphicsBank(s32);
+    void ClearScreenOffRequest(void);
+    void StartMusicTrack(s32);
+    extern M2C_UNK gRecordsMenuState;
+
+    if (IsSpriteDrawPaused()) ResumeSpriteDraw();
+    func_020842d4();
+    HideAllSpriteSlots();
+    if (M2C_FIELD(&gRecordsMenuState, void **, RECORDS_MENU_SCREEN)) {
+        HeapFreeBlock(M2C_FIELD(&gRecordsMenuState, void **, RECORDS_MENU_SCREEN));
+        M2C_FIELD(&gRecordsMenuState, void **, RECORDS_MENU_SCREEN) = 0;
+    }
+    FreeUiGraphicsBank(7);
+    ClearScreenOffRequest();
+    StartMusicTrack(4);
 }
 
 void func_ov005_02217264(M2C_UNK arg0) {

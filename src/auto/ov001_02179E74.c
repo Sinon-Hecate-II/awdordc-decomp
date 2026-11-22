@@ -30,7 +30,7 @@ void MapSelectList_Init(void) {
     void func_ov001_0217b130(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void MapSelectListUpdateBackgroundScroll(void);
-    void func_ov001_0217a2f0(void);
+    void MapSelectList_FadeIn(void);
     s32 nameEntryMode;
 
     M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ) = Ov001_Alloc((M2C_UNK)0x5c, (M2C_UNK)4);
@@ -52,7 +52,7 @@ void MapSelectList_Init(void) {
         (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)MapSelectListUpdateBackgroundScroll, (M2C_UNK)0, (M2C_UNK)0x6e);
     MapSelectList_Redraw();
     func_ov001_0217b130();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a2f0);
+    Ov001_SetStepCallback((M2C_UNK *)&MapSelectList_FadeIn);
 }
 
 /* Set up the map-select screen's graphics: load the list-background tilemap and
@@ -154,19 +154,21 @@ tile = (u16 *)((u8 *)((void **)M2C_FIELD(&gMapSelectState, void **, MAPSELECT_ST
 }
 }
 #pragma opt_common_subs reset
-void func_ov001_0217a2f0(void) {
+/* Fade the map-select list screen in from white and show its planes: the sub
+ * screen blends BG0, the main screen BG0/BG2/BG3 and the sprites. */
+void MapSelectList_FadeIn(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_0217a344(void);
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x1D, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x1D);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a344);
+    void MapSelectList_FadeInDone(void);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_BG3 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, OV001_BLEND_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_BG3 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback((M2C_UNK *)&MapSelectList_FadeInDone);
 }
 
-void func_ov001_0217a344(void) {
+void MapSelectList_FadeInDone(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_0217a380;
@@ -360,10 +362,10 @@ done:
 void func_ov001_0217a98c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK MapSelectList_FadeOut;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&MapSelectList_FadeOut);
 }
 

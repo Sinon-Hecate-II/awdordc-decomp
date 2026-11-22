@@ -69,15 +69,18 @@ void MarkUnitAttackRing(s32 x, s32 y, u8 *unit) {
     FillMapGridDiamond((s16)x, (s16)y, (s16)(*(&gUnitMinAttackRange + (((u32)(*unit << 26) >> 26) * 0x70)) - 1), -1);
 }
 
-void FloodFillUnitRangeForPlayer(s16 arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4, s32 arg5) {
+/* Build the move range of `player`'s units: point the map's active player at it,
+ * run FloodFillUnitRange with the unit's position, kind, range and mode, then
+ * restore the active player to the one the map view belongs to. */
+void FloodFillUnitRangeForPlayer(s16 player, M2C_UNK x, M2C_UNK y, M2C_UNK kind, s32 value, s32 moveRange) {
     M2C_UNK FloodFillUnitRange(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern void **gCurrentMap;
-    void *temp_r0;
+    void *map;
 
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B6) = arg0;
-    FloodFillUnitRange(arg1, arg2, arg3, arg4, arg5);
-    temp_r0 = *gCurrentMap;
-    M2C_FIELD(temp_r0, u16 *, 0x52B6) = (u16) M2C_FIELD(temp_r0, u16 *, 0x52A4);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_ACTIVE_PLAYER) = player;
+    FloodFillUnitRange(x, y, kind, value, moveRange);
+    map = *gCurrentMap;
+    M2C_FIELD(map, u16 *, MAP_ACTIVE_PLAYER) = (u16) M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER);
 }
 
 void func_01ffc2e8(void *arg0) {

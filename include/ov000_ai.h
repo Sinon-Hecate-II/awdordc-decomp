@@ -60,6 +60,7 @@
 #define AI_COMMAND_STATE_ACTION_FLAGS 0x08 /* u16 action-planning flags */
 #define AI_ACTION_SKIP_REPLAN 0x20 /* suppress the fallback callback in action finalization */
 #define AI_ACTION_DESTINATION_CHOSEN 0x10 /* the acting unit's destination is chosen; finalization does not choose it again */
+#define AI_ACTION_PRODUCTION_IMPROVED 0x08 /* a production tile's score improved, so the move is re-finalized */
 #define AI_ACTION_CO_POWER 0x100 /* the action being planned is the AI's CO-power use */
 #define AI_COMMAND_STATE_MODE       0x0A /* u16 bitfield word (3-bit fields at bits 3..5, 6..8, 9..11) */
 /* Total property count of the players not on the current army's team, summed

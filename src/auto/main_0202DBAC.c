@@ -14,8 +14,8 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     M2C_UNK Sound_SetPlayerCallbacks(void *, s32);
     void Sound_ReleasePlayer(void *);
     u64 U64Divide(u64, u64);
-    void func_0202eec0(void *);
-    void func_0202eed8(void *, s32, s32);
+    void Sound_ResetFade(void *);
+    void Sound_StartFade(void *, s32, s32);
     s32 Sound_AcquireChannel(void *, s32, s32);
     u32 U32DivideRem(u32, u32);
     s32 Sound_StartVoice(void *, s32, s32, s32, s32, s32, s32, s32);
@@ -62,8 +62,8 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     M2C_FIELD(player, s32 *, 0x15C) = 0;
     M2C_FIELD(player, s32 *, 0x154) = *(u8 *)((u8 *)pb + 4);
     M2C_FIELD(player, s32 *, 0x158) = 0x7F;
-    func_0202eec0((u8 *)player + 0xE8);
-    func_0202eed8((u8 *)player + 0xE8, 0x7F00, 1);
+    Sound_ResetFade((u8 *)player + 0xE8);
+    Sound_StartFade((u8 *)player + 0xE8, 0x7F00, 1);
 
     playType = M2C_FIELD(player, u8 *, 0xC0);
     switch (playType) { case 0: playMode = 0; break; case 1: case 2: playMode = 1; break; }
@@ -102,22 +102,24 @@ s32 Sound_StartPlayer(void **handle, void *sample, s32 slotIndex, s32 priority, 
     return 1;
 }
 
-void func_0202de1c(void *arg0, s32 arg1) {
+/* Fades a sound player out to silence over `length` frames and marks it stopping,
+ * dropping its priority so a new sound may replace it; stops it at once when it is
+ * not playing or no fade length was given. */
+void Sound_FadeOutPlayer(void *player, s32 length) {
  void Sound_StopPlayer(void *);
- void func_0202eed8(void *, s32, s32);
- s32 flags = M2C_FIELD(arg0, s32 *, 0x110);
- s32 saved = arg1;
- if (((flags << 30) >> 31) == 0) {
-  Sound_StopPlayer(arg0);
+ void Sound_StartFade(void *, s32, s32);
+ s32 flags = M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS);
+ if (SOUND_HANDLE_FLAG_IS_SET(flags, SOUND_HANDLE_BIT_PLAYING) == 0) {
+  Sound_StopPlayer(player);
   return;
  }
- if (arg1 == 0) {
-  Sound_StopPlayer(arg0);
+ if (length == 0) {
+  Sound_StopPlayer(player);
   return;
  }
- func_0202eed8((u8 *)arg0 + 0xe8, 0, arg1);
- M2C_FIELD(arg0, s32 *, 0x110) |= 8;
- M2C_FIELD(arg0, s32 *, 0x150) = 0;
+ Sound_StartFade((u8 *)player + SOUND_HANDLE_FADE, 0, length);
+ M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) |= 1 << SOUND_HANDLE_BIT_STOPPING;
+ M2C_FIELD(player, s32 *, SOUND_HANDLE_PRIORITY) = 0;
 }
 
 /* Stop a sound player: under the sound task's locks, stop the voices if it is

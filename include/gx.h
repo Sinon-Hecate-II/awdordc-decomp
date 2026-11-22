@@ -26,6 +26,8 @@
 #define BGCNT_SCR_BASE_MASK 0x1F00 /* bits 8..12: screen base block of the background's map */
 #define BGCNT_SCR_BASE_SHIFT 8
 #define BGCNT_BITMAP_DIRECT 0x0080 /* a bitmap background maps VRAM linearly instead of in screen blocks */
+#define BGCNT_CHAR_BASE_MASK 0x003C /* bits 2..5: character base block, in 16 KiB units */
+#define BGCNT_BITMAP_CHAR_BASE_MASK 0x003C /* BG3 bitmap base block, selected in bitmap display modes */
 
 /* Sizes of a background's screen base block and of a direct bitmap block. */
 #define BG_SCR_BLOCK_SHIFT    11 /* screen base block: 2 KiB */
@@ -230,12 +232,16 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_SUB_OBJ_EXTPLTT_VRAM_BASE 0x068A0000 /* sub-engine OBJ extended palettes */
 #define GX_MAIN_OBJ_OAM_BASE    0x07000000 /* main-engine 3D sprite OAM */
 #define GX_SUB_OBJ_OAM_BASE     0x07000400 /* sub-engine 3D sprite OAM */
+#define GX_MAIN_OBJ_VRAM_BASE   0x06400000 /* main-engine 3D sprite OBJ character VRAM */
+#define GX_SUB_OBJ_VRAM_BASE    0x06600000 /* sub-engine 3D sprite OBJ character VRAM */
 #define GX_OAM_SIZE             0x400
 #define GX_OAM_DISABLED         0x200 /* attr0 value that leaves an OAM entry disabled */
 #define GX_MAIN_DISPCNT         0x04000000 /* main-engine display control */
 #define GX_SUB_DISPCNT          0x04001000 /* sub-engine display control */
 #define GX_MAIN_PALETTE_BASE    0x05000000 /* main-engine palette RAM */
+#define GX_MAIN_OBJ_PALETTE_BASE 0x05000200 /* main-engine OBJ palette RAM */
 #define GX_SUB_PALETTE_BASE     0x05000400 /* sub-engine palette RAM */
+#define GX_SUB_OBJ_PALETTE_BASE  0x05000600 /* sub-engine OBJ palette RAM */
 #define GX_PALETTE_SIZE         0x400
 
 #define GX_BGEXTPLTT_BASE_E     0x06880000 /* bank E grant */
@@ -289,6 +295,11 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define DISP3DCNT_OVERFLOW   0x2000
 #define DISP3DCNT_ERROR_MASK 0x3000
 #define DISP3DCNT_ALPHA_BLEND 0x0010
+/* DISP3DCNT fog fields: bit 7 switches fog on, bits 6-7 the blend mode and bits
+ * 8-13 the density; GX_SetFog packs all three. */
+#define DISP3DCNT_FOG_ENABLE 0x0080
+#define DISP3DCNT_FOG_MASK   0x3F40
+#define DISP3DCNT_FOG_OFF_MASK 0xCF7F /* bits GX_SetFog clears when fog is switched off */
 #define GX_CLEAR_DEPTH_MAX   0x7FFF
 
 /* A texture's side length in pixels, and the code the GX TEXIMAGE_PARAM width

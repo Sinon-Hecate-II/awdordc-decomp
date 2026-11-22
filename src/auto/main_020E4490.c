@@ -31,7 +31,7 @@ void func_020e4490(void) {
     M2C_UNK Reset3DSpriteOam();
     M2C_UNK func_0208232c();
     M2C_UNK Reset3DSpriteListsOnBothEngines();
-    M2C_UNK func_020e3448();
+    M2C_UNK InitGameHeap();
     M2C_UNK func_02080bd4();
     M2C_UNK func_020883bc();
     M2C_UNK func_02086574();
@@ -80,7 +80,7 @@ void func_020e4490(void) {
     } while (var_r8 < 2);
     gCur3DSpriteEngine = temp_r7;
     Reset3DSpriteListsOnBothEngines();
-    func_020e3448();
+    InitGameHeap();
     func_02080bd4();
     func_020883bc();
     func_02086574();
@@ -147,12 +147,12 @@ func_02004e60(1,1);
  * (a division may be in progress), ticks the VBlank counter, marks the sprite
  * update busy and walks the 3D sprite layers: layer 1 every VBlank, and layers
  * 0/2 plus the bank, VRAM and OAM uploads only when the main loop has already
- * taken the previous frame; otherwise it just refreshes the OAM entries.  It
- * then signals the VBlank event, restores the math registers and waits for the
- * divider to finish. */
+ * taken the previous frame; otherwise it only blanks the OAM entries the last
+ * upload added (ClearLast3DSpriteOamEntries).  It then signals the VBlank
+ * event, restores the math registers and waits for the divider to finish. */
 void VBlankHandler(void) {
     void Upload3DSpriteOam(void);
-    void func_01ff87e4(void);
+    void ClearLast3DSpriteOamEntries(void);
     M2C_UNK Apply3DSpriteBanks();
     void Update3DSpriteVram(void);
     void GetSpriteLayerHead(int);
@@ -183,7 +183,7 @@ void VBlankHandler(void) {
         Upload3DSpriteOam();
         (*(volatile unsigned char *)&gFramePending) = 1;
     } else {
-        func_01ff87e4();
+        ClearLast3DSpriteOamEntries();
     }
     (*(volatile unsigned char *)&gSpriteUpdateBusy) = 0;
     M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) = (M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) | OS_EVENT_VBLANK);
@@ -248,27 +248,27 @@ void ResetGameState(void) {
 }
 
 void func_020e47f8(void) {
-    void func_020e4818(s32);
+    void ClearSaveRecordHeader(s32);
     s32 var_r4;
 
     var_r4 = 0;
     do {
-        func_020e4818(var_r4);
+        ClearSaveRecordHeader(var_r4);
         var_r4 += 1;
     } while (var_r4 < 3);
 }
 
-void func_020e4818(s32 a){
+/* Clear the 8-byte header (the save-slot summary) of save record `record`. */
+void ClearSaveRecordHeader(s32 record) {
 extern u8 data_0215dba4[];
-u32 *p=(u32 *)(data_0215dba4+a*0x118);
-p[0]&=~15;
-p[0]&=~240;
-p[1]&=0xffff0000;
-p[1]=(u16)p[1];
-p[0]&=~0xff00;
-p[0]&=~0xff0000;
-p[0]&=~0xff000000;
-
+u32 *header=(u32 *)(data_0215dba4+record*0x118);
+header[0]&=~15;
+header[0]&=~240;
+header[1]&=0xffff0000;
+header[1]=(u16)header[1];
+header[0]&=~0xff00;
+header[0]&=~0xff0000;
+header[0]&=~0xff000000;
 }
 
 #pragma peephole off

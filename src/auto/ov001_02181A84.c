@@ -20,7 +20,7 @@ void func_ov001_02181a84(void) {
     extern M2C_UNK data_ov001_0218faf6;
     extern M2C_UNK data_ov001_0218faf8;
     extern M2C_UNK data_ov001_0218fafc;
-    extern void func_ov001_02181c94(void);
+    extern void Ov001_FadeInIconMenu(void);
 
     M2C_UNK r4;
     M2C_UNK r5;
@@ -71,7 +71,7 @@ void func_ov001_02181a84(void) {
         *(u16 *)(r5 + r3p)
     );
 
-    Ov001_SetStepCallback((M2C_UNK)&func_ov001_02181c94);
+    Ov001_SetStepCallback((M2C_UNK)&Ov001_FadeInIconMenu);
 }
 
 void func_ov001_02181ba8(void) {
@@ -98,12 +98,14 @@ void func_ov001_02181ba8(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
 }
 
-void func_ov001_02181c94(void) {
+/* Fades in the ov001 icon menu: start the sub and main fades from white with the
+ * menu's planes, show them, then run the step that opens the menu. */
+void Ov001_FadeInIconMenu(void) {
     extern M2C_UNK func_ov001_02181ce8;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&func_ov001_02181ce8);
 }
 
@@ -134,14 +136,14 @@ void func_ov001_02181d24(void) {
 
 extern void func_ov001_02181d60(void);
 extern void func_ov001_02181ee4(void);
-extern void func_ov001_02181ee8(void);
+extern void Ov001_ApplyIconMenuChoice(void);
 void func_ov001_02181d4c(void) {
     void func_ov001_02181d60(void);
     void func_ov001_02181ee4(void);
-    void func_ov001_02181ee8(void);
+    void Ov001_ApplyIconMenuChoice(void);
     func_ov001_02181d60();
     func_ov001_02181ee4();
-    func_ov001_02181ee8();
+    Ov001_ApplyIconMenuChoice();
 }
 
 void func_ov001_02181d60(void) {
@@ -202,31 +204,34 @@ void func_ov001_02181ee4(void) {
 
 }
 
-void func_ov001_02181ee8(void) {
+/* Applies the icon row's chosen action: 0 (back) plays the cancel sound, 1
+ * (confirm) plays the accept sound, loads the chosen icon tile and marks the
+ * choice confirmed; either way it moves on to the step that closes the menu. */
+void Ov001_ApplyIconMenuChoice(void) {
     s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     void Ov001_LoadSelectedIconTile(void);
-    void func_ov001_02181f3c(void);
+    void Ov001_BeginIconMenuClose(void);
     extern M2C_UNK gOv001IconMenuState;
     switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
         Ov001_LoadSelectedIconTile();
-        M2C_FIELD(&gOv001IconMenuState, u8 *, 2) = 1;
+        ((Ov001IconMenuState *)&gOv001IconMenuState)->confirmed = 1;
         break;
     default: return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02181f3c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_BeginIconMenuClose);
 }
 
-void func_ov001_02181f3c(void) {
+void Ov001_BeginIconMenuClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMenu;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutMenu);
 }
 
@@ -711,12 +716,15 @@ void Ov001_LoadSaveSlotMenuBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
+/* Fades in the ov001 save-slot menu: start the sub and main fades from white,
+ * enable the sub BG0 and main BG2/OBJ planes, then hand over to the step that
+ * shows the menu's message. */
 void Ov001_FadeInSaveSlotMenu(void) {
     extern M2C_UNK Ov001_ShowSaveSlotMenu;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&Ov001_ShowSaveSlotMenu);
 }
 

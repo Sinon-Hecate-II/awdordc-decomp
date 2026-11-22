@@ -807,6 +807,11 @@ typedef struct RecordsScreen {
     s16 list[1];         /* +0xE6: shuffled record indices */
 } RecordsScreen;
 
+/* The records screen's global state wrapper (gRecordsMenuState): its state word
+ * at +0 and the heap-allocated RecordsScreen the menu works on at +8. */
+#define RECORDS_MENU_FLAGS  0x00 /* u16 menu state bits, bit 0 = the screen is open */
+#define RECORDS_MENU_SCREEN 0x08 /* RecordsScreen * freed when the screen closes */
+
 /* One entry of the records screen's music list (gRecordTracks, RECORD_TRACK_SIZE
  * bytes per entry): the track to play, the colour of its list row and how long
  * it lasts.  A zeroed entry terminates the table. */
@@ -1587,12 +1592,13 @@ typedef struct PeerAddress {
 #define MATCH_SESSION_PLAYER_SIZE  12
 
 /* Fields of one 12-byte player record (MATCH_SESSION_PLAYERS, and the record at
- * the head of a saved battle's slot): the first word packs the record kind in its
- * low two bits and a 21-bit flag field from bit 11 up; the two words after it are
- * the player's profile id, or for a PLAYER_RECORD_CODE record a 64-bit player
- * code whose low word is that id and whose high word is a 7-bit checksum of the
- * id and the local user id. */
-#define PLAYER_RECORD_TYPE       0x00 /* u32 bits 0..1: a PLAYER_RECORD_KIND_* value */
+ * the head of a saved battle's slot): the first word holds the record kind in
+ * bits 11..12 (GetPlayerRecordKind reads word0 >> 11 & 3) together with the
+ * high 11 bits of a player code at bits 0..10; the two words after it are the
+ * player's profile id, or for a PLAYER_RECORD_CODE record a 64-bit player code
+ * whose low word is that id and whose high word is a 7-bit checksum of the id
+ * and the local user id. */
+#define PLAYER_RECORD_TYPE       0x00 /* u32 bits 11..12: a PLAYER_RECORD_KIND_* value, bits 0..10: player-code high bits */
 #define PLAYER_RECORD_CODE       0x04 /* u64 player code of a PLAYER_RECORD_KIND_CODE record */
 #define PLAYER_RECORD_ID         0x04 /* s32 GameSpy profile id of a PLAYER_RECORD_KIND_PROFILE record */
 
@@ -1937,6 +1943,7 @@ typedef struct NetError {
 #define OV010_FLAG_MATCHMAKING 2 /* matchmaking has started (set by its start callback) */
 #define OV010_FLAG_RUNNING 3 /* the online session is running (cleared when it stops or its start fails) */
 #define OV010_FLAG_FAILED  4 /* the session start failed or the session stopped */
+#define OV010_FLAG_REGISTERING 5 /* the NAS player registration request is in flight */
 #define OV010_FLAG_ERROR   6 /* a network error has been handed to the UI, so it is not reported again */
 
 /* The online lobby's local-player name label: the player's name and the screen
@@ -2173,7 +2180,12 @@ typedef struct Ov001IconMenuState {
 #define SAVE_SLOT_CRC          0xFE /* offset within one slot image of its trailing 2-byte CRC16 */
 #define SAVE_SLOT_CRC_SIZE     0xFE /* bytes of a slot image covered by that CRC16 (everything before it) */
 #define SAVE_SLOT_STATUS_ERASED 0xFF /* SAVE_SLOT_STATUS value of an erased slot */
-#define SAVE_CRC_TABLE         0x4F8 /* u16[256]: CRC16 lookup table (built by func_02076710) */
+#define SAVE_CRC_TABLE         0x4F8 /* u16[256]: CRC16 lookup table (built by BuildCrc16Table) */
+
+/* Reflected (bit-reversed) CRC polynomials BuildCrc16Table/BuildCrc32Table are
+ * called with. */
+#define CRC16_POLYNOMIAL 0xA001
+#define CRC32_POLYNOMIAL 0xEDB88320
 
  /* The link-match setup sent before a saved battle (the 0xE8-byte state that
   * Ov001_CopyLinkMatchSetup copies out of the receive buffer): the map name, the
@@ -2209,7 +2221,12 @@ typedef struct Ov001IconMenuState {
  * the profile's own fields. */
 #define PROFILE_ID_BLOCK      0x04 /* 0x40-byte profile-id block (InitProfileIdBlock) */
 #define PROFILE_ID_BLOCK_SIZE 0x40
+#define PROFILE_ID_BLOCK_KEY     0x10 /* 12-byte NAS player key record (player code + its check word) */
+#define PROFILE_ID_BLOCK_ID      0x1C /* s32 GameSpy profile id the key was resolved to */
+#define PROFILE_ID_BLOCK_KEY_SET 0x20 /* u32 bit 0: a key has been stored in the block */
 #define PROFILE_ID_BLOCK_GAME_ID 0x24 /* u32 game id (0x5957324A, "YW2J"): salt of player codes and key type in their text form */
+#define PROFILE_GAME_ID_CODE 0x5957324A /* u32 game id ("YW2J") stored in the profile-id block */
+#define PROFILE_ID_BLOCK_CRC     0x3C /* u32 CRC32 of the block's first 0x3C bytes */
 #define SAVE_SLOT_COUNT         60         /* slot summaries/records in a block */
 #define SAVE_SLOT_SUMMARY_SIZE  12         /* bytes per slot summary */
 #define SAVE_SLOT_RECORD_SIZE   0x28       /* bytes per slot record */
@@ -2555,9 +2572,14 @@ enum {
     OV001_FADE_MAIN = 0,
     OV001_FADE_SUB = 1
 };
-#define OV001_FADE_TO_WHITE 3 /* ramp BLDY from 0 to 16 in brighten mode */
+/* The four gOv001FadeTable modes: where the BLDY ramp starts and ends. */
+#define OV001_FADE_FROM_BLACK 0 /* -16 to 0: fade in from black */
+#define OV001_FADE_TO_BLACK   1 /* 0 to -16: fade out through the backdrop */
+#define OV001_FADE_FROM_WHITE 2 /* 16 to 0: fade in from white */
+#define OV001_FADE_TO_WHITE   3 /* 0 to 16: fade out to white */
 #define OV001_BLEND_BG0 0x01
 #define OV001_BLEND_BG2 0x04
+#define OV001_BLEND_BG3 0x08
 #define OV001_BLEND_OBJ 0x10
 
 /* A fade mode's flags (gOv001FadeTable + OV001_FADE_FLAGS + mode). */
@@ -2764,6 +2786,8 @@ enum {
 #define SCENE_PANEL_FLIP       0x58 /* u8 nonzero: swap the two face children */
 #define SCENE_PANEL_FACE_STATE 0x59 /* u8 face display state (0 none, 5..10 the pose layouts) */
 #define SCENE_PANEL_LAYOUT     0x5a /* u8 face layout index */
+#define SCENE_PANEL_LAYOUT_TALK 1 /* SCENE_PANEL_LAYOUT: plain talk window, drawn with window_talk.cg */
+#define SCENE_PANEL_LAYOUT_BODY 2 /* SCENE_PANEL_LAYOUT: body window with the two face sprites, drawn with window_body.cg */
 #define SCENE_PANEL_MOTION     0x5b /* u8 motion variant: 1 offsets x, 2 offsets y */
 #define SCENE_PANEL_MOTION_X   0x5c /* s16 x the motion offset applies to */
 #define SCENE_PANEL_MOTION_Y   0x5e /* s16 y the motion offset applies to */
@@ -2845,6 +2869,9 @@ enum {
 #define MOVE_DIR_STOP   4
 #define MOVE_DIR_ATTACK 10
 #define MOVE_DIR_NONE   (-1)
+/* The compact command path (gCommandPath) packs two 4-bit MOVE_DIR codes per
+ * byte; a 4-bit 0xF nibble is a missing step, unpacked as MOVE_DIR_NONE. */
+#define COMMAND_PATH_NONE 0xF
 
 /* Flag byte at +0x20 of the friend-code entry's sub-panels. */
 typedef struct FriendCodeFlags {
@@ -3753,6 +3780,14 @@ typedef struct FifoMessage {
 #define ARM7_XFER_STATE_USER1    0x14 /* u32 first user word of the descriptor */
 #define ARM7_XFER_STATE_USER2    0x18 /* u32 second user word of the descriptor */
 #define ARM7_XFER_STATE_PROGRESS 0x1C /* u16 * where the ARM7's progress word is stored */
+
+/* The ARM9's side of the ARM7 boot handshake (gArm7BootSync, main_02006F14).
+ * InitArm7BootSync installs Arm7BootAckHandler on FIFO channel 12 and the
+ * ARM7's boot-ready reply (payload 0x10) sets ARM7_BOOT_SYNC_READY; the
+ * console-reboot path sends that request and the card-image loader waits for
+ * the ready flag before it loads. */
+#define ARM7_BOOT_SYNC_READY       0x00 /* s16 set to 1 by the ARM7's channel-12 boot-ready message */
+#define ARM7_BOOT_SYNC_INITIALISED 0x02 /* u16 nonzero once the channel-12 handler was installed */
 
 /* The ARM7 command service's state object (gArm7CommandState, at 0x0212FCCC).
  * The service talks to the ARM7 power/sound driver through the FIFO and

@@ -38,10 +38,10 @@ void func_ov001_02180b90(void) {
 void func_ov001_02180bbc(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_02180bdc;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_02180bdc);
 }
 
@@ -136,7 +136,7 @@ void Ov001_OpenAccessPointMenu(void) {
     void Ov001_LoadAccessPointMenuGraphics(void);
     void Ov001_InitSaveSlotSprites(void);
     void Ov001_UpdateMenuCursor(void);
-    void func_ov001_02180fbc(void);
+    void Ov001_FadeInAccessPointMenu(void);
     void Ov001_LoadObjLayoutBlock(s32);
     void Ov001_ShowMessagePanel(s32, s32, s32);
     void Ov001_OpenMenuForMode(s32);
@@ -152,7 +152,7 @@ void Ov001_OpenAccessPointMenu(void) {
     Ov001_OpenMenuForMode(0);
     Ov001_InitSaveSlotSprites();
     Ov001_UpdateMenuCursor();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180fbc);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInAccessPointMenu);
 }
 
 /* Load the access-point menu palettes, tiles and tilemap, and set its background priorities. */
@@ -220,12 +220,15 @@ void Ov001_InitSaveSlotSprites(void) {
     } while (slot < 3);
 }
 
-void func_ov001_02180fbc(void) {
+/* Fades in the ov001 access-point (region) menu: start the sub and main fades
+ * from white with the menu's planes, show them, then run the step that opens
+ * the menu once the fades finish. */
+void Ov001_FadeInAccessPointMenu(void) {
     extern M2C_UNK func_ov001_02181010;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&func_ov001_02181010);
 }
 
@@ -359,7 +362,7 @@ void func_ov001_021812c0(void) {
         func_ov001_0218560c();
     }
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutRegionMenu);
 }
 

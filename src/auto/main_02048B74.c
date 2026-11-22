@@ -69,7 +69,7 @@ s32 Vector_SearchSorted(M2C_UNK item, s32 base, s32 count, s32 elemSize, s32 (*c
     return low * elemSize + base;
 }
 
-void func_02048c5c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
+void TableNewDefault(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
     M2C_UNK TableNew2(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     TableNew2(arg0, arg1, 4, arg2, arg3, arg4);
 }
@@ -228,7 +228,19 @@ void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;i
 
 void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
 
-unsigned long long GetTickCountMs(void){int IsSystemTickInitialized(void);unsigned long long GetSystemTick(void);extern char sAssertTickAvailable[],sNonportFileName[],data_020fcde0[];if(IsSystemTickInitialized()!=1)AssertFailed(sAssertTickAvailable,sNonportFileName,data_020fcde0,0x109);return (GetSystemTick()<<6)/0x82ea;}
+/* Convert the hardware system tick count to milliseconds, asserting that the tick timer is initialized. */
+unsigned long long GetSystemTickMilliseconds(void) {
+    int IsSystemTickInitialized(void);
+    unsigned long long GetSystemTick(void);
+    extern char sAssertTickAvailable[];
+    extern char sNonportFileName[];
+    extern char data_020fcde0[];
+
+    if (IsSystemTickInitialized() != 1) {
+        AssertFailed(sAssertTickAvailable, sNonportFileName, data_020fcde0, 0x109);
+    }
+    return (GetSystemTick() << 6) / TICKS_TO_MS_DIVISOR;
+}
 
 void gpiSleep(void) {
     M2C_UNK SleepMilliseconds();

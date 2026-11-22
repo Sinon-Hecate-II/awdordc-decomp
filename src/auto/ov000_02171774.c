@@ -20,7 +20,7 @@ void func_ov000_02171774(void *p) {
  void *GetLocalizedFileName(void*);void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
  void SetFileDirectory(void*);void OpenNarcArchive(void*);void LoadNarcFileDecompressed(void*,void*);void LoadNarcFileToSpriteBuffer(void*,s32,s32);void CloseNarcArchive(void);
  s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void*,u16,s32);
- s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void func_02080a14(void*,s32,s32,void*);
+ s32 IsPlayerPresent(s32);s32 IsPlayerActive(s32);void CopyTileRect(void*,s32,s32,void*);
  void MI_CpuCopy32(void*,void*,s32);void CopyToObjPaletteShadow(void*,s32,s32);void DimPalette(void*);
  void LoadSpriteResource(s32,s32,s32,void*);void LoadDecompressedFileTo(void*,void*);void LoadFileToSpriteBuffer(void*,s32,s32);void CreateMenuUnitSprite(void*);
  void *old=gCur3DSpriteEngine;
@@ -39,7 +39,7 @@ void func_ov000_02171774(void *p) {
    a=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67cb);
    b=M2C_FIELD((u8*)*gCurrentMap+k,u8*,0x67c1);
    idx=i-1;t=idx<<3;
-   func_02080a14((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x80,8,6,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x680);
+   CopyTileRect((u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x80,8,6,(u8*)M2C_FIELD(gCur3DSpriteEngine,void* volatile *,0x28)+(t<<1)+0x680);
    dst=(u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x1c)+((idx*4+0x35c)<<5);
    MI_CpuCopy32(GetArmyStateTiles(a),dst,0x80);
    pal=(idx+0x1b)<<5;

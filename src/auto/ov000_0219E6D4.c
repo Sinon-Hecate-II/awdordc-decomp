@@ -186,7 +186,7 @@ s32 func_ov000_0219e9f4(void)
 {
     s32 SetRandomSeed(s32);
     s32 StepMapViewToTile(u8, u8);
-    void func_020844a0(u8 *, u8 *);
+    void UnpackCommandPath(u8 *, u8 *);
     void func_020d61f0(void);
     s32 IsPlayerLocallyControlled(s32);
     s32 IsLocalSessionHost(void);
@@ -289,7 +289,7 @@ s32 func_ov000_0219e9f4(void)
             if (visible)
                 scrolling = StepMapViewToTile(x, y);
         }
-        func_020844a0(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
+        UnpackCommandPath(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
         func_020d61f0();
         gAiCommandState[AI_COMMAND_STATE_STEP] = 2;
         return (u8)(scrolling == 0);
@@ -354,7 +354,7 @@ s32 RunAiCommandMoveStep(void) {
     void func_020d61f0(void);
     void *CreateUnitMoveForUnit(void *);
     void RefreshMapView(void);
-    void func_020844a0(u8 *, u8 *);
+    void UnpackCommandPath(u8 *, u8 *);
     s32 ResolvePathAttack(s32, s32, s32, void *, s32);
     s32 IsPlayerLocallyControlled(s32);
     void SetBattleCommand(s32, s32, s32, s32);
@@ -369,7 +369,7 @@ s32 RunAiCommandMoveStep(void) {
     func_020d61f0();
     CreateUnitMoveForUnit(*(void **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT));
     RefreshMapView();
-    func_020844a0(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
+    UnpackCommandPath(gCommandPath, (u8 *)*gCurrentMap + MAP_CURSOR_PATH);
     attack = ResolvePathAttack(
         *(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_X),
         *(s16 *)((u8 *)*gCurrentMap + MAP_CURSOR_OLD_Y),

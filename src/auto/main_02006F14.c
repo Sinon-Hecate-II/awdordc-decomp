@@ -339,27 +339,31 @@ void func_02007598(void) {
     func_02004e60(1, 1);
 }
 
-void func_020075b4(void) {
+/* Install the ARM7 boot handshake once: initialise PXI, wait for FIFO channel 12
+ * to be free and register Arm7BootAckHandler on it.  The ARM7's boot-ready reply
+ * then sets ARM7_BOOT_SYNC_READY, which the console-reboot path waits on. */
+void InitArm7BootSync(void) {
     M2C_UNK PXI_Init();
     M2C_UNK SetFifoMessageHandler(M2C_UNK, M2C_UNK *);
     s32 IsFifoMessageReady(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0212dfe4;
-    extern M2C_UNK func_02007608;
-    if (M2C_FIELD(&data_0212dfe4, u16 *, 2) != 0) {
+    extern M2C_UNK gArm7BootSync;
+    extern M2C_UNK Arm7BootAckHandler;
+
+    if (M2C_FIELD(&gArm7BootSync, u16 *, ARM7_BOOT_SYNC_INITIALISED) != 0) {
         return;
     }
-    M2C_FIELD(&data_0212dfe4, u16 *, 2) = 1U;
+    M2C_FIELD(&gArm7BootSync, u16 *, ARM7_BOOT_SYNC_INITIALISED) = 1U;
     PXI_Init();
     do {
 
     } while (IsFifoMessageReady(0xC, 1) == 0);
-    SetFifoMessageHandler(0xC, &func_02007608);
+    SetFifoMessageHandler(0xC, &Arm7BootAckHandler);
 }
 
-void func_02007608(s32 arg0,s32 arg1) {
+void Arm7BootAckHandler(s32 arg0,s32 arg1) {
 M2C_UNK SystemHalt();
-extern M2C_UNK data_0212dfe4;
-if(((u32)((arg1&0x7F00)<<8)>>16)==0x10) {M2C_FIELD(&data_0212dfe4,s16 *,0)=1;return;}
+extern M2C_UNK gArm7BootSync;
+if(((u32)((arg1&0x7F00)<<8)>>16)==0x10) {M2C_FIELD(&gArm7BootSync,s16 *,0)=1;return;}
 SystemHalt();
 }
 
@@ -688,27 +692,30 @@ void DmaCheckChannelConflict(s32 channel, s32 mode) {
     } while (i < 3);
 }
 
-void DmaValidateTransfer(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Debug check for a channel-0 DMA: the source range [src, src +/= size] must lie
+ * in the ARM9's DMA space (not the IO block and below DMA_REGION_LIMIT); halt the
+ * console otherwise.  `srcControl` is the channel's source-address control bit. */
+void DmaValidateTransfer(s32 channel, s32 src, s32 size, s32 srcControl) {
     M2C_UNK SystemHalt();
-    s32 var_r1;
-    u32 temp_ip;
-    u32 temp_r0;
+    s32 rangeEnd;
+    u32 srcRegion;
+    u32 endRegion;
 
-    var_r1 = arg1;
-    if (arg0 != 0) {
+    rangeEnd = src;
+    if (channel != 0) {
         return;
     }
-    temp_ip = var_r1 & 0xFF000000;
-    switch (arg3) {                                 /* irregular */
-    case 0x800000:
-        var_r1 -= arg2;
+    srcRegion = rangeEnd & DMA_ADDR_REGION_MASK;
+    switch (srcControl) {
+    case DMA_SRC_DECREMENT:
+        rangeEnd -= size;
         break;
     case 0x0:
-        var_r1 += arg2;
+        rangeEnd += size;
         break;
     }
-    temp_r0 = var_r1 & 0xFF000000;
-    if ((temp_ip != 0x04000000) && (temp_ip < 0x08000000U) && (temp_r0 != 0x04000000) && (temp_r0 < 0x08000000U)) {
+    endRegion = rangeEnd & DMA_ADDR_REGION_MASK;
+    if ((srcRegion != DMA_REGION_IO) && (srcRegion < DMA_REGION_LIMIT) && (endRegion != DMA_REGION_IO) && (endRegion < DMA_REGION_LIMIT)) {
         return;
     }
     SystemHalt();

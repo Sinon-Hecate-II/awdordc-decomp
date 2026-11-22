@@ -186,9 +186,13 @@ void ClearTileRect(u16 *p,s32 w,s32 h){
  for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=0;
 }
 
-void func_02080a14(u16 *p,s32 w,s32 h,u16 *q){
- s32 x,y;
- for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=q[y*32+x];
+/* Copy a width x height rectangle of tiles from one 32-tile-wide `tilemap`
+ * to another, keeping every tile's number and flip flags. */
+void CopyTileRect(u16 *dest, s32 width, s32 height, u16 *src) {
+    s32 x, y;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+            dest[y * TILEMAP_ROW_TILES + x] = src[y * TILEMAP_ROW_TILES + x];
 }
 
 #pragma opt_strength_reduction off

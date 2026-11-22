@@ -155,14 +155,14 @@ void Qr2_HandlePacket(void *qr2, void *packet, s32 length, void *address)
 /* Keep the master's NAT mapping alive: send it a minimal type-8 query carrying
  * our client id, then restamp the poll time so the next keep-alive is due 20s later. */
 void Qr2_SendKeepAlive(void *qr2) {
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     M2C_UNK ghiSendTo(s32, void *, s32, s32, void *, s32);
     M2C_UNK Qr2InitQuery(void *, s32, void *);
     Qr2Reply query;
     query.length = 0;
     Qr2InitQuery(query.data, QR2_TYPE_KEEPALIVE, (u8 *)qr2 + QR2_LOCAL_IP);
     ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query.data, query.length, 0, (u8 *)qr2 + QR2_REQUEST_ID, 8);
-    M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = GetTickCountMs();
+    M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = GetSystemTickMilliseconds();
 }
 
 /* Builds and sends the GameSpy QR2 state query: the local addresses and port,
@@ -170,7 +170,7 @@ void Qr2_SendKeepAlive(void *qr2) {
  * once known, the public address and port. Restamps the keep-alive times. */
 void Qr2_SendState(void *qr2, s32 state) {
     s32 IpToString(s32);
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     M2C_UNK ghiSendTo(s32, void *, s32, s32, void *, s32);
     M2C_UNK Qr2AppendInt(void *, s32);
     M2C_UNK Qr2AppendString(void *, void *);
@@ -237,7 +237,7 @@ void Qr2_SendState(void *qr2, s32 state) {
         }
     }
     ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query, M2C_FIELD(query, s32 *, QR2_QUERY_COUNT), 0, (char *)qr2 + QR2_REQUEST_ID, 8);
-    tick = GetTickCountMs();
+    tick = GetSystemTickMilliseconds();
     M2C_FIELD(qr2, s32 *, QR2_LAST_SENT) = tick;
     M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = tick;
     if (state != 0) {
@@ -393,10 +393,10 @@ void func_020601a4(void *arg0) {
 
 #pragma opt_propagation off
 void Qr2Query_SendQuery(void *a,void *b,s32 unused){
-s32 GetTickCountMs(void);
+s32 GetSystemTickMilliseconds(void);
 M2C_UNK ghiSendTo(s32,void *,s32,s32,void *,s32);
 u8 buf[256]; u8 addr[8]; s32 n,i,j; u8 *dst;
-QueryQueue_Append(a+8,b); M2C_FIELD(b,s32 *,28)=GetTickCountMs();
+QueryQueue_Append(a+8,b); M2C_FIELD(b,s32 *,28)=GetSystemTickMilliseconds();
 addr[1]=2;
 if(M2C_FIELD(b,u8 *,20)&32)return;
 if(M2C_FIELD(a,s32 *,0)==1){
@@ -472,7 +472,7 @@ void Qr2Query_StartServerQuery(void *list, GpiPlayer *server, s32 priority, s32 
 
 /* Dispatch each chunk of a typed message to its handlers found via a table, or fall back to a direct handler. */
 void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     void gpiPlayerSetString(void *, s32, void *);
     void func_02060e10(void *, void *, s32);
     s32 BoundedStringLength(void *, s32);
@@ -503,7 +503,7 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
         M2C_FIELD(entry, u8 *, 0x14) |= 0x43;
     }
     M2C_FIELD(entry, u8 *, 0x14) &= 0xF3;
-    M2C_FIELD(entry, s32 *, 0x1C) = GetTickCountMs() - M2C_FIELD(entry, s32 *, 0x1C);
+    M2C_FIELD(entry, s32 *, 0x1C) = GetSystemTickMilliseconds() - M2C_FIELD(entry, s32 *, 0x1C);
     Qr2Query_RemoveRequest((u8 *)owner + 8, entry);
     M2C_FIELD(owner, void (**)(void *, s32, void *, s32), 0x44)(owner, 0, entry, M2C_FIELD(owner, s32 *, 0x48));
 }
@@ -514,7 +514,7 @@ void func_020604d8(void *owner, void *entry, s8 *payload, s32 length) {
  * into the round-trip time, takes it off the pending list and reports the
  * finished query to the browser through its query callback. */
 void Qr2Query_HandleTextReply(void *list, void *server, void *reply, s32 unused) {
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     M2C_UNK Qr2Query_RemoveRequest(void *, void *);
     M2C_UNK Qr2Query_ParseTextFields(void *, M2C_UNK);
     s32 StringFind(M2C_UNK, M2C_UNK *);
@@ -539,7 +539,7 @@ void Qr2Query_HandleTextReply(void *list, void *server, void *reply, s32 unused)
         player->state = state | (GPI_PLAYER_STATE_COMPLETE | GPI_PLAYER_STATE_KEYS);
     }
     player->state &= GPI_PLAYER_QUERY_CLEAR;
-    player->ping = GetTickCountMs() - player->ping;
+    player->ping = GetSystemTickMilliseconds() - player->ping;
     Qr2Query_RemoveRequest((u8 *)list + SB_LIST_REQUESTS, server);
     M2C_FIELD(list, M2C_UNK (**)(void *, M2C_UNK, void *, s32), SB_LIST_ON_QUERY_DONE)(
         list, 0, server, M2C_FIELD(list, s32 *, SB_LIST_QUERY_DATA));

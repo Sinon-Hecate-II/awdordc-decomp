@@ -77,14 +77,14 @@ void PlaySlotSound(s32 arg0, s32 arg1) {
  * sound for the effect's current `frame`. */
 void ReplaceSlotSound(s32 slot, s32 frame) {
     M2C_UNK PlaySlotPendingSound(s32, s32, s32);
-    M2C_UNK PlaySlotSoundEffect(s32, s32);
+    M2C_UNK SetSlotSoundPan(s32, s32);
     void UpdateSlotEffectSound(s32, s32);
     extern M2C_UNK gEffectTable;
     s32 soundId = ((EffectSounds *)M2C_FIELD(*(void **)((u8 *)&gEffectTable + slot * 0x18), void **, 0x34))->intensity;
     if (soundId == 0) return;
     PlaySlotPendingSound(slot, -1, soundId);
-    if (slot == 0) PlaySlotSoundEffect(slot, -0x80);
-    else PlaySlotSoundEffect(slot, 0x7F);
+    if (slot == 0) SetSlotSoundPan(slot, -0x80);
+    else SetSlotSoundPan(slot, 0x7F);
     UpdateSlotEffectSound(slot, frame);
 }
 

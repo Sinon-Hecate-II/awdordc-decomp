@@ -10,10 +10,10 @@
    slot's sprite, then let the engine draw.  The previous engine is restored at
    the end, and nothing is drawn while the slot manager is paused. */
 void DrawSpriteSlots(void){
-u8 func_020b2714(void);void DrawSpriteSlotSprite(void*);
+u8 IsSpriteDrawPaused(void);void DrawSpriteSlotSprite(void*);
 extern u16 **gCur3DSpriteEngine;extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;extern u8 gSpriteSlots[];
 void *old,*p;u8 mode;s32 j,i;u8 *q;
-if(func_020b2714())return;
+if(IsSpriteDrawPaused())return;
 old=gCur3DSpriteEngine;
 i=0;do{
 if(i==0)p=g3DSpriteEngineMain;else p=g3DSpriteEngineSub;
@@ -43,17 +43,17 @@ extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x26)-=1;
 }
 
-void func_020b26f8(void) {
+void PauseSpriteDraw(void) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x27)+=1;
 }
 
-u8 func_020b2714(void) {
+u8 IsSpriteDrawPaused(void) {
 extern void *gSpriteSlotManager;
 return M2C_FIELD(gSpriteSlotManager,u8 *,0x27)!=0;
 }
 
-void func_020b2738(void) {
+void ResumeSpriteDraw(void) {
 extern void *gSpriteSlotManager;
 M2C_FIELD(gSpriteSlotManager,u8 *,0x27)-=1;
 }

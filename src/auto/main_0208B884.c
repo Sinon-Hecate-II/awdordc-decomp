@@ -353,7 +353,7 @@ void CreateAnimatedSpriteObject(M2C_UNK arg0) {
     Init3DSpriteObject();
 }
 
-void func_0208c54c(M2C_UNK arg0) {
+void CreateEffectSpriteObject(M2C_UNK arg0) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK Init3DSpriteObject();
     extern M2C_UNK data_02102790;

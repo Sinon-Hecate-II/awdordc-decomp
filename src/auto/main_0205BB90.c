@@ -107,7 +107,7 @@ s32 func_0205be04(s32 a, void *b, s32 c) {
  * the round-trip time from that timestamp and hand it to the connection's ping
  * callback.  Malformed or unexpected pings are ignored. */
 s32 gti2HandlePing(void *connection, void *message, s32 length) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     s32 gti2PingCallback(void *, s32);
     s32 ByteCompareN(void *, M2C_UNK *, s32);
     extern M2C_UNK gti2PingMagic;
@@ -126,7 +126,7 @@ s32 gti2HandlePing(void *connection, void *message, s32 length) {
     b1 = M2C_FIELD(message, volatile u8 *, 7);
     M2C_FIELD(dst, volatile u8 *, 2) = b0;
     M2C_FIELD(dst, volatile u8 *, 3) = b1;
-    return gti2PingCallback(connection, GetTickCountMs() - pingTimestamp) != 0;
+    return gti2PingCallback(connection, GetSystemTickMilliseconds() - pingTimestamp) != 0;
 }
 
 #pragma push
@@ -226,7 +226,7 @@ return gti2HandleLargeMessage(connection2,msgType,buf,len)!=0;
 
 /* Looks up the entry for the given connection/key; validates or refreshes it. */
 s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     s32 gti2DumpCallback(void *, void *, M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     s32 gti2CloseConnection(void *, M2C_UNK, M2C_UNK);
     void *func_0205cca0();
@@ -242,7 +242,7 @@ s32 func_0205c244(void *conn, M2C_UNK arg1, M2C_UNK arg2) {
     }
     if (M2C_FIELD(entry, s32 *, 0xC) == 0) {
         if ((M2C_FIELD(entry, u32 *, 0x20) == 0) ||
-            ((u32)(GetTickCountMs() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
+            ((u32)(GetSystemTickMilliseconds() - M2C_FIELD(entry, u32 *, 0x1C)) < M2C_FIELD(entry, u32 *, 0x20))) {
             return 1;
         }
         if (gti2CloseConnection(entry, 6, 1) == 0) {
@@ -313,7 +313,7 @@ s32 gti2QueueSentCommand(void *connection, s16 sequence, s32 size) {
     sent.offset = M2C_FIELD(connection, s32 *, GT2_SEND_BUFFER_LEN);
     sent.size = size;
     sent.sequence = sequence;
-    sent.lastSent = GetTickCountMs();
+    sent.lastSent = GetSystemTickMilliseconds();
     count = Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
     Vector_AddItem(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE), &sent);
     return count + 1 == Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));

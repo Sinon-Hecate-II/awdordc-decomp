@@ -207,7 +207,7 @@ s32 GetPowerRating(s32 player) {
 s32 GetTechniqueRating(s32 player) {
     extern s32 *gCurrentMap;
     extern s8 data_ov000_021b5580[];
-    s32 IsPlayerActive(s32); u32 func_020d303c(s32);u32 func_020d30a8(s32);
+    s32 IsPlayerActive(s32); u32 CountPlayerUnits(s32);u32 func_020d30a8(s32);
     s32 Divide(s32,s32);
     u32 own,enemy,other,buildings,extra,delta;
     s32 i,offset,playerOffset,clear,x,y,result;
@@ -219,12 +219,12 @@ s32 GetTechniqueRating(s32 player) {
         base=(void *)*gCurrentMap;q=(u8 *)base+offset;
         if(M2C_FIELD(q,u8 *,0x67c2)) {
             if(M2C_FIELD((u8 *)(playerOffset+(u32)base),u8 *,0x67ca)==M2C_FIELD(q,u8 *,0x67ca)) {
-                own+=func_020d303c(i);
+                own+=CountPlayerUnits(i);
                 extra+=func_020d30a8(i);
                 q=(u8 *)*gCurrentMap+offset;
                 buildings+=M2C_FIELD(q,u16 *,0x67c6);
                 other+=M2C_FIELD(q,u16 *,0x67c4);
-            } else enemy+=func_020d303c(i);
+            } else enemy+=CountPlayerUnits(i);
         }
     }
     base=(void *)*gCurrentMap;

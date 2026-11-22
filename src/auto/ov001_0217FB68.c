@@ -216,10 +216,10 @@ void func_ov001_0217ff34(void) {
 void func_ov001_0217ff60(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMatchSetup;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutMatchSetup);
 }
 
@@ -455,12 +455,15 @@ void Ov001_LoadOptionPageBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
+/* Show the option menu's second page: fade both engines in from white, make the
+ * page's background and sprite planes visible, then hand over to the fade's
+ * completion step. */
 void Ov001_FadeInOptionPage2(void) {
     extern M2C_UNK Ov001_OptionPage2FadeInStep;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, OV001_BLEND_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
     Ov001_SetStepCallback(&Ov001_OptionPage2FadeInStep);
 }
 
@@ -530,10 +533,10 @@ void func_ov001_02180608(void) {
 void Ov001_OptionPage2ConfirmStep(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_OptionPage2FadeOutStep;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_OptionPage2FadeOutStep);
 }
 
@@ -682,7 +685,12 @@ void Ov001_LoadFriendListBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
+/* Fade in the friend-list screen's panel and screen and show its planes, then wait
+ * for the fade in the next step. */
 void Ov001_FadeInFriendListScreen(void) {
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern M2C_UNK func_ov001_021809c4;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);

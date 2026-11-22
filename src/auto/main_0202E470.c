@@ -416,14 +416,14 @@ void *GetSoundArchiveEntry(void *arg0,s32 arg1) {
  return p;
 }
 
-void func_0202eec0(void *arg0) {
+void Sound_ResetFade(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
     M2C_FIELD(arg0, s32 *, 0) = 0;
     M2C_FIELD(arg0, s32 *, 0xC) = 0;
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-void func_0202eed8(void *arg0, s32 arg1, s32 arg2) {
+void Sound_StartFade(void *arg0, s32 arg1, s32 arg2) {
     s32 GetFadeValue();
     M2C_FIELD(arg0, s32 *, 0) = GetFadeValue();
     M2C_FIELD(arg0, s32 *, 4) = arg1;

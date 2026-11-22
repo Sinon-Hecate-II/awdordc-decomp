@@ -468,13 +468,13 @@ void func_020b4dcc(void *arg0) {
     M2C_UNK StartBattleRecord();
     M2C_UNK GetSaveType(M2C_UNK, s32);
     M2C_UNK func_020bf798();
-    M2C_UNK func_020e4818(s32);
+    M2C_UNK ClearSaveRecordHeader(s32);
     s32 temp_r4;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
     GetSaveType(0, temp_r4);
     StartBattleRecord();
-    func_020e4818(temp_r4);
+    ClearSaveRecordHeader(temp_r4);
     func_020bf798();
 }
 
@@ -557,23 +557,29 @@ if(flags&16)LoadAnimatedSpriteAssetsFromNarc(sprite,kind,base+0x329a0,tile,0);
 else LoadAnimatedSpriteAssetsFromNarc(sprite,kind,base+0x329a0,tile,1);
 }
 
-s32 CreateAnimatedMapSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
+/* Create an animated map sprite of class `name` for `owner` (a layer index or a
+ * parent sprite) and place it at map cell (tileX, tileY) with `rawFlags`, the
+ * graphic offset into its sheet and its tile index.  Returns the new sprite. */
+s32 CreateAnimatedMapSprite(M2C_UNK name, M2C_UNK tileX, M2C_UNK tileY, s32 rawFlags, s32 graphicOffset, u16 tileIndex, s32 owner) {
     s32 CreateAnimatedSpriteObject(s32);
     M2C_UNK PlaceMapSprite(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    s32 temp_r0;
+    s32 sprite;
 
-    temp_r0 = CreateAnimatedSpriteObject(arg6);
-    PlaceMapSprite(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
-    return temp_r0;
+    sprite = CreateAnimatedSpriteObject(owner);
+    PlaceMapSprite(sprite, name, tileX, tileY, rawFlags, graphicOffset, (s32) tileIndex);
+    return sprite;
 }
 
-s32 CreateEffectMapSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, u16 arg5, s32 arg6) {
-    s32 func_0208c54c(s32);
-    s32 temp_r0;
+/* Create a battle-effect map sprite of class `name` attached to `owner` and place
+ * it at map cell (tileX, tileY) with `rawFlags`, the graphic offset into its
+ * sheet and its tile index.  Returns the new sprite. */
+s32 CreateEffectMapSprite(M2C_UNK name, M2C_UNK tileX, M2C_UNK tileY, s32 rawFlags, s32 graphicOffset, u16 tileIndex, s32 owner) {
+    s32 CreateEffectSpriteObject(s32);
+    s32 sprite;
 
-    temp_r0 = func_0208c54c(arg6);
-    PlaceMapSprite(temp_r0, arg0, arg1, arg2, arg3, arg4, (s32) arg5);
-    return temp_r0;
+    sprite = CreateEffectSpriteObject(owner);
+    PlaceMapSprite(sprite, name, tileX, tileY, rawFlags, graphicOffset, (s32) tileIndex);
+    return sprite;
 }
 
 void ResetEffectSpritePool(void) {

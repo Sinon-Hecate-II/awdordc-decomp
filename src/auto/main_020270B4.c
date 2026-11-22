@@ -33,7 +33,22 @@ s32 WFC_InitSession(void *buffer, u32 size) {
     OS_RestoreInterrupts(irq); return 0;
 }
 
-s32 Wfc_ReleaseSession(void){s32 s=OS_DisableInterrupts(); void *p=(void *)gWfcSession; if(!p){OS_RestoreInterrupts(s);return 1;} if(M2C_FIELD(p,s32 *,0x2260)!=1){OS_RestoreInterrupts(s);return 1;} gWfcSession=0;OS_RestoreInterrupts(s);return 0;}
+/* Release the WFC session: only a session that has merely been started can be
+ * dropped. Returns 0 once gWfcSession has been cleared, 1 when there is no
+ * session or it is already past WFC_SESSION_STATE_STARTED. */
+s32 Wfc_ReleaseSession(void) {
+    s32 irq = OS_DisableInterrupts();
+    void *session = (void *)gWfcSession;
+
+    if (!session) { OS_RestoreInterrupts(irq); return 1; }
+    if (M2C_FIELD(session, s32 *, WFC_SESSION_STATE) != WFC_SESSION_STATE_STARTED) {
+        OS_RestoreInterrupts(irq);
+        return 1;
+    }
+    gWfcSession = 0;
+    OS_RestoreInterrupts(irq);
+    return 0;
+}
 
 /* One step of the WFC session's connection startup: queues the send request,
  * verifies the wireless link and starts hosting/joining with the operation

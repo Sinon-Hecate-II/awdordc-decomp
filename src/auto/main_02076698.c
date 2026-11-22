@@ -8,21 +8,21 @@ void BuildCrc8Table(u8 *table,u32 poly){u32 v,i,j;
 for(i=0;i<256;i++){v=i;for(j=0;j<8;j++){if(v&128)v=(v<<1)^poly;else v<<=1;}table[i]=v;}
 }
 
-s32 func_020766d8(s32 table,u8 *crc,s32 data,s32 size){u32 v,i;u8 *p=(u8*)data;v=*crc;
+s32 Crc8Update(s32 table,u8 *crc,s32 data,s32 size){u32 v,i;u8 *p=(u8*)data;v=*crc;
 for(i=0;i<(u32)size;i++)v=((u8*)table)[(u8)(v^*p++)];*crc=v;
 }
 
-void func_02076710(u16 *table,u32 poly){u32 v,j,i;
+void BuildCrc16Table(u16 *table,u32 poly){u32 v,j,i;
 for(i=0;i<256;i++){v=i;for(j=0;j<8;j++){if(v&1)v=(v>>1)^poly;else v>>=1;}table[i]=v;}
 }
 
-s32 func_02076754(s32 table,u16 *state,s32 data,s32 size) {
+s32 Crc16Update(s32 table,u16 *state,s32 data,s32 size) {
  u32 crc=*state; u32 i; u8 *p=(u8 *)data;
  for(i=0;i<(u32)size;i++) crc=M2C_FIELD(table,u16 *, ((crc ^ *p++) << 24) >> 23) ^ (crc >> 8);
  *state=crc;
 }
 
-void func_02076794(u32 *table,u32 poly) {
+void BuildCrc32Table(u32 *table,u32 poly) {
  u32 crc; u32 i; u32 j; u32 zero;
  i=0; zero=0;
  do { crc=i; j=zero;
@@ -31,36 +31,36 @@ void func_02076794(u32 *table,u32 poly) {
  }while(i<256);
 }
 
-s32 func_020767d4(s32 table,s32 *state,s32 data,s32 size) {
+s32 Crc32Update(s32 table,s32 *state,s32 data,s32 size) {
  u32 crc=*state; u32 i; u8 *p=(u8 *)data;
  for(i=0;i<(u32)size;i++) crc=((u32 *)table)[(u8)(crc ^ *p++)] ^ (crc >> 8);
  *state=crc;
 }
 
 u8 Crc8Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020766d8(M2C_UNK, u8 *, M2C_UNK, M2C_UNK);
+    M2C_UNK Crc8Update(M2C_UNK, u8 *, M2C_UNK, M2C_UNK);
     u8 sp0;
 
     sp0 = 0;
-    func_020766d8(arg0, &sp0, arg1, arg2);
+    Crc8Update(arg0, &sp0, arg1, arg2);
     return sp0;
 }
 
 u16 Crc16Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02076754(M2C_UNK, u16 *, M2C_UNK, M2C_UNK);
+    M2C_UNK Crc16Update(M2C_UNK, u16 *, M2C_UNK, M2C_UNK);
     u16 sp0;
 
     sp0 = 0;
-    func_02076754(arg0, &sp0, arg1, arg2);
+    Crc16Update(arg0, &sp0, arg1, arg2);
     return sp0;
 }
 
-s32 func_02076860(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_020767d4(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
+s32 Crc32Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+    M2C_UNK Crc32Update(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
     s32 sp0;
 
     sp0 = -1;
-    func_020767d4(arg0, &sp0, arg1, arg2);
+    Crc32Update(arg0, &sp0, arg1, arg2);
     return ~sp0;
 }
 

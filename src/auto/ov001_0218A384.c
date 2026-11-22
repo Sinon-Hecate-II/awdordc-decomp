@@ -163,15 +163,28 @@ void Ov001_QueuePush(void *queue, s32 value) {
     OS_EnableIrqMask(saved);
 }
 
-s32 Ov001_QueuePop(void *arg0) {
-M2C_UNK OS_EnableIrqMask(M2C_UNK);s32 OS_DisableIrqMask(M2C_UNK);u8 HardwareDivideRemainder(s32,u16);
-s32 result=0,saved,value;u8 head,tail,idx;u16 size;
+/* Pop the most recently pushed value from the ring queue with interrupts masked;
+ * returns 0 when the queue is empty. */
+s32 Ov001_QueuePop(void *queue) {
+    M2C_UNK OS_EnableIrqMask(M2C_UNK);
+    s32 OS_DisableIrqMask(M2C_UNK);
+    u8 HardwareDivideRemainder(s32, u16);
+    s32 result = 0, saved, value;
+    u8 head, tail, index;
+    u16 capacity;
 
-saved=OS_DisableIrqMask(1);head=M2C_FIELD(arg0,u8 *,3);tail=M2C_FIELD(arg0,u8 *,2);
-if(tail!=head){size=M2C_FIELD(arg0,u16 *,0);
-value=HardwareDivideRemainder(head+size-1,size);M2C_FIELD(arg0,u8 *,3)=value;idx=M2C_FIELD(arg0,u8 *,3);
-result=M2C_FIELD((u8*)arg0+(idx<<2),s32 *,4);}
-OS_EnableIrqMask(saved);return result;
+    saved = OS_DisableIrqMask(1);
+    head = M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE);
+    tail = M2C_FIELD(queue, u8 *, OV001_QUEUE_READ);
+    if (tail != head) {
+        capacity = M2C_FIELD(queue, u16 *, OV001_QUEUE_CAPACITY);
+        value = HardwareDivideRemainder(head + capacity - 1, capacity);
+        M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE) = value;
+        index = M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE);
+        result = M2C_FIELD((u8 *)queue + (index << 2), s32 *, OV001_QUEUE_ENTRIES);
+    }
+    OS_EnableIrqMask(saved);
+    return result;
 }
 
 void Ov001_InitFades(void) {
@@ -294,23 +307,26 @@ void Ov001_UpdateFade(M2C_UNK task, void *fadeArg) {
     }
 }
 
-s32 func_ov001_0218aa24(s32 arg0) {
+/* Starts the ov001 step delay: reuses the sub-engine fade slot as a frame counter,
+ * queues the Ov001_DelayStep task that counts down `frames` frames and posts task
+ * message 1 when it elapses. Returns 0 when a delay is already running. */
+s32 Ov001_StartDelay(s32 frames) {
     void *Ov001_AddTask(s32, M2C_UNK, void *, s32);
-    void func_ov001_0218aa7c(M2C_UNK, void *);
+    void Ov001_DelayStep(M2C_UNK, void *);
     extern M2C_UNK gOv001FadeStates;
-    s32 a = arg0;
-    void *r4 = (void *)gOv001FadeStates;
-    if (*((u8 *)r4 + 9) != 0) {
+    Ov001FadeStates *states = (Ov001FadeStates *)gOv001FadeStates;
+    s32 delay = frames;
+    if (states->sub.active != 0) {
         return 0;
     }
-    *(void **)r4 = Ov001_AddTask(1, (M2C_UNK)func_ov001_0218aa7c, r4, 0xc8);
-    *(u16 *)((u8 *)r4 + 4) = 0;
-    *(u16 *)((u8 *)r4 + 6) = (u16)a;
-    *((u8 *)r4 + 9) = 1;
+    states->sub.task = Ov001_AddTask(1, (M2C_UNK)Ov001_DelayStep, states, 0xc8);
+    states->sub.counter = 0;
+    states->sub.duration = (u16)delay;
+    states->sub.active = 1;
     return 1;
 }
 
-void func_ov001_0218aa7c(M2C_UNK arg0, void *arg1) {
+void Ov001_DelayStep(M2C_UNK arg0, void *arg1) {
     void Ov001_PostTaskMessage(M2C_UNK, M2C_UNK);
     M2C_FIELD(arg1, s16 *, 4) = (s16) (M2C_FIELD(arg1, s16 *, 4) + 1);
     if ((s32) M2C_FIELD(arg1, s16 *, 4) < (s32) M2C_FIELD(arg1, u16 *, 6)) {

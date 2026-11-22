@@ -77,7 +77,7 @@ s32 SetSoundEffectVolume(M2C_UNK arg0) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectPlayer;
     u8 IsSoundPlayerReady(void);
-    M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_SetPlayerPan(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
@@ -85,7 +85,7 @@ s32 SetSoundEffectVolume(M2C_UNK arg0) {
     if (IsSoundPlayerReady() == 0) {
         return 0;
     }
-    func_0202ad90(&gSoundEffectPlayer, 0xFFFF, arg0);
+    Sound_SetPlayerPan(&gSoundEffectPlayer, 0xFFFF, arg0);
     return 1;
 }
 
@@ -150,35 +150,41 @@ s32 SetSlotSoundPending(s32 slot, s32 volume, s32 frames) {
     return 1;
 }
 
-s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
+/* Set the pan of the sound playing on effect slot `slot` (-0x80 hard left,
+ * 0x7F hard right). Returns 0 while the sound system is off or the slot is
+ * silent, 1 once the pan was handed to the driver. */
+s32 SetSlotSoundPan(s32 slot, s32 pan) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
-    M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_SetPlayerPan(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (IsSlotSoundActive(arg0) == 0) {
+    if (IsSlotSoundActive(slot) == 0) {
         return 0;
     }
-    func_0202ad90(&gSoundEffectSlotHandles + arg0, 0xFFFF, arg1);
+    Sound_SetPlayerPan(&gSoundEffectSlotHandles + slot, 0xFFFF, pan);
     return 1;
 }
 
-s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
+/* Fade the scripted sound playing in effect slot `slot` to `volume` over
+ * `frames` frames. Returns 0 while the sound system is off or the slot is
+ * silent, 1 once the fade was handed to the driver. */
+s32 PlaySlotScriptedSound(s32 slot, s32 volume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
     M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (IsSlotSoundActive(arg0) == 0) {
+    if (IsSlotSoundActive(slot) == 0) {
         return 0;
     }
-    Sound_StartPlayerVolumeFade(&gSoundEffectSlotHandles + arg0, arg1, arg2);
+    Sound_StartPlayerVolumeFade(&gSoundEffectSlotHandles + slot, volume, frames);
     return 1;
 }
 
@@ -312,25 +318,27 @@ void func_020903b0(void) {
 }
 
 void func_020903d4(void) {
-    void func_020903f0(s32, s32);
+    void LoadSoundSequenceArchiveAndBank(s32, s32);
     M2C_UNK func_02090448(M2C_UNK);
-    func_020903f0(1, 0x24);
+    LoadSoundSequenceArchiveAndBank(1, 0x24);
     func_02090448(1);
 }
 
-void func_020903f0(s32 arg0, s32 arg1) {
+/* Load the sequence archive `archiveId` and the sound bank `bankId` into the
+ * sound driver's player, unless the sound system is off. */
+void LoadSoundSequenceArchiveAndBank(s32 archiveId, s32 bankId) {
     extern M2C_UNK gSoundDriverState;
     s32 func_0202c784(M2C_UNK *);
     s32 func_0202c860(M2C_UNK, M2C_UNK);
     s32 func_0202c88c(M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-    func_0202c860(arg0, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-    func_0202c88c(arg1, M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    func_0202c860(archiveId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    func_0202c88c(bankId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
 }
 
 M2C_UNK func_02090448(M2C_UNK arg0) {

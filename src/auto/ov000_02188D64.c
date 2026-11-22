@@ -14,11 +14,11 @@ void SelectCarriedUnitAction(void) {
     s32 HasEnemyPlayer(void);
     s32 PlayerHasHq(u16);
     void func_ov000_02188370(void);
-    void func_ov000_021884e4(void);
+    void AiPrioritiseAttackUnitProduction(void);
     void func_ov000_02188688(void);
-    void func_ov000_02188790(void);
-    void func_ov000_021888ec(void);
-    void func_ov000_02188a38(void);
+    void AiPrioritisePropertyCapture(void);
+    void AiPrioritiseReachPlayerHq(void);
+    void AiPrioritiseAssignedMoveTarget(void);
     UnkStruct_ov000_021A860C *sel, *unit;
     u8 id, tmp;
 
@@ -40,11 +40,11 @@ void SelectCarriedUnitAction(void) {
     }
     if (IsFootUnitKind(unit->unk0) || unit->unk0 == 13) func_ov000_02188370();
     else switch (unit->unkB) {
-    case 0: case 1: func_ov000_021884e4(); break;
-    case 2: if (HasEnemyPlayer() == 1) func_ov000_02188688(); else func_ov000_021884e4(); break;
-    case 3: case 4: func_ov000_02188790(); break;
-    case 5: if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) func_ov000_021888ec(); else func_ov000_02188790(); break;
-    case 7: case 8: case 9: func_ov000_02188a38(); break;
+    case 0: case 1: AiPrioritiseAttackUnitProduction(); break;
+    case 2: if (HasEnemyPlayer() == 1) func_ov000_02188688(); else AiPrioritiseAttackUnitProduction(); break;
+    case 3: case 4: AiPrioritisePropertyCapture(); break;
+    case 5: if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) AiPrioritiseReachPlayerHq(); else AiPrioritisePropertyCapture(); break;
+    case 7: case 8: case 9: AiPrioritiseAssignedMoveTarget(); break;
     }
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 64) {
         {UnkStruct_ov000_021A860C *p = M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT); tmp = p->unkC[0]; p->unkC[0] = p->unkC[1]; M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[1] = tmp;}

@@ -291,7 +291,17 @@ s32 GX_GetBG1CharPtrSub(void) {
 
 s32 GX_GetBG2CharPtr(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000c;if(mode<5 || !(b&0x80)){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
 
-s32 GX_GetBG3CharPtr(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000e;if(mode<3 || (mode<6 && !(b&0x80))){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
+/* Return the main-engine BG3 character/bitmap base address, or zero when BG3 is unavailable in the current display mode. */
+s32 GX_GetBG3CharPtr(void) {
+    s32 displayMode = *(volatile u32 *)0x04000000 & 0x7;
+    u32 bg3Control = *(volatile u16 *)0x0400000E;
+    if (displayMode < 3 || (displayMode < 6 && !(bg3Control & 0x80))) {
+        u32 bank = (*(volatile u32 *)0x04000000 & 0x07000000) >> 24;
+        u32 base = (bank << 16) + 0x06000000;
+        return base + (((bg3Control & 0x3C) >> 2) << 14);
+    }
+    return 0;
+}
 
 void func_02003984(s32 *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     *arg0 = arg1 | 0x40 | (arg2 << 8) | ((arg3 | (arg4 << 8)) << 0x10);
@@ -446,7 +456,18 @@ REG_GX_MTX_IDENTITY=0;
 }
 
 
-void GX_SetFog(s32 a,s32 b,s32 c,s32 d){if(a){*(volatile u16 *)0x400035c=d;*(volatile u16 *)0x4000060=(*(volatile u16 *)0x4000060&~0x3f40)|((c<<8)|(b<<6)|0x80);}else *(volatile u16 *)0x4000060&=0xcf7f;}
+/* Switch the 3D engine's fog on or off. When it is on, set the fog offset and
+ * DISP3DCNT's fog fields (blend mode, density and enable bit); when it is off,
+ * clear the fog bits. */
+void GX_SetFog(s32 enable, s32 fogBlend, s32 fogDensity, s32 fogOffset) {
+    if (enable) {
+        REG_GX_FOG_OFFSET = (u16) fogOffset;
+        REG_DISP3DCNT = (REG_DISP3DCNT & ~DISP3DCNT_FOG_MASK) |
+                        ((fogDensity << 8) | (fogBlend << 6) | DISP3DCNT_FOG_ENABLE);
+    } else {
+        REG_DISP3DCNT &= DISP3DCNT_FOG_OFF_MASK;
+    }
+}
 
 void GX_LoadToonTable(M2C_UNK arg0) {
     M2C_UNK CopyU16(M2C_UNK, s32, M2C_UNK);

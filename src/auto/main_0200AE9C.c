@@ -3,6 +3,7 @@
 #include "fs.h"
 /* The archives the game has open, in the order they were opened. */
 extern FSArchiveList gArchiveList;
+/* A 12-byte directory record (FSDirectoryBlock) as the path commands pass it. */
 typedef struct { u32 words[3]; } Unk032Record;
 typedef struct FileLink { struct FileLink *prev,*next; } FileLink;
 static inline void UnlinkFileRequest(FileLink *a) {
@@ -527,7 +528,18 @@ s32 FileSeek(void *request, s32 offset, s32 origin) {
     return 1;
 }
 
-s32 SetFileDirectory(s32 a){u8 buf[72];Unk032Record v;extern Unk032Record gFileCurrentDirectory;InitFileRequest(buf);if(!SubmitPathRequest(buf,a,0,(s32)&v))return 0;gFileCurrentDirectory=v;return 1;}
+/* Resolve `path` as a directory and make it the filesystem's current directory:
+ * true when the path resolved to a directory, false otherwise. */
+s32 SetFileDirectory(s32 path) {
+    extern Unk032Record gFileCurrentDirectory;
+    u8 request[0x48];
+    Unk032Record dir;
+
+    InitFileRequest(request);
+    if (!SubmitPathRequest(request, path, 0, (s32) &dir)) return 0;
+    gFileCurrentDirectory = dir;
+    return 1;
+}
 
 void func_0200bcb4(M2C_UNK arg0) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);

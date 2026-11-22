@@ -1,5 +1,5 @@
 MapEditor_StartMap kind:function(arm,size=0x22c) addr:0x02211200
-func_ov007_0221142c kind:function(arm,size=0x54) addr:0x0221142c
+MapEditor_ShowIntroMessage kind:function(arm,size=0x54) addr:0x0221142c
 func_ov007_02211480 kind:function(arm,size=0x2c) addr:0x02211480
 MapEditor_SpawnCursorSprite kind:function(arm,size=0x18) addr:0x022114ac
 MapEditor_PlaceSelectedUnit kind:function(arm,size=0x9c) addr:0x022114c4

@@ -1,6 +1,7 @@
 /* 16 functions from 0x020420A0 to 0x0204309C (main), found by ds-decomp. */
 #include "common.h"
 #include "net_session.h"
+#include "qr2.h"
 
 #pragma opt_strength_reduction off
 /* Per-frame handler for the connection states that wait on the other peers:
@@ -197,7 +198,24 @@ s32 UpdateConnectionSyncTimers(void) {
 #pragma opt_strength_reduction reset
 u8 func_020427b4(void){extern u8 gSessionPlayers[];u8 i=0;do{if(gSessionPlayers[i*12]==0)return i+100;i++;}while(i<154);return 0;}
 
-void ClearSessionPlayers(void){extern u8 gSessionPlayers[];void HeapFree(s32,s32,s32);void CpuFill(s32,void *,s32);s32 i=0;u8 *p=gSessionPlayers;do{if(M2C_FIELD(p,s32 *,4))HeapFree(4,M2C_FIELD(p,s32 *,4),0);i++;p+=12;}while(i<154);CpuFill(0,gSessionPlayers,0x738);}
+/* Releases the session player table: frees the heap string of every record that
+ * holds one, then fills all 154 records with zero. */
+void ClearSessionPlayers(void){
+extern u8 gSessionPlayers[];
+void HeapFree(s32,s32,s32);
+void CpuFill(s32,void *,s32);
+s32 record;
+u8 *player;
+
+record=0;
+player=gSessionPlayers;
+do{
+if(M2C_FIELD(player,s32 *,QR2_PLAYER_STRING))HeapFree(4,M2C_FIELD(player,s32 *,QR2_PLAYER_STRING),0);
+record++;
+player+=QR2_PLAYER_STRIDE;
+}while(record<QR2_PLAYER_COUNT);
+CpuFill(0,gSessionPlayers,QR2_PLAYER_STRIDE*QR2_PLAYER_COUNT);
+}
 
 /* Lowest player slot id (0..31, or 32 when all are taken) that no connected peer
  * occupies in the connection's list of peer slot ids. */

@@ -36,13 +36,15 @@ void Wfc_FreeWorkBlocks(void) {
     }
 }
 
-void *Wfc_GetWorkBlock(s32 arg0) {
+/* Returns the WFC work block allocated for the given WFC_WORK_* tag (the manager
+ * keeps them in reverse tag order), or 0 for a tag with no block. */
+void *Wfc_GetWorkBlock(s32 tag) {
  extern M2C_UNK gWfcManager;
- if (arg0 & 1) return M2C_FIELD(&gWfcManager, void **, 0x10);
- if (arg0 & 2) return M2C_FIELD(&gWfcManager, void **, 4);
- if (arg0 & 4) return M2C_FIELD(&gWfcManager, void **, 8);
- if (arg0 & 8) return M2C_FIELD(&gWfcManager, void **, 0xC);
- if (arg0 & 0x10) return M2C_FIELD(&gWfcManager, void **, 0);
+ if (tag & WFC_WORK_CONTROL) return ((WfcManager *)&gWfcManager)->control;
+ if (tag & WFC_WORK_SESSION) return ((WfcManager *)&gWfcManager)->session;
+ if (tag & WFC_WORK_AUX) return ((WfcManager *)&gWfcManager)->aux;
+ if (tag & WFC_WORK_CALLBACKS) return ((WfcManager *)&gWfcManager)->callbacks;
+ if (tag & WFC_WORK_FRIENDS) return ((WfcManager *)&gWfcManager)->friends;
  return 0;
 }
 

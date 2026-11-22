@@ -530,7 +530,7 @@ void func_02081fec(void) {
 
 void func_02082000(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=1;}
 
-void func_02082014(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=0;}
+void ClearScreenOffRequest(void){extern M2C_UNK gInputBlockState;M2C_FIELD(&gInputBlockState,u8 *,2)=0;}
 
 void MemAlloc(void) {
     M2C_UNK HeapAllocBlock();

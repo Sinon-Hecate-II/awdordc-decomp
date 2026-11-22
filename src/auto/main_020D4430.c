@@ -256,7 +256,7 @@ void func_020d4c18(void) {
 }
 
 void func_020d4ca4(void *);
-void func_020d4c28(void *arg0){G3X_Reset();func_02077c10();func_020d4ca4(arg0);}
+void func_020d4c28(void *arg0){G3X_Reset();UpdateMapView();func_020d4ca4(arg0);}
 
 void func_020d4c44(void) {
     M2C_UNK StepBattleMap();

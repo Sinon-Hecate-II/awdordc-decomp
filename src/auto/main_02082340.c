@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 #include "map_selection.h"
+#include "gx.h"
 typedef MapSelectionLists Lists020830;
 
 /* Packed attributes of one 3D sprite layer, as passed to Configure3DSpriteLayer.
@@ -256,6 +257,10 @@ void func_02082c84(void) {
     func_0200365c();
 }
 
+/* Give every VRAM bank back to the allocator, then assign the banks the 3D
+ * sprite engine lays out: texture in A, main BG in B, sub BG in C, sub OBJ in D,
+ * OBJ in E, OBJ extended palette in F, BG extended palette in G, sub BG
+ * extended palette in H and sub OBJ extended palette in I. */
 void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
@@ -267,15 +272,15 @@ void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     func_02082c84();
-    GX_SetBankForTex(1);
-    GX_SetBankForBG(2);
-    func_02003124(4);
-    GX_SetBankForSubOBJ(8);
-    GX_SetBankForOBJ(0x10);
-    GX_SetBankForOBJExtPltt(0x20);
-    func_02002ab8(0x40);
-    GX_SetBankForBGExtPlttSub(0x80);
-    GX_SetBankForOBJExtPlttSub(0x100);
+    GX_SetBankForTex(VRAM_BANK_A);
+    GX_SetBankForBG(VRAM_BANK_B);
+    func_02003124(VRAM_BANK_C);
+    GX_SetBankForSubOBJ(VRAM_BANK_D);
+    GX_SetBankForOBJ(VRAM_BANK_E);
+    GX_SetBankForOBJExtPltt(VRAM_BANK_F);
+    func_02002ab8(VRAM_BANK_G);
+    GX_SetBankForBGExtPlttSub(VRAM_BANK_H);
+    GX_SetBankForOBJExtPlttSub(VRAM_BANK_I);
 }
 
 /* Initialise both 3DS-sprite engines: select the main engine as the current one,

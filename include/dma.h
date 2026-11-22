@@ -19,6 +19,16 @@
 #define DMA_CTRL_HI_MODE   0x3a00 /* high half of the control word: transfer mode, size and 32-bit selection */
 #define DMA_CTRL_HI_ENABLE 0x8000 /* high half of DMA_CTRL_ENABLE */
 
+/* Source-address control bit of a channel's control word: set it to make the
+ * channel walk its source address down instead of up. */
+#define DMA_SRC_DECREMENT 0x00800000
+/* DmaValidateTransfer's source-range check: a source address's top byte selects
+ * its memory region.  The IO register block cannot be read by DMA, and addresses
+ * at or above DMA_REGION_LIMIT are outside the ARM9's DMA space. */
+#define DMA_ADDR_REGION_MASK 0xFF000000
+#define DMA_REGION_IO        0x04000000
+#define DMA_REGION_LIMIT     0x08000000
+
 /* Control word of a 32-bit fill: the fill-value register is the fixed source, the
  * destination increments, and the word count goes in the low bits. */
 #define DMA_FILL_CTRL(size)     (((size) >> 2) | 0x85000000)

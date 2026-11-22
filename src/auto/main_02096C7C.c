@@ -295,23 +295,27 @@ void SetScenePanelFaceSlot(s32 faceSlot, s32 faceId, s32 expression) {
     SetFaceSpriteFace(faceChild,faceId);
 }
 
-void func_0209747c(M2C_UNK arg0, s32 arg1) {
-    s32 temp_r0;
-    s32 temp_r0_3;
-    void *temp_r0_2;
+/* Hide the face of slot `faceSlot` (0 or 1) in the bottom scene panel when
+ * `hidden` is nonzero: the slot's linked face child is given face 0 (no face).
+ * When `hidden` is 0 the slot's stored face is shown again.  Either way the
+ * panel's palette is refreshed afterwards. */
+void SetScenePanelFaceHidden(s32 faceSlot, s32 hidden) {
+    s32 panel;
+    s32 child;
+    void *face;
 
-    temp_r0 = FindScenePanel(2);
-    if (temp_r0 == 0) {
+    panel = FindScenePanel(SCENE_PANEL_BOTTOM);
+    if (panel == 0) {
         return;
     }
-    temp_r0_2 = Get3DSpriteChild(temp_r0, arg0);
-    temp_r0_3 = M2C_FIELD(temp_r0_2, s32 *, 0x60);
-    if (arg1 != 0) {
-        SetFaceSpriteFace(temp_r0_3, 0U);
+    face = Get3DSpriteChild(panel, faceSlot);
+    child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
+    if (hidden != 0) {
+        SetFaceSpriteFace(child, 0U);
     } else {
-        SetFaceSpriteFace(temp_r0_3, M2C_FIELD(temp_r0_2, u8 *, 0x58));
+        SetFaceSpriteFace(child, M2C_FIELD(face, u8 *, FACE_SPRITE_FACE));
     }
-    UpdateScenePanelPalette(temp_r0);
+    UpdateScenePanelPalette(panel);
 }
 
 /* Builds the 3D sprite cells for the current sprite mode on both screens:

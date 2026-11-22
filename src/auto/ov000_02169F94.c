@@ -70,7 +70,7 @@ s32 IsSlotSoundActive(s32);
 s32 x,y;
 if(!IsSlotSoundActive(0))return;
 x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;
-PlaySlotSoundEffect(0,func_0208fa78(x/16,y/16));
+SetSlotSoundPan(0,func_0208fa78(x/16,y/16));
 }
 
 /* Copy one 0x100-byte block of the rank icon tiles from /window/rank.cg into

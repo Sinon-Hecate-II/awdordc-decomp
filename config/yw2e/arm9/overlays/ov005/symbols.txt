@@ -6,7 +6,7 @@ func_ov005_022119b4 kind:function(arm,size=0xc) addr:0x022119b4
 func_ov005_022119c0 kind:function(arm,size=0xc) addr:0x022119c0
 func_ov005_022119cc kind:function(arm,size=0xc) addr:0x022119cc
 func_ov005_022119d8 kind:function(arm,size=0xc) addr:0x022119d8
-func_ov005_022119e4 kind:function(arm,size=0x54) addr:0x022119e4
+CreateHistoryMenuPanel kind:function(arm,size=0x54) addr:0x022119e4
 HistoryTabAt kind:function(arm,size=0x1c) addr:0x02211a38
 func_ov005_02211a54 kind:function(arm,size=0x38) addr:0x02211a54
 HistoryMenu_SetRecordText kind:function(arm,size=0xc0) addr:0x02211a8c
@@ -68,7 +68,7 @@ func_ov005_02215650 kind:function(arm,size=0x14) addr:0x02215650
 func_ov005_02215664 kind:function(arm,size=0xe34) addr:0x02215664
 RecordsMenu_CreateRowSlots kind:function(arm,size=0x80) addr:0x02216498
 func_ov005_02216518 kind:function(arm,size=0xcf4) addr:0x02216518
-func_ov005_0221720c kind:function(arm,size=0x58) addr:0x0221720c
+RecordsMenu_Close kind:function(arm,size=0x58) addr:0x0221720c
 func_ov005_02217264 kind:function(arm,size=0x18) addr:0x02217264
 func_ov005_0221727c kind:function(arm,size=0x24) addr:0x0221727c
 func_ov005_022172a0 kind:function(arm,size=0x38) addr:0x022172a0
@@ -206,7 +206,7 @@ data_ov005_02220030 kind:data(any) addr:0x02220030
 data_ov005_02220048 kind:data(any) addr:0x02220048
 data_ov005_02220058 kind:data(any) addr:0x02220058
 data_ov005_02220078 kind:data(any) addr:0x02220078
-data_ov005_022200a0 kind:data(any) addr:0x022200a0
+gHistoryMenuPanelClass kind:data(any) addr:0x022200a0
 data_ov005_02220111 kind:data(any) addr:0x02220111 ambiguous
 data_ov005_02220198 kind:data(any) addr:0x02220198
 data_ov005_022201a0 kind:data(any) addr:0x022201a0

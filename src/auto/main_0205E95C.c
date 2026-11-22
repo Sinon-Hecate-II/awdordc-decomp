@@ -18,7 +18,7 @@ void func_0205e95c(void *arg0) {
     u32 lastActivity;
     u32 now;
 
-    now = GetTickCountMs();
+    now = GetSystemTickMilliseconds();
     if (M2C_FIELD(arg0, s32 *, 0) == -1) {
         return;
     }
@@ -53,7 +53,7 @@ block_14:
  * sends it, otherwise send the state change now and clear the dirty flag.  A NULL
  * argument means the current global connection. */
 void Qr2_StateChanged(void *qr2) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     M2C_UNK Qr2_SendState(void *, M2C_UNK);
     extern void *gQr2Connection;
 
@@ -63,7 +63,7 @@ void Qr2_StateChanged(void *qr2) {
     if (M2C_FIELD(qr2, s32 *, QR2_REPORT_TO_MASTER) == 0) {
         return;
     }
-    if ((u32) (GetTickCountMs() - M2C_FIELD(qr2, s32 *, QR2_LAST_SENT)) < QR2_STATE_MIN_INTERVAL_MS) {
+    if ((u32) (GetSystemTickMilliseconds() - M2C_FIELD(qr2, s32 *, QR2_LAST_SENT)) < QR2_STATE_MIN_INTERVAL_MS) {
         M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 1;
         return;
     }

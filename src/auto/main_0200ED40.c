@@ -75,9 +75,9 @@ void func_0200ede8(void *arg0) {
     } while (var_r4 != NULL);
 }
 
-void func_0200ee10(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }
+void PM_AddPreSleepCallback(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }
 
-void func_0200ee28(M2C_UNK arg0) {
+void PM_AddPostSleepCallback(M2C_UNK arg0) {
     void func_0200ed54(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212fce0;
     func_0200ed54(&data_0212fce0, arg0);

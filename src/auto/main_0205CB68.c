@@ -147,7 +147,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     s32 func_0205cca0(void *, s32, s32);
     void *func_0205cf44(void);
     void MemSet(void *, s32, s32);
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     s32 func_02059cf8(void *, s32);
     s32 Vector_New(s32, s32, void (*)(void *));
     void TableEnter(void *, void **);
@@ -171,7 +171,7 @@ s32 gti2CreateConnection(void *owner, s32 connOut, s32 address, s16 port) {
     *(s32 *)conn = address;
     *(u16 *)((u8 *)conn + 4) = (u16)port;
     *(void **)((u8 *)conn + 8) = owner;
-    timestamp = GetTickCountMs();
+    timestamp = GetSystemTickMilliseconds();
     *(s32 *)((u8 *)conn + 0x1C) = timestamp;
     *(s32 *)((u8 *)conn + 0x88) = *(s32 *)((u8 *)conn + 0x1C);
     *(u16 *)((u8 *)conn + 0x64) = 0;
@@ -342,21 +342,30 @@ success:
     }
 }
 
-s32 func_0205d3d0(void **a,void **b) {
-void *p=*a;void *q=*b;
-if(M2C_FIELD(p,s32 *,12)!=7) {if(!gti2ThinkConnection(p,q))return 0;}
-if(M2C_FIELD(p,s32 *,12)==7 && M2C_FIELD(p,s32 *,20)==0 && M2C_FIELD(p,s32 *,36)==0)gti2RemoveConnection((s32)p);
-return 1;
+/* Advance a connection's timers and retries, then remove it once closed and no callbacks remain. */
+s32 gti2ThinkAndReapConnection(void **connectionArg, void **nowArg) {
+    void *connection = *connectionArg;
+    void *now = *nowArg;
+
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_CLOSED) {
+        if (!gti2ThinkConnection(connection, now)) return 0;
+    }
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) == GT2_STATE_CLOSED &&
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_CLOSE_PENDING) == 0 &&
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_CALLBACKS) == 0) {
+        gti2RemoveConnection((s32)connection);
+    }
+    return 1;
 }
 
 s32 func_0205d428(void *arg0) {
     s32 TableMapSafe2(s32, s32 (*)(void **,void **), s32 *);
-    s32 GetTickCountMs();
-    s32 func_0205d3d0(void **,void **);
+    s32 GetSystemTickMilliseconds();
+    s32 gti2ThinkAndReapConnection(void **,void **);
     s32 sp0;
 
-    sp0 = GetTickCountMs();
-    if (TableMapSafe2(M2C_FIELD(arg0, s32 *, 0xC), &func_0205d3d0, &sp0) == 0) {
+    sp0 = GetSystemTickMilliseconds();
+    if (TableMapSafe2(M2C_FIELD(arg0, s32 *, 0xC), &gti2ThinkAndReapConnection, &sp0) == 0) {
         return 1;
     }
     return 0;

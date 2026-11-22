@@ -20,7 +20,7 @@ extern NetworkAddress6 gNatNegMagic;
  * first one is. The register-bound locals reproduce the original allocation. */
 void NatNeg_SendConnectPong(void *peer) {
     void func_0205d944(s32, s32, u16, void *, s32);
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     extern NetworkAddress6 gNatNegMagic;
     u8 packet[0x14];
 
@@ -77,7 +77,7 @@ void NatNeg_SendConnectPong(void *peer) {
         }
         func_0205d944(val, M2C_FIELD(vr4, s32 *, NATNEG_PEER_REMOTE_IP), M2C_FIELD(vr4, u16 *, NATNEG_PEER_REMOTE_PORT), packet, 0x14);
     }
-    M2C_FIELD(vr4, s32 *, NATNEG_PEER_DEADLINE) = GetTickCountMs() + 0x2BC;
+    M2C_FIELD(vr4, s32 *, NATNEG_PEER_DEADLINE) = GetSystemTickMilliseconds() + 0x2BC;
     M2C_FIELD(vr4, s32 *, NATNEG_PEER_MAX_RETRIES) = 0xC;
     if (M2C_FIELD(vr4, u8 *, NATNEG_PEER_FLAG32) != 0) {
         M2C_FIELD(vr4, s8 *, NATNEG_PEER_FLAG33) = 1;
@@ -188,7 +188,7 @@ void NatNeg_ReleasePeer(void) {
 /* Polls one NAT-negotiation peer: drains its socket, retries the current step
    when the deadline passes, and releases the peer on completion or timeout. */
 void UpdateNatNegPeer(void *peer) {
-s32 ghiSocketCanRecv(s32); s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetTickCountMs(void); void NatNeg_SendInitRequests(); void NatNeg_SendConnectPong(void *);
+s32 ghiSocketCanRecv(s32); s32 ghiRecvFrom(s32,void *,s32,s32,void *,s32 *); void HandleNatNegPacket(u8 *,s32,M2C_UNK); s32 GetSystemTickMilliseconds(void); void NatNeg_SendInitRequests(); void NatNeg_SendConnectPong(void *);
 extern u8 gNatNegRecvBuffer[];
 u8 address[8]; s32 size=8; u8 reply[8]; s32 n;
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_DONE){NatNeg_FreePeer(peer);return;}
@@ -200,7 +200,7 @@ if(n==-1)break;
 HandleNatNegPacket(gNatNegRecvBuffer,n,(M2C_UNK)address);
 } while(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)!=NATNEG_STATE_DONE && M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)!=-1);
 }
-if((M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START || M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_CONNECT) && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+if((M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START || M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_CONNECT) && (u32)GetSystemTickMilliseconds()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)>M2C_FIELD(peer,s32 *,NATNEG_PEER_MAX_RETRIES)){
 M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(2,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
 ((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
@@ -209,7 +209,7 @@ M2C_FIELD(peer,s32 *,NATNEG_PEER_RETRIES)++;
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_START)((void (*)(void *))NatNeg_SendInitRequests)(peer);else NatNeg_SendConnectPong(peer);
 }
 }
-if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_REPORT && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_REPORT && (u32)GetSystemTickMilliseconds()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
 if(M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET2)==-1){
 u16 port;
 reply[1]=2;
@@ -221,7 +221,7 @@ M2C_FIELD(peer,s32 *,NATNEG_PEER_SOCKET)=-1;
 }
 ((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
-if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_ACKED && (u32)GetTickCountMs()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
+if(M2C_FIELD(peer,s32 *,NATNEG_PEER_STATE)==NATNEG_STATE_ACKED && (u32)GetSystemTickMilliseconds()>M2C_FIELD(peer,u32 *,NATNEG_PEER_DEADLINE)){
 M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(1,-1,0,M2C_FIELD(peer,s32 *,NATNEG_PEER_SEND_DATA));
 ((void (*)(s32))NatNeg_ReleasePeer)(M2C_FIELD(peer,s32 *,NATNEG_PEER_ADDRESS));
 }
@@ -316,7 +316,7 @@ void NatNeg_HandleConnectPing(void *peer, void *packet, void *fromAddress) {
    re-sends a pong or, in the connect step, moves on to the report step and tells
    the send callback. */
 void NatNeg_HandleConnectPong(void *peer, void *packet, void *fromAddress) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     void NatNeg_SendConnectPong(void *);
     s32 socket2;
     u16 port;
@@ -337,7 +337,7 @@ void NatNeg_HandleConnectPong(void *peer, void *packet, void *fromAddress) {
             NatNeg_SendConnectPong(peer);
         }
         M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_REPORT;
-        M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = (s32) (GetTickCountMs() + 0x1388);
+        M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = (s32) (GetSystemTickMilliseconds() + 0x1388);
         socket2 = M2C_FIELD(peer, s32 *, NATNEG_PEER_SOCKET2);
         if (socket2 == -1) {
             return;
@@ -357,7 +357,7 @@ void NatNeg_HandleConnectPong(void *peer, void *packet, void *fromAddress) {
    event 1 report); an ERT_TEST (kind 2) is answered by turning the packet into
    an ERT_ACK (kind 3) and sending it back to the peer's address and port. */
 void NatNeg_HandleInitAndErt(void *peer, void *packet, void *fromAddress) {
-    s32 GetTickCountMs(void);
+    s32 GetSystemTickMilliseconds(void);
     void func_0205d944(s32, s32, u16, void *, s32);
     u8 kind;
 
@@ -384,7 +384,7 @@ void NatNeg_HandleInitAndErt(void *peer, void *packet, void *fromAddress) {
                 }
             }
             M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE) = NATNEG_STATE_ACKED;
-            M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = GetTickCountMs() + 0x2710;
+            M2C_FIELD(peer, s32 *, NATNEG_PEER_DEADLINE) = GetSystemTickMilliseconds() + 0x2710;
             M2C_FIELD(peer, void (**)(s32, s32), NATNEG_PEER_EVENT)(
                 M2C_FIELD(peer, s32 *, NATNEG_PEER_STATE), M2C_FIELD(peer, s32 *, NATNEG_PEER_SEND_DATA));
             break;
@@ -446,7 +446,7 @@ NatNeg_HandleInitAndErt(peer,&buf21,fromAddress);
  * the master server cannot be resolved. */
 s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 gameName, s32 playerName, s32 reportToMaster, s32 natNeg, s32 appendKeyCb, s32 appendIdx1Cb, s32 appendIdx2Cb, s32 collectKeysCb, s32 repeatCountCb, s32 eventCb, s32 context) {
     u8 *gpiMalloc(M2C_UNK);
-    M2C_UNK GetTickCountMs();
+    M2C_UNK GetSystemTickMilliseconds();
     M2C_UNK RefreshLocalIps();
     s32 ResolveHostAddress(s8 *, s32, void *, M2C_UNK);
     M2C_UNK StringFormat(s8 *, M2C_UNK *, s32);
@@ -475,7 +475,7 @@ s32 Qr2_CreateConnection(u8 **outConnection, s32 socket, s32 localPort, s32 game
     } else {
         qr2 = *outConnection = gpiMalloc(0x110);
     }
-    GetTickCountMs();
+    GetSystemTickMilliseconds();
     SetRandSeed();
     StringCopy(qr2 + QR2_GAMENAME, gameName);
     StringCopy(qr2 + 0x44, playerName);
@@ -600,7 +600,7 @@ void Qr2_ReadPackets(void *qr2) {
 #pragma opt_propagation off
 #pragma scheduling on
 void NatNeg_SendInitRequests(void *arg0) {
-s32 GetPreferredLocalIp(void); s32 func_0205d9fc(s32); s32 GetTickCountMs(void);
+s32 GetPreferredLocalIp(void); s32 func_0205d9fc(s32); s32 GetSystemTickMilliseconds(void);
 void func_0205d944(s32,s32,u16,void *,s32);
 s32 StringCopy(void *,s32); s32 StringLength(void *);
 extern M2C_UNK gServiceNameBuffer,gNatNegManager;
@@ -638,7 +638,7 @@ packet.bytes[20]=port;packet.bytes[19]=port>>8;
 if(M2C_FIELD(arg0,s32 *,28)==0){
 buf[12]=2;func_0205d944(M2C_FIELD(arg0,s32 *,0),M2C_FIELD(&gNatNegManager,s32 *,8),0x6cfd,buf,len);
 }
-M2C_FIELD(arg0,s32 *,40)=GetTickCountMs()+500;
+M2C_FIELD(arg0,s32 *,40)=GetSystemTickMilliseconds()+500;
 M2C_FIELD(arg0,s32 *,36)=30;
 
 }

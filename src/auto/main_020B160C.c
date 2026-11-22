@@ -514,12 +514,12 @@ s32 InitSpriteSlotFromDef(s32 x, s32 y, void *slot, void *desc, s32 id) {
  * ones (unless a slot already took focus), then calls each visible slot's per-frame
  * callback and the focused-slot key handler. */
 void UpdateSpriteSlots(void) {
-s32 func_020b2714(void); s32 func_020b26b8(void); s32 TryFocusSpriteSlot(u8 *);
+s32 IsSpriteDrawPaused(void); s32 func_020b26b8(void); s32 TryFocusSpriteSlot(u8 *);
 void AnimateSpriteSlot(u8 *); s32 HandleSpriteSlotTouch(u8 *); void HandleFocusedSpriteSlotKey(void);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub,*gSpriteSlotManager;
 extern u8 gSpriteSlots[];
 s32 slotFocused=0; void *savedEngine; s32 pass; s32 i; u8 *slot;
-if(func_020b2714())return;
+if(IsSpriteDrawPaused())return;
 if(func_020b26b8())return;
 savedEngine=gCur3DSpriteEngine;
 for(pass=0;pass<2;pass++){

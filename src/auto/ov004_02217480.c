@@ -39,7 +39,7 @@ func_01ffa8c4(state,1);
 
 #pragma opt_strength_reduction off
 void func_ov004_02217514(void *state) {
-void *func_0208c54c(void *);
+void *CreateEffectSpriteObject(void *);
 void LoadAnimatedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
@@ -50,14 +50,14 @@ s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
 switch(M2C_FIELD(state,u8 *,0x35)){
 case 0:
-sprite=func_0208c54c(state);LoadAnimatedSpriteAssetsFromNarc(sprite,data_ov004_0223c678,0x3a800,25,1);
+sprite=CreateEffectSpriteObject(state);LoadAnimatedSpriteAssetsFromNarc(sprite,data_ov004_0223c678,0x3a800,25,1);
 y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;
 M2C_FIELD(sprite,s32 *,0x40)=FX_Div(4096,M2C_FIELD(state,s32 *,0x40));
 PlaySoundEffect(238);M2C_FIELD(state,u8 *,0x35)=1;return;
 case 1:
-sprite=func_0208c54c(state);LoadAnimatedSpriteAssetsFromNarc(sprite,data_ov004_0223c63c,0x3a800,25,1);
+sprite=CreateEffectSpriteObject(state);LoadAnimatedSpriteAssetsFromNarc(sprite,data_ov004_0223c63c,0x3a800,25,1);
 y=M2C_FIELD(entry,s16 *,2);x=M2C_FIELD(entry,s16 *,0);
 M2C_FIELD(sprite,s32 *,0x34)=x;M2C_FIELD(sprite,s32 *,0x38)=y;
 M2C_FIELD(sprite,s32 *,0x3c)=9;

@@ -449,9 +449,9 @@ void func_ov009_0222496c(void *arg0) {
 }
 
 void *func_ov009_0222497c(void *arg0) {
-    void func_ov009_02224d1c(void *);
+    void FreeLinkPacket(void *);
     if (M2C_FIELD(arg0,void **,4) != NULL) {
-        func_ov009_02224d1c(M2C_FIELD(arg0,void **,4));
+        FreeLinkPacket(M2C_FIELD(arg0,void **,4));
         M2C_FIELD(arg0,s32 *,4) = 0;
     }
     return arg0;
@@ -683,7 +683,7 @@ void func_ov009_02224d0c(M2C_UNK arg0) {
     func_ov009_0222132c(arg0, 0x20);
 }
 
-void func_ov009_02224d1c(void *arg0) {
+void FreeLinkPacket(void *arg0) {
     M2C_UNK FreeLinkBlock(void *, s32);
     FreeLinkBlock(arg0, M2C_FIELD(arg0, s32 *, 8) + 0xC);
 }

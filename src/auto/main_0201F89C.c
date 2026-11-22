@@ -11,7 +11,7 @@
 s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
     s32 func_020214a8();
     void *func_0201f1d0(s32 (*)(void *), void *, s8);
-    s32 func_0201f318(void *, void *);
+    s32 SocketSubmitRecvTask(void *, void *);
     s32 SocketListenTask(void *);
     s32 ready, usable;
     s8 state;
@@ -49,7 +49,7 @@ s32 SocketListen(void *sock, u16 *peerPort, s32 *peerAddr) {
     M2C_FIELD(request, s32 *, 0x14) = (s32)peerPort;
     M2C_FIELD(request, s32 *, 0x18) = (s32)peerAddr;
     M2C_FIELD(sock, s16 *, SOCK_FLAGS) = (s16)(M2C_FIELD(sock, s16 *, SOCK_FLAGS) | SOCK_FLAG_BUSY);
-    return func_0201f318(sock, request);
+    return SocketSubmitRecvTask(sock, request);
 }
 
 /* Task half of SocketListen: bind the socket's receive port to its raw connection
@@ -138,20 +138,22 @@ s32 SocketConnect(void *sock, s16 peerPort, s32 peerAddr) {
     return 0;
 }
 
-/* Queue a connect task for the socket: its arguments are the local port bound to
- * the connection and the peer port/address, and the socket is marked busy until
- * the task reports. */
+/* Queue a connect task for the socket: its callback gets the local port bound to
+ * the connection and the peer port/address the connect goes to, and the socket is
+ * marked busy until the task reports. Returns SOCK_NO_MEMORY when no task record
+ * could be allocated, else the result of posting the task. */
 s32 SocketSubmitConnectTask(void *sock) {
-s32 SocketConnectTask(void *);
-void *SocketAllocTask(s32 (*)(void *),void *,s8);
-s32 func_0201f318(void *,void *);
-void *task=SocketAllocTask(SocketConnectTask,sock,M2C_FIELD(sock,s8 *,SOCK_BLOCKING));
-if(!task)return -33;
-M2C_FIELD(task,u16 *,CONNECT_TASK_LOCAL_PORT)=M2C_FIELD(sock,u16 *,SOCK_RECV_PORT);
-M2C_FIELD(task,u16 *,CONNECT_TASK_PEER_PORT)=M2C_FIELD(sock,u16 *,SOCK_CONNECT_PORT);
-M2C_FIELD(task,s32 *,CONNECT_TASK_PEER_ADDR)=M2C_FIELD(sock,s32 *,SOCK_CONNECT_ADDR);
-M2C_FIELD(sock,s16 *,SOCK_FLAGS)|=SOCK_FLAG_BUSY;
-return func_0201f318(sock,task);
+    s32 SocketConnectTask(void *);
+    void *SocketAllocTask(s32 (*)(void *), void *, s8);
+    s32 SocketSubmitRecvTask(void *, void *);
+    void *task = SocketAllocTask(SocketConnectTask, sock, M2C_FIELD(sock, s8 *, SOCK_BLOCKING));
+
+    if (!task) return SOCK_NO_MEMORY;
+    M2C_FIELD(task, u16 *, CONNECT_TASK_LOCAL_PORT) = M2C_FIELD(sock, u16 *, SOCK_RECV_PORT);
+    M2C_FIELD(task, u16 *, CONNECT_TASK_PEER_PORT) = M2C_FIELD(sock, u16 *, SOCK_CONNECT_PORT);
+    M2C_FIELD(task, s32 *, CONNECT_TASK_PEER_ADDR) = M2C_FIELD(sock, s32 *, SOCK_CONNECT_ADDR);
+    M2C_FIELD(sock, s16 *, SOCK_FLAGS) |= SOCK_FLAG_BUSY;
+    return SocketSubmitRecvTask(sock, task);
 }
 
 /* Connect task of a socket: point the raw connection at the peer from the task
@@ -360,7 +362,7 @@ M2C_FIELD(p,s32 *,0x10)=arg1;
 M2C_FIELD(p,s32 *,0x14)=arg2;
 M2C_FIELD(p,s32 *,0x18)=arg3;
 M2C_FIELD(p,s32 *,0x1c)=arg4;
-func_0201f318(arg0,p);
+SocketSubmitRecvTask(arg0,p);
 }
 
 s32 func_02020038(void *arg0) {
@@ -439,7 +441,7 @@ void *q=M2C_FIELD(arg0,void **,0x64),*p;
 if(M2C_FIELD(q,s32 *,0xf8)<M2C_FIELD(q,u16 *,0xfc))return 0;
 p=SocketAllocTask((s32 (*)(void *))func_020201d4,arg0,0);
 if(!p)return -33;
-return func_0201f318(arg0,p);
+return SocketSubmitRecvTask(arg0,p);
 }
 
 void func_020201d4(void *arg0) {

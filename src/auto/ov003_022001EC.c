@@ -134,8 +134,11 @@ s32 GetShogunBgFileName(s32 arg0) {
     return sShogunBgFileNames[arg0 - 1];
 }
 
-s32 GetPlayerBgFlagTile(u32 arg0) {
-    switch (arg0) {
+/* Tile index of the colour flag drawn on the select-screen background for player
+ * id 1..4, or 0 when there is no such player (the panel counterpart is
+ * GetPlayerPanelFlagTile). */
+s32 GetPlayerBgFlagTile(u32 playerId) {
+    switch (playerId) {
     case 1:
         return 0x2937;
     case 2:

@@ -163,14 +163,17 @@ s32 func_ov009_022254d8(void) {
     return 0;
 }
 
-M2C_UNK func_ov009_0222550c(void *arg0, s32 arg1) {
+/* Begin the link match-start handshake: fill the start record with the match id
+ * and this console's acknowledgement bit, install it in the link state and, when
+ * this console is the link host, send the start request to the peers. */
+M2C_UNK SubmitLinkStartRecord(void *record, s32 matchId) {
     M2C_UNK QueueHostLinkPacket(s32, void *, s32, s32);
     extern M2C_UNK gLinkState;
-    M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, s16 *, 4) = 1 << GetLinkLocalPlayerId();
-    M2C_FIELD(&gLinkState, void **, 0x48) = arg0;
+    M2C_FIELD(record, s32 *, LINK_START_RECORD_ID) = matchId;
+    M2C_FIELD(record, u16 *, LINK_START_RECORD_ACKS) = 1 << GetLinkLocalPlayerId();
+    M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD) = record;
     if (IsLinkHost() == 0) return;
-    QueueHostLinkPacket(2, M2C_FIELD(&gLinkState, void **, 0x48), 8, 0xFFFF);
+    QueueHostLinkPacket(LINK_MSG_START_REQUEST, M2C_FIELD(&gLinkState, void **, LINK_STATE_START_RECORD), 8, 0xFFFF);
 }
 
 /* Reports whether every connected player has acknowledged this console's
@@ -202,8 +205,8 @@ void func_ov009_022255ec() {
 }
 
 void func_ov009_02225600(void *arg0) {
-    M2C_UNK func_ov009_0222550c(void *, s32);
-    func_ov009_0222550c(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
+    M2C_UNK SubmitLinkStartRecord(void *, s32);
+    SubmitLinkStartRecord(arg0 + 0x38, M2C_FIELD(arg0, s32 *, 0x34));
 }
 
 s32 func_ov009_02225614(s32 arg0) {
@@ -281,7 +284,7 @@ void func_ov009_0222579c(s32 arg0) {
     func_ov009_02225768(arg0 + 0x34);
 }
 
-void func_ov009_022257ac(M2C_UNK arg0) {
+void SpawnLinkPlayerAnnounce(M2C_UNK arg0) {
     extern M2C_UNK data_ov009_022266ec;
     extern M2C_UNK data_ov009_02226588;
     M2C_UNK **temp_r0;
@@ -372,21 +375,26 @@ void func_ov009_02225934(void) {
 
 }
 
-void CreateLocalMatchRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    extern M2C_UNK data_ov009_02226518;
-    extern M2C_UNK data_ov009_022266c4;
-    void *temp_r0;
+/* Creates the local-wireless match-request node: a sprite object of
+ * gLocalMatchRequestClass, owned by `owner`, whose search parameters (name table,
+ * name count, game type, timeout and flags) are copied into the request fields the
+ * node's step reads back.  The online overlay's CreateOnlineMatchRequest builds the
+ * same node over gOnlineMatchRequestClass. */
+void CreateLocalMatchRequest(s32 names, s32 nameCount, s32 type, s32 timeout, s32 flags, s32 owner) {
+    extern M2C_UNK gLocalMatchRequestClass;
+    extern M2C_UNK gLocalMatchRequestVtbl;
+    void *request;
 
-    temp_r0 = CreateSpriteObject(&data_ov009_02226518, arg5);
-    if (temp_r0 == NULL) {
+    request = CreateSpriteObject(&gLocalMatchRequestClass, owner);
+    if (request == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov009_022266c4;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = arg4;
+    M2C_FIELD(request, M2C_UNK **, 0) = &gLocalMatchRequestVtbl;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_NAMES) = names;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_NAME_COUNT) = nameCount;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_TYPE) = type;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_TIMEOUT) = timeout;
+    M2C_FIELD(request, s32 *, MATCH_REQUEST_FLAGS) = flags;
 }
 
 /* Broadcasts the local player's record and name to the other connected peers
@@ -487,9 +495,9 @@ s32 func_ov009_02225b80(s32 arg0) {
 }
 
 void *func_ov009_02225b94(void *arg0) {
-    M2C_UNK func_ov009_02224d1c();
+    M2C_UNK FreeLinkPacket();
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        func_ov009_02224d1c();
+        FreeLinkPacket();
         M2C_FIELD(arg0, s32 *, 0x38) = 0;
     }
     return arg0;
@@ -497,7 +505,7 @@ void *func_ov009_02225b94(void *arg0) {
 
 void *func_ov009_02225bbc(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        func_ov009_02224d1c();
+        FreeLinkPacket();
         M2C_FIELD(arg0, s32 *, 0x38) = 0;
     }
     MemFree(arg0);

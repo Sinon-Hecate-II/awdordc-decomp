@@ -48,20 +48,23 @@ void MapEditor_StartMap(void *editor) {
 func_ov007_022121e4();
 }
 
-void func_ov007_0221142c(M2C_UNK arg0) {
+/* Map editor entry: the first time the editor opens (event flag 0x20), create a
+ * text layer owned by `owner`, render the editor's intro message (0x46000025)
+ * into it and arm its panel refresh timer. */
+void MapEditor_ShowIntroMessage(M2C_UNK owner) {
     M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
     s32 IsEventFlagMidSet(M2C_UNK);
     M2C_UNK func_0208999c(void *, M2C_UNK, s32);
     void *CreateTextLayer(M2C_UNK);
-    void *temp_r0;
+    void *layer;
 
     if (IsEventFlagMidSet(0x20) != 0) {
         return;
     }
     SetEventFlagMid(0x20, 1);
-    temp_r0 = CreateTextLayer(arg0);
-    func_0208999c(temp_r0, 2, 0x46000025);
-    M2C_FIELD(temp_r0, s32 *, 0x58) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x58) & ~0x1FC00000) | 0x01000000);
+    layer = CreateTextLayer(owner);
+    func_0208999c(layer, 2, 0x46000025);
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (s32) ((M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_REFRESH_TIMER) | 0x01000000);
 }
 
 void func_ov007_02211480(void) {

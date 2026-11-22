@@ -53,6 +53,7 @@ enum {
 #define WH_STATE_PHASE            0x2C
 #define WH_STATE_BSS_DESC         0x4C /* Buffer for the selected host descriptor. */
 #define WH_STATE_CONNECT_FLAGS    0x58
+#define WH_PHASE_STEP_QUEUED     2 /* a WFC step was queued; wait for it before starting the next */
 #define WH_PHASE_READY_TO_CONNECT 3
 #define WH_PHASE_CONNECT_PENDING  8
 #define WH_CONNECT_SETTINGS_BYTES 0x60
@@ -193,5 +194,23 @@ enum {
     OV001_PROFILE_SAVED     = 1, /* the obtained WFC profile was written to the save slots */
     OV001_PROFILE_OTHER     = 2  /* the profile action ended another way */
 };
+
+/* A loaded message archive: the 12-byte record the archive pool
+ * (gOv001MessageArchiveFreeList) hands out, one per message file Ov001_LoadMessageArchive
+ * loads.  Ov001_GetMessageText reads message `index` through it. */
+#define MESSAGE_ARCHIVE_OFFSETS  0x00 /* s32 *: per-message text offsets, added to MESSAGE_ARCHIVE_TEXTS */
+#define MESSAGE_ARCHIVE_TEXTS    0x04 /* s32 *: base of the message texts */
+#define MESSAGE_ARCHIVE_FILE     0x08 /* void *: loaded (decompressed) file image, freed on release */
+/* The archive pool keeps its free records in a queue at this offset. */
+#define MESSAGE_POOL_QUEUE       0x60
+
+/* Layout of a loaded message file: a header in front of the message bank, whose
+ * per-message offset table sits MESSAGE_BANK_OFFSETS_OFF bytes into the bank and
+ * whose texts start at the bank plus the offset stored at
+ * MESSAGE_BANK_TEXTS_OFF, plus MESSAGE_BANK_TEXTS_BIAS. */
+#define MESSAGE_FILE_HEADER        0x20
+#define MESSAGE_BANK_OFFSETS_OFF   0x10
+#define MESSAGE_BANK_TEXTS_OFF     0x04
+#define MESSAGE_BANK_TEXTS_BIAS     0x08
 
 #endif

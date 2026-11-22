@@ -7,7 +7,7 @@
 #define NET_SOCKET_H
 
 /* A socket operation is a small request record the caller fills in and hands to
- * the socket's task (func_0201f1d0 allocates one, func_0201f318/SocketSubmitSendTask/
+ * the socket's task (func_0201f1d0 allocates one, SocketSubmitRecvTask/SocketSubmitSendTask/
  * func_0201f338 post it, the task calls the callback with the record).  Its
  * fixed part is: +0x00 callback the task runs, +0x04 the socket, +0x08 the
  * task's message queue, +0x0C the socket's state and +0x0D nonzero when the
@@ -163,6 +163,7 @@ typedef struct SendRequest {
 #define SOCK_NOT_READY   (-39) /* the socket's ready flag is clear */
 #define SOCK_WOULD_BLOCK (-6)  /* nothing queued and the caller asked not to wait */
 #define SOCK_ALREADY     (-7)  /* an operation is already in progress on the socket */
+#define SOCK_NO_MEMORY  (-33) /* no task record could be allocated for the operation */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
 #define SOCK_MESSAGE_TOO_LONG (-35) /* a send is larger than the packet buffer allows */
 

@@ -57,7 +57,7 @@ enum {
     SB_SORT_STRING        = 2, /* string value, case sensitive (SBServerListCompareString) */
     SB_SORT_STRING_NOCASE = 3  /* string value, case insensitive (SBServerListCompareStringNoCase) */
 };
-#define SB_SLIST_START_TICK  0x4b4 /* u32 GetTickCountMs() the 2 s collection window starts at */
+#define SB_SLIST_START_TICK  0x4b4 /* u32 GetSystemTickMilliseconds() the 2 s collection window starts at */
 #define SB_SLIST_CRYPT_KEY  0x74  /* u8[8] GameSpy cipher key derived from the session challenge */
 #define SB_SLIST_RECV_BUFFER 0x7c  /* char *reply buffer (SBServerListConnectAndQuery allocates it) */
 #define SB_SLIST_RECV_LENGTH 0x80  /* s32 bytes held in SB_SLIST_RECV_BUFFER */

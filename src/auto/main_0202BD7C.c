@@ -100,7 +100,7 @@ void InitSoundArchive(void *archive, s32 base) {
     gCurrentArchive = (s32)archive;
 }
 
-s32 func_0202c014(s32 arg0){extern s32 gCurrentArchive;s32 old=gCurrentArchive;gCurrentArchive=arg0;return old;}
+s32 Sound_SetCurrentArchive(s32 arg0){extern s32 gCurrentArchive;s32 old=gCurrentArchive;gCurrentArchive=arg0;return old;}
 
 s32 Sound_GetCurrentArchive(void) {
     extern s32 gCurrentArchive;

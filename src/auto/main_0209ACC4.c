@@ -78,7 +78,7 @@ s32 DrawTextStep(void *arg0) {
     s32 IsGlyphEscape(void *);
     u32 func_02099e6c(void *, s32);
     M2C_UNK func_0209ac6c(void *, s32);
-    s32 func_0209c168(void *, s32);
+    s32 AdvanceTextColumn(void *, s32);
     M2C_UNK func_0209c418(void *);
     TextState *st = arg0;
     s32 var_r6;
@@ -109,7 +109,7 @@ main_loop:
                     return 1;
                 }
                 if (!(st->cellX == st->lineX && st->column == 0)) {
-                    func_0209c168(st, 1);
+                    AdvanceTextColumn(st, 1);
                 }
                 if (temp_r7 != 0) {
                     func_02099854(st->cursor, st->pixelX + (st->linePixel << 5), st->column, st->attr16);
@@ -131,7 +131,7 @@ main_loop:
                 if ((u8) st->column <= 1U) {
                     func_0209ac6c(st, func_020999e8(st));
                 }
-                if (func_0209c168(st, var_r6) != 0) {
+                if (AdvanceTextColumn(st, var_r6) != 0) {
                     func_0209ac6c(st, func_020999e8(st));
                 }
                 if ((notify = st->sound) != 0 && (s8) st->speed != 0) {

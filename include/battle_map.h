@@ -166,6 +166,8 @@ typedef struct DirectionMarker {
 #define MAP_VIEW_CELL_X     0x5150 /* s16 view scroll x, in whole cells (MAP_VIEW_X / 16) */
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
 #define MAP_VIEW_SCROLL_STATE 0x5154 /* u8 map-view scroll flags; the low nibble is nonzero while a scroll runs (IsMapCursorIdle) */
+#define MAP_BATTLE_RULES    0x5155 /* u8 battle-rule flags, set to 0x13 at battle start-up and overridable by the map script; the player-defeat checks test them */
+#define MAP_RULE_DEFEAT_BY_HQ 0x02 /* MAP_BATTLE_RULES: lose when the player's HQ has been lost */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
 /* The eye position (view+0x10..0x18, UpdateMapViewEye) is the view's zoom-scaled
  * offset plus the map scroll converted to view units: MAP_VIEW_EYE_CELL units per
@@ -743,6 +745,7 @@ enum {
 #define PLAYER_REC_FUNDS   0x00 /* s32 funds: builds cost ten times the unit's price */
 #define PLAYER_REC_FUNDS_SPENT 0x04 /* s32 total funds the player has spent */
 #define PLAYER_FUNDS_SPENT_MAX 999999999 /* cap of PLAYER_REC_FUNDS_SPENT */
+#define PLAYER_FUNDS_MAX 999999 /* funds saturate at the six-digit display maximum */
 #define PLAYER_REC_INCOME  0x08 /* s32 funds the player's properties pay it per turn */
 #define PLAYER_FUNDS_OFF (MAP_PLAYER_STATES + PLAYER_REC_FUNDS) /* s32 funds of a player record */
 #define PLAYER_REC_SPRITE  0x6C /* u32 unit-sprite state: low byte army id, small bitfields select the sprite tables */

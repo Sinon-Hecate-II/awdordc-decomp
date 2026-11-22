@@ -198,10 +198,10 @@ typedef struct DS3DSpriteEngine {
     u8   filler_47;
     u8   count;        /* +0x48 number of 3D sprites in use */
     u8   filler_49;
-    u8   index;        /* +0x4A */
-    u8   filler_4B;
-    u8   filler_4C;
-    u8   filler_4D;
+         u8   index;        /* +0x4A quads queued since the last flush */
+     u8   lastOamStart; /* +0x4B OAM index the last entry write started at */
+     u8   lastOamCount; /* +0x4C OAM entries that write added */
+     u8   filler_4D;
     u8   filler_4E;
     u8   filler_4F;
     void *filler_50;
@@ -230,6 +230,8 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_ENGINE_SPRITE_LIST  0x08 /* void *head of this engine's priority-sorted 3D sprite list */
 #define DS3D_ENGINE_SPRITE_COUNT 0x49 /* u8 3D sprites allocated into that list (its next-array index) */
 #define DS3D_ENGINE_INDEX    0x4A /* u8 quads queued since the last flush */
+#define DS3D_ENGINE_LAST_OAM_START 0x4B /* u8 OAM index the last entry write started at */
+#define DS3D_ENGINE_LAST_OAM_COUNT 0x4C /* u8 OAM entries that write added */
 #define DS3D_ENGINE_TEXTURE 0x1C /* u32 VRAM address graphics blocks are decompressed to */
 #define DS3D_ENGINE_PALETTES 0x30 /* void *0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
 #define DS3D_ENGINE_DIRTY    0x46 /* u8 DS3D_DIRTY_* bits (and bit i per layer) */

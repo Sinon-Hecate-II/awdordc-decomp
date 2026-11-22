@@ -692,7 +692,7 @@ void func_02008ca0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     SendArm7Message(9, arg0, arg1, arg2, 0);
 }
 
-void func_02008cc8(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+void Sound_StartChannels(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     SendArm7Message(0xC, arg0, arg1, arg2, arg3);
 }
 

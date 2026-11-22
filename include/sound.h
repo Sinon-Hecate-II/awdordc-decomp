@@ -64,6 +64,17 @@
 #define SOUND_PLAYER_STRIDE 0x174 /* bytes per player slot */
 
 /* Fields of a player slot that couple it to the handle variable that owns it. */
+/* A player handle's fade envelope (SOUND_HANDLE_FADE): GetFadeValue ramps the
+ * value from `start` to `target` over `length` ticks, AdvanceFade counting them. */
+typedef struct FadeEnvelope {
+    s32 start;    /* +0x00 value the fade starts from */
+    s32 target;   /* +0x04 value it ramps to */
+    s32 elapsed;  /* +0x08 ticks elapsed so far */
+    s32 length;   /* +0x0C ticks the fade spans */
+} FadeEnvelope;
+
+#define SOUND_HANDLE_FADE      0xE8 /* FadeEnvelope the player's volume is faded through */
+
 #define SOUND_HANDLE_OWNER    0x14C /* void ** the caller's handle variable, NULL when the slot is detached */
 #define SOUND_HANDLE_PRIORITY 0x150 /* s32 priority of the sound in the slot: a new sound replaces it only with at least this priority */
 
@@ -262,7 +273,7 @@ typedef struct PackedBankEntry {
 #define SOUND_VOICE_CHANNEL_BASE 0x04 /* void * the gSoundChannels entry whose voice list holds the voice */
 #define SOUND_VOICE_HEAP     0x08 /* void * channel heap block the voice plays from (its SOUND_CHANNEL_HEAP_OWNER points back) */
 #define SOUND_VOICE_LINKS    0x14 /* the {prev, next} pair of the voice lists */
-#define SOUND_VOICE_ENVELOPE 0x1C /* 16-byte volume envelope state (func_0202eec0/eed8, AdvanceFade/GetFadeValue/IsFadeDone) */
+#define SOUND_VOICE_ENVELOPE 0x1C /* 16-byte volume envelope state (Sound_ResetFade/eed8, AdvanceFade/GetFadeValue/IsFadeDone) */
 #define SOUND_VOICE_STATE    0x2C /* u8 0 = free, 1 = keyed on, 2 = playing */
 #define SOUND_VOICE_STARTED  0x2D /* u8 set once the voice's start command has been processed by the ARM7 */
 #define SOUND_VOICE_STOP_PENDING 0x2F /* u8 set while the channel-stop command still has to be sent */

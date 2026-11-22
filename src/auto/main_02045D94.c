@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void func_02076710(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);func_02076710(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void BuildCrc16Table(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);BuildCrc16Table(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
 s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!FifoReadBlock(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
 
@@ -281,7 +281,7 @@ s32 VerifySaveBlock(void *arg0) {
     if (func_02045e70(r8) == 0) {
         return 0xffffd8ef;
     }
-    func_02076710((u8 *)r8 + 0x500, 0xA001);
+    BuildCrc16Table((u8 *)r8 + 0x500, 0xA001);
     if (func_02045eb4(r8) == 0) {
         return 0xffffd8ef;
     }

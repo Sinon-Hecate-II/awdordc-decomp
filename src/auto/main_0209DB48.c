@@ -254,18 +254,20 @@ u8 IsTaskSpriteRunning(M2C_UNK arg0) {
     return var_r0;
 }
 
-void LoadWindowGraphics(s32 arg0, M2C_UNK arg1) {
+/* Load the dialogue window's graphics into `dest`: pick window_talk.cg or
+ * window_body.cg from the window directory according to the panel layout. */
+void LoadWindowGraphics(s32 layout, M2C_UNK dest) {
     M2C_UNK LoadDecompressedFileTo(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_0211f840;
-    extern M2C_UNK data_0211f848;
-    extern M2C_UNK data_0211f858;
-    SetFileDirectory(&data_0211f840);
-    switch (arg0) {                                 /* irregular */
-    case 1:
-        LoadDecompressedFileTo(&data_0211f848, arg1);
+    extern M2C_UNK sWindowGfxDirectory;
+    extern M2C_UNK sWindowTalkCgFile;
+    extern M2C_UNK sWindowBodyCgFile;
+    SetFileDirectory(&sWindowGfxDirectory);
+    switch (layout) {
+    case SCENE_PANEL_LAYOUT_TALK:
+        LoadDecompressedFileTo(&sWindowTalkCgFile, dest);
         return;
-    case 2:
-        LoadDecompressedFileTo(&data_0211f858, arg1);
+    case SCENE_PANEL_LAYOUT_BODY:
+        LoadDecompressedFileTo(&sWindowBodyCgFile, dest);
         return;
     }
 }

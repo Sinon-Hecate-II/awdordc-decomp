@@ -378,22 +378,25 @@ s32 GetNameGraphicFile(s32 arg0) {
     return gNameGraphicFiles[arg0];
 }
 
-void func_020e3448(void) {
+/* Creates the game's main heap: hand the whole arena (its low to high bound,
+ * 8-byte aligned) to CreateExpHeapInRange, store the resulting expanded heap in
+ * gGameHeap and clear its allocation flags. */
+void InitGameHeap(void) {
     s32 GetArenaHi(M2C_UNK);
     s32 GetArenaLo(M2C_UNK);
     s32 AllocFromArena(M2C_UNK, s32, M2C_UNK);
-    s32 func_0202a424(s32, s32, M2C_UNK);
-    M2C_UNK func_0202a4d4(s32, M2C_UNK);
-    extern s32 data_02168fe4;
-    s32 temp_r0;
-    s32 temp_r4;
-    s32 temp_r4_2;
+    s32 CreateExpHeapInRange(s32, s32, M2C_UNK);
+    M2C_UNK SetHeapFlags(s32, M2C_UNK);
+    extern s32 gGameHeap;
+    s32 heap;
+    s32 arenaLo;
+    s32 arenaSize;
 
-    temp_r4 = GetArenaLo(0);
-    temp_r4_2 = (GetArenaHi(0) - temp_r4) & ~7;
-    temp_r0 = func_0202a424(AllocFromArena(0, temp_r4_2, 8), temp_r4_2, 0);
-    data_02168fe4 = temp_r0;
-    func_0202a4d4(temp_r0, 0);
+    arenaLo = GetArenaLo(0);
+    arenaSize = (GetArenaHi(0) - arenaLo) & ~7;
+    heap = CreateExpHeapInRange(AllocFromArena(0, arenaSize, 8), arenaSize, 0);
+    gGameHeap = heap;
+    SetHeapFlags(heap, 0);
 }
 
 u16 func_020e349c(void) {

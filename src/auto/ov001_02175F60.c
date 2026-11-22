@@ -284,7 +284,7 @@ void Ov001_ShutdownScreen(void) {
  * advance to the next step. */
 void Ov001_InitScreen(void) {
     void func_ov001_02184404(void);
-    void func_ov001_02175e74(void);
+    void Ov001_InitMessageArchiveQueue(void);
     void func_ov001_02171fa0(void);
     void Ov001_InitHighlightBackground(void);
     void func_ov001_02171c10(void);
@@ -313,19 +313,19 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK gOv001TopScreenPath;
     extern M2C_UNK gOv001TopStep1Path;
     extern M2C_UNK GX_LoadBG1CharSub;
-    extern M2C_UNK func_02004108;
-    extern M2C_UNK func_02004314;
-    extern M2C_UNK func_020041b8;
+    extern M2C_UNK GX_LoadSubBGPltt;
+    extern M2C_UNK GX_LoadOBJSub;
+    extern M2C_UNK GX_LoadSubOBJPltt;
     extern M2C_UNK GX_LoadBG2Char;
     extern M2C_UNK GX_LoadBGPltt;
-    extern M2C_UNK func_020042bc;
+    extern M2C_UNK GX_LoadOBJ;
     extern M2C_UNK GX_LoadOBJPltt;
     extern M2C_UNK GX_LoadBG1ScrSub;
     extern M2C_UNK func_ov001_02176808;
 
     /* Bring up the screen's subsystems. */
     func_ov001_02184404();
-    func_ov001_02175e74();
+    Ov001_InitMessageArchiveQueue();
     func_ov001_02171fa0();
     Ov001_InitHighlightBackground();
     func_ov001_02171c10();
@@ -339,12 +339,12 @@ void Ov001_InitScreen(void) {
     Ov001_LoadCharBank(1, Ov001_GetLocalizedFileName(&gOv001TopCharPath));
     Ov001_LoadCharBank(0, Ov001_GetLocalizedFileName(&gOv001BottomCharPath));
     Ov001_LoadAsset(&gOv001TopBgTilesPath, &GX_LoadBG1CharSub);
-    Ov001_LoadAsset(&gOv001TopBgMapPath, &func_02004108);
-    Ov001_LoadAsset(&gOv001TopObjTilesPath, &func_02004314);
-    Ov001_LoadAsset(&gOv001ObjMapPath, &func_020041b8);
+    Ov001_LoadAsset(&gOv001TopBgMapPath, &GX_LoadSubBGPltt);
+    Ov001_LoadAsset(&gOv001TopObjTilesPath, &GX_LoadOBJSub);
+    Ov001_LoadAsset(&gOv001ObjMapPath, &GX_LoadSubOBJPltt);
     Ov001_LoadAsset(&gOv001BottomBgStep1TilesPath, &GX_LoadBG2Char);
     Ov001_LoadAsset(&gOv001BottomBgStep1MapPath, &GX_LoadBGPltt);
-    Ov001_LoadAsset(&gOv001BottomObjTilesPath, &func_020042bc);
+    Ov001_LoadAsset(&gOv001BottomObjTilesPath, &GX_LoadOBJ);
     Ov001_LoadAsset(&gOv001BottomObjMapPath, &GX_LoadOBJPltt);
     /* The top screen's layout depends on the screen variant. */
     switch (Ov001_GetScreenLayout()) {
@@ -451,16 +451,19 @@ void Ov001_LoadWifiMenuBackground(void) {
     M2C_FIELD((void *)0x0400000A, u16 *, 2) = (M2C_FIELD((void *)0x0400000A, u16 *, 2) & ~3) | 3;
 }
 
+/* Fades in the ov001 Wi-Fi menu: start the sub and main fades from white with
+ * the menu's background and object planes, show those planes, then run the step
+ * that brings the menu up once both fades have finished. */
 void Ov001_FadeInWifiMenu(void) {
-    extern M2C_UNK func_ov001_02176a74;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x14, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x14);
-    Ov001_SetStepCallback(&func_ov001_02176a74);
+    extern M2C_UNK Ov001_OpenWifiMenuAfterFade;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
+    Ov001_SetStepCallback(&Ov001_OpenWifiMenuAfterFade);
 }
 
-void func_ov001_02176a74(void) {
+void Ov001_OpenWifiMenuAfterFade(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_02176ab0;
@@ -560,10 +563,10 @@ void func_ov001_02176c1c(void) {
 void func_ov001_02176c6c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_02176c8c;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_02176c8c);
 }
 
@@ -647,13 +650,13 @@ void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void Ov001_LoadWfcSettingsBackground();
     extern s8 gOv001WfcSettingsReset;
-    extern M2C_UNK func_ov001_02176ef8;
+    extern M2C_UNK Ov001_FadeInWfcSettingsScreen;
     gOv001WfcSettingsReset = 0;
     Ov001_LoadWfcSettingsBackground();
     Ov001_LoadObjLayoutBlock(0x12);
     Ov001_ShowMessagePanel(0x3B, -1, 0);
     Ov001_ShowMessageBox(0x17);
-    Ov001_SetStepCallback(&func_ov001_02176ef8);
+    Ov001_SetStepCallback(&Ov001_FadeInWfcSettingsScreen);
 }
 
 /* Load the Wi-Fi settings background map (char/yb5Multi.nsc.l) into BG2 and put
@@ -671,12 +674,15 @@ void Ov001_LoadWfcSettingsBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02176ef8(void) {
+/* Fades in the ov001 WFC settings screen: start the sub and main fades from
+ * white with the screen's background and object planes, show those planes, then
+ * run the step that waits for the fades and opens the settings menu. */
+void Ov001_FadeInWfcSettingsScreen(void) {
     extern M2C_UNK func_ov001_02176f4c;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&func_ov001_02176f4c);
 }
 

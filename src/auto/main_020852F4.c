@@ -83,11 +83,11 @@ void SendLinkCommand(M2C_UNK arg0,M2C_UNK arg1){
 /* Pop the oldest message of one link command queue into buf.  Returns 1 when a
  * message was copied, 0 when the queue was empty. */
 u8 PopLinkCommand(s32 queue, void *buf) {
-    s32 func_02085df8(s32, M2C_UNK, M2C_UNK);
+    s32 PopLinkQueueEntry(s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gLinkCommandQueues;
     u8 popped;
 
-    if (func_02085df8((LINK_COMMAND_QUEUE_STRIDE * queue) + (s32) &gLinkCommandQueues, (M2C_UNK) buf, 0) != 0) {
+    if (PopLinkQueueEntry((LINK_COMMAND_QUEUE_STRIDE * queue) + (s32) &gLinkCommandQueues, (M2C_UNK) buf, 0) != 0) {
         popped = 1;
     } else {
         popped = 0;
@@ -533,7 +533,7 @@ void func_020859b4(M2C_UNK arg0) {
     func_020c4dd0(arg0);
 }
 #pragma pop
-void func_02085c04(void) {
+void SaveProfileSyncTime(void) {
     M2C_UNK GetServerDateTime(s32);
     GetServerDateTime(GetProfileSaveBlock() + 0x58);
 }
@@ -543,7 +543,7 @@ s32 func_02085c18(void) {
     return GetProfileSaveBlock() + 0x58;
 }
 
-void func_02085c28(void) {
+void StoreGetRequestServerTime(void) {
     GetServerDateTime(GetProfileSaveBlock() + 0x74);
 }
 
@@ -656,19 +656,21 @@ s32 AppendLinkCommand(void *queue, M2C_UNK data, u16 size, s16 unk22) {
     return 1;
 }
 
-s32 func_02085df8(s32 a,s32 b,s32 c) {
+/* Remove the queue head, copy its payload to the caller, optionally return its extra value, and free the entry. */
+s32 PopLinkQueueEntry(s32 queue, s32 destination, s32 extraValue) {
     void HeapFreeBlock(void *);
-    s32 len;
-    void *p;
-    p=M2C_FIELD(a,void **,0);
-    if(!p) return 0;
-    len=M2C_FIELD(p,u16 *,0x20);
-    if(c) M2C_FIELD(c,u16 *,0)=M2C_FIELD(p,u16 *,0x22);
-    MI_CpuCopy8(p,b,len);
-    M2C_FIELD(a,void **,0)=M2C_FIELD(p,void **,0x24);
-    if(!M2C_FIELD(a,void **,0)) M2C_FIELD(a,s32 *,4)=0;
-    HeapFreeBlock(p);
-    return len;
+    s32 entryLength;
+    void *entry;
+
+    entry = M2C_FIELD(queue, void **, 0);
+    if (entry == NULL) return 0;
+    entryLength = M2C_FIELD(entry, u16 *, 0x20);
+    if (extraValue) M2C_FIELD(extraValue, u16 *, 0) = M2C_FIELD(entry, u16 *, 0x22);
+    MI_CpuCopy8(entry, destination, entryLength);
+    M2C_FIELD(queue, void **, 0) = M2C_FIELD(entry, void **, 0x24);
+    if (M2C_FIELD(queue, void **, 0) == NULL) M2C_FIELD(queue, s32 *, 4) = 0;
+    HeapFreeBlock(entry);
+    return entryLength;
 }
 
 void func_02085e50(void *a) {

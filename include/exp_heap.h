@@ -32,4 +32,16 @@
 #define HEAP_USED_LIST  0x2c /* void *head of the used-block list; +0x04 is its tail */
 #define HEAP_FLAGS      0x36 /* u16; bit 0: search the whole free list for the smallest block that fits */
 
+/* Allocator state of a frame heap (the 'FRMH' heap CreateFrameHeap sets up),
+ * reached through the pointer stored at heap+0x24.  Head allocations grow the
+ * frame upward from `head`; tail allocations move `tail` down to meet them.  The
+ * heap's attribute byte lives 4 bytes before this struct, at heap+0x20. */
+typedef struct FrameHeap {
+    u32 head; /* +0x00 first free byte of the frame; a front allocation advances it */
+    u32 tail; /* +0x04 last free byte of the frame; a tail allocation moves it down */
+} FrameHeap;
+
+#define FRAME_HEAP_ATTRIBUTE     (-4)  /* heap+0x20: the heap attribute byte (see InitHeapHead) */
+#define FRAME_HEAP_ATTR_ZERO_FILL 0x01 /* attribute bit 0: clear freshly allocated bytes */
+
 #endif

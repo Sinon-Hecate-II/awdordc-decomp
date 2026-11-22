@@ -390,28 +390,31 @@ s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
     return sp0;
 }
 
-s32 SendPowerCommand(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
-    s32 Arm7SetPowerState();
-    s32 var_r0;
+/* Switch the ARM7 driver to the power state for `command` (1 -> state 1,
+ * 2 -> state 3, 3 -> state 2), handing `callback` and `user` over for the
+ * reply.  Returns ARM7_POWER_INVALID for any other command. */
+s32 SendPowerCommand(s32 command, void (*callback)(s32, s32 *), s32 *user) {
+    s32 Arm7SetPowerState(u32, s32, s32);
+    s32 state;
 
-    switch (arg0) {                                 /* irregular */
+    switch (command) {                              /* irregular */
     case 1:
-        var_r0 = 1;
+        state = 1;
         break;
     case 3:
-        var_r0 = 2;
+        state = 2;
         break;
     case 2:
-        var_r0 = 3;
+        state = 3;
         break;
     default:
-        var_r0 = 0;
+        state = 0;
         break;
     }
-    if (var_r0 == 0) {
-        return 0xFFFF;
+    if (state == 0) {
+        return ARM7_POWER_INVALID;
     }
-    return Arm7SetPowerState();
+    return Arm7SetPowerState(state, (s32)callback, (s32)user);
 }
 
 s32 SendPowerCommandWait(s32 arg0) {
@@ -496,7 +499,7 @@ if(result)return result;
 func_0200e270();return sp0;
 }
 
-void func_0200e868(s32 a) {
+void Arm7SetAmpParam2(s32 a) {
 func_0200e64c(2,(u16)a);
 }
 

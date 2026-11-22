@@ -457,7 +457,7 @@ void Ov001_DecompressBuffer(void *, void *);
 void Ov001_FreeAlloc(void *);
 s32 Ov001_Alloc(s32, s32);
 extern void *gOv001UtilityState;
-extern s32 data_ov001_021917bc;
+extern s32 gOv001CompressedFileSuffix;
 void *raw;
 u32 request[18];
 u32 size;
@@ -466,7 +466,7 @@ void *out;
 Ov001_QueuePop(M2C_FIELD(gOv001UtilityState, s32 *, 0x84));
 InitFileRequest(request); if (!OpenFileRequest(request, path)) SystemHalt();
 size = request[10] - request[9]; if (outSize) *outSize = size;
-if (Ov001_FileHasSuffix(path, (s32)&data_ov001_021917bc, 2)) align = -4; else align = alignment;
+if (Ov001_FileHasSuffix(path, (s32)&gOv001CompressedFileSuffix, 2)) align = -4; else align = alignment;
 raw = (void *)Ov001_Alloc(size, align);
 FileRead(request, raw, size); CloseFileRequest(request);
 if (align > 0) return raw;
@@ -480,18 +480,21 @@ void Ov001_FreeFile(s32 arg0, ...) {
  Ov001_QueuePush(M2C_FIELD(gOv001UtilityState,s32*,0x84),(void*)arg0);
 }
 
-s32 Ov001_FileHasSuffix(void *arg0, s32 arg1, s32 arg2) {
+/* Returns nonzero when the string `name` ends in the last `suffixLen` bytes of
+ * `suffix` (both strings must be at least that long): the two tails are compared
+ * byte for byte.  Used to spot the ".l" compressed-file suffix. */
+s32 Ov001_FileHasSuffix(void *name, s32 suffix, s32 suffixLen) {
     s32 StringLength(void *);
     s32 ByteCompareN(void *, void *, s32);
-    s32 temp_r4;
-    s32 temp_r0;
-    
-    temp_r4 = StringLength(arg0);
-    temp_r0 = StringLength(arg1);
-    if (temp_r4 < arg2 || temp_r0 < arg2) {
+    s32 nameLen;
+    s32 suffixLength;
+
+    nameLen = StringLength(name);
+    suffixLength = StringLength(suffix);
+    if (nameLen < suffixLen || suffixLength < suffixLen) {
         return 0;
     }
-    if (ByteCompareN(arg0 + (temp_r4 - arg2), arg1 + (temp_r0 - arg2), arg2) == 0) {
+    if (ByteCompareN(name + (nameLen - suffixLen), suffix + (suffixLength - suffixLen), suffixLen) == 0) {
         return 1;
     }
     return 0;

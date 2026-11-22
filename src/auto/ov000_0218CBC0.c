@@ -6,7 +6,7 @@
 typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u16 value:5; u8 tail[6]; } Unit0218C4;
 
 #pragma opt_strength_reduction off
-M2C_UNK func_ov000_0218cbc0(void) {
+M2C_UNK SelectDirectAttackTarget(void) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
     u8 *func_020a47e0(s32, s32);
@@ -118,19 +118,22 @@ M2C_UNK func_ov000_0218cbc0(void) {
     }
 }
 #pragma opt_strength_reduction reset
+/* AI: pick the attack target for the unit under the cursor. A direct-range unit
+ * scans its neighbouring tiles for a target; an indirect unit runs the ranged
+ * attack action instead. */
 void SelectUnitAttackTarget(void) {
     M2C_UNK SelectIndirectAttackAction(M2C_UNK);
-    M2C_UNK func_ov000_0218cbc0();
+    M2C_UNK SelectDirectAttackTarget();
     s32 GetUnitAttackClass(u32);
     extern void **gCurrentMap;
-    s32 temp_r0;
+    s32 attackClass;
 
-    temp_r0 = GetUnitAttackClass((u32) (*M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) << 0x1A) >> 0x1A);
-    switch (temp_r0) {                              /* irregular */
-    case 0:
-        func_ov000_0218cbc0();
+    attackClass = GetUnitAttackClass((u32) (*M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT) << 0x1A) >> 0x1A);
+    switch (attackClass) {
+    case UNIT_ATTACK_DIRECT:
+        SelectDirectAttackTarget();
         return;
-    case 1:
+    case UNIT_ATTACK_INDIRECT:
         SelectIndirectAttackAction(0);
         return;
     }

@@ -156,13 +156,13 @@ func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_F
 func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
 }
 
-void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK func_0202eed8(void *,M2C_UNK,M2C_UNK);void Sound_SetVoicePriority(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}func_0202eed8(a+28,0,b);Sound_SetVoicePriority(a,0);M2C_FIELD(a,u8 *,44)=2;}
+void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK Sound_StartFade(void *,M2C_UNK,M2C_UNK);void Sound_SetVoicePriority(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}Sound_StartFade(a+28,0,b);Sound_SetVoicePriority(a,0);M2C_FIELD(a,u8 *,44)=2;}
 
 void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *ListNext();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=ListNext(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
 
 void func_0202b1ac(void *arg0) {
-    M2C_UNK func_0202eec0(void *);
-    M2C_UNK func_0202eed8(void *, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_ResetFade(void *);
+    M2C_UNK Sound_StartFade(void *, M2C_UNK, M2C_UNK);
     M2C_FIELD(arg0, s8 *, 0x2E) = 0;
     M2C_FIELD(arg0, s8 *, 0x2D) = 0;
     M2C_FIELD(arg0, s8 *, 0x2F) = 0;
@@ -170,8 +170,8 @@ void func_0202b1ac(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x3E) = 0;
     M2C_FIELD(arg0, s8 *, 0x40) = 0x7F;
     M2C_FIELD(arg0, s8 *, 0x41) = 0x7F;
-    func_0202eec0(arg0 + 0x1C);
-    func_0202eed8(arg0 + 0x1C, 0x7F00, 1);
+    Sound_ResetFade(arg0 + 0x1C);
+    Sound_StartFade(arg0 + 0x1C, 0x7F00, 1);
 }
 
 M2C_UNK Sound_InsertChannelVoice(M2C_UNK *a,void *b){void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}ListInsertBefore(a,p,b);M2C_FIELD(b,void **,4)=a;}
@@ -411,23 +411,26 @@ s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelByte
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-s32 func_0202b70c(void *arg0) {
-    M2C_UNK func_02008cc8(s32, M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_0200ee10(void *);
-    M2C_UNK func_0200ee28(void *);
-    s32 temp_r0;
-    s32 temp_r0_2;
+/* Starts the player's hardware channels and, the first time, registers the
+ * player's pre/post-sleep hooks so it survives suspend/resume.  Returns the
+ * player's channels flag; a player already set up is left alone. */
+s32 Sound_StartPlayerChannels(void *player) {
+    M2C_UNK Sound_StartChannels(s32, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK PM_AddPreSleepCallback(void *);
+    M2C_UNK PM_AddPostSleepCallback(void *);
+    s32 flags;
+    s32 channelsFlag;
 
-    func_02008cc8(M2C_FIELD(arg0, s32 *, 0x44), 0, 1 << M2C_FIELD(arg0, s32 *, 0x40), 0);
-    temp_r0_2 = (s32) (M2C_FIELD(arg0, s32 *, 0x24) << 0x1E) >> 0x1F;
-    if (temp_r0_2 != 0) {
-        return temp_r0_2;
+    Sound_StartChannels(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
+    channelsFlag = (s32) (M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) << 0x1E) >> 0x1F;
+    if (channelsFlag != 0) {
+        return channelsFlag;
     }
-    func_0200ee10(arg0 + 8);
-    func_0200ee28(arg0 + 0x14);
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0x24) | 2;
-    M2C_FIELD(arg0, s32 *, 0x24) = temp_r0;
-    return temp_r0;
+    PM_AddPreSleepCallback(player + SOUND_PLAYER_STOP_CB);
+    PM_AddPostSleepCallback(player + SOUND_PLAYER_RELEASE_CB);
+    flags = M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) | SOUND_PLAYER_FLAG_CHANNELS;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) = flags;
+    return flags;
 }
 
 void Sound_StopIfPlaying(void *a){void Sound_StopVoice(void *);if(((s32)(M2C_FIELD(a,u32 *,36)<<31)>>31)==0)return;Sound_StopVoice(a);}
@@ -567,7 +570,7 @@ s32 Sound_ResumePlayer(void *player) {
             OS_RestoreInterrupts(irqState);
         } while (M2C_FIELD(player, s32 *, SOUND_PLAYER_CURRENT_SEGMENT) != 0);
     }
-    return func_02008cc8(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
+    return Sound_StartChannels(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
 }
 
 void func_0202ba8c(void) {
@@ -635,7 +638,7 @@ void StopStreamChannels(void) {
 
 #pragma opt_common_subs off
 void func_0202bc7c(void) {
-void CpuFill(s32,s32,s32); void DC_FlushRange(s32,s32); M2C_UNK func_02008cc8();
+void CpuFill(s32,s32,s32); void DC_FlushRange(s32,s32); M2C_UNK Sound_StartChannels();
 extern M2C_UNK gStreamSoundState,gStreamVoice;
 AudioBufferState *p=(AudioBufferState *)&gStreamVoice;
 s32 channel; register s32 dest,size;
@@ -648,7 +651,7 @@ CpuFill(0,p->buffer1,p->size);
 DC_FlushRange(p->buffer0,p->size);
 DC_FlushRange(p->buffer1,p->size);
 channel=p->channel;
-func_02008cc8(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
+Sound_StartChannels(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
 }
 #pragma opt_common_subs on
 /* Opens the sound archive whose file path is `path` into `archive`: clears the

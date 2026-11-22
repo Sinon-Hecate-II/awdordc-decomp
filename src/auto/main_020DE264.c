@@ -387,7 +387,7 @@ void Show3DSpriteSlide(void*);
 void Hide3DSpriteSlide(void*);
 void SetTextById(void*,u32);
 u32 GetReadyPlayerMask(void);
-void func_ov009_02224064(void);
+void GetLinkLocalPlayerInfo(void);
 void func_ov009_02224c34(int);
 void AnnounceLinkPlayer(void);
 void EnableMapConfirm(void);
@@ -499,7 +499,7 @@ if(!can && !(keys&1))return;
 v=GetReadyPlayerMask();
 if(v!=GetActivePlayerMask())return;
 
-func_ov009_02224064();
+GetLinkLocalPlayerInfo();
 p=M2C_FIELD(self,void * *,0x54);
 
 if(M2C_FIELD(p,s8 *,0x5a)>=0){SetupSetFrame(p,(((SetupSprite*)p)->baseFrame)+1,12);

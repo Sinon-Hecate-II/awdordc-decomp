@@ -2,7 +2,14 @@
 #include "common.h"
 static inline s32 *Init55550(s32 *p) {s32 addr=(s32)p;M2C_FIELD(addr,s32 *,16)=0;M2C_FIELD(addr,s32 *,0)=0;M2C_FIELD(addr,s32 *,4)=0;M2C_FIELD(addr,s32 *,8)=0;M2C_FIELD(addr,s32 *,12)=0;M2C_FIELD(addr,s32 *,20)=0;return p;}
 typedef struct { s32 unk_0; s32 unk_4; } Unk02050838Pair;
-typedef struct Unk020553C4 { u8 pad[0x428]; s32 handle, unk42c, unk430; } Unk020553C4;
+/* The GpiConnection fields around the buddy-status table (the full struct is
+ * GpiConnection in main_0204E408.c). */
+typedef struct GpiConnectionHead {
+    u8 pad[0x428];
+    HashTable *buddyTable; /* +0x428 table of GpiBuddyStatus keyed by profile id */
+    s32 unk42c;            /* +0x42C records created */
+    s32 buddyCount;        /* +0x430 buddies handed out, the index bound in gpGetBuddyStatus */
+} GpiConnectionHead;
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
 static inline void InitSocketAddress(s32 *p) { s32 addr=(s32)p; M2C_FIELD(addr,s32 *,0)=0; M2C_FIELD(addr,s32 *,4)=0; }
 
@@ -123,12 +130,12 @@ M2C_FIELD(peer,s32 *,0x10)=gpiGetTime(0)+0x12c;
 return 0;
 }
 
-s32 func_02055848(s32 *arg0) {
+s32 HashBuddyProfileId(s32 *arg0) {
 unsigned long long RuntimeIntDivMod(s32);
 return (s32)(RuntimeIntDivMod(*arg0)>>32);
 }
 
-s32 func_0205585c(s32 *arg0, s32 *arg1) {
+s32 CompareBuddyProfileId(s32 *arg0, s32 *arg1) {
     return *arg0 - *arg1;
 }
 
@@ -155,12 +162,16 @@ void FreeGpiBuddyStatus(GpiBuddyStatus *status) {
     status->unk18 = NULL;
 }
 
-s32 gpiCreateTimers(void **arg0) {
-s32 func_02048c5c();
-Unk020553C4 *p=*arg0;
-p->unk430=0;p->unk42c=0;
-p->handle=func_02048c5c(28,4,func_02055848,func_0205585c,FreeGpiBuddyStatus);
-return p->handle!=0;
+/* Creates the connection's buddy-status table: a hashtable of GpiBuddyStatus
+ * records keyed by profile id, with HashBuddyProfileId/CompareBuddyProfileId as
+ * its callbacks and FreeGpiBuddyStatus as the record release callback.  Clears
+ * the buddy counters and returns 1 when the table was created, 0 on failure. */
+s32 gpiCreateBuddyTable(void **connection) {
+s32 TableNewDefault();
+GpiConnectionHead *gpi=*connection;
+gpi->buddyCount=0;gpi->unk42c=0;
+gpi->buddyTable=TableNewDefault(sizeof(GpiBuddyStatus),4,HashBuddyProfileId,CompareBuddyProfileId,FreeGpiBuddyStatus);
+return gpi->buddyTable!=0;
 }
 
 /* Handles a GameSpy GPI '\npr\' (new player) packet: after the shared header

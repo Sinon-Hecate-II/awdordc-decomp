@@ -138,8 +138,8 @@ void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
 
 void func_ov001_0218b648(s32 a){
 M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
-s32 func_0202a424(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;
-MI_CpuFill8(a,0,0x40000);data_ov001_02193e44=func_0202a424(a,0x40000,0);
+s32 CreateExpHeapInRange(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;
+MI_CpuFill8(a,0,0x40000);data_ov001_02193e44=CreateExpHeapInRange(a,0x40000,0);
 if(data_ov001_02193e44==0)SystemHalt();
 }
 
@@ -469,8 +469,8 @@ void Ov001_InitSpriteObjs(void) {
 }
 
 void Ov001_FlushSpriteObjs(void){
-extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void func_02004264(s32,s32,s32);
-DC_FlushRange(gOv001SpriteArena,0x800);func_02004210(gOv001SpriteArena,0,0x400);func_02004264(gOv001SpriteArena+0x400,0,0x400);
+extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void GX_LoadOAMSub(s32,s32,s32);
+DC_FlushRange(gOv001SpriteArena,0x800);func_02004210(gOv001SpriteArena,0,0x400);GX_LoadOAMSub(gOv001SpriteArena+0x400,0,0x400);
 }
 
 #pragma pool_constants off

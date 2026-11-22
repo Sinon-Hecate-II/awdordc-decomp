@@ -109,14 +109,17 @@ void func_ov006_02217464(M2C_UNK arg0) {
     CreateSpriteFromClass(&data_ov006_02218a48, arg0);
 }
 
-void func_ov006_0221747c(void *arg0) {
+/* Allocate the ov006 map-offer object's name, map-record and packed-record
+ * buffers, clear its found-player count, then set the screen up for the search
+ * (UI graphics bank 4, frame border hidden and the map-confirm prompt off). */
+void InitMapOfferObject(void *offer) {
     s32 HeapAllocBlock(s32);
     M2C_UNK func_020e36dc(void *);
-    M2C_FIELD(arg0, s32 *, 0x38) = 0;
-    M2C_FIELD(arg0, s32 *, 0x3C) = HeapAllocBlock(0x80);
-    M2C_FIELD(arg0, s32 *, 0x48) = HeapAllocBlock(0x6F8);
-    M2C_FIELD(arg0, s32 *, 0x4C) = HeapAllocBlock(0x2AC);
-    func_020e36dc(arg0);
+    M2C_FIELD(offer, s32 *, MAP_OFFER_PLAYER_COUNT) = 0;
+    M2C_FIELD(offer, s32 *, MAP_OFFER_NAME) = HeapAllocBlock(0x80);
+    M2C_FIELD(offer, s32 *, MAP_OFFER_RECORD) = HeapAllocBlock(MAP_OFFER_RECORD_SIZE);
+    M2C_FIELD(offer, s32 *, MAP_OFFER_PACKED) = HeapAllocBlock(MAP_OFFER_PACKED_SIZE);
+    func_020e36dc(offer);
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
     DisableMapConfirm();
@@ -177,7 +180,7 @@ void func_ov006_0221762c(void *arg0) {
     M2C_UNK ExpandMapRecord(M2C_UNK, M2C_UNK);
     s32 GetOnlineLocalPlayerId(void);
     s32 IsValidMapRecord(M2C_UNK);
-    void func_020e3788(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    void CreateOnlinePlayerListCountedNode(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     extern const Ov006Date data_ov006_02218394;
 
@@ -227,7 +230,7 @@ void func_ov006_0221762c(void *arg0) {
     ((volatile u32 *)cell)[0x13] &= 0xF003FFFFU;
 
     if (IsValidMapRecord(M2C_FIELD(arg0, M2C_UNK *, 0x48)) != 0) {
-        func_020e3788((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);
+        CreateOnlinePlayerListCountedNode((M2C_UNK)M2C_FIELD(arg0, M2C_UNK *, 0x4C), 0x2AC, (M2C_UNK)((u8 *)arg0 + 0x38), (M2C_UNK)arg0);
     } else {
         SetSpriteAnimation(arg0, 2);
     }

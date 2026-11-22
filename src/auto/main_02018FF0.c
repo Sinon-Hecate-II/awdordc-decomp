@@ -232,14 +232,20 @@ void func_0201953c(void *p,s8 v,s32 n) {
  M2C_FIELD(p,s8**,4)+=n;
 }
 
-void func_02019590(void *p,s8 *s,s32 n) {
- u32 i,len;
- if(n<=0)return;
- len=M2C_FIELD(p,u32*,0);i=0;
- if(len>(u32)n)len=n;
- for(;i<len;i++)M2C_FIELD(p,s8**,4)[i]=s[i];
- M2C_FIELD(p,u32*,0)-=len;
- M2C_FIELD(p,s8**,4)+=n;
+/* Bounded write into a formatter output buffer: copy `count` bytes from `src`
+ * into the buffer, but only as many as still fit in the buffer's remaining
+ * capacity (+0); reduce that remaining count by the bytes written and advance
+ * the write cursor (+4) by the whole field width. */
+void FormatWriteBytes(void *out, s8 *src, s32 count) {
+    u32 i, len;
+
+    if (count <= 0) return;
+    len = M2C_FIELD(out, u32 *, 0);
+    i = 0;
+    if (len > (u32)count) len = count;
+    for (; i < len; i++) M2C_FIELD(out, s8 **, 4)[i] = src[i];
+    M2C_FIELD(out, u32 *, 0) -= len;
+    M2C_FIELD(out, s8 **, 4) += count;
 }
 
 #pragma opt_common_subs off
@@ -304,8 +310,8 @@ ap+=4;str=*(char **)(ap-4);len=0;
 if(precision<0){while(str[len])len++;}
 else {while(len<precision&&str[len])len++;}
 width-=len;
-if(flags&8){func_02019590(&out,(s8 *)str,len);func_0201953c(&out,' ',width);}
-else {func_0201953c(&out,(s8)(flags&16?'0':' '),width);func_02019590(&out,(s8 *)str,len);}
+if(flags&8){FormatWriteBytes(&out,(s8 *)str,len);func_0201953c(&out,' ',width);}
+else {func_0201953c(&out,(s8)(flags&16?'0':' '),width);FormatWriteBytes(&out,(s8 *)str,len);}
 format++;continue;
 case 'n':
 n=out.current-out.start;
@@ -317,7 +323,7 @@ format++;continue;
 case '%':
 if(mark+1==format){func_0201950c(&out,*format++);continue;}
 default:
-invalid:func_02019590(&out,(s8 *)mark,format-mark);continue;
+invalid:FormatWriteBytes(&out,(s8 *)mark,format-mark);continue;
 }
 hex:flags|=4096;base=16;
 number:

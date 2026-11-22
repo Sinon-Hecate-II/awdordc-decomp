@@ -1,5 +1,6 @@
 /* 19 functions from 0x02211200 to 0x022121F8 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { u32 x:9; u32 y:9; u32 layer:8; u32 rest:6; } Menu005Flags;
 
 #pragma opt_strength_reduction off
@@ -283,19 +284,23 @@ void func_ov005_022119d8(void) {
     func_ov005_02211988();
 }
 
-void func_ov005_022119e4(M2C_UNK arg0) {
+/* Spawns the ov005 records/history menu page under `parent` while the battle
+ * is still running and the current map is a campaign map received from another
+ * player; other battles get no records page. */
+void CreateHistoryMenuPanel(M2C_UNK parent) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 IsReceivedCampaignMap(u16);
     extern u8 gBattleEndState;
     extern void **gCurrentMap;
-    extern M2C_UNK data_ov005_022200a0;
+    extern M2C_UNK gHistoryMenuPanelClass;
+
     if (gBattleEndState != 0) {
         return;
     }
-    if (IsReceivedCampaignMap(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)) == 0) {
+    if (IsReceivedCampaignMap(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID)) == 0) {
         return;
     }
-    CreateSpriteObject(&data_ov005_022200a0, arg0);
+    CreateSpriteObject(&gHistoryMenuPanelClass, parent);
 }
 
 s32 HistoryTabAt(s32 arg0) {

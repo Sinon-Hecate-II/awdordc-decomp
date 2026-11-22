@@ -522,29 +522,32 @@ M2C_UNK TextLayer_AppendText(M2C_UNK arg0,M2C_UNK arg1) {
  TextLayer_SetText((void *)arg0,M2C_FIELD(arg0,s32 *,TEXT_LAYER_STRING));
 }
 #pragma opt_common_subs reset
-M2C_UNK TextLayer_FreeText(void *arg0) {
+/* Free a text layer's owned accumulated text and its two render buffers and
+ * forget the text it currently draws. */
+M2C_UNK TextLayer_FreeText(void *layer) {
     s32 HeapFreeBlock(s32);
-    s32 p;
-    p = *(volatile s32 *)((s8 *)arg0 + 0x64);
-    if (p != 0) {
-        HeapFreeBlock(p);
+    s32 block;
+
+    block = M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_STRING);
+    if (block != 0) {
+        HeapFreeBlock(block);
     }
-    p = 0;
-    *(volatile s32 *)((s8 *)arg0 + 0x64) = p;
-    p = *(volatile s32 *)((s8 *)arg0 + 0x68);
-    if (p != 0) {
-        HeapFreeBlock(p);
+    block = 0;
+    M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_STRING) = block;
+    block = M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_BUFFER_A);
+    if (block != 0) {
+        HeapFreeBlock(block);
     }
-    p = 0;
-    *(volatile s32 *)((s8 *)arg0 + 0x68) = p;
-    p = *(volatile s32 *)((s8 *)arg0 + 0x6C);
-    if (p != 0) {
-        HeapFreeBlock(p);
+    block = 0;
+    M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_BUFFER_A) = block;
+    block = M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_BUFFER_B);
+    if (block != 0) {
+        HeapFreeBlock(block);
     }
-    p = 0;
-    *(volatile s32 *)((s8 *)arg0 + 0x6C) = p;
-    *(volatile s32 *)((s8 *)arg0 + 0x70) = p;
-    return p;
+    block = 0;
+    M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_BUFFER_B) = block;
+    M2C_FIELD(layer, volatile s32 *, TEXT_LAYER_TEXT_DATA) = block;
+    return block;
 }
 
 #pragma peephole off

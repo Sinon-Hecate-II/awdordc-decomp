@@ -301,7 +301,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     return 0;
 }
 
-s32 func_02045620(void){void ResetWebRequest(void);extern s32 gWebTransaction;ResetWebRequest();return gWebTransaction=0;}
+s32 FinishWebRequest(void){void ResetWebRequest(void);extern s32 gWebTransaction;ResetWebRequest();return gWebTransaction=0;}
 
 /* Validate and send a put.asp web request: the record count and payload size
  * must be in range (a payload needs a size), then the put request is built and
@@ -440,7 +440,7 @@ s32 PollWebTransaction(void) {
     return 0;
 }
 
-s32 func_02045a88(void) {
+s32 GetWebTransactionStatus(void) {
     extern s32 gWebTransaction;
     return gWebTransaction;
 }

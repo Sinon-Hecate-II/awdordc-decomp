@@ -727,8 +727,8 @@ void InitProfileIdBlock(void *block, s32 gameId) {
     void MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     void InitNasLoginKey(void *);
     void func_02031e94(M2C_UNK, M2C_UNK);
-    void func_02076794(M2C_UNK *, s32);
-    s32 func_02076860(M2C_UNK *, void *, M2C_UNK);
+    void BuildCrc32Table(M2C_UNK *, s32);
+    s32 Crc32Block(M2C_UNK *, void *, M2C_UNK);
     u32 table[256];
 
     MI_CpuFill8((M2C_UNK)block, 0, PROFILE_ID_BLOCK_SIZE);
@@ -737,8 +737,8 @@ void InitProfileIdBlock(void *block, s32 gameId) {
     M2C_FIELD(block, s32 *, PROFILE_ID_BLOCK_GAME_ID) = gameId;
     InitNasLoginKey((u8 *)block + 4);
     func_02031e94((M2C_UNK)((u8 *)block + 0x10), 0);
-    func_02076794((M2C_UNK *)table, 0xEDB88320);
-    M2C_FIELD(block, s32 *, 0x3C) = func_02076860((M2C_UNK *)table, block, 0x3C);
+    BuildCrc32Table((M2C_UNK *)table, 0xEDB88320);
+    M2C_FIELD(block, s32 *, 0x3C) = Crc32Block((M2C_UNK *)table, block, 0x3C);
     M2C_FIELD(block, s32 *, 0x20) = (s32)(M2C_FIELD(block, s32 *, 0x20) | 1);
 }
 

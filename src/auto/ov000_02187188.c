@@ -1,7 +1,7 @@
 /* 9 functions from 0x02187188 to 0x02187F7C (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-extern void (*data_ov000_021df648)(void);
+extern void (*gAiPriorityScore)(void);
 void func_ov000_02188338(void);
 extern void **gCurrentMap;
 extern u32 gFrameCounter;
@@ -449,9 +449,9 @@ void func_ov000_02187c3c(void) {
     PlanMoveDestination(bestX, bestY);
 }
 #pragma opt_strength_reduction reset
-void func_ov000_02187e20(void) {
+void FinalizeAiProductionMove(void) {
 SelectBestMoveCell();
-if(data_ov000_021df648==func_ov000_02188338) ChooseMoveDestination();
+if(gAiPriorityScore==func_ov000_02188338) ChooseMoveDestination();
 func_ov000_02187c3c();
 }
 

@@ -524,14 +524,14 @@ return 1;
 u8 *gti2GetChallenge(u8 *buffer) {
  M2C_UNK AssertFailed();
  s32 Rand(void);
- void GetTickCountMs(void);
+ void GetSystemTickMilliseconds(void);
  void SetRandSeed(void);
  extern M2C_UNK gGt2GetChallengeName;
  extern M2C_UNK gGt2AssertBuffer;
  extern M2C_UNK gGt2AuthFileName;
  s32 i; u32 parity; u8 *cur; u32 prev,first;
  if (buffer == NULL) AssertFailed(&gGt2AssertBuffer, &gGt2AuthFileName, &gGt2GetChallengeName, 0x2b);
- GetTickCountMs();
+ GetSystemTickMilliseconds();
  SetRandSeed();
  buffer[0] = Rand() % 93 + 33;
  parity = 0;

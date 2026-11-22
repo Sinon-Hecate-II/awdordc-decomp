@@ -479,7 +479,7 @@ extern s32 gStreamSoundPlayer;
 extern const u8 gStreamChannels[];
 void Arm7TransferInit(void);
 void Arm7CommandInit(void);
-void func_0200e868(s32);
+void Arm7SetAmpParam2(s32);
 void func_0200e880(s32);
 s32 AllocAlignedBuffer(s32,s32);
 void FreeBuffer(s32,s32);
@@ -496,7 +496,7 @@ s32 bufferSize;
 s32 result;
 s32 buffer2;
 u8 channel;
-Arm7TransferInit();Arm7CommandInit();func_0200e868(1);func_0200e880(3);
+Arm7TransferInit();Arm7CommandInit();Arm7SetAmpParam2(1);func_0200e880(3);
 sampleBytes=((u32)(lengthMs*8000)*2)/1000;
 bufferSize=sampleBytes*2;
 M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE)=sampleBytes*4;M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE)=bufferSize;
@@ -535,11 +535,11 @@ s32 IsVoiceDataReady(void) {
 
 void func_ov010_02225d00(void) {
 extern s32 gStreamSoundPlayer;
-void func_0202b70c(void *);
+void Sound_StartPlayerChannels(void *);
 void func_0202a9f0(void);
 void func_02004e60(s32,s32);
 s32 i;
-func_0202b70c(&gStreamSoundPlayer);
+Sound_StartPlayerChannels(&gStreamSoundPlayer);
 for(i=0;i<4;i++){func_0202a9f0();func_02004e60(1,1);}
 }
 
@@ -572,19 +572,22 @@ void func_ov010_02224f74(s32 *);
 s32 out[4];func_ov010_02224f74(out);return out[0];
 }
 
-void func_ov010_02225db8(void) {
-extern s32 gStreamSoundPlayer;
-extern s32 gStreamVoiceState;
-void Sound_StopVoices(void *);
-void FreeBuffer(s32,s32);
-void func_0200e868(s32);
-Sound_StopIfPlaying(&gStreamSoundPlayer);
-Sound_StopVoices(&gStreamSoundPlayer);
-FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,12),M2C_FIELD(&gStreamVoiceState,s32 *,24));
-M2C_FIELD(&gStreamVoiceState,s32 *,12)=0;
-FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,28),M2C_FIELD(&gStreamVoiceState,s32 *,20));
-M2C_FIELD(&gStreamVoiceState,s32 *,28)=0;
-func_0200e868(0);
+/* Stop the streaming voice, free its two sample buffers and switch the sound
+ * amplifier back off. */
+void StopStreamedVoice(void) {
+    extern s32 gStreamSoundPlayer;
+    extern s32 gStreamVoiceState;
+    void Sound_StopVoices(void *);
+    void FreeBuffer(s32, s32);
+    void Arm7SetAmpParam2(s32);
+
+    Sound_StopIfPlaying(&gStreamSoundPlayer);
+    Sound_StopVoices(&gStreamSoundPlayer);
+    FreeBuffer(M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER1), M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER1_SIZE));
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER1) = 0;
+    FreeBuffer(M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER2), M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER2_SIZE));
+    M2C_FIELD(&gStreamVoiceState, s32 *, STREAM_VOICE_BUFFER2) = 0;
+    Arm7SetAmpParam2(0);
 }
 
 void VoiceChat_DetachContext(s32 a) {

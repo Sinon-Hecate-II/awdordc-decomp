@@ -53,7 +53,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     case 6: func_ov003_021fdfe8(entry); return;
     case 7: CreateOv003SceneView(entry); return;
     case 8:
-    case 9: func_02085000(0,0x6e0,entry); return;
+    case 9: CreateLocalPlayerNameLabel(0,0x6e0,entry); return;
     case 10: func_020e0f14(entry); return;
     case 11: func_020e147c(entry); return;
     case 12: func_020e19e8(entry); return;

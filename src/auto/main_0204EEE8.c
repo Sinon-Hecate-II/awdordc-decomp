@@ -193,7 +193,7 @@ return 1;
 /* Removes operation `opId` from the session: appends the removal fields to the
    outgoing message, frees the operation's shared buffers, unlinks it from the
    callback table and decrements the session's operation counter. */
-s32 func_0204fb50(void **connection,s32 opId) {
+s32 gpiAuthDeleteProfile(void **connection,s32 opId) {
 void gpiAppendStringField(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_0204fb2c(void *,void *,s32);
 s32 gpiFindBuddyStatus(void **,s32,void **);

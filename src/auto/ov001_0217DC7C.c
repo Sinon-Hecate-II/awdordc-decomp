@@ -55,10 +55,10 @@ void MapListHandleState(void) {
 void func_ov001_0217ded8(void) {
     M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_0217def8;
     Ov001_BlockScrollBar();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_0217def8);
 }
 

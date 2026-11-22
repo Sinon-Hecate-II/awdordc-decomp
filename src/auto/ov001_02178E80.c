@@ -315,14 +315,14 @@ void func_ov001_021794c0(void) {
 void Ov001_LeaveWfcEraseScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_StartProfileExitTask();
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern u8 gOv001WfcEraseResult;
     extern M2C_UNK Ov001_SlideOutProfileIconRow;
     if (gOv001WfcEraseResult == 0) {
         Ov001_StartProfileExitTask();
     }
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_SlideOutProfileIconRow);
 }
 
@@ -442,16 +442,19 @@ void Ov001_LoadWirelessSetupBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
+/* Fade the local wireless screen in: fade both engines in from white, make the
+ * screen's background and sprite planes visible, then hand over to the step that
+ * runs once the fade completes. */
 void Ov001_FadeInWirelessScreen(void) {
-    extern M2C_UNK func_ov001_02179874;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02179874);
+    extern M2C_UNK Ov001_WirelessScreenFadeDone;
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, OV001_BLEND_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback(&Ov001_WirelessScreenFadeDone);
 }
 
-void func_ov001_02179874(void) {
+void Ov001_WirelessScreenFadeDone(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
     void func_ov001_021798b0(void);
     if (Ov001_IsFadeActive(1) != 0) {
@@ -550,7 +553,7 @@ void func_ov001_02179a54(void) {
     if (M2C_FIELD(&gOv001WirelessState, s32 *, 4) != 0) {
         func_ov001_0218c94c(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
     }
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeOutWirelessScreen);
 }
 

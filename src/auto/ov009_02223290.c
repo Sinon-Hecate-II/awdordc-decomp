@@ -571,7 +571,7 @@ void func_ov009_02224024(void) {
     QueueHostLinkPacket(5, 0, 0, 1);
 }
 
-M2C_UNK *func_ov009_02224064(void) {
+M2C_UNK *GetLinkLocalPlayerInfo(void) {
     extern M2C_UNK gLinkLocalPlayerInfo;
     return &gLinkLocalPlayerInfo;
 }
@@ -586,7 +586,7 @@ s32 GetActiveLinkPlayerSlot(s32 a){
  return p;
 }
 
-s32 func_ov009_022240ac(s32 arg0) {
+s32 GetLinkPlayerSlot(s32 arg0) {
     extern M2C_UNK gLinkPlayers;
     return (0x60 * arg0) + (s32) &gLinkPlayers;
 }
@@ -595,7 +595,7 @@ s32 func_ov009_022240c0(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_ov009_02224064();
+    temp_r0 = GetLinkLocalPlayerInfo();
     if (temp_r0 == 0) {
         return 0;
     }

@@ -1,7 +1,7 @@
 /* 26 functions from 0x020A48EC to 0x020A5878 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-typedef struct { u16 a,b,c,d; } Unk020APosition;
+typedef union { struct { u16 a,b,c,d; }; struct { u16 unitId,orderType,x,y; }; } Unk020APosition;
 typedef struct { u8 pad[5]; u8 player:3; u8 rest:5; } Unk020APlayer;
 typedef struct { u8 x,y; u16 a:3; u16 b:3; u16 type:4; u16 rest:6; u8 value; u8 player:3; u8 enabled:1; u8 mode:4; u8 extra,last; } Unk020ABaseEntry;
 typedef struct { u16 first; u16 low:6; u16 type:4; u16 kind:4; u16 top:2; u8 value; u8 flags:4; u8 mode:4; u8 extra; u8 last; } Unk020AEntry;
@@ -108,10 +108,18 @@ void ClearSelectionQueue(void) {
     gSelectionQueueCount = 0;
 }
 
-void AppendSelectionEntry(s32 a,s32 b,s32 c,s32 d) {
-extern Unk020APosition *gSelectionQueue; extern s32 gSelectionQueueCount;
-Unk020APosition *p=gSelectionQueue;
-p[gSelectionQueueCount].c=a;p[gSelectionQueueCount].d=b;p[gSelectionQueueCount].a=c;p[gSelectionQueueCount].b=d;gSelectionQueueCount++;
+/* Append the cell (x, y) of selected unit `unitId` to the selection queue,
+ * tagged with the order type the entry plays for. */
+void AppendSelectionEntry(s32 x, s32 y, s32 unitId, s32 orderType) {
+    extern Unk020APosition *gSelectionQueue;
+    extern s32 gSelectionQueueCount;
+    Unk020APosition *p = gSelectionQueue;
+
+    p[gSelectionQueueCount].x = x;
+    p[gSelectionQueueCount].y = y;
+    p[gSelectionQueueCount].unitId = unitId;
+    p[gSelectionQueueCount].orderType = orderType;
+    gSelectionQueueCount++;
 }
 
 s32 GetOrderCenterOffsetX(void) {

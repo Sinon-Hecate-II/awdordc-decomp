@@ -419,13 +419,17 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,MATCH_SESSION_STATUS)=1;
 {void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);M2C_FIELD(p,u8 *,MATCH_SESSION_STEP)++;}
 }
 
-void ReportMatchSessionError(s32 a,s32 b) {
+/* Reports the match-session error `error` (with `detail`) : records it as the net
+ * error and, while the session is running, passes it to the session's event
+ * callback along with the session's player-list-changed flag and data, then runs
+ * the session's teardown step.  Nothing happens without a session or an error. */
+void ReportMatchSessionError(s32 error,s32 detail) {
 extern M2C_UNK gMatchSessionMgr;void SetNetError(s32,s32);void func_0203b128(void);
-void *p;
-if(!M2C_FIELD(&gMatchSessionMgr,void **,8)||!a)return;
-SetNetError(a,b);
-p=M2C_FIELD(&gMatchSessionMgr,void **,8);
-if(M2C_FIELD(p,s32 *,0)!=0 && M2C_FIELD(p,s32 *,0)!=2) M2C_FIELD(p,void (**)(s32,u8,s32),44)(a,M2C_FIELD(p,u8 *,29),M2C_FIELD(p,s32 *,48));
+void *session;
+if(!M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION)||!error)return;
+SetNetError(error,detail);
+session=M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION);
+if(M2C_FIELD(session,s32 *,MATCH_SESSION_STATUS)!=0 && M2C_FIELD(session,s32 *,MATCH_SESSION_STATUS)!=2) M2C_FIELD(session,void (**)(s32,u8,s32),MATCH_SESSION_EVENT_CB)(error,M2C_FIELD(session,u8 *,MATCH_SESSION_DIRTY),M2C_FIELD(session,s32 *,MATCH_SESSION_EVENT_DATA));
 func_0203b128();
 }
 

@@ -354,7 +354,7 @@ void func_ov010_0222b418(void *layer) {
     void *temp_r0;
 
     if (IsMapConfirmEnabled() != 0) {
-        func_020c4a74(0);
+        ResetProfileIdBlock(0);
         M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) = (u8)(M2C_FIELD(layer, u8 *, TEXT_LAYER_FLAGS) | TEXT_LAYER_FLAG_CONFIRMED);
         SetSpriteAnimation(layer, 3);
         return;

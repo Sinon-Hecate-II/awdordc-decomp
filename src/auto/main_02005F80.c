@@ -465,7 +465,7 @@ void func_02006858(void) {
 void InitArenaTable(void);
     void InstallExceptionHandler();
     M2C_UNK func_020074c0();
-    M2C_UNK func_020075b4();
+    M2C_UNK InitArm7BootSync();
     M2C_UNK GX_ResetBankOwners();
     M2C_UNK func_02008bb8();
     M2C_UNK PXI_Init();
@@ -483,7 +483,7 @@ void InitArenaTable(void);
     func_020074c0();
     GX_ResetBankOwners();
     func_02005968();
-    func_020075b4();
+    InitArm7BootSync();
     Mb_BootInit();
     SaveDevice_Init();
     Arm7CommandInit();

@@ -147,15 +147,15 @@ s32 gpiSendTextToPlayer(void **gpi,s32 playerId,s32 message) {
  * and resets the connection. The connection is handed back through out; returns
  * 0 on success, 1 when the allocation fails or a step errors out. */
 s32 gpiInitialize(void **out,s32 peerCallback,s32 peerCallbackData){
-void *gpiMalloc(s32);s32 gpiCreateTimers(void **);s32 gpiResetConnection(void **);void gpiFreeConnection(void **);void MemSet(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 gGpiLogInitialize[];
+void *gpiMalloc(s32);s32 gpiCreateBuddyTable(void **);s32 gpiResetConnection(void **);void gpiFreeConnection(void **);void MemSet(void *,s32,s32);void gpiLogMessage(void **,void *,...);extern u8 gGpiLogInitialize[];
 GpiConnection *connection;s32 i,result;
 *out=0;connection=gpiMalloc(0x490);if(!connection)return 1;MemSet(connection,0,0x490);
 connection->unk00=0;connection->timerSet=0;connection->unk100=1;connection->unk104=0;connection->unk108=0;connection->unk10c=0;connection->peerCallback=peerCallback;connection->peerCallbackData=peerCallbackData;
-if(!gpiCreateTimers((void **)&connection)){gpiFree(connection);connection=0;return 1;}
+if(!gpiCreateBuddyTable((void **)&connection)){gpiFree(connection);connection=0;return 1;}
 connection->unk420=0;for(i=0;i<6;i++){connection->pairs[i].first=0;connection->pairs[i].second=0;}
 connection->unk460=0;gpiLogMessage((void **)&connection,gGpiLogInitialize);
 result=gpiResetConnection((void **)&connection);if(result){gpiFreeConnection((void **)&connection);return result;}
-func_0204926c();GetTickCountMs();SetRandSeed();*out=connection;return 0;}
+func_0204926c();GetSystemTickMilliseconds();SetRandSeed();*out=connection;return 0;}
 
 void gpiFreeConnection(void **arg0) {
     M2C_UNK gpiFree(void *);

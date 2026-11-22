@@ -116,10 +116,16 @@ SetFileDirectory(data_0212a4f0);
 gCur3DSpriteEngine=old;
 }
 #pragma opt_strength_reduction reset
-void func_020c4604(M2C_UNK arg0){extern u16 *gKeyState;extern void *gBreakCutIn;
-M2C_FIELD(gBreakCutIn,s32*,0)++;
-if((M2C_FIELD(gBreakCutIn,s32*,0)<250)&&!(*gKeyState&1))return;
-M2C_FIELD(gBreakCutIn,s32*,4)=0;Sprite_ResumeAnimation(arg0);}
+/* Break cut-in step that ends the wait once the cut-in has run 250 frames or the
+ * player presses A: resets the step counter and resumes the sprite's animation. */
+void BreakCutInWaitOrSkip(M2C_UNK sprite) {
+    extern u16 *gKeyState;
+    extern void *gBreakCutIn;
+    M2C_FIELD(gBreakCutIn, s32 *, 0)++;
+    if ((M2C_FIELD(gBreakCutIn, s32 *, 0) < 250) && !(*gKeyState & KEY_A)) return;
+    M2C_FIELD(gBreakCutIn, s32 *, 4) = 0;
+    Sprite_ResumeAnimation(sprite);
+}
 
 /* Per-frame wait step of the break cut-in: advance the cut-in's frame counter
  * (capped at 250) and this step's own counter, then resume the sprite's animation
@@ -285,27 +291,32 @@ SaveTime_Clear(&timeB);
 M2C_FIELD(profile,s32 *,0x84)=0;
 M2C_FIELD(profile,s32 *,0x88)=timeB.v[1];
 M2C_FIELD(profile,s32 *,0x8c)=timeB.v[2];
-func_020323a4((void *)(profile+PROFILE_ID_BLOCK),0x5957324a);
+ func_020323a4((void *)(profile+PROFILE_ID_BLOCK),PROFILE_GAME_ID_CODE);
 func_0203287c((void *)(profile+PROFILE_ID_BLOCK));
 return 1;
 }
 
-s32 func_020c4a74(void *arg0) {
- M2C_UNK *GetProfileSaveBlock(void);
- void func_020323a4(void *,u32);
- s32 GetBattleSlotSummary(s32);
- void func_02031ee4(void);
- void func_0203287c(void *);
- s32 i;
- if(arg0==0)arg0=GetProfileSaveBlock();
- func_020323a4((u8*)arg0+4,0x5957324a);
- i=0;
- do {
- if(GetBattleSlotSummary(i)!=0)func_02031ee4();
- i++;
- }while(i<60);
- func_0203287c((u8*)arg0+4);
- return 1;
+/* Reset the local profile-id block (the one passed in, or the global profile
+ * block): reinitialise it with the game-id salt, detach the local profile from
+ * every present battle-save slot by clearing that slot's joined record, then
+ * refresh the block's two formatted player-code ids. */
+s32 ResetProfileIdBlock(void *profileBlock) {
+    M2C_UNK *GetProfileSaveBlock(void);
+    void func_020323a4(void *, u32);
+    s32 GetBattleSlotSummary(s32);
+    void func_02031ee4(void);
+    void func_0203287c(void *);
+    s32 i;
+
+    if (profileBlock == 0) profileBlock = GetProfileSaveBlock();
+    func_020323a4((u8 *)profileBlock + PROFILE_ID_BLOCK, PROFILE_GAME_ID_CODE);
+    i = 0;
+    do {
+        if (GetBattleSlotSummary(i) != 0) func_02031ee4();
+        i++;
+    } while (i < SAVE_SLOT_COUNT);
+    func_0203287c((u8 *)profileBlock + PROFILE_ID_BLOCK);
+    return 1;
 }
 
 M2C_UNK *GetProfileSaveBlock(void) {

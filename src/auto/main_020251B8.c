@@ -266,13 +266,14 @@ n+=1;
 ((u32 *)state)[0]+=a;((u32 *)state)[1]+=b;((u32 *)state)[2]+=c;((u32 *)state)[3]+=d;((u32 *)state)[4]+=e;
 }
 
-void SHA1_Init(void *arg0) {
-    MI_CpuFill8(arg0, 0, 0x5C);
-    M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
-    M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
-    M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0xC3D2E1F0;
+/* Initialise a compact SHA1 context to the standard SHA1 initial state. */
+void SHA1_Init(void *context) {
+    MI_CpuFill8(context, 0, sizeof(TlsSha1Context));
+    M2C_FIELD(context, s32 *, 0) = 0x67452301;
+    M2C_FIELD(context, s32 *, 4) = 0xEFCDAB89;
+    M2C_FIELD(context, s32 *, 8) = 0x98BADCFE;
+    M2C_FIELD(context, s32 *, 0xC) = 0x10325476;
+    M2C_FIELD(context, s32 *, 0x10) = 0xC3D2E1F0;
 }
 
 #pragma opt_strength_reduction off

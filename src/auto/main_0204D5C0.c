@@ -165,9 +165,9 @@ cleanup:
  * timeout runs out.  A close before Content-Length bytes arrived fails the
  * request with GHTTP_RESULT_DOWNLOAD_INCOMPLETE. */
 void ghiReceiveFile(GHIConnection *conn){
-s32 gpiMalloc(s32);void gpiFree(s32);s32 GetTickCountMs();s32 ghiReceiveData(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
+s32 gpiMalloc(s32);void gpiFree(s32);s32 GetSystemTickMilliseconds();s32 ghiReceiveData(void*,s32,s32*);s32 ghiProcessIncomingFileData(void*,s32,s32);
 s32 readSize,readBuf,status,contentLength,startTime;u32 elapsed;
-startTime=GetTickCountMs();elapsed=0;readBuf=gpiMalloc(0x2000);
+startTime=GetSystemTickMilliseconds();elapsed=0;readBuf=gpiMalloc(0x2000);
 if(!readBuf){conn->completed=1;conn->result=GHTTP_RESULT_OUT_OF_MEMORY;return;}
 while(!conn->completed && elapsed<conn->timeout){
 readSize=0x2000;status=ghiReceiveData(conn,readBuf,&readSize);
@@ -178,7 +178,7 @@ if(contentLength>0 && conn->bytesReceived<contentLength)conn->result=GHTTP_RESUL
 break;
 }
 if(!ghiProcessIncomingFileData(conn,readBuf,readSize))break;
-elapsed=GetTickCountMs()-startTime;
+elapsed=GetSystemTickMilliseconds()-startTime;
 }
 gpiFree(readBuf);
 }
@@ -453,15 +453,24 @@ s32 HasBuddyProfile(void **arg0,s32 arg1) {
  return 0;
 }
 
-s32 DeleteBuddyProfile(void **arg0,s32 arg1) {
- s32 func_0204fb50(void **,s32);
- extern s32 gGpiMsgDisconnected;
- void *p; s32 result;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- result=func_0204fb50(arg0,arg1);
- if(result==0) return 0;
- return result;
+/* Delete a buddy profile from the GameSpy connection by profile id: a null or
+ * disconnected connection reports the disconnected message and fails with 2,
+ * simulation mode does nothing; the deletion itself is the session's profile
+ * delete request. */
+s32 DeleteBuddyProfile(void **connection, s32 profileId) {
+    s32 gpiAuthDeleteProfile(void **, s32);
+    extern s32 gGpiMsgDisconnected;
+    void *gpi;
+    s32 result;
+
+    if (connection == 0 || (gpi = *connection) == 0) return 2;
+    if (M2C_FIELD(gpi, s32 *, GPI_CONN_SIMULATION) != 0) return 0;
+    if (M2C_FIELD(gpi, s32 *, GPI_CONN_STATE) == GPI_STATE_DISCONNECTED) {
+        gpiSetErrorString(connection, &gGpiMsgDisconnected);
+        return 2;
+    }
+    result = gpiAuthDeleteProfile(connection, profileId);
+    if (result == 0) return 0;
+    return result;
 }
 

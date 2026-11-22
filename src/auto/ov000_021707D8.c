@@ -13,7 +13,7 @@ s32 IsCampaignBattleRules(void);s32 func_020a8a84(u16);void *GetCurrentMapName(v
 void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
 void func_0209c024(s16,s16,void *,void *,s32,s32);
 s32 GetLanguage(void);s32 GetDigitCount(s32);s32 func_020cfb94(void);
-s32 func_020d303c(s32);s32 func_020d30a8(s32);
+s32 CountPlayerUnits(s32);s32 func_020d30a8(s32);
 void *func_020a8bc0(void);void *func_020a8bcc(void);
 volatile s32 e;
 void *old;
@@ -33,7 +33,7 @@ DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 if(func_020cfb94()>0){y=6;do{
 x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
 if(p[0x1e] && !p[0x19]){
-a=func_020d303c(x);if(a>999)a=999;
+a=CountPlayerUnits(x);if(a>999)a=999;
 b=func_020d30a8(x);if(b>999)b=999;
 x=M2C_FIELD(p,s32 *,0);c=p[0x18];if(c>999)c=999;d=M2C_FIELD(p,s32 *,8);if(d>999999)d=999999;e=x;if(x>999999)e=999999;
 color=p[0x1c]?3:0;

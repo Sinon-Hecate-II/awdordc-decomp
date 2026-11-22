@@ -196,13 +196,15 @@ M2C_UNK ApplyScreenMode(M2C_UNK arg0) {
     }
 }
 
+/* When the current screen's state flag shows its transition has finished (1),
+ * apply that screen's display mode. */
 void FinishCurrentScreenTransition(void) {
     s32 GetScreenFlag(u8);
     M2C_UNK ApplyScreenMode(M2C_UNK);
     extern s32 g3DSpriteEngineMain, gCur3DSpriteEngine;
-    u8 main = gCur3DSpriteEngine == g3DSpriteEngineMain;
-    u8 other = main != 1;
-    if (GetScreenFlag(other) != 1)
+    u8 isPrimary = gCur3DSpriteEngine == g3DSpriteEngineMain;
+    u8 screen = isPrimary != 1;
+    if (GetScreenFlag(screen) != 1)
         return;
     ApplyScreenMode(3);
 }

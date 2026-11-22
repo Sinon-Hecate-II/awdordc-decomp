@@ -268,7 +268,7 @@ tile=(u16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x3c)*3+0x280);base=gfx+0
 temp=HeapAllocBlock(0x800);index=(s16)(M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x50)-1);
 Clear3DSpriteLayer(0);
 switch(GetInfoWindowLanguage()){case 0:table=&gInfoPanelGfx0;break;case 1:table=&gInfoPanelGfx1;break;case 2:table=&gInfoPanelGfx2;break;case 3:table=&gInfoPanelGfx3;break;case 4:table=&gInfoPanelGfx4;break;case 5:table=&gInfoPanelGfx5;break;default:table=&gInfoPanelGfx0;break;}
-LoadGraphicsBlock(table,temp);func_02080a14(base,16,2,temp+0x520);
+LoadGraphicsBlock(table,temp);CopyTileRect(base,16,2,temp+0x520);
 for(i=0,step=0;i<2;i++,step+=32)AddToU16Array(base+step*2,32,384);
 SetTileRectPalette(base,16,2,11);HeapFreeBlock(temp);
 if(M2C_FIELD(M2C_FIELD(entry,void **,16),u8 *,0x48)){

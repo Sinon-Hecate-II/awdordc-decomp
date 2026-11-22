@@ -114,7 +114,21 @@ void UpdateLocalPlayerInput(void) {
 
 void UnpackCursorPath(u8 *a,u8 *b){s32 i=0,j=0;do{b[i]=((u32)(a[j]<<28)>>24)|(a[j+1]&15);j+=2;i++;}while(i<6);}
 
-void func_020844a0(u8 *a,u8 *b){s32 i=0,j=0,v;do{v=(a[i]>>4)&15;if(v==15)b[j]=255;else b[j]=v;v=a[i]&15;if(v==15)b[j+1]=255;else b[j+1]=v;i++;j+=2;}while(i<6);}
+/* Unpack the 6-byte compact command path (two 4-bit MOVE_DIR codes per byte, a
+ * 0xF nibble for a missing step) into the map's 12-byte cursor path `dest`. */
+void UnpackCommandPath(u8 *packed, u8 *dest) {
+    s32 i = 0, j = 0, dir;
+    do {
+        dir = (packed[i] >> 4) & 0xF;
+        if (dir == COMMAND_PATH_NONE) dest[j] = MOVE_DIR_NONE;
+        else dest[j] = dir;
+        dir = packed[i] & 0xF;
+        if (dir == COMMAND_PATH_NONE) dest[j + 1] = MOVE_DIR_NONE;
+        else dest[j + 1] = dir;
+        i++;
+        j += 2;
+    } while (i < 6);
+}
 
 #pragma opt_common_subs off
 void func_020844f8(void) {
@@ -669,14 +683,14 @@ s32 func_02084ea0(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 s32 func_02084eec(M2C_UNK arg0) {
-    s32 func_ov009_022257ac(M2C_UNK);
+    s32 SpawnLinkPlayerAnnounce(M2C_UNK);
     s32 func_ov010_02229eb4(M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_022257ac(arg0);
+        return SpawnLinkPlayerAnnounce(arg0);
     case 2:
         return func_ov010_02229eb4(arg0);
     default:
@@ -720,20 +734,23 @@ s32 Link_SetMessageHandler(M2C_UNK arg0) {
     }
 }
 
-void func_02085000(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Clear the link command queues, then create the local player's name label for
+ * the active link provider: an ov009 label on a single-card link (link mode 1),
+ * an ov010 label on a Nintendo WFC session (link mode 2). */
+void CreateLocalPlayerNameLabel(M2C_UNK x, M2C_UNK y, M2C_UNK owner) {
     M2C_UNK ClearLinkCommandQueues();
     M2C_UNK CreateLinkNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK CreateOnlineNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 linkMode;
 
     ClearLinkCommandQueues();
-    temp_r0 = GetLinkMode();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        CreateLinkNameLabel(arg0, arg1, arg2);
+    linkMode = GetLinkMode();
+    switch (linkMode) {
+    case NET_OVERLAY_LINK:
+        CreateLinkNameLabel(x, y, owner);
         return;
-    case 2:
-        CreateOnlineNameLabel(arg0, arg1, arg2);
+    case NET_OVERLAY_ONLINE:
+        CreateOnlineNameLabel(x, y, owner);
         return;
     }
 }

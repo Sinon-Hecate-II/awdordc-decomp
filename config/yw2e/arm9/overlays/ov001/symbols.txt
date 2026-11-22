@@ -121,7 +121,7 @@ func_ov001_0216d8a0 kind:function(thumb,size=0x42) addr:0x0216d8a0
 func_ov001_0216d8e4 kind:function(thumb,size=0xf0) addr:0x0216d8e4
 func_ov001_0216d9d4 kind:function(thumb,size=0x3c) addr:0x0216d9d4
 func_ov001_0216da10 kind:function(thumb,size=0x38) addr:0x0216da10
-func_ov001_0216da48 kind:function(thumb,size=0x58) addr:0x0216da48
+WhConnTaskBeginConnection kind:function(thumb,size=0x58) addr:0x0216da48
 WhConnTaskStartConnection kind:function(thumb,size=0x84) addr:0x0216daa0
 func_ov001_0216db24 kind:function(thumb,size=0xb8) addr:0x0216db24
 func_ov001_0216dbdc kind:function(thumb,size=0x30c) addr:0x0216dbdc
@@ -310,7 +310,7 @@ Ov001_GetScreenLayout kind:function(arm,size=0x18) addr:0x02175dec
 Ov001_HasOptionFlag kind:function(arm,size=0x1c) addr:0x02175e04
 Ov001_RequestScreenExit kind:function(arm,size=0x14) addr:0x02175e20
 func_ov001_02175e34 kind:function(arm,size=0x40) addr:0x02175e34
-func_ov001_02175e74 kind:function(arm,size=0x3c) addr:0x02175e74
+Ov001_InitMessageArchiveQueue kind:function(arm,size=0x3c) addr:0x02175e74
 Ov001_FreeMessageArchiveQueue kind:function(arm,size=0x14) addr:0x02175eb0
 Ov001_LoadMessageArchive kind:function(arm,size=0x58) addr:0x02175ec4
 Ov001_ReleaseMessageArchive kind:function(arm,size=0x2c) addr:0x02175f1c
@@ -339,7 +339,7 @@ Ov001_OpenInitialMenuAfterFade kind:function(arm,size=0x74) addr:0x02176844
 Ov001_OpenWifiMenu kind:function(arm,size=0x7c) addr:0x021768b8
 Ov001_LoadWifiMenuBackground kind:function(arm,size=0xec) addr:0x02176934
 Ov001_FadeInWifiMenu kind:function(arm,size=0x54) addr:0x02176a20
-func_ov001_02176a74 kind:function(arm,size=0x3c) addr:0x02176a74
+Ov001_OpenWifiMenuAfterFade kind:function(arm,size=0x3c) addr:0x02176a74
 func_ov001_02176ab0 kind:function(arm,size=0x28) addr:0x02176ab0
 func_ov001_02176ad8 kind:function(arm,size=0x14) addr:0x02176ad8
 Ov001_HandleChoiceInput kind:function(arm,size=0x12c) addr:0x02176aec
@@ -352,7 +352,7 @@ Ov001_MoveChoiceSelection kind:function(arm,size=0x70) addr:0x02176d80
 func_ov001_02176df0 kind:function(arm,size=0x40) addr:0x02176df0
 Ov001_OpenWfcSettingsScreen kind:function(arm,size=0x48) addr:0x02176e30
 Ov001_LoadWfcSettingsBackground kind:function(arm,size=0x80) addr:0x02176e78
-func_ov001_02176ef8 kind:function(arm,size=0x54) addr:0x02176ef8
+Ov001_FadeInWfcSettingsScreen kind:function(arm,size=0x54) addr:0x02176ef8
 func_ov001_02176f4c kind:function(arm,size=0x3c) addr:0x02176f4c
 func_ov001_02176f88 kind:function(arm,size=0x28) addr:0x02176f88
 func_ov001_02176fb0 kind:function(arm,size=0x14) addr:0x02176fb0
@@ -379,7 +379,7 @@ func_ov001_0217740c kind:function(arm,size=0x34) addr:0x0217740c
 Ov001_OpenMacAddressScreen kind:function(arm,size=0x34) addr:0x02177440
 Ov001_LoadMacAddressBackground kind:function(arm,size=0x80) addr:0x02177474
 DrawMacAddressPanel kind:function(arm,size=0x1d4) addr:0x021774f4
-func_ov001_021776c8 kind:function(arm,size=0x54) addr:0x021776c8
+Ov001_FadeInMacAddressScreen kind:function(arm,size=0x54) addr:0x021776c8
 func_ov001_0217771c kind:function(arm,size=0x3c) addr:0x0217771c
 func_ov001_02177758 kind:function(arm,size=0x28) addr:0x02177758
 func_ov001_02177780 kind:function(arm,size=0x14) addr:0x02177780
@@ -392,7 +392,7 @@ Ov001_CloseMacAddressScreen kind:function(arm,size=0x70) addr:0x02177850
 Ov001_InitOptionMenu kind:function(arm,size=0xc8) addr:0x021778c0
 Ov001_LoadOptionMenuBg kind:function(arm,size=0x19c) addr:0x02177988
 Ov001_FadeInOptionMenu kind:function(arm,size=0x54) addr:0x02177b24
-func_ov001_02177b78 kind:function(arm,size=0x3c) addr:0x02177b78
+Ov001_OptionMenuFadeDone kind:function(arm,size=0x3c) addr:0x02177b78
 func_ov001_02177bb4 kind:function(arm,size=0x28) addr:0x02177bb4
 func_ov001_02177bdc kind:function(arm,size=0x14) addr:0x02177bdc
 Ov001_HandleOptionMenuInput kind:function(arm,size=0xf4) addr:0x02177bf0
@@ -439,7 +439,7 @@ func_ov001_02178600 kind:function(arm,size=0x3c) addr:0x02178600
 func_ov001_0217863c kind:function(arm,size=0x50) addr:0x0217863c
 Ov001_OpenWfcEraseScreen kind:function(arm,size=0x48) addr:0x0217868c
 Ov001_LoadWfcEraseBackground kind:function(arm,size=0x80) addr:0x021786d4
-func_ov001_02178754 kind:function(arm,size=0x54) addr:0x02178754
+Ov001_FadeInWfcEraseScreen kind:function(arm,size=0x54) addr:0x02178754
 func_ov001_021787a8 kind:function(arm,size=0x2c) addr:0x021787a8
 func_ov001_021787d4 kind:function(arm,size=0x28) addr:0x021787d4
 func_ov001_021787fc kind:function(arm,size=0x14) addr:0x021787fc
@@ -500,7 +500,7 @@ func_ov001_021796f8 kind:function(arm,size=0x20) addr:0x021796f8
 Ov001_OpenWirelessScreen kind:function(arm,size=0x60) addr:0x02179718
 Ov001_LoadWirelessSetupBg kind:function(arm,size=0xa8) addr:0x02179778
 Ov001_FadeInWirelessScreen kind:function(arm,size=0x54) addr:0x02179820
-func_ov001_02179874 kind:function(arm,size=0x3c) addr:0x02179874
+Ov001_WirelessScreenFadeDone kind:function(arm,size=0x3c) addr:0x02179874
 func_ov001_021798b0 kind:function(arm,size=0x48) addr:0x021798b0
 func_ov001_021798f8 kind:function(arm,size=0xd4) addr:0x021798f8
 func_ov001_021799cc kind:function(arm,size=0x38) addr:0x021799cc
@@ -527,8 +527,8 @@ MapSelectList_Init kind:function(arm,size=0xd8) addr:0x02179ea8
 InitMapSelectGraphics kind:function(arm,size=0x154) addr:0x02179f80
 MapSelectList_InitScrollBar kind:function(arm,size=0xa8) addr:0x0217a0d4
 MapSelectList_InitRows kind:function(arm,size=0x174) addr:0x0217a17c
-func_ov001_0217a2f0 kind:function(arm,size=0x54) addr:0x0217a2f0
-func_ov001_0217a344 kind:function(arm,size=0x3c) addr:0x0217a344
+MapSelectList_FadeIn kind:function(arm,size=0x54) addr:0x0217a2f0
+MapSelectList_FadeInDone kind:function(arm,size=0x3c) addr:0x0217a344
 func_ov001_0217a380 kind:function(arm,size=0x28) addr:0x0217a380
 func_ov001_0217a3a8 kind:function(arm,size=0x14) addr:0x0217a3a8
 MapSelectList_PollInput kind:function(arm,size=0x254) addr:0x0217a3bc
@@ -553,7 +553,7 @@ func_ov001_0217b3f0 kind:function(arm,size=0x2c) addr:0x0217b3f0
 func_ov001_0217b41c kind:function(arm,size=0x28) addr:0x0217b41c
 InitNameEntryScreen kind:function(arm,size=0x134) addr:0x0217b444
 Ov001_LoadNameEntryGraphics kind:function(arm,size=0xbc) addr:0x0217b578
-func_ov001_0217b634 kind:function(arm,size=0x54) addr:0x0217b634
+Ov001_FadeInNameEntryScreen kind:function(arm,size=0x54) addr:0x0217b634
 Ov001_OpenNameEntryKeyboard kind:function(arm,size=0x7c) addr:0x0217b688
 Ov001_WaitKeyboardFirstKey kind:function(arm,size=0x20) addr:0x0217b704
 func_ov001_0217b724 kind:function(arm,size=0x10) addr:0x0217b724
@@ -572,7 +572,7 @@ func_ov001_0217bf14 kind:function(arm,size=0x2c) addr:0x0217bf14
 func_ov001_0217bf40 kind:function(arm,size=0x44) addr:0x0217bf40
 func_ov001_0217bf84 kind:function(arm,size=0x174) addr:0x0217bf84
 Ov001_LoadCodeEntryGraphics kind:function(arm,size=0xbc) addr:0x0217c0f8
-func_ov001_0217c1b4 kind:function(arm,size=0x54) addr:0x0217c1b4
+Ov001_FadeInCodeEntryScreen kind:function(arm,size=0x54) addr:0x0217c1b4
 Ov001_OpenCodeEntryKeypad kind:function(arm,size=0x8c) addr:0x0217c208
 Ov001_WaitKeypadFirstKey kind:function(arm,size=0x20) addr:0x0217c294
 func_ov001_0217c2b4 kind:function(arm,size=0x10) addr:0x0217c2b4
@@ -608,8 +608,8 @@ Ov001_SetWfcErrorCode kind:function(arm,size=0x10) addr:0x0217d260
 InitMapListScreen kind:function(arm,size=0x1fc) addr:0x0217d270
 InitMapListGraphics kind:function(arm,size=0x214) addr:0x0217d46c
 func_ov001_0217d680 kind:function(arm,size=0x3c) addr:0x0217d680
-func_ov001_0217d6bc kind:function(arm,size=0x54) addr:0x0217d6bc
-func_ov001_0217d710 kind:function(arm,size=0x34) addr:0x0217d710
+Ov001_FadeInMapList kind:function(arm,size=0x54) addr:0x0217d6bc
+Ov001_StartMapListInput kind:function(arm,size=0x34) addr:0x0217d710
 func_ov001_0217d744 kind:function(arm,size=0x10) addr:0x0217d744
 func_ov001_0217d754 kind:function(arm,size=0x280) addr:0x0217d754
 HandleMapListTouchChoice kind:function(arm,size=0x84) addr:0x0217d9d4
@@ -647,7 +647,7 @@ func_ov001_0217f70c kind:function(arm,size=0x20) addr:0x0217f70c
 SetMapListMode kind:function(arm,size=0x10) addr:0x0217f72c
 func_ov001_0217f73c kind:function(arm,size=0x20) addr:0x0217f73c
 MapList_LoadBackground kind:function(arm,size=0x94) addr:0x0217f75c
-func_ov001_0217f7f0 kind:function(arm,size=0x54) addr:0x0217f7f0
+Ov001_FadeInMapListScreen kind:function(arm,size=0x54) addr:0x0217f7f0
 func_ov001_0217f844 kind:function(arm,size=0x50) addr:0x0217f844
 func_ov001_0217f894 kind:function(arm,size=0x28) addr:0x0217f894
 func_ov001_0217f8bc kind:function(arm,size=0x4) addr:0x0217f8bc
@@ -729,7 +729,7 @@ func_ov001_02180d24 kind:function(arm,size=0x20) addr:0x02180d24
 Ov001_OpenAccessPointMenu kind:function(arm,size=0x60) addr:0x02180d44
 Ov001_LoadAccessPointMenuGraphics kind:function(arm,size=0x110) addr:0x02180da4
 Ov001_InitSaveSlotSprites kind:function(arm,size=0x108) addr:0x02180eb4
-func_ov001_02180fbc kind:function(arm,size=0x54) addr:0x02180fbc
+Ov001_FadeInAccessPointMenu kind:function(arm,size=0x54) addr:0x02180fbc
 func_ov001_02181010 kind:function(arm,size=0x3c) addr:0x02181010
 func_ov001_0218104c kind:function(arm,size=0x34) addr:0x0218104c
 func_ov001_02181080 kind:function(arm,size=0x14) addr:0x02181080
@@ -747,14 +747,14 @@ func_ov001_02181990 kind:function(arm,size=0x24) addr:0x02181990
 Ov001_ShowRegionIcon kind:function(arm,size=0xd0) addr:0x021819b4
 func_ov001_02181a84 kind:function(arm,size=0x124) addr:0x02181a84
 func_ov001_02181ba8 kind:function(arm,size=0xec) addr:0x02181ba8
-func_ov001_02181c94 kind:function(arm,size=0x54) addr:0x02181c94
+Ov001_FadeInIconMenu kind:function(arm,size=0x54) addr:0x02181c94
 func_ov001_02181ce8 kind:function(arm,size=0x3c) addr:0x02181ce8
 func_ov001_02181d24 kind:function(arm,size=0x28) addr:0x02181d24
 func_ov001_02181d4c kind:function(arm,size=0x14) addr:0x02181d4c
 func_ov001_02181d60 kind:function(arm,size=0x184) addr:0x02181d60
 func_ov001_02181ee4 kind:function(arm,size=0x4) addr:0x02181ee4
-func_ov001_02181ee8 kind:function(arm,size=0x54) addr:0x02181ee8
-func_ov001_02181f3c kind:function(arm,size=0x20) addr:0x02181f3c
+Ov001_ApplyIconMenuChoice kind:function(arm,size=0x54) addr:0x02181ee8
+Ov001_BeginIconMenuClose kind:function(arm,size=0x20) addr:0x02181f3c
 Ov001_FadeOutMenu kind:function(arm,size=0x64) addr:0x02181f5c
 Ov001_MenuConfirm kind:function(arm,size=0x130) addr:0x02181fc0
 func_ov001_021820f0 kind:function(arm,size=0xf4) addr:0x021820f0
@@ -803,8 +803,8 @@ Ov001_CloseSaveNameEntry kind:function(arm,size=0x70) addr:0x02182c68
 func_ov001_02182cd8 kind:function(arm,size=0x34) addr:0x02182cd8
 func_ov001_02182d0c kind:function(arm,size=0x50) addr:0x02182d0c
 Ov001_LoadWfcConnectStep2Bg kind:function(arm,size=0xa8) addr:0x02182d5c
-func_ov001_02182e04 kind:function(arm,size=0x54) addr:0x02182e04
-func_ov001_02182e58 kind:function(arm,size=0x3c) addr:0x02182e58
+Ov001_FadeInWfcConnectStep2 kind:function(arm,size=0x54) addr:0x02182e04
+Ov001_WaitWfcConnectStep2FadeIn kind:function(arm,size=0x3c) addr:0x02182e58
 func_ov001_02182e94 kind:function(arm,size=0x28) addr:0x02182e94
 func_ov001_02182ebc kind:function(arm,size=0x14) addr:0x02182ebc
 func_ov001_02182ed0 kind:function(arm,size=0x38) addr:0x02182ed0
@@ -1060,8 +1060,8 @@ Ov001_FreeFades kind:function(arm,size=0x14) addr:0x0218a7ec
 Ov001_IsFadeActive kind:function(arm,size=0x24) addr:0x0218a800
 Ov001_StartFade kind:function(arm,size=0xd8) addr:0x0218a824
 Ov001_UpdateFade kind:function(arm,size=0x128) addr:0x0218a8fc
-func_ov001_0218aa24 kind:function(arm,size=0x58) addr:0x0218aa24
-func_ov001_0218aa7c kind:function(arm,size=0x38) addr:0x0218aa7c
+Ov001_StartDelay kind:function(arm,size=0x58) addr:0x0218aa24
+Ov001_DelayStep kind:function(arm,size=0x38) addr:0x0218aa7c
 Ov001_CreateTextContext kind:function(arm,size=0x104) addr:0x0218aab4
 func_ov001_0218abb8 kind:function(arm,size=0x4c) addr:0x0218abb8
 CreatePooledTextPanel kind:function(arm,size=0xdc) addr:0x0218ac04
@@ -1566,7 +1566,7 @@ data_ov001_02191770 kind:data(any) addr:0x02191770
 data_ov001_02191794 kind:data(any) addr:0x02191794
 data_ov001_021917ac kind:data(any) addr:0x021917ac
 data_ov001_021917b4 kind:data(any) addr:0x021917b4
-data_ov001_021917bc kind:data(any) addr:0x021917bc
+gOv001CompressedFileSuffix kind:data(any) addr:0x021917bc
 gOv001KoreanFontFilePaths kind:data(any) addr:0x021917c0
 gOv001DefaultFontFilePaths kind:data(any) addr:0x021917c8
 data_ov001_021917d0 kind:data(any) addr:0x021917d0
@@ -1634,7 +1634,7 @@ gOv001Keypad kind:bss addr:0x02193d20
 gOv001WirelessSetup kind:bss addr:0x02193d24
 data_ov001_02193d28 kind:bss addr:0x02193d28
 gOv001ScreenState kind:bss addr:0x02193d2c
-data_ov001_02193d4c kind:bss addr:0x02193d4c
+gOv001MessageArchiveFreeList kind:bss addr:0x02193d4c
 data_ov001_02193d50 kind:bss addr:0x02193d50
 gOv001OptionPageState kind:bss addr:0x02193d54
 gOv001MessageArchive kind:bss addr:0x02193d58

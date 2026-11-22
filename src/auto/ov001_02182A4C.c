@@ -141,7 +141,7 @@ void func_ov001_02182d0c(void) {
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void Ov001_LoadWfcConnectStep2Bg(void);
-    void func_ov001_02182e04(void);
+    void Ov001_FadeInWfcConnectStep2(void);
     extern u8 gOv001WfcConnectChosen;
     gOv001WfcConnectChosen = 0;
     Ov001_LoadWfcConnectStep2Bg();
@@ -149,7 +149,7 @@ void func_ov001_02182d0c(void) {
     Ov001_ShowMessagePanel(0x38, -1, 0);
     Ov001_OpenMenuForMode(1);
     Ov001_ShowMessageBox(0x27);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182e04);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWfcConnectStep2);
 }
 
 /* Loads the WFC connection screen's step 2 background: tile graphics, palette
@@ -169,19 +169,21 @@ void Ov001_LoadWfcConnectStep2Bg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_02182e04(void) {
+/* Fade the WFC connection screen's second step in from white and show its planes:
+ * the sub screen blends BG0, the main screen BG0/BG2 and the sprites. */
+void Ov001_FadeInWfcConnectStep2(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_02182e58(void);
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182e58);
+    void Ov001_WaitWfcConnectStep2FadeIn(void);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, OV001_BLEND_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcConnectStep2FadeIn);
 }
 
-void func_ov001_02182e58(void) {
+void Ov001_WaitWfcConnectStep2FadeIn(void) {
     extern M2C_UNK func_ov001_02182e94;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
@@ -243,10 +245,10 @@ void func_ov001_02182f0c(void) {
 void func_ov001_02182f5c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_StartCloseWfcMenu;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_StartCloseWfcMenu);
 }
 
@@ -423,10 +425,10 @@ void func_ov001_021832cc(void){void Ov001_StartConnectionClose(void);extern u8 g
 void Ov001_StartConnectionClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_StartConnectionFadeOut;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_StartConnectionFadeOut);
 }
 
@@ -634,7 +636,21 @@ void RequestMapPreviewUpdate(void) {
     M2C_FIELD(gOv001MapPreview, s8 *, 0x604) = 1;
 }
 
-void CopyMapPreviewRows(void *a,s32 b,s32 c,s32 d){extern void *gOv001MapPreview;u8 *src=a;u8 *dst=(u8 *)gOv001MapPreview+4+b*2;s32 i;for(i=0;i<d;i++){CopyU16(src,dst,c*2);src+=64;dst+=64;}}
+/* Copy `rowCount` rows of `wordsPerRow` u16 tiles from a source tilemap into the
+ * map preview's BG2 tilemap, starting at tile column `destColumn`; both tilemaps
+ * advance one 32-tile row (64 bytes) per row. */
+void CopyMapPreviewRows(void *source, s32 destColumn, s32 wordsPerRow, s32 rowCount) {
+    extern void *gOv001MapPreview;
+    u8 *src = source;
+    u8 *dst = (u8 *)((Ov001MapPreview *)gOv001MapPreview)->tiles + destColumn * 2;
+    s32 i;
+
+    for (i = 0; i < rowCount; i++) {
+        CopyU16(src, dst, wordsPerRow * 2);
+        src += 64;
+        dst += 64;
+    }
+}
 
 void FlushMapPreview(void){
 extern void *gOv001MapPreview;void DC_FlushRange();void GX_LoadBG2Scr();

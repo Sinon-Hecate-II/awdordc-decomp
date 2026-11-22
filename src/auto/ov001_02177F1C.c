@@ -249,10 +249,10 @@ void func_ov001_02178398(void) {
 void func_ov001_021783c0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_021783e0;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_021783e0);
 }
 
@@ -353,10 +353,10 @@ void func_ov001_021785b8(void) {
 void func_ov001_021785e0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_02178600;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_02178600);
 }
 
@@ -393,14 +393,14 @@ void Ov001_OpenWfcEraseScreen(void) {
     s8 Ov001_ShowMessagePanel(s32, s32, s32);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     void Ov001_LoadWfcEraseBackground(void);
-    void func_ov001_02178754(void);
+    void Ov001_FadeInWfcEraseScreen(void);
     extern u8 gOv001WfcEraseConfirmed;
     gOv001WfcEraseConfirmed = 0;
     Ov001_LoadWfcEraseBackground();
     Ov001_LoadObjLayoutBlock(0x13);
     Ov001_ShowMessagePanel(0x3C, -1, 0);
     Ov001_ShowMessageBox(0x1B);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178754);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWfcEraseScreen);
 }
 
 /* Loads the Wi-Fi erase screen's background map (the shared "Multi" screen)
@@ -417,7 +417,12 @@ void Ov001_LoadWfcEraseBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02178754(void) {
+/* Fade in the Wi-Fi data-erase screen's option panel and screen, show the screen's
+ * planes, then wait for the fade in the next step. */
+void Ov001_FadeInWfcEraseScreen(void) {
+    M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
+    M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern M2C_UNK func_ov001_021787a8;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
@@ -484,10 +489,10 @@ void func_ov001_0217884c(void) {
 void func_ov001_0217889c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutWfcEraseScreen;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutWfcEraseScreen);
 }
 
@@ -737,10 +742,10 @@ void Ov001_MessageChoiceStep(void) {
 void Ov001_LockMessageChoice(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK Ov001_FadeOutMessageScreen;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&Ov001_FadeOutMessageScreen);
 }
 

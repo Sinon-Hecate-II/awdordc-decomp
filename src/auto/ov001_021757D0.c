@@ -312,49 +312,54 @@ s32 func_ov001_02175e34(void) {
     return (r1 + 0x31) & 0xFF;
 }
 
-void func_ov001_02175e74(void) {
+void Ov001_InitMessageArchiveQueue(void) {
     M2C_UNK Ov001_Alloc(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_QueueCreateFromBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_02193d4c;
+    extern M2C_UNK gOv001MessageArchiveFreeList;
     M2C_UNK val;
     M2C_UNK res;
     val = Ov001_Alloc(0x64, 0x4);
-    data_ov001_02193d4c = val;
+    gOv001MessageArchiveFreeList = val;
     res = Ov001_QueueCreateFromBuffer(0x8, val, 0xc);
-    M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60) = res;
+    M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, 0x60) = res;
 }
 
 void Ov001_FreeMessageArchiveQueue(void) {
     M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
-    extern M2C_UNK data_ov001_02193d4c;
-    Ov001_FreeAlloc(&data_ov001_02193d4c);
+    extern M2C_UNK gOv001MessageArchiveFreeList;
+    Ov001_FreeAlloc(&gOv001MessageArchiveFreeList);
 }
 
-M2C_UNK Ov001_LoadMessageArchive(M2C_UNK arg0) {
+/* Load the message file at `path` and fill one archive record from the pool with
+ * it: the file image, the per-message offset table and the base its offsets are
+ * relative to, so Ov001_GetMessageText can address the texts. Returns the record;
+ * Ov001_ReleaseMessageArchive hands it back. */
+M2C_UNK Ov001_LoadMessageArchive(M2C_UNK path) {
     M2C_UNK Ov001_QueuePop(M2C_UNK);
     M2C_UNK Ov001_LoadFile(M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_02193d4c;
-    M2C_UNK var_r4;
-    M2C_UNK local;
-    M2C_UNK ret;
-    M2C_UNK r2;
-    M2C_UNK r1;
-    var_r4 = Ov001_QueuePop(M2C_FIELD(data_ov001_02193d4c, M2C_UNK *, 0x60));
-    ret = Ov001_LoadFile(arg0, &local, 4);
-    r2 = ret + 0x20;
-    M2C_FIELD(var_r4, M2C_UNK *, 0x8) = ret;
-    M2C_FIELD(var_r4, M2C_UNK *, 0x0) = r2 + 0x10;
-    r1 = M2C_FIELD(r2, M2C_UNK *, 0x4);
-    M2C_FIELD(var_r4, M2C_UNK *, 0x4) = r2 + r1 + 0x8;
-    return var_r4;
+    extern M2C_UNK gOv001MessageArchiveFreeList;
+    M2C_UNK archive;
+    M2C_UNK size;
+    M2C_UNK file;
+    M2C_UNK bank;
+    M2C_UNK textOffset;
+
+    archive = Ov001_QueuePop(M2C_FIELD(gOv001MessageArchiveFreeList, M2C_UNK *, MESSAGE_POOL_QUEUE));
+    file = Ov001_LoadFile(path, &size, 4);
+    bank = file + MESSAGE_FILE_HEADER;
+    M2C_FIELD(archive, M2C_UNK *, MESSAGE_ARCHIVE_FILE) = file;
+    M2C_FIELD(archive, M2C_UNK *, MESSAGE_ARCHIVE_OFFSETS) = bank + MESSAGE_BANK_OFFSETS_OFF;
+    textOffset = M2C_FIELD(bank, M2C_UNK *, MESSAGE_BANK_TEXTS_OFF);
+    M2C_FIELD(archive, M2C_UNK *, MESSAGE_ARCHIVE_TEXTS) = bank + textOffset + MESSAGE_BANK_TEXTS_BIAS;
+    return archive;
 }
 
 void Ov001_ReleaseMessageArchive(M2C_UNK arg0) {
     M2C_UNK Ov001_FreeFile(M2C_UNK);
     M2C_UNK Ov001_QueuePush(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_ov001_02193d4c;
+    extern M2C_UNK gOv001MessageArchiveFreeList;
     Ov001_FreeFile(M2C_FIELD((void *)arg0, M2C_UNK *, 0x8));
-    Ov001_QueuePush(M2C_FIELD((void *)data_ov001_02193d4c, M2C_UNK *, 0x60), arg0);
+    Ov001_QueuePush(M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, 0x60), arg0);
 }
 
 s32 Ov001_GetMessageText(M2C_UNK arg0, u32 arg1) {

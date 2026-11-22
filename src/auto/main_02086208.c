@@ -173,8 +173,12 @@ void Init3DSpriteScene(void) {
     CreateSpriteFromClass(&data_02102210, 7);
 }
 
-s32 IsUiGraphicsBankInUse(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
+/* Whether text bank `bank` is one of the banks the boot UI keeps loaded for
+ * the whole game (the shared system and menu strings, banks 0..3, 6, 8, 9 and
+ * the last slot 39).  The other banks belong to one screen, which loads and
+ * frees them itself, so a language change only reloads these. */
+s32 IsUiGraphicsBankInUse(s32 bank) {
+    switch (bank) {                                 /* irregular */
     case 39:
     case 0:
     case 1:

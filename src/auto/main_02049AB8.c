@@ -371,7 +371,7 @@ return 0;
 #pragma opt_common_subs off
 #pragma opt_propagation off
 s32 ghiReceiveData(void *p,u8 *dst,s32 *len) {
-u32 GetTickCountMs(void);
+u32 GetSystemTickMilliseconds(void);
 s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
 s32 ghiRecv(s32,u8 *,s32,s32);
 
@@ -379,7 +379,7 @@ extern s32 gGhiRecvTimeoutMs[];
 s32 r; s32 err; s32 n; u32 now; register s32 got; register s32 out;
 n=*len-1;
 if(M2C_FIELD(p,s32 *,0x134)){
-now=GetTickCountMs();
+now=GetSystemTickMilliseconds();
 if(now<M2C_FIELD(p,u32 *,0x138)+gGhiRecvTimeoutMs[0])return 1;
 M2C_FIELD(p,u32 *,0x138)=now;
 if(n>=gGhiRecvTimeoutMs[1])n=gGhiRecvTimeoutMs[1];

@@ -28,45 +28,59 @@ void func_02004078(s32 arg0,s32 arg1) {
  *(volatile s32 *)0x04000468=0x1000;
 }
 
-void GX_LoadBGPltt(M2C_UNK arg0,s32 arg1,u32 arg2) {
- M2C_UNK DmaCopy16(s32,M2C_UNK,s32,u32);
- M2C_UNK CopyU16(M2C_UNK,s32,u32);
- extern s32 gGxDmaChannel;
- if(gGxDmaChannel!=-1&&arg2>0x1CU){DmaCopy16(gGxDmaChannel,arg0,arg1+0x05000000,arg2);return;}
- CopyU16(arg0,arg1+0x05000000,arg2);
-}
-
-void func_02004108(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of palette data to the main engine's BG palette RAM at
+ * `offset`: through the GX DMA channel when one is owned and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadBGPltt(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000400, arg2);
+
+    if (gGxDmaChannel != -1 && size > 0x1CU) {
+        DmaCopy16(gGxDmaChannel, src, offset + GX_MAIN_PALETTE_BASE, size);
         return;
     }
-    CopyU16(arg0, arg1 + 0x05000400, arg2);
+    CopyU16(src, offset + GX_MAIN_PALETTE_BASE, size);
 }
 
-void GX_LoadOBJPltt(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy palette data to sub-engine BG palette RAM, using DMA for transfers over 28 bytes when a GX DMA channel is available. */
+void GX_LoadSubBGPltt(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000200, arg2);
+
+    if (gGxDmaChannel != -1 && size > 0x1CU) {
+        DmaCopy16(gGxDmaChannel, src, offset + GX_SUB_PALETTE_BASE, size);
         return;
     }
-    CopyU16(arg0, arg1 + 0x05000200, arg2);
+    CopyU16(src, offset + GX_SUB_PALETTE_BASE, size);
 }
 
-void func_020041b8(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy palette data into main-engine OBJ palette RAM, using DMA for transfers over 28 bytes when a GX DMA channel is available. */
+void GX_LoadOBJPltt(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
     M2C_UNK CopyU16(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    if (gGxDmaChannel != -1 && arg2 > 0x1CU) {
-        DmaCopy16(gGxDmaChannel, arg0, arg1 + 0x05000600, arg2);
+
+    if (gGxDmaChannel != -1 && size > 0x1CU) {
+        DmaCopy16(gGxDmaChannel, src, offset + GX_MAIN_OBJ_PALETTE_BASE, size);
         return;
     }
-    CopyU16(arg0, arg1 + 0x05000600, arg2);
+    CopyU16(src, offset + GX_MAIN_OBJ_PALETTE_BASE, size);
+}
+
+/* Copy `size` bytes of palette data to the sub engine's OBJ palette RAM at
+ * `offset`: through the GX DMA channel when one is owned and the copy is larger
+ * than 28 bytes, on the CPU otherwise. */
+void GX_LoadSubOBJPltt(M2C_UNK src, s32 offset, u32 size) {
+    M2C_UNK DmaCopy16(s32, M2C_UNK, s32, u32);
+    M2C_UNK CopyU16(M2C_UNK, s32, u32);
+    extern s32 gGxDmaChannel;
+    if (gGxDmaChannel != -1 && size > 0x1CU) {
+        DmaCopy16(gGxDmaChannel, src, offset + GX_SUB_OBJ_PALETTE_BASE, size);
+        return;
+    }
+    CopyU16(src, offset + GX_SUB_OBJ_PALETTE_BASE, size);
 }
 
 void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
@@ -80,43 +94,53 @@ void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
     MIi_CpuCopy32(arg0, arg1 + 0x07000000, arg2);
 }
 
-void func_02004264(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of 3D-sprite OAM data from `src` into the sub engine's OAM
+ * at `offset`: through the GX DMA channel when one is owned and the copy is
+ * larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadOAMSub(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
-        DmaCopy(gGxDmaChannel, arg0, arg1 + 0x07000400, arg2);
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, offset + GX_SUB_OBJ_OAM_BASE, size);
         return;
     }
-    MIi_CpuCopy32(arg0, arg1 + 0x07000400, arg2);
+    MIi_CpuCopy32(src, offset + GX_SUB_OBJ_OAM_BASE, size);
 }
 
 #pragma push
 #pragma opt_propagation off
-void func_020042bc(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of 3D-sprite OBJ character data from `src` into the main
+ * engine's OBJ VRAM at `offset`: through the GX DMA channel when one is owned
+ * and the copy is larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadOBJ(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    register s32 base=0x06400000;
-    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
-        DmaCopy(gGxDmaChannel, arg0, base + arg1, arg2);
+    register s32 base = GX_MAIN_OBJ_VRAM_BASE;
+
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, base + offset, size);
         return;
     }
-    MIi_CpuCopy32(arg0, base + arg1, arg2);
+    MIi_CpuCopy32(src, base + offset, size);
 }
 #pragma pop
 #pragma push
 #pragma opt_propagation off
-void func_02004314(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of 3D-sprite OBJ character data into the sub engine's OBJ
+ * VRAM at `offset`: through the GX DMA channel when one is owned and the copy is
+ * larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadOBJSub(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    register u32 base=0x06600000;
-    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
-        DmaCopy(gGxDmaChannel, arg0, base + arg1, arg2);
+    register u32 base=GX_SUB_OBJ_VRAM_BASE;
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, base + offset, size);
         return;
     }
-    MIi_CpuCopy32(arg0, base + arg1, arg2);
+    MIi_CpuCopy32(src, base + offset, size);
 }
 #pragma pop
 

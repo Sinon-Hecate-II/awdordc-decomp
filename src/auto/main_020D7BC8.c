@@ -108,13 +108,20 @@ s32 GetUnitPanelKind(void *unit) {
     return 1;
 }
 
-void func_020d8540(void) {
+/* Refreshes the cached cursor-cell coordinates (X and Y) from the cursor's target
+ * tile, leaving the cache's flag bits alone. */
+void RefreshMapCursorCellCacheCoords(void) {
     extern void **gCurrentMap;
-    void *temp_r0;
-    temp_r0 = *gCurrentMap;
-    M2C_FIELD(temp_r0,u16 *,0x52E6) = (M2C_FIELD(temp_r0,u16 *,0x52E6) & ~0x1FC) | ((u32)(M2C_FIELD(temp_r0,u16 *,0x52C2) << 25) >> 23);
-    temp_r0 = *gCurrentMap;
-    M2C_FIELD(temp_r0,u16 *,0x52E6) = (M2C_FIELD(temp_r0,u16 *,0x52E6) & ~0xFE00) | ((u32)(M2C_FIELD(temp_r0,u16 *,0x52C4) << 25) >> 16);
+    void *map;
+
+    map = *gCurrentMap;
+    M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) =
+        (M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) & ~MAP_CURSOR_CELL_COORD_MASK) |
+        ((u32)(M2C_FIELD(map, u16 *, MAP_CURSOR_TARGET_X) << 25) >> 23);
+    map = *gCurrentMap;
+    M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) =
+        (M2C_FIELD(map, u16 *, MAP_CURSOR_CELL_CACHE) & ~MAP_CURSOR_CELL_COORD_Y_MASK) |
+        ((u32)(M2C_FIELD(map, u16 *, MAP_CURSOR_TARGET_Y) << 25) >> 16);
 }
 
 void func_020d8594(void) {
@@ -133,9 +140,9 @@ void func_020d8594(void) {
     if (M2C_FIELD(mapData, s16 *, 0x52E4) > 168) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) <= 169) M2C_FIELD(mapData, s16 *, 0x52E4) = 168;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4) - 168, 2);
-        func_020d8540();
+        RefreshMapCursorCellCacheCoords();
     }
-    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 168) func_020d8540();
+    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 168) RefreshMapCursorCellCacheCoords();
 }
 
 void func_020d867c(void) {
@@ -154,9 +161,9 @@ void func_020d867c(void) {
     if (M2C_FIELD(mapData, s16 *, 0x52E4) < 0) {
         if (M2C_FIELD(mapData, s16 *, 0x52E4) >= -1) M2C_FIELD(mapData, s16 *, 0x52E4) = 0;
         else M2C_FIELD(mapData, s16 *, 0x52E4) -= Divide(M2C_FIELD(mapData, s16 *, 0x52E4), 2);
-        func_020d8540();
+        RefreshMapCursorCellCacheCoords();
     }
-    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 0) func_020d8540();
+    if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 0) RefreshMapCursorCellCacheCoords();
 }
 
 /* Returns the cursor-cell display mode the cursor's target tile needs: which of

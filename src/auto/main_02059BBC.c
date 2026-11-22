@@ -408,19 +408,27 @@ if(callbacks)M2C_FIELD(connection,GT2ConnectionCallbacks *,GT2_CONNECTION_CALLBA
 return 1;
 }
 
-void func_0205a994(void *p,s32 a,s32 b,...) {
-M2C_UNK gti2NormalizeMessage(s32 *,s32 *);M2C_UNK gti2SendClose(void *,s32,s32);
-M2C_FIELD(p,s32 *,20)=0;if(M2C_FIELD(p,s32 *,12)!=4)return;
-gti2NormalizeMessage(&a,&b);gti2SendClose(p,a,b);M2C_FIELD(p,s32 *,12)=6;
+/* GameSpy GT2's gti2RejectConnection: refuse a connection that is still awaiting
+ * the server's accept by sending a CLOSE carrying the reason message, then move
+ * it to the peer-closed state; a connection in any other state is left alone. */
+void gti2RejectConnection(void *connection, s32 message, s32 length, ...) {
+    M2C_UNK gti2NormalizeMessage(s32 *, s32 *);
+    M2C_UNK gti2SendClose(void *, s32, s32);
+
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_CLOSE_PENDING) = 0;
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_AWAIT_ACCEPT) return;
+    gti2NormalizeMessage(&message, &length);
+    gti2SendClose(connection, message, length);
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_PEER_CLOSED;
 }
 
 s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {
-    s32 GetTickCountMs();
+    s32 GetSystemTickMilliseconds();
     s32 func_0205d228(s32, s32, u16, M2C_UNK, s32);
     if (func_0205d228(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4), arg1, arg2) == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x88) = GetTickCountMs();
+    M2C_FIELD(arg0, s32 *, 0x88) = GetSystemTickMilliseconds();
     return 1;
 }
 

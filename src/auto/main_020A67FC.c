@@ -121,15 +121,19 @@ void func_020a6b68(void *arg0) {
     func_020a7f48(0, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2);
 }
 
-void func_020a6b90(void *arg0) {
+/* Unit-sprite class update: place the map cursor at the tile of the unit the
+ * sprite shows (its tile x/y were set from the unit record at +0x54), then keep
+ * the sprite's animation held while a battle effect runs, resuming it when none
+ * is active. */
+void UnitSprite_PlaceCursorAndResume(void *sprite) {
     extern void **gCurrentMap;
     s32 IsBattleEffectActive(void);
     void Sprite_ResumeAnimation(void *);
-    void (*callback)(s32, s32, s32);
-    callback = (void (*)(s32, s32, s32))M2C_FIELD(gCurrentMap[1], void **, 8);
-    if (callback != 0) callback(M2C_FIELD(arg0, s32 *, 0x34) * 16, M2C_FIELD(arg0, s32 *, 0x38) * 16, 10);
+    void (*cursorCallback)(s32, s32, s32);
+    cursorCallback = (void (*)(s32, s32, s32))M2C_FIELD(gCurrentMap[1], void **, MAPVIEW_CURSOR_CB);
+    if (cursorCallback != 0) cursorCallback(M2C_FIELD(sprite, s32 *, 0x34) * 16, M2C_FIELD(sprite, s32 *, 0x38) * 16, 10);
     if (IsBattleEffectActive() != 0) return;
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void SpawnUnitSprite(s32 arg0, void *unused) {

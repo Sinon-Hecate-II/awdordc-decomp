@@ -196,7 +196,7 @@ void func_0201eed4(void) {
     void func_0201f09c(void);
     void WFC_SetSendCallback(s32);
     void func_0201a26c(void *);
-    void func_0201aa74(s32, s32, s32, s32);
+    void NetStackQueueAndWakeSender(s32, s32, s32, s32);
     s32 ReapClosedSockets(void);
     s32 func_0201f0b4(void);
     extern s32 data_020faf98;
@@ -249,7 +249,7 @@ void func_0201eed4(void) {
         if (r0v == 0) r0v = 0xB;
         func_0201a550(r0v);
     }
-    WFC_SetSendCallback((s32)func_0201aa74);
+    WFC_SetSendCallback((s32)NetStackQueueAndWakeSender);
     func_0201a4f8((s32)ReapClosedSockets);
     func_0201a26c(base);
 }
@@ -418,7 +418,7 @@ void *task;
     return result;
 }
 
-void func_0201f318(void *arg0) {
+void SocketSubmitRecvTask(void *arg0) {
     M2C_UNK SocketPostTask();
     SocketPostTask(M2C_FIELD(arg0, s32 *, 0x64));
 }

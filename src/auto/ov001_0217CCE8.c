@@ -1,5 +1,6 @@
 /* 23 functions from 0x0217CCE8 to 0x0217DC7C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 extern M2C_UNK gMapListState;
 extern const u8 data_ov001_0218f9bc[];
 void func_ov001_0217f6cc(void);
@@ -138,10 +139,10 @@ void func_ov001_0217d114(void) {
 void func_ov001_0217d13c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_0217d15c;
     Ov001_LockIconRow();
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_0217d15c);
 }
 
@@ -227,7 +228,7 @@ void InitMapListScreen(void) {
     extern s8 data_ov001_0218f99c[];
     void MapListUpdateBackgroundScroll(void);
     void func_ov001_0217f514(void);
-    void func_ov001_0217d6bc(void);
+    void Ov001_FadeInMapList(void);
 
     void *profile;
     s32 i;
@@ -275,7 +276,7 @@ void InitMapListScreen(void) {
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
     MapListRedrawInfoPanel();
     MapList_ApplyRowLayout();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d6bc);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInMapList);
 }
 
 /* Set up the map-list screen's graphics: load the two background tile/palette
@@ -344,19 +345,22 @@ void func_ov001_0217d680(void) {
     M2C_FIELD(&gMapListState, s8 *, 2) = 0;
 }
 
-void func_ov001_0217d6bc(void) {
+/* Fades in the ov001 map-list screen: start the sub and main fades from white
+ * with the list's background and object planes, show those planes, then run the
+ * step that starts the map list's input handling once both fades have finished. */
+void Ov001_FadeInMapList(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_0217d710(void);
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x1D, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x1D);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d710);
+    void Ov001_StartMapListInput(void);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_BG3 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_BG3 | GX_PLANEMASK_OBJ);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartMapListInput);
 }
 
-void func_ov001_0217d710(void) {
+void Ov001_StartMapListInput(void) {
     extern M2C_UNK func_ov001_0217d744;
     if (Ov001_IsFadeActive(1) != 0) {
         return;

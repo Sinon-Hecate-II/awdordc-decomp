@@ -21,17 +21,26 @@ void SetWeatherChangeDelay(s32 a) {
 }
 
 #pragma opt_instruction_scheduling off
-void func_020a3934(s32 a,s32 b) {
- extern s32 *data_027e0058;
- s32 IsPlayerActive(s32);
- s32 i;
- switch(a){case 1:case 2:case 3:
- i=1;
- do{
- if(IsPlayerActive(i))M2C_FIELD(*data_027e0058+i,u8 *,0x515b)=(u8)b;
- i++;
- }while(i<5);
- break;}
+/* When the weather changes to an adverse one (rain, snow or sandstorm), give
+ * every active player `turns` turns of weather-change delay.  (The delay array
+ * sits one byte past MAP_WEATHER_RESET, so player 1's entry is at RESET + 1.) */
+void SetWeatherChangeDelayForAllPlayers(s32 weather, s32 turns) {
+    extern s32 *gCurrentMap;
+    s32 IsPlayerActive(s32);
+    s32 player;
+
+    switch (weather) {
+    case WEATHER_RAIN:
+    case WEATHER_SNOW:
+    case WEATHER_SANDSTORM:
+        player = 1;
+        do {
+            if (IsPlayerActive(player))
+                M2C_FIELD(*gCurrentMap + player, u8 *, MAP_WEATHER_DELAY - 1) = (u8)turns;
+            player++;
+        } while (player < MAX_PLAYERS);
+        break;
+    }
 }
 #pragma opt_instruction_scheduling reset
 void SetWeatherChangeDelayIfChanged(s32 a) {
@@ -43,11 +52,11 @@ void SetWeatherChangeDelayIfChanged(s32 a) {
 
 void StartWeatherChange(M2C_UNK arg0) {
     s16 func_020a3790(M2C_UNK);
-    void func_020a3934();
+    void SetWeatherChangeDelayForAllPlayers();
     extern M2C_UNK gWeatherTransitionSpriteClass;
     void *temp_r4;
 
-    func_020a3934();
+    SetWeatherChangeDelayForAllPlayers();
     temp_r4 = CreateSpriteFromClass(&gWeatherTransitionSpriteClass, 7);
     M2C_FIELD(temp_r4, s16 *, 0x36) = func_020a3790(arg0);
     M2C_FIELD(temp_r4, s16 *, 0x38) = 0;

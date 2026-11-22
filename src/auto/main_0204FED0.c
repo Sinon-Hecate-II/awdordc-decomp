@@ -320,14 +320,20 @@ done:
     return 0;
 }
 
-s32 gpiConsumeReadBuffer(s32 unused,void *p) {
-s32 n;
-if(!p || !M2C_FIELD(p,s32 *,0) || !M2C_FIELD(p,s32 *,12))return 0;
-n=M2C_FIELD(p,s32 *,8)-M2C_FIELD(p,s32 *,12);
-M2C_FIELD(p,s32 *,8)=n;
-if(n)MemMove(M2C_FIELD(p,s32 *,0),M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,12),n);
-M2C_FIELD(M2C_FIELD(p,s32 *,0)+M2C_FIELD(p,s32 *,8),u8 *,0)=0;
-M2C_FIELD(p,s32 *,12)=0;return 0;
+/* Drop the bytes a peer's receive buffer has already read: compact the unread
+ * remainder (len - pos) to the front of the storage, NUL-terminate it and reset
+ * the read position.  The gpi connection argument is unused. */
+s32 gpiConsumeReadBuffer(M2C_UNK gpi, GPIBuffer *buf) {
+    s32 remaining;
+
+    (void)gpi;
+    if (!buf || !buf->data || !buf->pos) return 0;
+    remaining = buf->len - buf->pos;
+    buf->len = remaining;
+    if (remaining) MemMove(buf->data, (u8 *)buf->data + buf->pos, remaining);
+    ((u8 *)buf->data)[buf->len] = 0;
+    buf->pos = 0;
+    return 0;
 }
 
 /* Queues the connection's registered error callback with the result and the

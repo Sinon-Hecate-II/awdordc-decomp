@@ -228,7 +228,7 @@ i=0;offset=0;
 do{
 if(M2C_FIELD((u8 *)gHistoryMenu+i,u8 *,0x40)){
 tile=(u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x20)+offset*2+0x340;
-func_02080a14(tile,4,8,(u8 *)buffer+offset*2);
+CopyTileRect(tile,4,8,(u8 *)buffer+offset*2);
 j=0;row=0;
 do{
 AddToU16Array((u8 *)tile+row*2,8,1);

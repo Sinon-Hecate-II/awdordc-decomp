@@ -185,7 +185,11 @@ void ApplyMapViewProjection(s32 view) {
     REG_GX_MTX_IDENTITY = 0;
 }
 
-void func_02077c10(void) {
+/* Bring up the current map view for the frame: set the backdrop colour, rebuild
+ * the view projection for its zoom, update the eye position and the view
+ * transform, then load the view's projection onto the GX matrix stack.  The view
+ * block sits at *gCurrentMap + MAP_VIEW_ZOOM (0x2F8 + 0x6C00). */
+void UpdateMapView(void) {
     M2C_UNK func_02077ab8(s32);
     void ApplyMapViewProjection(s32);
     M2C_UNK BuildMapViewTransform(s32);
@@ -194,15 +198,15 @@ void func_02077c10(void) {
     M2C_UNK func_0207d95c(M2C_UNK);
     extern M2C_UNK gMapViewProjection;
     extern s32 *gCurrentMap;
-    s32 temp_r4;
+    s32 view;
 
-    temp_r4 = *gCurrentMap + 0x2F8;
+    view = *gCurrentMap + 0x2F8;
     func_0207d95c(0);
-    func_02077ab8(temp_r4 + 0x6C00);
-    func_0207ce54(temp_r4 + 0x6C00);
-    BuildMapViewTransform(temp_r4 + 0x6C00);
-    func_0207cddc(temp_r4 + 0x6C00, &gMapViewProjection);
-    ApplyMapViewProjection(temp_r4 + 0x6C00);
+    func_02077ab8(view + 0x6C00);
+    func_0207ce54(view + 0x6C00);
+    BuildMapViewTransform(view + 0x6C00);
+    func_0207cddc(view + 0x6C00, &gMapViewProjection);
+    ApplyMapViewProjection(view + 0x6C00);
 }
 
 void func_02077c64(void) {

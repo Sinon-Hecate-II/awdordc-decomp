@@ -552,12 +552,12 @@ nextRecord:
 #pragma opt_lifetimes reset
 void func_ov001_02184404(void) {
     s32 Ov001_Alloc(s32, M2C_UNK);
-    void func_02076710(u16 *, u32);
+    void BuildCrc16Table(u16 *, u32);
     s32 func_02045eb4(M2C_UNK);
     extern s32 gSaveData;
 
     gSaveData = Ov001_Alloc(0x6f8, 0x20);
-    func_02076710((u16 *)(gSaveData + 0x4f8), 0xa001);
+    BuildCrc16Table((u16 *)(gSaveData + 0x4f8), 0xa001);
     func_02045eb4((M2C_UNK)gSaveData);
 }
 

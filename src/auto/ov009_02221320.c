@@ -1,5 +1,6 @@
 /* 15 functions from 0x02221320 to 0x022222D0 (ov009), found by ds-decomp. */
 #include "common.h"
+#include "ov009_link.h"
 typedef struct PacketBits215a4 { u8 low:4; u8 high:4; } PacketBits215a4;
 extern u8 gLinkState[];
 static inline u16 SwapIME215a4(u16 value) { u16 old=*(volatile u16*)0x4000208;*(volatile u16*)0x4000208=value;return old; }
@@ -79,18 +80,22 @@ void func_ov009_0222134c(void *arg0) {
     MI_CpuFill8(arg0 + 0x20, 0, 0x40);
 }
 
-void *func_ov009_0222139c(void *arg0) {
-    M2C_FIELD(arg0, s8 *, 0x16) = 0;
-    M2C_FIELD(arg0, s8 *, 0x17) = -1;
-    M2C_FIELD(arg0, s8 *, 0x18) = -1;
-    M2C_FIELD(arg0, s8 *, 0x19) = -2;
-    M2C_FIELD(arg0, s8 *, 0x1A) = -2;
-    M2C_FIELD(arg0, s8 *, 0x1B) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1C) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1D) = -1;
-    MI_CpuFill8(arg0, 0, 0x16);
-    MI_CpuFill8(arg0 + 0x20, 0, 0x40);
-    return arg0;
+/* Prepare a 0x60-byte gLinkPlayers slot for a new player: mark it not connected
+ * with no player id, set the six state bytes that follow the id to their unset
+ * values, then clear the slot's name area and the 0x40-byte record behind the
+ * state bytes; returns the slot. */
+void *InitLinkPlayerRecord(void *record) {
+    M2C_FIELD(record, s8 *, LINK_PLAYER_FLAGS) = 0;
+    M2C_FIELD(record, s8 *, LINK_PLAYER_ID) = -1;
+    M2C_FIELD(record, s8 *, 0x18) = -1;
+    M2C_FIELD(record, s8 *, 0x19) = -2;
+    M2C_FIELD(record, s8 *, 0x1A) = -2;
+    M2C_FIELD(record, s8 *, 0x1B) = 0;
+    M2C_FIELD(record, s8 *, 0x1C) = 0;
+    M2C_FIELD(record, s8 *, 0x1D) = -1;
+    MI_CpuFill8(record, 0, 0x16);
+    MI_CpuFill8(record + 0x20, 0, 0x40);
+    return record;
 }
 
 void func_ov009_022213f0(M2C_UNK arg0, M2C_UNK arg1) {
@@ -202,7 +207,7 @@ M2C_FIELD(arg0,s32*,0x3c)=packet;
 M2C_FIELD(arg0,u32*,0x40)=M2C_FIELD(packet,u32*,8)+12;
 M2C_FIELD(arg0,u32*,0x34)=0;
 p=M2C_FIELD(arg0,s32*,0x38);
-if(p){func_ov009_02224d1c(p);M2C_FIELD(arg0,s32*,0x38)=0;}
+if(p){FreeLinkPacket(p);M2C_FIELD(arg0,s32*,0x38)=0;}
 func_ov009_02224cd8();
 }
 }else{
@@ -243,40 +248,44 @@ case 1:SendLinkChannelData(4,M2C_FIELD(arg0,u16*,0x44),packet,(u16)M2C_FIELD(arg
 }
 Sprite_ResumeAnimation(arg0);
 }else{
-func_ov009_02224d1c(M2C_FIELD(arg0,s32*,0x3c));
+FreeLinkPacket(M2C_FIELD(arg0,s32*,0x3c));
 M2C_FIELD(arg0,s32*,0x3c)=0;M2C_FIELD(arg0,u32*,0x40)=0;
 }
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
-void func_ov009_02221a94(void *arg0) {
+/* Send-completion step of the link actor: while any peer the packet was
+ * addressed to still has its transfer outstanding (bits in both +0x44 and
+ * +0x46) it waits; once none is left it frees the sent packet, clears the send
+ * state and resumes the sender sprite's animation. */
+void CompleteLinkSend(void *sender) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_UNK func_ov009_02224d1c(s32);
-    s32 var_r2;
+    M2C_UNK FreeLinkPacket(s32);
+    s32 peer;
 
-    var_r2 = 0;
-loop_1:
-    if ((M2C_FIELD(arg0, u16 *, 0x44) & (1 << var_r2)) && (M2C_FIELD(arg0, u16 *, 0x46) & (1 << var_r2))) {
+    peer = 0;
+loop:
+    if ((M2C_FIELD(sender, u16 *, 0x44) & (1 << peer)) && (M2C_FIELD(sender, u16 *, 0x46) & (1 << peer))) {
         return;
     }
-    var_r2 += 1;
-    if (var_r2 >= 4) {
-        func_ov009_02224d1c(M2C_FIELD(arg0, s32 *, 0x3C));
-        M2C_FIELD(arg0, s32 *, 0x3C) = 0;
-        M2C_FIELD(arg0, s32 *, 0x40) = 0;
-        Sprite_ResumeAnimation(arg0);
+    peer += 1;
+    if (peer >= 4) {
+        FreeLinkPacket(M2C_FIELD(sender, s32 *, 0x3C));
+        M2C_FIELD(sender, s32 *, 0x3C) = 0;
+        M2C_FIELD(sender, s32 *, 0x40) = 0;
+        Sprite_ResumeAnimation(sender);
         return;
     }
-    goto loop_1;
+    goto loop;
 }
 
 #pragma opt_lifetimes off
 void func_ov009_02221ae8(Receive21ae8 *state){
-s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK func_ov009_02224d1c(s32);
+s32 GetLinkPhase(void);s32 func_ov009_02224d0c(u32);M2C_UNK FreeLinkPacket(s32);
 s32 IsLinkHost(void);s32 QueueHostLinkPacket(s32,s32,s32,u16);s32 ClearPlayerActive(s32,s32,s32,u8,s32);
 s32 SetConnectedPlayers(u16);s32 GetConnectedPlayers(void);s32 func_ov009_02224ca4(void);s32 func_ov009_02224cd8(void);
 M2C_UNK MI_CpuCopy8();void SetLinkPlayerRecord(s32,M2C_UNK);
-s32 GetLinkLocalPlayerId(void);s32 func_ov009_022240ac(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 SendLinkPlayerInfo(u8);
+s32 GetLinkLocalPlayerId(void);s32 GetLinkPlayerSlot(void);s32 GetBattleSaveBlock(void);s32 func_020c5640(s32);s32 func_020c536c(s32,s32);s32 SendLinkPlayerInfo(u8);
 u32 func_ov009_022250f8(u8);s32 func_ov009_02225178(u8,s32);
 s32 i,packet,channel,n,value,keep;u8 *p;u32 size;Descriptor21ae8 desc;s32 (*callback)(u8,s32);
 if(GetLinkPhase()!=4 && GetLinkPhase()!=5)return;
@@ -313,9 +322,9 @@ case 10:
 p=state->channels[channel].packet;
 if(M2C_FIELD(p,u8 *,4)<16)Push21ae8(data_ov009_02226980,channel,p);else Push21ae8(data_ov009_022269b0,channel,p);
 state->channels[channel].offset=0;p=state->channels[channel].packet;
-if(p){func_ov009_02224d1c(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
+if(p){FreeLinkPacket(p);state->channels[channel].packet=0;}func_ov009_02224cd8();break;
 case 11:
-SetLinkPlayerRecord((u8)channel,packet+12);GetLinkLocalPlayerId();p=func_ov009_022240ac();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
+SetLinkPlayerRecord((u8)channel,packet+12);GetLinkLocalPlayerId();p=GetLinkPlayerSlot();QueueHostLinkPacket(12,p,96,(u16)(1<<channel));break;
 case 12:
 SetLinkPlayerRecord((u8)channel,packet+12);p=M2C_FIELD(gLinkState,s32 *,32);if(p)M2C_FIELD(p,u16 *,2)|=1<<channel;break;
 case 13:
@@ -328,14 +337,14 @@ if(GetBattleSaveBlock()){value=func_020c5640(packet+12);if(value>=0)func_020c536
 p=M2C_FIELD(gLinkState,s32 *,40);if(p)M2C_FIELD(p,u16 *,0)|=1<<channel;break;
 }
 callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x44);if(callback)keep=callback((u8)channel,packet);
-if(keep)func_ov009_02224d1c(packet);
+if(keep)FreeLinkPacket(packet);
 }
 if(M2C_FIELD(gLinkState,s32 *,0x54)){
 for(i=0;i<4;i++){
 size=func_ov009_022250f8((u8)i);if(size){
 keep=1;packet=func_ov009_02224d0c(size);func_ov009_02225178((u8)i,packet);
 channel=M2C_FIELD(packet,PacketBits215a4 *,5).low;
-callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x54);if(callback)keep=callback((u8)channel,packet);if(keep)func_ov009_02224d1c(packet);
+callback=M2C_FIELD(gLinkState,s32 (**)(u8,s32),0x54);if(callback)keep=callback((u8)channel,packet);if(keep)FreeLinkPacket(packet);
 }}
 }
 }

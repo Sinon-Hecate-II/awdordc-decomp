@@ -211,7 +211,7 @@ s32 SBServerListProcessAdHocServers(void *list) {
     s32 func_02061168(void);
     void gpiPlayerSetFlags(s32, s32);
     s32 SBServerListAddServer(void *, s32);
-    u32 GetTickCountMs(void);
+    u32 GetSystemTickMilliseconds(void);
     void ghiCloseSocket(s32);
     u8 packet[0x5dc];
     u16 fromAddr[4];
@@ -228,7 +228,7 @@ s32 SBServerListProcessAdHocServers(void *list) {
             SBServerListAddServer(list, server);
         }
     }
-    if (GetTickCountMs() - M2C_FIELD(list, u32 *, SB_SLIST_START_TICK) > 2000) {
+    if (GetSystemTickMilliseconds() - M2C_FIELD(list, u32 *, SB_SLIST_START_TICK) > 2000) {
         ghiCloseSocket(M2C_FIELD(list, s32 *, SB_SLIST_SOCKET));
         M2C_FIELD(list, s32 *, SB_SLIST_SOCKET) = -1;
         M2C_FIELD(list, s32 *, SB_SLIST_STATE) = SB_SLIST_STATE_IDLE;

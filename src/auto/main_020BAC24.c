@@ -335,7 +335,7 @@ void DropCarriedUnit(s32 cargoSlot) {
 extern u8 gUnitKindMaxAmmo[], gUnitKindMaxFuel[];
 M2C_UNK AddRecordValue(s32, s32);
 s32 GetUnitBuildCost(s32, s32);
-void func_020d2bc0(s32, s32);
+void AddPlayerFunds(s32, s32);
 s32 IsPlayerLocallyControlled(s32);
 void func_020a64bc(void *, s32);
 s32 IsUnitSelected(BattleMapUnitHead *);
@@ -371,7 +371,7 @@ void func_020bb768(void) {
     if (total > 10) {
         s32 cost = GetUnitBuildCost(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER),
             M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind);
-        func_020d2bc0(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), (total - 10) * cost);
+        AddPlayerFunds(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), (total - 10) * cost);
         total = 10;
     }
     M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->health = (u16)(total * 10);

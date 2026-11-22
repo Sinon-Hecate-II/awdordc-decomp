@@ -498,7 +498,23 @@ void DimPalette(M2C_UNK arg0) {
     BlendPalette(arg0, 0, 8, 8, 0x20);
 }
 
-void BlendPalette(s32 arg0,s32 a,s32 b,s32 c,s32 n) {s32 i;u16 *p;n/=2;p=(u16 *)arg0;i=0;if(n>0)for(;i<n;i++){*p=BlendRgb555_16(*p,a,b,c);p++;}}
+/* Blend every RGB555 entry of the `length`-byte palette at `palette` towards
+ * `blend`: each output channel is (own channel * keep + blend channel * mix) >> 4.
+ * Callers pass the palette as a plain address (the game's prototype). */
+void BlendPalette(s32 palette, s32 blend, s32 keep, s32 mix, s32 length) {
+    s32 i;
+    u16 *p;
+
+    length /= 2;
+    p = (u16 *)palette;
+    i = 0;
+    if (length > 0) {
+        for (; i < length; i++) {
+            *p = BlendRgb555_16(*p, blend, keep, mix);
+            p++;
+        }
+    }
+}
 
 /* Convert a palette colour to a warm sepia tint using weighted luminance. */
 u16 ConvertRgb555ToSepia(u16 color) {

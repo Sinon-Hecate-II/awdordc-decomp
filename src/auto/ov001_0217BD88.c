@@ -76,7 +76,7 @@ void func_ov001_0217bf40(void) {
 void func_ov001_0217bf84(void) {
 void *Ov001_Alloc(s32,s32);s32 Ov001_GetNameEntryMode(s32*,s32);
 void *CreateTextPanel(s32,s32);void *Ov001_CreateSpriteFromLayout(s32,s32);
-void Ov001_LoadCodeEntryGraphics(void);void func_ov001_0217c8ac(void);void func_ov001_0217c1b4(void);
+void Ov001_LoadCodeEntryGraphics(void);void func_ov001_0217c8ac(void);void Ov001_FadeInCodeEntryScreen(void);
 CodeHandlers handlers=gCodeEntryLoadHandlers;
 u8 choices[5]={((u8*)data_ov001_0218f848)[8],((u8*)data_ov001_0218f848)[9],((u8*)data_ov001_0218f848)[10],((u8*)data_ov001_0218f848)[11],((u8*)data_ov001_0218f848)[12]};
 s32 a;void *p;
@@ -90,7 +90,7 @@ Ov001_LoadCodeEntryGraphics();Ov001_LoadObjLayoutBlock(a+11);Ov001_ShowMessagePa
 M2C_FIELD(gOv001FriendCodeState,void**,0)=CreateTextPanel(0,0);
 M2C_FIELD(gOv001FriendCodeState,void**,4)=Ov001_CreateSpriteFromLayout(0,63);
 M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)=(M2C_FIELD(M2C_FIELD(gOv001FriendCodeState,void**,4),u16*,4)&~0xc00)|0xc00;
-func_ov001_0217c8ac();func_ov001_0217c7e8();Ov001_SetStepCallback((s32*)func_ov001_0217c1b4);
+func_ov001_0217c8ac();func_ov001_0217c7e8();Ov001_SetStepCallback((s32*)Ov001_FadeInCodeEntryScreen);
 }
 #pragma peephole reset
 /* Load the code-entry screen's OBJ palette, background tiles, palette and
@@ -117,12 +117,15 @@ void Ov001_LoadCodeEntryGraphics(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_0217c1b4(void) {
+/* Fades in the ov001 friend-code entry screen: start the sub and main fades from
+ * white, enable its background and object planes, then move on to the step that
+ * opens the keypad. */
+void Ov001_FadeInCodeEntryScreen(void) {
     extern M2C_UNK Ov001_OpenCodeEntryKeypad;
-    Ov001_StartFade(2, 1, 1, 8);
-    Ov001_StartFade(2, 0, 0x15, 8);
-    Ov001_EnableVisiblePlanes(1, 1);
-    Ov001_EnableVisiblePlanes(0, 0x15);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
+    Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
+    Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG0 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
     Ov001_SetStepCallback(&Ov001_OpenCodeEntryKeypad);
 }
 
@@ -257,9 +260,9 @@ void func_ov001_0217c668(void) {
 
 void func_ov001_0217c66c(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    M2C_UNK func_ov001_0218aa24(M2C_UNK);
+    M2C_UNK Ov001_StartDelay(M2C_UNK);
     extern M2C_UNK func_ov001_0217c688;
-    func_ov001_0218aa24(8);
+    Ov001_StartDelay(8);
     Ov001_SetStepCallback(&func_ov001_0217c688);
 }
 
