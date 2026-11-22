@@ -90,21 +90,26 @@ s32 func_0200dedc(M2C_UNK arg0) {
     return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
 }
 
-s32 func_0200df14(s32 arg0, s32 arg1) {
+/* End the ARM7 transfer service's current operation: take the busy flag, remember
+ * the completion callback and its argument, then post the transfer-end command.
+ * Returns 1 when a transfer is already pending, 0 once ended, 3 if the command
+ * could not be sent. */
+s32 Arm7TransferEnd(s32 callback, s32 user) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
+    s32 Arm7TransferSendStopCommand(void);
     extern M2C_UNK gArm7TransferState;
-    s32 state;
-    state = OS_DisableInterrupts();
-    if (M2C_FIELD(&gArm7TransferState, s32 *, 4) != 0) {
-        OS_RestoreInterrupts(state);
+    s32 interruptState;
+    interruptState = OS_DisableInterrupts();
+    if (M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_BUSY) != 0) {
+        OS_RestoreInterrupts(interruptState);
         return 1;
     }
-    M2C_FIELD(&gArm7TransferState, s32 *, 4) = 1;
-    OS_RestoreInterrupts(state);
-    M2C_FIELD(&gArm7TransferState, s32 *, 8) = arg0;
-    M2C_FIELD(&gArm7TransferState, s32 *, 0xC) = arg1;
-    if (func_0200e1e4() != 0) return 0;
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_BUSY) = 1;
+    OS_RestoreInterrupts(interruptState);
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_CALLBACK) = callback;
+    M2C_FIELD(&gArm7TransferState, s32 *, ARM7_XFER_STATE_USER) = user;
+    if (Arm7TransferSendStopCommand() != 0) return 0;
     return 3;
 }
 
@@ -113,7 +118,7 @@ s32 func_0200df70(void) {
     s32 func_0200e21c(void);
     extern M2C_UNK gArm7TransferState;
     s32 result;
-    result = func_0200df14((s32)func_0200e20c, 0);
+    result = Arm7TransferEnd((s32)func_0200e20c, 0);
     M2C_FIELD(&gArm7TransferState, s32 *, 0x10) = result;
     if (result == 0) func_0200e21c();
     return M2C_FIELD(&gArm7TransferState, s32 *, 0x10);
@@ -174,7 +179,7 @@ s32 Arm7TransferSubmit(u32 src, u32 dst, u32 size, u32 flags) {
     return 0;
 }
 
-s32 func_0200e1e4(void) {
+s32 Arm7TransferSendStopCommand(void) {
     s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
     if (SendFifoMessage(9, 0x03004200, 0) >= 0) {
         return 1;
@@ -348,7 +353,7 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     return 0;
 }
 #pragma scheduling reset
-s32 func_0200e5c4(M2C_UNK arg0, M2C_UNK arg1) {
+s32 Arm7GetValueWait(M2C_UNK arg0, M2C_UNK arg1) {
     void func_0200e270(void);
     s32 func_0200e558(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
@@ -499,13 +504,17 @@ void func_0200e880(s32 a) {
 func_0200e64c(3,(u16)a);
 }
 
-s32 ReadPowerFlags(s32 *a,s32 *b) {
-u16 value;s32 result;
-result=func_0200e5c4(0,&value);
-if(result)return result;
-if(a)*a=(value&8)?1:0;
-if(b)*b=(value&4)?1:0;
-return result;
+/* Reads the ARM7's power-flags word and reports the two backlight-off bits:
+   bit 3 into *backlight0Off (main screen) and bit 2 into *backlight1Off (sub
+   screen).  Returns the command's result. */
+s32 ReadPowerFlags(s32 *backlight0Off, s32 *backlight1Off) {
+    u16 value;
+    s32 result;
+    result = Arm7GetValueWait(0, &value);
+    if (result) return result;
+    if (backlight0Off) *backlight0Off = (value & 8) ? 1 : 0;
+    if (backlight1Off) *backlight1Off = (value & 4) ? 1 : 0;
+    return result;
 }
 
 void Arm7SendCommand(M2C_UNK arg0) {

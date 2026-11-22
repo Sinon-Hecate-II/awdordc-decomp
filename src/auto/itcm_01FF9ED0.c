@@ -107,25 +107,30 @@ void Update3DSpriteState(void *sprite) {
     }
 }
 
+/* Takes the next free 3D sprite object from the pool: the allocator cursor names
+ * the first unused slot of the order array, and the object there is handed out
+ * while the cursor advances.  A slot whose object is still being visited (its
+ * VISITING flag set, e.g. one deleted during this frame's update walk) is skipped
+ * by swapping it past a genuinely free slot, which is returned instead. */
 void *AllocSpriteObject(void) {
     extern void **g3DSpriteOrderCursor;
-    void **var_r3;
-    void *temp_r2;
-    void *var_r0;
+    void **scan;
+    void *candidate;
+    void *sprite;
 
-    var_r0 = *g3DSpriteOrderCursor;
-    if (M2C_FIELD(var_r0, u8 *, 0x30) & 0x20) {
-        var_r3 = g3DSpriteOrderCursor;
+    sprite = *g3DSpriteOrderCursor;
+    if (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_VISITING) {
+        scan = g3DSpriteOrderCursor;
         do {
-            var_r3 += 1;
-            temp_r2 = *var_r3;
-        } while (M2C_FIELD(temp_r2, u8 *, 0x30) & 0x20);
-        *g3DSpriteOrderCursor = temp_r2;
-        *var_r3 = var_r0;
-        var_r0 = *g3DSpriteOrderCursor;
+            scan += 1;
+            candidate = *scan;
+        } while (M2C_FIELD(candidate, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_VISITING);
+        *g3DSpriteOrderCursor = candidate;
+        *scan = sprite;
+        sprite = *g3DSpriteOrderCursor;
     }
     g3DSpriteOrderCursor += 1;
-    return var_r0;
+    return sprite;
 }
 
 void func_01ffa244(s32 arg0) {
@@ -383,17 +388,19 @@ void *FindObjectByClass(s32 arg0) {
  return 0;
 }
 
-void *Find3DSpriteById(s32 arg0) {
- extern void **g3DSpriteOrderCursor;
- extern void *g3DSpriteSortOrder[];
- extern s32 gCur3DSpriteEngine;
- void **p=g3DSpriteSortOrder;
- void *q;
- for(;p<g3DSpriteOrderCursor;p++) {
- q=*p;
- if(M2C_FIELD(q,s32 *,0x28)==gCur3DSpriteEngine && M2C_FIELD(q,s32 *,4)==arg0)return q;
- }
- return 0;
+/* Return the first live sprite of `spriteClass` that belongs to the current 3D
+ * sprite engine, or NULL when there is none. */
+void *Find3DSpriteByClassOnCurrentEngine(s32 spriteClass) {
+    extern void **g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
+    extern s32 gCur3DSpriteEngine;
+    void **p = g3DSpriteSortOrder;
+    void *q;
+    for (; p < g3DSpriteOrderCursor; p++) {
+        q = *p;
+        if (M2C_FIELD(q, s32 *, DS3D_SPRITE_ENGINE) == gCur3DSpriteEngine && M2C_FIELD(q, s32 *, DS3D_SPRITE_ALIVE) == spriteClass) return q;
+    }
+    return 0;
 }
 
 void *FindObjectByZ(s32 a) {
@@ -407,15 +414,21 @@ void *FindObjectByZ(s32 a) {
  return 0;
 }
 
-void *func_01ffa860(s32 a,s32 b) {
- extern void **g3DSpriteOrderCursor;
- extern void *g3DSpriteSortOrder[];
- void **q;void *p;
- if(b==0xFF00)return 0;
- for(q=g3DSpriteSortOrder;q<g3DSpriteOrderCursor;q++){
- p=*q;if(M2C_FIELD(p,s32 *,4)==a && M2C_FIELD(p,u16 *,0x2E)==b)return p;
- }
- return 0;
+/* Find the sprite object of class `spriteClass` that sits at depth `z` in the
+ * order array; an object with no depth set (DS3D_SPRITE_Z_NONE) is never
+ * matched, and 0 means nothing was found. */
+void *Find3DSpriteByClassAndZ(s32 spriteClass, u16 z) {
+    extern void **g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
+    void **cursor;
+    void *sprite;
+
+    if (z == DS3D_SPRITE_Z_NONE) return 0;
+    for (cursor = g3DSpriteSortOrder; cursor < g3DSpriteOrderCursor; cursor++) {
+        sprite = *cursor;
+        if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) == spriteClass && M2C_FIELD(sprite, u16 *, DS3D_SPRITE_Z) == z) return sprite;
+    }
+    return 0;
 }
 
 void SetSpriteZ(void *arg0, s16 arg1) {

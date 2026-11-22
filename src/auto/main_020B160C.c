@@ -155,14 +155,14 @@ void func_020b19a8(s32 arg0, s32 arg1) {
  * which while the player's army icon is animating. */
 void func_020b19d0(s32 player, s32 colour) {
     M2C_UNK QueueMainOBJExtPaletteCopy(void *, s32, M2C_UNK, M2C_UNK);
-    s32 func_020d1a74(void);
+    s32 IsPlayerArmyVariantSet(void);
     extern u8 data_020f3c20[];
     extern void *gCurrentMap;
     s32 playerOffset;
     s32 row1;
     s32 row2;
 
-    if (func_020d1a74() != 0) {
+    if (IsPlayerArmyVariantSet() != 0) {
         row1 = 0;
         row2 = 8;
     } else {

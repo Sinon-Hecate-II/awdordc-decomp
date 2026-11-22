@@ -630,11 +630,11 @@ s32 func_ov009_02224c1c(s32 arg0) {
 }
 
 s32 func_ov009_02224c34(M2C_UNK arg0) {
-    s32 func_ov009_02223d40(M2C_UNK);
+    s32 SetLinkDownloadMode(M2C_UNK);
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
-    if (func_ov009_02223d40(arg0) != 0) {
+    if (SetLinkDownloadMode(arg0) != 0) {
         return 1;
     }
     SetLinkPhase(8);

@@ -153,8 +153,8 @@ if(M2C_FIELD(M2C_FIELD(ctx,void **,0x13c),s32 *,12)==0 && M2C_FIELD(M2C_FIELD(p,
 str=M2C_FIELD(M2C_FIELD(p,void **,0),s8 **,8);
 out=&buf; *out=data_020ea97c;
 i=0;while((ch=str[i])!=0){
-if(StringFindChar((s32)data_020fd340,ch))AppendChar(ctx+0x50,ch);
-else if(ch==32)AppendChar(ctx+0x50,43);
+if(StringFindChar((s32)data_020fd340,ch))ghiAppendCharToBuffer(ctx+0x50,ch);
+else if(ch==32)ghiAppendCharToBuffer(ctx+0x50,43);
 else {hi=ch/16;if(hi>=16)AssertFailed(&data_020fd4e4,&sGhttpPostFile,&data_020fd294,0x30d);
 out->bytes[1]=data_020fd4f4[hi];out->bytes[2]=data_020fd4f4[ch%16];ghiAppendDataToBuffer(ctx+0x50,out,3);}
 i++;

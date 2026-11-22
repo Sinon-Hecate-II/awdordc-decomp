@@ -111,7 +111,7 @@ s32 ScoreAreaEffectCell(void *playerIdx, s32 tileX, s32 tileY, s32 range, s32 co
 }
 #pragma opt_strength_reduction reset
 #pragma opt_loop_invariants reset
-void func_ov000_021aab20(s32, s32, s32, s32, s32, s32);
+void SelectAreaEffectTargetOnAllCells(s32, s32, s32, s32, s32, s32);
 s32 func_ov000_021aa820(s32 a, s32 b, s32 c, s32 d) {
     s32 x;
     s32 y;
@@ -128,7 +128,7 @@ s32 func_ov000_021aa820(s32 a, s32 b, s32 c, s32 d) {
     default:
         return 0;
     }
-    return ((Fn)func_ov000_021aab20)(a, b, c, d, x, y);
+    return ((Fn)SelectAreaEffectTargetOnAllCells)(a, b, c, d, x, y);
 }
 
 /* Picks the map tile with the best area-effect score for a player: installs the
@@ -185,12 +185,12 @@ else if(bestScore!=0)return 1;
 return 0;
 }
 
-void func_ov000_021aab20(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+void SelectAreaEffectTargetOnAllCells(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
     typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
     ((Fn)SelectAreaEffectTarget)(a, b, c, d, e, f, 0);
 }
 
-void func_ov000_021aab4c(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+void SelectAreaEffectTargetOnGrid(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
     typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
     ((Fn)SelectAreaEffectTarget)(a, b, c, d, e, f, 1);
 }

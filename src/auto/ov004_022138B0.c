@@ -449,8 +449,8 @@ s32 func_ov004_02214454(void) {
 }
 
 void func_ov004_0221445c(s32 arg0) {
-    M2C_UNK func_020c78e8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_020c78e8(9, 6, 3, 0x32, arg0);
+    void CreateScriptMarkerSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    CreateScriptMarkerSprite(9, 6, 3, 0x32, arg0);
 }
 
 u8 func_ov004_0221447c(void) {
@@ -460,11 +460,16 @@ u8 func_ov004_0221447c(void) {
  if(n<=5)r=1;else r=0;return r;
 }
 
-void func_ov004_022144b4(s32 arg0) {
- s32 func_ov000_021aab20(s16 *,s32,s32,s32,s32,s32);
- s16 pos[2];
- if(!func_ov000_021aab20(pos,2,0,6,3,50))return;
- func_020c78e8(pos[0],pos[1],3,50,arg0);
+/* Battle-event script command: pick the best area-effect target for player 2
+ * (range 3, power 50) and create a target marker sprite there for the script
+ * object `owner`.  Nothing is marked when no target scores. */
+void ScriptCmd_ShowAreaEffectTarget(s32 owner) {
+    s32 SelectAreaEffectTargetOnAllCells(s16 *, s32, s32, s32, s32, s32);
+    void CreateScriptMarkerSprite(s32, s32, s32, s32, s32);
+    s16 pos[2];
+
+    if (!SelectAreaEffectTargetOnAllCells(pos, 2, 0, 6, 3, 50)) return;
+    CreateScriptMarkerSprite(pos[0], pos[1], 3, 50, owner);
 }
 
 /* Battle-script condition that succeeds when player 2 has no units. */
@@ -522,7 +527,7 @@ s32 Ov004_IsPlayerTwoUnitCountAtMostThree(void) {
     return 1;
 }
 
-s32 func_ov004_022145f0(s8 *a) {
+s32 GetTurnReinforcementKind(s8 *a) {
 extern void **gCurrentMap;
 s32 Modulo(s32,s32);
 s32 n=0;
@@ -530,27 +535,31 @@ while(a[n]>=0)n++;
 return a[Modulo(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)-1,n)];
 }
 
-void func_ov004_02214640(void) {
-extern s8 data_ov004_02233d24[];extern void **gCurrentMap;
-s32 n=func_ov004_022145f0(data_ov004_02233d24);void *p=*gCurrentMap;
+/* Battle-script command: when tile (10,8) is empty, spawn player 2's unit of the
+ * kind the turn reinforcement table picks for this turn there. */
+void SpawnReinforcementAt10_8(void) {
+extern s8 gReinforcementKindsAt10_8[];extern void **gCurrentMap;
+s32 kind=GetTurnReinforcementKind(gReinforcementKindsAt10_8);void *p=*gCurrentMap;
 s32 i=M2C_FIELD(p,u16 *,0x3768)+10;
 if(M2C_FIELD((u8 *)p+i,u8 *,0x508))return;
-if(!n)return;
-func_020a66e0(10,8,n,2);
+if(!kind)return;
+CreateMapUnitAndRefreshView(10,8,kind,2);
 }
 
-void func_ov004_0221469c(void) {
-extern s8 data_ov004_02233d1c[];extern void **gCurrentMap;
-s32 n=func_ov004_022145f0(data_ov004_02233d1c);void *p=*gCurrentMap;
+/* Battle-script command: when tile (14,8) is empty, spawn player 2's unit of
+ * the kind the turn reinforcement table picks for this turn there. */
+void SpawnReinforcementAt14_8(void) {
+extern s8 gReinforcementKindsAt14_8[];extern void **gCurrentMap;
+s32 kind=GetTurnReinforcementKind(gReinforcementKindsAt14_8);void *p=*gCurrentMap;
 s32 i=M2C_FIELD(p,u16 *,0x3768)+14;
 if(M2C_FIELD((u8 *)p+i,u8 *,0x508))return;
-if(!n)return;
-func_020a66e0(14,8,n,2);
+if(!kind)return;
+CreateMapUnitAndRefreshView(14,8,kind,2);
 }
 
 void func_ov004_022146f8(void) {
-    M2C_UNK func_02080774(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02080774(4, 2, 0, 0x32, 0);
+    M2C_UNK Create3DSpriteOffsetTrack(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    Create3DSpriteOffsetTrack(4, 2, 0, 0x32, 0);
 }
 
 u8 func_ov004_02214718(void) {

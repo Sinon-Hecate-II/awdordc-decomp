@@ -48,16 +48,20 @@ void *Wfc_GetWorkBlock(s32 arg0) {
 
 void *Wfc_GetWorkBlock(s32);
 u32 Wfc_FriendIdToSlot(u32);
-void Wfc_PublishState(u8 arg0) {
- void *a = Wfc_GetWorkBlock(1);
- void *b = Wfc_GetWorkBlock(0x10);
- M2C_FIELD(a,u8 *,9) = arg0;
- if (arg0 < 0x10) {
-  if (arg0 > M2C_FIELD(a,u8 *,0x16)) {
-   M2C_FIELD(a,u8 *,0x16) = arg0;
-   if (arg0 > 7) {
-    M2C_FIELD(a,u8 *,0x15) = Wfc_FriendIdToSlot(M2C_FIELD(b,u8 *,0xD0D));
-    M2C_FIELD(a,u8 *,0x14) = M2C_FIELD((u8 *)b + M2C_FIELD(b,u8 *,0xD13)*4,u8 *,0x444);
+/* Publish the WFC session state: store it in the control block and, when it is
+ * higher than any state reached so far, remember it; for the friend
+ * connection's link stages (above 7) also publish the selected friend's save
+ * slot and its record's connection result. */
+void Wfc_PublishState(u8 state) {
+ void *control = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+ void *friends = Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+ M2C_FIELD(control,u8 *,WFC_CONTROL_STATE) = state;
+ if (state < 0x10) {
+  if (state > M2C_FIELD(control,u8 *,WFC_CONTROL_STATE_MAX)) {
+   M2C_FIELD(control,u8 *,WFC_CONTROL_STATE_MAX) = state;
+   if (state > 7) {
+    M2C_FIELD(control,u8 *,WFC_CONTROL_SLOT) = Wfc_FriendIdToSlot(M2C_FIELD(friends,u8 *,WFC_STATE_RESULT_ID));
+    M2C_FIELD(control,u8 *,WFC_CONTROL_RECORD_RESULT) = M2C_FIELD((u8 *)friends + M2C_FIELD(friends,u8 *,WFC_STATE_RECORD_INDEX)*4,u8 *,WFC_STATE_RECORD_RESULT);
    }
   }
  }

@@ -1,5 +1,6 @@
 /* 40 functions from 0x0218B368 to 0x0218C228 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 void OS_EnableIrqMask(s32);
 extern s32 gOv001TilePools;
 
@@ -36,9 +37,21 @@ typedef struct InputGlobal {
     InputState *state;
 } InputGlobal;
 
-void Ov001_DisableVisiblePlanes(s32 a,s32 b){
-if(a==1){volatile u32 *p=(volatile u32 *)0x04001000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);return;}
-{volatile u32 *p=(volatile u32 *)0x04000000;u32 t=*p&0x1f00;*p=(*p&~0x1f00)|((~b&(t>>8))<<8);}
+/* Disable the display planes `planes` selects (GX_PLANEMASK_* bits) on the engine
+ * `engine` picks: 1 = sub engine, anything else = main engine.  The other
+ * planes keep their state. */
+void Ov001_DisableVisiblePlanes(s32 engine, s32 planes) {
+    if (engine == 1) {
+        volatile u32 *p = (volatile u32 *)GX_SUB_DISPCNT;
+        u32 visiblePlanes = *p & DISPCNT_PLANEMASK;
+        *p = (*p & ~DISPCNT_PLANEMASK) | ((~planes & (visiblePlanes >> DISPCNT_PLANEMASK_SHIFT)) << DISPCNT_PLANEMASK_SHIFT);
+        return;
+    }
+    {
+        volatile u32 *p = (volatile u32 *)GX_MAIN_DISPCNT;
+        u32 visiblePlanes = *p & DISPCNT_PLANEMASK;
+        *p = (*p & ~DISPCNT_PLANEMASK) | ((~planes & (visiblePlanes >> DISPCNT_PLANEMASK_SHIFT)) << DISPCNT_PLANEMASK_SHIFT);
+    }
 }
 
 /* Write a clip window rect into the selected display engine's window range

@@ -314,14 +314,14 @@ void StepBattleMap(void) {
     void func_020d4400();
     void func_020d4430();
     void func_020d447c();
-    M2C_UNK func_020d457c();
+    M2C_UNK TurnBannerStep();
     void func_020d4280();
     void func_020d42a8();
     void func_020d42d0();
     void func_020d42f8();
     void BeginPlayerTurn();
     M2C_UNK UpdateMapMode();
-    M2C_UNK func_020d1a1c(M2C_UNK);
+    M2C_UNK IsPlayerLocallyControlled(M2C_UNK);
     M2C_UNK UpdateAiTurn();
     void UpdateLinkAiCommand();
     void func_020d45d8();
@@ -374,7 +374,7 @@ void StepBattleMap(void) {
             func_020d447c();
             return;
         case MAP_STATE_TURN_BANNER:
-            func_020d457c();
+            TurnBannerStep();
             return;
         case MAP_STATE_TURN_INTRO1:
             func_020d4280();
@@ -395,7 +395,7 @@ void StepBattleMap(void) {
             UpdateMapMode();
             return;
         case MAP_STATE_AI_TURN:
-            if (func_020d1a1c(M2C_FIELD(map[0], u16 *, MAP_CURRENT_PLAYER))) { UpdateAiTurn(); return; }
+            if (IsPlayerLocallyControlled(M2C_FIELD(map[0], u16 *, MAP_CURRENT_PLAYER))) { UpdateAiTurn(); return; }
             UpdateLinkAiCommand(); return;
         case MAP_STATE_LINK_TURN: UpdateLinkAiCommand(); return;
         case MAP_STATE_RETURN: func_020d45d8(); return;
@@ -757,9 +757,9 @@ default:break;
 }}
 #pragma merge_duplicate_code reset
 void func_020d4400(void) {
-    M2C_UNK func_0208f8a0();
+    M2C_UNK IsMusicFadingOut();
     extern void **gCurrentMap;
-    if (func_0208f8a0() != 0) {
+    if (IsMusicFadingOut() != 0) {
         return;
     }
     M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 5;

@@ -149,7 +149,23 @@ s32 GetPlayerBgFlagTile(u32 arg0) {
     }
 }
 
-s32 GetPlayerPanelFlagTile(u32 a){switch(a){case 1:return 0x4e5b;case 2:return 0x76b2;case 3:return 0x46f9;case 4:return 0x5274;default:return 0;}}
+/* Tile index of the colour flag drawn on a player's panel for player id 1..4,
+ * or 0 when there is no such player (the select-screen counterpart is
+ * GetPlayerBgFlagTile). */
+s32 GetPlayerPanelFlagTile(u32 playerId) {
+    switch (playerId) {
+    case 1:
+        return 0x4E5B;
+    case 2:
+        return 0x76B2;
+    case 3:
+        return 0x46F9;
+    case 4:
+        return 0x5274;
+    default:
+        return 0;
+    }
+}
 
 /* Load the select-screen background for `playerCount` players into sprite layer
  * `layer` (the per-count CG, its tile data and the shared palette in OBJ palette

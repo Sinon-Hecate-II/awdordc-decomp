@@ -91,21 +91,21 @@ s32 SetSoundEffectVolume(M2C_UNK arg0) {
 
 s32 PlaySlotPendingSound(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     M2C_UNK func_0208fd40(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02090034(s32, M2C_UNK);
+    s32 StopSlotSound(s32, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return 0;
     }
-    func_02090034(arg0, 0);
-    func_0208fd40(&data_02157850 + arg0, arg1, arg2);
+    StopSlotSound(arg0, 0);
+    func_0208fd40(&gSoundEffectSlotHandles + arg0, arg1, arg2);
     return 1;
 }
 
-s32 func_02090034(s32 arg0, M2C_UNK arg1) {
+s32 StopSlotSound(s32 arg0, M2C_UNK arg1) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0208fd94(M2C_UNK, M2C_UNK);
 
@@ -115,15 +115,15 @@ s32 func_02090034(s32 arg0, M2C_UNK arg1) {
     if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
-    func_0208fd94(&data_02157850 + arg0, arg1);
+    func_0208fd94(&gSoundEffectSlotHandles + arg0, arg1);
     return 1;
 }
 
 u8 IsSlotSoundActive(s32 arg0) {
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     u8 var_r0;
 
-    if ((&data_02157850)[arg0] != 0) {
+    if ((&gSoundEffectSlotHandles)[arg0] != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -131,25 +131,28 @@ u8 IsSlotSoundActive(s32 arg0) {
     return var_r0;
 }
 
-s32 SetSlotSoundPending(s32 arg0, s32 arg1, s32 arg2) {
+/* Hand a pending volume change for slot `slot` to the sound driver, but only
+ * while the sound system is up and the slot's player is active. Returns 0 when
+ * nothing was handed over, 1 once the driver took it. */
+s32 SetSlotSoundPending(s32 slot, s32 volume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad50(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (IsSlotSoundActive(arg0) == 0) {
+    if (IsSlotSoundActive(slot) == 0) {
         return 0;
     }
-    func_0202ad50(&data_02157850 + arg0, (M2C_UNK)(u16)arg1, arg2);
+    func_0202ad50(&gSoundEffectSlotHandles + slot, (M2C_UNK)(u16)volume, frames);
     return 1;
 }
 
 s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
     M2C_UNK func_0202ad90(M2C_UNK, M2C_UNK, M2C_UNK);
 
@@ -159,13 +162,13 @@ s32 PlaySlotSoundEffect(s32 arg0, s32 arg1) {
     if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
-    func_0202ad90(&data_02157850 + arg0, 0xFFFF, arg1);
+    func_0202ad90(&gSoundEffectSlotHandles + arg0, 0xFFFF, arg1);
     return 1;
 }
 
 s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gSoundDriverState;
-    extern M2C_UNK data_02157850;
+    extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
     M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
 
@@ -175,7 +178,7 @@ s32 PlaySlotScriptedSound(s32 arg0, s32 arg1, s32 arg2) {
     if (IsSlotSoundActive(arg0) == 0) {
         return 0;
     }
-    Sound_StartPlayerVolumeFade(&data_02157850 + arg0, arg1, arg2);
+    Sound_StartPlayerVolumeFade(&gSoundEffectSlotHandles + arg0, arg1, arg2);
     return 1;
 }
 
@@ -219,15 +222,19 @@ s32 StartMusicTrack(s32 trackId) {
     return 1;
 }
 
-s32 func_02090248(s32 arg0) {
-extern M2C_UNK gSoundDriverState, gMusicSequencePlayer, gMusicSoundPlayer;
-u8 func_02090350(void); u8 func_02090370(void);
-M2C_UNK func_0202ac60(M2C_UNK,M2C_UNK);
-void func_0202d944(M2C_UNK,s32);
-if(M2C_FIELD(&gSoundDriverState,u8 *,0)==0) return 0;
-if(func_02090350()!=0) func_0202ac60(&gMusicSequencePlayer,arg0);
-if(func_02090370()!=0) func_0202d944(&gMusicSoundPlayer,arg0);
-return 1;
+/* Fade the running music players out to silence over `frames` frames (0 stops
+ * them at once): each of the sequence and streamed-sound players is left alone
+ * when it is not active.  Returns 0 while the sound system is off. */
+s32 FadeOutMusic(s32 frames) {
+    extern M2C_UNK gSoundDriverState, gMusicSequencePlayer, gMusicSoundPlayer;
+    u8 IsMusicSequencePlayerActive(void);
+    u8 IsMusicSoundPlayerActive(void);
+    M2C_UNK func_0202ac60(M2C_UNK, M2C_UNK);
+    void func_0202d944(M2C_UNK, s32);
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) return 0;
+    if (IsMusicSequencePlayerActive() != 0) func_0202ac60(&gMusicSequencePlayer, frames);
+    if (IsMusicSoundPlayerActive() != 0) func_0202d944(&gMusicSoundPlayer, frames);
+    return 1;
 }
 
 /* Fade the volume of both of the game's sound players (the sequence player and
@@ -237,21 +244,21 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gMusicSequencePlayer;
     extern M2C_UNK gMusicSoundPlayer;
-    u8 func_02090350(void);
-    u8 func_02090370(void);
+    u8 IsMusicSequencePlayerActive(void);
+    u8 IsMusicSoundPlayerActive(void);
     M2C_UNK Sound_StartPlayerVolumeFade(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_0202d960(M2C_UNK, M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (func_02090350() != 0) {
+    if (IsMusicSequencePlayerActive() != 0) {
         if (snapVolume != -1) {
             Sound_StartPlayerVolumeFade(&gMusicSequencePlayer, snapVolume, 0);
         }
         Sound_StartPlayerVolumeFade(&gMusicSequencePlayer, targetVolume, frames);
     }
-    if (func_02090370() != 0) {
+    if (IsMusicSoundPlayerActive() != 0) {
         if (snapVolume != -1) {
             func_0202d960(&gMusicSoundPlayer, snapVolume, 0);
         }
@@ -260,7 +267,7 @@ s32 Sound_FadeVolume(s32 snapVolume, s32 targetVolume, s32 frames) {
     return 1;
 }
 
-u8 func_02090350(void) {
+u8 IsMusicSequencePlayerActive(void) {
     extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
@@ -272,7 +279,7 @@ u8 func_02090350(void) {
     return var_r0;
 }
 
-u8 func_02090370(void) {
+u8 IsMusicSoundPlayerActive(void) {
     extern M2C_UNK gSoundDriverState;
     u8 var_r0;
 
@@ -360,51 +367,57 @@ void func_02090480(s32 arg0) {
     }
 }
 
-s32 func_020904c4(void) {
-    extern M2C_UNK data_02157914;
-    s32 var_r0;
-    s32 var_r2;
+/* Effective music volume: the channel's three 0..127 volume levels (master, the
+ * player's music setting and the fade/duck level) multiplied together and scaled
+ * back to the 0..127 range by dividing by full volume once per level. */
+s32 GetMusicVolume(void) {
+    extern M2C_UNK gMusicVolumeLevels;
+    s32 volume;
+    s32 level;
 
-    var_r0 = 0x7F;
-    var_r2 = 0;
+    volume = SOUND_VOLUME_MAX;
+    level = 0;
     do {
-        var_r0 = var_r0 * M2C_FIELD(&data_02157914, u8 *, var_r2);
-        var_r2 += 1;
-    } while (var_r2 < 3);
-    var_r2 = 0;
+        volume = volume * M2C_FIELD(&gMusicVolumeLevels, u8 *, level);
+        level += 1;
+    } while (level < SOUND_VOLUME_LEVELS);
+    level = 0;
     do {
-        var_r0 = var_r0 / 0x7F;
-        var_r2 += 1;
-    } while (var_r2 < 3);
-    return var_r0;
+        volume = volume / SOUND_VOLUME_MAX;
+        level += 1;
+    } while (level < SOUND_VOLUME_LEVELS);
+    return volume;
 }
 
-s32 func_0209051c(void) {
-    extern M2C_UNK data_02157910;
-    s32 var_r0;
-    s32 var_r2;
+/* Combine the SOUND_VOLUME_LEVELS volume factors of the sound-effect channels
+ * (master, user setting and fade, each 0..SOUND_VOLUME_MAX) into their single
+ * effective volume, kept within 0..SOUND_VOLUME_MAX. */
+s32 Sound_GetEffectVolume(void) {
+    extern M2C_UNK gSoundEffectVolumeLevels;
+    s32 volume;
+    s32 level;
 
-    var_r0 = 0x7F;
-    var_r2 = 0;
+    volume = SOUND_VOLUME_MAX;
+    level = 0;
     do {
-        var_r0 = var_r0 * M2C_FIELD(&data_02157910, u8 *, var_r2);
-        var_r2 += 1;
-    } while (var_r2 < 3);
-    var_r2 = 0;
+        volume = volume * M2C_FIELD(&gSoundEffectVolumeLevels, u8 *, level);
+        level += 1;
+    } while (level < SOUND_VOLUME_LEVELS);
+    level = 0;
     do {
-        var_r0 = var_r0 / 0x7F;
-        var_r2 += 1;
-    } while (var_r2 < 3);
-    return var_r0;
+        volume = volume / SOUND_VOLUME_MAX;
+        level += 1;
+    } while (level < SOUND_VOLUME_LEVELS);
+    return volume;
 }
 
 void func_02090574(void) {
 extern M2C_UNK gSoundDriverState;
 extern M2C_UNK gMusicSoundPlayer;
-s32 func_020904c4(void);
+s32 GetMusicVolume(void);
 void func_0202d994(volatile s32 *, s32, s32);
 if(M2C_FIELD(&gSoundDriverState,s32 *,8)!=0) {
-s32 value=func_020904c4();
+s32 value=GetMusicVolume();
 func_0202d994(&gMusicSoundPlayer,0,value);
 func_0202d994(&gMusicSoundPlayer,1,value);
 }
@@ -412,18 +425,18 @@ func_0202d994(&gMusicSoundPlayer,1,value);
 
 void func_020905bc(void) {
     M2C_UNK func_0202ab7c(M2C_UNK, s32);
-    s32 func_020904c4();
+    s32 GetMusicVolume();
 
-    func_0202ab7c(0, func_020904c4());
+    func_0202ab7c(0, GetMusicVolume());
     func_02090574();
 }
 
 void func_020905d8(void) {
-    s32 func_0209051c();
+    s32 Sound_GetEffectVolume();
     s32 temp_r4;
     s32 var_r5;
 
-    temp_r4 = func_0209051c();
+    temp_r4 = Sound_GetEffectVolume();
     var_r5 = 1;
     do {
         func_0202ab7c(var_r5, temp_r4);
@@ -432,16 +445,16 @@ void func_020905d8(void) {
 }
 
 void func_02090604(void) {
-    extern M2C_UNK data_02157914;
-    extern M2C_UNK data_02157910;
+    extern M2C_UNK gMusicVolumeLevels;
+    extern M2C_UNK gSoundEffectVolumeLevels;
     void func_020905bc(void);
     void func_020905d8(void);
     u8 *var_r2;
     u8 *var_r3;
     s32 var_r1;
 
-    var_r2 = (u8 *)&data_02157914;
-    var_r3 = (u8 *)&data_02157910;
+    var_r2 = (u8 *)&gMusicVolumeLevels;
+    var_r3 = (u8 *)&gSoundEffectVolumeLevels;
     var_r1 = 0;
     do {
         var_r1 += 1;
@@ -453,7 +466,7 @@ void func_02090604(void) {
 }
 
 void func_02090640(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_02157914;
+    extern M2C_UNK gMusicVolumeLevels;
     s32 var_r1;
 
     var_r1 = arg1;
@@ -462,12 +475,12 @@ void func_02090640(s32 arg0, s32 arg1) {
     } else if (var_r1 < 0) {
         var_r1 = 0;
     }
-    M2C_FIELD(&data_02157914, u8 *, arg0) = var_r1;
+    M2C_FIELD(&gMusicVolumeLevels, u8 *, arg0) = var_r1;
     func_020905bc();
 }
 
 void func_0209066c(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_02157910;
+    extern M2C_UNK gSoundEffectVolumeLevels;
     s32 var_r1;
 
     var_r1 = arg1;
@@ -476,13 +489,13 @@ void func_0209066c(s32 arg0, s32 arg1) {
     } else if (var_r1 < 0) {
         var_r1 = 0;
     }
-    M2C_FIELD(&data_02157910, u8 *, arg0) = var_r1;
+    M2C_FIELD(&gSoundEffectVolumeLevels, u8 *, arg0) = var_r1;
     func_020905d8();
 }
 
 u8 func_02090698(s32 arg0) {
-    extern M2C_UNK data_02157914;
-    return M2C_FIELD(&data_02157914, u8 *, arg0);
+    extern M2C_UNK gMusicVolumeLevels;
+    return M2C_FIELD(&gMusicVolumeLevels, u8 *, arg0);
 }
 
 /* Initialise a freshly allocated script player for `object`: attach the script and the

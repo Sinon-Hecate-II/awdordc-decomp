@@ -287,40 +287,43 @@ void gpiFree(M2C_UNK arg0) {
     HeapFree(5, arg0, 0);
 }
 
-M2C_UNK func_020377dc(M2C_UNK a,M2C_UNK b,M2C_UNK unused,M2C_UNK d){
+/* Create the WFC connection object: zero its 12 bytes, set its mode and sub-mode,
+ * park it in the created state, select the test NAS server and register it with
+ * the library. Does nothing when a connection already exists. */
+M2C_UNK Wfc_CreateConnection(M2C_UNK conn,M2C_UNK mode,M2C_UNK unused,M2C_UNK threadPriority){
  extern void *gWfcConnection;
- void func_02037854(s32);
+ void SetNasServerEnvironment(s32);
  void MI_CpuFill8(void *,s32,s32);void func_020220a8(s32);
  if(gWfcConnection)return;
- MI_CpuFill8(a,0,12);
- M2C_FIELD(a,u16 *,8)=b;M2C_FIELD(a,u16 *,10)=1;M2C_FIELD(a,u16 *,4)=1;M2C_FIELD(a,u16 *,6)=0;
- gWfcConnection=(void *)a;func_02037854(0);func_020220a8(d);
+ MI_CpuFill8((void *)conn,0,12);
+ M2C_FIELD(conn,u16 *,WFC_CONN_MODE)=mode;M2C_FIELD(conn,u16 *,WFC_CONN_SUBMODE)=1;M2C_FIELD(conn,u16 *,WFC_CONN_STATE)=WFC_CONN_IDLE;M2C_FIELD(conn,u16 *,WFC_CONN_LINK_READY)=0;
+ gWfcConnection=(void *)conn;SetNasServerEnvironment(NAS_SERVER_TEST);func_020220a8(threadPriority);
 }
 
 void func_0203783c(M2C_UNK arg0) {
-    M2C_UNK func_020377dc(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020377dc(arg0, 3, 1, 0x14);
+    M2C_UNK Wfc_CreateConnection(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    Wfc_CreateConnection(arg0, 3, 1, 0x14);
 }
 
-void func_02037854(s32 arg0) {
+void SetNasServerEnvironment(s32 arg0) {
     M2C_UNK func_0203289c(M2C_UNK *);
-    extern M2C_UNK data_020fc818;
-    extern M2C_UNK data_020fc840;
-    extern M2C_UNK data_020fc864;
+    extern M2C_UNK sNasServerUrlTest;
+    extern M2C_UNK sNasServerUrlDev;
+    extern M2C_UNK sNasServerUrlProd;
     switch (arg0) {                                 /* irregular */
     case 0:
-        func_0203289c(&data_020fc818);
+        func_0203289c(&sNasServerUrlTest);
         return;
     case 1:
-        func_0203289c(&data_020fc840);
+        func_0203289c(&sNasServerUrlDev);
         return;
     case 2:
-        func_0203289c(&data_020fc864);
+        func_0203289c(&sNasServerUrlProd);
         return;
     }
 }
 
-/* Start the WFC library on the connection created by func_020377dc: build the
+/* Start the WFC library on the connection created by Wfc_CreateConnection: build the
  * WFC_Init parameters from the connection's mode and sub-mode, hand the library
  * the game's work-block allocators and move the connection to RUNNING. A
  * failed WFC_Init is reported as network error -6; starting without a
@@ -418,12 +421,20 @@ s32 GetNetConnectionStatus(void) {
     return WFC_CONN_RUNNING;
 }
 
-void func_02037abc(void) {
-extern void *gWfcConnection;s32 Wfc_EndSession(void);void SleepMilliseconds(s32);
-if(!gWfcConnection)return;
-if(M2C_FIELD(gWfcConnection,u16 *,4)==1){gWfcConnection=0;return;}
-while(!Wfc_EndSession())SleepMilliseconds(10);
-gWfcConnection=0;
+/* Close the WFC session and wait for it to end: a connection the library never
+ * started is dropped at once, otherwise Wfc_EndSession is retried 10 ms apart
+ * until it succeeds, then the connection object is released. */
+void Wfc_EndConnection(void) {
+    extern void *gWfcConnection;
+    s32 Wfc_EndSession(void);
+    void SleepMilliseconds(s32);
+    if (!gWfcConnection) return;
+    if (M2C_FIELD(gWfcConnection, u16 *, WFC_CONN_STATE) == WFC_CONN_IDLE) {
+        gWfcConnection = 0;
+        return;
+    }
+    while (!Wfc_EndSession()) SleepMilliseconds(10);
+    gWfcConnection = 0;
 }
 
 /* Poll the shutdown of the WFC session: a connection that never started is
@@ -463,7 +474,7 @@ void func_02037bb8(void) {
 s32 func_02037bc4(void) {
     u32 GetWfcFriendSlot(void);
     void Wfc_UpdateConnection(void);
-    void func_02037abc(void);
+    void Wfc_EndConnection(void);
     void SetNetError(s32, s32);
     s32 func_02037b8c(void);
     u32 var_r2;
@@ -477,7 +488,7 @@ s32 func_02037bc4(void) {
             var_r2 = 0x63;
         }
         SetNetError(8, 0xFFFF2D10 - var_r2);
-        func_02037abc();
+        Wfc_EndConnection();
         return 1;
     }
     return 0;

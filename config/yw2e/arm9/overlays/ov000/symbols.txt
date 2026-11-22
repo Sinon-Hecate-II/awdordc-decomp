@@ -39,7 +39,7 @@ UnitMoveTileOffset kind:function(arm,size=0x14) addr:0x02169d50
 UnitMovePaletteOffset kind:function(arm,size=0x10) addr:0x02169d64
 ScrollMapViewToPoint kind:function(arm,size=0x14c) addr:0x02169d74
 func_ov000_02169ec0 kind:function(arm,size=0x48) addr:0x02169ec0
-func_ov000_02169f08 kind:function(arm,size=0x5c) addr:0x02169f08
+GetUnitMoveSpeed kind:function(arm,size=0x5c) addr:0x02169f08
 func_ov000_02169f64 kind:function(arm,size=0x24) addr:0x02169f64
 StepUnitMove kind:function(arm,size=0xc) addr:0x02169f88
 PlayUnitMoveSound kind:function(arm,size=0xac) addr:0x02169f94
@@ -240,7 +240,7 @@ func_ov000_02175ed8 kind:function(arm,size=0xd8) addr:0x02175ed8
 func_ov000_02175fb0 kind:function(arm,size=0xa2c) addr:0x02175fb0
 func_ov000_021769dc kind:function(arm,size=0x30) addr:0x021769dc
 Ov000Info_DrawFullPanel kind:function(arm,size=0x90) addr:0x02176a0c
-func_ov000_02176a9c kind:function(arm,size=0x5c) addr:0x02176a9c
+Ov000Info_DrawBlinkPanel kind:function(arm,size=0x5c) addr:0x02176a9c
 BuildUnitRecommendations kind:function(arm,size=0x2d4) addr:0x02176af8
 func_ov000_02176dcc kind:function(arm,size=0x3c) addr:0x02176dcc
 func_ov000_02176e08 kind:function(arm,size=0x20) addr:0x02176e08
@@ -266,7 +266,7 @@ func_ov000_0217aa2c kind:function(arm,size=0xe4) addr:0x0217aa2c
 IsEnemyUnitAt kind:function(arm,size=0x4c) addr:0x0217ab10
 IsAttackableEnemyMoveGoal kind:function(arm,size=0x7c) addr:0x0217ab5c
 IsPropertyMoveGoal kind:function(arm,size=0xa0) addr:0x0217abd8
-func_ov000_0217ac78 kind:function(arm,size=0x5c) addr:0x0217ac78
+IsOwnedBaseMoveGoal kind:function(arm,size=0x5c) addr:0x0217ac78
 ExpandCostSearchNode kind:function(arm,size=0x1c8) addr:0x0217acd4
 func_ov000_0217ae9c kind:function(arm,size=0x34c) addr:0x0217ae9c
 ExpandGoalSearchNode kind:function(arm,size=0x1d4) addr:0x0217b1e8
@@ -290,7 +290,7 @@ CanAttackUnitFrom kind:function(arm,size=0x268) addr:0x0217d150
 MarkCaptureUnitHasTarget kind:function(arm,size=0x70) addr:0x0217d3b8
 AssignUnitMoveTargets kind:function(arm,size=0x2b4) addr:0x0217d428
 ReleaseUnitMoveTargets kind:function(arm,size=0x174) addr:0x0217d6dc
-func_ov000_0217d850 kind:function(arm,size=0x1c) addr:0x0217d850
+ClearAiActionFlags kind:function(arm,size=0x1c) addr:0x0217d850
 func_ov000_0217d86c kind:function(arm,size=0x464) addr:0x0217d86c
 CursorUnitReachesEnemyKind22 kind:function(arm,size=0x194) addr:0x0217dcd0
 func_ov000_0217de64 kind:function(arm,size=0x858) addr:0x0217de64
@@ -318,7 +318,7 @@ RunAiRole4Or6Step5Action kind:function(arm,size=0x60) addr:0x021806d8
 func_ov000_02180738 kind:function(arm,size=0x40) addr:0x02180738
 RunAiRole4Or6Step7Action kind:function(arm,size=0x60) addr:0x02180778
 RunAiRole4Or6Step8Action kind:function(arm,size=0x60) addr:0x021807d8
-func_ov000_02180838 kind:function(arm,size=0x5c) addr:0x02180838
+RunAiRole4Or6Step9Action kind:function(arm,size=0x5c) addr:0x02180838
 RunAiRole4Or6Step10Action kind:function(arm,size=0x6c) addr:0x02180894
 func_ov000_02180900 kind:function(arm,size=0x14) addr:0x02180900
 func_ov000_02180914 kind:function(arm,size=0x10) addr:0x02180914
@@ -354,13 +354,13 @@ RunAiKind5Action kind:function(arm,size=0x18) addr:0x02181b8c
 RunAiProduceCargoAction kind:function(arm,size=0x6c) addr:0x02181ba4
 RunAiCoPowerAction kind:function(arm,size=0x78) addr:0x02181c10
 func_ov000_02181c88 kind:function(arm,size=0x1bec) addr:0x02181c88
-func_ov000_02183874 kind:function(arm,size=0xb78) addr:0x02183874
+MarkAiUnitAttackCells kind:function(arm,size=0xb78) addr:0x02183874
 func_ov000_021843ec kind:function(arm,size=0xc20) addr:0x021843ec
 func_ov000_0218500c kind:function(arm,size=0x1ac) addr:0x0218500c
 func_ov000_021851b8 kind:function(arm,size=0x1a8) addr:0x021851b8
 MarkAiThreatRange kind:function(arm,size=0x180) addr:0x02185360
 func_ov000_021854e0 kind:function(arm,size=0x104) addr:0x021854e0
-func_ov000_021855e4 kind:function(arm,size=0x490) addr:0x021855e4
+BuildAiThreatMap kind:function(arm,size=0x490) addr:0x021855e4
 ExpandAiRangeNode kind:function(arm,size=0x1ac) addr:0x02185a74
 FloodFillRangeFromTile kind:function(arm,size=0x398) addr:0x02185c20
 IsWithinAttackRange kind:function(arm,size=0xb8) addr:0x02185fb8
@@ -388,7 +388,7 @@ func_ov000_02188338 kind:function(arm,size=0x38) addr:0x02188338
 func_ov000_02188370 kind:function(arm,size=0x50) addr:0x02188370
 CanDoFootAiAction kind:function(arm,size=0x88) addr:0x021883c0
 func_ov000_02188448 kind:function(arm,size=0x40) addr:0x02188448
-func_ov000_02188488 kind:function(arm,size=0x5c) addr:0x02188488
+AiAttackUnitBalanceScore kind:function(arm,size=0x5c) addr:0x02188488
 func_ov000_021884e4 kind:function(arm,size=0x54) addr:0x021884e4
 CanDoAiAction01 kind:function(arm,size=0x90) addr:0x02188538
 AiRangeReachesEnemyHq kind:function(arm,size=0xb8) addr:0x021885c8
@@ -526,7 +526,7 @@ CountPlayerProperties kind:function(arm,size=0x68) addr:0x0219a3b0
 MarkAiTargetAreas kind:function(arm,size=0x16c) addr:0x0219a418
 CountEnemyProperties kind:function(arm,size=0x94) addr:0x0219a584
 ClearAiUnitActions kind:function(arm,size=0xb0) addr:0x0219a618
-func_ov000_0219a6c8 kind:function(arm,size=0x24) addr:0x0219a6c8
+ClearAiUnitLoadCounts kind:function(arm,size=0x24) addr:0x0219a6c8
 SelectAiUnitNeedState kind:function(arm,size=0x12c) addr:0x0219a6ec
 UpdateAiUnitSupplyState kind:function(arm,size=0x8c) addr:0x0219a818
 UpdateAiUnitRepairState kind:function(arm,size=0x20) addr:0x0219a8a4
@@ -570,14 +570,14 @@ SelectAiRole3Unit kind:function(arm,size=0x124) addr:0x0219d724
 func_ov000_0219d848 kind:function(arm,size=0x118) addr:0x0219d848
 func_ov000_0219d960 kind:function(arm,size=0x118) addr:0x0219d960
 func_ov000_0219da78 kind:function(arm,size=0x118) addr:0x0219da78
-func_ov000_0219db90 kind:function(arm,size=0x58) addr:0x0219db90
-func_ov000_0219dbe8 kind:function(arm,size=0x58) addr:0x0219dbe8
-func_ov000_0219dc40 kind:function(arm,size=0x58) addr:0x0219dc40
+StartAiThreatMapPhase kind:function(arm,size=0x58) addr:0x0219db90
+StartAiFootRangePhase kind:function(arm,size=0x58) addr:0x0219dbe8
+StartAiLoadCountResetPhase kind:function(arm,size=0x58) addr:0x0219dc40
 SelectBestAiUnit kind:function(arm,size=0x7c) addr:0x0219dc98
 SelectAiCoPowerUnit kind:function(arm,size=0x7c) addr:0x0219dd14
-func_ov000_0219dd90 kind:function(arm,size=0x58) addr:0x0219dd90
-func_ov000_0219dde8 kind:function(arm,size=0x58) addr:0x0219dde8
-func_ov000_0219de40 kind:function(arm,size=0x58) addr:0x0219de40
+StartAssignUnitMoveTargetsPhase kind:function(arm,size=0x58) addr:0x0219dd90
+StartReleaseUnitMoveTargetsPhase kind:function(arm,size=0x58) addr:0x0219dde8
+StartAiClearActionFlags kind:function(arm,size=0x58) addr:0x0219de40
 SelectAiKind13Unit kind:function(arm,size=0x114) addr:0x0219de98
 SelectAiRole2EmptyUnit kind:function(arm,size=0x124) addr:0x0219dfac
 SelectAiRole2Unit kind:function(arm,size=0x144) addr:0x0219e0d0
@@ -585,7 +585,7 @@ func_ov000_0219e214 kind:function(arm,size=0x144) addr:0x0219e214
 func_ov000_0219e358 kind:function(arm,size=0x144) addr:0x0219e358
 SelectAiRole5Unit kind:function(arm,size=0x11c) addr:0x0219e49c
 SelectAiSupplyUnit kind:function(arm,size=0x11c) addr:0x0219e5b8
-func_ov000_0219e6d4 kind:function(arm,size=0x58) addr:0x0219e6d4
+StartAiAttackCellScanPhase kind:function(arm,size=0x58) addr:0x0219e6d4
 SelectAiKind5Unit kind:function(arm,size=0x104) addr:0x0219e72c
 func_ov000_0219e830 kind:function(arm,size=0x18) addr:0x0219e830
 RunAiUnitSelectionStep kind:function(arm,size=0x88) addr:0x0219e848
@@ -603,7 +603,7 @@ func_ov000_0219f6d0 kind:function(arm,size=0x2c) addr:0x0219f6d0
 func_ov000_0219f6fc kind:function(arm,size=0x2c) addr:0x0219f6fc
 ProcessAiCommandDelay kind:function(arm,size=0x1f0) addr:0x0219f728
 func_ov000_0219f918 kind:function(arm,size=0x50) addr:0x0219f918
-func_ov000_0219f968 kind:function(arm,size=0x58) addr:0x0219f968
+PlayAiAttackEffect kind:function(arm,size=0x58) addr:0x0219f968
 func_ov000_0219f9c0 kind:function(arm,size=0x4c) addr:0x0219f9c0
 func_ov000_0219fa0c kind:function(arm,size=0x24) addr:0x0219fa0c
 FinishAiUnitMove kind:function(arm,size=0x68) addr:0x0219fa30
@@ -777,8 +777,8 @@ CombineAreaEffectPenalty kind:function(arm,size=0x10) addr:0x021aa558
 ScoreAreaEffectCell kind:function(arm,size=0x2b8) addr:0x021aa568
 func_ov000_021aa820 kind:function(arm,size=0x50) addr:0x021aa820
 SelectAreaEffectTarget kind:function(arm,size=0x2b0) addr:0x021aa870
-func_ov000_021aab20 kind:function(arm,size=0x2c) addr:0x021aab20
-func_ov000_021aab4c kind:function(arm,size=0x2c) addr:0x021aab4c
+SelectAreaEffectTargetOnAllCells kind:function(arm,size=0x2c) addr:0x021aab20
+SelectAreaEffectTargetOnGrid kind:function(arm,size=0x2c) addr:0x021aab4c
 data_ov000_021aab78 kind:data(any) addr:0x021aab78
 data_ov000_021aab79 kind:data(any) addr:0x021aab79
 data_ov000_021aab94 kind:data(any) addr:0x021aab94
@@ -1126,7 +1126,7 @@ data_ov000_021aec70 kind:data(any) addr:0x021aec70
 data_ov000_021aec7c kind:data(any) addr:0x021aec7c
 data_ov000_021aec88 kind:data(any) addr:0x021aec88
 data_ov000_021aec8c kind:data(any) addr:0x021aec8c
-data_ov000_021aec90 kind:data(any) addr:0x021aec90
+gUnitMoveStepSpeeds kind:data(any) addr:0x021aec90
 gUnitMoveSounds kind:data(any) addr:0x021aec94
 gUnitMoveSoundSpecials kind:data(any) addr:0x021aec98
 data_ov000_021aeee0 kind:data(any) addr:0x021aeee0
@@ -1475,7 +1475,7 @@ data_ov000_021b5c06 kind:data(any) addr:0x021b5c06
 gUnitMinAttackRange kind:data(any) addr:0x021b5c08
 gUnitMaxAttackRange kind:data(any) addr:0x021b5c09
 gUnitKindMaxFuel kind:data(any) addr:0x021b5c0a
-data_ov000_021b5c0b kind:data(any) addr:0x021b5c0b
+gUnitKindInfiniteAmmo kind:data(any) addr:0x021b5c0b
 data_ov000_021b5c0c kind:data(any) addr:0x021b5c0c
 data_ov000_021b5c0d kind:data(any) addr:0x021b5c0d
 gMovementTypeTable kind:data(any) addr:0x021b5c0e
@@ -1978,7 +1978,7 @@ data_ov000_021df684 kind:bss addr:0x021df684
 gAiCommand kind:bss addr:0x021df7d0
 data_ov000_021df7d6 kind:bss addr:0x021df7d6
 gCommandPath kind:bss addr:0x021df7dc
-data_ov000_021df7e4 kind:bss addr:0x021df7e4
+gAiUnitLoadCounts kind:bss addr:0x021df7e4
 gAiUnitList kind:bss addr:0x021df824
 gAiUnitScores kind:bss addr:0x021df868
 gUnitKindScores kind:bss addr:0x021df8ac

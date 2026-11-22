@@ -23,17 +23,21 @@ void func_ov001_0216cd28(s32 arg0, s32 arg1) {
     data_ov001_021925ec(arg1);
 }
 
-s32 func_ov001_0216cd38(s32 arg0, s32 arg1, s32 arg2) {
+/* Bring the ov001 network stack up with three endpoint addresses: the addresses
+   are byte-swapped into the config's three address words and applied by
+   func_02021a90, then the routine blocks until the console has a local IP
+   address.  Returns 0 once it does, or -1 when the stack fails to start. */
+s32 WhInitNetwork(s32 address0, s32 address1, s32 address2) {
     s32 Ov001SwapEndian32(s32);
     s32 func_02021a90(void *);
     void SleepMilliseconds();
     extern s32 gLocalIpAddress;
-    extern M2C_UNK data_ov001_0218fd44;
-    extern M2C_UNK data_ov001_0218fd4c;
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x18) = Ov001SwapEndian32(arg0);
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x1c) = Ov001SwapEndian32(arg1);
-    M2C_FIELD(&data_ov001_0218fd44, s32 *, 0x20) = Ov001SwapEndian32(arg2);
-    if (func_02021a90(&data_ov001_0218fd4c) < 0) return -1;
+    extern M2C_UNK gWhNetConfig;
+    extern M2C_UNK gWhNetInitParams;
+    M2C_FIELD(&gWhNetConfig, s32 *, 0x18) = Ov001SwapEndian32(address0);
+    M2C_FIELD(&gWhNetConfig, s32 *, 0x1c) = Ov001SwapEndian32(address1);
+    M2C_FIELD(&gWhNetConfig, s32 *, 0x20) = Ov001SwapEndian32(address2);
+    if (func_02021a90(&gWhNetInitParams) < 0) return -1;
     while (gLocalIpAddress == 0) SleepMilliseconds(100);
     return 0;
 }

@@ -1,5 +1,6 @@
 /* 3 functions from 0x0207E52C to 0x0207F460 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 typedef struct { s32 values[4]; } TerrainVariants7E52;
 typedef struct { s16 x,y,z; } TerrainOffset7E52;
 typedef struct { TerrainOffset7E52 values[4]; } TerrainNeighbors7E52;
@@ -166,18 +167,21 @@ default:return tile;
 }
 #pragma opt_instruction_scheduling reset
 #pragma opt_lifetimes reset
-s32 func_0207ef5c(s32 arg0, s32 arg1, s32 arg2) {
+/* Returns the autotile variant a map cell's terrain class draws with: class 0x34
+ * always reports variant 5, otherwise the class's flags pick the single-tile,
+ * connected or edge variant family (0 when the class uses none of them). */
+s32 GetTerrainClassVariant(s32 x, s32 y, s32 terrainClass) {
     s32 GetTerrainConnectionVariant(s32, s32);
     s32 GetTerrainEdgeVariant(s32, s32);
     s32 GetTerrainVariant1(s32, s32);
     extern M2C_UNK gTerrainClassFlags;
     u16 flags;
-    flags = (u16)M2C_FIELD(&gTerrainClassFlags, u32 *, arg2 * 8);
-    if (arg2 == 0x34) return 5;
-    if (flags & 1) return GetTerrainVariant1(arg0, arg1);
-    if (flags & 2) return GetTerrainConnectionVariant(arg0, arg1);
-    if (!(flags & 4)) return 0;
-    return GetTerrainEdgeVariant(arg0, arg1);
+    flags = (u16)M2C_FIELD(&gTerrainClassFlags, u32 *, terrainClass * 8);
+    if (terrainClass == 0x34) return 5;
+    if (flags & TERRAIN_CLASS_VARIANT1) return GetTerrainVariant1(x, y);
+    if (flags & TERRAIN_CLASS_CONNECTED) return GetTerrainConnectionVariant(x, y);
+    if (!(flags & TERRAIN_CLASS_EDGE)) return 0;
+    return GetTerrainEdgeVariant(x, y);
 }
 
 /* Maps a tileset tile id to the packed terrain value kept per map cell: the

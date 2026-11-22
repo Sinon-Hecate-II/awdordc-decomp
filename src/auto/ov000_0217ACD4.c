@@ -368,11 +368,11 @@ s32 func_ov000_0217bc34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
 }
 
 s32 func_ov000_0217bc84(s32 arg0, s32 arg1, s32 arg2) {
-    s32 func_ov000_0217ac78(s32, s32, s32);
+    s32 IsOwnedBaseMoveGoal(s32, s32, s32);
     s32 func_ov000_0217b8f0(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)();
 
-    gMoveSearchGoal = func_ov000_0217ac78;
+    gMoveSearchGoal = IsOwnedBaseMoveGoal;
     if (gMoveSearchGoal(arg0, arg1, 0) == 1) {
         return 1;
     }

@@ -596,17 +596,20 @@ void Link_SendPacket(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-s32 func_02084dcc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_ov009_0222410c(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_ov010_02229ba8(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+/* Copy the active network session's player record into `buffer`, through the
+ * running overlay's implementation (single-card link or online); returns `buffer`,
+ * or 0 when neither session is up. */
+s32 ReadActivePlayerRecord(M2C_UNK unused, M2C_UNK buffer, M2C_UNK length) {
+    s32 CopyActiveLinkPlayerRecord(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 CopyActiveOnlinePlayerRecord(M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return func_ov009_0222410c(arg0, arg1, arg2);
-    case 2:
-        return func_ov010_02229ba8(arg0, arg1, arg2);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return CopyActiveLinkPlayerRecord(unused, buffer, length);
+    case NET_OVERLAY_ONLINE:
+        return CopyActiveOnlinePlayerRecord(unused, buffer, length);
     default:
         return 0;
     }
@@ -829,11 +832,34 @@ gCur3DSpriteEngine=saved;
 }
 }
 #pragma optimization_level reset
-s32 func_02085238(s32 a,s32 b,s32 c,s32 d){void *CreateSpriteFromClass(void *,s32);extern M2C_UNK data_02102088;s32 r;void *p=CreateSpriteFromClass(&data_02102088,7);M2C_FIELD(p,s32 *,0x34)=a;M2C_FIELD(p,s32 *,0x38)=b;M2C_FIELD(p,u16 *,0x3c)=c;M2C_FIELD(p,u16 *,0x3e)=d;r=GetLinkMode();switch(r){case 1:r=M2C_FIELD(p,u16 *,0x3c)+0x10;M2C_FIELD(p,u16 *,0x3c)=r;break;case 2:default:break;}return r;}
+/* Create the link-status indicator sprite at (x, y) with the given tile and palette.
+ * On a Download Play link (link mode 1) the tile is shifted by 0x10 to the variant the
+ * sprite sheet uses there.  The link mode (or the shifted tile) is returned. */
+s32 CreateLinkStatusSprite(s32 x, s32 y, s32 tile, s32 palette) {
+    void *CreateSpriteFromClass(void *, s32);
+    extern M2C_UNK gLinkStatusSpriteClass;
+    s32 linkMode;
+    void *sprite = CreateSpriteFromClass(&gLinkStatusSpriteClass, 7);
+    M2C_FIELD(sprite, s32 *, 0x34) = x;
+    M2C_FIELD(sprite, s32 *, 0x38) = y;
+    M2C_FIELD(sprite, u16 *, 0x3c) = tile;
+    M2C_FIELD(sprite, u16 *, 0x3e) = palette;
+    linkMode = GetLinkMode();
+    switch (linkMode) {
+    case 1:
+        linkMode = M2C_FIELD(sprite, u16 *, 0x3c) + 0x10;
+        M2C_FIELD(sprite, u16 *, 0x3c) = linkMode;
+        break;
+    case 2:
+    default:
+        break;
+    }
+    return linkMode;
+}
 
 void func_02085294(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02085238(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    return (void)func_02085238(arg0, arg1, 0, 0);
+    M2C_UNK CreateLinkStatusSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    return (void)CreateLinkStatusSprite(arg0, arg1, 0, 0);
 }
 
 void CreateSubScreenLinkIndicator(void) {
@@ -849,7 +875,7 @@ void CreateSubScreenLinkIndicator(void) {
 
 void func_020852e0(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102088;
-    DeleteSpriteObjectsOfClass(&data_02102088);
+    extern M2C_UNK gLinkStatusSpriteClass;
+    DeleteSpriteObjectsOfClass(&gLinkStatusSpriteClass);
 }
 

@@ -1,6 +1,7 @@
 /* 44 functions from 0x022172B0 to 0x02218200 (ov006), found by ds-decomp. */
 #include "common.h"
 #include "ov006_map_transfer.h"
+#include "battle_map.h"
 typedef struct { s32 v[4]; } Ov006Date;
 
 /* The map-code screen object: what its digit display shows (kind 1 is the local
@@ -249,9 +250,9 @@ void func_ov006_022177e4(void) {
     M2C_UNK HideFrameBorderSprite();
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
-    if (func_02086a30(0x21) == 0) {
+    if (IsEventFlagMidSet(0x21) == 0) {
         SetUiMessageText(0x46000026);
-        func_02086740(0x21, 1);
+        SetEventFlagMid(0x21, 1);
         return;
     }
     SetUiMessageText(0);
@@ -414,20 +415,23 @@ void func_ov006_02217b08(void *arg0) {
     func_020c9120(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x54));
 }
 
-void func_ov006_02217b24(void *arg0) {
+/* Show the map-transfer screen's chosen map: create a text layer with the
+ * transfer status text, append the chosen record's name, reload the campaign map
+ * headers and schedule the campaign scene's teardown. */
+void ShowMapTransferChosenName(void *transfer) {
     M2C_UNK func_0208999c(s32, M2C_UNK, s32);
     M2C_UNK TextLayer_AppendText(s32, M2C_UNK *);
     s32 CreateTextLayer();
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
     M2C_UNK func_020c8e40();
-    extern M2C_UNK data_ov006_02218cd8;
+    extern M2C_UNK sMapTransferNameBreak;
     extern M2C_UNK func_ov003_021fef18;
-    s32 temp_r0;
+    s32 layer;
 
-    temp_r0 = CreateTextLayer();
-    func_0208999c(temp_r0, 2, 0x4600001F);
-    TextLayer_AppendText(temp_r0, &data_ov006_02218cd8);
-    TextLayer_AppendText(temp_r0, M2C_FIELD(arg0, s32 *, 0x54) + 6);
+    layer = CreateTextLayer();
+    func_0208999c(layer, 2, MAP_TRANSFER_MSG_CHOSEN_MAP);
+    TextLayer_AppendText(layer, &sMapTransferNameBreak);
+    TextLayer_AppendText(layer, M2C_FIELD(transfer, s32 *, MAP_TRANSFER_CHOSEN) + MAP_RECORD_NAME);
     func_020c8e40();
     CreateQueuedSpriteTask(&func_ov003_021fef18, 6);
 }
@@ -481,18 +485,18 @@ void func_ov006_02217c64(void) {
 
 void func_ov006_02217c74(M2C_UNK arg0) {
     M2C_UNK SetUiMessageText(s32);
-    M2C_UNK func_02086740(M2C_UNK, M2C_UNK);
-    s32 func_02086a30(M2C_UNK);
+    M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
+    s32 IsEventFlagMidSet(M2C_UNK);
     extern M2C_UNK data_ov006_02218ba8;
-    if (func_02086a30(0x22) != 0) {
+    if (IsEventFlagMidSet(0x22) != 0) {
         return;
     }
     SetUiMessageText(0x46000027);
-    func_02086740(0x22, 1);
+    SetEventFlagMid(0x22, 1);
     CreateSpriteObject(&data_ov006_02218ba8, arg0);
 }
 
-void func_ov006_02217cb8(M2C_UNK arg0) { M2C_UNK SetUiMessageText(s32); M2C_UNK func_02086740(M2C_UNK,M2C_UNK); s32 func_02086a30(M2C_UNK); extern M2C_UNK data_ov006_02218ba8; if(func_02086a30(0x23)!=0)return; SetUiMessageText(0x46000028); func_02086740(0x23,1); CreateSpriteObject(&data_ov006_02218ba8,arg0); }
+void func_ov006_02217cb8(M2C_UNK arg0) { M2C_UNK SetUiMessageText(s32); M2C_UNK SetEventFlagMid(M2C_UNK,M2C_UNK); s32 IsEventFlagMidSet(M2C_UNK); extern M2C_UNK data_ov006_02218ba8; if(IsEventFlagMidSet(0x23)!=0)return; SetUiMessageText(0x46000028); SetEventFlagMid(0x23,1); CreateSpriteObject(&data_ov006_02218ba8,arg0); }
 
 void func_ov006_02217cfc(s32 arg0) {
     extern s32 data_ov006_02218e2c;
@@ -648,5 +652,18 @@ void func_ov006_02218128(void *list) {
     else CreateOnlinePlayerIdListNode(playerId, flags, owner, list);
 }
 
-void func_ov006_022181a4(void *p) { s32 i; for(i=0;i<M2C_FIELD(p,u8 *,0x38);i++){u16 b=M2C_FIELD(p,u16 **,0x48)[i]; s32 a=M2C_FIELD(p,u8 **,0x4c)[i]; if(a==1)goto call; if(a!=2)continue; call: func_020868ac(b-0xe1,0);}}
+/* Clear the campaign-map saved flag (SetCampaignMapSaved) of every map the list
+ * holds: an entry whose join status is joinable (1) or rejected (2) maps it to its
+ * save slot (map id minus the first campaign id). */
+void ClearListedMapSavedFlags(void *list) {
+    s32 i;
+    for (i = 0; i < M2C_FIELD(list, u8 *, MAP_LIST_MAP_COUNT); i++) {
+        u16 mapId = M2C_FIELD(list, u16 **, MAP_LIST_MAP_IDS)[i];
+        s32 status = M2C_FIELD(list, u8 **, MAP_LIST_STATUS)[i];
+        if (status == 1) goto clear;
+        if (status != 2) continue;
+    clear:
+        SetCampaignMapSaved(mapId - MAP_ID_CAMPAIGN_FIRST, 0);
+    }
+}
 

@@ -3,7 +3,7 @@
 #include "battle_map.h"
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
-extern u8 data_ov000_021df7e4[];
+extern u8 gAiUnitLoadCounts[];
 extern s8 gTerrainPropertyType[];
 #define MAP (*gCurrentMap)
 #define SEL M2C_FIELD(MAP,void**,0x52d0)
@@ -40,7 +40,7 @@ for(;
 index<gPlayerUnitIdBase[M2C_FIELD(MAP,u16*,0x52a4)]+51;index++,offset+=14){
 unit=MAP+0x59a4+offset;
 if(!KIND(unit)||!CanKindLoad(KIND(SEL),KIND(unit))||
-data_ov000_021df7e4[index&63]||((u32)(M2C_FIELD(unit,u8*,11)<<24)>>31))continue;
+gAiUnitLoadCounts[index&63]||((u32)(M2C_FIELD(unit,u8*,11)<<24)>>31))continue;
 switch(KIND(SEL)){
 case 13:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)==1)break;continue;
 case 19:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)!=0)break;continue;
@@ -82,7 +82,7 @@ else bestDistance=CELL(candidateX,candidateY,0x2338);
 }
 }
 if(bestX==-1)return;
-data_ov000_021df7e4[chosen&63]++;
+gAiUnitLoadCounts[chosen&63]++;
 if(bestDistance<limit)SetMapCursor(bestX,bestY,2,0,0);
 else PlanMoveDestination(bestX,bestY);
 }

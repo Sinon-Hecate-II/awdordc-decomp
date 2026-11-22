@@ -255,7 +255,15 @@ SetTerrainTileset(M2C_FIELD(*gCurrentMap,u8*,MAP_TILESET));
 }
 
 #pragma opt_strength_reduction off
-void BuildMapRowOffsets(void) { extern void **gCurrentMap; s32 i; for(i=0;i<M2C_FIELD(*gCurrentMap,u16 *,0x5146);i++) M2C_FIELD((u8 *)*gCurrentMap+i*2,u16 *,0x3758)=i*M2C_FIELD(*gCurrentMap,u16 *,0x5144); }
+/* Fill the map's row offsets: each row starts its index times the map width
+ * into the per-cell arrays. */
+void BuildMapRowOffsets(void) {
+    extern void **gCurrentMap;
+    s32 row;
+
+    for (row = 0; row < M2C_FIELD(*gCurrentMap, u16 *, MAP_HEIGHT); row++)
+        M2C_FIELD((u8 *)*gCurrentMap + row * 2, u16 *, MAP_ROW_OFFSETS) = row * M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH);
+}
 #pragma opt_strength_reduction reset
 void LoadPlayerArmies(M2C_UNK arg0) {
     M2C_UNK SetPlayerIdForSlot(s32, s32);
@@ -349,70 +357,58 @@ LoadMapTileset();
 M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
 }
 
-void func_020cf2c8(void)
-{
-  extern void **gCurrentMap;
-  void **new_var2;
-  extern s8 gTerrainPropertyFlags[];
-  void SelectMapLayer(void *);
-  void FillMapLayer(s32);
-  s32 count;
-  void *new_var;
-  s32 i;
-  s32 recordOffset = 0;
-  s32 x;
-  s32 y;
-  s32 k;
-  s32 a;
-  s32 tile;
-  u8 *base;
-  u16 row;
-  count = 0;
-  SelectMapLayer(((u8 *) (*gCurrentMap)) + 0x1928);
-  FillMapLayer(-1);
-  for (i = 0; i < 5; i++)
-  {
-    *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + (i * 0x8c))) + 0x67bc)) = 0;
-  }
+void func_020cf2c8(void) {
+    extern void **gCurrentMap;
+    extern s8 gTerrainPropertyFlags[];
+    void SelectMapLayer(void *);
+    void FillMapLayer(s32);
+    s32 count;
+    s32 i;
+    s32 recordOffset = 0;
+    s32 x;
+    s32 y;
+    s32 k;
+    s32 a;
+    s32 tile;
+    u8 *base;
+    u16 row;
 
-  for (y = 0; y < ((s32) (*((u16 *) (((s8 *) (*gCurrentMap)) + 0x5146)))); y++)
-  {
-    for (x = 0; x < ((s32) (*((u16 *) (((s8 *) (*gCurrentMap)) + 0x5144)))); x++)
-    {
-      base = *gCurrentMap;
-      row = *((u16 *) (((s8 *) (((u8 *) base) + (y * (sizeof(u16))))) + 0x3758));
-      tile = *((u8 *) (((s8 *) (row + (((u8 *) base) + x))) + 0x1420));
-      k = tile & 0x1f;
-      a = gTerrainPropertyFlags[k];
-      new_var = *gCurrentMap;
-      if (((a != 0) && (k != 0x14)) && (k != 0x15))
-      {
-        *((u8 *) (((s8 *) (((u8 *) new_var) + (((tile & 0xe0) >> 5) * 0x8c))) + 0x67bc)) += 1;
-      }
-      if ((a != 0) || (k == 0x18))
-      {
-        new_var2 = gCurrentMap;
-        *((u8 *) (((s8 *) ((*((u16 *) (((s8 *) (((u8 *) (*new_var2)) + (y * (sizeof(u16))))) + 0x3758))) + (((u8 *) (*new_var2)) + x))) + 0x1928)) = (u8) count;
-        *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + recordOffset)) + 0x6c60)) = (u8) k;
-        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c61)) = (u8) x;
-        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c62)) = (u8) y;
-        *((u8 *) (((s8 *) (((u8 *) (*new_var2)) + recordOffset)) + 0x6c63)) = 0;
-        count++;
-        recordOffset += 6;
-      }
+    count = 0;
+    SelectMapLayer((u8 *)*gCurrentMap + 0x1928);
+    FillMapLayer(-1);
+    for (i = 0; i < 5; i++)
+        M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67bc) = 0;
+    for (y = 0; y < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
+        for (x = 0; x < (s32)M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
+            base = *gCurrentMap;
+            row = M2C_FIELD((u8 *)base + y * sizeof(u16), u16 *, 0x3758);
+            tile = M2C_FIELD(row + ((u8 *)base + x), u8 *, 0x1420);
+            k = tile & 0x1f;
+            a = gTerrainPropertyFlags[k];
+            if (a != 0 && k != 0x14 && k != 0x15)
+                M2C_FIELD((u8 *)*gCurrentMap + ((tile & 0xe0) >> 5) * 0x8c, u8 *, 0x67bc) += 1;
+            if (a != 0 || k == 0x18) {
+                M2C_FIELD(M2C_FIELD((u8 *)*gCurrentMap + y * sizeof(u16), u16 *, 0x3758) + ((u8 *)*gCurrentMap + x), u8 *, 0x1928) = (u8)count;
+                M2C_FIELD((u8 *)*gCurrentMap + recordOffset, u8 *, 0x6c60) = (u8)k;
+                M2C_FIELD((u8 *)*gCurrentMap + recordOffset, u8 *, 0x6c61) = (u8)x;
+                M2C_FIELD((u8 *)*gCurrentMap + recordOffset, u8 *, 0x6c62) = (u8)y;
+                M2C_FIELD((u8 *)*gCurrentMap + recordOffset, u8 *, 0x6c63) = 0;
+                count++;
+                recordOffset += 6;
+            }
+        }
     }
-
-  }
-
-  *((u8 *) (((s8 *) (((u8 *) (*gCurrentMap)) + (count * 6))) + 0x6c60)) = 0xff;
+    M2C_FIELD((u8 *)*gCurrentMap + count * 6, u8 *, 0x6c60) = 0xff;
 }
 
-void SetMapCursorTargetTile(s16 arg0, s16 arg1) {
+/* Aim the map cursor at a tile: record the target tile and snap the smoothed
+ * cursor position to it. */
+void SetMapCursorTargetTile(s16 tileX, s16 tileY) {
     extern void **gCurrentMap;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C2) = arg0;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C4) = arg1;
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C6) = (s16) (arg0 * 0x10);
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52C8) = (s16) (arg1 * 0x10);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = tileX;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = tileY;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_PIXEL_X) = (s16) (tileX * MAP_CURSOR_TILE_UNITS);
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_PIXEL_Y) = (s16) (tileY * MAP_CURSOR_TILE_UNITS);
 }
 
 /* Advance the smoothed cursor position stored in the game state toward (targetX, targetY):

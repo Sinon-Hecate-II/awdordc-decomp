@@ -355,7 +355,7 @@ void gpiInfoFreeProfiles(void) {
     M2C_FIELD(&gGpiInfoState,s32 *,4)=0;
 }
 #pragma opt_common_subs off
-s32 func_02059640(void *arg0, s32 arg1) {
+s32 gpiGetTeamId(void *arg0, s32 arg1) {
     s32 *Vector_GetItem(s32, s32);
     extern M2C_UNK gGpiInfoState;
     void *var_r0;
@@ -416,70 +416,92 @@ s64 gpiGetOrCreateDouble(void *gpi, void *key, M2C_UNK lookup, s64 value, s32 un
  return *(s64 *)result;
 }
 
-s32 func_02059778(void *arg0, void *arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
+/* Read the string value the gpi key/value store holds under `key`, creating the
+ * entry as a string with `value` when no such key exists yet, and return it.
+ * `gpi` overrides the logged-in session's store; `lookup` finds an existing
+ * entry and returns NULL when the key is absent. */
+s32 gpiGetOrCreateString(void *gpi, void *key, M2C_UNK lookup, M2C_UNK value, s32 unused) {
     s32 *BucketNew(s32, void *, s32, M2C_UNK *);
     extern M2C_UNK gGpiInfoState;
     s32 result;
-    void *obj = arg0;
-    if (obj == NULL) obj = M2C_FIELD(&gGpiInfoState, void **, 0x28);
-    if (obj == NULL) return arg3;
-    result = ((s32 (*)(s32, void *, M2C_UNK))arg2)(M2C_FIELD(obj, s32 *, 0xc), arg1, arg3);
+    void *object = gpi;
+    if (object == NULL) object = M2C_FIELD(&gGpiInfoState, void **, GPI_INFO_SESSION);
+    if (object == NULL) return value;
+    result = ((s32 (*)(s32, void *, M2C_UNK))lookup)(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, value);
     if (result != 0) return result;
-    return (s32)BucketNew(M2C_FIELD(obj, s32 *, 0xc), arg1, 2, (M2C_UNK *)arg3);
+    return (s32)BucketNew(M2C_FIELD(object, s32 *, GPI_SESSION_STORE), key, GPI_BUCKET_STRING, (M2C_UNK *)value);
 }
 
-void func_020597d4(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
+/* Store the int `value` in the key/value store under the team key
+ * "<name>_t<teamId>": format the key from `name` and the session's team id for
+ * `slot` (gpiGetTeamId), then get or create the int entry. */
+void gpiSetInt(void *gpi, M2C_UNK name, M2C_UNK lookup, M2C_UNK value, s32 slot) {
     M2C_UNK gpiGetOrCreateInt(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff524;
-    char sp4[64];
-    StringFormat(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
-    gpiGetOrCreateInt(arg0, sp4, arg2, arg3, arg4);
+    extern M2C_UNK gGpiTeamKeyFormat;
+    char key[64];
+    StringFormat(key, &gGpiTeamKeyFormat, name, gpiGetTeamId(gpi, slot));
+    gpiGetOrCreateInt(gpi, key, lookup, value, slot);
 }
 
-void func_02059830(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
+/* Store the double `value` in the key/value store under the team key
+ * "<name>_t<teamId>": format the key from `name` and the session's team id for
+ * `slot` (gpiGetTeamId), then get or create the double entry. */
+void gpiSetDouble(void *gpi, M2C_UNK name, M2C_UNK lookup, s64 value, s32 slot) {
     s64 gpiGetOrCreateDouble(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff524;
-    char sp8[64];
-    StringFormat(sp8, &data_020ff524, arg1, func_02059640(arg0, arg4));
-    gpiGetOrCreateDouble(arg0, sp8, arg2, arg3, arg4);
+    extern M2C_UNK gGpiTeamKeyFormat;
+    char key[64];
+    StringFormat(key, &gGpiTeamKeyFormat, name, gpiGetTeamId(gpi, slot));
+    gpiGetOrCreateDouble(gpi, key, lookup, value, slot);
 }
 
-void func_02059890(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_02059778(void *, void *, M2C_UNK, M2C_UNK, s32);
+/* Store the string `value` in the key/value store under the team key
+ * "<name>_t<teamId>": format the key from `name` and the session's team id for
+ * `slot` (gpiGetTeamId), then get or create the string entry. */
+void gpiSetValue(void *gpi, M2C_UNK name, M2C_UNK lookup, M2C_UNK value, s32 slot) {
+    M2C_UNK gpiGetOrCreateString(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
-    extern M2C_UNK data_020ff524;
-    char sp4[64];
-    StringFormat(sp4, &data_020ff524, arg1, func_02059640(arg0, arg4));
-    func_02059778(arg0, sp4, arg2, arg3, arg4);
+    extern M2C_UNK gGpiTeamKeyFormat;
+    char key[64];
+    StringFormat(key, &gGpiTeamKeyFormat, name, gpiGetTeamId(gpi, slot));
+    gpiGetOrCreateString(gpi, key, lookup, value, slot);
 }
 
-void func_020598ec(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
+/* Store the int `value` in the key/value store under the per-player key
+ * "<name>_<playerId>": format the key from `name` and the session's player id for
+ * `slot` (gpiGetPlayerId), then get or create the int entry. */
+void gpiSetPlayerInt(void *gpi, M2C_UNK name, M2C_UNK lookup, M2C_UNK value, s32 slot) {
     M2C_UNK gpiGetOrCreateInt(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK gGpiPlayerKeyFormat;
-    char sp4[64];
-    StringFormat(sp4, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
-    gpiGetOrCreateInt(arg0, sp4, arg2, arg3, arg4);
+    char key[64];
+    StringFormat(key, &gGpiPlayerKeyFormat, name, gpiGetPlayerId(gpi, slot));
+    gpiGetOrCreateInt(gpi, key, lookup, value, slot);
 }
 
-void gpiSetPlayerDouble(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s64 arg3, s32 arg4) {
+/* Stores the double `value` in the key/value store under the per-player key
+   "<name>_<playerId>": formats the key from `name` and the session's player id
+   for `slot` (gpiGetPlayerId), then gets or creates the double entry. */
+void gpiSetPlayerDouble(void *gpi, M2C_UNK name, M2C_UNK lookup, s64 value, s32 slot) {
     s64 gpiGetOrCreateDouble(void *, void *, M2C_UNK, s64, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK gGpiPlayerKeyFormat;
-    char sp8[64];
-    StringFormat(sp8, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
-    gpiGetOrCreateDouble(arg0, sp8, arg2, arg3, arg4);
+    char key[64];
+    StringFormat(key, &gGpiPlayerKeyFormat, name, gpiGetPlayerId(gpi, slot));
+    gpiGetOrCreateDouble(gpi, key, lookup, value, slot);
 }
 
-void func_020599a8(void *arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    M2C_UNK func_02059778(void *, void *, M2C_UNK, M2C_UNK, s32);
+/* Store the string `value` in the key/value store under the per-player key
+ * "<name>_<playerId>": format the key from `name` and the session's player id
+ * for `slot` (gpiGetPlayerId), then get or create the string entry. */
+void gpiSetPlayerString(void *gpi, M2C_UNK name, M2C_UNK lookup, M2C_UNK value, s32 slot) {
+    M2C_UNK gpiGetOrCreateString(void *, void *, M2C_UNK, M2C_UNK, s32);
     M2C_UNK StringFormat(void *, M2C_UNK *, M2C_UNK, s32);
     extern M2C_UNK gGpiPlayerKeyFormat;
-    char sp4[64];
-    StringFormat(sp4, &gGpiPlayerKeyFormat, arg1, gpiGetPlayerId(arg0, arg4));
-    func_02059778(arg0, sp4, arg2, arg3, arg4);
+    char key[64];
+    StringFormat(key, &gGpiPlayerKeyFormat, name, gpiGetPlayerId(gpi, slot));
+    gpiGetOrCreateString(gpi, key, lookup, value, slot);
 }
 
 s32 gti2CheckChallenge(u8 *arg0) {

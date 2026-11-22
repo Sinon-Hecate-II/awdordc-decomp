@@ -174,21 +174,26 @@ else scale=M2C_FIELD(gAiSettings,u8 *,14);
 value*=scale;if(value>110)value=110;return value;
 }
 #pragma optimization_level reset
-s32 GetAiUnitSearchRange(u8 *arg0) {
+/* Returns the search range the AI uses for `unit`: three quarters of the unit's
+ * movement-based range (GetAiUnitRange), evaluated with the unit standing in as
+ * the map's cursor unit; the previous cursor unit is put back afterwards.  A unit
+ * with no kind has no range and gets AI_UNIT_RANGE_MAX. */
+s32 GetAiUnitSearchRange(u8 *unit) {
     s32 GetAiUnitRange(u8 *, void *, u32);
     extern void **gCurrentMap;
-    s32 result;
-    u32 value;
-    u8 *saved;
-    void *base;
+    s32 range;
+    u32 kind;
+    u8 *savedUnit;
+    u8 *base; /* the map biased by 0x5000: MAP_CURSOR_UNIT sits at +0x2D0 in it */
+
     base = (u8 *)*gCurrentMap + 0x5000;
-    saved = M2C_FIELD(base, u8 **, 0x2D0);
-    value = (u32)(*arg0 << 26) >> 26;
-    if (value == 0) return 0x6E;
-    M2C_FIELD(base, u8 **, 0x2D0) = arg0;
-    result = (GetAiUnitRange(arg0, base, value) * 3) >> 2;
-    M2C_FIELD(*gCurrentMap, u8 **, 0x52D0) = saved;
-    return result;
+    savedUnit = M2C_FIELD(base, u8 **, 0x2D0);
+    kind = (u32)(*unit << 26) >> 26;
+    if (kind == 0) return AI_UNIT_RANGE_MAX;
+    M2C_FIELD(base, u8 **, 0x2D0) = unit;
+    range = (GetAiUnitRange(unit, base, kind) * 3) >> 2;
+    M2C_FIELD(*gCurrentMap, u8 **, MAP_CURSOR_UNIT) = savedUnit;
+    return range;
 }
 
 /* Flood the selected unit's movement range, then add its attack-distance rings. */

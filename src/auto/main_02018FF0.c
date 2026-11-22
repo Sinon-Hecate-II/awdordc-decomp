@@ -10,11 +10,11 @@ void Mb_SendBootParams(void) {
     extern M2C_UNK data_02136cc0;
     extern M2C_UNK data_02136cc4;
     extern s32 func_02018c9c(void);
-    void func_02018e24(M2C_UNK, void *);
+    void Mb_LockCartridgeAccess(M2C_UNK, void *);
     void func_02018da8(void *);
     void func_02018df0(void *);
-    void func_02018e80(M2C_UNK, void *);
-    M2C_UNK func_02018ea4(M2C_UNK);
+    void Mb_UnlockCartridgeAccess(M2C_UNK, void *);
+    M2C_UNK Mb_SendControlMessage(M2C_UNK);
     s32 OS_SetIrqEnableMask(s32);
     void DC_InvalidateRange(M2C_UNK, M2C_UNK);
     M2C_UNK DmaCopy16(s32, M2C_UNK, M2C_UNK, u32);
@@ -44,7 +44,7 @@ void Mb_SendBootParams(void) {
     old = OS_SetIrqEnableMask(0x40000);
     saved_ie = *(volatile u16 *)0x4000208;
     *(volatile u16 *)0x4000208 = 1;
-    func_02018e24(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
+    Mb_LockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
 
     carry = (*(volatile u16 *)0x4000204 & 0x8000) >> 15;
     func_02018da8(buf);
@@ -58,7 +58,7 @@ void Mb_SendBootParams(void) {
     *(volatile u16 *)0x4000204 = (hw & ~0x8000) | (carry << 15);
     func_02018df0(buf);
 
-    func_02018e80(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
+    Mb_UnlockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
 
     p = (u8 *)0x027FFF9A;
     if (p[1] != 0 || p[0] == 0) {
@@ -75,7 +75,7 @@ void Mb_SendBootParams(void) {
 
     MIi_CpuCopy32((void *)0xFFFF0020, (void *)&data_02136cc4, 0x9C);
     func_02006774();
-    func_02018ea4((((u32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
+    Mb_SendControlMessage((((u32)&data_02136cc0 + 0xFE000000) >> 5) << 6 | 1);
 
     delay = 1;
     while (*(u16 *)((u8 *)&data_02136c9c + 0) != 1) {
@@ -93,25 +93,28 @@ if((b&63)==1){data_02136c9c=1;return;}
 SystemHalt();
 }
 
-void Mb_BootCompleteHandler(s32 a,s32 b) {
-void func_0201926c(void);
+/* ARM7 multiboot message handler: on the boot-complete status, run the boot
+ * state's optional completion callback and record that the boot finished, aborting
+ * the boot when that callback fails; halt on any other status. */
+void Mb_BootCompleteHandler(s32 unused,s32 message) {
+void Mb_AbortBoot(void);
 extern M2C_UNK gMbBootState;
-if((b&63)==17){
+if((message&63)==17){
 s32 result;
-if(M2C_FIELD(&gMbBootState,s32 *,12))return;
+if(M2C_FIELD(&gMbBootState,s32 *,0xc))return;
 result=0;
-if(M2C_FIELD(&gMbBootState,s32 (**)(),24)) result=M2C_FIELD(&gMbBootState,s32 (**)(),24)();
-if(result)func_0201926c();
-M2C_FIELD(&gMbBootState,s32 *,12)=1;
+if(M2C_FIELD(&gMbBootState,s32 (**)(),0x18)) result=M2C_FIELD(&gMbBootState,s32 (**)(),0x18)();
+if(result)Mb_AbortBoot();
+M2C_FIELD(&gMbBootState,s32 *,0xc)=1;
 return;
 }
 SystemHalt();
 }
 
-void func_0201926c(void) {
+void Mb_AbortBoot(void) {
     M2C_UNK SystemHalt();
-    M2C_UNK func_02018ea4(M2C_UNK);
-    func_02018ea4(2);
+    M2C_UNK Mb_SendControlMessage(M2C_UNK);
+    Mb_SendControlMessage(2);
     SystemHalt();
 }
 
@@ -178,15 +181,22 @@ if(*src) do { *dst++=*src; } while(*++src);
 return saved;
 }
 
-s32 func_02019458(s8 *a,s8 *b,s32 n) {
- s32 i; s8 *p;
- p=b;i=0;
- for(;i<n-1;i++,p++) { a[i]=*p; if(*p==0)break; }
- if(i>=n-1 && n!=0)a[i]=0;
- return func_020194b8(b);
+/* Copy the NUL-terminated string `src` into `dst`, at most `size - 1` bytes,
+ * always NUL-terminating, and return the length of `src` (strlcpy semantics). */
+s32 Mb_StringCopyBounded(s8 *dst, s8 *src, s32 size) {
+    s32 i;
+    s8 *p;
+    p = src;
+    i = 0;
+    for (; i < size - 1; i++, p++) {
+        dst[i] = *p;
+        if (*p == 0) break;
+    }
+    if (i >= size - 1 && size != 0) dst[i] = 0;
+    return Mb_StringLength(src);
 }
 
-s32 func_020194b8(s8 *arg0) {
+s32 Mb_StringLength(s8 *arg0) {
     s32 var_r2;
 
     var_r2 = 0;

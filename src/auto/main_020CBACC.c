@@ -28,14 +28,16 @@ if(CanBeSupplied(q)&&RefillSuppliedUnit(q)){M2C_FIELD(state,u16 *,0x50)=i+1;brea
 }if(i==51)Sprite_ResumeAnimation(state);
 }
 
-void func_020cbbac(void) {
+/* Return the map view to the tile the current player left its cursor on, but only
+ * when that player's cursor belongs to the local human team. */
+void StepMapViewToCurrentPlayerCursor(void) {
  extern void **gCurrentMap;
- void *p;
- void *q;
- if (!IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap,u16 *,0x52A4))) return;
- p=*gCurrentMap;
- q=(u8 *)p+0x67A4+M2C_FIELD(p,u16 *,0x52A4)*0x8C;
- StepMapViewToTile(M2C_FIELD(q,u8 *,0x2D),M2C_FIELD(q,u8 *,0x2E));
+ void *map;
+ void *player;
+ if (!IsPlayerCursorOwner(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER))) return;
+ map=*gCurrentMap;
+ player=(u8 *)map+MAP_PLAYER_STATES+M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)*MAP_PLAYER_STRIDE;
+ StepMapViewToTile(M2C_FIELD(player,u8 *,PLAYER_REC_CURSOR_X),M2C_FIELD(player,u8 *,PLAYER_REC_CURSOR_Y));
 }
 
 void func_020cbc08(void) {

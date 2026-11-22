@@ -294,41 +294,43 @@ s32 func_0204b210(void *operation) {
     return status;
 }
 
-void func_0204b378(void) {
- M2C_UNK func_0204a608(); M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
- extern s32 gGhiRecvTimeoutMs, data_020fd010, data_0213dcbc;
+void ghttpInit(void) {
+ M2C_UNK ghiInitialize(); M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
+ extern s32 gGhiRecvTimeoutMs, data_020fd010, gGhiInitCount;
  ghiLockMutex();
- if (++data_0213dcbc == 1) { func_0204a608(); data_020fd010=125; gGhiRecvTimeoutMs=250; return; }
+ if (++gGhiInitCount == 1) { ghiInitialize(); data_020fd010=125; gGhiRecvTimeoutMs=250; return; }
  ghiUnlockMutex();
 }
 
-void func_0204b3cc(void) {
-    M2C_UNK func_0204a60c();
+/* Release a ghttp library user: when the last one goes away, tear the connection
+ * list down, drop the server override and run the platform cleanup. */
+void ghttpCleanup(void) {
+    M2C_UNK ghiCleanup();
     M2C_UNK ghiLockMutex();
     M2C_UNK ghiUnlockMutex();
     void ghiCleanupConnections();
     extern s32 gHttpServerOverride;
-    extern s32 data_0213dcbc;
-    s32 temp_r1;
+    extern s32 gGhiInitCount;
+    s32 remaining;
 
     ghiLockMutex();
-    temp_r1 = data_0213dcbc - 1;
-    data_0213dcbc = temp_r1;
-    if (temp_r1 == 0) {
+    remaining = gGhiInitCount - 1;
+    gGhiInitCount = remaining;
+    if (remaining == 0) {
         ghiCleanupConnections();
         if (gHttpServerOverride != 0) {
             gpiFree();
             gHttpServerOverride = 0;
         }
         ghiUnlockMutex();
-        func_0204a60c();
+        ghiCleanup();
         return;
     }
     ghiUnlockMutex();
 }
 
 s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post, s32 throttle, s32 blocking, s32 progressCallback, s32 completedCallback, s32 callbackParam) {
-    extern s32 data_020fd1c4, data_020fd17c, data_020fd14c, data_020fd1d4, data_020fd1e4, data_0213dcbc;
+    extern s32 data_020fd1c4, data_020fd17c, data_020fd14c, data_020fd1d4, data_020fd1e4, gGhiInitCount;
     void *gpiStringDup(char *);
     s32 ghiInitFixedBuffer(void *, void *, void *, s32);
     s32 ghiInitBuffer(void *, void *, s32, s32);
@@ -344,7 +346,7 @@ s32 ghttpGetEx(char *url, char *headers, void *buffer, s32 bufferSize, s32 post,
     if (!url || !*url) return -1;
     if (bufferSize < 0) return -1;
     if (buffer && bufferSize == 0) return -1;
-    if (!data_0213dcbc) func_0204b378();
+    if (!gGhiInitCount) ghttpInit();
     connection = ghiNewConnection();
     if (!connection) return -1;
     M2C_FIELD(connection, s32 *, 12) = 0;

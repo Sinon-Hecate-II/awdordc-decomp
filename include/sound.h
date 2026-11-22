@@ -177,6 +177,12 @@ typedef struct SoundSequenceArchiveRecord {
     s32 fileId;   /* +0x00 file id of the sequence archive in the archive */
 } SoundSequenceArchiveRecord;
 
+/* One record of the sound archive's sound table (SOUND_DATA_SOUND, GetSoundRecord):
+ * the playback parameters of one sound, read when it is started on a player. */
+#define SOUND_RECORD_SOUND_ID 0x00 /* s32 value handed to the player's start/segment callbacks */
+#define SOUND_RECORD_PRIORITY 0x05 /* u8 priority of the sound in its player slot */
+#define SOUND_RECORD_SLOT     0x06 /* u8 index of the player slot the sound plays on */
+
 /* A sound group of the sound archive: a count and that many items, each saying
  * which kind of sound resource it names and the load flags its loader gets. */
 typedef struct SoundGroupItem {
@@ -311,6 +317,7 @@ typedef struct SoundChannelRecord {
 } SoundChannelRecord;
 
 #define SOUND_VOLUME_MAX 0x7F /* full volume, in the 0..0x7F range */
+#define SOUND_VOLUME_LEVELS 3  /* volume levels (master, user setting, fade) multiplied into a channel's effective volume */
 
 /* Per-hardware-channel state (gSoundChannelSampleState), two s32 words per channel,
  * indexed by the note id the player lists at SOUND_PLAYER_NOTES: the sample
@@ -332,6 +339,8 @@ typedef struct SoundChannelRecord {
 #define SOUND_STATE_HEAP         0x14 /* s32 sound heap block */
 #define SOUND_STATE_PLAYED_COUNT 0x18 /* s32 sound ids started this frame */
 #define SOUND_STATE_FRAME        0x1C /* s32 gFrameCounter the count belongs to */
+#define SOUND_STATE_SOUND_ACTIVE    0x08 /* s32 nonzero while the streamed sound player gMusicSoundPlayer is active */
+#define SOUND_STATE_SEQUENCE_ACTIVE 0x0C /* s32 nonzero while the music sequence player gMusicSequencePlayer is active */
 #define SOUND_PLAYED_MAX         8    /* sound ids remembered per frame (gSoundFrameIds) */
 #define SOUND_SLOT_COUNT         4    /* sound effect slots (gSoundSlotHandles) */
 
@@ -369,6 +378,7 @@ typedef struct SoundChannelRecord {
 #define SOUND_MENU_CANCEL  0x1000F /* the choice was cancelled */
 #define SOUND_MENU_SELECT  0x10019 /* the highlighted list entry changed or was chosen */
 #define SOUND_MENU_TAB     0x10020 /* the active tab changed */
+#define SOUND_MENU_CLOSE   0x10022 /* the screen's close/back action was taken */
 
 /* The text window's sounds: the open one plays from NotifyWindowOpened, the
  * close one from func_0208a714; a window opened during a link session plays

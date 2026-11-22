@@ -259,27 +259,31 @@ s32 GetPanelGaugeLength(void *arg0) {
     return sum;
 }
 
-void func_ov002_021e3890(s32 arg0) {
+/* Give each of the two versus screen panels its player index, a link to the
+ * other player's panel, and whether that player's CO gauge entries are drawn
+ * (read from the other player's CO stat table). */
+void PlayerPanels_Setup(s32 panels) {
     extern u8 gPlayerSettings;
-    s32 var_lr;
-    s32 var_r4;
-    u8 *var_r5;
-    s32 var_r6;
-    u8 temp_r2;
-    var_lr = 0;
-    var_r5 = &gPlayerSettings;
-    var_r4 = arg0;
+    s32 player;
+    u8 *panel;
+    u8 *settings;
+    s32 other;
+    u8 gaugeShown;
+
+    player = 0;
+    settings = &gPlayerSettings;
+    panel = (u8 *)panels;
     do {
-        if (var_lr == 0) var_r6 = 1;
-        else var_r6 = 0;
-        M2C_FIELD(var_r4, u8 *, 0x64) = var_lr;
-        M2C_FIELD(var_r4, s32 *, 0x60) = var_r6 * 0x68 + arg0;
-        temp_r2 = M2C_FIELD(M2C_FIELD(var_r5, void **, 4), u8 *, 0x3C);
-        var_lr += 1;
-        var_r5 += 0x18;
-        M2C_FIELD(var_r4, u8 *, 0x65) = temp_r2;
-        var_r4 += 0x68;
-    } while (var_lr < 2);
+        if (player == 0) other = 1;
+        else other = 0;
+        M2C_FIELD(panel, u8 *, PANEL_PLAYER) = player;
+        M2C_FIELD(panel, s32 *, PANEL_OTHER) = other * PANEL_SIZE + panels;
+        gaugeShown = M2C_FIELD(M2C_FIELD(settings, void **, 4), u8 *, PANEL_CO_GAUGE_FLAG);
+        player += 1;
+        settings += VERSUS_DATA_STRIDE;
+        M2C_FIELD(panel, u8 *, PANEL_GAUGES_SHOWN) = gaugeShown;
+        panel += PANEL_SIZE;
+    } while (player < 2);
 }
 
 /* Rebuild both players' status panels: the two 0x68-byte panel objects at p
@@ -429,19 +433,23 @@ s32 IsBattleScreenSwapped(s32 *arg0) {
     return *arg0 & 1;
 }
 
-void func_ov002_021e3e0c(void *arg0, s16 arg1, s16 arg2, s16 arg3, u16 arg4, u16 arg5, u16 arg6, u16 arg7, u8 arg8, u8 arg9, u8 argA, u8 argB) {
-    M2C_FIELD(arg0, s16 *, 0) = arg1;
-    M2C_FIELD(arg0, s16 *, 2) = arg2;
-    M2C_FIELD(arg0, s16 *, 4) = arg3;
-    M2C_FIELD(arg0, u16 *, 0xC) = arg4;
-    M2C_FIELD(arg0, u16 *, 0xE) = arg5;
-    M2C_FIELD(arg0, u16 *, 0xA) = arg6;
-    M2C_FIELD(arg0, u16 *, 8) = arg7;
-    M2C_FIELD(arg0, u8 *, 0x11) = arg8;
-    M2C_FIELD(arg0, u8 *, 0x10) = arg9;
-    M2C_FIELD(arg0, u8 *, 0x12) = argA;
-    M2C_FIELD(arg0, u8 *, 0x13) = argB;
-    M2C_FIELD(arg0, s16 *, 6) = 0;
+/* Fill in one unit-model disc effect: its centre, the colour, radius and duration
+ * it animates over, the polygon attributes it draws with, and the effect record
+ * and variant it belongs to; the disc starts at frame 0. */
+void InitEffectDisc(void *arg0, s16 x, s16 y, s16 z, u16 radiusFrom, u16 radiusTo, u16 color, u16 duration, u8 polygonAttr, u8 alphaTo, u8 mirror, u8 unk13) {
+    EffectDisc *disc = (EffectDisc *) arg0;
+    disc->x = x;
+    disc->y = y;
+    disc->z = z;
+    disc->radiusFrom = radiusFrom;
+    disc->radiusTo = radiusTo;
+    disc->color = color;
+    disc->duration = duration;
+    disc->polygonAttr = polygonAttr;
+    disc->alphaTo = alphaTo;
+    disc->mirror = mirror;
+    disc->unk13 = unk13;
+    disc->elapsed = 0;
 }
 
 void func_ov002_021e3e64(void *arg0) {

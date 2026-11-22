@@ -5,7 +5,6 @@ extern s8 *data_ov000_021b5c54[];
 #include "ov000_unit_entry.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
-typedef struct { u8 pad[10]; u8 value:7; u8 flag:1; } UnkValue_021a89a4;
 
 #pragma pool_constants off
 s32 EnemyHasSeaUnit(void){
@@ -107,12 +106,16 @@ u8 IsMidActionStep(s32 aiStep) {
     return var_r0;
 }
 
-s32 GetAiUnitMoveRange(UnkValue_021a89a4 *a) {
-extern void **gCurrentMap;
-s32 func_020a86f0(s32);s32 Divide(s32,s32);s32 GetUnitMovement(void *);
-s32 n=Divide(a->value,func_020a86f0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
-if(GetUnitMovement(a)<=n)n=GetUnitMovement(a);
-return n;
+/* How far the AI's unit can still travel this turn: its remaining fuel divided by
+ * the player's movement fuel rate, capped by the unit kind's movement range. */
+s32 GetAiUnitMoveRange(BattleMapUnitHead *a) {
+    extern void **gCurrentMap;
+    s32 func_020a86f0(s32);
+    s32 Divide(s32, s32);
+    s32 GetUnitMovement(void *);
+    s32 range = Divide(a->fuel, func_020a86f0(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)));
+    if (GetUnitMovement(a) <= range) range = GetUnitMovement(a);
+    return range;
 }
 
 s32 ManhattanDistance(s32 a,s32 b,s32 c,s32 d) {

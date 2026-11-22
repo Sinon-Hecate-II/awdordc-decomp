@@ -15,7 +15,7 @@ void func_0203d910(void);
 void func_02039838(void);
 void func_02039844(void);
 void func_02039b9c(void);
-void func_02039478(void);
+void NasLoginResultCallback(void);
 void InitNasLoginContext(void *,void *,void *,s32,s32,void *,void *,s32);
 void StartMatchSession(void *,void *,void *,s32,s32);
 void InitConnection(void *,void *,void *,void *,void *,void *,s32,s32);
@@ -41,7 +41,7 @@ M2C_FIELD(gNetSession,s32 *,104)=(s32)gSessionGameName;
 M2C_FIELD(gNetSession,s32 *,108)=(s32)gSessionGamePassword;
 M2C_FIELD(gNetSession,s32 *,112)=0;M2C_FIELD(gNetSession,s32 *,116)=0;M2C_FIELD(gNetSession,s32 *,120)=0;M2C_FIELD(gNetSession,s32 *,124)=0;M2C_FIELD(gNetSession,s32 *,128)=0;M2C_FIELD(gNetSession,s32 *,132)=0;M2C_FIELD(gNetSession,s32 *,136)=0;M2C_FIELD(gNetSession,s32 *,140)=0;M2C_FIELD(gNetSession,s32 *,144)=0;M2C_FIELD(gNetSession,s32 *,148)=0;
 ResetPlayerSlots();
-InitNasLoginContext((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,func_02039478,0);
+InitNasLoginContext((u8 *)gNetSession+0x98,config,(u8 *)gNetSession+0x1c,gameId,M2C_FIELD(config,s32 *,0x24),(u8 *)gNetSession+0x2e,NasLoginResultCallback,0);
 StartMatchSession((u8 *)gNetSession+0x318,(u8 *)gNetSession+0x1c,(u8 *)gNetSession+0x2e,userData,timeout);
 InitConnection((u8 *)gNetSession+0x374,(u8 *)gNetSession+0x1c,gNetSession,(u8 *)gNetSession+4,gSessionGameName,gSessionGamePassword,userData,timeout);
 func_02044708((u8 *)gNetSession+0x7f8);
@@ -62,7 +62,7 @@ void TeardownNetSession(void) {
     s32 func_0204db84(void *channel, s32 a, s32 b, s32 c);
     void func_0204db50(void *channel);
     void func_0204db34(void *channel);
-    void func_02039e04(void);
+    void FreeNasLoginContext(void);
     void func_0203b088(void);
     void ShutdownConnection(void);
     void func_020449dc(void);
@@ -89,7 +89,7 @@ void TeardownNetSession(void) {
         func_0204db34(gNetSession + 0x1C);
         M2C_FIELD(gNetSession, s32 *, 0x1C) = 0;
     }
-    func_02039e04();
+    FreeNasLoginContext();
     func_0203b088();
     ShutdownConnection();
     func_020449dc();
@@ -428,7 +428,7 @@ u8 GetLocalPlayerId(void) {
     return 0U;
 }
 
-s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayerSlots(s32 *);s32 func_0203e338(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return GetActivePlayerSlots(a);return func_0203e338(a);}
+s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayerSlots(s32 *);s32 GetPeerSlotList(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return GetActivePlayerSlots(a);return GetPeerSlotList(a);}
 
 s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 MaskPlayerIds(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return MaskPlayerIds(a,b);}
 

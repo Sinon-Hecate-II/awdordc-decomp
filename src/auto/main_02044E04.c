@@ -15,14 +15,14 @@ typedef struct WebResponsePlayer {
 typedef struct { u32 words[4]; } CallbackRecord;
 
 s32 BeginWebRequest(void) {
-    M2C_UNK func_0204b378();
+    M2C_UNK ghttpInit();
     extern M2C_UNK gHttpRequestList;
-    func_0204b378();
+    ghttpInit();
     M2C_FIELD(&gHttpRequestList, s32 *, 4) = (s32) (M2C_FIELD(&gHttpRequestList, s32 *, 4) + 1);
     return 1;
 }
 
-s32 EndWebRequest(void){extern M2C_UNK gHttpRequestList;void func_0204b3cc(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;func_0204b3cc();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
+s32 EndWebRequest(void){extern M2C_UNK gHttpRequestList;void ghttpCleanup(void);void HttpRequestFreeAll(void);s32 n;if(M2C_FIELD(&gHttpRequestList,s32 *,4)<=0)return 1;ghttpCleanup();n=M2C_FIELD(&gHttpRequestList,s32 *,4)-1;M2C_FIELD(&gHttpRequestList,s32 *,4)=n;if(n==0)HttpRequestFreeAll();return 1;}
 
 s32 PumpWebRequest(void) {
     s32 HasNetError();
@@ -161,7 +161,26 @@ case 24:errorCode+=(u32)0xfffffc72;break;
 SetNetError(errorKind,errorCode);return result;
 }
 
-void *HttpRequestAlloc(CallbackRecord *src){void *HeapAlloc(s32,s32);extern M2C_UNK gHttpRequestList;void *p=HeapAlloc(4,28);if(!p)return 0;*(CallbackRecord *)p=*src;M2C_FIELD(p,s32 *,24)=0;M2C_FIELD(p,s32 *,16)=0;if(!M2C_FIELD(&gHttpRequestList,void **,0)){M2C_FIELD(&gHttpRequestList,void **,0)=p;return p;}else{M2C_FIELD(p,void **,24)=M2C_FIELD(&gHttpRequestList,void **,0);M2C_FIELD(&gHttpRequestList,void **,0)=p;}return p;}
+/* Allocate a request node, copy the caller's callbacks and data into it, clear
+ * its buffer, result and link and push it onto gHttpRequestList.  Returns the
+ * node, or 0 when the heap is exhausted. */
+void *HttpRequestAlloc(CallbackRecord *src) {
+    void *HeapAlloc(s32, s32);
+    extern M2C_UNK gHttpRequestList;
+    WebRequestNode *node = HeapAlloc(4, HTTP_REQUEST_NODE_SIZE);
+    if (!node) return 0;
+    *(CallbackRecord *)node = *src;
+    node->next = 0;
+    node->buffer = 0;
+    if (!M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0)) {
+        M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0) = node;
+        return node;
+    } else {
+        node->next = M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0);
+        M2C_FIELD(&gHttpRequestList, WebRequestNode **, 0) = node;
+    }
+    return node;
+}
 
 /* Unlink request node `node` from gHttpRequestList and free it. */
 void HttpRequestFree(void *node) {
@@ -498,13 +517,18 @@ s32 GetWebResponsePlayerTotal(s32 *total) {
     }
 }
 
-s32 func_02045c34(s32 *a) {
- s32 HasNetError(); s32 GetWebResponseHeader(s32 *);
- s32 x[3],r;
- if(HasNetError())return 1;
- r=GetWebResponseHeader(x);if(r)return r;
- if(!a)return 2;
- *a=M2C_FIELD(x[2],s32 *,4);return 0;
+/* Read the number of players online on the server from the current web response:
+ * on success store it through `online` and return 0, else return 1 on a network
+ * error, the response header's error, or 2 when there is no output pointer. */
+s32 GetWebResponseOnlinePlayerCount(s32 *online) {
+ s32 HasNetError(void); s32 GetWebResponseHeader(s32 *);
+ s32 header[3], error;
+ if (HasNetError()) return WEB_RESPONSE_NETWORK_ERROR;
+ error = GetWebResponseHeader(header);
+ if (error) return error;
+ if (!online) return 2;
+ *online = ((s32 *)header[WEB_RESPONSE_RECORDS])[WEB_RESPONSE_ONLINE];
+ return 0;
 }
 
 s32 func_02045c90(M2C_UNK arg0) {

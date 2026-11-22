@@ -49,16 +49,16 @@ func_ov007_022121e4();
 }
 
 void func_ov007_0221142c(M2C_UNK arg0) {
-    M2C_UNK func_02086740(M2C_UNK, M2C_UNK);
-    s32 func_02086a30(M2C_UNK);
+    M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
+    s32 IsEventFlagMidSet(M2C_UNK);
     M2C_UNK func_0208999c(void *, M2C_UNK, s32);
     void *CreateTextLayer(M2C_UNK);
     void *temp_r0;
 
-    if (func_02086a30(0x20) != 0) {
+    if (IsEventFlagMidSet(0x20) != 0) {
         return;
     }
-    func_02086740(0x20, 1);
+    SetEventFlagMid(0x20, 1);
     temp_r0 = CreateTextLayer(arg0);
     func_0208999c(temp_r0, 2, 0x46000025);
     M2C_FIELD(temp_r0, s32 *, 0x58) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x58) & ~0x1FC00000) | 0x01000000);
@@ -495,16 +495,19 @@ void func_ov007_02211e84(void) {
     Sprite_ResumeAnimation();
 }
 
-void SetMapEditorMode(s32 arg0) {
+/* Select the map editor's palette page and put the battle map's input mode into
+ * the matching state: the terrain page parks the cursor in the settling mode
+ * (unit status icons hidden) and the unit page uses the normal cursor mode. */
+void SetMapEditorMode(s32 page) {
     extern u8 gMapEditorState;
     extern void **gCurrentMap;
-    gMapEditorState = arg0;
-    switch (arg0) {
-    case 0:
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52B4) = 0xA;
+    gMapEditorState = page;
+    switch (page) {
+    case MAP_EDITOR_PAGE_TERRAIN:
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR_SETTLE;
         return;
-    case 1:
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52B4) = 0;
+    case MAP_EDITOR_PAGE_UNIT:
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR;
         return;
     }
 }

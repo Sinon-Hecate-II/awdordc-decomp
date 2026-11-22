@@ -61,4 +61,8 @@ enum {
  * palettes are copied into, one row per player, when the editor refreshes. */
 #define MAP_EDITOR_PLAYER_PALETTE_ROW 0x15
 
+/* Tile of the sub engine's texture the map name is rasterised at: the byte
+ * offset given to RenderTextToTiles is this tile times 0x20. */
+#define MAP_EDITOR_MAP_NAME_TILE 0x1CC
+
 #endif

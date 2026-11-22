@@ -80,14 +80,17 @@ void AddPlayerThreatInfluence(u8 player) {
     }
 }
 
+/* Clear the AI influence maps: both per-cell threat layers and the scoring
+ * buffer the AI builds for the map. */
 void ClearAiInfluenceMaps(void) {
     M2C_UNK MI_CpuFill8(M2C_UNK *, M2C_UNK, s32);
     M2C_UNK FillMapCellLayer(s32, M2C_UNK);
     extern s32 *gCurrentMap;
     extern M2C_UNK gAiInfluenceMap;
-    FillMapCellLayer(*gCurrentMap + 0x2840, 0);
-    FillMapCellLayer(*gCurrentMap + 0x2D48, 0);
-    MI_CpuFill8(&gAiInfluenceMap, 0, 0x508);
+
+    FillMapCellLayer(*gCurrentMap + MAP_CELL_THREAT_DIRECT, 0);
+    FillMapCellLayer(*gCurrentMap + MAP_CELL_THREAT_INDIRECT, 0);
+    MI_CpuFill8(&gAiInfluenceMap, 0, MAP_CELL_LAYER_BYTES);
 }
 
 /* Build the AI influence maps for the current cursor position: once per pass,

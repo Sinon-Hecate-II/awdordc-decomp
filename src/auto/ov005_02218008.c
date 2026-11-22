@@ -133,9 +133,9 @@ Ov005RefreshEntryFace();Ov005RefreshNameGraphic();CreateSubWallpaperSprite(3,15,
 #pragma opt_strength_reduction reset
 void func_ov005_0221885c(void) {
     M2C_UNK SelectSpriteSlot(s16);
-    M2C_UNK func_ov005_02217f6c();
+    M2C_UNK Ov005AddCoGridSprites();
     extern void *gOv005MenuState;
-    func_ov005_02217f6c();
+    Ov005AddCoGridSprites();
     SelectSpriteSlot(M2C_FIELD(gOv005MenuState, s16 *, 0xE));
 }
 
@@ -187,12 +187,12 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
  * detail page. */
 void Ov005ListMenuInput(M2C_UNK arg0){
 u32 _fflt(s32);u32 _fmul(u32,u32);u32 _fdiv(u32,u32);u32 _fadd(u32,u32);s32 _ffix(u32);
-M2C_UNK func_ov005_02217f6c();M2C_UNK SelectSpriteSlot(s16);void Sprite_ResumeAnimation(s32);M2C_UNK HideAllSpriteSlots();void PlaySoundEffect(s32);s32 IsCoUnlocked(s16);void SetTextById(void *,u32);s16 func_020bf8cc(s16);void Ov005SetDetailSelection(s16);
+M2C_UNK Ov005AddCoGridSprites();M2C_UNK SelectSpriteSlot(s16);void Sprite_ResumeAnimation(s32);M2C_UNK HideAllSpriteSlots();void PlaySoundEffect(s32);s32 IsCoUnlocked(s16);void SetTextById(void *,u32);s16 func_020bf8cc(s16);void Ov005SetDetailSelection(s16);
 extern void *gOv005MenuState;extern u16 *gKeyState;
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=_fmul(OV005_FLOAT_NEG256,_fflt(animTimer));eased=_fmul(eased,_fflt(animTimer));eased=_fdiv(eased,_fflt(OV005_MENU_ANIM_FRAMES_SQ));M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=_ffix(eased);
 eased=_fmul(OV005_FLOAT_NEG256,_fflt(animTimer));eased=_fmul(eased,_fflt(animTimer));eased=_fdiv(eased,_fflt(OV005_MENU_ANIM_FRAMES_SQ));M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SLIDE_IN)=_ffix(_fadd(OV005_FLOAT_256,eased));
-if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){func_ov005_02217f6c();SelectSpriteSlot(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX));}
+if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){Ov005AddCoGridSprites();SelectSpriteSlot(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_INDEX));}
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){Sprite_ResumeAnimation(arg0);HideAllSpriteSlots();PlaySoundEffect(0x1000f);return;}
 if((*gKeyState&1) && IsCoUnlocked(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX))){

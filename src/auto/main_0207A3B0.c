@@ -442,7 +442,7 @@ s32 RebuildPropertyTile(s32 x, s32 y, s32 owner) {
 /* Update each active entity (1..4) according to the state nibble packed in `value`. */
 void func_0207ad30(s32 value) {
     s32 IsPlayerPresent(s32);
-    s32 func_020d1a74(s32);
+    s32 IsPlayerArmyVariantSet(s32);
     s32 IsPlayerCoPowerReady(s32);
     extern void *gCurrentMap;
 
@@ -454,7 +454,7 @@ void func_0207ad30(s32 value) {
         if (!IsPlayerPresent(i)) {
             continue;
         }
-        if (func_020d1a74(i) && state >= 0) {
+        if (IsPlayerArmyVariantSet(i) && state >= 0) {
             callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(s32, s32), 0x24);
             if (callback) {
                 callback(i, state);

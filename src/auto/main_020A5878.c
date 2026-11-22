@@ -137,7 +137,11 @@ return 1;
 }
 
 #pragma opt_dead_code off
-u8 IsCellUnitOnTeamB(s32 a,s32 b){extern s32 *gCurrentMap;u8 *p=(u8 *)*gCurrentMap;s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x508);u8 r;if(!v)return 0;if(M2C_FIELD(p+((v>>6)+1)*0x8c,u8 *,0x67c3)&2)r=1;else r=0;return r;}
+/* Whether the unit standing on tile (x, y), if any, belongs to a team-B player. */
+u8 IsCellUnitOnTeamB(s32 x,s32 y){
+extern s32 *gCurrentMap;u8 *map=(u8 *)*gCurrentMap;
+s32 unitId=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_UNIT_ID);u8 onTeamB;if(!unitId)return 0;
+if(M2C_FIELD(map+((unitId>>6)+1)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SIDE_OFF)&SIDE_TEAM_B)onTeamB=1;else onTeamB=0;return onTeamB;}
 #pragma opt_dead_code reset
 /* Whether the (possibly submerged) unit record `unitPtr` standing on tile
  * (tileX, tileY) is revealed in the current view.  A unit that is not a submerged
@@ -435,7 +439,7 @@ void *CreateOwnedMapUnit(s32 x, s32 y, s32 kind, s32 player) {
     return unit;
 }
 
-void *func_020a66e0(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
+void *CreateMapUnitAndRefreshView(s32 a,s32 b,s32 c,s32 d){void *CreateMapUnit(s32,s32,s32,s32);void RefreshMapView(void *);void *p=CreateMapUnit((s16)a,(s16)b,(s16)c,d);if(!p)return 0;RefreshMapView(p);return p;}
 
 void RemoveUnit(M2C_UNK arg0) {
     void RemoveMapUnit(M2C_UNK, M2C_UNK);

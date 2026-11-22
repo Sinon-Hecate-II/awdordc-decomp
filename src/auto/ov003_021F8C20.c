@@ -282,7 +282,10 @@ void func_ov003_021f8c20(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0), M2C_UNK (**)(void *), 0x20)(arg0);
 }
 
-void func_ov003_021f91a4(void *arg0) {
+/* Map-select link step the host runs each frame: consume a pending link packet
+ * and send the local player's map-select state back in it -- the list cursor row
+ * (byte 9) and the menu's two selection values (bytes 10 and 11). */
+void Ov003_SendLocalMapSelectState(void *menu) {
     s32 Link_ReceivePacket(void *, s32);
     void Link_SendPacket(void *, s32);
     u8 buffer[0x24];
@@ -290,9 +293,9 @@ void func_ov003_021f91a4(void *arg0) {
     if (Link_ReceivePacket(buffer, 0x24) == 0) {
         return;
     }
-    buffer[9] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4);
-    buffer[10] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 0xC);
-    buffer[11] = M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14);
+    buffer[9] = M2C_FIELD(M2C_FIELD(menu, void **, 0x5C), s32 *, 4);
+    buffer[10] = M2C_FIELD(M2C_FIELD(menu, void **, 0x4C), s16 *, 0xC);
+    buffer[11] = M2C_FIELD(M2C_FIELD(menu, void **, 0x4C), s32 *, 0x14);
     Link_SendPacket(buffer, 0x24);
 }
 

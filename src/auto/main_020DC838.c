@@ -1,5 +1,18 @@
 /* 23 functions from 0x020DC838 to 0x020DD4F8 (main), found by ds-decomp. */
 #include "common.h"
+
+/* The matching/link menu object: the sprites the matching setup and input
+   handlers animate, plus the slide tween of its option. */
+typedef struct MatchingMenu {
+    u8 pad00[0x50];
+    void *optionSprite;  /* +0x50: highlighted option sprite */
+    u8 pad54[4];
+    void *backSprite;    /* +0x58: back button sprite */
+    u8 pad5C[8];
+    void *textSprite;    /* +0x64: option label */
+    SpriteTween *anim;   /* +0x68: slide tween */
+} MatchingMenu;
+
 static inline u16 SpriteFrame(void *p) {return (M2C_FIELD(p,u32 *,0x40)<<6)>>24;}
 static inline u32 SpriteBase(void *p) {return (u32)(M2C_FIELD(p,u8 *,0x59)<<28)>>28;}
 static inline u8 SpriteAvailable(void *p) {u8 r;if(SpriteBase(p)+2!=SpriteFrame(p))r=1;else r=0;return r;}
@@ -121,72 +134,78 @@ void func_020dca80(void) {
     MatchingMenuConfirmInput();
 }
 
-M2C_UNK func_020dca8c(void *arg0) {
+/* Hides the alternate matching/link menu: clears every sprite slot, slides the
+   option, back and label sprites away, then restarts the label's slide tween so
+   the menu can fade back in. */
+M2C_UNK HideMatchingMenuAlt(MatchingMenu *menu) {
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s16 temp_r0;
-    void *temp_r2;
-    u16 value;
+    s16 animValue;
+    SpriteTween *tween;
+    u16 start;
 
     HideAllSpriteSlots();
     SetSpriteSlotScroll(0, 0);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-    temp_r2 = M2C_FIELD(arg0, void **, 0x68);
-    M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
-    M2C_FIELD(temp_r2, s16 *, 0x10) = -0xFF;
-    M2C_FIELD(temp_r2, s16 *, 0xC) = 0xC;
-    value = M2C_FIELD(temp_r2, u16 *, 4);
-    M2C_FIELD(temp_r2, u16 *, 2) = value;
-    return value;
+    Hide3DSpriteSlide((s32)menu->optionSprite);
+    Hide3DSpriteSlide((s32)menu->backSprite);
+    Hide3DSpriteSlide((s32)menu->textSprite);
+    animValue = GetSpriteAnimValue(menu->anim);
+    tween = menu->anim;
+    tween->from = animValue;
+    tween->to = -0xFF;
+    tween->duration = 0xC;
+    start = tween->start;
+    tween->current = start;
+    return start;
 }
 
-M2C_UNK func_020dcae8(void *arg0) {
+/* Hides the matching/link menu: clears every sprite slot, slides the option,
+   back and label sprites away, then restarts the label's slide tween so the
+   menu can fade back in. */
+M2C_UNK HideMatchingMenu(MatchingMenu *menu) {
     M2C_UNK HideAllSpriteSlots();
     M2C_UNK SetSpriteSlotScroll(M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
     s16 GetSpriteAnimValue(void *);
-    s16 temp_r0;
-    void *temp_r2;
-    u16 value;
+    s16 animValue;
+    SpriteTween *tween;
+    u16 start;
 
     HideAllSpriteSlots();
     SetSpriteSlotScroll(0, 0);
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x50));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x58));
-    Hide3DSpriteSlide(M2C_FIELD(arg0, s32 *, 0x64));
-    temp_r0 = GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x68));
-    temp_r2 = M2C_FIELD(arg0, void **, 0x68);
-    M2C_FIELD(temp_r2, s16 *, 0xE) = temp_r0;
-    M2C_FIELD(temp_r2, s16 *, 0x10) = -0xFF;
-    M2C_FIELD(temp_r2, s16 *, 0xC) = 0xC;
-    value = M2C_FIELD(temp_r2, u16 *, 4);
-    M2C_FIELD(temp_r2, u16 *, 2) = value;
-    return value;
+    Hide3DSpriteSlide((s32)menu->optionSprite);
+    Hide3DSpriteSlide((s32)menu->backSprite);
+    Hide3DSpriteSlide((s32)menu->textSprite);
+    animValue = GetSpriteAnimValue(menu->anim);
+    tween = menu->anim;
+    tween->from = animValue;
+    tween->to = -0xFF;
+    tween->duration = 0xC;
+    start = tween->start;
+    tween->current = start;
+    return start;
 }
 
 void func_020dcb44(void) {
-    M2C_UNK func_020dca8c();
-    func_020dca8c();
+    M2C_UNK HideMatchingMenuAlt();
+    HideMatchingMenuAlt();
 }
 
 void func_020dcb50(void) {
-    M2C_UNK func_020dca8c();
-    func_020dca8c();
+    M2C_UNK HideMatchingMenuAlt();
+    HideMatchingMenuAlt();
 }
 
 void func_020dcb5c(void) {
-    M2C_UNK func_020dcae8();
-    func_020dcae8();
+    M2C_UNK HideMatchingMenu();
+    HideMatchingMenu();
 }
 
 void func_020dcb68(void) {
-    M2C_UNK func_020dcae8();
-    func_020dcae8();
+    M2C_UNK HideMatchingMenu();
+    HideMatchingMenu();
 }
 
 /* Set up the matching/link menu: configure the 3D sprite bank, build the five

@@ -424,14 +424,14 @@ s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
 #pragma optimize_ifs reset
 void func_ov010_02228614(void) {
     M2C_UNK func_0203783c(M2C_UNK *);
-    M2C_UNK func_02037854(M2C_UNK);
+    M2C_UNK SetNasServerEnvironment(M2C_UNK);
     M2C_UNK Wfc_StartConnection();
     M2C_UNK func_ov010_02226a88();
     extern M2C_UNK data_ov010_0222ef4c;
     Ov010Online_ClearStepFlag(1);
     func_ov010_02226a88();
     func_0203783c(&data_ov010_0222ef4c);
-    func_02037854(2);
+    SetNasServerEnvironment(2);
     Wfc_StartConnection();
 }
 

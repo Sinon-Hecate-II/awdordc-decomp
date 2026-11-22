@@ -414,9 +414,12 @@ s32 func_ov001_021803cc(void) {
     return 0;
 }
 
-void func_ov001_021803ec(void) {
+/* Open the ov001 option screen's second page: clear its exit flag, load the
+ * page background and the save-slot object layout, fill in the text and menu,
+ * and hand over to the fade-in. */
+void Ov001_OpenOptionPage2(void) {
 extern u8 gOv001OptionPage2ExitToConnection;
-void func_ov001_021804f0(void);
+void Ov001_FadeInOptionPage2(void);
 void Ov001_LoadOptionPageBg(void);
 M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
 M2C_UNK Ov001_ShowMessagePanel(M2C_UNK,M2C_UNK,M2C_UNK);
@@ -432,7 +435,7 @@ Ov001_OpenMenuForMode(2);
 Ov001_ShowMessageBox(0x24);
 Ov001_CreateAnimSprite(0);
 Ov001_PlaySound(0xb);
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021804f0);
+Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInOptionPage2);
 }
 
 /* Loads the ov001 option-page screen's background: tile graphics, palette and
@@ -452,16 +455,16 @@ void Ov001_LoadOptionPageBg(void) {
     REG_BG2CNT = (REG_BG2CNT & ~BG_PRIORITY_MASK) | 3;
 }
 
-void func_ov001_021804f0(void) {
-    extern M2C_UNK func_ov001_02180544;
+void Ov001_FadeInOptionPage2(void) {
+    extern M2C_UNK Ov001_OptionPage2FadeInStep;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_02180544);
+    Ov001_SetStepCallback(&Ov001_OptionPage2FadeInStep);
 }
 
-void func_ov001_02180544(void) {
+void Ov001_OptionPage2FadeInStep(void) {
 void func_ov001_02180584(void);
 M2C_UNK Ov001_OpenOptionPage(void);
 M2C_UNK func_ov001_02171e20(M2C_UNK);

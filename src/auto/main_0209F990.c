@@ -329,13 +329,23 @@ cost = ((s8 **)(table+weather*40))[faction];
 M2C_FIELD(path+i,s8 *,0x4e)=M2C_FIELD(path+i-1,s8 *,0x4e)-cost[gMovementTypeTable[kind*112]*32+terrain];
 }
 #pragma optimization_level reset
-s32 func_020a0300(s32 x,s32 y) {
- extern void *gUnitMovePath;
- s8 i; void *p=gUnitMovePath; char *q;
- i=0; if(i<=M2C_FIELD(p,volatile s8 *,0x5b)) { q=p; do {
- if(x==M2C_FIELD(q,s8 *,0x36)&&y==M2C_FIELD(q,s8 *,0x42)) return i;
- q++; i++; } while(i<=M2C_FIELD(p,volatile s8 *,0x5b)); }
- return -1;
+/* Return the index of the pending move-path step that stands on tile (x, y),
+ * or -1 when no step of the path is there. */
+s32 FindMovePathStep(s32 x, s32 y) {
+    extern void *gUnitMovePath;
+    s8 index;
+    void *path = gUnitMovePath;
+    char *step;
+    index = 0;
+    if (index <= M2C_FIELD(path, volatile s8 *, UNIT_PATH_LENGTH)) {
+        step = path;
+        do {
+            if (x == M2C_FIELD(step, s8 *, UNIT_PATH_X) && y == M2C_FIELD(step, s8 *, UNIT_PATH_Y)) return index;
+            step++;
+            index++;
+        } while (index <= M2C_FIELD(path, volatile s8 *, UNIT_PATH_LENGTH));
+    }
+    return -1;
 }
 
 /* Replays the map's cursor path arrows into the pending unit move path: each

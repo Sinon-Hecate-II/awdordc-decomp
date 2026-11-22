@@ -318,27 +318,30 @@ s32 func_0209d148(void *arg0) {
     return 0;
 }
 
-void func_0209d178(void *arg0) {
+/* 3D-sprite state handler: count down the state's delay at +0x2C, then resume the
+ * sprite's animation script -- when the delay reaches zero, or earlier once any key
+ * is held or a touch starts. */
+void SpriteState_WaitForInputOrTimeout(void *sprite) {
     void Sprite_ResumeAnimation(void *);
     extern u16 *gKeyState;
     extern void *gTouchState;
-    M2C_FIELD(arg0, s16 *, 0x2C)--;
-    if (M2C_FIELD(arg0, s16 *, 0x2C) <= 0) {
-        Sprite_ResumeAnimation(arg0);
+    M2C_FIELD(sprite, s16 *, 0x2C)--;
+    if (M2C_FIELD(sprite, s16 *, 0x2C) <= 0) {
+        Sprite_ResumeAnimation(sprite);
         return;
     }
-    if (*gKeyState == 0 && M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
-    Sprite_ResumeAnimation(arg0);
+    if (*gKeyState == 0 && M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) == 0) return;
+    Sprite_ResumeAnimation(sprite);
 }
 
 s32 func_0209d1d4(void *arg0) {
-    void func_0209d178(void *);
+    void SpriteState_WaitForInputOrTimeout(void *);
     s16 temp_r2;
 
     temp_r2 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2);
     if (temp_r2 != 0) {
         M2C_FIELD(arg0, s16 *, 0x2C) = temp_r2;
-        M2C_FIELD(arg0, void (**)(void *), 0x10) = &func_0209d178;
+        M2C_FIELD(arg0, void (**)(void *), 0x10) = &SpriteState_WaitForInputOrTimeout;
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 0;
@@ -563,8 +566,8 @@ s32 func_0209d6cc(void *arg0) {
 }
 
 s32 func_0209d6fc(void *arg0) {
-    M2C_UNK func_02090034(M2C_UNK, s16);
-    func_02090034(0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+    M2C_UNK StopSlotSound(M2C_UNK, s16);
+    StopSlotSound(0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }
@@ -780,23 +783,25 @@ void func_0209dad8(void **arg0) {
  M2C_FIELD(*arg0, void (**)(void *), 8)(arg0);
 }
 
-void func_0209daec(void) {
+/* Empties the 3D sprite list of both engines: each engine's list head and its
+   sprite count are cleared, dropping every sprite it held. */
+void Reset3DSpriteListsOnBothEngines(void) {
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 saved;
-    s32 i;
-    s32 obj;
-    saved = gCur3DSpriteEngine;
-    i = 0;
+    s32 activeEngine;
+    s32 engineIndex;
+    s32 engine;
+    activeEngine = gCur3DSpriteEngine;
+    engineIndex = 0;
     do {
-        if (i == 0) obj = g3DSpriteEngineMain;
-        else obj = g3DSpriteEngineSub;
-        gCur3DSpriteEngine = obj;
-        M2C_FIELD(obj, s32 *, 8) = 0;
-        M2C_FIELD(gCur3DSpriteEngine, s8 *, 0x49) = 0;
-        i++;
-    } while (i < 2);
-    gCur3DSpriteEngine = saved;
+        if (engineIndex == 0) engine = g3DSpriteEngineMain;
+        else engine = g3DSpriteEngineSub;
+        gCur3DSpriteEngine = engine;
+        M2C_FIELD(engine, s32 *, DS3D_ENGINE_SPRITE_LIST) = 0;
+        M2C_FIELD(gCur3DSpriteEngine, s8 *, DS3D_ENGINE_SPRITE_COUNT) = 0;
+        engineIndex++;
+    } while (engineIndex < 2);
+    gCur3DSpriteEngine = activeEngine;
 }
 

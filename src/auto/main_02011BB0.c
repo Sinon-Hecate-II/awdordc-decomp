@@ -262,24 +262,28 @@ s32 func_020121d8(M2C_UNK arg0) {
     return var_r0;
 }
 
-s32 func_02012218(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_02011034(M2C_UNK, M2C_UNK);
+/* Start the WFC command channel: initialize its work area at `work` for `mode`,
+ * install `callback` as the completion handler of the start command, then post
+ * that command with the info block's three work buffers (first buffer, the
+ * connection-data block and the command packet).  Returns 0 on success
+ * (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_StartCommandChannel(void *work, void (*callback)(void *), s32 mode) {
+    s32 WFC_InitCommandChannel(void *, s32);
     void *WFC_GetInfoBlock();
-    s32 temp_r0;
-    s32 var_r0;
-    void *temp_r0_2;
+    s32 result;
+    void *info;
 
-    temp_r0 = func_02011034(arg0, arg2);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = WFC_InitCommandChannel(work, mode);
+    if (result != 0) {
+        return result;
     }
-    WFC_SetChannelParam(0, arg1);
-    temp_r0_2 = WFC_GetInfoBlock();
-    var_r0 = WFC_SendCommand(0, 3, M2C_FIELD(temp_r0_2, s32 *, 0), M2C_FIELD(temp_r0_2, s32 *, 4), M2C_FIELD(temp_r0_2, s32 *, 0x10));
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(WFC_CMD_START, callback);
+    info = WFC_GetInfoBlock();
+    result = WFC_SendCommand(WFC_CMD_START, 3, M2C_FIELD(info, s32 *, WFC_CMD_INFO_BUFFER0), M2C_FIELD(info, s32 *, WFC_CMD_INFO_DATA), M2C_FIELD(info, s32 *, WFC_CMD_INFO_PACKET));
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 s32 func_02012274(M2C_UNK arg0) {
@@ -359,11 +363,27 @@ s32 WFC_ValidateStartParams(void *arg0) {
     return 1;
 }
 
-s32 func_02012418(M2C_UNK a,M2C_UNK b){void *WFC_GetInfoBlock();s32 r=WFC_CheckChannelState(1,2);void *p;if(r)return r;p=WFC_GetInfoBlock();M2C_FIELD(p,u16 *,0x150)=0;M2C_FIELD(p,s32 *,0x14c)=0;WFC_SetChannelParam(8,a);r=WFC_SendCommand(8,1,b);if(!r)r=2;return r;}
+/* Begin watching for child connections (WFC command 8): with the link idle,
+ * clear the info block's player-id bookkeeping (the local aid and the aid mask),
+ * install `handler` as the command's completion callback and queue the command
+ * with `param`.  Returns 0 on success (2 once queued) or a Wi-Fi error code. */
+s32 WFC_StartChildIndication(s32 handler, s32 param) {
+    void *WFC_GetInfoBlock();
+    s32 result = WFC_CheckChannelState(1, 2);
+    void *info;
+    if (result) return result;
+    info = WFC_GetInfoBlock();
+    M2C_FIELD(info, u16 *, WFC_CMD_INFO_LOCAL_AID) = 0;
+    M2C_FIELD(info, u32 *, WFC_CMD_INFO_AID_MASK) = 0;
+    WFC_SetChannelParam(8, handler);
+    result = WFC_SendCommand(8, 1, param);
+    if (!result) result = 2;
+    return result;
+}
 
 void func_02012474(M2C_UNK arg0) {
-    M2C_UNK func_02012418(M2C_UNK, M2C_UNK);
-    func_02012418(arg0, 1);
+    M2C_UNK WFC_StartChildIndication(M2C_UNK, M2C_UNK);
+    WFC_StartChildIndication(arg0, 1);
 }
 
 s32 func_02012484(M2C_UNK arg0) {

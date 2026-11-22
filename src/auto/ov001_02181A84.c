@@ -205,14 +205,14 @@ void func_ov001_02181ee4(void) {
 void func_ov001_02181ee8(void) {
     s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_021821e4(void);
+    void Ov001_LoadSelectedIconTile(void);
     void func_ov001_02181f3c(void);
     extern M2C_UNK gOv001IconMenuState;
     switch (Ov001_GetIconRowSelection()) {
     case 0: Ov001_PlaySound(7); break;
     case 1:
         Ov001_PlaySound(6);
-        func_ov001_021821e4();
+        Ov001_LoadSelectedIconTile();
         M2C_FIELD(&gOv001IconMenuState, u8 *, 2) = 1;
         break;
     default: return;
@@ -255,7 +255,7 @@ void Ov001_FadeOutMenu(void) {
  * path (case 3). */
 void Ov001_MenuConfirm(void){
 extern M2C_UNK gOv001IconMenuState;
-extern M2C_UNK Ov001_OpenAccessPointMenu,Ov001_OpenFriendListScreen,Ov001_OpenWirelessScreen,func_ov001_021803ec,InitMapListScreen;
+extern M2C_UNK Ov001_OpenAccessPointMenu,Ov001_OpenFriendListScreen,Ov001_OpenWirelessScreen,Ov001_OpenOptionPage2,InitMapListScreen;
 s32 Ov001_IsFadeActive(s32);s32 Ov001_IsIconRowIdle(void);
 if(Ov001_IsFadeActive(1))return;
 if(Ov001_IsFadeActive(0))return;
@@ -266,7 +266,7 @@ if(!M2C_FIELD(&gOv001IconMenuState,u8 *,2)){Ov001_SetNextScreenMode(2,0);Ov001_S
 switch(M2C_FIELD(&gOv001IconMenuState,s8 *,1)){
 case 0:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);return;
 case 1:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenWirelessScreen);return;
-case 2:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_021803ec);return;
+case 2:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenOptionPage2);return;
 case 3:Ov001_SetNextScreenMode(2,0);Ov001_SetNameEntryMode(0,0);SetMapListMode(1);Ov001_SetStepCallback(&InitMapListScreen);return;
 }
 }
@@ -321,14 +321,16 @@ void func_ov001_021820f0(M2C_UNK arg0) {
     Ov001_LayoutChoiceFrame(a, b, c, d);
 }
 
-void func_ov001_021821e4(void) {
-    M2C_UNK Ov001_LoadObjTile(s32, u8, u8);
-    struct Table { u8 values[4]; };
-    extern struct Table data_ov001_0218fa7c;
+/* Loads the icon tile of the highlighted icon-menu entry into the menu's OBJ
+ * tiles: that one tile number is both the destination slot and the tile copied. */
+void Ov001_LoadSelectedIconTile(void) {
+    void Ov001_LoadObjTile(s32, u8, u8);
+    typedef struct { u8 tiles[4]; } IconMenuTiles;
+    extern IconMenuTiles gOv001IconTiles;
     extern M2C_UNK gOv001IconMenuState;
-    struct Table table = data_ov001_0218fa7c;
-    u8 value = table.values[M2C_FIELD(&gOv001IconMenuState, s8 *, 1)];
-    Ov001_LoadObjTile(M2C_FIELD(&gOv001IconMenuState, s32 *, 4), value, value);
+    IconMenuTiles tiles = gOv001IconTiles;
+    u8 tile = tiles.tiles[M2C_FIELD(&gOv001IconMenuState, s8 *, 1)];
+    Ov001_LoadObjTile(M2C_FIELD(&gOv001IconMenuState, s32 *, 4), tile, tile);
 }
 
 /* Entry step of the online match's WFC connect screen: load its background, show
@@ -596,14 +598,17 @@ void func_ov001_0218273c(void) {
 
 }
 
+/* Leave the Wi-Fi success screen: when the name-entry menu was open, start its
+ * slide-close task, then fade both screens out and hand the state machine on to
+ * Ov001_FinishWfcScreen. */
 void Ov001_LeaveWfcSuccessScreen(void) {
     M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     M2C_UNK func_ov001_0218560c();
     extern M2C_UNK Ov001_FinishWfcScreen;
-    s32 sp0;
+    s32 nameEntryMode;
 
-    Ov001_GetNameEntryMode(0, &sp0);
-    if (sp0 != 0) {
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
+    if (nameEntryMode != 0) {
         func_ov001_0218560c();
     }
     Ov001_StartFade(3, 1, 1, 8);
@@ -669,21 +674,27 @@ void Ov001_WfcSuccessTimeoutStep(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveWfcSuccessScreen);
 }
 
+/* Entry step of the ov001 save-slot menu: frees the friend roster, loads the
+ * menu's background and message panel, then follows the pending name entry -
+ * building the slot sprites unless the name was just entered and committing the
+ * save slot when one was picked - before handing over to the fade-in step. */
 void Ov001_PrepareSaveSlotMenu(void) {
-    M2C_UNK func_ov001_02183fa0(void);
+    M2C_UNK Ov001_FreeFriendRoster(void);
+    M2C_UNK Ov001_GetNameEntryMode(M2C_UNK, s32 *);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_LoadSaveSlotObjLayout(void);
     M2C_UNK CommitSaveSlot(void);
     void Ov001_LoadSaveSlotMenuBg(void);
-    void func_ov001_02182970(void);
-    s32 sp0;
-    func_ov001_02183fa0();
-    Ov001_GetNameEntryMode(0, &sp0);
+    void Ov001_FadeInSaveSlotMenu(void);
+    s32 nameEntryMode;
+
+    Ov001_FreeFriendRoster();
+    Ov001_GetNameEntryMode(0, &nameEntryMode);
     Ov001_LoadSaveSlotMenuBg();
-    Ov001_ShowMessagePanel(0x31, -1, 0);
-    if (sp0 != 2) Ov001_LoadSaveSlotObjLayout();
-    if (sp0 == 1) CommitSaveSlot();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182970);
+    Ov001_ShowMessagePanel(OV001_MSG_CONNECTING, -1, 0);
+    if (nameEntryMode != 2) Ov001_LoadSaveSlotObjLayout();
+    if (nameEntryMode == 1) CommitSaveSlot();
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInSaveSlotMenu);
 }
 
 /* Load the save slot menu's background map and lower the priority of the sub
@@ -700,7 +711,7 @@ void Ov001_LoadSaveSlotMenuBg(void) {
     REG_BG2CNT = (u16) ((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_02182970(void) {
+void Ov001_FadeInSaveSlotMenu(void) {
     extern M2C_UNK Ov001_ShowSaveSlotMenu;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x14, 8);

@@ -10,6 +10,7 @@
 #define TCP_SOCK_RESULT  0x34 /* s32 result of the last operation */
 
 /* Network stack state (gNetStack) callbacks. */
+#define NETSTACK_SEND_FAILED 0x00 /* u8: nonzero after the last link send returned an error */
 #define NETSTACK_POLL   0x48 /* s32 (*poll)(void): nonzero while the link is up */
 #define NETSTACK_WAIT_INTERVAL 0x24 /* s32 milliseconds to sleep between idle polls */
 #define NETSTACK_SOCKET_RAW_CONNECTION 0xA4 /* void *raw transport connection of the current socket */

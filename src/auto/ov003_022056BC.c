@@ -30,7 +30,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
-    M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
+    M2C_UNK ReadActivePlayerRecord(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
     M2C_UNK SetOv003SceneClass(M2C_UNK *);
     s32 func_ov003_02200c7c();
@@ -152,7 +152,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
             var_r3_2 += 1;
         } while ((u32) var_r3_2 < 9U);
         if (func_ov003_02200c7c() != 0) {
-            func_02084dcc(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
+            ReadActivePlayerRecord(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
             M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
             Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
             Link_FlushSend();
@@ -185,7 +185,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     M2C_UNK ConstructArray(M2C_UNK **, M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK *);
     M2C_UNK **MemAlloc(M2C_UNK);
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
-    M2C_UNK func_02084dcc(M2C_UNK, M2C_UNK **, M2C_UNK);
+    M2C_UNK ReadActivePlayerRecord(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
     s32 func_ov003_02200c7c();
     extern M2C_UNK gSceneBaseVTable;
@@ -301,7 +301,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
                 var_r3_2 += 1;
             } while ((u32) var_r3_2 < 9U);
             if (func_ov003_02200c7c() != 0) {
-                func_02084dcc(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
+                ReadActivePlayerRecord(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
                 M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
                 Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
                 Link_FlushSend();
@@ -414,13 +414,13 @@ void *ShutdownOv003SceneObject(void *obj) {
  * first run is owned elsewhere. */
 SceneDisplayGroup *DestroySceneDisplayGroup(SceneDisplayGroup *group) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020990c0();
+    M2C_UNK DeleteAllFaceChildren();
     M2C_UNK MemFree();
     extern M2C_UNK gSceneDisplayGroupVTable;
     register s32 i;
 
     group->vtable = &gSceneDisplayGroupVTable;
-    func_020990c0();
+    DeleteAllFaceChildren();
     i = 0;
     do {
         if (group->sprites[i + 4] != 0) {
@@ -547,25 +547,29 @@ void *DestroyOv003SceneObject(void *obj) {
     return obj;
 }
 #pragma opt_common_subs reset
-M2C_UNK **SceneDisplayGroup_Destructor(M2C_UNK **arg0) {
+/* Non-deleting destructor of the scene display's sprite group (the object at
+ * SCENE_DISPLAY_GROUP, class gSceneDisplayGroupVTable): restore its class vtable
+ * and release its second and third runs of four sprites (the first run is owned
+ * elsewhere); DestroySceneDisplayGroup frees the group afterwards. */
+SceneDisplayGroup *SceneDisplayGroup_Destructor(SceneDisplayGroup *group) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020990c0();
+    M2C_UNK DeleteAllFaceChildren();
     extern M2C_UNK gSceneDisplayGroupVTable;
-    register s32 var_r4;
+    register s32 i;
 
-    *arg0 = &gSceneDisplayGroupVTable;
-    func_020990c0();
-    var_r4 = 0;
+    group->vtable = &gSceneDisplayGroupVTable;
+    DeleteAllFaceChildren();
+    i = 0;
     do {
-        if (arg0[var_r4 + 5] != 0) {
-            DeleteSpriteObject();
+        if (group->sprites[i + 4] != 0) {
+            DeleteSpriteObject(group->sprites[i + 4]);
         }
-        if (arg0[var_r4 + 9] != 0) {
-            DeleteSpriteObject();
+        if (group->sprites[i + 8] != 0) {
+            DeleteSpriteObject(group->sprites[i + 8]);
         }
-        var_r4 += 1;
-    } while (var_r4 < 4);
-    return arg0;
+        i += 1;
+    } while (i < 4);
+    return group;
 }
 
 /* Destructor of the ov003 options object (vtable slot 0): restore the class
@@ -641,7 +645,7 @@ s32 func_ov003_022061d8(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_022061ec(M2C_UNK arg0, s32 arg1) {
+void SetMapConfigFlags(M2C_UNK arg0, s32 arg1) {
     extern M2C_UNK gMapConfig;
     u16 v;
     v = M2C_FIELD(&gMapConfig, u16 *, 0);
@@ -649,15 +653,20 @@ void func_ov003_022061ec(M2C_UNK arg0, s32 arg1) {
     M2C_FIELD(&gMapConfig, u16 *, 0) = v;
 }
 
-s32 func_ov003_02206214(void){
-extern M2C_UNK gMapConfig;
-switch((u8)(((u32)M2C_FIELD(&gMapConfig,u16 *,0)<<26)>>29)){
-case 2:return 2;
-case 1:return 1;
-case 3:return 3;
-case 0:return 0;
-default:return 0;
-}}
+/* Read back the battle config's three flag bits (gMapConfig flags bits 3..5,
+ * saved in MapSettings.rules bits 28..30): values 0..3 are meaningful and a
+ * larger value reads as 0. */
+s32 GetMapConfigFlags(void) {
+    extern M2C_UNK gMapConfig;
+
+    switch ((u8)(((u32) M2C_FIELD(&gMapConfig, u16 *, 0) << 26) >> 29)) {
+    case 2: return 2;
+    case 1: return 1;
+    case 3: return 3;
+    case 0: return 0;
+    default: return 0;
+    }
+}
 
 s32 func_ov003_02206270(void) {
     return 1;
@@ -796,36 +805,40 @@ s32 func_ov003_022063b4(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_022063c8(s32 arg0, u8 arg1) {
+/* Store the battle-setting tileset choice on the current map; the menu's four
+ * choices map onto the tileset banks in a different order (0, 3, 1, 2). */
+void SetMapTilesetOption(s32 self, u8 option) {
     extern void **gCurrentMap;
-    s8 var_r1;
+    s8 tileset;
 
-    switch (arg1 & 0xff) {
+    switch (option & 0xff) {
     case 0:
-        var_r1 = 0;
+        tileset = 0;
         break;
     case 1:
-        var_r1 = 3;
+        tileset = 3;
         break;
     case 2:
-        var_r1 = 1;
+        tileset = 1;
         break;
     case 3:
-        var_r1 = 2;
+        tileset = 2;
         break;
     default:
-        var_r1 = 0;
+        tileset = 0;
         break;
     }
-    M2C_FIELD(*gCurrentMap, s8 *, 0x5157) = var_r1;
+    M2C_FIELD(*gCurrentMap, s8 *, MAP_TILESET) = tileset;
 }
 
-s32 func_ov003_02206428(void) {
+/* Inverse of SetMapTilesetOption: turn the map's stored tileset bank (MAP_TILESET)
+ * back into the menu's four-choice index (bank 0->0, 3->1, 1->2, 2->3). */
+s32 GetMapTilesetOption(void) {
     extern void **gCurrentMap;
-    u8 temp_r0;
+    u8 tileset;
 
-    temp_r0 = M2C_FIELD(*gCurrentMap, u8 *, 0x5157);
-    switch (temp_r0) {
+    tileset = M2C_FIELD(*gCurrentMap, u8 *, MAP_TILESET);
+    switch (tileset) {
     case 0:
         return 0;
     case 3:

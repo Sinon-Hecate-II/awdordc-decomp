@@ -17,6 +17,8 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_BODY_OFF  0x1a34 /* s32 POST body offset in the header block */
 #define HTTP_BODY_LEN  0x1a30 /* s32 body length from Content-Length */
 #define HTTP_LOCK      0x1a18 /* OS mutex guarding the two fields above */
+#define HTTP_STATE       0x1000 /* u8: request state, HTTP_STATE_QUEUED once the request is queued */
+#define HTTP_STATE_QUEUED 0xff /* the request was built and queued, the task may drive it */
 #define HTTP_OPTION_FLAG 0x1018 /* s32 the client-task option word 5, copied to data_0213d134 */
 #define HTTP_TASK_STACK     0x1000 /* the driving task's stack region */
 #define HTTP_TASK_STACK_SIZE 0x1000 /* bytes of that stack */
@@ -29,6 +31,16 @@ extern u8 gHttpLowRecvBufName[], gHttpLowSendBufName[];
 #define HTTP_USE_TLS   0x1130 /* s32 1 when the URL's scheme is https */
 #define HTTP_ENTROPY   0x19d4 /* u8[0x20] console entropy added to the RNG for the TLS handshake */
 #define HTTP_ENTROPY_SIZE 0x20
+
+/* The client's low-level socket control block, registered as the current raw
+ * connection at the start of the request task: the receive and transmit buffers
+ * are the two blocks the options' allocator handed out in HttpClientInit. */
+#define HTTP_RAW_CONNECTION      0x1138 /* socket control block */
+#define HTTP_RAW_CONNECTION_SIZE 0x64   /* bytes of the block cleared on setup */
+#define HTTP_LOW_RECV_BUF   0x19cc /* void *: low-level receive buffer */
+#define HTTP_LOW_SEND_BUF   0x19d0 /* void *: low-level transmit buffer */
+#define HTTP_RECV_BUF_SIZE  0xb68  /* bytes the receive buffer was allocated with */
+#define HTTP_SEND_BUF_SIZE  0x5ea  /* bytes the transmit buffer was allocated with */
 
 #pragma push
 #pragma opt_common_subs on
@@ -117,7 +129,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     s32 GetLocalTime(s32, s32);
     void SystemHalt(void);
     void *func_02029784(void);
-    void *func_020297c8(void *);
+    void *Wfc_GetConnectionCode(void *);
     void DC_InvalidateRange(void *, s32);
     u8 GetWfcFriendSlot(void);
     void func_020317ac(void *, void *);
@@ -185,7 +197,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         u8 language = GetWfcFriendSlot();
         StringFormatN((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);
     }
-    connData = func_020297c8(&connType);
+    connData = Wfc_GetConnectionCode(&connType);
     DC_InvalidateRange(connData, 0x20);
     if (connData == NULL) {
         OS_RestoreInterrupts(intrState);
@@ -293,18 +305,21 @@ void HttpClientStartTask(void *client, s32 priority) {
     TaskWake(client + HTTP_TASK);
 }
 
-void HttpClientAbort(void *arg0) {
+/* Stop the HTTP client's worker task: once the request has been queued (state
+ * HTTP_STATE_QUEUED), flag the task to abort under its mutex and, when the task
+ * is running, wait for it to finish. */
+void HttpClientAbort(void *client) {
     M2C_UNK OS_JoinThread(void *);
-    if (M2C_FIELD(arg0, u8 *, 0x1000) != 0xFF) {
+    if (M2C_FIELD(client, u8 *, HTTP_STATE) != HTTP_STATE_QUEUED) {
         return;
     }
-    LockMutex(arg0 + 0x1BF8);
-    M2C_FIELD(arg0, s32 *, 0x1C10) = 1;
-    UnlockMutex(arg0 + 0x1BF8);
-    if (M2C_FIELD(arg0, s32 *, 0x1BA4) == 0) {
+    LockMutex(client + HTTP_TASK_MUTEX);
+    M2C_FIELD(client, s32 *, HTTP_TASK_ABORT) = 1;
+    UnlockMutex(client + HTTP_TASK_MUTEX);
+    if (M2C_FIELD(client, s32 *, HTTP_TASK_READY) == 0) {
         return;
     }
-    OS_JoinThread(arg0 + 0x1B38);
+    OS_JoinThread(client + HTTP_TASK);
 }
 
 /* One wait step of the HTTP client task: while the connection uses TLS, add
@@ -327,15 +342,19 @@ s32 HttpClientTaskWait(void *client) {
     return 1;
 }
 
-void func_02034010(void *arg0) {
+/* Initialises the client's low-level socket control block: clears it and points
+   its receive and transmit buffers at the buffers HttpClientInit allocated from
+   the options' allocator, then registers the block as the current raw
+   connection. */
+void HttpClientInitRawConnection(void *client) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK SetCurrentRawConnection(void *);
-    MI_CpuFill8(arg0 + 0x1138, 0, 0x64);
-    M2C_FIELD(arg0, s32 *, 0x1174) = 0xB68;
-    M2C_FIELD(arg0, s32 *, 0x1178) = (s32) M2C_FIELD(arg0, s32 *, 0x19CC);
-    M2C_FIELD(arg0, s32 *, 0x1180) = 0x5EA;
-    M2C_FIELD(arg0, s32 *, 0x1184) = (s32) M2C_FIELD(arg0, s32 *, 0x19D0);
-    SetCurrentRawConnection(arg0 + 0x1138);
+    MI_CpuFill8(client + HTTP_RAW_CONNECTION, 0, HTTP_RAW_CONNECTION_SIZE);
+    M2C_FIELD(client, s32 *, HTTP_RAW_CONNECTION + SOCKET_RX_CAP) = HTTP_RECV_BUF_SIZE;
+    M2C_FIELD(client, s32 *, HTTP_RAW_CONNECTION + SOCKET_RX_BUFFER) = (s32) M2C_FIELD(client, s32 *, HTTP_LOW_RECV_BUF);
+    M2C_FIELD(client, s32 *, HTTP_RAW_CONNECTION + SOCKET_TX_CAP) = HTTP_SEND_BUF_SIZE;
+    M2C_FIELD(client, s32 *, HTTP_RAW_CONNECTION + SOCKET_TX_BUFFER) = (s32) M2C_FIELD(client, s32 *, HTTP_LOW_SEND_BUF);
+    SetCurrentRawConnection(client + HTTP_RAW_CONNECTION);
 }
 
 void func_02034068(void *arg0) {

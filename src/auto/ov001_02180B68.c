@@ -68,7 +68,7 @@ void Ov001_LeaveFriendList(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetNameEntryMode(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov001_02183fa0();
+    M2C_UNK Ov001_FreeFriendRoster();
     s32 Ov001_CloseFriendRoster();
     void *GetCurrentMapRecord();
     M2C_UNK LoadSaveSlot(u8);
@@ -95,7 +95,7 @@ void Ov001_LeaveFriendList(void) {
     Ov001_DisableVisiblePlanes(1, 1);
     Ov001_DisableVisiblePlanes(0, 0x15);
     if (gOv001FriendListState != OV001_FRIEND_LIST_AVAILABLE) {
-        func_ov001_02183fa0();
+        Ov001_FreeFriendRoster();
         LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4));
         Ov001_SetNextScreenMode(2, 1);
         Ov001_SetStepCallback(&func_ov001_02181a84);

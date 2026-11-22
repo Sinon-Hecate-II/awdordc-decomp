@@ -115,7 +115,7 @@ void func_ov001_021790d0(void) {
 void Ov001_ProfileChoiceStep(void) {
     void func_ov001_02179164(void);
     void func_ov001_02179168(void);
-    void func_ov001_0217916c(void);
+    void Ov001_ProfileFadeOutStep(void);
     extern s8 gOv001ProfileChoice;
     s32 selection;
 
@@ -135,7 +135,7 @@ void Ov001_ProfileChoiceStep(void) {
     }
     Ov001_SetProfileScreenCallback(0);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217916c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_ProfileFadeOutStep);
 }
 
 void func_ov001_02179164(void) {
@@ -146,26 +146,34 @@ void func_ov001_02179168(void) {
 
 }
 
-void func_ov001_0217916c(void) {
+/* Profile screen step after its choice menu has closed: once the region menu is
+ * gone, fade out the option plane too when the player picked the first option
+ * (OV001_CHOICE_OPTION 0), then fade out the screen's planes and install the
+ * step that runs when the fade-out has finished. */
+void Ov001_ProfileFadeOutStep(void) {
     extern s8 gOv001ProfileChoice;
-    extern M2C_UNK func_ov001_021791c8;
+    extern M2C_UNK Ov001_ProfileFadeDoneStep;
     if (Ov001_IsRegionMenuActive() != 0) return;
-    if (M2C_FIELD(&gOv001ProfileChoice, u8 *, 1) == 0) {
-        Ov001_StartFade(3, 1, 1, 8);
+    if (M2C_FIELD(&gOv001ProfileChoice, u8 *, OV001_CHOICE_OPTION) == 0) {
+        Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
     }
-    Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_021791c8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_SetStepCallback(&Ov001_ProfileFadeDoneStep);
 }
 
-void func_ov001_021791c8(void) {
+/* Step that runs once the profile screen's fade-out has finished: wait for both
+ * engine fades, then either advance the profile setup (when the player picked the
+ * second option without confirming) or start the profile exit task, and hand the
+ * step to Ov001_CloseProfileScreen. */
+void Ov001_ProfileFadeDoneStep(void) {
  M2C_UNK Ov001_StartProfileExitTask();
- M2C_UNK func_ov001_02176108();
+ M2C_UNK Ov001_AdvanceProfileSetup();
  extern s8 gOv001ProfileChoice;
  extern M2C_UNK Ov001_CloseProfileScreen;
- if(Ov001_IsFadeActive(1)!=0)return;
- if(Ov001_IsFadeActive(0)!=0)return;
- if(M2C_FIELD(&gOv001ProfileChoice,u8 *,0)==0 && M2C_FIELD(&gOv001ProfileChoice,u8 *,1)==1) {
- func_ov001_02176108();
+ if(Ov001_IsFadeActive(OV001_FADE_SUB)!=0)return;
+ if(Ov001_IsFadeActive(OV001_FADE_MAIN)!=0)return;
+ if(M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_CONFIRMED)==0 && M2C_FIELD(&gOv001ProfileChoice,u8 *,OV001_CHOICE_OPTION)==1) {
+ Ov001_AdvanceProfileSetup();
  }else {Ov001_StartProfileExitTask();}
  Ov001_SetStepCallback(&Ov001_CloseProfileScreen);
 }
@@ -214,12 +222,12 @@ void func_ov001_02179320(void) {
  M2C_UNK func_ov001_02175f8c(M2C_UNK *);
  M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
  M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
- void func_ov001_0217969c(s32);
+ void Ov001_WfcEraseResultCallback(s32);
  void Ov001_LoadWfcEraseResultBackground(void);
  void func_ov001_021793ec(void);
- extern u8 gOv001ProfileResult;
- func_ov001_02175f8c((M2C_UNK *)&func_ov001_0217969c);
- gOv001ProfileResult=0;
+ extern u8 gOv001WfcEraseResult;
+ func_ov001_02175f8c((M2C_UNK *)&Ov001_WfcEraseResultCallback);
+ gOv001WfcEraseResult=0;
  Ov001_LoadWfcEraseResultBackground();
  Ov001_ShowMessageBox(0x1C);
  Ov001_CreateAnimSprite(0);
@@ -295,22 +303,22 @@ void func_ov001_021794bc(void) {
 void func_ov001_021794c0(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    extern M2C_UNK func_ov001_021794ec;
+    extern M2C_UNK Ov001_LeaveWfcEraseScreen;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     Ov001_StopSound();
     Ov001_PlaySound(7);
-    Ov001_SetStepCallback(&func_ov001_021794ec);
+    Ov001_SetStepCallback(&Ov001_LeaveWfcEraseScreen);
 }
 
-void func_ov001_021794ec(void) {
+void Ov001_LeaveWfcEraseScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_StartProfileExitTask();
     M2C_UNK func_ov001_0218aa24(M2C_UNK);
-    extern u8 gOv001ProfileResult;
+    extern u8 gOv001WfcEraseResult;
     extern M2C_UNK Ov001_SlideOutProfileIconRow;
-    if (gOv001ProfileResult == 0) {
+    if (gOv001WfcEraseResult == 0) {
         Ov001_StartProfileExitTask();
     }
     Ov001_LockIconRow();
@@ -323,13 +331,13 @@ void func_ov001_021794ec(void) {
 void Ov001_SlideOutProfileIconRow(void) {
     s32 Ov001_IsProfileScreenDone();
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern u8 gOv001ProfileResult;
+    extern u8 gOv001WfcEraseResult;
     extern M2C_UNK func_ov001_021795a4;
 
     if (Ov001_IsFadeActive(1) != 0) return;
-    if (gOv001ProfileResult == OV001_PROFILE_NO_CHANGE && Ov001_IsProfileScreenDone() == 0) return;
+    if (gOv001WfcEraseResult == OV001_PROFILE_NO_CHANGE && Ov001_IsProfileScreenDone() == 0) return;
     Ov001_StartIconRowSlideOut();
-    if (gOv001ProfileResult == OV001_PROFILE_NO_CHANGE) Ov001_StartFade(3, 1, 1, 8);
+    if (gOv001WfcEraseResult == OV001_PROFILE_NO_CHANGE) Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x15, 8);
     Ov001_SetStepCallback(&func_ov001_021795a4);
 }
@@ -339,26 +347,26 @@ void Ov001_SlideOutProfileIconRow(void) {
 void func_ov001_021795a4(void) {
     s32 Ov001_IsIconRowIdle(void);
     s32 Ov001_IsProfileScreenDone(void);
-    extern u8 gOv001ProfileResult;
+    extern u8 gOv001WfcEraseResult;
     void Ov001_InitOptionMenu(void);
     void func_ov001_02178bc0(void);
     if (Ov001_IsFadeActive(0) != 0) return;
-    if (gOv001ProfileResult == 0 && Ov001_IsFadeActive(1) != 0) return;
+    if (gOv001WfcEraseResult == 0 && Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
-    if (gOv001ProfileResult == 0 && Ov001_IsProfileScreenDone() == 0) return;
+    if (gOv001WfcEraseResult == 0 && Ov001_IsProfileScreenDone() == 0) return;
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
-    if (gOv001ProfileResult == 0) {
+    if (gOv001WfcEraseResult == 0) {
         Ov001_FreeOptionBackground();
         Ov001_DisableVisiblePlanes(1, 1);
     }
     Ov001_DisableVisiblePlanes(0, 0x15);
-    if (gOv001ProfileResult == 0) {
+    if (gOv001WfcEraseResult == 0) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(Ov001_InitOptionMenu);
         return;
     }
-    if (gOv001ProfileResult == 2) {
+    if (gOv001WfcEraseResult == 2) {
         Ov001_SetNextScreenMode(0, 1);
         Ov001_SetStepCallback(func_ov001_02178bc0);
         return;
@@ -367,19 +375,23 @@ void func_ov001_021795a4(void) {
     Ov001_SetStepCallback(Ov001_ShowProfileMessage);
 }
 
-void func_ov001_0217969c(s32 arg0) {
-    extern u8 gOv001ProfileResult;
-    void func_ov001_021794ec(void);
+/* Completion callback of the Wi-Fi data-erase screen: event 0 means the data
+ * was erased (mark the profile as saved, success sound), any other event that
+ * the erase failed (profile other, failure sound).  Clears the callback and
+ * hands the step to the icon-row exit. */
+void Ov001_WfcEraseResultCallback(s32 event) {
+    extern u8 gOv001WfcEraseResult;
+    void Ov001_LeaveWfcEraseScreen(void);
     Ov001_StopSound();
-    if (arg0 == 0) {
-        gOv001ProfileResult = 1;
-        Ov001_PlaySound(0x10);
+    if (event == 0) {
+        gOv001WfcEraseResult = OV001_PROFILE_SAVED;
+        Ov001_PlaySound(OV001_SOUND_SAVED);
     } else {
-        gOv001ProfileResult = 2;
-        Ov001_PlaySound(0x12);
+        gOv001WfcEraseResult = OV001_PROFILE_OTHER;
+        Ov001_PlaySound(OV001_SOUND_FAILED);
     }
     Ov001_SetProfileScreenCallback(0);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021794ec);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_LeaveWfcEraseScreen);
 }
 
 s32 func_ov001_021796f8(void) {
@@ -467,7 +479,7 @@ void func_ov001_021798f8(void) {
     void func_ov001_021799cc(void);
     void func_ov001_02179a04(void);
     void func_ov001_02179a08(void);
-    s32 func_ov001_02175820(void);
+    s32 Ov001_UpdateWirelessSetup(void);
     void func_ov001_02179c38(void);
     void func_ov001_02179bec(void);
     M2C_UNK func_ov001_0218c94c(s32, s32);
@@ -480,7 +492,7 @@ void func_ov001_021798f8(void) {
     func_ov001_021799cc();
     func_ov001_02179a04();
     func_ov001_02179a08();
-    switch (func_ov001_02175820()) {
+    switch (Ov001_UpdateWirelessSetup()) {
     case 0:
         return;
     case 1:

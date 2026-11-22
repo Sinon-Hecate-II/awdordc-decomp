@@ -121,7 +121,7 @@ void func_ov001_02185ba8(s32 arg0) {
  * Returns 1 once the lobby was entered, 0 when connecting failed. */
 s32 Ov001_ConnectToWfcServer(s32 callback){
 void *Ov001_Alloc(s32,s32);u64 GetSystemTick(void);
-s32 func_02012218(M2C_UNK,M2C_UNK,M2C_UNK);
+s32 WFC_StartCommandChannel(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_02011af8(void *);u16 GetConsoleLocalId(void);void GetSystemUserProfile(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 Ov001_SendServerRequest(void);
 M2C_UNK Ov001_AddTask(M2C_UNK,void (*)(void),M2C_UNK,M2C_UNK);
@@ -136,7 +136,7 @@ state=&gOv001ConnectionState;
 p=*state;
 M2C_FIELD(p,u32 *,OV001_CONN_START_TICK)=(u32)ts;M2C_FIELD(p,u32 *,OV001_CONN_START_TICK+4)=(u32)(ts>>32);
 /* wait for the library to finish starting, then for its response block */
-if(func_02012218((M2C_UNK)*state,(M2C_UNK)Ov001_HandleServerReply,3)==2){
+if(WFC_StartCommandChannel((M2C_UNK)*state,(M2C_UNK)Ov001_HandleServerReply,3)==2){
 do {
 func_02011af8((u8 *)*state+OV001_CONN_RESPONSE);
 p=*state;

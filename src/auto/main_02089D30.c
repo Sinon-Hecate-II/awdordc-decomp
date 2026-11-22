@@ -237,7 +237,7 @@ u32 NotifyWindowOpened(void *window) {
 u32 func_0208a714(void *arg0) {
     u32 PlaySoundEffect(M2C_UNK);
     u32 Sound_WasPlayedWithin(M2C_UNK);
-    M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
+    M2C_UNK StopSlotSound(M2C_UNK, M2C_UNK);
     u32 temp_r0;
     u32 temp_r0_2;
 
@@ -245,7 +245,7 @@ u32 func_0208a714(void *arg0) {
     if (temp_r0_2 == 0) {
         return temp_r0_2;
     }
-    func_02090034(0, 0);
+    StopSlotSound(0, 0);
     temp_r0 = Sound_WasPlayedWithin(4);
     if (temp_r0 != 0) {
         return temp_r0;

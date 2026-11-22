@@ -1,6 +1,7 @@
 /* 16 functions from 0x021E8984 to 0x021E997C (ov002), found by ds-decomp. */
 #include "common.h"
 #include "ov002_effects.h"
+#include "ov002_panel.h"
 static inline void Translate021e9014(s32 x,s32 y,s32 z) {
  volatile s32 *p=(volatile s32 *)0x4000444;
  p[11]=x;p[11]=y;p[11]=z;
@@ -54,21 +55,23 @@ DrawUnitModelTree(M2C_FIELD((u8 *)arg0+best*4,void **,8));used|=1<<best;j++;
 func_ov002_021e4b94(arg0);
 }
 #pragma scheduling on
-void func_ov002_021e8ca4(void *arg0) {
+/* Free the five unit models a battle unit view holds and stop the sound of the
+ * view's effect slot. */
+void DestroyBattleUnitView(void *view) {
 void HeapFreeBlock(void *);
 void DestroyUnitModel(void *);
 s32 i=0;
 do {
-if(M2C_FIELD((u32)arg0+(i<<2),void **,8)!=0) {
-DestroyUnitModel(M2C_FIELD((u32)arg0+(i<<2),void **,8));
-if(M2C_FIELD((u32)arg0+(i<<2),void **,8)!=0) {
-HeapFreeBlock(M2C_FIELD((u32)arg0+(i<<2),void **,8));
-M2C_FIELD((u32)arg0+(i<<2),void **,8)=0;
+if(M2C_FIELD((u32)view+(i<<2),void **,UNIT_VIEW_SLOTS)!=0) {
+DestroyUnitModel(M2C_FIELD((u32)view+(i<<2),void **,UNIT_VIEW_SLOTS));
+if(M2C_FIELD((u32)view+(i<<2),void **,UNIT_VIEW_SLOTS)!=0) {
+HeapFreeBlock(M2C_FIELD((u32)view+(i<<2),void **,UNIT_VIEW_SLOTS));
+M2C_FIELD((u32)view+(i<<2),void **,UNIT_VIEW_SLOTS)=0;
 }
 }
 i++;
-}while(i<5);
-func_020af9cc(M2C_FIELD(arg0,u8 *,0x27),0,1);
+}while(i<UNIT_VIEW_MODEL_COUNT);
+StopEffectSlotSound(M2C_FIELD(view,u8 *,UNIT_VIEW_SIDE),0,1);
 }
 #pragma pop
 void func_ov002_021e8d04(void *arg0, s16 arg1) {

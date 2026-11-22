@@ -422,35 +422,38 @@ s32 LoadCompressedSpriteGraphics(M2C_UNK assetName, s32 destOffset, s32 frameCou
     return gfx;
 }
 
-void OpenEffectNarcArchive(M2C_UNK arg0) {
+/* Open the effect NARC archive, refcounted: the asset name gets the .narc
+ * extension, /effect becomes the current directory and the archive is opened
+ * only on the first call. */
+void OpenEffectNarcArchive(M2C_UNK assetName) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK StringCopy(M2C_UNK *, s32);
     M2C_UNK StringAppend(M2C_UNK *, M2C_UNK *);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
-    extern M2C_UNK data_02102878;
-    extern M2C_UNK data_02102880;
-    extern u8 data_021577e0;
-    M2C_UNK sp0[8];
-    u8 temp_r3;
+    extern M2C_UNK sNarcExtension;
+    extern M2C_UNK sEffectDirectory;
+    extern u8 gEffectNarcOpenCount;
+    M2C_UNK path[8];
+    u8 openCount;
 
-    temp_r3 = data_021577e0;
-    data_021577e0 = temp_r3 + 1;
-    if (temp_r3 != 0) {
+    openCount = gEffectNarcOpenCount;
+    gEffectNarcOpenCount = openCount + 1;
+    if (openCount != 0) {
         return;
     }
-    StringCopy(sp0, arg0);
-    StringAppend(sp0, &data_02102878);
-    SetFileDirectory(&data_02102880);
-    OpenNarcArchive(sp0);
+    StringCopy(path, assetName);
+    StringAppend(path, &sNarcExtension);
+    SetFileDirectory(&sEffectDirectory);
+    OpenNarcArchive(path);
 }
 
 void CloseEffectNarcArchive(void) {
     M2C_UNK CloseNarcArchive();
-    extern u8 data_021577e0;
+    extern u8 gEffectNarcOpenCount;
     u32 temp_r1;
 
-    temp_r1 = data_021577e0 - 1;
-    data_021577e0 = (u8) temp_r1;
+    temp_r1 = gEffectNarcOpenCount - 1;
+    gEffectNarcOpenCount = (u8) temp_r1;
     if (temp_r1 & 0xFF) {
         return;
     }

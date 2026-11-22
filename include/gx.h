@@ -49,6 +49,9 @@ enum {
     GX_PLANEMASK_BG3 = 1 << 3,
     GX_PLANEMASK_OBJ = 1 << 4
 };
+/* The visible-plane field in place: the GX_PLANEMASK_* bits of DISPCNT (8..12). */
+#define DISPCNT_PLANEMASK_SHIFT 8
+#define DISPCNT_PLANEMASK (0x1F << DISPCNT_PLANEMASK_SHIFT)
 enum {
     GX_MODE_0 = 0, /* text backgrounds */
     GX_MODE_1,

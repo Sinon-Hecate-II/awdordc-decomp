@@ -375,21 +375,24 @@ u8 IsPropertyMoveGoal(s32 x, s32 y) {
     return IsFootUnitKind(((u32)(M2C_FIELD(*gCurrentMap + unitId * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_RECORDS) << 26) >> 26)) == 0;
 }
 
-u8 func_ov000_0217ac78(s32 arg0, s32 arg1) {
+/* Move-search goal: true when tile (x, y) is a base owned by the current player
+ * (its terrain kind is MAP_TERRAIN_BASE and its owner bits are the current
+ * player's). */
+u8 IsOwnedBaseMoveGoal(s32 x, s32 y) {
     extern void **gCurrentMap;
-    u8 temp_r2;
-    u8 var_r0;
-    void *temp_r3;
+    u8 terrain;
+    u8 isOwnedBase;
+    void *map;
 
-    temp_r3 = *gCurrentMap;
-    temp_r2 = M2C_FIELD((temp_r3 + (arg0 + M2C_FIELD((temp_r3 + (arg1 * 2)), u16 *, 0x3758))), u8 *, 0x1420);
-    if ((temp_r2 & 0x1F) != 0x11) {
+    map = *gCurrentMap;
+    terrain = M2C_FIELD((map + (x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS))), u8 *, MAP_CELL_TERRAIN);
+    if ((terrain & MAP_TERRAIN_KIND_MASK) != MAP_TERRAIN_BASE) {
         return 0U;
     }
-    if (M2C_FIELD(temp_r3, u16 *, 0x52A6) == (temp_r2 & 0xE0)) {
-        var_r0 = 1;
+    if (M2C_FIELD(map, u16 *, MAP_CURRENT_OWNER) == (terrain & MAP_TERRAIN_OWNER_MASK)) {
+        isOwnedBase = 1;
     } else {
-        var_r0 = 0;
+        isOwnedBase = 0;
     }
-    return var_r0;
+    return isOwnedBase;
 }

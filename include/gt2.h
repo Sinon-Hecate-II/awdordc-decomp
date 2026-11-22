@@ -19,7 +19,7 @@ typedef struct Gt2PendingCommand {
 #define GT2_CONNECTION_ACK_QUEUE   0x60 /* Vector *of sent commands awaiting the peer's acknowledgement, sorted by sequence */
 #define GT2_CONNECTION_STATE       0x0C /* s32 handshake/connection state */
 #define GT2_CONNECTION_INITIATOR   0x10 /* s32 nonzero for a connection this side opened (the client), 0 for one the peer opened and the server accepted */
-#define GT2_CONNECTION_CLOSE_PENDING 0x14 /* s32 set when a connection closed while still awaiting the server's accept; gti2AcceptConnection then refuses it (and clears the flag) */
+#define GT2_CONNECTION_CLOSE_PENDING 0x14 /* s32 set when a connection closed while still awaiting the server's accept; the accept step then refuses it and clears the flag */
 #define GT2_CONNECTION_LAST_RECEIVE 0x1C /* u32 tick of the last command received, set to the creation time at first */
 #define GT2_CONNECTION_TIMEOUT     0x20 /* u32 silence limit in ms while this connection handshakes, 0 to use GT2_CONNECT_TIMEOUT */
 #define GT2_CONNECTION_RESPONSE    0x68 /* 32-byte expected challenge response */
@@ -72,6 +72,9 @@ enum {
 /* Bytes of a CONNECT command: its 7-byte command header plus the client's
  * 32-byte challenge (the size gti2BeginCommand is given for it). */
 #define GT2_CONNECT_SIZE (7 + GT2_RESPONSE_SIZE)
+/* Bytes every GT2 command starts with: the magic string, the command id and the
+ * sent and received sequence numbers. */
+#define GT2_COMMAND_HEADER_SIZE 7
 /* Challenge/response bytes are printable characters '!'..'}' (GTI2_CHALLENGE_BASE
  * plus 0..GTI2_CHALLENGE_RANGE-1); the response's rolling weight advances by
  * GTI2_RESPONSE_STEP at every position. */

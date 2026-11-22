@@ -7,6 +7,8 @@ extern unsigned char data_ov001_0218fdb0[];
 typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsigned char type,zero; short len; int value; } PacketWork;
 extern unsigned char gOv001RoomPlayerData[];
 extern unsigned char gOv001RoomRecords[];
+/* RC4 cipher state: the two state indices (i and j), the 256-byte S-box
+ * permutation and the modulus the indices wrap at (the message length). */
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
 extern unsigned char gRoomState[];
 extern signed char data_ov001_02191820[];
@@ -117,16 +119,27 @@ int Ov001_DecryptRoomData(int src,int dst,int length,unsigned int expectedChecks
  }
  func_ov001_0216ad64(cipher[2]); return 0;
 }
-void Ov001Rc4Init(CipherState *st,unsigned char *key,unsigned int len,unsigned int n) {
- unsigned char *s=st->s; unsigned int i,j,k; unsigned char t,u;
- st->j=0; st->i=0; st->n=n;
- for(i=0;i<n;i++) s[i]=i;
- j=0;k=0;
- for(i=0;i<n;i++) {
- t=s[i]; j=(j+key[k]+t)%st->n;
- u=s[j]; s[j]=t; s[i]=u;
- k++; if(k>=len) k=0;
- }
+/* RC4 key schedule (the KSA permutation): fill the state's S-box with 0..n-1,
+ * then shuffle it with the key bytes, wrapping the key index at `len`. */
+void Ov001Rc4Init(CipherState *st, unsigned char *key, unsigned int len, unsigned int n) {
+    unsigned char *s = st->s;
+    unsigned int index, swapIndex, keyIndex;
+    unsigned char t, u;
+    st->j = 0;
+    st->i = 0;
+    st->n = n;
+    for (index = 0; index < n; index++) s[index] = index;
+    swapIndex = 0;
+    keyIndex = 0;
+    for (index = 0; index < n; index++) {
+        t = s[index];
+        swapIndex = (swapIndex + key[keyIndex] + t) % st->n;
+        u = s[swapIndex];
+        s[swapIndex] = t;
+        s[index] = u;
+        keyIndex++;
+        if (keyIndex >= len) keyIndex = 0;
+    }
 }
 
 #pragma thumb on

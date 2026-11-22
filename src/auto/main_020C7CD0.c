@@ -98,7 +98,7 @@ s32 GetMapRecordSettings(void) {
     return GetMapRecord() + 0x30;
 }
 
-s32 func_020c7ea8(a)
+s32 GetCampaignMapSaveType(a)
 s32 a; {
     return GetCampaignMapIndex() + 9;
 }
@@ -230,7 +230,7 @@ s32 SetCampaignMapShareMode(s32 mapId, s32 mode) {
     s32 GetMapRecordBuffer();
     s32 GetMapRecordBufferStamp();
     s32 LoadMapRecord(s32, s32);
-    void func_020868ac(s32, s32);
+    void SetCampaignMapSaved(s32, s32);
     s32 index, record, stamp;
 
     if (mapId < MAP_ID_CAMPAIGN_FIRST || mapId >= MAP_ID_CAMPAIGN_END) return 0;
@@ -239,7 +239,7 @@ s32 SetCampaignMapShareMode(s32 mapId, s32 mode) {
     stamp = GetMapRecordBufferStamp();
     if (!LoadMapRecord(mapId, record)) return 0;
     M2C_FIELD(stamp, u32 *, 0xC) = (M2C_FIELD(stamp, u32 *, 0xC) & ~0xE0000000) | (mode << 29);
-    func_020868ac(index, 1);
+    SetCampaignMapSaved(index, 1);
     return StoreCampaignMapRecord(mapId, record);
 }
 
@@ -391,11 +391,23 @@ s32 LoadMapById(M2C_UNK arg0) {
     return 1;
 }
 
-s32 LoadMapRecord(s32 a,s32 b){u8 DoesMapRecordMatchBuffer(s32,s32);void MI_CpuFill32(s32,s32,s32);s32 LoadNewestSaveRecord(s32,s32);s32 p=func_020c7ea8(a);u8 r;MI_CpuFill32(0,b,0x6f8);if(!LoadNewestSaveRecord(p,b))return 0;if(DoesMapRecordMatchBuffer(a,b))r=1;else r=0;return r;}
+/* Load campaign map `mapId`'s newest saved record into `buffer` and report
+ * whether that record still matches the map's own record. */
+s32 LoadMapRecord(s32 mapId, s32 buffer) {
+    u8 DoesMapRecordMatchBuffer(s32, s32);
+    void MI_CpuFill32(s32, s32, s32);
+    s32 LoadNewestSaveRecord(s32, s32);
+    s32 saveType = GetCampaignMapSaveType(mapId);
+    u8 match;
+    MI_CpuFill32(0, buffer, MAP_RECORD_SIZE);
+    if (!LoadNewestSaveRecord(saveType, buffer)) return 0;
+    if (DoesMapRecordMatchBuffer(mapId, buffer)) match = 1; else match = 0;
+    return match;
+}
 
 s32 StoreCampaignMapRecord(s32 a,s32 b) {
  s32 IsValidMapRecord(s32); void func_020be438(s32,s32,s32);
- s32 p=func_020c7ea8(a);
+ s32 p=GetCampaignMapSaveType(a);
  if(!IsValidMapRecord(b))return 0;
  func_020be438(p,b,0x6f8);return 1;
 }

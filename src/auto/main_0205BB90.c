@@ -463,18 +463,20 @@ s32 gti2SendClientResponse(s32 connection, s32 response, s32 data, s32 len) {
     return 0;
 }
 
-s32 func_0205c7f8(M2C_UNK arg0) {
+/* Accept the connection: send the payload-less GTI2_ACCEPT command (its command
+ * header only).  Returns 0 when the connection was freed, 1 otherwise. */
+s32 gti2SendAccept(M2C_UNK connection) {
     s32 gti2BeginCommand(M2C_UNK, M2C_UNK, M2C_UNK, s32 *);
     s32 gti2EndReliableMessage(M2C_UNK);
-    s32 sp0;
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 4, 7, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_ACCEPT, GT2_COMMAND_HEADER_SIZE, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    if (gti2EndReliableMessage(arg0) != 0) {
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;
@@ -501,31 +503,36 @@ s32 gti2SendClose(s32 connection, M2C_UNK reason, s32 length) {
     return 0;
 }
 
-s32 func_0205c8c8(M2C_UNK arg0) {
-    s32 sp0;
+/* Acknowledge the peer's close with a payload-less GTI2_CLOSED command (its
+ * command header only).  Returns 0 when the connection was freed, 1 otherwise. */
+s32 gti2SendClosedAck(M2C_UNK connection) {
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 6, 7, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_CLOSED, GT2_COMMAND_HEADER_SIZE, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    if (gti2EndReliableMessage(arg0) != 0) {
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;
 }
 
-s32 func_0205c924(M2C_UNK arg0) {
-    s32 sp0;
+/* Send an empty GTI2_PING command (its command header only); the peer answers it
+ * with a sequence acknowledgement.  Returns 0 when the connection was freed, 1
+ * otherwise. */
+s32 gti2SendPing(M2C_UNK connection) {
+    s32 status;
 
-    if (gti2BeginCommand(arg0, 7, 7, &sp0) == 0) {
+    if (gti2BeginCommand(connection, GTI2_PING, GT2_COMMAND_HEADER_SIZE, &status) == 0) {
         return 0;
     }
-    if (sp0 != 0) {
+    if (status != 0) {
         return 1;
     }
-    if (gti2EndReliableMessage(arg0) != 0) {
+    if (gti2EndReliableMessage(connection) != 0) {
         return 1;
     }
     return 0;

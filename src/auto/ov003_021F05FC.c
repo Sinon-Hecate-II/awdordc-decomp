@@ -377,13 +377,13 @@ s32 func_ov003_021f0dcc(s32 arg0) {
 
 M2C_UNK **func_ov003_021f0de0(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020990c0();
+    M2C_UNK DeleteAllFaceChildren();
     M2C_UNK func_0209940c();
     extern M2C_UNK data_ov003_0220fb08;
     register s32 var_r4;
     *arg0 = &data_ov003_0220fb08;
     func_0209940c();
-    func_020990c0();
+    DeleteAllFaceChildren();
     var_r4 = 0;
     do {
         if (arg0[var_r4 + 0x11] != 0) {
@@ -585,13 +585,13 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
 #pragma opt_strength_reduction reset
 M2C_UNK **func_ov003_021f128c(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
-    M2C_UNK func_020990c0();
+    M2C_UNK DeleteAllFaceChildren();
     M2C_UNK func_0209940c();
     extern M2C_UNK data_ov003_0220fb08;
     register s32 var_r4;
     *arg0 = &data_ov003_0220fb08;
     func_0209940c();
-    func_020990c0();
+    DeleteAllFaceChildren();
     var_r4 = 0;
     do {
         if (arg0[var_r4 + 0x11] != 0) {
@@ -603,22 +603,25 @@ M2C_UNK **func_ov003_021f128c(M2C_UNK **arg0) {
     return arg0;
 }
 
-M2C_UNK **func_ov003_021f12d4(M2C_UNK **arg0) {
+/* Releases the battle-setup record without freeing it: re-apply its class, delete
+ * the unit sprites it owns and destroy its four player-setup entries; the record
+ * is left cleared for reuse.  DestroyBattleSetup is the freeing twin. */
+M2C_UNK **ShutdownBattleSetup(M2C_UNK **setup) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK func_ov003_021f05f8;
-    u8 var_r4;
-    *arg0 = &data_ov003_0220fb18;
-    var_r4 = 0;
+    u8 i;
+    *setup = &data_ov003_0220fb18;
+    i = 0;
     do {
-        if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0x78) != 0) {
+        if (M2C_FIELD(((s32)setup + (i * 4)), s32 *, BATTLE_SETUP_SPRITES) != 0) {
             DeleteSpriteObject();
         }
-        var_r4 += 1;
-    } while ((u32)var_r4 < 0x1AU);
-    DestroyArray((u8 *)arg0 + 0x14, 4, 0x18, &func_ov003_021f05f8);
-    return arg0;
+        i += 1;
+    } while ((u32)i < BATTLE_SETUP_SPRITE_COUNT);
+    DestroyArray((u8 *)setup + BATTLE_SETUP_PLAYERS, BATTLE_SETUP_PLAYER_COUNT, BATTLE_SETUP_PLAYER_LEN, &func_ov003_021f05f8);
+    return setup;
 }
 
 void func_ov003_021f1330(void) {

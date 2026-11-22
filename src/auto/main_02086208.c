@@ -118,14 +118,18 @@ void func_020863f0(void) {
     M2C_FIELD(temp_r0, s16 *, 0x4E) = Divide(0x2BF20, 0x3E8);
 }
 
-s32 func_02086420(M2C_UNK arg0) {
+/* Whether an online player has voice chat available: the online overlay must be
+ * up, and the player's record must exist with voice chat enabled. */
+s32 IsOnlinePlayerVoiceChatEnabled(s32 playerId) {
     s32 GetActiveOverlay();
     void *GetOnlinePlayerRecord(M2C_UNK);
-    void *temp_r0;
+    void *record;
+
     if (GetActiveOverlay() == 2) {
-        temp_r0 = GetOnlinePlayerRecord(arg0);
-        if (temp_r0 != NULL && M2C_FIELD(temp_r0, s8 *, 0x27) == 1 && M2C_FIELD(temp_r0, s8 *, 0x28) == 0) {
-            if (M2C_FIELD(temp_r0, u8 *, 0x1A) & 4) {
+        record = GetOnlinePlayerRecord(playerId);
+        if (record != NULL && M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 3) == 1 &&
+            M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 4) == 0) {
+            if (M2C_FIELD(record, u8 *, ONLINE_PLAYER_FLAGS) & ONLINE_PLAYER_FLAG_VOICE) {
                 return 1;
             }
         }
@@ -281,12 +285,12 @@ s32 GetUiMessageText(void) {
     return gUiMessageText;
 }
 
-void func_02086740(u32 arg0, s32 arg1) {
-    extern M2C_UNK data_0215771c;
+void SetEventFlagMid(u32 arg0, s32 arg1) {
+    extern M2C_UNK gEventFlagsMid;
     s32 shift = arg0 & 7;
     s32 mask = 1 << shift;
-    u8 byte = M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3);
-    M2C_FIELD(&data_0215771c,u8 *,arg0 >> 3) = (byte & ~mask) | (mask * arg1);
+    u8 byte = M2C_FIELD(&gEventFlagsMid,u8 *,arg0 >> 3);
+    M2C_FIELD(&gEventFlagsMid,u8 *,arg0 >> 3) = (byte & ~mask) | (mask * arg1);
 }
 
 void SetMapBackgroundSeenFlag(u32 arg0, s32 arg1) {
@@ -325,7 +329,7 @@ void func_02086878(u32 arg0, s32 arg1) {
  M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) = (M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_020868ac(u32 arg0, s32 arg1) {
+void SetCampaignMapSaved(u32 arg0, s32 arg1) {
  extern M2C_UNK data_021577ad;
  s32 shift = arg0 & 7;
  M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) = (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
@@ -391,55 +395,60 @@ u8 func_02086a20(s32 arg0) {
     return M2C_FIELD(&gEventValues, u8 *, arg0);
 }
 
-s32 func_02086a30(s32 arg0) {
-    extern M2C_UNK data_0215771c;
+s32 IsEventFlagMidSet(s32 arg0) {
+    extern M2C_UNK gEventFlagsMid;
     s32 shift = arg0 & 7;
-    u8 value = M2C_FIELD(&data_0215771c,u8 *, (u32)arg0 >> 3);
+    u8 value = M2C_FIELD(&gEventFlagsMid,u8 *, (u32)arg0 >> 3);
     return (u8)(value & (1 << shift));
 }
 
-void func_02086a50(s32 arg0,s32 arg1) {
+void SetEventFlagLow(s32 arg0,s32 arg1) {
  s32 shift; s32 mask;
  if(arg1) {shift=arg0&7;mask=1<<shift;gEventFlagsLow[arg0>>3]|=mask;}
  else {shift=arg0&7;mask=-1^(1<<shift);gEventFlagsLow[arg0>>3]&=mask;}
 }
 
-s32 func_02086aa0(s32 arg0) {
+s32 IsEventFlagLowSet(s32 arg0) {
  s32 shift=arg0&7;u8 value=gEventFlagsLow[arg0>>3];return (u8)(value&(1<<shift));
 }
 
-void func_02086ac0(void) {
+void ClearEventFlagsLow(void) {
  s32 i=0;u8 *p=gEventFlagsLow;u8 zero=i;
  do{i++;*p++=zero;}while(i<4);
 }
 
-M2C_UNK func_02086ae4(s32 arg0,s32 arg1) {
- if(arg0>=0&&arg0<0x20){func_02086a50(arg0,arg1);return;}
- if(arg0>=0x20&&arg0<0x60){func_02086740(arg0-0x20,(u8)arg1);return;}
- if(arg0<0x60)return;
- if(arg0>=0xA0)return;
- SetEventFlagHigh(arg0-0x60,(u8)arg1);
+/* Set event flag `flag` to `value` in whichever of the three event-flag blocks owns
+ * its id (low, mid or high); ids outside 0..0x9F are ignored. */
+M2C_UNK SetEventFlag(s32 flag,s32 value) {
+ if(flag>=EVENT_FLAG_LOW_BASE&&flag<EVENT_FLAG_MID_BASE){SetEventFlagLow(flag,value);return;}
+ if(flag>=EVENT_FLAG_MID_BASE&&flag<EVENT_FLAG_HIGH_BASE){SetEventFlagMid(flag-EVENT_FLAG_MID_BASE,(u8)value);return;}
+ if(flag<EVENT_FLAG_HIGH_BASE)return;
+ if(flag>=EVENT_FLAG_COUNT)return;
+ SetEventFlagHigh(flag-EVENT_FLAG_HIGH_BASE,(u8)value);
 }
 
-s32 IsEventFlagSet(s32 arg0) {
+/* Return whether event flag `flag` is set: flag ids 0x00-0x1F live in the low
+ * block, 0x20-0x5F in the mid block and 0x60-0x9F in the high block, so route to
+ * the matching getter; ids outside 0x00-0x9F are never set. */
+s32 IsEventFlagSet(s32 flag) {
     s32 IsEventFlagHighSet(s32);
-    s32 func_02086a30(s32);
-    s32 func_02086aa0();
-    if ((arg0 >= 0) && (arg0 < 0x20)) {
-        return func_02086aa0();
+    s32 IsEventFlagMidSet(s32);
+    s32 IsEventFlagLowSet();
+    if ((flag >= 0) && (flag < 0x20)) {
+        return IsEventFlagLowSet();
     }
-    if ((arg0 >= 0x20) && (arg0 < 0x60)) {
-        return func_02086a30(arg0 - 0x20);
+    if ((flag >= 0x20) && (flag < 0x60)) {
+        return IsEventFlagMidSet(flag - 0x20);
     }
-    if ((arg0 >= 0x60) && (arg0 < 0xA0)) {
-        return IsEventFlagHighSet(arg0 - 0x60);
+    if ((flag >= 0x60) && (flag < 0xA0)) {
+        return IsEventFlagHighSet(flag - 0x60);
     }
     return 0;
 }
 
 /* Initializes/clears the bitfield/flag tables used by the main overlay. */
 void func_02086b9c(void) {
-    M2C_UNK func_02086ae4(s32, M2C_UNK);
+    M2C_UNK SetEventFlag(s32, M2C_UNK);
     s32 var_r5;
     s32 var_r5_2;
     s32 var_r5_3;
@@ -472,17 +481,17 @@ void func_02086b9c(void) {
     } while (var_r6_2 < 0x113);
     var_r5 = 0;
     do {
-        func_020868ac(var_r5, 0);
+        SetCampaignMapSaved(var_r5, 0);
         var_r5 += 1;
     } while (var_r5 < 0x32);
     var_r5_2 = 0x20;
     do {
-        func_02086ae4(var_r5_2, 0);
+        SetEventFlag(var_r5_2, 0);
         var_r5_2 += 1;
     } while (var_r5_2 < 0x60);
     var_r5_3 = 0x60;
     do {
-        func_02086ae4(var_r5_3, 0);
+        SetEventFlag(var_r5_3, 0);
         var_r5_3 += 1;
     } while (var_r5_3 < 0xA0);
     var_r5_4 = 0;

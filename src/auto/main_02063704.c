@@ -238,12 +238,12 @@ s32 SBServerListProcessAdHocServers(void *list) {
 }
 
 s32 func_02063dac(void *arg0) {
-    void func_02061bdc(void *);
+    void SBServerListFreeRemovedServers(void *);
     s32 SBServerListCheckForData(void *);
     s32 SBServerListProcessAdHocServers(void *);
     s32 temp_r0;
 
-    func_02061bdc(arg0);
+    SBServerListFreeRemovedServers(arg0);
     temp_r0 = M2C_FIELD(arg0, s32 *, 0);
     switch (temp_r0) {
     case 2:

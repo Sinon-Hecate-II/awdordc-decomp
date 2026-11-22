@@ -80,7 +80,7 @@ s32 GetMapCursorOptionTouchAction(s32 optionMask) {
     return action;
 }
 
-s32 func_020bdcd0(void) {
+s32 GetMapSettleTouchAction(void) {
     s32 IsTouchInputDisabled();
     extern void *gTouchState;
     if (IsTouchInputDisabled() != 0) {

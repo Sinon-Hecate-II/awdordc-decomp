@@ -167,8 +167,23 @@ M2C_UNK func_02077ab8(s32 arg0) {
     BuildMapViewProjection((s32)&gMapViewProjection, colors, dims);
 }
 
-void ApplyMapViewProjection(s32 arg0) {void func_02003a8c();void func_02001034();extern M2C_UNK gMapViewProjection;u8 temp[64];
-*(volatile u32 *)0x4000440=0;*(volatile u32 *)0x4000454=0;func_02003a8c(&gMapViewProjection);func_02001034(arg0+28,temp);func_02003a8c(temp);*(volatile u32 *)0x4000440=2;*(volatile u32 *)0x4000454=0;}
+/* Multiply the map view's camera matrices into the GX projection stack: select the
+ * projection matrix, multiply in the view's projection, then multiply in the 4x4
+ * form of the view's affine 3x4 eye matrix at view+0x1C, and finish on the identity. */
+void ApplyMapViewProjection(s32 view) {
+    void GX_MultMatrix4x4(void *);
+    void Matrix3x4To4x4(s32, void *);
+    extern M2C_UNK gMapViewProjection;
+    u8 eyeMatrix[64];
+
+    REG_GX_MTX_MODE = 0;
+    REG_GX_MTX_IDENTITY = 0;
+    GX_MultMatrix4x4(&gMapViewProjection);
+    Matrix3x4To4x4(view + 28, eyeMatrix);
+    GX_MultMatrix4x4(eyeMatrix);
+    REG_GX_MTX_MODE = 2;
+    REG_GX_MTX_IDENTITY = 0;
+}
 
 void func_02077c10(void) {
     M2C_UNK func_02077ab8(s32);
@@ -492,13 +507,13 @@ void BuildMapCellShades(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 #pragma opt_strength_reduction off
 void func_0207843c(s32 x0,s32 y0,s32 x1,s32 y1){
-s32 func_0207e52c(s32,s32);s32 func_0207ef5c(s32,s32,u16);
+s32 func_0207e52c(s32,s32);s32 GetTerrainClassVariant(s32,s32,u16);
 extern s32 *gCurrentMap;extern u8 gMapCellCornerA[3840],gMapCellCornerB[3840];
 u8 *base=*(u8**)gCurrentMap;u8 *sub=base+0x120;s32 off;u16 *p; s32 a,x,y,w,h,b;u16 *q;
 w=M2C_FIELD(sub,u16*,0x5024);h=M2C_FIELD(sub,u16*,0x5026);
 if(x0<0)x0=0;if(y0<0)y0=0;if(x1>w-1)x1=w-1;if(y1>h-1)y1=h-1;
 p=(u16*)gMapCellCornerA;y=y0;goto outercheck;outer: off=y*2;x=x0;goto innercheck;inner:
-a=func_0207e52c(x,y);b=func_0207ef5c(x,y,(u16)a);
+a=func_0207e52c(x,y);b=GetTerrainClassVariant(x,y,(u16)a);
 M2C_FIELD((u8*)p+x*80,u16*,off)=a;
 M2C_FIELD(gMapCellCornerB+x*80,u16*,off)=b;
 x++;innercheck:if(x<=x1)goto inner;

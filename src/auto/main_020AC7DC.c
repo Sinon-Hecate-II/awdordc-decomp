@@ -41,13 +41,13 @@ if(M2C_FIELD(fade,s32 *,0x18)==1)func_020ac598(M2C_FIELD(fade,u8 *,TRANSITION_SP
 }
 
 s32 func_020ac924(M2C_UNK parent, s32 type) {
-    s32 func_01ffa860(M2C_UNK *, M2C_UNK);
+    s32 Find3DSpriteByClassAndZ(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gScreenTransitionClass, gScreenFadeClass;
     switch (type) {
     case 0:
-        return func_01ffa860(&gScreenTransitionClass, parent);
+        return Find3DSpriteByClassAndZ(&gScreenTransitionClass, parent);
     case 1:
-        return func_01ffa860(&gScreenFadeClass, parent);
+        return Find3DSpriteByClassAndZ(&gScreenFadeClass, parent);
     default:
         return 0;
     }

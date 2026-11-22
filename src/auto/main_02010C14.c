@@ -118,12 +118,21 @@ if(canNotify)SendFifoMessageWait(1,1);
 SystemHalt();
 }
 
-void SaveDevice_CheckChipId(s32 arg0) {
-s32 OS_DisableInterrupts(); M2C_UNK OS_RestoreInterrupts(s32);
-volatile s32 sp0; s32 *p; s32 saved;
-if(*(u16 *)0x027FFC10==0)p=(s32 *)0x027FF800;else p=(s32 *)0x027FFC00;
-sp0=*p;if(arg0==sp0)return;
-saved=OS_DisableInterrupts();((void (*)(s32,s32,s32))func_02010e94)(14,17,0);OS_RestoreInterrupts(saved);
+/* Compare the save chip id `chipId` just read from the card with the id word the
+ * firmware recorded at 0x027FF800 (or 0x027FFC00, selected by the flag at
+ * 0x027FFC10): if they differ, tell the ARM7 to shut the system down. */
+void SaveDevice_CheckChipId(s32 chipId) {
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
+    volatile s32 recorded;
+    s32 *record;
+    s32 saved;
+    if (*(u16 *)0x027FFC10 == 0) record = (s32 *)0x027FF800; else record = (s32 *)0x027FFC00;
+    recorded = *record;
+    if (chipId == recorded) return;
+    saved = OS_DisableInterrupts();
+    ((void (*)(s32, s32, s32))func_02010e94)(14, 17, 0);
+    OS_RestoreInterrupts(saved);
 }
 
 void SendFifoMessageWait(M2C_UNK arg0, M2C_UNK arg1) {
@@ -137,7 +146,7 @@ void SendFifoMessageWait(M2C_UNK arg0, M2C_UNK arg1) {
     } while (SendFifoMessage(0xE, arg0, 0) != 0);
 }
 
-s32 func_02011034(s32 a,s32 b) {
+s32 WFC_InitCommandChannel(s32 a,s32 b) {
 s32 func_02011060(s32,s32,s32);extern M2C_UNK gWfcChannelState;
 s32 result=func_02011060(a,b,0xF00);
 if(result!=0)return result;
@@ -252,20 +261,23 @@ s32 WFC_ShutdownCommandChannel(void) {
 
 void WFC_SetChannelParam(s32 a,s32 b){extern M2C_UNK gWfcChannelState;M2C_FIELD(M2C_FIELD(&gWfcChannelState,s32 *,4)+a*4,s32 *,24)=b;}
 
+/* Take a free 0x100-byte command block from the channel's free queue: invalidate
+ * its cached free bit and hand it out once the firmware has released it.  A block
+ * the firmware is still using goes back to the queue and the caller gets NULL. */
 u16 *WFC_AllocBuffer(void) {
     s32 OS_ReceiveMessage(M2C_UNK *, u16 **, M2C_UNK);
     M2C_UNK OS_JamMessage(M2C_UNK *, u16 *, M2C_UNK);
     extern M2C_UNK gWfcFreeBufferQueue;
-    u16 *sp0;
+    u16 *block;
 
-    if (OS_ReceiveMessage(&gWfcFreeBufferQueue, &sp0, 0) == 0) {
+    if (OS_ReceiveMessage(&gWfcFreeBufferQueue, &block, 0) == 0) {
         return NULL;
     }
-    DC_InvalidateRange(sp0, 2);
-    if (*sp0 & 0x8000) {
-        return sp0;
+    DC_InvalidateRange(block, sizeof(u16));
+    if (*block & WFC_CMD_BLOCK_FREE) {
+        return block;
     }
-    OS_JamMessage(&gWfcFreeBufferQueue, sp0, 1);
+    OS_JamMessage(&gWfcFreeBufferQueue, block, 1);
     return NULL;
 }
 

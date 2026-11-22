@@ -27,16 +27,20 @@ default:SetNetError(code,detail+0xfffe90d0);break;
 return result;
 }
 
-s32 ReportPeerConnectResult(s32 a,s32 unused,s32 off) {
-s32 code=a;
-if(a==0)return 0;
-switch(a){
-case 1:code=9;off=code-10;break;
-case 2:code=6;off=code-56;break;
-case 3:code=6;off=code-36;break;
-}
-ReportConnectionError(code,off+0xfffeb010);
-return a;
+/* Reports the result of a peer connection attempt: maps the result code (1..3) to
+   a WFC error class and a detail word for this call site, hands them to
+   ReportConnectionError, and returns the result unchanged.  Result 0 (success)
+   reports nothing. */
+s32 ReportPeerConnectResult(s32 result, s32 unused, s32 detail) {
+    s32 errorCode = result;
+    if (result == 0) return 0;
+    switch (result) {
+    case 1: errorCode = 9; detail = errorCode - 10; break;
+    case 2: errorCode = 6; detail = errorCode - 56; break;
+    case 3: errorCode = 6; detail = errorCode - 36; break;
+    }
+    ReportConnectionError(errorCode, detail + 0xfffeb010);
+    return result;
 }
 
 #pragma opt_propagation off

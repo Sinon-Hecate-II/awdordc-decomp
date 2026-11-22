@@ -16,6 +16,7 @@
 #define PANEL_STAT_SOURCE  0x36 /* PanelStat[5]: the player's own stat values, compared against the other panel's */
 #define PANEL_STAT_DISPLAY 0x4a /* PanelStat[5]: those values rebased onto the other player and drawn as the gauge entries */
 #define PANEL_GAUGES_SHOWN 0x65 /* u8 nonzero when the player's CO gauge entries are drawn (CO record byte 0x3C) */
+#define PANEL_CO_GAUGE_FLAG 0x3C /* u8 in the CO stat table (PANEL_STAT_TABLE): nonzero when that CO's gauge entries are drawn */
 
 /* One side's battle unit view on the versus screen (gUnitViews): the HP-gauge
  * animation and the character effect drawn for that player.  The two views lie
@@ -28,7 +29,8 @@
 #define UNIT_VIEW_EXPRESSION   0x04 /* s8 character expression, -1 = none */
 #define UNIT_VIEW_SHAKE        0x05 /* u8 frames of screenshake left */
 #define UNIT_VIEW_COLOR        0x06 /* u16 gauge/panel colour */
-#define UNIT_VIEW_SLOTS        0x08 /* void *[5]: the unit models the view draws, 4 bytes apart */
+#define UNIT_VIEW_SLOTS        0x08 /* void *[UNIT_VIEW_MODEL_COUNT]: the unit models the view draws, 4 bytes apart */
+#define UNIT_VIEW_MODEL_COUNT  5    /* unit models a view holds in UNIT_VIEW_SLOTS */
 #define UNIT_VIEW_SCALE        0x1C /* u16 8.8 scale applied to the view's 3D sprite (0x100 = 1.0) */
 #define UNIT_VIEW_X            0x1E /* s16 x of the gauge/effect sprite */
 #define UNIT_VIEW_SPRITE_X     0x20 /* s16 x added to the sprite's 3D position */

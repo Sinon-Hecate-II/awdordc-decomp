@@ -122,7 +122,7 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
  * or the query cannot be started. */
 s32 Ov010_RequestWfcMatch(s32 names,s32 count,s32 timeout,s32 flagsOut,s32 countOut){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED))return 0;MI_CpuFill8(flagsOut,0,count);M2C_FIELD(countOut,s32 *,0)=0;return func_02036ec0(names,count,0,timeout,flagsOut,countOut,255);}
 
-s32 func_ov010_02229f64(void) {
+s32 Ov010_IsWfcMatchRunning(void) {
     u32 PollWfcMatchRequest();
     s32 var_r4;
     u32 temp_r0;
@@ -149,8 +149,8 @@ void func_ov010_02229f98(void *arg0) {
 }
 
 void func_ov010_02229fc0(void) {
-    M2C_UNK func_ov010_02229f64();
-    func_ov010_02229f64();
+    M2C_UNK Ov010_IsWfcMatchRunning();
+    Ov010_IsWfcMatchRunning();
 }
 
 void func_ov010_02229fcc(void) {

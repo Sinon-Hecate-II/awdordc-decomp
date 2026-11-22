@@ -192,17 +192,19 @@ void func_020d87d8(void) {
     }
 }
 
+/* Set the cursor cell's display mode to the screen its target tile is on: the
+ * upper screen (0) or the lower one (0xA8). */
 void UpdateCursorCellDisplayMode(void) {
     extern void **gCurrentMap;
-    s32 temp_r0;
+    s32 displayMode;
 
-    temp_r0 = GetCursorCellDisplayMode();
-    switch (temp_r0) {                              /* irregular */
+    displayMode = GetCursorCellDisplayMode();
+    switch (displayMode) {
     case 0:
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) = 0;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_CELL_DISPLAY_MODE) = MAP_CURSOR_CELL_UPPER;
         return;
     case 1:
-        M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) = 0xA8;
+        M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_CELL_DISPLAY_MODE) = MAP_CURSOR_CELL_LOWER;
         return;
     }
 }

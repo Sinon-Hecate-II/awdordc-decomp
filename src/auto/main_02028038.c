@@ -86,16 +86,19 @@ s32 func_020282a8(u32 arg0) {
 }
 
 #pragma optimization_level 2
+/* Finishes the WFC session: raises its abort flag so later calls do nothing, and
+   unless the session step task is still running, moves it to the final error
+   state and reports WFC error event 7 (code 0x610). */
 void WFC_Finish(void){
  extern void *gWfcSession;
  void func_02028ef4(void);
  s32 func_02012274(void (*)(void));
  u8 *p=(u8 *)gWfcSession;
- p += 0x2000;
- if(p[0x26b])return;
- p[0x26b]=1;
+ p += WFC_SESSION_PLAYER_BLOCK;
+ if(p[WFC_SESSION_BLOCK_ABORT])return;
+ p[WFC_SESSION_BLOCK_ABORT]=1;
  if(func_02012274(func_02028ef4)==2)return;
- WFC_SetState(11);
+ WFC_SetState(WFC_SESSION_STATE_ERROR);
  WFC_DispatchEvent(7,0,0,0x610);
 }
 #pragma optimization_level reset

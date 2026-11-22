@@ -197,7 +197,7 @@ return 1;
 #pragma opt_common_subs off
 #pragma opt_strength_reduction on
 void func_ov000_021895bc(void){
- extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 data_ov000_021df7e4[];extern u8 *gAiCommandState;
+ extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern u8 gAiUnitLoadCounts[];extern u8 *gAiCommandState;
  void FloodFillUnitRange();void MarkAdjacentCells();s32 CanKindLoad();s32 Divide();s32 IsCurrentPlayerUnit(s16);s32 func_ov000_02189248(u8 *,s16 *);void SetMapCursor();void PlanMoveDestination();void ChooseCaptureDestination();
  s32 bestx,besty,best,index,offset,minx,maxy; s16 out[2];
  register s32 zero;register u8 *other;register s32 score,x;register u8 *unit;register s32 y,maxx;void *map,*tile;s32 n,dx,dy,dist,ux,uy;
@@ -214,7 +214,7 @@ void func_ov000_021895bc(void){
  if(M2C_FIELD(M2C_FIELD(map+unit[2]*4,s8 **,0x52e8),s8 *,unit[1])<0)goto next;
  if(!CanKindLoad((u32)(M2C_FIELD(map,u8 **,0x52d0)[0]<<26)>>26,n))goto next;
  if((u32)(M2C_FIELD(unit,u16 *,8)<<16)>>30!=2)goto next;
- if(data_ov000_021df7e4[index&63])goto next;
+ if(gAiUnitLoadCounts[index&63])goto next;
  if(!FindAdjacentPassableTile(unit[1],unit[2],out))goto next;
  score=(Divide(M2C_FIELD(M2C_FIELD(*gCurrentMap+out[1]*4,s8 **,0x52e8),s8 *,out[0]),gAiCommandState[5])+1)<<7;
  ux=unit[1];uy=unit[2];minx=ux-4;if(minx<0)minx=0;
@@ -242,7 +242,7 @@ void func_ov000_021895bc(void){
  if(func_ov000_02189248(unit,out)==1){
  map=*gCurrentMap;
  n=M2C_FIELD(map,u8 *,bestx+M2C_FIELD(map+besty*2,u16 *,0x3758));
- data_ov000_021df7e4[n&63]++;
+ gAiUnitLoadCounts[n&63]++;
  ux=out[0];uy=out[1];map=*gCurrentMap;
  if(M2C_FIELD(map,u8 *,ux+M2C_FIELD(map+uy*2,u16 *,0x3758))==0&&M2C_FIELD(M2C_FIELD(map+uy*4,s8 **,0x52e8),s8 *,ux)<=gAiCommandState[5]){
  SetMapCursor(ux,uy,2,0,0);return;

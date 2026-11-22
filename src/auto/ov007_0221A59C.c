@@ -17,7 +17,7 @@ struct TileCardinalNeighbors_0221 { s16 values[12]; };
 void func_ov007_0221a59c(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],gSpriteDesc64x32[];
-extern s32 data_ov007_02221e08;extern u32 gFrameCounter;
+extern s32 gMapEditorMapNameTileWidth;extern u32 gFrameCounter;
 void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
 s32 GetCachedPlayerUnitCount(s32);s32 GetMapEditorMode(void);s32 GetMapEditorUnitOwner(void);s32 MapEditor_GetPropertyCount(void);
 void DrawFrameRectBorder(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
@@ -59,7 +59,7 @@ SetTextSpriteValue(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c2));
 M2C_FIELD(sp,s16 *,6)=0x1e;M2C_FIELD(sp,s16 *,8)=0xb5;DrawTextSprite(sp);
 SetTextSpriteValue(sp,M2C_FIELD(*gCurrentMap,s16 *,0x52c4));
 M2C_FIELD(sp,s16 *,6)=0x47;M2C_FIELD(sp,s16 *,8)=0xb5;DrawTextSprite(sp);
-DrawTileRow((u16)((((0x70-data_ov007_02221e08)>>1)+6)&0x1ff),0xff,(u16)data_ov007_02221e08,(u16)((0x3ff&(0x1cc>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xe000),15);
+DrawTileRow((u16)((((0x70-gMapEditorMapNameTileWidth)>>1)+6)&0x1ff),0xff,(u16)gMapEditorMapNameTileWidth,(u16)((0x3ff&(0x1cc>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xe000),15);
 if(MapEditor_PlayerHasTeam(-1)!=0){
 if((gFrameCounter&63)<48){AddSprite(192,180,(u16)((0x3ff&(396>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(13<<12)),gSpriteDesc64x32,15);}
 }else{AddSprite(192,180,(u16)((0x3ff&(428>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(13<<12)),gSpriteDesc64x32,15);}
@@ -83,12 +83,12 @@ void MapEditor_RefreshGraphics(void) {
     M2C_UNK func_ov007_02219d10();
     M2C_UNK MapEditor_LoadTerrainBrushGraphics();
     M2C_UNK func_ov007_0221a018();
-    M2C_UNK func_ov007_0221a104();
+    M2C_UNK MapEditor_RenderMapName();
     MapEditor_LoadTerrainBrushGraphics();
     func_ov007_0221a018();
     MapEditor_LoadPlayerPalettes();
     func_ov007_02219d10();
-    func_ov007_0221a104();
+    MapEditor_RenderMapName();
 }
 
 /* Size the map editor's preview to the map: clear the top screen's third 3D

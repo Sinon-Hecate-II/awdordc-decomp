@@ -73,7 +73,7 @@ if(dist>=0 && dist<=radius+offset) data_ov000_021e0550[xx+yy*M2C_FIELD(*gCurrent
 }
 
 #pragma optimization_level 3
-void func_ov000_021855e4(void) {
+void BuildAiThreatMap(void) {
 extern u8 *gAiCommandState; extern s8 gTerrainPropertyFlags[];
 void MI_CpuFill8(void*,s32,s32); s32 GetTerrainThreatRadius(s32,s32);
 void func_ov000_0218500c(s32,s32,s32,s32); s32 IsCellOwnedByOtherArmy(s16,s16,s16);

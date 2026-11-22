@@ -26,14 +26,18 @@ void func_020d54b4(void) {
 
 }
 
-void func_020d54b8(void) {
- extern void *gCurrentMap;
- UpdateMapCursorInput();func_0207a7a4(1,8);
- if(!IsMapCursorIdle())return;
- if(!func_020bcc04())return;
- if(!func_020bdcd0())return;
- Reset3DSpriteBankState();
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
+/* Battle-map input mode 10 (cursor settling): keep the cursor and map view
+ * moving, and once the cursor is idle, the B key is released and the stylus is
+ * not being dragged, reset the 3D sprite bank and return to cursor mode. */
+void UpdateMapCursorSettle(void) {
+    extern void *gCurrentMap;
+    UpdateMapCursorInput();
+    func_0207a7a4(1, 8);
+    if (!IsMapCursorIdle()) return;
+    if (!GetMapSettleKeyAction()) return;
+    if (!GetMapSettleTouchAction()) return;
+    Reset3DSpriteBankState();
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
 void func_020d5514(void) {
@@ -53,7 +57,7 @@ void func_020d5514(void) {
  * leaving the cursor tile itself blocked off. */
 void ShowCursorUnitRanges(s32 x, s32 y) {
     extern void *gCurrentMap;
-    M2C_UNK func_020ba3b4();
+    M2C_UNK CanUnitAttackDirectly();
     M2C_UNK func_020ba414();
     M2C_UNK SelectMapLayer();
     M2C_UNK func_01ffc2e8();
@@ -66,7 +70,7 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
     BattleMapUnitHead *unit;
     s32 showMoveRange, showAttackRange;
 
-    showMoveRange = func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    showMoveRange = CanUnitAttackDirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     showAttackRange = func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
     if (showMoveRange) {
@@ -115,15 +119,18 @@ void ShowCursorUnitRanges(s32 x, s32 y) {
         M2C_FIELD(map + (y + 1) * 4, s8 **, MAP_GRID)[x] = 0;
 }
 #pragma opt_common_subs reset
-void func_020d5868(void) {
+/* Battle-map grid pass: mark every cell of the shared target list (gTargetList, as
+ * walked by GetTargetPosition) as holding a unit in MAP_GRID, so the cursor code
+ * draws it as an occupied target. */
+void MarkTargetCellsInGrid(void) {
  void *GetTargetPosition(s32);
  extern void *gCurrentMap;
  s32 i=0;
  for(;i<GetTargetCount();i++) {
- void *p=GetTargetPosition(i);
+ MapTargetEntry *entry=GetTargetPosition(i);
  void *base=M2C_FIELD(gCurrentMap,void **,0);
- u8 **rows=(u8 **)((u8 *)base+0x52e8);
- rows[M2C_FIELD(p,s16 *,6)][M2C_FIELD(p,s16 *,4)]=111;
+ u8 **rows=(u8 **)((u8 *)base+MAP_GRID);
+ rows[entry->y][entry->x]=MAP_GRID_HOLDS_UNIT;
  }
 }
 
@@ -156,7 +163,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
         func_020d5514();
         return 1;
     }
-    a = func_020ba3b4(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
+    a = CanUnitAttackDirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     b = func_020ba414(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     if (a == 0 && b == 0) {
         PlaySoundEffect(0x1001d);
@@ -199,7 +206,7 @@ M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=(M2C_FIELD(M
 SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap,void **,0)+MAP_CELL_ORDER);
 func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),void **,MAP_CURSOR_UNIT));
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_ACTIVE_PLAYER)=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER);
-func_020d5868();
+MarkTargetCellsInGrid();
 SetMapCursorVisible(0);CreateCursorCellBurst(7);
 M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_MODE)=2;
 StartUnitMovePath(menuMode);
@@ -237,7 +244,7 @@ void SelectCarriedUnit(u8 *transport, s32 cargoSlot, s32 menuMode) {
     SelectMapLayer((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_CELL_ORDER);
     func_01ffc2e8(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_ACTIVE_PLAYER) = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_CURRENT_PLAYER);
-    func_020d5868();
+    MarkTargetCellsInGrid();
     SetMapCursorVisible(0); CreateCursorCellBurst(7);
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u16 *, MAP_MODE) = 2;
     StartUnitMovePath(menuMode);

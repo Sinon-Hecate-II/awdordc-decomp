@@ -31,7 +31,11 @@ RefreshMapCursorCellCache();BeginWeatherResetTransition();func_020a694c();ApplyT
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
 
-void func_020d457c(void){extern void **gCurrentMap;if(func_0208f8a0())return;BuildArmyInfoWindow();if(M2C_FIELD(*gCurrentMap,u16*,0x52a2)==1){if(M2C_FIELD(*gCurrentMap,u16*,0x52a4)==1)M2C_FIELD(*gCurrentMap,u16*,0x52b0)=10;else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=9;}else M2C_FIELD(*gCurrentMap,u16*,0x52b0)=8;}
+/* Turn-banner step (MAP_STATE_TURN_BANNER): once the music fade-out from the last
+ * phase has finished, build the army-info window and pick the turn-intro step -
+ * TURN_INTRO3 for player 1 on the first turn, TURN_INTRO2 for the other players
+ * then, TURN_INTRO1 on later turns. */
+void TurnBannerStep(void){extern void **gCurrentMap;if(IsMusicFadingOut())return;BuildArmyInfoWindow();if(M2C_FIELD(*gCurrentMap,u16*,MAP_TURN)==1){if(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)==1)M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO3;else M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO2;}else M2C_FIELD(*gCurrentMap,u16*,MAP_STATE)=MAP_STATE_TURN_INTRO1;}
 
 void func_020d45d8(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,u16*,0x52b0)=M2C_FIELD(*gCurrentMap,u16*,0x52b2);M2C_FIELD(*gCurrentMap,u16*,0x52b2)=0;func_020ca4c0();}
 
@@ -233,7 +237,7 @@ int InitBattleMapPresentation(void) {
     PlaySlotScriptedSoundAtVolume(2, -1, 0x109, 0);
 }
 
-int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();func_02090034(1,10);func_02090034(2,10);}
+int func_020d4ba4(void){func_020a44e8();func_020d4d78();func_020d33ec();func_ov000_021696d4();StopSlotSound(1,10);StopSlotSound(2,10);}
 
 M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();LoadScenePanelGraphicsOnBothEngines();InitBattleMapPresentation();RefreshMapView();}
 
@@ -291,9 +295,9 @@ void func_020d4cc8(void *arg0) {
 }
 
 void *func_020d4cd4(void) {
-    void *func_01ffa860(M2C_UNK *, s32);
+    void *Find3DSpriteByClassAndZ(M2C_UNK *, s32);
     extern M2C_UNK data_0212bd84;
-    return func_01ffa860(&data_0212bd84, 0xFF03);
+    return Find3DSpriteByClassAndZ(&data_0212bd84, 0xFF03);
 }
 
 /* Create the battle map view's three sprite objects (the map itself and its two
@@ -350,7 +354,7 @@ case 6:func_020d6310();break;
 case 7:func_020d6350();break;
 case 8:UpdateMapSelectionCursor();break;
 case 9:func_020d54b4();break;
-case 10:func_020d54b8();break;
+case 10:UpdateMapCursorSettle();break;
 }
 }
 
@@ -380,9 +384,9 @@ int GetMapInputState(void) {
  * handler consume the key, draws the unit-info panel and, on a cancel action,
  * clears the unit selection. */
 void UpdateMapCursor(void) {
-s32 func_020d8f60(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 HandleMapTouchRelease(void);
+s32 IsUiCancelAvailable(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 HandleMapTouchRelease(void);
 s32 hadSelection, cancelled, playSound, key;
-hadSelection=func_020d8f60();
+hadSelection=IsUiCancelAvailable();
 cancelled=0; playSound=0;
 key=func_020bd13c();
 switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1; break; }
@@ -397,7 +401,7 @@ if(HandleMapTouchRelease()) return;
 break;
 case 0x10: func_020c752c(); return;
 case 0x100: CreateMapMenu(); return;
-case 0x40: func_020d8fa0(); break;
+case 0x40: HandleUiCancel(); break;
 case 0x80: break;
 }
 }
@@ -433,7 +437,7 @@ u8 func_020d5088(void *arg0) {
 void UpdateAimingCursor(void) {
  extern void **gCurrentMap;
  extern u8 data_0211fbc4[];
- u32 func_020bca68(void);
+ u32 GetAimCursorKeyAction(void);
  u32 GetTouchReleaseKeyAction(void);
  void *map;
  u32 keys;
@@ -454,7 +458,7 @@ void UpdateAimingCursor(void) {
  }
  if(IsMapCursorIdle()){
  keys=0;
- keys|=func_020bca68();
+ keys|=GetAimCursorKeyAction();
  keys|=GetTouchReleaseKeyAction();
  if(keys&0x10){ /* confirm the aimed tile */
  map=*gCurrentMap;
@@ -474,7 +478,7 @@ void UpdateAimingCursor(void) {
  DeleteSpriteObjectsOfClass(data_0211fbc4);
  PlaySoundEffect(0x1000f);
  } else if(keys&0x100)CreateMapMenu(); /* R menu */
- else if(keys&0x40)func_020d8fa0(); /* X close */
+ else if(keys&0x40)HandleUiCancel(); /* X close */
  }
  DrawUnitInfoPanel(2);
 }
@@ -503,7 +507,7 @@ keys |= func_020bcaf0();
 keys |= GetAimCursorTouchAction();
 if(keys&0x20) {CloseAimingCursor();return;}
 if(keys&0x100) {CreateMapMenu();return;}
-if(keys&0x40) {func_020d8fa0();return;}
+if(keys&0x40) {HandleUiCancel();return;}
 if(keys&0x10) {
 if(valid) {
 map=*gCurrentMap;

@@ -8,7 +8,27 @@ extern u8 gWhMacAddress[8], gWhPacket[8];
 
 #pragma thumb on
 s32 WhPacket_Wrap(void *a,s32 b,void *c,s32 d,s32 e){u8 *base=(u8 *)((s32)a+6);u8 *end;u8 *p; s32 bb=b;u32 sum=0;M2C_FIELD(c,u8 *,0)=0;M2C_FIELD(c,u8 *,1)=0;M2C_FIELD(c,u8 *,2)=0;M2C_FIELD(c,u8 *,3)=0;M2C_FIELD(c,u8 *,4)=0;M2C_FIELD(c,u8 *,5)=0;M2C_FIELD(c,u8 *,6)=0;M2C_FIELD(c,u8 *,7)=0;M2C_FIELD(c,u16 *,0)=((u8)((s32)(u16)(d-8)>>8)|(((u16)(d-8)<<8)&0xff00));if(e){func_ov001_0216f7c4((u8 *)a+6,c,d,e,16);d+=8;}else MemCopy((u8 *)a+6,c,d);M2C_FIELD(a,u8 *,0)=0;M2C_FIELD(a,u8 *,1)=0;M2C_FIELD(a,u8 *,2)=0;M2C_FIELD(a,u8 *,3)=0;M2C_FIELD(a,u8 *,4)=0;M2C_FIELD(a,u8 *,5)=0;M2C_FIELD(a,u16 *,0)=((u8)((s32)(u16)(bb)>>8)|(((u16)(bb)<<8)&0xff00));M2C_FIELD(a,u16 *,2)=((u8)((s32)(u16)(d)>>8)|(((u16)(d)<<8)&0xff00));end=base+d;for(p=(u8*)a;p<end;p++)sum+=*p;M2C_FIELD(end,u16 *,0)=((u8)((s32)(u16)(sum)>>8)|(((u16)(sum)<<8)&0xff00));return (s32)(end+2)- (s32)a;}
-void *WhPacket_AddField(u8 *a,s32 b,void *c,s32 d){s32 n;u16 t;M2C_FIELD(a,u8 *,0)=0;M2C_FIELD(a,u8 *,1)=0;M2C_FIELD(a,u8 *,2)=0;M2C_FIELD(a,u8 *,3)=0;t=b;M2C_FIELD(a,u16 *,0)=((u8)((s32)(u16)(t)>>8)|(((u16)(t)<<8)&0xff00));n=((d+11)&~7)-4;t=d;M2C_FIELD(a,u16 *,2)=((u8)((s32)(u16)(t)>>8)|(((u16)(t)<<8)&0xff00));a=(u8 *)((s32)a+4);MemSet(a,0,n);MemCopy(a,c,d);return (void *)((s32)a+n);}
+/* Append one tagged field to the user-data packet at `field`: a big-endian u16
+ * `tag` and byte `length`, then the `length` bytes of `data`, zero-padded to a
+ * multiple of 8 bytes.  Returns where the next field starts. */
+void *WhPacket_AddField(u8 *field, s32 tag, void *data, s32 length) {
+    s32 padBytes;
+    u16 value;
+
+    M2C_FIELD(field, u8 *, 0) = 0;
+    M2C_FIELD(field, u8 *, 1) = 0;
+    M2C_FIELD(field, u8 *, 2) = 0;
+    M2C_FIELD(field, u8 *, 3) = 0;
+    value = tag;
+    M2C_FIELD(field, u16 *, 0) = WH_READ_BE16(value);
+    padBytes = ((length + 11) & ~7) - 4;
+    value = length;
+    M2C_FIELD(field, u16 *, 2) = WH_READ_BE16(value);
+    field = (u8 *)((s32)field + 4);
+    MemSet(field, 0, padBytes);
+    MemCopy(field, data, length);
+    return (void *)((s32)field + padBytes);
+}
 
 s32 func_ov001_0216eca8(void *a,s32 b,void *c,s32 d){s32 n;M2C_FIELD(a,u8 *,0)=0;M2C_FIELD(a,u8 *,1)=0;M2C_FIELD(a,u8 *,2)=0;M2C_FIELD(a,u8 *,3)=0;M2C_FIELD(a,u8 *,4)=0;M2C_FIELD(a,u8 *,5)=0;M2C_FIELD(a,u8 *,6)=0;M2C_FIELD(a,u8 *,7)=0;n=(u8 *)WhPacket_AddField(a+8,b,c,d)-(u8 *)a;M2C_FIELD(a,u16 *,0)=n-8;return n;}
 

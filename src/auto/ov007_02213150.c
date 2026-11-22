@@ -1,6 +1,7 @@
 /* 22 functions from 0x02213150 to 0x02213E88 (ov007), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 static inline void SyncSprite13554(s32 p) {
 s32 GetUnitSpriteWidth(s32);s32 GetUnitSpriteHeight(s32);
 void func_02087d84(s32,s32,s32,s32,s32,s32);
@@ -164,7 +165,10 @@ DeleteMapMenuSprites();
 PopCarriedUnitMenuState();
 }
 
-void func_ov007_02213458(void) {
+/* Opens the map editor's map-fill menu: saves the carried-unit menu, hides the
+   map's menu sprites and the editor's sprite layer and refreshes the map view,
+   then builds the menu from the fill-preset entries at its saved selection. */
+void OpenMapEditorFillMenu(void) {
     M2C_UNK PushCarriedUnitMenuState();
     M2C_UNK DeleteMapMenuSprites();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
@@ -172,13 +176,13 @@ void func_ov007_02213458(void) {
     s32 func_020c0b9c();
     M2C_UNK func_020c0634(M2C_UNK *, s32, s32, u16, s32);
     extern void *gCur3DSpriteEngine;
-    extern M2C_UNK data_ov007_0221fa40;
+    extern M2C_UNK gMapEditorFillMenuEntries;
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
     RefreshMapView();
-    func_020c0634(&data_ov007_0221fa40, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
+    func_020c0634(&gMapEditorFillMenuEntries, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
 }
 
 /* Apply the map size chosen in the map-size panel (request->38 width,

@@ -85,7 +85,11 @@ s32 func_ov001_0216e07c(void) {
     return 0;
 }
 
-s32 func_ov001_0216e0b4(void) {
+/* WH connection start step: while the connection phase is ready to connect,
+ * start the wireless (WM) step; otherwise advance the current connection state.
+ * On success the phase moves to 2, so the started step is not begun again, and
+ * 1 is returned; 0 while it still has to be retried. */
+s32 WhBeginWirelessConnection(void) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_StartWirelessStep();
@@ -94,17 +98,17 @@ s32 func_ov001_0216e0b4(void) {
     s32 temp_r4;
 
     temp_r4 = OS_DisableInterrupts();
-    if (M2C_FIELD(&gWhState, s32 *, 0x2C) == 3) {
-        if (WFC_StartWirelessStep() != 3) {
+    if (M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) == WH_PHASE_READY_TO_CONNECT) {
+        if (WFC_StartWirelessStep() != WH_WFC_STEP_QUEUED) {
             OS_RestoreInterrupts(temp_r4);
             return 0;
         }
-        M2C_FIELD(&gWhState, s32 *, 0x2C) = 2;
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) = 2;
         OS_RestoreInterrupts(temp_r4);
         return 1;
     }
     if (WhAdvanceConnectionState() == 1) {
-        M2C_FIELD(&gWhState, s32 *, 0x2C) = 2;
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_PHASE) = 2;
         OS_RestoreInterrupts(temp_r4);
         return 1;
     }
@@ -238,19 +242,40 @@ while(r) { if(r==4 || r==5) {} else if(r==6) {active=0;result=1;} else {active=0
 }while(active);return result;
 }
 #pragma opt_propagation on
-s32 func_ov001_0216e3f0(void) {
-extern M2C_UNK gWhState;
-s32 r,again=1;
-if(func_ov001_0216e0b4()){
-do{SleepMilliseconds(10);r=WhPopEvent();
-while(r){switch(r){case 4:case 5:break;case 20:again=0;break;default:again=0;break;}r=WhPopEvent();}
-}while(again);
-}
-if(M2C_FIELD(&gWhState,s32 *,0x54)){
-M2C_FIELD(&gWhState,void (**)(s32),12)(M2C_FIELD(&gWhState,s32 *,0x54));
-M2C_FIELD(&gWhState,s32 *,0x54)=0;
-}
-return 1;
+/* Connects the console over the wireless (multi-card) link: starts the
+ * connection and pumps its events until the connect attempt is over (events 4
+ * and 5 are progress reports), then runs the overlay's cleanup callback and
+ * drops the connection context.  Always returns 1. */
+s32 WhConnectWireless(void) {
+    extern M2C_UNK gWhState;
+    s32 event;
+    s32 waiting = 1;
+
+    if (WhBeginWirelessConnection()) {
+        do {
+            SleepMilliseconds(10);
+            event = WhPopEvent();
+            while (event) {
+                switch (event) {
+                case 4:
+                case 5:
+                    break;
+                case 20:
+                    waiting = 0;
+                    break;
+                default:
+                    waiting = 0;
+                    break;
+                }
+                event = WhPopEvent();
+            }
+        } while (waiting);
+    }
+    if (M2C_FIELD(&gWhState, s32 *, WH_STATE_CONTEXT)) {
+        M2C_FIELD(&gWhState, void (**)(s32), WH_STATE_CLEANUP)(M2C_FIELD(&gWhState, s32 *, WH_STATE_CONTEXT));
+        M2C_FIELD(&gWhState, s32 *, WH_STATE_CONTEXT) = 0;
+    }
+    return 1;
 }
 
 #pragma thumb on

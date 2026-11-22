@@ -227,6 +227,8 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_ENGINE_OAM      0x34 /* void *OAM shadow of this engine, 0x400 bytes */
 #define DS3D_ENGINE_SRC      0x38 /* u16 *quads queued for the next flush, four u16 each */
 #define DS3D_ENGINE_COUNT    0x48 /* u8 OAM entries in use */
+#define DS3D_ENGINE_SPRITE_LIST  0x08 /* void *head of this engine's priority-sorted 3D sprite list */
+#define DS3D_ENGINE_SPRITE_COUNT 0x49 /* u8 3D sprites allocated into that list (its next-array index) */
 #define DS3D_ENGINE_INDEX    0x4A /* u8 quads queued since the last flush */
 #define DS3D_ENGINE_TEXTURE 0x1C /* u32 VRAM address graphics blocks are decompressed to */
 #define DS3D_ENGINE_PALETTES 0x30 /* void *0x400-byte OBJ palette shadow: 32 palettes of 0x20 bytes */
@@ -485,7 +487,7 @@ typedef struct UiModeState {
  * (see main_02080414.c) moves one or both engines' offset pair along a
  * looping 2-D path and hands the object back to its regular animation after
  * `steps` path points (or after the first pass when `steps` is -1).  The path
- * tables are the pointers in g3DSpriteOffsetTracks; a point whose x is 0x7FFF
+ * tables are the pointers in g3DSpriteOffsetTrackPaths; a point whose x is 0x7FFF
  * ends a pass. */
 typedef struct DS3DSpriteOffsetTrack {
     u8  pad00[0x4C];

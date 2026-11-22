@@ -125,7 +125,7 @@ void func_02060a20(void) {
     M2C_FIELD(&gQr2ParseState, s32 *, 8) = 0;
 }
 
-void func_02060a60(void **arg0) {
+void SBServerFree(void **arg0) {
     M2C_UNK TableFree(s32);
     void *temp_r4;
 
@@ -234,17 +234,20 @@ void func_02060cbc(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 0x20) = arg1;
 }
 
-s32 func_02060cc4(void *arg0) {
+s32 SBServerGetNext(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 0x20);
 }
 
-s32 Qr2_IsServerField(M2C_UNK *arg0){
- s32 StringCompare(s32,void *);
- extern void *gQr2MetaFields[2];
- void *sp0[2]; void **arr=sp0; u32 i;
- sp0[0]=gQr2MetaFields[0];sp0[1]=gQr2MetaFields[1];
- for(i=0;i<2;i++){if(!StringCompare((s32)arg0,arr[i]))return 0;}
- return 1;
+/* True when a key from a QR2 reply is an ordinary server field: the reply's
+ * meta keys ("queryid" and "final", gQr2MetaFields) are not stored in the
+ * server record. */
+s32 Qr2_IsServerField(M2C_UNK *key) {
+    s32 StringCompare(s32, void *);
+    extern char *gQr2MetaFields[2];
+    char *metaKeys[2]; char **meta = metaKeys; u32 i;
+    metaKeys[0] = gQr2MetaFields[0]; metaKeys[1] = gQr2MetaFields[1];
+    for (i = 0; i < 2; i++) { if (!StringCompare((s32) key, meta[i])) return 0; }
+    return 1;
 }
 
 /* QR2 reply field tokenizer: `input`, when nonzero, restarts the shared parse
@@ -521,9 +524,12 @@ void SendToPlayerList(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g){
  SBServerListQuery(a,b,c,d,e,f,128,g);
 }
 
-void func_02061638(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3, s32 arg4) {
+/* Resolve `host` to a numeric address and send `length` bytes of `packet` to that
+ * host and `port` through the server browser's transport, swapping the port to
+ * network byte order first.  Returns the transport's result. */
+s32 SBServerListSendToAddress(s32 browser, char *host, s32 port, void *packet, s32 length) {
     M2C_UNK func_02063aa8(s32, s32, u16, M2C_UNK, s32);
-    func_02063aa8(arg0 + 0x4C, ghiInetAddr(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3, arg4);
+    return func_02063aa8(browser + SB_LIST_QUERY, ghiInetAddr(host), (u16) ((u8) (port >> 8) | ((port << 8) & 0xFF00)), packet, length);
 }
 
 void func_02061690(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {

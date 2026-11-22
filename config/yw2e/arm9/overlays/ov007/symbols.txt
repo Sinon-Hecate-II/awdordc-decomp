@@ -61,7 +61,7 @@ func_ov007_022133f8 kind:function(arm,size=0x18) addr:0x022133f8
 func_ov007_02213410 kind:function(arm,size=0x18) addr:0x02213410
 func_ov007_02213428 kind:function(arm,size=0x18) addr:0x02213428
 func_ov007_02213440 kind:function(arm,size=0x18) addr:0x02213440
-func_ov007_02213458 kind:function(arm,size=0x5c) addr:0x02213458
+OpenMapEditorFillMenu kind:function(arm,size=0x5c) addr:0x02213458
 MapEditor_ApplyMapSize kind:function(arm,size=0x78) addr:0x022134b4
 func_ov007_0221352c kind:function(arm,size=0x28) addr:0x0221352c
 func_ov007_02213554 kind:function(arm,size=0x7a0) addr:0x02213554
@@ -175,7 +175,7 @@ MapEditor_DrawCatalogueCell kind:function(arm,size=0xb8) addr:0x02219c58
 func_ov007_02219d10 kind:function(arm,size=0x23c) addr:0x02219d10
 MapEditor_LoadTerrainBrushGraphics kind:function(arm,size=0xcc) addr:0x02219f4c
 func_ov007_0221a018 kind:function(arm,size=0xec) addr:0x0221a018
-func_ov007_0221a104 kind:function(arm,size=0x5c) addr:0x0221a104
+MapEditor_RenderMapName kind:function(arm,size=0x5c) addr:0x0221a104
 func_ov007_0221a160 kind:function(arm,size=0x408) addr:0x0221a160
 func_ov007_0221a568 kind:function(arm,size=0x34) addr:0x0221a568
 func_ov007_0221a59c kind:function(arm,size=0x584) addr:0x0221a59c
@@ -247,7 +247,7 @@ func_ov007_0221f244 kind:function(arm,size=0xc) addr:0x0221f244
 func_ov007_0221f250 kind:function(arm,size=0x14) addr:0x0221f250
 func_ov007_0221f264 kind:function(arm,size=0xc) addr:0x0221f264
 CreateMapEditList kind:function(arm,size=0x1e8) addr:0x0221f270
-func_ov007_0221f458 kind:function(arm,size=0x58) addr:0x0221f458
+DestroyMapEditList kind:function(arm,size=0x58) addr:0x0221f458
 func_ov007_0221f4b0 kind:function(arm,size=0x50) addr:0x0221f4b0
 data_ov007_0221f500 kind:data(any) addr:0x0221f500
 data_ov007_0221f508 kind:data(any) addr:0x0221f508
@@ -272,7 +272,7 @@ data_ov007_0221f890 kind:data(any) addr:0x0221f890
 data_ov007_0221f918 kind:data(any) addr:0x0221f918
 data_ov007_0221f9a8 kind:data(any) addr:0x0221f9a8
 data_ov007_0221fa00 kind:data(any) addr:0x0221fa00 ambiguous
-data_ov007_0221fa40 kind:data(any) addr:0x0221fa40
+gMapEditorFillMenuEntries kind:data(any) addr:0x0221fa40
 data_ov007_0221fb30 kind:data(any) addr:0x0221fb30
 data_ov007_0221fbc8 kind:data(any) addr:0x0221fbc8 ambiguous
 data_ov007_0221fc20 kind:data(any) addr:0x0221fc20
@@ -1028,6 +1028,6 @@ gPlayerUnitCounts kind:bss addr:0x02221a48
 data_ov007_02221a50 kind:bss addr:0x02221a50
 gMapMarkerGrid kind:bss addr:0x02221a84
 data_ov007_02221da4 kind:bss addr:0x02221da4 ambiguous
-data_ov007_02221e08 kind:bss addr:0x02221e08
+gMapEditorMapNameTileWidth kind:bss addr:0x02221e08
 gMapEditRecords kind:bss addr:0x02221e0c
 gMapEditObjectList kind:bss addr:0x02221e10

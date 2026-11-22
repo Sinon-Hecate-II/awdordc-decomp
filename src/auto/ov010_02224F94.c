@@ -557,8 +557,8 @@ M2C_FIELD(&gStreamVoiceState,s32 *,4)=1;
 
 void DisableVoiceStream(void) {
 extern s32 gStreamVoiceState;
-void func_0200df14(void (*)(void),s32);
-func_0200df14(func_ov010_02225948,0);
+void Arm7TransferEnd(void (*)(void),s32);
+Arm7TransferEnd(func_ov010_02225948,0);
 M2C_FIELD(&gStreamVoiceState,s32 *,4)=0;
 }
 

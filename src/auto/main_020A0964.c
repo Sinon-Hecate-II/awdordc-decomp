@@ -165,7 +165,7 @@ void func_020a0d18(void) {
     M2C_UNK ReplayCursorPathSteps(void);
     M2C_UNK IsMovePathCellUnique(void);
     M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
-    s32 func_020a0300(s8, s8);
+    s32 FindMovePathStep(s8, s8);
     void func_020a0068(s8);
     void AppendMovePathStep(s8, s8);
     s32 GetPlayerArmyVariant(s32);
@@ -232,7 +232,7 @@ void func_020a0d18(void) {
         x = sx; y = sy;
     }
     if ((*(s8 **)((u8 *)*gCurrentMap + y * 4 + 0x52e8))[x] == -1) return;
-    result = func_020a0300((s8)x, (s8)y);
+    result = FindMovePathStep((s8)x, (s8)y);
     if (result != -1) {
         func_020a0068((s8)(result + 1));
         ctx = (s8 *)gUnitMovePath;

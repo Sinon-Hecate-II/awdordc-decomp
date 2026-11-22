@@ -176,21 +176,25 @@ void Ov010_StartMatchQuery(void *label) {
     SetSpriteAnimation(label, 0x10);
 }
 
-void func_ov010_0222b01c(void *arg0) {
+/* Online-match name-label step: while the WFC match query started by
+ * Ov010_StartMatchQuery is still running, do nothing.  Once it has finished,
+ * close the status text window if the label has one, then switch the label to
+ * its confirmed (11) or waiting (16) animation. */
+void Ov010_UpdateMatchQuery(void *label) {
     M2C_UNK StartWindowClose();
     s32 FindTextLayer();
-    s32 func_ov010_02229f64();
-    if (func_ov010_02229f64() != 0) {
+    s32 Ov010_IsWfcMatchRunning();
+    if (Ov010_IsWfcMatchRunning() != 0) {
         return;
     }
-    if (((s32) M2C_FIELD(arg0, s8 *, 0x35) >= 0) && (FindTextLayer() != 0)) {
+    if (((s32) M2C_FIELD(label, s8 *, TEXT_LAYER_ENGINE) >= 0) && (FindTextLayer() != 0)) {
         StartWindowClose();
     }
-    if (M2C_FIELD(arg0, u8 *, 0x34) & 1) {
-        SetSpriteAnimation(arg0, 0xB);
+    if (M2C_FIELD(label, u8 *, TEXT_LAYER_FLAGS) & TEXT_LAYER_FLAG_CONFIRMED) {
+        SetSpriteAnimation(label, 0xB);
         return;
     }
-    SetSpriteAnimation(arg0, 0x10);
+    SetSpriteAnimation(label, 0x10);
 }
 
 void func_ov010_0222b074(void) {

@@ -13,7 +13,7 @@ s32 GetSessionPlayerSlot(s32 profileId) {
  }return -1;
 }
 
-void func_0203af18(void) {
+void MatchSession_ResetThinkTimer(void) {
  extern M2C_UNK gMatchSessionMgr; u64 GetSystemTick(void);
  u64 t; void *p=M2C_FIELD(&gMatchSessionMgr,void **,8);
  if(!p)return;

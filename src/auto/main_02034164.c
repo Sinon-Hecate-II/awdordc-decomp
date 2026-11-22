@@ -26,7 +26,7 @@ Pair02034164 headers[32];     /* +0x1A38: parsed response header name/value pair
 } Unk02034164;
 
 void HttpClientTask(Unk02034164 *client) {
-    void func_02034010(Unk02034164 *);
+    void HttpClientInitRawConnection(Unk02034164 *);
     s32 func_02034068(Unk02034164 *);
     void ResetCurrentConnection(void);
     M2C_UNK MI_CpuFill8(void *, s32, s32);
@@ -77,7 +77,7 @@ void HttpClientTask(Unk02034164 *client) {
     parsed = 0;
 
     if (timeout <= 0) timeout = 60000;
-    func_02034010(client);
+    HttpClientInitRawConnection(client);
     host = func_02034068(client);
     if (host == 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 2;

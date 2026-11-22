@@ -109,8 +109,31 @@ void ConfirmFirstMenuOption(void *entry) {
     Sprite_ResumeAnimation(menu);
 }
 
-void func_020d9ee4(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40){if(temp_r3==0){if(temp_r2&0x40)var_r0=4;}else var_r0=temp_r3-1;}else if(temp_r1&0x80) var_r0=temp_r3+1; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
+/* Move the focus of a five-option list with the d-pad: up goes to the previous
+ * option (from the first, only a fresh press wraps to the last), down to the next,
+ * and the focus sprite follows the new option when it changed. */
+void HandleFiveOptionListInput(u8 *option) {
+    M2C_UNK FocusSpriteSlotById();
+    extern void *gKeyState;
+    u16 repeat;
+    u16 pressed;
+    u8 selection;
+    s32 next;
+
+    selection = *option;
+    repeat = M2C_FIELD(gKeyState, u16 *, 2);      /* KeyState::repeat */
+    next = selection;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);     /* KeyState::pressed */
+    if (repeat & KEY_UP) {
+        if (selection == 0) {
+            if (pressed & KEY_UP) next = 4;
+        } else next = selection - 1;
+    } else if (repeat & KEY_DOWN) {
+        next = selection + 1;
+    }
+    if (next == selection) return;
+    FocusSpriteSlotById(next);
+}
 
 #pragma scheduling off
 /* Draw the option widget's four 5-wide progress bars (columns 1/6/11/16) onto

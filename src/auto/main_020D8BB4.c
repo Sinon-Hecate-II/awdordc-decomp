@@ -1,6 +1,7 @@
 /* 152 functions from 0x020D8BB4 to 0x020D9A98 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "sound.h"
 typedef struct { u16 values[6]; } SetupParams12;
 
 void func_020d8bb4(void) {
@@ -62,7 +63,7 @@ void func_020d8cfc(void) {
 
 }
 
-u8 func_020d8d00(void) {
+u8 HasSubScreenUi(void) {
     s32 FindObjectByClass(void *);
     extern M2C_UNK gSubScreenUiClass;
     extern void *g3DSpriteEngineSub;
@@ -109,7 +110,7 @@ u8 IsUiModeSwitchBusy(void) {
     extern void *gCur3DSpriteEngine;
     void *savedEngine;
     u8 busy;
-    if (func_020d8d00() == 0) return 0;
+    if (HasSubScreenUi() == 0) return 0;
     if (((UiModeState *)gUiMode)->requested != ((UiModeState *)gUiMode)->current) return 1;
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
@@ -119,19 +120,50 @@ u8 IsUiModeSwitchBusy(void) {
     return busy;
 }
 
-void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK gSubScreenUiClass;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&gSubScreenUiClass);gCur3DSpriteEngine=p;}
+void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK gSubScreenUiClass;void *p;if(!HasSubScreenUi())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&gSubScreenUiClass);gCur3DSpriteEngine=p;}
 
-void func_020d8e70(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;M2C_FIELD(gUiMode,s16 *,6)=M2C_FIELD(gUiMode,s16 *,2);p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(3,M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
+/* Enters the sub screen's UI (mode 3): when the sub-screen UI object exists, save
+   the current UI mode and switch to mode 3 with the stored parameter, drawing on
+   the sub engine. */
+void EnterSubScreenUi(void) {
+    s32 SetUiMode(s32, s32);
+    extern void *gUiMode;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub;
+    void *savedEngine;
+    if (!HasSubScreenUi()) return;
+    ((UiModeState *)gUiMode)->saved = ((UiModeState *)gUiMode)->current;
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    SetUiMode(3, ((UiModeState *)gUiMode)->param);
+    gCur3DSpriteEngine = savedEngine;
+}
 
-void func_020d8ecc(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!func_020d8d00())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(M2C_FIELD(gUiMode,s16 *,6),M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
+void func_020d8ecc(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!HasSubScreenUi())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(M2C_FIELD(gUiMode,s16 *,6),M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
 
 s32 SetUiMode(s32 a,s32 b){extern void *gUiMode;if(a==M2C_FIELD(gUiMode,s16 *,2))return 0;M2C_FIELD(gUiMode,s16 *,4)=a;M2C_FIELD(gUiMode,s32 *,8)=b;return 1;}
 
 s32 GetUiMode(void){extern void *gUiMode;return M2C_FIELD(gUiMode,s16 *,2);}
 
-s32 func_020d8f60(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *gUiMode;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
+s32 IsUiCancelAvailable(void){s32 func_ov000_02174d50(void);s32 func_020adff4(void);extern void *gUiMode;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:return func_ov000_02174d50();case 2:return func_020adff4();default:return 0;}}
 
-s32 func_020d8fa0(void){void func_ov000_02174d78(void);void func_020ae068(void);void PlaySoundEffect(s32);extern void *gUiMode;if(!func_020d8f60())return 0;switch(M2C_FIELD(gUiMode,s16 *,2)){case 1:func_ov000_02174d78();break;case 2:func_020ae068();break;}PlaySoundEffect(0x10022);return 1;}
+/* Handles the X (cancel) key for the current UI mode: when the mode can take a
+ * cancel, runs its close handler - toggles the battle-info window's panel
+ * (mode 1) or cancels the screen transition (mode 2) - plays the close sound
+ * and reports the key as consumed. */
+s32 HandleUiCancel(void) {
+    void func_ov000_02174d78(void);
+    void func_020ae068(void);
+    void PlaySoundEffect(s32);
+    extern void *gUiMode;
+
+    if (!IsUiCancelAvailable()) return 0;
+    switch (((UiModeState *)gUiMode)->current) {
+    case 1: func_ov000_02174d78(); break;
+    case 2: func_020ae068(); break;
+    }
+    PlaySoundEffect(SOUND_MENU_CLOSE);
+    return 1;
+}
 
 void func_020d8ff8(void) {
     M2C_UNK func_01ffaa0c(s32);

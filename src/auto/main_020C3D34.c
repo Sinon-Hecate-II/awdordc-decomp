@@ -121,10 +121,17 @@ M2C_FIELD(gBreakCutIn,s32*,0)++;
 if((M2C_FIELD(gBreakCutIn,s32*,0)<250)&&!(*gKeyState&1))return;
 M2C_FIELD(gBreakCutIn,s32*,4)=0;Sprite_ResumeAnimation(arg0);}
 
-void func_020c4658(M2C_UNK arg0){extern void *gBreakCutIn;
-M2C_FIELD(gBreakCutIn,s32*,0)++;M2C_FIELD(gBreakCutIn,s32*,4)++;
-if(M2C_FIELD(gBreakCutIn,s32*,0)>=250)M2C_FIELD(gBreakCutIn,s32*,0)=250;
-if(M2C_FIELD(gBreakCutIn,s32*,4)<64)return;Sprite_ResumeAnimation(arg0);}
+/* Per-frame wait step of the break cut-in: advance the cut-in's frame counter
+ * (capped at 250) and this step's own counter, then resume the sprite's animation
+ * script once the step has run for 64 frames. */
+void BreakCutInWaitFrames(void *sprite) {
+    extern void *gBreakCutIn;
+    M2C_FIELD(gBreakCutIn, s32 *, 0)++;
+    M2C_FIELD(gBreakCutIn, s32 *, 4)++;
+    if (M2C_FIELD(gBreakCutIn, s32 *, 0) >= 250) M2C_FIELD(gBreakCutIn, s32 *, 0) = 250;
+    if (M2C_FIELD(gBreakCutIn, s32 *, 4) < 64) return;
+    Sprite_ResumeAnimation(sprite);
+}
 
 /* Tear down the battle-start "break" cut-in: free its effect state and switch the
  * remaining layer flags off on the sub engine's sprite bank. */

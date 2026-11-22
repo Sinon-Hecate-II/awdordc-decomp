@@ -70,9 +70,13 @@ typedef s32 M2C_UNK;
 
 typedef struct OSLockWord {
     volatile u32 lockFlag;
-    u16 ownerId;
+    u16 ownerId;   /* +0x04 lock id owning the word, 0 when the word is free */
     u16 extension;
 } OSLockWord;
+
+/* OS_GetLockID hands out ids 64..127, so bit 6 of a nonzero ownerId is always
+ * set: testing it tells whether some lock id owns the word. */
+#define OS_LOCK_WORD_OWNED 0x40
 
 enum { OS_UNLOCK_NOT_OWNER = -2 };
 typedef s8 M2C_UNK8;
@@ -184,10 +188,14 @@ typedef struct UdpDatagram {
 #define SOCKET_LOCAL_ADDR 0x14 /* u32 local address */
 #define SOCKET_PEER_PORT  0x18 /* u16 peer port, 0 until a peer is bound */
 #define SOCKET_PEER_ADDR  0x1C /* u32 peer address, 0 or -1 until a peer is bound */
+#define SOCKET_NEXT_PEER_PORT 0x1A /* u16 peer port staged before it is committed to SOCKET_PEER_PORT */
+#define SOCKET_NEXT_PEER_ADDR 0x20 /* u32 peer address staged before it is committed to SOCKET_PEER_ADDR */
 #define SOCKET_DATA_CB    0x38 /* s32 (*)(void *, u32, void *) receive callback */
 #define SOCKET_RX_CAP     0x3C /* u32 receive buffer capacity */
 #define SOCKET_RX_BUFFER  0x40 /* void *receive buffer */
 #define SOCKET_RX_LENGTH  0x44 /* u32 bytes currently in the receive buffer */
+#define SOCKET_TX_CAP     0x48 /* u32 transmit buffer capacity */
+#define SOCKET_TX_BUFFER  0x4C /* void *transmit buffer */
 
 /* Socket states that are not TCP states (SOCKET_STATE). */
 enum {
@@ -736,6 +744,7 @@ typedef struct HistoryMenu {
 #define JS_FRAME_ID4        0x6A /* u8 copy of the data block's JS_KIND_ID4 bit */
 #define JS_FRAME_IMMEDIATE  0x6B /* u8 copy of the data block's JS_KIND_IMMEDIATE bit */
 #define JS_FRAME_BIGENDIAN  0x6C /* u8 copy of the data block's JS_KIND_BIGENDIAN bit */
+#define JS_FRAME_SAVED_LR   0x54 /* s32 slot of the restored link register (r14, always saved): the handler's PC */
 
 /* Frame context: the first 7 words are a copy of the faulted frame's sticky
  * fields, tail[0..20] the spilled registers r4..r11 too. */
@@ -992,7 +1001,8 @@ typedef struct OccupationEffect {
     u8   progress;   /* +0x39: portrait rows revealed / voices played */
     u8   pad3A[2];
     void *sprite;    /* +0x3C: panel sprite object */
-    u8   *co;        /* +0x40: CO data: [0] id, [1] asset, [3] face, [5] rows */
+    u8   *co;        /* +0x40: capture parameters, the battle-effect block: [0] player, [1] terrain kind (asset),
+                      * [2] owning/property army id, [3] capturing unit's army id, [5] capture points (rows) */
     u16  *spriteA;   /* +0x44: sprite effect object (special variant) */
     u16  *spriteB;   /* +0x48: sprite effect object (normal) */
     void *palette;   /* +0x4C: palette object */
@@ -1189,6 +1199,12 @@ enum {
     GPI_MSG_XFER_REPLY      = 201, /* answer to a \xfer\ game-data transfer */
     GPI_MSG_GAME_DATA_LAST  = 208
 };
+
+/* The player-info message record a gpi GPI_MSG_PLAYER_INFO callback receives
+ * (built in main_020543E8): the sender's id, its arrival time and its text. */
+#define GPI_PLAYER_INFO_ID   0x00 /* s32 the sender's player id */
+#define GPI_PLAYER_INFO_TIME 0x04 /* s32 gpiGetTime() when the message arrived */
+#define GPI_PLAYER_INFO_TEXT 0x08 /* char *the message's text */
 
 /* The \version\ value the game's gpi messages carry in their body. */
 #define GPI_PROTOCOL_VERSION 1
@@ -1633,6 +1649,14 @@ typedef struct MbCommand {
     u16 arg0; /* +0x02 first argument */
     u16 arg1; /* +0x04 second argument */
 } MbCommand;
+
+/* State of a held cartridge-access lock: the shared OS lock word's owner-id
+ * busy flag seen when the lock was taken (+0x00) and the caller's interrupt
+ * mask to restore (+0x04). */
+typedef struct MbLockState {
+    s32 busy;       /* +0x00 */
+    s32 interrupts; /* +0x04 */
+} MbLockState;
 #define MB_PLAYER_STATE     0x14E4 /* s32 per-player state, 4 bytes each, indexed from 1 */
 #define MB_PLAYER_STATE_GROUPED 5 /* the player has joined a group; the group's battle can start */
 #define MB_PLAYER_STATE_READY   7 /* the player's setup is complete; the link's ready check and the phase-3 acknowledge look for this */
@@ -1680,6 +1704,14 @@ typedef struct MbCommand {
 
 /* Link session fields of the multiboot context (gMbState.ctx, the front of the
  * same work area the offsets above index). */
+/* Four u16 send-status words the context keeps; the send-flag builder packs
+ * whether each is nonzero into the flag byte of a download send (bit 0 = the
+ * word at +0x0E, bit 1 = +0x12, bit 2 = +0x14, bit 3 = +0x16).  +0x16 is 1
+ * from startup, and the download sender always adds bits 0 and 1 itself. */
+#define MB_CTX_STATUS0      0x0E /* u16 */
+#define MB_CTX_STATUS1      0x12 /* u16 */
+#define MB_CTX_STATUS2      0x14 /* u16 */
+#define MB_CTX_STATUS3      0x16 /* u16 */
 /* Packet payload limits and buffer overhead for the multiboot parent's MP link. */
 #define MB_PARENT_PAYLOAD_MIN        0xE4U
 #define MB_PARENT_PAYLOAD_MAX        0x1FEU
@@ -1920,8 +1952,14 @@ typedef struct NetError {
  * per-slot state bytes, then the 0x40-byte network panel record (NET_PLAYER_*). */
 #define ONLINE_PLAYER_RECORD_SIZE 0x6C
 #define ONLINE_PLAYER_FLAGS 0x1a /* u8: bit 0 set while the record holds a connected peer */
+#define ONLINE_PLAYER_FLAG_VOICE 0x04 /* u8: bit 2 set while the peer has voice chat available */
 #define ONLINE_PLAYER_ID    0x1b /* s8: the player id the peer plays as, -1 when unset */
 #define ONLINE_PLAYER_RATING 0x20 /* s32: GameSpy skill rating (RATING_DEFAULT for a new player) */
+#define ONLINE_PLAYER_NAME_SIZE 0x1a /* bytes of the name area that precedes the flags */
+#define ONLINE_PLAYER_STATUS    0x1c /* s32 status word, -1 when unset */
+#define ONLINE_PLAYER_SLOT_STATE 0x24 /* s8[5]: per-slot state bytes, -1/-2 when unset */
+#define ONLINE_PLAYER_PANEL     0x2c /* network panel record that follows the slot states */
+#define ONLINE_PLAYER_PANEL_SIZE 0x40 /* bytes of the network panel record (NET_PLAYER_*) */
 
 /* A connected player's network record, the block GetNetworkPlayerRecord returns
  * (0x20 bytes into an ov009 link player slot, 0x2C into an ov010 online player
@@ -2191,6 +2229,13 @@ typedef struct Ov001IconMenuState {
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
 #define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
+
+/* Battle-save record types GetCurrentSaveType returns and SaveTypeHasNoSlot
+ * tests: a campaign battle uses SAVE_RECORD_TYPE_CAMPAIGN + its save slot
+ * (0..2), a versus battle the single SAVE_RECORD_TYPE_VERSUS record, which has
+ * no save slot of its own. */
+#define SAVE_RECORD_TYPE_CAMPAIGN 5 /* first campaign battle record (SAVE_RECORD_TYPE_CAMPAIGN + slot) */
+#define SAVE_RECORD_TYPE_VERSUS   8 /* the versus battle's single record */
 
 /* A battle save record: eight bytes kept per save slot (slots 5..8, see
  * GetBattleSaveRecord) describing the last battle fought there. */
@@ -2595,6 +2640,9 @@ typedef struct Ov001FadeStates {
 #define SPRITE_ENTRY_OBJ_MODE_SHIFT 10
 #define SPRITE_ENTRY_PALETTE_MASK   0xF000     /* bits 12-15 of the u16 at +4 */
 #define SPRITE_ENTRY_PALETTE_SHIFT  12
+/* The same u16 carries a 2-bit palette variant (0..3) in bits 10-11. */
+#define SPRITE_ENTRY_PALETTE_VARIANT_MASK  0x0C00
+#define SPRITE_ENTRY_PALETTE_VARIANT_SHIFT 10
 
 /* Packed position word of an ov001 sprite object (the object's first word): x in
  * the low byte, y in bits 16..24. */
@@ -3354,6 +3402,12 @@ typedef struct Ov001TextPanel {
 #define OV001_CTX_PANEL1_TILE_BUFFER 0x668 /* panel 1's cached tile image */
 #define OV001_CTX_PANEL_UPLOAD_FLAGS 0x67C /* one pending-upload byte per panel */
 #define OV001_CTX_PANEL_QUEUE        0x670 /* ring queue of the 32 text-panel objects CreatePooledTextPanel hands out */
+/* A fixed-entry ring queue (Ov001_QueueCreate, Ov001_QueuePush/Pop):
+ * u16 capacity, then the read and write indices, then the entries. */
+#define OV001_QUEUE_CAPACITY 0x00 /* u16 number of entries the ring holds */
+#define OV001_QUEUE_READ     0x02 /* u8 index of the entry QueuePop takes next */
+#define OV001_QUEUE_WRITE    0x03 /* u8 index of the entry QueuePush writes next */
+#define OV001_QUEUE_ENTRIES  0x04 /* s32[] entries, OV001_QUEUE_CAPACITY of them */
 #define OV001_CTX_SIZE               0x680 /* bytes of the text context allocation */
 #define OV001_CTX_PANEL_BUFFER       0x010 /* first of the 32 pooled text panels */
 #define OV001_CTX_SCREEN_PANELS      0x610 /* Ov001TextPanel[2]: the fixed full-screen panels (index 0 main, 1 sub), 0x30 bytes each, whose tile buffers live in the context */
@@ -3448,6 +3502,10 @@ enum {
 #define WEB_RESPONSE_SIZE    0 /* body size in bytes */
 #define WEB_RESPONSE_STATUS  1 /* server result code, 1 = player records follow */
 #define WEB_RESPONSE_RECORDS 2 /* body+4: first word is the record count, the records start at +8 */
+/* Words of the record array WEB_RESPONSE_RECORDS points at (the records themselves
+ * start after both of them). */
+#define WEB_RESPONSE_COUNT   0 /* number of player records in the reply */
+#define WEB_RESPONSE_ONLINE  1 /* players online on the whole server */
 
 /* Status the get.asp accessors return when the reply carries no player data. */
 #define WEB_STATUS_NO_DATA   15
@@ -3582,6 +3640,15 @@ typedef struct IrqHandler {
 #define OS_EVENT_VBLANK     0x0001 /* IRQ 0 */
 #define OS_EVENT_TIMER1     0x0010 /* IRQ 4, the OS timer */
 
+/* The game's event flags (SetEventFlag/IsEventFlagSet, main_02086208) are three
+ * separate bit blocks picked by the flag id: ids 0..0x1F in the low block,
+ * 0x20..0x5F in the mid block and 0x60..0x9F in the high block; other ids are
+ * ignored. */
+#define EVENT_FLAG_LOW_BASE   0x00 /* ..0x1F: gEventFlagsLow */
+#define EVENT_FLAG_MID_BASE   0x20 /* ..0x5F: gEventFlagsMid */
+#define EVENT_FLAG_HIGH_BASE  0x60 /* ..0x9F: gEventFlagsHigh */
+#define EVENT_FLAG_COUNT      0xA0 /* total flag ids (0..0x9F) */
+
 /* The system tick state: TIMER0's 16-bit counter extended to 64 bits by counting
  * the overflows at SYSTEM_TICK_OVERFLOW.  Addressed by offset (its symbol is
  * declared as a u16 by its users). */
@@ -3673,6 +3740,19 @@ typedef struct FifoMessage {
 #define ARM7_XFER_FIFO_TAG 9   /* IPC FIFO handler tag of the ARM7 transfer service */
 #define ARM7_XFER_WORD(n)  ((u32)(n) << 16) /* command index of a request word */
 #define ARM7_XFER_LAST_WORD 0x01000000      /* set on the last word of a request */
+
+/* The ARM7 transfer service's state object (gArm7TransferState).  One request is
+ * in flight at a time; Arm7TransferStart keeps the descriptor's user words and the
+ * completion callback here, Arm7TransferEnd reuses the busy flag, callback and
+ * user for its transfer-end command. */
+#define ARM7_XFER_STATE_READY    0x00 /* u16 nonzero once the FIFO handler is installed */
+#define ARM7_XFER_STATE_BUSY     0x04 /* s32 1 while a transfer is being started or completed */
+#define ARM7_XFER_STATE_CALLBACK 0x08 /* void (*)(s32 result, s32 user) run on completion */
+#define ARM7_XFER_STATE_USER     0x0C /* s32 second argument handed to the callback */
+#define ARM7_XFER_STATE_RESULT   0x10 /* s32 result of the last completed transfer */
+#define ARM7_XFER_STATE_USER1    0x14 /* u32 first user word of the descriptor */
+#define ARM7_XFER_STATE_USER2    0x18 /* u32 second user word of the descriptor */
+#define ARM7_XFER_STATE_PROGRESS 0x1C /* u16 * where the ARM7's progress word is stored */
 
 /* The ARM7 command service's state object (gArm7CommandState, at 0x0212FCCC).
  * The service talks to the ARM7 power/sound driver through the FIFO and
@@ -4085,6 +4165,18 @@ typedef struct DialogSequence {
 #define SND_CMD_BUFFER_ENTRY_VALUE  0x040 /* s32 value word of an entry */
 #define SND_CMD_BUFFER_PARAM_COUNT  16   /* s16 parameters per array */
 #define SND_CMD_BUFFER_TAIL_PARAMS  0x260 /* final s16 parameter array (16 values) */
+
+/* Intrusive doubly-linked list header shared by the List* helpers (ListInit,
+ * ListAddFirst, ListAppend/Prepend, ListInsertBefore, ListRemove, ListNext/Prev
+ * in main_02028EF4) and their callers: the head and tail node pointers, the node
+ * count and the byte offset of each node's {prev, next} link pair inside the
+ * node.  A null link pair word means there is no link that way. */
+#define DLIST_HEAD        0x00 /* void *first node */
+#define DLIST_TAIL        0x04 /* void *last node */
+#define DLIST_COUNT       0x08 /* u16 nodes in the list */
+#define DLIST_NODE_OFFSET 0x0A /* u16 offset of a node's link pair from the node's start */
+#define DLIST_LINK_PREV   0x00 /* void *previous node in a node's link pair */
+#define DLIST_LINK_NEXT   0x04 /* void *next node in a node's link pair */
 
 #endif
 

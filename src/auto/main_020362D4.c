@@ -14,7 +14,7 @@ extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncodi
  * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
  * could not be set up, 1 once the connection attempt is under way. */
 s32 OpenWfcHttpConnection(s32 timeout){
-M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 func_02021558(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
+M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
 if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
 M2C_FIELD(&gWfcNet,void **,16)=HeapAlloc(0,72);
@@ -30,7 +30,7 @@ func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->port=0x5000;
 ip=M2C_FIELD(&gWfcNet,u32 *,8);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addr=((ip>>24)&255)|((ip>>8)&0xff00)|((ip<<8)&0xff0000)|((ip<<24)&0xff000000);
-r=func_02021558(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,M2C_FIELD(&gWfcNet,void **,16)+4);
+r=SocketConnectAddress(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,M2C_FIELD(&gWfcNet,void **,16)+4);
 if(r<0&&r!=-26){
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->result=3;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->state=3;
@@ -46,7 +46,7 @@ return 1;}
    freed, or 4 when there is no connection to update. */
 s32 UpdateWfcHttpConnection(void) {
     u64 GetSystemTick(void);
-    s32 func_02021558(M2C_UNK, void *);
+    s32 SocketConnectAddress(M2C_UNK, void *);
     M2C_UNK func_02021750(s32, s32);
     M2C_UNK func_0202175c(s32);
     void SendWfcHttpRequest(void);
@@ -73,7 +73,7 @@ s32 UpdateWfcHttpConnection(void) {
 
     switch (((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->state) {
     case WFC_HTTP_CONNECTING:
-        r = func_02021558(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket,
+        r = SocketConnectAddress(((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->socket,
                           (char *)M2C_FIELD(&gWfcNet, void **, 0x10) + 4);
         if (r < 0 && r != -26) {
             ((WfcHttpConnection *)M2C_FIELD(&gWfcNet, void **, 0x10))->result = 3;

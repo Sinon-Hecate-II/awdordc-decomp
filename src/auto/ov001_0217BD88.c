@@ -284,7 +284,7 @@ void Ov001_HandleCodeEntryResult(void) {
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
     extern void *gOv001FriendCodeState;
     extern M2C_UNK Ov001_LeaveCodeEntry;
-    extern M2C_UNK func_ov001_0217c900;
+    extern M2C_UNK Ov001_HandleCodeEntryRegionChoice;
     extern M2C_UNK Ov001_RetryCodeEntry;
     u8 result;
     if (Ov001_IsKeypadOpen() != 0) return;
@@ -299,7 +299,7 @@ void Ov001_HandleCodeEntryResult(void) {
         return;
     }
     Ov001_ShowMessage(0x47, 2, 1, -1, 0);
-    Ov001_SetStepCallback(&func_ov001_0217c900);
+    Ov001_SetStepCallback(&Ov001_HandleCodeEntryRegionChoice);
 }
 
 #pragma opt_common_subs off
@@ -349,11 +349,14 @@ index = (index > 3) ? 3 : index;
 { u32 x = M2C_FIELD(&data_ov001_0218f888,u8*,index*3+2); *p = (0x28 | (*p & 0xFE00FF00)) | ((x << 23) >> 7); }
 }
 #pragma scheduling on
-void func_ov001_0217c900(void) {
+/* Step run once the code-entry confirmation menu (the "region menu") has been
+ * answered: store its answer as the entry result, play the matching sound, close
+ * the menu and move on to Ov001_FinishCodeEntry. Any other answer is ignored. */
+void Ov001_HandleCodeEntryRegionChoice(void) {
     extern void *gOv001FriendCodeState;
     extern M2C_UNK Ov001_FinishCodeEntry;
-    M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15) = Ov001_GetRegionMenuSelection();
-    switch (M2C_FIELD(gOv001FriendCodeState, u8 *, 0x15)) {
+    M2C_FIELD(gOv001FriendCodeState, u8 *, CODE_ENTRY_RESULT) = Ov001_GetRegionMenuSelection();
+    switch (M2C_FIELD(gOv001FriendCodeState, u8 *, CODE_ENTRY_RESULT)) {
     case 0: Ov001_PlaySound(7); break;
     case 1: Ov001_PlaySound(0xE); break;
     default: return;

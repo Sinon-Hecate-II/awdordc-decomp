@@ -140,21 +140,24 @@ void RunAiRole5Action(void) {
     FinishAiUnitAction();
 }
 
+/* Run the AI's supply action: unless the map-175 override applies or the acting
+ * unit is on its attack step, refresh the influence maps (or clear them on the
+ * first step), then pick the best adjacent tile from which to resupply. */
 void RunAiSupplyAction(void) {
     M2C_UNK func_ov000_0218ef40();
     M2C_UNK ClearAiInfluenceMaps();
     M2C_UNK BuildAiInfluenceMaps();
     extern void **gCurrentMap;
-    u32 temp_r0;
+    u32 aiStep;
 
     if (IsAiMap175Player2Override() != 0) {
         return;
     }
-    temp_r0 = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 0x1C) >> 0x1C;
-    if (temp_r0 == 6) {
+    aiStep = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 28) >> 28;
+    if (aiStep == AI_STEP_ATTACK) {
         return;
     }
-    if (temp_r0 != 1) {
+    if (aiStep != AI_STEP_FIRST) {
         BuildAiInfluenceMaps();
     } else {
         ClearAiInfluenceMaps();

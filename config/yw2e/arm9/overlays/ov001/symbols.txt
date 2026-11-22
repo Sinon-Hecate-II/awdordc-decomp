@@ -83,7 +83,7 @@ Ov001_XorSecondHalf kind:function(thumb,size=0x24) addr:0x0216ccbc
 Ov001_SwapHalves kind:function(thumb,size=0x2e) addr:0x0216cce0
 func_ov001_0216cd10 kind:function(thumb,size=0x18) addr:0x0216cd10
 func_ov001_0216cd28 kind:function(thumb,size=0x10) addr:0x0216cd28
-func_ov001_0216cd38 kind:function(thumb,size=0x58) addr:0x0216cd38
+WhInitNetwork kind:function(thumb,size=0x58) addr:0x0216cd38
 func_ov001_0216cd90 kind:function(thumb,size=0x22) addr:0x0216cd90
 func_ov001_0216cdb4 kind:function(thumb,size=0x20) addr:0x0216cdb4
 Ov001MemCopy kind:function(thumb,size=0x10) addr:0x0216cdd4
@@ -129,7 +129,7 @@ WhAdvanceConnectionState kind:function(thumb,size=0x68) addr:0x0216dee8
 func_ov001_0216df50 kind:function(thumb,size=0x42) addr:0x0216df50
 func_ov001_0216df94 kind:function(thumb,size=0xe8) addr:0x0216df94
 func_ov001_0216e07c kind:function(thumb,size=0x38) addr:0x0216e07c
-func_ov001_0216e0b4 kind:function(thumb,size=0x58) addr:0x0216e0b4
+WhBeginWirelessConnection kind:function(thumb,size=0x58) addr:0x0216e0b4
 WhStartConnection kind:function(thumb,size=0x84) addr:0x0216e10c
 WhStartSession kind:function(thumb,size=0xbc) addr:0x0216e190
 func_ov001_0216e24c kind:function(thumb,size=0xc) addr:0x0216e24c
@@ -140,7 +140,7 @@ WhPopEvent kind:function(thumb,size=0x38) addr:0x0216e2d8
 WhPushEvent kind:function(thumb,size=0x30) addr:0x0216e310
 WhEventTimerCallback kind:function(thumb,size=0xc) addr:0x0216e340
 func_ov001_0216e34c kind:function(thumb,size=0xa4) addr:0x0216e34c
-func_ov001_0216e3f0 kind:function(thumb,size=0x58) addr:0x0216e3f0
+WhConnectWireless kind:function(thumb,size=0x58) addr:0x0216e3f0
 WhJoinSelectedHost kind:function(thumb,size=0x124) addr:0x0216e448
 func_ov001_0216e56c kind:function(thumb,size=0x64) addr:0x0216e56c
 func_ov001_0216e5d0 kind:function(thumb,size=0x1cc) addr:0x0216e5d0
@@ -228,7 +228,7 @@ Ov001_FreeHighlightTilemap kind:function(arm,size=0x14) addr:0x0217223c
 Ov001_LoadObjLayoutBlock kind:function(arm,size=0x5c) addr:0x02172250
 Ov001_LoadSaveSlotObjLayout kind:function(arm,size=0x18) addr:0x021722ac
 func_ov001_021722c4 kind:function(arm,size=0x18) addr:0x021722c4
-func_ov001_021722dc kind:function(arm,size=0x40) addr:0x021722dc
+Ov001_UploadHighlightTilemap kind:function(arm,size=0x40) addr:0x021722dc
 Ov001_ShowWfcIcon kind:function(arm,size=0xb8) addr:0x0217231c
 Ov001_HideWfcIcon kind:function(arm,size=0x44) addr:0x021723d4
 Ov001_WfcIconUpdate kind:function(arm,size=0xa8) addr:0x02172418
@@ -292,7 +292,7 @@ Ov001_KeypadCloseStep1 kind:function(arm,size=0x70) addr:0x02175590
 Ov001_KeypadCloseDone kind:function(arm,size=0xc0) addr:0x02175600
 Ov001_InitWirelessSetup kind:function(arm,size=0x110) addr:0x021756c0
 func_ov001_021757d0 kind:function(arm,size=0x50) addr:0x021757d0
-func_ov001_02175820 kind:function(arm,size=0x60) addr:0x02175820
+Ov001_UpdateWirelessSetup kind:function(arm,size=0x60) addr:0x02175820
 Ov001_AllocWirelessWork kind:function(arm,size=0x10) addr:0x02175880
 Ov001_FreeWirelessWork kind:function(arm,size=0xc) addr:0x02175890
 Ov001_RunFrontEnd kind:function(arm,size=0x8c) addr:0x0217589c
@@ -321,7 +321,7 @@ Ov001_StartProfileExitTask kind:function(arm,size=0x20) addr:0x02176078
 func_ov001_02176098 kind:function(arm,size=0x3c) addr:0x02176098
 Ov001_IsProfileScreenDone kind:function(arm,size=0x1c) addr:0x021760d4
 Ov001_SetProfileScreenCallback kind:function(arm,size=0x18) addr:0x021760f0
-func_ov001_02176108 kind:function(arm,size=0xc) addr:0x02176108
+Ov001_AdvanceProfileSetup kind:function(arm,size=0xc) addr:0x02176108
 func_ov001_02176114 kind:function(arm,size=0x18) addr:0x02176114
 func_ov001_0217612c kind:function(arm,size=0x2a0) addr:0x0217612c
 Ov001_OpenOptionPage kind:function(arm,size=0x6c) addr:0x021763cc
@@ -466,8 +466,8 @@ func_ov001_02178d20 kind:function(arm,size=0x34) addr:0x02178d20
 func_ov001_02178d54 kind:function(arm,size=0x14) addr:0x02178d54
 func_ov001_02178d68 kind:function(arm,size=0x38) addr:0x02178d68
 func_ov001_02178da0 kind:function(arm,size=0x4) addr:0x02178da0
-func_ov001_02178da4 kind:function(arm,size=0x58) addr:0x02178da4
-func_ov001_02178dfc kind:function(arm,size=0x20) addr:0x02178dfc
+Ov001_MessageChoiceStep kind:function(arm,size=0x58) addr:0x02178da4
+Ov001_LockMessageChoice kind:function(arm,size=0x20) addr:0x02178dfc
 Ov001_FadeOutMessageScreen kind:function(arm,size=0x64) addr:0x02178e1c
 Ov001_CloseMessageScreen kind:function(arm,size=0xa8) addr:0x02178e80
 Ov001_ShowProfileMessage kind:function(arm,size=0xd0) addr:0x02178f28
@@ -478,8 +478,8 @@ func_ov001_021790d0 kind:function(arm,size=0x24) addr:0x021790d0
 Ov001_ProfileChoiceStep kind:function(arm,size=0x70) addr:0x021790f4
 func_ov001_02179164 kind:function(arm,size=0x4) addr:0x02179164
 func_ov001_02179168 kind:function(arm,size=0x4) addr:0x02179168
-func_ov001_0217916c kind:function(arm,size=0x5c) addr:0x0217916c
-func_ov001_021791c8 kind:function(arm,size=0x5c) addr:0x021791c8
+Ov001_ProfileFadeOutStep kind:function(arm,size=0x5c) addr:0x0217916c
+Ov001_ProfileFadeDoneStep kind:function(arm,size=0x5c) addr:0x021791c8
 Ov001_CloseProfileScreen kind:function(arm,size=0xc8) addr:0x02179224
 func_ov001_021792ec kind:function(arm,size=0x14) addr:0x021792ec
 func_ov001_02179300 kind:function(arm,size=0x20) addr:0x02179300
@@ -492,10 +492,10 @@ func_ov001_02179470 kind:function(arm,size=0x14) addr:0x02179470
 func_ov001_02179484 kind:function(arm,size=0x38) addr:0x02179484
 func_ov001_021794bc kind:function(arm,size=0x4) addr:0x021794bc
 func_ov001_021794c0 kind:function(arm,size=0x2c) addr:0x021794c0
-func_ov001_021794ec kind:function(arm,size=0x38) addr:0x021794ec
+Ov001_LeaveWfcEraseScreen kind:function(arm,size=0x38) addr:0x021794ec
 Ov001_SlideOutProfileIconRow kind:function(arm,size=0x80) addr:0x02179524
 func_ov001_021795a4 kind:function(arm,size=0xf8) addr:0x021795a4
-func_ov001_0217969c kind:function(arm,size=0x5c) addr:0x0217969c
+Ov001_WfcEraseResultCallback kind:function(arm,size=0x5c) addr:0x0217969c
 func_ov001_021796f8 kind:function(arm,size=0x20) addr:0x021796f8
 Ov001_OpenWirelessScreen kind:function(arm,size=0x60) addr:0x02179718
 Ov001_LoadWirelessSetupBg kind:function(arm,size=0xa8) addr:0x02179778
@@ -543,7 +543,7 @@ MapSelectList_SetRowTiles kind:function(arm,size=0x8c) addr:0x0217ae38
 MapSelectList_PositionRows kind:function(arm,size=0xbc) addr:0x0217aec4
 MapSelectList_ScrollUp kind:function(arm,size=0xbc) addr:0x0217af80
 MapSelectList_ScrollDown kind:function(arm,size=0x98) addr:0x0217b03c
-func_ov001_0217b0d4 kind:function(arm,size=0x5c) addr:0x0217b0d4
+MapSelectListUpdateBackgroundScroll kind:function(arm,size=0x5c) addr:0x0217b0d4
 func_ov001_0217b130 kind:function(arm,size=0x4c) addr:0x0217b130
 MapSelectList_MoveCursor kind:function(arm,size=0x14c) addr:0x0217b17c
 MapSelectList_PageUp kind:function(arm,size=0x74) addr:0x0217b2c8
@@ -565,7 +565,7 @@ Ov001_HandleNameEntryResult kind:function(arm,size=0xd8) addr:0x0217b944
 Ov001_CloseNameEntryScreen kind:function(arm,size=0x104) addr:0x0217ba1c
 RedrawNameEntryText kind:function(arm,size=0xf4) addr:0x0217bb20
 UpdateNameEntryCursor kind:function(arm,size=0x68) addr:0x0217bc14
-func_ov001_0217bc7c kind:function(arm,size=0x5c) addr:0x0217bc7c
+Ov001_HandleNameEntryRegionChoice kind:function(arm,size=0x5c) addr:0x0217bc7c
 Ov001_FinishNameEntry kind:function(arm,size=0xb0) addr:0x0217bcd8
 IsNameEntryValid kind:function(arm,size=0x18c) addr:0x0217bd88
 func_ov001_0217bf14 kind:function(arm,size=0x2c) addr:0x0217bf14
@@ -585,7 +585,7 @@ Ov001_HandleCodeEntryResult kind:function(arm,size=0x8c) addr:0x0217c6b8
 Ov001_LeaveCodeEntry kind:function(arm,size=0xa4) addr:0x0217c744
 func_ov001_0217c7e8 kind:function(arm,size=0xc4) addr:0x0217c7e8
 func_ov001_0217c8ac kind:function(arm,size=0x54) addr:0x0217c8ac
-func_ov001_0217c900 kind:function(arm,size=0x5c) addr:0x0217c900
+Ov001_HandleCodeEntryRegionChoice kind:function(arm,size=0x5c) addr:0x0217c900
 Ov001_FinishCodeEntry kind:function(arm,size=0xb4) addr:0x0217c95c
 TrimCodeEntryDigits kind:function(arm,size=0x78) addr:0x0217ca10
 IsCodeEntryValid kind:function(arm,size=0x154) addr:0x0217ca88
@@ -653,7 +653,7 @@ func_ov001_0217f894 kind:function(arm,size=0x28) addr:0x0217f894
 func_ov001_0217f8bc kind:function(arm,size=0x4) addr:0x0217f8bc
 func_ov001_0217f8c0 kind:function(arm,size=0x4) addr:0x0217f8c0
 func_ov001_0217f8c4 kind:function(arm,size=0x3c) addr:0x0217f8c4
-func_ov001_0217f900 kind:function(arm,size=0x5c) addr:0x0217f900
+Ov001_CloseMapListForAccessPoint kind:function(arm,size=0x5c) addr:0x0217f900
 func_ov001_0217f95c kind:function(arm,size=0x20) addr:0x0217f95c
 func_ov001_0217f97c kind:function(arm,size=0x3c) addr:0x0217f97c
 Ov001_LoadConnectionBackground kind:function(arm,size=0x80) addr:0x0217f9b8
@@ -696,10 +696,10 @@ func_ov001_021802ec kind:function(arm,size=0x3c) addr:0x021802ec
 Ov001_CloseMatchSetupForSave kind:function(arm,size=0x70) addr:0x02180328
 func_ov001_02180398 kind:function(arm,size=0x34) addr:0x02180398
 func_ov001_021803cc kind:function(arm,size=0x20) addr:0x021803cc
-func_ov001_021803ec kind:function(arm,size=0x5c) addr:0x021803ec
+Ov001_OpenOptionPage2 kind:function(arm,size=0x5c) addr:0x021803ec
 Ov001_LoadOptionPageBg kind:function(arm,size=0xa8) addr:0x02180448
-func_ov001_021804f0 kind:function(arm,size=0x54) addr:0x021804f0
-func_ov001_02180544 kind:function(arm,size=0x40) addr:0x02180544
+Ov001_FadeInOptionPage2 kind:function(arm,size=0x54) addr:0x021804f0
+Ov001_OptionPage2FadeInStep kind:function(arm,size=0x40) addr:0x02180544
 func_ov001_02180584 kind:function(arm,size=0x28) addr:0x02180584
 func_ov001_021805ac kind:function(arm,size=0x20) addr:0x021805ac
 func_ov001_021805cc kind:function(arm,size=0x38) addr:0x021805cc
@@ -758,7 +758,7 @@ func_ov001_02181f3c kind:function(arm,size=0x20) addr:0x02181f3c
 Ov001_FadeOutMenu kind:function(arm,size=0x64) addr:0x02181f5c
 Ov001_MenuConfirm kind:function(arm,size=0x130) addr:0x02181fc0
 func_ov001_021820f0 kind:function(arm,size=0xf4) addr:0x021820f0
-func_ov001_021821e4 kind:function(arm,size=0x58) addr:0x021821e4
+Ov001_LoadSelectedIconTile kind:function(arm,size=0x58) addr:0x021821e4
 Ov001_OpenWfcConnectScreen kind:function(arm,size=0x8c) addr:0x0218223c
 Ov001_LoadWfcConnectBg kind:function(arm,size=0xa8) addr:0x021822c8
 Ov001_StartWfcConnect kind:function(arm,size=0x98) addr:0x02182370
@@ -785,7 +785,7 @@ Ov001_FinishWfcScreen kind:function(arm,size=0xa4) addr:0x02182798
 Ov001_WfcSuccessTimeoutStep kind:function(arm,size=0x70) addr:0x0218283c
 Ov001_PrepareSaveSlotMenu kind:function(arm,size=0x58) addr:0x021828ac
 Ov001_LoadSaveSlotMenuBg kind:function(arm,size=0x6c) addr:0x02182904
-func_ov001_02182970 kind:function(arm,size=0x54) addr:0x02182970
+Ov001_FadeInSaveSlotMenu kind:function(arm,size=0x54) addr:0x02182970
 Ov001_ShowSaveSlotMenu kind:function(arm,size=0x88) addr:0x021829c4
 Ov001_CloseSaveSlotMenuStep kind:function(arm,size=0x3c) addr:0x02182a4c
 func_ov001_02182a88 kind:function(arm,size=0x4) addr:0x02182a88
@@ -829,7 +829,7 @@ Ov001_CloseConnectionScreen kind:function(arm,size=0xf4) addr:0x021833a4
 Ov001_HandleConnectionStatus kind:function(arm,size=0xec) addr:0x02183498
 func_ov001_02183584 kind:function(arm,size=0x2c) addr:0x02183584
 func_ov001_021835b0 kind:function(arm,size=0x20) addr:0x021835b0
-func_ov001_021835d0 kind:function(arm,size=0x5c) addr:0x021835d0
+Ov001_ConnectionChoiceStep kind:function(arm,size=0x5c) addr:0x021835d0
 Ov001_ResumeConnectionWait kind:function(arm,size=0x68) addr:0x0218362c
 InitMapPreview kind:function(arm,size=0x60) addr:0x02183694
 FreeMapPreview kind:function(arm,size=0x2c) addr:0x021836f4
@@ -857,7 +857,7 @@ func_ov001_02183e0c kind:function(arm,size=0x4c) addr:0x02183e0c
 Ov001_GetScrollbarPartRect kind:function(arm,size=0xd8) addr:0x02183e58
 Ov001_SetScrollbarHandlePos kind:function(arm,size=0x3c) addr:0x02183f30
 Ov001_AllocFriendRoster kind:function(arm,size=0x34) addr:0x02183f6c
-func_ov001_02183fa0 kind:function(arm,size=0x34) addr:0x02183fa0
+Ov001_FreeFriendRoster kind:function(arm,size=0x34) addr:0x02183fa0
 Ov001_OpenFriendRoster kind:function(arm,size=0xcc) addr:0x02183fd4
 Ov001_SendFriendRosterRequest kind:function(arm,size=0x34) addr:0x021840a0
 Ov001_CloseFriendRoster kind:function(arm,size=0x9c) addr:0x021840d4
@@ -1268,7 +1268,7 @@ gOv001MenuFrameTop kind:data(any) addr:0x0218fa3c
 gOv001MenuFrameRight kind:data(any) addr:0x0218fa3e
 gOv001MenuFrameBottom kind:data(any) addr:0x0218fa40
 data_ov001_0218fa74 kind:data(any) addr:0x0218fa74
-data_ov001_0218fa7c kind:data(any) addr:0x0218fa7c
+gOv001IconTiles kind:data(any) addr:0x0218fa7c
 data_ov001_0218fa80 kind:data(any) addr:0x0218fa80
 data_ov001_0218fa96 kind:data(any) addr:0x0218fa96
 data_ov001_0218fab6 kind:data(any) addr:0x0218fab6
@@ -1316,8 +1316,8 @@ data_ov001_0218fd1a kind:data(any) addr:0x0218fd1a
 gTouchScreenRect kind:data(any) addr:0x0218fd20
 data_ov001_0218fd28 kind:data(any) addr:0x0218fd28
 data_ov001_0218fd40 kind:data(any) addr:0x0218fd40
-data_ov001_0218fd44 kind:data(any) addr:0x0218fd44
-data_ov001_0218fd4c kind:data(any) addr:0x0218fd4c
+gWhNetConfig kind:data(any) addr:0x0218fd44
+gWhNetInitParams kind:data(any) addr:0x0218fd4c
 data_ov001_0218fda4 kind:data(any) addr:0x0218fda4
 data_ov001_0218fdb0 kind:data(any) addr:0x0218fdb0
 data_ov001_0218fdb8 kind:data(any) addr:0x0218fdb8
@@ -1646,7 +1646,7 @@ gOv001WfcEraseConfirmed kind:bss addr:0x02193d78
 data_ov001_02193d7c kind:bss addr:0x02193d7c
 gOv001MessageState kind:bss addr:0x02193d80
 gOv001ProfileChoice kind:bss addr:0x02193d84
-gOv001ProfileResult kind:bss addr:0x02193d88
+gOv001WfcEraseResult kind:bss addr:0x02193d88
 gOv001WirelessState kind:bss addr:0x02193d8c
 data_ov001_02193d94 kind:bss addr:0x02193d94
 gMapSelectState kind:bss addr:0x02193d98

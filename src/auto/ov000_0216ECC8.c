@@ -7,7 +7,7 @@ extern void **gCurrentMap;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern s32 gUnitListRows;
 extern u32 gUnitKindStats[];
-extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[],data_ov000_021b5c0b[];
+extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[],gUnitKindInfiniteAmmo[];
 int func_020a8b9c(void);int func_020a8b90(void);int func_020a8bb4(void);int func_020a8ba8(void);int func_020a8b78(void);int func_020a8b84(void);
 void DrawTilemapNumber(s16,s16,void *,int,int,int);
 void func_0209c024(s16,s16,void *,int,int,int);
@@ -199,7 +199,7 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  func_0209c024(22,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
  DrawTilemapNumber(24,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),gUnitKindMaxFuel[u->unk0*112],0,0);
  if(!gUnitKindMaxAmmo[u->unk0*112]){
- if(data_ov000_021b5c0b[u->unk0*112])func_0209c024(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b84(),0,0);
+ if(gUnitKindInfiniteAmmo[u->unk0*112])func_0209c024(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b84(),0,0);
  else func_0209bfdc((s16)(28-(MeasureStringWidth(GetLocalizedText(0xc000007f))>>4)),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),0xc000007f,0,0);
  }else{
  DrawTilemapNumber(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayHealth *)((u8 *)u+6))->ammo,0,0);

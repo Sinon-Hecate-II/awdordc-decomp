@@ -124,7 +124,27 @@ void SetNetState(s32 arg0) {
     M2C_FIELD(gNetSession, s32 *, 0x24) = arg0;
 }
 
-s32 func_02039224(s32 arg0) { s32 RemoveConnectionPeer(s32,s32); s32 func_0203e338(u8 **); u8 *p,*q; s32 n,i; n=func_0203e338(&p); i=0; if(n>0) { q=p; do { if(arg0==*q)break; i++; q++; }while(i<n); } if(i==n)return 0; return RemoveConnectionPeer(i,n); }
+/* Remove the present peer whose slot id is slotId: find it in the connection's
+ * peer slot list and drop that peer record, returning the removed peer's id
+ * (0 when no present peer has that slot id). */
+s32 RemovePeerBySlot(s32 slotId) {
+    s32 RemoveConnectionPeer(s32,s32);
+    s32 GetPeerSlotList(u8 **);
+    u8 *peers,*cursor;
+    s32 count,i;
+    count=GetPeerSlotList(&peers);
+    i=0;
+    if(count>0) {
+        cursor=peers;
+        do {
+            if(slotId==*cursor)break;
+            i++;
+            cursor++;
+        }while(i<count);
+    }
+    if(i==count)return 0;
+    return RemoveConnectionPeer(i,count);
+}
 
 u32 MaskPlayerIds(u8 *src, s32 n) {
 u32 acc=0; u32 i=0;
@@ -178,22 +198,25 @@ u32 ReportGt2SocketResult(u32 result, u32 unused, u32 detail) {
     return ret;
 }
 
-void func_02039478(s32 arg0, s32 arg1) {
+/* NAS login completion callback: on success record this console's profile id and
+ * move the session into the lobby, otherwise mark it offline; then notify the
+ * app's login callback with the result. */
+void NasLoginResultCallback(s32 error, s32 profileId) {
     void SetNetState(s32);
-    void func_0203af18(void);
+    void MatchSession_ResetThinkTimer(void);
     extern void *gNetSession;
-    if (arg0 == 0) {
-        M2C_FIELD(gNetSession, s32 *, 0x64) = arg1;
-        SetNetState(3);
-        func_0203af18();
+    if (error == 0) {
+        M2C_FIELD(gNetSession, s32 *, NET_SESSION_LOCAL_SOCKET) = profileId;
+        SetNetState(NET_STATE_READY);
+        MatchSession_ResetThinkTimer();
     } else {
-        SetNetState(0);
+        SetNetState(NET_STATE_OFFLINE);
     }
     {
-        void *p = gNetSession;
-        void (*cb)(s32, s32, s32) = (void (*)(s32, s32, s32))M2C_FIELD(p, void **, 0x70);
-        if (cb != NULL) {
-            cb(arg0, arg1, M2C_FIELD(p, s32 *, 0x74));
+        void *session = gNetSession;
+        void (*callback)(s32, s32, s32) = (void (*)(s32, s32, s32))M2C_FIELD(session, void **, NET_SESSION_LOGIN_CALLBACK);
+        if (callback != NULL) {
+            callback(error, profileId, M2C_FIELD(session, s32 *, NET_SESSION_LOGIN_DATA));
         }
     }
 }
@@ -275,10 +298,10 @@ void func_02039698(s32 unused, void *arg1) {
    the MAT payload to the command parser. */
 void HandleGpcmMatMessage(s32 conn,void *info,s32 arg){
 extern char sGpcmPrefix[],sMatPrefix[];extern void *gNetSession;
-s32 func_0203ad70(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 strtoul(const char *,void *,s32);
+s32 HandleBuddyAddAuthorizedMessage(s32,void *,s32);u32 StringLength(const char *);s32 ByteCompareN(const void *,const void *,u32);char *StringFindChar(const char *,s32);void *StringCopyPad(void *,const void *,u32);s32 strtoul(const char *,void *,s32);
 void HandleConnectionTextCommand(s32,s32,char *);
 char versionText[12]={0};char *text=M2C_FIELD(info,char **,8);u32 len;
-if(func_0203ad70(conn,info,arg))return;
+if(HandleBuddyAddAuthorizedMessage(conn,info,arg))return;
 if(ByteCompareN(text,sGpcmPrefix,StringLength(sGpcmPrefix)))return;
 text+=StringLength(sGpcmPrefix);
 len=StringFindChar(text,'v')-text;
@@ -307,7 +330,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     s32 func_0203e558(void);
     void *GetConnectionPeer();
     void ResetTransferSlot();
-    s32 func_02039224(s32);
+    s32 RemovePeerBySlot(s32);
     M2C_UNK func_0203dee8();
     void SetNetError(s32, s32);
     M2C_UNK ReportGpiSessionStatus();
@@ -365,7 +388,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             }
         }
         {
-            s32 funcres = func_02039224(r4);
+            s32 funcres = RemovePeerBySlot(r4);
             u8 idx = peer[0];
             (&gPlayerConnections)[idx] = 0;
             {
@@ -581,16 +604,22 @@ s32 ReportNasLoginError(u32 arg0, s32 arg1) {
 
 #pragma push
 #pragma opt_common_subs off
-void func_02039e04(void) {
-extern M2C_UNK gNasLogin;
-M2C_UNK HeapFree(s32,s32,s32);
-void NasAbort(void); void func_02032b10(void);
-if(M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)){
-NasAbort();func_02032b10();
-HeapFree(0,M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24),0);
-M2C_FIELD(M2C_FIELD(&gNasLogin,s32 *,4),s32 *,0x24)=0;
-}
-M2C_FIELD(&gNasLogin,s32 *,4)=0;
+/* Tear down the NAS login: if its context still holds a connection block, abort the
+ * NAS connection, release the HTTP client, free the block and clear it; then drop the
+ * gNasLogin context pointer. */
+void FreeNasLoginContext(void) {
+    extern M2C_UNK gNasLogin;
+    M2C_UNK HeapFree(s32, s32, s32);
+    void NasAbort(void);
+    void FreeNasConnection(void);
+
+    if (M2C_FIELD(M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_CONNECTION)) {
+        NasAbort();
+        FreeNasConnection();
+        HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_CONNECTION), 0);
+        M2C_FIELD(M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT), s32 *, NAS_LOGIN_CONNECTION) = 0;
+    }
+    M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT) = 0;
 }
 #pragma pop
 void func_02039e60(void) {

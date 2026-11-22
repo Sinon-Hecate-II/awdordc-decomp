@@ -144,7 +144,7 @@ void Qr2_HandlePacket(void *qr2, void *packet, s32 length, void *address)
             Qr2_HandlePeerPacket(qr2, payload + 4, length - 4);
         break;
     case QR2_TYPE_PEER_ACK:
-    case QR2_TYPE_RESERVED2:
+    case QR2_TYPE_KEEPALIVE:
     default:
         return;
     }
@@ -152,15 +152,17 @@ void Qr2_HandlePacket(void *qr2, void *packet, s32 length, void *address)
               reply.length, 0, address, 8);
 }
 #pragma pop
-void func_0205fb50(void *arg0){
- s32 GetTickCountMs(void);
- M2C_UNK ghiSendTo(s32,void *,s32,s32,void *,s32);
- M2C_UNK Qr2InitQuery(void *,s32,void *);
- u8 sp8[0x804];
- *(s32 *)(sp8+0x800)=0;
- Qr2InitQuery(sp8,8,(u8 *)arg0+0x84);
- ghiSendTo(M2C_FIELD(arg0,s32 *,0),sp8,*(s32 *)(sp8+0x800),0,(u8 *)arg0+0xcc,8);
- M2C_FIELD(arg0,s32 *,0xb0)=GetTickCountMs();
+/* Keep the master's NAT mapping alive: send it a minimal type-8 query carrying
+ * our client id, then restamp the poll time so the next keep-alive is due 20s later. */
+void Qr2_SendKeepAlive(void *qr2) {
+    s32 GetTickCountMs(void);
+    M2C_UNK ghiSendTo(s32, void *, s32, s32, void *, s32);
+    M2C_UNK Qr2InitQuery(void *, s32, void *);
+    Qr2Reply query;
+    query.length = 0;
+    Qr2InitQuery(query.data, QR2_TYPE_KEEPALIVE, (u8 *)qr2 + QR2_LOCAL_IP);
+    ghiSendTo(M2C_FIELD(qr2, s32 *, QR2_SOCKET), query.data, query.length, 0, (u8 *)qr2 + QR2_REQUEST_ID, 8);
+    M2C_FIELD(qr2, s32 *, QR2_LAST_POLL) = GetTickCountMs();
 }
 
 /* Builds and sends the GameSpy QR2 state query: the local addresses and port,

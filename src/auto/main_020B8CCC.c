@@ -93,21 +93,25 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=2;
 }
 #pragma opt_common_subs reset
 #pragma optimization_level 4
-void func_020b939c(void *arg0) {
+/* Start the production row's funds count-up: reset its elapsed-frame counter, set
+ * the count-up to run for 8 frames, play the unit-arrival sound at the map cursor's
+ * target tile, and in fast-animation mode remove the row straight away instead of
+ * animating the count-up. */
+void ProductionMenu_StartCountUp(void *row) {
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
     s32 IsFastAnimation();
     extern void **gCurrentMap;
-    void *temp_r1;
+    void *map;
 
-    M2C_FIELD(arg0, s16 *, 0x6C) = 0;
-    M2C_FIELD(arg0, s16 *, 0x6E) = 8;
-    temp_r1 = *gCurrentMap;
-    PlaySoundAtTile(0x111, M2C_FIELD(temp_r1, s16 *, 0x52C2), M2C_FIELD(temp_r1, s16 *, 0x52C4));
+    M2C_FIELD(row, s16 *, PRODUCTION_ROW_FRAME) = 0;
+    M2C_FIELD(row, s16 *, PRODUCTION_ROW_DURATION) = 8;
+    map = *gCurrentMap;
+    PlaySoundAtTile(0x111, M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_X), M2C_FIELD(map, s16 *, MAP_CURSOR_TARGET_Y));
     if (IsFastAnimation() == 0) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(row);
 }
 
 /* Advance the production menu's funds count-up by one frame: ease the displayed

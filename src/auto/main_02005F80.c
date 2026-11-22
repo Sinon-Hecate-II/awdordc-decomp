@@ -135,7 +135,7 @@ void func_02006198(void *arg0, s32 arg1) {
 }
 
 #pragma optimization_level 1
-void func_020061a0(void *arg0, s32 arg1, s32 arg2) {
+void InitThreadContext(void *arg0, s32 arg1, s32 arg2) {
 arg1+=4;
 M2C_FIELD(arg0,s32 *,0x40)=arg1;
 M2C_FIELD(arg0,s32 *,0x44)=arg2;
@@ -344,32 +344,35 @@ void LockMutex(void *mutex) {
     OS_RestoreInterrupts(irq);
 }
 
-void UnlockMutex(void *arg0) {
+/* Release an OS mutex held by the running thread: count its nested locks down and,
+ * on the last one, unlink the mutex from the thread and wake the threads sleeping
+ * on it. */
+void UnlockMutex(void *mutex) {
     s32 OS_DisableInterrupts();
     void OS_RestoreInterrupts(s32);
     M2C_UNK OS_WakeupThread(void *);
     void RemoveThreadMutex(void *, void *);
     extern M2C_UNK gSocketManager;
-    s32 state;
-    void *head;
-    u32 c;
+    s32 irq;
+    void *thread;
+    u32 count;
 
-    state = OS_DisableInterrupts();
-    head = M2C_FIELD(&gSocketManager, void **, 0x4);
-    if (M2C_FIELD(arg0, void **, 0x8) == head) {
-        c = M2C_FIELD(arg0, u32 *, 0xC);
-        c = c - 1;
-        M2C_FIELD(arg0, u32 *, 0xC) = c;
-        if (c == 0) {
-            RemoveThreadMutex(head, arg0);
-            M2C_FIELD(arg0, void **, 0x8) = NULL;
-            OS_WakeupThread(arg0);
+    irq = OS_DisableInterrupts();
+    thread = M2C_FIELD(&gSocketManager, void **, 0x4); /* the running thread */
+    if (M2C_FIELD(mutex, void **, OSMUTEX_OWNER) == thread) {
+        count = M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT);
+        count = count - 1;
+        M2C_FIELD(mutex, u32 *, OSMUTEX_COUNT) = count;
+        if (count == 0) {
+            RemoveThreadMutex(thread, mutex);
+            M2C_FIELD(mutex, void **, OSMUTEX_OWNER) = NULL;
+            OS_WakeupThread(mutex);
         }
     }
-    OS_RestoreInterrupts(state);
+    OS_RestoreInterrupts(irq);
 }
 
-void func_02006644(void *arg0) {
+void ReleaseThreadMutexes(void *arg0) {
     void *func_020057c8(void *);
     M2C_UNK OS_WakeupThread();
     void *temp_r0;

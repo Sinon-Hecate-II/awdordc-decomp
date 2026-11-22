@@ -12,7 +12,7 @@ extern u8 sQr2ConnectTargetMagic[8];
 
 void func_0205e95c(void *arg0) {
     /* Check connection timeouts and retry/reset state as needed. */
-    M2C_UNK func_0205fb50(void *);
+    M2C_UNK Qr2_SendKeepAlive(void *);
     extern M2C_UNK data_020ffa08;
     s32 retryCount;
     u32 lastActivity;
@@ -45,28 +45,30 @@ block_14:
     if ((u32) (now - M2C_FIELD(arg0, s32 *, 0xB0)) <= 0x4E20U) {
         return;
     }
-    func_0205fb50(arg0);
+    Qr2_SendKeepAlive(arg0);
 }
 
-void Qr2_StateChanged(void *arg0) {
+/* Report to the master that a QR2 connection's state changed: when a state query
+ * went out less than ten seconds ago, only mark the state dirty so the next poll
+ * sends it, otherwise send the state change now and clear the dirty flag.  A NULL
+ * argument means the current global connection. */
+void Qr2_StateChanged(void *qr2) {
     s32 GetTickCountMs();
     M2C_UNK Qr2_SendState(void *, M2C_UNK);
     extern void *gQr2Connection;
-    void *var_r4;
 
-    var_r4 = arg0;
-    if (var_r4 == NULL) {
-        var_r4 = gQr2Connection;
+    if (qr2 == NULL) {
+        qr2 = gQr2Connection;
     }
-    if (M2C_FIELD(var_r4, s32 *, 0xBC) == 0) {
+    if (M2C_FIELD(qr2, s32 *, QR2_REPORT_TO_MASTER) == 0) {
         return;
     }
-    if ((u32) (GetTickCountMs() - M2C_FIELD(var_r4, s32 *, 0xAC)) < 0x2710U) {
-        M2C_FIELD(var_r4, s32 *, 0xB4) = 1;
+    if ((u32) (GetTickCountMs() - M2C_FIELD(qr2, s32 *, QR2_LAST_SENT)) < QR2_STATE_MIN_INTERVAL_MS) {
+        M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 1;
         return;
     }
-    Qr2_SendState(var_r4, 1);
-    M2C_FIELD(var_r4, s32 *, 0xB4) = 0;
+    Qr2_SendState(qr2, QR2_STATE_CHANGED);
+    M2C_FIELD(qr2, s32 *, QR2_STATE_DIRTY) = 0;
 }
 
 /* Tear down a QR2 connection: report the final state to the master, close its
@@ -104,15 +106,18 @@ void Qr2AppendKeyId(u8 *p, s32 a) {
 #pragma optimization_level reset
 void Qr2AppendInt(void *a,M2C_UNK b){void Qr2AppendString(void *,M2C_UNK *);void StringFormat(void *,void *,M2C_UNK,...);extern M2C_UNK data_020ffa40;u8 buf[20];StringFormat(buf,&data_020ffa40,b);Qr2AppendString(a,(M2C_UNK *)buf);}
 
-void Qr2AppendString(void *a,M2C_UNK *b){
-s32 StringLength(void *);void MemCopy(void *,void *,s32);
-s32 n=StringLength(b)+1;
-s32 used=M2C_FIELD(a,s32 *,0x800);
-if(n>0x800-used)n=0x800-used;
-if(!n)return;
-MemCopy((u8 *)a+used,b,n);
-M2C_FIELD(a,s32 *,0x800)+=n;
-((u8 *)a)[M2C_FIELD(a,s32 *,0x800)-1]=0;
+/* Appends the NUL-terminated `text` to a QR2 query string (its used length kept
+   at QR2_QUERY_COUNT): the string is truncated so the query never exceeds
+   QR2_QUERY_SIZE bytes, and the buffer stays NUL-terminated. */
+void Qr2AppendString(void *query, M2C_UNK *text) {
+    s32 StringLength(void *); void MemCopy(void *, void *, s32);
+    s32 n = StringLength(text) + 1;
+    s32 used = M2C_FIELD(query, s32 *, QR2_QUERY_COUNT);
+    if (n > QR2_QUERY_SIZE - used) n = QR2_QUERY_SIZE - used;
+    if (!n) return;
+    MemCopy((u8 *)query + used, text, n);
+    M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) += n;
+    ((u8 *)query)[M2C_FIELD(query, s32 *, QR2_QUERY_COUNT) - 1] = 0;
 }
 
 #pragma opt_common_subs off
@@ -285,7 +290,7 @@ void Qr2_ParsePublicAddress(void *qr2, M2C_UNK text) {
 
 #pragma push
 #pragma opt_common_subs off
-void func_0205f10c(M2C_UNK a0,M2C_UNK a1,M2C_UNK a2,s32 count,s32 listPtr) {
+void Qr2AppendPlayerFieldGroup(M2C_UNK a0,M2C_UNK a1,M2C_UNK a2,s32 count,s32 listPtr) {
 void Qr2AppendString(void *,M2C_UNK *);
 extern M2C_UNK sQr2UnknownKey,sQr2EmptyValue;
 extern M2C_UNK *gQr2KeyNames[];
@@ -339,11 +344,13 @@ if(before==M2C_FIELD(a1,s32 *,2048))Qr2AppendString((void *)a1,&sQr2EmptyValue);
 }
 }
 #pragma pop
-void Qr2AppendPlayerFields(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7) {
-    void func_0205f10c(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    func_0205f10c(arg0, arg1, 0, arg2, arg3);
-    func_0205f10c(arg0, arg1, 1, arg4, arg5);
-    func_0205f10c(arg0, arg1, 2, arg6, arg7);
+/* Append a player record's three field groups to a QR2 query string: the plain
+ * "key\value" pairs, then the two indexed key groups (see Qr2AppendPlayerRecord). */
+void Qr2AppendPlayerFields(M2C_UNK qr2Record, M2C_UNK query, s32 plainLength, s32 plainFields, s32 indexedLength, s32 indexedFields, s32 indexed2Length, s32 indexed2Fields) {
+    void Qr2AppendPlayerFieldGroup(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
+    Qr2AppendPlayerFieldGroup(qr2Record, query, QR2_KEY_MODE_PLAIN, plainLength, plainFields);
+    Qr2AppendPlayerFieldGroup(qr2Record, query, QR2_KEY_MODE_INDEXED1, indexedLength, indexedFields);
+    Qr2AppendPlayerFieldGroup(qr2Record, query, QR2_KEY_MODE_INDEXED2, indexed2Length, indexed2Fields);
 }
 
 /* Appends one player record to a QR2 query string.  A record is three

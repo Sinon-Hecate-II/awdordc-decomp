@@ -631,14 +631,14 @@ void ClearTilemapRows(s32 tilemapAddress, u8 rowPairs) {
 }
 
 void ClearScenePanelRows(M2C_UNK arg0) {
-    s32 func_02091e70(M2C_UNK);
+    s32 GetScenePanelTextLineX(M2C_UNK);
     s32 *GetScenePanelState();
     void ClearTilemapRows(s32, u8);
     s32 *temp_r5;
     s32 temp_r4;
 
     temp_r5 = GetScenePanelState();
-    temp_r4 = func_02091e70(arg0);
+    temp_r4 = GetScenePanelTextLineX(arg0);
     ClearTilemapRows(*temp_r5 + (temp_r4 * 2), M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4A));
 }
 

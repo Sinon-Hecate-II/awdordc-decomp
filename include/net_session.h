@@ -12,10 +12,10 @@
 #define NET_SESSION_LOGIN_NAME     0x2e /* u16[26], NUL terminated */
 #define NET_SESSION_LAST_PLAYER    0x381 /* u8 index of the last entry of the session's player table (+0x468 sockets, +0x644 ids), i.e. the player count minus one: 0 while only this console is in the session */
 #define NET_SESSION_MODE           0x389 /* u8 connection mode: 0/1 the console joined, 2/3 it serves the match (the wider event callback is used) */
-#define NET_SESSION_PLAYER_SOCKETS 0x468 /* u32[32] GT2 socket id of each player, parallel to NET_SESSION_PLAYER_IDS */
+#define NET_SESSION_PLAYER_SOCKETS 0x468 /* u32[32] GameSpy profile id of each player, parallel to NET_SESSION_PLAYER_IDS */
 #define NET_SESSION_PLAYER_IDS     0x644 /* u8[32] player id of each entry in NET_SESSION_PLAYER_SOCKETS */
 #define NET_SESSION_CONNECTED_MASK 0x664 /* u32 bitmask of the player ids present in the session */
-#define NET_SESSION_LOCAL_SOCKET   0x64 /* u32 GT2 socket id of this console, matched against NET_SESSION_PLAYER_SOCKETS to find its player table entry */
+#define NET_SESSION_LOCAL_SOCKET   0x64 /* u32 this console's own profile id (second argument of the NAS login result), matched against NET_SESSION_PLAYER_SOCKETS to find its player table entry */
 #define NET_SESSION_GAME_NAME      0x68 /* char * service name */
 #define NET_SESSION_LOGIN_CALLBACK 0x70 /* void (*)(s32 error, s32 profileId, s32 data) */
 #define NET_SESSION_LOGIN_DATA     0x74 /* s32 callback data */

@@ -1,6 +1,16 @@
 /* 7 functions from 0x02209D0C to 0x0220ACCC (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ov003_menu.h"
+
+/* One row of the map-select entry table (gMapSelectEntries): the byte offset of
+ * the entry's title block inside the shared mode-select title CG, then the
+ * localized file record of the entry's own graphics. */
+typedef struct MapSelectEntry {
+    u32 titleBlockOffset;     /* +0x00 offset into the res_mode_select_title_cg buffer */
+    const void *graphicsFile; /* +0x04 localized file record of this entry's graphics */
+    u32 unknown08;            /* +0x08 */
+    u32 unknown0C;            /* +0x0C */
+} MapSelectEntry;             /* 0x10 bytes */
 static inline void AdvanceLabelX(s32 *x,u16 width) { *x=(u8)(*x+(width+8)); }
 
 
@@ -45,7 +55,7 @@ static inline void UpdateA9Value(void *p,s32 value) {
 
 #pragma opt_strength_reduction off
 M2C_UNK func_ov003_02209d0c(void *a,s32 b) {
-void func_ov003_0220a5fc(void *,s32);void func_ov003_0220a658(void *,s32);
+void Ov003_LoadMapSelectTitleBlock(void *,s32);void func_ov003_0220a658(void *,s32);
 u8 func_ov003_022066c8(u8);void *func_ov003_022066a8(u8);
 s16 func_020bfa20(void);s16 func_020bf9e0(void);
 void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
@@ -56,7 +66,7 @@ void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK Ov003_Re
 extern M2C_UNK data_0215d9b8;extern u8 data_ov003_02210c80[];extern void *gCur3DSpriteEngine;
 void *p;u8 i,total,j,x;s32 tile,k,mode;
 M2C_FIELD(a,u8 *,0x38)|=2;
-func_ov003_0220a5fc(a,b);
+Ov003_LoadMapSelectTitleBlock(a,b);
 mode=M2C_FIELD(a,u8 *,0x34);
 p=M2C_FIELD(a,void **,0x54);
 M2C_FIELD(p,s16 *,0xe)=0;M2C_FIELD(p,s16 *,0x10)=16;
@@ -153,19 +163,23 @@ func_ov003_02207a8c(a);
 return Ov003_RefreshListRowAnimations(a,10,255);
 }
 #pragma opt_strength_reduction reset
-void func_ov003_0220a5fc(void *arg0, s32 arg1) {
-M2C_UNK SetFileDirectory(M2C_UNK *);
-M2C_UNK LoadGraphicsBlock(s32,s32);
-s32 LoadFileToBuffer(s32,s32);
-s32 GetLocalizedFileName(s32);
-M2C_UNK HeapFreeBlock(s32);
-extern void *g3DSpriteEngineSub;
-extern M2C_UNK data_ov003_0220f240, data_ov003_0221118c, data_ov003_0221119c;
-s32 temp_r0;
-SetFileDirectory(&data_ov003_0221118c);
-temp_r0=LoadFileToBuffer(GetLocalizedFileName((s32)&data_ov003_0221119c),1);
-LoadGraphicsBlock(temp_r0+M2C_FIELD(&data_ov003_0220f240,s32 *,arg1*16),M2C_FIELD(g3DSpriteEngineSub,s32 *,0x14));
-HeapFreeBlock(temp_r0);
+/* Loads the map-select entry's title block into the sub screen's layer-2 VRAM
+   (engine +0x14): the shared mode-select title CG is loaded from the file
+   directory, and the block at the entry's offset within it is uploaded. */
+void Ov003_LoadMapSelectTitleBlock(void *screen, s32 entry) {
+    M2C_UNK SetFileDirectory(M2C_UNK *);
+    M2C_UNK LoadGraphicsBlock(s32, s32);
+    s32 LoadFileToBuffer(s32, s32);
+    s32 GetLocalizedFileName(s32);
+    M2C_UNK HeapFreeBlock(s32);
+    extern void *g3DSpriteEngineSub;
+    extern M2C_UNK sMapSelectDir, sMapSelectTitleCgFile;
+    extern MapSelectEntry gMapSelectEntries[];
+    s32 titleCg;
+    SetFileDirectory(&sMapSelectDir);
+    titleCg = LoadFileToBuffer(GetLocalizedFileName((s32)&sMapSelectTitleCgFile), 1);
+    LoadGraphicsBlock(titleCg + gMapSelectEntries[entry].titleBlockOffset, M2C_FIELD(g3DSpriteEngineSub, s32 *, 0x14));
+    HeapFreeBlock(titleCg);
 }
 
 void func_ov003_0220a658(void *arg0, s32 arg1) {

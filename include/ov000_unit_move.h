@@ -52,13 +52,16 @@ enum {
 #define STEP_SOUND_SHOAL       0x46 /* terrain kind 9 and plain ground on tileset 2 */
 #define STEP_SOUND_ROCK        0x3f /* terrain kind 3 */
 
-/* The per-unit-variant move-sound record is UNIT_MOVE_SOUND_RECORD_SIZE bytes,
- * picked by GetUnitVariantIndex from the unit's kind and its owner's cached
- * sprite state.  Its special field (gUnitMoveSoundSpecials) is
- * UNIT_MOVE_SOUND_FOOTSTEP for the units that walk and play a terrain footstep
- * at every step; every other unit instead loops the record's move sound
- * (gUnitMoveSounds), which is merely panned to the tile being entered. */
+/* The per-unit-variant move record is UNIT_MOVE_SOUND_RECORD_SIZE bytes, picked by
+ * GetUnitVariantIndex from the unit's kind and its owner's cached sprite state.
+ * It holds the variant's move graphics and animation files, its step speed (in
+ * frames; doubled while fast animation is on) and its sound fields: the move-sound
+ * special (gUnitMoveSoundSpecials) is UNIT_MOVE_SOUND_FOOTSTEP for the units that
+ * walk and play a terrain footstep at every step; every other unit instead loops
+ * the record's move sound (gUnitMoveSounds), which is merely panned to the tile
+ * being entered. */
 #define UNIT_MOVE_SOUND_RECORD_SIZE 20
+#define UNIT_MOVE_RECORD_SPEED      8  /* u8 step duration in frames (gUnitMoveSpeeds field) */
 #define UNIT_MOVE_SOUND_FOOTSTEP    0x8000
 
 #endif

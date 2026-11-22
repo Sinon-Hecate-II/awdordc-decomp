@@ -112,18 +112,21 @@ void MapSelectList_ScrollDown(s32 task) {
     Ov001_PostTaskMessage(0, task);
 }
 
-void func_ov001_0217b0d4(void) {
+/* If the map-select list moved, recompute the background scroll from the list's
+ * scroll position and write it into the offset registers of both scrolling BG
+ * layers, then clear the dirty flag. */
+void MapSelectListUpdateBackgroundScroll(void) {
     s32 HardwareDivideRemainder(u16, M2C_UNK);
     extern M2C_UNK gMapSelectState;
-    s32 temp_r1;
+    s32 scrollY;
 
-    if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x56) == 0) {
+    if (M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_SCROLL_DIRTY) == 0) {
         return;
     }
-    temp_r1 = 0x01FF0000 & ((HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, 2), 0x1C) - 0x32) << 0x10);
-    M2C_FIELD((void *)0x04000010, s32 *, 0) = temp_r1;
-    M2C_FIELD((void *)0x04000010, s32 *, 8) = temp_r1;
-    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, 4), u8 *, 0x56) = 0U;
+    scrollY = 0x01FF0000 & ((HardwareDivideRemainder(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL), MAPSELECT_ROW_UNITS) - 0x32) << 0x10);
+    REG_BG0OFS = scrollY;
+    REG_BG2OFS = scrollY;
+    M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_SCROLL_DIRTY) = 0U;
 }
 
 void func_ov001_0217b130(void) {
@@ -401,7 +404,7 @@ void Ov001_HandleNameEntryResult(void) {
     extern void *gOv001NameEntryConfig;
     extern void *gNameEntryState;
     extern M2C_UNK Ov001_CloseNameEntryScreen;
-    extern M2C_UNK func_ov001_0217bc7c;
+    extern M2C_UNK Ov001_HandleNameEntryRegionChoice;
     extern M2C_UNK func_ov001_0217bf14;
     s32 modeMessages[2];
     s32 mode;
@@ -422,7 +425,7 @@ void Ov001_HandleNameEntryResult(void) {
     }
     Ov001_GetNameEntryMode(0, &mode);
     Ov001_ShowMessage(modeMessages[mode], 2, 1, -1, 0);
-    Ov001_SetStepCallback(&func_ov001_0217bc7c);
+    Ov001_SetStepCallback(&Ov001_HandleNameEntryRegionChoice);
 }
 
 #pragma merge_constants off
@@ -521,11 +524,15 @@ void UpdateNameEntryCursor(void) {
     *cursor = (*cursor & NAME_ENTRY_CURSOR_POS_MASK) | gNameEntryRowY[row] | ((u32)gNameEntryColumnX[column] << 0x17 >> 7);
 }
 
-void func_ov001_0217bc7c(void) {
+/* Handles the region menu's answer on the name-entry screen: stores the selected
+   region into the entry's result byte, plays the cancel sound (0) or accept
+   sound (1), then closes the menu and moves on to finish name entry.  A rejected
+   choice leaves the menu open. */
+void Ov001_HandleNameEntryRegionChoice(void) {
     extern void *gNameEntryState;
     extern M2C_UNK Ov001_FinishNameEntry;
-    M2C_FIELD(gNameEntryState, u8 *, 0x2A) = Ov001_GetRegionMenuSelection();
-    switch (M2C_FIELD(gNameEntryState, u8 *, 0x2A)) {
+    M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT) = Ov001_GetRegionMenuSelection();
+    switch (M2C_FIELD(gNameEntryState, u8 *, NAME_ENTRY_RESULT)) {
     case 0: Ov001_PlaySound(7); break;
     case 1: Ov001_PlaySound(0xE); break;
     default: return;

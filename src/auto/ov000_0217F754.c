@@ -189,13 +189,16 @@ switch(GetKindAttackClass((u32)(p[0]<<26)>>26)){case 0:func_ov000_0217f96c(p);br
 }
 }
 
+/* True when the battle runs in the default config mode (the low five bits of
+ * gMapConfig are zero) and map 0xAF's view belongs to player 2: the AI's special
+ * map-175 override. */
 s32 IsAiMap175Player2Override(void) {
  extern u16 gMapConfig;
  extern void **gCurrentMap;
- void *p;
+ void *map;
  if (((u32)(gMapConfig<<29)>>29)&0xFF) return 0;
- p=*gCurrentMap;
- switch(M2C_FIELD(p,u16 *,0x5142)) { case 0xAF: if(M2C_FIELD(p,u16 *,0x52A4)==2)return 1; break; }
+ map=*gCurrentMap;
+ switch(M2C_FIELD(map,u16 *,MAP_ID)) { case 0xAF: if(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)==2)return 1; break; }
  return 0;
 }
 

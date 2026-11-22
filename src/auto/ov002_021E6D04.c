@@ -94,7 +94,7 @@ void ReleaseBattleSceneResources(void *arg0) {
  * then configures the background/3D-sprite control registers. */
 void InitBattleScene(void *state) {
     void SetupPlayerSettings(void *);
-    void func_ov002_021e3890(void *);
+    void PlayerPanels_Setup(void *);
     void PlayerPanels_Init(void *);
     void InitBattleUnitView(void *);
     void func_ov002_021e6cdc(void *);
@@ -111,7 +111,7 @@ void InitBattleScene(void *state) {
     extern void *g3DSpriteBankMain;
 
     SetupPlayerSettings(&gPlayerSettings);
-    func_ov002_021e3890(gEffectVariants);
+    PlayerPanels_Setup(gEffectVariants);
     PlayerPanels_Init(gEffectVariants);
 
     {
@@ -483,7 +483,7 @@ void EndBattleScene(void *arg0) {
 }
 
 void func_ov002_021e7970(void) {
-    void func_ov002_021e8ca4(void *);
+    void DestroyBattleUnitView(void *);
     void func_020af79c(void);
     extern M2C_UNK gUnitViews;
     extern M2C_UNK data_ov002_021f3018;
@@ -491,7 +491,7 @@ void func_ov002_021e7970(void) {
     void *p;
     p=&gUnitViews;
     i=0;
-    do { func_ov002_021e8ca4(p); i++; p+=0x2C; } while(i<2);
+    do { DestroyBattleUnitView(p); i++; p+=0x2C; } while(i<2);
     ReleaseBattleSceneResources(&data_ov002_021f3018);
     func_020af79c();
 }

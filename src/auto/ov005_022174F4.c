@@ -153,26 +153,30 @@ Ov005LoadEntryFacePalettes(M2C_FIELD(gOv005MenuState,s16 *,0x10));
 PlaySoundEffect(0x10019);
 }
 
-void func_ov005_02217f6c(void) {
-M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
-extern M2C_UNK data_ov005_02220800;
-s32 i=0;
-do {
-AddSpriteSlot((i%4)*50+30,(i/4)*18+87,&data_ov005_02220800,i);
-i++;
-}while(i<12);
+/* Creates the twelve page-0 CO grid slot sprites, one per CO: four slots to a
+   row, the grid starting at (X0, Y0) with each slot a STEP_X/STEP_Y step apart. */
+void Ov005AddCoGridSprites(void) {
+    M2C_UNK AddSpriteSlot(s32, s32, M2C_UNK *, s32);
+    extern M2C_UNK gOv005CoGridSlotDef;
+    s32 i = 0;
+    do {
+        AddSpriteSlot((i % OV005_MENU_CO_COLUMNS) * OV005_CO_GRID_STEP_X + OV005_CO_GRID_X0,
+                      (i / OV005_MENU_CO_COLUMNS) * OV005_CO_GRID_STEP_Y + OV005_CO_GRID_Y0,
+                      &gOv005CoGridSlotDef, i);
+        i++;
+    } while (i < OV005_MENU_CO_COUNT);
 }
 
 void Ov005AddDetailSprites(void) {
     M2C_UNK AddSpriteSlot(s32, M2C_UNK, M2C_UNK *, s32);
-    extern M2C_UNK data_ov005_02220828;
+    extern M2C_UNK gOv005DetailRowSlotDef;
     s32 var_r6;
     s32 var_r7;
 
     var_r6 = 0;
     var_r7 = 0xE;
     do {
-        AddSpriteSlot(var_r7, 0x5A, &data_ov005_02220828, var_r6);
+        AddSpriteSlot(var_r7, 0x5A, &gOv005DetailRowSlotDef, var_r6);
         var_r6 += 1;
         var_r7 += 0x3C;
     } while (var_r6 < 4);

@@ -63,15 +63,15 @@ typedef struct VoiceChatWidget {
 } VoiceChatWidget;
 
 void func_020852f4(void){
- void *FindObjectByClass(M2C_UNK *); M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *); extern M2C_UNK data_02102088;
- void *p=FindObjectByClass(&data_02102088);
+ void *FindObjectByClass(M2C_UNK *); M2C_UNK LoadScenePanelGraphicsOnBothEngines(void *); extern M2C_UNK gLinkStatusSpriteClass;
+ void *p=FindObjectByClass(&gLinkStatusSpriteClass);
  if(!p)return;
  M2C_FIELD(p,u8 *,0x40)=1; M2C_FIELD(p,u8 *,0x41)=0;LoadScenePanelGraphicsOnBothEngines(p);
 }
 
 void func_02085324(void){
- void *FindObjectByClass(M2C_UNK *); extern M2C_UNK data_02102088;
- void *p=FindObjectByClass(&data_02102088);
+ void *FindObjectByClass(M2C_UNK *); extern M2C_UNK gLinkStatusSpriteClass;
+ void *p=FindObjectByClass(&gLinkStatusSpriteClass);
  if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
 }
 

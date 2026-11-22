@@ -338,11 +338,27 @@ void func_020b4b20(void) {
 }
 
 void func_020b4b34(void) {
-    M2C_UNK func_0208f8d8();
-    func_0208f8d8();
+    M2C_UNK FadeMusicToFullVolume();
+    FadeMusicToFullVolume();
 }
 
-void func_020b4b40(void *arg0){void *GetSaveRecordBuffer();s32 SaveTypeHasNoSlot(u8);s32 GetSaveSlot(s32,u8);u8 v=M2C_FIELD(arg0,s32 *,0x5c);StampBattleRecord(v);if(!SaveTypeHasNoSlot(v)){GetSaveSlot(0,v);func_020e4870();}SaveBattleToRecord(GetSaveRecordBuffer());func_020be438(v,GetSaveRecordBuffer(),0x125c);}
+/* Save step: stamp the battle record with the current date and day count, and when
+ * the screen's save type has a slot select that slot; then write the battle prefix
+ * (SaveBattleToRecord) into the save record buffer and store the whole 0x125c-byte
+ * battle record under the screen's save type. */
+void SaveCurrentBattle(void *state) {
+    void *GetSaveRecordBuffer();
+    s32 SaveTypeHasNoSlot(u8);
+    s32 GetSaveSlot(s32, u8);
+    u8 saveType = M2C_FIELD(state, s32 *, 0x5c);
+    StampBattleRecord(saveType);
+    if (!SaveTypeHasNoSlot(saveType)) {
+        GetSaveSlot(0, saveType);
+        func_020e4870();
+    }
+    SaveBattleToRecord(GetSaveRecordBuffer());
+    func_020be438(saveType, GetSaveRecordBuffer(), 0x125c);
+}
 
 void func_020b4b98(void *arg0) {
     if (func_020be4c0((u8) M2C_FIELD(arg0, s32 *, 0x5C)) == 0) {

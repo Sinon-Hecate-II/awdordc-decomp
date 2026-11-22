@@ -98,14 +98,16 @@ u16 func_020183a4(void) {
     return M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u16 *, 0xC);
 }
 
-u8 func_020183b8(void) {
+/* Pack the multiboot parent context's four send-status words into the flag byte
+ * of a download send: bit n is set when the word at MB_CTX_STATUSn is nonzero. */
+u8 Mb_GetDownloadSendFlags(void) {
     extern M2C_UNK gMbState;
-    void *p = M2C_FIELD(&gMbState, void **, 8);
-    u32 r2 = M2C_FIELD(p, u16 *, 0x12) != 0 ? 2 : 0;
-    u32 r3 = M2C_FIELD(p, u16 *, 0xE) != 0 ? 1 : 0;
-    u32 r12 = M2C_FIELD(p, u16 *, 0x14) != 0 ? 4 : 0;
-    u32 r1 = M2C_FIELD(p, u16 *, 0x16) != 0 ? 8 : 0;
-    return (u8)(((r3 | r2) | r12) | r1);
+    void *ctx = M2C_FIELD(&gMbState, void **, 8);
+    u32 status1 = M2C_FIELD(ctx, u16 *, MB_CTX_STATUS1) != 0 ? 2 : 0;
+    u32 status0 = M2C_FIELD(ctx, u16 *, MB_CTX_STATUS0) != 0 ? 1 : 0;
+    u32 status2 = M2C_FIELD(ctx, u16 *, MB_CTX_STATUS2) != 0 ? 4 : 0;
+    u32 status3 = M2C_FIELD(ctx, u16 *, MB_CTX_STATUS3) != 0 ? 8 : 0;
+    return (u8)(((status0 | status1) | status2) | status3);
 }
 
 s32 func_02018418(void) {
@@ -561,10 +563,10 @@ u32 func_02018c84(void) {
 s32 func_02018c9c(void) {
     extern M2C_UNK data_02136c98;
     extern M2C_UNK data_027ffc30;
-    void func_02018e24(M2C_UNK, void *);
+    void Mb_LockCartridgeAccess(M2C_UNK, void *);
     void func_02018da8(void *);
     void func_02018df0(void *);
-    void func_02018e80(M2C_UNK, void *);
+    void Mb_UnlockCartridgeAccess(M2C_UNK, void *);
     s32 buf[4];
     s32 r4;
     volatile u8 *base;
@@ -582,7 +584,7 @@ s32 func_02018c9c(void) {
         return 0;
     }
     }
-    func_02018e24(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));
+    Mb_LockCartridgeAccess(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));
     func_02018da8((void *)buf);
 
     r2 = base[0xB2];
@@ -605,7 +607,7 @@ changed:
     }
 restore:
     func_02018df0(buf);
-    func_02018e80(M2C_FIELD(&data_02136c98, u16 *, 6), &buf[2]);
+    Mb_UnlockCartridgeAccess(M2C_FIELD(&data_02136c98, u16 *, 6), &buf[2]);
     return r4;
 }
 #pragma opt_strength_reduction reset
@@ -631,28 +633,38 @@ void func_02018df0(void *arg0) {
  *(volatile u16 *)0x04000204=b;
 }
 #pragma opt_propagation reset
-void func_02018e24(M2C_UNK arg0,void *arg1) {
-M2C_UNK OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); M2C_UNK func_02005584(M2C_UNK); M2C_UNK func_020054cc(M2C_UNK); M2C_UNK WaitByLoop(M2C_UNK);
-for(;;){
-M2C_FIELD(arg1,s32 *,4)=OS_DisableInterrupts();
-M2C_FIELD(arg1,s32 *,0)=func_02005584(0x27fffe8)&0x40;
-if(M2C_FIELD(arg1,s32 *,0)!=0)return;
-if(func_020054cc(arg0)==0)return;
-OS_RestoreInterrupts(M2C_FIELD(arg1,s32 *,4));
-WaitByLoop(1);
-}
+/* Take the cartridge-access lock `lockId` if it is free: if the shared OS lock
+ * word at 0x027FFFE8 is already owned, leave it alone and only record that.
+ * Otherwise keep trying to take it (restoring interrupts while waiting), and
+ * save the caller's interrupt mask in `state` for Mb_UnlockCartridgeAccess. */
+void Mb_LockCartridgeAccess(M2C_UNK lockId, void *stateBuf) {
+    M2C_UNK OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    M2C_UNK OSi_GetLockOwnerId(void *);
+    M2C_UNK OSi_TryLockWord(M2C_UNK);
+    M2C_UNK WaitByLoop(M2C_UNK);
+    MbLockState *state = (MbLockState *)stateBuf;
+
+    for (;;) {
+        state->interrupts = OS_DisableInterrupts();
+        state->busy = OSi_GetLockOwnerId((void *)0x027FFFE8) & OS_LOCK_WORD_OWNED;
+        if (state->busy != 0) return;
+        if (OSi_TryLockWord(lockId) == 0) return;
+        OS_RestoreInterrupts(state->interrupts);
+        WaitByLoop(1);
+    }
 }
 
-void func_02018e80(M2C_UNK arg0, void *arg1) {
-    M2C_UNK func_020054c0(M2C_UNK);
+void Mb_UnlockCartridgeAccess(M2C_UNK arg0, void *arg1) {
+    M2C_UNK OSi_UnlockWord(M2C_UNK);
     void OS_RestoreInterrupts(s32);
     if (M2C_FIELD(arg1, s32 *, 0) == 0) {
-        func_020054c0(arg0);
+        OSi_UnlockWord(arg0);
     }
     OS_RestoreInterrupts(M2C_FIELD(arg1, s32 *, 4));
 }
 
-void func_02018ea4(M2C_UNK arg0) {
+void Mb_SendControlMessage(M2C_UNK arg0) {
     M2C_UNK WaitByLoop(M2C_UNK);
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
     if (SendFifoMessage(0xD, arg0, 0) == 0) {

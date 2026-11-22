@@ -40,7 +40,7 @@ typedef struct EffectSet {
     u8 pad2C[0x08];
     EffectSounds *sounds; /* +0x34 what the effect set plays while displayed */
     u8 pad38[0x05];
-    u8 phase;             /* +0x3D current phase of the effect (func_020af9cc, PlaySlotPhaseSound) */
+    u8 phase;             /* +0x3D current phase of the effect (StopEffectSlotSound, PlaySlotPhaseSound) */
     u8 variantActive[1];  /* +0x3E one byte per variant: 1 while that variant is showing */
 } EffectSet;
 

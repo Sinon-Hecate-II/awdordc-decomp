@@ -16,7 +16,7 @@ extern M2C_UNK gRecordsMenuState;
 extern void *g3DSpriteEngineMain,*g3DSpriteEngineSub,*gCur3DSpriteEngine;
 extern M2C_UNK data_ov005_022204e0;
 void func_ov005_02214b98(void); void func_ov005_02214cdc(void);
-M2C_UNK func_02090248(s32);void RecordsMenu_SelectNextEnabled(s16);void RecordsMenu_SelectNextInList(s32);
+M2C_UNK FadeOutMusic(s32);void RecordsMenu_SelectNextEnabled(s16);void RecordsMenu_SelectNextInList(s32);
 void RecordsMenu_DrawList(s32);void Show3DSprite(void *);void Hide3DSprite(void *);
 s32 func_020b2714(void);void func_020b2738(void);void func_020b26f8(void);
 void LoadSpriteResource(s32,s32,u8,s32);s32 FindObjectByClass(void *);
@@ -36,7 +36,7 @@ reg=(u16 *)((u8 *)*(void **)gCur3DSpriteEngine+0x12);*reg=(*reg&~0xc0)|0x40;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=alpha;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=beta;
 {void *state=M2C_FIELD(&gRecordsMenuState,void **,8);gCur3DSpriteEngine=saved;if(M2C_FIELD(state,s16 *,0x88)==8)func_ov005_02214cdc();}}
-if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)>=0)M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)--;if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0x25b)func_02090248(600);if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0){s32 v=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)){case 0:break;case 1:RecordsMenu_SelectNextEnabled((s16)v);break;case 2:RecordsMenu_SelectNextInList(v);break;}}}
+if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)>=0)M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)--;if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0x25b)FadeOutMusic(600);if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0xa0)==0){s32 v=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e);switch(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x92)){case 0:break;case 1:RecordsMenu_SelectNextEnabled((s16)v);break;case 2:RecordsMenu_SelectNextInList(v);break;}}}
 {void *p=M2C_FIELD(&gRecordsMenuState,void **,8);if(M2C_FIELD(p,s16 *,0x9e)==0){s32 goal=M2C_FIELD(p,s16 *,0x98);s32 current=M2C_FIELD(p,s16 *,0x96);if(current!=goal*2){s32 d=goal*2-current;s16 step;if(d<0)d=-d;step=d>>1;if(step==0)step=1;M2C_FIELD(p,s16 *,0x96)=current>goal*2?M2C_FIELD(p,s16 *,0x96)-step:M2C_FIELD(p,s16 *,0x96)+step;M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9e)=1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));}}else M2C_FIELD(p,s16 *,0x9e)=0;}
 if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1){u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a|0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b|0x40;Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Show3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(func_020b2714())func_020b2738();}
 else {u16 * volatile a=*(u16 **)gCur3DSpriteEngine;u16 * volatile b;*a=*a&~0x20;b=*(u16 **)gCur3DSpriteEngine;*b=*b&~0x40;Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x174));Hide3DSprite(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x178));if(!func_020b2714())func_020b26f8();}
@@ -61,7 +61,7 @@ MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x17
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x17c));
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x180));
 MenuSpriteUpdate(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),void * *,0x184));
-if(M2C_FIELD(gKeyState,u16 *,0)&2){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){func_02090248(15);M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=-1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));return;}if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x90)!=-1)return;PlaySoundEffect(0x1000f);LockInactiveSpriteSlots();func_020b2268();func_02090248(15);Sprite_ResumeAnimation(arg0);return;}
+if(M2C_FIELD(gKeyState,u16 *,0)&2){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)!=-1){FadeOutMusic(15);M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x8e)=-1;RecordsMenu_DrawList(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x96));return;}if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x90)!=-1)return;PlaySoundEffect(0x1000f);LockInactiveSpriteSlots();func_020b2268();FadeOutMusic(15);Sprite_ResumeAnimation(arg0);return;}
 if(M2C_FIELD(gKeyState,u16 *,0)&4){if(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&1)M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)&=~1;else M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),u16 *,0)|=1;}
 if(M2C_FIELD(gKeyState,u16 *,0)&1)RecordsMenu_HandlePick((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x94)));else {
 void *state; u16 keys=M2C_FIELD(gKeyState,u16 *,0); arg0=0; state=M2C_FIELD(&gRecordsMenuState,void **,8);
@@ -113,9 +113,9 @@ void func_ov005_02217264(M2C_UNK arg0) {
 }
 
 void func_ov005_0221727c(void) {
-    M2C_UNK func_02090248(M2C_UNK);
+    M2C_UNK FadeOutMusic(M2C_UNK);
     extern M2C_UNK gRecordsMenuState;
-    func_02090248(0xF);
+    FadeOutMusic(0xF);
     M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x8E) = -1;
 }
 

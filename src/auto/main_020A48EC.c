@@ -45,8 +45,10 @@ s32 GetFacingOffset(s32 arg0) {
     }
 }
 
-void func_020a4af0(s32 arg0, s32 arg1, s32 arg2) {
-    AddMapOrderEx(arg0 - 1, arg1 - 1, 3, 3, 4, arg2, 0, 0x63, 1, 1, 0, 0x32);
+/* Queue a 3x3 area attack (MAPORDER_ATTACK_AREA) centred on the tile (x, y) for
+ * `player`, with a value of 99 and a last value of 50. */
+void AddAreaAttackOrder(s32 x, s32 y, s32 player) {
+    AddMapOrderEx(x - 1, y - 1, 3, 3, 4, player, 0, 0x63, 1, 1, 0, 0x32);
 }
 
 void AddPointAttackOrder(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -207,11 +209,11 @@ void SelectLineOrderTargets(Unk020ABaseEntry *a) {
 }
 #pragma opt_strength_reduction reset
 void SelectPointOrderTargets(Unk020ABaseEntry *p) {
-extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 func_ov000_021aab4c(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
+extern s32 *gCurrentMap; void SelectMapLayer(s32);void FillMapLayer(s32);void FillMapColumn(s32,s32,s32,s8,u8);s32 SelectAreaEffectTargetOnGrid(void *,s32,s32,s32,s32,s32);void ClearSelectionQueue(void);
 s16 pos[2];s32 map; s32 centerY;register s32 right;register s32 yy;register s32 xx;register s32 zero;register u32 cy;register s32 bottom;s32 left,top,dist;
 SelectMapLayer(*gCurrentMap+0x1e30);FillMapLayer(-1);
 FillMapColumn(p->x,p->y,(u32)(M2C_FIELD(p,u16 *,2)<<16)>>30,0,0);
-if(!func_ov000_021aab4c(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){ClearSelectionQueue();return;}
+if(!SelectAreaEffectTargetOnGrid(pos,p->player,0,6,2,M2C_FIELD(p,s8 *,7))){ClearSelectionQueue();return;}
 AppendSelectionEntry((u16)pos[0],(u16)pos[1],0,0);
 left=pos[0]-2;if(left<0)left=0;
 centerY=pos[1];top=centerY-2;if(top<0)top=0;

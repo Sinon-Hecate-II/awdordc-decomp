@@ -82,7 +82,30 @@ void FifoReceiveHandler(void) {
     }
 }
 
-void CompleteFileRequest(void *p,s32 a) {s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 OS_WakeupThread(void *);s32 k;void *prev,*next;k=OS_DisableInterrupts();prev=M2C_FIELD(p,void **,0);next=M2C_FIELD(p,void **,4);if(prev)M2C_FIELD(prev,void **,4)=next;if(next)M2C_FIELD(next,void **,0)=prev;M2C_FIELD(p,void **,0)=0;M2C_FIELD(p,void **,4)=0;M2C_FIELD(p,u32 *,12)&=~0x4f;M2C_FIELD(p,s32 *,20)=a;OS_WakeupThread((u8 *)p+24);OS_RestoreInterrupts(k);}
+/* Finish a file request: unlink it from its file's pending FIFO, clear every
+ * state bit it was given, store the command result and wake the caller waiting
+ * on its thread queue.  Interrupts stay off across the whole update so the FIFO
+ * and the caller's queue change atomically. */
+void CompleteFileRequest(void *p, s32 result) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    s32 OS_WakeupThread(void *);
+    s32 key;
+    FSFileRequest *request = (FSFileRequest *)p;
+    FSFileRequest *prev, *next;
+
+    key = OS_DisableInterrupts();
+    prev = request->prev;
+    next = request->next;
+    if (prev) prev->next = next;
+    if (next) next->prev = prev;
+    request->prev = 0;
+    request->next = 0;
+    request->flags &= ~FS_REQ_STATE_MASK;
+    request->result = result;
+    OS_WakeupThread((u8 *)request + FS_REQ_QUEUE);
+    OS_RestoreInterrupts(key);
+}
 
 /* Run one file command of a request: when the file's callback is armed for the
  * command it runs first (reporting 8 falls back to the default handler), then the

@@ -3,6 +3,12 @@
 #include "ds3dsprite.h"
 #include "list_widget.h"
 
+/* Per-screen display state, indexed by screen 0 (main engine) or 1 (sub engine):
+ * the screen flag GetScreenFlag reads, and the display mode GetScreenMode reads. */
+#define SCREEN_STATE_FLAG 0x00 /* s8: nonzero when the screen is enabled */
+#define SCREEN_STATE_MODE 0x02 /* s8: display mode applied to the screen */
+#define SCREEN_CURRENT    3    /* screen selector: whichever engine is current */
+
 #pragma opt_strength_reduction off
 /* Scroll update for a vertical list: once its opening animation ends, clamps the
  * scroll position at either end, then rebuilds the pixel offsets of the two
@@ -68,16 +74,16 @@ s16 GetListScrollY(void *widget) {
 }
 
 void func_020abb9c(void *arg0) {
-    M2C_UNK func_01ffa860(M2C_UNK *, u16);
+    M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, u16);
     extern M2C_UNK data_02126b94;
-    func_01ffa860(&data_02126b94, M2C_FIELD(arg0, u16 *, 0x68));
+    Find3DSpriteByClassAndZ(&data_02126b94, M2C_FIELD(arg0, u16 *, 0x68));
 }
 
-void func_020abbb4(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_UNK data_02126b94;func_01ffa860(&data_02126b94,M2C_FIELD(arg0,u16 *,106));}
+void func_020abbb4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,106));}
 
-void func_020abbcc(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_UNK data_02126b94;func_01ffa860(&data_02126b94,M2C_FIELD(arg0,u16 *,108));}
+void func_020abbcc(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,108));}
 
-void func_020abbe4(void *arg0) {M2C_UNK func_01ffa860(M2C_UNK *,u16);extern M2C_UNK data_02126b94;func_01ffa860(&data_02126b94,M2C_FIELD(arg0,u16 *,110));}
+void func_020abbe4(void *arg0) {M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *,u16);extern M2C_UNK data_02126b94;Find3DSpriteByClassAndZ(&data_02126b94,M2C_FIELD(arg0,u16 *,110));}
 
 /* Advance one frame of a two-axis easing animation: when its target coordinate
    (+0x10/+0x11) changes, latch it and restart; ease +0xA from +8 towards 0xA0 or
@@ -189,43 +195,69 @@ s32 func_020abe28(s32 arg0) {
     return arg0;
 }
 
-void func_020abe3c(u8 arg0,s8 arg1) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(data_0212735c+a,s8 *,0)=arg1;}
+void func_020abe3c(u8 arg0,s8 arg1) {extern s32 gScreenStates; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(gScreenStates+a,s8 *,0)=arg1;}
 
-u8 GetScreenFlag(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,0);}
+u8 GetScreenFlag(u8 arg0) {extern s32 gScreenStates; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
+u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(gScreenStates+a,u8 *,0);}
 
-void func_020abee4(u8 arg0, s8 arg1) {
-    extern s32 data_0212735c;
+/* Records a display mode for a screen's state: screen 3 resolves to the 3D sprite
+   engine that is current (0 for the main engine, 1 for the sub engine). */
+void SetScreenStateMode(u8 screen, s8 mode) {
+    extern s32 gScreenStates;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    u8 var_r0;
-    u8 var_r0_2;
-    u8 var_r0_3;
+    u8 index;
+    u8 isMain;
+    u8 resolved;
 
-    var_r0 = arg0;
-    if (var_r0 == 3) {
+    index = screen;
+    if (index == SCREEN_CURRENT) {
         if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
-            var_r0_2 = 1;
+            isMain = 1;
         } else {
-            var_r0_2 = 0;
+            isMain = 0;
         }
-        if (var_r0_2 != 1) {
-            var_r0_3 = 1;
+        if (isMain != 1) {
+            resolved = 1;
         } else {
-            var_r0_3 = 0;
+            resolved = 0;
         }
-        var_r0 = var_r0_3;
+        index = resolved;
     }
-    M2C_FIELD((data_0212735c + var_r0), s8 *, 2) = arg1;
+    M2C_FIELD((gScreenStates + index), s8 *, SCREEN_STATE_MODE) = mode;
 }
 
-u8 GetScreenMode(u8 arg0) {extern s32 data_0212735c; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(data_0212735c+a,u8 *,2);}
+/* Display mode recorded for a screen's state: screen 3 resolves to the 3D sprite
+ * engine that is current (0 when gCur3DSpriteEngine is the main engine, otherwise 1). */
+u8 GetScreenMode(u8 screen) {
+    extern s32 gScreenStates;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 gCur3DSpriteEngine;
+    u8 index;
+    u8 isMain;
+    u8 resolved;
+
+    index = screen;
+    if (index == SCREEN_CURRENT) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
+            isMain = 1;
+        } else {
+            isMain = 0;
+        }
+        if (isMain != 1) {
+            resolved = 1;
+        } else {
+            resolved = 0;
+        }
+        index = resolved;
+    }
+    return M2C_FIELD(gScreenStates + index, u8 *, SCREEN_STATE_MODE);
+}
 
 void func_020abf94(void) {
- void func_020abe3c(u8,s8); void func_020abee4(u8,s8);
- s32 i=0; do {func_020abe3c(i,1);func_020abee4(i,0);i++;}while(i<2);
+ void func_020abe3c(u8,s8); void SetScreenStateMode(u8,s8);
+ s32 i=0; do {func_020abe3c(i,1);SetScreenStateMode(i,0);i++;}while(i<2);
 }
 
 /* Animates the screen-split transition from its frame/length: eases the
@@ -276,7 +308,7 @@ void UpdateSplitTransition(u16 frame, u16 length) {
 void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
     u8 GetScreenMode(u8);
     void func_020abe3c(u8, s8);
-    void func_020abee4(u8, s8);
+    void SetScreenStateMode(u8, s8);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
     extern s32 g3DSpriteEngineSub;
@@ -405,7 +437,7 @@ void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
         }
 
         ((void(*)(u8, s32))func_020abe3c)(screen, flag);
-        ((void(*)(u8, s32))func_020abee4)(screen, (s32)mode);
+        ((void(*)(u8, s32))SetScreenStateMode)(screen, (s32)mode);
     }
 
     gCur3DSpriteEngine = savedEngine;

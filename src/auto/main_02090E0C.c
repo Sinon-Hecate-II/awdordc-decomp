@@ -192,12 +192,12 @@ void SetSpritePaletteBase(void) {
 void SetSpritePaletteIndex(s32 a) {s32 v=a==31?0:63;*(s32 *)0x040004a4=(v<<24)|0x80|(a<<16);}
 #pragma optimization_level reset
 s32 CreateSpriteAnim(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-            void func_02091954(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+            void Sprite_InitAnimation(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     s32 func_020919b4(M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = func_020919b4(0);
-    func_02091954(temp_r0, arg0, arg1, arg2);
+    Sprite_InitAnimation(temp_r0, arg0, arg1, arg2);
     return temp_r0;
 }
 
@@ -581,16 +581,19 @@ void Sprite_RestartAnimation(void *arg0) {
     M2C_FIELD(arg0, u16 *, 0x1C) = temp_r4;
 }
 
-void func_02091954(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,M2C_UNK arg3) {
+/* Initialise a script-driven sprite: install its animation data, then set its
+ * draw priority, flags and palette (the map sprite palette) and start the
+ * animation from its first frame at normal speed. */
+void Sprite_InitAnimation(M2C_UNK spriteArg, M2C_UNK script, M2C_UNK priority, M2C_UNK flags) {
 void Sprite_SetScriptData(M2C_UNK, M2C_UNK); M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
-void *r5=(void*)arg0; M2C_UNK r4=arg2; M2C_UNK r1;
-M2C_FIELD(r5,u8*,0x22)=arg3; Sprite_SetScriptData(arg0,arg1); r1=0;
-M2C_FIELD(r5,s32*,0x30)=r1; M2C_FIELD(r5,s32*,0x28)=r1; M2C_FIELD(r5,s32*,0x2c)=r1;
-M2C_FIELD(r5,s16*,0x18)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
-M2C_FIELD(r5,u8*,0x20)=r4; M2C_FIELD(r5,u8*,0x21)=31; M2C_FIELD(r5,s32*,0x14)=r1;
-M2C_FIELD(r5,u8*,0x23)=r1; M2C_FIELD(r5,s16*,0x1a)=r1;
-M2C_FIELD(r5,s16*,0x1c)=256; M2C_FIELD(r5,s16*,0x1e)=r1; M2C_FIELD(r5,s16*,0x24)=r1;
-Sprite_UpdateAnimationScript((M2C_UNK)r5);
+void *sprite=(void*)spriteArg; M2C_UNK prio=priority; M2C_UNK zero;
+M2C_FIELD(sprite,u8*,SPRITE_FLAGS)=flags; Sprite_SetScriptData(spriteArg,script); zero=0;
+M2C_FIELD(sprite,s32*,SPRITE_PARTS)=zero; M2C_FIELD(sprite,s32*,SPRITE_OAM_ATTR2)=zero; M2C_FIELD(sprite,s32*,0x2c)=zero;
+M2C_FIELD(sprite,s16*,SPRITE_TIMER)=zero; M2C_FIELD(sprite,s16*,SPRITE_DELAY)=zero;
+M2C_FIELD(sprite,u8*,SPRITE_PRIORITY)=prio; M2C_FIELD(sprite,u8*,SPRITE_PALETTE)=MAP_SPRITE_PALETTE; M2C_FIELD(sprite,s32*,SPRITE_LOOP_FRAME)=zero;
+M2C_FIELD(sprite,u8*,SPRITE_TILE_BASE)=zero; M2C_FIELD(sprite,s16*,SPRITE_DELAY)=zero;
+M2C_FIELD(sprite,s16*,SPRITE_SPEED)=0x100; M2C_FIELD(sprite,s16*,SPRITE_FRACTION)=zero; M2C_FIELD(sprite,s16*,SPRITE_COMMAND)=zero;
+Sprite_UpdateAnimationScript((M2C_UNK)sprite);
 }
 
 #pragma optimization_level 2

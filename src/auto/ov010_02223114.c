@@ -535,7 +535,7 @@ timestamp:
 }
 #pragma opt_propagation reset
 #pragma optimization_level reset
-s32 func_ov010_02223ec8(s32 a) {
+s32 VoiceLink_CreatePeerContext(s32 a) {
 s32 VoiceLink_AllocContext(s32);
 extern s32 gLinkConfig;
 s32 state=M2C_FIELD(&gLinkConfig,s32 *,0x10);

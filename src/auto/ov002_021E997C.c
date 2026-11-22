@@ -267,7 +267,7 @@ SetEffectNodeResourceCore(q,M2C_FIELD(data_ov002_021f302c,s32 *,resOfs),M2C_FIEL
 
 void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     void *MemAlloc(s32);
-    void func_ov002_021e3e0c(void *, s16, s16, s16, u16, u16, u16, u16, u8, u8, u8, u8);
+    void InitEffectDisc(void *, s16, s16, s16, u16, u16, u16, u16, u8, u8, u8, u8);
     extern u8 gEffectTable[];
     extern u8 data_ov002_021f306e[];
     void *tmp, *p, *base2;
@@ -301,7 +301,7 @@ void func_ov002_021ea4bc(void *arg0, s32 arg1, s32 arg2) {
     x = (s16)(arg1 + M2C_FIELD(p, s16 *, 0xa4));
     y = (s16)(arg2 + M2C_FIELD(p, s16 *, 0xa6));
     z = M2C_FIELD(p, s16 *, 0xa8);
-    func_ov002_021e3e0c(M2C_FIELD(arg0, void **, 0x64), x, y, z, a, b, c, d, e, 0x1f, idx, idx2);
+    InitEffectDisc(M2C_FIELD(arg0, void **, 0x64), x, y, z, a, b, c, d, e, 0x1f, idx, idx2);
 }
 
 void func_ov002_021ea5b8(void) {

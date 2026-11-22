@@ -203,13 +203,15 @@ s8 GetAdjacentAllyDirections(s32 unit, s32 x, s32 y) {
     return mask;
 }
 
-u8 func_020ba3b4(void *arg0) {
- extern M2C_UNK data_ov000_021b5c0b;
+/* Whether `unit` can attack a direct (range 1) target right now: its kind has a
+ * weapon that needs no ammo, or it still has ammo and its maximum range is 1. */
+u8 CanUnitAttackDirectly(void *unit) {
+ extern u8 gUnitKindInfiniteAmmo[];
  s32 GetUnitAttackRangeMax();
  u8 var_r0;
- if (M2C_FIELD(&data_ov000_021b5c0b,u8 *,((u32)(M2C_FIELD(arg0,u8 *,0)<<26)>>26)*0x70) == 1) return 1;
- if(GetUnitAttackRangeMax(arg0)!=1)return 0;
- if(((u32)(M2C_FIELD(arg0,u16 *,6)<<21)>>28)!=0)var_r0=1;else var_r0=0;
+ if (gUnitKindInfiniteAmmo[((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)*UNIT_KIND_STATS_SIZE] == 1) return 1;
+ if(GetUnitAttackRangeMax(unit)!=1)return 0;
+ if(((u32)(M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO)<<21)>>28)!=0)var_r0=1;else var_r0=0;
  return var_r0;
 }
 
@@ -327,14 +329,18 @@ if(M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+kind*32,s8 *,tile
 return M2C_FIELD((s8 *)M2C_FIELD(&gMovementCostTable,void **,0x64)+gMovementTypeTable[((u32)(selected[0]<<26)>>26)*112]*32,s8 *,tile)!=-1;
 }
 
-s32 GetTerrainPropertyFlagsAt(s32 a,s32 b) {
- extern void **gCurrentMap;
- extern u8 gTerrainPropertyFlags[];
- s32 IsTerrainOnUnitTeam(s32,s32);
- s32 p=(s32)*gCurrentMap;
- u8 t=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
- if(IsTerrainOnUnitTeam(M2C_FIELD(p,u8 *,0x52d4),t))return 0;
- return gTerrainPropertyFlags[t&31];
+/* Property flags of the terrain kind at cell (x, y): 0 when the cell's owner
+ * bits put it on the cursor unit's team (an own property is not a capture
+ * target), otherwise its entry in gTerrainPropertyFlags (1 for the capturable
+ * property kinds). */
+s32 GetTerrainPropertyFlagsAt(s32 x, s32 y) {
+    extern void **gCurrentMap;
+    extern u8 gTerrainPropertyFlags[];
+    s32 IsTerrainOnUnitTeam(s32, s32);
+    s32 map = (s32)*gCurrentMap;
+    u8 terrain = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN);
+    if (IsTerrainOnUnitTeam(M2C_FIELD(map, u8 *, MAP_CURSOR_UNIT_ID), terrain)) return 0;
+    return gTerrainPropertyFlags[terrain & MAP_TERRAIN_KIND_MASK];
 }
 
 /* Report whether the unit standing at (x, y) can be selected: the cell must be

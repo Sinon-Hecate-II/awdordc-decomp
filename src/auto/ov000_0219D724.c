@@ -183,46 +183,60 @@ void func_ov000_0219da78(void) {
     *gAiCommandState = 2;
 }
 
-void func_ov000_0219db90(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK func_ov000_021855e4;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &func_ov000_021855e4;
- *gAiCommandState = 2;
+/* AI turn-plan phase 0: no single unit is picked.  Install the army-wide
+ * BuildAiThreatMap action, which clears the AI's range layers and rebuilds every
+ * unit's threat range; the AI_UNIT_LIST_NO_UNIT entry makes PickAiUnitAction run
+ * it once without a cursor unit. */
+void StartAiThreatMapPhase(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK BuildAiThreatMap;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &BuildAiThreatMap;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219dbe8(void) {
+/* AI turn-plan phase with no single acting unit: install the army-wide action
+   that rebuilds the foot-unit (infantry/mech) reachability layer from the map's
+   property cells.  The AI_UNIT_LIST_NO_UNIT entry makes the action run once
+   without a cursor unit. */
+void StartAiFootRangePhase(void) {
  extern s8 *gAiCommandState;
  extern M2C_UNK *gAiUnitAction;
  extern s8 *gAiUnitListCursor;
  extern s8 gAiUnitList;
  extern M2C_UNK func_ov000_0219b3c8;
  gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
+ *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+ *gAiUnitListCursor = AI_UNIT_LIST_END;
  gAiUnitListCursor = &gAiUnitList;
  gAiUnitAction = &func_ov000_0219b3c8;
- *gAiCommandState = 2;
+ *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219dc40(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK func_ov000_0219a6c8;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &func_ov000_0219a6c8;
- *gAiCommandState = 2;
+/* AI turn-plan phase 12: no single unit is picked.  Install the army-wide
+ * ClearAiUnitLoadCounts action, which resets the per-unit count of how often
+ * each unit was used as a load target; the AI_UNIT_LIST_NO_UNIT entry runs it
+ * once without a cursor unit. */
+void StartAiLoadCountResetPhase(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK ClearAiUnitLoadCounts;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &ClearAiUnitLoadCounts;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
 /* AI turn phase for the general case: ask FindBestSelectableUnit for the best unit
@@ -277,46 +291,59 @@ void SelectAiCoPowerUnit(void) {
     *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219dd90(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK AssignUnitMoveTargets;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &AssignUnitMoveTargets;
- *gAiCommandState = 2;
+/* AI turn-plan phase 15: no single unit is picked.  Install the army-wide
+ * AssignUnitMoveTargets action, which gives every foot unit a property to
+ * capture; the AI_UNIT_LIST_NO_UNIT entry runs it once without a cursor unit. */
+void StartAssignUnitMoveTargetsPhase(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK AssignUnitMoveTargets;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &AssignUnitMoveTargets;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219dde8(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK ReleaseUnitMoveTargets;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &ReleaseUnitMoveTargets;
- *gAiCommandState = 2;
+/* AI turn-plan phase 17: no single unit is picked.  Install the army-wide
+ * ReleaseUnitMoveTargets action, which drops the capture targets the previous
+ * phase assigned; the AI_UNIT_LIST_NO_UNIT entry runs it once without a
+ * cursor unit. */
+void StartReleaseUnitMoveTargetsPhase(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK ReleaseUnitMoveTargets;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &ReleaseUnitMoveTargets;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
-void func_ov000_0219de40(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK func_ov000_0217d850;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &func_ov000_0217d850;
- *gAiCommandState = 2;
+/* Install the army-wide ClearAiActionFlags action, which drops the 0x08 flag
+ * BeginAiTurn sets on the AI's action flags; the AI_UNIT_LIST_NO_UNIT entry runs
+ * it once without a cursor unit. */
+void StartAiClearActionFlags(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK ClearAiActionFlags;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &ClearAiActionFlags;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
 /* AI turn phase starter for kind-13 units: collect the current player's ready

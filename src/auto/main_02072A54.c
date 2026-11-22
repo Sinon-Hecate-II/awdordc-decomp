@@ -188,7 +188,7 @@ s32 func_02072dc0(void *arg0) {
 
 
     void FindExceptionTableHandler(s32, void *);
-    s32 func_020744e0(void *, void *);
+    s32 Js_RestoreFrameRegisters(void *, void *);
     M2C_UNK Js_DecodeFrameData(void *, void *);
     s32 operands[40];
     s32 temp_r0;
@@ -202,7 +202,7 @@ s32 func_02072dc0(void *arg0) {
 loop_1:
     temp_r2 = M2C_FIELD(arg0, u8 **, 8);
     if ((temp_r2 == NULL) || (temp_r0_3 = *temp_r2, ((temp_r0_3 & 0x80) != 0))) {
-        FindExceptionTableHandler(func_020744e0(arg0 + 0x18, arg0), arg0);
+        FindExceptionTableHandler(Js_RestoreFrameRegisters(arg0 + 0x18, arg0), arg0);
         if (M2C_FIELD(arg0, s32 *, 4) == 0) {
             return 0xFF;
         }
@@ -290,7 +290,7 @@ block_48:
 #pragma pop
 void func_02073148(s32 arg0, void *arg1, s32 arg2) {
 u32 U32DivideRem(s32,u32);
-s32 func_020744e0(void *,void *);
+s32 Js_RestoreFrameRegisters(void *,void *);
 void func_020742e0(void);
 s32 Js_DecodeFrameData(void *,void *);
 s32 spa0;
@@ -337,7 +337,7 @@ u8 *p,*q,*end; u32 f,g,flag,flag2; s32 v,w,n; u8 op;
 loop:
 p=M2C_FIELD(arg1,u8 **,8);
 if(!p) {
-FindExceptionTableHandler(func_020744e0(arg0,arg1),arg1);
+FindExceptionTableHandler(Js_RestoreFrameRegisters(arg0,arg1),arg1);
 if(!M2C_FIELD(arg1,s32 *,4)) func_020742e0();
 Js_DecodeFrameData(arg0,arg1);
 p=M2C_FIELD(arg1,u8 **,8);

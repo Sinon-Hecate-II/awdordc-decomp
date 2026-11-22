@@ -375,7 +375,7 @@ void BeginAiTurn(void) {
     void func_ov000_0219a370(void);
     void MarkAiTargetAreas(void);
     void ClearAiUnitActions(void);
-    void func_ov000_0219a6c8(void);
+    void ClearAiUnitLoadCounts(void);
     void CountEnemyProperties(void);
     void Ov000_AssignAiOrders(void);
     void func_ov000_02181c88(void);
@@ -407,7 +407,7 @@ void BeginAiTurn(void) {
     func_ov000_0219a370();
     MarkAiTargetAreas();
     ClearAiUnitActions();
-    func_ov000_0219a6c8();
+    ClearAiUnitLoadCounts();
     CountEnemyProperties();
     Ov000_AssignAiOrders();
     func_ov000_02181c88();

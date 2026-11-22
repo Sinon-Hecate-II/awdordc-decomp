@@ -8,18 +8,23 @@ static inline s32 E6D4Offset(s16 index) { return index * (s16)14; }
 static inline s32 E6D4Call(u8 *p,s16 index) { s32 StepMapViewToTile(u8,u8); u8 *q=p+0x59a4+E6D4Offset(index);return StepMapViewToTile(q[1],q[2]); }
 static inline s32 E6D4Check(u8 *p, s16 index) { u8 *q=p+0x59a4+E6D4Offset(index); s32 yes=M2C_FIELD(p+M2C_FIELD(p,u16*,0x52a4)*0x8c,u8*,0x67c3); s32 y=q[2]; u32 x=q[1],bit; if(yes&2)yes=1;else{bit=x+M2C_FIELD(p+y*2,u16*,0x3758);yes=1;if((u8)(M2C_FIELD(p+(bit>>3),u8*,0x5201)&(1<<(bit&7)))==0)yes=0;} return yes; }
 
-void func_ov000_0219e6d4(void) {
- extern s8 *gAiCommandState;
- extern M2C_UNK *gAiUnitAction;
- extern s8 *gAiUnitListCursor;
- extern s8 gAiUnitList;
- extern M2C_UNK func_ov000_02183874;
- gAiUnitListCursor = &gAiUnitList;
- *gAiUnitListCursor++ = 0x40;
- *gAiUnitListCursor = 0;
- gAiUnitListCursor = &gAiUnitList;
- gAiUnitAction = &func_ov000_02183874;
- *gAiCommandState = 2;
+/* AI turn-plan phase 7: no single unit is picked.  Install the army-wide
+ * MarkAiUnitAttackCells action, which marks the cells each of the current
+ * player's units can attack; the AI_UNIT_LIST_NO_UNIT entry runs it once
+ * without a cursor unit. */
+void StartAiAttackCellScanPhase(void) {
+    extern s8 *gAiCommandState;
+    extern M2C_UNK *gAiUnitAction;
+    extern s8 *gAiUnitListCursor;
+    extern s8 gAiUnitList;
+    extern M2C_UNK MarkAiUnitAttackCells;
+
+    gAiUnitListCursor = &gAiUnitList;
+    *gAiUnitListCursor++ = AI_UNIT_LIST_NO_UNIT;
+    *gAiUnitListCursor = AI_UNIT_LIST_END;
+    gAiUnitListCursor = &gAiUnitList;
+    gAiUnitAction = &MarkAiUnitAttackCells;
+    *gAiCommandState = AI_COMMAND_PHASE_PICK_ACTION;
 }
 
 /* AI turn phase starter for kind-5 units (the kind-5..6 family, such as
@@ -127,7 +132,7 @@ s32 ProcessAiCommandStep(void) {
     s32 func_ov000_0219f0d8();
     s32 ProcessAiCommandDelay();
     s32 func_ov000_0219f918();
-    s32 func_ov000_0219f968();
+    s32 PlayAiAttackEffect();
     s32 func_ov000_0219f9c0();
     s32 func_ov000_0219fa0c();
     s32 FinishAiUnitMove();
@@ -150,7 +155,7 @@ s32 ProcessAiCommandStep(void) {
             continues = func_ov000_0219f918();
             break;
         case 4:
-            continues = func_ov000_0219f968();
+            continues = PlayAiAttackEffect();
             break;
         case 5:
             continues = func_ov000_0219fa0c();
@@ -183,7 +188,7 @@ s32 func_ov000_0219e9f4(void)
     s32 StepMapViewToTile(u8, u8);
     void func_020844a0(u8 *, u8 *);
     void func_020d61f0(void);
-    s32 func_020d1a1c(s32);
+    s32 IsPlayerLocallyControlled(s32);
     s32 IsLocalSessionHost(void);
     u8 IsUnitSubmerged(void *);
     u8 func_020a7d68(void *);
@@ -290,7 +295,7 @@ s32 func_ov000_0219e9f4(void)
         return (u8)(scrolling == 0);
     }
 
-    if (!func_020d1a1c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+    if (!IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         map = *gCurrentMap;
         unit = M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT);
         flags = M2C_FIELD(unit, u16 *, MAP_UNIT_FLAGS);
@@ -351,7 +356,7 @@ s32 RunAiCommandMoveStep(void) {
     void RefreshMapView(void);
     void func_020844a0(u8 *, u8 *);
     s32 ResolvePathAttack(s32, s32, s32, void *, s32);
-    s32 func_020d1a1c(s32);
+    s32 IsPlayerLocallyControlled(s32);
     void SetBattleCommand(s32, s32, s32, s32);
     void func_020a64ec(void *);
     extern void **gCurrentMap;
@@ -372,7 +377,7 @@ s32 RunAiCommandMoveStep(void) {
         (u8 *)*gCurrentMap + MAP_CURSOR_PATH,
         4);
     if (attack != 0) {
-        if (func_020d1a1c(*(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER)) != 0) {
+        if (IsPlayerLocallyControlled(*(u16 *)((u8 *)*gCurrentMap + MAP_CURRENT_PLAYER)) != 0) {
             SetBattleCommand(0xf, *(u8 *)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT_ID), 0, 0);
         }
         gAiCommand[AI_COMMAND_KIND] = 2;

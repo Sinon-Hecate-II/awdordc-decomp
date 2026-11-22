@@ -306,28 +306,32 @@ void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
     return arg0;
 }
 
-void *func_0202a544(void *arg0, s32 arg1, s32 arg2) {
+/* Frame-heap allocation from the front: align the heap's head pointer up to
+ * `alignment`, fail when the block would run past the heap's tail (returns NULL),
+ * zero-fill the newly claimed bytes when the heap asks for it, and advance the
+ * head.  Returns the aligned payload address. */
+void *AllocFromFrameHeapHead(void *heap, s32 size, s32 alignment) {
     M2C_UNK CpuFill(M2C_UNK, u32, s32);
-    u32 f0;
-    u32 r5;
-    u32 r6;
+    u32 head;
+    u32 aligned;
+    u32 next;
     u32 diff;
 
-    f0 = M2C_FIELD(arg0, u32 *, 0);
-    r5 = (u32)(~(arg2 - 1)) & ((u32)(arg2 - 1) + f0);
-    r6 = (u32)arg1 + r5;
-    if (r6 > M2C_FIELD(arg0, u32 *, 4)) {
+    head = M2C_FIELD(heap, u32 *, 0);
+    aligned = (u32)(~(alignment - 1)) & ((u32)(alignment - 1) + head);
+    next = (u32)size + aligned;
+    if (next > M2C_FIELD(heap, u32 *, 4)) {
         return (void *)0;
     }
-    diff = r6 - f0;
-    if (((u8)M2C_FIELD(arg0, s32 *, -4) & 0x1) != 0) {
-        CpuFill(0, f0, (s32)diff);
+    diff = next - head;
+    if (((u8)M2C_FIELD(heap, s32 *, -4) & 0x1) != 0) {
+        CpuFill(0, head, (s32)diff);
     }
-    M2C_FIELD(arg0, u32 *, 0) = r6;
-    return (void *)r5;
+    M2C_FIELD(heap, u32 *, 0) = next;
+    return (void *)aligned;
 }
 
-u32 func_0202a5a0(void *arg0, s32 arg1, s32 arg2) {
+u32 AllocFromFrameHeapTail(void *arg0, s32 arg1, s32 arg2) {
     M2C_UNK CpuFill(M2C_UNK, u32, s32);
     u32 temp_r3;
     u32 temp_r5;
@@ -378,17 +382,17 @@ void DestroyFrameHeap(void) {
 }
 
 void Sound_HeapAlloc(void *arg0, s32 arg1, s32 arg2) {
-    void *func_0202a544(void *, M2C_UNK, M2C_UNK);
-    u32 func_0202a5a0(void *, s32, s32);
+    void *AllocFromFrameHeapHead(void *, M2C_UNK, M2C_UNK);
+    u32 AllocFromFrameHeapTail(void *, s32, s32);
     if (arg1 == 0) {
         arg1 = 1;
     }
     arg1 = (arg1 + 3) & ~3;
     arg0 = (s8 *)arg0 + 0x24;
     if (arg2 >= 0) {
-        func_0202a544(arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
+        AllocFromFrameHeapHead(arg0, (M2C_UNK)arg1, (M2C_UNK)arg2);
     } else {
-        func_0202a5a0(arg0, arg1, -arg2);
+        AllocFromFrameHeapTail(arg0, arg1, -arg2);
     }
 }
 
@@ -418,12 +422,12 @@ s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
 }
 #pragma opt_propagation reset
 s32 func_0202a714(void *arg0, s32 arg1) {
-    void *func_0202a544(void *, M2C_UNK, M2C_UNK);
+    void *AllocFromFrameHeapHead(void *, M2C_UNK, M2C_UNK);
     s32 temp_r4;
     void *temp_r0;
 
     temp_r4 = M2C_FIELD(arg0, s32 *, 0x24);
-    temp_r0 = func_0202a544(arg0 + 0x24, 0x10, 4);
+    temp_r0 = AllocFromFrameHeapHead(arg0 + 0x24, 0x10, 4);
     if (temp_r0 == NULL) {
         return 0;
     }
@@ -593,10 +597,10 @@ void func_0202aa20(void) {
     M2C_UNK Sound_StopChannels(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
     s32 Sound_GetCommandCounter();
-    M2C_UNK func_0202bc1c();
+    M2C_UNK StopStreamChannels();
     s32 temp_r4;
 
-    func_0202bc1c();
+    StopStreamChannels();
     Sound_StopChannels(0, 0, 0, 0);
     temp_r4 = Sound_GetCommandCounter();
     Sound_FlushCommands(1);

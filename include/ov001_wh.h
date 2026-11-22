@@ -22,6 +22,24 @@ typedef struct Ov001DeviceNameRecord {
 #define OV001_SETUP_OPTION3    0x10C
 #define OV001_SETUP_OPTION4    0x10E
 #define OV001_SETUP_MAC        0x110 /* six-byte console MAC address */
+#define OV001_SETUP_STATUS     0x116 /* u8: result of the last setup attempt (0 = ok, 0xF = failed) */
+#define OV001_SETUP_PACKET     0x117 /* the 0x154-byte room setup packet (see BuildRoomSetupPacket) */
+
+/* The wireless setup state (gOv001WirelessSetup): a flag set once the local
+ * player's connection is accepted, then the 0x26C-byte setup request buffer
+ * whose layout starts with the setup header above. */
+typedef struct Ov001WirelessSetup {
+    u8 connected;
+    u8 pad[3];
+    u8 *request;
+} Ov001WirelessSetup;
+
+/* Results of one wireless setup poll. */
+enum {
+    OV001_SETUP_PENDING = 0, /* not connected yet; poll again next frame */
+    OV001_SETUP_JOINED  = 1, /* the local player's connection was accepted */
+    OV001_SETUP_FAILED  = 2  /* the connection attempt failed */
+};
 
 
 /* Event record passed to a WH task callback (HandleChildIndicate and friends). */
@@ -40,6 +58,14 @@ typedef struct Ov001DeviceNameRecord {
 #define WH_CONNECT_SETTINGS_BYTES 0x60
 #define WH_BSS_DESC_BYTES         0xC0
 #define WH_WFC_STEP_QUEUED        3
+
+/* The allocator/cleanup callbacks the overlay installs before a WH session runs
+ * (see Ov001_OpenOptionPage and func_ov001_021711e0), and the connection
+ * context they serve: the allocator builds it, the cleanup runs once the
+ * connection attempt is over. */
+#define WH_STATE_ALLOC     0x04 /* void *(*)(s32 bytes): allocates a WH session buffer */
+#define WH_STATE_CLEANUP   0x0C /* void (*)(void *context): the overlay's cleanup callback */
+#define WH_STATE_CONTEXT   0x54 /* void *connection context, 0 when none was allocated */
 
 /* The WH connection task's smaller state object (0x28 bytes): like gWhState it
  * stages a connection, but it keeps its buffers by pointer. */

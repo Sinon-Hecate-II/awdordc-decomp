@@ -40,14 +40,16 @@ void Ov001_MoveSpriteLayout(void *layout, s32 index, s32 x, s32 y) {
 }
 
 #pragma opt_strength_reduction off
-void Ov001_SetSpritePalette(M2C_UNK arg0, s32 arg1, s32 arg2) {
-u8 *entries=M2C_FIELD(arg0,u8 **,8);
+/* Set the palette variant (0..3) of one sprite entry, or of every entry when
+ * index is negative. */
+void Ov001_SetSpritePalette(M2C_UNK spriteObj, s32 index, s32 variant) {
+u8 *entries=M2C_FIELD(spriteObj,u8 **,8);
 s32 i;
-if(arg1>=0) {
-M2C_FIELD(entries+arg1*8,u16 *,4)=(M2C_FIELD(entries+arg1*8,u16 *,4)&~0xc00)|(arg2<<10);
+if(index>=0) {
+M2C_FIELD(entries+index*8,u16 *,4)=(M2C_FIELD(entries+index*8,u16 *,4)&~SPRITE_ENTRY_PALETTE_VARIANT_MASK)|(variant<<SPRITE_ENTRY_PALETTE_VARIANT_SHIFT);
 } else {
-for(i=0;i<M2C_FIELD(arg0,u8 *,12);i++) {
-M2C_FIELD(entries+i*8,u16 *,4)=(M2C_FIELD(entries+i*8,u16 *,4)&~0xc00)|(arg2<<10);
+for(i=0;i<M2C_FIELD(spriteObj,u8 *,12);i++) {
+M2C_FIELD(entries+i*8,u16 *,4)=(M2C_FIELD(entries+i*8,u16 *,4)&~SPRITE_ENTRY_PALETTE_VARIANT_MASK)|(variant<<SPRITE_ENTRY_PALETTE_VARIANT_SHIFT);
 }
 }
 }
@@ -141,22 +143,24 @@ void func_ov001_0218a6d8(s32 arg0, ...) {
  Ov001_FreeAlloc(&arg0);
 }
 
-void Ov001_QueuePush(void *arg0, s32 arg1) {
+/* Push a value into a fixed-size ring queue with interrupts masked; when the
+ * next write slot is still the read slot the queue is full and the game halts. */
+void Ov001_QueuePush(void *queue, s32 value) {
     u8 HardwareDivideRemainder(s32, u16);
     M2C_UNK OS_EnableIrqMask(s32);
     s32 OS_DisableIrqMask(M2C_UNK);
     M2C_UNK SystemHalt();
-    s32 temp_r6;
-    u8 temp_r0;
+    s32 saved;
+    u8 next;
 
-    temp_r6 = OS_DisableIrqMask(1);
-    temp_r0 = HardwareDivideRemainder(M2C_FIELD(arg0, u8 *, 3) + 1, M2C_FIELD(arg0, u16 *, 0));
-    if (temp_r0 == M2C_FIELD(arg0, u8 *, 2)) {
+    saved = OS_DisableIrqMask(1);
+    next = HardwareDivideRemainder(M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE) + 1, M2C_FIELD(queue, u16 *, OV001_QUEUE_CAPACITY));
+    if (next == M2C_FIELD(queue, u8 *, OV001_QUEUE_READ)) {
         SystemHalt();
     }
-    M2C_FIELD((arg0 + (M2C_FIELD(arg0, u8 *, 3) * 4)), s32 *, 4) = arg1;
-    M2C_FIELD(arg0, u8 *, 3) = temp_r0;
-    OS_EnableIrqMask(temp_r6);
+    M2C_FIELD((queue + (M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE) * 4)), s32 *, OV001_QUEUE_ENTRIES) = value;
+    M2C_FIELD(queue, u8 *, OV001_QUEUE_WRITE) = next;
+    OS_EnableIrqMask(saved);
 }
 
 s32 Ov001_QueuePop(void *arg0) {

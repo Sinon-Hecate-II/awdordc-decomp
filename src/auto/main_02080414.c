@@ -104,26 +104,38 @@ void Step3DSpriteOffsetPath(DS3DSpriteOffsetTrack *track) {
  Sprite_ResumeAnimation(track);
 }
 
-void func_02080750(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
-    M2C_UNK func_02080774(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    func_02080774(4, arg0, arg1, 0x64, arg2);
+void CreateScreenOffsetEffect(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+    M2C_UNK Create3DSpriteOffsetTrack(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    Create3DSpriteOffsetTrack(4, arg0, arg1, 0x64, arg2);
 }
 
-M2C_UNK func_02080774(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,s32 e) {
- void *CreateSpriteFromClass(M2C_UNK *,M2C_UNK);void *CreateSpriteObject(M2C_UNK *,s32);
- extern M2C_UNK data_02101cf8;extern void *data_02101cc4[];
- void *p;
- if(e)p=CreateSpriteObject(&data_02101cf8,e);else p=CreateSpriteFromClass(&data_02101cf8,6);
- M2C_FIELD(p,void **,0x54)=data_02101cc4[b];
- M2C_FIELD(p,s16 *,0x4c)=c;
- M2C_FIELD(p,s16 *,0x50)=a;
- M2C_FIELD(p,s16 *,0x52)=d;
+/* Create a screen-offset track sprite: a 3D sprite object of
+ * g3DSpriteOffsetTrackClass (cloned from `source`, or the class's default mode
+ * 6 when `source` is 0) that moves the engine offset pair `target` along path
+ * `pathIndex`, scaled by `scale` percent, for `steps` points.  Returns the
+ * object. */
+M2C_UNK Create3DSpriteOffsetTrack(s32 target, s32 pathIndex, s32 steps, s32 scale, s32 source) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void *CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK g3DSpriteOffsetTrackClass;
+    extern void *g3DSpriteOffsetTrackPaths[];
+    void *object;
+    DS3DSpriteOffsetTrack *track;
+
+    if (source) object = CreateSpriteObject(&g3DSpriteOffsetTrackClass, source);
+    else object = CreateSpriteFromClass(&g3DSpriteOffsetTrackClass, 6);
+    track = (DS3DSpriteOffsetTrack *)object;
+    track->path = g3DSpriteOffsetTrackPaths[pathIndex];
+    track->steps = steps;
+    track->target = target;
+    track->scale = scale;
+    return (M2C_UNK)object;
 }
 
-void func_020807d0(void) {
+void Delete3DSpriteOffsetTracks(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02101cf8;
-    DeleteSpriteObjectsOfClass(&data_02101cf8);
+    extern M2C_UNK g3DSpriteOffsetTrackClass;
+    DeleteSpriteObjectsOfClass(&g3DSpriteOffsetTrackClass);
 }
 
 #pragma opt_common_subs off

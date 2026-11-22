@@ -511,7 +511,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     extern u8 gOv001WfcScreenState;
     void func_ov001_02183584(void);
     void Ov001_StartConnectionClose(void);
-    void func_ov001_021835d0(void);
+    void Ov001_ConnectionChoiceStep(void);
 
     if (gOv001WfcScreenState != 0) {
         return status;
@@ -533,7 +533,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
         Ov001_SetConnectionStatusCallback(0);
         Ov001_ShowMessage(0x11, 0, 1, -1, 0);
         Ov001_LockIconRow();
-        return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021835d0);
+        return Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConnectionChoiceStep);
     case 3:
         gOv001WfcScreenState = 2;
         Ov001_StopSound();
@@ -564,7 +564,29 @@ void func_ov001_021835b0(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);
 }
 
-void func_ov001_021835d0(void){void Ov001_ResumeConnectionWait(void);extern u8 gOv001WfcScreenState;switch(Ov001_GetRegionMenuSelection()){case 1:gOv001WfcScreenState=3;Ov001_PlaySound(6);break;case 0:gOv001WfcScreenState=1;Ov001_PlaySound(7);break;default:return;}Ov001_CloseRegionMenu();Ov001_SetStepCallback((M2C_UNK *)&Ov001_ResumeConnectionWait);}
+/* Step that handles the player's answer to the Wi-Fi connection status message:
+ * the two-option menu reports option 1 as "no players" and option 0 as
+ * "connected" (with a sound each); any other value means the menu is still open.
+ * The menu is then closed and the step resumes waiting for the connection. */
+void Ov001_ConnectionChoiceStep(void) {
+    void Ov001_ResumeConnectionWait(void);
+    extern u8 gOv001WfcScreenState;
+
+    switch (Ov001_GetRegionMenuSelection()) {
+    case 1:
+        gOv001WfcScreenState = OV001_WFC_SCREEN_NO_PLAYERS;
+        Ov001_PlaySound(6);
+        break;
+    case 0:
+        gOv001WfcScreenState = OV001_WFC_SCREEN_CONNECTED;
+        Ov001_PlaySound(7);
+        break;
+    default:
+        return;
+    }
+    Ov001_CloseRegionMenu();
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_ResumeConnectionWait);
+}
 
 /* Step after the region menu closes on the Wi-Fi connection screen: when the
    connection is already complete, go straight to the screen's closing step;

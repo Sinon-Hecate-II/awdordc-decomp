@@ -13,7 +13,7 @@ static inline s32 UnitOwner83874(u8 *p) { if(p!=0)return (UnitIndex83874(p)>>6)+
 static inline s32 Distance83874(s32 x,s32 y,s32 xx,s32 yy) { s32 d=0;if(x-xx>0)d+=x-xx;else d+=xx-x;if(y-yy>0)d+=y-yy;else d+=yy-y;return d; }
 #pragma opt_common_subs off
 #pragma opt_propagation off
-void func_ov000_02183874(void) {
+void MarkAiUnitAttackCells(void) {
 s32 i,left,top,right,bottom,x,y,dx,dy,dist;u32 idx;u8 *p,*bounds,*map;
 MI_CpuFill8(data_ov000_021dfb04,0,0xa1);
 MI_CpuFill8(data_ov000_021dfa60,0,0xa1);

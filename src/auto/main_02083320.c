@@ -1,5 +1,6 @@
 /* 14 functions from 0x02083320 to 0x02084304 (main), found by ds-decomp. */
 #include "common.h"
+#include "map_selection.h"
 extern s32 gCur3DSpriteEngine;
 extern u8 gSpriteDesc16x32[];
 extern u8 gGlyphAdvance[];
@@ -26,10 +27,13 @@ typedef struct SpriteText {
     s8  priority;      /* +0x63 draw priority of the end caps */
 } SpriteText;
 
-u8 IsMapInLinkCategory(s32 arg0,s32 arg1) {
- s32 IsLinkSessionActive();
- if(IsLinkSessionActive()==0) return 1;
- return (u8)((s32)(u16)(arg0-225)/50)==(u8)(arg1-8);
+/* Whether a custom map belongs to the link block of the given map-list category:
+   true when no link session is running, otherwise when the map's 50-map block
+   (starting at MAP_CUSTOM_FIRST) matches the category's link block. */
+u8 IsMapInLinkCategory(s32 mapId, s32 listCategory) {
+    s32 IsLinkSessionActive();
+    if (IsLinkSessionActive() == 0) return 1;
+    return (u8)((s32)(u16)(mapId - MAP_CUSTOM_FIRST) / (MAP_CUSTOM_LOCAL_END - MAP_CUSTOM_FIRST)) == (u8)(listCategory - MAP_LIST_LINK_CUSTOM_FIRST);
 }
 
 void ResetTextLabelSlots(void) {

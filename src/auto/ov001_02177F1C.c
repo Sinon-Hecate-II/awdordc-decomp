@@ -691,10 +691,10 @@ void func_ov001_02178d20(void) {
 void func_ov001_02178d54(void) {
     void func_ov001_02178d68(void);
     void func_ov001_02178da0(void);
-    void func_ov001_02178da4(void);
+    void Ov001_MessageChoiceStep(void);
     func_ov001_02178d68();
     func_ov001_02178da0();
-    func_ov001_02178da4();
+    Ov001_MessageChoiceStep();
 }
 
 void func_ov001_02178d68(void) {
@@ -711,27 +711,30 @@ void func_ov001_02178da0(void) {
 
 }
 
-void func_ov001_02178da4(void) {
+/* Popup step: read the player's choice from the message popup's icon row - the
+ * confirm icon records option 1, the back icon option 0, each playing its sound -
+ * and move on to lock the choice; an unlatched row does nothing. */
+void Ov001_MessageChoiceStep(void) {
     s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(s32);
     extern s8 gOv001MessageState;
-    extern M2C_UNK func_ov001_02178dfc;
+    extern M2C_UNK Ov001_LockMessageChoice;
     switch (Ov001_GetIconRowSelection()) {
-    case 1:
-        M2C_FIELD(&gOv001MessageState, u8 *, 1) = 1;
-        Ov001_PlaySound(6);
+    case OV001_CHOICE_CONFIRM:
+        M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) = 1;
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
         break;
-    case 0:
-        M2C_FIELD(&gOv001MessageState, u8 *, 1) = 0;
-        Ov001_PlaySound(7);
+    case OV001_CHOICE_BACK:
+        M2C_FIELD(&gOv001MessageState, u8 *, OV001_MESSAGE_OPTION) = 0;
+        Ov001_PlaySound(OV001_SOUND_CANCEL);
         break;
     default:
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_02178dfc);
+    Ov001_SetStepCallback(&Ov001_LockMessageChoice);
 }
 
-void func_ov001_02178dfc(void) {
+void Ov001_LockMessageChoice(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK func_ov001_0218aa24(M2C_UNK);

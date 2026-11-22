@@ -47,6 +47,7 @@
 #define SB_SLIST_INSTANCE    0x494 /* void *instance passed to SB_SLIST_CALLBACK */
 #define SB_SLIST_SORT_FIELD  0x498 /* char[] key the server list is sorted on */
 #define SB_SLIST_SORT_DESC   0x49c /* s32 nonzero to sort descending */
+#define SB_SLIST_FREE_SERVERS 0x5D0 /* GpiPlayer *servers removed from the list, chained by GpiPlayer.next */
 
 /* Sort kinds SBServerListSortServers accepts as its last argument: which
  * comparator the key named in SB_SLIST_SORT_FIELD is sorted with. */

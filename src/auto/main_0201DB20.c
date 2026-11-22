@@ -138,7 +138,7 @@ void func_0201dd08(void) {
     u64 GetSystemTick(void);
     void SleepMilliseconds(s32);
     void AnnounceLocalAddress(void);
-    s32 func_0201e754(void);
+    s32 DhcpDiscoverOffer(void);
     s32 func_0201e7ac(u32 *, s32);
     void func_0201a134(s32);
     void SetCurrentRawConnection(void *);
@@ -183,7 +183,7 @@ void func_0201dd08(void) {
                             M2C_FIELD(&gNetStack, s32 *, 0xc) = 2;
                             flag = 0;
                         }
-                        if (func_0201e754()) {
+                        if (DhcpDiscoverOffer()) {
                             if (func_0201e7ac(&wait, 0)) goto connected;
                         }
                         AnnounceLocalAddress();
@@ -519,30 +519,33 @@ final:
     return result;
 }
 #pragma opt_common_subs reset
-s32 func_0201e754(void) {
+/* Fetch an address offer: open a raw connection to the DHCP server, send
+ * DHCPDISCOVER up to four times (each with a fresh transaction id) and return 1
+ * once an OFFER arrives, otherwise 0.  The raw connection is closed either way. */
+s32 DhcpDiscoverOffer(void) {
     M2C_UNK OpenRawConnection();
     M2C_UNK SetConnectionEndpoint(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK ResetCurrentConnection();
     M2C_UNK CloseRawConnection();
     s32 BuildDhcpDiscover();
     s32 func_0201e404(s32, s32);
-    s32 temp_r0;
-    s32 var_r5;
+    s32 result;
+    s32 attempt;
 
     ResetCurrentConnection();
     OpenRawConnection();
-    SetConnectionEndpoint(0x44, 0x43, -1);
-    var_r5 = 0;
+    SetConnectionEndpoint(DHCP_CLIENT_PORT, DHCP_SERVER_PORT, -1);
+    attempt = 0;
 loop_1:
-    temp_r0 = func_0201e404(BuildDhcpDiscover(), var_r5);
-    if (temp_r0 != 1) {
-        var_r5 += 1;
-        if (var_r5 < 4) {
+    result = func_0201e404(BuildDhcpDiscover(), attempt);
+    if (result != 1) {
+        attempt += 1;
+        if (attempt < 4) {
             goto loop_1;
         }
     }
     CloseRawConnection();
-    if (temp_r0 == 1) {
+    if (result == 1) {
         return 1;
     }
     return 0;

@@ -35,7 +35,8 @@
 #define QR2_TYPE_PEER    6  /* message relayed from another player, answered as QR2_TYPE_PEER_ACK */
 #define QR2_TYPE_PEER_ACK 7
 #define QR2_TYPE_RESERVED1 3 /* not handled */
-#define QR2_TYPE_RESERVED2 8 /* not handled */
+#define QR2_TYPE_KEEPALIVE 8 /* client -> master keep-alive query: type plus our client id; never answered */
+#define QR2_TYPE_RESERVED2 8 /* received type 8 is ignored */
 
 /* Fields of the QR2 connection record. */
 #define QR2_SOCKET        0x00  /* s32 UDP socket */
@@ -62,6 +63,11 @@
 
 /* The state value that only terminates the query (no trailing keep-alive). */
 #define QR2_STATE_FINAL   2
+/* State value sent when the connection's state changed. */
+#define QR2_STATE_CHANGED 1
+/* Shortest gap between two state reports: a change inside it is only marked
+ * dirty and sent with the next report. */
+#define QR2_STATE_MIN_INTERVAL_MS 10000
 
 /* Callbacks of the QR2 connection record, called with the record's context. */
 #define QR2_CB_APPEND_KEY    0x88 /* void (*)(s32 key, void *query, void *ctx) */

@@ -57,7 +57,7 @@ s32 func_ov010_02225f60(void) {
     func_ov010_02225d00();
     DisableVoiceStream();
     if (func_ov010_02229bf4()) {
-        func_ov010_02226060(0);
+        VoiceChat_ConnectPeer(0);
     }
     VoiceChat_SetCodecMode(1);
     return 1;
@@ -68,20 +68,24 @@ void TickVoiceStream(void) {
     func_ov010_022257a0();
 }
 
-s32 func_ov010_02226060(s32 arg0) {
-    s32 func_ov010_02223ec8(s32);
+/* Open the voice-chat link's exchange with `peerId`: when no context is
+ * attached, create one and send its connect packet.  Returns 0 when no context
+ * could be opened, 1 once one is attached. */
+s32 VoiceChat_ConnectPeer(s32 peerId) {
+    s32 VoiceLink_CreatePeerContext(s32);
     void VoiceLink_ReleaseContext(s32);
-    s32 func_ov010_0222405c(s32, s32);
+    s32 VoiceLink_TrySendStep(s32, s32);
     extern M2C_UNK gVoiceChatLink;
-    s32 temp_r4;
-    if (M2C_FIELD(&gVoiceChatLink, s32 *, 4) == 0) {
-        temp_r4 = func_ov010_02223ec8(arg0);
-        if (temp_r4 == 0) return 0;
-        if (func_ov010_0222405c(temp_r4, 0) != 0) {
-            VoiceLink_ReleaseContext(temp_r4);
+    s32 context;
+
+    if (M2C_FIELD(&gVoiceChatLink, s32 *, VOICE_CHAT_LINK_CONTEXT) == 0) {
+        context = VoiceLink_CreatePeerContext(peerId);
+        if (context == 0) return 0;
+        if (VoiceLink_TrySendStep(context, 0) != 0) {
+            VoiceLink_ReleaseContext(context);
             return 0;
         }
-        M2C_FIELD(&gVoiceChatLink, s32 *, 4) = temp_r4;
+        M2C_FIELD(&gVoiceChatLink, s32 *, VOICE_CHAT_LINK_CONTEXT) = context;
     }
     return 1;
 }
@@ -485,10 +489,10 @@ s32 Ov010_GetWebPlayerEntry(s32 index, s32 *entry) {
  * count when the read succeeds (status 0), otherwise -1, recording the read's
  * status as the web error. */
 s32 GetOnlinePlayerCount(void) {
- s32 func_02045c34(s32 *);
+ s32 GetWebResponseOnlinePlayerCount(s32 *);
  s32 count, status, result;
  result = -1;
- status = func_02045c34(&count);
+ status = GetWebResponseOnlinePlayerCount(&count);
  switch(status) {
  case 0: result = count; break;
  case 1: break;
@@ -548,19 +552,23 @@ M2C_UNK Ov010_FreeBlock(M2C_UNK arg0, s32 arg1, s32 arg2) {
  HeapFreeBlock(arg1);
 }
 
-void func_ov010_02226920(void *arg0) {
+/* Reinitialize a 0x6C-byte online player record: clear its name area, mark it
+ * not connected with no player id, default its rating to RATING_DEFAULT, set the
+ * per-slot state bytes to their unset values and clear its network panel record.
+ * The void-returning twin of InitOnlinePlayerRecord. */
+void ResetOnlinePlayerRecord(void *record) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x1A);
-    M2C_FIELD(arg0, s8 *, 0x1A) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1B) = -1;
-    M2C_FIELD(arg0, s32 *, 0x1C) = -1;
-    M2C_FIELD(arg0, s32 *, 0x20) = 0x5DC000;
-    M2C_FIELD(arg0, s8 *, 0x24) = -1;
-    M2C_FIELD(arg0, s8 *, 0x25) = -2;
-    M2C_FIELD(arg0, s8 *, 0x26) = -2;
-    M2C_FIELD(arg0, s8 *, 0x27) = -1;
-    M2C_FIELD(arg0, s8 *, 0x28) = -1;
-    MI_CpuFill8(arg0 + 0x2C, 0, 0x40);
+    MI_CpuFill8(record, 0, ONLINE_PLAYER_NAME_SIZE);
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_FLAGS) = 0;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_ID) = -1;
+    M2C_FIELD(record, s32 *, ONLINE_PLAYER_STATUS) = -1;
+    M2C_FIELD(record, s32 *, ONLINE_PLAYER_RATING) = RATING_DEFAULT;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 0) = -1;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 1) = -2;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 2) = -2;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 3) = -1;
+    M2C_FIELD(record, s8 *, ONLINE_PLAYER_SLOT_STATE + 4) = -1;
+    MI_CpuFill8(record + ONLINE_PLAYER_PANEL, 0, ONLINE_PLAYER_PANEL_SIZE);
 }
 
 /* Prepare a 0x6C-byte online player record for a new player: mark it not

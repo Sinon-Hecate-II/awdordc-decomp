@@ -25,6 +25,12 @@
 #define AI_FOOT_UNIT_BUFFER_NO_TARGETS 1
 #define AI_FOOT_UNIT_BUFFER_WITH_TARGETS 2
 
+/* A packed AI priority byte: the low 7 bits are the magnitude, capped at
+ * AI_SCORE_MAX, and bit 7 (AI_SCORE_FLAG) is an action-specific flag ORed on top
+ * so a flagged value outranks any unflagged one. */
+#define AI_SCORE_MAX  0x7f
+#define AI_SCORE_FLAG 0x80
+
 /* Values of AI_COMMAND_STATE_PHASE, driven by UpdateAiTurn (ov000_0219B848.c).
  * Phases 0..2 and 4 are stepped inside a task sprite running
  * ProcessAiCommandPhase until the phase leaves that set; 3, 5 and 6 are stepped
@@ -85,6 +91,8 @@
 /* One past the last valid AI_COMMAND_KIND: kinds 1..0x18 are commands, 0 and
  * above this are not (IsAiCommandKindValid). */
 #define AI_COMMAND_KIND_LIMIT 0x19
+#define AI_COMMAND_ATTACK_TARGET 4 /* attack the unit AI_COMMAND_UNIT names on the command tile */
+#define AI_COMMAND_ATTACK_TILE   5 /* attack the tile AI_COMMAND_CURSOR_X/Y names */
 #define AI_COMMAND_PRODUCE_UNIT 3 /* build the unit kind in AI_COMMAND_ACTOR at the command tile */
 #define AI_COMMAND_SET_AI_MODE  24 /* set player AI_COMMAND_UNIT's AI behaviour mode to AI_COMMAND_ARG_Y */
 
@@ -114,6 +122,7 @@ enum AiCargoDropDirection {
 #define UNIT_KIND_STATS_LOAD_MASK   0x62 /* u8 per load class: nonzero when the kind may be carried by a kind of that class */
 #define UNIT_KIND_STATS_MOVE   0x08 /* u8 base movement range */
 #define UNIT_KIND_STATS_AMMO   0x09 /* u8 maximum ammo (0 = the kind cannot attack) */
+#define UNIT_KIND_STATS_INFINITE_AMMO 0x0B /* u8 nonzero when the kind's weapon uses no ammo (it can attack with ammo 0; the info panel then shows an infinity icon) */
 #define UNIT_KIND_STATS_MAX_RANGE 0x0D /* u8 base maximum attack range: 0 cannot attack, 1 direct, above 1 indirect */
 #define UNIT_KIND_STATS_MIN_RANGE 0x0C /* u8 minimum attack range (1 = direct unit) */
 #define UNIT_KIND_STATS_FUEL   0x0E /* u8 maximum fuel */
@@ -136,11 +145,16 @@ enum AiCargoDropDirection {
 /* The AI steps in which a unit is carrying out the action it chose earlier: the
  * attack step resolves its attack, the capture step walks it onto the property.
  * The per-turn handlers run these; unit scans skip units that are in them. */
+#define AI_STEP_FIRST       1 /* the action's first step: the influence maps are cleared, not built */
 #define AI_STEP_ATTACK      6
 #define AI_STEP_CAPTURE     8
 
 /* Attack-distance rings added outside a movement flood fill start above its cost values. */
 #define AI_THREAT_RING_FIRST 111
+
+/* Highest search range GetAiUnitRange returns (it clamps scaled ranges to it);
+ * GetAiUnitSearchRange returns it for a unit whose kind is 0 (no unit). */
+#define AI_UNIT_RANGE_MAX 110
 
 /* Unit kinds the battle and AI code names directly. */
 #define UNIT_KIND_INFANTRY  1

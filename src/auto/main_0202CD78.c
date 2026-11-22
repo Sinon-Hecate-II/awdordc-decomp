@@ -550,7 +550,11 @@ s32 InitSoundPlayerSlots(s32 heap)
     return 1;
 }
 
-s32 func_0202d8a0(s32 a,s32 b,s32 c){void *GetSoundRecord(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=GetSoundRecord(b);if(!p)return 0;return Sound_StartPlayer(a,p,M2C_FIELD(p,u8 *,6),M2C_FIELD(p,u8 *,5),b,c,0,0,0,0);}
+/* Start sound `soundId` of the current sound archive on the player `handle`: look
+ * the sound up in the sound table and start it on a player slot with the record's
+ * own priority, for `lengthMs` (0 = play to the end).  Returns 0 when the sound is
+ * not in the archive, else the result of Sound_StartPlayer. */
+s32 Sound_StartArchiveRecord(s32 handle,s32 soundId,s32 lengthMs){void *GetSoundRecord(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=GetSoundRecord(soundId);if(!p)return 0;return Sound_StartPlayer(handle,p,M2C_FIELD(p,u8 *,SOUND_RECORD_SLOT),M2C_FIELD(p,u8 *,SOUND_RECORD_PRIORITY),soundId,lengthMs,0,0,0,0);}
 
 s32 func_0202d8fc(s32 arg) {
 void * volatile *arg0=(void * volatile *)arg;
@@ -561,9 +565,9 @@ return M2C_FIELD(p,s32 *,0x110)|=4;
 }
 
 s32 Sound_StartArchiveSound(M2C_UNK arg0) {
-    s32 func_0202d8a0();
+    s32 Sound_StartArchiveRecord();
     M2C_UNK func_0202d8fc(M2C_UNK);
-    if (func_0202d8a0() == 0) {
+    if (Sound_StartArchiveRecord() == 0) {
         return 0;
     }
     func_0202d8fc(arg0);

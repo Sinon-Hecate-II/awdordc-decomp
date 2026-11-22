@@ -9,7 +9,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 func_020d1a1c(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
+M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 IsPlayerLocallyControlled(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 ClearCursorUnitCapture();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -24,7 +24,7 @@ M2C_FIELD((u8*)*gCurrentMap+M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNI
 M2C_FIELD((u8*)*gCurrentMap+M2C_FIELD(M2C_FIELD(*gCurrentMap,u8**,MAP_CURSOR_UNIT),u8*,13)*14,u8*,MAP_UNIT_RECORDS+2)=M2C_FIELD(*gCurrentMap,s16*,MAP_CURSOR_Y);
 }
 /* the cursor keeps its direction only while the player may still choose one */
-if(func_020d1a1c(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER))){func_020a64bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR));
+if(IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER))){func_020a64bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR));
 M2C_FIELD(*gCurrentMap,u8*,MAP_CURSOR_DIR)=0;}func_ov000_021696d4();
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);unit->flags|=1;
 unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);if(unit->flags&8)unit->flags|=2;
@@ -336,7 +336,7 @@ extern u8 gUnitKindMaxAmmo[], gUnitKindMaxFuel[];
 M2C_UNK AddRecordValue(s32, s32);
 s32 GetUnitBuildCost(s32, s32);
 void func_020d2bc0(s32, s32);
-s32 func_020d1a1c(s32);
+s32 IsPlayerLocallyControlled(s32);
 void func_020a64bc(void *, s32);
 s32 IsUnitSelected(BattleMapUnitHead *);
 void ReplacePlayerSelectedUnit(BattleMapUnitHead *, BattleMapUnitHead *);
@@ -383,7 +383,7 @@ void func_020bb768(void) {
     limit = gUnitKindMaxAmmo[unit->kind * 0x70];
     if (amount > limit) unit->ammo = limit;
     else unit->ammo = amount;
-    if (func_020d1a1c(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
+    if (IsPlayerLocallyControlled(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER))) {
         func_020a64bc(M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT), M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR));
         M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_DIR) = 0;
     }

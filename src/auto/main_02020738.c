@@ -8,7 +8,7 @@ s32 NetworkPollClosing(void);
 
 s32 SocketQueueSend(void *connection, s32 buffer, s32 byteCount, s32 startPos, u16 tag, s32 fallback, s32 mode) {
     /* Queue a (possibly wrapped) send from connection's circular buffer and remember how much was taken. */
-    u16 func_0201d04c();
+    u16 AllocateLocalPort();
     s32 SocketSendTask(void *);
     s32 SocketAllocTask(void *, s32, s32);
     s32 SocketSubmitSendTask(s32, s32);
@@ -52,7 +52,7 @@ s32 SocketQueueSend(void *connection, s32 buffer, s32 byteCount, s32 startPos, u
     M2C_FIELD(ctx, u16 *, 0x100) = M2C_FIELD(entry, u16 *, 32);
     if (M2C_FIELD(connection, s8 *, 0x73) == 1) {
         if (!M2C_FIELD(connection, u16 *, 0x74)) {
-            M2C_FIELD(connection, u16 *, 0x74) = func_0201d04c();
+            M2C_FIELD(connection, u16 *, 0x74) = AllocateLocalPort();
             M2C_FIELD(connection, u16 *, 10) = M2C_FIELD(connection, u16 *, 0x74);
         }
         M2C_FIELD(entry, u16 *, 36) = M2C_FIELD(connection, u16 *, 0x74);
@@ -709,14 +709,16 @@ void func_0202152c(M2C_UNK arg0, void *arg1) {
     SocketBind(arg0, (u16) ((u8) ((s32) temp_r1 >> 8) | ((temp_r1 << 8) & 0xFF00)));
 }
 
-void func_02021558(M2C_UNK arg0, void *arg1) {
-    M2C_UNK SocketConnect(M2C_UNK, u16, s32);
-    u16 temp_r2;
-    u32 temp_lr;
+/* Convert the socket address's network-order port and IPv4 address to host
+ * order and hand them to SocketConnect. */
+s32 SocketConnectAddress(s32 socket, GhiSocketAddress *address) {
+    s32 SocketConnect(s32, u16, s32);
+    u16 netPort;
+    u32 netAddr;
 
-    temp_r2 = M2C_FIELD(arg1, u16 *, 2);
-    temp_lr = M2C_FIELD(arg1, u32 *, 4);
-    SocketConnect(arg0, (u16) ((u8) ((s32) temp_r2 >> 8) | ((temp_r2 << 8) & 0xFF00)), ((temp_lr << 0x18) & 0xFF000000) | (((temp_lr << 8) & 0xFF0000) | ((u8) (temp_lr >> 0x18) | ((temp_lr >> 8) & 0xFF00))));
+    netPort = address->port;
+    netAddr = address->addr;
+    return SocketConnect(socket, (u16) ((u8) ((s32) netPort >> 8) | ((netPort << 8) & 0xFF00)), ((netAddr << 0x18) & 0xFF000000) | (((netAddr << 8) & 0xFF0000) | ((u8) (netAddr >> 0x18) | ((netAddr >> 8) & 0xFF00))));
 }
 
 void func_020215b4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {

@@ -210,7 +210,7 @@ func_ov003_021f0de0 kind:function(arm,size=0x50) addr:0x021f0de0
 DestroyBattleSetup kind:function(arm,size=0x64) addr:0x021f0e30
 DestroyBattleObject kind:function(arm,size=0x3f8) addr:0x021f0e94
 func_ov003_021f128c kind:function(arm,size=0x48) addr:0x021f128c
-func_ov003_021f12d4 kind:function(arm,size=0x5c) addr:0x021f12d4
+ShutdownBattleSetup kind:function(arm,size=0x5c) addr:0x021f12d4
 func_ov003_021f1330 kind:function(arm,size=0x4) addr:0x021f1330
 func_ov003_021f1334 kind:function(arm,size=0x14) addr:0x021f1334
 func_ov003_021f1348 kind:function(arm,size=0x10) addr:0x021f1348
@@ -316,7 +316,7 @@ func_ov003_021f6724 kind:function(arm,size=0x48) addr:0x021f6724
 func_ov003_021f676c kind:function(arm,size=0x9f8) addr:0x021f676c
 func_ov003_021f7164 kind:function(arm,size=0x1abc) addr:0x021f7164
 func_ov003_021f8c20 kind:function(arm,size=0x584) addr:0x021f8c20
-func_ov003_021f91a4 kind:function(arm,size=0x5c) addr:0x021f91a4
+Ov003_SendLocalMapSelectState kind:function(arm,size=0x5c) addr:0x021f91a4
 func_ov003_021f9200 kind:function(arm,size=0xf4) addr:0x021f9200
 func_ov003_021f92f4 kind:function(arm,size=0x83c) addr:0x021f92f4
 func_ov003_021f9b30 kind:function(arm,size=0x320) addr:0x021f9b30
@@ -494,8 +494,8 @@ func_ov003_022061c4 kind:function(arm,size=0x8) addr:0x022061c4
 func_ov003_022061cc kind:function(arm,size=0x8) addr:0x022061cc
 func_ov003_022061d4 kind:function(arm,size=0x4) addr:0x022061d4
 func_ov003_022061d8 kind:function(arm,size=0x14) addr:0x022061d8
-func_ov003_022061ec kind:function(arm,size=0x28) addr:0x022061ec
-func_ov003_02206214 kind:function(arm,size=0x5c) addr:0x02206214
+SetMapConfigFlags kind:function(arm,size=0x28) addr:0x022061ec
+GetMapConfigFlags kind:function(arm,size=0x5c) addr:0x02206214
 func_ov003_02206270 kind:function(arm,size=0x8) addr:0x02206270
 func_ov003_02206278 kind:function(arm,size=0x8) addr:0x02206278
 func_ov003_02206280 kind:function(arm,size=0x8) addr:0x02206280
@@ -526,8 +526,8 @@ func_ov003_022063a0 kind:function(arm,size=0x8) addr:0x022063a0
 func_ov003_022063a8 kind:function(arm,size=0x8) addr:0x022063a8
 func_ov003_022063b0 kind:function(arm,size=0x4) addr:0x022063b0
 func_ov003_022063b4 kind:function(arm,size=0x14) addr:0x022063b4
-func_ov003_022063c8 kind:function(arm,size=0x60) addr:0x022063c8
-func_ov003_02206428 kind:function(arm,size=0x5c) addr:0x02206428
+SetMapTilesetOption kind:function(arm,size=0x60) addr:0x022063c8
+GetMapTilesetOption kind:function(arm,size=0x5c) addr:0x02206428
 func_ov003_02206484 kind:function(arm,size=0x8) addr:0x02206484
 func_ov003_0220648c kind:function(arm,size=0x8) addr:0x0220648c
 func_ov003_02206494 kind:function(arm,size=0x8) addr:0x02206494
@@ -583,7 +583,7 @@ func_ov003_02209310 kind:function(arm,size=0x9b8) addr:0x02209310
 func_ov003_02209cc8 kind:function(arm,size=0x14) addr:0x02209cc8
 func_ov003_02209cdc kind:function(arm,size=0x30) addr:0x02209cdc
 func_ov003_02209d0c kind:function(arm,size=0x8f0) addr:0x02209d0c
-func_ov003_0220a5fc kind:function(arm,size=0x5c) addr:0x0220a5fc
+Ov003_LoadMapSelectTitleBlock kind:function(arm,size=0x5c) addr:0x0220a5fc
 func_ov003_0220a658 kind:function(arm,size=0x40) addr:0x0220a658
 Ov003_SetRowAnimation kind:function(arm,size=0x24) addr:0x0220a698
 func_ov003_0220a6bc kind:function(arm,size=0x1a8) addr:0x0220a6bc
@@ -631,7 +631,7 @@ data_ov003_0220f202 kind:data(any) addr:0x0220f202
 data_ov003_0220f21d kind:data(any) addr:0x0220f21d
 data_ov003_0220f238 kind:data(any) addr:0x0220f238
 data_ov003_0220f239 kind:data(any) addr:0x0220f239
-data_ov003_0220f240 kind:data(any) addr:0x0220f240
+gMapSelectEntries kind:data(any) addr:0x0220f240
 data_ov003_0220f244 kind:data(any) addr:0x0220f244
 data_ov003_0220f340 kind:data(any) addr:0x0220f340
 data_ov003_0220f342 kind:data(any) addr:0x0220f342
@@ -881,8 +881,8 @@ data_ov003_02211148 kind:data(any) addr:0x02211148
 data_ov003_02211160 kind:data(any) addr:0x02211160
 data_ov003_02211178 kind:data(any) addr:0x02211178
 sTextPassThroughFormat kind:data(any) addr:0x02211188
-data_ov003_0221118c kind:data(any) addr:0x0221118c
-data_ov003_0221119c kind:data(any) addr:0x0221119c
+sMapSelectDir kind:data(any) addr:0x0221118c
+sMapSelectTitleCgFile kind:data(any) addr:0x0221119c
 gOv003SceneState kind:bss addr:0x022111c0
 gDownloadedMapIds kind:bss addr:0x022111d4
 data_ov003_022111de kind:bss addr:0x022111de

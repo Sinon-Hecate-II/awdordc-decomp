@@ -24,6 +24,11 @@
 #define OV005_MENU_CO_COUNT      12    /* COs listed on page 0: three rows of four */
 #define OV005_MENU_CO_COLUMNS     4    /* COs per row of the page-0 grid */
 
+#define OV005_CO_GRID_X0     30 /* left edge of the first page-0 CO slot */
+#define OV005_CO_GRID_Y0     87 /* top edge of the first page-0 CO slot */
+#define OV005_CO_GRID_STEP_X 50 /* horizontal pitch between page-0 CO slots */
+#define OV005_CO_GRID_STEP_Y 18 /* vertical pitch between page-0 CO slots */
+
 enum {
     OV005_PAGE_LIST   = 0,
     OV005_PAGE_DETAIL = 1

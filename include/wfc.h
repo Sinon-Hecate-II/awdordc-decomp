@@ -166,6 +166,14 @@ enum {
     WFC_CONN_FATAL     = 8  /* fatal WFC error, reported as network error 9 */
 };
 
+/* The NAS server URL environment picked by SelectNasServer (main_02037214):
+ * test, development and production Nintendo Wi-Fi Connection hosts. */
+enum {
+    NAS_SERVER_TEST = 0,
+    NAS_SERVER_DEV = 1,
+    NAS_SERVER_PROD = 2
+};
+
 /* Parameters handed to WFC_Init (12 bytes): the work-block allocator callbacks
  * the library keeps for the session, then the connection settings. The ov001
  * setup keeps a filled-in template of this block in its read-only data and only
@@ -363,6 +371,7 @@ typedef struct WfcMeasureChannelRequest {
  * or above WFC_CMD_EVENT_BASE are asynchronous events, the lower ones report the
  * completion of a posted command. */
 #define WFC_CMD_EVENT_BASE   0x2c
+#define WFC_CMD_START        0    /* start the command channel and hand the firmware the three work buffers */
 #define WFC_CMD_SHUTDOWN     2    /* the channel is being shut down */
 #define WFC_CMD_PEER_STATUS  8    /* a peer's connection status (mac +0xa, aid +0x10, reason +0x12, payload +0x14) */
 #define WFC_CMD_SELF_STATUS  0xc  /* the local connection status (aid +0xa, reason +0xc, mac +0x10) */
@@ -537,6 +546,7 @@ typedef struct NasLoginParameters {
 #define NAS_LOGIN_PASSWORD       0x148 /* char[256] account password it returns */
 #define NAS_LOGIN_GPI_PENDING    0x30 /* s32 nonzero while a gpi connection attempt runs; times out after 60 s */
 #define NAS_LOGIN_GPI_TICK       0x34 /* u64 GetSystemTick the attempt started at */
+#define NAS_LOGIN_CONNECTION     0x24 /* void *NAS connection block the login's HTTP runs on (HeapFree'd when the login is torn down) */
 
 /* Text form of a 12-byte NAS key/player record (FormatNasId): NAS_ID_TEXT_SIZE
  * bytes of "<player code in base 32><4 key-kind bytes><check word in base 32>",

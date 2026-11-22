@@ -255,16 +255,18 @@ void RecordDefeatedPlayers(void) {
     } while (player < 5);
 }
 
-s32 func_020ca190(void) {
+/* Returns the first player (1..4) whose property count has reached the map's
+   property-count victory limit, or 0 when there is no limit or nobody has. */
+s32 FindPlayerReachedPropertyLimit(void) {
     extern u8 gMapConfig[];
     extern void **gCurrentMap;
-    u8 var_r0;
-    if (gMapConfig[2] == 0) return 0;
-    var_r0 = 1;
+    u8 player;
+    if (gMapConfig[MAPCONFIG_PROPERTY_LIMIT] == 0) return 0;
+    player = 1;
     do {
-        if ((u32)M2C_FIELD((u8 *)*gCurrentMap + var_r0 * 0x8C, u8 *, 0x67BC) >= (u32)gMapConfig[2]) return var_r0;
-        var_r0 += 1;
-    } while (var_r0 < 5U);
+        if ((u32)M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_PROPERTIES) >= (u32)gMapConfig[MAPCONFIG_PROPERTY_LIMIT]) return player;
+        player += 1;
+    } while (player < 5U);
     return 0;
 }
 
@@ -301,7 +303,7 @@ void func_020ca4c0(void) {
     M2C_UNK EnterBattleEnd();
     void StartPlayerDefeatSequences();
     void RecordDefeatedPlayers();
-    s32 func_020ca190();
+    s32 FindPlayerReachedPropertyLimit();
     s32 func_020ca1ec();
     s32 temp_r0;
 
@@ -310,7 +312,7 @@ void func_020ca4c0(void) {
         EnterBattleEnd();
         return;
     }
-    temp_r0 = func_020ca190();
+    temp_r0 = FindPlayerReachedPropertyLimit();
     if (temp_r0 != 0) {
         AwardVictoryToPlayer(temp_r0, 0x20);
         return;
@@ -363,7 +365,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     void *GetTargetPosition(s16);
     M2C_UNK CreateTargetCursor(s16, s16);
     s32 CreateMapMenu(void);
-    void func_020d8fa0(void);
+    void HandleUiCancel(void);
     void MoveSelectionWithKeys(void *, s16);
     void UpdateSelectionFromTouch(void *, s16);
     void PlaySoundEffect(s32);
@@ -415,7 +417,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
         return;
     }
     if (merged & 0x40) {
-        func_020d8fa0();
+        HandleUiCancel();
     }
     oldval = saved;
     MoveSelectionWithKeys(&saved, count);

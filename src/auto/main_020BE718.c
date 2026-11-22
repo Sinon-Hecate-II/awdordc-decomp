@@ -55,7 +55,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK data_0215771c, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
+    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
     extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
     SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
     s32 i;
@@ -78,7 +78,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
         save->records[i].metadata = records[i].metadata;
         save->records[i].stamp = records[i].stamp;
     }
-    save->listHeader = *(SaveBytes8 *)&data_0215771c;
+    save->listHeader = *(SaveBytes8 *)&gEventFlagsMid;
     save->listSelection = *(SaveBytes16 *)&gSeenMapBackgroundFlags;
     save->listState = *(SaveBytes8 *)&data_02157734;
     save->listRowFlags = *(SaveBytes8 *)&gListRowFlags;
@@ -99,7 +99,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
-    extern M2C_UNK data_0215771c, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
+    extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
     extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
     s32 i;
 
@@ -121,7 +121,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
         ((SaveRecordBlock *)&data_0215dba4)[i].metadata = save->records[i].metadata;
         ((SaveRecordBlock *)&data_0215dba4)[i].stamp = save->records[i].stamp;
     }
-    *(SaveBytes8 *)&data_0215771c = save->listHeader;
+    *(SaveBytes8 *)&gEventFlagsMid = save->listHeader;
     *(SaveBytes16 *)&gSeenMapBackgroundFlags = save->listSelection;
     *(SaveBytes8 *)&data_02157734 = save->listState;
     *(SaveBytes8 *)&gListRowFlags = save->listRowFlags;
@@ -229,12 +229,15 @@ s32 GetSaveType(s32 arg0, s32 arg1) {
     }
 }
 
-s32 SaveTypeHasNoSlot(s32 arg0) {
-    switch (arg0) {
-    case 5: return 0;
-    case 6: return 0;
-    case 7: return 0;
-    case 8: return 1;
+/* Whether a battle-save record type keeps no save slot of its own: only the
+ * versus battle's single SAVE_RECORD_TYPE_VERSUS record, so the caller must not
+ * look up a slot for it. */
+s32 SaveTypeHasNoSlot(s32 saveType) {
+    switch (saveType) {
+    case SAVE_RECORD_TYPE_CAMPAIGN + 0: return 0;
+    case SAVE_RECORD_TYPE_CAMPAIGN + 1: return 0;
+    case SAVE_RECORD_TYPE_CAMPAIGN + 2: return 0;
+    case SAVE_RECORD_TYPE_VERSUS: return 1;
     default: return 0;
     }
 }

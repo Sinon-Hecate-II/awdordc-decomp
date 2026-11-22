@@ -336,7 +336,7 @@ M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y)=M2C_FIELD(*gCurrentMap,s16 *,M
 StepMapViewToTile(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 SetSpriteAnimation(a,0);Sprite_ResumeAnimation(a);return;}
 if(flags&256){CreateMapMenu();return;}
-if(flags&64){func_020d8fa0();return;}
+if(flags&64){HandleUiCancel();return;}
 }
 func_020cf828(0x1001a);func_0207a7a4(1,4);StepMapCursorAndNotify(2,10);
 }
@@ -359,13 +359,13 @@ void func_020c7804(void *arg0) {
 }
 
 void func_020c782c(void *arg0) {
-    M2C_UNK func_020b6330(s32, s32, M2C_UNK, u16, void *);
-    func_020b6330(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, M2C_FIELD(arg0, u16 *, 0x52), arg0);
+    M2C_UNK CreateMissileNMarker(s32, s32, M2C_UNK, u16, void *);
+    CreateMissileNMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2, M2C_FIELD(arg0, u16 *, 0x52), arg0);
 }
 
 void func_020c7850(void *arg0) {
-    M2C_UNK func_020b63e8(s32, s32, s32, u16, void *);
-    func_020b63e8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
+    M2C_UNK CreateMissileEMarker(s32, s32, s32, u16, void *);
+    CreateMissileEMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
 }
 
 void func_020c7874(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
@@ -384,11 +384,11 @@ void func_020c78ac(void *arg0) {
 }
 
 void func_020c78c4(void *arg0) {
-    M2C_UNK func_020b638c(s32, s32, s32, u16, void *);
-    func_020b638c(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
+    M2C_UNK CreateMissileBMarker(s32, s32, s32, u16, void *);
+    CreateMissileBMarker(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x64), M2C_FIELD(arg0, u16 *, 0x52), arg0);
 }
 
-void func_020c78e8(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
+void CreateScriptMarkerSprite(s32 arg0, s32 arg1, s32 arg2, s16 arg3, s32 arg4) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212aeec;
     void *temp_r0;

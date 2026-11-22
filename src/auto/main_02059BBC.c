@@ -395,11 +395,17 @@ if(callbacks)M2C_FIELD(connection,GT2ConnectionCallbacks *,GT2_CONNECTION_CALLBA
 gti2GetChallenge(challenge);gti2ComputeResponse((u8 *)connection+GT2_CONNECTION_RESPONSE,challenge);gti2SendConnect(connection,challenge);M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)=GT2_STATE_AWAIT_CONNECT_ACCEPT;return 0;
 }
 
-s32 func_0205a938(void *p,Unk0205Copy *q) {
-void func_0205c7f8(void *);
-if(M2C_FIELD(p,s32 *,20)){M2C_FIELD(p,s32 *,20)=0;return 0;}
-M2C_FIELD(p,s32 *,20)=0;if(M2C_FIELD(p,s32 *,12)!=4)return 0;
-func_0205c7f8(p);M2C_FIELD(p,s32 *,12)=5;if(q)M2C_FIELD(p,Unk0205Copy *,0x28)=*q;return 1;
+/* Server side of the GT2 handshake: drop a connection that closed while it was
+ * still pending and, once the peer's response is in, send ACCEPT, mark the
+ * connection established and store the callbacks it reports events through. */
+s32 gti2AcceptConnection(void *connection,GT2ConnectionCallbacks *callbacks) {
+void gti2SendAccept(void *);
+if(M2C_FIELD(connection,s32 *,GT2_CONNECTION_CLOSE_PENDING)){M2C_FIELD(connection,s32 *,GT2_CONNECTION_CLOSE_PENDING)=0;return 0;}
+M2C_FIELD(connection,s32 *,GT2_CONNECTION_CLOSE_PENDING)=0;
+if(M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)!=GT2_STATE_AWAIT_ACCEPT)return 0;
+gti2SendAccept(connection);M2C_FIELD(connection,s32 *,GT2_CONNECTION_STATE)=GT2_STATE_CONNECTED;
+if(callbacks)M2C_FIELD(connection,GT2ConnectionCallbacks *,GT2_CONNECTION_CALLBACK)=*callbacks;
+return 1;
 }
 
 void func_0205a994(void *p,s32 a,s32 b,...) {
@@ -468,5 +474,5 @@ return 1;
 
 s32 gti2CheckDelayedAck(void *p,u32 t) {s32 func_0205ca48(void *,u32);if(!M2C_FIELD(p,s32 *,0x90))return 1;if(t-M2C_FIELD(p,u32 *,0x94)>100){if(!func_0205ca48(p,t-M2C_FIELD(p,u32 *,0x94)))return 0;}return 1;}
 
-s32 gti2CheckPing(void *p,u32 t) {s32 func_0205c924(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!func_0205c924(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
+s32 gti2CheckPing(void *p,u32 t) {s32 gti2SendPing(void *,u32);if(t-M2C_FIELD(p,u32 *,0x88)>30000){if(!gti2SendPing(p,t-M2C_FIELD(p,u32 *,0x88)))return 0;}return 1;}
 

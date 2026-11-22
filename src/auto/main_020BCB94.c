@@ -18,7 +18,7 @@ s32 GetCursorCycleKey(void) {
     return 0;
 }
 
-s32 func_020bcc04(void) {
+s32 GetMapSettleKeyAction(void) {
     extern void *gKeyState;
     if (M2C_FIELD(gKeyState, u16 *, 0) & 2) {
         return 0x20;
@@ -140,7 +140,19 @@ void func_020bcee4(void *arg0) {
     RefreshMapView();
 }
 
-void func_020bcf14(s32 a){void *CreateSpriteFromClass(M2C_UNK *,s32);s32 NextRandomValue(void);extern M2C_UNK data_0212931c;void *p=CreateSpriteFromClass(&data_0212931c,7);M2C_FIELD(p,s32 *,0x5c)=a;M2C_FIELD(p,s32 *,0x60)=0;M2C_FIELD(p,s32 *,0x64)=1;M2C_FIELD(p,s32 *,0x68)=NextRandomValue()%6;}
+/* Create the on-map display of one player's units (the rotating unit-view sprite)
+ * and start it on `player` with a random model variant. */
+void CreatePlayerUnitView(s32 player) {
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
+    s32 NextRandomValue(void);
+    extern M2C_UNK gPlayerUnitViewClass;
+    void *view = CreateSpriteFromClass(&gPlayerUnitViewClass, 7);
+
+    M2C_FIELD(view, s32 *, PLAYER_UNIT_VIEW_PLAYER) = player;
+    M2C_FIELD(view, s32 *, 0x60) = 0;
+    M2C_FIELD(view, s32 *, PLAYER_UNIT_VIEW_SET) = 1;
+    M2C_FIELD(view, s32 *, PLAYER_UNIT_VIEW_VARIANT) = NextRandomValue() % 6;
+}
 
 /* Aim the map cursor at the tile under the stylus: turn the current touch point
  * into map pixel coordinates, divide by a tile's size, clamp it to the map and,

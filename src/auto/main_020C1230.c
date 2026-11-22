@@ -6,13 +6,13 @@ extern s32 gOccupationBackgroundNames[];
 void DrawMapPreview(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
     M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
     s32 func_020c11e4(s32);
-    M2C_UNK func_020c1298(s32, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK DrawMapPreviewLayerCore(s32, M2C_UNK, s32, M2C_UNK);
     extern M2C_UNK func_020c1364;
     if (func_020c11e4(arg0 + (arg2 << 5)) == 0) {
         return;
     }
     func_0209cce4(&func_020c1364, 1);
-    func_020c1298(arg0, arg1, arg2, arg3);
+    DrawMapPreviewLayerCore(arg0, arg1, arg2, arg3);
 }
 
 void RemoveMapViewSprites(void) {
@@ -20,17 +20,22 @@ void RemoveMapViewSprites(void) {
  func_0209cd00(func_020c1364); func_020c121c(); func_020c1d98();
 }
 
-M2C_UNK func_020c1298(s32 arg0,M2C_UNK arg1,s32 arg2,M2C_UNK arg3) {
- M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
- M2C_UNK RefreshPlayerColorIndices();
- void func_020c13a8(M2C_UNK);
- M2C_UNK FillMapPreviewTilemap(M2C_UNK,s32);
- extern M2C_UNK gMapPreviewPalettes; extern s32 gMapPreviewPaletteSlot;
- gMapPreviewPaletteSlot=arg3;
- RefreshPlayerColorIndices();
- CopyToObjPaletteShadow(&gMapPreviewPalettes,arg3<<5,0x20);
- func_020c13a8(arg0+(arg2<<5));
- return FillMapPreviewTilemap(arg1,(arg2&0x3ff)|(u16)(arg3<<12));
+/* Draw the current map into one VRAM layer of the map preview: refresh the player
+ * colour indices, load the preview palette into OBJ palette slot `palette`, copy
+ * the layer's tile graphics, then fill its tilemap with those tiles in that
+ * palette. */
+M2C_UNK DrawMapPreviewLayerCore(s32 layerVram, M2C_UNK layerTilemap, s32 tile, s32 palette) {
+    M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
+    M2C_UNK RefreshPlayerColorIndices();
+    M2C_UNK FillMapPreviewTilemap(M2C_UNK, s32);
+    void CopyMapPreviewTiles(M2C_UNK);
+    extern M2C_UNK gMapPreviewPalettes;
+    extern s32 gMapPreviewPaletteSlot;
+    gMapPreviewPaletteSlot = palette;
+    RefreshPlayerColorIndices();
+    CopyToObjPaletteShadow(&gMapPreviewPalettes, palette << 5, 0x20);
+    CopyMapPreviewTiles(layerVram + (tile << 5));
+    return FillMapPreviewTilemap(layerTilemap, (tile & 0x3FF) | (u16)(palette << 12));
 }
 
 /* Draw the current map into one layer of a 3D sprite map preview: refresh the
@@ -67,7 +72,7 @@ void func_020c1364(void) {
     );
 }
 
-void func_020c13a8(M2C_UNK arg0) {
+void CopyMapPreviewTiles(M2C_UNK arg0) {
     M2C_UNK CopyMapPreviewTopHalf();
     M2C_UNK CopyMapPreviewBottomHalf(M2C_UNK);
     CopyMapPreviewTopHalf();
@@ -383,5 +388,22 @@ u16 GetCOPortraitOffset(u32 coId) {
  return coId*CO_PORTRAIT_TILE_STRIDE+CO_PORTRAIT_TILE_BASE;
 }
 
-s32 GetCOFaceIndex(u32 a) { s32 GetUiColor(s32); switch(a){case 1:return GetUiColor(2);case 2:return GetUiColor(4);case 3:return GetUiColor(5);case 4:return GetUiColor(0);case 0:default:return 0;}}
+/* UI tint colour an army's occupation cut-in panel blends toward: army 1 is red,
+ * 2 blue and 3 cyan; army 4 and every other id are untinted. */
+s32 GetArmyColor(u32 armyId) {
+    s32 GetUiColor(s32);
+    switch (armyId) {
+    case 1:
+        return GetUiColor(2);
+    case 2:
+        return GetUiColor(4);
+    case 3:
+        return GetUiColor(5);
+    case 4:
+        return GetUiColor(0);
+    case 0:
+    default:
+        return 0;
+    }
+}
 

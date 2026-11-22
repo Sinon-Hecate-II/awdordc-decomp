@@ -95,4 +95,7 @@ extern M2C_UNK gMapOfferState;
 #define MAP_OFFER_MSG_PLAYER_FOUND 0x46000017
 #define MAP_OFFER_MSG_NO_PLAYER    0x46000016
 
+/* Status text shown above the name of the map chosen in a transfer. */
+#define MAP_TRANSFER_MSG_CHOSEN_MAP 0x4600001F
+
 #endif

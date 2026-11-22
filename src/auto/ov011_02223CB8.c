@@ -13,7 +13,7 @@ void func_ov011_02224b9c(void *,int);
 void func_ov011_02224aac(void *,int);
 void HandleIntroInput(void *);
 int PlaySoundEffect(int);
-int func_02090034(int,int);
+int StopSlotSound(int,int);
 void func_01ffac9c(int,int,int,void *,int);
 extern u16 gIntroAnimState[6];
 
@@ -152,7 +152,7 @@ void func_ov011_022242dc(void *p) {
   break;
  case 3:
   if (M2C_FIELD(p, u16 *, 0x34) == 342) PlaySoundEffect(302);
-  if (M2C_FIELD(p, u16 *, 0x34) == 343) func_02090034(0, 96);
+  if (M2C_FIELD(p, u16 *, 0x34) == 343) StopSlotSound(0, 96);
   break;
  case 4:
   if (GetLanguage() == 5 || GetLanguage() == 4) G3_UpdateIntroTiles(p, 5, 108, 128, colors.bytes + 20);
@@ -242,7 +242,7 @@ HandleIntroInput(p);
 void HandleIntroInput(void *entry) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK func_02090034(M2C_UNK, M2C_UNK);
+    M2C_UNK StopSlotSound(M2C_UNK, M2C_UNK);
     M2C_UNK SetScreenMode(s32);
     M2C_UNK ApplyScreenMode(s32);
     extern u16 *gKeyState;
@@ -306,7 +306,7 @@ void HandleIntroInput(void *entry) {
         } while (screenIndex2 < 2);
         gCur3DSpriteEngine = savedContext2;
         if ((u32) (u8) (M2C_FIELD(entry, u8 *, 0x39) + 0xFE) <= 1U) {
-            func_02090034(0, 3);
+            StopSlotSound(0, 3);
         }
         if (M2C_FIELD(entry, s32 *, 0x3C) == 2) {
             SetSpriteAnimation(entry, 4);

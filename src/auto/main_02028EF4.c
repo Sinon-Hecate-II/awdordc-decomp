@@ -482,33 +482,36 @@ void *func_02029784(void) {
     return var_r5;
 }
 
-void *func_020297c8(u16 *arg0) {
+/* When the session is linking a friend and has not aborted, return the friend
+ * code (WFC_RECORD_CODE) of the connection record and store its length in
+ * *codeLength; otherwise return NULL and a length of 0. */
+void *Wfc_GetConnectionCode(u16 *codeLength) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 GetSession(void);
 
-    s32 r6;
-    void *r7;
-    u16 r4;
+    s32 session;
+    void *code;
+    u16 length;
     s32 state;
 
-    r7 = (void *)0;
-    r4 = 0;
-    r6 = GetSession();
+    code = (void *)0;
+    length = 0;
+    session = GetSession();
     state = OS_DisableInterrupts();
-    if (r6 != 0) {
-        if (M2C_FIELD(r6, s32 *, 0x2000 + 0x260) == 9) {
-            if (M2C_FIELD(r6, u8 *, 0x2000 + 0x26B) == 0) {
-                r4 = (u16)M2C_FIELD(r6, u16 *, 0x2100 + 0x4A);
-                r7 = (void *)((char *)r6 + 0x14C + 0x2000);
+    if (session != 0) {
+        if (M2C_FIELD(session, s32 *, WFC_SESSION_STATE) == WFC_SESSION_STATE_LINKING) {
+            if (M2C_FIELD(session, u8 *, WFC_SESSION_ABORT) == 0) {
+                length = (u16)M2C_FIELD(session, u16 *, WFC_SESSION_CONN_DATA + WFC_RECORD_CODE_LEN);
+                code = (void *)((char *)session + WFC_SESSION_CONN_DATA + WFC_RECORD_CODE);
             }
         }
     }
     OS_RestoreInterrupts(state);
-    if (arg0 != (u16 *)0) {
-        *arg0 = r4;
+    if (codeLength != (u16 *)0) {
+        *codeLength = length;
     }
-    return r7;
+    return code;
 }
 
 void WFC_SetSendCallback(s32 arg0) {
@@ -812,31 +815,34 @@ M2C_FIELD(before,s32*,M2C_FIELD(list,u16*,10))=(s32)node;
 M2C_FIELD(list,u16 *,8)++;
 }
 
-void ListRemove(void *arg0, void *arg1) {
-    u16 idx;
-    u32 *node;
+/* Unlink an entry from the doubly-linked list: fix the head (DLIST_HEAD) or the
+ * previous entry's next link, then the tail (DLIST_TAIL) or the next entry's
+ * previous link, clear the entry's own link pair and decrement DLIST_COUNT. */
+void ListRemove(void *list, void *entry) {
+    u16 off;
+    u32 *link;
     u32 *prev;
-    u32 nxt;
+    u32 next;
 
-    idx = *(u16 *)((u8 *)arg0 + 0xA);
-    node = (u32 *)((u8 *)arg1 + idx);
-    if (*node == 0) {
-        *(u32 *)arg0 = node[1];
+    off = *(u16 *)((u8 *)list + DLIST_NODE_OFFSET);
+    link = (u32 *)((u8 *)entry + off);
+    if (*link == 0) {
+        *(u32 *)((u8 *)list + DLIST_HEAD) = link[1];
     } else {
-        prev = (u32 *)((u8 *)(*node) + idx);
-        prev[1] = node[1];
+        prev = (u32 *)((u8 *)(*link) + off);
+        prev[1] = link[1];
     }
-    nxt = node[1];
-    if (nxt == 0) {
-        *(u32 *)((u8 *)arg0 + 0x4) = node[0];
+    next = link[1];
+    if (next == 0) {
+        *(u32 *)((u8 *)list + DLIST_TAIL) = link[0];
     } else {
-        *(u32 *)((u8 *)nxt + *(u16 *)((u8 *)arg0 + 0xA)) = node[0];
+        *(u32 *)((u8 *)next + *(u16 *)((u8 *)list + DLIST_NODE_OFFSET)) = link[0];
     }
-    node[0] = 0;
-    node[1] = 0;
-    idx = *(u16 *)((u8 *)arg0 + 0x8);
-    idx = idx - 1;
-    *(u16 *)((u8 *)arg0 + 0x8) = idx;
+    link[0] = 0;
+    link[1] = 0;
+    off = *(u16 *)((u8 *)list + DLIST_COUNT);
+    off = off - 1;
+    *(u16 *)((u8 *)list + DLIST_COUNT) = off;
 }
 
 s32 ListNext(void *arg0, s32 arg1) {

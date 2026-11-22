@@ -1,6 +1,7 @@
 /* 27 functions from 0x0209EAF4 to 0x0209F990 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 typedef struct MapConfigRecord {
     u16 flags;
     u8 unk_2;
@@ -227,13 +228,13 @@ void func_0209f220(void) {
 void func_0209f238(void){extern void **gCurrentMap;void func_ov000_0216a97c(s32,s32);u8 *p=(u8 *)*gCurrentMap+0x6000;func_ov000_0216a97c(M2C_FIELD(p,s32 *,0xeb8),M2C_FIELD(p,s32 *,0xed8));}
 
 void func_0209f260(void) {
-    M2C_UNK func_0208f8c4();
-    func_0208f8c4();
+    M2C_UNK FadeMusicToHalfVolume();
+    FadeMusicToHalfVolume();
 }
 
 void func_0209f26c(void) {
-    M2C_UNK func_0208f8d8();
-    func_0208f8d8();
+    M2C_UNK FadeMusicToFullVolume();
+    FadeMusicToFullVolume();
 }
 
 void func_0209f278(void){extern void **gCurrentMap;void (*cb)(void)=M2C_FIELD(gCurrentMap[1],void (**)(void),0x50);if(cb)cb();InitBattleMapPresentation();Reset3DSpriteEngineState();}
@@ -245,9 +246,37 @@ void func_0209f2a8(void) {
     func_020d468c();
 }
 
-void func_0209f2b8(void *p){void *GetTargetPosition(s32);extern s32 gMapCursorOptionValue;extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);u16 *q;func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;q=GetTargetPosition(gMapCursorOptionValue);SetBattleCommand(4,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),q[0],0);}
+/* Order the battle command for the target the cursor has selected: the battle
+ * cursor is saved around the unit-cursor refresh, then, when the preview is armed
+ * to issue a command, the command attacks the unit the selected cursor option names. */
+void BattlePreviewAttackTarget(void *preview) {
+    void *GetTargetPosition(s32);
+    extern s32 gMapCursorOptionValue;
+    extern void **gCurrentMap;
+    void SetBattleCommand(s32, u8, s32, s32);
+    u16 *target;
 
-void func_0209f314(void *p){extern void **gCurrentMap;void SetBattleCommand(s32,u8,s32,s32);func_020c5b24();BattleUpdateUnitCursor();func_020c5b5c();if(!M2C_FIELD(p,s32 *,0x60))return;SetBattleCommand(5,M2C_FIELD(*gCurrentMap,u8 *,0x52d4),M2C_FIELD(p,s32 *,0x38),M2C_FIELD(p,s32 *,0x3c));}
+    SaveBattleCursorPosition();
+    BattleUpdateUnitCursor();
+    RestoreBattleCursorPosition();
+    if (!M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_ARMED)) return;
+    target = GetTargetPosition(gMapCursorOptionValue);
+    SetBattleCommand(AI_COMMAND_ATTACK_TARGET, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), target[0], 0);
+}
+
+/* Order the battle command for the tile the preview panel shows: the battle cursor
+ * is saved around the unit-cursor refresh, then, when the preview is armed to issue
+ * a command, the command attacks the panel's own tile. */
+void BattlePreviewAttackTile(void *preview) {
+    extern void **gCurrentMap;
+    void SetBattleCommand(s32, u8, s32, s32);
+
+    SaveBattleCursorPosition();
+    BattleUpdateUnitCursor();
+    RestoreBattleCursorPosition();
+    if (!M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_ARMED)) return;
+    SetBattleCommand(AI_COMMAND_ATTACK_TILE, M2C_FIELD(*gCurrentMap, u8 *, MAP_CURSOR_UNIT_ID), M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_X), M2C_FIELD(preview, s32 *, BATTLE_PREVIEW_Y));
+}
 
 void func_0209f360(void) {
     M2C_UNK func_ov000_0216a9bc(s32);

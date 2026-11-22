@@ -9,7 +9,7 @@ void func_020b6168(void *arg0) {
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
     void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
-    void func_02080750(s32, s32, s32);
+    void CreateScreenOffsetEffect(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
     M2C_UNK CancelMapCursorAnimation(void);
     void func_020b6124(void *);
@@ -70,7 +70,7 @@ void func_020b6168(void *arg0) {
         }
     }
 
-    func_02080750(2, 0x3C, 0);
+    CreateScreenOffsetEffect(2, 0x3C, 0);
     func_02080358(4, 0, 2, 0);
     PlaySoundAtTile(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
     CancelMapCursorAnimation();
@@ -89,51 +89,57 @@ void func_020b6320(void) {
 
 /* Spawn a path-marker task at tile (x, y) with the given range and tile index,
  * copy its label string into the task, then move the view onto the marker. */
-void func_020b6330(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
+void CreateMissileNMarker(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
-    extern M2C_UNK data_02128cec, data_02128e98;
+    extern M2C_UNK gMissileMarkerClass, gMissileNName;
     void *task;
-    task = CreateSpriteObject(&data_02128cec, parent);
+    task = CreateSpriteObject(&gMissileMarkerClass, parent);
     M2C_FIELD(task, s16 *, 0x44) = x;
     M2C_FIELD(task, s16 *, 0x46) = y;
     M2C_FIELD(task, s16 *, 0x4C) = range;
     M2C_FIELD(task, s16 *, 0x4E) = tileIdx;
     M2C_FIELD(task, s32 *, 0x50) = 0;
-    StringCopy(task + 0x34, &data_02128e98);
+    StringCopy(task + 0x34, &gMissileNName);
     PanMapViewToTile(x, y);
 }
 
-void func_020b638c(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
+/* Spawn the "missile_b" missile marker task at tile (x, y) with the given range
+ * and tile index, copy its label string into the task, then move the view onto
+ * the marker. */
+void CreateMissileBMarker(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
-    extern M2C_UNK data_02128cec, data_02128ea4;
-    M2C_UNK *g = &data_02128cec;
+    extern M2C_UNK gMissileMarkerClass, gMissileBName;
+    M2C_UNK *g = &gMissileMarkerClass;
     void *p;
-    p = CreateSpriteObject(g, arg4);
-    M2C_FIELD(p, s16 *, 0x44) = arg0;
-    M2C_FIELD(p, s16 *, 0x46) = arg1;
-    M2C_FIELD(p, s16 *, 0x4C) = arg2;
-    M2C_FIELD(p, s16 *, 0x4E) = arg3;
+    p = CreateSpriteObject(g, parent);
+    M2C_FIELD(p, s16 *, 0x44) = x;
+    M2C_FIELD(p, s16 *, 0x46) = y;
+    M2C_FIELD(p, s16 *, 0x4C) = range;
+    M2C_FIELD(p, s16 *, 0x4E) = tileIdx;
     M2C_FIELD(p, s32 *, 0x50) = 0;
-    StringCopy(p + 0x34, &data_02128ea4);
-    PanMapViewToTile(arg0, arg1);
+    StringCopy(p + 0x34, &gMissileBName);
+    PanMapViewToTile(x, y);
 }
 
-void func_020b63e8(s16 arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4) {
+/* Spawn the "missile_e" missile marker task at tile (x, y) with the given range
+ * and tile index, copy its label string into the task, then move the view onto
+ * the marker. */
+void CreateMissileEMarker(s16 x, s16 y, s16 range, s16 tileIdx, s32 parent) {
     void *CreateSpriteObject();
     M2C_UNK StringCopy(void *, M2C_UNK *);
-    extern M2C_UNK data_02128cec, data_02128eb0;
-    M2C_UNK *g = &data_02128cec;
+    extern M2C_UNK gMissileMarkerClass, gMissileEName;
+    M2C_UNK *g = &gMissileMarkerClass;
     void *p;
-    p = CreateSpriteObject(g, arg4);
-    M2C_FIELD(p, s16 *, 0x44) = arg0;
-    M2C_FIELD(p, s16 *, 0x46) = arg1;
-    M2C_FIELD(p, s16 *, 0x4C) = arg2;
-    M2C_FIELD(p, s16 *, 0x4E) = arg3;
+    p = CreateSpriteObject(g, parent);
+    M2C_FIELD(p, s16 *, 0x44) = x;
+    M2C_FIELD(p, s16 *, 0x46) = y;
+    M2C_FIELD(p, s16 *, 0x4C) = range;
+    M2C_FIELD(p, s16 *, 0x4E) = tileIdx;
     M2C_FIELD(p, s32 *, 0x50) = 0;
-    StringCopy(p + 0x34, &data_02128eb0);
-    PanMapViewToTile(arg0, arg1);
+    StringCopy(p + 0x34, &gMissileEName);
+    PanMapViewToTile(x, y);
 }
 
 /* Spawn the unit flare effect over the unit the task points at (its +0x5C):
@@ -347,7 +353,7 @@ M2C_FIELD((void *)CreateAnimatedMapSprite(&gDamageSpriteName,x,y,16,graphicOffse
 PinMapCellCorners(x,y);
 sx+=x; sy+=y; n++;
 }
-func_02080750(1,20,0); func_02080358(4,0,2,0);
+CreateScreenOffsetEffect(1,20,0); func_02080358(4,0,2,0);
 if(n>0) PlaySoundAtTile(0x6d,Divide(sx,n),Divide(sy,n));
 else func_0208facc(0x6d);
 }
@@ -532,13 +538,16 @@ void func_020b6fd8(void *arg0) {
     PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_020b6ff4(void *arg0) {
+/* Spawn the "gas_ball_up" gas effect over the task's tile: load its sprite sheet,
+ * place the animated sprite at the task's stored position, and play the effect
+ * sound there. */
+void CreateGasBallUpSprite(void *task) {
     M2C_UNK PlaySoundAtTile(s32, s32, s32);
     M2C_UNK CreateAnimatedMapSprite(M2C_UNK *, s32, s32, M2C_UNK, s32, s32, void *);
-    extern M2C_UNK data_02128f3c;
-    extern M2C_UNK data_02128f48;
-    CreateAnimatedMapSprite(&data_02128f48, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 0x10, LoadEffectSpriteSheet(&data_02128f3c, 0), 0, arg0);
-    PlaySoundAtTile(0x105, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    extern M2C_UNK gGasBallUpName;
+    extern M2C_UNK gGasBallUpSprite;
+    CreateAnimatedMapSprite(&gGasBallUpSprite, M2C_FIELD(task, s32 *, 0x34), M2C_FIELD(task, s32 *, 0x38), 0x10, LoadEffectSpriteSheet(&gGasBallUpName, 0), 0, task);
+    PlaySoundAtTile(0x105, M2C_FIELD(task, s32 *, 0x34), M2C_FIELD(task, s32 *, 0x38));
 }
 
 /* Spawns the "gas_ball_down" gas effect over the task's tile: places the animated
@@ -555,12 +564,15 @@ void CreateGasBallDownSprite(void *task) {
     CreateMapViewScrollHold(sprite);
 }
 
-void func_020b70b0(void *arg0) {
-    extern M2C_UNK data_02128f74;
-    extern M2C_UNK data_02128f80;
-    s32 temp = LoadEffectSpriteSheet(&data_02128f74, 2);
-    CreateAnimatedMapSprite(&data_02128f80, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), 0x10, temp, 2, arg0);
-    PlaySoundAtTile(0x106, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
+/* Spawn the "gas_storm" gas effect over the task's tile: load its sprite sheet,
+ * place the animated sprite at the task's stored position, and play the effect
+ * sound there. */
+void CreateGasStormSprite(void *task) {
+    extern M2C_UNK gGasStormName;
+    extern M2C_UNK gGasStormSprite;
+    s32 sheet = LoadEffectSpriteSheet(&gGasStormName, 2);
+    CreateAnimatedMapSprite(&gGasStormSprite, M2C_FIELD(task, s32 *, 0x3C), M2C_FIELD(task, s32 *, 0x40), 0x10, sheet, 2, task);
+    PlaySoundAtTile(0x106, M2C_FIELD(task, s32 *, 0x3C), M2C_FIELD(task, s32 *, 0x40));
 }
 
 void func_020b710c(void *arg0) {

@@ -226,17 +226,21 @@ done:
     return (u8 *)ctx.token.t2;
 }
 #pragma opt_common_subs reset
-void func_02073eb8(void *arg0, s32 arg1, s32 arg2) {
+/* Fill the running exception frame record's handler entry, at stack address
+ * record[0x18] + stackOffset: copy the record's three saved pointers and store the
+ * resume address record[4] + resume.  When the record's type pattern starts with a
+ * '*' the entry holds a pointer to the address instead of the address itself. */
+void Js_BuildHandlerEntry(void *record, s32 stackOffset, s32 resume) {
     void *entry;
-    entry = (u8 *)M2C_FIELD(arg0, void **, 0x18) + arg1;
-    M2C_FIELD(entry, s32 *, 0) = M2C_FIELD(arg0, s32 *, 4);
-    M2C_FIELD(entry, s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
-    M2C_FIELD(entry, s32 *, 8) = M2C_FIELD(arg0, s32 *, 8);
-    if (*M2C_FIELD(arg0, u8 **, 0) == 0x2A) {
+    entry = (u8 *)M2C_FIELD(record, void **, 0x18) + stackOffset;
+    M2C_FIELD(entry, s32 *, 0) = M2C_FIELD(record, s32 *, 4);
+    M2C_FIELD(entry, s32 *, 4) = M2C_FIELD(record, s32 *, 0);
+    M2C_FIELD(entry, s32 *, 8) = M2C_FIELD(record, s32 *, 8);
+    if (*M2C_FIELD(record, u8 **, 0) == 0x2A) {
         M2C_FIELD(entry, void **, 0xC) = (u8 *)entry + 0x10;
-        M2C_FIELD(entry, s32 *, 0x10) = *M2C_FIELD(arg0, s32 **, 4) + arg2;
+        M2C_FIELD(entry, s32 *, 0x10) = *M2C_FIELD(record, s32 **, 4) + resume;
     } else {
-        M2C_FIELD(entry, s32 *, 0xC) = M2C_FIELD(arg0, s32 *, 4) + arg2;
+        M2C_FIELD(entry, s32 *, 0xC) = M2C_FIELD(record, s32 *, 4) + resume;
     }
 }
 
@@ -256,7 +260,7 @@ p=func_02073cdc(a,frame,&operands[0]);
 operands[1]=p[1]|(p[2]<<8)|(p[3]<<16)|(p[4]<<24);
 DecodeExceptionSignedValue(DecodeExceptionValue(p+5,&operands[2]),&operands[3]);
 func_02073148(a,frame,p);
-func_02073eb8(a,operands[3],operands[0]);
+Js_BuildHandlerEntry(a,operands[3],operands[0]);
 func_0207462c(a,frame,frame[0]+operands[2]);
 }
 
@@ -459,22 +463,27 @@ t=*++p;++q;
 return 0;
 }
 #pragma opt_common_subs reset
-s32 func_020744e0(void *arg0) {
-    s32 temp;
-    s32 *p;
-    s32 i;
+/* Restore one frame's saved registers while unwinding: pop the registers the
+ * block marked in JS_FRAME_SAVE_MASK from below JS_FRAME_TOP + JS_FRAME_SAVE_SIZE
+ * (16 bytes higher when the block is ID4) into the frame, point JS_FRAME_PREV at
+ * the previous frame, and return the restored link register (JS_FRAME_SAVED_LR)
+ * the caller looks the exception handler up for. */
+s32 Js_RestoreFrameRegisters(void *frame) {
+    s32 saveSize;
+    s32 *stack;
+    s32 reg;
 
-    temp = M2C_FIELD(arg0, s32 *, 0x60);
-    p = (s32 *)(M2C_FIELD(arg0, s32 *, 0x18) + temp -
-                (M2C_FIELD(arg0, u8 *, 0x6A) != 0 ? 0x10 : 0));
-    for (i = 15; i >= 0; i--) {
-        if (M2C_FIELD(arg0, u16 *, 0x68) & (1 << i)) {
-            p--;
-            ((s32 *)arg0)[i + 7] = *p;
+    saveSize = M2C_FIELD(frame, s32 *, JS_FRAME_SAVE_SIZE);
+    stack = (s32 *)(M2C_FIELD(frame, s32 *, JS_FRAME_TOP) + saveSize -
+                (M2C_FIELD(frame, u8 *, JS_FRAME_ID4) != 0 ? 0x10 : 0));
+    for (reg = 15; reg >= 0; reg--) {
+        if (M2C_FIELD(frame, u16 *, JS_FRAME_SAVE_MASK) & (1 << reg)) {
+            stack--;
+            ((s32 *)frame)[reg + 7] = *stack;
         }
     }
-    M2C_FIELD(arg0, s32 *, 0x14) = M2C_FIELD(arg0, s32 *, 0x18) + temp;
-    return M2C_FIELD(arg0, s32 *, 0x54);
+    M2C_FIELD(frame, s32 *, JS_FRAME_PREV) = M2C_FIELD(frame, s32 *, JS_FRAME_TOP) + saveSize;
+    return M2C_FIELD(frame, s32 *, JS_FRAME_SAVED_LR);
 }
 
 /* Decode a handler's data block (state->data) into the unwinder's frame record:

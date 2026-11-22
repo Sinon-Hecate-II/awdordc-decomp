@@ -103,16 +103,20 @@ M2C_FIELD(gAiCommandState,s8 *,1)=0;
 return 0;
 }
 
-s32 func_ov000_0219f968(void) {
+/* AI command step 4: after an attack action (command kind 19) has been carried
+ * out, restore the unit cursor, draw the target cursor on the command's target
+ * tile and play the attack effect aimed from the cursor tile there, then hand
+ * over to the step that resets the command. */
+s32 PlayAiAttackEffect(void) {
 void BattleUpdateUnitCursor(void);
 void CreateTargetCursor(u8,u8);
 void CreateAttackTargetEffect(u8,u8,u8,u8,s32);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
 BattleUpdateUnitCursor();
-CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
-CreateAttackTargetEffect(gAiCommand[2],gAiCommand[3],gAiCommand[6],gAiCommand[7],7);
-M2C_FIELD(gAiCommandState,s8 *,1)=5;
+CreateTargetCursor(gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y]);
+CreateAttackTargetEffect(gAiCommand[AI_COMMAND_CURSOR_X],gAiCommand[AI_COMMAND_CURSOR_Y],gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y],7);
+M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_STEP)=5;
 return 0;
 }
 

@@ -228,12 +228,12 @@ s32 arg0;
 }
 
 s32 func_ov009_02222790(void) {
-    s32 func_02012218(M2C_UNK *, M2C_UNK *, M2C_UNK);
+    s32 WFC_StartCommandChannel(M2C_UNK *, M2C_UNK *, M2C_UNK);
     void SignalLinkError();
     extern M2C_UNK data_ov009_022277a0;
     extern M2C_UNK HandleLinkStartResult;
     SetLinkPhase(3);
-    if (func_02012218(&data_ov009_022277a0, &HandleLinkStartResult, 2) == 2) {
+    if (WFC_StartCommandChannel(&data_ov009_022277a0, &HandleLinkStartResult, 2) == 2) {
         return 1;
     }
     SignalLinkError();

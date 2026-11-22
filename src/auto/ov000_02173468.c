@@ -15,7 +15,7 @@ s32 GetTerrainNameGraphicIndex(s32,s32);
 s32 GetTerrainKindFromInfoId(s32);
 void AddSprite(u16,u16,u16,void *,s32);
 u8 func_ov000_02173e6c(void *);
-s32 func_02086420(u8);
+s32 IsOnlinePlayerVoiceChatEnabled(u8);
 s32 Divide(s32,s32);
 s32 func_020a88e8(s32);
 void DrawFrameBorderPulse(s16,s16,s32,s32,u16,s32);
@@ -75,7 +75,7 @@ r.flags[0]=src->flags[0];r.flags[1]=src->flags[1];r.flags[2]=src->flags[2];r.fla
 if(!r.flags[3])goto next;
 if(r.flags[4])a=1;else a=0;
 hidden=a&255;
-if(M2C_FIELD(arg0,s32 *,8)<60&&func_02086420((u8)counter)){
+if(M2C_FIELD(arg0,s32 *,8)<60&&IsOnlinePlayerVoiceChatEnabled((u8)counter)){
 AddSprite(241,(u16)y1,0x60be,gSpriteDesc16x8,1);
 AddSprite(241,(u16)y2,0x60de,gSpriteDesc16x8,1);
 }

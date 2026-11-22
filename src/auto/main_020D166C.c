@@ -108,16 +108,21 @@ s32 IsPlayerHuman(s32 a){extern void **gCurrentMap;return (u8)(((u8 *)*gCurrentM
 
 u8 IsPlayerCpu(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]==2;}
 
-s32 func_020d1a1c(s32 arg0) {
- s32 IsLocalSessionHost();
- extern M2C_UNK gMapData;
- if(M2C_FIELD(&gMapData,u8 *,4)==0)return 1;
- if(IsPlayerHuman(arg0))return 1;
- if(IsLocalSessionHost() && IsPlayerCpu(arg0))return 1;
- return 0;
+/* Whether this console controls player `playerId`: every player in a
+ * single-player battle (not a link battle), any human player in a link battle,
+ * and a CPU player when this console is the link session's host (it runs the
+ * AI for the CPU players on its side). */
+s32 IsPlayerLocallyControlled(s32 playerId) {
+    s32 IsLocalSessionHost();
+    extern M2C_UNK gMapData;
+
+    if (M2C_FIELD(&gMapData, u8 *, MAPDATA_LINK_BATTLE) == 0) return 1;
+    if (IsPlayerHuman(playerId)) return 1;
+    if (IsLocalSessionHost() && IsPlayerCpu(playerId)) return 1;
+    return 0;
 }
 
-u8 func_020d1a74(void) {
+u8 IsPlayerArmyVariantSet(void) {
     s32 GetPlayerArmyVariantIfSet();
     u8 var_r0;
 

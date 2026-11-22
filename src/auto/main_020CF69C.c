@@ -472,13 +472,16 @@ u8 IsPlayerCursorOwner(s32 player) {
   return result;
 }
 
-s32 GetTerrainDefenseScore(s32 a,s32 b,s32 c){
-s32 func_020a857c(s32);
-s32 n;
-if(func_020a857c(b))return 0;
-n=(s16)gTerrainDefenseStars[c]*(s16)10+M2C_FIELD((void *)*gCurrentMap+a*0x8C,s8 *,0x67C8);
-if(n<0)n=0;
-return n;
+/* Terrain defense a unit gains from standing on `terrain`: the terrain's defense
+ * stars times ten plus the owning player's per-turn defense bonus, floored at zero.
+ * Kinds that take no terrain defense (func_020a857c) score zero. */
+s32 GetTerrainDefenseScore(s32 player, s32 kind, s32 terrain) {
+    s32 func_020a857c(s32);
+    s32 score;
+    if (func_020a857c(kind)) return 0;
+    score = (s16)gTerrainDefenseStars[terrain] * (s16)10 + M2C_FIELD((void *)*gCurrentMap + player * MAP_PLAYER_STRIDE, s8 *, PLAYER_DEFENSE_BONUS_OFF);
+    if (score < 0) score = 0;
+    return score;
 }
 
 s32 GetTerrainMoveCost(s32 arg0,s32 arg1,s32 arg2) {

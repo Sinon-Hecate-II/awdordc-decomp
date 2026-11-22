@@ -36,9 +36,9 @@ void func_ov001_021887ec(void *arg0) {
 s32 func_ov001_0218880c(void) {
 extern M2C_UNK gWhWork;
 extern M2C_UNK func_ov001_02188858;
-s32 func_02012218(void *,void *,s32);
+s32 WFC_StartCommandChannel(void *,void *,s32);
 SetWhStatus(3);
-if(func_02012218((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x80,&func_ov001_02188858,2)==2) return 1;
+if(WFC_StartCommandChannel((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x80,&func_ov001_02188858,2)==2) return 1;
 SetWhError();
 SetWhStatus(10);
 return 0;

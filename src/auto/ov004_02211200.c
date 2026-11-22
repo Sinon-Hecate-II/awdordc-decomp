@@ -82,11 +82,11 @@ void Ov004_InitUraPlaneEffect(void *sprite) {
 
 void func_ov004_02211358(void) {
     M2C_UNK func_02091a50();
-    M2C_UNK func_020807d0();
-    M2C_UNK func_02090034(s32, s32);
+    M2C_UNK Delete3DSpriteOffsetTracks();
+    M2C_UNK StopSlotSound(s32, s32);
     func_02091a50();
-    func_020807d0();
-    func_02090034(0, 0x1E);
+    Delete3DSpriteOffsetTracks();
+    StopSlotSound(0, 0x1E);
 }
 
 M2C_UNK func_ov004_02211374(void *arg0) {
@@ -270,7 +270,7 @@ void func_ov004_02211844(void *ctx) {
             (Get3DSpriteTargetMode() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (Get3DSpriteTargetMode() != 3 || gCur3DSpriteEngine == savedContext)) {
             LoadCompressedSpriteGraphics(data_ov004_02218cec, 0, 0);
-            func_02080774(1, 1, 0, 100, 0);
+            Create3DSpriteOffsetTrack(1, 1, 0, 100, 0);
         }
         i++;
     } while (i < 2);

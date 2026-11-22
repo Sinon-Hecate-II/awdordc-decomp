@@ -67,7 +67,7 @@ void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void Toggl
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
 void Hide3DSpriteSlide(void *);void Show3DSpriteSlide(void *);s32 GetUiColor(s32);void func_020893a8(void *,s32,s32,s32);
-void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void func_ov003_021fbcf8(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void func_ov003_021f91a4(void *);
+void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void func_ov003_021fbcf8(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void Ov003_SendLocalMapSelectState(void *);
 u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;register u32 repeat;s32 active;u8 enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
 if(ov003_menu_kind(p,1))return;
 if(ov003_menu_kind(p,5))return;
@@ -238,6 +238,6 @@ if(ov003_menu_kind(p,4))return;
 if(ov003_menu_kind(p,6))return;
 if(ov003_menu_kind(p,7))return;
 if(ov003_menu_kind(p,8))return;
-if(func_ov003_021f4038())func_ov003_021f91a4(p);
+if(func_ov003_021f4038())Ov003_SendLocalMapSelectState(p);
 }
 #pragma opt_propagation on

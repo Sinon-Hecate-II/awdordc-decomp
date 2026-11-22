@@ -3,35 +3,42 @@
 #include "battle_map.h"
 #include "ds3dsprite.h"
 
-s32 func_02092df4(void *arg0) {
- s32 (*temp_r0)();
- s32 var_r0;
- void *temp_r0_2;
- void *temp_r0_3;
- temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 (**)(), 4);
- if (temp_r0 != NULL) {
-  if (temp_r0() != 0) var_r0 = 1; else var_r0 = 0;
- } else var_r0 = 1;
- if (var_r0 != 0) {
-  temp_r0_3 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), void **, 0xC);
-  M2C_FIELD(arg0, void **, 4) = temp_r0_3;
-  M2C_FIELD(arg0, void **, 0) = temp_r0_3;
- } else {
-  M2C_FIELD(arg0, void **, 4) = M2C_FIELD(arg0, void **, 4) + 0x10;
- }
- return 1;
+/* Map-script opcode: when the command's condition callback at +4 is absent or
+ * reports true, enter the script block named by the command's wide operand,
+ * pointing both the interpreter's block and its instruction pointer at it;
+ * otherwise run the next command.  Returns 1 so the interpreter keeps running. */
+s32 MapScriptEnterBlockIf(void *state) {
+    s32 (*condition)();
+    s32 takeBlock;
+    void *block;
+
+    condition = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 (**)(), MAP_SCRIPT_PARAM);
+    if (condition != NULL) {
+        if (condition() != 0) takeBlock = 1; else takeBlock = 0;
+    } else takeBlock = 1;
+    if (takeBlock != 0) {
+        block = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), void **, MAP_SCRIPT_OPERAND2);
+        M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = block;
+        M2C_FIELD(state, void **, MAP_SCRIPT_STATE_BLOCK) = block;
+    } else {
+        M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE;
+    }
+    return 1;
 }
 
-s32 func_02092e4c(void *arg0) {
+/* Map-script opcode: give the player named by the command's first operand the
+ * team in its second operand (SetPlayerTeam), record that value as the player's
+ * control kind in the map's player record, then advance the script and keep running. */
+s32 MapScriptSetPlayerTeam(void *state) {
  M2C_UNK SetPlayerTeam(u8, s16);
  extern void **gCurrentMap;
- u8 temp_r0;
- void *temp_r1;
- temp_r1 = M2C_FIELD(arg0,void **,4);
- temp_r0 = (u8) M2C_FIELD(temp_r1,s16 *,8);
- SetPlayerTeam((u8)temp_r0,M2C_FIELD(temp_r1,s16 *,0xa));
- M2C_FIELD((u8)temp_r0 * 0x8c + (s32)*gCurrentMap,s8 *,0x67c2) = M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,0xa);
- M2C_FIELD(arg0,void **,4) = M2C_FIELD(arg0,void **,4)+0x10;
+ u8 player;
+ void *command;
+ command = M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP);
+ player = (u8) M2C_FIELD(command,s16 *,MAP_SCRIPT_OPERAND0);
+ SetPlayerTeam((u8)player,M2C_FIELD(command,s16 *,MAP_SCRIPT_OPERAND1));
+ M2C_FIELD((u8)player * MAP_PLAYER_STRIDE + (s32)*gCurrentMap,s8 *,PLAYER_CONTROL_OFF) = M2C_FIELD(M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP),s16 *,MAP_SCRIPT_OPERAND1);
+ M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP) = M2C_FIELD(state,void **,MAP_SCRIPT_STATE_IP)+MAP_SCRIPT_COMMAND_SIZE;
  return 1;
 }
 
@@ -197,14 +204,14 @@ s32 func_02093288(void *arg0) {
 }
 
 s32 func_020932c8(void *arg0) {
-    M2C_UNK func_02090034(M2C_UNK, s32);
+    M2C_UNK StopSlotSound(M2C_UNK, s32);
     s32 var_r4;
 
     var_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
     if (IsMessageBoxActive() != 0) {
         var_r4 = 0;
     }
-    func_02090034(0, var_r4);
+    StopSlotSound(0, var_r4);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -225,8 +232,8 @@ s32 func_02093348(void *arg0) {
 }
 
 void func_02093370(void *arg0) {
-    s32 func_0208f8a0();
-    if (func_0208f8a0() == 0) {
+    s32 IsMusicFadingOut();
+    if (IsMusicFadingOut() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
@@ -248,15 +255,15 @@ s32 func_020933ac(void *arg0) {
 }
 
 s32 func_020933d8(void *arg0) {
-    M2C_UNK func_0208f8c4();
-    func_0208f8c4();
+    M2C_UNK FadeMusicToHalfVolume();
+    FadeMusicToHalfVolume();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 0;
 }
 
 s32 func_020933f8(void *arg0) {
-    M2C_UNK func_0208f8d8();
-    func_0208f8d8();
+    M2C_UNK FadeMusicToFullVolume();
+    FadeMusicToFullVolume();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 0;
 }
@@ -268,21 +275,24 @@ func_0208f7d0(GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255));
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-s32 func_02093458(void *arg0) {
+/* Map-script command: while no message box is up, duck the music to half volume
+ * when the track now playing is the current player's theme.  Advances the script
+ * one command and keeps running. */
+s32 MapScriptDuckPlayerMusic(void *state) {
 extern void **gCurrentMap;
 s32 GetPlayerMusicTrack(s32);
 if(IsMessageBoxActive()==0) {
-s32 v=func_0208f770();
-if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8c4();
+s32 v=GetCurrentMusicTrack();
+if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)&255)) FadeMusicToHalfVolume();
 }
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
-s32 func_020934b4(void *arg0) {
+s32 MapScriptRestorePlayerMusic(void *arg0) {
 extern void **gCurrentMap;
 s32 GetPlayerMusicTrack(s32);
-s32 v=func_0208f770();
-if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) func_0208f8d8();
+s32 v=GetCurrentMusicTrack();
+if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) FadeMusicToFullVolume();
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
@@ -311,14 +321,14 @@ s32 MapScriptSkipIfArmyDiffers(void *script) {
 }
 
 s32 func_02093564(void *arg0) {
-    M2C_UNK func_02086ae4(s16, M2C_UNK);
-    func_02086ae4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 1);
+    M2C_UNK SetEventFlag(s16, M2C_UNK);
+    SetEventFlag(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 1);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
 
 s32 func_02093590(void *arg0) {
-    func_02086ae4(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
+    SetEventFlag(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8), 0);
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -449,15 +459,20 @@ s32 func_02093960(void *arg0) {
  return 0;
 }
 
-s32 func_02093980(void *arg0) {
-extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
-s32 y=M2C_FIELD(p,s16 *,10);
-s32 x=M2C_FIELD(p,s16 *,8);
-void *base=*gCurrentMap;
-u8 id=M2C_FIELD((u8 *)base+(x+M2C_FIELD((u8 *)base+y*2,u16 *,0x3758)),u8 *,0x508);
-if(id) {RefreshMapView(RemoveUnit(id));}
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script command: silently remove the unit standing on the command's tile
+ * (no removal effect) and refresh the map view, then advance the script. */
+s32 MapScriptRemoveUnitAtCellNoEffect(void *script) {
+    extern void **gCurrentMap;
+    void *command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    s32 tileY = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1);
+    s32 tileX = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0);
+    void *map = *gCurrentMap;
+    u8 unitId = M2C_FIELD((u8 *)map + (tileX + M2C_FIELD((u8 *)map + tileY * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
+    if (unitId) {
+        RefreshMapView(RemoveUnit(unitId));
+    }
+    M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 /* Battle event command: remove units from the current player's group, optionally

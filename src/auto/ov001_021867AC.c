@@ -146,12 +146,15 @@ if(M2C_FIELD(gOv001RegionMenu,u8 *,OV001_REGION_FADE_OUT))Ov001_SetSlideStep(tas
 else Ov001_SetSlideStep(task,Ov001_RegionMenuCloseFinish);
 }
 
-void Ov001_RegionMenuFadeOutStep(s32 a) {
-extern void *gOv001RegionMenu;
-void Ov001_RegionMenuCloseFinish();
-M2C_FIELD(gOv001RegionMenu,s8 *,26)++;
-GX_SetBlendY(0x4000050,M2C_FIELD(gOv001RegionMenu,s8 *,26));
-if(M2C_FIELD(gOv001RegionMenu,s8 *,26)>=0)Ov001_SetSlideStep(a,Ov001_RegionMenuCloseFinish);
+/* Final close step of the region column when it fades out: raise the blend level
+ * one step a frame until it is back to 0 (fully opaque), then hand the task to the
+ * close-finish step. */
+void Ov001_RegionMenuFadeOutStep(s32 task) {
+    extern void *gOv001RegionMenu;
+    void Ov001_RegionMenuCloseFinish();
+    M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND)++;
+    GX_SetBlendY(GX_BLDCNT_MAIN, M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND));
+    if (M2C_FIELD(gOv001RegionMenu, s8 *, OV001_REGION_BLEND) >= 0) Ov001_SetSlideStep(task, Ov001_RegionMenuCloseFinish);
 }
 
 #pragma opt_strength_reduction off

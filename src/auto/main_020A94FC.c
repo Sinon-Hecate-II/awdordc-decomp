@@ -62,23 +62,25 @@ void func_020a9774(void *arg0, s16 arg1, s16 arg2, s8 arg3, s32 arg4) {
     DrawTextSprite(arg0);
 }
 
-M2C_UNK ScrollBar_PlaceThumb(void *arg0, s16 arg1, s16 arg2) {
+/* Clamp a requested thumb position into the thumb's travel range, store it as the
+   thumb's x/y, and store its offsets from the track start. */
+M2C_UNK ScrollBar_PlaceThumb(void *thumb, s16 posX, s16 posY) {
     s32 x;
     s32 y;
-    x = M2C_FIELD(arg0, s16 *, 0x14);
-    if (arg1 <= x) {
-        x = M2C_FIELD(arg0, s16 *, 0x12);
-        if (arg1 >= x) x = arg1;
+    x = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MAX_X);
+    if (posX <= x) {
+        x = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MIN_X);
+        if (posX >= x) x = posX;
     }
-    M2C_FIELD(arg0, s16 *, 8) = x;
-    y = M2C_FIELD(arg0, s16 *, 0x18);
-    if (arg2 <= y) {
-        y = M2C_FIELD(arg0, s16 *, 0x16);
-        if (arg2 >= y) y = arg2;
+    M2C_FIELD(thumb, s16 *, SCROLLTHUMB_X) = x;
+    y = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MAX_Y);
+    if (posY <= y) {
+        y = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MIN_Y);
+        if (posY >= y) y = posY;
     }
-    M2C_FIELD(arg0, s16 *, 0xA) = y;
-    M2C_FIELD(arg0, s16 *, 0xC) = M2C_FIELD(arg0, s16 *, 8) - M2C_FIELD(arg0, s16 *, 0x12);
-    M2C_FIELD(arg0, s16 *, 0xE) = M2C_FIELD(arg0, s16 *, 0xA) - M2C_FIELD(arg0, s16 *, 0x16);
+    M2C_FIELD(thumb, s16 *, SCROLLTHUMB_Y) = y;
+    M2C_FIELD(thumb, s16 *, SCROLLTHUMB_DX) = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_X) - M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MIN_X);
+    M2C_FIELD(thumb, s16 *, SCROLLTHUMB_DY) = M2C_FIELD(thumb, s16 *, SCROLLTHUMB_Y) - M2C_FIELD(thumb, s16 *, SCROLLTHUMB_MIN_Y);
 }
 
 /* Drag a scrollbar's thumb: when the thumb is enabled and the touch begins on

@@ -325,7 +325,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     void MIi_CpuCopy32(s32, void *, s32);
     void *GetConnection(void);
     s32 gt2AddressToString(s32, s32, s32);
-    s32 func_02061638(s32, s32, s32, void *, s32);
+    s32 SBServerListSendToAddress(s32, s32, s32, void *, s32);
     extern PacketTag5 sQr2MatchCommandMagic;
     SendPacket packet;
     u8 e, d, c, b, a;
@@ -358,7 +358,7 @@ s32 func_0203f20c(s32 command, s32 dest, s32 mode, s32 payload, s32 count) {
     i = 0;
     do {
         context = GetConnection();
-        result = func_02061638(M2C_FIELD(context, s32 *, 0xe4), gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
+        result = SBServerListSendToAddress(M2C_FIELD(context, s32 *, 0xe4), gt2AddressToString(dest, 0, 0), mode, tag, packet.length + 20);
         if (result == 0) {
             return result;
         }

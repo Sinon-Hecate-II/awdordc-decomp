@@ -19,21 +19,23 @@ extern u8 sSbReleaseStrName[];
 extern void *sSbQueryErrorPrefix;
 extern s32 sSbNoServer[2];
 
-s32 SBServerListCompareInt(s32 *arg0, s32 *arg1) {
+/* Server-list sort callback for an integer key: compare the two servers' values of
+ * the list's sort key, negated when the list sorts ascending. */
+s32 SBServerListCompareInt(s32 *serverA, s32 *serverB) {
     s32 SBServerGetIntValue(s32, s32, M2C_UNK);
     extern void *gSBServerListSorting;
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 var_r0;
+    s32 valueA;
+    s32 valueB;
+    s32 result;
 
-    temp_r4 = *arg0;
-    temp_r5 = *arg1;
-    temp_r4 = SBServerGetIntValue(temp_r4, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), 0);
-    var_r0 = temp_r4 - SBServerGetIntValue(temp_r5, M2C_FIELD(gSBServerListSorting, s32 *, 0x498), 0);
-    if (M2C_FIELD(gSBServerListSorting, s32 *, 0x49C) == 0) {
-        var_r0 = -var_r0;
+    valueA = *serverA;
+    valueB = *serverB;
+    valueA = SBServerGetIntValue(valueA, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0);
+    result = valueA - SBServerGetIntValue(valueB, M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_FIELD), 0);
+    if (M2C_FIELD(gSBServerListSorting, s32 *, SB_SLIST_SORT_DESC) == 0) {
+        result = -result;
     }
-    return var_r0;
+    return result;
 }
 
 /* Server-list sort callback for a floating-point key: compare the two servers'
@@ -156,25 +158,27 @@ s32 SBServerListGetServerAt(void *arg0) {
     return *Vector_GetItem(M2C_FIELD(arg0, s32 *, 4));
 }
 
-void func_02061bdc(void *arg0) {
-    M2C_UNK func_02060a60(s32 *);
-    s32 func_02060cc4(s32);
-    s32 sp0;
-    s32 var_r5;
+/* Free every server the list removed earlier, then empty the list's removed-server
+ * chain. */
+void SBServerListFreeRemovedServers(void *list) {
+    M2C_UNK SBServerFree(s32 *);
+    s32 SBServerGetNext(s32);
+    s32 server;
+    s32 current;
 
-    var_r5 = M2C_FIELD(arg0, s32 *, 0x5D0);
-    if (var_r5 == 0) {
+    server = M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS);
+    if (server == 0) {
         return;
     }
-    sp0 = var_r5;
-    if (var_r5 != 0) {
+    current = server;
+    if (server != 0) {
         do {
-            var_r5 = func_02060cc4(var_r5);
-            func_02060a60(&sp0);
-            sp0 = var_r5;
-        } while (var_r5 != 0);
+            server = SBServerGetNext(server);
+            SBServerFree(&current);
+            current = server;
+        } while (server != 0);
     }
-    M2C_FIELD(arg0, s32 *, 0x5D0) = 0;
+    M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS) = 0;
 }
 
 s32 func_02061c34(void *a) {
@@ -183,7 +187,7 @@ s32 i,n;
 n=Vector_GetCount(M2C_FIELD(a,s32 *,4));
 for(i=0;i<n;i++)func_02061b38(a,*Vector_GetItem(M2C_FIELD(a,s32 *,4),i));
 func_02048b74(M2C_FIELD(a,s32 *,4));
-func_02061bdc(a);
+SBServerListFreeRemovedServers(a);
 }
 
 void func_02061c8c(void *arg0) {

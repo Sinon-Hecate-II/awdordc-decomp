@@ -1,15 +1,18 @@
 /* 16 functions from 0x020232B8 to 0x02024260 (main), found by ds-decomp. */
 #include "common.h"
 
-M2C_UNK TlsComputeMasterSecret(void *p) {
- M2C_UNK TlsComputeMasterSecretChunk(void *,void *,void *);
- M2C_UNK MI_CpuCopy8(s32,s32,u32);
- extern M2C_UNK data_020fb048,data_020fb04c,data_020fb050;
- u8 buf[48];
- TlsComputeMasterSecretChunk(buf,&data_020fb048,p);
- TlsComputeMasterSecretChunk(buf+16,&data_020fb04c,p);
- TlsComputeMasterSecretChunk(buf+32,&data_020fb050,p);
- return MI_CpuCopy8((s32)buf,(s32)p,48);
+/* Derive the 48-byte TLS master secret: run the three SSLv3 PRF labels ("A",
+ * "BB", "CCC") through TlsComputeMasterSecretChunk, concatenating the 16-byte
+ * results in `buf`, then copy them into the session's master secret. */
+M2C_UNK TlsComputeMasterSecret(void *tls) {
+    M2C_UNK TlsComputeMasterSecretChunk(void *, void *, void *);
+    M2C_UNK MI_CpuCopy8(s32, s32, u32);
+    extern u8 sTlsMasterSecretLabelA[], sTlsMasterSecretLabelBb[], sTlsMasterSecretLabelCcc[];
+    u8 buf[TLS_MASTER_SECRET_SIZE];
+    TlsComputeMasterSecretChunk(buf, sTlsMasterSecretLabelA, tls);
+    TlsComputeMasterSecretChunk(buf + 16, sTlsMasterSecretLabelBb, tls);
+    TlsComputeMasterSecretChunk(buf + 32, sTlsMasterSecretLabelCcc, tls);
+    return MI_CpuCopy8((s32)buf, (s32)tls, TLS_MASTER_SECRET_SIZE);
 }
 
 /* Derives the TLS record-layer keys: for each direction it runs the master secret

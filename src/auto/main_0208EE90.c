@@ -243,9 +243,9 @@ s32 OS_GetIrqHandler(s32);
 void OS_SetIrqHandler(s32,s32);
 void OS_DisableIrqMask(s32);
 void GX_SetVBlankIrq(s32);
-void func_0208fce8(void);
+void ShutdownSound(void);
 void func_02088724(void);
-void func_02037854(s32);
+void SetNasServerEnvironment(s32);
 void *func_020e3580(s32,s32);
 void Ov001_RunFrontEnd(void *,s32,s32);
 M2C_UNK HeapFreeBlock();
@@ -260,9 +260,9 @@ savedFifoHandler=OS_GetIrqHandler(1);
 OS_SetIrqHandler(1,0);
 OS_DisableIrqMask(1);
 GX_SetVBlankIrq(0);
-func_0208fce8();
+ShutdownSound();
 func_02088724();
-func_02037854(2);
+SetNasServerEnvironment(2);
 workBuffer=func_020e3580(0x40000,0x20);
 if(GetLanguageIndex()==0) Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0x10);
 else Ov001_RunFrontEnd(workBuffer,GetLanguageIndex(),0);
@@ -301,7 +301,7 @@ s32 func_0208f75c(s32 arg0) {
     return arg0;
 }
 
-s32 func_0208f770(void) {
+s32 GetCurrentMusicTrack(void) {
     extern s32 data_02102910;
     return data_02102910;
 }
@@ -352,7 +352,7 @@ void func_0208f820(void *arg0) {
 }
 
 void func_0208f844(s32 arg0) {
-    void func_02090248(s32);
+    void FadeOutMusic(s32);
     void *CreateSpriteFromClass(M2C_UNK *, s32);
     extern s32 data_02102910;
     extern M2C_UNK data_02102934;
@@ -362,7 +362,7 @@ void func_0208f844(s32 arg0) {
     if (arg0 == 0) {
         arg0 = 1;
     }
-    func_02090248(arg0);
+    FadeOutMusic(arg0);
     M2C_FIELD(CreateSpriteFromClass(&data_02102934, 7), s16 *, 0x6C) = (s16)arg0;
 }
 
@@ -371,7 +371,7 @@ M2C_UNK func_0208f890(void) {
     func_0208f844(0x1E);
 }
 
-u8 func_0208f8a0(void) {
+u8 IsMusicFadingOut(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_02102934;
     u8 var_r0;
@@ -384,12 +384,12 @@ u8 func_0208f8a0(void) {
     return var_r0;
 }
 
-void func_0208f8c4(void) {
+void FadeMusicToHalfVolume(void) {
     M2C_UNK func_0208f8ec(M2C_UNK, M2C_UNK);
     func_0208f8ec(0x40, 0x1E);
 }
 
-void func_0208f8d8(void) {
+void FadeMusicToFullVolume(void) {
     func_0208f8ec(0x7F, 0x1E);
 }
 
@@ -397,11 +397,11 @@ s32 func_0208f8ec(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_Fa
 
 void func_0208f904(void){
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK*);
- void func_02090248(s32);
+ void FadeOutMusic(s32);
  extern M2C_UNK data_02102934,data_0210295c;
  extern s32 data_02102910;
  DeleteSpriteObjectsOfClass(&data_02102934);DeleteSpriteObjectsOfClass(&data_0210295c);
- func_02090248(0);data_02102910=0xffff;
+ FadeOutMusic(0);data_02102910=0xffff;
 }
 
 void func_0208f940(void *arg0) {
@@ -528,7 +528,7 @@ void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){
 void InitSound(void) {
     void OpenSoundPlayer(void);
     void func_0208fc4c(void);
-    extern M2C_UNK gMusicSequencePlayer, gSoundEffectPlayer, gMusicSoundPlayer, data_02157850, gSoundDriverState, gSoundFrameIds;
+    extern M2C_UNK gMusicSequencePlayer, gSoundEffectPlayer, gMusicSoundPlayer, gSoundEffectSlotHandles, gSoundDriverState, gSoundFrameIds;
     extern s32 gFrameCounter;
     s32 i;
     u8 *handle;
@@ -537,7 +537,7 @@ void InitSound(void) {
     func_0202acb0(&gMusicSequencePlayer);
     func_0202acb0(&gSoundEffectPlayer);
     func_0202d9c0(&gMusicSoundPlayer);
-    for (handle = (u8 *)&data_02157850, i = 0; i < SOUND_SLOT_COUNT; i++, handle += 4) {
+    for (handle = (u8 *)&gSoundEffectSlotHandles, i = 0; i < SOUND_SLOT_COUNT; i++, handle += 4) {
         func_0202acb0(handle);
     }
     M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) = 0;
@@ -577,22 +577,25 @@ void OpenSoundPlayer(void){
  M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED)=1;func_020903b0();
 }
 
-void func_0208fce8(void) {
+/* Shut the game's sound system down: reset the sound engine, destroy the driver's
+   sound heap and, when the raw heap block is still allocated, release it and
+   clear the state. */
+void ShutdownSound(void) {
     M2C_UNK func_0202ac70(M2C_UNK);
     M2C_UNK Sound_DestroyHeap(s32);
     M2C_UNK HeapFreeBlock();
     extern M2C_UNK gSoundDriverState;
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
     func_0202ac70(0);
-    Sound_DestroyHeap(M2C_FIELD(&gSoundDriverState, s32 *, 0x14));
-    M2C_FIELD(&gSoundDriverState, u8 *, 0) = 0U;
-    if (M2C_FIELD(&gSoundDriverState, s32 *, 0x14) == 0) {
+    Sound_DestroyHeap(M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP));
+    M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) = 0U;
+    if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP) == 0) {
         return;
     }
     HeapFreeBlock();
-    M2C_FIELD(&gSoundDriverState, s32 *, 0x14) = 0;
+    M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP) = 0;
 }
 
 void func_0208fd40(M2C_UNK *a,s32 b,u32 c){

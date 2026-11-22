@@ -30,7 +30,7 @@ void func_020e4490(void) {
     M2C_UNK func_020e31f0();
     M2C_UNK Reset3DSpriteOam();
     M2C_UNK func_0208232c();
-    M2C_UNK func_0209daec();
+    M2C_UNK Reset3DSpriteListsOnBothEngines();
     M2C_UNK func_020e3448();
     M2C_UNK func_02080bd4();
     M2C_UNK func_020883bc();
@@ -79,7 +79,7 @@ void func_020e4490(void) {
         var_r8 += 1;
     } while (var_r8 < 2);
     gCur3DSpriteEngine = temp_r7;
-    func_0209daec();
+    Reset3DSpriteListsOnBothEngines();
     func_020e3448();
     func_02080bd4();
     func_020883bc();
@@ -324,14 +324,14 @@ void func_020e4870(s32 arg0) {
 }
 #pragma peephole reset
 void func_020e49ec(void) {
-    M2C_UNK func_02086ae4(s32, M2C_UNK);
+    M2C_UNK SetEventFlag(s32, M2C_UNK);
     M2C_UNK ResetMapProgress();
     s32 var_r5;
 
     ResetMapProgress();
     var_r5 = 0x60;
     do {
-        func_02086ae4(var_r5, 0);
+        SetEventFlag(var_r5, 0);
         var_r5 += 1;
     } while (var_r5 < 0xA0);
 }

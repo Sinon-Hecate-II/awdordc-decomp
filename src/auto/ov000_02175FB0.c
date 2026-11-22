@@ -127,20 +127,23 @@ void Ov000Info_DrawFullPanel(M2C_UNK arg0) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_ov000_02176a9c(M2C_UNK arg0) {
+/* Blink refresh of the ov000 unit info panel on the sub engine: draw the
+ * backdrop and the unit's stats (but not the tile frame), then mark layers 2
+ * and 0 dirty. */
+void Ov000Info_DrawBlinkPanel(M2C_UNK entry) {
     M2C_UNK DrawInfoPanelBackdrop();
     M2C_UNK Ov000Info_DrawUnitPanel(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
+    void *savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     DrawInfoPanelBackdrop();
-    Ov000Info_DrawUnitPanel(arg0);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
-    gCur3DSpriteEngine = temp_r4;
+    Ov000Info_DrawUnitPanel(entry);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER0);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 #pragma opt_strength_reduction off

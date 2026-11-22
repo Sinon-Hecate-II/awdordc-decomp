@@ -118,11 +118,11 @@ s32 func_02093f98(void *arg0) {
 }
 
 s32 func_02093fb8(void *arg0) {
-    M2C_UNK func_020a4af0(s16, s16, s32);
+    M2C_UNK AddAreaAttackOrder(s16, s16, s32);
     void *temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, void **, 4);
-    func_020a4af0(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
+    AddAreaAttackOrder(M2C_FIELD(temp_r2, s16 *, 8), M2C_FIELD(temp_r2, s16 *, 0xA), M2C_FIELD(temp_r2, s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 1;
 }
@@ -429,7 +429,7 @@ void ResetDialogUI(void) {
  ptr=(u8*)&gDialogSequences;
  for(i=0;i<8;i++,ptr+=0x18)*(s32*)ptr=0;
  for(i=0;i<8;) { ptr=Get3DSpriteManager(); ptr+=(u32)i*4; i++; M2C_FIELD(ptr,s32*,0x24)=0; }
- func_02086ac0();func_020947ac();func_02095fd4();
+ ClearEventFlagsLow();func_020947ac();func_02095fd4();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
  SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
@@ -743,7 +743,7 @@ void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
 /* Builds a battle action entry for the given slot and submits it. */
 void func_02094c90(s32 slot, s32 arg1) {
  extern s32 gCur3DSpriteEngine;
- s32 IsMessageBoxActive(); s32 HighlightScenePanel(); s32 GetMenuCursor(); s32 func_02091e70();
+ s32 IsMessageBoxActive(); s32 HighlightScenePanel(); s32 GetMenuCursor(); s32 GetScenePanelTextLineX();
  void *GetScenePanelState(s32);
  s32 value; void *ptrA,*ptrB,*ptrC,*ptrD;
  if(IsMessageBoxActive()!=0)return;
@@ -751,7 +751,7 @@ void func_02094c90(s32 slot, s32 arg1) {
  HideMenuCursor(GetMenuCursor());
  if(GetMenuCursor()<0)return;
  if(GetMenuCursor()>=3)return;
- value=func_02091e70(3);
+ value=GetScenePanelTextLineX(3);
  ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=GetScenePanelState(3);ptrD=GetScenePanelState(3);
  func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(GetScenePanelState(3),u16*,4));
 }

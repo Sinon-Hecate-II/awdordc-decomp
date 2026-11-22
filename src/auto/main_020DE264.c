@@ -49,7 +49,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     extern M2C_UNK data_0212d440;
     extern M2C_UNK data_0212d450;
     s32 GetPeerRatingMatchQuality(s32, void *);
-    s32 func_020de5b0(M2C_UNK);
+    s32 WaitForBrowsedSession(M2C_UNK);
     void func_020de610(void);
 
     void *savedEngine = gCur3DSpriteEngine;
@@ -107,7 +107,7 @@ M2C_UNK SetupScene(M2C_UNK setup, M2C_UNK mode) {
     updateFn=0;
     switch(M2C_FIELD(setup,s32 *,0x3c)) {
     case 0: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)GetPeerRatingMatchQuality;break;
-    case 1: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)func_020de5b0;break;
+    case 1: M2C_FIELD(setup,u16 *,0x4a)=10;updateFn=(s32)WaitForBrowsedSession;break;
     }
 
     M2C_FIELD((void *)setup, u8 *, 0x41) = 0;
@@ -149,19 +149,22 @@ s32 GetPeerRatingMatchQuality(s32 playerId, void *scene) {
     return quality;
 }
 
-s32 func_020de5b0(M2C_UNK arg0) {
+/* Per-frame matchmaking wait: -1 until the local player is online and the
+ * browsed server reports user_param 1; then read its rating (defaulting to
+ * RATING_DEFAULT) and return the maximum match quality. */
+s32 WaitForBrowsedSession(M2C_UNK playerId) {
     M2C_UNK GetBrowsedServerValue(M2C_UNK, M2C_UNK *, s32);
     void *GetLocalPlayerStatus();
-    extern M2C_UNK data_0212c5e0;
-    extern M2C_UNK data_0212c5d0;
-    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
+    extern M2C_UNK sQr2UserParamKey;
+    extern M2C_UNK sQr2RatingKey;
+    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, LOCAL_STATUS_OPTIONS) & LOCAL_OPTION_ONLINE)) {
         return -1;
     }
-    if (GetBrowsedServerValue(arg0, &data_0212c5e0, 1) != 1) {
+    if (GetBrowsedServerValue(playerId, &sQr2UserParamKey, 1) != 1) {
         return -1;
     }
-    GetBrowsedServerValue(arg0, &data_0212c5d0, 0x5DC000);
-    return 0x7FFFFF;
+    GetBrowsedServerValue(playerId, &sQr2RatingKey, RATING_DEFAULT);
+    return MATCH_QUALITY_MAX;
 }
 
 void func_020de610(void) {

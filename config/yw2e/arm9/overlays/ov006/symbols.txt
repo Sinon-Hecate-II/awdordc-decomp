@@ -92,7 +92,7 @@ func_ov006_0221791c kind:function(arm,size=0x2c) addr:0x0221791c
 BuildMapTransferPlayerList kind:function(arm,size=0x6c) addr:0x02217948
 func_ov006_022179b4 kind:function(arm,size=0x154) addr:0x022179b4
 func_ov006_02217b08 kind:function(arm,size=0x1c) addr:0x02217b08
-func_ov006_02217b24 kind:function(arm,size=0x58) addr:0x02217b24
+ShowMapTransferChosenName kind:function(arm,size=0x58) addr:0x02217b24
 func_ov006_02217b7c kind:function(arm,size=0x28) addr:0x02217b7c
 func_ov006_02217ba4 kind:function(arm,size=0x4c) addr:0x02217ba4
 func_ov006_02217bf0 kind:function(arm,size=0x1c) addr:0x02217bf0
@@ -111,7 +111,7 @@ DrawMapCodeInfo kind:function(arm,size=0xa8) addr:0x02217e78
 func_ov006_02217f20 kind:function(arm,size=0xd8) addr:0x02217f20
 BuildJoinableMapList kind:function(arm,size=0x130) addr:0x02217ff8
 func_ov006_02218128 kind:function(arm,size=0x7c) addr:0x02218128
-func_ov006_022181a4 kind:function(arm,size=0x5c) addr:0x022181a4
+ClearListedMapSavedFlags kind:function(arm,size=0x5c) addr:0x022181a4
 func_ov006_02218200 kind:function(arm,size=0x100) addr:0x02218200
 func_ov006_02218300 kind:function(arm,size=0x28) addr:0x02218300
 func_ov006_02218328 kind:function(arm,size=0x18) addr:0x02218328
@@ -172,7 +172,7 @@ data_ov006_02218aa8 kind:data(any) addr:0x02218aa8
 data_ov006_02218b94 kind:data(any) addr:0x02218b94 ambiguous
 data_ov006_02218ba8 kind:data(any) addr:0x02218ba8
 data_ov006_02218bd8 kind:data(any) addr:0x02218bd8
-data_ov006_02218cd8 kind:data(any) addr:0x02218cd8
+sMapTransferNameBreak kind:data(any) addr:0x02218cd8
 data_ov006_02218cdc kind:data(any) addr:0x02218cdc
 sMapCodeDebugFormat kind:data(any) addr:0x02218dd4
 gMapCodeString kind:bss addr:0x02218e00

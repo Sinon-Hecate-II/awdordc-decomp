@@ -424,8 +424,8 @@ void StartNextMap(void *p) {
 
 void func_ov007_0221c4d4(void) {
  extern s32 *gCurrentMap;
- s32 func_020c7ea8(s32); s32 func_020be4c0(s32); void SetUiMessageText(u32);
- if(func_020be4c0(func_020c7ea8(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))==0){SetUiMessageText(0xC000034C);return;}
+ s32 GetCampaignMapSaveType(s32); s32 func_020be4c0(s32); void SetUiMessageText(u32);
+ if(func_020be4c0(GetCampaignMapSaveType(M2C_FIELD(*gCurrentMap,u16 *,0x5142)))==0){SetUiMessageText(0xC000034C);return;}
  SetUiMessageText(0);
 }
 

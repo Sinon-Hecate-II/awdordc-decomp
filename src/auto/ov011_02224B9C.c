@@ -417,9 +417,29 @@ IntroMenu011 *InitIntroMenu(IntroMenu011 *menu) {
     return menu;
 }
 
-void *func_ov011_02225704(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
+void *IntroMenu_Destroy(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
 
-void *func_ov011_02225758(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10); MemFree(arg0); return arg0; }
+/* Intro-menu vtable destroy-and-free entry: reset the object's vtable, delete its
+ * three entry sprites, release UI graphics bank 10 and free the object. */
+void *IntroMenu_DestroyAndFree(IntroMenu011 *menu) {
+    M2C_UNK DeleteSpriteObject(void *);
+    M2C_UNK FreeUiGraphicsBank(s32);
+    extern M2C_UNK gIntroMenuVTable;
+    register s32 i;
+    menu->vtable = &gIntroMenuVTable;
+    i = 0;
+    do {
+        void *p = menu->entries[i];
+        if (p) {
+            DeleteSpriteObject(p);
+            menu->entries[i] = 0;
+        }
+        i++;
+    } while (i < 3);
+    FreeUiGraphicsBank(10);
+    MemFree(menu);
+    return menu;
+}
 
 void func_ov011_022257b4(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x50) = (s32) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 4);

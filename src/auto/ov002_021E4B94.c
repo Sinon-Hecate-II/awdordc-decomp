@@ -124,19 +124,21 @@ void func_ov002_021e5974(s32 *arg0, s32 *arg1) {
     *arg1 = temp_r3;
 }
 
-void MirrorTilemapHorizontally(u16 *arg0, s32 arg1) {
+/* Flips a tilemap of `rows` 32-tile rows left to right in place: each row's tiles are
+   reversed and their horizontal-flip bit toggled, so the whole map reads mirrored. */
+void MirrorTilemapHorizontally(u16 *tiles, s32 rows) {
     s32 j;
     s32 i;
     u16 a;
     u16 b;
-    for (i = 0; i < arg1; i++) {
+    for (i = 0; i < rows; i++) {
         for (j = 0; j < 16; j++) {
-            a = arg0[31 - j];
-            b = arg0[j];
-            arg0[j] = a ^ 0x400;
-            arg0[31 - j] = b ^ 0x400;
+            a = tiles[31 - j];
+            b = tiles[j];
+            tiles[j] = a ^ FRAME_TILE_FLIP_H;
+            tiles[31 - j] = b ^ FRAME_TILE_FLIP_H;
         }
-        arg0 += 32;
+        tiles += 32;
     }
 }
 

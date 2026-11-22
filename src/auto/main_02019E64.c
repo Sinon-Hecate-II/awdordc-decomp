@@ -351,7 +351,16 @@ s32 IsLocalDestinationAddress(s32 addr) {
 
 s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
 
-void SendLinkFrame(u8 *a,s32 b,s32 c,s32 d){void MI_CpuCopy8(void *,void *,s32);s32 WFC_SendPacket(void *,void *,s32,s32,s32);extern M2C_UNK gLinkHeaderTemplate,gNetStack;MI_CpuCopy8(&gLinkHeaderTemplate,a+6,6);M2C_FIELD(&gNetStack,u8 *,0)=WFC_SendPacket(a,a+6,b-6,c,d)<0;}
+/* Send one link-layer frame: rebuild its SNAP header from the shared template and
+ * hand the frame to the WFC session, recording in the network stack whether the
+ * send failed (a negative WFC result). */
+void SendLinkFrame(u8 *frame, s32 frameLen, s32 extraData, s32 extraLen) {
+    void MI_CpuCopy8(void *, void *, s32);
+    s32 WFC_SendPacket(void *, void *, s32, s32, s32);
+    extern M2C_UNK gLinkHeaderTemplate, gNetStack;
+    MI_CpuCopy8(&gLinkHeaderTemplate, frame + 6, 6);
+    M2C_FIELD(&gNetStack, u8 *, NETSTACK_SEND_FAILED) = WFC_SendPacket(frame, frame + 6, frameLen - 6, extraData, extraLen) < 0;
+}
 
 /* Append a link-layer frame to the network stack's transmit ring.  The record
  * is [u16 length][6-byte destination][6-byte source][frame+6 ..], where the

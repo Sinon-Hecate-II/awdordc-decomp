@@ -175,23 +175,26 @@ s32 TerrainAnimTotalFrames(u8 *arg0) {
     return var_r1;
 }
 
-s32 GetTerrainAnimFrame(u8 *arg0) {
+/* Index of the frame the terrain kind's frame list shows on this game frame: walk
+ * its entries' durations until the frame counter's position falls inside one. */
+s32 GetTerrainAnimFrame(u8 *frameList) {
     s64 U32DivideRem(s32, s32);
     extern s32 gFrameCounter;
-    s32 var_r1;
-    s32 var_r4;
-    u8 *var_r5;
-    u8 var_r0;
-    var_r5 = arg0;
-    var_r4 = 0;
-    var_r1 = U32DivideRem(gFrameCounter, TerrainAnimTotalFrames(arg0)) >> 32;
-    var_r0 = *var_r5;
-    while (var_r0 != 0) {
-        if (var_r1 <= var_r0) return var_r4;
-        var_r1 -= var_r0;
-        var_r5 += 3;
-        var_r0 = *var_r5;
-        var_r4++;
+    s32 remaining;
+    s32 index;
+    u8 *frame;
+    u8 duration;
+
+    frame = frameList;
+    index = 0;
+    remaining = U32DivideRem(gFrameCounter, TerrainAnimTotalFrames(frameList)) >> 32;
+    duration = *frame;
+    while (duration != 0) {
+        if (remaining <= duration) return index;
+        remaining -= duration;
+        frame += 3;
+        duration = *frame;
+        index++;
     }
     return 0;
 }

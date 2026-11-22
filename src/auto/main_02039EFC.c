@@ -98,7 +98,7 @@ void func_0203a2b4(void) {
     extern M2C_UNK gNasLogin;
     s32 func_02032b98(void);
     void Nas_GetResult(void *);
-    void func_02032b10(void);
+    void FreeNasConnection(void);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
     void StringCopy(void *, M2C_UNK);
@@ -123,7 +123,7 @@ void func_0203a2b4(void) {
         Nas_GetResult(buf + 0x20C);
         StringCopy((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x48, (M2C_UNK)(buf + 0x200 + 0x56));
         StringCopy((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x148, (M2C_UNK)(buf + 0x300 + 0x83));
-        func_02032b10();
+        FreeNasConnection();
         HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24), 0);
         M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24) = 0;
         if (func_02032370(M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), void **, 0x1C))) {
@@ -149,12 +149,12 @@ void func_0203a2b4(void) {
         q = U64Divide(diff << 6, 0x82EAULL);
         if (q > 0x2710ULL) {
             Nas_GetResult(buf + 0x48);
-            func_02032b10();
+            FreeNasConnection();
             HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24), 0);
             M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24) = 0;
             ReportNasLoginError(2, *(s32 *)(buf + 0x48));
         } else {
-            func_02032b10();
+            FreeNasConnection();
             MI_CpuFill8(buf, 0, 0x48);
             n = Utf16StringLength(M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x10));
             MI_CpuCopy8(M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), s32 *, 0x10), buf, n * 2 + 2);
@@ -437,15 +437,19 @@ if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,0x18))return;
 gpiGetInfo(a,M2C_FIELD(b,s32 *,0),0,0,&func_0203b9a8,0);
 }
 
-s32 func_0203ad70(M2C_UNK arg0, void *arg1) {
+/* Handle the GameSpy buddy-add authorization message: when the player-info
+ * message's text is the server's "I have authorized your request to add me to
+ * your list", fetch the sender's profile through HandleGpiPlayerInfo and report
+ * the message handled. */
+s32 HandleBuddyAddAuthorizedMessage(s32 conn, void *message) {
     M2C_UNK gpiGetInfo(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
     s32 StringCompare(s32, M2C_UNK *);
-    extern M2C_UNK data_020fc8b4;
+    extern M2C_UNK sBuddyAddAuthorized;
     extern M2C_UNK HandleGpiPlayerInfo;
-    if (StringCompare(M2C_FIELD(arg1, s32 *, 8), &data_020fc8b4) != 0) {
+    if (StringCompare(M2C_FIELD(message, s32 *, GPI_PLAYER_INFO_TEXT), &sBuddyAddAuthorized) != 0) {
         return 0;
     }
-    gpiGetInfo(arg0, M2C_FIELD(arg1, s32 *, 0), 0, 0, &HandleGpiPlayerInfo, 0);
+    gpiGetInfo(conn, M2C_FIELD(message, s32 *, GPI_PLAYER_INFO_ID), 0, 0, &HandleGpiPlayerInfo, 0);
     return 1;
 }
 

@@ -54,8 +54,8 @@ void func_ov004_022130f4(void) {
 }
 
 void func_ov004_02213100(void) {
-    M2C_UNK func_ov004_0221285c();
-    func_ov004_0221285c();
+    M2C_UNK ResetSub3DSpriteBankState();
+    ResetSub3DSpriteBankState();
 }
 
 void func_ov004_0221310c(void) {
@@ -203,23 +203,25 @@ s32 IsPlayerOneTankWounded(void) {
     return 0;
 }
 
-u8 func_ov004_02213404(void) {
+/* Battle-script condition: true when a unit stands on tile (5,5) and its HP
+ * (the low seven bits of the unit record's health word) is 90 or below. */
+u8 IsUnitOnTileFiveFiveWounded(void) {
     extern void **gCurrentMap;
-    u8 temp_r1;
-    u8 var_r0;
-    void *temp_r2;
+    u8 unitId;
+    u8 wounded;
+    void *map;
 
-    temp_r2 = *gCurrentMap;
-    temp_r1 = M2C_FIELD((temp_r2 + (M2C_FIELD(temp_r2, u16 *, 0x3762) + 5)), u8 *, 0x508);
-    if (temp_r1 == 0) {
+    map = *gCurrentMap;
+    unitId = M2C_FIELD((map + (M2C_FIELD(map, u16 *, MAP_ROW_OFFSETS + 5 * 2) + 5)), u8 *, MAP_CELL_UNIT_ID);
+    if (unitId == 0) {
         return 0U;
     }
-    if ((u32) ((u32) (M2C_FIELD(((temp_r1 * 0xE) + (s32) temp_r2), u16 *, 0x59AA) << 0x19) >> 0x19) <= 0x5AU) {
-        var_r0 = 1;
+    if ((u32) ((u32) (M2C_FIELD(((unitId * MAP_UNIT_STRIDE) + (s32) map), u16 *, MAP_UNIT_RECORDS + MAP_UNIT_HEALTH) << 0x19) >> 0x19) <= 0x5AU) {
+        wounded = 1;
     } else {
-        var_r0 = 0;
+        wounded = 0;
     }
-    return var_r0;
+    return wounded;
 }
 
 s32 PlayerTwoHasFiveOrFewerUnits(void) {
@@ -360,15 +362,23 @@ s32 IsPlayerOneUnitWounded(void) {
     return 0;
 }
 
-s32 func_ov004_0221373c(void) {
-extern void **gCurrentMap;
-u8 *base; u32 i; u8 v;
-base=*gCurrentMap;
-if(M2C_FIELD(base,u16 *,0x52a4)==1) {
-i=M2C_FIELD(base,u16 *,0x3764)+3;
-v=(base+i)[0x1420];
-if(((s32)(v&0xe0)>>5)==1) {if(base[i]==0)return 1;}
-}return 0;
+/* Mission condition: true when the viewing player is player 1, player 1 owns the
+ * property on tile (3, 6), and no unit is visible on that tile. */
+s32 IsPlayerOnePropertyThreeSixUndefended(void) {
+    extern void **gCurrentMap;
+    u8 *base;
+    u32 cell;
+    u8 terrain;
+
+    base = *gCurrentMap;
+    if (M2C_FIELD(base, u16 *, MAP_CURRENT_PLAYER) == 1) {
+        cell = M2C_FIELD(base, u16 *, MAP_ROW_OFFSETS + 6 * 2) + 3; /* tile (3, 6) */
+        terrain = (base + cell)[MAP_CELL_TERRAIN];
+        if (((s32)(terrain & MAP_TERRAIN_OWNER_MASK) >> MAP_PROPERTY_TILE_OWNER_SHIFT) == 1) {
+            if (base[cell] == 0) return 1; /* MAP_CELL_VISIBLE_UNIT */
+        }
+    }
+    return 0;
 }
 
 /* Battle-script condition: true while event flag 0 is clear and player 2 has no

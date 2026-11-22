@@ -43,7 +43,7 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
     void OS_RestoreInterrupts(s32);
     void WFC_SetRequest(void *, s32);
     void WFC_SetState(s32);
-    s32 func_02011034(s32, s32);
+    s32 WFC_InitCommandChannel(s32, s32);
     s32 WFC_SetGeneralHandler(s32);
     s32 WFC_OpenLink(void *);
     u16 WFC_GetPlayerMask(void);
@@ -72,7 +72,7 @@ s32 WFC_ConnectStep(void *request, s32 callback) {
         OS_RestoreInterrupts(irq);
         return 1;
     }
-    switch (func_02011034(gWfcSession, (u16)M2C_FIELD((void *)gWfcSession, u32 *, WFC_SESSION_REQUEST))) {
+    switch (WFC_InitCommandChannel(gWfcSession, (u16)M2C_FIELD((void *)gWfcSession, u32 *, WFC_SESSION_REQUEST))) {
     case 3:
         WFC_SetState(11);
         OS_RestoreInterrupts(irq);

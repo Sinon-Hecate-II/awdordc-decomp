@@ -280,7 +280,7 @@ loopinc:
     }
 }
 #pragma opt_strength_reduction on
-void func_ov000_0217d850(void) {
+void ClearAiActionFlags(void) {
     extern void *gAiCommandState;
     M2C_FIELD(gAiCommandState, u8 *, 7) = (u8) (M2C_FIELD(gAiCommandState, u8 *, 7) & ~8);
 }

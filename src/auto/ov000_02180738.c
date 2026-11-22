@@ -83,7 +83,12 @@ void RunAiRole4Or6Step8Action(void) {
     FinishAiUnitAction();
 }
 
-void func_ov000_02180838(void) {
+/* Role-4/6 AI step-9 handler (case 9 of the func_ov000_021812a8 dispatcher):
+ * clear the influence maps and pick the acting unit's move action target, run
+ * the attack, run the reachable-attack search when the owning player's AI mode
+ * is not 0, then plan the reachable-attack, production-site, attack-move and
+ * port destinations and finish the unit's action. */
+void RunAiRole4Or6Step9Action(void) {
 M2C_UNK ClearAiInfluenceMaps();
 M2C_UNK SelectAiMoveActionTarget();
 M2C_UNK RunAiAttackAction();
@@ -94,12 +99,12 @@ M2C_UNK SelectPortDestination();
 M2C_UNK FinishAiUnitAction();
 M2C_UNK func_ov000_02186a18();
 extern void **gCurrentMap;
-void *temp_r3;
+void *map;
 ClearAiInfluenceMaps();
 SelectAiMoveActionTarget();
 RunAiAttackAction();
-temp_r3 = *gCurrentMap;
-if (M2C_FIELD((s8 *)temp_r3 + M2C_FIELD(temp_r3, u16 *, 0x52A4) * 0x8C, u8 *, 0x67CE) != 0) { func_ov000_02186a18(); }
+map = *gCurrentMap;
+if (M2C_FIELD((s8 *)map + M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER) * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_AI_MODE) != 0) { func_ov000_02186a18(); }
 PlanReachableAttackDestination();
 PlanProductionSiteDestination();
 SelectAttackMoveDestination();
@@ -621,7 +626,7 @@ case 4: RunAiRole4Or6Step4Action(); return;
 case 5: if(PlayerHasHq(M2C_FIELD(state,u16 *,0x52a4))==1)RunAiRole4Or6Step5Action(); else RunAiRole4Or6Step4Action(); return;
 case 7: RunAiRole4Or6Step7Action(); return;
 case 8: RunAiRole4Or6Step8Action(); return;
-case 9: func_ov000_02180838(); return;
+case 9: RunAiRole4Or6Step9Action(); return;
 case 6: func_ov000_02180738(); return;
 case 10: RunAiRole4Or6Step10Action(); return;
 }

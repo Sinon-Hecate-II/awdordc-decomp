@@ -371,7 +371,18 @@ void ReplacePlayerSelectedUnit(BattleMapUnitHead *selected, BattleMapUnitHead *r
 
 u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;u8 r;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;if(M2C_FIELD(p,u8 *,112))r=1;else r=0;return r;}
 
-u8 *GetPlayerSelectedUnit(s32 a){extern s32 *gCurrentMap;s32 base=*gCurrentMap;s32 p=base+0x67a4+140*a;u32 b;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;b=M2C_FIELD(p,u8 *,112);if(!b)return 0;return (u8 *)(base+0x59a4+14*b);}
+/* Pointer to player `player`'s selected unit record, or NULL when the player has
+ * no army yet (its sprite word is 0) or has nothing selected. */
+u8 *GetPlayerSelectedUnit(s32 player) {
+    extern s32 *gCurrentMap;
+    s32 base = *gCurrentMap;
+    s32 record = base + MAP_PLAYER_STATES + MAP_PLAYER_STRIDE * player;
+    u32 selected;
+    if (!((u32)(M2C_FIELD(record, s32 *, PLAYER_REC_SPRITE) << 24) >> 24)) return 0;
+    selected = M2C_FIELD(record, u8 *, PLAYER_REC_SELECTED_UNIT);
+    if (!selected) return 0;
+    return (u8 *)(base + MAP_UNIT_RECORDS + MAP_UNIT_STRIDE * selected);
+}
 
 s32 GetPlayerArmyVariantIfSet(s32 a) {
     extern s32 *gCurrentMap;
@@ -395,8 +406,8 @@ void func_020a3428(s32 a,u32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a
 s32 func_020a3460(s32 a){extern s32 *gCurrentMap;return (u32)(M2C_FIELD(*gCurrentMap+140*a,u32 *,0x6810)<<18)>>30;}
 
 void func_020a348c(void) {
-    M2C_UNK func_020bcf14();
-    func_020bcf14();
+    M2C_UNK CreatePlayerUnitView();
+    CreatePlayerUnitView();
 }
 
 void func_020a3498(M2C_UNK arg0) {

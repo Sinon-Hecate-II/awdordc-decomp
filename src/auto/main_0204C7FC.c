@@ -115,7 +115,7 @@ done:size=1024;ghiReceiveData(connection,buf,&size);
 void ghiSendRequest(void *request) {
   s32 ghiAppendDataToBuffer(void *, void *, s32);
   s32 AppendHttpHeader(M2C_UNK, M2C_UNK *, M2C_UNK *);
-  M2C_UNK AppendChar(s32, s32);
+  M2C_UNK ghiAppendCharToBuffer(s32, s32);
   void AppendInt(s32, s32);
   s32 SendBufferedData(void *);
   void ResetBuffer(void *);
@@ -145,7 +145,7 @@ void ghiSendRequest(void *request) {
     else {
       ghiAppendDataToBuffer(sendBuf, &sHeaderHostColon, 0);
       ghiAppendDataToBuffer(sendBuf, (void *)M2C_FIELD(request, s32 *, 0x18), 0);
-    AppendChar((s32)sendBuf, 0x3a);
+    ghiAppendCharToBuffer((s32)sendBuf, 0x3a);
     AppendInt((s32)sendBuf, M2C_FIELD(request, u16 *, 0x20));
     ghiAppendDataToBuffer(sendBuf, &sHttpCrlf, 2);
     }

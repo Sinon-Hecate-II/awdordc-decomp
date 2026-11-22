@@ -27,19 +27,23 @@ s32 gti2ThinkConnection(void *connection, u32 now) {
 }
 
 M2C_UNK func_0205ac1c(s32 a,s32 b) {
-void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void gti2RemoveConnection(s32);void func_0205c8c8(s32);
+void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void gti2RemoveConnection(s32);void gti2SendClosedAck(s32);
 if(b){
 if(M2C_FIELD(a,s32 *,12)>=7)return;
 gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);gti2RemoveConnection(a);
-}else {M2C_FIELD(a,s32 *,12)=6;func_0205c8c8(a);}
+}else {M2C_FIELD(a,s32 *,12)=6;gti2SendClosedAck(a);}
 }
 
-void gti2MarkConnectionClosed(void *p,...) {
-void TableRemove(s32,void **);void Vector_AddItem(s32,void **);
-if(M2C_FIELD(p,s32 *,12)==7)return;
-M2C_FIELD(p,s32 *,12)=7;
-TableRemove(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,12),&p);
-Vector_AddItem(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,16),&p);
+/* Mark a GT2 connection closed: leave it alone if it already is, otherwise set
+ * its state and move it from its socket's connection hash table to the socket's
+ * connection vector. */
+void gti2MarkConnectionClosed(void *connection, ...) {
+    void TableRemove(s32, void **);
+    void Vector_AddItem(s32, void **);
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) == GT2_STATE_CLOSED) return;
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_CLOSED;
+    TableRemove(M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTION_TABLE), &connection);
+    Vector_AddItem(M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS), &connection);
 }
 
 /* Free a GT2 connection: its queued handshake data, receive and send buffers,
@@ -88,8 +92,8 @@ void Gt2SocketSetConnectAttempt(void) {
 }
 
 void func_0205adb4(void) {
-    M2C_UNK func_0205a938();
-    func_0205a938();
+    M2C_UNK gti2AcceptConnection();
+    gti2AcceptConnection();
 }
 
 void func_0205adc0(void) {

@@ -167,36 +167,40 @@ u8 func_ov000_02188448(void) {
     return var_r0;
 }
 
-s32 func_ov000_02188488(void) {
-    s32 temp_r0;
-    s32 temp_r4;
-    s32 var_r0;
-    s32 var_r0_2;
-    s32 var_r1;
-    s32 var_r2;
+/* AI production priority for attack units, from the counts of enemy attack
+ * targets and the team's attack-capable units: AI_SCORE_FLAG is set while the
+ * two counts are within min(targets, 5) of each other, and the low bits are
+ * |targets - teamAttackers| + 1, capped at AI_SCORE_MAX. */
+s32 AiAttackUnitBalanceScore(void) {
+    s32 teamAttackers;
+    s32 targets;
+    s32 magnitude;
+    s32 imbalance;
+    s32 flag;
+    s32 clamp;
 
-    temp_r4 = CountAiAttackTargetUnits();
-    temp_r0 = CountTeamAttackUnits();
-    if (temp_r4 > 5) {
-        var_r2 = 5;
+    targets = CountAiAttackTargetUnits();
+    teamAttackers = CountTeamAttackUnits();
+    if (targets > 5) {
+        clamp = 5;
     } else {
-        var_r2 = temp_r4;
+        clamp = targets;
     }
-    if (((s32) (temp_r4 - var_r2) < temp_r0) && ((s32) (temp_r4 + var_r2) > temp_r0)) {
-        var_r1 = 0x80;
+    if (((s32) (targets - clamp) < teamAttackers) && ((s32) (targets + clamp) > teamAttackers)) {
+        flag = AI_SCORE_FLAG;
     } else {
-        var_r1 = 0;
+        flag = 0;
     }
-    if (temp_r4 > temp_r0) {
-        var_r0_2 = temp_r4 - temp_r0;
+    if (targets > teamAttackers) {
+        imbalance = targets - teamAttackers;
     } else {
-        var_r0_2 = temp_r0 - temp_r4;
+        imbalance = teamAttackers - targets;
     }
-    var_r0 = var_r0_2 + 1;
-    if (var_r0 & 0x80) {
-        var_r0 = 0x7F;
+    magnitude = imbalance + 1;
+    if (magnitude & AI_SCORE_FLAG) {
+        magnitude = AI_SCORE_MAX;
     }
-    return var_r0 | var_r1;
+    return magnitude | flag;
 }
 
 void func_ov000_021884e4(void) {
@@ -204,7 +208,7 @@ void func_ov000_021884e4(void) {
     extern s32 (*data_ov000_021df64c)(void);
     extern s32 (*data_ov000_021df648)(void);
     data_ov000_021df64c = (s32 (*)(void))func_ov000_02188448;
-    data_ov000_021df648 = func_ov000_02188488;
+    data_ov000_021df648 = AiAttackUnitBalanceScore;
     func_ov000_02187f7c();
     if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) func_ov000_02187e20();
     func_ov000_02188688();

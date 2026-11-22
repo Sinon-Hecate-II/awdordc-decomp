@@ -309,7 +309,7 @@ void Ov001_AllocFriendRoster(void) {
 
 #pragma opt_common_subs off
 #pragma pool_constants off
-void func_ov001_02183fa0(void) {
+void Ov001_FreeFriendRoster(void) {
  u16 WFC_GetPlayerMask(void); M2C_UNK Ov001_FreeAlloc(M2C_UNK *); extern M2C_UNK gWfcFriendRoster; extern s32 gSaveData;
  if(*(volatile M2C_UNK *)&gWfcFriendRoster==0)return;
  while(WFC_GetPlayerMask()!=0x8000){}
@@ -323,7 +323,7 @@ void func_ov001_02183fa0(void) {
  * or the request cannot be started. */
 s32 Ov001_OpenFriendRoster(void) {
     s32 FillU16(s32, void *, s32);
-    s32 func_02012218(void *, void (*)(void), s32);
+    s32 WFC_StartCommandChannel(void *, void (*)(void), s32);
     s32 func_02011af8(void *);
     u16 GetConsoleLocalId(void);
     s32 Ov001_SendFriendRosterRequest(void);
@@ -333,7 +333,7 @@ s32 Ov001_OpenFriendRoster(void) {
     u8 *base;
 
     FillU16(0, (u8 *)gWfcFriendRoster + WFC_FRIEND_SLOTS, WFC_FRIEND_SLOTS_SIZE);
-    if (func_02012218((void *)gWfcFriendRoster, Ov001_HandleFriendRosterReply, 3) != WFC_CMD_OK)
+    if (WFC_StartCommandChannel((void *)gWfcFriendRoster, Ov001_HandleFriendRosterReply, 3) != WFC_CMD_OK)
         return 0;
     do {
         func_02011af8((u8 *)gWfcFriendRoster + WFC_FRIEND_REPLY);

@@ -167,6 +167,11 @@ typedef struct DirectionMarker {
 #define MAP_VIEW_CELL_Y     0x5152 /* s16 view scroll y, in whole cells (MAP_VIEW_Y / 16) */
 #define MAP_VIEW_SCROLL_STATE 0x5154 /* u8 map-view scroll flags; the low nibble is nonzero while a scroll runs (IsMapCursorIdle) */
 #define MAP_VIEW_ZOOM       0x6ef8 /* s16 view zoom: 0 and 128 are the two levels */
+/* The eye position (view+0x10..0x18, UpdateMapViewEye) is the view's zoom-scaled
+ * offset plus the map scroll converted to view units: MAP_VIEW_EYE_CELL units per
+ * map cell, half a cell in from the map's corner. */
+#define MAP_VIEW_EYE_CELL   0x300
+#define MAP_VIEW_EYE_HALF_CELL 0x180
 /* Inside the map view block (MAP_VIEW_ZOOM is its base): the Q12 matrix the view
  * projects a point with, and the world origin a projected point is relative to. */
 #define MAP_VIEW_MATRIX     0xb0 /* s32[9]: Q12 matrix the view projects with */
@@ -233,6 +238,13 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_TILE_TERRAIN    0x6a60 /* u8 per tile id: terrain kind/owner byte the cell gets */
 #define MAP_TERRAIN_KIND_MASK  0x1f /* terrain byte: terrain kind */
 #define MAP_TERRAIN_OWNER_MASK 0xe0 /* terrain byte: owner bits (player << 5) */
+
+/* gTerrainClassFlags: one 8-byte record per terrain class (a tile's class id from
+ * the current tileset): the class flags word, then palette/x/y/offset bytes.  The
+ * low bits of the flags word say which autotile family the class is drawn with. */
+#define TERRAIN_CLASS_VARIANT1  0x0001 /* draw with the single-tile variant */
+#define TERRAIN_CLASS_CONNECTED 0x0002 /* draw with the connected autotile */
+#define TERRAIN_CLASS_EDGE      0x0004 /* draw with the edge autotile */
 
 /* Terrain kinds the map code names directly; the tileset's MAP_TILE_TERRAIN
  * table maps each tile id to one of these packed values. */
@@ -448,6 +460,7 @@ typedef struct MapSettingsPlayer {
 /* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
  * flags word followed by the battle setting, value limits and per-player mask. */
 #define MAPCONFIG_FLAGS     0x00 /* u16 packed rule flags */
+#define MAPCONFIG_PROPERTY_LIMIT 0x02 /* u8 properties a player must own to win; 0 disables the rule */
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
@@ -587,6 +600,7 @@ typedef struct MapTargetEntry {
 #define MAP_GRID            0x52e8 /* s8 *rows[64]: per-cell grid value; <0 impassable, >110 holds a unit */
 #define MAP_GRID_ROW_INDEX  0x14ba /* MAP_GRID seen as an s8 * array: index of row y (MAP_GRID / 4) */
 #define MAP_GRID_NO_UNIT_MAX 0x6E  /* largest MAP_GRID value of a cell that holds no unit */
+#define MAP_GRID_HOLDS_UNIT  0x6F  /* MAP_GRID value marking a cell as holding a unit */
 #define MAP_GRID_TAKEN       0x40  /* bit of a cell an attack range covers */
 #define MAP_CELL_SCORE      0x2338 /* s8 per cell: influence/score layer (movement cost, danger range, ...) */
 #define MAP_CELL_UNSET      0x7f   /* s8 marker FillMapLayer clears a cell layer to: no value computed yet */
@@ -603,6 +617,7 @@ typedef struct MapTargetEntry {
 #define MAP_CORNER_COLOR_RESERVED 7  /* corner code the overlay pass skips */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
+#define MAP_MODE_CURSOR_SETTLE 10  /* MAP_MODE value of the cursor-settling handler (UpdateMapMode case 10): the cursor tracks its target, unit status icons stay hidden (RenderUnitAt mode 1) and the handler falls back to MAP_MODE_CURSOR once the cursor is idle. The map editor leaves it set on its terrain page. */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
 
@@ -648,6 +663,8 @@ enum {
 #define MAP_CURSOR_TARGET_X 0x52c2 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_TARGET_Y 0x52c4 /* s16 tile the cursor is aimed at */
 #define MAP_CURSOR_CELL_DISPLAY_MODE 0x52e4 /* s16 cursor cell display mode */
+#define MAP_CURSOR_CELL_UPPER 0    /* display mode: the cursor's tile is on the upper screen */
+#define MAP_CURSOR_CELL_LOWER 0xA8 /* display mode: the cursor's tile is on the lower screen */
 #define MAP_CURSOR_CELL_CACHE 0x52e6 /* u16 cached cursor-cell coordinates and flags */
 #define MAP_CURSOR_CELL_X_SHIFT 2
 #define MAP_CURSOR_CELL_Y_SHIFT 9
@@ -656,6 +673,7 @@ enum {
 #define MAP_CURSOR_CELL_FLAGS_MASK 0x0003
 #define MAP_CURSOR_PIXEL_X  0x52c6 /* s16 smoothed cursor position, x in 1/16-cell units */
 #define MAP_CURSOR_PIXEL_Y  0x52c8 /* s16 smoothed cursor position, y in 1/16-cell units */
+#define MAP_CURSOR_TILE_UNITS 16 /* MAP_CURSOR_PIXEL_X/Y units per tile */
 #define MAP_TILE_SIZE 768 /* 3 * 256: one map tile's on-screen size in pixels */
 #define MAP_TOUCH_TILE_X    0x52ca /* s16 tile the current stylus press started on, 0xff when none */
 #define MAP_TOUCH_TILE_Y    0x52cc
@@ -663,7 +681,7 @@ enum {
 
 /* The battle help/status panel state (gBattleHelpPanel): the page it shows, a flag
  * that the panel is up, and the cursor position saved around the panel's unit
- * cursor (func_020c5b24 saves it, func_020c5b5c restores it). */
+ * cursor (SaveBattleCursorPosition saves it, RestoreBattleCursorPosition restores it). */
 #define MAP_HELP_PAGE       0 /* u8 page/tile the panel shows, toggled by func_020c5b98 */
 #define MAP_HELP_SHOWN      1 /* u8 nonzero while the panel covers part of the screen */
 #define MAP_HELP_SAVED_X    2 /* s16 cursor old x saved while the panel's unit cursor runs */
@@ -671,7 +689,12 @@ enum {
 #define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
 
 /* Action flags shared by map keyboard and stylus input. */
-enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
+enum {
+    MAP_ACTION_CONFIRM = 0x10,
+    MAP_ACTION_CANCEL = 0x20,
+    MAP_ACTION_CLOSE = 0x40,  /* X: close the aiming cursor */
+    MAP_ACTION_MENU = 0x100   /* R: open the map menu */
+};
 #define MAP_PREVIEW_UNIT_TILE_BASE 19 /* gTileGfxRowOffset index of the first unit-marker tile row */
 
 /* gMapPreviewPalettes: staging data for the map preview, three 16-colour
@@ -689,6 +712,17 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_PLAYER_STATES  0x67a4
 #define MAP_PLAYER_STRIDE  0x8c
 
+/* The on-map player unit view: one sprite object per player (created by
+ * CreatePlayerUnitView from class gPlayerUnitViewClass at main_020BCB94.c) that
+ * walks that player's 51 unit slots and draws the units as a rotating display;
+ * StartPlayerUnitView and UpdatePlayerUnitView drive it.  These fields come after
+ * the plain 3D sprite object fields. */
+#define PLAYER_UNIT_VIEW_PLAYER  0x5C /* s32 player whose units the view shows */
+#define PLAYER_UNIT_VIEW_SET     0x64 /* s32 sprite set/variant the view uses */
+#define PLAYER_UNIT_VIEW_VARIANT 0x68 /* s32 random model variant of the view */
+#define PLAYER_UNIT_VIEW_FRAME   0x6C /* s16 frames the view has been running */
+#define PLAYER_UNIT_VIEW_SLOT    0x70 /* s16 unit slot the view is showing, 0..50 */
+
 /* Map scripts are arrays of MAP_SCRIPT_COMMAND_SIZE-byte commands, run by the
  * opcode handlers in main_02092DF4.  The interpreter state keeps the block at
  * +0, the command being run at +4 and a wait callback at +8; a command holds
@@ -699,7 +733,10 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define MAP_SCRIPT_OP_LABEL     29 /* label command: names a jump target in MAP_SCRIPT_OPERAND2 */
 #define MAP_SCRIPT_OP_MESSAGE   0x6B /* a message command: the script-skip command seeks to the next one, or to the end */
 #define MAP_SCRIPT_PARAM        0x04 /* opcode-specific word of the current command (a callback or a sprite class) */
+#define MAP_SCRIPT_STATE_BLOCK  0x00 /* the script block being run; MapScriptFindLabel scans its commands */
 #define MAP_SCRIPT_STATE_IP     0x04
+#define MAP_SCRIPT_STATE_WAIT   0x08 /* wait callback run each frame while the command runs; 0 finishes it */
+#define MAP_SCRIPT_STATE_PLAYER 0x11 /* u8 player id the wait command targets */
 #define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
 #define MAP_SCRIPT_OPERAND1     0x0A /* s16 second operand */
 #define MAP_SCRIPT_OPERAND2     0x0C /* s32 wide operand */
@@ -738,6 +775,8 @@ enum { MAP_ACTION_CONFIRM = 0x10, MAP_ACTION_CANCEL = 0x20 };
 #define PLAYER_DEFEAT_LOST       2    /* the player's lost flag is set (rule flag 2) */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
+#define PLAYER_REC_DEFENSE_BONUS 0x24 /* s8 flat terrain-defense points this player's units add; reset each turn (func_020a23c4) */
+#define PLAYER_DEFENSE_BONUS_OFF (MAP_PLAYER_STATES + PLAYER_REC_DEFENSE_BONUS) /* s8 */
 #define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */
 #define PLAYER_REC_UNIT_OWNER  0x32 /* u8 low two bits: owner group stamped into MAP_UNIT_KIND of the units the player creates (allies share one) */
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
@@ -852,6 +891,13 @@ enum {
     BATTLE_RESULT_DRAW = 3
 };
 
+/* Relationship of one player towards another, returned by GetPlayerRelation. */
+enum {
+    PLAYER_RELATION_NONE  = 0, /* the other player is not in the battle */
+    PLAYER_RELATION_ENEMY = 1, /* different army (nation) */
+    PLAYER_RELATION_ALLY  = 2  /* same army (nation) */
+};
+
 /* The battle-results summary block (gBattleResults).  When a battle ends the
  * game lists the players by outcome and stores the winning player's ratings;
  * the results screen (overlay 5) lays its rows out from the player lists and
@@ -886,6 +932,7 @@ enum {
 #define BATTLE_PREVIEW_UNIT 0x34 /* void *unit record, 0 when it previews the tile */
 #define BATTLE_PREVIEW_X    0x38 /* s32 tile x */
 #define BATTLE_PREVIEW_Y    0x3C /* s32 tile y */
+#define BATTLE_PREVIEW_ARMED 0x60 /* s32 nonzero when confirming the preview issues the battle command; 0 for a preview that only shows the forecast (the AI's own previews) */
 
 /* Player control kind (PLAYER_CONTROL_OFF). */
 enum {
@@ -956,6 +1003,7 @@ typedef struct MapRecordStamp {
     u32 playerId; /* +0x10 WFC player id of the console that saved the record */
 } MapRecordStamp;
 
+#define MAP_RECORD_NAME        0x06 /* char[0x21] map name, NUL terminated */
 #define MAP_RECORD_MAGIC       0x20070731
 #define MAP_RECORD_CHECKSUM    0x46 /* u16 CRC-16 of the record data (Crc16 from +0x54, 0x6A4 bytes) */
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */

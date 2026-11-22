@@ -345,7 +345,7 @@ void func_02004e20(s32);
 func_02004e20(a);
 }
 
-void func_02003a8c(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02004e44(a);}
+void GX_MultMatrix4x4(s32 a){void func_02004e44(s32);*(s32 *)0x4000400=0x18;func_02004e44(a);}
 
 void func_02003aa8(s32 a){void func_02004e20(s32);*(s32 *)0x4000400=0x19;func_02004e20(a);}
 

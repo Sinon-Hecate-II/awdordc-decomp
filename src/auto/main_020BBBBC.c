@@ -397,7 +397,7 @@ s32 func_020bc910(void) {
     void func_020d549c(void *);
     void func_020c752c(void);
     void CreateMapMenu(void);
-    void func_020d8fa0(void);
+    void HandleUiCancel(void);
     void *func_020d2e3c(u16);
     void PlaySoundEffect(void *);
     s32 StepMapViewToTile(u8, u8);
@@ -428,7 +428,7 @@ s32 func_020bc910(void) {
         return 1;
     }
     if (flags & 0x400) {
-        func_020d8fa0();
+        HandleUiCancel();
         return 0;
     }
     if (flags & 0x200) {
@@ -461,15 +461,22 @@ s32 func_020bc910(void) {
     return 1;
 }
 
-s32 func_020bca68(void) {
- extern void *gKeyState;
- extern u8 gTouchConfirmFlag;
- u16 v=M2C_FIELD(gKeyState,u16 *,0);
- if(v&1){gTouchConfirmFlag=0;return 16;}
- if(v&2)return 32;
- if(v&256)return 256;
- if(v&1024)return 64;
- return 0;
+/* Button input for the battle-map aiming cursor: A confirms, B cancels, R opens
+ * the map menu and X closes the cursor; an A press also clears the pending
+ * touch-confirm flag, as the button overrides a stylus confirm. */
+s32 GetAimCursorKeyAction(void) {
+    extern void *gKeyState;
+    extern u8 gTouchConfirmFlag;
+    u16 pressed = M2C_FIELD(gKeyState, u16 *, 0);
+
+    if (pressed & KEY_A) {
+        gTouchConfirmFlag = 0;
+        return MAP_ACTION_CONFIRM;
+    }
+    if (pressed & KEY_B) return MAP_ACTION_CANCEL;
+    if (pressed & KEY_R) return MAP_ACTION_MENU;
+    if (pressed & KEY_X) return MAP_ACTION_CLOSE;
+    return 0;
 }
 
 s32 func_020bcac0(void) {
@@ -503,15 +510,17 @@ s32 func_020bcaf0(void) {
     return 0;
 }
 
-void MoveSelectionWithKeys(s32 *arg0,s32 arg1) {
+/* Step a menu's selection index with the D-pad's auto-repeat: right/down picks
+ * the next entry, left/up the previous, wrapping around the `count` entries. */
+void MoveSelectionWithKeys(s32 *selection, s32 count) {
 extern void *gKeyState;
-if(M2C_FIELD(gKeyState,u16 *,2)&0x90) {
-(*arg0)++;
-if(*arg0==arg1) *arg0=0;
+if(((KeyState *)gKeyState)->repeat&(KEY_RIGHT|KEY_DOWN)) {
+(*selection)++;
+if(*selection==count) *selection=0;
 }
-if(M2C_FIELD(gKeyState,u16 *,2)&0x60) {
-if(*arg0<=0) *arg0=arg1;
-(*arg0)--;
+if(((KeyState *)gKeyState)->repeat&(KEY_LEFT|KEY_UP)) {
+if(*selection<=0) *selection=count;
+(*selection)--;
 }
 }
 

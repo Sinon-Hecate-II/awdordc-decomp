@@ -1,37 +1,41 @@
 /* 35 functions from 0x02174F68 to 0x02175F60 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "ov001_wh.h"
 
 typedef struct { s32 x; u32 y; } Position;
+
+extern Ov001WirelessSetup gOv001WirelessSetup;
 
 void func_ov001_021757d0(s32 arg0) {
     M2C_UNK func_ov001_0216d14c();
     M2C_UNK func_ov001_02184b50(void *);
-    extern M2C_UNK gOv001WirelessSetup;
     extern M2C_UNK data_ov001_02193d28;
     func_ov001_0216d14c();
     if (arg0 != 0) {
-        if ((M2C_FIELD(M2C_FIELD(&gOv001WirelessSetup, void **, 4), u8 *, 0x116) == 0) && (M2C_FIELD(&gOv001WirelessSetup, u8 *, 0) == 1)) {
-            func_ov001_02184b50(M2C_FIELD(&gOv001WirelessSetup, void **, 4) + 0x117);
+        if ((gOv001WirelessSetup.request[OV001_SETUP_STATUS] == 0) && (gOv001WirelessSetup.connected == 1)) {
+            func_ov001_02184b50(gOv001WirelessSetup.request + OV001_SETUP_PACKET);
         }
     }
     Ov001_FreeAlloc(&data_ov001_02193d28);
 }
 
-s32 func_ov001_02175820(void) {
-    extern M2C_UNK gOv001WirelessSetup;
-    s32 func_ov001_0216ad74(M2C_UNK);
-    if (func_ov001_0216ad74(M2C_FIELD(&gOv001WirelessSetup, M2C_UNK *, 4)) == 0) {
-        M2C_FIELD(&gOv001WirelessSetup, u8 *, 0) = 1;
-        return 1;
+/* One frame of the wireless setup screen's connection attempt: run the setup
+ * exchange and report whether the local player's connection was accepted (1),
+ * is still pending (0) or has failed (2). */
+s32 Ov001_UpdateWirelessSetup(void) {
+    s32 func_ov001_0216ad74(void *);
+    if (func_ov001_0216ad74(gOv001WirelessSetup.request) == 0) {
+        gOv001WirelessSetup.connected = 1;
+        return OV001_SETUP_JOINED;
     }
     {
-        u8 c = M2C_FIELD(M2C_FIELD(&gOv001WirelessSetup, M2C_UNK *, 4), u8 *, 0x116);
-        if (c == 1) goto L0;
-        if ((u8)(c + 0xFD) > 2) goto L2;
-    L0:
-        return 0;
-    L2:
-        return 2;
+        u8 status = gOv001WirelessSetup.request[OV001_SETUP_STATUS];
+        if (status == 1) goto still_pending;
+        if ((u8)(status + 0xFD) > 2) goto failed;
+    still_pending:
+        return OV001_SETUP_PENDING;
+    failed:
+        return OV001_SETUP_FAILED;
     }
 }
 

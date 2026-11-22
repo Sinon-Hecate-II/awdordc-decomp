@@ -1,5 +1,6 @@
 /* 43 functions from 0x0207C2F0 to 0x0207D130 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ds3dsprite.h"
 #include "hw_div.h"
 typedef struct { s32 x,y,z; } Vec0207;
@@ -190,18 +191,21 @@ void UploadBGExtPaletteTask(void *task) {
     HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
-void QueueBGExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+/* Queue an upload of `byteCount` bytes from `source` into the BG extended
+ * palette at `offset`, `slot` (0x2000 bytes each) further into it; free the
+ * source block after the upload when `freeSource` is set. */
+void QueueBGExtPaletteUpload(s32 source, s32 slot, s32 offset, s32 byteCount, u8 freeSource) {
     void UploadBGExtPaletteTask(void *);
-    void *temp_r0;
+    void *task;
 
-    temp_r0 = CreateQueuedSpriteTask(&UploadBGExtPaletteTask, 0);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x50) = (s32) arg4;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    SetSpriteZ(temp_r0, 0xFF02);
+    task = CreateQueuedSpriteTask(&UploadBGExtPaletteTask, 0);
+    M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE) = source;
+    M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET) = (s32) (offset + (slot << 0xD));
+    M2C_FIELD(task, s32 *, DS3D_TASK_SIZE) = byteCount;
+    M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) = (s32) freeSource;
+    M2C_FIELD(task, s32 *, 0x48) = 0;
+    M2C_FIELD(task, s32 *, 0x4C) = 0;
+    SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
 /* Run a queued OBJ extended-palette upload: copy the task's palette to the OBJ
@@ -229,18 +233,21 @@ void UploadOBJExtPaletteTask(void *task) {
     HeapFreeBlock(M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE));
 }
 
-void QueueOBJExtPaletteUpload(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
+/* Queue an upload of `byteCount` bytes from `source` into the OBJ extended
+ * palette at `offset`, `slot` (0x2000 bytes each) further into it; free the
+ * source block after the upload when `freeSource` is set. */
+void QueueOBJExtPaletteUpload(s32 source, s32 slot, s32 offset, s32 byteCount, u8 freeSource) {
     void UploadOBJExtPaletteTask(void *);
-    void *temp_r0;
+    void *task;
 
-    temp_r0 = CreateQueuedSpriteTask(&UploadOBJExtPaletteTask, 0);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = (s32) (arg2 + (arg1 << 0xD));
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x50) = (s32) arg4;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    SetSpriteZ(temp_r0, 0xFF02);
+    task = CreateQueuedSpriteTask(&UploadOBJExtPaletteTask, 0);
+    M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE) = source;
+    M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET) = (s32) (offset + (slot << 0xD));
+    M2C_FIELD(task, s32 *, DS3D_TASK_SIZE) = byteCount;
+    M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) = (s32) freeSource;
+    M2C_FIELD(task, s32 *, 0x48) = 0;
+    M2C_FIELD(task, s32 *, 0x4C) = 0;
+    SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
 void LoadGraphicsBlock(void *arg0, u32 arg1) {
@@ -473,12 +480,12 @@ void BuildMapViewTransform(void *view) {
 
 void func_0207cddc(s32 arg0, M2C_UNK arg1) {
  M2C_UNK func_02000ca0(void *, s32);
- M2C_UNK func_02001034(s32, void *);
+ M2C_UNK Matrix3x4To4x4(s32, void *);
  M2C_UNK func_02001524(s32, void *);
  M2C_UNK func_02001748(void *, M2C_UNK, s32);
  s32 sp24[16];
  s32 sp0[9];
- func_02001034(arg0 + 0x1C, sp24);
+ Matrix3x4To4x4(arg0 + 0x1C, sp24);
  func_02001748(sp24, arg1, arg0 + 0x70);
  func_02001524(arg0 + 0x70, sp0);
  func_02000ca0(sp0, arg0 + 0xB0);
@@ -493,15 +500,17 @@ void func_0207ce28(M2C_UNK arg0) {
 }
 
 void func_0207ce54(void) {
-    M2C_UNK func_0207ce60();
-    func_0207ce60();
+    M2C_UNK UpdateMapViewEye();
+    UpdateMapViewEye();
 }
 
-M2C_UNK func_0207ce60(void *arg0) {
+/* Recompute the map view's eye position (view+0x10/+0x14/+0x18): the view's
+ * zoom-scaled offset plus the map scroll in view units, half a cell in. */
+M2C_UNK UpdateMapViewEye(void *view) {
  extern void **gCurrentMap;
- M2C_FIELD(arg0,s32 *,0x10) = M2C_FIELD(arg0,s32 *,0) + ((M2C_FIELD(*gCurrentMap,s16 *,0x5148) * (s16)0x300) >> 4) + 0x180;
- M2C_FIELD(arg0,s32 *,0x14) = M2C_FIELD(arg0,s32 *,4) + ((M2C_FIELD(*gCurrentMap,s16 *,0x514a) * (s16)0x300) >> 4) + 0x180;
- M2C_FIELD(arg0,s32 *,0x18) = M2C_FIELD(arg0,s32 *,8);
+ M2C_FIELD(view,s32 *,0x10) = M2C_FIELD(view,s32 *,0) + ((M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_X) * (s16)MAP_VIEW_EYE_CELL) >> 4) + MAP_VIEW_EYE_HALF_CELL;
+ M2C_FIELD(view,s32 *,0x14) = M2C_FIELD(view,s32 *,4) + ((M2C_FIELD(*gCurrentMap,s16 *,MAP_VIEW_Y) * (s16)MAP_VIEW_EYE_CELL) >> 4) + MAP_VIEW_EYE_HALF_CELL;
+ M2C_FIELD(view,s32 *,0x18) = M2C_FIELD(view,s32 *,8);
 }
 
 void SetViewZoom(void *arg0, s16 arg1) {

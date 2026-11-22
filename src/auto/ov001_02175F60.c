@@ -76,7 +76,7 @@ void Ov001_SetProfileScreenCallback(s32 arg0) {
     M2C_FIELD(data_ov001_02193d50, s32 *, 0x1E298) = arg0;
 }
 
-void func_ov001_02176108(void) {
+void Ov001_AdvanceProfileSetup(void) {
     M2C_UNK func_ov001_02188f0c();
     func_ov001_02188f0c();
 }

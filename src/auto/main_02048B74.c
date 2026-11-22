@@ -18,20 +18,24 @@ void func_02048b74(M2C_UNK arg0) {
     } while (var_r4 >= 0);
 }
 
-s32 Vector_SearchLinear(M2C_UNK arg0, s32 arg1, s32 arg2, s32 arg3, s32 (*arg4)(M2C_UNK, s32)) {
-    s32 var_r4;
-    s32 var_r5;
+/* GameSpy darray ArraySearchLinear: scan the `count` elemSize-byte elements at
+ * `base` from the first on, calling compare(item, element) on each; return the
+ * address of the first element the comparator accepts (returns 0), or 0 when
+ * none does. */
+s32 Vector_SearchLinear(s32 item, s32 base, s32 count, s32 elemSize, s32 (*compare)(s32, s32)) {
+    s32 i;
+    s32 offset;
 
-    var_r4 = 0;
-    if (arg2 > 0) {
-        var_r5 = 0;
+    i = 0;
+    if (count > 0) {
+        offset = 0;
         do {
-            if (arg4(arg0, arg1 + var_r5) == 0) {
-                return arg3 * var_r4 + arg1;
+            if (compare(item, base + offset) == 0) {
+                return elemSize * i + base;
             }
-            var_r4 += 1;
-            var_r5 += arg3;
-        } while (var_r4 < arg2);
+            i += 1;
+            offset += elemSize;
+        } while (i < count);
     }
     return 0;
 }

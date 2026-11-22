@@ -410,7 +410,7 @@ void UpdateConnectedPlayerCount(void) {
  M2C_FIELD(GetConnection(),u8 *,0xe)=n;
 }
 
-s32 func_0203e338(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnection()+0x2d0; return M2C_FIELD(GetConnection(),u8 *,0xd)+1; }
+s32 GetPeerSlotList(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnection()+0x2d0; return M2C_FIELD(GetConnection(),u8 *,0xd)+1; }
 
 /* Copies the slot ids of the session's present players (those whose bit is set in
  * CONN_SESSION_PLAYER_MASK) into gActivePlayerSlots, up to the first absent one,

@@ -41,7 +41,7 @@ M2C_UNK *GetExplosionSpriteName(u32 effectType) {
 /* Draws one of several unit/map status overlays at position (x, y) depending on mode. */
 void func_020b5314(u8 mode, s32 x, s32 y) {
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
-    void func_02080750(s32, s32, s32);
+    void CreateScreenOffsetEffect(s32, s32, s32);
     void func_02080358(s32, s32, s32, s32);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     typedef M2C_UNK (*Fb0c)(s32, s32, s32);
@@ -50,37 +50,37 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
     case 1:
     case 2:
         ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
-        func_02080750(1, 0x14, 0);
+        CreateScreenOffsetEffect(1, 0x14, 0);
         return;
     case 3:
         ((Fb0c)PlaySoundAtTile)(0x6d, x, y);
-        func_02080750(1, 0x14, 0);
+        CreateScreenOffsetEffect(1, 0x14, 0);
         return;
     case 4:
         ((Fb0c)PlaySoundAtTile)(0x73, x, y);
-        func_02080750(1, 0x14, 0);
+        CreateScreenOffsetEffect(1, 0x14, 0);
         return;
     case 5:
         ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
-        func_02080750(0, 0xa, 0);
+        CreateScreenOffsetEffect(0, 0xa, 0);
         return;
     case 6:
         ((Fb0c)PlaySoundAtTile)(0x8a, x, y);
-        func_02080750(0, 5, 0);
+        CreateScreenOffsetEffect(0, 5, 0);
         return;
     case 7:
         ((Fb0c)PlaySoundAtTile)(0x11f, x, y);
-        func_02080750(0, 5, 0);
+        CreateScreenOffsetEffect(0, 5, 0);
         return;
     case 8:
         SpawnSoundEffectAtTile(0x10e, x, y, 0);
         SpawnSoundEffectAtTile(0x10f, x, y, 0x1e);
-        func_02080750(1, 0x14, 0);
+        CreateScreenOffsetEffect(1, 0x14, 0);
         func_02080358(4, 0, 2, 0);
         return;
     case 9:
         ((Fb0c)PlaySoundAtTile)(0xfa, x, y);
-        func_02080750(1, 0x1e, 0);
+        CreateScreenOffsetEffect(1, 0x1e, 0);
         func_02080358(8, 0, 4, 0);
         return;
     }

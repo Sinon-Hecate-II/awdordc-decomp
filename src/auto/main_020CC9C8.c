@@ -422,18 +422,21 @@ void CopyTeamSightBitmap(s32 arg0, s32 arg1) {
  MI_CpuCopy8(size*arg0+base,size*arg1+base);
 }
 
-s32 GetPlayerRelation(s32 arg0, s32 arg1) {
+/* How `player` relates to `other`: PLAYER_RELATION_NONE if `other` is not in the
+ * battle, ENEMY when the two players' armies (nations) differ, ALLY when they
+ * match. */
+s32 GetPlayerRelation(s32 player, s32 other) {
     extern s32 *gCurrentMap;
-    s32 temp_r0;
+    s32 players;
 
-    if (IsPlayerPresent(arg1) == 0) {
-        return 0;
+    if (IsPlayerPresent(other) == 0) {
+        return PLAYER_RELATION_NONE;
     }
-    temp_r0 = *gCurrentMap + 0x67A4;
-    if (M2C_FIELD(((arg0 * 0x8C) + temp_r0), u8 *, 0x26) != M2C_FIELD(((arg1 * 0x8C) + temp_r0), u8 *, 0x26)) {
-        return 1;
+    players = *gCurrentMap + MAP_PLAYER_STATES;
+    if (M2C_FIELD(((player * MAP_PLAYER_STRIDE) + players), u8 *, PLAYER_REC_ARMY) != M2C_FIELD(((other * MAP_PLAYER_STRIDE) + players), u8 *, PLAYER_REC_ARMY)) {
+        return PLAYER_RELATION_ENEMY;
     }
-    return 2;
+    return PLAYER_RELATION_ALLY;
 }
 
 /* True when a human player is on the given player's side (any of the other

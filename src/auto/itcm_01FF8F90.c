@@ -282,9 +282,12 @@ void Apply3DSpriteBanks(void) {
     func_0207fafc();
 }
 
-u8 Is3DSpriteWholeLayer(u8 arg0,u32 arg1) {
-u8 result;
-switch(arg0){case 0:return 1;case 1:case 3:if(arg1<=2)result=1;else result=0;return result;case 2:case 4:case 5:if(arg1<=1)result=1;else result=0;return result;default:return 0;}
+/* Whether a 3D-sprite bank of this mode draws `layer` as one whole cell grid
+ * (rather than a split layer): mode 0 on any layer, modes 1 and 3 up to layer 2,
+ * modes 2, 4 and 5 up to layer 1. */
+u8 Is3DSpriteWholeLayer(u8 bankMode,u32 layer) {
+u8 whole;
+switch(bankMode){case 0:return 1;case 1:case 3:if(layer<=2)whole=1;else whole=0;return whole;case 2:case 4:case 5:if(layer<=1)whole=1;else whole=0;return whole;default:return 0;}
 }
 
 /* True when `layer` of the 3D sprite bank in layout `bankMode` is a split layer:

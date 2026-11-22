@@ -458,7 +458,7 @@ void func_ov000_02175234(void *arg0){
                 M2C_FIELD(arg0, s32 *, 8) = 0;
             }
             if (M2C_FIELD(arg0, s32 *, 8) == 0 || M2C_FIELD(arg0, s32 *, 8) == 40) {
-                func_ov000_02176a9c(arg0);
+                Ov000Info_DrawBlinkPanel(arg0);
             }
             break;
     }

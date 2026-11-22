@@ -154,7 +154,7 @@ addr.bytes[0]=length;
 return ghiRecordSocketError(func_0202152c(socket,&addr),-1);
 }
 
-s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 func_02021558(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return ghiRecordSocketError(func_02021558(a,&addr),-1);}
+s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 SocketConnectAddress(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return ghiRecordSocketError(SocketConnectAddress(a,&addr),-1);}
 
 void ghiListen(void) {
     s32 func_02021960();

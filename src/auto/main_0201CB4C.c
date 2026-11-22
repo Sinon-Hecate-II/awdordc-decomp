@@ -166,7 +166,7 @@ void NetReceiveThreadMain(void) {
     }
 }
 
-u16 func_0201d04c(void) {
+u16 AllocateLocalPort(void) {
     extern M2C_UNK gSocketManager;
     extern M2C_UNK gNetStack;
 
@@ -246,32 +246,35 @@ void OpenRawConnection(void) {
     M2C_FIELD(q, s32 *, 0x44) = 0;
 }
 
-void SetConnectionEndpoint(s32 arg0, s32 arg1, s32 arg2) {
+/* Point the current socket's connection at the given peer: stage the peer port
+ * and address and commit them (a loopback peer takes the link's own address),
+ * then set the local port, allocating a free one when the caller passes none. */
+void SetConnectionEndpoint(s32 localPort, s32 peerPort, s32 peerAddr) {
     extern M2C_UNK gSocketManager;
     extern M2C_UNK gNetStack;
-    u16 func_0201d04c(void);
-    M2C_UNK *inner;
-    M2C_UNK *q;
-    s32 temp;
-    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
-    q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
-    if (q == 0) {
+    u16 AllocateLocalPort(void);
+    M2C_UNK *thread;
+    M2C_UNK *socket;
+    s32 resolvedAddr;
+    thread = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
+    socket = (M2C_UNK *)M2C_FIELD(thread, void **, 0xA4);
+    if (socket == 0) {
         return;
     }
-    if (arg2 == 0x7F000001) {
-        temp = M2C_FIELD(&gNetStack, s32 *, 0x50);
+    if (peerAddr == IP_LOOPBACK) {
+        resolvedAddr = M2C_FIELD(&gNetStack, s32 *, NETSTACK_LOCAL_IP);
     } else {
-        temp = arg2;
+        resolvedAddr = peerAddr;
     }
-    M2C_FIELD(q, u16 *, 0x1A) = (u16)arg1;
-    M2C_FIELD(q, u16 *, 0x18) = M2C_FIELD(q, u16 *, 0x1A);
-    M2C_FIELD(q, s32 *, 0x20) = temp;
-    M2C_FIELD(q, s32 *, 0x1C) = temp;
-    if (arg0 != 0) {
-        M2C_FIELD(q, s16 *, 0x0A) = (s16)arg0;
+    M2C_FIELD(socket, u16 *, SOCKET_NEXT_PEER_PORT) = (u16)peerPort;
+    M2C_FIELD(socket, u16 *, SOCKET_PEER_PORT) = M2C_FIELD(socket, u16 *, SOCKET_NEXT_PEER_PORT);
+    M2C_FIELD(socket, s32 *, SOCKET_NEXT_PEER_ADDR) = resolvedAddr;
+    M2C_FIELD(socket, s32 *, SOCKET_PEER_ADDR) = resolvedAddr;
+    if (localPort != 0) {
+        M2C_FIELD(socket, s16 *, SOCKET_LOCAL_PORT) = (s16)localPort;
         return;
     }
-    M2C_FIELD(q, s16 *, 0x0A) = func_0201d04c();
+    M2C_FIELD(socket, s16 *, SOCKET_LOCAL_PORT) = AllocateLocalPort();
 }
 
 void ResetCurrentConnection(void) {

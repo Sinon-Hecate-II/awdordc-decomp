@@ -51,13 +51,13 @@ void func_ov002_021e42b0(void *arg0) {
  * step and, when the fill settles, play the defeat sound if the player is out of
  * HP; then decay the view's screenshake counter while the gauges are moving. */
 void StepUnitViewGauge(u8 *view) {
- u32 func_020af9cc(u32,s32,s32);
+ u32 StopEffectSlotSound(u32,s32,s32);
  extern u8 gVersusGaugeHp[];
  if((u32)(view[UNIT_VIEW_FLAGS]<<24)>>28) {
  if((u32)view[UNIT_VIEW_GAUGE_FRAME]<(u32)view[UNIT_VIEW_GAUGE_LENGTH]) {
  if(++view[UNIT_VIEW_GAUGE_FRAME]==(u32)view[UNIT_VIEW_GAUGE_LENGTH]) {
  u32 player=(u32)(view[UNIT_VIEW_FLAGS]<<28)>>28;
- if(((s32)gVersusGaugeHp[player*VERSUS_DATA_STRIDE]+9)/10==0) func_020af9cc(player,32,0);
+ if(((s32)gVersusGaugeHp[player*VERSUS_DATA_STRIDE]+9)/10==0) StopEffectSlotSound(player,32,0);
  }}}
  if(AreUnitViewGaugesDone() && view[UNIT_VIEW_SHAKE]) --view[UNIT_VIEW_SHAKE];
 }

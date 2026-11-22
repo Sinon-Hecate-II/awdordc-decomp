@@ -503,17 +503,21 @@ extern M2C_UNK gInputBlockState;
 M2C_FIELD(&gInputBlockState,u8 *,3) = 0;
 }
 
-void func_02081f78(void) {
+/* Override this frame's input: make KEY_B appear newly pressed, auto-repeating
+ * and held, and clear the touch flags. */
+void ForceKeyBInput(void) {
     extern M2C_UNK gKeyState;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), s16 *, 0) = 2;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), s16 *, 2) = 2;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), s16 *, 4) = 2;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 0), s16 *, 6) = 2;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), s8 *, 0x14) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), s8 *, 0x13) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), s8 *, 0x12) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), s8 *, 0x15) = 0;
-    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), s8 *, 0x16) = 0;
+
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->pressed = KEY_B;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat = KEY_B;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->repeat2 = KEY_B;
+    ((KeyState *)M2C_FIELD(&gKeyState, void **, 0))->held = KEY_B;
+
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_STARTED) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_PRESSED) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_ACTIVE) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_TAP) = 0;
+    M2C_FIELD(M2C_FIELD(&gKeyState, void **, 4), u8 *, TOUCH_RELEASED) = 0;
 }
 
 void func_02081fd4(void){extern M2C_UNK data_02101edc;M2C_UNK CreateSpriteFromClass(M2C_UNK *,s32);CreateSpriteFromClass(&data_02101edc,3);}

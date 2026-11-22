@@ -425,9 +425,36 @@ void func_ov009_02223d14(void *arg0) {
 }
 
 #pragma opt_common_subs off
-s32 func_ov009_02223d40(s32 a) { extern M2C_UNK gLinkState,func_ov009_02223da0; s32 func_02013e24(M2C_UNK *,s32); s32 result; u8 flags; if(a) {flags=M2C_FIELD(&gLinkState,u8 *,0x156);flags|=2; M2C_FIELD(&gLinkState,u8 *,0x156)=flags;} else {flags=M2C_FIELD(&gLinkState,u8 *,0x156);flags&=~2; M2C_FIELD(&gLinkState,u8 *,0x156)=flags;} result=func_02013e24(&func_ov009_02223da0,M2C_FIELD(&gLinkState,u8 *,0x156)&2); switch(result){case 2:case 3:break;default:SignalLinkError();return 0;}return 1;}
+/* Set or clear the link's download-transfer mode (LINK_STATE_FLAG_DOWNLOAD) and
+ * hand the resulting flag to the WFC link command; a command result other than
+ * 2 or 3 signals a link error.  Returns 1 when the command was queued. */
+s32 SetLinkDownloadMode(s32 download) {
+    extern M2C_UNK gLinkState, HandleLinkDownloadModeEvent;
+    s32 func_02013e24(M2C_UNK *, s32);
+    s32 result;
+    u8 flags;
+    if (download) {
+        flags = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS);
+        flags |= LINK_STATE_FLAG_DOWNLOAD;
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) = flags;
+    } else {
+        flags = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS);
+        flags &= ~LINK_STATE_FLAG_DOWNLOAD;
+        M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) = flags;
+    }
+    result = func_02013e24(&HandleLinkDownloadModeEvent, M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) & LINK_STATE_FLAG_DOWNLOAD);
+    switch (result) {
+    case 2:
+    case 3:
+        break;
+    default:
+        SignalLinkError();
+        return 0;
+    }
+    return 1;
+}
 #pragma opt_common_subs reset
-void func_ov009_02223da0(void *arg0) {
+void HandleLinkDownloadModeEvent(void *arg0) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     M2C_UNK SignalLinkEvent();
     if (M2C_FIELD(arg0, u16 *, 2) == 0) {
@@ -587,7 +614,7 @@ s32 func_ov009_022240f4(void) {
     return 0;
 }
 
-s32 func_ov009_0222410c(s32 a,s32 b,s32 c){
+s32 CopyActiveLinkPlayerRecord(s32 a,s32 b,s32 c){
  s32 p=GetActiveLinkPlayerSlot(a);
  if(!p)return 0;
  MI_CpuCopy8(p+0x20,b,c);

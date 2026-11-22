@@ -1,6 +1,7 @@
 /* 13 functions from 0x02219ACC to 0x0221A59C (ov007), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "battle_map.h"
 #include "ov007_map_editor.h"
 
 void func_ov007_02219acc(void *arg0) {
@@ -205,15 +206,17 @@ void func_ov007_0221a018(void) {
     gCur3DSpriteEngine = savedBank;
 }
 
-void func_ov007_0221a104(void) {
-extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub;
-extern void *gCurrentMap;
-extern s32 data_ov007_02221e08;
-s32 RenderTextToTiles(void *,void *);
-s32 old=gCur3DSpriteEngine;
-gCur3DSpriteEngine=g3DSpriteEngineSub;
-data_ov007_02221e08=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,u8 **,0x1c)+0x3980,M2C_FIELD(gCurrentMap,u8 **,0)+0x5120);
-gCur3DSpriteEngine=old;
+/* Rasterise the current map's name into the sub engine's map-name text tiles and
+   cache how many tiles wide it is, so the editor panel can centre it. */
+void MapEditor_RenderMapName(void) {
+    extern s32 gCur3DSpriteEngine, g3DSpriteEngineSub;
+    extern void *gCurrentMap;
+    extern s32 gMapEditorMapNameTileWidth;
+    s32 RenderTextToTiles(void *, void *);
+    s32 savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    gMapEditorMapNameTileWidth = RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine, u8 **, DS3D_ENGINE_TEXTURE) + (MAP_EDITOR_MAP_NAME_TILE << 5), M2C_FIELD(gCurrentMap, u8 **, 0) + MAP_NAME);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 typedef struct MapEditorBankFlags {

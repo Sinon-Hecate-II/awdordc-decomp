@@ -210,7 +210,7 @@ void **func_02099088(s32 arg0) {
     return result;
 }
 
-void func_020990c0(void) {
+void DeleteAllFaceChildren(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102fd4;
     DeleteSpriteObjectsOfClass(&data_02102fd4);

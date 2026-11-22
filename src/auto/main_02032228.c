@@ -310,7 +310,7 @@ if(!M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,NAS_CONN_TASK_ID))retur
 OS_JoinThread(M2C_FIELD(&gNasConnection,void **,8)+NAS_CONN_TASK);
 }
 
-void func_02032b10(void) {
+void FreeNasConnection(void) {
 M2C_UNK HttpClientCleanup(s32); extern M2C_UNK gNasConnection; extern M2C_UNK data_020fb34c;
 void (*callback)(void *,void *,s32);
 if(!M2C_FIELD(&gNasConnection,void **,8))return;

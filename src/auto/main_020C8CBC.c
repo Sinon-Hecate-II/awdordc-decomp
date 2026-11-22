@@ -23,7 +23,7 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void func_020868ac(s32,s32);s32 IsLastCampaignMap(s32);void StartBattleRecord(s32);func_02086844(a,0);func_02086878(a,0);func_020868ac(a-225,0);if(!IsLastCampaignMap(a))return;StartBattleRecord(8);}
+s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void SetCampaignMapSaved(s32,s32);s32 IsLastCampaignMap(s32);void StartBattleRecord(s32);func_02086844(a,0);func_02086878(a,0);SetCampaignMapSaved(a-225,0);if(!IsLastCampaignMap(a))return;StartBattleRecord(8);}
 
 void func_020c8d50(M2C_UNK arg0) {
     s32 GetMapRecordBuffer();
@@ -198,13 +198,13 @@ void func_020c9120(s16 arg0, s32 arg1) {
 
 void func_020c9168(void *arg0) {
     M2C_UNK func_020be488(s32);
-    s32 func_020c7ea8(s32);
+    s32 GetCampaignMapSaveType(s32);
     M2C_UNK func_020c8d0c(s32);
     s32 temp_r4;
     s32 temp_r5;
 
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x34);
-    temp_r4 = func_020c7ea8(temp_r5);
+    temp_r4 = GetCampaignMapSaveType(temp_r5);
     func_020c8d0c(temp_r5);
     func_020be488(temp_r4);
 }

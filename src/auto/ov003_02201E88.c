@@ -250,9 +250,9 @@ s32 func_ov003_02202408(s32 arg0) {
 
 void func_ov003_02202414(void *arg0) {
     M2C_UNK Link_SendPacket(void *, M2C_UNK);
-    M2C_UNK func_02084dcc(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK ReadActivePlayerRecord(M2C_UNK, s32, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    func_02084dcc(0, M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+    ReadActivePlayerRecord(0, M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x110) = 0;
     Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
     Link_FlushSend();

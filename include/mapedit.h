@@ -27,4 +27,13 @@ typedef struct MapEditList {
     void *panel;       /* +0x44 the panel the list is drawn in */
 } MapEditList;
 
+/* Offsets of the list widget object the MapEditList members above sit in, from
+ * the object's base (+0x00 holds the widget's vtable). */
+#define MAP_EDIT_LIST_LAYOUT        0x34 /* void *: softkey layout table of the current region */
+#define MAP_EDIT_LIST_LABEL         0x38 /* void *: the label of the selected entry */
+#define MAP_EDIT_LIST_SELECTED      0x3C /* s8: index of the selected entry */
+#define MAP_EDIT_LIST_SCROLL_POS    0x3E /* s16: current scroll position of the list */
+#define MAP_EDIT_LIST_SCROLL_TARGET 0x40 /* s16: the position the list is scrolling to */
+#define MAP_EDIT_LIST_PANEL         0x44 /* void *: the panel the list is drawn in */
+
 #endif

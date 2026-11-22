@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
-extern u8 data_ov000_021df7e4[64];
+extern u8 gAiUnitLoadCounts[64];
 extern u8 *gAiCommandState;
 extern void **gCurrentMap;
 extern u16 gPlayerUnitIdBase[];
@@ -53,8 +53,8 @@ void ClearAiUnitActions(void) {
     }
 }
 
-void func_ov000_0219a6c8(void) {
-s32 i=0; u8 *p=data_ov000_021df7e4; u8 zero=i;
+void ClearAiUnitLoadCounts(void) {
+s32 i=0; u8 *p=gAiUnitLoadCounts; u8 zero=i;
 do { i++; *p++=zero; } while(i<64);
 }
 

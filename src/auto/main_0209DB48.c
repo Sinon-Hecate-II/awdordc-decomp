@@ -25,7 +25,7 @@ typedef struct {
 void func_0209db48(void){
 void AppendSpriteDescToOam(u16,u16,u16,s32);void func_01ff8930(s16,s16,u16,u16,u16,s32);
 void func_01ff8a8c(u16,u16,u16,s32);void func_01ff8c0c(s16,s16,u16,u16,u16,s32);
-void func_0209daec(void);
+void Reset3DSpriteListsOnBothEngines(void);
 extern void *g3DSpriteEngineSub,*g3DSpriteEngineMain,*data_027e01d8;
 void *cur,*saved; s32 i;
 saved=data_027e01d8;i=0;
@@ -46,7 +46,7 @@ cur=M2C_FIELD(cur,void **,0);
 }
 i++;
 }while(i<2);
-data_027e01d8=saved;func_0209daec();
+data_027e01d8=saved;Reset3DSpriteListsOnBothEngines();
 }
 
 s32 func_0209dc48(void) {
@@ -246,7 +246,7 @@ u8 IsTaskSpriteRunning(M2C_UNK arg0) {
     extern M2C_UNK gTaskSpriteClass;
     u8 var_r0;
 
-    if (func_01ffa860(&gTaskSpriteClass, arg0) != 0) {
+    if (Find3DSpriteByClassAndZ(&gTaskSpriteClass, arg0) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -544,9 +544,9 @@ void **Alloc3DSprite(s32 arg0) {
 }
 
 void FindScenePanel(M2C_UNK arg0) {
-    M2C_UNK func_01ffa860(M2C_UNK *, M2C_UNK);
+    M2C_UNK Find3DSpriteByClassAndZ(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0211f810;
-    func_01ffa860(&data_0211f810, arg0);
+    Find3DSpriteByClassAndZ(&data_0211f810, arg0);
 }
 
 void func_0209e9f4(void) {

@@ -614,7 +614,24 @@ if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED)==1)func_02008f10(0,0,0,0);
 M2C_FIELD(voice,s32 *,STREAM_VOICE_ACTIVE)=0;
 }
 
-void func_0202bc1c(void){M2C_UNK Sound_StopChannels(s32,s32,s32,s32);s32 Sound_GetCommandCounter();M2C_UNK Sound_FlushCommands(s32);M2C_UNK Sound_WaitForCommand(s32);extern M2C_UNK gStreamSoundState,gStreamVoice;s32 r;void *p=&gStreamVoice;s32 channel;if(!M2C_FIELD(&gStreamSoundState,s32 *,72))return;channel=M2C_FIELD(p,s32 *,44);Sound_StopChannels(M2C_FIELD(p,s32 *,36),M2C_FIELD(p,s32 *,40),channel>=0?1<<channel:0,0);r=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(r);}
+/* Stop the streamed voice's hardware channels and wait for the sound driver to
+ * apply the stop; the voice itself stays open. */
+void StopStreamChannels(void) {
+    M2C_UNK Sound_StopChannels(s32, s32, s32, s32);
+    s32 Sound_GetCommandCounter();
+    M2C_UNK Sound_FlushCommands(s32);
+    M2C_UNK Sound_WaitForCommand(s32);
+    extern M2C_UNK gStreamSoundState, gStreamVoice;
+    s32 mark;
+    void *voice = &gStreamVoice;
+    s32 channel;
+    if (!M2C_FIELD(&gStreamSoundState, s32 *, STREAM_STATE_VOICE)) return;
+    channel = M2C_FIELD(voice, s32 *, STREAM_VOICE_CHANNEL);
+    Sound_StopChannels(M2C_FIELD(voice, s32 *, STREAM_VOICE_MASK_A), M2C_FIELD(voice, s32 *, STREAM_VOICE_MASK_B), channel >= 0 ? 1 << channel : 0, 0);
+    mark = Sound_GetCommandCounter();
+    Sound_FlushCommands(SOUND_FLUSH_BLOCK);
+    Sound_WaitForCommand(mark);
+}
 
 #pragma opt_common_subs off
 void func_0202bc7c(void) {

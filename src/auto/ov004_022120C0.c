@@ -193,30 +193,33 @@ void DrawWindowFrameBar(s32 x, s32 y, s32 tileBase)
   AddSprite((u16)x,(u16)y,(u16)tileBase,&gSpriteDesc32x16,11);
 }
 
-void func_ov004_0221285c(void) {
+/* Reset the sprite bank state of the sub 3D engine (Reset3DSpriteBankState acts
+ * on whatever gCur3DSpriteEngine points at), then restore the engine that was
+ * current.  The loop visits both engines but only the sub engine is reset. */
+void ResetSub3DSpriteBankState(void) {
     M2C_UNK Reset3DSpriteBankState();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    s32 temp_r7;
-    s32 var_r1;
-    s32 var_r8;
+    s32 savedEngine;
+    s32 engine;
+    s32 i;
 
-    temp_r7 = gCur3DSpriteEngine;
-    var_r8 = 0;
+    savedEngine = gCur3DSpriteEngine;
+    i = 0;
     do {
-        if (var_r8 == 0) {
-            var_r1 = g3DSpriteEngineMain;
+        if (i == 0) {
+            engine = g3DSpriteEngineMain;
         } else {
-            var_r1 = g3DSpriteEngineSub;
+            engine = g3DSpriteEngineSub;
         }
-        gCur3DSpriteEngine = var_r1;
-        if (var_r1 == g3DSpriteEngineSub) {
+        gCur3DSpriteEngine = engine;
+        if (engine == g3DSpriteEngineSub) {
             Reset3DSpriteBankState();
         }
-        var_r8 += 1;
-    } while (var_r8 < 2);
-    gCur3DSpriteEngine = temp_r7;
+        i += 1;
+    } while (i < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 /* Per-frame wait: once a button or the touch screen is pressed, or after 900

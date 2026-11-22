@@ -1,5 +1,6 @@
 /* 71 functions from 0x02091E04 to 0x02092DF4 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #include "battle_map.h"
 extern u16 gPlayerUnitIdBase[];
 extern void **gCurrentMap;
@@ -34,18 +35,22 @@ s8 GetMenuCursor(void) {
     return M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D);
 }
 
-s32 func_02091e70(s32 arg0) {
+/* First cell x where the message text line of scene panel `panelIndex` starts: a
+ * message drawn on a single screen starts at cell 2 in panel mode 1 and cell 8 in
+ * panel mode 0; a message spanning both screens (or none) starts at cell 2; any
+ * other sprite count starts at cell 0. */
+s32 GetScenePanelTextLineX(s32 panelIndex) {
     s32 Get3DSpriteCount();
-    s32 temp_r0;
-    u8 temp_r0_2;
-    void *temp_r4;
-    temp_r4 = (void *)GetScenePanelState(arg0);
-    temp_r0 = Get3DSpriteCount();
-    switch (temp_r0) {
+    ScenePanelState *panel;
+    s32 spriteCount;
+    u8 mode;
+    panel = (ScenePanelState *)GetScenePanelState(panelIndex);
+    spriteCount = Get3DSpriteCount();
+    switch (spriteCount) {
     case 1:
-        temp_r0_2 = M2C_FIELD(temp_r4, u8 *, 7);
-        if (temp_r0_2 == 1) return 2;
-        if (temp_r0_2 == 0) return 8;
+        mode = panel->mode;
+        if (mode == 1) return 2;
+        if (mode == 0) return 8;
         break;
     case 0:
     case 2:
@@ -271,22 +276,25 @@ void OnMapScrollDone(void *arg0) {
     }
 }
 
-s32 func_020922cc(void *arg0) {
+/* Map-script command: pan or step the map view to the tile the command's two
+ * operands name (a nonzero third operand pans), then wait until the scroll has
+ * finished before running the next command. */
+s32 MapScriptMoveViewToTile(void *script) {
     s32 IsMessageBoxActive();
     M2C_UNK StepMapViewToTile(s16, s16);
     M2C_UNK PanMapViewToTile(s16, s16);
-    void *temp_r1;
+    void *command;
 
     if (IsMessageBoxActive() == 0) {
-        temp_r1 = M2C_FIELD(arg0, void **, 4);
-        if (M2C_FIELD(temp_r1, s32 *, 0xC) != 0) {
-            PanMapViewToTile(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+        command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+        if (M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2) != 0) {
+            PanMapViewToTile(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1));
         } else {
-            StepMapViewToTile(M2C_FIELD(temp_r1, s16 *, 8), M2C_FIELD(temp_r1, s16 *, 0xA));
+            StepMapViewToTile(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1));
         }
-        M2C_FIELD(arg0, void (**)(void *), 8) = OnMapScrollDone;
+        M2C_FIELD(script, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = OnMapScrollDone;
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -357,7 +365,7 @@ s32 func_02092460(void *arg0) {
 /* Map-script command: wait until no 3D sprite of the command's class is left on
  * the main screen.  Returns 0 while one remains, 1 once it is gone. */
 s32 WaitForMain3DSpriteRemoved(void *script) {
-    s32 Find3DSpriteById(s32);
+    s32 Find3DSpriteByClassOnCurrentEngine(s32);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *savedEngine;
@@ -365,7 +373,7 @@ s32 WaitForMain3DSpriteRemoved(void *script) {
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM)) != 0) {
+    if (Find3DSpriteByClassOnCurrentEngine(M2C_FIELD(M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_PARAM)) != 0) {
         found = 1;
     } else {
         found = 0;
@@ -381,7 +389,7 @@ s32 WaitForMain3DSpriteRemoved(void *script) {
 /* Script command: look the command's 3D sprite id up in the sub engine and stay
    on the command until that sprite has gone, then advance the script. */
 s32 Wait3DSpriteSubGone(void *ctx) {
-    s32 Find3DSpriteById(s32);
+    s32 Find3DSpriteByClassOnCurrentEngine(s32);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     void *savedEngine;
@@ -389,7 +397,7 @@ s32 Wait3DSpriteSubGone(void *ctx) {
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(ctx, void **, 4), s32 *, 4)) != 0) {
+    if (Find3DSpriteByClassOnCurrentEngine(M2C_FIELD(M2C_FIELD(ctx, void **, 4), s32 *, 4)) != 0) {
         found = 1;
     } else {
         found = 0;
@@ -403,8 +411,8 @@ s32 Wait3DSpriteSubGone(void *ctx) {
 }
 
 s32 func_0209255c(void *arg0) {
-    s32 Find3DSpriteById(s32);
-    if (Find3DSpriteById(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
+    s32 Find3DSpriteByClassOnCurrentEngine(s32);
+    if (Find3DSpriteByClassOnCurrentEngine(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 4)) != 0) {
         return 0;
     }
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
@@ -474,7 +482,7 @@ M2C_FIELD(sequence,s32 *,4)+=16;return 0;
 s32 ShowMessageText(s32 textId) {
  s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
  s32 func_02099dcc(s32); void SetMessageBoxState(s32); s32 IsMessageBoxActive(void);
- u8 Get3DSpriteTarget(void); s32 func_02091e70(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
+ u8 Get3DSpriteTarget(void); s32 GetScenePanelTextLineX(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK MarkSpriteLayer1Dirty(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
@@ -488,7 +496,7 @@ s32 ShowMessageText(s32 textId) {
  if(Get3DSpriteTarget()==0 && gCur3DSpriteEngine!=g3DSpriteEngineMain)goto next;
  if(Get3DSpriteTarget()==1 && gCur3DSpriteEngine!=g3DSpriteEngineSub)goto next;
  if(Get3DSpriteTarget()==3 && gCur3DSpriteEngine!=savedEngine)goto next;
- style=func_02091e70(2); managerA=(void *)Get3DSpriteManager();managerB=(void *)Get3DSpriteManager();
+ style=GetScenePanelTextLineX(2); managerA=(void *)Get3DSpriteManager();managerB=(void *)Get3DSpriteManager();
  layerA=(void *)GetScenePanelState(2);layerB=(void *)GetScenePanelState(2);layerC=(void *)GetScenePanelState(2);
  attr=M2C_FIELD(layerB,u8 *,6);attr=attr<<28;attr=attr>>16;
  sprite=(void *)CreateMessageSprite((s16)style,1,M2C_FIELD(managerA,u8 *,0x4c),
@@ -613,19 +621,23 @@ func_02092b14(arg0);
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-void func_02092bac(void *arg0) {
-extern void **gCurrentMap;
-int func_020d1a74(u8);
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)!=12)return;
-if(!func_020d1a74(M2C_FIELD(arg0,u8 *,0x11)))return;
-if(M2C_FIELD(*gCurrentMap,u16 *,0x52a4)==1)M2C_FIELD(arg0,s32 *,8)=0;
+/* Map-script wait callback: keeps the script on its command until the map reaches
+ * state 12 and the player id saved at MAP_SCRIPT_STATE_PLAYER has an army variant;
+ * when player 1 is the current player it clears the wait callback, ending the
+ * command. */
+void WaitForPlayerArmyVariant(void *state) {
+    extern void **gCurrentMap;
+    int IsPlayerArmyVariantSet(u8);
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) != 12) return;
+    if (!IsPlayerArmyVariantSet(M2C_FIELD(state, u8 *, MAP_SCRIPT_STATE_PLAYER))) return;
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) == 1) M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_WAIT) = 0;
 }
 
 s32 func_02092c08(void *arg0) {
-void func_02092bac(void *);
+void WaitForPlayerArmyVariant(void *);
 M2C_FIELD(arg0,s8 *,0x11)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-M2C_FIELD(arg0,void (**)(void *),8)=func_02092bac;
-func_02092bac(arg0);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+M2C_FIELD(arg0,void (**)(void *),8)=WaitForPlayerArmyVariant;
+WaitForPlayerArmyVariant(arg0);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
 s32 func_02092c40(void *arg0) {

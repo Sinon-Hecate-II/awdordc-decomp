@@ -190,13 +190,14 @@ s32 AppendHttpHeader(M2C_UNK buffer, M2C_UNK *name, M2C_UNK *value) {
     return 0;
 }
 
-s32 AppendChar(s32 p,s32 c) {
-s32 ghiAppendDataToBuffer(s32,s32 *,s32,...);
-extern M2C_UNK sAssertBuffer,gGhttpBufferFileName,data_020fce7c;
-u8 v=c;
-if(!p)AssertFailed(&sAssertBuffer,&gGhttpBufferFileName,&data_020fce7c,0x131);
-if(!p)return 0;
-return ghiAppendDataToBuffer(p,(s32 *)&v,1);
+/* Append one character to a ghttp send buffer; asserts the buffer is non-null first. */
+s32 ghiAppendCharToBuffer(s32 buffer, s32 c) {
+    s32 ghiAppendDataToBuffer(s32, s32 *, s32, ...);
+    extern M2C_UNK sAssertBuffer, gGhttpBufferFileName, gGhiAppendCharToBufferName;
+    u8 v = c;
+    if (!buffer) AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &gGhiAppendCharToBufferName, 0x131);
+    if (!buffer) return 0;
+    return ghiAppendDataToBuffer(buffer, (s32 *)&v, 1);
 }
 
 void AppendInt(s32 a,s32 b) {
@@ -313,11 +314,11 @@ void ghiCallPostCallback(GHIConnection *connection) {
     connection->postCallback(connection->request, connection->postOffset, connection->postLength, connection->postIndex, Vector_GetCount((s32)connection->postItems), connection->callbackParam);
 }
 
-void func_0204a608(void) {
+void ghiInitialize(void) {
 
 }
 
-void func_0204a60c(void) {
+void ghiCleanup(void) {
 
 }
 

@@ -602,14 +602,14 @@ s32 func_020c5b10(s32 arg0) {
     return arg0;
 }
 
-void func_020c5b24(void) {
+void SaveBattleCursorPosition(void) {
     extern M2C_UNK gBattleHelpPanel;
     extern void **gCurrentMap;
     M2C_FIELD(&gBattleHelpPanel, s16 *, 2) = (s16) M2C_FIELD(*gCurrentMap, s16 *, 0x52D8);
     M2C_FIELD(&gBattleHelpPanel, s16 *, 4) = (s16) M2C_FIELD(*gCurrentMap, s16 *, 0x52DA);
 }
 
-void func_020c5b5c(void) {
+void RestoreBattleCursorPosition(void) {
 extern M2C_UNK gBattleHelpPanel;
 extern void **gCurrentMap;
 M2C_FIELD(*gCurrentMap,s16 *,0x52d8)=M2C_FIELD(&gBattleHelpPanel,s16 *,2);

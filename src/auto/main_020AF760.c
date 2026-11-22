@@ -141,10 +141,10 @@ void UpdateSlotEffectSound(s32 effect, s32 frame) {
     PlaySlotScriptedSound(effect, gSoundLevelVolumes[variant], 0);
 }
 
-void func_020af9cc(s32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK func_02090034(s32,s32); extern M2C_UNK gEffectTable;
+void StopEffectSlotSound(s32 arg0,s32 arg1,s32 arg2) {
+M2C_UNK StopSlotSound(s32,s32); extern M2C_UNK gEffectTable;
 if(arg2==0 && M2C_FIELD(*(void **)((u8*)&gEffectTable+arg0*0x18),u8 *,0x3d)==3)return;
-func_02090034(arg0,arg1);
+StopSlotSound(arg0,arg1);
 }
 
 /* Plays effect `slot`'s volume sound for the effect's default variant, throttled

@@ -9,7 +9,7 @@ extern const A77cTable data_ov000_021aabb0;
 extern u32 gRecordValues[];
 
 #pragma opt_strength_reduction off
-void PlayUnitMoveSound(void *p) { s32 GetUnitVariantIndex(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:func_02090034(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
+void PlayUnitMoveSound(void *p) { s32 GetUnitVariantIndex(u8,u8); void PlayUnitStepSound(void *);void PlaySoundAtTile(s32,s32,s32);extern s32 *gCurrentMap;extern M2C_UNK gUnitMoveSoundSpecials;s32 idx,mode,x,y;idx=GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8c,u8 *,0x67cd)); x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;x=(s32)(x+((u32)(x>>3)>>28))>>4;y=(s32)(y+((u32)(y>>3)>>28))>>4;switch(mode=*(s32 *)((u8 *)&gUnitMoveSoundSpecials+idx*20)){case 0:break;case 0x8000:PlayUnitStepSound(p);break;case 0x4000:StopSlotSound(0);break;default:PlaySoundAtTile(mode,x,y);break;} }
 #pragma opt_strength_reduction reset
 void UpdateMoveSoundPan(void *);
 /* When a unit starts a step, a walker plays the terrain's footstep sound (its
@@ -115,10 +115,12 @@ default: return 0;
 }
 }
 
-u16 GetRecordTier(s32 a,s32 b) {
-s32 p=GetRecordDefinition(a,b);u32 n=GetRecordValue(a,b);u16 r;
-if(n>=M2C_FIELD(p,u32 *,16))return 3;if(n>=M2C_FIELD(p,u32 *,12))return 2;
-if(n>=M2C_FIELD(p,u32 *,8)) r=1;else r=0;return r;
+/* The tier (0..3) a record's accumulated value has reached: 3 at its gold
+   threshold, 2 at silver, 1 at bronze, and 0 below bronze. */
+u16 GetRecordTier(s32 group,s32 index) {
+RecordDefinition *record=(RecordDefinition *)GetRecordDefinition(group,index);u32 value=GetRecordValue(group,index);u16 tier;
+if(value>=record->gold)return 3;if(value>=record->silver)return 2;
+if(value>=record->bronze) tier=1;else tier=0;return tier;
 }
 
 /* Sum the tier every listed record has reached across the three record groups. */

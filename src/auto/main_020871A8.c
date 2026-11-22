@@ -27,14 +27,18 @@ void DrawSolidQuad(s32 x, s32 y, s32 z, s32 width, s32 height, u16 color) {
     REG_GX_COLOR = GX_RGB_WHITE;
 }
 
-void func_0208726c(s32 *x, s32 *y, s32 angle, s32 dist) {
+/* Writes into *x and *y the offset of the point `dist` away from the centre of
+ * a circle at `angle` (0 points straight up), rounded from the sine/cosine
+ * table's 12-bit values. */
+void GetCirclePointOffset(s32 *x, s32 *y, s32 angle, s32 dist) {
     extern s16 gSinCosTable[];
-    s32 i = (angle >> 4) * 2;
-    s32 a = gSinCosTable[i];
-    s32 b = gSinCosTable[i + 1];
+    s32 index = (angle >> 4) * 2;
+    s32 sine = gSinCosTable[index];
+    s32 cosine = gSinCosTable[index + 1];
     s32 d = -dist;
-    s32 p = -(d * a);
-    s32 q = d * b;
+    s32 p = -(d * sine);
+    s32 q = d * cosine;
+
     *x = ((p >> 11) & 1) + (p >> 12);
     *y = ((q >> 11) & 1) + (q >> 12);
 }
@@ -43,13 +47,13 @@ s32 RuntimeIntDivMod(s32,s32);
 #pragma push
 #pragma optimization_level 4
 #pragma opt_common_subs off
-void DrawGxCircleFan(s32 x,s32 y,s32 z,s32 r,s32 n,u16 color){s32 px,qx,py,qy,i;*(volatile u32*)0x4000500=0;*(volatile u32*)0x4000480=color;if(n&1) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=n;i++){func_0208726c(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
+void DrawGxCircleFan(s32 x,s32 y,s32 z,s32 r,s32 n,u16 color){s32 px,qx,py,qy,i;*(volatile u32*)0x4000500=0;*(volatile u32*)0x4000480=color;if(n&1) {GetCirclePointOffset(&px,&py,0,(s16)r);for(i=1;i<=n;i++){GetCirclePointOffset(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x+px) | ((u32)(u16)(s16)(y+py)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
-px=qx;py=qy;}}else if(n&2) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>1);i++){func_0208726c(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
+px=qx;py=qy;}}else if(n&2) {GetCirclePointOffset(&px,&py,0,(s16)r);for(i=1;i<=(n>>1);i++){GetCirclePointOffset(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
@@ -61,7 +65,7 @@ px=qx;py=qy;}}else if(n&2) {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>1);i+
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x-px) | ((u32)(u16)(s16)(y-py)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
-px=qx;py=qy;}}else {func_0208726c(&px,&py,0,(s16)r);for(i=1;i<=(n>>2);i++){func_0208726c(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
+px=qx;py=qy;}}else {GetCirclePointOffset(&px,&py,0,(s16)r);for(i=1;i<=(n>>2);i++){GetCirclePointOffset(&qx,&qy,(u16)RuntimeIntDivMod(i<<16,n),(s16)r);*(volatile u32*)0x400048c=((u32)(u16)(s16)(y)<<16) + (u32)(u16)(s16)(x);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;
 *(volatile u32*)0x400048c=(u32)(u16)(s16)(x+qx) | ((u32)(u16)(s16)(y+qy)<<16);
 *(volatile u32*)0x400048c=(u32)(u16)(s16)z;

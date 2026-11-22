@@ -34,11 +34,11 @@ void func_0202175c(void) {
 void *ghiResolveHostname(void *hostname) {
     u32 LookupHostAddress(void *);
     void MI_CpuFill8(void *, s32, s32);
-    void func_02019458(void *, void *, s32);
+    void Mb_StringCopyBounded(void *, void *, s32);
     u32 address = LookupHostAddress(hostname);
     if (!address) return 0;
     MI_CpuFill8(&gHostName, 0, 0x101);
-    func_02019458(&gHostName, hostname, 0x101);
+    Mb_StringCopyBounded(&gHostName, hostname, 0x101);
     /* The host entry at +0x20 of the record: name, aliases, address type,
        address length and address list. */
     M2C_FIELD(&gHostRecord, void **, 0x20) = &gHostName;

@@ -255,12 +255,12 @@ void func_020054a0(M2C_UNK arg0) {
     OSi_DoUnlockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_02005504, 1);
 }
 
-void func_020054c0(M2C_UNK arg0) {
+void OSi_UnlockWord(M2C_UNK arg0) {
     void func_020054a0(M2C_UNK);
     func_020054a0(arg0);
 }
 
-void func_020054cc(M2C_UNK arg0) {
+void OSi_TryLockWord(M2C_UNK arg0) {
     M2C_UNK OSi_DoLockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void func_020054ec(void);
     OSi_DoLockByWord(arg0, 0x027FFFE8, (M2C_UNK)func_020054ec, 1);
@@ -292,7 +292,7 @@ void func_0200556c(void) {
     *(u16 *)0x04000204 |= 0x800;
 }
 
-u16 func_02005584(void *arg0) {
+u16 OSi_GetLockOwnerId(void *arg0) {
     return M2C_FIELD(arg0, u16 *, 4);
 }
 
@@ -375,7 +375,7 @@ void *DequeueThread(void *arg0) {
     return temp_r2;
 }
 
-void *func_02005774(void *a, void *b) {
+void *UnlinkThreadFromQueue(void *a, void *b) {
 void *p, *next, *head;
 head=M2C_FIELD(a,void **,0); p=head;
 while(p){ next=M2C_FIELD(p,void **,0x80); if(p==b){
@@ -402,15 +402,28 @@ void *func_020057c8(void *arg0) {
     return temp_r2;
 }
 
-void InsertReadyThread(void *a) {
-extern M2C_UNK gThreadManager;
-void *p, *prev, *head;
-prev=0; head=M2C_FIELD(&gThreadManager,void **,0x2c); p=head;
-while(p && M2C_FIELD(p,u32 *,0x70)<M2C_FIELD(a,u32 *,0x70)){prev=p;p=M2C_FIELD(p,void **,0x68);}
-if(!prev){M2C_FIELD(a,void **,0x68)=head;M2C_FIELD(&gThreadManager,void **,0x2c)=a;}else{M2C_FIELD(a,void **,0x68)=M2C_FIELD(prev,void **,0x68);M2C_FIELD(prev,void **,0x68)=a;}
+/* Insert `thread` into the ready list (THREAD_MANAGER_READY), keeping it ordered by
+ * Thread::priority and chaining through Thread::next. */
+void InsertReadyThread(Thread *thread) {
+    extern M2C_UNK gThreadManager;
+    Thread *p, *prev, *head;
+    prev = 0;
+    head = M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_READY);
+    p = head;
+    while (p && (u32)p->priority < (u32)thread->priority) {
+        prev = p;
+        p = p->next;
+    }
+    if (!prev) {
+        thread->next = head;
+        M2C_FIELD(&gThreadManager, Thread **, THREAD_MANAGER_READY) = thread;
+    } else {
+        thread->next = prev->next;
+        prev->next = thread;
+    }
 }
 
-void func_02005858(void *a) {
+void RemoveReadyThread(void *a) {
 extern M2C_UNK gThreadManager;
 void *prev=0,*p=M2C_FIELD(&gThreadManager,void **,0x2c);
 while(p && p!=a){prev=p;p=M2C_FIELD(p,void **,0x68);}
@@ -424,7 +437,7 @@ if(!prev){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(a,void **,0x68);}els
 void RescheduleThreads(void) {
 extern M2C_UNK gThreadManager;
 extern M2C_UNK gSocketManager;
-s32 GetProcessorMode(void); void *FindNextReadyThread(void); s32 func_02006224(void *); void func_02006270(s32);
+s32 GetProcessorMode(void); void *FindNextReadyThread(void); s32 func_02006224(void *); void SwitchThreadContext(s32);
 void *manager; void *current,*next; void (*cb)(void *,void *);
 if(M2C_FIELD(&gThreadManager,s32 *,4))return;
 manager=&gSocketManager;
@@ -436,7 +449,7 @@ if(M2C_FIELD(current,s32 *,0x64)!=2 && func_02006224(current))return;
 cb=M2C_FIELD(&gThreadManager,void (**)(void *,void *),0);if(cb)cb(current,next);
 cb=M2C_FIELD(manager,void (**)(void *,void *),12);if(cb)cb(current,next);
 M2C_FIELD(&gThreadManager,void **,0x28)=next;
-func_02006270((s32)next);
+SwitchThreadContext((s32)next);
 }
 
 #pragma scheduling off
@@ -483,7 +496,7 @@ s32 func_02005ab0(void) {
 /* Initializes a managed memory-block object (obj) backed by buffer (buf) of (bufLen) bytes, with priority (priority) and callback (callback); registers it in the global block list. */
 void TaskCreate(void *obj,void *callback,s32 owner,u8 *buf,u32 bufLen,s32 priority) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
-void func_020061a0(); void func_02006198();
+void InitThreadContext(); void func_02006198();
 void CpuFill(s32,void *,s32); void func_02005bbc(void);
 s32 state; s32 id; u8 *base;
 state=OS_DisableInterrupts();
@@ -499,7 +512,7 @@ M2C_FIELD(obj,s32 *,0x98)=0;
 *(u32 *)(M2C_FIELD(obj,u8 **,0x94)-4)=0xFDDB597D;
 *M2C_FIELD(obj,u32 **,0x90)=0x7BF9DD5B;
 M2C_FIELD(obj,s32 *,0x9c)=M2C_FIELD(obj,s32 *,0xa0)=0;
-func_020061a0(obj,callback,buf-4);
+InitThreadContext(obj,callback,buf-4);
 M2C_FIELD(obj,s32 *,4)=owner;
 M2C_FIELD(obj,void (**)(void),0x3c)=func_02005bbc;
 CpuFill(0,base+4,bufLen-8);
@@ -514,27 +527,30 @@ OS_RestoreInterrupts(state);
 }
 
 void func_02005bbc(void) {
-    M2C_UNK func_02005bdc(s32, M2C_UNK);
+    M2C_UNK TaskExit(s32, M2C_UNK);
     extern M2C_UNK gThreadManager;
     OS_DisableInterrupts();
-    func_02005bdc(M2C_FIELD(&gThreadManager, s32 *, 0x28), 0);
+    TaskExit(M2C_FIELD(&gThreadManager, s32 *, 0x28), 0);
 }
 
-M2C_UNK func_02005bdc(s32 a,s32 b){
+/* End task `thread` with exit `status`: once the scheduler is up, point the
+ * thread's context at TaskExitThread, mark it ready and switch to it so the exit
+ * runs on its own stack; before that, run the exit path directly. */
+M2C_UNK TaskExit(s32 thread,s32 status){
 extern s32 gThreadManager;
-void func_02005c38(s32);
-void func_020061a0();
-void func_02006270(s32);
+void TaskExitThread(s32);
+void InitThreadContext();
+void SwitchThreadContext(s32);
 if(M2C_FIELD(&gThreadManager,s32 *,28)){
-func_020061a0(a,func_02005c38);
-M2C_FIELD(a,s32 *,4)=b;
-M2C_FIELD(a,s32 *,0)|=128;
-M2C_FIELD(a,s32 *,100)=1;
-func_02006270(a);
-}else func_02005c38(b);
+InitThreadContext(thread,TaskExitThread);
+M2C_FIELD(thread,s32 *,4)=status;
+M2C_FIELD(thread,s32 *,0)|=128;
+M2C_FIELD(thread,s32 *,0x64)=THREAD_STATE_READY;
+SwitchThreadContext(thread);
+}else TaskExitThread(status);
 }
 
-void func_02005c38(s32 a){
+void TaskExitThread(s32 a){
 extern s32 gThreadManager;
 void TerminateCurrentThread(void);
 void *p=*M2C_FIELD(&gThreadManager,void ***,8);
@@ -543,20 +559,23 @@ if(cb){M2C_FIELD(p,void (**)(s32),0xB4)=NULL;cb(a);
 OS_DisableInterrupts();}TerminateCurrentThread();
 }
 
+/* Terminate the running thread: stop the scheduler, release the mutexes it still
+ * holds, unlink it from its wait and ready queues, wake every thread joining it,
+ * then let the scheduler run again and halt on the next reschedule. */
 void TerminateCurrentThread(void){
 extern s32 gThreadManager;
 void OS_DisableScheduler(void);
-void func_02006644(void *);
-void func_02005858(void *);
+void ReleaseThreadMutexes(void *);
+void RemoveReadyThread(void *);
 void OS_WakeupThread(void *);
 void OS_EnableScheduler(void);
 void SystemHalt(void);
 void OS_Reschedule(void);
-void *p=*M2C_FIELD(&gThreadManager,void ***,8);
-OS_DisableScheduler();func_02006644(p);
-if(M2C_FIELD(p,void **,120)){func_02005774(M2C_FIELD(p,void **,120),p);}func_02005858(p);
-M2C_FIELD(p,s32 *,100)=2;
-OS_WakeupThread(p+156);OS_EnableScheduler();OS_Reschedule();SystemHalt();
+void *thread=*M2C_FIELD(&gThreadManager,void ***,8);
+OS_DisableScheduler();ReleaseThreadMutexes(thread);
+if(M2C_FIELD(thread,void **,0x78)){UnlinkThreadFromQueue(M2C_FIELD(thread,void **,0x78),thread);}RemoveReadyThread(thread);
+M2C_FIELD(thread,s32 *,0x64)=THREAD_STATE_FINISHED;
+OS_WakeupThread(thread+THREAD_JOIN_QUEUE);OS_EnableScheduler();OS_Reschedule();SystemHalt();
 }
 
 /* Terminate `thread` from outside: if it is the thread that is running, take
@@ -570,8 +589,8 @@ void TerminateThread(void *thread) {
     extern s32 gThreadManager;
     s32 irqState = OS_DisableInterrupts();
     if (M2C_FIELD(&gThreadManager, void **, THREAD_MANAGER_CURRENT) == thread) TerminateCurrentThread();
-    OS_DisableScheduler(); func_02006644(thread); CancelThreadWakeTimer(thread);
-    if (M2C_FIELD(thread, void **, 120)) { func_02005774(M2C_FIELD(thread, void **, 120), thread); } func_02005858(thread);
+    OS_DisableScheduler(); ReleaseThreadMutexes(thread); CancelThreadWakeTimer(thread);
+    if (M2C_FIELD(thread, void **, 120)) { UnlinkThreadFromQueue(M2C_FIELD(thread, void **, 120), thread); } RemoveReadyThread(thread);
     M2C_FIELD(thread, s32 *, 100) = 2;
     OS_WakeupThread((u8 *)thread + THREAD_JOIN_QUEUE); OS_EnableScheduler(); OS_RestoreInterrupts(irqState); OS_Reschedule();
 }

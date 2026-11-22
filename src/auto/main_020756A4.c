@@ -287,7 +287,7 @@ void func_02076244(M2C_UNK arg0) {
     M2C_UNK func_02081f08();
     M2C_UNK Apply3DSpriteDisplayConfig();
     M2C_UNK Set3DSpriteVramBanks();
-    M2C_UNK func_02090248(M2C_UNK);
+    M2C_UNK FadeOutMusic(M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     s32 MeasureMessageLinesWidth(M2C_UNK, M2C_UNK);
@@ -318,7 +318,7 @@ void func_02076244(M2C_UNK arg0) {
     s32 temp_r1;
     void *var_r0;
 
-    func_02090248(0);
+    FadeOutMusic(0);
     func_02008ef0(0);
     Sound_FlushCommands(0);
     func_02081f08();

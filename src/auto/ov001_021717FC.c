@@ -335,13 +335,15 @@ void Ov001_FreeHighlightTilemap(void) {
     Ov001_FreeAlloc(&sOv001HighlightTilemapBuffer);
 }
 
-void func_ov001_021722dc(s32);
-M2C_UNK Ov001_LoadObjLayoutBlock(s32 a) {
- void MI_CpuCopy32(s32,s32,s32);
- s32 p=Ov001_LoadFile(Ov001_GetLocalizedFileName(sOv001HighlightTilemapPaths[a]),0,4);
- MI_CpuCopy32(p,sOv001HighlightTilemapBuffer,192);
- Ov001_FreeFile(p);
- Ov001_AddTask(1,func_ov001_021722dc,0,120);
+void Ov001_UploadHighlightTilemap(s32);
+/* Copy highlight layout `layout`'s tilemap block into the shared highlight
+ * buffer and start the deferred BG1 upload task. */
+M2C_UNK Ov001_LoadObjLayoutBlock(s32 layout) {
+    void MI_CpuCopy32(s32, s32, s32);
+    s32 block = Ov001_LoadFile(Ov001_GetLocalizedFileName(sOv001HighlightTilemapPaths[layout]), 0, 4);
+    MI_CpuCopy32(block, sOv001HighlightTilemapBuffer, OV001_HIGHLIGHT_TILEMAP_BYTES);
+    Ov001_FreeFile(block);
+    Ov001_AddTask(1, Ov001_UploadHighlightTilemap, 0, 120);
 }
 
 void Ov001_LoadSaveSlotObjLayout(void) {
@@ -354,7 +356,7 @@ void func_ov001_021722c4(void) {
     Ov001_LoadObjLayoutBlock(M2C_FIELD(GetCurrentMapRecord(), u8 *, 0xF4) + 2);
 }
 
-void func_ov001_021722dc(s32 a) {
+void Ov001_UploadHighlightTilemap(s32 a) {
  void GX_LoadBG1Scr(s32,s32,s32);
  void Ov001_PostTaskMessage(s32,s32);
  DC_FlushRange(sOv001HighlightTilemapBuffer,192);

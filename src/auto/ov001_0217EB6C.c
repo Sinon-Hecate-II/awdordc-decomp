@@ -446,13 +446,17 @@ void func_ov001_0217f8c0(void) {
 }
 
 void func_ov001_0217f8c4(void) {
-    extern M2C_UNK func_ov001_0217f900;
+    extern M2C_UNK Ov001_CloseMapListForAccessPoint;
     Ov001_StartFade(3, 1, 1, 8);
     Ov001_StartFade(3, 0, 0x14, 8);
-    Ov001_SetStepCallback(&func_ov001_0217f900);
+    Ov001_SetStepCallback(&Ov001_CloseMapListForAccessPoint);
 }
 
-void func_ov001_0217f900(void) {
+/* Fade-out completion step of the map-list screen: once both engines' fades have
+ * finished, free the option background, disable its visible planes, set the
+ * access-point screen mode and install Ov001_OpenAccessPointMenu as the next
+ * step. */
+void Ov001_CloseMapListForAccessPoint(void) {
     M2C_UNK Ov001_FreeOptionBackground();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);

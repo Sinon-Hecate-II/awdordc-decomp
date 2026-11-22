@@ -542,27 +542,30 @@ void BigNumModPow(void *arg0, void *arg1, void *arg2, s32 arg3, void *arg4) {
     gFree(buf);
 }
 #pragma pop
-void BigNumFromBytes(s16 *dst, u8 *src, s32 count, s32 size) {
+/* Convert `byteCount` big-endian bytes into the `limbCount`-limb big number
+ * `limbs`, zero-filling the top limbs; a leading odd byte goes into the top limb
+ * on its own. (Big numbers are arrays of 16-bit limbs, least significant first.) */
+void BigNumFromBytes(u16 *limbs, const u8 *bytes, s32 byteCount, s32 limbCount) {
     M2C_UNK MI_CpuFill8(u8 *, s32, u32);
-    s16 *var_r4;
-    s32 var_r5;
-    u8 *var_r6;
+    u16 *out;
+    s32 remaining;
+    const u8 *in;
 
-    var_r4 = dst;
-    var_r5 = count;
-    var_r6 = src;
-    MI_CpuFill8((u8 *)var_r4, 0, (u32)(size * 2));
-    var_r6 = var_r6 + (var_r5 - 1);
-    if (var_r5 > 1) {
+    out = limbs;
+    remaining = byteCount;
+    in = bytes;
+    MI_CpuFill8((u8 *)out, 0, (u32)(limbCount * 2));
+    in = in + (remaining - 1);
+    if (remaining > 1) {
         do {
-            var_r5 -= 2;
-            *var_r4 = (s16)(var_r6[0] + (var_r6[-1] << 8));
-            var_r4 += 1;
-            var_r6 -= 2;
-        } while (var_r5 > 1);
+            remaining -= 2;
+            *out = (s16)(in[0] + (in[-1] << 8));
+            out += 1;
+            in -= 2;
+        } while (remaining > 1);
     }
-    if (var_r5 > 0) {
-        *var_r4 = (s16)var_r6[0];
+    if (remaining > 0) {
+        *out = (s16)in[0];
     }
 }
 

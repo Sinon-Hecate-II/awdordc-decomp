@@ -29,7 +29,7 @@ void MapSelectList_Init(void) {
     void MapSelectList_Redraw(void);
     void func_ov001_0217b130(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_0217b0d4(void);
+    void MapSelectListUpdateBackgroundScroll(void);
     void func_ov001_0217a2f0(void);
     s32 nameEntryMode;
 
@@ -49,7 +49,7 @@ void MapSelectList_Init(void) {
     MapSelectList_InitRows();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_TEXT_PANEL) = (s32)CreateTextPanel((M2C_UNK)0, (M2C_UNK)0);
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_TASK) =
-        (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)func_ov001_0217b0d4, (M2C_UNK)0, (M2C_UNK)0x6e);
+        (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)MapSelectListUpdateBackgroundScroll, (M2C_UNK)0, (M2C_UNK)0x6e);
     MapSelectList_Redraw();
     func_ov001_0217b130();
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217a2f0);
@@ -413,9 +413,9 @@ Ov001_FreeFile(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),void **,8));
 Ov001_DisableVisiblePlanes(1,1);Ov001_DisableVisiblePlanes(0,29);
 *(u32 *)0x04000010=0;*(u32 *)0x04000018=0;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,MAPSELECT_CHOSEN)==0){
-func_ov001_02183fa0();LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xf4));Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
+Ov001_FreeFriendRoster();LoadSaveSlot(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xf4));Ov001_SetNextScreenMode(2,0);Ov001_SetStepCallback(&func_ov001_02181a84);
 }else if(M2C_FIELD(&gMapSelectState,u8 *,0)==4){
-func_ov001_02183fa0();Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);
+Ov001_FreeFriendRoster();Ov001_SetNextScreenMode(0,1);Ov001_SetStepCallback(&Ov001_OpenFriendListScreen);
 }else{
 obj=M2C_FIELD(&gMapSelectState,void **,4);
 func_ov001_02184498(M2C_FIELD(obj,void **,MAPSELECT_ENTRIES)+M2C_FIELD(obj,u8 *,MAPSELECT_INDEX)*MAPSELECT_ENTRY_SIZE);

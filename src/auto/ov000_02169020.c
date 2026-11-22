@@ -177,7 +177,7 @@ void *CreateUnitMoveForUnit(u8 *unit) {
 void *CreateUnitMove(s32 x,s32 y,s32 owner,s32 kind,s32 direction) {
  s32 FindFreeUnitMoveSlot(void);
  void *CreateSpriteFromClass(M2C_UNK *,s32);
- s32 func_ov000_02169f08(void *);
+ s32 GetUnitMoveSpeed(void *);
  void InitUnitMoveSprites(void *);
  extern M2C_UNK gUnitMoveClass;
  void *p;
@@ -191,7 +191,7 @@ void *CreateUnitMove(s32 x,s32 y,s32 owner,s32 kind,s32 direction) {
  M2C_FIELD(p,u8 *,UNIT_MOVE_KIND)=kind;
  M2C_FIELD(p,u8 *,UNIT_MOVE_OWNER)=owner;
  M2C_FIELD(p,u8 *,UNIT_MOVE_DIRECTION)=direction;
- M2C_FIELD(p,u16 *,UNIT_MOVE_SPEED)=func_ov000_02169f08(p);
+ M2C_FIELD(p,u16 *,UNIT_MOVE_SPEED)=GetUnitMoveSpeed(p);
  InitUnitMoveSprites(p);
  return p;
 }
@@ -377,11 +377,14 @@ case MOVE_DIR_UP:y--;break;
 }
 }
 
-s32 MovePathEndsInAttack(s8 *p) {
- loop: switch(*p++) {
- case 9: p++; goto loop;
- case -1: case 4: return 0;
- case 10: return 1;
+/* Whether a movement path ends by attacking the unit on its last cell: walk the
+ * path, skipping the extra byte of each hold step (9), and stop at MOVE_DIR_ATTACK
+ * (an attack) or at either end code (no attack). */
+s32 MovePathEndsInAttack(s8 *path) {
+ loop: switch (*path++) {
+ case 9: path++; goto loop;   /* skip the step's extra byte */
+ case MOVE_DIR_NONE: case MOVE_DIR_STOP: return 0;
+ case MOVE_DIR_ATTACK: return 1;
  default: goto loop;
  }
 }
@@ -551,14 +554,16 @@ s32 func_ov000_02169ec0(M2C_UNK p) {
  return M2C_FIELD(data_ov000_021aec88,s32 *,GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD))*20);
 }
 
-s32 func_ov000_02169f08(void *p) {
+/* The variant's unit-move speed: the step duration in frames from the unit-variant
+ * move record, doubled while fast animation is on, returned as a signed half. */
+s32 GetUnitMoveSpeed(void *move) {
  s32 GetUnitVariantIndex(s32,s32);
  s32 IsFastAnimation(void);
- extern M2C_UNK data_ov000_021aec90;
+ extern M2C_UNK gUnitMoveStepSpeeds;
  s32 value;
- void *base=M2C_FIELD(gCurrentMap,void **,0);
- s32 index=GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(base+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD));
- value=M2C_FIELD(&data_ov000_021aec90,u8 *,index*20);
+ void *map=M2C_FIELD(gCurrentMap,void **,0);
+ s32 variant=GetUnitVariantIndex(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(map+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF));
+ value=M2C_FIELD(&gUnitMoveStepSpeeds,u8 *,variant*UNIT_MOVE_SOUND_RECORD_SIZE);
  if(IsFastAnimation()!=0)value<<=1;
  return (s16)value;
 }

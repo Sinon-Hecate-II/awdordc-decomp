@@ -698,7 +698,7 @@ s32 func_ov010_02229b90(void) {
     return 0;
 }
 
-s32 func_ov010_02229ba8(s32 a,s32 b,s32 c) {
+s32 CopyActiveOnlinePlayerRecord(s32 a,s32 b,s32 c) {
 s32 p=GetOnlinePlayerRecord(a);
 if(!p)return 0;MI_CpuCopy8(p+0x2c,b,c);return b;
 }
