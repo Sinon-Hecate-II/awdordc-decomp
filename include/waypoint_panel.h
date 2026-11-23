@@ -50,4 +50,17 @@ enum {
     WAYPOINT_GROUP_4_FIRST = 25
 };
 
+/* The waypoint panel's sprite group (class gWaypointPanelGroupVTable, the object
+ * the panel keeps at +0x68): one face sprite per waypoint slot, a label sprite
+ * per slot plus a trailing label, and the panel's own main face sprite.  The
+ * deleting destructor DestroyWaypointPanelGroup frees the labels and the group;
+ * WaypointPanelGroup_Destructor is its non-freeing twin. */
+typedef struct WaypointPanelGroup {
+    u8 pad00[0x14];
+    void *sprites[12]; /* +0x14 face sprite for each of the 12 slots */
+    void *labels[12];  /* +0x44 label sprite for each slot */
+    void *last;        /* +0x74 trailing label */
+    void *main;        /* +0x78 the panel's main face sprite */
+} WaypointPanelGroup;
+
 #endif

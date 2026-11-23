@@ -107,7 +107,7 @@ MenuInit a={0,1,0x1c0,0x9d0,0x11e5,0x19f6};
 MenuInit b={0,1,1,0x813,0x1024,0x1836};
 void *dst; s32 n; s32 i,j;void *p,*save;
 gHistoryMenu=HeapAllocBlock(100);
-func_02082c84();GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);GX_SetBankForSubOBJ(8);
+GX_ReleaseBankGrants();GX_SetBankForBG(1);GX_SetBankForOBJ(2);GX_SetBankForSubBG(4);GX_SetBankForSubOBJ(8);
 M2C_FIELD(gHistoryMenu,u8 *,0)=0;M2C_FIELD(gHistoryMenu,u8 *,1)=0;M2C_FIELD(gHistoryMenu,u8 *,2)=0;
 for(i=0;i<3;i++){p=HistoryTabAt(i);M2C_FIELD(p,s16 *,2)=0;M2C_FIELD(p,s16 *,0)=M2C_FIELD(p,s16 *,2);M2C_FIELD(p,s16 *,4)=0;}
 for(j=0;j<3;j++)CountTabRecords(j);
@@ -248,7 +248,7 @@ void HistoryMenu_Update(void *widget) {
   M2C_UNK MenuSpriteUpdate(M2C_UNK);
   M2C_UNK PlaySoundEffect(s32);
   void LockInactiveSpriteSlots(void);
-  void func_020b2268(void);
+  void CloseAllActiveSpriteSlots(void);
   M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
   void HistoryMenu_RefreshTab(void);
   extern void *gHistoryMenu;
@@ -324,7 +324,7 @@ sprite=M2C_FIELD(gHistoryMenu,void **,0x5c);SetMenuAnimFrame(sprite,((MenuAnimSp
   if (buttons & 0x2) {
     PlaySoundEffect(0x1000f);
     LockInactiveSpriteSlots();
-    func_020b2268();
+    CloseAllActiveSpriteSlots();
     Sprite_ResumeAnimation(widget);
     return;
   }

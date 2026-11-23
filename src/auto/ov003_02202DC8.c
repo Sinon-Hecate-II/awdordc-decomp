@@ -209,7 +209,7 @@ void func_ov003_02203280(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK EnableMapConfirm();
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    M2C_UNK func_ov003_021f1bd4();
+    M2C_UNK Ov003_SetMapConfirmEnabled();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fac(void *);
     extern u16 gMapConfig;
@@ -226,7 +226,7 @@ void func_ov003_02203280(void *arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
     }
-    func_ov003_021f1bd4();
+    Ov003_SetMapConfirmEnabled();
     base = M2C_FIELD(self, void **, 0x44);
     var_r7 = 0;
     do {

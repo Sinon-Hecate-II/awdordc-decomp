@@ -358,7 +358,7 @@ void Reset3DSpriteEngines(void) {
     M2C_UNK func_02097150(M2C_UNK, M2C_UNK);
     M2C_UNK func_02097164(M2C_UNK, M2C_UNK);
     M2C_UNK func_02097178(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020971c0(M2C_UNK, M2C_UNK);
+    M2C_UNK SetPanelFaceHidden(M2C_UNK, M2C_UNK);
 
     s32 savedEngine;
     s32 engineIndex;
@@ -407,7 +407,7 @@ void Reset3DSpriteEngines(void) {
                 func_02097150(layer, tileBase);
                 func_02097164(layer, layer);
                 func_02097178(layer, 0);
-                func_020971c0(layer, 0);
+                SetPanelFaceHidden(layer, 0);
                 tileBase = tileBase + 0x80;
             }
         }
@@ -488,7 +488,7 @@ u8 GetDialogSuspendCount(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x4B);
 }
 
-void func_02094798(void) {
+void DisableTouchInput(void) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x47) = 1;
 }
 
@@ -504,7 +504,7 @@ void EndDialogSequence(s32 *arg0) {
     s32 IsDialogActive();
     void StartNextQueuedDialog(void);
     M2C_UNK func_02095fd4();
-    M2C_UNK func_020d472c();
+    M2C_UNK ReleaseMapViewHold();
     if (*arg0 == 0) {
         return;
     }
@@ -514,7 +514,7 @@ void EndDialogSequence(s32 *arg0) {
         func_02095fd4();
         StartNextQueuedDialog();
     }
-    func_020d472c();
+    ReleaseMapViewHold();
 }
 
 /* Queue a dialog script: run it at once when no dialog sequence is active,
@@ -556,13 +556,13 @@ void StartNextQueuedDialog(void) {
 void *StartDialogSequence(s32 arg0) {
 s32 FindDialogSequence(s32);
 void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
-M2C_UNK func_02095fd4(void);void func_02094798(void);void func_020d4704(void);
+M2C_UNK func_02095fd4(void);void DisableTouchInput(void);void AcquireMapViewHold(void);
 extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=FindDialogSequence(0);
 if(index==-1)return NULL;
 SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
-func_02095fd4();func_02094798();func_020d4704();
+func_02095fd4();DisableTouchInput();AcquireMapViewHold();
 offset=index*24;
 base=(u8 *)&gDialogSequences;
 *(void **)(base+offset)=(void *)arg0;
@@ -692,11 +692,11 @@ void func_02094b50(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020971c0(M2C_UNK, M2C_UNK);
+    M2C_UNK SetPanelFaceHidden(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_020971c0(arg0, arg1);
+    SetPanelFaceHidden(arg0, arg1);
 }
 
 void func_02094ba0(M2C_UNK arg0) {

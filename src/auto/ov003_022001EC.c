@@ -426,8 +426,8 @@ u8 func_ov003_02200ca8(void) {
 }
 
 void func_ov003_02200cd4(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x4D4C5342, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x4D4C5342, arg0);
 }
 
 /* Icon tile offset of a setup-menu entry's value: the value indexes the icon

@@ -172,7 +172,7 @@ DeleteSpriteObject(arg0);
 }
 #pragma opt_common_subs off
 int func_ov005_0221c150(void *arg0) {
-void func_02098cb8(s32,s16,s16,u16,s32,s32);
+void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);
 void AddSprite(u16,u8,u16,void *,s32);
 extern M2C_UNK gCoState,gCoPlayerSlots,gBattleResults,data_02101f4c,data_02101f1c;
 extern void *gCur3DSpriteEngine;
@@ -189,7 +189,7 @@ else enabled=1;
 if (enabled == 0) goto drawRows;
 {
 s32 x=M2C_FIELD(arg0,s16 *,0x38)&511;
-func_02098cb8(9,(s16)((x&0xfe00)|((x-1)&511)),0,(u16)(0x4800|((0x388 >> (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),1,5);
+AddFaceSpriteTile(9,(s16)((x&0xfe00)|((x-1)&511)),0,(u16)(0x4800|((0x388 >> (((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),1,5);
 }
 drawRows:
 {
@@ -211,7 +211,7 @@ spriteY=(u8)(rowY+1);
 AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
 id=M2C_FIELD(p++,s8 *,0)-1;
 x2=(coords[0x1d+i]+183)&511;
-func_02098cb8(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
 AddSprite((u16)((x2&0xfe00)|((x2+1)&511)),spriteY,(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 y+=18; i++;
 } while (i < M2C_FIELD(&gBattleResults,u8 *,12));
@@ -236,7 +236,7 @@ spriteY=(u8)(rowY+1);
 AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
 id=M2C_FIELD(p,s8 *,8)-1;
 x2=(coords[0x1d+i]+183)&511;
-func_02098cb8(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
 AddSprite((u16)((x2&0xfe00)|((x2+1)&511)),spriteY,(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 i++; y+=18; p++;
 } while (i < M2C_FIELD(&gBattleResults,u8 *,14));
@@ -261,7 +261,7 @@ spriteY=(u8)(rowY+1);
 AddSprite((u16)((x&0xfe00)|((x-10)&511)),spriteY,(u16)(0x8000|(((id*16+0x220)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f1c,5);
 id=M2C_FIELD(p,s8 *,4)-1;
 x2=(coords[0x1d+i]+183)&511;
-func_02098cb8(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
+AddFaceSpriteTile(0,(s16)x2,(s16)rowY,(u16)((((u32)id<<28)>>16)|(((id*24+0x270)>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),0,5);
 AddSprite((u16)((x2&0xfe00)|((x2+1)&511)),spriteY,(u16)(0x7000|((0x1d8>>(((u32)M2C_FIELD(*(void **)gCur3DSpriteEngine,u16 *,0)<<17)>>30))&1023)),&data_02101f4c,6);
 i++; y+=18; p++;
 } while (i < M2C_FIELD(&gBattleResults,u8 *,13));
@@ -287,9 +287,9 @@ void func_ov005_0221c9d8(void) {
 }
 
 void func_ov005_0221c9e4(M2C_UNK arg0) {
-    s32 func_0209bf28();
+    s32 IsTextSpriteActive();
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    if (func_0209bf28() != 0) {
+    if (IsTextSpriteActive() != 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);

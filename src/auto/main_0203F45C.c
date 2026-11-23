@@ -26,10 +26,10 @@ if(M2C_FIELD(GetConnection(),s32 *,416)!=4||M2C_FIELD(GetConnection(),s32 *,516)
 M2C_FIELD(GetConnection(),s32 *,520)=0;M2C_FIELD(GetConnection(),u8 *,423)=0;M2C_FIELD(GetConnection(),s32 *,456)=0;M2C_FIELD(GetConnection(),s32 *,444)=0;
 M2C_FIELD(GetConnection(),s32 *,36)=M2C_FIELD(payload+payload[0],s32 *,4);M2C_FIELD(GetConnection(),u16 *,164)=M2C_FIELD(payload+payload[0],s32 *,8);M2C_FIELD(GetConnection(),s32 *,440)=M2C_FIELD(payload+payload[0],s32 *,4);M2C_FIELD((u8 *)GetConnection()+256,u16 *,180)=M2C_FIELD(payload+payload[0],s32 *,8);
 if(M2C_FIELD(GetConnection(),u8 *,21)==1){
-if(AreAllConnectionMembers(payload+1,payload[0])){if(M2C_FIELD(GetConnection(),u8 *,13))func_020407fc(peer,payload);}
-else{func_02040dc8(peer);if(ReportConnectionCommandResult())return 0;TryConnectToPeer(0,0,peer);if(ReportConnectionCommandResult())return 0;break;}}
+if(AreAllConnectionMembers(payload+1,payload[0])){if(M2C_FIELD(GetConnection(),u8 *,13))StoreConnectionCommand(peer,payload);}
+else{CancelJoinRequest(peer);if(ReportConnectionCommandResult())return 0;TryConnectToPeer(0,0,peer);if(ReportConnectionCommandResult())return 0;break;}}
 if(!M2C_FIELD(GetConnection(),u8 *,21)){
-if(M2C_FIELD(GetConnection(),u8 *,13)){func_020407fc(peer,payload);DisconnectAllPeers();if(ReportConnectionCommandResult())return 0;}
+if(M2C_FIELD(GetConnection(),u8 *,13)){StoreConnectionCommand(peer,payload);DisconnectAllPeers();if(ReportConnectionCommandResult())return 0;}
 SetConnectionState(6);func_0203ecb0(0,0,SBServerListGetServer(M2C_FIELD(GetConnection(),s32 *,228),0));if(ReportPeerConnectResult())return 0;
 }else{SetConnectionState(5);if(ReportMatchmakingResult(SendMatchmakingParameter(peer)))return 0;}break;
 case 3:

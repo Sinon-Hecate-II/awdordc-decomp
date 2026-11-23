@@ -14,7 +14,7 @@ extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncodi
  * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
  * could not be set up, 1 once the connection attempt is under way. */
 s32 OpenWfcHttpConnection(s32 timeout){
-M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 func_020219e8(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
+M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 SocketFcntl(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
 if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
 M2C_FIELD(&gWfcNet,void **,16)=HeapAlloc(0,72);
@@ -23,8 +23,8 @@ MI_CpuFill8(M2C_FIELD(&gWfcNet,void **,16),0,72);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=-1;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=func_02021500(2,1,0);
 if(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket<0){HeapFree(0,M2C_FIELD(&gWfcNet,void **,16),0);M2C_FIELD(&gWfcNet,void **,16)=0;return 0;}
-r=func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,3,0);
-func_020219e8(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|4);
+r=SocketFcntl(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,3,0);
+SocketFcntl(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|4);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addrLen=8;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->addrFamily=2;
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->port=0x5000;
@@ -241,11 +241,14 @@ fail:
  return 0;
 }
 
-void func_02036ec0(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g) {
+/* Start a WFC match query: resolve the query's region byte (WFC_REGION_DEFAULT
+ * asks for WFC_REGION_A, any other caller value reads the cartridge's own region
+ * letter from the ROM header's game code) and hand the query to CreateWfcMatch. */
+void CreateWfcMatchForRegion(s32 names,s32 count,s32 typeValue,s32 timeout,s32 flagsOut,s32 countOut,s32 region) {
  M2C_UNK CreateWfcMatch(s32,s32,s32,s32,s32,s32,s8 *);
- s8 x[1];
- switch(g) {case 255: x[0]=65; break; default: x[0]=*(s8 *)0x027ffe0f; break;}
- CreateWfcMatch(a,b,c,d,e,f,x);
+ s8 regionByte[1];
+ switch(region) {case WFC_REGION_DEFAULT: regionByte[0]=WFC_REGION_A; break; default: regionByte[0]=*(s8 *)ROM_HEADER_GAME_CODE_REGION; break;}
+ CreateWfcMatch(names,count,typeValue,timeout,flagsOut,countOut,regionByte);
 }
 
 /* Poll the HTTP request that creates a WFC match: return NONE while no match

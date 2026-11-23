@@ -140,21 +140,24 @@ void func_ov001_0217d13c(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_0217d15c;
+    extern M2C_UNK Ov001_FadeOutWfcErrorScreen;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_0217d15c);
+    Ov001_SetStepCallback(&Ov001_FadeOutWfcErrorScreen);
 }
 
-void func_ov001_0217d15c(void) {
+/* Fade out of the ov001 Wi-Fi error screen: wait for the icon row to start
+ * sliding out, then start both white fades (the sub plane and the main plane
+ * with its background layers and objects) and move to the step that leaves. */
+void Ov001_FadeOutWfcErrorScreen(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK Ov001_LeaveWfcErrorScreen;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_LeaveWfcErrorScreen);
 }
 
@@ -227,7 +230,7 @@ void InitMapListScreen(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern s8 data_ov001_0218f99c[];
     void MapListUpdateBackgroundScroll(void);
-    void func_ov001_0217f514(void);
+    void MapListUpdateRowHighlightTimers(void);
     void Ov001_FadeInMapList(void);
 
     void *profile;
@@ -273,7 +276,7 @@ void InitMapListScreen(void) {
         }
     }
     M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x3c) = Ov001_AddTask(1, (void (*)(void))MapListUpdateBackgroundScroll, 0, 0x6e);
-    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))func_ov001_0217f514, 0, 0x78);
+    M2C_FIELD(M2C_FIELD(&gMapListState, void **, 8), void **, 0x00) = Ov001_AddTask(0, (void (*)(void))MapListUpdateRowHighlightTimers, 0, 0x78);
     MapListRedrawInfoPanel();
     MapList_ApplyRowLayout();
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInMapList);

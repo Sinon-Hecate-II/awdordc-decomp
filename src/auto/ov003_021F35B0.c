@@ -23,34 +23,38 @@ void func_ov003_021f35d8(void *arg0) {
     SetOv003SceneClass(0);
 }
 
-void func_ov003_021f35f8(void *arg0) {
+/* Battle-setup step: set the setup's screen state and mirror the map-select
+ * confirm state.  When the map is confirmed (IsMapConfirmEnabled) the confirm
+ * state is set to enabled and the step returns; otherwise it is set to disabled
+ * and, if the link session is in error, the object plays its back animation. */
+void Ov003_UpdateMapConfirmState(Ov003BattleSetup *setup) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 IsSessionInError();
     s32 func_0208477c();
     s32 IsMapConfirmEnabled();
-    M2C_UNK func_ov003_021f1bd4();
-    M2C_FIELD(arg0, s8 *, 0x34) = 2;
+    M2C_UNK Ov003_SetMapConfirmEnabled();
+    setup->state = 2;
     if (IsMapConfirmEnabled() != 0) {
-        func_ov003_021f1bd4();
+        Ov003_SetMapConfirmEnabled();
         return;
     }
-    func_ov003_021f1be8();
+    Ov003_SetMapConfirmDisabled();
     if ((IsSessionInError() == 0) && (func_0208477c() == 0)) {
         return;
     }
-    SetSpriteAnimation(arg0, 5);
+    SetSpriteAnimation(setup, 5);
 }
 
 void func_ov003_021f3648(void *arg0) {
-    M2C_UNK func_02085054(M2C_UNK, M2C_UNK, void *);
+    M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_02086330();
     M2C_UNK DisableMapConfirm();
     M2C_UNK func_ov003_021f182c();
-    M2C_UNK func_ov003_021f1be8();
-    func_ov003_021f1be8();
+    M2C_UNK Ov003_SetMapConfirmDisabled();
+    Ov003_SetMapConfirmDisabled();
     DisableMapConfirm();
     func_02086330();
-    func_02085054(0, 0x6E0, arg0);
+    CreateMatchNameLabel(0, 0x6E0, arg0);
     if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
         return;
     }
@@ -65,7 +69,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
     M2C_UNK func_020886fc();
     M2C_UNK PlayMusicTrack(M2C_UNK);
     M2C_UNK MapSettings_SetDefaults(M2C_UNK);
-    M2C_UNK func_020bfb74(M2C_UNK);
+    M2C_UNK MapSettings_CopyToGameSettings(M2C_UNK);
     u32 GetMapCategory();
     void SetOv003SceneState(s32);
     M2C_UNK func_ov003_021f1480(s32);
@@ -144,7 +148,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 6:
@@ -157,7 +161,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         temp_r0_5 = M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x40), u8 *, 4);
         var_r0_2 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_2 != 0) {
-            func_020bfb74(0);
+            MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
         func_020886d4();
@@ -173,7 +177,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         temp_r0_6 = M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x40), u8 *, 4);
         var_r0_3 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_3 != 0) {
-            func_020bfb74(0);
+            MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
         func_020886fc();
@@ -188,7 +192,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         temp_r0_7 = M2C_FIELD(M2C_FIELD(temp_r0, M2C_UNK ***, 0x40), u8 *, 4);
         var_r0_4 = PanelHasSelection(M2C_FIELD(temp_r0,void **,0x40));
         if (var_r0_4 != 0) {
-            func_020bfb74(0);
+            MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
         func_020886fc();
@@ -206,7 +210,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_5 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 24:
@@ -222,7 +226,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_6 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 8:
@@ -238,7 +242,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_7 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 14:
@@ -254,7 +258,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_8 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 15:
@@ -270,7 +274,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_9 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 16:
@@ -286,7 +290,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_10 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     case 17:
@@ -302,7 +306,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         if (var_r0_11 == 0) {
             return;
         }
-        func_020bfb74(0);
+        MapSettings_CopyToGameSettings(0);
         MapSettings_SetDefaults(0);
         return;
     default:
@@ -527,7 +531,7 @@ u8 func_ov003_021f4064(void) {
 }
 
 void func_ov003_021f4090(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x4D4C5342, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x4D4C5342, arg0);
 }
 

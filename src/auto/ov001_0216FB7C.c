@@ -225,28 +225,30 @@ void Ov001_MD5_Update(void *state, s32 dataAddress, u32 byteCount) {
 }
 
 #pragma thumb on
-void func_ov001_021707dc(void *arg0, void *arg1) {
+/* Finish the ov001 MD5 digest: append the padding and the message bit count,
+   write the 16-byte digest to `digest`, then clear the context. */
+void Ov001_MD5_Final(u8 *digest, MD5Context *context) {
     void Ov001_MD5_Update(void *, s32, u32);
-    void func_ov001_02171078(u8 *, volatile u32 *, u32);
-    void func_ov001_021710e8(s8 *, s32, u32);
-    extern M2C_UNK data_ov001_0218fe68;
-    u8 sp0[8];
-    u32 temp_r1;
+    void Ov001_StoreWordsBigEndian(u8 *, volatile u32 *, u32);
+    void Ov001_MemSet(s8 *, s32, u32);
+    extern u8 gOv001Md5Padding;
+    u8 bitCount[8];
+    u32 index;
 
-    func_ov001_02171078(sp0, (volatile u32 *)((u8 *)arg1 + 0x10), 8);
-    temp_r1 = (*(u32 *)((u8 *)arg1 + 0x10) >> 3) & 0x3F;
+    Ov001_StoreWordsBigEndian(bitCount, (volatile u32 *)context->count, 8);
+    index = (context->count[0] >> 3) & 0x3F;
     {
-        s32 var_r2;
-        if (temp_r1 < 0x38) {
-            var_r2 = 0x38 - temp_r1;
+        s32 padLength;
+        if (index < MD5_PAD_LIMIT) {
+            padLength = MD5_PAD_LIMIT - index;
         } else {
-            var_r2 = 0x78 - temp_r1;
+            padLength = MD5_BLOCK_SIZE + MD5_PAD_LIMIT - index;
         }
-        Ov001_MD5_Update(arg1, (s32)&data_ov001_0218fe68, (u32)var_r2);
+        Ov001_MD5_Update(context, (s32)&gOv001Md5Padding, (u32)padLength);
     }
-    Ov001_MD5_Update(arg1, (s32)sp0, 8);
-    func_ov001_02171078((u8 *)arg0, (volatile u32 *)arg1, 0x10);
-    func_ov001_021710e8((s8 *)arg1, 0, 0x58);
+    Ov001_MD5_Update(context, (s32)bitCount, 8);
+    Ov001_StoreWordsBigEndian(digest, (volatile u32 *)context->state, 0x10);
+    Ov001_MemSet((s8 *)context, 0, 0x58);
 }
 #pragma thumb off
 

@@ -163,7 +163,7 @@ u8 func_020b846c(M2C_UNK arg0) {
 void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
     u8 func_020b846c(s32);
-    M2C_UNK func_0209b2dc(M2C_UNK, s16, M2C_UNK, s32, s32, s32, s32);
+    M2C_UNK DrawLocalizedTextLine(M2C_UNK, s16, M2C_UNK, s32, s32, s32, s32);
     extern M2C_UNK data_02127c0c;
     extern s32 gListRowDrawOffset;
     extern void *g3DSpriteEngineMain;
@@ -182,7 +182,7 @@ void DrawListRowsAtOffset(s32 arg0, s32 arg1) {
     temp_r6 = data_027e01d8;
     data_027e01d8 = g3DSpriteEngineMain;
     DrawTilemapNumber(3, (s16) (arg0 + 5), M2C_FIELD(data_027e01d8, s32 *, 0x24), arg1 + 1, 0, (s32) var_r4);
-    func_0209b2dc(6, (s16) (arg0 + 5), 1, var_r5, 0, (s32) var_r4, (s32) (u16) gListRowDrawOffset);
+    DrawLocalizedTextLine(6, (s16) (arg0 + 5), 1, var_r5, 0, (s32) var_r4, (s32) (u16) gListRowDrawOffset);
     data_027e01d8 = temp_r6;
     gListRowDrawOffset += 0x24;
 }
@@ -277,13 +277,13 @@ M2C_UNK func_020b8740(void) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
-    M2C_UNK func_020b2268();
+    M2C_UNK CloseAllActiveSpriteSlots();
     void *temp_r4;
     temp_r4 = GetMenuList();
     PlaySoundEffect(0x10018);
     Sprite_ResumeAnimation(temp_r4);
     func_020b21a0();
-    func_020b2268();
+    CloseAllActiveSpriteSlots();
 }
 
 void func_020b876c(void) {

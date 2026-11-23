@@ -83,9 +83,9 @@ void func_ov002_021e8d04(void *arg0, s16 arg1) {
  * frame by the slot variant, and record the country and variant it plays. */
 void InitUnitModel(void *model, s8 country, s8 variant) {
     M2C_UNK func_ov002_021e16bc();
-    M2C_UNK func_ov002_021e26d4(void *);
+    M2C_UNK Ov002_EnableEffectNodes(void *);
     func_ov002_021e16bc(model, country, variant);
-    func_ov002_021e26d4(model);
+    Ov002_EnableEffectNodes(model);
     M2C_FIELD(model, s16 *, UNIT_MODEL_X) = 0;
     M2C_FIELD(model, s16 *, UNIT_MODEL_Y) = 0;
     M2C_FIELD(model, s16 *, UNIT_MODEL_Z) = 0;

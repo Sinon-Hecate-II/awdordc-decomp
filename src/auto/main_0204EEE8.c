@@ -221,7 +221,7 @@ M2C_FIELD(M2C_FIELD(op,void **,8),s32 *,12)=0;
 gpiFree(M2C_FIELD(op,s32 *,8));M2C_FIELD(op,s32 *,8)=0;
 if(gpiPeerConnectionDone(op))gpiFreeBuddyList(connection,op);
 if(--M2C_FIELD(session,s32 *,0x430)<0)AssertFailed(&data_020fdea8,&data_020fde9c,&data_020fdd84,0x204);
-func_02055cd0(connection,func_0204fb2c,refCount);
+gpiWalkBuddyTable(connection,func_0204fb2c,refCount);
 }
 return 0;
 }

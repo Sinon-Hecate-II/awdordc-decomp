@@ -196,14 +196,17 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 CreateMenuUnitSprite(p);gCur3DSpriteEngine=old;
 }
 #pragma optimization_level 4
-void func_ov000_021711a4(void) {
+/* Tear down the win-rule window: clear its two overlay layers on the current
+ * engine, mark both dirty so the engine uploads them empty, and play the close
+ * sound. */
+void UnloadWinRuleWindow(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     PlaySoundEffect(0x10018);
 }
 
@@ -227,12 +230,12 @@ s32 func_ov000_0217122c(s32 arg0) {
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern M2C_UNK data_ov000_021b8cdc;
 s32 IsPlayerPresent(s32);s32 IsPlayerCpu(s32);s32 IsPlayerActive(s32);
 void *GetLocalizedFileName(void *);void LoadNarcFileDecompressed(void *,void *);
-s32 func_02084b08(s32);void LoadRankIconGraphics(s32,s32,s32);
+s32 GetPlayerRank(s32);void LoadRankIconGraphics(s32,s32,s32);
 void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
 void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);
 s32 func_02084ac0(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
-s32 func_02084b58(s32);s32 func_02084ba8(s32);s32 GetFavouriteGroupTextId(s32);s32 GetFavouriteRecordTextId(s32);s32 GetLocalizedText(s32);
-void func_0209b32c(s32,s16,s32,s32,s32,u16,u16);
+s32 GetPlayerFavouriteGroup(s32);s32 GetPlayerFavouriteRecord(s32);s32 GetFavouriteGroupTextId(s32);s32 GetFavouriteRecordTextId(s32);s32 GetLocalizedText(s32);
+void DrawTextLineCore(s32,s16,s32,s32,s32,u16,u16);
 s32 i=arg0-1,off;u8 *p=(u8 *)*gCurrentMap+0x67a4+arg0*140;
 s32 n=i*5,a=p[0x27],b=p[0x1d],t,color;void *dst,*engine;
 if(!IsPlayerPresent(arg0))return 0;
@@ -240,7 +243,7 @@ if(IsPlayerCpu(arg0))return 0;
 LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov000_021b8cdc),(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x28)+(n<<6));
 t=i*12;off=t+0x35c;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
-LoadRankIconGraphics(func_02084b08(i),off<<5,11);
+LoadRankIconGraphics(GetPlayerRank(i),off<<5,11);
 dst=(u8 *)M2C_FIELD(gCur3DSpriteEngine,void * volatile *,0x1c)+((t+0x364)<<5);
 MI_CpuCopy32(GetArmyStateTiles(a),dst,128);
 off=(i+28)<<5;
@@ -248,8 +251,8 @@ CopyToObjPaletteShadow(GetArmyIconPalette(b),off,32);
 if(!IsPlayerActive(arg0))DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
 color=IsPlayerActive(arg0)?0:3;off=(i<<7)+16;engine=*(void * volatile *)&gCur3DSpriteEngine;
 DrawGlyphString(func_02084ac0(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
-func_0209b32c(13,(s16)(n+3),1,GetLocalizedText(GetFavouriteGroupTextId(func_02084b58(i))),0,(u16)color,(u16)(off+80));
-func_0209b32c(19,(s16)(n+3),1,GetLocalizedText(GetFavouriteRecordTextId(func_02084ba8(i))),0,(u16)color,(u16)(off+96));
+DrawTextLineCore(13,(s16)(n+3),1,GetLocalizedText(GetFavouriteGroupTextId(GetPlayerFavouriteGroup(i))),0,(u16)color,(u16)(off+80));
+DrawTextLineCore(19,(s16)(n+3),1,GetLocalizedText(GetFavouriteRecordTextId(GetPlayerFavouriteRecord(i))),0,(u16)color,(u16)(off+96));
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;
 }
 #pragma pop

@@ -19,7 +19,7 @@ typedef struct {
 } SaveInit;
 typedef struct { u8 enabled:1; u8 mode:3; u8 unused:4; } SaveFlags;
 typedef struct { u16 low:7; u16 mode:3; u16 high:6; } SaveMode;
-extern M2C_UNK gGameSettings, data_0215deec, gMovementCostTable;
+extern M2C_UNK gGameSettings, gGameSettingsSaveBuffer, gMovementCostTable;
 
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
@@ -71,20 +71,30 @@ return buf+256;
 #pragma opt_common_subs reset
 void func_020bf798(void) {
     M2C_UNK func_020be718(M2C_UNK *);
-    M2C_UNK func_020be438(s32, M2C_UNK *, s32);
-    extern M2C_UNK data_0215deec;
+    M2C_UNK WriteSaveRecord(s32, M2C_UNK *, s32);
+    extern M2C_UNK gGameSettingsSaveBuffer;
     s32 size = 0x5CC;
-    func_020be718(&data_0215deec);
-    func_020be438(4, &data_0215deec, size);
+    func_020be718(&gGameSettingsSaveBuffer);
+    WriteSaveRecord(4, &gGameSettingsSaveBuffer, size);
 }
 #pragma opt_propagation reset
-M2C_UNK func_020bf7c4(void){
-void func_020bfa08(void);void func_020bfa48(void);
-s32 LoadNewestSaveRecord(s32,void *);void func_020beabc(void *);void InitDefaultGameSettings(void);
-if(!LoadNewestSaveRecord(4,&data_0215deec))return;
-func_020beabc(&data_0215deec);
-if(M2C_FIELD(&gGameSettings,u32 *,0x128)!=0x20070810)InitDefaultGameSettings();
-func_020bfa08();func_020bfa48();
+/* Load the saved game-settings snapshot, restore its values, and initialise defaults if its magic is invalid. */
+M2C_UNK LoadGameSettings(void) {
+    void func_020bfa08(void);
+    void func_020bfa48(void);
+    s32 LoadNewestSaveRecord(s32, void *);
+    void func_020beabc(void *);
+    void InitDefaultGameSettings(void);
+
+    if (!LoadNewestSaveRecord(4, &gGameSettingsSaveBuffer)) {
+        return;
+    }
+    func_020beabc(&gGameSettingsSaveBuffer);
+    if (M2C_FIELD(&gGameSettings, u32 *, 0x128) != GAME_SETTINGS_MAGIC) {
+        InitDefaultGameSettings();
+    }
+    func_020bfa08();
+    func_020bfa48();
 }
 
 void func_020bf814(s32 a){
@@ -122,27 +132,30 @@ if(a==0||a>=15)return 0;
 return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<28)>>29;
 }
 
-void func_020bf8fc(s32 a,s32 b) {
+void SetCoSavedMode(s32 a,s32 b) {
 extern M2C_UNK gCoUnlocked;
 if(a==0)return;if(a>=15)return;
 ((SaveFlags *)&gCoUnlocked)[a].mode=(u8)b;
 }
 
-void ApplyViewZoomOption(M2C_UNK arg0) {
-    M2C_UNK func_0207cfb0(M2C_UNK, M2C_UNK);
+/* Apply the saved map-view zoom option to `view`: the options word's 3-bit zoom
+ * field selects zoom 0 (the zoomed-in value) when it is clear, and otherwise the
+ * zoomed-out level GAME_OPTION_ZOOM_OUT. */
+void ApplyViewZoomOption(void *view) {
+    M2C_UNK SetViewZoomField(void *, s16);
     extern M2C_UNK data_0215d990;
-    u32 temp_r1;
+    u32 zoomOption;
 
-    temp_r1 = (u32) (M2C_FIELD(&data_0215d990, u16 *, 0x2E) << 0x16) >> 0x1D;
-    switch (temp_r1) {                              /* irregular */
+    zoomOption = (u32) (M2C_FIELD(&data_0215d990, u16 *, GAME_OPTIONS_WORD) << 0x16) >> 0x1D;
+    switch (zoomOption) {                              /* irregular */
     case 0:
-        func_0207cfb0(arg0, 0);
+        SetViewZoomField(view, 0);
         return;
     case 1:
-        func_0207cfb0(arg0, 0x80);
+        SetViewZoomField(view, GAME_OPTION_ZOOM_OUT);
         return;
     default:
-        func_0207cfb0(arg0, 0x80);
+        SetViewZoomField(view, GAME_OPTION_ZOOM_OUT);
         return;
     }
 }
@@ -172,8 +185,8 @@ func_020bfa08();
 }
 
 void func_020bfa08(void) {
-    M2C_UNK func_02090640(M2C_UNK, s32);
-    func_02090640(1, func_020bf9e0());
+    M2C_UNK SetMusicVolumeLevel(M2C_UNK, s32);
+    SetMusicVolumeLevel(1, func_020bf9e0());
 }
 
 s32 func_020bfa20(void){return M2C_FIELD(&gGameSettings,u8 *,0x12d);}
@@ -185,9 +198,9 @@ func_020bfa48();
 }
 
 void func_020bfa48(void) {
-    M2C_UNK func_0209066c(M2C_UNK, s32);
+    M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, s32);
     s32 func_020bfa20();
-    func_0209066c(1, func_020bfa20());
+    SetSoundEffectVolumeLevel(1, func_020bfa20());
 }
 
 void *GetBattleRecord(s32 a) {
@@ -218,20 +231,26 @@ else p->entries[i].mode=2;
 }
 }
 
-void func_020bfb74(void *a) {
-if (!a) a=GetMapSettings();
-M2C_FIELD(&gGameSettings,SavePair *,0)=M2C_FIELD(a,SavePair *,0);
-M2C_FIELD(&gGameSettings,SavePair *,4)=M2C_FIELD(a,SavePair *,4);
-M2C_FIELD(&gGameSettings,u32 *,8)=M2C_FIELD(a,u32 *,8);
-M2C_FIELD(&gGameSettings,u32 *,12)=M2C_FIELD(a,u32 *,12);
+/* Copy a map-settings record (gMapSettings when none is given) into the map
+ * settings at the start of gGameSettings: the four player slots, the packed rules
+ * and the packed value limits. */
+void MapSettings_CopyToGameSettings(void *settings) {
+    if (!settings) settings = GetMapSettings();
+    M2C_FIELD(&gGameSettings, SavePair *, 0) = M2C_FIELD(settings, SavePair *, 0);
+    M2C_FIELD(&gGameSettings, SavePair *, 4) = M2C_FIELD(settings, SavePair *, 4);
+    M2C_FIELD(&gGameSettings, u32 *, 8) = M2C_FIELD(settings, u32 *, 8);
+    M2C_FIELD(&gGameSettings, u32 *, 12) = M2C_FIELD(settings, u32 *, 12);
 }
 
-void MapSettings_CopyFromGameSettings(void *a) {
-if (!a) a=GetMapSettings();
-M2C_FIELD(a,SavePair *,0)=M2C_FIELD(&gGameSettings,SavePair *,0);
-M2C_FIELD(a,SavePair *,4)=M2C_FIELD(&gGameSettings,SavePair *,4);
-M2C_FIELD(a,u32 *,8)=M2C_FIELD(&gGameSettings,u32 *,8);
-M2C_FIELD(a,u32 *,12)=M2C_FIELD(&gGameSettings,u32 *,12);
+/* Copy the current game settings' 16-byte player setup block (the four player
+ * entries and the two option words) into the map settings record, or into
+ * gMapSettings when no record is given. */
+void MapSettings_CopyFromGameSettings(void *settings) {
+    if (!settings) settings = GetMapSettings();
+    M2C_FIELD(settings, SavePair *, 0) = M2C_FIELD(&gGameSettings, SavePair *, 0);
+    M2C_FIELD(settings, SavePair *, 4) = M2C_FIELD(&gGameSettings, SavePair *, 4);
+    M2C_FIELD(settings, u32 *, 8) = M2C_FIELD(&gGameSettings, u32 *, 8);
+    M2C_FIELD(settings, u32 *, 12) = M2C_FIELD(&gGameSettings, u32 *, 12);
 }
 
 /* Pick a random map id among the maps a random battle may use: count them,
@@ -265,10 +284,12 @@ s32 NextRandomValue(void);
 return NextRandomValue()%100>80;
 }
 
+/* Roll the tileset a randomly generated map starts on: tileset 1 20% of the
+ * time, tileset 2 or 3 20% each, otherwise tileset 0. */
 s32 RandomTileset(void) {
 s32 NextRandomValue(void);
-s32 n=NextRandomValue()%100;
-if(n>80)return 1;if(n>60)return 2;if(n>40)return 3;return 0;
+s32 roll=NextRandomValue()%100;
+if(roll>80)return 1;if(roll>60)return 2;if(roll>40)return 3;return 0;
 }
 
 /* Pick the starting weather for a randomly generated map from its tileset:
@@ -386,13 +407,13 @@ void func_020c0204(void) {
     M2C_UNK func_02076244();
     M2C_UNK GetLocalizedText(s32);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020bf7c4();
+    M2C_UNK LoadGameSettings();
     M2C_UNK func_020c4910();
     if (func_02076208() != 0) {
         GetLocalizedText(0xC000034D);
         func_02076244();
     }
-    func_020bf7c4();
+    LoadGameSettings();
     AddRecordValue(0x27, 1);
     func_020c4910();
 }

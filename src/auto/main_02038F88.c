@@ -587,19 +587,22 @@ s32 GetLocalPlayerInfo(void) {
     return 0;
 }
 
-s32 ReportNasLoginError(u32 arg0, s32 arg1) {
+/* Report a failed NAS login: record the network error, hand it to the login's
+ * result callback when one is installed, and reset the login state to idle.  Does
+ * nothing when no login context exists or the error code is 0. */
+s32 ReportNasLoginError(u32 errorCode, s32 detail) {
     extern M2C_UNK gNasLogin;
     void SetNetError(s32, s32);
-    void func_02039e60(void);
-    void *p;
-    p = (void *)M2C_FIELD(&gNasLogin, void **, 4);
-    if (p == NULL || arg0 == 0) return;
-    SetNetError(arg0, arg1);
-    p = (void *)M2C_FIELD(&gNasLogin, void **, 4);
-    if (M2C_FIELD(p, void (**)(s32, u8, s32), 0x14) != NULL) {
-        M2C_FIELD(p, void (**)(s32, u8, s32), 0x14)(arg0, 0, M2C_FIELD(p, s32 *, 0x18));
+    void ResetNasLoginState(void);
+    void *context;
+    context = (void *)M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT);
+    if (context == NULL || errorCode == 0) return;
+    SetNetError(errorCode, detail);
+    context = (void *)M2C_FIELD(&gNasLogin, void **, NAS_LOGIN_CONTEXT);
+    if (M2C_FIELD(context, void (**)(s32, u8, s32), NAS_LOGIN_RESULT_CB) != NULL) {
+        M2C_FIELD(context, void (**)(s32, u8, s32), NAS_LOGIN_RESULT_CB)(errorCode, 0, M2C_FIELD(context, s32 *, NAS_LOGIN_RESULT_ARG));
     }
-    func_02039e60();
+    ResetNasLoginState();
 }
 
 #pragma push
@@ -622,7 +625,7 @@ void FreeNasLoginContext(void) {
     M2C_FIELD(&gNasLogin, s32 *, NAS_LOGIN_CONTEXT) = 0;
 }
 #pragma pop
-void func_02039e60(void) {
+void ResetNasLoginState(void) {
     extern M2C_UNK gNasLogin;
     M2C_UNK *p;
     p = (M2C_UNK *)M2C_FIELD(&gNasLogin, void **, 4);

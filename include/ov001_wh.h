@@ -84,8 +84,14 @@ enum {
 #define WH_LOG_STATUS 0x08000000 /* log level of a WH status change */
 
 /* Connection object fields (gWhWork+4). */
+#define WH_CMD_CHANNEL  0x80 /* the command channel's 0xF00-byte work buffer (WFC_StartCommandChannel) */
 #define WH_DS_CHANNEL   0x13e0 /* channel state object the data-sharing exchange runs on (see wfc_channel.h) */
 #define WH_DS_PLAYERS   0x1c00 /* u16 player mask, u16 known mask, then the players' 0x200-byte data blocks */
+#define WH_KEY_CHANNEL  0x1e00 /* channel state object the key-sharing step runs on (see wfc_channel.h) */
+/* Fields of the WH_DS_PLAYERS block, relative to its base. */
+#define WH_DS_PLAYER_MASK 0x00 /* u16: bit per player taking part in the exchange */
+#define WH_DS_KNOWN_MASK  0x02 /* u16: bit per player whose data block has been received */
+#define WH_DS_DATA        0x04 /* the players' data blocks, one per connected player */
 #define WH_LINK_STATUS  0x40 /* s32: WH_STATUS_* */
 #define WH_CONN_USER_INFO_CB 0x13AC /* s32 (*)(void *userInfo, void *connection): fills the user-info block and returns the WFC user type */
 #define WH_CONN_USER_INFO    0x13C0 /* user-info block handed to WFC_SubmitUserInfo */
@@ -126,7 +132,8 @@ enum {
     WH_STATUS_KEYSHARING     = 6,
     WH_STATUS_MEASURECHAN    = 7,
     WH_STATUS_CONNECT_FAILED = 8,
-    WH_STATUS_PARENT_START   = 9 /* WM_STATECODE_PARENT_START, used as the failure state */
+    WH_STATUS_PARENT_START   = 9, /* WM_STATECODE_PARENT_START, used as the failure state */
+    WH_STATUS_ERROR          = 10 /* DWCi_MOV_WH_SYSSTATE_ERROR: a step failed */
 };
 
 /* The ov001 Wi-Fi menu's option rows (gOv001OptionMenuState.selected). */
@@ -183,6 +190,7 @@ enum {
     OV001_SOUND_CANCEL  = 7, /* the screen is being left without an action */
     OV001_SOUND_MOVE    = 8, /* the cursor moved to another row */
     OV001_SOUND_ERROR   = 9, /* the action is not possible */
+    OV001_SOUND_OPEN    = 0xB, /* a screen was entered */
     OV001_SOUND_SAVED   = 0x10, /* a profile or save operation completed */
     OV001_SOUND_FAILED  = 0x12  /* a profile action failed or was cancelled */
 };

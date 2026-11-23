@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
-void func_ov000_02188688(void);
+void AiPrioritiseEnemyHqProduction(void);
 u8 AiAssignedTargetInMovementRange(void);
 
 u8 AiRangeReachesPlayerHq(void);
@@ -97,7 +97,7 @@ s32 AiNeedsMoreFootUnitsInRange(void) {
     return 0;
 }
 
-s32 func_ov000_02188338(void) {
+s32 AiFootUnitBalanceScore(void) {
     s32 CountActiveTeamFootUnits();
     s32 AiHasAttackTargetOrFootUnit();
     s32 temp_r4;
@@ -117,14 +117,17 @@ s32 func_ov000_02188338(void) {
     return var_r0 | var_r5;
 }
 
-void func_ov000_02188370(void) {
+/* AI production priority for foot units: install the "needs more foot units in
+ * range" predicate and the foot-unit balance score, score the reachable
+ * production tiles, and finalize the best move when a tile's score improved. */
+void AiPrioritiseFootUnitProduction(void) {
     extern void *gAiCommandState;
     extern s32 (*gAiPriorityPredicate)(void);
     extern s32 (*gAiPriorityScore)(void);
     gAiPriorityPredicate = AiNeedsMoreFootUnitsInRange;
-    gAiPriorityScore = func_ov000_02188338;
+    gAiPriorityScore = AiFootUnitBalanceScore;
     AiScoreProductionTiles();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
+    if (M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) & AI_ACTION_PRODUCTION_IMPROVED) FinalizeAiProductionMove();
 }
 
 /* Whether the AI may still act with the foot unit at (x, y): flood-fill that
@@ -215,7 +218,7 @@ void AiPrioritiseAttackUnitProduction(void) {
     gAiPriorityScore = AiAttackUnitBalanceScore;
     AiScoreProductionTiles();
     if (M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) & AI_ACTION_PRODUCTION_IMPROVED) FinalizeAiProductionMove();
-    func_ov000_02188688();
+    AiPrioritiseEnemyHqProduction();
 }
 
 /* AI action check for unit AI states 0 and 1: flood-fill the acting unit's
@@ -261,19 +264,22 @@ s32 AiRangeReachesEnemyHq(void) {
     return 0;
 }
 
-s32 func_ov000_02188680(void) {
+s32 AiEnemyHqProductionScore(void) {
     return 1;
 }
 
-void func_ov000_02188688(void) {
+/* AI production priority for reaching an enemy HQ: install the "enemy HQ is
+ * reachable" predicate and the constant enemy-HQ score, score the reachable
+ * production tiles, and finalize the best move when a tile's score improved. */
+void AiPrioritiseEnemyHqProduction(void) {
     s32 AiRangeReachesEnemyHq(void);
     extern void *gAiCommandState;
     extern s32 (*gAiPriorityPredicate)(void);
     extern s32 (*gAiPriorityScore)(void);
     gAiPriorityPredicate = AiRangeReachesEnemyHq;
-    gAiPriorityScore = func_ov000_02188680;
+    gAiPriorityScore = AiEnemyHqProductionScore;
     AiScoreProductionTiles();
-    if (M2C_FIELD(gAiCommandState, u16 *, 8) & 8) FinalizeAiProductionMove();
+    if (M2C_FIELD(gAiCommandState, u16 *, AI_COMMAND_STATE_ACTION_FLAGS) & AI_ACTION_PRODUCTION_IMPROVED) FinalizeAiProductionMove();
 }
 
 /* AI action check for unit AI state 2: flood-fill the acting unit's movement

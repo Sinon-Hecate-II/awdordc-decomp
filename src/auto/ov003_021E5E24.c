@@ -66,7 +66,7 @@ void func_ov003_021e6234(void *obj) {
     M2C_UNK DrawMapPreviewLayer(s32, s32, s32, M2C_UNK);
     M2C_UNK CountMapProperties(s32);
     M2C_UNK LoadBattleMap(M2C_UNK);
-    M2C_UNK func_020cf278(M2C_UNK);
+    M2C_UNK PreloadMapTileset(M2C_UNK);
     s32 GetMapName(M2C_UNK);
     s32 func_ov006_02217d0c();
     extern void **gCurrentMap;
@@ -75,7 +75,7 @@ void func_ov003_021e6234(void *obj) {
     void *savedContext;
 
     ResetMapUnits();
-    func_020cf278(0xE1);
+    PreloadMapTileset(0xE1);
     LoadBattleMap(0xE1);
     M2C_FIELD(obj, s16 *, 0x62) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5144) * 4);
     M2C_FIELD(obj, s16 *, 0x64) = (s16) (M2C_FIELD(*gCurrentMap, u16 *, 0x5146) * 4);
@@ -631,8 +631,8 @@ u8 func_ov003_021e6d28(void) {
 }
 
 void func_ov003_021e6d54(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x4D4C5342, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x4D4C5342, arg0);
 }
 
 /* Return the group record (first slot, count) of the waypoint-list slot that

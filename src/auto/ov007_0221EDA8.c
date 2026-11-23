@@ -336,7 +336,7 @@ void CreateMapEditList(u8 *name) {
 
 /* Destroy the map editor's entry-list widget: free its label and hand the panel
  * to its own destructor, then free the widget itself. */
-void *DestroyMapEditList(void *list) {
+void *FreeMapEditList(void *list) {
     M2C_UNK MemFree(void *);
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gMapEditListVTable;
@@ -357,24 +357,27 @@ void *DestroyMapEditList(void *list) {
     return list;
 }
 
-void *func_ov007_0221f4b0(void *arg0) {
+/* The map editor's entry-list destroy method: reset the widget's vtable, free
+ * its label and the glyph heap block the label owns, then destroy its panel and
+ * hand the widget back (FreeMapEditList also frees the widget itself). */
+void *DestroyMapEditList(void *list) {
     M2C_UNK MemFree(void *);
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gMapEditListVTable;
-    void *temp_r4;
-    void *temp_r0;
+    void *label;
+    void *panel;
 
-    M2C_FIELD(arg0, void **, 0) = &gMapEditListVTable;
-    temp_r4 = M2C_FIELD(arg0, void **, 0x38);
-    if (temp_r4 != NULL) {
-        HeapFreeBlock(M2C_FIELD(temp_r4, s32 *, 0x14));
-        MemFree(temp_r4);
+    M2C_FIELD(list, void **, 0) = &gMapEditListVTable;
+    label = M2C_FIELD(list, void **, MAP_EDIT_LIST_LABEL);
+    if (label != NULL) {
+        HeapFreeBlock(M2C_FIELD(label, s32 *, 0x14));
+        MemFree(label);
     }
-    temp_r0 = M2C_FIELD(arg0, void **, 0x44);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(M2C_FIELD(temp_r0, void **, 0), void (**)(void *), 4)(temp_r0);
+    panel = M2C_FIELD(list, void **, MAP_EDIT_LIST_PANEL);
+    if (panel != NULL) {
+        M2C_FIELD(M2C_FIELD(panel, void **, 0), void (**)(void *), 4)(panel);
     }
-    
-    return arg0;
+
+    return list;
 }
 

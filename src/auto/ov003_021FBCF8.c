@@ -2,6 +2,7 @@
 #include "common.h"
 #include "panel.h"
 #include "sound.h"
+#include "list_widget.h"
 typedef struct PanelFlagByte { unsigned char low:3; unsigned char mode:3; unsigned char pending:1; unsigned char high:1; } PanelFlagByte;
 static inline void PanelDispatch(void *p, int slot) { ((void (**)(void *))*(void **)p)[slot](p); }
 
@@ -26,20 +27,23 @@ static inline s32 PanelCategory(u32 kind) {
     }
 }
 
-void func_ov003_021fbcf8(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Map-list scroll input: scroll the panel's list widget by `delta` and, when the
+ * list's first-visible index actually moves, refresh the map preview and play the
+ * scroll sound. */
+void Ov003_ScrollMapList(void *panel, s32 delta, s32 force) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK ListWidgetScrollBy(void *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
-    s16 temp_r4;
-    void *temp_r0;
+    s16 oldScroll;
+    void *list;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x4C);
-    temp_r4 = (s16) M2C_FIELD(temp_r0, s32 *, 0x14);
-    ListWidgetScrollBy(temp_r0, arg1, arg2, 1);
-    if (temp_r4 == (s16) M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s32 *, 0x14)) {
+    list = M2C_FIELD(panel, void **, 0x4C);
+    oldScroll = (s16) M2C_FIELD(list, s32 *, LIST_WIDGET_SCROLL);
+    ListWidgetScrollBy(list, delta, force, 1);
+    if (oldScroll == (s16) M2C_FIELD(M2C_FIELD(panel, void **, 0x4C), s32 *, LIST_WIDGET_SCROLL)) {
         return;
     }
-    func_ov003_021f92f4(arg0, 0);
+    func_ov003_021f92f4(panel, 0);
     PlaySoundEffect(0x10019);
 }
 
@@ -249,7 +253,7 @@ void func_ov003_021fc26c(void *arg0) {
  M2C_UNK PlaySoundEffect(s32);
  u32 GetMapCategory(void);
  M2C_UNK func_ov003_021f92f4(void *,s32);
- void func_ov003_021f1bd4(void);
+ void Ov003_SetMapConfirmEnabled(void);
  void func_020d8ccc(u16);
  void EnableMapConfirm(void);
  void func_ov003_021f2848(void *);
@@ -334,7 +338,7 @@ void func_ov003_021fc26c(void *arg0) {
   M2C_FIELD(sprite,u32 *,0x40)=(M2C_FIELD(sprite,u32 *,0x40)&~0x03fc0000)|((u32)(u16)(((u32)(M2C_FIELD(sprite,u8 *,0x59)<<28)>>28)+1)<<24>>6);
   M2C_FIELD(sprite,s8 *,0x5a)=12;
  }
- func_ov003_021f1bd4();
+ Ov003_SetMapConfirmEnabled();
  Ov003_CloseMapPanel(arg0);
  func_020d8ccc(selected);
  EnableMapConfirm();
@@ -367,7 +371,7 @@ void func_ov003_021fc820(void *arg0) {
  * map screen (modes 6-8, or mode 4 in an online session) with an active link,
  * then clear the map-confirm flag. */
 void Ov003_LeaveMapPanel(void *panelObj) {
-    void func_ov003_021f1be8(void);
+    void Ov003_SetMapConfirmDisabled(void);
     void Ov003_CloseMapPanel(void *);
     s32 GetActiveOverlay(void);
     s32 IsLinkSessionActive(void);
@@ -389,7 +393,7 @@ void Ov003_LeaveMapPanel(void *panelObj) {
         backButton->color = (backButton->color & ~0x03FC0000) | ((u32) ((u16) (((u32) (step << 0x1C) >> 0x1C) + 1) << 0x18) >> 6);
         backButton->timer = 0xC;
     }
-    func_ov003_021f1be8();
+    Ov003_SetMapConfirmDisabled();
     Ov003_CloseMapPanel(panel);
 
     mode = (u32) (panel->modeBits << 0x1C) >> 0x1C;

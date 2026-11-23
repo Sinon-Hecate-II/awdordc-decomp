@@ -1,6 +1,7 @@
 /* 19 functions from 0x02211200 to 0x022121F8 (ov005), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "sound.h"
 typedef struct { u32 x:9; u32 y:9; u32 layer:8; u32 rest:6; } Menu005Flags;
 
 #pragma opt_strength_reduction off
@@ -434,15 +435,17 @@ if(M2C_FIELD(p,s16 *,2)<0)M2C_FIELD(p,s16 *,2)=0;
 return M2C_FIELD(p,s16 *,2)-old;
 }
 
+/* Scroll the active records-menu tab down one row, if a row remains below the
+ * seven-row window: play the list sound and refresh the record text. */
 s32 HistoryScrollDown(void) {
 extern s32 gHistoryMenu;
 void PlaySoundEffect(s32);
-s32 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
-s16 n=M2C_FIELD(p,s16 *,2);
-s32 next=n+7;
-if(next>=M2C_FIELD(p,s16 *,8))return 0;
-M2C_FIELD(p,s16 *,2)++;
-PlaySoundEffect(0x10019);
+HistoryMenuTab *tab=(HistoryMenuTab *)HistoryTabAt(((HistoryMenu *)gHistoryMenu)->tab);
+s16 cursor=tab->cursor;
+s32 nextRow=cursor+HISTORY_MENU_PAGE_ROWS;
+if(nextRow>=tab->count)return 0;
+tab->cursor++;
+PlaySoundEffect(SOUND_MENU_SELECT);
 HistoryMenu_SetRecordText();
 return 1;
 }

@@ -114,14 +114,14 @@ if(M2C_FIELD(arg0,s32 *,8)>90)M2C_FIELD(arg0,s32 *,8)=0;
 }
 #pragma pop
 u8 func_ov000_02173e6c(void *arg0) {
-    s32 func_020d46e8();
+    s32 GetMapViewHoldCount();
     s32 GetMapInputState();
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0x14) == 0) {
         return 0U;
     }
-    if (func_020d46e8() != 0) {
+    if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
     if (GetMapInputState() == 0) {

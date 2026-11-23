@@ -249,17 +249,17 @@ s32 ShowMapUnavailableMessage(s32 arg0) {
  * and entry+0x38, and marks the screen state ready (3). */
 void InitMapSelectScreen(s32 arg0) {
     M2C_UNK ClearAll3DSpriteLayers(void);
-    void func_02082c84(void);
+    void GX_ReleaseBankGrants(void);
     void Set3DSpriteVramBanks(void);
     void func_02003560(void);
     void GX_SetBankForObjExtPalette(s32);
     void func_020035bc(void);
-    void func_02002ab8(s32);
+    void GX_SetBankForBGExtPalette(s32);
     void func_ov003_021f1ab8(s32);
     void func_ov003_021f1af8(s32);
     s32 IsMapConfirmEnabled(void);
-    void func_ov003_021f1bd4(void);
-    void func_ov003_021f1be8(void);
+    void Ov003_SetMapConfirmEnabled(void);
+    void Ov003_SetMapConfirmDisabled(void);
     void CreateScene3DSprite(void *);
     void ApplySceneLayers(void *);
     void ResetPlayerMask(void);
@@ -280,12 +280,12 @@ void InitMapSelectScreen(s32 arg0) {
     void *unusedObj;
 
     ClearAll3DSpriteLayers();
-    func_02082c84();
+    GX_ReleaseBankGrants();
     Set3DSpriteVramBanks();
     func_02003560();
     GX_SetBankForObjExtPalette(0x40);
     func_020035bc();
-    func_02002ab8(0x20);
+    GX_SetBankForBGExtPalette(0x20);
     func_ov003_021f1ab8((s32)&data_ov003_0220fcb4);
     func_ov003_021f1af8((s32)&data_ov003_0220fca8);
 
@@ -324,9 +324,9 @@ void InitMapSelectScreen(s32 arg0) {
     gCur3DSpriteEngine = savedEngine;
 
     if (IsMapConfirmEnabled() != 0) {
-        func_ov003_021f1bd4();
+        Ov003_SetMapConfirmEnabled();
     } else {
-        func_ov003_021f1be8();
+        Ov003_SetMapConfirmDisabled();
     }
 
 
@@ -366,7 +366,7 @@ void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
  void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
  s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
- void func_02086330(void); void func_02085054(s32,s32,s32);
+ void func_02086330(void); void CreateMatchNameLabel(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
  s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
@@ -398,7 +398,7 @@ void func_ov003_021f2e98(s32 entry) {
  else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
- if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();func_02085054(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
+ if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();CreateMatchNameLabel(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);

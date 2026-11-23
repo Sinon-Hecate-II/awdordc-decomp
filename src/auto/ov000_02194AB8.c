@@ -15,7 +15,7 @@ s32 IsPlayerActive(s32);
 s32 IsSameTeam(s32,s32);
 s32 IsUnitVisibleAtCell(s32,s32,s32,s32);
 s32 IsUnitInSight(u16);
-s32 func_ov000_021a96f4(s32,s32,s32);
+s32 GetSubmergedAttackDamage(s32,s32,s32);
 s32 GetAttackDamage(s32,s32,s32);
 s32 IsFootUnitKind(s32);
 s32 IsTerrainOnUnitTeam(s32,s32);
@@ -57,7 +57,7 @@ if(M2C_FIELD(map+(y)*4,s8 **,0x52e8)[x]<0)goto next_unit;
 if(!((u32)(unit[11]<<25)>>31)&&!IsUnitVisibleAtCell(M2C_FIELD(map,u16 *,0x52a4),kind,x,y))goto next_unit;
 if(((UnitKind1955 *)unit)->kind==22&&(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind!=23&&!IsUnitInSight((u16)id))goto next_unit;
 if(M2C_FIELD(unit,u16 *,4)&32){
-if(!func_ov000_021a96f4((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))goto next_unit;
+if(!GetSubmergedAttackDamage((*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind,((UnitKind1955 *)unit)->kind,0))goto next_unit;
 }
 kind=(*(UnitKind1955 **)((u8 *)*gCurrentMap+0x52d0))->kind;
 if(kind==21)value=GetAttackDamage(17,((UnitKind1955 *)unit)->kind,0);else value=GetAttackDamage(kind,((UnitKind1955 *)unit)->kind,0);
@@ -229,7 +229,7 @@ s32 GetUnitAttackClass(s32);
 void GetAiUnitRange(void);
 void BuildAiUnitThreatRange(void);
 s32 GetTerrainPropertyFlagsAt(s32,s32);
-s32 func_ov000_0217bc34(s32,s32,s32,s32);
+s32 CanReachEnemyUnit(s32,s32,s32,s32);
 s32 FindAttackPosition(s16 *);
 extern void **gCurrentMap;
 extern void *gAiSettings;
@@ -250,7 +250,7 @@ cell=*(s8 *)(*(u16 *)(map+0x3758+y*2)+(map+x)+0x1928);
 map = (u8 *)((u32)map + cell*6);
 if((map+kind)[0x6c63]>=((u8 *)gAiSettings)[13])continue;
 if(best<(*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x])continue;
-if(!func_ov000_0217bc34(x,y,2,5))continue;
+if(!CanReachEnemyUnit(x,y,2,5))continue;
 cand[0]=x;cand[1]=y;
 best=(*(s8 **)((u8 *)*gCurrentMap+0x52e8+y*4))[x];
 }}
@@ -282,7 +282,7 @@ void func_ov000_02195750(void) {
 s32 SelectPropertyDestination(s16 *out) {
     s32 IsPropertyTerrain(s32);
     s32 GetUnitAttackClass(s32);
-    s32 func_ov000_0217bc34(s32, s32, s32, s32);
+    s32 CanReachEnemyUnit(s32, s32, s32, s32);
     void FloodFillUnitRange(u8, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
@@ -311,7 +311,7 @@ s32 SelectPropertyDestination(s16 *out) {
             if (*(u16 *)(map + MAP_CURRENT_OWNER) != (terrain & MAP_TERRAIN_OWNER_MASK)) continue;
             moveCost = M2C_FIELD((u8 *)*gCurrentMap+y*4,s8 **,MAP_GRID)[x];
             if (bestCost < moveCost) continue;
-            if (!func_ov000_0217bc34(x, y, 2, 5)) continue;
+            if (!CanReachEnemyUnit(x, y, 2, 5)) continue;
             attackClass = GetUnitAttackClass((*(UnitKind1955 **)((u8 *)*gCurrentMap + MAP_CURSOR_UNIT))->kind);
             if (attackClass == 1) {
                 threatLimit = ((u8 *)gAiUnitTypeTuning)[2];

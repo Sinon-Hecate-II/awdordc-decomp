@@ -194,8 +194,8 @@ void LoadAnimatedSpriteAssets(void *obj, M2C_UNK list1, M2C_UNK list2, M2C_UNK l
     M2C_FIELD(M2C_FIELD(obj, void **, 0x4C), s32 *, 0x2C) = size;
     ptr = M2C_FIELD(obj, void **, 0x4C);
     M2C_FIELD(ptr, u8 *, 0x22) = (u8) (M2C_FIELD(ptr, u8 *, 0x22) | 0x40);
-    M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xFC000000) | (func_02091ac0(M2C_FIELD(obj, void **, 0x4C)) << 0x1A));
-    M2C_FIELD(obj, s32 *, 0x48) = (s32) ((M2C_FIELD(obj, s32 *, 0x48) & 0xFFE003FF) | ((u32) (func_02091a84(M2C_FIELD(obj, void **, 0x4C)) << 0x15) >> 0xB));
+    M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xFC000000) | (GetSpriteScriptFrameCount(M2C_FIELD(obj, void **, 0x4C)) << 0x1A));
+    M2C_FIELD(obj, s32 *, 0x48) = (s32) ((M2C_FIELD(obj, s32 *, 0x48) & 0xFFE003FF) | ((u32) (GetSpriteScriptDuration(M2C_FIELD(obj, void **, 0x4C)) << 0x15) >> 0xB));
     M2C_FIELD(obj, s32 *, 0x44) = (s32) ((M2C_FIELD(obj, s32 *, 0x44) & ~0xC00000) | 0x400000);
 }
 
@@ -210,18 +210,22 @@ M2C_FIELD(obj,void **,0x4c)=sub;SetSpriteAnimFrame(sub,0);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x30)=M2C_FIELD(obj,s32 *,0x50);
 M2C_FIELD(M2C_FIELD(obj,void **,0x4c),s32 *,0x28)=packed;
 ptr=M2C_FIELD(obj,void **,0x4c);M2C_FIELD(ptr,u8 *,0x22)|=0x40;
-M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xfc000000)|(func_02091ac0(M2C_FIELD(obj,void **,0x4c))<<26);
-M2C_FIELD(obj,s32 *,0x48)=(M2C_FIELD(obj,s32 *,0x48)&0xffe003ff)|((u32)(func_02091a84(M2C_FIELD(obj,void **,0x4c))<<21)>>11);
+M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xfc000000)|(GetSpriteScriptFrameCount(M2C_FIELD(obj,void **,0x4c))<<26);
+M2C_FIELD(obj,s32 *,0x48)=(M2C_FIELD(obj,s32 *,0x48)&0xffe003ff)|((u32)(GetSpriteScriptDuration(M2C_FIELD(obj,void **,0x4c))<<21)>>11);
 M2C_FIELD(obj,s32 *,0x44)=(M2C_FIELD(obj,s32 *,0x44)&~0xc00000)|0x800000;
 }
 
-void SetAnimatedSpriteFrame(void *arg0) {
+/* Commit the object's sprite animation to its current frame and recompute the two
+ * frame-timing fields from the script: its frame count (SpriteFlags::high) and its
+ * total duration (SpriteTimer::duration). */
+void SetAnimatedSpriteFrame(void *obj) {
     M2C_UNK SetSpriteAnimFrame(s32);
-    s32 func_02091a84(s32);
-    s32 func_02091ac0(s32);
-    SetSpriteAnimFrame(M2C_FIELD(arg0, s32 *, 0x4C));
-    M2C_FIELD(arg0, s32 *, 0x44) = (s32) ((M2C_FIELD(arg0, s32 *, 0x44) & ~0xFC000000) | (func_02091ac0(M2C_FIELD(arg0, s32 *, 0x4C)) << 0x1A));
-    M2C_FIELD(arg0, s32 *, 0x48) = (s32) ((M2C_FIELD(arg0, s32 *, 0x48) & 0xFFE003FF) | ((u32) (func_02091a84(M2C_FIELD(arg0, s32 *, 0x4C)) << 0x15) >> 0xB));
+    s32 GetSpriteScriptDuration(s32);
+    s32 GetSpriteScriptFrameCount(s32);
+
+    SetSpriteAnimFrame(M2C_FIELD(obj, s32 *, SPRITE_OBJ_ANIM));
+    M2C_FIELD(obj, s32 *, SPRITE_OBJ_FLAGS) = (s32) ((M2C_FIELD(obj, s32 *, SPRITE_OBJ_FLAGS) & ~SPRITE_FLAGS_HIGH_MASK) | (GetSpriteScriptFrameCount(M2C_FIELD(obj, s32 *, SPRITE_OBJ_ANIM)) << 0x1A));
+    M2C_FIELD(obj, s32 *, SPRITE_OBJ_TIMER) = (s32) ((M2C_FIELD(obj, s32 *, SPRITE_OBJ_TIMER) & ~SPRITE_TIMER_DURATION_MASK) | ((u32) (GetSpriteScriptDuration(M2C_FIELD(obj, s32 *, SPRITE_OBJ_ANIM)) << 0x15) >> 0xB));
 }
 
 void func_0208c0d0(void *arg0, u8 arg1) {
@@ -260,14 +264,14 @@ s32 GetObjectTileY(void *arg0) {
 
 s32 func_0208c214(void *arg0) {
     s32 func_02094758();
-    M2C_UNK func_020d4704();
+    M2C_UNK AcquireMapViewHold();
     M2C_UNK (*temp_r1)(void *);
     u32 temp_r0;
     temp_r1 = M2C_FIELD(arg0, M2C_UNK (**)(void *), 0x68);
     if (temp_r1 != NULL) temp_r1(arg0);
     temp_r0 = (u32)(M2C_FIELD(arg0, u32 *, 0x44) << 12) >> 31;
     if (temp_r0 == 0) return temp_r0;
-    func_020d4704();
+    AcquireMapViewHold();
     return func_02094758();
 }
 
@@ -311,7 +315,7 @@ gCur3DSpriteEngine=savedEngine; ++g->elapsed;
 s32 ReleaseAnimatedSpriteObject(void *obj) {
     void Sprite_ClearHandle(s32 *);
     s32 func_02094770();
-    M2C_UNK func_020d472c();
+    M2C_UNK ReleaseMapViewHold();
     M2C_UNK HeapFreeBlock(s32);
     s32 (*releaseCb)(void *);
     s32 result;
@@ -321,7 +325,7 @@ s32 ReleaseAnimatedSpriteObject(void *obj) {
     if (M2C_FIELD(obj, s32 *, SPRITE_OBJ_FILE_BUF) != 0) HeapFreeBlock(M2C_FIELD(obj, s32 *, SPRITE_OBJ_FILE_BUF));
     result = (u32)(M2C_FIELD(obj, u32 *, SPRITE_OBJ_FLAGS) << 12) >> 31;
     if (result != 0) {
-        func_020d472c();
+        ReleaseMapViewHold();
         result = func_02094770();
     }
     releaseCb = M2C_FIELD(obj, s32 (**)(void *), SPRITE_OBJ_RELEASE_CB);

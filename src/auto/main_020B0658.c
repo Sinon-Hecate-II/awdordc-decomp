@@ -210,7 +210,7 @@ func_01ff9e78((char *)&data_020f4160+((gFrameCounter>>2)%15)*2+2,2,30);
 
 #pragma opt_strength_reduction reset
 void func_020b0cbc(void) {
-    func_020c0a1c(3);
+    LoadUiSpritePalette(3);
 }
 
 void func_020b0ccc(void) {

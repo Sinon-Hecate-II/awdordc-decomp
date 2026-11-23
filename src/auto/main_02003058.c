@@ -27,7 +27,7 @@ void GX_SetBankForObjCD(s32 banks){extern M2C_UNK gVramBankState;M2C_FIELD(&gVra
  * allocator's +0x12 slot, map the banks to the main engine's background extended
  * palette (bank C) or to the sub engine's background (banks H and I), and hand
  * the banks the purpose no longer uses back to the allocator. */
-void func_02003124(s32 banks){
+void GX_SetBankForSubBG(s32 banks){
 extern M2C_UNK gVramBankState;
 M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)=(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING)|M2C_FIELD(&gVramBankState,u16 *,0x12))&~banks;
 M2C_FIELD(&gVramBankState,u16 *,0x12)=banks;
@@ -289,7 +289,20 @@ s32 GX_GetBG1CharPtrSub(void) {
     return (((s32) (*(u16 *)0x0400100A & 0x3C) >> 2) << 0xE) + 0x06200000;
 }
 
-s32 GX_GetBG2CharPtr(void){s32 mode=*(volatile u32*)0x4000000&7;u32 b=*(volatile u16*)0x400000c;if(mode<5 || !(b&0x80)){u32 a=(*(volatile u32*)0x4000000&0x7000000)>>24;u32 base=(a<<16)+0x6000000;return base+(((b&0x3c)>>2)<<14);}return 0;}
+/* Return the main-engine BG2 character/bitmap base address.  BG2 is a character
+ * background in modes 0..4; from mode 5 on it uses its bitmap unless BG2CNT bit 7
+ * makes it map VRAM directly, in which case it has no character base and this
+ * returns zero. */
+s32 GX_GetBG2CharPtr(void) {
+    s32 mode = REG_DISPCNT & DISPCNT_MODE_MASK;
+    u32 bg2Control = REG_BG2CNT;
+    if (mode < GX_MODE_5 || !(bg2Control & BGCNT_BITMAP_DIRECT)) {
+        u32 bank = (REG_DISPCNT & DISPCNT_BG_CHAR_BASE_MASK) >> DISPCNT_BG_CHAR_BASE_SHIFT;
+        u32 base = (bank << 16) + GX_MAIN_VRAM_BASE;
+        return base + (((bg2Control & BGCNT_CHAR_BASE_MASK) >> BGCNT_CHAR_BASE_SHIFT) << 14);
+    }
+    return 0;
+}
 
 /* Return the main-engine BG3 character/bitmap base address, or zero when BG3 is unavailable in the current display mode. */
 s32 GX_GetBG3CharPtr(void) {
@@ -349,7 +362,7 @@ void GX_SetBlendY(void *arg0, s32 arg1) {
 
 void GX_LoadMatrix4x4(s32 a){void func_02004e44(s32);*(volatile s32 *)0x4000400=0x16;func_02004e44(a);}
 
-void func_02003a70(s32 a) {
+void GX_LoadMatrix4x3(s32 a) {
 void func_02004e20(s32);
 *(s32 *)0x04000400=0x17;
 func_02004e20(a);

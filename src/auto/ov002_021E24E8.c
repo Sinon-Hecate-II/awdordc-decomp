@@ -62,27 +62,36 @@ if (M2C_FIELD(node, void **, 0) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **
 if (M2C_FIELD(node, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **, 4)); M2C_FIELD(node, void **, 4) = NULL; }
 }
 
-void func_ov002_021e26d4(void *arg0) {
- void **p=0;
- M2C_FIELD(arg0,s8 *,0x50)=1;
- while((p=p ? M2C_FIELD(p,void ***,4) : (M2C_FIELD(arg0,s32 *,8)==0 ? 0 : (void **)((u8 *)arg0+8)))!=0) {
- func_ov002_021e26d4(*p);
- }
+/* Set the active flag on an effect node and on every node below it, so the whole
+ * subtree is stepped again (effect script command 27). */
+void Ov002_EnableEffectNodes(void *node) {
+    void **link = 0;
+    M2C_FIELD(node, s8 *, FX_NODE_ACTIVE) = 1;
+    while ((link = link ? M2C_FIELD(link, void ***, FX_LINK_NEXT)
+                        : (M2C_FIELD(node, s32 *, FX_NODE_CHILD) == 0 ? 0 : (void **)((u8 *)node + FX_NODE_CHILD))) != 0) {
+        Ov002_EnableEffectNodes(*link);
+    }
 }
 
-void func_ov002_021e2724(void *arg0) {
- void **p=0;
- M2C_FIELD(arg0,s8 *,0x50)=0;
- while((p=p ? M2C_FIELD(p,void ***,4) : (M2C_FIELD(arg0,s32 *,8)==0 ? 0 : (void **)((u8 *)arg0+8)))!=0) {
- func_ov002_021e2724(*p);
- }
+/* Clear the active flag on an effect node and on every node below it, so the
+ * whole subtree stops being stepped (the counterpart of Ov002_EnableEffectNodes). */
+void Ov002_DisableEffectNodes(void *node) {
+    void **link = 0;
+    M2C_FIELD(node, s8 *, FX_NODE_ACTIVE) = 0;
+    while ((link = link ? M2C_FIELD(link, void ***, FX_LINK_NEXT)
+                        : (M2C_FIELD(node, s32 *, FX_NODE_CHILD) == 0 ? 0 : (void **)((u8 *)node + FX_NODE_CHILD))) != 0) {
+        Ov002_DisableEffectNodes(*link);
+    }
 }
 
-void func_ov002_021e2770(void *arg0, s8 arg1) {
- void **p=0;
- M2C_FIELD(arg0,s8 *,0x51)=arg1;
- while((p=p ? M2C_FIELD(p,void ***,4) : (M2C_FIELD(arg0,s32 *,8)==0 ? 0 : (void **)((u8 *)arg0+8)))!=0) {
- func_ov002_021e2770(*p,arg1);
+/* Set a value on the effect node's FX_NODE_FLAG_51 byte and on every node below
+ * it in its child chain. */
+void Ov002_SetEffectNodesFlag51(void *node, s8 value) {
+ void **link = 0;
+ M2C_FIELD(node, s8 *, FX_NODE_FLAG_51) = value;
+ while ((link = link ? M2C_FIELD(link, void ***, FX_LINK_NEXT)
+                    : (M2C_FIELD(node, s32 *, FX_NODE_CHILD) == 0 ? 0 : (void **)((u8 *)node + FX_NODE_CHILD))) != 0) {
+  Ov002_SetEffectNodesFlag51(*link, value);
  }
 }
 
@@ -301,21 +310,25 @@ void SetEffectNodePosition(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 0x58) = (s32) (arg2 << 8);
 }
 
-void func_ov002_021e2d2c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s16 arg6, s16 arg7, s16 arg8) {
-    M2C_FIELD(arg0, s32 *, 0x5C) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x60) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x64) = arg3;
-    M2C_FIELD(arg0, s32 *, 0x68) = arg4;
-    M2C_FIELD(arg0, s32 *, 0x70) = arg5;
-    M2C_FIELD(arg0, s16 *, 0x7A) = arg6;
-    M2C_FIELD(arg0, s16 *, 0x7C) = arg7;
-    M2C_FIELD(arg0, s16 *, 0x7E) = arg8;
-    if (arg5 != 0) {
-        M2C_FIELD(arg0, s16 *, 0x78) = arg6;
+/* Fill an effect node's timed motion from an effect record: per-tick velocity
+ * and acceleration, the duration and the scale ramp.  The node starts at the
+ * ramp's from-scale when the motion runs for a duration, otherwise at its
+ * to-scale; clearing the move-while-scaling mode makes it ease first, then move. */
+void SetEffectNodeMotion(void *node, s32 velocityX, s32 velocityY, s32 accelX, s32 accelY, s32 duration, s16 scaleFrom, s16 scaleTo, s16 scaleStep) {
+    M2C_FIELD(node, s32 *, FX_NODE_VX) = velocityX;
+    M2C_FIELD(node, s32 *, FX_NODE_VY) = velocityY;
+    M2C_FIELD(node, s32 *, FX_NODE_AX) = accelX;
+    M2C_FIELD(node, s32 *, FX_NODE_AY) = accelY;
+    M2C_FIELD(node, s32 *, FX_NODE_DURATION) = duration;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_FROM) = scaleFrom;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_TO) = scaleTo;
+    M2C_FIELD(node, s16 *, FX_NODE_SCALE_STEP) = scaleStep;
+    if (duration != 0) {
+        M2C_FIELD(node, s16 *, FX_NODE_SCALE) = scaleFrom;
     } else {
-        M2C_FIELD(arg0, s16 *, 0x78) = arg7;
+        M2C_FIELD(node, s16 *, FX_NODE_SCALE) = scaleTo;
     }
-    M2C_FIELD(arg0, s16 *, 0x86) = 0;
+    M2C_FIELD(node, s16 *, FX_NODE_MODE_86) = 0;
 }
 
 /* Configure an effect node's timed motion from an effect's transform values:

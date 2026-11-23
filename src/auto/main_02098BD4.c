@@ -10,7 +10,7 @@ extern Unk02098BD4Table data_020f36bc;
 
 /* Indexes the CO face layout table by expression (0..11, in three-step groups)
  * and by the face's variant flag, and returns the face tile record chosen. */
-s32 func_02098bd4(M2C_UNK expr, u8 variant) {
+s32 GetFaceTileRecord(M2C_UNK expr, u8 variant) {
 Unk02098BD4Table table=data_020f36bc;
 s32 i=0;
 switch(expr) {
@@ -31,13 +31,15 @@ if(variant) i++;
 return table.values[i];
 }
 
-void func_02098cb8(M2C_UNK arg0,s32 arg1,u32 arg2,M2C_UNK arg3,u8 arg4,s32 arg5) {
+/* Add one tile of a CO face as a 3D sprite at (x, y): the tile record comes from
+ * the face table row chosen by `expr` and `variant`, `tile` is the packed OBJ
+ * tile/palette word and `priority` the OBJ priority. */
+void AddFaceSpriteTile(s32 expr,s32 x,u32 y,M2C_UNK tile,u8 variant,s32 priority) {
 M2C_UNK AddSprite(u16,u8,M2C_UNK,s32,s32);
-s32 func_02098bd4(M2C_UNK,u8);
-s32 result=func_02098bd4(arg0,arg4);
-arg2=(u8)arg2;
-arg1 &= 0x1ff;
-AddSprite((u16)arg1,arg2,arg3,result,arg5);
+s32 faceTemplate=GetFaceTileRecord(expr,variant);
+y=(u8)y;
+x &= DS3D_OBJ_X_MASK;
+AddSprite((u16)x,y,tile,faceTemplate,priority);
 }
 
 M2C_UNK func_02098d08(M2C_UNK arg0, s32 arg1) {
@@ -320,14 +322,16 @@ M2C_UNK func_02099338(void *arg0) {
     M2C_FIELD(arg0, void ***, 0x60) = func_02099088((s32)arg0);
 }
 
-M2C_UNK func_0209936c(void *a){
+/* Draw a CO face sprite: pick its face tile row from its expression and variant,
+ * advance its fade and slide animations, then draw it at its own position. */
+M2C_UNK DrawFaceSprite(void *face){
  void UpdateSpriteFade(void*);void UpdateSpriteSlide(void*);
- s32 func_02098bd4(M2C_UNK,u8);
+ s32 GetFaceTileRecord(M2C_UNK,u8);
  void DrawSpriteActorAt(void*,s32,s32,s32,s32);
- s32 v;if(!FaceSpriteIsLoaded(a))return;
- v=func_02098bd4(M2C_FIELD(a,u8*,0x59),M2C_FIELD(a,u8*,0x5b));
- UpdateSpriteFade(a);UpdateSpriteSlide(a);
- DrawSpriteActorAt(a,M2C_FIELD(a,s16*,0x34),M2C_FIELD(a,s16*,0x36),M2C_FIELD(a,s8*,0x49),v);
+ s32 record;if(!FaceSpriteIsLoaded(face))return;
+ record=GetFaceTileRecord(M2C_FIELD(face,u8*,FACE_SPRITE_EXPRESSION),M2C_FIELD(face,u8*,FACE_SPRITE_VARIANT));
+ UpdateSpriteFade(face);UpdateSpriteSlide(face);
+ DrawSpriteActorAt(face,M2C_FIELD(face,s16*,0x34),M2C_FIELD(face,s16*,0x36),M2C_FIELD(face,s8*,FACE_SPRITE_TILE_ROW),record);
 }
 
 void func_020993bc(void) {
@@ -336,8 +340,8 @@ void func_020993bc(void) {
 }
 
 void func_020993c8(void) {
-    M2C_UNK func_0209936c();
-    func_0209936c();
+    M2C_UNK DrawFaceSprite();
+    DrawFaceSprite();
 }
 
 void **CreateFaceSprite(s32 arg0) {
@@ -354,7 +358,7 @@ void **CreateFaceSprite(s32 arg0) {
     return result;
 }
 
-void func_0209940c(void) {
+void DeleteAllFaceSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102fac;
     DeleteSpriteObjectsOfClass(&data_02102fac);

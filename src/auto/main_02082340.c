@@ -234,7 +234,7 @@ void Reset3DSpriteDisplayState(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_02082c84(void) {
+void GX_ReleaseBankGrants(void) {
     M2C_UNK func_02003538();
     M2C_UNK func_0200354c();
     M2C_UNK func_02003560();
@@ -264,21 +264,21 @@ void func_02082c84(void) {
 void Set3DSpriteVramBanks(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
-    M2C_UNK func_02002ab8(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPalette(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    M2C_UNK func_02003124(M2C_UNK);
+    M2C_UNK GX_SetBankForSubBG(M2C_UNK);
     M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
-    func_02082c84();
+    GX_ReleaseBankGrants();
     GX_SetBankForTex(VRAM_BANK_A);
     GX_SetBankForBG(VRAM_BANK_B);
-    func_02003124(VRAM_BANK_C);
+    GX_SetBankForSubBG(VRAM_BANK_C);
     GX_SetBankForSubOBJ(VRAM_BANK_D);
     GX_SetBankForOBJ(VRAM_BANK_E);
     GX_SetBankForOBJExtPltt(VRAM_BANK_F);
-    func_02002ab8(VRAM_BANK_G);
+    GX_SetBankForBGExtPalette(VRAM_BANK_G);
     GX_SetBankForBGExtPlttSub(VRAM_BANK_H);
     GX_SetBankForOBJExtPlttSub(VRAM_BANK_I);
 }

@@ -37,17 +37,20 @@ unsigned char *StringCopy(unsigned char *dst, const unsigned char *src) {
     return dst;
 }
 
-s8 *StringCopyPad(s8 *a,s8 *b,s32 n) {
-s8 *p=a;
-if(n==0) return a;
-do {
-if((*p++=*b++)==0) {
-if(--n==0) return a;
-do { *p++=0; } while(--n);
-return a;
-}
-} while(--n);
-return a;
+/* strncpy: copy at most `size` bytes of the string `src` to `dst`.  Copying stops
+ * after `src`'s terminator and the remaining bytes up to `size` are zero-filled.
+ * Returns `dst`. */
+s8 *StringCopyPad(s8 *dst, s8 *src, s32 size) {
+    s8 *out = dst;
+    if (size == 0) return dst;
+    do {
+        if ((*out++ = *src++) == 0) {
+            if (--size == 0) return dst;
+            do { *out++ = 0; } while (--size);
+            return dst;
+        }
+    } while (--size);
+    return dst;
 }
 
 s8 *StringAppend(s8 *a,s8 *b) {

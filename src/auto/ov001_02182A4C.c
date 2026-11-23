@@ -1,6 +1,7 @@
 /* 60 functions from 0x02182A4C to 0x02183A20 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_wh.h"
 
 void Ov001_CloseSaveSlotMenuStep(void) {
     void func_ov001_02182a88(void);
@@ -134,7 +135,10 @@ void func_ov001_02182cd8(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182c2c);
 }
 
-void func_ov001_02182d0c(void) {
+/* Open the WFC connection screen's second step: clear the connection choice, load
+ * the step's background, object layout block, message panel and menu, show its
+ * message box, then hand over to the step's fade-in. */
+void Ov001_OpenWfcConnectStep2Screen(void) {
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_OpenMenuForMode(M2C_UNK);
@@ -205,10 +209,10 @@ Ov001_UnlockIconRow();Ov001_SetStepCallback(&func_ov001_02182ebc);
 void func_ov001_02182ebc(void) {
  void func_ov001_02182ed0(void);
  void func_ov001_02182f08(void);
- void func_ov001_02182f0c(void);
+ void Ov001_ApplyWfcMenuSelection(void);
  func_ov001_02182ed0();
  func_ov001_02182f08();
- func_ov001_02182f0c();
+ Ov001_ApplyWfcMenuSelection();
 }
 
 void func_ov001_02182ed0(void) {
@@ -225,24 +229,29 @@ void func_ov001_02182f08(void) {
 
 }
 
-void func_ov001_02182f0c(void) {
+/* Apply the icon-row choice on the Wi-Fi menu: leaving without connecting plays
+ * the cancel sound, choosing to connect marks the choice and plays the confirm
+ * sound; either way the menu moves on to its close.  A selection of -2 (nothing
+ * chosen) is ignored. */
+void Ov001_ApplyWfcMenuSelection(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001WfcConnectChosen;
-    void func_ov001_02182f5c(void);
+    void Ov001_PrepareCloseWfcMenu(void);
+
     switch (Ov001_GetIconRowSelection()) {
-    case 0: Ov001_PlaySound(7); break;
+    case 0: Ov001_PlaySound(OV001_SOUND_CANCEL); break;
     case 1:
-        Ov001_PlaySound(6);
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
         gOv001WfcConnectChosen = 1;
         break;
     default: return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182f5c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseWfcMenu);
 }
 
-void func_ov001_02182f5c(void) {
+void Ov001_PrepareCloseWfcMenu(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -397,10 +406,10 @@ void func_ov001_02183254(void) {
 void Ov001_UpdateConnectionWait(void) {
     void func_ov001_02183290(void);
     void func_ov001_021832c8(void);
-    void func_ov001_021832cc(void);
+    void Ov001_CancelConnectionWait(void);
     func_ov001_02183290();
     func_ov001_021832c8();
-    func_ov001_021832cc();
+    Ov001_CancelConnectionWait();
 }
 
 void func_ov001_02183290(void) {
@@ -420,7 +429,7 @@ void func_ov001_021832c8(void) {
 
 }
 
-void func_ov001_021832cc(void){void Ov001_StartConnectionClose(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);}
+void Ov001_CancelConnectionWait(void){void Ov001_StartConnectionClose(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);}
 
 void Ov001_StartConnectionClose(void) {
     M2C_UNK Ov001_LockIconRow();
@@ -464,7 +473,7 @@ void Ov001_CloseConnectionScreen(void) {
     void func_ov001_02185dac(void);
     extern u8 gOv001WfcScreenState;
     extern void Ov001_OpenAccessPointMenu(void);
-    extern void func_ov001_02182d0c(void);
+    extern void Ov001_OpenWfcConnectStep2Screen(void);
     extern void func_ov001_02182b00(void);
 
     if (Ov001_IsFadeActive(0) != 0) {
@@ -491,7 +500,7 @@ void Ov001_CloseConnectionScreen(void) {
     }
     if (gOv001WfcScreenState == 3) {
         Ov001_SetNextScreenMode(2, 1);
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02182d0c);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenWfcConnectStep2Screen);
         return;
     }
     Ov001_SetNextScreenMode(0, 0);
@@ -652,12 +661,16 @@ void CopyMapPreviewRows(void *source, s32 destColumn, s32 wordsPerRow, s32 rowCo
     }
 }
 
-void FlushMapPreview(void){
-extern void *gOv001MapPreview;void DC_FlushRange();void GX_LoadBG2Scr();
-if(!M2C_FIELD(gOv001MapPreview,u8 *,0x604))return;
-DC_FlushRange((u8 *)gOv001MapPreview+4,0x600);
-GX_LoadBG2Scr((u8 *)gOv001MapPreview+4,0,0x600);
-M2C_FIELD(gOv001MapPreview,u8 *,0x604)=0;
+/* Flush the ov001 map preview's dirty BG2 tilemap: clean it out of the data
+ * cache, load it into BG2, then clear the dirty flag. */
+void FlushMapPreview(void) {
+    extern void *gOv001MapPreview;
+    void DC_FlushRange();
+    void GX_LoadBG2Scr();
+    if (!((Ov001MapPreview *)gOv001MapPreview)->dirty) return;
+    DC_FlushRange(((Ov001MapPreview *)gOv001MapPreview)->tiles, sizeof(((Ov001MapPreview *)gOv001MapPreview)->tiles));
+    GX_LoadBG2Scr(((Ov001MapPreview *)gOv001MapPreview)->tiles, 0, sizeof(((Ov001MapPreview *)gOv001MapPreview)->tiles));
+    ((Ov001MapPreview *)gOv001MapPreview)->dirty = 0;
 }
 
 void Ov001_LoadObjTile(s32 a,s32 b,s32 c){

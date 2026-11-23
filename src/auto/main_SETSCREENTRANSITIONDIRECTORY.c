@@ -77,7 +77,7 @@ void SetScreenTransitionDone(void) {
     *gScreenTransition |= 1;
 }
 
-void func_020ad70c(void) {
+void ClearScreenTransitionDone(void) {
 extern s16 *gScreenTransition;
 *gScreenTransition &= ~1;
 }

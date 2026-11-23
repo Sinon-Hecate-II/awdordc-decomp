@@ -66,18 +66,23 @@ void FreeLinkBlock(s32 arg0, s32 arg1) {
     HeapFreeBlock();
 }
 
-void func_ov009_0222134c(void *arg0) {
+/* Reset a gLinkPlayers slot to its unset state: clear the 0x16-byte player
+ * name, mark the slot not connected (flags 0, no player id) and set the state
+ * bytes that follow the id to their unset values, then clear the 0x40-byte
+ * record at +0x20.  InitLinkPlayerRecord is the same setup for a new player,
+ * but returns the slot. */
+void ResetLinkPlayerRecord(void *record) {
     M2C_UNK MI_CpuFill8(void *, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg0, 0, 0x16);
-    M2C_FIELD(arg0, s8 *, 0x16) = 0;
-    M2C_FIELD(arg0, s8 *, 0x17) = -1;
-    M2C_FIELD(arg0, s8 *, 0x18) = -1;
-    M2C_FIELD(arg0, s8 *, 0x19) = -2;
-    M2C_FIELD(arg0, s8 *, 0x1A) = -2;
-    M2C_FIELD(arg0, s8 *, 0x1B) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1C) = 0;
-    M2C_FIELD(arg0, s8 *, 0x1D) = -1;
-    MI_CpuFill8(arg0 + 0x20, 0, 0x40);
+    MI_CpuFill8(record, 0, 0x16);
+    M2C_FIELD(record, s8 *, LINK_PLAYER_FLAGS) = 0;
+    M2C_FIELD(record, s8 *, LINK_PLAYER_ID) = -1;
+    M2C_FIELD(record, s8 *, LINK_PLAYER_RANK) = -1;
+    M2C_FIELD(record, s8 *, LINK_PLAYER_FAV_GROUP) = -2;
+    M2C_FIELD(record, s8 *, LINK_PLAYER_FAV_RECORD) = -2;
+    M2C_FIELD(record, s8 *, 0x1B) = 0;
+    M2C_FIELD(record, s8 *, 0x1C) = 0;
+    M2C_FIELD(record, s8 *, 0x1D) = -1;
+    MI_CpuFill8(record + 0x20, 0, 0x40);
 }
 
 /* Prepare a 0x60-byte gLinkPlayers slot for a new player: mark it not connected
@@ -235,7 +240,7 @@ callback=M2C_FIELD(gLinkState,void(**)(u16,s32),0x18);
 if(callback)callback(M2C_FIELD(arg0,u16*,0x44),M2C_FIELD(arg0,s32*,0x3c));
 mask=1<<me;
 if(M2C_FIELD(arg0,u16*,0x44)&(1<<me)){
-func_ov009_022236f4(M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40),(u16)mask);
+DispatchLinkPacket(M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40),(u16)mask);
 HandleLinkChannelCommand(21,(u8)me,M2C_FIELD(arg0,s32*,0x3c),M2C_FIELD(arg0,u32*,0x40));
 }
 M2C_FIELD(arg0,u16*,0x44)&=(-1 ^ mask);

@@ -16,6 +16,7 @@ enum {
 #define OV001_MENU_HANDLES    7    /* s32 handles: the rows, then the slide task and a flag */
 #define OV001_MENU_TASK_SLOT  5    /* index of the slide task handle */
 #define OV001_MENU_FILE       0x00 /* void *: loaded menu layout resource */
+#define OV001_MENU_LAYOUT_SIZE 0x600 /* bytes of the loaded layout resource */
 #define OV001_MENU_SPRITES    0x04 /* s32 *: OV001_MENU_HANDLES sprite handles */
 
 /* The ov001 region-column menu (gOv001RegionMenu): a vertical column of sprites
@@ -63,5 +64,6 @@ enum {
 #define OV001_ICON_ROW_HIDDEN_Y 192 /* y the row waits at below the screen */
 #define OV001_ICON_ROW_REST_Y   168 /* y the row rests at once in view */
 #define OV001_ICON_ROW_STEP     4   /* pixels the row moves each frame */
+#define OV001_ICON_ROW_INTRO_FRAMES 4 /* frames the row counts out before it takes input */
 
 #endif

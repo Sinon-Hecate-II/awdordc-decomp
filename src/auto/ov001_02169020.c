@@ -48,7 +48,25 @@ void Ov001_InitFontSet(void *arg0, M2C_UNK arg1) {
 
 s32 GetFontGlyphIndex(void **a,u32 b){s32 GetFontCmapGlyphIndex(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return GetFontCmapGlyphIndex(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
 
-void *GetFontGlyphMetric(void **a,u32 b){void *p;void *base; base=*a;p=M2C_FIELD(base,void **,12);while(p){u16 lo=M2C_FIELD(p,u16 *,0);if(lo<=b && b<=M2C_FIELD(p,u16 *,2))return p+8+(b-lo)*3;p=M2C_FIELD(p,void **,4);}return base+4;}
+/* Width record of `glyph` in font resource `resourcePtr`: walk the resource's
+ * CWDH range list (a u16 first/last and a next pointer at +4) and return the
+ * 3-byte metric entry for the glyph, or the resource's zero metric past its
+ * header when no range covers the glyph. */
+void *GetFontGlyphMetric(void **resourcePtr, u32 glyph) {
+    void *p;
+    void *base;
+
+    base = *resourcePtr;
+    p = M2C_FIELD(base, void **, 0xC);
+    while (p) {
+        u16 first = M2C_FIELD(p, u16 *, 0);
+        if (first <= glyph && glyph <= M2C_FIELD(p, u16 *, 2)) {
+            return p + 8 + (glyph - first) * 3;
+        }
+        p = M2C_FIELD(p, void **, 4);
+    }
+    return base + 4;
+}
 
 /* Width in pixels of one line of text from the font's character stream: add each
  * glyph's advance plus the letter spacing until a newline (10) or the end of the

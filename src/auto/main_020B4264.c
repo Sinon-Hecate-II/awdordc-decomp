@@ -357,7 +357,7 @@ void SaveCurrentBattle(void *state) {
         func_020e4870();
     }
     SaveBattleToRecord(GetSaveRecordBuffer());
-    func_020be438(saveType, GetSaveRecordBuffer(), 0x125c);
+    WriteSaveRecord(saveType, GetSaveRecordBuffer(), 0x125c);
 }
 
 void func_020b4b98(void *arg0) {
@@ -391,7 +391,7 @@ void ResumeSavedBattle(u8 saveType) {
     if (callback) callback();
     SetupPlayerTeams();
     RefreshMapView();
-    func_020c0a1c(3);
+    LoadUiSpritePalette(3);
 }
 
 void func_020b4ca0(void) {
@@ -496,7 +496,7 @@ void Init3DSpriteDisplay(void) {
     void Apply3DSpriteDisplayConfig(void);
     void func_020d4d78(void);
     void func_020994e0(s32);
-    void func_020c0a88(void);
+    void LoadUiGraphics(void);
     void CopyToObjPaletteShadow(void *, s32, s32);
     void func_020af1c0(s32, s32);
     extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub, *g3DSpriteEngineMain, *g3DSpriteBankMain;
@@ -530,7 +530,7 @@ void Init3DSpriteDisplay(void) {
     func_020d4d78();
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) & ~1) | 1;
     func_020994e0(0);
-    func_020c0a88();
+    LoadUiGraphics();
     CopyToObjPaletteShadow(gMapSpritePalette, 32, 32);
     func_020af1c0(3, 15);
 }

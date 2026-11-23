@@ -59,25 +59,28 @@ void func_0209ccd4(void *arg0) {
  M2C_FIELD(arg0, void (**)(void *), 0x34)(arg0);
 }
 
-void func_0209cce4(s32 arg0) {
+void CreateFrameCallbackTask(s32 arg0) {
     void *CreateSpriteFromClass(M2C_UNK *);
-    extern M2C_UNK data_0211dff0;
-    M2C_FIELD(CreateSpriteFromClass(&data_0211dff0), s32 *, 0x34) = arg0;
+    extern M2C_UNK gFrameCallbackTaskClass;
+    M2C_FIELD(CreateSpriteFromClass(&gFrameCallbackTaskClass), s32 *, 0x34) = arg0;
 }
 
-void func_0209cd00(s32 arg0) {
- M2C_UNK DeleteSpriteObject();
- extern M2C_UNK data_0211dff0;
- extern M2C_UNK g3DSpriteObjectPool;
- u8 *p;
- s32 i;
- p = (u8 *)&g3DSpriteObjectPool;
- i = 0;
- do {
-  if (M2C_FIELD(p, void **, 4) == &data_0211dff0 && M2C_FIELD(p, s32 *, 0x34) == arg0) DeleteSpriteObject(p);
-  i++;
-  p += 0x74;
- } while (i < 0x80);
+/* Destroy every frame-callback task sprite whose registered callback is
+ * `callback`: walk the 3D sprite pool and delete each matching object. */
+void DeleteFrameCallbackTask(s32 callback) {
+    M2C_UNK DeleteSpriteObject();
+    extern M2C_UNK gFrameCallbackTaskClass;
+    extern M2C_UNK g3DSpriteObjectPool;
+    u8 *object;
+    s32 i;
+
+    object = (u8 *)&g3DSpriteObjectPool;
+    i = 0;
+    do {
+        if (M2C_FIELD(object, void **, DS3D_SPRITE_ALIVE) == &gFrameCallbackTaskClass && M2C_FIELD(object, s32 *, DS3D_TASK_CALLBACK) == callback) DeleteSpriteObject(object);
+        i++;
+        object += DS3D_SPRITE_SIZE;
+    } while (i < DS3D_SPRITE_COUNT);
 }
 
 s32 func_0209cd4c(void) {
@@ -270,24 +273,30 @@ s32 func_0209d05c(void *arg0) {
     return 1;
 }
 
-s32 func_0209d074(void *arg0) {
-    s32 (*func)(void *);
-    func = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 (**)(void *), 4);
-    if (func == NULL || func(arg0) != 0) {
-        SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+/* 3D-sprite state handler: jump the sprite's animation to the state whose id the
+ * parameter names when the state's predicate callback (its data) is missing or
+ * returns nonzero; otherwise fall through to the next state. */
+s32 SpriteState_GotoIfPredicate(void *sprite) {
+    s32 (*predicate)(void *);
+    predicate = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 (**)(void *), DS3D_STATE_DATA);
+    if (predicate == NULL || predicate(sprite) != 0) {
+        SetSpriteAnimation(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
     } else {
-        M2C_FIELD(arg0, void **, 8) += 8;
+        M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     }
     return 1;
 }
 
-s32 func_0209d0c0(void *arg0) {
-    s32 (*func)(void *);
-    func = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 (**)(void *), 4);
-    if (func == NULL || func(arg0) == 0) {
-        SetSpriteAnimation(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+/* 3D-sprite state handler: jump the sprite's animation to the state whose id the
+ * parameter names when the state's predicate callback (its data) is missing or
+ * returns zero; otherwise fall through to the next state. */
+s32 SpriteState_GotoIfNotPredicate(void *sprite) {
+    s32 (*predicate)(void *);
+    predicate = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 (**)(void *), DS3D_STATE_DATA);
+    if (predicate == NULL || predicate(sprite) == 0) {
+        SetSpriteAnimation(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
     } else {
-        M2C_FIELD(arg0, void **, 8) += 8;
+        M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     }
     return 1;
 }
@@ -573,8 +582,8 @@ s32 func_0209d6fc(void *arg0) {
 }
 
 s32 func_0209d728(void *arg0) {
-    M2C_UNK func_0208f844(s16);
-    func_0208f844(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
+    M2C_UNK FadeOutMusicOverFrames(s16);
+    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;
 }
@@ -613,14 +622,14 @@ s32 func_0209d790(void *arg0) {
 
 s32 func_0209d7d8(void *arg0) {
     void LoadResource(u8);
-    void func_020884f8(u8);
+    void UnloadResource(u8);
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 8);
     if (M2C_FIELD(temp_r1, s32 *, 4) != 0) {
         LoadResource(M2C_FIELD(temp_r1, s16 *, 2));
     } else {
-        func_020884f8(M2C_FIELD(temp_r1, s16 *, 2));
+        UnloadResource(M2C_FIELD(temp_r1, s16 *, 2));
     }
     M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
     return 1;

@@ -426,43 +426,50 @@ s32 func_0202a6dc(void *arg0, M2C_UNK arg1) {
  return end-mask;
 }
 #pragma opt_propagation reset
-s32 func_0202a714(void *arg0, s32 arg1) {
+/* Records a frame-heap state tagged `tag`: allocates a state node from the heap,
+ * saves the heap's current head and tail in it, pushes it on the heap's state
+ * list and returns 1, or 0 when the node cannot be allocated. */
+s32 RecordFrameHeapState(void *heap, s32 tag) {
     void *AllocFromFrameHeapHead(void *, M2C_UNK, M2C_UNK);
-    s32 temp_r4;
-    void *temp_r0;
+    s32 head;
+    void *state;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x24);
-    temp_r0 = AllocFromFrameHeapHead(arg0 + 0x24, 0x10, 4);
-    if (temp_r0 == NULL) {
+    head = M2C_FIELD(heap, s32 *, 0x24);
+    state = AllocFromFrameHeapHead(heap + 0x24, FRAME_HEAP_STATE_SIZE, 4);
+    if (state == NULL) {
         return 0;
     }
-    M2C_FIELD(temp_r0, s32 *, 0) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 4) = temp_r4;
-    M2C_FIELD(temp_r0, s32 *, 8) = (s32) M2C_FIELD(arg0, s32 *, 0x28);
-    M2C_FIELD(temp_r0, void **, 0xC) = (void *) M2C_FIELD(arg0, void **, 0x2C);
-    M2C_FIELD(arg0, void **, 0x2C) = temp_r0;
+    M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_TAG) = tag;
+    M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_HEAD) = head;
+    M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_TAIL) = (s32) M2C_FIELD(heap, s32 *, 0x28);
+    M2C_FIELD(state, void **, FRAME_HEAP_STATE_NEXT) = (void *) M2C_FIELD(heap, void **, 0x2C);
+    M2C_FIELD(heap, void **, FRAME_HEAP_STATE_LIST) = state;
     return 1;
 }
 
-s32 func_0202a764(void *arg0, s32 arg1) {
-    void *var_r3;
+/* Restore the frame heap to a recorded state: find the saved-state node whose tag
+ * is `tag` (the newest node when tag is 0) and put back the frame head and tail
+ * it recorded, dropping that node and every newer one.  Returns 0 when no node
+ * matches. */
+s32 UnrecordFrameHeapState(void *heap, s32 tag) {
+    void *state;
 
-    var_r3 = M2C_FIELD(arg0, void **, 0x2C);
-    if ((arg1 != 0) && (var_r3 != NULL)) {
+    state = M2C_FIELD(heap, void **, FRAME_HEAP_STATE_LIST);
+    if ((tag != 0) && (state != NULL)) {
 loop_4:
-        if (M2C_FIELD(var_r3, s32 *, 0) != arg1) {
-            var_r3 = M2C_FIELD(var_r3, void **, 0xC);
-            if (var_r3 != NULL) {
+        if (M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_TAG) != tag) {
+            state = M2C_FIELD(state, void **, FRAME_HEAP_STATE_NEXT);
+            if (state != NULL) {
                 goto loop_4;
             }
         }
     }
-    if (var_r3 == NULL) {
+    if (state == NULL) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(var_r3, s32 *, 4);
-    M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(var_r3, s32 *, 8);
-    M2C_FIELD(arg0, void **, 0x2C) = (void *) M2C_FIELD(var_r3, void **, 0xC);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_HEAD) = (s32) M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_HEAD);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_TAIL) = (s32) M2C_FIELD(state, s32 *, FRAME_HEAP_STATE_TAIL);
+    M2C_FIELD(heap, void **, FRAME_HEAP_STATE_LIST) = (void *) M2C_FIELD(state, void **, FRAME_HEAP_STATE_NEXT);
     return 1;
 }
 
@@ -722,8 +729,8 @@ s32 Sound_CreateChannelHeap(s32 channel, void *soundPlayer, s32 heapSize) {
 }
 
 void func_0202ac60(s32 *arg0) {
-    M2C_UNK func_0202b10c(s32);
-    func_0202b10c(*arg0);
+    M2C_UNK Sound_FadeOutVoice(s32);
+    Sound_FadeOutVoice(*arg0);
 }
 
 void func_0202ac70(M2C_UNK arg0) {
@@ -735,7 +742,7 @@ void func_0202ac70(M2C_UNK arg0) {
     var_r4 = 0;
     do {
         if (M2C_FIELD(var_r5, u8 *, 0x2C) != 0) {
-            func_0202b10c(var_r5, arg0);
+            Sound_FadeOutVoice(var_r5, arg0);
         }
         var_r4 += 1;
         var_r5 += 0x44;

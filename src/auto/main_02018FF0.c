@@ -222,14 +222,17 @@ void func_0201950c(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 **, 4) = (s8 *) (M2C_FIELD(arg0, s8 **, 4) + 1);
 }
 
-void func_0201953c(void *p,s8 v,s32 n) {
- u32 i,len;
- if(n<=0)return;
- len=M2C_FIELD(p,u32*,0);i=0;
- if(len>(u32)n)len=n;
- for(;i<len;i++)M2C_FIELD(p,s8**,4)[i]=v;
- M2C_FIELD(p,u32*,0)-=len;
- M2C_FIELD(p,s8**,4)+=n;
+/* Formatter helper: write `count` copies of fill byte `c` into the output buffer,
+ * but only as many as still fit; reduce the remaining capacity by the bytes
+ * written and advance the write cursor by the whole count. */
+void FormatWriteFill(Print195 *out, s8 c, s32 count) {
+    u32 i, len;
+    if (count <= 0) return;
+    len = out->left; i = 0;
+    if (len > (u32)count) len = count;
+    for (; i < len; i++) out->current[i] = c;
+    out->left -= len;
+    out->current += count;
 }
 
 /* Bounded write into a formatter output buffer: copy `count` bytes from `src`
@@ -302,16 +305,16 @@ case 'd':case 'i':goto number;
 case 'c':
 if(precision>=0)goto invalid;
 ap+=4;c=*(s32 *)(ap-4);
-if(flags&8){func_0201950c(&out,(s8)c);func_0201953c(&out,' ',width-1);}
-else {func_0201953c(&out,(s8)(flags&16?'0':' '),width-1);func_0201950c(&out,(s8)c);}
+if(flags&8){func_0201950c(&out,(s8)c);FormatWriteFill(&out,' ',width-1);}
+else {FormatWriteFill(&out,(s8)(flags&16?'0':' '),width-1);func_0201950c(&out,(s8)c);}
 format++;continue;
 case 's':
 ap+=4;str=*(char **)(ap-4);len=0;
 if(precision<0){while(str[len])len++;}
 else {while(len<precision&&str[len])len++;}
 width-=len;
-if(flags&8){FormatWriteBytes(&out,(s8 *)str,len);func_0201953c(&out,' ',width);}
-else {func_0201953c(&out,(s8)(flags&16?'0':' '),width);FormatWriteBytes(&out,(s8 *)str,len);}
+if(flags&8){FormatWriteBytes(&out,(s8 *)str,len);FormatWriteFill(&out,' ',width);}
+else {FormatWriteFill(&out,(s8)(flags&16?'0':' '),width);FormatWriteBytes(&out,(s8 *)str,len);}
 format++;continue;
 case 'n':
 n=out.current-out.start;
@@ -367,11 +370,11 @@ if(flags&16){pad=width-n-prefixLen;if(precision<pad)precision=pad;}
 if(precision>0)width-=precision;
 width-=prefixLen+n;
 left=flags&8;
-if(!left)func_0201953c(&out,' ',width);
+if(!left)FormatWriteFill(&out,' ',width);
 while(prefixLen>0)func_0201950c(&out,prefix[--prefixLen]);
-func_0201953c(&out,'0',precision);
+FormatWriteFill(&out,'0',precision);
 while(n>0)func_0201950c(&out,digits[--n]);
-if(left)func_0201953c(&out,' ',width);
+if(left)FormatWriteFill(&out,' ',width);
 format++;
 }
 if(out.left)*out.current=0;

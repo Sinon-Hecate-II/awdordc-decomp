@@ -276,7 +276,7 @@ case 0:break;
 GX_ReleaseBanks(M2C_FIELD(&gVramBankState,u16 *,VRAM_BANKS_PENDING));
 }
 
-void func_02002ab8(s32 mode) {
+void GX_SetBankForBGExtPalette(s32 mode) {
     extern M2C_UNK gVramBankState;
     /* Select a 3D VRAM bank mode and update the display control mirror. */
     M2C_FIELD(&gVramBankState, u16 *, 0) = (M2C_FIELD(&gVramBankState, u16 *, 0) | M2C_FIELD(&gVramBankState, u16 *, 0xe)) & ~mode;

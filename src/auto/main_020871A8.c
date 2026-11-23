@@ -271,7 +271,20 @@ func_02087ea0(a,func_02087e68(a,b));
 #pragma pop
 void func_02087f00(void *p, s32 id) { void func_02087ec0(void *, s32); func_02087ec0(p, id); M2C_FIELD(p,s32 *,4)=M2C_FIELD(p,s32 *,0); M2C_FIELD(p,u8 *,15)=255; }
 
-s32 func_02087f20(s32 a,void *b,s32 c,s32 d) {s32 x=M2C_FIELD(b,s16 *,0);s32 y;if(c<x || x+M2C_FIELD(b,u16 *,4)<=c)return 0;y=M2C_FIELD(b,s16 *,2);if(d<y || y+M2C_FIELD(b,u16 *,6)<=d)return 0;return 1;}
+/* Return whether the point (pointX, pointY) lies inside the widget's half-open rectangle. */
+s32 WidgetRectContainsPoint(s32 unused, void *rect, s32 pointX, s32 pointY) {
+    s32 left = M2C_FIELD(rect, s16 *, 0);
+    s32 top;
+
+    if (pointX < left || left + M2C_FIELD(rect, u16 *, 4) <= pointX) {
+        return 0;
+    }
+    top = M2C_FIELD(rect, s16 *, 2);
+    if (pointY < top || top + M2C_FIELD(rect, u16 *, 6) <= pointY) {
+        return 0;
+    }
+    return 1;
+}
 
 /* Tests whether a point falls on a sprite cell list's background: it must lie
  * inside the list's bounding box and on none of its active cells (each cell's

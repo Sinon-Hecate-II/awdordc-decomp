@@ -57,18 +57,19 @@ void DrawScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, s32 layerVram, s3
 }
 
 void func_0209bccc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
-    void func_0209bd0c(M2C_UNK, M2C_UNK, s32, s32, s32, s32, u16, u16);
+    void CreateLocalizedMessageSprite(M2C_UNK, M2C_UNK, s32, s32, s32, s32, u16, u16);
     extern s32 gCur3DSpriteEngine;
     void *temp_r5;
 
     temp_r5 = gCur3DSpriteEngine + (arg2 * 4);
-    func_0209bd0c(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
+    CreateLocalizedMessageSprite(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
 }
 
-void func_0209bd0c(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
-s32 GetLocalizedText(s32);
-s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
-CreateMessageSprite(a,b,c,d,e,GetLocalizedText(f),g,h);
+/* Create a message sprite whose text is the localized string for `textId`. */
+void CreateLocalizedMessageSprite(s32 x, s32 y, s32 palette, s32 layerVram, s32 layerTiles, s32 textId, u16 attr, u16 tile) {
+    s32 GetLocalizedText(s32);
+    s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
+    CreateMessageSprite(x, y, palette, layerVram, layerTiles, GetLocalizedText(textId), attr, tile);
 }
 
 /* Create a message-box text sprite and set it up to draw the text script `text`
@@ -141,12 +142,13 @@ M2C_FIELD(a,u8 *,0x4a)=(u8)b;
 M2C_FIELD(a,u8 *,0x4b)=(u8)c;
 }
 
-u8 func_0209bf28(void) {
+/* Returns 1 while any message or text sprite is still alive. */
+u8 IsTextSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMessageSpriteClass;
     extern M2C_UNK data_021032d8;
     extern M2C_UNK data_02103300;
-    u8 var_r0;
+    u8 active;
 
     if (FindObjectByClass(&gMessageSpriteClass) != 0) {
         return 1U;
@@ -155,11 +157,11 @@ u8 func_0209bf28(void) {
         return 1U;
     }
     if (FindObjectByClass(&data_02103300) != 0) {
-        var_r0 = 1;
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 void func_0209bf7c(void) {
@@ -514,7 +516,7 @@ void *Text_GetLineStart(void *text, s32 line) {
     return cur;
 }
 
-void *func_0209c658(M2C_UNK arg0) {
+void *Text_FindLineBreakEnd(M2C_UNK arg0) {
     void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     u8 temp_r1;
     void *temp_r0;

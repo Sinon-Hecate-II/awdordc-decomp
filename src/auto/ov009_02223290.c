@@ -190,13 +190,16 @@ void func_ov009_022236c0(void *arg0) {
     callback(arg0);
 }
 
-void func_ov009_022236f4(s32 arg0,u16 arg1,u16 arg2) {
-M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
-extern M2C_UNK gLinkState;
-u8 buffer[12];
-MI_CpuCopy8(arg0,(s32)buffer,12);
-if(M2C_FIELD(&gLinkState,M2C_UNK (**)(s32,u16,u16),0x60)==NULL)return;
-M2C_FIELD(&gLinkState,M2C_UNK (**)(s32,u16,u16),0x60)(arg0,arg1,arg2);
+/* Hand link packet `packet` to the overlay's registered packet handler, after
+ * copying its 12-byte packet header (which reads the header back into memory).
+ * Nothing happens when no handler is installed. */
+void DispatchLinkPacket(s32 packet, u16 arg1, u16 arg2) {
+    M2C_UNK MI_CpuCopy8(s32,s32,M2C_UNK);
+    extern M2C_UNK gLinkState;
+    u8 packetHeader[12];
+    MI_CpuCopy8(packet, (s32)packetHeader, 12);
+    if (M2C_FIELD(&gLinkState, M2C_UNK (**)(s32,u16,u16), LINK_STATE_PACKET_HANDLER) == NULL) return;
+    M2C_FIELD(&gLinkState, M2C_UNK (**)(s32,u16,u16), LINK_STATE_PACKET_HANDLER)(packet, arg1, arg2);
 }
 
 #pragma push
@@ -285,7 +288,7 @@ callback(arg0,arg1,arg2,arg3,arg4);
 }
 
 void func_ov009_02223a90(void *arg0) {
-    void func_ov009_022236f4(s32, u16, u16);
+    void DispatchLinkPacket(s32, u16, u16);
     s32 temp_r0;
 
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
@@ -296,7 +299,7 @@ void func_ov009_02223a90(void *arg0) {
     if (temp_r0 == 0) {
         return;
     }
-    func_ov009_022236f4(temp_r0, M2C_FIELD(arg0, u16 *, 0x18), M2C_FIELD(arg0, u16 *, 0x10));
+    DispatchLinkPacket(temp_r0, M2C_FIELD(arg0, u16 *, 0x18), M2C_FIELD(arg0, u16 *, 0x10));
 }
 
 /* Callback of the Download Play link channels 4 and 12: a failed event reports
@@ -430,7 +433,7 @@ void func_ov009_02223d14(void *arg0) {
  * 2 or 3 signals a link error.  Returns 1 when the command was queued. */
 s32 SetLinkDownloadMode(s32 download) {
     extern M2C_UNK gLinkState, HandleLinkDownloadModeEvent;
-    s32 func_02013e24(M2C_UNK *, s32);
+    s32 WFC_SubmitDownloadMode(M2C_UNK *, s32);
     s32 result;
     u8 flags;
     if (download) {
@@ -442,7 +445,7 @@ s32 SetLinkDownloadMode(s32 download) {
         flags &= ~LINK_STATE_FLAG_DOWNLOAD;
         M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) = flags;
     }
-    result = func_02013e24(&HandleLinkDownloadModeEvent, M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) & LINK_STATE_FLAG_DOWNLOAD);
+    result = WFC_SubmitDownloadMode(&HandleLinkDownloadModeEvent, M2C_FIELD(&gLinkState, u8 *, LINK_STATE_FLAGS) & LINK_STATE_FLAG_DOWNLOAD);
     switch (result) {
     case 2:
     case 3:
@@ -485,14 +488,19 @@ void HandleLinkDownloadDataEvent(void *arg0) {
     }
 }
 
-s32 func_ov009_02223e5c(void) {
- extern M2C_UNK gLinkState,func_ov009_02223ea8;
- s32 func_02012be4(M2C_UNK *,s32);
- u8 old=M2C_FIELD(&gLinkState,u8 *,0);
- M2C_FIELD(&gLinkState,u8 *,0)=old+1;
- if(old!=0) return 1;
- if(func_02012be4(&func_ov009_02223ea8,0)==2) return 1;
- SignalLinkError();return 0;
+/* Add a user of the link's event notifications: bump the listener count at
+ * gLinkState+0 and, when it is the first user, install the handler
+ * func_ov009_02223ea8 through WFC command 0x23 (mode 0).  Returns 1 once the
+ * listener is installed, or signals a link error and returns 0. */
+s32 AddLinkEventListener(void) {
+    extern M2C_UNK gLinkState, func_ov009_02223ea8;
+    s32 WFC_SetLinkEvents(M2C_UNK *, s32);
+    u8 old = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT);
+    M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT) = old + 1;
+    if (old != 0) return 1;
+    if (WFC_SetLinkEvents(&func_ov009_02223ea8, 0) == LINK_TASK_QUEUED) return 1;
+    SignalLinkError();
+    return 0;
 }
 
 void func_ov009_02223ea8(void *arg0) {
@@ -505,11 +513,11 @@ void func_ov009_02223ea8(void *arg0) {
 
 s32 func_ov009_02223ec8(void) {
  extern M2C_UNK gLinkState,func_ov009_02223f14;
- s32 func_02012be4(M2C_UNK *,s32);
+ s32 WFC_SetLinkEvents(M2C_UNK *,s32);
  u8 value=M2C_FIELD(&gLinkState,u8 *,0)-1;
  M2C_FIELD(&gLinkState,u8 *,0)=value;
  if(M2C_FIELD(&gLinkState,u8 *,0)!=0) return 1;
- if(func_02012be4(&func_ov009_02223f14,1)==2) return 1;
+ if(WFC_SetLinkEvents(&func_ov009_02223f14,1)==2) return 1;
  SignalLinkError();return 0;
 }
 
@@ -591,7 +599,7 @@ s32 GetLinkPlayerSlot(s32 arg0) {
     return (0x60 * arg0) + (s32) &gLinkPlayers;
 }
 
-s32 func_ov009_022240c0(s32 arg0, M2C_UNK arg1) {
+s32 CopyLinkLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     s32 temp_r0;
 

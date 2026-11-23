@@ -1,5 +1,6 @@
 /* 31 functions from 0x02096C7C to 0x02097C50 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ds3dsprite.h"
 #include "battle_map.h"
 
@@ -34,34 +35,39 @@ void AwardVictoryToPlayer(s32 winner, M2C_UNK reason) {
     EnterBattleEnd();
 }
 
-void func_02096d0c(void) {
+/* Apply the standard 3D sprite layout preset to the current engine. */
+void SetStandard3DSpriteLayout(void) {
     M2C_UNK Apply3DSpriteLayout(u16 *);
-    typedef struct { u16 a, b, c, d, e, f; } T;
-    extern T data_020f3644;
-    T sp0;
+    extern DS3DSpriteLayoutConfig g3DSpriteLayoutStandard;
+    DS3DSpriteLayoutConfig preset;
 
-    sp0 = data_020f3644;
-    Apply3DSpriteLayout((u16 *) &sp0);
+    preset = g3DSpriteLayoutStandard;
+    Apply3DSpriteLayout((u16 *) &preset);
 }
 
-void func_02096d5c(void) {
+/* Assign the VRAM banks the 3D sprite layers draw from: release the current
+ * grants, then give main BG bank A, main OBJ bank B, sub BG bank C, sub OBJ bank D,
+ * main BG extended palette bank E, main OBJ extended palette bank F, sub BG
+ * extended palette bank H and sub OBJ extended palette bank I.  Bank G is left
+ * to whoever holds it. */
+void SetSpriteLayerVramBanks(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
-    M2C_UNK func_02002ab8(M2C_UNK);
-    M2C_UNK func_02003124(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPalette(M2C_UNK);
+    M2C_UNK GX_SetBankForSubBG(M2C_UNK);
     M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
-    M2C_UNK func_02082c84();
-    func_02082c84();
-    GX_SetBankForBG(1);
-    GX_SetBankForOBJ(2);
-    func_02003124(4);
-    GX_SetBankForSubOBJ(8);
-    func_02002ab8(0x10);
-    GX_SetBankForObjExtPalette(0x20);
-    GX_SetBankForBGExtPlttSub(0x80);
-    GX_SetBankForOBJExtPlttSub(0x100);
+    M2C_UNK GX_ReleaseBankGrants();
+    GX_ReleaseBankGrants();
+    GX_SetBankForBG(VRAM_BANK_A);
+    GX_SetBankForOBJ(VRAM_BANK_B);
+    GX_SetBankForSubBG(VRAM_BANK_C);
+    GX_SetBankForSubOBJ(VRAM_BANK_D);
+    GX_SetBankForBGExtPalette(VRAM_BANK_E);
+    GX_SetBankForObjExtPalette(VRAM_BANK_F);
+    GX_SetBankForBGExtPlttSub(VRAM_BANK_H);
+    GX_SetBankForOBJExtPlttSub(VRAM_BANK_I);
 }
 
 void func_02096da8(void) {
@@ -80,8 +86,8 @@ void func_02096dbc(void) {
    the current selection (main, sub or the saved engine): configures the background
    banks, then ORs the layer-enable bits (0x10..0x100) into each matching engine. */
 void EnableSpriteLayers(void) {
-    void func_02096d5c(void);
-    void func_02096d0c(void);
+    void SetSpriteLayerVramBanks(void);
+    void SetStandard3DSpriteLayout(void);
     M2C_UNK ApplyScreenMode(M2C_UNK);
     M2C_UNK ClearAll3DSpriteLayers(void);
     s32 Get3DSpriteTargetMode(void);
@@ -89,7 +95,7 @@ void EnableSpriteLayers(void) {
     u16 *volatile layer0, *volatile layer1, *volatile layer2, *volatile layer3, *volatile layer4;
     void *savedEngine;
     s32 engineIndex;
-    func_02096d5c();
+    SetSpriteLayerVramBanks();
     savedEngine = gCur3DSpriteEngine;
     engineIndex = 0;
     do {
@@ -97,7 +103,7 @@ void EnableSpriteLayers(void) {
         if ((Get3DSpriteTargetMode() != 0 || gCur3DSpriteEngine == g3DSpriteEngineMain) &&
             (Get3DSpriteTargetMode() != 1 || gCur3DSpriteEngine == g3DSpriteEngineSub) &&
             (Get3DSpriteTargetMode() != 3 || gCur3DSpriteEngine == savedEngine)) {
-            func_02096d0c();
+            SetStandard3DSpriteLayout();
             layer0 = *(u16 **)gCur3DSpriteEngine; *layer0 = *layer0 | 0x10;
             layer1 = *(u16 **)gCur3DSpriteEngine; *layer1 = *layer1 | 0x20;
             layer2 = *(u16 **)gCur3DSpriteEngine; *layer2 = *layer2 | 0x40;
@@ -187,7 +193,27 @@ void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePa
 
 void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(GetScenePanelState(),u8 *,7)=b; p=FindScenePanel((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
 
-void func_020971c0(s32 a,s32 b) { s32 p; void *q; s32 r; p=FindScenePanel((u16)a);if(!p)return;q=Get3DSpriteChild(p,0);r=M2C_FIELD(q,s32 *,0x60);if(b)SetFaceSpriteFace(r,0);else SetFaceSpriteFace(r,M2C_FIELD(q,u8 *,0x58));UpdateScenePanelPalette(p); }
+/* Hide the face in scene panel `panelIndex` when `hidden` is nonzero: the panel's
+ * face slot 0 linked face child is given face 0 (no face); when `hidden` is 0 the
+ * slot's stored face is shown again.  The panel's palette is refreshed afterwards. */
+void SetPanelFaceHidden(s32 panelIndex, s32 hidden) {
+    s32 panel;
+    s32 child;
+    void *face;
+
+    panel = FindScenePanel((u16) panelIndex);
+    if (panel == 0) {
+        return;
+    }
+    face = Get3DSpriteChild(panel, 0);
+    child = M2C_FIELD(face, s32 *, FACE_SPRITE_CHILD);
+    if (hidden) {
+        SetFaceSpriteFace(child, 0);
+    } else {
+        SetFaceSpriteFace(child, M2C_FIELD(face, u8 *, FACE_SPRITE_FACE));
+    }
+    UpdateScenePanelPalette(panel);
+}
 
 /* Give face slot 0 of scene panel panelIndex the face id and expression a
  * message-box script asks for, then refresh the panel's palette. */
@@ -549,7 +575,7 @@ s32 HighlightScenePanel(s32 panelIndex) {
                 highlighted = 1;
             }
             func_02091d6c(((ScenePanelState *) state)->palette, highlighted);
-            func_0209e26c((void *) panel, highlighted);
+            SetScenePanelFaceState((void *) panel, highlighted);
             UpdateScenePanelPalette((void *) panel);
         }
     }

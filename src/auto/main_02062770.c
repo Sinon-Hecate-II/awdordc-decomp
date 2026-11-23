@@ -186,7 +186,7 @@ void SBServerListSetError(void *arg0, s32 arg1) {
 }
 
 s32 SBServerListProcessConnectReply(void *a){
-s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_AddItem(s32,s32 *);void GsCryptData(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
+s32 Vector_New(s32,s32,s32);s32 Vector_GetCount(s32);void Vector_Append(s32,s32 *);void GsCryptData(void *,u8 *,s32);s32 BoundedStringLength(s8 *,s32);s32 StringIntern(void *,void *);void AssertFailed(void *,void *,void *,s32);void MemMove(void *,void *,s32);
 extern s32 sSbNoServer;extern s32 data_021001a8,data_021000ec;
 s32 n;u8 *p;s32 len,off,r,i;u8 *buffer; s32 pair[2];n=M2C_FIELD(a,s32 *,0x80);p=M2C_FIELD(a,u8 **,0x7c);
 switch(M2C_FIELD(a,u32 *,0x5c8)){
@@ -209,7 +209,7 @@ M2C_FIELD(a,s32 *,0x5c8)=2;M2C_FIELD(a,s32 *,0x484)=-1;
 case 2:
 if(M2C_FIELD(a,s32 *,0x484)==-1){if(n<1)break;i=p[0];M2C_FIELD(a,s32 *,0x484)=i;r=Vector_New(8,i,0);M2C_FIELD(a,s32 *,8)=r;if(!r)return 5;p++;n--;}
 while(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8))){
-if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=StringIntern(a,p+1);Vector_AddItem(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
+if(n<2)break;len=BoundedStringLength(p+1,n-1);if(len==-1)break;pair[1]=p[0];pair[0]=StringIntern(a,p+1);Vector_Append(M2C_FIELD(a,s32 *,8),pair);p+=len+1;n-=len+1;
 }
 if(M2C_FIELD(a,s32 *,0x484)>Vector_GetCount(M2C_FIELD(a,s32 *,8)))break;
 M2C_FIELD(a,s32 *,0x5c8)=3;M2C_FIELD(a,s32 *,0x484)=-1;
@@ -239,7 +239,7 @@ M2C_FIELD(a,s32 *,0x80)=n;return 0;
  * schema cannot be allocated. */
 s32 SBServerListParseKeyList(void *list, u8 *data, s32 size) {
     s32 Vector_New(s32, s32, s32);
-    void Vector_AddItem(s32, s32 *);
+    void Vector_Append(s32, s32 *);
     s32 StringIntern(void *, void *);
     s32 BoundedStringLength(s8 *, s32);
     void SBServerListFreeKeyList(void *);
@@ -265,7 +265,7 @@ s32 SBServerListParseKeyList(void *list, u8 *data, s32 size) {
         }
         entry.type = *data;
         entry.name = (char *)StringIntern(list, data + 1);
-        Vector_AddItem(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST), (s32 *)&entry);
+        Vector_Append(M2C_FIELD(list, s32 *, SB_SLIST_KEY_LIST), (s32 *)&entry);
         data += len + 1;
         size -= len + 1;
     }
@@ -410,7 +410,7 @@ s32 GpiHandleServerInfoResponse(void *gpi, u8 *data, s32 size) {
 #pragma scheduling off
 s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
     s32 SBServerListFindByAddress(M2C_UNK, s32, u16);
-    M2C_UNK func_02061b6c(M2C_UNK);
+    M2C_UNK SBServerListRemoveServerAt(M2C_UNK);
     s32 sp4;
     u16 sp0;
 
@@ -441,7 +441,7 @@ s32 func_02063678(M2C_UNK arg0, u8 *arg1, s32 arg2) {
             }
         }
     }
-    func_02061b6c(arg0);
+    SBServerListRemoveServerAt(arg0);
     return 0;
 }
 #pragma scheduling reset

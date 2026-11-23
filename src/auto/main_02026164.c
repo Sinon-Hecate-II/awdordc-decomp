@@ -585,17 +585,17 @@ void BigNumToBytes(u8 *dst, u16 *src, s32 n) {
     }
 }
 
-void func_02027090(void) {
+void MD5ContextInit(void) {
     M2C_UNK MD5Init();
     MD5Init();
 }
 
-void func_0202709c(void) {
+void MD5ContextUpdate(void) {
     M2C_UNK MD5Update();
     MD5Update();
 }
 
-void func_020270a8(void) {
+void MD5ContextFinal(void) {
     M2C_UNK func_0200c55c();
     func_0200c55c();
 }

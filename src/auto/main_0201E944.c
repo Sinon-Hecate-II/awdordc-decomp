@@ -370,23 +370,27 @@ s32 func_0201f230(void *arg0) {
     return var_r1;
 }
 
-s32 SocketQueueTask(M2C_UNK arg0, void *arg1) {
-    M2C_UNK var_r2;
-    s32 temp_r0;
+/* Post a socket task to a raw connection's task queue: a stop message (no task)
+ * and a task whose caller waits (TASK_WAIT) are posted blocking, any other task
+ * non-blocking.  A task the full queue refuses goes back to the task pool and
+ * the call fails with SOCK_TASK_QUEUE_FULL; otherwise it returns 0. */
+s32 SocketQueueTask(OSMessageQueue *queue, void *task) {
+    s32 flags;
+    s32 queued;
 
-    if ((arg1 == NULL) || (M2C_FIELD(arg1, s8 *, 0xD) & 1)) {
-        var_r2 = 1;
+    if ((task == NULL) || (M2C_FIELD(task, s8 *, TASK_WAIT) & 1)) {
+        flags = OS_MESSAGE_BLOCK;
     } else {
-        var_r2 = 0;
+        flags = OS_MESSAGE_NOBLOCK;
     }
-    temp_r0 = OS_SendMessage(arg0, arg1, var_r2);
-    if (temp_r0 == 0) {
-        SocketFreeTask(arg1);
+    queued = OS_SendMessage(queue, task, flags);
+    if (queued == 0) {
+        SocketFreeTask(task);
     }
-    if (temp_r0 != 0) {
+    if (queued != 0) {
         return 0;
     }
-    return -0x2A;
+    return SOCK_TASK_QUEUE_FULL;
 }
 
 s32 SocketSubmitTask(void *arg0, void *arg1) {

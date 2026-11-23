@@ -394,7 +394,9 @@ s32 func_ov007_02214718(s32 x, s32 y) {
     return 1;
 }
 
-void ResizeMap(s32 arg0, s32 arg1) {
+/* Resize the current map to `width` x `height` cells: reset the units and players,
+ * store the new size, then rebuild the row offsets and the generated map content. */
+void ResizeMap(s32 width, s32 height) {
     M2C_UNK ResetMapUnits();
     M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
@@ -405,8 +407,8 @@ void ResizeMap(s32 arg0, s32 arg1) {
     ResetMapUnits();
     InitPlayerStates();
     func_020d1f2c();
-    M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5144) = (u16) arg0;
-    M2C_FIELD((void *) *gCurrentMap, u16 *, 0x5146) = (u16) arg1;
+    M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_WIDTH) = (u16) width;
+    M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_HEIGHT) = (u16) height;
     BuildMapRowOffsets();
     func_ov007_02217a5c();
     func_020cf2c8();
@@ -565,20 +567,23 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     func_020cf2c8();
 }
 
-s32 Map_MinDistanceThreshold(s32 arg0) {
-    M2C_UNK func_0207ca08(M2C_UNK);
-    M2C_UNK Divide(M2C_UNK, M2C_UNK);
+/* Scale a Manhattan-distance threshold for the current map: `baseDistance` cells
+ * on the 30x30 reference map become baseDistance * sqrt(width * height) / 30,
+ * with the cell counts in 8.8 fixed point and the hardware square root. */
+s32 Map_MinDistanceThreshold(s32 baseDistance) {
+    s32 HardwareSquareRoot(s32);
+    s32 Divide(s32, s32);
     extern s32 *gCurrentMap;
-    void *temp_r0;
-    s32 var_r1;
-    s32 var_r0;
-    s32 var_r5;
+    void *map;
+    s32 heightFixed;
+    s32 widthFixed;
+    s32 mapSize;
 
-    temp_r0 = (void *) *gCurrentMap;
-    var_r1 = (s32) (M2C_FIELD(temp_r0, u16 *, 0x5146) << 8);
-    var_r0 = (s32) (M2C_FIELD(temp_r0, u16 *, 0x5144) << 8);
-    var_r5 = func_0207ca08((s32) (var_r1 * var_r0));
-    return Divide((s32) (arg0 * var_r5), func_0207ca08(0x3840000));
+    map = (void *) *gCurrentMap;
+    heightFixed = (s32) (M2C_FIELD(map, u16 *, MAP_HEIGHT) << 8);
+    widthFixed = (s32) (M2C_FIELD(map, u16 *, MAP_WIDTH) << 8);
+    mapSize = HardwareSquareRoot((s32) (heightFixed * widthFixed));
+    return Divide((s32) (baseDistance * mapSize), HardwareSquareRoot(MAP_DISTANCE_REFERENCE_AREA_FIXED8));
 }
 
 void Map_RandomScaledValue(void) {

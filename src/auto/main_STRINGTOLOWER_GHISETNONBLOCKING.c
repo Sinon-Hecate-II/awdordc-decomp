@@ -17,17 +17,17 @@ typedef struct { u8 bytes[8]; } UnkSocketAddress;
 /* Polls a single fd for readability/priority/error; sets output flags accordingly. */
 
 s32 ghiSetNonBlocking(M2C_UNK arg0, s32 arg1) {
-    s32 func_020219e8(M2C_UNK, M2C_UNK, s32);
+    s32 SocketFcntl(M2C_UNK, M2C_UNK, s32);
     s32 temp_r0;
     s32 var_r2;
 
-    temp_r0 = func_020219e8(arg0, 3, 0);
+    temp_r0 = SocketFcntl(arg0, 3, 0);
     if (arg1 != 0) {
         var_r2 = temp_r0 & ~4;
     } else {
         var_r2 = temp_r0 | 4;
     }
-    if (func_020219e8(arg0, 4, var_r2) == 0) {
+    if (SocketFcntl(arg0, 4, var_r2) == 0) {
         return 1;
     }
     return 0;
@@ -154,7 +154,15 @@ addr.bytes[0]=length;
 return ghiRecordSocketError(func_0202152c(socket,&addr),-1);
 }
 
-s32 ghiConnect(int a,UnkSocketAddress *b,u8 c){s32 SocketConnectAddress(int,UnkSocketAddress *);UnkSocketAddress addr=*b;addr.bytes[0]=c;return ghiRecordSocketError(SocketConnectAddress(a,&addr),-1);}
+/* ghiConnect: connects `socket` to `address`, whose length byte is replaced with
+ * the caller's `length`.  A failed connect returns -1 after recording the socket
+ * error. */
+s32 ghiConnect(int socket, UnkSocketAddress *address, u8 length) {
+    s32 SocketConnectAddress(int, UnkSocketAddress *);
+    UnkSocketAddress addr = *address;
+    addr.bytes[0] = length;
+    return ghiRecordSocketError(SocketConnectAddress(socket, &addr), -1);
+}
 
 void ghiListen(void) {
     s32 func_02021960();
@@ -213,10 +221,10 @@ void ghiGetSockName(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
 }
 
 s32 ghiInetAddr(M2C_UNK arg0) {
-    s32 func_02021c40(M2C_UNK, s32 *);
+    s32 ghiResolveInetAddr(M2C_UNK, s32 *);
     s32 sp0;
 
-    if (func_02021c40(arg0, &sp0) == 0) {
+    if (ghiResolveInetAddr(arg0, &sp0) == 0) {
         return -1;
     }
     return sp0;

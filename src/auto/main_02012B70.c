@@ -1,6 +1,7 @@
 /* 19 functions from 0x02012B70 to 0x02013B54 (main), found by ds-decomp. */
 #include "common.h"
 #include "wfc_channel.h"
+#include "ov001_wh.h"
 #pragma push
 #pragma optimization_level 0
 static inline u16 InitTransferState(s32 buffer,s32 channel,s32 flags,s32 count,s32 option,s32 mode) {
@@ -27,7 +28,7 @@ WFC_SetChannelParam(0x23,callback); CpuFill(0,packet,0x20);
 result=WFC_SendCommandPacket(packet,0x20); if(!result) result=2; return result;
 }
 
-void func_02012be4(s32 arg0, s16 arg1) {
+void WFC_SetLinkEvents(s32 arg0, s16 arg1) {
 void CpuFill(s32,void *,s32);
 u32 buf[7];
 CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; WFC_SendCommand23(arg0,buf);
@@ -417,13 +418,16 @@ void WFC_PostReceive(void *state, s32 dropSelf) {
 }
 
 #pragma scheduling off
-s32 func_02013aa8(void *arg0, void *arg1, s32 arg2) {
-u16 a=M2C_FIELD(arg1,u16 *,0); u16 b=M2C_FIELD(arg1,u16 *,2);
-u32 mask=1u<<arg2;
-if(!arg0) return 0; if(!arg1) return 0;
-if(!(a & mask)) return 0;
-if(!(b & mask)) return 0;
-return WFC_PlayerDataOffset(arg0,a,(s32)arg1+4,arg2);
+/* Address of player `playerIndex`'s data block in the WH data-sharing block, or 0
+ * when the player is not both taking part (WH_DS_PLAYER_MASK) and known
+ * (WH_DS_KNOWN_MASK). */
+s32 WFC_GetPlayerData(void *state, void *players, s32 playerIndex) {
+u16 playerMask=M2C_FIELD(players,u16 *,WH_DS_PLAYER_MASK); u16 knownMask=M2C_FIELD(players,u16 *,WH_DS_KNOWN_MASK);
+u32 playerBit=1u<<playerIndex;
+if(!state) return 0; if(!players) return 0;
+if(!(playerMask & playerBit)) return 0;
+if(!(knownMask & playerBit)) return 0;
+return WFC_PlayerDataOffset(state,playerMask,(s32)players+WH_DS_DATA,playerIndex);
 }
 #pragma scheduling reset
 s32 WFC_PlayerDataOffset(void *arg0, s32 arg1, s32 arg2, s32 arg3) {

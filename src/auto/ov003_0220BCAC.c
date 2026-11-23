@@ -94,9 +94,9 @@ s8 func_ov003_0220bf68(void *arg0) {
 }
 
 void func_ov003_0220bf70(void) {
-    M2C_UNK func_01ff9d88(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayerSub(M2C_UNK);
     extern void *g3DSpriteEngineSub;
-    func_01ff9d88(1);
+    Clear3DSpriteLayerSub(1);
     M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 2);
 }
 
@@ -179,7 +179,7 @@ unitId=unit?M2C_FIELD(unit,u16*,8):-1;
 if((u8)(unitId-11)==1 && !IsUnitAvailable(8)){type=MENU_ENTRY_INFO;value=5;}
 }
 switch(type){
-case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
+case MENU_ENTRY_UNIT:menu[MENU_ACTION]=49;Ov003_SetRowAnimation(menu,value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);Clear3DSpriteLayerSub(1);M2C_FIELD(g3DSpriteEngineSub,u8*,0x46)|=2;PlaySoundEffect(0x1000d);break;
 case MENU_ENTRY_INFO:EnableMapConfirm();SetMapCategory(value);Ov003_RefreshListRowAnimations(menu,0,(u8)index);Sprite_ResumeAnimation(menu);PlaySoundEffect(0x1000e);break;
 case MENU_ENTRY_SUBMENU:switch(desc[MENU_DESC_VALUE]){case 0:case 1:case 2:PlaySoundEffect(0x1000d);RequestMenuMode(menu,1);func_020b4db0(value,menu);break;case 3:PlaySoundEffect(0x1000d);RequestMenuMode(menu,3);func_020b4e10(menu);break;}break;
 }
@@ -197,7 +197,7 @@ void Ov003_ConfirmRowValue(void *arg0, int arg1) {
  if((u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_FIRST) || (u8)((((unsigned int)menu[MENU_MODE]<<24)>>28)==MENU_MODE_SECOND)){menu[MENU_SELECT_MODE]=1;DisableMapConfirm();Sprite_ResumeAnimation(menu);}
  menu[MENU_FLAGS]&=~MENU_FLAG_ANIM;
  row=*(u8 **)(menu+MENU_SELECTION);row[row[MENU_ROW_COUNT]]=arg1;
- if(rowValue!=16){menu[MENU_ACTION]=30;Ov003_SetRowAnimation(menu,rowValue);Ov003_RefreshListRowAnimations(menu,5,MENU_MODE_IDLE);func_01ff9d88(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
+ if(rowValue!=16){menu[MENU_ACTION]=30;Ov003_SetRowAnimation(menu,rowValue);Ov003_RefreshListRowAnimations(menu,5,MENU_MODE_IDLE);Clear3DSpriteLayerSub(1);M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;}
  else {DisableMapConfirm();Sprite_ResumeAnimation(menu);}
 }
 

@@ -294,11 +294,16 @@ if(((TouchState *)base)->callback)((TouchState *)base)->callback(0,4,0);
 } else {base=(u32)&gTouchDriverState;((TouchState *)base)->flags3a = 1 | ((TouchState *)base)->flags3a;((TouchState *)base)->flags38&=~1;OS_RestoreInterrupts(t);}
 }
 #pragma opt_propagation reset
-s32 func_0200d80c(u16 *a) {
-void TP_WaitBusy(u32);
-TP_WaitBusy(1);if(M2C_FIELD(&gTouchDriverState,u16 *,0x38)&1)return 1;
-((TouchPair *)a)[0]=M2C_FIELD(&gTouchDriverState,TouchPair *,8);
-((TouchPair *)a)[1]=M2C_FIELD(&gTouchDriverState,TouchPair *,12);return 0;
+/* Wait for the touch panel controller's sample command to finish, then copy the
+ * raw point (x, y, touch, valid) into `sample`.  Returns 1 when the command
+ * failed, 0 when the sample was read. */
+s32 TP_ReadTouchSample(u16 *sample) {
+    void TP_WaitBusy(u32);
+    TP_WaitBusy(1);
+    if (((TouchState *)&gTouchDriverState)->flags38 & 1) return 1;
+    ((TouchPair *)sample)[0] = M2C_FIELD(&gTouchDriverState, TouchPair *, 8);
+    ((TouchPair *)sample)[1] = M2C_FIELD(&gTouchDriverState, TouchPair *, 12);
+    return 0;
 }
 
 #pragma opt_instruction_scheduling off

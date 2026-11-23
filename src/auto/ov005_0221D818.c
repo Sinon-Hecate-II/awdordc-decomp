@@ -9,11 +9,11 @@ extern void **gCurrentMap;
 extern u8 gSpriteDesc32x16[],data_02101f4c[],gSpriteDesc16x16[],gSpriteDesc8x8[],gSpriteDesc16x32[];
 extern u8 data_0215c34a[],gCoState[],data_ov005_02220a1c[],data_ov005_02220a24[];
 void AddSprite(u16,u16,u16,void *,s32);
-void func_02098cb8(s32,s16,s16,u16,s32,s32);
+void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);
 s32 func_020cfb94(void);
 void DivMod(s32,s32,s32 *,s32 *);
 s32 Modulo(s32,s32);
-void *func_020a866c(s32);
+void *GetDisplayUnitKind(s32);
 s32 func_020d3014(s32,void *);
 s32 func_020d3080(s32,void *);
 s32 func_020a72b0(s32,void *);
@@ -29,7 +29,7 @@ gCur3DSpriteEngine=g3DSpriteEngineMain;
 AddSprite(192,M2C_FIELD(arg0,s32 *,0x44)&255,RESULT_ATTR((M2C_FIELD(arg0,s32 *,0x54)<<3)+0x398,0xc000),gSpriteDesc32x16,5);
 i=M2C_FIELD(arg0,s32 *,0x50);
 y=(169-M2C_FIELD(arg0,s32 *,0x44))&255;
-func_02098cb8(0,7,y,RESULT_ATTR(i*24+0x270,(u32)(i<<28)>>16),1,5);
+AddFaceSpriteTile(0,7,y,RESULT_ATTR(i*24+0x270,(u32)(i<<28)>>16),1,5);
 AddSprite(5,(u16)((y&0xff00)|((y+1)&255)),RESULT_ATTR(0x1d8,0x7000),data_02101f4c,6);
 for(loop=0;loop<func_020cfb94();loop++){
 AddSprite((u16)((79+20*loop)&511),(170-M2C_FIELD(arg0,s32 *,0x44))&255,RESULT_ATTR(0x388+4*loop,(u32)((loop+8)<<28)>>16),gSpriteDesc16x16,8);
@@ -90,14 +90,14 @@ gCur3DSpriteEngine=saved2;
 x+=56;q++;tile+=8;i++;
 }while(*++p);}
 ox=0;oy=-2;mode=M2C_FIELD(arg0,u8 *,0x58)?0x400:0;
-for(i=0;func_020a866c(i);i++,ox+=64){
+for(i=0;GetDisplayUnitKind(i);i++,ox+=64){
 if(!Modulo(i,4)){oy+=20;ox=8;}
-if(M2C_FIELD(arg0,s32 *,0x54)==0)score=func_020d3014(M2C_FIELD(arg0,s32 *,0x50)+1,func_020a866c(i));
-else score=func_020d3080(M2C_FIELD(arg0,s32 *,0x50)+1,func_020a866c(i));
+if(M2C_FIELD(arg0,s32 *,0x54)==0)score=func_020d3014(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
+else score=func_020d3080(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
 if(score){
 if(score>99)score=99;
 n=M2C_FIELD(arg0,s32 *,0x50);
-map=func_020a866c(i);
+map=GetDisplayUnitKind(i);
 ay=mode|(oy&255);x=ox&511;
 py=(ay&0xff00)|(ay&255);
 tile=func_020a72b0(n+1,map)+0x3ac;
@@ -159,7 +159,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
     s32 DidPlayerWin(void);
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    void *func_02090eb8(M2C_UNK *, s32, s32, s32, u16, s32, void *);
+    void *CreateScriptedSpriteFromFile(M2C_UNK *, s32, s32, s32, u16, s32, void *);
     void PositionAwardPanelSprites(void *);
     s32 RandomIntRange(s32, s32);
     void SpawnResultSpark(s32, s32, s32);
@@ -192,7 +192,7 @@ void func_ov005_0221e22c(M2C_UNK parent) {
         savedEngine = gCur3DSpriteEngine;
         for (i = 0; i < 2; i++) {
             gCur3DSpriteEngine = i == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
-            M2C_FIELD(medalDisplay + i * 4, void **, 0x34) = func_02090eb8(&data_ov005_02220a78, 0, 0, 0, (u16)(0xa000 | ((472 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 1023)), 0, medalDisplay);
+            M2C_FIELD(medalDisplay + i * 4, void **, 0x34) = CreateScriptedSpriteFromFile(&data_ov005_02220a78, 0, 0, 0, (u16)(0xa000 | ((472 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 17) >> 30)) & 1023)), 0, medalDisplay);
         }
         gCur3DSpriteEngine = savedEngine;
         PositionAwardPanelSprites(medalDisplay);

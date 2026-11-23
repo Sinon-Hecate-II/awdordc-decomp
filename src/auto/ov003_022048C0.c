@@ -335,8 +335,8 @@ void func_ov003_02205698(void) {
 }
 
 void func_ov003_022056a4(void) {
-    M2C_UNK func_ov003_02202454();
-    func_ov003_02202454();
+    M2C_UNK Ov003_HideSetupPanelSprites();
+    Ov003_HideSetupPanelSprites();
 }
 
 void func_ov003_022056b0(void) {

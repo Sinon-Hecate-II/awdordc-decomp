@@ -131,9 +131,9 @@ s32 ProcessAiCommandStep(void) {
     s32 RunAiCommandMoveStep();
     s32 func_ov000_0219f0d8();
     s32 ProcessAiCommandDelay();
-    s32 func_ov000_0219f918();
+    s32 ResolveAiAttackCommand();
     s32 PlayAiAttackEffect();
-    s32 func_ov000_0219f9c0();
+    s32 FinishAiAttackCommand();
     s32 func_ov000_0219fa0c();
     s32 FinishAiUnitMove();
     s32 func_ov000_0219fa98();
@@ -152,7 +152,7 @@ s32 ProcessAiCommandStep(void) {
             continues = func_ov000_0219f0d8();
             break;
         case 3:
-            continues = func_ov000_0219f918();
+            continues = ResolveAiAttackCommand();
             break;
         case 4:
             continues = PlayAiAttackEffect();
@@ -161,7 +161,7 @@ s32 ProcessAiCommandStep(void) {
             continues = func_ov000_0219fa0c();
             break;
         case 6:
-            continues = func_ov000_0219f9c0();
+            continues = FinishAiAttackCommand();
             break;
         case 7:
             continues = ProcessAiCommandDelay();
@@ -397,8 +397,8 @@ s32 func_ov000_0219f0d8(void) {
     void RefreshMapView(void);
     void func_020bbc2c(s32);
     void BattleUpdateUnitCursor(void);
-    void func_ov000_0219f3fc(void);
-    void func_ov000_0219f448(void);
+    void AiProduceUnitAtCommandTile(void);
+    void AiProduceUnitCommand(void);
     void ApplyWeatherCommand(void);
     u8 AiMoveCursorToCommandTile(void);
     u8 AiMoveCursorToCommandPoint(void);
@@ -445,10 +445,10 @@ s32 func_ov000_0219f0d8(void) {
     case 16:
         break;
     case 2:
-        func_ov000_0219f3fc();
+        AiProduceUnitAtCommandTile();
         break;
     case 3:
-        func_ov000_0219f448();
+        AiProduceUnitCommand();
         break;
     case 4:
         ApplyWeatherCommand();
@@ -529,24 +529,31 @@ s32 func_ov000_0219f0d8(void) {
 }
 #pragma opt_common_subs reset
 #pragma opt_propagation reset
-void func_ov000_0219f3fc(void) {
+/* AI command 2 build action, the twin of AiProduceUnitCommand (command 3): build
+ * the command's unit kind on its cursor tile, play the unit-arrival sound and move
+ * on to command step 9. */
+void AiProduceUnitAtCommandTile(void) {
     void PlaySoundAtTile(s32, u8, u8);
     void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
-    ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
-    PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
-    M2C_FIELD(gAiCommandState, s8 *, 1) = 9;
+
+    ProduceUnit(gAiCommand[AI_COMMAND_CURSOR_X], gAiCommand[AI_COMMAND_CURSOR_Y], gAiCommand[AI_COMMAND_ACTOR]);
+    PlaySoundAtTile(0x111, gAiCommand[AI_COMMAND_CURSOR_X], gAiCommand[AI_COMMAND_CURSOR_Y]);
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = 9;
 }
 
-void func_ov000_0219f448(void) {
+/* AI command 3 (build a unit): build the command's unit kind at its cursor
+ * tile, play the unit-arrival sound and move on to command step 9. */
+void AiProduceUnitCommand(void) {
     void PlaySoundAtTile(s32, u8, u8);
     void ProduceUnit(u8, u8, u8);
     extern u8 gAiCommand[];
     extern s8 *gAiCommandState;
-    ProduceUnit(gAiCommand[2], gAiCommand[3], gAiCommand[1]);
-    PlaySoundAtTile(0x111, gAiCommand[2], gAiCommand[3]);
-    M2C_FIELD(gAiCommandState, s8 *, 1) = 9;
+
+    ProduceUnit(gAiCommand[AI_COMMAND_CURSOR_X], gAiCommand[AI_COMMAND_CURSOR_Y], gAiCommand[AI_COMMAND_ACTOR]);
+    PlaySoundAtTile(0x111, gAiCommand[AI_COMMAND_CURSOR_X], gAiCommand[AI_COMMAND_CURSOR_Y]);
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = 9;
 }
 
 /* AI command kind 4: apply a weather change to the battle map.  It switches the

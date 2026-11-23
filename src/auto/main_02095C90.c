@@ -13,7 +13,7 @@ extern u16 gMapConfig[];
 void InitTelopWindow(void *telop) {
     M2C_UNK MeasureStringWidth(M2C_UNK);
     void LoadScenePanelPalette(M2C_UNK);
-    void func_02096d0c(void);
+    void SetStandard3DSpriteLayout(void);
     M2C_UNK DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
@@ -40,7 +40,7 @@ void InitTelopWindow(void *telop) {
 
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_02096d0c();
+    SetStandard3DSpriteLayout();
     statReg0 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
     *statReg0 = *statReg0 | 0x10;
     statReg1 = M2C_FIELD(gCur3DSpriteEngine, u16 **, 0);
@@ -161,7 +161,7 @@ u8 IsMessageBoxActive(void) {
     return var_r0;
 }
 
-u8 func_02096038(void) {
+u8 IsMessageBoxIdle(void) {
     u8 var_r0;
 
     if (GetMessageBoxState() == 3) {
@@ -175,15 +175,18 @@ u8 func_02096038(void) {
     return var_r0;
 }
 
+/* Consume a Start press that begins a message box: only while the box is off
+ * (not idle-animating and not already active) does Start mark it started and
+ * report that the caller may skip ahead. */
 s32 TryStartDialogSkip(void) {
-    extern u16 *gKeyState;
-    if (func_02096038() == 0) {
+    extern KeyState *gKeyState;
+    if (IsMessageBoxIdle() == 0) {
         return 0;
     }
     if (IsMessageBoxActive() != 0) {
         return 0;
     }
-    if (!(*gKeyState & 8)) {
+    if (!(gKeyState->pressed & KEY_START)) {
         return 0;
     }
     SetMessageBoxState(1);
@@ -191,9 +194,9 @@ s32 TryStartDialogSkip(void) {
 }
 
 void func_020960b4(void) {
-    M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateFrameCallbackTask(M2C_UNK *, M2C_UNK);
     extern M2C_UNK UpdateDialogSequences;
-    func_0209cce4(&UpdateDialogSequences, 5);
+    CreateFrameCallbackTask(&UpdateDialogSequences, 5);
 }
 
 void LayerOffsetToPixel(s32 arg0, s32 arg1, void *arg2) {
@@ -205,13 +208,19 @@ void LayerOffsetToPixel(s32 arg0, s32 arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 2) = (s16) (Divide(temp_r0, 0x40) * 8);
 }
 
-void func_020960fc(void *arg0) {
-M2C_UNK GetMenuCursor(void);
-void func_02097c50(s32,s32,s32);
-extern void *gCur3DSpriteEngine;
-s16 pos[2];
-LayerOffsetToPixel(M2C_FIELD(arg0,s32 *,0x4c),M2C_FIELD((u8 *)gCur3DSpriteEngine+M2C_FIELD(arg0,u8 *,0x40)*4,s32 *,0x20),pos);
-func_02097c50(GetMenuCursor(),pos[0]+M2C_FIELD(arg0,s16 *,0x4a),pos[1]);
+/* Lay out the message widget: turn the address of its cells in the layer's
+ * tilemap into a screen position, then move the menu cursor (the vertically
+ * bobbing one) to the widget's x offset there. */
+void LayoutMessageWidget(ScenePanelWidget *widget) {
+    M2C_UNK GetMenuCursor(void);
+    void SetScenePanelCursorVertical(s32, s32, s32);
+    extern void *gCur3DSpriteEngine;
+    s16 pos[2];
+
+    LayerOffsetToPixel(widget->tileMap,
+                       (s32)((DS3DSpriteEngine *)gCur3DSpriteEngine)->layerTiles[widget->layer],
+                       pos);
+    SetScenePanelCursorVertical(GetMenuCursor(), pos[0] + widget->x, pos[1]);
 }
 
 /* Per-frame input of a scene-panel message widget: while the text is idle the
@@ -223,14 +232,14 @@ void UpdateMessageWidget(void *widget) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK GetMenuCursor();
     M2C_UNK HideMenuCursor();
-    s32 func_0209dc48();
+    s32 GetMessageWidgetKeyAction();
     s32 GetScreenTouchConfirm();
     s32 keyAction;
     u16 actions;
 
-    keyAction = func_0209dc48();
+    keyAction = GetMessageWidgetKeyAction();
     actions = keyAction | GetScreenTouchConfirm();
-    if ((func_02096038() != 0) && (actions & PANEL_INPUT_SKIP)) {
+    if ((IsMessageBoxIdle() != 0) && (actions & PANEL_INPUT_SKIP)) {
         func_02095ff8(1);
     }
     if (!(actions & (PANEL_INPUT_SKIP | PANEL_INPUT_CONFIRM | PANEL_INPUT_CANCEL))) {

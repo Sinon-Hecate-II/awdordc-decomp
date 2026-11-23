@@ -41,8 +41,8 @@ extern unsigned char gOv001CryptKeyTail[118];
  * buffer, append this player's 8-byte session token, then post the transfer. */
 int Ov001_SendRoomRequest(int state, int session, int context) {
     void Ov001_SetRoomError(int);
-    void func_ov001_0216c88c(int, unsigned char *, int, short *, short *, int);
-    void func_ov001_0216c8e0(unsigned short *, int, int, int, signed char, signed char, void *);
+    void Ov001_WriteRoomPayload(int, unsigned char *, int, short *, short *, int);
+    void Ov001_WriteRoomPacketHeader(unsigned short *, int, int, int, signed char, signed char, void *);
     void Ov001_SendRoomTransfer(int, int, int, int);
     int Ov001_ScrambleToken(void *, int, void *, int);
     int Ov001SwapEndian32(int);
@@ -67,14 +67,14 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     packet.work.value = M2C_FIELD(gRoomState, int *, OV001_REQUEST_MASK);
     packet.work.value = Ov001SwapEndian32(packet.work.value);
     packet.work.length = 8;
-    func_ov001_0216c88c(M2C_FIELD(gRoomState, int *, 0), buffer + OV001_PKT_HEADER,
+    Ov001_WriteRoomPayload(M2C_FIELD(gRoomState, int *, 0), buffer + OV001_PKT_HEADER,
                        (int)&packet.work.type, &packet.work.length, &packet.work.flags, (int)&packet.work);
     Ov001MemCopy(packet.token, (void *)(session + 8), 8);
     if (Ov001_ScrambleToken(packet.token, 8, data_ov001_0218fdb0, 6)) {
         Ov001_SetRoomError(2);
         return -1;
     }
-    func_ov001_0216c8e0((unsigned short *)buffer, OV001_CMD_ROOM_REQUEST, packet.work.length, packet.work.flags, packet.work.status, OV001_PKT_KIND_ROOM, packet.token);
+    Ov001_WriteRoomPacketHeader((unsigned short *)buffer, OV001_CMD_ROOM_REQUEST, packet.work.length, packet.work.flags, packet.work.status, OV001_PKT_KIND_ROOM, packet.token);
     packet.work.length += OV001_PKT_HEADER;
     Ov001_SendRoomTransfer((int)buffer, packet.work.length, 0, context);
     return 0;

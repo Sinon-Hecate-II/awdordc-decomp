@@ -239,7 +239,7 @@ s32 SocketShutdown(void *socket) {
 }
 #pragma opt_common_subs reset
 s32 SocketShutdownTask(void *arg0) {
-    M2C_UNK func_0201d484();
+    M2C_UNK CloseTransport();
     s32 var_r1;
     s8 temp_r0;
 
@@ -249,7 +249,7 @@ s32 SocketShutdownTask(void *arg0) {
         var_r1 = 0;
     }
     if (var_r1 != 0) {
-        func_0201d484();
+        CloseTransport();
     }
     return 0;
 }
@@ -300,7 +300,7 @@ return 0;
  * then move the socket from the active list to the closed list under the
  * interrupt lock and mark it closed. */
 s32 SocketCloseTask(void *request) {
-    M2C_UNK func_0201d484();
+    M2C_UNK CloseTransport();
     M2C_UNK WaitForTlsCloseNotify();
     M2C_UNK CloseRawConnection();
     M2C_UNK ClearCurrentRawConnection();
@@ -319,7 +319,7 @@ s32 SocketCloseTask(void *request) {
     if ((state != SOCK_STATE_IDLE) && (state != SOCK_STATE_CONNECTED)) duplex = 0;
     if (duplex != 0) {
         OS_JoinThread(M2C_FIELD(socket, s32 *, SOCK_TX_CONN) + 0x20); /* the send connection's thread */
-        func_0201d484();
+        CloseTransport();
         WaitForTlsCloseNotify();
         CloseRawConnection();
     }
@@ -476,7 +476,7 @@ retry:
  * that is being shut down, reap the closed ones, and report SOCK_BUSY until the
  * network task has finished. */
 s32 NetworkPollClosing(void) {
-    s32 NetworkTaskIsFinished();
+    s32 IsNetworkTaskFinished();
     M2C_UNK SocketClose(s32);
     M2C_UNK ReapClosedSockets();
     s32 SocketCloseAll();
@@ -494,7 +494,7 @@ s32 NetworkPollClosing(void) {
             result = SOCK_BUSY;
         }
         ReapClosedSockets();
-    } else if (NetworkTaskIsFinished() == 0) {
+    } else if (IsNetworkTaskFinished() == 0) {
         result = SOCK_BUSY;
     } else {
         WFC_SetSendCallback(0);
@@ -531,25 +531,30 @@ s32 LookupHostAddress(s32 hostname) {
     return address;
 }
 
-s32 func_020211e4(s32 arg0) {
+/* Resolve `hostname` with the configured DNS servers cleared, so that only a
+ * literal IPv4 address string resolves (a host name would need a DNS query):
+ * save the two server addresses under a disabled-interrupt lock, look the name up
+ * and put them back. */
+s32 DnsLookupAddressWithoutServers(s32 hostname) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 DnsLookupAddress(s32);
     extern M2C_UNK gDnsServerAddresses;
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 temp_r6;
-    s32 temp_r7;
-    temp_r5 = OS_DisableInterrupts();
-    temp_r6 = M2C_FIELD(&gDnsServerAddresses, s32 *, 0);
-    temp_r7 = M2C_FIELD(&gDnsServerAddresses, s32 *, 4);
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = 0;
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = 0;
-    temp_r4 = DnsLookupAddress(arg0);
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 0) = temp_r6;
-    M2C_FIELD(&gDnsServerAddresses, s32 *, 4) = temp_r7;
-    OS_RestoreInterrupts(temp_r5);
-    return temp_r4;
+    s32 address;
+    s32 lock;
+    s32 primary;
+    s32 secondary;
+
+    lock = OS_DisableInterrupts();
+    primary = M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_PRIMARY);
+    secondary = M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_SECONDARY);
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_PRIMARY) = 0;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_SECONDARY) = 0;
+    address = DnsLookupAddress(hostname);
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_PRIMARY) = primary;
+    M2C_FIELD(&gDnsServerAddresses, s32 *, DNS_SERVER_SECONDARY) = secondary;
+    OS_RestoreInterrupts(lock);
+    return address;
 }
 
 s32 SetDnsServerAddresses(s32 arg0, s32 arg1) {

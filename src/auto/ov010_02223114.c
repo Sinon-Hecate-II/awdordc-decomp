@@ -7,8 +7,8 @@ s32 func_ov010_02223114(void) {
     M2C_UNK VoiceChat_DecodePacket(void *, void *, s32);
     void *func_ov010_02223440(s32);
     M2C_UNK Link_UnlinkPendingPacket(void *);
-    void func_ov010_022235a4();
-    M2C_UNK func_ov010_02223624(void *, void *, s32);
+    void VoiceCodec_DecodeMuLaw();
+    M2C_UNK VoiceCodec_DecodePcm8(void *, void *, s32);
     s32 Link_InsertPacket(void *, u8);
     M2C_UNK Link_FreePacket();
     s32 i;
@@ -31,8 +31,8 @@ s32 func_ov010_02223114(void) {
                 VoiceChat_DecodePacket(M2C_FIELD(item, void **, 0x474), (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
             } else {
                 old = M2C_FIELD(item, void **, 0x474);
-                if (type == 1) func_ov010_022235a4(old, (s8 *)item + 0x1C);
-                else func_ov010_02223624(old, (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
+                if (type == 1) VoiceCodec_DecodeMuLaw(old, (s8 *)item + 0x1C);
+                else VoiceCodec_DecodePcm8(old, (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
             }
             M2C_FIELD(item, void **, 0x474) = (s8 *)item + 0x1C;
             Link_UnlinkPendingPacket(item);
@@ -106,14 +106,16 @@ void func_ov010_02223314(s32 arg0) {
     gLinkPendingCounts[arg0] = 0;
 }
 
-void func_ov010_0222335c(void) {
+/* Free every packet waiting to be sent (the whole pending list, head at
+ * gLinkPendingList) and clear each channel's queued-packet count. */
+void Link_FreeAllPendingPackets(void) {
 M2C_UNK Link_FreePacket();
 extern s32 gLinkPendingList;
 extern s32 gLinkPendingCounts[];
-void *p=(void *)gLinkPendingList;
+void *packet = (void *)gLinkPendingList;
 s32 i;
-while(p) { void *old=p; p=M2C_FIELD(p,void **,8); Link_FreePacket(old); }
-for(i=0;i<3;i++) gLinkPendingCounts[i]=0;
+while (packet) { void *old = packet; packet = M2C_FIELD(packet, void **, LINK_PACKET_NEXT); Link_FreePacket(old); }
+for (i = 0; i < LINK_CHANNEL_COUNT; i++) gLinkPendingCounts[i] = 0;
 }
 
 /* Append a packet to the tail of the pending-send list, increment its channel's
@@ -181,7 +183,7 @@ s32 Link_UnlinkPendingPacket(void *packet) {
     return gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)];
 }
 
-void func_ov010_022234f8(u8 *out,s16 *in,u32 n) {
+void VoiceCodec_EncodeMuLaw(u8 *out,s16 *in,u32 n) {
 extern s32 data_ov010_0222c004[];
 s32 seg,mask; u32 i; s32 sample,x,value; s32 *table;
 for(i=0;i<n;i++) {
@@ -197,14 +199,17 @@ out[i]=value;
 }
 }
 
-void func_ov010_022235a4(const u8 *src,s16 *dst,u32 count) { u32 i; for(i=0;i<count;i++) { s32 v=~src[i]; s32 magnitude=(((v&15)<<3)+132)<<((v&0x70)>>4); if(v&0x80) magnitude=132-magnitude; else magnitude-=132; dst[i]=magnitude; } }
+/* Decode `count` bytes of 8-bit mu-law voice samples (the VOICE_CODEC_MULAW
+ * codec) into signed 16-bit samples: each byte holds an inverted sign bit, a
+ * 3-bit exponent and a 4-bit mantissa, scaled around the 132 midpoint. */
+void VoiceCodec_DecodeMuLaw(const u8 *src,s16 *dst,u32 count) { u32 i; for(i=0;i<count;i++) { s32 v=~src[i]; s32 magnitude=(((v&15)<<3)+132)<<((v&0x70)>>4); if(v&0x80) magnitude=132-magnitude; else magnitude-=132; dst[i]=magnitude; } }
 
-void func_ov010_022235f8(s8 *out,s16 *in,u32 n) {
+void VoiceCodec_EncodePcm8(s8 *out,s16 *in,u32 n) {
 u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
 }
 
 #pragma opt_strength_reduction off
-s32 func_ov010_02223624(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
+s32 VoiceCodec_DecodePcm8(void *src,void *dst,s32 count){u32 i;for(i=0;i<(u32)count;i++)((s16 *)dst)[i]=((s8 *)src)[i]<<8;}
 #pragma opt_strength_reduction reset
 void func_ov010_02223654(s32 arg0) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32);

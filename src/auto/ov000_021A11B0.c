@@ -13,7 +13,7 @@ extern u8 gAiTargetCandidates[],gUnitKindStats[];
 s32 IsUnitOnCurrentTeam(s32);s32 AiCandidateIncludesUnit(s32,void *);
 s32 ManhattanDistance(s32,s32,s16,s16);void SelectMapLayer(void *);
 void FloodFillUnitRange(u8,u8,s32,s32,s32);
-s32 func_ov000_021a99dc(void *);s32 IsFootUnitKind(s32);
+s32 IsUnitUnarmedAndEmpty(void *);s32 IsFootUnitKind(s32);
 s32 IsPropertyTerrain(s32);s32 IsTerrainOnUnitTeam(s16,s32);
 register u8 *p asm("r8");
 s32 y,i,id,d,xmin,xmax,ymin,ymax,r,dx,dy,cx,cy,w,h;
@@ -62,7 +62,7 @@ map=*gCurrentMap;id=map[((Map16E8 *)map)->rows[y]+x];
 if(!id)continue;
 unit=map+0x59a4+id*14;
 if(!AiCandidateIncludesUnit(i,unit))continue;
-if(func_ov000_021a99dc(unit)==1)continue;
+if(IsUnitUnarmedAndEmpty(unit)==1)continue;
 if(gUnitKindStats[((u32)(unit[0]<<26)>>26)*112+19]&7){
 map=*gCurrentMap;if(M2C_FIELD(map+((Map16E8 *)map)->rows[y]+x,s8 *,0x2338)<0)continue;
 }

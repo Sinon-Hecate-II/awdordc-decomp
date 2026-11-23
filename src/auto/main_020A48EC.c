@@ -51,21 +51,31 @@ void AddAreaAttackOrder(s32 x, s32 y, s32 player) {
     AddMapOrderEx(x - 1, y - 1, 3, 3, 4, player, 0, 0x63, 1, 1, 0, 0x32);
 }
 
-void AddPointAttackOrder(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Queue a point/column attack (MAPORDER_ATTACK_POINT) on the tile (x, y) for
+ * `player`, playing `mode` with `kind`. */
+void AddPointAttackOrder(M2C_UNK x, M2C_UNK y, s32 player, s32 mode, s32 kind) {
     M2C_UNK AddMapOrderEx(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, u8, s32, s32, s32, s32, s32);
-    AddMapOrderEx(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 0, 0x32);
+    AddMapOrderEx(x, y, 1, 1, MAPORDER_ATTACK_POINT, player, 0, 0, mode, kind, 0, 0x32);
 }
 
-void AddFacingPointAttackOrder(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    AddMapOrderEx(arg0, arg1, 1, 1, 5, arg2, 0, 0, arg3, arg4, 1, 0x32);
+/* Queue the player-facing variant of a point/column attack
+ * (MAPORDER_ATTACK_POINT) on the tile (x, y) for `player`, playing `mode` with
+ * `kind`. */
+void AddFacingPointAttackOrder(M2C_UNK x, M2C_UNK y, s32 player, s32 mode, s32 kind) {
+    AddMapOrderEx(x, y, 1, 1, MAPORDER_ATTACK_POINT, player, 0, 0, mode, kind, 1, 0x32);
 }
 
-void AddLineAttackOrder(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    AddMapOrderEx(arg0, arg1, 1, 1, 6, arg2, 1, 0x63, arg3, arg4, 3, 0x50);
+/* Queue a line attack (MAPORDER_ATTACK_LINE) on the tile (x, y) for `player`,
+ * playing `mode` with `kind`, a value of 99 and a last value of 80. */
+void AddLineAttackOrder(s32 x, s32 y, s32 player, s32 mode, s32 kind) {
+    AddMapOrderEx(x, y, 1, 1, MAPORDER_ATTACK_LINE, player, 1, 0x63, mode, kind, 3, 0x50);
 }
 
-void AddFacingLineAttackOrder(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, s32 arg4) {
-    AddMapOrderEx(arg0, arg1, 1, 1, 7, arg2, 1, 0x63, arg3, arg4, 1, 0x50);
+/* Queue a player-facing line attack (MAPORDER_ATTACK_LINE_FACING) on the tile
+ * (x, y) for `player`, playing `mode` with `kind`, a value of 99 and a last
+ * value of 80. */
+void AddFacingLineAttackOrder(s32 x, s32 y, s32 player, s32 mode, s32 kind) {
+    AddMapOrderEx(x, y, 1, 1, MAPORDER_ATTACK_LINE_FACING, player, 1, 0x63, mode, kind, 1, 0x50);
 }
 
 /* Whether an order in the map's order queue is still doing something: attack

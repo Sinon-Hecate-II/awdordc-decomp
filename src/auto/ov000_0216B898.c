@@ -113,7 +113,7 @@ void EnterArmyInfoView(void){
 extern void *gCurrentMap,*gCur3DSpriteEngine;
 void (*mapCallback)(void);u16 *volatile attr;u16 *volatile flag0;u16 *volatile flag1;u16 *volatile flag2;u16 *volatile flag3;u16 *volatile flag4;
 mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x40);if(mapCallback)mapCallback();
-func_020c0a88();
+LoadUiGraphics();
 attr=(u16 *)(*(u8 **)gCur3DSpriteEngine+18);*attr=*attr&~0xc0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;

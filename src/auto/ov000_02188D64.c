@@ -13,9 +13,9 @@ void SelectCarriedUnitAction(void) {
     s32 IsFootUnitKind(s32);
     s32 HasEnemyPlayer(void);
     s32 PlayerHasHq(u16);
-    void func_ov000_02188370(void);
+    void AiPrioritiseFootUnitProduction(void);
     void AiPrioritiseAttackUnitProduction(void);
-    void func_ov000_02188688(void);
+    void AiPrioritiseEnemyHqProduction(void);
     void AiPrioritisePropertyCapture(void);
     void AiPrioritiseReachPlayerHq(void);
     void AiPrioritiseAssignedMoveTarget(void);
@@ -38,10 +38,10 @@ void SelectCarriedUnitAction(void) {
         unit = (UnkStruct_ov000_021A860C *)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS + M2C_FIELD(*gCurrentMap, UnkStruct_ov000_021A860C **, MAP_CURSOR_UNIT)->unkC[0] * 14);
         M2C_FIELD(gAiCommandState, u16 *, 8) |= 64;
     }
-    if (IsFootUnitKind(unit->unk0) || unit->unk0 == 13) func_ov000_02188370();
+    if (IsFootUnitKind(unit->unk0) || unit->unk0 == 13) AiPrioritiseFootUnitProduction();
     else switch (unit->unkB) {
     case 0: case 1: AiPrioritiseAttackUnitProduction(); break;
-    case 2: if (HasEnemyPlayer() == 1) func_ov000_02188688(); else AiPrioritiseAttackUnitProduction(); break;
+    case 2: if (HasEnemyPlayer() == 1) AiPrioritiseEnemyHqProduction(); else AiPrioritiseAttackUnitProduction(); break;
     case 3: case 4: AiPrioritisePropertyCapture(); break;
     case 5: if (PlayerHasHq(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) == 1) AiPrioritiseReachPlayerHq(); else AiPrioritisePropertyCapture(); break;
     case 7: case 8: case 9: AiPrioritiseAssignedMoveTarget(); break;

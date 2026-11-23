@@ -160,7 +160,7 @@ void UpdateListMenu(void) {
    sprite, let every visible row draw its own icon, highlight the selected row,
    create one sprite slot per row, then register the per-frame redraw task. */
 void OpenListMenu(void *arg0) {
-    M2C_UNK func_0209cce4(void (*)(void), M2C_UNK);
+    M2C_UNK CreateFrameCallbackTask(void (*)(void), M2C_UNK);
     void HighlightListMenuRow(void *, s32);
     void DrawListMenuRowIcon(void *, s32);
     M2C_UNK CreateCarriedUnitRowSlots(void *);
@@ -182,25 +182,29 @@ void OpenListMenu(void *arg0) {
     }
     HighlightListMenuRow(arg0, menu->selection);
     CreateCarriedUnitRowSlots(arg0);
-    func_0209cce4(&UpdateListMenu, 9);
+    CreateFrameCallbackTask(&UpdateListMenu, 9);
 }
 
-void func_020c0564(void *arg0) {
-    M2C_UNK func_0209cd00(void (*)(void));
+/* Closes the carried-unit list menu: stops its per-frame redraw task, requests the
+ * outro of the menu's row slots, clears the map-view sprite layers, runs the view
+ * controller's callback at +0x04, then releases the map-view hold the menu took
+ * while it was open. */
+void CloseCarriedUnitListMenu(void *menu) {
+    M2C_UNK DeleteFrameCallbackTask(void (*)(void));
     void UpdateListMenu(void);
-    void func_020c0f18();
+    void CloseCarriedUnitListSprites();
     void ResetMapViewLayers(void);
     M2C_UNK func_0207a668();
-    M2C_UNK func_020d472c();
+    M2C_UNK ReleaseMapViewHold();
     extern void *gCurrentMap;
     void (*callback)(void);
-    func_0209cd00(UpdateListMenu);
-    func_020c0f18(arg0);
+    DeleteFrameCallbackTask(UpdateListMenu);
+    CloseCarriedUnitListSprites(menu);
     ResetMapViewLayers();
     callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), void (**)(void), 4);
     if (callback != NULL) callback();
     func_0207a668();
-    func_020d472c();
+    ReleaseMapViewHold();
 }
 
 s32 GetCarriedUnitMenu(void) {
@@ -240,7 +244,7 @@ void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 a
 
 #pragma opt_instruction_scheduling off
 s32 func_020c0634(s32 entries,s32 x,s32 y,s32 selection,s32 width) {
-void ResetSpriteSlots(void); s32 CreateSpriteFromClass(s32 *,s32); void func_020d4704(void);
+void ResetSpriteSlots(void); s32 CreateSpriteFromClass(s32 *,s32); void AcquireMapViewHold(void);
 extern s32 data_02129630;
 MenuC0634 *p; s16 n=0; u16 height=16; s32 i; s32 offset;
 ResetSpriteSlots(); p=(MenuC0634 *)CreateSpriteFromClass(&data_02129630,7); i=n; offset=i;
@@ -264,7 +268,7 @@ p->width=width;
 if(y+height>=192)y=192-height;
 if(y<0)y=0;
 p->x=x;p->y=y;
-func_020d4704();return (s32)p;
+AcquireMapViewHold();return (s32)p;
 }
 #pragma opt_instruction_scheduling reset
 void CreateMenuAt(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
@@ -332,31 +336,34 @@ extern M2C_UNK gArmyPalettes;extern void *gCurrentMap;
 CopyToObjPaletteShadow((u8 *)&gArmyPalettes+((M2C_FIELD(arg0*0x8c+M2C_FIELD(gCurrentMap,s32 *,0),u8 *,0x67c1)+3)<<5),0x160,0x20);
 }
 
-void func_020c0a04(M2C_UNK arg0) {
+void LoadUiGraphicsBlock(M2C_UNK arg0) {
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0211e0a8;
     LoadGraphicsBlock(&data_0211e0a8, arg0);
 }
 
-void func_020c0a1c(s32 arg0) {
+void LoadUiSpritePalette(s32 arg0) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK gUiSpritePalette;
     CopyToObjPaletteShadow(&gUiSpritePalette, arg0 << 5, 0x20);
 }
 
-void func_020c0a3c(s32 arg0) {
+/* Load the UI graphics into one 3D sprite engine layer: put the UI tile block at
+ * the layer's VRAM address, copy the UI sprite palette into palette slot 3, load
+ * scene panel palette 0 and queue the UI pattern in its colour. */
+void LoadUiLayerGraphics(s32 layer) {
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, s32, M2C_UNK);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     s32 GetUiColor(M2C_UNK);
     extern s32 gCur3DSpriteEngine;
-    func_020c0a04(M2C_FIELD((gCur3DSpriteEngine + (arg0 * 4)), s32 *, 0xC));
-    func_020c0a1c(3);
+    LoadUiGraphicsBlock(M2C_FIELD((gCur3DSpriteEngine + (layer * 4)), s32 *, 0xC));
+    LoadUiSpritePalette(3);
     LoadScenePanelPalette(0);
     Load3DSpritePattern(0x1000, 1, GetUiColor(9), 2);
 }
 
-void func_020c0a88(void) {
-    func_020c0a3c(2);
+void LoadUiGraphics(void) {
+    LoadUiLayerGraphics(2);
 }
 
 void func_020c0a98(void) {
@@ -393,7 +400,7 @@ void func_020c0b88(s8 arg0) {
     M2C_FIELD(gCarriedUnitMenuStackPtr, s8 *, 2) = arg0;
 }
 
-s8 func_020c0b9c(void) {extern void *gCarriedUnitMenuStackPtr;return M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2);}
+s8 GetCarriedUnitMenuSelection(void) {extern void *gCarriedUnitMenuStackPtr;return M2C_FIELD(gCarriedUnitMenuStackPtr,s8 *,2);}
 
 /* Draws the cargo list of the unit under the cursor: one row per carried-unit
  * slot (the row's +0x24 slot, 0xFFFF when empty), with the carried unit's icon
@@ -515,9 +522,9 @@ M2C_FIELD(slot,void **,SPRITE_SLOT_OWNER)=p;y+=h>>3;
 FocusSpriteSlotById(M2C_FIELD(p,u8 *,0x4e));SetSpriteSlotFrameToFocus();
 }
 
-void func_020c0f18(void) {
-    M2C_UNK func_020b2268();
-    func_020b2268();
+void CloseCarriedUnitListSprites(void) {
+    M2C_UNK CloseAllActiveSpriteSlots();
+    CloseAllActiveSpriteSlots();
 }
 
 /* Draw the carried-unit list menu: add one sprite-batch cell per visible row
@@ -605,30 +612,33 @@ void func_020c1190(void) {
 
 }
 
-void func_020c1194(void *arg0) {
+/* Per-frame step of one map-preview layer sprite: advance its 64-frame counter and,
+ * on the frames that ask for them, copy the map's top half, then its bottom half,
+ * then stamp the visible units' markers into the layer's VRAM. */
+void UpdateMapPreviewLayer(void *sprite) {
     M2C_UNK DrawMapUnitMarkers(s32);
     M2C_UNK CopyMapPreviewTopHalf(s32);
     M2C_UNK CopyMapPreviewBottomHalf(s32);
-    s16 temp_r2;
-    s32 temp_r1;
+    s16 frame;
+    s32 step;
 
-    temp_r2 = M2C_FIELD(arg0, s16 *, 0x6C);
-    M2C_FIELD(arg0, s16 *, 0x6C) = (s16) (temp_r2 + 1);
-    temp_r1 = temp_r2 & 0x3F;
-    switch (temp_r1) {                              /* irregular */
-    case 0:
-        CopyMapPreviewTopHalf(M2C_FIELD(arg0, s32 *, 0x34));
+    frame = M2C_FIELD(sprite, s16 *, MAP_PREVIEW_SPRITE_FRAME);
+    M2C_FIELD(sprite, s16 *, MAP_PREVIEW_SPRITE_FRAME) = (s16) (frame + 1);
+    step = frame & MAP_PREVIEW_FRAME_MASK;
+    switch (step) {                              /* irregular */
+    case MAP_PREVIEW_FRAME_TOP:
+        CopyMapPreviewTopHalf(M2C_FIELD(sprite, s32 *, MAP_PREVIEW_SPRITE_VRAM));
         return;
-    case 1:
-        CopyMapPreviewBottomHalf(M2C_FIELD(arg0, s32 *, 0x34));
+    case MAP_PREVIEW_FRAME_BOTTOM:
+        CopyMapPreviewBottomHalf(M2C_FIELD(sprite, s32 *, MAP_PREVIEW_SPRITE_VRAM));
         return;
-    case 22:
-        DrawMapUnitMarkers(M2C_FIELD(arg0, s32 *, 0x34));
+    case MAP_PREVIEW_FRAME_UNITS:
+        DrawMapUnitMarkers(M2C_FIELD(sprite, s32 *, MAP_PREVIEW_SPRITE_VRAM));
         return;
     }
 }
 
-s32 func_020c11e4(s32 a) {
+s32 CreateMapPreviewLayerSprite(s32 a) {
 extern M2C_UNK data_02129690;
 s32 FindObjectByClass(M2C_UNK *);
 M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);

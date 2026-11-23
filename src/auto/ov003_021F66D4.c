@@ -21,21 +21,24 @@ typedef struct UnkUnitOv003 {
     u8 *f68;
 } UnkUnitOv003;
 
-void func_ov003_021f66d4(M2C_UNK arg0) {
+/* Link-sync step of the ov003 scene: consume the pending 0x24-byte link packet,
+ * clear its two request words and send the packet back as the acknowledgement, then
+ * resume the scene sprite's animation. */
+void Ov003_AcknowledgeLinkSync(M2C_UNK sprite) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 Link_ReceivePacket(s32 *, M2C_UNK);
     M2C_UNK Link_SendPacket(s32 *, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    s32 buffer[9];
+    s32 packet[9];
 
-    if (Link_ReceivePacket(buffer, 0x24) == 0) {
+    if (Link_ReceivePacket(packet, 0x24) == 0) {
         return;
     }
-    buffer[0] = 0;
-    buffer[1] = 0;
-    Link_SendPacket(buffer, 0x24);
+    packet[0] = 0;
+    packet[1] = 0;
+    Link_SendPacket(packet, 0x24);
     Link_FlushSend();
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_ov003_021f6724(void *arg0) {

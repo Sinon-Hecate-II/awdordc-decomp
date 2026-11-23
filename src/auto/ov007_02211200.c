@@ -19,7 +19,7 @@ void MapEditor_StartMap(void *editor) {
  void (*callback)(void);
  ResetBattleMap();func_020d8cfc();
  M2C_FIELD(*gCurrentMap,u8*,MAP_PLAYER_COUNT)=4;
- func_020bfb74(0);ResetPlayerSetupTables();MapSettings_SetDefaults(0);
+ MapSettings_CopyToGameSettings(0);ResetPlayerSetupTables();MapSettings_SetDefaults(0);
  if(!func_020c8020(M2C_FIELD(*gCurrentMap,u16*,MAP_ID))){
  map=*gCurrentMap;
  text=GetLocalizedText(0xc00002eb);
@@ -357,7 +357,7 @@ void MapEditor_Update(M2C_UNK editor) {
     extern KeyState *gKeyState;
     extern u8 *gTouchState;
     extern void **gCurrentMap;
-    s32 func_020d46e8(void);
+    s32 GetMapViewHoldCount(void);
     s32 func_020ab240(void);
     void func_020cf828(s32);
     void func_0207a7a4(s32, s32);
@@ -388,7 +388,7 @@ void MapEditor_Update(M2C_UNK editor) {
     s32 mask;
     keyPressed = gKeyState->pressed;
     keyHeld = gKeyState->held;
-    if (func_020d46e8()) {
+    if (GetMapViewHoldCount()) {
         M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH) = 1;
         return;
     }

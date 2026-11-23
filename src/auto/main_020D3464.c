@@ -79,18 +79,21 @@ s32 UpdateTurnTimer(void) {
     return 0;
 }
 
-void func_020d35d8(void) {
+/* End-turn step: wait until the map's input mode has finished, then clear the
+ * sprites of the map's notice class, create the turn-end transition effect and
+ * move on to the end-player-turn step. */
+void StartEndTurn(void) {
     M2C_UNK UpdateMapMode();
     M2C_UNK func_02081fec();
     M2C_UNK func_020b7bbc();
     extern void **gCurrentMap;
-    if (M2C_FIELD(*gCurrentMap, u16 *, 0x52B4) != 0) {
+    if (M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) != 0) {
         UpdateMapMode();
         return;
     }
     func_02081fec();
     func_020b7bbc();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0x16;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_END_TURN_STEP;
 }
 
 void func_020d3628(void) {
@@ -223,13 +226,13 @@ void func_020d39a4(void) {
 
 s32 func_020d39b4(void) {
     M2C_UNK GetActiveOverlay();
-    M2C_UNK func_ov010_02228678(M2C_UNK *);
+    M2C_UNK Ov010Online_PollMatchmaking(M2C_UNK *);
     extern M2C_UNK gMapData;
     s32 local;
     if (GetActiveOverlay() != 2) {
         return 0;
     }
-    if (func_ov010_02228678(&local) != 0) {
+    if (Ov010Online_PollMatchmaking(&local) != 0) {
         return 1;
     }
     M2C_FIELD(&gMapData, u8 *, 7) = local;
@@ -277,11 +280,11 @@ void AdvanceAfterOverlayEvent(void) {
 #pragma optimization_level 2
 void func_020d3aa4(void *arg0) {
  M2C_UNK func_02086330();
- M2C_UNK func_02085054(M2C_UNK, M2C_UNK, M2C_UNK);
+ M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
  extern M2C_UNK gMapData;
  if (M2C_FIELD(&gMapData,u8 *,5) != 0 || M2C_FIELD(&gMapData,u8 *,7) == 0) {
  func_02086330();
- func_02085054(0,0x25c,arg0);
+ CreateMatchNameLabel(0,0x25c,arg0);
  }
 }
 #pragma optimization_level reset
@@ -306,11 +309,11 @@ void StepBattleMap(void) {
     M2C_UNK HandleOverlayResult();
     M2C_UNK UpdateTurnTimer();
     M2C_UNK IsUiModeSwitchBusy();
-    M2C_UNK func_020d46e8();
+    M2C_UNK GetMapViewHoldCount();
     M2C_UNK IsUnitMoveActive();
     void CheckTurnLimitStep();
     void AdvanceTurnStep();
-    void func_020d422c();
+    void BeginPlayerTurnSetup();
     void func_020d4400();
     void func_020d4430();
     void func_020d447c();
@@ -327,7 +330,7 @@ void StepBattleMap(void) {
     void func_020d45d8();
     M2C_UNK func_020d4614();
     M2C_UNK func_020d466c();
-    void func_020d35d8();
+    void StartEndTurn();
     void func_020d3628();
     void func_020d3830();
     void AdvanceAfterOverlayEvent();
@@ -348,7 +351,7 @@ void StepBattleMap(void) {
     if (HandleOverlayResult() != 0) return;
     if (UpdateTurnTimer() != 0) return;
     if (IsUiModeSwitchBusy() != 0) return;
-    if (func_020d46e8() != 0) return;
+    if (GetMapViewHoldCount() != 0) return;
     if (IsUnitMoveActive() != 0) return;
 
     {
@@ -362,7 +365,7 @@ void StepBattleMap(void) {
             AdvanceTurnStep();
             return;
         case MAP_STATE_BEGIN_PHASE:
-            func_020d422c();
+            BeginPlayerTurnSetup();
             return;
         case MAP_STATE_TURN_START_WAIT:
             func_020d4400();
@@ -401,7 +404,7 @@ void StepBattleMap(void) {
         case MAP_STATE_RETURN: func_020d45d8(); return;
         case MAP_STATE_BATTLE_FINISH: func_020d4614(); return;
         case MAP_STATE_RESUME_INPUT: func_020d466c(); return;
-        case MAP_STATE_END_TURN: func_020d35d8(); return;
+        case MAP_STATE_END_TURN: StartEndTurn(); return;
         case MAP_STATE_END_TURN_STEP: func_020d3628(); return;
         case MAP_STATE_OVERLAY_RESULT: func_020d3830(); return;
         case MAP_STATE_AFTER_OVERLAY: AdvanceAfterOverlayEvent(); return;
@@ -678,21 +681,23 @@ void AdvanceTurnStep(void) {
  EndCpuOnlyBattle();
 }
 
-void func_020d422c(void) {
-    M2C_UNK func_020a3498(M2C_UNK);
-    M2C_UNK BeginPlayerPhase();
-    M2C_UNK InitPlayerTurnState();
-    M2C_UNK func_020a23c4();
-    M2C_UNK RefreshMapView();
+/* Run the current player's turn-start setup, refresh the map view, and advance to the turn-start wait state. */
+void BeginPlayerTurnSetup(void) {
+    M2C_UNK SetPlayerCoAnimationToIdle(M2C_UNK);
+    M2C_UNK BeginPlayerPhase(void);
+    M2C_UNK InitPlayerTurnState(void);
+    M2C_UNK func_020a23c4(void);
+    M2C_UNK RefreshMapView(void);
     void func_020d427c(void);
     extern void **gCurrentMap;
-    func_020a3498(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4));
+
+    SetPlayerCoAnimationToIdle(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     BeginPlayerPhase();
     InitPlayerTurnState();
     func_020a23c4();
     RefreshMapView();
     func_020d427c();
-    M2C_FIELD(*gCurrentMap, u16 *, 0x52B0) = 4;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_TURN_START_WAIT;
 }
 
 void func_020d427c(void) {
@@ -737,9 +742,9 @@ void func_020d42f8(void) {
  * goes to the AI turn path (state 14, restarting the AI command phase); the
  * remaining link players skip to state 19. */
 void BeginPlayerTurn(void){
-M2C_UNK func_020c0a1c(M2C_UNK);void SetAiCommandPhase(s32);extern void **gCurrentMap;extern M2C_UNK gMapData;
+M2C_UNK LoadUiSpritePalette(M2C_UNK);void SetAiCommandPhase(s32);extern void **gCurrentMap;extern M2C_UNK gMapData;
 u8 *map,*state;u16 player;u8 control;
-func_020c0a1c(3);
+LoadUiSpritePalette(3);
 map=(u8*)*gCurrentMap;state=map+0x5200;
 player=M2C_FIELD(state,u16*,0xa4);
 control=M2C_FIELD(map+player*0x8c,u8*,PLAYER_CONTROL_OFF);

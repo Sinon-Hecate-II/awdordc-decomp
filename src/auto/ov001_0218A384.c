@@ -1,5 +1,6 @@
 /* 39 functions from 0x0218A384 to 0x0218B368 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 typedef struct { s8 x, y; } TextDirection;
 static inline void get_obj_xy(void *base, s32 index, s32 *x, s32 *y) {
 *x=(M2C_FIELD(base,u32 *,index*8)&0x1ff0000)>>16;
@@ -632,17 +633,19 @@ void BuildTouchRect(void *arg0, void *arg1, void *arg2) {
     M2C_FIELD(arg2, s16 *, 6) = (s16) (M2C_FIELD(arg0, u16 *, 2) + M2C_FIELD(arg1, u16 *, 2));
 }
 
-void Ov001_EnableVisiblePlanes(s32 arg0, s32 arg1) {
-    if (arg0 == 1) {
-        volatile u32 *p1 = (volatile u32 *)0x04001000;
-        u32 t1 = *p1 & 0x1F00;
-        *p1 = (*p1 & ~0x1F00) | ((arg1 | (t1 >> 8)) << 8);
+/* Turn on the display planes named by `planes` (GX_PLANEMASK_* bits) in the main
+ * or sub engine's DISPCNT, keeping the planes that are already visible. */
+void Ov001_EnableVisiblePlanes(s32 engine, s32 planes) {
+    if (engine == OV001_FADE_SUB) {
+        volatile u32 *dispCnt = (volatile u32 *)GX_SUB_DISPCNT;
+        u32 visible = *dispCnt & DISPCNT_PLANEMASK;
+        *dispCnt = (*dispCnt & ~DISPCNT_PLANEMASK) | ((planes | (visible >> DISPCNT_PLANEMASK_SHIFT)) << DISPCNT_PLANEMASK_SHIFT);
         return;
     }
     {
-        volatile u32 *p2 = (volatile u32 *)0x04000000;
-        u32 t2 = *p2 & 0x1F00;
-        *p2 = (*p2 & ~0x1F00) | ((arg1 | (t2 >> 8)) << 8);
+        volatile u32 *dispCnt = (volatile u32 *)GX_MAIN_DISPCNT;
+        u32 visible = *dispCnt & DISPCNT_PLANEMASK;
+        *dispCnt = (*dispCnt & ~DISPCNT_PLANEMASK) | ((planes | (visible >> DISPCNT_PLANEMASK_SHIFT)) << DISPCNT_PLANEMASK_SHIFT);
     }
 }
 

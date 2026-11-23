@@ -384,46 +384,53 @@ loop_1:
     goto loop_1;
 }
 
-s32 ConnectTransport(void){extern M2C_UNK gSocketManager;s32 func_02024c60(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return func_02024c60(p);return TcpConnect(p);}return 1;}
+s32 ConnectTransport(void){extern M2C_UNK gSocketManager;s32 TlsClientConnect(void*);void *p;p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);if(p){if(M2C_FIELD(p,u8*,9))return TlsClientConnect(p);return TcpConnect(p);}return 1;}
 
-s32 func_0201d3e4(u16 *arg0,u32 *arg1) {
+/* Report the endpoint of the socket's connection once its transport is up (a TCP
+ * stream established or a raw connection listening): *portOut gets the peer port,
+ * *localAddrOut the local address, and the peer address is returned. 0 while the
+ * socket has no such connection. */
+s32 GetSocketEndpoints(u16 *portOut,u32 *localAddrOut) {
 extern M2C_UNK gSocketManager;
-void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
-if(p!=0&&(M2C_FIELD(p,u8*,8)==4||M2C_FIELD(p,u8*,8)==10)){
-if(arg0!=0)*arg0=M2C_FIELD(p,u16*,0x18);
-if(arg1!=0)*arg1=M2C_FIELD(p,u32*,0x14);
-return M2C_FIELD(p,s32*,0x1c);
+void *conn=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,SOCK_OBJECT_RAW);
+if(conn!=0&&(M2C_FIELD(conn,u8*,SOCKET_STATE)==TCP_STATE_ESTABLISHED||M2C_FIELD(conn,u8*,SOCKET_STATE)==SOCKET_STATE_UDP_LISTEN)){
+if(portOut!=0)*portOut=M2C_FIELD(conn,u16*,SOCKET_PEER_PORT);
+if(localAddrOut!=0)*localAddrOut=M2C_FIELD(conn,u32*,SOCKET_LOCAL_ADDR);
+return M2C_FIELD(conn,s32*,SOCKET_PEER_ADDR);
 }
 return 0;
 }
 
-void func_0201d434(void *arg0) {
+/* Start closing a TCP connection: a connection in SYN_RCVD or ESTABLISHED sends
+ * its FIN (with ACK) and moves to FIN_WAIT1, a closed one does nothing, and any
+ * other state is answered with a bare ACK. */
+void TcpCloseConnection(void *conn) {
     M2C_UNK TaskYield();
     M2C_UNK TcpSendAck(void *, M2C_UNK);
     M2C_UNK TcpSendFinAck(void *, M2C_UNK);
-    u8 temp_r1;
+    u8 state;
 
     TaskYield();
-    temp_r1 = M2C_FIELD(arg0, u8 *, 8);
-    if ((u32) (u8) (temp_r1 + 0xFD) <= 1U) {
-        TcpSendFinAck(arg0, 0x19);
-        M2C_FIELD(arg0, u8 *, 8) = 7U;
+    state = M2C_FIELD(conn, u8 *, SOCKET_STATE);
+    if ((u32)(u8)(state + 0xFD) <= 1U) {
+        TcpSendFinAck(conn, 0x19);
+        M2C_FIELD(conn, u8 *, SOCKET_STATE) = TCP_STATE_FIN_WAIT1;
         return;
     }
-    if (temp_r1 == 0) {
+    if (state == TCP_STATE_CLOSED) {
         return;
     }
-    TcpSendAck(arg0, 0x1A);
+    TcpSendAck(conn, 0x1A);
 }
 
-void func_0201d484(void) {
+void CloseTransport(void) {
 void TlsSendCloseNotify(void *);
-void func_0201d434(void *);
+void TcpCloseConnection(void *);
 extern M2C_UNK gSocketManager;
 void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
 if(M2C_FIELD(p,u8*,9)!=0)TlsSendCloseNotify(p);
-func_0201d434(p);
+TcpCloseConnection(p);
 }
 
 void WaitForTlsCloseNotify(void) {
@@ -451,23 +458,27 @@ done:
     M2C_FIELD(rawConnection, u8 *, TCP_SOCK_STATE) = 0;
 }
 
-s32 PeekDatagramReceivedData(s32 *arg0, void *arg1) {
+/* Waits for a datagram connection's pending datagram (an ICMP reply): reports
+ * the datagram's byte length in sizeOut and returns the connection's receive
+ * buffer it sits in.  Sleeps until the connection has one, first asking its
+ * task to service the connection. */
+s32 PeekDatagramReceivedData(s32 *sizeOut, void *connection) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_SleepThread(M2C_UNK);
     M2C_UNK OS_RestoreInterrupts(s32);
-    s32 var_r6;
-    s32 temp_r7;
+    s32 length;
+    s32 saved;
 
-    temp_r7 = OS_DisableInterrupts();
-    var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
-    while (var_r6 == 0) {
-        M2C_FIELD(arg1, s32 *, 4) = 3;
+    saved = OS_DisableInterrupts();
+    length = M2C_FIELD(connection, s32 *, CONN_RX_PENDING_LEN);
+    while (length == 0) {
+        M2C_FIELD(connection, s32 *, CONN_TASK_ID) = 3;
         OS_SleepThread(0);
-        var_r6 = M2C_FIELD(arg1, s32 *, 0x44);
+        length = M2C_FIELD(connection, s32 *, CONN_RX_PENDING_LEN);
     }
-    OS_RestoreInterrupts(temp_r7);
-    *arg0 = var_r6;
-    return M2C_FIELD(arg1, s32 *, 0x40);
+    OS_RestoreInterrupts(saved);
+    *sizeOut = length;
+    return M2C_FIELD(connection, s32 *, CONN_RX_BUFFER);
 }
 
 /* Peek at what a raw connection has received: when it has no data and is still
@@ -552,12 +563,12 @@ TcpSendAck(arg1,0x1b);
 }
 
 void func_0201d70c(u32 arg0) {
-void func_02024d8c(u32,void *);
+void TlsConsumeReceivedData(u32,void *);
 void ConsumeReceivedData(u32,void *);
 extern M2C_UNK gSocketManager;
 void *p=M2C_FIELD(M2C_FIELD(&gSocketManager,void**,4),void**,0xa4);
 if(p==0)return;
-if(M2C_FIELD(p,u8*,9)!=0)func_02024d8c(arg0,p);
+if(M2C_FIELD(p,u8*,9)!=0)TlsConsumeReceivedData(arg0,p);
 else ConsumeReceivedData(arg0,p);
 }
 

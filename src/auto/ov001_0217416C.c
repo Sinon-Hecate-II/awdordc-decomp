@@ -394,7 +394,7 @@ void Ov001KeypadTouchReleased(void) {
     extern u8 gKeypadActionKeySize[];
     void BuildTouchRect(void *, void *, void *);
     s32 TouchRectReleased(void *);
-    void Ov001KeypadSetHighlight(s32);
+    void Ov001_SetKeypadHighlight(s32);
     void Ov001_PlaySound(s32);
 
     s32 key;
@@ -412,7 +412,7 @@ void Ov001KeypadTouchReleased(void) {
             if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key) {
                 goto fail;
             }
-            Ov001KeypadSetHighlight(key);
+            Ov001_SetKeypadHighlight(key);
             goto tail;
         }
         keyRect += 4;
@@ -425,7 +425,7 @@ void Ov001KeypadTouchReleased(void) {
             if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_DELETE) {
                 goto fail;
             }
-            Ov001KeypadSetHighlight(key + KEYPAD_DELETE);
+            Ov001_SetKeypadHighlight(key + KEYPAD_DELETE);
             if (key != 0) {
                 goto tail;
             }
@@ -458,25 +458,29 @@ void Ov001KeypadTouchReleased(void) {
             if (M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_TOUCH_KEY) != key + KEYPAD_CLEAR) {
                 goto fail;
             }
-            Ov001KeypadSetHighlight(key + KEYPAD_CLEAR);
+            Ov001_SetKeypadHighlight(key + KEYPAD_CLEAR);
             goto tail;
         }
         keyRect += 4;
     }
 
 fail:
-    Ov001KeypadSetHighlight(-1);
+    Ov001_SetKeypadHighlight(-1);
 
 tail:
     M2C_FIELD(gOv001Keypad, u8 *, KEYPAD_REPEAT) = 0;
     return;
 }
 
-void Ov001KeypadSetHighlight(s32 arg0){extern void *gOv001Keypad;
-if(arg0==M2C_FIELD(gOv001Keypad,s8*,0x62))return;
-func_ov001_021751c8(arg0,1);
-func_ov001_021751c8(M2C_FIELD(gOv001Keypad,s8*,0x62),0);
-M2C_FIELD(gOv001Keypad,s8*,0x62)=arg0;
+/* Move the keypad's highlight to `key`: give the newly highlighted key its pressed
+ * frame, return the previously highlighted key to its normal frame, and remember
+ * the new one (nothing happens when it is already highlighted). */
+void Ov001_SetKeypadHighlight(s32 key) {
+    extern void *gOv001Keypad;
+    if (key == M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_HIGHLIGHTED)) return;
+    Ov001_SetKeypadKeySelected(key, 1);
+    Ov001_SetKeypadKeySelected(M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_HIGHLIGHTED), 0);
+    M2C_FIELD(gOv001Keypad, s8 *, KEYPAD_HIGHLIGHTED) = key;
 }
 
 void func_ov001_02174dcc(void) {

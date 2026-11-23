@@ -539,10 +539,10 @@ void func_02061690(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
 }
 
 void SBServerListRemoveServer(s32 arg0){
- s32 func_02061a74(s32); M2C_UNK func_02061b6c(s32,s32);
- s32 n=func_02061a74(arg0+0x4c);
+ s32 SBServerListFindByServer(s32); M2C_UNK SBServerListRemoveServerAt(s32,s32);
+ s32 n=SBServerListFindByServer(arg0+0x4c);
  if(n==-1)return;
- func_02061b6c(arg0+0x4c,n);
+ SBServerListRemoveServerAt(arg0+0x4c,n);
 }
 
 s32 SBServerListThink(s32 arg0) {

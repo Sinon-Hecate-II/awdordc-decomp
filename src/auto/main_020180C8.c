@@ -50,14 +50,19 @@ void func_02018254(s16 arg0) {
     M2C_FIELD(&gMbState, s16 *, 0x26) = arg0;
 }
 
-s32 Mb_SendChannelPacket(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4) {
+/* Send one multiboot channel packet: queue `data` (length bytes) for the players
+ * in playerMask through the WFC channel transport (channel 1, mode 3) with
+ * `callback` as its completion handler, then report the send result as multiboot
+ * message 0xF.  `timeout` is unused here: multiboot sends always use the fixed
+ * channel and mode. */
+s32 Mb_SendChannelPacket(M2C_UNK callback, M2C_UNK data, M2C_UNK length, M2C_UNK timeout, u16 playerMask) {
     s32 WFC_SendChannelData(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
     void Mb_ReportPacketResult(M2C_UNK, s32);
-    s32 temp_r0;
+    s32 result;
 
-    temp_r0 = WFC_SendChannelData(arg0, 0, arg1, arg2, (s32) arg4, 1, 3);
-    Mb_ReportPacketResult(0xF, temp_r0);
-    return temp_r0;
+    result = WFC_SendChannelData(callback, 0, data, length, (s32) playerMask, 1, 3);
+    Mb_ReportPacketResult(0xF, result);
+    return result;
 }
 
 /* Send one match packet (buffer `data`, `len` bytes, channel `chan`, flags `flags`)
@@ -516,21 +521,25 @@ s32 MultiBoot_StoreRecordFragment(u8 *header, s32 player) {
     }
 }
 
-s32 MultiBoot_RecordComplete(s32 arg0) {
-extern M2C_UNK gMbRecordRx;
-u16 i;
-u32 word;
-s32 count;
-i=0;
-count=M2C_FIELD(&gMbRecordRx,s32 *,12);
-if(count>0) {
-word=M2C_FIELD(M2C_FIELD(&gMbRecordRx,s32 *,4)+(arg0-1)*4,u32 *,0x1e0);
-do {
-if(!(word&(1u<<i)))return 0;
-i++;
-}while(count>i);
-}
-return 1;
+/* Whether `player`'s multiboot info record has received every fragment: its
+ * per-player bitmask has all `fragmentCount` low bits set.  A record with no
+ * fragments to collect is complete. */
+s32 MultiBoot_RecordComplete(s32 player) {
+    extern M2C_UNK gMbRecordRx;
+    u16 fragment;
+    u32 received;
+    s32 fragmentCount;
+
+    fragment = 0;
+    fragmentCount = MB_RECORD_RX->fragmentCount;
+    if (fragmentCount > 0) {
+        received = M2C_FIELD(MB_RECORD_RX->buffer + (player - 1) * 4, u32 *, MB_RECORD_MASK);
+        do {
+            if (!(received & (1u << fragment))) return 0;
+            fragment++;
+        } while (fragmentCount > fragment);
+    }
+    return 1;
 }
 
 void Mb_InitBootState(void) {
@@ -664,15 +673,17 @@ void Mb_UnlockCartridgeAccess(M2C_UNK arg0, void *arg1) {
     OS_RestoreInterrupts(M2C_FIELD(arg1, s32 *, 4));
 }
 
-void Mb_SendControlMessage(M2C_UNK arg0) {
+/* Posts the multiboot control message `command` on the boot-handshake FIFO
+ * channel, waiting until the FIFO accepts it. */
+void Mb_SendControlMessage(M2C_UNK command) {
     M2C_UNK WaitByLoop(M2C_UNK);
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (SendFifoMessage(0xD, arg0, 0) == 0) {
+    if (SendFifoMessage(MB_FIFO_TAG, command, 0) == 0) {
         return;
     }
     do {
         WaitByLoop(1);
-    } while (SendFifoMessage(0xD, arg0, 0) != 0);
+    } while (SendFifoMessage(MB_FIFO_TAG, command, 0) != 0);
 }
 
 void Mb_SetBootMode(s32 arg0) {

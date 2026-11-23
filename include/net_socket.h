@@ -23,6 +23,14 @@
  * UDP / ICMP is SOCK_TRANSPORT in tcp_socket.h, a different field.) */
 #define SOCK_BLOCKING       0x72 /* s8: 1 = blocking I/O, 0 = non-blocking */
 #define SOCK_BLOCKING_ON    1    /* the blocking value of SOCK_BLOCKING */
+
+/* Commands and flag of the fcntl-like socket control call (SocketFcntl):
+ * F_GETFL returns the socket's status flags, F_SETFL sets them from the value
+ * passed, and O_NONBLOCK (bit 4 of those flags) means the socket is
+ * non-blocking, i.e. SOCK_BLOCKING is clear. */
+#define F_GETFL    3
+#define F_SETFL    4
+#define O_NONBLOCK 4
 #define SOCK_FLAGS      0x70 /* s16: bit 0 set once the socket is initialised */
 #define SOCK_FLAG_READY 0x0001
 #define SOCK_FLAG_BUSY  0x0002 /* a task is running on the socket (or a read is in progress) */
@@ -53,6 +61,13 @@
 #define LISTEN_TASK_PEER_PORT_PTR 0x14 /* u16 *out: peer port of the connection */
 #define LISTEN_TASK_PEER_ADDR_PTR 0x18 /* s32 *out: peer IPv4 address of the connection */
 
+/* SocketStartRecvTask's task arguments (the receive task reads them back): the
+ * buffer to receive into, its length and the peer-endpoint out-pointers. */
+#define RECV_TASK_BUF       0x10 /* s32 destination buffer */
+#define RECV_TASK_LEN       0x14 /* u32 bytes to receive */
+#define RECV_TASK_PEER_PORT 0x18 /* u16 *out: peer port of the received data */
+#define RECV_TASK_PEER_ADDR 0x1C /* s32 *out: peer IPv4 address of the received data */
+
 /* The socket's own local port (SOCK_RECV_PORT) and the port the transport layer
  * bound it to (SOCK_LINK_PORT, the low-level socket's local port); the first
  * received record fills SOCK_RECV_PORT in.  SOCK_PEER_* is the peer of the
@@ -67,6 +82,10 @@
 /* The well-known UDP port of a DNS server. */
 #define DNS_SERVER_PORT 53
 
+/* The two IPv4 DNS servers of gDnsServerAddresses, in query order. */
+#define DNS_SERVER_PRIMARY   0x00 /* s32 primary server address */
+#define DNS_SERVER_SECONDARY 0x04 /* s32 secondary server address */
+
 /* Raw connection receive queue. */
 #define CONN_RECV_TAIL   0x100 /* void *newest queued record */
 #define CONN_RECV_HEAD   0x104 /* void *oldest queued record */
@@ -75,6 +94,7 @@
 #define CONN_RECV_THREAD 0x10c /* OSThreadQueue the reader sleeps on */
 #define CONN_RECV_HOLD   0xfe  /* s8 nonzero while a caller peeks, so recv keeps the record */
 #define CONN_RECV_PENDING 0xf8 /* s32 received bytes waiting to be consumed (func_0201d70c) */
+#define CONN_RECV_RELEASE_AT 0xfc /* u16 pending-byte count at which the receive window is released */
 
 /* A socket also holds a second raw connection at +0x68, used for sending.  Its
  * outgoing packet goes in a buffer described by {size at SOCK_TX_SIZE, pointer
@@ -166,6 +186,7 @@ typedef struct SendRequest {
 #define SOCK_NO_MEMORY  (-33) /* no task record could be allocated for the operation */
 #define SOCK_ABORTED     (-56) /* the socket was closed or torn down while waiting */
 #define SOCK_MESSAGE_TOO_LONG (-35) /* a send is larger than the packet buffer allows */
+#define SOCK_TASK_QUEUE_FULL (-42) /* a raw connection's task queue was full, so the task was not queued */
 
 /* A DNS lookup runs over a temporary raw connection whose buffers come from one
  * allocation: a receive buffer and, behind it, the pending-datagram buffer. */
@@ -178,9 +199,15 @@ typedef struct SendRequest {
  * starts a connect while no lookup is in flight. */
 #define DNS_QUERY_STATE  0x00 /* s32 */
 #define DNS_QUERY_IDLE   1    /* no lookup in flight: its result is unknown or expired */
+#define DNS_QUERY_SOCKET      0x04 /* s32 socket the query is sent on, -1 until created */
+#define DNS_QUERY_PACKET_LEN  0x50 /* s32 bytes of the query packet to send */
+#define DNS_QUERY_SENT        0x54 /* u32 GetSystemTickMilliseconds() of the last send */
+#define DNS_QUERY_RETRIES     0x58 /* s32 times the query was resent */
 
 /* The socket manager (gSocketManager): a list of socket objects; each object
- * links the socket the network stack sees at +0xA4. */
+ * links the socket the network stack sees at +0xA4.  The word at +0x04 is the
+ * thread that is currently running, shared with the scheduler/mutex code. */
+#define SOCKMGR_RUNNING_THREAD 0x04 /* Thread *: the thread the scheduler is running */
 #define SOCKMGR_SOCKETS    0x08 /* void *first socket object */
 #define SOCK_OBJECT_RAW    0xA4 /* void *the socket the network stack works on */
 #define SOCK_OBJECT_NEXT   0x68 /* void *next socket object in the manager's list */

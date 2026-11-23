@@ -42,21 +42,25 @@ s32 gti2HandleSmallMessage(void *session, s32 command, s32 buf, s32 len) {
     return 1;
 }
 
-s32 func_0205bcdc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Handle a GT2 acknowledgement control message (type 100): its two-byte payload
+ * is the highest sequence number the peer acknowledged, so drop every sent command
+ * up to it.  A message of any other length is malformed and closes the connection.
+ * Returns 1 when it was handled, 0 when the close failed and the socket is gone. */
+s32 gti2HandleAck(M2C_UNK connection, M2C_UNK message, s32 length) {
     s32 Gt2ReadShort(M2C_UNK, M2C_UNK);
-    s32 Gt2CloseConnection();
+    s32 Gt2CloseConnection(M2C_UNK);
     s32 Gt2AckSentData(M2C_UNK, s32);
-    s32 var_r0;
+    s32 ok;
 
-    if (arg2 != 2) {
-        if (Gt2CloseConnection() != 0) {
-            var_r0 = 1;
+    if (length != 2) {
+        if (Gt2CloseConnection(connection) != 0) {
+            ok = 1;
         } else {
-            var_r0 = 0;
+            ok = 0;
         }
-        return var_r0;
+        return ok;
     }
-    if (Gt2AckSentData(arg0, Gt2ReadShort(arg1, 0)) != 0) {
+    if (Gt2AckSentData(connection, Gt2ReadShort(message, 0)) != 0) {
         return 1;
     }
     return 0;
@@ -161,7 +165,7 @@ s32 gti2HandleLargeMessage(void *session, s32 messageType, void *message, s32 si
     s32 len = size - 3;
 
     if (messageType == 100) {
-        if (!func_0205bcdc((s32) session, (s32) ((char *) message + 3), len)) return 0;
+        if (!gti2HandleAck((s32) session, (s32) ((char *) message + 3), len)) return 0;
     } else if (messageType == 101) {
         if (!gti2HandleResendRequest(session, (char *) message + 3, len)) return 0;
     } else if (messageType == 102) {
@@ -315,7 +319,7 @@ s32 gti2QueueSentCommand(void *connection, s16 sequence, s32 size) {
     sent.sequence = sequence;
     sent.lastSent = GetSystemTickMilliseconds();
     count = Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
-    Vector_AddItem(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE), &sent);
+    Vector_Append(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE), &sent);
     return count + 1 == Vector_GetCount(M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_QUEUE));
 }
 
@@ -331,8 +335,8 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
     s32 gti2SendClosedAndClose(M2C_UNK);
     s32 gti2QueueSentCommand(void *, s16, s32);
     void gti2BufferWriteData(void *, M2C_UNK, s32);
-    void gti2AddByteToBuffer(void *, s32);
-    void gti2AddShortToBuffer(void *, s32);
+    void gti2BufferWriteByte(void *, s32);
+    void gti2BufferWriteUShort(void *, s32);
     s32 free;
 
     free = gti2GetBufferFreeSpace((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER));
@@ -353,13 +357,13 @@ s32 gti2BeginCommand(M2C_UNK p, M2C_UNK mode, M2C_UNK arg2, s32 *status) {
         return 1;
     }
     gti2BufferWriteData((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), &gGt2Magic, 2);
-    gti2AddByteToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), (s32)(mode & 0xff));
+    gti2BufferWriteByte((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), (s32)(mode & 0xff));
     {
         u16 sequence = M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE);
         M2C_FIELD(p, u16 *, GT2_CONNECTION_SEND_SEQUENCE) = sequence + 1;
-        gti2AddShortToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), sequence);
+        gti2BufferWriteUShort((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), sequence);
     }
-    gti2AddShortToBuffer((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), M2C_FIELD(p, u16 *, GT2_RECV_SEQUENCE));
+    gti2BufferWriteUShort((void *)((char *)p + GT2_CONNECTION_SEND_BUFFER), M2C_FIELD(p, u16 *, GT2_RECV_SEQUENCE));
     *status = 0;
     return 1;
 }

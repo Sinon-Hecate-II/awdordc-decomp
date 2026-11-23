@@ -330,14 +330,14 @@ M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),u8 *,MATCH_SESSION_CURSOR)++;M2
    name (+0x8e) or key (+0x97), register the peer on the connection and mark it
    joined; then remove the message's player from the session if it matched, or
    reject it otherwise. Ignores messages that are not type 0. */
-void func_0203b9a8(void **conn, void *buf, s32 unused) {
+void AddBuddyProfileCallback(void **conn, void *buf, s32 unused) {
     extern M2C_UNK gMatchSessionMgr;
     extern M2C_UNK data_020fc8f0;
     s32 GetPlayerRecordType(void *);
     s32 GetLocalPlayerInfo(void);
     void FormatPlayerNasId(s32, void *, void *);
     s32 StringCompare(void *, void *);
-    s32 func_0204e074(void **, s32);
+    s32 gpiAddProfile(void **, s32);
     void AssignPlayerRecordId(void *, s32);
     s32 GetPlayerRecordId(s32, s32);
     s32 StringFormatN(void *, s32, void *, ...);
@@ -372,7 +372,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
             self = GetLocalPlayerInfo();
             FormatPlayerNasId(self, (u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset, keyText + 5);
             if (StringCompare(keyText + 5, (u8 *)buf + 0x8e) == 0) {
-                func_0204e074(conn, M2C_FIELD(buf, s32 *, 4));
+                gpiAddProfile(conn, M2C_FIELD(buf, s32 *, 4));
                 AssignPlayerRecordId((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset, M2C_FIELD(buf, s32 *, 4));
                 found = 1;
             }
@@ -390,7 +390,7 @@ void func_0203b9a8(void **conn, void *buf, s32 unused) {
                 self = GetLocalPlayerInfo();
                 if (messagePlayerId == GetPlayerRecordId(self, (s32)((u8 *)M2C_FIELD(M2C_FIELD(manager, void **, 8), void **, 0x18) + recordOffset))) {
                     if (ByteCompareN(keyText, (u8 *)buf + 0x97, 4) == 0) {
-                        func_0204e074(conn, messagePlayerId);
+                        gpiAddProfile(conn, messagePlayerId);
                         found = 1;
                     }
                 }
@@ -514,23 +514,26 @@ void func_0203bd0c(void) {
 }
 
 s32 func_0203bd34(void) {
-    s32 func_0203bd54();
+    s32 CanLeaveOnlineSession();
     M2C_UNK DisconnectConnection();
-    if (func_0203bd54() == 0) {
+    if (CanLeaveOnlineSession() == 0) {
         return 0;
     }
     DisconnectConnection();
     return 1;
 }
 
-s32 func_0203bd54(void) {
+/* Nonzero when the online match session can be left cleanly: no network error,
+ * a connection is open, the network session is online (NET_STATE_SESSION) and no
+ * connection change is in progress (CONN_SESSION_BUSY). */
+s32 CanLeaveOnlineSession(void) {
     s32 HasNetError();
     s32 GetNetSessionState();
     void *GetConnection();
     if (HasNetError() != 0) {
         return 0;
     }
-    if ((GetConnection() == NULL) || (GetNetSessionState() != 5) || (M2C_FIELD(GetConnection(), u8 *, 0x1A9) != 0)) {
+    if ((GetConnection() == NULL) || (GetNetSessionState() != NET_STATE_SESSION) || (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_BUSY) != 0)) {
         return 0;
     }
     return 1;

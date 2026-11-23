@@ -1,5 +1,6 @@
 /* 44 functions from 0x020B160C to 0x020B25B8 (main), found by ds-decomp. */
 #include "common.h"
+#include "gx.h"
 #include "ds3dsprite.h"
 #include "sprite_slot.h"
 #include "battle_map.h"
@@ -24,7 +25,7 @@ func_020c09c0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYE
 
 void ApplyMapViewTilesetWeather(void) {
     M2C_UNK func_02091d20();
-    M2C_UNK func_020d672c();
+    M2C_UNK LoadUnderInfoGraphics();
     M2C_UNK func_ov000_02169368();
     extern void *gCurrentMap;
     M2C_UNK (*temp_r2)(u8, u8);
@@ -32,7 +33,7 @@ void ApplyMapViewTilesetWeather(void) {
 
     func_ov000_02169368();
     func_02091d20();
-    func_020d672c();
+    LoadUnderInfoGraphics();
     temp_r2 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(u8, u8), 0x58);
     if (temp_r2 == NULL) {
         return;
@@ -50,13 +51,13 @@ void func_020b1770(void) {
 
 void func_020b179c(void) {
  M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);
- M2C_UNK func_020c0a88();
+ M2C_UNK LoadUiGraphics();
  extern void *gCur3DSpriteEngine;
  void *p; s32 src; M2C_UNK *dst;
  p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x10); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x24);
  MI_CpuCopy32(dst,src,0x800);
  p=gCur3DSpriteEngine; src=M2C_FIELD(p,volatile s32 *,0x14); dst=M2C_FIELD(p,M2C_UNK * volatile *,0x28);
- MI_CpuCopy32(dst,src,0x800); func_020c0a88();
+ MI_CpuCopy32(dst,src,0x800); LoadUiGraphics();
 }
 
 void func_020b17dc(void) {
@@ -80,25 +81,28 @@ void func_020b1800(void) {
     func_02003584();
 }
 
-void func_020b1810(void) {
+/* Assign the VRAM banks the battle map view lays out: texture in A/B, the main
+ * engine's BG in D, OBJ in E, OBJ extended palette in F and OBJ palette in G,
+ * and the sub engine's BG in C, OBJ in I and BG extended palette in H. */
+void SetMapViewVramBanks(void) {
     M2C_UNK GX_SetBankForBG(M2C_UNK);
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    M2C_UNK func_02003124(M2C_UNK);
+    M2C_UNK GX_SetBankForSubBG(M2C_UNK);
     M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
-    M2C_UNK func_02082c84();
-    func_02082c84();
-    GX_SetBankForTex(3);
-    GX_SetBankForBG(8);
-    GX_SetBankForOBJ(0x10);
-    GX_SetBankForOBJExtPltt(0x20);
-    GX_SetBankForObjExtPalette(0x40);
-    func_02003124(4);
-    GX_SetBankForSubOBJ(0x100);
-    GX_SetBankForBGExtPlttSub(0x80);
+    M2C_UNK GX_ReleaseBankGrants();
+    GX_ReleaseBankGrants();
+    GX_SetBankForTex(VRAM_BANK_A | VRAM_BANK_B);
+    GX_SetBankForBG(VRAM_BANK_D);
+    GX_SetBankForOBJ(VRAM_BANK_E);
+    GX_SetBankForOBJExtPltt(VRAM_BANK_F);
+    GX_SetBankForObjExtPalette(VRAM_BANK_G);
+    GX_SetBankForSubBG(VRAM_BANK_C);
+    GX_SetBankForSubOBJ(VRAM_BANK_I);
+    GX_SetBankForBGExtPlttSub(VRAM_BANK_H);
 }
 
 /* The map view's +0x50 setup method: rebuild the battle map's graphics on the
@@ -244,16 +248,18 @@ if(!p || !M2C_FIELD(p,u8 *,1) || (u8)(M2C_FIELD(p,u8 *,4)+253)<=1) return 0;
 return 1;
 }
 
-void SetSpriteSlotFrameRect(s16 a,s16 b,s16 c,s16 d) {
+/* Set the focus frame drawn around a sprite slot from its two corners: the
+ * rectangle spans (left, top) to (right, bottom). */
+void SetSpriteSlotFrameRect(s16 left,s16 top,s16 right,s16 bottom) {
 extern void *gSpriteSlotManager;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x10)=a;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x12)=b;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x14)=c;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x16)=b;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x18)=a;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x1a)=d;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x1c)=c;
-M2C_FIELD(gSpriteSlotManager,s16 *,0x1e)=d;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_TL_X)=left;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_TL_Y)=top;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_TR_X)=right;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_TR_Y)=top;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BL_X)=left;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BL_Y)=bottom;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BR_X)=right;
+M2C_FIELD(gSpriteSlotManager,s16 *,SPRITE_SLOT_MGR_FRAME_BR_Y)=bottom;
 }
 
 void SetSpriteSlotScroll(s16 a,s16 b) {
@@ -426,7 +432,7 @@ p=gSpriteSlots; i=0;
 do { if(SpriteSlotHasFlags(p,1)!=1) M2C_FIELD(p,u16 *,0x1c)&=~0x400; i++;p+=0x3c; } while(i<0x55);
 }
 
-void func_020b2268(void) {
+void CloseAllActiveSpriteSlots(void) {
     extern u8 gSpriteSlots[];
     s32 i;
     u8 *p;

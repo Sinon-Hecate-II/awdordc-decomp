@@ -142,6 +142,13 @@ typedef struct ResourceArchive {
     void *objectBlock;  /* +0x8C loaded object table section */
 } ResourceArchive;
 
+/* Resource slots of the game's data archive.  gResourceLoaded holds one flag per
+ * slot (1 while the resource is in memory), gResourceFileIds the archive file id
+ * of each slot, and gResourceDependencyMasks its set of memory-group bits: a
+ * resource shares memory with every resource whose mask intersects its own, so
+ * only one resource of a group may be loaded at a time. */
+#define RESOURCE_SLOT_COUNT 12
+
 /* A file archive handle (the game's main data pack and the overlay archives).
  * The handle keeps the archive image in memory (+0x28) and the two index tables
  * the file lookups walk - the file allocation table (FAT) and the file name

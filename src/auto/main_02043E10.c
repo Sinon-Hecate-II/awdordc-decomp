@@ -17,7 +17,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
     s32 gt2AddressToString(s32, s32, s32);
     s32 func_0205adcc(s32, s32, s32, void *, s32, s32, s32, s32);
     void ReportGt2ConnectResult(void);
-    s32 func_020431e0(s32);
+    s32 ReportPeerConnectError(s32);
     s32 RestartConnection(s32);
     s32 StartPeerConnect(void *);
     s32 ReportPeerConnectResult();
@@ -91,7 +91,7 @@ void OnPeerConnect(s32 event, s32 socketHandle, PeerAddress *addr, ConnAttempt *
         if (attempt->natNeg == 0) {
             return;
         }
-        kind = func_020431e0(event);
+        kind = ReportPeerConnectError(event);
         if (kind != 2 && kind != 1) {
             return;
         }
@@ -323,7 +323,22 @@ s32 SendDataToPlayers(s32 playerMask, M2C_UNK data, M2C_UNK size) {
     return mask;
 }
 
-s32 SetTransferReceiveBuffer(s32 a,s32 b,s32 c){void *GetTransferSlot();void *p=GetTransferSlot(a);if(GetTransferState(a)==2)return 0;M2C_FIELD(p,s32 *,4)=b;M2C_FIELD(p,s32 *,8)=c;M2C_FIELD(p,u8 *,0x1d)=1;M2C_FIELD(p,s32 *,0x10)=0;M2C_FIELD(p,s32 *,0x18)=0;return 1;}
+/* Point player `playerId`'s transfer slot at `buffer` for the next inbound
+ * transfer of `size` bytes; refused while that slot is already receiving. */
+s32 SetTransferReceiveBuffer(s32 playerId, void *buffer, s32 size) {
+    extern s32 gTransferManager;
+    void *GetTransferSlot(s32);
+    TransferSlot *slot;
+
+    slot = GetTransferSlot(playerId);
+    if (GetTransferState(playerId) == 2) return 0;
+    slot->inData = buffer;
+    slot->inSize = size;
+    slot->state = 1;
+    slot->inReceived = 0;
+    slot->inExpected = 0;
+    return 1;
+}
 
 s32 Transfer_SetStartCallback(s32 a){extern s32 gTransferManager;if(!gTransferManager)return 0;M2C_FIELD(gTransferManager,s32 *,0x600)=a;return 1;}
 

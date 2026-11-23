@@ -34,7 +34,23 @@ s32 func_ov001_0216eca8(void *a,s32 b,void *c,s32 d){s32 n;M2C_FIELD(a,u8 *,0)=0
 
 s32 func_ov001_0216ecd0(void *a,s32 *out){s32 kind,len,tag,size; s32 cursor; volatile s32 b; s32 n,base; u16 x,y,t; u16 *p; base=WhPacket_Unwrap(a,&kind,&len);x=0;y=0;cursor=base;b=0;if(!base)return 0;if(kind!=1)return 0;n=len;cursor=base+8; p=(u16 *)func_ov001_0216eb00(&cursor,n+base,&tag,&size);while(p){switch(tag){case 1:t=*p;x=(u8)((s32)t>>8)|((t<<8)&0xff00);break;case 2:t=*p;b=(u16)((u8)((s32)t>>8)|(0xff00&(t<<8)));break;case 5:t=*p;y=(u8)((s32)t>>8)|((t<<8)&0xff00);break;}p=(u16 *)func_ov001_0216eb00(&cursor,n+base,&tag,&size);}if(x!=1||b!=1)return 0;if((s32)y>=1)*out=1;else *out=0;return 1;}
 
-s32 func_ov001_0216eda4(void *a,s32 b,void *c,s32 d){s32 x,n;void *p;p=(void *)WhPacket_Unwrap(a,&x,&n);if(!p)return 0;if(x!=b)return 0;if(d){func_ov001_0216f97c(c,p,n,d,16);n-=8;}else MemCopy(c,p,n);return n;}
+/* Copy the payload of the packet `packet` to `out` once its type is `type`:
+ * decrypt the payload with `key` and drop its trailing 8-byte tag when a key is
+ * given, otherwise copy it as is.  Returns the payload length, 0 on failure. */
+s32 WhPacket_ExtractPayload(void *packet, s32 type, void *out, void *key) {
+    s32 packetType, length;
+    void *payload;
+    payload = (void *)WhPacket_Unwrap(packet, &packetType, &length);
+    if (!payload) return 0;
+    if (packetType != type) return 0;
+    if (key) {
+        WhDecryptPayload(out, payload, length, key, 16);
+        length -= 8;
+    } else {
+        MemCopy(out, payload, length);
+    }
+    return length;
+}
 
 /* Build the WH user-data packet into out: put a u16 1 followed by the 7-byte
  * constant block into a value buffer, write the tagged fields into gWhPacket -

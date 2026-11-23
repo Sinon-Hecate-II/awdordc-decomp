@@ -26,7 +26,7 @@ M2C_FIELD(gMoveSearchWrite,u8 *,3)=c;
 gMoveSearchWrite+=4;gMoveSearchCount++;return 0;
 }
 
-s32 func_ov000_0217ae9c(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 RunMoveCostSearch(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     void LoadUnitMovementCosts(s32);
     s32 ExpandCostSearchNode(s32);
     s32 GetUnitMoveRange(u16, s32);
@@ -257,7 +257,7 @@ gMoveSearchWrite+=4;gMoveSearchCount++;return 0;
 
 #pragma push
 #pragma optimization_level 3
-s32 func_ov000_0217b8f0(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+s32 RunMoveRangeSearch(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     s32 ExpandRangeSearchNode(s32);
     s32 GetUnitMoveRange(u16, s32);
     extern s8 gMoveSearchBuffer;
@@ -355,26 +355,32 @@ found:
     return 1;
 }
 #pragma pop
-s32 func_ov000_0217bc34(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Whether a unit at (x, y) can reach an enemy-occupied tile with movement type
+ * `moveType` and at most `costLimit` movement points: check the starting tile
+ * and then run the terrain-cost move search with the enemy-unit goal. */
+s32 CanReachEnemyUnit(s32 x, s32 y, s32 moveType, s32 costLimit) {
     s32 IsEnemyUnitAt();
-    s32 func_ov000_0217ae9c(s32, s32, s32, s32);
+    s32 RunMoveCostSearch(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)();
 
     gMoveSearchGoal = IsEnemyUnitAt;
     if (gMoveSearchGoal() == 1) {
         return 1;
     }
-    return func_ov000_0217ae9c(arg0, arg1, arg2, arg3);
+    return RunMoveCostSearch(x, y, moveType, costLimit);
 }
 
-s32 func_ov000_0217bc84(s32 arg0, s32 arg1, s32 arg2) {
+/* Whether a unit at (x, y) can reach a base tile owned by the current player
+ * within `range` movement steps: check the starting tile and then run the
+ * move-range search with the owned-base goal. */
+s32 CanReachOwnedBase(s32 x, s32 y, s32 range) {
     s32 IsOwnedBaseMoveGoal(s32, s32, s32);
-    s32 func_ov000_0217b8f0(s32, s32, s32, s32);
+    s32 RunMoveRangeSearch(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)();
 
     gMoveSearchGoal = IsOwnedBaseMoveGoal;
-    if (gMoveSearchGoal(arg0, arg1, 0) == 1) {
+    if (gMoveSearchGoal(x, y, 0) == 1) {
         return 1;
     }
-    return func_ov000_0217b8f0(arg0, arg1, 0, arg2);
+    return RunMoveRangeSearch(x, y, 0, range);
 }

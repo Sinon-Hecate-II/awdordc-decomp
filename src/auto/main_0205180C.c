@@ -224,7 +224,7 @@ void gpiDisconnect(void **arg0, s32 sendLogout) {
         } while (peer != NULL);
     }
     *(s32 *)((char *)connection + GPI_CONN_PEER_HEAD) = 0;
-    while (func_02055cd0(arg0, gpiReleaseBuddyStatusRecord, 0) == 0) {
+    while (gpiWalkBuddyTable(arg0, gpiReleaseBuddyStatusRecord, 0) == 0) {
     }
 }
 

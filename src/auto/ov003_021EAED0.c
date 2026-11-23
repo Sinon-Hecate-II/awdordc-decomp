@@ -11,7 +11,7 @@ void func_ov003_021eaed0(void *arg0) {
 s32 Link_ReceivePacket(void *,s32);void *GetLocalNetworkPlayerRecord();s32 GetLocalPlayerIdForOverlay();
 s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
 s32 func_ov003_021e9c08(void *),func_ov003_021e9c30(void *);
-u8 func_ov003_021eba24(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
+u8 GetLocalPlayerWaypointSlot(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
 s32 AreNetworkPlayerRecordsReady(void);s32 func_ov003_021eaeb0(void *);
 u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),func_ov003_021ebb88(void *);
 u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
@@ -40,7 +40,7 @@ player=GetLocalPlayerIdForOverlay();
 count=func_ov003_021e9c24(arg0);
 func_ov003_021ea4a8(arg0,(u32)(M2C_FIELD(arg0,u8 *,0x3a)<<31)>>31);
 if(func_ov003_021e9c08(arg0)){
-packet[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),func_ov003_021eba24(M2C_FIELD(arg0,void **,0x6c)));
+packet[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),GetLocalPlayerWaypointSlot(M2C_FIELD(arg0,void **,0x6c)));
 if(IsSessionHost()){
 for(j=0;j<count;j++){if(func_ov003_021e73c8(M2C_FIELD(arg0,s32 *,0x6c),j))packet[j+18]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),j);}
 if(((s32(*)(void *))AreNetworkPlayerRecordsReady)(arg0)){
@@ -153,7 +153,7 @@ else if(InRange(action,21,24)){StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),slot,1);
 }
 if(IsLinkSessionActive()){
 if(!Link_ReceivePacket(send,36))return;
-send[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),func_ov003_021eba24(M2C_FIELD(arg0,void **,0x6c)));
+send[13]=func_ov003_021e82fc(M2C_FIELD(arg0,s32 *,0x6c),GetLocalPlayerWaypointSlot(M2C_FIELD(arg0,void **,0x6c)));
 Link_SendPacket(send,36);
 }
 if(!IsMapListCategory3())return;
@@ -162,20 +162,26 @@ if(!func_0208eb68(M2C_FIELD(arg0,void **,0x60)))return;
 ApplyWaypointMenuAction(arg0,25);M2C_FIELD(arg0,u8 *,0x39)|=2;
 }
 #pragma pop
-u8 func_ov003_021eba24(void *arg0) {
- s32 GetLocalPlayerIdForOverlay();
- s32 value;
- u8 i;
- u8 count;
- s8 result;
- value=GetLocalPlayerIdForOverlay();
- count=M2C_FIELD(arg0,u8 *,4);
- for(i=0;(u32)i<(u32)count;i++) {
-  if(value==M2C_FIELD(arg0+i,u8 *,0x74)) {result=(s8)i; goto done;}
- }
- result=-1;
+/* Return the waypoint slot the local player owns, searched over the list's used
+ * slots, or -1 (0xFF) when no used slot is theirs. */
+u8 GetLocalPlayerWaypointSlot(void *list) {
+    s32 GetLocalPlayerIdForOverlay();
+    s32 playerId;
+    u8 slot;
+    u8 count;
+    s8 found;
+
+    playerId = GetLocalPlayerIdForOverlay();
+    count = M2C_FIELD(list, u8 *, WAYPOINT_LIST_COUNT);
+    for (slot = 0; (u32)slot < (u32)count; slot++) {
+        if (playerId == M2C_FIELD(list + slot, u8 *, WAYPOINT_LIST_IDS)) {
+            found = (s8)slot;
+            goto done;
+        }
+    }
+    found = -1;
 done:
- return (u8)result;
+    return (u8)found;
 }
 
 /* Whether every ready player has a network player record whose data field is set;

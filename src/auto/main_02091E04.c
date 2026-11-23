@@ -22,7 +22,7 @@ u8 Get3DSpriteTarget(void) {
     return M2C_FIELD(Get3DSpriteManager(), u8 *, 0x49);
 }
 
-void func_02091e44(void) {
+void GetScriptTransitionTarget(void) {
     M2C_UNK Get3DSpriteTargetMode();
     Get3DSpriteTargetMode();
 }
@@ -443,12 +443,16 @@ s32 func_020925e4(void *arg0) {
     return 1;
 }
 
-s32 func_02092608(void *arg0) {
-extern void **gCurrentMap;
-s32 CreateOwnedMapUnit(s32,s32,s32,s32);void RefreshMapView(s32);
-void *p=M2C_FIELD(arg0,void **,4);
-RefreshMapView(CreateOwnedMapUnit(M2C_FIELD(p,s16 *,8),M2C_FIELD(p,s16 *,10),M2C_FIELD(p,s32 *,12),M2C_FIELD(*gCurrentMap,u16 *,0x52a4)));
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script command: create a unit of the command's kind on the command's tile
+ * for the current player, then refresh the map view and advance the script. */
+s32 MapScriptCreateOwnedUnit(void *state) {
+    extern void **gCurrentMap;
+    s32 CreateOwnedMapUnit(s32, s32, s32, s32);
+    void RefreshMapView(s32);
+    void *command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    RefreshMapView(CreateOwnedMapUnit(M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0), M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1), M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)));
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 s32 func_02092654(void *arg0) {
@@ -459,8 +463,8 @@ s32 func_02092654(void *arg0) {
 }
 
 s32 func_02092674(void *arg0) {
-    M2C_UNK func_02094798();
-    func_02094798();
+    M2C_UNK DisableTouchInput();
+    DisableTouchInput();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -516,8 +520,8 @@ void func_02092888(M2C_UNK arg0) {
 }
 
 void func_020928a0(void *arg0) {
-    s32 func_0209bf28();
-    if (func_0209bf28() == 0) {
+    s32 IsTextSpriteActive();
+    if (IsTextSpriteActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
@@ -602,22 +606,25 @@ if(M2C_FIELD(*gCurrentMap,u16 *,0x52b0)==12)return 0;
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
-void func_02092b14(void *arg0) {
+/* Map-script wait callback: hold the script until the map reaches the player
+ * turn (MAP_STATE_PLAYER_TURN) — on the saved turn when one is given — and then,
+ * once the saved player is the current player, clear the wait callback. */
+void WaitForMapTurn(void *state) {
 extern void **gCurrentMap;
-void *p=*gCurrentMap;
-s32 v;
-if(M2C_FIELD(p,u16 *,0x52b0)!=12)return;
-v=M2C_FIELD(arg0,s16 *,0x12);
-if(v>=0 && v!=M2C_FIELD(p,u16 *,0x52a2))return;
-if(M2C_FIELD(p,u16 *,0x52a4)==M2C_FIELD(arg0,u8 *,0x11))M2C_FIELD(arg0,s32 *,8)=0;
+void *map=*gCurrentMap;
+s32 turn;
+if(M2C_FIELD(map,u16 *,MAP_STATE)!=MAP_STATE_PLAYER_TURN)return;
+turn=M2C_FIELD(state,s16 *,MAP_SCRIPT_STATE_TURN);
+if(turn>=0 && turn!=M2C_FIELD(map,u16 *,MAP_TURN))return;
+if(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)==M2C_FIELD(state,u8 *,MAP_SCRIPT_STATE_PLAYER))M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_WAIT)=0;
 }
 
 s32 func_02092b68(void *arg0) {
-void func_02092b14(void *);
+void WaitForMapTurn(void *);
 M2C_FIELD(arg0,s8 *,0x11)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
 M2C_FIELD(arg0,s16 *,0x12)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,10);
-M2C_FIELD(arg0,void (**)(void *),8)=func_02092b14;
-func_02092b14(arg0);
+M2C_FIELD(arg0,void (**)(void *),8)=WaitForMapTurn;
+WaitForMapTurn(arg0);
 M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
@@ -640,14 +647,21 @@ M2C_FIELD(arg0,void (**)(void *),8)=WaitForPlayerArmyVariant;
 WaitForPlayerArmyVariant(arg0);M2C_FIELD(arg0,s32 *,4)+=16;return 0;
 }
 
-s32 func_02092c40(void *arg0) {
-extern u16 *gKeyState;
-void *p=M2C_FIELD(arg0,void **,4);
-u32 keys=*gKeyState;
-u32 mask=M2C_FIELD(p,u32 *,12);
-void (*callback)(u32)=M2C_FIELD(p,void (**)(u32),4);
-if(keys&mask)callback(mask);else return 0;
-func_02094798();M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script opcode: wait until any of the keys in the command's mask
+ * (MAP_SCRIPT_OPERAND2) is pressed, then run the command's callback with the
+ * mask, disable touch input and move on. Returns 0 either way, so the script
+ * stays on the command until the key arrives. */
+s32 MapScriptWaitForKey(void *state) {
+    extern KeyState *gKeyState;
+    void *command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    u32 keys = gKeyState->pressed;
+    u32 keyMask = M2C_FIELD(command, u32 *, MAP_SCRIPT_OPERAND2);
+    void (*callback)(u32) = M2C_FIELD(command, void (**)(u32), MAP_SCRIPT_PARAM);
+
+    if (keys & keyMask) callback(keyMask); else return 0;
+    DisableTouchInput();
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 s32 func_02092c94(void *arg0) {

@@ -81,16 +81,17 @@ s32 gti2GetBufferFreeSpace(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4) - M2C_FIELD(arg0, s32 *, 8);
 }
 
-void gti2AddByteToBuffer(void *p,s32 a) {
-extern M2C_UNK data_020ff5d4,gAssertFileNameBuffer,data_020ff5a8;
+/* Append the byte `value` to `buffer`, asserting there is still room for it. */
+void gti2BufferWriteByte(Gt2Buffer *buffer,s32 value) {
+extern M2C_UNK gAssertExprBufferByteFits,gAssertFileNameBuffer,gAssertNameBufferWriteByte;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
-if(M2C_FIELD(p,s32 *,8)>=M2C_FIELD(p,s32 *,4))AssertFailed(&data_020ff5d4,&gAssertFileNameBuffer,&data_020ff5a8,35);
-M2C_FIELD(p,u8 **,0)[M2C_FIELD(p,s32 *,8)++]=a;
+if(buffer->len>=buffer->size)AssertFailed(&gAssertExprBufferByteFits,&gAssertFileNameBuffer,&gAssertNameBufferWriteByte,35);
+buffer->data[buffer->len++]=value;
 }
 
 /* Append the 16-bit value `value` to `buffer` as two big-endian bytes,
  * asserting that both fit. */
-void gti2AddShortToBuffer(Gt2Buffer *buffer, s32 value) {
+void gti2BufferWriteUShort(Gt2Buffer *buffer, s32 value) {
 extern M2C_UNK gAssertExprBufferShortFits,gAssertFileNameBuffer,gAssertNameBufferWriteUShort;
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,M2C_UNK);
 if(M2C_FIELD(buffer,s32 *,8)+2>M2C_FIELD(buffer,s32 *,4))AssertFailed(&gAssertExprBufferShortFits,&gAssertFileNameBuffer,&gAssertNameBufferWriteUShort,46);

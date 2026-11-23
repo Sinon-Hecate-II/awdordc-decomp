@@ -2,6 +2,8 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+#include "ov007_map_editor.h"
+#include "sound.h"
 static inline void SyncSprite13554(s32 p) {
 s32 GetUnitSpriteWidth(s32);s32 GetUnitSpriteHeight(s32);
 void func_02087d84(s32,s32,s32,s32,s32,s32);
@@ -59,25 +61,28 @@ void func_ov007_0221327c(void) {
     } while (i < 13);
 }
 
-void func_ov007_022132bc(void) {
-    M2C_UNK SetMapEditorMode(M2C_UNK);
+/* Switch the map editor between its terrain and unit palette pages (the keyboard
+ * shortcut): the page toggles, the tool resets to the paint tool, the editor's
+ * graphics refresh and the tab-change sound plays. */
+void MapEditor_TogglePage(void) {
     s32 GetMapEditorMode();
-    M2C_UNK SetMapEditorTool(M2C_UNK);
-    M2C_UNK MapEditor_RefreshGraphics();
-    s32 temp_r0;
+    void SetMapEditorMode(s32);
+    void SetMapEditorTool(s32);
+    void MapEditor_RefreshGraphics(void);
+    s32 page;
 
-    temp_r0 = GetMapEditorMode();
-    if (temp_r0 != 0) {
-        if (temp_r0 == 1) {
-            SetMapEditorMode(0);
-            SetMapEditorTool(0);
+    page = GetMapEditorMode();
+    if (page != 0) {
+        if (page == 1) {
+            SetMapEditorMode(MAP_EDITOR_PAGE_TERRAIN);
+            SetMapEditorTool(MAP_EDITOR_TOOL_PAINT);
         }
     } else {
-        SetMapEditorMode(1);
-        SetMapEditorTool(0);
+        SetMapEditorMode(MAP_EDITOR_PAGE_UNIT);
+        SetMapEditorTool(MAP_EDITOR_TOOL_PAINT);
     }
     MapEditor_RefreshGraphics();
-    PlaySoundEffect(0x10020);
+    PlaySoundEffect(SOUND_MENU_TAB);
 }
 
 void func_ov007_0221330c(void) {
@@ -173,7 +178,7 @@ void OpenMapEditorFillMenu(void) {
     M2C_UNK DeleteMapMenuSprites();
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK RefreshMapView();
-    s32 func_020c0b9c();
+    s32 GetCarriedUnitMenuSelection();
     M2C_UNK func_020c0634(M2C_UNK *, s32, s32, u16, s32);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK gMapEditorFillMenuEntries;
@@ -182,7 +187,7 @@ void OpenMapEditorFillMenu(void) {
     Clear3DSpriteLayer(1);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
     RefreshMapView();
-    func_020c0634(&gMapEditorFillMenuEntries, 0x60, 0x30, (u16)func_020c0b9c(), 0x50);
+    func_020c0634(&gMapEditorFillMenuEntries, 0x60, 0x30, (u16)GetCarriedUnitMenuSelection(), 0x50);
 }
 
 /* Apply the map size chosen in the map-size panel (request->38 width,

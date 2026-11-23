@@ -160,11 +160,16 @@ void SendMatchPacket(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
     Mb_SendMatchPacket(arg2, arg0, arg1);
 }
 
-u16 func_02015f48(u16 *p,s32 bytes) {
- u32 sum=0;s32 n=bytes>>1;u32 x;
- if(n>0)do{u16 v=*p++;n--;sum+=v;}while(n>0);
- x=(sum>>16)+(u16)sum;
- return (x+(x>>16))^0xFFFF;
+/* 16-bit one's-complement checksum (RFC 1071) over `bytes` bytes of native-order
+ * 16-bit words: sum the words, fold the carries twice and return the complement.
+ * Used for the download-play packet's checksum field. */
+u16 Mb_Checksum16(u16 *words, s32 bytes) {
+    u32 sum = 0;
+    s32 n = bytes >> 1;
+    u32 folded;
+    if (n > 0) do { u16 v = *words++; n--; sum += v; } while (n > 0);
+    folded = (sum >> 16) + (u16)sum;
+    return (folded + (folded >> 16)) ^ 0xFFFF;
 }
 
 /* Initialize an entry's 0x4C0-byte work buffer from a source descriptor: zero it, load two optional resources, and copy fixed fields. */
@@ -328,19 +333,23 @@ s32 DownloadStartNextFile(void) {
  return 1;
 }
 
+/* Chooses the next batch of chunk packets for the file being downloaded: a file
+ * without loaded resources sends its header from the record's start (nine
+ * packets), one with resources sends the resource region (four packets); then the
+ * sender advances to the chunk-sending step. */
 void DownloadBeginPacket(void) {
  extern M2C_UNK gDownloadSendState;
- void *p;
- if(M2C_FIELD(&gDownloadSendState,u8 *,0x24)!=2)return;
- p=M2C_FIELD(&gDownloadSendState,void **,0x1C);
- if(M2C_FIELD(p,u8 *,0x4B2)==0){
- M2C_FIELD(&gDownloadSendState,u8 *,0x28)=9;
- M2C_FIELD(&gDownloadSendState,void **,0x20)=p;
+ void *file;
+ if(M2C_FIELD(&gDownloadSendState,u8 *,DL_STATE)!=DL_STATE_BEGIN_PACKET)return;
+ file=M2C_FIELD(&gDownloadSendState,void **,DL_CURRENT);
+ if(M2C_FIELD(file,u8 *,DL_FILE_HAS_RESOURCES)==0){
+ M2C_FIELD(&gDownloadSendState,u8 *,DL_CHUNK_COUNT)=9;
+ M2C_FIELD(&gDownloadSendState,void **,DL_CHUNK_SOURCE)=file;
  }else{
- M2C_FIELD(&gDownloadSendState,u8 *,0x28)=4;
- M2C_FIELD(&gDownloadSendState,void **,0x20)=p+0x220;
+ M2C_FIELD(&gDownloadSendState,u8 *,DL_CHUNK_COUNT)=4;
+ M2C_FIELD(&gDownloadSendState,void **,DL_CHUNK_SOURCE)=file+DL_FILE_RESOURCES;
  }
- M2C_FIELD(&gDownloadSendState,u8 *,0x24)=3;
+ M2C_FIELD(&gDownloadSendState,u8 *,DL_STATE)=DL_STATE_SEND_CHUNK;
 }
 
 #pragma opt_propagation off
@@ -351,7 +360,7 @@ extern M2C_UNK data_021311e8;
 extern M2C_UNK gDownloadPacket;
 s32 FillU16(s32,void *,s32);
 s32 CopyU16();
-u16 func_02015f48(u16 *,s32);
+u16 Mb_Checksum16(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 register void *p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
 u32 end=(u32)p+0x358;
@@ -370,7 +379,7 @@ M2C_FIELD(&gDownloadSendState,u32 *,0x40)=M2C_FIELD(p,u32 *,0x4b8);
 ((PacketBits *)((u8 *)&gDownloadSendState+0x44))->high=M2C_FIELD(p,u8 *,0x4b5);
 M2C_FIELD(&gDownloadSendState,u8 *,0x47)=M2C_FIELD(&gDownloadSendState,u8 *,0x29)++;
 M2C_FIELD(&gDownloadSendState,u16 *,0x48)=0;
-M2C_FIELD(&gDownloadSendState,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=Mb_Checksum16((u16 *)&data_021311e8,0x68);
 if((u8)++M2C_FIELD(&gDownloadSendState,u8 *,0x27)>=M2C_FIELD(&gDownloadSendState,u8 *,0x28))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=4;
 else M2C_FIELD(&gDownloadSendState,volatile u32 *,0x20)+=0x62;
 WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
@@ -390,7 +399,7 @@ M2C_FIELD(&gDownloadSendState,u8 *,0x24)=5;
 void DownloadSendRosterPacket(s32 a,s32 b,s32 c) {
 extern M2C_UNK gDownloadSendState,data_02131248,data_021311f0,data_021311e8,gDownloadPacket;
 s32 FillU16(s32,void *,s32);s32 CopyU16();
-u16 func_02015f48(u16 *,s32);
+u16 Mb_Checksum16(u16 *,s32);
 void WFC_SubmitDownloadData(s32,void *,s32,s32,s32,s32);
 void *p,*header,*state; u8 *dest; register s32 i;u32 count;u16 mask;void (*callback)(u32);
 p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
@@ -429,7 +438,7 @@ checkEntries:if(i<15)goto entriesLoop;
 entriesDone:
 if(count<4)M2C_FIELD(&data_021311f0,u8 *,count*22)&=~0xf0;
 M2C_FIELD(&gDownloadSendState,u16 *,0x48)=0;
-M2C_FIELD(&gDownloadSendState,u16 *,0x48)=func_02015f48((u16 *)&data_021311e8,0x68);
+M2C_FIELD(&gDownloadSendState,u16 *,0x48)=Mb_Checksum16((u16 *)&data_021311e8,0x68);
 p=M2C_FIELD(&gDownloadSendState,void **,0x1c);
 if(M2C_FIELD(p,u16 *,0x4b0)==M2C_FIELD(p,u16 *,0x35a))M2C_FIELD(&gDownloadSendState,u8 *,0x24)=1;
 WFC_SubmitDownloadData(0,&gDownloadPacket,0x70,a,b,(u8)(c|3));
@@ -479,7 +488,10 @@ s32 Mb_LinkExchangeReady(void) {
     return ready;
 }
 
-void func_020168a0(void) {
+/* Start the multiboot link's connect step: install func_02016934 as the WFC
+ * general handler and submit the connect request built from gMbParam, reporting
+ * each result back through Mb_ReportPacketResult (message 0x80, then 0x1D). */
+void Mb_StartConnect(void) {
     s32 WFC_SetGeneralHandler(M2C_UNK *);
     s32 WFC_SubmitConnectRequest(M2C_UNK *, u16, u16, u16, s32);
     M2C_UNK Mb_ReportPacketResult(M2C_UNK, s32);

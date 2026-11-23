@@ -5,19 +5,22 @@ static inline u64 Pack_020c91ac(u64 x, u64 y, u64 z, u32 w) {
     return (x<<20) | (y<<36) | (z<<4) | (w&15);
 }
 
-s32 FindCampaignMapId(M2C_UNK arg0) {
+/* Find the campaign map whose saved record matches `record`: scan this player's
+ * campaign map slots (id MAP_ID_CAMPAIGN_FIRST + index) in order and return the
+ * first valid record that matches, or 0 when none does. */
+s32 FindCampaignMapId(M2C_UNK record) {
     s32 GetMapRecord(s32);
     s32 IsCampaignMapRecordValid(s32);
     s32 MapRecordsMatch(M2C_UNK, s32);
-    s32 var_r4;
+    s32 index;
 
-    var_r4 = 0;
+    index = 0;
 loop_1:
-    if ((IsCampaignMapRecordValid(var_r4 + 0xE1) != 0) && (MapRecordsMatch(arg0, GetMapRecord(var_r4 + 0xE1)) != 0)) {
-        return var_r4 + 0xE1;
+    if ((IsCampaignMapRecordValid(index + MAP_ID_CAMPAIGN_FIRST) != 0) && (MapRecordsMatch(record, GetMapRecord(index + MAP_ID_CAMPAIGN_FIRST)) != 0)) {
+        return index + MAP_ID_CAMPAIGN_FIRST;
     }
-    var_r4 += 1;
-    if (var_r4 >= 0x32) {
+    index += 1;
+    if (index >= MAP_ID_CAMPAIGN_PER_PLAYER) {
         return 0;
     }
     goto loop_1;
@@ -426,8 +429,8 @@ void UpdateMapActionPopup(void *arg0) {
 
 void func_020c989c(void *arg0) {
     void Sprite_ClearHandle(s32 *);
-    M2C_UNK func_020d472c();
-    func_020d472c();
+    M2C_UNK ReleaseMapViewHold();
+    ReleaseMapViewHold();
     Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x54));
 }
 

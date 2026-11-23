@@ -28,7 +28,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094d8c();
     M2C_UNK func_02094dac();
     M2C_UNK func_02094df0(M2C_UNK, s32, s32);
-    M2C_UNK func_02095250(s32);
+    M2C_UNK RecordsMenu_PlayTrack(s32);
     M2C_UNK func_020952c8(s32);
     M2C_UNK StartScriptedScreenTransition(M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020953d0();
@@ -464,7 +464,7 @@ loop_1:
         func_0209c428(arg0);
         return 2;
     case 24:
-        func_02095250(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
+        RecordsMenu_PlayTrack(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
         func_0209c418(arg0);
         func_0209c428(arg0);
         return 2;

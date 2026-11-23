@@ -182,14 +182,17 @@ s32 func_020c8020(s32 a) {
  return r;
 }
 
-s32 IsLastCampaignMap(s32 arg0) {
+/* Whether `mapId` is the last campaign map the player cleared, as recorded in the
+ * versus battle record: true while that record holds a battle, the id is a
+ * campaign map id and it matches the id saved in the record. */
+s32 IsLastCampaignMap(s32 mapId) {
     s32 IsUnitAvailable(M2C_UNK);
     u16 *GetBattleRecord(M2C_UNK);
-    u16 *temp_r0;
+    u16 *record;
 
-    if (IsUnitAvailable(8) != 0) {
-        temp_r0 = GetBattleRecord(8);
-        if ((arg0 >= 0xE1) && (arg0 < 0x1A9) && (arg0 == *temp_r0)) {
+    if (IsUnitAvailable(SAVE_RECORD_TYPE_VERSUS) != 0) {
+        record = GetBattleRecord(SAVE_RECORD_TYPE_VERSUS);
+        if ((mapId >= MAP_ID_CAMPAIGN_FIRST) && (mapId < MAP_ID_CAMPAIGN_END) && (mapId == M2C_FIELD(record, u16 *, BATTLE_RECORD_MAP))) {
             return 1;
         }
     }
@@ -406,10 +409,10 @@ s32 LoadMapRecord(s32 mapId, s32 buffer) {
 }
 
 s32 StoreCampaignMapRecord(s32 a,s32 b) {
- s32 IsValidMapRecord(s32); void func_020be438(s32,s32,s32);
+ s32 IsValidMapRecord(s32); void WriteSaveRecord(s32,s32,s32);
  s32 p=GetCampaignMapSaveType(a);
  if(!IsValidMapRecord(b))return 0;
- func_020be438(p,b,0x6f8);return 1;
+ WriteSaveRecord(p,b,0x6f8);return 1;
 }
 
 u8 DoesMapRecordMatchBuffer(s32 a,s32 b){s32 IsValidMapRecord(s32);u8 MapRecordsMatch(u8 *,u8 *);s32 p=GetMapRecord(a);u8 r;if(!IsValidMapRecord(b))return 0;if(MapRecordsMatch(b,p))r=1;else r=0;return r;}
@@ -534,13 +537,18 @@ u8 MapRecordsMatch(u8 *lhs, u8 *rhs) {
     return (u8)(p->tail == q->tail);
 }
 
-s32 IsLocalMacAddress(s32 a) {
- void GetMacAddress(void *);
- u8 buf[6]; s32 i;
- GetMacAddress(buf);
- for(i=0;i<6;i++) {
- if(buf[i]!=*(u8 *)(a+i))return 0;
- }
- return 1;
+/* Return whether a stored six-byte hardware address matches this console's MAC address. */
+s32 IsLocalMacAddress(s32 storedAddress) {
+    void GetMacAddress(void *address);
+    u8 localAddress[6];
+    s32 byteIndex;
+
+    GetMacAddress(localAddress);
+    for (byteIndex = 0; byteIndex < 6; byteIndex++) {
+        if (localAddress[byteIndex] != *(u8 *)(storedAddress + byteIndex)) {
+            return 0;
+        }
+    }
+    return 1;
 }
 

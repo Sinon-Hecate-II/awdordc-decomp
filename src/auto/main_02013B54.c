@@ -60,7 +60,11 @@ s32 WFC_SubmitDownloadData(s32 channelParam, void *data, u32 length, s32 sendCod
     return result;
 }
 
-s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
+/* Tell the WFC firmware whether this console is the match's parent (host) via
+ * command WFC_CMD_PARENT request 1.  Download play posts 1 (host), the online
+ * session 0.  Refuses until the command channel is open and the flag is 0 or 1;
+ * returns the channel's error, or WFC_CMD_OK once the request is queued. */
+s32 WFC_SubmitParentMode(M2C_UNK channelHandler, s32 parentMode) {
     s32 WFC_CheckChannelOpen();
     s32 temp_r0;
     s32 var_r0;
@@ -69,13 +73,13 @@ s32 func_02013cfc(M2C_UNK arg0, s32 arg1) {
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    if ((arg1 != 0) && (arg1 != 1)) {
-        return 6;
+    if ((parentMode != 0) && (parentMode != 1)) {
+        return WFC_CMD_BAD_PARAM;
     }
-    WFC_SetChannelParam(0x19, arg0);
-    var_r0 = WFC_SendCommand(0x19, 1, arg1);
+    WFC_SetChannelParam(WFC_CMD_PARENT, channelHandler);
+    var_r0 = WFC_SendCommand(WFC_CMD_PARENT, 1, parentMode);
     if (var_r0 == 0) {
-        var_r0 = 2;
+        var_r0 = WFC_CMD_OK;
     }
     return var_r0;
 }
@@ -124,23 +128,27 @@ s32 WFC_MeasureChannel(s32 callback, s16 ccaMode, s16 edThreshold, s16 channel, 
     return result;
 }
 
-s32 func_02013e24(M2C_UNK arg0, M2C_UNK arg1) {
+/* Switch the link's download-transfer mode through WFC command 0x21: refuse
+ * until the link is in one of the states the request may be sent from, install
+ * `callback` as the command's completion handler and post the download flag.
+ * Returns the channel's error, or WFC_CMD_OK once the request is queued. */
+s32 WFC_SubmitDownloadMode(M2C_UNK callback, s32 downloadMode) {
     M2C_UNK WFC_SetChannelParam(M2C_UNK, M2C_UNK);
     s32 WFC_SendCommand(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 WFC_CheckChannelState(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
-    s32 var_r0;
+    s32 result;
+    s32 commandResult;
 
-    temp_r0 = WFC_CheckChannelState(2, 7, 9);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = WFC_CheckChannelState(2, 7, 9);
+    if (result != 0) {
+        return result;
     }
-    WFC_SetChannelParam(0x21, arg0);
-    var_r0 = WFC_SendCommand(0x21, 1, arg1);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(WFC_CMD_DOWNLOAD_MODE, callback);
+    commandResult = WFC_SendCommand(WFC_CMD_DOWNLOAD_MODE, 1, downloadMode);
+    if (commandResult == 0) {
+        commandResult = WFC_CMD_OK;
     }
-    return var_r0;
+    return commandResult;
 }
 
 void func_02013e70(s32 arg0) { s32 OS_DisableInterrupts(); void OS_RestoreInterrupts(s32); extern s32 gMbWork; s32 state=OS_DisableInterrupts(); M2C_FIELD(gMbWork,s32 *,0x14e4)=arg0; OS_RestoreInterrupts(state); }
@@ -167,13 +175,15 @@ void *MultiBoot_GetPlayerInfo(s32 player) {
     return 0;
 }
 #pragma opt_strength_reduction reset
-s32 Mb_IsPlayerReady(s32 arg0) {
- extern s32 gMbWork;
- s32 Mb_IsValidPlayer();
- if(gMbWork && Mb_IsValidPlayer(arg0)) {
- if(M2C_FIELD(gMbWork+(arg0-1)*4,s32 *,0x14e8)==7) return 1;
- }
- return 0;
+/* True while the multiboot match work area is live and player `player` has
+ * finished its setup (its slot state is MB_PLAYER_STATE_READY). */
+s32 Mb_IsPlayerReady(s32 player) {
+    extern s32 gMbWork;
+    s32 Mb_IsValidPlayer();
+    if (gMbWork && Mb_IsValidPlayer(player)) {
+        if (M2C_FIELD(gMbWork + (player - 1) * 4, s32 *, MB_PLAYER_STATE_FIRST) == MB_PLAYER_STATE_READY) return 1;
+    }
+    return 0;
 }
 
 /* Notes that player `player` has acknowledged a step of the multiboot match
@@ -208,17 +218,20 @@ s32 Mb_AckPlayerPhase(s32 player, u32 phase) {
     return 0;
 }
 
-void func_02014050(s32 arg0, s32 arg1, M2C_UNK arg2) {
-    s32 Mb_IsValidPlayer();
+/* Store player `player`'s multiboot state and dispatch the matching event to the
+ * work area's command callback: the state is only written for a valid player but
+ * the event is dispatched either way. */
+void Mb_SetPlayerState(s32 player, s32 state, M2C_UNK packet) {
+    s32 Mb_IsValidPlayer(s32);
     extern s32 gMbWork;
-    M2C_UNK func_0201409c(s32, s32, M2C_UNK);
-    if (Mb_IsValidPlayer() != 0) {
-        M2C_FIELD((gMbWork + ((arg0 - 1) * 4)), s32 *, 0x14E8) = arg1;
+    M2C_UNK Mb_DispatchPlayerEvent(s32, s32, M2C_UNK);
+    if (Mb_IsValidPlayer(player) != 0) {
+        M2C_FIELD((gMbWork + ((player - 1) * 4)), s32 *, MB_PLAYER_STATE_FIRST) = state;
     }
-    func_0201409c(arg0, arg1, arg2);
+    Mb_DispatchPlayerEvent(player, state, packet);
 }
 
-M2C_UNK func_0201409c(s32 arg0,s32 arg1,M2C_UNK arg2) {
+M2C_UNK Mb_DispatchPlayerEvent(s32 arg0,s32 arg1,M2C_UNK arg2) {
  extern s32 gMbWork;
  void (*callback)(s32,s32,M2C_UNK)=M2C_FIELD(gMbWork,void (**)(s32,s32,M2C_UNK),0x14e4);
  if(!callback) return;
@@ -233,8 +246,8 @@ void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); v
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
-case 21: func_02014050(0,1,(s32)b); break;
-case 0: if(*(u16*)((u8*)b+16)!=0 && *(u16*)((u8*)b+16)<16) func_02014050(*(u16*)((u8*)b+16),2,(s32)b); break;
+case 21: Mb_SetPlayerState(0,1,(s32)b); break;
+case 0: if(*(u16*)((u8*)b+16)!=0 && *(u16*)((u8*)b+16)<16) Mb_SetPlayerState(*(u16*)((u8*)b+16),2,(s32)b); break;
 case 1:
 if(*(u16*)((u8*)b+16)==0 || *(u16*)((u8*)b+16)>=16) break;
 M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*2,u16*,0x148a)=0;
@@ -255,8 +268,8 @@ if(M2C_FIELD(gMbWork,u16*,0x1536)&(1<<*(u16*)((u8*)b+16))) {
 M2C_FIELD(gMbWork,u8*,0x1535)--;
 M2C_FIELD(gMbWork,u16*,0x1536)&=~(1<<*(u16*)((u8*)b+16));
 }
-if(M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*4,s32*,0x14e8)==8) func_02014050(*(u16*)((u8*)b+16),9,0);
-func_02014050(*(u16*)((u8*)b+16),3,(s32)b);
+if(M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*4,s32*,0x14e8)==8) Mb_SetPlayerState(*(u16*)((u8*)b+16),9,0);
+Mb_SetPlayerState(*(u16*)((u8*)b+16),3,(s32)b);
 M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*4,s32*,0x14e8)=0;
 break;
 case 3: ProcessGroupStartMessages((s32)b); break;
@@ -294,7 +307,7 @@ M2C_FIELD(gMbWork+(n-1)*4,u32 *,0x14a8)=*(u32 *)packet;
 M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x148a)=*(u16 *)(packet+26);
 MI_CpuCopy8(packet+4,(void *)(gMbWork+0x1340+(n-1)*22),22);
 ((Packet14564 *)(gMbWork+0x1340+((u32)n-1)*22))->high=(u8)n;
-func_02014050(n,10,(M2C_UNK)(packet+4));
+Mb_SetPlayerState(n,10,(M2C_UNK)(packet+4));
 }
 if(state!=10)return;
 group=p[28]; count=0;
@@ -303,7 +316,7 @@ M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=4;
 }else{
 for(i=0;i<16;i++)if(M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4e)&(1<<i))count++;
 if(count>=M2C_FIELD(M2C_FIELD(gMbWork+group*0x5d4,u32 *,0x1d40),u8 *,24)){
-M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,11,0);return;}
+M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;Mb_SetPlayerState(n,11,0);return;}
 }
 switch(M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)){
 case 3:
@@ -313,27 +326,27 @@ M2C_FIELD(gMbWork,u16 *,0x1536)|=1<<n;
 M2C_FIELD(gMbWork+n-1,u8 *,0x1526)=group;
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4e)|=1<<n;
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d50)|=1<<n;
-M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,5,0);return;
-case 4:M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,4,0);return;
+M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;Mb_SetPlayerState(n,5,0);return;
+case 4:M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;Mb_SetPlayerState(n,4,0);return;
 }break;
 case 8:
-if(state==5){func_02014050(n,14,0);return;}
+if(state==5){Mb_SetPlayerState(n,14,0);return;}
 if(state!=14)return;
 if(M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)!=2)return;
 group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4c)|=1<<n;
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d48)=0;
-M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,6,0);break;
+M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;Mb_SetPlayerState(n,6,0);break;
 case 9:
 if(state!=6)return;
 group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);if(group==255)return;
 M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4a)=func_02015204(M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4a),*(u16 *)(header+2));
 gGroupChunkPendingMask|=1<<group;break;
 case 10:
-if(state==6){group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);if(group==255)return;M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4c)&=~(1<<n);func_02014050(n,7,0);return;}
+if(state==6){group=M2C_FIELD(gMbWork+n-1,u8 *,0x1526);if(group==255)return;M2C_FIELD(gMbWork+group*0x5d4,u16 *,0x1d4c)&=~(1<<n);Mb_SetPlayerState(n,7,0);return;}
 if(state!=7)return;
 if(M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)!=5)return;
-M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;func_02014050(n,8,0);break;
+M2C_FIELD(gMbWork+(n-1)*2,u16 *,0x1754)=0;Mb_SetPlayerState(n,8,0);break;
 }
 }
 #pragma opt_strength_reduction reset

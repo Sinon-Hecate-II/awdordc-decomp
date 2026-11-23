@@ -181,16 +181,19 @@ void CreateMapViewScrollHold(M2C_UNK arg0) {
     CreateSpriteObject(&data_02100bf8, arg0);
 }
 
-void func_0207b800(void) {
-    extern M2C_UNK data_02144d60;
-    extern M2C_UNK data_02144d64;
-    extern M2C_UNK data_02144dc8;
-    extern M2C_UNK data_02144f98;
+/* Point the current map at the built-in storage for its four blocks: the battle
+ * map data, the map-view controller, the active unit-move controller slots and
+ * the map effect state.  A fresh session calls this while resetting all state. */
+void ResetCurrentMapBlocks(void) {
+    extern M2C_UNK gBattleMapBuffer;
+    extern M2C_UNK gMapViewController;
+    extern M2C_UNK gUnitMoveSlots;
+    extern M2C_UNK gMapEffectState;
     extern void *gCurrentMap;
-    M2C_FIELD(gCurrentMap, M2C_UNK **, 0) = &data_02144f98;
-    M2C_FIELD(gCurrentMap, M2C_UNK **, 4) = &data_02144d64;
-    M2C_FIELD(gCurrentMap, M2C_UNK **, 8) = &data_02144d60;
-    M2C_FIELD(gCurrentMap, M2C_UNK **, 0xC) = &data_02144dc8;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, MAP_DATA_PTR) = &gBattleMapBuffer;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, MAP_VIEW_PTR) = &gMapViewController;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, MAP_UNIT_MOVE_PTR) = &gUnitMoveSlots;
+    M2C_FIELD(gCurrentMap, M2C_UNK **, MAP_EFFECT_PTR) = &gMapEffectState;
 }
 
 /* Configure the current 3D sprite engine: set control bit 3, clear the low 3 bits of the sprite header, then initialise engine slots from the default data block (and a second pass / the alternate block when not on the secondary engine). */
@@ -588,17 +591,17 @@ s32 GetBatchSpriteSourceHeight(s32 arg0) {
 }
 
 void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02004b54();
-    M2C_UNK func_02004cf0();
+    M2C_UNK GX_BeginLoadTex();
+    M2C_UNK GX_EndLoadTex();
     M2C_UNK func_02004d3c();
     M2C_UNK func_02004ddc();
     M2C_UNK MI_CpuCopy32(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_02101468;
     extern M2C_UNK data_02101488;
-    func_02004b54();
+    GX_BeginLoadTex();
     LoadGraphicsBlock(&data_02101488, arg0);
-    func_02004cf0();
+    GX_EndLoadTex();
     func_02004d3c();
     MI_CpuCopy32(&data_02101468, arg1, 0x20);
     func_02004ddc();

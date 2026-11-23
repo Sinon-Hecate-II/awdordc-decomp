@@ -1,7 +1,7 @@
 SetLinkPhase kind:function(arm,size=0xc) addr:0x02221320
 func_ov009_0222132c kind:function(arm,size=0xc) addr:0x0222132c
 FreeLinkBlock kind:function(arm,size=0x14) addr:0x02221338
-func_ov009_0222134c kind:function(arm,size=0x50) addr:0x0222134c
+ResetLinkPlayerRecord kind:function(arm,size=0x50) addr:0x0222134c
 InitLinkPlayerRecord kind:function(arm,size=0x54) addr:0x0222139c
 func_ov009_022213f0 kind:function(arm,size=0x1c) addr:0x022213f0
 func_ov009_0222140c kind:function(arm,size=0x18) addr:0x0222140c
@@ -33,8 +33,8 @@ RequestLinkPlayerAnnounce kind:function(arm,size=0x20) addr:0x02222a00
 func_ov009_02222a20 kind:function(arm,size=0xa4) addr:0x02222a20
 func_ov009_02222ac4 kind:function(arm,size=0x40) addr:0x02222ac4
 func_ov009_02222b04 kind:function(arm,size=0x38) addr:0x02222b04
-func_ov009_02222b3c kind:function(arm,size=0x50) addr:0x02222b3c
-func_ov009_02222b8c kind:function(arm,size=0x290) addr:0x02222b8c
+StartLinkChildIndicate kind:function(arm,size=0x50) addr:0x02222b3c
+HandleLinkChildIndicate kind:function(arm,size=0x290) addr:0x02222b8c
 StartLinkSession kind:function(arm,size=0xf0) addr:0x02222e1c
 HandleLinkConnectTaskEvent kind:function(arm,size=0x78) addr:0x02222f0c
 func_ov009_02222f84 kind:function(arm,size=0xc8) addr:0x02222f84
@@ -49,7 +49,7 @@ StartLinkTransfer kind:function(arm,size=0xc8) addr:0x022234d4
 HandleLinkTransferTaskEvent kind:function(arm,size=0xa4) addr:0x0222359c
 SendLinkChannelData kind:function(arm,size=0x80) addr:0x02223640
 func_ov009_022236c0 kind:function(arm,size=0x34) addr:0x022236c0
-func_ov009_022236f4 kind:function(arm,size=0x50) addr:0x022236f4
+DispatchLinkPacket kind:function(arm,size=0x50) addr:0x022236f4
 HandleLinkChannelCommand kind:function(arm,size=0x2e0) addr:0x02223744
 func_ov009_02223a24 kind:function(arm,size=0xc) addr:0x02223a24
 ClearPlayerActive kind:function(arm,size=0x60) addr:0x02223a30
@@ -70,7 +70,7 @@ SetLinkDownloadMode kind:function(arm,size=0x60) addr:0x02223d40
 HandleLinkDownloadModeEvent kind:function(arm,size=0x20) addr:0x02223da0
 SubmitLinkDownloadData kind:function(arm,size=0x78) addr:0x02223dc0
 HandleLinkDownloadDataEvent kind:function(arm,size=0x24) addr:0x02223e38
-func_ov009_02223e5c kind:function(arm,size=0x4c) addr:0x02223e5c
+AddLinkEventListener kind:function(arm,size=0x4c) addr:0x02223e5c
 func_ov009_02223ea8 kind:function(arm,size=0x20) addr:0x02223ea8
 func_ov009_02223ec8 kind:function(arm,size=0x4c) addr:0x02223ec8
 func_ov009_02223f14 kind:function(arm,size=0x20) addr:0x02223f14
@@ -82,7 +82,7 @@ func_ov009_02224024 kind:function(arm,size=0x40) addr:0x02224024
 GetLinkLocalPlayerInfo kind:function(arm,size=0xc) addr:0x02224064
 GetActiveLinkPlayerSlot kind:function(arm,size=0x3c) addr:0x02224070
 GetLinkPlayerSlot kind:function(arm,size=0x14) addr:0x022240ac
-func_ov009_022240c0 kind:function(arm,size=0x34) addr:0x022240c0
+CopyLinkLocalPlayerRecord kind:function(arm,size=0x34) addr:0x022240c0
 func_ov009_022240f4 kind:function(arm,size=0x18) addr:0x022240f4
 CopyActiveLinkPlayerRecord kind:function(arm,size=0x34) addr:0x0222410c
 func_ov009_02224140 kind:function(arm,size=0x18) addr:0x02224140
@@ -150,7 +150,7 @@ func_ov009_022255ec kind:function(arm,size=0x14) addr:0x022255ec
 func_ov009_02225600 kind:function(arm,size=0x14) addr:0x02225600
 func_ov009_02225614 kind:function(arm,size=0x30) addr:0x02225614
 func_ov009_02225644 kind:function(arm,size=0x10) addr:0x02225644
-func_ov009_02225654 kind:function(arm,size=0x50) addr:0x02225654
+CreateLinkStartRequest kind:function(arm,size=0x50) addr:0x02225654
 func_ov009_022256a4 kind:function(arm,size=0x30) addr:0x022256a4
 IsPlayerAnnouncePending kind:function(arm,size=0x94) addr:0x022256d4
 func_ov009_02225768 kind:function(arm,size=0x14) addr:0x02225768
@@ -214,7 +214,7 @@ StartLinkStatusSplitTransitions kind:function(arm,size=0x6c) addr:0x022260dc
 func_ov009_02226148 kind:function(arm,size=0xc) addr:0x02226148
 func_ov009_02226154 kind:function(arm,size=0x28) addr:0x02226154
 CreateLinkNameLabel kind:function(arm,size=0x68) addr:0x0222617c
-func_ov009_022261e4 kind:function(arm,size=0x30) addr:0x022261e4
+CreateLinkMatchNameLabel kind:function(arm,size=0x30) addr:0x022261e4
 RefreshLinkPlayerAnnounce kind:function(arm,size=0x54) addr:0x02226214
 func_ov009_02226268 kind:function(arm,size=0x28) addr:0x02226268
 func_ov009_02226290 kind:function(arm,size=0x14) addr:0x02226290
@@ -235,7 +235,7 @@ data_ov009_02226490 kind:data(any) addr:0x02226490
 gLinkActorClass kind:data(any) addr:0x022264b8
 data_ov009_022264e0 kind:data(any) addr:0x022264e0
 gLocalMatchRequestClass kind:data(any) addr:0x02226518
-data_ov009_02226550 kind:data(any) addr:0x02226550
+gLinkStartRequestClass kind:data(any) addr:0x02226550
 data_ov009_02226588 kind:data(any) addr:0x02226588
 data_ov009_022265c0 kind:data(any) addr:0x022265c0
 data_ov009_022265f8 kind:data(any) addr:0x022265f8
@@ -246,14 +246,14 @@ data_ov009_022266b0 kind:data(any) addr:0x022266b0
 gLocalMatchRequestVtbl kind:data(any) addr:0x022266c4
 data_ov009_022266d8 kind:data(any) addr:0x022266d8
 data_ov009_022266ec kind:data(any) addr:0x022266ec
-data_ov009_02226700 kind:data(any) addr:0x02226700
+gLinkStartRequestVtbl kind:data(any) addr:0x02226700
 data_ov009_02226714 kind:data(any) addr:0x02226714
 data_ov009_02226728 kind:data(any) addr:0x02226728
 gLinkStatusLabelVTable kind:data(any) addr:0x0222673c
 data_ov009_02226750 kind:data(any) addr:0x02226750
 data_ov009_0222675c kind:data(any) addr:0x0222675c
 gLinkNameLabelClass kind:data(any) addr:0x02226784
-data_ov009_022267b4 kind:data(any) addr:0x022267b4
+gLinkMatchNameLabelClass kind:data(any) addr:0x022267b4
 gLinkStatusLabelClass kind:data(any) addr:0x0222682c
 data_ov009_02226874 kind:data(any) addr:0x02226874
 gLinkState kind:bss addr:0x022268e0

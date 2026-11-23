@@ -99,7 +99,7 @@ void func_ov010_02229ea4(s32 arg0) {
     func_ov010_02229e70(arg0 + 0x34);
 }
 
-M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
+M2C_UNK **SpawnOnlinePlayerAnnounce(M2C_UNK arg0) {
     M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern M2C_UNK data_ov010_0222c288;
@@ -120,7 +120,7 @@ M2C_UNK **func_ov010_02229eb4(M2C_UNK arg0) {
  * connection: clears the caller's per-player flag buffer and count, then creates
  * the query with the default encoding.  Returns 0 when the connection is not up
  * or the query cannot be started. */
-s32 Ov010_RequestWfcMatch(s32 names,s32 count,s32 timeout,s32 flagsOut,s32 countOut){s32 func_02036ec0(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED))return 0;MI_CpuFill8(flagsOut,0,count);M2C_FIELD(countOut,s32 *,0)=0;return func_02036ec0(names,count,0,timeout,flagsOut,countOut,255);}
+s32 Ov010_RequestWfcMatch(s32 names,s32 count,s32 timeout,s32 flagsOut,s32 countOut){s32 CreateWfcMatchForRegion(s32,s32,s32,s32,s32,s32,s32);if(!IsOnlineSessionFlagSet(OV010_FLAG_CONNECTED))return 0;MI_CpuFill8(flagsOut,0,count);M2C_FIELD(countOut,s32 *,0)=0;return CreateWfcMatchForRegion(names,count,0,timeout,flagsOut,countOut,255);}
 
 s32 Ov010_IsWfcMatchRunning(void) {
     u32 PollWfcMatchRequest();
@@ -309,14 +309,14 @@ void func_ov010_0222a238(void) {
     IncrementSpriteChildCount();
 }
 
-void func_ov010_0222a258(void) {
-    M2C_UNK func_01ffaa6c();
+void Ov010Online_ReleaseTextLayer(void) {
+    M2C_UNK DecrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK data_ov010_0222c544;
     if (FindObjectByClass(&data_ov010_0222c544) == 0) {
         return;
     }
-    func_01ffaa6c();
+    DecrementSpriteChildCount();
 }
 
 void func_ov010_0222a278(void) {
@@ -419,7 +419,19 @@ gCur3DSpriteEngine=old;func_ov010_0222a278();return;
 default:func_ov010_0222a238();return;}}
 #pragma opt_common_subs reset
 #pragma scheduling reset
-void func_ov010_0222a694(void *arg0){u32 v;if(!M2C_FIELD(arg0,s32 *,0x38))return;v=M2C_FIELD(arg0,u32 *,0x40);switch(v){case 0:case 1:case 2:func_ov010_0222a258();return;default:func_ov010_0222a258();return;case 3:case 4:case 5:case 6:case 7:return;}}
+/* Net-error sprite frame: release the text layer the text error classes (0..2)
+ * left up so the sprite can draw the next error; the match-label classes (3..7)
+ * keep their label and need nothing here. */
+void Ov010Online_ReleaseNetErrorText(void *error){
+ u32 errorClass;
+ if(!M2C_FIELD(error,s32 *,NET_ERROR_CODE))return;
+ errorClass=M2C_FIELD(error,u32 *,NET_ERROR_CLASS);
+ switch(errorClass){
+ case 0:case 1:case 2:Ov010Online_ReleaseTextLayer();return;
+ default:Ov010Online_ReleaseTextLayer();return;
+ case 3:case 4:case 5:case 6:case 7:return;
+ }
+}
 
 /* Online net-error screen update: create the split-screen transition on each
  * screen whose transition flag is set, and set that screen's bit (1 main, 2 sub)

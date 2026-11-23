@@ -205,10 +205,10 @@ s32 Mb_IsValidPlayer(u32 arg0) {
 }
 
 void func_02015230(M2C_UNK arg0, s16 arg1) {
-    M2C_UNK func_0201409c(M2C_UNK, M2C_UNK, s16 *);
+    M2C_UNK Mb_DispatchPlayerEvent(M2C_UNK, M2C_UNK, s16 *);
     s16 sp0;
 
     sp0 = arg1;
-    func_0201409c(arg0, 0xD, &sp0);
+    Mb_DispatchPlayerEvent(arg0, 0xD, &sp0);
 }
 

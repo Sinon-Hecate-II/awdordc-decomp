@@ -84,7 +84,7 @@ func_ov005_022176a0 kind:function(arm,size=0x720) addr:0x022176a0
 Ov005MoveCoListSelection kind:function(arm,size=0x8c) addr:0x02217dc0
 func_ov005_02217e4c kind:function(arm,size=0x38) addr:0x02217e4c
 Ov005MoveDetailSelection kind:function(arm,size=0x94) addr:0x02217e84
-func_ov005_02217f18 kind:function(arm,size=0x54) addr:0x02217f18
+Ov005ApplyDetailSelection kind:function(arm,size=0x54) addr:0x02217f18
 Ov005AddCoGridSprites kind:function(arm,size=0x5c) addr:0x02217f6c
 Ov005AddDetailSprites kind:function(arm,size=0x40) addr:0x02217fc8
 func_ov005_02218008 kind:function(arm,size=0x854) addr:0x02218008
@@ -173,7 +173,7 @@ func_ov005_0221e88c kind:function(arm,size=0x668) addr:0x0221e88c
 UpdateResultsScreen kind:function(arm,size=0xb8) addr:0x0221eef4
 func_ov005_0221efac kind:function(arm,size=0xc) addr:0x0221efac
 PlayMapBattleMusic kind:function(arm,size=0x80) addr:0x0221efb8
-func_ov005_0221f038 kind:function(arm,size=0x4c) addr:0x0221f038
+CreateResultsScreen kind:function(arm,size=0x4c) addr:0x0221f038
 func_ov005_0221f084 kind:function(arm,size=0x364) addr:0x0221f084
 WaitForResultsInput kind:function(arm,size=0x60) addr:0x0221f3e8
 FreeResultsScreenGraphics kind:function(arm,size=0xb0) addr:0x0221f448
@@ -309,11 +309,11 @@ data_ov005_02220a24 kind:data(any) addr:0x02220a24
 data_ov005_02220a2c kind:data(any) addr:0x02220a2c
 data_ov005_02220a34 kind:data(any) addr:0x02220a34
 data_ov005_02220a3c kind:data(any) addr:0x02220a3c
-data_ov005_02220a44 kind:data(any) addr:0x02220a44
+gResultsDirectory kind:data(any) addr:0x02220a44
 data_ov005_02220a4c kind:data(any) addr:0x02220a4c
 data_ov005_02220a54 kind:data(any) addr:0x02220a54
 data_ov005_02220a60 kind:data(any) addr:0x02220a60
-data_ov005_02220a6c kind:data(any) addr:0x02220a6c
+gResultsBirdAnimation kind:data(any) addr:0x02220a6c
 data_ov005_02220a78 kind:data(any) addr:0x02220a78
 data_ov005_02220a84 kind:data(any) addr:0x02220a84
 data_ov005_02220a90 kind:data(any) addr:0x02220a90
@@ -356,7 +356,7 @@ data_ov005_02220f90 kind:data(any) addr:0x02220f90
 gResultSparkVTable kind:data(any) addr:0x02220fa4
 gResultSlideSpriteVtbl kind:data(any) addr:0x02220fb8
 data_ov005_02220fcc kind:data(any) addr:0x02220fcc
-data_ov005_02220fe0 kind:data(any) addr:0x02220fe0
+gResultsScreenVtbl kind:data(any) addr:0x02220fe0
 data_ov005_02220fec kind:data(any) addr:0x02220fec
 data_ov005_02221008 kind:data(any) addr:0x02221008
 gCoMapFaces kind:data(any) addr:0x02221024

@@ -1,5 +1,5 @@
 func_ov002_021e1500 kind:function(arm,size=0x2c) addr:0x021e1500
-func_ov002_021e152c kind:function(arm,size=0x50) addr:0x021e152c
+SetupBattleScene kind:function(arm,size=0x50) addr:0x021e152c
 func_ov002_021e157c kind:function(arm,size=0x1c) addr:0x021e157c
 func_ov002_021e1598 kind:function(arm,size=0x14) addr:0x021e1598
 func_ov002_021e15ac kind:function(arm,size=0x34) addr:0x021e15ac
@@ -23,9 +23,9 @@ func_ov002_021e2204 kind:function(arm,size=0x160) addr:0x021e2204
 func_ov002_021e2364 kind:function(arm,size=0x184) addr:0x021e2364
 FreeModelNode kind:function(arm,size=0xf8) addr:0x021e24e8
 FreeModelList1 kind:function(arm,size=0xf4) addr:0x021e25e0
-func_ov002_021e26d4 kind:function(arm,size=0x50) addr:0x021e26d4
-func_ov002_021e2724 kind:function(arm,size=0x4c) addr:0x021e2724
-func_ov002_021e2770 kind:function(arm,size=0x54) addr:0x021e2770
+Ov002_EnableEffectNodes kind:function(arm,size=0x50) addr:0x021e26d4
+Ov002_DisableEffectNodes kind:function(arm,size=0x4c) addr:0x021e2724
+Ov002_SetEffectNodesFlag51 kind:function(arm,size=0x54) addr:0x021e2770
 Ov002_GetEffectScriptDuration kind:function(arm,size=0x84) addr:0x021e27c4
 Ov002_CreateEffectNode kind:function(arm,size=0xe0) addr:0x021e2848
 Ov002_ClearEffectNodesWithScript kind:function(arm,size=0x64) addr:0x021e2928
@@ -41,7 +41,7 @@ UpdateEffectNode kind:function(arm,size=0x1a0) addr:0x021e2aa8
 SetEffectNodeDrawTransform kind:function(arm,size=0xa8) addr:0x021e2c48
 func_ov002_021e2cf0 kind:function(arm,size=0x14) addr:0x021e2cf0
 SetEffectNodePosition kind:function(arm,size=0x28) addr:0x021e2d04
-func_ov002_021e2d2c kind:function(arm,size=0x4c) addr:0x021e2d2c
+SetEffectNodeMotion kind:function(arm,size=0x4c) addr:0x021e2d2c
 SetEffectNodeTransform kind:function(arm,size=0xa0) addr:0x021e2d78
 SetEffectNodeScreenPosition kind:function(arm,size=0x10) addr:0x021e2e18
 IsEffectNodeOffScreen kind:function(arm,size=0x90) addr:0x021e2e28
@@ -105,8 +105,8 @@ DrawBattleSceneUnitView kind:function(arm,size=0x78) addr:0x021e78e4
 EndBattleScene kind:function(arm,size=0x14) addr:0x021e795c
 func_ov002_021e7970 kind:function(arm,size=0x3c) addr:0x021e7970
 IsBattleSceneIntro kind:function(arm,size=0x18) addr:0x021e79ac
-func_ov002_021e79c4 kind:function(arm,size=0x50) addr:0x021e79c4
-func_ov002_021e7a14 kind:function(arm,size=0x50) addr:0x021e7a14
+Ov002_SelectUnitSetVariant kind:function(arm,size=0x50) addr:0x021e79c4
+Ov002_SelectUnitSetVariantAlt kind:function(arm,size=0x50) addr:0x021e7a14
 SetupPlayerSettings kind:function(arm,size=0x220) addr:0x021e7a64
 SetDemoBattleDefaults kind:function(arm,size=0xb0) addr:0x021e7c84
 SetBattleUnitAnimation kind:function(arm,size=0x2b8) addr:0x021e7d34
@@ -152,8 +152,8 @@ SetupUnitActionNodeEx kind:function(arm,size=0x140) addr:0x021ea37c
 func_ov002_021ea4bc kind:function(arm,size=0xfc) addr:0x021ea4bc
 func_ov002_021ea5b8 kind:function(arm,size=0xc) addr:0x021ea5b8
 AdvanceUnitEffectVariant kind:function(arm,size=0x64) addr:0x021ea5c4
-func_ov002_021ea628 kind:function(arm,size=0x4c) addr:0x021ea628
-data_ov002_021ea680 kind:data(any) addr:0x021ea680
+UnitEffectVariantAtLimit kind:function(arm,size=0x4c) addr:0x021ea628
+gBattleSceneLayout kind:data(any) addr:0x021ea680
 data_ov002_021ea68c kind:data(any) addr:0x021ea68c
 data_ov002_021ea704 kind:data(any) addr:0x021ea704
 data_ov002_021ea71c kind:data(any) addr:0x021ea71c
@@ -1234,10 +1234,10 @@ gUnitActionTable kind:data(any) addr:0x021f2e54
 gAnimStateTable kind:data(any) addr:0x021f2e70
 gUnitViewShakeOffsets kind:data(any) addr:0x021f2ef0
 data_ov002_021f2f1c kind:data(any) addr:0x021f2f1c
-data_ov002_021f2f40 kind:bss addr:0x021f2f40
+gDemoBattle kind:bss addr:0x021f2f40
 gEffectVariants kind:bss addr:0x021f2f44
 data_ov002_021f2fa9 kind:bss addr:0x021f2fa9
-data_ov002_021f3014 kind:bss addr:0x021f3014
+gBattleSpriteState kind:bss addr:0x021f3014
 data_ov002_021f3018 kind:bss addr:0x021f3018
 data_ov002_021f301c kind:bss addr:0x021f301c
 gEffectNodeResource kind:bss addr:0x021f3020

@@ -499,15 +499,17 @@ void MD5Transform(void *arg0) {
 #undef F
 }
 
-void Sha1Init(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
-    M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
-    M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0xC3D2E1F0;
-    M2C_FIELD(arg0, s32 *, 0x14) = 0;
-    M2C_FIELD(arg0, s32 *, 0x18) = 0;
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
+/* Initialize a SHA1 context: the standard five-word initial state, plus a zero
+ * bit count and buffered-byte count. */
+void Sha1Init(Sha1Context *ctx) {
+    ctx->state[0] = 0x67452301;
+    ctx->state[1] = 0xEFCDAB89;
+    ctx->state[2] = 0x98BADCFE;
+    ctx->state[3] = 0x10325476;
+    ctx->state[4] = 0xC3D2E1F0;
+    ctx->bitCountLo = 0;
+    ctx->bitCountHi = 0;
+    ctx->bufferBytes = 0;
 }
 
 /* Feed more message bytes to a SHA1 context: advance the 64-bit bit counter,

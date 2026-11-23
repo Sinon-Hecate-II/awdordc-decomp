@@ -37,7 +37,7 @@ void ChooseCaptureDestination(void) {
     u8 *map = *gCurrentMap;
     s32 army = GetPlayerArmyVariant(M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER));
     s32 moveRange = ComputeUnitMoveRange(M2C_FIELD(map, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind,
-        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_ATTACKER), M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), army, 0);
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_WEATHER), M2C_FIELD(map, u16 *, MAP_CURRENT_PLAYER), army, 0);
     BattleMapUnitHead *unit = M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT);
     s32 x, y;
     s32 rowY, columnX;
@@ -69,7 +69,7 @@ void ChooseCaptureDestination(void) {
     SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_SCORE);
     army = GetPlayerArmyVariant(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     FloodFillUnitRange(bestX, bestY, 7, ComputeUnitMoveRange(7,
-        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_ATTACKER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), army, 0), 0);
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_WEATHER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), army, 0), 0);
     SelectMapLayer((u8 *)*gCurrentMap + MAP_CELL_ORDER);
 
     candidateCost = 0x7fff;

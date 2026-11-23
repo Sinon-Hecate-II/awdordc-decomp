@@ -1,6 +1,7 @@
 /* 25 functions from 0x02047B84 to 0x02048B74 (main), found by ds-decomp. */
 #include "common.h"
 #include "ghttp.h"
+#include "net_socket.h"
 typedef struct { u8 len, family; u16 port; s32 address; } SockAddr;
 extern M2C_UNK sWebGetPath;
 extern M2C_UNK gWebRequestState, data_020fca68;
@@ -249,34 +250,36 @@ s32 ResolveServiceHostAddress(char *hostname, s32 port, void *addrPtr) {
     return 1;
 }
 
-void func_0204817c(void) {
+/* Sends the service-availability DNS query packet to the server it resolved and
+ * records the send time, which the retry check times the answer out against. */
+void SendServiceAvailabilityQuery(void) {
     s32 GetSystemTickMilliseconds();
     M2C_UNK ghiSendTo(s32, M2C_UNK *, s32, M2C_UNK, M2C_UNK *, s32);
     extern s32 gDnsQueryState[];
-    extern M2C_UNK gDnsPacketHeader;
-    extern M2C_UNK data_0213db94;
-    ghiSendTo(M2C_FIELD(&gDnsQueryState, s32 *, 4), &data_0213db94, M2C_FIELD(&gDnsQueryState, s32 *, 0x50), 0, &gDnsPacketHeader, 8);
-    M2C_FIELD(&gDnsQueryState, s32 *, 0x54) = GetSystemTickMilliseconds();
+    extern M2C_UNK gDnsServerAddress;
+    extern M2C_UNK gDnsQueryPacket;
+    ghiSendTo(M2C_FIELD(&gDnsQueryState, s32 *, DNS_QUERY_SOCKET), &gDnsQueryPacket, M2C_FIELD(&gDnsQueryState, s32 *, DNS_QUERY_PACKET_LEN), 0, &gDnsServerAddress, 8);
+    M2C_FIELD(&gDnsQueryState, s32 *, DNS_QUERY_SENT) = GetSystemTickMilliseconds();
 }
 
 /* Sets up a DNS query for service availability for the given service name. */
 void InitServiceAvailabilityQuery(s8 *serviceName) {
     s32 StringCopy(); s32 func_0204926c(); s32 StringFormat(); s32 ghiSocket(); s32 StringLength(); s32 MemCopy();
-    extern M2C_UNK gServiceNameBuffer, gOverrideDnsName, gServiceAvailabilityFormat, gDnsPacketHeader, gDnsQueryNameBuffer;
+    extern M2C_UNK gServiceNameBuffer, gOverrideDnsName, gServiceAvailabilityFormat, gDnsServerAddress, gDnsQueryNameBuffer;
     s8 hostNameBuffer[64]; s32 hasOverride, dnsNameLength;
     StringCopy(&gServiceNameBuffer, serviceName);
     M2C_FIELD(&gDnsQueryState, s32 *, 4) = -1;
     func_0204926c(&gDnsQueryState);
     hasOverride = M2C_FIELD(&gOverrideDnsName, s8 *, 0);
     if (!hasOverride) StringFormat(hostNameBuffer, &gServiceAvailabilityFormat, serviceName);
-    if (!ResolveServiceHostAddress(hasOverride ? (s8 *)&gOverrideDnsName : hostNameBuffer, 0x6cfc, &gDnsPacketHeader)) return;
+    if (!ResolveServiceHostAddress(hasOverride ? (s8 *)&gOverrideDnsName : hostNameBuffer, 0x6cfc, &gDnsServerAddress)) return;
     M2C_FIELD(&gDnsQueryState, s32 *, 4) = ghiSocket(2, 2, 0);
     if (M2C_FIELD(&gDnsQueryState, s32 *, 4) == -1) return;
     M2C_FIELD(&gDnsQueryState, s8 *, 0x10) = 9;
     dnsNameLength = StringLength(serviceName);
     MemCopy(&gDnsQueryNameBuffer, serviceName, dnsNameLength + 1);
     M2C_FIELD(&gDnsQueryState, s32 *, 0x50) = dnsNameLength + 6;
-    func_0204817c();
+    SendServiceAvailabilityQuery();
     M2C_FIELD(&gDnsQueryState, s32 *, 0x58) = 0;
 }
 
@@ -334,7 +337,7 @@ ghiCloseSocket(gDnsQueryState[1]);
 gDnsQueryState[0]=1;
 return 1;
 }
-func_0204817c();
+SendServiceAvailabilityQuery();
 {s32 n=gDnsQueryState[22]+1;
 gDnsQueryState[22]=n;}
 }
@@ -414,19 +417,21 @@ if(index<0||index>=M2C_FIELD(array,s32 *,VECTOR_COUNT))return 0;
 return M2C_FIELD(array,s32 *,VECTOR_ITEMS)+M2C_FIELD(array,s32 *,VECTOR_ELEM_SIZE)*index;
 }
 
-void Vector_AddItem(s32 *arg0, M2C_UNK arg1) {
+/* Append `item` at the end of the dynamic array `array` (Vector_InsertAt at the
+ * current count), asserting the array is not NULL. */
+void Vector_Append(s32 *array, M2C_UNK item) {
     M2C_UNK Vector_InsertAt(s32 *, M2C_UNK, s32);
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fcc10;
+    extern M2C_UNK sArrayAppendName;
     extern M2C_UNK sDarrayFileName;
     extern M2C_UNK sAssertArray;
-    if (arg0 == NULL) {
-        AssertFailed(&sAssertArray, &sDarrayFileName, &data_020fcc10, 0xA0);
+    if (array == NULL) {
+        AssertFailed(&sAssertArray, &sDarrayFileName, &sArrayAppendName, 0xA0);
     }
-    if (arg0 == NULL) {
+    if (array == NULL) {
         return;
     }
-    Vector_InsertAt(arg0, arg1, *arg0);
+    Vector_InsertAt(array, item, *array);
 }
 
 /* GameSpy darray.c ArrayInsertAt: inserts `item` at `index`, growing the array

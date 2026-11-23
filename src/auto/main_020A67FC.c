@@ -313,7 +313,17 @@ s32 func_020a72fc(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 GetUnitOwner(p) void *p;{s32 n;if(!p)n=0;else n=((s32)p-(s32)((u8 *)*gCurrentMap+0x59a4))/14;return (n>>6)+1;}
+/* Return the 1-based player that owns the unit record at `p`, from its slot in
+ * the map's 256-entry unit array (64 slots per player).  A NULL pointer reports
+ * player 1.  The K&R header keeps the non-prototype calls in this file valid. */
+s32 GetUnitOwner(p)
+void *p;
+{
+    s32 slot;
+    if (!p) slot = 0;
+    else slot = ((s32)p - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
+    return (slot >> MAP_UNIT_OWNER_SHIFT) + 1;
+}
 
 u32 func_020a735c(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
@@ -362,20 +372,22 @@ s32 func_020a7558(void) {
     return 2;
 }
 
-s32 GetUnitCaptureRate(void *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Capture points a unit contributes per turn: its health in HP bars plus its
+ * commander's capture-rate bonus (its stat block's capture stat). */
+s32 GetUnitCaptureRate(void *unit, s32 x, s32 y) {
     s32 Divide(s32, M2C_UNK);
-    s32 func_020a2638(void *, M2C_UNK, M2C_UNK);
-    s32 var_r4;
-    u32 temp_r0;
+    s32 GetUnitCaptureBonus(void *, M2C_UNK, M2C_UNK);
+    s32 healthBars;
+    u32 health;
 
     GetUnitOwner();
-    temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
-    if (temp_r0 == 0) {
-        var_r4 = 0;
+    health = (u32) (M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 0x19) >> 0x19;
+    if (health == 0) {
+        healthBars = 0;
     } else {
-        var_r4 = Divide(temp_r0 - 1, 0xA) + 1;
+        healthBars = Divide(health - 1, 0xA) + 1;
     }
-    return var_r4 + func_020a2638(arg0, arg1, arg2);
+    return healthBars + GetUnitCaptureBonus(unit, x, y);
 }
 
 /* Effective movement of a unit: its kind's base movement plus the stat block's

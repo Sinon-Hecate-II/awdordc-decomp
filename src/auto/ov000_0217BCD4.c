@@ -18,16 +18,19 @@ extern s32 IsAttackableEnemyMoveGoal(s32,s32,s32);
 gMoveSearchGoal=IsAttackableEnemyMoveGoal;
 return func_ov000_0217b3bc(a,b,c,d);
 }
-s32 func_ov000_0217bcf4(s32 arg0, s32 arg1, s32 arg2) {
+/* Whether a unit at (x, y) can reach a property tile within `range` movement
+ * steps: check the starting tile and then run the move-range search with the
+ * property goal. */
+s32 CanReachProperty(s32 x, s32 y, s32 range) {
     s32 IsPropertyMoveGoal(s32, s32, s32);
-    s32 func_ov000_0217b8f0(s32, s32, s32, s32);
+    s32 RunMoveRangeSearch(s32, s32, s32, s32);
     extern s32 (*gMoveSearchGoal)(s32, s32, s32);
 
     gMoveSearchGoal = IsPropertyMoveGoal;
-    if (gMoveSearchGoal(arg0, arg1, 0) == 1) {
+    if (gMoveSearchGoal(x, y, 0) == 1) {
         return 1;
     }
-    return func_ov000_0217b8f0(arg0, arg1, 0, arg2);
+    return RunMoveRangeSearch(x, y, 0, range);
 }
 
 /* Encodes the drop tile relative to the transport, with a special code for a tile occupied by another unit. */

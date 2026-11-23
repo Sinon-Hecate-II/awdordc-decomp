@@ -55,9 +55,12 @@ if(data_020ebda2[f]<0){M2C_FIELD(a,u16 *,0x42)=tile+3+palette;return;}
 M2C_FIELD(a,u16 *,0x42)=f+0x78+palette;
 }
 #pragma pop
-void func_0207a61c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, u16 arg4, u8 arg5, u8 arg6) {
+/* Write the 2x2 icon tile quad of unit kind `unitKind` into the map tile buffer
+ * `tileBuf` for the cell at column `column`, row `row`, in palette `palette`
+ * (256 selects the base palette).  `flag` and `extraFlag` are unit display flags. */
+void WriteUnitKindTileQuad(s32 tileBuf, s32 column, s32 row, M2C_UNK unitKind, u16 palette, u8 flag, u8 extraFlag) {
 
-    func_0207a3b0(arg0 + (arg1 * 2) + (arg2 << 6), arg3, arg4, arg5, (s32) arg6, 0, 0, 0, 0, 0, 0);
+    func_0207a3b0(tileBuf + (column * 2) + (row << 6), unitKind, palette, flag, (s32) extraFlag, 0, 0, 0, 0, 0, 0);
 }
 
 void func_0207a668(void) {

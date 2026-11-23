@@ -369,7 +369,17 @@ void ReplacePlayerSelectedUnit(BattleMapUnitHead *selected, BattleMapUnitHead *r
               MAP_PLAYER_STATES + PLAYER_REC_SELECTED_UNIT) = replacementId;
 }
 
-u8 func_020a32a8(s32 a){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;u8 r;if(!((u32)(M2C_FIELD(p,s32 *,108)<<24)>>24))return 0;if(M2C_FIELD(p,u8 *,112))r=1;else r=0;return r;}
+/* Whether player `player` has a selected unit: the player must have an army
+ * (the sprite word's low byte is nonzero) and a selected-unit id. */
+u8 HasPlayerSelectedUnit(s32 player) {
+    extern s32 *gCurrentMap;
+    s32 record = *gCurrentMap + MAP_PLAYER_STATES + MAP_PLAYER_STRIDE * player;
+    u8 selected;
+    if (!((u32)(M2C_FIELD(record, s32 *, PLAYER_REC_SPRITE) << 24) >> 24)) return 0;
+    if (M2C_FIELD(record, u8 *, PLAYER_REC_SELECTED_UNIT)) selected = 1;
+    else selected = 0;
+    return selected;
+}
 
 /* Pointer to player `player`'s selected unit record, or NULL when the player has
  * no army yet (its sprite word is 0) or has nothing selected. */
@@ -410,7 +420,7 @@ void func_020a348c(void) {
     CreatePlayerUnitView();
 }
 
-void func_020a3498(M2C_UNK arg0) {
+void SetPlayerCoAnimationToIdle(M2C_UNK arg0) {
     void func_020a338c(s32, s32);
     func_020a338c(arg0, 0);
 }
@@ -504,7 +514,19 @@ s32 AddCoPowerMeterPoints(s32 player, s32 points) {
   }
 }
 
-void func_020a36ec(void *a){s16 xy[2];s32 func_ov000_021aa820(s16 *,s32,s32,s32);if(!func_ov000_021aa820(xy,M2C_FIELD(a,s16 *,0x6c),0,1)){SetSpriteAnimation(a,0);return;}M2C_FIELD(a,s32 *,0x34)=xy[0];M2C_FIELD(a,s32 *,0x38)=xy[1];}
+/* Start handler of the player's army display panel sprite: look up the panel's
+ * screen position for the player id at +0x6C and store it at +0x34/+0x38; hide
+ * the sprite when the player has no panel to show. */
+void StartPlayerArmyDisplay(void *panel) {
+    s16 pos[2];
+    s32 SelectAreaEffectTargetForMode(s16 *, s32, s32, s32);
+    if (!SelectAreaEffectTargetForMode(pos, M2C_FIELD(panel, s16 *, 0x6C), 0, 1)) {
+        SetSpriteAnimation(panel, 0);
+        return;
+    }
+    M2C_FIELD(panel, s32 *, 0x34) = pos[0];
+    M2C_FIELD(panel, s32 *, 0x38) = pos[1];
+}
 
 void func_020a3740(void *arg0) {
     M2C_UNK func_020c7874(s32, s32, M2C_UNK, M2C_UNK, void *);
@@ -543,7 +565,17 @@ if(!cb)return;
 cb(M2C_FIELD(*gCurrentMap,u8 *,MAP_WEATHER),M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET));
 }
 
-void func_020a3810(void *a){switch((u32)M2C_FIELD(a,s16 *,0x36)){case 0:PlaySoundEffect(0xd4);return;case 1:PlaySoundEffect(0xd6);return;case 2:PlaySoundEffect(0xd5);return;case 3:PlaySoundEffect(0xd7);return;default:return;}}
+/* Sprite handler of the weather transition sprite: plays the sound of the new
+ * weather the sprite is switching the map to (its weather id at +0x36). */
+void PlayWeatherChangeSound(void *sprite) {
+    switch ((u32)M2C_FIELD(sprite, s16 *, 0x36)) {
+    case WEATHER_CLEAR:     PlaySoundEffect(SOUND_WEATHER_CLEAR);     return;
+    case WEATHER_RAIN:      PlaySoundEffect(SOUND_WEATHER_RAIN);      return;
+    case WEATHER_SNOW:      PlaySoundEffect(SOUND_WEATHER_SNOW);      return;
+    case WEATHER_SANDSTORM: PlaySoundEffect(SOUND_WEATHER_SANDSTORM); return;
+    default: return;
+    }
+}
 
 #pragma opt_instruction_scheduling off
 /* Ticks down the current player's weather-change delay and reports whether the

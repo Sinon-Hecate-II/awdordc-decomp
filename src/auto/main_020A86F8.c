@@ -1,5 +1,6 @@
 /* 69 functions from 0x020A86F8 to 0x020A94FC (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 
 typedef struct { s32 values[6]; } Table020a8b3c;
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
@@ -31,22 +32,22 @@ s32 GetUnitAttackPower(void *arg0) {
     return GetUnitAttackPowerBonus(arg0, M2C_FIELD(arg0, u8 *, 1), M2C_FIELD(arg0, u8 *, 2)) + 0x64;
 }
 
-s32 func_020a8774(u32 arg0) {
+s32 GetOwnerGroupAttackBonus(u32 arg0) {
  switch(arg0) { case 1: return 5; case 2: return 10; case 3: return 20; default: return 0; }
 }
 
-s32 func_020a87b0(u32 arg0) {
+s32 GetOwnerGroupDefenseBonus(u32 arg0) {
  switch(arg0) { case 1: return 0; case 2: return 0; case 3: return 20; default: return 0; }
 }
 
 void func_020a87ec(u8 *arg0) {
-    M2C_UNK func_020a8774(u32);
-    func_020a8774((u32) (*arg0 << 0x18) >> 0x1E);
+    M2C_UNK GetOwnerGroupAttackBonus(u32);
+    GetOwnerGroupAttackBonus((u32) (*arg0 << 0x18) >> 0x1E);
 }
 
 void func_020a8804(u8 *arg0) {
-    M2C_UNK func_020a87b0(u32);
-    func_020a87b0((u32) (*arg0 << 0x18) >> 0x1E);
+    M2C_UNK GetOwnerGroupDefenseBonus(u32);
+    GetOwnerGroupDefenseBonus((u32) (*arg0 << 0x18) >> 0x1E);
 }
 
 s32 GetPlayerAttackPropertyBonus(s32 arg0) {
@@ -144,7 +145,7 @@ u8 GetMapPlayerFlags(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIE
 
 u8 func_020a8a30(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,28);}
 
-u8 func_020a8a4c(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,32);}
+u8 GetMapPlayerId(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,32);}
 
 u8 func_020a8a68(s32 a,s32 b){u8 *p=(u8*)MapData_GetRecord(a);return M2C_FIELD(p+(b-1),u8 *,36);}
 
@@ -304,14 +305,27 @@ if(widthScale!=256)x=ScaleFixed8(x,widthScale);
 if(heightScale!=256)y=ScaleFixed8(y,heightScale);
 ResetGxTextureParams();DrawSolidQuad(px,py,z,x,y,(u16)color);}
 
-u8 func_020a8ef8(s32 a){s32 GetLocalPlayerIdForOverlay();s32 Divide();s32 b;u8 v;if(IsIndexInRange((s16)a,225,425)==0)return 0;b=GetLocalPlayerIdForOverlay();if(b==(u8)Divide(a-225,50))v=1;else v=0;return v;}
+/* Whether `mapId` is one of the local player's own campaign maps: campaign map
+   ids are split into 50-map blocks by player slot, and this is the block
+   belonging to the local player. */
+u8 IsCampaignMapForLocalPlayer(s32 mapId) {
+    s32 GetLocalPlayerIdForOverlay();
+    s32 Divide();
+    s32 localPlayerId;
+    u8 owned;
+    if (IsIndexInRange((s16)mapId, MAP_ID_CAMPAIGN_FIRST, MAP_ID_CAMPAIGN_END) == 0) return 0;
+    localPlayerId = GetLocalPlayerIdForOverlay();
+    if (localPlayerId == (u8)Divide(mapId - MAP_ID_CAMPAIGN_FIRST, MAP_ID_CAMPAIGN_PER_PLAYER)) owned = 1;
+    else owned = 0;
+    return owned;
+}
 
 u16 func_020a8f4c(s32 arg0) {
     M2C_UNK IsLinkSessionActive();
     s32 GetLocalPlayerIdForOverlay();
-    u8 func_020a8ef8(s32);
+    u8 IsCampaignMapForLocalPlayer(s32);
     IsLinkSessionActive();
-    if (func_020a8ef8(arg0) == 0) {
+    if (IsCampaignMapForLocalPlayer(arg0) == 0) {
         return 0xFFFFU;
     }
     return (u16) (arg0 - (GetLocalPlayerIdForOverlay() * 0x32));

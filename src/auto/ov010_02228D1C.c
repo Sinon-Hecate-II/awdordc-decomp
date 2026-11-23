@@ -394,8 +394,8 @@ s32 func_ov010_022294c8(s32 arg0) {
 }
 
 s32 func_ov010_022294e0(void) {
-    s32 func_0203bd54();
-    return func_0203bd54();
+    s32 CanLeaveOnlineSession();
+    return CanLeaveOnlineSession();
 }
 
 s32 func_ov010_022294ec(void) {
@@ -539,18 +539,21 @@ s32 QueueOnlinePacket(u8 arg0, void *arg1, s32 arg2, s32 arg3) {
     return ret != 0;
 }
 
+/* Whether the online session's outbound packet queue is empty.  an empty result
+ * counts as empty.  The queue head (ONLINE_SESSION_QUEUE) is read with
+ * interrupts disabled so a queued packet cannot slip in mid-check. */
 s32 Ov010Online_IsSendQueueEmpty(void) {
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern u16 gOv010OnlineSession;
     s32 result;
-    u16 saved;
+    u16 savedIme;
     if (IsOnlineSessionFlagSet(3) == 0) return 1;
     result = 0;
-    saved = *(volatile u16 *)0x04000208;
+    savedIme = *(volatile u16 *)0x04000208;
     *(volatile u16 *)0x04000208 = 0;
-    if (M2C_FIELD(&gOv010OnlineSession, s32 *, 0x60) == 0) result = 1;
+    if (M2C_FIELD(&gOv010OnlineSession, s32 *, ONLINE_SESSION_QUEUE) == 0) result = 1;
     (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = saved;
+    *(volatile u16 *)0x04000208 = savedIme;
     return result;
 }
 
@@ -670,12 +673,12 @@ if(!(M2C_FIELD(p,u8 *,0x1a)&1))p=0;
 return p;
 }
 
-s32 func_ov010_02229b48(s32 arg0) {
+s32 GetOnlinePlayerSlot(s32 arg0) {
     extern M2C_UNK gOv010PlayerRecords;
     return (0x6C * arg0) + (s32) &gOv010PlayerRecords;
 }
 
-s32 func_ov010_02229b5c(s32 arg0, M2C_UNK arg1) {
+s32 CopyOnlineLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
     s32 temp_r0;
 

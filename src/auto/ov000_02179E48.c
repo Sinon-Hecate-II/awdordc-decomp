@@ -335,13 +335,15 @@ if(v<result)result=v;
 return result;
 }
 
-u8 IsEnemyUnitAt(s32 arg0, s32 arg1, s32 arg2) {
- extern void **gCurrentMap;
- s32 IsUnitOnCurrentTeam(s32);
- void *base = *gCurrentMap;
- u8 id = M2C_FIELD(base + (arg0 + M2C_FIELD(base + arg1 * 2, u16 *, 0x3758)), u8 *, 0);
- if (id == 0) return 0;
- return IsUnitOnCurrentTeam(id) != 1;
+/* Returns 1 when the cell (x, y) holds a unit the viewing player can see (its
+ * MAP_CELL_VISIBLE_UNIT id is nonzero) that is not on the current player's team. */
+u8 IsEnemyUnitAt(s32 x, s32 y, s32 unused) {
+    extern void **gCurrentMap;
+    s32 IsUnitOnCurrentTeam(s32);
+    void *map = *gCurrentMap;
+    u8 unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+    if (unitId == 0) return 0;
+    return IsUnitOnCurrentTeam(unitId) != 1;
 }
 
 /* AI move-search goal: true when the tile (x, y) holds an enemy unit whose kind

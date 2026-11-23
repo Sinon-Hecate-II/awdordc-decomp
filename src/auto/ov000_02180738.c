@@ -17,7 +17,7 @@ temp_r1 = M2C_FIELD(*gCurrentMap, void **, 0x52D0);
 SetMapCursor(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2), 2, 0, 0);
 }
 
-/* Role-4/6 AI step-7 handler (case 7 of the func_ov000_021812a8 dispatcher for
+/* Role-4/6 AI step-7 handler (case 7 of the RunAiRole4Or6ActionByStep dispatcher for
  * a unit that acts in place): build the influence maps and pick the acting unit's
  * action target, run the attack, flag the action plan when the owning player's AI
  * mode is not 0, then plan the reachable-attack, production-site, attack-move and
@@ -50,7 +50,7 @@ void RunAiRole4Or6Step7Action(void) {
     FinishAiUnitAction();
 }
 
-/* Role-4/6 AI step-8 (capture) handler (case 8 of the func_ov000_021812a8
+/* Role-4/6 AI step-8 (capture) handler (case 8 of the RunAiRole4Or6ActionByStep
  * dispatcher for a unit that acts in place): build the influence maps and pick the
  * acting unit's action target, run the attack, flag the action plan when the
  * owning player's AI mode is not 0, then plan the capture move, production-site,
@@ -83,7 +83,7 @@ void RunAiRole4Or6Step8Action(void) {
     FinishAiUnitAction();
 }
 
-/* Role-4/6 AI step-9 handler (case 9 of the func_ov000_021812a8 dispatcher):
+/* Role-4/6 AI step-9 handler (case 9 of the RunAiRole4Or6ActionByStep dispatcher):
  * clear the influence maps and pick the acting unit's move action target, run
  * the attack, run the reachable-attack search when the owning player's AI mode
  * is not 0, then plan the reachable-attack, production-site, attack-move and
@@ -112,10 +112,11 @@ SelectPortDestination();
 FinishAiUnitAction();
 }
 
-/* Role-4/6 AI step-10 action: build the influence maps and pick the acting
- * unit's action target, run the in-place attack when the owning player's AI
- * mode calls for it, then plan the HQ, enemy-unit, production-site and
- * property/port destinations and finish the unit's action. */
+/* Role-4/6 AI step-10 handler: rebuild the influence maps and pick the acting
+ * unit's action target, run the attack action and, when the owner's AI mode is
+ * set, search for an attack target; then plan the enemy HQ, enemy unit and
+ * production destinations, choose the move, property and port destinations and
+ * finish the unit's action. */
 void RunAiRole4Or6Step10Action(void) {
     M2C_UNK BuildAiInfluenceMaps();
     M2C_UNK SelectAiActionTarget();
@@ -512,16 +513,20 @@ void RunAiRole1CaptureAction(void) {
     SelectCaptureStayDestination();
 }
 
-void func_ov000_02180ec8(void) {
+/* Role-1 continuation callback (installed by BuildScoredAiRole1UnitListWithAiStep
+ * for the current player's role-1 units that already hold an AI step): skip the
+ * map-175 player-2 override and units busy with their attack or capture step, then
+ * rebuild the influence maps and plan the unit's action. */
+void RunAiRole1StepAction(void) {
     M2C_UNK func_ov000_0218f468();
     extern void **gCurrentMap;
-    u32 temp_r0;
+    u32 aiStep;
 
     if (IsAiMap175Player2Override() != 0) {
         return;
     }
-    temp_r0 = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, 0x52D0), u8 *, 0xB) << 0x1C) >> 0x1C;
-    if ((temp_r0 != 6) && (temp_r0 != 8)) {
+    aiStep = (u32) (M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_AI_STATE) << 0x1C) >> 0x1C;
+    if ((aiStep != AI_STEP_ATTACK) && (aiStep != AI_STEP_CAPTURE)) {
         BuildAiInfluenceMaps();
         func_ov000_0218f468();
     }
@@ -612,7 +617,7 @@ void RunAiRole4Or6Action(void) {
 }
 
 /* Dispatches on the low nibble of byte at p+0x52db; runs various step handlers. */
-void func_ov000_021812a8(void) {
+void RunAiRole4Or6ActionByStep(void) {
 extern void **gCurrentMap;
 void *state;
 if(IsAiMap175Player2Override()) {RunAiMap175MoveOverride(); return;}

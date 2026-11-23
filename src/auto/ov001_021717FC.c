@@ -30,17 +30,20 @@ if(pos[0]>OV001_ICON_ROW_REST_Y)return;
 Ov001_IconRow_Layout(OV001_ICON_ROW_REST_Y);Ov001_SetSlideStep(task,(M2C_UNK *)Ov001_IconRow_IntroStep);
 }
 
-void Ov001_IconRow_IntroStep(M2C_UNK arg0) {
+/* Intro step of the shared icon row (Ov001_IconRow_SlideOut hands over to it):
+ * keep the row unselected while its four intro frames run, then switch the slide
+ * step to the touch handler that lets the player pick a bar. */
+void Ov001_IconRow_IntroStep(M2C_UNK task) {
     M2C_UNK Ov001_SetSlideStep(M2C_UNK, M2C_UNK *);
     extern void *gOv001IconRow;
     extern M2C_UNK Ov001_HandleIconRowTouch;
-    M2C_FIELD(gOv001IconRow, s8 *, 0x16) = -1;
-    M2C_FIELD(gOv001IconRow, u16 *, 0x14) = (u16) (M2C_FIELD(gOv001IconRow, u16 *, 0x14) + 1);
-    if ((u32) M2C_FIELD(gOv001IconRow, u16 *, 0x14) < 4U) {
+    ((Ov001IconRow *)gOv001IconRow)->selected = -1;
+    ((Ov001IconRow *)gOv001IconRow)->introDelay = (u16) (((Ov001IconRow *)gOv001IconRow)->introDelay + 1);
+    if ((u32) ((Ov001IconRow *)gOv001IconRow)->introDelay < OV001_ICON_ROW_INTRO_FRAMES) {
         return;
     }
-    M2C_FIELD(gOv001IconRow, u16 *, 0x14) = 0U;
-    Ov001_SetSlideStep(arg0, &Ov001_HandleIconRowTouch);
+    ((Ov001IconRow *)gOv001IconRow)->introDelay = 0U;
+    Ov001_SetSlideStep(task, &Ov001_HandleIconRowTouch);
 }
 
 /* Handles a tap on the shared ov001 icon row: finds the touched bar, switches
@@ -190,18 +193,21 @@ void Ov001_LoadAsset(u8 *arg0,void (*arg1)(s32,s32,s32)) {
  Ov001_FreeFile(p);
 }
 
-void Ov001_OpenMenuForMode(s32 a){
-s32 x;func_ov001_02175d78(&x,0);
-if(x==1){Ov001_OpenMenu(a);return;}
-if(x==2)Ov001_LoadMenuRows(a);
+/* Open the shared ov001 menu for the next screen mode the previous screen set:
+ * mode 1 builds the five-row option menu, mode 2 only loads the menu rows, and
+ * mode 0 leaves the screen alone.  `variant` selects the menu's icon/tables. */
+void Ov001_OpenMenuForMode(s32 variant){
+s32 nextMode;Ov001_GetNextScreenMode(&nextMode,0);
+if(nextMode==1){Ov001_OpenMenu(variant);return;}
+if(nextMode==2)Ov001_LoadMenuRows(variant);
 }
 
 void func_ov001_02171e20(M2C_UNK arg0) {
     M2C_UNK func_ov001_0217159c(M2C_UNK);
-    M2C_UNK func_ov001_02175d78(M2C_UNK, s32 *);
+    M2C_UNK Ov001_GetNextScreenMode(M2C_UNK, s32 *);
     s32 sp0;
 
-    func_ov001_02175d78(0, &sp0);
+    Ov001_GetNextScreenMode(0, &sp0);
     if (sp0 != 1) {
         return;
     }

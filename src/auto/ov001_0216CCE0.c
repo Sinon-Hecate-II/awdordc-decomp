@@ -237,7 +237,7 @@ s32 func_ov001_0216d1e4(void) {
 #pragma thumb on
 s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  s32 OS_ReceiveMessage(void *,s32 *,s32);void InitTimer(void *);void ScheduleTimer(void *,s32,s32,void *,s32);void CancelTimer(void *);
- void MI_CpuFill8(s32,u8);void func_02029220(void);
+ void MI_CpuFill8(s32,u8);void WFC_ClearPlayerList(void);
  s32 func_ov001_0216d8e4(s32,void *,s32,s32);
  extern s32 data_ov001_02192600,data_ov001_02192620,data_ov001_021926e0;
  u32 timer[11];s32 msg;s32 result,tries,bound,i,active,flags,ready;u8 *packet;s32 offset;u16 *rx; void *p;
@@ -253,7 +253,7 @@ s32 func_ov001_0216d394(void *arg0,s32 *arg1){
  packet=(u8 *)&data_ov001_021926e0;
  packet[1]=ready;
  MI_CpuCopy8((s32)((u8 *)p+44),(s32)&packet[2+20*ready],M2C_FIELD(p,s32 *,40));
- func_02029220();
+ WFC_ClearPlayerList();
  if(func_ov001_0216d8e4(0,(u8 *)p+4,M2C_FIELD(p,s32 *,0),0x30bffe)){
  tries=0;InitTimer(timer);ScheduleTimer(timer,0x3fec42,0,(void *)func_ov001_0216d074,18);
  goto test;

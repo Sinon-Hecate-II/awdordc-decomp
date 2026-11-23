@@ -39,22 +39,25 @@ void func_ov001_02180bbc(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_02180bdc;
+    extern M2C_UNK Ov001_FadeOutFriendList;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_02180bdc);
+    Ov001_SetStepCallback(&Ov001_FadeOutFriendList);
 }
 
-void func_ov001_02180bdc(void) {
+/* Fade out the ov001 Wi-Fi friend-list screen: wait for the icon row's fade-in,
+ * slide the row out, start the fades of the sub screen and of the main screen's
+ * backgrounds and sprites, then move on to leaving the screen. */
+void Ov001_FadeOutFriendList(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_LeaveFriendList;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_LeaveFriendList);
 }
 
@@ -390,7 +393,7 @@ void Ov001_FadeOutRegionMenu(void) {
  * callback (map list or layout screen, depending on the chosen region). */
 void Ov001_FinishRegionMenu(void){
 extern M2C_UNK data_ov001_021909f4,data_ov001_02193dd0;
-extern M2C_UNK Ov001_OpenWifiMenu,func_ov001_02181a84,InitMapListScreen,func_ov001_02182d0c;
+extern M2C_UNK Ov001_OpenWifiMenu,func_ov001_02181a84,InitMapListScreen,Ov001_OpenWfcConnectStep2Screen;
 s32 Ov001_IsFadeActive(s32);s32 Ov001_IsMenuLayoutReady(void);s32 Ov001_IsIconRowIdle(void);void *GetCurrentMapRecord(void);
 void Ov001_DestroySprite(s32);
 u32 i;s32 p;
@@ -411,7 +414,7 @@ case 0:case 1:case 2:
 Ov001_SetNextScreenMode(2,0);
 if(M2C_FIELD(GetCurrentMapRecord(),u8 *,0xe7)==255)Ov001_SetStepCallback(&func_ov001_02181a84);
 else{Ov001_SetNameEntryMode(0,0);SetMapListMode(0);Ov001_SetStepCallback(&InitMapListScreen);}break;
-case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&func_ov001_02182d0c);break;
+case 3:Ov001_SetNextScreenMode(2,1);Ov001_SetStepCallback(&Ov001_OpenWfcConnectStep2Screen);break;
 }
 Ov001_FreeAlloc(&data_ov001_02193dd0);
 }

@@ -243,11 +243,11 @@ s32 func_0208477c(void) {
 
 #pragma opt_common_subs off
 s32 func_020847b8(void) {
-    s32 func_02011af8(u16 *);
+    s32 WFC_GetConnectionData(u16 *);
     extern u16 data_02156e64;
     s32 var_r0;
 
-    if (func_02011af8(&data_02156e64) == 0) {
+    if (WFC_GetConnectionData(&data_02156e64) == 0) {
         if (data_02156e64 != 0) {
             var_r0 = 1;
         } else {
@@ -446,66 +446,75 @@ s32 func_02084ac0(M2C_UNK arg0) {
     }
 }
 
-s8 func_02084b08(M2C_UNK arg0) {
-    s32 temp_r0_3;
-    void *temp_r0;
-    void *temp_r0_2;
+/* The rank of player `player` (the index used to load the player's rank icon),
+ * read from the link overlay's player slot or, online, from the online player
+ * record; -1 when the player is not found. */
+s8 GetPlayerRank(M2C_UNK player) {
+    s32 overlay;
+    void *onlineRecord;
+    void *linkPlayer;
 
-    temp_r0_3 = GetActiveOverlay();
-    switch (temp_r0_3) {                            /* irregular */
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
     case 1:
-        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
-        if (temp_r0_2 != NULL) {
-            return M2C_FIELD(temp_r0_2, s8 *, 0x18);
+        linkPlayer = GetActiveLinkPlayerSlot(player);
+        if (linkPlayer != NULL) {
+            return M2C_FIELD(linkPlayer, s8 *, LINK_PLAYER_RANK);
         }
     case 2:
-        temp_r0 = GetOnlinePlayerRecord(arg0);
-        if (temp_r0 != NULL) {
-            return M2C_FIELD(temp_r0, s8 *, 0x24);
+        onlineRecord = GetOnlinePlayerRecord(player);
+        if (onlineRecord != NULL) {
+            return M2C_FIELD(onlineRecord, s8 *, ONLINE_PLAYER_SLOT_RANK);
         }
     default:
         return -1;
     }
 }
 
-s8 func_02084b58(M2C_UNK arg0) {
-    s32 temp_r0_3;
-    void *temp_r0;
-    void *temp_r0_2;
+/* The favourite CO/group index of player `player`, read from the link overlay's
+ * player slot or, online, from the online player record; -2 when the player is
+ * not found. */
+s8 GetPlayerFavouriteGroup(M2C_UNK player) {
+    s32 overlay;
+    void *onlineRecord;
+    void *linkPlayer;
 
-    temp_r0_3 = GetActiveOverlay();
-    switch (temp_r0_3) {                            /* irregular */
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
     case 1:
-        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
-        if (temp_r0_2 != NULL) {
-            return M2C_FIELD(temp_r0_2, s8 *, 0x19);
+        linkPlayer = GetActiveLinkPlayerSlot(player);
+        if (linkPlayer != NULL) {
+            return M2C_FIELD(linkPlayer, s8 *, LINK_PLAYER_FAV_GROUP);
         }
     case 2:
-        temp_r0 = GetOnlinePlayerRecord(arg0);
-        if (temp_r0 != NULL) {
-            return M2C_FIELD(temp_r0, s8 *, 0x25);
+        onlineRecord = GetOnlinePlayerRecord(player);
+        if (onlineRecord != NULL) {
+            return M2C_FIELD(onlineRecord, s8 *, ONLINE_PLAYER_SLOT_FAV_GROUP);
         }
     default:
         return -2;
     }
 }
 
-s8 func_02084ba8(M2C_UNK arg0) {
-    s32 temp_r0_3;
-    void *temp_r0;
-    void *temp_r0_2;
+/* The favourite CO/record index of player `player`, read from the link overlay's
+ * player slot or, online, from the online player record; -2 when the player is
+ * not found. */
+s8 GetPlayerFavouriteRecord(M2C_UNK player) {
+    s32 overlay;
+    void *onlineRecord;
+    void *linkPlayer;
 
-    temp_r0_3 = GetActiveOverlay();
-    switch (temp_r0_3) {                            /* irregular */
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
     case 1:
-        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
-        if (temp_r0_2 != NULL) {
-            return M2C_FIELD(temp_r0_2, s8 *, 0x1A);
+        linkPlayer = GetActiveLinkPlayerSlot(player);
+        if (linkPlayer != NULL) {
+            return M2C_FIELD(linkPlayer, s8 *, LINK_PLAYER_FAV_RECORD);
         }
     case 2:
-        temp_r0 = GetOnlinePlayerRecord(arg0);
-        if (temp_r0 != NULL) {
-            return M2C_FIELD(temp_r0, s8 *, 0x26);
+        onlineRecord = GetOnlinePlayerRecord(player);
+        if (onlineRecord != NULL) {
+            return M2C_FIELD(onlineRecord, s8 *, ONLINE_PLAYER_SLOT_FAV_RECORD);
         }
     default:
         return -2;
@@ -578,17 +587,20 @@ void SetOnlineLocalPlayerId(s32 arg0) {
     M2C_FIELD(GetLocalPlayerStatus(), s32 *, 0x1C) = arg0;
 }
 
-s32 Link_ReceivePacket(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_ov009_022240c0(M2C_UNK, M2C_UNK);
-    s32 func_ov010_02229b5c(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+/* Copy the local player's record into `buffer`, which `length` bytes, through
+ * whichever network overlay is running: the single-card link's copy or the
+ * online session's, or 0 when neither session is up. */
+s32 Link_ReceivePacket(M2C_UNK buffer, M2C_UNK length) {
+    s32 CopyLinkLocalPlayerRecord(M2C_UNK, M2C_UNK);
+    s32 CopyOnlineLocalPlayerRecord(M2C_UNK, M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return func_ov009_022240c0(arg0, arg1);
-    case 2:
-        return func_ov010_02229b5c(arg0, arg1);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return CopyLinkLocalPlayerRecord(buffer, length);
+    case NET_OVERLAY_ONLINE:
+        return CopyOnlineLocalPlayerRecord(buffer, length);
     default:
         return 0;
     }
@@ -666,17 +678,20 @@ void Link_FlushSend(void) {
     }
 }
 
-s32 func_02084ea0(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_ov009_02225654(M2C_UNK, M2C_UNK);
+/* Create the link match start-request node tagged with `matchId` and owned by
+ * `owner`, dispatching to the active link overlay: local wireless (1) or online
+ * Wi-Fi (2). */
+s32 Link_CreateStartRequest(M2C_UNK matchId, M2C_UNK owner) {
+    s32 CreateLinkStartRequest(M2C_UNK, M2C_UNK);
     s32 func_ov010_02229d54(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
     switch (temp_r0) {                              /* irregular */
     case 1:
-        return func_ov009_02225654(arg0, arg1);
+        return CreateLinkStartRequest(matchId, owner);
     case 2:
-        return func_ov010_02229d54(arg0, arg1);
+        return func_ov010_02229d54(matchId, owner);
     default:
         return 0;
     }
@@ -684,7 +699,7 @@ s32 func_02084ea0(M2C_UNK arg0, M2C_UNK arg1) {
 
 s32 func_02084eec(M2C_UNK arg0) {
     s32 SpawnLinkPlayerAnnounce(M2C_UNK);
-    s32 func_ov010_02229eb4(M2C_UNK);
+    s32 SpawnOnlinePlayerAnnounce(M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -692,7 +707,7 @@ s32 func_02084eec(M2C_UNK arg0) {
     case 1:
         return SpawnLinkPlayerAnnounce(arg0);
     case 2:
-        return func_ov010_02229eb4(arg0);
+        return SpawnOnlinePlayerAnnounce(arg0);
     default:
         return 0;
     }
@@ -755,18 +770,21 @@ void CreateLocalPlayerNameLabel(M2C_UNK x, M2C_UNK y, M2C_UNK owner) {
     }
 }
 
-void func_02085054(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_ov009_022261e4(M2C_UNK, M2C_UNK, M2C_UNK);
+/* Create the name label shown for the local player during a match, through the
+ * running overlay's implementation (the single-card link overlay's or the online
+ * overlay's). */
+void CreateMatchNameLabel(M2C_UNK x, M2C_UNK y, M2C_UNK owner) {
+    M2C_UNK CreateLinkMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK CreateOnlineMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        func_ov009_022261e4(arg0, arg1, arg2);
+    overlay = GetActiveOverlay();
+    switch (overlay) {
+    case NET_OVERLAY_LINK:
+        CreateLinkMatchNameLabel(x, y, owner);
         return;
-    case 2:
-        CreateOnlineMatchNameLabel(arg0, arg1, arg2);
+    case NET_OVERLAY_ONLINE:
+        CreateOnlineMatchNameLabel(x, y, owner);
         return;
     }
 }

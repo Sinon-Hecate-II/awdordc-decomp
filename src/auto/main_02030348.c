@@ -2,22 +2,37 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 Wfc_GetConnectionErrorCode(void){void *Wfc_GetWorkBlock(s32);s32 Wfc_GetResultCode(void);s32 func_02030400(void *);void *p; s32 r;p=Wfc_GetWorkBlock(1);r=Wfc_GetResultCode();if(r<4)return func_02030398(r);else if(r<5)return func_020303dc();else if(r==5)return func_020303e4(p);else return func_02030400(p);}
+/* Turn the result code of the last WFC step into the connection error code the
+ * UI reports: the step results 0..3 map to -10..-7 and the failed link (4) to
+ * -6; a finished connection (5) reports the no-friend error, anything later the
+ * error of the friend result it ended with. */
+s32 Wfc_GetConnectionErrorCode(void){
+ void *Wfc_GetWorkBlock(s32);
+ s32 Wfc_GetResultCode(void);
+ s32 Wfc_GetFriendResultError(void *);
+ void *control; s32 result;
+ control=Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+ result=Wfc_GetResultCode();
+ if(result<4)return Wfc_GetStepResultError(result);
+ else if(result<5)return Wfc_GetLinkError();
+ else if(result==5)return Wfc_GetNoFriendError(control);
+ else return Wfc_GetFriendResultError(control);
+}
 
-s32 func_02030398(u32 a){switch(a){case 1:return -9;case 0:return -10;case 2:return -8;case 3:return -7;default:return 0;}}
+s32 Wfc_GetStepResultError(u32 a){switch(a){case 1:return -9;case 0:return -10;case 2:return -8;case 3:return -7;default:return 0;}}
 
-s32 func_020303dc(void) {
+s32 Wfc_GetLinkError(void) {
     return -6;
 }
 
-s32 func_020303e4(void *arg0) {
+s32 Wfc_GetNoFriendError(void *arg0) {
     if (M2C_FIELD(arg0, u8 *, 0xB) == 0) {
         return 0xFFFF3C4D;
     }
     return 0xFFFF3865;
 }
 
-s32 func_02030400(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
+s32 Wfc_GetFriendResultError(void *a){s32 r;u8 t=M2C_FIELD(a,u8 *,0x16);if(t<10){t=M2C_FIELD(a,u8 *,0x14);if(t==3)r=0xffff3864-M2C_FIELD(a,u8 *,0x15);else if(t==4)r=-0xc800-M2C_FIELD(a,u8 *,0x15);else r=0xffff379c-M2C_FIELD(a,u8 *,0x15);}else if(t<13)r=0xffff34e0-M2C_FIELD(a,u8 *,0x15);else {r=M2C_FIELD(a,s32 *,0x10);if(r==0)r=0xffff3cb0-M2C_FIELD(a,u8 *,0x15);else if(r==-1)r=0xffff347c-M2C_FIELD(a,u8 *,0x15);else if(r==-2)r=0xffff3418-M2C_FIELD(a,u8 *,0x15);else if(r==-3)r=0xffff33b4-M2C_FIELD(a,u8 *,0x15);else if(r==-4)r=0xffff30f8-M2C_FIELD(a,u8 *,0x15);else if(r==-5)r=0xffff3094-M2C_FIELD(a,u8 *,0x15);else if(r==-6){r=0xffff3030-M2C_FIELD(a,u8 *,0x15);return r;}}return r;}
 
 /* Rebuilds the WFC friend-list row table for one source: the save slots (0),
  * the connected friend records (1) or the FREESPOT configuration (2).  Returns
@@ -48,7 +63,19 @@ s32 Wfc_BuildFriendEntries(s32 source) {
     return state[WFC_STATE_ENTRY_COUNT];
 }
 
-s32 Wfc_MatchFreespotCode(u8 *a){void *Wfc_GetWorkBlock(s32);s32 StringCompareN(void *,void *,s32);extern M2C_UNK sFreespotCode;u32 v=(u32)(M2C_FIELD(Wfc_GetWorkBlock(16),u8 *,0xd0c)<<28)>>28;if(v==0||v==6){if(!StringCompareN(a+12,&sFreespotCode,8))return 8;}return 0;}
+/* When the friend-list mode is ALL or FREESPOT, return the FREESPOT friend id for
+ * a selected friend record whose code is the built-in "FREESPOT" code; otherwise 0. */
+s32 Wfc_MatchFreespotCode(u8 *record) {
+    void *Wfc_GetWorkBlock(s32);
+    s32 StringCompareN(void *, void *, s32);
+    extern M2C_UNK sFreespotCode;
+    u32 listMode = (u32)(M2C_FIELD(Wfc_GetWorkBlock(WFC_WORK_FRIENDS), u8 *, WFC_STATE_FLAGS) << 28) >> 28;
+
+    if (listMode == WFC_LIST_MODE_ALL || listMode == WFC_LIST_MODE_FREESPOT) {
+        if (!StringCompareN(record + WFC_RECORD_CODE, &sFreespotCode, 8)) return WFC_FRIEND_ID_FREESPOT;
+    }
+    return 0;
+}
 
 /* Builds the friend-list rows from the save slots and, when the list mode is ALL
  * or FREESPOT, appends the built-in FREESPOT entry (friend id 8) after them.
@@ -375,15 +402,18 @@ s32 Wfc_SendConnectionMessage(u8 mode) {
     }
 }
 
-s32 Wfc_StartFriendCodeMessage(void *a) {
+/* WFC friend-connection state 3: restart the wait timer, clear the friend id
+ * being processed and submit one empty-code request, so the selected friend's
+ * code can be received.  Stays in state 3 (WFC_STEP_FRIEND_CODE). */
+s32 Wfc_StartFriendCodeMessage(void *state) {
  u64 GetSystemTick(void);
  void Wfc_SubmitMessage(s32,s32,s32,s32);
  extern u8 data_020ea758[],data_020ea760[];
- M2C_FIELD(a,u64 *,0xcb0)=GetSystemTick();
- M2C_FIELD(a,s8 *,0xd11)=0;
- M2C_FIELD(a,u64 *,0xcb0)=GetSystemTick();
- Wfc_SubmitMessage((s32)data_020ea758,(s32)data_020ea760,M2C_FIELD(a,s8 *,0xd11),0x200000);
- return 3;
+ M2C_FIELD(state,u64 *,WFC_STATE_TIMER)=GetSystemTick();
+ M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID)=0;
+ M2C_FIELD(state,u64 *,WFC_STATE_TIMER)=GetSystemTick();
+ Wfc_SubmitMessage((s32)data_020ea758,(s32)data_020ea760,M2C_FIELD(state,s8 *,WFC_STATE_FRIEND_ID),0x200000);
+ return WFC_STEP_FRIEND_CODE;
 }
 
 /* WFC friend-connection state 3: waits for the selected friend's code.  Every

@@ -158,13 +158,13 @@ void UpdateTextObject(TextState *st) {
     s32 func_020953e8(void);
     s32 func_0209546c(void);
     void SetMessageBoxState(s8);
-    s32 func_02096038(void);
+    s32 IsMessageBoxIdle(void);
     s32 HideAllScenePanels(void);
     s32 IsAnyScenePanelAnimating(void);
     s32 func_020999b8(void *);
     M2C_UNK StopTextObject(M2C_UNK);
     s32 DrawTextStep(void *);
-    u32 func_0209dc9c(void);
+    u32 GetTextObjectKeyAction(void);
     u32 GetTextObjectTouchConfirm(void);
     M2C_UNK DeleteSpriteObject(M2C_UNK);
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
@@ -179,7 +179,7 @@ void UpdateTextObject(TextState *st) {
     s32 savedEngine;
     s32 screenIndex;
 
-    actionMask = func_0209dc9c();
+    actionMask = GetTextObjectKeyAction();
     actionMask = actionMask | GetTextObjectTouchConfirm();
     actionMask = (u16)actionMask;
 
@@ -192,7 +192,7 @@ void UpdateTextObject(TextState *st) {
         if (func_0209546c() != 0) return;
     }
 
-    if (st->speed >= 1 && func_02096038()) {
+    if (st->speed >= 1 && IsMessageBoxIdle()) {
         if (actionMask & 0x400) SetMessageBoxState(1);
         if ((actionMask & 0x30) && st->linePixel != st->lineStart)
             StopTextObject((s32)st);
@@ -331,17 +331,20 @@ void func_0209b26c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 a
 }
 
 void DrawTextLine(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
-    void func_0209b32c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
+    void DrawTextLineCore(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
 
-    func_0209b32c(arg0, arg1, arg2, arg3, arg4, 0, arg5);
+    DrawTextLineCore(arg0, arg1, arg2, arg3, arg4, 0, arg5);
 }
 
-void func_0209b2dc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
-    void func_0209b32c(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
-    func_0209b32c(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5, arg6);
+/* Draw a line of localized text: resolve the text id for the current locale and
+ * hand the line's position, palette, glyph attributes and line offset to the
+ * shared text-line renderer. */
+void DrawLocalizedTextLine(s32 x, s32 y, s32 palette, s32 textId, u16 attr, u16 attr16, u16 lineOffset) {
+    void DrawTextLineCore(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16, u16);
+    DrawTextLineCore(x, y, palette, GetLocalizedText(textId), attr, attr16, lineOffset);
 }
 
-void func_0209b32c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
+void DrawTextLineCore(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
     extern s32 gCur3DSpriteEngine;
     void *temp_r6;

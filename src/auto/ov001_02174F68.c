@@ -56,7 +56,7 @@ void Ov001_PositionKeypadStep(s32 arg0, u16 arg1) {
  } while (++i < c[arg0]);
 }
 #pragma pop
-void func_ov001_021751c8(s32 arg0, s32 arg1) {
+void Ov001_SetKeypadKeySelected(s32 arg0, s32 arg1) {
 void Ov001_SetSpriteAttrs(s32,s32,s32,u8);
 extern void *gOv001Keypad;
 extern u8 data_ov001_0218f5e4[],data_ov001_0218f5d8[];

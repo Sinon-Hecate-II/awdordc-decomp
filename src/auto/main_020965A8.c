@@ -97,7 +97,7 @@ RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16*,MAP_CURSOR_OWNER)=(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)-1)<<6;
 }
 
-void func_02096b24(void) {
+void ShowPlayerUnitDialogSequence(void) {
     M2C_UNK SetUiMessageText();
     extern M2C_UNK data_02102e14;
     SetUiMessageText();

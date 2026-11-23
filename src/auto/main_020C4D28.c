@@ -319,8 +319,8 @@ void GetOwnFriendCode(s32 arg0) {
 
 void CopyLocalPlayerRecord(M2C_UNK arg0) {
     M2C_UNK IsPlayerRecordPresent(M2C_UNK);
-    M2C_UNK func_02032670(s32, M2C_UNK);
-    func_02032670(GetProfileSaveBlock() + 4, arg0);
+    M2C_UNK GetLocalPlayerRecord(s32, M2C_UNK);
+    GetLocalPlayerRecord(GetProfileSaveBlock() + 4, arg0);
     IsPlayerRecordPresent(arg0);
 }
 

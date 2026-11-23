@@ -372,8 +372,8 @@ extern M2C_UNK gLinkConfig;
 u32 func_ov010_0222519c(void *,u32);
 void func_ov010_02225538(void *,u32,u32);
 s32 func_ov010_02224f94(u32,u32,s32);
-void func_ov010_022234f8(void *,void *,u32);
-void func_ov010_022235f8(void *,void *,u32);
+void VoiceCodec_EncodeMuLaw(void *,void *,u32);
+void VoiceCodec_EncodePcm8(void *,void *,u32);
 s32 CountBits(void);
 u32 n;
 u32 packetFlags;
@@ -413,9 +413,9 @@ if(mode>=2){
 if(packet[5]&0x80){M2C_FIELD(&gVoiceChatState,s16 *,0x10)=0;M2C_FIELD(&gVoiceChatState,u8 *,0x12)=0;}
 VoiceChat_EncodePacket(payload-4,(s32)payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1,&gLinkCodecState,mode);
 }else if(mode==1){
-func_ov010_022234f8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
+VoiceCodec_EncodeMuLaw(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
 }else if(mode==0){
-func_ov010_022235f8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
+VoiceCodec_EncodePcm8(payload,payload,M2C_FIELD(&gVoiceChatState,u32 *,0x24)>>1);
 }
 n=M2C_FIELD(&gVoiceChatState,u32 *,4);
 M2C_FIELD(&gVoiceChatState,u32 *,0xf0c)=n;
@@ -432,7 +432,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void func_ov010_0222369c(u32);
     void func_ov010_02223314(u32);
     void Link_FreeAllQueuedPackets(void);
-    void func_ov010_0222335c(void);
+    void Link_FreeAllPendingPackets(void);
     s32 func_ov010_02223b18(void *, void *);
     void Link_AppendPendingPacket(void *);
     void Link_FreePacket(void *);
@@ -507,7 +507,7 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
         item = func_ov010_02224eb8();
         if (!item) {
             Link_FreeAllQueuedPackets();
-            func_ov010_0222335c();
+            Link_FreeAllPendingPackets();
             item = func_ov010_02224eb8();
         }
     }

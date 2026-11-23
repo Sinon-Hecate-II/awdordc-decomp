@@ -147,6 +147,7 @@ typedef struct SceneViewLabel {
 
 /* The scene view's 11-glyph label group (gSceneLabelGroupVTable): the sprite
  * handle of each glyph. */
+#define SCENE_LABEL_GLYPH_COUNT 11
 typedef struct SceneViewLabelGroup {
     void *vtable;            /* +0x00 gSceneLabelGroupVTable */
     s8 color;                /* +0x04 */
@@ -157,7 +158,7 @@ typedef struct SceneViewLabelGroup {
     u8 unk09;                /* +0x09 */
     u8 unk0A;                /* +0x0A */
     u8 unk0B;                /* +0x0B */
-    s32 glyphs[11];          /* +0x0C glyph sprite handles */
+    s32 glyphs[SCENE_LABEL_GLYPH_COUNT]; /* +0x0C glyph sprite handles */
     s32 count;               /* +0x38 */
 } SceneViewLabelGroup;
 

@@ -261,9 +261,15 @@ typedef struct PackedBankEntry {
 #define SOUND_LIST_COUNT       0x08 /* u16 nodes in the list */
 #define SOUND_LIST_NODE_OFFSET 0x0A /* u16 offset of the links inside a node */
 
-/* The sound heap header holds a frame heap handle followed by a section list. */
+/* The sound heap header holds a frame heap handle followed by a section list.  A
+ * section groups the data blocks allocated while it is the newest one; pushing a
+ * section records the frame heap under the section's index so the section's
+ * allocations can be rolled back. */
 #define SOUND_HEAP_HEADER_SIZE 0x10
 #define SOUND_HEAP_ALIGNMENT 4
+#define SOUND_HEAP_FRAME         0x00 /* s32 the heap's frame-heap handle */
+#define SOUND_HEAP_SECTIONS      0x04 /* the section list header (a 12-byte ListInit header) */
+#define SOUND_HEAP_SECTION_COUNT 0x0C /* u16 sections currently on the heap (the section list's count word) */
 
 /* One voice of gVoicePool (16 voices, 0x44 bytes each).  gActiveVoices and
  * gFreeVoices both link the voices at SOUND_VOICE_LINKS; a playing voice is
@@ -283,6 +289,12 @@ typedef struct PackedBankEntry {
 #define SOUND_VOICE_LAST_VOLUME  0x3E /* s16 hardware channel volume written last, so it is only resent when it changes */
 #define SOUND_VOICE_VOLUME   0x40 /* u8 voice volume level, 0..127 */
 #define SOUND_VOICE_EXPRESSION 0x41 /* u8 second volume level (expression), 0..127 */
+/* SOUND_VOICE_STATE values. */
+enum {
+    SOUND_VOICE_FREE     = 0, /* the voice is on the free list */
+    SOUND_VOICE_KEYED_ON = 1, /* its start command is queued, the ARM7 has not confirmed it yet */
+    SOUND_VOICE_PLAYING  = 2  /* playing, released once its envelope has faded out */
+};
 #define SOUND_VOICE_COUNT    16
 #define SOUND_PLAYER_VOICE   0x00 /* void * driver voice currently attached to a player, NULL when none */
 
@@ -398,10 +410,33 @@ typedef struct SoundChannelRecord {
 #define SOUND_WINDOW_CLOSE 0x124
 #define SOUND_WINDOW_LINK  0x10013
 
+/* Sounds played while a weather change is applied, one per new weather: clear,
+ * rain, snow, sandstorm. */
+#define SOUND_WEATHER_CLEAR     0xd4
+#define SOUND_WEATHER_RAIN      0xd6
+#define SOUND_WEATHER_SNOW      0xd5
+#define SOUND_WEATHER_SANDSTORM 0xd7
+
 /* Battle music tracks: the CO-power theme that replaces the map's music while a
  * player's CO power is active (GetCoPowerMusicTrack).  Armies 1..7 use the first,
  * every other army the second. */
 #define SOUND_CO_POWER_THEME_1 0x10002
 #define SOUND_CO_POWER_THEME_2 0x10003
+
+/* The delayed one-shot sound-effect sprite (class gDelayedSoundEffectClass,
+ * spawned by SpawnSoundEffectAtTile / func_0208f998 and updated by
+ * UpdateDelayedSoundEffect): it waits SOUND_EFFECT_DELAY frames, plays
+ * SOUND_EFFECT_ID at SOUND_EFFECT_VOLUME with SOUND_EFFECT_PAN, then deletes
+ * itself. */
+#define SOUND_EFFECT_DELAY   0x52 /* s16 frames to wait before playing */
+#define SOUND_EFFECT_ELAPSED 0x54 /* s16 frames elapsed so far */
+#define SOUND_EFFECT_ID      0x5C /* s32 sound effect to play */
+#define SOUND_EFFECT_VOLUME  0x60 /* s32 volume it is played at */
+#define SOUND_EFFECT_PAN     0x64 /* s32 stereo pan */
+
+/* The running music track (gCurrentMusicTrack) and the object that fades it out
+ * (class gMusicFadeOutClass, spawned by FadeOutMusicOverFrames). */
+#define MUSIC_NONE        0xFFFF /* gCurrentMusicTrack value when no track plays */
+#define MUSIC_FADE_FRAMES 0x6C   /* s16 frames left before the fade-out object stops the track */
 
 #endif

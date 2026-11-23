@@ -324,7 +324,7 @@ void Ov001_FreeFriendRoster(void) {
 s32 Ov001_OpenFriendRoster(void) {
     s32 FillU16(s32, void *, s32);
     s32 WFC_StartCommandChannel(void *, void (*)(void), s32);
-    s32 func_02011af8(void *);
+    s32 WFC_GetConnectionData(void *);
     u16 GetConsoleLocalId(void);
     s32 Ov001_SendFriendRosterRequest(void);
     void Ov001_HandleFriendRosterReply();
@@ -336,7 +336,7 @@ s32 Ov001_OpenFriendRoster(void) {
     if (WFC_StartCommandChannel((void *)gWfcFriendRoster, Ov001_HandleFriendRosterReply, 3) != WFC_CMD_OK)
         return 0;
     do {
-        func_02011af8((u8 *)gWfcFriendRoster + WFC_FRIEND_REPLY);
+        WFC_GetConnectionData((u8 *)gWfcFriendRoster + WFC_FRIEND_REPLY);
         base = (u8 *)gWfcFriendRoster;
     } while (*(u16 *)(base + WFC_FRIEND_REPLY) != WFC_REPLY_DONE);
     *(WfcFriendRosterRequest *)(base + WFC_FRIEND_REQUEST) = *(const WfcFriendRosterRequest *)gFriendRosterRequestDefaults;
@@ -360,20 +360,20 @@ s32 Ov001_SendFriendRosterRequest(void) {
  * (and, while the request is still in flight, queue the cancel and wait for the
  * reply to arrive), then end the WFC link. */
 s32 Ov001_CloseFriendRoster(void) {
-    s32 func_02011af8(void *);
+    s32 WFC_GetConnectionData(void *);
     s32 func_02012274(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
     void Ov001_HandleFriendRosterReply();
     extern s32 gWfcFriendRoster;
 
     *(u8 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_CLOSING) = 1;
-    func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
+    WFC_GetConnectionData((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
     if (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE) {
         if (func_02012274(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {
             return 0;
         }
         do {
-            func_02011af8((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
+            WFC_GetConnectionData((void *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY));
         } while (*(u16 *)((s8 *)gWfcFriendRoster + WFC_FRIEND_REPLY) != WFC_REPLY_DONE);
     }
     if (WFC_EndLink(Ov001_HandleFriendRosterReply) != WFC_CMD_OK) {

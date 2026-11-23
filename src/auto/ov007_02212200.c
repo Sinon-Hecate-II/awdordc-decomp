@@ -245,7 +245,7 @@ void func_ov007_02212cbc(void) {
 void func_ov007_02212cc8(M2C_UNK arg0) {
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
-    s32 func_020d46e8(void);
+    s32 GetMapViewHoldCount(void);
     M2C_UNK SetMapEditorTool(s32);
     s32 GetMapEditorTool(void);
     M2C_UNK func_ov007_02212dcc(void);
@@ -271,7 +271,7 @@ void func_ov007_02212cc8(M2C_UNK arg0) {
     if (initialTimer != GetMapEditorTool()) {
         PlaySoundEffect(0x10011);
     }
-    if (func_020d46e8() == 0) {
+    if (GetMapViewHoldCount() == 0) {
         return;
     }
     SetSpriteAnimation(arg0, 1);

@@ -109,7 +109,7 @@ void *MemAlloc(s32);
 void SetEffectScale(void *,u32);void InitEffectNode(void *,u8,u8);
 void SetEffectNodeResource(void *,s32,u16,u8,s32);
 void SetEffectNodePosition(void *,s16,s16,s16);
-void func_ov002_021e2d2c(void *,s16,s16,s16,s32,s32,s32,s32,s32);
+void SetEffectNodeMotion(void *,s16,s16,s16,s32,s32,s32,s32,s32);
 void SetEffectNodeScreenPosition(void *,s16,s16,u16);
 extern u8 data_ov002_021ea704[],data_ov002_021ea71c[],gEffectNodeResource[],data_ov002_021f3034[],data_ov002_021f3048[],gEffectTable[],gEffectDefaultVariant[],data_ov002_021f3108[],gEffectHasVariants[];
 void *settings; s16 x,y,z; void *q; u16 pointScale; s32 offset,finalOff; u32 scale; u8 index;void *p,*extra; u16 *point;
@@ -134,7 +134,7 @@ scale=(u32)((pointScale*M2C_FIELD(settings,u16 *,0xCC))<<8)>>16;
 InitEffectNode(q,index,M2C_FIELD(arg0,u8 *,0x8D));
 SetEffectNodePosition(q,x,y,z);
 SetEffectScale(q,scale);
-func_ov002_021e2d2c(q,M2C_FIELD(settings,s16 *,0x88),M2C_FIELD(settings,s16 *,0x8A),M2C_FIELD(settings,s16 *,0x8C),M2C_FIELD(settings,s16 *,0x8E),M2C_FIELD(settings,s16 *,0x90),M2C_FIELD(settings,s16 *,0x92),M2C_FIELD(settings,s16 *,0x94),M2C_FIELD(settings,s16 *,0x96));
+SetEffectNodeMotion(q,M2C_FIELD(settings,s16 *,0x88),M2C_FIELD(settings,s16 *,0x8A),M2C_FIELD(settings,s16 *,0x8C),M2C_FIELD(settings,s16 *,0x8E),M2C_FIELD(settings,s16 *,0x90),M2C_FIELD(settings,s16 *,0x92),M2C_FIELD(settings,s16 *,0x94),M2C_FIELD(settings,s16 *,0x96));
 SetEffectNodeScreenPosition(q,M2C_FIELD(arg0,s16 *,0x6C),M2C_FIELD(arg0,s16 *,0x6E),M2C_FIELD(arg0,u16 *,0x72));
 finalOff=M2C_FIELD(arg0,u8 *,0x8C)*100;
 SetEffectNodeResource(q,M2C_FIELD(gEffectNodeResource,s32 *,finalOff),M2C_FIELD(data_ov002_021f3034,u16 *,finalOff),(data_ov002_021f3048+finalOff)[M2C_FIELD(arg0,u8 *,0x8D)*8],0);
@@ -326,11 +326,13 @@ void AdvanceUnitEffectVariant(void *model) {
     }
 }
 
-s32 func_ov002_021ea628(void *arg0) {
-extern u8 gEffectHasVariants[];
-extern u8 gEffectVariants[];
-u8 index = M2C_FIELD(arg0,u8 *,0x8C);
-if (gEffectHasVariants[index*0x2C] != 0 && M2C_FIELD(gEffectVariants + index*0x68,u8 *,0x66) <= M2C_FIELD(arg0,s32 *,0x84)) return 1;
-return 0;
+/* True when the model's effect has timed variants and its current effect-variant
+ * index has reached the variant limit stored for its country's effect set. */
+s32 UnitEffectVariantAtLimit(void *model) {
+    extern u8 gEffectHasVariants[];
+    extern u8 gEffectVariants[];
+    u8 country = M2C_FIELD(model, u8 *, UNIT_MODEL_COUNTRY);
+    if (gEffectHasVariants[country * 0x2C] != 0 && M2C_FIELD(gEffectVariants + country * 0x68, u8 *, 0x66) <= M2C_FIELD(model, s32 *, UNIT_MODEL_EFFECT_VARIANT)) return 1;
+    return 0;
 }
 

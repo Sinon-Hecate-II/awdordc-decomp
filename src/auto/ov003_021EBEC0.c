@@ -235,7 +235,7 @@ void func_ov003_021ec780(u8 *p,s32 i) {p+=14;p[i]=p[i]==1?2:1;}
 
 s32 InRange(u8,s32,s32);
 void StepCounter(s32,s32,s32);
-s32 EntriesDiffer(void*);
+s32 WaypointOptionsDiffer(void*);
 #pragma inline on
 #pragma opt_propagation on
 /* Decrements counter entry `index` by one (wrapping or clamping to its min/max at
@@ -277,11 +277,11 @@ void StepCounterDown(void *counters, s32 index, s32 force) {
     StepCounter(counters + 0x14 + index * 24, -1, force);
     if (ov003_entries_differ(counters)) return;
     StepCounter(counters + 0x14 + index * 24, -1, force);
-    if (EntriesDiffer((void *)counters)) return;
+    if (WaypointOptionsDiffer((void *)counters)) return;
     StepCounter(counters + 0x14 + index * 24, -1, force);
-    if (EntriesDiffer((void *)counters)) return;
+    if (WaypointOptionsDiffer((void *)counters)) return;
     StepCounter(counters + 0x14 + index * 24, -1, force);
-    if (EntriesDiffer((void *)counters)) return;
+    if (WaypointOptionsDiffer((void *)counters)) return;
     StepCounterDown(counters, index, force);
 }
 /* Applies the waypoint option panel action the player picked (direction group 0-3,

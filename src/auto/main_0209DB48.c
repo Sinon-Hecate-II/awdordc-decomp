@@ -49,27 +49,32 @@ i++;
 data_027e01d8=saved;Reset3DSpriteListsOnBothEngines();
 }
 
-s32 func_0209dc48(void) {
+/* Panel input action for a message widget, from the keys pressed this frame:
+ * A confirms, B cancels, Start skips; holding A with Down confirms as well. */
+s32 GetMessageWidgetKeyAction(void) {
     extern u16 *gKeyState;
     u16 keys;
-    keys = gKeyState[0];
-    if (keys & 1) return 0x10;
-    if (keys & 2) return 0x20;
-    if (keys & 8) return 0x400;
-    keys = gKeyState[3];
-    if ((keys & 1) && (keys & 0x80)) return 0x10;
+
+    keys = gKeyState[0]; /* KeyState.pressed */
+    if (keys & KEY_A) return PANEL_INPUT_CONFIRM;
+    if (keys & KEY_B) return PANEL_INPUT_CANCEL;
+    if (keys & KEY_START) return PANEL_INPUT_SKIP;
+    keys = gKeyState[3]; /* KeyState.held */
+    if ((keys & KEY_A) && (keys & KEY_DOWN)) return PANEL_INPUT_CONFIRM;
     return 0;
 }
 
-s32 func_0209dc9c(void) {
+/* Map the current key input to this text object's action mask: Start skips, B
+ * cancels and A confirms (also while A and Down are held together). */
+s32 GetTextObjectKeyAction(void) {
     extern u16 *gKeyState;
     u16 keys;
     keys = gKeyState[0];
-    if (keys & 8) return 0x400;
-    if (keys & 2) return 0x20;
-    if (keys & 1) return 0x10;
+    if (keys & KEY_START) return PANEL_INPUT_SKIP;
+    if (keys & KEY_B) return PANEL_INPUT_CANCEL;
+    if (keys & KEY_A) return PANEL_INPUT_CONFIRM;
     keys = gKeyState[3];
-    if ((keys & 1) && (keys & 0x80)) return 0x10;
+    if ((keys & KEY_A) && (keys & KEY_DOWN)) return PANEL_INPUT_CONFIRM;
     return 0;
 }
 
@@ -325,22 +330,24 @@ void func_0209e25c(void *arg0, s8 arg1, s16 arg2, s16 arg3) {
     M2C_FIELD(arg0, s16 *, 0x5E) = arg3;
 }
 
-void func_0209e26c(void *arg0, s8 arg1) {
+/* Set the scene panel's face display state and apply it to both of its face
+ * children, refreshing each, then rebuild the panel's palette. */
+void SetScenePanelFaceState(void *panel, s8 faceState) {
     M2C_UNK SetFaceSpriteActive(s32, s8);
     M2C_UNK RefreshFaceSprite(s32);
     void UpdateScenePanelPalette(void *);
-    s32 temp_r0;
-    s32 var_r5;
+    s32 child;
+    s32 i;
 
-    M2C_FIELD(arg0, s8 *, 0x59) = arg1;
-    var_r5 = 0;
+    M2C_FIELD(panel, s8 *, SCENE_PANEL_FACE_STATE) = faceState;
+    i = 0;
     do {
-        temp_r0 = Get3DSpriteChild(arg0, var_r5);
-        SetFaceSpriteActive(temp_r0, arg1);
-        RefreshFaceSprite(temp_r0);
-        var_r5 += 1;
-    } while (var_r5 < 2);
-    UpdateScenePanelPalette(arg0);
+        child = Get3DSpriteChild(panel, i);
+        SetFaceSpriteActive(child, faceState);
+        RefreshFaceSprite(child);
+        i += 1;
+    } while (i < 2);
+    UpdateScenePanelPalette(panel);
 }
 
 void func_0209e2b8(void *arg0, s8 arg1) {

@@ -28,6 +28,9 @@
 #define TILEMAP_GLYPH_ALT_VARIANT     3
 #define TILEMAP_GLYPH_ALT_TILE_OFFSET 0x1C
 
+/* The bank's signed master brightness (0 = unchanged, +16 white, -16 black). */
+#define DS3D_BANK_BRIGHTNESS 0x50
+
 /* Byte of the bank copied to the display blend register (0..31). */
 #define DS3D_BANK_BLEND 0x53
 
@@ -208,6 +211,17 @@ typedef struct DS3DSpriteEngine {
     void *filler_54; /* +0x54 this screen's shared default text object (TextState, main_0209ACC4) */
 } DS3DSpriteEngine;
 
+/* A 3D sprite layout preset handed to Apply3DSpriteLayout: the bank's display
+ * settings followed by one descriptor word per layer (Configure3DSpriteLayer). */
+typedef struct DS3DSpriteLayoutConfig {
+    u8 mode;                 /* +0x00 bank mode index (DS3D_BANK_MODE*) */
+    u8 mainScreenEnabled;    /* +0x01 nonzero: 1D OBJ mapping enabled */
+    u8 firstLayer : 4;       /* +0x02 low nibble */
+    u8 secondLayer : 4;      /* +0x02 high nibble */
+    u8 mainScreenLayer;      /* +0x03 main-screen layer index */
+    u16 layers[4];           /* +0x04 one descriptor word per layer */
+} DS3DSpriteLayoutConfig; /* 0x0C bytes */
+
 /* The hardware OAM of the two screens: 0x400 bytes each, filled with 0xC0
  * attribute bytes to disable every entry. */
 #define DS3D_OAM_MAIN     0x07000000
@@ -229,6 +243,25 @@ typedef struct DS3DSpriteEngine {
 #define DS3D_ENGINE_COUNT    0x48 /* u8 OAM entries in use */
 #define DS3D_ENGINE_SPRITE_LIST  0x08 /* void *head of this engine's priority-sorted 3D sprite list */
 #define DS3D_ENGINE_SPRITE_COUNT 0x49 /* u8 3D sprites allocated into that list (its next-array index) */
+
+/* One slot of an engine's sprite array (the pointer at DS3DSpriteEngine+0x04,
+ * DS3D_ENGINE_SPRITE_COUNT of them, DS3D_ENTRY_SIZE bytes each, also linked into
+ * the priority list at +0x08).  A slot's position is carried as two halves: the
+ * low bits sign-extended, and the high bits; the draw code adds them back. */
+#define DS3D_ENTRY_NEXT     0x00 /* void *next slot in the list (sorted highest priority first) */
+#define DS3D_ENTRY_TEMPLATE 0x04 /* void *SpriteQuadTemplate the slot draws */
+#define DS3D_ENTRY_X_LOW    0x08 /* s16 x low bits, sign-extended */
+#define DS3D_ENTRY_Y_LOW    0x0a /* s16 y low bits, sign-extended */
+#define DS3D_ENTRY_X_HIGH   0x0c /* s16 x high bits */
+#define DS3D_ENTRY_Y_HIGH   0x0e /* s16 y high bits */
+#define DS3D_ENTRY_TILE     0x10 /* u16 tile/attribute passed to the draw call */
+#define DS3D_ENTRY_FLAGS    0x12 /* u8 DS3D_ENTRY_FLAG_* */
+#define DS3D_ENTRY_PRIORITY 0x13 /* s8 draw priority the list is sorted on */
+#define DS3D_ENTRY_SIZE     0x14 /* bytes of one slot */
+
+/* DS3D_ENTRY_FLAGS bits. */
+#define DS3D_ENTRY_FLAG_AFFINE 0x01 /* draw the slot as a 3D (affine) sprite */
+#define DS3D_ENTRY_FLAG_LOWPOS 0x10 /* the position's low halves are filled in too */
 #define DS3D_ENGINE_INDEX    0x4A /* u8 quads queued since the last flush */
 #define DS3D_ENGINE_LAST_OAM_START 0x4B /* u8 OAM index the last entry write started at */
 #define DS3D_ENGINE_LAST_OAM_COUNT 0x4C /* u8 OAM entries that write added */
@@ -314,11 +347,16 @@ typedef struct SpriteTimer {
     u32 elapsed:11;  /* frames since the fade started */
 } SpriteTimer;
 
+/* The two words above, as masks for the code that updates one field in place. */
+#define SPRITE_FLAGS_HIGH_MASK     0xFC000000 /* SpriteFlags::high, bits 26..31 */
+#define SPRITE_TIMER_DURATION_MASK 0x001FFC00 /* SpriteTimer::duration, bits 10..20 */
+
 /* Resource fields of the animated sprite object built by CreateAnimatedSpriteObject
  * (main_0208B884.c).  Its control word is the SpriteFlags at +0x44; the optional
  * callbacks at +0x68/+0x6C/+0x70 run on the object's first update, every frame and
  * as it is released. */
 #define SPRITE_OBJ_FLAGS      0x44 /* u32 SpriteFlags control word */
+#define SPRITE_OBJ_TIMER      0x48 /* u32 SpriteTimer timing word */
 #define SPRITE_OBJ_ANIM       0x4C /* void *sprite-animation handle (CreateSpriteAnim) */
 #define SPRITE_OBJ_DECOMP_BUF 0x50 /* s32 decompressed data buffer (LoadDecompressedFile) */
 #define SPRITE_OBJ_FILE_BUF   0x54 /* s32 file buffer (LoadFileToBuffer) */
@@ -504,7 +542,7 @@ typedef struct DS3DSpriteOffsetTrack {
 } DS3DSpriteOffsetTrack;
 
 
-/* Fields a 3D sprite object gains when it is a screen flash (func_02080358
+/* Fields a 3D sprite object gains when it is a screen flash (CreateScreenFlash
  * creates it; the update callbacks in main_02080414 step it): the fade to white,
  * a hold at white, then the fade back.  The plain 3D sprite object fields
  * (0x00..0x33) come first. */
@@ -603,20 +641,23 @@ enum {
 #define TEXT_BITMAP_BLOCK_ROWS  8
 #define TEXT_BITMAP_BLOCK_BYTES 256
 
-/* A two-state widget of a scene panel: two 32x16 halves side by side, one of
- * them selected. The layout helper places it and the update helper handles its
- * input and runs `callback` once the user has chosen. */
-typedef struct ToggleWidget {
+/* A widget of a scene panel: its cells are drawn into one layer's tilemap and
+ * its input runs `callback` once the user has chosen.  The layout helpers place
+ * it and move the menu cursor onto it; the update helpers handle its input. */
+typedef struct ScenePanelWidget {
     u8 pad00[0x34];
-    s16 selected;           /* +0x34 0 = left half, 1 = right half */
+    s16 selected;           /* +0x34 two-state widgets: 0 = left half, 1 = right half */
     u8 pad36[0x0A];
-    u8 engine;              /* +0x40 engine (screen) whose layer the widget is on */
+    u8 layer;               /* +0x40 layer whose tilemap holds the widget's cells */
     u8 pad41[3];
     void (*callback)(void); /* +0x44 run after the choice is made */
     u16 panelEntry;         /* +0x48 panel entry the widget was created on */
-    s16 x;                  /* +0x4A x offset of the selected half */
-    s32 tile;               /* +0x4C offset of the widget's tile in the layer */
-} ToggleWidget;             /* 0x50 bytes */
+    s16 x;                  /* +0x4A x offset of the selection cursor from the cells */
+    s32 tileMap;            /* +0x4C address of the widget's cells in the layer's tilemap */
+} ScenePanelWidget;         /* 0x50 bytes */
+
+/* A two-state widget: two 32x16 halves side by side, one of them selected. */
+typedef ScenePanelWidget ToggleWidget;
 
 /* A CO face sprite (the portrait nodes built by func_02099338): a 3D sprite
  * object extended with the face texture shown, its expression and palette

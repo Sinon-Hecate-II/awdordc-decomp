@@ -191,13 +191,17 @@ s32 FindBaseTargetCandidate(void) {
     return result;
 }
 
-s32 HasAiTargetOfType(s32 a) {
- extern u8 *gAiState;
- extern M2C_UNK gAiTargetCandidates;
- u8 *p=(u8 *)&gAiTargetCandidates;
- s32 i;
- for(i=0;i<*gAiState;i++,p+=12) {if(a==4 || p[2]==a)return 1;}
- return 0;
+/* True when the AI target-candidate list holds an entry of the given type; the
+ * wildcard AI_CANDIDATE_TYPE_ANY matches any entry. */
+s32 HasAiTargetOfType(s32 type) {
+    extern u8 *gAiState;
+    extern M2C_UNK gAiTargetCandidates;
+    u8 *candidate = (u8 *)&gAiTargetCandidates;
+    s32 i;
+    for (i = 0; i < *gAiState; i++, candidate += AI_CANDIDATE_STRIDE) {
+        if (type == AI_CANDIDATE_TYPE_ANY || candidate[AI_CANDIDATE_TYPE] == type) return 1;
+    }
+    return 0;
 }
 
 /* Return the index of a unit kind's representative in the AI's nine-entry
@@ -228,14 +232,14 @@ s32 ScaleAiDamageByRange(s32 value,s32 kind,s32 bonus) {
  extern s32 *gCurrentMap;
  extern u8 gUnitMinAttackRange[];
  extern void *gAiCommandState;
- if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,MAP_FOG)==0 && M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAYER)!=2) return 0;
+ if(kind==5 && M2C_FIELD(*gCurrentMap,u8 *,MAP_FOG)==0 && M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAN_WEATHER)!=2) return 0;
  if(GetUnitAttackClass((u8)kind)==1) {
  if(IsMobileIndirectUnitKind(kind))value<<=1;
- value=(value*(ComputeUnitMaxAttackRange(kind,M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAYER),M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),bonus,1)+4-gUnitMinAttackRange[kind*UNIT_KIND_STATS_SIZE]))>>3;
+ value=(value*(ComputeUnitMaxAttackRange(kind,M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAN_WEATHER),M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),bonus,1)+4-gUnitMinAttackRange[kind*UNIT_KIND_STATS_SIZE]))>>3;
  if(((u32)(M2C_FIELD(gAiCommandState,u16 *,AI_COMMAND_STATE_MODE)<<23)>>29)==1 && kind==11)value=(value*3)>>1;
  } else {
  if((u32)(kind-8)<=1)kind=7;
- value=(value*ComputeUnitMoveRange(kind,M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAYER),M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),bonus,1))>>3;
+ value=(value*ComputeUnitMoveRange(kind,M2C_FIELD(gAiCommandState,u8 *,AI_COMMAND_STATE_PLAN_WEATHER),M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),bonus,1))>>3;
  }
  if(kind==4)value>>=1;
  if(kind==3)value>>=1;
@@ -251,7 +255,7 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
  if(a==3 && IsFootUnitKind(b))a=1;
  if(a==6 && IsFootUnitKind(b))a=7;
  if(IsFootUnitKind(b))v=GetAttackDamage(a,b,1)>>1;
- else if(b==22){t=GetAttackDamage(a,b,1);v=func_ov000_021a96f4(a,b,1)+(t>>1);}
+ else if(b==22){t=GetAttackDamage(a,b,1);v=GetSubmergedAttackDamage(a,b,1)+(t>>1);}
  else v=GetAttackDamage(a,b,1);
  if((gUnitKindFlags[a*112]&7) && (gUnitKindFlags[b*112]&32))v>>=1;
  if((gUnitKindFlags[a*112]&32) && (gUnitKindFlags[b*112]&32))v<<=1;
@@ -273,10 +277,10 @@ s32 func_ov000_021a7084(s32 a,s32 b) {
 #pragma opt_propagation off
 u8 func_ov000_021a72c0(u32 arg0){
 s32 CanBuildUnitKind(u16);
-extern int *data_027e0058;extern s8 data_ov000_021aab78[];extern void *data_ov000_021df57c;
+extern int *data_027e0058;extern s8 gUnitKindBuildable[];extern void *data_ov000_021df57c;
 u8 result=0;
 if(arg0>=27)return result;
-if(data_ov000_021aab78[arg0]==-1)return result;
+if(gUnitKindBuildable[arg0]==-1)return result;
 if(((u8*)data_ov000_021df57c+(arg0-1)*12)[20]==0)return result;
 result=CanBuildUnitKind(*(u16*)((u8*)*data_027e0058+0x52a4))!=0;
 return result;

@@ -1,5 +1,6 @@
 /* 12 functions from 0x0216ECC8 to 0x0216FC60 (ov000), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ov000_unit_entry.h"
 typedef struct {u16 hp:7;u16 ammo:4;u16 flags:5;} DisplayHealth;
 typedef struct {u8 fuel:7;u8 flag:1;} DisplayFuel;
@@ -11,8 +12,8 @@ extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[],gUnitKindInfiniteAmmo[];
 int func_020a8b9c(void);int func_020a8b90(void);int func_020a8bb4(void);int func_020a8ba8(void);int func_020a8b78(void);int func_020a8b84(void);
 void DrawTilemapNumber(s16,s16,void *,int,int,int);
 void func_0209c024(s16,s16,void *,int,int,int);
-void func_0207a61c(void *,u16,u16,int,u16,u8,u8);
-void func_0209b2dc(s16,s16,int,u32,int,int,u16);
+void WriteUnitKindTileQuad(void *,u16,u16,int,u16,u8,u8);
+void DrawLocalizedTextLine(s16,s16,int,u32,int,int,u16);
 int Divide(int,int);int GetLocalizedText(u32);int MeasureStringWidth(int);
 void func_0209bfdc(s16,s16,void *,u32,int,int);
 
@@ -191,8 +192,8 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  }
  DrawTilemapNumber(3,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),index+1,0,0);
  if(icon)func_0209c024((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
- func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
- func_0209b2dc(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)gUnitListRows);
+ WriteUnitKindTileQuad(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
+ DrawLocalizedTextLine(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)gUnitListRows);
  health=u->unk6;if(health==0)health=0;else health=Divide(health-1,10)+1;
  DrawTilemapNumber(18,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),health,0,0);
  DrawTilemapNumber(21,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayFuel *)((u8 *)u+10))->fuel,0,0);
@@ -316,37 +317,43 @@ if(M2C_FIELD(a,s16 *,0x3a)>max) M2C_FIELD(a,s16 *,0x3a)=max;
 return M2C_FIELD(a,s16 *,0x3a)-old;
 }
 
-void func_ov000_0216fb98(void *arg0) {
+/* Step the map view to the tile of the unit the list's info panel shows (nothing
+ * to do while no unit is selected). */
+void ScrollListStepToSelectedUnit(ScrollList *list) {
     M2C_UNK StepMapViewToTile(u8, u8);
     extern void **gCurrentMap;
-    s16 temp_ip;
-    s32 temp_r1;
-    void *temp_r3;
+    s16 selectedId;
+    s32 record;
+    void *map;
 
-    temp_ip = M2C_FIELD(arg0, s16 *, 0x40);
-    if (temp_ip == 0) {
+    selectedId = list->selectedId;
+    if (selectedId == 0) {
         return;
     }
-    temp_r3 = *gCurrentMap;
-    temp_r1 = ((M2C_FIELD(temp_r3, u16 *, 0x52A8) + temp_ip) * 0xE) + (s32) (temp_r3 + 0x59A4);
-    StepMapViewToTile(M2C_FIELD(temp_r1, u8 *, 1), M2C_FIELD(temp_r1, u8 *, 2));
+    map = *gCurrentMap;
+    record = ((M2C_FIELD(map, u16 *, MAP_UNIT_GROUP_BASE) + selectedId) * MAP_UNIT_STRIDE) + (s32) (map + MAP_UNIT_RECORDS);
+    StepMapViewToTile(M2C_FIELD(record, u8 *, MAP_UNIT_X), M2C_FIELD(record, u8 *, MAP_UNIT_Y));
 }
 
-void ScrollListConfirm(u8 *a) {
-extern M2C_UNK gUnitListRows;
-s32 p=GetScrollList();
-M2C_FIELD(p,s16 *,0x40)=M2C_FIELD(&gUnitListRows,u8 **,4)[M2C_FIELD(p,s16 *,0x3a)+*a];
-PlaySoundEffect(0x10016);
-Sprite_ResumeAnimation(p);
-func_020b21a0();
-func_020b2268();
+/* Confirm the unit list's highlighted row: store the unit id of that row's slot as
+ * the list's info-panel selection, play the confirm sound and resume the list. */
+void ScrollListConfirm(u8 *selectedRow) {
+    extern M2C_UNK gUnitListRows;
+    ScrollList *list;
+
+    list = (ScrollList *)GetScrollList();
+    list->selectedId = M2C_FIELD(&gUnitListRows, u8 **, UNIT_LIST_ROWS_PTR)[list->scrollPos + *selectedRow];
+    PlaySoundEffect(0x10016);
+    Sprite_ResumeAnimation(list);
+    func_020b21a0();
+    CloseAllActiveSpriteSlots();
 }
 
 void ScrollListCancel(void) {
     M2C_UNK Sprite_ResumeAnimation(s32);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020b21a0();
-    M2C_UNK func_020b2268();
+    M2C_UNK CloseAllActiveSpriteSlots();
     s32 GetScrollList();
     s32 temp_r4;
 
@@ -354,5 +361,5 @@ void ScrollListCancel(void) {
     PlaySoundEffect(0x10018);
     Sprite_ResumeAnimation(temp_r4);
     func_020b21a0();
-    func_020b2268();
+    CloseAllActiveSpriteSlots();
 }

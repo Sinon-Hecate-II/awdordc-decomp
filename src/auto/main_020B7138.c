@@ -151,16 +151,19 @@ void func_020b7824(void *arg0) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
 }
 
-void func_020b7860(void *arg0) {
+/* Resume the task's sprite animation as soon as the player presses one of the
+ * action keys (A, B, Start, X or Y) or starts a touch. */
+void ResumeAnimationOnInput(void *task) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    extern u16 *gKeyState;
+    extern KeyState *gKeyState;
     extern void *gTouchState;
-    if (*gKeyState & 0xC0B) {
-        Sprite_ResumeAnimation(arg0);
+
+    if ((gKeyState->pressed & KEY_INPUT_RESPONSE) != 0) {
+        Sprite_ResumeAnimation(task);
         return;
     }
-    if (M2C_FIELD(gTouchState, u8 *, 0x14) == 0) return;
-    Sprite_ResumeAnimation(arg0);
+    if (M2C_FIELD(gTouchState, u8 *, TOUCH_STARTED) == 0) return;
+    Sprite_ResumeAnimation(task);
 }
 
 void CreateTurnStartPanel(void) {

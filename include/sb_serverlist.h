@@ -126,6 +126,7 @@ typedef struct QueryQueue {
 /* Events the list reports through SB_SLIST_CALLBACK:
  * (list, event, server, SB_SLIST_INSTANCE). */
 #define SB_LIST_EVENT_SERVER_ADDED   0 /* a server was added to the list */
+#define SB_LIST_EVENT_SERVER_REMOVED 2 /* a server left the list (reported before it is dropped) */
 #define SB_LIST_EVENT_QUERY_COMPLETE 3 /* the running query finished */
 #define SB_LIST_EVENT_DISCONNECTED   4 /* the list is being disconnected from the master */
 #define SB_LIST_EVENT_QUERY_ERROR    5 /* the master reported an error, see SB_SLIST_ERROR */

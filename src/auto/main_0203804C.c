@@ -59,7 +59,7 @@ void TeardownNetSession(void) {
     void DestroyServerBrowser(void *resource);
     void func_0203bd0c(void);
     void gpiInfoCloseSocket(void);
-    s32 func_0204db84(void *channel, s32 a, s32 b, s32 c);
+    s32 gpiSetPeerCallback(void *channel, s32 a, s32 b, s32 c);
     void func_0204db50(void *channel);
     void func_0204db34(void *channel);
     void FreeNasLoginContext(void);
@@ -81,10 +81,10 @@ void TeardownNetSession(void) {
     func_0203bd0c();
     gpiInfoCloseSocket();
     if (M2C_FIELD(gNetSession, s32 *, 0x1C)) {
-        func_0204db84(gNetSession + 0x1C, 0, 0, 0);
-        func_0204db84(gNetSession + 0x1C, 3, 0, 0);
-        func_0204db84(gNetSession + 0x1C, 1, 0, 0);
-        func_0204db84(gNetSession + 0x1C, 2, 0, 0);
+        gpiSetPeerCallback(gNetSession + 0x1C, 0, 0, 0);
+        gpiSetPeerCallback(gNetSession + 0x1C, 3, 0, 0);
+        gpiSetPeerCallback(gNetSession + 0x1C, 1, 0, 0);
+        gpiSetPeerCallback(gNetSession + 0x1C, 2, 0, 0);
         func_0204db50(gNetSession + 0x1C);
         func_0204db34(gNetSession + 0x1C);
         M2C_FIELD(gNetSession, s32 *, 0x1C) = 0;
@@ -105,7 +105,7 @@ void TickNetSession(void) {
     extern void *gNetSession;
     extern M2C_UNK func_02039698;
     extern M2C_UNK HandleGpcmMatMessage;
-    extern M2C_UNK func_0203ad24;
+    extern M2C_UNK HandleBuddyAddRequest;
     extern M2C_UNK MatchSession_ReportBuddyStatus;
     s32 func_02037bc4(void);
     void func_02039200(void);
@@ -120,7 +120,7 @@ void TickNetSession(void) {
     void func_0203cb38(s32);
     void UpdateTransferSlots(void);
     s32 func_0204db04(s32, s32, s32);
-    s32 func_0204db84(void *, s32, s32, s32);
+    s32 gpiSetPeerCallback(void *, s32, s32, s32);
     void Qr2_DestroyConnection(void *);
 
     if (func_02037bc4()) func_02039200();
@@ -131,10 +131,10 @@ void TickNetSession(void) {
         switch (func_0204837c()) {
         case 1:
             if (ReportNetErrorForState(func_0204db04((s32)gNetSession + 0x1c, M2C_FIELD(gNetSession, s32 *, 0xa0), 0))) return;
-            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
-            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
-            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 1, (s32)&func_0203ad24, 0))) return;
-            if (ReportNetErrorForState(func_0204db84((u8 *)gNetSession + 0x1c, 2, (s32)&MatchSession_ReportBuddyStatus, 0))) return;
+            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 0, (s32)&func_02039698, 0))) return;
+            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 3, (s32)&HandleGpcmMatMessage, 0))) return;
+            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 1, (s32)&HandleBuddyAddRequest, 0))) return;
+            if (ReportNetErrorForState(gpiSetPeerCallback((u8 *)gNetSession + 0x1c, 2, (s32)&MatchSession_ReportBuddyStatus, 0))) return;
             SetNetState(2);
             func_02039c68();
             break;
@@ -428,7 +428,19 @@ u8 GetLocalPlayerId(void) {
     return 0U;
 }
 
-s32 GetActiveConnectionList(s32 *a){extern void *gNetSession;s32 GetActivePlayerSlots(s32 *);s32 GetPeerSlotList(s32 *);if(!gNetSession)return 0;*a=(s32)(gNetSession+0x644);if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return GetActivePlayerSlots(a);return GetPeerSlotList(a);}
+/* Points `outList` at the session's player id array and returns how many ids it
+ * holds: the session's own array while it serves the match (mode 2 or 3),
+ * otherwise the connection's peer slot ids.  0 when there is no session. */
+s32 GetActiveConnectionList(s32 *outList) {
+    extern void *gNetSession;
+    s32 GetActivePlayerSlots(s32 *);
+    s32 GetPeerSlotList(s32 *);
+
+    if (!gNetSession) return 0;
+    *outList = (s32)(gNetSession + NET_SESSION_PLAYER_IDS);
+    if (M2C_FIELD(gNetSession, volatile u8 *, NET_SESSION_MODE) == 2 || M2C_FIELD(gNetSession, volatile u8 *, NET_SESSION_MODE) == 3) return GetActivePlayerSlots(outList);
+    return GetPeerSlotList(outList);
+}
 
 s32 func_02038f00(void){extern void *gNetSession;s32 GetActiveConnectionList(s32 *);s32 MaskPlayerIds(s32,s32);s32 a,b;if(!gNetSession)return 0;b=GetActiveConnectionList(&a);return MaskPlayerIds(a,b);}
 

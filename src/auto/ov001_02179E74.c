@@ -27,7 +27,7 @@ void MapSelectList_Init(void) {
     M2C_UNK CreateTextPanel(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void MapSelectList_Redraw(void);
-    void func_ov001_0217b130(void);
+    void MapSelectList_ApplyRowLayout(void);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     void MapSelectListUpdateBackgroundScroll(void);
     void MapSelectList_FadeIn(void);
@@ -51,7 +51,7 @@ void MapSelectList_Init(void) {
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_TASK) =
         (s32)Ov001_AddTask((M2C_UNK)1, (M2C_UNK)MapSelectListUpdateBackgroundScroll, (M2C_UNK)0, (M2C_UNK)0x6e);
     MapSelectList_Redraw();
-    func_ov001_0217b130();
+    MapSelectList_ApplyRowLayout();
     Ov001_SetStepCallback((M2C_UNK *)&MapSelectList_FadeIn);
 }
 
@@ -204,7 +204,7 @@ MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
 void MapSelectList_PollInput(void) {
 extern M2C_UNK gMapSelectState; extern u8 gTouchScreenRect[],gMapSelectRowRects[];
 s32 TouchRectPressed(void *);s32 TouchRectHeld(void *);s32 KeyPressed(s32);s32 KeyHeld(s32);s32 KeyReleased(s32);
-void Ov001_LatchIconRowSelection(s32);void func_ov001_0217b130(void);M2C_UNK Ov001_PlaySound(s32);void Ov001_BlockScrollBar(void);void MapSelectList_PageDown(void);void MapSelectList_PageUp(void);void MapSelectList_MoveCursor(s32);
+void Ov001_LatchIconRowSelection(s32);void MapSelectList_ApplyRowLayout(void);M2C_UNK Ov001_PlaySound(s32);void Ov001_BlockScrollBar(void);void MapSelectList_PageDown(void);void MapSelectList_PageUp(void);void MapSelectList_MoveCursor(s32);
 u8 *heldRect; s32 row; s32 index; u8 *pressedRect;
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)||M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x57))return;
 if(TouchRectPressed(gTouchScreenRect)){
@@ -212,14 +212,14 @@ M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)=-1;
 for(index=0,pressedRect=gMapSelectRowRects;(u32)index<5;index++,pressedRect+=8){
 if(TouchRectPressed(pressedRect)){
 if(index<4){M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)=index;break;}
-Ov001_LatchIconRowSelection(1);M2C_FIELD(&gMapSelectState,u8 *,0)=index;func_ov001_0217b130();return;
+Ov001_LatchIconRowSelection(1);M2C_FIELD(&gMapSelectState,u8 *,0)=index;MapSelectList_ApplyRowLayout();return;
 }}}
 if(TouchRectHeld(gTouchScreenRect)){
 for(heldRect=gMapSelectRowRects,row=0;row<4;row++,heldRect+=8){
 if(TouchRectHeld(heldRect)){
 if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s8 *,0x50)!=row)break;
 if(row>=M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),u8 *,0x51)){Ov001_PlaySound(9);break;}
-Ov001_LatchIconRowSelection(1);M2C_FIELD(&gMapSelectState,u8 *,0)=row;func_ov001_0217b130();return;
+Ov001_LatchIconRowSelection(1);M2C_FIELD(&gMapSelectState,u8 *,0)=row;MapSelectList_ApplyRowLayout();return;
 }}}
 if(KeyPressed(KEY_A)){Ov001_LatchIconRowSelection(1);Ov001_BlockScrollBar();return;}
 if(KeyPressed(KEY_B)){Ov001_LatchIconRowSelection(0);return;}
@@ -248,7 +248,7 @@ void MapSelectList_HandleInput(void) {
  M2C_UNK Ov001_UnlockIconRow();
  M2C_UNK Ov001_PlaySound(s32);
  void MapSelectList_Redraw(void);
- void func_ov001_0217b130(void);
+ void MapSelectList_ApplyRowLayout(void);
  s32 Ov001_AddTask(s32,s32,s32,s32);
  s32 remainder;
  if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)) return;
@@ -271,7 +271,7 @@ void MapSelectList_HandleInput(void) {
  Ov001_PlaySound(0x13);
  MapSelectList_Redraw();
  remainder=HardwareDivideRemainder(M2C_FIELD(&gMapSelectState,u16 *,2),0x1c);
- if(remainder==0) {func_ov001_0217b130();return;}
+ if(remainder==0) {MapSelectList_ApplyRowLayout();return;}
  if(remainder<14) {
  M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,4),s32 *,0x38)=Ov001_AddTask(0,(s32)&MapSelectList_ScrollUp,0,120);
  return;

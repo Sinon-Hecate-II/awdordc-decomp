@@ -456,7 +456,7 @@ s32 GetMapRecordBuffer();
 M2C_UNK LoadMapRecord(u16,s32);
 s32 GetSaveRecordBuffer();
 M2C_UNK func_0208547c(s32,s32,void *);
-M2C_UNK func_0208559c(s32,s32,void *);
+M2C_UNK CreateLinkBlockReceiver(s32,s32,void *);
 u16 mapId=M2C_FIELD(*gCurrentMap,u16 *,0x5142);
 u16 slot=Divide(mapId-0xe1,0x32);
 if(!IsValueInRange((s16)mapId,0xe1,0x1a9)) return;
@@ -465,15 +465,15 @@ LoadMapRecord((u16)(mapId-slot*0x32),GetMapRecordBuffer());
 func_0208547c(GetSaveRecordBuffer(),0x6f8,setup);
 return;
 }
-func_0208559c(GetSaveRecordBuffer(),0x6f8,setup);
+CreateLinkBlockReceiver(GetSaveRecordBuffer(),0x6f8,setup);
 }
 
 void func_ov006_02217078(void *arg0) {
  void *GetMapSettings();
  M2C_UNK func_0208547c(s32,s32,void *);
- M2C_UNK func_0208559c(s32,s32,void *);
+ M2C_UNK CreateLinkBlockReceiver(s32,s32,void *);
  if(M2C_FIELD(arg0,u8 *,0x4c)==0) { func_0208547c((s32)GetMapSettings(),0x10,arg0); return; }
- func_0208559c((s32)GetMapSettings(),0x10,arg0);
+ CreateLinkBlockReceiver((s32)GetMapSettings(),0x10,arg0);
 }
 
 void func_ov006_022170b4(void *arg0) {
@@ -489,18 +489,18 @@ void func_ov006_022170b4(void *arg0) {
 
 void func_ov006_022170e8(void *arg0) {
     M2C_UNK func_0208547c(s32, s32, void *);
-    M2C_UNK func_0208559c(s32, s32, void *);
+    M2C_UNK CreateLinkBlockReceiver(s32, s32, void *);
     u8 func_ov006_02216e84();
     if (func_ov006_02216e84() != 0) {
         func_0208547c(M2C_FIELD(arg0, s32 *, 0x50), 0x22D8, arg0);
         return;
     }
-    func_0208559c(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
+    CreateLinkBlockReceiver(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
 }
 
 void func_ov006_02217124(void *arg0) {
     if (func_ov006_02216e84() != 0) {
-        func_0208559c(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
+        CreateLinkBlockReceiver(M2C_FIELD(arg0, s32 *, 0x54), 0x22D8, arg0);
         return;
     }
     func_0208547c(M2C_FIELD(arg0, s32 *, 0x50), 0x22D8, arg0);

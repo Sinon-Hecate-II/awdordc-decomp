@@ -12,7 +12,7 @@ int IsCellVisibleToCurrentTeam(s16,s16);
 int FindBestAdjacentTile(int,int,s16 *);
 int func_ov000_02176e28(int,s16 *);
 int HasBetterAttackerNearby(void *);
-int func_ov000_021aa820(s16 *,u16,int,int);
+int SelectAreaEffectTargetForMode(s16 *,u16,int,int);
 void SetMapCursor(s16,s16,int,int,int);
 void func_ov000_02199f38(void);
 void ClearUnitMoveTarget(void);
@@ -172,7 +172,7 @@ void func_ov000_0219137c(void){
  }}
  if(portX!=-1){
  position[0]=portX;position[1]=portY;
- if(func_ov000_021aa820(position,M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,0)==1){
+ if(SelectAreaEffectTargetForMode(position,M2C_FIELD(*gCurrentMap,u16 *,0x52a4),1,0)==1){
  SetMapCursor((s16)portX,(s16)portY,19,(u8)position[0],(u8)position[1]);return;
  }}
  if(best==0)return;

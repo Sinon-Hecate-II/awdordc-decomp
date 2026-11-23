@@ -88,14 +88,14 @@ void DrawScreenTransition(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 #pragma opt_common_subs reset
-void func_020ad968(void) {
+/* Apply the screen-transition 3D sprite layout preset to the current engine. */
+void SetScreenTransitionSpriteLayout(void) {
     M2C_UNK Apply3DSpriteLayout(u16 *);
-    typedef struct { u16 a, b, c, d, e, f; } T;
-    extern T data_020f4d1c;
-    T sp0;
+    extern DS3DSpriteLayoutConfig data_020f4d1c;
+    DS3DSpriteLayoutConfig preset;
 
-    sp0 = data_020f4d1c;
-    Apply3DSpriteLayout((u16 *) &sp0);
+    preset = data_020f4d1c;
+    Apply3DSpriteLayout((u16 *) &preset);
 }
 
 #pragma push
@@ -104,7 +104,7 @@ void func_020ad968(void) {
  * engine's layers and corner sprites, load the x_change textures, and start
  * the 12-byte animation state from the variant in screenInfo+0x5C. */
 void InitScreenTransition(M2C_UNK a0) {
-    void func_020ad968(void);
+    void SetScreenTransitionSpriteLayout(void);
     void SetScreenTransitionDirectory(void);
     s32 GetScreenTransitionSide(void);
     void Clear3DSpriteLayer(u8);
@@ -127,7 +127,7 @@ void InitScreenTransition(M2C_UNK a0) {
 
     saved = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    func_020ad968();
+    SetScreenTransitionSpriteLayout();
 
     {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x10;}
     {u16 * volatile reg=*gCur3DSpriteEngine;*reg=*reg|0x20;}
@@ -184,11 +184,11 @@ void func_020adc20(void) {
 }
 #pragma opt_common_subs reset
 u8 func_020adc4c(void) {
-    s32 func_020d46e8();
+    s32 GetMapViewHoldCount();
     s32 GetMapInputState();
     u8 var_r0;
 
-    if (func_020d46e8() != 0) {
+    if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
     if (GetMapInputState() == 0) {
@@ -342,16 +342,20 @@ s32 func_020ae0a8(void) {
     return *(s16 *)(gScreenTransition + 2);
 }
 
-void BeginScreenTransition(s32 arg0, s32 arg1) {
-    M2C_UNK func_020ad70c();
-    M2C_UNK func_020d8ce8(s32);
+/* Start the split screen-change transition of `type` over `length` frames:
+ * clear its done flag, reset the frame counter, store the type and length, hand
+ * the type to the UI mode and play the transition sound. */
+void BeginScreenTransition(s32 type, s32 length) {
+    M2C_UNK ClearScreenTransitionDone();
+    M2C_UNK SetUiModeParameter(s32);
     M2C_UNK PlaySoundEffect(s32);
     extern s32 gScreenTransition;
-    func_020ad70c();
-    *(s16 *)(gScreenTransition + 6) = 0;
-    *(s16 *)(gScreenTransition + 8) = arg1;
-    *(s16 *)(gScreenTransition + 2) = arg0;
-    func_020d8ce8(arg0);
+
+    ClearScreenTransitionDone();
+    ((ScreenTransition *)gScreenTransition)->frame = 0;
+    ((ScreenTransition *)gScreenTransition)->length = (s16) length;
+    ((ScreenTransition *)gScreenTransition)->type = (s16) type;
+    SetUiModeParameter(type);
     PlaySoundEffect(0x10021);
 }
 

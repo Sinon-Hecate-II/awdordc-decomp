@@ -9,7 +9,7 @@ void *func_020ab1c4(void*);void InitUnitSprite(void*,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);void Hide3DSprite(void*);
 s32 GetUnitSpriteWidth(void*);s32 GetUnitSpriteHeight(void*);void func_02087d84(void*,s32,s16,s16,u16,u16);
 void *func_0208bc24(void*);s32 Divide(s32,s32);s32 Modulo(s32,s32);
-void func_ov003_021e1530(void*,u8);void *CreateFrameBorderSprite(void*);void func_020893f4(void*,s32,s32);void Sync3DSpriteToTarget(void*);
+void func_ov003_021e1530(void*,u8);void *CreateFrameBorderSprite(void*);void LoadFrameBorderSpritePattern(void*,s32,s32);void Sync3DSpriteToTarget(void*);
 static inline void RefreshSprite(void *sprite) {
 u8 active=M2C_FIELD(M2C_FIELD(sprite,void**,0x64),u8*,0x12)!=0;
 if(active){s16 y=M2C_FIELD(sprite,s16*,0x52),x=M2C_FIELD(sprite,s16*,0x50);s32 w=GetUnitSpriteWidth(sprite),h=GetUnitSpriteHeight(sprite);func_02087d84(M2C_FIELD(sprite,void**,0x64),1,x,y,(u16)w,(u16)h);}
@@ -82,7 +82,7 @@ M2C_FIELD(sprite,u32*,0x40)=(M2C_FIELD(sprite,u32*,0x40)&0xfffc01ff)|((u32)(h<<2
 sprite=M2C_FIELD(menu+i*4,u8**,12);M2C_FIELD(sprite,u16*,0x68)=left;M2C_FIELD(sprite,u16*,0x6a)=right;M2C_FIELD(sprite,u16*,0x6c)=up;M2C_FIELD(sprite,u16*,0x6e)=down;
 }
 func_ov003_021e1530(menu,10);
-M2C_FIELD(p,void**,0x4c)=CreateFrameBorderSprite(p);func_020893f4(M2C_FIELD(p,void**,0x4c),0x4f00,1);sprite=M2C_FIELD(p,u8**,0x4c);
+M2C_FIELD(p,void**,0x4c)=CreateFrameBorderSprite(p);LoadFrameBorderSpritePattern(M2C_FIELD(p,void**,0x4c),0x4f00,1);sprite=M2C_FIELD(p,u8**,0x4c);
 M2C_FIELD(sprite,u16*,0x34)=112;M2C_FIELD(sprite,u16*,0x36)=164;M2C_FIELD(sprite,u32*,0x40)=((M2C_FIELD(sprite,u32*,0x40)&~511)|58)&0xfffc01ff|0x7400;
 Sync3DSpriteToTarget(M2C_FIELD(p,void**,0x4c));M2C_FIELD(M2C_FIELD(p,void**,0x4c),u8*,0x58)=1;Hide3DSprite(M2C_FIELD(p,void**,0x4c));
 func_ov003_021e3714(p);

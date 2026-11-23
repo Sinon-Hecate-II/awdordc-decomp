@@ -190,7 +190,20 @@ done:
     return result;
 }
 
-s32 CompareNamesNoCase(u8 *a,u8 *b,u32 n) {u32 i,x,y;for(i=0;i<n;i++){x=a[i]-0x41;y=b[i]-0x41;if(x<=25)x+=32;if(y<=25)y+=32;if(x!=y)return x-y;}return 0;}
+/* Compare two fixed-length names case-insensitively: fold ASCII upper-case letters
+ * to lower case, then return the difference of the first differing bytes, or 0 when
+ * the names are equal. */
+s32 CompareNamesNoCase(u8 *nameA, u8 *nameB, u32 length) {
+    u32 i, x, y;
+    for (i = 0; i < length; i++) {
+        x = nameA[i] - 'A';
+        y = nameB[i] - 'A';
+        if (x <= 'Z' - 'A') x += 'a' - 'A';
+        if (y <= 'Z' - 'A') y += 'a' - 'A';
+        if (x != y) return x - y;
+    }
+    return 0;
+}
 
 /* Read length bytes through a stream position: arm the file's request event,
  * run its active read proc at the stream's current offset, and if the proc says

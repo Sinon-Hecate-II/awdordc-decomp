@@ -193,11 +193,11 @@ void func_ov002_021e7474(void *);
    ready, ends it on A/B/START or a touch. */
 void UpdateBattleScene(void *state) {
     void StepBattleScene(void *);
-    extern u8 data_ov002_021f2f40;
+    extern u8 gDemoBattle;
     extern KeyState *gKeyState;
     extern u32 gFrameCounter;
     extern void *gTouchState;
-    if (data_ov002_021f2f40) return;
+    if (gDemoBattle) return;
     if (gKeyState->held & KEY_L) {
         if (gFrameCounter & 1) StepBattleScene(state);
     } else if (gKeyState->held & KEY_R) {
@@ -218,7 +218,7 @@ void TickSlotSoundDelays(void);
 void func_ov002_021e78a4(void *);
 extern M2C_UNK gUnitViews;
 extern M2C_UNK gUnitViewsP2;
-extern u8 data_ov002_021f2f40;
+extern u8 gDemoBattle;
 switch(M2C_FIELD(state,u8 *,BATTLE_SCENE_PHASE)) {
 case BATTLE_SCENE_PHASE_SETUP: func_ov002_021e7120(state); break;
 case BATTLE_SCENE_PHASE_SLIDE_IN: func_ov002_021e712c(state); break;
@@ -228,7 +228,7 @@ case BATTLE_SCENE_PHASE_EFFECTS: func_ov002_021e749c(state); break;
 StepUnitView(&gUnitViews);
 StepUnitView(&gUnitViewsP2);
 TickSlotSoundDelays();
-if(data_ov002_021f2f40) return;
+if(gDemoBattle) return;
 func_ov002_021e78a4(state);
 }
 
@@ -456,14 +456,14 @@ void DrawBattleSceneUnitView(void) {
     M2C_UNK SetGxPolygonAttr(M2C_UNK, M2C_UNK);
     s32 IsBattleScreenSwapped(M2C_UNK *);
     M2C_UNK func_ov002_021e8984(s32);
-    extern M2C_UNK data_ov002_021f3014;
+    extern M2C_UNK gBattleSpriteState;
     extern M2C_UNK gPlayerSettings;
     extern M2C_UNK gUnitViews;
     s32 otherCountry;
 
     SetupSprite3DScene();
     SetGxPolygonAttr(0, 0x1F);
-    if (IsBattleScreenSwapped(&data_ov002_021f3014) != 0) {
+    if (IsBattleScreenSwapped(&gBattleSpriteState) != 0) {
         func_ov002_021e8984((M2C_FIELD(&gPlayerSettings, u8 *, VERSUS_DATA_COUNTRY) * 0x2C) + (s32) &gUnitViews);
     } else {
         if (M2C_FIELD(&gPlayerSettings, u8 *, VERSUS_DATA_COUNTRY) == 0) {
@@ -507,30 +507,36 @@ u8 IsBattleSceneIntro(void *arg0) {
     return var_r0;
 }
 
-s32 func_ov002_021e79c4(M2C_UNK arg0, M2C_UNK arg1) {
+/* Pick the unit-set variant index for one side (0 or 1) of the battle `settings`:
+ * the side's unit-set definition selects it (type 1 -> 0x1F, type 2 -> 0x3C,
+ * type 3 -> 0x59), with 2 as the default. */
+s32 Ov002_SelectUnitSetVariant(M2C_UNK settings, M2C_UNK side) {
     s32 func_ov002_021e805c();
     s32 func_ov002_021e8080(M2C_UNK, M2C_UNK);
     s32 func_ov002_021e80a4(M2C_UNK, M2C_UNK);
     if (func_ov002_021e805c() != 0) {
         return 0x1F;
     }
-    if (func_ov002_021e8080(arg0, arg1) != 0) {
+    if (func_ov002_021e8080(settings, side) != 0) {
         return 0x3C;
     }
-    if (func_ov002_021e80a4(arg0, arg1) != 0) {
+    if (func_ov002_021e80a4(settings, side) != 0) {
         return 0x59;
     }
     return 2;
 }
 
-s32 func_ov002_021e7a14(M2C_UNK arg0, M2C_UNK arg1) {
+/* Pick the alternative unit-set variant index for one side (0 or 1) of the battle
+ * `settings`: its unit-set definition type selects the variant (1 -> 0x21,
+ * 2 -> 0x3E, 3 -> 0x5B), with 4 as the default. */
+s32 Ov002_SelectUnitSetVariantAlt(M2C_UNK settings, M2C_UNK side) {
     if (func_ov002_021e805c() != 0) {
         return 0x21;
     }
-    if (func_ov002_021e8080(arg0, arg1) != 0) {
+    if (func_ov002_021e8080(settings, side) != 0) {
         return 0x3E;
     }
-    if (func_ov002_021e80a4(arg0, arg1) != 0) {
+    if (func_ov002_021e80a4(settings, side) != 0) {
         return 0x5B;
     }
     return 4;
@@ -544,12 +550,12 @@ s32 func_ov002_021e7a14(M2C_UNK arg0, M2C_UNK arg1) {
 void SetupPlayerSettings(void *settings) {
     extern M2C_UNK gPlayerSettings;
     extern u8 data_ov002_021f1134[];
-extern u8 data_ov002_021f2f40;
+extern u8 gDemoBattle;
     extern u8 data_ov002_021f1bf4[];
     u8 func_ov002_021e8014(s32, s32);
-    s32 func_ov002_021e79c4(M2C_UNK, M2C_UNK);
+    s32 Ov002_SelectUnitSetVariant(M2C_UNK, M2C_UNK);
     u8 func_ov002_021e8038(s32, s32);
-    s32 func_ov002_021e7a14(M2C_UNK, M2C_UNK);
+    s32 Ov002_SelectUnitSetVariantAlt(M2C_UNK, M2C_UNK);
 
     M2C_FIELD(settings, void **, 0x4) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0xc) * 64);
     M2C_FIELD(settings, void **, 0x1c) = (void *)(data_ov002_021f1134 + M2C_FIELD(&gPlayerSettings, u8 *, 0x24) * 64);
@@ -558,25 +564,25 @@ extern u8 data_ov002_021f2f40;
 
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 2) {
         if (func_ov002_021e8014((s32)settings, 0) == 0) {
-            u8 variant = func_ov002_021e79c4((M2C_UNK)settings, 0);
+            u8 variant = Ov002_SelectUnitSetVariant((M2C_UNK)settings, 0);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 2) {
         if (func_ov002_021e8014((s32)settings, 1) == 0) {
-            u8 variant = func_ov002_021e79c4((M2C_UNK)settings, 1);
+            u8 variant = Ov002_SelectUnitSetVariant((M2C_UNK)settings, 1);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x4), u8 *, 0x3d) == 3) {
         if (func_ov002_021e8038((s32)settings, 0) == 0) {
-            u8 variant = func_ov002_021e7a14((M2C_UNK)settings, 0);
+            u8 variant = Ov002_SelectUnitSetVariantAlt((M2C_UNK)settings, 0);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x10) = variant;
         }
     }
     if (M2C_FIELD(M2C_FIELD(settings, void **, 0x1c), u8 *, 0x3d) == 3) {
         if (func_ov002_021e8038((s32)settings, 1) == 0) {
-            u8 variant = func_ov002_021e7a14((M2C_UNK)settings, 1);
+            u8 variant = Ov002_SelectUnitSetVariantAlt((M2C_UNK)settings, 1);
             M2C_FIELD(&gPlayerSettings, u8 *, 0x28) = variant;
         }
     }
@@ -584,7 +590,7 @@ extern u8 data_ov002_021f2f40;
     M2C_FIELD(settings, void **, 0x8) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x10) * 0x24);
     M2C_FIELD(settings, void **, 0x20) = (void *)(data_ov002_021f1bf4 + M2C_FIELD(&gPlayerSettings, u8 *, 0x28) * 0x24);
 
-    if (data_ov002_021f2f40 == 0) {
+    if (gDemoBattle == 0) {
         u8 side = M2C_FIELD(settings, u8 *, 0x0);
         s32 otherSide = (side == 0) ? 1 : 0;
         u8 otherType = M2C_FIELD(M2C_FIELD((u8 *)settings + otherSide * 0x18, void **, 0x4), u8 *, 0x3d);

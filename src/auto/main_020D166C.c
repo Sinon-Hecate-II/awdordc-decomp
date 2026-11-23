@@ -248,9 +248,9 @@ void InitPlayerTurnState(void) {
 }
 
 void LoadPlayerPalettes(void) {
- void func_020c0a1c(s32); void func_020c09c0(s32);
+ void LoadUiSpritePalette(s32); void func_020c09c0(s32);
  extern void **gCurrentMap;
- func_020c0a1c(3);
+ LoadUiSpritePalette(3);
  func_020c09c0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 }
 

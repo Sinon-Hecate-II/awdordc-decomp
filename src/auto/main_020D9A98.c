@@ -193,8 +193,26 @@ void ConfirmMenuOption(void *entry) {
     Sprite_ResumeAnimation(menu);
 }
 
-void func_020da0a0(u8 *arg0){M2C_UNK FocusSpriteSlotById(); extern void *gKeyState; u16 temp_r1; u16 temp_r2; u8 temp_r3; s32 var_r0;
-temp_r3=*arg0; temp_r1=M2C_FIELD(gKeyState,u16*,2); var_r0=temp_r3; temp_r2=M2C_FIELD(gKeyState,u16*,0); if(temp_r1&0x40)var_r0=temp_r3-1;else if((temp_r1&0x80)&&(temp_r2&0x80))var_r0=0; if(var_r0==temp_r3) return; FocusSpriteSlotById(var_r0); }
+/* Input handler of the four-option settings widget: an up repeat moves the
+ * highlight to the previous option, and a fresh down press returns it to the
+ * first option; the option's sprite slot follows the new highlight. */
+void HandleFourOptionListInput(u8 *option) {
+    M2C_UNK FocusSpriteSlotById();
+    extern void *gKeyState;
+    u16 repeat;
+    u16 pressed;
+    u8 selection;
+    s32 next;
+
+    selection = *option;
+    repeat = M2C_FIELD(gKeyState, u16 *, 2);      /* KeyState::repeat */
+    next = selection;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);     /* KeyState::pressed */
+    if (repeat & KEY_UP) next = selection - 1;
+    else if ((repeat & KEY_DOWN) && (pressed & KEY_DOWN)) next = 0;
+    if (next == selection) return;
+    FocusSpriteSlotById(next);
+}
 
 // Draws two 5-step progress bars (levels x/y growing by 5) onto a UI screen, then marks it dirty.
 void func_020da0ec(void *a) {

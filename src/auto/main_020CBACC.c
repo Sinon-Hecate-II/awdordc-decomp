@@ -372,7 +372,7 @@ void CloseMapViewStep(void *a) {
         RefreshMapCursorCellCache();
     }
     Reset3DSpriteBankState();
-    func_020c0a88();
+    LoadUiGraphics();
     M2C_FIELD(*gCurrentMap, u16 *, MAP_MODE) = 0;
 }
 
@@ -469,7 +469,7 @@ M2C_FIELD(a,s16 *,0x6e)=NextMapCursorOption(3,M2C_FIELD(a,s16 *,0x6c));
 void UpdateAdjacentAllySelection(void *option) {
     M2C_UNK UpdateMapCursorOption(s32 *, M2C_UNK);
     M2C_UNK DeleteSpriteObject(void *);
-    void func_020d472c(void);
+    void ReleaseMapViewHold(void);
     void OpenMapActionMenu(void);
     M2C_UNK CreateAdjacentAllyMarker(s32);
     M2C_UNK Sprite_ResumeAnimation(void *);
@@ -484,7 +484,7 @@ void UpdateAdjacentAllySelection(void *option) {
     M2C_FIELD(option, s16 *, MAP_OPTION_SELECTED) = (s16)selected;
     if (action & 0x20) {
         DeleteSpriteObject(option);
-        func_020d472c();
+        ReleaseMapViewHold();
         OpenMapActionMenu();
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_X);
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_OLD_Y);
@@ -497,8 +497,8 @@ void UpdateAdjacentAllySelection(void *option) {
 }
 
 void func_020cc974(void) {
-void func_020d468c(void);void func_020d472c(void);void BattleUpdateUnitCursor(void);extern void **gCurrentMap;
-func_020d468c();func_020d472c();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;BattleUpdateUnitCursor();
+void func_020d468c(void);void ReleaseMapViewHold(void);void BattleUpdateUnitCursor(void);extern void **gCurrentMap;
+func_020d468c();ReleaseMapViewHold();M2C_FIELD(*gCurrentMap,u16 *,0x52b4)=0;BattleUpdateUnitCursor();
 }
 
 s32 func_020cc9a4(void) {

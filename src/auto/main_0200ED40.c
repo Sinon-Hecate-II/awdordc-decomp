@@ -21,26 +21,29 @@ void func_0200ed40(void **arg0, void *arg1) {
 }
 
 #pragma scheduling off
-void func_0200ed54(M2C_UNK *arg0, M2C_UNK arg1) {
-    M2C_UNK *p, *n;
-    if (arg0 == NULL) {
+/* Append callback node `node` at the tail of the singly linked list `list`
+ * (a node's next pointer sits at +0x08), or make it the head when the list is
+ * empty. */
+void CallbackList_Append(M2C_UNK *list, M2C_UNK node) {
+    M2C_UNK *tail, *next;
+    if (list == NULL) {
         return;
     }
-    p = (M2C_UNK *)*arg0;
-    if (p == NULL) {
-        M2C_FIELD(arg1, M2C_UNK *, 8) = 0;
-        *arg0 = arg1;
+    tail = (M2C_UNK *)*list;
+    if (tail == NULL) {
+        M2C_FIELD(node, M2C_UNK *, 8) = 0;
+        *list = node;
         return;
     }
-    n = M2C_FIELD(p, M2C_UNK *, 8);
-    if (n != NULL) {
+    next = M2C_FIELD(tail, M2C_UNK *, 8);
+    if (next != NULL) {
         do {
-            p = n;
-            n = M2C_FIELD(n, M2C_UNK *, 8);
-        } while (n != NULL);
+            tail = next;
+            next = M2C_FIELD(next, M2C_UNK *, 8);
+        } while (next != NULL);
     }
-    M2C_FIELD(arg1, M2C_UNK *, 8) = (M2C_UNK)n;
-    M2C_FIELD(p, M2C_UNK *, 8) = arg1;
+    M2C_FIELD(node, M2C_UNK *, 8) = (M2C_UNK)next;
+    M2C_FIELD(tail, M2C_UNK *, 8) = node;
 }
 void func_0200eda0(M2C_UNK *arg0, M2C_UNK arg1) {
     M2C_UNK var_r2;
@@ -78,9 +81,9 @@ void func_0200ede8(void *arg0) {
 void PM_AddPreSleepCallback(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }
 
 void PM_AddPostSleepCallback(M2C_UNK arg0) {
-    void func_0200ed54(M2C_UNK *, M2C_UNK);
+    void CallbackList_Append(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212fce0;
-    func_0200ed54(&data_0212fce0, arg0);
+    CallbackList_Append(&data_0212fce0, arg0);
 }
 #pragma scheduling reset
 /* Unlinks a node from the global list rooted at data_0212fcd8. */

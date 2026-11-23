@@ -207,7 +207,7 @@ void func_020e048c(void *entity) {
     } while (2 > i);
     gCur3DSpriteEngine = savedEntity;
     FillU16(0, &data_02168f74, 8);
-    func_02084ea0(0x434c4353, entity);
+    Link_CreateStartRequest(0x434c4353, entity);
 }
 
 M2C_UNK func_020e0580(s32 arg0) {
@@ -456,39 +456,39 @@ void func_020e0dc0(void *entity) {
 }
 
 void func_020e0dcc(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
     M2C_UNK PublishLocalPlayerStatus();
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 void func_020e0dec(M2C_UNK arg0) {
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 void func_020e0e0c(M2C_UNK arg0) {
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 void func_020e0e2c(M2C_UNK arg0) {
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 void func_020e0e4c(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
     M2C_UNK PublishLocalPlayerStatus();
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 void func_020e0e6c(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
     M2C_UNK PublishLocalPlayerStatus();
     PublishLocalPlayerStatus();
-    func_02084ea0(0x56434854, arg0);
+    Link_CreateStartRequest(0x56434854, arg0);
 }
 
 M2C_UNK func_020e0e8c(void *arg0) { M2C_UNK HideAllSpriteSlots();

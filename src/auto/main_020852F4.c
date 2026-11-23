@@ -123,8 +123,8 @@ void Link_InstallCommandHandler(void) {
 }
 
 void func_02085428(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x50544453, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x50544453, arg0);
 }
 
 void func_02085440(void *arg0) {
@@ -134,7 +134,7 @@ void func_02085440(void *arg0) {
 }
 
 void func_02085464(M2C_UNK arg0) {
-    func_02084ea0(0x50524453, arg0);
+    Link_CreateStartRequest(0x50524453, arg0);
 }
 
 void func_0208547c(s32 arg0, s32 arg1, M2C_UNK arg2) {
@@ -153,7 +153,7 @@ void func_0208547c(s32 arg0, s32 arg1, M2C_UNK arg2) {
 }
 
 void func_020854b8(M2C_UNK arg0) {
-    func_02084ea0(0x50544453, arg0);
+    Link_CreateStartRequest(0x50544453, arg0);
 }
 
 void func_020854d0(void *arg0) {
@@ -170,7 +170,7 @@ void func_020854d0(void *arg0) {
 }
 
 void func_02085514(M2C_UNK arg0) {
-    func_02084ea0(0x50524453, arg0);
+    Link_CreateStartRequest(0x50524453, arg0);
 }
 
 /* Handles the link messages that carry a whole data block: a LINK_MSG_BLOCK
@@ -200,20 +200,25 @@ s32 Link_HandleBlockMessage(u32 sender, void *message) {
     return result;
 }
 
-void func_0208559c(s32 a,s32 b,s32 c) {
-    void *CreateSpriteForOwner(M2C_UNK *,M2C_UNK);
-    extern M2C_UNK gLinkBlockReceiverClass, data_021021b0;
-    void *p=CreateSpriteForOwner(&gLinkBlockReceiverClass,c);
-    if(!p) return;
-    M2C_FIELD(p,void **,0)=&data_021021b0;
-    M2C_FIELD(p,s32 *,0x34)=Link_SetMessageHandler((M2C_UNK *)&Link_HandleBlockMessage);
-    M2C_FIELD(p,u8 *,0x38)=0;
-    M2C_FIELD(p,s32 *,0x3c)=a;
-    M2C_FIELD(p,s32 *,0x40)=b;
+/* Create the link listener that transfers one whole data block: take over the
+ * link layer's message handler (remembering the previous one), point at the block
+ * buffer and its size, and clear the block-received flag. */
+void CreateLinkBlockReceiver(s32 blockData, s32 blockSize, s32 owner) {
+    void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gLinkBlockReceiverClass, gLinkBlockReceiverVtbl;
+    void *receiver;
+
+    receiver = CreateSpriteForOwner(&gLinkBlockReceiverClass, owner);
+    if (!receiver) return;
+    M2C_FIELD(receiver, void **, 0) = &gLinkBlockReceiverVtbl;
+    M2C_FIELD(receiver, s32 *, LINK_PLAYER_DATA_PREV_HANDLER) = Link_SetMessageHandler((M2C_UNK *)&Link_HandleBlockMessage);
+    M2C_FIELD(receiver, u8 *, LINK_BLOCK_RECEIVED) = 0;
+    M2C_FIELD(receiver, s32 *, LINK_PLAYER_OWN_DATA) = blockData;
+    M2C_FIELD(receiver, s32 *, LINK_PLAYER_DATA_SIZE) = blockSize;
 }
 
 void func_020855f0(M2C_UNK arg0) {
-    func_02084ea0(0x50544353, arg0);
+    Link_CreateStartRequest(0x50544353, arg0);
 }
 
 u8 func_02085608(void *a) {
@@ -234,7 +239,7 @@ void func_02085644(void *arg0) {
 }
 
 void func_0208565c(M2C_UNK arg0) {
-    func_02084ea0(0x50524353, arg0);
+    Link_CreateStartRequest(0x50524353, arg0);
 }
 
 /* Handles the link messages that carry the players' data blocks: a
@@ -538,7 +543,7 @@ void SaveProfileSyncTime(void) {
     GetServerDateTime(GetProfileSaveBlock() + 0x58);
 }
 
-s32 func_02085c18(void) {
+s32 GetProfileSyncTime(void) {
     s32 GetProfileSaveBlock();
     return GetProfileSaveBlock() + 0x58;
 }
@@ -547,7 +552,7 @@ void StoreGetRequestServerTime(void) {
     GetServerDateTime(GetProfileSaveBlock() + 0x74);
 }
 
-s32 func_02085c3c(void) {
+s32 GetGetRequestServerTime(void) {
     return GetProfileSaveBlock() + 0x74;
 }
 
@@ -589,16 +594,16 @@ void *func_02085cd8(void *arg0) {
 
 void *func_02085cfc(void *arg0) {
     M2C_UNK MemFree(void *);
-    extern M2C_UNK data_021021b0;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021b0;
+    extern M2C_UNK gLinkBlockReceiverVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
     Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     MemFree(arg0);
     return arg0;
 }
 
 void *func_02085d28(void *arg0) {
-    extern M2C_UNK data_021021b0;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_021021b0;
+    extern M2C_UNK gLinkBlockReceiverVtbl;
+    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
     Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
@@ -728,8 +733,8 @@ void func_02085ebc(void *arg0) {
  * ducks the game's channel-2 volume to 0x20, and it fades back to 0x7F when the
  * voice stops.  This updates the button state and drives the widget's fade. */
 void UpdateVoiceChatWidget(VoiceChatWidget *obj) {
-    M2C_UNK func_02090640(M2C_UNK, s32);
-    M2C_UNK func_0209066c(M2C_UNK, s32);
+    M2C_UNK SetMusicVolumeLevel(M2C_UNK, s32);
+    M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, s32);
     s16 func_02090698(M2C_UNK);
     M2C_UNK UpdateSpriteAnimation(void *);
     s32 GetSpriteAnimValue(void *);
@@ -794,7 +799,7 @@ void UpdateVoiceChatWidget(VoiceChatWidget *obj) {
         obj->talkHeld = 0;
     }
     UpdateSpriteAnimation(obj->anim);
-    func_02090640(2, GetSpriteAnimValue(obj->anim));
-    func_0209066c(2, GetSpriteAnimValue(obj->anim));
+    SetMusicVolumeLevel(2, GetSpriteAnimValue(obj->anim));
+    SetSoundEffectVolumeLevel(2, GetSpriteAnimValue(obj->anim));
 }
 

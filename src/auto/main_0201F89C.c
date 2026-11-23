@@ -61,7 +61,7 @@ s32 SocketListenTask(void *task) {
     M2C_UNK UnlockMutex(void *);
     M2C_UNK SetConnectionEndpoint(u16, M2C_UNK, M2C_UNK);
     M2C_UNK func_0201d2b8();
-    s32 func_0201d3e4(u16 *, M2C_UNK *);
+    s32 GetSocketEndpoints(u16 *, M2C_UNK *);
     M2C_UNK peerAddr;
     u16 peerPort;
     s32 result;
@@ -74,7 +74,7 @@ s32 SocketListenTask(void *task) {
     SetConnectionEndpoint(M2C_FIELD(task, u16 *, LISTEN_TASK_LOCAL_PORT), 0, 0);
     func_0201d2b8();
     M2C_FIELD(raw, s32 *, CONN_RECV_PENDING) = 0;
-    result = func_0201d3e4(&peerPort, &peerAddr);
+    result = GetSocketEndpoints(&peerPort, &peerAddr);
     *M2C_FIELD(task, u16 **, LISTEN_TASK_PEER_PORT_PTR) = peerPort;
     *M2C_FIELD(task, s32 **, LISTEN_TASK_PEER_ADDR_PTR) = result;
     M2C_FIELD(socket, s16 *, SOCK_FLAGS) = (s16) (M2C_FIELD(socket, s16 *, SOCK_FLAGS) | SOCK_FLAG_DONE);
@@ -355,17 +355,20 @@ s32 GetRecvWindowData(void *sock,s32 *remaining,u16 *localPort,u16 *remotePort,s
  return M2C_FIELD(conn,s32 *,CONN_RX_BUFFER)+pending;
 }
 
-s32 SocketStartRecvTask(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-s32 func_02020038(void *);
-void *p=SocketAllocTask(func_02020038,arg0,1);
-M2C_FIELD(p,s32 *,0x10)=arg1;
-M2C_FIELD(p,s32 *,0x14)=arg2;
-M2C_FIELD(p,s32 *,0x18)=arg3;
-M2C_FIELD(p,s32 *,0x1c)=arg4;
-SocketSubmitRecvTask(arg0,p);
+/* Start an asynchronous receive of up to len bytes into buf: allocate a receive
+ * task record, fill in its buffer, length and the two peer-endpoint out-pointers,
+ * and post it to the socket. */
+s32 SocketStartRecvTask(void *sock, s32 buf, s32 len, s32 peerPort, s32 peerAddr) {
+    s32 SocketRecvFromTask(void *);
+    void *task = SocketAllocTask(SocketRecvFromTask, sock, 1);
+    M2C_FIELD(task, s32 *, RECV_TASK_BUF) = buf;
+    M2C_FIELD(task, s32 *, RECV_TASK_LEN) = len;
+    M2C_FIELD(task, s32 *, RECV_TASK_PEER_PORT) = peerPort;
+    M2C_FIELD(task, s32 *, RECV_TASK_PEER_ADDR) = peerAddr;
+    SocketSubmitRecvTask(sock, task);
 }
 
-s32 func_02020038(void *arg0) {
+s32 SocketRecvFromTask(void *arg0) {
     void *PeekSocketReceivedData(u32 *);
     M2C_UNK SleepMilliseconds(s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
@@ -435,16 +438,19 @@ loop_1:
     return var_r4;
 }
 
-s32 SocketReleaseRecvWindow(void *arg0) {
-void func_020201d4(void *);
-void *q=M2C_FIELD(arg0,void **,0x64),*p;
-if(M2C_FIELD(q,s32 *,0xf8)<M2C_FIELD(q,u16 *,0xfc))return 0;
-p=SocketAllocTask((s32 (*)(void *))func_020201d4,arg0,0);
-if(!p)return -33;
-return SocketSubmitRecvTask(arg0,p);
+/* Queue the task that consumes the connection's pending receive data once enough
+ * of it has arrived: nothing happens while the pending byte count is below the
+ * connection's receive-window release threshold. */
+s32 SocketReleaseRecvWindow(void *sock) {
+    void SocketReleaseRecvWindowTask(void *);
+    void *raw = M2C_FIELD(sock, void **, SOCK_RAW), *task;
+    if (M2C_FIELD(raw, s32 *, CONN_RECV_PENDING) < M2C_FIELD(raw, u16 *, CONN_RECV_RELEASE_AT)) return 0;
+    task = SocketAllocTask((s32 (*)(void *))SocketReleaseRecvWindowTask, sock, 0);
+    if (!task) return SOCK_NO_MEMORY;
+    return SocketSubmitRecvTask(sock, task);
 }
 
-void func_020201d4(void *arg0) {
+void SocketReleaseRecvWindowTask(void *arg0) {
     M2C_UNK func_020201e4(s32);
     func_020201e4(M2C_FIELD(arg0, s32 *, 4));
 }

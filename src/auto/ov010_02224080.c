@@ -329,7 +329,19 @@ case -1: break;
 return v;
 }
 
-s32 VoiceLink_NoOtherContextWaiting(void *a){extern M2C_UNK gVoiceLinkState;void *p=M2C_FIELD(&gVoiceLinkState,void **,20);while(p){if(M2C_FIELD(p,s32 *,0)&&M2C_FIELD(p,s32 *,12)==2&&a!=p)return 0;p=M2C_FIELD(p,void **,20);}return 1;}
+/* Returns 1 when no exchange context other than `context` is waiting on
+ * handshake step 2, i.e. when no other exchange has a reply in flight. */
+s32 VoiceLink_NoOtherContextWaiting(void *context) {
+    extern M2C_UNK gVoiceLinkState;
+    VoiceLinkContext *p = ((VoiceLinkState *) &gVoiceLinkState)->activeList;
+    while (p) {
+        if (p->valid && p->step == 2 && context != (void *) p) {
+            return 0;
+        }
+        p = p->next;
+    }
+    return 1;
+}
 
 #pragma opt_propagation off
 s32 VoiceLink_CheckStartStep(void *a,void *b){

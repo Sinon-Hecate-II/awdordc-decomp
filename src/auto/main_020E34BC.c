@@ -146,36 +146,36 @@ void func_020e3610(M2C_UNK arg0) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 IsSessionInError();
     s32 func_0208477c();
-    s32 func_ov010_02226364();
+    s32 IsProfileSyncOverdue();
     if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
-    if (func_ov010_02226364() == 0) {
+    if (IsProfileSyncOverdue() == 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);
 }
 
 void func_020e3654(M2C_UNK arg0) {
-    s32 func_ov010_02226560();
+    s32 HasWebGetRequestTimedOut();
     if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
-    if (func_ov010_02226560() == 0) {
+    if (HasWebGetRequestTimedOut() == 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);
 }
 
 void func_020e3698(M2C_UNK arg0) {
-    s32 func_ov010_022266ec();
+    s32 IsProfileSyncOverdueAlt();
     if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
         Sprite_ResumeAnimation(arg0);
         return;
     }
-    if (func_ov010_022266ec() == 0) {
+    if (IsProfileSyncOverdueAlt() == 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);
@@ -205,14 +205,17 @@ void func_020e370c(void *arg0) {
    }
 }
 
-void func_020e3738(void *arg0) {
+/* Online-player list upload node: clear the request's answer slot, send the
+ * list's collected records in a web PUT request and, when the request cannot be
+ * queued, start the list's waiting animation instead. */
+void UploadOnlinePlayerRecords(void *list) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
-    s32 func_ov010_02226334(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, void *);
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    if (func_ov010_02226334(0, 2, 0, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), arg0) != 0) {
+    s32 SubmitWebPutRequestAndCreateSprite(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, void *);
+    *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 0;
+    if (SubmitWebPutRequestAndCreateSprite(0, 2, 0, M2C_FIELD(list, s32 *, LIST_FIRST), M2C_FIELD(list, s32 *, LIST_COUNT), list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 /* Creates an online-player-list node over a caller-owned array of player records:
@@ -659,13 +662,16 @@ void func_020e4064(void *arg0) {
  }
 }
 
-void func_020e4090(void *arg0) {
-    s32 func_ov010_022266c4(M2C_UNK, s32, M2C_UNK, s32, void *);
-    *M2C_FIELD(arg0, s32 **, 0x40) = 0;
-    if (func_ov010_022266c4(8, *M2C_FIELD(arg0, s32 **, 0x44), 0, M2C_FIELD(arg0, s32 *, 0x48), arg0) != 0) {
+/* Online-player list sync node: clear the request's answer slot, sync the list's
+ * player record (web sync kind 8) with the server and, when the request cannot
+ * be queued, start the list's waiting animation instead. */
+void SyncOnlinePlayerRecord(void *list) {
+    s32 SubmitWebSyncRequestAndCreateSprite(M2C_UNK, s32, M2C_UNK, s32, void *);
+    *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 0;
+    if (SubmitWebSyncRequestAndCreateSprite(8, *M2C_FIELD(list, s32 **, LIST_IDS), 0, M2C_FIELD(list, s32 *, LIST_UNK48), list) != 0) {
         return;
     }
-    SetSpriteAnimation(arg0, 1);
+    SetSpriteAnimation(list, 1);
 }
 
 /* Twin of CreateOnlinePlayerIdListNode over the other id-list sprite bank (the one

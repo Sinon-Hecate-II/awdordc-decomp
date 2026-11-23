@@ -156,14 +156,14 @@ s32 TableCount(HashTable *table) {
 void TableEnter(void *table,s32 data) {
 extern M2C_UNK sAssertTable,gHashtableFileName,sTableEnterName;
 s32 Vector_Search(s32,s32,s32,s32,s32);
-M2C_UNK Vector_AddItem(s32,s32);
+M2C_UNK Vector_Append(s32,s32);
 M2C_UNK Vector_ReplaceItem(s32,s32,s32);
 s32 bucket,index;
 if(!table)AssertFailed(&sAssertTable,&gHashtableFileName,&sTableEnterName,0x71);
 if(!table)return;
 bucket=M2C_FIELD(table,s32 (**)(s32,s32),12)(data,M2C_FIELD(table,s32 *,4));
 index=Vector_Search(M2C_FIELD(table,s32 **,0)[bucket],data,M2C_FIELD(table,s32 *,16),0,0);
-if(index==-1)Vector_AddItem(M2C_FIELD(table,s32 **,0)[bucket],data);
+if(index==-1)Vector_Append(M2C_FIELD(table,s32 **,0)[bucket],data);
 else Vector_ReplaceItem(M2C_FIELD(table,s32 **,0)[bucket],data,index);
 }
 
@@ -224,9 +224,17 @@ s32 TableMapSafe2(HashTable *table, s32 (*callback)(s32, s32), s32 userData) {
     return 0;
 }
 
-void func_0204917c(u8 *a,char *b){extern char data_020fcdcc[];unsigned int i=0;int off=0;do {StringFormat(b+off,data_020fcdcc,a[i]);i++;off+=2;}while(i<16);}
+void FormatMD5Hex(u8 *a,char *b){extern char gMD5HexFormat[];unsigned int i=0;int off=0;do {StringFormat(b+off,gMD5HexFormat,a[i]);i++;off+=2;}while(i<16);}
 
-void Md5Hex(int a,int b,char *c){u8 ctx[88];u8 digest[16];func_02027090(ctx);func_0202709c(ctx,a,b);func_020270a8(digest,ctx);func_0204917c(digest,c);}
+/* Fill `hex` with the hexadecimal MD5 digest of the `length` bytes at `data`. */
+void Md5Hex(void *data, u32 length, char *hex) {
+    u8 context[88];
+    u8 digest[16];
+    MD5ContextInit(context);
+    MD5ContextUpdate(context, data, length);
+    MD5ContextFinal(digest, context);
+    FormatMD5Hex(digest, hex);
+}
 
 /* Convert the hardware system tick count to milliseconds, asserting that the tick timer is initialized. */
 unsigned long long GetSystemTickMilliseconds(void) {

@@ -10,7 +10,7 @@ func_ov004_02211374 kind:function(arm,size=0x3cc) addr:0x02211374
 func_ov004_02211740 kind:function(arm,size=0x4) addr:0x02211740
 func_ov004_02211744 kind:function(arm,size=0x100) addr:0x02211744
 func_ov004_02211844 kind:function(arm,size=0xe0) addr:0x02211844
-func_ov004_02211924 kind:function(arm,size=0x28) addr:0x02211924
+Ov004_SetUraPlaneZoom kind:function(arm,size=0x28) addr:0x02211924
 func_ov004_0221194c kind:function(arm,size=0x59c) addr:0x0221194c
 func_ov004_02211ee8 kind:function(arm,size=0xc) addr:0x02211ee8
 func_ov004_02211ef4 kind:function(arm,size=0xc) addr:0x02211ef4
@@ -20,8 +20,8 @@ func_ov004_02211f18 kind:function(arm,size=0x24) addr:0x02211f18
 func_ov004_02211f3c kind:function(arm,size=0x24) addr:0x02211f3c
 func_ov004_02211f60 kind:function(arm,size=0x20) addr:0x02211f60
 func_ov004_02211f80 kind:function(arm,size=0x20) addr:0x02211f80
-func_ov004_02211fa0 kind:function(arm,size=0x54) addr:0x02211fa0
-func_ov004_02211ff4 kind:function(arm,size=0x54) addr:0x02211ff4
+Ov004_ZoomInUraPlane kind:function(arm,size=0x54) addr:0x02211fa0
+Ov004_ZoomOutUraPlane kind:function(arm,size=0x54) addr:0x02211ff4
 func_ov004_02212048 kind:function(arm,size=0x14) addr:0x02212048
 func_ov004_0221205c kind:function(arm,size=0x2c) addr:0x0221205c
 func_ov004_02212088 kind:function(arm,size=0x38) addr:0x02212088
@@ -55,7 +55,7 @@ func_ov004_02213820 kind:function(arm,size=0x20) addr:0x02213820
 Ov004_IsPlayerTwoArmyEmpty_02213840 kind:function(arm,size=0x70) addr:0x02213840
 IsAiBuildingOnPlayerOneCityOrBase kind:function(arm,size=0x7c) addr:0x022138b0
 func_ov004_0221392c kind:function(arm,size=0x30) addr:0x0221392c
-func_ov004_0221395c kind:function(arm,size=0x4c) addr:0x0221395c
+IsSetAiModeCommandOnRig kind:function(arm,size=0x4c) addr:0x0221395c
 IsSetAiModeCommandOnPlayerOneTempAirfield kind:function(arm,size=0x74) addr:0x022139a8
 CheckPlayerOneOpeningFormation kind:function(arm,size=0xbc) addr:0x02213a1c
 PlayerTwoHasNoUnits kind:function(arm,size=0x70) addr:0x02213ad8
@@ -121,7 +121,7 @@ data_ov004_02218bb8 kind:data(any) addr:0x02218bb8
 data_ov004_02218bc4 kind:data(any) addr:0x02218bc4
 data_ov004_02218be0 kind:data(any) addr:0x02218be0
 data_ov004_02218c00 kind:data(any) addr:0x02218c00
-data_ov004_02218c20 kind:data(any) addr:0x02218c20
+gUraPlaneEffectClass kind:data(any) addr:0x02218c20
 data_ov004_02218c50 kind:data(any) addr:0x02218c50
 data_ov004_02218c70 kind:data(any) addr:0x02218c70
 data_ov004_02218c90 kind:data(any) addr:0x02218c90

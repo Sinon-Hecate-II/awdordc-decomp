@@ -282,23 +282,25 @@ useSpecialTheme:
     PlayMusicTrack(track);
 }
 
-void func_ov005_0221f038(M2C_UNK arg0) {
+/* Create the results screen object under `parent`: give it the results screen's
+ * vtable and load the bird animation it shows from the /result directory. */
+void CreateResultsScreen(M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 LoadDecompressedFile(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov005_02220a44;
-    extern M2C_UNK data_ov005_02220a6c;
+    extern M2C_UNK gResultsDirectory;
+    extern M2C_UNK gResultsBirdAnimation;
     extern M2C_UNK gResultsScreenClass;
-    extern M2C_UNK data_ov005_02220fe0;
-    void *temp_r0;
+    extern M2C_UNK gResultsScreenVtbl;
+    void *screen;
 
-    temp_r0 = CreateSpriteObject(&gResultsScreenClass, arg0);
-    if (temp_r0 == NULL) {
+    screen = CreateSpriteObject(&gResultsScreenClass, parent);
+    if (screen == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov005_02220fe0;
-    SetFileDirectory(&data_ov005_02220a44);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = LoadDecompressedFile(&data_ov005_02220a6c, 1);
+    M2C_FIELD(screen, M2C_UNK **, 0) = &gResultsScreenVtbl;
+    SetFileDirectory(&gResultsDirectory);
+    M2C_FIELD(screen, s32 *, 0x34) = LoadDecompressedFile(&gResultsBirdAnimation, 1);
 }
 
 #pragma peephole off

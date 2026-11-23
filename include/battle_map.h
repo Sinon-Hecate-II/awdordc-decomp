@@ -127,6 +127,7 @@ enum {
 #define MAP_CURRENT_PLAYER  0x52a4 /* u16 the player the view belongs to */
 #define MAP_UNIT_SLOT_CURSOR 0x52c0 /* s16 unit slot the free-slot search starts after, 0 = none used yet */
 #define MAP_CURRENT_OWNER   0x52a6 /* u16 the current player's owner bits (MAP_CURRENT_PLAYER << 5) */
+#define MAP_VIEW_HOLD       0x52aa /* s8 holds taken on the map view; map input is blocked while it is nonzero */
 #define MAP_ACTIVE_PLAYER   0x52b6 /* u16 player whose units are being processed, saved and restored around influence builds */
 #define MAP_CURSOR_UNIT     0x52d0 /* BattleMapUnit * of the unit under the cursor */
 #define MAP_CURSOR_UNIT_ID  0x52d4 /* u8 id of the unit under the cursor */
@@ -156,6 +157,8 @@ typedef struct DirectionMarker {
 #define MAP_CELL_BITMAP_SIZE 0xA1 /* bytes in one team's cell bitmap; the two bitmaps sit back to back */
 #define MAP_WIDTH           0x5144 /* u16 map width in cells */
 #define MAP_HEIGHT          0x5146 /* u16 map height in cells */
+#define MAP_DISTANCE_REFERENCE_CELLS 30 /* side of the reference map a scaled distance threshold is based on */
+#define MAP_DISTANCE_REFERENCE_AREA_FIXED8 0x3840000 /* (MAP_DISTANCE_REFERENCE_CELLS << 8) squared */
 #define MAP_VIEW_X          0x5148 /* s16 view scroll x, in 1/16-cell units */
 #define MAP_VIEW_Y          0x514a /* s16 view scroll y, in 1/16-cell units */
 #define MAPVIEW_SCROLL_DONE 0x001C /* callback invoked when map-view scrolling finishes */
@@ -174,9 +177,12 @@ typedef struct DirectionMarker {
  * map cell, half a cell in from the map's corner. */
 #define MAP_VIEW_EYE_CELL   0x300
 #define MAP_VIEW_EYE_HALF_CELL 0x180
-/* Inside the map view block (MAP_VIEW_ZOOM is its base): the Q12 matrix the view
- * projects a point with, and the world origin a projected point is relative to. */
-#define MAP_VIEW_MATRIX     0xb0 /* s32[9]: Q12 matrix the view projects with */
+/* Inside the map view block (MAP_VIEW_ZOOM is its base): the 4x4 view*projection
+ * matrix that projects world points to the screen, the Q12 matrix the view
+ * unprojects screen points with, and the world origin a projected point is
+ * relative to. */
+#define MAP_VIEW_PROJECTION 0x70 /* s32[16]: view*projection matrix, projects world points to the screen */
+#define MAP_VIEW_MATRIX     0xb0 /* s32[9]: Q12 inverse of the projection's 3x3, unprojects screen points */
 #define MAP_VIEW_ORIGIN     0xf0 /* s32[3]: world position a projected point is added to */
 #define MAP_TILESET         0x5157 /* u8 battle-setting/tileset index, selects the terrain tileset bank */
 #define MAP_FOG             0x5156 /* u8 nonzero when fog of war hides distant units */
@@ -365,6 +371,18 @@ enum {
     MAPORDER_CURSOR             = 9  /* map cursor placed on one tile */
 };
 
+/* Battle-preview target kind of a tile (GetTileTargetKind): the type of the attack
+ * order anchored on it, or this value when the tile has destructible impact-terrain
+ * hit points left. */
+#define MAP_TARGET_IMPACT_TERRAIN 1
+
+/* Damage-table kinds (the row GetWeaponDamagePercent indexes within a weapon's
+ * per-attacker damage table) for the non-unit battle-preview targets above, as
+ * returned by GetDamageTargetIndex. */
+#define DAMAGE_TARGET_IMPACT_TERRAIN 0x1d
+#define DAMAGE_TARGET_ATTACK_AREA    0x1e
+#define DAMAGE_TARGET_ATTACK_LINE    0x1f
+
 /* One record of the map's order queue (MAP_ORDERS): the tile rectangle the order
  * covers, its type and the value and countdown it runs with.  The byte at +0x05
  * holds the player the order belongs to, its enabled flag and its mode. */
@@ -462,8 +480,12 @@ typedef struct MapSettingsPlayer {
 /* gMapConfig, the decoded per-battle configuration (a 16-byte record): a u16
  * flags word followed by the battle setting, value limits and per-player mask. */
 #define MAPCONFIG_FLAGS     0x00 /* u16 packed rule flags */
+#define MAPCONFIG_MODE      0x00 /* u16: the battle mode in the low three bits of MAPCONFIG_FLAGS */
+#define MAPCONFIG_MODE_MASK 0x0007 /* low three bits of MAPCONFIG_FLAGS */
+#define MAPCONFIG_MODE_TEAM 0    /* battle mode of the story/team battles, whose maps restrict what may be built */
 #define MAPCONFIG_PROPERTY_LIMIT 0x02 /* u8 properties a player must own to win; 0 disables the rule */
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
+#define MAPCONFIG_UNBUILDABLE_KINDS 0x0C /* u32 per unit kind: a set bit means the map forbids building that kind (a map script sets and clears the bits) */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
@@ -708,6 +730,16 @@ enum {
 #define MAP_PREVIEW_CURSOR_RAMP 0x40 /* u16[16] per-frame cursor colours */
 #define MAP_PREVIEW_CURSOR_COLOR 14  /* colour of the preview palette the ramp rewrites */
 
+/* A map-preview layer sprite (created by DrawMapPreview, one per layer): over a
+ * 64-frame cycle it copies the map's top half into its VRAM layer, then the bottom
+ * half, and later stamps the visible units' markers. */
+#define MAP_PREVIEW_SPRITE_VRAM  0x34 /* s32: VRAM offset the layer's tiles are copied to */
+#define MAP_PREVIEW_SPRITE_FRAME 0x6C /* s16: per-frame counter driving the copies */
+#define MAP_PREVIEW_FRAME_MASK   0x3F /* the counter wraps every 64 frames */
+#define MAP_PREVIEW_FRAME_TOP    0    /* copy the map's top half */
+#define MAP_PREVIEW_FRAME_BOTTOM 1    /* copy the map's bottom half */
+#define MAP_PREVIEW_FRAME_UNITS  22   /* stamp a marker for every visible unit */
+
 /* The battle map's per-player states: five 0x8c-byte records at map+0x67a4.
  * Player 0 is team A's base player and player 1 team B's; the remaining players
  * are allies sharing one of those armies (see MAP_TEAM_A_PLAYER / MAP_TEAM_B_PLAYER). */
@@ -739,6 +771,7 @@ enum {
 #define MAP_SCRIPT_STATE_IP     0x04
 #define MAP_SCRIPT_STATE_WAIT   0x08 /* wait callback run each frame while the command runs; 0 finishes it */
 #define MAP_SCRIPT_STATE_PLAYER 0x11 /* u8 player id the wait command targets */
+#define MAP_SCRIPT_STATE_TURN   0x12 /* s16 map turn the wait command waits for, -1 for any */
 #define MAP_SCRIPT_OPERAND0     0x08 /* s16 first operand of the current command */
 #define MAP_SCRIPT_OPERAND1     0x0A /* s16 second operand */
 #define MAP_SCRIPT_OPERAND2     0x0C /* s32 wide operand */
@@ -853,6 +886,11 @@ enum {
 /* gCurrentMap[2] points to the three-slot pool of active unit-move controllers:
  * a byte is nonzero while the controller with that slot exists. */
 #define MAP_UNIT_MOVE_SLOTS 0x08
+/* The four block pointers held in gCurrentMap, as byte offsets (gCurrentMap[0..3]). */
+#define MAP_DATA_PTR        0x00 /* the runtime battle map (the MAP_* fields) */
+#define MAP_VIEW_PTR        MAPVIEW_CONTROLLER_INDEX * 4 /* the map-view controller */
+#define MAP_UNIT_MOVE_PTR   0x08 /* the MAP_UNIT_MOVE_SLOTS pool */
+#define MAP_EFFECT_PTR      0x0C /* the MAP_EFFECT_* state */
 
 /* gCurrentMap[1] is the map-view controller: it owns the scroll task and gets
  * a callback run each time a scroll pan finishes. */
@@ -931,11 +969,14 @@ enum {
 #define BATTLE_END_SPRITE_Z 0xFF03
 
 /* The battle-preview panel sprite (gBattlePreviewPanelDef, the class function
- * func_0209eaf4 creates): the unit it previews and the tile it was opened on. */
-#define BATTLE_PREVIEW_UNIT 0x34 /* void *unit record, 0 when it previews the tile */
+ * func_0209eaf4 creates) and the preview sprite built under it: the feature it
+ * previews and the tile it was opened on. */
+#define BATTLE_PREVIEW_UNIT 0x34 /* void *MapOrder feature it previews, 0 when it previews the tile */
 #define BATTLE_PREVIEW_X    0x38 /* s32 tile x */
 #define BATTLE_PREVIEW_Y    0x3C /* s32 tile y */
 #define BATTLE_PREVIEW_ARMED 0x60 /* s32 nonzero when confirming the preview issues the battle command; 0 for a preview that only shows the forecast (the AI's own previews) */
+#define BATTLE_PREVIEW_MODE 0x6c /* s16 the previewed feature's order type (MAP_ORDER_TYPE) */
+#define BATTLE_PREVIEW_VALUE 0x6e /* s16 the previewed feature's value / remaining HP (MAP_ORDER_VALUE) */
 
 /* Player control kind (PLAYER_CONTROL_OFF). */
 enum {
@@ -977,6 +1018,11 @@ enum {
 /* Map ids in this range are campaign maps with a full 0x6f8-byte record. */
 #define MAP_ID_CAMPAIGN_FIRST 0xE1
 #define MAP_ID_CAMPAIGN_END   0x1A9 /* one past the last campaign map */
+
+/* The campaign ids are divided into equal blocks by player slot: the block a
+ * map id falls in, (id - MAP_ID_CAMPAIGN_FIRST) / MAP_ID_CAMPAIGN_PER_PLAYER,
+ * is the slot of the player who owns it. */
+#define MAP_ID_CAMPAIGN_PER_PLAYER 50
 
 /* A saved map record. The 0x54-byte header is shared by the compact saved form
  * (0x2AC bytes: a 20x20 terrain area with the packed unit entries after it at

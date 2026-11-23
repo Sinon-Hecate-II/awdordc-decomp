@@ -69,13 +69,13 @@ if(ReportNasError()) return; M2C_FIELD(M2C_FIELD(&gNasLogin,void **,NAS_LOGIN_CO
  * the descriptor to CreateNasConnection. */
 void StartNasRequest(void *a,s32 b){
 extern M2C_UNK gNasLogin;
-u64 GetSystemTick(void); s32 func_02032370(void *); s32 func_02032358(void *); s32 IsLocalPlayerCode(void *); void InitNasLoginKey(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 HeapAllocAligned(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void CreateNasConnection(void *,s32);void MI_CpuFill8(void *,s32,s32);
+u64 GetSystemTick(void); s32 HasNasKeyRecord(void *); s32 IsNasKeyRecord(void *); s32 IsLocalPlayerCode(void *); void InitNasLoginKey(void *); void FormatNasId(void *,s32,void *); void func_02031dfc(void *,u32); s32 Utf16StringLength(s32); void MI_CpuCopy8(s32,void *,s32);void StringCopy(void *,M2C_UNK); s32 HeapAllocAligned(s32,s32,s32); void HeapAlloc(void);void HeapFree(M2C_UNK,M2C_UNK,M2C_UNK);void CreateNasConnection(void *,s32);void MI_CpuFill8(void *,s32,s32);
 u8 buf[72];void *p; s32 n;
 MI_CpuFill8(buf,0,72);M2C_FIELD(&gNasLogin,void **,8)=a;M2C_FIELD(&gNasLogin,s32 *,0)=b;
-if(func_02032370(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),void **,28))){
+if(HasNasKeyRecord(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),void **,28))){
 p=M2C_FIELD(&gNasLogin,void **,4);FormatNasId(M2C_FIELD(p,u8 **,28)+16,M2C_FIELD(M2C_FIELD(p,void **,28),s32 *,36),(u8 *)p+0x248);
 }else{
-if(!func_02032358((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x3c)){
+if(!IsNasKeyRecord((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x3c)){
 if(IsLocalPlayerCode(M2C_FIELD(M2C_FIELD(&gNasLogin,void **,4),u8 **,28)+4)){
 p=M2C_FIELD(&gNasLogin,void **,4);M2C_FIELD(p,Record3A *,0x3c)=M2C_FIELD(M2C_FIELD(p,void **,28),Record3A *,4);
 }else InitNasLoginKey((u8 *)M2C_FIELD(&gNasLogin,void **,4)+0x3c);
@@ -96,14 +96,14 @@ CreateNasConnection(buf,n);
 #pragma opt_strength_reduction off
 void func_0203a2b4(void) {
     extern M2C_UNK gNasLogin;
-    s32 func_02032b98(void);
+    s32 Nas_GetConnectionResult(void);
     void Nas_GetResult(void *);
     void FreeNasConnection(void);
     u64 GetSystemTick(void);
     u64 U64Divide(u64, u64);
     void StringCopy(void *, M2C_UNK);
     void HeapFree(M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 func_02032370(void *);
+    s32 HasNasKeyRecord(void *);
     void StartNasGpiConnection(M2C_UNK, M2C_UNK, M2C_UNK *, M2C_UNK);
     void MI_CpuFill8(void *, s32, s32);
     s32 Utf16StringLength(s32);
@@ -118,7 +118,7 @@ void func_0203a2b4(void) {
     void *context;
     u64 now, stored, diff, q;
 
-    r = func_02032b98();
+    r = Nas_GetConnectionResult();
     if (r == 0x15) {
         Nas_GetResult(buf + 0x20C);
         StringCopy((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x48, (M2C_UNK)(buf + 0x200 + 0x56));
@@ -126,7 +126,7 @@ void func_0203a2b4(void) {
         FreeNasConnection();
         HeapFree(0, M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24), 0);
         M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), M2C_UNK *, 0x24) = 0;
-        if (func_02032370(M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), void **, 0x1C))) {
+        if (HasNasKeyRecord(M2C_FIELD(M2C_FIELD(&gNasLogin, void **, 4), void **, 0x1C))) {
             M2C_FIELD(&gNasLogin, void (**)(void *, void *, s32), 8)(
                 (void *)((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x48),
                 (void *)((u8 *)M2C_FIELD(&gNasLogin, void **, 4) + 0x148),
@@ -139,7 +139,7 @@ void func_0203a2b4(void) {
                 3);
         }
     } else {
-        r = func_02032b98();
+        r = Nas_GetConnectionResult();
         if (r == 0) {
             return;
         }
@@ -433,12 +433,17 @@ if(M2C_FIELD(session,s32 *,MATCH_SESSION_STATUS)!=0 && M2C_FIELD(session,s32 *,M
 func_0203b128();
 }
 
-void func_0203ad24(M2C_UNK a,void *b) {
-extern M2C_UNK gMatchSessionMgr;
-extern M2C_UNK func_0203b9a8;
-M2C_UNK gpiGetInfo(M2C_UNK,s32,M2C_UNK,M2C_UNK,M2C_UNK *,s32);
-if(!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,0x18))return;
-gpiGetInfo(a,M2C_FIELD(b,s32 *,0),0,0,&func_0203b9a8,0);
+/* Incoming signed buddy request: when a match session is running and has player
+ * records, fetch the requester's profile (the request's sender id) and hand the
+ * reply to AddBuddyProfileCallback, which adds the matching session player as a
+ * buddy. */
+void HandleBuddyAddRequest(M2C_UNK connection, void *request) {
+    extern M2C_UNK gMatchSessionMgr;
+    extern M2C_UNK AddBuddyProfileCallback;
+    M2C_UNK gpiGetInfo(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK *, s32);
+
+    if (!M2C_FIELD(M2C_FIELD(&gMatchSessionMgr, void **, MATCH_SESSION_MGR_SESSION), void **, MATCH_SESSION_PLAYERS)) return;
+    gpiGetInfo(connection, M2C_FIELD(request, s32 *, GPI_PLAYER_INFO_ID), 0, 0, &AddBuddyProfileCallback, 0);
 }
 
 /* Handle the GameSpy buddy-add authorization message: when the player-info

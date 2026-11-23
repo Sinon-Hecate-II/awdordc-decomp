@@ -18,9 +18,9 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_01ff85b8(s32, M2C_UNK, M2C_UNK);
     M2C_UNK func_020026d8(M2C_UNK);
     M2C_UNK func_02002968(M2C_UNK);
-    M2C_UNK func_02002ab8(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPalette(M2C_UNK);
     M2C_UNK func_02002bb8(M2C_UNK);
-    M2C_UNK func_02003124(M2C_UNK);
+    M2C_UNK GX_SetBankForSubBG(M2C_UNK);
     M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
@@ -32,7 +32,7 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK func_02081590(M2C_UNK *, s32);
     M2C_UNK func_020815fc(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK Apply3DSpriteLayout(M2C_UNK *);
-    M2C_UNK func_02082c84();
+    M2C_UNK GX_ReleaseBankGrants();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
@@ -144,12 +144,12 @@ void func_ov005_02218fd0(void *arg0) {
     s32 var_r0_6;
     s32 var_r1;
 
-    func_02082c84();
+    GX_ReleaseBankGrants();
     func_020026d8(1);
     func_02002968(2);
-    func_02003124(4);
+    GX_SetBankForSubBG(4);
     GX_SetBankForSubOBJ(8);
-    func_02002ab8(0x40);
+    GX_SetBankForBGExtPalette(0x40);
     func_02002bb8(0x20);
     GX_SetBankForBGExtPlttSub(0x80);
     GX_SetBankForOBJExtPlttSub(0x100);
@@ -462,7 +462,7 @@ SetFileDirectory(sResultDir);
 LoadDecompressedFileTo(sResultBackgroundFile,M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540);
 AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,void **,0x2c)+0x540,192,0x9000);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
-func_01ffaa6c(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;Sprite_ResumeAnimation(p);
+DecrementSpriteChildCount(M2C_FIELD(p,void **,0x38));M2C_FIELD(p,s32 *,0x38)=0;Sprite_ResumeAnimation(p);
 }
 }
 

@@ -220,7 +220,31 @@ if(M2C_FIELD(&gSoundCommandQueueState,s32 *,8)==0)r=M2C_FIELD(&gSoundCommandQueu
 OS_RestoreInterrupts(s);return r;
 }
 
-s32 Sound_IsCommandReached(u32 a){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 r;u32 v=M2C_FIELD(&gSoundCommandQueueState,u32 *,4);if(a>v){if(a-v<0x80000000U)r=0;else r=1;}else{if(v-a<0x80000000U)r=1;else r=0;}OS_RestoreInterrupts(state);return r;}
+/* Test whether the driver's completed-command counter has reached a queue mark, accounting for wraparound. */
+s32 Sound_IsCommandReached(u32 commandMark) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    extern M2C_UNK gSoundCommandQueueState;
+    s32 interruptState = OS_DisableInterrupts();
+    s32 reached;
+    u32 completedCount = M2C_FIELD(&gSoundCommandQueueState, u32 *, 4);
+
+    if (commandMark > completedCount) {
+        if (commandMark - completedCount < 0x80000000U) {
+            reached = 0;
+        } else {
+            reached = 1;
+        }
+    } else {
+        if (completedCount - commandMark < 0x80000000U) {
+            reached = 1;
+        } else {
+            reached = 0;
+        }
+    }
+    OS_RestoreInterrupts(interruptState);
+    return reached;
+}
 
 s32 func_02009574(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();s32 count=0;void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);if(p){do{p=*(void **)p;count++;}while(p);}OS_RestoreInterrupts(state);return count;}
 

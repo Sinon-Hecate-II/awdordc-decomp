@@ -55,7 +55,7 @@ void AddPlayerThreatInfluence(u8 player) {
             continue;
         }
         if (((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->flags & 0x20) {
-            if (!func_ov000_021a96f4(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind, 0)) {
+            if (!GetSubmergedAttackDamage(unit->kind, ((Unit98 *)M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT))->kind, 0)) {
                 continue;
             }
         }

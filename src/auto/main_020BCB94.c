@@ -79,7 +79,16 @@ void SpawnArmySpecialEffect(u8 x, u8 y, M2C_UNK arg2, M2C_UNK arg3, s32 parent) 
     }
 }
 
-void func_020bcd90(void *a){extern void **gCurrentMap;extern u8 data_021261a0[];void func_02096b24(s32);u32 v=(u32)(M2C_FIELD((u8 *)*gCurrentMap+M2C_FIELD(a,s32 *,0x5c)*0x8c,s32 *,0x6810)<<24)>>24;func_02096b24(M2C_FIELD(data_021261a0+v*0x9c,s32 *,M2C_FIELD(a,s32 *,0x68)*4));}
+/* Show the army- and variant-specific dialog for a player's unit-view object. */
+void ShowPlayerUnitDialog(void *unitView) {
+    extern void **gCurrentMap;
+    extern u8 data_021261a0[];
+    void ShowPlayerUnitDialogSequence(s32);
+    u32 armyId;
+
+    armyId = (u32)(M2C_FIELD((u8 *)*gCurrentMap + M2C_FIELD(unitView, s32 *, PLAYER_UNIT_VIEW_PLAYER) * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24;
+    ShowPlayerUnitDialogSequence(M2C_FIELD(data_021261a0 + armyId * 0x9c, s32 *, M2C_FIELD(unitView, s32 *, PLAYER_UNIT_VIEW_VARIANT) * 4));
+}
 
 void func_020bcde0(void) {
     M2C_UNK func_020c4764();
@@ -128,7 +137,7 @@ void func_020bcee4(void *arg0) {
     M2C_UNK func_020a33f0(s32, M2C_UNK);
     M2C_UNK func_020a34a8(s32);
     M2C_UNK func_020a34f4(s32);
-    M2C_UNK func_020c0a88();
+    M2C_UNK LoadUiGraphics();
     M2C_UNK RefreshMapView();
     s32 temp_r4;
 
@@ -136,7 +145,7 @@ void func_020bcee4(void *arg0) {
     func_020a34a8(temp_r4);
     func_020a34f4(temp_r4);
     func_020a33f0(temp_r4, 0);
-    func_020c0a88();
+    LoadUiGraphics();
     RefreshMapView();
 }
 
@@ -446,7 +455,18 @@ void UpdateSelectionFromTouch(s32 *outIndex, s32 count) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_TOUCH_TILE_Y) = 255;
 }
 
-s32 FindTargetIndexAt(s32 n,s32 x,s32 y){void *GetTargetPosition(s32);s32 i;for(i=0;i<n;i++){void *p=GetTargetPosition(i);if(x==M2C_FIELD(p,s16 *,4)&&y==M2C_FIELD(p,s16 *,6))return i;}return -1;}
+/* Index of the target at tile (x,y) among the first `count` entries of the battle
+ * map's target list, or -1 when no target sits there. */
+s32 FindTargetIndexAt(s32 count, s32 x, s32 y) {
+    void *GetTargetPosition(s32);
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+        MapTargetEntry *target = GetTargetPosition(i);
+        if (x == target->x && y == target->y) return i;
+    }
+    return -1;
+}
 
 /* Returns an action code for the unit under the current cursor when it matches the selected tile. */
 s32 GetTouchActionFlags(s32 unitIndex) {

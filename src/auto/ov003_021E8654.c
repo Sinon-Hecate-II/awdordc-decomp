@@ -139,7 +139,7 @@ void func_ov003_021e8958(void *arg0) {
     void func_ov003_021e771c(void *, void *);
     void CreateWaypointPanelSprites(void *, void *);
     void *CreateFrameBorderSprite(void *);
-    void func_020893f4(void *, s32, s32);
+    void LoadFrameBorderSpritePattern(void *, s32, s32);
     void func_ov003_021e97bc(void *, s32, s32, s32, s32);
     void Sync3DSpriteToTarget(void *);
     void func_ov003_021e97fc(void *, s32);
@@ -202,13 +202,13 @@ void func_ov003_021e8958(void *arg0) {
     func_ov003_021e8f98(M2C_FIELD(arg0, void **, 0x64), arg0);
     CreateWaypointPanelSprites(M2C_FIELD(arg0, void **, 0x68), arg0);
     M2C_FIELD(arg0, void **, 0x58) = CreateFrameBorderSprite(arg0);
-    func_020893f4(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
+    LoadFrameBorderSpritePattern(M2C_FIELD(arg0, void **, 0x58), 0xb000, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x58), 0xa, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x58));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x58), 1);
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x58));
     M2C_FIELD(arg0, void **, 0x5c) = CreateFrameBorderSprite(arg0);
-    func_020893f4(M2C_FIELD(arg0, void **, 0x5c), 0xb400, 0xa);
+    LoadFrameBorderSpritePattern(M2C_FIELD(arg0, void **, 0x5c), 0xb400, 0xa);
     func_ov003_021e97bc(M2C_FIELD(arg0, void **, 0x5c), 0x38, 0x10, 0x38, 0x38);
     Sync3DSpriteToTarget(M2C_FIELD(arg0, void **, 0x5c));
     func_ov003_021e97fc(M2C_FIELD(arg0, void **, 0x5c), 1);

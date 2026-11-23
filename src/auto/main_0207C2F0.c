@@ -46,7 +46,7 @@ s32 StringHasTerminator(u8 *arg0, s32 arg1) {
     return 0;
 }
 
-void func_0207c39c(void *arg0) {
+void RunMemoryCopyTask(void *arg0) {
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
     M2C_UNK MI_CpuCopy8(s32, s32, s32);
     s32 flags = M2C_FIELD(arg0, s32 *, 0x40);
@@ -61,47 +61,52 @@ void func_0207c39c(void *arg0) {
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void QueueMemoryCopy(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
+/* Queue a memory copy: the task runner copies `size` bytes from `source` to
+ * `dest` (32-bit words when the size is word-aligned, bytes otherwise) and frees
+ * the source block afterwards when `freeSource` is set. */
+void QueueMemoryCopy(s32 source, s32 dest, s32 size, s32 freeSource) {
     M2C_UNK SetSpriteZ(void *, s32);
     void *CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
-    void func_0207c39c(void *);
-    void *temp_r0;
+    void RunMemoryCopyTask(void *);
+    void *task;
 
-    temp_r0 = CreateQueuedSpriteTask((M2C_UNK *)&func_0207c39c, 2);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x50) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    SetSpriteZ(temp_r0, 0xFF02);
+    task = CreateQueuedSpriteTask((M2C_UNK *)&RunMemoryCopyTask, 2);
+    M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE) = source;
+    M2C_FIELD(task, s32 *, DS3D_TASK_DEST) = dest;
+    M2C_FIELD(task, s32 *, DS3D_TASK_SIZE) = size;
+    M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) = freeSource;
+    M2C_FIELD(task, s32 *, 0x48) = 0;
+    M2C_FIELD(task, s32 *, 0x4C) = 0;
+    SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
-void func_0207c42c(void *arg0) {
-    M2C_UNK func_02004b54();
+void TextureBankCopyTask(void *arg0) {
+    M2C_UNK GX_BeginLoadTex();
     M2C_UNK LoadTextureBankBlock(s32, s32, s32);
-    M2C_UNK func_02004cf0();
+    M2C_UNK GX_EndLoadTex();
     M2C_UNK HeapFreeBlock(s32);
-    func_02004b54();
+    GX_BeginLoadTex();
     LoadTextureBankBlock(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x44), M2C_FIELD(arg0, s32 *, 0x40));
-    func_02004cf0();
+    GX_EndLoadTex();
     if (M2C_FIELD(arg0, s32 *, 0x50) == 0) {
         return;
     }
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_0207c464(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    void *temp_r0;
+/* Queue a copy of `size` bytes from `source` into the texture-bank region at byte
+ * `offset`; the source block is freed afterwards when `freeSource` is set. */
+void QueueTextureBankCopy(s32 source, s32 offset, s32 size, s32 freeSource) {
+    void *task;
 
-    temp_r0 = CreateQueuedSpriteTask(&func_0207c42c, 0);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x50) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
-    SetSpriteZ(temp_r0, 0xFF02);
+    task = CreateQueuedSpriteTask(&TextureBankCopyTask, 0);
+    M2C_FIELD(task, s32 *, DS3D_TASK_SOURCE) = source;
+    M2C_FIELD(task, s32 *, DS3D_TASK_OFFSET) = offset;
+    M2C_FIELD(task, s32 *, DS3D_TASK_SIZE) = size;
+    M2C_FIELD(task, s32 *, DS3D_TASK_FREE_SOURCE) = freeSource;
+    M2C_FIELD(task, s32 *, 0x48) = 0;
+    M2C_FIELD(task, s32 *, 0x4C) = 0;
+    SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
 void CopyMainOBJExtPaletteWordsTask(void *arg0) {
@@ -250,18 +255,22 @@ void QueueOBJExtPaletteUpload(s32 source, s32 slot, s32 offset, s32 byteCount, u
     SetSpriteZ(task, DS3D_COPY_TASK_Z);
 }
 
-void LoadGraphicsBlock(void *arg0, u32 arg1) {
+/* Decompress the graphics block `block` into `dest`: its header's type nibble
+ * selects the compression type and the handler table holds a VRAM and a main-RAM
+ * variant of each type (the RAM one an entry further).  A type without a handler
+ * is uncompressed and copied word for word. */
+void LoadGraphicsBlock(void *block, u32 dest) {
     M2C_UNK MI_CpuCopy32(s32, s32, s32);
-    extern void (*data_02101448[])();
-    void (*func)();
-    u8 index = (s32)(M2C_FIELD(arg0, u8 *, 0) & 0xF0) >> 3;
-    if (arg1 < 0x04000000U) index++;
-    func = data_02101448[index];
-    if (func == NULL) {
-        MI_CpuCopy32((s32)arg0, arg1, M2C_FIELD(arg0, u32 *, 0) >> 8);
+    extern void (*gDecompressBlockHandlers[])();
+    void (*handler)();
+    u8 index = (s32)(M2C_FIELD(block, u8 *, COMP_BLOCK_WORD) & COMP_BLOCK_TYPE_MASK) >> 3;
+    if (dest < COMP_BLOCK_RAM_END) index++;
+    handler = gDecompressBlockHandlers[index];
+    if (handler == NULL) {
+        MI_CpuCopy32((s32)block, dest, M2C_FIELD(block, u32 *, COMP_BLOCK_WORD) >> COMP_BLOCK_SIZE_SHIFT);
         return;
     }
-    func(arg0, arg1);
+    handler(block, dest);
 }
 
 u32 GetDecompressedSize(u32 *arg0) {
@@ -365,7 +374,7 @@ s32 func_0207c9c8(s32 arg0, s32 arg1) {
     return *(volatile s32 *)0x040002A0;
 }
 
-s32 func_0207ca08(s32 arg0) {
+s32 HardwareSquareRoot(s32 arg0) {
     *(volatile u16 *)0x040002B0 = 0;
     *(volatile s32 *)0x040002B8 = arg0;
     while (*(volatile u16 *)0x040002B0 & 0x8000) {}
@@ -456,9 +465,9 @@ M2C_UNK InitMapViewCameraVectors(M2C_UNK *view, M2C_UNK eyeX, M2C_UNK eyeY, M2C_
  * point, its ground projection and the up axis into the view object, builds the
  * view matrix from them and inverts it into the view's inverse matrix. */
 void BuildMapViewTransform(void *view) {
-    void func_0200402c(void *, void *, void *, s32, void *);
+    void G3X_SetCamera(void *, void *, void *, s32, void *);
     void MTX_Copy33(void *, void *);
-    M2C_UNK func_02000ca0(void *, s32);
+    M2C_UNK MTX_Inverse33(void *, s32);
     Vec0207 eye = {0, 0, 0};
     Vec0207 ground = {0, 0, 0};
     Vec0207 up = gMapViewUpVector;
@@ -473,22 +482,27 @@ void BuildMapViewTransform(void *view) {
     *(Vec0207 *)((u8 *)view + 0xf0) = eye;
     *(Vec0207 *)((u8 *)view + 0xfc) = ground;
     *(Vec0207 *)((u8 *)view + 0x108) = up;
-    func_0200402c(&eye, &up, &ground, 1, (u8 *)view + 0x1c);
+    G3X_SetCamera(&eye, &up, &ground, 1, (u8 *)view + 0x1c);
     MTX_Copy33((u8 *)view + 0x1c, matrix);
-    func_02000ca0(matrix, (s32)view + 0x4c);
+    MTX_Inverse33(matrix, (s32)view + 0x4c);
 }
 
-void func_0207cddc(s32 arg0, M2C_UNK arg1) {
- M2C_UNK func_02000ca0(void *, s32);
- M2C_UNK Matrix3x4To4x4(s32, void *);
- M2C_UNK func_02001524(s32, void *);
- M2C_UNK func_02001748(void *, M2C_UNK, s32);
- s32 sp24[16];
- s32 sp0[9];
- Matrix3x4To4x4(arg0 + 0x1C, sp24);
- func_02001748(sp24, arg1, arg0 + 0x70);
- func_02001524(arg0 + 0x70, sp0);
- func_02000ca0(sp0, arg0 + 0xB0);
+/* Compose the map view's view and projection matrices: expand the view's affine
+ * 3x4 eye matrix to 4x4, multiply it by `projection` into view+MAP_VIEW_PROJECTION,
+ * then store the inverse of that matrix's 3x3 part at view+MAP_VIEW_MATRIX, which
+ * the view uses to unproject screen points back into map space. */
+void BuildMapViewScreenTransform(void *view, M2C_UNK projection) {
+    M2C_UNK MTX_Inverse33(void *, s32);
+    M2C_UNK Matrix3x4To4x4(s32, void *);
+    M2C_UNK MTX_Copy33From44(s32, void *);
+    M2C_UNK MTX_Mult4x4(void *, M2C_UNK, s32);
+    s32 eyeMatrix[16];
+    s32 projection33[9];
+
+    Matrix3x4To4x4((s32)view + 0x1C, eyeMatrix);
+    MTX_Mult4x4(eyeMatrix, projection, (s32)view + MAP_VIEW_PROJECTION);
+    MTX_Copy33From44((s32)view + MAP_VIEW_PROJECTION, projection33);
+    MTX_Inverse33(projection33, (s32)view + MAP_VIEW_MATRIX);
 }
 
 void func_0207ce28(M2C_UNK arg0) {
@@ -514,10 +528,10 @@ M2C_UNK UpdateMapViewEye(void *view) {
 }
 
 void SetViewZoom(void *arg0, s16 arg1) {
-    void func_0207cfb0(void *, s16);
+    void SetViewZoomField(void *, s16);
     M2C_UNK UpdateViewForZoom(M2C_UNK);
     void SaveViewZoomOption(void *);
-    func_0207cfb0(arg0, arg1);
+    SetViewZoomField(arg0, arg1);
     UpdateViewForZoom((M2C_UNK)arg0);
     SaveViewZoomOption(arg0);
 }
@@ -538,7 +552,7 @@ s32 GetViewWidthForZoom(s32 zoom) {
     return EaseInterpolate(EASE_LINEAR, ((u8 *)&zoomedIn)[VIEW_PRESET_WIDTH], ((u8 *)&zoomedOut)[VIEW_PRESET_WIDTH], zoom, 0x80);
 }
 
-void func_0207cfb0(void *arg0, s16 arg1) {
+void SetViewZoomField(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0xE) = arg1;
 }
 

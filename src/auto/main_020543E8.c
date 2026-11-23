@@ -35,32 +35,48 @@ void gpiFreeOperation(void **connectionRef, GPIOperation *operation) {
     gpiFree(operation);
 }
 
-void gpiRemoveOperation(void **a,void *b) {
- void *base=*a; void *prev=NULL; void *p=M2C_FIELD(base,void **,0x424);
- while(p) {if(p==b) {if(!prev) M2C_FIELD(base,void **,0x424)=M2C_FIELD(p,void **,32); else M2C_FIELD(prev,void **,32)=M2C_FIELD(b,void **,32); gpiFreeOperation(a,b); return;} prev=p; p=M2C_FIELD(p,void **,32);}
+/* Unlink the queued operation `operation` from the connection's pending
+ * operation list and free it. */
+void gpiRemoveOperation(void **connectionRef, GPIOperation *operation) {
+    void *connection = *connectionRef;
+    GPIOperation *prev = NULL;
+    GPIOperation *p = M2C_FIELD(connection, GPIOperation **, GPI_CONN_OPERATIONS);
+    while (p) {
+        if (p == operation) {
+            if (!prev) M2C_FIELD(connection, GPIOperation **, GPI_CONN_OPERATIONS) = p->next;
+            else prev->next = operation->next;
+            gpiFreeOperation(connectionRef, operation);
+            return;
+        }
+        prev = p;
+        p = p->next;
+    }
 }
 
-s32 func_020544d4(void **arg0, void **arg1, s32 arg2) {
-    void *var_r3;
+/* Find the pending operation with id `id` in the connection's operation list;
+ * store it through `operationOut` (or NULL when there is none) and return
+ * whether one was found. */
+s32 gpiFindOperationById(void **connectionRef, void **operationOut, s32 id) {
+    GPIOperation *op;
 
-    var_r3 = M2C_FIELD(*arg0, void **, 0x424);
-    if (var_r3 != NULL) {
+    op = M2C_FIELD(*connectionRef, GPIOperation **, GPI_CONN_OPERATIONS);
+    if (op != NULL) {
 loop_1:
-        if (M2C_FIELD(var_r3, s32 *, 0x18) == arg2) {
-            if (arg1 != NULL) {
-                *arg1 = var_r3;
+        if (op->id == id) {
+            if (operationOut != NULL) {
+                *operationOut = op;
             }
             return 1;
         }
-        var_r3 = M2C_FIELD(var_r3, void **, 0x20);
-        if (var_r3 == NULL) {
+        op = op->next;
+        if (op == NULL) {
             goto block_6;
         }
         goto loop_1;
     }
 block_6:
-    if (arg1 != NULL) {
-        *arg1 = NULL;
+    if (operationOut != NULL) {
+        *operationOut = NULL;
     }
     return 0;
 }

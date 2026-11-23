@@ -1,12 +1,13 @@
 /* 18 functions from 0x02046D38 to 0x02047B84 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 
 typedef struct { char bytes[17]; } HexDigits;
 typedef struct { char bytes[20]; } HashPrefix;
 typedef struct { u32 lo, hi; } Unk046Pair;
 typedef struct { Unk046Pair a, b; s32 flag; } Unk046State;
 void GetWfcProfile(void *);
-s32 func_02045d94(void *, s32);
+s32 FifoUploadWfcProfile(void *, s32);
 s32 BuildWfcProfile(void *);
 
 /* Encode a WFC profile code: pack the 16-bit seed, the 24-bit MAC address and
@@ -63,9 +64,19 @@ while(*(u64 *)(p+8)==0){
 }
 return 1;
 }
-s32 CreateWfcProfile(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(func_02045d94(&s,arg0)!=0) return 1; return 0; }
+s32 CreateWfcProfile(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(FifoUploadWfcProfile(&s,arg0)!=0) return 1; return 0; }
 
-s32 func_020470dc(Unk046State *p, s32 x) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&p->b; *(u64 *)&p->b=*(u64 *)&s.b; if(func_02045d94(p,x)!=0) return 1; return 0; }
+/* Copy the console's generated profile code into both id fields of the local
+ * profile record and upload the record over the FIFO, using `workBuffer` as the
+ * transfer scratch space.  Returns 1 when the transfer finished. */
+s32 UploadWfcProfileRecord(Unk046State *profile, s32 workBuffer) {
+    Unk046State own;
+    GetWfcProfile(&own);
+    *(u64 *)&profile->a = *(u64 *)&profile->b;
+    *(u64 *)&profile->b = *(u64 *)&own.b;
+    if (FifoUploadWfcProfile(profile, workBuffer) != 0) return 1;
+    return 0;
+}
 
 #pragma opt_propagation off
 #pragma opt_common_subs off
@@ -129,9 +140,25 @@ register u32 tmp4, tmp3;
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void GetWfcProfileIds(Unk046State *p) { Unk046State s; GetWfcProfile(&s); *(u64 *)&p->a=*(u64 *)&s.a; *(u64 *)&p->b=*(u64 *)&s.b; p->flag=*(u64 *)&s.a != 0; }
+/* Read the console's WFC profile into `ids`: copy the friend code and the
+   generated profile code out of the raw profile record, and report whether the
+   friend code is set. */
+void GetWfcProfileIds(WfcProfileIds *ids) {
+    WfcProfileIds profile;
+    GetWfcProfile(&profile);
+    *(u64 *)&ids->friendCode = *(u64 *)&profile.friendCode;
+    *(u64 *)&ids->profileCode = *(u64 *)&profile.profileCode;
+    ids->hasFriendCode = *(u64 *)&profile.friendCode != 0;
+}
 
-s32 IsWfcProfileEmpty(void) { Unk046State s; GetWfcProfile(&s); if(*(u64 *)&s.b==0 && *(u64 *)&s.a==0)return 1;return 0; }
+/* True when the local WFC profile holds no code: both the console's friend code
+ * and the profile code generated from its seed are zero. */
+s32 IsWfcProfileEmpty(void) {
+    WfcProfileRecord profile;
+    GetWfcProfile(&profile);
+    if (*(u64 *)&profile.profileCode == 0 && *(u64 *)&profile.friendCode == 0) return 1;
+    return 0;
+}
 
 u32 Base64EncodedLength(u32 n) { return ((n % 3 != 0) + n / 3) * 4; }
 

@@ -12,7 +12,7 @@ void InitNasLoginKey(void *record) {
     void GetWfcProfileIds(void *);
     void func_02031dd4(void *, u32, u32);
     void func_02031dfc(void *, u32);
-    void func_02031e94(void *, s32);
+    void SetPlayerRecordKind(void *, s32);
     u32 profile[5];
     u32 entropy[8];
     u32 i;
@@ -25,7 +25,7 @@ void InitNasLoginKey(void *record) {
     if (profile[4]) func_02031dd4(record, profile[0], profile[1]);
     else func_02031dd4(record, profile[2], profile[3]);
     func_02031dfc(record, (u32)((seed * NAS_KEY_SEED_MULT + NAS_KEY_SEED_ADD) >> 32));
-    func_02031e94(record, 1);
+    SetPlayerRecordKind(record, 1);
 }
 
 /* True when a NAS player record's code is this console's own: its friend code
@@ -39,14 +39,14 @@ if(ids.hasFriendCode) return *(u64 *)&ids.friendCode[0]==GetNasPlayerCode(record
 return *(u64 *)&ids.profileCode[0]==GetNasPlayerCode(record);
 }
 
-s32 func_02032358(s32 a) {
+s32 IsNasKeyRecord(s32 a) {
 s32 GetPlayerRecordKind();
 return GetPlayerRecordKind(a)==1;
 }
 
-s32 func_02032370(s32 arg0) {
-    M2C_UNK func_02032358(s32);
-    return func_02032358(arg0 + 0x10);
+s32 HasNasKeyRecord(s32 arg0) {
+    M2C_UNK IsNasKeyRecord(s32);
+    return IsNasKeyRecord(arg0 + 0x10);
 }
 
 s32 IsPlayerRecordPresent(void) {
@@ -78,7 +78,7 @@ return 0;
 }
 
 s32 func_020323f4(void *arg0) {
-    if ((func_02032358(arg0 + 0x10) != 0) && ((s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0)) {
+    if ((IsNasKeyRecord(arg0 + 0x10) != 0) && ((s32) M2C_FIELD(arg0, s32 *, 0x1C) > 0)) {
         return 1;
     }
     return 0;
@@ -174,27 +174,30 @@ void func_02032634(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02031e04(M2C_UNK, M2C_UNK, M2C_UNK);
     MI_CpuFill8(arg0, 0, 0xC);
     func_02031e04(arg0, arg1, arg2);
-    func_02031e94(arg0, 2);
+    SetPlayerRecordKind(arg0, 2);
 }
 
-void func_02032670(void *a,Unk032Record *b) {
+/* Copy the local player's 12-byte identity record out of the profile-id block
+ * `block`: once the block's +0x10 key has been resolved to a profile id, build a
+ * profile record from that id, otherwise copy the block's NAS login key. */
+void GetLocalPlayerRecord(void *block,Unk032Record *out) {
 M2C_UNK MI_CpuFill8();
-M2C_UNK func_02031e0c(s32,s32);
-M2C_UNK func_02031e94();
-MI_CpuFill8(b,0,12);
-if(func_02032370((s32)a)!=0) {
-func_02031e0c((s32)b,M2C_FIELD(a,s32 *,0x1c));
-func_02031e94(b,3);
-} else *b=*(Unk032Record *)((u8 *)a+4);
+M2C_UNK SetProfileRecordId(s32,s32);
+M2C_UNK SetPlayerRecordKind();
+MI_CpuFill8(out,0,12);
+if(HasNasKeyRecord((s32)block)!=0) {
+SetProfileRecordId((s32)out,M2C_FIELD(block,s32 *,PROFILE_ID_BLOCK_ID));
+SetPlayerRecordKind(out,PLAYER_RECORD_KIND_PROFILE);
+} else *out=*(Unk032Record *)((u8 *)block+PROFILE_ID_BLOCK_LOGIN_KEY);
 }
 
 void AssignPlayerRecordId(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02031e0c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02031e94(M2C_UNK, M2C_UNK);
+    M2C_UNK SetProfileRecordId(M2C_UNK, M2C_UNK);
+    M2C_UNK SetPlayerRecordKind(M2C_UNK, M2C_UNK);
     MI_CpuFill8(arg0, 0, 0xC);
-    func_02031e0c(arg0, arg1);
-    func_02031e94(arg0, 3);
+    SetProfileRecordId(arg0, arg1);
+    SetPlayerRecordKind(arg0, 3);
 }
 
 void FormatPlayerNasId(void *a,s32 b,s32 c) {
@@ -248,7 +251,7 @@ void func_0203287c(s32 arg0) {
     FormatPlayerRecordId(arg0, arg0 + 0x10);
 }
 
-void func_0203289c(s32 arg0) {
+void SetNasServerUrl(s32 arg0) {
     extern s32 gNasServer;
     gNasServer = arg0;
 }
@@ -340,15 +343,20 @@ void func_02032b68(void) {
     OS_JoinThread(M2C_FIELD(&gNasConnection, void **, 8) + 0x1318);
 }
 
-s32 func_02032b98(void) {
-M2C_UNK LockMutex(void *); M2C_UNK UnlockMutex(void *);
-extern M2C_UNK gNasConnection;
-s32 result;
-if (!M2C_FIELD(&gNasConnection,void **,8)) return 22;
-LockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
-result=M2C_FIELD(M2C_FIELD(&gNasConnection,void **,8),s32 *,0x1004);
-UnlockMutex(M2C_FIELD(&gNasConnection,void **,8)+0x13d8);
-return result;
+/* NAS connection outcome: NAS_CONN_RESULT_NO_CONNECTION while no connection
+ * block exists, otherwise the result code the connection task last published,
+ * read under the mutex that guards it. */
+s32 Nas_GetConnectionResult(void) {
+    M2C_UNK LockMutex(void *);
+    M2C_UNK UnlockMutex(void *);
+    extern M2C_UNK gNasConnection;
+    s32 result;
+
+    if (!M2C_FIELD(&gNasConnection, void **, 8)) return NAS_CONN_RESULT_NO_CONNECTION;
+    LockMutex(M2C_FIELD(&gNasConnection, void **, 8) + NAS_CONN_MUTEX);
+    result = M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, NAS_CONN_RESULT);
+    UnlockMutex(M2C_FIELD(&gNasConnection, void **, 8) + NAS_CONN_MUTEX);
+    return result;
 }
 
 /* Copies the NAS connection's result block (its head word is the NAS result
@@ -523,7 +531,7 @@ s32 Nas_UpdateRequest(void) {
     extern M2C_UNK gNasConnection, gAllocTagBmWork, gFreeTagBmWork, data_0213d120;
     s32 ParseHttpResponse(u32, u32, void *);
     s32 func_02033210(void);
-    s32 func_020470dc(void *, void *);
+    s32 UploadWfcProfileRecord(void *, void *);
     void CreateWfcProfile(void *);
     void func_0204712c(void *);
 
@@ -548,7 +556,7 @@ s32 Nas_UpdateRequest(void) {
                     *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
                     return 2;
                 }
-                if (func_020470dc(&data_0213d120, (void *)(((u32)buffer + 0x1f) & ~0x1fu)) != 1) {
+                if (UploadWfcProfileRecord(&data_0213d120, (void *)(((u32)buffer + 0x1f) & ~0x1fu)) != 1) {
                     freefn((void *)&gFreeTagBmWork, buffer, 0);
                     *(s32 *)(*(u8 **)((u8 *)&gNasConnection + 8) + 0x1000 + 8) = 0x4e84;
                     return 15;

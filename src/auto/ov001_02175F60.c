@@ -1,6 +1,7 @@
 /* 38 functions from 0x02175F60 to 0x02176F4C (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_wh.h"
 static inline s32 ov001_event_value(u8 value) { return value; }
 
 struct MenuValues2 { u8 values[2]; };
@@ -17,7 +18,7 @@ void func_ov001_02175f60(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
 /* Set up the ov001 online profile screen: allocate its work block, store the
  * task's continuation callback, copy the default match settings, hand the
  * block to the profile subsystem and install the screen's task. */
-void func_ov001_02175f8c(void *arg0) {
+void Ov001_InitProfileScreen(void *arg0) {
     s32 Ov001_Alloc(s32, s32);
     s32 Ov001_GetMessageText(M2C_UNK, u32);
     s32 func_ov001_02175e34(void);
@@ -491,10 +492,10 @@ void func_ov001_02176ab0(void) {
 void func_ov001_02176ad8(void) {
     void Ov001_HandleChoiceInput(void);
     void func_ov001_02176c18(void);
-    void func_ov001_02176c1c(void);
+    void Ov001_HandleWifiMenuChoice(void);
     Ov001_HandleChoiceInput();
     func_ov001_02176c18();
-    func_ov001_02176c1c();
+    Ov001_HandleWifiMenuChoice();
 }
 
 #pragma opt_strength_reduction off
@@ -538,45 +539,50 @@ void func_ov001_02176c18(void) {
 
 }
 
-void func_ov001_02176c1c(void) {
+/* Act on the Wi-Fi menu's latched icon-row choice: BACK fades the screen out to
+ * shutdown, CONFIRM loads the highlighted option's tile and hands the menu to its
+ * exit step.  Any other selection (no choice latched yet) does nothing. */
+void Ov001_HandleWifiMenuChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_02176df0(void);
-    void func_ov001_02176c6c(void);
+    void Ov001_LoadSelectedWifiMenuTile(void);
+    void Ov001_WifiMenuExit(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    s32 temp_r0;
+    s32 choice;
 
-    temp_r0 = Ov001_GetIconRowSelection();
-    switch (temp_r0) {                              /* irregular */
-    case 0:
-        Ov001_PlaySound(7);
+    choice = Ov001_GetIconRowSelection();
+    switch (choice) {
+    case OV001_CHOICE_BACK:
+        Ov001_PlaySound(OV001_SOUND_CANCEL);
         Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeToShutdownScreen);
         return;
-    case 1:
-        Ov001_PlaySound(6);
-        func_ov001_02176df0();
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02176c6c);
+    case OV001_CHOICE_CONFIRM:
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
+        Ov001_LoadSelectedWifiMenuTile();
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_WifiMenuExit);
         return;
     }
 }
 
-void func_ov001_02176c6c(void) {
+void Ov001_WifiMenuExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_02176c8c;
+    extern M2C_UNK Ov001_FadeOutWifiMenu;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_02176c8c);
+    Ov001_SetStepCallback(&Ov001_FadeOutWifiMenu);
 }
 
-void func_ov001_02176c8c(void) {
+/* Fade the Wi-Fi menu out to white once its sub-screen fade has finished, then
+ * hand over to Ov001_FinishWifiMenu, which releases the menu's resources. */
+void Ov001_FadeOutWifiMenu(void) {
     extern M2C_UNK Ov001_FinishWifiMenu;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x16, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG1 | GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_FinishWifiMenu);
 }
 
@@ -636,7 +642,7 @@ void Ov001_MoveChoiceSelection(s32 direction) {
     }
 }
 
-void func_ov001_02176df0(void) {
+void Ov001_LoadSelectedWifiMenuTile(void) {
 M2C_UNK Ov001_LoadObjTile(s32,u8,u8);
 extern u8 gOv001WifiMenuSelection;
 struct MenuValues2 table=data_ov001_0218f6f4;

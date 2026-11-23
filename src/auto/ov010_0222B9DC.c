@@ -1,5 +1,6 @@
 /* 19 functions from 0x0222B9DC to 0x0222BD5C (ov010), found by ds-decomp. */
 #include "common.h"
+#include "string_storage.h"
 
 typedef struct { u8 value; } Flag;
 
@@ -86,23 +87,26 @@ void CreateOnlineMatchNameLabel(s8 x, s16 y, M2C_UNK owner) {
     M2C_FIELD(label, s32 *, 0x40) = 0;
 }
 
-void func_ov010_0222bb18(M2C_UNK arg0) {
+/* Announce this console's online player status when it has changed: while the
+ * online session is running, compare the local status record with the slot record
+ * published for this player and, when they differ, spawn the player's announce
+ * (its counterpart in the local-wireless code is RefreshLinkPlayerAnnounce). */
+void RefreshOnlinePlayerAnnounce(M2C_UNK owner) {
     s32 ByteCompareN(s32, s32, M2C_UNK);
+    s32 GetOnlinePlayerSlot(s32);
     M2C_UNK GetOnlineTransportPlayerId();
     s32 GetLocalPlayerStatus();
-    s32 func_ov010_02229b48();
-    M2C_UNK func_ov010_02229eb4(M2C_UNK);
-    s32 temp_r4;
+    M2C_UNK SpawnOnlinePlayerAnnounce(M2C_UNK);
+    s32 localStatus;
 
-    if (IsOnlineSessionFlagSet(3) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_RUNNING) == 0) {
         return;
     }
-    temp_r4 = GetLocalPlayerStatus();
-    GetOnlineTransportPlayerId();
-    if (ByteCompareN(temp_r4, func_ov010_02229b48(), 0x6C) == 0) {
+    localStatus = GetLocalPlayerStatus();
+    if (ByteCompareN(localStatus, GetOnlinePlayerSlot(GetOnlineTransportPlayerId()), ONLINE_PLAYER_RECORD_SIZE) == 0) {
         return;
     }
-    func_ov010_02229eb4(arg0);
+    SpawnOnlinePlayerAnnounce(owner);
 }
 
 void func_ov010_0222bb64(M2C_UNK arg0) {
@@ -170,36 +174,43 @@ void *StringStorageAssign(void *dst, void *src) {
 }
 
 void func_ov010_0222bc54(void *arg0, M2C_UNK arg1) {
-    M2C_UNK func_ov010_0222bcd8(void *, M2C_UNK, u32, M2C_UNK);
+    M2C_UNK StringStorageReplaceWithText(void *, M2C_UNK, u32, M2C_UNK);
     u32 var_r2;
     if (((u32)(M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) == 0) {
         var_r2 = (u32)(M2C_FIELD(arg0, u8 *, 0) << 0x18) >> 0x19;
     } else {
         var_r2 = M2C_FIELD(arg0, u32 *, 4);
     }
-    func_ov010_0222bcd8(arg0, 0, var_r2, arg1);
+    StringStorageReplaceWithText(arg0, 0, var_r2, arg1);
 }
 
-void *StringStorageReplaceWith(void *arg0, M2C_UNK arg1, u32 arg2, void *arg3) {
+/* Replace the range [pos, pos+remove) of the stored string `dst` with the whole
+ * contents of the stored string `src`, taking `src`'s text from wherever it is
+ * held: inline in the small form, or on the heap in the large form. */
+void *StringStorageReplaceWith(void *dst, M2C_UNK pos, u32 remove, void *src) {
     void *StringStorageReplace(void *, M2C_UNK, u32, void *, void *, Flag);
-    u32 len;
-    u8 *start;
+    u32 length;
+    u8 *text;
     Flag unused;
-    if (((u32)(M2C_FIELD(arg3, s32 *, 0) << 31) >> 31) != 0) {
-        start = M2C_FIELD(arg3, u8 **, 8);
-        len = M2C_FIELD(arg3, u32 *, 4);
+
+    if (((StringStorage *)src)->large.flag) {
+        text = ((StringStorage *)src)->large.data;
+        length = ((StringStorage *)src)->large.length;
     } else {
-        start = (u8 *)arg3 + 1;
-        len = (u32)(M2C_FIELD(arg3, u8 *, 0) << 24) >> 25;
+        text = ((StringStorage *)src)->small.data;
+        length = ((StringStorage *)src)->small.length;
     }
-    return StringStorageReplace(arg0, arg1, arg2, start, start + len, unused);
+    return StringStorageReplace(dst, pos, remove, text, text + length, unused);
 }
 
-M2C_UNK func_ov010_0222bcd8(void *arg0, M2C_UNK arg1, u32 arg2, M2C_UNK arg3) {
+/* Replace the range [pos, pos+remove) of the stored string `storage` with the
+ * NUL-terminated C string `text`, whose length StringStorageReplace derives from
+ * its start and end pointers. */
+M2C_UNK StringStorageReplaceWithText(void *storage, M2C_UNK pos, u32 remove, M2C_UNK text) {
     void *StringStorageReplace(void *, M2C_UNK, u32, void *, void *, Flag);
     s32 StringLength(M2C_UNK);
     Flag unused;
-    return (M2C_UNK)StringStorageReplace(arg0, arg1, arg2, (void *)arg3, (u8 *)arg3 + StringLength(arg3), unused);
+    return (M2C_UNK)StringStorageReplace(storage, pos, remove, (void *)text, (u8 *)text + StringLength(text), unused);
 }
 
 s32 func_ov010_0222bd24(s32 arg0) {

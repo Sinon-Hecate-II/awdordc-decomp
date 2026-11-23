@@ -9,7 +9,7 @@ void func_ov003_021f40a8(void *arg0) {
     void func_ov003_021f1b38(s32, void *);
     void Apply3DSpriteBanks(void);
     void *CreateFrameBorderSprite(void *);
-    void func_020893f4(void *, void *, s32);
+    void LoadFrameBorderSpritePattern(void *, void *, s32);
     void Sync3DSpriteToTarget(void *);
     void Hide3DSprite(void *);
     void *func_0208bc24(void *);
@@ -57,7 +57,7 @@ void func_ov003_021f40a8(void *arg0) {
     q = M2C_FIELD(arg0, void **, 0x6c);
     o = CreateFrameBorderSprite(arg0);
     M2C_FIELD(q, void **, 0) = o;
-    func_020893f4(o, (void *)0x8b80, 1);
+    LoadFrameBorderSpritePattern(o, (void *)0x8b80, 1);
     o = M2C_FIELD(q, void **, 0);
     M2C_FIELD(o, u16 *, 0x34) = 6;
     M2C_FIELD(o, u16 *, 0x36) = 0x28;

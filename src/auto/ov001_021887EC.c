@@ -1,6 +1,7 @@
 /* 25 functions from 0x0218851C to 0x021893E4 (ov001), found by ds-decomp. */
 #include "common.h"
 #include "ov001_wh.h"
+#include "wfc.h"
 /* The ov001 profile / download-play setup state (gOv001ProfileState). */
 #define PROFILE_STATE      0xA90 /* u8: current profile / download-play screen state */
 #define PROFILE_RESULT     0xAAC /* u8: result the state-2 list start acts on (1 start list, 2 leave) */
@@ -33,22 +34,28 @@ void func_ov001_021887ec(void *arg0) {
     SystemHalt();
 }
 
-s32 func_ov001_0218880c(void) {
-extern M2C_UNK gWhWork;
-extern M2C_UNK func_ov001_02188858;
-s32 WFC_StartCommandChannel(void *,void *,s32);
-SetWhStatus(3);
-if(WFC_StartCommandChannel((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x80,&func_ov001_02188858,2)==2) return 1;
-SetWhError();
-SetWhStatus(10);
-return 0;
+/* Start the WH connection's WFC command channel: mark the link busy and post the
+ * start command with the overlay's completion callback; when the command cannot
+ * be queued, report it through the WH error state and return 0. */
+s32 Ov001_StartCommandChannel(void) {
+    extern M2C_UNK gWhWork;
+    extern M2C_UNK Ov001_HandleCommandChannelStartResult;
+    s32 WFC_StartCommandChannel(void *, void *, s32);
+    SetWhStatus(WH_STATUS_BUSY);
+    if (WFC_StartCommandChannel((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_CMD_CHANNEL, &Ov001_HandleCommandChannelStartResult, 2) == WFC_CMD_OK) return 1;
+    SetWhError();
+    SetWhStatus(WH_STATUS_ERROR);
+    return 0;
 }
 
-void func_ov001_02188858(void *arg0){
+/* Completion callback of the WFC command-channel start for the WH (download-play)
+ * session: a reported failure aborts the session, otherwise the overlay's general
+ * WFC event handler is installed and the link goes idle. */
+void Ov001_HandleCommandChannelStartResult(void *event) {
 s32 WFC_SetGeneralHandler(void *);
-if(M2C_FIELD(arg0,u16 *,2)){SetWhError();SetWhStatus(10);return;}
-if(WFC_SetGeneralHandler((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(10);return;}
-SetWhStatus(1);
+if(M2C_FIELD(event,u16 *,WH_EVENT_STATUS)){SetWhError();SetWhStatus(WH_STATUS_ERROR);return;}
+if(WFC_SetGeneralHandler((void *)func_ov001_021887ec)){SetWhError();SetWhStatus(WH_STATUS_ERROR);return;}
+SetWhStatus(WH_STATUS_IDLE);
 }
 
 #pragma peephole off
@@ -101,8 +108,8 @@ void func_ov001_02188a20(s32 arg0) {
 
 void Ov001_GetPlayerData(s32 arg0) {
 extern M2C_UNK gWhWork;
-void func_02013aa8(void *, void *, s32);
-func_02013aa8((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x13E0,(u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x1C00,arg0);
+void WFC_GetPlayerData(void *, void *, s32);
+WFC_GetPlayerData((u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x13E0,(u8 *)M2C_FIELD(&gWhWork, void **, 4)+0x1C00,arg0);
 }
 
 /* Step the DWC data-sharing exchange on the connection's channel: pass the step's
@@ -137,7 +144,7 @@ void func_ov001_02188b04(void) {
 void func_ov001_02188b20(void) {
 extern M2C_UNK data_ov001_0219174c;
 extern M2C_UNK data_ov001_02191770;
-s32 func_ov001_021881d0(void); s32 func_ov001_02188220(void); s32 func_ov001_021880d0(void); s32 func_ov001_02188100(void);
+s32 Ov001_EndKeySharing(void); s32 func_ov001_02188220(void); s32 func_ov001_021880d0(void); s32 func_ov001_02188100(void);
 s32 state=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
 if((state == 1) ? 1 : 0) {
 void (*cb1)(s32,void *)=M2C_FIELD(&gWhWork,void (* volatile *)(s32,void *),0); if(cb1) cb1(0x8000000,&data_ov001_0219174c);
@@ -147,7 +154,7 @@ state=M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40);
 if(state!=6 && state!=5 && state!=4){SetWhStatus(3);func_ov001_02188b04();return;}
 SetWhStatus(3);
 switch(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),u32 *,0x44)){
-case 3: if(!func_ov001_021881d0())func_ov001_02188b04();break;
+case 3: if(!Ov001_EndKeySharing())func_ov001_02188b04();break;
 case 1:case 5: if(!func_ov001_02188220())func_ov001_02188b04();break;
 case 2: if(!func_ov001_021880d0())func_ov001_02188b04();break;
 case 0:case 4: if(!func_ov001_02188100())func_ov001_02188b04();break;
@@ -155,14 +162,17 @@ case 0:case 4: if(!func_ov001_02188100())func_ov001_02188b04();break;
 }
 }
 
+/* End the WH (download-play) connection: it must currently be idle, then the WFC
+ * end-link command is issued (status BUSY) with Ov001_HandleEndLinkResult as its
+ * callback.  Returns 1 when the command was queued, 0 when it failed. */
 s32 Ov001_EndLink(void){
 extern M2C_UNK gWhWork;
-extern M2C_UNK func_ov001_02188344;
+extern M2C_UNK Ov001_HandleEndLinkResult;
 s32 WFC_EndLink(void *);
-if(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40)!=1)SystemHalt();
-SetWhStatus(3);
-if(WFC_EndLink(&func_ov001_02188344)==2)return 1;
-SetWhStatus(9);return 0;
+if(M2C_FIELD(M2C_FIELD(&gWhWork,void **,WH_WORK_CONNECTION),s32 *,WH_LINK_STATUS)!=WH_STATUS_IDLE)SystemHalt();
+SetWhStatus(WH_STATUS_BUSY);
+if(WFC_EndLink(&Ov001_HandleEndLinkResult)==2)return 1;
+SetWhStatus(WH_STATUS_PARENT_START);return 0;
 }
 
 void func_ov001_02188c78(void *p, void *a) {

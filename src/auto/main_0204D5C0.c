@@ -204,16 +204,20 @@ s32 func_0204db50(void **arg0) {
  return gpiThink(arg0,0);
 }
 
-s32 func_0204db84(void **arg0,s32 arg1,s32 arg2,s32 arg3) {
- void gpiSetErrorString(void **,void *);
- extern s32 data_020fda24;
- void *p;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(arg1<0 || arg1>=6) {gpiSetErrorString(arg0,&data_020fda24); return 2;}
- p=(char *)p+arg1*8;
- M2C_FIELD(p,s32 *,0x1a4)=arg2;
- M2C_FIELD(p,s32 *,0x1a8)=arg3;
- return 0;
+/* Registers callback `index` of the connection: stores `handler` and the `data`
+ * it is called with in the connection's six-entry callback table.  Fails with
+ * "Invalid func." when the index is out of range. */
+s32 gpiSetPeerCallback(void **connection, s32 index, s32 handler, s32 data) {
+    void gpiSetErrorString(void **, void *);
+    extern s32 gpiErrorInvalidFunc;
+    void *p;
+
+    if (connection == 0 || (p = *connection) == 0) return 2;
+    if (index < 0 || index >= GPI_CONN_CALLBACK_COUNT) { gpiSetErrorString(connection, &gpiErrorInvalidFunc); return 2; }
+    p = (char *)p + index * GPI_CONN_CALLBACK_STRIDE;
+    M2C_FIELD(p, s32 *, GPI_CONN_ERROR_CALLBACK) = handler;
+    M2C_FIELD(p, s32 *, GPI_CONN_ERROR_DATA) = data;
+    return 0;
 }
 
 /* Opens a GameSpy connection with a raw profile: nickname, unique nickname and a
@@ -306,14 +310,18 @@ s32 gpiGetInfo(void **gpi, s32 profileId, s32 useCache, s32 blocking,
     return gpiGetInfoInternal(gpi, profileId, useCache, blocking, callback, callbackArg);
 }
 
-s32 gpiSetInfoString(void **arg0,s32 arg1,s32 arg2) {
- s32 func_0205342c(void **,s32,s32);
- extern s32 gGpiMsgDisconnected;
- void *p;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- return func_0205342c(arg0,arg1,arg2);
+/* Set one profile-info field of the connection to the string `value`: validates
+ * the connection, treats simulation mode as a no-op and fails with "Disconnected"
+ * when the connection is down, otherwise writes the field. */
+s32 gpiSetInfoString(void **connection, s32 field, s8 *value) {
+    s32 gpiSetInfoField(void **, s32, s8 *);
+    extern s32 gGpiMsgDisconnected;
+    void *p;
+
+    if (connection == 0 || (p = *connection) == 0) return 2;
+    if (M2C_FIELD(p, s32 *, GPI_CONN_SIMULATION) != 0) return 0;
+    if (M2C_FIELD(p, s32 *, GPI_CONN_STATE) == GPI_STATE_DISCONNECTED) { gpiSetErrorString(connection, &gGpiMsgDisconnected); return 2; }
+    return gpiSetInfoField(connection, field, value);
 }
 
 s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
@@ -355,14 +363,18 @@ s32 func_0204df00(void **connection, s32 newProfileId, s8 *reason) {
     return 0;
 }
 
-s32 func_0204e074(void **arg0,s32 arg1) {
- s32 gpiAuthAddProfile(void **,s32);
- extern s32 gGpiMsgDisconnected;
- void *p;
- if(arg0==0 || (p=*arg0)==0) return 2;
- if(M2C_FIELD(p,s32 *,0x108)!=0) return 0;
- if(M2C_FIELD(p,s32 *,0x1d8)==4) {gpiSetErrorString(arg0,&gGpiMsgDisconnected);return 2;}
- return gpiAuthAddProfile(arg0,arg1);
+/* Add profile `profileId` to the connection's buddy list: validates the
+ * connection, treats simulation mode as a no-op and fails with "Disconnected"
+ * when the connection is down, otherwise sends the add. */
+s32 gpiAddProfile(void **connection, s32 profileId) {
+    s32 gpiAuthAddProfile(void **, s32);
+    extern s32 gGpiMsgDisconnected;
+    void *p;
+
+    if (connection == 0 || (p = *connection) == 0) return 2;
+    if (M2C_FIELD(p, s32 *, GPI_CONN_SIMULATION) != 0) return 0;
+    if (M2C_FIELD(p, s32 *, GPI_CONN_STATE) == GPI_STATE_DISCONNECTED) { gpiSetErrorString(connection, &gGpiMsgDisconnected); return 2; }
+    return gpiAuthAddProfile(connection, profileId);
 }
 
 /* Release a profile record: drop one reference to it and, once the session no
@@ -444,13 +456,16 @@ s32 gpiGetBuddyIndex(void **connection,s32 profileId,s32 *index) {
  return 0;
 }
 
-s32 HasBuddyProfile(void **arg0,s32 arg1) {
- s32 gpiFindBuddyStatus(void **,s32,void **);
- void *sp0;
- if(arg0==0 || *arg0==0) return 0;
- if(M2C_FIELD(*arg0,s32 *,0x108)!=0) return 0;
- if(gpiFindBuddyStatus(arg0,arg1,&sp0)!=0 && M2C_FIELD(sp0,s32 *,8)!=0) return 1;
- return 0;
+/* Whether the connection has a live buddy-status record for `profileId` that has
+ * its presence details filled in: false when there is no connection, when the
+ * connection is in simulation mode, or when the buddy has no details. */
+s32 HasBuddyProfile(void **connection, s32 profileId) {
+    s32 gpiFindBuddyStatus(void **, s32, void **);
+    void *buddy;
+    if (connection == 0 || *connection == 0) return 0;
+    if (M2C_FIELD(*connection, s32 *, GPI_CONN_SIMULATION) != 0) return 0;
+    if (gpiFindBuddyStatus(connection, profileId, &buddy) != 0 && M2C_FIELD(buddy, s32 *, GPI_BUDDY_DETAILS) != 0) return 1;
+    return 0;
 }
 
 /* Delete a buddy profile from the GameSpy connection by profile id: a null or

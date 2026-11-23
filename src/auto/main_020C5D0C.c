@@ -81,8 +81,8 @@ void func_020c5de0(void) {
 
 s32 func_020c5e08(void) {
     s32 IsCampaignBattleRules();
-    s32 func_ov000_0216b104();
-    if ((IsCampaignBattleRules() != 0) && (func_ov000_0216b104() != 0)) {
+    s32 IsMapEventConditionMet();
+    if ((IsCampaignBattleRules() != 0) && (IsMapEventConditionMet() != 0)) {
         return 0;
     }
     return 2;
@@ -351,9 +351,12 @@ s32 CanSupplyAtCursor(void) {
  return 2;
 }
 
-s32 func_020c67bc(void) {
+/* Availability of the Dive command for the submarine under the cursor: the unit
+ * must be surfaced (UNIT_FLAG_SUBMERGED clear) and have no join or load pending.
+ * Returns 0 when the command is available, 2 when it is not. */
+s32 CanSubmergeUnitAtCursor(void) {
  extern void **gCurrentMap;
- if(M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u16 *,4)&0x20)return 2;
+ if(M2C_FIELD(M2C_FIELD(*gCurrentMap,BattleMapUnitHead **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_SUBMERGED)return 2;
  if(CanJoinUnitAtCursor()==0)return 2;
  if(CanLoadUnitAtCursor()==0)return 2;
  return 0;
@@ -460,32 +463,35 @@ s32 func_020c6214(void) {
     return 2;
 }
 
-s32 func_020c680c(void) {
-    s32 func_020c67bc();
+s32 CanSubmergeCommand(void) {
+    s32 CanSubmergeUnitAtCursor();
     extern void **gCurrentMap;
 
     switch (((UnkStruct_020C5D0C *) M2C_FIELD(*gCurrentMap, u8 **, 0x52D0))->unk0) {
     case 0x16:
-        return func_020c67bc();
+        return CanSubmergeUnitAtCursor();
     }
     return 2;
 }
 
-s32 func_020c684c(void) {
+/* Availability of the Surface command for the submarine under the cursor: the
+ * unit must have no join or load pending and be submerged (UNIT_FLAG_SUBMERGED
+ * set).  Returns 0 when the command is available, 2 when it is not. */
+s32 CanSurfaceUnitAtCursor(void) {
  s32 CanLoadUnitAtCursor(); extern void **gCurrentMap;
  if (!CanJoinUnitAtCursor()) return 2;
  if (!CanLoadUnitAtCursor()) return 2;
- if (M2C_FIELD(M2C_FIELD(*gCurrentMap,void **,0x52D0),u16 *,4)&0x20) return 0;
+ if (M2C_FIELD(M2C_FIELD(*gCurrentMap,BattleMapUnitHead **,MAP_CURSOR_UNIT),u16 *,MAP_UNIT_FLAGS)&UNIT_FLAG_SUBMERGED) return 0;
  return 2;
 }
 
-s32 func_020c689c(void) {
-    s32 func_020c684c();
+s32 CanSurfaceCommand(void) {
+    s32 CanSurfaceUnitAtCursor();
     extern void **gCurrentMap;
 
     switch (((UnkStruct_020C5D0C *) M2C_FIELD(*gCurrentMap, u8 **, 0x52D0))->unk0) {
     case 0x16:
-        return func_020c684c();
+        return CanSurfaceUnitAtCursor();
     }
     return 2;
 }
@@ -507,11 +513,11 @@ s32 CanFireFlare(void) {
 
 void func_020c6968(void) {
     M2C_UNK PushCarriedUnitMenuState();
-    M2C_UNK func_020c757c();
+    M2C_UNK OpenCarriedUnitMenu();
     M2C_UNK DeleteMapMenuSprites();
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
-    func_020c757c();
+    OpenCarriedUnitMenu();
 }
 
 void func_020c697c(void) {
@@ -664,16 +670,16 @@ void func_020c6be8(void) {
 
 void func_020c6c20(void) {
     M2C_UNK func_020cb018(M2C_UNK);
-    M2C_UNK func_020d4704();
+    M2C_UNK AcquireMapViewHold();
     func_020cb018(0);
     DeleteMapMenuSprites();
-    func_020d4704();
+    AcquireMapViewHold();
 }
 
 void func_020c6c38(void) {
     func_020cb018(1);
     DeleteMapMenuSprites();
-    func_020d4704();
+    AcquireMapViewHold();
 }
 
 void func_020c6c50(void) {

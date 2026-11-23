@@ -54,7 +54,7 @@ void func_020d8ccc(s16 arg0) {
     M2C_FIELD(*gCurrentMap, s16 *, 0x5142) = arg0;
 }
 
-void func_020d8ce8(s32 arg0) {
+void SetUiModeParameter(s32 arg0) {
     extern void *gUiMode;
     M2C_FIELD(gUiMode, s32 *, 8) = arg0;
 }
@@ -138,7 +138,20 @@ void EnterSubScreenUi(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020d8ecc(void){s32 SetUiMode(s32,s32);extern void *gUiMode;extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;void *p;if(!HasSubScreenUi())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;SetUiMode(M2C_FIELD(gUiMode,s16 *,6),M2C_FIELD(gUiMode,s32 *,8));gCur3DSpriteEngine=p;}
+/* Leaves the sub screen (mode 3): when its UI object exists, asks for the mode
+ * that was saved while it was up, drawing on the sub engine. */
+void LeaveSubScreenUi(void) {
+    s32 SetUiMode(s32, s32);
+    extern void *gUiMode;
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub;
+    void *savedEngine;
+
+    if (!HasSubScreenUi()) return;
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    SetUiMode(((UiModeState *)gUiMode)->saved, ((UiModeState *)gUiMode)->param);
+    gCur3DSpriteEngine = savedEngine;
+}
 
 s32 SetUiMode(s32 a,s32 b){extern void *gUiMode;if(a==M2C_FIELD(gUiMode,s16 *,2))return 0;M2C_FIELD(gUiMode,s16 *,4)=a;M2C_FIELD(gUiMode,s32 *,8)=b;return 1;}
 
@@ -166,8 +179,8 @@ s32 HandleUiCancel(void) {
 }
 
 void func_020d8ff8(void) {
-    M2C_UNK func_01ffaa0c(s32);
-    func_01ffaa0c(0xFF05);
+    M2C_UNK DeleteSpriteObjectsWithZ(s32);
+    DeleteSpriteObjectsWithZ(0xFF05);
 }
 
 void func_020d900c(void) {
@@ -193,7 +206,7 @@ void func_020d908c(void) {
     void Apply3DSpriteLayout(void *);
     void Reset3DSpriteBankState(void);
     void Reset3DSpriteCorners(void);
-    void func_020c0a88(void);
+    void LoadUiGraphics(void);
     void LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
     void AddToU16Array(void *, s32, s32);
     void CopyToObjPaletteShadow(M2C_UNK *, s32, s32);
@@ -223,7 +236,7 @@ void func_020d908c(void) {
     Apply3DSpriteLayout(&setup);
     Reset3DSpriteBankState();
     Reset3DSpriteCorners();
-    func_020c0a88();
+    LoadUiGraphics();
     LoadGraphicsBlock(&data_020efad4, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x18));
     LoadGraphicsBlock(&data_020f28f0, (M2C_UNK)M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C));
     AddToU16Array(M2C_FIELD(gCur3DSpriteEngine, void **, 0x2C), 0x800, 0x1000);

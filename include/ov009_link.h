@@ -31,6 +31,12 @@ typedef struct LinkCompletionEvent {
 #define LINK_TASK_EVENT_COMMAND 0x04 /* u16 command reported by a completion task */
 #define LINK_TASK_CMD_DATA_DONE 10   /* the task's data step finished; the link is up */
 
+/* gLinkState +0x00: u8 reference count of the users that have the link's event
+ * notifications installed.  AddLinkEventListener bumps it and installs the
+ * handler on the first user; RemoveLinkEventListener drops it and takes the
+ * handler down with the last one. */
+#define LINK_STATE_LISTENER_COUNT 0x00
+
 /* gLinkState link-setup flags and the console's own player slot. */
 #define LINK_STATE_FLAGS        0x156 /* u8: link setup flags */
 #define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
@@ -98,6 +104,9 @@ enum {
 /* A gLinkPlayers slot: one per player slot, 0x60 bytes. */
 #define LINK_PLAYER_FLAGS 0x16 /* u8: bit 0 set while the slot holds a connected player */
 #define LINK_PLAYER_ID    0x17 /* s8: the player id the slot plays as, -1 when unset */
+#define LINK_PLAYER_RANK       0x18 /* s8: rank index used to load the player's rank icon, -1 when unset */
+#define LINK_PLAYER_FAV_GROUP  0x19 /* s8: favourite CO/group index, -2 when unset */
+#define LINK_PLAYER_FAV_RECORD 0x1A /* s8: favourite CO record index, -2 when unset */
 
 /* The link's per-peer connection-data slots (gLinkPeerSlots): four 0xC8-byte slots,
  * each holding the 0xC0-byte block a peer sent, a validity timer and an in-use
@@ -153,8 +162,12 @@ typedef struct LinkRequestRecord {
 #define LINK_TASK_QUEUED 2
 /* gLinkState +0x50: s32 bit per player slot whose link result has been handled. */
 #define LINK_STATE_RESULT_FLAGS 0x50
-/* gLinkState +0x3C: handler the overlay's general WFC events are forwarded to. */
-#define LINK_STATE_EVENT_HANDLER 0x3C
+ /* gLinkState +0x3C: handler the overlay's general WFC events are forwarded to. */
+ #define LINK_STATE_EVENT_HANDLER 0x3C
+ /* gLinkState +0x60: handler the overlay hands a link packet to; set through a
+  * setter that returns the previous handler and called with the packet and two
+  * words describing it (its length and the addressed player mask). */
+ #define LINK_STATE_PACKET_HANDLER 0x60
 
 /* gLinkState +0x64: head of the overlay's pending-send queue.  Packets are linked
  * through +0x00, the tail is at +0x68 and the count at +0x6C; a queued packet

@@ -420,15 +420,18 @@ if(n) do {s8 c=*in++;--n;*p++=c;} while(n);
 return out;
 }
 
-void *MemMove(char *dst,char *src,u32 n) {
- if(src>=dst) {
- char *p=dst;
- if(n) { do { *p++=*src++; } while(--n); }
- } else {
- char *s=src+n; char *p=dst+n;
- if(n) { do { *--p=*--s; } while(--n); }
- }
- return dst;
+/* Copy `count` bytes from `src` to `dst`: forward when dst is at or after src,
+ * backward (from the end) when the ranges overlap the other way. */
+void *MemMove(char *dst, char *src, u32 count) {
+    if (src >= dst) {
+        char *to = dst;
+        if (count) { do { *to++ = *src++; } while (--count); }
+    } else {
+        char *from = src + count;
+        char *to = dst + count;
+        if (count) { do { *--to = *--from; } while (--count); }
+    }
+    return dst;
 }
 
 s32 MemSet(s32 arg0) {

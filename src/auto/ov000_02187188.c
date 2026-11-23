@@ -2,7 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 extern void (*gAiPriorityScore)(void);
-void func_ov000_02188338(void);
+void AiFootUnitBalanceScore(void);
 extern void **gCurrentMap;
 extern u32 gFrameCounter;
 
@@ -451,7 +451,7 @@ void func_ov000_02187c3c(void) {
 #pragma opt_strength_reduction reset
 void FinalizeAiProductionMove(void) {
 SelectBestMoveCell();
-if(gAiPriorityScore==func_ov000_02188338) ChooseMoveDestination();
+if(gAiPriorityScore==AiFootUnitBalanceScore) ChooseMoveDestination();
 func_ov000_02187c3c();
 }
 

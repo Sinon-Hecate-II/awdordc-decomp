@@ -19,7 +19,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK data_ov003_0220f8e0;
     extern M2C_UNK data_ov003_0220faf8;
-    extern M2C_UNK data_ov003_0220fb08;
+    extern M2C_UNK gWaypointPanelGroupVTable;
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
@@ -184,7 +184,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
         temp_r0_9 = MemAlloc(0x80);
         if (temp_r0_9 != NULL) {
             var_r3 = 0;
-            *temp_r0_9 = &data_ov003_0220fb08;
+            *temp_r0_9 = &gWaypointPanelGroupVTable;
             do {
                 temp_r1 = &temp_r0_9[var_r3];
                 var_r3 += 1;
@@ -375,24 +375,28 @@ s32 func_ov003_021f0dcc(s32 arg0) {
     return arg0;
 }
 
-M2C_UNK **func_ov003_021f0de0(M2C_UNK **arg0) {
+/* Free the waypoint panel's sprite group: install its class, drop the panel's
+ * face sprites and face children, delete the 13 label handles the group owns,
+ * then free the group. WaypointPanelGroup_Destructor is the non-freeing twin. */
+M2C_UNK **DestroyWaypointPanelGroup(M2C_UNK **group) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DeleteAllFaceChildren();
-    M2C_UNK func_0209940c();
-    extern M2C_UNK data_ov003_0220fb08;
-    register s32 var_r4;
-    *arg0 = &data_ov003_0220fb08;
-    func_0209940c();
+    M2C_UNK DeleteAllFaceSprites();
+    extern M2C_UNK gWaypointPanelGroupVTable;
+    register s32 i;
+
+    *group = &gWaypointPanelGroupVTable;
+    DeleteAllFaceSprites();
     DeleteAllFaceChildren();
-    var_r4 = 0;
+    i = 0;
     do {
-        if (arg0[var_r4 + 0x11] != 0) {
+        if (group[i + 0x11] != 0) {
             DeleteSpriteObject();
         }
-        var_r4 += 1;
-    } while (var_r4 < 0xD);
-    MemFree(arg0);
-    return arg0;
+        i += 1;
+    } while (i < 0xD);
+    MemFree(group);
+    return group;
 }
 
 /* Destructor of the battle-setup record: install its class, release the unit
@@ -583,14 +587,14 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     return obj;
 }
 #pragma opt_strength_reduction reset
-M2C_UNK **func_ov003_021f128c(M2C_UNK **arg0) {
+M2C_UNK **WaypointPanelGroup_Destructor(M2C_UNK **arg0) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DeleteAllFaceChildren();
-    M2C_UNK func_0209940c();
-    extern M2C_UNK data_ov003_0220fb08;
+    M2C_UNK DeleteAllFaceSprites();
+    extern M2C_UNK gWaypointPanelGroupVTable;
     register s32 var_r4;
-    *arg0 = &data_ov003_0220fb08;
-    func_0209940c();
+    *arg0 = &gWaypointPanelGroupVTable;
+    DeleteAllFaceSprites();
     DeleteAllFaceChildren();
     var_r4 = 0;
     do {

@@ -417,7 +417,27 @@ IntroMenu011 *InitIntroMenu(IntroMenu011 *menu) {
     return menu;
 }
 
-void *IntroMenu_Destroy(M2C_UNK **arg0) { M2C_UNK DeleteSpriteObject(void *); M2C_UNK FreeUiGraphicsBank(s32); extern M2C_UNK gIntroMenuVTable; register s32 i; M2C_FIELD(arg0,M2C_UNK **,0)=&gIntroMenuVTable; i=0; do {void *p=arg0[i+16]; if(p) {DeleteSpriteObject(p); arg0[i+16]=0;} i++;}while(i<3); FreeUiGraphicsBank(10);  return arg0; }
+/* Intro-menu vtable destroy entry: reset the object's vtable, delete its three
+ * entry sprites and release UI graphics bank 10, without freeing the object. */
+void *IntroMenu_Destroy(IntroMenu011 *menu) {
+    M2C_UNK DeleteSpriteObject(void *);
+    M2C_UNK FreeUiGraphicsBank(s32);
+    extern M2C_UNK gIntroMenuVTable;
+    register s32 i;
+
+    menu->vtable = &gIntroMenuVTable;
+    i = 0;
+    do {
+        void *p = menu->entries[i];
+        if (p) {
+            DeleteSpriteObject(p);
+            menu->entries[i] = 0;
+        }
+        i++;
+    } while (i < 3);
+    FreeUiGraphicsBank(10);
+    return menu;
+}
 
 /* Intro-menu vtable destroy-and-free entry: reset the object's vtable, delete its
  * three entry sprites, release UI graphics bank 10 and free the object. */

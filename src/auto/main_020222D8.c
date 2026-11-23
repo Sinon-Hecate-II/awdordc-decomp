@@ -284,10 +284,10 @@ MD5_Final(session+TLS_MD5_CTX,out);
 }
 #pragma scheduling off
 s32 func_020222d8(void *ctx,u8 **input,s32 depth,s32 index,s32 mode) {
-s32 MI_CpuCopy8(); s32 func_0202219c(u8**); void AppendCommaSeparatedName(void*,u8*,s32);
+s32 MI_CpuCopy8(); s32 ParseAsn1Length(u8**); void AppendCommaSeparatedName(void*,u8*,s32);
 u32 ParseAsn1Time(u8*); s32 ByteCompareN(void*,void*,s32); s32 StringLength(void*);
 extern char *data_020fb004[6];
-u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=func_0202219c(&p); s32 i; u8 *end; u32 date; u32 sw;
+u8 *start=*input; u8 *p=start+1; u8 tag=*start; s32 len=ParseAsn1Length(&p); s32 i; u8 *end; u32 date; u32 sw;
 if (!(len >= 0 && len <= 2000)) return 1;
 sw=tag&31;
 switch(sw){

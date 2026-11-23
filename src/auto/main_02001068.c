@@ -122,7 +122,7 @@ void MTX_LookAt(s32 *camPos, s32 *camUp, s32 *target, s32 *mtx) {
     out[11] = -Vec3DotProduct(pos, sp18);
 }
 
-void func_02001524(void *arg0,UnkVec3 *arg1) {
+void MTX_Copy33From44(void *arg0,UnkVec3 *arg1) {
 *arg1++=*(UnkVec3 *)arg0; arg0=(u8 *)arg0+16;
 *arg1++=*(UnkVec3 *)arg0; arg0=(u8 *)arg0+16;
 *arg1++=*(UnkVec3 *)arg0;
@@ -167,7 +167,7 @@ void MatrixScale44(s32 *src, s32 *dst, s32 x, s32 y, s32 z) {
     }
 }
 
-void func_02001748(void *arg0, void *arg1, void *arg2) {
+void MTX_Mult4x4(void *arg0, void *arg1, void *arg2) {
     Matrix016 tmp;
     s32 *a = arg0, *b = arg1;
     s32 *out = arg2 == arg1 ? tmp.m : arg2;

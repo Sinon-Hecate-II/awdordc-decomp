@@ -32,7 +32,7 @@ s32 IsCampaignMapRecordValid(u16);
 s32 IsCampaignMapRecordPlayable(u16);
 s32 IsCampaignMapCleared(u16);
 void *GetMapName(u16);
-void func_0209b32c(s16,s16,s32,void *,s32,u8,u16);
+void DrawTextLineCore(s16,s16,s32,void *,s32,u8,u16);
 extern u8 gSpriteDesc16x16[];
 s32 GetListScrollY(void *);
 void func_0208e0b8(s16,s16,s16,u16,s32);
@@ -114,7 +114,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  else shade=(u8)(IsCampaignMapCleared(item)?0:3);
  }
  {u8 a=(u8)Modulo(i,20);void *b=GetMapName(item);
- func_0209b32c((s16)tx,(s16)ty,0,b,0xa000,shade,(u16)(a*16+1));}
+ DrawTextLineCore((s16)tx,(s16)ty,0,b,0xa000,shade,(u16)(a*16+1));}
  p=(u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3);
  M2C_FIELD(p,u8 *,0x186c)=(M2C_FIELD(p,u8 *,0x186c)&~(1<<(idx&7)))|(1<<(idx&7));
  }

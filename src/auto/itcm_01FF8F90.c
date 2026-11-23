@@ -316,23 +316,32 @@ s32 Get3DSpriteLayerSize(u8 bankMode, s32 layer) {
     return data_01ff9b60[(u32)(M2C_FIELD(*gCur3DSpriteEngine + layer, u16 *, DS3D_BANK_LAYER_TILE0) << 16) >> 30] * 2;
 }
 
-void Clear3DSpriteLayer(u8 arg0) {
+/* Wipe the tile buffer of sprite layer `layer` in the current 3D-sprite engine:
+ * the byte count is the layer's size for the bank's tile-size class, the
+ * destination its buffer in the engine's layer table. */
+void Clear3DSpriteLayer(u8 layer) {
     s32 Get3DSpriteLayerSize(u8, s32);
     M2C_UNK MI_CpuFill32(M2C_UNK, s32, s32);
     extern u16 **gCur3DSpriteEngine;
-    MI_CpuFill32(0, M2C_FIELD(&gCur3DSpriteEngine[arg0], s32 *, 0x20), Get3DSpriteLayerSize((u8)(((u32)(**gCur3DSpriteEngine << 0x1D) >> 0x1D)), arg0));
+    MI_CpuFill32(0, M2C_FIELD(&gCur3DSpriteEngine[layer], s32 *, DS3D_ENGINE_LAYER_TILES), Get3DSpriteLayerSize((u8)(((u32)(**gCur3DSpriteEngine << 0x1D) >> 0x1D)), layer));
 }
 
-void func_01ff9d38(s32 arg0) {
+/* Wipe the tile buffer of layer `layer` of the main 3D-sprite engine.  The byte
+ * count is Get3DSpriteLayerSize for the bank's tile-size class; the destination
+ * is the layer's buffer pointer in the main engine's layer table at +0x20. */
+void Clear3DSpriteLayerMain(u8 layer) {
     extern u16 *g3DSpriteBankMain;
     extern s32 g3DSpriteEngineMain;
-    MI_CpuFill32(0, M2C_FIELD((g3DSpriteEngineMain + (arg0 * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*g3DSpriteBankMain << 0x1D) >> 0x1D), arg0));
+    MI_CpuFill32(0, M2C_FIELD((g3DSpriteEngineMain + (layer * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*g3DSpriteBankMain << 0x1D) >> 0x1D), layer));
 }
 
-void func_01ff9d88(s32 arg0) {
+/* Wipe the tile buffer of layer `layer` of the sub 3D-sprite engine.  The byte
+ * count is Get3DSpriteLayerSize for the bank's tile-size class; the destination
+ * is the layer's buffer pointer in the sub engine's layer table at +0x20. */
+void Clear3DSpriteLayerSub(u8 layer) {
     extern u16 *g3DSpriteBankSub;
     extern s32 g3DSpriteEngineSub;
-    MI_CpuFill32(0, M2C_FIELD((g3DSpriteEngineSub + (arg0 * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*g3DSpriteBankSub << 0x1D) >> 0x1D), arg0));
+    MI_CpuFill32(0, M2C_FIELD((g3DSpriteEngineSub + (layer * 4)), s32 *, 0x20), Get3DSpriteLayerSize((u8) ((u32) (*g3DSpriteBankSub << 0x1D) >> 0x1D), layer));
 }
 
 #pragma opt_propagation off

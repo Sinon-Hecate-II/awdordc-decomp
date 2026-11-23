@@ -87,7 +87,7 @@ result=gpiAppendStringField(connection,buffer,&gGpiMsgBodyTag);if(result)return 
 buffer[5]=buffer[2];
 result=gpiAppendStringToBufferLen(connection,buffer,message,len);if(result)return result;
 result=gpiAppendChar(connection,buffer,0);if(result)return result;
-Vector_AddItem(M2C_FIELD(peer,s32 *,0x38),buffer);
+Vector_Append(M2C_FIELD(peer,s32 *,0x38),buffer);
 M2C_FIELD(peer,s32 *,16)=gpiGetTime(0)+300;
 return 0;
 }
@@ -279,20 +279,27 @@ s32 gpiMatchBuddyNickEmail(s32 connection, void *entry, void *search) {
     return 1;
 }
 
-s32 gpiFindBuddyByNickEmail(void **arg0,s32 arg1,s32 arg2,s32 *arg3) {
-s32 func_02055cd0(void **,s32 (*)(s32,void *,void *),void *);
-s32 data[4];
-data[0]=arg1;data[1]=arg2;data[3]=0;data[2]=(s32)arg3;
-func_02055cd0(arg0,gpiMatchBuddyNickEmail,data);
-if(!data[3])*arg3=0;
-return 0;
+/* Find the connection's buddy whose cached profile has the given nick and email:
+ * walk the buddy table with the matching predicate and clear `result` when no
+ * record matched.  Always returns 0; the found record (or 0) comes back through
+ * `result`. */
+s32 gpiFindBuddyByNickEmail(void **connection, s32 nick, s32 email, s32 *result) {
+    s32 gpiWalkBuddyTable(void **, s32 (*)(s32, void *, void *), void *);
+    s32 search[4];
+    search[0] = nick;
+    search[1] = email;
+    search[3] = 0;
+    search[2] = (s32) result;
+    gpiWalkBuddyTable(connection, gpiMatchBuddyNickEmail, search);
+    if (!search[3]) *result = 0;
+    return 0;
 }
 
 void func_02055cb4(M2C_UNK arg0, void *arg1) {
     M2C_FIELD(arg1, M2C_UNK (**)(s32, M2C_UNK, s32), 4)(M2C_FIELD(arg1, s32 *, 0), arg0, M2C_FIELD(arg1, s32 *, 8));
 }
 
-s32 func_02055cd0(void **arg0,s32 (*arg1)(s32,void *,void *),void *arg2) {
+s32 gpiWalkBuddyTable(void **arg0,s32 (*arg1)(s32,void *,void *),void *arg2) {
 s32 TableMapSafe2(s32,void (*)(s32,void *),void *);
 s32 data[3];void *p=*arg0;
 data[1]=(s32)arg1;data[2]=(s32)arg2;data[0]=(s32)arg0;
@@ -307,7 +314,7 @@ return 1;
 
 s32 gpiGetBuddyStatusByIndex(void **arg0, s32 arg1) {
 s32 data[2]; data[0]=arg1;data[1]=0;
-func_02055cd0(arg0,func_02055d10,data);return data[1];
+gpiWalkBuddyTable(arg0,func_02055d10,data);return data[1];
 }
 
 s32 gpiPeerConnectionDone(void *arg0) {

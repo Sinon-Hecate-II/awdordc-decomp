@@ -1,6 +1,7 @@
 /* 24 functions from 0x020B9C8C to 0x020BAC24 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 #include "ov000_ai.h"
 static inline s32 DistanceBAAE0(s32 x,s32 y,s32 xx,s32 yy) { s32 d=0; if(x-xx>0)d+=x-xx;else d+=xx-x; if(y-yy>0)d+=y-yy;else d+=yy-y; return d; }
 typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0x85c]; u8 units[256][14]; } MapBAAE0;
@@ -10,11 +11,11 @@ typedef struct { u8 pad0[0x508]; u8 cells[0x3250]; u16 rows[0x40]; u8 pad37d8[0x
  * (menu_seisan) from its archive into the sprite engine's texture, tile-buffer
  * and palette areas, lay out the unit list and refresh the screen object. */
 void LoadProductionMenuScreen(u8 *screen) {
- void func_020994e0(s32); void LoadScenePanelGraphicsOnBothEngines(void); void func_020c0a88(void);
+ void func_020994e0(s32); void LoadScenePanelGraphicsOnBothEngines(void); void LoadUiGraphics(void);
  void RefreshMapView(void); void SetFileDirectory(void *);
  M2C_UNK GetLocalizedFileName(void *); void OpenNarcArchive(void);
  void LoadNarcFileDecompressed(M2C_UNK,M2C_UNK); void LoadNarcFileToSpriteBuffer(M2C_UNK,s32,s32); void CloseNarcArchive(void);
- void AddToU16Array(M2C_UNK,s32,s32); void func_020b9bec(void); void func_020b9c40(void);
+ void AddToU16Array(M2C_UNK,s32,s32); void CreateProductionMenuSprites(void); void DrawProductionMenuColumns(void);
  void PlaySoundEffect(s32); void DrawProductionUnitPreview(u8); void CreateMenuUnitSprite(void *);
  extern void **gCurrentMap; extern void *gCur3DSpriteEngine;
  extern M2C_UNK sProductionMenuDir; extern M2C_UNK sProductionMenuNarcName;
@@ -23,7 +24,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  void (*mapCallback)(void);
  func_020994e0(0);
  LoadScenePanelGraphicsOnBothEngines();
- func_020c0a88();
+ LoadUiGraphics();
  mapCallback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);
  if(mapCallback)mapCallback();
  RefreshMapView();
@@ -40,7 +41,7 @@ void LoadProductionMenuScreen(u8 *screen) {
  CloseNarcArchive();
  AddToU16Array(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x28),0x100,0x6124);
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- func_020b9bec(); func_020b9c40();
+ CreateProductionMenuSprites(); DrawProductionMenuColumns();
  PlaySoundEffect(0x10017);
  DrawProductionUnitPreview(gProductionMenuState[8]);
  CreateMenuUnitSprite(screen);
@@ -50,51 +51,60 @@ void func_020b9dc8(void) {
 
 }
 
-void func_020b9dcc(void) {
- void func_020b9978(void); void Clear3DSpriteLayer(s32); void func_0207a668(void); void func_020b2268(void);
+/* Teardown handler of the production menu screen: clear the menu's sprite
+ * layers, let the map view resume through its restore callback, then retire the
+ * menu's remaining sprites. */
+void UnloadProductionMenuScreen(void) {
+ void func_020b9978(void); void Clear3DSpriteLayer(s32); void func_0207a668(void); void CloseAllActiveSpriteSlots(void);
  extern void **gCurrentMap;
  extern void *gCur3DSpriteEngine;
- void (*callback)(void);
+ void (*restoreMapView)(void);
  func_020b9978();
  Clear3DSpriteLayer(2);
- M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),4);
- if(callback) callback();
- func_0207a668(); func_020b2268();
+ M2C_FIELD(gCur3DSpriteEngine,u8 *,DS3D_ENGINE_DIRTY)|=DS3D_DIRTY_LAYER2;
+ restoreMapView=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),4);
+ if(restoreMapView) restoreMapView();
+ func_0207a668(); CloseAllActiveSpriteSlots();
 }
 
-s32 CanBuildUnitKind(s32 arg0, s32 arg1) {
- s32 func_020b9e70(s32,s32); s32 func_020b9ec0(s32,s32);
+/* Report whether `player` may build a unit of `kind`: the map must not have
+ * disabled the kind (MAPCONFIG_UNBUILDABLE_KINDS), and in team mode the kind
+ * must also be one the current story map allows. */
+s32 CanBuildUnitKind(s32 player, s32 kind) {
+ s32 CanBuildUnitKindIgnoringMap(s32,s32); s32 CanBuildUnitKindOnMap(s32,s32);
  extern M2C_UNK gMapConfig;
- if(M2C_FIELD(&gMapConfig,u32 *,12)&(1<<(u8)arg1)) return 0;
- switch((u8)((u32)(M2C_FIELD(&gMapConfig,u16 *,0)<<29)>>29)) {
- case 0: return func_020b9ec0(arg0,arg1);
- case 1: default: return func_020b9e70(arg0,arg1);
+ if(M2C_FIELD(&gMapConfig,u32 *,MAPCONFIG_UNBUILDABLE_KINDS)&(1<<(u8)kind)) return 0;
+ switch((u8)((u32)(M2C_FIELD(&gMapConfig,u16 *,MAPCONFIG_FLAGS)<<29)>>29)) {
+ case MAPCONFIG_MODE_TEAM: return CanBuildUnitKindOnMap(player,kind);
+ case 1: default: return CanBuildUnitKindIgnoringMap(player,kind);
  }
 }
 
-s32 func_020b9e70(s32 arg0,s32 arg1) {
- s32 func_020a7bbc(s32);
- extern M2C_UNK data_ov000_021aab78;
- if(M2C_FIELD(&data_ov000_021aab78,s8 *,arg1)==-1) return 0;
- if(func_020a7bbc(arg1)==0) return 0;
- switch(arg1) { case 17: return 0; default: return 1; }
+/* Report whether unit kind `kind` may be built at all, apart from the current
+ * map's own restrictions: the kind must not be marked unbuildable (-1) in
+ * gUnitKindBuildable, must have a build cost, and kind 17 is never buildable. */
+s32 CanBuildUnitKindIgnoringMap(s32 player,s32 kind) {
+ s32 GetUnitKindBuildCost(s32);
+ extern M2C_UNK gUnitKindBuildable;
+ if(M2C_FIELD(&gUnitKindBuildable,s8 *,kind)==-1) return 0;
+ if(GetUnitKindBuildCost(kind)==0) return 0;
+ switch(kind) { case 17: return 0; default: return 1; }
 }
 
 /* Report whether facility type `facility` is available on the current map in
- * mode 0: reject it if the per-facility table (data_ov000_021aab78) marks it
+ * mode 0: reject it if the per-facility table (gUnitKindBuildable) marks it
  * invalid (-1) or its attribute word (data_ov000_021b5c00[type*0x70]) is zero;
  * otherwise each facility type is blocked on the special maps whose id lies in
  * [0xa1, limit] (larger limits cover more facilities). */
-s32 func_020b9ec0(s32 unit, s32 facility) {
-    s32 func_020a7bbc(s32);
+s32 CanBuildUnitKindOnMap(s32 unit, s32 facility) {
+    s32 GetUnitKindBuildCost(s32);
     s32 func_ov004_02213820(void);
-    extern M2C_UNK data_ov000_021aab78;
+    extern M2C_UNK gUnitKindBuildable;
     extern void **gCurrentMap;
     u16 mapId;
     (void)unit;
-    if (M2C_FIELD(&data_ov000_021aab78, s8 *, facility) == -1) return 0;
-    if (func_020a7bbc(facility) == 0) return 0;
+    if (M2C_FIELD(&gUnitKindBuildable, s8 *, facility) == -1) return 0;
+    if (GetUnitKindBuildCost(facility) == 0) return 0;
     switch (facility) {
     case 17:
         return 0;

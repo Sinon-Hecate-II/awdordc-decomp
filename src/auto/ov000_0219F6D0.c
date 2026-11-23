@@ -91,15 +91,20 @@ s32 ProcessAiCommandDelay(void) {
     return 0;
 }
 
-s32 func_ov000_0219f918(void) {
+/* AI command step 3 (an attack command of kind 4 or 5): commit the attack the AI
+ * picked.  An attack-target command (kind 4) resolves the fight on the named
+ * unit's tile; an attack-tile command instead shows the battle preview on the
+ * command's target tile.  Either way the AI then goes back to picking its next
+ * action (phase 2, step 0). */
+s32 ResolveAiAttackCommand(void) {
 void func_020bb0d0(u8);
 void func_020bb0ec(u8,u8);
 extern u8 gAiCommand[];
 extern void *gAiCommandState;
-if(gAiCommand[0] == 4) func_020bb0d0(gAiCommand[6]);
-else func_020bb0ec(gAiCommand[6],gAiCommand[7]);
-M2C_FIELD(gAiCommandState,s8 *,0)=2;
-M2C_FIELD(gAiCommandState,s8 *,1)=0;
+if(gAiCommand[AI_COMMAND_KIND] == AI_COMMAND_ATTACK_TARGET) func_020bb0d0(gAiCommand[AI_COMMAND_UNIT]);
+else func_020bb0ec(gAiCommand[AI_COMMAND_UNIT],gAiCommand[AI_COMMAND_ARG_Y]);
+M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_PHASE)=AI_COMMAND_PHASE_PICK_ACTION;
+M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_STEP)=0;
 return 0;
 }
 
@@ -120,17 +125,22 @@ M2C_FIELD(gAiCommandState,s8 *,AI_COMMAND_STATE_STEP)=5;
 return 0;
 }
 
-s32 func_ov000_0219f9c0(void) {
-void BattleUpdateUnitCursor(void);
-void CreateTargetCursor(u8,u8);
-void AiDecrementUnitAmmo(u8,u8,s32);
-extern u8 gAiCommand[];
-extern void *gAiCommandState;
-BattleUpdateUnitCursor();
-CreateTargetCursor(gAiCommand[6],gAiCommand[7]);
-AiDecrementUnitAmmo(gAiCommand[6],gAiCommand[7],0);
-M2C_FIELD(gAiCommandState,s8 *,1)=5;
-return 0;
+/* AI command step 6, the last step of an attack action: restore the battle unit
+ * cursor, draw the target cursor on the command's target tile and spend one point
+ * of the acting unit's ammo, then hand back to step 5, which returns the AI to
+ * picking its next action. */
+s32 FinishAiAttackCommand(void) {
+    void BattleUpdateUnitCursor(void);
+    void CreateTargetCursor(u8, u8);
+    void AiDecrementUnitAmmo(u8, u8, s32);
+    extern u8 gAiCommand[];
+    extern void *gAiCommandState;
+
+    BattleUpdateUnitCursor();
+    CreateTargetCursor(gAiCommand[AI_COMMAND_UNIT], gAiCommand[AI_COMMAND_ARG_Y]);
+    AiDecrementUnitAmmo(gAiCommand[AI_COMMAND_UNIT], gAiCommand[AI_COMMAND_ARG_Y], 0);
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = 5;
+    return 0;
 }
 
 s32 func_ov000_0219fa0c(void) {

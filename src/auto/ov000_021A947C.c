@@ -1,6 +1,7 @@
 /* 29 functions from 0x021A947C to 0x021AA3FC (ov000), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ov000_ai.h"
 static inline s32 unit_blocks_action(s32 unit) {
  extern void **gCurrentMap;
  s32 GetPlayerArmyVariant(s32);
@@ -73,18 +74,27 @@ s32 IsUnitVisibleAtCell(s32 player, s32 unitKind, s32 x, s32 y) {
     return neighbours != 0;
 }
 #pragma pop
-void GetAttackDamage(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Estimated damage an attack of `attackerKind` deals to `targetKind` under the
+ * map's current weather for the current player; `applyBonus` also counts the
+ * CO-zone bonus.  func_ov000_021a96f4 is the same estimate for the alternate
+ * damage row. */
+s32 GetAttackDamage(s32 attackerKind, s32 targetKind, s32 applyBonus) {
     M2C_UNK GetEstimatedDamage(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    GetEstimatedDamage(arg0, arg1, 0, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    GetEstimatedDamage(attackerKind, targetKind, 0,
+        M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_WEATHER),
+        M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), 0, applyBonus);
 }
 
-void func_ov000_021a96f4(M2C_UNK arg0, M2C_UNK arg1, s32 arg2) {
+/* Damage estimate of `attackerKind` against a submerged target of `targetKind`:
+ * the same estimate as GetAttackDamage but with the damage row used for a
+ * submerged target. */
+void GetSubmergedAttackDamage(M2C_UNK attackerKind, M2C_UNK targetKind, s32 applyBonus) {
     M2C_UNK GetEstimatedDamage(M2C_UNK, M2C_UNK, s32, u8, s32, s32, s32);
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    GetEstimatedDamage(arg0, arg1, 1, M2C_FIELD(gAiCommandState, u8 *, 0xC), M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 0, arg2);
+    GetEstimatedDamage(attackerKind, targetKind, 1, M2C_FIELD(gAiCommandState, u8 *, AI_COMMAND_STATE_WEATHER), M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), 0, applyBonus);
 }
 
 /* The higher of the unit's two weapon damage percentages against a target kind:
@@ -190,11 +200,13 @@ u8 CanUnitAttackKind(u8 *unit, s32 targetKind) {
     return result;
 }
 
-s32 func_ov000_021a99dc(u8 *arg0) {
- if(GetUnitAttackClass((u32)(*arg0<<26)>>26)==2 || ((u32)(*arg0<<26)>>26)==25) {
- if(arg0[12]==0) return 1;
- }
- return 0;
+/* Returns 1 for a unit the AI can ignore as a threat: it cannot attack (kind 25
+ * is treated as unarmed) and carries no unit in its first cargo slot. */
+s32 IsUnitUnarmedAndEmpty(u8 *unit) {
+    if (GetUnitAttackClass((u32)(*unit << 26) >> 26) == UNIT_ATTACK_NONE || ((u32)(*unit << 26) >> 26) == 25) {
+        if (unit[MAP_UNIT_FIRST_CARRIED] == 0) return 1;
+    }
+    return 0;
 }
 
 /* Returns 1 if the unit's terrain unit table permits passing through the given map cell. */
@@ -336,7 +348,7 @@ u32 CellMoveScore(s32 x, s32 y, s32 directWeight, s32 indirectWeight) {
  * Returns 0 when there is none. */
 s32 FindBestSelectableUnit(void) {
  extern void **gCurrentMap; extern u16 gMapConfig; extern u16 gPlayerUnitIdBase[]; extern s32 (**gAiSettings)(s32,s32);
- s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 func_020a7bbc(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
+ s32 GetPlayerCommanderId(u16); s32 func_020a3150(u16); void *GetPlayerSelectedUnit(u16); s32 IsUnitSelected(void *); s32 func_020cf908(s32,s32,s32,s32); s32 func_020a2788(s32,s32); s32 GetUnitActionCost(s32,s32); s32 GetUnitKindBuildCost(s32); s32 AiSettings_DefaultUnitFilter(s32,s32);
  s32 commander; u8 *best; s32 id; u8 *unit; s32 offset;
  GetPlayerCommanderId(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER));
  best=0;
@@ -361,7 +373,7 @@ s32 FindBestSelectableUnit(void) {
  if(*gAiSettings==0){if(AiSettings_DefaultUnitFilter(commander,(u32)(unit[0]<<26)>>26)){goto select;}goto next;}
  else {if((*gAiSettings)(commander,(u32)(unit[0]<<26)>>26))goto select;goto next;}
  select:
- if(best && func_020a7bbc((u32)(best[0]<<26)>>26)>=func_020a7bbc((u32)(unit[0]<<26)>>26))continue;
+ if(best && GetUnitKindBuildCost((u32)(best[0]<<26)>>26)>=GetUnitKindBuildCost((u32)(unit[0]<<26)>>26))continue;
  best=unit;
  next:;
  }while((++id,offset+=14,id)<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)]+51);

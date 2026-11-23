@@ -19,7 +19,7 @@ void func_0200fc58(void) {
     void TaskWake(void *);
     void SetFifoMessageHandler(s32, void *);
     void func_0200fd90(s32);
-    void func_02010cc4(void);
+    void SaveDevice_ThreadMain(void);
     void func_02010c90(s32, s32, s32);
 
     volatile u8 *base = (volatile u8 *) &gSaveDeviceState;
@@ -46,7 +46,7 @@ void func_0200fc58(void) {
         *(volatile s32 *)(base + 0x10) = zero;
         *(volatile s32 *)(base + 0x110) = zero;
         *(volatile s32 *)(base + 0x10C) = zero;
-        TaskCreate(base + 0x44, (void *)func_02010cc4, 0,
+        TaskCreate(base + 0x44, (void *)SaveDevice_ThreadMain, 0,
                       (u8 *)data_02130400, 0x400,
                       *(volatile s32 *)(base + 0x108));
         TaskWake(base + 0x44);
@@ -390,17 +390,20 @@ void CARD_SetCommand(u32 command, u32 address) {
 }
 
 #pragma opt_propagation off
-void func_02010688(void)
+/* Starts the DMA read of the next 512-byte backup-chip block: arms the
+ * transfer's DMA channel to pull the block from the card data port into the
+ * destination, queues the block's command, then starts it through ROM control. */
+void SaveDevice_StartTransferDma(void)
 {
-  extern void *data_0212fde0;
-  extern u32 data_02130420[];
+  extern void *gSaveDeviceState;
+  extern u32 gSaveDeviceCommand[];
   void func_02008538(u32, void *, u32, u32);
-  u32 *p;
-  u32 *q = data_02130420;
-  p = (u32 *) (&data_0212fde0);
-  func_02008538(p[10], (void *) 0x04100010, p[8], 512);
-  CARD_SetCommand((p[7] >> 8) | 0xB7000000, p[7] << 24);
-  *((volatile u32 *) 0x040001A4) = q[1];
+  u32 *state;
+  u32 *command = gSaveDeviceCommand;
+  state = (u32 *) (&gSaveDeviceState);
+  func_02008538(state[SAVE_DEVICE_DMA_CHANNEL / 4], (void *) 0x04100010, state[SAVE_DEVICE_DEST / 4], 512);
+  CARD_SetCommand((state[SAVE_DEVICE_ADDRESS / 4] >> 8) | 0xB7000000, state[SAVE_DEVICE_ADDRESS / 4] << 24);
+  *((volatile u32 *) 0x040001A4) = command[1];
 }
 #pragma opt_propagation on
 void func_020106dc(void) {
@@ -413,7 +416,7 @@ void func_020106dc(void) {
     void OS_RestoreInterrupts(s32);
     void OS_WakeupThread(void *);
     void TaskWake(void *);
-    void func_02010688(void);
+    void SaveDevice_StartTransferDma(void);
     extern void *gSaveDeviceState;
     s32 a;
     s32 c;
@@ -461,7 +464,7 @@ void func_020106dc(void) {
     }
     return;
 fail:
-    func_02010688();
+    SaveDevice_StartTransferDma();
 }
 
 s32 func_020107ac(void *command) {
@@ -529,7 +532,7 @@ s32 func_020107ac(void *command) {
         OS_SetIrqMask(0x80000);
         OS_EnableIrqMask(0x80000);
         OS_RestoreInterrupts(irq);
-        func_02010688();
+        SaveDevice_StartTransferDma();
     }
     return started;
 }

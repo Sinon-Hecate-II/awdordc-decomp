@@ -26,12 +26,27 @@ s32 gti2ThinkConnection(void *connection, u32 now) {
     return 0;
 }
 
-M2C_UNK func_0205ac1c(s32 a,s32 b) {
-void gti2MarkConnectionClosed(void *,...);M2C_UNK gti2SendClosed();s32 gti2ClosedCallback(s32,s32);void gti2RemoveConnection(s32);void gti2SendClosedAck(s32);
-if(b){
-if(M2C_FIELD(a,s32 *,12)>=7)return;
-gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);gti2RemoveConnection(a);
-}else {M2C_FIELD(a,s32 *,12)=6;gti2SendClosedAck(a);}
+/* Close a GT2 connection.  When `localClose` is set the connection is marked
+ * closed, the peer is told with a CLOSED notice, the closed callback runs with
+ * reason 0 (local) and the connection is dropped from its socket; otherwise the
+ * peer closed, so the state becomes PEER_CLOSED and the reliable CLOSED
+ * acknowledgement is sent.  A connection that is already closed is left alone. */
+M2C_UNK gti2HandleConnectionClose(s32 connection, s32 localClose) {
+    void gti2MarkConnectionClosed(void *, ...);
+    M2C_UNK gti2SendClosed();
+    s32 gti2ClosedCallback(s32, s32);
+    void gti2RemoveConnection(s32);
+    void gti2SendClosedAck(s32);
+    if (localClose) {
+        if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) >= GT2_STATE_CLOSED) return;
+        gti2MarkConnectionClosed((void *) connection);
+        gti2SendClosed(connection);
+        gti2ClosedCallback(connection, 0);
+        gti2RemoveConnection(connection);
+    } else {
+        M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_PEER_CLOSED;
+        gti2SendClosedAck(connection);
+    }
 }
 
 /* Mark a GT2 connection closed: leave it alone if it already is, otherwise set
@@ -39,11 +54,11 @@ gti2MarkConnectionClosed((void *)a);gti2SendClosed(a);gti2ClosedCallback(a,0);gt
  * connection vector. */
 void gti2MarkConnectionClosed(void *connection, ...) {
     void TableRemove(s32, void **);
-    void Vector_AddItem(s32, void **);
+    void Vector_Append(s32, void **);
     if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) == GT2_STATE_CLOSED) return;
     M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_CLOSED;
     TableRemove(M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTION_TABLE), &connection);
-    Vector_AddItem(M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS), &connection);
+    Vector_Append(M2C_FIELD(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), s32 *, GT2_SOCKET_CONNECTIONS), &connection);
 }
 
 /* Free a GT2 connection: its queued handshake data, receive and send buffers,
@@ -137,8 +152,8 @@ void gt2Send(void *connection, const u8 *message, s32 length, s32 reliable) {
 }
 
 void GT2FailConnectionAttempt(M2C_UNK arg0) {
-    M2C_UNK func_0205ac1c(M2C_UNK, M2C_UNK);
-    func_0205ac1c(arg0, 1);
+    M2C_UNK gti2HandleConnectionClose(M2C_UNK, M2C_UNK);
+    gti2HandleConnectionClose(arg0, 1);
 }
 
 void func_0205afdc(s32 *arg0) {
@@ -350,7 +365,23 @@ s32 gti2HandleClientResponse(void *connection, s32 message, s32 length) {
     return Gt2InvokeConnectAttempt(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), connection, M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), GetSystemTickMilliseconds() - M2C_FIELD(connection, s32 *, GT2_CONNECTION_START_TIME), message + GT2_RESPONSE_SIZE, length - GT2_RESPONSE_SIZE) != 0;
 }
 
-s32 func_0205b6a0(void *a) {s32 Gt2ConnectionCallCallback();s32 v;if(M2C_FIELD(a,s32 *,12)!=1){if(Gt2CloseConnection(a))v=1;else v=0;return v;} M2C_FIELD(a,s32 *,12)=5;if(Gt2ConnectionCallCallback(a,0,0,0))return 1;return 0;}
+/* Client side of the GT2 handshake: handle the server's ACCEPT.  A connection
+ * still waiting for it becomes connected and reports the connect event through
+ * its callback; any other state is closed.  Returns 0 when a callback freed the
+ * connection. */
+s32 gti2HandleAccept(void *connection) {
+    s32 Gt2ConnectionCallCallback();
+    s32 closed;
+
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) != GT2_STATE_AWAIT_SERVER_ACCEPT) {
+        if (Gt2CloseConnection(connection)) closed = 1;
+        else closed = 0;
+        return closed;
+    }
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_CONNECTED;
+    if (Gt2ConnectionCallCallback(connection, GT2_EVENT_CONNECTED, 0, 0)) return 1;
+    return 0;
+}
 
 /* GT2 command 5 handler (GTI2_CLOSE): the peer asked to close. A connection
  * still waiting for the server's ACCEPT is torn down normally; otherwise it is
@@ -391,7 +422,7 @@ s32 Gt2DispatchCommand(void *object, s32 command, s32 param_a, s32 param_b) {
     else if (command == 1) { if (!gti2HandleConnect(object, (void *)param_a, param_b)) return 0; }
     else if (command == 2) { if (!gti2HandleConnectAccept(object, (void *)param_a, param_b)) return 0; }
     else if (command == 3) { if (!gti2HandleClientResponse(object, param_a, param_b)) return 0; }
-    else if (command == 4) { if (!func_0205b6a0(object)) return 0; }
+    else if (command == 4) { if (!gti2HandleAccept(object)) return 0; }
     else if (command == 5) { if (!gti2HandleClose(object, param_a, param_b)) return 0; }
     else if (command == 6) { if (!func_0205b758(object)) return 0; }
     return 1;

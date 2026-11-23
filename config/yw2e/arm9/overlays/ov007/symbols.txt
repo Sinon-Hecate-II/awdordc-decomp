@@ -47,7 +47,7 @@ func_ov007_02212db8 kind:function(arm,size=0x14) addr:0x02212db8
 func_ov007_02212dcc kind:function(arm,size=0x384) addr:0x02212dcc
 func_ov007_02213150 kind:function(arm,size=0x12c) addr:0x02213150
 func_ov007_0221327c kind:function(arm,size=0x40) addr:0x0221327c
-func_ov007_022132bc kind:function(arm,size=0x50) addr:0x022132bc
+MapEditor_TogglePage kind:function(arm,size=0x50) addr:0x022132bc
 func_ov007_0221330c kind:function(arm,size=0x18) addr:0x0221330c
 func_ov007_02213324 kind:function(arm,size=0x34) addr:0x02213324
 func_ov007_02213358 kind:function(arm,size=0x8) addr:0x02213358
@@ -166,9 +166,9 @@ UpdatePanelClose kind:function(arm,size=0x128) addr:0x022197d4
 UpdatePanelDisplay kind:function(arm,size=0x1b8) addr:0x022198fc
 func_ov007_02219ab4 kind:function(arm,size=0x18) addr:0x02219ab4
 func_ov007_02219acc kind:function(arm,size=0x1c) addr:0x02219acc
-func_ov007_02219ae8 kind:function(arm,size=0x50) addr:0x02219ae8
+UpdatePanelRowCollapse kind:function(arm,size=0x50) addr:0x02219ae8
 func_ov007_02219b38 kind:function(arm,size=0x2c) addr:0x02219b38
-func_ov007_02219b64 kind:function(arm,size=0x50) addr:0x02219b64
+MapEditor_PaletteOpenStep kind:function(arm,size=0x50) addr:0x02219b64
 func_ov007_02219bb4 kind:function(arm,size=0x24) addr:0x02219bb4
 MapEditor_LoadPlayerPalettes kind:function(arm,size=0x80) addr:0x02219bd8
 MapEditor_DrawCatalogueCell kind:function(arm,size=0xb8) addr:0x02219c58
@@ -247,8 +247,8 @@ func_ov007_0221f244 kind:function(arm,size=0xc) addr:0x0221f244
 func_ov007_0221f250 kind:function(arm,size=0x14) addr:0x0221f250
 func_ov007_0221f264 kind:function(arm,size=0xc) addr:0x0221f264
 CreateMapEditList kind:function(arm,size=0x1e8) addr:0x0221f270
-DestroyMapEditList kind:function(arm,size=0x58) addr:0x0221f458
-func_ov007_0221f4b0 kind:function(arm,size=0x50) addr:0x0221f4b0
+FreeMapEditList kind:function(arm,size=0x58) addr:0x0221f458
+DestroyMapEditList kind:function(arm,size=0x50) addr:0x0221f4b0
 data_ov007_0221f500 kind:data(any) addr:0x0221f500
 data_ov007_0221f508 kind:data(any) addr:0x0221f508
 data_ov007_0221f514 kind:data(any) addr:0x0221f514

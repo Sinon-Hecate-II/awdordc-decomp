@@ -340,7 +340,7 @@ void Sound_DestroyHeap(s32 *arg0) {
  * release callback, unlinks the group from the player's list, resets the
  * player's heap and flushes the sound commands, then adds a fresh block. */
 s32 Sound_FreeAllBlocks(void *player){
-s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 func_0202c7ec(void *);
+s32 ListPrev(void *,M2C_UNK);void ListRemove(void *,void *);void func_0202a6b0(s32,s32);void Sound_FlushAndWait(void);s32 Sound_AppendHeapSection(void *);
 void *group;s32 changed=0;void *block;
 group=(void *)ListPrev(player+4,0);
 while(group){
@@ -353,7 +353,7 @@ block=(void *)ListPrev(group,(s32)block);
 }
 ListRemove(player+4,group);group=(void *)ListPrev(player+4,0);
 }
-func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return func_0202c7ec(player);
+func_0202a6b0(M2C_FIELD(player,s32 *,0),3);if(changed)Sound_FlushAndWait();return Sound_AppendHeapSection(player);
 }
 
 /* Take a `size`-byte data block from the sound heap in `pool` (32-byte aligned,
@@ -365,27 +365,31 @@ block=Sound_HeapAlloc(*pool,((size+31)&~31)+32,32);if(!block)return 0;
 blockList=ListPrev(pool+1,0);M2C_FIELD(block,s32 *,SOUND_BLOCK_SIZE)=size;M2C_FIELD(block,s32 *,SOUND_BLOCK_FREE)=freeCallback;M2C_FIELD((u32)block,s32 *,SOUND_BLOCK_FREE_ARG)=freeArg;M2C_FIELD(block,s32 *,SOUND_BLOCK_INDEX)=index;ListAppend(blockList,block);return block+SOUND_BLOCK_DATA;
 }
 
-s32 func_0202c658(void *arg0) {
-    s32 func_0202a714(s32, u16);
-    M2C_UNK func_0202a764(s32, M2C_UNK);
-    s32 func_0202c7ec(void *);
-    if (func_0202a714(M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 0xC)) == 0) {
+/* Push a new, empty section onto the sound heap: record the frame-heap state
+ * under the new section's index so the section's allocations can be rolled back,
+ * then append the section.  Returns the section's index, or -1 when the record or
+ * the section allocation failed. */
+s32 Sound_PushHeapSection(void *player) {
+    s32 RecordFrameHeapState(s32, u16);
+    M2C_UNK UnrecordFrameHeapState(s32, M2C_UNK);
+    s32 Sound_AppendHeapSection(void *);
+    if (RecordFrameHeapState(M2C_FIELD(player, s32 *, SOUND_HEAP_FRAME), M2C_FIELD(player, u16 *, SOUND_HEAP_SECTION_COUNT)) == 0) {
         return -1;
     }
-    if (func_0202c7ec(arg0) != 0) {
-        return M2C_FIELD(arg0, u16 *, 0xC) - 1;
+    if (Sound_AppendHeapSection(player) != 0) {
+        return M2C_FIELD(player, u16 *, SOUND_HEAP_SECTION_COUNT) - 1;
     }
-    func_0202a764(M2C_FIELD(arg0, s32 *, 0), 0);
+    UnrecordFrameHeapState(M2C_FIELD(player, s32 *, SOUND_HEAP_FRAME), 0);
     return -1;
 }
 
 void func_0202c6a4(void *p, s32 count) {
     s32 ListPrev(void *, M2C_UNK);
     void ListRemove(void *, void *);
-    s32 func_0202a764(s32, s32);
-    s32 func_0202a714(s32, u16);
+    s32 UnrecordFrameHeapState(s32, s32);
+    s32 RecordFrameHeapState(s32, u16);
     void Sound_FlushAndWait(void);
-    s32 func_0202c7ec(void *);
+    s32 Sound_AppendHeapSection(void *);
     s32 Sound_FreeAllBlocks(void *);
     void *a;
     s32 changed;
@@ -409,12 +413,12 @@ void func_0202c6a4(void *p, s32 count) {
         }
         ListRemove(p + 4, a);
     }
-    func_0202a764(M2C_FIELD(p, s32 *, 0), count);
+    UnrecordFrameHeapState(M2C_FIELD(p, s32 *, 0), count);
     if (changed) {
         Sound_FlushAndWait();
     }
-    func_0202a714(M2C_FIELD(p, s32 *, 0), M2C_FIELD(p, u16 *, 12));
-    func_0202c7ec(p);
+    RecordFrameHeapState(M2C_FIELD(p, s32 *, 0), M2C_FIELD(p, u16 *, 12));
+    Sound_AppendHeapSection(p);
 }
 
 s32 func_0202c778(void *arg0) {
@@ -437,9 +441,9 @@ void func_0202c7a8(M2C_UNK arg0) {
     ListInit(arg0, 0);
 }
 
-s32 Sound_InitHeap(u32 p,s32 a){s32 func_0202c7ec(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return func_0202c7ec(p)!=0;}
+s32 Sound_InitHeap(u32 p,s32 a){s32 Sound_AppendHeapSection(void *);ListInit(p+4,12);M2C_FIELD(p,s32 *,0)=a;return Sound_AppendHeapSection(p)!=0;}
 
-s32 func_0202c7ec(void *p){
+s32 Sound_AppendHeapSection(void *p){
 void *Sound_HeapAlloc(s32,s32,M2C_UNK);void func_0202c7a8(s32);M2C_UNK ListAppend(s32,void *);
 void *q=Sound_HeapAlloc(M2C_FIELD(p,s32 *,0),20,4);if(!q)return 0;func_0202c7a8((s32)q);ListAppend((s32)(p+4),q);return 1;
 }

@@ -54,13 +54,13 @@ u8 func_020d46cc(void) {
     return M2C_FIELD(*gCurrentMap, u8 *, 0x52AC);
 }
 
-s32 func_020d46e8(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,s8*,0x52aa);}
+s32 GetMapViewHoldCount(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD);}
 
-void func_020d4704(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,0x52aa)++;}
+void AcquireMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)++;}
 
-void func_020d472c(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,0x52aa)--;}
+void ReleaseMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)--;}
 
-void func_020d4754(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,0x52aa)=0;}
+void ResetMapViewHold(void){extern void **gCurrentMap;M2C_FIELD(*gCurrentMap,s8*,MAP_VIEW_HOLD)=0;}
 
 u8 IsUnitMoveActive(void){extern void **gCurrentMap;return M2C_FIELD(*gCurrentMap,u8*,0x52ab);}
 
@@ -270,8 +270,8 @@ void func_020d4c50(void){void *p=func_020d4cd4();if(!p)return;if(!func_020d4cb0(
 
 void func_020d4c80(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    M2C_UNK func_01ffaa0c(u16);
-    func_01ffaa0c((u16) M2C_FIELD(arg0, s32 *, 0x5C));
+    M2C_UNK DeleteSpriteObjectsWithZ(u16);
+    DeleteSpriteObjectsWithZ((u16) M2C_FIELD(arg0, s32 *, 0x5C));
     Sprite_ResumeAnimation(arg0);
 }
 
@@ -322,7 +322,7 @@ void CreateBattleMapViewSprites(void) {
     if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED)) CreateSubScreenLinkIndicator();
 }
 
-int func_020d4d78(void){s32 FindObjectByZ(s32);void *func_0209cce4(void (*)(void *),int);if(!FindObjectByZ(0xff03))return;M2C_FIELD(func_0209cce4(func_020d4c80,2),s32*,0x5c)=0xff03;}
+int func_020d4d78(void){s32 FindObjectByZ(s32);void *CreateFrameCallbackTask(void (*)(void *),int);if(!FindObjectByZ(0xff03))return;M2C_FIELD(CreateFrameCallbackTask(func_020d4c80,2),s32*,0x5c)=0xff03;}
 
 u8 func_020d4dac(void) {
     s32 FindObjectByZ(s32);
@@ -483,7 +483,7 @@ void UpdateAimingCursor(void) {
  DrawUnitInfoPanel(2);
 }
 
-void CloseAimingCursor(void){extern void **gCurrentMap;func_020b2268();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
+void CloseAimingCursor(void){extern void **gCurrentMap;CloseAllActiveSpriteSlots();PlaySoundEffect(0x1000f);M2C_FIELD(*gCurrentMap,u16*,0x52b4)=0;}
 
 /* Aim-cursor handler for battle-map mode 3: shows the cursor over the aimed tile
    and, when that tile holds one of the current player's ready units, on confirm

@@ -431,13 +431,15 @@ s16 UpdateSpriteGridPixelOffset(void *grid) {
     return M2C_FIELD(grid, s16 *, SPRITE_GRID_PIXEL_OFFSET);
 }
 
-u8 func_020b320c(void *p) {
-s32 Divide(s32);
-s32 step=M2C_FIELD(p,volatile u8 *,5);
-s32 a=M2C_FIELD(p,u8 *,4);
-s16 b=Divide(M2C_FIELD(p,s16 *,0xa)+step-1);
-if(a>=b)a=b;
-return M2C_FIELD(p,s16 *,0xc)+(s16)a<b;
+/* True when the grid can scroll one row further down: the first visible row plus
+ * the rows the raster shows is still below the grid's page count. */
+u8 CanScrollSpriteGridDown(void *grid) {
+    s32 Divide(s32);
+    s32 columns = M2C_FIELD(grid, volatile u8 *, SPRITE_GRID_COLUMNS);
+    s32 visibleRows = M2C_FIELD(grid, u8 *, SPRITE_GRID_ROWS);
+    s16 pageCount = Divide(M2C_FIELD(grid, s16 *, SPRITE_GRID_ITEM_COUNT) + columns - 1);
+    if (visibleRows >= pageCount) visibleRows = pageCount;
+    return M2C_FIELD(grid, s16 *, SPRITE_GRID_SCROLL) + (s16)visibleRows < pageCount;
 }
 
 u8 func_020b325c(void *arg0) {

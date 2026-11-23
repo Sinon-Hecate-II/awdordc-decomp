@@ -6,8 +6,7 @@ extern void **gCurrentMap;
 if (x>=0 && y>=0 && x<M2C_FIELD(*gCurrentMap,u16 *,0x5144) && y<M2C_FIELD(*gCurrentMap,u16 *,0x5146)) return 1;
 return 0;
 }
-typedef struct { u8 values[27]; } UnkA866cTable;
-extern const UnkA866cTable data_020f3c04;
+extern const DisplayUnitKindList gUnitKindMenuList;
 
 /* Score of a unit that moves from its own tile to (a,b): the power of its kind, the
  * player's terrain effect and the terrain penalty of the destination.  A player
@@ -181,7 +180,7 @@ s32 ComputeUnitMoveRange(s32 kind, s32 weather, s32 player, s32 bonusType, u8 ap
  return range;
 }
 
-u16 func_020a7bbc(s32 arg0) {
+u16 GetUnitKindBuildCost(s32 arg0) {
  extern u8 data_ov000_021b5c00[];
  return *(u16 *)(data_ov000_021b5c00 + arg0 * 0x70);
 }
@@ -615,7 +614,12 @@ s32 UnitKindCanSupply(s32 arg0) {
 
 s32 func_020a8630(u32 a){switch(a){case 5:return 1;case 13:return 1;case 21:return 1;default:return 0;}}
 
-u8 func_020a866c(u32 a){UnkA866cTable t=data_020f3c04;return t.values[a];}
+/* Unit kind at display slot `index` of gUnitKindMenuList, in the order the unit
+ * list and the CO-zone panel draw them; 0 for the entry that ends the list. */
+u8 GetDisplayUnitKind(u32 index) {
+    DisplayUnitKindList list = gUnitKindMenuList;
+    return list.values[index];
+}
 
 s32 func_020a86bc(void) {
     return 0;

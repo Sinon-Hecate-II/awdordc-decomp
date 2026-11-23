@@ -183,8 +183,8 @@ void Ov003_LoadMapSelectTitleBlock(void *screen, s32 entry) {
 }
 
 void func_ov003_0220a658(void *arg0, s32 arg1) {
-    M2C_UNK func_02004b54();
-    M2C_UNK func_02004cf0();
+    M2C_UNK GX_BeginLoadTex();
+    M2C_UNK GX_EndLoadTex();
     M2C_UNK LoadGraphicsBlock(s32, s32);
     s32 LoadFileToBuffer(s32, s32);
     s32 GetLocalizedFileName(s32);
@@ -192,9 +192,9 @@ void func_ov003_0220a658(void *arg0, s32 arg1) {
     extern M2C_UNK data_ov003_0220f244;
     s32 temp_r4;
     temp_r4 = LoadFileToBuffer(GetLocalizedFileName(M2C_FIELD(&data_ov003_0220f244, s32 *, arg1 * 0x10)), 1);
-    func_02004b54();
+    GX_BeginLoadTex();
     LoadGraphicsBlock(temp_r4, 0x06800000);
-    func_02004cf0();
+    GX_EndLoadTex();
     HeapFreeBlock(temp_r4);
 }
 

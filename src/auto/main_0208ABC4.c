@@ -239,8 +239,8 @@ void func_0208b4e4(void) {
 }
 
 void func_0208b4f0(void) {
-    M2C_UNK func_0208ab78();
-    func_0208ab78();
+    M2C_UNK ReleaseWindowResources();
+    ReleaseWindowResources();
 }
 
 void func_0208b4fc(void) {

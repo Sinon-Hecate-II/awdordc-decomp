@@ -45,7 +45,7 @@ void main(void)
 
 #pragma push
 #pragma opt_strength_reduction off
-s32 func_02000ca0(void *arg0,void *arg1){
+s32 MTX_Inverse33(void *arg0,void *arg1){
 void func_02002030(s32,s32);
 s32 func_02001ff8(void);
 void MTX_Copy33(void *,void *);

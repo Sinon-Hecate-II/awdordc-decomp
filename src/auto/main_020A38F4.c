@@ -185,12 +185,15 @@ void InitClearWeatherEffects(void);void InitRainEffects(void);void InitSnowEffec
 switch(a){case 0:InitClearWeatherEffects();return;case 1:InitRainEffects();return;case 2:InitSnowEffects();return;case 3:InitSandstormEffects();return;default:return;}
 }
 
-void func_020a4100(s32 a) {
-extern s32 *gCurrentMap;u8 b=a;
-M2C_FIELD(*gCurrentMap,u8 *,0x515b)=b;
-M2C_FIELD(*gCurrentMap,u8 *,0x5158)=b;
-M2C_FIELD(*gCurrentMap,u8 *,0x515a)=b;
-M2C_FIELD(*gCurrentMap,u8 *,0x5159)=0;
+/* Fixes the map's weather to `weather`: current, start and reset weather all
+ * become it, and the automatic weather change is turned off. */
+void SetMapWeather(s32 weather) {
+    extern s32 *gCurrentMap;
+    u8 w = weather;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_RESET) = w;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER) = w;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_START) = w;
+    M2C_FIELD(*gCurrentMap, u8 *, MAP_WEATHER_MODE) = 0;
 }
 
 #pragma push

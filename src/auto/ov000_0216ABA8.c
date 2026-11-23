@@ -10,6 +10,15 @@ typedef struct ScriptMapNested16 { u8 pad[0x59a4]; struct { u8 entries[256][14];
 
 typedef struct ScriptUnit16 { u8 kind:6; u8 team:2; u8 rest[13]; } ScriptUnit16;
 typedef struct ScriptMap16 { u8 pad[0x59a4]; ScriptUnit16 units[256]; } ScriptMap16;
+
+/* An event script's condition list is a run of 8-byte commands.  An OR-group of
+ * conditions ends with its action command (opcode 0x17, 0x18 or 0x19) and the
+ * whole list ends with opcode 0x22. */
+#define SCRIPT_CMD_BYTES     8    /* bytes per event-script command */
+#define SCRIPT_OP_GROUP_END0 0x17 /* action command ending an OR-group of conditions */
+#define SCRIPT_OP_GROUP_END1 0x18 /* ditto */
+#define SCRIPT_OP_GROUP_END2 0x19 /* ditto */
+#define SCRIPT_OP_LIST_END   0x22 /* ends the whole condition list */
 #pragma optimization_level 0
 typedef struct ScriptUnitsBlock16 { ScriptUnit16 entries[256]; } ScriptUnitsBlock16;
 static inline ScriptUnitsBlock16 *ScriptBlock16(void) { extern s32 *gCurrentMap; return (ScriptUnitsBlock16*)&((ScriptMapNested16*)*gCurrentMap)->units; }
@@ -65,14 +74,17 @@ cmd+=8;
 }
 return matched;
 }
-u8 *SkipToNextConditionGroup(u8 *arg0) {
-    while (*arg0 != 0x17 && *arg0 != 0x18 && *arg0 != 0x19) {
-        if (*arg0 == 0x22) {
-            return arg0;
+/* Skip the rest of the current OR-group of event-script conditions: advance one
+ * command at a time until the group's terminating action command (0x17..0x19) or
+ * the list terminator, and return it. */
+u8 *SkipToNextConditionGroup(u8 *cmd) {
+    while (*cmd != SCRIPT_OP_GROUP_END0 && *cmd != SCRIPT_OP_GROUP_END1 && *cmd != SCRIPT_OP_GROUP_END2) {
+        if (*cmd == SCRIPT_OP_LIST_END) {
+            return cmd;
         }
-        arg0 += 8;
+        cmd += SCRIPT_CMD_BYTES;
     }
-    return arg0;
+    return cmd;
 }
 #pragma optimization_level reset
 void *GetMapEventScript(void) {
@@ -85,7 +97,15 @@ void *GetMapEventScript(void) {
     }
 }
 #pragma optimization_level 0
-s32 func_ov000_0216b104(void) {  void *p=GetMapEventScript(); if(p!=0 && M2C_FIELD(p,s32 *,0x28)!=0) {return EvalScriptConditions(M2C_FIELD(p,s32 *,0x28),0,0,0,0);}else return 0;}
+/* Return whether the map's event-script condition list for the event at +0x28 of
+ * the script block holds, without running that event's action commands.  A map
+ * with no event script, or that event without a condition list, reports 0. */
+s32 IsMapEventConditionMet(void) {
+    void *script = GetMapEventScript();
+    if (script != 0 && M2C_FIELD(script, s32 *, 0x28) != 0) {
+        return EvalScriptConditions(M2C_FIELD(script, s32 *, 0x28), 0, 0, 0, 0);
+    } else return 0;
+}
 #pragma optimization_level reset
 s32 func_ov000_0216b154(void) {
     return 0;

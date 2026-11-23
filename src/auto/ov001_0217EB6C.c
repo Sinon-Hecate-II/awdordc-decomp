@@ -326,7 +326,9 @@ void func_ov001_0217f1f0(s32 event) {
 
 void func_ov001_0217f4e0(void){void Ov001_LoadObjTile(s32,u8,u8);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f8c0[];u8 v=data_ov001_0218f8c0[M2C_FIELD(&gMapListState,u8 *,0)-11];Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapListState,void **,8),s32 *,16),v,v);}
 
-void func_ov001_0217f514(void){extern M2C_UNK gMapListState;M2C_UNK MapListRedrawInfoPanel();s32 i=0;do{u8 *p=(u8 *)M2C_FIELD(&gMapListState,void **,8)+i;if(p[4]){p[4]--;if(!M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,8)+i,u8 *,4))MapListRedrawInfoPanel();}i++;}while(i<4);}
+/* Per-frame map-list task: tick down each of the four rows' custom-map highlight
+ * timers and redraw the info panel when one expires. */
+void MapListUpdateRowHighlightTimers(void){extern M2C_UNK gMapListState;M2C_UNK MapListRedrawInfoPanel();s32 i=0;do{u8 *object=(u8 *)M2C_FIELD(&gMapListState,void **,OV001_MAP_LIST_OBJECT)+i;if(object[OV001_MAP_LIST_ROW_HIGHLIGHT]){object[OV001_MAP_LIST_ROW_HIGHLIGHT]--;if(!M2C_FIELD((u8 *)M2C_FIELD(&gMapListState,void **,OV001_MAP_LIST_OBJECT)+i,u8 *,OV001_MAP_LIST_ROW_HIGHLIGHT))MapListRedrawInfoPanel();}i++;}while(i<4);}
 
 /* Highlights the custom-map row the player just picked on the map list: the
  * four entries that open a custom-map list come as two pairs (local maps 2 and
@@ -416,22 +418,24 @@ void MapList_LoadBackground(void) {
  * enable its background and object planes, then move on to the step that shows
  * the connect message. */
 void Ov001_FadeInMapListScreen(void) {
-    extern M2C_UNK func_ov001_0217f844;
+    extern M2C_UNK Ov001_ShowMapListConnectMessage;
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_SUB, GX_PLANEMASK_BG0, 8);
     Ov001_StartFade(OV001_FADE_FROM_WHITE, OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ, 8);
     Ov001_EnableVisiblePlanes(OV001_FADE_SUB, GX_PLANEMASK_BG0);
     Ov001_EnableVisiblePlanes(OV001_FADE_MAIN, GX_PLANEMASK_BG2 | GX_PLANEMASK_OBJ);
-    Ov001_SetStepCallback(&func_ov001_0217f844);
+    Ov001_SetStepCallback(&Ov001_ShowMapListConnectMessage);
 }
 
-void func_ov001_0217f844(void) {
+/* Map-list fade-in step: once both engines' fades have finished, show the
+ * connect message and install the step that waits for it to be dismissed. */
+void Ov001_ShowMapListConnectMessage(void) {
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK func_ov001_0217f894;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    if (Ov001_IsFadeActive(0) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     Ov001_ShowMessage(0x44, 5, 1, -1, 0);

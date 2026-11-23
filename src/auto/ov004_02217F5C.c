@@ -11,7 +11,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    M2C_UNK func_02003124(M2C_UNK);
+    M2C_UNK GX_SetBankForSubBG(M2C_UNK);
     M2C_UNK GX_SetBankForSubOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForBGExtPlttSub(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
@@ -26,12 +26,12 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_0208168c(s32, M2C_UNK);
     M2C_UNK Apply3DSpriteLayout(u16 *);
     M2C_UNK Reset3DSpriteBankState();
-    M2C_UNK func_02082c84();
+    M2C_UNK GX_ReleaseBankGrants();
     M2C_UNK func_02087d84(void *, M2C_UNK, s16, s16, s32, s32);
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Show3DSpriteSlide(void *);
     M2C_UNK func_020994e0();
-    M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateFrameCallbackTask(M2C_UNK *, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aad18(void *);
@@ -41,7 +41,7 @@ void func_ov004_02217f5c(void *arg0) {
     void *func_020ab1c4(void *);
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadBattleMap(s32);
-    M2C_UNK func_020cf278(s32);
+    M2C_UNK PreloadMapTileset(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_ov003_021fef58(void *);
     M2C_UNK func_ov003_021ff36c();
@@ -114,12 +114,12 @@ void func_ov004_02217f5c(void *arg0) {
 
     Ov004DisplayConfig sp3C = *(Ov004DisplayConfig *)&data_ov004_02218bc4;
     Ov004DisplayConfig sp30 = *(Ov004DisplayConfig *)((u8 *)&data_ov004_02218bc4 + 12);
-    func_02082c84();
+    GX_ReleaseBankGrants();
     GX_SetBankForTex(3);
     GX_SetBankForBG(0x20);
     GX_SetBankForOBJ(0x10);
     GX_SetBankForOBJExtPltt(0x40);
-    func_02003124(4);
+    GX_SetBankForSubBG(4);
     GX_SetBankForSubOBJ(8);
     GX_SetBankForBGExtPlttSub(0x80);
     GX_SetBankForOBJExtPlttSub(0x100);
@@ -244,8 +244,8 @@ void func_ov004_02217f5c(void *arg0) {
     func_020aad18(temp_r0_5);
     gCur3DSpriteEngine = temp_r5;
     func_ov003_021fef58(arg0);
-    func_0209cce4(&InitMapView3DRendering, 4);
-    func_0209cce4(&func_ov004_02214904, 0xA);
+    CreateFrameCallbackTask(&InitMapView3DRendering, 4);
+    CreateFrameCallbackTask(&func_ov004_02214904, 0xA);
     temp_r0_6 = M2C_FIELD(arg0, s32 *, 0x40);
     if ((temp_r0_6 != 0x800) && (temp_r0_6 != 0x1000)) {
 
@@ -318,7 +318,7 @@ loop_46:
     }
     if (var_r5 != NULL) {
         ResetBattleMap();
-        func_020cf278(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
+        PreloadMapTileset(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
         LoadBattleMap(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
         func_ov003_021ff36c();
     }

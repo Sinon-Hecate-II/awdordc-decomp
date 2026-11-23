@@ -150,15 +150,58 @@ void Sound_FreeVoice(void) {
     Sound_RecycleVoice();
 }
 
-void Sound_StartSequence(void *a){
-void func_0202b1ac(void *);void func_02008bf0();void func_02008ca0();s32 Sound_GetCommandCounter();void *p=M2C_FIELD(a,void **,4);
-func_02008bf0(M2C_FIELD(a,u8 *,60));if(M2C_FIELD(p,s32 *,28))func_02008ca0(M2C_FIELD(a,u8 *,60),65535,M2C_FIELD(p,s32 *,28));
-func_0202b1ac(a);M2C_FIELD(a,s32 *,48)=Sound_GetCommandCounter();M2C_FIELD(a,u8 *,47)=1;M2C_FIELD(a,u8 *,44)=1;
+/* Start voice `voice` on its hardware channel: stop the channel, send it its
+ * stored parameter, reset the voice's envelope, then mark it keyed on with the
+ * ARM7 command counter its start command was queued at. */
+void Sound_StartSequence(void *voice) {
+    void func_0202b1ac(void *);
+    void func_02008bf0();
+    void func_02008ca0();
+    s32 Sound_GetCommandCounter();
+    void *channel = M2C_FIELD(voice, void **, SOUND_VOICE_CHANNEL_BASE);
+
+    func_02008bf0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
+    if (M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C))
+        func_02008ca0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFF, M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C));
+    func_0202b1ac(voice);
+    M2C_FIELD(voice, s32 *, SOUND_VOICE_START_MARK) = Sound_GetCommandCounter();
+    M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING) = 1;
+    M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) = SOUND_VOICE_KEYED_ON;
 }
 
-void func_0202b10c(void *a,s32 b){void Sound_ReleaseVoice(void *);M2C_UNK Sound_StartFade(void *,M2C_UNK,M2C_UNK);void Sound_SetVoicePriority(void *,s8);if(!a||!M2C_FIELD(a,u8 *,44))return;if(!b){Sound_ReleaseVoice(a);return;}Sound_StartFade(a+28,0,b);Sound_SetVoicePriority(a,0);M2C_FIELD(a,u8 *,44)=2;}
+/* Release `voice`, fading its volume envelope to silence over `fadeLength` ticks
+ * first; a length of 0 releases it immediately.  The voice's priority is dropped
+ * so a new sound can take its channel, and it is marked playing so the per-frame
+ * voice update releases it once the fade ends.  An idle voice is left alone. */
+void Sound_FadeOutVoice(void *voice, s32 fadeLength) {
+    void Sound_ReleaseVoice(void *);
+    M2C_UNK Sound_StartFade(void *,M2C_UNK,M2C_UNK);
+    void Sound_SetVoicePriority(void *,s8);
+    if(!voice||!M2C_FIELD(voice,u8 *,SOUND_VOICE_STATE))return;
+    if(!fadeLength){Sound_ReleaseVoice(voice);return;}
+    Sound_StartFade(voice+SOUND_VOICE_ENVELOPE,0,fadeLength);
+    Sound_SetVoicePriority(voice,0);
+    M2C_FIELD(voice,u8 *,SOUND_VOICE_STATE)=SOUND_VOICE_PLAYING;
+}
 
-void *Sound_LinkVoiceChannel(s32 a,void *b){extern M2C_UNK gSoundChannels;void *ListNext();M2C_UNK ListRemove();M2C_UNK Sound_FreeAllBlocks();void *p=(u8 *)&gSoundChannels+a*36;void *q=ListNext(p+12,0);if(!q)return 0;ListRemove(p+12,q);M2C_FIELD(q,void **,12)=b;M2C_FIELD(b,void **,8)=q;Sound_FreeAllBlocks(M2C_FIELD(q,void **,8));return M2C_FIELD(q,void **,8);}
+/* Take the first preallocated sequence-player heap off `channel`'s list and give
+ * it to `voice`: the voice records the heap at SOUND_VOICE_HEAP and the heap
+ * node its owner, then the heap's blocks are cleared and the heap is returned.
+ * Returns NULL when the channel has no heap left. */
+void *Sound_LinkVoiceChannel(s32 channel,void *voice){
+extern M2C_UNK gSoundChannels;
+void *ListNext();
+M2C_UNK ListRemove();
+M2C_UNK Sound_FreeAllBlocks();
+void *channelRecord=(u8 *)&gSoundChannels+channel*SOUND_CHANNEL_SIZE;
+void *node=ListNext(channelRecord+SOUND_CHANNEL_SEQ_LIST,0);
+if(!node)return 0;
+ListRemove(channelRecord+SOUND_CHANNEL_SEQ_LIST,node);
+M2C_FIELD(node,void **,SOUND_CHANNEL_HEAP_OWNER)=voice;
+M2C_FIELD(voice,void **,SOUND_VOICE_HEAP)=node;
+Sound_FreeAllBlocks(M2C_FIELD(node,void **,SOUND_CHANNEL_HEAP_HEAP));
+return M2C_FIELD(node,void **,SOUND_CHANNEL_HEAP_HEAP);
+}
 
 void func_0202b1ac(void *arg0) {
     M2C_UNK Sound_ResetFade(void *);
@@ -174,9 +217,27 @@ void func_0202b1ac(void *arg0) {
     Sound_StartFade(arg0 + 0x1C, 0x7F00, 1);
 }
 
-M2C_UNK Sound_InsertChannelVoice(M2C_UNK *a,void *b){void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(a,0);while(p){if(M2C_FIELD(b,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(a,p);}ListInsertBefore(a,p,b);M2C_FIELD(b,void **,4)=a;}
+/* Insert `voice` into a channel's voice list just before the first voice of
+ * higher priority, keeping the list sorted by SOUND_VOICE_PRIORITY (lower
+ * priority first, equal priorities after one another), and link the voice to
+ * the channel that owns the list. */
+M2C_UNK Sound_InsertChannelVoice(M2C_UNK *list,void *voice){void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(list,0);while(p){if(M2C_FIELD(voice,u8 *,SOUND_VOICE_PRIORITY)<M2C_FIELD(p,u8 *,SOUND_VOICE_PRIORITY))break;p=ListNext(list,p);}ListInsertBefore(list,p,voice);M2C_FIELD(voice,void **,SOUND_VOICE_CHANNEL_BASE)=list;}
 
-M2C_UNK Sound_InsertActiveVoice(void *a){extern M2C_UNK gActiveVoices;void *ListNext();M2C_UNK ListInsertBefore();void *p=ListNext(&gActiveVoices,0);while(p){if(M2C_FIELD(a,u8 *,61)<M2C_FIELD(p,u8 *,61))break;p=ListNext(&gActiveVoices,p);}ListInsertBefore(&gActiveVoices,p,a);}
+/* Insert `voice` into the active-voice list just before the first voice of
+ * higher priority, keeping the list sorted by SOUND_VOICE_PRIORITY (lowest
+ * priority first, equal priorities after one another). */
+M2C_UNK Sound_InsertActiveVoice(void *voice) {
+    extern M2C_UNK gActiveVoices;
+    void *ListNext();
+    M2C_UNK ListInsertBefore();
+    void *p = ListNext(&gActiveVoices, 0);
+
+    while (p) {
+        if (M2C_FIELD(voice, u8 *, SOUND_VOICE_PRIORITY) < M2C_FIELD(p, u8 *, SOUND_VOICE_PRIORITY)) break;
+        p = ListNext(&gActiveVoices, p);
+    }
+    ListInsertBefore(&gActiveVoices, p, voice);
+}
 
 void Sound_ReleaseVoice(void *arg0) {
     M2C_UNK func_02008bd0(u8);
@@ -238,21 +299,24 @@ void Sound_RecycleVoice(void *voice) {
     M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) = 0;
 }
 
-void Sound_FreeChannelHeap(void *arg0) {
+/* Frees a channel-heap node when its sequence player is done with it: destroy
+ * the heap it holds, clear the owner voice's reference to it, and once no voice
+ * owns it any more unlink it from its channel's sequence list. */
+void Sound_FreeChannelHeap(void *node) {
     M2C_UNK Sound_DestroyHeap();
     extern M2C_UNK gSoundChannels;
-    void *temp_r1;
+    void *owner;
 
-    if (M2C_FIELD(arg0, s32 *, 8) == 0) {
+    if (M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_HEAP) == 0) {
         return;
     }
     Sound_DestroyHeap();
-    temp_r1 = M2C_FIELD(arg0, void **, 0xC);
-    if (temp_r1 != NULL) {
-        M2C_FIELD(temp_r1, s32 *, 8) = 0;
+    owner = M2C_FIELD(node, void **, SOUND_CHANNEL_HEAP_OWNER);
+    if (owner != NULL) {
+        M2C_FIELD(owner, s32 *, SOUND_VOICE_HEAP) = 0;
         return;
     }
-    ListRemove((M2C_FIELD(arg0, s32 *, 0x10) * 0x24) + (s32) &gSoundChannels + 0xC, arg0);
+    ListRemove((M2C_FIELD(node, s32 *, SOUND_CHANNEL_HEAP_CHANNEL) * SOUND_CHANNEL_SIZE) + (s32) &gSoundChannels + SOUND_CHANNEL_SEQ_LIST, node);
 }
 
 /* Give a voice a new priority: detach it from its channel's voice list and the
@@ -283,7 +347,7 @@ void Sound_SetVoicePriority(void *voice, s8 priority) {
  * holding hardware channels. */
 void Sound_InitPlayer(void *a) {
     void ListInit(M2C_UNK *, s32);
-    void func_0202b9d0(void *);
+    void Sound_StopPlayerChannels(void *);
     s32 Sound_ResumePlayer(void *);
     extern M2C_UNK gPlayingVoicesReady, gPlayingVoices;
 
@@ -291,7 +355,7 @@ void Sound_InitPlayer(void *a) {
         ListInit(&gPlayingVoices, 0);
         gPlayingVoicesReady = 1;
     }
-    M2C_FIELD(a, void (**)(void *), SOUND_PLAYER_STOP_CB) = func_0202b9d0;
+    M2C_FIELD(a, void (**)(void *), SOUND_PLAYER_STOP_CB) = Sound_StopPlayerChannels;
     M2C_FIELD(a, void **, SOUND_PLAYER_STOP_DATA) = a;
     M2C_FIELD(a, s32 (**)(void *), SOUND_PLAYER_RELEASE_CB) = Sound_ResumePlayer;
     M2C_FIELD(a, void **, SOUND_PLAYER_RELEASE_DATA) = a;
@@ -535,20 +599,23 @@ M2C_UNK Sound_StartSegment(M2C_UNK arg0, M2C_UNK mode) {
     return next;
 }
 
-void func_0202b9d0(void *arg0) {
+/* The sound player's stop hook (installed by Sound_InitPlayer): when the player
+ * still holds its hardware channels, stop them, flush the queued commands and wait
+ * for the driver to reach the command counter taken just before the flush. */
+void Sound_StopPlayerChannels(void *player) {
     M2C_UNK Sound_StopChannels(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
     s32 Sound_GetCommandCounter();
-    s32 temp_r4;
+    s32 commandMark;
 
-    if (((s32) (M2C_FIELD(arg0, s32 *, 0x24) << 0x1E) >> 0x1F) == 0) {
+    if (((s32) (M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) << 0x1E) >> 0x1F) == 0) {
         return;
     }
-    Sound_StopChannels(M2C_FIELD(arg0, s32 *, 0x44), 0, 1 << M2C_FIELD(arg0, s32 *, 0x40), 0);
-    temp_r4 = Sound_GetCommandCounter();
+    Sound_StopChannels(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
+    commandMark = Sound_GetCommandCounter();
     Sound_FlushCommands(1);
-    Sound_WaitForCommand(temp_r4);
+    Sound_WaitForCommand(commandMark);
 }
 
 /* Post-sleep resume callback: ends the player's pending sample segments, then

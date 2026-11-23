@@ -95,14 +95,17 @@ SetTextSpriteValue(sp,M2C_FIELD(gMapConfig,s32 *,8));M2C_FIELD(sp,s16 *,6)=32;M2
 SetTextSpriteValue(sp,M2C_FIELD(gMapConfig,u16 *,6));M2C_FIELD(sp,s16 *,6)=96;M2C_FIELD(sp,s16 *,8)=144;DrawTextSprite(sp);
 switch((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<26)>>29){case 0:tile=func_ov000_02171768(11);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 1:tile=func_ov000_02171768(12);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 2:tile=func_ov000_02171768(13);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;case 3:tile=func_ov000_02171768(14);AddSprite(128,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);break;}if((u32)(M2C_FIELD(gMapConfig,u16 *,0)<<23)>>31){tile=func_ov000_02171768(0);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}else{tile=func_ov000_02171768(1);AddSprite(192,144,(u16)((0x3ff&(tile>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|0xa000),data_02101f1c,11);}gCur3DSpriteEngine=saved;}
 #pragma opt_strength_reduction reset
-void func_ov000_021723bc(void) {
+/* Tear down the rule_confirm window: clear its two overlay layers on the current
+ * engine, mark both dirty so the engine uploads them empty, and play the close
+ * sound. */
+void UnloadRuleConfirmWindow(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     M2C_UNK PlaySoundEffect(s32);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
     PlaySoundEffect(0x10018);
 }
 

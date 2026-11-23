@@ -213,14 +213,14 @@ void DrawSecondCarriedUnitIcon(void) {
  SetCarriedUnitIconSprite(1,0x240,10,2,2);
 }
 
-s32 func_020c7438(s32 arg0) {
+s32 GetMenuCenteredX(s32 arg0) {
     u32 temp_r0;
 
     temp_r0 = 0x20 - arg0;
     return ((s32) (temp_r0 + (temp_r0 >> 0x1F)) >> 1) * 8;
 }
 
-s32 func_020c744c(void) {
+s32 GetMenuTopY(void) {
     return 0x10;
 }
 
@@ -256,14 +256,14 @@ void GetMapCursorScreenPosition(s32 tileX, s32 tileY, s32 *screenPos) {
 
 void func_020c752c(void) {
     M2C_UNK CreateMenuAt(M2C_UNK *, s32, s32, M2C_UNK);
-    M2C_UNK func_020c0a88();
+    M2C_UNK LoadUiGraphics();
     extern M2C_UNK data_0212a8b4;
     s32 temp_r4;
 
     func_020994e0(0);
-    func_020c0a88();
-    temp_r4 = func_020c7438(0xC);
-    CreateMenuAt(&data_0212a8b4, temp_r4, func_020c744c(), 0x50);
+    LoadUiGraphics();
+    temp_r4 = GetMenuCenteredX(0xC);
+    CreateMenuAt(&data_0212a8b4, temp_r4, GetMenuTopY(), 0x50);
 }
 
 void func_020c7568(void) {
@@ -273,11 +273,14 @@ void func_020c7568(void) {
     PopCarriedUnitMenuState();
 }
 
-void func_020c757c(void) {
- M2C_UNK func_020c0634(M2C_UNK *,s32,s32,u16,s32); s32 func_020c0b9c(); extern M2C_UNK data_0212a774;
+/* Open the carried-unit menu described by its entry table: clear the text tiles
+ * and load the menu panel graphics, then build the menu centred horizontally near
+ * the top of the screen, restoring the selection saved on the menu stack. */
+void OpenCarriedUnitMenu(void) {
+ M2C_UNK func_020c0634(M2C_UNK *,s32,s32,u16,s32); s32 GetCarriedUnitMenuSelection(); extern M2C_UNK data_0212a774;
  s32 x,y;
- func_020994e0(0); func_020c0a88(); x=func_020c7438(8); y=func_020c744c();
- func_020c0634(&data_0212a774,x,y,(u16)func_020c0b9c(),0x50);
+ func_020994e0(0); LoadUiGraphics(); x=GetMenuCenteredX(8); y=GetMenuTopY();
+ func_020c0634(&data_0212a774,x,y,(u16)GetCarriedUnitMenuSelection(),0x50);
 }
 
 /* Opens the map cursor's action menu: clears the text tiles, lays the menu out at

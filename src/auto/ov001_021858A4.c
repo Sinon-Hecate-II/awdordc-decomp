@@ -98,19 +98,23 @@ s32 Ov001_IsMenuLayoutReady(void) {
 void Ov001_LoadMenuResource(s32 arg0) {
     s32 Ov001_GetLocalizedFileName(s32);
     s32 Ov001_LoadFile(s32, s32, s32);
-    void func_ov001_02185ba8(s32);
+    void Ov001_LoadMenuLayoutTask(s32);
     extern s32 data_ov001_02190be4[];
     extern s32 gOv001MenuLayout;
     gOv001MenuLayout = Ov001_LoadFile(Ov001_GetLocalizedFileName(data_ov001_02190be4[arg0]), 0, 4);
-    Ov001_AddTask(1, func_ov001_02185ba8, 0, 0x78);
+    Ov001_AddTask(1, Ov001_LoadMenuLayoutTask, 0, 0x78);
 }
 
-void func_ov001_02185ba8(s32 arg0) {
+/* Task that finishes loading the option menu's layout resource: flush the 0x600
+ * bytes of layout data out of the data cache, copy them into the sub screen's BG1
+ * map, free the file and report task message 1 to the waiting caller. */
+void Ov001_LoadMenuLayoutTask(s32 task) {
     extern s32 gOv001MenuLayout;
-    DC_FlushRange(gOv001MenuLayout, 0x600);
-    GX_LoadBG1ScrSub(gOv001MenuLayout, 0, 0x600);
+
+    DC_FlushRange(gOv001MenuLayout, OV001_MENU_LAYOUT_SIZE);
+    GX_LoadBG1ScrSub(gOv001MenuLayout, 0, OV001_MENU_LAYOUT_SIZE);
     Ov001_FreeFile(gOv001MenuLayout);
-    Ov001_PostTaskMessage(1, arg0);
+    Ov001_PostTaskMessage(1, task);
 }
 
 #pragma opt_common_subs off
@@ -122,7 +126,7 @@ void func_ov001_02185ba8(s32 arg0) {
 s32 Ov001_ConnectToWfcServer(s32 callback){
 void *Ov001_Alloc(s32,s32);u64 GetSystemTick(void);
 s32 WFC_StartCommandChannel(M2C_UNK,M2C_UNK,M2C_UNK);
-s32 func_02011af8(void *);u16 GetConsoleLocalId(void);void GetSystemUserProfile(void *);
+s32 WFC_GetConnectionData(void *);u16 GetConsoleLocalId(void);void GetSystemUserProfile(void *);
 void MI_CpuCopy8(void *,void *,s32);s32 Ov001_SendServerRequest(void);
 M2C_UNK Ov001_AddTask(M2C_UNK,void (*)(void),M2C_UNK,M2C_UNK);
 M2C_UNK Ov001_FreeAlloc(M2C_UNK);
@@ -138,7 +142,7 @@ M2C_FIELD(p,u32 *,OV001_CONN_START_TICK)=(u32)ts;M2C_FIELD(p,u32 *,OV001_CONN_ST
 /* wait for the library to finish starting, then for its response block */
 if(WFC_StartCommandChannel((M2C_UNK)*state,(M2C_UNK)Ov001_HandleServerReply,3)==2){
 do {
-func_02011af8((u8 *)*state+OV001_CONN_RESPONSE);
+WFC_GetConnectionData((u8 *)*state+OV001_CONN_RESPONSE);
 p=*state;
 } while(M2C_FIELD(p,u16 *,OV001_CONN_RESPONSE)!=2);
 {
@@ -171,7 +175,7 @@ s32 Ov001_SendServerRequest(void) {
 
 #pragma opt_strength_reduction off
 s32 func_ov001_02185dac(void) {
-    s32 func_02011af8(void *);
+    s32 WFC_GetConnectionData(void *);
     s32 func_02012274(void (*)(void));
     s32 WFC_EndLink(void (*)(void));
     void Ov001_HandleServerReply(u16 *);
@@ -182,13 +186,13 @@ extern s32 gOv001MenuLayout;
 u32 state;
 
     *(u8 *)((s8 *)gOv001ConnectionState + 0x1b94) = 1;
-    func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
+    WFC_GetConnectionData((s8 *)gOv001ConnectionState + 0x13b8);
     if (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2) {
         if (func_02012274((void (*)(void))Ov001_HandleServerReply) != 2) {
             return 0;
         }
         do {
-            func_02011af8((s8 *)gOv001ConnectionState + 0x13b8);
+            WFC_GetConnectionData((s8 *)gOv001ConnectionState + 0x13b8);
         } while (*(u16 *)((s8 *)gOv001ConnectionState + 0x13b8) != 2);
     }
     if (WFC_EndLink((void (*)(void))Ov001_HandleServerReply) != 2) {

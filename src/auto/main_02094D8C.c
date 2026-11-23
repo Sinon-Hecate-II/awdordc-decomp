@@ -98,14 +98,17 @@ end:i++;
 }while(i<2);
 gCur3DSpriteEngine=saved;
 }
-void func_02095250(s32 arg0) {
-extern M2C_UNK data_02102aa8;
-if(IsMessageBoxActive())return;
-switch(arg0) {
-case 100:func_0208f890();return;
-case 101:CreateSpriteFromClass(&data_02102aa8,7);return;
-default:PlayMusicTrack(RecordsMenu_GetRecordTrack(arg0));return;
-}
+/* Play the records-screen track a script asked for: a gRecordTracks index plays
+ * that record, RECORD_TRACK_STOP fades the music out and RECORD_TRACK_WAIT
+ * starts a sprite that waits for the fade to finish. */
+void RecordsMenu_PlayTrack(s32 track) {
+    extern M2C_UNK data_02102aa8;
+    if (IsMessageBoxActive()) return;
+    switch (track) {
+    case RECORD_TRACK_STOP: FadeOutMusicDefault(); return;
+    case RECORD_TRACK_WAIT: CreateSpriteFromClass(&data_02102aa8, 7); return;
+    default: PlayMusicTrack(RecordsMenu_GetRecordTrack(track)); return;
+    }
 }
 
 u8 func_020952a4(void) {
@@ -131,12 +134,12 @@ void func_020952c8(M2C_UNK arg0) {
     PlaySoundEffect();
 }
 
-/* Runs the screen transition a script asked for: `isFade` picks the brightness
- * fade (1) or the plain transition (0), `mode` is the TRANSITION_MODE_* effect
- * and `duration` its length in frames, on the screen the 3D-sprite target names.
- * While the text/telop state is busy the transition is applied instantly. */
+/* Scene-script opcode: `isFade` 0 creates a screen transition object and 1 a
+ * screen fade, in `mode` (dark, bright or split) for `duration` frames, on the
+ * script's target screen and layer 7.  While a message box is up the change is
+ * applied at once (duration 0). */
 void StartScriptedScreenTransition(s32 isFade,s32 mode,s32 duration) {
-u32 target=(u8)func_02091e44();
+u32 target=(u8)GetScriptTransitionTarget();
 if(IsMessageBoxActive())duration=0;
 switch(isFade) {
 case 0:CreateScreenTransitions((u8)mode,(u16)duration,target,7);return;

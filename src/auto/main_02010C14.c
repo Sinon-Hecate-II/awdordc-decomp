@@ -5,12 +5,12 @@
 /* One-time save-chip device setup: return when the device is already up, then mark
  * it ready, clear the transfer parameters, run the device task and ARM7 interface
  * setup (func_0200fc58), install the ROM transfer routine in the transfer command
- * block and the ARM7 shutdown FIFO handler (func_02010e68). */
+ * block and the ARM7 shutdown FIFO handler (SystemFifo_Init). */
 void SaveDevice_Init(void) {
     extern u8 gSaveDeviceState[], data_02130400[];
     M2C_UNK *SaveDevice_GetTransferHandler(void);
     void func_0200fc58();
-    void func_02010e68();
+    void SystemFifo_Init();
     u8 *p = gSaveDeviceState;
     u8 *q;
     s32 zero, minus, one;
@@ -29,7 +29,7 @@ void SaveDevice_Init(void) {
     M2C_FIELD(q, s32 *, 0) = zero;
     func_0200fc58();
     M2C_FIELD(data_02130400, s32 *, 0x20) = (s32)SaveDevice_GetTransferHandler(); /* the transfer command block's handler */
-    func_02010e68();
+    SystemFifo_Init();
 }
 
 void func_02010c78(void) {
@@ -44,7 +44,23 @@ M2C_UNK *SaveDevice_GetTransferHandler(void) {
 
 void func_02010c90(s32 a,s32 b,s32 c){extern u8 gSaveDeviceState[];void TaskWake(s32);s32 v;if(a!=11)return;if(!c)return;v=M2C_FIELD(gSaveDeviceState,s32 *,260);M2C_FIELD(gSaveDeviceState,s32 *,276)&=~32;TaskWake(v);}
 
-void func_02010cc4(void){extern u8 gSaveDeviceState[];s32 OS_DisableInterrupts();M2C_UNK OS_RestoreInterrupts(s32);void OS_SleepThread(s32);s32 zero=0;u8 *p=gSaveDeviceState;s32 a;for(;;){a=OS_DisableInterrupts();while(!(M2C_FIELD(p,s32 *,276)&8))OS_SleepThread(zero);OS_RestoreInterrupts(a);M2C_FIELD(p,void (**)(void *),64)(p);}}
+/* Save-device worker thread: keep waiting until a transfer signals the device's
+ * asynchronous flag, then run the routine installed for it with the device state. */
+void SaveDevice_ThreadMain(void) {
+    extern u8 gSaveDeviceState[];
+    s32 OS_DisableInterrupts();
+    M2C_UNK OS_RestoreInterrupts(s32);
+    void OS_SleepThread(s32);
+    s32 zero = 0;
+    u8 *device = gSaveDeviceState;
+    s32 saved;
+    for (;;) {
+        saved = OS_DisableInterrupts();
+        while (!(M2C_FIELD(device, s32 *, SAVE_DEVICE_FLAGS) & SAVE_DEVICE_FLAG_ASYNC)) OS_SleepThread(zero);
+        OS_RestoreInterrupts(saved);
+        M2C_FIELD(device, void (**)(void *), SAVE_DEVICE_TASK_ROUTINE)(device);
+    }
+}
 
 /* Sends a packet over the device, retrying while the device reports "busy/again" (status 4). */
 s32 func_02010d14(void *dev, s32 *packet, s32 retries) {
@@ -89,18 +105,34 @@ if (status == 0) return 1;
 return 0;
 }
 
-void func_02010e68(void) { void PXI_Init(void); void SetFifoMessageHandler(s32,void (*)(s32,s32)); void func_02010e94(s32,s32); extern M2C_UNK data_02130640; PXI_Init();SetFifoMessageHandler(14,func_02010e94);M2C_FIELD(&data_02130640,s32 *,4)=0; }
+/* One-time setup of the ARM7 system FIFO: initialise the PXI link, install
+ * SystemFifoHandler on the system tag and clear the pre-shutdown callback. */
+void SystemFifo_Init(void) {
+    void PXI_Init(void);
+    void SetFifoMessageHandler(s32, void (*)(s32, s32));
+    void SystemFifoHandler(s32, s32);
+    extern M2C_UNK gSystemShutdownState;
 
-void func_02010e94(s32 a,s32 b) { void ShutdownSystem(void); void SystemHalt(void); extern M2C_UNK data_02130640; s32 result;
-if((b&63)==17) {if(M2C_FIELD(&data_02130640,s32 *,0))return;result=1;M2C_FIELD(&data_02130640,s32 *,0)=result;
-if(M2C_FIELD(&data_02130640,s32 (**)(),4))result=M2C_FIELD(&data_02130640,s32 (**)(),4)();
-if(!result)return;
+    PXI_Init();
+    SetFifoMessageHandler(SYSTEM_FIFO_TAG, SystemFifoHandler);
+    M2C_FIELD(&gSystemShutdownState, s32 *, SYSTEM_SHUTDOWN_CALLBACK) = 0;
+}
+
+/* ARM7 system-FIFO (tag 14) handler: on the ARM7's shutdown request, run the
+ * registered pre-shutdown callback and, unless it vetoes the shutdown, halt the
+ * console; any other message halts the console directly. */
+void SystemFifoHandler(s32 tag, s32 message) { void ShutdownSystem(void); void SystemHalt(void); extern M2C_UNK gSystemShutdownState; s32 proceed;
+if((message&63)==SYSTEM_CMD_SHUTDOWN) {if(M2C_FIELD(&gSystemShutdownState,s32 *,SYSTEM_SHUTDOWN_STARTED))return;proceed=1;M2C_FIELD(&gSystemShutdownState,s32 *,SYSTEM_SHUTDOWN_STARTED)=proceed;
+if(M2C_FIELD(&gSystemShutdownState,s32 (**)(),SYSTEM_SHUTDOWN_CALLBACK))proceed=M2C_FIELD(&gSystemShutdownState,s32 (**)(),SYSTEM_SHUTDOWN_CALLBACK)();
+if(!proceed)return;
 ShutdownSystem();return;}SystemHalt();
 }
 
-s32 func_02010ee8(void) {
-    extern s32 data_02130640;
-    return data_02130640;
+/* Nonzero once the ARM7's shutdown request has been handled; card operations
+ * check it to report a "shutting down" failure instead of proceeding. */
+s32 System_IsShuttingDown(void) {
+    extern s32 gSystemShutdownState;
+    return gSystemShutdownState;
 }
 
 /* Final shutdown path: stop all four DMA channels and, while the lid is
@@ -131,19 +163,21 @@ void SaveDevice_CheckChipId(s32 chipId) {
     recorded = *record;
     if (chipId == recorded) return;
     saved = OS_DisableInterrupts();
-    ((void (*)(s32, s32, s32))func_02010e94)(14, 17, 0);
+    ((void (*)(s32, s32, s32))SystemFifoHandler)(14, 17, 0);
     OS_RestoreInterrupts(saved);
 }
 
-void SendFifoMessageWait(M2C_UNK arg0, M2C_UNK arg1) {
+/* Post `payload` to the ARM7 system FIFO (tag SYSTEM_FIFO_TAG), retrying after
+ * waiting `loopCount` cycles until the ARM7 accepts it. */
+void SendFifoMessageWait(M2C_UNK payload, M2C_UNK loopCount) {
     M2C_UNK WaitByLoop(M2C_UNK);
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (SendFifoMessage(0xE, arg0, 0) == 0) {
+    if (SendFifoMessage(SYSTEM_FIFO_TAG, payload, 0) == 0) {
         return;
     }
     do {
-        WaitByLoop(arg1);
-    } while (SendFifoMessage(0xE, arg0, 0) != 0);
+        WaitByLoop(loopCount);
+    } while (SendFifoMessage(SYSTEM_FIFO_TAG, payload, 0) != 0);
 }
 
 s32 WFC_InitCommandChannel(s32 a,s32 b) {
@@ -556,22 +590,25 @@ s32 WFC_SetChannelHandler(s32 arg0, void (*callback)(void *), s32 arg2) {
     return 0;
 }
 
-s32 func_02011af8(s32 arg0) {
+/* Copy the firmware's filled connection-data block (WFC_CMD_INFO_DATA) into the
+ * caller's reply buffer.  Returns the channel's not-ready result (3), the
+ * bad-parameter result (6) when the buffer is NULL, or 0 once it has been copied. */
+s32 WFC_GetConnectionData(s32 reply) {
     M2C_UNK DC_InvalidateRange(s32, M2C_UNK);
     M2C_UNK MI_CpuCopy32(s32, s32, M2C_UNK);
-    s32 temp_r0;
-    void *temp_r4;
+    s32 result;
+    void *info;
 
-    temp_r4 = WFC_GetInfoBlock();
-    temp_r0 = WFC_CheckReady();
-    if (temp_r0 != 0) {
-        return temp_r0;
+    info = WFC_GetInfoBlock();
+    result = WFC_CheckReady();
+    if (result != 0) {
+        return result;
     }
-    if (arg0 == 0) {
+    if (reply == 0) {
         return 6;
     }
-    DC_InvalidateRange(M2C_FIELD(temp_r4, s32 *, 4), 0x7D0);
-    MI_CpuCopy32(M2C_FIELD(temp_r4, s32 *, 4), arg0, 0x7D0);
+    DC_InvalidateRange(M2C_FIELD(info, s32 *, WFC_CMD_INFO_DATA), WFC_CONN_DATA_SIZE);
+    MI_CpuCopy32(M2C_FIELD(info, s32 *, WFC_CMD_INFO_DATA), reply, WFC_CONN_DATA_SIZE);
     return 0;
 }
 

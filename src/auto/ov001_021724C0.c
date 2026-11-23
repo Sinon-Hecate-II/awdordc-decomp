@@ -550,12 +550,14 @@ tail:
     return;
 }
 
-void Ov001_SetSelectedKeyboardKey(s32 arg0) {
+/* Moves the keyboard's touch highlight to `key`: clears the selected flag on the
+ * key that had it, sets it on the new one and remembers it. */
+void Ov001_SetSelectedKeyboardKey(s32 key) {
  extern void *gOv001MenuState;
- if(arg0==M2C_FIELD(gOv001MenuState,s8 *,0x11f)) return;
- Ov001_SetKeyboardKeySelected(arg0,1);
- Ov001_SetKeyboardKeySelected(M2C_FIELD(gOv001MenuState,s8 *,0x11f),0);
- M2C_FIELD(gOv001MenuState,s8 *,0x11f)=arg0;
+ if(key==((Ov001KeyboardState *)gOv001MenuState)->highlightedKey) return;
+ Ov001_SetKeyboardKeySelected(key,1);
+ Ov001_SetKeyboardKeySelected(((Ov001KeyboardState *)gOv001MenuState)->highlightedKey,0);
+ ((Ov001KeyboardState *)gOv001MenuState)->highlightedKey=key;
 }
 
 

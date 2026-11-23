@@ -84,7 +84,7 @@ void StoreLinkMatchSetup(u8 *setup) {
 }
 
 #pragma scheduling on
-void func_ov001_02184b50(u8 *src){
+void Ov001_SaveRoomSetupPacket(u8 *src){
 extern s32 data_ov001_02193e04;
 M2C_UNK func_02007f8c(void*,s32,s32);M2C_UNK func_02008048(void*,void*,s32);
 u8 flags; u8 *p=(u8*)data_ov001_02193e04+0x400;

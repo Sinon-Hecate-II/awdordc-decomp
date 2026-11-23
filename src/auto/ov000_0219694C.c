@@ -208,23 +208,26 @@ s32 GetModifiedDamagePercent(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 ApplyAttackBonus(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Scale attack damage by (100 + the attacker's owner-group attack bonus) over
+ * (100 + the defender's owner-group defense bonus); leave it unchanged when both
+ * bonuses are zero. */
+s32 ApplyAttackBonus(s32 damage, M2C_UNK defenderOwner, M2C_UNK attackerOwner) {
     s32 Divide(s32, s32);
-    s32 func_020a8774(M2C_UNK);
-    s32 func_020a87b0(M2C_UNK);
-    s32 temp_r1;
-    s32 temp_r4;
-    s32 var_r6;
+    s32 GetOwnerGroupAttackBonus(M2C_UNK);
+    s32 GetOwnerGroupDefenseBonus(M2C_UNK);
+    s32 defenseBonus;
+    s32 attackBonus;
+    s32 result;
 
-    var_r6 = arg0;
-    temp_r4 = func_020a8774(arg2);
-    temp_r1 = func_020a87b0(arg1);
-    if ((temp_r4 == 0) && (temp_r1 == 0)) {
+    result = damage;
+    attackBonus = GetOwnerGroupAttackBonus(attackerOwner);
+    defenseBonus = GetOwnerGroupDefenseBonus(defenderOwner);
+    if ((attackBonus == 0) && (defenseBonus == 0)) {
 
     } else {
-        var_r6 = Divide(var_r6 * (temp_r4 + 0x64), temp_r1 + 0x64);
+        result = Divide(result * (attackBonus + 0x64), defenseBonus + 0x64);
     }
-    return var_r6;
+    return result;
 }
 
 /* Scales a base value by percentage modifiers derived from up to two optional unit pointers; returns the base unchanged when neither modifier applies. */

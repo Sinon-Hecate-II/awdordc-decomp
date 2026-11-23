@@ -4,25 +4,32 @@
 #include "battle_map.h"
 #include "ov007_map_editor.h"
 
+void *GetPanelObject();
+M2C_UNK Sprite_ResumeAnimation(void *);
+s16 EaseInterpolate(s32, s32, s32, s16, s32);
+
 void func_ov007_02219acc(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
     PlaySoundEffect(0x10020);
 }
 
-void func_ov007_02219ae8(void *arg0) {
+/* Collapse step of an ov007 panel row animation: advance the driver's frame
+ * counter, ease the panel's second row value from full size to zero over four
+ * frames, and resume the driver's animation once it has finished. */
+void UpdatePanelRowCollapse(void *driver) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     s16 EaseInterpolate(M2C_UNK, M2C_UNK, M2C_UNK, s16, s32);
     void *GetPanelObject();
-    void *temp_r4;
+    void *panel;
 
-    temp_r4 = GetPanelObject();
-    M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
-    M2C_FIELD(temp_r4, s16 *, 0x3E) = EaseInterpolate(4, 0x100, 0, M2C_FIELD(arg0, s16 *, 0x54), 4);
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
+    panel = GetPanelObject();
+    M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) = (s16) (M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) + 1);
+    M2C_FIELD(panel, s16 *, OV007_PANEL_ANIM1) = EaseInterpolate(EASE_OUT_QUAD, 0x100, 0, M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME), 4);
+    if ((s32) M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) < 4) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(driver);
 }
 
 void func_ov007_02219b38(void *arg0) {
@@ -33,16 +40,19 @@ func_ov007_0221863c(p);
 M2C_FIELD(arg0,s16 *,0x54)=0;
 }
 
-void func_ov007_02219b64(void *arg0) {
-    void *temp_r4;
+/* Step of the map editor palette panel's open animation: advance the driver's
+ * frame counter, ease the panel's second animated value from 0 to 256 over four
+ * frames, and resume the driver's sprite animation once the four frames are up. */
+void MapEditor_PaletteOpenStep(void *driver) {
+    void *panel;
 
-    temp_r4 = GetPanelObject();
-    M2C_FIELD(arg0, s16 *, 0x54) = (s16) (M2C_FIELD(arg0, s16 *, 0x54) + 1);
-    M2C_FIELD(temp_r4, s16 *, 0x3E) = EaseInterpolate(4, 0, 0x100, M2C_FIELD(arg0, s16 *, 0x54), 4);
-    if ((s32) M2C_FIELD(arg0, s16 *, 0x54) < 4) {
+    panel = GetPanelObject();
+    M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) = (s16) (M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) + 1);
+    M2C_FIELD(panel, u16 *, OV007_PANEL_ANIM1) = EaseInterpolate(EASE_OUT_QUAD, 0, 0x100, M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME), 4);
+    if ((s32) M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) < 4) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(driver);
 }
 
 void func_ov007_02219bb4(M2C_UNK arg0, s32 arg1) {

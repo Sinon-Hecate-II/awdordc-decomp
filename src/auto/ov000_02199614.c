@@ -396,11 +396,11 @@ void BeginAiTurn(void) {
         *(u8 **)(map + MAP_CURSOR_UNIT) = map + MAP_UNIT_RECORDS + map[MAP_CURSOR_UNIT_ID] * 0xe;
     }
     func_020c93cc();
-    gAiCommandState[AI_COMMAND_STATE_ATTACKER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
+    gAiCommandState[AI_COMMAND_STATE_WEATHER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
     if ((*(u8 **)gCurrentMap)[MAP_WEATHER_MODE] == 1) {
-        gAiCommandState[AI_COMMAND_STATE_PLAYER] = 0;
+        gAiCommandState[AI_COMMAND_STATE_PLAN_WEATHER] = 0;
     } else {
-        gAiCommandState[AI_COMMAND_STATE_PLAYER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
+        gAiCommandState[AI_COMMAND_STATE_PLAN_WEATHER] = (*(u8 **)gCurrentMap)[MAP_WEATHER];
     }
     SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + MAP_CURRENT_PLAYER));
     UpdateAiCapabilityFlags();

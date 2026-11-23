@@ -16,7 +16,7 @@ void func_ov004_02216290(void *arg0){
 void func_0200100c(void *);s32 FX_Div(s32,s32);s32 Divide(s32,s32);
 void GX_SetOrthoProjection(s32,s32,s32,s32,s32,s32,s32,s32,s32);
 void func_02001114(void *,s32,s32,s32);void MTX_TransApply43(void *,void *,s32,s32,s32);
-void func_02001148(void *,void *,void *);void MTX_Copy43(void *,void *);void func_02003a70(void *);
+void func_02001148(void *,void *,void *);void MTX_Copy43(void *,void *);void GX_LoadMatrix4x3(void *);
 void SetGxPolygonAttr(s32,s32);void func_020870dc(s32,s32,s32,s32,s32,s32,s32,s32);
 void DrawTexturedQuadUV(s32,s32,s32,s32,s32,s32,s32,s32,s32);void ResetGxTextureParams(void);
 void DrawGxLine(s32,s32,s32,s32,s32,s32);void DrawGxRectFrame(s32,s32,s32,s32,s32,s32);
@@ -53,7 +53,7 @@ gx[0]=0;GX_SetOrthoProjection(0,192,0,256,-1000,0,4096,1,0);
 func_02001114(a,M2C_FIELD(arg0,s32 *,64),M2C_FIELD(arg0,s32 *,64),4096);
 y=M2C_FIELD(arg0,s16 *,82);x=M2C_FIELD(arg0,s16 *,80);func_0200100c(b);MTX_TransApply43(b,b,x,y,0);
 func_0200100c(d);func_02001148(a,b,d);MTX_Copy43(d,c);
-gx[0]=3;gx[5]=0;gx[0]=2;func_02003a70(c);
+gx[0]=3;gx[5]=0;gx[0]=2;GX_LoadMatrix4x3(c);
 {volatile u32 *cmd=(volatile u32 *)0x04000484;cmd[0]=0x20000000;cmd[-14]=0;cmd[-16]=0;}
 SetGxPolygonAttr(0,31);func_020870dc(4,512,512,0,0,0,0,0);
 DrawTexturedQuadUV(0,0,0,512,304,0,0,512,304);

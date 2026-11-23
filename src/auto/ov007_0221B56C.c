@@ -51,12 +51,17 @@ s32 Map_GetCellTerrainKind(s32 arg0, s32 arg1) {
     return var_r0;
 }
 
-s32 Map_GetCellTerrainOwner(s32 a,s32 b) {
- extern s32 *gCurrentMap; extern s8 gTerrainPropertyFlags[];
- s32 p=*gCurrentMap;
- s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420);
- if(gTerrainPropertyFlags[v&31]) return (v&0xE0)>>5;
- return 0;
+/* Return the owning player for a property at (x, y), or zero for non-property terrain. */
+s32 Map_GetCellTerrainOwner(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    extern s8 gTerrainPropertyFlags[];
+    s32 mapData = *gCurrentMap;
+    s32 terrainValue = M2C_FIELD(mapData + (x + M2C_FIELD(mapData + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN);
+
+    if (gTerrainPropertyFlags[terrainValue & MAP_TERRAIN_KIND_MASK]) {
+        return (terrainValue & MAP_TERRAIN_OWNER_MASK) >> MAP_PROPERTY_TILE_OWNER_SHIFT;
+    }
+    return 0;
 }
 
 /* Whether the map generator treats cell (x, y) as wasteland: the barren ground
@@ -214,12 +219,14 @@ u8 Map_CanUnitKindStandOnCell(s32 x, s32 y, s32 unitKind) {
                      M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) != -1;
 }
 
-s32 MapEditor_GetUnitKindAt(s32 a,s32 b) {
- extern s32 *gCurrentMap;
- s32 p=*gCurrentMap;
- u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
- if(!id)return -1;
- return (u32)(M2C_FIELD(p+id*14,u8 *,0x59A4)<<26)>>26;
+/* Map editor: the kind of unit standing on cell (x, y), or -1 when no unit is
+ * visible there.  The kind is the low six bits of the unit record's kind byte. */
+s32 MapEditor_GetUnitKindAt(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    u8 id = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+    if (!id) return -1;
+    return (u32) (M2C_FIELD(map + id * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_RECORDS + MAP_UNIT_KIND) << 26) >> 26;
 }
 
 #pragma push
@@ -233,12 +240,14 @@ s32 MapEditor_GetUnitOwnerAt(s32 a,s32 b) {
  return ((id&0xC0)>>6)+1;
 }
 #pragma pop
-s32 MapEditor_GetUnitStateAt(s32 a,s32 b) {
- extern s32 *gCurrentMap;
- s32 p=*gCurrentMap;
- u8 id=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0);
- if(!id)return -1;
- return (u32)(M2C_FIELD(p+id*14,u8 *,0x59AF)<<28)>>28;
+/* Map editor: the AI state (the low nibble of MAP_UNIT_AI_STATE) of the unit on
+ * cell (x, y), or -1 when the cell holds no unit. */
+s32 MapEditor_GetUnitStateAt(s32 x, s32 y) {
+    extern s32 *gCurrentMap;
+    s32 map = *gCurrentMap;
+    u8 unitId = M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_VISIBLE_UNIT);
+    if (!unitId) return -1;
+    return (u32)(M2C_FIELD(map + unitId * MAP_UNIT_STRIDE, u8 *, MAP_UNIT_RECORDS + MAP_UNIT_AI_STATE) << 28) >> 28;
 }
 
 /* Copies the 64 unit records of a stashed unit group back into the map's group

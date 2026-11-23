@@ -38,30 +38,37 @@ extern unsigned char gOv001CryptKeyTail[118];
 
 #pragma thumb on
 
-void func_ov001_0216c88c(int mode, unsigned char *p, int a, short *n, short *out, int b) {
+/* Write the room request's payload into the transfer buffer: when the room's
+ * encryption mode is on, encrypt the payload in place behind its big-endian
+ * length, record the encryption checksum and flags, and grow the length by the
+ * 4-byte prefix; otherwise copy the payload unchanged. */
+void Ov001_WriteRoomPayload(int mode, unsigned char *dest, int src, short *length, short *flags, int checksum) {
  int Ov001_EncryptRoomData();
  void Ov001MemCopy();
  short Ov001SwapEndian16Alt(unsigned short);
  extern unsigned char data_ov001_02192560[8];
  if(mode == 1) {
- *out = 1;
- Ov001_EncryptRoomData(a,p+4,*n,b,p+2,data_ov001_02192560,8);
- *(short *)p = Ov001SwapEndian16Alt((unsigned short)*n);
- *n += 4;
+ *flags = 1;
+ Ov001_EncryptRoomData(src,dest+4,*length,checksum,dest+2,data_ov001_02192560,8);
+ *(short *)dest = Ov001SwapEndian16Alt((unsigned short)*length);
+ *length += 4;
  return;
  }
- Ov001MemCopy(p,a,*n);
+ Ov001MemCopy(dest,src,*length);
 }
 
-void func_ov001_0216c8e0(unsigned short *p,int a,int b,int c,signed char d,signed char e,void *f) {
+/* Fill a room-protocol packet header at `header`: the big-endian marker 1 and
+ * command, the transfer length, flags, status and kind bytes, and the 8-byte
+ * player token the packet answers. */
+void Ov001_WriteRoomPacketHeader(u16 *header,int command,int length,int flags,signed char status,signed char kind,void *token) {
  short Ov001SwapEndian16Alt(unsigned short);
  void Ov001MemCopy();
- p[0]=Ov001SwapEndian16Alt(1); p[1]=0; p[2]=0;
- p[3]=Ov001SwapEndian16Alt((unsigned short)a); p[4]=0;
- p[5]=Ov001SwapEndian16Alt((unsigned short)b);
- p[6]=Ov001SwapEndian16Alt((unsigned short)c);
- ((signed char *)p)[14]=d; ((signed char *)p)[15]=e;
- Ov001MemCopy(p+8,f,8);
+ header[0]=Ov001SwapEndian16Alt(1); header[1]=0; header[2]=0;
+ header[3]=Ov001SwapEndian16Alt((unsigned short)command); header[4]=0;
+ header[5]=Ov001SwapEndian16Alt((unsigned short)length);
+ header[6]=Ov001SwapEndian16Alt((unsigned short)flags);
+ ((signed char *)header)[OV001_PKT_STATUS]=status; ((signed char *)header)[OV001_PKT_KIND]=kind;
+ Ov001MemCopy(header+8,token,8);
 }
 
 /* Sends a room transfer to the room's host: builds the host's 8-byte socket

@@ -72,7 +72,7 @@ void DisconnectConnection(void) {
     s32 SendMatchAddress(void);
     M2C_UNK GT2NotifyConnectionClosed(s32);
     void NatNeg_ReleasePeer(s32);
-    s32 func_02040dc8(M2C_UNK);
+    s32 CancelJoinRequest(M2C_UNK);
     s32 ReportConnectionCommandResult(void);
 
     M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_TARGET_ID) = 0;
@@ -86,7 +86,7 @@ void DisconnectConnection(void) {
         if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_PLAYER_COUNT) != 0) {
             GT2NotifyConnectionClosed(*M2C_FIELD(GetConnection(), s32 **, CONN_SESSION_GT2_SOCKET));
         } else {
-            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
+            CancelJoinRequest(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())ReportConnectionCommandResult)() != 0) return;
         }
         CloseConnection();
@@ -99,7 +99,7 @@ void DisconnectConnection(void) {
         M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xb ||
         M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STATE) == 0xc) {
         if (M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_JOIN_PEER) != 0) {
-            func_02040dc8(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
+            CancelJoinRequest(M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_PEER_IDS));
             if (((s32 (*)())ReportConnectionCommandResult)() != 0) return;
         }
         SendMatchAddress();

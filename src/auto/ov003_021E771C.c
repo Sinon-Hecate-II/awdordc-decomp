@@ -1,5 +1,6 @@
 /* 5 functions from 0x021E771C to 0x021E8654 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_menu.h"
 extern u8 data_ov003_0220f12c[];
 static inline void ov003_refresh_sprite(void *sprite) {
 s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);
@@ -127,14 +128,17 @@ u8 func_ov003_021e82fc(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), u8 *, 0xA);
 }
 
-s32 EntriesDiffer(void *arg0) {
+/* Returns nonzero when the waypoint list's per-slot option counters are not all
+ * set to the same value: list + i*24 points 0x14 before counter i, so the two
+ * loads are counter[i].value and counter[i+1].value. */
+s32 WaypointOptionsDiffer(void *list) {
     u8 i;
     s32 entry;
     s32 count;
     i = 0;
-    count = M2C_FIELD(arg0, s8 *, 4) - 1;
+    count = M2C_FIELD(list, s8 *, WAYPOINT_LIST_COUNT) - 1;
     for (; i < count; i++) {
-        entry = (s32)arg0 + i * 0x18;
+        entry = (s32)list + i * sizeof(OptionCounter);
         if (M2C_FIELD(entry, s32 *, 0x18) != M2C_FIELD(entry, s32 *, 0x30)) return 1;
     }
     return 0;
@@ -216,8 +220,8 @@ void StepCounterUp(s32 counters, s32 index, s32 force) {
         if (changed) return;
     }
     StepCounter(counters + 0x14 + index * 24, 1, force);
-    if (EntriesDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
-    if (EntriesDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
-    if (EntriesDiffer((void *)counters)) return; StepCounterUp(counters, index, force);
+    if (WaypointOptionsDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
+    if (WaypointOptionsDiffer((void *)counters)) return; StepCounter(counters + 0x14 + index * 24, 1, force);
+    if (WaypointOptionsDiffer((void *)counters)) return; StepCounterUp(counters, index, force);
 }
 #pragma pop

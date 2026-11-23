@@ -6,7 +6,7 @@ typedef struct { u32 words[2]; } Unk0200FilePair;
 void func_02088044(void *arg0) {
     void *func_02087e68();
     M2C_UNK func_02087ea0(void *, void *);
-    s32 func_02087f20(void *, void *, u16, u16);
+    s32 WidgetRectContainsPoint(void *, void *, u16, u16);
     s32 SpriteCellListBackgroundHit(void *, u16, u16);
     extern void *gTouchState;
     void *temp_r1_3;
@@ -33,7 +33,7 @@ void func_02088044(void *arg0) {
         var_r4 = M2C_FIELD(arg0, void **, 0x14);
         if ((s32) M2C_FIELD(arg0, u16 *, 0x10) > 0) {
 loop_2:
-            if ((M2C_FIELD(var_r4, u16 *, 0xA) != 0) && (func_02087f20(arg0, var_r4, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
+            if ((M2C_FIELD(var_r4, u16 *, 0xA) != 0) && (WidgetRectContainsPoint(arg0, var_r4, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0)) {
                 if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
                     M2C_FIELD(arg0, s8 *, 8) = (s8) M2C_FIELD(var_r4, u16 *, 8);
                     M2C_FIELD(arg0, u8 *, 0xE) = 0U;
@@ -108,7 +108,7 @@ loop_2:
         if ((temp_r1_2 != -1) && ((u32) M2C_FIELD(gTouchState, u8 *, 0x10) < 0x1EU)) {
             if (temp_r1_2 != -2) {
                 temp_r0_3 = func_02087e68();
-                if ((func_02087f20(arg0, temp_r0_3, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(temp_r0_3, u16 *, 0xA) & 2)) {
+                if ((WidgetRectContainsPoint(arg0, temp_r0_3, M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2)) != 0) && (M2C_FIELD(temp_r0_3, u16 *, 0xA) & 2)) {
                     if (M2C_FIELD(arg0, u8 *, 0xE) == 0) {
                         M2C_FIELD(arg0, s8 *, 0xB) = (s8) M2C_FIELD(arg0, s8 *, 8);
                     }
@@ -208,22 +208,25 @@ M2C_UNK LoadResource(M2C_UNK index) {
     func_020e349c();
 }
 
-void func_020884f8(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK gResourceFileIds,gResourceLoaded;
+void UnloadResource(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK gResourceFileIds,gResourceLoaded;
 if(M2C_FIELD(&gResourceLoaded,u8 *,a)==0)return;
 if(func_0200c408(0,((s32 *)&gResourceFileIds)[a])==1)M2C_FIELD(&gResourceLoaded,u8 *,a)=0;
 func_020e349c();}
 
-void func_0208853c(s32 arg0) {
+/* Unload every loaded resource that shares a memory group with slot `index`
+ * (their gResourceDependencyMasks entries intersect), so that `index` can be
+ * loaded into the freed memory. */
+void UnloadConflictingResources(s32 index) {
     extern M2C_UNK gResourceDependencyMasks;
     s32 i;
     u8 *p;
     p = (u8 *)&gResourceDependencyMasks;
     i = 0;
     do {
-        if ((*p & ((u8 *)&gResourceDependencyMasks)[arg0]) && IsResourceLoaded((u8)i) != 0) func_020884f8(i);
+        if ((*p & ((u8 *)&gResourceDependencyMasks)[index]) && IsResourceLoaded((u8)i) != 0) UnloadResource(i);
         i++;
         p++;
-    } while (i < 12);
+    } while (i < RESOURCE_SLOT_COUNT);
 }
 
 s32 IsResourceLoaded(s32 arg0) {
@@ -231,31 +234,31 @@ s32 IsResourceLoaded(s32 arg0) {
     return M2C_FIELD(&gResourceLoaded, u8 *, arg0);
 }
 
-void func_0208859c(void){if(IsResourceLoaded(0)!=0)return;func_0208853c(0);LoadResource(0);}
+void func_0208859c(void){if(IsResourceLoaded(0)!=0)return;UnloadConflictingResources(0);LoadResource(0);}
 
-void func_020885c4(void){if(IsResourceLoaded(2)!=0)return;func_0208853c(2);LoadResource(2);}
+void func_020885c4(void){if(IsResourceLoaded(2)!=0)return;UnloadConflictingResources(2);LoadResource(2);}
 
 void func_020885ec(void) {
-    func_020884f8(2);
+    UnloadResource(2);
 }
 
 void func_020885fc(void) {
     if (IsResourceLoaded(3) != 0) {
         return;
     }
-    func_0208853c(3);
+    UnloadConflictingResources(3);
     LoadResource(3);
 }
 
 void func_02088624(void) {
-    func_020884f8(3);
+    UnloadResource(3);
 }
 
 void func_02088634(void) {
     if (IsResourceLoaded(4) != 0) {
         return;
     }
-    func_0208853c(4);
+    UnloadConflictingResources(4);
     LoadResource(4);
 }
 
@@ -263,7 +266,7 @@ void func_0208865c(void) {
     if (IsResourceLoaded(5) != 0) {
         return;
     }
-    func_0208853c(5);
+    UnloadConflictingResources(5);
     LoadResource(5);
 }
 
@@ -271,7 +274,7 @@ void func_02088684(void) {
     if (IsResourceLoaded(6) != 0) {
         return;
     }
-    func_0208853c(6);
+    UnloadConflictingResources(6);
     LoadResource(6);
 }
 
@@ -279,7 +282,7 @@ void func_020886ac(void) {
     if (IsResourceLoaded(7) != 0) {
         return;
     }
-    func_0208853c(7);
+    UnloadConflictingResources(7);
     LoadResource(7);
 }
 
@@ -287,7 +290,7 @@ void func_020886d4(void) {
     if (IsResourceLoaded(9) != 0) {
         return;
     }
-    func_0208853c(9);
+    UnloadConflictingResources(9);
     LoadResource(9);
 }
 
@@ -295,7 +298,7 @@ void func_020886fc(void) {
     if (IsResourceLoaded(0xA) != 0) {
         return;
     }
-    func_0208853c(0xA);
+    UnloadConflictingResources(0xA);
     LoadResource(0xA);
 }
 
@@ -303,7 +306,7 @@ void func_02088724(void) {
     if (IsResourceLoaded(1) != 0) {
         return;
     }
-    func_0208853c(1);
+    UnloadConflictingResources(1);
     LoadResource(1);
 }
 
@@ -311,7 +314,7 @@ void func_0208874c(void) {
     if (IsResourceLoaded(0xB) != 0) {
         return;
     }
-    func_0208853c(0xB);
+    UnloadConflictingResources(0xB);
     LoadResource(0xB);
 }
 
@@ -511,9 +514,36 @@ void Hide3DSprite(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x48) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) & ~1);
 }
 
-void Show3DSpriteFade(void *p,s32 a){void Show3DSprite(void *);if(!a){Show3DSprite(p);M2C_FIELD(p,u32 *,0x40)=(M2C_FIELD(p,u32 *,0x40)&~0xfc000000)|0x40000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x10;}
+/* Show a 3D sprite actor: with no fade length, show it fully opaque (alpha
+ * SPRITE_ACTOR_ALPHA_MAX) and clear any fade; otherwise start fading it in over
+ * `frames` frames. */
+void Show3DSpriteFade(void *sprite, s32 frames) {
+    void Show3DSprite(void *);
+    if (!frames) {
+        Show3DSprite(sprite);
+        M2C_FIELD(sprite, u32 *, SPRITE_ACTOR_SPLIT) = (M2C_FIELD(sprite, u32 *, SPRITE_ACTOR_SPLIT) & ~SPRITE_ACTOR_ALPHA_MASK) | (SPRITE_ACTOR_ALPHA_MAX << 26);
+        M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) &= ~SPRITE_ACTOR_FADE_MASK;
+        return;
+    }
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_FADE_TIMER) = 0;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_FADE_LEN) = frames;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_FADE_MASK) | (SPRITE_FADE_IN << 4);
+}
 
-void Hide3DSpriteFade(void *p,s32 a){void Hide3DSprite(void *);if(!a){Hide3DSprite(p);M2C_FIELD(p,u32 *,0x40)&=~0xfc000000;M2C_FIELD(p,u8 *,0x48)&=~0x30;return;}M2C_FIELD(p,u8 *,0x4b)=0;M2C_FIELD(p,u8 *,0x4a)=a;M2C_FIELD(p,u8 *,0x48)=(M2C_FIELD(p,u8 *,0x48)&~0x30)|0x20;}
+/* Hide a sprite actor: with `frames` 0 it is hidden at once - fully transparent
+ * and with the fade mode cleared - otherwise it starts fading out over `frames`. */
+void Hide3DSpriteFade(void *sprite, s32 frames) {
+    void Hide3DSprite(void *);
+    if (!frames) {
+        Hide3DSprite(sprite);
+        M2C_FIELD(sprite, u32 *, SPRITE_ACTOR_SPLIT) &= ~SPRITE_ACTOR_ALPHA_MASK;
+        M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) &= ~SPRITE_ACTOR_FADE_MASK;
+        return;
+    }
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_FADE_TIMER) = 0;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_FADE_LEN) = frames;
+    M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) = (M2C_FIELD(sprite, u8 *, SPRITE_ACTOR_STATE) & ~SPRITE_ACTOR_FADE_MASK) | (SPRITE_FADE_OUT << 4);
+}
 
 void Set3DSpriteSlideTarget(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x50) = arg1;

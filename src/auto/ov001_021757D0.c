@@ -6,17 +6,20 @@ typedef struct { s32 x; u32 y; } Position;
 
 extern Ov001WirelessSetup gOv001WirelessSetup;
 
-void func_ov001_021757d0(s32 arg0) {
-    M2C_UNK func_ov001_0216d14c();
-    M2C_UNK func_ov001_02184b50(void *);
-    extern M2C_UNK data_ov001_02193d28;
+/* Leave the ov001 local-wireless setup screen: step the WH connection task
+ * once, and when this screen's connection was accepted, save the room setup
+ * packet into the save data.  Finally release the wireless work buffer. */
+void Ov001_FinishWirelessSetup(s32 wasConnected) {
+    void func_ov001_0216d14c(void);
+    void Ov001_SaveRoomSetupPacket(u8 *);
+    extern M2C_UNK gOv001WirelessWork;
     func_ov001_0216d14c();
-    if (arg0 != 0) {
+    if (wasConnected != 0) {
         if ((gOv001WirelessSetup.request[OV001_SETUP_STATUS] == 0) && (gOv001WirelessSetup.connected == 1)) {
-            func_ov001_02184b50(gOv001WirelessSetup.request + OV001_SETUP_PACKET);
+            Ov001_SaveRoomSetupPacket(gOv001WirelessSetup.request + OV001_SETUP_PACKET);
         }
     }
-    Ov001_FreeAlloc(&data_ov001_02193d28);
+    Ov001_FreeAlloc(&gOv001WirelessWork);
 }
 
 /* One frame of the wireless setup screen's connection attempt: run the setup
@@ -67,7 +70,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     void Ov001_UpdateLidState(void);
     void func_ov001_0218c63c(void);
     void func_02007598(void);
-    void func_ov001_02175d04(void);
+    void Ov001_ShutdownCore(void);
     extern u8 gOv001ScreenState;
 
     M2C_FIELD(&gOv001ScreenState, M2C_UNK *, OV001_SCREEN_WORK) = work;
@@ -85,7 +88,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
         func_ov001_0218c63c();
         func_02007598();
     } while (!M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT));
-    func_ov001_02175d04();
+    Ov001_ShutdownCore();
     return 0;
 }
 
@@ -128,7 +131,7 @@ void Ov001_SetupDisplay(void) {
     void GX_ConfigureDisplay(s32, s32, s32);
     void GX_SetMasterBrightness(void *, s32);
     void GX_SetBlendControl(s32, s32, s32);
-    void func_02003124(s32);
+    void GX_SetBankForSubBG(s32);
     void GX_SetBankForSubOBJ(s32);
     void GX_SetSubBgMode(s32);
     void Ov001_CreateTextContext(void);
@@ -157,7 +160,7 @@ void Ov001_SetupDisplay(void) {
     *(volatile u32 *)0x04000018 = 0;
     *(volatile u32 *)0x0400001c = 0;
     GX_SetBlendControl(0x04000050, 0x3f, 0x10);
-    func_02003124(0x80);
+    GX_SetBankForSubBG(0x80);
     GX_SetBankForSubOBJ(0x100);
     GX_SetSubBgMode(0);
 
@@ -207,7 +210,11 @@ void Ov001_SetupDisplay(void) {
     GX_SetVBlankIrq(1);
 }
 
-void func_ov001_02175d04(void) {
+/* Tear down overlay 001, the counterpart of Ov001_InitCore: stop the sub
+ * display, the input and the vblank handler, then release the subsystems the
+ * overlay brought up (its tasks, sprite and tile pools, fades, sound and
+ * streaming) and finally the heap. */
+void Ov001_ShutdownCore(void) {
     M2C_UNK func_02002490();
     M2C_UNK func_ov001_02184ff8();
     M2C_UNK func_ov001_02189c80();
@@ -248,7 +255,7 @@ void Ov001_SetNextScreenMode(s32 arg0, s32 arg1) {
     M2C_FIELD(&gOv001ScreenState, s32 *, 0x14) = arg1;
 }
 
-void func_ov001_02175d78(s32 *arg0, s32 *arg1) {
+void Ov001_GetNextScreenMode(s32 *arg0, s32 *arg1) {
     extern u8 gOv001ScreenState;
     if (arg0 != 0) {
         *arg0 = M2C_FIELD(&gOv001ScreenState, s32 *, 0x10);

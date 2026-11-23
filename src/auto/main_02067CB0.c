@@ -15,7 +15,7 @@ f64 _f2d(f32);
 f32 _d2f(f64);
 int func_02065020(void *,const char *,int);
 #pragma opt_peephole off
-s32 func_02067cb0(s32 (*get)(void *,s32,s32),void *ctx,s32 arg2,s32 arg3,s32 safe){
+s32 ScanFormatted(s32 (*get)(void *,s32,s32),void *ctx,s32 arg2,s32 arg3,s32 safe){
 char *fmt=(char *)arg2;u32 *args=(u32 *)arg3;void *dst;
 s32 base,used,negative,overflow;
 s32 value,signedValue,fc;
@@ -253,20 +253,24 @@ s32 ScanFloatStreamRead(void *stream, s32 pushback, s32 op) {
     }
 }
 #pragma optimize_for_size reset
-s32 func_02068a88(s8 *arg0, s32 arg1, s32 arg2) {
+/* Scan a formatted C string: run the scanf parser over `text` with argument list
+ * `argList`, returning the number of fields assigned, or -1 when the text is NULL
+ * or empty. */
+s32 VStringScanf(s8 *text, s32 format, s32 argList) {
     s32 ScanFloatStreamRead(void *, s32, s32);
-    s32 func_02067cb0(s32 (*)(void *, s32, s32), void *, s32, s32, s32);
-    struct { s8 *ptr; s32 eof; } state;
-    state.ptr = arg0;
-    if (arg0 == NULL || *arg0 == 0) return -1;
-    state.eof = 0;
-    return func_02067cb0(ScanFloatStreamRead, &state, arg1, arg2, 0);
+    s32 ScanFormatted(s32 (*)(void *, s32, s32), void *, s32, s32, s32);
+    ScanStream stream;
+
+    stream.ptr = text;
+    if (text == NULL || *text == 0) return -1;
+    stream.eof = 0;
+    return ScanFormatted(ScanFloatStreamRead, &stream, format, argList, 0);
 }
 
 void StringScanf(s32 arg0, s32 arg1, ...) {
  char *args;
  args=(char *)(((u32)&arg1 & ~3U)+4);
- func_02068a88((s8 *)arg0,arg1,(s32)args);
+ VStringScanf((s8 *)arg0,arg1,(s32)args);
 }
 
 /* Takes (and clears) the one-shot socket-event handler registered for id (1..7)
@@ -278,7 +282,7 @@ s32 InvokeSocketCallback(s32 id) {
 M2C_UNK LockMutex(M2C_UNK *);
 M2C_UNK UnlockMutex(M2C_UNK *);
 s32 TryLockMutex(M2C_UNK *);
-M2C_UNK func_02063e1c(M2C_UNK);
+M2C_UNK FlushSocketEvents(M2C_UNK);
 extern M2C_UNK gSocketManager;
 extern M2C_UNK gStreamLockOwner;
 extern s32 gStreamLockDepth[9];
@@ -305,7 +309,7 @@ n=gStreamLockDepth[7]-1;
 gStreamLockDepth[7]=n;
 if(n==0) UnlockMutex(&gSocketCallbackLock);
 if(cb==(M2C_UNK (*)(s32))1 || (cb==0 && id==1)) return 0;
-if(cb==0) func_02063e1c(0);
+if(cb==0) FlushSocketEvents(0);
 cb(id);
 return 0;
 }

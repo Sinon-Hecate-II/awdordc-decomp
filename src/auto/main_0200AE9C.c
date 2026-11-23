@@ -543,10 +543,10 @@ s32 SetFileDirectory(s32 path) {
 
 void func_0200bcb4(M2C_UNK arg0) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
-    s32 func_02010ee8();
+    s32 System_IsShuttingDown();
     M2C_UNK var_r1;
 
-    if (func_02010ee8() != 0) {
+    if (System_IsShuttingDown() != 0) {
         var_r1 = 5;
     } else {
         var_r1 = 0;

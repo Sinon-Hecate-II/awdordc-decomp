@@ -250,21 +250,23 @@ void func_ov001_021783c0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_021783e0;
+    extern M2C_UNK Ov001_FadeOutScreenToWhite;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_021783e0);
+    Ov001_SetStepCallback(&Ov001_FadeOutScreenToWhite);
 }
 
-void func_ov001_021783e0(void) {
-    void func_ov001_0217842c(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    Ov001_StartFade(3, 1, 0x3F, 0x40);
-    Ov001_StartFade(3, 0, 0x3F, 0x40);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217842c);
+/* Once the option menu's fade has settled, fade the sub and main screens out to
+ * white over 64 frames and move on to the step that waits for them. */
+void Ov001_FadeOutScreenToWhite(void) {
+    void Ov001_WaitFadeOutAndWakeDisplay(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_ALL, 0x40);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_ALL, 0x40);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitFadeOutAndWakeDisplay);
 }
 
-void func_ov001_0217842c(void) {
+void Ov001_WaitFadeOutAndWakeDisplay(void) {
     M2C_UNK WaitCycles(M2C_UNK);
     M2C_UNK WakeDisplayWait();
     if (Ov001_IsFadeActive(1) != 0) {
@@ -362,31 +364,34 @@ void func_ov001_021785e0(void) {
 
 void func_ov001_02178600(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
-    extern M2C_UNK func_ov001_0217863c;
+    extern M2C_UNK Ov001_CloseWfcEraseMessage;
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
     Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_0217863c);
+    Ov001_SetStepCallback(&Ov001_CloseWfcEraseMessage);
 }
 
-void func_ov001_0217863c(void) {
+/* Close the Wi-Fi data-erase screen's message once its fade finishes and its
+ * icon row is idle: release the page background, hide the main screen's planes
+ * and continue to the erase-result screen. */
+void Ov001_CloseWfcEraseMessage(void) {
     s32 Ov001_IsIconRowIdle();
     M2C_UNK Ov001_SetNextScreenMode(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_FreePageBackground(M2C_UNK);
     M2C_UNK Ov001_DisableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_02179320;
-    if (Ov001_IsFadeActive(0) != 0) {
+    extern M2C_UNK Ov001_OpenWfcEraseResultScreen;
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) {
         return;
     }
     if (Ov001_IsIconRowIdle() == 0) {
         return;
     }
     Ov001_FreePageBackground(0);
-    Ov001_DisableVisiblePlanes(0, 0x15);
+    Ov001_DisableVisiblePlanes(OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ);
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_02179320);
+    Ov001_SetStepCallback(&Ov001_OpenWfcEraseResultScreen);
 }
 
 void Ov001_OpenWfcEraseScreen(void) {
@@ -452,10 +457,10 @@ void func_ov001_021787d4(void) {
 void func_ov001_021787fc(void) {
     void func_ov001_02178810(void);
     void func_ov001_02178848(void);
-    void func_ov001_0217884c(void);
+    void Ov001_HandleWfcEraseChoice(void);
     func_ov001_02178810();
     func_ov001_02178848();
-    func_ov001_0217884c();
+    Ov001_HandleWfcEraseChoice();
 }
 
 void func_ov001_02178810(void) {
@@ -472,21 +477,24 @@ void func_ov001_02178848(void) {
 
 }
 
-void func_ov001_0217884c(void) {
+/* Wi-Fi data-erase screen choice: BACK plays the cancel sound, CONFIRM plays the
+ * confirm sound and flags the erase as confirmed; either way the icon row is
+ * then locked and the screen starts fading out. */
+void Ov001_HandleWfcEraseChoice(void) {
     extern u8 gOv001WfcEraseConfirmed;
-    void func_ov001_0217889c(void);
+    void Ov001_WfcEraseExit(void);
     switch (Ov001_GetIconRowSelection()) {
-    case 0: Ov001_PlaySound(7); break;
-    case 1:
-        Ov001_PlaySound(6);
+    case OV001_CHOICE_BACK: Ov001_PlaySound(OV001_SOUND_CANCEL); break;
+    case OV001_CHOICE_CONFIRM:
+        Ov001_PlaySound(OV001_SOUND_CONFIRM);
         gOv001WfcEraseConfirmed = 1;
         break;
     default: return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217889c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseExit);
 }
 
-void func_ov001_0217889c(void) {
+void Ov001_WfcEraseExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);

@@ -44,16 +44,19 @@ s32 ReportPeerConnectResult(s32 result, s32 unused, s32 detail) {
 }
 
 #pragma opt_propagation off
-s32 func_020431e0(s32 a) {
-s32 code;
-if(a==0)return 0;
-switch(a){
-case 1:return 1;
-case 2:return 2;
-default:code=6;break;
-}
-if(code)ReportConnectionError(code,0xfffeb007);
-return a;
+/* Handle a peer socket connect event: 0 and the two ordinary codes (1, 2) pass
+ * straight back; any other code reports a failed match connection for this call
+ * site and is passed back for the caller's retry decision. */
+s32 ReportPeerConnectError(s32 event) {
+    s32 code;
+    if (event == 0) return 0;
+    switch (event) {
+    case 1: return 1;
+    case 2: return 2;
+    default: code = CONN_ERROR_MATCH_FAILED; break;
+    }
+    if (code) ReportConnectionError(code, 0xfffeb007);
+    return event;
 }
 #pragma opt_propagation reset
 /* Reports a GameSpy GT2 result: turns the result code into a network error class
@@ -100,7 +103,7 @@ void HandleServerListEvent(s32 list, s32 event, s32 server) {
     void DisconnectAllPeers();
     s32 ReportConnectionCommandResult();
     void SendJoinRequest();
-    void func_02040dc8();
+    void CancelJoinRequest();
     void TryConnectToPeer();
     s32 func_0203ecb0();
     void SendMatchmakingParameter();
@@ -228,7 +231,7 @@ host_target_found:
                         }
                     } else {
                         conn = GetConnection();
-                        func_02040dc8((void *)M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
+                        CancelJoinRequest((void *)M2C_FIELD(conn, s32 *, CONN_SESSION_PEER_IDS));
                         if (ReportConnectionCommandResult() != 0) goto cleanup;
                         SetConnectionState(CONN_STATE_JOINING);
                         conn = GetConnection();

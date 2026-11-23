@@ -195,14 +195,16 @@ if(IsPlayerHuman(co[0]))PlaySoundEffect(0xe0);else PlaySoundEffect(0xe2);
 effect->frame++;
 }
 
-void func_020c2ca0(void *arg0) {
+/* Hide the CO occupation cut-in: clear its two 3D sprite layers and their dirty
+ * bits, and mark the effect inactive so DrawOccupationScreen skips it. */
+void HideOccupationScreen(OccupationEffect *effect) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(2);
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 4);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
-    M2C_FIELD(arg0, u8 *, 0x35) = 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
+    effect->active = 0;
 }
 
 /* Enters the CO occupation cut-in's view of the map: runs the map view's setup
@@ -234,8 +236,8 @@ void func_020c2e1c(void) {
 }
 
 void func_020c2e28(void) {
-    void func_020c2ca0();
-    func_020c2ca0();
+    void HideOccupationScreen();
+    HideOccupationScreen();
 }
 
 void func_020c2e34(void) {

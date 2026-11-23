@@ -9,8 +9,8 @@ u8 func_ov003_021e1500(s32 arg0, s32 arg1, s32 arg2) {
 }
 
 void func_ov003_021e1518(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x4D4C5342, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x4D4C5342, arg0);
 }
 
 /* Sets up one slot of the table pointed at by state: allocates/recycles an entry via

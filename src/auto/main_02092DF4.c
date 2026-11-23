@@ -65,13 +65,18 @@ s32 MapScriptSetBattleRulesSub(void *state) {
     return 1;
 }
 
-s32 func_02092f30(void *arg0){
-extern void **gCurrentMap;
-void *p=M2C_FIELD(arg0,void **,4);
-s16 value=M2C_FIELD(p,s16 *,10);
-void *dest=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(p,s16 *,8)*0x8c;
-M2C_FIELD(dest,u32 *,0x6c)=(M2C_FIELD(dest,u32 *,0x6c)&~255)|(value&255);
-M2C_FIELD(arg0,s32 *,4)+=16;return 1;
+/* Map-script opcode: give the player named by the command's first operand the
+ * army id in its second operand (the low byte of the player record's sprite
+ * state), then advance the script and keep running. */
+s32 MapScriptSetPlayerArmy(void *state) {
+    extern void **gCurrentMap;
+    void *command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    s16 army = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1);
+    void *record = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) * MAP_PLAYER_STRIDE;
+
+    M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) = (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~255) | (army & 255);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 1;
 }
 
 /* Map-script opcode: set the map cursor to the command's two signed operands,
@@ -243,8 +248,8 @@ M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
 }
 
 s32 func_02093348(void *arg0) {
-    M2C_UNK func_0208f844(s32);
-    func_0208f844(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
+    M2C_UNK FadeOutMusicOverFrames(s32);
+    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
     M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
     return 0;
 }
@@ -306,12 +311,15 @@ if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)&255))
 M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
-s32 MapScriptRestorePlayerMusic(void *arg0) {
+/* Map-script command: bring the music back to full volume when the track now
+ * playing is the current player's theme.  Advances the script one command and
+ * keeps running. */
+s32 MapScriptRestorePlayerMusic(void *state) {
 extern void **gCurrentMap;
 s32 GetPlayerMusicTrack(s32);
 s32 v=GetCurrentMusicTrack();
-if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,0x52A4)&255)) FadeMusicToFullVolume();
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+if(v==GetPlayerMusicTrack(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER)&255)) FadeMusicToFullVolume();
+M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 }
 
 /* Map-script command: skip the next OPERAND2 commands when the army id of the

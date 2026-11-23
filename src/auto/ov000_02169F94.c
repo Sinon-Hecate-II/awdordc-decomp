@@ -64,13 +64,15 @@ if(*(s32 *)((u8 *)&gUnitMoveSounds+soundIndex*20))PlaySoundEffectOnChannel0(*(s3
 UpdateMoveSoundPan(move);
 }
 
-void UpdateMoveSoundPan(void *p) {
-s32 func_0208fa78(s32,s32);
+/* Re-pans the moving unit's looping move sound to the tile it currently occupies
+ * (the unit position is kept in 1/16-tile units, so it is rounded to a tile). */
+void UpdateMoveSoundPan(void *move) {
+s32 MapTileToSoundPan(s32,s32);
 s32 IsSlotSoundActive(s32);
 s32 x,y;
 if(!IsSlotSoundActive(0))return;
-x=M2C_FIELD(p,s16 *,0x4c)+8;y=M2C_FIELD(p,s16 *,0x4e)+8;
-SetSlotSoundPan(0,func_0208fa78(x/16,y/16));
+x=M2C_FIELD(move,s16 *,UNIT_MOVE_X)+8;y=M2C_FIELD(move,s16 *,UNIT_MOVE_Y)+8;
+SetSlotSoundPan(0,MapTileToSoundPan(x/16,y/16));
 }
 
 /* Copy one 0x100-byte block of the rank icon tiles from /window/rank.cg into

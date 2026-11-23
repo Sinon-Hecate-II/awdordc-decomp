@@ -93,7 +93,14 @@ M2C_UNK CreateScriptedSprite(M2C_UNK script, M2C_UNK slot, M2C_UNK x, M2C_UNK y,
     return (M2C_UNK)object;
 }
 
-void func_02090eb8(M2C_UNK a,M2C_UNK b,M2C_UNK c,M2C_UNK d,u16 e,s32 f,s32 g) {s32 LoadDecompressedFile(M2C_UNK,M2C_UNK);M2C_UNK CreateScriptedSprite(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,s32,s32,s32);s32 r=LoadDecompressedFile(a,1);CreateScriptedSprite(r,b,c,d,e,f,1,g);}
+/* Load an animation script from a file and create the scripted sprite that plays
+ * it: the decompressed script buffer is owned by the sprite and freed with it. */
+void CreateScriptedSpriteFromFile(M2C_UNK file, M2C_UNK slot, M2C_UNK x, M2C_UNK y, u16 tile, s32 priority, s32 mode) {
+    s32 LoadDecompressedFile(M2C_UNK, M2C_UNK);
+    M2C_UNK CreateScriptedSprite(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, s32, s32, s32);
+    s32 script = LoadDecompressedFile(file, 1);
+    CreateScriptedSprite(script, slot, x, y, tile, priority, 1, mode);
+}
 
 /* Delete a scripted sprite: reset its vtable, tear down its player list and its
  * auxiliary sprite list, run its optional dispose callback, then free the
@@ -171,9 +178,13 @@ DeleteSpriteObject(wrapper);
 }
 #pragma opt_propagation reset
 void func_0209106c(void *a) {void Sprite_ClearHandle(s32 *);void (*fp)(s32 *)=Sprite_ClearHandle;fp(M2C_FIELD(a,s32 **,0x58));}
-s32 DrawSpriteScript(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,s32 h,u8 i) {
+/* Draw part `tag` of a sprite animation script at frame `frame`: look up that
+ * part's frame quad data and, when it exists, submit its 3D geometry at `pos`
+ * with the given graphics parameters.  Returns 1 when the frame was drawn, 0
+ * when the script has no such frame. */
+s32 DrawSpriteScript(void *scripts,s32 tag,s32 frame,const void *pos,s32 gfxAddr,s32 tileDataSize,s32 gfxSize,s32 extra,u8 geometryParam) {
 s32 GetSpriteScriptFrameData(void *,s32,s32);s32 DrawSprite3DGeometry(s32,s32,s32,s32,s32,s32,u8);
-s32 r=GetSpriteScriptFrameData(a,b,c);if(r) {DrawSprite3DGeometry(r,d,e,f,g,h,i);return 1;}return 0;
+s32 frameData=GetSpriteScriptFrameData(scripts,tag,frame);if(frameData) {DrawSprite3DGeometry(frameData,(s32)pos,gfxAddr,tileDataSize,gfxSize,extra,geometryParam);return 1;}return 0;
 }
 #pragma optimization_level reset
 M2C_UNK DrawSprite3D(void *arg0) {
@@ -452,7 +463,7 @@ Sprite_RestartAnimation(sprite);
 
 void DrawSprite3DParts(M2C_UNK a) {
     void QueueMemoryCopy(s32, s32, s32, s32);
-    void func_0207c464(s32, s32, s32, s32);
+    void QueueTextureBankCopy(s32, s32, s32, s32);
     extern u8 data_02102a10[];
     extern void *gCur3DSpriteEngine;
 
@@ -503,7 +514,7 @@ loop:
             
 
             if (byte22 & 0x04) {
-                func_0207c464(offsetVal, *(s32 *)((char *)arg0+0x28) + r6, product, r11);
+                QueueTextureBankCopy(offsetVal, *(s32 *)((char *)arg0+0x28) + r6, product, r11);
             } else {
                 s32 spiritShifted = ((u32)*(s32 *)((char *)arg0+0x28) << 22) >> 17;
                 s32 secondArg = (*(s32 *)((char *)engine + 0x1C) + spiritShifted);secondArg+=r6;
@@ -599,24 +610,26 @@ Sprite_UpdateAnimationScript((M2C_UNK)sprite);
 #pragma optimization_level 2
 s32 func_020919b4(M2C_UNK a) {extern s32 data_02157918;s32 i=0; s32 *p=&data_02157918;do {if(*p==a)return i*52+(s32)&data_02157918;i++;p=(s32*)((u8*)p+52);}while(i<32);return 0;}
 #pragma optimization_level reset
-void func_020919f4(void *arg0) {
+/* One frame of a child-sprite wrapper's 2D draw: draw the child at the wrapper's
+ * screen position and delete the wrapper once the child sprite has stopped. */
+void DrawChildSprite2D(void *wrapper) {
     M2C_UNK DeleteSpriteObject(void *);
     s32 DrawSprite2D(s32 *, s32, s32);
-    s32 *temp_r0;
-    s32 var_r1;
+    s32 *child;
+    s32 gone;
 
-    if (DrawSprite2D(M2C_FIELD(arg0, s32 **, 0x58), M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
+    if (DrawSprite2D(M2C_FIELD(wrapper, s32 **, SPRITE_WRAPPER_CHILD), M2C_FIELD(wrapper, s32 *, SPRITE_WRAPPER_X), M2C_FIELD(wrapper, s32 *, SPRITE_WRAPPER_Y)) != 0) {
         return;
     }
-    temp_r0 = M2C_FIELD(arg0, s32 **, 0x58);
-    var_r1 = 1;
-    if ((temp_r0 != NULL) && (*temp_r0 != 0)) {
-        var_r1 = 0;
+    child = M2C_FIELD(wrapper, s32 **, SPRITE_WRAPPER_CHILD);
+    gone = 1;
+    if ((child != NULL) && (*child != 0)) {
+        gone = 0;
     }
-    if (var_r1 == 0) {
+    if (gone == 0) {
         return;
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(wrapper);
 }
 
 #pragma scheduling off
@@ -642,7 +655,7 @@ u16 func_02091a70(void *arg0) {
 
 #pragma push
 #pragma scheduling off
-s32 func_02091a84(void *arg0) {
+s32 GetSpriteScriptDuration(void *arg0) {
     u16 *p = M2C_FIELD(arg0, u16 **, 0x8);
     s32 sum = 0;
 
@@ -667,7 +680,7 @@ void func_02091abc(void) {
 
 #pragma push
 #pragma scheduling off
-s32 func_02091ac0(void *arg0) {
+s32 GetSpriteScriptFrameCount(void *arg0) {
     u16 *p = M2C_FIELD(arg0, u16 **, 0x8);
     s32 sum = 0;
 
@@ -748,26 +761,30 @@ M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
     gRecordValues[arg0] = (unsigned int)arg1;
 }
 
-void func_02091c98(void) {
+void LoadScenePanelGraphics(void) {
 extern void *gCur3DSpriteEngine;
-extern M2C_UNK data_0211e738;
-extern M2C_UNK data_0211e068;
-LoadGraphicsBlock(&data_0211e738,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
-CopyToObjPaletteShadow(&data_0211e068,0x200,0x20);
+extern M2C_UNK gScenePanelGraphics;
+extern M2C_UNK gScenePanelPalette;
+LoadGraphicsBlock(&gScenePanelGraphics,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c));
+CopyToObjPaletteShadow(&gScenePanelPalette,0x200,0x20);
 }
 
+/* Load the shared scene-panel graphics and palette for both 3D sprite engines:
+ * make each engine current in turn (main screen, then sub screen), upload the
+ * panel to it, and restore the previously current engine afterwards. */
 void LoadScenePanelGraphicsOnBothEngines(void) {
-extern void *gCur3DSpriteEngine;
-extern void *g3DSpriteEngineSub;
-extern void *g3DSpriteEngineMain;
-void *save=gCur3DSpriteEngine;
-s32 i=0;
-do {
-gCur3DSpriteEngine=i==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
-func_02091c98();
-i++;
-}while(i<2);
-gCur3DSpriteEngine=save;
+    extern void *gCur3DSpriteEngine;
+    extern void *g3DSpriteEngineSub;
+    extern void *g3DSpriteEngineMain;
+    void *savedEngine = gCur3DSpriteEngine;
+    s32 screen = 0;
+
+    do {
+        gCur3DSpriteEngine = screen == 0 ? g3DSpriteEngineMain : g3DSpriteEngineSub;
+        LoadScenePanelGraphics();
+        screen++;
+    } while (screen < 2);
+    gCur3DSpriteEngine = savedEngine;
 }
 
 #pragma scheduling off

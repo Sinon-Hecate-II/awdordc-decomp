@@ -8,6 +8,7 @@
 #define OV001_PKT_COMMAND 0x06 /* u16 big-endian command: 0x1010, 0x2010 or 0x3010 */
 #define OV001_PKT_LENGTH  0x0a /* u16 big-endian bytes of the payload */
 #define OV001_PKT_FLAGS   0x0c /* u16 big-endian transfer flags */
+#define OV001_PKT_STATUS  0x0e /* u8 status byte carried with the flags */
 #define OV001_PKT_KIND    0x0f /* u8 kind; 17 marks a room-protocol packet */
 #define OV001_PKT_TOKEN   0x10 /* 8-byte player token the packet answers */
 

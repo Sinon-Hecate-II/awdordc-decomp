@@ -258,11 +258,17 @@ void func_ov003_02202414(void *arg0) {
     Link_FlushSend();
 }
 
-void func_ov003_02202454(void *arg0){void *p;u8 i;
-p=M2C_FIELD(arg0,void**,0x40);
-Hide3DSprite(M2C_FIELD(p,s32*,0));Hide3DSprite(M2C_FIELD(p,s32*,4));
-for(i=0;(u32)i<8;i++){Hide3DSprite(((s32*)(p+8))[i]);Hide3DSprite(((s32*)(p+0x28))[i]);}
-Hide3DSprite(M2C_FIELD(arg0,s32*,0x4c));}
+/* Hide every sprite of the setup panel: its two slide sprites, the four rows of
+ * four slot sprites (each loop pass hides one sprite from two of the rows), and
+ * the panel's highlight cursor. */
+void Ov003_HideSetupPanelSprites(void *panel) {
+    void *sprites;
+    u8 i;
+    sprites = M2C_FIELD(panel, void **, SETUP_PANEL_SPRITES);
+    Hide3DSprite(M2C_FIELD(sprites, s32 *, 0)); Hide3DSprite(M2C_FIELD(sprites, s32 *, 4));
+    for (i = 0; (u32)i < 8; i++) { Hide3DSprite(((s32 *)(sprites + 8))[i]); Hide3DSprite(((s32 *)(sprites + 0x28))[i]); }
+    Hide3DSprite(M2C_FIELD(panel, s32 *, SETUP_PANEL_HIGHLIGHT));
+}
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
@@ -562,7 +568,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_0208fe30(s32);
     M2C_UNK func_020d47f0();
     M2C_UNK func_ov003_021f140c(M2C_UNK);
-    M2C_UNK func_ov003_021f1be8();
+    M2C_UNK Ov003_SetMapConfirmDisabled();
     s32 func_ov003_02200c7c();
     M2C_UNK func_ov003_02204fd0(void *);
     extern u16 data_02168f14;
@@ -579,7 +585,7 @@ void func_ov003_02202cc4(void *arg0) {
         M2C_FIELD(temp_r0, s32 *, 0x40) = (s32) ((M2C_FIELD(temp_r0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(temp_r0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
         M2C_FIELD(temp_r0, s8 *, 0x5A) = 0xC;
     }
-    func_ov003_021f1be8();
+    Ov003_SetMapConfirmDisabled();
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x1A) >> 0x1A) == 0) {
         var_r0 = 1;
     } else {

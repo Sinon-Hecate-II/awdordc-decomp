@@ -198,7 +198,7 @@ void func_ov010_022272cc(void *arg0) {
 s32 IsOnlineSessionFlagSet(s32);
 s32 GetOnlineTransportPlayerId();
 s32 IsOnlineSessionHost();
-s32 func_ov010_02229b48(s32);
+s32 GetOnlinePlayerSlot(s32);
 unsigned int Ov010Online_GetQueuedPacketSize(unsigned int);
 s32 func_ov010_02229920(s32,void *);
 void *func_ov010_02229568(u32);
@@ -284,7 +284,7 @@ M2C_FIELD((u8 *)arg0+chan*8,void **,0x38)=0;
 break;
 case 7:
 SetOnlinePlayerRecord((u8)chan,(u8 *)p+0xc);
-QueueOnlineLinkPacket(8,(void *)func_ov010_02229b48(GetOnlineTransportPlayerId()),0x6c,(u16)(1<<chan));
+QueueOnlineLinkPacket(8,(void *)GetOnlinePlayerSlot(GetOnlineTransportPlayerId()),0x6c,(u16)(1<<chan));
 break;
 case 8:
 SetOnlinePlayerRecord((u8)chan,(u8 *)p+0xc);

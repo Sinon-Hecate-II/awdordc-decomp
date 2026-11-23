@@ -56,27 +56,32 @@ void func_ov001_0217ded8(void) {
     M2C_UNK Ov001_BlockScrollBar();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_0217def8;
+    extern M2C_UNK Ov001_FadeOutMapList;
     Ov001_BlockScrollBar();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_0217def8);
+    Ov001_SetStepCallback(&Ov001_FadeOutMapList);
 }
 
-void func_ov001_0217def8(void) {
+/* Wait for the map list's fade-in to finish, then fade the sub screen's BG0 and
+ * the main screen's BG0/BG2/BG3 and OBJ out to white over eight frames and move
+ * on to closing the screen. */
+void Ov001_FadeOutMapList(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217df44;
-    if (Ov001_IsFadeActive(1) != 0) {
+    extern M2C_UNK Ov001_CloseMapListScreen;
+
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x1D, 8);
-    Ov001_SetStepCallback(&func_ov001_0217df44);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN,
+                    OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_BG3 | OV001_BLEND_OBJ, 8);
+    Ov001_SetStepCallback(&Ov001_CloseMapListScreen);
 }
 
 #pragma push
 #pragma opt_strength_reduction off
-void func_ov001_0217df44(void) {
+void Ov001_CloseMapListScreen(void) {
 extern M2C_UNK gMapListState, data_ov001_0219085c, data_ov001_02193db4;
 extern M2C_UNK GX_LoadOBJPltt,InitNameEntryScreen,func_ov001_0217bf84,Ov001_OpenWfcConnectScreen,func_ov001_0217f73c,Ov001_OpenAccessPointMenu,func_ov001_02181a84;
 s32 Ov001_IsFadeActive(s32);

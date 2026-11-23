@@ -195,11 +195,61 @@ s32 func_020abe28(s32 arg0) {
     return arg0;
 }
 
-void func_020abe3c(u8 arg0,s8 arg1) {extern s32 gScreenStates; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} M2C_FIELD(gScreenStates+a,s8 *,0)=arg1;}
+/* Set the per-screen enabled flag: screen 0 or 1, or SCREEN_CURRENT, which
+ * resolves to the sub screen when the main engine is the active one and to the
+ * main screen otherwise. */
+void SetScreenFlag(u8 screen, s8 flag) {
+    extern s32 gScreenStates;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 gCur3DSpriteEngine;
+    u8 index;
+    u8 isMain;
+    u8 resolved;
 
-u8 GetScreenFlag(u8 arg0) {extern s32 gScreenStates; extern s32 g3DSpriteEngineMain; extern s32 gCur3DSpriteEngine;
-u8 a,b,c; a=arg0; if(a==3) {if(gCur3DSpriteEngine==g3DSpriteEngineMain)b=1;else b=0;if(b!=1)c=1;else c=0;a=c;} return M2C_FIELD(gScreenStates+a,u8 *,0);}
+    index = screen;
+    if (index == SCREEN_CURRENT) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
+            isMain = 1;
+        } else {
+            isMain = 0;
+        }
+        if (isMain != 1) {
+            resolved = 1;
+        } else {
+            resolved = 0;
+        }
+        index = resolved;
+    }
+    M2C_FIELD((gScreenStates + index), s8 *, SCREEN_STATE_FLAG) = flag;
+}
+
+/* Reads the per-screen enabled flag: screen 0 or 1, or SCREEN_CURRENT, which
+ * resolves to the sub screen when the main engine is the active one and to the
+ * main screen otherwise. */
+u8 GetScreenFlag(u8 screen) {
+    extern s32 gScreenStates;
+    extern s32 g3DSpriteEngineMain;
+    extern s32 gCur3DSpriteEngine;
+    u8 index;
+    u8 isMain;
+    u8 resolved;
+
+    index = screen;
+    if (index == SCREEN_CURRENT) {
+        if (gCur3DSpriteEngine == g3DSpriteEngineMain) {
+            isMain = 1;
+        } else {
+            isMain = 0;
+        }
+        if (isMain != 1) {
+            resolved = 1;
+        } else {
+            resolved = 0;
+        }
+        index = resolved;
+    }
+    return M2C_FIELD(gScreenStates + index, u8 *, SCREEN_STATE_FLAG);
+}
 
 /* Records a display mode for a screen's state: screen 3 resolves to the 3D sprite
    engine that is current (0 for the main engine, 1 for the sub engine). */
@@ -256,8 +306,8 @@ u8 GetScreenMode(u8 screen) {
 }
 
 void func_020abf94(void) {
- void func_020abe3c(u8,s8); void SetScreenStateMode(u8,s8);
- s32 i=0; do {func_020abe3c(i,1);SetScreenStateMode(i,0);i++;}while(i<2);
+ void SetScreenFlag(u8,s8); void SetScreenStateMode(u8,s8);
+ s32 i=0; do {SetScreenFlag(i,1);SetScreenStateMode(i,0);i++;}while(i<2);
 }
 
 /* Animates the screen-split transition from its frame/length: eases the
@@ -307,7 +357,7 @@ void UpdateSplitTransition(u16 frame, u16 length) {
  * and records the flag and mode in the screen's state. */
 void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
     u8 GetScreenMode(u8);
-    void func_020abe3c(u8, s8);
+    void SetScreenFlag(u8, s8);
     void SetScreenStateMode(u8, s8);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
@@ -436,7 +486,7 @@ void ConfigureScreenEngine(u8 screen, s32 flag, u8 mode) {
             *(u8 *)((u8 *)*(u8 **)gCur3DSpriteEngine + 0x4f) = 0;
         }
 
-        ((void(*)(u8, s32))func_020abe3c)(screen, flag);
+        ((void(*)(u8, s32))SetScreenFlag)(screen, flag);
         ((void(*)(u8, s32))SetScreenStateMode)(screen, (s32)mode);
     }
 
@@ -461,11 +511,11 @@ void func_020ac598(s32 arg0) {
 }
 
 void func_020ac5c8(void *arg0) {
-    M2C_UNK func_01ffaa6c();
+    M2C_UNK DecrementSpriteChildCount();
     if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
         return;
     }
-    func_01ffaa6c();
+    DecrementSpriteChildCount();
 }
 
 /* Starts the screen-split transition sprite: resets its elapsed-frame counter,
@@ -545,7 +595,7 @@ void func_020ac7a0(void *arg0) {
     if (M2C_FIELD(arg0, s32 *, 0x40) == 0) {
         return;
     }
-    func_01ffaa6c();
+    DecrementSpriteChildCount();
 }
 
 void func_020ac7b8(void *arg0) {

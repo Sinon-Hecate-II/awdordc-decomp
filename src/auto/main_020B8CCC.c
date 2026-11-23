@@ -50,7 +50,7 @@ gCur3DSpriteEngine=old;
 void ReturnToMapView(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK, s32);
     void RefreshMapView();
-    void func_020d472c();
+    void ReleaseMapViewHold();
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineMain;
     void *old = gCur3DSpriteEngine;
@@ -61,7 +61,7 @@ void ReturnToMapView(void) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
     RefreshMapView();
-    func_020d472c();
+    ReleaseMapViewHold();
     gCur3DSpriteEngine = old;
 }
 
@@ -331,7 +331,7 @@ void func_020b9978(void) {
 void func_020b99ac(s32 arg0,s32 arg1,s32 arg2) {
 M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void DrawTilemapNumber(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
-M2C_UNK func_0207a61c(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
+M2C_UNK WriteUnitKindTileQuad(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK GetUnitBuildCostTimes10(M2C_UNK,M2C_UNK);
 extern u8 gProductionChoices[],gUnitKindStats[];
 extern void *gCur3DSpriteEngine; extern void **gCurrentMap;
@@ -349,7 +349,7 @@ row=y+i*2;
 func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
 value=GetUnitBuildCostTimes10(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
 DrawTilemapNumber(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
-func_0207a61c(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);
+WriteUnitKindTileQuad(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);
 i++; } while(i<7);
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0x3a)=0;
 M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0x42)=0;
@@ -358,7 +358,7 @@ M2C_FIELD(*(void**)gCur3DSpriteEngine,u16*,0x44)=0;
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
 }
 #pragma opt_instruction_scheduling off
-void func_020b9b48(s32 a,s32 b,s32 c) {
+void AddProductionMenuColumnSprites(s32 a,s32 b,s32 c) {
 M2C_UNK AddSpriteSlot(s32,s32,M2C_UNK *,s32);
 extern u8 gProductionChoices[];extern M2C_UNK data_02129150;
 s32 i; s32 y; register s32 x;
@@ -374,9 +374,34 @@ i++;y+=16;
 }while(i<7);
 }
 #pragma opt_instruction_scheduling reset
-void func_020b9bac(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK DrawWindowFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);DrawWindowFrame(a,b,16,16,1);func_020b99ac(a,b,c);}
+void DrawProductionMenuColumn(M2C_UNK a,M2C_UNK b,M2C_UNK c){void func_020b99ac(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK DrawWindowFrame(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);DrawWindowFrame(a,b,16,16,1);func_020b99ac(a,b,c);}
 
-void func_020b9bec(void){void func_020b9b48(s32,s32,s32);void SelectSpriteSlot(s32);extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7)func_020b9b48(8,4,0);else{func_020b9b48(0,4,0);func_020b9b48(16,4,7);}SelectSpriteSlot(0);}
+/* Lay out the sprite slots for the unit-production menu's entries: one column of
+   7 when the list fits on a single page, otherwise two columns split across the
+   page, then focus the first slot. */
+void CreateProductionMenuSprites(void) {
+    void AddProductionMenuColumnSprites(s32, s32, s32);
+    void SelectSpriteSlot(s32);
+    extern M2C_UNK gProductionMenuState;
+    if (M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_COUNT) <= PRODUCTION_MENU_PAGE_ENTRIES) AddProductionMenuColumnSprites(8, 4, 0);
+    else {
+        AddProductionMenuColumnSprites(0, 4, 0);
+        AddProductionMenuColumnSprites(16, 4, 7);
+    }
+    SelectSpriteSlot(0);
+}
 
-void func_020b9c40(void){extern M2C_UNK gProductionMenuState;if(M2C_FIELD(&gProductionMenuState,s32 *,4)<=7){func_020b9bac(8,4,0);return;}func_020b9bac(0,4,0);func_020b9bac(16,4,7);}
+/* Draw the unit-production menu's windowed columns: a single column when the
+ * list fits on one page, otherwise two columns split across the page. */
+void DrawProductionMenuColumns(void) {
+    void DrawProductionMenuColumn(s32, s32, s32);
+    extern M2C_UNK gProductionMenuState;
+
+    if (M2C_FIELD(&gProductionMenuState, s32 *, PRODUCTION_MENU_COUNT) <= PRODUCTION_MENU_PAGE_ENTRIES) {
+        DrawProductionMenuColumn(8, 4, 0);
+        return;
+    }
+    DrawProductionMenuColumn(0, 4, 0);
+    DrawProductionMenuColumn(16, 4, 7);
+}
 

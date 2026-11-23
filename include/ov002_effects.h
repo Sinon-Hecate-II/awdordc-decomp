@@ -48,7 +48,9 @@ typedef struct EffectSet {
 typedef struct EffectVariant {
     u8 pad00[0x12];
     u8 startFrame; /* +0x12 frame the variant starts on */
-    u8 pad13[0x55];
+    u8 pad13[0x53];
+    u8 variantLimit; /* +0x66 limit the model's effect-variant index is checked against */
+    u8 pad67;
 } EffectVariant; /* 0x68 bytes */
 
 /* gEffectHasVariants[effect]: the effect swaps between timed variants. */

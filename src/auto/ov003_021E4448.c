@@ -236,8 +236,8 @@ void func_ov003_021e48dc(void) {
 
 void func_ov003_021e48e8(void *arg0) {
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    M2C_UNK func_ov003_021f1bd4();
-    func_ov003_021f1bd4();
+    M2C_UNK Ov003_SetMapConfirmEnabled();
+    Ov003_SetMapConfirmEnabled();
     SetOv003SceneState(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
 }
@@ -515,22 +515,24 @@ s32 func_ov003_021e4e58(s32 arg0) {
     return arg0;
 }
 
-M2C_UNK **func_ov003_021e4e6c(M2C_UNK **arg0) {
+/* Deleting destructor of a scene-view label group: restore the group's vtable,
+ * delete its eleven glyph sprites, then free the group itself. */
+SceneViewLabelGroup *DestroySceneViewLabelGroup(SceneViewLabelGroup *group) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK MemFree();
     extern M2C_UNK gSceneLabelGroupVTable;
-    u8 var_r4;
+    u8 i;
 
-    *arg0 = &gSceneLabelGroupVTable;
-    var_r4 = 0;
+    group->vtable = &gSceneLabelGroupVTable;
+    i = 0;
     do {
-        if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {
+        if (group->glyphs[i] != 0) {
             DeleteSpriteObject();
         }
-        var_r4 += 1;
-    } while ((u32) var_r4 < 0xBU);
-    MemFree(arg0);
-    return arg0;
+        i += 1;
+    } while ((u32) i < SCENE_LABEL_GLYPH_COUNT);
+    MemFree(group);
+    return group;
 }
 
 /* Destructor of the ov003 battle-scene object: resets its two vtables, releases

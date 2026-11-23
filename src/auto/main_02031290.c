@@ -199,32 +199,37 @@ void Wfc_BuildHostConfig(M2C_UNK control, M2C_UNK state, M2C_UNK config) {
 
 /* Wfc_BuildHostConfig (void) is written by compile_and_diff below */
 
-s32 Wfc_EncodePlayerCode(void *arg0) {
-    u32 temp_r3;
+/* Read the 4-byte big-endian player code at `code` and return it byte-swapped
+ * into the little-endian word the WFC host config stores. */
+s32 Wfc_EncodePlayerCode(void *code) {
+    u32 word;
 
-    temp_r3 = 0;
-    temp_r3 |= M2C_FIELD(arg0, u8 *, 0) << 0x18;
-    temp_r3 |= M2C_FIELD(arg0, u8 *, 1) << 0x10;
-    temp_r3 |= M2C_FIELD(arg0, u8 *, 2) << 0x8;
-    temp_r3 |= M2C_FIELD(arg0, u8 *, 3);
-    return ((temp_r3 << 0x18) & 0xFF000000) | (((temp_r3 << 8) & 0xFF0000) | ((u8) (temp_r3 >> 0x18) | ((temp_r3 >> 8) & 0xFF00)));
+    word = 0;
+    word |= M2C_FIELD(code, u8 *, 0) << 0x18;
+    word |= M2C_FIELD(code, u8 *, 1) << 0x10;
+    word |= M2C_FIELD(code, u8 *, 2) << 0x8;
+    word |= M2C_FIELD(code, u8 *, 3);
+    return ((word << 0x18) & 0xFF000000) | (((word << 8) & 0xFF0000) | ((u8) (word >> 0x18) | ((word >> 8) & 0xFF00)));
 }
 
-s32 Wfc_EncodeCodeMask(s32 arg0) {
-    u32 var_r3;
-    s32 var_r0;
-    s32 temp_r1;
+/* Build the WFC host config's player-code mask for a code with `codeBits` set
+ * bits: the top codeBits bits of a big-endian word, byte-swapped like the codes
+ * Wfc_EncodePlayerCode writes (0 set bits give 0, all 32 give -1). */
+s32 Wfc_EncodeCodeMask(s32 codeBits) {
+    u32 mask;
+    s32 count;
+    s32 shift;
 
-    temp_r1 = 0x20 - arg0;
-    var_r3 = -1U;
-    var_r0 = 0;
-    if (temp_r1 > 0) {
+    shift = 0x20 - codeBits;
+    mask = -1U;
+    count = 0;
+    if (shift > 0) {
         do {
-            var_r0 += 1;
-            var_r3 *= 2;
-        } while (var_r0 < temp_r1);
+            count += 1;
+            mask *= 2;
+        } while (count < shift);
     }
-    return ((var_r3 << 0x18) & 0xFF000000) | (((var_r3 << 8) & 0xFF0000) | ((u8) (var_r3 >> 0x18) | ((var_r3 >> 8) & 0xFF00)));
+    return ((mask << 0x18) & 0xFF000000) | (((mask << 8) & 0xFF0000) | ((u8) (mask >> 0x18) | ((mask >> 8) & 0xFF00)));
 }
 
 #pragma opt_strength_reduction off
@@ -546,7 +551,7 @@ void func_02031e04(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s32 *, 8) = arg2;
 }
 
-void func_02031e0c(void *arg0, s32 arg1) {
+void SetProfileRecordId(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s32 *, 4) = arg1;
 }
 
@@ -580,7 +585,7 @@ void GetPlayerRecordType(void) {
 
 #pragma optimization_level 2
 void func_02031e7c(M2C_UNK a,M2C_UNK b) { M2C_UNK func_02031d64(M2C_UNK,M2C_UNK,M2C_UNK,s32); func_02031d64(a,b,11,0x1fffff); }
-void func_02031e94(M2C_UNK arg0, M2C_UNK arg1) {
+void SetPlayerRecordKind(M2C_UNK arg0, M2C_UNK arg1) {
     s32 func_02031e14(u32 *);
     void func_02031e7c(M2C_UNK, M2C_UNK);
     s32 temp_r0;
@@ -726,7 +731,7 @@ StringFormatN((M2C_UNK)out,NAS_ID_TEXT_SIZE,&sNasIdFormat,code,(keyType>>24)&255
 void InitProfileIdBlock(void *block, s32 gameId) {
     void MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
     void InitNasLoginKey(void *);
-    void func_02031e94(M2C_UNK, M2C_UNK);
+    void SetPlayerRecordKind(M2C_UNK, M2C_UNK);
     void BuildCrc32Table(M2C_UNK *, s32);
     s32 Crc32Block(M2C_UNK *, void *, M2C_UNK);
     u32 table[256];
@@ -736,7 +741,7 @@ void InitProfileIdBlock(void *block, s32 gameId) {
     M2C_FIELD(block, s32 *, 0x1C) = 0;
     M2C_FIELD(block, s32 *, PROFILE_ID_BLOCK_GAME_ID) = gameId;
     InitNasLoginKey((u8 *)block + 4);
-    func_02031e94((M2C_UNK)((u8 *)block + 0x10), 0);
+    SetPlayerRecordKind((M2C_UNK)((u8 *)block + 0x10), 0);
     BuildCrc32Table((M2C_UNK *)table, 0xEDB88320);
     M2C_FIELD(block, s32 *, 0x3C) = Crc32Block((M2C_UNK *)table, block, 0x3C);
     M2C_FIELD(block, s32 *, 0x20) = (s32)(M2C_FIELD(block, s32 *, 0x20) | 1);

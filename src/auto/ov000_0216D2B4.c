@@ -47,7 +47,7 @@ topIndex++;topX+=24;tile+=4;
 if(M2C_FIELD(gArmyInfoState,u8 *,16)==1){
 s32 mx1=511,mt1=1023,mx2=511,mt2=1023,mx3=511,mt3=1023,mx4=511,mt4=1023,mx5=511,mt5=1023,mx6=511,mt6=1023,mx7=511,mt7=1023;
 for(i=0;i<27;i++){
-x=i%4*64;y=i/4*20;v=func_020a866c(i);if(!v)continue;
+x=i%4*64;y=i/4*20;v=GetDisplayUnitKind(i);if(!v)continue;
 tile=func_020a72b0(0,v)+437;
 AddSprite((u16)((x+2)&mx1),(u8)(y+18),(u16)(((tile)>>((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30)&mt1)|((u32)((palette+11)<<28)>>16)),gSpriteDesc16x16,0);
 
@@ -106,7 +106,7 @@ void func_ov000_0216dd0c(void) {
  void *GetLocalizedFileName(void *);
  void OpenNarcArchive(void *);void CloseNarcArchive(void);
  void LoadNarcFileDecompressed(void *,void *);
- void func_01ff9d38(s32);void func_01ff9d88(s32);
+ void Clear3DSpriteLayerMain(s32);void Clear3DSpriteLayerSub(s32);
  void func_0209bbd0(s32,s32,s32,s32,s32,s32);
  void func_0209b26c(s32,s32,s32,u32,s32,s32);
  u8 *state=gArmyInfoState;
@@ -118,7 +118,7 @@ void func_ov000_0216dd0c(void) {
  saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b8874),M2C_FIELD(engine,void **,0x28));
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- func_01ff9d38(1);
+ Clear3DSpriteLayerMain(1);
  M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
  func_0209bbd0(2,2,1,M2C_FIELD(record,s32 *,8),0x1000,1);
  func_0209bbd0(2,12,1,M2C_FIELD(record,s32 *,12),0x1000,0xa1);
@@ -126,7 +126,7 @@ void func_ov000_0216dd0c(void) {
  gCur3DSpriteEngine=g3DSpriteEngineSub;engine=g3DSpriteEngineSub;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b888c),M2C_FIELD(engine,void **,0x28));
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- func_01ff9d88(1);
+ Clear3DSpriteLayerSub(1);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  func_0209bbd0(2,8,1,M2C_FIELD(record,s32 *,4),0x1000,0x81);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
@@ -138,12 +138,12 @@ void func_ov000_0216dd0c(void) {
  saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88b8),M2C_FIELD(engine,void **,0x28));
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- func_01ff9d38(1);
+ Clear3DSpriteLayerMain(1);
  M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
  engine=g3DSpriteEngineSub;gCur3DSpriteEngine=engine;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b88d0),M2C_FIELD(engine,void **,0x28));
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
- func_01ff9d88(1);
+ Clear3DSpriteLayerSub(1);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  func_0209b26c(3,14,1,0xf0000097,0x1000,1);
  func_0209b26c(3,16,1,0xf0000098,0x1000,0x21);

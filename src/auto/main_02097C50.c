@@ -2,7 +2,7 @@
 #include "common.h"
 #include "ds3dsprite.h"
 
-void func_02097c50(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void SetScenePanelCursorVertical(u32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
  s32 FindScenePanel(u16); M2C_UNK func_0209e25c(s32,M2C_UNK,M2C_UNK,M2C_UNK);
  s32 t=FindScenePanel((u16)arg0); if(!t)return; func_0209e25c(t,2,arg1,arg2);
 }

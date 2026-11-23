@@ -451,30 +451,34 @@ M2C_UNK func_ov010_0222866c(M2C_UNK arg0) {
     return func_02037c10(arg0);
 }
 
-s32 func_ov010_02228678(M2C_UNK *arg0) {
+/* Step the matchmaking HTTP request: return 1 while it is still running, else
+ * store the outcome in *outSuccess (1 = matched, 0 = failed) and return 0.
+ * The step codes are the WFC_HTTP_STEP_* values PollWfcMatchmakingHttp returns. */
+s32 Ov010Online_PollMatchmaking(M2C_UNK *outSuccess) {
     M2C_UNK PollWfcMatchmakingHttp(void);
-    s32 var_r4;
-    u32 temp_r0;
-    var_r4 = 1;
-    temp_r0 = PollWfcMatchmakingHttp();
-    switch (temp_r0) {
-    case 0:
-        var_r4 = 0;
+    s32 running;
+    u32 step;
+
+    running = 1;
+    step = PollWfcMatchmakingHttp();
+    switch (step) {
+    case 0: /* WFC_HTTP_STEP_NONE */
+        running = 0;
         break;
-    case 1:
+    case 1: /* WFC_HTTP_STEP_RUNNING */
         break;
-    case 2:
-        M2C_FIELD(arg0, s32 *, 0) = 1;
-        var_r4 = 0;
+    case 2: /* WFC_HTTP_STEP_DONE */
+        M2C_FIELD(outSuccess, s32 *, 0) = 1;
+        running = 0;
         break;
-    case 3:
-        M2C_FIELD(arg0, s32 *, 0) = 0;
-        var_r4 = 0;
+    case 3: /* WFC_HTTP_STEP_FAILED */
+        M2C_FIELD(outSuccess, s32 *, 0) = 0;
+        running = 0;
         break;
     default:
         break;
     }
-    return var_r4;
+    return running;
 }
 
 void func_ov010_022286cc(void *arg0) {
@@ -488,8 +492,8 @@ void func_ov010_022286cc(void *arg0) {
 
 void func_ov010_022286f0(void *arg0) {
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 func_ov010_02228678(M2C_UNK *);
-    if (func_ov010_02228678(M2C_FIELD(arg0, s32 *, 0x38)) != 0) {
+    s32 Ov010Online_PollMatchmaking(M2C_UNK *);
+    if (Ov010Online_PollMatchmaking(M2C_FIELD(arg0, s32 *, 0x38)) != 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);

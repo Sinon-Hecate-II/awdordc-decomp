@@ -77,18 +77,20 @@ s32 func_020d66fc(s8 *arg0) {
     return 0;
 }
 
-void func_020d672c(void) {
+/* Load the under_info assets of the map view's info panel: the localized character
+ * graphics (under_info.cg) into the 3D sprite engine's texture at +0x2A00 and the
+ * palette (under_info.cl) into the sprite palette at 0x320. */
+void LoadUnderInfoGraphics(void) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
     s32 GetLocalizedFileName(M2C_UNK *);
-    extern M2C_UNK data_0212beec;
-    extern M2C_UNK data_0212bef8;
-    extern M2C_UNK data_0212bf08;
+    extern u8 sUnderInfoDir[], sUnderInfoCgName[], sUnderInfoClName[];
     extern u16 **gCur3DSpriteEngine;
-    SetFileDirectory(&data_0212beec);
-    LoadDecompressedFileTo(GetLocalizedFileName(&data_0212bef8), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2A00);
-    LoadFileToSpriteBuffer(&data_0212bf08, 0x320, 0x20);
+
+    SetFileDirectory(sUnderInfoDir);
+    LoadDecompressedFileTo(GetLocalizedFileName(sUnderInfoCgName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + 0x2A00);
+    LoadFileToSpriteBuffer(sUnderInfoClName, 0x320, 0x20);
 }
 
 /* Draws the information window for the map tile under the cursor: resolves the

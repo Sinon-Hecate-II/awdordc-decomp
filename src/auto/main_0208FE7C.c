@@ -73,49 +73,59 @@ u8 Sound_WasPlayedWithin(s32 arg0) {
     return var_r0;
 }
 
-s32 SetSoundEffectVolume(M2C_UNK arg0) {
+/* Pan the sound-effect player (0xFFFF tells the driver to keep the volume it has).
+ * Returns 0 while the sound system is off or the player is not ready, 1 once the
+ * pan was handed to the driver. */
+s32 SetSoundEffectPan(M2C_UNK pan) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectPlayer;
     u8 IsSoundPlayerReady(void);
     M2C_UNK Sound_SetPlayerPan(M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
     if (IsSoundPlayerReady() == 0) {
         return 0;
     }
-    Sound_SetPlayerPan(&gSoundEffectPlayer, 0xFFFF, arg0);
+    Sound_SetPlayerPan(&gSoundEffectPlayer, 0xFFFF, pan);
     return 1;
 }
 
-s32 PlaySlotPendingSound(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Play packed sound `packedSoundId` (its low 16 bits name the sound, the high 16
+ * bits its archive) on sound-effect slot `slot`, stopping the slot's current sound
+ * first; `channel` -1 uses the slot's default channel. Returns 0 while the sound
+ * system is off, 1 once the sound was handed to the slot. */
+s32 PlaySlotPendingSound(s32 slot, M2C_UNK channel, M2C_UNK packedSoundId) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectSlotHandles;
-    M2C_UNK func_0208fd40(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_PlayPackedId(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 StopSlotSound(s32, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    StopSlotSound(arg0, 0);
-    func_0208fd40(&gSoundEffectSlotHandles + arg0, arg1, arg2);
+    StopSlotSound(slot, 0);
+    Sound_PlayPackedId(&gSoundEffectSlotHandles + slot, channel, packedSoundId);
     return 1;
 }
 
-s32 StopSlotSound(s32 arg0, M2C_UNK arg1) {
+/* Stop the sound playing in effect slot `slot`: the slot's voice is released at
+ * once when `fadeFrames` is 0, otherwise faded out over that many frames.  Returns
+ * 0 while the sound system is off or the slot is already silent. */
+s32 StopSlotSound(s32 slot, s32 fadeFrames) {
     extern M2C_UNK gSoundDriverState;
     extern M2C_UNK gSoundEffectSlotHandles;
     u8 IsSlotSoundActive(s32);
-    M2C_UNK func_0208fd94(M2C_UNK, M2C_UNK);
+    M2C_UNK Sound_StopPlayerVoice(M2C_UNK, M2C_UNK);
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return 0;
     }
-    if (IsSlotSoundActive(arg0) == 0) {
+    if (IsSlotSoundActive(slot) == 0) {
         return 0;
     }
-    func_0208fd94(&gSoundEffectSlotHandles + arg0, arg1);
+    Sound_StopPlayerVoice(&gSoundEffectSlotHandles + slot, fadeFrames);
     return 1;
 }
 
@@ -309,12 +319,12 @@ void func_02090390(void) {
 
 void func_020903b0(void) {
     extern M2C_UNK gSoundDriverState;
-    s32 func_0202c658(void *);
+    s32 Sound_PushHeapSection(void *);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
         return;
     }
-    func_0202c658(M2C_FIELD(&gSoundDriverState, void **, 0x10));
+    Sound_PushHeapSection(M2C_FIELD(&gSoundDriverState, void **, 0x10));
 }
 
 void func_020903d4(void) {
@@ -324,8 +334,9 @@ void func_020903d4(void) {
     func_02090448(1);
 }
 
-/* Load the sequence archive `archiveId` and the sound bank `bankId` into the
- * sound driver's player, unless the sound system is off. */
+/* Load a sequence archive and a sound bank into the sound player's heap: the two
+ * loads run between the heap-access calls of func_0202c784.  Does nothing while
+ * the sound system is off. */
 void LoadSoundSequenceArchiveAndBank(s32 archiveId, s32 bankId) {
     extern M2C_UNK gSoundDriverState;
     s32 func_0202c784(M2C_UNK *);
@@ -473,7 +484,7 @@ void func_02090604(void) {
     func_020905d8();
 }
 
-void func_02090640(s32 arg0, s32 arg1) {
+void SetMusicVolumeLevel(s32 arg0, s32 arg1) {
     extern M2C_UNK gMusicVolumeLevels;
     s32 var_r1;
 
@@ -487,7 +498,7 @@ void func_02090640(s32 arg0, s32 arg1) {
     func_020905bc();
 }
 
-void func_0209066c(s32 arg0, s32 arg1) {
+void SetSoundEffectVolumeLevel(s32 arg0, s32 arg1) {
     extern M2C_UNK gSoundEffectVolumeLevels;
     s32 var_r1;
 
@@ -794,8 +805,8 @@ done:
  * on the same owner's list (SPRITE_PLAYER_NEXT).  Hidden players are skipped and
  * the draw helper is picked by SPRITE_PLAYER_FLAG_3D. */
 void SpritePlayer_DrawList(void *player) {
-    void func_01ffabac(s32, s32, s32, s32, s32, void *, s32);
-    void func_01ffad4c(s32, s32, s32, s32, s32, void *, s32);
+    void AddSpriteEntry(s32, s32, s32, s32, s32, void *, s32);
+    void AddSpriteEntry3D(s32, s32, s32, s32, s32, void *, s32);
 
     u8 flags;
 
@@ -804,7 +815,7 @@ void SpritePlayer_DrawList(void *player) {
         return;
     }
     if ((flags & SPRITE_PLAYER_FLAG_3D) == 0) {
-        func_01ffabac(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
+        AddSpriteEntry(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
                       M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y),
                       (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH),
                       (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH),
@@ -812,7 +823,7 @@ void SpritePlayer_DrawList(void *player) {
                       (void *)M2C_FIELD(player, void **, SPRITE_PLAYER_FRAME),
                       M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY) + M2C_FIELD(player, s8 *, SPRITE_PLAYER_PRIORITY_ADD));
     } else {
-        func_01ffad4c(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
+        AddSpriteEntry3D(M2C_FIELD(player, s16 *, SPRITE_PLAYER_X),
                       M2C_FIELD(player, s16 *, SPRITE_PLAYER_Y),
                       (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_X_HIGH),
                       (u16)M2C_FIELD(player, u16 *, SPRITE_PLAYER_Y_HIGH),

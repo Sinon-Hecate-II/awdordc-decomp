@@ -1,6 +1,8 @@
 /* 9 functions from 0x022174F4 to 0x02218008 (ov005), found by ds-decomp. */
 #include "common.h"
 #include "ov005_menu.h"
+#include "sound.h"
+#include "sound.h"
 extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 extern u8 data_02101f0c[];
 #define STATE gOv005MenuState
@@ -48,7 +50,7 @@ M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SCROLL_VEL)=-1;
 #pragma opt_strength_reduction off
 void func_ov005_022176a0(void){
 s32 IsCoUnlocked(s32);void AddSprite(u16,u16,u16,void*,s32);
-void func_02098cb8(s32,s16,s16,u16,s32,s32);void func_02098dc0(s16,s16,u16,s32);
+void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);void func_02098dc0(s16,s16,u16,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);u32 GetUnitSpriteWidth(void*);u32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s16,s16,u16,u16);void Ov005RefreshNameGraphic(void);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
@@ -62,7 +64,7 @@ x=M2C_FIELD(STATE,s16*,8)+((i%4)*50+30);y=(i/4)*18+87;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 AddSprite((u16)((x+2)&511),(u8)(y+1),ATTR(0x40c,0x7800),data_02101f0c,0);
 AddSprite((u16)((x+2)&511),(u8)(y+9),ATTR(0x414,0x7800),data_02101f0c,0);
-if(IsCoUnlocked(i+1))func_02098cb8(0,x,y,(u16)(((i<<12)&0xffff)|0x400|((tile)>>SIZE&0x3ff)),0,0);
+if(IsCoUnlocked(i+1))AddFaceSpriteTile(0,x,y,(u16)(((i<<12)&0xffff)|0x400|((tile)>>SIZE&0x3ff)),0,0);
 gCur3DSpriteEngine=saved;
 }
 }
@@ -144,13 +146,16 @@ if(value!=old)FocusSpriteSlotById(value);
 Ov005SetDetailSelection(value);
 }
 
-void func_ov005_02217f18(u8 *arg0) {
+/* Apply a newly highlighted entry of the detail row: store it as the menu's
+ * selection, highlight its sprite, remember the CO's mode with it, reload the
+ * CO's face palettes and play the menu-select sound. */
+void Ov005ApplyDetailSelection(u8 *selection) {
 extern void *gOv005MenuState;
-M2C_FIELD(gOv005MenuState,s16 *,0x12)=*arg0;
-Ov005SetDetailSelection(*arg0);
-func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,0x10),M2C_FIELD(gOv005MenuState,s16 *,0x12));
-Ov005LoadEntryFacePalettes(M2C_FIELD(gOv005MenuState,s16 *,0x10));
-PlaySoundEffect(0x10019);
+M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION)=*selection;
+Ov005SetDetailSelection(*selection);
+SetCoSavedMode(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX),M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION));
+Ov005LoadEntryFacePalettes(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX));
+PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Creates the twelve page-0 CO grid slot sprites, one per CO: four slots to a

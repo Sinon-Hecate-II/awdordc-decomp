@@ -115,14 +115,16 @@ void func_02028ef4(void *arg0) {
     }
 }
 #pragma pop
-void func_02029220(void) {
+/* Zero the WFC session's player-record list buffer (its capacity bytes) with
+ * interrupts disabled; does nothing when there is no session or no buffer. */
+void WFC_ClearPlayerList(void) {
 s32 OS_DisableInterrupts(void); void OS_RestoreInterrupts(s32); void *GetSession(void); void MI_CpuFill8(void *,s32,s32);
-s32 state; void *base; void *p; void *ptr; s32 val;
-state=OS_DisableInterrupts(); base=GetSession();
-if (!base) { OS_RestoreInterrupts(state); return; }
-p=(s8*)base+0x2000; ptr=M2C_FIELD(p,void**,0x270);
-if(ptr) { val=M2C_FIELD(p,s32*,0x274); if(val>0) MI_CpuFill8(ptr,0,val); }
-OS_RestoreInterrupts(state);
+s32 interruptState; void *session; void *block; void *list; s32 capacity;
+interruptState=OS_DisableInterrupts(); session=GetSession();
+if (!session) { OS_RestoreInterrupts(interruptState); return; }
+block=(s8*)session+WFC_SESSION_PLAYER_BLOCK; list=M2C_FIELD(block,void**,WFC_PLAYER_LIST_BLOCK_OFFSET);
+if(list) { capacity=M2C_FIELD(block,s32*,WFC_PLAYER_LIST_CAP_OFFSET); if(capacity>0) MI_CpuFill8(list,0,capacity); }
+OS_RestoreInterrupts(interruptState);
 }
 
 /* Number of player records in the session's player list, read with interrupts
@@ -349,10 +351,24 @@ loop_5:
     return node;
 }
 
-void *WFC_FindPlayerNodeByIndex(void *arg0) {
- void *base=GetSession(); void *block=(u8 *)base+0x2000; void *head=M2C_FIELD(block,void **,0x270); void *p=0;
- if(head!=0 && M2C_FIELD(block,u32 *,0x274)>12){p=M2C_FIELD(head,void **,4);if(p!=0){do {if(M2C_FIELD(p,void **,4)==arg0)break;p=M2C_FIELD(p,void **,12);}while(p!=0);}}
- return p;
+/* Find the session's player-list node whose node index is `index`, or NULL when
+ * the list is empty or no node matches. */
+void *WFC_FindPlayerNodeByIndex(void *index) {
+    void *session = GetSession();
+    void *block = (u8 *)session + WFC_SESSION_PLAYER_BLOCK;
+    void *list = M2C_FIELD(block, void **, WFC_PLAYER_LIST_BLOCK_OFFSET);
+    void *node = 0;
+
+    if (list != 0 && M2C_FIELD(block, u32 *, WFC_PLAYER_LIST_CAP_OFFSET) > WFC_PLAYER_LIST_HEADER_SIZE) {
+        node = M2C_FIELD(list, void **, WFC_PLAYER_LIST_HEAD);
+        if (node != 0) {
+            do {
+                if (M2C_FIELD(node, void **, WFC_PLAYER_NODE_INDEX) == index) break;
+                node = M2C_FIELD(node, void **, WFC_PLAYER_NODE_NEXT);
+            } while (node != 0);
+        }
+    }
+    return node;
 }
 
 /* Move a player-record node to the tail (most recently updated end) of the
@@ -623,20 +639,23 @@ void WFC_OnSendRequestComplete(void) {
     WFC_UnlockSend(&gWfcSendLock);
 }
 
-s32 WFC_TryLockSend(void *arg0) {
+/* Non-blocking recursive lock of the WFC send mutex: take it when free, count a
+ * nested lock when the same fixed holder already owns it, and report failure
+ * when someone else holds it. */
+s32 WFC_TryLockSend(void *lock) {
     extern M2C_UNK func_01ff8000;
-    M2C_UNK *temp_r2;
+    void *owner;
 
-    temp_r2 = M2C_FIELD(arg0, M2C_UNK **, 8);
-    if (temp_r2 == NULL) {
-        M2C_FIELD(arg0, M2C_UNK **, 8) = &func_01ff8000;
-        M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) + 1);
+    owner = M2C_FIELD(lock, void **, OSMUTEX_OWNER);
+    if (owner == NULL) {
+        M2C_FIELD(lock, void **, OSMUTEX_OWNER) = &func_01ff8000;
+        M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) = (s32) (M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) + 1);
         return 1;
     }
-    if (temp_r2 != &func_01ff8000) {
+    if (owner != &func_01ff8000) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0xC) = (s32) (M2C_FIELD(arg0, s32 *, 0xC) + 1);
+    M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) = (s32) (M2C_FIELD(lock, s32 *, OSMUTEX_COUNT) + 1);
     return 1;
 }
 
@@ -768,36 +787,43 @@ void ListAddFirst(void *arg0, void *arg1) {
     M2C_FIELD(arg0, u16 *, 8) += 1;
 }
 
-void ListAppend(void *arg0, void *arg1) {
+/* Append `node` at the tail of the doubly-linked list `list`: an empty list goes
+   through ListAddFirst, otherwise the node is linked after the current tail and
+   becomes the new tail.  The DLIST_* macros name the header and link fields. */
+void ListAppend(void *list, void *node) {
     void ListAddFirst(void *, void *);
-    u16 off;
+    u16 nodeOffset;
 
-    if (M2C_FIELD(arg0, void **, 0) == (void *)0) {
-        ListAddFirst(arg0, arg1);
+    if (M2C_FIELD(list, void **, DLIST_HEAD) == (void *)0) {
+        ListAddFirst(list, node);
         return;
     }
-    off = M2C_FIELD(arg0, u16 *, 0xA);
-    M2C_FIELD(arg1, s32 *, off) = M2C_FIELD(arg0, s32 *, 4);
-    M2C_FIELD((void *)((char *)arg1 + off), s32 *, 4) = 0;
-    M2C_FIELD((void *)(M2C_FIELD(arg0, void **, 4) + M2C_FIELD(arg0, u16 *, 0xA)), s32 *, 4) = (s32)arg1;
-    M2C_FIELD(arg0, void **, 4) = arg1;
-    M2C_FIELD(arg0, u16 *, 8) = (u16)(M2C_FIELD(arg0, u16 *, 8) + 1);
+    nodeOffset = M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET);
+    M2C_FIELD(node, s32 *, nodeOffset) = M2C_FIELD(list, s32 *, DLIST_TAIL);
+    M2C_FIELD((void *)((char *)node + nodeOffset), s32 *, DLIST_LINK_NEXT) = 0;
+    M2C_FIELD((void *)(M2C_FIELD(list, void **, DLIST_TAIL) + M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET)), s32 *, DLIST_LINK_NEXT) = (s32)node;
+    M2C_FIELD(list, void **, DLIST_TAIL) = node;
+    M2C_FIELD(list, u16 *, DLIST_COUNT) = (u16)(M2C_FIELD(list, u16 *, DLIST_COUNT) + 1);
 }
 
-void ListPrepend(void *arg0, void *arg1) {
+/* Prepend `node` at the head of the doubly-linked list `list`: an empty list goes
+   through ListAddFirst, otherwise the node's previous link is cleared and it is
+   chained in front of the current head.  The DLIST_* macros name the header and
+   link fields. */
+void ListPrepend(void *list, void *node) {
     void ListAddFirst(void *, void *);
-    u16 off;
+    u16 nodeOffset;
 
-    if (M2C_FIELD(arg0, void **, 0) == (void *)0) {
-        ListAddFirst(arg0, arg1);
+    if (M2C_FIELD(list, void **, DLIST_HEAD) == (void *)0) {
+        ListAddFirst(list, node);
         return;
     }
-    off = M2C_FIELD(arg0, u16 *, 0xA);
-    M2C_FIELD(arg1, s32 *, off) = 0;
-    M2C_FIELD((void *)((char *)arg1 + off), s32 *, 4) = M2C_FIELD(arg0, s32 *, 0);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0), s32 *, M2C_FIELD(arg0, u16 *, 0xA)) = (s32)arg1;
-    M2C_FIELD(arg0, void **, 0) = arg1;
-    M2C_FIELD(arg0, u16 *, 8) = (u16)(M2C_FIELD(arg0, u16 *, 8) + 1);
+    nodeOffset = M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET);
+    M2C_FIELD(node, s32 *, nodeOffset) = 0;
+    M2C_FIELD((void *)((char *)node + nodeOffset), s32 *, DLIST_LINK_NEXT) = M2C_FIELD(list, s32 *, DLIST_HEAD);
+    M2C_FIELD(M2C_FIELD(list, void **, DLIST_HEAD), s32 *, M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET)) = (s32)node;
+    M2C_FIELD(list, void **, DLIST_HEAD) = node;
+    M2C_FIELD(list, u16 *, DLIST_COUNT) = (u16)(M2C_FIELD(list, u16 *, DLIST_COUNT) + 1);
 }
 
 /* Inserts `node` into the doubly-linked list `list` before the node `before`: a

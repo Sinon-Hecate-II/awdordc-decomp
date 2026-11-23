@@ -27,11 +27,17 @@
 #define BGCNT_SCR_BASE_SHIFT 8
 #define BGCNT_BITMAP_DIRECT 0x0080 /* a bitmap background maps VRAM linearly instead of in screen blocks */
 #define BGCNT_CHAR_BASE_MASK 0x003C /* bits 2..5: character base block, in 16 KiB units */
+#define BGCNT_CHAR_BASE_SHIFT 2
 #define BGCNT_BITMAP_CHAR_BASE_MASK 0x003C /* BG3 bitmap base block, selected in bitmap display modes */
 
 /* Sizes of a background's screen base block and of a direct bitmap block. */
 #define BG_SCR_BLOCK_SHIFT    11 /* screen base block: 2 KiB */
 #define BG_BITMAP_BLOCK_SHIFT 14 /* direct bitmap block: 16 KiB */
+
+/* DISPCNT bits 24..26 select the main engine backgrounds' character base block,
+ * in 64 KiB units from the start of background VRAM. */
+#define DISPCNT_BG_CHAR_BASE_MASK  0x07000000
+#define DISPCNT_BG_CHAR_BASE_SHIFT 24
 
 /* Display control of the main engine and its copy for the sub engine. */
 #define REG_DISPCNT (*(volatile u32 *)0x04000000)
@@ -210,8 +216,8 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define GX_EXTPLTT_LOAD_BG_GRANT      0x14 /* grant of the main-engine BG extended palette */
 #define GX_EXTPLTT_LOAD_SUB_OBJ_GRANT 0x18 /* grant of the sub-engine OBJ extended palette */
 
-/* The texture and texture-palette loaders (GX_BeginLoadTex/TexPltt,
- * GX_LoadTex/TexPltt, GX_EndLoadTex/TexPltt) keep their state in gGxTexLoad:
+/* The texture loaders (GX_BeginLoadTex, LoadTextureBankBlock, GX_EndLoadTex)
+ * keep their state in gGxTexLoad:
  * the VRAM base of each area, the grant it was taken from, and the second base
  * and split offset a texture area spanning two banks copies across. */
 #define GX_TEXLOAD_TEX_BASE       0x04 /* main-engine 3D texture VRAM base */

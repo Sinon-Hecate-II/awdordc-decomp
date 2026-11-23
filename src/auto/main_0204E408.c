@@ -183,7 +183,7 @@ s32 func_0204e830(void *arg0, void *arg1) {
 /* Reset a gpi connection to its initial state: free its receive, message, send
  * and two queue buffers, drop the pending operations and clear the cached status
  * and location strings. */
-s32 gpiResetConnection(void **a){void gpiRemoveOperation(void **,void *);void func_02055cd0(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
+s32 gpiResetConnection(void **a){void gpiRemoveOperation(void **,void *);void gpiWalkBuddyTable(void **,void *);s32 func_0204e830(void *, void *);GpiConnection *p=*a;
 p->unk110=0;p->unk12f=0;p->unk144=0;
 p->socket=-1;p->state=0;
 p->recvBuffer.len=0;p->recvBuffer.pos=0;p->recvBuffer.size=0;
@@ -199,7 +199,7 @@ gpiFree(p->unk450.data);p->unk450.data=0;
 p->unk204=-1;p->unk20c=2;
 while(p->unk424)gpiRemoveOperation(a,p->unk424);
 p->unk424=0;p->unk430=0;
-func_02055cd0(a,&func_0204e830);
+gpiWalkBuddyTable(a,&func_0204e830);
 p->unk19c=0;p->unk1a0=0;p->unk198=0;p->unk210=0;p->unk41c=0;p->unk434=0;
 p->cachedStatus=-1;p->statusString[0]=0;p->locationString[0]=0;
 return 0;}
@@ -223,7 +223,7 @@ s32 gpiHandleServerData(void *ctx) {
     void MemCopy(void *, void *, s32);
     void MemMove(void *, void *, s32);
     s32 ParseInt(void *);
-    s32 func_020544d4(void **, void **, s32);
+    s32 gpiFindOperationById(void **, void **, s32);
     s32 gpiProcessOperation(void *, s32, void *);
     s32 gpiProcessErrorReply(void *, void *, s32);
     s32 StringCompareN(void *, void *, s32);
@@ -269,7 +269,7 @@ s32 gpiHandleServerData(void *ctx) {
             messageEnd = StringFind(scan, gGpiKeyId);
             if (messageEnd) {
                 id = ParseInt(messageEnd + 4);
-                if (!func_020544d4(ctx, &operation, id)) {
+                if (!gpiFindOperationById(ctx, &operation, id)) {
                     gpiLogMessage(ctx, gGpiMsgNoOperation, id);
                 } else {
                     result = gpiProcessOperation(ctx, (s32)operation, M2C_FIELD(conn, void **, 0x1ec));
@@ -305,7 +305,7 @@ s32 gpiHandleServerData(void *ctx) {
 s32 gpiThink(void **connection, s32 waitId) {
     void gpiSleep(s32); s32 gpiHandleServerData(void *); s32 gpiRemoveCallbacks(void **,s32);
     s32 gpiCheckConnect(void **); void gpiFinishOperation(void **); void gpiRemoveOperation(void **,void *);
-    s32 func_020544d4(void **,void **,s32); s32 func_0205519c(void **);
+    s32 gpiFindOperationById(void **,void **,s32); s32 func_0205519c(void **);
     s32 gpiProcessSearches(void **); s32 gpiDisconnect(void **,s32);
     void AssertFailed(void *,void *,void *,s32);
     extern M2C_UNK data_020fdb64,data_020fdc80,data_020fdd78,data_020fdd80;
@@ -324,7 +324,7 @@ s32 gpiThink(void **connection, s32 waitId) {
             if(keepPolling)gpiSleep(10);
         }while(keepPolling);
         if(result) {
-            if(func_020544d4(connection,&next,1))M2C_FIELD(next,s32 *,0x1c)=4;
+            if(gpiFindOperationById(connection,&next,1))M2C_FIELD(next,s32 *,0x1c)=4;
             else AssertFailed(&data_020fdd80,&data_020fdd78,&data_020fdb64,0x1dc);
         }
     }

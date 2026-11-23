@@ -223,8 +223,8 @@ M2C_UNK DrawSizedOamSprite(s32 screenX, s32 screenY, s32 width, s32 height, s32 
 }
 
 M2C_UNK *GetSaveRecordBuffer(void) {
-    extern M2C_UNK data_0215deec;
-    return &data_0215deec;
+    extern M2C_UNK gGameSettingsSaveBuffer;
+    return &gGameSettingsSaveBuffer;
 }
 
 void func_020be12c(void) {
@@ -287,16 +287,16 @@ if(id==-1)return;
 func_02076180((u16)id);
 }
 
-void func_020be2e0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void QueueSaveRecord(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_02075fd8(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     func_02075fd8(arg0, 0, arg1, arg2);
 }
 
-void func_020be2f8(M2C_UNK arg0) {
+void QueueSettingsRecord(M2C_UNK arg0) {
     M2C_UNK func_020be718();
     func_020be718();
     func_020be1dc(4);
-    func_020be2e0(arg0, 0x5CC, 4);
+    QueueSaveRecord(arg0, 0x5CC, 4);
 }
 
 /* Load the newest save-directory record of type `type`: walk the save directory,
@@ -316,14 +316,21 @@ if(func_02076208()){GetLocalizedText(0xc000034d);func_02076244();}
 return result;
 }
 
-void func_020be438(s32 a,s32 b,s32 c) {
- s32 HeapAllocBlock(s32);
- s32 v=0;
- func_020be1dc(a);
- func_020be2e0(b,c,(u8)a);
- if(a!=4) {v=HeapAllocBlock(0x6000);func_020be2f8(v);}
- func_02076198();
- func_020be188(v);
+/* Queue a save: write the `size`-byte record in `buffer` as record type
+ * `saveType`, and unless that is the shared settings type (4) also snapshot the
+ * global settings into a fresh block and queue that as the shared record.  Then
+ * start the save task and hand the block to the save indicator sprite. */
+void WriteSaveRecord(s32 saveType, void *buffer, s32 size) {
+    s32 HeapAllocBlock(s32);
+    s32 block = 0;
+    func_020be1dc(saveType);
+    QueueSaveRecord(buffer, size, (u8)saveType);
+    if (saveType != 4) {
+        block = HeapAllocBlock(0x6000);
+        QueueSettingsRecord(block);
+    }
+    func_02076198();
+    func_020be188(block);
 }
 
 void func_020be488(s32 a) {
@@ -332,7 +339,7 @@ void func_020be488(s32 a) {
     func_020be1dc(a);
     if(a!=4) {
         v=HeapAllocBlock(0x6000);
-        func_020be2f8(v);
+        QueueSettingsRecord(v);
     }
     func_02076198();
     func_020be188(v);
@@ -367,7 +374,7 @@ void func_020be59c(void) {
  * and the save records, set the default slot words and clear the per-slot
  * setting words. Runs at startup and whenever the settings magic is missing. */
 void InitDefaultGameSettings(void) {
-M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK func_020bf8fc(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
+M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK func_020bf814(M2C_UNK);M2C_UNK func_020bf8ac(s32,s32);M2C_UNK SetCoSavedMode(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
 s32 i,slot,entry; s32 flagOff,modeOff;
 M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
@@ -378,7 +385,7 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)|=0x4000;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
 MapSettings_SetDefaults(0);
 i=0;flagOff=0;modeOff=0;
-do{func_020bf8ac(i,flagOff);func_020bf8fc(i,modeOff);++i;}while(i<15);
+do{func_020bf8ac(i,flagOff);SetCoSavedMode(i,modeOff);++i;}while(i<15);
 func_020bf814(0);func_020e47f8();func_020e49ec();func_02086b9c();func_02091bcc();
 M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|0x80;
 func_020bf9f0(95);func_020bfa30(95);

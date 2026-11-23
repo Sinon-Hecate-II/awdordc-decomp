@@ -229,22 +229,25 @@ void Sound_RemoveRequestsForPlayer(M2C_UNK list, void *player) {
     OS_RestoreInterrupts(saved);
 }
 
-void *func_0202e09c(M2C_UNK arg0) {
+/* Take the first queued segment request off `list` with interrupts held off, and
+ * drop the owning player's queued-request count.  Returns the request, or NULL
+ * when the list is empty. */
+void *Sound_DequeueRequest(void *list) {
     M2C_UNK ListRemove(M2C_UNK, void *);
     void *ListNext(M2C_UNK, M2C_UNK);
-    s32 temp_r4;
-    void *temp_r0;
-    void *temp_r1;
+    s32 saved;
+    void *request;
+    void *player;
 
-    temp_r4 = OS_DisableInterrupts();
-    temp_r0 = ListNext(arg0, 0);
-    if (temp_r0 != NULL) {
-        ListRemove(arg0, temp_r0);
-        temp_r1 = M2C_FIELD(temp_r0, void **, 8);
-        M2C_FIELD(temp_r1, s32 *, 0x11C) = (s32) (M2C_FIELD(temp_r1, s32 *, 0x11C) - 1);
+    saved = OS_DisableInterrupts();
+    request = ListNext((M2C_UNK)list, 0);
+    if (request != NULL) {
+        ListRemove((M2C_UNK)list, request);
+        player = M2C_FIELD(request, void **, SOUND_REQUEST_PLAYER);
+        M2C_FIELD(player, s32 *, SOUND_HANDLE_REQUEST_COUNT) = (s32) (M2C_FIELD(player, s32 *, SOUND_HANDLE_REQUEST_COUNT) - 1);
     }
-    OS_RestoreInterrupts(temp_r4);
-    return temp_r0;
+    OS_RestoreInterrupts(saved);
+    return request;
 }
 
 #pragma opt_common_subs off

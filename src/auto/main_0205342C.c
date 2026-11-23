@@ -8,7 +8,7 @@ typedef struct RequestPair534 { s32 a,b; } RequestPair534;
 typedef struct Unk02053e40 { u32 words[60]; } Unk02053e40;
 
 #pragma opt_propagation off
-s32 func_0205342c(s32 *arg0, s32 arg1, s8 *arg2) {
+s32 gpiSetInfoField(s32 *arg0, s32 arg1, s8 *arg2) {
     M2C_UNK StringToLower(s8 *);
     s32 AppendUpdateProField(s32 *, M2C_UNK *, s8 *);
     s32 AppendUpdateUiField(s32 *, M2C_UNK *, s8 *);

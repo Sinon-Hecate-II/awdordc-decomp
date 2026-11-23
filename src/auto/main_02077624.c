@@ -193,7 +193,7 @@ void UpdateMapView(void) {
     M2C_UNK func_02077ab8(s32);
     void ApplyMapViewProjection(s32);
     M2C_UNK BuildMapViewTransform(s32);
-    M2C_UNK func_0207cddc(s32, M2C_UNK *);
+    M2C_UNK BuildMapViewScreenTransform(s32, M2C_UNK *);
     M2C_UNK func_0207ce54(s32);
     M2C_UNK func_0207d95c(M2C_UNK);
     extern M2C_UNK gMapViewProjection;
@@ -205,7 +205,7 @@ void UpdateMapView(void) {
     func_02077ab8(view + 0x6C00);
     func_0207ce54(view + 0x6C00);
     BuildMapViewTransform(view + 0x6C00);
-    func_0207cddc(view + 0x6C00, &gMapViewProjection);
+    BuildMapViewScreenTransform(view + 0x6C00, &gMapViewProjection);
     ApplyMapViewProjection(view + 0x6C00);
 }
 
@@ -293,9 +293,9 @@ void func_02077eb8(void) {
 
 /* Loads and prepares the animation/texture data tables used at startup. */
 void func_02077ebc(void) {
-    M2C_UNK func_02004b54();
+    M2C_UNK GX_BeginLoadTex();
     M2C_UNK LoadTextureBankBlock(M2C_UNK *, s32, M2C_UNK);
-    M2C_UNK func_02004cf0();
+    M2C_UNK GX_EndLoadTex();
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK func_02081384(M2C_UNK *, s32);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
@@ -324,7 +324,7 @@ void func_02077ebc(void) {
     s32 i;
     s32 j;
 
-    func_02004b54();
+    GX_BeginLoadTex();
     i = 0;
     do {
         LoadTextureBankBlock(&data_02144cbc, i + 0x329A0, 0x20);
@@ -335,7 +335,7 @@ void func_02077ebc(void) {
         LoadTextureBankBlock(&data_02144cbc, j + 0x30D20, 0x20);
         j += 0x20;
     } while (j < 0x1800);
-    func_02004cf0();
+    GX_EndLoadTex();
     SetFileDirectory(&data_02100ad8);
     func_02081384(&data_02100ae4, 0x24D20);
     func_02081400(&data_02100af0, 0x1200, 0x200);

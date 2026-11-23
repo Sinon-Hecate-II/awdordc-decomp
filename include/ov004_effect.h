@@ -24,7 +24,9 @@ typedef struct Ov004UraPlaneEffect {
     s16 scrollFrame;     /* +0x52 */
 } Ov004UraPlaneEffect;
 
-#define OV004_URA_PLANE_SCALE_ONE 0x100
+#define OV004_URA_PLANE_SCALE_ONE 0x100 /* resting scale the effect starts and ends at (1x) */
+#define OV004_URA_PLANE_ZOOM_IN_SCALE 0x800 /* scale the ura-plane zoom-in grows to (8x) */
+#define OV004_URA_PLANE_ZOOM_IN_FRAMES 60 /* ura-plane zoom-in duration, in frames */
 #define OV004_URA_PLANE_START_SOUND 0xF7
 
 #endif

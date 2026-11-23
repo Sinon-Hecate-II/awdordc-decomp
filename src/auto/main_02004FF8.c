@@ -170,19 +170,23 @@ func_02005424(0x7e,0x027ffff0,0);
 func_020053a0(0x7f,0x027ffff0,0);
 }
 
-M2C_UNK func_02005354(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Block until the lock word at `lockAddress` is taken for `lockId`: retry
+ * OSi_DoLockByWord, spinning on WaitByLoop while the word is already taken.
+ * `onLock` runs when the lock is acquired and `maskFiq` selects the interrupt
+ * mask the take runs under. */
+M2C_UNK OS_LockByWord(M2C_UNK lockId, M2C_UNK lockAddress, M2C_UNK onLock, M2C_UNK maskFiq) {
     void WaitByLoop(s32);
     M2C_UNK OSi_DoLockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
 
-    if (OSi_DoLockByWord(arg0, arg1, arg2, arg3) <= 0) return;
+    if (OSi_DoLockByWord(lockId, lockAddress, onLock, maskFiq) <= 0) return;
     do {
         WaitByLoop(0x400);
-    } while (OSi_DoLockByWord(arg0, arg1, arg2, arg3) > 0);
+    } while (OSi_DoLockByWord(lockId, lockAddress, onLock, maskFiq) > 0);
 }
 
 void func_020053a0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02005354(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    func_02005354(arg0, arg1, arg2, 0);
+    M2C_UNK OS_LockByWord(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    OS_LockByWord(arg0, arg1, arg2, 0);
 }
 
 /* Release a lock word owned by lockId, running the optional cleanup with interrupts masked. */
@@ -375,14 +379,24 @@ void *DequeueThread(void *arg0) {
     return temp_r2;
 }
 
-void *UnlinkThreadFromQueue(void *a, void *b) {
-void *p, *next, *head;
-head=M2C_FIELD(a,void **,0); p=head;
-while(p){ next=M2C_FIELD(p,void **,0x80); if(p==b){
-void *prev=M2C_FIELD(p,void **,0x7c);
-if(head==p) M2C_FIELD(a,void **,0)=next; else M2C_FIELD(prev,void **,0x80)=next;
-if(M2C_FIELD(a,void **,4)==p) M2C_FIELD(a,void **,4)=prev; else M2C_FIELD(next,void **,0x7c)=prev; break;
-} p=next;} return p;
+/* Remove `thread` from the wait queue `queue`, fixing the queue's head and tail
+ * and its neighbours' links. Returns the thread, or NULL when it was not in the
+ * queue. */
+void *UnlinkThreadFromQueue(OSThreadQueue *queue, Thread *thread) {
+    Thread *p, *next, *head;
+    head = queue->head;
+    p = head;
+    while (p) {
+        next = p->queueNext;
+        if (p == thread) {
+            Thread *prev = p->queuePrev;
+            if (head == p) queue->head = next; else prev->queueNext = next;
+            if (queue->tail == p) queue->tail = prev; else next->queuePrev = prev;
+            break;
+        }
+        p = next;
+    }
+    return p;
 }
 
 void *func_020057c8(void *arg0) {
@@ -621,12 +635,19 @@ s32 TaskIsFinished(void *arg0) {
     return 0;
 }
 
-M2C_UNK OS_SleepThread(void *a){
-extern M2C_UNK gThreadManager;
-s32 irq=OS_DisableInterrupts();
-void *p=M2C_FIELD(M2C_FIELD(&gThreadManager,void **,8),void **,0);
-if(a){M2C_FIELD(p,void **,0x78)=a;OS_EnqueueThread(a,p);}
-M2C_FIELD(p,s32 *,0x64)=0;RescheduleThreads();OS_RestoreInterrupts(irq);
+/* Put the running thread to sleep: with interrupts masked, enqueue it on `queue`
+ * (or on no queue when it is NULL), mark it waiting and reschedule. */
+M2C_UNK OS_SleepThread(void *queue) {
+    extern M2C_UNK gThreadManager;
+    s32 irq = OS_DisableInterrupts();
+    Thread *current = M2C_FIELD(M2C_FIELD(&gThreadManager, void **, THREAD_MANAGER_RUNNING), Thread **, 0);
+    if (queue) {
+        current->waitQueue = queue;
+        OS_EnqueueThread(queue, current);
+    }
+    current->state = THREAD_STATE_WAITING;
+    RescheduleThreads();
+    OS_RestoreInterrupts(irq);
 }
 
 /* Wake every thread asleep on the queue with interrupts disabled: pop each one,

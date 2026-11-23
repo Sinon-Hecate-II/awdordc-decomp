@@ -397,7 +397,7 @@ mgr=gConnectionMgr;
 if(((GetSystemTick()-M2C_FIELD(mgr,u64*,24))<<6)/0x82ea<(M2C_FIELD(mgr,u32*,4)>>2)) return;
 send:
 if(M2C_FIELD(GetConnection(),s32*,0x204)) {
-func_02040dc8(M2C_FIELD(GetConnection(),s32*,0x204)); if(ReportConnectionCommandResult()) return;
+CancelJoinRequest(M2C_FIELD(GetConnection(),s32*,0x204)); if(ReportConnectionCommandResult()) return;
 }
 SetConnectionState(19);
 for(i=1;i<=M2C_FIELD(GetConnection(),u8*,13);i++) {

@@ -495,7 +495,7 @@ s32 func_020a2608(s32 arg0, s32 arg1, s32 arg2) {
  return M2C_FIELD(data, s16 *, 10);
 }
 
-s32 func_020a2638(s32 arg0, s32 arg1, s32 arg2) {
+s32 GetUnitCaptureBonus(s32 arg0, s32 arg1, s32 arg2) {
  s32 BuildUnitStatBlock(void *, void *, s32, s32);
  u32 data[3];
  BuildUnitStatBlock(data, (void*)arg0, arg1, arg2);

@@ -41,7 +41,20 @@ typedef struct FrameHeap {
     u32 tail; /* +0x04 last free byte of the frame; a tail allocation moves it down */
 } FrameHeap;
 
+#define FRAME_HEAP_HEAD 0x24 /* u32 first free byte of the frame (FrameHeap::head) */
+#define FRAME_HEAP_TAIL 0x28 /* u32 last free byte of the frame (FrameHeap::tail) */
 #define FRAME_HEAP_ATTRIBUTE     (-4)  /* heap+0x20: the heap attribute byte (see InitHeapHead) */
 #define FRAME_HEAP_ATTR_ZERO_FILL 0x01 /* attribute bit 0: clear freshly allocated bytes */
+
+/* A recorded frame-heap state: RecordFrameHeapState allocates one of these from
+ * the heap itself, tags it with the caller's tag and pushes it on the heap's
+ * state list at heap+0x2C; the matching unrecord call finds a node by tag and
+ * restores the head and tail it saved. */
+#define FRAME_HEAP_STATE_LIST 0x2c /* void *head of the recorded-state list */
+#define FRAME_HEAP_STATE_SIZE 0x10 /* bytes of one recorded-state node */
+#define FRAME_HEAP_STATE_TAG  0x00 /* u32 tag the state was recorded under */
+#define FRAME_HEAP_STATE_HEAD 0x04 /* u32 saved frame-heap head */
+#define FRAME_HEAP_STATE_TAIL 0x08 /* u32 saved frame-heap tail */
+#define FRAME_HEAP_STATE_NEXT 0x0c /* void *next recorded-state node */
 
 #endif

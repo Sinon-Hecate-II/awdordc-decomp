@@ -44,7 +44,7 @@ void LoadAnimatedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 s32 FX_Div(s32,s32);
 M2C_UNK PlaySoundEffect(s32);
 u8 EaseInterpolate(M2C_UNK,s16,s16,u8,s32);
-void ResetBattleMap(void);void func_020cf278(s32);void LoadBattleMap(s32);void func_ov003_021ff36c(void);
+void ResetBattleMap(void);void PreloadMapTileset(s32);void LoadBattleMap(s32);void func_ov003_021ff36c(void);
 s32 MapData_GetCategory(s32);void SetSpriteAnimation(void *,s32);M2C_UNK Sprite_ResumeAnimation(void *);
 s32 i,value,id,ok; void *entry,*sprite,*q,*base; u32 old;u8 selected;s16 x,y;u8 *cursor;
 entry=Entry175(M2C_FIELD(state,void **,0x5c),M2C_FIELD(state,u8 *,0x37));
@@ -92,7 +92,7 @@ M2C_FIELD(q,u8 *,4)|=2;ok=1;
 if(ok){
 if(q){y=M2C_FIELD(q,s16 *,2);x=M2C_FIELD(q,s16 *,0);M2C_FIELD(state,s16 *,0x48)=x;M2C_FIELD(state,s16 *,0x4a)=y;}
 q=Selected175(M2C_FIELD(state,void **,0x5c));
-if(q){ResetBattleMap();func_020cf278(M2C_FIELD(q,u8 *,7)+161);LoadBattleMap(M2C_FIELD(q,u8 *,7)+161);func_ov003_021ff36c();}
+if(q){ResetBattleMap();PreloadMapTileset(M2C_FIELD(q,u8 *,7)+161);LoadBattleMap(M2C_FIELD(q,u8 *,7)+161);func_ov003_021ff36c();}
 M2C_FIELD(state,s16 *,0x4c)=0;M2C_FIELD(state,s16 *,0x4e)=0;PlaySoundEffect(240);
 }
 M2C_FIELD(state,u8 *,0x36)=0;M2C_FIELD(state,u8 *,0x35)=5;return;
@@ -215,13 +215,13 @@ void func_ov004_02217e50(void *state) {
 }
 
 void func_ov004_02217f34(void) {
-    M2C_UNK func_0209cd00(M2C_UNK *);
+    M2C_UNK DeleteFrameCallbackTask(M2C_UNK *);
     M2C_UNK func_020ab200();
     M2C_UNK func_ov003_021ff3ac();
     extern M2C_UNK InitMapView3DRendering;
     extern M2C_UNK func_ov004_02214904;
     func_ov003_021ff3ac();
     func_020ab200();
-    func_0209cd00(&InitMapView3DRendering);
-    func_0209cd00(&func_ov004_02214904);
+    DeleteFrameCallbackTask(&InitMapView3DRendering);
+    DeleteFrameCallbackTask(&func_ov004_02214904);
 }

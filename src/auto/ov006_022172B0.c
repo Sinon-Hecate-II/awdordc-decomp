@@ -134,12 +134,15 @@ void func_ov006_022174d0(void *arg0) {
     ShowFrameBorderSprite();
 }
 
-void func_ov006_02217504(void *arg0) {
+/* Begin the ov006 map-offer search: turn the offered map's name into glyphs in
+ * the object's text buffer, then create the link match request that finds
+ * another player to exchange the map with. */
+void StartMapOfferSearch(void *offer) {
     M2C_UNK Link_CreateMatchRequest(void *, M2C_UNK, M2C_UNK, void *, void *, void *);
     M2C_UNK ConvertTextToGlyphs(s32, s32);
     s32 GetMapName(u16);
-    ConvertTextToGlyphs(M2C_FIELD(arg0, s32 *, 0x3C), GetMapName((u16) M2C_FIELD(arg0, s32 *, 0x34)));
-    Link_CreateMatchRequest(arg0 + 0x3C, 1, 0, arg0 + 0x40, arg0 + 0x44, arg0);
+    ConvertTextToGlyphs(M2C_FIELD(offer, s32 *, MAP_OFFER_NAME), GetMapName((u16) M2C_FIELD(offer, s32 *, MAP_OFFER_MAP_ID)));
+    Link_CreateMatchRequest(offer + MAP_OFFER_NAME, 1, 0, offer + MAP_OFFER_TIMEOUT, offer + MAP_OFFER_FLAGS, offer);
 }
 
 void func_ov006_02217554(void *p) {
@@ -449,19 +452,22 @@ void func_ov006_02217b7c(M2C_UNK arg0) {
     SetSpriteAnimation(arg0, 4);
 }
 
-void func_ov006_02217ba4(s32 arg0) {
+/* Start the map-transfer screen's target-player id display: a nine-digit number
+ * at (0xa0, 0x58) that starts empty and writes its value back to the transfer
+ * object's target player id. */
+void CreateMapTransferTargetIdDisplay(s32 transfer) {
     M2C_UNK SetNumberDisplayGraphics(void *, M2C_UNK, M2C_UNK);
     void *CreateNumberDisplay();
-    void *temp_r0;
+    void *display;
 
-    temp_r0 = CreateNumberDisplay();
-    SetNumberDisplayGraphics(temp_r0, 0xCC00, 0xF);
-    M2C_FIELD(temp_r0, s32 *, 0x68) = (s32) (arg0 + 0x40);
-    M2C_FIELD(temp_r0, s32 *, 0x60) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x5C) = 9;
-    M2C_FIELD(temp_r0, s16 *, 0x34) = 0xA0;
-    M2C_FIELD(temp_r0, s16 *, 0x36) = 0x58;
+    display = CreateNumberDisplay();
+    SetNumberDisplayGraphics(display, 0xCC00, 0xF);
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_SOURCE) = (s32) (transfer + MAP_TRANSFER_TARGET_ID);
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_VALUE) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_HIGH) = 0;
+    M2C_FIELD(display, s32 *, NUMBER_DISPLAY_DIGITS) = 9;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_X) = 0xA0;
+    M2C_FIELD(display, s16 *, SPRITE_ACTOR_Y) = 0x58;
 }
 
 void func_ov006_02217bf0(void *arg0) {

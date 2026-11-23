@@ -8,26 +8,29 @@ void func_ov002_021e1500(void) {
     M2C_UNK GX_SetBankForOBJ(M2C_UNK);
     M2C_UNK GX_SetBankForTex(M2C_UNK);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    M2C_UNK func_02082c84();
-    func_02082c84();
+    M2C_UNK GX_ReleaseBankGrants();
+    GX_ReleaseBankGrants();
     GX_SetBankForTex(3);
     GX_SetBankForBG(0x10);
     GX_SetBankForOBJ(0x40);
     GX_SetBankForOBJExtPltt(0x20);
 }
 
-void func_ov002_021e152c(void) {
+/* Set up the battle scene's graphics: select the GX banks, apply the scene's
+ * 3D-sprite layout, fill in the demo battle's player settings when the automatic
+ * demo is running, then initialise the battle scene and its sprite overlay. */
+void SetupBattleScene(void) {
     void Apply3DSpriteLayout(void *);
     void SetDemoBattleDefaults(void *);
     void InitBattleScene(void *);
     void InitBattleSpriteScene(void *);
-    extern M2C_UNK data_ov002_021ea680,gPlayerSettings,gBattleSceneState,data_ov002_021f3014;
-    extern u8 data_ov002_021f2f40;
+    extern M2C_UNK gBattleSceneLayout, gPlayerSettings, gBattleSceneState, gBattleSpriteState;
+    extern u8 gDemoBattle;
     func_ov002_021e1500();
-    Apply3DSpriteLayout(&data_ov002_021ea680);
-    if(data_ov002_021f2f40) SetDemoBattleDefaults(&gPlayerSettings);
+    Apply3DSpriteLayout(&gBattleSceneLayout);
+    if (gDemoBattle) SetDemoBattleDefaults(&gPlayerSettings);
     InitBattleScene(&gBattleSceneState);
-    InitBattleSpriteScene(&data_ov002_021f3014);
+    InitBattleSpriteScene(&gBattleSpriteState);
 }
 
 void func_ov002_021e157c(void) {
@@ -46,8 +49,8 @@ void func_ov002_021e1598(void) {
 void func_ov002_021e15ac(void) {
     void func_ov002_021e3dd4(void *);
     void func_ov002_021e7970(void *);
-    extern M2C_UNK data_ov002_021f3014,gBattleSceneState;
-    func_ov002_021e3dd4(&data_ov002_021f3014);
+    extern M2C_UNK gBattleSpriteState,gBattleSceneState;
+    func_ov002_021e3dd4(&gBattleSpriteState);
     func_ov002_021e7970(&gBattleSceneState);
     *(volatile u16 *)0x4000304 &= ~0x8000;
 }
@@ -59,19 +62,19 @@ void func_ov002_021e15e0(void) {
 }
 
 void CreateBattleSceneSprite(s32 a) {
-    void func_ov002_021e152c(void);
+    void SetupBattleScene(void);
     void CreateSpriteObject(void *,s32);
-    extern u8 data_ov002_021f2f40;
+    extern u8 gDemoBattle;
     extern M2C_UNK data_ov002_021ea68c;
-    data_ov002_021f2f40=0;
-    func_ov002_021e152c();
+    gDemoBattle=0;
+    SetupBattleScene();
     CreateSpriteObject(&data_ov002_021ea68c,a);
 }
 
 void func_ov002_021e1624(void) {
     M2C_UNK IsBattleScreenSwapped(M2C_UNK *);
-    extern M2C_UNK data_ov002_021f3014;
-    IsBattleScreenSwapped(&data_ov002_021f3014);
+    extern M2C_UNK gBattleSpriteState;
+    IsBattleScreenSwapped(&gBattleSpriteState);
 }
 
 /* Clear script playback state and restore the default transform and polygon alpha. */
@@ -204,9 +207,9 @@ void func_ov002_021e1844(void *arg0) {
     M2C_UNK func_ov002_021e299c(void *, M2C_UNK);
     M2C_UNK func_ov002_021e29d8(void *);
     M2C_UNK func_ov002_021e29f8(void *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov002_021e26d4(void *);
-    M2C_UNK func_ov002_021e2724(void *);
-    M2C_UNK func_ov002_021e2770(void *, M2C_UNK);
+    M2C_UNK Ov002_EnableEffectNodes(void *);
+    M2C_UNK Ov002_DisableEffectNodes(void *);
+    M2C_UNK Ov002_SetEffectNodesFlag51(void *, M2C_UNK);
     void Ov002_CreateEffectNode(void *, s32, s32);
     M2C_UNK Ov002_ClearEffectNodesWithScript(void *, M2C_UNK);
     M2C_UNK PlaySlotVolumeSound(M2C_UNK);
@@ -302,13 +305,13 @@ void func_ov002_021e1844(void *arg0) {
             func_ov002_021e29f8(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8), (M2C_UNK)M2C_FIELD(current, s16 *, 0xa));
             break;
         case 27:
-            func_ov002_021e26d4(arg0);
+            Ov002_EnableEffectNodes(arg0);
             break;
         case 28:
-            func_ov002_021e2724(arg0);
+            Ov002_DisableEffectNodes(arg0);
             break;
         case 29:
-            func_ov002_021e2770(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8));
+            Ov002_SetEffectNodesFlag51(arg0, (M2C_UNK)M2C_FIELD(current, s16 *, 0x8));
             break;
         case 30:
             M2C_FIELD(arg0, u8 *, 0x52) = 1;

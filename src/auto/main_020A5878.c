@@ -69,25 +69,30 @@ void func_020a5ac8(void) {
     CreateSpriteFromClass(&data_02120608, 7);
 }
 
-s32 GetDamageTargetIndex(u32 arg0) {
-    s32 var_r1;
+/* The damage-table kind (the row GetWeaponDamagePercent indexes) a weapon uses
+ * against a battle target of `targetKind`, a GetTileTargetKind value: the damage
+ * table keeps a pseudo-kind for destructible impact terrain (1) and for the
+ * area-attack (MAPORDER_ATTACK_AREA) and line-attack (MAPORDER_ATTACK_LINE/
+ * _FACING) order targets.  Anything else uses kind 0. */
+s32 GetDamageTargetIndex(u32 targetKind) {
+    s32 damageKind;
 
-    var_r1 = 0;
-    switch (arg0) {
+    damageKind = 0;
+    switch (targetKind) {
     default:
         break;
-    case 4:
-        var_r1 = 0x1E;
+    case MAPORDER_ATTACK_AREA:
+        damageKind = DAMAGE_TARGET_ATTACK_AREA;
         break;
-    case 6:
-    case 7:
-        var_r1 = 0x1F;
+    case MAPORDER_ATTACK_LINE:
+    case MAPORDER_ATTACK_LINE_FACING:
+        damageKind = DAMAGE_TARGET_ATTACK_LINE;
         break;
-    case 1:
-        var_r1 = 0x1D;
+    case MAP_TARGET_IMPACT_TERRAIN:
+        damageKind = DAMAGE_TARGET_IMPACT_TERRAIN;
         break;
     }
-    return var_r1;
+    return damageKind;
 }
 
 /* Spend a unit's turn-start fuel: the per-terrain cost of its kind, five for a

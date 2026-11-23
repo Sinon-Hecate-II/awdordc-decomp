@@ -10,7 +10,7 @@ void func_020b6168(void *arg0) {
     void *CreateEffectMapSprite(M2C_UNK *, s32, s32, s32, s32, s32, void *);
     s32 SetAnimatedSpriteFrame(void *, s32);
     void CreateScreenOffsetEffect(s32, s32, s32);
-    void func_02080358(s32, s32, s32, s32);
+    void CreateScreenFlash(s32, s32, s32, s32);
     M2C_UNK CancelMapCursorAnimation(void);
     void func_020b6124(void *);
 
@@ -71,7 +71,7 @@ void func_020b6168(void *arg0) {
     }
 
     CreateScreenOffsetEffect(2, 0x3C, 0);
-    func_02080358(4, 0, 2, 0);
+    CreateScreenFlash(4, 0, 2, 0);
     PlaySoundAtTile(0x93, M2C_FIELD(arg0, s16 *, 0x44), M2C_FIELD(arg0, s16 *, 0x46));
     CancelMapCursorAnimation();
 }
@@ -278,14 +278,17 @@ void CreateSmallFlareSprite(void *task) {
     PlaySoundAtTile(0x131, M2C_FIELD(task, s16 *, 0x44), M2C_FIELD(task, s16 *, 0x46));
 }
 
-void func_020b6794(void *arg0) {
+/* Last step of the missile-strike effect script: mark the two-tile blast area
+ * around the effect's map tile on team A's threat layer as directly threatened
+ * for the current player, then redraw the map view. */
+void MarkBlastThreatArea(void *marker) {
     M2C_UNK MarkThreatBitmap(s16, s16, M2C_UNK, M2C_UNK, s32, s32);
     M2C_UNK RefreshMapView(void);
     extern void **gCurrentMap;
-    void **m = gCurrentMap;
-    void *p = arg0;
-    u8 v = (u8)M2C_FIELD(*m, u16 *, 0x52A4);
-    MarkThreatBitmap(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, 1, v, 2);
+    void **mapRef = gCurrentMap;
+    void *p = marker;
+    u8 player = (u8)M2C_FIELD(*mapRef, u16 *, MAP_CURRENT_PLAYER);
+    MarkThreatBitmap(M2C_FIELD(p, s16 *, 0x44), M2C_FIELD(p, s16 *, 0x46), 2, SIDE_TEAM_A, player, 2);
     RefreshMapView();
 }
 
@@ -310,14 +313,18 @@ case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),
 case 2:break;case 3:break;case 4:func_020b5964(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
-s32 CreateUnitPreviewSprite(s32 a,s32 b) {
-void GetMapOrderEffectPosition(s32,s16 *);void *CreateSpriteObject();extern M2C_UNK gMapPreviewSpriteClass;
-s16 xy[2];s32 p;
-GetMapOrderEffectPosition(a,xy);p=CreateSpriteObject(&gMapPreviewSpriteClass,b);
-M2C_FIELD(p,s32 *,0x38)=xy[0];M2C_FIELD(p,s32 *,0x3c)=xy[1];
-M2C_FIELD(p,s16 *,0x6c)=(u32)(M2C_FIELD(a,u16 *,2)<<22)>>28;
-M2C_FIELD(p,s16 *,0x6e)=M2C_FIELD(a,u8 *,4);
-M2C_FIELD(p,s32 *,0x34)=a;return p;
+/* Create the battle-preview sprite for the destructible feature `feature` under
+ * `parent`: place it at the feature's effect tile and carry the feature's order
+ * type as the sprite's mode and the feature's value (its remaining HP) as its
+ * value. */
+s32 CreateFeaturePreviewSprite(MapOrder *feature,s32 parent) {
+void GetMapOrderEffectPosition(MapOrder *,s16 *);void *CreateSpriteObject();extern M2C_UNK gMapPreviewSpriteClass;
+s16 pos[2];s32 p;
+GetMapOrderEffectPosition(feature,pos);p=CreateSpriteObject(&gMapPreviewSpriteClass,parent);
+M2C_FIELD(p,s32 *,BATTLE_PREVIEW_X)=pos[0];M2C_FIELD(p,s32 *,BATTLE_PREVIEW_Y)=pos[1];
+M2C_FIELD(p,s16 *,BATTLE_PREVIEW_MODE)=(u32)(M2C_FIELD(feature,u16 *,MAP_ORDER_TYPE)<<22)>>28;
+M2C_FIELD(p,s16 *,BATTLE_PREVIEW_VALUE)=M2C_FIELD(feature,u8 *,MAP_ORDER_VALUE);
+M2C_FIELD(p,void **,BATTLE_PREVIEW_UNIT)=feature;return p;
 }
 
 /* Spawn the tile-preview sprite for map cell (x, y) under `parent`: record the
@@ -353,7 +360,7 @@ M2C_FIELD((void *)CreateAnimatedMapSprite(&gDamageSpriteName,x,y,16,graphicOffse
 PinMapCellCorners(x,y);
 sx+=x; sy+=y; n++;
 }
-CreateScreenOffsetEffect(1,20,0); func_02080358(4,0,2,0);
+CreateScreenOffsetEffect(1,20,0); CreateScreenFlash(4,0,2,0);
 if(n>0) PlaySoundAtTile(0x6d,Divide(sx,n),Divide(sy,n));
 else func_0208facc(0x6d);
 }

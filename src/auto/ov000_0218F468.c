@@ -29,7 +29,7 @@ void func_ov000_0218f468(void){
 s32 Divide(s32,s32);s32 IsAllyUnitAtCell(s16,s16);s32 IsCurrentPlayerUnit(s16);
 void ClearUnitMoveTarget(void);void func_ov000_02199f38(void);void BuildUnitMoveRange(void *);
 s32 func_020d27a4(s32,s32);s32 GetUnitDamagePercent(s32,s32);
-s32 func_ov000_021aa820(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
+s32 SelectAreaEffectTargetForMode(s16 *,u16,s32,s32);void SetMapCursor(s16,s16,s32,u8,u8);
 s32 CanUnitAttackKind(void *,s32);void FloodFillUnitRange(u8,u8,u8,s32,s32);void PlanMoveDestination(s32,s32);
 u8 *u,*m,*v,*tile; s32 x,y,health,action; s16 pos[2];
 u=SelectedF468();x=M2C_FIELD(u,DestF468 *,8).x;y=M2C_FIELD(u,DestF468 *,8).y;
@@ -60,7 +60,7 @@ if(M2C_FIELD(gAiCommandState,FlagF468 *,7).flag)func_ov000_02199f38();return;
 m=MapF468();tile=TileF468(x,y);
 if((M2C_FIELD(tile,u8 *,0x1420)&31)==24){
 pos[0]=x;pos[1]=y;
-if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
+if(SelectAreaEffectTargetForMode(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
 ClearF468();ClearUnitMoveTarget();SetMapCursor((s16)x,(s16)y,19,(u8)pos[0],(u8)pos[1]);return;
 }
 m=MapF468();tile=TileF468(x,y);v=(u8 *)m+0x6c60+M2C_FIELD(tile,s8 *,0x1928)*6;
@@ -99,7 +99,7 @@ s32 IsAllyUnitAtCell(s16,s16);
 s32 IsCurrentPlayerUnit(s16);
 s32 IsPropertyCell(s32,s32);
 void func_ov000_02199f38(void);
-s32 func_ov000_021aa820(s16 *,u16,s32,s32);
+s32 SelectAreaEffectTargetForMode(s16 *,u16,s32,s32);
 void ClearUnitMoveTarget(void);
 void SetMapCursor(s16,s16,s32,u8,u8);
 s16 pos[2];
@@ -152,7 +152,7 @@ if(bestTransportScore<=cellScore){transportX=cellX;transportY=cellY;bestTranspor
 if(bestTransportScore>bestScore){
 if(IsAllyUnitAtCell((s16)transportX,(s16)transportY))func_ov000_02199f38();
 pos[0]=transportX;pos[1]=transportY;
-if(func_ov000_021aa820(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
+if(SelectAreaEffectTargetForMode(pos,M2C_FIELD(MapF468(),u16 *,0x52a4),1,0)==1){
 SetMapCursor((s16)transportX,(s16)transportY,19,(u8)pos[0],(u8)pos[1]);return;
 }
 }

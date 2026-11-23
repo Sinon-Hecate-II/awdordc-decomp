@@ -9,7 +9,7 @@ static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<1
 #pragma opt_strength_reduction off
 void func_02089d30(void *arg0) {
     void func_02089cec(void *);
-    void *func_0209c658(void *);
+    void *Text_FindLineBreakEnd(void *);
     void *Text_GetLineStart(void *,s32);
     s32 RenderTextToTiles(s32,void *);
     s32 func_0209c690(void *);
@@ -47,7 +47,7 @@ void func_02089d30(void *arg0) {
         if(mode==1&&gCur3DSpriteEngine!=g3DSpriteEngineSub)continue;
         if(mode==3&&gCur3DSpriteEngine!=previousEngine)continue;
         maxLength=0;offset=M2C_FIELD(arg0,u16 *,0x3e)<<5;
-        end=func_0209c658(M2C_FIELD(arg0,void **,0x70));
+        end=Text_FindLineBreakEnd(M2C_FIELD(arg0,void **,0x70));
         M2C_FIELD(arg0,u32 *,0x58)&=~0x3c0000;
         index=0;
         do{
@@ -259,7 +259,7 @@ void func_0208a750(void *arg0) {
     s32 GetScreenFlag(u32);
     s32 IsScreenFadeActive();
     M2C_UNK func_020b269c();
-    M2C_UNK func_020d4704();
+    M2C_UNK AcquireMapViewHold();
     extern s32 gCur3DSpriteEngine;
     u16 * volatile sp60;
     u16 * volatile sp5C;
@@ -317,7 +317,7 @@ void func_0208a750(void *arg0) {
         M2C_FIELD(arg0, s32 *, 0x58) = (s32) (M2C_FIELD(arg0, s32 *, 0x58) & ~0x400);
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {
-        func_020d4704();
+        AcquireMapViewHold();
         func_020b269c();
     }
     if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x15) >> 0x1F) & 0xFF) {
@@ -406,19 +406,23 @@ void func_0208a750(void *arg0) {
     }
 }
 #pragma pop
-void func_0208ab78(void *arg0) {
+/* Release what a text-layer panel claimed when it was shown: reset the 3D sprite
+ * engine's screen window when the panel had one (state bit 10, the window mask),
+ * drop its map-view and sprite-slot holds (state bit 12), then play the window's
+ * close sound. */
+void ReleaseWindowResources(void *window) {
     M2C_UNK Reset3DSpriteBankState();
     M2C_UNK Reset3DSpriteEngineState();
     M2C_UNK func_020b26dc();
-    M2C_UNK func_020d472c();
-    if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x15) >> 0x1F) & 0xFF) {
+    M2C_UNK ReleaseMapViewHold();
+    if (((u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x15) >> 0x1F) & 0xFF) {
         Reset3DSpriteEngineState();
         Reset3DSpriteBankState();
     }
-    if (((u32) (M2C_FIELD(arg0, s32 *, 0x58) << 0x13) >> 0x1F) & 0xFF) {
-        func_020d472c();
+    if (((u32) (M2C_FIELD(window, s32 *, TEXT_LAYER_PANEL_STATE) << 0x13) >> 0x1F) & 0xFF) {
+        ReleaseMapViewHold();
         func_020b26dc();
     }
-    func_0208a714(arg0);
+    func_0208a714(window);
 }
 

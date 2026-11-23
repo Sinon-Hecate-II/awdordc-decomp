@@ -500,21 +500,24 @@ s32 gt2StringToAddress(char *string, s32 *ipOut, u16 *portOut) {
     return 1;
 }
 #pragma opt_common_subs reset
-void gti2NormalizeMessage(M2C_UNK **arg0, s32 *arg1) {
+/* GameSpy GT2's gti2NormalizeMessage: fill a message passed as a null pointer in
+ * with the shared empty message, and a length of -1 with the message's byte
+ * length including its terminator; any other length is left alone. */
+void gti2NormalizeMessage(M2C_UNK **message, s32 *length) {
     s32 StringLength(M2C_UNK *);
     extern M2C_UNK sGt2EmptyMessage;
-    M2C_UNK *temp_r2;
+    M2C_UNK *text;
 
-    temp_r2 = *arg0;
-    if (temp_r2 == NULL) {
-        *arg0 = &sGt2EmptyMessage;
-        *arg1 = 0;
+    text = *message;
+    if (text == NULL) {
+        *message = &sGt2EmptyMessage;
+        *length = 0;
         return;
     }
-    if (*arg1 != -1) {
+    if (*length != -1) {
         return;
     }
-    *arg1 = StringLength(temp_r2) + 1;
+    *length = StringLength(text) + 1;
 }
 
 /* Find the NAT-negotiation peer record with the given address in the manager's
@@ -546,7 +549,7 @@ s32 Vector_New(s32,s32,void (*)(void *));
 s32 func_02048688(s32); s32 *func_02048690(s32,s32);
 s32 handle=M2C_FIELD(&data_0213e144,s32 *,16); s32 data[16]={0};
 if(!handle)M2C_FIELD(&data_0213e144,s32 *,16)=Vector_New(64,4,func_0205d7c4);
-Vector_AddItem(M2C_FIELD(&data_0213e144,s32 *,16),data);
+Vector_Append(M2C_FIELD(&data_0213e144,s32 *,16),data);
 return func_02048690(M2C_FIELD(&data_0213e144,s32 *,16),func_02048688(M2C_FIELD(&data_0213e144,s32 *,16))-1);
 }
 

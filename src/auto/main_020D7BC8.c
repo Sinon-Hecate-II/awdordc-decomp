@@ -387,15 +387,19 @@ void func_020d8b28(void) {
     func_020d8894();
 }
 
-void func_020d8b34(void) {
- extern M2C_UNK data_0212c260; extern M2C_UNK data_0212c264; extern M2C_UNK data_0215d9b8;
- s32 GetMapCategory();
- void (*callback)(void);
- u16 value;
- callback=M2C_FIELD((u8 *)&data_0212c260+GetMapCategory()*8,void (**)(void),0);
- value=M2C_FIELD((u8 *)&data_0212c264+GetMapCategory()*8,u32 *,0);
- M2C_FIELD(&data_0215d9b8,u16 *,6)=(M2C_FIELD(&data_0215d9b8,u16 *,6)&~15)|(value&15);
- callback();
+/* Select the category-specific map-list mode, then run that category's setup callback. */
+void ApplyMapCategorySelection(void) {
+    extern M2C_UNK gMapCategorySelectionCallbacks;
+    extern M2C_UNK gMapCategorySelectionModes;
+    extern M2C_UNK data_0215d9b8;
+    s32 GetMapCategory(void);
+    void (*setupCallback)(void);
+    u16 mapListMode;
+
+    setupCallback = M2C_FIELD((u8 *)&gMapCategorySelectionCallbacks + GetMapCategory() * 8, void (**)(void), 0);
+    mapListMode = M2C_FIELD((u8 *)&gMapCategorySelectionModes + GetMapCategory() * 8, u32 *, 0);
+    M2C_FIELD(&data_0215d9b8, u16 *, 6) = (M2C_FIELD(&data_0215d9b8, u16 *, 6) & ~15) | (mapListMode & 15);
+    setupCallback();
 }
 
 s32 func_020d8b84(s32 arg0) {

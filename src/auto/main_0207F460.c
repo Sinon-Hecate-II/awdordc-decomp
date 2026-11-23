@@ -1,5 +1,6 @@
 /* 13 functions from 0x0207F460 to 0x02080414 (main), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 static inline void Window7fafc(s32 *dst,s32 start,s32 end) { *dst=(start&511)|((end&511)<<16); }
 
 /* The current tile offset of one animated terrain kind, in pixels. */
@@ -301,7 +302,7 @@ case 3:func_020039c8(&data_027e011c,(((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngi
 data_027e00f8=(u32)(M2C_FIELD(g3DSpriteBankMain,u16 *,2)<<29)>>29;
 }
 #pragma pop
-void func_02080358(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
+void CreateScreenFlash(s16 arg0, s16 arg1, s16 arg2, s32 arg3) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *CreateSpriteObject(M2C_UNK *, s32);
     extern M2C_UNK data_02101d30;
@@ -327,17 +328,20 @@ void func_020803a0(void *arg0) {
 
 #pragma push
 #pragma optimize_ifs off
-void func_020803c8(void *arg0) {
+/* Screen-flash init callback: reset the fade-in, hold and fade-out frame counters
+ * and set the engine's brightness to white (16) when the flash has no fade-in,
+ * otherwise to normal (0) so the fade-in callback raises it. */
+void InitScreenFlash(void *sprite) {
     extern void **gCur3DSpriteEngine;
-    M2C_FIELD(arg0, s32 *, 0x5C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x60) = 0;
-    M2C_FIELD(arg0, s32 *, 0x64) = 0;
-    switch (M2C_FIELD(arg0, s16 *, 0x6C)) {
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_FLASH_IN_ELAPSED) = 0;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_FLASH_HOLD_ELAPSED) = 0;
+    M2C_FIELD(sprite, s32 *, DS3D_SPRITE_FLASH_OUT_ELAPSED) = 0;
+    switch (M2C_FIELD(sprite, s16 *, DS3D_SPRITE_FLASH_IN_FRAMES)) {
     case 0:
-        M2C_FIELD(*gCur3DSpriteEngine, s8 *, 0x50) = 0x10;
+        M2C_FIELD(*gCur3DSpriteEngine, s8 *, DS3D_BANK_BRIGHTNESS) = 16;
         break;
     default:
-        M2C_FIELD(*gCur3DSpriteEngine, s8 *, 0x50) = 0;
+        M2C_FIELD(*gCur3DSpriteEngine, s8 *, DS3D_BANK_BRIGHTNESS) = 0;
         break;
     }
 }

@@ -428,13 +428,13 @@ void WaypointPanel_RefreshCoIcons(void *panel) {
 }
 
 void func_ov003_021f01cc(void *arg0) {
-    M2C_UNK func_ov003_021f1bd4();
-    M2C_UNK func_ov003_021f1be8();
+    M2C_UNK Ov003_SetMapConfirmEnabled();
+    M2C_UNK Ov003_SetMapConfirmDisabled();
     if (((u32) (M2C_FIELD(arg0, u8 *, 0x3A) << 0x18) >> 0x1F) != 0) {
-        func_ov003_021f1bd4();
+        Ov003_SetMapConfirmEnabled();
         return;
     }
-    func_ov003_021f1be8();
+    Ov003_SetMapConfirmDisabled();
 }
 
 void func_ov003_021f01f0(M2C_UNK arg0) {
@@ -450,7 +450,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
     extern M2C_UNK data_ov003_0220faf8;
-    extern M2C_UNK data_ov003_0220fb08;
+    extern M2C_UNK gWaypointPanelGroupVTable;
     extern M2C_UNK data_ov003_0220fb18;
     void *temp_r0;
     void *temp_r0_2;
@@ -612,7 +612,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     temp_r0_3 = MemAlloc(0x80);
     if (temp_r0_3 != NULL) {
         i = 0;
-        * (M2C_UNK **)temp_r0_3 = &data_ov003_0220fb08;
+        * (M2C_UNK **)temp_r0_3 = &gWaypointPanelGroupVTable;
         do {
             base = &((M2C_UNK *)temp_r0_3)[i];
             i += 1;

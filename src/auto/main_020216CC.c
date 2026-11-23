@@ -110,25 +110,28 @@ s32 SocketAccept(void *listenSocket, GhiSocketAddress *peer) {
     return result;
 }
 
-s32 func_020219e8(void *arg0, s32 arg1, s32 arg2) {
-    s32 var_r0;
+/* fcntl-style control of a socket: F_GETFL returns its status flags (O_NONBLOCK
+ * set while it is non-blocking), F_SETFL sets them from `flags`.  Returns -1
+ * when there is no socket, 0 otherwise. */
+s32 SocketFcntl(void *socket, s32 command, s32 flags) {
+    s32 result;
 
-    if (arg0 == NULL) {
+    if (socket == NULL) {
         return -1;
     }
-    switch (arg1) {                                 /* irregular */
-    case 3:
-        if (M2C_FIELD(arg0, s8 *, 0x72) == 1) {
-            var_r0 = 0;
+    switch (command) {                                 /* irregular */
+    case F_GETFL:
+        if (M2C_FIELD(socket, s8 *, SOCK_BLOCKING) == SOCK_BLOCKING_ON) {
+            result = 0;
         } else {
-            var_r0 = 4;
+            result = O_NONBLOCK;
         }
-        return var_r0;
-    case 4:
-        if (arg2 & 4) {
-            M2C_FIELD(arg0, s8 *, 0x72) = 0;
+        return result;
+    case F_SETFL:
+        if (flags & O_NONBLOCK) {
+            M2C_FIELD(socket, s8 *, SOCK_BLOCKING) = 0;
         } else {
-            M2C_FIELD(arg0, s8 *, 0x72) = 1;
+            M2C_FIELD(socket, s8 *, SOCK_BLOCKING) = SOCK_BLOCKING_ON;
         }
         /* fallthrough */
     default:
@@ -188,10 +191,13 @@ FormatIpAddress(2,&a,&data_02138bac,16);
 return &data_02138bac;
 }
 
-s32 func_02021c40(s32 a,u32 *b){
-u32 func_020211e4(s32);u32 v=func_020211e4(a);
+/* GameSpy inet_addr helper: turn the address string `hostname` into a
+ * network-order IPv4 address, stored in *address.  Returns 1 when it resolved,
+ * 0 when it did not. */
+s32 ghiResolveInetAddr(s32 hostname,u32 *address){
+u32 DnsLookupAddressWithoutServers(s32);u32 v=DnsLookupAddressWithoutServers(hostname);
 if(!v)return 0;
-*b=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
+*address=((v<<24)&0xff000000)|(((v<<8)&0xff0000)|((u8)(v>>24)|((v>>8)&0xff00)));
 return 1;
 }
 
@@ -347,15 +353,18 @@ void func_020220a8(s32 arg0) {
     M2C_FIELD(&gTlsCipherSuites, s32 *, 4) = arg0;
 }
 
+/* Raise the running thread's run priority to the configured TLS boost priority
+ * while the RSA/TLS work runs; return the priority to restore it to, or -1 when
+ * no boost priority is set (THREAD_PRIORITY_MAX or more, as at boot). */
 s32 BoostThreadPriority(void) {
-s32 GetThreadPriority(void *); void SetThreadPriority(s32,u32);
-extern M2C_UNK gTlsCipherSuites, gSocketManager;
-void *p; s32 x;
-if(M2C_FIELD(&gTlsCipherSuites,u32 *,4)>=32)return -1;
-p=M2C_FIELD(&gSocketManager,void **,4);
-x=GetThreadPriority(p);
-SetThreadPriority((s32)p,M2C_FIELD(&gTlsCipherSuites,u32 *,4));
-return x;
+    s32 GetThreadPriority(void *); void SetThreadPriority(s32,u32);
+    extern M2C_UNK gTlsCipherSuites, gSocketManager;
+    void *thread; s32 oldPriority;
+    if(M2C_FIELD(&gTlsCipherSuites,u32 *,TLS_BOOST_PRIORITY)>=THREAD_PRIORITY_MAX)return -1;
+    thread=M2C_FIELD(&gSocketManager,void **,SOCKMGR_RUNNING_THREAD);
+    oldPriority=GetThreadPriority(thread);
+    SetThreadPriority((s32)thread,M2C_FIELD(&gTlsCipherSuites,u32 *,TLS_BOOST_PRIORITY));
+    return oldPriority;
 }
 
 void RestoreThreadPriority(u32 a){
@@ -380,17 +389,35 @@ void func_02022128(s32 arg0, s32 arg1) {
     }
 }
 
-void *FindNamedRsaKey(void *p,void *key){
-s32 StringCompare(void *,void *);
-s32 i;void **a;s32 n;void *v;
-n=M2C_FIELD(p,s32 *,0x818);
-i=0;
-if(n>0){a=M2C_FIELD(p,void ***,0x814);do{v=a[i];if(!StringCompare(M2C_FIELD(v,void **,0),key))return v;i++;}while(i<n);}return 0;
+/* Return the key in the TLS context's key list whose name is `issuer`, or NULL
+ * when no entry has that name. */
+NamedRsaKey *FindNamedRsaKey(void *ctx, const char *issuer) {
+    s32 StringCompare(void *, void *);
+    s32 i;
+    NamedRsaKey **keys;
+    s32 count;
+    NamedRsaKey *key;
+
+    count = M2C_FIELD(ctx, s32 *, TLS_KEY_COUNT);
+    i = 0;
+    if (count > 0) {
+        keys = M2C_FIELD(ctx, NamedRsaKey ***, TLS_KEY_LIST);
+        do {
+            key = keys[i];
+            if (!StringCompare(key->name, (void *)issuer)) return key;
+            i++;
+        } while (i < count);
+    }
+    return 0;
 }
 
-u32 func_0202219c(u8 **p){
+/* Parse the DER length that follows an ASN.1 tag: the first byte is the length
+ * when its high bit is clear, otherwise its low 7 bits are the number of
+ * following bytes of a big-endian length.  Advances *p past the length and
+ * returns it, or -1 when the length would not fit in 32 bits. */
+u32 ParseAsn1Length(u8 **p){
 u8 *q=*p;u32 v=*q++;s32 n;
-if(v&0x80){n=v&0x7f;v=0;while(n--){if(v&0xff000000)return -1;v=*q+++(v<<8);}}
+if(v&ASN1_LENGTH_LONG_FORM){n=v&ASN1_LENGTH_VALUE_MASK;v=0;while(n--){if(v&0xff000000)return -1;v=*q+++(v<<8);}}
 *p=q;return v;
 }
 

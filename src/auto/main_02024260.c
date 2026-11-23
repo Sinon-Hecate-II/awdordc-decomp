@@ -186,14 +186,14 @@ TlsSendFinished(transport);
 #pragma peephole on
 #pragma scheduling off
 void func_02024b24(void *p) {
-void func_0201d25c(void *); void func_0201d434(void *); void SHA1_Init(void *); void MD5_Init(void *);
+void func_0201d25c(void *); void TcpCloseConnection(void *); void SHA1_Init(void *); void MD5_Init(void *);
 void *q = M2C_FIELD(p, void **, 12);
 retry:
 func_0201d25c(p);
 M2C_FIELD(q,u8 *,0x455)=0; M2C_FIELD(q,s32 *,0x1d4)=0; M2C_FIELD(q,u8 *,0x454)=1;
 SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);
 if (!TlsServerHandshake(p)) {M2C_FIELD(q,u8 *,0x455)=8; return;}
-func_0201d434(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);
+TcpCloseConnection(p); M2C_FIELD(p,u16 *,0x18)=M2C_FIELD(p,u16 *,0x1a); M2C_FIELD(p,s32 *,0x1c)=M2C_FIELD(p,s32 *,0x20);
 goto retry;
 }
 #pragma pop
@@ -225,7 +225,25 @@ s32 TlsClientHandshake(void *transport) {
  return 0;
 }
 
-s32 func_02024c60(void *p){s32 TcpConnect(void *);s32 TlsClientHandshake(void *);void SHA1_Init(void *);void MD5_Init(void *);void *q=M2C_FIELD(p,void **,12);if(M2C_FIELD(p,u8 *,8)!=4&&TcpConnect(p))return 1;M2C_FIELD(q,u8 *,0x455)=0;M2C_FIELD(q,s32 *,0x1d4)=0;M2C_FIELD(q,u8 *,0x454)=0;SHA1_Init((u8 *)q+0x2ec);MD5_Init((u8 *)q+0x3a4);return TlsClientHandshake(p);}
+/* Start the TLS client handshake on `transport`: bring the TCP connection up
+ * unless it is already established, reset the TLS channel's handshake state,
+ * record-MAC key and server-side flag, restart its SHA1 and MD5 transcript
+ * hashes, then run the client handshake.  Returns 1 on failure, 0 when done. */
+s32 TlsClientConnect(void *transport) {
+    s32 TcpConnect(void *);
+    s32 TlsClientHandshake(void *);
+    void SHA1_Init(void *);
+    void MD5_Init(void *);
+    void *channel = M2C_FIELD(transport, void **, 0xC);
+
+    if (M2C_FIELD(transport, u8 *, SOCKET_STATE) != TCP_STATE_ESTABLISHED && TcpConnect(transport)) return 1;
+    M2C_FIELD(channel, u8 *, TLS_STATE) = 0;
+    M2C_FIELD(channel, s32 *, TLS_MAC_KEY_IN) = 0;
+    M2C_FIELD(channel, u8 *, TLS_SERVER_SIDE) = 0;
+    SHA1_Init((u8 *)channel + TLS_TRANSCRIPT_SHA1);
+    MD5_Init((u8 *)channel + TLS_TRANSCRIPT_MD5);
+    return TlsClientHandshake(transport);
+}
 
 /* TLS-socket counterpart of PeekReceivedData: finishes the pending TLS record by
  * reading its remaining bytes from the socket, hands the assembled record to
@@ -271,17 +289,20 @@ s32 TlsPeekReceivedData(s32 *sizeOut, void *socket) {
     return (s32)M2C_FIELD(channel, void **, TLS_PENDING_RECORD) + M2C_FIELD(channel, s32 *, TLS_PENDING_READ);
 }
 
-void func_02024d8c(u32 arg0, void *arg1) {
+/* TLS counterpart of ConsumeReceivedData: drop `count` bytes from the server/channel's
+ * pending TLS record.  Once the whole record is consumed its buffer is freed and the
+ * pointer cleared; otherwise the read offset simply advances. */
+void TlsConsumeReceivedData(u32 count, void *transport) {
     extern void (*gFree[])(void *);
-    u8 *p = M2C_FIELD(arg1, u8 **, 12);
-    u32 rem = M2C_FIELD(p, u32 *, 0x828) - M2C_FIELD(p, u32 *, 0x82c);
-    if (arg0 >= rem) {
-        void *q = M2C_FIELD(p, void **, 0x824);
-        if (q) gFree[0](q);
-        M2C_FIELD(p, void **, 0x824) = 0;
+    u8 *channel = M2C_FIELD(transport, u8 **, 12);
+    u32 remaining = M2C_FIELD(channel, u32 *, TLS_PENDING_SIZE) - M2C_FIELD(channel, u32 *, TLS_PENDING_READ);
+    if (count >= remaining) {
+        void *record = M2C_FIELD(channel, void **, TLS_PENDING_RECORD);
+        if (record) gFree[0](record);
+        M2C_FIELD(channel, void **, TLS_PENDING_RECORD) = 0;
         return;
     }
-    M2C_FIELD(p, u32 *, 0x82c) += arg0;
+    M2C_FIELD(channel, u32 *, TLS_PENDING_READ) += count;
 }
 
 /* Feeds the transport bytes that have arrived so far into the pending TLS

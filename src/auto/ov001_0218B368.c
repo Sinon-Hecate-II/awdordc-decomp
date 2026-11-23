@@ -469,8 +469,8 @@ void Ov001_InitSpriteObjs(void) {
 }
 
 void Ov001_FlushSpriteObjs(void){
-extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void func_02004210(s32,s32,s32);void GX_LoadOAMSub(s32,s32,s32);
-DC_FlushRange(gOv001SpriteArena,0x800);func_02004210(gOv001SpriteArena,0,0x400);GX_LoadOAMSub(gOv001SpriteArena+0x400,0,0x400);
+extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void GX_LoadOAM(s32,s32,s32);void GX_LoadOAMSub(s32,s32,s32);
+DC_FlushRange(gOv001SpriteArena,0x800);GX_LoadOAM(gOv001SpriteArena,0,0x400);GX_LoadOAMSub(gOv001SpriteArena+0x400,0,0x400);
 }
 
 #pragma pool_constants off
@@ -486,13 +486,17 @@ extern s32 gOv001SpriteArena; void Ov001_QueuePop(s32);
 Ov001_QueuePop(M2C_FIELD(gOv001SpriteArena+(n<<2),s32 *,0x800));
 }
 
-void Ov001_ReleaseSprite(u32 *p){
-extern s32 gOv001SpriteArena;
-void Ov001_QueuePush(s32,void *);
-s32 i=0;
-*p=(*p&0xc1fffcff)|0x200;
-if((u32)p>=(u32)(gOv001SpriteArena+0x400))i=1;
-Ov001_QueuePush(M2C_FIELD(gOv001SpriteArena+(i<<2),s32 *,0x800),p);
+/* Release a sprite object back to its screen: mark its entry word hidden with the
+ * draw-mode and matrix bits cleared, then push it onto the free-entry queue of
+ * the screen the object lives in (objects at or past the arena's second half are
+ * the sub screen's). */
+void Ov001_ReleaseSprite(u32 *entry) {
+    extern s32 gOv001SpriteArena;
+    void Ov001_QueuePush(s32, void *);
+    s32 screen = 0;
+    *entry = (*entry & SPRITE_ENTRY_ATTR_MASK) | SPRITE_ENTRY_HIDDEN;
+    if ((u32)entry >= (u32)(gOv001SpriteArena + OV001_SPRITE_OBJS_PER_SCREEN)) screen = 1;
+    Ov001_QueuePush(M2C_FIELD(gOv001SpriteArena + (screen << 2), s32 *, OV001_SPRITE_OBJ_FREE_QUEUES), entry);
 }
 
 s32 Ov001_SpriteObjAddr(s32 arg0, s32 arg1) {

@@ -259,22 +259,26 @@ s32 func_02063dac(void *arg0) {
 
 M2C_UNK func_02063df8(void) {
     M2C_UNK InvokeSocketCallback(M2C_UNK);
-    void func_02063e1c(M2C_UNK);
+    void FlushSocketEvents(M2C_UNK);
     extern M2C_UNK gSocketEventState;
     InvokeSocketCallback(1);
     M2C_FIELD(&gSocketEventState, s32 *, 0xC) = 1;
-    func_02063e1c(1);
+    FlushSocketEvents(1);
 }
 
-void func_02063e1c(M2C_UNK arg0) {
+/* Flush the deferred socket callbacks (`arg0` selects the flush queue); when the
+ * network link is not armed yet, run the exit handlers and the one-shot idle
+ * callback first. */
+void FlushSocketEvents(M2C_UNK arg0) {
     M2C_UNK FlushSocketCallbacks(M2C_UNK);
-    M2C_UNK func_02074074();
+    void func_02074074();
     extern M2C_UNK gSocketEventState;
-    if (M2C_FIELD(&gSocketEventState, s32 *, 0xC) == 0) {
+
+    if (M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_ARMED) == 0) {
         func_02074074();
-        if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4) != NULL) {
-            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4)();
-            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), 4) = NULL;
+        if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB) != NULL) {
+            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB)();
+            M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB) = NULL;
         }
     }
     FlushSocketCallbacks(arg0);

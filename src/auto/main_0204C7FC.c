@@ -15,7 +15,7 @@ void ghiDoConnect(GHIConnection *connection) {
     s32 ghiGetLastSocketError(s32);
     s32 PollOneFd(s32, s32 *, s32, s32);
     M2C_UNK ghiCallProgressCallback(void *, s32, s32);
-    extern s32 data_020fd010;
+    extern s32 gGhiRecvChunkSize;
     extern s32 gHttpServerOverride;
     extern u16 gHttpPortOverride;
     GhiSocketAddress addr;
@@ -41,7 +41,7 @@ void ghiDoConnect(GHIConnection *connection) {
             return;
         }
         if (connection->throttle != 0) {
-            ghiSetRecvBufferSize(connection->socket, data_020fd010);
+            ghiSetRecvBufferSize(connection->socket, gGhiRecvChunkSize);
         }
         clear_socket_address(&addr);
         addr.family = 2;

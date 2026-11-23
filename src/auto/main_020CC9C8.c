@@ -103,8 +103,8 @@ if(hidden>=99)return 0;return 1;
 }
 #pragma opt_strength_reduction reset
 void func_020ccdc0(M2C_UNK arg0) {
-    M2C_UNK func_02084ea0(s32, M2C_UNK);
-    func_02084ea0(0x474D4544, arg0);
+    M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
+    Link_CreateStartRequest(0x474D4544, arg0);
 }
 
 void func_020ccdd8(s32 arg0) {

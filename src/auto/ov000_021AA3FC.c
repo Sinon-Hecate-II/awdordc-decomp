@@ -112,23 +112,26 @@ s32 ScoreAreaEffectCell(void *playerIdx, s32 tileX, s32 tileY, s32 range, s32 co
 #pragma opt_strength_reduction reset
 #pragma opt_loop_invariants reset
 void SelectAreaEffectTargetOnAllCells(s32, s32, s32, s32, s32, s32);
-s32 func_ov000_021aa820(s32 a, s32 b, s32 c, s32 d) {
-    s32 x;
-    s32 y;
+/* Select a target cell for an area effect of the given mode with that mode's
+ * default range (2 cells) and power (30 in mode 0, 80 in mode 1).  Returns 0 for
+ * a mode without defaults, otherwise the selection's success flag. */
+s32 SelectAreaEffectTargetForMode(s16 *outPos, s32 player, s32 targetableOnly, s32 mode) {
+    s32 range;
+    s32 power;
     typedef s32 (*Fn)(s32, s32, s32, s32, s32, s32);
-    switch (d) {
+    switch (mode) {
     case 0:
-        x = 2;
-        y = 0x1e;
+        range = 2;
+        power = 0x1e;
         break;
     case 1:
-        x = 2;
-        y = 0x50;
+        range = 2;
+        power = 0x50;
         break;
     default:
         return 0;
     }
-    return ((Fn)SelectAreaEffectTargetOnAllCells)(a, b, c, d, x, y);
+    return ((Fn)SelectAreaEffectTargetOnAllCells)(outPos, player, targetableOnly, mode, range, power);
 }
 
 /* Picks the map tile with the best area-effect score for a player: installs the

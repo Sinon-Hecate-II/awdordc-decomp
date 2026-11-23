@@ -14,7 +14,7 @@ typedef struct { u8 bytes[8]; } SaveProgressFlags;
 
 typedef struct { u8 pixels[32]; } Unk020ETile;
 typedef struct { u8 count; u8 pad[3]; s32 ptr; } Unk02168Fec;
-u16 *func_020e4c10(u16 *,u16 *,u16 *,u32);
+u16 *LowerBoundU16(u16 *,u16 *,u16 *,u32);
 extern s32 gMicTestIpc;
 
 #pragma opt_common_subs off
@@ -199,7 +199,7 @@ void VBlankHandler(void) {
  * map's buffers, graphics files and config are set up again. */
 void ResetGameState(void) {
     M2C_UNK Apply3DSpriteBanks();
-    M2C_UNK func_0207b800();
+    M2C_UNK ResetCurrentMapBlocks();
     M2C_UNK ResetTextLabelSlots();
     M2C_UNK ResetTextState();
     M2C_UNK ResetDialogUI();
@@ -240,7 +240,7 @@ void ResetGameState(void) {
         screen += 1;
     } while (screen < 2);
     gCur3DSpriteEngine = savedEngine;
-    func_0207b800();
+    ResetCurrentMapBlocks();
     func_020d3cec();
     func_0209f87c();
     func_ov000_02169368();
@@ -398,20 +398,25 @@ s32 func_020e4b54(void) {
 
 #pragma push
 #pragma opt_common_subs off
-s32 func_020e4b9c(u16 key,...){extern u16 data_0212da1c;extern u16 data_020f4eb4[];volatile u8 a=0;volatile u8 b=0;u16 *p=func_020e4c10(data_020f4eb4,data_020f4eb4+data_0212da1c,&key,*(u32 *)&b);if(*p!=key)return 0;return p-data_020f4eb4;}
+s32 func_020e4b9c(u16 key,...){extern u16 data_0212da1c;extern u16 data_020f4eb4[];volatile u8 a=0;volatile u8 b=0;u16 *p=LowerBoundU16(data_020f4eb4,data_020f4eb4+data_0212da1c,&key,*(u32 *)&b);if(*p!=key)return 0;return p-data_020f4eb4;}
 #pragma pop
-u16 *func_020e4c10(u16 *first,u16 *last,u16 *key,u32 unused){
-s32 n=last-first;
-while(n>0){
-s32 half=n/2;
-u16 *p=first+half;
-if(*p<*key){
-half++;
-first=p+1;
-n-=half;
-}else n=half;
-}
-return first;
+/* Binary-search the sorted u16 table [first, last) for the first element not less
+ * than *key (std::lower_bound); `unused` is a spare fourth argument. */
+u16 *LowerBoundU16(u16 *first, u16 *last, u16 *key, u32 unused) {
+    s32 count = last - first;
+
+    while (count > 0) {
+        s32 half = count / 2;
+        u16 *mid = first + half;
+        if (*mid < *key) {
+            half++;
+            first = mid + 1;
+            count -= half;
+        } else {
+            count = half;
+        }
+    }
+    return first;
 }
 #pragma opt_propagation reset
 void func_020e4c64(void) {

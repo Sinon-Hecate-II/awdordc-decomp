@@ -36,14 +36,29 @@ u8 IsMapInLinkCategory(s32 mapId, s32 listCategory) {
     return (u8)((s32)(u16)(mapId - MAP_CUSTOM_FIRST) / (MAP_CUSTOM_LOCAL_END - MAP_CUSTOM_FIRST)) == (u8)(listCategory - MAP_LIST_LINK_CUSTOM_FIRST);
 }
 
+/* Clear every generated text-label slot: each slot loses its used flag and its
+ * two 12-glyph rows. */
 void ResetTextLabelSlots(void) {
- extern s8 gTextLabelSlotState;
- s32 i,j; s8 *p,*a,*b;
- a=&gTextLabelSlotState; i=0; b=a;
- do { j=0; *a=0;
- do { p=b+j; M2C_FIELD(p,s8 *,169)=0; ++j; M2C_FIELD(p,s8 *,13)=0; }while(j<12);
- ++i; ++a; b+=12;
- }while(i<13);
+    extern s8 gTextLabelSlotState;
+    s32 slot, i;
+    s8 *flag, *row, *entry;
+
+    flag = &gTextLabelSlotState;
+    slot = 0;
+    row = flag;
+    do {
+        i = 0;
+        *flag = 0;
+        do {
+            entry = row + i;
+            M2C_FIELD(entry, s8 *, TEXT_LABEL_ROW_B) = 0;
+            ++i;
+            M2C_FIELD(entry, s8 *, TEXT_LABEL_ROW_A) = 0;
+        } while (i < TEXT_LABEL_ROW_BYTES);
+        ++slot;
+        ++flag;
+        row += TEXT_LABEL_ROW_BYTES;
+    } while (slot < TEXT_LABEL_SLOT_COUNT);
 }
 
 /* Clear the generated text state of the label slots the link player setup does

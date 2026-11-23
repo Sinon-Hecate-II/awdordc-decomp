@@ -191,7 +191,7 @@ void func_0201a26c(void *arg0) {
     extern s32 data_020faf74;
     extern s32 gNetReceiveThread;
     extern s32 data_02138ac0;
-    extern s32 data_02137438;
+    extern s32 gNetworkTask;
     extern s32 data_021382c0;
 
     func_02000b9c(0x2000bdc);
@@ -262,23 +262,29 @@ hi=M2C_FIELD(arg0,s32 *,0x18);lo=M2C_FIELD(arg0,u32 *,0x14);
     M2C_FIELD((u8 *)&gNetStack, u8 *, 0x1) = 0;
     {
         TaskCreate((void *)&gNetReceiveThread, (void *)NetReceiveThreadMain, 0, (void *)&data_02138ac0, 0x800, data_020faf74);
-        TaskCreate((void *)&data_02137438, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
+        TaskCreate((void *)&gNetworkTask, (void *)&func_0201dd08, 0, (void *)&data_021382c0, 0x800, data_020faf74);
     }
     TaskWake((s32)&gNetReceiveThread);
-    TaskWake((s32)&data_02137438);
+    TaskWake((s32)&gNetworkTask);
 }
 
 #pragma opt_common_subs off
-void *NetworkTaskIsFinished(void) {
-s32 OS_DisableInterrupts(void);void OS_RestoreInterrupts(s32);s32 TaskIsFinished(s32);void TaskWake(s32);
-extern M2C_UNK data_02137438;extern M2C_UNK gNetStack;
-s32 saved=OS_DisableInterrupts();
-s32 result=TaskIsFinished((s32)&data_02137438);
-if(result==0 && M2C_FIELD(&gNetStack,s32 *,0x44)==0) {
-M2C_FIELD(&gNetStack,s32 *,0x44)=1;
-TaskWake((s32)&data_02137438);
-}
-OS_RestoreInterrupts(saved);return (void *)result;
+/* Checks whether the network worker has finished; if it is still running, queues its wakeup once. */
+void *IsNetworkTaskFinished(void) {
+    s32 OS_DisableInterrupts(void);
+    void OS_RestoreInterrupts(s32);
+    s32 TaskIsFinished(s32);
+    void TaskWake(s32);
+    extern M2C_UNK gNetworkTask;
+    extern M2C_UNK gNetStack;
+    s32 interruptState = OS_DisableInterrupts();
+    s32 isFinished = TaskIsFinished((s32)&gNetworkTask);
+    if (isFinished == 0 && M2C_FIELD(&gNetStack, s32 *, NETSTACK_WORKER_WAKE_PENDING) == 0) {
+        M2C_FIELD(&gNetStack, s32 *, NETSTACK_WORKER_WAKE_PENDING) = 1;
+        TaskWake((s32)&gNetworkTask);
+    }
+    OS_RestoreInterrupts(interruptState);
+    return (void *)isFinished;
 }
 #pragma opt_common_subs on
 
@@ -287,16 +293,16 @@ void func_0201a4f8(s32 arg0) {
     M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
 }
 
-void func_0201a508(void){void *NetworkTaskIsFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK data_02137438,gNetReceiveThread,gNetStack;NetworkTaskIsFinished();OS_JoinThread(&data_02137438);TerminateThread(&gNetReceiveThread);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
+void func_0201a508(void){void *IsNetworkTaskFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK gNetworkTask,gNetReceiveThread,gNetStack;IsNetworkTaskFinished();OS_JoinThread(&gNetworkTask);TerminateThread(&gNetReceiveThread);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
 
 void func_0201a550(s32 arg0) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);
     extern s32 data_020faf74;
-    extern M2C_UNK data_02137438;
+    extern M2C_UNK gNetworkTask;
     extern M2C_UNK gNetReceiveThread;
     data_020faf74 = arg0;
     SetThreadPriority(&gNetReceiveThread, arg0);
-    SetThreadPriority(&data_02137438, arg0);
+    SetThreadPriority(&gNetworkTask, arg0);
 }
 
 /* Adds the 16-bit words of a buffer to a running one's-complement checksum and
@@ -321,7 +327,16 @@ void Checksum(M2C_UNK arg0, M2C_UNK arg1) {
     ChecksumFinalize((u16)ChecksumAccumulate((u8 *)arg0, (u32)arg1, 0));
 }
 
-s32 IsTransportChecksumBad(u8 *a,s32 b,u8 *c,u32 d){u32 r;r=ChecksumAccumulate(c+12,8,ChecksumAccumulate(a,b,d));r+=b;if(r&0x10000)r=(u16)(r+1);return r!=65535;}
+/* True when the one's-complement checksum of a TCP/UDP segment plus its IPv4
+ * pseudo header (source and destination addresses, protocol and length) does not
+ * come out to 0xFFFF, i.e. the received segment is corrupt. */
+s32 IsTransportChecksumBad(u8 *segment,s32 length,u8 *ipHeader,u32 protocol){
+    u32 sum;
+    sum=ChecksumAccumulate(ipHeader+IP_HEADER_SRC_ADDR,8,ChecksumAccumulate(segment,length,protocol));
+    sum+=length;
+    if(sum&0x10000)sum=(u16)(sum+1);
+    return sum!=65535;
+}
 
 s32 IsLocalSubnetAddress(s32 a){extern M2C_UNK gNetStack;s32 r=1;if(a!=-1&&a!=0x7f000001){s32 mask=M2C_FIELD(&gNetStack,s32 *,28);if((a&mask)!=(M2C_FIELD(&gNetStack,s32 *,80)&mask))r=0;}return r;}
 

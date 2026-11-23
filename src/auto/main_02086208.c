@@ -138,32 +138,35 @@ s32 IsOnlinePlayerVoiceChatEnabled(s32 playerId) {
     return 0;
 }
 
-void *func_02086478(void *arg0) {
+/* Delete the voice-chat widget: free its volume-fade animation, restore the
+ * music and sound-effect channel 2 volumes to their default, and free the
+ * object itself. */
+void *DeleteVoiceChatWidget(VoiceChatWidget *widget) {
     M2C_UNK MemFree();
-    M2C_UNK func_02090640(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209066c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, M2C_UNK);
     extern M2C_UNK gVoiceChatWidgetVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
-    if (M2C_FIELD(arg0, s32 *, 0x50) != 0) {
-        MemFree();
+    M2C_FIELD(widget, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
+    if (widget->anim != 0) {
+        MemFree(widget->anim);
     }
-    func_02090640(2, 0x7F);
-    func_0209066c(2, 0x7F);
-    MemFree(arg0);
-    return arg0;
+    SetMusicVolumeLevel(2, 0x7F);
+    SetSoundEffectVolumeLevel(2, 0x7F);
+    MemFree(widget);
+    return widget;
 }
 
-void *func_020864c4(void *arg0) {
+void *DestroyVoiceChatWidget(void *arg0) {
     M2C_UNK MemFree();
-    M2C_UNK func_02090640(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209066c(M2C_UNK, M2C_UNK);
+    M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, M2C_UNK);
     extern M2C_UNK gVoiceChatWidgetVtbl;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
     if (M2C_FIELD(arg0, s32 *, 0x50) != 0) {
         MemFree();
     }
-    func_02090640(2, 0x7F);
-    func_0209066c(2, 0x7F);
+    SetMusicVolumeLevel(2, 0x7F);
+    SetSoundEffectVolumeLevel(2, 0x7F);
     return arg0;
 }
 
@@ -230,14 +233,17 @@ void ReloadUiGraphicsBanks(void) {
     } while (loadBank < TEXT_BANK_COUNT);
 }
 
-void LoadUiGraphicsBank(u8 arg0) {
+/* Load localized text bank `bank`: build its file path from the bank's base file
+ * name and the current language, decompress it and keep the loaded bank in
+ * gUiGraphicsBanks. */
+void LoadUiGraphicsBank(u8 bank) {
  s32 GetLocalizedFileName(s32);
  void StringFormat(void *, void *, s32);
  s32 LoadDecompressedFile(void *, s32);
- extern M2C_UNK data_0210244c, data_02102250, gUiGraphicsBanks[];
- u8 sp0[0x20];
- StringFormat(sp0, &data_02102250, GetLocalizedFileName(M2C_FIELD(&data_0210244c, s32 *, arg0 * 8)));
- ((s32 *)&gUiGraphicsBanks)[arg0] = LoadDecompressedFile(sp0, 1);
+ extern M2C_UNK gTextBankFileNames, gMessageBankPathFormat, gUiGraphicsBanks[];
+ u8 path[0x20];
+ StringFormat(path, &gMessageBankPathFormat, GetLocalizedFileName(M2C_FIELD(&gTextBankFileNames, s32 *, bank * 8)));
+ ((s32 *)&gUiGraphicsBanks)[bank] = LoadDecompressedFile(path, 1);
 }
 
 void FreeUiGraphicsBank(u8 arg0) {
@@ -339,18 +345,20 @@ void SetCampaignMapSaved(u32 arg0, s32 arg1) {
  M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) = (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void SetEventFlagHigh(u32 arg0, s32 arg1) {
+/* Set (value nonzero) or clear bit `flagId` of the high event-flag bank: one of
+ * the 64 flags in gEventFlagsHigh, at bit flagId&7 of byte flagId>>3. */
+void SetEventFlagHigh(u32 flagId, s32 value) {
     extern M2C_UNK gEventFlagsHigh;
     s32 shift;
     s32 mask;
-    if (arg1 != 0) {
-        shift = arg0 & 7;
+    if (value != 0) {
+        shift = flagId & 7;
         mask = 1 << shift;
-        M2C_FIELD(&gEventFlagsHigh,u8 *,arg0 >> 3) |= mask;
+        M2C_FIELD(&gEventFlagsHigh, u8 *, flagId >> 3) |= mask;
     } else {
-        shift = arg0 & 7;
+        shift = flagId & 7;
         mask = -1 ^ (1 << shift);
-        M2C_FIELD(&gEventFlagsHigh,u8 *,arg0 >> 3) &= mask;
+        M2C_FIELD(&gEventFlagsHigh, u8 *, flagId >> 3) &= mask;
     }
 }
 
@@ -406,10 +414,20 @@ s32 IsEventFlagMidSet(s32 arg0) {
     return (u8)(value & (1 << shift));
 }
 
-void SetEventFlagLow(s32 arg0,s32 arg1) {
- s32 shift; s32 mask;
- if(arg1) {shift=arg0&7;mask=1<<shift;gEventFlagsLow[arg0>>3]|=mask;}
- else {shift=arg0&7;mask=-1^(1<<shift);gEventFlagsLow[arg0>>3]&=mask;}
+/* Set (value nonzero) or clear bit `flagId` of the low event-flag bank: one of
+ * the 32 flags in gEventFlagsLow, at bit flagId&7 of byte flagId>>3. */
+void SetEventFlagLow(s32 flagId, s32 value) {
+    s32 shift;
+    s32 mask;
+    if (value) {
+        shift = flagId & 7;
+        mask = 1 << shift;
+        gEventFlagsLow[flagId >> 3] |= mask;
+    } else {
+        shift = flagId & 7;
+        mask = -1 ^ (1 << shift);
+        gEventFlagsLow[flagId >> 3] &= mask;
+    }
 }
 
 s32 IsEventFlagLowSet(s32 arg0) {
@@ -548,12 +566,12 @@ void SetDefault3DLightMaterial(void) {
  * material, then start a new projection matrix and write a straight normal. */
 void SetupSprite3DScene(void) {
  void G3X_Reset(void);
- void func_0200402c(Vec02086dfc *,Vec02086dfc *,Vec02086dfc *,s32,s32);
+ void G3X_SetCamera(Vec02086dfc *,Vec02086dfc *,Vec02086dfc *,s32,s32);
  void SetDefault3DLightMaterial(void);
  Vec02086dfc eye=gSpriteSceneCameraEye;
  Vec02086dfc center={0,0,0};
  Vec02086dfc up=gSpriteSceneCameraUp;
- G3X_Reset();func_0200402c(&eye,&up,&center,1,0);SetDefault3DLightMaterial();
+ G3X_Reset();G3X_SetCamera(&eye,&up,&center,1,0);SetDefault3DLightMaterial();
  REG_GX_MTX_PUSH=0;REG_GX_MTX_MODE=3;
  REG_GX_MTX_IDENTITY=0;REG_GX_MTX_MODE=2;
  REG_GX_NORMAL=0x20000000;

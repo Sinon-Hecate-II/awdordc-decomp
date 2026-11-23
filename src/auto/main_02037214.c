@@ -305,20 +305,22 @@ void func_0203783c(M2C_UNK arg0) {
     Wfc_CreateConnection(arg0, 3, 1, 0x14);
 }
 
-void SetNasServerEnvironment(s32 arg0) {
-    M2C_UNK func_0203289c(M2C_UNK *);
+/* Point the NAS library at the server for the chosen environment: the test, dev
+ * or production NAS host (see NAS_SERVER_*). */
+void SetNasServerEnvironment(s32 environment) {
+    M2C_UNK SetNasServerUrl(M2C_UNK *);
     extern M2C_UNK sNasServerUrlTest;
     extern M2C_UNK sNasServerUrlDev;
     extern M2C_UNK sNasServerUrlProd;
-    switch (arg0) {                                 /* irregular */
-    case 0:
-        func_0203289c(&sNasServerUrlTest);
+    switch (environment) {
+    case NAS_SERVER_TEST:
+        SetNasServerUrl(&sNasServerUrlTest);
         return;
-    case 1:
-        func_0203289c(&sNasServerUrlDev);
+    case NAS_SERVER_DEV:
+        SetNasServerUrl(&sNasServerUrlDev);
         return;
-    case 2:
-        func_0203289c(&sNasServerUrlProd);
+    case NAS_SERVER_PROD:
+        SetNasServerUrl(&sNasServerUrlProd);
         return;
     }
 }

@@ -295,8 +295,8 @@ u8 func_ov003_021fd1a0(void *arg0) {
 }
 
 void func_ov003_021fd1cc(void) {
-    M2C_UNK func_ov003_021f66d4();
-    func_ov003_021f66d4();
+    M2C_UNK Ov003_AcknowledgeLinkSync();
+    Ov003_AcknowledgeLinkSync();
 }
 
 void func_ov003_021fd1d8(void) {
@@ -378,7 +378,7 @@ u8 IsMapSubmenuKind(void *entity) {
 void func_ov003_021fd2d0(void *entity) {
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Hide3DSpriteSlide(s32);
-    M2C_UNK func_020893a8(s32, s32, M2C_UNK, s32);
+    M2C_UNK SetFrameBorderSpritePattern(s32, s32, M2C_UNK, s32);
     M2C_UNK SetTextById(s32, s32);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK SetMenuPanelState(void *, M2C_UNK);
@@ -431,7 +431,7 @@ void func_ov003_021fd2d0(void *entity) {
     SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), 0x10, 3, 6);
     SetTextById(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 4), 0x4700001D);
     Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(entity, void **, 0x68), s32 *, 8));
-    func_020893a8(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, GetUiColor(0x11));
+    SetFrameBorderSpritePattern(M2C_FIELD(M2C_FIELD(entity, void **, 0x6C), s32 *, 0), 0x8B80, 1, GetUiColor(0x11));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
 }
 

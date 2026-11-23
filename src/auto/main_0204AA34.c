@@ -294,11 +294,14 @@ s32 func_0204b210(void *operation) {
     return status;
 }
 
+/* Initialise the ghttp library on first use: count the library's users under the
+ * connection mutex and, for the first, run the platform init and set the throttle
+ * parameters (pause between reads and receive chunk size). */
 void ghttpInit(void) {
  M2C_UNK ghiInitialize(); M2C_UNK ghiLockMutex(); M2C_UNK ghiUnlockMutex();
  extern s32 gGhiRecvTimeoutMs, data_020fd010, gGhiInitCount;
  ghiLockMutex();
- if (++gGhiInitCount == 1) { ghiInitialize(); data_020fd010=125; gGhiRecvTimeoutMs=250; return; }
+ if (++gGhiInitCount == 1) { ghiInitialize(); data_020fd010=GHI_THROTTLE_CHUNK_SIZE; gGhiRecvTimeoutMs=GHI_THROTTLE_INTERVAL_MS; return; }
  ghiUnlockMutex();
 }
 

@@ -222,20 +222,25 @@ void func_ov009_02225644(s32 arg0) {
     func_ov009_022255ec(arg0 + 0x38);
 }
 
-void *func_ov009_02225654(s32 arg0, M2C_UNK arg1) {
-    extern M2C_UNK data_ov009_02226550;
-    extern M2C_UNK data_ov009_02226700;
-    void *temp_r0;
+/* Create the link match-start request node (class gLinkStartRequestClass) owned by
+ * `owner` and tagged with `matchId`, but only while the link is in an active game
+ * phase.  Installs the node's vtable and returns it, or NULL on failure. */
+void *CreateLinkStartRequest(s32 matchId, M2C_UNK owner) {
+    extern M2C_UNK gLinkStartRequestClass;
+    extern M2C_UNK gLinkStartRequestVtbl;
+    s32 GetLinkPhase();
+    M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    void *node;
 
-    if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
+    if ((GetLinkPhase() != LINK_PHASE_ACTIVE) && (GetLinkPhase() != LINK_PHASE_INGAME)) {
         return NULL;
     }
-    temp_r0 = CreateSpriteObject(&data_ov009_02226550, arg1);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_ov009_02226700;
-        M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
+    node = CreateSpriteObject(&gLinkStartRequestClass, owner);
+    if (node != NULL) {
+        M2C_FIELD(node, M2C_UNK **, 0) = &gLinkStartRequestVtbl;
+        M2C_FIELD(node, s32 *, 0x34) = matchId;
     }
-    return temp_r0;
+    return node;
 }
 
 M2C_UNK func_ov009_022256a4(s32 arg0) {
@@ -772,7 +777,7 @@ void StartLinkStatusSplitFades(void *sprite) {
 
 void func_ov009_022260a0(void *arg0) {
     M2C_UNK CreateLinkStatusLabel(s8, u16, s32, void *);
-    void func_ov009_022261e4(M2C_UNK, u16, void *);
+    void CreateLinkMatchNameLabel(M2C_UNK, u16, void *);
     s32 temp_r2;
 
     temp_r2 = M2C_FIELD(arg0, s32 *, 0x38);
@@ -780,7 +785,7 @@ void func_ov009_022260a0(void *arg0) {
         return;
     }
     CreateLinkStatusLabel(M2C_FIELD(arg0, s8 *, 0x35), M2C_FIELD(arg0, u16 *, 0x36), temp_r2, arg0);
-    func_ov009_022261e4(-1, M2C_FIELD(arg0, u16 *, 0x36), arg0);
+    CreateLinkMatchNameLabel(-1, M2C_FIELD(arg0, u16 *, 0x36), arg0);
 }
 
 void func_ov009_022260d8(void) {
@@ -849,15 +854,15 @@ void CreateLinkNameLabel(s32 unusedX, s32 unusedY, void *owner) {
     CreateSpriteForOwner(&gLinkNameLabelClass, owner);
 }
 
-void func_ov009_022261e4(M2C_UNK arg0, u16 arg1, void *arg2) {
+void CreateLinkMatchNameLabel(M2C_UNK arg0, u16 arg1, void *arg2) {
     s32 GetLinkPhase(void);
     M2C_UNK EnableMapConfirm(void);
     void *CreateSpriteForOwner(void *, void *);
-    extern M2C_UNK data_ov009_022267b4;
+    extern M2C_UNK gLinkMatchNameLabelClass;
     if (GetLinkPhase() == 0) {
         EnableMapConfirm();
         return;
     }
-    CreateSpriteForOwner(&data_ov009_022267b4, arg2);
+    CreateSpriteForOwner(&gLinkMatchNameLabelClass, arg2);
 }
 

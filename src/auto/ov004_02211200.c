@@ -277,7 +277,7 @@ void func_ov004_02211844(void *ctx) {
     gCur3DSpriteEngine = savedContext;
 }
 
-void func_ov004_02211924(void *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5) {
+void Ov004_SetUraPlaneZoom(void *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5) {
     M2C_FIELD(arg0, s16 *, 0x4A) = arg1;
     M2C_FIELD(arg0, s16 *, 0x4C) = arg2;
     M2C_FIELD(arg0, s16 *, 0x34) = arg3;
@@ -484,24 +484,24 @@ void func_ov004_02211f0c(void) {
 void func_ov004_02211f18(void) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
     void func_ov004_0221194c(s32, M2C_UNK *);
-    extern M2C_UNK data_ov004_02218c20;
+    extern M2C_UNK gUraPlaneEffectClass;
     extern M2C_UNK data_ov004_02218d90;
-    func_ov004_0221194c(CreateSpriteFromClass(&data_ov004_02218c20, 7), &data_ov004_02218d90);
+    func_ov004_0221194c(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &data_ov004_02218d90);
 }
 
 void func_ov004_02211f3c(void) {
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
     void func_ov004_0221194c(s32, M2C_UNK *);
-    extern M2C_UNK data_ov004_02218c20;
+    extern M2C_UNK gUraPlaneEffectClass;
     extern M2C_UNK data_ov004_02218d9c;
-    func_ov004_0221194c(CreateSpriteFromClass(&data_ov004_02218c20, 7), &data_ov004_02218d9c);
+    func_ov004_0221194c(CreateSpriteFromClass(&gUraPlaneEffectClass, 7), &data_ov004_02218d9c);
 }
 
 void func_ov004_02211f60(void) {
     void func_ov004_02211744();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov004_02218c20;
-    if (FindObjectByClass(&data_ov004_02218c20) == 0) {
+    extern M2C_UNK gUraPlaneEffectClass;
+    if (FindObjectByClass(&gUraPlaneEffectClass) == 0) {
         return;
     }
     func_ov004_02211744();
@@ -510,39 +510,45 @@ void func_ov004_02211f60(void) {
 void func_ov004_02211f80(void) {
     void func_ov004_02211844();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov004_02218c20;
-    if (FindObjectByClass(&data_ov004_02218c20) == 0) {
+    extern M2C_UNK gUraPlaneEffectClass;
+    if (FindObjectByClass(&gUraPlaneEffectClass) == 0) {
         return;
     }
     func_ov004_02211844();
 }
 
-void func_ov004_02211fa0(void) {
+/* Zoom the ura-plane effect in from 1x to 8x over 60 frames, centred at
+ * (160, 128), and play its zoom sound. */
+void Ov004_ZoomInUraPlane(void) {
     s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
-    extern M2C_UNK data_ov004_02218c20;
-    s32 temp_r0;
-    temp_r0 = FindObjectByClass(&data_ov004_02218c20);
-    if (temp_r0 == 0) return;
-    func_ov004_02211924((void *)temp_r0, 0xA0, 0x80, 0x100, 0x800, 0x3C);
+    extern M2C_UNK gUraPlaneEffectClass;
+    s32 effect;
+    effect = FindObjectByClass(&gUraPlaneEffectClass);
+    if (effect == 0) return;
+    Ov004_SetUraPlaneZoom((void *)effect, 0xA0, 0x80, OV004_URA_PLANE_SCALE_ONE, OV004_URA_PLANE_ZOOM_IN_SCALE, OV004_URA_PLANE_ZOOM_IN_FRAMES);
     PlaySoundEffect(0x113);
 }
 
-void func_ov004_02211ff4(void) {
+/* Start the ura-plane effect shrinking back from 4x to its normal scale over 30
+ * frames, centred on the upper screen, and play its sound.  Nothing to do when
+ * the effect object is not present. */
+void Ov004_ZoomOutUraPlane(void) {
     s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
-    extern M2C_UNK data_ov004_02218c20;
-    s32 temp_r0;
-    temp_r0 = FindObjectByClass(&data_ov004_02218c20);
-    if (temp_r0 == 0) return;
-    func_ov004_02211924((void *)temp_r0, 0x80, 0x60, 0x400, 0x100, 0x1E);
+    extern M2C_UNK gUraPlaneEffectClass;
+    s32 effect;
+
+    effect = FindObjectByClass(&gUraPlaneEffectClass);
+    if (effect == 0) return;
+    Ov004_SetUraPlaneZoom((void *)effect, 0x80, 0x60, 0x400, OV004_URA_PLANE_SCALE_ONE, 0x1E);
     PlaySoundEffect(0x112);
 }
 
 void func_ov004_02212048(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_ov004_02218c20;
-    DeleteSpriteObjectsOfClass(&data_ov004_02218c20);
+    extern M2C_UNK gUraPlaneEffectClass;
+    DeleteSpriteObjectsOfClass(&gUraPlaneEffectClass);
 }
 
 s32 func_ov004_0221205c(void) {

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "wfc.h"
 
-s32 func_02045d94(void *arg0,u8 *a) { void *func_020467b8(void *); void BuildCrc16Table(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);BuildCrc16Table(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
+s32 FifoUploadWfcProfile(void *arg0,u8 *a) { void *func_020467b8(void *); void BuildCrc16Table(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);BuildCrc16Table(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
 s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!FifoReadBlock(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
 
@@ -222,12 +222,16 @@ void FifoWriteBlock(s32 address, s32 size, s32 data) {
     }
 }
 
-s32 FifoVerifyBlock(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Read a block of `size` bytes back from the ARM7 address `address` into
+ * `readback` and check it against the block at `data`: 0 if the read failed,
+ * 1 if the read-back bytes match, else 0. */
+s32 FifoVerifyBlock(s32 data, s32 address, s32 size, s32 readback) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (FifoReadBlock(arg1, arg2, arg3) == 0) {
+
+    if (FifoReadBlock(address, size, readback) == 0) {
         return 0;
     }
-    if (ByteCompareN(arg0, arg3, arg2) == 0) {
+    if (ByteCompareN(data, readback, size) == 0) {
         return 1;
     }
     return 0;

@@ -48,7 +48,7 @@ void HttpClientTask(Unk02034164 *client) {
     s32 HttpParseContentLength(Unk02034164 *);
     void func_0201d70c(u32);
     u64 U64Divide(u64, u64);
-    void func_0201d484(void);
+    void CloseTransport(void);
     void WaitForTlsCloseNotify(void);
     s32 func_02034864(s32);
     extern u8 data_020fb528[];
@@ -162,7 +162,7 @@ void HttpClientTask(Unk02034164 *client) {
         }
     } while (1);
 
-    func_0201d484();
+    CloseTransport();
     WaitForTlsCloseNotify();
     CloseRawConnection();
     ClearCurrentRawConnection();
@@ -170,7 +170,7 @@ void HttpClientTask(Unk02034164 *client) {
     return;
 
 cleanup:
-    func_0201d484();
+    CloseTransport();
     WaitForTlsCloseNotify();
     CloseRawConnection();
     ClearCurrentRawConnection();

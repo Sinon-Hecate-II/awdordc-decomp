@@ -12,12 +12,12 @@ typedef struct Pos180 {s16 h[4];} Pos180;
 extern u16 data_ov005_02220058[];
 extern void *gOv005MenuState, *gCur3DSpriteEngine, *g3DSpriteEngineMain, *g3DSpriteEngineSub;
 void LoadUiGraphicsBank();
-void func_02082c84();
+void GX_ReleaseBankGrants();
 void GX_SetBankForBG();
 void GX_SetBankForOBJ();
-void func_02003124();
+void GX_SetBankForSubBG();
 void GX_SetBankForSubOBJ();
-void func_02002ab8();
+void GX_SetBankForBGExtPalette();
 void GX_SetBankForObjExtPalette();
 void GX_SetBankForBGExtPlttSub();
 void GX_SetBankForOBJExtPlttSub();
@@ -77,8 +77,8 @@ u16 * volatile v8;
 u16 * volatile v9;
 u16 * volatile v10;
 u16 * volatile v11;
-LoadUiGraphicsBank(10); gOv005MenuState=HeapAllocBlock(60);func_02082c84();
-GX_SetBankForBG(1);GX_SetBankForOBJ(2);func_02003124(4);GX_SetBankForSubOBJ(8);func_02002ab8(16);GX_SetBankForObjExtPalette(32);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
+LoadUiGraphicsBank(10); gOv005MenuState=HeapAllocBlock(60);GX_ReleaseBankGrants();
+GX_SetBankForBG(1);GX_SetBankForOBJ(2);GX_SetBankForSubBG(4);GX_SetBankForSubOBJ(8);GX_SetBankForBGExtPalette(16);GX_SetBankForObjExtPalette(32);GX_SetBankForBGExtPlttSub(128);GX_SetBankForOBJExtPlttSub(256);
 M2C_FIELD(gOv005MenuState,u8 *,0)=0; M2C_FIELD(gOv005MenuState,s16 *,4)=0; M2C_FIELD(gOv005MenuState,s16 *,2)=M2C_FIELD(gOv005MenuState,s16 *,4);M2C_FIELD(gOv005MenuState,s16 *,14)=0;M2C_FIELD(gOv005MenuState,s16 *,12)=M2C_FIELD(gOv005MenuState,s16 *,14);M2C_FIELD(gOv005MenuState,s16 *,18)=0;M2C_FIELD(gOv005MenuState,s16 *,20)=0;M2C_FIELD(gOv005MenuState,s16 *,16)=M2C_FIELD(gOv005MenuState,s16 *,14)+1;M2C_FIELD(gOv005MenuState,s16 *,6)=0;M2C_FIELD(gOv005MenuState,s16 *,22)=12;M2C_FIELD(gOv005MenuState,s16 *,24)=0;M2C_FIELD(gOv005MenuState,s16 *,8)=0;M2C_FIELD(gOv005MenuState,s16 *,10)=256;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;Apply3DSpriteLayout(&first);
 v0=(u16*)M2C_FIELD(gCur3DSpriteEngine,void **,0); *v0 = *v0 &~ 16;
@@ -210,7 +210,7 @@ Ov005SetDetailSelection(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));H
 void Ov005DetailMenuInput(M2C_UNK arg0){
 extern void *gOv005MenuState;extern u16 *gKeyState;
 u32 _fflt(s32);u32 _fmul(u32,u32);u32 _fdiv(u32,u32);u32 _fadd(u32,u32);s32 _ffix(u32);
-void Ov005AddDetailSprites(void);M2C_UNK SelectSpriteSlot(s16);void func_020bf8fc(s32,s32);void Ov005LoadEntryFacePalettes(s32);void SetTextById(void *,u32);M2C_UNK HideAllSpriteSlots();void PlaySoundEffect(s32);
+void Ov005AddDetailSprites(void);M2C_UNK SelectSpriteSlot(s16);void SetCoSavedMode(s32,s32);void Ov005LoadEntryFacePalettes(s32);void SetTextById(void *,u32);M2C_UNK HideAllSpriteSlots();void PlaySoundEffect(s32);
 void *menu=gOv005MenuState;s32 animTimer=M2C_FIELD(menu,s16 *,OV005_MENU_ANIM);u32 eased;
 eased=_fmul(OV005_FLOAT_256,_fflt(animTimer));eased=_fmul(eased,_fflt(animTimer));eased=_fdiv(eased,_fflt(OV005_MENU_ANIM_FRAMES_SQ));
 M2C_FIELD(menu,s16 *,OV005_MENU_SLIDE_OUT)=_ffix(_fadd(OV005_FLOAT_NEG256,eased));
@@ -219,7 +219,7 @@ M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SLIDE_IN)=_ffix(eased);
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)==1){Ov005AddDetailSprites();SelectSpriteSlot(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SELECTION));}
 if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)>0)return;
 if(*gKeyState&2){
-func_020bf8fc(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX),M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));
+SetCoSavedMode(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX),M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_CONFIRMED));
 Ov005LoadEntryFacePalettes(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_BASE_INDEX));
 SetTextById(M2C_FIELD(gOv005MenuState,void **,OV005_MENU_SPRITE),0x40000000);
 M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)=OV005_PAGE_LIST;M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_ANIM)=OV005_MENU_ANIM_FRAMES;

@@ -108,6 +108,16 @@ enum {
 #define WFC_PROFILE_ID_SHIFT    6    /* the id starts 6 bits into its 2-byte window */
 #define WFC_PROFILE_ID10_MASK   0x3ff /* ten bits of id */
 
+/* The 20-byte unpacked WFC profile record GetWfcProfile fills: the console's
+ * friend code, the profile code BuildWfcProfile generated from the seed, the
+ * profile id and that seed. */
+typedef struct WfcProfileRecord {
+    u64 friendCode;  /* +0x00 WFC_PROFILE_FRIEND_CODE, 0 when no profile exists */
+    u64 profileCode; /* +0x08 WFC_PROFILE_CODE */
+    u16 id;          /* +0x10 WFC_PROFILE_ID */
+    u16 seed;        /* +0x12 WFC_PROFILE_SEED */
+} WfcProfileRecord;
+
 /* What GetWfcProfileIds copies out of the profile record: the console's friend
  * code (first) and the generated profile code (second), then a flag that is
  * nonzero when the friend code exists.  Kept as word pairs so the 20-byte
@@ -316,6 +326,15 @@ enum {
     WFC_MEASURE_CHANNEL_IDLE_STATE = 2
 };
 
+/* ARM7 request that declares whether this console is the match's parent (host):
+ * request 1 carries a single flag, 1 when this console is the parent and 0
+ * otherwise (download play posts 1, the online session 0). */
+#define WFC_CMD_PARENT 0x19
+
+/* ARM7 request that switches the link's download-transfer mode: request 1
+ * carries a single flag, 1 while the link should use the download transfer. */
+#define WFC_CMD_DOWNLOAD_MODE 0x21
+
 typedef struct WfcMeasureChannelRequest {
     s16 command;
     s16 ccaMode;
@@ -333,6 +352,12 @@ typedef struct WfcMeasureChannelRequest {
  * channel's handshake flag, which the ARM9 clears once it has handled a packet. */
 #define WFC_SHARED_FLAG_WORD 0x027FFF96
 
+/* The region byte the WFC match query sends: the query wrapper uses WFC_REGION_A
+ * when its caller passes WFC_REGION_DEFAULT, otherwise the cartridge's own
+ * region letter taken from the ROM header. */
+#define WFC_REGION_DEFAULT 255 /* caller's region argument: use WFC_REGION_A */
+#define WFC_REGION_A       'A' /* region byte sent for WFC_REGION_DEFAULT */
+
 /* The WFC command channel's global state (gWfcChannelState).  The ARM9 allocates
  * one work area, splits it into buffers and keeps their pointers in the info block
  * the state points at (+WFC_CMD_STATE_INFO).  The firmware writes command packets
@@ -345,6 +370,7 @@ typedef struct WfcMeasureChannelRequest {
 /* Fields of the info block (WFC_CMD_STATE_INFO). */
 #define WFC_CMD_INFO_BUFFER0 0x00  /* void *first buffer of the work area */
 #define WFC_CMD_INFO_DATA    0x04  /* void *0x800-byte connection-data block the firmware fills */
+#define WFC_CONN_DATA_SIZE   0x7D0 /* bytes of that block WFC_GetConnectionData copies into a caller buffer */
 #define WFC_CMD_INFO_LINK_STATE 0x00 /* u16 link state at the start of that block (WFC_LINK_STATE) */
 #define WFC_CMD_INFO_BUFFER1 0x0c  /* void *0x100-byte buffer */
 #define WFC_CMD_INFO_PACKET  0x10  /* void *0x100-byte command packet the firmware wrote */
@@ -506,6 +532,7 @@ enum {
 /* Message ids Ov001_ShowMessage displays for the friend roster. */
 #define OV001_MSG_FRIEND_UNAVAILABLE 14
 #define OV001_MSG_NO_FRIENDS         15
+#define OV001_MSG_WFC_ERASE_RESULT   0x1C /* message box text of the WFC data-erase result screen */
 #define OV001_MSG_CONNECTING         0x31 /* "connecting" panel of the ov001 WFC connect screens */
 #define OV001_MSG_FRIEND_LIST        0x33 /* panel and message box text of the ov001 friend-list screen */
 
@@ -525,6 +552,7 @@ enum {
 #define SERVER_TIME_OFFSET 0x0C /* s64 local clock minus server time */
 #define SERVER_TIME_SPAN_SECONDS 3155760000LL /* one RTC century, 100 * 365.25 days */
 #define SERVER_TIME_SPAN_LAST    3155759999LL /* last second before that wrap */
+#define SERVER_TIME_RESYNC_SECONDS 60 /* the profile's sync time is out of date after this many seconds */
 
 /* NAS (Nintendo Authentication Server) login, driven by gNasLogin.  The global
  * holds the pending request's kind, the current context and the completion
@@ -546,6 +574,11 @@ typedef struct NasLoginParameters {
     s32 callbackArg;
     s32 session;
 } NasLoginParameters;
+
+/* The login's result callback and the argument it receives, at the offsets of the
+ * NasLoginParameters fields resultCallback and callbackArg. */
+#define NAS_LOGIN_RESULT_CB  0x14 /* void (*)(s32 errorCode, u8 unused, s32 arg) */
+#define NAS_LOGIN_RESULT_ARG 0x18 /* s32 argument passed to the result callback */
 
 /* Fields of the login context (NAS_LOGIN_CONTEXT). */
 #define NAS_LOGIN_STATE          0x04 /* s32 state, one of NAS_STATE_* */
@@ -596,6 +629,7 @@ enum {
 #define NAS_CONN_STACK_SIZE  0x1000 /* bytes of that stack */
 #define NAS_CONN_STACK_TOP   0x1000 /* top of the stack (the status block starts there) */
 #define NAS_CONN_RESULT      0x1004 /* s32 outcome of the connection attempt */
+#define NAS_CONN_RESULT_NO_CONNECTION 22 /* reported when no connection block exists */
 #define NAS_CONN_STATUS      0x1008 /* s32 head of the status block */
 #define NAS_CONN_STATUS_SIZE 0x1C4  /* bytes of the status block shared with the caller */
 #define NAS_CONN_REQUEST     0x11CC /* NasRequest descriptor copied from the caller */

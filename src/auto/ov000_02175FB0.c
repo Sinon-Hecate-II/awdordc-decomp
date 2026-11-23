@@ -182,14 +182,14 @@ for(otherKind=0;otherKind<M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x100)-1;o
 {s32 offset=unitKind*12; s32 a,b; a=*(volatile s32 *)(data_ov000_021ae2c8+offset);b=*(volatile s32 *)(data_ov000_021ae2cc+offset);M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x58)=a;M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x5c)=b;}
 }
 u8 func_ov000_02176dcc(void *arg0) {
-    s32 func_020d46e8();
+    s32 GetMapViewHoldCount();
     s32 GetMapInputState();
     u8 var_r0;
 
     if (M2C_FIELD(arg0, u8 *, 0xC) == 0) {
         return 0U;
     }
-    if (func_020d46e8() != 0) {
+    if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
     if (GetMapInputState() == 0) {

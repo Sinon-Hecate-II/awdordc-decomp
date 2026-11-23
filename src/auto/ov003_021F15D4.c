@@ -64,7 +64,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     case 17:
         ApplyBgLayerVisibility();
         func_02086330();
-        func_02085054(0,0x6e0,entry);
+        CreateMatchNameLabel(0,0x6e0,entry);
         return;
     case 18: func_ov003_021fe3b4(entry); return;
     case 19: func_ov003_021fe780(entry); return;
@@ -274,12 +274,12 @@ void func_ov003_021f1bc0(void) {
     gOv003SceneState = 0;
 }
 
-void func_ov003_021f1bd4(void) {
+void Ov003_SetMapConfirmEnabled(void) {
     extern u8 gOv003SceneState;
     gOv003SceneState = 1;
 }
 
-void func_ov003_021f1be8(void) {
+void Ov003_SetMapConfirmDisabled(void) {
     extern u8 gOv003SceneState;
     gOv003SceneState = 2;
 }

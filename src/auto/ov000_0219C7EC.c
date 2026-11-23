@@ -342,7 +342,7 @@ void BuildScoredAiRole1UnitListWithAiStep(void) {
     extern M2C_UNK *gAiUnitAction;
     extern s8 *gAiUnitListCursor;
     extern u8 gAiUnitList;
-    extern M2C_UNK func_ov000_02180ec8;
+    extern M2C_UNK RunAiRole1StepAction;
     void ScoreAiUnitsByHpAndTarget(void);
     s32 index;
     s32 stride;
@@ -377,7 +377,7 @@ void BuildScoredAiRole1UnitListWithAiStep(void) {
     *gAiUnitListCursor = 0;
     gAiUnitListCursor = (s8 *)&gAiUnitList;
     ScoreAiUnitsByHpAndTarget();
-    gAiUnitAction = &func_ov000_02180ec8;
+    gAiUnitAction = &RunAiRole1StepAction;
     gAiCommandState[AI_COMMAND_STATE_PHASE] = 2;
 }
 
@@ -550,7 +550,7 @@ extern s8 *gAiCommandState;
 extern M2C_UNK *gAiUnitAction;
 extern s8 *gAiUnitListCursor;
 extern u8 gAiUnitList;
-extern M2C_UNK func_ov000_021812a8;
+extern M2C_UNK RunAiRole4Or6ActionByStep;
 void ScoreAiUnitsByWeatherMove(void);
 void ScoreAiUnitsByMoveType(void);
 void MoveSelectedAiUnitLast(void);
@@ -584,7 +584,7 @@ if (M2C_FIELD(*gCurrentMap, u8 *, MAP_FOG) != 0 ||
     ScoreAiUnitsByMoveType();
 }
 MoveSelectedAiUnitLast();
-gAiUnitAction = &func_ov000_021812a8;
+gAiUnitAction = &RunAiRole4Or6ActionByStep;
 *gAiCommandState = 2;
 }
 

@@ -20,7 +20,7 @@ void func_ov003_021e3500(void *arg0) {
     M2C_UNK func_ov003_021f1894();
     u32 func_ov003_021f2574();
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    M2C_UNK func_ov003_021f1bd4();
+    M2C_UNK Ov003_SetMapConfirmEnabled();
     void Sprite_ResumeAnimation(void *);
 
     register void *r5 asm("r5");
@@ -101,14 +101,14 @@ void func_ov003_021e3500(void *arg0) {
     SetOv003SceneState(2);
     M2C_FIELD(r5, s8 *, 0x38) = 0;
     Sprite_ResumeAnimation(r5);
-    func_ov003_021f1bd4();
+    Ov003_SetMapConfirmEnabled();
 }
 
 void func_ov003_021e36cc(void *arg0) {
     M2C_UNK Hide3DSprite(s32);
     M2C_UNK SetOv003SceneState(M2C_UNK);
-    M2C_UNK func_ov003_021f1bd4();
-    func_ov003_021f1bd4();
+    M2C_UNK Ov003_SetMapConfirmEnabled();
+    Ov003_SetMapConfirmEnabled();
     if (M2C_FIELD(arg0, u8 *, 0x39) != 0) {
         Hide3DSprite(M2C_FIELD(arg0, s32 *, 0x4C));
     }
@@ -130,7 +130,7 @@ void func_ov003_021e3714(void *arg0) {
     void *GetSaveRecordBuffer(void);
     void MI_CpuCopy32(void *, void *, u32);
     void ResetBattleMap(void);
-    void func_020cf278(s32);
+    void PreloadMapTileset(s32);
     void LoadBattleMap(s32);
     void ClearTileRect(u16 *, s32, s32);
     void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
@@ -179,7 +179,7 @@ void func_ov003_021e3714(void *arg0) {
     }
 
     ResetBattleMap();
-    func_020cf278(value);
+    PreloadMapTileset(value);
     LoadBattleMap(value);
 
     *(u16 *)((u8 *)arg0 + 0x62) = (u16)(*(u16 *)((u8 *)*gCurrentMap + 0x5144) << 2);
@@ -471,7 +471,7 @@ DrawTextSprite(M2C_FIELD(arg0,void**,0x50));
 tile=(u16)(GetMapListIconTile(7,id)*4+0x234);
 AddSprite(py,(u8)(top-2),(u16)((mask&((s32)tile>>((EngineBits3ff8*)*gCur3DSpriteEngine)->shift))|0x8800),&gSpriteDesc16x16,17);
 if(i==0)record=M2C_FIELD(arg0,s32*,0x68);else record=M2C_FIELD(arg0,s32*,0x6c);
-func_0209b32c(layer,offset,0,record+j*0x6f8+6,0x7000,0,(u16)(sequence+M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank*320));
+DrawTextLineCore(layer,offset,0,record+j*0x6f8+6,0x7000,0,(u16)(sequence+M2C_FIELD(arg0,MenuBits3ff8*,0x60).bank*320));
 sequence+=16;j++;
 }while(j<count);
 }

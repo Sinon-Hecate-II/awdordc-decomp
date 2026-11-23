@@ -9,6 +9,7 @@
 #define MAP_TRANSFER_MAP_ID      0x34 /* s32 campaign map id whose record is transferred */
 #define MAP_TRANSFER_MODE        0x38 /* s32 transfer mode selecting the operation */
 #define MAP_TRANSFER_COUNT       0x3C /* s32 number of player entries collected */
+#define MAP_TRANSFER_TARGET_ID   0x40 /* s64 online player id the transfer targets, entered by the number display */
 #define MAP_TRANSFER_SOURCE      0x48 /* s32 source map record for the local mode */
 #define MAP_TRANSFER_ENTRIES     0x4C /* u8 * received player entries, MAP_TRANSFER_SLOTS of them */
 #define MAP_TRANSFER_RECORDS     0x50 /* u8 * expanded received map records */

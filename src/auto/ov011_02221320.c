@@ -45,12 +45,12 @@ void ConfigureIntroScreens(void *arg0) {
    sprite engines and the intro screen configurations, then start the logo
    animation in its initial state. */
 void InitIntroScene(void *logo) {
-    M2C_UNK func_02082c84(void);
+    M2C_UNK GX_ReleaseBankGrants(void);
     M2C_UNK GX_SetBankForBG(s32);
-    M2C_UNK func_02003124(s32);
+    M2C_UNK GX_SetBankForSubBG(s32);
     M2C_UNK GX_SetBankForSubOBJ(s32);
     M2C_UNK GX_SetBankForOBJ(s32);
-    M2C_UNK func_02002ab8(s32);
+    M2C_UNK GX_SetBankForBGExtPalette(s32);
     M2C_UNK GX_SetBankForBGExtPlttSub(s32);
     M2C_UNK GX_SetBankForOBJExtPlttSub(s32);
     M2C_UNK ApplyScreenMode(s32);
@@ -67,12 +67,12 @@ void InitIntroScene(void *logo) {
     s32 engineIndex;
     s32 engine;
 
-    func_02082c84();
+    GX_ReleaseBankGrants();
     GX_SetBankForBG(3);
-    func_02003124(4);
+    GX_SetBankForSubBG(4);
     GX_SetBankForSubOBJ(8);
     GX_SetBankForOBJ(0x10);
-    func_02002ab8(0x60);
+    GX_SetBankForBGExtPalette(0x60);
     GX_SetBankForBGExtPlttSub(0x80);
     GX_SetBankForOBJExtPlttSub(0x100);
     ConfigureIntroScreens(logo);
@@ -107,20 +107,24 @@ void InitIntroScene(void *logo) {
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-void InitIntroLogo(void *arg0) {
-    if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {
-        M2C_FIELD(arg0, s16 *, 0x34) = 0;
-        M2C_FIELD(arg0, s8 *, 0x39) = 0;
-        M2C_FIELD(arg0, s8 *, 0x36) = 0;
-        M2C_FIELD(arg0, s8 *, 0x37) = 0x20;
-        M2C_FIELD(arg0, u8 *, 0x38) = 1U;
+/* Start the intro logo's first animation: if it has not started yet (INTRO_STATE
+ * 0) begin the opening animation (state 1); otherwise the initial call already
+ * picked the opening, so advance to state 2.  Either way the state timer is
+ * reset, the stage and sub-state cleared and animation 0x20 selected. */
+void InitIntroLogo(void *logo) {
+    if (M2C_FIELD(logo, u8 *, INTRO_STATE) == 0) {
+        M2C_FIELD(logo, u16 *, INTRO_TIMER) = 0;
+        M2C_FIELD(logo, u8 *, INTRO_STAGE) = 0;
+        M2C_FIELD(logo, u8 *, INTRO_SUBSTATE) = 0;
+        M2C_FIELD(logo, u8 *, INTRO_ANIM) = 0x20;
+        M2C_FIELD(logo, u8 *, INTRO_STATE) = 1U;
         return;
     }
-    M2C_FIELD(arg0, s16 *, 0x34) = 0x20;
-    M2C_FIELD(arg0, s8 *, 0x39) = 0;
-    M2C_FIELD(arg0, s8 *, 0x36) = 0;
-    M2C_FIELD(arg0, s8 *, 0x37) = 0x20;
-    M2C_FIELD(arg0, u8 *, 0x38) = 2U;
+    M2C_FIELD(logo, u16 *, INTRO_TIMER) = 0x20;
+    M2C_FIELD(logo, u8 *, INTRO_STAGE) = 0;
+    M2C_FIELD(logo, u8 *, INTRO_SUBSTATE) = 0;
+    M2C_FIELD(logo, u8 *, INTRO_ANIM) = 0x20;
+    M2C_FIELD(logo, u8 *, INTRO_STATE) = 2U;
 }
 
 /* Pick the intro logo's next state and animation from its presentation mode:

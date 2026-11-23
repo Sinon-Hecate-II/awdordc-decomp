@@ -67,8 +67,11 @@
  * at the start of the AI's turn (CountEnemyProperties). */
 #define AI_COMMAND_STATE_ENEMY_PROPERTIES 0x04 /* u8 enemy property total */
 #define AI_COMMAND_STATE_CAPTURE_PUSH     0x20 /* bit of the above: the enemies hold enough properties that infantry and mechs head straight for any property */
-#define AI_COMMAND_STATE_ATTACKER   0x0C /* u8 kind of the unit the AI is evaluating an attack with */
-#define AI_COMMAND_STATE_PLAYER     0x0D /* u8 player slot the AI is acting for */
+/* The weather the AI plans with: +0x0C is the map's current weather (MAP_WEATHER);
+ * +0x0D is the weather movement and range are estimated for, clear (0) while the
+ * weather may change by itself. */
+#define AI_COMMAND_STATE_WEATHER      0x0C /* u8 the map's current weather (MAP_WEATHER) */
+#define AI_COMMAND_STATE_PLAN_WEATHER 0x0D /* u8 weather the AI plans movement and range with */
 
 /* The AI action's two unit-move objects are kept in the pointer slots just past
  * gAiCommandTimer (the same slots as data_ov000_021e146c[0] and [1]).  The step
@@ -118,6 +121,7 @@ enum AiCargoDropDirection {
 
 /* Layout of one unit-kind record in gUnitKindStats. */
 #define UNIT_KIND_STATS_SIZE   112 /* bytes per unit kind */
+#define UNIT_KIND_STATS_COST   0x00 /* u16 the kind's build cost (GetUnitKindBuildCost; 0 = the kind cannot be built) */
 #define UNIT_KIND_STATS_CARGO_COUNT 0x60 /* u8 number of units the kind can carry (its cargo slots) */
 #define UNIT_KIND_STATS_LOAD_CLASS  0x61 /* u8 the kind's carry class, a column in the load mask below */
 #define UNIT_KIND_STATS_LOAD_MASK   0x62 /* u8 per load class: nonzero when the kind may be carried by a kind of that class */

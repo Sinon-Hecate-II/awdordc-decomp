@@ -181,9 +181,13 @@ void AddTileRectPalette(u16 *tilemap, s32 width, s32 height, u32 palette) {
         }
 }
 
-void ClearTileRect(u16 *p,s32 w,s32 h){
- s32 x,y;
- for(y=0;y<h;y++)for(x=0;x<w;x++)p[y*32+x]=0;
+/* Clear a width x height rectangle of tilemap words starting at tilemap,
+ * walking the map's TILEMAP_ROW_TILES-tile rows. */
+void ClearTileRect(u16 *tilemap, s32 width, s32 height) {
+    s32 x, y;
+    for (y = 0; y < height; y++)
+        for (x = 0; x < width; x++)
+            tilemap[y * TILEMAP_ROW_TILES + x] = 0;
 }
 
 /* Copy a width x height rectangle of tiles from one 32-tile-wide `tilemap`
@@ -249,12 +253,14 @@ void func_02080bd4(void) {
     func_0200beec(HeapAllocBlock(), temp_r4);
 }
 
-s32 func_02080c00(void *a) {
+/* Return the size in bytes of the file at `path`, or 0 when it cannot be
+ * opened.  A temporary filesystem request is opened and closed around the size. */
+s32 GetFileSize(void *path) {
  void InitFileRequest(void *);s32 OpenFileRequest(void *,void *);void CloseFileRequest(void *);
- s32 buf[18];s32 n;
- InitFileRequest(buf);
- if(!OpenFileRequest(buf,a))return 0;
- n=buf[10]-buf[9];CloseFileRequest(buf);return n;
+ void *request[18];s32 size;
+ InitFileRequest(request);
+ if(!OpenFileRequest(request,path))return 0;
+ size=M2C_FIELD(request,u32 *,FS_REQ_FILE_END)-M2C_FIELD(request,u32 *,FS_REQ_FILE_START);CloseFileRequest(request);return size;
 }
 
 /* Reads the whole file at `path` into memory at `dest` in 0x2800-byte chunks and
@@ -466,13 +472,17 @@ s32 LoadFileToNewBuffer(M2C_UNK a,M2C_UNK b) {
  HeapFreeBlock(p);return 0;
 }
 
-s32 LoadFileToSpriteBuffer(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+/* Load the file `path` into the current 3D sprite engine's OBJ palette shadow at
+ * byte `offset`, then mark the palette dirty so it is uploaded on the next
+ * flush. Returns 0 when the file could not be read. */
+s32 LoadFileToSpriteBuffer(M2C_UNK path, s32 offset, M2C_UNK size) {
     s32 ReadFileSection(M2C_UNK, s32, M2C_UNK, M2C_UNK);
     extern void *gCur3DSpriteEngine;
-    if (ReadFileSection(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, 0, arg2) == 0) {
+
+    if (ReadFileSection(path, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + offset, 0, size) == 0) {
         return 0;
     }
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_PALETTE);
     return 1;
 }
 
@@ -493,16 +503,20 @@ s32 LoadFileToBGExtPltt(M2C_UNK path, s32 paletteSlot, s32 offset, s32 size) {
  HeapFreeBlock(buffer); return 1;
 }
 
-s32 func_02081254(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Load the file at `path` and queue an upload of its `size` bytes into the BG
+ * extended palette at byte `offset`, `paletteSlot` (0x2000 bytes each) further
+ * into it; the file buffer is freed after the upload.  Returns 1, or 0 when the
+ * file could not be read. */
+s32 QueueFileToBGExtPltt(M2C_UNK path, M2C_UNK paletteSlot, M2C_UNK offset, M2C_UNK size) {
     M2C_UNK QueueBGExtPaletteUpload(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 LoadFileToNewBuffer(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 buffer;
 
-    temp_r0 = LoadFileToNewBuffer(arg0, arg3);
-    if (temp_r0 == 0) {
+    buffer = LoadFileToNewBuffer(path, size);
+    if (buffer == 0) {
         return 0;
     }
-    QueueBGExtPaletteUpload(temp_r0, arg1, arg2, arg3, 1);
+    QueueBGExtPaletteUpload(buffer, paletteSlot, offset, size, 1);
     return 1;
 }
 
@@ -545,13 +559,13 @@ s32 func_02081384(M2C_UNK arg0, M2C_UNK arg1) {
 
 s32 func_020813c4(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK DC_FlushRange(s32, s32);
-    M2C_UNK func_0207c464(s32, M2C_UNK, s32, M2C_UNK);
+    M2C_UNK QueueTextureBankCopy(s32, M2C_UNK, s32, M2C_UNK);
     s32 sp0;
     s32 temp_r0;
 
     temp_r0 = LoadDecompressedFileBuffer(arg0, 0, &sp0);
     DC_FlushRange(temp_r0, sp0);
-    func_0207c464(temp_r0, arg1, sp0, 1);
+    QueueTextureBankCopy(temp_r0, arg1, sp0, 1);
     return sp0;
 }
 

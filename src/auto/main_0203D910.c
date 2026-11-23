@@ -403,11 +403,13 @@ s32 func_0203e2a4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetCo
 
 s32 func_0203e2c4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xe); }
 
+/* Store the number of present player slots (the set bits of CONN_SESSION_PLAYER_MASK,
+ * minus one; 0 when there is none) as CONN_SESSION_ACTIVE_MAX. */
 void UpdateConnectedPlayerCount(void) {
- s32 n=-1; s32 i;
- for(i=0;i<32;i++) { if(M2C_FIELD(GetConnection(),s32 *,0x2f0) & (1<<i)) n++; }
- if(n==-1) { M2C_FIELD(GetConnection(),u8 *,0xe)=0; return; }
- M2C_FIELD(GetConnection(),u8 *,0xe)=n;
+ s32 playerCount=-1; s32 bit;
+ for(bit=0;bit<32;bit++) { if(M2C_FIELD(GetConnection(),s32 *,CONN_SESSION_PLAYER_MASK) & (1<<bit)) playerCount++; }
+ if(playerCount==-1) { M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX)=0; return; }
+ M2C_FIELD(GetConnection(),u8 *,CONN_SESSION_ACTIVE_MAX)=playerCount;
 }
 
 s32 GetPeerSlotList(s32 *arg0) { if(GetConnection()==0)return 0; *arg0=GetConnection()+0x2d0; return M2C_FIELD(GetConnection(),u8 *,0xd)+1; }

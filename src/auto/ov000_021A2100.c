@@ -196,7 +196,7 @@ gAiState[14]=best[0];gAiState[15]=best[1];return 1;
 s32 func_ov000_021a2db8(void) {
  void FloodFillUnitRange(s32,s32,s32,s32,s32);
  s32 PlayerHasHq(u16); s32 GetUnitBuildCost(u16,u8);
- s32 func_ov000_0217bc84(s32,s32,s32);
+ s32 CanReachOwnedBase(s32,s32,s32);
  void CommitAiAction(s32); s32 FindBaseTargetCandidate(void);
  extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
  extern void *gAiCommandState; extern u8 gAiCommand[];
@@ -217,7 +217,7 @@ s32 func_ov000_021a2db8(void) {
  }while(unitIndex<gPlayerUnitIdBase[M2C_FIELD(*gCurrentMap,u16 *,0x52a4)]+51);
  }
  unit=map+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*140;
- if(func_ov000_0217bc84(unit[43]&127,unit[44]&127,4)!=0 && (s32)M2C_FIELD(*gCurrentMap,u16 *,0x52a2)<10)return 0;
+ if(CanReachOwnedBase(unit[43]&127,unit[44]&127,4)!=0 && (s32)M2C_FIELD(*gCurrentMap,u16 *,0x52a2)<10)return 0;
  map=*gCurrentMap;unit=map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;
  FloodFillUnitRange(unit[43]&127,unit[44]&127,7,110,0);
  choice=FindBaseTargetCandidate();if(choice==-1)return 0;

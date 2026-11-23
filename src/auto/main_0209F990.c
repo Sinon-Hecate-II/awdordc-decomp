@@ -10,7 +10,7 @@ extern u8 gMovementTypeTable[];
 #pragma opt_strength_reduction off
 s32 func_0209f990(void) {
     void func_0209f8c0(void);
-    void func_0209f8f8(s32, s32, s32, s32);
+    void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
@@ -43,7 +43,7 @@ s32 func_0209f990(void) {
                             if (func_020d27a4(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                                 func_020d166c(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), id, (void *)((u8 *)*gCurrentMap + 0x52dc));
                                 if (M2C_FIELD((u8 *)*gCurrentMap, s16 *, 0x6ed6) != 0) {
-                                    func_0209f8f8(x, y, id, 0);
+                                    AppendTargetEntry(x, y, id, 0);
                                 }
                             }
                         } else {
@@ -59,7 +59,7 @@ s32 func_0209f990(void) {
                                 }
                                 func_020d1690(M2C_FIELD((u8 *)*gCurrentMap, u8 *, 0x52d4), visible, (void *)((u8 *)*gCurrentMap + 0x52dc));
                                 if (M2C_FIELD((u8 *)*gCurrentMap, s16 *, 0x6ed6) != 0) {
-                                    func_0209f8f8(x, y, 0, (s32)(u16)visible);
+                                    AppendTargetEntry(x, y, 0, (s32)(u16)visible);
                                 }
                             }
                         }
@@ -77,7 +77,7 @@ next_cell:
 #pragma opt_common_subs off
 s32 func_0209fb70(void) {
     void func_0209f8c0(void);
-    void func_0209f8f8(s32, s32, s32, s32);
+    void AppendTargetEntry(s32, s32, s32, s32);
     s32 GetTileTargetKind(s32, s32);
     void *FindMapOrderAtTile(s32, s32);
     u8 func_020d27a4(s32, s32);
@@ -109,7 +109,7 @@ s32 func_0209fb70(void) {
             if (id != 0) {
                 if (func_020d27a4(M2C_FIELD((M2C_UNK *)*gCurrentMap, u8 *, 0x52d4), id) == 0) {
                     if (func_020d0a08(M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), (u8 *)(M2C_UNK *)*gCurrentMap + 0x59a4 + id * 14) != 0) {
-                        func_0209f8f8(x, y, id, 0);
+                        AppendTargetEntry(x, y, id, 0);
                     }
                 }
             } else {
@@ -124,7 +124,7 @@ s32 func_0209fb70(void) {
                         }
                     }
                     if (CanUnitDamageKind((u8 *)M2C_FIELD((M2C_UNK *)*gCurrentMap, M2C_UNK *, 0x52d0), visible) != 0) {
-                        func_0209f8f8(x, y, 0, (s32)(u16)visible);
+                        AppendTargetEntry(x, y, 0, (s32)(u16)visible);
                     }
                 }
             }

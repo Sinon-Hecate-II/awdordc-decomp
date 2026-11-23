@@ -70,7 +70,7 @@ void func_ov001_02176ffc(void) {
  * region-selection menu. */
 void Ov001_HandleWfcSettingsChoice(void) {
     void Ov001_WfcSettingsExit(void);
-    void func_ov001_021771a4(void);
+    void Ov001_WfcSettingsRegionChoiceStep(void);
     s32 choice;
     choice = Ov001_GetIconRowSelection();
     switch (choice) {
@@ -82,7 +82,7 @@ void Ov001_HandleWfcSettingsChoice(void) {
         Ov001_PlaySound(OV001_SOUND_CONFIRM);
         Ov001_ShowMessage(0x18, 0, 1, -1, 0);
         Ov001_LockIconRow();
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021771a4);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsRegionChoiceStep);
         return;
     }
 }
@@ -141,26 +141,29 @@ void Ov001_CloseWfcSettingsScreen(void) {
     Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177214);
 }
 
-void func_ov001_021771a4(void) {
-    void func_ov001_021771f4(void);
+/* WFC-settings screen step after its popup opened: read the region menu's answer
+ * (1 = reset the WFC settings, 0 = cancel) and play the matching sound, then
+ * close the popup and wait for it to finish closing. */
+void Ov001_WfcSettingsRegionChoiceStep(void) {
+    void Ov001_WfcSettingsRegionClosed(void);
     extern u8 gOv001WfcSettingsReset;
-    s32 temp_r0;
-    temp_r0 = Ov001_GetRegionMenuSelection();
-    switch (temp_r0) {
+    s32 choice;
+    choice = Ov001_GetRegionMenuSelection();
+    switch (choice) {
     case 1:
         Ov001_PlaySound(0xE);
         gOv001WfcSettingsReset = 1;
         break;
     case 0:
-        Ov001_PlaySound(7);
+        Ov001_PlaySound(OV001_SOUND_CANCEL);
         break;
     default: return;
     }
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021771f4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcSettingsRegionClosed);
 }
 
-void func_ov001_021771f4(void) {
+void Ov001_WfcSettingsRegionClosed(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
@@ -254,21 +257,25 @@ void func_ov001_021773a0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_021773c0;
+    extern M2C_UNK Ov001_ResetProfileFadeToWhite;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_021773c0);
+    Ov001_SetStepCallback(&Ov001_ResetProfileFadeToWhite);
 }
 
-void func_ov001_021773c0(void) {
-    void func_ov001_0217740c(void);
-    if (Ov001_IsFadeActive(1) != 0) return;
-    Ov001_StartFade(3, 1, 0x3F, 0x40);
-    Ov001_StartFade(3, 0, 0x3F, 0x40);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217740c);
+/* Final step of the Wi-Fi profile reset flow: once the icon row's fade-in has
+ * finished, fade both screens to white over 64 frames across every blend target,
+ * then hand over to the step that waits for the fades and lets the display
+ * sleep. */
+void Ov001_ResetProfileFadeToWhite(void) {
+    void Ov001_WaitResetFadeAndSleep(void);
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) return;
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_ALL, 0x40);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_ALL, 0x40);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitResetFadeAndSleep);
 }
 
-void func_ov001_0217740c(void) {
+void Ov001_WaitResetFadeAndSleep(void) {
     M2C_UNK WaitCycles(M2C_UNK);
     M2C_UNK WakeDisplayWait();
     s32 Ov001_IsFadeActive(M2C_UNK);
@@ -390,21 +397,24 @@ void func_ov001_021777e0(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
-    extern M2C_UNK func_ov001_02177800;
+    extern M2C_UNK Ov001_FadeOutMacAddress;
     Ov001_LockIconRow();
     Ov001_StartDelay(8);
-    Ov001_SetStepCallback(&func_ov001_02177800);
+    Ov001_SetStepCallback(&Ov001_FadeOutMacAddress);
 }
 
-void func_ov001_02177800(void) {
+/* Fade out the ov001 MAC-address screen: wait for the icon row's fade-in, slide
+ * the row out, start the fades of the sub screen and of the main screen's
+ * backgrounds and sprites, then move on to closing the screen. */
+void Ov001_FadeOutMacAddress(void) {
     M2C_UNK Ov001_StartIconRowSlideOut();
     extern M2C_UNK Ov001_CloseMacAddressScreen;
-    if (Ov001_IsFadeActive(1) != 0) {
+    if (Ov001_IsFadeActive(OV001_FADE_SUB) != 0) {
         return;
     }
     Ov001_StartIconRowSlideOut();
-    Ov001_StartFade(3, 1, 1, 8);
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_SUB, OV001_BLEND_BG0, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseMacAddressScreen);
 }
 

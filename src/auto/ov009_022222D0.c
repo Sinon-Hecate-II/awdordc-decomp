@@ -394,30 +394,34 @@ s32 func_ov009_02222ac4(void) {
 }
 
 void func_ov009_02222b04(void *arg0) {
-    s32 func_ov009_02222b3c();
+    s32 StartLinkChildIndicate();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SignalLinkEvent();
         SetLinkPhase(8);
         return;
     }
-    if (func_ov009_02222b3c() != 0) {
+    if (StartLinkChildIndicate() != 0) {
         return;
     }
     SetLinkPhase(8);
 }
 
-s32 func_ov009_02222b3c(void) {
-    s32 func_02012474(M2C_UNK *);
+/* Queue the Download Play child-indication task, whose callback HandleLinkChildIndicate
+ * reports child connect/disconnect events: a task that fails to queue aborts the link,
+ * otherwise this console marks itself connected and clears the handled link results.  A
+ * link already up (phase 4 or 5) needs nothing. */
+s32 StartLinkChildIndicate(void) {
+    s32 func_02012474(void (*)(void *));
     M2C_UNK SetConnectedPlayers(s32);
     M2C_UNK ClearLinkEventFlags();
     void SignalLinkError();
-    extern M2C_UNK func_ov009_02222b8c;
-    s32 state = GetLinkPhase();
-    switch (state) {
-    case 4:
-    case 5: return 1;
+    void HandleLinkChildIndicate(void *);
+    s32 phase = GetLinkPhase();
+    switch (phase) {
+    case LINK_PHASE_ACTIVE:
+    case LINK_PHASE_INGAME: return 1;
     default:
-        if (func_02012474(&func_ov009_02222b8c) != 2) {
+        if (func_02012474(&HandleLinkChildIndicate) != LINK_TASK_QUEUED) {
             SignalLinkError();
             return 0;
         }
@@ -429,7 +433,7 @@ s32 func_ov009_02222b3c(void) {
 
 #pragma opt_common_subs off
 #pragma opt_propagation off
-void func_ov009_02222b8c(void *event) {
+void HandleLinkChildIndicate(void *event) {
     s32 StartLinkSession(void);
     void SignalLinkEvent(s32);
     void SignalLinkError();

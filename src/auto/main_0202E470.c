@@ -40,7 +40,7 @@ void Sound_CloseMemorySource(void);
 #pragma push
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_0202e470(void *arg0) {
+void Sound_FillRequestBuffers(void *arg0) {
     void LockMutex(void *);
     void UnlockMutex(void *);
     M2C_UNK DC_FlushRange(s32, u32);
@@ -397,13 +397,16 @@ void Sound_CloseMemorySource(void) {
 }
 
 #pragma opt_common_subs off
-void Sound_WorkerThread(void *arg0) {
-void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *func_0202e09c(void *);void func_0202e470(void *);void Sound_FreeRequest(void *);
-void *p;char *base=(char*)arg0; base+=0xc8;
-for(;;){OS_SleepThread((char*)arg0+0x4c0);for(;;){
-LockMutex((char*)base+0x400);p=func_0202e09c((char*)arg0+0x4e0);
-if(!p){UnlockMutex((char*)base+0x400);break;}
-func_0202e470(p);Sound_FreeRequest(p);UnlockMutex((char*)base+0x400);
+/* Body of the sound worker task: sleep on its wait queue, then, while holding
+ * the request-queue mutex, fill each pending segment request and free it. */
+void Sound_WorkerThread(void *worker) {
+void OS_SleepThread(void *);void LockMutex(void *);void UnlockMutex(void *);void *Sound_DequeueRequest(void *);void Sound_FillRequestBuffers(void *);void Sound_FreeRequest(void *);
+void *request;
+char *task=(char*)worker; task+=0xC8; /* the queue mutex (SOUND_TASK_LOCK, 0x4C8) is task + 0x400 */
+for(;;){OS_SleepThread((char*)worker+SOUND_TASK_WAIT_QUEUE);for(;;){
+LockMutex(task+0x400);request=Sound_DequeueRequest((char*)worker+SOUND_TASK_REQUEST_QUEUE);
+if(!request){UnlockMutex(task+0x400);break;}
+Sound_FillRequestBuffers(request);Sound_FreeRequest(request);UnlockMutex(task+0x400);
 }}
 }
 #pragma opt_common_subs reset

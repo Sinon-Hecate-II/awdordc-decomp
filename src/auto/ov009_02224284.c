@@ -655,11 +655,11 @@ s32 PublishLinkPlayerRecord(void) {
 }
 
 s32 func_ov009_02224ca4(void) {
-    s32 func_ov009_02223e5c();
+    s32 AddLinkEventListener();
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
-    if (func_ov009_02223e5c() != 0) {
+    if (AddLinkEventListener() != 0) {
         return 1;
     }
     SetLinkPhase(8);

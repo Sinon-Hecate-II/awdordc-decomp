@@ -31,45 +31,47 @@ void func_020af7ac(void) {
         *q++ = (i++, zero);
     } while (i < 2);
 }
+/* Count each effect slot's volume and variant sound hold-off timers down by one
+ * frame; a timer stops at zero. */
 void TickSlotSoundDelays(void) {
     extern u8 gSlotVariantSoundDelay[];
     extern u8 gSlotVolumeSoundDelay[];
-    s32 var_r1;
-    u8 *var_r2;
-    u8 *var_r3;
-    u8 temp_r0;
-    u8 temp_r0_2;
+    s32 slot;
+    u8 *volumeDelay;
+    u8 *variantDelay;
+    u8 volumeRemaining;
+    u8 variantRemaining;
 
-    var_r2 = gSlotVolumeSoundDelay;
-    var_r3 = gSlotVariantSoundDelay;
-    var_r1 = 0;
+    volumeDelay = gSlotVolumeSoundDelay;
+    variantDelay = gSlotVariantSoundDelay;
+    slot = 0;
     do {
-        temp_r0 = *var_r2;
-        var_r1 += 1;
-        if (temp_r0 != 0) {
-            *var_r2 = temp_r0 - 1;
+        volumeRemaining = *volumeDelay;
+        slot += 1;
+        if (volumeRemaining != 0) {
+            *volumeDelay = volumeRemaining - 1;
         }
-        temp_r0_2 = *var_r3;
-        var_r2 += 1;
-        if (temp_r0_2 != 0) {
-            *var_r3 = temp_r0_2 - 1;
+        variantRemaining = *variantDelay;
+        volumeDelay += 1;
+        if (variantRemaining != 0) {
+            *variantDelay = variantRemaining - 1;
         }
-        var_r3 += 1;
-    } while (var_r1 < 2);
+        variantDelay += 1;
+    } while (slot < 2);
 }
 
 void PlaySlotSound(s32 arg0, s32 arg1) {
     M2C_UNK PlaySoundEffect(s32);
-    M2C_UNK SetSoundEffectVolume(M2C_UNK);
+    M2C_UNK SetSoundEffectPan(M2C_UNK);
     if (arg1 == 0) {
         return;
     }
     PlaySoundEffect(arg1);
     if (arg0 == 0) {
-        SetSoundEffectVolume(-0x80);
+        SetSoundEffectPan(-0x80);
         return;
     }
-    SetSoundEffectVolume(0x7F);
+    SetSoundEffectPan(0x7F);
 }
 
 /* Replaces effect `slot`'s sound with the effect's intensity sound, panned left

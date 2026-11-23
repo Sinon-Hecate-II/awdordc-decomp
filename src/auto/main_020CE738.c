@@ -97,7 +97,7 @@ void ResetBattleMap(void) {
     extern void **gCurrentMap;
     void RefreshMapCursorCellCache(void);
     void func_0207ce28(void *);
-    void func_020d4754(void);
+    void ResetMapViewHold(void);
     void func_020d47b0(void);
     void ResetMapUnits(void);
     void func_020a45cc(void);
@@ -128,7 +128,7 @@ void ResetBattleMap(void) {
     *(u8 *)((u8 *)*gCurrentMap + 0x52ae) = 0;
     *(u8 *)((u8 *)*gCurrentMap + 0x52af) = 0;
 
-    func_020d4754();
+    ResetMapViewHold();
     func_020d47b0();
 
     gLinkAiCommandStage = 0;
@@ -265,20 +265,22 @@ void BuildMapRowOffsets(void) {
         M2C_FIELD((u8 *)*gCurrentMap + row * 2, u16 *, MAP_ROW_OFFSETS) = row * M2C_FIELD(*gCurrentMap, u16 *, MAP_WIDTH);
 }
 #pragma opt_strength_reduction reset
-void LoadPlayerArmies(M2C_UNK arg0) {
+/* Set every player slot's player id from map `mapId`'s per-player assignment:
+ * slot 0 is always id 0, slots 1..4 take the id the map data gives them. */
+void LoadPlayerArmies(M2C_UNK mapId) {
     M2C_UNK SetPlayerIdForSlot(s32, s32);
-    s32 func_020a8a4c(M2C_UNK, s32);
-    s32 var_r5;
+    s32 GetMapPlayerId(M2C_UNK, s32);
+    s32 player;
 
-    var_r5 = 0;
+    player = 0;
     do {
-        if (var_r5 == 0) {
-            SetPlayerIdForSlot(var_r5, 0);
+        if (player == 0) {
+            SetPlayerIdForSlot(player, 0);
         } else {
-            SetPlayerIdForSlot(var_r5, func_020a8a4c(arg0, var_r5));
+            SetPlayerIdForSlot(player, GetMapPlayerId(mapId, player));
         }
-        var_r5 += 1;
-    } while (var_r5 < 5);
+        player += 1;
+    } while (player < 5);
 }
 
 #pragma opt_strength_reduction off
@@ -348,13 +350,16 @@ void LoadBattleMap(s32 id)
   FreeMapTileData();
 }
 #pragma opt_strength_reduction reset
-void func_020cf278(s32 arg0) {
+/* Preload the terrain tileset graphics of the map with id `mapId`: point the
+ * current map's tileset at that map's, reload the tileset, then put the current
+ * map's own tileset back. */
+void PreloadMapTileset(s32 mapId) {
 s32 MapData_GetTileset(s32); void LoadMapTileset(void);
 extern void **gCurrentMap;
-u8 old=M2C_FIELD(*gCurrentMap,u8 *,0x5157);
-M2C_FIELD(*gCurrentMap,u8 *,0x5157)=MapData_GetTileset(arg0);
+u8 oldTileset=M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET);
+M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET)=MapData_GetTileset(mapId);
 LoadMapTileset();
-M2C_FIELD(*gCurrentMap,u8 *,0x5157)=old;
+M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET)=oldTileset;
 }
 
 void func_020cf2c8(void) {

@@ -312,7 +312,7 @@ M2C_UNK SwapBattleScreenCapture(s32 *phase) {
     if (*phase & 1) {
         REG_POWCNT1 |= POWCNT1_LCD_SWAP;
         func_020033f4();
-        func_02003124(4);
+        GX_SetBankForSubBG(4);
         func_02003104(8);
         capture = DISPCAPCNT_CAPTURE_3D;
         REG_DISPCAPCNT = capture;
@@ -380,20 +380,20 @@ gCur3DSpriteEngine=old;
 #pragma opt_strength_reduction on
 void SwapBattleScreen(void) {
     M2C_UNK SwapBattleScreenCapture(M2C_UNK *);
-    extern M2C_UNK data_ov002_021f3014;
-    SwapBattleScreenCapture(&data_ov002_021f3014);
+    extern M2C_UNK gBattleSpriteState;
+    SwapBattleScreenCapture(&gBattleSpriteState);
 }
 
 void UpdateBattleSpriteLayers(void) {
     M2C_UNK func_ov002_021e3a7c(M2C_UNK *);
-    extern M2C_UNK data_ov002_021f3014;
-    func_ov002_021e3a7c(&data_ov002_021f3014);
+    extern M2C_UNK gBattleSpriteState;
+    func_ov002_021e3a7c(&gBattleSpriteState);
 }
 
 void DrawBattleSpriteGrid(void) {
 
-    extern M2C_UNK data_ov002_021f3014;
-    func_ov002_021e3b7c(&data_ov002_021f3014);
+    extern M2C_UNK gBattleSpriteState;
+    func_ov002_021e3b7c(&gBattleSpriteState);
 }
 
 /* Prepare the battle screen's 3D-sprite overlay: clear the two shared VRAM banks,
@@ -401,7 +401,7 @@ void DrawBattleSpriteGrid(void) {
  * palettes, then install the three per-frame callbacks that swap the two screen
  * halves, reconfigure the layers and draw the sprite grid.  `phase` is the half
  * currently shown. */
-void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void SetLayerSize(s32,s32);void func_0209cce4(s32,s32);
+void InitBattleSpriteScene(s32 *phase) {M2C_UNK func_020033e0(void);M2C_UNK func_020033f4(void);void Set3DSpriteLayerPalette(s32,s32);void SetLayerSize(s32,s32);void CreateFrameCallbackTask(s32,s32);
 extern volatile u16 *g3DSpriteBankSub;extern u32 gCur3DSpriteEngine;extern u32 g3DSpriteEngineSub;
 func_020033e0();func_020033f4();
 g3DSpriteBankSub[0]=(u16)((g3DSpriteBankSub[0]&~0x7)|0x3);
@@ -417,16 +417,16 @@ g3DSpriteBankSub[6]=(u16)((g3DSpriteBankSub[6]&~0x3C)|0x4);
 g3DSpriteBankSub[6]=(u16)(g3DSpriteBankSub[6]|0x80);
 Set3DSpriteLayerPalette(3,0);SetLayerSize(3,1);gCur3DSpriteEngine=savedEngine;}
 *phase=0;
-func_0209cce4((s32)SwapBattleScreen,2);
-func_0209cce4((s32)UpdateBattleSpriteLayers,7);
-func_0209cce4((s32)DrawBattleSpriteGrid,9);
+CreateFrameCallbackTask((s32)SwapBattleScreen,2);
+CreateFrameCallbackTask((s32)UpdateBattleSpriteLayers,7);
+CreateFrameCallbackTask((s32)DrawBattleSpriteGrid,9);
 }
 
 void func_ov002_021e3dd4(void) {
-    M2C_UNK func_0209cd00(void (*)(void));
-    func_0209cd00(SwapBattleScreen);
-    func_0209cd00(UpdateBattleSpriteLayers);
-    func_0209cd00(DrawBattleSpriteGrid);
+    M2C_UNK DeleteFrameCallbackTask(void (*)(void));
+    DeleteFrameCallbackTask(SwapBattleScreen);
+    DeleteFrameCallbackTask(UpdateBattleSpriteLayers);
+    DeleteFrameCallbackTask(DrawBattleSpriteGrid);
 }
 
 s32 IsBattleScreenSwapped(s32 *arg0) {

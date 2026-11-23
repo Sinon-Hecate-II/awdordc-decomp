@@ -175,14 +175,16 @@ void MarkPlayerDefeated(s32 player, s32 reason) {
     AddRecordValue(0x16, 1);
 }
 
-void ShowArmyDefeatMessage(s32 arg0) {
+/* Shows the defeat message of `player`'s army: the player record's 1-based army
+ * index selects one of the four per-army message ids. */
+void ShowArmyDefeatMessage(s32 player) {
     typedef struct { s32 entries[4]; } Table;
     M2C_UNK ShowUiMessage(s32);
     extern void **gCurrentMap;
     extern Table gArmyDefeatMessageIds;
-    Table sp0;
-    sp0 = gArmyDefeatMessageIds;
-    ShowUiMessage(sp0.entries[M2C_FIELD((u8 *)*gCurrentMap + arg0 * 0x8C, u8 *, 0x67C1) - 1]);
+    Table ids;
+    ids = gArmyDefeatMessageIds;
+    ShowUiMessage(ids.entries[M2C_FIELD((u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE, u8 *, MAP_PLAYER_STATES + PLAYER_REC_ARMY_INDEX) - 1]);
 }
 
 /* Starts the defeat presentation of `player`, who was removed for `reason` (a
@@ -192,14 +194,14 @@ void ShowArmyDefeatMessage(s32 arg0) {
  * check. */
 void StartPlayerDefeat(s32 player, s32 reason) {
     void ScheduleBattleEndCheck(void);
-    void func_020a3498(void);
+    void SetPlayerCoAnimationToIdle(void);
     void EndPlayerTurn(void);
     extern void **gCurrentMap;
     ShowArmyDefeatMessage(player);
     CreatePlayerDefeatSprite((u16)player, (u16)reason);
     MarkPlayerDefeated(player, reason);
     if (M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER) == player) {
-        func_020a3498();
+        SetPlayerCoAnimationToIdle();
         EndPlayerTurn();
     }
     if (reason != PLAYER_DEFEAT_LOST) return;
@@ -447,7 +449,7 @@ void func_020ca77c(M2C_UNK arg0) {
 #pragma opt_propagation off
 void func_020ca794(void *arg0) {
 extern void **gCurrentMap;
-void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void func_0209f8f8(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
+void func_0209f8c0(void);void FillMapLayer(s32);s32 func_020a7714(void *);void AppendTargetEntry(s32,s32,s32,s32);s16 GetTargetCount(void);void PlaySoundEffect(s32);
 s32 y1,x0,x1,dist,v,x,y; void *p; s32 range; void *centre;
 M2C_FIELD(arg0,s16*,0x6c)=0;
 func_0209f8c0();FillMapLayer(-1);
@@ -464,7 +466,7 @@ p=*gCurrentMap;
 v=M2C_FIELD(p,s16*,0x52dc)-x;if(v<=0)v=x-M2C_FIELD(p,s16*,0x52dc);dist=0;dist+=v;
 v=M2C_FIELD(p,s16*,0x52de)-y;if(v<=0)v=y-M2C_FIELD(p,s16*,0x52de);dist=dist+v;
 if(dist<0)continue; if(dist<=func_020a7714(M2C_FIELD(p,void **,0x52d0))){
-func_0209f8f8(x,y,0,0);
+AppendTargetEntry(x,y,0,0);
 M2C_FIELD((u8*)*gCurrentMap+y*4,u8 **,0x52e8)[x]=1;
 }
 }}

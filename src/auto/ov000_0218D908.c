@@ -125,7 +125,7 @@ nextTile:
 void func_ov000_0218dda4(void) {
     M2C_UNK BuildUnitMoveRange(s32);
     M2C_UNK SetMapCursor(s16, s16, M2C_UNK, u8, s32);
-    s32 func_ov000_021aa820(s16 *, u16, M2C_UNK, M2C_UNK);
+    s32 SelectAreaEffectTargetForMode(s16 *, u16, M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     void **owner;
     s16 pos[2];
@@ -178,7 +178,7 @@ void func_ov000_0218dda4(void) {
     }
     pos[0] = (s16) var_r4;
     pos[1] = (s16) var_r5;
-    if (func_ov000_021aa820(pos, M2C_FIELD(*owner, u16 *, 0x52A4), 1, 0) != 1) {
+    if (SelectAreaEffectTargetForMode(pos, M2C_FIELD(*owner, u16 *, 0x52A4), 1, 0) != 1) {
         return;
     }
     SetMapCursor((s16) var_r4, (s16) var_r5, 0x13, (u8) pos[0], (s32) (u8) pos[1]);

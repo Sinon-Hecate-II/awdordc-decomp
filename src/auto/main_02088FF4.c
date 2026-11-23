@@ -220,31 +220,34 @@ void *InitFrameBorderSprite(void *sprite) {
     return sprite;
 }
 
-void func_020893a8(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
+/* Give frame-border sprite `sprite` the pattern at `vramOffset`: its tile row,
+ * OBJ palette row `palette` and highlight colour `color`; load the pattern's
+ * graphics and reset the sprite's first tile and priority. */
+void SetFrameBorderSpritePattern(void *sprite, u32 vramOffset, s32 palette, s32 color) {
     M2C_UNK Load3DSpritePattern(u32, s32, s32, M2C_UNK);
-    *(volatile u16 *)((s8 *)arg0 + 0x3E) = (u16)(arg1 >> 5);
+    *(volatile u16 *)((s8 *)sprite + SPRITE_ACTOR_TILE_ROW) = (u16)(vramOffset >> 5);
     {
-        s32 t = *(volatile s32 *)((s8 *)arg0 + 0x40);
-        u32 shifted = (u32)arg2 << 0x18;
-        shifted >>= 6;
-        t &= ~0x03FC0000;
-        t |= (s32)shifted;
-        *(volatile s32 *)((s8 *)arg0 + 0x40) = t;
+        s32 word = *(volatile s32 *)((s8 *)sprite + SPRITE_ACTOR_SPLIT);
+        u32 paletteBits = (u32)palette << 0x18;
+        paletteBits >>= 6;
+        word &= ~SPRITE_ACTOR_PALETTE_MASK;
+        word |= (s32)paletteBits;
+        *(volatile s32 *)((s8 *)sprite + SPRITE_ACTOR_SPLIT) = word;
     }
-    *(volatile s16 *)((s8 *)arg0 + 0x5C) = (s16)arg3;
-    Load3DSpritePattern(arg1, arg2, arg3, 2);
-    *(volatile s16 *)((s8 *)arg0 + 0x3C) = 0;
-    *(volatile s8 *)((s8 *)arg0 + 0x49) = 0;
+    *(volatile s16 *)((s8 *)sprite + FRAME_ACTOR_COLOR) = (s16)color;
+    Load3DSpritePattern(vramOffset, palette, color, 2);
+    *(volatile s16 *)((s8 *)sprite + SPRITE_ACTOR_TILE) = 0;
+    *(volatile s8 *)((s8 *)sprite + SPRITE_ACTOR_PRIORITY) = 0;
 }
 
-M2C_UNK func_020893f4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     s32 GetUiColor(M2C_UNK);
-    func_020893a8((void *)arg0, arg1, arg2, GetUiColor(9));
+    SetFrameBorderSpritePattern((void *)arg0, arg1, arg2, GetUiColor(9));
 }
 
 void func_02089424(M2C_UNK arg0) {
-    M2C_UNK func_020893f4(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020893f4(arg0, 0x1000, 1);
+    M2C_UNK LoadFrameBorderSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadFrameBorderSpritePattern(arg0, 0x1000, 1);
 }
 
 void Sync3DSpriteToTarget(void *arg0) {
@@ -443,7 +446,7 @@ void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
     u8 SetPanelChoice(M2C_UNK, s32);
     M2C_UNK GetUiColor(s32);
     M2C_UNK DrawUiGradient(M2C_UNK, M2C_UNK, s32, s32);
-    void func_02091c98(void);
+    void LoadScenePanelGraphics(void);
     void LoadScenePanelPalette(s32);
     void func_02089b18(M2C_UNK, M2C_UNK);
 
@@ -481,7 +484,7 @@ void RenderTextLayer(M2C_UNK entity, M2C_UNK arg1, u32 arg2, s32 arg3) {
             t1 = GetUiColor(0xD);
             t2 = GetUiColor(0xE);
             DrawUiGradient(0x1400, 1, t1, t2);
-            func_02091c98();
+            LoadScenePanelGraphics();
             LoadScenePanelPalette(0x12);
             func_02089b18(entity, arg3);
         }
@@ -551,24 +554,27 @@ M2C_UNK TextLayer_FreeText(void *layer) {
 }
 
 #pragma peephole off
-void TextLayer_SetText(void *arg0, s32 arg1) {
-    s32 func_0209c658(s32);
-    u32 temp_r1;
+/* Point the text layer at `text` and pick its panel kind: text holding a line
+ * break becomes a dismissable text panel, otherwise the panel's saved mode is
+ * restored over the kind. */
+void TextLayer_SetText(void *layer, s32 text) {
+    s32 Text_FindLineBreakEnd(s32);
+    u32 panelState;
 
-    M2C_FIELD(arg0, s32 *, 0x70) = arg1;
-    if (func_0209c658(arg1) != 0) {
-        M2C_FIELD(arg0, u32 *, 0x58) = (u32) ((M2C_FIELD(arg0, u32 *, 0x58) & ~7) | 1);
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_TEXT_DATA) = text;
+    if (Text_FindLineBreakEnd(text) != 0) {
+        M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) = (u32)((M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_KIND_MASK) | TEXT_LAYER_PANEL_KIND_TEXT);
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, u32 *, 0x58);
-    M2C_FIELD(arg0, u32 *, 0x58) = (u32) ((temp_r1 & ~7) | ((temp_r1 >> 0x1D) & 7));
+    panelState = M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE);
+    M2C_FIELD(layer, u32 *, TEXT_LAYER_PANEL_STATE) = (u32)((panelState & ~TEXT_LAYER_PANEL_KIND_MASK) | ((panelState >> TEXT_LAYER_PANEL_SAVED_MODE_SHIFT) & TEXT_LAYER_PANEL_KIND_MASK));
 }
 #pragma peephole reset
 void func_02089c80(void *arg0) {
- s32 func_0209c658(s32);
+ s32 Text_FindLineBreakEnd(s32);
  M2C_UNK SetSpriteAnimation(void *,s32);
  M2C_UNK DeleteSpriteObject(void *);
- s32 p=func_0209c658(M2C_FIELD(arg0,s32 *,0x70));
+ s32 p=Text_FindLineBreakEnd(M2C_FIELD(arg0,s32 *,0x70));
  if(p){TextLayer_SetText(arg0,p);SetSpriteAnimation(arg0,0);return;}
  DeleteSpriteObject(arg0);
 }

@@ -199,8 +199,8 @@ void SoundEngineUpdateTimers(void) {
 }
 
 void func_0208f5cc(void) {
-    M2C_UNK func_0208f890();
-    func_0208f890();
+    M2C_UNK FadeOutMusicDefault();
+    FadeOutMusicDefault();
 }
 
 void func_0208f5d8(void) {
@@ -302,21 +302,21 @@ s32 func_0208f75c(s32 arg0) {
 }
 
 s32 GetCurrentMusicTrack(void) {
-    extern s32 data_02102910;
-    return data_02102910;
+    extern s32 gCurrentMusicTrack;
+    return gCurrentMusicTrack;
 }
 
 M2C_UNK PlayMusicTrack(s32 arg0) {
-extern s32 data_02102910;
+extern s32 gCurrentMusicTrack;
 void func_0208f904(void);
 void StartMusicTrack(s32);
 void func_020ad594(s32);
 void func_020ad640(void);
-s32 current=data_02102910;
+s32 current=gCurrentMusicTrack;
 if(current==arg0) return current;
 func_0208f904();
 StartMusicTrack(arg0);
-data_02102910=arg0;
+gCurrentMusicTrack=arg0;
 func_020ad594(arg0);
 func_020ad640();
 }
@@ -326,20 +326,20 @@ void func_0208f7c0(void *arg0) {
 }
 
 void func_0208f7d0(s32 arg0) {
-    M2C_UNK func_0208f890();
+    M2C_UNK FadeOutMusicDefault();
     void *CreateSpriteFromClass(M2C_UNK *, s32);
-    extern s32 data_02102910;
+    extern s32 gCurrentMusicTrack;
     extern M2C_UNK data_0210295c;
-    if (data_02102910 == arg0) {
+    if (gCurrentMusicTrack == arg0) {
         return;
     }
-    func_0208f890();
+    FadeOutMusicDefault();
     M2C_FIELD(CreateSpriteFromClass(&data_0210295c, 7), s32 *, 0x5C) = arg0;
 }
 
 void func_0208f808(void) {
-    extern s32 data_02102910;
-    data_02102910 = 0xffff;
+    extern s32 gCurrentMusicTrack;
+    gCurrentMusicTrack = 0xffff;
 }
 
 void func_0208f820(void *arg0) {
@@ -351,32 +351,35 @@ void func_0208f820(void *arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_0208f844(s32 arg0) {
+/* Fade the running music out over `frames` frames (0 means one frame) by
+ * spawning the fade-out timer object; does nothing when music is stopped. */
+void FadeOutMusicOverFrames(s32 frames) {
     void FadeOutMusic(s32);
     void *CreateSpriteFromClass(M2C_UNK *, s32);
-    extern s32 data_02102910;
-    extern M2C_UNK data_02102934;
-    if (data_02102910 == 0xFFFF) {
+    extern s32 gCurrentMusicTrack;
+    extern M2C_UNK gMusicFadeOutClass;
+
+    if (gCurrentMusicTrack == MUSIC_NONE) {
         return;
     }
-    if (arg0 == 0) {
-        arg0 = 1;
+    if (frames == 0) {
+        frames = 1;
     }
-    FadeOutMusic(arg0);
-    M2C_FIELD(CreateSpriteFromClass(&data_02102934, 7), s16 *, 0x6C) = (s16)arg0;
+    FadeOutMusic(frames);
+    M2C_FIELD(CreateSpriteFromClass(&gMusicFadeOutClass, 7), s16 *, MUSIC_FADE_FRAMES) = (s16)frames;
 }
 
-M2C_UNK func_0208f890(void) {
-    void func_0208f844(s32);
-    func_0208f844(0x1E);
+M2C_UNK FadeOutMusicDefault(void) {
+    void FadeOutMusicOverFrames(s32);
+    FadeOutMusicOverFrames(0x1E);
 }
 
 u8 IsMusicFadingOut(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102934;
+    extern M2C_UNK gMusicFadeOutClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02102934) != 0) {
+    if (FindObjectByClass(&gMusicFadeOutClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -398,39 +401,42 @@ s32 func_0208f8ec(s32 a,s32 b){s32 Sound_FadeVolume(s32,s32,s32);return Sound_Fa
 void func_0208f904(void){
  M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK*);
  void FadeOutMusic(s32);
- extern M2C_UNK data_02102934,data_0210295c;
- extern s32 data_02102910;
- DeleteSpriteObjectsOfClass(&data_02102934);DeleteSpriteObjectsOfClass(&data_0210295c);
- FadeOutMusic(0);data_02102910=0xffff;
+ extern M2C_UNK gMusicFadeOutClass,data_0210295c;
+ extern s32 gCurrentMusicTrack;
+ DeleteSpriteObjectsOfClass(&gMusicFadeOutClass);DeleteSpriteObjectsOfClass(&data_0210295c);
+ FadeOutMusic(0);gCurrentMusicTrack=0xffff;
 }
 
 void func_0208f940(void *arg0) {
     M2C_FIELD(arg0, s16 *, 0x54) = 0;
 }
 
-void func_0208f94c(void *arg0) {
+/* Update the delayed one-shot sound-effect sprite: count the elapsed frames and,
+ * once SOUND_EFFECT_DELAY is reached, play SOUND_EFFECT_ID at SOUND_EFFECT_VOLUME,
+ * pan it by SOUND_EFFECT_PAN and delete the sprite. */
+void UpdateDelayedSoundEffect(void *sprite) {
     M2C_UNK DeleteSpriteObject(void *);
-    s16 temp_r1;
-    s32 temp_r4;
+    s16 elapsed;
+    s32 pan;
 
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x54);
-    M2C_FIELD(arg0, s16 *, 0x54) = (s16) (temp_r1 + 1);
-    if ((s32) temp_r1 < (s32) M2C_FIELD(arg0, s16 *, 0x52)) {
+    elapsed = M2C_FIELD(sprite, s16 *, SOUND_EFFECT_ELAPSED);
+    M2C_FIELD(sprite, s16 *, SOUND_EFFECT_ELAPSED) = (s16) (elapsed + 1);
+    if ((s32) elapsed < (s32) M2C_FIELD(sprite, s16 *, SOUND_EFFECT_DELAY)) {
         return;
     }
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x64);
-    if (func_0208fe7c(M2C_FIELD(arg0, s32 *, 0x5C), M2C_FIELD(arg0, s32 *, 0x60)) != 0) {
-        SetSoundEffectVolume(temp_r4);
+    pan = M2C_FIELD(sprite, s32 *, SOUND_EFFECT_PAN);
+    if (func_0208fe7c(M2C_FIELD(sprite, s32 *, SOUND_EFFECT_ID), M2C_FIELD(sprite, s32 *, SOUND_EFFECT_VOLUME)) != 0) {
+        SetSoundEffectPan(pan);
     }
-    DeleteSpriteObject(arg0);
+    DeleteSpriteObject(sprite);
 }
 
 void func_0208f998(s32 arg0, s16 arg1) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102984;
+    extern M2C_UNK gDelayedSoundEffectClass;
     void *temp_r0;
 
-    temp_r0 = CreateSpriteFromClass(&data_02102984, 7);
+    temp_r0 = CreateSpriteFromClass(&gDelayedSoundEffectClass, 7);
     M2C_FIELD(temp_r0, s32 *, 0x5C) = arg0;
     M2C_FIELD(temp_r0, s32 *, 0x60) = 0x7F;
     M2C_FIELD(temp_r0, s32 *, 0x64) = 0;
@@ -447,18 +453,18 @@ void func_0208f9d0(void *a){
 
 void StartLoopingSoundEffect(s32 a,s32 b){
  void *CreateSpriteFromClass(M2C_UNK*,M2C_UNK);
- extern M2C_UNK data_02102914;
- void *p=CreateSpriteFromClass(&data_02102914,7);
+ extern M2C_UNK gLoopingSoundEffectClass;
+ void *p=CreateSpriteFromClass(&gLoopingSoundEffectClass,7);
  M2C_FIELD(p,s32*,0x5c)=a;M2C_FIELD(p,s16*,0x52)=b;
 }
 
 void func_0208fa28(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_02102914;
-    DeleteSpriteObjectsOfClass(&data_02102914);
+    extern M2C_UNK gLoopingSoundEffectClass;
+    DeleteSpriteObjectsOfClass(&gLoopingSoundEffectClass);
 }
 
-s32 func_0208fa3c(void) {
+s32 GetSoundEffectVolume(void) {
     s32 GetViewZoom(s32);
     extern s32 *gCurrentMap;
     s32 var_r0;
@@ -474,49 +480,53 @@ s32 func_0208fa3c(void) {
     return 0x7F;
 }
 
-s32 func_0208fa78(s32 a,s32 b){
+/* Stereo pan (-32..32) for a sound played at map tile (tileX, tileY): based on
+ * the tile's screen x, clamped at the screen edges and eased across its width. */
+s32 MapTileToSoundPan(s32 tileX,s32 tileY){
  void MapTileToScreen(s32,s32,s32*);
  s32 EaseInterpolate(s32,s32,s32,s32,s32);
- s32 v[3];
- MapTileToScreen(a,b,v);
- if(v[0]<0)return -32;
- if(v[0]>256)return 32;
- return EaseInterpolate(0,-32,32,v[0],256);
+ s32 screen[3];
+ MapTileToScreen(tileX,tileY,screen);
+ if(screen[0]<0)return -32;
+ if(screen[0]>256)return 32;
+ return EaseInterpolate(0,-32,32,screen[0],256);
 }
 
 void func_0208facc(M2C_UNK arg0) {
-    s32 func_0208fa3c();
+    s32 GetSoundEffectVolume();
     M2C_UNK func_0208fe7c(M2C_UNK, s32);
-    func_0208fe7c(arg0, func_0208fa3c());
+    func_0208fe7c(arg0, GetSoundEffectVolume());
 }
 
 void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
     M2C_UNK PlaySlotScriptedSoundAtVolume(M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    PlaySlotScriptedSoundAtVolume(0, -1, arg0, func_0208fa3c());
+    PlaySlotScriptedSoundAtVolume(0, -1, arg0, GetSoundEffectVolume());
 }
 
 void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 func_0208fa78(M2C_UNK, M2C_UNK);
-    M2C_UNK SetSoundEffectVolume(s32);
+    s32 MapTileToSoundPan(M2C_UNK, M2C_UNK);
+    M2C_UNK SetSoundEffectPan(s32);
     s32 temp_r4;
     s32 temp_r5;
 
-    temp_r5 = func_0208fa3c();
-    temp_r4 = func_0208fa78(arg1, arg2);
+    temp_r5 = GetSoundEffectVolume();
+    temp_r4 = MapTileToSoundPan(arg1, arg2);
     if (func_0208fe7c(arg0, temp_r5) == 0) {
         return;
     }
-    SetSoundEffectVolume(temp_r4);
+    SetSoundEffectPan(temp_r4);
 }
 
-void SpawnSoundEffectAtTile(s32 a,s32 b,s32 c,s32 d){
- void *CreateSpriteFromClass(M2C_UNK*,M2C_UNK);
- extern M2C_UNK data_02102984;
- void *p=CreateSpriteFromClass(&data_02102984,7);
- M2C_FIELD(p,s32*,0x5c)=a;
- M2C_FIELD(p,s32*,0x60)=func_0208fa3c();
- M2C_FIELD(p,s32*,0x64)=func_0208fa78(b,c);
- M2C_FIELD(p,s16*,0x52)=d;
+/* Spawn a delayed one-shot sound effect: record the effect id, the current
+ * zoom-based volume, the stereo pan of the tile it plays at and the delay. */
+void SpawnSoundEffectAtTile(s32 soundId, s32 tileX, s32 tileY, s32 delay) {
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gDelayedSoundEffectClass;
+    void *sprite = CreateSpriteFromClass(&gDelayedSoundEffectClass, 7);
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_ID) = soundId;
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_VOLUME) = GetSoundEffectVolume();
+    M2C_FIELD(sprite, s32 *, SOUND_EFFECT_PAN) = MapTileToSoundPan(tileX, tileY);
+    M2C_FIELD(sprite, s16 *, SOUND_EFFECT_DELAY) = delay;
 }
 
 #pragma opt_common_subs on
@@ -598,13 +608,16 @@ void ShutdownSound(void) {
     M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_HEAP) = 0;
 }
 
-void func_0208fd40(M2C_UNK *a,s32 b,u32 c){
- u32 hi=(c&0xffff0000)>>16;u32 lo=(u16)c;
- if(hi){Sound_PlayArchiveEntry(a,b,-1,-1,hi,lo);return;}
- Sound_PlaySequence(a,b,-1,-1,lo);
+/* Play a sound effect from a packed id: the high 16 bits name the archive the
+ * sound comes from (0 for a plain sequence), the low 16 bits the sequence or
+ * archive entry. */
+void Sound_PlayPackedId(M2C_UNK *player,s32 channel,u32 packedId){
+ u32 archiveId=(packedId&0xffff0000)>>16;u32 soundId=(u16)packedId;
+ if(archiveId){Sound_PlayArchiveEntry(player,channel,-1,-1,archiveId,soundId);return;}
+ Sound_PlaySequence(player,channel,-1,-1,soundId);
 }
 
-void func_0208fd94(void) {
+void Sound_StopPlayerVoice(void) {
     M2C_UNK func_0202ac60();
     func_0202ac60();
 }
@@ -630,11 +643,11 @@ M2C_FIELD(&gSoundDriverState,u32*,SOUND_STATE_PLAYED_COUNT)=next;
 }
 s32 PlaySoundEffect(s32 a){
  s32 Sound_ClaimPlaySlot(s32);
- void func_0208fd40(M2C_UNK*,s32,u32);
+ void Sound_PlayPackedId(M2C_UNK*,s32,u32);
  extern M2C_UNK gSoundDriverState,gSoundEffectPlayer;
  u8 enabled=M2C_FIELD(&gSoundDriverState,u8*,0);
  if(enabled==0)return 0;
  if(!Sound_ClaimPlaySlot(a))return 0;
- func_0208fd40(&gSoundEffectPlayer,-1,a);return 1;
+ Sound_PlayPackedId(&gSoundEffectPlayer,-1,a);return 1;
 }
 

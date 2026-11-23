@@ -130,12 +130,12 @@ s32 UpdateMapCursorOption(s32 *option, s32 optionMask) {
 
 void func_020cae2c(void *p){
 extern void **gCurrentMap; extern s32 gMapCursorOptionValue;
-M2C_UNK func_020d472c();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
+M2C_UNK ReleaseMapViewHold();M2C_UNK OpenMapActionMenu();void DeleteSpriteObject(void *);void Sprite_ResumeAnimation(void *);void func_020c93fc(u8,u8);
 s32 mask=M2C_FIELD(p,s16 *,0x6c); s32 a=M2C_FIELD(p,s16 *,0x6e),flags; s16 selector; s32 index;u8 *units;void *map;u8 *unit;
 flags=UpdateMapCursorOption(&a,mask);
 M2C_FIELD(p,s16 *,0x6e)=a;
 if(flags&32){
-func_020d472c();OpenMapActionMenu();
+ReleaseMapViewHold();OpenMapActionMenu();
 map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c2)=M2C_FIELD(map,s16 *,0x52d8);
 map=*gCurrentMap;M2C_FIELD(map,s16 *,0x52c4)=M2C_FIELD(map,s16 *,0x52da);
 DeleteSpriteObject(p);return;
@@ -156,7 +156,7 @@ Sprite_ResumeAnimation(p);
  * snaps the target cursor back onto the cursor tile and re-arms the option; otherwise
  * it issues battle command 8 (attack) with the direction chosen for each target. */
 void ConfirmAttackCommand(void *option) {
-    M2C_UNK func_020d472c();
+    M2C_UNK ReleaseMapViewHold();
     s32 CanConfirmFirstCargoDrop();
     s32 CanConfirmSecondCargoDrop();
     M2C_UNK OpenMapActionMenu();
@@ -169,7 +169,7 @@ void ConfirmAttackCommand(void *option) {
     void *map;
     s32 dir0, dir1;
 
-    func_020d472c();
+    ReleaseMapViewHold();
     if ((CanConfirmFirstCargoDrop() == 0) || (CanConfirmSecondCargoDrop() == 0)) {
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X);
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y);

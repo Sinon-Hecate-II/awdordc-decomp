@@ -61,7 +61,7 @@ void InitBattlePreviewSprite(void *panel) {
     u8 *cell;
 
     if (unit) {
-        CreateUnitPreviewSprite(unit, panel);
+        CreateFeaturePreviewSprite(unit, panel);
         hp = M2C_FIELD(unit, u8 *, 4);
     } else {
         CreateTilePreviewSprite(M2C_FIELD(panel, s32 *, 0x38), M2C_FIELD(panel, s32 *, 0x3c), panel);
@@ -303,10 +303,10 @@ void InitBattleMapConfig(void) {
     extern void **gCurrentMap;
     extern MapConfigRecord gMapConfig;
     void ResetPlayerSetupTables(void);
-    s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 func_020a8a4c(s32,s32); s32 GetMapPlayerFlags(s32,s32);
+    s32 func_020a8a30(s32,s32); s32 func_020a8a68(s32,s32); s32 GetMapPlayerId(s32,s32); s32 GetMapPlayerFlags(s32,s32);
     void SetPlayerCoId(s32,s32); void SetPlayerArmyId(s32,s32); void SetPlayerIdForSlot(s32,s32); void SetPlayerTeam(s32,s32);
     s32 func_020a88d4(s32); s32 MapData_GetBattleSetting(s32); s32 func_020a89a4(s32); s32 MapData_GetValueLimitLow(s32); s32 MapData_GetValueLimitHigh(s32); s32 func_020a8a04(s32);
-    void func_020a88c4(s32); void func_020a4100(void); s32 MapData_GetTileset(s32);
+    void func_020a88c4(s32); void SetMapWeather(void); s32 MapData_GetTileset(s32);
     s32 player, value, fieldA, fieldB, playerFlags, team;
     u8 *base;
     s32 setting;
@@ -316,7 +316,7 @@ void InitBattleMapConfig(void) {
     for (player = 1; player < 5; player++) {
         value = func_020a8a30(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         fieldA = func_020a8a68(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
-        fieldB = func_020a8a4c(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
+        fieldB = GetMapPlayerId(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         playerFlags = GetMapPlayerFlags(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), player);
         switch (value) {
         case 0: SetPlayerCoId(player, 0); break;
@@ -343,7 +343,7 @@ void InitBattleMapConfig(void) {
     gMapConfig.flags |= 0x4000;
     gMapConfig.flags |= 0x8000;
     func_020a88c4(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
-    func_020a4100();
+    SetMapWeather();
     base = (u8 *)*gCurrentMap;
     base[MAP_TILESET] = MapData_GetTileset(M2C_FIELD(base, u16 *, MAP_ID));
     M2C_FIELD(*gCurrentMap, u8 *, 0x5155) = 0x13;
@@ -488,7 +488,19 @@ s32 GetTargetCount(void) {
 
 void *GetTargetPosition(s32 n){extern M2C_UNK gTargetList;return M2C_FIELD(&gTargetList,u8 **,4)+n*8;}
 
-void func_0209f8f8(s32 a,s32 b,s32 c,s32 d){extern M2C_UNK gTargetList;Unk09List *s=(Unk09List *)&gTargetList;Unk09Position *p=s->p;p[s->count].c=a;p[s->count].d=b;p[s->count].a=c;p[s->count].b=d;s->count++;}
+/* Append a battle-target entry for cell (x, y) to the shared target list
+ * gTargetList: the id of the unit standing there and the damage to deal (or the
+ * cell's visibility value), then bump the list's count. */
+void AppendTargetEntry(s32 x, s32 y, s32 id, s32 value) {
+    extern M2C_UNK gTargetList;
+    Unk09List *list = (Unk09List *)&gTargetList;
+    MapTargetEntry *entry = (MapTargetEntry *)list->p;
+    entry[list->count].x = x;
+    entry[list->count].y = y;
+    entry[list->count].id = id;
+    entry[list->count].value = value;
+    list->count++;
+}
 
 s32 func_0209f944(s32 a,s32 b){extern M2C_UNK gTargetList;Unk09List *s=(Unk09List *)&gTargetList;Unk09Position *p=s->p;s32 i;s32 n=s->count;for(i=0;i<n;i++,p++){if(a==p->c&&b==p->d)return 1;}return 0;}
 

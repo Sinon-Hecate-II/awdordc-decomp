@@ -3,21 +3,25 @@
 #include "battle_map.h"
 extern s32 gOccupationBackgroundNames[];
 
-void DrawMapPreview(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    M2C_UNK func_0209cce4(M2C_UNK *, M2C_UNK);
-    s32 func_020c11e4(s32);
+/* Draw the current map into a map-preview layer: create the layer's preview
+ * sprite at its VRAM once (later calls leave it alone), start the per-frame
+ * cursor colour animation, then draw the map into tile `tile` with OBJ palette
+ * `palette`. */
+void DrawMapPreview(s32 layerVram, M2C_UNK layerTiles, s32 tile, M2C_UNK palette) {
+    M2C_UNK CreateFrameCallbackTask(M2C_UNK *, M2C_UNK);
+    s32 CreateMapPreviewLayerSprite(s32);
     M2C_UNK DrawMapPreviewLayerCore(s32, M2C_UNK, s32, M2C_UNK);
-    extern M2C_UNK func_020c1364;
-    if (func_020c11e4(arg0 + (arg2 << 5)) == 0) {
+    extern M2C_UNK AnimateMapPreviewCursorColor;
+    if (CreateMapPreviewLayerSprite(layerVram + (tile << 5)) == 0) {
         return;
     }
-    func_0209cce4(&func_020c1364, 1);
-    DrawMapPreviewLayerCore(arg0, arg1, arg2, arg3);
+    CreateFrameCallbackTask(&AnimateMapPreviewCursorColor, 1);
+    DrawMapPreviewLayerCore(layerVram, layerTiles, tile, palette);
 }
 
 void RemoveMapViewSprites(void) {
- void func_0209cd00(void (*)(void)); void func_020c121c(void); void func_020c1d98(void); void func_020c1364(void);
- func_0209cd00(func_020c1364); func_020c121c(); func_020c1d98();
+ void DeleteFrameCallbackTask(void (*)(void)); void func_020c121c(void); void func_020c1d98(void); void AnimateMapPreviewCursorColor(void);
+ DeleteFrameCallbackTask(AnimateMapPreviewCursorColor); func_020c121c(); func_020c1d98();
 }
 
 /* Draw the current map into one VRAM layer of the map preview: refresh the player
@@ -59,7 +63,7 @@ void DrawMapPreviewLayer(s32 layerVram, M2C_UNK layerTilemap, s32 tile, s32 pale
     FillMapPreviewTilemap(layerTilemap, (tile & 0x3FF) | (u16) (palette << 0xC));
 }
 
-void func_020c1364(void) {
+void AnimateMapPreviewCursorColor(void) {
     M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
     extern s32 gMapPreviewPalettes;
     extern s32 gMapPreviewPaletteSlot;

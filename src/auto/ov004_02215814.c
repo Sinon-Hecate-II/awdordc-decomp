@@ -10,7 +10,7 @@ void func_ov004_02215814(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadBattleMap(s32);
-    M2C_UNK func_020cf278(s32);
+    M2C_UNK PreloadMapTileset(s32);
     M2C_UNK func_ov003_021ff36c();
     extern void *gKeyState;
     extern void *gTouchState;
@@ -449,7 +449,7 @@ loop_163:
         }
         if (var_r6_2 != NULL) {
             ResetBattleMap();
-            func_020cf278(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
+            PreloadMapTileset(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
             LoadBattleMap(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
             func_ov003_021ff36c();
         }
@@ -635,7 +635,7 @@ loop_259:
             }
             if (var_r4_3 != NULL) {
                 ResetBattleMap();
-                func_020cf278(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
+                PreloadMapTileset(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
                 LoadBattleMap(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
                 func_ov003_021ff36c();
             }

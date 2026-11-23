@@ -55,7 +55,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 Set3DSpriteVramBanks(void *);s32 Apply3DSpriteLayout(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 func_0209cce4(void *,s32);s32 PlayMusicTrack(s32);
+s32 Set3DSpriteVramBanks(void *);s32 Apply3DSpriteLayout(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 AddToU16Array(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 CreateFrameCallbackTask(void *,s32);s32 PlayMusicTrack(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;Set3DSpriteVramBanks(state);
@@ -92,16 +92,16 @@ LoadDecompressedFileTo(GetLocalizedFileName(data_ov011_02228c04),M2C_FIELD(gCur3
 LoadFileToSpriteBuffer(data_ov011_02228c0c,512,32);
 Clear25d(18,1);Clear25d(18,2);Set25d(18,4);Clear25d(18,8);Clear25d(18,16);
 Set25d(18,256);Clear25d(18,512);Clear25d(18,1024);Set25d(18,2048);Clear25d(18,4096);
-gCur3DSpriteEngine=saved;func_0209cce4(&func_ov011_0222513c,4);func_0209cce4(&func_ov011_02225224,10);PlayMusicTrack(0x10011);
+gCur3DSpriteEngine=saved;CreateFrameCallbackTask(&func_ov011_0222513c,4);CreateFrameCallbackTask(&func_ov011_02225224,10);PlayMusicTrack(0x10011);
 }
 #pragma opt_common_subs reset
 void func_ov011_022264e4(void) {
-    M2C_UNK func_0209cd00(M2C_UNK *);
+    M2C_UNK DeleteFrameCallbackTask(M2C_UNK *);
     M2C_UNK func_020af1e4();
     extern M2C_UNK func_ov011_0222513c;
     extern M2C_UNK func_ov011_02225224;
-    func_0209cd00(&func_ov011_0222513c);
-    func_0209cd00(&func_ov011_02225224);
+    DeleteFrameCallbackTask(&func_ov011_0222513c);
+    DeleteFrameCallbackTask(&func_ov011_02225224);
     func_020af1e4();
 }
 

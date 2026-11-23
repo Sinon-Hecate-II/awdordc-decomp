@@ -262,15 +262,18 @@ return 0;
 }
 unsigned int func_ov001_0216c510(unsigned int x) { unsigned int result = 0; if (x & 0x10) result = 1; return result; }
 
-int func_ov001_0216c520(int mode, int a, int b, int c) {
- void func_ov001_0216bc3c(int);
+/* Send one of the room protocol's three request kinds: announce the kind's
+ * request type and hand the state/session/context on to its request builder.
+ * Returns the builder's result, or -1 for an unknown kind. */
+int Ov001_DispatchRoomRequest(int mode, int state, int session, int context) {
+ void Ov001_SetRoomRequestType(int);
  int func_ov001_0216c574(int,int,int);
  int Ov001_SendRoomRequest(int,int,int);
  int func_ov001_0216c794(int,int,int);
  switch(mode) {
- case 0: func_ov001_0216bc3c(2); return func_ov001_0216c574(a,b,c);
- case 1: func_ov001_0216bc3c(3); return Ov001_SendRoomRequest(a,b,c);
- case 2: func_ov001_0216bc3c(5); return func_ov001_0216c794(a,b,c);
+ case 0: Ov001_SetRoomRequestType(2); return func_ov001_0216c574(state,session,context);
+ case 1: Ov001_SetRoomRequestType(3); return Ov001_SendRoomRequest(state,session,context);
+ case 2: Ov001_SetRoomRequestType(5); return func_ov001_0216c794(state,session,context);
  default: return -1;
  }
 }

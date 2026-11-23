@@ -319,7 +319,7 @@ return 0;
 }
 WFC_SetGeneralHandler(M2C_FIELD(M2C_FIELD(p,void **,8),s32 *,0x508));
 M2C_FIELD(M2C_FIELD(p,void **,8),u8 *,0x50d)=1;
-func_020168a0(); return 0;
+Mb_StartConnect(); return 0;
 }
 #pragma pop
 /* Resets the multiboot (DS Download Play) parent state: lays out its work buffers, sizes and

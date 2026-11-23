@@ -141,6 +141,12 @@ typedef struct GHIConnectionList {
 #define GHI_CONNECTION_SIZE      0x184 /* bytes of one GHIConnection slot */
 #define GHI_CONNECTION_GROW_STEP 4   /* slots added when the table is full */
 
+/* Throttle parameters ghttpInit sets on the library's first use (see
+ * GHIConnection.throttle): how long a throttled transfer waits between reads and
+ * the small receive buffer/chunk size it reads at a time. */
+#define GHI_THROTTLE_INTERVAL_MS 250 /* pause between reads of a throttled connection */
+#define GHI_THROTTLE_CHUNK_SIZE  125 /* bytes read/a small recv buffer per read while throttled */
+
 /* Offsets of the POST upload state inside GHIConnection, for code that still
  * addresses the connection as a byte buffer. */
 #define GHI_RESULT        0x38  /* GHIConnection.result */
@@ -231,6 +237,11 @@ enum {
     WEB_TXN_COMPLETE  = 5, /* the request finished, a new one may be sent */
     WEB_TXN_FAILED    = 6  /* the request failed */
 };
+
+/* A web request the online screen is waiting on is presumed lost once its
+ * server time is this many seconds old: the waiting sprite resumes (the checks
+ * in ov010 at 0x02226364, 0x02226560 and 0x022266EC). */
+#define WEB_REQUEST_STALE_SECONDS 60
 
 enum {
     WEB_RESPONSE_NETWORK_ERROR = 1,

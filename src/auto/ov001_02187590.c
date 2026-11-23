@@ -452,16 +452,33 @@ s32 func_ov001_021880d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);i
 
 s32 func_ov001_02188100(void) {
     s32 WFC_SendTeardownCommand(M2C_UNK *);
-    extern M2C_UNK func_ov001_02188130;
+    extern M2C_UNK DWCi_MOV_WH_StateInEndParent;
     SetWhStatus(3);
-    if (WFC_SendTeardownCommand(&func_ov001_02188130) == 2) {
+    if (WFC_SendTeardownCommand(&DWCi_MOV_WH_StateInEndParent) == 2) {
         return 1;
     }
     SetWhError();
     return 0;
 }
 
-void func_ov001_02188130(void *a){extern M2C_UNK gWhWork;extern M2C_UNK data_ov001_02191644;M2C_UNK func_ov001_02188b04();if(M2C_FIELD(a,u16 *,2)){SetWhError();func_ov001_02188b04();return;}if(func_ov001_02188184())return;if(M2C_FIELD(&gWhWork,void (**)(s32,void *),0))M2C_FIELD(&gWhWork,void (**)(s32,void *),0)(0x8000000,&data_ov001_02191644);func_ov001_02188b04();}
+/* Teardown-completion callback for the end-parent WH state: a nonzero event status
+   records the error, an unfinished teardown poll just waits, and once the teardown
+   is done the failure is logged and the state machine advances. */
+void DWCi_MOV_WH_StateInEndParent(void *event) {
+    extern M2C_UNK gWhWork;
+    extern M2C_UNK sWhLogEndParentFailed;
+    M2C_UNK func_ov001_02188b04();
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS)) {
+        SetWhError();
+        func_ov001_02188b04();
+        return;
+    }
+    if (func_ov001_02188184()) return;
+    if (M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)) {
+        M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)(WH_LOG_STATUS, &sWhLogEndParentFailed);
+    }
+    func_ov001_02188b04();
+}
 
 s32 func_ov001_02188184(void) {
     s32 func_02012484(void (*)(void *));
@@ -481,7 +498,18 @@ void func_ov001_021881ac(void *arg0) {
     SetWhStatus(1);
 }
 
-s32 func_ov001_021881d0(void){extern M2C_UNK gWhWork;s32 func_02013b48(void *);if(M2C_FIELD(M2C_FIELD(&gWhWork,void **,4),s32 *,0x40)!=6)return 0;SetWhStatus(3);if(func_02013b48((u8 *)M2C_FIELD(&gWhWork,void **,4)+0x1e00)==2)return 1;SetWhError();return 0;}
+/* End the WH connection's key-sharing step: only while the connection is in the
+ * key-sharing status, mark it busy and stop the key-sharing channel; returns 1
+ * when the stop was queued, 0 when it failed. */
+s32 Ov001_EndKeySharing(void) {
+    extern M2C_UNK gWhWork;
+    s32 func_02013b48(void *);
+    if (M2C_FIELD(M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION), s32 *, WH_LINK_STATUS) != WH_STATUS_KEYSHARING) return 0;
+    SetWhStatus(WH_STATUS_BUSY);
+    if (func_02013b48((u8 *)M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION) + WH_KEY_CHANNEL) == 2) return 1;
+    SetWhError();
+    return 0;
+}
 
 s32 func_ov001_02188220(void) {
     extern M2C_UNK func_ov001_02188250;
@@ -546,7 +574,7 @@ void func_ov001_02188310(void *arg0) {
     SetWhStatus(1);
 }
 
-void func_ov001_02188344(void *arg0) {
+void Ov001_HandleEndLinkResult(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
         SetWhStatus(0xA);
         return;

@@ -1,5 +1,6 @@
 /* 53 functions from 0x02178E80 to 0x02179E74 (ov001), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 #include "gx.h"
 #include "ov001_wh.h"
 
@@ -16,7 +17,7 @@ void Ov001_CloseMessageScreen(void) {
     s32 Ov001_IsIconRowIdle();
     extern M2C_UNK gOv001MessageState;
     extern M2C_UNK Ov001_InitOptionMenu;
-    extern M2C_UNK func_ov001_02179320;
+    extern M2C_UNK Ov001_OpenWfcEraseResultScreen;
     if (Ov001_IsFadeActive(1) != 0) return;
     if (Ov001_IsFadeActive(0) != 0) return;
     if (Ov001_IsIconRowIdle() == 0) return;
@@ -32,7 +33,7 @@ void Ov001_CloseMessageScreen(void) {
         return;
     }
     Ov001_SetNextScreenMode(0, 1);
-    Ov001_SetStepCallback(&func_ov001_02179320);
+    Ov001_SetStepCallback(&Ov001_OpenWfcEraseResultScreen);
 }
 
 /* Step of the ov001 profile screen that shows the confirmation message: resets the
@@ -218,21 +219,24 @@ s32 func_ov001_02179300(void) {
     return 0;
 }
 
-void func_ov001_02179320(void) {
- M2C_UNK func_ov001_02175f8c(M2C_UNK *);
- M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
- M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
- void Ov001_WfcEraseResultCallback(s32);
- void Ov001_LoadWfcEraseResultBackground(void);
- void func_ov001_021793ec(void);
- extern u8 gOv001WfcEraseResult;
- func_ov001_02175f8c((M2C_UNK *)&Ov001_WfcEraseResultCallback);
- gOv001WfcEraseResult=0;
- Ov001_LoadWfcEraseResultBackground();
- Ov001_ShowMessageBox(0x1C);
- Ov001_CreateAnimSprite(0);
- Ov001_PlaySound(11);
- Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021793ec);
+/* Opens the Wi-Fi data-erase result screen: installs the profile callback that
+ * records the outcome, resets that outcome, loads the result background, shows the
+ * result message box, sprite and sound, then hands over to the fade-in step. */
+void Ov001_OpenWfcEraseResultScreen(void) {
+    M2C_UNK Ov001_InitProfileScreen(M2C_UNK *);
+    M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
+    M2C_UNK Ov001_CreateAnimSprite(M2C_UNK);
+    void Ov001_WfcEraseResultCallback(s32);
+    void Ov001_LoadWfcEraseResultBackground(void);
+    void Ov001_FadeInWfcEraseResultScreen(void);
+    extern u8 gOv001WfcEraseResult;
+    Ov001_InitProfileScreen((M2C_UNK *)&Ov001_WfcEraseResultCallback);
+    gOv001WfcEraseResult = OV001_PROFILE_NO_CHANGE;
+    Ov001_LoadWfcEraseResultBackground();
+    Ov001_ShowMessageBox(OV001_MSG_WFC_ERASE_RESULT);
+    Ov001_CreateAnimSprite(0);
+    Ov001_PlaySound(OV001_SOUND_OPEN);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWfcEraseResultScreen);
 }
 
 /* Loads the background map of the step that reports the Wi-Fi data-erase
@@ -249,7 +253,7 @@ void Ov001_LoadWfcEraseResultBackground(void) {
     REG_BG2CNT = (u16)((REG_BG2CNT & ~BG_PRIORITY_MASK) | 3);
 }
 
-void func_ov001_021793ec(void) {
+void Ov001_FadeInWfcEraseResultScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     void func_ov001_02179420(void);
@@ -481,7 +485,7 @@ void func_ov001_021798b0(void) {
 void func_ov001_021798f8(void) {
     void func_ov001_021799cc(void);
     void func_ov001_02179a04(void);
-    void func_ov001_02179a08(void);
+    void Ov001_CancelWirelessSetupTask(void);
     s32 Ov001_UpdateWirelessSetup(void);
     void func_ov001_02179c38(void);
     void func_ov001_02179bec(void);
@@ -494,7 +498,7 @@ void func_ov001_021798f8(void) {
     s32 pending;
     func_ov001_021799cc();
     func_ov001_02179a04();
-    func_ov001_02179a08();
+    Ov001_CancelWirelessSetupTask();
     switch (Ov001_UpdateWirelessSetup()) {
     case 0:
         return;
@@ -535,15 +539,18 @@ void func_ov001_02179a04(void) {
 
 }
 
-void func_ov001_02179a08(void) {
+/* Wireless setup step: when the player picks the back icon while the screen's
+ * connection task is still pending, post that task for release, forget it and
+ * lock the icon row, then hand the step to Ov001_BeginWirelessCancel. */
+void Ov001_CancelWirelessSetupTask(void) {
     extern u8 gOv001WirelessState;
-    extern M2C_UNK func_ov001_02179c84;
-    if (Ov001_GetIconRowSelection() != 0) return;
-    if (M2C_FIELD(&gOv001WirelessState, s32 *, 4) == 0) return;
-    Ov001_PostTaskMessage(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
-    M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
+    extern M2C_UNK Ov001_BeginWirelessCancel;
+    if (Ov001_GetIconRowSelection() != OV001_CHOICE_BACK) return;
+    if (M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK) == 0) return;
+    Ov001_PostTaskMessage(1, M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK));
+    M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK) = 0;
     Ov001_LockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02179c84);
+    Ov001_SetStepCallback(&Ov001_BeginWirelessCancel);
 }
 
 void func_ov001_02179a54(void) {
@@ -591,7 +598,7 @@ void Ov001_CloseWirelessScreen(void) {
         return;
     }
 
-    func_ov001_021757d0(gOv001WirelessState != 0);
+    Ov001_FinishWirelessSetup(gOv001WirelessState != 0);
     Ov001_FreeOptionSprites();
     Ov001_FreePageBackground(0);
 
@@ -612,13 +619,13 @@ void Ov001_CloseWirelessScreen(void) {
 
 void func_ov001_02179bd0(void) {
     void func_ov001_021799cc(void);
-    void func_ov001_02179a08(void);
+    void Ov001_CancelWirelessSetupTask(void);
     M2C_UNK Ov001_UpdateInput();
     M2C_UNK func_ov001_0218c7d4(M2C_UNK);
     Ov001_UpdateInput();
     func_ov001_0218c7d4(0);
     func_ov001_021799cc();
-    func_ov001_02179a08();
+    Ov001_CancelWirelessSetupTask();
 }
 
 void func_ov001_02179bec(void) {
@@ -649,7 +656,7 @@ extern u8 gOv001WirelessState;
 u8 *p;
 func_ov001_021799cc();
 func_ov001_02179a04();
-func_ov001_02179a08();
+Ov001_CancelWirelessSetupTask();
 p=&gOv001WirelessState;
 M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,2)+1;
 if(M2C_FIELD(p,u16 *,2)<0x438U) return;
@@ -657,7 +664,7 @@ Ov001_StopSound();
 Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
 }
 
-void func_ov001_02179c84(void) {
+void Ov001_BeginWirelessCancel(void) {
 extern u8 gOv001WirelessState;
 Ov001_StopSound();
 Ov001_PlaySound(7);

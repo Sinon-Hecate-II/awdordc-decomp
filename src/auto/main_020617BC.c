@@ -123,13 +123,26 @@ void SBServerListSortServers(void *list, s32 descending, s32 field, u32 sortKind
 }
 
 void SBServerListAddServer(void *arg0, s32 arg1) {
-    M2C_UNK Vector_AddItem(s32, s32 *);
+    M2C_UNK Vector_Append(s32, s32 *);
 
-    Vector_AddItem(M2C_FIELD(arg0, s32 *, 4), &arg1);
+    Vector_Append(M2C_FIELD(arg0, s32 *, 4), &arg1);
     M2C_FIELD(arg0, M2C_UNK (**)(void *, s32, s32, s32), 0x488)(arg0, 0, arg1, M2C_FIELD(arg0, s32 *, 0x494));
 }
 
-s32 func_02061a74(void *a,s32 b){s32 Vector_GetCount(s32);s32 *Vector_GetItem();s32 n,i;n=Vector_GetCount(M2C_FIELD(a,s32 *,4));for(i=0;i<n;i++){if(b==*Vector_GetItem(M2C_FIELD(a,s32 *,4),i))return i;}return -1;}
+/* Index in `list`'s server vector of the entry holding `server`, or -1 when the
+   list does not contain it. */
+s32 SBServerListFindByServer(void *list, s32 server) {
+    s32 Vector_GetCount(s32);
+    s32 *Vector_GetItem();
+    s32 count;
+    s32 i;
+
+    count = Vector_GetCount(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS));
+    for (i = 0; i < count; i++) {
+        if (server == *Vector_GetItem(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), i)) return i;
+    }
+    return -1;
+}
 
 /* Index in `list` of the server whose address and network-order port both match,
  * or -1 when no server does. */
@@ -137,13 +150,16 @@ s32 SBServerListFindByAddress(void *list,s32 ip,s32 port){s32 Vector_GetCount(s3
 
 void SBServerListRetireServer(void *a,s32 b){void func_02060cbc(s32,s32);s32 p=M2C_FIELD(a,s32 *,0x5d0);if(!p)func_02060cbc(b,0);else func_02060cbc(b,p);M2C_FIELD(a,s32 *,0x5d0)=b;}
 
-void func_02061b6c(void *a,s32 b) {
-s32 *Vector_GetItem();
-void Vector_RemoveItem(s32,s32);
-s32 p=*Vector_GetItem(M2C_FIELD(a,s32 *,4),b);
-M2C_FIELD(a,M2C_UNK (**)(void *,s32,s32,s32),0x488)(a,2,p,M2C_FIELD(a,s32 *,0x494));
-Vector_RemoveItem(M2C_FIELD(a,s32 *,4),b);
-SBServerListRetireServer(a,p);
+/* Remove the server at `index` from the list's server vector: report the removal
+ * through the list's callback, drop the entry from the vector, then chain the
+ * server onto the list's removed-server list. */
+void SBServerListRemoveServerAt(void *list, s32 index) {
+    s32 *Vector_GetItem();
+    void Vector_RemoveItem(s32, s32);
+    s32 server = *Vector_GetItem(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), index);
+    M2C_FIELD(list, M2C_UNK (**)(void *, s32, s32, s32), SB_SLIST_CALLBACK)(list, SB_LIST_EVENT_SERVER_REMOVED, server, M2C_FIELD(list, s32 *, SB_SLIST_INSTANCE));
+    Vector_RemoveItem(M2C_FIELD(list, s32 *, SB_SLIST_SERVERS), index);
+    SBServerListRetireServer(list, server);
 }
 
 #pragma scheduling off
@@ -358,21 +374,24 @@ s32 SBServerListOpenConnection(void *list) {
     return 3;
 }
 #pragma pop
-void AppendString(s32 *arg0, M2C_UNK *arg1, s32 *arg2) {
+/* Append the NUL-terminated `string` (or the shared empty string when it is NULL)
+ * to the packet buffer at `*cursor`, then advance the cursor and the packet
+ * length in `*length` by the bytes copied, the terminator included. */
+void AppendString(s32 *cursor, M2C_UNK *string, s32 *length) {
     M2C_UNK MemCopy(s32, M2C_UNK *, s32);
     s32 StringLength(M2C_UNK *);
     extern M2C_UNK sSbEmptyString;
-    M2C_UNK *var_r7;
-    s32 temp_r5;
+    M2C_UNK *text;
+    s32 size;
 
-    var_r7 = arg1;
-    if (var_r7 == NULL) {
-        var_r7 = &sSbEmptyString;
+    text = string;
+    if (text == NULL) {
+        text = &sSbEmptyString;
     }
-    temp_r5 = StringLength(var_r7) + 1;
-    MemCopy(*arg0, var_r7, temp_r5);
-    *arg2 += temp_r5;
-    *arg0 += temp_r5;
+    size = StringLength(text) + 1;
+    MemCopy(*cursor, text, size);
+    *length += size;
+    *cursor += size;
 }
 
 void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
@@ -381,12 +400,15 @@ void AppendByte(s8 **arg0, s8 arg1, s32 *arg2) {
     *arg0 += 1;
 }
 
+/* Appends `value` to the packet buffer at `*cursor` in big-endian byte order
+ * (most significant byte first), then advances the cursor and adds 4 to the
+ * packet length in *length.  The variadic tail is how its callers pass the
+ * remaining packet arguments. */
 void AppendInt32BE(u8 **cursor, s32 value, s32 *length, ...) {
     u8 *out = *cursor;
     const u8 *in = (const u8 *)&value;
-    struct BytePair { u8 first, second; };
-    *(struct BytePair *)out = *(const struct BytePair *)in;
-    *(struct BytePair *)(out + 2) = *(const struct BytePair *)(in + 2);
+    *(Pair617BC *)out = *(const Pair617BC *)in;
+    *(Pair617BC *)(out + 2) = *(const Pair617BC *)(in + 2);
     *length += 4;
     *cursor += 4;
 }

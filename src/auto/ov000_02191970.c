@@ -19,7 +19,7 @@ extern s8 gTerrainPropertyType[];
 void func_ov000_02191970(void){
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,u32,s32,s32);
 s32 GetAiUnitMoveRange(void*);s32 CanKindLoad(u32,u32);
-s32 GetUnitMoveRange(u32,u32);s32 func_ov000_0217bcf4(s32,s32,s32);
+s32 GetUnitMoveRange(u32,u32);s32 CanReachProperty(s32,s32,s32);
 s32 func_ov000_0217bcd4(s32,s32,u32,s32);
 s32 IsAllyUnitAtCell(s16,s16);s32 CanUnitKindStandAt(u32,s32,s32);
 s32 IsPropertyCell(s32,s32);s32 IsTerrainOnUnitTeam(u32,u32);
@@ -48,7 +48,7 @@ case 19:if(((u32)(M2C_FIELD(unit,u16*,8)<<16)>>30)!=0)break;continue;
 range=GetUnitMoveRange(M2C_FIELD(MAP,u16*,0x52a4),KIND(unit));
 { s32 ux=M2C_FIELD(unit,u8*,1); s32 row=ROW(M2C_FIELD(unit,u8*,2)); d=M2C_FIELD(MAP+ux+row,s8*,0x2338); } special=0;
 temporary=limit+range;
-if(d<temporary&&(func_ov000_0217bcf4(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),range*2-1)==1||
+if(d<temporary&&(CanReachProperty(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),range*2-1)==1||
 func_ov000_0217bcd4(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range)==1)){special=1;d=temporary;}
 if(d>bestDistance+range)continue;
 FloodFillUnitRange(M2C_FIELD(unit,u8*,1),M2C_FIELD(unit,u8*,2),KIND(unit),range,1);

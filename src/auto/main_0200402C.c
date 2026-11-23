@@ -5,15 +5,21 @@ typedef struct { u32 a,b,c,d,e,f,g,h; } FuncCopy8;
 
 typedef struct { u32 x, y, z; } FuncCopyV3;
 
-void func_0200402c(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2,s32 arg3,M2C_UNK *arg4) {
- M2C_UNK MTX_LookAt(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK *);
- M2C_UNK func_02003a70(M2C_UNK *);
- M2C_UNK sp0[12]; M2C_UNK *p=arg4;
- if(p==NULL)p=sp0;
- MTX_LookAt(arg0,arg1,arg2,p);
- if(arg3==0)return;
- *(volatile s32 *)0x04000440=2;
- func_02003a70(p);
+/* Build the camera's look-at matrix from its eye position `eye`, up vector `up`
+ * and `target` point, and load it onto the geometry engine's position matrix
+ * stack when `loadToGx` is set.  The matrix goes to `mtx`, or to a local one
+ * when the caller passes NULL. */
+void G3X_SetCamera(s32 *eye, s32 *up, s32 *target, s32 loadToGx, s32 *mtx) {
+    void MTX_LookAt(s32 *, s32 *, s32 *, s32 *);
+    M2C_UNK GX_LoadMatrix4x3(M2C_UNK *);
+    s32 localMtx[12];
+    s32 *matrix = mtx;
+
+    if (matrix == NULL) matrix = localMtx;
+    MTX_LookAt(eye, up, target, matrix);
+    if (loadToGx == 0) return;
+    REG_GX_MTX_MODE = 2;
+    GX_LoadMatrix4x3(matrix);
 }
 
 void func_02004078(s32 arg0,s32 arg1) {
@@ -83,15 +89,18 @@ void GX_LoadSubOBJPltt(M2C_UNK src, s32 offset, u32 size) {
     CopyU16(src, offset + GX_SUB_OBJ_PALETTE_BASE, size);
 }
 
-void func_02004210(M2C_UNK arg0, s32 arg1, u32 arg2) {
+/* Copy `size` bytes of 3D-sprite OAM data from `src` into the main engine's OAM
+   at `offset`: through the GX DMA channel when one is owned and the copy is
+   larger than 48 bytes, on the CPU otherwise. */
+void GX_LoadOAM(M2C_UNK src, s32 offset, u32 size) {
     M2C_UNK DmaCopy(s32, M2C_UNK, s32, u32);
     M2C_UNK MIi_CpuCopy32(M2C_UNK, s32, u32);
     extern s32 gGxDmaChannel;
-    if (gGxDmaChannel != -1 && arg2 > 0x30U) {
-        DmaCopy(gGxDmaChannel, arg0, arg1 + 0x07000000, arg2);
+    if (gGxDmaChannel != -1 && size > 0x30U) {
+        DmaCopy(gGxDmaChannel, src, offset + GX_MAIN_OBJ_OAM_BASE, size);
         return;
     }
-    MIi_CpuCopy32(arg0, arg1 + 0x07000000, arg2);
+    MIi_CpuCopy32(src, offset + GX_MAIN_OBJ_OAM_BASE, size);
 }
 
 /* Copy `size` bytes of 3D-sprite OAM data from `src` into the sub engine's OAM
@@ -379,13 +388,13 @@ void GX_LoadBGExtPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
 
 void GX_EndLoadBGExtPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
-    M2C_UNK func_02002ab8(M2C_UNK);
+    M2C_UNK GX_SetBankForBGExtPalette(M2C_UNK);
     extern s32 gGxDmaChannel;
     extern M2C_UNK gGxExtPlttLoad;
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    func_02002ab8(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14));
+    GX_SetBankForBGExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14));
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14) = 0;
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x10) = 0;
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0xc) = 0;
@@ -506,7 +515,7 @@ void GX_EndLoadOBJExtPlttSub(void) {
     M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x18) = 0;
 }
 
-void func_02004b54(void) {
+void GX_BeginLoadTex(void) {
     s32 func_020033b8(void);
     extern u8 data_020e9b40[], data_020e9b42[], data_020e9b44[];
     extern M2C_UNK gGxTexLoad;
@@ -573,7 +582,10 @@ void LoadTextureBankBlock(M2C_UNK src, u32 offset, u32 size) {
     }
 }
 
-void func_02004cf0(void) {
+/* Finish a 3D texture-bank load: wait for the async copy on the GX DMA channel,
+ * hand the texture area's VRAM bank back with the grant GX_BeginLoadTex took,
+ * and clear the area's recorded base, second base, split offset and grant. */
+void GX_EndLoadTex(void) {
     M2C_UNK GX_SetBankForTex(s32);
     M2C_UNK DmaWaitChannel(s32);
     extern s32 gGxDmaChannel;
@@ -581,11 +593,11 @@ void func_02004cf0(void) {
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForTex(M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x14));
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x1C) = 0;
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x18) = 0;
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x4) = 0;
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x14) = 0;
+    GX_SetBankForTex(M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_GRANT));
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_OFFSET) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_BASE2) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_BASE) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_GRANT) = 0;
 }
 
 void func_02004d3c(void) {

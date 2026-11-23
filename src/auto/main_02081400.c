@@ -88,10 +88,10 @@ void CloseNarcArchive(void) {
 }
 
 void func_02081568(void) {
-    M2C_UNK func_02080c00();
+    M2C_UNK GetFileSize();
     M2C_UNK BuildNarcPath();
     BuildNarcPath();
-    func_02080c00();
+    GetFileSize();
 }
 
 s32 LoadNarcFileRaw(void *arg0, void *arg1) {
@@ -131,8 +131,8 @@ void func_0208161c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
 
 void LoadNarcLayerPalette(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
  s32 BuildNarcPath(M2C_UNK);
- void func_02081254(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- func_02081254(BuildNarcPath(arg0), arg1, arg2, arg3);
+ void QueueFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+ QueueFileToBGExtPltt(BuildNarcPath(arg0), arg1, arg2, arg3);
 }
 
 void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -326,7 +326,7 @@ void UpdateTouchInput(void) {
     extern M2C_UNK gKeyState;
     extern M2C_UNK gInputBlockState;
     void func_0200d778(void);
-    s32 func_0200d80c(u16 *);
+    s32 TP_ReadTouchSample(u16 *);
     void CalibrateTouchSample(u16 *, u16 *);
     u8 sample[0x10];
 
@@ -339,7 +339,7 @@ void UpdateTouchInput(void) {
         return;
     }
     func_0200d778();
-    if (func_0200d80c((u16 *)(sample + 8)) != 0) {
+    if (TP_ReadTouchSample((u16 *)(sample + 8)) != 0) {
         *(u16 *)(sample + 6) = 3;
     } else {
     CalibrateTouchSample((u16 *)sample, (u16 *)(sample + 8));
@@ -414,7 +414,7 @@ void func_02081d38(void) {
 
 void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);SetLcdEnabled(0);}
 
-void func_02081d6c(void){extern M2C_UNK gInputBlockState;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
+void EnterDisplaySleep(void){extern M2C_UNK gInputBlockState;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
 
 void func_02081da0(void) {
 extern M2C_UNK gInputBlockState;
@@ -443,17 +443,22 @@ u8 func_02081e14(void) {
     return var_r0;
 }
 
-void func_02081e38(void *arg0) {
-extern M2C_UNK gInputBlockState;
-M2C_FIELD(arg0,u16 *,0x56) = 0;
-if (func_02084824() == 0) {
-M2C_FIELD(arg0,u16 *,0x56) = 1;
-func_02081d6c();
-}
-if (M2C_FIELD(&gInputBlockState,u8 *,2) != 0) {
-M2C_FIELD(arg0,u16 *,0x56) = 1;
-func_02081d6c();
-}
+/* Per-frame screen-off handling for a screen's object: clear the object's
+ * display-off flag, then set it and put the display to sleep when a screen-off
+ * was requested or a soft reset is not permitted (func_02084824 is
+ * IsSoftResetAllowed, and a link or Wi-Fi session denies it, where a real sleep
+ * would drop the connection). */
+void SuspendDisplayIfRequested(void *screen) {
+    extern M2C_UNK gInputBlockState;
+    M2C_FIELD(screen, u16 *, 0x56) = 0;
+    if (func_02084824() == 0) {
+        M2C_FIELD(screen, u16 *, 0x56) = 1;
+        EnterDisplaySleep();
+    }
+    if (((InputBlockState *)&gInputBlockState)->suspendRequested != 0) {
+        M2C_FIELD(screen, u16 *, 0x56) = 1;
+        EnterDisplaySleep();
+    }
 }
 
 void func_02081e84(void *arg0) {

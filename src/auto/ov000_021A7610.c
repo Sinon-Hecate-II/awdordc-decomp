@@ -249,7 +249,7 @@ s32 SelectUnitForTargetCandidate(s32 candidateIndex) {
 }
 void func_ov000_021a7610(void) {
 u8 func_ov000_021a7348(void); s32 GetUnitThreatClass(u8); s32 func_ov000_021a72c0(s32);
-s32 func_ov000_021a96f4(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
+s32 GetSubmergedAttackDamage(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
 s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 CountPlayerUnitsOfKindNotInAiState(s32,s32); s32 GetUnitBuildCost(u16,s32);
 extern u8 *gAiState; extern u32 gUnitKindScores[27];
@@ -268,7 +268,7 @@ for(kind=1;kind<27;kind++){
 if(!func_ov000_021a72c0((u8)kind))continue;
 for(j=0;j<9;j++){
 if(values[j]==0)continue;
-if(data_ov000_021df598[j]==22)v=func_ov000_021a96f4(kind,data_ov000_021df598[j],0);
+if(data_ov000_021df598[j]==22)v=GetSubmergedAttackDamage(kind,data_ov000_021df598[j],0);
 else v=GetAttackDamage(kind,data_ov000_021df598[j],0);
 v=ScaleAiDamageByRange(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
 if(gUnitKindStats[data_ov000_021df598[j]*112+19]&16){

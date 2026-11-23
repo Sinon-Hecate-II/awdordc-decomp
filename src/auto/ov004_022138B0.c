@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ov000_ai.h"
+#include "ov000_unit_entry.h"
 
 /* Battle-script condition: true when the AI's standing command is a unit build
  * (kind 3) and its cursor sits on a city or base owned by player 1. */
@@ -36,10 +37,14 @@ u8 func_ov004_0221392c(void) {
     return var_r0;
 }
 
-s32 func_ov004_0221395c(void) {
+/* Battle-script condition: true when the standing command sets a player's AI mode
+ * (kind 24) and the unit under the cursor is the Rig (kind 13). */
+s32 IsSetAiModeCommandOnRig(void) {
     extern void **gCurrentMap;
     extern u8 gAiCommand;
-    if (gAiCommand == 0x18 && ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, u8 **, 0x52D0), u8 *, 0) << 26) >> 26) == 0xD) return 1;
+    if (gAiCommand == AI_COMMAND_SET_AI_MODE &&
+        ((u32)(M2C_FIELD(M2C_FIELD(*gCurrentMap, void **, MAP_CURSOR_UNIT), u8 *, MAP_UNIT_KIND) << 26) >> 26) == UNIT_KIND_RIG)
+        return 1;
     return 0;
 }
 
@@ -125,7 +130,7 @@ s32 Ov004_IsPlayerTwoArmyEmpty(void) {
 
 void func_ov004_02213bb8(void) {
 extern void **gCurrentMap; extern u16 gPlayerUnitIdBase[];
-s32 RandomIntRange(s32,s32); s32 func_020a7bbc(s32); void func_02086930(s32,u8);
+s32 RandomIntRange(s32,s32); s32 GetUnitKindBuildCost(s32); void func_02086930(s32,u8);
 u8 buf[27],out[27]; s32 i,t,cnt,maxCount,chosen,primCount,j; u32 outCount; void **map; s32 wt; u8 *dst;
 for(j=0;j<27;j++)buf[j]=0;
 map=gCurrentMap;
@@ -141,8 +146,8 @@ for(t=0;t<27;t++){
 if(buf[t]==0)continue;
 if(maxCount>buf[t])continue;
 if(chosen!=-1 && maxCount==buf[t]){
-wt=func_020a7bbc(t);
-if(wt<func_020a7bbc(chosen))continue;
+wt=GetUnitKindBuildCost(t);
+if(wt<GetUnitKindBuildCost(chosen))continue;
 }
 maxCount=buf[t];chosen=t;
 }
@@ -527,12 +532,14 @@ s32 Ov004_IsPlayerTwoUnitCountAtMostThree(void) {
     return 1;
 }
 
-s32 GetTurnReinforcementKind(s8 *a) {
+/* Kind of unit to reinforce with this turn: `kinds` is a -1 terminated list of
+ * unit kinds, cycled by the 1-based battle turn number. */
+s32 GetTurnReinforcementKind(s8 *kinds) {
 extern void **gCurrentMap;
 s32 Modulo(s32,s32);
-s32 n=0;
-while(a[n]>=0)n++;
-return a[Modulo(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)-1,n)];
+s32 count=0;
+while(kinds[count]>=0)count++;
+return kinds[Modulo(M2C_FIELD(*gCurrentMap,u16 *,MAP_TURN)-1,count)];
 }
 
 /* Battle-script command: when tile (10,8) is empty, spawn player 2's unit of the

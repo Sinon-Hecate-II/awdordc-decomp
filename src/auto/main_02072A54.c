@@ -15,22 +15,28 @@ typedef struct { u8 type:5; } RuntimeType;
 #define EXC_TABLE_ENTRY_SIZE   12   /* bytes per exception table entry */
 #define EXC_ENTRY_INLINE_LSDA  0x01 /* entry word 1 bit 0: the LSDA follows inline at entry+8 */
 
-s32 func_02072a54(void) { return 7; }
+s32 SemihostingReadChar(void) { return 7; }
 
 s32 func_02072a68(void) {
     return 0x18;
 }
 
-s32 func_02072a78(s32 unused,u8 *p,u32 *count) {
-s32 func_02072a54(void);
-u32 i;
-u32 n=*count;
-for(i=0;i<n;i++) {
-s32 c=func_02072a54();
-p[i]=(short)c;
-if((u8)c==13 || (u8)c==10) { *count=i+1; break; }
-}
-return 0;
+/* Console input hook of the MSL stdio streams: read up to *count characters into
+ * `buffer`, stopping after a carriage return or line feed, and store the number
+ * of characters consumed back into *count.  `handle` is not used. */
+s32 __read_console(s32 handle, u8 *buffer, u32 *count) {
+    s32 SemihostingReadChar(void);
+    u32 i;
+    u32 n = *count;
+    for (i = 0; i < n; i++) {
+        s32 c = SemihostingReadChar();
+        buffer[i] = (short)c;
+        if ((u8)c == '\r' || (u8)c == '\n') {
+            *count = i + 1;
+            break;
+        }
+    }
+    return 0;
 }
 
 s32 func_02072ac8(s32 unused,u8 *p,u32 *count) {

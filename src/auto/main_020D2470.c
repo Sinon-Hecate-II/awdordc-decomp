@@ -204,19 +204,21 @@ void RestorePlayersOfActiveArmies(void) {
     } while (i < MAX_PLAYERS);
 }
 
-void func_020d2958(void) {
+/* Clear the defeat turn (PLAYER_REC_DEFEAT_TURN) of every player that has a
+ * controller, so all present players count as still in the battle. */
+void ClearPresentPlayerDefeatTurns(void) {
     extern s32 *gCurrentMap;
     s32 IsPlayerPresent(s32);
-    s32 i = 1;
-    s32 off = 0x8C;
+    s32 player = 1;
+    s32 playerOffset = MAP_PLAYER_STRIDE;
 
     do {
-        if (IsPlayerPresent(i) != 0) {
-            M2C_FIELD(*gCurrentMap + off, u16 *, 0x67BE) = 0;
+        if (IsPlayerPresent(player) != 0) {
+            M2C_FIELD(*gCurrentMap + playerOffset, u16 *, MAP_PLAYER_STATES + PLAYER_REC_DEFEAT_TURN) = 0;
         }
-        i++;
-        off += 0x8C;
-    } while (i < 5);
+        player++;
+        playerOffset += MAP_PLAYER_STRIDE;
+    } while (player < MAX_PLAYERS);
 }
 
 /* Whether a player has been routed by losing its units: 1 when the player is not
@@ -356,11 +358,11 @@ s32 GetUnitBuildCost(arg0, arg1)
     u16 arg0;
     s32 arg1;
 {
-    s32 func_020a7bbc(s32);
+    s32 GetUnitKindBuildCost(s32);
     s32 Divide(s32, s32);
     s32 t;
 
-    t = func_020a7bbc(arg1);
+    t = GetUnitKindBuildCost(arg1);
     return Divide(t * 0x64, 0x64);
 }
 
@@ -374,9 +376,9 @@ s32 GetUnitActionCost(void) {
 }
 
 void func_020d2d60(M2C_UNK arg0) {
-    s32 func_020a32a8();
+    s32 HasPlayerSelectedUnit();
     M2C_UNK func_020a3100(M2C_UNK);
-    if (func_020a32a8() != 0) {
+    if (HasPlayerSelectedUnit() != 0) {
         return;
     }
     func_020a3100(arg0);

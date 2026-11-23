@@ -5,12 +5,12 @@ typedef struct DispatchCtx169 { u8 pad0[0x40]; u8 buffer[0x4c4]; u32 value; u8 p
 typedef struct DispatchWork169 { u8 pad[0x131c]; u32 active; u8 pad1320[0x1c8]; u32 entries[15]; } DispatchWork169;
 extern M2C_UNK gMbState;
 extern M2C_UNK gMbParam;
-void func_020168a0(void);
+void Mb_StartConnect(void);
 int Mb_LinkExchangeReady(void);
 void Mb_CancelLink(void *);
 void *WFC_StartDownloadPlay(void *, void *);
 void *WFC_StartChildIndication(void *, void *);
-void *func_02013cfc(void *, int);
+void *WFC_SubmitParentMode(void *, int);
 void *WFC_EndLink(void *);
 void *func_02012a64(void *, int, int, void *, int, int, int, int, int, int, int);
 void Mb_ReportPacketResult(int, void *);
@@ -24,9 +24,9 @@ void WFC_SetGeneralHandler(int);
 void func_02016934(void *arg0) {
 u32 i,n; 
 switch ((s32)M2C_FIELD(arg0,u16 *,0)) {
-case 0: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else func_020168a0(); return;
+case 0: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_StartConnect(); return;
 case 29: if(M2C_FIELD(arg0,u16 *,2)) {M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(7,WFC_StartDownloadPlay(func_02016934,M2C_FIELD(&gMbState,void **,8))); return;
-case 7: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(21,arg0); Mb_ReportPacketResult(25,func_02013cfc(func_02016934,1)); return;
+case 7: M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(21,arg0); Mb_ReportPacketResult(25,WFC_SubmitParentMode(func_02016934,1)); return;
 case 25: if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);} else Mb_ReportPacketResult(8,WFC_StartChildIndication(func_02016934,M2C_FIELD(&gMbParam,void **,12))); return;
 case 8:
 if(M2C_FIELD(arg0,u16 *,2)){M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(int,void *),0x51c)(256,arg0);return;}

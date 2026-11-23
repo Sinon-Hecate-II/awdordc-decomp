@@ -14,7 +14,9 @@ extern const u16 gTerrainVariantTable[256];
 extern const u8 gTerrainClassFlags[];
 
 extern const u8 data_020ec6bc[], data_020ecabc[], data_020ecebc[], data_020ed2bc[], data_020ed6bc[], data_020edabc[], data_020ec2bc[];
-extern u32 data_0214c0c0[2];
+/* Main OBJ extended-palette direct write: [0] is the VRAM base of the released
+ * palette banks and [1] the bank grant the last write used. */
+extern u32 gObjExtPlttWriteState[2];
 extern const u16 gVramBankBaseTable[8];
 
 extern s16 gSinCosTable[2048];
@@ -259,12 +261,12 @@ void BuildMapViewProjection(s32 *matrix, s32 *zoom, s32 *offset) {
 }
 
 void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK func_02004b54();
+    M2C_UNK GX_BeginLoadTex();
     M2C_UNK LoadTextureBankBlock(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_02004cf0();
-    func_02004b54();
+    M2C_UNK GX_EndLoadTex();
+    GX_BeginLoadTex();
     LoadTextureBankBlock(arg0, arg1, arg2);
-    func_02004cf0();
+    GX_EndLoadTex();
 }
 
 /* Upload `size` bytes from `src` into the main OBJ extended palette at byte
@@ -299,15 +301,19 @@ void CopyMainOBJExtPalette(s32 src, s32 offset, s32 size) {
     func_02004ddc();
 }
 
-M2C_UNK CopyMainOBJExtPaletteHalfword(s32 arg0,s32 arg1) {
-s32 GX_ReleaseBankForOBJExtPltt(void);
-void GX_SetBankForOBJExtPltt(s32);
-s32 state=GX_ReleaseBankForOBJExtPltt();
-u32 base=(u32)gVramBankBaseTable[state>>4]<<12;
-data_0214c0c0[1]=state;
-data_0214c0c0[0]=base;
-*(u16 *)(base+(arg1&~1))=*(u16 *)arg0;
-GX_SetBankForOBJExtPltt(state);
+/* Copy one halfword from `src` into the main-engine OBJ extended palette at byte
+ * `offset`: release the palette's bank grant, get the VRAM base of the banks it
+ * gave back, write the halfword and re-grant the bank.  Used for the halfword
+ * writes that GX_LoadTexPltt cannot do. */
+M2C_UNK CopyMainOBJExtPaletteHalfword(s32 src, s32 offset) {
+    s32 GX_ReleaseBankForOBJExtPltt(void);
+    void GX_SetBankForOBJExtPltt(s32);
+    s32 banks = GX_ReleaseBankForOBJExtPltt();
+    u32 base = (u32) gVramBankBaseTable[banks >> 4] << 12;
+    gObjExtPlttWriteState[1] = banks;
+    gObjExtPlttWriteState[0] = base;
+    *(u16 *) (base + (offset & ~1)) = *(u16 *) src;
+    GX_SetBankForOBJExtPltt(banks);
 }
 
 /* Point the terrain tile lookup at the table for the current map's tileset kind

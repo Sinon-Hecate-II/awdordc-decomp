@@ -18,18 +18,20 @@ M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)++;
 PlaySoundEffect(0x10019);return 1;
 }
 
+/* Page the records list down by one screen: move its top visible row down six,
+ * stop at the last full page, and return how many rows it actually moved. */
 s16 RecordsMenu_PageDown(void) {
     extern M2C_UNK gRecordsMenuState;
-    s16 temp_r3;
-    s32 temp_r1;
+    s16 oldScroll;
+    s32 maxScroll;
 
-    temp_r3 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16) (temp_r3 + 6);
-    temp_r1 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x9A) - 6;
-    if ((s32) M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) > temp_r1) {
-        M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16) temp_r1;
+    oldScroll = RECORDS_SCREEN->scroll;
+    RECORDS_SCREEN->scroll = (s16) (oldScroll + 6);
+    maxScroll = RECORDS_SCREEN->count - 6;
+    if ((s32) RECORDS_SCREEN->scroll > maxScroll) {
+        RECORDS_SCREEN->scroll = (s16) maxScroll;
     }
-    return (s16) (M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) - temp_r3);
+    return (s16) (RECORDS_SCREEN->scroll - oldScroll);
 }
 
 void func_ov005_0221425c(void){
@@ -78,7 +80,7 @@ void RecordsMenu_DrawRow(s32 row,s32 record) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain; extern M2C_UNK gRecordsMenuState;
 s32 RecordsMenu_IsRecordAvailable(s32); void *RecordsMenu_GetRecord(s32);
 void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
-void func_0209b2dc(s32,s16,s32,u32,s32,s32,u16);
+void DrawLocalizedTextLine(s32,s16,s32,u32,s32,s32,u16);
 void FillTileRect(void *,s32,s32,u16,s32);
 s32 mode; u32 color; s32 barTile; void *saved; u16 iconTile;
 barTile=(row+1)*50+0x134;saved=gCur3DSpriteEngine;
@@ -88,7 +90,7 @@ color=M2C_FIELD(RecordsMenu_GetRecord(record),u32 *,4);
 if(RECORDS_SCREEN->highlighted==record)mode=9;else mode=0;
 } else {color=0x43000000; mode=3;}
 DrawTilemapNumber(3,(s16)(row+3),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),record+1,0x2000,mode);
-func_0209b2dc(5,(s16)(row+3),1,color,0x2000,mode,(u16)barTile);
+DrawLocalizedTextLine(5,(s16)(row+3),1,color,0x2000,mode,(u16)barTile);
 iconTile=RECORDS_SCREEN->enabled[record]?0x124:0x128;
 FillTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x38+(row+3)*64,2,2,iconTile,0);
 gCur3DSpriteEngine=saved;

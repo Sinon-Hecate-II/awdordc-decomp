@@ -101,10 +101,10 @@ M2C_FIELD(gAiState,u8 *,AI_STATE_ACTION)=0;
 }
 
 s32 GetAiUnitKindValue(s32 a,s32 unused,s32 c) {
-s32 func_020a7bbc(s32);
+s32 GetUnitKindBuildCost(s32);
 s32 func_020a886c(s32,s32);
 s32 Divide(s32,s32);
-s32 n=func_020a7bbc(c);
+s32 n=GetUnitKindBuildCost(c);
 return Divide(n*(func_020a886c(a,0)+100),100);
 }
 
@@ -144,7 +144,7 @@ s32 BuildAiTargetGroups(void) {
     s32 IsCurrentPlayerUnit(s16);
     s32 func_ov000_021a43e8();
     s32 GetUnitAttackClass(s32);
-    s32 func_ov000_021a99dc(void *);
+    s32 IsUnitUnarmedAndEmpty(void *);
     s32 IsPropertyTerrain(s32);
     s32 IsTerrainOnUnitTeam(s32,s32);
     s32 EvaluateAiTargetGroupForCapture(s32,s32);
@@ -193,7 +193,7 @@ s32 BuildAiTargetGroups(void) {
                                 if(GetUnitAttackClass(unit->unk0)==1) group[5]++;
                                 if(unit->unk0==26) group[6]++;
                             }
-                        } else if(!func_ov000_021a99dc(unit)) {
+                        } else if(!IsUnitUnarmedAndEmpty(unit)) {
                             group[0]+=2;
                             if ((gUnitKindStats[unit->unk0*112+0x13]&7) && !IsFootUnitKind(unit->unk0)) statusFlags|=1;
                             if ((gUnitKindStats[unit->unk0*112+0x13]&16) && unit->unk0!=19) typeFlags|=2;

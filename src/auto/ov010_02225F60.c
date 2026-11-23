@@ -1,5 +1,6 @@
 /* 41 functions from 0x02225F60 to 0x02226D9C (ov010), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 #define ONLINE_USE_INTERRUPT_GUARD
 #include "online_link.h"
 #include "ghttp.h"
@@ -201,7 +202,7 @@ void ClearWebRequestError(void) {
 s32 SubmitWebPutRequest(s32 playerId, s32 field2, s32 field3, s32 payload, s32 payloadSize) {
     s32 GetServerTime(M2C_UNK *, M2C_UNK *);
     s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
-    s32 func_02085c18();
+    s32 GetProfileSyncTime();
     u32 SendWebPutRequest(s32, s32, s32, s32, s32);
     M2C_UNK date[4];
     M2C_UNK time[3];
@@ -210,7 +211,7 @@ s32 SubmitWebPutRequest(s32 playerId, s32 field2, s32 field3, s32 payload, s32 p
 
     result = 1;
     if (GetServerTime(date, time) != 0) {
-        GetElapsedSeconds(func_02085c18(), date, time);
+        GetElapsedSeconds(GetProfileSyncTime(), date, time);
     }
     status = SendWebPutRequest(playerId, field2, field3, payload, payloadSize);
     switch (status) {
@@ -258,7 +259,7 @@ s32 CompleteWebPutRequest(void) {
     return inFlight;
 }
 
-s32 func_ov010_02226334(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, void *arg5) {
+s32 SubmitWebPutRequestAndCreateSprite(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, void *arg5) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SubmitWebPutRequest(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
     extern M2C_UNK data_ov010_0222c080;
@@ -268,34 +269,37 @@ s32 func_ov010_02226334(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 
     return CreateSpriteObject(&data_ov010_0222c080, arg5);
 }
 
-s32 func_ov010_02226364(void) {
+/* Whether the local profile's sync time is out of date: the server's time must be
+ * known and lie at least a minute (SERVER_TIME_RESYNC_SECONDS) after the time the
+ * profile was last synced. */
+s32 IsProfileSyncOverdue(void) {
     s32 GetServerTime(M2C_UNK *, M2C_UNK *);
     s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
-    s32 func_02085c18();
+    s32 GetProfileSyncTime();
     M2C_UNK date[4];
     M2C_UNK time[3];
-    s64 temp;
-    s32 res;
+    s64 elapsed;
+    s32 overdue;
 
     if (GetServerTime(date, time) == 0) {
-        temp = 0;
+        elapsed = 0;
     } else {
-        temp = GetElapsedSeconds(func_02085c18(), date, time);
+        elapsed = GetElapsedSeconds(GetProfileSyncTime(), date, time);
     }
-    res = 0;
-    if (temp >= 0x3C) {
-        res = 1;
+    overdue = 0;
+    if (elapsed >= SERVER_TIME_RESYNC_SECONDS) {
+        overdue = 1;
     }
-    return res;
+    return overdue;
 }
 
 /* Fills the request payload's kind marker for `kind`, submits it as a web GET
  * request, and records any error status. Returns 0 when the kind is unknown. */
 s32 SendWebGetForKind(u32 kind,s32 playerId,s32 field2,s32 *payload){
-s32 GetServerTime(M2C_UNK *,M2C_UNK *);s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *);s32 func_02085c3c(void);u32 SendWebGetRequest(u32,s32,s32,s32 *);
+s32 GetServerTime(M2C_UNK *,M2C_UNK *);s64 GetElapsedSeconds(s32,M2C_UNK *,M2C_UNK *);s32 GetGetRequestServerTime(void);u32 SendWebGetRequest(u32,s32,s32,s32 *);
 M2C_UNK date[4];M2C_UNK time[3];s32 ok;u32 status;
 ok=1;
-if(GetServerTime(date,time)!=0)GetElapsedSeconds(func_02085c3c(),date,time);
+if(GetServerTime(date,time)!=0)GetElapsedSeconds(GetGetRequestServerTime(),date,time);
 switch(kind){case 0:*payload=8;break;case 1:*payload=12;break;case 2:case 4:case 5:*payload=12;break;case 3:*payload=0x10c;break;case 6:*payload=16;break;default:return 0;}
 status=SendWebGetRequest(kind,playerId,field2,payload);
 switch(status){default:break;case 1:ok=0;break;case 7:ok=0;break;case 2:ok=0;break;case 8:ok=0;break;case 9:ok=0;break;}
@@ -342,25 +346,29 @@ s32 SubmitWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return CreateSpriteObject(&data_ov010_0222c0a0, arg4);
 }
 
-s32 func_ov010_02226560(void) {
-    s32 GetServerTime(M2C_UNK *, M2C_UNK *);
-    s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
-    s32 func_02085c3c();
-    M2C_UNK date[4];
-    M2C_UNK time[3];
-    s64 temp;
-    s32 res;
+/* Returns 1 once the server clock has run WEB_REQUEST_STALE_SECONDS past the
+ * time stored when the last get.asp request was answered (the profile save's
+ * +0x74 record), so the sprite waiting on that request may resume; 0 while the
+ * server time is unavailable or the record is still fresh. */
+s32 HasWebGetRequestTimedOut(void) {
+    s32 GetServerTime(s32 *, s32 *);
+    s64 GetElapsedSeconds(s32, s32 *, s32 *);
+    s32 GetGetRequestServerTime();
+    s32 date[4];
+    s32 time[3];
+    s64 elapsedSeconds;
+    s32 timedOut;
 
     if (GetServerTime(date, time) == 0) {
-        temp = 0;
+        elapsedSeconds = 0;
     } else {
-        temp = GetElapsedSeconds(func_02085c3c(), date, time);
+        elapsedSeconds = GetElapsedSeconds(GetGetRequestServerTime(), date, time);
     }
-    res = 0;
-    if (temp >= 0x3C) {
-        res = 1;
+    timedOut = 0;
+    if (elapsedSeconds >= WEB_REQUEST_STALE_SECONDS) {
+        timedOut = 1;
     }
-    return res;
+    return timedOut;
 }
 
 /* Refresh the clock from the server, then send a sync web request for `kind`,
@@ -369,7 +377,7 @@ s32 func_ov010_02226560(void) {
 s32 SubmitWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
     s32 GetServerTime(M2C_UNK *, M2C_UNK *);
     s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
-    s32 func_02085c18();
+    s32 GetProfileSyncTime();
     u32 SendWebSyncRequest(s32, s32, u32, s32);
     M2C_UNK time[3];
     M2C_UNK date[4];
@@ -378,7 +386,7 @@ s32 SubmitWebSyncRequest(s32 kind, s32 playerId, u32 recordCount, s32 payload) {
 
     result = 1;
     if (GetServerTime(date, time) != 0) {
-        GetElapsedSeconds(func_02085c18(), date, time);
+        GetElapsedSeconds(GetProfileSyncTime(), date, time);
     }
     status = SendWebSyncRequest(kind, playerId, recordCount, payload);
     switch (status) {
@@ -425,7 +433,7 @@ s32 CompleteWebSyncRequest(void) {
     return inFlight;
 }
 
-s32 func_ov010_022266c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+s32 SubmitWebSyncRequestAndCreateSprite(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SubmitWebSyncRequest();
     extern M2C_UNK data_ov010_0222c060;
@@ -433,25 +441,28 @@ s32 func_ov010_022266c4(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     return CreateSpriteObject(&data_ov010_0222c060, arg4);
 }
 
-s32 func_ov010_022266ec(void) {
+/* Copy of IsProfileSyncOverdue used by the record-sync wait state: whether the
+ * profile's sync time is out of date, that is the server's time is known and lies
+ * at least a minute (SERVER_TIME_RESYNC_SECONDS) after the time of the last sync. */
+s32 IsProfileSyncOverdueAlt(void) {
     s32 GetServerTime(M2C_UNK *, M2C_UNK *);
     s64 GetElapsedSeconds(s32, M2C_UNK *, M2C_UNK *);
-    s32 func_02085c18();
+    s32 GetProfileSyncTime();
     M2C_UNK time[3];
     M2C_UNK date[4];
-    s64 temp;
-    s32 res;
+    s64 elapsed;
+    s32 overdue;
 
     if (GetServerTime(date, time) == 0) {
-        temp = 0;
+        elapsed = 0;
     } else {
-        temp = GetElapsedSeconds(func_02085c18(), date, time);
+        elapsed = GetElapsedSeconds(GetProfileSyncTime(), date, time);
     }
-    res = 0;
-    if (temp >= 0x3C) {
-        res = 1;
+    overdue = 0;
+    if (elapsed >= SERVER_TIME_RESYNC_SECONDS) {
+        overdue = 1;
     }
-    return res;
+    return overdue;
 }
 
 void func_ov010_02226738(void) {

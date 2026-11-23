@@ -92,6 +92,13 @@ enum {
     GTI2_CLOSED           = 6, /* close acknowledgement, no payload */
     GTI2_PING             = 7  /* empty ping; its sequence acknowledgement answers it */
 };
+/* Event types a connection reports through GT2_CONNECTION_CALLBACK. */
+enum {
+    GT2_EVENT_CONNECTED = 0, /* the handshake finished and data can flow */
+    GT2_EVENT_CLOSED    = 2, /* the peer closed the connection, its reason follows */
+    GT2_EVENT_TIMEOUT   = 6  /* the handshake timed out */
+};
+
 /* A GT2 byte buffer: the connection keeps one for received bytes and one for
  * sent bytes.  data holds size bytes, of which len are used. */
 #define GT2_CONNECTION_RECV_BUFFER 0x44 /* Gt2Buffer holding received command bytes */

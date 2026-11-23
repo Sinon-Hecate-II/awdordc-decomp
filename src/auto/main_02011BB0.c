@@ -9,6 +9,8 @@ typedef struct { u32 flags; u16 a,b,c,d; u8 e,f,g,h; } PacketParams_02012a64;
 #define SESSION_PAYLOAD     0x00 /* void *: optional data copied to the child */
 #define SESSION_PAYLOAD_LEN 0x04 /* u16: payload length in bytes */
 #define SESSION_HEADER      0x14 /* u16: nonzero when the session carries an extra header */
+#define SESSION_GROUP_ID    0x18 /* u16: the console's game group id (GetGameGroupId), MB_GROUP_ID_FIRST.. */
+#define SESSION_PLAYER_COUNT 0x32 /* u16: players the session serves, 1..14 */
 #define SESSION_SIZE_A      0x34 /* u16: transfer A size, header included (max 512) */
 #define SESSION_SIZE_B      0x36 /* u16: transfer B size, header included (max 512) */
 
@@ -345,19 +347,22 @@ s32 WFC_StartDownloadPlay(s32 handler, void *params) {
     return result;
 }
 
-s32 WFC_ValidateStartParams(void *arg0) {
-    u16 temp_r0;
-    u16 temp_r1;
+/* Check the download-play session start parameters: the payload length, the
+ * advertised game group id and the player count must lie in their allowed
+ * ranges.  Returns 1 when they do, 0 otherwise. */
+s32 WFC_ValidateStartParams(void *params) {
+    u16 groupId;
+    u16 playerCount;
 
-    if ((u32) M2C_FIELD(arg0, u16 *, 4) > 0x70U) {
+    if ((u32) M2C_FIELD(params, u16 *, SESSION_PAYLOAD_LEN) > 0x70U) {
         return 0;
     }
-    temp_r1 = M2C_FIELD(arg0, u16 *, 0x18);
-    if (((u32) temp_r1 < 0xAU) || ((u32) temp_r1 > 0x3E8U)) {
+    groupId = M2C_FIELD(params, u16 *, SESSION_GROUP_ID);
+    if (((u32) groupId < 0xAU) || ((u32) groupId > 0x3E8U)) {
         return 0;
     }
-    temp_r0 = M2C_FIELD(arg0, u16 *, 0x32);
-    if (((u32) temp_r0 < 1U) || ((u32) temp_r0 > 0xEU)) {
+    playerCount = M2C_FIELD(params, u16 *, SESSION_PLAYER_COUNT);
+    if (((u32) playerCount < 1U) || ((u32) playerCount > 0xEU)) {
         return 0;
     }
     return 1;

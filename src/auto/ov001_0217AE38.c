@@ -5,7 +5,7 @@ void Ov001_LoadNameEntryGraphics(void);
 void UpdateNameEntryCursor(void);
 void RedrawNameEntryText(void);
 
-void func_ov001_0217b130(void);
+void MapSelectList_ApplyRowLayout(void);
 
 /* Give the (row)th label and map-name sprite of the map-select list the tiles of
  * entry mapIndex: the label's tile comes from MAPSELECT_LABEL_TILES indexed by the
@@ -79,7 +79,7 @@ void MapSelectList_ScrollUp(s32 task) {
     HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     Ov001_UpdateScrollbarHandle();
     Ov001_UnblockScrollBar();
-    func_ov001_0217b130();
+    MapSelectList_ApplyRowLayout();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = 0;
     Ov001_PostTaskMessage(0, task);
 }
@@ -107,7 +107,7 @@ void MapSelectList_ScrollDown(s32 task) {
     HardwareDivide(M2C_FIELD(&gMapSelectState, u16 *, MAPSELECT_STATE_SCROLL) * M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_LAST_ROW), M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u16 *, MAPSELECT_MAX_SCROLL));
     Ov001_UpdateScrollbarHandle();
     Ov001_UnblockScrollBar();
-    func_ov001_0217b130();
+    MapSelectList_ApplyRowLayout();
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_SCROLL_ANIM) = 0;
     Ov001_PostTaskMessage(0, task);
 }
@@ -129,12 +129,15 @@ void MapSelectListUpdateBackgroundScroll(void) {
     M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), u8 *, MAPSELECT_SCROLL_DIRTY) = 0U;
 }
 
-void func_ov001_0217b130(void) {
+/* Give the map-select list's highlight frame the layout of the highlighted row:
+ * the row's left and right end pieces and its y come from the layout table, and the
+ * last visible row uses the third row style instead of the second. */
+void MapSelectList_ApplyRowLayout(void) {
     void Ov001_LayoutChoiceFrameRow(s32, u16, u16, u16);
     extern u16 data_ov001_0218f7ec[], data_ov001_0218f7ee[], data_ov001_0218f7f0[];
     extern M2C_UNK gMapSelectState;
-    u32 index = M2C_FIELD(&gMapSelectState, u8 *, 0);
-    Ov001_LayoutChoiceFrameRow(index < 4 ? 2 : 3, data_ov001_0218f7ec[index * 4], data_ov001_0218f7f0[index * 4], data_ov001_0218f7ee[index * 4]);
+    u32 row = M2C_FIELD(&gMapSelectState, u8 *, MAPSELECT_STATE_CURSOR);
+    Ov001_LayoutChoiceFrameRow(row < MAPSELECT_ROWS - 1 ? 2 : 3, data_ov001_0218f7ec[row * 4], data_ov001_0218f7f0[row * 4], data_ov001_0218f7ee[row * 4]);
 }
 
 /* Map-select list D-pad handler: moves the highlighted row up (dir == 1) or
@@ -157,7 +160,7 @@ case 3:if(dir==1)M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=row-1;e
 case 4:if(dir==1)moved=0;else {M2C_FIELD(&gMapSelectState,u16 *,MAPSELECT_STATE_SCROLL)=0;M2C_FIELD(&gMapSelectState,u8 *,MAPSELECT_STATE_CURSOR)=0;MapSelectList_Redraw();Ov001_UpdateScrollbarHandle(0);}break;
 }
 if(!moved){if(M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH))return;Ov001_PlaySound(9);M2C_FIELD(M2C_FIELD(&gMapSelectState,void **,MAPSELECT_STATE_OBJ),u8 *,MAPSELECT_BUMP_LATCH)=1;return;}
-Ov001_PlaySound(8);func_ov001_0217b130();
+Ov001_PlaySound(8);MapSelectList_ApplyRowLayout();
 }
 
 /* Page the map-select list up from its first row: when the list is already at

@@ -42,7 +42,7 @@ M2C_UNK *GetExplosionSpriteName(u32 effectType) {
 void func_020b5314(u8 mode, s32 x, s32 y) {
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
     void CreateScreenOffsetEffect(s32, s32, s32);
-    void func_02080358(s32, s32, s32, s32);
+    void CreateScreenFlash(s32, s32, s32, s32);
     M2C_UNK SpawnSoundEffectAtTile(s32, s32, s32, s32);
     typedef M2C_UNK (*Fb0c)(s32, s32, s32);
     switch (mode) {
@@ -76,12 +76,12 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
         SpawnSoundEffectAtTile(0x10e, x, y, 0);
         SpawnSoundEffectAtTile(0x10f, x, y, 0x1e);
         CreateScreenOffsetEffect(1, 0x14, 0);
-        func_02080358(4, 0, 2, 0);
+        CreateScreenFlash(4, 0, 2, 0);
         return;
     case 9:
         ((Fb0c)PlaySoundAtTile)(0xfa, x, y);
         CreateScreenOffsetEffect(1, 0x1e, 0);
-        func_02080358(8, 0, 4, 0);
+        CreateScreenFlash(8, 0, 4, 0);
         return;
     }
 }

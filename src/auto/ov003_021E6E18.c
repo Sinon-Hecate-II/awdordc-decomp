@@ -1,5 +1,7 @@
 /* 15 functions from 0x021E6E18 to 0x021E771C (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
+#include "sprite_grid.h"
 s32 IsSessionHost(void);
 s32 func_ov003_021e6d28(void);
 s32 GetLocalPlayerIdForOverlay(void);
@@ -144,23 +146,26 @@ u8 func_ov003_021e7450(void *arg0) {
     return M2C_FIELD(arg0, u8 *, 8);
 }
 
-void func_ov003_021e7458(void *arg0, s32 arg1, s32 arg2) {
+/* Ov003 waypoint-list slot update: refresh the slot sprite's cell while the slot
+ * lies in the used range [groupFirst, groupFirst + count), and otherwise drop the
+ * slot's sub-cell so an unused slot shows nothing. */
+void RefreshWaypointSlotSprite(void *list, s32 slot, s32 groupFirst) {
     M2C_UNK RemoveSpriteCell(void *, M2C_UNK);
     M2C_UNK func_020aad18(void *);
-    s32 var_r1;
+    s32 active;
     s32 count;
-    void *temp_r0;
-    count = M2C_FIELD(arg0, s8 *, 4);
-    temp_r0 = M2C_FIELD(arg0 + arg1 * 4, void **, 0x78);
-    if (arg1 < arg2 + count) {
-        func_020aad18(temp_r0);
+    void *sprite;
+    count = M2C_FIELD(list, s8 *, WAYPOINT_LIST_COUNT);
+    sprite = M2C_FIELD(list + slot * 4, void **, WAYPOINT_LIST_SLOTS);
+    if (slot < groupFirst + count) {
+        func_020aad18(sprite);
         return;
     }
-    temp_r0 = M2C_FIELD(temp_r0, void **, 0x64);
-    if (M2C_FIELD(temp_r0, u8 *, 0x12) != 0) var_r1 = 1;
-    else var_r1 = 0;
-    if (!(var_r1 & 0xFF)) return;
-    RemoveSpriteCell(temp_r0, 1);
+    sprite = M2C_FIELD(sprite, void **, DS3D_SPRITE_CELLS);
+    if (M2C_FIELD(sprite, u8 *, SPRITE_CELL_LIST_USED) != 0) active = 1;
+    else active = 0;
+    if (!(active & 0xFF)) return;
+    RemoveSpriteCell(sprite, 1);
 }
 
 s8 func_ov003_021e74a4(void *arg0) {
@@ -170,7 +175,7 @@ s8 func_ov003_021e74a4(void *arg0) {
 /* Re-initialize a 26-slot waypoint/segment list. Each slot (p+i*4, +0x78) is a
  * segment; seg+0x64 is its sub-object whose +0x12 entry count tells whether it
  * is active. In mode 0 (path), slots 0-20 are (re)built for the current path
- * state (func_ov003_021e7458) or cleared (func_020aad18), and slots 21-25 are
+ * state (RefreshWaypointSlotSprite) or cleared (func_020aad18), and slots 21-25 are
  * released if active; in mode 1 (grid), slots 0-20 are released and 21-25 built.
  * The list's head/tail next-pointers are re-linked to the active range, then the
  * display is refreshed (HandleWaypointInput). */
@@ -193,8 +198,8 @@ void SetWaypointListLayout(void *list, s32 mode) {
         i = 0;
         do {
             if (!InRange(i, 21, 24)) {
-                if (InRange(i, 0, 3)) func_ov003_021e7458(list, i, 0);
-                else if (InRange(i, 4, 7)) func_ov003_021e7458(list, i, 4);
+                if (InRange(i, 0, 3)) RefreshWaypointSlotSprite(list, i, 0);
+                else if (InRange(i, 4, 7)) RefreshWaypointSlotSprite(list, i, 4);
                 else func_020aad18(M2C_FIELD(list + i * 4, void **, 0x78));
             } else {
                 sub = M2C_FIELD(M2C_FIELD(list + i * 4, void **, 0x78), void **, 0x64);
@@ -217,7 +222,7 @@ void SetWaypointListLayout(void *list, s32 mode) {
         M2C_FIELD(list, s8 *, 0xe4) = 21;
         do {
             if (j >= 21) {
-                if (InRange(j, 21, 24)) func_ov003_021e7458(list, j, 21);
+                if (InRange(j, 21, 24)) RefreshWaypointSlotSprite(list, j, 21);
                 else func_020aad18(M2C_FIELD(list + j * 4, void **, 0x78));
             } else {
                 sub = M2C_FIELD(M2C_FIELD(list + j * 4, void **, 0x78), void **, 0x64);
