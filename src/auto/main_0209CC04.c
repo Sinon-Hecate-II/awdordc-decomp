@@ -603,20 +603,23 @@ s32 func_0209d750(void *arg0) {
     return 1;
 }
 
-s32 func_0209d790(void *arg0) {
+/* 3D-sprite state handler: when the state's data names a valid message, reset the
+ * dialog UI, show the message and spawn its text sprite under this sprite, then
+ * advance to the next state entry. */
+s32 SpriteState_ShowMessage(void *sprite) {
     s32 IsMessageTextIdValid(s32);
     M2C_UNK ShowMessageText(s32);
-    M2C_UNK func_02092888(void *);
+    M2C_UNK SpawnMessageTextSprite(void *);
     M2C_UNK ResetDialogUI();
-    s32 temp_r4;
+    s32 textId;
 
-    temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4);
-    if (IsMessageTextIdValid(temp_r4) != 0) {
+    textId = M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA);
+    if (IsMessageTextIdValid(textId) != 0) {
         ResetDialogUI();
-        ShowMessageText(temp_r4);
-        func_02092888(arg0);
+        ShowMessageText(textId);
+        SpawnMessageTextSprite(sprite);
     }
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) += DS3D_STATE_SIZE;
     return 0;
 }
 
@@ -647,7 +650,7 @@ void TextLayer_ShowMessage(void *arg0, s32 arg1, s32 arg2, s32 arg3) {
  * message named by the state's data at the row in its parameter, marking the
  * panel hidden behind a configured screen window. */
 s32 SpriteState_ShowTextPanel(void *sprite) {
-    void *func_0208b520(void *);
+    void *CreateTextLayerChild(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 textId;
     s16 row;
@@ -657,7 +660,7 @@ s32 SpriteState_ShowTextPanel(void *sprite) {
     textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
     row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
     if (IsMessageTextIdValid(textId) != 0) {
-        panel = func_0208b520(sprite);
+        panel = CreateTextLayerChild(sprite);
         TextLayer_ShowMessage(panel, 0, textId, row);
         M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) = M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) | (TEXT_LAYER_PANEL_WINDOW_MASK | TEXT_LAYER_PANEL_HIDDEN);
     }
@@ -669,7 +672,7 @@ s32 SpriteState_ShowTextPanel(void *sprite) {
  * message named by the state's data at the row in its parameter, and hide the
  * panel (no screen window). */
 s32 SpriteState_CreateHiddenTextPanel(void *sprite) {
-    void *func_0208b520(void *);
+    void *CreateTextLayerChild(void *);
     void TextLayer_ShowMessage(void *, s32, s32, s32);
     s32 textId;
     s16 row;
@@ -679,7 +682,7 @@ s32 SpriteState_CreateHiddenTextPanel(void *sprite) {
     textId = M2C_FIELD(state, s32 *, DS3D_STATE_DATA);
     row = M2C_FIELD(state, s16 *, DS3D_STATE_PARAM);
     if (IsMessageTextIdValid(textId) != 0) {
-        panel = func_0208b520(sprite);
+        panel = CreateTextLayerChild(sprite);
         TextLayer_ShowMessage(panel, 0, textId, row);
         M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) = (M2C_FIELD(panel, s32 *, TEXT_LAYER_PANEL_STATE) | TEXT_LAYER_PANEL_HIDDEN) & ~TEXT_LAYER_PANEL_WINDOW_MASK;
     }

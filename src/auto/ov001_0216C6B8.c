@@ -3,7 +3,7 @@
 #include "common.h"
 #include "ov001_room.h"
 extern unsigned char data_ov001_0218fd40[];
-extern unsigned char data_ov001_0218fdb0[];
+extern unsigned char gBuiltinWifiKey[];
 extern unsigned char gOv001RoomPlayerData[];
 extern unsigned char gOv001RoomRecords[];
 typedef struct CipherState { unsigned int i, j; unsigned char *s; unsigned int n; } CipherState;
@@ -70,7 +70,7 @@ int Ov001_SendRoomRequest(int state, int session, int context) {
     Ov001_WriteRoomPayload(M2C_FIELD(gRoomState, int *, 0), buffer + OV001_PKT_HEADER,
                        (int)&packet.work.type, &packet.work.length, &packet.work.flags, (int)&packet.work);
     Ov001MemCopy(packet.token, (void *)(session + 8), 8);
-    if (Ov001_ScrambleToken(packet.token, 8, data_ov001_0218fdb0, 6)) {
+    if (Ov001_ScrambleToken(packet.token, 8, gBuiltinWifiKey, 6)) {
         Ov001_SetRoomError(2);
         return -1;
     }

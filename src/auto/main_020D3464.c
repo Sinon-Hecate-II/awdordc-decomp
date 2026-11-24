@@ -239,17 +239,21 @@ s32 func_020d39b4(void) {
     return 0;
 }
 
-void func_020d39f4(s32 arg0) {
+/* Overlay-cleanup step: start the map-view hold that follows the just-ended
+ * overlay battle. For the local-wireless overlay clear the pending match result;
+ * for the online overlay create the matchmaking hold sprite, which polls
+ * matchmaking while it holds the map. */
+void SetupMapViewHold(s32 owner) {
     M2C_UNK GetActiveOverlay();
     M2C_UNK CreateSpriteObject(M2C_UNK, M2C_UNK);
     extern M2C_UNK gMapData;
-    extern M2C_UNK data_0212b9d4;
+    extern M2C_UNK gOnlineMatchViewHoldClass;
     switch (GetActiveOverlay()) {                      /* irregular */
     case 1:
-        M2C_FIELD(&gMapData, u8 *, 7) = 0;
+        M2C_FIELD(&gMapData, u8 *, MAPDATA_MATCH_RESULT) = 0;
         return;
     case 2:
-        CreateSpriteObject(&data_0212b9d4, arg0);
+        CreateSpriteObject(&gOnlineMatchViewHoldClass, owner);
         return;
     }
 }
@@ -279,11 +283,11 @@ void AdvanceAfterOverlayEvent(void) {
 
 #pragma optimization_level 2
 void func_020d3aa4(void *arg0) {
- M2C_UNK func_02086330();
+ M2C_UNK DeleteVoiceChatWidgets();
  M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, M2C_UNK);
  extern M2C_UNK gMapData;
  if (M2C_FIELD(&gMapData,u8 *,5) != 0 || M2C_FIELD(&gMapData,u8 *,7) == 0) {
- func_02086330();
+ DeleteVoiceChatWidgets();
  CreateMatchNameLabel(0,0x25c,arg0);
  }
 }
@@ -315,7 +319,7 @@ void StepBattleMap(void) {
     void AdvanceTurnStep();
     void BeginPlayerTurnSetup();
     void func_020d4400();
-    void func_020d4430();
+    void TurnStartSetupStep();
     void func_020d447c();
     M2C_UNK TurnBannerStep();
     void func_020d4280();
@@ -371,7 +375,7 @@ void StepBattleMap(void) {
             func_020d4400();
             return;
         case MAP_STATE_TURN_START_SETUP:
-            func_020d4430();
+            TurnStartSetupStep();
             return;
         case MAP_STATE_TURN_START:
             func_020d447c();
@@ -429,22 +433,24 @@ void func_020d3cec(void) {
     LoadNameGraphicFiles();
 }
 
-void func_020d3d24(void) {
+/* Reset the map, load its terrain and units, initialize player and AI state, then start the active player's phase. */
+void ResetBattleMapAndBeginPhase(void) {
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadMapTileset();
     M2C_UNK LoadBattleMap(M2C_UNK);
     M2C_UNK func_020ceea8();
-    M2C_UNK func_020a23c4();
+    M2C_UNK ResetPlayerTurnBonuses();
     M2C_UNK func_020cfd14();
     M2C_UNK CenterMapViewAtBattleStart();
     M2C_UNK BeginPlayerPhase();
     M2C_UNK InitPlayerTurnState();
     extern void **gCurrentMap;
+
     ResetBattleMap();
     LoadMapTileset();
-    LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
+    LoadBattleMap(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID));
     func_020ceea8();
-    func_020a23c4();
+    ResetPlayerTurnBonuses();
     func_020cfd14();
     CenterMapViewAtBattleStart();
     BeginPlayerPhase();
@@ -686,7 +692,7 @@ void BeginPlayerTurnSetup(void) {
     M2C_UNK SetPlayerCoAnimationToIdle(M2C_UNK);
     M2C_UNK BeginPlayerPhase(void);
     M2C_UNK InitPlayerTurnState(void);
-    M2C_UNK func_020a23c4(void);
+    M2C_UNK ResetPlayerTurnBonuses(void);
     M2C_UNK RefreshMapView(void);
     void func_020d427c(void);
     extern void **gCurrentMap;
@@ -694,7 +700,7 @@ void BeginPlayerTurnSetup(void) {
     SetPlayerCoAnimationToIdle(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
     BeginPlayerPhase();
     InitPlayerTurnState();
-    func_020a23c4();
+    ResetPlayerTurnBonuses();
     RefreshMapView();
     func_020d427c();
     M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_TURN_START_WAIT;

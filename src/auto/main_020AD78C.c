@@ -378,14 +378,17 @@ BeginScreenTransition(arg0,14);
 }
 }
 
+/* Whether a screen-change transition may be started: its sprite must exist, the
+ * transition state block must be allocated, and no transition may be running. */
 u8 CanStartScreenTransition(void) {
-s32 IsScreenTransitionDone();
-extern s32 gScreenTransition;
-u8 result;
-if(!HasScreenTransitionSprite())return 0;
-if(!gScreenTransition)return 0;
-if(IsScreenTransitionDone()!=0)result=1;else result=0;
-return result;
+    s32 IsScreenTransitionDone();
+    extern s32 gScreenTransition;
+    u8 canStart;
+
+    if (!HasScreenTransitionSprite()) return 0;
+    if (!gScreenTransition) return 0;
+    if (IsScreenTransitionDone() != 0) canStart = 1; else canStart = 0;
+    return canStart;
 }
 
 void func_020ae1e8(s32 arg0) {

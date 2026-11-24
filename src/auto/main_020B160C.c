@@ -10,7 +10,7 @@
  * palettes 4..7 and the current player's palette into OBJ palette 3. */
 void UploadBattleMapGraphics(void){
 s32 func_020a7290(void);void *func_020a7278(void);void *func_020a7284(void);
-M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void CopyToObjPaletteShadow(void *,s32,s32);void func_020c09c0(s32);
+M2C_UNK MI_CpuCopy32(M2C_UNK *,s32,M2C_UNK);void CopyToObjPaletteShadow(void *,s32,s32);void LoadPlayerArmyPalette(s32);
 extern void *gCur3DSpriteEngine;extern void *gCurrentMap;extern u8 gArmyPalettes[];
 s32 tileBytes;void *engine;
 tileBytes=func_020a7290()<<5;engine=M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0x10);
@@ -21,25 +21,29 @@ CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void
 CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+2*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,416,32);
 CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+3*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,448,32);
 CopyToObjPaletteShadow(gArmyPalettes+(M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap,void **,0)+4*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_INDEX_OFF)-1)*32,480,32);
-func_020c09c0(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER));}
+LoadPlayerArmyPalette(M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),u16 *,MAP_CURRENT_PLAYER));}
 
+/* Re-apply the battle map to the map view for its current weather and tileset:
+ * clear the unit-move controller slots, upload the scene panel's icon tiles and
+ * the under-info panel graphics, then run the view controller's set-terrain
+ * callback (MAPVIEW_SET_TERRAIN) with the map's weather and tileset. */
 void ApplyMapViewTilesetWeather(void) {
-    M2C_UNK func_02091d20();
-    M2C_UNK LoadUnderInfoGraphics();
-    M2C_UNK func_ov000_02169368();
+    void ClearUnitMoveSlots(void);
+    void LoadScenePanelIconTiles(void);
+    void LoadUnderInfoGraphics(void);
     extern void *gCurrentMap;
-    M2C_UNK (*temp_r2)(u8, u8);
-    void *temp_r0;
+    void (*setTerrain)(u8, u8);
+    void *map;
 
-    func_ov000_02169368();
-    func_02091d20();
+    ClearUnitMoveSlots();
+    LoadScenePanelIconTiles();
     LoadUnderInfoGraphics();
-    temp_r2 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(u8, u8), 0x58);
-    if (temp_r2 == NULL) {
+    setTerrain = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), void (**)(u8, u8), MAPVIEW_SET_TERRAIN);
+    if (setTerrain == NULL) {
         return;
     }
-    temp_r0 = M2C_FIELD(gCurrentMap, void **, 0);
-    temp_r2(M2C_FIELD(temp_r0, u8 *, 0x5158), M2C_FIELD(temp_r0, u8 *, 0x5157));
+    map = M2C_FIELD(gCurrentMap, void **, MAP_DATA_PTR);
+    setTerrain(M2C_FIELD(map, u8 *, MAP_WEATHER), M2C_FIELD(map, u8 *, MAP_TILESET));
 }
 
 void func_020b1770(void) {
@@ -149,9 +153,9 @@ func_020b1770();ApplyMapViewTilesetWeather();func_020b179c();func_020b17dc();
 }
 
 void func_020b19a8(s32 arg0, s32 arg1) {
-    M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
+    M2C_UNK CopyBytesToObjPaletteShadow(void *, s32, M2C_UNK);
     extern u8 data_020f3c20[];
-    func_01ff9e78(data_020f3c20 + arg1 * 2, ((arg0 + 0xB) << 5) + 0x1E, 2);
+    CopyBytesToObjPaletteShadow(data_020f3c20 + arg1 * 2, ((arg0 + 0xB) << 5) + 0x1E, 2);
 }
 
 /* Upload the caller's entry of the army colour table - and the table's first
@@ -241,11 +245,16 @@ void ResetSpriteSlots(void) {
     M2C_FIELD(gSpriteSlotManager, u8 *, SPRITE_SLOT_MGR_DRAW_PAUSE_DEPTH) = 0;
 }
 
+/* The focused slot is interactive while visible and not in its closing/outro animation. */
 s32 IsFocusedSpriteSlotInteractive(void) {
-extern void *gSpriteSlotManager;
-void *p=M2C_FIELD(gSpriteSlotManager,void **,12);
-if(!p || !M2C_FIELD(p,u8 *,1) || (u8)(M2C_FIELD(p,u8 *,4)+253)<=1) return 0;
-return 1;
+    extern void *gSpriteSlotManager;
+    void *focusedSlot = M2C_FIELD(gSpriteSlotManager, void **, SPRITE_SLOT_MGR_FOCUS);
+
+    if (!focusedSlot || !M2C_FIELD(focusedSlot, u8 *, SPRITE_SLOT_VISIBLE) ||
+        (u8)(M2C_FIELD(focusedSlot, u8 *, SPRITE_SLOT_ANIM) + 253) <= 1) {
+        return 0;
+    }
+    return 1;
 }
 
 /* Set the focus frame drawn around a sprite slot from its two corners: the
@@ -389,7 +398,23 @@ void SetSpriteSlotFrameToFocus(void) {
     M2C_FIELD(gSpriteSlotManager, s16 *, SPRITE_SLOT_MGR_FRAME_BR_Y) = (s16)bottom;
 }
 
-s32 FindSpriteSlotById(a) s32 a; {extern u8 gSpriteSlots[];s32 i=0;u8 *p=gSpriteSlots;do{if(p[1]&&a==p[0])return (s32)gSpriteSlots+60*i;i++;p+=60;}while(i<85);return 0;}
+/* Return the first active sprite slot whose id is `id`, or NULL when no slot
+ * has that id. */
+s32 FindSpriteSlotById(id)
+s32 id;
+{
+    extern u8 gSpriteSlots[];
+    s32 i = 0;
+    u8 *slot = gSpriteSlots;
+
+    do {
+        if (slot[SPRITE_SLOT_VISIBLE] && id == slot[SPRITE_SLOT_ID])
+            return (s32)gSpriteSlots + i * SPRITE_SLOT_STRIDE;
+        i++;
+        slot += SPRITE_SLOT_STRIDE;
+    } while (i < SPRITE_SLOT_COUNT);
+    return 0;
+}
 
 u8 func_020b212c(void) {
     extern void *gSpriteSlotManager;
@@ -418,18 +443,29 @@ s32 i=0; u8 *p=gSpriteSlots;
 do { if(SpriteSlotHasFlags(p,1)!=0) p[1]=0; i++;p+=0x3c; } while(i<0x55);
 }
 
+/* Disable touch-clicking on every sprite slot that is not enabled (won't take focus). */
 void LockInactiveSpriteSlots(void) {
 extern u8 gSpriteSlots[];
-s32 i; u8 *p;
-p=gSpriteSlots; i=0;
-do { if(SpriteSlotHasFlags(p,1)!=1) M2C_FIELD(p,u16 *,0x1c)|=0x400; i++;p+=0x3c; } while(i<0x55);
+s32 i; u8 *slot;
+slot=gSpriteSlots; i=0;
+do { if(SpriteSlotHasFlags(slot,SPRITE_SLOT_FLAG_ENABLED)!=1) M2C_FIELD(slot,u16 *,SPRITE_SLOT_FLAGS)|=SPRITE_SLOT_FLAG_DISABLED; i++;slot+=SPRITE_SLOT_STRIDE; } while(i<SPRITE_SLOT_COUNT);
 }
 
+/* Clear the disabled flag on every sprite slot that is not enabled. */
 void UnlockInactiveSpriteSlots(void) {
-extern u8 gSpriteSlots[];
-s32 i; u8 *p;
-p=gSpriteSlots; i=0;
-do { if(SpriteSlotHasFlags(p,1)!=1) M2C_FIELD(p,u16 *,0x1c)&=~0x400; i++;p+=0x3c; } while(i<0x55);
+    extern u8 gSpriteSlots[];
+    s32 slotIndex;
+    u8 *slot;
+
+    slot = gSpriteSlots;
+    slotIndex = 0;
+    do {
+        if (SpriteSlotHasFlags(slot, SPRITE_SLOT_FLAG_ENABLED) != SPRITE_SLOT_FLAG_ENABLED) {
+            M2C_FIELD(slot, u16 *, SPRITE_SLOT_FLAGS) &= ~SPRITE_SLOT_FLAG_DISABLED;
+        }
+        slotIndex++;
+        slot += SPRITE_SLOT_STRIDE;
+    } while (slotIndex < SPRITE_SLOT_COUNT);
 }
 
 void CloseAllActiveSpriteSlots(void) {

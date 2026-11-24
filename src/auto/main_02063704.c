@@ -237,21 +237,24 @@ s32 SBServerListProcessAdHocServers(void *list) {
     return 0;
 }
 
-s32 func_02063dac(void *arg0) {
+/* Per-frame server-browser step: drop the servers the application removed, then
+ * do the work the list's state asks for (collect the ad-hoc announcements, or
+ * take in and parse what the master sent); an idle list has nothing to do. */
+s32 SBServerListProcessState(void *list) {
     void SBServerListFreeRemovedServers(void *);
     s32 SBServerListCheckForData(void *);
     s32 SBServerListProcessAdHocServers(void *);
-    s32 temp_r0;
+    s32 state;
 
-    SBServerListFreeRemovedServers(arg0);
-    temp_r0 = M2C_FIELD(arg0, s32 *, 0);
-    switch (temp_r0) {
-    case 2:
-    case 3:
-        return SBServerListCheckForData(arg0);
-    case 0:
-        return SBServerListProcessAdHocServers(arg0);
-    case 1:
+    SBServerListFreeRemovedServers(list);
+    state = M2C_FIELD(list, s32 *, SB_SLIST_STATE);
+    switch (state) {
+    case SB_SLIST_STATE_CONNECTED:
+    case SB_SLIST_STATE_QUERYING:
+        return SBServerListCheckForData(list);
+    case SB_SLIST_STATE_AD_HOC:
+        return SBServerListProcessAdHocServers(list);
+    case SB_SLIST_STATE_IDLE:
     default:
         return 0;
     }
@@ -271,11 +274,11 @@ M2C_UNK func_02063df8(void) {
  * callback first. */
 void FlushSocketEvents(M2C_UNK arg0) {
     M2C_UNK FlushSocketCallbacks(M2C_UNK);
-    void func_02074074();
+    void RunExitFunctions();
     extern M2C_UNK gSocketEventState;
 
     if (M2C_FIELD(&gSocketEventState, s32 *, SOCK_EVENT_ARMED) == 0) {
-        func_02074074();
+        RunExitFunctions();
         if (M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB) != NULL) {
             M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB)();
             M2C_FIELD(&gSocketEventState, M2C_UNK (**)(), SOCK_EVENT_IDLE_CB) = NULL;

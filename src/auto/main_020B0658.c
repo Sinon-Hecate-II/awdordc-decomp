@@ -192,7 +192,7 @@ void BeginBrightEffectStereo(void *effect) {
  * equally spaced frames of white, so it takes 60 frames to cycle) through the
  * mixer, choosing one of the two gradients by the effect's side flag (0x6C). */
 void DrawBrightEffectStereo(void *arg0) {
-M2C_UNK func_01ff9e78(void *,M2C_UNK,M2C_UNK);
+M2C_UNK CopyBytesToObjPaletteShadow(void *,M2C_UNK,M2C_UNK);
 M2C_UNK QueueMemoryCopy(M2C_UNK *,s32,M2C_UNK,M2C_UNK);
 extern M2C_UNK data_020f3d60; extern M2C_UNK data_020f4160; extern M2C_UNK data_020f41a0;
 extern void *gCur3DSpriteEngine; extern u32 gFrameCounter;
@@ -202,10 +202,10 @@ QueueMemoryCopy((char *)&data_020f3d60+(n<<7),M2C_FIELD(gCur3DSpriteEngine,s32 *
 M2C_FIELD(arg0,s16 *,0x6e)++;
 }
 if(M2C_FIELD(arg0,s16 *,0x6c)==0){
-func_01ff9e78((char *)&data_020f41a0+((gFrameCounter>>2)%15)*2+2,2,30);
+CopyBytesToObjPaletteShadow((char *)&data_020f41a0+((gFrameCounter>>2)%15)*2+2,2,30);
 return;
 }
-func_01ff9e78((char *)&data_020f4160+((gFrameCounter>>2)%15)*2+2,2,30);
+CopyBytesToObjPaletteShadow((char *)&data_020f4160+((gFrameCounter>>2)%15)*2+2,2,30);
 }
 
 #pragma opt_strength_reduction reset

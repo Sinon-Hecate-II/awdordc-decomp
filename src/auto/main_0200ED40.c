@@ -45,22 +45,25 @@ void CallbackList_Append(M2C_UNK *list, M2C_UNK node) {
     M2C_FIELD(node, M2C_UNK *, 8) = (M2C_UNK)next;
     M2C_FIELD(tail, M2C_UNK *, 8) = node;
 }
-void func_0200eda0(M2C_UNK *arg0, M2C_UNK arg1) {
-    M2C_UNK var_r2;
-    M2C_UNK var_r3;
-    if (arg0 != NULL) {
-        var_r2 = *arg0;
-        var_r3 = var_r2;
-        if (var_r2 != 0) {
+/* Remove callback node `node` from the singly linked list `list` when it is in
+ * it (a node's next pointer sits at +0x08). */
+void CallbackList_Remove(M2C_UNK *list, M2C_UNK node) {
+    M2C_UNK current;
+    M2C_UNK previous;
+
+    if (list != NULL) {
+        current = *list;
+        previous = current;
+        if (current != 0) {
             do {
-                if (var_r2 == arg1) {
-                    if (var_r2 == var_r3) *arg0 = M2C_FIELD(var_r2, M2C_UNK *, 8);
-                    else M2C_FIELD(var_r3, M2C_UNK *, 8) = M2C_FIELD(var_r2, M2C_UNK *, 8);
+                if (current == node) {
+                    if (current == previous) *list = M2C_FIELD(current, M2C_UNK *, 8);
+                    else M2C_FIELD(previous, M2C_UNK *, 8) = M2C_FIELD(current, M2C_UNK *, 8);
                     return;
                 }
-                var_r3 = var_r2;
-                var_r2 = M2C_FIELD(var_r2, M2C_UNK *, 8);
-            } while (var_r2 != 0);
+                previous = current;
+                current = M2C_FIELD(current, M2C_UNK *, 8);
+            } while (current != 0);
         }
     }
 }
@@ -89,15 +92,15 @@ void PM_AddPostSleepCallback(M2C_UNK arg0) {
 /* Unlinks a node from the global list rooted at data_0212fcd8. */
 void PM_DeletePreSleepCallback(M2C_UNK node) {
     extern M2C_UNK data_0212fcd8;
-    void (*unlinkNode)(M2C_UNK *, M2C_UNK) = func_0200eda0;
+    void (*unlinkNode)(M2C_UNK *, M2C_UNK) = CallbackList_Remove;
     unlinkNode(&data_0212fcd8, node);
 }
 #pragma peephole reset
 #pragma scheduling reset
 void PM_DeletePostSleepCallback(M2C_UNK arg0) {
-    void func_0200eda0(M2C_UNK *, M2C_UNK);
+    void CallbackList_Remove(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212fce0;
-    func_0200eda0(&data_0212fce0, arg0);
+    CallbackList_Remove(&data_0212fce0, arg0);
 }
 /* Bring the RTC service up once: mark the state initialised, clear the pending
  * request, then install the reply handler on the RTC command FIFO. */

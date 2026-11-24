@@ -8,11 +8,11 @@ void *GetLocalizedFileName(void *);u8 *LoadFileToBuffer(void *,s32);void *HeapAl
 
 M2C_UNK func_ov002_021e5d5c(M2C_UNK arg0){
 s32 side,mode;u8 *dest=(u8 *)arg0,*country,*settings; s32 res,i,j,shade;u8 *palette,*resource,*state;u16 tiles=0;u16 pal=tiles;u32 size;u8 *other;
-if(gDemoBattle[0]){func_0207c1fc(0x6800000,0x6890000);tiles=(u16)(tiles+96);pal=(u16)(pal+1);}
+if(gDemoBattle[0]){LoadDemoBattleGraphics(0x6800000,0x6890000);tiles=(u16)(tiles+96);pal=(u16)(pal+1);}
 GX_BeginLoadTex();M2C_FIELD(dest,u16 *,200)=tiles;
 size=LoadDecompressedFileTo(data_ov002_021f2d94,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));
-GX_EndLoadTex();func_02004d3c();M2C_FIELD(dest,u8 *,202)=pal;
-ReadFileSection(data_ov002_021f2da0,0x6890000+(pal<<5),128,32);pal=(u16)(pal+1);func_02004ddc();
+GX_EndLoadTex();GX_BeginLoadTexPltt();M2C_FIELD(dest,u8 *,202)=pal;
+ReadFileSection(data_ov002_021f2da0,0x6890000+(pal<<5),128,32);pal=(u16)(pal+1);GX_EndLoadTexPltt();
 LoadDecompressedFileTo(GetLocalizedFileName(data_ov002_021f2dac),M2C_FIELD(gCur3DSpriteEngine,s32 *,28)+2048);
 palette=LoadFileToBuffer(data_ov002_021f2db8,1);
 CopyToObjPaletteShadow(palette+(gPlayerSettings[25]<<5),544,32);CopyToObjPaletteShadow(palette+(gPlayerSettings[49]<<5),576,32);
@@ -35,7 +35,7 @@ M2C_FIELD(country,u16 *,38)=tiles;
 if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=ComparePlayerGauges(state);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=LoadFaceGraphics(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dc4);}
 M2C_FIELD(country,u16 *,40)=tiles;
 if(settings[21]){if(settings[22]!=2)mode=0;else {mode=2;res=CompareUnitViewGauges(state,0);switch(res){case 1:mode=3;break;case 2:mode=4;break;}}size=LoadFaceGraphics(settings[21],mode,0x6800000+(tiles<<5));size=(size+31)&~31;tiles=(u16)(tiles+(size>>5));SetFileDirectory(data_ov002_021f2dcc);}
-GX_EndLoadTex();func_02004d3c();
+GX_EndLoadTex();GX_BeginLoadTexPltt();
 resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24]*4,void **,0);palette=HeapAllocBlock(128);
 if(resource)ReadFileSection(M2C_FIELD(resource,void **,8),(s32)palette,settings[25]<<7,128);else MI_CpuFill32(0,palette,128);
 if(func_ov002_021e8038(gPlayerSettings,side)){
@@ -67,8 +67,8 @@ M2C_FIELD(country,u8 *,43)=pal;
 resource=M2C_FIELD(M2C_FIELD(settings,void **,8),void **,20);
 if(resource){ReadFileSection(resource,(0x6890000+((pal)<<5)),0,32);pal=(u16)(pal+1);}
 M2C_FIELD(country,u8 *,44)=pal;
-if(settings[21]){func_02098b4c(settings[21],2,(0x6890000+((pal)<<5)));pal=(u16)(pal+16);SetFileDirectory(data_ov002_021f2e34);}
-func_02004ddc();resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24]*4,void **,0);M2C_FIELD(country,void **,0)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[19]*4,void **,8);M2C_FIELD(country,void **,4)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=settings[19]==0?M2C_FIELD(M2C_FIELD(settings,void **,4),void **,16):0;M2C_FIELD(country,void **,8)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,void **,4)+M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,u8 *,19)*4,void **,20);M2C_FIELD(country,void **,12)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,void **,4)+M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,u8 *,19)*4,void **,28);if(!resource)resource=M2C_FIELD(M2C_FIELD(settings,void **,4),void **,36);M2C_FIELD(country,void **,16)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(settings,void **,4),void **,36);M2C_FIELD(country,void **,20)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;for(i=0;i<5;i++)M2C_FIELD(country+(u32)i*2,u16 *,86)=BlendRgb555_16(0x1fff,M2C_FIELD(M2C_FIELD(settings,void **,8),u16 *,26),(u8)(16-M2C_FIELD(M2C_FIELD(settings,void **,8)+i,u8 *,28)),M2C_FIELD(M2C_FIELD(settings,void **,8)+i,u8 *,28));
+if(settings[21]){LoadFacePaletteToAddress(settings[21],2,(0x6890000+((pal)<<5)));pal=(u16)(pal+16);SetFileDirectory(data_ov002_021f2e34);}
+GX_EndLoadTexPltt();resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24]*4,void **,0);M2C_FIELD(country,void **,0)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[19]*4,void **,8);M2C_FIELD(country,void **,4)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=settings[19]==0?M2C_FIELD(M2C_FIELD(settings,void **,4),void **,16):0;M2C_FIELD(country,void **,8)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,void **,4)+M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,u8 *,19)*4,void **,20);M2C_FIELD(country,void **,12)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,void **,4)+M2C_FIELD(gPlayerSettings+(side==0?1:0)*24,u8 *,19)*4,void **,28);if(!resource)resource=M2C_FIELD(M2C_FIELD(settings,void **,4),void **,36);M2C_FIELD(country,void **,16)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;resource=M2C_FIELD(M2C_FIELD(settings,void **,4),void **,36);M2C_FIELD(country,void **,20)=resource?LoadDecompressedFile(M2C_FIELD(resource,void **,4),1):0;for(i=0;i<5;i++)M2C_FIELD(country+(u32)i*2,u16 *,86)=BlendRgb555_16(0x1fff,M2C_FIELD(M2C_FIELD(settings,void **,8),u16 *,26),(u8)(16-M2C_FIELD(M2C_FIELD(settings,void **,8)+i,u8 *,28)),M2C_FIELD(M2C_FIELD(settings,void **,8)+i,u8 *,28));
 country+=100;settings+=24;state+=44;side++;}while(side<2);
 }
 

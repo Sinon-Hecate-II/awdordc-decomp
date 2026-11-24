@@ -67,14 +67,18 @@ void func_020323a4(void) {
     InitProfileIdBlock();
 }
 
-s32 func_020323b0(void *a) {
-void BuildCrc32Table(void *,u32);
-u32 Crc32Block(void *,void *,u32);
-u32 table[256]; u32 crc;
-BuildCrc32Table(table,0xedb88320);
-crc=Crc32Block(table,a,0x3c);
-if(crc==M2C_FIELD(a,u32 *,0x3c)) return 1;
-return 0;
+/* True when the stored CRC32 at the end of the profile-id block (+0x3C) matches
+ * the CRC32 of the block's first PROFILE_ID_BLOCK_CRC bytes. */
+s32 VerifyProfileIdBlockCrc(void *block) {
+    void BuildCrc32Table(void *, u32);
+    u32 Crc32Block(void *, void *, u32);
+    u32 table[256];
+    u32 crc;
+
+    BuildCrc32Table(table, CRC32_POLYNOMIAL);
+    crc = Crc32Block(table, block, PROFILE_ID_BLOCK_CRC);
+    if (crc == M2C_FIELD(block, u32 *, PROFILE_ID_BLOCK_CRC)) return 1;
+    return 0;
 }
 
 s32 func_020323f4(void *arg0) {
@@ -127,17 +131,18 @@ s32 func_020324f0(void *arg0) {
 }
 
 void func_02032508(void) {
-    M2C_UNK func_02032514();
-    func_02032514();
+    M2C_UNK ClearNasProfileKey();
+    ClearNasProfileKey();
 }
 
-s32 func_02032514(void *a) {
+/* Mark the profile-id block's NAS key as unset and refresh the block's CRC32. */
+s32 ClearNasProfileKey(void *block) {
 void BuildCrc32Table(void *,u32);
 u32 Crc32Block(void *,void *,u32);
 u32 table[256];
-M2C_FIELD(a,u32 *,0x20)&=~1;
-BuildCrc32Table(table,0xedb88320);
-M2C_FIELD(a,u32 *,0x3c)=Crc32Block(table,a,0x3c);
+M2C_FIELD(block,u32 *,PROFILE_ID_BLOCK_KEY_SET)&=~1;
+BuildCrc32Table(table,CRC32_POLYNOMIAL);
+M2C_FIELD(block,u32 *,PROFILE_ID_BLOCK_CRC)=Crc32Block(table,block,0x3c);
 }
 
 u64 func_02032558(void *a) {
@@ -164,9 +169,9 @@ default:return 0;
 }
 
 u64 func_02032604(void *a) {
-u64 func_02031f14(s32,s32);
+u64 BuildPlayerCode(s32,s32);
 s32 x=M2C_FIELD(a,s32 *,0x1c); u64 r=0;
-if(x)r=func_02031f14(x,M2C_FIELD(a,s32 *,0x24));
+if(x)r=BuildPlayerCode(x,M2C_FIELD(a,s32 *,0x24));
 return r;
 }
 
@@ -412,7 +417,7 @@ M2C_UNK UnlockMutex(void *);
 u64 GetSystemTick(void);
 M2C_UNK SleepMilliseconds(M2C_UNK);
 u64 U64Divide(u64,u64);
-M2C_UNK func_0203367c(M2C_UNK);
+M2C_UNK Nas_SetConnectionResult(M2C_UNK);
 M2C_UNK Nas_UpdateRequest(void);
 M2C_UNK HttpClientCleanup(M2C_UNK);
 M2C_UNK NasConnect(M2C_UNK);
@@ -453,13 +458,13 @@ for (;;) {
         streamCtx = (u8 *)streamCtx + 0x1000;
         streamState = *(M2C_UNK *)((u8 *)streamCtx + 0x20);
         if (streamState == 7) {
-            func_0203367c(0x14);
+            Nas_SetConnectionResult(0x14);
             return;
         }
         if (retryCount > 2) {
-            if (streamState == 2) { func_0203367c(9); return; }
-            if (streamState == 3) { func_0203367c(0xb); return; }
-            func_0203367c(0xd);
+            if (streamState == 2) { Nas_SetConnectionResult(9); return; }
+            if (streamState == 3) { Nas_SetConnectionResult(0xb); return; }
+            Nas_SetConnectionResult(0xd);
             return;
         }
         retryCount = retryCount + 1;
@@ -467,13 +472,13 @@ for (;;) {
     } else {
         step = Nas_UpdateRequest();
         switch(step) {
-        case 0x15: func_0203367c(0x15); return;
+        case 0x15: Nas_SetConnectionResult(0x15); return;
         case 0x10:
-            if(retryCount>2){func_0203367c(0x10);return;}
+            if(retryCount>2){Nas_SetConnectionResult(0x10);return;}
             retryCount++;reinit=0;break;
-        case 0x11:func_0203367c(step);return;
+        case 0x11:Nas_SetConnectionResult(step);return;
         default:
-            if(retryCount>=2){func_0203367c(step);return;}
+            if(retryCount>=2){Nas_SetConnectionResult(step);return;}
             retryCount++;reinit=1;break;
         }
     }
@@ -491,7 +496,7 @@ for (;;) {
                 *(M2C_UNK *)((u8 *)conn + 0x1008) = 0x4e84;
                 conn = M2C_FIELD(&gNasConnection, void **, 8);
                 UnlockMutex((u8 *)conn + 0x13d8);
-                func_0203367c(0x14);
+                Nas_SetConnectionResult(0x14);
                 return;
             }
             UnlockMutex((u8 *)conn + 0x13d8);

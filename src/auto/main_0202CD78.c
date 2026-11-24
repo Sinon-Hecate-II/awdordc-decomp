@@ -175,26 +175,29 @@ void FreeBankArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
 }
 
 void FreeWaveArchiveFile(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02008ed0(s32, s32);
-    M2C_UNK func_02009aa4(s32);
+    M2C_UNK Sound_FreeWaveArchiveMemory(s32, s32);
+    M2C_UNK Link_ClearSlotChain(s32);
     Sound_UntrackArchiveFile(arg0, arg2, arg3);
-    func_02008ed0(arg0, arg0 + arg1);
-    func_02009aa4(arg0);
+    Sound_FreeWaveArchiveMemory(arg0, arg0 + arg1);
+    Link_ClearSlotChain(arg0);
 }
 
 void func_0202d0a4(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
-s32 func_02009aa4(s32);
+s32 Link_ClearSlotChain(s32);
 Sound_UntrackArchiveFile(arg0,arg2,arg3);
-func_02009aa4(arg0);
+Link_ClearSlotChain(arg0);
 }
 
-void FreeWaveArchiveEntry(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
+/* Free a wave-archive entry block: clear its packed-table slot when the table
+   still points at this block, then release the block back to the ARM7 sound heap. */
+void FreeWaveArchiveEntry(s32 block, s32 size, M2C_UNK archive, M2C_UNK entryIndex) {
     M2C_UNK SetPackedTableEntry(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetPackedTableEntry(M2C_UNK, M2C_UNK);
-    if (arg0 == GetPackedTableEntry(arg2, arg3)) {
-        SetPackedTableEntry(arg2, arg3, 0);
+    M2C_UNK Sound_FreeWaveArchiveMemory(s32, s32);
+    if (block == GetPackedTableEntry(archive, entryIndex)) {
+        SetPackedTableEntry(archive, entryIndex, 0);
     }
-    func_02008ed0(arg0, arg0 + arg1);
+    Sound_FreeWaveArchiveMemory(block, block + size);
 }
 
 /* LoadWaveArchiveEntry: give entry `entryIndex` of the wave archive its own
@@ -297,16 +300,18 @@ if(!Sound_CreateChannelHeap(i,saved,rec->heapSize))return 0;
 return 1;
 }
 
-s32 Sound_PlaySequenceRecord(M2C_UNK arg0, s32 arg1) {
+/* Play sequence `sequenceId` of the current sound archive on `player`, with the
+ * channel, bank and priority its own sequence record carries. */
+s32 Sound_PlaySequenceRecord(M2C_UNK player, s32 sequenceId) {
     void *GetSoundSequenceRecord(s32);
     s32 Sound_PlaySequenceById(M2C_UNK, s32, s32, s32, void *, s32);
-    void *temp_r0;
+    SoundSequenceRecord *record;
 
-    temp_r0 = GetSoundSequenceRecord(arg1);
-    if (temp_r0 == NULL) {
+    record = GetSoundSequenceRecord(sequenceId);
+    if (record == NULL) {
         return 0;
     }
-    return Sound_PlaySequenceById(arg0, M2C_FIELD(temp_r0, u8 *, 9), M2C_FIELD(temp_r0, u16 *, 4), M2C_FIELD(temp_r0, u8 *, 8), temp_r0, arg1);
+    return Sound_PlaySequenceById(player, record->channel, record->bankId, record->priority, record, sequenceId);
 }
 
 /* Play sequence `sequenceId` of the current sound archive on `player`: a
@@ -586,7 +591,7 @@ Sound_FadeOutPlayer(*arg0,arg1);
 
 void func_0202d960(void *volatile *a,s32 b){void Sound_StartFade(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;Sound_StartFade(p+0xe8,b<<8);}
 
-void func_0202d994(volatile s32 *a,s32 b,s32 c){extern s16 gSoundVoiceVolumeTable[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,gSoundVoiceVolumeTable[c]);}
+void Sound_SetVoiceVolumeFromLevel(volatile s32 *a,s32 b,s32 c){extern s16 gSoundVoiceVolumeTable[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,gSoundVoiceVolumeTable[c]);}
 
 void func_0202d9c0(s32 *arg0) {
     *arg0 = 0;

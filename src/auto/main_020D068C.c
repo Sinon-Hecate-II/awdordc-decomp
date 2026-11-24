@@ -153,7 +153,24 @@ void ApplyBattleDamage(BattleUnit *side, s32 isDefender, M2C_UNK addVariance) {
 }
 
 #pragma opt_cond_exec off
-void AddDamageVariance(void *p,s32 a) { extern u8 gMapData[]; if(((u32)M2C_FIELD(gMapData,u16*,12)<<20)>>31)return; switch(a){case 0:return;default:break;} if(M2C_FIELD(p,volatile s16*,0x14)==0)return; {s32 t=((s32 (*)(M2C_UNK))RollDamageVariance)(M2C_FIELD(p,M2C_UNK*,0)); M2C_FIELD(p,s16*,0x14)=M2C_FIELD(p,s16*,0x14)+t;} }
+/* Add a random damage variance to a battle participant's damage total, unless
+ * the map's rules turn variance off (bit 0x800 of MAPDATA_RULES) or the caller
+ * asked for none; a participant that already deals no damage is left alone. */
+void AddDamageVariance(void *participant, s32 addVariance) {
+    extern u8 gMapData[];
+    s32 variance;
+
+    if (((u32)M2C_FIELD(gMapData, u16 *, MAPDATA_RULES) << 20) >> 31) return;
+    switch (addVariance) {
+    case 0:
+        return;
+    default:
+        break;
+    }
+    if (M2C_FIELD(participant, volatile s16 *, 0x14) == 0) return;
+    variance = ((s32 (*)(M2C_UNK))RollDamageVariance)(M2C_FIELD(participant, M2C_UNK *, 0));
+    M2C_FIELD(participant, s16 *, 0x14) = M2C_FIELD(participant, s16 *, 0x14) + variance;
+}
 #pragma opt_cond_exec reset
 void RollDamageVariance(M2C_UNK arg0) {
     M2C_UNK RandomIntRange(s32, s32);

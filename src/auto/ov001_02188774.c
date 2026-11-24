@@ -12,7 +12,7 @@ extern M2C_UNK data_ov001_0219166c, data_ov001_02191684, data_ov001_021916cc;
 
 #pragma push
 #pragma opt_propagation off
-s32 func_ov001_02188774(void) {
+s32 Ov001_ResetLinkWork(void) {
 extern M2C_UNK gWhWork;
 s32 Ov001_StartCommandChannel(void);
 M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4),s32 *,4772)=0;

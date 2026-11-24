@@ -2,6 +2,7 @@
 #include "common.h"
 #include "gx.h"
 #include "ov001_wh.h"
+#include "wfc.h"
 
 /* Moves the Wi-Fi option menu's selection one row: direction 1 is up (two rows
  * forward modulo the option count), anything else down; plays the move sound and
@@ -394,6 +395,8 @@ void Ov001_CloseWfcEraseMessage(void) {
     Ov001_SetStepCallback(&Ov001_OpenWfcEraseResultScreen);
 }
 
+/* Set up the Wi-Fi data-erase screen: load its background and object layout,
+ * show its warning panel and info box, and start the fade-in. */
 void Ov001_OpenWfcEraseScreen(void) {
     s8 Ov001_ShowMessagePanel(s32, s32, s32);
     M2C_UNK Ov001_LoadObjLayoutBlock(M2C_UNK);
@@ -402,9 +405,9 @@ void Ov001_OpenWfcEraseScreen(void) {
     extern u8 gOv001WfcEraseConfirmed;
     gOv001WfcEraseConfirmed = 0;
     Ov001_LoadWfcEraseBackground();
-    Ov001_LoadObjLayoutBlock(0x13);
-    Ov001_ShowMessagePanel(0x3C, -1, 0);
-    Ov001_ShowMessageBox(0x1B);
+    Ov001_LoadObjLayoutBlock(OV001_WFC_ERASE_LAYOUT);
+    Ov001_ShowMessagePanel(OV001_MSG_WFC_ERASE, -1, 0);
+    Ov001_ShowMessageBox(OV001_MSG_WFC_ERASE_INFO);
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_FadeInWfcEraseScreen);
 }
 

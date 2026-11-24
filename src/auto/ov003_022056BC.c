@@ -962,7 +962,7 @@ void func_ov003_0220660c(void) {
 
 }
 
-u8 func_ov003_02206690(s32 arg0, s32 arg1, s32 arg2) {
+u8 Ov003_IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
  if ((arg1 <= arg0) && (arg0 <= arg2)) result = 1;
  else result = 0;

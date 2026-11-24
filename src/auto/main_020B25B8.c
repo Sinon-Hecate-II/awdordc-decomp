@@ -284,7 +284,7 @@ void (*cb)(void *)=M2C_FIELD(p,void (**)(void *),0x34);
 if(!cb)return;cb(p);
 }
 
-s32 func_020b2e78(s32 x,s32 y,void *p) {
+s32 RectContainsPoint(s32 x,s32 y,void *p) {
 s16 a=M2C_FIELD(p,s16 *,0),b;
 if(a<=x && (b=M2C_FIELD(p,s16 *,2))<=y) {
 if(a+M2C_FIELD(p,s16 *,4)>=x && b+M2C_FIELD(p,s16 *,6)>=y)return 1;

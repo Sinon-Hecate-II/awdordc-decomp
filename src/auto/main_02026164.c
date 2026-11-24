@@ -569,19 +569,23 @@ void BigNumFromBytes(u16 *limbs, const u8 *bytes, s32 byteCount, s32 limbCount) 
     }
 }
 
-void BigNumToBytes(u8 *dst, u16 *src, s32 n) {
-    u8 *p;
-    dst += n - 1;
-    while (n > 1) {
-        p = dst - 1;
-        *dst = (u8)*src;
-        dst -= 2;
-        *p = (u8)(*src >> 8);
-        src++;
-        n -= 2;
+/* Store the `byteCount`-byte big-endian form of the big number `limbs` into
+ * `bytes`: each limb's high byte lands at the lower address and its low byte at
+ * the higher one (big numbers are arrays of 16-bit limbs, least significant
+ * first).  The inverse of BigNumFromBytes. */
+void BigNumToBytes(u8 *bytes, u16 *limbs, s32 byteCount) {
+    u8 *hiByte;
+    bytes += byteCount - 1;
+    while (byteCount > 1) {
+        hiByte = bytes - 1;
+        *bytes = (u8)*limbs;
+        bytes -= 2;
+        *hiByte = (u8)(*limbs >> 8);
+        limbs++;
+        byteCount -= 2;
     }
-    if (n > 0) {
-        *dst = (u8)*src;
+    if (byteCount > 0) {
+        *bytes = (u8)*limbs;
     }
 }
 
@@ -596,7 +600,7 @@ void MD5ContextUpdate(void) {
 }
 
 void MD5ContextFinal(void) {
-    M2C_UNK func_0200c55c();
-    func_0200c55c();
+    M2C_UNK MD5Final();
+    MD5Final();
 }
 

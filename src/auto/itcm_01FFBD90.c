@@ -127,7 +127,7 @@ void ClearAdjacentMoveDirs(s32 x, s32 y) {
  * random pick, records it in dirPath, and advances. Stops when the current cell's
  * direction is 0; then reverses the recorded turn list and caps it with 4
  * (ReverseMovePath). The starting cell's direction is also copied to map+0x52d5. */
-void func_01ffc4b8(s32 x, s32 y, s8 *dirPath) {
+void BuildMovePathForTile(s32 x, s32 y, s8 *dirPath) {
     void ReverseMovePath(s8 *, s8 *);
     extern void **gCurrentMap;
     s32 NextRandomValue(void);

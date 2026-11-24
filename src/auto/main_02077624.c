@@ -297,7 +297,7 @@ void func_02077ebc(void) {
     M2C_UNK LoadTextureBankBlock(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK GX_EndLoadTex();
     M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK func_02081384(M2C_UNK *, s32);
+    M2C_UNK LoadFileToTextureBank(M2C_UNK *, s32);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
@@ -337,9 +337,9 @@ void func_02077ebc(void) {
     } while (j < 0x1800);
     GX_EndLoadTex();
     SetFileDirectory(&data_02100ad8);
-    func_02081384(&data_02100ae4, 0x24D20);
+    LoadFileToTextureBank(&data_02100ae4, 0x24D20);
     func_02081400(&data_02100af0, 0x1200, 0x200);
-    func_02081384(GetLocalizedFileName(&data_02100afc), 0x20000);
+    LoadFileToTextureBank(GetLocalizedFileName(&data_02100afc), 0x20000);
     func_02081400(&data_02100b0c, 0x1400, 0x40);
     OpenNarcArchive(&data_02100b1c);
     func_0208168c(&data_02100b28, 0x22F20);

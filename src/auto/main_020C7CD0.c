@@ -199,11 +199,14 @@ s32 IsLastCampaignMap(s32 mapId) {
     return 0;
 }
 
-s32 IsLocalCampaignMapRecord(s32 a) {
+/* Whether campaign map record `mapId` was created on this console: a valid
+ * campaign record whose stored stamp (GetMapRecordStamp) carries the local
+ * console's MAC address. */
+s32 IsLocalCampaignMapRecord(s32 mapId) {
  s32 IsLocalMacAddress(s32);
- if(a<0xe1||a>=0x1a9)return 0;
- if(!IsCampaignMapRecordValid(a))return 0;
- return IsLocalMacAddress(GetMapRecordStamp(a));
+ if(mapId<MAP_ID_CAMPAIGN_FIRST||mapId>=MAP_ID_CAMPAIGN_END)return 0;
+ if(!IsCampaignMapRecordValid(mapId))return 0;
+ return IsLocalMacAddress(GetMapRecordStamp(mapId));
 }
 
 /* Whether the current campaign map is one received over a link that is not stored
@@ -376,20 +379,23 @@ void func_020c8564(M2C_UNK arg0) {
     RestoreMapUnits(arg0);
 }
 
-s32 LoadMapById(M2C_UNK arg0) {
+/* Load the saved record of map `mapId` into the map-record buffer and install it
+ * on the battle map: its header and terrain, its units, the property-cell list
+ * and the map view.  Returns 0 when the record could not be loaded. */
+s32 LoadMapById(s32 mapId) {
     s32 GetMapRecordBuffer();
-    s32 LoadMapRecord(M2C_UNK, s32);
-    M2C_UNK func_020cf2c8();
+    s32 LoadMapRecord(s32, s32);
+    M2C_UNK RebuildMapPropertyCells();
     M2C_UNK RefreshMapView();
-    s32 temp_r0;
+    s32 record;
 
-    temp_r0 = GetMapRecordBuffer();
-    if (LoadMapRecord(arg0, temp_r0) == 0) {
+    record = GetMapRecordBuffer();
+    if (LoadMapRecord(mapId, record) == 0) {
         return 0;
     }
-    ApplyMapRecord(temp_r0);
-    RestoreMapUnits(temp_r0);
-    func_020cf2c8();
+    ApplyMapRecord(record);
+    RestoreMapUnits(record);
+    RebuildMapPropertyCells();
     RefreshMapView();
     return 1;
 }
@@ -415,7 +421,18 @@ s32 StoreCampaignMapRecord(s32 a,s32 b) {
  WriteSaveRecord(p,b,0x6f8);return 1;
 }
 
-u8 DoesMapRecordMatchBuffer(s32 a,s32 b){s32 IsValidMapRecord(s32);u8 MapRecordsMatch(u8 *,u8 *);s32 p=GetMapRecord(a);u8 r;if(!IsValidMapRecord(b))return 0;if(MapRecordsMatch(b,p))r=1;else r=0;return r;}
+/* Whether `buffer` holds a valid map record that matches campaign map `mapId`'s
+ * own stored record (used to check a loaded save record still fits the map). */
+u8 DoesMapRecordMatchBuffer(s32 mapId, s32 buffer) {
+    s32 IsValidMapRecord(s32);
+    u8 MapRecordsMatch(u8 *, u8 *);
+    s32 mapRecord = GetMapRecord(mapId);
+    u8 match;
+
+    if (!IsValidMapRecord(buffer)) return 0;
+    if (MapRecordsMatch((u8 *)buffer, (u8 *)mapRecord)) match = 1; else match = 0;
+    return match;
+}
 
 /* Pack the current system date/time and a CRC of the record data into its header. */
 void func_020c86a8(void *p) {

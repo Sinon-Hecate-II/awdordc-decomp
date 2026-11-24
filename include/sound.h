@@ -28,6 +28,17 @@
 #define SOUND_PLAYER_FLAG_CHANNELS  0x0002 /* SOUND_PLAYER_FLAGS bit: the voice's hardware channels are allocated */
 #define SOUND_PLAY_MODE_HALF        1      /* play mode that uses half the note bytes */
 
+/* The ARM9-side per-channel timer callbacks (gSoundChannelCallbacks, 8 entries
+ * indexed by hardware channel).  An entry is {callback, argument, generation};
+ * Sound_StartChannelTimer stores them and sends the bumped generation to the
+ * ARM7 with sound command 0x12, whose reply must echo it before the callback
+ * runs (func_020097bc). */
+#define SOUND_CHANNEL_CALLBACK_CALLBACK 0x00 /* void (*)(void *arg): the channel's timer callback */
+#define SOUND_CHANNEL_CALLBACK_ARG      0x04 /* void * argument passed to the callback */
+#define SOUND_CHANNEL_CALLBACK_GEN      0x08 /* u8 generation counter for the channel */
+#define SOUND_CHANNEL_CALLBACK_SIZE     0x0C /* bytes per entry */
+#define SOUND_CHANNEL_CALLBACK_COUNT    8    /* entries in the table */
+
 /* The sound player handle: what Sound_StartPlayer (main_0202DBAC) fills in and
  * the segment callback (Sound_NextSegment) services.  One sound playing on a
  * set of hardware channels; separate from the voice object above. */
@@ -350,6 +361,14 @@ typedef struct SoundChannelRecord {
 #define SOUND_CHANNEL_STATE_STRIDE  8 /* bytes per channel: SOUND_CHANNEL_SAMPLE_ADDR + one word */
 #define SOUND_CHANNEL_SAMPLE_ADDR   0 /* s32 address of the channel's current sample */
 #define SOUND_CHANNEL_TIMER_PERIOD  4 /* s32 timer period the channel plays at */
+
+/* The sound driver's hardware-channel masks (gSoundChannelMasks), one bit per
+ * channel: which ones the voices/streamed players are running on, which ones
+ * Sound_AllocChannel has handed out, and which ones Sound_ReserveChannels has
+ * reserved from the sound library. */
+#define SOUND_CHANNEL_MASK_VOICE    0x00 /* u32: channels the voices and streamed players use */
+#define SOUND_CHANNEL_MASK_ALLOC    0x04 /* u32: channels Sound_AllocChannel handed out */
+#define SOUND_CHANNEL_MASK_RESERVED 0x08 /* u32: channels reserved by Sound_ReserveChannels */
 
 /* The game's sound wrapper state (gSoundState): the SDK sound player it keeps
  * running, the heap that player lives in, and the sound ids already started this

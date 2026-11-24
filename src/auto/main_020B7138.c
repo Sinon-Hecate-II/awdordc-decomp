@@ -9,17 +9,21 @@ static inline void LoadPalette7464(u32 value) { extern void *gCur3DSpriteEngine;
 typedef struct { u8 pad[0x48]; u32 mode:10; u32 duration:11; u32 frame:11; } FadeTask;
 typedef struct { u8 pad[0x44]; u32 tile:16; u32 flags:16; } SpriteTile;
 
-void func_020b7138(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
+/* Spawn the gas-storm order effect task under `parent`: remember the order's own
+ * cell (orderX, orderY), its target cell (targetX, targetY) and the order's slot,
+ * which the task's script uses to play the gas ball and storm and to apply the
+ * order's damage. */
+void CreateGasStormEffect(s32 orderX, s32 orderY, s32 targetX, s32 targetY, s32 orderSlot, M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, s32);
-    extern M2C_UNK data_02128da4;
-    void *temp_r0;
+    extern M2C_UNK gGasStormEffectClass;
+    void *task;
 
-    temp_r0 = CreateSpriteObject(&data_02128da4, arg5);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg2;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = arg3;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = arg4;
+    task = CreateSpriteObject(&gGasStormEffectClass, parent);
+    M2C_FIELD(task, s32 *, 0x34) = orderX;
+    M2C_FIELD(task, s32 *, 0x38) = orderY;
+    M2C_FIELD(task, s32 *, 0x3C) = targetX;
+    M2C_FIELD(task, s32 *, 0x40) = targetY;
+    M2C_FIELD(task, s32 *, 0x44) = orderSlot;
 }
 
 /* Rasterize a mode-selected line into the path grid, install its endpoint as
@@ -106,7 +110,7 @@ void SpawnBeamEffect(s32 tileX, s32 tileY, u32 facing, s32 order, void *parent) 
 #pragma push
 #pragma opt_common_subs off
 void func_020b7464(void *a) {
-s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void func_020ab150(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
+s32 GetArmyStateLabel(s32);s32 RenderTextToTiles(s32,s32);void LoadScenePanelPalette(s32);void *GetArmyStateTiles(s32);void MI_CpuCopy32(void *,s32,s32);void *GetArmyIconPalette(s32);void CopyToObjPaletteShadow(void *,s32,s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);void OpenNarcArchive(void);void LoadNarcFileDecompressed(void *,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(s32,u16,s32);void *func_020ab1c4(void *);void InitUnitSprite(void *,s32,s32,s32,s32);void Set3DSpriteSlideTargetAndStart(void *,s32,s32,s32,s32);s32 GetUnitSpriteWidth(void *);s32 GetUnitSpriteHeight(void *);void func_02087d84(void *,s32,s16,s16,u16,u16);void CreateUnitSpriteButtonTask(void *,s32);void func_020aad18(void *);void Show3DSpriteSlide(void *);void *CreateAnimatedSpriteObject(s32);void LoadCompressedSpriteGraphics(void *,s32,s32);void LoadCompressedSpriteAssetsFromNarc(void *,void *,s32,s32,s32);
 extern void **gCurrentMap;extern void *gCur3DSpriteEngine;extern u8 data_02128fb8[],data_02128fc0[],data_02128fcc[],data_02128fd4[],data_02128fdc[],data_02128fe4[],data_02128ff0[];
 void *map,*unit,*p,*q; s32 icon,kind,base,t,n; s16 y,x;u8 flag;u16 palette;
 map=*gCurrentMap;unit=(u8 *)map+0x67a4+M2C_FIELD(map,u16 *,0x52a4)*140;icon=M2C_FIELD(unit,u8 *,0x27);kind=M2C_FIELD(unit,u8 *,0x1d);
@@ -124,7 +128,7 @@ M2C_FIELD(a,void **,0x38)=func_020ab1c4(a);InitUnitSprite(M2C_FIELD(a,void **,0x
 p=M2C_FIELD(a,void **,0x38);Set3DSpriteSlideTargetAndStart(p,0xe0,0xa0,0x100,0xa0);
 flag=M2C_FIELD(M2C_FIELD(p,void **,0x64),u8 *,0x12)!=0;
 if(flag){y=M2C_FIELD(p,s16 *,0x52);x=M2C_FIELD(p,s16 *,0x50);t=GetUnitSpriteWidth(p);n=GetUnitSpriteHeight(p);func_02087d84(M2C_FIELD(p,void **,0x64),1,x,y,(u16)t,(u16)n);}
-func_020ab150(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));Show3DSpriteSlide(M2C_FIELD(a,void **,0x38));
+CreateUnitSpriteButtonTask(M2C_FIELD(a,void **,0x38),1);func_020aad18(M2C_FIELD(a,void **,0x38));Show3DSpriteSlide(M2C_FIELD(a,void **,0x38));
 M2C_FIELD(a,void **,0x3c)=CreateAnimatedSpriteObject((s32)a);
 LoadCompressedSpriteGraphics(GetLocalizedFileName(data_02128fe4),0x6c00,12);q=GetLocalizedFileName(data_02128ff0);LoadCompressedSpriteAssetsFromNarc(M2C_FIELD(a,void **,0x3c),q,0x6c00,12,0);
 p=M2C_FIELD(a,void **,0x3c);M2C_FIELD(p,s32 *,0x34)=128;M2C_FIELD(p,s32 *,0x38)=96;M2C_FIELD(p,s32 *,0x3c)=0;

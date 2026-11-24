@@ -70,8 +70,13 @@ struct FSFileRequest {
 #define FS_REQ_QUEUED    0x00000002 /* still queued, dropped by a cancel */
 #define FS_REQ_COMPLETED 0x00000004 /* wake the caller waiting at +0x18 */
 #define FS_REQ_RUNNING   0x00000008 /* the callback has started this request's command */
+#define FS_REQ_OPEN      0x00000010 /* the request holds an open file entry (set by the open commands, cleared by close) */
 #define FS_REQ_NOTIFIED  0x00000040 /* the file callback has seen this request */
 #define FS_REQ_DIRECTORY 0x00000020 /* the request names a directory rather than a file */
+
+/* File command ids (FSFileRequest::command, SubmitFileRequest). */
+#define FS_COMMAND_OPEN_BY_ID 6 /* read the FAT record of the request's file id and open its range */
+#define FS_COMMAND_OPEN_RANGE 7 /* install the request's archive range as an open file */
 
 /* Every state bit a finished request drops: it is no longer active, queued,
  * running, waiting for its caller or pending notification. */

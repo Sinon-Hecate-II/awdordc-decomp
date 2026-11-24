@@ -1,5 +1,7 @@
 /* 9 functions from 0x021FE780 to 0x021FF3D4 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
+#include "ov003_scene.h"
 
 void func_ov003_021fe780(M2C_UNK arg0) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
@@ -302,7 +304,7 @@ void func_ov003_021feb4c(M2C_UNK arg0) {
 void func_ov003_021fef18(void) {
     void *FindObjectByClass(M2C_UNK *);
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
+    M2C_UNK Ov003_RefreshMapPreview(void *, M2C_UNK);
     extern M2C_UNK data_ov003_0220ff2c;
     void *temp_r0;
 
@@ -311,7 +313,7 @@ void func_ov003_021fef18(void) {
         return;
     }
     MI_CpuFill8(M2C_FIELD(temp_r0, s32 *, 0x44) + 0x186C, 0, 0xD);
-    func_ov003_021f92f4(temp_r0, 0);
+    Ov003_RefreshMapPreview(temp_r0, 0);
 }
 
 void func_ov003_021fef58(M2C_UNK arg0) {
@@ -325,7 +327,7 @@ void func_ov003_021fef58(M2C_UNK arg0) {
     extern void **data_027e0058;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220fe1c;
+    extern M2C_UNK gOv003MapMenuClass;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
     extern M2C_UNK data_ov003_02210130;
@@ -345,7 +347,7 @@ void func_ov003_021fef58(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220fe1c, arg0);
+    temp_r0 = CreateSpriteFromClass(&gOv003MapMenuClass, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
@@ -483,23 +485,24 @@ s32 func_ov003_021ff358(s32 arg0) {
     return arg0;
 }
 
-void func_ov003_021ff36c(void) {
+/* Point the map-select menu scene at the current map and redraw its preview. */
+void Ov003_SyncMapMenuMap(void) {
     extern void **gCurrentMap;
-    extern M2C_UNK data_ov003_0220fe1c;
-    void *temp_r0;
+    extern M2C_UNK gOv003MapMenuClass;
+    Ov003MapMenuScene *menu;
 
-    temp_r0 = FindObjectByClass(&data_ov003_0220fe1c);
-    if (temp_r0 == NULL) {
+    menu = FindObjectByClass(&gOv003MapMenuClass);
+    if (menu == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
-    func_ov003_021f92f4(temp_r0, 0);
+    menu->mapId = (u16) M2C_FIELD(*gCurrentMap, u16 *, MAP_ID);
+    Ov003_RefreshMapPreview(menu, 0);
 }
 
 void func_ov003_021ff3ac(void) {
-    extern M2C_UNK data_ov003_0220fe1c;
+    extern M2C_UNK gOv003MapMenuClass;
     void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_ov003_0220fe1c);
+    temp_r0 = FindObjectByClass(&gOv003MapMenuClass);
     if (temp_r0 == NULL) {
         return;
     }

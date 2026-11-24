@@ -64,16 +64,19 @@ s32 ScriptCmd_AddEffectArea(void *script) {
     return 1;
 }
 
-s32 func_02093e94(void *arg0) {
+/* Map-script command: drop the pulsating target-area rectangle
+ * (MAPORDER_EFFECT_AREA) from the command's tile (s16 at +0x08, x in the low
+ * byte), then advance the script. */
+s32 ScriptCmd_RemoveEffectArea(void *script) {
     s32 FindMapOrderOfTypeAt(u8, u8, M2C_UNK);
-    M2C_UNK func_020a4a68();
-    s16 temp_r0;
+    M2C_UNK RemoveMapOrder();
+    s16 tile;
 
-    temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
-    if (FindMapOrderOfTypeAt((u8) temp_r0, (u8) (temp_r0 >> 8), 3) != 0) {
-        func_020a4a68();
+    tile = M2C_FIELD(M2C_FIELD(script, void **, 4), s16 *, 8);
+    if (FindMapOrderOfTypeAt((u8) tile, (u8) (tile >> 8), MAPORDER_EFFECT_AREA) != 0) {
+        RemoveMapOrder();
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
@@ -98,21 +101,27 @@ s32 ScriptCmd_PlaceMapCursor(void *script) {
     return 1;
 }
 
-s32 func_02093f50(void *arg0) {
-    s16 temp_r0;
+/* Map-script command: take the map cursor back off the command's tile (s16 at
+ * +0x08, x in the low byte), dropping its MAPORDER_CURSOR order if one is there,
+ * and stop the looping cursor sound.  Advances the script. */
+s32 ScriptCmd_RemoveMapCursor(void *script) {
+    s32 FindMapOrderOfTypeAt(u8, u8, M2C_UNK);
+    M2C_UNK RemoveMapOrder();
+    M2C_UNK StopLoopingSoundEffects();
+    s16 tile;
 
-    temp_r0 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s16 *, 8);
-    if (FindMapOrderOfTypeAt((u8) temp_r0, (u8) (temp_r0 >> 8), 9) != 0) {
-        func_020a4a68();
+    tile = M2C_FIELD(M2C_FIELD(script, void **, 4), s16 *, 8);
+    if (FindMapOrderOfTypeAt((u8) tile, (u8) (tile >> 8), MAPORDER_CURSOR) != 0) {
+        RemoveMapOrder();
     }
-    func_0208fa28();
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    StopLoopingSoundEffects();
+    M2C_FIELD(script, void **, 4) = (void *) (M2C_FIELD(script, void **, 4) + 0x10);
     return 1;
 }
 
 s32 func_02093f98(void *arg0) {
-    M2C_UNK func_0208fa28();
-    func_0208fa28();
+    M2C_UNK StopLoopingSoundEffects();
+    StopLoopingSoundEffects();
     M2C_FIELD(arg0, s32 *, 4) = (s32) (M2C_FIELD(arg0, s32 *, 4) + 0x10);
     return 1;
 }
@@ -357,7 +366,7 @@ void Reset3DSpriteEngines(void) {
     M2C_UNK func_0209713c(M2C_UNK);
     M2C_UNK func_02097150(M2C_UNK, M2C_UNK);
     M2C_UNK func_02097164(M2C_UNK, M2C_UNK);
-    M2C_UNK func_02097178(M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelMode(M2C_UNK, M2C_UNK);
     M2C_UNK SetPanelFaceHidden(M2C_UNK, M2C_UNK);
 
     s32 savedEngine;
@@ -406,7 +415,7 @@ void Reset3DSpriteEngines(void) {
             for (layer = 0; layer < 3; layer = layer + 1) {
                 func_02097150(layer, tileBase);
                 func_02097164(layer, layer);
-                func_02097178(layer, 0);
+                SetScenePanelMode(layer, 0);
                 SetPanelFaceHidden(layer, 0);
                 tileBase = tileBase + 0x80;
             }
@@ -684,11 +693,11 @@ void func_02094b28(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02094b50(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02097178(M2C_UNK, M2C_UNK);
+    M2C_UNK SetScenePanelMode(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_02097178(arg0, arg1);
+    SetScenePanelMode(arg0, arg1);
 }
 
 void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
@@ -760,6 +769,6 @@ void func_02094c90(s32 slot, s32 arg1) {
  if(GetMenuCursor()>=3)return;
  value=GetScenePanelTextLineX(3);
  ptrA=Get3DSpriteManager();ptrB=Get3DSpriteManager();ptrC=GetScenePanelState(3);ptrD=GetScenePanelState(3);
- func_0209bee0(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(GetScenePanelState(3),u16*,4));
+ SetTextObjectLine(arg1,(s16)value,1,M2C_FIELD(ptrA,u8*,0x4c),M2C_FIELD((u8*)gCur3DSpriteEngine+M2C_FIELD(ptrB,u8*,0x4c)*4,s32*,0xc),M2C_FIELD(ptrC,s32*,0),(u16)((M2C_FIELD(ptrD,u8*,6)&15)<<12),M2C_FIELD(GetScenePanelState(3),u16*,4));
 }
 

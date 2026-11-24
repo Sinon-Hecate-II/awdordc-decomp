@@ -60,31 +60,38 @@ void func_020814ac(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
     HeapFreeBlock(temp_r0);
 }
 
-u8 OpenNarcArchive(M2C_UNK arg0) {
+/* Open the NARC archive at `path`: load the archive file into the shared buffer
+ * and initialise the archive handle under the name "ARC".  Returns 1 when the
+ * archive is open, 0 when it could not be. */
+u8 OpenNarcArchive(M2C_UNK path) {
     s32 InitNarcArchive(M2C_UNK *, M2C_UNK *, s32);
-    extern M2C_UNK data_02101e78;
-    extern s32 data_0214c0e0;
-    extern M2C_UNK data_0214c0e4;
-    u8 var_r0;
-    data_0214c0e0 = LoadFileToBuffer(arg0, 0);
-    if (InitNarcArchive(&data_0214c0e4, &data_02101e78, data_0214c0e0) != 0) {
-        var_r0 = 1;
+    extern M2C_UNK gNarcArchiveName;
+    extern s32 gNarcFileData;
+    extern M2C_UNK gNarcArchive;
+    u8 opened;
+    gNarcFileData = LoadFileToBuffer(path, 0);
+    if (InitNarcArchive(&gNarcArchive, &gNarcArchiveName, gNarcFileData) != 0) {
+        opened = 1;
     } else {
-        var_r0 = 0;
+        opened = 0;
     }
-    return var_r0;
+    return opened;
 }
 
+/* Close the NARC archive opened by OpenNarcArchive: release the archive handle
+ * and free the image buffer it was loaded into.  Does nothing when there is no
+ * open archive. */
 void CloseNarcArchive(void) {
-    M2C_UNK func_0202a940(M2C_UNK *);
-    extern s32 data_0214c0e0;
-    extern M2C_UNK data_0214c0e4;
-    if (data_0214c0e0 == 0) {
+    M2C_UNK CloseArchive(M2C_UNK *);
+    extern s32 gNarcFileData;
+    extern M2C_UNK gNarcArchive;
+
+    if (gNarcFileData == 0) {
         return;
     }
-    func_0202a940(&data_0214c0e4);
-    HeapFreeBlock(data_0214c0e0);
-    data_0214c0e0 = 0;
+    CloseArchive(&gNarcArchive);
+    HeapFreeBlock(gNarcFileData);
+    gNarcFileData = 0;
 }
 
 void func_02081568(void) {
@@ -142,7 +149,7 @@ void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
 }
 
 s32 func_0208168c(void *arg0, void *arg1) {
-    return func_02081384(BuildNarcPath(arg0), arg1);
+    return LoadFileToTextureBank(BuildNarcPath(arg0), arg1);
 }
 
 void func_020816a4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
@@ -190,11 +197,11 @@ void ResetKeyState(void) {
 }
 
 void RebootConsole(void) {
-    M2C_UNK func_02002490();
+    M2C_UNK GX_TurnOffDisplay();
     M2C_UNK func_02006774();
     M2C_UNK func_02006804();
     M2C_UNK func_02007668(s32);
-    func_02002490();
+    GX_TurnOffDisplay();
     *(s32 *)0x04001000 &= ~0x10000;
     func_02006774();
     func_02006804();
@@ -414,7 +421,7 @@ void func_02081d38(void) {
 
 void func_02081d50(void){extern M2C_UNK data_02101e8c;M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);M2C_UNK SetLcdEnabled(s32);DeleteSpriteObjectsOfClass(&data_02101e8c);SetLcdEnabled(0);}
 
-void EnterDisplaySleep(void){extern M2C_UNK gInputBlockState;func_02002490();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
+void EnterDisplaySleep(void){extern M2C_UNK gInputBlockState;GX_TurnOffDisplay();*(volatile u32 *)0x4001000 &=~0x10000;func_02081d50();M2C_FIELD(&gInputBlockState,u8 *,1)=1;}
 
 void func_02081da0(void) {
 extern M2C_UNK gInputBlockState;
@@ -432,7 +439,7 @@ if (((s32)(*(u16 *)0x027FFFA8 & 0x8000) >> 15) != 0) var_r0 = 1; else var_r0 = 0
 return var_r0;
 }
 
-u8 func_02081e14(void) {
+u8 IsSleepRequested(void) {
     u8 var_r0;
 
     if (((s32) (*(u16 *)0x027FFFA8 & 0x8000) >> 0xF) != 0) {
@@ -461,17 +468,21 @@ void SuspendDisplayIfRequested(void *screen) {
     }
 }
 
-void func_02081e84(void *arg0) {
+/* One step of the sleep screen: unless the sleep/lid flag says the console is on
+ * its way down, restart the screen's animation; then, when the screen is not yet
+ * marked asleep, run the ARM7 sleep handshake (it returns once the console wakes)
+ * and restart the animation again. */
+void UpdateSleepScreen(void *screen) {
     M2C_UNK Sprite_ResumeAnimationRepeat(void *);
     M2C_UNK func_0200e920(M2C_UNK, M2C_UNK, M2C_UNK);
-    if (func_02081e14() == 0) {
-        Sprite_ResumeAnimationRepeat(arg0);
+    if (IsSleepRequested() == 0) {
+        Sprite_ResumeAnimationRepeat(screen);
     }
-    if (M2C_FIELD(arg0, s16 *, 0x56) != 0) {
+    if (M2C_FIELD(screen, s16 *, DS3D_SPRITE_SLEEP_FLAG) != 0) {
         return;
     }
     func_0200e920(0xC, 0, 0);
-    Sprite_ResumeAnimationRepeat(arg0);
+    Sprite_ResumeAnimationRepeat(screen);
 }
 
 void func_02081ec8(void *arg0) {

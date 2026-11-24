@@ -49,26 +49,28 @@ void func_ov001_0217bf14(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_0217bf40;
+    extern M2C_UNK Ov001_ReopenNameEntryKeyboard;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_0217bf40);
+    Ov001_SetStepCallback(&Ov001_ReopenNameEntryKeyboard);
 }
 
-void func_ov001_0217bf40(void) {
+/* Step run after the name-entry region menu closes: clear the cursor sprite's
+ * attribute bits and re-open the name-entry keyboard. */
+void Ov001_ReopenNameEntryKeyboard(void) {
     s32 Ov001_IsRegionMenuActive();
     extern void *gNameEntryState;
     extern M2C_UNK Ov001_OpenNameEntryKeyboard;
-    s32 *temp_r3;
+    s32 *cursor;
 
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    temp_r3 = M2C_FIELD(gNameEntryState, s32 **, 4);
-    *temp_r3 &= 0xC1FFFCFF;
+    cursor = M2C_FIELD(gNameEntryState, s32 **, NAME_ENTRY_CURSOR);
+    *cursor &= NAME_ENTRY_CURSOR_MASK;
     Ov001_SetStepCallback(&Ov001_OpenNameEntryKeyboard);
 }
 
@@ -425,25 +427,26 @@ return IsValidTextChar(code)!=0;
 }
 
 void Ov001_RetryCodeEntry(void) {
-    extern M2C_UNK func_ov001_0217cc08;
+    extern M2C_UNK Ov001_OpenKeypadAfterRegionMenu;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(6);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_0217cc08);
+    Ov001_SetStepCallback(&Ov001_OpenKeypadAfterRegionMenu);
 }
 
-void func_ov001_0217cc08(void) {
-    extern void *gOv001FriendCodeState;
+/* Step run after a code-entry retry: once the region menu has closed, clear the
+ * code-entry sprite's display flags and open the keypad again. */
+void Ov001_OpenKeypadAfterRegionMenu(void) {
     void Ov001_OpenCodeEntryKeypad(void);
-    s32 *temp_r3;
+    s32 *flags;
 
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    temp_r3 = M2C_FIELD(gOv001FriendCodeState, s32 **, 4);
-    *temp_r3 &= 0xC1FFFCFF;
+    flags = M2C_FIELD(gOv001FriendCodeState, s32 **, 4);
+    *flags &= 0xC1FFFCFF;
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_OpenCodeEntryKeypad);
 }
 

@@ -133,8 +133,8 @@ void func_ov003_021e8958(void *arg0) {
     void func_ov003_021e8f80(void *, s32);
     void func_ov003_021e8f98(void *, s32);
     s32 func_020cfb94(void *);
-    void func_ov003_021f1b38(s32, void *);
-    void func_ov003_021f1b7c(s32, void *);
+    void SetSceneLayerOverrideMain(s32, void *);
+    void SetSceneLayerOverrideSub(s32, void *);
     void Apply3DSpriteBanks(void);
     void func_ov003_021e771c(void *, void *);
     void CreateWaypointPanelSprites(void *, void *);
@@ -152,7 +152,7 @@ void func_ov003_021e8958(void *arg0) {
     void *func_0208ed64(void *);
     void func_0208eb30(void *, s32, s32);
     void func_0208eb60(void *, s32);
-    s32 func_ov003_021f153c(void);
+    s32 GetSceneEntryOffset(void);
     void func_ov003_021e9830(void *, s32);
     s32 IsLinkSessionActive(void);
     void *GetLocalNetworkPlayerRecord(void);
@@ -192,11 +192,11 @@ void func_ov003_021e8958(void *arg0) {
     u8 *h;
 
     if (func_020cfb94(arg0) == 2) func_ov003_021e8f80(arg0, 1);
-    func_ov003_021f1b38(3, &data_ov003_0220f890);
-    func_ov003_021f1b38(0, &data_ov003_0220f892);
-    func_ov003_021f1b38(1, &data_ov003_0220f88e);
-    func_ov003_021f1b7c(0, &data_ov003_0220f88c);
-    func_ov003_021f1b7c(3, &data_ov003_0220f894);
+    SetSceneLayerOverrideMain(3, &data_ov003_0220f890);
+    SetSceneLayerOverrideMain(0, &data_ov003_0220f892);
+    SetSceneLayerOverrideMain(1, &data_ov003_0220f88e);
+    SetSceneLayerOverrideSub(0, &data_ov003_0220f88c);
+    SetSceneLayerOverrideSub(3, &data_ov003_0220f894);
     Apply3DSpriteBanks();
     func_ov003_021e771c(M2C_FIELD(arg0, void **, 0x6c), arg0);
     func_ov003_021e8f98(M2C_FIELD(arg0, void **, 0x64), arg0);
@@ -230,7 +230,7 @@ void func_ov003_021e8958(void *arg0) {
         func_ov003_021e87d0(M2C_FIELD(arg0, void **, 0x60), 0, 0xb6);
         gCur3DSpriteEngine = t2;
     }
-    v = func_ov003_021f153c();
+    v = GetSceneEntryOffset();
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x48), v);
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x50), v);
     func_ov003_021e9830(M2C_FIELD(arg0, s32 *, 0x4c), 0xc0);

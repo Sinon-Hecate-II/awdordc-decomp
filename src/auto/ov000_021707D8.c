@@ -11,9 +11,9 @@ extern void **gCurrentMap;
 extern u8 gMapConfig[];
 s32 IsCampaignBattleRules(void);s32 func_020a8a84(u16);void *GetCurrentMapName(void);
 void DrawTilemapNumber(s16,s16,void *,s32,s32,s32);
-void func_0209c024(s16,s16,void *,void *,s32,s32);
+void DrawTextToTilemap(s16,s16,void *,void *,s32,s32);
 s32 GetLanguage(void);s32 GetDigitCount(s32);s32 func_020cfb94(void);
-s32 CountPlayerUnits(s32);s32 func_020d30a8(s32);
+s32 CountPlayerUnitsBuilt(s32);s32 CountPlayerUnitsLost(s32);
 void *func_020a8bc0(void);void *func_020a8bcc(void);
 volatile s32 e;
 void *old;
@@ -24,8 +24,8 @@ old=gCur3DSpriteEngine;dst=M2C_FIELD(old,void **,0x24);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(IsCampaignBattleRules()){
 DrawTilemapNumber(3,1,dst,func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
-func_0209c024(5,1,dst,GetCurrentMapName(),0,0);
-}else func_0209c024(2,1,dst,GetCurrentMapName(),0,0);
+DrawTextToTilemap(5,1,dst,GetCurrentMapName(),0,0);
+}else DrawTextToTilemap(2,1,dst,GetCurrentMapName(),0,0);
 if(!GetLanguage()) x=26;
 else x=30-(3-GetDigitCount(M2C_FIELD(*gCurrentMap,u16 *,0x52a2)));
 DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
@@ -33,16 +33,16 @@ DrawTilemapNumber((s16)x,1,dst,M2C_FIELD(*gCurrentMap,u16 *,0x52a2),0,0);
 if(func_020cfb94()>0){y=6;do{
 x=i+1;p=(u8 *)*gCurrentMap+0x67a4+x*140;
 if(p[0x1e] && !p[0x19]){
-a=CountPlayerUnits(x);if(a>999)a=999;
-b=func_020d30a8(x);if(b>999)b=999;
+a=CountPlayerUnitsBuilt(x);if(a>999)a=999;
+b=CountPlayerUnitsLost(x);if(b>999)b=999;
 x=M2C_FIELD(p,s32 *,0);c=p[0x18];if(c>999)c=999;d=M2C_FIELD(p,s32 *,8);if(d>999999)d=999999;e=x;if(x>999999)e=999999;
 color=p[0x1c]?3:0;
 DrawTilemapNumber(8,(s16)y,dst,a,0,color);
 DrawTilemapNumber(12,(s16)y,dst,b,0,color);
 if(p[0x1c]){
-func_0209c024(16,(s16)y,dst,func_020a8bc0(),0,color);
-func_0209c024(23,(s16)y,dst,func_020a8bc0(),0,color);
-func_0209c024(30,(s16)y,dst,func_020a8bc0(),0,color);
+DrawTextToTilemap(16,(s16)y,dst,func_020a8bc0(),0,color);
+DrawTextToTilemap(23,(s16)y,dst,func_020a8bc0(),0,color);
+DrawTextToTilemap(30,(s16)y,dst,func_020a8bc0(),0,color);
 }else{
 map=*gCurrentMap;
 if((!map[0x5156] && map[0x5158]!=2) || p[0x26]==map[0x67ca+M2C_FIELD(map,u16 *,0x52a4)*140]){
@@ -54,10 +54,10 @@ if(gMapConfig[2]){
 DrawTilemapNumber(16,(s16)y,dst,c,0,color);
 DrawTilemapNumber(23,(s16)y,dst,d,0,color);
 }else{
-func_0209c024(16,(s16)y,dst,func_020a8bcc(),0,color);
-func_0209c024(23,(s16)y,dst,func_020a8bcc(),0,color);
+DrawTextToTilemap(16,(s16)y,dst,func_020a8bcc(),0,color);
+DrawTextToTilemap(23,(s16)y,dst,func_020a8bcc(),0,color);
 }
-func_0209c024(30,(s16)y,dst,func_020a8bcc(),0,color);
+DrawTextToTilemap(30,(s16)y,dst,func_020a8bcc(),0,color);
 }}
 y+=3;
 }i++;}while(i<func_020cfb94());}}
@@ -65,7 +65,7 @@ map=*gCurrentMap;
 if((!map[0x5156] && map[0x5158]!=2)||gMapConfig[2]){
 a=map[0x67bc];if(a>999)a=999;
 DrawTilemapNumber(16,17,dst,a,0,0);
-}else func_0209c024(16,17,dst,func_020a8bcc(),0,0);
+}else DrawTextToTilemap(16,17,dst,func_020a8bcc(),0,0);
 gCur3DSpriteEngine=old;
 }
 void func_ov000_02170ca0(void) {
@@ -174,7 +174,7 @@ void func_ov000_02171028(void) {
 void func_ov000_02171040(void *p){
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern void **gCurrentMap;
 extern M2C_UNK data_ov000_021b8c58,data_ov000_021b8c60,data_ov000_021b8c70,data_ov000_021b8c7c,data_ov000_021b8c88;
-s32 func_020a8afc(s32);void func_0209b26c(s32,s32,s32,s32,u16,u16);
+s32 func_020a8afc(s32);void DrawLocalizedText(s32,s32,s32,s32,u16,u16);
 void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileToSpriteBuffer(void *,s32,s32);
 void CloseNarcArchive(void);void LoadScenePanelPalette(s32);
@@ -182,7 +182,7 @@ s32 Get3DSpriteLayerSize(u8,s32);void AddToU16Array(void *,u16,s32);void CreateM
 void *old=gCur3DSpriteEngine;s32 n;u16 v;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 n=func_020a8afc(M2C_FIELD(*gCurrentMap,u16 *,0x5142));
-LoadScenePanelPalette(0);func_0209b26c(5,8,1,n,0,64);
+LoadScenePanelPalette(0);DrawLocalizedText(5,8,1,n,0,64);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 SetFileDirectory(&data_ov000_021b8c58);
 OpenNarcArchive(GetLocalizedFileName(&data_ov000_021b8c60));
@@ -233,7 +233,7 @@ void *GetLocalizedFileName(void *);void LoadNarcFileDecompressed(void *,void *);
 s32 GetPlayerRank(s32);void LoadRankIconGraphics(s32,s32,s32);
 void *GetArmyStateTiles(s32);void *GetArmyIconPalette(s32);
 void MI_CpuCopy32(void *,void *,s32);void CopyToObjPaletteShadow(void *,s32,s32);void DimPalette(void *);
-s32 func_02084ac0(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
+s32 GetActivePlayerRecord(s32);void DrawGlyphString(s32,void *,void *,s32,s32,u16,s32);
 s32 GetPlayerFavouriteGroup(s32);s32 GetPlayerFavouriteRecord(s32);s32 GetFavouriteGroupTextId(s32);s32 GetFavouriteRecordTextId(s32);s32 GetLocalizedText(s32);
 void DrawTextLineCore(s32,s16,s32,s32,s32,u16,u16);
 s32 i=arg0-1,off;u8 *p=(u8 *)*gCurrentMap+0x67a4+arg0*140;
@@ -250,7 +250,7 @@ off=(i+28)<<5;
 CopyToObjPaletteShadow(GetArmyIconPalette(b),off,32);
 if(!IsPlayerActive(arg0))DimPalette((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x30)+(off&~1));
 color=IsPlayerActive(arg0)?0:3;off=(i<<7)+16;engine=*(void * volatile *)&gCur3DSpriteEngine;
-DrawGlyphString(func_02084ac0(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
+DrawGlyphString(GetActivePlayerRecord(i),M2C_FIELD(engine,void **,0x10),M2C_FIELD(engine,void **,0x24),0,9,(u16)(n+1),off);
 DrawTextLineCore(13,(s16)(n+3),1,GetLocalizedText(GetFavouriteGroupTextId(GetPlayerFavouriteGroup(i))),0,(u16)color,(u16)(off+80));
 DrawTextLineCore(19,(s16)(n+3),1,GetLocalizedText(GetFavouriteRecordTextId(GetPlayerFavouriteRecord(i))),0,(u16)color,(u16)(off+96));
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;return 1;

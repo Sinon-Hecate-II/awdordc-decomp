@@ -429,7 +429,24 @@ void func_ov001_021832c8(void) {
 
 }
 
-void Ov001_CancelConnectionWait(void){void Ov001_StartConnectionClose(void);extern u8 gOv001WfcScreenState;M2C_UNK Ov001_StopSound();if(gOv001WfcScreenState)return;if(Ov001_GetIconRowSelection())return;gOv001WfcScreenState=2;Ov001_StopSound();Ov001_PlaySound(7);Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartConnectionClose);}
+/* Runs each frame while the Wi-Fi connection is being waited on: nothing has
+ * been reported and the player tapped the icon row's back icon, so give up on
+ * the connection, mark it lost and hand over to the closing step. */
+void Ov001_CancelConnectionWait(void) {
+    void Ov001_StartConnectionClose(void);
+    extern u8 gOv001WfcScreenState;
+    M2C_UNK Ov001_StopSound();
+    if (gOv001WfcScreenState) {
+        return;
+    }
+    if (Ov001_GetIconRowSelection() != OV001_CHOICE_BACK) {
+        return;
+    }
+    gOv001WfcScreenState = OV001_WFC_SCREEN_DISCONNECTED;
+    Ov001_StopSound();
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
+    Ov001_SetStepCallback((M2C_UNK *) &Ov001_StartConnectionClose);
+}
 
 void Ov001_StartConnectionClose(void) {
     M2C_UNK Ov001_LockIconRow();

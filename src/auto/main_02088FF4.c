@@ -173,8 +173,8 @@ void func_020891fc(void *arg0)
 M2C_UNK func_020892f0(void *arg0, s32 arg1) {
  void UpdateSpriteFade(void *,s32);
  M2C_UNK UpdateSpriteSlide(M2C_UNK);
- void func_020887ec(void *);
- UpdateSpriteFade(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);func_020887ec(arg0);
+ void DrawSpriteActor(void *);
+ UpdateSpriteFade(arg0,arg1);UpdateSpriteSlide((M2C_UNK)arg0);DrawSpriteActor(arg0);
 }
 
 void func_02089310(void) {
@@ -337,7 +337,7 @@ void func_02089784(s32 arg0) {
     M2C_FIELD(CreateSpriteFromClass(&data_02102698, 6), s32 *, 0x34) = arg0;
 }
 
-void func_020897a4(void) {
+void DeleteTextLayerIconObjects(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102698;
     DeleteSpriteObjectsOfClass(&data_02102698);
@@ -381,7 +381,7 @@ void func_0208989c(s32 arg0) {
     M2C_FIELD(CreateSpriteFromClass(&data_02102738, 1), s32 *, 0x34) = arg0;
 }
 
-void func_020898bc(void) {
+void DeleteTextLayerAuxIconObjects(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02102738;
     DeleteSpriteObjectsOfClass(&data_02102738);
@@ -413,19 +413,19 @@ void *InitTextLayer(void *layer) {
 }
 
 M2C_UNK **func_02089944(M2C_UNK **arg0) {
-    M2C_UNK func_02089cec(M2C_UNK **);
+    M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **);
     extern M2C_UNK gTextLayerVtable;
     *arg0 = &gTextLayerVtable;
     TextLayer_FreeText();
-    func_02089cec(arg0);
+    TextLayer_FreeChildSprites(arg0);
     return arg0;
 }
 
 M2C_UNK **func_0208996c(M2C_UNK **arg0) {
- M2C_UNK func_02089cec(M2C_UNK **);
+ M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **);
  M2C_UNK MemFree(M2C_UNK **);
  *arg0=&gTextLayerVtable;
- TextLayer_FreeText();func_02089cec(arg0);MemFree(arg0);return arg0;
+ TextLayer_FreeText();TextLayer_FreeChildSprites(arg0);MemFree(arg0);return arg0;
 }
 
 void RenderTextLayer(M2C_UNK, M2C_UNK, u32, s32);
@@ -592,11 +592,14 @@ s32 func_02089cb8(void *arg0) {
     return 1;
 }
 
-M2C_UNK func_02089cec(M2C_UNK **arg0) {
- M2C_UNK DeleteSpriteObject(void *);
- void *p;
- p=M2C_FIELD(arg0,void **,0x5C); if(p){DeleteSpriteObject(p);M2C_FIELD(arg0,s32 *,0x5C)=0;}
- p=M2C_FIELD(arg0,void **,0x60); if(p){DeleteSpriteObject(p);M2C_FIELD(arg0,s32 *,0x60)=0;}
- func_020897a4();func_020898bc();
+/* Release a text layer's two icon child sprites, then delete any objects of the
+ * icon sprite classes they were created from. */
+M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **layer) {
+    M2C_UNK DeleteSpriteObject(void *);
+    void *sprite;
+
+    sprite = M2C_FIELD(layer, void **, TEXT_LAYER_LEFT_ICON); if (sprite) { DeleteSpriteObject(sprite); M2C_FIELD(layer, s32 *, TEXT_LAYER_LEFT_ICON) = 0; }
+    sprite = M2C_FIELD(layer, void **, TEXT_LAYER_RIGHT_ICON); if (sprite) { DeleteSpriteObject(sprite); M2C_FIELD(layer, s32 *, TEXT_LAYER_RIGHT_ICON) = 0; }
+    DeleteTextLayerIconObjects(); DeleteTextLayerAuxIconObjects();
 }
 

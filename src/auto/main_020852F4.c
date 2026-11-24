@@ -156,17 +156,19 @@ void func_020854b8(M2C_UNK arg0) {
     Link_CreateStartRequest(0x50544453, arg0);
 }
 
-void func_020854d0(void *arg0) {
+/* Resume the data-block receiver's (waiting) animation once its block has
+ * arrived, or straight away when the network session reports a problem. */
+void ResumeBlockReceiverAnimation(void *receiver) {
     s32 IsSessionInError();
     s32 GetOverlayEventFlags();
     if ((IsSessionInError() != 0) || (GetOverlayEventFlags() != 0)) {
-        Sprite_ResumeAnimation(arg0);
+        Sprite_ResumeAnimation(receiver);
         return;
     }
-    if (M2C_FIELD(arg0, u8 *, 0x38) == 0) {
+    if (M2C_FIELD(receiver, u8 *, LINK_BLOCK_RECEIVED) == 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(receiver);
 }
 
 void func_02085514(M2C_UNK arg0) {
@@ -304,9 +306,9 @@ void func_02085788(s32 arg0) {
     M2C_UNK MemSet(M2C_UNK *, u8, s32);
     s32 GetActiveOverlay();
     s32 GetPlayerArmyId(s32);
-    M2C_UNK func_020c4cdc(s32);
-    M2C_UNK func_020c4dd0(s32);
-    void *func_020c5328();
+    M2C_UNK CreateLocalProfileSaveSprite(s32);
+    M2C_UNK CreateLocalBattleSaveSprite(s32);
+    void *GetBattleSlotRecord();
     s32 FindBattleSaveSlotByProfileId(s32);
     M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
@@ -405,7 +407,7 @@ loop_10:
                         temp_r0_5 = FindBattleSaveSlotByProfileId(M2C_FIELD(temp_r0_4, s32 *, 0x1C));
                         if (temp_r0_5 >= 0) {
                             M2C_FIELD((out + var_r9), s8 *, 4) = (s8) temp_r0_5;
-                            temp_r0_6 = func_020c5328();
+                            temp_r0_6 = GetBattleSlotRecord();
                             M2C_FIELD(temp_r0_6, u16 *, 0x1A) = (u16) (M2C_FIELD(temp_r0_6, u16 *, 0x1A) + 1);
                             M2C_FIELD(&data_02157634, s8 *, 0) = 1;
                         }
@@ -416,16 +418,16 @@ loop_10:
         } while ((u32) var_r9 < 4U);
         break;
     }
-    func_020c4cdc(sp0);
-    func_020c4dd0(sp0);
+    CreateLocalProfileSaveSprite(sp0);
+    CreateLocalBattleSaveSprite(sp0);
 }
 #pragma push
 #pragma opt_scheduling off
 void func_020859b4(M2C_UNK arg0) {
     s32 GetActiveOverlay();
-    M2C_UNK func_020c4cdc(M2C_UNK);
-    M2C_UNK func_020c4dd0(M2C_UNK);
-    void *func_020c5328();
+    M2C_UNK CreateLocalProfileSaveSprite(M2C_UNK);
+    M2C_UNK CreateLocalBattleSaveSprite(M2C_UNK);
+    void *GetBattleSlotRecord();
     M2C_UNK ConvergeSyncedPositions(M2C_UNK, s32 *, s32 *);
     u32 GetPlayerResultAgainst(s32, s32);
     void *GetLocalPlayerStatus();
@@ -511,7 +513,7 @@ void func_020859b4(M2C_UNK arg0) {
         var_r8 = 0;
         do {
             if ((s32) M2C_FIELD(((u8 *)&data_02157634 + var_r8), s8 *, 4) >= 0) {
-                temp_r5 = func_020c5328();
+                temp_r5 = GetBattleSlotRecord();
                 temp_r0_3 = GetPlayerResultAgainst(temp_r7 + 1, var_r8 + 1);
                 switch (temp_r0_3) {                /* switch 3 */
                 case 2:                             /* switch 3 */
@@ -534,8 +536,8 @@ void func_020859b4(M2C_UNK arg0) {
         break;
     }
     M2C_FIELD(&data_02157634, u8 *, 0) = 0U;
-    func_020c4cdc(arg0);
-    func_020c4dd0(arg0);
+    CreateLocalProfileSaveSprite(arg0);
+    CreateLocalBattleSaveSprite(arg0);
 }
 #pragma pop
 void SaveProfileSyncTime(void) {

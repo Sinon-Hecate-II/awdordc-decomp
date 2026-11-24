@@ -252,25 +252,28 @@ void func_ov006_022177c8(s32 arg0) {
     M2C_FIELD(CreateSpriteObject(&data_ov006_02218aa8), s32 *, 0x34) = arg0;
 }
 
-void func_ov006_022177e4(void) {
+/* Campaign map menu UI object init: load the UI graphics bank and hide the frame
+ * border, then show the menu's one-time hint text; a mid event flag records that
+ * the hint was shown, so later openings only clear the message. */
+void InitCampaignMapMenuUi(void) {
     M2C_UNK HideFrameBorderSprite();
     LoadUiGraphicsBank(4);
     HideFrameBorderSprite();
-    if (IsEventFlagMidSet(0x21) == 0) {
-        SetUiMessageText(0x46000026);
-        SetEventFlagMid(0x21, 1);
+    if (IsEventFlagMidSet(CAMPAIGN_MENU_HINT_FLAG) == 0) {
+        SetUiMessageText(CAMPAIGN_MENU_MSG_HINT);
+        SetEventFlagMid(CAMPAIGN_MENU_HINT_FLAG, 1);
         return;
     }
     SetUiMessageText(0);
 }
 
-void func_ov006_0221782c(void) {
+void ShutdownCampaignMapMenuUi(void) {
     M2C_UNK ShowFrameBorderSprite();
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
 }
 
-void func_ov006_02217840(M2C_UNK arg0) {
+void CreateCampaignMapMenuUi(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_ov006_02218a78;
     CreateSpriteObject(&data_ov006_02218a78, arg0);
@@ -416,9 +419,9 @@ done:
 
 void func_ov006_02217b08(void *arg0) {
     M2C_UNK func_020c9100();
-    M2C_UNK func_020c9120(s32, s32);
+    M2C_UNK AppendCampaignMapLoadEntry(s32, s32);
     func_020c9100();
-    func_020c9120(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x54));
+    AppendCampaignMapLoadEntry(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x54));
 }
 
 /* Show the map-transfer screen's chosen map: create a text layer with the
@@ -492,20 +495,37 @@ void func_ov006_02217c64(void) {
     FreeUiGraphicsBank(4);
 }
 
-void func_ov006_02217c74(M2C_UNK arg0) {
+/* Show the map-pick list 8 hint once: create the hint sprite under `owner` and
+ * show its text, recording in a mid event flag that the hint has been shown so
+ * later openings of the list keep quiet. */
+void ShowMapPickHint8(M2C_UNK owner) {
     M2C_UNK SetUiMessageText(s32);
     M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
     s32 IsEventFlagMidSet(M2C_UNK);
-    extern M2C_UNK data_ov006_02218ba8;
-    if (IsEventFlagMidSet(0x22) != 0) {
+    extern M2C_UNK gMapPickHintClass;
+    if (IsEventFlagMidSet(MAP_PICK_HINT_FLAG_8) != 0) {
         return;
     }
-    SetUiMessageText(0x46000027);
-    SetEventFlagMid(0x22, 1);
-    CreateSpriteObject(&data_ov006_02218ba8, arg0);
+    SetUiMessageText(MAP_PICK_HINT_MSG_8);
+    SetEventFlagMid(MAP_PICK_HINT_FLAG_8, 1);
+    CreateSpriteObject(&gMapPickHintClass, owner);
 }
 
-void func_ov006_02217cb8(M2C_UNK arg0) { M2C_UNK SetUiMessageText(s32); M2C_UNK SetEventFlagMid(M2C_UNK,M2C_UNK); s32 IsEventFlagMidSet(M2C_UNK); extern M2C_UNK data_ov006_02218ba8; if(IsEventFlagMidSet(0x23)!=0)return; SetUiMessageText(0x46000028); SetEventFlagMid(0x23,1); CreateSpriteObject(&data_ov006_02218ba8,arg0); }
+/* Show the map-pick list 7 hint once: create the hint sprite under `owner` and
+ * show its text, recording in a mid event flag that the hint has been shown so
+ * later openings of the list keep quiet. */
+void ShowMapPickHint7(M2C_UNK owner) {
+    M2C_UNK SetUiMessageText(s32);
+    M2C_UNK SetEventFlagMid(M2C_UNK, M2C_UNK);
+    s32 IsEventFlagMidSet(M2C_UNK);
+    extern M2C_UNK gMapPickHintClass;
+    if (IsEventFlagMidSet(MAP_PICK_HINT_FLAG_7) != 0) {
+        return;
+    }
+    SetUiMessageText(MAP_PICK_HINT_MSG_7);
+    SetEventFlagMid(MAP_PICK_HINT_FLAG_7, 1);
+    CreateSpriteObject(&gMapPickHintClass, owner);
+}
 
 void func_ov006_02217cfc(s32 arg0) {
     extern s32 data_ov006_02218e2c;
@@ -532,13 +552,16 @@ void InitMapListObject(void *object) {
     DisableMapConfirm();
 }
 
-void func_ov006_02217d9c(void *arg0) {
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x44));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x48));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
-    func_020e36f4(arg0);
+/* Tear down the online map-list object: free the received player entries and the
+ * per-candidate arrays it allocated, finish its web request, release the UI
+ * graphics bank it loaded and show the shared frame border again. */
+void FreeMapListObject(void *list) {
+    HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_ENTRIES));
+    HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_PLAYER_IDS));
+    HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_MAP_IDS));
+    HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_STATUS));
+    HeapFreeBlock(M2C_FIELD(list, s32 *, MAP_LIST_JOINABLE_IDS));
+    func_020e36f4(list);
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
 }

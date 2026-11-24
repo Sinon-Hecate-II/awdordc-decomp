@@ -151,7 +151,16 @@ void SwapBytes(u8 *arg0, u8 *arg1) {
     *arg1 = temp_r3;
 }
 
-u8 Base64EncodeChar(u32 a){if(a<26)return a+65;if(a<52)return a+71;if(a<62)return a-4;if(a==62)return 43;if(a==63)return 47;return 0;}
+/* The standard base64 character for the six-bit value `value`: A-Z for 0..25,
+ * a-z for 26..51, 0-9 for 52..61, then '+' and '/'; anything else maps to 0. */
+u8 Base64EncodeChar(u32 value) {
+    if (value < 26) return value + 65;
+    if (value < 52) return value + 71;
+    if (value < 62) return value - 4;
+    if (value == 62) return 43;
+    if (value == 63) return 47;
+    return 0;
+}
 
 /* Base64-encode `count` bytes from `src_void` into `dst_void`, QR2 style:
    every 3-byte group (zero padded when the input runs out) becomes 4 six-bit

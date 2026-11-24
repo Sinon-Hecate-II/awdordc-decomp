@@ -73,8 +73,8 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     s32 GetUnitKindMoveRange(s32);
     s32 func_020a7bec(s32);
     s32 func_020a7bf8(s32);
-    s32 func_020a7c50(s32);
-    s32 func_020a7c68(s32);
+    s32 GetUnitKindMaxFuel(s32);
+    s32 GetUnitKindMaxAmmo(s32);
     s32 func_020a7c98(s32);
     M2C_UNK BuildUnitRecommendations(void *, s32);
     extern s32 *gCurrentMap;
@@ -85,10 +85,10 @@ void func_ov000_021755b4(void *entry, s32 templateIndex, s32 statIndex) {
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0) = (s32) M2C_FIELD(((templateIndex * 0x8C) + *gCurrentMap), u8 *, 0x67CD);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0xC) = -1;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s8 *, 0x49) = 0;
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x10) = func_020a7c68(statIndex);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = func_020a7c68(statIndex);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x18) = func_020a7c50(statIndex);
-    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = func_020a7c50(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x10) = GetUnitKindMaxAmmo(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x14) = GetUnitKindMaxAmmo(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x18) = GetUnitKindMaxFuel(statIndex);
+    M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x1C) = GetUnitKindMaxFuel(statIndex);
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x20) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x24) = 0;
     M2C_FIELD(M2C_FIELD(entry, void **, 0x10), s32 *, 0x28) = GetUnitKindMoveRange(statIndex);
@@ -173,7 +173,7 @@ void DrawInfoPanelBackdrop(void *entry) {
 void func_ov000_02175878(void *arg0) {
     void CopyToObjPaletteShadow(void *, s32, s32);
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
-    void func_0209b26c(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
+    void DrawLocalizedText(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, u16, u16);
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
     extern u8 data_ov000_021ae2a0[];
@@ -209,7 +209,7 @@ void func_ov000_02175878(void *arg0) {
     }
     LoadGraphicsBlock((M2C_UNK *)graphics, base);
     CopyToObjPaletteShadow(data_ov000_021dec34[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)][flag] + idx, 0x180, 0x20);
-    func_0209b26c(2, 0xD, 1, data_ov000_021debc8[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)], 0xF000, color);
+    DrawLocalizedText(2, 0xD, 1, data_ov000_021debc8[M2C_FIELD(M2C_FIELD(arg0, void **, 0x10), s32 *, 4)], 0xF000, color);
     gCur3DSpriteEngine = saved;
 }
 #pragma pop

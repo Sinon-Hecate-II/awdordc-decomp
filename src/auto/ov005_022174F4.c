@@ -50,7 +50,7 @@ M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_SCROLL_VEL)=-1;
 #pragma opt_strength_reduction off
 void func_ov005_022176a0(void){
 s32 IsCoUnlocked(s32);void AddSprite(u16,u16,u16,void*,s32);
-void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);void func_02098dc0(s16,s16,u16,s32);
+void AddFaceSpriteTile(s32,s16,s16,u16,s32,s32);void AddFaceSprite(s16,s16,u16,s32);
 void Set3DSpriteSlideTargetAndStart(void*,s32,s32,s32,s32);u32 GetUnitSpriteWidth(void*);u32 GetUnitSpriteHeight(void*);
 void func_02087d84(void*,s32,s16,s16,u16,u16);void Ov005RefreshNameGraphic(void);
 s32 EaseInterpolate(s32,s32,s32,s32,s32);
@@ -79,7 +79,7 @@ if((u8)(M2C_FIELD(M2C_FIELD(p,void**,0x64),u8*,0x12)!=0)){s16 y=M2C_FIELD(p,s16*
 }
 }
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
-if(IsCoUnlocked(M2C_FIELD(STATE,s16*,14)+1))func_02098dc0(98,32,ATTR(0x41c,0x6000),0);
+if(IsCoUnlocked(M2C_FIELD(STATE,s16*,14)+1))AddFaceSprite(98,32,ATTR(0x41c,0x6000),0);
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 if(M2C_FIELD(STATE,s16*,0x16)<=0)Ov005RefreshNameGraphic();
 {

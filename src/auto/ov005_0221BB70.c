@@ -23,7 +23,7 @@ static inline s32 MaxU8(u8 a, u8 b, u8 c) {
 void StartCoVictoryQuote(M2C_UNK screen) {
     M2C_UNK Sprite_ResumeAnimationRepeat(M2C_UNK);
     s32 func_02097e84();
-    void *func_0209bccc(s32, s32, s32, s32, s32, s32);
+    void *CreateLocalizedMessageSpriteOnLayer(s32, s32, s32, s32, s32, s32);
     s32 DidPlayerWin();
     M2C_UNK GetCurrentCoFaceId();
     s32 GetCoQuoteTextId();
@@ -38,7 +38,7 @@ void StartCoVictoryQuote(M2C_UNK screen) {
         Sprite_ResumeAnimationRepeat(screen);
         return;
     }
-    sprite = func_0209bccc(2, 0x14, 0, GetCoQuoteTextId(), 0, 1);
+    sprite = CreateLocalizedMessageSpriteOnLayer(2, 0x14, 0, GetCoQuoteTextId(), 0, 1);
     M2C_FIELD(sprite, u16 *, 0x46) = 12;
     M2C_FIELD(sprite, u8 *, 0x55) = 2;
     /* Leaves the CO's face id in r0 for func_02097e84, which maps a character to

@@ -68,6 +68,15 @@
 /* Kind byte marking a room-protocol packet (value of OV001_PKT_KIND). */
 #define OV001_PKT_KIND_ROOM 0x11
 
+/* The built-in access-point profile InitBuiltinWifiAp fills from the hard-coded
+ * SSID (gBuiltinWifiSsid) and WEP key (gBuiltinWifiKey). */
+#define WIFI_AP_SSID_LENGTH 0x00 /* u32: bytes of the SSID text */
+#define WIFI_AP_SSID        0x04 /* char[0x20]: network name */
+#define WIFI_AP_SECURITY    0x24 /* u32: 1 = WEP security */
+#define WIFI_AP_KEY_LENGTH  0x28 /* u32: bytes of the key text */
+#define WIFI_AP_KEY         0x2c /* char[]: WEP key text, at most WIFI_AP_KEY_MAX bytes */
+#define WIFI_AP_KEY_MAX     13   /* longest key accepted (104-bit WEP in ASCII) */
+
 /* The request record the ov001 request builders fill in before the transfer is
  * written into the buffer: a status byte, a flag word and the transfer length
  * so far, followed by the record itself (a type byte, a zero byte, a

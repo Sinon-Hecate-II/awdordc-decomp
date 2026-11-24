@@ -25,7 +25,7 @@ void InitCardArchive(s32 device) {
     s32 func_0200bd94(void);
     s32 func_0200bd20(void);
     s32 CardArchiveCommand(s32, s32);
-    s32 func_0200bcd8(s32, s32, s32, s32);
+    s32 ReadCardArchiveBlock(void *, void *, s32, s32);
     extern FSCardArchiveWork gCardArchiveWork;
     extern M2C_UNK gCardArchive;
     extern u32 gCardArchiveName;
@@ -61,7 +61,7 @@ void InitCardArchive(s32 device) {
             u32 fat = base[0x82]; /* ROM header FAT offset */
             if (fat != (u32)-1 && fat != 0) {
                 ConfigureArchiveLayout(&gCardArchive, 0, (s32)fat, (s32)base[0x83], (s32)fnt, (s32)base[0x81],
-                              (void *)func_0200bcd8, (void *)func_0200bd20);
+                              (void *)ReadCardArchiveBlock, (void *)func_0200bd20);
             }
         }
     }
@@ -336,20 +336,29 @@ void RunModuleExitFunctions(FSFileHeader *header) {
     }
 }
 
-s32 func_0200c3f8(void *range) {
+s32 CompleteFileUnload(void *range) {
     RunModuleExitFunctions(range);
     return 1;
 }
 
-s32 func_0200c408(s32 arg0,s32 arg1) {s32 LoadFileHeader();u8 temp[44];if(!LoadFileHeader(temp,arg0,arg1) || !func_0200c3f8(temp)) return 0;return 1;}
+/* Read the header of one archive file and run the exit functions of the module
+ * that file holds, unloading it; returns 1 once that module is gone. */
+s32 UnloadFileModule(s32 archive, s32 fileIndex) {
+    s32 LoadFileHeader();
+    FSFileHeader header;
 
-void MD5Init(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
-    M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
-    M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0;
-    M2C_FIELD(arg0, s32 *, 0x14) = 0;
+    if (!LoadFileHeader(&header, archive, fileIndex) || !CompleteFileUnload(&header)) return 0;
+    return 1;
+}
+
+/* Initialize the MD5 chaining state and clear the message bit count. */
+void MD5Init(MD5Context *context) {
+    context->state[0] = 0x67452301;
+    context->state[1] = 0xEFCDAB89;
+    context->state[2] = 0x98BADCFE;
+    context->state[3] = 0x10325476;
+    context->count[0] = 0;
+    context->count[1] = 0;
 }
 
 /* Append length bytes of message data to an MD5 context: fill the pending
@@ -383,7 +392,7 @@ void MD5Update(void *context, void *data, u32 length) {
         MI_CpuCopy8((void *)cursor, ctx->buffer, 0x3f & length);
 }
 
-void func_0200c55c(M2C_UNK arg0, void *arg1) {
+void MD5Final(M2C_UNK arg0, void *arg1) {
     M2C_UNK func_02008048(void *, M2C_UNK, M2C_UNK);
     M2C_UNK func_0200c494(void *, M2C_UNK *, M2C_UNK);
     M2C_UNK func_0200c614(void *);

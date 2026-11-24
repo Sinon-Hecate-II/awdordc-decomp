@@ -287,7 +287,7 @@ if(callback==NULL)return;
 callback(arg0,arg1,arg2,arg3,arg4);
 }
 
-void func_ov009_02223a90(void *arg0) {
+void DeliverLinkSendResult(void *arg0) {
     void DispatchLinkPacket(s32, u16, u16);
     s32 temp_r0;
 
@@ -344,9 +344,9 @@ void func_ov009_02223b8c(void *arg0) {
 }
 
 s32 func_ov009_02223bbc(void) {
-    s32 func_02012484(void (*)(void *));
+    s32 WFC_SendCommand9(void (*)(void *));
     void func_ov009_02223be4(void *);
-    if (func_02012484(func_ov009_02223be4) == 2) return 1;
+    if (WFC_SendCommand9(func_ov009_02223be4) == 2) return 1;
     SignalLinkError();
     return 0;
 }
@@ -490,20 +490,20 @@ void HandleLinkDownloadDataEvent(void *arg0) {
 
 /* Add a user of the link's event notifications: bump the listener count at
  * gLinkState+0 and, when it is the first user, install the handler
- * func_ov009_02223ea8 through WFC command 0x23 (mode 0).  Returns 1 once the
+ * HandleLinkEventsAdded through WFC command 0x23 (mode 0).  Returns 1 once the
  * listener is installed, or signals a link error and returns 0. */
 s32 AddLinkEventListener(void) {
-    extern M2C_UNK gLinkState, func_ov009_02223ea8;
+    extern M2C_UNK gLinkState, HandleLinkEventsAdded;
     s32 WFC_SetLinkEvents(M2C_UNK *, s32);
     u8 old = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT);
     M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT) = old + 1;
     if (old != 0) return 1;
-    if (WFC_SetLinkEvents(&func_ov009_02223ea8, 0) == LINK_TASK_QUEUED) return 1;
+    if (WFC_SetLinkEvents(&HandleLinkEventsAdded, 0) == LINK_TASK_QUEUED) return 1;
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_02223ea8(void *arg0) {
+void HandleLinkEventsAdded(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) == 0) {
         return;
     }
@@ -511,17 +511,22 @@ void func_ov009_02223ea8(void *arg0) {
     SetLinkPhase(8);
 }
 
-s32 func_ov009_02223ec8(void) {
- extern M2C_UNK gLinkState,func_ov009_02223f14;
- s32 WFC_SetLinkEvents(M2C_UNK *,s32);
- u8 value=M2C_FIELD(&gLinkState,u8 *,0)-1;
- M2C_FIELD(&gLinkState,u8 *,0)=value;
- if(M2C_FIELD(&gLinkState,u8 *,0)!=0) return 1;
- if(WFC_SetLinkEvents(&func_ov009_02223f14,1)==2) return 1;
- SignalLinkError();return 0;
+/* Drop one user of the link's event notifications: decrement the listener count
+ * and, with the last user gone, uninstall the handler through WFC command 0x23
+ * (mode 1).  Returns 1 while listeners remain or once it is uninstalled, or
+ * signals a link error and returns 0 when the command is not queued. */
+s32 RemoveLinkEventListener(void) {
+    extern M2C_UNK gLinkState, HandleLinkEventsRemoved;
+    s32 WFC_SetLinkEvents(M2C_UNK *, s32);
+    u8 old = M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT);
+    M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT) = old - 1;
+    if (M2C_FIELD(&gLinkState, u8 *, LINK_STATE_LISTENER_COUNT) != 0) return 1;
+    if (WFC_SetLinkEvents(&HandleLinkEventsRemoved, 1) == LINK_TASK_QUEUED) return 1;
+    SignalLinkError();
+    return 0;
 }
 
-void func_ov009_02223f14(void *arg0) {
+void HandleLinkEventsRemoved(void *arg0) {
     if (M2C_FIELD(arg0, u16 *, 2) == 0) {
         return;
     }
@@ -611,7 +616,7 @@ s32 CopyLinkLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
     return arg0;
 }
 
-s32 func_ov009_022240f4(void) {
+s32 GetActiveLinkPlayerRecord(void) {
     s32 GetActiveLinkPlayerSlot();
     s32 temp_r0;
 

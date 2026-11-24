@@ -51,7 +51,7 @@ q->from=127;q->to=127;q->duration=0;q->current=q->start;
 gCur3DSpriteEngine=saved;
 }
 
-void func_02086330(void) {
+void DeleteVoiceChatWidgets(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;
     DeleteSpriteObjectsOfClass(&gVoiceChatWidgetClass);
@@ -156,18 +156,21 @@ void *DeleteVoiceChatWidget(VoiceChatWidget *widget) {
     return widget;
 }
 
-void *DestroyVoiceChatWidget(void *arg0) {
+/* Release the voice-chat widget's resources without freeing the object itself:
+ * reset its vtable, free its volume-fade animation and restore the music and
+ * sound-effect channel 2 volumes. */
+void *DestroyVoiceChatWidget(VoiceChatWidget *widget) {
     M2C_UNK MemFree();
     M2C_UNK SetMusicVolumeLevel(M2C_UNK, M2C_UNK);
     M2C_UNK SetSoundEffectVolumeLevel(M2C_UNK, M2C_UNK);
     extern M2C_UNK gVoiceChatWidgetVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
-    if (M2C_FIELD(arg0, s32 *, 0x50) != 0) {
-        MemFree();
+    M2C_FIELD(widget, M2C_UNK **, 0) = &gVoiceChatWidgetVtbl;
+    if (widget->anim != 0) {
+        MemFree(widget->anim);
     }
     SetMusicVolumeLevel(2, 0x7F);
     SetSoundEffectVolumeLevel(2, 0x7F);
-    return arg0;
+    return widget;
 }
 
 void Init3DSpriteScene(void) {
@@ -322,27 +325,27 @@ void SetListRowFlag(u32 arg0, s32 arg1) {
 }
 
 void SetMapListFlag(u32 arg0, s32 arg1) {
- extern M2C_UNK data_02157744;
+ extern M2C_UNK gMapListFlags;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) = (M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_02086844(u32 arg0, s32 arg1) {
- extern M2C_UNK data_02157767;
+void SetCampaignMapPlayed(u32 arg0, s32 arg1) {
+ extern M2C_UNK gCampaignMapPlayed;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_02157767, u8 *, arg0 >> 3) = (M2C_FIELD(&data_02157767, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gCampaignMapPlayed, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapPlayed, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
-void func_02086878(u32 arg0, s32 arg1) {
- extern M2C_UNK data_0215778a;
+void SetCampaignMapCleared(u32 arg0, s32 arg1) {
+ extern M2C_UNK gCampaignMapCleared;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) = (M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
 void SetCampaignMapSaved(u32 arg0, s32 arg1) {
- extern M2C_UNK data_021577ad;
+ extern M2C_UNK gCampaignMapSaved;
  s32 shift = arg0 & 7;
- M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) = (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
+ M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) = (M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) & ~(1 << shift)) | ((1 << shift) * arg1);
 }
 
 /* Set (value nonzero) or clear bit `flagId` of the high event-flag bank: one of
@@ -368,18 +371,18 @@ void func_02086930(s32 arg0, s8 arg1) {
 }
 
 u8 IsMapListFlagSet(u32 arg0) {
-    extern M2C_UNK data_02157744;
-    return (u8) (M2C_FIELD(&data_02157744, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    extern M2C_UNK gMapListFlags;
+    return (u8) (M2C_FIELD(&gMapListFlags, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 IsCampaignMapCleared(u32 arg0) {
-    extern M2C_UNK data_0215778a;
-    return (u8) (M2C_FIELD(&data_0215778a, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    extern M2C_UNK gCampaignMapCleared;
+    return (u8) (M2C_FIELD(&gCampaignMapCleared, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 u8 IsCampaignMapSaved(u32 arg0) {
-    extern M2C_UNK data_021577ad;
-    return (u8) (M2C_FIELD(&data_021577ad, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
+    extern M2C_UNK gCampaignMapSaved;
+    return (u8) (M2C_FIELD(&gCampaignMapSaved, u8 *, arg0 >> 3) & (1 << (arg0 & 7)));
 }
 
 s32 IsEventFlagHighSet(s32 arg0) {
@@ -493,12 +496,12 @@ void func_02086b9c(void) {
     } while (var_r7 < 0x113);
     var_r6 = 0;
     do {
-        func_02086844(var_r6, 0);
+        SetCampaignMapPlayed(var_r6, 0);
         var_r6 += 1;
     } while (var_r6 < 0x113);
     var_r6_2 = 0;
     do {
-        func_02086878(var_r6_2, 0);
+        SetCampaignMapCleared(var_r6_2, 0);
         var_r6_2 += 1;
     } while (var_r6_2 < 0x113);
     var_r5 = 0;

@@ -11,11 +11,11 @@ extern u32 gUnitKindStats[];
 extern u8 gUnitKindMaxFuel[],gUnitKindMaxAmmo[],gUnitKindInfiniteAmmo[];
 int func_020a8b9c(void);int func_020a8b90(void);int func_020a8bb4(void);int func_020a8ba8(void);int func_020a8b78(void);int func_020a8b84(void);
 void DrawTilemapNumber(s16,s16,void *,int,int,int);
-void func_0209c024(s16,s16,void *,int,int,int);
+void DrawTextToTilemap(s16,s16,void *,int,int,int);
 void WriteUnitKindTileQuad(void *,u16,u16,int,u16,u8,u8);
 void DrawLocalizedTextLine(s16,s16,int,u32,int,int,u16);
 int Divide(int,int);int GetLocalizedText(u32);int MeasureStringWidth(int);
-void func_0209bfdc(s16,s16,void *,u32,int,int);
+void DrawLocalizedTextToTilemap(s16,s16,void *,u32,int,int);
 
 /* Switch gCur3DSpriteEngine to g3DSpriteEngineMain and rebuild its display lists; bit 0 of mode selects one of two layouts. */
 void ScrollListRebuild(s32 mode,s32 reverse){
@@ -191,20 +191,20 @@ void func_ov000_0216f3d0(s32 row,s32 index){
  default:icon=0;offset=0;break;
  }
  DrawTilemapNumber(3,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),index+1,0,0);
- if(icon)func_0209c024((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
+ if(icon)DrawTextToTilemap((s16)(shift+5),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),icon,0,0);
  WriteUnitKindTileQuad(M2C_FIELD(gCur3DSpriteEngine,void **,0x24),(u16)(offset+5),(u16)(row+5),u->unk0,(u16)base,u->unkC[0],(u8)((DisplayHealth *)((u8 *)u+6))->flags);
  DrawLocalizedTextLine(9,(s16)(row+5),1,*(u32 *)((u8 *)gUnitKindStats+u->unk0*112),0,0,(u16)gUnitListRows);
  health=u->unk6;if(health==0)health=0;else health=Divide(health-1,10)+1;
  DrawTilemapNumber(18,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),health,0,0);
  DrawTilemapNumber(21,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayFuel *)((u8 *)u+10))->fuel,0,0);
- func_0209c024(22,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
+ DrawTextToTilemap(22,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
  DrawTilemapNumber(24,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),gUnitKindMaxFuel[u->unk0*112],0,0);
  if(!gUnitKindMaxAmmo[u->unk0*112]){
- if(gUnitKindInfiniteAmmo[u->unk0*112])func_0209c024(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b84(),0,0);
- else func_0209bfdc((s16)(28-(MeasureStringWidth(GetLocalizedText(0xc000007f))>>4)),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),0xc000007f,0,0);
+ if(gUnitKindInfiniteAmmo[u->unk0*112])DrawTextToTilemap(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b84(),0,0);
+ else DrawLocalizedTextToTilemap((s16)(28-(MeasureStringWidth(GetLocalizedText(0xc000007f))>>4)),(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),0xc000007f,0,0);
  }else{
  DrawTilemapNumber(27,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((DisplayHealth *)((u8 *)u+6))->ammo,0,0);
- func_0209c024(28,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
+ DrawTextToTilemap(28,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0,0);
  DrawTilemapNumber(29,(s16)(row+5),M2C_FIELD(gCur3DSpriteEngine,void **,0x24),gUnitKindMaxAmmo[u->unk0*112],0,0);
  }
  gCur3DSpriteEngine=saved;

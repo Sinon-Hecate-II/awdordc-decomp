@@ -7,7 +7,7 @@ typedef struct { u16 a,b,c,d; } FourShorts;
 
 #pragma scheduling on
 s32 GetMapListTouchedEntry(void){
- s32 TouchRectPressed(void *);s32 func_ov001_0218bd1c(FourShorts *);
+ s32 TouchRectPressed(void *);s32 TouchRectSizePressed(FourShorts *);
  s32 HardwareDivide(u16,s32);
  extern M2C_UNK gTouchScreenRect,gMapListState;
  extern FourBytes gOv001MapListLayout;
@@ -17,7 +17,7 @@ s32 GetMapListTouchedEntry(void){
  value=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+4);
  for(i=0;i<4;i++,value++){
- if(value!=2 && value!=6){if(func_ov001_0218bd1c(&rect))return gMapListRowToState[value];}
+ if(value!=2 && value!=6){if(TouchRectSizePressed(&rect))return gMapListRowToState[value];}
  rect.b+=29;
  }
  value=HardwareDivide(M2C_FIELD(&gMapListState,u16 *,4),29);
@@ -25,10 +25,10 @@ s32 GetMapListTouchedEntry(void){
  if(value==2){
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
  rect.b+=j*29;
- if(func_ov001_0218bd1c(&rect))return 2;
+ if(TouchRectSizePressed(&rect))return 2;
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+12);
  rect.b+=j*29;
- if(func_ov001_0218bd1c(&rect))return 3;
+ if(TouchRectSizePressed(&rect))return 3;
  break;
  }
  }
@@ -37,10 +37,10 @@ s32 GetMapListTouchedEntry(void){
  if(value==6){
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+20);
  rect.b+=k*29;
- if(func_ov001_0218bd1c(&rect))return 7;
+ if(TouchRectSizePressed(&rect))return 7;
  rect=*(FourShorts *)((u8 *)&gOv001MapListLayout+12);
  rect.b+=k*29;
- if(func_ov001_0218bd1c(&rect))return 8;
+ if(TouchRectSizePressed(&rect))return 8;
  break;
  }
  }
@@ -49,14 +49,17 @@ s32 GetMapListTouchedEntry(void){
  return 14;
 }
 #pragma scheduling reset
-s32 func_ov001_0217ede0(s32 arg0) {
+/* Screen row (0..3) at which the given absolute list row is shown under the
+ * current scroll position, or -1 when the row is not one of the visible rows. */
+s32 GetMapListScreenRow(s32 row) {
     s32 HardwareDivide(u16, s32);
     extern M2C_UNK gMapListState;
-    s32 value;
+    s32 visibleRow;
     s32 i;
-    value = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, 4), 0x1D);
-    for (i = 0; i < 4; i++, value++) {
-        if (value == arg0) return i;
+
+    visibleRow = HardwareDivide(M2C_FIELD(&gMapListState, u16 *, OV001_MAP_LIST_SCROLL), OV001_MAP_LIST_ROW_HEIGHT);
+    for (i = 0; i < 4; i++, visibleRow++) {
+        if (visibleRow == row) return i;
     }
     return -1;
 }
@@ -210,7 +213,7 @@ M2C_UNK MapList_UpdateStateFromRow(void) {
     MapList_ApplyRowLayout();
 }
 
-void SelectMapListChoice(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=func_ov001_0217ede0(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
+void SelectMapListChoice(u32 a){void MapList_ApplyRowLayout(void);extern M2C_UNK gMapListState;extern u8 data_ov001_0218f9bc[];M2C_FIELD(&gMapListState,u8 *,0)=a;M2C_FIELD(&gMapListState,u8 *,2)=GetMapListScreenRow(data_ov001_0218f9bc[a]);MapList_ApplyRowLayout();}
 
 void func_ov001_0217f1f0(s32 event) {
     void *GetCurrentMapRecord(void);

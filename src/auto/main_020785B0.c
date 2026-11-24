@@ -234,8 +234,8 @@ MapView_SetCursorPosition((s16)(x<<4),(s16)(y<<4),M2C_FIELD(arg0,u8 *,4));
  * selected, ...), converts the tile to world coordinates and hands it to
  * RenderUnitSprite. */
 void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
-    s32 func_020a7d80(void *);
-    s32 func_020a7dc4(void *);
+    s32 IsUnitLowOnFuel(void *);
+    s32 IsUnitLowOnAmmo(void *);
     s32 UnitKindCanSupply(s32);
     s32 IsUnitSubmerged(void *);
     s32 UnitHasFacing(void *);
@@ -262,8 +262,8 @@ void RenderUnitAt(s32 x, s32 y, s32 extra, u8 mode) {
     player = ((val & 0xc0) >> 6) + 1;
     unit = (u8 *)base + MAP_UNIT_RECORDS + (s32)(val * MAP_UNIT_STRIDE);
 
-    if (func_020a7d80((void *)unit)) flags |= 0x2;
-    if (func_020a7dc4((void *)unit)) {
+    if (IsUnitLowOnFuel((void *)unit)) flags |= 0x2;
+    if (IsUnitLowOnAmmo((void *)unit)) {
         kind = ((RenderUnit *)unit)->kind;
         if (UnitKindCanSupply(kind)) flags |= 0x8;
         else flags |= 0x4;

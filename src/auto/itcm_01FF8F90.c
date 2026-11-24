@@ -345,15 +345,18 @@ void Clear3DSpriteLayerSub(u8 layer) {
 }
 
 #pragma opt_propagation off
-void func_01ff9dd8(u8 arg0) { M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32); extern u16 **gCur3DSpriteEngine; s32 dest; dest=M2C_FIELD((char *)gCur3DSpriteEngine + arg0*4,s32 *,0xC); { s32 zero=0; s32 size=0x40; MI_CpuFill32(zero,dest,size); } }
+void Clear3DSpriteLayerVram(u8 arg0) { M2C_UNK MI_CpuFill32(M2C_UNK,s32,s32); extern u16 **gCur3DSpriteEngine; s32 dest; dest=M2C_FIELD((char *)gCur3DSpriteEngine + arg0*4,s32 *,0xC); { s32 zero=0; s32 size=0x40; MI_CpuFill32(zero,dest,size); } }
 #pragma opt_propagation reset
+/* Clear every 3D-sprite layer of the current engine: wipe layer `layer`'s VRAM
+ * region and its tile buffer, then mark it dirty (bit `layer` of the engine's
+ * dirty mask at +0x46) so the engine uploads it again. */
 void ClearAll3DSpriteLayers(void) {
     extern u16 **gCur3DSpriteEngine;
-    s32 i;
-    for (i = 0; i < 4; i++) {
-        func_01ff9dd8((u8)i);
-        Clear3DSpriteLayer((u8)i);
-        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << i;
+    s32 layer;
+    for (layer = 0; layer < 4; layer++) {
+        Clear3DSpriteLayerVram((u8)layer);
+        Clear3DSpriteLayer((u8)layer);
+        M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 1 << layer;
     }
 }
 

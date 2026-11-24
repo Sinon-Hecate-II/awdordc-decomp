@@ -2,7 +2,20 @@
 #include "common.h"
 extern u8 data_ov001_0218c9e4[4][4][2];
 
-void *func_ov001_02169020(void *a,s32 b){u16 n,i;void *p; p=a+M2C_FIELD(a,u16 *,12);n=M2C_FIELD(a,u16 *,14);i=0;for(;i<n;i++){if(M2C_FIELD(p,s32 *,0)==b)return p;p+=M2C_FIELD(p,s32 *,4);}return 0;}
+/* Finds the NFTR font block of the given four-character `kind` in the file's
+ * block table: the header gives the table's offset and its entry count, and each
+ * entry holds the block's tag and its size, which is also the stride to the next
+ * entry.  Returns the block header, or NULL when no block has that tag. */
+NftrBlockHeader *FindFontBlock(NftrFileHeader *font, u32 kind) {
+    NftrBlockHeader *block = (NftrBlockHeader *)((u8 *)font + font->headerSize);
+    u16 count = font->blockCount;
+    u16 i = 0;
+    for (; i < count; i++) {
+        if (block->kind == kind) return block;
+        block = (NftrBlockHeader *)((u8 *)block + block->size);
+    }
+    return NULL;
+}
 
 /* Glyph index of character code `ch` inside one CMAP record of a font resource:
  * the record lists the character range it maps and one of three lookup tables.
@@ -46,7 +59,20 @@ void Ov001_InitFontSet(void *arg0, M2C_UNK arg1) {
     M2C_FIELD(arg0, M2C_UNK **, 4) = &func_ov001_0216ad40;
 }
 
-s32 GetFontGlyphIndex(void **a,u32 b){s32 GetFontCmapGlyphIndex(void *,u32);void *p=M2C_FIELD(*a,void **,16);while(p){if(M2C_FIELD(p,u16 *,0)<=b && b<=M2C_FIELD(p,u16 *,2))return GetFontCmapGlyphIndex(p,b);p=M2C_FIELD(p,void **,8);}return 65535;}
+/* Glyph index of character code `ch` in the font resource `resourcePtr`: walk the
+ * resource's CMAP list in order and let the first record whose character range
+ * covers `ch` map it (GetFontCmapGlyphIndex).  Returns OV001_GLYPH_NONE when no
+ * record covers `ch`. */
+s32 GetFontGlyphIndex(void **resourcePtr,u32 ch){
+ s32 GetFontCmapGlyphIndex(void *,u32);
+ Ov001FontResource *resource=*resourcePtr;
+ Ov001CmapRecord *record=resource->cmapList;
+ while(record){
+  if(record->first<=ch && ch<=record->last)return GetFontCmapGlyphIndex(record,ch);
+  record=record->next;
+ }
+ return OV001_GLYPH_NONE;
+}
 
 /* Width record of `glyph` in font resource `resourcePtr`: walk the resource's
  * CWDH range list (a u16 first/last and a next pointer at +4) and return the

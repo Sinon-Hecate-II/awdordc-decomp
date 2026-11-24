@@ -47,7 +47,7 @@ u16 IsSystemTickInitialized(void) {
 
 #pragma opt_propagation off
 void SystemTickOverflowHandler(void) {
-void func_02005154(u32,void (*)(void),u32); extern u16 gSystemTickState;
+void OS_SetTimerHandler(u32,void (*)(void),u32); extern u16 gSystemTickState;
 ++M2C_FIELD(&gSystemTickState,u64 *,8);
 if (M2C_FIELD(&gSystemTickState,s32 *,4)) {
 *(volatile u16 *)0x04000102=0;
@@ -55,7 +55,7 @@ if (M2C_FIELD(&gSystemTickState,s32 *,4)) {
 *(volatile u16 *)0x04000102=0xc1;
 M2C_FIELD(&gSystemTickState,s32 *,4)=0;
 }
-func_02005154(0,SystemTickOverflowHandler,0);
+OS_SetTimerHandler(0,SystemTickOverflowHandler,0);
 }
 #pragma opt_propagation reset
 /* The system tick: TIMER0's free-running 16-bit counter extended to 64 bits by
@@ -84,11 +84,11 @@ u16 func_020070a4(void) {
 
 #pragma opt_if_conversion off
 void ArmTimerCountdown(void *arg0) {
-void func_02005154(u32, void (*)(void), u32); s32 func_020073c0(s32); void OS_EnableIrqMask(u32);
+void OS_SetTimerHandler(u32, void (*)(void), u32); s32 func_020073c0(s32); void OS_EnableIrqMask(u32);
 u64 now=GetSystemTick(); s64 delta; u16 timer;
 *(volatile u16 *)0x04000106=0;
 delta=M2C_FIELD(arg0,s64*,0xc)-now;
-func_02005154(1,(void(*)(void))func_020073c0,0);
+OS_SetTimerHandler(1,(void(*)(void))func_020073c0,0);
 timer=0;
 if(delta<0)timer=0xfffe;
 else if(delta<0x10000)timer=(u16)~(u32)delta;
@@ -306,18 +306,20 @@ void TimerInterruptHandler(void) {
 }
 #pragma scheduling reset
 
-void func_020074c0(void) {
+/* One-time setup of the VCount (scanline match) interrupt module: mark it
+ * initialised, clear its state block and leave the VCount interrupt masked. */
+void InitVCountIrqModule(void) {
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
-    extern M2C_UNK data_0212dfd0;
-    if (M2C_FIELD(&data_0212dfd0, u16 *, 0) != 0) {
+    extern VCountIrqState gVCountIrqState;
+    if (gVCountIrqState.initialized != 0) {
         return;
     }
-    M2C_FIELD(&data_0212dfd0, u16 *, 0) = 1U;
-    M2C_FIELD(&data_0212dfd0, s32 *, 0xC) = 0;
-    M2C_FIELD(&data_0212dfd0, s32 *, 0x10) = 0;
-    OS_DisableIrqMask(4);
-    M2C_FIELD(&data_0212dfd0, s32 *, 8) = 0;
-    M2C_FIELD(&data_0212dfd0, s32 *, 4) = 0;
+    gVCountIrqState.initialized = 1;
+    gVCountIrqState.unknown0C = 0;
+    gVCountIrqState.unknown10 = 0;
+    OS_DisableIrqMask(IRQ_VCOUNT);
+    gVCountIrqState.unknown08 = 0;
+    gVCountIrqState.unknown04 = 0;
 }
 
 s32 func_02007508(void) {

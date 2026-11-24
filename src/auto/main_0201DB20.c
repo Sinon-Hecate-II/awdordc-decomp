@@ -78,18 +78,20 @@ s32 GetSocketReceivedDataSize(void) {
     return 0;
 }
 
-void func_0201dc28(void) {
+/* Flush the current raw connection's pending send queue: if it still holds
+ * queued bytes, send them on their own and clear the queue. */
+void FlushPendingSendData(void) {
     M2C_UNK SendSocketData(s32, s32, M2C_UNK, M2C_UNK);
     extern M2C_UNK gSocketManager;
-    s32 temp_r1;
-    void *temp_r4;
+    s32 pending;
+    void *conn;
 
-    temp_r4 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (temp_r4 != NULL) {
-        temp_r1 = M2C_FIELD(temp_r4, s32 *, 0x60);
-        if (temp_r1 != 0) {
-            SendSocketData(M2C_FIELD(temp_r4, s32 *, 0x5C), temp_r1, 0, 0);
-            M2C_FIELD(temp_r4, s32 *, 0x60) = 0;
+    conn = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, SOCK_OBJECT_RAW);
+    if (conn != NULL) {
+        pending = M2C_FIELD(conn, s32 *, CONN_PENDING_TX_LEN);
+        if (pending != 0) {
+            SendSocketData(M2C_FIELD(conn, s32 *, CONN_PENDING_TX_BUF), pending, 0, 0);
+            M2C_FIELD(conn, s32 *, CONN_PENDING_TX_LEN) = 0;
         }
     }
 }

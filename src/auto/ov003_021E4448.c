@@ -606,20 +606,23 @@ void *DestroyOv003SceneView(void *obj) {
     return obj;
 }
 
-M2C_UNK **func_ov003_021e4fec(M2C_UNK **arg0) {
+/* Destructor core of the scene-view label group: reset its vtable to the base
+ * one and delete each of its eleven glyph sprites (the deleting destructor then
+ * frees the group itself). */
+SceneViewLabelGroup *ReleaseSceneViewLabelGroup(SceneViewLabelGroup *group) {
     M2C_UNK DeleteSpriteObject();
     extern M2C_UNK gSceneLabelGroupVTable;
-    u8 var_r4;
+    u8 i;
 
-    *arg0 = &gSceneLabelGroupVTable;
-    var_r4 = 0;
+    group->vtable = &gSceneLabelGroupVTable;
+    i = 0;
     do {
-        if (M2C_FIELD(((s32)arg0 + (var_r4 * 4)), s32 *, 0xC) != 0) {
+        if (group->glyphs[i] != 0) {
             DeleteSpriteObject();
         }
-        var_r4 += 1;
-    } while ((u32) var_r4 < 0xBU);
-    return arg0;
+        i += 1;
+    } while ((u32) i < SCENE_LABEL_GLYPH_COUNT);
+    return group;
 }
 
 void func_ov003_021e5030(void) {

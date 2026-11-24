@@ -270,10 +270,13 @@ u8 GsCryptInitStep(u8 *sbox,u32 i,u8 *key,u32 keyLen,u8 *value,u32 *pos){
  return result;
 }
 
-void GsCryptInitDefault(u8 *arg0){
- s32 i,j;
- arg0[0x100]=1;arg0[0x101]=3;arg0[0x102]=5;arg0[0x103]=7;arg0[0x104]=11;
- for(i=0,j=255;i<256;i++,j--)arg0[i]=j;
+/* Fill the GameSpy cipher state with its fixed default schedule: the permutation
+ * counted down from 255 and the five step bytes 1, 3, 5, 7 and 11. */
+void GsCryptInitDefault(u8 *state) {
+    s32 i, j;
+    GsCryptState *crypt = (GsCryptState *)state;
+    crypt->a = 1; crypt->b = 3; crypt->c = 5; crypt->d = 7; crypt->e = 11;
+    for (i = 0, j = 255; i < 256; i++, j--) crypt->sbox[i] = j;
 }
 
 /* Initialise the GameSpy stream cipher's state from a key: fill the 256-byte

@@ -165,7 +165,7 @@ void func_ov007_02217f8c(void *arg0) {
     M2C_UNK InitUnitSprite(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    M2C_UNK func_020ab150(void *, M2C_UNK);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     s8 GetMapEditorMode();
@@ -262,7 +262,7 @@ void func_ov007_02217f8c(void *arg0) {
         height = GetUnitSpriteHeight(temp_r6);
         func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x44), 1);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x44), 1);
     M2C_FIELD(arg0, void **, 0x48) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x48), 2, 0x36C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x48);
@@ -279,7 +279,7 @@ void func_ov007_02217f8c(void *arg0) {
         height = GetUnitSpriteHeight(temp_r6);
         func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x48), 2);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x48), 2);
     M2C_FIELD(arg0, void **, 0x4C) = func_020ab1c4(arg0);
     InitUnitSprite(M2C_FIELD(arg0, void **, 0x4C), 0x14, 0x37C, 3, 0);
     temp_r6 = M2C_FIELD(arg0, void **, 0x4C);
@@ -296,7 +296,7 @@ void func_ov007_02217f8c(void *arg0) {
         height = GetUnitSpriteHeight(temp_r6);
         func_02087d84(M2C_FIELD(temp_r6, void **, 0x64), 1, temp_r8, temp_r7, (u16) temp_r9, (u16) height);
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x4C), 0x304);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x4C), 0x304);
     SetFileDirectory(&data_ov007_02220030);
     OpenNarcArchive(GetLocalizedFileName(&data_ov007_0222003c));
     LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov007_0222004c), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));

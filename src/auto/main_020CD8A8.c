@@ -363,8 +363,16 @@ void MarkPathThreatRange(s16 startX, s16 startY, s8 *path) {
     }
 }
 
-s32 GetTerrainThreatRadius(s32 a,s32 b) {
+/* Danger-zone radius around a terrain cell: 5 for a radar or the special threat
+ * tile (kind 26), 2 for an owned property, none otherwise.  The second argument is
+ * the weather, reused here as the terrain kind after the snow test: snow (2) turns
+ * every terrain radius off. */
+s32 GetTerrainThreatRadius(s32 cell, s32 kind) {
 extern s8 gTerrainPropertyFlags[];
-if(b==2)return 0;b=a&31;if(b==26)return 5;if(b==23)return 5;return gTerrainPropertyFlags[b]?2:0;
+if(kind==MAP_WEATHER_SNOW)return 0;
+kind=cell&MAP_TERRAIN_KIND_MASK;
+if(kind==26)return 5;
+if(kind==MAP_TERRAIN_RADAR)return 5;
+return gTerrainPropertyFlags[kind]?2:0;
 }
 

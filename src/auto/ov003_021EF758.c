@@ -153,7 +153,7 @@ void func_ov003_021efb74(void *arg0) {
     M2C_UNK IsSessionHost(void);
     M2C_UNK func_ov003_021e6d28(void);
     M2C_UNK InRange(s32, s32, s32);
-    M2C_UNK func_ov003_021f153c(void);
+    M2C_UNK GetSceneEntryOffset(void);
     void SetOv003SceneState(s32);
 
     void *r7 = arg0;
@@ -199,7 +199,7 @@ void func_ov003_021efb74(void *arg0) {
     } while ((s32)r5 < 12);
 
     Show3DSprite(M2C_FIELD(r4, s32 *, 0x74));
-    _v = func_ov003_021f153c();
+    _v = GetSceneEntryOffset();
     r2 = M2C_FIELD(r7, void **, 0x3c);
     M2C_FIELD(r2, s16 *, 0xe) = (s16)_v;
     M2C_FIELD(r2, s16 *, 0x10) = 0;

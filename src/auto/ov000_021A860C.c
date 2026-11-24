@@ -325,9 +325,17 @@ u8 IsCellOwnedByOtherArmy(s32 unitId, s32 x, s32 y) {
  return other;
 }
 
-u8 func_ov000_021a911c(s32 a,s32 b,s32 c){
-extern void **gCurrentMap;u8 *p=*gCurrentMap;s32 n=(a>>6)+1;u8 r;
-if(n==(M2C_FIELD(p+(b+M2C_FIELD(p+c*2,u16 *,0x3758)),u8 *,0x1420)>>5))r=1;else r=0;return r;}
+/* Whether the property on cell (x, y) is owned by the player that owns unit
+ * `unitId`: the unit's player number ((unitId >> MAP_UNIT_OWNER_SHIFT) + 1) against
+ * the terrain byte's owner bits. */
+u8 IsCellOwnedByUnitPlayer(s32 unitId, s32 x, s32 y) {
+    extern void **gCurrentMap;
+    u8 *map = *gCurrentMap;
+    s32 player = (unitId >> MAP_UNIT_OWNER_SHIFT) + 1;
+    u8 same;
+    if (player == (M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) >> MAP_PROPERTY_TILE_OWNER_SHIFT)) same = 1; else same = 0;
+    return same;
+}
 
 /* Whether the unit standing on cell (x, y) belongs to player `player`: both are
  * compared by their army (nation) id, so allied players count as the same army.
@@ -337,7 +345,21 @@ extern void **gCurrentMap;u8 *map=*gCurrentMap;
 s32 unitId=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_UNIT_ID);u8 same;if(!unitId)return 0;
 if(M2C_FIELD(map+player*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF)==M2C_FIELD(map+((unitId>>6)+1)*MAP_PLAYER_STRIDE,u8 *,PLAYER_ARMY_OFF))same=1;else same=0;return same;}
 
-s32 func_ov000_021a91d0(s32 a){switch(a&31){case 15:case 17:case 18:case 19:case 22:return 1;default:return 0;}}
+/* True for the terrain kinds of the properties the AI treats as repair and
+ * resupply points: headquarters, base, airport, port and communications tower.
+ * A city (MAP_TERRAIN_CITY, 0x10) does not count. */
+s32 IsRepairPropertyKind(s32 terrain) {
+    switch (terrain & MAP_TERRAIN_KIND_MASK) {
+    case MAP_TERRAIN_HQ:
+    case MAP_TERRAIN_BASE:
+    case MAP_TERRAIN_AIRPORT:
+    case MAP_TERRAIN_PORT:
+    case MAP_TERRAIN_COM_TOWER:
+        return 1;
+    default:
+        return 0;
+    }
+}
 
 /* Returns 1 when tile (x, y) holds a property the unit could capture: a capturable
    cell owned by another army, and the unit's kind may capture that terrain. */

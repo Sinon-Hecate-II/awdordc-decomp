@@ -1,11 +1,11 @@
 /* 31 functions from 0x02223114 to 0x02224080 (ov010), found by ds-decomp. */
 #include "common.h"
 
-s32 func_ov010_02223114(void) {
-    s32 func_ov010_02223420(void);
-    s32 func_ov010_02223430(s32);
+s32 VoiceChat_DecodePendingPackets(void) {
+    s32 Link_GetPendingHead(void);
+    s32 Link_GetPendingCount(s32);
     M2C_UNK VoiceChat_DecodePacket(void *, void *, s32);
-    void *func_ov010_02223440(s32);
+    void *Link_FindPendingPacket(s32);
     M2C_UNK Link_UnlinkPendingPacket(void *);
     void VoiceCodec_DecodeMuLaw();
     M2C_UNK VoiceCodec_DecodePcm8(void *, void *, s32);
@@ -18,14 +18,14 @@ s32 func_ov010_02223114(void) {
     void *head;
     void *item;
     void *old;
-    head = (void *)func_ov010_02223420();
+    head = (void *)Link_GetPendingHead();
     if (head == NULL) return 0;
     id = M2C_FIELD(head, u8 *, 0x11);
-    count = func_ov010_02223430(id);
+    count = Link_GetPendingCount(id);
     i = 0;
     if (count > 0) {
         do {
-            item = func_ov010_02223440(id);
+            item = Link_FindPendingPacket(id);
             type = M2C_FIELD(item, s32 *, 0xC);
             if (type >= 2) {
                 VoiceChat_DecodePacket(M2C_FIELD(item, void **, 0x474), (s8 *)item + 0x1C, M2C_FIELD(item, s32 *, 0x14));
@@ -45,7 +45,7 @@ s32 func_ov010_02223114(void) {
 
 int __clz(unsigned int);
 #pragma intrinsic on
-s32 func_ov010_022231d4(void) {
+s32 VoiceChat_PlayQueuedFrames(void) {
 M2C_UNK func_020444cc(u8,s32,s32);
 s32 func_ov010_02222cac(void);
 extern M2C_UNK data_ov010_0222c960, data_ov010_0222edc0;
@@ -89,21 +89,23 @@ void func_ov010_022232e0(void) {
     } while (i < 3);
 }
 
-void func_ov010_02223314(s32 arg0) {
-    void *func_ov010_02223440(s32);
+/* Free every packet still waiting to be sent on link channel `channel`, then
+ * clear that channel's pending-packet count. */
+void Link_FreeChannelPendingPackets(s32 channel) {
+    void *Link_FindPendingPacket(s32);
     M2C_UNK Link_UnlinkPendingPacket(void *);
     M2C_UNK Link_FreePacket();
     extern s32 gLinkPendingCounts[];
-    void *item;
-    item = func_ov010_02223440(arg0);
-    if (item != NULL) {
+    void *packet;
+    packet = Link_FindPendingPacket(channel);
+    if (packet != NULL) {
         do {
-            Link_UnlinkPendingPacket(item);
-            Link_FreePacket(item);
-            item = func_ov010_02223440(arg0);
-        } while (item != NULL);
+            Link_UnlinkPendingPacket(packet);
+            Link_FreePacket(packet);
+            packet = Link_FindPendingPacket(channel);
+        } while (packet != NULL);
     }
-    gLinkPendingCounts[arg0] = 0;
+    gLinkPendingCounts[channel] = 0;
 }
 
 /* Free every packet waiting to be sent (the whole pending list, head at
@@ -138,17 +140,17 @@ s32 Link_AppendPendingPacket(void *packet) {
     return gLinkPendingCounts[M2C_FIELD(packet, u8 *, LINK_PACKET_CHANNEL)];
 }
 
-s32 func_ov010_02223420(void) {
+s32 Link_GetPendingHead(void) {
     extern s32 gLinkPendingList;
     return gLinkPendingList;
 }
 
-s32 func_ov010_02223430(s32 arg0) {
+s32 Link_GetPendingCount(s32 arg0) {
     extern s32 gLinkPendingCounts[];
     return gLinkPendingCounts[arg0];
 }
 
-void *func_ov010_02223440(s32 a) {
+void *Link_FindPendingPacket(s32 a) {
 extern s32 gLinkPendingList;
 void *p=(void *)gLinkPendingList;
 while(p) {
@@ -220,21 +222,23 @@ gLinkQueueTail[arg0]=0; b[arg0]=0; a[arg0]=0;
 OS_RestoreInterrupts(v);
 }
 
-void func_ov010_0222369c(s32 arg0) {
+/* Free every packet queued on link channel `channel` and clear its queue count. */
+void Link_FreeChannelQueuedPackets(s32 channel) {
     void *Link_PeekPacket(s32);
     M2C_UNK Link_PopPacket(s32);
     M2C_UNK Link_FreePacket(void *);
     extern s32 gLinkQueueCount[];
-    void *item;
-    item = Link_PeekPacket(arg0);
-    if (item != NULL) {
+    void *packet;
+
+    packet = Link_PeekPacket(channel);
+    if (packet != NULL) {
         do {
-            Link_PopPacket(arg0);
-            Link_FreePacket(item);
-            item = Link_PeekPacket(arg0);
-        } while (item != NULL);
+            Link_PopPacket(channel);
+            Link_FreePacket(packet);
+            packet = Link_PeekPacket(channel);
+        } while (packet != NULL);
     }
-    gLinkQueueCount[arg0] = 0;
+    gLinkQueueCount[channel] = 0;
 }
 
 /* Free every packet queued on all three link channels and reset each channel's
@@ -290,15 +294,18 @@ gLinkQueueCount[channel]++;
 OS_RestoreInterrupts(gLinkQueueIrq);
 return gLinkQueueCount[channel];
 }
-void *Link_PeekPacket(s32 arg0) {
+/* Return the packet at the head of link channel `channel`'s send queue without
+ * removing it (NULL when the queue is empty), reading the head with interrupts
+ * disabled. */
+void *Link_PeekPacket(s32 channel) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern s32 gLinkQueueIrq;
     extern s32 gLinkQueueHead[];
     gLinkQueueIrq = OS_DisableInterrupts();
-    if (gLinkQueueHead[arg0] != 0) {
+    if (gLinkQueueHead[channel] != 0) {
         OS_RestoreInterrupts(gLinkQueueIrq);
-        return (void *)gLinkQueueHead[arg0];
+        return (void *)gLinkQueueHead[channel];
     }
     OS_RestoreInterrupts(gLinkQueueIrq);
     return NULL;
@@ -629,10 +636,10 @@ s32 VoiceLink_BuildControlPacket(void *context, s32 step, void *packet, u32 size
     return 0;
 }
 
-s32 func_ov010_0222405c(s32 arg0, s32 arg1) {
-    s32 func_ov010_0222441c(s32, s32);
+s32 VoiceLink_TrySendControlStep(s32 arg0, s32 arg1) {
+    s32 VoiceLink_SendControlPacket(s32, s32);
     extern M2C_UNK gLinkConfig;
     if (M2C_FIELD(&gLinkConfig, s32 *, 0x10) == 2) return -3;
-    return func_ov010_0222441c(arg0, arg1);
+    return VoiceLink_SendControlPacket(arg0, arg1);
 }
 

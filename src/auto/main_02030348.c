@@ -19,7 +19,17 @@ s32 Wfc_GetConnectionErrorCode(void){
  else return Wfc_GetFriendResultError(control);
 }
 
-s32 Wfc_GetStepResultError(u32 a){switch(a){case 1:return -9;case 0:return -10;case 2:return -8;case 3:return -7;default:return 0;}}
+/* Connection error code reported for a WFC step result 0..3: results 0 to 3 map
+ * to -10, -9, -8 and -7; anything else has no error of its own. */
+s32 Wfc_GetStepResultError(u32 stepResult) {
+    switch (stepResult) {
+    case 1: return -9;
+    case 0: return -10;
+    case 2: return -8;
+    case 3: return -7;
+    default: return 0;
+    }
+}
 
 s32 Wfc_GetLinkError(void) {
     return -6;
@@ -250,15 +260,27 @@ s32 Wfc_MarkRecordsToSend(void *friends) {
     return count;
 }
 #pragma opt_strength_reduction on
-s32 Wfc_FindFirstRecordToSend(void *a) {
- u8 n;u8 i;u8 r;
- n=M2C_FIELD(a,u8 *,0xd12);r=0;i=0;
- if((u32)n>(u32)i) {
-loop:
- if(((u32)(M2C_FIELD(a+i*4,u8 *,0x447)<<24)>>31)==0) r=i;
- else {i++;if((u32)i<n)goto loop;}
- }
- return r;
+/* Find the first friend record that has not been sent yet: walk the record flags
+ * at WFC_STATE_RECORD_FLAGS (stride 4) and return the index of the first record
+ * without the WFC_STATE_RECORD_SENT bit, or 0 when every record was sent. */
+s32 Wfc_FindFirstRecordToSend(void *state) {
+    u8 count;
+    u8 index;
+    u8 found;
+
+    count = M2C_FIELD(state, u8 *, WFC_STATE_RECORD_COUNT);
+    found = 0;
+    index = 0;
+    if ((u32) count > (u32) index) {
+    loop:
+        if (((u32) (M2C_FIELD(state + index * 4, u8 *, WFC_STATE_RECORD_FLAGS) << 24) >> 31) == 0) {
+            found = index;
+        } else {
+            index++;
+            if ((u32) index < count) goto loop;
+        }
+    }
+    return found;
 }
 
 /* Chooses the next result code based on the current mode of the shared state. */
@@ -435,14 +457,18 @@ s32 Wfc_StepFriendCodeMessage(void *state) {
  return 3;
 }
 
-s32 Wfc_NextFriendPass(void *a) {
- u8 t;
- M2C_FIELD(a,u8 *,0xd15)=0;
- t=M2C_FIELD(a,u8 *,0xd0b);
- M2C_FIELD(a,u8 *,0xd0b)=(t&~0xf0)|((u32)((u8)(((u32)(t<<24)>>28)+1)<<28)>>24);
- Wfc_BuildFriendEntries(0);
- M2C_FIELD(a,s8 *,0xd11)=1;
- return 3;
+/* Start a fresh pass over the friend list of a WFC friend connection: clear the
+ * retry count, advance the pass count in the high nibble of the connection flags,
+ * rebuild the friend-list rows from the save slots' friend codes and point the
+ * friend id at the first entry.  Returns the friend-code step. */
+s32 Wfc_NextFriendPass(void *state) {
+    u8 connFlags;
+    M2C_FIELD(state, u8 *, WFC_STATE_CONN_RETRY) = 0;
+    connFlags = M2C_FIELD(state, u8 *, WFC_STATE_CONN_FLAGS);
+    M2C_FIELD(state, u8 *, WFC_STATE_CONN_FLAGS) = (connFlags & ~0xf0) | ((u32)((u8)(((u32)(connFlags<<24)>>28)+1)<<28)>>24);
+    Wfc_BuildFriendEntries(WFC_ENTRY_SOURCE_SAVE_SLOTS);
+    M2C_FIELD(state, s8 *, WFC_STATE_FRIEND_ID) = 1;
+    return WFC_STEP_FRIEND_CODE;
 }
 
 /* WFC friend-connection state 4: sends the friend records one at a time.  A

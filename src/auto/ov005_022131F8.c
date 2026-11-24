@@ -1,6 +1,7 @@
 /* 12 functions from 0x022131F8 to 0x022141CC (ov005), found by ds-decomp. */
 #include "common.h"
 typedef struct {u16 a,b,c,d,e,f;} MenuInit;
+#define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 extern u8 data_ov005_022203dc[];
 extern u8 data_ov005_022203ec[];
 extern u8 data_ov005_022203fc[];
@@ -398,14 +399,17 @@ s32 RecordsMenu_ScrollUp(void) {
     return 1;
 }
 
+/* Page the records list up by one screen: move its top visible row up six, stop
+ * at the first row, and return how many rows it actually moved. */
 s16 RecordsMenu_PageUp(void) {
     extern M2C_UNK gRecordsMenuState;
-    s16 temp_r3;
-    temp_r3 = M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98);
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = (s16)(temp_r3 - 6);
-    if (M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) < 0) {
-        M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) = 0;
+    s16 oldScroll;
+
+    oldScroll = RECORDS_SCREEN->scroll;
+    RECORDS_SCREEN->scroll = (s16) (oldScroll - 6);
+    if (RECORDS_SCREEN->scroll < 0) {
+        RECORDS_SCREEN->scroll = 0;
     }
-    return (s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x98) - temp_r3);
+    return (s16) (RECORDS_SCREEN->scroll - oldScroll);
 }
 

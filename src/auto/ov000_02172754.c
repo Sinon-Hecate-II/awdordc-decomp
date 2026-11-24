@@ -166,7 +166,7 @@ void DrawInfoWindowFrame(void *unused) {
 void DrawTerrainInfoBanner(void *entry) {
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, s32);
     void CopyToObjPaletteShadow(M2C_UNK, s32, s32);
-    void func_0209b26c(s32, s32, s32, s32, s32, u16);
+    void DrawLocalizedText(s32, s32, s32, s32, s32, u16);
     s32 GetTerrainInfoContext();
     s32 GetTerrainGraphic(s32, s32);
     s32 func_ov000_02172478(s32, s32);
@@ -199,7 +199,7 @@ void DrawTerrainInfoBanner(void *entry) {
     } else {
         CopyToObjPaletteShadow((s32)&data_ov000_021b8f5c, 0x80, 0xc0);
     }
-    func_0209b26c(2, 0xa, 1, GetTerrainNameId(context, *M2C_FIELD(entry, s32 **, 0x18)), 0xf000, (u16)palette);
+    DrawLocalizedText(2, 0xa, 1, GetTerrainNameId(context, *M2C_FIELD(entry, s32 **, 0x18)), 0xf000, (u16)palette);
     gCur3DSpriteEngine = savedEngine;
 }
 

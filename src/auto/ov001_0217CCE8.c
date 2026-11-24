@@ -525,7 +525,7 @@ Ov001_PlaySound(9);Ov001_ShowMessage(6,1,1,-1,0);Ov001_SetStepCallback((M2C_UNK 
 }
 if(a==11)Ov001_PlaySound(6);else Ov001_PlaySound(14);
 }else if(a==13){func_ov001_0217f4e0();Ov001_PlaySound(7);}
-else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,func_ov001_0217ede0(data_ov001_0218f9bc[a]));MapListUpdateRowSprites();}
+else {Ov001_PlaySound(6);func_ov001_0217e67c(0,1,GetMapListScreenRow(data_ov001_0218f9bc[a]));MapListUpdateRowSprites();}
 Ov001_BlockScrollBar();Ov001_SetStepCallback((M2C_UNK *)func_ov001_0217ded8);
 }
 

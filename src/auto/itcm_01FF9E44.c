@@ -9,7 +9,7 @@ void CopyToObjPaletteShadow(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 0x10;
 }
 
-void func_01ff9e78(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
+void CopyBytesToObjPaletteShadow(M2C_UNK arg0, s32 arg1, M2C_UNK arg2) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, s32, M2C_UNK);
     extern u16 **gCur3DSpriteEngine;
     MI_CpuCopy8(arg0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + arg1, arg2);

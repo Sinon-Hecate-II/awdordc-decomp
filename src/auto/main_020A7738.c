@@ -60,8 +60,8 @@ u32 func_020a789c(void *arg0) {
 }
 
 void func_020a78ac(u8 *arg0) {
-    M2C_UNK func_020a7c68(u32);
-    func_020a7c68((u32) (*arg0 << 0x1A) >> 0x1A);
+    M2C_UNK GetUnitKindMaxAmmo(u32);
+    GetUnitKindMaxAmmo((u32) (*arg0 << 0x1A) >> 0x1A);
 }
 
 u32 func_020a78c4(void *arg0) {
@@ -69,8 +69,8 @@ u32 func_020a78c4(void *arg0) {
 }
 
 void func_020a78d4(u8 *arg0) {
-    M2C_UNK func_020a7c50(u32);
-    func_020a7c50((u32) (*arg0 << 0x1A) >> 0x1A);
+    M2C_UNK GetUnitKindMaxFuel(u32);
+    GetUnitKindMaxFuel((u32) (*arg0 << 0x1A) >> 0x1A);
 }
 
 u32 func_020a78ec(u8 *arg0) {
@@ -104,17 +104,19 @@ u8 GetKindWeaponDamagePercent(s32 arg0, s32 arg1, s32 arg2) {
  return *(GetDamageTargetIndex(arg1) + (data_ov000_021b5c13 + arg0 * 0x70 + (arg2 << 5)));
 }
 
-s32 func_020a799c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* The damage percent of the better of a unit kind's two weapons against a target
+ * kind, for the given target flags. */
+s32 GetBestWeaponDamagePercent(s32 attackerKind, s32 targetKind, s32 targetFlags) {
     s32 GetWeaponDamagePercent(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    s32 temp_r0;
-    s32 var_r4;
+    s32 secondaryPercent;
+    s32 bestPercent;
 
-    var_r4 = GetWeaponDamagePercent(arg0, arg1, 0, arg2);
-    temp_r0 = GetWeaponDamagePercent(arg0, arg1, 1, arg2);
-    if (var_r4 <= temp_r0) {
-        var_r4 = temp_r0;
+    bestPercent = GetWeaponDamagePercent(attackerKind, targetKind, 0, targetFlags);
+    secondaryPercent = GetWeaponDamagePercent(attackerKind, targetKind, 1, targetFlags);
+    if (bestPercent <= secondaryPercent) {
+        bestPercent = secondaryPercent;
     }
-    return var_r4;
+    return bestPercent;
 }
 
 /* Estimate the damage a unit kind deals: the higher of its two weapons' damage
@@ -209,12 +211,12 @@ s32 ComputeUnitMaxAttackRange(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
  return var_r4;
 }
 
-s32 func_020a7c50(u32 arg0) {
+s32 GetUnitKindMaxFuel(u32 arg0) {
  extern u8 gUnitKindMaxFuel[];
  return gUnitKindMaxFuel[arg0 * 0x70];
 }
 
-s32 func_020a7c68(u32 arg0) {
+s32 GetUnitKindMaxAmmo(u32 arg0) {
  extern u8 gUnitKindMaxAmmo[];
  return gUnitKindMaxAmmo[arg0 * 0x70];
 }
@@ -322,22 +324,27 @@ u8 func_020a7d68(void *arg0) {
     return var_r0;
 }
 
-u8 func_020a7d80(void *arg0) {
- s32 temp_r0;
- s32 var_r0;
- temp_r0 = func_020a7c50((u32)(M2C_FIELD(arg0, u8 *, 0) << 26) >> 26);
- if (temp_r0 > 0 && (temp_r0 >> 1) >= (s32)((u32)(M2C_FIELD(arg0, u8 *, 10) << 25) >> 25)) var_r0 = 1;
- else var_r0 = 0;
- return var_r0;
+/* Whether a unit's fuel has fallen to half its kind's maximum or below; a kind
+ * with no fuel (maximum 0) is never low. */
+u8 IsUnitLowOnFuel(void *unit) {
+ s32 GetUnitKindMaxFuel(u32);
+ s32 maxFuel;
+ s32 lowFuel;
+ maxFuel = GetUnitKindMaxFuel((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26);
+ if (maxFuel > 0 && (maxFuel >> 1) >= (s32)((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_FUEL) << 25) >> 25)) lowFuel = 1;
+ else lowFuel = 0;
+ return lowFuel;
 }
 
-u8 func_020a7dc4(void *arg0) {
- s32 temp_r0;
- s32 var_r0;
- temp_r0 = func_020a7c68((u32)(M2C_FIELD(arg0, u8 *, 0) << 26) >> 26);
- if (temp_r0 > 0 && (temp_r0 >> 1) >= (s32)((u32)(M2C_FIELD(arg0, u16 *, 6) << 21) >> 28)) var_r0 = 1;
- else var_r0 = 0;
- return var_r0;
+/* Status check: the unit's kind carries ammo at all and the unit has spent its
+ * way down to at most half of its kind's maximum, so the low-ammo icon shows. */
+u8 IsUnitLowOnAmmo(void *unit) {
+ s32 maxAmmo;
+ s32 result;
+ maxAmmo = GetUnitKindMaxAmmo((u32)(M2C_FIELD(unit, u8 *, MAP_UNIT_KIND) << 26) >> 26);
+ if (maxAmmo > 0 && (maxAmmo >> 1) >= (s32)((u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_AMMO) << 21) >> 28)) result = 1;
+ else result = 0;
+ return result;
 }
 
 u8 IsSupplyUnitKind(u8 *p){extern u8 data_ov000_021b5c65[];u8 r;if(data_ov000_021b5c65[((u32)(*p<<26)>>26)*0x70])r=1;else r=0;return r;}

@@ -25,6 +25,11 @@
 #define AI_FOOT_UNIT_BUFFER_NO_TARGETS 1
 #define AI_FOOT_UNIT_BUFFER_WITH_TARGETS 2
 
+/* Desired surplus of the team's attack units over its count of enemy attack
+ * targets; below it the AI wants to build more attackers (AiNeedsMoreAttackUnits),
+ * and AiAttackUnitBalanceScore balances the two counts within this much. */
+#define AI_ATTACK_UNIT_BUFFER 5
+
 /* A packed AI priority byte: the low 7 bits are the magnitude, capped at
  * AI_SCORE_MAX, and bit 7 (AI_SCORE_FLAG) is an action-specific flag ORed on top
  * so a flagged value outranks any unflagged one. */
@@ -224,6 +229,9 @@ enum AiCargoDropDirection {
 
 /* The unit set's 12 header bytes are copied to gAiSettings+8 .. +19. */
 #define AI_SETTING_TRANSPORT_PERCENT   0x0B /* u8 wanted transports as a percentage of the infantry+mech count */
+#define AI_SETTING_UPGRADE_CHANCE      0x0A /* u8 percentage the AI's tier-2 build chance grows per turn */
+#define AI_UPGRADE_FIRST_TURN          3    /* no tier-2 build chance through this turn */
+#define AI_UPGRADE_CHANCE_MAX          80   /* most the tier-2 build chance may reach, in percent */
 #define AI_SETTING_UNIT13_PERCENT      0x0C /* u8 wanted kind-13 units as a percentage of the infantry+mech count */
 #define AI_SETTING_UNIT13_LAST_TURN    0x12 /* u8 last turn on which more kind-13 units are built */
 #define AI_SETTING_TRANSPORT_LAST_TURN 0x13 /* u8 last turn on which more transports are built */

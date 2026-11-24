@@ -426,7 +426,22 @@ void InitUnitRecord(void *arg0, u8 kind) {
     unit->unkA_7 = 0; unit->unkB5 = 0; unit->unkB6 = 0; unit->unkB7 = 0;
 }
 #pragma scheduling reset
-void *CreateMapUnit(s32 a,s32 b,s32 c,s32 d){void *FindFreeUnitRecord(s32);void InitUnitRecord(void *,u8);void func_020d3154(s32,s32);void *p=FindFreeUnitRecord(d);if(!p)return 0;InitUnitRecord(p,(u8)c);M2C_FIELD(p,u8 *,1)=a;M2C_FIELD(p,u8 *,2)=b;func_020d3154(d,c);return p;}
+/* Put a unit of `kind` for `player` on tile (x, y): take a free unit record,
+ * initialise it as that kind and add it to the player's unit totals. Returns the
+ * new unit, or NULL when the player has no free record. */
+void *CreateMapUnit(s32 x, s32 y, s32 kind, s32 player) {
+    void *FindFreeUnitRecord(s32);
+    void InitUnitRecord(void *, u8);
+    void AddPlayerUnitKind(s32, s32);
+    u8 *unit = FindFreeUnitRecord(player);
+
+    if (!unit) return 0;
+    InitUnitRecord(unit, (u8)kind);
+    unit[MAP_UNIT_X] = x;
+    unit[MAP_UNIT_Y] = y;
+    AddPlayerUnitKind(player, kind);
+    return unit;
+}
 
 /* Create a map unit of `kind` for `player` at tile (x, y): stamp it with the
  * player's owner group, mark it as having already acted this turn, and start a
@@ -465,7 +480,7 @@ void RemoveMapUnit(s32 unitId, s32 destroyed) {
     u8 *unit = (u8 *)*gCurrentMap + 0x1a4 + 0x5800 + unitId * 14;
     if (destroyed) {
         u32 health;
-        func_020d319c((unitId >> MAP_UNIT_OWNER_SHIFT) + 1, (u32)(unit[MAP_UNIT_KIND] << 26) >> 26);
+        AddPlayerUnitLost((unitId >> MAP_UNIT_OWNER_SHIFT) + 1, (u32)(unit[MAP_UNIT_KIND] << 26) >> 26);
         health = (u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 25) >> 25;
         AddPlayerUnitValue(unit, health == 0 ? 0 : Divide(health - 1, 10) + 1);
     } else DecrementPlayerUnitCount((unitId >> MAP_UNIT_OWNER_SHIFT) + 1);

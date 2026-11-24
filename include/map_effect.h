@@ -64,4 +64,12 @@ typedef struct UnitRemoveEffect {
     s32 unitIndex;  /* +0x64 index of the unit in the unit table */
 } UnitRemoveEffect;
 
+/* One tile sprite of the range-damage effect: main_020B6168 creates one per tile
+ * of the effect's diamond, stores the tile it damages and the damage amount on it,
+ * and registers the per-frame update that fires the damage once. */
+#define RANGE_EFFECT_TIMER  0x48 /* u32 shared sprite timer; only frame 0 deals the damage */
+#define RANGE_EFFECT_TILE_X 0x58 /* s32 map tile x */
+#define RANGE_EFFECT_TILE_Y 0x5C /* s32 map tile y */
+#define RANGE_EFFECT_DAMAGE 0x60 /* s32 damage dealt to the unit on the tile */
+
 #endif

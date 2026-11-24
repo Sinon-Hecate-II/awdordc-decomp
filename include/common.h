@@ -45,6 +45,21 @@ typedef struct DecompressState {
     u8 vramFlag;  /* +0x01 1 when the output address is outside main RAM (VRAM) */
 } DecompressState;
 
+/* The Huffman decoder state (DecompressState +0x04) that InitHuffmanDecompress
+ * sets up and HuffmanDecompress runs: the output pointer and remaining count, the
+ * bit and output-word accumulators, and the node/tree buffer the node pointer
+ * walks while decoding symbols. */
+#define HUFFMAN_OUTPUT     0x00 /* u32 *: next output word */
+#define HUFFMAN_REMAINING  0x04 /* s32: output bytes still to produce */
+#define HUFFMAN_NODE       0x08 /* u8 *: current tree node within the buffer at +0x1C */
+#define HUFFMAN_BITS       0x0C /* u32: bit accumulator */
+#define HUFFMAN_OUT_WORD   0x10 /* u32: output word being assembled */
+#define HUFFMAN_NODE_COUNT 0x14 /* s16: nodes still to read for the current symbol */
+#define HUFFMAN_BIT_COUNT  0x16 /* u8: bits held in the accumulator */
+#define HUFFMAN_WORD_BITS  0x17 /* u8: bits assembled into the output word */
+#define HUFFMAN_WORD_SHIFT 0x18 /* u8: header low nibble, bits per output pixel */
+#define HUFFMAN_BUFFER     0x1C /* u8[]: symbol/tree buffer the node pointer walks */
+
 /* Word-at-a-time C string helpers (StringCompare, StringCopy): a little-endian word
  * holds a NUL byte when (word + STRING_ZERO_BIAS) & ~word & STRING_ZERO_MASK is set. */
 #define STRING_ZERO_BIAS 0xfefefeffu /* the word minus 0x01010101 */
@@ -589,6 +604,11 @@ typedef struct WaypointSlotGroup {
 #define SETUP_MENU_SLOTS      0xE8 /* void *[9]: the entry sprites */
 #define SETUP_MENU_SLOT_COUNT 9
 #define SETUP_MENU_CURRENT    0x10C /* void *: sprite of the selected entry */
+/* The setup menu's 0x24-byte network state packet at SETUP_MENU_PACKET: the first
+ * word is the start/confirm flag (set to 1 before a send), the second word a
+ * second request flag, then the packed setup values. */
+#define SETUP_MENU_PACKET      0x110 /* u8[0x24]: setup state packet sent to the other players */
+#define SETUP_MENU_PACKET_SIZE 0x24
 
 /* The scene object that owns the setup menu above: it holds the menu at
  * SETUP_PANEL_MENU and its SETUP_PANEL_STATE byte says whether the panel is open
@@ -605,6 +625,12 @@ typedef struct WaypointSlotGroup {
  * per-frame update animates every sprite in the set; the panel hide routine
  * (Ov003_HideSetupPanelSprites) hides them all. */
 #define SETUP_PANEL_SPRITES   0x40 /* void *: the panel's sprite set */
+/* Offsets inside the sprite set at SETUP_PANEL_SPRITES. */
+#define SETUP_SPRITES_SLIDE_0    0x00 /* void *: first slide sprite */
+#define SETUP_SPRITES_SLIDE_1    0x04 /* void *: second slide sprite */
+#define SETUP_SPRITES_ROW_TOP    0x08 /* void *[8]: first two rows of four slot sprites */
+#define SETUP_SPRITES_ROW_BOTTOM 0x28 /* void *[8]: last two rows of four slot sprites */
+#define SETUP_SPRITES_ROW_COUNT  8    /* slot sprites walked from each row pointer */
 
 /* Per-row animation targets of a MapSelectRow (the tween fields in front of its
  * three animation pointers). Ov003_ApplyRowSelectionAnimations stores the first
@@ -979,6 +1005,14 @@ enum {
     SPRITE_TWEEN_EASE_IN = 3,  /* from -> to, quadratic ease-in */
     SPRITE_TWEEN_EASE_OUT = 4  /* from -> to, quadratic ease-out */
 };
+
+/* The three SpriteTweens an animated menu object steps together each frame
+ * (StepSpriteTweenGroup), and the object's cached copy of the first tween's
+ * value (0x2A): while the two still agree the third tween runs ease-out. */
+#define SPRITE_TWEEN_FIRST  0x30 /* first SpriteTween */
+#define SPRITE_TWEEN_SECOND 0x42 /* second SpriteTween */
+#define SPRITE_TWEEN_THIRD  0x54 /* third SpriteTween */
+#define SPRITE_TWEEN_CACHED 0x2A /* s16 cached value of the first tween */
 
 /* One entry of a SpriteAnimPlayer's frame table (12 bytes): the segment runs
  * until the player's frame counter reaches endFrame, the tween moving towards
@@ -1388,6 +1422,12 @@ typedef struct GpiStringListData {
 #define GPI_CONN_LOCAL_SOCKET 0x204 /* s32 local socket, -1 when unused */
 #define GPI_CONN_LOCAL_PORT   0x208 /* u16 port the local socket was bound to, 0 when unused */
 
+/* Socket option level and names the ghi socket helpers hand to the get/set
+ * option wrapper. */
+#define GHI_SOL_SOCKET 0xFFFF /* level: generic socket options */
+#define GHI_SO_SNDBUF  0x1001 /* get/set the send buffer size */
+#define GHI_SO_RCVBUF  0x1002 /* get/set the receive buffer size */
+
 /* Port of the GameSpy connection manager, in network byte order (29900). */
 #define GPI_MASTER_PORT 0xCC74
 
@@ -1796,6 +1836,13 @@ typedef struct MbLockState {
 #define MB_LINK_EXCHANGE    0x528 /* u16 1 while the group match-data exchange is under way */
 #define MB_LINK_PLAYERS     0x52A /* u16 bit per player slot still in the link, 0 when none */
 #define MB_LINK_ALIVE       0x5E4 /* s32 1 while the link keeps running; cleared when it closes */
+/* The game's link command callback (gMbState+8, the multiboot context): the
+ * dispatcher func_020140c4 runs it with a command/event code and its packet. */
+#define MB_CTX_CALLBACK     0x51C /* s32 (*)(s32 event, void *packet) */
+#define MB_LINK_EVENT_CANCEL 17 /* the link cancel has finished; the game tears the match state down */
+/* gMbState+0xC, the download work block: nonzero once the block has been set up
+ * for a download-play session (MultiBoot_StartParent), cleared when it ends. */
+#define MB_DOWNLOAD_SET_UP  0x1316 /* u16 */
 
 /* The DS Download Play send queue the WFC download channel drains
  * (gDownloadSendState, main_02015AA0): the files waiting to be sent, the file being
@@ -2256,6 +2303,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_SLOT_CRC_SIZE     0xFE /* bytes of a slot image covered by that CRC16 (everything before it) */
 #define SAVE_SLOT_STATUS_ERASED 0xFF /* SAVE_SLOT_STATUS value of an erased slot */
 #define SAVE_CRC_TABLE         0x4F8 /* u16[256]: CRC16 lookup table (built by BuildCrc16Table) */
+#define SAVE_DATA_SIZE         0x6F8 /* bytes of the ov001 save data block (four slots, working copy, CRC table) */
 
 /* Reflected (bit-reversed) CRC polynomials BuildCrc16Table/BuildCrc32Table are
  * called with. */
@@ -2373,6 +2421,18 @@ typedef struct Ov001IconMenuState {
  * nonzero once the archive was initialised, 0x2052 becomes 1 once it failed. */
 #define SAVE_MANAGER_ACTIVE 0x2050 /* u8: the archive was initialised */
 #define SAVE_MANAGER_STATE  0x2052 /* u8: 1 = the archive is unusable */
+#define SAVE_MANAGER_QUEUE       0x2054 /* the request queue: SAVE_REQUEST_STRIDE-byte entries */
+#define SAVE_MANAGER_QUEUE_COUNT 0x2554 /* u32 number of requests queued */
+
+/* One queued save-list request.  Its kind byte selects the fields SaveList_Flush
+ * reads: an update carries two records and a value type, a delete a record id. */
+#define SAVE_REQUEST_STRIDE 0x14 /* bytes per queued request */
+#define SAVE_REQUEST_RECORD 0x0C /* u16 record id of a delete request */
+#define SAVE_REQUEST_KIND   0x0F /* u8 SAVE_REQUEST_* */
+enum {
+    SAVE_REQUEST_UPDATE = 1, /* write a record back (func_02075cbc) */
+    SAVE_REQUEST_DELETE = 2  /* drop a record (a delete request) */
+};
 
 /* One 12-byte entry of the save manager's block index table (gSaveManager +
  * index * SAVE_BLOCK_ENTRY_STRIDE): SaveManager_ScanArchive copies it from the
@@ -2600,6 +2660,7 @@ typedef struct Ov001KeyboardState {
 /* The two-bar icon row shared by the ov001 screens (gOv001IconRow): each page
  * id picks the pair of wide bar sprites that slide in; tapping a bar selects it
  * for a moment before the row restores itself. */
+#define OV001_ICON_ROW_NOT_READY (-2) /* selected: the row has not slid in yet and takes no input */
 typedef struct Ov001IconRow {
     void *bars[2];    /* +0x00 the two option bar sprites */
     void *backdrop;   /* +0x08 wide background bar sprite */
@@ -2626,6 +2687,12 @@ typedef struct Ov001WfcIcon {
 #define GX_BLDCNT_MAIN 0x04000050
 #define GX_BLDCNT_SUB  0x04001050
 #define GX_BLDALPHA_MAIN 0x04000052 /* u16: EVA (bits 0-4) and EVB (bits 8-12) coefficients */
+/* Bits 6-7 of BLDCNT (the effect field): how BLDY is applied.  0x40 is plain
+ * alpha blending; the level's sign picks between brightening and darkening. */
+#define GX_BLDCNT_EFFECT_MASK     0x00C0
+#define GX_BLDCNT_EFFECT_ALPHA    0x0040
+#define GX_BLDCNT_EFFECT_BRIGHTEN 0x0080 /* BLDY lightens the screen */
+#define GX_BLDCNT_EFFECT_DARKEN   0x00C0 /* BLDY darkens the screen */
 #define GX_VCOUNT        0x04000006 /* u16: current scanline, read by per-scanline effects */
 
 /* Window range registers of the main engine; the sub engine's sit at +0x1000.
@@ -2757,6 +2824,21 @@ typedef struct Ov001FadeStates {
 #define OV001_SPRITE_POS_Y_MASK  0x01FF0000
 #define OV001_SPRITE_POS_Y_SHIFT 16
 
+/* The ov001 character-bank files, loaded one per screen (gOv001CharBanks:
+ * index 1 the top screen's, 0 the bottom screen's).  Each file is an array of
+ * sprite layouts followed by their OAM source entries. */
+#define OV001_CHAR_BANK_COUNT 2
+#define OV001_CHAR_BANK_TOP    1 /* the top screen's bank */
+#define OV001_CHAR_BANK_BOTTOM 0 /* the bottom screen's bank */
+
+/* One sprite layout in a char-bank file: how many 6-byte OAM source entries it
+ * has (+0x00) and where they start in the file (+0x04). */
+typedef struct Ov001SpriteLayout {
+    u16 count;  /* +0x00 OAM source entries in the layout */
+    u16 pad02;  /* +0x02 */
+    s32 offset; /* +0x04 offset of the source entries from the file's start */
+} Ov001SpriteLayout;
+
 /* The DS screen is 256x192 pixels: sprite layouts are clipped to its height. */
 #define SCREEN_HEIGHT 192
 
@@ -2805,6 +2887,8 @@ enum {
 #define MENU_STATE_OPTION 0x01 /* set: the second of the menu's two options was taken */
 #define MENU_STATE_CHOSEN 0x02 /* a choice has been made, the menu is playing it out */
 #define MENU_STATE_ACCEPTED 0x20 /* the menu accepted the choice and is animating away */
+#define MENU_STATE_OPTION0_PRESSED 0x04 /* the menu's first option child registered its press */
+#define MENU_STATE_OPTION1_PRESSED 0x08 /* the menu's second option child registered its press */
 
 /* Position and slide-animation fields of the 3D sprite actor animated by
  * UpdateSpriteSlide: a current position, a slide origin and target, and a state
@@ -3406,6 +3490,16 @@ enum {
 #define VOICE_CHAT_CONTEXT_MAX       3    /* contexts the chat tracks at once, one per link channel */
 #define VOICE_CHAT_STREAM_STATS      0xF00 /* s32[6] stream statistics cleared when the stream starts */
 
+/* The ov010 voice-chat service state (gVoiceChatSession): the session the voice
+ * stream runs in, apart from the codec state above and the link's own state. */
+#define VOICE_CHAT_SESSION_TICK        0x00 /* u32 frames since the service started */
+#define VOICE_CHAT_SESSION_ACTIVE      0x08 /* s32 1 while a voice-chat session runs */
+#define VOICE_CHAT_SESSION_LOCAL_ID    0x0C /* u8 this console's player id */
+#define VOICE_CHAT_SESSION_STREAM_CB   0x10 /* void (*)(u8 peer, s32 left, s32 right, s32 arg): decoded audio */
+#define VOICE_CHAT_SESSION_STREAM_ARG  0x14 /* s32 argument handed to that callback */
+#define VOICE_CHAT_SESSION_PAD18       0x18 /* s32 cleared when the session starts */
+#define VOICE_CHAT_SESSION_KIND        0x1C /* s32 connection kind (1..3), 0 once the session ends */
+
 /* The 4-byte ADPCM codec header at the start of a voice audio packet, which is
  * also the codec's state: the predictor, the step-table index and a zero byte. */
 #define VOICE_ADPCM_PREDICTOR   0x00 /* s16 predicted sample */
@@ -3414,8 +3508,9 @@ enum {
 
 /* Header of a voice-chat link packet (magic 0x5F564354). */
 #define VOICE_LINK_PACKET_SIZE 0x10 /* bytes in every voice-link packet and in its header */
+#define VOICE_LINK_PACKET_MAGIC 0x5F564354 /* first field of every voice-link packet header */
 typedef struct VoiceLinkPacket {
-    u32 magic;      /* +0x00: 0x5F564354 */
+    u32 magic;      /* +0x00: VOICE_LINK_PACKET_MAGIC */
     u8  kind;       /* +0x04: packet kind, 0/0xFF are control packets */
     u8  headerSize; /* +0x05: 16 */
     u8  subtype;    /* +0x06: handshake step within the kind */
@@ -3446,6 +3541,16 @@ typedef struct VoiceLinkReply {
 #define TEXT_CODE_LINE_END     13
 #define TEXT_CODE_LINE_END_ALT 10
 #define TEXT_CODE_LINE_BREAK   4 /* line break, optionally followed by a CR or LF (Text_FindLineBreakEnd) */
+#define TEXT_CODE_MSG_SPRITE_COUNT 0x15 /* 3D sprite count the message asks for: operand 0x80/0x81/0x82 selects 0/1/2 (Text_GetScreenCount) */
+#define TEXT_CODE_LINE_ALIGN   0x1D /* 2-byte code whose operand's low seven bits hold the line's alignment (Text_GetLineAlignment) */
+#define TEXT_CODE_CHOICE_WIDGET     5 /* embeds an interactive two-state choice widget in the text; a plain message box rejects such a text */
+#define TEXT_CODE_CHOICE_WIDGET_ALT 6 /* the same widget, its initial selection on the other half */
+
+/* Alignment codes carried by a TEXT_CODE_LINE_ALIGN operand; a text panel's
+ * per-line kind (Text_GetLineAlignment) picks how each line is drawn. */
+#define TEXT_LINE_ALIGN_CENTER 0 /* draw the line centred in the block */
+#define TEXT_LINE_ALIGN_LEFT   2 /* draw the line flush left */
+#define TEXT_LINE_ALIGN_RIGHT  3 /* draw the line flush right */
 
 /* A measured text line or text block, in pixels. */
 typedef struct Ov001TextSize {
@@ -3461,6 +3566,25 @@ typedef struct Ov001TextSize {
 #define OV001_TEXT_ANCHOR_HORIZ_BLOCK 0x80  /* unknown anchor flag used by the textured-text draw path */
 #define OV001_TEXT_VALIGN_BOTTOM 0x100      /* DrawVerticallyAnchoredText: put the block's end at the anchor */
 #define OV001_TEXT_ANCHOR_HRIGHT  0x20 /* put the block's trailing edge at the anchor */
+
+/* A NitroSDK NFTR font file's header and its binary block table.  The header
+ * ends with the offset and entry count of the table; each entry carries a
+ * four-character block tag and the block's size, which is also the stride to the
+ * next entry (FindFontBlock, RelocateFontPointers). */
+typedef struct NftrFileHeader {
+    u32 signature;  /* +0x00 'RTFN' (0x4E465452) */
+    u16 byteOrder;  /* +0x04 */
+    u16 version;    /* +0x06 */
+    u32 fileSize;   /* +0x08 */
+    u16 headerSize; /* +0x0C offset of the block table */
+    u16 blockCount; /* +0x0E number of block table entries */
+} NftrFileHeader;
+
+typedef struct NftrBlockHeader {
+    u32 kind; /* +0x00 block tag: 'FINF', 'CWDH', 'CMAP' or 'CGLP' */
+    u32 size; /* +0x04 block size, the stride to the next table entry */
+    /* +0x08 block data */
+} NftrBlockHeader;
 
 typedef struct Ov001FontResource {
     u8   unk00;         /* +0x00 */
@@ -3493,6 +3617,21 @@ typedef struct Ov001CwdhRecord {
     void *next;/* +0x04 next range record, NULL at the end of the list */
     /* +0x08 first of (last - first + 1) 3-byte Ov001GlyphMetric entries */
 } Ov001CwdhRecord;
+
+/* One CMAP record of a font resource: the character range it maps, the mapping
+ * method and the next record of the list.  The method selects the table that
+ * follows at +12: 0 a base glyph index, 1 a u16 glyph table indexed from
+ * `first`, 2 sorted (u16 code, u16 glyph) pairs. */
+typedef struct Ov001CmapRecord {
+    u16 first;  /* +0x00 first character code the record maps */
+    u16 last;   /* +0x02 last character code the record maps */
+    u16 method; /* +0x04 lookup method (0, 1 or 2) */
+    u16 pad06;
+    void *next; /* +0x08 next record of the list, NULL at the end */
+} Ov001CmapRecord;
+
+/* Returned by the glyph lookups for a character the font does not map. */
+#define OV001_GLYPH_NONE 0xffff
 
 /* The pair a glyph draw hands to the panel's ops: the glyph's width record and
  * its bitmap data inside the font's glyph run table. */
@@ -3681,9 +3820,9 @@ enum {
 #define TEXT_SPRITE_VALUE   0x1C /* s32: numeric value, clamped to +/-999999 */
 #define TEXT_SPRITE_DESC    0x24 /* void *sprite descriptor used for each glyph */
 
-/* A text layer sprite (CreateTextLayer and the RenderTextLayer family in
- * main_02088FF4): a 3D-sprite object that owns the text it draws plus two small
- * render buffers. */
+/* A text layer sprite (CreateTextLayer, CreateTextLayerChild and the
+ * RenderTextLayer family in main_02088FF4): a 3D-sprite object that owns the
+ * text it draws plus two small render buffers. */
 #define TEXT_LAYER_PANEL_STATE        0x58 /* u32 packed panel state */
 #define TEXT_LAYER_LEFT_ICON          0x5C /* void * child sprite */
 #define TEXT_LAYER_RIGHT_ICON         0x60 /* void * child sprite */
@@ -3750,11 +3889,18 @@ enum {
 #define REG_TM0CNT   0x04000102 /* u16 TIMER0 control; 0xC1 = enabled with an overflow interrupt */
 #define REG_TM1D     0x04000104 /* u16 TIMER1 countdown, armed by ArmTimerCountdown */
 #define REG_TM1CNT   0x04000106 /* u16 TIMER1 control; 0xC1 = enabled with an overflow interrupt */
+/* ARM9 external memory control: which processor arbitrates cartridge ROM/SPI,
+ * main RAM and VRAM accesses.  The multiboot cartridge reader saves and restores
+ * the RAM and VRAM fields around its cartridge-header reads. */
+#define REG_EXMEMCNT          0x04000204 /* u16 */
+#define EXMEMCNT_RAM_MASK     0x000C     /* bits 2-3: ARM7/ARM9 main-RAM priority and access */
+#define EXMEMCNT_VRAM_PRIORITY 0x0010    /* bit 4: ARM7/ARM9 VRAM priority */
 #define REG_IE       0x04000210 /* u32 interrupt enable mask */
 #define REG_IF       0x04000214 /* u32 interrupt flags */
 #define IRQ_VBLANK   0x0001     /* REG_IE/REG_IF bit 0: VBlank */
 #define IRQ_TIMER0   0x0008     /* REG_IF bit set when TIMER0 overflows */
 #define IRQ_TIMER1   0x0010     /* REG_IF bit set when TIMER1 overflows (the OS timer) */
+#define IRQ_VCOUNT   0x0004     /* REG_IE/REG_IF bit 2: VCount (scanline) match */
 #define TIMER0_HALF  0x8000     /* top bit of the 16-bit counter */
 
 /* The ARM9 IRQ handler table: one handler per IRQ bit (the timers are IRQ 3-6,
@@ -3807,6 +3953,19 @@ typedef struct SystemTickState {
 #define SYSTEM_TICK_INITIALIZED 0x00 /* u16 nonzero once the timer has been set up */
 #define SYSTEM_TICK_RELOAD      0x04 /* s32 nonzero when TIMER0 must be reloaded */
 #define SYSTEM_TICK_OVERFLOW    0x08 /* u64 TIMER0 overflows counted so far */
+
+/* The VCount (scanline match) interrupt module's state block, cleared once
+ * during its one-time initialisation.  Only the module's initialisation is
+ * linked into this build, so the four words after the flag are never read back
+ * here. */
+typedef struct VCountIrqState {
+    u16 initialized;  /* +0x00 nonzero once the module has been set up */
+    u8  pad02[2];     /* +0x02 */
+    s32 unknown04;    /* +0x04 */
+    s32 unknown08;    /* +0x08 */
+    s32 unknown0C;    /* +0x0C */
+    s32 unknown10;    /* +0x10 */
+} VCountIrqState;     /* 0x14 bytes */
 
 /* The DS firmware's user settings ("Personal Data") at 0x027FFC80: version, the
  * favourite colour and birthday, the nickname and personal message with their
@@ -3932,6 +4091,7 @@ typedef struct FifoMessage {
 #define ARM7_CMD_DONE_SLEEP  0x08 /* s32: nonzero once the ARM7 answered command 0x62 */
 #define ARM7_CMD_SET_POWER   0x63 /* Arm7SetPowerState: switch the ARM7 power state */
 #define ARM7_CMD_SET_AMP     0x64 /* command 0x64: set a sound-amplifier parameter */
+#define ARM7_CMD_GET_VALUE   0x67 /* command 0x67: read the ARM7's system value, answered through ARM7_CMD_VALUE_PTR */
 
 /* An ARM7 command is sent as one or two FIFO words: the command word names the
  * command byte and carries an extra argument byte, a command with a 16-bit
@@ -4000,6 +4160,13 @@ typedef struct MicTestScreen {
 #define LCD_WAKE_DELAY_CYCLES 0x996A00
 /* Delay between display-wake attempts while the shell closes the lid. */
 #define DISPLAY_WAKE_RETRY_CYCLES 0xA3A47
+
+/* The ARM7/ARM9 shared work area (the shared header and everything the two CPUs
+ * share); SHARED_FIFO_TAG_WORD is the s32 index into it whose bit `tag` is set
+ * while a handler for that IPC FIFO message tag is registered
+ * (SetFifoMessageHandler). */
+#define SHARED_WORK_BASE     0x027FFC00
+#define SHARED_FIFO_TAG_WORD 226 /* s32 index: bit per handled FIFO tag */
 
 /* Word of the ARM7/ARM9 shared work area that the ARM7 keeps up to date; its
  * top bit is set while the lid is closed. */
@@ -4155,6 +4322,9 @@ typedef struct LocalizedTextBank {
 #define TEXT_BANK_INDEX_MASK 0xFFFFFF /* low bits of a text id: index in the bank's offset table */
 #define TEXT_BANK_COUNT 0x28 /* slots in gTextBankTable / loaded banks in gUiGraphicsBanks */
 
+/* UI message text ids passed to SetUiMessageText. */
+#define TEXT_ID_NO_SAVE_DATA 0xC000034C /* the save data the current menu needs is missing */
+
 /* The generated text-label slot table (gTextLabelSlotState): 13 slots, each a
  * used flag (one byte at the table base) plus two 12-byte rows, one row per slot
  * at base + slot*TEXT_LABEL_ROW_BYTES. */
@@ -4228,6 +4398,7 @@ typedef struct Thread {
 #define CO_STATE_RANK      0x03 /* u8 grade 1..4 of the total rating */
 #define CO_STATE_CURRENT_SLOT 0x04 /* u8 index into gCoPlayerSlots of the CO the menus show */
 #define CO_STATE_UNLOCKED 0x08
+#define CO_COUNT 15 /* COs in the roster: CO_STATE_UNLOCKED has one bit each */
 
 /* The CO roster (gCoPlayerSlots): 12-byte records, one per CO. */
 #define CO_SLOT_STRIDE 12 /* bytes per record */
@@ -4345,6 +4516,18 @@ typedef struct DialogSequence {
 #define SND_CMD_BUFFER_ENTRY_VALUE  0x040 /* s32 value word of an entry */
 #define SND_CMD_BUFFER_PARAM_COUNT  16   /* s16 parameters per array */
 #define SND_CMD_BUFFER_TAIL_PARAMS  0x260 /* final s16 parameter array (16 values) */
+
+/* One ARM7 sound command node (SOUND_CMD_NODE_SIZE bytes) from the
+ * gSoundCommandNodes pool: the queue's next link at +0x00, the command id at
+ * +0x04 and up to four s32 arguments at +0x08..+0x14.  SendArm7Message fills one
+ * and EnqueueSoundCommand queues it. */
+#define SOUND_CMD_NODE_NEXT 0x00 /* next node link used by the queue */
+#define SOUND_CMD_NODE_ID   0x04 /* s32 command id */
+#define SOUND_CMD_NODE_ARG0 0x08 /* s32 first command argument */
+#define SOUND_CMD_NODE_ARG1 0x0C /* s32 second command argument */
+#define SOUND_CMD_NODE_ARG2 0x10 /* s32 third command argument */
+#define SOUND_CMD_NODE_ARG3 0x14 /* s32 fourth command argument */
+#define SOUND_CMD_NODE_SIZE 0x18
 
 /* Intrusive doubly-linked list header shared by the List* helpers (ListInit,
  * ListAddFirst, ListAppend/Prepend, ListInsertBefore, ListRemove, ListNext/Prev

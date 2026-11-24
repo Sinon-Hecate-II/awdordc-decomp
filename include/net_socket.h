@@ -165,6 +165,15 @@ typedef struct SendRequest {
 #define NET_ALLOC_ALLOC 0x18 /* void *(*)(s32 size) */
 #define NET_ALLOC_FREE  0x1c /* void (*)(void *block) */
 
+/* The socket task pool (gSocketTaskPool, main_0201E944): one block from the net
+ * allocator holding the free-task message queue (gSocketTaskQueue, which sits
+ * immediately at +0x04) followed by the task slots themselves.  A slot is taken
+ * by receiving it from the queue (func_0201f1a8) and returned by posting it back
+ * (SocketFreeTask), so the queue holds every slot that is currently idle. */
+#define TASKPOOL_BLOCK 0x00 /* void *the allocated block */
+#define TASKPOOL_SLOTS 0x18 /* s32 slots the pool was created with (the queue's msgCount) */
+#define TASKPOOL_FREE  0x20 /* s32 slots idle in the queue (its usedCount) */
+
 /* One queued socket task (SocketAllocTask builds it from the task pool and
  * SocketQueueTask posts it to a raw connection's queue); the socket task thread
  * calls TASK_FUNC with TASK_SOCKET and forwards TASK_RESULT to the waiter. */

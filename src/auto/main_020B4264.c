@@ -354,7 +354,7 @@ void SaveCurrentBattle(void *state) {
     StampBattleRecord(saveType);
     if (!SaveTypeHasNoSlot(saveType)) {
         GetSaveSlot(0, saveType);
-        func_020e4870();
+        StoreSaveSlotProgress();
     }
     SaveBattleToRecord(GetSaveRecordBuffer());
     WriteSaveRecord(saveType, GetSaveRecordBuffer(), 0x125c);
@@ -436,17 +436,23 @@ void func_020b4d24(void) {
     CreateSpriteFromClass(&data_021287b4, 7);
 }
 
-void func_020b4d3c(void *arg0) {
-    M2C_UNK func_020e4870(s32);
+/* Begin a battle saved under the save type in the screen's +0x5C field: initialise
+ * the battle record, remember the slot in the save-slot summary, then store the
+ * current progress into that slot and save the game settings. */
+void StartBattleAndSaveProgress(void *state) {
+    M2C_UNK StartBattleRecord();
+    M2C_UNK GetSaveType(M2C_UNK, s32);
+    M2C_UNK StoreSaveSlotProgress(s32);
+    M2C_UNK SaveGameSettings();
     extern s32 gSaveSlotSummary;
-    s32 temp_r4;
+    s32 saveType;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    GetSaveType(0, temp_r4);
+    saveType = M2C_FIELD(state, s32 *, 0x5C);
+    GetSaveType(0, saveType);
     StartBattleRecord();
-    gSaveSlotSummary = (gSaveSlotSummary & ~0xF) | (temp_r4 & 0xF);
-    func_020e4870(temp_r4);
-    func_020bf798();
+    gSaveSlotSummary = (gSaveSlotSummary & ~0xF) | (saveType & 0xF);
+    StoreSaveSlotProgress(saveType);
+    SaveGameSettings();
 }
 
 void func_020b4d80(void) {
@@ -467,7 +473,7 @@ void func_020b4db0(s32 arg0) {
 void func_020b4dcc(void *arg0) {
     M2C_UNK StartBattleRecord();
     M2C_UNK GetSaveType(M2C_UNK, s32);
-    M2C_UNK func_020bf798();
+    M2C_UNK SaveGameSettings();
     M2C_UNK ClearSaveRecordHeader(s32);
     s32 temp_r4;
 
@@ -475,7 +481,7 @@ void func_020b4dcc(void *arg0) {
     GetSaveType(0, temp_r4);
     StartBattleRecord();
     ClearSaveRecordHeader(temp_r4);
-    func_020bf798();
+    SaveGameSettings();
 }
 
 void func_020b4df4(s32 arg0) {

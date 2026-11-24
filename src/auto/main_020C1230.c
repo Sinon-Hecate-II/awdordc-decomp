@@ -63,15 +63,18 @@ void DrawMapPreviewLayer(s32 layerVram, M2C_UNK layerTilemap, s32 tile, s32 pale
     FillMapPreviewTilemap(layerTilemap, (tile & 0x3FF) | (u16) (palette << 0xC));
 }
 
+/* Per-frame map-preview cursor animation: copy the cursor colour the frame counter
+ * selects out of the colour ramp over colour 14 of the OBJ palette slot the preview
+ * was drawn with, which marks that engine's palette dirty. */
 void AnimateMapPreviewCursorColor(void) {
-    M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
+    M2C_UNK CopyBytesToObjPaletteShadow(void *, s32, M2C_UNK);
     extern s32 gMapPreviewPalettes;
     extern s32 gMapPreviewPaletteSlot;
     extern s32 gFrameCounter;
-    
-    func_01ff9e78(
-        (char *)&gMapPreviewPalettes + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
-        (gMapPreviewPaletteSlot << 5) + 0x1C,
+
+    CopyBytesToObjPaletteShadow(
+        (char *)&gMapPreviewPalettes + MAP_PREVIEW_CURSOR_RAMP + ((u32)(gFrameCounter & 0x3C) >> 1),
+        (gMapPreviewPaletteSlot << 5) + MAP_PREVIEW_CURSOR_COLOR * 2,
         2
     );
 }
@@ -161,11 +164,11 @@ for(y=h>>1;y<h;y++){for(x=0;x<w;x++){src=func_020c10a4(x,y,z);dst=(u16*)p+gPrevi
 }
 
 void func_020c183c(void *arg0) {
-    M2C_UNK func_01ff9e78(void *, s32, M2C_UNK);
+    M2C_UNK CopyBytesToObjPaletteShadow(void *, s32, M2C_UNK);
     extern s32 gMapPreviewPalettes;
     extern s32 gFrameCounter;
     
-    func_01ff9e78(
+    CopyBytesToObjPaletteShadow(
         (char *)&gMapPreviewPalettes + 0x40 + ((u32)(gFrameCounter & 0x3C) >> 1),
         (M2C_FIELD(arg0, s16 *, 0x5A) << 5) + 0x1C,
         2
@@ -227,13 +230,14 @@ s32 CountMapProperties(u8 *dst) {
     return count;
 }
 #pragma opt_strength_reduction reset
-s32 GetUnitCategoryCount(s32 offset,u8 *base,s32 index) {
- s32 sum=0;
- if(index<0) {
- base=(u8 *)offset+ (s32)base;
- for(index=0;index<5;index++,base+=12) sum+=*base;
- } else sum+=base[index*12+offset];
- return sum;
+/* Return a map unit-category count for one player band, or sum that category across all five bands when playerBand is negative. */
+s32 GetUnitCategoryCount(s32 categoryOffset, u8 *countGrid, s32 playerBand) {
+    s32 count = 0;
+    if (playerBand < 0) {
+        countGrid = (u8 *)categoryOffset + (s32)countGrid;
+        for (playerBand = 0; playerBand < 5; playerBand++, countGrid += 12) count += *countGrid;
+    } else count += countGrid[playerBand * 12 + categoryOffset];
+    return count;
 }
 #pragma opt_strength_reduction reset
 /* Map a cell's terrain kind (the low five bits of its terrain byte) to the slot

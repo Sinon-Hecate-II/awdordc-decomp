@@ -48,7 +48,20 @@
 #define WFC_CH_PLAYER_MASK   0x80e /* u16 bit per connected player */
 #define WFC_CH_PAYLOAD_LEN   0x810 /* u16 bytes of one player's data copy */
 #define WFC_CH_TRANSFER_LEN  0x814 /* u16 bytes sent per slot transfer (payload plus header) */
+#define WFC_CH_CHANNEL       0x816 /* u16 channel index of this state object */
 #define WFC_CH_PARENT_MODE   0x818 /* u16 1 in the host (parent) channel */
+
+/* Payload of WFC command 0x23's link-event request (its sub-command 3): the
+ * command word, then the link-event switch repeated in both 16-bit halves
+ * (0 installs the link's event handler, 1 removes it); the rest is zeroed. */
+typedef struct WfcLinkEventRequest {
+    s32 command;     /* +0x00 WFC_LINK_EVENT_COMMAND */
+    s16 event;       /* +0x04 the link-event switch */
+    s16 eventMirror; /* +0x06 the same switch, repeated */
+    u32 reserved[5]; /* +0x08 zeroed padding of the 0x1c-byte payload */
+} WfcLinkEventRequest;
+
+#define WFC_LINK_EVENT_COMMAND 3 /* sub-command: set the link's event handler */
 
 /* Channel state object control fields (the four data slots come before them). */
 #define WFC_CH_SENT_SEQUENCE 0x800 /* u16[4]: start sequence of each slot's last transfer */

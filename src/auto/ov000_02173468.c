@@ -164,24 +164,27 @@ Ov000InfoMenu *Ov000_InfoWindow_Init(Ov000InfoMenu *menu) {
     return menu;
 }
 
-void *Ov000_InfoWindow_FreePanels(void *arg0) {
+/* Free both panels of the ov000 map info window: the unit-statistics window's
+ * panel descriptor and then the terrain/unit info panel's entry table, leaving
+ * the window object itself to its caller. */
+void *Ov000_InfoWindow_FreePanels(Ov000InfoMenu *menu) {
     M2C_UNK MemFree(s32);
-    M2C_UNK func_ov000_021725c8(s32);
-    M2C_UNK func_ov000_0217519c(s32);
-    s32 temp_r4;
-    s32 temp_r4_2;
+    M2C_UNK Ov000_InfoPanel_FreeEntries(s32);
+    M2C_UNK Ov000_StatsWindow_FreePanel(s32);
+    s32 statsWindow;
+    s32 panel;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0);
-    if (temp_r4 != 0) {
-        func_ov000_0217519c(temp_r4);
-        MemFree(temp_r4);
+    statsWindow = (s32)menu->statsWindow;
+    if (statsWindow != 0) {
+        Ov000_StatsWindow_FreePanel(statsWindow);
+        MemFree(statsWindow);
     }
-    temp_r4_2 = M2C_FIELD(arg0, s32 *, 4);
-    if (temp_r4_2 != 0) {
-        func_ov000_021725c8(temp_r4_2);
-        MemFree(temp_r4_2);
+    panel = (s32)menu->panel;
+    if (panel != 0) {
+        Ov000_InfoPanel_FreeEntries(panel);
+        MemFree(panel);
     }
-    return arg0;
+    return menu;
 }
 
 #pragma opt_if-conversion on

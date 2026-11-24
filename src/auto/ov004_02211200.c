@@ -31,21 +31,24 @@ void func_ov004_02211260(void) {
     func_ov000_0216aabc();
 }
 
-void func_ov004_0221126c(M2C_UNK arg0) {
+/* Battle-end step on the final campaign map: with no dialog open and the player
+ * having won, load the ending resource, create the ending overlay object and
+ * reset the text state, then resume the event sprite's animation. */
+void Ov004_StartFinalMapEnding(M2C_UNK eventSprite) {
     M2C_UNK ResetTextState();
     M2C_UNK func_0208874c();
     s32 DidPlayerWin();
-    s32 func_020e4b54();
+    s32 IsFinalCampaignMap();
     M2C_UNK func_ov004_02227ecc_unk(M2C_UNK);
     if (IsDialogActive() != 0) {
         return;
     }
-    if ((DidPlayerWin() != 0) && (func_020e4b54() != 0)) {
+    if ((DidPlayerWin() != 0) && (IsFinalCampaignMap() != 0)) {
         func_0208874c();
-        func_ov004_02227ecc_unk(arg0);
+        func_ov004_02227ecc_unk(eventSprite);
         ResetTextState();
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(eventSprite);
 }
 
 void func_ov004_022112b4(M2C_UNK arg0) {

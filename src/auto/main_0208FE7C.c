@@ -6,9 +6,9 @@ static inline void CallNodeMethod(void *node) {
     M2C_FIELD(*(void **)node, void (**)(void *), 0)(node);
 }
 
-void func_02090574(void);
+void UpdateStreamedMusicVolume(void);
 
-s32 func_0208fe7c(s32 arg0, s32 arg1) {
+s32 Sound_PlayEffectAtVolume(s32 arg0, s32 arg1) {
     s32 PlaySoundEffect(s32);
 
     if (PlaySoundEffect(arg0) != 0) {
@@ -57,7 +57,10 @@ u8 IsSoundPlayerReady(void) {
     return var_r0;
 }
 
-u8 Sound_WasPlayedWithin(s32 arg0) {
+/* Returns 1 when the sound driver counted a sound within the last `frames` frames
+ * (its SOUND_STATE_FRAME is within that many of gFrameCounter), 0 once that
+ * window has passed or the sound player is not ready. */
+u8 Sound_WasPlayedWithin(s32 frames) {
     extern M2C_UNK gSoundDriverState;
     extern s32 gFrameCounter;
     u8 var_r0;
@@ -65,7 +68,7 @@ u8 Sound_WasPlayedWithin(s32 arg0) {
     if (IsSoundPlayerReady() == 0) {
         return 0;
     }
-    if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&gSoundDriverState, s32 *, 0x1C) + arg0)) {
+    if ((u32) gFrameCounter <= (u32) (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_FRAME) + frames)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -228,7 +231,7 @@ s32 StartMusicTrack(s32 trackId) {
     id = (u16) trackId;
     if (trackId & 0x10000) {
         started = Sound_StartArchiveSound(&gMusicSoundPlayer, id, 0) & 0xFF;
-        func_02090574();
+        UpdateStreamedMusicVolume();
     } else {
         started = Sound_PlaySequenceRecord(&gMusicSequencePlayer, id) & 0xFF;
     }
@@ -362,27 +365,28 @@ M2C_UNK func_02090448(M2C_UNK arg0) {
     func_0202c784(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
 }
 
-void func_02090480(s32 arg0) {
+/* Rewind the music player's recorded heap state by the requested frame count, clamping the new position to zero. */
+void RewindMusicPlayerHeapByFrames(s32 frames) {
     M2C_UNK func_0202c778(M2C_UNK);
     M2C_UNK func_0202c6a4(M2C_UNK, s32);
     extern M2C_UNK gSoundDriverState;
 
-    if (M2C_FIELD(&gSoundDriverState, u8 *, 0) == 0) {
+    if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
     {
-        M2C_UNK r0;
-        s32 diff;
+        M2C_UNK playerFrames;
+        s32 targetFrames;
 
-        r0 = func_0202c778(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10));
-        if (r0 == 0) {
+        playerFrames = func_0202c778(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+        if (playerFrames == 0) {
             return;
         }
-        diff = r0 - arg0;
-        if (diff < 0) {
-            diff = 0;
+        targetFrames = playerFrames - frames;
+        if (targetFrames < 0) {
+            targetFrames = 0;
         }
-        func_0202c6a4(M2C_FIELD(&gSoundDriverState, M2C_UNK *, 0x10), diff);
+        func_0202c6a4(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER), targetFrames);
     }
 }
 
@@ -430,16 +434,19 @@ s32 Sound_GetEffectVolume(void) {
     return volume;
 }
 
-void func_02090574(void) {
-extern M2C_UNK gSoundDriverState;
-extern M2C_UNK gMusicSoundPlayer;
-s32 GetMusicVolume(void);
-void func_0202d994(volatile s32 *, s32, s32);
-if(M2C_FIELD(&gSoundDriverState,s32 *,8)!=0) {
-s32 value=GetMusicVolume();
-func_0202d994(&gMusicSoundPlayer,0,value);
-func_0202d994(&gMusicSoundPlayer,1,value);
-}
+/* Re-apply the current effective music volume to both voices of the streamed
+ * music sound player, while that player is active. */
+void UpdateStreamedMusicVolume(void) {
+    extern M2C_UNK gSoundDriverState;
+    extern M2C_UNK gMusicSoundPlayer;
+    s32 GetMusicVolume(void);
+    void Sound_SetVoiceVolumeFromLevel(volatile s32 *, s32, s32);
+
+    if (M2C_FIELD(&gSoundDriverState, s32 *, SOUND_STATE_SOUND_ACTIVE) != 0) {
+        s32 volume = GetMusicVolume();
+        Sound_SetVoiceVolumeFromLevel(&gMusicSoundPlayer, 0, volume);
+        Sound_SetVoiceVolumeFromLevel(&gMusicSoundPlayer, 1, volume);
+    }
 }
 
 void func_020905bc(void) {
@@ -447,7 +454,7 @@ void func_020905bc(void) {
     s32 GetMusicVolume();
 
     func_0202ab7c(0, GetMusicVolume());
-    func_02090574();
+    UpdateStreamedMusicVolume();
 }
 
 void func_020905d8(void) {
@@ -630,24 +637,26 @@ void SpritePlayer_Remove(void *player) {
     MemFree();
 }
 
-void func_02090894(void **arg0) {
+/* Free every script player in the list headed by `players`, then clear the owning
+ * sprite's player-list head so it no longer points at the freed players. */
+void SpritePlayer_FreeList(void **players) {
     M2C_UNK MemFree(void **);
     void SpritePlayer_AdvanceToCommand(void *);
-    void **var_r4;
-    void **temp_r5;
+    void **player;
+    void **next;
 
-    var_r4 = arg0;
-    SpritePlayer_AdvanceToCommand(arg0);
-    if (arg0 != NULL) {
+    player = players;
+    SpritePlayer_AdvanceToCommand(players);
+    if (players != NULL) {
         do {
-            temp_r5 = M2C_FIELD(var_r4, void ***, 8);
-            if (var_r4 != NULL) {
-                MemFree(var_r4);
+            next = M2C_FIELD(player, void ***, SPRITE_PLAYER_NEXT);
+            if (player != NULL) {
+                MemFree(player);
             }
-            var_r4 = temp_r5;
-        } while (temp_r5 != NULL);
+            player = next;
+        } while (next != NULL);
     }
-    M2C_FIELD(*arg0, s32 *, 0x38) = 0;
+    M2C_FIELD(*players, s32 *, SPRITE_OWNER_PLAYER_LIST) = 0;
 }
 
 /* Advances one frame of a script player: while its delay counter is nonzero it

@@ -13,7 +13,7 @@ s8 func_ov003_021e9c24(void *);void func_ov003_021ea4a8(void *,s32);
 s32 func_ov003_021e9c08(void *),func_ov003_021e9c30(void *);
 u8 GetLocalPlayerWaypointSlot(void *);u8 func_ov003_021e82fc(s32,s32);s32 func_ov003_021e73c8(s32,s32);
 s32 AreNetworkPlayerRecordsReady(void);s32 func_ov003_021eaeb0(void *);
-u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),func_ov003_021ebb88(void *);
+u8 func_ov003_021ebbcc(void *);void func_ov003_021ebc00(void *),func_ov003_021ebc54(void *),PressWaypointSprite(void *);
 u8 IsWaypointPanelIdle(void *);s32 func_ov003_021e9e58(void *);
 void SetWaypointPanelMode(void *,s32);void Link_SendPacket(void *,s32);
 u8 func_ov003_021ebc88(void *);void func_ov003_021e9e4c(void *);
@@ -53,7 +53,7 @@ if(IsMapListCategory3() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_
 if(func_ov003_021e6d28() && IsWaypointPanelIdle(arg0) && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021e9e58(arg0) && !func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(M2C_FIELD(remote,u8 *,8)==1){
-SetWaypointPanelMode(arg0,1);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
+SetWaypointPanelMode(arg0,1);PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,4));
 if(func_ov003_021e6d28())Hide3DSpriteSlide(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s32 *,4));
 M2C_FIELD(packet,s32 *,24)=1;Link_SendPacket(packet,36);return;
 }
@@ -96,28 +96,28 @@ if(func_ov003_021e9c08(arg0) && M2C_FIELD(packet,s32 *,24)){
 if(!func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));
 if(func_ov003_021ebc88(M2C_FIELD(arg0,void **,0x58)))func_ov003_021e9804(M2C_FIELD(arg0,void **,0x58));
 UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
-if(func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0))){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));}
+if(func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0))){PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));}
 if(M2C_FIELD(gTouchState,u8 *,0x12))return;
 if(!(*gKeyState&2))return;
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));return;
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));return;
 }else if(func_ov003_021e6d28() && func_ov003_021e9c30(arg0))return;
 }
 touch=M2C_FIELD(gTouchState,u8 *,0x12);ready=1;keys=gKeyState[0];held=gKeyState[1];
 UpdateWaypointSelectSprites(M2C_FIELD(arg0,void **,0x64));
 if(func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0))){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
 }
 for(i=0;i<func_ov003_021e74a4(M2C_FIELD(arg0,s32 *,0x6c));i++){
 if(ready && func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8))){
-func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8));PlaySoundEffect(0x10011);ready=0;
+func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,8));PlaySoundEffect(0x10011);ready=0;
 }else if(ready && func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24))){
-func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24));PlaySoundEffect(0x10011);ready=0;
+func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),i);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,24));PlaySoundEffect(0x10011);ready=0;
 }else if(ready && func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,40))){
-StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),i,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,40));
+StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),i,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,40));
 if(func_ov003_021e9e2c(arg0))ApplyWaypointMenuAction(arg0,(u8)(i+21));else func_ov003_021ed27c(arg0,(u8)(i+21));
 PlaySoundEffect(0x10011);ready=0;
 }else if(ready && func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56))){
-StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),i,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56));
+StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),i,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+i*4,void **,56));
 if(func_ov003_021e9e2c(arg0))ApplyWaypointMenuAction(arg0,(u8)(i+21));else func_ov003_021ed27c(arg0,(u8)(i+21));
 PlaySoundEffect(0x10011);ready=0;
 }
@@ -135,7 +135,7 @@ if(!touch){
 if(ready && (keys&1)){ApplyWaypointMenuAction(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;}
 if(ready && (keys&8)){UpdateWaypointSelection(arg0,25);SetWaypointPanelState(arg0,0);ready=0;func_ov003_021eccd4(arg0);}
 if(ready && func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0)) && (keys&2)){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0,void **,0x64),void **,0));HandleWaypointPanelCancel(arg0,func_ov003_021e9cd0(M2C_FIELD(arg0,s32 *,0x6c)));ready=0;
 }
 if(held&64)func_ov003_021ed8f0(arg0,64,keys&64);
 if(held&128)func_ov003_021ed8f0(arg0,128,(u8)(keys&128));
@@ -143,12 +143,12 @@ if(held&32)func_ov003_021ed8f0(arg0,32,keys&32);
 if(held&16)func_ov003_021ed8f0(arg0,16,keys&16);
 if(ready && (keys&512)){
 action=(s16)action;
-if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,8));PlaySoundEffect(0x10011);}
-else if(InRange(action,21,24)){StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),slot,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,56));PlaySoundEffect(0x10011);}
+if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,8));PlaySoundEffect(0x10011);}
+else if(InRange(action,21,24)){StepCounterDown(M2C_FIELD(arg0,s32 *,0x6c),slot,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,56));PlaySoundEffect(0x10011);}
 }else if(ready && (keys&256)){
 action=(s16)action;
-if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,24));PlaySoundEffect(0x10011);}
-else if(InRange(action,21,24)){StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),slot,1);func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,40));PlaySoundEffect(0x10011);}
+if(InRange(action,4,7)){func_ov003_021ec780(M2C_FIELD(arg0,s32 *,0x6c),slot);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,24));PlaySoundEffect(0x10011);}
+else if(InRange(action,21,24)){StepCounterUp(M2C_FIELD(arg0,s32 *,0x6c),slot,1);PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x64)+slot*4,void **,40));PlaySoundEffect(0x10011);}
 }
 }
 if(IsLinkSessionActive()){
@@ -232,12 +232,14 @@ void OpenWaypointPanel(void *panel) {
     func_ov003_021e88e0(panel);
 }
 
-void func_ov003_021ebb88(void *arg0) {
-    if ((s32) M2C_FIELD(arg0, s8 *, 0x5A) < 0) {
+/* Show a waypoint sprite's pressed frame (its base frame plus one) and hold it
+ * for 12 frames; does nothing while the sprite's press timer is still negative. */
+void PressWaypointSprite(void *sprite) {
+    if ((s32) M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) < 0) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) ((u16) (((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
-    M2C_FIELD(arg0, s8 *, 0x5A) = 0xC;
+    M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) = (s32) ((M2C_FIELD(sprite, s32 *, MENU_SPRITE_FRAME) & ~MENU_SPRITE_FRAME_MASK) | ((u32) ((u16) (((u32) (M2C_FIELD(sprite, u8 *, MENU_SPRITE_BASE) << 0x1C) >> 0x1C) + 1) << 0x18) >> 6));
+    M2C_FIELD(sprite, s8 *, MENU_SPRITE_TIMER) = 12;
 }
 
 u8 func_ov003_021ebbcc(void *arg0) {

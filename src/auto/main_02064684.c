@@ -191,12 +191,20 @@ s32 FlushFileStream(void *stream) {
     return 0;
 }
 
+/* Reverse the characters of the NUL-terminated string `s` in place and return it. */
 char *StringReverse(char *s) {
- s32 StringLength(char *);
- s32 i=0;
- s32 j=StringLength(s)-1;
- while(i<j) { char temp=s[i]; s[i]=s[j]; s[j]=temp; i++; j--; }
- return s;
+    s32 StringLength(char *);
+    s32 left = 0;
+    s32 right = StringLength(s) - 1;
+
+    while (left < right) {
+        char temp = s[left];
+        s[left] = s[right];
+        s[right] = temp;
+        left++;
+        right--;
+    }
+    return s;
 }
 
 #pragma opt_strength_reduction off

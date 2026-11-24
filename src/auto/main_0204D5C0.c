@@ -12,7 +12,7 @@ void func_0204d5c0(void *arg0) {
     void StringFormat(void *, void *, ...);
     s32 StringLength(s32);
     void MemMove(void *, void *, s32);
-    void ResetBuffer(void *);
+    void ghiResetBuffer(void *);
     void ghiCallProgressCallback(void *, s32, s32);
     s32 gpiStringDup(s8 *);
     s32 StringCompareN(void *, void *, s32);
@@ -70,7 +70,7 @@ void func_0204d5c0(void *arg0) {
                 M2C_FIELD(arg0, s32 *, 0x80) = bodyLen;
                 M2C_FIELD(arg0, s32 *, 0x84) = 0;
             } else {
-                ResetBuffer((u8 *)arg0 + 0x74);
+                ghiResetBuffer((u8 *)arg0 + 0x74);
             }
             M2C_FIELD(arg0, s32 *, 0x10) = 6;
             ghiCallProgressCallback(arg0, 0, 0);

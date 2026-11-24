@@ -74,7 +74,7 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
     s32 GetTileTargetKind(s32, s32);
     void func_020d166c(s32, s32, void *);
     void func_020d1690(s32, s32, void *);
-    void func_01ff9e78(const void *, s32, s32);
+    void CopyBytesToObjPaletteShadow(const void *, s32, s32);
     void AddSprite(u16, u16, u16, void *, s32);
     void DrawDecimalNumber(s32, u8, s32);
 #define PULSE_PHASE ((gFrameCounter >> 1) & 0x1f)
@@ -130,10 +130,10 @@ void func_020d759c(s32 panelX, s32 panelY, s32 side) {
         band = 0;
 
     switch (band) {
-    case 0: func_01ff9e78(data_02120700 + color, 0x33e, 2); break;
-    case 1: func_01ff9e78(data_02120720 + color, 0x33e, 2); break;
-    case 2: func_01ff9e78(data_02120740 + color, 0x33e, 2); break;
-    case 3: func_01ff9e78(data_02120760 + color, 0x33e, 2); break;
+    case 0: CopyBytesToObjPaletteShadow(data_02120700 + color, 0x33e, 2); break;
+    case 1: CopyBytesToObjPaletteShadow(data_02120720 + color, 0x33e, 2); break;
+    case 2: CopyBytesToObjPaletteShadow(data_02120740 + color, 0x33e, 2); break;
+    case 3: CopyBytesToObjPaletteShadow(data_02120760 + color, 0x33e, 2); break;
     }
     spriteX = (x + 8) & 0x1ff;
     AddSprite((u16)spriteX, (u16)((y - 24) & 0xff), (u16)Tile6e0c(0x150, 0x80), &gSpriteDesc32x8, 10);

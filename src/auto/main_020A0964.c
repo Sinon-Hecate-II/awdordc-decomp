@@ -161,10 +161,10 @@ void func_020a0d18(void) {
     M2C_UNK SelectMapLayer(M2C_UNK);
     M2C_UNK BuildMoveRangeFromPathEnd(void);
     M2C_UNK func_020a086c(M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK BuildMovePathForTile(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK ReplayCursorPathSteps(void);
     M2C_UNK IsMovePathCellUnique(void);
-    M2C_UNK func_020a05d8(M2C_UNK, M2C_UNK);
+    M2C_UNK RebuildMovePathToTile(M2C_UNK, M2C_UNK);
     s32 FindMovePathStep(s8, s8);
     void func_020a0068(s8);
     void AppendMovePathStep(s8, s8);
@@ -214,15 +214,15 @@ void func_020a0d18(void) {
         BuildMoveRangeFromPathEnd();
         sx = x; sy = y;
         if (func_020a086c(&sx, &sy)) {
-            func_01ffc4b8(sx, sy, (u8 *)*gCurrentMap + 0x5388);
+            BuildMovePathForTile(sx, sy, (u8 *)*gCurrentMap + 0x5388);
             ReplayCursorPathSteps();
-            if (!IsMovePathCellUnique()) func_020a05d8(sx, sy);
+            if (!IsMovePathCellUnique()) RebuildMovePathToTile(sx, sy);
         } else {
             SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
             sx = x; sy = y;
             if (func_020a086c(&sx, &sy)) {
                 SelectMapLayer((u8 *)*gCurrentMap + 0x2338);
-                func_020a05d8(sx, sy);
+                RebuildMovePathToTile(sx, sy);
             } else {
                 SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
                 return;
@@ -269,11 +269,11 @@ void func_020a0d18(void) {
     BuildMoveRangeFromPathEnd();
     base = (u8 *)*gCurrentMap;
     if ((*(s8 **)(base + y * 4 + 0x52e8))[x] == -1) {
-        func_020a05d8(x, y);
+        RebuildMovePathToTile(x, y);
     } else {
-        func_01ffc4b8(x, y, base + 0x5388);
+        BuildMovePathForTile(x, y, base + 0x5388);
         ReplayCursorPathSteps();
-        if (!IsMovePathCellUnique()) func_020a05d8(x, y);
+        if (!IsMovePathCellUnique()) RebuildMovePathToTile(x, y);
     }
     SelectMapLayer((u8 *)*gCurrentMap + 0x1e30);
 }

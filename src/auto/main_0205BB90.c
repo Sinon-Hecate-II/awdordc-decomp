@@ -186,7 +186,7 @@ void *func_0205cca0(void *,M2C_UNK,M2C_UNK);
 s32 gti2DumpCallback(void *,void *,M2C_UNK,M2C_UNK,s32,s32,s32,s32);
 s32 ByteCompareN(void *,M2C_UNK *,s32);
 s32 gti2UnrecognizedMessageCallback(void *,M2C_UNK,M2C_UNK,void *,s32,s32 *);
-s32 func_0205cb68(s32,s32,u16);
+s32 gti2SendClosedOnSocket(s32,s32,u16);
 s32 func_0205a860(void *,void **,M2C_UNK,M2C_UNK);
 void gti2SendClosed(void *);s32 gti2HandleData(void *,void *,s32);
 s32 Gt2CloseConnection(); s32 gti2HandleSmallMessage(void *,s32,s32,s32);s32 gti2HandleLargeMessage(void *,s32,void *,s32);
@@ -203,14 +203,14 @@ if(!gti2UnrecognizedMessageCallback(socket,address,port,buf,len,&handled))return
 if(handled)return 1;
 if(isControl && buf[2]==1)goto incoming;
 if(isControl && buf[2]==104)goto accepted1;
-if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
+if(!((s32 (*)(void *,s32,s32))gti2SendClosedOnSocket)(socket,address,port))return 0;
 accepted1:return 1;
 incoming:
 if(M2C_FIELD(socket,s32*,0x20)==0)return 1;
 acceptResult=func_0205a860(socket,&connection,address,port);
 if(acceptResult==0)goto connected;
 if(acceptResult==5)goto accepted2;
-if(!((s32 (*)(void *,s32,s32))func_0205cb68)(socket,address,port))return 0;
+if(!((s32 (*)(void *,s32,s32))gti2SendClosedOnSocket)(socket,address,port))return 0;
 accepted2:return 1;
 }
 connected:
@@ -604,7 +604,7 @@ if(gti2SendRaw(p,buf,n)==0)return 0; return 1;
 s32 func_0205cb38(s32 a,void *b,s32 c) { s32 gti2SendRaw(s32,void *,s32); M2C_FIELD(b,u8 *,2)=103; return gti2SendRaw(a,b,c); }
 
 void gti2SendClosed(void *arg0) {
-    M2C_UNK func_0205cb68(s32, s32, u16);
-    func_0205cb68(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4));
+    M2C_UNK gti2SendClosedOnSocket(s32, s32, u16);
+    gti2SendClosedOnSocket(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4));
 }
 

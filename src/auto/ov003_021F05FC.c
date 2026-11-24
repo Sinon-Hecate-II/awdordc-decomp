@@ -1,5 +1,6 @@
 /* 38 functions from 0x021F05FC to 0x021F15D4 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ov003_mapselect.h"
 
 /* The ov003 battle-setup record (class/vtable data_ov003_0220fb18): it holds the
  * per-player setup (CO id and army state) of the four players and the unit sprite
@@ -587,24 +588,28 @@ M2C_UNK DestroyBattleObject(M2C_UNK obj) {
     return obj;
 }
 #pragma opt_strength_reduction reset
-M2C_UNK **WaypointPanelGroup_Destructor(M2C_UNK **arg0) {
+/* Release the waypoint panel's sprite group without freeing it: install its class,
+ * drop the panel's face sprites and face children, then delete the 13 label handles
+ * the group owns (one per slot plus the trailing label). DestroyWaypointPanelGroup
+ * is the freeing twin. */
+M2C_UNK **WaypointPanelGroup_Destructor(M2C_UNK **group) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DeleteAllFaceChildren();
     M2C_UNK DeleteAllFaceSprites();
     extern M2C_UNK gWaypointPanelGroupVTable;
-    register s32 var_r4;
-    *arg0 = &gWaypointPanelGroupVTable;
+    register s32 i;
+    *group = &gWaypointPanelGroupVTable;
     DeleteAllFaceSprites();
     DeleteAllFaceChildren();
-    var_r4 = 0;
+    i = 0;
     do {
-        if (arg0[var_r4 + 0x11] != 0) {
+        if (group[i + 0x11] != 0) {
             DeleteSpriteObject();
         }
-        var_r4 += 1;
-    } while (var_r4 < 0xD);
+        i += 1;
+    } while (i < 0xD);
     
-    return arg0;
+    return group;
 }
 
 /* Releases the battle-setup record without freeing it: re-apply its class, delete
@@ -752,12 +757,15 @@ void func_ov003_021f152c(s8 arg0) {
     M2C_FIELD(&gOv003SceneState, s8 *, 4) = arg0;
 }
 
-s32 func_ov003_021f153c(void) {
+/* Horizontal slide offset of the scene transition the current ov003 scene was
+ * entered with (gOv003SceneState+4): +0x100 for an entry from the right, -0x100
+ * for an entry from the left, and 0 when the scene does not slide. */
+s32 GetSceneEntryOffset(void) {
     extern M2C_UNK gOv003SceneState;
-    switch (M2C_FIELD(&gOv003SceneState, u8 *, 4)) {
-    case 0: return 0;
-    case 1: return 0x100;
-    case 2: return -0x100;
+    switch (M2C_FIELD(&gOv003SceneState, u8 *, SCENE_ENTRY_STATE)) {
+    case SCENE_ENTRY_NONE: return 0;
+    case SCENE_ENTRY_RIGHT: return 0x100;
+    case SCENE_ENTRY_LEFT: return -0x100;
     default: return 0;
     }
 }

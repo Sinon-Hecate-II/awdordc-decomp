@@ -473,28 +473,34 @@ void LoadFacePaletteAt(s32 faceId, s32 layout, s32 palettePage, s32 effects) {
     QueueOBJExtPaletteUpload(palette, 0, offset, 512, 1);
 }
 
-void func_02098b4c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Load a character's face palette file for the given layout straight into the
+ * destination address. */
+void LoadFacePaletteToAddress(s32 faceId, s32 layout, s32 dst) {
     M2C_UNK SetFileDirectory(s32);
     M2C_UNK LoadFileToAddress(s32, M2C_UNK);
     s32 GetFaceTexturePath();
-    s32 GetFacePaletteFile(M2C_UNK, M2C_UNK);
-    s32 temp_r4;
-    s32 temp_r5;
+    s32 GetFacePaletteFile(s32, s32);
+    s32 faceDir;
+    s32 palette;
 
-    temp_r5 = GetFaceTexturePath();
-    temp_r4 = GetFacePaletteFile(arg0, arg1);
-    if (temp_r5 == 0) {
+    faceDir = GetFaceTexturePath();
+    palette = GetFacePaletteFile(faceId, layout);
+    if (faceDir == 0) {
         return;
     }
-    SetFileDirectory(temp_r5);
-    LoadFileToAddress(temp_r4, arg2);
+    SetFileDirectory(faceDir);
+    LoadFileToAddress(palette, dst);
 }
 
-void func_02098b94(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    void LoadFaceTexture(M2C_UNK, M2C_UNK, s32);
-    void LoadFacePaletteAt(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+/* Load a character's face texture into the current 3D sprite engine's texture
+ * area at byte offset `textureOffset`, and queue its palette for upload into OBJ
+ * extended palette page `palettePage` with no tints. */
+void LoadFaceTextureAndPaletteAt(s32 faceId, s32 layout, s32 textureOffset, s32 palettePage) {
+    void LoadFaceTexture(s32, s32, s32);
+    void LoadFacePaletteAt(s32, s32, s32, s32);
     extern void *gCur3DSpriteEngine;
-    LoadFaceTexture(arg0, arg1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x1C) + arg2);
-    LoadFacePaletteAt(arg0, arg1, arg3, 0);
+
+    LoadFaceTexture(faceId, layout, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + textureOffset);
+    LoadFacePaletteAt(faceId, layout, palettePage, 0);
 }
 

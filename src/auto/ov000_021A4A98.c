@@ -106,16 +106,20 @@ s32 EvaluateAiTargetGroupForCapture(u8 candidateX, u8 candidateY) {
 }
 #pragma pop
 
-s32 func_ov000_021a4dc4(void) {
+/* Score the capture target the AI would pick: find a city target candidate (type 1)
+ * and evaluate the target group that capturing its tile would take.  Returns 0 when
+ * there is no such candidate. */
+s32 EvaluateCaptureTargetCandidate(void) {
     s32 EvaluateAiTargetGroupForCapture(u8, u8);
     s32 FindAiTargetCandidate(s32);
     extern u8 gAiTargetCandidates;
-    extern u8 data_ov000_021e00ad;
+    extern u8 gAiTargetCandidateYs;
     s32 index = FindAiTargetCandidate(1);
     s32 offset;
+
     if (index == -1) return 0;
-    offset = index * 12;
-    return EvaluateAiTargetGroupForCapture((&gAiTargetCandidates)[offset], (&data_ov000_021e00ad)[offset]);
+    offset = index * AI_CANDIDATE_STRIDE;
+    return EvaluateAiTargetGroupForCapture((&gAiTargetCandidates)[offset], (&gAiTargetCandidateYs)[offset]);
 }
 
 #pragma push

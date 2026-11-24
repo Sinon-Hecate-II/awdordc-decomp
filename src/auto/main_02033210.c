@@ -1,5 +1,6 @@
 /* 14 functions from 0x02033210 to 0x02034164 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 /* The 7-word options block HttpClientInit copies into the client: word 0 is the
  * URL, word 3 the allocator (void *(*)(const char *name, u32 size)), word 4 the
  * matching deallocator and word 6 a timeout in milliseconds. */
@@ -98,13 +99,15 @@ if(func_020346d0(p,data_020fb41c,bb,func_0206cd90(bb)*2))return 8;
 return 0;
 }
 #pragma opt_common_subs off
-void func_0203367c(s32 arg0) {
+/* Publish the NAS connection task's outcome `result` in the connection block,
+ * under the mutex that guards it. */
+void Nas_SetConnectionResult(s32 result) {
     M2C_UNK LockMutex(s32);
     M2C_UNK UnlockMutex(void *);
     extern M2C_UNK gNasConnection;
-    LockMutex(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
-    M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, 0x1004) = arg0;
-    UnlockMutex(M2C_FIELD(&gNasConnection, void **, 8) + 0x13D8);
+    LockMutex(M2C_FIELD(&gNasConnection, void **, 8) + NAS_CONN_MUTEX);
+    M2C_FIELD(M2C_FIELD(&gNasConnection, void **, 8), s32 *, NAS_CONN_RESULT) = result;
+    UnlockMutex(M2C_FIELD(&gNasConnection, void **, 8) + NAS_CONN_MUTEX);
 }
 
 void func_020336c0(s32 arg0) {
@@ -128,11 +131,11 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 GetLocalTime(s32, s32);
     void SystemHalt(void);
-    void *func_02029784(void);
+    void *WFC_GetConnectionAltCode(void);
     void *Wfc_GetConnectionCode(void *);
     void DC_InvalidateRange(void *, s32);
     u8 GetWfcFriendSlot(void);
-    void func_020317ac(void *, void *);
+    void Wfc_GetSharedApCode(void *, void *);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern u8 gFmtFriendCode[], gFmtU03[], gFmtHex02[], gFmtHex02Pair[], gFmtDate6[], gFmtSessionCode[];
@@ -185,7 +188,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     StringFormatN((void *)((u8 *)arg0 + 0x34), 0xd, gFmtDate6,
         dateVals[3], dateVals[4], dateVals[5], dateVals[0], dateVals[1], dateVals[2]);
     intrState = OS_DisableInterrupts();
-    connInfo = func_02029784();
+    connInfo = WFC_GetConnectionAltCode();
     DC_InvalidateRange(connInfo, 6);
     if (connInfo == NULL) {
         OS_RestoreInterrupts(intrState);
@@ -203,7 +206,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         OS_RestoreInterrupts(intrState);
         return 0;
     }
-    func_020317ac(connData, (void *)((u8 *)arg0 + 0x72));
+    Wfc_GetSharedApCode(connData, (void *)((u8 *)arg0 + 0x72));
     MI_CpuCopy8(connData, (void *)((u8 *)arg0 + 0x4e), 0x20);
     OS_RestoreInterrupts(intrState);
     return 1;

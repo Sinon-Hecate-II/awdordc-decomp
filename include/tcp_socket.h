@@ -29,6 +29,15 @@
 #define NETSTACK_RING_WAITER 0x54 /* void *running thread object while the reader sleeps for a record, else 0 */
 #define NETSTACK_MAX_PACKET 0x5e4 /* largest record the ring accepts */
 
+/* The network stack's 64-bit linear-congruential PRNG advanced by NetStackRandom:
+ * state = state * NETSTACK_RANDOM_MULT + NETSTACK_RANDOM_ADD, returning the new
+ * state's high 32 bits.  seed_network_random sets the state and the constants. */
+#define NETSTACK_RANDOM_STATE 0x68 /* u64: current state */
+#define NETSTACK_RANDOM_MULT  0x70 /* u64: multiplier, NETSTACK_RANDOM_MULT_VALUE */
+#define NETSTACK_RANDOM_ADD   0x78 /* u64: increment, NETSTACK_RANDOM_ADD_VALUE */
+#define NETSTACK_RANDOM_MULT_VALUE 0x5D588B656C078965ULL
+#define NETSTACK_RANDOM_ADD_VALUE  0x269EC3
+
 /* More gNetStack fields used by the IPv4 sender in main_0201AE0C. */
 #define NETSTACK_ALLOC    0x14 /* void *(*)(s32 size) packet buffer allocator */
 #define NETSTACK_FREE     0x40 /* void (*)(void *block) packet buffer release */

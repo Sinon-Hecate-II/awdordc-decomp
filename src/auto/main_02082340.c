@@ -433,7 +433,15 @@ s32 MapListCategoryToDataCategory(u32 listCategory) {
     }
 }
 
-u8 func_020830a8(u16 x){ s32 MapData_GetCategory(void); s32 IsCampaignMapRecordPlayable(s32); s32 GetMapPlayerCount(u16); u8 y=MapDataCategoryToMapKind(MapData_GetCategory()); if(y!=7)return y; if(!IsCampaignMapRecordPlayable(x))return 7; return GetMapPlayerCount(x)+7; }
+/* Map-list icon kind of `mapId`: the kind of its map-data category, or for a
+ * custom map the custom kind, plus its player count when its record is playable. */
+u8 GetMapListIconKind(u16 mapId){
+s32 MapData_GetCategory(void);s32 IsCampaignMapRecordPlayable(s32);s32 GetMapPlayerCount(u16);
+u8 kind=MapDataCategoryToMapKind(MapData_GetCategory());
+if(kind!=MAP_KIND_CUSTOM)return kind;
+if(!IsCampaignMapRecordPlayable(mapId))return MAP_KIND_CUSTOM;
+return GetMapPlayerCount(mapId)+MAP_KIND_CUSTOM;
+}
 
 #pragma opt_common_subs off
 /* Build the available map categories, or a single list of local custom-map slots. */

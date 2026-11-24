@@ -214,15 +214,17 @@ s32 func_02093250(void *arg0) {
     return 1;
 }
 
-s32 func_02093288(void *arg0) {
+/* Map-script command: play the slot-pending sound named by the command's wide
+ * operand, unless a message box is up.  Advances the script and keeps running. */
+s32 MapScriptPlaySlotSound(void *state) {
     M2C_UNK PlaySlotPendingSound(M2C_UNK, M2C_UNK, s32);
-    s32 temp_r4;
+    s32 soundId;
 
-    temp_r4 = M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC);
+    soundId = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2);
     if (IsMessageBoxActive() == 0) {
-        PlaySlotPendingSound(0, -1, temp_r4);
+        PlaySlotPendingSound(0, -1, soundId);
     }
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
@@ -239,12 +241,16 @@ s32 func_020932c8(void *arg0) {
     return 1;
 }
 
-s32 func_02093304(void *arg0) {
-s32 v;
-s32 temp=M2C_FIELD(M2C_FIELD(arg0,void **,4),s32 *,12);
-if(IsMessageBoxActive()!=0) v=1;
-else {PlayMusicTrack(temp);v=0;}
-M2C_FIELD(arg0,s32 *,4)+=16;return (s16)v;
+/* Map-script command: start the music track named by the command's wide
+ * operand, unless a message box is up (the command is skipped then).  Advances
+ * the script and keeps it running either way. */
+s32 MapScriptPlayMusic(void *state) {
+    s32 result;
+    s32 track = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2);
+    if (IsMessageBoxActive() != 0) result = 1;
+    else { PlayMusicTrack(track); result = 0; }
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return (s16)result;
 }
 
 s32 func_02093348(void *arg0) {
@@ -383,7 +389,7 @@ void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
    move the unit record to the target. */
 void MoveUnitToTile(void *unit, u8 x, u8 y) {
     M2C_UNK FloodFillUnitRange(u8, u8, u32, s32, s32);
-    M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
+    M2C_UNK BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
     s32 CreateUnitMoveForUnit();
     M2C_UNK StartUnitMove(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
@@ -393,7 +399,7 @@ void MoveUnitToTile(void *unit, u8 x, u8 y) {
     void *move;
 
     FloodFillUnitRange(u[1], u[2], (u32) (u[0] << 0x1A) >> 0x1A, 0x6E, 1);
-    func_01ffc4b8(x, y, (s32) *gCurrentMap + MAP_CURSOR_PATH);
+    BuildMovePathForTile(x, y, (s32) *gCurrentMap + MAP_CURSOR_PATH);
     ptr = (signed char *) *gCurrentMap + MAP_CURSOR_PATH;
     while (*ptr != 4 && *ptr != -1) {
         ptr++;
@@ -622,7 +628,7 @@ s32 func_02093ce4(void *arg0) {
 s32 ScriptCmd_RebuildScene(void *script) {
     M2C_UNK Get3DSpriteTargetMode();
     M2C_UNK func_020d4ba4();
-    M2C_UNK func_020d8e28();
+    M2C_UNK RebuildSubScreenUi();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
     s32 target;
@@ -646,10 +652,10 @@ s32 ScriptCmd_RebuildScene(void *script) {
         func_020d4ba4();
         break;
     case DS3D_TARGET_SUB:
-        func_020d8e28();
+        RebuildSubScreenUi();
         break;
     case DS3D_TARGET_BOTH:
-        func_020d8e28();
+        RebuildSubScreenUi();
         func_020d4ba4();
         break;
     }

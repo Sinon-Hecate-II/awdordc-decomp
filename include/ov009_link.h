@@ -37,6 +37,11 @@ typedef struct LinkCompletionEvent {
  * handler down with the last one. */
 #define LINK_STATE_LISTENER_COUNT 0x00
 
+/* gLinkState +0x0C: the result code most recently signalled, and +0x2C the
+ * handler that is told about it (result code, 0). */
+#define LINK_STATE_RESULT_CODE    0x0C /* s32 result code last signalled */
+#define LINK_STATE_RESULT_HANDLER 0x2C /* void (*)(s32 result, s32 unused) */
+
 /* gLinkState link-setup flags and the console's own player slot. */
 #define LINK_STATE_FLAGS        0x156 /* u8: link setup flags */
 #define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
@@ -85,6 +90,27 @@ enum {
 
 /* Result code signalled when a link step completes. */
 #define LINK_EVENT_COMPLETE 0x15
+
+/* The link's packet sender object class, created with the live link actor and
+ * freed with it: it splits a queued packet into channel transfers and keeps
+ * track of which peers still have one outstanding. */
+#define LINK_SENDER_OFFSET      0x34 /* s32 payload bytes already put into the transfer */
+#define LINK_SENDER_PACKET      0x38 /* void *queued packet being split into transfers */
+#define LINK_SENDER_TRANSFER    0x3C /* void *transfer packet (12-byte header) handed to WFC */
+#define LINK_SENDER_LENGTH      0x40 /* s32 bytes of that transfer packet */
+#define LINK_SENDER_PEERS       0x44 /* u16 bit per player slot the transfer is addressed to */
+#define LINK_SENDER_OUTSTANDING 0x46 /* u16 bit per player slot whose transfer has not completed */
+
+/* Fields of the send-completion record the WFC channel library hands the completion
+ * callback registered through SendLinkChannelData. */
+#define LINK_SEND_EVENT_RESULT  0x02 /* u16 WFC result of the transfer */
+#define LINK_SEND_EVENT_CHANNEL 0x0A /* u16 channel the transfer ran on (4 or 12) */
+#define LINK_SEND_EVENT_PEERS   0x0E /* u16 bit per player slot whose transfer is still outstanding */
+#define LINK_SEND_EVENT_INDEX   0x10 /* u16 word handed to the packet handler with the packet */
+#define LINK_SEND_EVENT_DATA    0x14 /* void *packet the completed transfer carried, 0 when none */
+#define LINK_SEND_EVENT_LENGTH  0x18 /* u16 bytes of that packet */
+#define LINK_SEND_RESULT_DONE   0xF  /* done result that clears the outstanding mask on the end channel */
+#define LINK_SEND_END_CHANNEL   4    /* the channel whose done result clears the outstanding mask */
 
 /* Live link actor instance (gLinkActorClass). */
 #define LINK_ACTOR_RETRY     0x34 /* s16 retry counter */

@@ -149,7 +149,7 @@ s32 WFC_StartWirelessStep(void) {
     void OS_RestoreInterrupts(s32);
     void WFC_SetState(s32);
     void WFC_OperationCallback(void);
-    s32 func_020121d8(M2C_UNK);
+    s32 WFC_StartWireless(M2C_UNK);
     s32 irq = OS_DisableInterrupts();
     void *session = (void *)gWfcSession;
     s32 result;
@@ -169,7 +169,7 @@ s32 WFC_StartWirelessStep(void) {
         OS_RestoreInterrupts(irq);
         return 1;
     case WFC_SESSION_STATE_READY:
-        result = func_020121d8((M2C_UNK)WFC_OperationCallback);
+        result = WFC_StartWireless((M2C_UNK)WFC_OperationCallback);
         switch (result) {
         case 2:
             WFC_SetState(WFC_SESSION_STATE_WIRELESS);
@@ -386,8 +386,8 @@ s32 WFC_ProcessLinkState(void){
 u16 *func_02011910(void);
 M2C_UNK DC_InvalidateRange();
 s32 WFC_ShutdownCommandChannel(void);
-s32 func_02012158(void *);
-s32 func_020121d8(M2C_UNK);
+s32 WFC_SendCommand4(void *);
+s32 WFC_StartWireless(M2C_UNK);
 s32 func_02012274(void *);
 void WFC_OperationCallback(void);
 void func_02028ef4(void);
@@ -417,8 +417,8 @@ WFC_SetState(1);M2C_FIELD((void *)gWfcSession,u16 *,WFC_SESSION_SUBSTATE)=0;
 OS_RestoreInterrupts(irq);return 0;
 }
 break;
-case 1:result=func_02012158(WFC_OperationCallback);break;
-case 2:result=func_020121d8((M2C_UNK)WFC_OperationCallback);break;
+case 1:result=WFC_SendCommand4(WFC_OperationCallback);break;
+case 2:result=WFC_StartWireless((M2C_UNK)WFC_OperationCallback);break;
 default:M2C_FIELD((void *)gWfcSession,u8 *,WFC_SESSION_ABORT)=1;
 result=func_02012274(func_02028ef4);
 break;

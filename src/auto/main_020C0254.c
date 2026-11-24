@@ -4,8 +4,23 @@
 #include "ds3dsprite.h"
 #include "battle_map.h"
 /* A row of the caller-supplied 0x28-byte entry table a carried-unit list menu is
- * built from; only the fields the menu reads are named. */
-typedef struct { u8 pad00[0x24]; u16 slot; u16 icon; } MenuRowC0634;
+ * built from: the row kind (0xff ends the table), the callback that reports the
+ * row's status, the row's icon/highlight/action callbacks and the sprite-slot id
+ * and icon kind it draws. */
+typedef struct {
+    u8 kind;                          /* +0x00 row kind, 0xff ends the table */
+    u8 pad01[3];
+    s32 (*getStatus)(void);           /* +0x04 returns the row's status byte (2 = hidden) */
+    void (*drawIcon)(s32, u8, u8);    /* +0x08 draws the row's icon */
+    void (*field0C)(s32, u8, u8);     /* +0x0C */
+    void (*highlight)(s32, u8, u8);   /* +0x10 highlights the row in the sprite batch */
+    u8 pad14[4];
+    void (*action)(s32, u8, u8);      /* +0x18 the row's confirm action */
+    void (*field1C)(s32, u8, u8);     /* +0x1C */
+    u8 pad20[4];
+    u16 slot;                         /* +0x24 sprite-slot id of the row */
+    u16 icon;                         /* +0x26 icon kind the row draws */
+} MenuRowC0634;
 /* The carried-unit list menu func_020c0634 builds and OpenListMenu drives: the
  * caller's entry table, a status and an entry index per visible row, the row
  * counts, the chosen row and the panel's screen position. */
@@ -24,7 +39,9 @@ typedef struct {
 typedef struct { u8 pad[0x1420]; u8 tiles[0x2338]; u16 rows[0x40]; u8 pad37d8[0x196c]; u16 width,height; u8 pad5148[0xb9]; u8 visible[0x200]; } MapC10;
 extern void *gCarriedUnitMenuStackPtr;
 extern u8 gCarriedUnitMenuStateStack[];
-typedef struct { s8 x,y,index,flag; s32 value; } CEntry;
+/* One saved carried-unit list menu on the menu-state stack: the panel's
+ * position and width, the chosen row and the caller's entry table. */
+typedef struct { s8 x, y, selection, width; s32 entries; } CarriedUnitMenuState;
 
 u8 func_020c0254(void) {
     s32 FindObjectByClass(M2C_UNK *);
@@ -100,17 +117,21 @@ s8 GetCarriedUnitListEntryStatus(s32 arg0, s32 arg1) {
     return M2C_FIELD((arg0 + arg1), s8 *, 0x38);
 }
 
-void HighlightListMenuRow(void *arg0, s32 arg1) {
-    void func_0207bc80(u16);
+/* Highlight a carried-unit list row: draw the list batch with the row's icon kind
+ * picked out in the highlight palette, then run the row's highlight callback when
+ * it has one, passing the row's entry, index and status byte. */
+void HighlightListMenuRow(void *menu, s32 row) {
+    void SetSpriteBatchHighlightKind(u16);
     void DrawSpriteBatch(void);
-    s32 temp_r0;
-    void (*temp_r3)(s32, u8, u8);
-    temp_r0 = GetCarriedUnitListEntry(arg0, arg1);
-    func_0207bc80(M2C_FIELD(temp_r0, u16 *, 0x26));
+    MenuRowC0634 *entry;
+    void (*highlight)(s32, u8, u8);
+
+    entry = (MenuRowC0634 *)GetCarriedUnitListEntry(menu, row);
+    SetSpriteBatchHighlightKind(entry->icon);
     DrawSpriteBatch();
-    temp_r3 = M2C_FIELD(temp_r0, void (**)(s32, u8, u8), 0x10);
-    if (temp_r3 == 0) return;
-    temp_r3(temp_r0, arg1, M2C_FIELD(arg0 + arg1, u8 *, 0x38));
+    highlight = entry->highlight;
+    if (highlight == 0) return;
+    highlight((s32)entry, row, M2C_FIELD(menu + row, u8 *, 0x38));
 }
 
 void DrawListMenuRowIcon(void *arg0, s32 arg1) {
@@ -237,8 +258,8 @@ void func_020c05f0(void) {
 
 void func_020c05fc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
     M2C_UNK func_020c0634(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    void func_020c0a98();
-    func_020c0a98();
+    void ResetCarriedUnitMenuStack();
+    ResetCarriedUnitMenuStack();
     func_020c0634(arg0, arg1, arg2, arg3, arg4);
 }
 
@@ -331,9 +352,13 @@ void ResetMapViewLayers(void) {
     if (callback) callback();
 }
 
-void func_020c09c0(s32 arg0) {
-extern M2C_UNK gArmyPalettes;extern void *gCurrentMap;
-CopyToObjPaletteShadow((u8 *)&gArmyPalettes+((M2C_FIELD(arg0*0x8c+M2C_FIELD(gCurrentMap,s32 *,0),u8 *,0x67c1)+3)<<5),0x160,0x20);
+/* Load player `player`'s army colour palette into the battle map's OBJ palette
+ * slot at 0x160. */
+void LoadPlayerArmyPalette(s32 player) {
+    extern u8 gArmyPalettes[];
+    extern void *gCurrentMap;
+
+    CopyToObjPaletteShadow(gArmyPalettes + ((M2C_FIELD(player * MAP_PLAYER_STRIDE + M2C_FIELD(gCurrentMap, s32 *, 0), u8 *, PLAYER_ARMY_INDEX_OFF) + 3) << 5), 0x160, 0x20);
 }
 
 void LoadUiGraphicsBlock(M2C_UNK arg0) {
@@ -366,10 +391,11 @@ void LoadUiGraphics(void) {
     LoadUiLayerGraphics(2);
 }
 
-void func_020c0a98(void) {
-CEntry *p=(CEntry *)gCarriedUnitMenuStateStack; s32 i;
-gCarriedUnitMenuStackPtr=p;
-for(i=0;i<8;i++){p[i].x=0;p[i].y=0;p[i].index=0;p[i].flag=0;p[i].value=0;}
+/* Clear the carried-unit menu-state stack and point its cursor at the base. */
+void ResetCarriedUnitMenuStack(void) {
+CarriedUnitMenuState *state=(CarriedUnitMenuState *)gCarriedUnitMenuStateStack; s32 i;
+gCarriedUnitMenuStackPtr=state;
+for(i=0;i<8;i++){state[i].x=0;state[i].y=0;state[i].selection=0;state[i].width=0;state[i].entries=0;}
 }
 
 /* Saves the current carried-unit list menu onto the menu-state stack: copies its
@@ -475,10 +501,10 @@ void func_020c0d50(void *arg0) {
  * event's condition rejects the carried unit, buzz on a row that cannot be
  * picked, else play the confirm sound and run the row's action. */
 s32 ClickCarriedUnitRow(void *slot) {
-s32 func_ov000_0216aa44(u8,s32);
+s32 RunUnitEvent(u8,s32);
 u8 index=M2C_FIELD(slot,u8 *,SPRITE_SLOT_ID); MenuC0634 *list=M2C_FIELD(slot,MenuC0634 **,SPRITE_SLOT_OWNER);
 if(!IsCarriedUnitListOpen())return 0;
-if(func_ov000_0216aa44(M2C_FIELD(GetCarriedUnitListEntry(list,index),u8 *,0),0))return 0;
+if(RunUnitEvent(M2C_FIELD(GetCarriedUnitListEntry(list,index),u8 *,0),0))return 0;
 if(list->status[index]==1)PlaySoundEffect(0x1001d);
 else {PlaySoundEffect(0x10016);RunCarriedUnitRowAction(list,index);}
 return 1;
@@ -555,7 +581,7 @@ void InitUnitSprite(void *,s32,s32,s32,s32);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s16,s16,s32);
 u32 GetUnitSpriteWidth(void *); u32 GetUnitSpriteHeight(void *);
 void func_02087d84(void *,s32,s32,s32,u16,u16);
-void func_020ab150(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
+void CreateUnitSpriteButtonTask(void *,s16); void func_020aad18(void *);void Show3DSpriteSlide(void *);
 void *unit; s16 y; s16 x; u32 width,height; u32 visible;
 unit=func_020ab1c4((s32)owner);
 InitUnitSprite(unit,2,0x120,3,1);
@@ -566,7 +592,7 @@ y=M2C_FIELD(unit,s16 *,0x52);x=M2C_FIELD(unit,s16 *,0x50);
 width=GetUnitSpriteWidth(unit);height=GetUnitSpriteHeight(unit);
 func_02087d84(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)height);
 }
-func_020ab150(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
+CreateUnitSpriteButtonTask(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
 }
 
 void RefreshPlayerColorIndices(void) {

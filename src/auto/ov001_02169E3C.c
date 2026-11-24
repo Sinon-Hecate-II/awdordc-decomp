@@ -263,7 +263,7 @@ void DrawVerticallyAnchoredText(void *state, s32 x, s32 y, s32 blockWidth, s32 a
    internal pointers; on success returns 1 and writes a pointer to its FINF section into *outFinf. */
 s32 func_ov001_0216aab0(void *font, void **outFinf) {
     M2C_UNK SystemHalt();
-    s32 func_ov001_02169020(void *, s32);
+    NftrBlockHeader *FindFontBlock(NftrFileHeader *, u32);
     M2C_UNK RelocateFontPointers(void *);
     s32 temp_r0;
     s32 isNftr;
@@ -334,7 +334,7 @@ s32 func_ov001_0216aab0(void *font, void **outFinf) {
         backwardCompat = 1;
     }
     RelocateFontPointers(font);
-    temp_r0 = func_ov001_02169020(font, 0x46494E46);
+    temp_r0 = (s32) FindFontBlock(font, 0x46494E46);
     if (temp_r0 == 0) {
         *outFinf = NULL;
         return 0;

@@ -9,7 +9,7 @@ typedef struct { u8 kind:6; u8 flags:2; u8 pad[5]; u16 health:7; u16 flags2:4; u
 M2C_UNK SelectDirectAttackTarget(void) {
     extern void **gCurrentMap;
     extern void *gAiCommandState;
-    u8 *func_020a47e0(s32, s32);
+    u8 *FindDestructibleFeatureAtTile(s32, s32);
     s32 MapOrder_IsEnemyOwned(void);
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
@@ -59,7 +59,7 @@ M2C_UNK SelectDirectAttackTarget(void) {
             if (d < 1) continue;
             if (d > 1) continue;
 
-            unit = func_020a47e0(x, y);
+            unit = FindDestructibleFeatureAtTile(x, y);
             if (unit != 0 && MapOrder_IsEnemyOwned() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;

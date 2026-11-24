@@ -7,7 +7,7 @@ void SetupSprite3DScene(s32);
 s32 Divide(s32, s32);
 void SetGxPolygonAttr(s32, s32);
 void func_020a8cf0(s32, s32, s32, s32, u16, s32, u16, u16, u16, volatile u16);
-s32 func_ov003_02206690(s32, s32, s32);
+s32 Ov003_IsValueInRange(s32, s32, s32);
 s32 func_020e4b28(s32);
 s32 func_020a8e28(s32, s32);
 void GetSaveType(s32, s32);
@@ -16,7 +16,7 @@ void DrawSolidQuadScaled(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 static inline u8 Animated856(void *p){return M2C_FIELD(p,u8 *,0x34)!=0;}
 static inline u8 Mode856(void *p,s32 m){return M2C_FIELD(M2C_FIELD(p,void **,0x3c),u8 *,15)==m;}
 static inline u8 Pair856(void *p,u8 i){return M2C_FIELD(M2C_FIELD(p,void **,0x3c),u8 *,15)==8 && i<=1;}
-static inline u8 Split856(void *p,u8 i){return Mode856(p,8)&&func_ov003_02206690(i,2,4)!=0;}
+static inline u8 Split856(void *p,u8 i){return Mode856(p,8)&&Ov003_IsValueInRange(i,2,4)!=0;}
 static inline u8 Row856(void *p,u8 i,u8 target){return Mode856(p,8)&&i==target;}
 static inline s32 Selected856(void *p,s32 none){void *q=M2C_FIELD(M2C_FIELD(p,void **,0x5c),void **,0);return (u8)((q?M2C_FIELD(q,u16 *,8):none)-11);}
 static inline u8 Small856(s32 value){return value<3;}
@@ -99,7 +99,7 @@ if(alpha && !((u32)(M2C_FIELD(arg0,u8 *,56)<<27)>>31) &&
 (((u32)(M2C_FIELD(arg0,u8 *,56)<<30)>>31)||i!=Selected856(arg0,none))){
 SetGxPolygonAttr(1,(u8)alpha);DrawSolidQuadScaled(x,y,2,width,M2C_FIELD(M2C_FIELD(arg0,void **,68),u8 *,2),shade,sx,sy,align,256);SetGxPolygonAttr(1,31);
 }
-if(!Pair856(arg0,i)&&Mode856(arg0,8))func_ov003_02206690((u8)i,2,4);
+if(!Pair856(arg0,i)&&Mode856(arg0,8))Ov003_IsValueInRange((u8)i,2,4);
 next:data=M2C_FIELD(arg0,void **,68);originY=(s16)(originY+M2C_FIELD(data,u8 *,4));advance:i++;offset+=36;
 }while(i<M2C_FIELD(data,u8 *,0));
 }

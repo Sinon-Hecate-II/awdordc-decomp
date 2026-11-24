@@ -63,24 +63,24 @@ void Ov001_GetSpritePosition(void *arg0, s32 arg1, u32 *arg2, s32 *arg3) {
 
 void Ov001_LoadCharBank(s32 arg0, M2C_UNK arg1) {
  s32 Ov001_LoadFile(M2C_UNK,M2C_UNK *,M2C_UNK);
- extern M2C_UNK data_ov001_02193e34;
+ extern M2C_UNK gOv001CharBanks;
  M2C_UNK sp0;
- (&data_ov001_02193e34)[arg0]=Ov001_LoadFile(arg1,&sp0,4);
+ (&gOv001CharBanks)[arg0]=Ov001_LoadFile(arg1,&sp0,4);
 }
 
 void Ov001_FreeCharBank(u8 arg0) {
  void Ov001_FreeFile(s32);
- extern M2C_UNK data_ov001_02193e34;
- Ov001_FreeFile(((s32 *)&data_ov001_02193e34)[arg0]);
- ((s32 *)&data_ov001_02193e34)[arg0] = 0;
+ extern M2C_UNK gOv001CharBanks;
+ Ov001_FreeFile(((s32 *)&gOv001CharBanks)[arg0]);
+ ((s32 *)&gOv001CharBanks)[arg0] = 0;
 }
 
 void Ov001_LoadSpriteObjLayout(s32 arg0, s32 arg1, s32 arg2) {
-extern M2C_UNK data_ov001_02193e34;
+extern M2C_UNK gOv001CharBanks;
 void CpuFill(u32,void *,s32);
 void CopyU16(const void *,void *,u32);
 void MIi_CpuCopy32(const void *,void *,s32);
-u8 *base=(u8 *)((M2C_UNK *)&data_ov001_02193e34)[arg0];
+u8 *base=(u8 *)((M2C_UNK *)&gOv001CharBanks)[arg0];
 s32 index=arg1<<3;
 u16 count=*(u16 *)(base+index);
 s32 offset=*(s32 *)(base+index+4);
@@ -103,16 +103,20 @@ s32 Ov001_CreateSpriteFromLayout(M2C_UNK arg0, M2C_UNK arg1) {
     return temp_r0;
 }
 
-M2C_UNK Ov001_CreateSprite(s32 arg0,s32 arg1,s32 arg2) {
-extern M2C_UNK data_ov001_02193e34;
+/* Create a sprite object from one layout of a character bank (1 = top screen,
+ * 0 = bottom screen): look up the layout's OAM entry count in gOv001CharBanks,
+ * allocate that many sprite entries from the pool (`fromHead` picks which end of
+ * the arena it takes them from) and copy the layout's source entries into it. */
+void *Ov001_CreateSprite(s32 bank, s32 layoutIndex, s32 fromHead) {
+extern M2C_UNK gOv001CharBanks;
 M2C_UNK Ov001_AllocSpriteBlock(s32,s32,s32);
 s32 Ov001_GetSpriteObjEntry(s32,s32);
 void Ov001_LoadSpriteObjLayout(s32,s32,s32);
-void *base=((M2C_UNK **)&data_ov001_02193e34)[arg0];
-u16 count=*(u16 *)((u8 *)base+arg1*8);
-M2C_UNK t=Ov001_AllocSpriteBlock(arg0,count,arg2);
-Ov001_LoadSpriteObjLayout(arg0,arg1,Ov001_GetSpriteObjEntry(t,0));
-return t;
+Ov001SpriteLayout *layouts=(Ov001SpriteLayout *)((M2C_UNK *)&gOv001CharBanks)[bank];
+u16 count=layouts[layoutIndex].count;
+M2C_UNK block=Ov001_AllocSpriteBlock(bank,count,fromHead);
+Ov001_LoadSpriteObjLayout(bank,layoutIndex,Ov001_GetSpriteObjEntry(block,0));
+return block;
 }
 
 void *Ov001_QueueCreate(s32 arg0) {
@@ -139,7 +143,7 @@ void *Ov001_QueueCreateFromBuffer(s32 arg0, s32 arg1, s32 arg2) {
     return base;
 }
 
-void func_ov001_0218a6d8(s32 arg0, ...) {
+void Ov001_FreeBlock(s32 arg0, ...) {
  M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
  Ov001_FreeAlloc(&arg0);
 }
@@ -188,13 +192,16 @@ s32 Ov001_QueuePop(void *queue) {
     return result;
 }
 
+/* Allocate the ov001 screen-fade state block (the sub and main fade slots) and
+ * reset both engines' blend control to full white: every plane blended, BLDY 16. */
 void Ov001_InitFades(void) {
     extern M2C_UNK gOv001FadeStates;
     void *Ov001_Alloc(s32, M2C_UNK);
     void GX_SetBlendControl(M2C_UNK, s32, s32);
-    gOv001FadeStates = (M2C_UNK)Ov001_Alloc(0x18, 4);
-    GX_SetBlendControl(0x4000050, 0x3f, 0x10);
-    GX_SetBlendControl(0x4001050, 0x3f, 0x10);
+
+    gOv001FadeStates = (M2C_UNK)Ov001_Alloc(sizeof(Ov001FadeStates), 4);
+    GX_SetBlendControl(GX_BLDCNT_MAIN, OV001_BLEND_ALL, 0x10);
+    GX_SetBlendControl(GX_BLDCNT_SUB, OV001_BLEND_ALL, 0x10);
 }
 
 void Ov001_FreeFades(void) {
@@ -381,17 +388,19 @@ void Ov001_CreateTextContext(void) {
     }
 }
 #pragma opt_strength_reduction reset
-void func_ov001_0218abb8(void) {
+/* Free the ov001 text context built by Ov001_CreateTextContext: its two font
+ * files, its queue of pooled text panels and the context allocation itself. */
+void Ov001_FreeTextContext(void) {
  void Ov001_FreeFile(s32);
- void func_ov001_0218a6d8(s32,...);
+ void Ov001_FreeBlock(s32,...);
  M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
  extern M2C_UNK gOv001TextContext;
- extern M2C_UNK data_ov001_02193e44;
- M2C_UNK *p=&gOv001TextContext;
+ extern M2C_UNK gOv001Heap;
+ M2C_UNK *contextSlot=&gOv001TextContext;
  s32 i;
- for(i=0;i<2;i++)Ov001_FreeFile(*((s32 *)((u8 *)(*p)+0x674)+i));
- func_ov001_0218a6d8(*((s32 *)((u8 *)gOv001TextContext+0x670)));
- Ov001_FreeAlloc(&data_ov001_02193e44-1);
+ for(i=0;i<2;i++)Ov001_FreeFile(((s32 *)((u8 *)*contextSlot+OV001_CTX_FONT_FILES))[i]);
+ Ov001_FreeBlock(*((s32 *)((u8 *)gOv001TextContext+OV001_CTX_PANEL_QUEUE)));
+ Ov001_FreeAlloc(&gOv001Heap-1); /* &gOv001TextContext, spelled apart so the pool keeps two words */
 }
 
 /* Take a text panel object from the ov001 context's queue, set its size and font
@@ -427,10 +436,10 @@ void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 
 }
 
 void func_ov001_0218ace0(M2C_UNK arg0) {
-    M2C_UNK func_ov001_0218c3a0(M2C_UNK);
+    M2C_UNK Ov001_ReturnTileRangeNode(M2C_UNK);
     void Ov001_QueuePush(void *, s32);
     extern M2C_UNK gOv001TextContext;
-    func_ov001_0218c3a0(M2C_FIELD((void *)arg0, M2C_UNK *, 0x28));
+    Ov001_ReturnTileRangeNode(M2C_FIELD((void *)arg0, M2C_UNK *, 0x28));
     Ov001_QueuePush((void *)M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x670), arg0);
 }
 

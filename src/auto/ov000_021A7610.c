@@ -127,15 +127,15 @@ s32 FindCarrierTargetCandidate(s32 reserveFunds) {
 }
 
 s32 func_ov000_021a7f1c(s32 arg0) {
-s32 FindAiTargetOfType(s32);s32 func_ov000_021a4dc4(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
+s32 FindAiTargetOfType(s32);s32 EvaluateCaptureTargetCandidate(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 IsUnitKindRatioSatisfied(s32,s32);s32 FindAiTargetCandidate(u8);s32 IsGroupUnitRatioOk(s8,s32);
-void func_ov000_021a0250(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
+void ResetRejectedAiTargetCandidates(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
 s32 CanReservePurchaseFunds(s32);s32 CountPlayerUnitsOfKindNotInAiState(s32,s32);
 extern u8 gUnitKindInfo[],gUnitKindStats[],gUnitKindTargetClass[],gAiTargetCandidates[],gAiCommand[];
 extern u32 gUnitKindScores[];extern void **gCurrentMap;extern u8 *gAiState;
 s32 mode,flag,low,best,i,index,other,cost,limit;u8 chosen;u32 score,v; s32 shortfall;u8 *attr,*entry,*map,*state;u16 price,player;
 if(FindAiTargetOfType(4)==-1)return -1;
-mode=func_ov000_021a4dc4();flag=mode&256;
+mode=EvaluateCaptureTargetCandidate();flag=mode&256;
 retry:
 low=(u8)mode;best=0;score=0;limit=low-1;
 for(i=1,attr=gUnitKindInfo;i<27;i++,attr+=112){
@@ -163,11 +163,11 @@ if(index==-1)goto reject;
 if((attr[19]&7) && GetUnitAttackClass(chosen)==1){
 entry=gAiTargetCandidates+index*12;
 if(IsGroupUnitRatioOk((s8)entry[4],best)){entry[3]=254;goto again;}
-func_ov000_021a0250();
+ResetRejectedAiTargetCandidates();
 }else if((u8)(gUnitKindTargetClass[best]+254)<=1){
 entry=gAiTargetCandidates+index*12;
 if(func_ov000_021a4e08(entry[0],entry[1],best)>=90){entry[3]=255;goto again;}
-func_ov000_021a0250();
+ResetRejectedAiTargetCandidates();
 }
 cost=GetUnitBuildCost(*(u16 *)((u8 *)*gCurrentMap+0x52a4),best)*10;
 map=*gCurrentMap;price=(u16)cost;
@@ -207,7 +207,7 @@ if(price>((AiPlayer *)(map+0x67a4)+*(u16 *)(map+0x52a4))->money-shortfall)goto r
 }
 gAiCommand[6]=best;return index;
 reject:
-gUnitKindScores[best]=0;func_ov000_021a0250();goto retry;
+gUnitKindScores[best]=0;ResetRejectedAiTargetCandidates();goto retry;
 }
 
 /* Picks the best affordable unit kind to build against one AI target candidate:
@@ -314,14 +314,14 @@ for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)g
 void ScoreUnitKindsForTargetCandidate(s32 index) {
 extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
 extern u8 *gAiSettings;
-extern u8 gAiTargetCandidates[],data_ov000_021e00ad[],gUnitKindStats[];
+extern u8 gAiTargetCandidates[],gAiTargetCandidateYs[],gUnitKindStats[];
 extern void **gCurrentMap;
 void FloodFillUnitRange(s32,s32,s32,s32,s32); s32 IsUnitOnCurrentTeam(s32); void func_ov000_021a7610(void);
 s32 minx,maxy,r,cx,cy; s32 maxx,y,x,i,off,miny; u8 *unit,*map,*entry;
 for(i=0;i<27;i++) {data_ov000_021e1474[i]=0;data_ov000_021e14aa[i]=data_ov000_021e1474[i];}
 off=index*12;
-FloodFillUnitRange(gAiTargetCandidates[off],data_ov000_021e00ad[off],7,gAiSettings[16],0);
-cx=gAiTargetCandidates[off]; cy=data_ov000_021e00ad[off]; r=gAiSettings[16];
+FloodFillUnitRange(gAiTargetCandidates[off],gAiTargetCandidateYs[off],7,gAiSettings[16],0);
+cx=gAiTargetCandidates[off]; cy=gAiTargetCandidateYs[off]; r=gAiSettings[16];
 minx=cx-r; if(minx<0)minx=0;
 miny=cy-r; if(miny<0)miny=0;
 map=*gCurrentMap;

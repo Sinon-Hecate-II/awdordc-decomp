@@ -2,7 +2,18 @@
 #include "common.h"
 #include "battle_map.h"
 
-s32 GetKeyActionFlags(void){extern void *gKeyState;u16 v=M2C_FIELD(gKeyState,u16 *,0);if(v&2)return 32;if(v&1)return 16;if(v&256)return 256;if(v&1024)return 64;return 0;}
+/* The map action the key pressed this frame asks for: B cancels before A
+ * confirms, then R opens the map menu and X closes the aiming cursor. */
+s32 GetKeyActionFlags(void) {
+    extern void *gKeyState;
+    u16 pressed = ((KeyState *)gKeyState)->pressed;
+
+    if (pressed & KEY_B) return MAP_ACTION_CANCEL;
+    if (pressed & KEY_A) return MAP_ACTION_CONFIRM;
+    if (pressed & KEY_R) return MAP_ACTION_MENU;
+    if (pressed & KEY_X) return MAP_ACTION_CLOSE;
+    return 0;
+}
 
 s32 GetCursorCycleKey(void) {
     extern void *gKeyState;
@@ -29,22 +40,24 @@ s32 GetMapSettleKeyAction(void) {
     return 0x20;
 }
 
+/* The map-cursor action the key pressed this frame asks for, in priority order:
+ * A confirms, B cancels, R opens the map menu and X closes the aiming cursor. */
 s32 GetMapCursorKeyAction(void) {
     extern void *gKeyState;
-    u16 temp_r0;
+    u16 pressed;
 
-    temp_r0 = M2C_FIELD(gKeyState, u16 *, 0);
-    if (temp_r0 & 1) {
-        return 0x10;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);
+    if (pressed & KEY_A) {
+        return MAP_ACTION_CONFIRM;
     }
-    if (temp_r0 & 2) {
-        return 0x20;
+    if (pressed & KEY_B) {
+        return MAP_ACTION_CANCEL;
     }
-    if (temp_r0 & 0x100) {
-        return 0x100;
+    if (pressed & KEY_R) {
+        return MAP_ACTION_MENU;
     }
-    if (temp_r0 & 0x400) {
-        return 0x40;
+    if (pressed & KEY_X) {
+        return MAP_ACTION_CLOSE;
     }
     return 0;
 }

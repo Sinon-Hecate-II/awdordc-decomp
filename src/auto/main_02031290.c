@@ -262,45 +262,47 @@ void func_020316c4(void *arg0) {
 }
 #pragma opt_strength_reduction reset
 s32 Wfc_IsSharedApCode(M2C_UNK arg0) {
-    M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
+    M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK, M2C_UNK *);
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fb2a4;
+    extern M2C_UNK gWfcSharedApCodeTag;
     M2C_UNK buf[6];
 
-    func_0203182c(arg0, &buf[0]);
-    if (ByteCompareN((M2C_UNK) &buf[0], &data_020fb2a4, 8) == 0) {
+    Wfc_DecodeSharedApCode(arg0, &buf[0]);
+    if (ByteCompareN((M2C_UNK) &buf[0], &gWfcSharedApCodeTag, 8) == 0) {
         return 1;
     }
     return 0;
 }
 
 void func_02031784(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
-    void func_02031930(M2C_UNK *, M2C_UNK);
+    M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK, M2C_UNK *);
+    void Wfc_ComputeFriendCodeHash(M2C_UNK *, M2C_UNK);
     M2C_UNK buf[6];
 
-    func_0203182c(arg0, &buf[0]);
-    func_02031930(&buf[0], arg1);
+    Wfc_DecodeSharedApCode(arg0, &buf[0]);
+    Wfc_ComputeFriendCodeHash(&buf[0], arg1);
 }
 
-void func_020317ac(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0203182c(M2C_UNK, M2C_UNK *);
+/* If `connCode` is a shared access point connection code, copies the 10-byte
+ * access point code that follows its "NDWCSHAP" tag to `apCode`. */
+void Wfc_GetSharedApCode(M2C_UNK connCode, M2C_UNK apCode) {
+    M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK, M2C_UNK *);
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
     void MI_CpuCopy8(void *, void *, u32);
-    extern M2C_UNK data_020fb2a4;
-    M2C_UNK buf0[2];
-    M2C_UNK buf1[4];
-    func_0203182c(arg0, buf0);
-    if (ByteCompareN((M2C_UNK)buf0, &data_020fb2a4, 8) != 0) {
+    extern M2C_UNK gWfcSharedApCodeTag;
+    M2C_UNK buf[6];
+
+    Wfc_DecodeSharedApCode(connCode, buf);
+    if (ByteCompareN((M2C_UNK)buf, &gWfcSharedApCodeTag, 8) != 0) {
         return;
     }
-    MI_CpuCopy8(buf1, (void *)arg1, 0xA);
+    MI_CpuCopy8(&buf[2], (void *)apCode, 0xA);
 }
 
 s32 Wfc_IsUsbApCode(M2C_UNK arg0) {
     s32 ByteCompareN(M2C_UNK, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fb2b0;
-    if (ByteCompareN(arg0, &data_020fb2b0, 8) == 0) {
+    extern M2C_UNK gWfcUsbApCodeTag;
+    if (ByteCompareN(arg0, &gWfcUsbApCodeTag, 8) == 0) {
         return 1;
     }
     return 0;
@@ -313,7 +315,7 @@ void func_0203181c(s32 arg0, u8 *dst) {
 
 #pragma push
 #pragma opt_strength_reduction off
-M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
+M2C_UNK Wfc_DecodeSharedApCode(M2C_UNK arg0, M2C_UNK *arg1) {
     extern u8 data_020ea8ef[];
     extern signed char *data_020fb23c[];
     M2C_UNK func_02031b98(M2C_UNK, u8 *, s32, s32);
@@ -366,17 +368,19 @@ M2C_UNK func_0203182c(M2C_UNK arg0, M2C_UNK *arg1) {
     }
 }
 #pragma pop
-void func_02031930(M2C_UNK *arg0, M2C_UNK arg1) {
-    M2C_UNK MD5Init(M2C_UNK *);
-    M2C_UNK MD5Update(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0200c55c(M2C_UNK *, M2C_UNK *);
+/* Build the 13-byte WFC friend-code check value from a decoded 24-byte
+   friend-code block: MD5 it and keep digest bytes 3..15. */
+void Wfc_ComputeFriendCodeHash(M2C_UNK *code, M2C_UNK out) {
+    void MD5Init(M2C_UNK *);
+    void MD5Update(M2C_UNK *, M2C_UNK, u32);
+    void MD5Final(M2C_UNK *, M2C_UNK *);
     void MI_CpuCopy8(void *, void *, u32);
     u8 digest[20];
     u8 ctx[88];
     MD5Init((M2C_UNK *)ctx);
-    MD5Update((M2C_UNK *)ctx, (M2C_UNK)arg0, 0x18);
-    func_0200c55c((M2C_UNK *)digest, (M2C_UNK *)ctx);
-    MI_CpuCopy8(digest + 3, (void *)arg1, 0xD);
+    MD5Update((M2C_UNK *)ctx, (M2C_UNK)code, 0x18);
+    MD5Final((M2C_UNK *)digest, (M2C_UNK *)ctx);
+    MI_CpuCopy8(digest + 3, (void *)out, 0xD);
 }
 
 void func_0203197c(u8 *src, u8 *dst) {
@@ -615,16 +619,19 @@ void func_02031ee4(M2C_UNK arg0) {
     func_02031e7c(arg0, func_02031e14((u32 *)arg0) & ~4);
 }
 
-u64 func_02031f14(s32 arg0, s32 arg1) {
+/* Build a 64-bit player code from a GameSpy profile id and the game id: the low
+ * word is the profile id, the high word the 7-bit CRC-8 check over { profile id,
+ * game id }.  The inverse of IsPlayerCodeValid. */
+u64 BuildPlayerCode(s32 profileId, s32 gameId) {
     void BuildCrc8Table(u8 *, s32);
     s32 Crc8Block(u8 *, s32 *, s32);
     u8 buf[0x100];
     s32 in[2];
 
-    in[0] = arg0;
-    in[1] = arg1;
+    in[0] = profileId;
+    in[1] = gameId;
     BuildCrc8Table(buf, 7);
-    return (u32) arg0 | ((u64) (Crc8Block(buf, in, 8) & 0x7f) << 32);
+    return (u32) profileId | ((u64) (Crc8Block(buf, in, 8) & 0x7f) << 32);
 }
 
 void func_02031f58(void *arg0, u64 arg1) {

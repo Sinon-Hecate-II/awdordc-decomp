@@ -80,12 +80,14 @@ M2C_UNK *GetFaceSpriteTemplate(void) {
     return &data_020f3650;
 }
 
-void func_02098dc0(s32 arg0, s32 arg1, M2C_UNK arg2, s32 arg3) {
- M2C_UNK AddSprite(u16,u8,M2C_UNK,s32,s32);
- s32 result = (s32)GetFaceSpriteTemplate();
- arg1 = (u8)arg1;
- arg0 &= 0x1FF;
- AddSprite((u16)arg0,arg1,arg2,result,arg3);
+/* Add a CO face sprite using the shared face template, with the supplied position, tile, and priority. */
+void AddFaceSprite(s32 x, s32 y, M2C_UNK tile, s32 priority) {
+    M2C_UNK AddSprite(u16, u8, M2C_UNK, s32, s32);
+    s32 faceTemplate = (s32)GetFaceSpriteTemplate();
+
+    y = (u8)y;
+    x &= 0x1FF;
+    AddSprite((u16)x, y, tile, faceTemplate, priority);
 }
 
 void func_02098e04(void *arg0, u32 arg1, s32 arg2) {
@@ -181,11 +183,11 @@ M2C_UNK func_0209902c(void *arg0) {
 M2C_UNK func_02099040(void *arg0) {
  void UpdateSpriteFade(void *);
  void UpdateSpriteSlide(void *);
- void func_020887ec(void *);
+ void DrawSpriteActor(void *);
  if(IsFaceSpriteLoaded(arg0)==0) return;
  UpdateSpriteFade(arg0);
  UpdateSpriteSlide(arg0);
- func_020887ec(arg0);
+ DrawSpriteActor(arg0);
 }
 
 void func_02099070(void) {
@@ -410,19 +412,20 @@ void func_020994e0(M2C_UNK arg0) {
     InitTextTiles(1, arg0, 0);
 }
 
-void func_020994f8(u16 *a, s32 b, s32 c) {
-    s32 i = 0;
-    if (c <= 0) return;
+/* Fill two tilemap rows for a cached glyph string, alternating even and odd tile IDs across the rows. */
+void WriteCachedGlyphTilemap(u16 *tilemap, s32 firstTile, s32 tileCount) {
+    s32 column = 0;
+    if (tileCount <= 0) return;
     {
-        s32 v = b;
-        s32 w = 1;
+        s32 evenTile = firstTile;
+        s32 oddTileOffset = 1;
         do {
-            a[i] = (u16)v;
-            a[i + 32] = (u16)(b + w);
-            i++;
-            v += 2;
-            w += 2;
-        } while (i < c);
+            tilemap[column] = (u16)evenTile;
+            tilemap[column + 32] = (u16)(firstTile + oddTileOffset);
+            column++;
+            evenTile += 2;
+            oddTileOffset += 2;
+        } while (column < tileCount);
     }
 }
 
@@ -434,7 +437,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
     s32 StringLength(M2C_UNK);
     void StringCopy(M2C_UNK, M2C_UNK);
     s32 func_0209b370(s32, s32, s32, s32, s32, s32, u16, u16, u16);
-    void func_020994f8(u16 *, s32, s32);
+    void WriteCachedGlyphTilemap(u16 *, s32, s32);
     s32 MeasureStringWidth(M2C_UNK);
 
     register void *obj;
@@ -463,7 +466,7 @@ s32 func_0209953c(s32 arg0, s32 arg1, s32 arg2, M2C_UNK arg3, s32 arg4, s32 arg5
                 if (StringCompare((void *)((u8 *)obj + cursor), (void *)arg3) == 0) {
                     u = *(u16 *)((u8 *)obj + idx * 4 + 0x200);
                     byte2 = *((u8 *)obj + idx * 4 + 0x202);
-                    func_020994f8((u16 *)(arg2 + arg0 * 2 + arg1 * 64),
+                    WriteCachedGlyphTilemap((u16 *)(arg2 + arg0 * 2 + arg1 * 64),
                                  (u16)(arg4 + u), byte2);
                     return idx;
                 }

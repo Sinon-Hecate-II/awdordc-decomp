@@ -163,7 +163,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
     extern u16 **g3DSpriteEngineSub;
     extern u16 **g3DSpriteEngineMain;
     extern void *gTouchState;
-    M2C_UNK func_020b2e78(M2C_UNK, M2C_UNK, void *);
+    M2C_UNK RectContainsPoint(M2C_UNK, M2C_UNK, void *);
     M2C_UNK func_020b212c(void);
     void SetTileRectPalette(void *, M2C_UNK, M2C_UNK, M2C_UNK);
 
@@ -196,7 +196,7 @@ M2C_UNK func_ov006_022157a0(void *arg0) {
         buf[3] = (u16)*(s16 *)((char *)arg0 + 0x1A);
 
         if ((*(u8 *)((char *)gTouchState + 0x12) != 0 &&
-             func_020b2e78(
+             RectContainsPoint(
                  (M2C_UNK)*(u16 *)gTouchState,
                  (M2C_UNK)*((u16 *)gTouchState + 1),
                  buf) != 0) ||

@@ -30,7 +30,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    void func_020ab150(void *, s32);
+    void CreateUnitSpriteButtonTask(void *, s32);
     void Show3DSpriteSlide(void *);
     void func_020aad18(void *);
     void func_02087d84(void *, s32, s32, s32, s32, s32);
@@ -77,7 +77,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         s32 w=GetUnitSpriteWidth(sprite);
         func_02087d84(M2C_FIELD(sprite, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite));
     }
-    func_020ab150(sprite, 1);
+    CreateUnitSpriteButtonTask(sprite, 1);
     Show3DSpriteSlide(sprite);
     func_020aad18(sprite);
 
@@ -91,7 +91,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
         s32 w=GetUnitSpriteWidth(sprite2);
         func_02087d84(M2C_FIELD(sprite2, void **, 0x64),1,b,a,(u16)w,(u16)GetUnitSpriteHeight(sprite2));
     }
-    func_020ab150(sprite2, 2);
+    CreateUnitSpriteButtonTask(sprite2, 2);
     Show3DSpriteSlide(sprite2);
     func_020aad18(sprite2);
 
@@ -416,23 +416,31 @@ if(GetRecordTier(0,k)+(GetRecordTier(0,i)+GetRecordTier(0,j))>=5) ((HistoryMenu 
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
+/* Scroll the active records-menu tab up by one row, stopping at the top: play the
+ * list sound and refresh the record the cursor now shows. */
 s32 HistoryScrollUp(void) {
-extern s32 gHistoryMenu;
-void PlaySoundEffect(s32);
-s32 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
-s32 n=M2C_FIELD(p,s16 *,2);
-if(!n)return 0;
-M2C_FIELD(p,s16 *,2)=n-1;
-PlaySoundEffect(0x10019);HistoryMenu_SetRecordText();return 1;
+    extern s32 gHistoryMenu;
+    void PlaySoundEffect(s32);
+    HistoryMenuTab *tab = (HistoryMenuTab *)HistoryTabAt(((HistoryMenu *)gHistoryMenu)->tab);
+    s32 cursor = tab->cursor;
+    if (!cursor) return 0;
+    tab->cursor = cursor - 1;
+    PlaySoundEffect(SOUND_MENU_SELECT);
+    HistoryMenu_SetRecordText();
+    return 1;
 }
 
+/* Scroll the active records-menu tab up one page (HISTORY_MENU_PAGE_ROWS rows),
+ * stopping at the top, and return how many rows the view moved. */
 s16 HistoryPageUp(void) {
 extern s32 gHistoryMenu;
-s32 p=HistoryTabAt(M2C_FIELD(gHistoryMenu,s8 *,1));
-s16 old=M2C_FIELD(p,s16 *,2);
-M2C_FIELD(p,s16 *,2)=old-7;
-if(M2C_FIELD(p,s16 *,2)<0)M2C_FIELD(p,s16 *,2)=0;
-return M2C_FIELD(p,s16 *,2)-old;
+HistoryMenuTab *tab;
+s16 old;
+tab=(HistoryMenuTab *)HistoryTabAt(((HistoryMenu *)gHistoryMenu)->tab);
+old=tab->cursor;
+tab->cursor=old-HISTORY_MENU_PAGE_ROWS;
+if(tab->cursor<0)tab->cursor=0;
+return tab->cursor-old;
 }
 
 /* Scroll the active records-menu tab down one row, if a row remains below the

@@ -148,37 +148,43 @@ s32 func_02092048(void *arg0) {
     return var_r0;
 }
 
-s16 func_02092084(void *arg0) {
-    s16 var_r0;
-    void *temp_r1;
+/* Map-script opcode: run the callback the command carries at MAP_SCRIPT_PARAM
+ * with the command's wide operand (MAP_SCRIPT_OPERAND2), then advance to the next
+ * command.  Returns 1 while a script block is still loaded, 0 once it is cleared. */
+s16 MapScriptCallFunction(void *state) {
+    void *command;
+    s16 running;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    M2C_FIELD(temp_r1, M2C_UNK (**)(s32), 4)(M2C_FIELD(temp_r1, s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
-    if (M2C_FIELD(arg0, s32 *, 0) != 0) {
-        var_r0 = 1;
+    command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    M2C_FIELD(command, M2C_UNK (**)(s32), MAP_SCRIPT_PARAM)(M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
+    if (M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_BLOCK) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
-void func_020920c4(void *arg0) {
+void WaitForDialogSpriteGone(void *arg0) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102a70;
-    if (FindObjectByClass(&data_02102a70) == 0) {
+    extern M2C_UNK gDialogSpriteClass;
+    if (FindObjectByClass(&gDialogSpriteClass) == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_020920e8(void *arg0) {
+/* Dialog-script command: create the dialog sprite of class gDialogSpriteClass and
+ * hand it to the command's setup callback (MAP_SCRIPT_PARAM), then keep this
+ * sequence on the command until the sprite has gone. */
+s32 DialogOpcodeCreateSprite(void *sequence) {
     M2C_UNK CreateSpriteFromClass(s32, s32);
-    extern M2C_UNK data_02102a70;
-    s32 temp_r0;
-    temp_r0 = CreateSpriteFromClass((s32)&data_02102a70, 7);
-    M2C_FIELD(arg0, void (**)(void *), 8) = func_020920c4;
-    M2C_FIELD(M2C_FIELD(arg0, void **, 4), void (**)(s32), 4)(temp_r0);
-    M2C_FIELD(arg0, void **, 4) = (void *)(M2C_FIELD(arg0, void **, 4) + 0x10);
+    extern M2C_UNK gDialogSpriteClass;
+    s32 sprite;
+    sprite = CreateSpriteFromClass((s32)&gDialogSpriteClass, 7);
+    M2C_FIELD(sequence, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForDialogSpriteGone;
+    M2C_FIELD(M2C_FIELD(sequence, void **, MAP_SCRIPT_STATE_IP), void (**)(s32), MAP_SCRIPT_PARAM)(sprite);
+    M2C_FIELD(sequence, void **, MAP_SCRIPT_STATE_IP) = (void *)(M2C_FIELD(sequence, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -484,16 +490,16 @@ M2C_FIELD(sequence,s32 *,4)+=16;return 0;
  * text and sprite engines, then create the message sprite on each screen the
  * current 3D-sprite target requires. Returns 1 when the text could not be set up. */
 s32 ShowMessageText(s32 textId) {
- s32 GetLocalizedText(s32); void func_02099e10(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
- s32 func_02099dcc(s32); void SetMessageBoxState(s32); s32 IsMessageBoxActive(void);
+ s32 GetLocalizedText(s32); void Text_GetScreenCount(void); void func_020943e0(void); void Reset3DSpriteEngines(void);
+ s32 Text_IsPlainMessage(s32); void SetMessageBoxState(s32); s32 IsMessageBoxActive(void);
  u8 Get3DSpriteTarget(void); s32 GetScenePanelTextLineX(s32); s32 Get3DSpriteManager(void); s32 GetScenePanelState(s32);
  s32 CreateMessageSprite(s32,s32,s32,s32,s32,s32,u16,u16);
  M2C_UNK MarkSpriteLayer1Dirty(void);
  extern void *gCur3DSpriteEngine; extern void *g3DSpriteEngineMain; extern void *g3DSpriteEngineSub;
  s32 text; void *savedEngine; s32 screen,style; void *managerA,*managerB,*layerA,*layerB,*layerC,*sprite; u32 attr;
  text=GetLocalizedText(textId);
- func_02099e10(); func_020943e0(); Reset3DSpriteEngines();
- if(func_02099dcc(text)==0){SetMessageBoxState(3);} if(IsMessageBoxActive()!=0)goto abort;
+ Text_GetScreenCount(); func_020943e0(); Reset3DSpriteEngines();
+ if(Text_IsPlainMessage(text)==0){SetMessageBoxState(3);} if(IsMessageBoxActive()!=0)goto abort;
  savedEngine=gCur3DSpriteEngine;
  for(screen=0;screen<2;screen++){
  if(screen==0)gCur3DSpriteEngine=g3DSpriteEngineMain;else gCur3DSpriteEngine=g3DSpriteEngineSub;
@@ -513,10 +519,10 @@ s32 ShowMessageText(s32 textId) {
 abort: return 1;
 }
 
-void func_02092888(M2C_UNK arg0) {
+void SpawnMessageTextSprite(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102a58;
-    CreateSpriteObject(&data_02102a58, arg0);
+    extern M2C_UNK gMessageTextSpriteClass;
+    CreateSpriteObject(&gMessageTextSpriteClass, arg0);
 }
 
 void func_020928a0(void *arg0) {
@@ -619,13 +625,18 @@ if(turn>=0 && turn!=M2C_FIELD(map,u16 *,MAP_TURN))return;
 if(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)==M2C_FIELD(state,u8 *,MAP_SCRIPT_STATE_PLAYER))M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_WAIT)=0;
 }
 
-s32 func_02092b68(void *arg0) {
-void WaitForMapTurn(void *);
-M2C_FIELD(arg0,s8 *,0x11)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,8);
-M2C_FIELD(arg0,s16 *,0x12)=M2C_FIELD(M2C_FIELD(arg0,void **,4),s16 *,10);
-M2C_FIELD(arg0,void (**)(void *),8)=WaitForMapTurn;
-WaitForMapTurn(arg0);
-M2C_FIELD(arg0,s32 *,4)+=16;return 0;
+/* Map-script command: wait until the map reaches the turn of the player the
+ * command's first operand names (the second operand is the turn to wait for, -1
+ * for any).  Stores the wait parameters in the sequence state, then starts
+ * waiting at once. */
+s32 MapScriptWaitForTurn(void *state) {
+    void WaitForMapTurn(void *);
+    M2C_FIELD(state, u8 *, MAP_SCRIPT_STATE_PLAYER) = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND0);
+    M2C_FIELD(state, s16 *, MAP_SCRIPT_STATE_TURN) = M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s16 *, MAP_SCRIPT_OPERAND1);
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForMapTurn;
+    WaitForMapTurn(state);
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
 }
 
 /* Map-script wait callback: keeps the script on its command until the map reaches

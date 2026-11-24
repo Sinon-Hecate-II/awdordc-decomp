@@ -132,6 +132,7 @@ typedef struct QueryQueue {
 #define SB_LIST_EVENT_QUERY_ERROR    5 /* the master reported an error, see SB_SLIST_ERROR */
 
 /* SB_SLIST_STATE values. */
+#define SB_SLIST_STATE_AD_HOC    0 /* collecting the servers that announce themselves (SBServerListProcessAdHocServers) */
 #define SB_SLIST_STATE_IDLE      1 /* disconnected, ready for a new query */
 #define SB_SLIST_STATE_CONNECTED 2 /* connected: master replies are decrypted and parsed */
 #define SB_SLIST_STATE_QUERYING  3 /* a query/connect handshake is in flight */

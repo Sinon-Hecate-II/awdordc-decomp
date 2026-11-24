@@ -154,7 +154,7 @@ void Sound_FreeVoice(void) {
  * stored parameter, reset the voice's envelope, then mark it keyed on with the
  * ARM7 command counter its start command was queued at. */
 void Sound_StartSequence(void *voice) {
-    void func_0202b1ac(void *);
+    void Sound_ResetVoice(void *);
     void func_02008bf0();
     void func_02008ca0();
     s32 Sound_GetCommandCounter();
@@ -163,7 +163,7 @@ void Sound_StartSequence(void *voice) {
     func_02008bf0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
     if (M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C))
         func_02008ca0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFF, M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C));
-    func_0202b1ac(voice);
+    Sound_ResetVoice(voice);
     M2C_FIELD(voice, s32 *, SOUND_VOICE_START_MARK) = Sound_GetCommandCounter();
     M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING) = 1;
     M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) = SOUND_VOICE_KEYED_ON;
@@ -203,18 +203,21 @@ Sound_FreeAllBlocks(M2C_FIELD(node,void **,SOUND_CHANNEL_HEAP_HEAP));
 return M2C_FIELD(node,void **,SOUND_CHANNEL_HEAP_HEAP);
 }
 
-void func_0202b1ac(void *arg0) {
+/* Reinitialise a driver voice for a fresh start: clear its started, stop-pending
+ * and volume fields and ramp its volume envelope to full (0x7F00) in one tick, so
+ * the voice comes back at full volume. */
+void Sound_ResetVoice(void *voice) {
     M2C_UNK Sound_ResetFade(void *);
     M2C_UNK Sound_StartFade(void *, M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg0, s8 *, 0x2E) = 0;
-    M2C_FIELD(arg0, s8 *, 0x2D) = 0;
-    M2C_FIELD(arg0, s8 *, 0x2F) = 0;
-    M2C_FIELD(arg0, s16 *, 0x34) = 0;
-    M2C_FIELD(arg0, s16 *, 0x3E) = 0;
-    M2C_FIELD(arg0, s8 *, 0x40) = 0x7F;
-    M2C_FIELD(arg0, s8 *, 0x41) = 0x7F;
-    Sound_ResetFade(arg0 + 0x1C);
-    Sound_StartFade(arg0 + 0x1C, 0x7F00, 1);
+    M2C_FIELD(voice, s8 *, 0x2E) = 0;
+    M2C_FIELD(voice, s8 *, SOUND_VOICE_STARTED) = 0;
+    M2C_FIELD(voice, s8 *, SOUND_VOICE_STOP_PENDING) = 0;
+    M2C_FIELD(voice, s16 *, 0x34) = 0;
+    M2C_FIELD(voice, s16 *, SOUND_VOICE_LAST_VOLUME) = 0;
+    M2C_FIELD(voice, s8 *, SOUND_VOICE_VOLUME) = 0x7F;
+    M2C_FIELD(voice, s8 *, SOUND_VOICE_EXPRESSION) = 0x7F;
+    Sound_ResetFade(voice + SOUND_VOICE_ENVELOPE);
+    Sound_StartFade(voice + SOUND_VOICE_ENVELOPE, 0x7F00, 1);
 }
 
 /* Insert `voice` into a channel's voice list just before the first voice of
@@ -403,8 +406,8 @@ s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelByte
     void Sound_StopIfPlaying(void *);
     s32 U32DivideRem(s32, s32);
     s32 Sound_AllocChannel(void);
-    void func_02008e44(s32, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
-    void func_02008d54(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    void Sound_StartChannel(s32, s32, M2C_UNK, s32, s32, s32, s32, s32, s32, s32);
+    void Sound_StartChannelTimer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     void ListAppend(M2C_UNK, void *);
     s32 OS_DisableInterrupts(void);
     M2C_UNK Sound_StartSegment(M2C_UNK, M2C_UNK);
@@ -450,12 +453,12 @@ s32 Sound_StartVoice(void *player, s32 playMode, s32 sampleData, s32 channelByte
             s32 val = M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES) * noteIndex + sampleData;
             ((s32 (*)[2])channelInfo)[ch][0] = val;
             ((s32 (*)[2])channelInfo)[ch][1] = zero;
-            func_02008e44(ch, playMode, ((s32 (*)[2])channelInfo)[ch][0], 1, zero, (u32)M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES) >> 2, 0x7F, zero, rateShifted, 0x40);
+            Sound_StartChannel(ch, playMode, ((s32 (*)[2])channelInfo)[ch][0], 1, zero, (u32)M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_BYTES) >> 2, 0x7F, zero, rateShifted, 0x40);
             noteIndex++;
         } while (noteIndex < M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT));
     }
 
-    func_02008d54(M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), timerPeriod, timerPeriod, (M2C_UNK)Sound_AdvanceVoice, (s32)player);
+    Sound_StartChannelTimer(M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), timerPeriod, timerPeriod, (M2C_UNK)Sound_AdvanceVoice, (s32)player);
     ListAppend(&gPlayingVoices, player);
     M2C_FIELD(player, s32 *, SOUND_PLAYER_PLAY_MODE) = playMode;
     M2C_FIELD(player, s32 *, SOUND_PLAYER_SEGMENTS) = segments;
@@ -728,14 +731,14 @@ Sound_StartChannels(p->channel0,p->channel1,channel>=0?1<<channel:0,0);
  * on success the archive becomes the current sound archive. */
 void Sound_OpenArchive(void *archive, s32 path, s32 pool, s32 loadExtra) {
     M2C_UNK InitFileRequest(void *);
-    s32 func_0200b95c(void *, s32);
+    s32 ResolveFileRangeFromPath(void *, s32);
     s32 OpenFileRange(void *, Unk02BDFileRange);
     s32 LoadResourceArchive(void *, s32, s32);
     extern void *gCurrentArchive;
     M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_DATA_BLOCK) = 0;
     M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_TABLE) = 0;
     M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_FILE) = 0;
-    if (!func_0200b95c(archive + SOUND_ARCHIVE_FILE_RANGE, path)) return;
+    if (!ResolveFileRangeFromPath(archive + SOUND_ARCHIVE_FILE_RANGE, path)) return;
     InitFileRequest(archive + SOUND_ARCHIVE_FILE_REQUEST);
     if (!OpenFileRange(archive + SOUND_ARCHIVE_FILE_REQUEST, M2C_FIELD(archive, Unk02BDFileRange *, SOUND_ARCHIVE_FILE_RANGE))) return;
     M2C_FIELD(archive, s32 *, SOUND_ARCHIVE_OPENED) = 1;

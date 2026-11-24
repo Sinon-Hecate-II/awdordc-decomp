@@ -447,9 +447,11 @@ if(!M2C_FIELD(order,u8 *,MAP_ORDER_VALUE))order=0;
 return (s32)order;
 }
 
-s32 func_020a47e0(s32 a,s32 b) {
-extern s32 *gCurrentMap;s32 FindMapFeatureAtTile(s32,s32);s32 p=*gCurrentMap;
-if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)!=29)return 0;return FindMapFeatureAtTile(a,b);
+/* The destructible map feature anchored at tile (x, y), or NULL: only a tile
+ * whose terrain kind is a feature tile can hold one. */
+s32 FindDestructibleFeatureAtTile(s32 x,s32 y) {
+extern s32 *gCurrentMap;s32 FindMapFeatureAtTile(s32,s32);s32 map=*gCurrentMap;
+if((M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK)!=MAP_TERRAIN_FEATURE)return 0;return FindMapFeatureAtTile(x,y);
 }
 
 #pragma scheduling off

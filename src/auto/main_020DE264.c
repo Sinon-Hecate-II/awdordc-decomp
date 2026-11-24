@@ -180,7 +180,7 @@ void Show3DSpriteSlide(void *); void Hide3DSprite(void *); void SetTextById(void
 void func_ov010_02228f80(s32,s32,s32,void *,void *,void *,void *,s32);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern M2C_UNK gMatchScenePath,gMatchSceneNarc,gMatchScene4PScreen,gMatchScene2PScreen;
-void func_020de868(s32,s32,void *); s32 func_020de884(s32);
+void func_020de868(s32,s32,void *); s32 WaitForMatchSession(s32);
 void *savedEngine=gCur3DSpriteEngine; void *sprite; s32 layout,animValue;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 Clear3DSpriteLayer(1);
@@ -215,7 +215,7 @@ M2C_FIELD(setup,u16 *,0x48)&=~0x100;
 M2C_FIELD(setup,u16 *,0x48)&=~0x200;
 M2C_FIELD(setup,u8 *,0x41)=0;
 layout=GetSetupCode((void *)setup);
-func_ov010_02228f80(side,layout,1,(void *)func_020de868,(void *)setup,(void *)func_020de884,(void *)setup,0);
+func_ov010_02228f80(side,layout,1,(void *)func_020de868,(void *)setup,(void *)WaitForMatchSession,(void *)setup,0);
 }
 
 void func_020de868(s32 arg0, s32 arg1, void *arg2) {
@@ -227,15 +227,18 @@ void func_020de868(s32 arg0, s32 arg1, void *arg2) {
     }
 }
 
-s32 func_020de884(M2C_UNK arg0) {
+/* Per-frame matchmaking wait for the 1v1 match scene: -1 until the local player
+ * is online; then reads the opponent's skill rating (default RATING_DEFAULT) and
+ * reports the maximum match quality. */
+s32 WaitForMatchSession(M2C_UNK playerId) {
     M2C_UNK GetBrowsedServerValue(M2C_UNK, M2C_UNK *, s32);
     void *GetLocalPlayerStatus();
-    extern M2C_UNK data_0212c5c8;
-    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, 0x1A) & 2)) {
+    extern M2C_UNK sMatchRatingKey;
+    if (!(M2C_FIELD(GetLocalPlayerStatus(), u8 *, LOCAL_STATUS_OPTIONS) & LOCAL_OPTION_ONLINE)) {
         return -1;
     }
-    GetBrowsedServerValue(arg0, &data_0212c5c8, 0x5DC000);
-    return 0x7FFFFF;
+    GetBrowsedServerValue(playerId, &sMatchRatingKey, RATING_DEFAULT);
+    return MATCH_QUALITY_MAX;
 }
 
 #pragma opt_strength_reduction on

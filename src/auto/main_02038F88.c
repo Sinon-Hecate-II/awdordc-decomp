@@ -100,13 +100,15 @@ void *GetPlayerPeer(s32 arg0) {
     return &gPlayerPeers + arg0 * 2;
 }
 
-s32 HasPlayerConnection(s32 arg0) {
+/* Whether any of the 32 player connection slots holds a session with peer `peerId`. */
+s32 HasPlayerConnection(s32 peerId) {
     void *GetConnectionPeer(void *);
     extern M2C_UNK gPlayerConnections;
     s32 i;
+
     for (i = 0; i < 32; i++) {
         if ((&gPlayerConnections)[i] != 0) {
-            if (M2C_FIELD(GetConnectionPeer((void *)(&gPlayerConnections)[i]), u8 *, 1) == arg0) {
+            if (((PlayerPeer *)GetConnectionPeer((void *)(&gPlayerConnections)[i]))->peerId == peerId) {
                 return 1;
             }
         }
@@ -221,11 +223,16 @@ void NasLoginResultCallback(s32 error, s32 profileId) {
     }
 }
 
-void DispatchMatchSessionEvent(s32 arg0,s32 arg1) {
-extern void *gNetSession; void SetNetState(s32);
-s32 v=M2C_FIELD(gNetSession,s32 *,0x28);
-if(v!=4)SetNetState(v);
-M2C_FIELD(gNetSession,void (**)(s32,s32,s32),0x78)(arg0,arg1,M2C_FIELD(gNetSession,s32 *,0x7c));
+/* Hand a match-making event to the session's match callback (with its data),
+ * first restoring the state the session was in before matchmaking began. */
+void DispatchMatchSessionEvent(s32 event, s32 data) {
+    extern void *gNetSession;
+    void SetNetState(s32);
+    s32 prevState = M2C_FIELD(gNetSession, s32 *, NET_SESSION_PREV_STATE);
+    if (prevState != NET_STATE_MATCHMAKING) {
+        SetNetState(prevState);
+    }
+    M2C_FIELD(gNetSession, void (**)(s32, s32, s32), NET_SESSION_MATCH_CALLBACK)(event, data, M2C_FIELD(gNetSession, s32 *, NET_SESSION_MATCH_DATA));
 }
 
 /* Match event callback installed with the connection layer: keeps the session

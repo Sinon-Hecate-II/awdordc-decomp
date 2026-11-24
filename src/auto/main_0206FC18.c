@@ -29,7 +29,7 @@ void StringCopy(void *,void *);void func_0206f8c4(u32 *,u32,Flag);
 void func_0207465c(void *,void *,void *);
 s32 func_020700a0(s32),func_02070068(s32);
 void MemCopy(void *,void *,u32),MemMove(void *,void *,u32);s32 MemFree(s32);
-void func_0206ffc4(void *,s32,s32);void *func_0206fa14(void *);
+void StringStorageAssignRange(void *,s32,s32);void *func_0206fa14(void *);
 extern u8 data_021008f0[],data_02100888[],data_02100860[],data_0210090c[],data_02100944[],data_02100874[],data_021008b8[],data_021007f4[];
 u32 exception1[3],exception2[3];StringStorage temp;
 u32 required,remaining,oldcap,oldsize,removed,newsize,capacity,inserted,tail,i;
@@ -62,7 +62,7 @@ self->large.data=buffer;self->large.length=newsize;self->large.capacity=capacity
 }else {
 for(i=0;i<3;i++)((u32 *)&temp)[i]=0;
 if(tail && data+pos+inserted<end && end<=data+oldsize){
-func_0206ffc4(&temp,(s32)first,(s32)end);
+StringStorageAssignRange(&temp,(s32)first,(s32)end);
 if(!temp.large.flag)first=temp.small.data;else first=temp.large.data;
 }
 if(tail)MemMove(data+pos+inserted,data+pos+removed,tail);
@@ -74,13 +74,16 @@ func_0206fa14(&temp);
 return self;
 }
 #pragma optimization_level reset
-void func_0206ffc4(void *a, s32 b, s32 c) {
+/* Set a string storage's contents to the byte range [first, last): drop the
+ * storage's current length, then insert the range at position 0. */
+void StringStorageAssignRange(void *storage, s32 first, s32 last) {
     void func_0207000c(void *, s32, u32, s32, s32, s32);
-    u32 n;
-    if (((u32)(M2C_FIELD(a,s32 *,0)<<31)>>31)==0) {
-        n=(u32)(M2C_FIELD(a,u8 *,0)<<24)>>25;
-    } else n=M2C_FIELD(a,u32 *,4);
-    func_0207000c(a,0,n,b,c,0);
+    u32 length;
+
+    if (((StringStorage *)storage)->large.flag == 0) {
+        length = ((StringStorage *)storage)->small.length;
+    } else length = ((StringStorage *)storage)->large.length;
+    func_0207000c(storage, 0, length, first, last, 0);
 }
 
 void func_0207000c(void *a, s32 b, u32 c, s32 d, s32 e, s32 f) {

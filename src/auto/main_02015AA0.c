@@ -250,12 +250,18 @@ s32 func_02016194(s32 a) {
 }
 #pragma dont_inline reset
 
-void func_020161bc(void *arg0) {
-extern M2C_UNK gDownloadSendState;
-void *p=M2C_FIELD(&gDownloadSendState,void **,0x18);void *next;
-if(!p)M2C_FIELD(&gDownloadSendState,void **,0x18)=arg0;
-else {while((next=M2C_FIELD(p,void **,0x4bc))!=0)p=next;M2C_FIELD(p,void **,0x4bc)=arg0;}
-M2C_FIELD(arg0,void **,0x4bc)=0;
+/* Append a download file to the tail of the DS Download Play send queue. */
+void DownloadQueueFile(void *file) {
+    extern M2C_UNK gDownloadSendState;
+    void *queued = M2C_FIELD(&gDownloadSendState, void **, DL_QUEUE);
+    void *next;
+
+    if (!queued) M2C_FIELD(&gDownloadSendState, void **, DL_QUEUE) = file;
+    else {
+        while ((next = M2C_FIELD(queued, void **, DL_FILE_NEXT)) != 0) queued = next;
+        M2C_FIELD(queued, void **, DL_FILE_NEXT) = file;
+    }
+    M2C_FIELD(file, void **, DL_FILE_NEXT) = 0;
 }
 
 void func_02016200(void) {
@@ -501,12 +507,16 @@ void Mb_StartConnect(void) {
     Mb_ReportPacketResult(0x1D, WFC_SubmitConnectRequest(&func_02016934, M2C_FIELD(&gMbParam, u16 *, 6), M2C_FIELD(&gMbParam, u16 *, 2), M2C_FIELD(&gMbParam, u16 *, 0), (s32) M2C_FIELD(&gMbParam, u16 *, 4)));
 }
 
-void Mb_CancelLink(s32 arg0) {
-extern M2C_UNK gMbState;
-void (*callback)(s32,s32);
-M2C_FIELD(M2C_FIELD(&gMbState,void **,8),u8 *,0x50d)=0;
-M2C_FIELD(M2C_FIELD(&gMbState,void **,12),u16 *,0x1316)=0;
-callback=M2C_FIELD(M2C_FIELD(&gMbState,void **,8),void (**)(s32,s32),0x51c);
-if(callback)callback(17,arg0);
+/* Finish cancelling the download-play link: mark the link as no longer started and
+ * the download block as free, then report the cancel (event 17) to the game's link
+ * callback so it tears the match state down. */
+void Mb_CancelLink(s32 event) {
+    extern M2C_UNK gMbState;
+    void (*callback)(s32, s32);
+
+    M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), u8 *, MB_LINK_STARTED) = 0;
+    M2C_FIELD(M2C_FIELD(&gMbState, void **, 12), u16 *, MB_DOWNLOAD_SET_UP) = 0;
+    callback = M2C_FIELD(M2C_FIELD(&gMbState, void **, 8), void (**)(s32, s32), MB_CTX_CALLBACK);
+    if (callback) callback(MB_LINK_EVENT_CANCEL, event);
 }
 

@@ -1,6 +1,7 @@
 /* 38 functions from 0x02088044 to 0x02088FF4 (main), found by ds-decomp. */
 #include "common.h"
 #include "fs.h"
+#include "ds3dsprite.h"
 typedef struct { u32 words[2]; } Unk0200FilePair;
 
 void func_02088044(void *arg0) {
@@ -208,10 +209,16 @@ M2C_UNK LoadResource(M2C_UNK index) {
     func_020e349c();
 }
 
-void UnloadResource(u8 a){s32 func_0200c408(M2C_UNK,s32);M2C_UNK func_020e349c();extern M2C_UNK gResourceFileIds,gResourceLoaded;
-if(M2C_FIELD(&gResourceLoaded,u8 *,a)==0)return;
-if(func_0200c408(0,((s32 *)&gResourceFileIds)[a])==1)M2C_FIELD(&gResourceLoaded,u8 *,a)=0;
-func_020e349c();}
+/* Unload resource slot `index` when it is loaded: drop its archive file from the
+ * module loader, clear the loaded flag if the drop succeeded, then commit. */
+void UnloadResource(u8 index) {
+ s32 UnloadFileModule(M2C_UNK, s32);
+ M2C_UNK func_020e349c();
+ extern M2C_UNK gResourceFileIds, gResourceLoaded;
+ if (M2C_FIELD(&gResourceLoaded, u8 *, index) == 0) return;
+ if (UnloadFileModule(0, ((s32 *)&gResourceFileIds)[index]) == 1) M2C_FIELD(&gResourceLoaded, u8 *, index) = 0;
+ func_020e349c();
+}
 
 /* Unload every loaded resource that shares a memory group with slot `index`
  * (their gResourceDependencyMasks entries intersect), so that `index` can be
@@ -321,9 +328,26 @@ void func_0208874c(void) {
 #pragma optimization_level 4
 void func_02088774(s32 a){void CopyU16(void *,s32,s32);extern u8 data_021577c0[];extern void *gCur3DSpriteEngine;s32 base=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30);s32 offset=(a<<5)&~1;CopyU16(data_021577c0,offset+base,32);}
 #pragma optimization_level reset
-void DrawSpriteActorAt(void *p,s32 a,s32 b,s32 c,s32 d){void func_020887ec(void *);s32 x=M2C_FIELD(p,s16 *,0x34),y=M2C_FIELD(p,s16 *,0x36),z=M2C_FIELD(p,s8 *,0x49),w=M2C_FIELD(p,s32 *,0x44);M2C_FIELD(p,s16 *,0x34)=a;M2C_FIELD(p,s16 *,0x36)=b;M2C_FIELD(p,s8 *,0x49)=c;M2C_FIELD(p,s32 *,0x44)=d;func_020887ec(p);M2C_FIELD(p,s16 *,0x34)=x;M2C_FIELD(p,s16 *,0x36)=y;M2C_FIELD(p,s8 *,0x49)=z;M2C_FIELD(p,s32 *,0x44)=w;}
+/* Draw a 3D sprite actor once at a temporary position and priority with the
+ * given quad template, then restore its own position, priority and template. */
+void DrawSpriteActorAt(void *p, s32 x, s32 y, s32 priority, s32 template) {
+    void DrawSpriteActor(void *);
+    s32 savedX = M2C_FIELD(p, s16 *, SPRITE_ACTOR_X),
+        savedY = M2C_FIELD(p, s16 *, SPRITE_ACTOR_Y),
+        savedPriority = M2C_FIELD(p, s8 *, SPRITE_ACTOR_PRIORITY),
+        savedTemplate = M2C_FIELD(p, s32 *, DS3D_SPRITE_TEMPLATE);
+    M2C_FIELD(p, s16 *, SPRITE_ACTOR_X) = x;
+    M2C_FIELD(p, s16 *, SPRITE_ACTOR_Y) = y;
+    M2C_FIELD(p, s8 *, SPRITE_ACTOR_PRIORITY) = priority;
+    M2C_FIELD(p, s32 *, DS3D_SPRITE_TEMPLATE) = template;
+    DrawSpriteActor(p);
+    M2C_FIELD(p, s16 *, SPRITE_ACTOR_X) = savedX;
+    M2C_FIELD(p, s16 *, SPRITE_ACTOR_Y) = savedY;
+    M2C_FIELD(p, s8 *, SPRITE_ACTOR_PRIORITY) = savedPriority;
+    M2C_FIELD(p, s32 *, DS3D_SPRITE_TEMPLATE) = savedTemplate;
+}
 
-void func_020887ec(void *p){
+void DrawSpriteActor(void *p){
 s32 func_01ff8f90(s32,s32,s32);void func_01ffaacc(u16,u16,u16,s32,s32);
 extern void *gCur3DSpriteEngine,*data_027e00c4,*data_027e00c8;
 void *saved,*bank; s32 i;u32 mode,flags;u16 x,y,attr,pal;u32 shift,tile,part;
@@ -550,7 +574,7 @@ void Set3DSpriteSlideTarget(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 0x52) = arg2;
 }
 
-void func_02088e68(void *arg0, s32 arg1) {
+void Set3DSpriteSlideLength(void *arg0, s32 arg1) {
     M2C_FIELD(arg0, s8 *, 0x4E) = arg1;
 }
 
@@ -565,9 +589,17 @@ void func_02088e7c(void *arg0, s32 arg1) {
 
 void Set3DSpriteSlideTargetAndStart(void *p,s16 a,s16 b,s16 c,s32 d){Set3DSpriteSlideTarget(p,a,b);Set3DSpriteSlideStart(p,c,d);}
 
-void Slide3DSpriteIn(void *p,s16 a,s32 b,s32 c,s32 d,s32 e){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,c,d);Set3DSpriteSlideStart(p,a,b);func_02088e68(p,e);Show3DSpriteSlide(p);}
+/* Slide a 3D sprite in: set the slide's origin (startX, startY) and target
+ * (targetX, targetY), give it a length in frames, then start it (SPRITE_SLIDE_SHOW). */
+void Slide3DSpriteIn(void *sprite, s16 startX, s32 startY, s32 targetX, s32 targetY, s32 slideLen) {
+    void Show3DSpriteSlide(void *);
+    Set3DSpriteSlideTarget(sprite, targetX, targetY);
+    Set3DSpriteSlideStart(sprite, startX, startY);
+    Set3DSpriteSlideLength(sprite, slideLen);
+    Show3DSpriteSlide(sprite);
+}
 
-void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));func_02088e68(p,a);Show3DSpriteSlide(p);}
+void func_02088eec(void *p,s8 a){void Show3DSpriteSlide(void *);Set3DSpriteSlideTarget(p,M2C_FIELD(p,s16 *,0x50),M2C_FIELD(p,s16 *,0x52));Set3DSpriteSlideLength(p,a);Show3DSpriteSlide(p);}
 
 /* Show a 3D sprite by sliding it in: with no slide length, place it straight at
  * its target and show it; otherwise start the forward slide (mode SPRITE_SLIDE_SHOW). */

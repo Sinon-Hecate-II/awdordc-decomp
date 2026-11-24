@@ -99,4 +99,19 @@ extern M2C_UNK gMapOfferState;
 /* Status text shown above the name of the map chosen in a transfer. */
 #define MAP_TRANSFER_MSG_CHOSEN_MAP 0x4600001F
 
+/* The one-time hint the campaign map menu shows when it first opens, and the
+ * event flag (index into gEventFlagsMid, see EVENT_FLAG_MID_BASE) that records
+ * the hint has been shown. */
+#define CAMPAIGN_MENU_MSG_HINT   0x46000026
+#define CAMPAIGN_MENU_HINT_FLAG  0x21
+
+/* The one-time hints the two map-pick lists (MENU_KIND_MAP_PICK_7/8) show when
+ * they first open their ov006 map sub-panel, and the mid event flags that record
+ * each hint has been shown.  Each hint creates one sprite from
+ * gMapPickHintClass. */
+#define MAP_PICK_HINT_MSG_7  0x46000028
+#define MAP_PICK_HINT_FLAG_7 0x23
+#define MAP_PICK_HINT_MSG_8  0x46000027
+#define MAP_PICK_HINT_FLAG_8 0x22
+
 #endif

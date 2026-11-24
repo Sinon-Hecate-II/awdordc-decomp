@@ -242,7 +242,7 @@ M2C_UNK Mb_DispatchPlayerEvent(s32 arg0,s32 arg1,M2C_UNK arg2) {
 #pragma opt_common_subs off
 void func_020140c4(s32 a, void *b) {
 extern s32 gMbWork;
-void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void func_02018960(); void func_02015008(); void DownloadFileSetRoster(); s32 func_02018390(); s32 func_020183a4(); s32 Mb_GetDownloadSendFlags(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
+void ProcessGroupStartMessages(s32); void MI_CpuFill8(); void MultiBoot_ClearRecordSlot(); void func_02015008(); void DownloadFileSetRoster(); s32 func_02018390(); s32 func_020183a4(); s32 Mb_GetDownloadSendFlags(); void DownloadSendStep(); void func_02015230(); void MI_CpuFill32();
 s32 id, idx, off, group; u8 i; s32 x,y,z;
 switch(a) {
 case 17: break;
@@ -253,7 +253,7 @@ if(*(u16*)((u8*)b+16)==0 || *(u16*)((u8*)b+16)>=16) break;
 M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*2,u16*,0x148a)=0;
 MI_CpuFill8(gMbWork+0x14a8+(*(u16*)((u8*)b+16)-1)*4,0,4);
 MI_CpuFill8(gMbWork+0x1340+(*(u16*)((u8*)b+16)-1)*22,0,22);
-func_02018960(*(u16*)((u8*)b+16));
+MultiBoot_ClearRecordSlot(*(u16*)((u8*)b+16));
 M2C_FIELD(gMbWork+(*(u16*)((u8*)b+16)-1)*2,u16*,0x1754)=0;
 id=*(u16*)((u8*)b+16); idx=id-1;
 group=M2C_FIELD(gMbWork+idx,s8*,0x1526);

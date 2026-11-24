@@ -17,7 +17,7 @@ s32 GetSpriteAnimValue(void *);
 s32 Modulo(s32,s32);
 s32 Divide(s32,s32);
 void Clear3DSpriteLayer(s32);
-s32 func_ov003_021f3f5c(s16,s16,s32,s32,s32,s32,s32,s32);
+s32 RectsOverlap(s16,s16,s32,s32,s32,s32,s32,s32);
 void ClearTileRect(void *,s32,s32);
 u8 FindMapPick(void *,void *,u16);
 void func_ov003_021fac2c(u16,u16,s16,s16,s32);
@@ -26,7 +26,7 @@ void SetTextSpriteValue(void *,s16);
 void DrawTextSprite(void *);
 s32 GetMapListIconTile(u8,u16);
 void AddSprite(u16,u8,u16,void *,s32);
-s32 func_ov003_021f2654(void);
+s32 IsCampaignMapHeaderCategory(void);
 s32 IsCampaignMapAvailable(u16);
 s32 IsCampaignMapRecordValid(u16);
 s32 IsCampaignMapRecordPlayable(u16);
@@ -64,7 +64,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  py=y+Divide(i,n)*16;
  tx=Modulo(i,n)*15;
  ty=Modulo(Divide(i,n)*2,32);
- if(!func_ov003_021f3f5c((s16)px,(s16)py,240,16,6,40,240,112)){
+ if(!RectsOverlap((s16)px,(s16)py,240,16,6,40,240,112)){
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))==0){
  ClearTileRect((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
@@ -102,7 +102,7 @@ void func_ov003_021fad10(void *arg0,s32 arg1,s32 arg2) {
  idx=(u8)i;
  if((u8)!(M2C_FIELD((u8*)M2C_FIELD(arg0,void **,0x44)+(idx>>3),u8 *,0x186c)&(1<<(idx&7)))){
  ClearTileRect((u8*)gCur3DSpriteEngine[8]+tx*2+ty*64,9,2);
- if(func_ov003_021f2654())shade=0;
+ if(IsCampaignMapHeaderCategory())shade=0;
  else {
  mode=M2C_FIELD(arg0,Ov003DrawNibble *,0x3b).low;
  if((u8)(mode==6))shade=(u8)(IsCampaignMapAvailable(item)?0:3);

@@ -18,11 +18,11 @@ int IsCampaignMapRecordValid(int);
 int GetMapIconFrameIndex(int);
 void AddSprite(int,int,int,void *,int);
 int IsCampaignMapForLocalPlayer(int);
-int func_ov003_021f2654(void);
+int IsCampaignMapHeaderCategory(void);
 void DrawFrameBorder(int,int,int,int,int,int,int);
 int GetMapListIconTile(int,int);
 int MapData_GetCategory(int);
-int func_020830a8(int);
+int GetMapListIconKind(int);
 int func_020a8a84(int);
 void SetTextSpriteValue(void *,int);
 void DrawTextSprite(void *);
@@ -59,7 +59,7 @@ flag=0;
 if(id>=225 && id<425 &&IsCampaignMapRecordValid(id)==0)flag=1;
 if(((u8)flag && ((mode=(u32)(p[59]<<28)>>28),Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8))) ||
 (!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) ||
-(func_ov003_021f2654() && ((u32)(p[57]<<24)>>31))) {
+(IsCampaignMapHeaderCategory() && ((u32)(p[57]<<24)>>31))) {
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,56)=-b;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=-c;
 }else{
@@ -78,7 +78,7 @@ icon=(u16)((GetMapListIconTile((M2C_FIELD(p,u8 **,68)+Unk021F9FE0PageIndex(M2C_F
 v=(u8)(MapData_GetCategory(M2C_FIELD(p,u16 *,60))==0);
 icon=(u16)((GetMapListIconTile((u16)(v==1?1:3),id)<<2)+808);
 }else if(Unk021F9FE0Eq(mode,5)){
-icon=(u16)((GetMapListIconTile(func_020830a8(id),id)<<2)+808);
+icon=(u16)((GetMapListIconTile(GetMapListIconKind(id),id)<<2)+808);
 }
 shift=((u32)M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<17)>>30;
 AddSprite((u16)((b+3)&511),21,(u16)(((icon>>shift)&1023)|0x9800),gSpriteDesc16x16,17);

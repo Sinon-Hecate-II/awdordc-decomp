@@ -492,6 +492,7 @@ typedef struct UiModeState {
 #define DS3D_SPRITE_FLAGS        0x30 /* u8 DS3D_SPRITE_FLAG_* */
 #define DS3D_SPRITE_CHILD_COUNT  0x31 /* u8 number of children */
 #define DS3D_SPRITE_TEMPLATE     0x44 /* void *: the SpriteQuadTemplate the sprite draws (handed to AddSprite) */
+#define DS3D_SPRITE_SLEEP_FLAG   0x56 /* s16: 0 while the screen is awake, nonzero once it has put the console to sleep */
 #define DS3D_SPRITE_CELLS        0x64 /* void *the object's SpriteCellList (see sprite_grid.h) */
 #define DS3D_CLASS_DESTROY       0x00 /* method at DS3D_SPRITE_CLASS +0x00: destroys the object it is given */
 

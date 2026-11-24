@@ -135,7 +135,7 @@ void func_ov000_02169334(void *p) {
 }
 
 extern int *gCurrentMap;
-void func_ov000_02169368(void)
+void ClearUnitMoveSlots(void)
 {
     unsigned short i = 0;
 
@@ -293,11 +293,16 @@ void func_ov000_02169740(void *arg0) {
     func_020d47b0();
 }
 
+/* Find a free slot in the map's unit-move pool: the index of the first of its
+ * UNIT_MOVE_SLOT_COUNT flagged bytes that is free (0), or -1 when all are taken. */
 s32 FindFreeUnitMoveSlot(void) {
- u16 i=0;
- u8 *p=M2C_FIELD(gCurrentMap,u8 **,8);
- do {if(p[i]==0)return (s16)i; i++;}while(i<3);
- return -1;
+    u16 i = 0;
+    u8 *slots = M2C_FIELD(gCurrentMap, u8 **, MAP_UNIT_MOVE_SLOTS);
+    do {
+        if (slots[i] == 0) return (s16)i;
+        i++;
+    } while (i < UNIT_MOVE_SLOT_COUNT);
+    return -1;
 }
 
 s32 CountMovePathSteps(volatile s8 *p) {
@@ -498,10 +503,10 @@ void func_ov000_02169cd4(void *arg0) {
 s32 LoadUnitMoveGfx(M2C_UNK arg0) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFile(s32, M2C_UNK);
-    s32 func_ov000_02169ec0(M2C_UNK);
+    s32 GetUnitMoveGfxFileId(M2C_UNK);
     extern M2C_UNK data_ov000_021aeee0;
     SetFileDirectory(&data_ov000_021aeee0);
-    LoadDecompressedFile(func_ov000_02169ec0(arg0), 1);
+    LoadDecompressedFile(GetUnitMoveGfxFileId(arg0), 1);
 }
 
 s32 LoadUnitMoveAnim(void *arg0) {
@@ -548,10 +553,13 @@ scrollDone=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),MAPVIEW_SC
 if(scrollDone)scrollDone();
 }
 #pragma pop
-s32 func_ov000_02169ec0(M2C_UNK p) {
- s32 GetUnitVariantIndex(s32,s32);
- extern s32 data_ov000_021aec88[];
- return M2C_FIELD(data_ov000_021aec88,s32 *,GetUnitVariantIndex(M2C_FIELD(p,u8 *,0x42),M2C_FIELD(*gCurrentMap+M2C_FIELD(p,u8 *,0x43)*0x8C,u8 *,0x67CD))*20);
+/* File id of the move-graphics file (LoadUnitMoveGfx) of the unit-move's variant:
+ * the variant is picked from the unit's kind and its owner's cached sprite state,
+ * and its entry in gUnitMoveGfxFileIds is UNIT_MOVE_SOUND_RECORD_SIZE bytes long. */
+s32 GetUnitMoveGfxFileId(M2C_UNK move) {
+    s32 GetUnitVariantIndex(s32,s32);
+    extern s32 gUnitMoveGfxFileIds[];
+    return M2C_FIELD(gUnitMoveGfxFileIds,s32 *,GetUnitVariantIndex(M2C_FIELD(move,u8 *,UNIT_MOVE_KIND),M2C_FIELD(*gCurrentMap+M2C_FIELD(move,u8 *,UNIT_MOVE_OWNER)*MAP_PLAYER_STRIDE,u8 *,PLAYER_SPRITE_STATE_OFF))*UNIT_MOVE_SOUND_RECORD_SIZE);
 }
 
 /* The variant's unit-move speed: the step duration in frames from the unit-variant

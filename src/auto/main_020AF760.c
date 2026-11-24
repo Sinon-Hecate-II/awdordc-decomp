@@ -17,8 +17,8 @@ do { s32 v=*M2C_FIELD(M2C_FIELD(p,void **,4),s32 **,0x34); if(v)func_02090448(v)
 }
 
 void func_020af79c(void) {
-    M2C_UNK func_02090480(M2C_UNK);
-    func_02090480(0);
+    M2C_UNK RewindMusicPlayerHeapByFrames(M2C_UNK);
+    RewindMusicPlayerHeapByFrames(0);
 }
 
 void func_020af7ac(void) {

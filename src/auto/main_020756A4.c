@@ -161,13 +161,15 @@ q[15]=1;M2C_FIELD(q,s32 *,0)=a;M2C_FIELD(q,s32 *,4)=b;M2C_FIELD(q,s32 *,8)=c;q[1
 ((Queue02075 *)p)->count++;
 }
 
-void func_02075e84(M2C_UNK *arg0, s32 arg1) {
- s32 temp_ip;
- if ((M2C_FIELD(arg0,u8 *,0x2050)!=0)&&(M2C_FIELD(arg0,u8 *,0x2052)!=1)) {
- temp_ip=M2C_FIELD(arg0,s32 *,0x2554)*0x14+(s32)((void *)arg0+0x2054);
- M2C_FIELD(temp_ip,u8 *,0xF)=2;
- M2C_FIELD(temp_ip,s16 *,0xC)=arg1;
- M2C_FIELD(arg0,s32 *,0x2554)=M2C_FIELD(arg0,s32 *,0x2554)+1;
+/* Queue a save-record delete request (kind SAVE_REQUEST_DELETE) for record id `id`
+ * in the save manager's request queue; ignored once the archive is unusable. */
+void SaveList_QueueDelete(M2C_UNK *manager, s32 id) {
+ s32 entry;
+ if ((M2C_FIELD(manager,u8 *,SAVE_MANAGER_ACTIVE)!=0)&&(M2C_FIELD(manager,u8 *,SAVE_MANAGER_STATE)!=1)) {
+ entry=M2C_FIELD(manager,s32 *,SAVE_MANAGER_QUEUE_COUNT)*SAVE_REQUEST_STRIDE+(s32)((void *)manager+SAVE_MANAGER_QUEUE);
+ M2C_FIELD(entry,u8 *,SAVE_REQUEST_KIND)=SAVE_REQUEST_DELETE;
+ M2C_FIELD(entry,s16 *,SAVE_REQUEST_RECORD)=id;
+ M2C_FIELD(manager,s32 *,SAVE_MANAGER_QUEUE_COUNT)=M2C_FIELD(manager,s32 *,SAVE_MANAGER_QUEUE_COUNT)+1;
  }
 }
 
@@ -242,7 +244,7 @@ if(keptRecords)HeapFreeBlock(keptRecords);
 
 void DeleteSaveRecord(M2C_UNK arg0) {
     extern M2C_UNK gSaveManager;
-    func_02075e84(&gSaveManager, arg0);
+    SaveList_QueueDelete(&gSaveManager, arg0);
 }
 
 void func_02076198(void){CreateTaskSprite(func_02075ee8,1,0x400,0x11,0);}
@@ -401,17 +403,19 @@ loop_6:
     goto loop_6;
 }
 #pragma pop
-u8 CountBits(u32 arg0) {
-    u32 temp_r0;
-    u32 temp_r0_2;
-    u32 temp_r0_3;
-    u32 temp_r1;
+/* Counts the set bits of `value` with the classic SWAR popcount: fold the 2-bit
+ * pairs into 2-bit sums, then the 4-, 8- and 16-bit groups, and return the byte. */
+u8 CountBits(u32 value) {
+    u32 evenBits;
+    u32 nibbles;
+    u32 bytes;
+    u32 halfwords;
 
-    temp_r0_2 = arg0 - (0x55555555 & (arg0 >> 1));
-    temp_r1 = (temp_r0_2 & 0x33333333) + (0x33333333 & (temp_r0_2 >> 2));
-    temp_r0_3 = (temp_r1 + (temp_r1 >> 4)) & 0x0F0F0F0F;
-    temp_r0 = temp_r0_3 + (temp_r0_3 >> 8);
-    return (u8) (temp_r0 + (temp_r0 >> 0x10));
+    evenBits = value - (0x55555555 & (value >> 1));
+    nibbles = (evenBits & 0x33333333) + (0x33333333 & (evenBits >> 2));
+    bytes = (nibbles + (nibbles >> 4)) & 0x0F0F0F0F;
+    halfwords = bytes + (bytes >> 8);
+    return (u8) (halfwords + (halfwords >> 0x10));
 }
 
 void func_02076658(M2C_UNK arg0,M2C_UNK arg1,M2C_UNK arg2){

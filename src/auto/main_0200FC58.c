@@ -79,19 +79,22 @@ void func_0200fd90(s32 arg0) {
 }
 
 #pragma optimization_level 2
-s32 func_0200fda0(void) {
+/* Waits for the running backup transfer: sleeps on the device's thread queue
+ * while the busy flag is set, then reports whether the ARM7 answered successfully
+ * (the response's first word is 0). */
+s32 SaveDevice_WaitForTransfer(void) {
     extern void *gSaveDeviceState;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     void OS_SleepThread(void *);
-    void *p = &gSaveDeviceState;
+    void *device = &gSaveDeviceState;
     s32 state = OS_DisableInterrupts();
 
-    while (M2C_FIELD(p, volatile u32 *, 0x114) & 4) {
-        OS_SleepThread((u8 *)p + 0x10c);
+    while (M2C_FIELD(device, volatile u32 *, SAVE_DEVICE_FLAGS) & SAVE_DEVICE_FLAG_BUSY) {
+        OS_SleepThread((u8 *)device + SAVE_DEVICE_THREAD_QUEUE);
     }
     OS_RestoreInterrupts(state);
-    return *M2C_FIELD(p, s32 **, 0) == 0;
+    return *M2C_FIELD(device, s32 **, SAVE_DEVICE_RESPONSE) == 0;
 }
 #pragma optimization_level reset
 s32 func_0200fdec(void) {
@@ -348,8 +351,8 @@ return **(s32 **)p==0;
 #pragma opt_copy_propagation reset
 #pragma opt_common_subs reset
 void func_02010584(void) {
-    M2C_UNK func_0200fda0();
-    func_0200fda0();
+    M2C_UNK SaveDevice_WaitForTransfer();
+    SaveDevice_WaitForTransfer();
 }
 
 s32 func_02010590(void) {

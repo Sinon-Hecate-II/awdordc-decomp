@@ -149,7 +149,7 @@ void func_020ced08(void) {
     extern void **gCurrentMap;
     extern s8 data_ov000_021b56c0[];
     extern u16 data_ov000_021aeee8[];
-    void func_020cf2c8(void);
+    void RebuildMapPropertyCells(void);
     s32 func_020d1980(s32);
     void func_0207ab84(s32, s32, u8);
     register u8 tile;
@@ -160,7 +160,7 @@ void func_020ced08(void) {
     register s32 found;
     s32 counter;
 
-    func_020cf2c8();
+    RebuildMapPropertyCells();
     offset = 0;
     counter = 0;
     found = 0;
@@ -362,7 +362,7 @@ LoadMapTileset();
 M2C_FIELD(*gCurrentMap,u8 *,MAP_TILESET)=oldTileset;
 }
 
-void func_020cf2c8(void) {
+void RebuildMapPropertyCells(void) {
     extern void **gCurrentMap;
     extern s8 gTerrainPropertyFlags[];
     void SelectMapLayer(void *);

@@ -33,21 +33,39 @@ s32 ghiSetNonBlocking(M2C_UNK arg0, s32 arg1) {
     return 0;
 }
 
-s32 ghiSetRecvBufferSize(s32 a,s32 b,...) {
-void func_020498a4(void);
-void *ap = &b;
-return ((s32 (*)(s32,s32,s32,void *,s32))func_020498a4)(a,65535,4098,ap,4)!=-1;
+/* GameSpy ghi: set `socket`'s receive-buffer size to `size` (SO_RCVBUF) through
+ * the DS set-socket-option entry; returns 1 when that call does not fail. */
+s32 ghiSetRecvBufferSize(s32 socket,s32 size,...) {
+void ghiSetSockOpt(void);
+void *optval = &size;
+return ((s32 (*)(s32,s32,s32,void *,s32))ghiSetSockOpt)(socket,GHI_SOL_SOCKET,GHI_SO_RCVBUF,optval,sizeof(s32))!=-1;
 }
 
 s32 ghiSetSendBufferSize(s32 a,s32 b,...) {
-void func_020498a4(void);
+void ghiSetSockOpt(void);
 void *ap = &b;
-return ((s32 (*)(s32,s32,s32,void *,s32))func_020498a4)(a,65535,4097,ap,4)!=-1;
+return ((s32 (*)(s32,s32,s32,void *,s32))ghiSetSockOpt)(a,65535,4097,ap,4)!=-1;
 }
 
-s32 ghiGetRecvBufferSize(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1002,(int)&value,&size)==-1)return -1;return value;}
+/* GameSpy ghi: reads socket `socket`'s receive-buffer size and returns it, or -1
+ * when the option lookup fails. */
+s32 ghiGetRecvBufferSize(int socket){
+s32 ghiGetSockOpt(int,int,int,int,s32 *);
+s32 value;
+s32 size=4;
+if(ghiGetSockOpt(socket,GHI_SOL_SOCKET,GHI_SO_RCVBUF,(int)&value,&size)==-1)return -1;
+return value;
+}
 
-s32 ghiGetSendBufferSize(int a){s32 func_0204987c(int,int,int,int,s32 *);s32 value; s32 size=4;if(func_0204987c(a,0xffff,0x1001,(int)&value,&size)==-1)return -1;return value;}
+/* GameSpy ghi: reads socket `socket`'s send-buffer size and returns it, or -1
+ * when the option lookup fails. */
+s32 ghiGetSendBufferSize(int socket){
+s32 ghiGetSockOpt(int,int,int,int,s32 *);
+s32 value;
+s32 size=4;
+if(ghiGetSockOpt(socket,GHI_SOL_SOCKET,GHI_SO_SNDBUF,(int)&value,&size)==-1)return -1;
+return value;
+}
 
 s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
     s32 PollSockets(void *, u32, s64);
@@ -200,12 +218,12 @@ addr.bytes[0]=f;
 return ghiRecordSocketError(func_020216cc(a,b,c,d,&addr),-1);
 }
 
-s32 func_0204987c(s32 a,s32 b,s32 c,s32 d,s32 *e) {
+s32 ghiGetSockOpt(s32 a,s32 b,s32 c,s32 d,s32 *e) {
 M2C_UNK MI_CpuFill8(s32,s32,s32);
 MI_CpuFill8(d,0,*e);return ghiRecordSocketError(0,-1);
 }
 
-void func_020498a4(void) {
+void ghiSetSockOpt(void) {
     ghiRecordSocketError(0, -1);
 }
 

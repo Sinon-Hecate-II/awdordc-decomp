@@ -330,34 +330,40 @@ void GX_SetBlendControl(void *arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(arg0, s16 *, 4) = (s16) arg2;
 }
 
-void func_020039c8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    M2C_FIELD(arg0, s16 *, 2) = (s16) (arg3 | (arg4 << 8));
-    if (arg5 < 0) {
-        M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0xC0 | (arg2 << 8));
-        M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg5);
+/* Write a blend-state record: BLDCNT (the two target-plane masks and the effect
+ * bits, which pick the decrease effect when the blend level is negative, with the
+ * level's magnitude in BLDY) and BLDALPHA (the two coefficients). */
+void GX_SetBlendState(void *record, s32 targetA, s32 targetB, s32 eva, s32 evb, s32 level) {
+    M2C_FIELD(record, s16 *, 2) = (s16) (eva | (evb << 8));
+    if (level < 0) {
+        M2C_FIELD(record, s16 *, 0) = (s16) (targetA | 0xC0 | (targetB << 8));
+        M2C_FIELD(record, s16 *, 4) = (s16) (0 - level);
         return;
     }
-    M2C_FIELD(arg0, s16 *, 0) = (s16) (arg1 | 0x80 | (arg2 << 8));
-    M2C_FIELD(arg0, s16 *, 4) = (s16) arg5;
+    M2C_FIELD(record, s16 *, 0) = (s16) (targetA | 0x80 | (targetB << 8));
+    M2C_FIELD(record, s16 *, 4) = (s16) level;
 }
 
-void GX_SetBlendY(void *arg0, s32 arg1) {
-    s32 temp_r2;
-    u16 temp_r3;
+/* Set the BLDY blend level and pick the BLDCNT effect from the level's sign: a
+ * negative level darkens, a positive one brightens.  The target-plane bits of
+ * BLDCNT are preserved. */
+void GX_SetBlendY(void *blendCnt, s32 level) {
+    s32 effect;
+    u16 blendCntValue;
 
-    temp_r3 = M2C_FIELD(arg0, u16 *, 0);
-    temp_r2 = temp_r3 & 0xC0;
-    if (arg1 < 0) {
-        if (temp_r2 == 0x80) {
-            M2C_FIELD(arg0, u16 *, 0) = (u16) ((temp_r3 & ~0xC0) | 0xC0);
+    blendCntValue = M2C_FIELD(blendCnt, u16 *, 0);
+    effect = blendCntValue & GX_BLDCNT_EFFECT_MASK;
+    if (level < 0) {
+        if (effect == GX_BLDCNT_EFFECT_BRIGHTEN) {
+            M2C_FIELD(blendCnt, u16 *, 0) = (u16) ((blendCntValue & ~GX_BLDCNT_EFFECT_MASK) | GX_BLDCNT_EFFECT_DARKEN);
         }
-        M2C_FIELD(arg0, s16 *, 4) = (s16) (0 - arg1);
+        M2C_FIELD(blendCnt, s16 *, 4) = (s16) (0 - level);
         return;
     }
-    if (temp_r2 == 0xC0) {
-        M2C_FIELD(arg0, u16 *, 0) = (u16) ((temp_r3 & ~0xC0) | 0x80);
+    if (effect == GX_BLDCNT_EFFECT_DARKEN) {
+        M2C_FIELD(blendCnt, u16 *, 0) = (u16) ((blendCntValue & ~GX_BLDCNT_EFFECT_MASK) | GX_BLDCNT_EFFECT_BRIGHTEN);
     }
-    M2C_FIELD(arg0, s16 *, 4) = (s16) arg1;
+    M2C_FIELD(blendCnt, s16 *, 4) = (s16) level;
 }
 
 void GX_LoadMatrix4x4(s32 a){void func_02004e44(s32);*(volatile s32 *)0x4000400=0x16;func_02004e44(a);}

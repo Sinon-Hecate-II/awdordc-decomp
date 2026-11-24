@@ -15,14 +15,17 @@ i=0;slot=startSlot;bits=M2C_FIELD(p,u32*,WFC_SESSION_STATUS);do{rem=slot%WFC_PLA
 rem=(startSlot+i)%WFC_PLAYER_SLOT_COUNT;return rem+1;
 }
 #pragma opt_common_subs on
-void WFC_DispatchEvent(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Deliver the session's pending substep to its event callback: take the substep
+ * from WFC_SESSION_SUBSTATE, clear it and hand it, with the event's arguments,
+ * to WFC_CallEventHandler (the callback the session installed). */
+void WFC_DispatchEvent(M2C_UNK result, M2C_UNK data, M2C_UNK value, s32 tag) {
     void WFC_CallEventHandler(s16, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     extern void *gWfcSession;
-    s16 temp_r0;
+    s16 substate;
 
-    temp_r0 = M2C_FIELD(gWfcSession, s16 *, 0x2280);
-    M2C_FIELD(gWfcSession, s16 *, 0x2280) = 0;
-    WFC_CallEventHandler(temp_r0, arg0, arg1, arg2, arg3);
+    substate = M2C_FIELD(gWfcSession, s16 *, WFC_SESSION_SUBSTATE);
+    M2C_FIELD(gWfcSession, s16 *, WFC_SESSION_SUBSTATE) = 0;
+    WFC_CallEventHandler(substate, result, data, value, tag);
 }
 
 void WFC_CallEventHandler(s16 a,s32 b,s32 c,s32 d,s32 e){
@@ -120,15 +123,15 @@ case WFC_SESSION_STATE_MATCHMAKING:WFC_SetState(WFC_SESSION_STATE_LINKED);return
  * result kind and the operation id, runs the matching continuation, then
  * advances the session state machine and reports the outcome. */
 void WFC_OperationCallback(u16 *msg) {
-s32 WFC_ShutdownCommandChannel(void);s32 func_02012158(void *);s32 func_02012198(void *);s32 WFC_SubmitParentMode(void *,s32);s32 WFC_SubmitMatchSettings(void *,s32,s32,void *);s32 WFC_SendConnectionData(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
+s32 WFC_ShutdownCommandChannel(void);s32 WFC_SendCommand4(void *);s32 WFC_SendCommand5(void *);s32 WFC_SubmitParentMode(void *,s32);s32 WFC_SubmitMatchSettings(void *,s32,s32,void *);s32 WFC_SendConnectionData(void *,void *,s32,s32,u16);void func_0202899c(const u16 *);extern void *gWfcSession;
 s32 result=20;
 switch(msg[1]){
 case 0:
 switch(msg[0]){
-case 3:result=func_02012198(WFC_OperationCallback);break;
+case 3:result=WFC_SendCommand5(WFC_OperationCallback);break;
 case 4: {s32 n=WFC_ShutdownCommandChannel();switch(n){case 0: {WFC_SetState(1);WFC_DispatchEvent(0,0,0,0x663);return;}case 4:default:WFC_SetState(11);WFC_DispatchEvent(7,0,0,0x66c);return;}}
 case 5:WFC_SetState(3);WFC_DispatchEvent(0,0,0,0x673);return;
-case 6:result=func_02012158(WFC_OperationCallback);break;
+case 6:result=WFC_SendCommand4(WFC_OperationCallback);break;
 case 29:result=WFC_SubmitParentMode(WFC_OperationCallback,0);break;
 case 25:{u8 *session=gWfcSession;result=WFC_SubmitMatchSettings(WFC_OperationCallback,session[0x2250],session[0x2251],session+0x2200);break;}
 case 39:{u8 *session=gWfcSession;u32 statusBits=M2C_FIELD(session,u32 *,0x2264);u16 bothSet=(statusBits&0xc0000)==0xc0000;result=WFC_SendConnectionData(func_0202899c,session+0x2140,0,(statusBits&0x30000)!=0x30000,bothSet);break;}
@@ -142,7 +145,7 @@ case 2:case 3:case 4:default:WFC_SetState(11);{u8 *session=gWfcSession;WFC_Dispa
 /* Handle a message from the WFC socket: advance the connection state machine and report the result. */
 void WFC_ProcessCallback(u16 *msg){
 extern void *gWfcSession;
-void DC_InvalidateRange(s32,s32); void WFC_StorePlayerRecord(s32,u16); u64 U32DivideRem(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 func_02012700(void *);void WFC_ProcessSendCallback(u16 *);
+void DC_InvalidateRange(s32,s32); void WFC_StorePlayerRecord(s32,u16); u64 U32DivideRem(s32,s32); s32 WFC_SendRequestPacket(void *,void *);s32 WFC_SendCommand11(void *);void WFC_ProcessSendCallback(u16 *);
 s32 result=20,i,n;u32 bits;
 switch(msg[1]){
 case 0:
@@ -158,7 +161,7 @@ M2C_FIELD(gWfcSession,u16 *,0x228e)=(1<<WFC_FindFreePlayerSlot((u16)(32-func_020
 DC_InvalidateRange(M2C_FIELD(gWfcSession,s32 *,0x2288),M2C_FIELD(gWfcSession,u16 *,0x228c));
 M2C_FIELD(gWfcSession,s32 *,0x2284)++;
 result=WFC_SendRequestPacket(WFC_ProcessCallback,(u8 *)gWfcSession+0x2288);break;
-case 7:result=func_02012700(WFC_ProcessSendCallback);break;
+case 7:result=WFC_SendCommand11(WFC_ProcessSendCallback);break;
 case 13:WFC_Finish();return;
 }
 if(result==2)return;

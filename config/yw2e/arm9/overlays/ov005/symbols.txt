@@ -19,10 +19,10 @@ HistoryPageUp kind:function(arm,size=0x48) addr:0x02212160
 HistoryScrollDown kind:function(arm,size=0x50) addr:0x022121a8
 HistoryPageDown kind:function(arm,size=0x4c) addr:0x022121f8
 HistoryMenu_DrawTier kind:function(arm,size=0x9c) addr:0x02212244
-func_ov005_022122e0 kind:function(arm,size=0x344) addr:0x022122e0
-func_ov005_02212624 kind:function(arm,size=0x190) addr:0x02212624
-func_ov005_022127b4 kind:function(arm,size=0x190) addr:0x022127b4
-func_ov005_02212944 kind:function(arm,size=0x48) addr:0x02212944
+HistoryMenu_DrawPage0Row kind:function(arm,size=0x344) addr:0x022122e0
+HistoryMenu_DrawPage1Row kind:function(arm,size=0x190) addr:0x02212624
+HistoryMenu_DrawPage2Row kind:function(arm,size=0x190) addr:0x022127b4
+HistoryMenu_DrawRow kind:function(arm,size=0x48) addr:0x02212944
 HistoryMenu_DrawList kind:function(arm,size=0x1b4) addr:0x0221298c
 func_ov005_02212b40 kind:function(arm,size=0x278) addr:0x02212b40
 LoadHistoryMenuPage0Bg kind:function(arm,size=0x68) addr:0x02212db8
@@ -92,7 +92,7 @@ func_ov005_0221885c kind:function(arm,size=0x20) addr:0x0221885c
 Ov005SyncMenuState kind:function(arm,size=0x198) addr:0x0221887c
 Ov005ListMenuInput kind:function(arm,size=0x1bc) addr:0x02218a14
 Ov005DetailMenuInput kind:function(arm,size=0x1e4) addr:0x02218bd0
-func_ov005_02218db4 kind:function(arm,size=0x48) addr:0x02218db4
+Ov005MenuInput kind:function(arm,size=0x48) addr:0x02218db4
 func_ov005_02218dfc kind:function(arm,size=0x40) addr:0x02218dfc
 func_ov005_02218e3c kind:function(arm,size=0x18) addr:0x02218e3c
 GetCurrentCoFaceId kind:function(arm,size=0x88) addr:0x02218e54
@@ -181,7 +181,7 @@ func_ov005_0221f4f8 kind:function(arm,size=0x508) addr:0x0221f4f8
 func_ov005_0221fa00 kind:function(arm,size=0x18) addr:0x0221fa00
 func_ov005_0221fa18 kind:function(arm,size=0xfc) addr:0x0221fa18
 DrawUnlockedCoList kind:function(arm,size=0xb4) addr:0x0221fb14
-func_ov005_0221fbc8 kind:function(arm,size=0x44) addr:0x0221fbc8
+CreateUnlockedCoListScreen kind:function(arm,size=0x44) addr:0x0221fbc8
 Ov005_InitScreenGraphics kind:function(arm,size=0x104) addr:0x0221fc0c
 func_ov005_0221fd10 kind:function(arm,size=0x10) addr:0x0221fd10
 CreateCampaignHintPanel kind:function(arm,size=0x90) addr:0x0221fd20
@@ -321,7 +321,7 @@ data_ov005_02220a9c kind:data(any) addr:0x02220a9c
 data_ov005_02220aa8 kind:data(any) addr:0x02220aa8
 data_ov005_02220ad0 kind:data(any) addr:0x02220ad0
 gResultSlideAnimScript kind:data(any) addr:0x02220b00
-data_ov005_02220b38 kind:data(any) addr:0x02220b38
+gUnlockedCoListScreenClass kind:data(any) addr:0x02220b38
 data_ov005_02220b70 kind:data(any) addr:0x02220b70
 data_ov005_02220b80 kind:data(any) addr:0x02220b80 ambiguous
 gCampaignHintPanelClass kind:data(any) addr:0x02220bb0

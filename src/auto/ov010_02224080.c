@@ -163,29 +163,41 @@ context->next=((VoiceLinkState *)&gVoiceLinkState)->activeList;
 return context;
 }
 
-s32 func_ov010_0222441c(void *arg0, M2C_UNK arg1) {
+/* Build the control packet (kind 0xFF) of one voice-link protocol step into a local
+ * buffer and transmit it: the packet builder's error is returned as is, and a transmit
+ * that reached no peer reports -4. */
+s32 VoiceLink_SendControlPacket(void *context, s32 step) {
     s32 VoiceLink_BuildControlPacket(void *, M2C_UNK, void *, u32);
-    s32 func_ov010_02224614(void *, void *);
-    u8 sp0[0x10];
-    s32 temp_r0;
+    s32 VoiceLink_TransmitPacket(void *, void *);
+    u8 packet[0x10];
+    s32 result;
 
-    temp_r0 = VoiceLink_BuildControlPacket(arg0, arg1, sp0, 0x10);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    result = VoiceLink_BuildControlPacket(context, step, packet, 0x10);
+    if (result != 0) {
+        return result;
     }
-    if (func_ov010_02224614(arg0, sp0) != 0) {
+    if (VoiceLink_TransmitPacket(context, packet) != 0) {
         return 0;
     }
     return -4;
 }
 
-s32 VoiceLink_SendPacket(void *arg0,s32 arg1) {
- u8 sp0[0x10]; s32 result;
- s32 func_ov010_02224614(void *,void *);
- result=VoiceLink_BuildStepPacket(arg0,arg1,sp0,0x10);
- if(result!=0) return result;
- if(func_ov010_02224614(arg0,sp0)!=0) return 0;
- return -4;
+/* Build the step packet of one voice-link protocol step into a local buffer and
+ * transmit it: the packet builder's error is returned as is, and a transmit that
+ * reached no peer reports -4. */
+s32 VoiceLink_SendPacket(void *context, s32 step) {
+    u8 packet[0x10];
+    s32 result;
+    s32 VoiceLink_TransmitPacket(void *, void *);
+
+    result = VoiceLink_BuildStepPacket(context, step, packet, 0x10);
+    if (result != 0) {
+        return result;
+    }
+    if (VoiceLink_TransmitPacket(context, packet) != 0) {
+        return 0;
+    }
+    return -4;
 }
 
 void VoiceLink_SetPacketFromContext(void *arg0, void *arg1) {
@@ -254,19 +266,21 @@ M2C_UNK VoiceLink_SendControl(s32 arg0) {
 }
 
 #pragma opt_propagation off
-void VoiceLink_InitContext(void *arg0,s32 arg1) {
-extern M2C_UNK gLinkConfig;
-u8 zero;
-u32 i;
-u8 *ptr;
-ptr=arg0;i=6;zero=0;
-do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
-M2C_FIELD(arg0,s32 *,0)=M2C_FIELD(&gLinkConfig,s32 *,0x10);
-M2C_FIELD(arg0,s32 *,0xc)=0;
-M2C_FIELD(arg0,s8 *,4)=arg1;
+/* Recycle an exchange context for peer `peerId`: clear all 0x18 bytes, mark it in
+ * use with the link config's mode and reset its protocol step. */
+void VoiceLink_InitContext(void *context, s32 peerId) {
+ extern M2C_UNK gLinkConfig;
+ u8 zero;
+ u32 i;
+ u8 *ptr;
+ ptr=(u8 *)context;i=6;zero=0;
+ do {ptr[0]=zero;ptr[1]=zero;ptr[2]=zero;ptr[3]=zero;ptr+=4;}while(--i);
+ ((VoiceLinkContext *)context)->valid=M2C_FIELD(&gLinkConfig,s32 *,LINK_CONFIG_MODE);
+ ((VoiceLinkContext *)context)->step=0;
+ ((VoiceLinkContext *)context)->peerId=peerId;
 }
 #pragma opt_propagation reset
-s32 func_ov010_02224614(void *arg0,void *arg1) {
+s32 VoiceLink_TransmitPacket(void *arg0,void *arg1) {
  s32 SendTransferToPeer(u8,void *,u32);
  if(M2C_FIELD(arg1,u8 *,4)==0xff && M2C_FIELD(arg1,u8 *,6)==4) {
  VoiceLink_BroadcastPacket(arg0,arg1);
@@ -306,7 +320,24 @@ u8 VoiceLink_GetReplyType(u8 *a,u8 *b){
     return 12;
 }
 
-M2C_UNK VoiceLink_InitPacket(void *a,void *b,u8 c){extern M2C_UNK gLinkConfig;M2C_FIELD(b,s32 *,0)=0x5f564354;M2C_FIELD(b,u8 *,5)=16;M2C_FIELD(b,u8 *,6)=c;M2C_FIELD(b,u8 *,8)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,u8 *,9)=M2C_FIELD(a,u8 *,4);M2C_FIELD(b,u8 *,10)=0;M2C_FIELD(b,u8 *,11)=M2C_FIELD(&gLinkConfig,u8 *,0);M2C_FIELD(b,s32 *,12)=0;return 0;}
+/* Fill in the fixed header of a voice-link packet: the magic and header size, the
+ * exchange step as the packet subtype, the local player as both sender and peer
+ * id, the context's peer as the target, and a zero flag and sequence number. */
+M2C_UNK VoiceLink_InitPacket(void *context, void *packet, u8 step) {
+    extern M2C_UNK gLinkConfig;
+    VoiceLinkPacket *p = packet;
+    VoiceLinkContext *ctx = context;
+
+    p->magic = VOICE_LINK_PACKET_MAGIC;
+    p->headerSize = VOICE_LINK_PACKET_SIZE;
+    p->subtype = step;
+    p->sender = ((LinkConfig *) &gLinkConfig)->localId;
+    p->target = ctx->peerId;
+    p->flag = 0;
+    p->peerId = ((LinkConfig *) &gLinkConfig)->localId;
+    p->sequence = 0;
+    return 0;
+}
 
 s32 VoiceLink_AdvanceStep(void *a, void *b) {
 extern M2C_UNK gLinkConfig;

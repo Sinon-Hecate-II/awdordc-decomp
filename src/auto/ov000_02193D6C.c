@@ -141,7 +141,7 @@ s32 HasAiOptionalUnitBuildFlag(void);s32 CountPlayerUnitsOfKind(s32);s32 CanKind
 s32 func_ov000_0217d86c(void);void SelectAttackingUnit(void);
 void SelectMapLayer(void*);void FloodFillUnitRange(s32,s32,s32,s32,s32);void FillMapLayer(s32);
 s32 IsMidActionStep(u32);s32 CanUnitAttackKind(u8*,u32);
-s32 IsUnitProductionTerrain(u32);s32 func_ov000_021a911c(s16,s16,s16);
+s32 IsUnitProductionTerrain(u32);s32 IsCellOwnedByUnitPlayer(s16,s16,s16);
 void PlanMoveDestination(s32,s32);
 s32 bestX=-1,bestY=-1,best=32767,index,offset,found,distance;
 u32 mode;u8 *unit;
@@ -192,7 +192,7 @@ FloodFillUnitRange(SEL[1],SEL[2],KIND(SEL),110,0);
 if(!found){
 {s32 x,y;for(y=0;y<M2C_FIELD(MAP,u16*,0x5146);y++)for(x=0;x<M2C_FIELD(MAP,u16*,0x5144);x++){
 if(PATH(x,y)<0||(CELL(x,y,0x1420)&31)!=19||
-!func_ov000_021a911c(M2C_FIELD(MAP,s16*,0x52a8),x,y))continue;
+!IsCellOwnedByUnitPlayer(M2C_FIELD(MAP,s16*,0x52a8),x,y))continue;
 distance=PATH(x,y);if(best>=distance){bestX=x;bestY=y;best=distance;}
 }}
 if(bestX==-1)return;PlanMoveDestination(bestX,bestY);return;

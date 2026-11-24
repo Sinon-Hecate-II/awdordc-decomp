@@ -248,13 +248,16 @@ s32 func_ov003_02202408(s32 arg0) {
     return (s32) (arg0 << 0xD) >> 0x10;
 }
 
-void func_ov003_02202414(void *arg0) {
+/* Refresh the setup menu's network state packet from the local player's record,
+ * clear its start flag and send it to the other players. */
+void Ov003_SendSetupPlayerState(void *panel) {
     M2C_UNK Link_SendPacket(void *, M2C_UNK);
-    M2C_UNK ReadActivePlayerRecord(M2C_UNK, s32, M2C_UNK);
+    M2C_UNK ReadActivePlayerRecord(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    ReadActivePlayerRecord(0, M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
-    M2C_FIELD(M2C_FIELD(arg0, void **, 0x44), s32 *, 0x110) = 0;
-    Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
+
+    ReadActivePlayerRecord(0, M2C_FIELD(panel, void **, SETUP_PANEL_MENU) + SETUP_MENU_PACKET, SETUP_MENU_PACKET_SIZE);
+    M2C_FIELD(M2C_FIELD(panel, void **, SETUP_PANEL_MENU), s32 *, SETUP_MENU_PACKET) = 0;
+    Link_SendPacket(M2C_FIELD(panel, void **, SETUP_PANEL_MENU) + SETUP_MENU_PACKET, SETUP_MENU_PACKET_SIZE);
     Link_FlushSend();
 }
 
@@ -376,9 +379,9 @@ void func_ov003_022024a8(void *arg0) {
 #pragma opt_common_subs on
 #pragma opt_strength_reduction on
 void func_ov003_0220277c(void *arg0) {
-    void func_ov003_02202b68(void *);
+    void Ov003_UpdateSetupPanelSprites(void *);
     M2C_UNK func_ov003_021e88a4(M2C_UNK);
-    M2C_UNK func_ov003_021ebb88(M2C_UNK);
+    M2C_UNK PressWaypointSprite(M2C_UNK);
     u8 func_ov003_022021d8(void *);
     void Ov003_CancelSetupPanel();
     void Ov003_IncreaseSelectedEntry(void *, s32);
@@ -411,9 +414,9 @@ void func_ov003_0220277c(void *arg0) {
     s32 r4 = 0;
     u16 r9 = M2C_FIELD(gKeyState, u16 *, 2);
 
-    func_ov003_02202b68(M2C_FIELD(arg0, void **, 0x40));
+    Ov003_UpdateSetupPanelSprites(M2C_FIELD(arg0, void **, 0x40));
     if (func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0)) != 0) {
-        func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0));
+        PressWaypointSprite(M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0));
         Ov003_CancelSetupPanel(arg0, func_ov003_022021d8(M2C_FIELD(arg0, void **, 0x44)));
         r7 = 0;
     }
@@ -422,7 +425,7 @@ void func_ov003_0220277c(void *arg0) {
         if (r7 != 0) {
             if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8)) != 0) {
                 Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
-                func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8));
+                PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r8) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
                     if (func_ov003_022021c0(arg0) != 0) {
@@ -438,7 +441,7 @@ void func_ov003_0220277c(void *arg0) {
         if (r7 != 0) {
             if (func_ov003_021e88a4(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28)) != 0) {
                 Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r8);
-                func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28));
+                PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r8 * 4, void **, 0x28));
                 if (func_ov003_022021c0(arg0) != 0) {
                     func_ov003_02202ec0(arg0, r8);
                 } else {
@@ -493,7 +496,7 @@ void func_ov003_0220277c(void *arg0) {
         if (r7 != 0 && (r9 & 0x100)) {
             if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
                 Ov003_IncreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
-                func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 8));
+                PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 8));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
                 }
@@ -503,7 +506,7 @@ void func_ov003_0220277c(void *arg0) {
         if (r7 != 0 && (r9 & 0x200)) {
             if (func_ov003_02200c64((r4 << 16) >> 16, 0, 7) != 0) {
                 Ov003_DecreaseSelectedEntry(M2C_FIELD(arg0, void **, 0x44), r4 & 0xFF);
-                func_ov003_021ebb88(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 0x28));
+                PressWaypointSprite(M2C_FIELD((u8 *)M2C_FIELD(arg0, void **, 0x40) + r4 * 4, void **, 0x28));
                 if (func_ov003_02202e94((s32)arg0, r4 & 0xFF) != 0) {
                     Ov003_UpdateSelectedEntryText(arg0);
                 }
@@ -518,15 +521,17 @@ void func_ov003_0220277c(void *arg0) {
     func_ov003_02204ec4(arg0);
 }
 
-void func_ov003_02202b68(void *p) {
- M2C_UNK MenuSpriteUpdate(s32);
- u8 i;
- MenuSpriteUpdate(M2C_FIELD(p,s32 *,0));
- MenuSpriteUpdate(M2C_FIELD(p,s32 *,4));
- for(i=0;(u32)i<8;i++) {
- MenuSpriteUpdate(((s32 *)(p+8))[i]);
- MenuSpriteUpdate(((s32 *)(p+0x28))[i]);
- }
+/* Animate every sprite of the setup panel's sprite set (the two slide sprites
+ * and the four rows of four slot sprites) by one frame. */
+void Ov003_UpdateSetupPanelSprites(void *sprites) {
+    M2C_UNK MenuSpriteUpdate(s32);
+    u8 i;
+    MenuSpriteUpdate(M2C_FIELD(sprites, s32 *, SETUP_SPRITES_SLIDE_0));
+    MenuSpriteUpdate(M2C_FIELD(sprites, s32 *, SETUP_SPRITES_SLIDE_1));
+    for (i = 0; (u32)i < SETUP_SPRITES_ROW_COUNT; i++) {
+        MenuSpriteUpdate(((s32 *)(sprites + SETUP_SPRITES_ROW_TOP))[i]);
+        MenuSpriteUpdate(((s32 *)(sprites + SETUP_SPRITES_ROW_BOTTOM))[i]);
+    }
 }
 
 /* Cancel the setup panel: play the cancel sound; if the panel is already closed,

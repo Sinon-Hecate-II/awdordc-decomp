@@ -133,7 +133,7 @@ void *AllocSpriteObject(void) {
     return sprite;
 }
 
-void func_01ffa244(s32 arg0) {
+void Free3DSpriteObject(s32 arg0) {
     extern void **g3DSpriteOrderCursor;
     void **var_r2;
     s32 temp_r3;
@@ -255,22 +255,25 @@ void CreateSpriteForOwner(s32 a,s32 b) {
  if(b<12)CreateSpriteFromClass(a,b);else CreateSpriteObject(a,b);
 }
 
-void func_01ffa468(void *p) {
+void Mark3DSpriteTreeOwned(void *p) {
  void *q=M2C_FIELD(p,void **,0x24);
- if(q)func_01ffa468(q);
+ if(q)Mark3DSpriteTreeOwned(q);
  q=M2C_FIELD(p,void **,0x1C);
- if(q)func_01ffa468(q);
+ if(q)Mark3DSpriteTreeOwned(q);
  M2C_FIELD(p,u8 *,0x30)|=2;
 }
 
-void func_01ffa4a0(void *p) {
- void *q=M2C_FIELD(p,void **,0x24);
- if(q)func_01ffa4a0(q);
- q=M2C_FIELD(p,void **,0x1C);
- if(q)func_01ffa4a0(q);
- if(M2C_FIELD(p,u8 *,0x30)&1)return;
- M2C_FIELD(p,u8 *,0x30)|=1;
- func_01ffa244((s32)p);
+/* Marks a 3D sprite object and everything below it (later siblings and children)
+ * as dead and gives each object back to the free pool. */
+void Release3DSpriteTree(void *sprite) {
+    void *node;
+    node = M2C_FIELD(sprite, void **, DS3D_SPRITE_NEXT);
+    if (node) Release3DSpriteTree(node);
+    node = M2C_FIELD(sprite, void **, DS3D_SPRITE_CHILD);
+    if (node) Release3DSpriteTree(node);
+    if (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_DEAD) return;
+    M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) |= DS3D_SPRITE_FLAG_DEAD;
+    Free3DSpriteObject((s32)sprite);
 }
 
 /* Destroys a 3D sprite object and everything below it: the later siblings and the
@@ -301,7 +304,23 @@ void Delete3DSpriteTree(void *obj) {
 
 #pragma push
 #pragma optimization_level 2
-void DeleteSpriteObject(void *arg0) { do { if(!arg0) break; switch(M2C_FIELD(arg0,u32 *,4)){case 0: return;default:break;} if(M2C_FIELD(arg0,u8 *,0x30)&2) break; RemoveSpriteFromOwner(arg0);func_01ffa468(arg0);Delete3DSpriteTree(arg0);func_01ffa4a0(arg0); } while(0); }
+/* Remove a live standalone sprite from its owner and destroy/release its entire sprite tree. */
+void DeleteSpriteObject(void *sprite) {
+    do {
+        if (!sprite) break;
+        switch (M2C_FIELD(sprite, u32 *, DS3D_SPRITE_ALIVE)) {
+        case 0:
+            return;
+        default:
+            break;
+        }
+        if (M2C_FIELD(sprite, u8 *, DS3D_SPRITE_FLAGS) & DS3D_SPRITE_FLAG_TREE_OWNED) break;
+        RemoveSpriteFromOwner(sprite);
+        Mark3DSpriteTreeOwned(sprite);
+        Delete3DSpriteTree(sprite);
+        Release3DSpriteTree(sprite);
+    } while (0);
+}
 #pragma pop
 /* One frame of a 3D sprite object tree: walk the sibling chain, then, unless the
  * object has children, run its state update (or the UPDATE_CB override), point
@@ -376,16 +395,18 @@ void Sprite_ResumeAnimationRepeat(void *arg0) {
     M2C_FIELD(arg0, u8 *, 0x30) = (u8) (M2C_FIELD(arg0, u8 *, 0x30) | 0x40);
 }
 
-void *FindObjectByClass(s32 arg0) {
- extern void **g3DSpriteOrderCursor;
- extern void *g3DSpriteSortOrder[];
- void **p=g3DSpriteSortOrder;
- void *q;
- for(;p<g3DSpriteOrderCursor;p++) {
- q=*p;
- if(M2C_FIELD(q,s32 *,4)==arg0)return q;
- }
- return 0;
+/* Return the first live 3D sprite object of class `spriteClass` in the depth sort
+ * order, or NULL when there is none. */
+void *FindObjectByClass(s32 spriteClass) {
+    extern void **g3DSpriteOrderCursor;
+    extern void *g3DSpriteSortOrder[];
+    void **cursor = g3DSpriteSortOrder;
+    void *sprite;
+    for (; cursor < g3DSpriteOrderCursor; cursor++) {
+        sprite = *cursor;
+        if (M2C_FIELD(sprite, s32 *, DS3D_SPRITE_ALIVE) == spriteClass) return sprite;
+    }
+    return 0;
 }
 
 /* Return the first live sprite of `spriteClass` that belongs to the current 3D

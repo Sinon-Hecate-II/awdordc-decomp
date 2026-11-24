@@ -161,21 +161,23 @@ s32 GetLinkMode(void) {
  * NET_OVERLAY_NONE.  Each counts only while its overlay resource is loaded. */
 s32 GetActiveOverlay(void){s32 IsResourceLoaded(s32);s32 GetLinkPhase(void);s32 IsOnlineSessionFlagSet(s32);s32 linkUp;if(IsResourceLoaded(NET_RESOURCE_LINK)){if(GetLinkPhase())linkUp=1;else linkUp=0;if(linkUp)return NET_OVERLAY_LINK;}else if(IsResourceLoaded(NET_RESOURCE_ONLINE)&&IsOnlineSessionFlagSet(0))return NET_OVERLAY_ONLINE;return NET_OVERLAY_NONE;}
 
+/* True when a network session is currently active: a single-card link once its
+ * phase has come up, or an online (WFC) session once its flag is set. */
 s32 IsLinkSessionActive(void) {
     s32 GetLinkPhase();
-    s32 temp_r0;
-    s32 var_r0;
+    s32 overlay;
+    s32 active;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
         if (GetLinkPhase() != 0) {
-            var_r0 = 1;
+            active = 1;
         } else {
-            var_r0 = 0;
+            active = 0;
         }
-        return var_r0;
-    case 2:
+        return active;
+    case NET_OVERLAY_ONLINE:
         return IsOnlineSessionFlagSet(0);
     default:
         return 0;
@@ -225,7 +227,7 @@ s32 IsSessionInError(void) {
     }
 }
 
-s32 func_0208477c(void) {
+s32 IsSessionResultHandled(void) {
     s32 IsLinkResultFlagSet(M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     s32 temp_r0;
@@ -331,7 +333,21 @@ s32 GetReadyPlayerMask(void) {
     }
 }
 
-s32 GetLocalPlayerSlot(void){s32 func_ov009_02225460(void);s32 func_ov010_02229a14(void);switch(GetActiveOverlay()){case 1:return (s8)func_ov009_02225460();case 2:return (s8)func_ov010_02229a14();default:return 0;}}
+/* This console's player slot in the active network session (0 when offline):
+ * the single-card link's or the online session's own slot byte. */
+s32 GetLocalPlayerSlot(void) {
+    s32 GetLinkLocalPlayerSlot(void);
+    s32 GetOnlineLocalPlayerSlot(void);
+
+    switch (GetActiveOverlay()) {
+    case NET_OVERLAY_LINK:
+        return (s8)GetLinkLocalPlayerSlot();
+    case NET_OVERLAY_ONLINE:
+        return (s8)GetOnlineLocalPlayerSlot();
+    default:
+        return 0;
+    }
+}
 
 /* Bit mask of the player ids of every connected player: from the link
  * overlay's player slots, or from the online session's player records. */
@@ -422,24 +438,26 @@ s32 GetOverlayEventFlags(void) {
 
 s32 IsOverlayEventSet(s32 a){s32 v,r;v=GetOverlayEventFlags();r=1;if(!(v&(1<<a)))r=0;return r;}
 
-s32 func_02084ac0(M2C_UNK arg0) {
+/* The player record of `player` in the active network session: the single-card
+ * link's player slot, or the online session's player record, or NULL when no
+ * session overlay is running. */
+s32 GetActivePlayerRecord(s32 player) {
     s32 GetActiveLinkPlayerSlot(M2C_UNK);
     s32 GetOnlinePlayerRecord(M2C_UNK);
-    s32 temp_r0;
-    s32 temp_r0_2;
-    s32 temp_r0_3;
+    s32 overlay;
+    s32 record;
 
-    temp_r0_3 = GetActiveOverlay();
-    switch (temp_r0_3) {                            /* irregular */
-    case 1:
-        temp_r0_2 = GetActiveLinkPlayerSlot(arg0);
-        if (temp_r0_2 != 0) {
-            return temp_r0_2;
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        record = GetActiveLinkPlayerSlot(player);
+        if (record != 0) {
+            return record;
         }
-    case 2:
-        temp_r0 = GetOnlinePlayerRecord(arg0);
-        if (temp_r0 != 0) {
-            return temp_r0;
+    case NET_OVERLAY_ONLINE:
+        record = GetOnlinePlayerRecord(player);
+        if (record != 0) {
+            return record;
         }
     default:
         return 0;
@@ -606,18 +624,20 @@ s32 Link_ReceivePacket(M2C_UNK buffer, M2C_UNK length) {
     }
 }
 
-void Link_SendPacket(M2C_UNK arg0, M2C_UNK arg1) {
+/* Hand a buffer of `size` bytes (`src`) to the active network overlay, which
+ * stages it as this console's local-player record to be sent to the others. */
+void Link_SendPacket(M2C_UNK src, M2C_UNK size) {
     M2C_UNK func_ov009_02223f7c(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov010_02229a74(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        func_ov009_02223f7c(arg0, arg1);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        func_ov009_02223f7c(src, size);
         return;
-    case 2:
-        func_ov010_02229a74(arg0, arg1);
+    case NET_OVERLAY_ONLINE:
+        func_ov010_02229a74(src, size);
         return;
     }
 }
@@ -641,17 +661,20 @@ s32 ReadActivePlayerRecord(M2C_UNK unused, M2C_UNK buffer, M2C_UNK length) {
     }
 }
 
-s32 GetNetworkPlayerRecord(M2C_UNK arg0) {
-    s32 func_ov009_022240f4(M2C_UNK);
-    s32 func_ov010_02229b90(M2C_UNK);
-    s32 temp_r0;
+/* The network record of the connected player `playerId` in the running network
+ * session: the single-card link's record or the online session's, or 0 when
+ * neither session is up. */
+s32 GetNetworkPlayerRecord(M2C_UNK playerId) {
+    s32 GetActiveLinkPlayerRecord(M2C_UNK);
+    s32 GetActiveOnlinePlayerRecord(M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return func_ov009_022240f4(arg0);
-    case 2:
-        return func_ov010_02229b90(arg0);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return GetActiveLinkPlayerRecord(playerId);
+    case NET_OVERLAY_ONLINE:
+        return GetActiveOnlinePlayerRecord(playerId);
     default:
         return 0;
     }
@@ -683,7 +706,7 @@ void Link_FlushSend(void) {
  * Wi-Fi (2). */
 s32 Link_CreateStartRequest(M2C_UNK matchId, M2C_UNK owner) {
     s32 CreateLinkStartRequest(M2C_UNK, M2C_UNK);
-    s32 func_ov010_02229d54(M2C_UNK, M2C_UNK);
+    s32 Ov010Online_CreateStartRequest(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetActiveOverlay();
@@ -691,23 +714,26 @@ s32 Link_CreateStartRequest(M2C_UNK matchId, M2C_UNK owner) {
     case 1:
         return CreateLinkStartRequest(matchId, owner);
     case 2:
-        return func_ov010_02229d54(matchId, owner);
+        return Ov010Online_CreateStartRequest(matchId, owner);
     default:
         return 0;
     }
 }
 
-s32 func_02084eec(M2C_UNK arg0) {
+/* Spawn the player-announce sprite under `owner` through whichever network
+ * overlay is running (single-card link or online), or return 0 when neither is
+ * up. */
+s32 SpawnPlayerAnnounce(M2C_UNK owner) {
     s32 SpawnLinkPlayerAnnounce(M2C_UNK);
     s32 SpawnOnlinePlayerAnnounce(M2C_UNK);
-    s32 temp_r0;
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return SpawnLinkPlayerAnnounce(arg0);
-    case 2:
-        return SpawnOnlinePlayerAnnounce(arg0);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return SpawnLinkPlayerAnnounce(owner);
+    case NET_OVERLAY_ONLINE:
+        return SpawnOnlinePlayerAnnounce(owner);
     default:
         return 0;
     }
@@ -733,17 +759,19 @@ s32 Link_CreateMatchRequest(M2C_UNK names, M2C_UNK nameCount, M2C_UNK type, M2C_
     }
 }
 
-s32 Link_SetMessageHandler(M2C_UNK arg0) {
-    s32 func_ov009_02224c1c(M2C_UNK);
-    s32 func_ov010_022294c8(M2C_UNK);
-    s32 temp_r0;
+/* Install `handler` as the running network overlay's link message handler and
+ * return the one it replaced (0 when neither overlay is up). */
+s32 Link_SetMessageHandler(M2C_UNK handler) {
+    s32 SetLinkMessageHandler(M2C_UNK);
+    s32 SetOnlineMessageHandler(M2C_UNK);
+    s32 overlay;
 
-    temp_r0 = GetActiveOverlay();
-    switch (temp_r0) {                              /* irregular */
-    case 1:
-        return func_ov009_02224c1c(arg0);
-    case 2:
-        return func_ov010_022294c8(arg0);
+    overlay = GetActiveOverlay();
+    switch (overlay) {                              /* irregular */
+    case NET_OVERLAY_LINK:
+        return SetLinkMessageHandler(handler);
+    case NET_OVERLAY_ONLINE:
+        return SetOnlineMessageHandler(handler);
     default:
         return 0;
     }

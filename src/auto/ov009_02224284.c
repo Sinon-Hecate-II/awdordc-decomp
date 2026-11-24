@@ -64,11 +64,11 @@ s32 func_ov009_022242c8(void) {
     M2C_UNK func_ov009_02224bd4(M2C_UNK);
     M2C_UNK func_ov009_02224bec(M2C_UNK);
     M2C_UNK func_ov009_02224c04(M2C_UNK);
-    M2C_UNK func_ov009_02224c1c(M2C_UNK);
+    M2C_UNK SetLinkMessageHandler(M2C_UNK);
     M2C_UNK func_ov009_02224b8c(M2C_UNK);
     M2C_UNK SetConnectedPlayers(M2C_UNK);
     void ClearLinkEventFlags(void);
-    s32 func_ov009_02222790(void);
+    s32 StartLinkCommandChannel(void);
     extern M2C_UNK gLinkState;
     extern M2C_UNK gLinkLocalPlayerInfo;
     extern M2C_UNK data_ov009_02226a40;
@@ -154,7 +154,7 @@ s32 func_ov009_022242c8(void) {
     func_ov009_02224bd4(0);
     func_ov009_02224bec(0);
     func_ov009_02224c04(0);
-    func_ov009_02224c1c(0);
+    SetLinkMessageHandler(0);
     func_ov009_02224b8c(0);
     SetConnectedPlayers(1);
     ClearLinkEventFlags();
@@ -164,7 +164,7 @@ s32 func_ov009_022242c8(void) {
     M2C_FIELD(&gLinkDownloadHeader, u16 *, 0x4) = 0;
     MI_CpuFill8(&gLinkConnectionExtraData, 0, 0x18);
 
-    if (func_ov009_02222790() != 0) {
+    if (StartLinkCommandChannel() != 0) {
         return 1;
     }
     return 0;
@@ -332,7 +332,7 @@ s32 func_ov009_02224730(s32 arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022266b0;
-    extern M2C_UNK data_ov009_02226638;
+    extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226714;
@@ -421,7 +421,7 @@ test:
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
-    ptr = CreateSpriteFromClass((s32)&data_ov009_02226638, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkSenderClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226688;
         M2C_FIELD(ptr, s32 *, 0x34) = 0;
@@ -477,7 +477,7 @@ s32 func_ov009_022249a4(s32 arg0, s32 arg1, s32 arg2) {
     extern M2C_UNK gLinkPeerSlots;
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022266b0;
-    extern M2C_UNK data_ov009_02226638;
+    extern M2C_UNK gLinkSenderClass;
     extern M2C_UNK data_ov009_02226688;
     extern M2C_UNK data_ov009_022264e0;
     extern M2C_UNK data_ov009_02226714;
@@ -550,7 +550,7 @@ test:
         M2C_FIELD(ptr, u32 *, 0x38) = 0;
         MI_CpuFill32(0, (u8 *)ptr + 0x3c, 0x10);
     }
-    ptr = CreateSpriteFromClass((s32)&data_ov009_02226638, 3);
+    ptr = CreateSpriteFromClass((s32)&gLinkSenderClass, 3);
     if (ptr != 0) {
         M2C_FIELD(ptr, M2C_UNK *, 0) = (s32)&data_ov009_02226688;
         M2C_FIELD(ptr, s32 *, 0x34) = 0;
@@ -622,7 +622,7 @@ s32 func_ov009_02224c04(s32 arg0) {
  return old;
 }
 
-s32 func_ov009_02224c1c(s32 arg0) {
+s32 SetLinkMessageHandler(s32 arg0) {
  extern M2C_UNK gLinkState;
  s32 old = M2C_FIELD(&gLinkState,s32 *,0x54);
  M2C_FIELD(&gLinkState,s32 *,0x54) = arg0;
@@ -667,11 +667,11 @@ s32 func_ov009_02224ca4(void) {
 }
 
 s32 func_ov009_02224cd8(void) {
-    s32 func_ov009_02223ec8();
+    s32 RemoveLinkEventListener();
     if (GetLinkRequestKind() != 0) {
         return 0;
     }
-    if (func_ov009_02223ec8() != 0) {
+    if (RemoveLinkEventListener() != 0) {
         return 1;
     }
     SetLinkPhase(8);

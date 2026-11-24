@@ -40,15 +40,18 @@ void UpdateMapCursorSettle(void) {
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
-void func_020d5514(void) {
+/* Empty-tile pick: run the map view's empty-tile callback (if installed), then
+ * put the battle map into cursor-settling mode so the cursor glides onto the
+ * picked tile before normal cursor input resumes. */
+void StartEmptyTileSettle(void) {
     extern void *gCurrentMap;
-    M2C_UNK (*temp_r0)();
+    M2C_UNK (*callback)();
 
-    temp_r0 = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 4), M2C_UNK (**)(), 0x44);
-    if (temp_r0 != NULL) {
-        temp_r0();
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), M2C_UNK (**)(), MAPVIEW_EMPTY_TILE_CB);
+    if (callback != NULL) {
+        callback();
     }
-    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, 0x52B4) = 0xA;
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR_SETTLE;
 }
 
 #pragma opt_common_subs off
@@ -160,7 +163,7 @@ s32 SelectCursorTarget(s32 x, s32 y) {
         (u8 *)M2C_FIELD(gCurrentMap, void **, 0) + MAP_UNIT_RECORDS + M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_UNIT_ID) * MAP_UNIT_STRIDE;
     M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, MAP_CURSOR_CARRIER) = 0;
     if (M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), u8 *, x + M2C_FIELD((u8 *)M2C_FIELD(gCurrentMap, void **, 0) + y * 2, u16 *, MAP_ROW_OFFSETS)) == 0) {
-        func_020d5514();
+        StartEmptyTileSettle();
         return 1;
     }
     a = CanUnitAttackDirectly(M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), void **, MAP_CURSOR_UNIT));
@@ -352,12 +355,14 @@ void MoveCursorTo(s32 x, s32 y) {
     return;
 }
 
-void func_020d61ac(void) {
- extern void *gCurrentMap;
- void *p=M2C_FIELD(gCurrentMap,void **,0);
- SetMapCursorTargetTile(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
- OpenMapActionMenu();
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=5;
+/* Aim the cursor at its own tile, open the map action menu there and switch to the
+ * map-target input mode (MAP_MODE_TARGET_CURSOR) that runs that menu. */
+void OpenMapActionMenuAtCursor(void) {
+    extern void *gCurrentMap;
+    void *map = M2C_FIELD(gCurrentMap, void **, 0);
+    SetMapCursorTargetTile(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y));
+    OpenMapActionMenu();
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_TARGET_CURSOR;
 }
 
 void func_020d61f0(void) {
@@ -380,7 +385,7 @@ void UpdateMapTargetCursor(void) {
     if (func_020d46cc() == 0) {
         if (func_020c9550() != 0) {
             func_020c95e4();
-            func_020d61ac();
+            OpenMapActionMenuAtCursor();
             return;
         }
         func_020d61f0();
@@ -425,11 +430,15 @@ void func_020d6310(void) {
  M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
 }
 
-void func_020d6350(void) {
- extern void *gCurrentMap;
- void *p=M2C_FIELD(gCurrentMap,void **,0);
- SetMapCursorTargetTile(M2C_FIELD(p,s16 *,0x52dc),M2C_FIELD(p,s16 *,0x52de));
- func_020d468c();BattleUpdateUnitCursor();
- M2C_FIELD(M2C_FIELD(gCurrentMap,void **,0),s16 *,0x52b4)=0;
+/* MAP_MODE 7 handler: snap the cursor's move target back to its own tile, mark the
+ * map command state and refresh the unit under the cursor, then resume the normal
+ * cursor mode. */
+void UpdateMapCursorReturn(void) {
+    extern void *gCurrentMap;
+    void *map = M2C_FIELD(gCurrentMap, void **, 0);
+    SetMapCursorTargetTile(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y));
+    func_020d468c();
+    BattleUpdateUnitCursor();
+    M2C_FIELD(M2C_FIELD(gCurrentMap, void **, 0), s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 

@@ -46,9 +46,13 @@ if(a!=0||flag==1){x=M2C_FIELD(p,s32 *,16);if(x==0)flag=1;else HeapFree(4,x,0);}
 result=flag!=0;HttpRequestFree((void*)base);return result;
 }
 #pragma opt_instruction_scheduling reset
-void HttpProgressCallback(s32 unused,s32 a,s32 b,s32 c,s32 d,s32 e,void *p){
-void (*cb)(s32,s32,s32,s32,s32,s32)=M2C_FIELD(p,void (**)(s32,s32,s32,s32,s32,s32),8);
-if(!cb)return;cb(a,b,c,d,e,M2C_FIELD(p,s32 *,0));
+/* ghttp progress callback for a web request node: pass the ghttp progress
+ * arguments (minus the request index) on to the node's progress callback, with
+ * the node's user data as the last argument. */
+void HttpProgressCallback(s32 unused,s32 state,s32 buffer,s32 bufferLen,s32 bytesReceived,s32 contentLength,void *p){
+WebRequestNode *node=(WebRequestNode *)p;
+void (*cb)(s32,s32,s32,s32,s32,s32)=node->onProgress;
+if(!cb)return;cb(state,buffer,bufferLen,bytesReceived,contentLength,node->userData);
 }
 
 /* Start an asynchronous ghttp request through the game's request list: fetch url with an
@@ -254,7 +258,7 @@ s32 GetWebResponseHeader(s32 *header) {
  * success, otherwise a nonzero error code. */
 s32 RegisterWebRequest(s32 requestStr, s32 context) {
     s32 HasNetError(void);
-    s32 func_020323b0(void *);
+    s32 VerifyProfileIdBlockCrc(void *);
     s32 func_020323f4(void *);
     u32 StringLength(void *);
     void *StringCopyPad(void *, void *, s32);
@@ -276,7 +280,7 @@ s32 RegisterWebRequest(s32 requestStr, s32 context) {
     if (M2C_FIELD(&gWebTransaction, s32 *, 0) != 0) {
         return 3;
     }
-    if (func_020323b0((void *)context) == 0 || func_020323f4((void *)context) == 0) {
+    if (VerifyProfileIdBlockCrc((void *)context) == 0 || func_020323f4((void *)context) == 0) {
         return 6;
     }
     if (StringLength((void *)requestStr) >= 0x54u) {

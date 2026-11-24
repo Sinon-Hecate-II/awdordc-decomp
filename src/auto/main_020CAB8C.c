@@ -394,7 +394,7 @@ M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;
 }
 
-void func_020cb8cc(s32 a) {
+void CreateSupplyOverlay(s32 a) {
 extern M2C_UNK data_0212b3ac;
 void *p=CreateSpriteFromClass(&data_0212b3ac,7);
 if(a) M2C_FIELD(p,s16 *,0x36)=0;

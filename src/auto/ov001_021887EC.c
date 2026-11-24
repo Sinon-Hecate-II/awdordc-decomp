@@ -4,6 +4,7 @@
 #include "wfc.h"
 /* The ov001 profile / download-play setup state (gOv001ProfileState). */
 #define PROFILE_STATE      0xA90 /* u8: current profile / download-play screen state */
+#define PROFILE_PREV_STATE 0xA91 /* u8: state PROFILE_STATE held on the previous poll */
 #define PROFILE_RESULT     0xAAC /* u8: result the state-2 list start acts on (1 start list, 2 leave) */
 #define PROFILE_LINK_FRAMES 0xA98 /* u32: frames the download-play link step has been running */
 #define PROFILE_STATE_TIMER 0xA9C /* u32: frames the current profile state has been held */
@@ -60,7 +61,7 @@ SetWhStatus(WH_STATUS_IDLE);
 
 #pragma peephole off
 s32 func_ov001_021888a8(s32 mode, s32 option, s32 channel) {
-    s32 func_ov001_02187bb0(void);
+    s32 Ov001_StartDownloadPlayConnection(void);
     if (M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, WH_LINK_STATUS) != WH_STATUS_IDLE) {
         SystemHalt();
     }
@@ -92,7 +93,7 @@ s32 func_ov001_021888a8(s32 mode, s32 option, s32 channel) {
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), u16 *, 0x14) = mode == 2;
 
     if (mode == 0 || mode == 2 || mode == 4) {
-        return func_ov001_02187bb0();
+        return Ov001_StartDownloadPlayConnection();
     }
     if (M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)) {
         M2C_FIELD(&gWhWork, void (**)(s32, void *, s32), WH_WORK_LOG)(
@@ -178,7 +179,7 @@ SetWhStatus(WH_STATUS_PARENT_START);return 0;
 void func_ov001_02188c78(void *p, void *a) {
     extern void *gOv001ProfileState;
     void func_ov001_02186e40(void *);
-    void func_02045eb4(void *);
+    void FifoReadSaveSlots(void *);
     void *GetSaveData(void);
     gOv001ProfileState = p;
     func_ov001_02186e40((u8 *)p + 0xb00);
@@ -187,7 +188,7 @@ void func_ov001_02188c78(void *p, void *a) {
     M2C_FIELD(gOv001ProfileState, u8 *, 2704) = 1;
     M2C_FIELD(gOv001ProfileState, u8 *, 2705) = 1;
     M2C_FIELD(gOv001ProfileState, s32 *, 2716) = 0;
-    func_ov001_02189828();
+    Ov001_InitProfileSharing();
     M2C_FIELD(gOv001ProfileState, s32 *, 2740) = M2C_FIELD(a, s32 *, 0);
     M2C_FIELD(gOv001ProfileState, s32 *, 2744) = M2C_FIELD(a, s32 *, 4);
     M2C_FIELD(gOv001ProfileState, s32 *, 2748) = M2C_FIELD(a, s32 *, 8);
@@ -197,7 +198,7 @@ void func_ov001_02188c78(void *p, void *a) {
     M2C_FIELD(gOv001ProfileState, u8 *, 0xa92) = M2C_FIELD(a, u8 *, 24);
     M2C_FIELD(gOv001ProfileState, u8 *, 0xacc) = 2;
     GetSystemTick();
-    func_02045eb4((u8 *)gOv001ProfileState + 0x64c);
+    FifoReadSaveSlots((u8 *)gOv001ProfileState + 0x64c);
     GetSystemTick();
     M2C_FIELD(gOv001ProfileState, void **, 0xaa4) = GetSaveData();
 }
@@ -244,12 +245,16 @@ M2C_FIELD(gOv001ProfileState,s32 *,PROFILE_LIST_TIMER)=0;
 M2C_FIELD(gOv001ProfileState,u16 *,PROFILE_PROGRAM_ID)++;
 }
 
-s32 func_ov001_02188ec4(void) {
+/* Start a profile / download-play transfer from one of the setup screen's idle
+ * states: reset the profile run and the WH link work and move the screen to its
+ * child-search state.  Returns 0 when the screen is in no state that may start a
+ * transfer. */
+s32 Ov001_StartProfileTransfer(void) {
 extern void *gOv001ProfileState;
-u32 state=M2C_FIELD(gOv001ProfileState,u8 *,0xA90);
+u32 state=M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE);
 if(state!=1 && state!=26 && state!=29) return 0;
-Ov001_BeginProfileTransfer();func_ov001_02188774();
-M2C_FIELD(gOv001ProfileState,u8 *,0xA90)=2;return 1;
+Ov001_BeginProfileTransfer();Ov001_ResetLinkWork();
+M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)=2;return 1;
 }
 
 s32 func_ov001_02188f0c(void){
@@ -265,7 +270,7 @@ Ov001_DropUnacknowledgedPlayers();return 1;
  * sequence that ends the WFC link (each step gives the link task
  * PROFILE_STATE_DELAY frames to settle before Ov001_EndLink closes it). */
 void Ov001_UpdateProfileSetup(void) {
-    s32 func_ov001_02188ec4(void);
+    s32 Ov001_StartProfileTransfer(void);
     void Ov001_UpdateChildSearch(void);
     void func_ov001_021893c0(void);
     void Ov001_UpdateLinkState(void);
@@ -283,7 +288,7 @@ void Ov001_UpdateProfileSetup(void) {
     case 1:
         if (state[PROFILE_RESULT] == 1) {
             state[PROFILE_RESULT] = 0;
-            func_ov001_02188ec4();
+            Ov001_StartProfileTransfer();
         } else if (state[PROFILE_RESULT] == 2) {
             state[PROFILE_RESULT] = 0;
             ((u8 *)gOv001ProfileState)[PROFILE_STATE] = 34;
@@ -395,11 +400,13 @@ void Ov001_UpdateProfileSetup(void) {
     }
 }
 
-void func_ov001_021892c4(u8 *arg0,u8 *arg1) {
+/* Read the profile screen's current state and whether it changed since the last
+ * poll, then remember it as the previous state. */
+void Ov001_PollProfileState(u8 *stateOut,u8 *changedOut) {
 extern void *gOv001ProfileState;
-*arg0=M2C_FIELD(gOv001ProfileState,u8 *,0xA90);
-if(M2C_FIELD(gOv001ProfileState,u8 *,0xA90)!=M2C_FIELD(gOv001ProfileState,u8 *,0xA91)) *arg1=1; else *arg1=0;
-M2C_FIELD(gOv001ProfileState,u8 *,0xA91)=M2C_FIELD(gOv001ProfileState,u8 *,0xA90);
+*stateOut=M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE);
+if(M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE)!=M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_PREV_STATE)) *changedOut=1; else *changedOut=0;
+M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_PREV_STATE)=M2C_FIELD(gOv001ProfileState,u8 *,PROFILE_STATE);
 }
 
 void func_ov001_02189308(void) {

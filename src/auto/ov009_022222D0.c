@@ -213,46 +213,53 @@ void HandleLinkWfcEvent(void *event) {
     M2C_FIELD(&gLinkState,void (**)(void *),LINK_STATE_EVENT_HANDLER)(event);
 }
 
-void SignalLinkEvent(arg0)
-s32 arg0;
+/* Signal a link event code: record it in the link state and hand it to the result
+ * handler, unless the link already failed or was aborted. */
+void SignalLinkEvent(code)
+s32 code;
 {
     s32 GetLinkPhase();
     extern M2C_UNK gLinkState;
     void *state;
-    if (GetLinkPhase() == 8) return;
-    if (GetLinkPhase() == 9) return;
-    state=&gLinkState;
-    M2C_FIELD(state,s32 *,0xC)=arg0;
-    if (M2C_FIELD(state,void (**)(s32,s32),0x2C)==NULL) return;
-    M2C_FIELD(state,void (**)(s32,s32),0x2C)(arg0,0);
+    if (GetLinkPhase() == LINK_PHASE_ERROR) return;
+    if (GetLinkPhase() == LINK_PHASE_ABORTED) return;
+    state = &gLinkState;
+    M2C_FIELD(state, s32 *, LINK_STATE_RESULT_CODE) = code;
+    if (M2C_FIELD(state, void (**)(s32, s32), LINK_STATE_RESULT_HANDLER) == NULL) return;
+    M2C_FIELD(state, void (**)(s32, s32), LINK_STATE_RESULT_HANDLER)(code, 0);
 }
 
-s32 func_ov009_02222790(void) {
+/* Start the link overlay's WFC command channel: move to the pending phase and
+ * queue its start command, whose completion HandleLinkStartResult takes.  A
+ * failed queue signals the link error and aborts the session. */
+s32 StartLinkCommandChannel(void) {
     s32 WFC_StartCommandChannel(M2C_UNK *, M2C_UNK *, M2C_UNK);
     void SignalLinkError();
-    extern M2C_UNK data_ov009_022277a0;
+    extern M2C_UNK gLinkCommandChannelWork;
     extern M2C_UNK HandleLinkStartResult;
-    SetLinkPhase(3);
-    if (WFC_StartCommandChannel(&data_ov009_022277a0, &HandleLinkStartResult, 2) == 2) {
+    SetLinkPhase(LINK_PHASE_PENDING);
+    if (WFC_StartCommandChannel(&gLinkCommandChannelWork, &HandleLinkStartResult, 2) == 2 /* WFC_CMD_OK */) {
         return 1;
     }
     SignalLinkError();
-    SetLinkPhase(9);
+    SetLinkPhase(LINK_PHASE_ABORTED);
     return 0;
 }
 
-void SignalLinkError(arg0)
-s32 arg0;
+/* Signal a link error code: record it in the link state and hand it to the result
+ * handler, unless the link already failed or was aborted. */
+void SignalLinkError(errorCode)
+s32 errorCode;
 {
     s32 GetLinkPhase();
     extern M2C_UNK gLinkState;
     void *state;
-    if (GetLinkPhase() == 8) return;
-    if (GetLinkPhase() == 9) return;
+    if (GetLinkPhase() == LINK_PHASE_ERROR) return;
+    if (GetLinkPhase() == LINK_PHASE_ABORTED) return;
     state=&gLinkState;
-    M2C_FIELD(state,s32 *,0xC)=arg0;
-    if (M2C_FIELD(state,void (**)(s32,s32),0x2C)==NULL) return;
-    M2C_FIELD(state,void (**)(s32,s32),0x2C)(arg0,0);
+    M2C_FIELD(state,s32 *,LINK_STATE_RESULT_CODE)=errorCode;
+    if (M2C_FIELD(state,void (**)(s32,s32),LINK_STATE_RESULT_HANDLER)==NULL) return;
+    M2C_FIELD(state,void (**)(s32,s32),LINK_STATE_RESULT_HANDLER)(errorCode,0);
 }
 
 /* Completion callback of the WFC command that prepares the link channel: a reported
@@ -306,18 +313,18 @@ s32 AnnounceNextLinkPlayer(u16 firstSlot) {
     RequestLinkPlayerAnnounce((M2C_UNK) &HandleLinkAnnounceEvent, firstSlot);
 }
 
-void SignalLinkResult(arg0)
-s32 arg0;
-{
+/* Signal a link result code: record it in the link state and hand it to the
+ * result handler, unless the link already failed or was aborted. */
+void SignalLinkResult(s32 result) {
     s32 GetLinkPhase();
     extern M2C_UNK gLinkState;
     void *state;
-    if (GetLinkPhase() == 8) return;
-    if (GetLinkPhase() == 9) return;
-    state=&gLinkState;
-    M2C_FIELD(state,s32 *,0xC)=arg0;
-    if (M2C_FIELD(state,void (**)(s32,s32),0x2C)==NULL) return;
-    M2C_FIELD(state,void (**)(s32,s32),0x2C)(arg0,0);
+    if (GetLinkPhase() == LINK_PHASE_ERROR) return;
+    if (GetLinkPhase() == LINK_PHASE_ABORTED) return;
+    state = &gLinkState;
+    M2C_FIELD(state, s32 *, LINK_STATE_RESULT_CODE) = result;
+    if (M2C_FIELD(state, void (**)(s32, s32), LINK_STATE_RESULT_HANDLER) == NULL) return;
+    M2C_FIELD(state, void (**)(s32, s32), LINK_STATE_RESULT_HANDLER)(result, 0);
 }
 
 /* Handles the answer to one player-announcement command: the answering player's
@@ -700,9 +707,9 @@ done:
 }
 #pragma scheduling reset
 s32 func_ov009_02223244(void) {
-    s32 func_02012700(void (*)(void *));
+    s32 WFC_SendCommand11(void (*)(void *));
     void func_ov009_0222326c(void *);
-    if (func_02012700(func_ov009_0222326c) == 2) return 1;
+    if (WFC_SendCommand11(func_ov009_0222326c) == 2) return 1;
     SignalLinkError();
     return 0;
 }

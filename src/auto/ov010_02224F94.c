@@ -268,14 +268,14 @@ s32 func_ov010_02225640(void *arg) {
     s32 func_ov010_022224b4(void);
     M2C_UNK func_ov010_02224270();
     void MI_CpuFill8(void *, u32, u32);
-    extern M2C_UNK data_ov010_0222edb4;
+    extern M2C_UNK gVoiceChatSession;
     extern M2C_UNK gLinkConfig;
     s32 kind;
     u8 b;
     s32 t;
     func_02000b9c(0x2000c6c);
     if (!arg) return 0;
-    if (M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) != 0) return 1;
+    if (M2C_FIELD(&gVoiceChatSession, s32 *, 8) != 0) return 1;
     kind = M2C_FIELD(arg, s32 *, 8);
     if (kind != 1 && kind != 2 && kind != 3) return 0;
     if (!M2C_FIELD(arg, s32 *, 0x18)) return 0;
@@ -283,13 +283,13 @@ s32 func_ov010_02225640(void *arg) {
     if (!t || !M2C_FIELD(arg, s32 *, 0x14)) return 0;
     if (t % 32 != 0) return 0;
     MI_CpuFill8(&gLinkConfig, 0, 0x18);
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x10) = M2C_FIELD(arg, s32 *, 0x18);
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x14) = M2C_FIELD(arg, s32 *, 0x1C);
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x1C) = M2C_FIELD(arg, s32 *, 8);
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x18) = 0;
+    M2C_FIELD(&gVoiceChatSession, s32 *, 0x10) = M2C_FIELD(arg, s32 *, 0x18);
+    M2C_FIELD(&gVoiceChatSession, s32 *, 0x14) = M2C_FIELD(arg, s32 *, 0x1C);
+    M2C_FIELD(&gVoiceChatSession, s32 *, 0x1C) = M2C_FIELD(arg, s32 *, 8);
+    M2C_FIELD(&gVoiceChatSession, s32 *, 0x18) = 0;
     b = (u8)M2C_FIELD(arg, u8 *, 0xC);
     if ((u32)b >= 0x20) return 0;
-    M2C_FIELD(&data_ov010_0222edb4, u8 *, 0xC) = b;
+    M2C_FIELD(&gVoiceChatSession, u8 *, 0xC) = b;
     {
         s32 r = VoiceLink_InitPacketPool(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
         if (!r) { func_ov010_02224ea0(); return 0; }
@@ -301,7 +301,7 @@ s32 func_ov010_02225640(void *arg) {
     {
         s32 r = func_ov010_022224b4();
         if (r) {
-            M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 1;
+            M2C_FIELD(&gVoiceChatSession, s32 *, 8) = 1;
             return 1;
         }
     }
@@ -314,22 +314,26 @@ void func_ov010_02225778(void) {
     M2C_UNK func_ov010_022225b0();
     M2C_UNK func_ov010_02224270();
     M2C_UNK func_ov010_02224ea0();
-    extern M2C_UNK data_ov010_0222edb4;
+    extern M2C_UNK gVoiceChatSession;
     func_ov010_022225b0();
     func_ov010_02224270();
     func_ov010_02224ea0();
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 0x1C) = 0;
-    M2C_FIELD(&data_ov010_0222edb4, s32 *, 8) = 0;
+    M2C_FIELD(&gVoiceChatSession, s32 *, 0x1C) = 0;
+    M2C_FIELD(&gVoiceChatSession, s32 *, 8) = 0;
 }
 
-void func_ov010_022257a0(void) {
-extern s32 data_ov010_0222edb4;
-void VoiceLink_CheckTimeout(void);
-s32 func_ov010_022231d4(void);
-void func_ov010_02223114(void);
-if(!M2C_FIELD(&data_ov010_0222edb4,s32 *,8))return;
-if(!(++data_ov010_0222edb4 & 15))VoiceLink_CheckTimeout();
-if(func_ov010_022231d4())func_ov010_02223114();
+/* Per-frame update of a running voice-chat session: count the frames, check the
+ * link for a timed-out exchange every 16 frames, then play the frames queued for
+ * the codec and decode the packets that have arrived. */
+void VoiceChat_Tick(void) {
+    extern s32 gVoiceChatSession;
+    void VoiceLink_CheckTimeout(void);
+    s32 VoiceChat_PlayQueuedFrames(void);
+    void VoiceChat_DecodePendingPackets(void);
+
+    if (!M2C_FIELD(&gVoiceChatSession, s32 *, VOICE_CHAT_SESSION_ACTIVE)) return;
+    if (!(++gVoiceChatSession & 15)) VoiceLink_CheckTimeout();
+    if (VoiceChat_PlayQueuedFrames()) VoiceChat_DecodePendingPackets();
 }
 
 /* Feed one incoming voice-chat packet to the dispatcher; when it carried audio
@@ -337,7 +341,7 @@ if(func_ov010_022231d4())func_ov010_02223114();
  * stream callback.  Returns 0 for a packet with the wrong magic, 1 otherwise. */
 s32 VoiceChat_ReceivePacket(s32 peer, s32 packet, s32 length) {
     s32 VoiceChat_DispatchPacket(s32, s32, s32, s32 *);
-    extern s32 data_ov010_0222edb4;
+    extern s32 gVoiceChatSession;
     s32 samples[2];
     s32 result = VoiceChat_DispatchPacket(peer, packet, length, samples);
 
@@ -345,7 +349,7 @@ s32 VoiceChat_ReceivePacket(s32 peer, s32 packet, s32 length) {
     case 0:
         break;
     case 1:
-        ((void (*)(s32, s32, s32, s32))M2C_FIELD(&data_ov010_0222edb4, s32 *, 16))(peer, samples[0], samples[1], M2C_FIELD(&data_ov010_0222edb4, s32 *, 20));
+        ((void (*)(s32, s32, s32, s32))M2C_FIELD(&gVoiceChatSession, s32 *, 16))(peer, samples[0], samples[1], M2C_FIELD(&gVoiceChatSession, s32 *, 20));
         return 1;
     case 2:
         return 0;
@@ -355,20 +359,20 @@ s32 VoiceChat_ReceivePacket(s32 peer, s32 packet, s32 length) {
 
 #pragma opt_instruction_scheduling off
 s32 VoiceChat_DispatchPacket(s32 a,s32 b,s32 c,s32 *out) {
-extern s32 data_ov010_0222edb4;
+extern s32 gVoiceChatSession;
 u64 GetSystemTick(void);
 void func_ov010_02222f28(s32,s32,s32,u64);
 s32 VoiceLink_HandlePacket(s32,s32,s32,s32 *);
 u64 now; register u32 kind, family; s32 *state;
 if(!b)return 0;
 if(M2C_FIELD(b,u32*,0)!=0x5f564354)return 2;
-if(!M2C_FIELD(&data_ov010_0222edb4,s32*,28)||!M2C_FIELD(&data_ov010_0222edb4,s32*,8))return 0;
+if(!M2C_FIELD(&gVoiceChatSession,s32*,28)||!M2C_FIELD(&gVoiceChatSession,s32*,8))return 0;
 out[0]=0;out[1]=0;
 now=GetSystemTick();
 kind=M2C_FIELD(b,u8*,4);
 family = kind & 0xf0;
 if (family == 0x40) {
-state=&data_ov010_0222edb4;
+state=&gVoiceChatSession;
 state[1]=state[1]+1;
 func_ov010_02222f28(a,b,c,now);
 return 0;

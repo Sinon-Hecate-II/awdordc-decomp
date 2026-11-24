@@ -160,7 +160,7 @@ s32 Mb_RegisterProgram(s32 arg0, s32 arg1) {
     void Mb_BuildProgramRecord(void *, void *);
     s32 Mb_BuildChunkIndex(void *, void *);
     M2C_UNK func_02015f94(void *, s32, void *);
-    M2C_UNK func_020161bc(void *);
+    M2C_UNK DownloadQueueFile(void *);
     s32 func_02018418();
     M2C_UNK Mb_StartWorkerTask(void *, M2C_UNK);
     s32 Mb_IsTaskCreated();
@@ -213,7 +213,7 @@ block_10:
         }
         func_02015f94(gMbWork + 0x186C + temp_r6, arg0, gMbWork + 0x1300);
         M2C_FIELD((gMbWork + temp_r6), u8 *, 0x1D21) = var_r4;
-        func_020161bc(gMbWork + 0x186C + temp_r6);
+        DownloadQueueFile(gMbWork + 0x186C + temp_r6);
         sequence=data_02131184;
         M2C_FIELD((gMbWork + temp_r6), u8 *, 0x1D1F) = sequence;
         M2C_FIELD((gMbWork + temp_r6), s16 *, 0x1D4E) = 1;

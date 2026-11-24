@@ -8,9 +8,9 @@ void CloseLinkChannel(void) {
     s32 func_ov009_02223ce4();
     extern M2C_UNK gLinkActorClass;
     extern M2C_UNK data_ov009_022264e0;
-    extern M2C_UNK data_ov009_02226638;
+    extern M2C_UNK gLinkSenderClass;
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&gLinkSenderClass);
     DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     if (func_ov009_02223ce4() != 0) {
         return;
@@ -31,7 +31,7 @@ void RestartLinkSession(void) {
     s32 func_ov009_02223c08();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     M2C_UNK SetLinkPhase(M2C_UNK);
-    extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
+    extern M2C_UNK gLinkActorClass, gLinkSenderClass, data_ov009_022264e0;
     s32 phase = GetLinkPhase();
     if (phase == LINK_PHASE_READY) return;
     if (phase == LINK_PHASE_REQUEST) {
@@ -45,7 +45,7 @@ void RestartLinkSession(void) {
     }
     SetLinkPhase(LINK_PHASE_PENDING);
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&gLinkSenderClass);
     DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     switch (GetLinkRequestKind()) {
     case 0:
@@ -78,11 +78,11 @@ s32 EndLinkSession(void) {
     s32 WFC_SetChannelHandler(s32, s32, s32);
     s32 WFC_EndLink(void *);
     void HandleLinkEndTaskEvent(void);
-    extern M2C_UNK gLinkActorClass, data_ov009_02226638, data_ov009_022264e0;
+    extern M2C_UNK gLinkActorClass, gLinkSenderClass, data_ov009_022264e0;
     SetLinkPhase(LINK_PHASE_READY);
     ResetLinkQueues();
     DeleteSpriteObjectsOfClass(&gLinkActorClass);
-    DeleteSpriteObjectsOfClass(&data_ov009_02226638);
+    DeleteSpriteObjectsOfClass(&gLinkSenderClass);
     DeleteSpriteObjectsOfClass(&data_ov009_022264e0);
     if (WFC_SetChannelHandler(0xC, 0, 0) != 0) {
         SignalLinkError();
@@ -120,7 +120,7 @@ s32 GetLinkLocalPlayerId(void) {
     return WFC_GetLocalPlayerIndex() & 0xFF;
 }
 
-u8 func_ov009_02225460(void) {
+u8 GetLinkLocalPlayerSlot(void) {
     extern M2C_UNK gLinkState;
     return M2C_FIELD(&gLinkState, u8 *, 0x157);
 }
@@ -438,14 +438,18 @@ void BroadcastLinkPlayerInfo(void *maskPtr) {
     }
 }
 
-s32 func_ov009_02225a98(s32 arg0) {
+/* Whether this console's player-info announcement is still incomplete: true while
+ * an announce mask is registered in the link state and it does not yet cover every
+ * connected player.  The caller's argument is not used. */
+s32 IsLinkAnnounceIncomplete(s32 unused) {
     s32 GetConnectedPlayers();
     extern M2C_UNK gLinkState;
-    s32 first, mask;
-    if (M2C_FIELD(&gLinkState, void **, 0x28) != NULL) {
-        first = GetConnectedPlayers();
-        mask = GetConnectedPlayers();
-        if (first != (*M2C_FIELD(&gLinkState, u16 **, 0x28) & mask)) return 1;
+    s32 connected, connectedMask;
+
+    if (M2C_FIELD(&gLinkState, void **, LINK_STATE_ANNOUNCE) != NULL) {
+        connected = GetConnectedPlayers();
+        connectedMask = GetConnectedPlayers();
+        if (connected != (*M2C_FIELD(&gLinkState, u16 **, LINK_STATE_ANNOUNCE) & connectedMask)) return 1;
     }
     return 0;
 }
@@ -461,11 +465,11 @@ void func_ov009_02225af4(s32 arg0) {
 }
 
 s32 func_ov009_02225b04(s32 arg0) {
-    s32 func_ov009_02225a98(s32);
+    s32 IsLinkAnnounceIncomplete(s32);
     if ((GetLinkPhase() != 4) && (GetLinkPhase() != 5)) {
         return 0;
     }
-    return func_ov009_02225a98(arg0 + 0x34);
+    return IsLinkAnnounceIncomplete(arg0 + 0x34);
 }
 
 void func_ov009_02225b34(s32 arg0) {
@@ -474,8 +478,8 @@ void func_ov009_02225b34(s32 arg0) {
 }
 
 void func_ov009_02225b44(void *arg0) {
-    M2C_UNK func_020c4dd0(s32);
-    func_020c4dd0(M2C_FIELD(arg0, s32 *, 0x18));
+    M2C_UNK CreateLocalBattleSaveSprite(s32);
+    CreateLocalBattleSaveSprite(M2C_FIELD(arg0, s32 *, 0x18));
 }
 
 void func_ov009_02225b54(M2C_UNK arg0) {

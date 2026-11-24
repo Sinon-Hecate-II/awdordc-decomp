@@ -35,14 +35,14 @@ typedef struct GpiConnection {
     s32 unk41c;           /* +0x41C */
     s32 unk420;           /* +0x420 */
     s32 unk424;           /* +0x424 pending operation list */
-    s32 timerHandle;      /* +0x428 handle of the start-up timer set */
+    HashTable *buddyTable; /* +0x428 buddy-status records keyed by profile id */
     s32 unk42c;           /* +0x42C */
     s32 unk430;           /* +0x430 */
     s32 unk434;           /* +0x434 */
     u8  pad438[8];
     GPIBuffer unk440;     /* +0x440 */
     GPIBuffer unk450;     /* +0x450 */
-    void *unk460;         /* +0x460 owned memory block */
+    void *ownedBlock;     /* +0x460 owned block, freed with the connection */
     u8  pad464[8];
     s32 peerCallback;     /* +0x46C callback run when a peer connects */
     s32 peerCallbackData; /* +0x470 its data */
@@ -153,23 +153,26 @@ GpiConnection *connection;s32 i,result;
 connection->unk00=0;connection->timerSet=0;connection->unk100=1;connection->unk104=0;connection->unk108=0;connection->unk10c=0;connection->peerCallback=peerCallback;connection->peerCallbackData=peerCallbackData;
 if(!gpiCreateBuddyTable((void **)&connection)){gpiFree(connection);connection=0;return 1;}
 connection->unk420=0;for(i=0;i<6;i++){connection->pairs[i].first=0;connection->pairs[i].second=0;}
-connection->unk460=0;gpiLogMessage((void **)&connection,gGpiLogInitialize);
+connection->ownedBlock=0;gpiLogMessage((void **)&connection,gGpiLogInitialize);
 result=gpiResetConnection((void **)&connection);if(result){gpiFreeConnection((void **)&connection);return result;}
 func_0204926c();GetSystemTickMilliseconds();SetRandSeed();*out=connection;return 0;}
 
-void gpiFreeConnection(void **arg0) {
+/* Tear down a gpi connection: disconnect it (sending the logout command when it
+ * is still logged in), release its owned block and buddy-status table, then free
+ * the connection itself and clear the caller's pointer. */
+void gpiFreeConnection(void **connection) {
     M2C_UNK gpiFree(void *);
-    M2C_UNK TableFree(s32);
+    void TableFree(HashTable *);
     M2C_UNK gpiDisconnect(void **, M2C_UNK);
-    void *temp_r4;
+    GpiConnection *p;
 
-    temp_r4 = *arg0;
-    gpiDisconnect(arg0, 1);
-    gpiFree(M2C_FIELD(temp_r4, void **, 0x460));
-    M2C_FIELD(temp_r4, void **, 0x460) = NULL;
-    TableFree(M2C_FIELD(temp_r4, s32 *, 0x428));
-    gpiFree(temp_r4);
-    *arg0 = NULL;
+    p = *connection;
+    gpiDisconnect(connection, 1);
+    gpiFree(p->ownedBlock);
+    p->ownedBlock = NULL;
+    TableFree(p->buddyTable);
+    gpiFree(p);
+    *connection = NULL;
 }
 
 s32 func_0204e830(void *arg0, void *arg1) {

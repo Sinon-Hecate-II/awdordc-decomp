@@ -100,7 +100,9 @@ void func_020d18fc(s32 a) {
     if ((u32)M2C_FIELD(p, u16 *, 0x20) < 0xffff) M2C_FIELD(p, u16 *, 0x20)++;
 }
 
-s32 IsPlayerActive(s32 a){extern void **gCurrentMap;u8 result;u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;if(!p[0x1e])return 0;if(M2C_FIELD(p,u16 *,0x1a)==0)result=1;else result=0;return result;}
+/* Whether player `player` is still in the battle: their record must have control
+ * (not PLAYER_CONTROL_NONE) and no defeat turn yet. */
+s32 IsPlayerActive(s32 player){extern void **gCurrentMap;u8 result;u8 *p=(u8 *)*gCurrentMap+MAP_PLAYER_STATES+player*MAP_PLAYER_STRIDE;if(!p[PLAYER_REC_CTRL])return 0;if(M2C_FIELD(p,u16 *,PLAYER_REC_DEFEAT_TURN)==0)result=1;else result=0;return result;}
 
 u8 IsPlayerPresent(s32 a){extern void **gCurrentMap;return ((u8 *)*gCurrentMap+a*0x8c)[0x67c2]!=0;}
 
@@ -145,20 +147,22 @@ u8 WillNextTurnStartNewDay(void) {
     return nextPlayer < M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER);
 }
 
+/* Whether any player slot from 1 to MAX_PLAYERS-1 holds a human player still in
+ * the battle; the turn/record code uses it to tell a human turn from a CPU-only one. */
 s32 HasActiveHumanPlayer(void) {
     s32 IsPlayerActive(s32);
-    s32 var_r5;
-    s32 var_r6;
+    s32 found;
+    s32 player;
 
-    var_r6 = 1;
-    var_r5 = 0;
+    player = 1;
+    found = 0;
     do {
-        if ((IsPlayerActive(var_r6) != 0) && (IsPlayerHuman(var_r6) != 0)) {
-            var_r5 = 1;
+        if ((IsPlayerActive(player) != 0) && (IsPlayerHuman(player) != 0)) {
+            found = 1;
         }
-        var_r6 += 1;
-    } while (var_r6 < 5);
-    return var_r5;
+        player += 1;
+    } while (player < MAX_PLAYERS);
+    return found;
 }
 
 s32 func_020d1b40(void) {
@@ -248,10 +252,10 @@ void InitPlayerTurnState(void) {
 }
 
 void LoadPlayerPalettes(void) {
- void LoadUiSpritePalette(s32); void func_020c09c0(s32);
+ void LoadUiSpritePalette(s32); void LoadPlayerArmyPalette(s32);
  extern void **gCurrentMap;
  LoadUiSpritePalette(3);
- func_020c09c0(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+ LoadPlayerArmyPalette(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 }
 
 /* Updates, for each of the four playable slots (i = 1..4), the cached display state (idle/busy flags etc.) that drives sprite selection for that slot. */
@@ -319,7 +323,7 @@ void func_020d1f2c(void) {
     s32 IsCampaignBattleRules(void);
     void func_020d2168(void);
     void func_020d1dc8(void);
-    s32 func_020d3154(s32, s32);
+    s32 AddPlayerUnitKind(s32, s32);
 
 
     {
@@ -398,7 +402,7 @@ void func_020d1f2c(void) {
             units = (u8 *)((s32)*gCurrentMap + 0x59a4);
             low6 = ((u32)(units[r4] << 26)) >> 26;
             if (low6 != 0) {
-                func_020d3154((r5v >> 6) + 1, low6);
+                AddPlayerUnitKind((r5v >> 6) + 1, low6);
             }
         }
     }

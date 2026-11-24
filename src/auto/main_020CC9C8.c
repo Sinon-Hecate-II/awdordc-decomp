@@ -115,7 +115,10 @@ void func_020ccdd8(s32 arg0) {
     CreateSpriteObject(&data_0212b7ec, arg0);
 }
 
-void func_020cce04(s32 arg0) {
+/* Battle-results screen entry for results sprite `sprite`: compute the battle's
+ * win ratings, record its outcome, then play the sprite's defeat animation when
+ * the player lost a campaign battle, its normal one otherwise. */
+void ShowBattleResultsScreen(s32 sprite) {
     void BattleResults_ComputeRatings(void);
     void func_0209c8d4(void);
     void SetSpriteAnimation(s32, s32);
@@ -124,9 +127,9 @@ void func_020cce04(s32 arg0) {
     BattleResults_ComputeRatings();
     func_0209c8d4();
     if (IsCampaignBattleRules() && DidPlayerLose()) {
-        SetSpriteAnimation(arg0, 1);
+        SetSpriteAnimation(sprite, 1);
     } else {
-        SetSpriteAnimation(arg0, 0);
+        SetSpriteAnimation(sprite, 0);
     }
 }
 
@@ -240,18 +243,20 @@ u8 DidPlayerLose(void) {
     return var_r0;
 }
 
+/* Whether the battle ended in a draw: true as soon as any player 1..4 is
+ * present and their battle result is BATTLE_RESULT_DRAW. */
 s32 IsBattleDraw(void) {
     s32 GetPlayerResult(s32);
     s32 IsPlayerPresent(s32);
-    s32 var_r4;
+    s32 player;
 
-    var_r4 = 1;
+    player = 1;
 loop_1:
-    if ((IsPlayerPresent(var_r4) != 0) && (GetPlayerResult(var_r4) == 3)) {
+    if ((IsPlayerPresent(player) != 0) && (GetPlayerResult(player) == BATTLE_RESULT_DRAW)) {
         return 1;
     }
-    var_r4 += 1;
-    if (var_r4 >= 5) {
+    player += 1;
+    if (player >= 5) {
         return 0;
     }
     goto loop_1;

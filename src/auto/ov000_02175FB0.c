@@ -153,14 +153,14 @@ void Ov000Info_DrawBlinkPanel(M2C_UNK entry) {
  * sorted by score, plus the two totals at +0x58/+0x5c. */
 void BuildUnitRecommendations(s32 entry, s32 unitKind) {
 extern s32 data_ov000_021ae40c[];extern u8 data_ov000_021ae2c8[];extern u8 data_ov000_021ae2cc[];
-s32 func_020a799c(s32,s32,s32);
+s32 GetBestWeaponDamagePercent(s32,s32,s32);
 s32 otherKind,compare,score,tier,temp; s32 *statTable=(s32 *)((u8 *)data_ov000_021ae40c+unitKind*48);void *panel;
 for(otherKind=0;otherKind<6;otherKind++){panel=M2C_FIELD(entry,void **,16);M2C_FIELD((u8 *)panel+otherKind*4,s32 *,0x64)=statTable[otherKind+(M2C_FIELD(panel,s32 *,16)>0?0:6)];}
 for(otherKind=0;otherKind<8;otherKind++){M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+otherKind*4,s32 *,0x7c)=0;M2C_FIELD((u8 *)M2C_FIELD(entry,void **,16)+otherKind*4,s32 *,0x9c)=0;}
 M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0xfc)=0;
 M2C_FIELD(M2C_FIELD(entry,void **,16),s32 *,0x100)=0;
 for(otherKind=1;otherKind<27;otherKind++){
-score=func_020a799c(otherKind,unitKind,0);
+score=GetBestWeaponDamagePercent(otherKind,unitKind,0);
 if(score>=90)tier=3;else if(score>=70)tier=2;else if(score>0)tier=1;else tier=0;
 switch(tier){
 case 3:

@@ -45,7 +45,7 @@ void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
     extern u8 gMovementTypeTable[];
     void FillMapLayer(s8);
     void LoadUnitMovementCosts(s32);
-    void func_01ffb50c(s32);
+    void LoadSpecialMovementCosts(s32);
     void func_01ffb114(s32, s32, s32);
     s32 func_020a85b8(s32);
     s8 *base;
@@ -75,7 +75,7 @@ void FloodFillUnitRange(s32 x, s32 y, s32 kind, s32 value, s32 moveRange) {
         LoadUnitMovementCosts(kind);
     } else {
         FillMapLayer(-1);
-        func_01ffb50c(kind);
+        LoadSpecialMovementCosts(kind);
     }
 
     ((MoveSearchNode *)gMoveSearchWrite)->x = (u8)x;
@@ -213,14 +213,19 @@ gMoveSearchState[i]=(costs+stats[UNIT_KIND_STATS_MOVETYPE]*32)[i];
 }
 
 #pragma opt_peephole off
-void func_01ffb50c(s32 arg0) {
-extern s8 data_ov000_021b54e0[];
-extern s8 *gMoveSearchState;
-s32 i;
-for(i=0;i<32;i++) {
- s32 value=data_ov000_021b54e0[i];
- if(value) gMoveSearchState[i]=1; else ((u8*)gMoveSearchState)[i]=255;
-}
+/* Fill the movement search's per-terrain cost table for a unit kind outside the
+ * normal range: cost 1 for the terrains gSpecialMoveTerrain flags, 255 (blocked)
+ * for every other.  Every such kind shares this one table, so `kind` is unused. */
+void LoadSpecialMovementCosts(s32 kind) {
+    extern s8 gSpecialMoveTerrain[];
+    extern s8 *gMoveSearchState;
+    s32 i;
+
+    for (i = 0; i < 32; i++) {
+        s32 value = gSpecialMoveTerrain[i];
+        if (value) gMoveSearchState[i] = 1;
+        else ((u8 *)gMoveSearchState)[i] = 255;
+    }
 }
 #pragma opt_peephole reset
 /* Point the movement search at a per-cell byte layer of the map: MAP_GRID's row

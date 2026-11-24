@@ -41,19 +41,21 @@ void Ov003_AcknowledgeLinkSync(M2C_UNK sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void func_ov003_021f6724(void *arg0) {
+/* Slide-hide the six part sprites the map-list scene keeps at +0x68, then run
+ * the scene's map-list display update. */
+void Ov003_RefreshMapListDisplay(void *scene) {
     M2C_UNK Hide3DSpriteSlide(s32);
     M2C_UNK func_ov003_021f8c20(void *);
-    void *temp_r4;
+    void *parts;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x68);
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0));
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 4));
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 8));
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0xC));
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0x10));
-    Hide3DSpriteSlide(M2C_FIELD(temp_r4, s32 *, 0x14));
-    func_ov003_021f8c20(arg0);
+    parts = M2C_FIELD(scene, void **, 0x68);
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 0));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 4));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 8));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 0xC));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 0x10));
+    Hide3DSpriteSlide(M2C_FIELD(parts, s32 *, 0x14));
+    func_ov003_021f8c20(scene);
 }
 
 #pragma opt_instruction_scheduling off
@@ -63,7 +65,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     extern u8 data_ov003_0220fe00[28];
     extern u8 data_ov003_0220fdf2[14];
     void UpdateSpriteAnimation(void *);
-    void func_020ab2c4(void *);
+    void StepSpriteTweenGroup(void *);
     s16 GetSpriteAnimValue(void *);
     void Set3DSpriteSlideTargetAndStart(void *, s16, s16, s16, s32);
     s32 GetUnitSpriteWidth(void *);
@@ -74,7 +76,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     s32 func_ov003_021f4064(void);
     u16 func_ov003_021fbcd8(void *, s32);
     s32 func_ov003_021f3f24(s32, s32, s32, s32);
-    s16 func_ov003_021f3fa0(s32, s32, s32);
+    s16 WrapValueToRange(s32, s32, s32);
     s32 Divide(s32, s32);
     void func_ov003_021f9fe0(void *, s32, s32);
     void Ov003_DrawIconGrid(void *, s32, s32);
@@ -170,7 +172,7 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     if (cond & 0xff) {
 L1:
         UpdateSpriteAnimation(arg0->f60 + 0x20);
-        func_020ab2c4(arg0->f4C);
+        StepSpriteTweenGroup(arg0->f4C);
         UpdateSpriteAnimation(arg0->f44 + 0x1C);
     }
     if (arg0->state == 0) {
@@ -352,7 +354,7 @@ L608:
                 temp_r5 = GetSpriteAnimValue(arg0->f60 + 0x20);
                 r11r = Divide(temp_r9, 2);
                 w = Divide(temp_r9, 2);
-                pv = func_ov003_021f3fa0((s16) (temp_r5 + (s16) ((lim - i) * q)), (s16) (-r11r), (s16) w);
+                pv = WrapValueToRange((s16) (temp_r5 + (s16) ((lim - i) * q)), (s16) (-r11r), (s16) w);
                 temp_r9 = (s16) (-0x10 - pv);
 L698:
                 if ((lim != 0) && ((u32) lim < 3)) {

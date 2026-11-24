@@ -1,7 +1,7 @@
 /* 2 functions from 0x021E16EC to 0x021E2628 (ov003), found by ds-decomp. */
 #include "common.h"
 extern u16 data_ov003_0220f34a,data_ov003_0220f346,data_ov003_0220f342,data_ov003_0220f344,data_ov003_0220f340,data_ov003_0220f348;
-void func_ov003_021f1b38(s32,void*);void func_ov003_021f1b7c(s32,void*);void func_ov003_021f2860(void*);
+void SetSceneLayerOverrideMain(s32,void*);void SetSceneLayerOverrideSub(s32,void*);void func_ov003_021f2860(void*);
 u32 func_ov003_021f2574(void);u32 func_ov003_021f2560(void);
 void *GetCampaignMapHeader(u16);void MI_CpuCopy32(void*,void*,s32);
 void func_ov003_021f14a0(void);void Apply3DSpriteBanks(void);
@@ -43,8 +43,8 @@ u8 *p=a,*q,*sprite,*menu;
 u8 i;u32 n;void **saved;void *data;
 s32 cw,ch;
 s16 x,y;s32 w,h;u16 left,right,up,down;
-func_ov003_021f1b38(0,&data_ov003_0220f34a);func_ov003_021f1b38(1,&data_ov003_0220f346);func_ov003_021f1b38(3,&data_ov003_0220f342);
-func_ov003_021f1b7c(0,&data_ov003_0220f344);func_ov003_021f1b7c(1,&data_ov003_0220f340);func_ov003_021f1b7c(3,&data_ov003_0220f348);
+SetSceneLayerOverrideMain(0,&data_ov003_0220f34a);SetSceneLayerOverrideMain(1,&data_ov003_0220f346);SetSceneLayerOverrideMain(3,&data_ov003_0220f342);
+SetSceneLayerOverrideSub(0,&data_ov003_0220f344);SetSceneLayerOverrideSub(1,&data_ov003_0220f340);SetSceneLayerOverrideSub(3,&data_ov003_0220f348);
 func_ov003_021f2860(M2C_FIELD(p,u8**,0x5c)+4);
 for(i=0;i<VisibleEntries(p);i++)MI_CpuCopy32(M2C_FIELD(p,u8**,0x6c)+i*0x6f8,GetCampaignMapHeader((u16)(i+50)),84);
 func_ov003_021f14a0();Apply3DSpriteBanks();

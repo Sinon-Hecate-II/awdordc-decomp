@@ -34,14 +34,17 @@ else{MemMove(M2C_FIELD(state,void **,12),M2C_FIELD(state,u8 **,12)+used,M2C_FIEL
 if(M2C_FIELD(&gGpiInfoSocket,s32 *,0)==-1)return 0;else return 1;
 }
 #pragma opt_common_subs reset
-void gpiXorInfoMessage(s8 *arg0, s32 arg1) {
+/* XOR `length` bytes at `buffer` in place with the gpi info message key, taking
+ * the key bytes from the connection's cursor; when the cursor reaches the NUL
+ * that ends the key it starts over at the key's first byte. */
+void gpiXorInfoMessage(s8 *buffer, s32 length) {
     extern M2C_UNK gGpiInfoSocket;
     s32 i;
-    s8 *p;
-    p = M2C_FIELD(&gGpiInfoSocket, s8 **, 8);
-    for (i = 0; i < arg1; i++) {
-        arg0[i] ^= *p;
-        if (*++p == 0) p = M2C_FIELD(&gGpiInfoSocket, s8 **, 8);
+    const s8 *key;
+    key = M2C_FIELD(&gGpiInfoSocket, const s8 **, GPI_SOCKET_XOR_KEY);
+    for (i = 0; i < length; i++) {
+        buffer[i] ^= *key;
+        if (*++key == 0) key = M2C_FIELD(&gGpiInfoSocket, const s8 **, GPI_SOCKET_XOR_KEY);
     }
 }
 

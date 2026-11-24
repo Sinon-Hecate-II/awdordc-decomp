@@ -9,7 +9,7 @@ typedef struct UnitBac24 { u8 kind,x,y,unk3; u16 flags; u16 health:7;u16 rest:9;
    is refreshed and a unit that died is taken off the map. */
 void BattleUpdateUnitCursor(void){
 extern void **gCurrentMap;
-M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 IsPlayerLocallyControlled(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void func_ov000_0216aa04(void *,s32);void func_ov000_0216a9bc(void *);void RefreshMapCursorCellCache(void);
+M2C_UNK ClearCursorUnitCapture();M2C_UNK func_020bf858();s32 IsPlayerLocallyControlled(s32);void func_020a64bc(void *,s32);M2C_UNK func_ov000_021696d4();void UpdateCursorUnitAiKnown(void);M2C_UNK RevealUnitsAroundCursor(M2C_UNK,M2C_UNK,M2C_UNK);M2C_UNK MarkPathThreatRange(M2C_UNK,M2C_UNK,M2C_UNK);void MarkUnitMovePath(void *,void *,void *,void *);void RemoveUnit(s32);M2C_UNK RefreshMapView();s32 func_020d66fc(void *);void RunCursorUnitEventWithValue(void *,s32);void RunCursorUnitEvent(void *);void RefreshMapCursorCellCache(void);
 BattleMapUnit *unit;u8 *map;s32 carrierId;u32 tileIndex;
 ClearCursorUnitCapture();func_020bf858();
 /* the unit under the cursor and the units it carries stand on the cursor's tile */
@@ -49,8 +49,8 @@ unit=M2C_FIELD(*gCurrentMap,BattleMapUnit**,MAP_CURSOR_UNIT);
 /* a unit without health is taken off the map */
 if(!unit->health){if(unit)carrierId=unit-(BattleMapUnit*)((u8*)*gCurrentMap+MAP_UNIT_RECORDS);else carrierId=0;RemoveUnit(carrierId);}
 RefreshMapView();
-if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))func_ov000_0216aa04(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
-else func_ov000_0216a9bc(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
+if(func_020d66fc((u8*)*gCurrentMap+MAP_CURSOR_PATH))RunCursorUnitEventWithValue(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT),11);
+else RunCursorUnitEvent(M2C_FIELD(*gCurrentMap,void**,MAP_CURSOR_UNIT));
 RefreshMapCursorCellCache();
 }
 
@@ -263,18 +263,21 @@ void LoadUnitIntoTransport(void) {
         M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y));
 }
 
-void func_020bb5c0(void *arg0) {
+/* Marker action for the unit it points at: refill the unit's ammo and fuel for
+ * free, repair one level (ten health points) at the owning player's expense, then
+ * show the refill effect popup on the marker's tile. */
+void ResupplyMarkedUnit(void *marker) {
     M2C_UNK func_020c98d8(s32, s32, M2C_UNK);
     M2C_UNK RefillUnitAmmo(s32, M2C_UNK);
     M2C_UNK RefillUnitFuel(s32, M2C_UNK);
     M2C_UNK LevelUpUnit(s32, M2C_UNK, M2C_UNK);
-    s32 temp_r4;
+    s32 unit;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x54);
-    RefillUnitAmmo(temp_r4, 0);
-    RefillUnitFuel(temp_r4, 0);
-    LevelUpUnit(temp_r4, 1, 1);
-    func_020c98d8(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 1);
+    unit = M2C_FIELD(marker, s32 *, 0x54);
+    RefillUnitAmmo(unit, 0);
+    RefillUnitFuel(unit, 0);
+    LevelUpUnit(unit, 1, 1);
+    func_020c98d8(M2C_FIELD(marker, s32 *, 0x34), M2C_FIELD(marker, s32 *, 0x38), 1);
 }
 
 /* Drop the unit carried in `cargoSlot` (0 = first carried unit, 1 = second) from
@@ -401,15 +404,18 @@ void func_020bb768(void) {
         M2C_FIELD(*gCurrentMap, BattleMapUnitHead **, MAP_CURSOR_UNIT)->kind);
 }
 
-void func_020bbac8(void) {
+/* Supply order (battle command 13): record the human player's supply action, then
+ * open the supply overlay that marks and refills the adjacent friendly units the
+ * supply unit can top up. */
+void SupplyCommand(void) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020cb8cc(M2C_UNK);
+    M2C_UNK CreateSupplyOverlay(M2C_UNK);
     s32 IsPlayerHuman(u16);
     extern void **gCurrentMap;
-    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         AddRecordValue(0x10, 1);
     }
-    func_020cb8cc(0);
+    CreateSupplyOverlay(0);
 }
 
 /* End the current player's turn: pick and store the weather the next turn

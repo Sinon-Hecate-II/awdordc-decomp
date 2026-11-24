@@ -478,12 +478,12 @@ void Reset3DSpriteBankDisplay(void) {
  * spend the rest of the frame stepping slot turns, then finish with the
  * overlay's post-sync hook. */
 void Ov003_SyncLinkSlots(void *p) {
-s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void Sprite_ResumeAnimation(void*); s32 GetSessionPlayerCount(void); s32 func_ov003_021f153c(void);
+s32 func_020cfb94(void); s32 Link_ReceivePacket(void*,s32); void Link_SendPacket(void*,s32); void Link_FlushSend(void); void Sprite_ResumeAnimation(void*); s32 GetSessionPlayerCount(void); s32 GetSceneEntryOffset(void);
 u32 buf[9]; u8 flag, n, start;
 if(func_020cfb94()==2) M2C_FIELD(p,u8*,0x39)=(M2C_FIELD(p,u8*,0x39)&~1)|1;
 if(!Link_ReceivePacket(buf,0x24))return;
 flag=(((u32)(M2C_FIELD(p,u8*,0x39)<<31)>>31)==0);
-if(flag && func_ov003_021f153c()==-256) M2C_FIELD(buf,u8*,8)=1;
+if(flag && GetSceneEntryOffset()==-256) M2C_FIELD(buf,u8*,8)=1;
 else {M2C_FIELD(buf,u8*,8)=0;buf[6]=0;}
 buf[0]=0;buf[1]=0;
 start=GetSessionPlayerCount(); n=0;

@@ -55,18 +55,21 @@ OS_EnableIrqMask(old);
 return node;
 }
 #pragma scheduling reset
-void func_ov001_0218c3a0(u32 arg0) {
+/* Return tile-range node `range` to the free-node queue of the screen pool it
+ * came from (the second pool when it lies past the first 0x1A0-byte pool),
+ * after unlinking it from that pool's in-use list. */
+void Ov001_ReturnTileRangeNode(u32 range) {
     M2C_UNK Ov001_QueuePush(s32, u32);
     M2C_UNK Ov001_ListRemove();
     extern s32 gOv001TilePools;
-    s32 var_r4;
+    s32 pool;
 
-    var_r4 = 0;
-    Ov001_ListRemove();
-    if (arg0 >= (u32) (gOv001TilePools + 0x1A0)) {
-        var_r4 = 1;
+    pool = 0;
+    Ov001_ListRemove(range);
+    if (range >= (u32) (gOv001TilePools + OV001_TILE_POOL_STRIDE)) {
+        pool = 1;
     }
-    Ov001_QueuePush(M2C_FIELD(((var_r4 * 0x1A0) + gOv001TilePools), s32 *, 0x19C), arg0);
+    Ov001_QueuePush(M2C_FIELD(((pool * OV001_TILE_POOL_STRIDE) + gOv001TilePools), s32 *, OV001_TILE_POOL_FREE_NODES), range);
 }
 
 s32 StringLengthUpTo(u8 *p,s32 n) {
@@ -188,10 +191,10 @@ void GxClearDisplayMemory(void) {
 }
 
 void func_ov001_0218c63c(void) {
-    s32 func_0200ed18(s32 *);
+    s32 Arm7ReadValueWait(s32 *);
     s32 sp0;
 
-    if (func_0200ed18(&sp0) != 0) {
+    if (Arm7ReadValueWait(&sp0) != 0) {
         return;
     }
     if (sp0 == 0xF) {
@@ -238,12 +241,28 @@ void Ov001_InitTasks(void) {
     }
 }
 
-void func_ov001_0218c78c(void) {
-void func_ov001_0218bf30(s32); void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); extern s32 gOv001Tasks; extern s32 gVramBankGrants[]; s32 i; for(i=0;i<2;i++){ func_ov001_0218bf30(((RuntimePair64 *)gOv001Tasks)[i].b);func_ov001_0218a6d8(((RuntimePair64 *)gOv001Tasks)[i].a); } Ov001_FreeAlloc(gVramBankGrants+13); }
+/* Tear down the cooperative task system: free every task group's pending-callback
+ * list and free-node queue, then the group array itself. */
+void Ov001_FreeTasks(void) {
+    void func_ov001_0218bf30(s32);
+    void Ov001_FreeBlock(s32);
+    void Ov001_FreeAlloc(void *);
+    extern s32 gOv001Tasks;
+    extern s32 gVramBankGrants[];
+    s32 i;
+
+    for (i = 0; i < OV001_TASK_GROUP_COUNT; i++) {
+        func_ov001_0218bf30((s32)OV001_TASKS[i].list);
+        Ov001_FreeBlock(OV001_TASKS[i].freeNodes);
+    }
+    /* The group array (the word right after gVramBankGrants); spelled through the
+     * neighbouring symbol so the pool keeps the original's two literal words. */
+    Ov001_FreeAlloc(gVramBankGrants + 13);
+}
 
 void func_ov001_0218c7d4(s32 n) {
 s32 Ov001_QueuePop(s32);
-M2C_UNK func_ov001_0218c958();
+M2C_UNK Ov001_ReturnTaskNode();
 extern s32 gOv001Tasks;
 void *node;
 s32 i; s32 offset;
@@ -257,7 +276,7 @@ offset=(s32)((u32)n*64);
 for(i=0;i<M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,0x34);i++) {
 s32 p=Ov001_QueuePop(M2C_FIELD((s32)((u8 *)gOv001Tasks+offset),s32 *,4));
 if(!p) return;
-func_ov001_0218c958(n,p);
+Ov001_ReturnTaskNode(n,p);
 }
 }
 
@@ -309,18 +328,21 @@ Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,4),arg);
 }
 
 void func_ov001_0218c94c(void) {
-    M2C_UNK func_ov001_0218c958();
-    func_ov001_0218c958();
+    M2C_UNK Ov001_ReturnTaskNode();
+    Ov001_ReturnTaskNode();
 }
 
-M2C_UNK func_ov001_0218c958(s32 n,void *p) {
-void Ov001_FreeAlloc(void *);
-M2C_UNK Ov001_ListRemove();
-M2C_UNK Ov001_QueuePush(s32,u32);
-extern s32 gOv001Tasks;
-if(M2C_FIELD(p,u8 *,17)) Ov001_FreeAlloc((u8 *)p+12);
-Ov001_ListRemove(p);
-Ov001_QueuePush(M2C_FIELD(gOv001Tasks+(n<<6),s32 *,0),(u32)p);
+/* Recycle task node `node` of task group `group`: free the argument buffer it
+ * owns, unlink it from the pending-callback list and push it back onto the
+ * group's free-node queue. */
+M2C_UNK Ov001_ReturnTaskNode(s32 group, Ov001TaskNode *node) {
+    void Ov001_FreeAlloc(void *);
+    M2C_UNK Ov001_ListRemove();
+    M2C_UNK Ov001_QueuePush(s32, u32);
+    extern s32 gOv001Tasks;
+    if (node->ownsArg) Ov001_FreeAlloc((u8 *)node + 12);
+    Ov001_ListRemove(node);
+    Ov001_QueuePush(OV001_TASKS[group].freeNodes, (u32)node);
 }
 
 void Ov001_SetTaskGroupEnabled(s32 arg0, s8 arg1) {

@@ -7,7 +7,7 @@ void func_ov003_021f9b30(void *arg0) {
     M2C_UNK ScrollListTo(void *, u8, M2C_UNK);
     M2C_UNK func_020ab3b0(void *, u8, M2C_UNK);
     u32 GetMapCategory();
-    M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
+    M2C_UNK Ov003_RefreshMapPreview(void *, M2C_UNK);
     extern u16 **data_027e01d8;
     s32 temp_r1;
     s32 temp_r1_2;
@@ -89,7 +89,7 @@ void func_ov003_021f9b30(void *arg0) {
     }
     ptr_3 = (var_r2_3 * 0xC) + M2C_FIELD(arg0, s32 *, 0x48) + (u8) M2C_FIELD(M2C_FIELD(arg0, void **, 0x5C), s32 *, 4);
     ScrollListTo(M2C_FIELD(arg0, void **, 0x4C), M2C_FIELD(ptr_3, u8 *, 0xD), 1);
-    func_ov003_021f92f4(arg0, 0);
+    Ov003_RefreshMapPreview(arg0, 0);
 }
 
 /* Redraw the 3x3 icon grid at (baseX, baseY): for each of the eight slots look up

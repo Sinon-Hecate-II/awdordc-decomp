@@ -385,7 +385,7 @@ s32 func_ov010_022294b0(s32 arg0) {
     return temp_r2;
 }
 
-s32 func_ov010_022294c8(s32 arg0) {
+s32 SetOnlineMessageHandler(s32 arg0) {
     extern u16 gOv010OnlineSession;
     s32 temp_r2;
     temp_r2 = M2C_FIELD(&gOv010OnlineSession, s32 *, 0x50);
@@ -609,7 +609,7 @@ s32 GetOnlineTransportPlayerId(void) {
     return GetLocalPlayerId();
 }
 
-u8 func_ov010_02229a14(void) {
+u8 GetOnlineLocalPlayerSlot(void) {
     extern u16 gOv010OnlineSession;
     return M2C_FIELD(&gOv010OnlineSession, u8 *, 0xFB);
 }
@@ -624,8 +624,8 @@ s32 GetLinkPlayerCount(void) {
 }
 
 s32 GetConnectedPlayerCount(void) {
-    s32 func_02038e4c();
-    return func_02038e4c() & 0xFF;
+    s32 GetNetSessionPlayerCount();
+    return GetNetSessionPlayerCount() & 0xFF;
 }
 
 void func_ov010_02229a50(void) {
@@ -690,7 +690,7 @@ s32 CopyOnlineLocalPlayerRecord(s32 arg0, M2C_UNK arg1) {
     return arg0;
 }
 
-s32 func_ov010_02229b90(void) {
+s32 GetActiveOnlinePlayerRecord(void) {
     s32 GetOnlinePlayerRecord();
     s32 temp_r0;
 

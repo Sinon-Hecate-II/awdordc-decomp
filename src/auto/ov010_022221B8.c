@@ -172,7 +172,7 @@ found:
 #pragma optimization_level reset
 void VoiceChat_RemoveChannel(void *arg0) {
 extern void *gVoiceChatContexts[]; extern u8 gLinkChannelStates[]; extern M2C_UNK gVoiceChatState;
-void func_ov010_022239c8(void *); void func_ov010_0222369c(u32); void func_ov010_02223314(u32); void func_ov010_02224f28(void);
+void func_ov010_022239c8(void *); void Link_FreeChannelQueuedPackets(u32); void Link_FreeChannelPendingPackets(u32); void func_ov010_02224f28(void);
 u32 i;
 for(i=0;i<3;i++) {
 if(gVoiceChatContexts[i]==arg0) {
@@ -182,8 +182,8 @@ void *empty = 0;
 gVoiceChatContexts[i]=empty;
 M2C_FIELD(&gVoiceChatState,s32 *,0x20)=count-1;
 func_ov010_022239c8(channel);
-func_ov010_0222369c(i);
-func_ov010_02223314(i);
+Link_FreeChannelQueuedPackets(i);
+Link_FreeChannelPendingPackets(i);
 {
     u32 *state = (u32 *)&gVoiceChatState;
     u32 flags = state[1];
@@ -429,8 +429,8 @@ return (s32)packet;
 #pragma pop
 s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
     void *func_ov010_02224eb8(void);
-    void func_ov010_0222369c(u32);
-    void func_ov010_02223314(u32);
+    void Link_FreeChannelQueuedPackets(u32);
+    void Link_FreeChannelPendingPackets(u32);
     void Link_FreeAllQueuedPackets(void);
     void Link_FreeAllPendingPackets(void);
     s32 func_ov010_02223b18(void *, void *);
@@ -502,8 +502,8 @@ s32 func_ov010_02222f28(s32 arg0, void *arg1, s32 arg2, s32 arg3, s32 arg4) {
 
     item = func_ov010_02224eb8();
     if (!item) {
-        func_ov010_0222369c((u32)M2C_FIELD(slot, s32 *, 0x34));
-        func_ov010_02223314((u32)M2C_FIELD(slot, s32 *, 0x34));
+        Link_FreeChannelQueuedPackets((u32)M2C_FIELD(slot, s32 *, 0x34));
+        Link_FreeChannelPendingPackets((u32)M2C_FIELD(slot, s32 *, 0x34));
         item = func_ov010_02224eb8();
         if (!item) {
             Link_FreeAllQueuedPackets();

@@ -86,7 +86,7 @@ void ghiDoConnect(GHIConnection *connection) {
    no encryptor is configured with result 17, starts the installed encryptor,
    flushes whatever is still buffered, then reads the reply into a 1 KiB buffer. */
 void ghiProcessConnected(GHIConnection *connection){
-s32 StringCompareN(void *,void *,s32);M2C_UNK ghiCallProgressCallback(void *,s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);M2C_UNK ghiReceiveData(void *,void *,s32 *);
+s32 StringCompareN(void *,void *,s32);M2C_UNK ghiCallProgressCallback(void *,s32,s32);s32 SendBufferedData(void *);void ghiResetBuffer(void *);M2C_UNK ghiReceiveData(void *,void *,s32 *);
 M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);
 extern M2C_UNK sUrlSchemeHttps,gGhttpAssertZero,gGhttpProcessFileName,data_020fd804;
 u8 buf[1024];s32 size;
@@ -103,7 +103,7 @@ AssertFailed(&gGhttpAssertZero,&gGhttpProcessFileName,&data_020fd804,0x146);retu
 if(connection->buffer.pos>=connection->buffer.len)goto done;
 if(!SendBufferedData(connection))return;
 if(connection->buffer.pos<connection->buffer.len)return;
-ResetBuffer((u8 *)connection+0x50);
+ghiResetBuffer((u8 *)connection+0x50);
 done:size=1024;ghiReceiveData(connection,buf,&size);
 }
 
@@ -118,7 +118,7 @@ void ghiSendRequest(void *request) {
   M2C_UNK ghiAppendCharToBuffer(s32, s32);
   void AppendInt(s32, s32);
   s32 SendBufferedData(void *);
-  void ResetBuffer(void *);
+  void ghiResetBuffer(void *);
   M2C_UNK *GetContentType(void *);
   M2C_UNK ghiCallProgressCallback(void *, s32, s32);
   u8 *StringFind(s32, M2C_UNK *);
@@ -169,7 +169,7 @@ void ghiSendRequest(void *request) {
   }
   if (SendBufferedData(request) == 0) return;
   if (M2C_FIELD(request, s32 *, 0x60) < M2C_FIELD(request, s32 *, 0x5c)) return;
-  ResetBuffer((u8 *)request + 0x50);
+  ghiResetBuffer((u8 *)request + 0x50);
   if(M2C_FIELD(request, s32 *, 0x13c)) M2C_FIELD(request, s32 *, 0x10)=4; else M2C_FIELD(request, s32 *, 0x10)=5;
   ghiCallProgressCallback(request, 0, 0);
 }

@@ -11,7 +11,7 @@ void func_ov004_02215814(void *arg0) {
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadBattleMap(s32);
     M2C_UNK PreloadMapTileset(s32);
-    M2C_UNK func_ov003_021ff36c();
+    M2C_UNK Ov003_SyncMapMenuMap();
     extern void *gKeyState;
     extern void *gTouchState;
     s16 copy_y,copy_x;
@@ -451,7 +451,7 @@ loop_163:
             ResetBattleMap();
             PreloadMapTileset(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
             LoadBattleMap(M2C_FIELD(var_r6_2, u8 *, 7) + 0xA1);
-            func_ov003_021ff36c();
+            Ov003_SyncMapMenuMap();
         }
         M2C_FIELD(arg0, s16 *, 0x4C) = 0;
         M2C_FIELD(arg0, s16 *, 0x4E) = 0;
@@ -637,7 +637,7 @@ loop_259:
                 ResetBattleMap();
                 PreloadMapTileset(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
                 LoadBattleMap(M2C_FIELD(var_r4_3, u8 *, 7) + 0xA1);
-                func_ov003_021ff36c();
+                Ov003_SyncMapMenuMap();
             }
             M2C_FIELD(arg0, s16 *, 0x4C) = 0;
             M2C_FIELD(arg0, s16 *, 0x4E) = 0;

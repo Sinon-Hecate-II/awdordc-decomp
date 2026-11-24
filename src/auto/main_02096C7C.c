@@ -191,7 +191,19 @@ void func_02097150(M2C_UNK arg0, s16 arg1) {
 
 void func_02097164(s32 a,s8 b) { s32 *GetScenePanelState(); M2C_FIELD(GetScenePanelState(),s8 *,6)=b; }
 
-void func_02097178(s32 a,s32 b) { s32 *GetScenePanelState(); s32 p; M2C_FIELD(GetScenePanelState(),u8 *,7)=b; p=FindScenePanel((u16)a); if(!p)return; if(b==1)func_0209e2b8(p,1);else func_0209e2b8(p,0); }
+/* Store `mode` as scene panel `panelIndex`'s text layout mode and set the panel's
+ * child-flip flag to match: mode 1 flips the panel's two face sprites, anything
+ * else leaves them in order. */
+void SetScenePanelMode(s32 panelIndex, s32 mode) {
+    s32 *GetScenePanelState();
+    s32 panel;
+
+    ((ScenePanelState *) GetScenePanelState())->mode = mode;
+    panel = FindScenePanel((u16) panelIndex);
+    if (!panel) return;
+    if (mode == 1) SetScenePanelChildFlip(panel, 1);
+    else SetScenePanelChildFlip(panel, 0);
+}
 
 /* Hide the face in scene panel `panelIndex` when `hidden` is nonzero: the panel's
  * face slot 0 linked face child is given face 0 (no face); when `hidden` is 0 the
@@ -539,21 +551,23 @@ s32 HideScenePanel(s32 panelIndex) {
     return 0;
 }
 
+/* Hide all three scene panels (top, middle and bottom); returns 1 when at least
+ * one was hidden, 0 otherwise. */
 s32 HideAllScenePanels(void) {
     s32 HideScenePanel(M2C_UNK);
-    s32 var_r4;
+    s32 hidden;
 
-    var_r4 = 0;
-    if (HideScenePanel(0) != 0) {
-        var_r4 = 1;
+    hidden = 0;
+    if (HideScenePanel(SCENE_PANEL_TOP) != 0) {
+        hidden = 1;
     }
-    if (HideScenePanel(1) != 0) {
-        var_r4 = 1;
+    if (HideScenePanel(SCENE_PANEL_MIDDLE) != 0) {
+        hidden = 1;
     }
-    if (HideScenePanel(2) != 0) {
-        var_r4 = 1;
+    if (HideScenePanel(SCENE_PANEL_BOTTOM) != 0) {
+        hidden = 1;
     }
-    return var_r4;
+    return hidden;
 }
 
 /* Highlight the scene panel `panelIndex` (top, middle or bottom) and clear the

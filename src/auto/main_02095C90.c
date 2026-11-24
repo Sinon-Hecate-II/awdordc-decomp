@@ -275,12 +275,14 @@ switch(M2C_FIELD(p,s16 *,0x34)) {case 0:selX=pos[0];selY=pos[1];break;case 1:sel
 func_02097c84(cursor,selX,selY);
 }
 
-void func_020962ec(void *arg0) {
+/* Initialise a two-state widget: draw its label into the widget's tilemap, lay
+ * out its two halves and run its callback. */
+void InitToggleWidget(ToggleWidget *widget) {
     M2C_UNK LayoutToggleWidget(void *);
-    M2C_UNK func_0209bfdc(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
-    func_0209bfdc(0, 0, M2C_FIELD(arg0, s32 *, 0x4C), 0xC0000321, (s32) M2C_FIELD(arg0, u16 *, 0x48), 0);
-    LayoutToggleWidget(arg0);
-    M2C_FIELD(arg0, M2C_UNK (**)(), 0x44)();
+    M2C_UNK DrawLocalizedTextToTilemap(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    DrawLocalizedTextToTilemap(0, 0, widget->tileMap, 0xC0000321, (s32) widget->panelEntry, 0);
+    LayoutToggleWidget(widget);
+    widget->callback();
 }
 
 /* Per-frame input of the two-state widget: left/right switch the selected half

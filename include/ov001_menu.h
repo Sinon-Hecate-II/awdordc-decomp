@@ -19,6 +19,16 @@ enum {
 #define OV001_MENU_LAYOUT_SIZE 0x600 /* bytes of the loaded layout resource */
 #define OV001_MENU_SPRITES    0x04 /* s32 *: OV001_MENU_HANDLES sprite handles */
 
+/* The menu layout screens loaded by Ov001_LoadMenuResource: one localised file
+ * each, uploaded to the sub screen's BG1 map. */
+enum {
+    OV001_MENU_LAYOUT_STEP1 = 0, /* char/jtStep1.nsc */
+    OV001_MENU_LAYOUT_STEP2,     /* char/jtStep2.nsc */
+    OV001_MENU_LAYOUT_STEP3,     /* char/jtStep3.nsc */
+    OV001_MENU_LAYOUT_OPTIONS,   /* char/jtOption.nsc */
+    OV001_MENU_LAYOUT_TOP        /* char/jtTop.nsc */
+};
+
 /* The ov001 region-column menu (gOv001RegionMenu): a vertical column of sprites
  * for the region the player is choosing, opened by a fade and a slide from the
  * bottom of the screen. */

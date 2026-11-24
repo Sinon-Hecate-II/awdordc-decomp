@@ -45,12 +45,12 @@ void HistoryMenu_DrawTier(s32 column, s32 tier) {
  gCur3DSpriteEngine = saved;
 }
 #pragma opt_strength_reduction reset
-void func_ov005_022122e0(s32 arg0, s32 arg1) {
+void HistoryMenu_DrawPage0Row(s32 arg0, s32 arg1) {
     void *GetRecordDefinition(M2C_UNK);
     u32 GetRecordValue(M2C_UNK, M2C_UNK);
     s32 GetRecordTier(M2C_UNK, M2C_UNK);
     s32 func_ov005_02211a54(M2C_UNK, M2C_UNK);
-    M2C_UNK func_0209b26c(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
+    M2C_UNK DrawLocalizedText(M2C_UNK, s16, M2C_UNK, s32, s32, s32);
     M2C_UNK DrawLocalizedTextLine(M2C_UNK, s16, M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK DrawNumber(M2C_UNK, s16, M2C_UNK, u32, s32, s32);
     void DrawTextLine(s32, s16, s32, const u8 *, s32, s32);
@@ -78,7 +78,7 @@ void func_ov005_022122e0(s32 arg0, s32 arg1) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     y = 0x144 + (arg0 + 1) * 0x2E;
     if (func_ov005_02211a54(0, arg1) == 0) {
-        func_0209b26c(2, (s16)(arg0 + 5), 1, M2C_FIELD(p, s32 *, 0), 0x1000, (u16)y);
+        DrawLocalizedText(2, (s16)(arg0 + 5), 1, M2C_FIELD(p, s32 *, 0), 0x1000, (u16)y);
         if (M2C_FIELD(p, u16 *, 0x4) == 0) {
             DrawNumber(0x10, (s16)(arg0 + 5), 1, M2C_FIELD(gHistoryMenu, s32 *, 0x4), 0x1000, (u16)(y + 0x1E));
             DrawTextLine(0x11, (s16)(arg0 + 5), 1, data_ov005_02220274, 0x1000, (u16)(y + 0x24));
@@ -113,9 +113,9 @@ void func_ov005_022122e0(s32 arg0, s32 arg1) {
     gCur3DSpriteEngine = saved;
 }
 
-void func_ov005_02212624(s32 arg0,M2C_UNK arg1) {
+void HistoryMenu_DrawPage1Row(s32 arg0,M2C_UNK arg1) {
 M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
-M2C_UNK func_0209b26c(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
+M2C_UNK DrawLocalizedText(M2C_UNK,s16,M2C_UNK,s32,s32,s32);
 M2C_UNK DrawLocalizedTextLine(M2C_UNK,s16,M2C_UNK,M2C_UNK,s32,s32,s32);
 M2C_UNK DrawNumber(M2C_UNK,s16,M2C_UNK,u32,s32,s32);
 s32 GetUnitVariantIndex(u16,M2C_UNK);
@@ -129,7 +129,7 @@ p=GetRecordDefinition(1);money=GetRecordValue(1,arg1);t=GetRecordTier(1,arg1);
 last=arg1;arg1=(arg0+1)*46+0x144;saved=(u32)gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(func_ov005_02211a54(1,last)==0){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),0)*4+0xcc),3);
-func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
+DrawLocalizedText(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),0x1000,(u16)arg1);
 if(money>0x5f5e0ffU)money=0x5f5e0ff;
 DrawNumber(22,(s16)(arg0+5),1,money,0x1000,(u16)(arg1+30));
 }else DrawLocalizedTextLine(2,(s16)(arg0+5),1,0x45000000,0x1000,3,(u16)arg1);
@@ -137,9 +137,9 @@ HistoryMenu_DrawTier(arg0+5,t);gCur3DSpriteEngine=(void *)saved;
 }
 
 #pragma opt_common_subs on
-void func_ov005_022127b4(s32 arg0,s32 arg1){
+void HistoryMenu_DrawPage2Row(s32 arg0,s32 arg1){
 M2C_UNK FillTileRect(s32,s32,s32,u16,s32);
-M2C_UNK func_0209b26c(s32,s16,s32,s32,s32,s32);
+M2C_UNK DrawLocalizedText(s32,s16,s32,s32,s32,s32);
 M2C_UNK DrawLocalizedTextLine(s32,s16,s32,s32,s32,s32,s32);
 M2C_UNK DrawNumber(s32,s16,s32,u32,s32,s32);
 s32 GetUnitVariantIndex(u16,s32);
@@ -153,31 +153,33 @@ position=(arg0+1)*46+0x144;
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 if(!func_ov005_02211a54(2,index)){
 FillTileRect(M2C_FIELD(gCur3DSpriteEngine,s32 *,36)+4+((arg0+5)<<6),2,2,(u16)(GetUnitVariantIndex(M2C_FIELD(p,u16 *,4),1)*4+0xcc),6);
-func_0209b26c(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
+DrawLocalizedText(4,(s16)(arg0+5),1,M2C_FIELD(p,s32 *,0),4096,(u16)position);
 if(value>99999999U)value=99999999;
 DrawNumber(22,(s16)(arg0+5),1,value,4096,(u16)(position+30));
 }else DrawLocalizedTextLine(2,(s16)(arg0+5),1,0x45000000,4096,3,(u16)position);
 HistoryMenu_DrawTier(arg0+5,status);gCur3DSpriteEngine=saved;
 }}
-void func_ov005_02212944(s32 arg0,s32 arg1) {
- void func_ov005_022122e0(s32,s32);
- void func_ov005_02212624(s32,s32);
- void func_ov005_022127b4(s32,s32);
- extern void *gHistoryMenu;
- switch(M2C_FIELD(gHistoryMenu,s8 *,1)) {
- case 0: func_ov005_022122e0(arg0,arg1); return;
- case 1: func_ov005_02212624(arg0,arg1); return;
- case 2: func_ov005_022127b4(arg0,arg1); return;
- }
+/* Draw one row of the history list: hand its slot and record index to the row
+ * renderer of the active tab (page 0 records, pages 1 and 2 unit lists). */
+void HistoryMenu_DrawRow(s32 row, s32 record) {
+    void HistoryMenu_DrawPage0Row(s32, s32);
+    void HistoryMenu_DrawPage1Row(s32, s32);
+    void HistoryMenu_DrawPage2Row(s32, s32);
+    extern void *gHistoryMenu;
+    switch (((HistoryMenu *)gHistoryMenu)->tab) {
+    case 0: HistoryMenu_DrawPage0Row(row, record); return;
+    case 1: HistoryMenu_DrawPage1Row(row, record); return;
+    case 2: HistoryMenu_DrawPage2Row(row, record); return;
+    }
 }
 
 #pragma optimization_level 2
 void HistoryMenu_DrawList(s16 arg0) {
 s16 *HistoryTabAt(s8);
-void func_ov005_02212944(s32,s32);
+void HistoryMenu_DrawRow(s32,s32);
 void ClearTileRect(void *,s32,s32);
 void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);
-void func_0209c024(s32,s16,void *,s32,s32,s32);
+void DrawTextToTilemap(s32,s16,void *,s32,s32,s32);
 s32 func_020a8b78(void);
 extern void *gHistoryMenu;
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
@@ -193,19 +195,19 @@ if(arg0&1){
 a=0;
 b=arg0>>1;
 c=-1;
-do{func_ov005_02212944(c,b);a++;b++;c+=2;}while(a<8);
+do{HistoryMenu_DrawRow(c,b);a++;b++;c+=2;}while(a<8);
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x100,0x20,1);
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0x4c0,0x20,1);
 }else{
 d=0;
 e=0;
 f=arg0>>1;
-do{func_ov005_02212944(e,f);d++;f++;e+=2;}while(d<7);
+do{HistoryMenu_DrawRow(e,f);d++;f++;e+=2;}while(d<7);
 ClearTileRect((u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x24)+0xf4,6,2);
 }
 DrawTilemapNumber(0x1b,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,6),0x1000,0);
 value=func_020a8b78();
-func_0209c024(0x1c,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),value,0x1000,0);
+DrawTextToTilemap(0x1c,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),value,0x1000,0);
 DrawTilemapNumber(0x1e,3,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),M2C_FIELD(p,s16 *,8),0x1000,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;
@@ -246,7 +248,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 HeapFreeBlock(buffer);
 Clear3DSpriteLayerSub(1);
 DrawTilemapNumber(26,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x2e),0x9000,0);
-func_0209c024(27,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),func_020a8b78(),0x9000,0);
+DrawTextToTilemap(27,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),func_020a8b78(),0x9000,0);
 DrawTilemapNumber(30,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x24),M2C_FIELD(gHistoryMenu,u16 *,0x30),0x9000,0);
 ClearTextBitmap((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,0x60);
 RenderLocalizedTextToTiles((u8 *)M2C_FIELD(g3DSpriteEngineSub,void **,0x1c)+0x1480,M2C_FIELD(gHistoryMenu,s32 *,0x34));

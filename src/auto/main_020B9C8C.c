@@ -372,19 +372,25 @@ u8 IsSelectableUnitAt(s32 x,s32 y) {
 }
 
 #pragma opt_if-conversion off
-s32 IsMissileSiloCell(s32 a,s32 b) {
- extern void **data_027e0058;
- s32 p=(s32)*data_027e0058;
- switch(M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31){case MAP_TERRAIN_SILO:return 1;default:return 0;}
+/* Whether map cell (x, y) holds a missile silo (terrain kind MAP_TERRAIN_SILO). */
+s32 IsMissileSiloCell(s32 x,s32 y) {
+ extern void **gCurrentMap;
+ s32 map=(s32)*gCurrentMap;
+ switch(M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),u8 *,MAP_CELL_TERRAIN)&MAP_TERRAIN_KIND_MASK){case MAP_TERRAIN_SILO:return 1;default:return 0;}
 }
 #pragma opt_if-conversion on
+/* Clear the capture points of the unit the cursor now sits on, but only when the
+ * cursor has moved since its tile was last synced (MAP_CURSOR_OLD_X/Y differ from
+ * the current tile); while the cursor has not moved there is nothing to reset. */
 void ClearCursorUnitCapture(void) {
- extern void **gCurrentMap;
- void *p=*gCurrentMap;
- void *q;
- if(M2C_FIELD(p,s16 *,0x52d8)==M2C_FIELD(p,s16 *,0x52dc) && M2C_FIELD(p,s16 *,0x52da)==M2C_FIELD(p,s16 *,0x52de))return;
- q=M2C_FIELD(p,void **,0x52d0);
- M2C_FIELD(q,u16 *,6)&=~0xf800;
+    extern void **gCurrentMap;
+    void *map = *gCurrentMap;
+    void *unit;
+
+    if (M2C_FIELD(map, s16 *, MAP_CURSOR_OLD_X) == M2C_FIELD(map, s16 *, MAP_CURSOR_X) &&
+        M2C_FIELD(map, s16 *, MAP_CURSOR_OLD_Y) == M2C_FIELD(map, s16 *, MAP_CURSOR_Y)) return;
+    unit = M2C_FIELD(map, void **, MAP_CURSOR_UNIT);
+    M2C_FIELD(unit, u16 *, MAP_UNIT_CAPTURE) &= ~MAP_UNIT_CAPTURE_MASK;
 }
 
 void func_020baaac(void) {

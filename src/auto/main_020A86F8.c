@@ -320,15 +320,18 @@ u8 IsCampaignMapForLocalPlayer(s32 mapId) {
     return owned;
 }
 
-u16 func_020a8f4c(s32 arg0) {
+/* Campaign map ids are split into MAP_ID_CAMPAIGN_PER_PLAYER-map blocks owned by
+ * the player slots.  Map `mapId`, when it is one of the local player's own
+ * campaign maps, back to its id in the base block; return 0xFFFF otherwise. */
+u16 GetCampaignMapBaseId(s32 mapId) {
     M2C_UNK IsLinkSessionActive();
     s32 GetLocalPlayerIdForOverlay();
     u8 IsCampaignMapForLocalPlayer(s32);
     IsLinkSessionActive();
-    if (IsCampaignMapForLocalPlayer(arg0) == 0) {
+    if (IsCampaignMapForLocalPlayer(mapId) == 0) {
         return 0xFFFFU;
     }
-    return (u16) (arg0 - (GetLocalPlayerIdForOverlay() * 0x32));
+    return (u16) (mapId - (GetLocalPlayerIdForOverlay() * MAP_ID_CAMPAIGN_PER_PLAYER));
 }
 
 /* Advance a tween's frame counter by its per-update step: the linear and eased

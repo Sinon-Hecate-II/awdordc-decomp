@@ -1,6 +1,7 @@
 /* 13 functions from 0x02207A54 to 0x0220856C (ov003), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "ov003_menu.h"
 static inline void ResetSlot(void *p, u16 value) {
 M2C_FIELD(p,s32 *,8)=M2C_FIELD(p,s32 *,4);
 M2C_FIELD(p,u16 *,12)=value;
@@ -120,7 +121,7 @@ void func_ov003_02207c7c(void *arg0) {
 void func_02087d84(void *,u16,s32,s16,u16,s32);
 s32 func_020a8ce4(s32,s32);
 s32 func_020a8e28(s32,s32);
-s32 func_ov003_02206690(s32,s32,s32);
+s32 Ov003_IsValueInRange(s32,s32,s32);
 void *inner,*inner2;
 u16 selected;
 s32 x;
@@ -146,7 +147,7 @@ if(kind==8){if(idx<=1)cond=1;}
 if(!(cond&255)){
 idx=(u8)((inner2?M2C_FIELD(inner2,u16 *,8):minus)-11);
 if(kind==8)cond2=1;else cond2=0;
-cond3=(cond2&255) && func_ov003_02206690(idx,2,4)!=0;
+cond3=(cond2&255) && Ov003_IsValueInRange(idx,2,4)!=0;
 if(cond3&255)goto half;
 }else {half: width>>=1;}
 p=M2C_FIELD(arg0,void **,0x44);
@@ -159,16 +160,18 @@ i++;
 }while(i<M2C_FIELD(M2C_FIELD(arg0,void **,0x44),u8 *,0)+11);
 }
 
-u8 func_ov003_02207e38(void *arg0, s32 arg1) {
-    s32 func_ov003_02206690(s32, s32, s32);
+/* True when the menu's current selection is in the split-row layout (mode 8) and
+ * rowIndex names one of its split rows (2..4). */
+u8 Ov003_IsSplitRow(void *menu, s32 rowIndex) {
+    s32 Ov003_IsValueInRange(s32, s32, s32);
     s32 var_r0;
 
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) {
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
     }
-    if ((var_r0 & 0xFF) && (func_ov003_02206690(arg1, 2, 4) != 0)) {
+    if ((var_r0 & 0xFF) && (Ov003_IsValueInRange(rowIndex, 2, 4) != 0)) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

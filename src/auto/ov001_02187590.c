@@ -240,15 +240,20 @@ void *p = M2C_FIELD(&gWhWork, void **, 4);
 if ((u32)(M2C_FIELD(p, s32 *, 0x40) - 9) > 1) M2C_FIELD(p, s32 *, 0x54) = arg0;
 }
 
-s32 func_ov001_02187bb0(void) {
-s32 WFC_StartDownloadPlay(void *, void *);
-void Ov001_HandleDownloadPlayStartResult(void *);
-extern M2C_UNK gWhWork;
-SetWhStatus(3);
-if (WFC_StartDownloadPlay((void *)Ov001_HandleDownloadPlayStartResult, M2C_FIELD(&gWhWork, void **, 4)) == 2) return 1;
-SetWhError();
-SetWhStatus(9);
-return 0;
+/* Start the Download Play session; return 1 if WFC queued the asynchronous start, otherwise record an error and fail the connection. */
+s32 Ov001_StartDownloadPlayConnection(void) {
+    s32 WFC_StartDownloadPlay(void *, void *);
+    void Ov001_HandleDownloadPlayStartResult(void *);
+    extern M2C_UNK gWhWork;
+
+    SetWhStatus(WH_STATUS_BUSY);
+    if (WFC_StartDownloadPlay((void *)Ov001_HandleDownloadPlayStartResult,
+                              M2C_FIELD(&gWhWork, void **, WH_WORK_CONNECTION)) == 2) {
+        return 1;
+    }
+    SetWhError();
+    SetWhStatus(WH_STATUS_PARENT_START);
+    return 0;
 }
 
 /* Completion callback of the download-play start request: when it reported an
@@ -481,9 +486,9 @@ void DWCi_MOV_WH_StateInEndParent(void *event) {
 }
 
 s32 func_ov001_02188184(void) {
-    s32 func_02012484(void (*)(void *));
+    s32 WFC_SendCommand9(void (*)(void *));
     void func_ov001_021881ac(void *);
-    if (func_02012484(func_ov001_021881ac) == 2) return 1;
+    if (WFC_SendCommand9(func_ov001_021881ac) == 2) return 1;
     SetWhError();
     return 0;
 }

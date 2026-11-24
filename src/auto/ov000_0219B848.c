@@ -4,7 +4,7 @@
 #include "ov000_ai.h"
 extern void **gCurrentMap;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[],gTerrainPropertyType[],data_ov000_021b5500[],gAiRangeLayer[];
+extern s8 gProductionSiteTerrain[],gTerrainPropertyType[],data_ov000_021b5500[],gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df41c[],data_ov000_021df424[];
 s32 func_ov000_0219b848(void) {
@@ -15,7 +15,7 @@ s32 IsFootUnitKind(s32); s32 IsMidActionStep(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out;
 u8 *entry; s32 enemyIndex,enemyPlayer,index; u8 *enemyUnit; u8 *unit; u8 *candidate,*scan,*best; void *map; s32 player,count,pass,i,cost,oldpass,bestcost,price,allow,relation,delta,bestdelta; s32 row,propertyChosen; u8 funds,penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 CanUnitKindStandAt(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 GetUnitBuildCost(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 CanUnitKindStandAt(s32,s32,s32); s32 SelectTransportTarget(s32,s32); s32 GetUnitBuildCost(u16,u8); s32 IsCellOwnedByUnitPlayer(s16,s32,s32); void CommitAiAction(s32);
 count=0;out=&gAiTargetCandidates;
 if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 
@@ -26,7 +26,7 @@ if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap
 map=*gCurrentMap;
 if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)))goto nextEntry;
 }else{
-if(!data_ov000_021b5580[entry[0]&31])goto nextEntry;
+if(!gProductionSiteTerrain[entry[0]&31])goto nextEntry;
 map=*gCurrentMap;
 if(M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)&224)goto nextEntry;
 }
@@ -75,7 +75,7 @@ cost++;if(out[4]<cost)goto nextProperty;
 out[4]=cost;propertyChosen=1;
 }else{
 cost++;if(out[5]<cost)goto nextProperty;
-out[5]=cost;relation=func_ov000_021a911c(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
+out[5]=cost;relation=IsCellOwnedByUnitPlayer(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
 }
 }
 nextProperty:candidate+=6;

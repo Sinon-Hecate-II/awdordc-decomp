@@ -33,7 +33,7 @@ void MapEditor_StartMap(void *editor) {
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();func_020a45cc();func_020a23c4();BeginPlayerPhase();InitPlayerTurnState();
+ LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();func_020a45cc();ResetPlayerTurnBonuses();BeginPlayerPhase();InitPlayerTurnState();
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));func_020b1ae0();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -638,25 +638,29 @@ M2C_FIELD(&gMapEditorState,u8 *,MAP_EDITOR_PLAYER_COUNT)=0;
 for(player=0;player<5;player++){if(GetPlayerTeam(player)==1)M2C_FIELD(&gMapEditorState,u8 *,MAP_EDITOR_PLAYER_COUNT)++;}
 }
 
-u8 MapEditor_PlayerHasTeam(s32 arg0) {
+/* Whether a player is on a team: for players 1..4, whether that player's team is
+ * set; for the special player -1, whether the edited map has a team at all, i.e.
+ * at least MAP_EDITOR_TEAM_MIN_PLAYERS players in use. */
+u8 MapEditor_PlayerHasTeam(s32 player) {
     s32 GetPlayerTeam();
     extern u8 gMapEditorState;
-    u8 var_r0;
-    u8 var_r0_2;
-    if (arg0 < 0) {
-        if ((u32) M2C_FIELD(&gMapEditorState, u8 *, 2) >= 2U) {
-            var_r0_2 = 1;
+    u8 onTeam;
+    u8 hasTeam;
+
+    if (player < 0) {
+        if ((u32) M2C_FIELD(&gMapEditorState, u8 *, MAP_EDITOR_PLAYER_COUNT) >= MAP_EDITOR_TEAM_MIN_PLAYERS) {
+            hasTeam = 1;
         } else {
-            var_r0_2 = 0;
+            hasTeam = 0;
         }
-        return var_r0_2;
+        return hasTeam;
     }
-    if (GetPlayerTeam(arg0) != 0) {
-        var_r0 = 1;
+    if (GetPlayerTeam(player) != 0) {
+        onTeam = 1;
     } else {
-        var_r0 = 0;
+        onTeam = 0;
     }
-    return var_r0;
+    return onTeam;
 }
 
 void RefreshMapEditor(void) {

@@ -4,7 +4,7 @@
 #include "ds3dsprite.h"
 #include "menu_list.h"
 
-extern u8 data_021290b4[40];
+extern M2C_UNK gMenuListRowSlotDef;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineMain;
 extern u8 data_02129114[12];
@@ -316,18 +316,22 @@ void func_020b88f8(u8 *arg0) {
     M2C_FIELD(GetMenuList(), s16 *, 0x3a) = *arg0;
 }
 
-void func_020b8910(void) {
+/* Creates the six row sprite slots of the scrollable menu list, stacked
+ * MENU_LIST_ROW_SLOT_STEP pixels apart from y MENU_LIST_ROW_SLOT_Y, and focuses
+ * the first row. */
+void CreateMenuListRowSlots(void) {
     void *GetMenuList(void);
-    s32 i;
+    s32 row;
     s32 y;
+
     GetMenuList();
-    i = 0;
-    y = 0x27;
+    row = 0;
+    y = MENU_LIST_ROW_SLOT_Y;
     do {
-        AddSpriteSlot(4, y, data_021290b4, i);
-        i++;
-        y += 0x10;
-    } while (i < 6);
+        AddSpriteSlot(MENU_LIST_ROW_SLOT_X, y, &gMenuListRowSlotDef, row);
+        row++;
+        y += MENU_LIST_ROW_SLOT_STEP;
+    } while (row < MENU_LIST_VISIBLE_ROWS);
     SelectSpriteSlot(0);
 }
 
@@ -351,7 +355,7 @@ void func_020b8970(void *arg0) {
     void Show3DSpriteSlide(void *);
     void Load3DSpritePattern(void *, s32, s32, s32);
     void func_020994e0(s32);
-    void func_0209c024(s32, s32, void *, s32, s32, s32);
+    void DrawTextToTilemap(s32, s32, void *, s32, s32, s32);
     void DrawTilemapNumber(s32, s32, void *, s32, s32, s32);
     s32 func_020a8b78(void);
     s32 GetUnitSpriteWidth(void *);
@@ -359,7 +363,7 @@ void func_020b8970(void *arg0) {
     s32 GetUiColor(s32);
     u8 func_020b846c(s32);
     void RedrawListRows(s32);
-    void func_020b8910(void);
+    void CreateMenuListRowSlots(void);
     void CreateMenuUnitSprite(void *);
     s32 func_020cd6fc(void);
     void CreateMenuTextSprite(void *, s32, s32, s32, s32, s32, s32, void *, s32);
@@ -422,12 +426,12 @@ void func_020b8970(void *arg0) {
     CreateMenuUnitSprite(arg0);
     Load3DSpritePattern((void *) 0x6b80, 0xb, GetUiColor(0xc), 2);
     DrawTilemapNumber(0x1b, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x44), 0, 0);
-    func_0209c024(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
+    DrawTextToTilemap(0x1c, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), func_020a8b78(), 0, 0);
     DrawTilemapNumber(0x1e, 3, M2C_FIELD(gCur3DSpriteEngine, void **, 0x24), M2C_FIELD(arg0, s16 *, 0x42), 0, 0);
     RedrawListRows(M2C_FIELD(arg0, s16 *, 0x3e));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 2;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) |= 4;
-    func_020b8910();
+    CreateMenuListRowSlots();
     gCur3DSpriteEngine = temp_r4;
 }
 

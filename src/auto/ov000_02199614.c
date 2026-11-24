@@ -224,7 +224,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
     void MarkCaptureUnitHasTarget(s32);
     M2C_UNK func_02072b10(M2C_UNK *, M2C_UNK);
     void BuildUnitMoveRange(void *);
-    void func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
+    void BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
     s32 UnpackCursorPath(void *, void *);
     s32 GetRandomSeed(void);
     s32 GetUnitMoveFuelCost(s32, s32);
@@ -252,7 +252,7 @@ void SetMapCursor(s32 arg0, s32 arg1, u8 arg2, u8 arg3, u8 arg4) {
         func_02072b10(&data_ov000_021df604, 1);
     }
     BuildUnitMoveRange(unit);
-        func_01ffc4b8(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
+        BuildMovePathForTile(arg0, arg1, (s32)(((u8 *)*gCurrentMap) + 0x5388));
         UnpackCursorPath(((u8 *)*gCurrentMap) + 0x5388, gCommandPath);
 
         gAiCommand[1] = ((u8 *)*gCurrentMap)[0x52D4];
@@ -372,7 +372,7 @@ void BeginAiTurn(void) {
     void func_020c93cc(void);
     void SetupAiUnitParameters(u16);
     void UpdateAiCapabilityFlags(void);
-    void func_ov000_0219a370(void);
+    void ClearPropertyCellCounters(void);
     void MarkAiTargetAreas(void);
     void ClearAiUnitActions(void);
     void ClearAiUnitLoadCounts(void);
@@ -404,7 +404,7 @@ void BeginAiTurn(void) {
     }
     SetupAiUnitParameters(*(u16 *)(*(u8 **)gCurrentMap + MAP_CURRENT_PLAYER));
     UpdateAiCapabilityFlags();
-    func_ov000_0219a370();
+    ClearPropertyCellCounters();
     MarkAiTargetAreas();
     ClearAiUnitActions();
     ClearAiUnitLoadCounts();
@@ -431,20 +431,23 @@ void func_ov000_0219a350(void) {
     M2C_FIELD(gAiState, s8 *, 3) = 0;
 }
 
-void func_ov000_0219a370(void) {
+/* Reset the per-property bookkeeping of the map's property-cell table for the AI
+ * turn: the use count and the two extra counter bytes (0x04/0x05) of all
+ * MAP_PROPERTY_MAX records. */
+void ClearPropertyCellCounters(void) {
     extern s32 *gCurrentMap;
-    s32 var_r1;
-    void *var_r2;
+    s32 i;
+    u8 *record;
 
-    var_r1 = 0;
-    var_r2 = *gCurrentMap + 0x6C60;
+    i = 0;
+    record = *gCurrentMap + MAP_PROPERTY_CELLS;
     do {
-        M2C_FIELD(var_r2, s8 *, 3) = 0;
-        M2C_FIELD(var_r2, s8 *, 4) = 0;
-        var_r1 += 1;
-        M2C_FIELD(var_r2, s8 *, 5) = 0;
-        var_r2 += 6;
-    } while (var_r1 < 0x63);
+        M2C_FIELD(record, s8 *, MAP_PROPERTY_COUNT) = 0;
+        M2C_FIELD(record, s8 *, 4) = 0;
+        i += 1;
+        M2C_FIELD(record, s8 *, 5) = 0;
+        record += MAP_PROPERTY_STRIDE;
+    } while (i < MAP_PROPERTY_MAX);
 }
 
 /* Count player `player`'s properties from the eight per-kind counters in the

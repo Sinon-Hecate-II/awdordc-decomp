@@ -399,9 +399,9 @@ s32 RemoveConnectionPeer(s32 slotIndex, s32 peerCount) {
     return removedPeerId;
 }
 
-s32 func_0203e2a4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xd); }
+s32 GetConnectionPeerCount(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xd); }
 
-s32 func_0203e2c4(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xe); }
+s32 GetConnectionActivePlayerMax(void) { if(GetConnection()==0)return 0; return M2C_FIELD(GetConnection(),u8 *,0xe); }
 
 /* Store the number of present player slots (the set bits of CONN_SESSION_PLAYER_MASK,
  * minus one; 0 when there is none) as CONN_SESSION_ACTIVE_MAX. */

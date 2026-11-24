@@ -28,10 +28,17 @@ WFC_SetChannelParam(0x23,callback); CpuFill(0,packet,0x20);
 result=WFC_SendCommandPacket(packet,0x20); if(!result) result=2; return result;
 }
 
-void WFC_SetLinkEvents(s32 arg0, s16 arg1) {
-void CpuFill(s32,void *,s32);
-u32 buf[7];
-CpuFill(0,buf,0x1c); buf[0]=3; ((s16 *)buf)[2]=arg1; ((s16 *)buf)[3]=arg1; WFC_SendCommand23(arg0,buf);
+/* Install (event 0) or remove (event 1) the link's event notification handler
+ * `callback` through a WFC command 0x23 link-event request.  Returns the Wi-Fi
+ * result (2 once the request is queued). */
+s32 WFC_SetLinkEvents(s32 callback, s16 event) {
+    void CpuFill(s32, void *, s32);
+    WfcLinkEventRequest request;
+    CpuFill(0, &request, sizeof(request));
+    request.command = WFC_LINK_EVENT_COMMAND;
+    request.event = event;
+    request.eventMirror = event;
+    return WFC_SendCommand23(callback, &request);
 }
 
 /* Queue a WFC data-send event for `len` bytes at `buf`: refuse when the link is
@@ -130,13 +137,13 @@ s32 WFC_SubmitLinkRequest(s32 requestId) {
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 s32 func_02012fac(s32 buffer,s32 channel,s32 flags,s32 count,s32 option) {
-s32 WFC_CheckChannelState();s32 WFC_GetLocalPlayerIndex(void);s32 func_02011994(void);
+s32 WFC_CheckChannelState();s32 WFC_GetLocalPlayerIndex(void);s32 WFC_GetConnectedPeerMask(void);
 void MI_CpuFill32(s32,void *,s32);s32 CountBits(s32);s32 WFC_SetChannelHandler(u16,s32,s32);
 void WFC_ParentChannelHandler(void *);void WFC_ChildChannelHandler(void *);void WFC_OnChannelSendComplete(void *);
 s32 mode,mask=1,result,i,opt;u32 bits;u16 *p;u8 *block;
 result=WFC_CheckChannelState(2,9,10);if(result)return result;
 if(!buffer)return 6;if((u32)channel>=16)return 6;if(!flags)return 6;
-mode=WFC_GetLocalPlayerIndex();if(!mode)mask=func_02011994();
+mode=WFC_GetLocalPlayerIndex();if(!mode)mask=WFC_GetConnectedPeerMask();
 MI_CpuFill32(0,(void *)buffer,0x820);
 p=(u16 *)(buffer+0x800);
 p[4]=0;p[5]=0;p[6]=0;p[8]=count;p[11]=channel;p[7]=0;
@@ -165,24 +172,27 @@ p[5]=3;((s32 (*)(s32,s32,s32))WFC_SetChannelHandler)(channel,(s32)WFC_ChildChann
 return 0;
 }
 #pragma pop
-s32 func_02013200(void *arg0) {
+/* Close a WFC channel state object: detach its event handler and clear its player
+ * mask and send state so the library stops using the channel. Returns 6 when there
+ * is no object and 3 when the channel was already closed. */
+s32 WFC_CloseChannel(void *channel) {
     M2C_UNK WFC_SetChannelHandler(u16, M2C_UNK, M2C_UNK);
-    if (arg0 == NULL) {
+    if (channel == NULL) {
         return 6;
     }
-    if (M2C_FIELD(arg0, u16 *, 0x80E) == 0) {
+    if (M2C_FIELD(channel, u16 *, WFC_CH_PLAYER_MASK) == 0) {
         return 3;
     }
-    WFC_SetChannelHandler(M2C_FIELD(arg0, u16 *, 0x816), 0, 0);
-    M2C_FIELD(arg0, u16 *, 0x80E) = 0U;
-    M2C_FIELD(arg0, s16 *, 0x81C) = 0;
+    WFC_SetChannelHandler(M2C_FIELD(channel, u16 *, WFC_CH_CHANNEL), 0, 0);
+    M2C_FIELD(channel, u16 *, WFC_CH_PLAYER_MASK) = 0U;
+    M2C_FIELD(channel, s16 *, WFC_CH_SEND_STATE) = 0;
     return 0;
 }
 
 s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     s32 WFC_CheckChannelState(s32, s32);
     s32 WFC_GetLocalPlayerIndex(void);
-    s32 func_02011994(void);
+    s32 WFC_GetConnectedPeerMask(void);
     s32 WFC_SendChannelData(s32, s32, void *, u32, u16, u16, u16);
     void CopyU16(void *, void *, u32);
     void WFC_StoreReceiveData(void *, u32, void *);
@@ -205,7 +215,7 @@ s32 func_02013248(s32 arg0, void *arg1, void *arg2) {
     if (r9 == 0) return 6;
     if (r8 == 0) return 6;
     r5 = WFC_GetLocalPlayerIndex();
-    if (r5 == 0) r4 = func_02011994();
+    if (r5 == 0) r4 = WFC_GetConnectedPeerMask();
     state = M2C_FIELD(r10, u16 *, 0x81c);
     if (state == 5) return 1;
     if (state != 1 && state != 4) return 3;
@@ -390,12 +400,12 @@ void WFC_StoreReceiveData(void *state,u32 index,void *src) {
 void WFC_PostReceive(void *state, s32 dropSelf) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02011994(void);
+    s32 WFC_GetConnectedPeerMask(void);
     void FillU16(s32, void *, u32);
     s32 savedIrq = OS_DisableInterrupts();
     s32 freeSlot, nextSlot, curSlot, peerMask, result;
     if (((u16 (*)[256])state)[M2C_FIELD(state, u16 *, 0x808)][0] == 0) {
-        peerMask = func_02011994();
+        peerMask = WFC_GetConnectedPeerMask();
         curSlot = M2C_FIELD(state, u16 *, 0x808);
         nextSlot = (curSlot + 1) & 3;
         if (M2C_FIELD(state, u16 *, 0x818) == 1) freeSlot = (nextSlot + 1) & 3;
@@ -441,6 +451,6 @@ void func_02013b2c(M2C_UNK arg0, M2C_UNK arg1) {
 }
 
 void func_02013b48(void) {
-    M2C_UNK func_02013200();
-    func_02013200();
+    M2C_UNK WFC_CloseChannel();
+    WFC_CloseChannel();
 }

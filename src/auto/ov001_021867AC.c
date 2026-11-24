@@ -210,16 +210,20 @@ func_02013e70(Ov001_HandleLinkEvent);
 Ov001_SetLinkStatus(1);
 }
 
-void func_ov001_02186fa0(M2C_UNK arg0, M2C_UNK arg1) {
+/* Begin the download-play parent's multiboot program transfer: mark the link as
+ * waiting, initialise the multiboot library with bootParam (link status 7 when
+ * that fails), then load and register the program image described by
+ * fileRequest, halting the console when it cannot be loaded. */
+void Ov001_StartMultibootProgramTransfer(s32 fileRequest, s32 bootParam) {
     M2C_UNK SystemHalt();
-    s32 func_02017f90(M2C_UNK);
+    s32 func_02017f90(s32);
     s32 Ov001_LoadDownloadPlayProgram(M2C_UNK);
     Ov001_SetLinkStatus(2);
-    if (func_02017f90(arg1) != 0) {
+    if (func_02017f90(bootParam) != 0) {
         Ov001_SetLinkStatus(7);
         return;
     }
-    if (Ov001_LoadDownloadPlayProgram(arg0) != 0) {
+    if (Ov001_LoadDownloadPlayProgram(fileRequest) != 0) {
         return;
     }
     SystemHalt();

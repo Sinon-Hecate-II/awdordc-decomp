@@ -12,8 +12,22 @@ s32 Crc8Update(s32 table,u8 *crc,s32 data,s32 size){u32 v,i;u8 *p=(u8*)data;v=*c
 for(i=0;i<(u32)size;i++)v=((u8*)table)[(u8)(v^*p++)];*crc=v;
 }
 
-void BuildCrc16Table(u16 *table,u32 poly){u32 v,j,i;
-for(i=0;i<256;i++){v=i;for(j=0;j<8;j++){if(v&1)v=(v>>1)^poly;else v>>=1;}table[i]=v;}
+/* Build the reflected CRC-16 lookup table used for save and map-record checksums. */
+void BuildCrc16Table(u16 *table, u32 polynomial) {
+    u32 crc;
+    u32 bitIndex;
+    u32 tableIndex;
+
+    for (tableIndex = 0; tableIndex < 256; tableIndex++) {
+        crc = tableIndex;
+        for (bitIndex = 0; bitIndex < 8; bitIndex++) {
+            if (crc & 1)
+                crc = (crc >> 1) ^ polynomial;
+            else
+                crc >>= 1;
+        }
+        table[tableIndex] = crc;
+    }
 }
 
 s32 Crc16Update(s32 table,u16 *state,s32 data,s32 size) {

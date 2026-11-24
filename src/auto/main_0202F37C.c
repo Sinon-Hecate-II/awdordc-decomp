@@ -99,10 +99,10 @@ u32 Wfc_FriendIdToSlot(u32 arg0) {
 }
 
 void Wfc_ClearWorkFlags(void) {
- void func_0202f334(s32, void *, s32);
+ void Wfc_ReleaseWorkBlock(s32, void *, s32);
  extern M2C_UNK gWfcManager;
- func_0202f334(8, M2C_FIELD(&gWfcManager, void **, 0xC), 0xC);
- func_0202f334(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
+ Wfc_ReleaseWorkBlock(8, M2C_FIELD(&gWfcManager, void **, 0xC), 0xC);
+ Wfc_ReleaseWorkBlock(0x10, M2C_FIELD(&gWfcManager, void **, 0), 0xD18);
 }
 
 /* Whether the selected friend record may be connected to: returns 2 when another
@@ -381,27 +381,32 @@ void Wfc_HandleConnectMessage(void *msg) {
  } else if(type==WFC_MSG_TYPE_FRIEND) Wfc_HandleFriendMessage(M2C_FIELD(msg,s32 *,WFC_MSG_PEER));
 }
 
+/* WFC friend-connection dispatch: the state-7 step resolves the selected friend
+ * and starts its link (Wfc_StepFriendLink), the state-8 step advances the friend
+ * connection that is opening (Wfc_UpdateFriendConnection); any other state is
+ * returned unchanged.  The work-block call feeds the friend block to the step
+ * implicitly in r0. */
 s32 Wfc_StepFriends(void) {
-    s32 func_0202fce0();
+    s32 Wfc_StepFriendLink();
     s32 Wfc_UpdateFriendConnection();
-    s32 var_r4;
+    s32 state;
 
-    var_r4 = Wfc_GetSessionState();
-    Wfc_GetWorkBlock(0x10);
-    switch (var_r4) {                               /* irregular */
-    case 7:
-        var_r4 = func_0202fce0();
+    state = Wfc_GetSessionState();
+    Wfc_GetWorkBlock(WFC_WORK_FRIENDS);
+    switch (state) {
+    case WFC_STEP_LINK:
+        state = Wfc_StepFriendLink();
         break;
-    case 8:
-        var_r4 = Wfc_UpdateFriendConnection();
+    case WFC_STEP_LINK_WAIT:
+        state = Wfc_UpdateFriendConnection();
         break;
     }
-    return var_r4;
+    return state;
 }
 
 /* Polls/refreshes the current entry for state 'p': clears the D0D slot, zeroes a temp buffer,
    calls func_020300e8 to (re)validate, then updates the D0B flags and reports 9 or 8. */
-s32 func_0202fce0(void *p) {
+s32 Wfc_StepFriendLink(void *p) {
 void MI_CpuFill8(void *,s32,s32); u8 Wfc_ResolveFriendSelection(void *);
 void *q=p+0x470+M2C_FIELD(p,u8 *,0xD13)*0xC0;
 s32 ok;

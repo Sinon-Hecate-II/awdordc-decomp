@@ -58,6 +58,13 @@ enum {
 #define GPI_INFO_RECV_BUFFER   0x0C /* u8 * receive buffer, grown as data arrives */
 #define GPI_INFO_RECV_CAPACITY 0x2C /* s32 allocated size of the receive buffer */
 
+/* The gpi info connection object (gGpiInfoSocket): the GHI socket the info
+ * protocol runs on and the cursor into the XOR key string its messages are
+ * encrypted with.  gpiXorInfoMessage walks that cursor from byte to byte and
+ * wraps it back to the key's first byte at the NUL that ends the string. */
+#define GPI_SOCKET_HANDLE  0x00 /* s32 GHI socket, -1 when the connection is closed */
+#define GPI_SOCKET_XOR_KEY 0x08 /* const s8 * next byte of the message XOR key */
+
 /* A GameSpy info string is a run of \key\value\ fields; the gpi info reader
  * (gpiGetInfoField) extracts one value into gGpiProfileScratch.  The gpi reply
  * keys are the gGpiKey* strings in main_02058CA4's data: \lid\, \pid\,

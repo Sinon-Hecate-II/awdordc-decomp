@@ -1,6 +1,7 @@
 /* 50 functions from 0x020A28F4 to 0x020A38F4 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "ds3dsprite.h"
 #include "sound.h"
 
 typedef struct { u32 low:8; u32 mid:2; u32 hi:2; } Word020a334c;
@@ -102,7 +103,7 @@ s32 GetPlayerMusicTrack(u8 player) {
     return M2C_FIELD(&data_02126180, s32 *, ((u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 24) >> 24) * ARMY_DATA_SIZE);
 }
 
-void func_020a2b84(s32 arg0) {
+void PlayPlayerMusic(s32 arg0) {
     M2C_UNK func_0208f7d0();
     M2C_UNK GetPlayerMusicTrack(u8);
     GetPlayerMusicTrack((u8)(arg0 & 0xFF));
@@ -151,7 +152,7 @@ void StartPlayerUnitView(void *view) {
     extern s32 *gCurrentMap;
     extern u8 data_021261c4[];
     s32 playerRecord = *gCurrentMap + MAP_PLAYER_STATES + M2C_FIELD(view, s32 *, 0x5C) * MAP_PLAYER_STRIDE;
-    s32 spriteVariant = func_020a3460(M2C_FIELD(view, s32 *, 0x5C));
+    s32 spriteVariant = GetPlayerSpriteSet(M2C_FIELD(view, s32 *, 0x5C));
     u32 armyId = (u32)(M2C_FIELD(playerRecord, s32 *, PLAYER_REC_SPRITE) << 24) >> 24;
     if (M2C_FIELD(data_021261c4 + armyId * 0x9C, s32 *, spriteVariant * 0x28) == 0) {
         DeleteSpriteObject(view);
@@ -181,7 +182,7 @@ do {
 map=*gCurrentMap;
 unit=(u8 *)(map+MAP_UNIT_RECORDS+(M2C_FIELD(map,u16 *,MAP_CURSOR_OWNER)+M2C_FIELD(view,s16 *,0x70))*MAP_UNIT_STRIDE);
 if(((u32)(M2C_FIELD(unit,u8 *,MAP_UNIT_KIND)<<26)>>26)!=0){
-spriteSet=func_020a3460(player);
+spriteSet=GetPlayerSpriteSet(player);
 armyId=(u32)(M2C_FIELD(map+playerOffset,s32 *,MAP_PLAYER_STATES+PLAYER_REC_SPRITE)<<24)>>24;
 if(((s32 (*)(u8 *))M2C_FIELD(gMovementCostTable+armyId*156+spriteSet*40,s32 *,0x58))(unit)){
 map=*gCurrentMap;
@@ -194,7 +195,7 @@ StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y
 if(IsMapViewScrolling())return;
 }
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
-spriteSet=func_020a3460(player);
+spriteSet=GetPlayerSpriteSet(player);
 armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
 ((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 goto increment;
@@ -202,11 +203,11 @@ visible:
 StepMapViewToTile(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y));
 if(IsMapViewScrolling())return;
 tmp=*gCurrentMap+MAP_PLAYER_STATES+playerOffset;
-spriteSet=func_020a3460(player);
+spriteSet=GetPlayerSpriteSet(player);
 armyId=(u32)(M2C_FIELD(tmp,s32 *,PLAYER_REC_SPRITE)<<24)>>24;
 ((void (*)(u8 *))M2C_FIELD(data_021261c8+armyId*156,s32 *,spriteSet*40))(unit);
 done:
-SpawnArmySpecialEffect(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),M2C_FIELD(view,s16 *,0x6c),func_020a3460(player),view);
+SpawnArmySpecialEffect(M2C_FIELD(unit,u8 *,MAP_UNIT_X),M2C_FIELD(unit,u8 *,MAP_UNIT_Y),M2C_FIELD(view,s16 *,0x6c),GetPlayerSpriteSet(player),view);
 increment:
 M2C_FIELD(view,s16 *,0x70)++;
 break;
@@ -413,7 +414,7 @@ void func_020a33f0(s32 a,u32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a
 
 void func_020a3428(s32 a,u32 b){extern s32 *gCurrentMap;s32 p=*gCurrentMap+0x67a4+140*a;M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&~0x3000)|((b<<30)>>18);}
 
-s32 func_020a3460(s32 a){extern s32 *gCurrentMap;return (u32)(M2C_FIELD(*gCurrentMap+140*a,u32 *,0x6810)<<18)>>30;}
+s32 GetPlayerSpriteSet(s32 a){extern s32 *gCurrentMap;return (u32)(M2C_FIELD(*gCurrentMap+140*a,u32 *,0x6810)<<18)>>30;}
 
 void func_020a348c(void) {
     M2C_UNK CreatePlayerUnitView();
@@ -443,12 +444,13 @@ s32 GetCoPowerMeterPoints(s32 a) {
     return (u32)*w >> 21;
 }
 #pragma opt_common_subs reset
-void SetCoPowerMeterPoints(s32 a,s32 b){
+/* Store a player's CO power meter points (bits 21..31 of its sprite state), clamped at zero. */
+void SetCoPowerMeterPoints(s32 player,s32 points){
  extern s32 *gCurrentMap;
- s32 *p;
- if(b<0)b=0;
- p=(s32 *)(*gCurrentMap+0x67a4+140*a);
- M2C_FIELD(p,u32 *,108)=(M2C_FIELD(p,u32 *,108)&0x1fffff)|((u32)b<<21);
+ s32 *record;
+ if(points<0)points=0;
+ record=(s32 *)(*gCurrentMap+MAP_PLAYER_STATES+MAP_PLAYER_STRIDE*player);
+ M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)=(M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)&PLAYER_CO_METER_MASK)|((u32)points<<PLAYER_CO_METER_SHIFT);
 }
 
 /* Meter points needed for a player's CO power level: nothing at level 0,
@@ -479,17 +481,21 @@ s32 GetCoPowerMeterCost(s32 player, s32 level) {
     return cost * ((s32 (*)(s32))GetCoPowerMeterPointsPerStar)(player);
 }
 
-s32 RefreshPlayerArmyDisplay(s32 a){
- extern s32 *gCur3DSpriteEngine;
- s32 func_020a3460(s32);
- void func_020a338c(s32,s32);
- void func_020a23c4(void);
- void RefreshMapView(void);
- M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x38)=0;
- M2C_FIELD(*gCur3DSpriteEngine,s16 *,0x40)=0;
- func_020a338c(a,func_020a3460(a));
- func_020a23c4();
- RefreshMapView();
+/* Reset the on-map army display of player `player`: zero layer 0's quad offsets
+ * on the current sprite bank, copy the player's sprite set into the display's
+ * variant, clear the per-turn bonuses of the active players and redraw the map
+ * view. */
+s32 RefreshPlayerArmyDisplay(s32 player) {
+    extern s32 *gCur3DSpriteEngine;
+    s32 GetPlayerSpriteSet(s32);
+    void func_020a338c(s32, s32);
+    void ResetPlayerTurnBonuses(void);
+    void RefreshMapView(void);
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_QUAD_X) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s16 *, DS3D_QUAD_Y) = 0;
+    func_020a338c(player, GetPlayerSpriteSet(player));
+    ResetPlayerTurnBonuses();
+    RefreshMapView();
 }
 
 /* Add `points` to a player's CO power meter, clamped between zero and the

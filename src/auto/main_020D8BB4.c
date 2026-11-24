@@ -63,19 +63,21 @@ void func_020d8cfc(void) {
 
 }
 
+/* Whether the sub screen's UI object exists: the lookup runs on the sub engine,
+ * with the current engine put back afterwards. */
 u8 HasSubScreenUi(void) {
     s32 FindObjectByClass(void *);
     extern M2C_UNK gSubScreenUiClass;
     extern void *g3DSpriteEngineSub;
     extern void *gCur3DSpriteEngine;
-    void *temp_r4;
-    u8 var_r0;
-    temp_r4 = gCur3DSpriteEngine;
+    void *savedEngine;
+    u8 found;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (FindObjectByClass(&gSubScreenUiClass) != 0) var_r0 = 1;
-    else var_r0 = 0;
-    gCur3DSpriteEngine = temp_r4;
-    return var_r0;
+    if (FindObjectByClass(&gSubScreenUiClass) != 0) found = 1;
+    else found = 0;
+    gCur3DSpriteEngine = savedEngine;
+    return found;
 }
 
 /* Starts the sub-screen UI (UI mode 3) for the requested mode: record the mode and
@@ -120,7 +122,23 @@ u8 IsUiModeSwitchBusy(void) {
     return busy;
 }
 
-void func_020d8e28(void){void func_020d932c(void);void DeleteSpriteObjectsOfClass(void *);extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern M2C_UNK gSubScreenUiClass;void *p;if(!HasSubScreenUi())return;p=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineSub;func_020d932c();DeleteSpriteObjectsOfClass(&gSubScreenUiClass);gCur3DSpriteEngine=p;}
+/* Rebuild the sub-screen UI on the sub engine: create the sprite for the current
+ * UI mode and drop the sub-screen UI objects that were up, then restore the
+ * engine the caller was drawing on. */
+void RebuildSubScreenUi(void) {
+    void CreateUiModeSprite(void);
+    void DeleteSpriteObjectsOfClass(void *);
+    extern void *gCur3DSpriteEngine, *g3DSpriteEngineSub;
+    extern M2C_UNK gSubScreenUiClass;
+    void *savedEngine;
+
+    if (!HasSubScreenUi()) return;
+    savedEngine = gCur3DSpriteEngine;
+    gCur3DSpriteEngine = g3DSpriteEngineSub;
+    CreateUiModeSprite();
+    DeleteSpriteObjectsOfClass(&gSubScreenUiClass);
+    gCur3DSpriteEngine = savedEngine;
+}
 
 /* Enters the sub screen's UI (mode 3): when the sub-screen UI object exists, save
    the current UI mode and switch to mode 3 with the stored parameter, drawing on
@@ -255,13 +273,15 @@ void func_020d908c(void) {
     *layer5 = (u16)(*layer5 | 0x100);
 }
 
-void func_020d9244(void) {
+/* Clears the UI screen's two base 3D sprite layers (0 and 1) on the current
+ * engine and marks both for rebuild. */
+void ClearUiScreenLayers(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(0);
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER0);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
 void func_020d9284(void) {
@@ -295,7 +315,7 @@ void func_020d92f8(s32 arg0) {
     CreateScreenTransitionChildren(0, 8, 1, arg0);
 }
 
-void func_020d932c(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *gUiMode;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(gUiMode,s16 *,2)*12),8);}
+void CreateUiModeSprite(void){M2C_UNK CreateSpriteFromClass(void *,s32);extern void *gUiMode;extern M2C_UNK data_0212c4fc;CreateSpriteFromClass(*(void **)((u8 *)&data_0212c4fc+M2C_FIELD(gUiMode,s16 *,2)*12),8);}
 
 void func_020d9360(s32 arg0) {
 M2C_UNK CreateSpriteObject(M2C_UNK *,s32);
@@ -326,7 +346,7 @@ void func_020d93d4(void) {
 /* Processes two current-entity slots, creating/updating linked objects for an entity when conditions allow. */
 void func_020d93e0(void *entity) {
     s32 IsLinkSessionActive(void);
-    s32 func_0208477c(void);
+    s32 IsSessionResultHandled(void);
     s32 GetOverlayEventFlags(void);
     s32 FindTextLayer(void);
     void StartWindowClose(void);
@@ -339,7 +359,7 @@ void func_020d93e0(void *entity) {
     void *created;
 
     if (!IsLinkSessionActive()) return;
-    if (func_0208477c()) return;
+    if (IsSessionResultHandled()) return;
     if (!GetOverlayEventFlags()) return;
     M2C_FIELD(entity, u16 *, 0x48) |= 0x1000;
     if (FindTextLayer()) StartWindowClose();
@@ -816,8 +836,8 @@ void func_020d9954(void) {
 }
 
 void func_020d9960(void) {
-    M2C_UNK func_020e0580();
-    func_020e0580();
+    M2C_UNK CreateLinkPlayerMaskListener();
+    CreateLinkPlayerMaskListener();
 }
 
 void func_020d996c(void) {

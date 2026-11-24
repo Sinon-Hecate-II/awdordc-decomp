@@ -108,7 +108,7 @@ if(a!=0){*(volatile u16 *)0x4000004 |= 8;return v;}
 return v;
 }
 
-void func_02002490(void) {
+void GX_TurnOffDisplay(void) {
     extern s16 gGxDisplayConfig;
     extern s16 gGxDisplayStatus;
     s32 temp_ip;
@@ -119,16 +119,18 @@ void func_02002490(void) {
     *(s32 *)0x04000000 = temp_ip & ~0x30000;
 }
 
+/* Turn the main display on: mark it configured, then put the saved display mode
+ * back into DISPCNT, or the normal graphics mode when none was saved. */
 void GX_TurnOnDisplay(void) {
  extern s16 gGxDisplayConfig, gGxDisplayStatus;
  u16 v;
  gGxDisplayConfig = 1;
  v = gGxDisplayStatus;
  if (v != 0) {
-  *(volatile u32 *)0x4000000 = (*(volatile u32 *)0x4000000 & ~0x30000) | ((u32)v << 16);
+  REG_DISPCNT = (REG_DISPCNT & ~DISPCNT_DISPLAY_MODE_MASK) | ((u32)v << DISPCNT_DISPLAY_MODE_SHIFT);
   return;
  }
- *(volatile u32 *)0x4000000 |= 0x10000;
+ REG_DISPCNT |= DISPCNT_DISPLAY_MODE_GRAPHICS;
 }
 
 /* Set the main display's mode: rewrite DISPCNT's video-mode and BG0-enable bits

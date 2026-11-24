@@ -37,7 +37,7 @@ void HttpClientTask(Unk02034164 *client) {
     void CloseRawConnection(void);
     void ClearCurrentRawConnection(void);
     s32 SendNetPacket(s32, s32);
-    void func_0201dc28(void);
+    void FlushPendingSendData(void);
     s32 HttpClientTaskWait(Unk02034164 *);
     u64 GetSystemTick(void);
     s32 GetSocketReceivedDataSize(void);
@@ -106,7 +106,7 @@ void HttpClientTask(Unk02034164 *client) {
         M2C_FIELD(client, s32 *, 0x1020) = 5;
         goto cleanup;
     }
-    func_0201dc28();
+    FlushPendingSendData();
     if (HttpClientTaskWait(client) == 0) {
         M2C_FIELD(client, s32 *, 0x1020) = 7;
         goto cleanup;

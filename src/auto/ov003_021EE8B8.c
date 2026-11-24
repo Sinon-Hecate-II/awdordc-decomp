@@ -24,7 +24,7 @@ static inline int Ov003PlayersReady(void) {
 extern void ***gCur3DSpriteEngine;
 extern u8 data_ov003_0220f89e[],gSpriteDesc64x32[];
 void AddSprite(u16,u16,u16,void *,int);
-void func_02098dc0(s16,int,u16,int);
+void AddFaceSprite(s16,int,u16,int);
 void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
 void func_02087d84(void *,int,s16,s16,u16,u16);
 u32 GetUnitSpriteWidth(void *);u32 GetUnitSpriteHeight(void *);
@@ -394,7 +394,7 @@ void func_ov003_021ef210(void *arg0, u32 arg1, s32 arg2, s32 arg3) {
         temp_r2_2 = (GetWaypointOptionCoId(M2C_FIELD((M2C_FIELD(arg0, void **, 0x6C) + var_r8), u8 *, 0xA)) * 0x10) + 0x1F0;
         temp_r0_2 = temp_r9 - 4;
         sp10 = temp_r0_2;
-        func_02098dc0((s16) temp_r0_2, 0, (u16) ((sp24 & (temp_r2_2 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7400), 0xA);
+        AddFaceSprite((s16) temp_r0_2, 0, (u16) ((sp24 & (temp_r2_2 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7400), 0xA);
         temp_r5 = M2C_FIELD((M2C_FIELD(arg0, s32 *, 0x64) + (var_r8 * 4)), void **, 8);
         temp_r7 = temp_r9 - 1;
         Set3DSpriteSlideTargetAndStart(temp_r5, temp_r7, sp14, temp_r7, sp14);

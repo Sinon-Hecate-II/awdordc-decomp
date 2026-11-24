@@ -106,7 +106,7 @@ void CreateScriptedSpriteFromFile(M2C_UNK file, M2C_UNK slot, M2C_UNK x, M2C_UNK
  * auxiliary sprite list, run its optional dispose callback, then free the
  * animation script (when the object owns it) and the object itself. */
 void *DeleteScriptedSprite(void *sprite) {
-    M2C_UNK func_02090894();
+    M2C_UNK SpritePlayer_FreeList();
     M2C_UNK Sprite_DestroyAuxList();
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK MemFree();
@@ -115,7 +115,7 @@ void *DeleteScriptedSprite(void *sprite) {
 
     M2C_FIELD(sprite, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
     if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_PLAYER_LIST) != 0) {
-        func_02090894();
+        SpritePlayer_FreeList();
     }
     if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_AUX_LIST) != 0) {
         Sprite_DestroyAuxList();
@@ -136,7 +136,7 @@ void *DeleteScriptedSprite(void *sprite) {
    then free the animation script it owns.  The object itself stays allocated
    (DeleteScriptedSprite releases it). */
 void *DestroyScriptedSprite(void *sprite) {
-    M2C_UNK func_02090894();
+    M2C_UNK SpritePlayer_FreeList();
     M2C_UNK Sprite_DestroyAuxList();
     M2C_UNK HeapFreeBlock(s32);
     extern M2C_UNK gScriptedSpriteVtbl;
@@ -144,7 +144,7 @@ void *DestroyScriptedSprite(void *sprite) {
 
     M2C_FIELD(sprite, M2C_UNK **, 0) = &gScriptedSpriteVtbl;
     if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_PLAYER_LIST) != 0) {
-        func_02090894();
+        SpritePlayer_FreeList();
     }
     if (M2C_FIELD(sprite, s32 *, SPRITE_OWNER_AUX_LIST) != 0) {
         Sprite_DestroyAuxList();
@@ -788,7 +788,7 @@ void LoadScenePanelGraphicsOnBothEngines(void) {
 }
 
 #pragma scheduling off
-void func_02091d20(void) {M2C_UNK CopyU16(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK data_020f41e0;extern void *gCur3DSpriteEngine;CopyU16(&data_020f41e0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
+void LoadScenePanelIconTiles(void) {M2C_UNK CopyU16(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK gScenePanelIconTiles;extern void *gCur3DSpriteEngine;CopyU16(&gScenePanelIconTiles,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
 #pragma scheduling reset
 void LoadScenePanelPalette(s32 arg0) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);

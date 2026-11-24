@@ -64,7 +64,16 @@ while(*(u64 *)(p+8)==0){
 }
 return 1;
 }
-s32 CreateWfcProfile(s32 arg0) { Unk046State s; if (BuildWfcProfile(&s)==0) return 0; if(FifoUploadWfcProfile(&s,arg0)!=0) return 1; return 0; }
+/* Build a fresh WFC profile record into a local scratch record and upload it
+ * over the FIFO, using `workBuffer` as the transfer scratch space.
+ * Returns 1 when the upload finished. */
+s32 CreateWfcProfile(s32 workBuffer) {
+    WfcProfileRecord profile;
+
+    if (BuildWfcProfile(&profile) == 0) return 0;
+    if (FifoUploadWfcProfile(&profile, workBuffer) != 0) return 1;
+    return 0;
+}
 
 /* Copy the console's generated profile code into both id fields of the local
  * profile record and upload the record over the FIFO, using `workBuffer` as the

@@ -1,5 +1,6 @@
 /* 38 functions from 0x02175F60 to 0x02176F4C (ov001), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 #include "gx.h"
 #include "ov001_wh.h"
 static inline s32 ov001_event_value(u8 value) { return value; }
@@ -23,7 +24,7 @@ void Ov001_InitProfileScreen(void *arg0) {
     s32 Ov001_GetMessageText(M2C_UNK, u32);
     s32 func_ov001_02175e34(void);
     void func_ov001_02188c78(M2C_UNK, void *);
-    s32 func_ov001_02188ec4(void);
+    s32 Ov001_StartProfileTransfer(void);
     void SystemHalt(void);
     M2C_UNK Ov001_AddTask(M2C_UNK, M2C_UNK *, M2C_UNK, M2C_UNK);
     extern void *data_ov001_02193d50;
@@ -46,7 +47,7 @@ void Ov001_InitProfileScreen(void *arg0) {
     buf.c = Ov001_GetMessageText(gOv001MessageArchive, 1);
     buf.g = (u8)func_ov001_02175e34();
     func_ov001_02188c78((M2C_UNK)data_ov001_02193d50, &buf);
-    if (func_ov001_02188ec4() == 0) SystemHalt();
+    if (Ov001_StartProfileTransfer() == 0) SystemHalt();
     M2C_FIELD(data_ov001_02193d50, M2C_UNK *, 0x1E29C) = Ov001_AddTask(0, (M2C_UNK *)&func_ov001_0217612c, 0, 0x78);
 }
 
@@ -93,14 +94,14 @@ void *func_ov001_02176114(void) {
 #pragma push
 #pragma opt_propagation off
 void func_ov001_0217612c(void *arg0) {
-void Ov001_UpdateProfileSetup(void); s32 func_ov001_021892c4(void*,void*); extern void *data_ov001_02193d50;
+void Ov001_UpdateProfileSetup(void); s32 Ov001_PollProfileState(void*,void*); extern void *data_ov001_02193d50;
 M2C_UNK Ov001_PostTaskMessage(M2C_UNK,M2C_UNK); M2C_UNK Ov001_FreeAlloc(M2C_UNK*);
 void *func_ov001_02189308(void); void CopyU16(const void*,void*,u32);
 u8 sp1,sp0; u8 *main; void (*fp)(s32);
 Ov001_UpdateProfileSetup();
 if(M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a0)!=0 && M2C_FIELD(data_ov001_02193d50,u8*,0x1e2a1)==0){
 fp=(void(*)(s32))M2C_FIELD(data_ov001_02193d50,void**,0x1e298);if(fp)fp(0);return;}
-func_ov001_021892c4(&sp1,&sp0);
+Ov001_PollProfileState(&sp1,&sp0);
 {s32 v=(s32)(u32)sp1;
 if(v>26)goto high26;
 if(v>=26)goto block26;
@@ -284,7 +285,7 @@ void Ov001_ShutdownScreen(void) {
  * resources of both screens, set the background priority and fade in, then
  * advance to the next step. */
 void Ov001_InitScreen(void) {
-    void func_ov001_02184404(void);
+    void Ov001_AllocSaveData(void);
     void Ov001_InitMessageArchiveQueue(void);
     void func_ov001_02171fa0(void);
     void Ov001_InitHighlightBackground(void);
@@ -325,7 +326,7 @@ void Ov001_InitScreen(void) {
     extern M2C_UNK func_ov001_02176808;
 
     /* Bring up the screen's subsystems. */
-    func_ov001_02184404();
+    Ov001_AllocSaveData();
     Ov001_InitMessageArchiveQueue();
     func_ov001_02171fa0();
     Ov001_InitHighlightBackground();
@@ -650,6 +651,9 @@ u8 value=table.values[gOv001WifiMenuSelection];
 Ov001_LoadObjTile(M2C_FIELD(&gOv001WifiMenuSelection,s32 *,4),value,value);
 }
 
+/* Open the ov001 WFC settings screen from the option menu: clear the screen's
+ * reset flag, load its background and object layout, draw its message panel and
+ * the one-shot info box, then hand over to the fade-in step. */
 void Ov001_OpenWfcSettingsScreen(void) {
     M2C_UNK Ov001_ShowMessagePanel(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_ShowMessageBox(M2C_UNK);
@@ -659,9 +663,9 @@ void Ov001_OpenWfcSettingsScreen(void) {
     extern M2C_UNK Ov001_FadeInWfcSettingsScreen;
     gOv001WfcSettingsReset = 0;
     Ov001_LoadWfcSettingsBackground();
-    Ov001_LoadObjLayoutBlock(0x12);
-    Ov001_ShowMessagePanel(0x3B, -1, 0);
-    Ov001_ShowMessageBox(0x17);
+    Ov001_LoadObjLayoutBlock(OV001_WFC_SETTINGS_LAYOUT);
+    Ov001_ShowMessagePanel(OV001_MSG_WFC_SETTINGS, -1, 0);
+    Ov001_ShowMessageBox(OV001_MSG_WFC_SETTINGS_INFO);
     Ov001_SetStepCallback(&Ov001_FadeInWfcSettingsScreen);
 }
 

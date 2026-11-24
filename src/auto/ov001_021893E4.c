@@ -16,6 +16,7 @@
 #define PROFILE_LINKED     0xA93 /* u8: the download-play link is connected */
 #define PROFILE_LOCAL_BYTE 0xA92 /* u8: id this console advertises in the data-sharing connect entry */
 #define PROFILE_SEND_ENTRY 0xAB0 /* void *: the outgoing data-sharing entry being built */
+#define PROFILE_BUFFER_SIZE 0x100 /* bytes of each of the state's two cleared buffers (the outgoing entry and the entry area) */
 #define PROFILE_LINK_TICKS 0xA94 /* s32: link ticks, a list move every other one */
 #define PROFILE_CURSOR_MARK 0x202 /* u16 cursor id pushed to the connected players */
 #define PROFILE_ROW_COUNT  0x24   /* rows in a profile list round */
@@ -41,7 +42,7 @@ typedef struct Ov001SpritePool { u8 slots[0x200]; Ov001SpriteBlock head; Ov001Sp
 void Ov001_UpdateLinkState(void) {
     s32 Ov001_GetLinkStatus(void);
     s32 Ov001_GetLinkInfo(s32);
-    void func_ov001_02186fa0(M2C_UNK, M2C_UNK);
+    void Ov001_StartMultibootProgramTransfer(M2C_UNK, M2C_UNK);
     s32 Ov001_AreJoinedPlayersReady(void);
     void func_ov001_02187454(void);
     void func_ov001_0218754c(void);
@@ -53,7 +54,7 @@ void Ov001_UpdateLinkState(void) {
     switch (status) {
     case 1: {
         void *state = gOv001ProfileState;
-        func_ov001_02186fa0((u8 *)state + PROFILE_FILE,
+        Ov001_StartMultibootProgramTransfer((u8 *)state + PROFILE_FILE,
             M2C_FIELD(state, u16 *, PROFILE_MAP_H));
         return;
     }
@@ -120,11 +121,11 @@ void Ov001_UpdateLinkState(void) {
 }
 
 void func_ov001_0218959c(void) {
-    M2C_UNK func_ov001_02189828(void);
+    M2C_UNK Ov001_InitProfileSharing(void);
     void func_ov001_02188a20(s32);
     extern s32 func_ov001_021897ec(s32);
     extern void *gOv001ProfileState;
-    func_ov001_02189828();
+    Ov001_InitProfileSharing();
     func_ov001_02188a20((s32) &func_ov001_021897ec);
     M2C_FIELD(gOv001ProfileState, u8 *, 0xA90) = 8;
 }
@@ -220,13 +221,15 @@ s32 func_ov001_021897ec(s32 arg0) {
     return 1;
 }
 
-M2C_UNK func_ov001_02189828(void) {
- extern void *gOv001ProfileState; void MI_CpuFill8(void*,s32,s32); void *p;
- MI_CpuFill8((u8*)gOv001ProfileState+0x100,0,0x100);
- MI_CpuFill8(gOv001ProfileState,0,0x100);
- p=gOv001ProfileState;
- M2C_FIELD(p,void**,0xAB0)=p;
- return (s32)p;
+/* Reset the profile-sharing state: clear the outgoing entry and the received-entry
+ * area, then point the outgoing entry at the state's own first buffer. */
+M2C_UNK Ov001_InitProfileSharing(void) {
+ extern void *gOv001ProfileState; void MI_CpuFill8(void*,s32,s32); void *state;
+ MI_CpuFill8((u8*)gOv001ProfileState+PROFILE_ENTRY_BASE,0,PROFILE_BUFFER_SIZE);
+ MI_CpuFill8(gOv001ProfileState,0,PROFILE_BUFFER_SIZE);
+ state=gOv001ProfileState;
+ M2C_FIELD(state,void**,PROFILE_SEND_ENTRY)=state;
+ return (s32)state;
 }
 
 /* One step of the download-play profile data sharing: while the link is up send
@@ -530,7 +533,7 @@ void Ov001_InitSpritePools(void) {
 }
 
 #pragma opt_propagation off
-void func_ov001_0218a01c(void) { void func_ov001_0218a6d8(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));func_ov001_0218a6d8(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
+void func_ov001_0218a01c(void) { void Ov001_FreeBlock(s32); void Ov001_FreeAlloc(void *); void func_ov001_0218bf30(s32); extern s32 gOv001SpritePools; s32 i,offset; i=0;offset=0;do{func_ov001_0218bf30(M2C_FIELD(gOv001SpritePools+offset,s32*,0x220));Ov001_FreeBlock(M2C_FIELD(gOv001SpritePools+offset,s32*,0x224));i++;offset+=0x228;}while(i<2);Ov001_FreeAlloc(&gOv001SpritePools); }
 #pragma opt_propagation reset
 /* Give a free sprite object of pool `pool` the first run of `size` 8-byte entry
  * slots that fits in its arena, searching from the low addresses when `fromHead`

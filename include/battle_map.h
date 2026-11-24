@@ -273,6 +273,7 @@ enum { WEATHER_CLEAR = 0, WEATHER_RAIN = 1, WEATHER_SNOW = 2, WEATHER_SANDSTORM 
 #define MAP_TERRAIN_SILO       0x18 /* missile silo: a unit that can reach it may launch a missile; not capturable */
 #define MAP_TERRAIN_SILO_EMPTY 0x19 /* fired missile silo: the empty shell the cell shows afterwards */
 #define MAP_TERRAIN_IMPACT     0x1c /* destructible impact feature; its cell becomes a crater */
+#define MAP_TERRAIN_FEATURE    0x1d /* feature tile: a cell of this kind anchors a destructible map feature and is highlighted inside an order effect area */
 
 /* Columns of the per-owner terrain count table used by the property icon grid. */
 enum {
@@ -440,7 +441,7 @@ typedef struct MapOrder {
 #define MAP_OPTION_SELECTED    0x6E /* s16 chosen option, MAP_CURSOR_OPTION_* */
 #define MAP_OPTION_CARGO_SLOT  0x70 /* s16 carried-unit slot a cargo drop acts on (0 = first, 1 = next) */
 
-/* The map's property-cell list, rebuilt by func_020cf2c8: one 6-byte record per
+/* The map's property-cell list, rebuilt by RebuildMapPropertyCells: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
 #define MAP_PROPERTY_CELLS  0x6c60 /* first record */
 #define MAP_PROPERTY_STRIDE 6      /* bytes per record */
@@ -448,6 +449,7 @@ typedef struct MapOrder {
 #define MAP_PROPERTY_X      0x01   /* u8 tile x */
 #define MAP_PROPERTY_Y      0x02   /* u8 tile y */
 #define MAP_PROPERTY_COUNT  0x03   /* u8 times the cell was used */
+#define MAP_PROPERTY_MAX    0x63   /* property records the table can hold; the AI turn resets all of them */
 #define MAP_PROPERTY_END    0xff   /* terrain kind that ends the list */
 
 /* One player's slot in a map-settings record: the CO, army and team that player
@@ -485,6 +487,7 @@ typedef struct MapSettingsPlayer {
 #define MAPCONFIG_MODE_TEAM 0    /* battle mode of the story/team battles, whose maps restrict what may be built */
 #define MAPCONFIG_PROPERTY_LIMIT 0x02 /* u8 properties a player must own to win; 0 disables the rule */
 #define MAPCONFIG_CO_POWER  0x1000 /* bit 12 of MAPCONFIG_FLAGS: CO powers are enabled */
+#define MAPCONFIG_ARMY_MODE 0x2000 /* bit 13 of MAPCONFIG_FLAGS: army mode — the map uses per-army movement costs and the CO-zone bonus tables */
 #define MAPCONFIG_UNBUILDABLE_KINDS 0x0C /* u32 per unit kind: a set bit means the map forbids building that kind (a map script sets and clears the bits) */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
@@ -517,7 +520,9 @@ typedef struct MapSettings {
 #define MAP_UNIT_AMMO       0x06 /* u16: ammo in bits 7..10 (health in bits 0..6) */
 #define MAP_UNIT_AMMO_SHIFT 7    /* first bit of the ammo field in MAP_UNIT_AMMO */
 #define MAP_UNIT_AMMO_MASK  0x780 /* the four ammo bits in MAP_UNIT_AMMO */
-#define MAP_UNIT_CAPTURE    0x06 /* u16: capture points in bits 11..15, 0 when the unit is not capturing (20 finishes it) */
+ #define MAP_UNIT_CAPTURE    0x06 /* u16: capture points in bits 11..15, 0 when the unit is not capturing (20 finishes it) */
+ #define MAP_UNIT_CAPTURE_SHIFT 11   /* first bit of the capture-points field in MAP_UNIT_CAPTURE */
+ #define MAP_UNIT_CAPTURE_MASK  0xf800 /* the five capture-point bits in MAP_UNIT_CAPTURE */
 #define MAP_UNIT_FUEL       0x0A /* u8 fuel in the low seven bits */
 #define MAP_UNIT_MOVE_PLANNED 0x80 /* bit 7 of the fuel byte: the AI has planned a move for the unit (SetMapCursor sets it) */
 #define MAP_UNIT_CAPTURE_COMPLETE 20 /* capture points at which a property is captured */
@@ -594,6 +599,14 @@ typedef struct MapTargetEntry {
     s16 y;     /* +0x06 tile y */
 } MapTargetEntry;
 
+/* The target list's own record (gTargetList): the array above and how many of its
+ * entries are in use. */
+typedef struct MapTargetList {
+    void *scratch;           /* +0x00 scratch buffer pointer */
+    MapTargetEntry *entries; /* +0x04 the MapTargetEntry array */
+    s32 count;               /* +0x08 number of entries in use */
+} MapTargetList;
+
 /* Per-unit flag bits in MAP_UNIT_FLAGS. */
 #define UNIT_FLAG_ACTED      0x0001 /* the unit has acted this turn (HasUnitActed) */
 #define UNIT_FLAG_CARRIED    0x0002 /* the unit is carried in a transport: it stands on no map cell */
@@ -641,6 +654,7 @@ typedef struct MapTargetEntry {
 #define MAP_CORNER_COLOR_RESERVED 7  /* corner code the overlay pass skips */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
+#define MAP_MODE_TARGET_CURSOR 5   /* MAP_MODE value of the map-target handler (UpdateMapTargetCursor): the action menu is open at the cursor tile */
 #define MAP_MODE_CURSOR_SETTLE 10  /* MAP_MODE value of the cursor-settling handler (UpdateMapMode case 10): the cursor tracks its target, unit status icons stay hidden (RenderUnitAt mode 1) and the handler falls back to MAP_MODE_CURSOR once the cursor is idle. The map editor leaves it set on its terrain page. */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
 #define MAP_RETURN_STATE    0x52b2 /* u16 state to go back to after a temporary submode (0 = none) */
@@ -786,6 +800,7 @@ enum {
  * GetCoPowerMeterPoints reads it and SetCoPowerMeterPoints writes it; charging it adds
  * points clamped to the player's dual-power cost. */
 #define PLAYER_CO_METER_SHIFT 21 /* bits 21..31 of PLAYER_REC_SPRITE: CO power meter points */
+#define PLAYER_CO_METER_MASK  0x1FFFFF /* the low 21 bits of PLAYER_REC_SPRITE, kept when the meter is rewritten */
 /* Power selector for GetCoPowerMeterCost: which of a commander's powers' star cost to read. */
 #define CO_POWER_LEVEL_NONE 0
 #define CO_POWER_LEVEL_CO   1
@@ -811,10 +826,13 @@ enum {
 #define PLAYER_DEFEAT_LOST       2    /* the player's lost flag is set (rule flag 2) */
 #define PLAYER_REC_CTRL    0x1E /* u8 PLAYER_CONTROL_*, within a record */
 #define PLAYER_REC_ENEMY_UNITS 0x22 /* u16 running total of the opposing team's units */
-#define PLAYER_REC_DEFENSE_BONUS 0x24 /* s8 flat terrain-defense points this player's units add; reset each turn (func_020a23c4) */
+#define PLAYER_REC_DEFENSE_BONUS 0x24 /* s8 flat terrain-defense points this player's units add; reset each turn (ResetPlayerTurnBonuses) */
 #define PLAYER_DEFENSE_BONUS_OFF (MAP_PLAYER_STATES + PLAYER_REC_DEFENSE_BONUS) /* s8 */
 #define PLAYER_REC_UNIT_COUNT  0x31 /* u8 units the player has alive */
 #define PLAYER_REC_UNIT_OWNER  0x32 /* u8 low two bits: owner group stamped into MAP_UNIT_KIND of the units the player creates (allies share one) */
+#define PLAYER_REC_UNIT_KIND_COUNT 27 /* entries in a player's per-kind unit tallies: one per unit kind (the kind byte's low six bits) */
+#define PLAYER_REC_UNITS_BUILT 0x33 /* u8[PLAYER_REC_UNIT_KIND_COUNT] per unit kind: units the player has built so far (AddPlayerUnitKind) */
+#define PLAYER_REC_UNITS_LOST  0x4E /* u8[PLAYER_REC_UNIT_KIND_COUNT] per unit kind: the player's units that have been destroyed (bumped when one dies) */
 #define PLAYER_REC_SIDE    0x1F /* u8 SIDE_*, within a record */
 #define PLAYER_REC_CROSS_ALL 0x1F /* u8 bits: terrain the player's units may enter regardless of movement type */
 #define PLAYER_REC_ARMY    0x26 /* u8 army (nation) id, within a record */
@@ -856,6 +874,7 @@ enum {
 /* The per-army (CO) data table at gMovementCostTable, one 0x9c-byte block per
  * army id: +0x00 is the s32 localized name text id, +0x64 the s8 * movement
  * cost table for the army's current weather and variant. */
+#define ARMY_DATA_UNLOCK_MAP 0x24 /* u16 map id whose completion unlocks this CO (0 for the initial COs) */
 #define ARMY_DATA_SIZE 0x9c
 #define ARMY_DATA_NAME 0x00
 #define ARMY_DATA_MOVE_COSTS 0x64 /* s8 **[variant][row]: per-terrain cost rows, 32 bytes per movement type */
@@ -902,6 +921,10 @@ enum {
                                       * weather (MAP_WEATHER) and tileset (MAP_TILESET) to the view */
 #define MAPVIEW_INIT_PRESENTATION 0x40 /* void (*)(void): prepare the map view before creating its sprites */
 #define MAPVIEW_FRAME_CB        0x30 /* void (*)(void): run once per frame by the battle-map state dispatcher */
+#define MAPVIEW_SETUP_CB        0x4c /* void (*)(void): set up the view's own data once a battle map has been loaded */
+#define MAPVIEW_EMPTY_TILE_CB   0x44 /* void (*)(void): run when the cursor is aimed at an empty tile (no unit there);
+                                      * StartEmptyTileSettle calls it before entering the settling mode */
+#define MAPVIEW_RESTORE_CB      0x50 /* void (*)(void): reset the view's state before its presentation is rebuilt (save resume and view restore) */
 #define MAPVIEW_CONTROLLER_INDEX 1   /* index into gCurrentMap */
 #define MAP_CURSOR_KIND_TARGET 2 /* cursor selector the target-cursor updater (main_020CBACC) passes */
 
@@ -1005,6 +1028,7 @@ enum {
 #define MAPDATA_HEIGHT  0x01 /* u8 map height in cells */
 #define MAPDATA_TILES   0x02 /* u16 per cell: tile id into MAP_TILE_TERRAIN */
 #define MAPDATA_LINK_BATTLE 0x04 /* u8 nonzero when the battle runs over a link/online session (its overlay is polled) */
+#define MAPDATA_MATCH_RESULT 0x07 /* u8 online matchmaking outcome written by the overlay poll: 1 = opponent found, 0 = failed */
 #define MAPDATA_TURN_TIMER 0x08 /* u32 nonzero while the battle's per-frame time accumulation runs (EnableBattleTurnTimer) */
 #define MAPDATA_RULES   0x0C /* u16 packed battle rule flags; bit 12 (0x1000) is CO powers enabled, cleared when the map forbids them, bit 13 (0x2000) selects army-specific movement costs instead of army 0's */
 #define MAPDATA_DAY_LIMIT 0x0F /* u8 day limit: when a new day starts on this day (MAP_TURN) the battle ends, 0 = unlimited */
@@ -1014,6 +1038,7 @@ enum {
  * progress table; the trial maps follow up to 0xE0. */
 #define MAP_ID_STORY_FIRST 0xA1
 #define MAP_ID_STORY_END   0xBB /* one past the last story mission */
+#define MAP_ID_STORY_FINAL 0xBA /* the last story mission: the campaign's final battle */
 
 /* Map ids in this range are campaign maps with a full 0x6f8-byte record. */
 #define MAP_ID_CAMPAIGN_FIRST 0xE1
@@ -1074,7 +1099,12 @@ typedef struct MapRecordStamp {
  * one compiled condition list per map event, each a pointer to 8-byte commands that
  * end with opcode 0x22.  The EvalScriptConditions wrappers in ov000_02169F94 run
  * one list per event. */
+#define MAP_EVENT_TURN_START    0x08 /* run at the start of a player's turn (MAP_STATE_TURN_START_SETUP) */
 #define MAP_EVENT_UNIT_SELECTED 0x10 /* run with the unit a player just selected */
+#define MAP_EVENT_BATTLE        0x14 /* run when a battle starts, with its attacker and defender (the MAP_BATTLE_* records) */
+#define MAP_EVENT_CURSOR_UNIT   0x18 /* run with the unit under the battle cursor once its path is refreshed */
+#define MAP_EVENT_UNIT          0x1C /* run for a unit lifecycle event: the first value is the event code (14 = unit built, 0x31 = unit destroyed, or a carried unit kind), the unit is the second */
+#define MAP_EVENT_CURSOR_IDLE   0x30 /* run while the battle cursor rests (UpdateMapCursor, main_020D4430) */
 
 /* A map-selection list: five runtime map records held one after another. */
 #define MAP_RECORD_LIST_COUNT 5
@@ -1120,5 +1150,16 @@ enum {
     MAP_CELL_PART_DOWN_LEFT,
     MAP_CELL_PART_DOWN_RIGHT
 };
+
+/* The campaign map load queue (class gCampaignMapLoadQueueClass): a sprite the
+ * campaign map screens create to have saved map records expanded into the
+ * campaign map headers one per frame. Entries are appended by
+ * AppendCampaignMapLoadEntry and consumed in order by LoadNextCampaignMapRecord
+ * (the class's vtable step). */
+#define CAMPAIGN_LOAD_QUEUE_COUNT   0x34 /* u8 entries queued */
+#define CAMPAIGN_LOAD_QUEUE_INDEX   0x35 /* u8 entry being expanded */
+#define CAMPAIGN_LOAD_QUEUE_IDS     0x36 /* u16[CAMPAIGN_LOAD_QUEUE_MAX] queued map ids */
+#define CAMPAIGN_LOAD_QUEUE_RECORDS 0x4C /* MapRecordHeader *[CAMPAIGN_LOAD_QUEUE_MAX] queued records */
+#define CAMPAIGN_LOAD_QUEUE_MAX     11   /* entries the queue holds (0x4C - 0x36 halves) */
 
 #endif

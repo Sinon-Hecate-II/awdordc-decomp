@@ -7,11 +7,11 @@ void func_ov006_022144ac(void *arg0) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;
 extern u8 gMapCodeString[],data_ov006_022183cc[],data_ov006_022183ce[],data_ov006_02218728[],data_ov006_02218730[],data_ov006_02218740[],data_ov006_02218750[],data_ov006_02218764[];
 u64 func_020c54ac(void *);void func_020c5618(s32,u32,u32);
-void func_02019e64(void *,s32,void *,s32,s32);void func_020c536c(s32,void *);
+void func_02019e64(void *,s32,void *,s32,s32);void SetBattleSlotRecord(s32,void *);
 void Configure3DSpriteLayer(s32,void *);void Clear3DSpriteLayer(s32);void SetFileDirectory(void *);void *GetLocalizedFileName(void *);
 void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,s32);void CloseNarcArchive(void);
-void func_02081340(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
-s32 LoadSpriteResource(s32,s32,s32,s32);void func_01ff9dd8(s32);void LoadScenePanelPalette(s32);
+void LoadFileSectionToSpriteBuffer(void *,s32,s32,s32);void SetTileRectPalette(s32,s32,s32,s32);
+s32 LoadSpriteResource(s32,s32,s32,s32);void Clear3DSpriteLayerVram(s32);void LoadScenePanelPalette(s32);
 s32 GetUiColor(s32);void Load3DSpritePattern(s32,s32,s32,s32);void func_01ffa920(void *,void *);void Show3DSprite(void *);void Show3DSpriteSlide(void *);
 u32 func_020c5464(s16);
 void func_ov006_02215010(void);
@@ -22,7 +22,7 @@ code=func_020c54ac(gMapCodeString);
 id=M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s16 *,8);
 func_020c5618(id,(u32)code,(u32)(code>>32));
 func_02019e64(text,0,gMapCodeString,0,0);
-func_020c536c(id,text);M2C_FIELD(arg0,u8 *,0x34)=1;
+SetBattleSlotRecord(id,text);M2C_FIELD(arg0,u8 *,0x34)=1;
 }
 savedEngine=gCur3DSpriteEngine;gCur3DSpriteEngine=g3DSpriteEngineMain;
 Configure3DSpriteLayer(0,data_ov006_022183cc);Configure3DSpriteLayer(1,data_ov006_022183ce);
@@ -39,7 +39,7 @@ Clear3DSpriteLayer(0);SetFileDirectory(data_ov006_02218728);
 OpenNarcArchive(GetLocalizedFileName(data_ov006_02218730));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218740),M2C_FIELD(gCur3DSpriteEngine,s32 *,0xc));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_02218750),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20));
-CloseNarcArchive();func_02081340(data_ov006_02218764,160,0,32);
+CloseNarcArchive();LoadFileSectionToSpriteBuffer(data_ov006_02218764,160,0,32);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x20),32,24,5);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
 Clear3DSpriteLayer(3);
@@ -47,7 +47,7 @@ tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x18);LoadSpriteResource(3,0,0,tile);
 tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+0xe0;LoadSpriteResource(3,2,0,tile);
 SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x2c),32,24,7);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=8;
-Clear3DSpriteLayer(1);func_01ff9dd8(1);
+Clear3DSpriteLayer(1);Clear3DSpriteLayerVram(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=2|M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46);
 LoadScenePanelPalette(6);
 tile=M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x34c0;LoadSpriteResource(1,0,1,tile);
@@ -123,8 +123,8 @@ void func_ov006_02215038(void) {
 }
 
 void func_ov006_02215044(void) {
-    M2C_UNK func_020c4dd0();
-    func_020c4dd0();
+    M2C_UNK CreateLocalBattleSaveSprite();
+    CreateLocalBattleSaveSprite();
 }
 
 void func_ov006_02215050(void) {
@@ -177,7 +177,7 @@ void func_ov006_022150f8(void) {
 
 void func_ov006_02215104(s32 spriteId) {
 void Clear3DSpriteLayer(s32);
-void func_01ff9dd8(s32);
+void Clear3DSpriteLayerVram(s32);
 void *CreateTextLayer(s32);
 void RenderTextLayerMessage(void *,s32,s32,s32);
 void LoadScenePanelPalette(s32);
@@ -195,7 +195,7 @@ p5=(u16 *)((u8 *)*(void **)gCur3DSpriteEngine+0x12); *p5=*p5&~0xc0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
-Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);func_01ff9dd8(0);func_01ff9dd8(1);
+Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);Clear3DSpriteLayerVram(0);Clear3DSpriteLayerVram(1);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|1;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|2;
 sprite=CreateTextLayer(spriteId);RenderTextLayerMessage(sprite,2,0x4640,0x42000001);M2C_FIELD(sprite,u32 *,0x58)|=0x1000;
@@ -209,8 +209,8 @@ p11=(u16 *)((u8 *)*(void **)gCur3DSpriteEngine+0x12); *p11=*p11&~0xc0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x51)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x52)=0;
 M2C_FIELD(*(void **)gCur3DSpriteEngine,u8 *,0x53)=0;
-Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);func_01ff9dd8(0);func_01ff9dd8(1);
-Clear3DSpriteLayer(0);func_01ff9dd8(0);LoadScenePanelPalette(7);
+Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);Clear3DSpriteLayerVram(0);Clear3DSpriteLayerVram(1);
+Clear3DSpriteLayer(0);Clear3DSpriteLayerVram(0);LoadScenePanelPalette(7);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|1;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|1;
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)=M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|2;

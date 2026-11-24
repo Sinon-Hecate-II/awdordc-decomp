@@ -178,23 +178,29 @@ s32 GetRecordProfileId(s32 arg0) {
  return GetPlayerRecordId((u8 *)GetProfileSaveBlock()+4,arg0);
 }
 
-s32 func_020c4798(void) {
- M2C_UNK *GetBattleSaveBlock(void);
- s32 IsPlayerRecordPresent(s32);
- s32 temp_r0;
- s32 var_r4;
- s32 var_r5;
- s32 var_r6;
- var_r4=-1;
- temp_r0=(s32)GetBattleSaveBlock();
- if(temp_r0==0)return var_r4;
- var_r6=temp_r0+4;
- var_r5=0;
- do {
- if(IsPlayerRecordPresent(var_r6)==0){var_r4=var_r5;break;}
- var_r5+=1;var_r6+=12;
- }while(var_r5<60);
- return var_r4;
+/* Return the index of the first battle-save slot whose summary names no player,
+ * or -1 when there is no battle save block or every slot is taken. */
+s32 FindFreeBattleSaveSlot(void) {
+    M2C_UNK *GetBattleSaveBlock(void);
+    s32 IsPlayerRecordPresent(s32);
+    s32 block;
+    s32 result = -1;
+    s32 slot;
+    s32 record;
+
+    block = (s32)GetBattleSaveBlock();
+    if (block == 0) return result;
+    record = block + SAVE_SUMMARIES_OFFSET;
+    slot = 0;
+    do {
+        if (IsPlayerRecordPresent(record) == 0) {
+            result = slot;
+            break;
+        }
+        slot++;
+        record += SAVE_SLOT_SUMMARY_SIZE;
+    } while (slot < SAVE_SLOT_COUNT);
+    return result;
 }
 
 /* Fill `dateTime` with the current server clock as a 4-word date followed by a
@@ -239,17 +245,20 @@ void func_020c48ec(void *arg0) {
     CreateBattleLoadSprite(M2C_FIELD(arg0, s32 *, 0x38), arg0);
 }
 
-void func_020c4910(void) {
- void *CreateSpriteFromClass(M2C_UNK *,s32);
- extern M2C_UNK data_0212a5cc;
- extern M2C_UNK data_0212a514;
- extern M2C_UNK data_02164098;
- extern M2C_UNK data_02164128;
- void *p=CreateSpriteFromClass(&data_0212a5cc,7);
- if(p==0)return;
- M2C_FIELD(p,M2C_UNK **,0)=&data_0212a514;
- M2C_FIELD(p,M2C_UNK **,0x34)=&data_02164098;
- M2C_FIELD(p,M2C_UNK **,0x38)=&data_02164128;
+/* Create the save/load screen object: give it its vtable and point it at the
+ * local profile and battle save blocks that its save and load callbacks show. */
+void CreateSaveLoadScreen(void) {
+    void *CreateSpriteFromClass(M2C_UNK *, s32);
+    extern M2C_UNK gSaveLoadScreenClass;
+    extern M2C_UNK gSaveLoadScreenVtbl;
+    extern M2C_UNK gProfileSaveBlock;
+    extern M2C_UNK gBattleSaveBlock;
+    void *screen = CreateSpriteFromClass(&gSaveLoadScreenClass, 7);
+
+    if (screen == 0) return;
+    M2C_FIELD(screen, M2C_UNK **, 0) = &gSaveLoadScreenVtbl;
+    M2C_FIELD(screen, M2C_UNK **, 0x34) = &gProfileSaveBlock;
+    M2C_FIELD(screen, M2C_UNK **, 0x38) = &gBattleSaveBlock;
 }
 
 /* Initialise the local player's profile save block: the save magic, a cleared
@@ -320,8 +329,8 @@ s32 ResetProfileIdBlock(void *profileBlock) {
 }
 
 M2C_UNK *GetProfileSaveBlock(void) {
-    extern M2C_UNK data_02164098;
-    return &data_02164098;
+    extern M2C_UNK gProfileSaveBlock;
+    return &gProfileSaveBlock;
 }
 
 s32 InitBattleSaveRecords(s32 *saveBlock) {
@@ -353,19 +362,19 @@ s32 InitBattleSaveRecords(s32 *saveBlock) {
 }
 
 M2C_UNK *GetBattleSaveBlock(void) {
-    extern M2C_UNK data_02164128;
-    return &data_02164128;
+    extern M2C_UNK gBattleSaveBlock;
+    return &gBattleSaveBlock;
 }
 
 s32 func_020c4b6c(s32 arg0) {
-    M2C_UNK func_020323b0(s32);
+    M2C_UNK VerifyProfileIdBlockCrc(s32);
     s32 var_r0;
 
     var_r0 = arg0;
     if (var_r0 == 0) {
         var_r0 = GetProfileSaveBlock();
     }
-    func_020323b0(var_r0 + 4);
+    VerifyProfileIdBlockCrc(var_r0 + 4);
 }
 
 void func_020c4b88(s32 arg0) {
@@ -390,7 +399,7 @@ void func_020c4ba4(s32 arg0) {
     func_020323f4(var_r0 + 4);
 }
 
-void func_020c4bc0(s32 arg0) {
+void IsProfileKeySet(s32 arg0) {
     M2C_UNK func_020324e4(s32);
     s32 var_r0;
 
@@ -469,7 +478,7 @@ M2C_UNK CreateProfileSaveSprite(s32 saveBlock, s32 owner) {
     }
 }
 
-void func_020c4cdc(M2C_UNK arg0) {
+void CreateLocalProfileSaveSprite(M2C_UNK arg0) {
     M2C_UNK CreateProfileSaveSprite(M2C_UNK, M2C_UNK);
     CreateProfileSaveSprite(0, arg0);
 }

@@ -289,7 +289,7 @@ return result;
 s32 func_ov000_021a7348(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(s32,s32);
-    s32 func_ov000_021a911c(s16);
+    s32 IsCellOwnedByUnitPlayer(s16);
     extern s32 *gCurrentMap;
     extern void *gAiCommandState;
     extern u16 gPlayerUnitIdBase[];
@@ -382,7 +382,7 @@ s32 func_ov000_021a7348(void) {
                 map = (u8 *)*gCurrentMap;
                 row = *(u16 *)(map + y * 2 + 0x3758);
                 terrain = *(u8 *)(map + x + row + 0x1000 + 0x420) & 0x1f;
-                if (terrain == 0x12 && func_ov000_021a911c(idx) == 1) continue;
+                if (terrain == 0x12 && IsCellOwnedByUnitPlayer(idx) == 1) continue;
                 {
                     map=(u8 *)*gCurrentMap;
                     x=unit[1]; y=unit[2];

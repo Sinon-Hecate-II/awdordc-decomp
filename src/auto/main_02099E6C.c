@@ -26,7 +26,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK func_02094c68(s32, M2C_UNK);
     M2C_UNK func_02094c90(s32, void *);
     M2C_UNK func_02094d8c();
-    M2C_UNK func_02094dac();
+    M2C_UNK ClearScenePanelHighlight();
     M2C_UNK func_02094df0(M2C_UNK, s32, s32);
     M2C_UNK RecordsMenu_PlayTrack(s32);
     M2C_UNK func_020952c8(s32);
@@ -377,7 +377,7 @@ loop_1:
         }
         return 2;
     case 18:
-        func_02094dac();
+        ClearScenePanelHighlight();
         func_0209c428(arg0);
         goto return_two;
     case 19:

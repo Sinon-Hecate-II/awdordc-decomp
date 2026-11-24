@@ -293,7 +293,23 @@ void func_0201a4f8(s32 arg0) {
     M2C_FIELD(&gNetStack, s32 *, 0x3C) = arg0;
 }
 
-void func_0201a508(void){void *IsNetworkTaskFinished(void);void OS_JoinThread(void *);void TerminateThread(void *);void func_0201a134(s32);extern M2C_UNK gNetworkTask,gNetReceiveThread,gNetStack;IsNetworkTaskFinished();OS_JoinThread(&gNetworkTask);TerminateThread(&gNetReceiveThread);M2C_FIELD(&gNetStack,s32 *,84)=0;func_0201a134(0);M2C_FIELD(&gNetStack,s32 *,88)=0;M2C_FIELD(&gNetStack,s32 *,92)=0;}
+/* Stops the network workers: waits for the network task to finish and joins its
+ * thread, terminates the receive thread, then clears the packet ring's reader
+ * thread, buffer pointer and size so the stack is back to a stopped state. */
+void NetworkStopWorkers(void){
+void *IsNetworkTaskFinished(void);
+void OS_JoinThread(void *);
+void TerminateThread(void *);
+void func_0201a134(s32);
+extern M2C_UNK gNetworkTask,gNetReceiveThread,gNetStack;
+IsNetworkTaskFinished();
+OS_JoinThread(&gNetworkTask);
+TerminateThread(&gNetReceiveThread);
+M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_WAITER)=0;
+func_0201a134(0);
+M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_BUF)=0;
+M2C_FIELD(&gNetStack,s32 *,NETSTACK_RING_SIZE)=0;
+}
 
 void func_0201a550(s32 arg0) {
     M2C_UNK SetThreadPriority(M2C_UNK *, s32);
@@ -483,19 +499,22 @@ u8 *NetStackPeekFrame(s32 *out){
 }
 
 #pragma opt_strength_reduction off
+/* Release the record at the network stack ring's read position: advance the read
+ * offset by the record's leading u16 length and wrap it to the start once it
+ * reaches the end of the ring, with interrupts disabled against the producer. */
 void NetStackConsumeFrame(void){
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     extern M2C_UNK gNetStack;
-    s32 key;
-    u32 old;
-    u8 *buf;
-    key = OS_DisableInterrupts();
-    old = M2C_FIELD(&gNetStack, volatile u32 *, 0x30);
-    buf = (u8 *)M2C_FIELD(&gNetStack, u8 **, 0x58);
-    M2C_FIELD(&gNetStack, volatile u32 *, 0x30) = old + M2C_FIELD(buf, u16 *, M2C_FIELD(&gNetStack, volatile u32 *, 0x30));
-    if (M2C_FIELD(&gNetStack, volatile u32 *, 0x30) >= M2C_FIELD(&gNetStack, u32 *, 0x5c)) M2C_FIELD(&gNetStack, volatile u32 *, 0x30) = 0;
-    OS_RestoreInterrupts(key);
+    s32 interruptState;
+    u32 readPos;
+    u8 *ring;
+    interruptState = OS_DisableInterrupts();
+    readPos = M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ);
+    ring = (u8 *)M2C_FIELD(&gNetStack, u8 **, NETSTACK_RING_BUF);
+    M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) = readPos + M2C_FIELD(ring, u16 *, M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ));
+    if (M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) >= M2C_FIELD(&gNetStack, u32 *, NETSTACK_RING_SIZE)) M2C_FIELD(&gNetStack, volatile u32 *, NETSTACK_RING_READ) = 0;
+    OS_RestoreInterrupts(interruptState);
 }
 #pragma opt_strength_reduction reset
 /* Find the MAC address to send a frame to IPv4 address `ip`: our own for the

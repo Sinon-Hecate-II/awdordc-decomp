@@ -23,17 +23,19 @@ void CreateAttackTargetEffect(s16 targetX, s16 targetY, s32 sourceX, s32 sourceY
     M2C_FIELD(effect, s16 *, 0x52) = 0x1E;
 }
 
-void func_020bbc2c(M2C_UNK arg0) {
+/* Create the player unit view portrait for `player` and refresh the map view;
+ * a human current player also counts one toward record 6. */
+void ShowPlayerUnitView(M2C_UNK player) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK func_020a348c(M2C_UNK);
     M2C_UNK RefreshMapView();
     s32 IsPlayerHuman(u16);
     extern s32 *gCurrentMap;
 
-    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4)) != 0) {
+    if (IsPlayerHuman(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER)) != 0) {
         AddRecordValue(6, 1);
     }
-    func_020a348c(arg0);
+    func_020a348c(player);
     RefreshMapView();
 }
 
@@ -190,7 +192,7 @@ void func_020bc0e0(void) {
     s32 func_020cd5d8(void);
     void CreateBattleEffect(s32, s32, s32, s32, u8, u8);
     void func_020c32b0(s32, s32);
-    void func_020cf2c8(void);
+    void RebuildMapPropertyCells(void);
     void CompletePropertyCapture(s32, s32);
 #define CURSOR_UNIT(map) M2C_FIELD((map), u8 **, MAP_CURSOR_UNIT)
 #define CURSOR_X(map) M2C_FIELD((map), s16 *, MAP_CURSOR_X)
@@ -268,7 +270,7 @@ updateCapture:
         map = (u8 *)*gCurrentMap;
         M2C_FIELD(map + CURSOR_INDEX(map)*2, u16 *, MAP_CELL_TILE_ID) = 0x179;
     }
-    func_020cf2c8();
+    RebuildMapPropertyCells();
     map = (u8 *)*gCurrentMap;
     CompletePropertyCapture(CURSOR_X(map), CURSOR_Y(map));
 #undef CAPTURE
@@ -327,26 +329,33 @@ void func_020bc610(void *arg0) {
     }
 }
 
-s32 IsCellEnterable(s32 a,s32 b) {
+/* Whether map cell (x, y) can be entered: its order layer (MAP_CELL_ORDER) is
+ * 0..MAP_GRID_NO_UNIT_MAX, i.e. neither impassable (negative) nor holding a
+ * unit (above MAP_GRID_NO_UNIT_MAX). */
+s32 IsCellEnterable(s32 x,s32 y) {
  extern s32 *gCurrentMap;
- s32 p=*gCurrentMap;
- s32 v=M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),s8 *,0x1e30);
- if(v>=0 && v<=110)return 1;
+ s32 map=*gCurrentMap;
+ s32 v=M2C_FIELD(map+(x+M2C_FIELD(map+y*2,u16 *,MAP_ROW_OFFSETS)),s8 *,MAP_CELL_ORDER);
+ if(v>=0 && v<=MAP_GRID_NO_UNIT_MAX)return 1;
  return 0;
 }
 
-u8 IsCellOccupied(s32 arg0, s32 arg1) {
+/* Whether the map cell at (x, y) is blocked: its working-order/overlay value
+ * (MAP_CELL_ORDER) is above MAP_GRID_NO_UNIT_MAX, so the cell holds a unit or an
+ * impassable overlay.  The complement of IsCellEnterable for non-negative
+ * values. */
+u8 IsCellOccupied(s32 x, s32 y) {
     extern s32 *gCurrentMap;
-    s32 temp_r2;
-    u8 var_r0;
+    s32 map;
+    u8 occupied;
 
-    temp_r2 = *gCurrentMap;
-    if ((s32) M2C_FIELD((temp_r2 + (arg0 + M2C_FIELD((temp_r2 + (arg1 * 2)), u16 *, 0x3758))), s8 *, 0x1E30) > 0x6E) {
-        var_r0 = 1;
+    map = *gCurrentMap;
+    if ((s32) M2C_FIELD((map + (x + M2C_FIELD((map + (y * 2)), u16 *, MAP_ROW_OFFSETS))), s8 *, MAP_CELL_ORDER) > MAP_GRID_NO_UNIT_MAX) {
+        occupied = 1;
     } else {
-        var_r0 = 0;
+        occupied = 0;
     }
-    return var_r0;
+    return occupied;
 }
 
 #pragma opt_strength_reduction off
@@ -490,22 +499,25 @@ s32 func_020bcac0(void) {
     return 0x20;
 }
 
-s32 func_020bcaf0(void) {
+/* The unit-select cursor's action for the key pressed this frame: A confirms,
+ * B cancels, R opens the map menu and X closes the cursor - the same mapping as
+ * GetAimCursorKeyAction, but without clearing the pending touch confirm. */
+s32 GetUnitSelectKeyAction(void) {
     extern void *gKeyState;
-    u16 temp_r0;
+    u16 pressed;
 
-    temp_r0 = M2C_FIELD(gKeyState, u16 *, 0);
-    if (temp_r0 & 1) {
-        return 0x10;
+    pressed = M2C_FIELD(gKeyState, u16 *, 0);
+    if (pressed & KEY_A) {
+        return MAP_ACTION_CONFIRM;
     }
-    if (temp_r0 & 2) {
-        return 0x20;
+    if (pressed & KEY_B) {
+        return MAP_ACTION_CANCEL;
     }
-    if (temp_r0 & 0x100) {
-        return 0x100;
+    if (pressed & KEY_R) {
+        return MAP_ACTION_MENU;
     }
-    if (temp_r0 & 0x400) {
-        return 0x40;
+    if (pressed & KEY_X) {
+        return MAP_ACTION_CLOSE;
     }
     return 0;
 }

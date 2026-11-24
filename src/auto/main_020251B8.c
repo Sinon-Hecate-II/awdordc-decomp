@@ -94,12 +94,14 @@ offset+=4;
 M2C_FIELD(state,u32*,0)+=a;M2C_FIELD(state,u32*,4)+=b;M2C_FIELD(state,u32*,8)+=c;M2C_FIELD(state,u32*,12)+=d;
 }
 
-void MD5_Init(void *arg0) {
-    MI_CpuFill8(arg0, 0, 0x58);
-    M2C_FIELD(arg0, s32 *, 0) = 0x67452301;
-    M2C_FIELD(arg0, s32 *, 4) = 0xEFCDAB89;
-    M2C_FIELD(arg0, s32 *, 8) = 0x98BADCFE;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0x10325476;
+/* Initialise an MD5 context for a new digest: clear it and load the four
+ * chaining words of the standard initial state. */
+void MD5_Init(MD5Context *context) {
+    MI_CpuFill8(context, 0, sizeof(MD5Context));
+    context->state[0] = 0x67452301;
+    context->state[1] = 0xEFCDAB89;
+    context->state[2] = 0x98BADCFE;
+    context->state[3] = 0x10325476;
 }
 
 /* Feed `length` bytes at `input` into the running MD5 digest: advance the bit
@@ -155,31 +157,36 @@ void MD5_Final(void *context, M2C_UNK *out) {
     CopyDigestBytes(out, context, MD5_DIGEST_SIZE);
 }
 
-s32 func_02025868(s32 arg0, u32 *arg1) {
-    u32 value;
-    u32 result;
-    value = arg1[arg0] ^ (arg1[(arg0 + 2) & 15] ^ (arg1[(arg0 + 13) & 15] ^ arg1[arg0 ^ 8]));
-    result = (value << 1) | (value >> 31);
-    arg1[arg0] = result;
-    return result;
+/* SHA-1 message-schedule expansion: fold three earlier words into slot `index`
+ * of the 16-word circular schedule, rotate the result left one bit, and store
+ * and return it. */
+s32 SHA1_ExpandWord(s32 index, u32 *schedule) {
+    u32 expanded;
+    u32 word;
+    expanded = schedule[index] ^ (schedule[(index + 2) & 15] ^ (schedule[(index + 13) & 15] ^ schedule[index ^ 8]));
+    word = (expanded << 1) | (expanded >> 31);
+    schedule[index] = word;
+    return word;
 }
 
-void StoreWordsBigEndian(void *arg0, u32 *arg1, u32 arg2) {
-    u8 *out = arg0;
+/* Write `count` bytes' worth of 32-bit words from `words` to `dest`, most
+ * significant byte first. */
+void StoreWordsBigEndian(void *dest, u32 *words, u32 count) {
+    u8 *out = dest;
     
     u32 i = 0;
     u32 value;
-    arg2 >>= 2;
-    if (arg2 == 0) return;
+    count >>= 2;
+    if (count == 0) return;
     do {
-        value = *arg1++;
+        value = *words++;
         i++;
         out[0] = value >> 24;
         out[1] = value >> 16;
         out[2] = value >> 8;
         out[3] = value;
         out += 4;
-    } while (i < arg2);
+    } while (i < count);
 }
 
 #pragma opt_peephole off
@@ -212,54 +219,54 @@ n+=5;
 }
 e += ((((a << 5) | (a >> 27)) + (d ^ (b & (c ^ d)))) + w[15]) + 0x5a827999;
 b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + func_02025868(0,w)) + 0x5a827999;
+d += ((((e << 5) | (e >> 27)) + (c ^ (a & (b ^ c)))) + SHA1_ExpandWord(0,w)) + 0x5a827999;
 a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + func_02025868(1,w)) + 0x5a827999;
+c += ((((d << 5) | (d >> 27)) + (b ^ (e & (a ^ b)))) + SHA1_ExpandWord(1,w)) + 0x5a827999;
 e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + func_02025868(2,w)) + 0x5a827999;
+b += ((((c << 5) | (c >> 27)) + (a ^ (d & (e ^ a)))) + SHA1_ExpandWord(2,w)) + 0x5a827999;
 d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + func_02025868(3,w)) + 0x5a827999;
+a += ((((b << 5) | (b >> 27)) + (e ^ (c & (d ^ e)))) + SHA1_ExpandWord(3,w)) + 0x5a827999;
 c = (c << 30) | (c >> 2);
 n=4;
 for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + func_02025868(n,w)) + 0x6ed9eba1;
+e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(n,w)) + 0x6ed9eba1;
 b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + func_02025868(n+1,w)) + 0x6ed9eba1;
+d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(n+1,w)) + 0x6ed9eba1;
 a = (a << 30) | (a >> 2);
 n=(n+2)&15;
-c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + func_02025868(n,w)) + 0x6ed9eba1;
+c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(n,w)) + 0x6ed9eba1;
 e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + func_02025868(n+1,w)) + 0x6ed9eba1;
+b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(n+1,w)) + 0x6ed9eba1;
 d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + func_02025868(n+2,w)) + 0x6ed9eba1;
+a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(n+2,w)) + 0x6ed9eba1;
 c = (c << 30) | (c >> 2);
 n+=3;
 }
 for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + ((b & (c | d)) | (c & d))) + func_02025868(n,w)) + 0x8f1bbcdc;
+e += ((((a << 5) | (a >> 27)) + ((b & (c | d)) | (c & d))) + SHA1_ExpandWord(n,w)) + 0x8f1bbcdc;
 b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + ((a & (b | c)) | (b & c))) + func_02025868(n+1,w)) + 0x8f1bbcdc;
+d += ((((e << 5) | (e >> 27)) + ((a & (b | c)) | (b & c))) + SHA1_ExpandWord(n+1,w)) + 0x8f1bbcdc;
 a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + ((e & (a | b)) | (a & b))) + func_02025868(n+2,w)) + 0x8f1bbcdc;
+c += ((((d << 5) | (d >> 27)) + ((e & (a | b)) | (a & b))) + SHA1_ExpandWord(n+2,w)) + 0x8f1bbcdc;
 e = (e << 30) | (e >> 2);
 n=(n+3)&15;
-b += ((((c << 5) | (c >> 27)) + ((d & (e | a)) | (e & a))) + func_02025868(n,w)) + 0x8f1bbcdc;
+b += ((((c << 5) | (c >> 27)) + ((d & (e | a)) | (e & a))) + SHA1_ExpandWord(n,w)) + 0x8f1bbcdc;
 d = (d << 30) | (d >> 2);
-a += ((((b << 5) | (b >> 27)) + ((c & (d | e)) | (d & e))) + func_02025868(n+1,w)) + 0x8f1bbcdc;
+a += ((((b << 5) | (b >> 27)) + ((c & (d | e)) | (d & e))) + SHA1_ExpandWord(n+1,w)) + 0x8f1bbcdc;
 c = (c << 30) | (c >> 2);
 n+=2;
 }
 for(i=0;i<4;i++){
-e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + func_02025868(n,w)) + 0xca62c1d6;
+e += ((((a << 5) | (a >> 27)) + (d ^ (b ^ c))) + SHA1_ExpandWord(n,w)) + 0xca62c1d6;
 b = (b << 30) | (b >> 2);
-d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + func_02025868(n+1,w)) + 0xca62c1d6;
+d += ((((e << 5) | (e >> 27)) + (c ^ (a ^ b))) + SHA1_ExpandWord(n+1,w)) + 0xca62c1d6;
 a = (a << 30) | (a >> 2);
-c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + func_02025868(n+2,w)) + 0xca62c1d6;
+c += ((((d << 5) | (d >> 27)) + (b ^ (e ^ a))) + SHA1_ExpandWord(n+2,w)) + 0xca62c1d6;
 e = (e << 30) | (e >> 2);
-b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + func_02025868(n+3,w)) + 0xca62c1d6;
+b += ((((c << 5) | (c >> 27)) + (a ^ (d ^ e))) + SHA1_ExpandWord(n+3,w)) + 0xca62c1d6;
 d = (d << 30) | (d >> 2);
 n=(n+4)&15;
-a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + func_02025868(n,w)) + 0xca62c1d6;
+a += ((((b << 5) | (b >> 27)) + (e ^ (c ^ d))) + SHA1_ExpandWord(n,w)) + 0xca62c1d6;
 c = (c << 30) | (c >> 2);
 n+=1;
 }

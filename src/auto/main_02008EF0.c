@@ -36,7 +36,20 @@ void func_02008f60(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
     SendArm7Message(7, arg0 | (arg4 << 0x18), arg1, arg2, arg3);
 }
 
-s32 SendArm7Message(int a,int b,int c,int d,int e){void *AllocSoundCommand(int);void *p=AllocSoundCommand(1);if(!p)return (s32)p;M2C_FIELD(p,s32 *,4)=a;M2C_FIELD(p,s32 *,8)=b;M2C_FIELD(p,s32 *,12)=c;M2C_FIELD(p,s32 *,16)=d;M2C_FIELD(p,s32 *,20)=e;return EnqueueSoundCommand(p);}
+/* Send one command to the ARM7 sound driver: take a command node, fill in its
+ * command id and four arguments, and queue it.  Returns 0 if no node could be
+ * taken. */
+s32 SendArm7Message(int commandId, int arg0, int arg1, int arg2, int arg3) {
+    void *AllocSoundCommand(int);
+    void *command = AllocSoundCommand(1);
+    if (!command) return (s32) command;
+    M2C_FIELD(command, s32 *, SOUND_CMD_NODE_ID) = commandId;
+    M2C_FIELD(command, s32 *, SOUND_CMD_NODE_ARG0) = arg0;
+    M2C_FIELD(command, s32 *, SOUND_CMD_NODE_ARG1) = arg1;
+    M2C_FIELD(command, s32 *, SOUND_CMD_NODE_ARG2) = arg2;
+    M2C_FIELD(command, s32 *, SOUND_CMD_NODE_ARG3) = arg3;
+    return EnqueueSoundCommand(command);
+}
 
 void func_02008fcc(void){extern s32 data_0212e000;extern M2C_UNK data_0212e004;if(data_0212e000)return;data_0212e000=1;InitMutex(&data_0212e004);InitSoundCommandQueue();func_0200973c();}
 
@@ -286,24 +299,45 @@ void Sound_SignalArm7(void) {
     } while (SendFifoMessage(7, 0, 0) < 0);
 }
 
-void *Sound_PopFreeCommand(void){s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);extern M2C_UNK gSoundCommandQueueState;s32 state=OS_DisableInterrupts();void *p=M2C_FIELD(&gSoundCommandQueueState,void **,0);void *next;if(!p){OS_RestoreInterrupts(state);return 0;}next=*(void **)p;M2C_FIELD(&gSoundCommandQueueState,void **,0)=next;if(!next)M2C_FIELD(&gSoundCommandQueueState,s32 *,16)=0;OS_RestoreInterrupts(state);return p;}
+/* Takes a free command node off the queue's free list, interrupts locked; returns
+ * 0 when the list is empty, and clears the list tail when the last node is taken. */
+void *Sound_PopFreeCommand(void) {
+    s32 OS_DisableInterrupts(void);
+    s32 OS_RestoreInterrupts(s32);
+    extern M2C_UNK gSoundCommandQueueState;
+    s32 irq;
+    QueueNode09298 *command;
+    QueueNode09298 *next;
+
+    irq = OS_DisableInterrupts();
+    command = ((State09100 *)&gSoundCommandQueueState)->head;
+    if (!command) {
+        OS_RestoreInterrupts(irq);
+        return 0;
+    }
+    next = command->next;
+    ((State09100 *)&gSoundCommandQueueState)->head = next;
+    if (!next) ((State09100 *)&gSoundCommandQueueState)->tail = 0;
+    OS_RestoreInterrupts(irq);
+    return command;
+}
 
 s32 Sound_IsCommandChannelReady(void){s32 func_020062b4(void);s32 OS_DisableInterrupts(void);s32 OS_RestoreInterrupts(s32);s32 state,v,result;if(!func_020062b4())return 1;state=OS_DisableInterrupts();*(volatile s32 *)0x04fff200=16;v=*(volatile s32 *)0x04fff200;OS_RestoreInterrupts(state);if(v)result=1;else result=0;return result;}
 
-void func_0200973c(void){extern M2C_UNK data_0212fb00;int i=0;u8 *p=(u8 *)&data_0212fb00;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
+void func_0200973c(void){extern M2C_UNK gSoundChannelCallbacks;int i=0;u8 *p=(u8 *)&gSoundChannelCallbacks;int zero=i;do{*(s32 *)p=zero;*(s32 *)(p+4)=zero;i++;p[8]=zero;p+=12;}while(i<8);}
 
 void func_0200976c(s32 arg0) {
-    extern M2C_UNK data_0212fb00;
+    extern M2C_UNK gSoundChannelCallbacks;
     s32 temp_r1;
 
-    temp_r1 = (arg0 * 0xC) + (s32) &data_0212fb00;
+    temp_r1 = (arg0 * 0xC) + (s32) &gSoundChannelCallbacks;
     M2C_FIELD(temp_r1, u8 *, 8) = (u8) (M2C_FIELD(temp_r1, u8 *, 8) + 1);
 }
 
-u8 func_0200978c(int a,int b,int c){extern M2C_UNK data_0212fb00;void *p=(char *)&data_0212fb00+a*12;M2C_FIELD(p,int *,0)=b;M2C_FIELD(p,int *,4)=c;return ++M2C_FIELD(p,u8 *,8);}
+u8 Sound_RegisterChannelCallback(int a,int b,int c){extern M2C_UNK gSoundChannelCallbacks;void *p=(char *)&gSoundChannelCallbacks+a*12;M2C_FIELD(p,int *,0)=b;M2C_FIELD(p,int *,4)=c;return ++M2C_FIELD(p,u8 *,8);}
 
 s32 func_020097bc(s32 a){
-extern M2C_UNK data_0212fb00;void *p=(char *)&data_0212fb00+(a&255)*12;
+extern M2C_UNK gSoundChannelCallbacks;void *p=(char *)&gSoundChannelCallbacks+(a&255)*12;
 if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
 }
@@ -409,20 +443,23 @@ void Link_ClearSlotOwners(void *object) {
     Sound_UnlockMutex();
 }
 
-void func_02009aa4(void *arg0) {
-    void *temp_r6;
-    void *var_r0;
+/* Clear the chain of 8-byte link slots rooted at `object`'s +0x18 word: each
+ * slot's owner and next are zeroed and cleaned for the ARM7, under the sound
+ * mutex. */
+void Link_ClearSlotChain(void *object) {
+    void *next;
+    void *slot;
 
     Sound_LockMutex();
-    var_r0 = M2C_FIELD(arg0, void **, 0x18);
-    if (var_r0 != NULL) {
+    slot = M2C_FIELD(object, void **, 0x18);
+    if (slot != NULL) {
         do {
-            temp_r6 = M2C_FIELD(var_r0, void **, 4);
-            M2C_FIELD(var_r0, s32 *, 0) = 0;
-            M2C_FIELD(var_r0, void **, 4) = NULL;
-            DC_CleanRange(var_r0, 8);
-            var_r0 = temp_r6;
-        } while (temp_r6 != NULL);
+            next = M2C_FIELD(slot, void **, 4);
+            M2C_FIELD(slot, s32 *, 0) = 0;
+            M2C_FIELD(slot, void **, 4) = NULL;
+            DC_CleanRange(slot, 8);
+            slot = next;
+        } while (next != NULL);
     }
     Sound_UnlockMutex();
 }
@@ -517,13 +554,21 @@ stable++;
 return OS_RestoreInterrupts(state);
 }
 #pragma scheduling on
-s32 SetFifoMessageHandler(s32 a,M2C_UNK *b){
-s32 OS_DisableInterrupts(void);extern s32 gFifoMessageHandlers[];
-s32 s=OS_DisableInterrupts();s32 *base=(s32 *)0x027ffc00;
-gFifoMessageHandlers[a]=(s32)b;
-if(b)base[226]|=1<<a;
-else base[226]&=~(1<<a);
-return OS_RestoreInterrupts(s);
+/* Register `handler` as the receiver of IPC FIFO messages tagged `tag` (NULL
+ * removes it), mirroring the registration into the shared work area's tag mask
+ * that the ARM7 reads, with interrupts off. Returns the previous interrupt state. */
+s32 SetFifoMessageHandler(s32 tag, M2C_UNK *handler) {
+    s32 OS_DisableInterrupts(void);
+    extern s32 gFifoMessageHandlers[];
+    s32 irqState;
+    s32 *handledTags;
+
+    irqState = OS_DisableInterrupts();
+    handledTags = (s32 *)SHARED_WORK_BASE;
+    gFifoMessageHandlers[tag] = (s32)handler;
+    if (handler) handledTags[SHARED_FIFO_TAG_WORD] |= 1 << tag;
+    else handledTags[SHARED_FIFO_TAG_WORD] &= ~(1 << tag);
+    return OS_RestoreInterrupts(irqState);
 }
 
 s32 IsFifoMessageReady(s32 a, s32 b) {

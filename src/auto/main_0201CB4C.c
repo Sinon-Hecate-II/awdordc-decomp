@@ -208,19 +208,20 @@ u16 AllocateLocalPort(void) {
     return M2C_FIELD(&gNetStack, u16 *, 8);
 }
 
+/* Advance the network stack's 64-bit LCG and return the high 32 bits of the new state. */
 s32 NetStackRandom(void) {
     extern M2C_UNK gNetStack;
-    u64 mult;
-    u64 val;
-    u64 add;
-    u64 res;
+    u64 multiplier;
+    u64 state;
+    u64 increment;
+    u64 next;
 
-    mult = M2C_FIELD(&gNetStack, u64 *, 0x70);
-    val = M2C_FIELD(&gNetStack, u64 *, 0x68);
-    add = M2C_FIELD(&gNetStack, u64 *, 0x78);
-    res = mult * val + add;
-    M2C_FIELD(&gNetStack, u64 *, 0x68) = res;
-    return (s32)(res >> 32);
+    multiplier = M2C_FIELD(&gNetStack, u64 *, NETSTACK_RANDOM_MULT);
+    state = M2C_FIELD(&gNetStack, u64 *, NETSTACK_RANDOM_STATE);
+    increment = M2C_FIELD(&gNetStack, u64 *, NETSTACK_RANDOM_ADD);
+    next = multiplier * state + increment;
+    M2C_FIELD(&gNetStack, u64 *, NETSTACK_RANDOM_STATE) = next;
+    return (s32)(next >> 32);
 }
 
 void SetCurrentRawConnection(s32 arg0) {

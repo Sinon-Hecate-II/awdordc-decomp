@@ -285,12 +285,21 @@ M2C_FIELD(&gAiCommand,s8 *,6)=0x16;
 CommitAiAction(result);return 1;
 }
 
-s32 GetAiRandomChance(void) {
- extern void **gCurrentMap; extern void *gAiSettings;
- s32 r=0; u16 x;
- x=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
- if((s32)x>3) {r=M2C_FIELD(gAiSettings,u8 *,10)*x; if(r>80) r=80;}
- return r;
+/* Chance, in percent, that the AI builds a tier-2 unit instead of a tier-1 one:
+ * none through turn 3, then the unit set's per-turn percentage times the current
+ * turn number, capped at AI_UPGRADE_CHANCE_MAX. */
+s32 GetAiUpgradeChance(void) {
+    extern void **gCurrentMap;
+    extern void *gAiSettings;
+    s32 chance = 0;
+    u16 turn;
+
+    turn = M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN);
+    if ((s32) turn > AI_UPGRADE_FIRST_TURN) {
+        chance = M2C_FIELD(gAiSettings, u8 *, AI_SETTING_UPGRADE_CHANCE) * turn;
+        if (chance > AI_UPGRADE_CHANCE_MAX) chance = AI_UPGRADE_CHANCE_MAX;
+    }
+    return chance;
 }
 
 /* Tries to build a basic (tier 1 or 2) unit for the AI: checks the player can
@@ -320,7 +329,7 @@ M2C_FIELD(gAiState,u8 *,8)+=t;
 if(M2C_FIELD(gAiState,u8 *,8)>=M2C_FIELD(gAiSettings,u8 *,8)+M2C_FIELD(gAiSettings,u8 *,9))return 0;
 }
 r=Modulo(NextRandomValue(),100);
-if(r<GetAiRandomChance() && (map=*gCurrentMap,playerId=M2C_FIELD(map,u16 *,0x52a4),M2C_FIELD(playerId*MAP_PLAYER_STRIDE+(s32)map,s32 *,MAP_PLAYER_STATES)>=GetUnitBuildCost(playerId,2)*20))M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=2;
+if(r<GetAiUpgradeChance() && (map=*gCurrentMap,playerId=M2C_FIELD(map,u16 *,0x52a4),M2C_FIELD(playerId*MAP_PLAYER_STRIDE+(s32)map,s32 *,MAP_PLAYER_STATES)>=GetUnitBuildCost(playerId,2)*20))M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=2;
 else M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=1;
 CommitAiAction(candidate);return 1;
 }

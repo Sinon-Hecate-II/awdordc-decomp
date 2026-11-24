@@ -107,7 +107,7 @@ void TickNetSession(void) {
     extern M2C_UNK HandleGpcmMatMessage;
     extern M2C_UNK HandleBuddyAddRequest;
     extern M2C_UNK MatchSession_ReportBuddyStatus;
-    s32 func_02037bc4(void);
+    s32 Wfc_CheckStrayLink(void);
     void func_02039200(void);
     s32 HasNetError(void);
     s32 func_0204837c(void);
@@ -123,7 +123,7 @@ void TickNetSession(void) {
     s32 gpiSetPeerCallback(void *, s32, s32, s32);
     void Qr2_DestroyConnection(void *);
 
-    if (func_02037bc4()) func_02039200();
+    if (Wfc_CheckStrayLink()) func_02039200();
     if (!gNetSession || M2C_FIELD(gNetSession, s32 *, 0x24) == 0) return;
     if (HasNetError() != 0) return;
     switch (M2C_FIELD(gNetSession, s32 *, 0x24)) {
@@ -418,7 +418,18 @@ s32 DisconnectPeerSlot(s32 playerId) {
     return 0;
 }
 
-s32 func_02038e4c(void){extern void *gNetSession;s32 func_0203e2c4(void);s32 func_0203e2a4(void);if(!gNetSession)return 0;if(M2C_FIELD(gNetSession,volatile u8 *,0x389)==2 || M2C_FIELD(gNetSession,volatile u8 *,0x389)==3)return func_0203e2c4()+1;return func_0203e2a4()+1;}
+/* Number of players in the current online session: the host (NET_SESSION_MODE 2
+ * or 3) reports its active player slots, a joiner its connected peers, plus the
+ * local player either way. 0 with no session. */
+s32 GetNetSessionPlayerCount(void) {
+    extern void *gNetSession;
+    s32 GetConnectionActivePlayerMax(void);
+    s32 GetConnectionPeerCount(void);
+
+    if (!gNetSession) return 0;
+    if (M2C_FIELD(gNetSession, volatile u8 *, NET_SESSION_MODE) == 2 || M2C_FIELD(gNetSession, volatile u8 *, NET_SESSION_MODE) == 3) return GetConnectionActivePlayerMax() + 1;
+    return GetConnectionPeerCount() + 1;
+}
 
 u8 GetLocalPlayerId(void) {
     extern void *gNetSession;

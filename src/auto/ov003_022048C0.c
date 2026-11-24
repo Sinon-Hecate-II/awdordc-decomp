@@ -206,7 +206,7 @@ void func_ov003_02205420(void **arg0) {
 void SetupSceneObjectDisplay(void *entity) {
 M2C_UNK Show3DSprite(s32);
 M2C_UNK Show3DSpriteSlide(s32);
-s16 func_ov003_021f153c();
+s16 GetSceneEntryOffset();
 s32 func_ov003_02200ca8();
 s16 offset;
 void *group;
@@ -215,7 +215,7 @@ void *parts;
 u8 j;
 void *first;
 void *second;
-offset=func_ov003_021f153c();
+offset=GetSceneEntryOffset();
 if((u8)(((u32)(M2C_FIELD(entity,u8 *,0x3a)<<26)>>26)==1)) offset=0;
 else {
 group=M2C_FIELD(entity,void **,0x50);
@@ -330,8 +330,8 @@ u8 func_ov003_02205678(void *arg0) {
 }
 
 void func_ov003_02205698(void) {
-    M2C_UNK func_ov003_02202414();
-    func_ov003_02202414();
+    M2C_UNK Ov003_SendSetupPlayerState();
+    Ov003_SendSetupPlayerState();
 }
 
 void func_ov003_022056a4(void) {

@@ -26,19 +26,22 @@ void func_ov010_02229d44(s32 arg0) {
     func_ov010_02229d0c(arg0 + 0x38);
 }
 
-M2C_UNK **func_ov010_02229d54(s32 arg0, M2C_UNK arg1) {
-M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
-s32 IsOnlineSessionFlagSet(M2C_UNK);
-extern M2C_UNK data_ov010_0222c250;
-extern M2C_UNK data_ov010_0222c394;
-M2C_UNK **temp_r0;
-if (IsOnlineSessionFlagSet(3) == 0) return NULL;
-temp_r0 = CreateSpriteObject(&data_ov010_0222c250, arg1);
-if (temp_r0 != NULL) {
-*temp_r0 = &data_ov010_0222c394;
-M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-}
-return temp_r0;
+/* Create the online (Wi-Fi) match start-request node tagged with `matchId` and
+ * owned by `owner`, once the online session is running. */
+M2C_UNK **Ov010Online_CreateStartRequest(s32 matchId, M2C_UNK owner) {
+    M2C_UNK **CreateSpriteObject(M2C_UNK *, M2C_UNK);
+    s32 IsOnlineSessionFlagSet(M2C_UNK);
+    extern M2C_UNK gOv010StartRequestClass;
+    extern M2C_UNK gOv010StartRequestVtbl;
+    M2C_UNK **node;
+
+    if (IsOnlineSessionFlagSet(OV010_FLAG_RUNNING) == 0) return NULL;
+    node = CreateSpriteObject(&gOv010StartRequestClass, owner);
+    if (node != NULL) {
+        *node = &gOv010StartRequestVtbl;
+        M2C_FIELD(node, s32 *, 0x34) = matchId;
+    }
+    return node;
 }
 
 M2C_UNK func_ov010_02229d9c(s32 arg0) {

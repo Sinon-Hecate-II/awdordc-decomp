@@ -209,17 +209,19 @@ StringFormat(buf,&data_020fcf80,b);
 ghiAppendDataToBuffer(a,buf,0);
 }
 
-void ResetBuffer(void *arg0) {
+/* ghttp ghiResetBuffer: empty a GHIBuffer -- clear its used length and read
+ * position and NUL-terminate its storage. */
+void ghiResetBuffer(GHIBuffer *buffer) {
     M2C_UNK AssertFailed(M2C_UNK *, M2C_UNK *, M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_020fce48;
     extern M2C_UNK sAssertBuffer;
     extern M2C_UNK gGhttpBufferFileName;
-    if (arg0 == NULL) {
-        AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &data_020fce48, 0x16C);
+    extern M2C_UNK gGhiResetBufferName;
+    if (buffer == NULL) {
+        AssertFailed(&sAssertBuffer, &gGhttpBufferFileName, &gGhiResetBufferName, 0x16C);
     }
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0;
-    *M2C_FIELD(arg0, s8 **, 4) = 0;
+    buffer->len = 0;
+    buffer->pos = 0;
+    *buffer->data = 0;
 }
 
 /* Send the rest of a connection's request buffer: poll the socket until it is
@@ -353,7 +355,7 @@ conn->readBuffer.len+=outBytes;
 used=conn->decryptBuffer.pos;
 if(used>255){
 remaining=conn->decryptBuffer.len-used;
-if(!remaining)ResetBuffer(&conn->decryptBuffer);
+if(!remaining)ghiResetBuffer(&conn->decryptBuffer);
 else {
 data=(s32)conn->decryptBuffer.data;
 MemMove(data,data+used,remaining);

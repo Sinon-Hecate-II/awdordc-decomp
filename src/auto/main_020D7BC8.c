@@ -26,7 +26,7 @@ s32 GetArmyPalette(s32);
 void QueueMemoryCopy(s32,s32,s32,s32);
 void CopyToObjPaletteShadow(s32,s32,s32);
 s32 UnitKindCanSupply(s32);
-s32 func_020a7c68(s32);
+s32 GetUnitKindMaxAmmo(s32);
 void DrawDecimalNumber(s32,s32,s32);
 void AddSprite(u16,u16,u16,void *,s32);
 s32 unitKind=GetUnitKind(unit);
@@ -46,7 +46,7 @@ AddSprite((u16)((x+71)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FI
 }else{
 AddSprite((u16)((x+71)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))) | 0x9000) + (0x3ff & (26 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),gSpriteDesc8x8,8);
 }
-if(func_020a7c68((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0) {
+if(GetUnitKindMaxAmmo((u32)(M2C_FIELD(unit,u8 *,0)<<26)>>26)==0) {
 AddSprite((u16)((x+79)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30))) | 0x9000) + (0x3ff & (20 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))),gSpriteDesc8x8,8);
 }else{
 DrawDecimalNumber((x+79)&511,screenY,GetUnitAmmo(unit));
@@ -266,9 +266,9 @@ void func_020d8904(void) {
 }
 
 void func_020d8914(void) {
-    M2C_UNK func_0209f87c();
+    M2C_UNK ResetMapConfig();
     M2C_UNK ApplyMapSettingsToPlayers(M2C_UNK);
-    func_0209f87c();
+    ResetMapConfig();
     ApplyMapSettingsToPlayers(0);
 }
 

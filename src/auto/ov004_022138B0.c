@@ -328,11 +328,13 @@ return 0;
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-s32 func_ov004_022141bc(void) {
-    s32 temp_r4;
+/* Battle-script condition: true when player 1's CO power meter is exactly full,
+ * i.e. its points equal the dual-power cost and are nonzero. */
+s32 IsPlayerOneCoPowerReady(void) {
+    s32 cost;
 
-    temp_r4 = GetCoPowerMeterCost(1, 2);
-    if ((temp_r4 == GetCoPowerMeterPoints(1)) && (GetCoPowerMeterPoints(1) > 0)) {
+    cost = GetCoPowerMeterCost(1, CO_POWER_LEVEL_DUAL);
+    if ((cost == GetCoPowerMeterPoints(1)) && (GetCoPowerMeterPoints(1) > 0)) {
         return 1;
     }
     return 0;

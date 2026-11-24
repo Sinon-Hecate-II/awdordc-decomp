@@ -56,12 +56,12 @@ s16 func_ov003_0220b7b8(void *);
 void func_ov003_0220b7c0(void *);
 u8 func_ov003_0220b7fc(void *,s32);
 u8 func_ov003_0220b8ac(void *,s32);
-u8 func_ov003_0220bb40(void *,s32);
+u8 IsMenuSplitOptionRow(void *,s32);
 void ScrollBar_ScrollBy(void *,s32);
 void Ov003_StepOptionCounter0(void *,s32);
 void Ov003_StepOptionCounter1(void *,s32);
 void ScrollA9SliderBy(void *,s32);
-void func_ov003_0220bb88(void *);
+void MarkMenuSplitSelection(void *);
 void func_ov003_0220bbcc(void *);
 s32 i,left,right,active,pos,old;u16 held,press;
 if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<31)>>31))return;
@@ -80,25 +80,25 @@ held=M2C_FIELD(gKeyState,u16 *,2);
 if((held&32)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),-8);
 if(func_ov003_0220b8ac(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),-8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
-if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
-func_ov003_0220bb88(a);
+if(Ov003_IsSplitRow(a,(u8)i)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);}
+if(IsMenuSplitOptionRow(a,(u8)i))PlaySoundEffect(0x10011);
+MarkMenuSplitSelection(a);
 }
 else if((held&16)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_0220b7fc(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x60),8);
 if(func_ov003_0220b8ac(a,(u8)i))ScrollBar_ScrollBy(M2C_FIELD(a,void **,0x64),8);
-if(func_ov003_02207e38(a,(u8)i)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
-if(func_ov003_0220bb40(a,(u8)i))PlaySoundEffect(0x10011);
-func_ov003_0220bb88(a);
+if(Ov003_IsSplitRow(a,(u8)i)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));if(func_ov003_02209274(a,(u8)i))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)i))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)i))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);}
+if(IsMenuSplitOptionRow(a,(u8)i))PlaySoundEffect(0x10011);
+MarkMenuSplitSelection(a);
 }
 
 if((M2C_FIELD(gKeyState,u16 *,0)&0x800)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_02207a70(a)&&func_ov003_02207a54(a))func_ov003_0220bbcc(a);active=0;
 }
 if(active&&(M2C_FIELD(gKeyState,u16 *,0)&4)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
-if(func_ov003_02207a70(a)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);func_ov003_0220bb88(a);}
+if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}
 if(func_ov003_02209258(a)){
-if(func_020e4b28(i)){RequestMenuMode(a,2);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(i,a);PlaySoundEffect(0x1000d);}
+if(func_020e4b28(i)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(i,a);PlaySoundEffect(0x1000d);}
 else PlaySoundEffect(0x1001d);
 } active=0;
 }
@@ -111,29 +111,29 @@ if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIE
 old=Ov003_GetSelectedRowIndex(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
 if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
 else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0));Ov003_ConfirmRowValue(a,(u16)old);PlaySoundEffect(0x1000f);active=0;
 }else if(active&&func_ov003_02207a54(a)&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,20))){
 if(func_ov003_02207a70(a))func_ov003_0220bbcc(a);active=0;
 }else if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){
-if(func_ov003_02207a70(a)){func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);func_ov003_0220bb88(a);}active=0;
+if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}active=0;
 }
 if(func_ov003_02209258(a)){if(func_020e4b28(old))func_ov003_021ebc54(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else func_ov003_021ebc00(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
 if(active&&func_ov003_021ebbcc(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))){
-if(func_ov003_02209258(a)){RequestMenuMode(a,2);func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
+if(func_ov003_02209258(a)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
 }
 if(active&&pos>=3&&pos<=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)+2){
 Ov003_SetRowAnimation(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
 M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_0220bf70(a);PlaySoundEffect(0x1000f);active=0;
 }
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
-if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));
+if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),-1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),-1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
 if(active&&func_ov003_021e88a4(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8))){
-func_ov003_021ebb88(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
-if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(func_ov003_0220bb40(a,(u8)old))PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,8));
+if(func_ov003_02209274(a,(u8)old))Ov003_StepOptionCounter0(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092a8(a,(u8)old))Ov003_StepOptionCounter1(M2C_FIELD(a,void **,0x40),1);if(func_ov003_022092dc(a,(u8)old))ScrollA9SliderBy(M2C_FIELD(a,void **,0x40),1);if(IsMenuSplitOptionRow(a,(u8)old))PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
 
-if(left!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
-if(right!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64))){PlaySoundEffect(0x10011);func_ov003_0220bb88(a);}
+if(left!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x60))){PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
+if(right!=func_ov003_0220b7b8(M2C_FIELD(a,void **,0x64))){PlaySoundEffect(0x10011);MarkMenuSplitSelection(a);}
 M2C_FIELD(a,u8 *,0x37)=(M2C_FIELD(a,u8 *,0x37)&~0xf0)|((u32)((u8)old<<28)>>24);
 if(!((u32)(M2C_FIELD(a,u8 *,0x38)<<26)>>31)){
 if(((u32)(M2C_FIELD(a,u8 *,0x37)<<28)>>28)==((u32)(M2C_FIELD(a,u8 *,0x37)<<24)>>28))return;
@@ -188,11 +188,11 @@ u8 func_ov003_0220b8ac(void *arg0, s32 arg1) { s32 active; s32 result; if (M2C_F
  * wrap flag is set) or clamps into it.  The range test is the shared counter
  * code's; its result is not used here. */
 void Ov003_StepOptionCounter0(void *arg0, s32 delta) {
-    s32 func_ov003_02206690(s32, s32, s32);
+    s32 Ov003_IsValueInRange(s32, s32, s32);
     OptionCounter *counter = (OptionCounter *)arg0;
     s32 value, limit;
     value = delta + counter->value;
-    func_ov003_02206690((s16) value, (s16) counter->minimum, (s16) counter->maximum);
+    Ov003_IsValueInRange((s16) value, (s16) counter->minimum, (s16) counter->maximum);
     counter->value = value;
     if (counter->wrap) {
         while (counter->value > counter->maximum) counter->value -= counter->maximum - counter->minimum + 1;
@@ -213,11 +213,11 @@ void Ov003_StepOptionCounter0(void *arg0, s32 delta) {
  * wrap flag is set) or clamps into it.  The range test is the shared counter
  * code's; its result is not used here. */
 void Ov003_StepOptionCounter1(void *arg0,s32 delta){
- s32 func_ov003_02206690(s32,s32,s32);
+ s32 Ov003_IsValueInRange(s32,s32,s32);
  OptionCounter *counter=&((OptionCounter *)arg0)[1];
  s32 value,limit;
  value=delta+counter->value;
- func_ov003_02206690((s16)value,(s16)counter->minimum,(s16)counter->maximum);
+ Ov003_IsValueInRange((s16)value,(s16)counter->minimum,(s16)counter->maximum);
  counter->value=value;
  if(counter->wrap){
  while(counter->value>counter->maximum) counter->value-=counter->maximum-counter->minimum+1;
@@ -229,9 +229,9 @@ void Ov003_StepOptionCounter1(void *arg0,s32 delta){
  * the new value between the slider's limits (wrapping around them instead when
  * the slider allows it).  The first two sliders have their own copies. */
 void ScrollA9SliderBy(void *slider, s32 delta){
- s32 func_ov003_02206690(s32,s32,s32); s32 newValue,limit;
+ s32 Ov003_IsValueInRange(s32,s32,s32); s32 newValue,limit;
  newValue=delta+M2C_FIELD(slider,s32 *,0x34);
- func_ov003_02206690((s16)newValue,(s16)M2C_FIELD(slider,s32 *,0x3c),(s16)M2C_FIELD(slider,s32 *,0x38));
+ Ov003_IsValueInRange((s16)newValue,(s16)M2C_FIELD(slider,s32 *,0x3c),(s16)M2C_FIELD(slider,s32 *,0x38));
  M2C_FIELD(slider,s32 *,0x34)=newValue;
  if(M2C_FIELD(slider,u8 *,0x44)){
  while(M2C_FIELD(slider,s32 *,0x34)>M2C_FIELD(slider,s32 *,0x38)) M2C_FIELD(slider,s32 *,0x34)-=M2C_FIELD(slider,s32 *,0x38)-M2C_FIELD(slider,s32 *,0x3c)+1;
@@ -239,42 +239,46 @@ void ScrollA9SliderBy(void *slider, s32 delta){
  }else{limit=M2C_FIELD(slider,s32 *,0x38);newValue=M2C_FIELD(slider,s32 *,0x34);if(newValue<=limit){limit=M2C_FIELD(slider,s32 *,0x3c);if(newValue>=limit)limit=newValue;}M2C_FIELD(slider,s32 *,0x34)=limit;}
 }
 
-u8 func_ov003_0220bb40(void *arg0, s32 arg1) {
-    s32 func_ov003_02206690(s32, s32, s32);
-    s32 var_r0;
+/* True when the unit-list menu is in its split-row mode and `row` is one of the
+ * three split option rows (MENU_SPLIT_ROW_FIRST..MENU_SPLIT_ROW_LAST). */
+u8 IsMenuSplitOptionRow(void *menu, s32 row) {
+    s32 Ov003_IsValueInRange(s32, s32, s32);
+    s32 inRange;
 
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) {
-        var_r0 = 1;
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) {
+        inRange = 1;
     } else {
-        var_r0 = 0;
+        inRange = 0;
     }
-    if ((var_r0 & 0xFF) && (func_ov003_02206690(arg1, 2, 4) != 0)) {
-        var_r0 = 1;
+    if ((inRange & 0xFF) && (Ov003_IsValueInRange(row, MENU_SPLIT_ROW_FIRST, MENU_SPLIT_ROW_LAST) != 0)) {
+        inRange = 1;
     } else {
-        var_r0 = 0;
+        inRange = 0;
     }
-    return (u8) var_r0;
+    return (u8) inRange;
 }
 
-void func_ov003_0220bb88(void *arg0) {
-    s32 var_r1;
-    s32 var_r1_2;
+/* Set the split-row selection flag on the unit-list menu object when it has no
+ * mode pending and its selection context is showing the split-row layout. */
+void MarkMenuSplitSelection(void *menu) {
+    s32 modeIsZero;
+    s32 splitRows;
 
-    if (((u32) (M2C_FIELD(arg0, u8 *, 0x36) << 0x18) >> 0x1C) == 0) {
-        var_r1 = 1;
+    if (((u32) (M2C_FIELD(menu, u8 *, MENU_MODE) << 0x18) >> 0x1C) == 0) {
+        modeIsZero = 1;
     } else {
-        var_r1 = 0;
+        modeIsZero = 0;
     }
-    if (!(var_r1 & 0xFF)) {
+    if (!(modeIsZero & 0xFF)) {
         return;
     }
-    if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), u8 *, 0xF) == 8) {
-        var_r1_2 = 1;
+    if (M2C_FIELD(M2C_FIELD(menu, void **, MENU_SELECTION), u8 *, MENU_SELECTION_MODE) == MENU_SELECT_MODE_SPLIT_ROWS) {
+        splitRows = 1;
     } else {
-        var_r1_2 = 0;
+        splitRows = 0;
     }
-    if (var_r1_2 & 0xFF) {
-        M2C_FIELD(arg0, u8 *, 0x38) = (u8) (M2C_FIELD(arg0, u8 *, 0x38) | 0x80);
+    if (splitRows & 0xFF) {
+        M2C_FIELD(menu, u8 *, MENU_FLAGS) = (u8) (M2C_FIELD(menu, u8 *, MENU_FLAGS) | MENU_FLAG_SPLIT_SELECT);
     }
 }
 

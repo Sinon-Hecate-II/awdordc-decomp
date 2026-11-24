@@ -116,8 +116,8 @@ s32 GetUnitMaxWeaponDamagePercent(void *unit, M2C_UNK targetKind) {
 }
 
 void GetUnitDamagePercent(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_020a799c(M2C_UNK, M2C_UNK, M2C_UNK);
-    func_020a799c(arg0, arg1, 0);
+    M2C_UNK GetBestWeaponDamagePercent(M2C_UNK, M2C_UNK, M2C_UNK);
+    GetBestWeaponDamagePercent(arg0, arg1, 0);
 }
 
 void GetUnitMoveRange(M2C_UNK arg0, M2C_UNK arg1) {
@@ -134,11 +134,14 @@ void GetUnitMaxAttackRange(M2C_UNK arg0, M2C_UNK arg1) {
     ComputeUnitMaxAttackRange(arg1, M2C_FIELD(gAiCommandState, u8 *, 0xD), M2C_FIELD(*data_027e0058, u16 *, 0x52A4), 0, 0);
 }
 
-s32 IsPropertyCell(s32 a,s32 b) {
- extern void **data_027e0058;s32 GetTerrainPropertyFlagsAt(s32,s32);
- s32 p=(s32)*data_027e0058;
- if((M2C_FIELD(p+(a+M2C_FIELD(p+b*2,u16 *,0x3758)),u8 *,0x1420)&31)==24)return 1;
- return GetTerrainPropertyFlagsAt(a,b);
+/* Whether the map cell at (x, y) is a capturable property: its terrain kind is a
+ * property kind (silos count too, though their property-flag table entry is 0). */
+s32 IsPropertyCell(s32 x, s32 y) {
+    extern void **data_027e0058;
+    s32 GetTerrainPropertyFlagsAt(s32, s32);
+    s32 map = (s32)*data_027e0058;
+    if ((M2C_FIELD(map + (x + M2C_FIELD(map + y * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_TERRAIN) & MAP_TERRAIN_KIND_MASK) == MAP_TERRAIN_SILO) return 1;
+    return GetTerrainPropertyFlagsAt(x, y);
 }
 
 s32 IsFootUnitKind(s32 a) {

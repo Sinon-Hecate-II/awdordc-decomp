@@ -86,14 +86,17 @@ void OS_SetDmaHandler(s32 arg0, s32 arg1, s32 arg2) {
     M2C_FIELD(&data_0212dc20, s32 *, offset) = OS_EnableIrqMask(1 << shift) & (1 << shift);
 }
 #pragma optimization_level 2
-void func_02005154(s32 arg0, s32 arg1, s32 arg2) {
- s32 OS_EnableIrqMask(s32);
- extern M2C_UNK data_0212dc4c, data_0212dc50, data_0212dc54;
- s32 offset = arg0 * 12;
- M2C_FIELD(&data_0212dc4c, volatile s32 *, offset) = arg1;
- M2C_FIELD(&data_0212dc54, volatile s32 *, offset) = arg2;
- OS_EnableIrqMask(1 << (arg0 + 3));
- M2C_FIELD(&data_0212dc50, s32 *, offset) = 1;
+/* Install `handler` (called with `arg`) as the IRQ handler for timer `timer`
+ * (0 = TIMER0, whose IRQ bit is IRQ_NUMBER_TIMER0), enable that interrupt and
+ * mark the entry as set up. */
+void OS_SetTimerHandler(s32 timer, s32 handler, s32 arg) {
+    s32 OS_EnableIrqMask(s32);
+    extern M2C_UNK gTimerIrqHandlers, gTimerIrqMasks, gTimerIrqArgs;
+    s32 offset = timer * sizeof(IrqHandler);
+    M2C_FIELD(&gTimerIrqHandlers, volatile s32 *, offset) = handler;
+    M2C_FIELD(&gTimerIrqArgs, volatile s32 *, offset) = arg;
+    OS_EnableIrqMask(1 << (timer + IRQ_NUMBER_TIMER0));
+    M2C_FIELD(&gTimerIrqMasks, s32 *, offset) = 1;
 }
 #pragma optimization_level reset
 s32 OS_SetIrqEnableMask(s32 arg0) {
@@ -437,11 +440,14 @@ void InsertReadyThread(Thread *thread) {
     }
 }
 
-void RemoveReadyThread(void *a) {
+/* Unlink `thread` from the ready list (THREAD_MANAGER_READY): find its
+ * predecessor and chain that thread's Thread::next past it, or move the list head
+ * to its successor when it heads the list. */
+void RemoveReadyThread(void *thread) {
 extern M2C_UNK gThreadManager;
-void *prev=0,*p=M2C_FIELD(&gThreadManager,void **,0x2c);
-while(p && p!=a){prev=p;p=M2C_FIELD(p,void **,0x68);}
-if(!prev){M2C_FIELD(&gThreadManager,void **,0x2c)=M2C_FIELD(a,void **,0x68);}else{M2C_FIELD(prev,void **,0x68)=M2C_FIELD(a,void **,0x68);}
+Thread *prev=0,*p=M2C_FIELD(&gThreadManager,Thread **,THREAD_MANAGER_READY);
+while(p&&p!=(Thread *)thread){prev=p;p=p->next;}
+if(!prev){M2C_FIELD(&gThreadManager,Thread **,THREAD_MANAGER_READY)=((Thread *)thread)->next;}else{prev->next=((Thread *)thread)->next;}
 }
 
 /* RescheduleThreads: the scheduler's switch point — pick the next runnable thread

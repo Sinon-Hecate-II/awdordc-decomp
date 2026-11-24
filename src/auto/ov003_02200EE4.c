@@ -1,7 +1,7 @@
 /* 6 functions from 0x02200EE4 to 0x02201E88 (ov003), found by ds-decomp. */
 #include "common.h"
-s32 func_ov003_021f1b38();
-s32 func_ov003_021f1b7c();
+s32 SetSceneLayerOverrideMain();
+s32 SetSceneLayerOverrideSub();
 void *func_0208bc24();
 s32 func_ov003_021e9810();
 s32 func_ov003_021e9818();
@@ -41,7 +41,7 @@ s32 func_ov003_022023e4();
 s32 func_ov003_021ea294();
 s32 Ov003_LoadPlayerSelectBg();
 s32 func_ov003_022023fc();
-s32 func_01ff9dd8();
+s32 Clear3DSpriteLayerVram();
 s32 Modulo();
 s32 func_ov003_02202408();
 s32 func_ov003_022004f0();
@@ -87,18 +87,18 @@ void *res;
 u8 i;
 s32 side,side2,offset,slot;
 s8 character;
-func_ov003_021f1b38(3,data_ov003_02210456);
+SetSceneLayerOverrideMain(3,data_ov003_02210456);
 if(func_ov003_02201500(p)){
-func_ov003_021f1b7c(0,data_ov003_02210454);
-func_ov003_021f1b7c(1,data_ov003_02210458);
-func_ov003_021f1b7c(3,data_ov003_0221045a);
+SetSceneLayerOverrideSub(0,data_ov003_02210454);
+SetSceneLayerOverrideSub(1,data_ov003_02210458);
+SetSceneLayerOverrideSub(3,data_ov003_0221045a);
 saved=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineSub;
 M2C_FIELD(p,void**,0x58)=func_0208bc24(p);
 func_ov003_021e9810(M2C_FIELD(p,void**,0x58),0x210);
 func_ov003_021e9818(M2C_FIELD(p,void**,0x58),8);
 gCur3DSpriteEngine=saved;
 }else if(func_ov003_0220151c(p)){
-func_ov003_021f1b38(2,data_ov003_0221045c);
+SetSceneLayerOverrideMain(2,data_ov003_0221045c);
 CreateMainWallpaperSprite(2,15,6);
 func_ov003_0220153c(0,0,1,1,1);
 }
@@ -151,7 +151,7 @@ saved2=gCur3DSpriteEngine;gCur3DSpriteEngine=(u16 **)g3DSpriteEngineSub;
 SetFileDirectory(data_ov003_022109a4);Clear3DSpriteLayer(3);
 Ov003_LoadPlayerSelectBg(3,2,func_ov003_022023fc(p));
 func_ov003_021ea134(3);
-func_01ff9dd8(0);func_01ff9dd8(1);Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);
+Clear3DSpriteLayerVram(0);Clear3DSpriteLayerVram(1);Clear3DSpriteLayer(0);Clear3DSpriteLayer(1);
 for(i=0;i<(u32)func_ov003_022023fc(p);i++){
 if(Modulo(i,2)==0)side=0;else side=1;
 side2=(u8)side;

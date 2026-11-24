@@ -124,14 +124,17 @@ void DrawUnlockedCoList(M2C_UNK owner) {
     RenderTextLayer(CreateTextLayer(owner), 2, 0x6B80, text);
 }
 
-void func_ov005_0221fbc8(M2C_UNK arg0) {
+/* Spawn the unlocked-CO-list screen under `owner`, but only when the player has
+ * unlocked at least one CO (the first set bit of CO_STATE_UNLOCKED). */
+void CreateUnlockedCoListScreen(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gCoState;
-    extern M2C_UNK data_ov005_02220b38;
-    s32 i;
-    for (i = 0; i < 15; i++) {
-        if (M2C_FIELD(&gCoState, s32 *, 8) & (1 << i)) {
-            CreateSpriteObject(&data_ov005_02220b38, arg0);
+    extern M2C_UNK gUnlockedCoListScreenClass;
+    s32 co;
+
+    for (co = 0; co < CO_COUNT; co++) {
+        if (M2C_FIELD(&gCoState, s32 *, CO_STATE_UNLOCKED) & (1 << co)) {
+            CreateSpriteObject(&gUnlockedCoListScreenClass, owner);
             return;
         }
     }

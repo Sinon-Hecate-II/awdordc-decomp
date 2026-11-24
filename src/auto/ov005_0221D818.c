@@ -14,8 +14,8 @@ s32 func_020cfb94(void);
 void DivMod(s32,s32,s32 *,s32 *);
 s32 Modulo(s32,s32);
 void *GetDisplayUnitKind(s32);
-s32 func_020d3014(s32,void *);
-s32 func_020d3080(s32,void *);
+s32 GetPlayerUnitKindCount(s32,void *);
+s32 GetPlayerUnitKindLossCount(s32,void *);
 s32 func_020a72b0(s32,void *);
 void *saved,*saved2;
 s32 y,i,n,d,dx,x,tile,palette,count,oy,ox,ay,mode,score;
@@ -92,8 +92,8 @@ x+=56;q++;tile+=8;i++;
 ox=0;oy=-2;mode=M2C_FIELD(arg0,u8 *,0x58)?0x400:0;
 for(i=0;GetDisplayUnitKind(i);i++,ox+=64){
 if(!Modulo(i,4)){oy+=20;ox=8;}
-if(M2C_FIELD(arg0,s32 *,0x54)==0)score=func_020d3014(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
-else score=func_020d3080(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
+if(M2C_FIELD(arg0,s32 *,0x54)==0)score=GetPlayerUnitKindCount(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
+else score=GetPlayerUnitKindLossCount(M2C_FIELD(arg0,s32 *,0x50)+1,GetDisplayUnitKind(i));
 if(score){
 if(score>99)score=99;
 n=M2C_FIELD(arg0,s32 *,0x50);

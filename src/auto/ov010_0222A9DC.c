@@ -110,7 +110,7 @@ void func_ov010_0222ae08(M2C_UNK arg0) {
    label layer with the blank label (text id 0x4200001b) and keep that layer
    hidden, then move the flow on to the session step that follows. */
 void Ov010_HideEntityLabel(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *func_0208b520(void *);M2C_UNK func_ov010_02228614();
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK func_ov010_02228614();
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedEngine;u32 bank;s32 slot;s8 engineMode;void *label;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -121,7 +121,7 @@ gCur3DSpriteEngine=bank;engineMode=M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE);
 if(engineMode==0&&bank!=g3DSpriteEngineMain)continue;
 if(engineMode==1&&bank!=g3DSpriteEngineSub)continue;
 if(engineMode==3&&bank!=savedEngine)continue;
-label=func_0208b520(entity);
+label=CreateTextLayerChild(entity);
 RenderTextLayerMessage(label,0,M2C_FIELD(entity,u16 *,TEXT_LAYER_VALUE)<<5,0x4200001b);
 M2C_FIELD(label,s32 *,0x58)=((M2C_FIELD(label,s32 *,0x58)|0x1000)&~0x400)|0x800;
 }while(++slot<2);
@@ -146,16 +146,21 @@ void func_ov010_0222af18(void) {
     ClearLinkCommandQueues();
 }
 
-void func_ov010_0222af58(M2C_UNK arg0) {
-    s32 func_020c4bc0(M2C_UNK);
-    if (IsOnlineSessionFlagSet(2) == 0) {
+/* Matchmaking step: attach the profile-save sprite (only once the local profile
+ * has a stored NAS key) and the battle-save sprite to the online session's owner
+ * object, then resume the owner's animation.  Ignored until matchmaking starts. */
+void Ov010_ShowMatchmakingSaveSprites(M2C_UNK owner) {
+    s32 IsProfileKeySet(M2C_UNK);
+    M2C_UNK CreateLocalProfileSaveSprite(M2C_UNK);
+    M2C_UNK CreateLocalBattleSaveSprite(M2C_UNK);
+    if (IsOnlineSessionFlagSet(OV010_FLAG_MATCHMAKING) == 0) {
         return;
     }
-    if (func_020c4bc0(0) != 0) {
-        func_020c4cdc(arg0);
+    if (IsProfileKeySet(0) != 0) {
+        CreateLocalProfileSaveSprite(owner);
     }
-    func_020c4dd0(arg0);
-    Sprite_ResumeAnimation(arg0);
+    CreateLocalBattleSaveSprite(owner);
+    Sprite_ResumeAnimation(owner);
 }
 
 /* Online name-label step: starts the WFC match query for the local player's
@@ -234,10 +239,10 @@ void StartOnlineMatchLabelSplitFades(void *label) {
 }
 
 void func_ov010_0222b11c(M2C_UNK arg0) {
-    M2C_UNK func_020c4cdc();
-    M2C_UNK func_020c4dd0(M2C_UNK);
-    func_020c4cdc();
-    func_020c4dd0(arg0);
+    M2C_UNK CreateLocalProfileSaveSprite();
+    M2C_UNK CreateLocalBattleSaveSprite(M2C_UNK);
+    CreateLocalProfileSaveSprite();
+    CreateLocalBattleSaveSprite(arg0);
     SetSpriteAnimation(arg0, 1);
 }
 
@@ -268,7 +273,7 @@ SetSpriteAnimation((s32)entity,19);
  * 1 = sub engine, 3 = the engine active when called), then play its hide
  * animation. */
 void Ov010_HideEntitySprite(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *func_0208b520(void *);M2C_UNK SetSpriteAnimation(s32,s32);
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK SetSpriteAnimation(s32,s32);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 engine;void *sprite;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -279,7 +284,7 @@ gCur3DSpriteEngine=bank;engine=M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE);
 if(engine==0&&bank!=g3DSpriteEngineMain)continue;
 if(engine==1&&bank!=g3DSpriteEngineSub)continue;
 if(engine==3&&bank!=savedBank)continue;
-sprite=func_0208b520(entity);
+sprite=CreateTextLayerChild(entity);
 RenderTextLayerMessage(sprite,0,M2C_FIELD(entity,u16 *,0x36)<<5,0x4200001e);
 M2C_FIELD(sprite,s32 *,0x58)=((M2C_FIELD(sprite,s32 *,0x58)|0x1000)&~0x400)|0x800;
 }while(++i<2);

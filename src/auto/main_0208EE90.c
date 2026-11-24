@@ -310,14 +310,14 @@ M2C_UNK PlayMusicTrack(s32 arg0) {
 extern s32 gCurrentMusicTrack;
 void func_0208f904(void);
 void StartMusicTrack(s32);
-void func_020ad594(s32);
+void RecordsMenu_FindTrackIndex(s32);
 void func_020ad640(void);
 s32 current=gCurrentMusicTrack;
 if(current==arg0) return current;
 func_0208f904();
 StartMusicTrack(arg0);
 gCurrentMusicTrack=arg0;
-func_020ad594(arg0);
+RecordsMenu_FindTrackIndex(arg0);
 func_020ad640();
 }
 
@@ -425,7 +425,7 @@ void UpdateDelayedSoundEffect(void *sprite) {
         return;
     }
     pan = M2C_FIELD(sprite, s32 *, SOUND_EFFECT_PAN);
-    if (func_0208fe7c(M2C_FIELD(sprite, s32 *, SOUND_EFFECT_ID), M2C_FIELD(sprite, s32 *, SOUND_EFFECT_VOLUME)) != 0) {
+    if (Sound_PlayEffectAtVolume(M2C_FIELD(sprite, s32 *, SOUND_EFFECT_ID), M2C_FIELD(sprite, s32 *, SOUND_EFFECT_VOLUME)) != 0) {
         SetSoundEffectPan(pan);
     }
     DeleteSpriteObject(sprite);
@@ -458,7 +458,7 @@ void StartLoopingSoundEffect(s32 a,s32 b){
  M2C_FIELD(p,s32*,0x5c)=a;M2C_FIELD(p,s16*,0x52)=b;
 }
 
-void func_0208fa28(void) {
+void StopLoopingSoundEffects(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gLoopingSoundEffectClass;
     DeleteSpriteObjectsOfClass(&gLoopingSoundEffectClass);
@@ -494,8 +494,8 @@ s32 MapTileToSoundPan(s32 tileX,s32 tileY){
 
 void func_0208facc(M2C_UNK arg0) {
     s32 GetSoundEffectVolume();
-    M2C_UNK func_0208fe7c(M2C_UNK, s32);
-    func_0208fe7c(arg0, GetSoundEffectVolume());
+    M2C_UNK Sound_PlayEffectAtVolume(M2C_UNK, s32);
+    Sound_PlayEffectAtVolume(arg0, GetSoundEffectVolume());
 }
 
 void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
@@ -503,18 +503,21 @@ void PlaySoundEffectOnChannel0(M2C_UNK arg0) {
     PlaySlotScriptedSoundAtVolume(0, -1, arg0, GetSoundEffectVolume());
 }
 
-void PlaySoundAtTile(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    s32 MapTileToSoundPan(M2C_UNK, M2C_UNK);
-    M2C_UNK SetSoundEffectPan(s32);
-    s32 temp_r4;
-    s32 temp_r5;
+/* Play sound effect soundId at the current zoom-based volume and pan it by the
+ * map tile (tileX, tileY) it plays at. */
+void PlaySoundAtTile(s32 soundId, s32 tileX, s32 tileY) {
+    s32 MapTileToSoundPan(s32, s32);
+    s32 Sound_PlayEffectAtVolume(s32, s32);
+    s32 SetSoundEffectPan(s32);
+    s32 volume;
+    s32 pan;
 
-    temp_r5 = GetSoundEffectVolume();
-    temp_r4 = MapTileToSoundPan(arg1, arg2);
-    if (func_0208fe7c(arg0, temp_r5) == 0) {
+    volume = GetSoundEffectVolume();
+    pan = MapTileToSoundPan(tileX, tileY);
+    if (Sound_PlayEffectAtVolume(soundId, volume) == 0) {
         return;
     }
-    SetSoundEffectPan(temp_r4);
+    SetSoundEffectPan(pan);
 }
 
 /* Spawn a delayed one-shot sound effect: record the effect id, the current
@@ -574,11 +577,11 @@ void func_0208fc4c(void) {
  * initialise the archive's channels and the sound worker, then mark the driver
  * enabled and apply its settings. */
 void OpenSoundPlayer(void){
- s32 func_020e34f4(s32);s32 Sound_CreateHeap(s32,s32);
+ s32 HeapAllocBlockTail(s32);s32 Sound_CreateHeap(s32,s32);
  extern M2C_UNK gSoundDriverState,gSoundArchive,gSoundArchivePath;
  s32 player;
  if(M2C_FIELD(&gSoundDriverState,u8*,SOUND_STATE_ENABLED))return;
- if(!M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP))M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP)=func_020e34f4(SOUND_HEAP_BYTES);
+ if(!M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP))M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP)=HeapAllocBlockTail(SOUND_HEAP_BYTES);
  player=Sound_CreateHeap(M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_HEAP),SOUND_HEAP_BYTES);
  M2C_FIELD(&gSoundDriverState,s32*,SOUND_STATE_PLAYER)=player;
  Sound_OpenArchive(&gSoundArchive,&gSoundArchivePath,player,0);
@@ -641,13 +644,22 @@ M2C_FIELD(&gSoundFrameIds,s32*,count<<2)=soundId;
 M2C_FIELD(&gSoundDriverState,u32*,SOUND_STATE_PLAYED_COUNT)=next;
 } return 1;
 }
-s32 PlaySoundEffect(s32 a){
- s32 Sound_ClaimPlaySlot(s32);
- void Sound_PlayPackedId(M2C_UNK*,s32,u32);
- extern M2C_UNK gSoundDriverState,gSoundEffectPlayer;
- u8 enabled=M2C_FIELD(&gSoundDriverState,u8*,0);
- if(enabled==0)return 0;
- if(!Sound_ClaimPlaySlot(a))return 0;
- Sound_PlayPackedId(&gSoundEffectPlayer,-1,a);return 1;
+/* Plays packed sound `soundId` on the sound-effect player, at most once per
+ * frame: returns 0 while the sound system is off or the sound was already
+ * started this frame, 1 once it was handed to the driver. */
+s32 PlaySoundEffect(s32 soundId) {
+    s32 Sound_ClaimPlaySlot(s32);
+    void Sound_PlayPackedId(M2C_UNK *, s32, u32);
+    extern M2C_UNK gSoundDriverState, gSoundEffectPlayer;
+    u8 enabled = M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED);
+
+    if (enabled == 0) {
+        return 0;
+    }
+    if (!Sound_ClaimPlaySlot(soundId)) {
+        return 0;
+    }
+    Sound_PlayPackedId(&gSoundEffectPlayer, -1, soundId);
+    return 1;
 }
 

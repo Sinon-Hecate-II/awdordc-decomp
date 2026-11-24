@@ -16,6 +16,7 @@
 
 /* Heap signature (u32 at heap+0x00). */
 #define HEAP_SIGNATURE_EXP 0x45585048 /* 'EXPH' */
+#define HEAP_SIGNATURE_FRM 0x46524D48 /* 'FRMH': frame heap, see InitFrameHeapArea */
 
 /* Heap-containment links of an expanded heap's header.  InitHeapHead starts the
  * heap's child list at +0x0C and links the heap into the list of the heap that
@@ -43,6 +44,7 @@ typedef struct FrameHeap {
 
 #define FRAME_HEAP_HEAD 0x24 /* u32 first free byte of the frame (FrameHeap::head) */
 #define FRAME_HEAP_TAIL 0x28 /* u32 last free byte of the frame (FrameHeap::tail) */
+#define FRAME_HEAP_DATA 0x30 /* first byte of the frame heap's allocatable area (the header ends here) */
 #define FRAME_HEAP_ATTRIBUTE     (-4)  /* heap+0x20: the heap attribute byte (see InitHeapHead) */
 #define FRAME_HEAP_ATTR_ZERO_FILL 0x01 /* attribute bit 0: clear freshly allocated bytes */
 

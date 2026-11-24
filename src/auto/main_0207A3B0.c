@@ -367,7 +367,7 @@ void func_0207a7a4(s32 arg0, s32 arg1) {
 void CompletePropertyCapture(s32 x, s32 y) {
     M2C_UNK SetPropertyOwnerTile(s32, s32, u8);
     M2C_UNK RefreshMapView(void);
-    M2C_UNK func_020cf2c8(void);
+    M2C_UNK RebuildMapPropertyCells(void);
     M2C_UNK func_020d2470(void);
     extern void *gCurrentMap;
     s32 index;
@@ -382,7 +382,7 @@ void CompletePropertyCapture(s32 x, s32 y) {
     terrain[index] = value;
     SetPropertyOwnerTile(x, y, (u8)(value & MAP_TERRAIN_OWNER_MASK));
     RefreshMapView();
-    func_020cf2c8();
+    RebuildMapPropertyCells();
     func_020d2470();
 }
 

@@ -61,16 +61,19 @@ M2C_UNK ProcessFileRequests(FSFileRequest *request) {
     } while (request);
 }
 
-s32 FinishFileRequest(void *arg0) {
+/* Run the request's command, complete the request with the result and, when its
+ * file still has pending requests, process the next one.  Returns 1 when the
+ * command succeeded (result 0), else 0. */
+s32 FinishFileRequest(void *request) {
     M2C_UNK CompleteFileRequest(void *, s32);
     s32 ExecuteFileCommand(void *, s32);
     s32 GetNextFileRequest(s32);
     M2C_UNK ProcessFileRequests();
-    CompleteFileRequest(arg0, ExecuteFileCommand(arg0, M2C_FIELD(arg0, s32 *, 0x10)));
-    if (GetNextFileRequest(M2C_FIELD(arg0, s32 *, 8)) != 0) {
+    CompleteFileRequest(request, ExecuteFileCommand(request, M2C_FIELD(request, s32 *, FS_REQ_COMMAND)));
+    if (GetNextFileRequest(M2C_FIELD(request, s32 *, FS_REQ_FILE)) != 0) {
         ProcessFileRequests();
     }
-    if (M2C_FIELD(arg0, s32 *, 0x14) == 0) {
+    if (M2C_FIELD(request, s32 *, FS_REQ_RESULT) == 0) {
         return 1;
     }
     return 0;
@@ -437,22 +440,25 @@ M2C_UNK func_0200b8e0(M2C_UNK a, M2C_UNK b, M2C_UNK c, M2C_UNK d) {
     return n;
 }
 
-s32 func_0200b95c(s32 a,s32 b) {
+s32 ResolveFileRangeFromPath(s32 a,s32 b) {
  s32 SubmitPathRequest(void *,s32,s32,s32);
  u8 v[0x48];
  InitFileRequest(v);
  return SubmitPathRequest(v,b,a,0)!=0;
 }
 
-s32 OpenFileDirect(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    M2C_FIELD(arg0, s32 *, 8) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x38) = arg4;
-    M2C_FIELD(arg0, s32 *, 0x30) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x34) = arg3;
-    if (SubmitFileRequest(arg0, 7) == 0) {
+/* Open the archive range [start, end) of file id `fileId` directly on `request`
+   (open-range command): fill in the request's file and open fields, submit it,
+   and on success mark the request as an open file rather than a directory. */
+s32 OpenFileDirect(void *request, s32 archive, s32 start, s32 end, s32 fileId) {
+    M2C_FIELD(request, s32 *, FS_REQ_FILE) = archive;
+    M2C_FIELD(request, s32 *, FS_REQ_OPEN_ID) = fileId;
+    M2C_FIELD(request, s32 *, FS_REQ_OPEN_START) = start;
+    M2C_FIELD(request, s32 *, FS_REQ_OPEN_END) = end;
+    if (SubmitFileRequest(request, FS_COMMAND_OPEN_RANGE) == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0xC) = (s32) ((M2C_FIELD(arg0, s32 *, 0xC) | 0x10) & ~0x20);
+    M2C_FIELD(request, s32 *, FS_REQ_FLAGS) = (s32) ((M2C_FIELD(request, s32 *, FS_REQ_FLAGS) | FS_REQ_OPEN) & ~FS_REQ_DIRECTORY);
     return 1;
 }
 
@@ -462,7 +468,14 @@ s32 OpenFileDirect(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
  * when there is no archive or the command could not be started. */
 s32 OpenFileRange(s32 request,Unk02BDFileRange range){if(!range.words[0])return 0;M2C_FIELD(request,u32 *,FS_REQ_FILE)=range.words[0];M2C_FIELD(request,u32 *,FS_REQ_OPEN_START)=range.words[0];M2C_FIELD(request,u32 *,FS_REQ_OPEN_END)=M2C_FIELD(&range,volatile u32 *,4);if(!SubmitFileRequest((void *)request,6))return 0;M2C_FIELD(request,s32 *,FS_REQ_FLAGS)=(M2C_FIELD(request,s32 *,FS_REQ_FLAGS)|16)&~FS_REQ_DIRECTORY;return 1;}
 
-s32 OpenFileRequest(s32 a){s32 OpenFileRange(s32,Unk02BDFileRange);Unk02BDFileRange v;if(((s32 (*)(void *))func_0200b95c)(&v)&&OpenFileRange(a,v))return 1;return 0;}
+/* Opens the file named by `path` on `request`: resolve the path into the file's
+ * archive and id, then open that file range on the request. */
+s32 OpenFileRequest(s32 request,s32 path){
+s32 OpenFileRange(s32,Unk02BDFileRange);
+Unk02BDFileRange range;
+if(ResolveFileRangeFromPath(&range,path)&&OpenFileRange(request,range))return 1;
+return 0;
+}
 
 s32 CloseFileRequest(void *arg0) {
     s32 SubmitFileRequest(void *, M2C_UNK);
@@ -501,7 +514,18 @@ s32 WaitForFileRequest(void *request) {
     return M2C_FIELD(request, s32 *, FS_REQ_RESULT) == 0;
 }
 
-void func_0200bb98(void *a){s32 key=OS_DisableInterrupts();void *p;if((M2C_FIELD(a,volatile s32 *,12)&1)?1:0){M2C_FIELD(a,volatile s32 *,12)|=2;p=M2C_FIELD(a,void **,8);M2C_FIELD(p,s32 *,28)|=32;}OS_RestoreInterrupts(key);}
+/* Cancels a file request: while it is still active, mark it so the file's
+ * request processor drops it, and mark the file it runs on as cancelling. */
+void CancelFileRequest(FSFileRequest *request){
+s32 key=OS_DisableInterrupts();
+void *file;
+if((M2C_FIELD(request,volatile s32 *,FS_REQ_FLAGS)&FS_REQ_ACTIVE)?1:0){
+M2C_FIELD(request,volatile s32 *,FS_REQ_FLAGS)|=FS_REQ_QUEUED;
+file=M2C_FIELD(request,void **,FS_REQ_FILE);
+M2C_FIELD(file,s32 *,FS_FILE_STATE)|=FS_FILE_CANCELLING;
+}
+OS_RestoreInterrupts(key);
+}
 
 s32 FileRead(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK func_0200b8e0(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
@@ -541,7 +565,7 @@ s32 SetFileDirectory(s32 path) {
     return 1;
 }
 
-void func_0200bcb4(M2C_UNK arg0) {
+void CardArchiveReadDone(M2C_UNK arg0) {
     M2C_UNK FileOperationCompleted(M2C_UNK, M2C_UNK);
     s32 System_IsShuttingDown();
     M2C_UNK var_r1;
@@ -554,7 +578,10 @@ void func_0200bcb4(M2C_UNK arg0) {
     FileOperationCompleted(arg0, var_r1);
 }
 
-s32 func_0200bcd8(s32 a,s32 b,s32 c,s32 d){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern FSCardArchiveWork gCardArchiveWork;func_02010b1c(M2C_FIELD(&gCardArchiveWork,s32 *,4),c,b,d,(s32)func_0200bcb4,(void *)a,1);return 6;}
+/* The card archive's read procedure: start an asynchronous card transfer of
+ * `length` bytes at `offset` into `buffer` for the request `file`, and report the
+ * read as still in progress (6) so the caller waits for its completion callback. */
+s32 ReadCardArchiveBlock(void *file,void *buffer,s32 offset,s32 length){void func_02010b1c(s32,s32,s32,s32,s32,void *,s32);extern FSCardArchiveWork gCardArchiveWork;func_02010b1c(gCardArchiveWork.device,offset,buffer,length,(s32)CardArchiveReadDone,file,1);return 6;}
 
 s32 func_0200bd20(void) {
     return 1;

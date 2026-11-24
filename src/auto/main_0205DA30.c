@@ -227,25 +227,28 @@ M2C_FIELD(peer,M2C_UNK (**)(s32,s32,void *,s32),NATNEG_PEER_SEND)(1,-1,0,M2C_FIE
 }
 }
 
-void func_0205e178(void) {
+/* Polls every NAT-negotiation peer once per network frame: walks the manager's
+ * peer vector from the last record back to the first and lets UpdateNatNegPeer
+ * drain and advance each one. Does nothing before any peer has been created. */
+void NatNeg_Think(void) {
     s32 Vector_GetCount();
     M2C_UNK Vector_GetItem(s32, s32);
     void UpdateNatNegPeer();
     extern M2C_UNK gNatNegManager;
-    s32 var_r5;
+    s32 index;
 
-    if (M2C_FIELD(&gNatNegManager, s32 *, 0x10) == 0) {
+    if (M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS) == 0) {
         return;
     }
-    var_r5 = Vector_GetCount() - 1;
-    if (var_r5 < 0) {
+    index = Vector_GetCount() - 1;
+    if (index < 0) {
         return;
     }
     do {
-        Vector_GetItem(M2C_FIELD(&gNatNegManager, s32 *, 0x10), var_r5);
+        Vector_GetItem(M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS), index);
         UpdateNatNegPeer();
-        var_r5 -= 1;
-    } while (var_r5 >= 0);
+        index -= 1;
+    } while (index >= 0);
 }
 
 #pragma scheduling off

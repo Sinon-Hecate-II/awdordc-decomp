@@ -144,9 +144,9 @@ void SpawnRippleEffect(M2C_UNK unused, M2C_UNK mode) {
 extern void **gCurrentMap;
 extern u8 sRippleInName[],sRippleOutName[];
 void *CreateAnimatedMapSprite(void *,s32,s32,s32,s32,s32,s32);
-s32 func_020d0548(s32,s32);
+s32 IsWithinScreenBounds(s32,s32);
 void *map=*gCurrentMap,*sprite; s32 x=M2C_FIELD(map,s16 *,0x52dc),y=M2C_FIELD(map,s16 *,0x52de); if(!visibleCB(map,x,y))return;
-if(!func_020d0548(x,y))return;
+if(!IsWithinScreenBounds(x,y))return;
 switch(mode){
 case 0:
 sprite=CreateAnimatedMapSprite(sRippleInName,x,y,0,0,0,7);

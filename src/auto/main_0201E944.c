@@ -282,8 +282,8 @@ void func_0201f09c(void) {
 }
 
 s32 func_0201f0b4(void) {
-    s32 func_02029784();
-    if (func_02029784() != 0) {
+    s32 WFC_GetConnectionAltCode();
+    if (WFC_GetConnectionAltCode() != 0) {
         return 1;
     }
     return 0;
@@ -323,12 +323,15 @@ s32 NetworkAllocTaskPool(s32 count) {
     return 0;
 }
 
+/* Frees the socket task pool: hand the block NetworkAllocTaskPool allocated back
+ * to the net allocator, unless some task slot is still in use (the free queue
+ * holds fewer than the pool's full set).  Returns 0, or -1 while a slot is out. */
 s32 NetworkFreeTaskPool(void) {
     extern s32 gNetAllocator;
     extern M2C_UNK gSocketTaskPool;
-    if (M2C_FIELD(&gSocketTaskPool, s32 *, 0x20) < M2C_FIELD(&gSocketTaskPool, s32 *, 0x18)) return -1;
-    M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&gSocketTaskPool, s32 *, 0));
-    M2C_FIELD(&gSocketTaskPool, s32 *, 0) = 0;
+    if (M2C_FIELD(&gSocketTaskPool, s32 *, TASKPOOL_FREE) < M2C_FIELD(&gSocketTaskPool, s32 *, TASKPOOL_SLOTS)) return -1;
+    M2C_FIELD(gNetAllocator, void (**)(s32), NET_ALLOC_FREE)(M2C_FIELD(&gSocketTaskPool, s32 *, TASKPOOL_BLOCK));
+    M2C_FIELD(&gSocketTaskPool, s32 *, TASKPOOL_BLOCK) = 0;
     return 0;
 }
 

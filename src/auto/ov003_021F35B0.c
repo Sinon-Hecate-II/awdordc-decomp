@@ -30,7 +30,7 @@ void func_ov003_021f35d8(void *arg0) {
 void Ov003_UpdateMapConfirmState(Ov003BattleSetup *setup) {
     M2C_UNK SetSpriteAnimation(void *, M2C_UNK);
     s32 IsSessionInError();
-    s32 func_0208477c();
+    s32 IsSessionResultHandled();
     s32 IsMapConfirmEnabled();
     M2C_UNK Ov003_SetMapConfirmEnabled();
     setup->state = 2;
@@ -39,27 +39,31 @@ void Ov003_UpdateMapConfirmState(Ov003BattleSetup *setup) {
         return;
     }
     Ov003_SetMapConfirmDisabled();
-    if ((IsSessionInError() == 0) && (func_0208477c() == 0)) {
+    if ((IsSessionInError() == 0) && (IsSessionResultHandled() == 0)) {
         return;
     }
     SetSpriteAnimation(setup, 5);
 }
 
-void func_ov003_021f3648(void *arg0) {
-    M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, void *);
-    M2C_UNK func_02086330();
-    M2C_UNK DisableMapConfirm();
-    M2C_UNK func_ov003_021f182c();
+/* Enter the match scene for the setup: disable map confirming, close the
+ * voice-chat UI and create the match-name label off-screen (y = 0x6E0), then on
+ * the first call start the scene transition. */
+void Ov003_EnterMatchScene(Ov003BattleSetup *setup) {
     M2C_UNK Ov003_SetMapConfirmDisabled();
+    M2C_UNK DisableMapConfirm();
+    M2C_UNK DeleteVoiceChatWidgets();
+    M2C_UNK CreateMatchNameLabel(M2C_UNK, M2C_UNK, void *);
+    M2C_UNK Ov003_CreateScreenTransition();
+
     Ov003_SetMapConfirmDisabled();
     DisableMapConfirm();
-    func_02086330();
-    CreateMatchNameLabel(0, 0x6E0, arg0);
-    if (M2C_FIELD(arg0, u8 *, 0x44) != 0) {
+    DeleteVoiceChatWidgets();
+    CreateMatchNameLabel(0, 0x6E0, setup);
+    if (setup->pending != 0) {
         return;
     }
-    func_ov003_021f182c();
-    M2C_FIELD(arg0, u8 *, 0x44) = 1U;
+    Ov003_CreateScreenTransition();
+    setup->pending = 1;
 }
 
 void func_ov003_021f3688(M2C_UNK arg0) {
@@ -460,35 +464,40 @@ s32 func_ov003_021f3f24(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     return 1;
 }
 
-s32 func_ov003_021f3f5c(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s16 arg4, s16 arg5, s16 arg6, s16 arg7) {
-    if (arg0 + arg2 < arg4 || arg4 + arg6 < arg0) return 0;
-    if (arg1 + arg3 < arg5 || arg5 + arg7 < arg1) return 0;
+/* Return 1 when the rectangle (x0, y0) of size (w0, h0) overlaps the rectangle
+ * (x1, y1) of size (w1, h1): the two are apart only when one lies entirely past
+ * the other on either axis. */
+s32 RectsOverlap(s32 x0, s32 y0, s32 w0, s32 h0, s16 x1, s16 y1, s16 w1, s16 h1) {
+    if (x0 + w0 < x1 || x1 + w1 < x0) return 0;
+    if (y0 + h0 < y1 || y1 + h1 < y0) return 0;
     return 1;
 }
 
-void func_ov003_021f3fa0(s32 arg0, s32 arg1, s32 arg2) {
-    s16 temp_r0;
-    s16 temp_r0_2;
-    s32 temp_gt;
-    s32 temp_gt_2;
-    s32 var_r0;
+/* Wrap `value` into the range [min, max) by adding or subtracting the period
+ * (max - min) until it falls inside, truncating the intermediate sum to 16 bits. */
+void WrapValueToRange(s32 value, s32 min, s32 max) {
+    s16 wrapped;
+    s16 wrapped2;
+    s32 stillBelow;
+    s32 belowMax;
+    s32 result;
 
-    var_r0 = arg0;
-    if (var_r0 < arg1) {
+    result = value;
+    if (result < min) {
         do {
-            temp_r0 = var_r0 + (arg2 - arg1);
-            temp_gt = arg1 > (s32) temp_r0;
-            var_r0 = (s32) temp_r0;
-        } while (temp_gt);
+            wrapped = result + (max - min);
+            stillBelow = min > (s32) wrapped;
+            result = (s32) wrapped;
+        } while (stillBelow);
     }
-    if (var_r0 < arg2) {
+    if (result < max) {
         return;
     }
     do {
-        temp_r0_2 = var_r0 - (arg2 - arg1);
-        temp_gt_2 = arg2 > (s32) temp_r0_2;
-        var_r0 = (s32) temp_r0_2;
-    } while (!temp_gt_2);
+        wrapped2 = result - (max - min);
+        belowMax = max > (s32) wrapped2;
+        result = (s32) wrapped2;
+    } while (!belowMax);
 }
 
 s16 func_ov003_021f3fe4(s32 arg0, s32 arg1, s32 arg2) {

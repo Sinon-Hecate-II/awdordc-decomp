@@ -76,7 +76,7 @@ void SetupEntityDisplay(void *entity) {
     void *partsB;
     void *partsC;
 
-    frame=func_ov003_021f153c();
+    frame=GetSceneEntryOffset();
     first = M2C_FIELD(entity, void **, 0x58);
     M2C_FIELD(first, s16 *, 0xE) = frame;
     M2C_FIELD(first, s16 *, 0x10) = 0;
@@ -300,8 +300,8 @@ void func_ov003_021fd1cc(void) {
 }
 
 void func_ov003_021fd1d8(void) {
-    M2C_UNK func_ov003_021f6724();
-    func_ov003_021f6724();
+    M2C_UNK Ov003_RefreshMapListDisplay();
+    Ov003_RefreshMapListDisplay();
 }
 
 void func_ov003_021fd1e4(void) {
@@ -317,7 +317,7 @@ void BeginLinkMapTransfer(void *entity) {
     s32 IsLinkSessionActive();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK func_ov003_021f152c(M2C_UNK);
-    s32 func_ov003_021f153c();
+    s32 GetSceneEntryOffset();
     M2C_UNK Ov003_BroadcastPlayerSetup(M2C_UNK);
     M2C_UNK CreateMapTransferPanelStep1(void *);
     s32 isMapList;
@@ -333,7 +333,7 @@ void BeginLinkMapTransfer(void *entity) {
     if (IsLinkSessionActive() == 0) {
         return;
     }
-    if (func_ov003_021f153c() != 0) {
+    if (GetSceneEntryOffset() != 0) {
         return;
     }
     func_ov003_021f152c(1);
@@ -382,9 +382,9 @@ void func_ov003_021fd2d0(void *entity) {
     M2C_UNK SetTextById(s32, s32);
     s32 GetUiColor(M2C_UNK);
     M2C_UNK SetMenuPanelState(void *, M2C_UNK);
-    M2C_UNK func_ov006_02217840(void *);
-    M2C_UNK func_ov006_02217c74(void *);
-    M2C_UNK func_ov006_02217cb8(void *);
+    M2C_UNK CreateCampaignMapMenuUi(void *);
+    M2C_UNK ShowMapPickHint8(void *);
+    M2C_UNK ShowMapPickHint7(void *);
     extern void *gCur3DSpriteEngine;
     s32 var_r0;
     s32 var_r0_2;
@@ -397,7 +397,7 @@ void func_ov003_021fd2d0(void *entity) {
         var_r0 = 0;
     }
     if (var_r0 & 0xFF) {
-        func_ov006_02217840(entity);
+        CreateCampaignMapMenuUi(entity);
     }
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C) == 8) {
         var_r0_2 = 1;
@@ -405,7 +405,7 @@ void func_ov003_021fd2d0(void *entity) {
         var_r0_2 = 0;
     }
     if (var_r0_2 & 0xFF) {
-        func_ov006_02217c74(entity);
+        ShowMapPickHint8(entity);
     }
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C) == 7) {
         var_r0_3 = 1;
@@ -413,7 +413,7 @@ void func_ov003_021fd2d0(void *entity) {
         var_r0_3 = 0;
     }
     if (var_r0_3 & 0xFF) {
-        func_ov006_02217cb8(entity);
+        ShowMapPickHint7(entity);
     }
     if (((u32) (M2C_FIELD(entity, u8 *, 0x3B) << 0x1C) >> 0x1C) == 4) {
         var_r0_4 = 1;

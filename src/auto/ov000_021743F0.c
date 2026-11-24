@@ -398,7 +398,7 @@ void *Ov000_StatsWindow_Create(void *entry) {
     return entry;
 }
 
-void *func_ov000_0217519c(void *arg0) {
+void *Ov000_StatsWindow_FreePanel(void *arg0) {
     M2C_UNK MemFree(s32);
     MemFree(M2C_FIELD(arg0, s32 *, 0x10));
     return arg0;

@@ -402,7 +402,7 @@ void ResizeMap(s32 width, s32 height) {
     M2C_UNK func_020d1f2c();
     M2C_UNK BuildMapRowOffsets();
     M2C_UNK func_ov007_02217a5c();
-    M2C_UNK func_020cf2c8();
+    M2C_UNK RebuildMapPropertyCells();
     extern s32 *gCurrentMap;
     ResetMapUnits();
     InitPlayerStates();
@@ -411,7 +411,7 @@ void ResizeMap(s32 width, s32 height) {
     M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_HEIGHT) = (u16) height;
     BuildMapRowOffsets();
     func_ov007_02217a5c();
-    func_020cf2c8();
+    RebuildMapPropertyCells();
 }
 
 #pragma optimization_level 4
@@ -424,7 +424,7 @@ void FillMapTerrain(s32 preset) {
     M2C_UNK InitPlayerStates();
     M2C_UNK func_020d1f2c();
     M2C_UNK BuildMapRowOffsets();
-    M2C_UNK func_020cf2c8();
+    M2C_UNK RebuildMapPropertyCells();
     void ResizeMap(s32, s32);
     extern s32 *gCurrentMap;
 
@@ -465,7 +465,7 @@ void FillMapTerrain(s32 preset) {
             }
         }
     }
-    func_020cf2c8();
+    RebuildMapPropertyCells();
 }
 /* Rebuilds the map at the requested size from the map editor's serialized
  * export: fills the default terrain, copies the exported terrain grid and the
@@ -483,7 +483,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     s32 TerrainByteToTileId(u8);
     void *CreateMapUnit(s16, s16, s16, s32);
     void Map_RefreshCellTile(M2C_UNK, M2C_UNK);
-    M2C_UNK func_020cf2c8(void);
+    M2C_UNK RebuildMapPropertyCells(void);
     extern s32 *gCurrentMap;
 
     void *exportBlock;
@@ -564,7 +564,7 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
         } while(mapY<height);
     }
 
-    func_020cf2c8();
+    RebuildMapPropertyCells();
 }
 
 /* Scale a Manhattan-distance threshold for the current map: `baseDistance` cells

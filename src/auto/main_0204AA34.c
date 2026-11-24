@@ -177,7 +177,7 @@ void ghiForEachConnection(M2C_UNK *callback) {
 void func_0204afd8(void *obj) {
     M2C_UNK ghiCloseSocket(s32);
     M2C_UNK func_020496cc(s32, M2C_UNK);
-    M2C_UNK ResetBuffer(void *);
+    M2C_UNK ghiResetBuffer(void *);
     extern M2C_UNK data_020fd038;
     extern M2C_UNK ghiAssertFile;
     extern M2C_UNK data_020fd0a4;
@@ -201,9 +201,9 @@ void func_0204afd8(void *obj) {
     func_020496cc(M2C_FIELD(obj, s32 *, 0x48), 2);
     ghiCloseSocket(M2C_FIELD(obj, s32 *, 0x48));
     M2C_FIELD(obj, s32 *, 0x48) = -1;
-    ResetBuffer(obj + 0x50);
-    ResetBuffer(obj + 0x74);
-    ResetBuffer(obj + 0x98);
+    ghiResetBuffer(obj + 0x50);
+    ghiResetBuffer(obj + 0x74);
+    ghiResetBuffer(obj + 0x98);
     M2C_FIELD(obj, s32 *, 0xE4) = 0;
     M2C_FIELD(obj, s32 *, 0xE8) = 0;
     M2C_FIELD(obj, s32 *, 0xEC) = 0;

@@ -285,7 +285,7 @@ if (M2C_FIELD(node, void **, 4) != NULL) { HeapFreeBlock(M2C_FIELD(node, void **
    the animation table, mode 1 applies a movement value (or -1), mode 2 starts
    an attack/movement action and updates the unit's travel speed. */
 void func_ov002_021e97d8(void *unit, s32 mode, s32 value, s32 flag) {
-void func_ov002_021e173c(void *, u8);
+void SetEffectNodeScript(void *, u8);
 void SetupUnitMoveNode(void *, s32);
 void SetupUnitActionNode(void *, s32);
 void SetupUnitActionNodeEx(void *);
@@ -295,14 +295,14 @@ s32 off;
 switch (mode) {
 case 0:
 off = M2C_FIELD(unit, u8 *, 0x8c) * 24;
-if (gEffectDefaultVariant[off] == 0) { func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x39)); return; }
-func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x3a)); return;
+if (gEffectDefaultVariant[off] == 0) { SetEffectNodeScript(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x39)); return; }
+SetEffectNodeScript(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, off), u8 *, 0x3a)); return;
 case 1:
 if (flag == 0) { SetupUnitMoveNode(unit, value); return; }
 SetupUnitMoveNode(unit, -1); return;
 case 2:
 if (flag == 0) { SetupUnitActionNode(unit, value); return; }
-func_ov002_021e173c(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
+SetEffectNodeScript(unit, M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3b));
 if (gEffectHasVariants[M2C_FIELD(unit, u8 *, 0x8c) * 44]) SetupUnitActionNodeEx(unit); else SetupUnitActionNode(unit, -1);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) == 0) func_ov002_021e9008(unit, 0x800, -0x800); else func_ov002_021ea4bc(unit, 0, 0);
 if (M2C_FIELD(M2C_FIELD(gEffectTable, void **, M2C_FIELD(unit, u8 *, 0x8c) * 24), u8 *, 0x3d) != 2) return;

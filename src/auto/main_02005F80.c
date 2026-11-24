@@ -454,17 +454,21 @@ void RemoveThreadMutex(void *arg0, void *arg1) {
 }
 
 #pragma opt_propagation off
-void func_02006838(void) { u32 saved; u32 *io; io=(u32 *)0x04000000; saved=io[0x82]; io[0x82]=(u32)io; do {} while(*(volatile u16 *)((u8 *)io+6)); io[0x82]=saved; }
+void WaitForVBlankStart(void) { u32 saved; u32 *io; io=(u32 *)0x04000000; saved=io[0x82]; io[0x82]=(u32)io; do {} while(*(volatile u16 *)((u8 *)io+6)); io[0x82]=saved; }
 #pragma opt_propagation reset
-void func_02006858(void) {
+/* Bring up the system services and drivers the game runs on: the memory arenas,
+ * the ARM7/IPC links, the exception handler, sound and DMA, the OS timer and
+ * thread manager, the VRAM bank table, the save device, multiboot and the ARM7
+ * command channel, finishing with a VBlank-synchronised interrupt restore. */
+void InitSystemServices(void) {
     M2C_UNK func_02004fe0();
     M2C_UNK func_02005254();
     M2C_UNK func_02005288();
     M2C_UNK func_02005968();
-    void func_02006838(void);
-void InitArenaTable(void);
+    void WaitForVBlankStart(void);
+    void InitArenaTable(void);
     void InstallExceptionHandler();
-    M2C_UNK func_020074c0();
+    M2C_UNK InitVCountIrqModule();
     M2C_UNK InitArm7BootSync();
     M2C_UNK GX_ResetBankOwners();
     M2C_UNK func_02008bb8();
@@ -480,14 +484,14 @@ void InitArenaTable(void);
     func_02005254();
     InstallExceptionHandler();
     func_02008bb8();
-    func_020074c0();
+    InitVCountIrqModule();
     GX_ResetBankOwners();
     func_02005968();
     InitArm7BootSync();
     Mb_BootInit();
     SaveDevice_Init();
     Arm7CommandInit();
-    func_02006838();
+    WaitForVBlankStart();
 }
 
 /* Fills the arena table once: the top and bottom address of each arena's memory

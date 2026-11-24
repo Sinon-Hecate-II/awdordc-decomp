@@ -19,9 +19,9 @@ static inline u8 AtStart2e98(void *p) {
 static inline s32 BlockNext2e98(void *p) {if(AtEnd2e98(p))return 1; return IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)+1]);}
 static inline s32 BlockPrev2e98(void *p) {if(AtStart2e98(p))return 1; return IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)-1]);}
 static inline void AdvanceState2e98(s32 a) {
- s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
+ s32 func_ov003_021f1448(void); void Ov003_CreateScreenTransition(void);
  if(M2C_FIELD(a,u8 *,0x44)) {M2C_FIELD(a,u8 *,0x34)=2; return;}
- if(func_ov003_021f1448()) {func_ov003_021f182c(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
+ if(func_ov003_021f1448()) {Ov003_CreateScreenTransition(); M2C_FIELD(a,u8 *,0x44)=1;M2C_FIELD(a,u8 *,0x34)=2;}
 }
 /* True while the map-select list's current category (gMapCategory) is one that
  * lists the campaign map records (ids 225..424): the story and the trial-map
@@ -34,7 +34,12 @@ s32 IsCampaignMapCategory(void) {
  }
 }
 
-s32 func_ov003_021f2654(void) {
+/* True while the current map category shows the game's campaign maps directly:
+ * its campaign map ids (225..424) are loaded from the cached campaign map
+ * headers, one 50-map block per player, instead of a saved map record, so its
+ * maps never need the unavailable shading.  A subset of IsCampaignMapCategory,
+ * which also covers the categories whose campaign-range ids are player records. */
+s32 IsCampaignMapHeaderCategory(void) {
  s32 GetMapCategory();
  switch(GetMapCategory()) {
  case 6: case 12: case 22: case 23: return 1;
@@ -94,15 +99,18 @@ s32 FindFreeMapPick(s32 unused,s32 array) {
     return 255;
 }
 
-void func_ov003_021f2808(s32 arg0, M2C_UNK arg1) {
+/* Pick or unpick the map the first side has selected in the link map-select
+ * screen, after checking its campaign map record: a map whose record is not
+ * valid is refused with sound 0x1001D instead. */
+void ToggleFirstSideMapPick(s32 block, s32 map) {
     M2C_UNK PlaySoundEffect(s32);
     s32 IsCampaignMapRecordValid(M2C_UNK);
     void ToggleMapPick(s32, s32, M2C_UNK);
-    if (IsCampaignMapRecordValid(arg1) == 0) {
+    if (IsCampaignMapRecordValid(map) == 0) {
         PlaySoundEffect(0x1001D);
         return;
     }
-    ToggleMapPick(arg0, arg0 + 4, arg1);
+    ToggleMapPick(block, block + 4, map);
 }
 
 void func_ov003_021f2848(s32 arg0) {
@@ -181,7 +189,7 @@ tail:
 }
 #pragma pop
 /* Attempt to start a contextual action (overlay-dependent); returns 1 if one was started. */
-s32 func_ov003_021f2a9c(s32 entry) {
+s32 ShowLinkResultPanel(s32 entry) {
     s32 IsLinkSessionActive(void);
     s32 IsTextLayerActive(void);
     s32 GetActiveOverlay(void);
@@ -255,8 +263,8 @@ void InitMapSelectScreen(s32 arg0) {
     void GX_SetBankForObjExtPalette(s32);
     void func_020035bc(void);
     void GX_SetBankForBGExtPalette(s32);
-    void func_ov003_021f1ab8(s32);
-    void func_ov003_021f1af8(s32);
+    void SetSceneLayoutMain(s32);
+    void SetSceneLayoutSub(s32);
     s32 IsMapConfirmEnabled(void);
     void Ov003_SetMapConfirmEnabled(void);
     void Ov003_SetMapConfirmDisabled(void);
@@ -286,8 +294,8 @@ void InitMapSelectScreen(s32 arg0) {
     GX_SetBankForObjExtPalette(0x40);
     func_020035bc();
     GX_SetBankForBGExtPalette(0x20);
-    func_ov003_021f1ab8((s32)&data_ov003_0220fcb4);
-    func_ov003_021f1af8((s32)&data_ov003_0220fca8);
+    SetSceneLayoutMain((s32)&data_ov003_0220fcb4);
+    SetSceneLayoutSub((s32)&data_ov003_0220fca8);
 
     layer = 0;
     savedEngine = (u16 **)gCur3DSpriteEngine;
@@ -364,15 +372,15 @@ void InitMapSelectScreen(s32 arg0) {
 /* Advance the cursor/movement state machine for the current entry. */
 void func_ov003_021f2e98(s32 entry) {
  M2C_UNK func_ov003_021f17e0(); M2C_UNK SetSpriteAnimation(M2C_UNK,M2C_UNK);
- void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void func_ov003_021f182c(void);
+ void Sprite_ResumeAnimation(s32); s32 func_ov003_021f1448(void); void Ov003_CreateScreenTransition(void);
  s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
- void func_02086330(void); void CreateMatchNameLabel(s32,s32,s32);
+ void DeleteVoiceChatWidgets(void); void CreateMatchNameLabel(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
  void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
  s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
- if(func_ov003_021f2a9c(entry)||ShowMapUnavailableMessage(entry)) {
+ if(ShowLinkResultPanel(entry)||ShowMapUnavailableMessage(entry)) {
  func_ov003_021f17e0(); SetSpriteAnimation(entry,5); return;
  }
  if(M2C_FIELD(entry,u8 *,0x45)||M2C_FIELD(entry,u8 *,0x46)) return;
@@ -385,7 +393,7 @@ void func_ov003_021f2e98(s32 entry) {
  if(M2C_FIELD(entry,u8 *,0x44)) {M2C_FIELD(entry,u8 *,0x34)=2;return;}
  if(M2C_FIELD(entry,u8 *,0x44)) return;
  if(!func_ov003_021f1448()) return;
- func_ov003_021f182c(); M2C_FIELD(entry,u8 *,0x44)=1; M2C_FIELD(entry,u8 *,0x34)=2;
+ Ov003_CreateScreenTransition(); M2C_FIELD(entry,u8 *,0x44)=1; M2C_FIELD(entry,u8 *,0x34)=2;
  return;
  case 2:
  switch(GetMapConfirmState()) {
@@ -398,7 +406,7 @@ void func_ov003_021f2e98(s32 entry) {
  else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
- if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();func_02086330();CreateMatchNameLabel(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
+ if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();DeleteVoiceChatWidgets();CreateMatchNameLabel(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
@@ -451,18 +459,22 @@ void ApplyMapConfirmState(void *entry) {
     } else DisableMapConfirm();
 }
 
-void func_ov003_021f3564(M2C_UNK arg0) {
+/* Refresh the link status of the highlighted map-select entry: run the link
+ * session handler, then if a link-result panel was shown or the "map
+ * unavailable" notice was raised, cancel the cursor's animation and play the
+ * refusal animation (5). */
+void RefreshMapSelectLinkState(s32 entry) {
     M2C_UNK SetSpriteAnimation(M2C_UNK, M2C_UNK);
     M2C_UNK func_ov003_021f17e0();
     void func_ov003_021f2878();
-    s32 func_ov003_021f2a9c(M2C_UNK);
+    s32 ShowLinkResultPanel(M2C_UNK);
     s32 ShowMapUnavailableMessage(M2C_UNK);
-    func_ov003_021f2878();
-    if ((func_ov003_021f2a9c(arg0) == 0) && (ShowMapUnavailableMessage(arg0) == 0)) {
+    func_ov003_021f2878(entry);
+    if ((ShowLinkResultPanel(entry) == 0) && (ShowMapUnavailableMessage(entry) == 0)) {
         return;
     }
     func_ov003_021f17e0();
-    SetSpriteAnimation(arg0, 5);
+    SetSpriteAnimation(entry, 5);
 }
 
 void func_ov003_021f35a4(void) {

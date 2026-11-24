@@ -56,7 +56,7 @@ void func_020be718(SaveSettingsSnapshot *save) {
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
-    extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
+    extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
     SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
     s32 i;
 
@@ -82,10 +82,10 @@ void func_020be718(SaveSettingsSnapshot *save) {
     save->listSelection = *(SaveBytes16 *)&gSeenMapBackgroundFlags;
     save->listState = *(SaveBytes8 *)&data_02157734;
     save->listRowFlags = *(SaveBytes8 *)&gListRowFlags;
-    save->listData[0] = *(SaveBytes35 *)&data_02157744;
-    save->listData[1] = *(SaveBytes35 *)&data_02157767;
-    save->listData[2] = *(SaveBytes35 *)&data_0215778a;
-    save->listFooter = *(SaveBytes7 *)&data_021577ad;
+    save->listData[0] = *(SaveBytes35 *)&gMapListFlags;
+    save->listData[1] = *(SaveBytes35 *)&gCampaignMapPlayed;
+    save->listData[2] = *(SaveBytes35 *)&gCampaignMapCleared;
+    save->listFooter = *(SaveBytes7 *)&gCampaignMapSaved;
 }
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
@@ -100,7 +100,7 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
     extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, data_02157734, gListRowFlags;
-    extern M2C_UNK data_02157744, data_02157767, data_0215778a, data_021577ad;
+    extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
     s32 i;
 
     M2C_FIELD(&gGameSettings, u32 *, 0x128) = save->settingsWord;
@@ -125,10 +125,10 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     *(SaveBytes16 *)&gSeenMapBackgroundFlags = save->listSelection;
     *(SaveBytes8 *)&data_02157734 = save->listState;
     *(SaveBytes8 *)&gListRowFlags = save->listRowFlags;
-    *(SaveBytes35 *)&data_02157744 = save->listData[0];
-    *(SaveBytes35 *)&data_02157767 = save->listData[1];
-    *(SaveBytes35 *)&data_0215778a = save->listData[2];
-    *(SaveBytes7 *)&data_021577ad = save->listFooter;
+    *(SaveBytes35 *)&gMapListFlags = save->listData[0];
+    *(SaveBytes35 *)&gCampaignMapPlayed = save->listData[1];
+    *(SaveBytes35 *)&gCampaignMapCleared = save->listData[2];
+    *(SaveBytes7 *)&gCampaignMapSaved = save->listFooter;
     func_020e4b24();
 }
 #pragma opt_loop_invariants reset

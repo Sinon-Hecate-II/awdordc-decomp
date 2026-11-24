@@ -150,24 +150,28 @@ u8 CanDoFootAiAction(s32 x, s32 y) {
     return result;
 }
 
+/* Whether the AI wants more attack units: never while its assigned move target
+ * is already in range, nor when there are no enemy attack targets; otherwise it
+ * wants more while the team's attack units trail the target count by
+ * AI_ATTACK_UNIT_BUFFER. */
 u8 AiNeedsMoreAttackUnits(void) {
     s32 AiRangeReachesAssignedMoveTarget();
-    s32 temp_r0;
-    u8 var_r0;
+    s32 attackTargets;
+    u8 needsMoreUnits;
 
     if (AiRangeReachesAssignedMoveTarget() == 1) {
         return 0U;
     }
-    temp_r0 = CountAiAttackTargetUnits();
-    if (temp_r0 == 0) {
+    attackTargets = CountAiAttackTargetUnits();
+    if (attackTargets == 0) {
         return 0U;
     }
-    if (CountTeamAttackUnits() < (s32) (temp_r0 + 5)) {
-        var_r0 = 1;
+    if (CountTeamAttackUnits() < (s32) (attackTargets + AI_ATTACK_UNIT_BUFFER)) {
+        needsMoreUnits = 1;
     } else {
-        var_r0 = 0;
+        needsMoreUnits = 0;
     }
-    return var_r0;
+    return needsMoreUnits;
 }
 
 /* AI production priority for attack units, from the counts of enemy attack

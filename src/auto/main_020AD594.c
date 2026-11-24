@@ -49,26 +49,29 @@ s32 *RecordsMenu_GetRecord(s32);
  * each engine in turn and creates the fade on the selected ones, then puts the
  * previous engine back. */
 
-s32 func_020ad594(s32 arg0)
+/* Returns the index in the records screen's music list (gRecordTracks) of the
+ * entry playing track id `trackId`, or -1 when no entry has it. */
+s32 RecordsMenu_FindTrackIndex(s32 trackId)
 {
-  s32 func_020ad5dc();
-  s32 *RecordsMenu_GetRecord(s32);
-  s32 new_var[2];
-  s32 temp_r0;
-  temp_r0 = func_020ad5dc();
-  for (new_var[1] = 0; new_var[1] < temp_r0; new_var[1]++)
-  {
-    new_var[0] = *((s32 *) (((s8 *) RecordsMenu_GetRecord(new_var[1])) + 0));
-    if (new_var[0] == arg0)
-    {
-      return new_var[1];
-    }
-  }
+    s32 RecordsMenu_GetTrackCount();
+    s32 *RecordsMenu_GetRecord(s32);
+    s32 scan[2]; /* scan[0]: the entry's track id, scan[1]: its index */
+    s32 count;
 
-  return -1;
+    count = RecordsMenu_GetTrackCount();
+    for (scan[1] = 0; scan[1] < count; scan[1]++)
+    {
+        scan[0] = *((s32 *) (((s8 *) RecordsMenu_GetRecord(scan[1])) + 0));
+        if (scan[0] == trackId)
+        {
+            return scan[1];
+        }
+    }
+
+    return -1;
 }
 
-s32 func_020ad5dc(void) {
+s32 RecordsMenu_GetTrackCount(void) {
     s32 var_r4;
 
     var_r4 = 0;

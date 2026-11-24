@@ -460,7 +460,7 @@ s32 Wfc_PollSessionEnd(void) {
     return 1;
 }
 
-s32 func_02037b8c(void) {
+s32 Wfc_IsLinkReady(void) {
     extern void *gWfcConnection;
     if ((gWfcConnection != NULL) && (M2C_FIELD(gWfcConnection, u16 *, 4) == 6)) {
         return 1;
@@ -469,27 +469,28 @@ s32 func_02037b8c(void) {
 }
 
 void func_02037bb8(void) {
-    M2C_UNK func_02029ad8();
-    func_02029ad8();
+    M2C_UNK WFC_GetLinkSignalLevel();
+    WFC_GetLinkSignalLevel();
 }
 
-s32 func_02037bc4(void) {
+/* Poll the WFC connection and, when it reports a link that came up ready although
+ * the net session does not use it, report network error 8 (its detail derived from
+ * the connecting friend slot), end the connection and return 1. */
+s32 Wfc_CheckStrayLink(void) {
     u32 GetWfcFriendSlot(void);
     void Wfc_UpdateConnection(void);
     void Wfc_EndConnection(void);
     void SetNetError(s32, s32);
-    s32 func_02037b8c(void);
-    u32 var_r2;
+    s32 Wfc_IsLinkReady(void);
+    u32 friendSlot;
     s32 dummy;
     (void)dummy;
 
     Wfc_UpdateConnection();
-    if (func_02037b8c() != 0) {
-        var_r2 = GetWfcFriendSlot();
-        if (var_r2 > 0x63U) {
-            var_r2 = 0x63;
-        }
-        SetNetError(8, 0xFFFF2D10 - var_r2);
+    if (Wfc_IsLinkReady() != 0) {
+        friendSlot = GetWfcFriendSlot();
+        if (friendSlot > 99U) friendSlot = 99;
+        SetNetError(8, 0xFFFF2D10 - friendSlot);
         Wfc_EndConnection();
         return 1;
     }

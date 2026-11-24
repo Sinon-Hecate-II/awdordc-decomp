@@ -12,7 +12,7 @@ void func_020b6168(void *arg0) {
     void CreateScreenOffsetEffect(s32, s32, s32);
     void CreateScreenFlash(s32, s32, s32, s32);
     M2C_UNK CancelMapCursorAnimation(void);
-    void func_020b6124(void *);
+    void ApplyAreaDamageTile(void *);
 
     u8 *core;
     register s32 xc,yc,range;
@@ -65,7 +65,7 @@ void func_020b6168(void *arg0) {
                 M2C_FIELD(p, s32 *, 0x58) = x;
                 M2C_FIELD(p, s32 *, 0x5C) = y;
                 M2C_FIELD(p, s32 *, 0x60) = M2C_FIELD(arg0, s16 *, 0x4E);
-                M2C_FIELD(p, void (**)(void *), 0x6C) = func_020b6124;
+                M2C_FIELD(p, void (**)(void *), 0x6C) = ApplyAreaDamageTile;
             }
         }
     }

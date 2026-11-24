@@ -3,9 +3,9 @@
 #include "battle_map.h"
 #include "ov000_unit_move.h"
 #include "ds3dsprite.h"
-typedef struct { s32 values[3]; } A77cTable;
+typedef struct { s32 values[3]; } FavouriteGroupTextIds; /* the favourite record group's text id per group */
 typedef struct { u32 value, threshold; } A564Entry;
-extern const A77cTable data_ov000_021aabb0;
+extern const FavouriteGroupTextIds gFavouriteGroupTextIds;
 extern u32 gRecordValues[];
 
 #pragma opt_strength_reduction off
@@ -238,10 +238,13 @@ void GetFavouriteRecordGroup(void) {
     GetFavouriteRecord(0);
 }
 
-s32 GetFavouriteGroupTextId(s32 a) {
-A77cTable table;
-if(a==-1)return 0xc0000021;
-table=data_ov000_021aabb0;return table.values[a];
+/* The text id naming the player's favourite record group: -1 (no favourite) has its
+ * own string, groups 0..2 the string their slot of the table holds. */
+s32 GetFavouriteGroupTextId(s32 group) {
+    FavouriteGroupTextIds table;
+    if (group == -1) return 0xc0000021;
+    table = gFavouriteGroupTextIds;
+    return table.values[group];
 }
 
 void GetFavouriteRecordIndex(void) {
@@ -283,7 +286,7 @@ s32 func_ov000_0216a834(void) {
     return 0;
 }
 
-s32 func_ov000_0216a86c(void) {
+s32 RunTurnStartEvent(void) {
     s32 temp_r0;
     void *temp_r0_2;
 
@@ -322,57 +325,67 @@ if((index&0xc0)>>6)return 0;
 if(script && M2C_FIELD(script,s32 *,MAP_EVENT_UNIT_SELECTED))return EvalScriptConditions(M2C_FIELD(script,s32 *,MAP_EVENT_UNIT_SELECTED),unit,0,0,1);return 0;
 }
 
-s32 func_ov000_0216a97c(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's battle-start event (script slot MAP_EVENT_BATTLE) with the
+ * previewed battle's attacker and defender; returns nonzero when a condition of
+ * the event matched. */
+s32 RunBattleEvent(s32 attacker, s32 defender) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x14);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, arg0, arg1, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_BATTLE);
+        if (script != 0) {
+            return EvalScriptConditions(script, attacker, defender, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216a9bc(M2C_UNK arg0) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's cursor-unit event (script slot 0x18) with the unit under the
+ * battle cursor; returns nonzero when a condition of the event matched. */
+s32 RunCursorUnitEvent(s32 unit) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, arg0, 0, 0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_CURSOR_UNIT);
+        if (script != 0) {
+            return EvalScriptConditions(script, unit, 0, 0, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216aa04(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's cursor-unit event (script slot MAP_EVENT_CURSOR_UNIT) with the
+ * unit and an extra script value; returns nonzero when a condition matched. */
+s32 RunCursorUnitEventWithValue(s32 unit, s32 value) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x18);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, arg0, 0, arg1, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_CURSOR_UNIT);
+        if (script != 0) {
+            return EvalScriptConditions(script, unit, 0, value, 1);
         }
     }
     return 0;
 }
 
-s32 func_ov000_0216aa44(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's unit-lifecycle event (script slot MAP_EVENT_UNIT) for a unit: the
+ * event code selects the case (unit built, unit destroyed, a carried unit kind)
+ * and the unit is the one it applies to. Returns nonzero when a condition matched. */
+s32 RunUnitEvent(s32 eventCode, s32 unit) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x1C);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, arg1, 0, arg0, 1);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_UNIT);
+        if (script != 0) {
+            return EvalScriptConditions(script, unit, 0, eventCode, 1);
         }
     }
     return 0;
@@ -434,15 +447,18 @@ s32 func_ov000_0216ab2c(void) {
     return 0;
 }
 
-s32 func_ov000_0216ab64(s32 arg0) {
-    s32 temp_r0;
-    void *temp_r0_2;
+/* Run the map's cursor-idle event (script slot MAP_EVENT_CURSOR_IDLE) while the
+ * battle cursor rests: evaluate the event's condition list, applying its effects
+ * when `applyEffects` is set; returns nonzero when a condition matched. */
+s32 RunCursorIdleEvent(s32 applyEffects) {
+    s32 script;
+    void *eventScript;
 
-    temp_r0_2 = GetMapEventScript();
-    if (temp_r0_2 != NULL) {
-        temp_r0 = M2C_FIELD(temp_r0_2, s32 *, 0x30);
-        if (temp_r0 != 0) {
-            return EvalScriptConditions(temp_r0, 0, 0, 0, arg0);
+    eventScript = GetMapEventScript();
+    if (eventScript != NULL) {
+        script = M2C_FIELD(eventScript, s32 *, MAP_EVENT_CURSOR_IDLE);
+        if (script != 0) {
+            return EvalScriptConditions(script, 0, 0, 0, applyEffects);
         }
     }
     return 0;

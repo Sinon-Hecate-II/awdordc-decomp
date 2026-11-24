@@ -257,28 +257,33 @@ void func_0208b514(M2C_UNK window) {
     UpdateTextLayerPanel(window);
 }
 
-void func_0208b520(s32 arg0) {
+/* Create a text-layer sprite under `owner` on the current 3D-sprite engine and
+ * mark it TEXT_LAYER_PANEL_NESTED when another text layer was already up, so it
+ * knows it is drawn over one. */
+void CreateTextLayerChild(s32 owner) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     void *InitTextLayer(void);
-    extern M2C_UNK data_021027f0;
-    s32 temp_r4;
-    void *var_r0;
-    temp_r4 = IsTextLayerActive();
-    var_r0 = CreateSpriteFromClass(&data_021027f0, arg0);
-    if (var_r0 != 0) var_r0 = InitTextLayer();
-    M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
+    extern M2C_UNK gTextLayerSpriteClass;
+    s32 nested;
+    void *layer;
+    nested = IsTextLayerActive();
+    layer = CreateSpriteFromClass(&gTextLayerSpriteClass, owner);
+    if (layer != 0) layer = InitTextLayer();
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_NESTED) | ((u32)(nested << 31) >> 18);
 }
 
-void CreateTextLayer(s32 arg0) {
+/* Create a text-layer sprite owned by `owner` and mark it TEXT_LAYER_PANEL_NESTED
+ * when another text layer was already up, so it knows it is drawn over one. */
+void CreateTextLayer(s32 owner) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     void *InitTextLayer(void);
-    extern M2C_UNK data_021027f0;
-    s32 temp_r4;
-    void *var_r0;
-    temp_r4 = IsTextLayerActive();
-    var_r0 = CreateSpriteForOwner(&data_021027f0, arg0);
-    if (var_r0 != 0) var_r0 = InitTextLayer();
-    M2C_FIELD(var_r0, s32 *, 0x58) = (M2C_FIELD(var_r0, s32 *, 0x58) & ~0x2000) | ((u32)(temp_r4 << 31) >> 18);
+    extern M2C_UNK gTextLayerSpriteClass;
+    s32 nested;
+    void *layer;
+    nested = IsTextLayerActive();
+    layer = CreateSpriteForOwner(&gTextLayerSpriteClass, owner);
+    if (layer != 0) layer = InitTextLayer();
+    M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_NESTED) | ((u32)(nested << 31) >> 18);
 }
 
 u8 IsTextLayerActive(void) {
@@ -296,8 +301,8 @@ s32 func_0208b5c4(void) {
 
 s32 FindTextLayer(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_021027f0;
-    return FindObjectByClass(&data_021027f0);
+    extern M2C_UNK gTextLayerSpriteClass;
+    return FindObjectByClass(&gTextLayerSpriteClass);
 }
 
 void func_0208b600(void *arg0) {

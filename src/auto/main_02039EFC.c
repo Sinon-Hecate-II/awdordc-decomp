@@ -486,15 +486,17 @@ s32 func_0203ae50(void) {
     return 0;
 }
 
-s32 GetSessionPlayerId(s32 a) {
+/* GameSpy profile id of the match session's player at index `index`, or 0 when no
+ * session is running or the player's record is empty or not resolved yet. */
+s32 GetSessionPlayerId(s32 index) {
 extern M2C_UNK gMatchSessionMgr;
 s32 GetLocalPlayerInfo(void);
 s32 GetPlayerRecordId(s32,void *);
-void *p,*v;
-p=M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),void **,0x18);
-if(!p)return 0;
-v=(void *)GetPlayerRecordId(GetLocalPlayerInfo(),(u8 *)p+a*12);
-if(v==0||v==(void *)-1)return 0;
-return (s32)v;
+void *players,*profileId;
+players=M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION),void **,MATCH_SESSION_PLAYERS);
+if(!players)return 0;
+profileId=(void *)GetPlayerRecordId(GetLocalPlayerInfo(),(u8 *)players+index*MATCH_SESSION_PLAYER_SIZE);
+if(profileId==0||profileId==(void *)-1)return 0;
+return (s32)profileId;
 }
 

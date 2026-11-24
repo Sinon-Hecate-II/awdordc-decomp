@@ -99,7 +99,7 @@ void MI_CpuCopy32(const void*,void*,u32);
 void func_02019424(void*,u32);
 int IsLeadByte(void*);
 int MeasureStringWidth(void*);
-int func_020b2e78(u16,u16,void*);
+int RectContainsPoint(u16,u16,void*);
 M2C_UNK SetTileRectPalette(s32,s32,s32,s32);
 void *old,*state;u32 pressed; s16 rect[4];u32 copy[17];s32 screen,kind,index,i,width,oldIndex;u32 text,*table,*cursor;u8 ok;
 pressed=M2C_FIELD(gKeyState,u16 *,6)&1;old=gCur3DSpriteEngine;state=M2C_FIELD(self,void * *,0x10);
@@ -131,7 +131,7 @@ width=(s16)width;SetTextIndex(state,oldIndex);ok=width<=64;
 }
 checked:
 if(!ok){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),6);}else{
-if((M2C_FIELD(gTouchState,u8 *,0x12)&&func_020b2e78(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
+if((M2C_FIELD(gTouchState,u8 *,0x12)&&RectContainsPoint(M2C_FIELD(gTouchState,u16 *,0),M2C_FIELD(gTouchState,u16 *,2),rect))||(M2C_FIELD(self,u8 *,0)==func_020b212c()&&pressed)){SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),7);}else{SetTileRectPalette((s32)((u8*)M2C_FIELD(gCur3DSpriteEngine,void * *,0x24)+(M2C_FIELD(self,s16 *,0x14)>>3)*2+(M2C_FIELD(self,s16 *,0x16) >>3)*64),(u16)(M2C_FIELD(self,s16 *,0x18)>>3),(u16)(M2C_FIELD(self,s16 *,0x1a)>>3),5);}
 }
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 }

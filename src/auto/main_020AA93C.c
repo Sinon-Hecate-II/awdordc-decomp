@@ -154,7 +154,7 @@ void *GetUnitSpriteDef(u32 unitKind) {
 void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
     void *MemAlloc(M2C_UNK);
-    M2C_UNK func_02088e68(void *, M2C_UNK);
+    M2C_UNK Set3DSpriteSlideLength(void *, M2C_UNK);
     M2C_UNK func_02088e7c(void *, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, u32, s32);
     void func_020aad18(void *);
@@ -198,7 +198,7 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg2 & ~0xF8000000);
     M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (((u32) (M2C_FIELD(arg0, u8 *, 0x59) << 0x1C) >> 0x1C) << 0x18) >> 6));
     M2C_FIELD(arg0, s16 *, 0x3C) = 0;
-    func_02088e68(arg0, 0xA);
+    Set3DSpriteSlideLength(arg0, 0xA);
     func_02088e7c(arg0, 6);
     temp_r0 = MemAlloc(0x24);
     if (temp_r0 != NULL) {
@@ -392,20 +392,23 @@ fail:
     UpdateUnitSpriteFrame(sprite);
 }
 
-void func_020ab150(void *arg0, s16 arg1) {
+/* Give a unit sprite a fresh button task: replace the task it already has with a
+ * new one that watches the given key mask, so the sprite plays its press
+ * animation while those keys are held. */
+void CreateUnitSpriteButtonTask(void *sprite, u16 buttons) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02126b28;
-    extern M2C_UNK data_02126bd0;
-    void *temp_r0;
+    extern M2C_UNK gUnitSpriteButtonTaskClass;
+    extern M2C_UNK gUnitSpriteButtonTaskVtbl;
+    void *task;
 
-    DeleteSpriteObject(M2C_FIELD(arg0, void **, 0x60));
-    temp_r0 = CreateSpriteFromClass(&data_02126b28, 4);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, M2C_UNK **, 0) = &data_02126bd0;
+    DeleteSpriteObject(M2C_FIELD(sprite, void **, UNIT_SPRITE_BUTTON_TASK));
+    task = CreateSpriteFromClass(&gUnitSpriteButtonTaskClass, 4);
+    if (task != NULL) {
+        M2C_FIELD(task, M2C_UNK **, 0) = &gUnitSpriteButtonTaskVtbl;
     }
-    M2C_FIELD(temp_r0, void **, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x38) = arg1;
-    M2C_FIELD(arg0, void **, 0x60) = temp_r0;
+    M2C_FIELD(task, void **, UNIT_SPRITE_TASK_SPRITE) = sprite;
+    M2C_FIELD(task, u16 *, UNIT_SPRITE_TASK_BUTTONS) = buttons;
+    M2C_FIELD(sprite, void **, UNIT_SPRITE_BUTTON_TASK) = task;
 }
 
 u16 GetSpriteButtonMask(void *arg0) {
@@ -481,24 +484,27 @@ u8 func_020ab2a4(void) {
     return data_0215c3a0 != 0;
 }
 
-void func_020ab2c4(void *arg0) {
+/* Step the three tweens an animated menu object runs: while the first tween's
+ * value still matches its cached copy, put the third tween on the ease-out curve,
+ * then advance all three. */
+void StepSpriteTweenGroup(void *object) {
     M2C_UNK UpdateSpriteAnimation(void *);
     s32 GetSpriteAnimValue(void *);
-    s16 temp_r4;
-    s32 var_r0;
+    s16 cachedValue;
+    s32 changed;
 
-    temp_r4 = M2C_FIELD(arg0, s16 *, 0x2A);
-    if (temp_r4 != GetSpriteAnimValue(arg0 + 0x30)) {
-        var_r0 = 1;
+    cachedValue = M2C_FIELD(object, s16 *, SPRITE_TWEEN_CACHED);
+    if (cachedValue != GetSpriteAnimValue(object + SPRITE_TWEEN_FIRST)) {
+        changed = 1;
     } else {
-        var_r0 = 0;
+        changed = 0;
     }
-    if (!(var_r0 & 0xFF)) {
-        M2C_FIELD(arg0, s8 *, 0x54) = 4;
+    if (!(changed & 0xFF)) {
+        M2C_FIELD(object, s8 *, SPRITE_TWEEN_THIRD) = SPRITE_TWEEN_EASE_OUT;
     }
-    UpdateSpriteAnimation(arg0 + 0x30);
-    UpdateSpriteAnimation(arg0 + 0x42);
-    UpdateSpriteAnimation(arg0 + 0x54);
+    UpdateSpriteAnimation(object + SPRITE_TWEEN_FIRST);
+    UpdateSpriteAnimation(object + SPRITE_TWEEN_SECOND);
+    UpdateSpriteAnimation(object + SPRITE_TWEEN_THIRD);
 }
 
 #pragma opt_propagation off

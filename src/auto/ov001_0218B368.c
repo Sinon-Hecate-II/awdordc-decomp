@@ -20,10 +20,10 @@ typedef struct TouchFlags {
 typedef struct TouchSample { u16 x,y,active,status; } TouchSample;
 typedef struct InputState {
     TouchSample samples[5];
-    u16 field_0x28;
-    u16 field_0x2a;
-    volatile u16 field_0x2c;
-    volatile u16 field_0x2e;
+    volatile u16 touchX;     /* current touch point x */
+    volatile u16 touchY;     /* current touch point y */
+    volatile u16 prevTouchX; /* last touch point x (copied before each sample scan) */
+    volatile u16 prevTouchY; /* last touch point y */
     u16 pressed;
     u16 newPressed;
     u16 repeat;
@@ -138,51 +138,68 @@ void func_ov001_0218b4dc(s32 engine, u32 target, u32 value, s32 blend) {
 
 void func_ov001_0218b648(s32 a){
 M2C_UNK MI_CpuFill8(s32,M2C_UNK,M2C_UNK);
-s32 CreateExpHeapInRange(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;
-MI_CpuFill8(a,0,0x40000);data_ov001_02193e44=CreateExpHeapInRange(a,0x40000,0);
-if(data_ov001_02193e44==0)SystemHalt();
+s32 CreateExpHeapInRange(s32,s32,s32);void SystemHalt(void);extern s32 gOv001Heap;
+MI_CpuFill8(a,0,0x40000);gOv001Heap=CreateExpHeapInRange(a,0x40000,0);
+if(gOv001Heap==0)SystemHalt();
 }
 
 void func_ov001_0218b688(void) {
     M2C_UNK func_0202a45c(s32);
-    extern s32 data_ov001_02193e44;
-    func_0202a45c(data_ov001_02193e44);
-    data_ov001_02193e44 = 0;
+    extern s32 gOv001Heap;
+    func_0202a45c(gOv001Heap);
+    gOv001Heap = 0;
 }
 
-s32 func_ov001_0218b6ac(s32 a,s32 b){
-s32 OS_DisableIrqMask(s32);void OS_EnableIrqMask(s32);s32 func_0202a468(s32,s32,s32);void SystemHalt(void);extern s32 data_ov001_02193e44;s32 result,saved;
-saved=OS_DisableIrqMask(1);result=func_0202a468(data_ov001_02193e44,a,b);
-if(!result)SystemHalt();OS_EnableIrqMask(saved);return result;
+/* Allocate `size` bytes from the ov001 expansion heap with `align` (a negative
+ * alignment allocates from the heap's tail), with IRQ 1 (DMA0) masked; the system
+ * halts when the heap cannot satisfy the request. Returns the new block. */
+s32 Ov001_HeapAlloc(s32 size, s32 align) {
+    s32 OS_DisableIrqMask(s32);
+    void OS_EnableIrqMask(s32);
+    s32 AllocFromExpHeap(s32, s32, s32);
+    void SystemHalt(void);
+    extern s32 gOv001Heap;
+    s32 block;
+    s32 saved;
+
+    saved = OS_DisableIrqMask(1);
+    block = AllocFromExpHeap(gOv001Heap, size, align);
+    if (!block) SystemHalt();
+    OS_EnableIrqMask(saved);
+    return block;
 }
 
 s32 Ov001_Alloc(M2C_UNK arg0) {
     M2C_UNK MI_CpuFill8(s32, M2C_UNK, M2C_UNK);
-    s32 func_ov001_0218b6ac();
+    s32 Ov001_HeapAlloc();
     s32 temp_r0;
 
-    temp_r0 = func_ov001_0218b6ac();
+    temp_r0 = Ov001_HeapAlloc();
     MI_CpuFill8(temp_r0, 0, arg0);
     return temp_r0;
 }
 
+/* Free the block that *p points at on the ov001 expansion heap and clear the
+ * pointer, with IRQ 1 (DMA0) masked.  Returns 0 once freed, or the saved IRQ state
+ * when there was nothing to free. */
 s32 Ov001_FreeAlloc(s32 *p) {
-s32 OS_DisableIrqMask(s32);
-extern s32 data_ov001_02193e44;
-s32 saved=OS_DisableIrqMask(1);
-if(*p==0)return saved;
-func_0202a498(data_ov001_02193e44,*p);
-OS_EnableIrqMask(saved);
-*p=0;
-return 0;
+    s32 OS_DisableIrqMask(s32);
+    extern s32 gOv001Heap;
+    s32 saved = OS_DisableIrqMask(1);
+
+    if (*p == 0) return saved;
+    FreeExpHeapBlock(gOv001Heap, *p);
+    OS_EnableIrqMask(saved);
+    *p = 0;
+    return 0;
 }
 
 void func_ov001_0218b760(s32 a) {
 s32 OS_DisableIrqMask(s32);
-extern s32 data_ov001_02193e44;
+extern s32 gOv001Heap;
 s32 saved=OS_DisableIrqMask(1);
 if(a==0)return;
-func_0202a498(data_ov001_02193e44,a);
+FreeExpHeapBlock(gOv001Heap,a);
 OS_EnableIrqMask(saved);
 }
 
@@ -273,7 +290,7 @@ for(i=active;i<4;) {
 sp=(u8 *)((InputGlobal *)&gOv001Input)->state->samples;
 sp+= (index << 3);
 if(M2C_FIELD(sp,u16 *,4)==1 && !M2C_FIELD(sp,u16 *,6)) {
-active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],&((InputGlobal *)&gOv001Input)->state->field_0x28);break;
+active=1;CalibrateTouchSample(xy);func_ov001_0218b2bc(xy[0],xy[1],(void *)&((InputGlobal *)&gOv001Input)->state->touchX);break;
 }
 i++;index=HardwareDivideRemainder(index+4,5);
 }
@@ -364,11 +381,35 @@ s32 TouchRectHeld(u16 *rect) {
     return rect[3] >= M2C_FIELD(state, u16 *, 0x2a);
 }
 
-s32 func_ov001_0218bd1c(u16 *a){u16 box[4];box[0]=a[0];box[1]=a[1];box[2]=a[0]+a[2];box[3]=a[1]+a[3];return TouchRectPressed(box);}
+/* TouchRectPressed for a rectangle given as (x, y, width, height): expand it to
+ * the (left, top, right, bottom) form and test the touch point. */
+s32 TouchRectSizePressed(u16 *rect){
+u16 box[4];
+box[0]=rect[0];
+box[1]=rect[1];
+box[2]=rect[0]+rect[2];
+box[3]=rect[1]+rect[3];
+return TouchRectPressed(box);
+}
 
-s32 Ov001_ReadTouchPoint(u16 *a){extern M2C_UNK gOv001Input;void *p=M2C_FIELD(&gOv001Input,void **,4);u16 x,y;
-if(!M2C_FIELD(p,TouchFlags *,0x38).active){x=M2C_FIELD(p,volatile u16 *,0x2c);y=M2C_FIELD(p,volatile u16 *,0x2e);a[0]=x;a[1]=y;return 0;}
-x=M2C_FIELD(p,volatile u16 *,0x28);y=M2C_FIELD(p,volatile u16 *,0x2a);a[0]=x;a[1]=y;return 1;
+/* Read the current touch point into point: the current position with 1 while the
+   stylus is down, or the last position with 0 when it is not. */
+s32 Ov001_ReadTouchPoint(u16 *point) {
+    extern M2C_UNK gOv001Input;
+    InputState *input = M2C_FIELD(&gOv001Input, InputState **, 4);
+    u16 x, y;
+    if (!input->flags.active) {
+        x = input->prevTouchX;
+        y = input->prevTouchY;
+        point[0] = x;
+        point[1] = y;
+        return 0;
+    }
+    x = input->touchX;
+    y = input->touchY;
+    point[0] = x;
+    point[1] = y;
+    return 1;
 }
 
 /* Keep the LCD in step with the shell's lid switch: turn the display off while
@@ -468,9 +509,19 @@ void Ov001_InitSpriteObjs(void) {
     M2C_FIELD(gOv001SpriteArena, s32 *, OV001_SPRITE_OBJ_TASK) = Ov001_AddTask(1, Ov001_FlushSpriteObjs, 0, OV001_SPRITE_OBJ_TASK_PERIOD);
 }
 
-void Ov001_FlushSpriteObjs(void){
-extern s32 gOv001SpriteArena;void DC_FlushRange(s32,s32);void GX_LoadOAM(s32,s32,s32);void GX_LoadOAMSub(s32,s32,s32);
-DC_FlushRange(gOv001SpriteArena,0x800);GX_LoadOAM(gOv001SpriteArena,0,0x400);GX_LoadOAMSub(gOv001SpriteArena+0x400,0,0x400);
+/* Copy both screens' sprite-object (OAM) entries to the hardware OAM: flush the
+ * CPU cache over the whole two-screen arena, then load each screen's 1 KiB block
+ * into its own OAM (main and sub engine).  Runs as the periodic flush task that
+ * Ov001_InitSpriteObjs registers. */
+void Ov001_FlushSpriteObjs(void) {
+    extern s32 gOv001SpriteArena;
+    void DC_FlushRange(s32, s32);
+    void GX_LoadOAM(s32, s32, s32);
+    void GX_LoadOAMSub(s32, s32, s32);
+
+    DC_FlushRange(gOv001SpriteArena, OV001_SPRITE_OBJ_BUFFER);
+    GX_LoadOAM(gOv001SpriteArena, 0, OV001_SPRITE_OBJS_PER_SCREEN);
+    GX_LoadOAMSub(gOv001SpriteArena + OV001_SPRITE_OBJS_PER_SCREEN, 0, OV001_SPRITE_OBJS_PER_SCREEN);
 }
 
 #pragma pool_constants off

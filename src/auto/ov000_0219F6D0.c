@@ -245,9 +245,9 @@ void DestroyCursorUnit(void) {
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK ExplodeUnit(s32);
     s32 IsPlayerHuman(u16);
-    s32 func_ov000_0216aa44(M2C_UNK, s32);
+    s32 RunUnitEvent(M2C_UNK, s32);
     extern void **gCurrentMap;
-    if (func_ov000_0216aa44(0x31, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0) {
+    if (RunUnitEvent(0x31, M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT)) != 0) {
         return;
     }
     ExplodeUnit(M2C_FIELD(*gCurrentMap, s32 *, MAP_CURSOR_UNIT));
@@ -402,51 +402,61 @@ void ProcessAiTurnPlan(void) {
     }
 }
 
+/* Clear the claimed flag of every AI target group built this turn, so the next
+ * build can hand them out again. */
 void ReleaseAiTargetGroups(void) {
-extern u8 *gAiState;
-extern u8 gAiTargetGroups[];
-u8 *q=gAiState;
-s32 i;
-u8 *p=gAiTargetGroups;
-for(i=0;i<q[1];i++,p+=8) p[1]=0;
+    extern u8 *gAiState;
+    extern u8 gAiTargetGroups[];
+    u8 *state = gAiState;
+    s32 i;
+    u8 *group = gAiTargetGroups;
+
+    for (i = 0; i < state[AI_STATE_GROUP_COUNT]; i++, group += AI_GROUP_STRIDE)
+        group[AI_GROUP_CLAIMED] = 0;
 }
 
+/* A new turn: the candidates skipped last turn become pickable again, while the
+ * rejected ones stay rejected. */
 void ResetAiTargetCandidates(void) {
     extern u8 *gAiState;
     extern u8 gAiTargetCandidates;
-    u8 *count;
+    u8 *state;
     s32 i;
-    u8 *p;
-    u8 value;
-    count = gAiState;
-    p = &gAiTargetCandidates;
+    u8 *candidate;
+    u8 status;
+
+    state = gAiState;
+    candidate = &gAiTargetCandidates;
     i = 0;
-    if ((s32)*count <= 0) return;
+    if ((s32)state[0] <= 0) return;
     do {
-        value = p[3];
+        status = candidate[AI_CANDIDATE_STATUS];
         i++;
-        if ((u32)value >= 0xFD) p[3] = 0x7F;
-        p += 12;
-    } while (i < (s32)*count);
+        if ((u32)status >= AI_CANDIDATE_SKIPPED) candidate[AI_CANDIDATE_STATUS] = AI_CANDIDATE_FRESH;
+        candidate += AI_CANDIDATE_STRIDE;
+    } while (i < (s32)state[0]);
 }
 
-void func_ov000_021a0250(void) {
+/* Drop the temporary rejection marks (0xFE/0xFF) the unit chooser leaves on
+ * target candidates, so each one can be offered to the next unit kind again. */
+void ResetRejectedAiTargetCandidates(void) {
     extern u8 *gAiState;
     extern u8 gAiTargetCandidates;
-    u8 *count;
+    u8 *state;
     s32 i;
-    u8 *p;
-    u8 value;
-    count = gAiState;
-    p = &gAiTargetCandidates;
+    u8 *candidate;
+    u8 status;
+
+    state = gAiState;
+    candidate = &gAiTargetCandidates;
     i = 0;
-    if ((s32)*count <= 0) return;
+    if ((s32)*state <= 0) return;
     do {
-        value = p[3];
+        status = candidate[AI_CANDIDATE_STATUS];
         i++;
-        if ((u32)value > 0xFD) p[3] = 0x7F;
-        p += 12;
-    } while (i < (s32)*count);
+        if ((u32)status > AI_CANDIDATE_SKIPPED) candidate[AI_CANDIDATE_STATUS] = AI_CANDIDATE_FRESH;
+        candidate += AI_CANDIDATE_STRIDE;
+    } while (i < (s32)*state);
 }
 
 void ReleaseAiTargets(void) {

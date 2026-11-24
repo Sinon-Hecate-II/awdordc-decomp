@@ -425,7 +425,7 @@ M2C_UNK ReapClosedSockets(void) {
 s32 NetworkShutdown(void) {
     M2C_UNK SleepMilliseconds(M2C_UNK);
     M2C_UNK func_0201a4f8(s32);
-    M2C_UNK func_0201a508();
+    M2C_UNK NetworkStopWorkers();
     s32 NetworkFreeTaskPool();
     extern void *gNetAllocator;
     extern s32 gLocalIpAddress;
@@ -438,7 +438,7 @@ s32 NetworkShutdown(void) {
     }
     result = NetworkFreeTaskPool();
     if (result >= 0) {
-        func_0201a508();
+        NetworkStopWorkers();
         func_0201a4f8(0);
         if (M2C_FIELD(gNetAllocator, s32 *, 0x28) == 0) {
             M2C_FIELD(gNetAllocator, void (**)(s32), 0x1C)(M2C_FIELD(&gNetStackState, s32 *, 0x1C));
@@ -594,7 +594,7 @@ s32 GetLocalIpAddress(void) {
  * operation that has not been read yet has its busy/done flags cleared. */
 s32 SocketPoll(void *sock) {
     s32 SocketGetSendRingFreeBytes(void *);
-    s32 func_0202139c(void *);
+    s32 SocketReadableBytes(void *);
     s32 lock, pending, status = 0;
     s8 state;
 
@@ -603,7 +603,7 @@ s32 SocketPoll(void *sock) {
         if (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_TIMEOUT) status |= 0x20;
         if (M2C_FIELD(sock, s8 *, SOCK_STATE) == 1 || (M2C_FIELD(sock, volatile s16 *, SOCK_FLAGS) & SOCK_FLAG_DONE)) {
             lock = OS_DisableInterrupts();
-            if (func_0202139c(sock) > 0) status |= 1;
+            if (SocketReadableBytes(sock) > 0) status |= 1;
             if (SocketGetSendRingFreeBytes(sock) > 0) status |= 8;
             OS_RestoreInterrupts(lock);
         }
@@ -620,23 +620,27 @@ s32 SocketPoll(void *sock) {
     return status;
 }
 
-s32 func_0202139c(void *arg0) {
-    s8 temp_r1;
-    void *temp_r2;
-    void *temp_r0;
-    s32 var_r3;
-    temp_r2 = M2C_FIELD(arg0, void **, 0x64);
-    var_r3 = 0;
-    if (temp_r2 != NULL) {
-        temp_r1 = M2C_FIELD(arg0, s8 *, 0x73);
-        if (temp_r1 == 1) {
-            temp_r0 = M2C_FIELD(temp_r2, void **, 0x104);
-            if (temp_r0 != NULL) { var_r3 = M2C_FIELD(temp_r0, u16 *, 4); }
-        } else if (temp_r1 == 0 || temp_r1 == 4) {
-            var_r3 = M2C_FIELD(arg0, s32 *, 0x44) - M2C_FIELD(temp_r2, s32 *, 0xF8);
+/* Bytes a socket has ready to read: on a receive-only socket the payload length of
+ * the next queued record, on a duplex socket the unread bytes of its receive
+ * window.  Zero when the socket has no connection or only sends. */
+s32 SocketReadableBytes(void *sock) {
+    s8 state;
+    void *raw;
+    void *record;
+    s32 readable;
+
+    raw = M2C_FIELD(sock, void **, SOCK_RAW);
+    readable = 0;
+    if (raw != NULL) {
+        state = M2C_FIELD(sock, s8 *, SOCK_STATE);
+        if (state == SOCK_STATE_RECV_ONLY) {
+            record = M2C_FIELD(raw, void **, CONN_RECV_HEAD);
+            if (record != NULL) { readable = M2C_FIELD(record, u16 *, REC_LEN); }
+        } else if (state == SOCK_STATE_IDLE || state == SOCK_STATE_CONNECTED) {
+            readable = M2C_FIELD(sock, s32 *, CONN_RX_POS) - M2C_FIELD(raw, s32 *, CONN_RECV_PENDING);
         }
     }
-    return var_r3;
+    return readable;
 }
 
 s32 AlignSize4(s32 arg0) {

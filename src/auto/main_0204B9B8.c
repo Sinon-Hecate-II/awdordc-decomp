@@ -311,7 +311,7 @@ s32 ghiPostStateDoPosting(void *state, void *context, s32 isFirstPart) {
  * the closing multipart boundary. Returns 0 on error, 1 when done, 2 when the
  * caller has to come back for more. */
 s32 ghiPostDoPosting(void *connection){
-M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 SendBufferedData(void *);void ResetBuffer(void *);s32 ghiSendData(void *,void *,s32);s32 StringLength(const char *);
+M2C_UNK AssertFailed(M2C_UNK *,M2C_UNK *,M2C_UNK *,s32);s32 Vector_GetCount(s32);void *Vector_GetItem(s32,s32);s32 SendBufferedData(void *);void ghiResetBuffer(void *);s32 ghiSendData(void *,void *,s32);s32 StringLength(const char *);
 extern M2C_UNK data_020fd6c0,sGhttpPostFile,data_020fd210,data_020fd440,data_020fd6cc,data_020fd454,data_020fd6ec,data_020fd710,data_020fd760,data_020fd76c,sMultipartBoundaryEnd;
 void *item;s32 result,total;
 if(!connection)AssertFailed(&data_020fd6c0,&sGhttpPostFile,&data_020fd210,0x404);
@@ -321,7 +321,7 @@ if(Vector_GetCount(M2C_FIELD(M2C_FIELD(connection,void **,GHI_POST_DATA),s32 *,0
 if(M2C_FIELD(connection,s32 *,GHI_POST_INDEX)<0)AssertFailed(&data_020fd6ec,&sGhttpPostFile,&data_020fd210,0x408);
 if(M2C_FIELD(connection,s32 *,GHI_POST_INDEX)>Vector_GetCount(M2C_FIELD(connection,s32 *,GHI_POST_ITEMS)))AssertFailed(&data_020fd710,&sGhttpPostFile,&data_020fd210,0x409);
 total=Vector_GetCount(M2C_FIELD(connection,s32 *,GHI_POST_ITEMS));
-if(M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN)){if(!SendBufferedData(connection))return 0;if(M2C_FIELD(connection,s32 *,GHI_BUFFER_POS)<M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN))return 2;ResetBuffer(connection+0x50);
+if(M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN)){if(!SendBufferedData(connection))return 0;if(M2C_FIELD(connection,s32 *,GHI_BUFFER_POS)<M2C_FIELD(connection,s32 *,GHI_BUFFER_LEN))return 2;ghiResetBuffer(connection+0x50);
 if(M2C_FIELD(connection,volatile s32 *,GHI_POST_INDEX)==total)return 1;}
 while(M2C_FIELD(connection,s32 *,GHI_POST_INDEX)<total){
 item=Vector_GetItem(M2C_FIELD(connection,s32 *,GHI_POST_ITEMS),M2C_FIELD(connection,s32 *,GHI_POST_INDEX));

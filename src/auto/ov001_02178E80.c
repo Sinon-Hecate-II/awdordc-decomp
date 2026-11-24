@@ -460,7 +460,7 @@ void Ov001_FadeInWirelessScreen(void) {
 
 void Ov001_WirelessScreenFadeDone(void) {
     M2C_UNK func_ov001_02171e20(M2C_UNK);
-    void func_ov001_021798b0(void);
+    void Ov001_StartWirelessSetupTask(void);
     if (Ov001_IsFadeActive(1) != 0) {
         return;
     }
@@ -468,26 +468,28 @@ void Ov001_WirelessScreenFadeDone(void) {
         return;
     }
     func_ov001_02171e20(1);
-    Ov001_SetStepCallback(&func_ov001_021798b0);
+    Ov001_SetStepCallback(&Ov001_StartWirelessSetupTask);
 }
 
-void func_ov001_021798b0(void) {
+/* Wireless screen step: once the icon row is selectable, start the wireless
+ * setup's per-frame task and move on to the step that polls the connection. */
+void Ov001_StartWirelessSetupTask(void) {
     s32 Ov001_AddTask(s32, void (*)(void), s32, s32);
-    void func_ov001_02179bd0(void);
-    extern M2C_UNK func_ov001_021798f8;
+    void Ov001_WirelessSetupFrameTask(void);
+    extern M2C_UNK Ov001_PollWirelessSetup;
     extern u8 gOv001WirelessState;
-    if (Ov001_GetIconRowSelection() == -2) return;
-    M2C_FIELD(&gOv001WirelessState, s32 *, 4) = Ov001_AddTask(1, &func_ov001_02179bd0, 0, 0x78);
-    Ov001_SetStepCallback(&func_ov001_021798f8);
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
+    M2C_FIELD(&gOv001WirelessState, s32 *, OV001_WIRELESS_TASK) = Ov001_AddTask(1, &Ov001_WirelessSetupFrameTask, 0, 0x78);
+    Ov001_SetStepCallback(&Ov001_PollWirelessSetup);
 }
 
 /* Poll a pending online battle connection and, on success, hand off to the appropriate follow-up handler. */
-void func_ov001_021798f8(void) {
+void Ov001_PollWirelessSetup(void) {
     void func_ov001_021799cc(void);
     void func_ov001_02179a04(void);
     void Ov001_CancelWirelessSetupTask(void);
     s32 Ov001_UpdateWirelessSetup(void);
-    void func_ov001_02179c38(void);
+    void Ov001_WaitForWirelessConnection(void);
     void func_ov001_02179bec(void);
     M2C_UNK func_ov001_0218c94c(s32, s32);
     M2C_UNK Ov001_StopSound(void);
@@ -508,7 +510,7 @@ void func_ov001_021798f8(void) {
         M2C_FIELD(&gOv001WirelessState, u8 *, 0) = 1;
         func_ov001_0218c94c(1, pending);
         M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179c38);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitForWirelessConnection);
         return;
     case 2:
         pending = M2C_FIELD(&gOv001WirelessState, s32 *, 4);
@@ -553,7 +555,7 @@ void Ov001_CancelWirelessSetupTask(void) {
     Ov001_SetStepCallback(&Ov001_BeginWirelessCancel);
 }
 
-void func_ov001_02179a54(void) {
+void Ov001_AbandonWirelessConnection(void) {
     extern u8 gOv001WirelessState;
     void Ov001_FadeOutWirelessScreen(void);
     Ov001_LockIconRow();
@@ -617,7 +619,7 @@ void Ov001_CloseWirelessScreen(void) {
     }
 }
 
-void func_ov001_02179bd0(void) {
+void Ov001_WirelessSetupFrameTask(void) {
     void func_ov001_021799cc(void);
     void Ov001_CancelWirelessSetupTask(void);
     M2C_UNK Ov001_UpdateInput();
@@ -644,24 +646,28 @@ void func_ov001_02179bec(void) {
 void func_ov001_02179c18(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     s32 Ov001_IsRegionMenuActive();
-    void func_ov001_02179a54(void);
+    void Ov001_AbandonWirelessConnection(void);
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
-void func_ov001_02179c38(void) {
-extern u8 gOv001WirelessState;
-u8 *p;
-func_ov001_021799cc();
-func_ov001_02179a04();
-Ov001_CancelWirelessSetupTask();
-p=&gOv001WirelessState;
-M2C_FIELD(p,u16 *,2)=M2C_FIELD(p,u16 *,2)+1;
-if(M2C_FIELD(p,u16 *,2)<0x438U) return;
-Ov001_StopSound();
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
+/* Wireless setup wait step: after the connection task was posted it keeps polling
+ * the icon row's input and counts frames; once OV001_WIRELESS_TIMEOUT frames pass
+ * without a reply it stops the connection sound and gives the attempt up. */
+void Ov001_WaitForWirelessConnection(void) {
+    extern u8 gOv001WirelessState;
+    u8 *state;
+
+    func_ov001_021799cc();
+    func_ov001_02179a04();
+    Ov001_CancelWirelessSetupTask();
+    state = &gOv001WirelessState;
+    M2C_FIELD(state, u16 *, OV001_WIRELESS_TIMER) = M2C_FIELD(state, u16 *, OV001_WIRELESS_TIMER) + 1;
+    if (M2C_FIELD(state, u16 *, OV001_WIRELESS_TIMER) < OV001_WIRELESS_TIMEOUT) return;
+    Ov001_StopSound();
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
 void Ov001_BeginWirelessCancel(void) {
@@ -669,7 +675,7 @@ extern u8 gOv001WirelessState;
 Ov001_StopSound();
 Ov001_PlaySound(7);
 gOv001WirelessState=0;
-Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179a54);
+Ov001_SetStepCallback((M2C_UNK *)&Ov001_AbandonWirelessConnection);
 }
 
 void func_ov001_02179cb4(void) {

@@ -78,22 +78,24 @@ s32 GetTextObjectKeyAction(void) {
     return 0;
 }
 
+/* Map the keys pressed this frame to this scene-panel widget's action mask:
+ * Left and Right move the selection, A confirms and B cancels. */
 s32 GetPanelKeyAction(void) {
     extern u16 *gKeyState;
-    u16 temp_r0;
+    u16 keys;
 
-    temp_r0 = *gKeyState;
-    if (temp_r0 & 0x20) {
-        return 4;
+    keys = *gKeyState;
+    if (keys & KEY_LEFT) {
+        return PANEL_INPUT_LEFT;
     }
-    if (temp_r0 & 0x10) {
-        return 8;
+    if (keys & KEY_RIGHT) {
+        return PANEL_INPUT_RIGHT;
     }
-    if (temp_r0 & 1) {
-        return 0x10;
+    if (keys & KEY_A) {
+        return PANEL_INPUT_CONFIRM;
     }
-    if (temp_r0 & 2) {
-        return 0x20;
+    if (keys & KEY_B) {
+        return PANEL_INPUT_CANCEL;
     }
     return 0;
 }
@@ -137,21 +139,27 @@ s32 GetTextObjectTouchConfirm(void) {
     return 0;
 }
 
-void SetWidgetRect(s32 arg0, Unk0209Rect arg1) {
-    extern Unk0209Rect data_0215bde8[];
-    Unk0209Rect *rect;
-    rect = &data_0215bde8[arg0];
-    *rect = arg1;
+/* Store one widget's touch rectangle into the shared table: slot 1 is the left
+ * half and slot 2 the right half of the two-state widgets. */
+void SetWidgetRect(s32 rectIndex, WidgetRect rect) {
+    extern WidgetRect gWidgetRects[];
+    WidgetRect *slot;
+
+    slot = &gWidgetRects[rectIndex];
+    *slot = rect;
 }
 
-s32 func_0209deb0(M2C_UNK arg0, M2C_UNK arg1) {
-    s32 func_020b2e78(M2C_UNK, M2C_UNK, M2C_UNK *);
-    extern M2C_UNK data_0215bdf0;
-    extern M2C_UNK data_0215bdf8;
-    if (func_020b2e78(arg0, arg1, &data_0215bdf0) != 0) {
+/* Return which of the widget's two touch halves the point (x, y) lies in: 1 for
+ * the left half, 2 for the right half, 0 for neither. */
+s32 GetTouchRegion(s32 x, s32 y) {
+    s32 RectContainsPoint(s32, s32, void *);
+    extern Unk0209Rect gWidgetLeftRect;
+    extern Unk0209Rect gWidgetRightRect;
+
+    if (RectContainsPoint(x, y, &gWidgetLeftRect) != 0) {
         return 1;
     }
-    if (func_020b2e78(arg0, arg1, &data_0215bdf8) != 0) {
+    if (RectContainsPoint(x, y, &gWidgetRightRect) != 0) {
         return 2;
     }
     return 0;
@@ -163,7 +171,7 @@ s32 GetPanelTouchAction(void) {
     extern s32 data_0215bde0;
     s32 region;
 
-    region = func_0209deb0(M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
+    region = GetTouchRegion(M2C_FIELD(gTouchState, u16 *, 0), M2C_FIELD(gTouchState, u16 *, 2));
     if (M2C_FIELD(gTouchState, u8 *, 0x12) != 0) {
         if (M2C_FIELD(gTouchState, u8 *, 0x14) != 0) {
             data_0215bde0 = region;
@@ -350,7 +358,7 @@ void SetScenePanelFaceState(void *panel, s8 faceState) {
     UpdateScenePanelPalette(panel);
 }
 
-void func_0209e2b8(void *arg0, s8 arg1) {
+void SetScenePanelChildFlip(void *arg0, s8 arg1) {
     M2C_FIELD(arg0, s8 *, 0x58) = arg1;
 }
 
@@ -364,19 +372,22 @@ s32 Get3DSpriteChild(void *arg0, s32 arg1) {
     return M2C_FIELD((arg0 + (var_r1 * 4)), s32 *, 0x68);
 }
 
-void *func_0209e2d8(M2C_UNK arg0) {
-    s32 FaceSpriteIsLoaded();
-    s32 var_r5;
-    void *temp_r4;
+/* The scene panel's face sprite that is in use: the first of its two face
+ * children (in flip order) that has a face loaded and its active-face flag set,
+ * or NULL when neither is showing. */
+void *GetActivePanelFace(void *panel) {
+    s32 FaceSpriteIsLoaded(void *);
+    s32 index;
+    void *child;
 
-    var_r5 = 0;
+    index = 0;
 loop_1:
-    temp_r4 = Get3DSpriteChild(arg0, var_r5);
-    if ((FaceSpriteIsLoaded() != 0) && (M2C_FIELD(temp_r4, u8 *, 0x5C) != 0)) {
-        return temp_r4;
+    child = (void *) Get3DSpriteChild(panel, index);
+    if ((FaceSpriteIsLoaded(child) != 0) && (M2C_FIELD(child, u8 *, FACE_SPRITE_ACTIVE) != 0)) {
+        return child;
     }
-    var_r5 += 1;
-    if (var_r5 >= 2) {
+    index += 1;
+    if (index >= 2) {
         return NULL;
     }
     goto loop_1;
@@ -425,7 +436,7 @@ void UpdateScenePanelPalette(void *arg0) {
         case 1:M2C_FIELD(p,void**,0x60)=data_020f39ee;M2C_FIELD(p,void**,0x64)=data_020f39d4;p[0x49]=7;break;
     }
     q=func_0209bfc8();
-    p=func_0209e2d8((s32)arg0);
+    p=GetActivePanelFace((s32)arg0);
     if(q && p)M2C_FIELD(q,void**,0x60)=func_02097e84(p[0x58]);
 }
 

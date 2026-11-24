@@ -297,14 +297,16 @@ void func_02074048(void) {
     }
 }
 
-void func_02074074(void) {
+/* Run and unlink every function on the C++ exit-function list, handing each its
+ * stored argument and -1, until the list is empty. */
+void RunExitFunctions(void) {
     extern void *gExitFunctionList;
     void *entry;
     entry = gExitFunctionList;
     if (entry == NULL) return;
     do {
-        gExitFunctionList = M2C_FIELD(entry, void **, 0);
-        M2C_FIELD(entry, void (**)(s32, s32), 4)(M2C_FIELD(entry, s32 *, 8), -1);
+        gExitFunctionList = M2C_FIELD(entry, void **, EXIT_FUNC_NEXT);
+        M2C_FIELD(entry, void (**)(s32, s32), EXIT_FUNC_CALLBACK)(M2C_FIELD(entry, s32 *, EXIT_FUNC_ARG), -1);
         entry = gExitFunctionList;
     } while (entry != NULL);
 }
@@ -333,12 +335,16 @@ extern "C" void ConstructArray(s32 first, s32 count, s32 stride, M2C_UNK (*const
 }
 #pragma cplusplus on
 #pragma exceptions on
-extern "C" void DestroyArray(s32 arg0, s32 arg1, s32 arg2, M2C_UNK (*arg3)(s32)) {
+/* Destroy `count` array elements in reverse, `stride` bytes apart: `first` is the
+ * base and the elements end at first + count * stride, so each step subtracts the
+ * stride and calls `destructor` on the element.  Does nothing without a
+ * destructor. */
+extern "C" void DestroyArray(s32 first, s32 count, s32 stride, M2C_UNK (*destructor)(s32)) {
     s32 current;
-    if (arg3 != 0) {
-        current = arg1 * arg2 + arg0;
+    if (destructor != 0) {
+        current = count * stride + first;
         try {
-            while (arg1 != 0) { current -= arg2; arg3(current); --arg1; }
+            while (count != 0) { current -= stride; destructor(current); --count; }
         } catch (s32) {}
     }
 }

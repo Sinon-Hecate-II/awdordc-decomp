@@ -242,10 +242,10 @@ void FinishBattleAndSave(void) {
     s32 GetCurrentSaveType();
     s32 SaveTypeHasNoSlot(s32);
     M2C_UNK GetSaveSlot(M2C_UNK, s32);
-    M2C_UNK func_020bf798();
+    M2C_UNK SaveGameSettings();
     u16 GetMapFollowupMapId(u16, s32);
     s32 IsCampaignBattleRules();
-    M2C_UNK func_020e4870();
+    M2C_UNK StoreSaveSlotProgress();
     extern void **gCurrentMap;
     s32 recordType;
     s32 slot;
@@ -256,7 +256,7 @@ void FinishBattleAndSave(void) {
         StartBattleRecord();
         if (SaveTypeHasNoSlot(recordType) == 0) {
             GetSaveSlot(0, recordType);
-            func_020e4870();
+            StoreSaveSlotProgress();
         }
     }
     if (IsCampaignBattleRules() != 0) {
@@ -270,7 +270,7 @@ void FinishBattleAndSave(void) {
         } while (slot < 4);
         SetMapListFlag(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), 1);
     }
-    func_020bf798();
+    SaveGameSettings();
 }
 
 void func_020b3c2c(M2C_UNK arg0) {

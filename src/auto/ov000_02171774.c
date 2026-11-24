@@ -196,7 +196,7 @@ M2C_FIELD(arg0,void **,0x18)=p;func_ov000_02172754(arg0);return arg0;
 }
 #pragma opt_strength_reduction reset
 
-void *func_ov000_021725c8(void *arg0) {
+void *Ov000_InfoPanel_FreeEntries(void *arg0) {
     M2C_UNK MemFree(s32);
     MemFree(M2C_FIELD(arg0, s32 *, 0x18));
     return arg0;

@@ -95,14 +95,17 @@ s32 Ov001_IsMenuLayoutReady(void) {
     return 0;
 }
 
-void Ov001_LoadMenuResource(s32 arg0) {
+/* Load the localised BG screen for menu page `page` (one of the OV001_MENU_LAYOUT_*
+ * screens), remember it as the menu layout and start the task that copies it to
+ * the sub screen's BG1 map. */
+void Ov001_LoadMenuResource(s32 page) {
     s32 Ov001_GetLocalizedFileName(s32);
     s32 Ov001_LoadFile(s32, s32, s32);
     void Ov001_LoadMenuLayoutTask(s32);
-    extern s32 data_ov001_02190be4[];
+    extern s32 sOv001MenuLayoutPaths[];
     extern s32 gOv001MenuLayout;
-    gOv001MenuLayout = Ov001_LoadFile(Ov001_GetLocalizedFileName(data_ov001_02190be4[arg0]), 0, 4);
-    Ov001_AddTask(1, Ov001_LoadMenuLayoutTask, 0, 0x78);
+    gOv001MenuLayout = Ov001_LoadFile(Ov001_GetLocalizedFileName(sOv001MenuLayoutPaths[page]), 0, 4);
+    Ov001_AddTask(1, Ov001_LoadMenuLayoutTask, 0, 120);
 }
 
 /* Task that finishes loading the option menu's layout resource: flush the 0x600
@@ -468,10 +471,12 @@ if(c) M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_RegionMenuFade
 else M2C_FIELD(gOv001RegionMenu,s32*,0x14)=Ov001_AddTask(1,Ov001_SlideRegionMenuIn,0,120);
 }
 #pragma scheduling reset
+/* Close the ov001 region menu: stop the task currently animating it (task message
+ * 0), then start the close-delay task and store its id on the menu. */
 void Ov001_CloseRegionMenu(void) {
 extern void *gOv001RegionMenu;void Ov001_RegionMenuCloseDelay();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
-Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,20));
-M2C_FIELD(gOv001RegionMenu,s32 *,20)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
+Ov001_PostTaskMessage(0,M2C_FIELD(gOv001RegionMenu,s32 *,OV001_REGION_TASK));
+M2C_FIELD(gOv001RegionMenu,s32 *,OV001_REGION_TASK)=Ov001_AddTask(1,Ov001_RegionMenuCloseDelay,0,120);
 }
 
 s8 Ov001_GetRegionMenuSelection(void) {

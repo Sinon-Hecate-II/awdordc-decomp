@@ -3,8 +3,8 @@
 #include "ov000_ui.h"
 typedef struct { u8 bytes[6]; } UnitPaletteLookup;
 static inline void ArmyInfo_LoadTile(s32 tile, u32 resource, s32 palette) {
- void func_0209b26c(s32,s32,s32,u32,s32,s32);
- func_0209b26c(3,tile,1,resource,0x1000,palette);
+ void DrawLocalizedText(s32,s32,s32,u32,s32,s32);
+ DrawLocalizedText(3,tile,1,resource,0x1000,palette);
 }
 static inline void *ArmyInfo_UseEngine(void **current, void *engine) {
  *current=engine;
@@ -96,7 +96,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=0;
 gCur3DSpriteEngine=p;
 }
 #pragma opt_instruction_scheduling off
-void func_ov000_0216dd0c(void) {
+void ArmyInfo_RedrawContents(void) {
  extern void *gArmyInfoState;
  extern u8 gMovementCostTable[];
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
@@ -107,8 +107,8 @@ void func_ov000_0216dd0c(void) {
  void OpenNarcArchive(void *);void CloseNarcArchive(void);
  void LoadNarcFileDecompressed(void *,void *);
  void Clear3DSpriteLayerMain(s32);void Clear3DSpriteLayerSub(s32);
- void func_0209bbd0(s32,s32,s32,s32,s32,s32);
- void func_0209b26c(s32,s32,s32,u32,s32,s32);
+ void DrawLocalizedScreenTextLine(s32,s32,s32,s32,s32,s32);
+ void DrawLocalizedText(s32,s32,s32,u32,s32,s32);
  u8 *state=gArmyInfoState;
  void *record=gMovementCostTable+M2C_FIELD(state+state[13],u8 *,4)*0x9c;
  void *saved,*engine;
@@ -120,15 +120,15 @@ void func_ov000_0216dd0c(void) {
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  Clear3DSpriteLayerMain(1);
  M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
- func_0209bbd0(2,2,1,M2C_FIELD(record,s32 *,8),0x1000,1);
- func_0209bbd0(2,12,1,M2C_FIELD(record,s32 *,12),0x1000,0xa1);
+ DrawLocalizedScreenTextLine(2,2,1,M2C_FIELD(record,s32 *,8),0x1000,1);
+ DrawLocalizedScreenTextLine(2,12,1,M2C_FIELD(record,s32 *,12),0x1000,0xa1);
  M2C_FIELD(g3DSpriteEngineMain,u8 *,0x46)|=2;
  gCur3DSpriteEngine=g3DSpriteEngineSub;engine=g3DSpriteEngineSub;
  LoadNarcFileDecompressed(GetLocalizedFileName(data_ov000_021b888c),M2C_FIELD(engine,void **,0x28));
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  Clear3DSpriteLayerSub(1);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
- func_0209bbd0(2,8,1,M2C_FIELD(record,s32 *,4),0x1000,0x81);
+ DrawLocalizedScreenTextLine(2,8,1,M2C_FIELD(record,s32 *,4),0x1000,0x81);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  gCur3DSpriteEngine=saved;CloseNarcArchive();
  }
@@ -145,26 +145,31 @@ void func_ov000_0216dd0c(void) {
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
  Clear3DSpriteLayerSub(1);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
- func_0209b26c(3,14,1,0xf0000097,0x1000,1);
- func_0209b26c(3,16,1,0xf0000098,0x1000,0x21);
- func_0209b26c(3,18,1,0xf0000099,0x1000,0x41);
- func_0209b26c(3,20,1,0xf000009a,0x1000,0x61);
+ DrawLocalizedText(3,14,1,0xf0000097,0x1000,1);
+ DrawLocalizedText(3,16,1,0xf0000098,0x1000,0x21);
+ DrawLocalizedText(3,18,1,0xf0000099,0x1000,0x41);
+ DrawLocalizedText(3,20,1,0xf000009a,0x1000,0x61);
  M2C_FIELD(g3DSpriteEngineSub,u8 *,0x46)|=2;
  gCur3DSpriteEngine=saved;CloseNarcArchive();
  }
 }
-void func_ov000_0216e054(void) {
+/* Apply the newly selected player to the army-info window: set the file
+ * directory and the selection's sprite slot, redraw the CO face on the main
+ * screen, toggle the face page, restart the slide from the left (-1) and redraw
+ * the window's contents. */
+void ArmyInfo_ApplySelection(void) {
     extern void *gArmyInfoState;
     M2C_UNK SetArmyInfoFileDirectory(void);
     M2C_UNK FocusSpriteSlotById(u8);
     M2C_UNK ArmyInfo_DrawFaceMain(void);
-    void func_ov000_0216dd0c(void);
+    void ArmyInfo_RedrawContents(void);
+
     SetArmyInfoFileDirectory();
-    FocusSpriteSlotById(M2C_FIELD(gArmyInfoState, u8 *, 0xD));
+    FocusSpriteSlotById(M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_SELECTED));
     ArmyInfo_DrawFaceMain();
-    M2C_FIELD(gArmyInfoState, u8 *, 0x11) = 1 - M2C_FIELD(gArmyInfoState, u8 *, 0x11);
-    M2C_FIELD(gArmyInfoState, s16 *, 0x14) = -1;
-    func_ov000_0216dd0c();
+    M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_PAGE) = 1 - M2C_FIELD(gArmyInfoState, u8 *, ARMY_INFO_FACE_PAGE);
+    M2C_FIELD(gArmyInfoState, s16 *, ARMY_INFO_SLIDE_STEP) = -1;
+    ArmyInfo_RedrawContents();
 }
 
 void func_ov000_0216e09c(u8 arg0) {
@@ -177,11 +182,11 @@ void func_ov000_0216e09c(u8 arg0) {
 void func_ov000_0216e0d0(u8 *arg0) {
     extern void *gArmyInfoState;
     M2C_UNK PlaySoundEffect(s32);
-    void func_ov000_0216e054(void);
+    void ArmyInfo_ApplySelection(void);
     if (M2C_FIELD(gArmyInfoState, u8 *, 0xD) == *arg0) return;
     PlaySoundEffect(0x10019);
     func_ov000_0216e09c(*arg0);
-    func_ov000_0216e054();
+    ArmyInfo_ApplySelection();
 }
 
 /* Creates one selectable sprite slot per listed player, then focuses the

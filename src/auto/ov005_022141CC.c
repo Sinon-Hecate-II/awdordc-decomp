@@ -1,5 +1,6 @@
 /* 12 functions from 0x022141CC to 0x02215168 (ov005), found by ds-decomp. */
 #include "common.h"
+#include "sound.h"
 static inline void *SwitchEngine1425c(void *p){extern void *gCur3DSpriteEngine;void *old=gCur3DSpriteEngine;gCur3DSpriteEngine=p;return old;}
 static inline s32 Mul1425c(s32 a,s32 b){return ((s64)a*b+2048)>>12;}
 typedef struct {s16 vals[8];} ShakeList1425c;
@@ -9,13 +10,16 @@ extern u8 data_02101f0c[],gSpriteDesc8x8[],data_ov005_02220486[];
 extern s16 data_ov005_02220048[8],data_ov005_02220484,gSinCosTable[];
 #define RECORDS_SCREEN ((RecordsScreen *)M2C_FIELD(&gRecordsMenuState, void **, 8))
 
+/* Move the records list's top visible row down one, stopping when only the last
+ * full page (six rows) would remain; plays the select sound when it moves. */
 s32 RecordsMenu_ScrollDown(void) {
-extern M2C_UNK gRecordsMenuState;
-s16 n=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98);
-s32 next=n+6;
-if(next>=M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x9a))return 0;
-M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)++;
-PlaySoundEffect(0x10019);return 1;
+    extern M2C_UNK gRecordsMenuState;
+    s16 scroll = RECORDS_SCREEN->scroll;
+    s32 next = scroll + 6;
+    if (next >= RECORDS_SCREEN->count) return 0;
+    RECORDS_SCREEN->scroll++;
+    PlaySoundEffect(SOUND_MENU_SELECT);
+    return 1;
 }
 
 /* Page the records list down by one screen: move its top visible row down six,
@@ -100,7 +104,7 @@ gCur3DSpriteEngine=saved;
  * rows (seven when the scroll position is half a row off, six otherwise), then
  * redraw the selectable and total counters at the bottom. */
 void RecordsMenu_DrawList(s32 scroll) {
-void ClearTileRect(void *,s32,s32);void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);void func_0209c024(s32,s16,void *,s32,s32,s32);s32 func_020a8b78(void);
+void ClearTileRect(void *,s32,s32);void DrawTilemapNumber(s32,s16,void *,s32,s32,s32);void DrawTextToTilemap(s32,s16,void *,s32,s32,s32);s32 func_020a8b78(void);
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain;extern M2C_UNK gRecordsMenuState;
 s32 drawn,recordEven,recordOdd,rowEven,rowOdd,drawnEven;void *saved=gCur3DSpriteEngine;
 gCur3DSpriteEngine=g3DSpriteEngineMain;
@@ -115,7 +119,7 @@ drawnEven=0;rowEven=0;recordEven=scroll>>1;
 do{RecordsMenu_DrawRow(rowEven,recordEven);drawnEven++;recordEven++;rowEven+=2;}while(drawnEven<6);
 }
 DrawTilemapNumber(27,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->selectable,0x2000,0);
-func_0209c024(28,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0x2000,0);
+DrawTextToTilemap(28,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),func_020a8b78(),0x2000,0);
 DrawTilemapNumber(30,1,M2C_FIELD(gCur3DSpriteEngine,void **,0x24),((RecordsScreen *)M2C_FIELD(&gRecordsMenuState,void **,8))->count,0x2000,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;
 gCur3DSpriteEngine=saved;

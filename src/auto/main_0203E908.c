@@ -246,7 +246,7 @@ s32 StartPeerConnect(void *arg0) {
     s32 GT2SocketHandle(s32);
     s32 gt2AddressToString(s32, M2C_UNK, M2C_UNK);
     s32 NatNeg_BeginNegotiation(s32, s32, u8, M2C_UNK *, M2C_UNK *, void *);
-    M2C_UNK func_02061690(s32, s32, u16, s32);
+    M2C_UNK SBServerListSendNATNegotiation(s32, s32, u16, s32);
     extern M2C_UNK func_02043e0c;
     void OnPeerConnect(s32,s32,s32,void *);
     s32 result;
@@ -255,7 +255,7 @@ s32 StartPeerConnect(void *arg0) {
 
     if (attempt->isJoin == 0) {
         connection = GetConnection();
-        func_02061690(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
+        SBServerListSendNATNegotiation(M2C_FIELD(connection, s32 *, CONN_SESSION_SERVER_BROWSER), gt2AddressToString(attempt->address, 0, 0), attempt->port, attempt->natNeg);
         if (ReportMatchmakingResult() != 0) {
             return 2;
         }

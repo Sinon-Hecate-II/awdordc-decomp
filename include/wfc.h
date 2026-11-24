@@ -31,8 +31,10 @@ typedef struct WfcManager {
 
 /* The WFC control block (Wfc_GetWorkBlock(WFC_WORK_CONTROL)) records the progress
  * and result of one connection attempt: the session state, the result of the last
- * step, the network check's outcome and the friend it was made for. */
-#define WFC_CONTROL_MASK         0x08 /* u8 bits of the handlers currently enabled */
+ * step, the network check's outcome and the friend it was made for. Its first
+ * WFC_CONTROL_SIZE bytes are the WfcAllocationState below (+0 allocate, +4 freeBlock
+ * and +8 the mask of owned blocks), which the WFC_Init allocation callbacks fill in. */
+#define WFC_CONTROL_MASK         0x08 /* u8 WfcAllocationState::ownedMask: bits of the owned work blocks */
 #define WFC_CONTROL_STATE        0x09 /* u8 session state published by Wfc_PublishState */
 #define WFC_CONTROL_STEP_STATE   0x0A /* u8 session state saved by Wfc_SetResultCode */
 #define WFC_CONTROL_RESULT       0x0C /* s32 result code of the last step */
@@ -40,6 +42,10 @@ typedef struct WfcManager {
 #define WFC_CONTROL_RECORD_RESULT 0x14 /* u8 copy of the selected record's connection result */
 #define WFC_CONTROL_SLOT         0x15 /* u8 save slot of the friend the result is for */
 #define WFC_CONTROL_STATE_MAX    0x16 /* u8 highest session state reached */
+#define WFC_CONTROL_FRIEND_SLOT  0x17 /* u8 friend slot the session is match-making with (Wfc_FriendIdToSlot) */
+
+/* Returned by GetWfcFriendSlot when there is no session to read a friend slot from. */
+#define WFC_FRIEND_SLOT_NONE     0xFF
 
 typedef struct WfcAllocationState {
     void *(*allocate)(s32 tag, s32 size);
@@ -252,8 +258,9 @@ WFC_SESSION_STATE_WIRELESS   = 4,  /* the wireless start command was queued and 
  * byte of each received packet, mapped to 0..255 by WFC_AddSignalSample, kept in
  * a ring of WFC_SIGNAL_SAMPLE_COUNT. The count is 0..16 while the ring fills and
  * above 16 once it has wrapped, its low 4 bits the slot the next sample goes to;
- * WFC_GetAverageSignal averages the samples taken so far and WFC_GetSignalLevel
- * buckets that average into a 0..3 connection level. */
+ * WFC_GetAverageSignal averages the samples taken so far and WFC_GetSignalGrade
+ * buckets that average into a 0..3 connection level, which WFC_GetLinkSignalLevel
+ * reports while the session is in WFC_SESSION_STATE_LINKING. */
 #define WFC_SIGNAL_SAMPLE_COUNT 16 /* samples the ring holds */
 #define WFC_SIGNAL_RING_FULL    16 /* a count above this means the ring has wrapped */
 
@@ -371,6 +378,7 @@ typedef struct WfcMeasureChannelRequest {
 #define WFC_CMD_INFO_BUFFER0 0x00  /* void *first buffer of the work area */
 #define WFC_CMD_INFO_DATA    0x04  /* void *0x800-byte connection-data block the firmware fills */
 #define WFC_CONN_DATA_SIZE   0x7D0 /* bytes of that block WFC_GetConnectionData copies into a caller buffer */
+#define WFC_CONN_DATA_PEER_MASK 0x86 /* u16: bitmask of the peers currently connected (one bit per player aid) */
 #define WFC_CMD_INFO_LINK_STATE 0x00 /* u16 link state at the start of that block (WFC_LINK_STATE) */
 #define WFC_CMD_INFO_BUFFER1 0x0c  /* void *0x100-byte buffer */
 #define WFC_CMD_INFO_PACKET  0x10  /* void *0x100-byte command packet the firmware wrote */
@@ -536,6 +544,16 @@ enum {
 #define OV001_MSG_CONNECTING         0x31 /* "connecting" panel of the ov001 WFC connect screens */
 #define OV001_MSG_FRIEND_LIST        0x33 /* panel and message box text of the ov001 friend-list screen */
 
+/* Object layout block and message ids of the ov001 WFC settings screen. */
+#define OV001_WFC_SETTINGS_LAYOUT   0x12 /* layout block its title/border objects come from */
+#define OV001_MSG_WFC_SETTINGS      0x3B /* the screen's message panel text */
+#define OV001_MSG_WFC_SETTINGS_INFO 0x17 /* the screen's one-shot info message box text */
+
+/* Object layout block and message ids of the ov001 WFC data-erase screen. */
+#define OV001_WFC_ERASE_LAYOUT   0x13 /* layout block its title/border objects come from */
+#define OV001_MSG_WFC_ERASE      0x3C /* the screen's message panel text */
+#define OV001_MSG_WFC_ERASE_INFO 0x1B /* the screen's one-shot info message box text */
+
 /* Layout of the RFC-1123 Date header the server sends:
  * "Www, DD Mmm YYYY hh:mm:ss GMT" (29 characters, field boundaries below). */
 #define HTTP_DATE_DAY_SPACE   7  /* ' ' before the day-of-month */
@@ -653,6 +671,7 @@ enum {
 #define WFC_NET_CHECK_TASK           0x111C /* thread object used by the HTTP worker */
 #define WFC_NET_CHECK_TASK_ID        0x1188 /* s32 TaskCreate id, zero before creation */
 #define WFC_NET_CHECK_TASK_PRIORITY  0x10   /* priority used for the worker */
+#define WFC_NET_CHECK_MUTEX          0x11DC /* mutex guarding WFC_NET_CHECK_STATE */
 /* Status the HTTP worker publishes, and reads back, under the network state's mutex. */
 #define WFC_NET_CHECK_STATE          0x1000 /* s32 step code; 11 once the server answered */
 #define WFC_NET_CHECK_RESULT         0x1004 /* s32 result code of the check, negative on error */
@@ -826,8 +845,9 @@ enum {
     WFC_STEP_FRIEND_RECORDS = 4,
     WFC_STEP_FRIEND_ENTRIES = 5,
     WFC_STEP_FRIEND_RESULTS = 6,
-    WFC_STEP_LINK           = 7,
-    WFC_STEP_DONE           = 17 /* the friend connection has finished */
+    WFC_STEP_LINK           = 7,  /* hands over to the link step: resolve the selected friend and start its link */
+    WFC_STEP_LINK_WAIT      = 8,  /* the friend connection is opening (Wfc_UpdateFriendConnection) */
+    WFC_STEP_DONE           = 17  /* the friend connection has finished */
 };
 
 #endif

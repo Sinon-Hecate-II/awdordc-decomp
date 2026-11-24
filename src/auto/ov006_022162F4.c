@@ -212,7 +212,7 @@ SetFileDirectory(data_ov006_022188a0);OpenNarcArchive(GetLocalizedFileName(data_
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_022188dc),M2C_FIELD(gCur3DSpriteEngine,s32*,0x20));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov006_022188b0),M2C_FIELD(gCur3DSpriteEngine,s32*,0x24));CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov006_022188bc,0,96);
-SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x20),32,24,0);SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),32,24,0);func_01ff9dd8(3);
+SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x20),32,24,0);SetTileRectPalette(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),32,24,0);Clear3DSpriteLayerVram(3);
 M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=1;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=8;
 LoadSpriteResource(1,0,5,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x3a00);
 LoadSpriteResource(1,2,0,M2C_FIELD(gCur3DSpriteEngine,s32*,0x30)+0x2c0);

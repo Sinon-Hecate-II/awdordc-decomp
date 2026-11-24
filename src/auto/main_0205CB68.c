@@ -8,18 +8,21 @@ struct SocketInit_0205 { u16 port; s32 len; s32 addr; struct Packet_0205 pkt; };
 
 #pragma push
 #pragma opt_global_reg off
-s32 func_0205cb68(s32 a, s32 b, s32 c) {
-    s32 func_0205d228(void *, s32, s32, void *, s32);
+/* Send a bare "connection closed" control message - the two magic bytes and the
+ * long-form closed id - to a peer the socket has no connection for, so it drops
+ * whatever it thinks it has. */
+s32 gti2SendClosedOnSocket(s32 socket, s32 address, s32 port) {
+    s32 gti2SocketSend(void *, s32, s32, void *, s32);
     extern u8 gGt2Magic[];
-    u8 v[3];
-    struct BytePair_0205 *p = (struct BytePair_0205 *)v;
+    u8 buffer[3];
+    struct BytePair_0205 *magic = (struct BytePair_0205 *)buffer;
 
     const struct BytePair_0205 *header = (const struct BytePair_0205 *)gGt2Magic;
-    u8 lo = header->v[0], hi = header->v[1];
-    v[2] = 'h';
-    p->v[0] = lo;
-    p->v[1] = hi;
-    return func_0205d228((void *)a, b, c, p, 3) != 0;
+    u8 first = header->v[0], second = header->v[1];
+    buffer[2] = GTI2_LARGE_CLOSED;
+    magic->v[0] = first;
+    magic->v[1] = second;
+    return gti2SocketSend((void *)socket, address, port, magic, 3) != 0;
 }
 #pragma pop
 /* Resend one queued sent command the peer has not acknowledged: write the
@@ -123,10 +126,13 @@ M2C_FIELD(p,u16 *,8)=((pkt.c>>8)&0xff)|((pkt.c<<8)&0xff00);
 }
 }
 #pragma pop
-void gti2FreeSocket(void *arg0) {
+/* Free a GT2 socket: defer the free while one of its callbacks is running (the
+ * outermost callback frees it), otherwise close its OS handle and free its
+ * connection table, its connection vector and the socket itself. */
+void gti2FreeSocket(void *socket) {
 M2C_UNK gpiFree(void *);M2C_UNK TableFree(s32);M2C_UNK func_02049270();M2C_UNK ghiCloseSocket(s32);
-if(M2C_FIELD(arg0,s32 *,0x1c)!=0){M2C_FIELD(arg0,s32 *,0x14)=1;return;}
-ghiCloseSocket(M2C_FIELD(arg0,s32 *,0));TableFree(M2C_FIELD(arg0,s32 *,0xc));Vector_Free(M2C_FIELD(arg0,s32 *,0x10));gpiFree(arg0);func_02049270();
+if(M2C_FIELD(socket,s32 *,GT2_SOCKET_CALLBACKS)!=0){M2C_FIELD(socket,s32 *,GT2_SOCKET_DIRTY)=1;return;}
+ghiCloseSocket(M2C_FIELD(socket,s32 *,GT2_SOCKET_HANDLE));TableFree(M2C_FIELD(socket,s32 *,GT2_SOCKET_CONNECTION_TABLE));Vector_Free(M2C_FIELD(socket,s32 *,GT2_SOCKET_CONNECTIONS));gpiFree(socket);func_02049270();
 }
 
 void gti2SocketSetConnectAttempt(void *arg0, s32 arg1) {
@@ -280,7 +286,7 @@ void gti2RemoveConnection(s32 conn)
     return;
 }
 #pragma scheduling reset
-s32 func_0205d228(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
+s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     void gti2NormalizeMessage(M2C_UNK **, s32 *);
     s32 func_0204955c(s32);
     s32 ghiSendTo(s32, s32, s32, s32, void *, s32);

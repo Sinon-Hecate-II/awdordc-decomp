@@ -372,7 +372,7 @@ void InitSpriteBatch(s32 layer, s32 layer2, s32 tileOffset, s32 paletteBase) {
     }
 }
 
-void func_0207bc80(s32 arg0) {
+void SetSpriteBatchHighlightKind(s32 arg0) {
     extern s32 gSpriteBatch;
     M2C_FIELD((void *)gSpriteBatch, s32 *, 0x64) = arg0;
 }
@@ -590,21 +590,23 @@ s32 GetBatchSpriteSourceHeight(s32 arg0) {
     return gSpriteKindHeights[M2C_FIELD((void *)(gSpriteBatch + arg0), u8 *, 0x3C) * 8];
 }
 
-void func_0207c1fc(M2C_UNK arg0, M2C_UNK arg1) {
+/* Load the demo battle's fixed graphics into VRAM: the compressed tile block into
+ * the tile area at `tileDest`, then its 32-byte palette into the palette area at
+ * `paletteDest`. */
+void LoadDemoBattleGraphics(M2C_UNK tileDest, M2C_UNK paletteDest) {
     M2C_UNK GX_BeginLoadTex();
     M2C_UNK GX_EndLoadTex();
-    M2C_UNK func_02004d3c();
-    M2C_UNK func_02004ddc();
+    M2C_UNK GX_BeginLoadTexPltt();
+    M2C_UNK GX_EndLoadTexPltt();
     M2C_UNK MI_CpuCopy32(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK LoadGraphicsBlock(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02101468;
-    extern M2C_UNK data_02101488;
+    extern M2C_UNK gDemoBattleGraphics, gDemoBattlePalette;
     GX_BeginLoadTex();
-    LoadGraphicsBlock(&data_02101488, arg0);
+    LoadGraphicsBlock(&gDemoBattleGraphics, tileDest);
     GX_EndLoadTex();
-    func_02004d3c();
-    MI_CpuCopy32(&data_02101468, arg1, 0x20);
-    func_02004ddc();
+    GX_BeginLoadTexPltt();
+    MI_CpuCopy32(&gDemoBattlePalette, paletteDest, 0x20);
+    GX_EndLoadTexPltt();
 }
 
 /* Seed the random generator from the RTC: the date (year, month, day) and the

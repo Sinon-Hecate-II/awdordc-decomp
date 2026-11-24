@@ -1,5 +1,6 @@
 /* 2 functions from 0x0203538C to 0x020362D4 (main), found by ds-decomp. */
 #include "common.h"
+#include "wfc.h"
 extern void *gWfcNet;
 extern void *data_020fb7b4,*gNasServer;
 extern u8 data_0213d150[],gSocketManager[],data_020fb8c8[],data_020fb8d4[],data_020fb8f4[],data_020fb8fc[],data_020fb904[],data_020fb82c[];
@@ -143,11 +144,13 @@ done:
 if(first)freefn(data_020fb944,first,0);if(second)freefn(data_020fb950,second,0);if(result)freefn(data_020fb95c,result,0);
 }
 #pragma optimization_level reset
-void Wfc_SetNetCheckState(s32 arg0) {
+/* Publish the network check's state under WFC_NET_CHECK_MUTEX (the counterpart of
+ * Wfc_GetNetCheckState). */
+void Wfc_SetNetCheckState(s32 state) {
     M2C_UNK LockMutex(void *);
     M2C_UNK UnlockMutex(void *);
     extern void *gWfcNet;
-    LockMutex(gWfcNet + 0x11DC);
-    M2C_FIELD(gWfcNet, s32 *, 0x1000) = arg0;
-    UnlockMutex(gWfcNet + 0x11DC);
+    LockMutex(gWfcNet + WFC_NET_CHECK_MUTEX);
+    M2C_FIELD(gWfcNet, s32 *, WFC_NET_CHECK_STATE) = state;
+    UnlockMutex(gWfcNet + WFC_NET_CHECK_MUTEX);
 }

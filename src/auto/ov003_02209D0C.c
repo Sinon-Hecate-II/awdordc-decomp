@@ -60,7 +60,7 @@ u8 func_ov003_022066c8(u8);void *func_ov003_022066a8(u8);
 s16 func_020bfa20(void);s16 func_020bf9e0(void);
 void func_ov003_0220accc(void *,u8);void Clear3DSpriteLayer(s32);
 s32 GetLanguage(void);s32 GetLocalizedText(void *);s32 func_0209c2a8(s32);
-void func_0209b26c(u8,s32,s32,void *,s32,u16);
+void DrawLocalizedText(u8,s32,s32,void *,s32,u16);
 void func_ov003_0220a864(M2C_UNK);void Show3DSpriteSlide(void *);void Hide3DSpriteSlide(void *);s32 func_02089080(void *);
 void func_02087ec0(void *,s16);void func_ov003_02207a8c(void *);M2C_UNK Ov003_RefreshListRowAnimations(void *,s32,s32);
 extern M2C_UNK data_0215d9b8;extern u8 data_ov003_02210c80[];extern void *gCur3DSpriteEngine;
@@ -100,41 +100,41 @@ if(mode) {
 void *text;u16 width;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,12),void **,0);
 width=func_0209c2a8(GetLocalizedText(text));
-func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
+DrawLocalizedText(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>1) {
 x+=width;
-func_0209b26c(x,0,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
+DrawLocalizedText(x,0,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,16),void **,0);
 width=func_0209c2a8(GetLocalizedText(text));
-func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
+DrawLocalizedText(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>2) {
 {s32 next=x+width;u16 position=tile;
-func_0209b26c((u8)next,0,1,(void *)0x4800000f,0x2000,position);}tile+=2;
+DrawLocalizedText((u8)next,0,1,(void *)0x4800000f,0x2000,position);}tile+=2;
 }}
 x=0;
 for(k=2;k<M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8);k++) {
 text=M2C_FIELD(M2C_FIELD((u8 *)M2C_FIELD(a,void **,0x58)+k*4,void **,12),void **,0);
 width=func_0209c2a8(GetLocalizedText(text));
-func_0209b26c(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
+DrawLocalizedText(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
 if(k!=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)-1) {
-func_0209b26c(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
+DrawLocalizedText(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
 }
 }
 } else {
 void *text;u16 width;
 text=M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58),void **,12),void **,0);
 width=func_0209c2a8(GetLocalizedText(text));
-func_0209b26c(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
+DrawLocalizedText(x,0,1,text,0x2000,(u16)tile);tile+=width*2;
 if(M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)>1) {
 {s32 next=x+width;u16 position=tile;
-func_0209b26c((u8)next,x,1,(void *)0x4800000f,0x2000,position);}tile+=2;
+DrawLocalizedText((u8)next,x,1,(void *)0x4800000f,0x2000,position);}tile+=2;
 }
 for(k=1;k<M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8);k++) {
 text=M2C_FIELD(M2C_FIELD((u8 *)M2C_FIELD(a,void **,0x58)+k*4,void **,12),void **,0);
 width=func_0209c2a8(GetLocalizedText(text));
-func_0209b26c(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
+DrawLocalizedText(x,2,1,text,0x2000,(u16)tile);x+=width;tile+=width*2;
 if(k!=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)-1) {
-func_0209b26c(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
+DrawLocalizedText(x,2,1,(void *)0x4800000f,0x2000,(u16)tile);x++;tile+=2;
 }
 }
 }

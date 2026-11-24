@@ -545,23 +545,26 @@ void *WhPacket_Unwrap(u8 *packet, s32 *typeOut, s32 *lengthOut) {
 }
 
 #pragma thumb on
-s32 func_ov001_0216eb00(s32 *pp,s32 end,s32 a,s32 b) {
-u8 *p=(u8 *)*pp;
-u16 v,n;
-if((u32)p>=(u32)end)return 0;
-v=*(u16 *)p;
-*(s32 *)a=(u16)((u8)((s32)v>>8)|(0xff00&(v<<8)));
-v=*(u16 *)(p+2);p+=4;
-n=(u16)((u8)((s32)v>>8)|(0xff00&(v<<8)));
-*(s32 *)b=n;
-*pp=(s32)(p+(((n+11)&~7)-4));
-return (s32)p;
+/* Read one 8-byte-aligned WH packet entry: the header's two big-endian words go
+   out as the entry type and payload length; advance the cursor past the entry and
+   return its payload address (0 at the end of the buffer). */
+s32 WhPacket_ReadEntry(s32 *cursor, s32 end, s32 typeOut, s32 lengthOut) {
+    u8 *p = (u8 *)*cursor;
+    u16 v, n;
+    if ((u32)p >= (u32)end) return 0;
+    v = *(u16 *)p;
+    *(s32 *)typeOut = WH_READ_BE16(v);
+    v = *(u16 *)(p + 2); p += 4;
+    n = WH_READ_BE16(v);
+    *(s32 *)lengthOut = n;
+    *cursor = (s32)(p + (((n + 11) & ~7) - 4));
+    return (s32)p;
 }
 
 #pragma thumb on
 void func_ov001_0216eb50(u16 *arg0,s32 arg1,s32 arg2) {
-s32 func_ov001_0216eb00(s32 *,s32,s32,s32);
+s32 WhPacket_ReadEntry(s32 *,s32,s32,s32);
 s32 temp_r5; s32 sp0;u16 temp_r2;
 temp_r5=(s32)arg0+8;sp0=temp_r5;temp_r2=*arg0;
-func_ov001_0216eb00(&sp0,temp_r5+(u16)((u8)((s32)temp_r2>>8)|(0xff00&(temp_r2<<8))),arg1,arg2);
+WhPacket_ReadEntry(&sp0,temp_r5+(u16)((u8)((s32)temp_r2>>8)|(0xff00&(temp_r2<<8))),arg1,arg2);
 }

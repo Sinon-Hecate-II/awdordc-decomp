@@ -39,7 +39,7 @@ M2C_UNK *GetExplosionSpriteName(u32 effectType) {
 }
 
 /* Draws one of several unit/map status overlays at position (x, y) depending on mode. */
-void func_020b5314(u8 mode, s32 x, s32 y) {
+void ExplosionEffect_Play(u8 mode, s32 x, s32 y) {
     M2C_UNK PlaySoundAtTile(s32, s16, s16);
     void CreateScreenOffsetEffect(s32, s32, s32);
     void CreateScreenFlash(s32, s32, s32, s32);
@@ -86,17 +86,20 @@ void func_020b5314(u8 mode, s32 x, s32 y) {
     }
 }
 
-void ExplosionSprite_Trigger(void *arg0) {
+/* Trigger handler of a spawned explosion sprite: play the explosion's sound and
+ * screen effect on the tile the sprite is on, only the first time it is called. */
+void ExplosionSprite_Trigger(void *effect) {
     s32 GetObjectTileX(void *);
     s32 GetObjectTileY(void *);
-    void func_020b5314(u8, s32, s32);
-    s32 temp_r4;
-    u8 temp_r5;
-    temp_r5 = (u8) M2C_FIELD(arg0, s32 *, 0x5C);
-    if (M2C_FIELD(arg0, s32 *, 0x58) & 0xFF) return;
-    temp_r4 = GetObjectTileX(arg0);
-    func_020b5314(temp_r5, temp_r4, GetObjectTileY(arg0));
-    M2C_FIELD(arg0, s32 *, 0x58) = 1;
+    void ExplosionEffect_Play(u8, s32, s32);
+    s32 x;
+    u8 type;
+
+    type = (u8) ((ExplosionEffect *) effect)->type;
+    if (((ExplosionEffect *) effect)->triggered & 0xFF) return;
+    x = GetObjectTileX(effect);
+    ExplosionEffect_Play(type, x, GetObjectTileY(effect));
+    ((ExplosionEffect *) effect)->triggered = 1;
 }
 
 void ExplosionSprite_Update(void *arg0) {
@@ -144,7 +147,7 @@ void func_020b55c4(UnitRemoveEffect *effect) {
     s32 GetObjectTileY(void *);
     void RemoveUnit(u8);
     void DestroyUnit(u8);
-    void func_020b5314(u8, s32, s32);
+    void ExplosionEffect_Play(u8, s32, s32);
     void ScheduleBattleEndCheck(void);
     void func_ov000_0216ab2c(void);
     s32 x;
@@ -155,7 +158,7 @@ void func_020b55c4(UnitRemoveEffect *effect) {
     unitIndex = effect->unitIndex;
     if (effect->done & 0xFF) return;
     x = GetObjectTileX(effect);
-    func_020b5314(type, x, GetObjectTileY(effect));
+    ExplosionEffect_Play(type, x, GetObjectTileY(effect));
     if (destroy) DestroyUnit(unitIndex); else RemoveUnit(unitIndex);
     RefreshMapView();
     effect->done = 1;
@@ -368,7 +371,7 @@ void func_020b59c0(void *arg0) {
     default:
         break;
     }
-    func_020a4a68();
+    RemoveMapOrder();
     func_020cfd28();
 }
 #pragma scheduling reset
@@ -384,11 +387,11 @@ void func_020b5dc0(void *arg0) {
 
 void func_020b5de0(void *arg0) {
     M2C_UNK ApplyTerrainBlast(s32, s32);
-    M2C_UNK func_020cf2c8();
+    M2C_UNK RebuildMapPropertyCells();
     M2C_UNK RefreshMapView();
     ApplyTerrainBlast(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C));
     RefreshMapView();
-    func_020cf2c8();
+    RebuildMapPropertyCells();
 }
 
 void func_020b5e00(s32 arg0, s32 arg1, M2C_UNK arg2) {
@@ -517,20 +520,23 @@ void StepMissileStrike(MissileEffect *effect) {
     Sprite_ResumeAnimation(effect);
 }
 
-void func_020b6124(void *arg0) {
+/* Per-frame update of one tile of the range-damage effect: on the tile sprite's
+ * first frame, pin the map cell's corners and damage the unit standing on the tile
+ * by the amount the effect stored. */
+void ApplyAreaDamageTile(void *sprite) {
     M2C_UNK PinMapCellCorners(s32, s32);
     M2C_UNK DamageUnitAtTile(s32, s32, s32);
-    s32 temp_r4;
-    s32 temp_r5;
-    s32 temp_r6;
+    s32 tileX;
+    s32 tileY;
+    s32 amount;
 
-    if ((u16) ((u32) M2C_FIELD(arg0, u32 *, 0x48) >> 0x15) != 0) {
+    if ((u16)((u32)M2C_FIELD(sprite, u32 *, RANGE_EFFECT_TIMER) >> 0x15) != 0) {
         return;
     }
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x5C);
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x58);
-    temp_r6 = M2C_FIELD(arg0, s32 *, 0x60);
-    PinMapCellCorners(temp_r4, temp_r5);
-    DamageUnitAtTile(temp_r4, temp_r5, temp_r6);
+    tileY = M2C_FIELD(sprite, s32 *, RANGE_EFFECT_TILE_Y);
+    tileX = M2C_FIELD(sprite, s32 *, RANGE_EFFECT_TILE_X);
+    amount = M2C_FIELD(sprite, s32 *, RANGE_EFFECT_DAMAGE);
+    PinMapCellCorners(tileX, tileY);
+    DamageUnitAtTile(tileX, tileY, amount);
 }
 

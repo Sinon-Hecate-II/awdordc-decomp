@@ -3,7 +3,7 @@
 extern void **gCurrentMap;
 extern u8 *gAiState;
 extern u8 gAiTargetCandidates;
-extern s8 data_ov000_021b5580[], gTerrainPropertyType[], gAiRangeLayer[];
+extern s8 gProductionSiteTerrain[], gTerrainPropertyType[], gAiRangeLayer[];
 extern u16 gPlayerUnitIdBase[];
 extern u8 data_ov000_021df590[], data_ov000_021df594[];
 extern u8 gAiCommand[];
@@ -49,7 +49,7 @@ s32 IsFootUnitKind(s32); s32 IsMidActionStep(s32);
 void SelectMapLayer(void *); void FloodFillUnitRange(s32,s32,s32,s32,s32);
 u8 *out=&gAiTargetCandidates+*gAiState*12;
 u8 *entry; u8 *unit; u8 *enemyUnit; s32 enemyPlayer,enemyIndex; u8 *best,*scan,*candidate; void *map; s32 player,index,count=0,relation,pass,i,cost,oldpass,bestcost,price,allow,delta,bestdelta; s32 row; u8 funds; s32 penalty; u32 kind;
-s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 GetUnitBuildCost(u16,u8); s32 func_ov000_021a911c(s16,s32,s32); void CommitAiAction(s32);
+s32 func_ov000_0217a59c(s32,s32,s32,s32); s32 GetUnitBuildCost(u16,u8); s32 IsCellOwnedByUnitPlayer(s16,s32,s32); void CommitAiAction(s32);
 if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&4)return 0;
 if(!arg0 && (GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap,u16 *,0x52a4))&8))return 0;
 entry=(u8 *)*gCurrentMap+0x6c60;
@@ -60,14 +60,14 @@ if(GetMapPlayerFlags(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(*gCurrentMap
 map=*gCurrentMap;
 if(IsTerrainOnUnitTeam(M2C_FIELD(map,s16 *,0x52a8),M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)))goto nextEntry;
 }else{
-if(!data_ov000_021b5580[entry[0]&31])goto nextEntry;
+if(!gProductionSiteTerrain[entry[0]&31])goto nextEntry;
 map=*gCurrentMap;
 if(M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)&224)goto nextEntry;
 }
 }else{
 map=*gCurrentMap;
 if(M2C_FIELD(map+entry[1]+M2C_FIELD(map+entry[2]*2,u16 *,0x3758),u8 *,0x1420)&224)goto nextEntry;
-if(data_ov000_021b5580[entry[0]&31])goto nextEntry;
+if(gProductionSiteTerrain[entry[0]&31])goto nextEntry;
 }
 if(func_ov000_021a8d7c(entry[1],entry[2],5))goto nextEntry;
 for(player=1;player<5;player++){
@@ -137,7 +137,7 @@ if(kind==0||kind==M2C_FIELD(map,u16 *,0x52a6))goto nextProperty;
 cost=M2C_FIELD(map+index,s8 *,0x2338);
 if(cost>=0 && cost+1<=out[5]){
 {s32 distance=cost+1;
-out[5]=distance;}relation=func_ov000_021a911c(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
+out[5]=distance;}relation=IsCellOwnedByUnitPlayer(M2C_FIELD(*gCurrentMap,s16 *,0x52a8),candidate[1],candidate[2]);
 }
 }
 }

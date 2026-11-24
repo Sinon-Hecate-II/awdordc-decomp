@@ -15,7 +15,7 @@ typedef struct MbCartridgeState {
 void Mb_RemovePlayer(s32 arg0) {
 extern M2C_UNK gMbState;
 void func_02016934(void *);
-void func_02018960(s32);
+void MultiBoot_ClearRecordSlot(s32);
 M2C_UNK MI_CpuFill8(M2C_UNK,M2C_UNK,M2C_UNK);
 s32 func_0201280c(void (*)(void *),s32);
 s32 i,temp,off;u16 v1,v2;u8 *q;
@@ -25,7 +25,7 @@ i=arg0-1;
 M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+i*2+0x1400,u16*,0x8a)=0;
 MI_CpuFill8((u8*)M2C_FIELD(&gMbState,void**,12)+0xa8+0x1400+i*4,0,4);
 MI_CpuFill8((u8*)M2C_FIELD(&gMbState,void**,12)+0x1340+i*22,0,22);
-func_02018960(arg0);
+MultiBoot_ClearRecordSlot(arg0);
 M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+i*2+0x1700,u16*,0x54)=0;
 temp=M2C_FIELD((u8*)M2C_FIELD(&gMbState,void**,12)+i+0x1500,s8*,0x26);
 if(temp!=-1){
@@ -381,16 +381,19 @@ void Mb_QueueTask(M2C_UNK requestNode, s32 run, M2C_UNK finish, s32 requestedPri
     OS_RestoreInterrupts(saved);
 }
 
-void Mb_QueueTaskExit(M2C_UNK arg0) {
+/* Queue the multiboot worker's own exit job, with `finish` as its completion
+ * callback, under an interrupt lock; nothing happens when no worker is running. */
+void Mb_QueueTaskExit(void (*finish)(void)) {
     extern M2C_UNK gMbWorkerTask;
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 Mb_IsTaskCreated(void);
     void Mb_QueueTask(M2C_UNK, s32, M2C_UNK, s32);
     s32 saved;
+
     saved = OS_DisableInterrupts();
     if (Mb_IsTaskCreated() != 0) {
-        Mb_QueueTask((M2C_UNK)((u8 *)gMbWorkerTask + 0xC4), 0, arg0, 0);
+        Mb_QueueTask((M2C_UNK)((u8 *)gMbWorkerTask + MB_TASK_JOB_BLOCK), 0, (M2C_UNK)finish, 0);
     }
     OS_RestoreInterrupts(saved);
 }
@@ -409,19 +412,20 @@ void func_02018940(s32 arg0) {
     MI_CpuFill8(arg0, 0, 0x21C);
 }
 
-void func_02018960(s32 arg0) {
+/* Clear a player's 30-byte reassembled multiboot record and its received-fragment mask. */
+void MultiBoot_ClearRecordSlot(s32 playerId) {
     extern M2C_UNK gMbRecordRx;
-    void *base;
-    s32 idx;
+    void *recordBuffer;
+    s32 playerIndex;
     
-    base = M2C_FIELD(&gMbRecordRx, void **, 4);
-    if (base == NULL) {
+    recordBuffer = M2C_FIELD(&gMbRecordRx, void **, 4);
+    if (recordBuffer == NULL) {
         return;
     }
-    idx = arg0 - 1;
-    MI_CpuFill8((void *)((u8 *)base + idx * 32), 0, 0x1E);
-    base = M2C_FIELD(&gMbRecordRx, void **, 4);
-    M2C_FIELD((u8 *)base + idx * 4, u32 *, 0x1E0) = 0;
+    playerIndex = playerId - 1;
+    MI_CpuFill8((void *)((u8 *)recordBuffer + playerIndex * MB_RECORD_SLOT), 0, MB_RECORD_SIZE);
+    recordBuffer = M2C_FIELD(&gMbRecordRx, void **, 4);
+    M2C_FIELD((u8 *)recordBuffer + playerIndex * 4, u32 *, MB_RECORD_MASK) = 0;
 }
 
 /* Copy a multiboot command into a work buffer in its wire form: the one-byte
@@ -545,16 +549,16 @@ s32 MultiBoot_RecordComplete(s32 player) {
 void Mb_InitBootState(void) {
     M2C_UNK CpuSet(s32 *, M2C_UNK *, s32);
     s16 OS_GetLockID();
-    extern M2C_UNK data_02136c98;
+    extern M2C_UNK gMbBootConfig;
     extern M2C_UNK data_02136c9c;
     s32 sp0;
 
     sp0 = 0;
     CpuSet(&sp0, &data_02136c9c, 0x05000001);
-    M2C_FIELD(&data_02136c98, s16 *, 6) = OS_GetLockID();
+    M2C_FIELD(&gMbBootConfig, s16 *, 6) = OS_GetLockID();
 }
 
-s32 func_02018c5c(void) {
+s32 Mb_IsCartridgeUnchanged(void) {
     u32 func_02018c84(void);
     s32 func_02018c9c();
     if ((func_02018c9c() != 0) && (func_02018c84() == 0)) {
@@ -570,11 +574,11 @@ u32 func_02018c84(void) {
 
 #pragma opt_strength_reduction off
 s32 func_02018c9c(void) {
-    extern M2C_UNK data_02136c98;
+    extern M2C_UNK gMbBootConfig;
     extern M2C_UNK data_027ffc30;
     void Mb_LockCartridgeAccess(M2C_UNK, void *);
-    void func_02018da8(void *);
-    void func_02018df0(void *);
+    void Mb_SaveCartridgeBusConfig(void *);
+    void Mb_RestoreCartridgeBusConfig(void *);
     void Mb_UnlockCartridgeAccess(M2C_UNK, void *);
     s32 buf[4];
     s32 r4;
@@ -593,8 +597,8 @@ s32 func_02018c9c(void) {
         return 0;
     }
     }
-    Mb_LockCartridgeAccess(M2C_FIELD(&data_02136c98, u16 *, 6), (void *)(&buf[2]));
-    func_02018da8((void *)buf);
+    Mb_LockCartridgeAccess(M2C_FIELD(&gMbBootConfig, u16 *, 6), (void *)(&buf[2]));
+    Mb_SaveCartridgeBusConfig((void *)buf);
 
     r2 = base[0xB2];
     if (r2 == 0x96 &&
@@ -615,20 +619,23 @@ changed:
         ((MbCartridgeState *)&data_027ffc30)->changed = 1;
     }
 restore:
-    func_02018df0(buf);
-    Mb_UnlockCartridgeAccess(M2C_FIELD(&data_02136c98, u16 *, 6), &buf[2]);
+    Mb_RestoreCartridgeBusConfig(buf);
+    Mb_UnlockCartridgeAccess(M2C_FIELD(&gMbBootConfig, u16 *, 6), &buf[2]);
     return r4;
 }
 #pragma opt_strength_reduction reset
-void func_02018da8(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = (s32) ((s32) (*(u16 *)0x04000204 & 0xC) >> 2);
-    M2C_FIELD(arg0, s32 *, 4) = (s32) ((s32) (*(u16 *)0x04000204 & 0x10) >> 4);
-    *(u16 *)0x04000204 = (*(u16 *)0x04000204 & ~0xC) | 0xC;
-    *(u16 *)0x04000204 &= ~0x10;
+/* Save EXMEMCNT's main-RAM arbitration bits and VRAM priority in `saved`, then
+   switch them to the values a multiboot cartridge-header read needs: RAM bits 2-3
+   set and the VRAM priority bit cleared. */
+void Mb_SaveCartridgeBusConfig(void *saved) {
+    M2C_FIELD(saved, s32 *, 0) = (s32) ((s32) (*(u16 *)REG_EXMEMCNT & EXMEMCNT_RAM_MASK) >> 2);
+    M2C_FIELD(saved, s32 *, 4) = (s32) ((s32) (*(u16 *)REG_EXMEMCNT & EXMEMCNT_VRAM_PRIORITY) >> 4);
+    *(u16 *)REG_EXMEMCNT = (*(u16 *)REG_EXMEMCNT & ~EXMEMCNT_RAM_MASK) | EXMEMCNT_RAM_MASK;
+    *(u16 *)REG_EXMEMCNT &= ~EXMEMCNT_VRAM_PRIORITY;
 }
 
 #pragma opt_propagation off
-void func_02018df0(void *arg0) {
+void Mb_RestoreCartridgeBusConfig(void *arg0) {
  u32 a,b;
  a=M2C_FIELD(arg0,u32 *,0);
  b=*(volatile u16 *)0x04000204;
@@ -686,25 +693,27 @@ void Mb_SendControlMessage(M2C_UNK command) {
     } while (SendFifoMessage(MB_FIFO_TAG, command, 0) != 0);
 }
 
-void Mb_SetBootMode(s32 arg0) {
+/* Sets the multiboot boot mode: record it in the boot config and, while the
+ * cartridge state is not the saved one, switch the boot-mode access bits. */
+void Mb_SetBootMode(s32 mode) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    s32 func_02018c5c(void);
+    s32 Mb_IsCartridgeUnchanged(void);
     void func_02006cc0(s32, s32);
-    extern M2C_UNK data_02136c98;
-    s32 saved;
-    saved = OS_DisableInterrupts();
-    data_02136c98 = (M2C_UNK)arg0;
-    if (func_02018c5c() == 0) {
-        s32 r1;
-        if (arg0 != 0) {
-            r1 = 0x1000;
+    extern M2C_UNK gMbBootConfig;
+    s32 irq;
+    irq = OS_DisableInterrupts();
+    gMbBootConfig = (M2C_UNK)mode;
+    if (Mb_IsCartridgeUnchanged() == 0) {
+        s32 bits;
+        if (mode != 0) {
+            bits = 0x1000;
         } else {
-            r1 = 0x5000;
+            bits = 0x5000;
         }
-        func_02006cc0(0xf000, r1);
+        func_02006cc0(0xf000, bits);
     }
-    OS_RestoreInterrupts(saved);
+    OS_RestoreInterrupts(irq);
 }
 
 /* Bring up DS Download Play once: initialise the boot state and the ARM7 link,

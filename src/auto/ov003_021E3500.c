@@ -16,7 +16,7 @@ void func_ov003_021e3500(void *arg0) {
     void *CreateTextLayer(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK func_020c9100(void *);
-    M2C_UNK func_020c9120(u16, s32);
+    M2C_UNK AppendCampaignMapLoadEntry(u16, s32);
     M2C_UNK func_ov003_021f1894();
     u32 func_ov003_021f2574();
     M2C_UNK SetOv003SceneState(M2C_UNK);
@@ -56,7 +56,7 @@ void func_ov003_021e3500(void *arg0) {
         i = 0;
         goto loop_test;
         do {
-            func_020c9120(
+            AppendCampaignMapLoadEntry(
                 M2C_FIELD(M2C_FIELD(r5, s32 *, 0x5C) + ((s32)i * 2), u16 *, 0x12),
                 base + ((s32)i * 0x6F8));
             temp_r1 = (u8)(((M2C_FIELD(r5, u8 *, 0x60) | 0x40) & ~0x30) | 0x20);

@@ -16,7 +16,7 @@ s32 GetSpriteAnimValue(void *);
 s32 Divide(s32,s32);
 void SetSpriteQuad(s32,s16,s16,s16,s16);
 void AddSprite(u16,u16,u16,void *,s32);
-s32 func_ov003_02206690(s32,s32,s32);
+s32 Ov003_IsValueInRange(s32,s32,s32);
 s32 func_02089080(void *);
 void Show3DSprite(void *);
 s32 Is3DSpriteVisible(void *);
@@ -129,7 +129,7 @@ if(!(boolean&255)){show=0;goto decide;}
 state=(u32)(M2C_FIELD(arg0,u8 *,0x36)<<24)>>28;
 if(state==0)boolean=1;else boolean=0;
 if(boolean&255){if(M2C_FIELD(arg0,u8 *,0x34)!=0)boolean=1;else boolean=0;if(boolean&255){show=0;goto decide;}}
-if(!func_ov003_02206690(index,2,4)){show=0;goto decide;}
+if(!Ov003_IsValueInRange(index,2,4)){show=0;goto decide;}
 show=M2C_FIELD((u8 *)M2C_FIELD(arg0,void **,0x48)+index*36,u16 *,12)==256;
 decide:
 

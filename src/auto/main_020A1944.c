@@ -206,8 +206,8 @@ s32 GetPowerRating(s32 player) {
 
 s32 GetTechniqueRating(s32 player) {
     extern s32 *gCurrentMap;
-    extern s8 data_ov000_021b5580[];
-    s32 IsPlayerActive(s32); u32 CountPlayerUnits(s32);u32 func_020d30a8(s32);
+    extern s8 gProductionSiteTerrain[];
+    s32 IsPlayerActive(s32); u32 CountPlayerUnitsBuilt(s32);u32 CountPlayerUnitsLost(s32);
     s32 Divide(s32,s32);
     u32 own,enemy,other,buildings,extra,delta;
     s32 i,offset,playerOffset,clear,x,y,result;
@@ -219,12 +219,12 @@ s32 GetTechniqueRating(s32 player) {
         base=(void *)*gCurrentMap;q=(u8 *)base+offset;
         if(M2C_FIELD(q,u8 *,0x67c2)) {
             if(M2C_FIELD((u8 *)(playerOffset+(u32)base),u8 *,0x67ca)==M2C_FIELD(q,u8 *,0x67ca)) {
-                own+=CountPlayerUnits(i);
-                extra+=func_020d30a8(i);
+                own+=CountPlayerUnitsBuilt(i);
+                extra+=CountPlayerUnitsLost(i);
                 q=(u8 *)*gCurrentMap+offset;
                 buildings+=M2C_FIELD(q,u16 *,0x67c6);
                 other+=M2C_FIELD(q,u16 *,0x67c4);
-            } else enemy+=CountPlayerUnits(i);
+            } else enemy+=CountPlayerUnitsBuilt(i);
         }
     }
     base=(void *)*gCurrentMap;
@@ -233,7 +233,7 @@ s32 GetTechniqueRating(s32 player) {
         register u8 *row;
         for(x=0;x<M2C_FIELD(base,u16 *,0x5144);x++){
             row=(u8 *)base+M2C_FIELD(base,u16 *,0x3758+y*2)+x;
-            if(data_ov000_021b5580[M2C_FIELD(row,u8 *,0x1420)&31]!=0)clear=0;
+            if(gProductionSiteTerrain[M2C_FIELD(row,u8 *,0x1420)&31]!=0)clear=0;
         }
     }
     delta=clear;
@@ -387,23 +387,26 @@ s32 GetPlayerTeam(s32 arg0) {
     return M2C_FIELD(&data_0215c37c, u8 *, arg0);
 }
 
-void func_020a23c4(void) {
+/* Resets the per-turn combat fields of every active player - the flat terrain
+ * defense bonus and the army movement-cost row beside it - then recounts the
+ * players' derived data. */
+void ResetPlayerTurnBonuses(void) {
     s32 IsPlayerActive(s32);
     M2C_UNK func_020d2470();
     extern s32 *gCurrentMap;
-    s32 var_r5;
-    s32 var_r6;
+    s32 player;
+    s32 playerOffset;
 
-    var_r5 = 1;
-    var_r6 = 0x8C;
+    player = 1;
+    playerOffset = MAP_PLAYER_STRIDE;
     do {
-        if (IsPlayerActive(var_r5) != 0) {
-            M2C_FIELD((*gCurrentMap + var_r6), s8 *, 0x67C9) = 0;
-            M2C_FIELD((*gCurrentMap + var_r6), s8 *, 0x67C8) = 0;
+        if (IsPlayerActive(player) != 0) {
+            M2C_FIELD(*gCurrentMap + playerOffset, s8 *, MAP_PLAYER_STATES + PLAYER_REC_MOVE_COST_ROW) = 0;
+            M2C_FIELD(*gCurrentMap + playerOffset, s8 *, MAP_PLAYER_STATES + PLAYER_REC_DEFENSE_BONUS) = 0;
         }
-        var_r5 += 1;
-        var_r6 += 0x8C;
-    } while (var_r5 < 5);
+        player++;
+        playerOffset += MAP_PLAYER_STRIDE;
+    } while (player < MAX_PLAYERS);
     func_020d2470();
 }
 
@@ -554,22 +557,26 @@ s8 func_020a27a0(s32 arg0, s32 arg1) {
  return *(s8 *)(arg1 + (arg0 * 0x48 + (s32)&gCoZoneKindEnabled));
 }
 
-s32 GetCoZoneBonusIndex(s32 arg0, s32 arg1) {
+/* Index of `commander`'s CO-zone bonus record in the given power state (0 = CO
+ * zone off, 1 = CO power active): (commander - 1) * 2 + powerActive.  Returns -1
+ * when the map is not in army mode (MAPCONFIG_ARMY_MODE) or the commander is
+ * unset. */
+s32 GetCoZoneBonusIndex(s32 commander, s32 powerActive) {
     extern u16 gMapConfig;
-    s32 var_r1;
+    s32 power;
 
     if (((u32) (gMapConfig << 0x12) >> 0x1F) == 0) {
         return -1;
     }
-    if (arg0 == 0) {
+    if (commander == 0) {
         return -1;
     }
-    if (arg1 != 0) {
-        var_r1 = 1;
+    if (powerActive != 0) {
+        power = 1;
     } else {
-        var_r1 = 0;
+        power = 0;
     }
-    return var_r1 + ((arg0 - 1) * 2);
+    return power + ((commander - 1) * 2);
 }
 
 /* Whether the CO zone of `commander` boosts unit kind `kind`: the kind is

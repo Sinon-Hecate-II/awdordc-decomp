@@ -38,12 +38,12 @@ void func_ov005_02218fd0(void *arg0) {
     M2C_UNK Set3DSpriteSlideTargetAndStart(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_02091cd0();
     M2C_UNK func_02091d4c(M2C_UNK);
-    M2C_UNK func_02098b94(s32, s32, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadFaceTextureAndPaletteAt(s32, s32, M2C_UNK, M2C_UNK);
     M2C_UNK LoadSpriteResource(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK func_020aab24(void *, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     s32 func_020aae10(void *);
     s32 func_020aae44(void *);
-    M2C_UNK func_020ab150(void *, M2C_UNK);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
     void *func_020ab1c4(M2C_UNK);
     M2C_UNK *func_020e3218(M2C_UNK *);
     s32 func_ov005_02218e54();
@@ -216,7 +216,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r8_2 = func_020aae10(temp_r5);
         func_02087d84(M2C_FIELD(temp_r5, void **, 0x64), 1, temp_r7_2, temp_r6_2, (u16) temp_r8_2, (u16) func_020aae44(temp_r5));
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x38), 1);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x38), 1);
     var_r2 = 0;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x38), s8 *, 0x49) = 0;
     temp_r0_8 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x38), void **, 0x64);
@@ -253,7 +253,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r8_4 = func_020aae10(temp_r5_2);
         func_02087d84(M2C_FIELD(temp_r5_2, void **, 0x64), 1, temp_r7_4, temp_r6_4, (u16) temp_r8_4, (u16) func_020aae44(temp_r5_2));
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x3C), 0x200);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x3C), 0x200);
     var_r2_2 = 0;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), s8 *, 0x49) = 0;
     temp_r0_9 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x3C), void **, 0x64);
@@ -290,7 +290,7 @@ void func_ov005_02218fd0(void *arg0) {
         temp_r8_6 = func_020aae10(temp_r5_3);
         func_02087d84(M2C_FIELD(temp_r5_3, void **, 0x64), 1, temp_r7_6, temp_r6_6, (u16) temp_r8_6, (u16) func_020aae44(temp_r5_3));
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x40), 0x100);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x40), 0x100);
     var_r2_3 = 0;
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), s8 *, 0x49) = 0;
     temp_r0_10 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x40), void **, 0x64);
@@ -391,7 +391,7 @@ void func_ov005_02218fd0(void *arg0) {
     if (temp_r4 == 0) {
         return;
     }
-    func_02098b94(temp_r4, temp_r1, 0x7100, 4);
+    LoadFaceTextureAndPaletteAt(temp_r4, temp_r1, 0x7100, 4);
 }
 #pragma scheduling reset
 void func_ov005_02219a24(void *p){

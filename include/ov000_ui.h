@@ -45,6 +45,7 @@ enum {
 #define ARMY_INFO_FACE_MAIN 0x0F /* u8 selected player's CO face id drawn on the main screen */
 #define ARMY_INFO_FACE_PAGE 0x11 /* u8 alternate face page (0/1), toggled per redraw */
 #define ARMY_INFO_SLIDE     0x12 /* s16 slide-in offset, 0..12 */
+#define ARMY_INFO_SLIDE_STEP 0x14 /* s16 added to ARMY_INFO_SLIDE each frame (-1 slides in, +1 out) */
 
 /* The selected CO's name graphic is decompressed into this range of the sub
  * screen engine's texture VRAM; the range is cleared while the CO has no name

@@ -35,6 +35,11 @@ typedef struct SpriteStateWord {
 
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain;
+/* gCarriedUnitIconTable holds one SpriteAttribute0209 icon record per carried-unit
+ * slot, in two halves: the active main sprite engine uses the first 32 records and
+ * the sub engine the next 32. */
+#define CARRIED_UNIT_ICON_COUNT 32
+#define CARRIED_UNIT_ICON_HALF_SHIFT 7 /* bytes into the sub engine's half: CARRIED_UNIT_ICON_COUNT * 4 */
 extern u8 gCarriedUnitIconTable[256];
 extern s32 gMapProgressRecords[58];  // 232 bytes / 4
 extern s32 gSaveSlotSummary[2];   // 8 bytes / 4
@@ -56,13 +61,16 @@ void DrawScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, s32 layerVram, s3
     CreateSpriteFromClass(&data_02103300, 7);
 }
 
-void func_0209bccc(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
-    void CreateLocalizedMessageSprite(M2C_UNK, M2C_UNK, s32, s32, s32, s32, u16, u16);
+/* Create a message sprite for the localized string `textId` drawn as one line at
+ * cell (x, y) on DS 3D sprite layer `layer`, using that layer's VRAM address and
+ * tile buffer. */
+void CreateLocalizedMessageSpriteOnLayer(s32 x, s32 y, s32 layer, s32 textId, u16 attr, u16 tile) {
+    void CreateLocalizedMessageSprite(s32, s32, s32, s32, s32, s32, u16, u16);
     extern s32 gCur3DSpriteEngine;
-    void *temp_r5;
+    void *layerFields;
 
-    temp_r5 = gCur3DSpriteEngine + (arg2 * 4);
-    CreateLocalizedMessageSprite(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
+    layerFields = gCur3DSpriteEngine + (layer * 4);
+    CreateLocalizedMessageSprite(x, y, layer, M2C_FIELD(layerFields, s32 *, DS3D_ENGINE_LAYER_VRAM), M2C_FIELD(layerFields, s32 *, DS3D_ENGINE_LAYER_TILES), textId, (s32) attr, (s32) tile);
 }
 
 /* Create a message sprite whose text is the localized string for `textId`. */
@@ -85,13 +93,16 @@ s32 CreateMessageSprite(s32 x, s32 y, s32 palette, s32 layerVram, s32 layerTiles
     return temp_r0;
 }
 
-s32 InitTextObject(s32 a,s32 b,s32 c,s32 d,s32 e,s32 f,s32 g,u16 h,u16 i) {
-void func_0209be10(void *,s32,s32,s32,s32,s32,s32,u16,u16,u16);
-func_0209be10((void *)a,b,c,d,e,f,g,h,0,i);
+/* Initialise a text object to draw the text script `text` at cell (x, y) with
+ * glyph palette `palette`, the layer's VRAM and tile addresses, cell attribute
+ * `attr` and line pixel offset `tile`; the glyph draw attribute is left 0. */
+s32 InitTextObject(s32 textObject, s32 x, s32 y, s32 palette, s32 layerVram, s32 layerTiles, s32 text, u16 attr, u16 tile) {
+    void InitTextStateEx(void *, s32, s32, s32, s32, s32, s32, u16, u16, u16);
+    InitTextStateEx((void *)textObject, x, y, palette, layerVram, layerTiles, text, attr, 0, tile);
 }
 
 #pragma scheduling on
-void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
+void InitTextStateEx(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, u16 arg7, u16 arg8, u16 arg9) {
     void (*Get3DSpriteLayerDirtyMarker(u32))(void);
     extern s32 gCur3DSpriteEngine;
     extern s32 g3DSpriteEngineMain;
@@ -129,17 +140,21 @@ void func_0209be10(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5,
     M2C_FIELD(arg0, u8 *, 0x5c) = 0;
 }
 #pragma scheduling off
-void func_0209bee0(void *a,s32 b,s32 c,s32 d,s32 e,s32 f,u16 g,u16 h) {
-M2C_FIELD(a,u8 *,0x57)=d;
-M2C_FIELD(a,s32 *,0x3c)=e;
-M2C_FIELD(a,s32 *,0x40)=f;
-M2C_FIELD(a,u16 *,0x44)=g;
-M2C_FIELD(a,u16 *,0x4e)=h;
-M2C_FIELD(a,u16 *,0x4c)=h;
-M2C_FIELD(a,u8 *,0x48)=(u8)b;
-M2C_FIELD(a,u8 *,0x49)=(u8)c;
-M2C_FIELD(a,u8 *,0x4a)=(u8)b;
-M2C_FIELD(a,u8 *,0x4b)=(u8)c;
+/* (Re)configure a text object's line without touching its script cursor or
+ * timers: set its glyph palette (+0x57), x pixel position (+0x3C), glyph cell
+ * buffer (+0x40), base cell attribute (+0x44), line pixel offset and start
+ * (+0x4C/+0x4E) and the line's first and current cell (+0x48..+0x4B). */
+void SetTextObjectLine(void *textObject,s32 lineX,s32 lineY,s32 palette,s32 pixelX,s32 cells,u16 baseAttr,u16 linePixel) {
+M2C_FIELD(textObject,u8 *,0x57)=palette;
+M2C_FIELD(textObject,s32 *,0x3c)=pixelX;
+M2C_FIELD(textObject,s32 *,0x40)=cells;
+M2C_FIELD(textObject,u16 *,0x44)=baseAttr;
+M2C_FIELD(textObject,u16 *,0x4e)=linePixel;
+M2C_FIELD(textObject,u16 *,0x4c)=linePixel;
+M2C_FIELD(textObject,u8 *,0x48)=(u8)lineX;
+M2C_FIELD(textObject,u8 *,0x49)=(u8)lineY;
+M2C_FIELD(textObject,u8 *,0x4a)=(u8)lineX;
+M2C_FIELD(textObject,u8 *,0x4b)=(u8)lineY;
 }
 
 /* Returns 1 while any message or text sprite is still alive. */
@@ -186,12 +201,14 @@ void func_0209bfc8(void) {
     FindObjectByClass(&gMessageSpriteClass);
 }
 
-void func_0209bfdc(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
-    M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
-    func_0209c024(arg0, arg1, arg2, GetLocalizedText(arg3), (s32) arg4, (s32) arg5);
+/* Draw the localized text whose id is `textId` into the tilemap at `tiles`,
+ * starting at cell (x, y), with cell attributes `attrs` and glyph set `variant`. */
+void DrawLocalizedTextToTilemap(s32 x, s32 y, s32 tiles, s32 textId, u16 attrs, u16 variant) {
+    M2C_UNK DrawTextToTilemap(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
+    DrawTextToTilemap(x, y, tiles, GetLocalizedText(textId), (s32) attrs, (s32) variant);
 }
 
-s32 func_0209c024(s32 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
+s32 DrawTextToTilemap(s32 a,s32 b,s32 c,s32 d,u16 e,u16 f) {
 s32 func_0209953c(s32,s32,s32,s32,u16,u16);
 func_0209953c(a,b,c,d,e,f);
 }
@@ -294,19 +311,21 @@ s32 MeasureGlyphWidth(u8 *glyph, s32 *width) {
     return 0;
 }
 
-s32 MeasureStringWidth(u8 *arg0) {
+/* Pixel width of a plain text string: walk it glyph by glyph, adding each
+ * glyph's advance to the running width. */
+s32 MeasureStringWidth(u8 *text) {
     s32 MeasureGlyphWidth(u8 *, s32 *);
-    s32 sp0;
-    u8 *var_r5;
+    s32 width;
+    u8 *cursor;
 
-    var_r5 = arg0;
-    sp0 = 0;
-    if ((var_r5 != NULL) && (*var_r5 != 0)) {
+    cursor = text;
+    width = 0;
+    if ((cursor != NULL) && (*cursor != 0)) {
         do {
-            var_r5 = &var_r5[MeasureGlyphWidth(var_r5, &sp0)];
-        } while (*var_r5 != 0);
+            cursor = &cursor[MeasureGlyphWidth(cursor, &width)];
+        } while (*cursor != 0);
     }
-    return sp0;
+    return width;
 }
 
 s32 func_0209c2a8(void) {
@@ -536,22 +555,25 @@ void *Text_FindLineBreakEnd(M2C_UNK arg0) {
     return NULL;
 }
 
-s32 func_0209c690(M2C_UNK arg0) {
+/* Return a text line's alignment from its TEXT_CODE_LINE_ALIGN control code:
+ * TEXT_LINE_ALIGN_CENTER/LEFT/RIGHT, or CENTER when the line carries no such
+ * code or an unknown operand. */
+s32 GetTextLineAlignment(u8 *text) {
     void *FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
-    void *temp_r0;
-    u8 temp_r1;
+    void *code;
+    u8 align;
 
-    temp_r0 = FindTextControlCode(arg0, 0x1d, 0);
-    if (temp_r0 == 0) {
+    code = FindTextControlCode((M2C_UNK)text, TEXT_CODE_LINE_ALIGN, 0);
+    if (code == 0) {
         goto fail;
     }
-    temp_r1 = *(u8 *)((u8 *)temp_r0 + 1) & 0x7F;
-    switch (temp_r1) {
-    case 0:
+    align = *(u8 *)((u8 *)code + 1) & 0x7F;
+    switch (align) {
+    case TEXT_LINE_ALIGN_CENTER:
     case 1:
-    case 2:
-    case 3:
-        return temp_r1;
+    case TEXT_LINE_ALIGN_LEFT:
+    case TEXT_LINE_ALIGN_RIGHT:
+        return align;
     default:
         break;
     }
@@ -559,17 +581,24 @@ fail:
     return 0;
 }
 
-void *GetCarriedUnitIcon(s32 arg0) {
- u8 result=(gCur3DSpriteEngine==g3DSpriteEngineMain);
- s32 flag=result!=1;
+/* Return the icon record for carried-unit slot `slot`, from the half of
+ * gCarriedUnitIconTable that belongs to the active 3D sprite engine (the main
+ * engine's first half, the sub engine's second). */
+void *GetCarriedUnitIcon(s32 slot) {
+ u8 isMain=(gCur3DSpriteEngine==g3DSpriteEngineMain);
+ s32 subHalf=isMain!=1;
  u8 *base=gCarriedUnitIconTable;
- return base+(flag<<7)+(arg0<<2);
+ return base+(subHalf<<CARRIED_UNIT_ICON_HALF_SHIFT)+(slot<<2);
 }
 
-void SetCarriedUnitIconSprite(s32 arg0,s16 arg1,s8 arg2,s32 arg3,u8 arg4) {
- void *GetCarriedUnitIcon(s32);
- SpriteAttribute0209 *p=GetCarriedUnitIcon(arg0);
- p->value=arg1;p->mode=arg2;p->low=arg4;p->high=arg4;
+/* Set the carried-unit icon's tile index, palette and square dimensions (in 8-pixel units). */
+void SetCarriedUnitIconSprite(s32 slot, s16 tileIndex, s8 palette, s32 unused, u8 size) {
+    void *GetCarriedUnitIcon(s32);
+    SpriteAttribute0209 *icon = GetCarriedUnitIcon(slot);
+    icon->value = tileIndex;
+    icon->mode = palette;
+    icon->low = size;
+    icon->high = size;
 }
 
 /* Draw the icon of the unit carried in list slot `slot` at screen position
@@ -633,16 +662,16 @@ void AcknowledgeMapProgress(void) {
 void func_0209c8d4(void) {
     s32 GetActiveOverlay();
     s32 IsLinkSessionActive();
-    M2C_UNK func_02086844(u16, M2C_UNK);
-    M2C_UNK func_02086878(u16, M2C_UNK);
+    M2C_UNK SetCampaignMapPlayed(u16, M2C_UNK);
+    M2C_UNK SetCampaignMapCleared(u16, M2C_UNK);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     s32 GetRatingRank(s32);
-    M2C_UNK func_020bf814(u16);
+    M2C_UNK UnlockCosForMap(u16);
     s32 IsCoUnlocked(s32);
     s32 DidPlayerWin();
     s32 HasActiveHumanPlayer();
     s32 func_020d1b40();
-    s32 func_020e4b54();
+    s32 IsFinalCampaignMap();
     extern M2C_UNK gCoState;
     extern M2C_UNK gCoPlayerSlots;
     extern s32 gSaveSlotSummary[2];
@@ -672,11 +701,11 @@ void func_0209c8d4(void) {
         M2C_FIELD(&gCoState, s32 *, 8) = var_r0;
     } while (var_r7 < 0xF);
     if (IsLinkSessionActive() == 0) {
-        func_02086844(temp_r8, 1);
+        SetCampaignMapPlayed(temp_r8, 1);
         if (DidPlayerWin() != 0) {
             if ((HasActiveHumanPlayer() != 0) && (func_020d1b40() == 0)) {
                 AddRecordValue(0x1A, 1);
-                func_02086878(temp_r8, 1);
+                SetCampaignMapCleared(temp_r8, 1);
             }
             switch (temp_r8) {                      /* switch 1; irregular */
             case 0xB1:                              /* switch 1 */
@@ -703,8 +732,8 @@ void func_0209c8d4(void) {
                         records[temp_r9].state = 4;
                     }
                 }
-                func_020bf814(temp_r8);
-                if (func_020e4b54() != 0) {
+                UnlockCosForMap(temp_r8);
+                if (IsFinalCampaignMap() != 0) {
                     var_r1 = (u32) (gSaveSlotSummary[0] << 8) >> 0x18;
                     if ((s32) var_r1 < 0xFF) {
                         var_r1 += 1;

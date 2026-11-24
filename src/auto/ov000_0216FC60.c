@@ -205,7 +205,7 @@ void func_ov000_02170110(void *arg0) {
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
     M2C_UNK Load3DSpritePattern(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK func_020994e0(M2C_UNK);
-    M2C_UNK func_0209c024(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
+    M2C_UNK DrawTextToTilemap(M2C_UNK, M2C_UNK, s32, s32, s32, s32);
     M2C_UNK DrawTilemapNumber(M2C_UNK, M2C_UNK, s32, s16, s32, s32);
     s32 GetArmyStateLabel(u8);
     s32 GetUiColor(M2C_UNK);
@@ -279,7 +279,7 @@ void func_ov000_02170110(void *arg0) {
     MI_CpuCopy32(GetArmyStateTiles(M2C_FIELD(s, u8 *, 0x27)), (s32) p + 0x4000, 0x80);
     CopyToObjPaletteShadow(GetArmyIconPalette(M2C_FIELD(s, u8 *, 0x1D)), 0x3A0, 0x20);
     Load3DSpritePattern(0x6B80, 0xB, GetUiColor(0xC), 2);
-    func_0209c024(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), GetArmyStateLabel(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
+    DrawTextToTilemap(5, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), GetArmyStateLabel(M2C_FIELD(s, u8 *, 0x27)), 0, 0);
     DrawTilemapNumber(0x1A, 1, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x24), M2C_FIELD(arg0, s16 *, 0x3C), 0, 0);
     ScrollListDrawRows(M2C_FIELD(arg0, s16 *, 0x38));
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);

@@ -386,6 +386,9 @@ void GX_LoadBGExtPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     MIi_CpuCopy32(src, dst, (u32)size);
 }
 
+/* End a main-engine BG extended-palette load: wait for the DMA copy to finish,
+ * hand the palette's bank grant back to the VRAM allocator and clear the load
+ * state (grant, VRAM base and running offset). */
 void GX_EndLoadBGExtPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForBGExtPalette(M2C_UNK);
@@ -394,30 +397,33 @@ void GX_EndLoadBGExtPltt(void) {
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForBGExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14));
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x14) = 0;
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x10) = 0;
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0xc) = 0;
+    GX_SetBankForBGExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_BG_GRANT));
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_BG_GRANT) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_BG_BASE) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_BG_OFFSET) = 0;
 }
 
+/* Begin a main-engine OBJ extended-palette load: release the palette's bank
+ * grant and record it, then store the VRAM base the load copies into, chosen from
+ * the bank the release gave back (bank F or bank G). */
 void GX_BeginLoadOBJExtPltt(void) {
     s32 func_02003394();
     extern M2C_UNK gGxExtPlttLoad;
-    s32 v = func_02003394();
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8) = (M2C_UNK)v;
-    if (v == 0) {
+    s32 grant = func_02003394();
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_GRANT) = (M2C_UNK)grant;
+    if (grant == 0) {
         return;
     }
-    if (v == 0x20) {
-        goto store_6890;
+    if (grant == VRAM_BANK_F) {
+        goto store_bank_f;
     }
-    if (v == 0x40) {
-        M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = (M2C_UNK)0x6894000;
+    if (grant == VRAM_BANK_G) {
+        M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_BASE) = (M2C_UNK)GX_BGEXTPLTT_BASE_G;
         return;
     }
     return;
-store_6890:
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = (M2C_UNK)0x6890000;
+store_bank_f:
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_BASE) = (M2C_UNK)GX_BGEXTPLTT_BASE_F;
     return;
 }
 
@@ -438,6 +444,9 @@ void GX_LoadOBJExtPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     MIi_CpuCopy32(src, paletteBase + (s32)offset, (u32)size);
 }
 
+/* End a main-engine OBJ extended-palette load: wait for the DMA copy to finish,
+ * hand the palette's bank grant back to the VRAM allocator and clear the load
+ * state (grant and VRAM base). */
 void GX_EndLoadOBJExtPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForObjExtPalette(M2C_UNK);
@@ -446,9 +455,9 @@ void GX_EndLoadOBJExtPltt(void) {
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForObjExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8));
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x8) = 0;
-    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, 0x4) = 0;
+    GX_SetBankForObjExtPalette(M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_GRANT));
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_GRANT) = 0;
+    M2C_FIELD(&gGxExtPlttLoad, M2C_UNK *, GX_EXTPLTT_LOAD_OBJ_BASE) = 0;
 }
 
 void GX_BeginLoadBGExtPlttSub(void) {
@@ -600,7 +609,7 @@ void GX_EndLoadTex(void) {
     M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEX_GRANT) = 0;
 }
 
-void func_02004d3c(void) {
+void GX_BeginLoadTexPltt(void) {
  s32 GX_ReleaseBankForOBJExtPltt(); extern M2C_UNK data_020e9b30; extern M2C_UNK gGxTexLoad;
  s32 state=GX_ReleaseBankForOBJExtPltt();
  u32 base=((u16*)&data_020e9b30)[state>>4];
@@ -609,7 +618,7 @@ void func_02004d3c(void) {
 }
 
 /* Copy `size` bytes of texture-palette data from `src` into the main-engine 3D
- * texture palette at byte `offset`.  GX_BeginLoadTexPltt left the palette area's
+ * texture palette at byte `offset`.  The palette-load begin left the area's
  * VRAM base in gGxTexLoad; the copy runs through the GX DMA channel when one is
  * owned and on the CPU otherwise. */
 void GX_LoadTexPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
@@ -625,7 +634,10 @@ void GX_LoadTexPltt(M2C_UNK src, M2C_UNK offset, M2C_UNK size) {
     MIi_CpuCopy32(src, paletteBase + (s32)offset, (u32)size);
 }
 
-void func_02004ddc(void) {
+/* End a main-engine 3D texture-palette load: wait for the DMA copy to finish,
+ * hand the palette's bank grant back to the VRAM allocator and clear the load
+ * state (grant and VRAM base). */
+void GX_EndLoadTexPltt(void) {
     M2C_UNK DmaWaitChannel(s32);
     M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
     extern s32 gGxDmaChannel;
@@ -633,9 +645,9 @@ void func_02004ddc(void) {
     if (gGxDmaChannel != -1) {
         DmaWaitChannel(gGxDmaChannel);
     }
-    GX_SetBankForOBJExtPltt(M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0xc));
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0xc) = 0;
-    M2C_FIELD(&gGxTexLoad, M2C_UNK *, 0x8) = 0;
+    GX_SetBankForOBJExtPltt(M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEXPLTT_GRANT));
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEXPLTT_GRANT) = 0;
+    M2C_FIELD(&gGxTexLoad, M2C_UNK *, GX_TEXLOAD_TEXPLTT_BASE) = 0;
 }
 
 typedef u32 Block3[3];

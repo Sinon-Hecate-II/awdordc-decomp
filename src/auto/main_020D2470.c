@@ -135,22 +135,26 @@ s32 IsTerrainOnUnitTeam(s32 arg0, s32 arg1) {
     return IsSameTeam(temp + 1, arg1 >> 5);
 }
 
-s32 IsPropertyOwnedByTeam(s32 arg0, s32 arg1, s32 arg2) {
+/* Whether the property at tile (x, y) belongs to a player on `player`'s team:
+ * the cell's terrain owner bits (owner << MAP_PROPERTY_TILE_OWNER_SHIFT) are 0
+ * when the property is unowned, otherwise the owner is compared with `player`
+ * through IsSameTeam. */
+s32 IsPropertyOwnedByTeam(s32 player, s32 x, s32 y) {
     extern s32 *gCurrentMap;
     u8 IsSameTeam(s32, s32);
-    s32 p;
-    u16 val;
-    u8 byte;
-    s32 pos;
+    s32 map;
+    u16 rowOffset;
+    u8 terrain;
+    s32 cellIndex;
 
-    p = *gCurrentMap;
-    val = *(u16 *)(p + arg2 * 2 + 0x3758);
-    pos = arg1 + val;
-    byte = *(u8 *)(p + pos + 0x1420);
-    if ((byte >> 5) == 0) {
+    map = *gCurrentMap;
+    rowOffset = *(u16 *)(map + y * 2 + MAP_ROW_OFFSETS);
+    cellIndex = x + rowOffset;
+    terrain = *(u8 *)(map + cellIndex + MAP_CELL_TERRAIN);
+    if ((terrain >> 5) == 0) {
         return 0;
     }
-    return IsSameTeam(arg0, byte >> 5);
+    return IsSameTeam(player, terrain >> 5);
 }
 
 /* Whether a map unit of `kind` that carries units should show its cargo marker:
@@ -225,10 +229,10 @@ void ClearPresentPlayerDefeatTurns(void) {
  * active, or when it has no units left while either it still owns units in its
  * per-kind counts or none of the marked unit kinds are left on the field. */
 s32 IsPlayerRouted(M2C_UNK player) {
- s32 PlayerHasNoUnits(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 CountPlayerUnits(M2C_UNK);
+ s32 PlayerHasNoUnits(M2C_UNK); s32 func_020d2a6c(M2C_UNK); s32 CountPlayerUnitsBuilt(M2C_UNK);
  if (!IsPlayerActive()) return 1;
  if (PlayerHasNoUnits(player)) {
-  if (CountPlayerUnits(player)) return 1;
+  if (CountPlayerUnitsBuilt(player)) return 1;
   if (func_020d2a6c(player)) return 1;
  }
  return 0;
@@ -261,7 +265,7 @@ s32 PlayerHasNoUnits(s32 player) {
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 s32 func_020d2a6c(s32 arg0) {
-extern s32 *gCurrentMap;extern s8 data_ov000_021b5580[];
+extern s32 *gCurrentMap;extern s8 gProductionSiteTerrain[];
 s32 y=0;u8 *dims; s32 x,width;u8 *p;s32 byte;u8 *base=(u8*)*gCurrentMap; dims=base+0x5100;
 if(y<M2C_FIELD(dims,u16 *,0x46)){
 width=M2C_FIELD(dims,u16 *,0x44);{s32 zero=0;
@@ -271,7 +275,7 @@ if(x<width){
 p=base+M2C_FIELD(base+(y<<1),u16 *,0x3758);
 do {
 byte=M2C_FIELD(p,u8 *,0x1420);
-if(arg0==((byte&0xe0)>>5) && data_ov000_021b5580[byte&31]!=0)return 0;
+if(arg0==((byte&0xe0)>>5) && gProductionSiteTerrain[byte&31]!=0)return 0;
 x++;p++;
 }while(x<width);
 }
@@ -488,49 +492,54 @@ u8 func_020d2ff0(s32 arg0) {
     return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67D5);
 }
 
-u8 func_020d3014(s32 a, s32 b) {
+u8 GetPlayerUnitKindCount(s32 a, s32 b) {
 extern s32 *gCurrentMap;
 u8 *p=(u8 *)(a*0x8c+*gCurrentMap);
 p+=b;
 return p[0x67d7];
 }
 
-s32 CountPlayerUnits(s32 arg0) {
+/* Sum the player's per-kind units-built tallies across all unit kinds. */
+s32 CountPlayerUnitsBuilt(s32 player) {
     extern s32 *gCurrentMap;
-    s32 i;
-    s32 acc;
-    u8 *p;
+    s32 unitKind;
+    s32 totalBuilt;
+    u8 *playerRecord;
 
-    acc = 0;
-    i = acc;
-    p = (u8 *)*gCurrentMap + arg0 * 0x8C;
+    totalBuilt = 0;
+    unitKind = 0;
+    playerRecord = (u8 *)*gCurrentMap + player * MAP_PLAYER_STRIDE;
     do {
-        acc += p[0x67D7];
-        p++;
-        i++;
-    } while (i < 0x1B);
-    return acc;
+        totalBuilt += playerRecord[MAP_PLAYER_STATES + PLAYER_REC_UNITS_BUILT];
+        playerRecord++;
+        unitKind++;
+    } while (unitKind < PLAYER_REC_UNIT_KIND_COUNT);
+    return totalBuilt;
 }
 
-u8 func_020d3080(s32 a,s32 b) {
+u8 GetPlayerUnitKindLossCount(s32 a,s32 b) {
 extern s32 *gCurrentMap;
 u8 *p=(u8 *)(a*0x8c+*gCurrentMap);
 p+=b;
 return p[0x67f2];
 }
 
-s32 func_020d30a8(s32 a) {
-extern s32 *gCurrentMap;
-s32 i;
-s32 sum;
-u8 *p;
-sum=0;
-p=(u8 *)(a*0x8c+*gCurrentMap);
-for(i=0;i<27;i++,p++)sum+=M2C_FIELD(p,u8 *,0x67f2);
-return sum;
+/* Sum the player's destroyed-unit tallies across all unit kinds. */
+s32 CountPlayerUnitsLost(s32 player) {
+    extern s32 *gCurrentMap;
+    s32 unitKind;
+    s32 totalLost;
+    u8 *playerRecord;
+
+    totalLost = 0;
+    playerRecord = (u8 *)(player * MAP_PLAYER_STRIDE + *gCurrentMap);
+    for (unitKind = 0; unitKind < PLAYER_REC_UNIT_KIND_COUNT; unitKind++, playerRecord++) {
+        totalLost += M2C_FIELD(playerRecord, u8 *, MAP_PLAYER_STATES + PLAYER_REC_UNITS_LOST);
+    }
+    return totalLost;
 }
 
-void func_020d30ec(s32 a) {
+void IncrementPlayerUnitCount(s32 a) {
 extern s32 *gCurrentMap;
 u8 *p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
 if((u32)p[0x31]<255)p[0x31]++;
@@ -544,22 +553,29 @@ if(v!=0){v--;p[0x31]=v;}
 return v;
 }
 
-void func_020d3154(s32 a,s32 b) {
-extern s32 *gCurrentMap;
-u8 *p;
-func_020d30ec(a);
-p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
-p+=0x33;
-if(p[b]!=255)p[b]++;
+/* Add a newly created unit of `kind` to `player`'s tallies: bump the player's
+ * live unit count and the per-kind built count. */
+void AddPlayerUnitKind(s32 player, s32 kind) {
+    extern s32 *gCurrentMap;
+    u8 *p;
+
+    IncrementPlayerUnitCount(player);
+    p = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    p += PLAYER_REC_UNITS_BUILT;
+    if (p[kind] != 255) p[kind]++;
 }
 
-void func_020d319c(s32 a,s32 b) {
-extern s32 *gCurrentMap;
-u8 *p;
-DecrementPlayerUnitCount(a);
-p=(u8 *)*gCurrentMap+0x67a4+a*0x8c;
-p+=0x4e;
-if(p[b]!=255)p[b]++;
+/* Record that `player` has lost a unit of `kind`: drop the player's live unit
+ * count and bump the per-kind loss tally (the counterpart of AddPlayerUnitKind,
+ * called from RemoveMapUnit when a unit is destroyed rather than withdrawn). */
+void AddPlayerUnitLost(s32 player, s32 kind) {
+    extern s32 *gCurrentMap;
+    u8 *p;
+
+    DecrementPlayerUnitCount(player);
+    p = (u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE;
+    p += PLAYER_REC_UNITS_LOST;
+    if (p[kind] != 255) p[kind]++;
 }
 
 void func_020d31e4(void) {

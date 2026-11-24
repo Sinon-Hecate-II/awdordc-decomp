@@ -554,7 +554,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     M2C_UNK func_ov010_02228bb0(M2C_UNK);
     void func_ov010_02229498(M2C_UNK);
     void func_ov010_022294b0(M2C_UNK);
-    void func_ov010_022294c8(M2C_UNK);
+    void SetOnlineMessageHandler(M2C_UNK);
     s32 GetEarnedRecordTierTotal(void);
     s32 GetRecordRank(void);
     s32 GetFavouriteRecordGroup(void);
@@ -592,7 +592,7 @@ extern "C" void func_ov010_02228760(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s3
     func_ov010_02228bb0(g);
     func_ov010_02229498(h);
     func_ov010_022294b0(i);
-    func_ov010_022294c8(j);
+    SetOnlineMessageHandler(j);
     func_ov010_02229a50();
     state=&gOv010OnlineSession;
     M2C_FIELD(state,s32 *,0x18)=0;
@@ -679,7 +679,7 @@ void Ov010Online_EndSession(void) {
     void func_ov010_02229480(M2C_UNK);
     void func_ov010_02229498(M2C_UNK);
     void func_ov010_022294b0(M2C_UNK);
-    void func_ov010_022294c8(M2C_UNK);
+    void SetOnlineMessageHandler(M2C_UNK);
     M2C_UNK Ov010Online_ClearStepFlag(M2C_UNK);
     extern M2C_UNK gOv010SessionStateClass;
     extern M2C_UNK gOv010ConnectionClass;
@@ -702,7 +702,7 @@ void Ov010Online_EndSession(void) {
     func_ov010_02229480(0);
     func_ov010_02229498(0);
     func_ov010_022294b0(0);
-    func_ov010_022294c8(0);
+    SetOnlineMessageHandler(0);
     Ov010Online_ClearStepFlag(2);
 }
 

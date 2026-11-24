@@ -1,6 +1,7 @@
 /* 5 functions from 0x02225A9C to 0x02226658 (ov011), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+#include "intro_menu.h"
 extern s32 gCur3DSpriteEngine;
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub;
 extern u8 data_ov011_02228a3c[],data_ov011_02228b54[],data_ov011_02228b5c[],data_ov011_02228b68[],data_ov011_02228b74[],data_ov011_02228b80[],data_ov011_02228a30[],data_ov011_02228b8c[],data_ov011_02228b94[],data_ov011_02228ba0[],data_ov011_02228bac[],data_ov011_02228bb8[],data_ov011_02228bc4[],data_ov011_02228bcc[],data_ov011_02228bd8[],data_ov011_02228be4[],data_ov011_02228bf0[],data_ov011_02228bfc[],data_ov011_02228c04[],data_ov011_02228c0c[];
@@ -105,13 +106,16 @@ void func_ov011_022264e4(void) {
     func_020af1e4();
 }
 
-void func_ov011_02226508(void *arg0) {
-extern s32 gCur3DSpriteEngine;
-M2C_FIELD(arg0,u16 *,0x3A)++;
-M2C_FIELD(arg0,u8 *,0x37)++;
-if (((u32)(M2C_FIELD(arg0,u8 *,0x34)<<31)>>31)==0) return;
-*(volatile s32 *)&gCur3DSpriteEngine = *(volatile s32 *)&gCur3DSpriteEngine;
-M2C_FIELD(arg0,u8 *,0x38)++;
+/* Advance the ov011 intro-menu object's per-frame timers: bump its frame timer
+ * and fade timer, and, once the sequence has started (flags bit 0), bump the
+ * appear timer that drives the panel fade.  The volatile self-assignment of
+ * gCur3DSpriteEngine is the load-and-store the original emitted here. */
+void IntroMenu_AdvanceTimers(IntroMenu011 *menu) {
+    menu->timer++;
+    menu->fadeTimer++;
+    if (((u32)(menu->flags << 31) >> 31) == 0) return;
+    *(volatile s32 *)&gCur3DSpriteEngine = *(volatile s32 *)&gCur3DSpriteEngine;
+    menu->appearTimer++;
 }
 
 /* Load an effect's archive, graphics, screen map and palette into the selected layer. */

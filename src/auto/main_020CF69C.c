@@ -3,8 +3,8 @@
 #include "battle_map.h"
 extern u8 data_0212bd5c[];
 extern s8 gTerrainDefenseStars[];
-extern s8 data_ov000_021b5580[];
-extern s8 data_ov000_021b5580[];
+extern s8 gProductionSiteTerrain[];
+extern s8 gProductionSiteTerrain[];
 extern s32 *gCurrentMap;
 extern s32 gMapData;
 
@@ -81,7 +81,7 @@ void func_020cf850(M2C_UNK arg0) {
  * carry one of the player's production terrains (base, port or airport), have no
  * unit standing on it, and the map data's rule flag 2 must be clear. */
 u8 IsOwnedProductionSite(s32 x, s32 y) {
- s32 func_020a88fc(u16); s32 func_020d048c(u8, s32);
+ s32 func_020a88fc(u16); s32 IsProductionSiteOwnedByPlayer(u8, s32);
  extern s32 *gCurrentMap;
  u8 result; void *map; s32 index; u8 terrain;
  map=(void *)*gCurrentMap;
@@ -90,7 +90,7 @@ u8 IsOwnedProductionSite(s32 x, s32 y) {
  if(M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER)==0) return 0;
  index=((u8 *)map)[index];
  if(index!=0) return 0;
- if(func_020d048c(terrain, M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))==0) return 0;
+ if(IsProductionSiteOwnedByPlayer(terrain, M2C_FIELD(map,u16 *,MAP_CURRENT_PLAYER))==0) return 0;
  if(func_020a88fc(M2C_FIELD((void *)*gCurrentMap,u16 *,MAP_ID))==0) result=1; else result=0;
  return result;
 }
@@ -100,14 +100,14 @@ u8 IsOwnedProductionSite(s32 x, s32 y) {
  * (15) or be able to enter the tile's own terrain class (17) or, for kinds with
  * the tracked/booted flags, a road/bridge class (18, 19). */
 u8 func_020cf908(s32 arg0,s32 arg1,s32 arg2,s32 arg3) {
-void func_020d0538(void);
+void GetTerrainOwner(void);
 u8 IsTerrainKind(s32,s32);
 extern u8 gUnitKindFlags[];
 void *p=(void *)*gCurrentMap;
 s32 index=arg0+M2C_FIELD(p+arg1*2,u16*,0x3758);
 u8 value=M2C_FIELD(p+index,u8*,0x1420);
 s32 offset;
-if(arg2!=((s32 (*)(s32))func_020d0538)(value))return 0;
+if(arg2!=((s32 (*)(s32))GetTerrainOwner)(value))return 0;
 if(IsTerrainKind(value,15))return 1;
 offset=arg3*0x70;
 if(gUnitKindFlags[offset]&7) {if(IsTerrainKind(value,17))return 1;}
@@ -134,11 +134,11 @@ u8 IsPlainOrShoalTerrain(s32 x, s32 y) {
    byte 5 = height, then the per-tile ids at +0x54 mapped through TerrainByteToTileId);
    any other id is expanded from a resource by the generic loader. */
 void LoadMapTileData(u32 id) {
-s32 HeapAllocBlock(s32); void *func_020e34f4(s32); s32 LoadMapRecord(u32,void *); s32 TerrainByteToTileId(s32); M2C_UNK HeapFreeBlock(s32); void *func_020a8b1c(u32); void SetFileDirectory(void *); void LoadDecompressedFileTo(void *,s32);
+s32 HeapAllocBlock(s32); void *HeapAllocBlockTail(s32); s32 LoadMapRecord(u32,void *); s32 TerrainByteToTileId(s32); M2C_UNK HeapFreeBlock(s32); void *func_020a8b1c(u32); void SetFileDirectory(void *); void LoadDecompressedFileTo(void *,s32);
 s32 i; u8 *tileSet; u8 *tileIds; void *resource;
 gMapData=HeapAllocBlock(0xA12);
 if(id>=0xE1 && id<0x1A9){
-tileSet=func_020e34f4(0x6F8);
+tileSet=HeapAllocBlockTail(0x6F8);
 if(LoadMapRecord(id,tileSet)){
 M2C_FIELD(gMapData,u8 *,0)=tileSet[4];
 M2C_FIELD(gMapData,u8 *,1)=tileSet[5];
@@ -220,10 +220,10 @@ void ClampCursorToMap(void) {
 }
 
 void func_020cfd14(void) {
-    M2C_UNK func_020cf2c8();
+    M2C_UNK RebuildMapPropertyCells();
     M2C_UNK UpdateAiCapabilityFlags();
     M2C_UNK func_020d2470();
-    func_020cf2c8();
+    RebuildMapPropertyCells();
     func_020d2470();
     UpdateAiCapabilityFlags();
 }
@@ -419,7 +419,21 @@ s32 GetMoveRangeCommanderId(M2C_UNK arg0) {
     return GetPlayerCommanderId(arg0);
 }
 
-s32 func_020d048c(u8 a,s32 b){void func_020d0538(void);extern s8 data_ov000_021b5580[];u8 n=a&31;s32 v=b;if(v!=((s32 (*)(void))func_020d0538)())return 0;if(n!=16){if(data_ov000_021b5580[n&31])return 1;}return 0;}
+/* Whether `terrain` is a production property (base, airport or port) whose owner
+ * field names `player`: the tile's owner (GetTerrainOwner) must equal `player`
+ * and its kind must be flagged in gProductionSiteTerrain. */
+s32 IsProductionSiteOwnedByPlayer(u8 terrain, s32 player) {
+    void GetTerrainOwner(void);
+    extern s8 gProductionSiteTerrain[];
+    u8 kind = terrain & MAP_TERRAIN_KIND_MASK;
+    s32 expectedOwner = player;
+
+    if (expectedOwner != ((s32 (*)(void))GetTerrainOwner)()) return 0;
+    if (kind != MAP_TERRAIN_CITY) {
+        if (gProductionSiteTerrain[kind & MAP_TERRAIN_KIND_MASK]) return 1;
+    }
+    return 0;
+}
 
 u8 IsTerrainKind(s32 arg0, s32 arg1) {
     u8 var_r0;
@@ -445,18 +459,21 @@ s32 func_020d0530(s32 arg0) {
     return arg0 & 0xE0;
 }
 
-void func_020d0538(void) {
+void GetTerrainOwner(void) {
     M2C_UNK func_020d0528();
     M2C_UNK func_020d0530();
     func_020d0530();
     func_020d0528();
 }
 
-s32 func_020d0548(s32 arg0,s32 arg1) {
+/* Whether (x, y) lie inside the screen rectangle 0..256 across by 0..192 down.
+ * The tile-to-screen projection of (x, y) is computed first, but its result is not
+ * what the bounds are checked against. */
+s32 IsWithinScreenBounds(s32 x, s32 y) {
  void MapTileToScreen(s32,s32,void *);
- s32 temp[3];
- MapTileToScreen(arg0,arg1,temp);
- if(arg0<0 || arg1<0 || arg0>256 || arg1>192) return 0;
+ s32 screenPos[3];
+ MapTileToScreen(x, y, screenPos);
+ if (x < 0 || y < 0 || x > 256 || y > 192) return 0;
  return 1;
 }
 

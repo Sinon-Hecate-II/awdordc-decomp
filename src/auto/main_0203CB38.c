@@ -17,7 +17,7 @@ s32 SBServerListThink(s32);
 s32 DestroyServerBrowser(s32);
 s32 func_02061750(s32);
 void Qr2_ServiceConnection(s32);
-void func_0205e178(void);
+void NatNeg_Think(void);
 void func_0205d8f4(void);
 s32 StartMatchmaking(void);
 s32 UpdateConnectionSyncWait(void);
@@ -194,7 +194,7 @@ void func_0203cb38(void *arg0) {
     Qr2_ServiceConnection(M2C_FIELD(GetConnection(),s32 *,0x10));
     M2C_FIELD(gConnectionMgr,s32 *,0xc)=0;
     M2C_FIELD(gConnectionMgr,s32 *,0x10)=1;
-    func_0205e178();
+    NatNeg_Think();
     M2C_FIELD(gConnectionMgr,s32 *,0x10)=0;
     if(M2C_FIELD(gConnectionMgr,s32 *,0xc)==1) {
         M2C_FIELD(gConnectionMgr,s32 *,0xc)=0;

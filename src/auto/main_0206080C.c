@@ -532,10 +532,12 @@ s32 SBServerListSendToAddress(s32 browser, char *host, s32 port, void *packet, s
     return func_02063aa8(browser + SB_LIST_QUERY, ghiInetAddr(host), (u16) ((u8) (port >> 8) | ((port << 8) & 0xFF00)), packet, length);
 }
 
-void func_02061690(s32 arg0, M2C_UNK arg1, s32 arg2, M2C_UNK arg3) {
-    s32 ghiInetAddr(M2C_UNK);
-    M2C_UNK func_02063bd0(s32, s32, u16, M2C_UNK);
-    func_02063bd0(arg0 + 0x4C, ghiInetAddr(arg1), (u16) ((u8) (arg2 >> 8) | ((arg2 << 8) & 0xFF00)), arg3);
+/* Send the NAT-negotiation request carrying `cookie` to `host` and `port` through
+ * the server browser's QR2 query socket, the port in network byte order. */
+void SBServerListSendNATNegotiation(s32 browser, char *host, s32 port, s32 cookie) {
+    s32 ghiInetAddr(char *);
+    s32 func_02063bd0(s32, s32, u16, s32);
+    func_02063bd0(browser + SB_LIST_QUERY, ghiInetAddr(host), (u16) ((u8) (port >> 8) | ((port << 8) & 0xFF00)), cookie);
 }
 
 void SBServerListRemoveServer(s32 arg0){
@@ -546,10 +548,10 @@ void SBServerListRemoveServer(s32 arg0){
 }
 
 s32 SBServerListThink(s32 arg0) {
-    s32 func_02063dac(s32);
+    s32 SBServerListProcessState(s32);
 
     Qr2Query_Update((void *) arg0);
-    return func_02063dac(arg0 + 0x4C);
+    return SBServerListProcessState(arg0 + 0x4C);
 }
 
 M2C_UNK func_0206171c(void *p){

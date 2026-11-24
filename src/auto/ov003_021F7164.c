@@ -61,9 +61,9 @@ extern void func_ov003_021fca84(void *);
 #pragma opt_propagation off
 void func_ov003_021f7164(void *arg0) {
 void MenuSpriteUpdate(void *);void func_02088044(void *);s32 Divide(s32,s32);
-void ListWidgetScrollUp(void *);void ListWidgetScrollDown(void *);void PlaySoundEffect(s32);void func_ov003_021f92f4(void *,s32);
+void ListWidgetScrollUp(void *);void ListWidgetScrollDown(void *);void PlaySoundEffect(s32);void Ov003_RefreshMapPreview(void *,s32);
 s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
-void ConfirmMapSelection(void *);void func_ov003_021f2808(void *,u16);void ToggleMapPick(void *,void *,u16);
+void ConfirmMapSelection(void *);void ToggleFirstSideMapPick(void *,u16);void ToggleMapPick(void *,void *,u16);
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
 void Hide3DSpriteSlide(void *);void Show3DSpriteSlide(void *);s32 GetUiColor(s32);void SetFrameBorderSpritePattern(void *,s32,s32,s32);
@@ -93,7 +93,7 @@ if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,24);
 if((u8)ov003_button_pressed(button)){
 ov003_animate_button(button);ListWidgetScrollUp(M2C_FIELD(p,void **,0x4c));PlaySoundEffect(0x10019);
-func_ov003_021f92f4(p,0);active=0;
+Ov003_RefreshMapPreview(p,0);active=0;
 }
 }
 if(active){
@@ -103,7 +103,7 @@ enable=rows+oldRows<(s16)Divide((s16)M2C_FIELD(list,s32 *,24),M2C_FIELD(list,s16
 if(enable){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,28);
 if((u8)ov003_button_pressed(button)){
-ov003_animate_button(button);ListWidgetScrollDown(M2C_FIELD(p,void **,0x4c));PlaySoundEffect(0x10019);func_ov003_021f92f4(p,0);active=0;
+ov003_animate_button(button);ListWidgetScrollDown(M2C_FIELD(p,void **,0x4c));PlaySoundEffect(0x10019);Ov003_RefreshMapPreview(p,0);active=0;
 }
 }
 }
@@ -116,7 +116,7 @@ else if(ov003_menu_kind(p,4)){
 mode=(u32)(p[0x3e]<<29)>>29;
 if((u8)(mode==0)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4);ov003_animate_button(button);
-func_ov003_021f2808(M2C_FIELD(p,void **,0x44)+4,selection);
+ToggleFirstSideMapPick(M2C_FIELD(p,void **,0x44)+4,selection);
 }else if((u8)(mode==1)){
 button=M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,8);ov003_animate_button(button);
 context=M2C_FIELD(p,void **,0x44);ToggleMapPick(context+4,context+0x12,selection);
@@ -173,7 +173,7 @@ if(func_ov003_021f3f0c((s16)keyy,10,(s16)(GetScrollLimit(M2C_FIELD(p,void **,0x4
 list=M2C_FIELD(p,void **,0x4c);
 keyx=(s16)(keyy-10+M2C_FIELD(list,s16 *,12));
 if(M2C_FIELD(list,s32 *,24)!=keyx)func_020ab3b0(list,(s16)keyx,1);
-func_ov003_021f92f4(p,0);PlaySoundEffect(0x10019);active=0;
+Ov003_RefreshMapPreview(p,0);PlaySoundEffect(0x10019);active=0;
 }
 }
 p[0x39]=(p[0x39]&~127)|(keyy&127);
@@ -185,7 +185,7 @@ if(held&1){
 mode=(u32)(p[0x3e]<<29)>>29;
 if((u8)(mode==0)){
 ov003_animate_button(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,4));
-func_ov003_021f2808(M2C_FIELD(p,void **,0x44)+4,selection);
+ToggleFirstSideMapPick(M2C_FIELD(p,void **,0x44)+4,selection);
 }else if((u8)(mode==1)){
 ov003_animate_button(M2C_FIELD(M2C_FIELD(p,void **,0x68),void **,8));
 context=M2C_FIELD(p,void **,0x44);ToggleMapPick(context+4,context+18,selection);

@@ -9,7 +9,7 @@ void func_ov000_0219b3c8(void) {
     s32 GetUnitMoveRange(s32, s32);
     void FillMapCellLayer(void *, s32);
     s32 IsTerrainOnUnitTeam(s32, u8);
-    s32 func_ov000_021a91d0(s32);
+    s32 IsRepairPropertyKind(s32);
     s32 ManhattanDistance(s16, s16, s16, s16);
     extern void **gCurrentMap;
 
@@ -60,7 +60,7 @@ void func_ov000_0219b3c8(void) {
     rowVal = *(u16 *)((u8 *)data + rec_y * 2 + 0x3758);
     cellByte = *(u8 *)((u8 *)data + rec_x + rowVal + 0x1420);
 
-    r7 = (func_ov000_021a91d0(cellByte) == 1) ? 8 : 1;
+    r7 = (IsRepairPropertyKind(cellByte) == 1) ? 8 : 1;
 
     for (r9 = 0; r9 < *(u16 *)((u8 *)*gCurrentMap + 0x5146); r9++) {
         for (r10 = 0; r10 < *(u16 *)((u8 *)*gCurrentMap + 0x5144); r10++) {

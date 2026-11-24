@@ -395,7 +395,7 @@ s32 func_ov000_0219f0d8(void) {
     void RevealUnitsAroundCursor(s32, s32, void *);
     void MarkPathThreatRange(s32, s32, void *);
     void RefreshMapView(void);
-    void func_020bbc2c(s32);
+    void ShowPlayerUnitView(s32);
     void BattleUpdateUnitCursor(void);
     void AiProduceUnitAtCommandTile(void);
     void AiProduceUnitCommand(void);
@@ -405,7 +405,7 @@ s32 func_ov000_0219f0d8(void) {
     void LoadUnitIntoTransport(void);
     void func_ov000_0219fabc(s32);
     void func_020bb768(void);
-    void func_020bbac8(void);
+    void SupplyCommand(void);
     void SubmergeUnit(void);
     void SurfaceUnit(void);
     void DestroyCursorUnit(void);
@@ -454,7 +454,7 @@ s32 func_ov000_0219f0d8(void) {
         ApplyWeatherCommand();
         break;
     case 5:
-        func_020bbc2c(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
+        ShowPlayerUnitView(*(u16 *)((u8 *)*gCurrentMap + 0x52a4));
         BattleUpdateUnitCursor();
         break;
     case 6:
@@ -482,7 +482,7 @@ s32 func_ov000_0219f0d8(void) {
         BattleUpdateUnitCursor();
         break;
     case 13:
-        func_020bbac8();
+        SupplyCommand();
         break;
     case 14:
         SubmergeUnit();

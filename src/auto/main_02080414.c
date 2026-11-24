@@ -16,7 +16,7 @@ void StepScreenFlashFadeIn(void *sprite) {
  Sprite_ResumeAnimation(sprite);
 }
 
-void func_02080498(void *arg0) {
+void StepScreenFlashHold(void *arg0) {
  M2C_UNK Sprite_ResumeAnimation(void *);
  s32 temp_r2;
  if(M2C_FIELD(arg0,s16 *,0x6E)==0) {Sprite_ResumeAnimation(arg0);return;}
@@ -305,7 +305,7 @@ s32 LoadDecompressedFileTo(void *path, s32 dest) {
     int FileRead(void *, void *, s32);
     int CloseFileRequest(void *);
     int SystemHalt(void);
-    int func_020e34f4(s32);
+    int HeapAllocBlockTail(s32);
     int HeapFreeBlock(s32);
     u32 InitDecompress(void *, void *, u32);
     s32 DecompressChunk(void *, void *, s32);
@@ -321,7 +321,7 @@ s32 LoadDecompressedFileTo(void *path, s32 dest) {
     u32 next;
     int maxChunk;
 
-    buf = (void *)func_020e34f4(0x2000);
+    buf = (void *)HeapAllocBlockTail(0x2000);
 
     InitFileRequest(req);
     if (OpenFileRequest(req, path) == 0) {
@@ -390,7 +390,7 @@ void *LoadFileToBuffer(void *path, int persistent) {
     if (persistent != 0) {
         buf = (void *)HeapAllocBlock(total);
     } else {
-        buf = (void *)func_020e34f4(total);
+        buf = (void *)HeapAllocBlockTail(total);
     }
     off = 0;
     if (total != 0) {
@@ -415,18 +415,18 @@ void *LoadFileToBuffer(void *path, int persistent) {
    A nonzero `persistent` takes the buffers from the permanent asset heap instead
    of the temporary block heap. */
 s32 LoadDecompressedFileBuffer(s32 path,s32 persistent,s32 outSize) {
-s32 func_020e34f4(s32);s32 HeapAllocBlock();s32 HeapFreeBlock(s32);
+s32 HeapAllocBlockTail(s32);s32 HeapAllocBlock();s32 HeapFreeBlock(s32);
 s32 InitFileRequest(void *);s32 OpenFileRequest(void *,void *);s32 FileRead(void *,void *,s32);s32 CloseFileRequest(void *);s32 SystemHalt(void);
 s32 GetDecompressedSize(void *);u32 InitDecompress(void *, void *, u32);s32 DecompressChunk(void *,void *,s32);
 u32 req[18];u8 decoder[0x220]; s32 size; s32 output; u8 *buf; u32 read=0; u32 total,chunk;
-if(persistent)buf=(u8 *)func_020e34f4(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
+if(persistent)buf=(u8 *)HeapAllocBlockTail(0x2000);else buf=(u8 *)HeapAllocBlock(0x2000);
 InitFileRequest(req);
 if(!OpenFileRequest(req,(void *)path)){SystemHalt();return 0;}
 total=req[10]-req[9];chunk=total<0x2000?total:0x2000;
 if(FileRead(req,buf,chunk)!=chunk){SystemHalt();return 0;}
 read+=chunk;
 size=GetDecompressedSize(buf);
-if(persistent)output=HeapAllocBlock(size);else output=func_020e34f4(size);
+if(persistent)output=HeapAllocBlock(size);else output=HeapAllocBlockTail(size);
 InitDecompress(decoder,buf,(void *)output);
 if(DecompressChunk(decoder,buf+4,chunk-4)>0) { u32 next; do {
 next=total-read;if(next>=0x2000)next=0x2000;
@@ -465,11 +465,16 @@ int ReadFileSection(int path, int dest, int offset, int size) {
     return 1;
 }
 
-s32 LoadFileToNewBuffer(M2C_UNK a,M2C_UNK b) {
- s32 ReadFileSection(M2C_UNK,s32,M2C_UNK,M2C_UNK);s32 func_020e34f4(M2C_UNK);
- s32 p=func_020e34f4(b);
- if(ReadFileSection(a,p,0,b))return p;
- HeapFreeBlock(p);return 0;
+/* Read the file at `path` into a freshly allocated `size`-byte buffer from the
+ * game heap.  Returns the buffer, or NULL after freeing it when the file cannot
+ * be read. */
+s32 LoadFileToNewBuffer(M2C_UNK path, M2C_UNK size) {
+    s32 ReadFileSection(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    s32 HeapAllocBlockTail(M2C_UNK);
+    s32 buffer = HeapAllocBlockTail(size);
+    if (ReadFileSection(path, buffer, 0, size)) return buffer;
+    HeapFreeBlock(buffer);
+    return 0;
 }
 
 /* Load the file `path` into the current 3D sprite engine's OBJ palette shadow at
@@ -537,24 +542,33 @@ s32 LoadFileToOBJExtPltt(M2C_UNK path, s32 paletteSlot, s32 offset, s32 size) {
  HeapFreeBlock(buffer); return 1;
 }
 
-s32 func_02081340(M2C_UNK a,s32 b,M2C_UNK c,M2C_UNK d) {
- extern void *gCur3DSpriteEngine;
- if(!ReadFileSection(a,M2C_FIELD(gCur3DSpriteEngine,s32 *,0x30)+b,c,d))return 0;
- M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=0x10;
- return 1;
+/* Load `size` bytes at `fileOffset` of the file at `path` into the current 3D
+ * sprite engine's OBJ palette shadow at byte `destOffset`, then mark the palette
+ * dirty so it is uploaded on the next flush.  Returns 0 when the file could not be
+ * read. */
+s32 LoadFileSectionToSpriteBuffer(M2C_UNK path, s32 destOffset, M2C_UNK fileOffset, M2C_UNK size) {
+    s32 ReadFileSection(M2C_UNK, s32, M2C_UNK, M2C_UNK);
+    extern void *gCur3DSpriteEngine;
+
+    if (!ReadFileSection(path, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_PALETTES) + destOffset, fileOffset, size)) return 0;
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_PALETTE;
+    return 1;
 }
 
-s32 func_02081384(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_0207da34(s32, M2C_UNK, s32);
+/* Load the decompressed file at `path` and upload its bytes into the texture
+ * bank at byte `destOffset`, then release the buffer.  Returns the number of
+ * bytes loaded. */
+s32 LoadFileToTextureBank(M2C_UNK path, M2C_UNK destOffset) {
+    M2C_UNK UploadTextureBank(s32, M2C_UNK, s32);
     M2C_UNK HeapFreeBlock(s32);
-    s32 sp0;
-    s32 temp_r0;
+    s32 size;
+    s32 buffer;
 
-    temp_r0 = LoadDecompressedFileBuffer(arg0, 0, &sp0);
-    DC_FlushRange(temp_r0, sp0);
-    func_0207da34(temp_r0, arg1, sp0);
-    HeapFreeBlock(temp_r0);
-    return sp0;
+    buffer = LoadDecompressedFileBuffer(path, 0, &size);
+    DC_FlushRange(buffer, size);
+    UploadTextureBank(buffer, destOffset, size);
+    HeapFreeBlock(buffer);
+    return size;
 }
 
 s32 func_020813c4(M2C_UNK arg0, M2C_UNK arg1) {

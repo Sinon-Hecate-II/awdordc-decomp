@@ -74,7 +74,7 @@ s32 IsPrintableString(u8 *p,s32 n) {s32 i; for(i=0;i<n;i++){u32 c=*p++;if(c<32||
 s32 func_ov001_0216bb4c(u32 *arg0) {
 s32 func_ov001_0216cdb4(void *,M2C_UNK *,s32);
 s32 func_ov001_0216cf08(M2C_UNK *);
-extern M2C_UNK data_ov001_0218fda4;
+extern M2C_UNK gBuiltinWifiSsid;
 s32 result; u32 n;
 s32 matches;
 s32 i;
@@ -86,7 +86,7 @@ i=0;
 if((s32)n>0) {
 text=p+8;
 do {
-if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&data_ov001_0218fda4) && !func_ov001_0216cdb4(text,&data_ov001_0218fda4,func_ov001_0216cf08(&data_ov001_0218fda4)))matches++;
+if((M2C_FIELD(p,u32 *,0x54)&1) && M2C_FIELD(p,s32 *,4)==func_ov001_0216cf08(&gBuiltinWifiSsid) && !func_ov001_0216cdb4(text,&gBuiltinWifiSsid,func_ov001_0216cf08(&gBuiltinWifiSsid)))matches++;
 p+=0x54;text+=0x54;i++;
 }while(i<(s32)n);
 }
@@ -95,18 +95,20 @@ if(matches==0)result=5;
 return result;
 }
 #pragma scheduling reset
-s32 func_ov001_0216bbc8(void *p) {
-extern M2C_UNK data_ov001_0218fda4;
-extern M2C_UNK data_ov001_0218fdb0;
+/* Fill `ap` with the built-in access point: the SSID gBuiltinWifiSsid and its WEP
+ * key gBuiltinWifiKey, failing when the key is longer than WIFI_AP_KEY_MAX bytes. */
+s32 InitBuiltinWifiAp(void *ap) {
+extern M2C_UNK gBuiltinWifiSsid;
+extern M2C_UNK gBuiltinWifiKey;
 s32 Ov001StringLength(M2C_UNK *);
 M2C_UNK Ov001MemCopy(void *,M2C_UNK *,s32);
-u32 n;
-M2C_FIELD(p,u32 *,0)=Ov001StringLength(&data_ov001_0218fda4);
-Ov001MemCopy((u8 *)p+4,&data_ov001_0218fda4,M2C_FIELD(p,u32 *,0));
-M2C_FIELD(p,u32 *,0x24)=1;
-n=M2C_FIELD(p,u32 *,0x28)=Ov001StringLength(&data_ov001_0218fdb0);
-if(n>13)return -1;
-Ov001MemCopy((u8 *)p+0x2c,&data_ov001_0218fdb0,n);
+u32 keyLength;
+M2C_FIELD(ap,u32 *,WIFI_AP_SSID_LENGTH)=Ov001StringLength(&gBuiltinWifiSsid);
+Ov001MemCopy((u8 *)ap+WIFI_AP_SSID,&gBuiltinWifiSsid,M2C_FIELD(ap,u32 *,WIFI_AP_SSID_LENGTH));
+M2C_FIELD(ap,u32 *,WIFI_AP_SECURITY)=1;
+keyLength=M2C_FIELD(ap,u32 *,WIFI_AP_KEY_LENGTH)=Ov001StringLength(&gBuiltinWifiKey);
+if(keyLength>WIFI_AP_KEY_MAX)return -1;
+Ov001MemCopy((u8 *)ap+WIFI_AP_KEY,&gBuiltinWifiKey,keyLength);
 return 0;
 }
 void func_ov001_0216bc0c(s32 n,void *p,M2C_UNK *src) {

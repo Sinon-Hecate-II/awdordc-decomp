@@ -87,14 +87,16 @@ s32 FindTextControlCode(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     return 0;
 }
 #pragma opt_propagation reset
-u8 func_02099dcc(M2C_UNK arg0) {
+/* Return 1 when the message text is a plain message with no embedded choice
+ * widget, so the full-screen message box can show it; 0 when it carries one. */
+u8 Text_IsPlainMessage(M2C_UNK text) {
     s32 FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
     u8 var_r0;
 
-    if (FindTextControlCode(arg0, 5, 1) != 0) {
+    if (FindTextControlCode(text, TEXT_CODE_CHOICE_WIDGET, 1) != 0) {
         return 0U;
     }
-    if (FindTextControlCode(arg0, 6, 1) == 0) {
+    if (FindTextControlCode(text, TEXT_CODE_CHOICE_WIDGET_ALT, 1) == 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -102,16 +104,19 @@ u8 func_02099dcc(M2C_UNK arg0) {
     return var_r0;
 }
 
-s32 func_02099e10(M2C_UNK arg0) {
+/* Number of screens the message in `text` is shown on, taken from its
+ * TEXT_CODE_MSG_SPRITE_COUNT operand (0x80 -> 0, 0x81 -> 1, 0x82 -> 2); 1 when
+ * the text carries no such code. */
+s32 Text_GetScreenCount(u8 *text) {
     s32 FindTextControlCode(M2C_UNK, M2C_UNK, M2C_UNK);
-    void *temp_r0;
-    u8 value;
-    temp_r0 = (void *)FindTextControlCode(arg0, 0x15, 1);
-    if (temp_r0 != NULL) {
-        value = M2C_FIELD(temp_r0, u8 *, 1);
-        if (value == 0x80) return 0;
-        if (value == 0x81) return 1;
-        if (value == 0x82) return 2;
+    void *controlCode;
+    u8 operand;
+    controlCode = (void *)FindTextControlCode((M2C_UNK)text, TEXT_CODE_MSG_SPRITE_COUNT, 1);
+    if (controlCode != NULL) {
+        operand = M2C_FIELD(controlCode, u8 *, 1);
+        if (operand == 0x80) return 0;
+        if (operand == 0x81) return 1;
+        if (operand == 0x82) return 2;
     }
     return 1;
 }

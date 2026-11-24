@@ -301,16 +301,20 @@ void InitLz77Decompress(void *arg0, s32 arg1, u32 *arg2) {
 
 #pragma push
 #pragma opt_propagation off
-void InitHuffmanDecompress(void *arg0,s32 arg1,s32 *arg2) {
-M2C_FIELD(arg0,s32 *,0)=arg1;
-M2C_FIELD(arg0,u32 *,4)=(u32)*arg2>>8;
-M2C_FIELD(arg0,s8 *,0x18)=(u32)(*arg2<<28)>>28;
-M2C_FIELD(arg0,s16 *,0x14)=-1;
-M2C_FIELD(arg0,void **,8)=(u8 *)arg0+0x1c;
-M2C_FIELD(arg0,s32 *,0x10)=0;
-M2C_FIELD(arg0,s8 *,0x17)=0;
-M2C_FIELD(arg0,s32 *,0xc)=0;
-M2C_FIELD(arg0,s8 *,0x16)=0;
+/* Initialise the Huffman decoder state (DecompressState +0x04): store the output
+ * address and the decompressed size from the block header, take the header's low
+ * nibble as the output pixel width, point the node pointer at the decoder's own
+ * symbol buffer and clear the accumulators. */
+void InitHuffmanDecompress(void *decoder, s32 dest, s32 *header) {
+M2C_FIELD(decoder,s32 *,HUFFMAN_OUTPUT)=dest;
+M2C_FIELD(decoder,u32 *,HUFFMAN_REMAINING)=(u32)*header>>8;
+M2C_FIELD(decoder,s8 *,HUFFMAN_WORD_SHIFT)=(u32)(*header<<28)>>28;
+M2C_FIELD(decoder,s16 *,HUFFMAN_NODE_COUNT)=-1;
+M2C_FIELD(decoder,void **,HUFFMAN_NODE)=(u8 *)decoder+HUFFMAN_BUFFER;
+M2C_FIELD(decoder,s32 *,HUFFMAN_OUT_WORD)=0;
+M2C_FIELD(decoder,s8 *,HUFFMAN_WORD_BITS)=0;
+M2C_FIELD(decoder,s32 *,HUFFMAN_BITS)=0;
+M2C_FIELD(decoder,s8 *,HUFFMAN_BIT_COUNT)=0;
 }
 #pragma pop
 s32 RleDecompress8Bit(void *arg0,u8 *src,s32 size){
@@ -717,9 +721,12 @@ void Sound_StopChannels(M2C_UNK arg0, M2C_UNK arg1, u32 channelMask, s32 arg3) {
     SendArm7Message(0xD, arg0, arg1, channelMask, arg3);
 }
 
-void func_02008d54(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, s32 arg4) {
-    s32 func_0200978c(M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0x12, arg0, arg1, arg2, func_0200978c(arg0, arg3, arg4));
+/* Register `callback`/`callbackArg` as the ARM7 timer callback for hardware
+ * `channel` and start that channel's timer (ARM7 sound command 0x12) with the
+ * timer parameters; the freshly bumped generation is sent as the last argument. */
+void Sound_StartChannelTimer(M2C_UNK channel, M2C_UNK period, M2C_UNK reload, M2C_UNK callback, s32 callbackArg) {
+    s32 Sound_RegisterChannelCallback(M2C_UNK, M2C_UNK, s32);
+    SendArm7Message(0x12, channel, period, reload, Sound_RegisterChannelCallback(channel, callback, callbackArg));
 }
 
 void func_02008d94(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -744,9 +751,14 @@ void func_02008e24(M2C_UNK arg0, M2C_UNK arg1) {
     SendArm7Message(0x15, arg0, arg1, 0, 0);
 }
 
-void func_02008e44(s32 arg0, s32 arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8, s32 arg9) {
+/* Send the ARM7 "start channel" command (id 0xE), which keys one hardware
+ * channel on with a sample: the channel number and its timer period (rate << 5)
+ * in the first word, the sample address in the second, the length in 32-bit
+ * words with the volume and its loop flags in the third, and the loop start
+ * point, pan, play mode and channel flags in the last. */
+void Sound_StartChannel(s32 channel, s32 playMode, s32 sampleAddr, s32 channelFlags, s32 loopStart, s32 lengthWords, s32 volume, s32 loopFlags, s32 timer, s32 pan) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    SendArm7Message(0xE, arg0 | (arg8 << 0x10), arg2, arg5 | ((arg6 << 0x18) | (arg7 << 0x16)), arg4 | (((arg3 << 0x1A) | (arg1 << 0x18)) | (arg9 << 0x10)));
+    SendArm7Message(0xE, channel | (timer << 0x10), sampleAddr, lengthWords | ((volume << 0x18) | (loopFlags << 0x16)), loopStart | (((channelFlags << 0x1A) | (playMode << 0x18)) | (pan << 0x10)));
 }
 
 void func_02008e90(M2C_UNK arg0, M2C_UNK arg1) {
@@ -759,7 +771,7 @@ void func_02008eb0(M2C_UNK arg0, M2C_UNK arg1) {
     SendArm7Message(0x1F, arg0, arg1, 0, 0);
 }
 
-void func_02008ed0(M2C_UNK arg0, M2C_UNK arg1) {
+void Sound_FreeWaveArchiveMemory(M2C_UNK arg0, M2C_UNK arg1) {
     M2C_UNK SendArm7Message(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     SendArm7Message(0x20, arg0, arg1, 0, 0);
 }

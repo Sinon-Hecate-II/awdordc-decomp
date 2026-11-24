@@ -148,20 +148,23 @@ s32 func_020673cc(s32 arg0, M2C_UNK arg1, s32 arg2) {
     return var_r5;
 }
 
-s32 WriteFormatBuffer(void *arg0, M2C_UNK arg1, s32 arg2) {
+/* Writer callback for the bounded string formatter: appends `count` bytes from
+ * `data` to the FormatBuffer, clamped to the space left after the bytes already
+ * written, and returns 1. */
+s32 WriteFormatBuffer(FormatBuffer *state, M2C_UNK data, u32 count) {
     M2C_UNK MemCopy(s32, M2C_UNK, s32);
-    s32 temp_r3;
-    s32 var_r5;
-    u32 temp_r2;
+    u32 position;
+    u32 writeCount;
+    u32 size;
 
-    temp_r3 = M2C_FIELD(arg0, s32 *, 8);
-    var_r5 = arg2;
-    temp_r2 = M2C_FIELD(arg0, u32 *, 4);
-    if ((u32) (temp_r3 + var_r5) > temp_r2) {
-        var_r5 = temp_r2 - temp_r3;
+    position = state->position;
+    writeCount = count;
+    size = state->size;
+    if (position + writeCount > size) {
+        writeCount = size - position;
     }
-    MemCopy(M2C_FIELD(arg0, s32 *, 0) + temp_r3, arg1, var_r5);
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + var_r5);
+    MemCopy((s32)(state->buffer + position), data, (s32)writeCount);
+    state->position = state->position + writeCount;
     return 1;
 }
 

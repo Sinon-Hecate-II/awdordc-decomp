@@ -5,6 +5,7 @@
 #define GT2_CONNECTION_IP          0x00 /* s32 remote IPv4 address */
 #define GT2_CONNECTION_PORT        0x04 /* u16 remote port */
 #define GT2_CONNECTION_SOCKET      0x08 /* void *owning socket */
+#define GT2_SOCKET_HANDLE          0x00 /* s32 OS socket handle, -1 before it is created */
 #define GT2_CONNECTION_SEND_BUFFER 0x50 /* u8 *ring buffer keeping sent command bytes until the peer acknowledges them */
 #define GT2_SEND_BUFFER_LEN        0x58 /* s32 bytes used in GT2_CONNECTION_SEND_BUFFER (its Gt2Buffer.len) */
 #define GT2_CONNECTION_PENDING_QUEUE 0x5C /* Vector *of received commands buffered until their sequence is due, sorted by sequence */
@@ -92,6 +93,10 @@ enum {
     GTI2_CLOSED           = 6, /* close acknowledgement, no payload */
     GTI2_PING             = 7  /* empty ping; its sequence acknowledgement answers it */
 };
+/* Command ids of the long GT2 messages (gti2HandleLargeMessage).  They are the
+ * other encoding of a control message a peer uses for an unreachable socket, and
+ * the ones the short enum above cannot express. */
+#define GTI2_LARGE_CLOSED 104 /* closed notification a socket sends a peer it has no connection for */
 /* Event types a connection reports through GT2_CONNECTION_CALLBACK. */
 enum {
     GT2_EVENT_CONNECTED = 0, /* the handshake finished and data can flow */

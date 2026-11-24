@@ -6,19 +6,19 @@
    reset the sprite bank of both 3D engines, release the entity's five sprite
    objects, and reset the engine scroll offsets. */
 void TeardownEntity(void *a) {
-void Link_SetMessageHandler(s32);s32 IsLinkResultFlagSet(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void func_02084eec(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void HideAllSpriteSlots(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
+void Link_SetMessageHandler(s32);s32 IsLinkResultFlagSet(s32);s32 GetLinkPhase(void);void Link_InstallCommandHandler(void);void func_ov009_02225b54(s32);void SpawnPlayerAnnounce(s32);void EnableMapConfirm(void);M2C_UNK ResetPlayerMask(void);M2C_UNK DisableMapConfirm(void);s32 IsOnlineSessionFlagSet(s32);void CreateVoiceChatWidget(s32);void HideAllSpriteSlots(void);void DeleteSpriteObject(s32);M2C_UNK SetSpriteSlotScroll(s32,s32);
 extern void **gCur3DSpriteEngine,**g3DSpriteEngineSub,**g3DSpriteEngineMain;
 s32 i;void **savedEngine;u16 *volatile bank10;u16 *volatile bank20;u16 *volatile bank40;u16 *volatile bank80;u16 *volatile bank100;u16 *volatile oamAttr;
 Link_SetMessageHandler(0);
 switch(M2C_FIELD(a,s32 *,0x34)){
 case 0:
 if(!IsLinkResultFlagSet(1)&&(GetLinkPhase()==4||GetLinkPhase()==5)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
-Link_InstallCommandHandler();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+Link_InstallCommandHandler();func_ov009_02225b54(M2C_FIELD(a,s32 *,0x18));SpawnPlayerAnnounce(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 case 1:case 2:
 if(!IsOnlineSessionFlagSet(6)&&IsOnlineSessionFlagSet(3)&&!(M2C_FIELD(a,u16 *,0x48)&0x1000)){
 if(M2C_FIELD(a,s32 *,0x34)==2&&M2C_FIELD(a,s32 *,0x38)==0)CreateVoiceChatWidget(7);
-Link_InstallCommandHandler();func_02084eec(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
+Link_InstallCommandHandler();SpawnPlayerAnnounce(M2C_FIELD(a,s32 *,0x18));EnableMapConfirm();
 }else {if(M2C_FIELD(a,u16 *,0x48)&0x1000)ResetPlayerMask();DisableMapConfirm();}break;
 }
 savedEngine=gCur3DSpriteEngine;
@@ -241,23 +241,26 @@ void func_020da0ec(void *a) {
     }
 }
 
-void func_020da1e8(void *arg0) {
+/* Press handler of the menu's first option: while the menu has not been accepted
+ * and this option's press is not yet registered, play the option-press sound, mark
+ * the press and resume the menu's animation. */
+void PressFirstMenuOption(void *entry) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
-    s32 temp_r0_2;
-    u16 temp_r0;
-    void *temp_r4;
+    s32 pressed;
+    u16 state;
+    void *menu;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x10);
-    temp_r0 = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (temp_r0 & 0x20) {
+    menu = M2C_FIELD(entry, void **, 0x10);
+    state = M2C_FIELD(menu, u16 *, MENU_STATE);
+    if (state & MENU_STATE_ACCEPTED) {
         return;
     }
-    temp_r0_2 = temp_r0 & 4;
-    if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
+    pressed = state & MENU_STATE_OPTION0_PRESSED;
+    if ((pressed == 0) && (pressed == 0)) {
         PlaySoundEffect(0x1000E);
-        M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 4);
-        Sprite_ResumeAnimation(temp_r4);
+        M2C_FIELD(menu, u16 *, MENU_STATE) = (u16) (M2C_FIELD(menu, u16 *, MENU_STATE) | MENU_STATE_OPTION0_PRESSED);
+        Sprite_ResumeAnimation(menu);
     }
 }
 
@@ -325,21 +328,26 @@ void UpdateToggleOption(void *entry) {
     PlaySoundEffect(0x10019);
 }
 
-void func_020da3c8(void *arg0) {
-    s32 temp_r0_2;
-    u16 temp_r0;
-    void *temp_r4;
+/* Press handler of the menu's second option: while the menu has not been accepted
+ * and this option's press is not yet registered, play the option-press sound, mark
+ * the press and resume the menu's animation. */
+void PressSecondMenuOption(void *entry) {
+    M2C_UNK Sprite_ResumeAnimation(void *);
+    M2C_UNK PlaySoundEffect(s32);
+    s32 pressed;
+    u16 state;
+    void *menu;
 
-    temp_r4 = M2C_FIELD(arg0, void **, 0x10);
-    temp_r0 = M2C_FIELD(temp_r4, u16 *, 0x48);
-    if (temp_r0 & 0x20) {
+    menu = M2C_FIELD(entry, void **, 0x10);
+    state = M2C_FIELD(menu, u16 *, MENU_STATE);
+    if (state & MENU_STATE_ACCEPTED) {
         return;
     }
-    temp_r0_2 = temp_r0 & 8;
-    if ((temp_r0_2 == 0) && (temp_r0_2 == 0)) {
+    pressed = state & MENU_STATE_OPTION1_PRESSED;
+    if ((pressed == 0) && (pressed == 0)) {
         PlaySoundEffect(0x1000E);
-        M2C_FIELD(temp_r4, u16 *, 0x48) = (u16) (M2C_FIELD(temp_r4, u16 *, 0x48) | 8);
-        Sprite_ResumeAnimation(temp_r4);
+        M2C_FIELD(menu, u16 *, MENU_STATE) = (u16) (M2C_FIELD(menu, u16 *, MENU_STATE) | MENU_STATE_OPTION1_PRESSED);
+        Sprite_ResumeAnimation(menu);
     }
 }
 
@@ -374,7 +382,7 @@ void HandleTwoOptionListInput(u8 *option) {
 #pragma opt_schedule off
 void func_020da480(void *arg0) {
     M2C_UNK ResetPlayerMask(void);
-    M2C_UNK func_02086330(void);
+    M2C_UNK DeleteVoiceChatWidgets(void);
     M2C_UNK Configure3DSpriteLayer(M2C_UNK, void *);
     M2C_UNK LoadScenePanelPalette(M2C_UNK);
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
@@ -386,7 +394,7 @@ void func_020da480(void *arg0) {
     M2C_UNK CloseNarcArchive(void);
     M2C_UNK GetUiColor(M2C_UNK);
     M2C_UNK Load3DSpritePattern(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_01ff9dd8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayerVram(M2C_UNK);
     M2C_UNK DisableMapConfirm(void);
     extern void **gCur3DSpriteEngine;
     extern void **g3DSpriteEngineMain;
@@ -408,7 +416,7 @@ void func_020da480(void *arg0) {
     u8 displayMode;
 
     ResetPlayerMask();
-    func_02086330();
+    DeleteVoiceChatWidgets();
 
     unitStruct = *(void **)((u8 *)arg0 + 0x68);
     *(u16 *)((u8 *)unitStruct + 0xe) = 0;
@@ -504,7 +512,7 @@ void func_020da480(void *arg0) {
     ((u8 *)*gCur3DSpriteEngine)[0x53] = 0;
 
     Clear3DSpriteLayer(0);
-    func_01ff9dd8(0);
+    Clear3DSpriteLayerVram(0);
     gCur3DSpriteEngine = savedEngine;
     DisableMapConfirm();
 }

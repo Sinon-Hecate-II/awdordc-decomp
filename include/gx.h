@@ -48,6 +48,12 @@
 #define DISPCNT_MODE_MASK    0x7
 #define DISPCNT_BG_VRAM_MASK 0x38000000
 #define DISPCNT_BG_VRAM_SHIFT 27
+/* DISPCNT bits 16..17 hold the 2D display mode: 0 turns the display off, 1 is the
+ * normal graphics display.  GX_TurnOffDisplay saves it and GX_TurnOnDisplay
+ * restores it through gGxDisplayStatus. */
+#define DISPCNT_DISPLAY_MODE_SHIFT 16
+#define DISPCNT_DISPLAY_MODE_MASK  (3 << DISPCNT_DISPLAY_MODE_SHIFT)
+#define DISPCNT_DISPLAY_MODE_GRAPHICS (1 << DISPCNT_DISPLAY_MODE_SHIFT)
 
 /* Unshifted masks for the visible planes in DISPCNT bits 8..12. */
 enum {

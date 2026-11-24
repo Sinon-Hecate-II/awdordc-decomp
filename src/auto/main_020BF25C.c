@@ -69,7 +69,7 @@ return buf+256;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
-void func_020bf798(void) {
+void SaveGameSettings(void) {
     M2C_UNK func_020be718(M2C_UNK *);
     M2C_UNK WriteSaveRecord(s32, M2C_UNK *, s32);
     extern M2C_UNK gGameSettingsSaveBuffer;
@@ -97,10 +97,12 @@ M2C_UNK LoadGameSettings(void) {
     func_020bfa48();
 }
 
-void func_020bf814(s32 a){
-void func_020bf8ac(s32,s32);
-s32 i;u8 *p=(u8 *)&gMovementCostTable;
-i=0;do{if(a==M2C_FIELD(p,u16 *,0x24))func_020bf8ac(i,1);i++;p+=0x9c;}while(i<15);
+/* Unlock every CO whose unlock map (ARMY_DATA_UNLOCK_MAP) is `mapId`, awarding
+ * the COs a completed map unlocks. */
+void UnlockCosForMap(s32 mapId) {
+void SetCoUnlocked(s32,s32);
+s32 i;u8 *army=(u8 *)&gMovementCostTable;
+i=0;do{if(mapId==M2C_FIELD(army,u16 *,ARMY_DATA_UNLOCK_MAP))SetCoUnlocked(i,1);i++;army+=ARMY_DATA_SIZE;}while(i<CO_COUNT);
 }
 
 void func_020bf858(void) {
@@ -124,7 +126,7 @@ extern M2C_UNK gCoUnlocked;
 return (u32)(M2C_FIELD(&gCoUnlocked,u8 *,a)<<31)>>31;
 }
 
-void func_020bf8ac(s32 a,s32 b){extern M2C_UNK gCoUnlocked;u32 old=M2C_FIELD(&gCoUnlocked,u8*,a); b&=1;M2C_FIELD(&gCoUnlocked,u8*,a)=(old&~1)|b;}
+void SetCoUnlocked(s32 a,s32 b){extern M2C_UNK gCoUnlocked;u32 old=M2C_FIELD(&gCoUnlocked,u8*,a); b&=1;M2C_FIELD(&gCoUnlocked,u8*,a)=(old&~1)|b;}
 
 u32 func_020bf8cc(s32 a) {
 extern M2C_UNK gCoUnlocked;
@@ -408,14 +410,14 @@ void func_020c0204(void) {
     M2C_UNK GetLocalizedText(s32);
     M2C_UNK AddRecordValue(M2C_UNK, M2C_UNK);
     M2C_UNK LoadGameSettings();
-    M2C_UNK func_020c4910();
+    M2C_UNK CreateSaveLoadScreen();
     if (func_02076208() != 0) {
         GetLocalizedText(0xC000034D);
         func_02076244();
     }
     LoadGameSettings();
     AddRecordValue(0x27, 1);
-    func_020c4910();
+    CreateSaveLoadScreen();
 }
 
 void func_020c023c(M2C_UNK arg0) {

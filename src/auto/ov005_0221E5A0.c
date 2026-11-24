@@ -87,7 +87,7 @@ void func_ov005_0221e5a0(M2C_UNK parent) {
         s32 tile = 0x270;
         u8 *co = gCoState;
         do {
-            func_02098b94(M2C_FIELD(co, u16 *, 0x18), 0, tile << 5, (u16)i);
+            LoadFaceTextureAndPaletteAt(M2C_FIELD(co, u16 *, 0x18), 0, tile << 5, (u16)i);
             i++;
             tile += 0x18;
             co += 0xc;
@@ -195,8 +195,8 @@ gCur3DSpriteEngine=g3DSpriteEngineSub; InitTextTiles(0,0,0);
 v=GetCurrentMapName(); t=M2C_FIELD(*gCurrentMap,u16 *,0x52a2);
 if(IsCampaignBattleRules()) {
 DrawTilemapNumber(6,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),func_020a8a84(M2C_FIELD(*gCurrentMap,u16 *,0x5142)),0,0);
-func_0209c024(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
-} else func_0209c024(5,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
+DrawTextToTilemap(8,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
+} else DrawTextToTilemap(5,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),v,0,0);
 if(!GetLanguage()) DrawTilemapNumber(23,1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
 else DrawTilemapNumber((s16)(GetDigitCount(t)+24),1,M2C_FIELD(gCur3DSpriteEngine,s32 *,32),t,0,0);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
@@ -323,7 +323,7 @@ void func_ov005_0221f084(void *arg0) {
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    M2C_UNK func_020ab150(void *, M2C_UNK);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void **g3DSpriteEngineSub;
@@ -425,7 +425,7 @@ void func_ov005_0221f084(void *arg0) {
         func_02087d84(M2C_FIELD(temp_r4, void **, 0x64), 1, temp_r6, temp_r5, (u16) temp_r7, (u16) GetUnitSpriteHeight(temp_r4));
     }
     }
-    func_020ab150(M2C_FIELD(arg0, void **, 0x34), 1);
+    CreateUnitSpriteButtonTask(M2C_FIELD(arg0, void **, 0x34), 1);
     func_020aad18(M2C_FIELD(arg0, void **, 0x34));
     Hide3DSprite(M2C_FIELD(arg0, void **, 0x34));
     data_027e01d8 = temp_r11;

@@ -8,6 +8,7 @@
 #define MAP_EDITOR_MODE          0x00 /* u8 0 = terrain palette page, 1 = unit palette page */
 #define MAP_EDITOR_TERRAIN_OWNER 0x01 /* u8 owner (bits 5..7) the terrain brush paints */
 #define MAP_EDITOR_PLAYER_COUNT  0x02 /* u8 players in use (assigned to team 1) */
+#define MAP_EDITOR_TEAM_MIN_PLAYERS 2 /* players in use needed for the map to have a team (MapEditor_PlayerHasTeam(-1)) */
 #define MAP_EDITOR_TERRAIN_KIND  0x03 /* u8 terrain kind (bits 0..4) the terrain brush paints */
 #define MAP_EDITOR_UNIT_COUNT    0x04 /* u8 units placed on the map */
 #define MAP_EDITOR_MODIFIED      0x05 /* u8 nonzero once the map was edited */

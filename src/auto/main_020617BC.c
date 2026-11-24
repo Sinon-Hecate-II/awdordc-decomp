@@ -501,7 +501,16 @@ if(!M2C_FIELD(slist,s32*,0x7c)){M2C_FIELD(slist,s32*,0x7c)=gpiMalloc(4096);if(!M
 return 0;
 }
 #pragma pop
-void SBServerListFreeKeyNames(void *a) {void StringInternRelease(void *,s32);s32 i;for(i=0;i<M2C_FIELD(a,s32 *,0x480);i++)StringInternRelease(a,((s32 *)a)[i+33]);M2C_FIELD(a,s32 *,0x480)=0;}
+/* Release every interned key name the reply parser stored in the list's
+ * SB_SLIST_KEY_NAMES array, then reset the count. */
+void SBServerListFreeKeyNames(void *list) {
+    void StringInternRelease(void *, s32);
+    s32 i;
+
+    for (i = 0; i < M2C_FIELD(list, s32 *, SB_SLIST_KEY_NAME_COUNT); i++)
+        StringInternRelease(list, ((s32 *)((u8 *)list + SB_SLIST_KEY_NAMES))[i]);
+    M2C_FIELD(list, s32 *, SB_SLIST_KEY_NAME_COUNT) = 0;
+}
 
 /* Free the list's key schema (SB_SLIST_KEY_LIST): release the interned name of
  * every SBServerListKey entry, free the schema vector and clear the pointer. */

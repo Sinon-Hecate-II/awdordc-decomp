@@ -55,7 +55,7 @@ static inline s32 Health1911(Unit1911 *u) {s32 h=u->health;return h?Divide(h-1,1
  * on the map. For each living unit (value != 0) of the same kind as the selected
  * unit, not already at full health (h != 10), trigger the heal routine
  * (SetMapCursor) at that tile when the combined health clears one of the
- * thresholds: the unit's cell attribute is a healable type (func_ov000_021a91d0)
+ * thresholds: the unit's cell attribute is a healable type (IsRepairPropertyKind)
  * and h+cur<=15; or cur<7 and h+cur<=12; or h+cur<=10. opt_common_subs is
  * disabled because the three heal checks intentionally duplicate the call. */
 void func_ov000_02190f74(void){
@@ -66,7 +66,7 @@ void BuildUnitMoveRange(void *);
 s32 IsCurrentPlayerUnit(s16);
 s32 Divide(s32,s32);
 void SetMapCursor(s16,s16,s32,s32,s32);
-s32 func_ov000_021a91d0(u8);
+s32 IsRepairPropertyKind(u8);
 s32 id; Unit1911 *unit; s32 x,y,h,cur; Map1911 *map;
 BuildUnitMoveRange(M2C_FIELD(*gCurrentMap,void **,0x52d0));
 for(y=0;y<M2C_FIELD(*gCurrentMap,u16 *,0x5146);y++){
@@ -83,7 +83,7 @@ h=Health1911(unit);
 if(h==10)continue;
 cur=Health1911(((Map1911 *)*gCurrentMap)->selected);
 map=*gCurrentMap;
-if(func_ov000_021a91d0(M2C_FIELD((u32)map+M2C_FIELD(unit,u8 *,1)+map->rows[M2C_FIELD(unit,u8 *,2)],u8 *,0x1420))&&h+cur<=15)
+if(IsRepairPropertyKind(M2C_FIELD((u32)map+M2C_FIELD(unit,u8 *,1)+map->rows[M2C_FIELD(unit,u8 *,2)],u8 *,0x1420))&&h+cur<=15)
 SetMapCursor((s16)x,(s16)y,9,0,0);
 if(cur<7&&h+cur<=12)SetMapCursor((s16)x,(s16)y,9,0,0);
 if(h+cur<=10)SetMapCursor((s16)x,(s16)y,9,0,0);

@@ -11,7 +11,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
     M2C_UNK func_020aad18(s32);
     u32 GetUnitSpriteWidth(void *);
     u32 GetUnitSpriteHeight(void *);
-    M2C_UNK func_020ab150(void *, M2C_UNK);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
     void *func_020ab1c4(M2C_UNK);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
@@ -38,7 +38,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[0], 8);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[0], 8);
 
     data_ov007_02221a50[1] = (M2C_UNK)func_020ab1c4(arg0);
     InitUnitSprite((void *)data_ov007_02221a50[1], 6, 0x160, 3, 0);
@@ -53,7 +53,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[1], 256);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[1], 256);
 
     data_ov007_02221a50[2] = (M2C_UNK)func_020ab1c4(arg0);
     InitUnitSprite((void *)data_ov007_02221a50[2], 20, 0x170, 3, 0);
@@ -68,7 +68,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[2], 4);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[2], 4);
 
     data_ov007_02221a50[3] = (M2C_UNK)func_020ab1c4(arg0);
     InitUnitSprite((void *)data_ov007_02221a50[3], 53, 0x180, 3, 0);
@@ -83,7 +83,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[3], 1);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[3], 1);
     M2C_FIELD((void *)data_ov007_02221a50[3], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[4] = (M2C_UNK)func_020ab1c4(arg0);
@@ -99,7 +99,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[4], 2);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[4], 2);
     M2C_FIELD((void *)data_ov007_02221a50[4], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[5] = (M2C_UNK)func_020ab1c4(arg0);
@@ -115,7 +115,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[5], 1024);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[5], 1024);
     M2C_FIELD((void *)data_ov007_02221a50[5], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[6] = (M2C_UNK)func_020ab1c4(arg0);
@@ -131,7 +131,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[6], 2048);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[6], 2048);
     M2C_FIELD((void *)data_ov007_02221a50[6], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[7] = (M2C_UNK)func_020ab1c4(arg0);
@@ -147,7 +147,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[7], 512);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[7], 512);
 
     data_ov007_02221a50[8] = (M2C_UNK)func_020ab1c4(arg0);
     InitUnitSprite((void *)data_ov007_02221a50[8], 58, 0x1d0, 3, 0);
@@ -162,7 +162,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[8], 1);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[8], 1);
     M2C_FIELD((void *)data_ov007_02221a50[8], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[9] = (M2C_UNK)func_020ab1c4(arg0);
@@ -178,7 +178,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[9], 2);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[9], 2);
     M2C_FIELD((void *)data_ov007_02221a50[9], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[10] = (M2C_UNK)func_020ab1c4(arg0);
@@ -194,7 +194,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[10], 1024);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[10], 1024);
     M2C_FIELD((void *)data_ov007_02221a50[10], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[11] = (M2C_UNK)func_020ab1c4(arg0);
@@ -210,7 +210,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[11], 2048);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[11], 2048);
     M2C_FIELD((void *)data_ov007_02221a50[11], s8 *, 0x5a) = -1;
 
     data_ov007_02221a50[12] = (M2C_UNK)func_020ab1c4(arg0);
@@ -226,7 +226,7 @@ void func_ov007_02212200(M2C_UNK arg0) {
             func_02087d84(M2C_FIELD(sprite, void **, 0x64), 1, x, y, (u16)width, (u16)height);
         }
     }
-    func_020ab150((void *)data_ov007_02221a50[12], 512);
+    CreateUnitSpriteButtonTask((void *)data_ov007_02221a50[12], 512);
 
     sprites = data_ov007_02221a50;
     i = 0;

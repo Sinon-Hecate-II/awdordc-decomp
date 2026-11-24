@@ -225,7 +225,7 @@ void func_0209f220(void) {
     M2C_FIELD(g3DSpriteBankSub, s8 *, 0x50) = 0;
 }
 
-void func_0209f238(void){extern void **gCurrentMap;void func_ov000_0216a97c(s32,s32);u8 *p=(u8 *)*gCurrentMap+0x6000;func_ov000_0216a97c(M2C_FIELD(p,s32 *,0xeb8),M2C_FIELD(p,s32 *,0xed8));}
+void func_0209f238(void){extern void **gCurrentMap;void RunBattleEvent(s32,s32);u8 *p=(u8 *)*gCurrentMap+0x6000;RunBattleEvent(M2C_FIELD(p,s32 *,0xeb8),M2C_FIELD(p,s32 *,0xed8));}
 
 void func_0209f260(void) {
     M2C_UNK FadeMusicToHalfVolume();
@@ -279,9 +279,9 @@ void BattlePreviewAttackTile(void *preview) {
 }
 
 void func_0209f360(void) {
-    M2C_UNK func_ov000_0216a9bc(s32);
+    M2C_UNK RunCursorUnitEvent(s32);
     extern void **gCurrentMap;
-    func_ov000_0216a9bc(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
+    RunCursorUnitEvent(M2C_FIELD(*gCurrentMap, s32 *, 0x52D0));
 }
 
 void func_0209f384(void) {
@@ -466,7 +466,7 @@ void ResetPlayerSetupTables(void) {
     *cfg = bits;
 }
 
-void func_0209f858(void) {
+void ResetBattleEndState(void) {
     extern M2C_UNK gBattleEndState;
     M2C_FIELD(&gBattleEndState, s8 *, 0) = 0;
     M2C_FIELD(&gBattleEndState, s8 *, 1) = 0;
@@ -474,7 +474,18 @@ void func_0209f858(void) {
     M2C_FIELD(&gBattleEndState, s8 *, 3) = 1;
 }
 
-void func_0209f87c(void){extern MapConfigRecord gMapConfig;extern void **gCurrentMap;gMapConfig.flags=(gMapConfig.flags&~7)|1;M2C_FIELD(*gCurrentMap,u16 *,0x5142)=1;ResetPlayerSetupTables();func_0209f858();}
+/* Reset the map config record to its free-play defaults: mode 1 in
+ * gMapConfig.flags, the default map id, the player setup tables and the
+ * battle-end record. */
+void ResetMapConfig(void) {
+    extern MapConfigRecord gMapConfig;
+    extern void **gCurrentMap;
+
+    gMapConfig.flags = (gMapConfig.flags & ~7) | 1;
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) = 1;
+    ResetPlayerSetupTables();
+    ResetBattleEndState();
+}
 
 void func_0209f8c0(void) {
     extern M2C_UNK gTargetList;
@@ -502,5 +513,16 @@ void AppendTargetEntry(s32 x, s32 y, s32 id, s32 value) {
     list->count++;
 }
 
-s32 func_0209f944(s32 a,s32 b){extern M2C_UNK gTargetList;Unk09List *s=(Unk09List *)&gTargetList;Unk09Position *p=s->p;s32 i;s32 n=s->count;for(i=0;i<n;i++,p++){if(a==p->c&&b==p->d)return 1;}return 0;}
+/* Return 1 when the battle target list already holds the cell (x, y). */
+s32 IsTargetCellListed(s32 x, s32 y) {
+    extern M2C_UNK gTargetList;
+    MapTargetList *list = (MapTargetList *)&gTargetList;
+    MapTargetEntry *entry = list->entries;
+    s32 i;
+    s32 count = list->count;
+    for (i = 0; i < count; i++, entry++) {
+        if (x == entry->x && y == entry->y) return 1;
+    }
+    return 0;
+}
 

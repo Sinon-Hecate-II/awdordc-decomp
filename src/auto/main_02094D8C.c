@@ -1,6 +1,12 @@
 /* 17 functions from 0x02094D8C to 0x02095C90 (main), found by ds-decomp. */
 #include "common.h"
 #include "ds3dsprite.h"
+
+/* Frame countdown of the scene-script wait sprite: func_0209544c creates the
+ * sprite (class data_02102a88) with it and the sprite's update callback steps it,
+ * resuming the script when it reaches 0 or the player skips the dialog. */
+#define SCRIPT_WAIT_FRAMES 0x6C /* s16 frames left to wait */
+
 typedef struct SpriteControl094df0 { u16 mode:3; u16 rest:13; } SpriteControl094df0;
 typedef struct SpriteBuffer094df0 { u8 bytes[1]; } SpriteBuffer094df0;
 static inline u8 IsMain094df0(void) { extern s32 gCur3DSpriteEngine,g3DSpriteEngineMain; u8 value; if(gCur3DSpriteEngine==g3DSpriteEngineMain)value=1;else value=0; return value; }
@@ -15,16 +21,19 @@ void func_02094d8c(M2C_UNK arg0) {
     HighlightScenePanelFace(arg0);
 }
 
-void func_02094dac(void) {
+/* Clears the current scene-panel highlight: with the single-panel layout (fewer
+ * than two 3D sprites) it clears the panel highlight, with the two-face layout
+ * (exactly two 3D sprites) it clears both faces. */
+void ClearScenePanelHighlight(void) {
     s32 Get3DSpriteCount();
     M2C_UNK HighlightScenePanel(M2C_UNK);
-    s32 temp_r0;
+    s32 spriteCount;
 
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    temp_r0 = Get3DSpriteCount();
-    switch (temp_r0) {                              /* irregular */
+    spriteCount = Get3DSpriteCount();
+    switch (spriteCount) {                          /* irregular */
     case 0:
     case 1:
         HighlightScenePanel(-1);
@@ -192,21 +201,23 @@ u8 func_020953e8(void) {
     return var_r0;
 }
 
-void func_0209540c(void *arg0) {
+/* Scene-script wait sprite's update: resume the script after SCRIPT_WAIT_FRAMES
+ * frames, or at once when the player skips the dialog. */
+void WaitForScriptFramesOrSkip(void *sprite) {
     M2C_UNK Sprite_ResumeAnimation(void *);
     s32 TryStartDialogSkip();
-    s16 temp_r1;
+    s16 framesLeft;
 
     if (TryStartDialogSkip() != 0) {
-        Sprite_ResumeAnimation(arg0);
+        Sprite_ResumeAnimation(sprite);
         return;
     }
-    temp_r1 = M2C_FIELD(arg0, s16 *, 0x6C);
-    M2C_FIELD(arg0, s16 *, 0x6C) = (s16) (temp_r1 - 1);
-    if (temp_r1 != 0) {
+    framesLeft = M2C_FIELD(sprite, s16 *, SCRIPT_WAIT_FRAMES);
+    M2C_FIELD(sprite, s16 *, SCRIPT_WAIT_FRAMES) = (s16) (framesLeft - 1);
+    if (framesLeft != 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(sprite);
 }
 
 void func_0209544c(s16 arg0) {

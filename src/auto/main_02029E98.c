@@ -267,14 +267,14 @@ void func_0202a45c(void) {
     func_02029f14();
 }
 
-s32 func_0202a468(void *arg0, s32 arg1, s32 arg2) {
+s32 AllocFromExpHeap(void *arg0, s32 arg1, s32 arg2) {
     if (arg1 == 0) arg1 = 1;
     arg1 = (arg1 + 3) & ~3;
     if (arg2 >= 0) return func_0202a1d0(arg0, arg1, arg2);
     return func_0202a284(arg0, arg1, -arg2);
 }
 
-void func_0202a498(s32 arg0, s32 arg1) {
+void FreeExpHeapBlock(s32 arg0, s32 arg1) {
     void GetBlockRange(void *, void *);
     void *UnlinkBlock(void *, void *);
     s32 func_0202a334(void *, HeapRange *);
@@ -297,13 +297,16 @@ M2C_FIELD(arg0,u16 *,0x36)=M2C_FIELD(arg0,u16 *,0x36)|(arg1&1);
 return bit;
 }
 #pragma opt_propagation reset
-void *func_0202a4fc(void *arg0, M2C_UNK arg1, s32 arg2) {
+/* Initialise a frame heap ('FRMH') over the memory the caller hands in: set up its
+ * heap header, then point the frame's head and tail at the start and end of its
+ * area and clear its recorded-state list. */
+void *InitFrameHeapArea(void *heap, M2C_UNK endAddress, s32 attribute) {
     M2C_UNK InitHeapHead();
-    InitHeapHead(arg0, 0x46524D48, arg0 + 0x30, arg1, arg2);
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x18);
-    M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x1C);
-    M2C_FIELD(arg0, s32 *, 0x2C) = 0;
-    return arg0;
+    InitHeapHead(heap, HEAP_SIGNATURE_FRM, heap + FRAME_HEAP_DATA, endAddress, attribute);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_HEAD) = (s32) M2C_FIELD(heap, s32 *, HEAP_AREA_START);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_TAIL) = (s32) M2C_FIELD(heap, s32 *, HEAP_AREA_END);
+    M2C_FIELD(heap, s32 *, FRAME_HEAP_STATE_LIST) = 0;
+    return heap;
 }
 
 /* Frame-heap allocation from the front: align the heap's head pointer up to
@@ -374,11 +377,11 @@ void func_0202a60c(void *arg0) {
 }
 
 void *CreateFrameHeap(u32 arg0, u32 arg1, s32 arg2) {
-    void *func_0202a4fc(void *, M2C_UNK, s32);
+    void *InitFrameHeapArea(void *, M2C_UNK, s32);
     u32 end = (arg1 + arg0) & ~3;
     u32 start = (arg0 + 3) & ~3;
     if (start > end || end - start < 0x30) return NULL;
-    return func_0202a4fc((void *)start, (M2C_UNK)end, arg2);
+    return InitFrameHeapArea((void *)start, (M2C_UNK)end, arg2);
 }
 
 void DestroyFrameHeap(void) {
@@ -473,14 +476,16 @@ loop_4:
     return 1;
 }
 
-s32 func_0202a7b4(void *arg0) {
-    if (M2C_FIELD(arg0, s32 *, 0) != 0x4352414E) {
+/* True when `header` starts with a NARC archive header: the "NARC" magic, the
+ * little-endian byte-order mark and version 0x0100. */
+s32 IsValidNarcHeader(void *header) {
+    if (M2C_FIELD(header, s32 *, 0) != NARC_MAGIC) {
         return 0;
     }
-    if (M2C_FIELD(arg0, u16 *, 4) != 0xFFFE) {
+    if (M2C_FIELD(header, u16 *, 4) != NARC_BYTE_ORDER) {
         return 0;
     }
-    if (M2C_FIELD(arg0, u16 *, 6) == 0x100) {
+    if (M2C_FIELD(header, u16 *, 6) == NARC_VERSION) {
         return 1;
     }
     return 0;
@@ -507,7 +512,7 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     fat = NULL;
     fnt = NULL;
     image = NULL;
-    if (func_0202a7b4(data) == 0) {
+    if (IsValidNarcHeader(data) == 0) {
         return 0;
     }
     blockCount = M2C_FIELD(data, u16 *, 0xE);
@@ -546,7 +551,7 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     return 0;
 }
 
-s32 func_0202a940(M2C_UNK arg0) {
+s32 CloseArchive(M2C_UNK arg0) {
     M2C_UNK ReleaseArchiveName(M2C_UNK);
     s32 func_0200b32c();
     if (func_0200b32c() == 0) {
@@ -624,63 +629,69 @@ void func_0202aa58(void) {
     func_0202bc7c();
 }
 
-s32 Sound_ReserveChannels(s32 arg0) {
+/* Reserve the hardware channels in `channelMask` for the game: succeed trivially
+ * when none are asked for, fail when any is already reserved, otherwise tell the
+ * sound driver (its ARM7 side) to reserve them and record the mask as reserved. */
+s32 Sound_ReserveChannels(s32 channelMask) {
  M2C_UNK func_02008dbc(M2C_UNK, M2C_UNK);
- extern M2C_UNK data_0213b2a0;
- if (!arg0) return 1;
- if (arg0 & M2C_FIELD(&data_0213b2a0, s32 *, 8)) return 0;
- func_02008dbc(arg0, 0);
- { s32 v = M2C_FIELD(&data_0213b2a0, s32 *, 8); arg0 = v | (u32)arg0;
- M2C_FIELD(&data_0213b2a0, s32 *, 8) = arg0; }
+ extern M2C_UNK gSoundChannelMasks;
+ if (!channelMask) return 1;
+ if (channelMask & M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED)) return 0;
+ func_02008dbc(channelMask, 0);
+ { s32 v = M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED); channelMask = v | (u32)channelMask;
+ M2C_FIELD(&gSoundChannelMasks, s32 *, SOUND_CHANNEL_MASK_RESERVED) = channelMask; }
  return 1;
 }
 
 void func_0202aaac(s32 arg0) {
     M2C_UNK func_02008ddc(M2C_UNK, M2C_UNK);
-    extern M2C_UNK data_0213b2a0;
+    extern M2C_UNK gSoundChannelMasks;
     M2C_UNK *g;
     if (arg0 == 0) {
         return;
     }
     func_02008ddc(arg0, 0);
-    g = &data_0213b2a0;
+    g = &gSoundChannelMasks;
     g[2] = g[2] & ~arg0;
 }
 
 void func_0202aadc(s32 arg0) {
-    extern s32 data_0213b2a0;
-    data_0213b2a0 &= ~arg0;
+    extern s32 gSoundChannelMasks;
+    gSoundChannelMasks &= ~arg0;
 }
 
 #pragma push
 #pragma opt_common_subs off
+/* Hand out the first free hardware channel (the lowest clear bit of the
+ * allocated-channel mask), mark it allocated and return its index, or -1 when
+ * none of the eight channels is free. */
 s32 Sound_AllocChannel(void) {
- extern M2C_UNK data_0213b2a0;
- s32 mask = 1;
- s32 i;
- for (i=0; i<8; i++, mask <<= 1) {
-  if (!(M2C_FIELD(&data_0213b2a0, u32 *, 4) & mask)) {
-   s32 v = M2C_FIELD(&data_0213b2a0, u32 *, 4);
-   mask = v | (u32)mask;
-   M2C_FIELD(&data_0213b2a0, u32 *, 4) = mask;
-   return i;
-  }
- }
- return -1;
+    extern M2C_UNK gSoundChannelMasks;
+    s32 mask = 1;
+    s32 channel;
+    for (channel = 0; channel < 8; channel++, mask <<= 1) {
+        if (!(M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_ALLOC) & mask)) {
+            s32 inUse = M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_ALLOC);
+            mask = inUse | (u32)mask;
+            M2C_FIELD(&gSoundChannelMasks, u32 *, SOUND_CHANNEL_MASK_ALLOC) = mask;
+            return channel;
+        }
+    }
+    return -1;
 }
 #pragma pop
 void func_0202ab40(s32 arg0) {
-    extern M2C_UNK data_0213b2a0;
-    M2C_UNK *g = &data_0213b2a0;
+    extern M2C_UNK gSoundChannelMasks;
+    M2C_UNK *g = &gSoundChannelMasks;
     M2C_UNK m = 1;
     g[1] = g[1] & ~(m << arg0);
 }
 
 void func_0202ab60(void) {
-    extern M2C_UNK data_0213b2a0;
-    M2C_FIELD(&data_0213b2a0, u32 *, 8) = 0;
-    M2C_FIELD(&data_0213b2a0, u32 *, 0) = 0;
-    M2C_FIELD(&data_0213b2a0, u32 *, 4) = 0;
+    extern M2C_UNK gSoundChannelMasks;
+    M2C_FIELD(&gSoundChannelMasks, u32 *, 8) = 0;
+    M2C_FIELD(&gSoundChannelMasks, u32 *, 0) = 0;
+    M2C_FIELD(&gSoundChannelMasks, u32 *, 4) = 0;
 }
 
 void func_0202ab7c(s32 arg0, s8 arg1) {

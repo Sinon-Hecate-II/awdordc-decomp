@@ -204,14 +204,14 @@ void ResetGameState(void) {
     M2C_UNK ResetTextState();
     M2C_UNK ResetDialogUI();
     M2C_UNK func_020960b4();
-    M2C_UNK func_0209f87c();
+    M2C_UNK ResetMapConfig();
     M2C_UNK func_020abf94();
     M2C_UNK ApplyScreenMode(M2C_UNK);
     M2C_UNK ResetSpriteSlots();
     M2C_UNK InitDefaultGameSettings();
     M2C_UNK ClearCampaignMapHeaders();
     M2C_UNK func_020d3cec();
-    M2C_UNK func_ov000_02169368();
+    M2C_UNK ClearUnitMoveSlots();
     extern s32 g3DSpriteEngineSub;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
@@ -242,8 +242,8 @@ void ResetGameState(void) {
     gCur3DSpriteEngine = savedEngine;
     ResetCurrentMapBlocks();
     func_020d3cec();
-    func_0209f87c();
-    func_ov000_02169368();
+    ResetMapConfig();
+    ClearUnitMoveSlots();
     func_020960b4();
 }
 
@@ -272,7 +272,7 @@ header[0]&=~0xff000000;
 }
 
 #pragma peephole off
-void func_020e4870(s32 arg0) {
+void StoreSaveSlotProgress(s32 arg0) {
     extern M2C_UNK data_0215d9b8;
     extern M2C_UNK gSaveSlotSummary;
     extern void **gCurrentMap;
@@ -387,10 +387,12 @@ void func_020e4b24(void) {
 
 u8 func_020e4b28(s32 a){extern u8 data_0215dba4[];return ((u32)(M2C_FIELD(data_0215dba4,u32 *,a*0x118)<<16)>>24)!=0;}
 
-s32 func_020e4b54(void) {
+/* True on the campaign's final battle (story map MAP_ID_STORY_FINAL) while the
+ * battle runs in the default mode (the low three bits of gMapConfig clear). */
+s32 IsFinalCampaignMap(void) {
     extern u16 gMapConfig;
     extern void **gCurrentMap;
-    if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF) && (M2C_FIELD(*gCurrentMap, u16 *, 0x5142) == 0xBA)) {
+    if (!(((u32) (gMapConfig << 0x1D) >> 0x1D) & 0xFF) && (M2C_FIELD(*gCurrentMap, u16 *, MAP_ID) == MAP_ID_STORY_FINAL)) {
         return 1;
     }
     return 0;
@@ -481,15 +483,18 @@ accept:
 }
 
 #pragma scheduling off
-s32 func_020e4e44(void *arg0) {
- s16 count=M2C_FIELD(arg0,s16 *,0x3e);
- s32 done;
- if(count>0)M2C_FIELD(arg0,s16 *,0x3e)=count-1;
- if(M2C_FIELD(arg0,s16 *,0x3e)==0)done=1;else done=0;
- if(!(done&255))return 0;
- M2C_FIELD(arg0,u8 *,0x3c) &= ~2;
- M2C_FIELD(arg0,u8 *,0x3c) |= 1;
- return 1;
+/* Tick the mic test's measurement timer: decrement it (not below zero) and, when
+ * it reaches zero, end the running measurement by clearing its flag and setting
+ * the "measurement requested" flag.  Returns 1 once the window ended, else 0. */
+s32 TickMicTestTimer(MicTestScreen *screen) {
+    s16 count = M2C_FIELD(screen, s16 *, 0x3e);
+    s32 expired;
+    if (count > 0) M2C_FIELD(screen, s16 *, 0x3e) = count - 1;
+    if (M2C_FIELD(screen, s16 *, 0x3e) == 0) expired = 1; else expired = 0;
+    if (!(expired & 255)) return 0;
+    M2C_FIELD(screen, u8 *, 0x3c) &= ~MIC_TEST_FLAG_RUNNING;
+    M2C_FIELD(screen, u8 *, 0x3c) |= MIC_TEST_FLAG_START;
+    return 1;
 }
 #pragma scheduling reset
 void func_020e4e8c(void *arg0) {

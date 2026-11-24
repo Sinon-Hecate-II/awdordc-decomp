@@ -70,7 +70,7 @@ s32 HeapAllocBlock(s32 arg0) {
 s32 func_020e3580(s32, s32);
 #pragma push
 #pragma opt_global_reg off
-s32 func_020e34f4(s32 arg0) {
+s32 HeapAllocBlockTail(s32 arg0) {
  s32 func_020e3580(s32,s32);
  s32 s;
  volatile u32 saved;
@@ -87,7 +87,7 @@ s32 func_020e34f4(s32 arg0) {
 }
 #pragma pop
 s32 func_020e352c(s32 arg0, s32 arg1) {
-    M2C_UNK func_0202a468(s32, s32, s32);
+    M2C_UNK AllocFromExpHeap(s32, s32, s32);
     extern s32 gGameHeap;
     volatile u32 saved;
     u32 temp;
@@ -96,7 +96,7 @@ s32 func_020e352c(s32 arg0, s32 arg1) {
     *(volatile u16 *)0x04000208 = 0;
     p = (void *)gGameHeap;
     saved = temp;
-    func_0202a468((s32)p, arg0, arg1);
+    AllocFromExpHeap((s32)p, arg0, arg1);
     {
         u32 s = saved;
         (void)*(volatile u16 *)0x04000208;
@@ -116,7 +116,7 @@ saved=temp;
 {
     s32 direction = -arg1;
     s32 block = gGameHeap;
-    result = func_0202a468(block, arg0, direction);
+    result = AllocFromExpHeap(block, arg0, direction);
 }
 {
     volatile u16 *ime = (volatile u16 *)0x04000208;
@@ -129,56 +129,70 @@ return result;
 #pragma push
 #pragma opt_propagation off
 void HeapFreeBlock(s32 arg0) {
-void func_0202a498(s32,s32);
+void FreeExpHeapBlock(s32,s32);
 extern s32 gGameHeap;
 volatile u32 saved;
 u32 temp;
 temp=*(volatile u16*)0x04000208;
 *(volatile u16*)0x04000208=0;
 saved=temp;
-func_0202a498(gGameHeap,arg0);
+FreeExpHeapBlock(gGameHeap,arg0);
 temp=saved; arg0=temp;
 (void)*(volatile u16*)0x04000208;
 *(volatile u16*)0x04000208=arg0;
 }
 #pragma pop
-void func_020e3610(M2C_UNK arg0) {
+/* Wait callback of the counted online-player list: resume the list's animation once
+ * the profile sync is overdue, or straight away when the network session has failed
+ * or has already handled a result. */
+void ResumeOnlineListWhenProfileSyncOverdue(M2C_UNK list) {
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
     s32 IsSessionInError();
-    s32 func_0208477c();
+    s32 IsSessionResultHandled();
     s32 IsProfileSyncOverdue();
-    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
-        Sprite_ResumeAnimation(arg0);
+
+    if ((IsSessionInError() != 0) || (IsSessionResultHandled() != 0)) {
+        Sprite_ResumeAnimation(list);
         return;
     }
     if (IsProfileSyncOverdue() == 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(list);
 }
 
-void func_020e3654(M2C_UNK arg0) {
+/* Wait callback of the counted online-player list: resume the list's animation once
+ * the web GET request's server-time deadline passes, or straight away when the
+ * network session has failed or has already handled a result. */
+void ResumeOnlineListWhenWebGetTimesOut(M2C_UNK list) {
+    M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
+    s32 IsSessionInError();
+    s32 IsSessionResultHandled();
     s32 HasWebGetRequestTimedOut();
-    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
-        Sprite_ResumeAnimation(arg0);
+
+    if ((IsSessionInError() != 0) || (IsSessionResultHandled() != 0)) {
+        Sprite_ResumeAnimation(list);
         return;
     }
     if (HasWebGetRequestTimedOut() == 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(list);
 }
 
-void func_020e3698(M2C_UNK arg0) {
+/* Wait callback of the record-sync online-player list: like
+ * ResumeOnlineListWhenProfileSyncOverdue, but polls the alternate profile-sync check
+ * used while the player records are being synchronised. */
+void ResumeOnlineListWhenProfileSyncOverdueAlt(M2C_UNK list) {
     s32 IsProfileSyncOverdueAlt();
-    if ((IsSessionInError() != 0) || (func_0208477c() != 0)) {
-        Sprite_ResumeAnimation(arg0);
+    if ((IsSessionInError() != 0) || (IsSessionResultHandled() != 0)) {
+        Sprite_ResumeAnimation(list);
         return;
     }
     if (IsProfileSyncOverdueAlt() == 0) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(list);
 }
 
 void func_020e36dc(void) {
@@ -301,7 +315,7 @@ void RequestOnlinePlayerListIds(void *list) {
  * every player record in the array.  Returns the node, or NULL on failure. */
 void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
     void *CreateSpriteForOwner(void *, s32);
-    s32 func_020e34f4(s32);
+    s32 HeapAllocBlockTail(s32);
     s32 GetOnlineLocalPlayerId(void);
     void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
@@ -320,7 +334,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
         M2C_FIELD(node, s32 *, LIST_COUNT) = 1;
         M2C_FIELD(node, s32 *, LIST_LIMIT) = 0;
         M2C_FIELD(node, s32 *, LIST_CAPACITY) = unk34;
-        M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
+        M2C_FIELD(node, s32 *, LIST_IDS) = HeapAllocBlockTail(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
         playerId = GetOnlineLocalPlayerId();
         MIi_CpuCopy32((s32)&playerId, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
@@ -621,7 +635,7 @@ void RequestOnlinePlayersByIds(void *list) {
  * or NULL when the sprite cannot be created. */
 void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
-    s32 func_020e34f4(s32);
+    s32 HeapAllocBlockTail(s32);
     void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 gOnlinePlayerListWithIdsClass;
@@ -638,7 +652,7 @@ void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s
         M2C_FIELD(node, s32 *, LIST_COUNT) = *countPtr;
         M2C_FIELD(node, s32 *, LIST_LIMIT) = 0;
         M2C_FIELD(node, s32 *, LIST_CAPACITY) = (s32)countPtr;
-        M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
+        M2C_FIELD(node, s32 *, LIST_IDS) = HeapAllocBlockTail(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
         MIi_CpuCopy32(ids, (void *)M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
@@ -683,7 +697,7 @@ void SyncOnlinePlayerRecord(void *list) {
  * the sprite cannot be created. */
 void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
-    s32 func_020e34f4(s32);
+    s32 HeapAllocBlockTail(s32);
     void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d8a8;
@@ -699,7 +713,7 @@ void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
         M2C_FIELD(node, s32 *, LIST_FIRST) = 0;
         M2C_FIELD(node, s32 *, LIST_COUNT) = 1;
         M2C_FIELD(node, s32 *, 0x40) = result;
-        M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
+        M2C_FIELD(node, s32 *, LIST_IDS) = HeapAllocBlockTail(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = flags;
         MIi_CpuCopy32((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
@@ -715,7 +729,7 @@ void *func_020e40e0(s32 id, s32 flags, s32 result, s32 owner) {
  * when the sprite cannot be created. */
 void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
-    s32 func_020e34f4(s32);
+    s32 HeapAllocBlockTail(s32);
     void MIi_CpuCopy32(s32, void *, s32);
     void CpuFill(s32, s32, s32);
     extern s32 data_0212d7d8;
@@ -731,7 +745,7 @@ void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
         M2C_FIELD(node, s32 *, LIST_FIRST) = 0;
         M2C_FIELD(node, s32 *, LIST_COUNT) = 1;
         M2C_FIELD(node, s32 *, 0x40) = result;
-        M2C_FIELD(node, s32 *, LIST_IDS) = func_020e34f4(0x100);
+        M2C_FIELD(node, s32 *, LIST_IDS) = HeapAllocBlockTail(0x100);
         M2C_FIELD(node, s32 *, LIST_UNK48) = flags;
         MIi_CpuCopy32((s32) &idCopy, (void *) M2C_FIELD(node, s32 *, LIST_IDS), M2C_FIELD(node, s32 *, LIST_COUNT) * 4);
         count = M2C_FIELD(node, s32 *, LIST_COUNT);
@@ -781,23 +795,26 @@ void RequestOnlinePlayerCount(void *list) {
     SetSpriteAnimation(list, 1);
 }
 
-void func_020e42bc(s32 arg0) {
+/* Create an online-player list node with no player records yet: install the
+ * player-list vtable and clear every list field, leaving the entries to be
+ * fetched by the node's class (count, by-ids or upload request). */
+void CreateOnlinePlayerListEmptyNode(s32 owner) {
     void *CreateSpriteForOwner(void *, s32);
-    extern s32 data_0212d748;
+    extern s32 gOnlinePlayerListEmptyClass;
     extern s32 gOnlinePlayerListVtable;
-    void *temp_r0;
+    void *node;
 
-    temp_r0 = CreateSpriteForOwner(&data_0212d748, arg0);
-    if (temp_r0 == NULL) {
+    node = CreateSpriteForOwner(&gOnlinePlayerListEmptyClass, owner);
+    if (node == NULL) {
         return;
     }
-    M2C_FIELD(temp_r0, s32 **, 0) = &gOnlinePlayerListVtable;
-    M2C_FIELD(temp_r0, s32 *, 0x34) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x3c) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x40) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x44) = 0;
-    M2C_FIELD(temp_r0, s32 *, 0x48) = 0;
+    M2C_FIELD(node, s32 **, LIST_VTABLE) = &gOnlinePlayerListVtable;
+    M2C_FIELD(node, s32 *, LIST_FIRST) = 0;
+    M2C_FIELD(node, s32 *, LIST_COUNT) = 0;
+    M2C_FIELD(node, s32 *, LIST_LIMIT) = 0;
+    M2C_FIELD(node, s32 *, LIST_CAPACITY) = 0;
+    M2C_FIELD(node, s32 *, LIST_IDS) = 0;
+    M2C_FIELD(node, s32 *, LIST_UNK48) = 0;
 }
 
 void func_020e4304(void) {
@@ -832,10 +849,10 @@ void *func_020e434c(void *arg0) {
 void func_020e4378(void) {
     M2C_UNK func_020022d8();
     M2C_UNK GX_InitDisplay();
-    M2C_UNK func_02002490();
+    M2C_UNK GX_TurnOffDisplay();
     M2C_UNK func_02003104(s32);
     M2C_UNK func_020035f8();
-    M2C_UNK func_02006858();
+    M2C_UNK InitSystemServices();
     M2C_UNK func_02006c58();
     M2C_UNK func_02006c6c();
     M2C_UNK func_02006c7c();
@@ -847,13 +864,13 @@ void func_020e4378(void) {
     u16 *p;
     u16 *q;
     func_02006c58();
-    func_02006858();
+    InitSystemServices();
     InitSystemTick();
     func_02007140();
     func_020022d8();
     gGxDmaChannel = -1;
     GX_InitDisplay();
-    func_02002490();
+    GX_TurnOffDisplay();
     *(s32 *)0x04001000 &= ~0x10000;
     Arm7CommandInit();
     func_02003104(0x1FF);

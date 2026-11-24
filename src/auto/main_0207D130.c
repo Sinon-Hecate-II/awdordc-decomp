@@ -260,7 +260,7 @@ void BuildMapViewProjection(s32 *matrix, s32 *zoom, s32 *offset) {
     REG_GX_MTX_STORE = 0;
 }
 
-void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void UploadTextureBank(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     M2C_UNK GX_BeginLoadTex();
     M2C_UNK LoadTextureBankBlock(M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK GX_EndLoadTex();
@@ -273,9 +273,9 @@ void func_0207da34(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
  * `offset`: unaligned ranges are written halfword by halfword, aligned ones with
  * the palette's word copy. */
 void CopyMainOBJExtPalette(s32 src, s32 offset, s32 size) {
-    M2C_UNK func_02004d3c();
+    M2C_UNK GX_BeginLoadTexPltt();
     M2C_UNK GX_LoadTexPltt(s32, s32, s32);
-    M2C_UNK func_02004ddc();
+    M2C_UNK GX_EndLoadTexPltt();
     M2C_UNK CopyMainOBJExtPaletteHalfword(s32, s32);
     s32 remaining;
     s32 vramOffset;
@@ -296,9 +296,9 @@ void CopyMainOBJExtPalette(s32 src, s32 offset, s32 size) {
         } while (remaining != 0);
         return;
     }
-    func_02004d3c();
+    GX_BeginLoadTexPltt();
     GX_LoadTexPltt(source, vramOffset, remaining);
-    func_02004ddc();
+    GX_EndLoadTexPltt();
 }
 
 /* Copy one halfword from `src` into the main-engine OBJ extended palette at byte

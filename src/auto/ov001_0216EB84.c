@@ -32,7 +32,7 @@ void *WhPacket_AddField(u8 *field, s32 tag, void *data, s32 length) {
 
 s32 func_ov001_0216eca8(void *a,s32 b,void *c,s32 d){s32 n;M2C_FIELD(a,u8 *,0)=0;M2C_FIELD(a,u8 *,1)=0;M2C_FIELD(a,u8 *,2)=0;M2C_FIELD(a,u8 *,3)=0;M2C_FIELD(a,u8 *,4)=0;M2C_FIELD(a,u8 *,5)=0;M2C_FIELD(a,u8 *,6)=0;M2C_FIELD(a,u8 *,7)=0;n=(u8 *)WhPacket_AddField(a+8,b,c,d)-(u8 *)a;M2C_FIELD(a,u16 *,0)=n-8;return n;}
 
-s32 func_ov001_0216ecd0(void *a,s32 *out){s32 kind,len,tag,size; s32 cursor; volatile s32 b; s32 n,base; u16 x,y,t; u16 *p; base=WhPacket_Unwrap(a,&kind,&len);x=0;y=0;cursor=base;b=0;if(!base)return 0;if(kind!=1)return 0;n=len;cursor=base+8; p=(u16 *)func_ov001_0216eb00(&cursor,n+base,&tag,&size);while(p){switch(tag){case 1:t=*p;x=(u8)((s32)t>>8)|((t<<8)&0xff00);break;case 2:t=*p;b=(u16)((u8)((s32)t>>8)|(0xff00&(t<<8)));break;case 5:t=*p;y=(u8)((s32)t>>8)|((t<<8)&0xff00);break;}p=(u16 *)func_ov001_0216eb00(&cursor,n+base,&tag,&size);}if(x!=1||b!=1)return 0;if((s32)y>=1)*out=1;else *out=0;return 1;}
+s32 func_ov001_0216ecd0(void *a,s32 *out){s32 kind,len,tag,size; s32 cursor; volatile s32 b; s32 n,base; u16 x,y,t; u16 *p; base=WhPacket_Unwrap(a,&kind,&len);x=0;y=0;cursor=base;b=0;if(!base)return 0;if(kind!=1)return 0;n=len;cursor=base+8; p=(u16 *)WhPacket_ReadEntry(&cursor,n+base,&tag,&size);while(p){switch(tag){case 1:t=*p;x=(u8)((s32)t>>8)|((t<<8)&0xff00);break;case 2:t=*p;b=(u16)((u8)((s32)t>>8)|(0xff00&(t<<8)));break;case 5:t=*p;y=(u8)((s32)t>>8)|((t<<8)&0xff00);break;}p=(u16 *)WhPacket_ReadEntry(&cursor,n+base,&tag,&size);}if(x!=1||b!=1)return 0;if((s32)y>=1)*out=1;else *out=0;return 1;}
 
 /* Copy the payload of the packet `packet` to `out` once its type is `type`:
  * decrypt the payload with `key` and drop its trailing 8-byte tag when a key is
@@ -88,5 +88,6 @@ s32 func_ov001_0216ee90(void){GetMacAddress();return 1;}
  * (high nibble first).  Returns 0 on the first character that is not a hex digit. */
 s32 HexToBytes(u8 *out,s8 *hex,s32 length){s32 ch,value,index;value=0;index=value;for(;index<length;index++){ch=hex[index];switch(ch){case '0':case '1':case '2':case '3':case '4':case '5':case '6':case '7':case '8':case '9':value+=ch-48;break;case 'a':case 'b':case 'c':case 'd':case 'e':case 'f':value+=ch-87;break;case 'A':case 'B':case 'C':case 'D':case 'E':case 'F':value+=ch-55;break;default:return 0;}if(index%2==0)value<<=4;else{out[index/2]=value;value=0;}}return 1;}
 
-void func_ov001_0216fb34(u8 *a,u8 *b,u8 *c){c[0]=a[0]^b[0];c[1]=a[1]^b[1];c[2]=a[2]^b[2];c[3]=a[3]^b[3];c[4]=a[4]^b[4];c[5]=a[5]^b[5];c[6]=a[6]^b[6];c[7]=a[7]^b[7];}
+/* XOR two 8-byte blocks, `left` ^ `right`, byte for byte into `out`. */
+void WhXor8Bytes(u8 *left,u8 *right,u8 *out){out[0]=left[0]^right[0];out[1]=left[1]^right[1];out[2]=left[2]^right[2];out[3]=left[3]^right[3];out[4]=left[4]^right[4];out[5]=left[5]^right[5];out[6]=left[6]^right[6];out[7]=left[7]^right[7];}
 

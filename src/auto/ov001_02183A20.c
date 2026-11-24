@@ -6,7 +6,7 @@
 void func_ov001_02183a20(void) {
     s32 Ov001_HitScrollbarPart(void);
     void func_ov001_02183cec(s8);
-    s32 func_ov001_02183e0c(void);
+    s32 Ov001_HitReleasedScrollbarCap(void);
     void Ov001_ScrollbarJumpToTouch(void);
     void Ov001_UpdateScrollbarDrag(void);
     void Ov001_PlaySound(s32);
@@ -52,7 +52,7 @@ void func_ov001_02183a20(void) {
             Ov001_UpdateScrollbarDrag();
             return;
         case 2: {
-            r = ((s32 (*)(s32))func_ov001_02183e0c)(2);
+            r = ((s32 (*)(s32))Ov001_HitReleasedScrollbarCap)(2);
             if (r != 2) {
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 5;
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
@@ -66,7 +66,7 @@ void func_ov001_02183a20(void) {
             return;
         }
         case 3: {
-            r = ((s32 (*)(s32))func_ov001_02183e0c)(3);
+            r = ((s32 (*)(s32))Ov001_HitReleasedScrollbarCap)(3);
             if (r != 3) {
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1d) = 7;
                 M2C_FIELD(gOv001Scrollbar, u8 *, 0x1c) = 0;
@@ -223,20 +223,22 @@ loop_3:
     goto loop_3;
 }
 
-s32 func_ov001_02183e0c(void) {
+/* Which scroll-bar cap a released touch hit: checks the up then the down cap and
+ * returns its OV001_SCROLLBAR_PART_*, or 0 when the release missed both. */
+s32 Ov001_HitReleasedScrollbarCap(void) {
     void Ov001_GetScrollbarPartRect(s32, M2C_UNK *);
     s32 TouchRectReleased(M2C_UNK *);
-    s32 sp0[2];
-    s32 var_r5;
+    s32 rect[2];
+    s32 part;
 
-    var_r5 = 2;
+    part = OV001_SCROLLBAR_PART_UP;
 loop_1:
-    Ov001_GetScrollbarPartRect(var_r5, sp0);
-    if (TouchRectReleased(sp0) != 0) {
-        return var_r5;
+    Ov001_GetScrollbarPartRect(part, rect);
+    if (TouchRectReleased(rect) != 0) {
+        return part;
     }
-    var_r5 += 1;
-    if (var_r5 <= 3) {
+    part += 1;
+    if (part <= OV001_SCROLLBAR_PART_DOWN) {
         goto loop_1;
     }
     return 0;
@@ -550,15 +552,17 @@ nextRecord:
 }
 #pragma opt_loop_invariants reset
 #pragma opt_lifetimes reset
-void func_ov001_02184404(void) {
+/* Allocate the ov001 save data block, build its CRC16 lookup table and read the
+ * four saved slots from the ARM7 save area into it. */
+void Ov001_AllocSaveData(void) {
     s32 Ov001_Alloc(s32, M2C_UNK);
     void BuildCrc16Table(u16 *, u32);
-    s32 func_02045eb4(M2C_UNK);
+    s32 FifoReadSaveSlots(M2C_UNK);
     extern s32 gSaveData;
 
-    gSaveData = Ov001_Alloc(0x6f8, 0x20);
-    BuildCrc16Table((u16 *)(gSaveData + 0x4f8), 0xa001);
-    func_02045eb4((M2C_UNK)gSaveData);
+    gSaveData = Ov001_Alloc(SAVE_DATA_SIZE, 0x20);
+    BuildCrc16Table((u16 *)(gSaveData + SAVE_CRC_TABLE), CRC16_POLYNOMIAL);
+    FifoReadSaveSlots((M2C_UNK)gSaveData);
 }
 
 void Ov001_FreeSaveData(void) {
@@ -689,56 +693,61 @@ void func_ov001_021846f8(u8 *arg0) {
 void func_ov001_0218471c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
-    extern char data_ov001_02190b58[];
+    extern char gOv001CodeFormat[];
     u8 *p = (u8 *)gSaveData;
     u8 t0 = p[0x4c2];
     u8 t1 = p[0x4c3];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c0], p[0x4c1], t0, t1);
+    func_0200563c(arg0, (s32)gOv001CodeFormat, p[0x4c0], p[0x4c1], t0, t1);
 }
 
 void func_ov001_0218475c(s32 arg0) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
-    extern char data_ov001_02190b58[];
+    extern char gOv001CodeFormat[];
     u8 *p = (u8 *)gSaveData;
     u8 t0 = p[0x4f2];
     u8 t1 = p[0x4f3];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4f0], p[0x4f1], t0, t1);
+    func_0200563c(arg0, (s32)gOv001CodeFormat, p[0x4f0], p[0x4f1], t0, t1);
 }
 
 #pragma opt_peephole off
-void func_ov001_0218479c(s32 arg0) {
+/* Format the second saved player-code value (SAVE_PLAYER_CODES + 4) as four
+ * decimal groups for the UI. */
+void Ov001_FormatSavePlayerCode2(s32 output) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
-    extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)gSaveData;
-    u8 *q = p + 0x4c4;
-    u8 t0 = q[2];
-    u8 t1 = q[3];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c4], q[1], t0, t1);
+    extern char gOv001CodeFormat[];
+    u8 *saveData = (u8 *)gSaveData;
+    u8 *playerCode = saveData + SAVE_PLAYER_CODES + 4;
+    u8 group2 = playerCode[2];
+    u8 group3 = playerCode[3];
+    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 4], playerCode[1], group2, group3);
 }
 #pragma opt_peephole reset
-void func_ov001_021847e0(s32 arg0) {
+/* Format the fourth saved player-code value as four decimal groups for the UI. */
+void Ov001_FormatSavePlayerCode3(s32 output) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
-    extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)gSaveData;
-    u8 *q = p + 0x4c8;
-    u8 t0 = q[2];
-    u8 t1 = q[3];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4c8], q[1], t0, t1);
+    extern char gOv001CodeFormat[];
+    u8 *saveData = (u8 *)gSaveData;
+    u8 *playerCode = saveData + SAVE_PLAYER_CODES + 8;
+    u8 group2 = playerCode[2];
+    u8 group3 = playerCode[3];
+    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 8], playerCode[1], group2, group3);
 }
 
 #pragma opt_strength_reduction off
-void func_ov001_02184824(s32 arg0) {
+/* Format the fourth saved player-code value (SAVE_PLAYER_CODES + 12) as four
+ * decimal groups for the UI. */
+void Ov001_FormatSavePlayerCode4(s32 output) {
     void func_0200563c(s32, s32, ...);
     extern s32 gSaveData;
-    extern char data_ov001_02190b58[];
-    u8 *p = (u8 *)gSaveData;
-    u8 *q = p + 0x4cc;
-    u8 t0 = q[2];
-    u8 t1 = q[3];
-    func_0200563c(arg0, (s32)data_ov001_02190b58, p[0x4cc], q[1], t0, t1);
+    extern char gOv001CodeFormat[];
+    u8 *saveData = (u8 *)gSaveData;
+    u8 *playerCode = saveData + SAVE_PLAYER_CODES + 12;
+    u8 group2 = playerCode[2];
+    u8 group3 = playerCode[3];
+    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 12], playerCode[1], group2, group3);
 }
 #pragma opt_strength_reduction reset
 u8 Ov001_GetSaveSlotStatus(s32 arg0) {

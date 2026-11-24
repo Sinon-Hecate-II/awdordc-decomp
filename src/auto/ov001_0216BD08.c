@@ -3,7 +3,7 @@
 #include "common.h"
 #include "ov001_room.h"
 extern unsigned char data_ov001_0218fd40[];
-extern unsigned char data_ov001_0218fdb0[];
+extern unsigned char gBuiltinWifiKey[];
 typedef struct PacketWork { signed char a; short b,c; unsigned short pad; unsigned char type,zero; short len; int value; } PacketWork;
 extern unsigned char gOv001RoomPlayerData[];
 extern unsigned char gOv001RoomRecords[];

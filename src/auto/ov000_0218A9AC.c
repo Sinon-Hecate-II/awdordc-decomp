@@ -20,7 +20,7 @@ void SelectAttackMoveDestination(void) {
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     void FloodFillUnitRange(s32, s32, u8, s32, s32);
     void MarkAdjacentCells(s8);
-    s32 func_020a47e0(s32, s32);
+    s32 FindDestructibleFeatureAtTile(s32, s32);
     s32 MapOrder_IsEnemyOwned(void);
     s32 func_ov000_0217aa2c(s32, s32);
     s32 FindAttackPosition(void *);
@@ -68,7 +68,7 @@ void SelectAttackMoveDestination(void) {
                 if ((((u32)((u8 *)gAiCommandState)[7]) << 29 >> 31)) goto evaluate;
                 goto next;
             }
-            if (!func_020a47e0(x, y)) goto next;
+            if (!FindDestructibleFeatureAtTile(x, y)) goto next;
             if (!MapOrder_IsEnemyOwned()) goto next;
 evaluate:
             {

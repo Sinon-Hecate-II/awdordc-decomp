@@ -423,13 +423,16 @@ void gti2RejectConnection(void *connection, s32 message, s32 length, ...) {
     M2C_FIELD(connection, s32 *, GT2_CONNECTION_STATE) = GT2_STATE_PEER_CLOSED;
 }
 
-s32 gti2SendRaw(void *arg0, M2C_UNK arg1, s32 arg2) {
+/* Send `length` bytes of `data` to the connection's peer in one raw socket
+ * send and remember when they went out.  Returns 1 on success, 0 when the send
+ * failed. */
+s32 gti2SendRaw(void *connection, void *data, s32 length) {
     s32 GetSystemTickMilliseconds();
-    s32 func_0205d228(s32, s32, u16, M2C_UNK, s32);
-    if (func_0205d228(M2C_FIELD(arg0, s32 *, 8), M2C_FIELD(arg0, s32 *, 0), M2C_FIELD(arg0, u16 *, 4), arg1, arg2) == 0) {
+    s32 gti2SocketSend(void *, s32, u16, void *, s32);
+    if (gti2SocketSend(M2C_FIELD(connection, void **, GT2_CONNECTION_SOCKET), M2C_FIELD(connection, s32 *, GT2_CONNECTION_IP), M2C_FIELD(connection, u16 *, GT2_CONNECTION_PORT), data, length) == 0) {
         return 0;
     }
-    M2C_FIELD(arg0, s32 *, 0x88) = GetSystemTickMilliseconds();
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_LAST_SENT) = GetSystemTickMilliseconds();
     return 1;
 }
 

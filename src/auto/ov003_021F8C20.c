@@ -313,7 +313,7 @@ void func_ov003_021f9200(void *obj) {
 
 #pragma opt_propagation off
 #pragma opt_if-conversion off
-void func_ov003_021f92f4(void *obj) {
+void Ov003_RefreshMapPreview(void *obj) {
     s32 id;
     s32 value;
     void *saved;
@@ -325,11 +325,11 @@ void func_ov003_021f92f4(void *obj) {
         if((u32)id>=225 && (u32)id<425 && IsCampaignMapCategory()) {
             value=0;
             if(IsMapKind92(obj)) value=id;
-            if(!func_ov003_021f400c() && func_ov003_021f2654() && IsCampaignMapForLocalPlayer(id)) value=func_020a8f4c(id);
+            if(!func_ov003_021f400c() && IsCampaignMapHeaderCategory() && IsCampaignMapForLocalPlayer(id)) value=GetCampaignMapBaseId(id);
             if(value) { LoadMapRecord(value,GetMapRecordBuffer()); ResetMapUnits(); }
         }
         PreloadMapTileset(id);
-        if((u32)id>=225 && (u32)id<425 && func_ov003_021f2654() && !func_ov003_021f400c() && !IsCampaignMapForLocalPlayer(id)) {
+        if((u32)id>=225 && (u32)id<425 && IsCampaignMapHeaderCategory() && !func_ov003_021f400c() && !IsCampaignMapForLocalPlayer(id)) {
             M2C_FIELD(obj,u8 *,0x39)|=0x80;
             ApplyMapHeader(GetCampaignMapHeader(id-225));
         } else LoadBattleMap(id);

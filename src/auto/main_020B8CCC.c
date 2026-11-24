@@ -134,7 +134,7 @@ if((frame&3)==1)PlaySoundEffect(0x10023);if(frame<duration)return;Sprite_ResumeA
 void ProductionMenu_ConfirmBuild(void *row) {
     s32 ProduceUnit(s32, s32, s32);
     void SetBattleCommand(s32, u8, s32, s32);
-    void func_ov000_0216aa44(s32, s32);
+    void RunUnitEvent(s32, s32);
     extern void **gCurrentMap;
     s32 kind = M2C_FIELD(row, s32 *, PRODUCTION_ROW_KIND);
     s32 unit;
@@ -144,7 +144,7 @@ void ProductionMenu_ConfirmBuild(void *row) {
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_X) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X);
     M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_Y) = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_Y);
     SetBattleCommand(1, kind, 0, 0);
-    func_ov000_0216aa44(14, unit);
+    RunUnitEvent(14, unit);
     M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_CURSOR;
 }
 
@@ -329,7 +329,7 @@ void func_020b9978(void) {
 
 #pragma opt_common_subs off
 void func_020b99ac(s32 arg0,s32 arg1,s32 arg2) {
-M2C_UNK func_0209bfdc(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
+M2C_UNK DrawLocalizedTextToTilemap(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 void DrawTilemapNumber(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u16);
 M2C_UNK WriteUnitKindTileQuad(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,u16,u8,u8);
 M2C_UNK GetUnitBuildCostTimes10(M2C_UNK,M2C_UNK);
@@ -346,7 +346,7 @@ i=0; do {
 kind=ptr[i*2]; if(!kind)break;
 if(*(i*2+ptr+1)){mode=3;color=256;}else{mode=0;color=M2C_FIELD(*gCurrentMap,u16*,0x52a8);}
 row=y+i*2;
-func_0209bfdc(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
+DrawLocalizedTextToTilemap(x,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),M2C_FIELD(gUnitKindStats,s32*,kind*112),0,mode);
 value=GetUnitBuildCostTimes10(M2C_FIELD(*gCurrentMap,u16*,0x52a4),ptr[i*2]);
 DrawTilemapNumber(right,(s16)row,M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),value,0,mode);
 WriteUnitKindTileQuad(M2C_FIELD(gCur3DSpriteEngine,s32*,0x24),left,(u16)row,ptr[i*2],color,0,0);

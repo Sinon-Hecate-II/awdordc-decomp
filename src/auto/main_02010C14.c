@@ -33,8 +33,8 @@ void SaveDevice_Init(void) {
 }
 
 void func_02010c78(void) {
-    M2C_UNK func_0200fda0();
-    func_0200fda0();
+    M2C_UNK SaveDevice_WaitForTransfer();
+    SaveDevice_WaitForTransfer();
 }
 
 M2C_UNK *SaveDevice_GetTransferHandler(void) {
@@ -361,10 +361,13 @@ s32 WFC_GetInfoBlock(void) {
 
 s32 WFC_CheckReady(void) { extern M2C_UNK gWfcChannelState; if(M2C_FIELD(&gWfcChannelState,u16 *,0))return 0;return 3; }
 
+/* Whether the WFC command channel is open: 0 once the link has left its initial
+ * states, otherwise the not-ready result (3).  Flushes the firmware-written link
+ * state out of the data cache before reading it. */
 s32 WFC_CheckChannelOpen(void) {
-extern M2C_UNK gWfcChannelState;s32 r=WFC_CheckReady();if(r)return r;
-DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),2);
-return M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),void **,4),u16 *,0)<=1U?3:0;
+extern M2C_UNK gWfcChannelState;s32 ready=WFC_CheckReady();if(ready)return ready;
+DC_InvalidateRange(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,WFC_CMD_STATE_INFO),void **,WFC_CMD_INFO_DATA),sizeof(u16));
+return M2C_FIELD(M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,WFC_CMD_STATE_INFO),void **,WFC_CMD_INFO_DATA),u16 *,WFC_CMD_INFO_LINK_STATE)<=1U?WFC_CMD_NOT_READY:0;
 }
 
 /* Verify the WFC command channel is ready and that the link's current state is
@@ -531,23 +534,46 @@ extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_F
 
 u16 func_02011964(void) { s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32); extern M2C_UNK gWfcChannelState;s32 s=OS_DisableInterrupts();s32 r;void *p=M2C_FIELD(&gWfcChannelState,void **,4);if(p)r=M2C_FIELD(p,s32 *,0x14c);else r=0;OS_RestoreInterrupts(s);return r;}
 
-s32 func_02011994(void) {s32 OS_DisableInterrupts(void); M2C_UNK OS_RestoreInterrupts(s32);M2C_UNK DC_InvalidateRange();extern M2C_UNK gWfcChannelState;s32 r;void *p;s32 s;s=OS_DisableInterrupts();p=M2C_FIELD(&gWfcChannelState,void **,4);if(!p)r=0;else {p=M2C_FIELD(p,void **,4);DC_InvalidateRange(p+0x86,2);r=M2C_FIELD(p,u16 *,0x86);}OS_RestoreInterrupts(s);return r;}
+/* The bitmask of the WFC peers currently connected (one bit per player aid),
+ * read from the firmware's connection-data block; 0 when the channel is down. */
+s32 WFC_GetConnectedPeerMask(void) {
+    s32 OS_DisableInterrupts(void);
+    M2C_UNK OS_RestoreInterrupts(s32);
+    M2C_UNK DC_InvalidateRange();
+    extern M2C_UNK gWfcChannelState;
+    s32 result;
+    void *data;
+    s32 irq;
+    irq = OS_DisableInterrupts();
+    data = M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO);
+    if (!data) result = 0;
+    else {
+        data = M2C_FIELD(data, void **, WFC_CMD_INFO_DATA);
+        DC_InvalidateRange(data + WFC_CONN_DATA_PEER_MASK, 2);
+        result = M2C_FIELD(data, u16 *, WFC_CONN_DATA_PEER_MASK);
+    }
+    OS_RestoreInterrupts(irq);
+    return result;
+}
 
-s32 WFC_SetGeneralHandler(s32 arg0) {
+/* Install `handler` as the WFC command channel's general event callback, with
+ * interrupts disabled: when the channel is not initialised return its not-ready
+ * code without installing anything, otherwise store the callback and return 0. */
+s32 WFC_SetGeneralHandler(s32 handler) {
     s32 OS_DisableInterrupts();
     M2C_UNK OS_RestoreInterrupts(s32);
     s32 WFC_CheckReady();
-    s32 temp_r0;
-    s32 temp_r5;
+    s32 ready;
+    s32 irqState;
 
-    temp_r5 = OS_DisableInterrupts();
-    temp_r0 = WFC_CheckReady();
-    if (temp_r0 != 0) {
-        OS_RestoreInterrupts(temp_r5);
-        return temp_r0;
+    irqState = OS_DisableInterrupts();
+    ready = WFC_CheckReady();
+    if (ready != 0) {
+        OS_RestoreInterrupts(irqState);
+        return ready;
     }
-    M2C_FIELD(WFC_GetInfoBlock(), s32 *, 0xC8) = arg0;
-    OS_RestoreInterrupts(temp_r5);
+    M2C_FIELD(WFC_GetInfoBlock(), s32 *, WFC_CMD_INFO_CALLBACK) = handler;
+    OS_RestoreInterrupts(irqState);
     return 0;
 }
 

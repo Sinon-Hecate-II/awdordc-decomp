@@ -311,36 +311,42 @@ s32 gpiFlushUpdateBuffers(void **connection, void *outputBuffer) {
     return 0;
 }
 
-s32 AppendUpdateProField(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Append a key and its value to the connection's accumulated "updatepro" profile
+ * fields (the block gpiFlushUpdateBuffers later flushes out).  Returns the first
+ * append's error, or the second's. */
+s32 AppendUpdateProField(s32 *connection, M2C_UNK key, M2C_UNK value) {
     s32 gpiAppendStringField(s32 *, s32, M2C_UNK);
     s32 temp_r0;
-    s32 temp_r4;
+    s32 session;
     s32 var_r0;
 
-    temp_r4 = *arg0;
-    temp_r0 = gpiAppendStringField(arg0, temp_r4 + 0x440, arg1);
+    session = *connection;
+    temp_r0 = gpiAppendStringField(connection, session + GPI_CONN_UPDATE_PRO_BUFFER, key);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    var_r0 = gpiAppendStringField(arg0, temp_r4 + 0x440, arg2);
+    var_r0 = gpiAppendStringField(connection, session + GPI_CONN_UPDATE_PRO_BUFFER, value);
     if (var_r0 == 0) {
         var_r0 = 0;
     }
     return var_r0;
 }
 
-s32 AppendUpdateUiField(s32 *arg0, M2C_UNK arg1, M2C_UNK arg2) {
+/* Append a key and its value to the connection's accumulated "updateui" UI
+ * fields (the block gpiFlushUpdateBuffers later flushes out).  Returns the
+ * first append's error, or the second's. */
+s32 AppendUpdateUiField(s32 *connection, M2C_UNK key, M2C_UNK value) {
     s32 gpiAppendStringField(s32 *, s32, M2C_UNK);
     s32 temp_r0;
-    s32 temp_r4;
+    s32 session;
     s32 var_r0;
 
-    temp_r4 = *arg0;
-    temp_r0 = gpiAppendStringField(arg0, temp_r4 + 0x450, arg1);
+    session = *connection;
+    temp_r0 = gpiAppendStringField(connection, session + GPI_CONN_UPDATE_UI_BUFFER, key);
     if (temp_r0 != 0) {
         return temp_r0;
     }
-    var_r0 = gpiAppendStringField(arg0, temp_r4 + 0x450, arg2);
+    var_r0 = gpiAppendStringField(connection, session + GPI_CONN_UPDATE_UI_BUFFER, value);
     if (var_r0 == 0) {
         var_r0 = 0;
     }

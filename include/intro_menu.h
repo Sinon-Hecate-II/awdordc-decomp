@@ -51,7 +51,7 @@ typedef struct IntroMenu011 {
     u8 fadeTimer;              /* +0x37 */
     u8 appearTimer;            /* +0x38 */
     u8 unknown39;              /* +0x39 */
-    s16 timer;                 /* +0x3A frames the menu has been shown */
+    u16 timer;                 /* +0x3A frames the menu has been shown */
     u8 unknown3C[4];           /* +0x3C */
     void *entries[3];          /* +0x40 the entry sprites */
     IntroMenuStep *step;       /* +0x4C cursor into gIntroMenuTable */

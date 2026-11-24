@@ -11,8 +11,8 @@ void Mb_SendBootParams(void) {
     extern M2C_UNK data_02136cc4;
     extern s32 func_02018c9c(void);
     void Mb_LockCartridgeAccess(M2C_UNK, void *);
-    void func_02018da8(void *);
-    void func_02018df0(void *);
+    void Mb_SaveCartridgeBusConfig(void *);
+    void Mb_RestoreCartridgeBusConfig(void *);
     void Mb_UnlockCartridgeAccess(M2C_UNK, void *);
     M2C_UNK Mb_SendControlMessage(M2C_UNK);
     s32 OS_SetIrqEnableMask(s32);
@@ -47,7 +47,7 @@ void Mb_SendBootParams(void) {
     Mb_LockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
 
     carry = (*(volatile u16 *)0x4000204 & 0x8000) >> 15;
-    func_02018da8(buf);
+    Mb_SaveCartridgeBusConfig(buf);
 
     hw = *(volatile u16 *)0x4000204;
     *(volatile u16 *)0x4000204 = hw & ~0x8000;
@@ -56,7 +56,7 @@ void Mb_SendBootParams(void) {
 
     hw = *(volatile u16 *)0x4000204;
     *(volatile u16 *)0x4000204 = (hw & ~0x8000) | (carry << 15);
-    func_02018df0(buf);
+    Mb_RestoreCartridgeBusConfig(buf);
 
     Mb_UnlockCartridgeAccess(*(u16 *)((u8 *)&data_02136c9c + 2), buf + 8);
 

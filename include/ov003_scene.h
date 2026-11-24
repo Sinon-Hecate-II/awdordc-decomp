@@ -207,4 +207,15 @@ typedef struct Ov003SceneView {
     u8 *downloadedMaps;              /* +0x6C MAP_RECORD_LIST_COUNT map records */
 } Ov003SceneView;
 
+/* The ov003 map-select scene that shows one map and its preview (class
+ * gOv003MapMenuClass, menu kind 1): the scene object's vtables, then the
+ * MAP_ID whose preview the scene draws. */
+typedef struct Ov003MapMenuScene {
+    void *vtable;   /* +0x00 */
+    u8 pad04[0x30];
+    void *iface;    /* +0x34 second vtable */
+    u8 pad38[4];
+    u16 mapId;      /* +0x3C MAP_ID the preview shows */
+} Ov003MapMenuScene;
+
 #endif

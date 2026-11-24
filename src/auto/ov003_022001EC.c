@@ -449,22 +449,24 @@ u16 Ov003_GetEntryValueIconTile(u32 kind, u16 value) {
     return (u16)(value << 4);
 }
 
-s32 Ov003_GetEntryValueTextId(s32 a, s32 b) {
-    extern s32 data_ov003_022104a4[], data_ov003_022104b4[], data_ov003_02210494[];
-    switch (a) {
+/* Text id of a setup-menu entry's value: the value indexes the text table of the
+ * entry's kind, and kinds without a table keep the value as it is. */
+s32 Ov003_GetEntryValueTextId(s32 kind, s32 value) {
+    extern s32 gOv003EntryTextTableKind6[], gOv003EntryTextTableKind1[], gOv003EntryTextTableKind2[];
+    switch (kind) {
     case 1:
-        b = data_ov003_022104b4[b];
+        value = gOv003EntryTextTableKind1[value];
         break;
     case 2:
-        b = data_ov003_02210494[b];
+        value = gOv003EntryTextTableKind2[value];
         break;
     case 6:
-        b = data_ov003_022104a4[b];
+        value = gOv003EntryTextTableKind6[value];
         break;
     default:
         break;
     }
-    return b;
+    return value;
 }
 
 void func_ov003_02200dc8(void *a,u32 b) {

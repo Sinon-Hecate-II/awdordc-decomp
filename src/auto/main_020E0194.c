@@ -6,13 +6,13 @@ M2C_UNK CloseOnlineMenu();
 typedef struct { unsigned char value:4; } E0194Bits;
 typedef struct { u32 low:18; u32 value:8; u32 high:6; } E0B04Bits;
 static inline s32 E0B04Process(void *entity) {
-s32 IsLinkSessionActive(void);s32 func_0208477c(void);s32 GetOverlayEventFlags(void);
+s32 IsLinkSessionActive(void);s32 IsSessionResultHandled(void);s32 GetOverlayEventFlags(void);
 s32 FindTextLayer(void); M2C_UNK StartWindowClose(void);void *CreateTextLayer(void *);
 M2C_UNK RenderTextLayerMessage(void *,s32,s32,s32);
 extern s32 g3DSpriteEngineMain,g3DSpriteEngineSub,gCur3DSpriteEngine;
 void *created; s32 bank; register s32 i; s32 saved; u8 mode;
 if(!IsLinkSessionActive())return 0;
-if(func_0208477c())return 0;
+if(IsSessionResultHandled())return 0;
 if(GetOverlayEventFlags()){
 M2C_FIELD(entity,u16 *,0x48)|=0x1000;
 if(FindTextLayer())StartWindowClose();
@@ -180,7 +180,7 @@ void func_020e048c(void *entity) {
     M2C_UNK FillU16(M2C_UNK, M2C_UNK *, M2C_UNK);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     M2C_UNK StartWindowClose();
-    void *func_0208b520(void *);
+    void *CreateTextLayerChild(void *);
     s32 FindTextLayer();
     extern M2C_UNK data_02168f74;
     extern s32 g3DSpriteEngineMain, g3DSpriteEngineSub, gCur3DSpriteEngine;
@@ -199,7 +199,7 @@ void func_020e048c(void *entity) {
         if (mode == 0 && bank != g3DSpriteEngineMain) goto next;
         if (mode == 1 && bank != g3DSpriteEngineSub) goto next;
         if (mode == 3 && bank != savedEntity) goto next;
-        created = func_0208b520(entity);
+        created = CreateTextLayerChild(entity);
         RenderTextLayerMessage(created, 0, M2C_FIELD(entity, u16 *, 0x46) << 5, 0x44000009);
         M2C_FIELD(created, s32 *, 0x58) |= 0x1800;
     next:
@@ -210,12 +210,14 @@ void func_020e048c(void *entity) {
     Link_CreateStartRequest(0x434c4353, entity);
 }
 
-M2C_UNK func_020e0580(s32 arg0) {
+/* Record the local player's ready mask in the per-player mask table, then start
+ * syncing that table (2 bytes of mask per player) with the other link players. */
+M2C_UNK CreateLinkPlayerMaskListener(s32 owner) {
  s32 GetLocalPlayerIdForOverlay(); s16 GetReadyPlayerMask(); M2C_UNK CreateLinkPlayerDataListener();
  extern u16 *gLinkPlayerMasks[];
- s32 i=GetLocalPlayerIdForOverlay();
- *gLinkPlayerMasks[i]=GetReadyPlayerMask();
- return CreateLinkPlayerDataListener(gLinkPlayerMasks,gLinkPlayerMasks[GetLocalPlayerIdForOverlay()],2,arg0);
+ s32 localPlayerId=GetLocalPlayerIdForOverlay();
+ *gLinkPlayerMasks[localPlayerId]=GetReadyPlayerMask();
+ return CreateLinkPlayerDataListener(gLinkPlayerMasks,gLinkPlayerMasks[GetLocalPlayerIdForOverlay()],2,owner);
 }
 
 /* For each linked player whose session mask differs from the local player's, set
@@ -381,7 +383,7 @@ void func_020e0af8(void) {
 
 /* Updates child objects and resumes the entity script when its primary child is ready or A is pressed. */
 void func_020e0b04(void *entity) {
-    s32 IsLinkSessionActive(void); s32 func_0208477c(void); s32 GetOverlayEventFlags(void);
+    s32 IsLinkSessionActive(void); s32 IsSessionResultHandled(void); s32 GetOverlayEventFlags(void);
     s32 FindTextLayer(void); M2C_UNK StartWindowClose(void); void *CreateTextLayer(void *);
     M2C_UNK RenderTextLayerMessage(void *, s32, s32, s32);
     void DisableMapConfirm(void); void SetSpriteAnimation(void *, s32);

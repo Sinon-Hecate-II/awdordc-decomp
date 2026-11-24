@@ -65,7 +65,7 @@ extern void **gCurrentMap;
 extern u16 data_ov000_021aeee8[];
 extern s8 gTerrainPropertyFlags[];
 void SetPropertyOwnerTile(s32,s32,u8); void RebuildPropertyTile(s32,s32,s32);
-void func_020cf2c8(void);void RefreshMapView(void);void func_020d2470(void);
+void RebuildMapPropertyCells(void);void RefreshMapView(void);void func_020d2470(void);
 u32 player; u16 i; u8 x,y; s32 kind,unit; u8 *map,*p,*rec,*tile;u32 old; u16 *rows; s32 row;
 if(M2C_FIELD(arg0,s16 *,0x6e)!=2) player=0;
 else {
@@ -81,7 +81,7 @@ map=(u8 *)*gCurrentMap;
 p=map+0x67a4+M2C_FIELD(arg0,s16 *,0x6c)*0x8c;
 player=(u32)((old&0xe0)<<11)>>16;
 SetPropertyOwnerTile(p[0x2b]&127,p[0x2c]&127,(u8)data_ov000_021aeee8[M2C_FIELD(arg0,s16 *,0x6c)]);
-func_020cf2c8();
+RebuildMapPropertyCells();
 }
 for(i=0;i<99;i++){
 map=(u8 *)*gCurrentMap;
@@ -112,7 +112,7 @@ SetPropertyOwnerTile(x,y,(u8)data_ov000_021aeee8[player]);
 }
 }
 }
-RefreshMapView();func_020cf2c8();func_020d2470();
+RefreshMapView();RebuildMapPropertyCells();func_020d2470();
 M2C_FIELD(arg0,s16 *,0x70)=1;
 }
 #pragma pop
@@ -484,7 +484,7 @@ void func_020caa34(void *dialog) {
     s32 GetMapCursorTouchAction(void);
     M2C_UNK StepMapViewToTile(s16, s16);
     M2C_UNK Sprite_ResumeAnimation(void *);
-    s32 func_0209f944(s16, s16);
+    s32 IsTargetCellListed(s16, s16);
     M2C_UNK func_020d468c(void);
     M2C_UNK CreateTargetCursor(s16, s16);
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
@@ -512,7 +512,7 @@ void func_020caa34(void *dialog) {
             return;
         }
         if (flags & 0x10) {
-            if (func_0209f944(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
+            if (IsTargetCellListed(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),
                                M2C_FIELD(*gCurrentMap, s16 *, 0x52C4)) != 0) {
                 func_020d468c();
                 CreateTargetCursor(M2C_FIELD(*gCurrentMap, s16 *, 0x52C2),

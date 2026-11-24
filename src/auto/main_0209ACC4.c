@@ -325,9 +325,11 @@ void InitTextState(TextState *st) {
     st->flags = defaults->flags;
 }
 
-void func_0209b26c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
+/* Resolve a localized text id and draw the line at (x, y) with the given layer
+ * palette and glyph attributes. */
+void DrawLocalizedText(s32 x, s32 y, s32 palette, s32 textId, u16 attr, u16 attr16) {
     void DrawTextLine(M2C_UNK, M2C_UNK, M2C_UNK, s32, u16, u16);
-    DrawTextLine(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
+    DrawTextLine(x, y, palette, GetLocalizedText(textId), attr, attr16);
 }
 
 void DrawTextLine(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
@@ -344,23 +346,26 @@ void DrawLocalizedTextLine(s32 x, s32 y, s32 palette, s32 textId, u16 attr, u16 
     DrawTextLineCore(x, y, palette, GetLocalizedText(textId), attr, attr16, lineOffset);
 }
 
-void DrawTextLineCore(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5, u16 arg6) {
+/* Draw one line of glyph text at (x, y) in the current screen engine's layer
+ * `palette`: take that layer's VRAM destination and tile buffer and hand the line
+ * position, text, glyph attributes and line offset to func_0209b370. */
+void DrawTextLineCore(M2C_UNK x, M2C_UNK y, M2C_UNK palette, M2C_UNK text, u16 attr, u16 attr16, u16 lineOffset) {
     M2C_UNK func_0209b370(M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16, u16);
     extern s32 gCur3DSpriteEngine;
-    void *temp_r6;
+    void *layer;
 
-    temp_r6 = gCur3DSpriteEngine + (arg2 * 4);
-    func_0209b370(arg0, arg1, arg2, M2C_FIELD(temp_r6, s32 *, 0xC), M2C_FIELD(temp_r6, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5, (s32) arg6);
+    layer = gCur3DSpriteEngine + (palette * 4);
+    func_0209b370(x, y, palette, M2C_FIELD(layer, s32 *, DS3D_ENGINE_LAYER_VRAM), M2C_FIELD(layer, s32 *, DS3D_ENGINE_LAYER_TILES), text, (s32) attr, (s32) attr16, (s32) lineOffset);
 }
 
 #pragma opt_propagation on
 M2C_UNK func_0209b370(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 e,s32 f,u16 g,u16 h,u16 i) {
-M2C_UNK func_0209be10(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32,s32,s32,u16,u16,u16);
+M2C_UNK InitTextStateEx(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32,s32,s32,u16,u16,u16);
 M2C_UNK StopTextObject(s32);void *CreateSpriteFromClass(M2C_UNK *,s32);
 extern s32 gCur3DSpriteEngine;extern M2C_UNK data_021032d8;
 s32 p=gCur3DSpriteEngine;
 p=M2C_FIELD(p,s32 *,0x54);
-func_0209be10(p,a,b,c,d,e,f,g,h,i);
+InitTextStateEx(p,a,b,c,d,e,f,g,h,i);
 StopTextObject(p);CreateSpriteFromClass(&data_021032d8,7);
 }
 #pragma opt_propagation reset
@@ -539,19 +544,25 @@ void func_0209b9a8(s32 a0, s32 a1, s32 a2, u16 a3) {
     }
 }
 #pragma scheduling reset
-void func_0209bbd0(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3, u16 arg4, u16 arg5) {
-    void func_0209bc18(M2C_UNK, M2C_UNK, s32, s32, u16, u16);
+/* Resolve the localized text id and draw one line of it on the current screen
+ * engine's layer at (x, y) with glyph palette `palette`. */
+void DrawLocalizedScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, M2C_UNK textId, u16 attr, u16 tile) {
+    void DrawScreenText(M2C_UNK, M2C_UNK, s32, s32, u16, u16);
     M2C_UNK GetLocalizedText(M2C_UNK);
 
-    func_0209bc18(arg0, arg1, arg2, GetLocalizedText(arg3), arg4, arg5);
+    DrawScreenText(x, y, palette, GetLocalizedText(textId), attr, tile);
 }
 
-void func_0209bc18(M2C_UNK arg0, M2C_UNK arg1, s32 arg2, s32 arg3, u16 arg4, u16 arg5) {
+/* Draw one line of the text script `text` at cell (x, y) on the current screen
+ * engine's layer `palette`: take that layer's VRAM destination and tile buffer
+ * and hand the line position, text and glyph attributes to the screen text-line
+ * renderer. */
+void DrawScreenText(M2C_UNK x, M2C_UNK y, M2C_UNK palette, M2C_UNK text, u16 attr, u16 tile) {
     M2C_UNK DrawScreenTextLine(M2C_UNK, M2C_UNK, s32, s32, s32, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
-    void *temp_r5;
+    void *layer;
 
-    temp_r5 = gCur3DSpriteEngine + (arg2 * 4);
-    DrawScreenTextLine(arg0, arg1, arg2, M2C_FIELD(temp_r5, s32 *, 0xC), M2C_FIELD(temp_r5, s32 *, 0x20), arg3, (s32) arg4, (s32) arg5);
+    layer = gCur3DSpriteEngine + (palette * 4);
+    DrawScreenTextLine(x, y, palette, M2C_FIELD(layer, s32 *, DS3D_ENGINE_LAYER_VRAM), M2C_FIELD(layer, s32 *, DS3D_ENGINE_LAYER_TILES), text, (s32) attr, (s32) tile);
 }
 

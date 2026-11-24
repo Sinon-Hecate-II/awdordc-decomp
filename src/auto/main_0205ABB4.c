@@ -156,18 +156,20 @@ void GT2FailConnectionAttempt(M2C_UNK arg0) {
     gti2HandleConnectionClose(arg0, 1);
 }
 
-void func_0205afdc(s32 *arg0) {
+void gti2FailTableConnection(s32 *arg0) {
     GT2FailConnectionAttempt(*arg0);
 }
 
-void GT2NotifyConnectionClosed(void *a) {
-extern s32 data_0213e110;
+/* Fail every connection a GT2 socket owns (the socket is closing), run from a
+ * reentry guard so a closed callback cannot start this pass again. */
+void GT2NotifyConnectionClosed(void *socket) {
+extern s32 gGt2ClosingConnections;
 void TableMapSafe(s32,void (*)(s32 *),s32);
-void func_0205afdc(s32 *);
-if(data_0213e110==1)return;
-data_0213e110=1;
-TableMapSafe(M2C_FIELD(a,s32 *,12),func_0205afdc,0);
-data_0213e110=0;
+void gti2FailTableConnection(s32 *);
+if(gGt2ClosingConnections==1)return;
+gGt2ClosingConnections=1;
+TableMapSafe(M2C_FIELD(socket,s32 *,GT2_SOCKET_CONNECTION_TABLE),gti2FailTableConnection,0);
+gGt2ClosingConnections=0;
 }
 
 u16 GT2SocketPort(void *arg0) {

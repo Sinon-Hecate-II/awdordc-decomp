@@ -217,7 +217,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    M2C_UNK func_020ab150(void *, u16);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, u16);
     void *func_020ab1c4(s32);
     void *sprite;
     s16 fh1, fw1;
@@ -268,7 +268,7 @@ void CreateMenuTextSprite(void **outSprite, s32 x, s32 y, M2C_UNK kind, s32 reso
     if (value == -1) {
         return;
     }
-    func_020ab150(*outSprite, (u16) value);
+    CreateUnitSpriteButtonTask(*outSprite, (u16) value);
 }
 
 u8 GetLanguage(void) {

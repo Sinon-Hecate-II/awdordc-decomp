@@ -2,6 +2,7 @@
 #include "common.h"
 #include "sound.h"
 #include "fs.h"
+#include "wfc.h"
 typedef struct { u8 pad[0xd0a];u8 a;u8 b:2;u8 padb:6;u8 c:4;u8 d:2;u8 padd:2; } Config0202ef;
 typedef struct { s32 unk_0; s32 unk_4; } Unk0202ed18;
 typedef struct {
@@ -369,8 +370,8 @@ void Sound_ReadFileSource(void *arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
 }
 
 void Sound_CloseFileSource(s32 arg0) {
-    M2C_UNK func_0200bb98(s32);
-    func_0200bb98(arg0 + 0x5C);
+    M2C_UNK CancelFileRequest(s32);
+    CancelFileRequest(arg0 + 0x5C);
 }
 
 s32 Sound_OpenMemorySource(void *arg0, M2C_UNK arg1) {
@@ -466,7 +467,7 @@ s32 IsFadeDone(void *arg0) {
  * session. Returns 1 on success, or 0 after tearing the resources down again
  * when the session cannot start. */
 s32 WFC_Init(void *params) {
-void CpuFill(s32,void *,s32);s32 func_0202f2f4(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void Wfc_FreeWorkBlocks(void);
+void CpuFill(s32,void *,s32);s32 Wfc_AcquireWorkBlock(s32,M2C_UNK);void func_02045c90(void);s32 WFC_InitSession(void *,s32);void Wfc_FreeWorkBlocks(void);
 extern M2C_UNK data_0213d100;
 void *block,*buffer;Config0202ef *config;s32 status;
 block=M2C_FIELD(params,void *(**)(s32,s32),0)(1,24);
@@ -474,10 +475,10 @@ M2C_FIELD(&data_0213d100,void **,16)=block;CpuFill(0,block,24);
 block=M2C_FIELD(&data_0213d100,void **,16);
 M2C_FIELD(block,s32 *,0)=M2C_FIELD(params,s32 *,0);M2C_FIELD(block,s32 *,4)=M2C_FIELD(params,s32 *,4);
 M2C_FIELD(block,u8 *,9)=1;M2C_FIELD(block,u8 *,22)=1;M2C_FIELD(block,u8 *,8)=1;
-M2C_FIELD(&data_0213d100,s32 *,0)=func_0202f2f4(16,0xd18);
-M2C_FIELD(&data_0213d100,s32 *,4)=func_0202f2f4(2,0x2300);
-M2C_FIELD(&data_0213d100,s32 *,8)=func_0202f2f4(4,88);
-M2C_FIELD(&data_0213d100,s32 *,12)=func_0202f2f4(8,12);
+M2C_FIELD(&data_0213d100,s32 *,0)=Wfc_AcquireWorkBlock(16,0xd18);
+M2C_FIELD(&data_0213d100,s32 *,4)=Wfc_AcquireWorkBlock(2,0x2300);
+M2C_FIELD(&data_0213d100,s32 *,8)=Wfc_AcquireWorkBlock(4,88);
+M2C_FIELD(&data_0213d100,s32 *,12)=Wfc_AcquireWorkBlock(8,12);
 CpuFill(0,M2C_FIELD(&data_0213d100,void **,0),0xd18);
 CpuFill(0,M2C_FIELD(&data_0213d100,void **,4),0x2300);
 CpuFill(0,M2C_FIELD(&data_0213d100,void **,8),88);
@@ -531,21 +532,24 @@ s32 GetWfcSessionProgress(void) {
  return Wfc_GetConnectionErrorCode(state);
 }
 
+/* The friend slot the current WFC session is match-making with, or
+ * WFC_FRIEND_SLOT_NONE when there is no control block or the session is not in a
+ * match-making state. */
 u8 GetWfcFriendSlot(void) {
     u32 Wfc_GetSessionState();
     extern M2C_UNK gWfcManager;
-    u32 temp_r0;
-    u8 var_r4;
+    u32 state;
+    u8 slot;
 
-    var_r4 = 0xFF;
+    slot = WFC_FRIEND_SLOT_NONE;
     if (M2C_FIELD(&gWfcManager, void **, 0x10) == NULL) {
-        return 0xFFU;
+        return WFC_FRIEND_SLOT_NONE;
     }
-    temp_r0 = Wfc_GetSessionState();
-    if ((temp_r0 >= 0xAU) && (temp_r0 <= 0x10U)) {
-        var_r4 = M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, 0x17);
+    state = Wfc_GetSessionState();
+    if ((state >= 0xAU) && (state <= 0x10U)) {
+        slot = M2C_FIELD(M2C_FIELD(&gWfcManager, void **, 0x10), u8 *, WFC_CONTROL_FRIEND_SLOT);
     }
-    return var_r4;
+    return slot;
 }
 
 s32 Wfc_EndSession(void) {
@@ -566,29 +570,33 @@ void Wfc_SetSlotImage(s32 arg0, M2C_UNK arg1) {
     MIi_CpuCopy32(arg1, Wfc_GetWorkBlock(0x10) + (arg0 << 8), 0xF0);
 }
 
-s32 func_0202f2f4(s32 arg0, M2C_UNK arg1) {
-    u8 temp_r1;
-    void *temp_r0;
+/* Claim an owned WFC work block: set `tag`'s bit in the control block's ownership
+ * mask and hand the block to the session's allocator callback.  Returns 0 when the
+ * bit was already set, otherwise the callback's result. */
+s32 Wfc_AcquireWorkBlock(s32 tag, M2C_UNK size) {
+    u8 owned;
+    void *state;
 
-    temp_r0 = Wfc_GetWorkBlock(1);
-    temp_r1 = M2C_FIELD(temp_r0, u8 *, 8);
-    if (temp_r1 & arg0) {
+    state = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    owned = M2C_FIELD(state, u8 *, WFC_CONTROL_MASK);
+    if (owned & tag) {
         return 0;
     }
-    M2C_FIELD(temp_r0, u8 *, 8) = (u8) (temp_r1 | arg0);
-    return M2C_FIELD(temp_r0, s32 (**)(s32, M2C_UNK), 0)(arg0, arg1);
+    M2C_FIELD(state, u8 *, WFC_CONTROL_MASK) = (u8)(owned | tag);
+    return M2C_FIELD(state, s32 (**)(s32, M2C_UNK), 0)(tag, size);
 }
 
-void func_0202f334(s32 arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    u8 temp_r2;
-    void *temp_r0;
+/* Release an owned WFC work block: clear its bit in the control block's ownership
+ * mask and hand the block back to the session's free-block callback. */
+void Wfc_ReleaseWorkBlock(s32 tag, void *block, s32 size) {
+    WfcAllocationState *state = Wfc_GetWorkBlock(WFC_WORK_CONTROL);
+    u8 mask;
 
-    temp_r0 = Wfc_GetWorkBlock(1);
-    temp_r2 = M2C_FIELD(temp_r0, u8 *, 8);
-    if (!(temp_r2 & arg0)) {
+    mask = state->ownedMask;
+    if (!(mask & tag)) {
         return;
     }
-    M2C_FIELD(temp_r0, u8 *, 8) = (u8) (temp_r2 & ~arg0);
-    M2C_FIELD(temp_r0, M2C_UNK (**)(s32, M2C_UNK, M2C_UNK), 4)(arg0, arg1, arg2);
+    state->ownedMask = mask & ~tag;
+    state->freeBlock(tag, block, size);
 }
 

@@ -30,10 +30,21 @@ Unk020AEntry *AddMapOrder(s32,s32,s32,s32,s32,s32,u8,s32);
 Unk020AEntry *p=AddMapOrder(x,y,width,height,type,player,enabled,value);
 u16 topBits=(u16)top;u16 kindBits=(u16)kind;u8 lastByte=last;p->mode=(u8)mode;p->top=topBits;p->kind=kindBits;M2C_FIELD(p,s8 *,6)=mode;p->last=lastByte;return (s32)p;}
 
-void func_020a4a68(Unk020AEntry *p) {while(p->type){*p=p[1];p++;}}
+/* Remove a map order from the map's order queue (entries from map+MAP_ORDERS): shift
+ * every later entry down one slot, stopping at the free entry (type 0) that ends
+ * the queue. */
+void RemoveMapOrder(Unk020AEntry *order) {
+    while (order->type) {
+        *order = order[1];
+        order++;
+    }
+}
 
-s32 GetFacingOffset(s32 arg0) {
-    switch (arg0) {                                 /* irregular */
+/* Return the signed sprite tile offset of a unit facing `facing` (0..3, the top
+ * two bits of the unit's facing word): facing right (0) adds 0x2000 tiles to the
+ * sprite's base tile, facing left (2) subtracts it, and up/down are centred. */
+s32 GetFacingOffset(s32 facing) {
+    switch (facing) {
     case 0:
         return 0x2000;
     case 1:
@@ -279,7 +290,7 @@ void PlayOrderEffectStep(void *sprite) {
     M2C_UNK SetSpriteAnimation(void *, s32);
     void *FindMapOrderAtTile(s16, s16);
     M2C_UNK func_020b6f98(s16, s16, s32, void *);
-    M2C_UNK func_020b7138(s16, s16, s16, s16, s32, void *);
+    M2C_UNK CreateGasStormEffect(s16, s16, s16, s16, s32, void *);
     M2C_UNK SpawnBeamEffect(s16, s16, u32, s32, void *);
     extern Unk020APosition *gSelectionQueue;
     Unk020APosition *queue = gSelectionQueue, *order, *target;
@@ -300,7 +311,7 @@ void PlayOrderEffectStep(void *sprite) {
         SpawnBeamEffect((s16)target->c, (s16)target->d, (u32)(M2C_FIELD(orderTile, u16 *, 2) << 16) >> 30, nextSlot + 1, sprite); break;
     case 5:
         target = &queue[slot + 1];
-        func_020b7138((s16)order->c, (s16)order->d, (s16)target->c, (s16)target->d, slot + 2, sprite);
+        CreateGasStormEffect((s16)order->c, (s16)order->d, (s16)target->c, (s16)target->d, slot + 2, sprite);
         M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++; break;
     }
     M2C_FIELD(sprite, s16 *, ORDER_SPRITE_QUEUE_CURSOR)++;

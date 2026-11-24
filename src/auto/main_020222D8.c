@@ -126,14 +126,18 @@ void TlsProcessServerHello(s32 channel, u8 *body) {
     M2C_FIELD(channel, u8 *, TLS_STATE) = 2;
 }
 #pragma opt_propagation reset
-s32 TlsListContainsSuite(u8 *p,s32 n,s32 stride,s32 target) {
-s32 i,v;
-for(i=0;i<n;i++,p+=stride) {
-v=p[0]; v=(v<<8)+p[1];
-if(stride==3)v=p[2]+(v<<8);
-if(v==target)return 1;
-}
-return 0;
+/* Returns 1 when the cipher suite list the peer offered (`count` entries of
+ * `entrySize` bytes holding big-endian suite ids) contains `suite`; SSLv2 lists
+ * use 3-byte entries, later versions 2. */
+s32 TlsListContainsSuite(u8 *list, s32 count, s32 entrySize, s32 suite) {
+    s32 i, value;
+    for (i = 0; i < count; i++, list += entrySize) {
+        value = list[0];
+        value = (value << 8) + list[1];
+        if (entrySize == 3) value = list[2] + (value << 8);
+        if (value == suite) return 1;
+    }
+    return 0;
 }
 
 /* Picks the first cipher suite this build prefers (gTlsCipherSuites) that the

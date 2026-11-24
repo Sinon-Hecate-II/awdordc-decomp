@@ -42,7 +42,7 @@ s32 IsPropertyCell(s32,s32);
 s32 GetUnitRemainingMoveRange(void *);
 void func_ov000_02199f38(void);
 void PlanMoveDestination(s32,s32);
-s32 func_ov000_021a91d0(s32);
+s32 IsRepairPropertyKind(s32);
 void SelectAttackingUnitFallback(void);
 #pragma push
 #pragma opt_common_subs off
@@ -163,7 +163,7 @@ void func_ov000_02190094(void)
       tile = new_var[1][(0x1420 + x) + (*((u16 *) ((new_var[1] + 0x3758) + (y * 2))))];
       cost = 2 * (*((s8 *) (((new_var[1] + 0x2338) + x) + (*((u16 *) ((new_var[1] + 0x3758) + (y * 2)))))));
       i = (*((s8 **) ((new_var[1] + 0x52e8) + (y * 4))))[x];
-      if (func_ov000_021a91d0(tile & 31) == 1)
+      if (IsRepairPropertyKind(tile & 31) == 1)
       {
         cost--;
       }

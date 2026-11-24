@@ -5,7 +5,15 @@ void UpdateMapCursor(void);
 void UpdateUnitSelectCursor(void);
 void UpdateAimingCursor(void);
 
-void func_020d4430(void){extern void **gCurrentMap;if((s32)M2C_FIELD(*gCurrentMap,u16*,0x52a2)>1)func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,0x52a4));func_ov000_0216a86c();M2C_FIELD(*gCurrentMap,u16*,0x52b0)=6;}
+/* Turn-start setup step (MAP_STATE_TURN_START_SETUP): from the second turn on,
+ * start the current player's music, run the map event's turn-start script, then
+ * advance to MAP_STATE_TURN_START. */
+void TurnStartSetupStep(void) {
+    extern void **gCurrentMap;
+    if ((s32)M2C_FIELD(*gCurrentMap, u16 *, MAP_TURN) > 1) PlayPlayerMusic(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
+    RunTurnStartEvent();
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_STATE) = MAP_STATE_TURN_START;
+}
 
 /* Advances the battle state machine one step: bail out when locked or busy,
    handle the current entry's pending flag, otherwise run the step sequence. */
@@ -26,7 +34,7 @@ state=(u8 *)*gCurrentMap+0x67a4+M2C_FIELD(*gCurrentMap,u16 *,0x52a4)*0x8c;
 StepMapViewToTile(M2C_FIELD(state,u8 *,0x2d),M2C_FIELD(state,u8 *,0x2e));
 }
 if(IsMapViewScrolling())return;
-func_020a2b84(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+PlayPlayerMusic(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
 RefreshMapCursorCellCache();BeginWeatherResetTransition();func_020a694c();ApplyTurnRepairs();RefreshMapView();
 M2C_FIELD(*gCurrentMap,u16 *,0x52b0)=7;
 }
@@ -110,10 +118,10 @@ void func_020d4928(void) {
     M2C_UNK InitBattleMapPresentation();
     M2C_UNK InitPlayerCursorPositions();
     M2C_UNK LoadCurrentMap();
-    M2C_UNK func_020d4ae8();
+    M2C_UNK SetupBattleMapView();
     M2C_UNK func_020b1ae0();
     func_020b1ae0();
-    func_020d4ae8();
+    SetupBattleMapView();
     LoadCurrentMap();
     InitPlayerCursorPositions();
     InitBattleMapPresentation();
@@ -126,7 +134,7 @@ void func_020d4948(void) {
     CreateSpriteFromClass(&data_0212be74, 7);
 }
 
-void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void func_02086330(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;func_02086330(func_02084cc0(arg0));}
+void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084cc0(void *); void DeleteVoiceChatWidgets(void *); if(M2C_FIELD(&gBattleEndState,u8*,0)==0)return;DeleteVoiceChatWidgets(func_02084cc0(arg0));}
 
 /* Hand the finished battle over to its ending: in team mode (config mode 0) pick
  * the special ending when the player won on map BA with the clear counter at 1,
@@ -134,14 +142,14 @@ void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *func_02084c
  * the recorded battle-end conditions and then clear that record. */
 void FinishBattle(void) {
     M2C_UNK func_02088634();
-    M2C_UNK func_0209f858();
+    M2C_UNK ResetBattleEndState();
     s32 DidPlayerWin();
     M2C_UNK func_020cd5ac();
     M2C_UNK func_020d887c();
     M2C_UNK func_020d88ac();
     M2C_UNK func_020d895c();
     M2C_UNK func_020d8cc8();
-    s32 func_020e4b54();
+    s32 IsFinalCampaignMap();
     extern s32 gSaveSlotSummary;
     extern M2C_UNK gBattleEndState;
     extern u16 gMapConfig;
@@ -150,7 +158,7 @@ void FinishBattle(void) {
     battleMode = (u32) (gMapConfig << 0x1D) >> 0x1D;
     switch ((u8) battleMode) {
     case 0:
-        if ((DidPlayerWin() != 0) && (func_020e4b54() != 0) && (((u32) (gSaveSlotSummary << 8) >> 0x18) == 1)) {
+        if ((DidPlayerWin() != 0) && (IsFinalCampaignMap() != 0) && (((u32) (gSaveSlotSummary << 8) >> 0x18) == 1)) {
             func_020d88ac();
             return;
         }
@@ -165,7 +173,7 @@ void FinishBattle(void) {
                 func_020d895c();
             }
             func_020d8cc8();
-            func_0209f858();
+            ResetBattleEndState();
             return;
         }
         func_020d887c();
@@ -192,7 +200,7 @@ func_020b1ae0();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),void(**)(void),0x50);
 if(callback)callback();
 InitBattleMapPresentation();
-func_020a2b84(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
+PlayPlayerMusic(M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER));
 func_020d93a8();
 }
 
@@ -201,7 +209,20 @@ void func_020d4ac8(s16 arg0) {
     M2C_FIELD(CreateSpriteFromClass(&data_0212bdcc, 7), s16 *, 0x34) = arg0;
 }
 
-int func_020d4ae8(void){extern void **gCurrentMap;int (*cb)(void);func_020d3d24();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x4c);if(cb)cb();cb=M2C_FIELD(M2C_FIELD(gCurrentMap,void**,4),int(**)(void),0x50);if(cb)return cb();return (int)cb;}
+/* Reset and start the battle map, then run the map-view controller's callbacks:
+ * its setup callback after the load, and its restore callback (whose result is
+ * returned) before the presentation is built. */
+int SetupBattleMapView(void) {
+    extern void **gCurrentMap;
+    int (*cb)(void);
+
+    ResetBattleMapAndBeginPhase();
+    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), int (**)(void), MAPVIEW_SETUP_CB);
+    if (cb) cb();
+    cb = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), int (**)(void), MAPVIEW_RESTORE_CB);
+    if (cb) return cb();
+    return (int)cb;
+}
 
 extern void CreateBattleMapViewSprites(void);
 extern void CreateWeatherEffectSprite(void);
@@ -243,8 +264,8 @@ M2C_UNK RestoreBattleMapView(void){extern void **gCurrentMap;void (*cb)(void)=M2
 
 void func_020d4c08(void) {
     M2C_UNK func_020d4ba4();
-    M2C_UNK func_020d8e28();
-    func_020d8e28();
+    M2C_UNK RebuildSubScreenUi();
+    RebuildSubScreenUi();
     func_020d4ba4();
 }
 
@@ -348,10 +369,10 @@ case 0:UpdateMapCursor();break;
 case 1:func_020d5068();break;
 case 2:UpdateAimingCursor();break;
 case 3:UpdateUnitSelectCursor();break;
-case 4:func_020d61ac();break;
+case 4:OpenMapActionMenuAtCursor();break;
 case 5:UpdateMapTargetCursor();break;
 case 6:func_020d6310();break;
-case 7:func_020d6350();break;
+case 7:UpdateMapCursorReturn();break;
 case 8:UpdateMapSelectionCursor();break;
 case 9:func_020d54b4();break;
 case 10:UpdateMapCursorSettle();break;
@@ -384,7 +405,7 @@ int GetMapInputState(void) {
  * handler consume the key, draws the unit-info panel and, on a cancel action,
  * clears the unit selection. */
 void UpdateMapCursor(void) {
-s32 IsUiCancelAvailable(void); s32 func_020bd13c(void); s32 func_ov000_0216ab64(s32); s32 func_020bc910(void); s32 HandleMapTouchRelease(void);
+s32 IsUiCancelAvailable(void); s32 func_020bd13c(void); s32 RunCursorIdleEvent(s32); s32 func_020bc910(void); s32 HandleMapTouchRelease(void);
 s32 hadSelection, cancelled, playSound, key;
 hadSelection=IsUiCancelAvailable();
 cancelled=0; playSound=0;
@@ -393,7 +414,7 @@ switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1;
 if(playSound) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
 MapCursor_StepTowardTarget(0);
 if(IsMapCursorIdle()) {
-if(func_ov000_0216ab64(1)) return;
+if(RunCursorIdleEvent(1)) return;
 switch(key) {
 case 0: case 0x20: case 0x1000:
 if(func_020bc910()) return;
@@ -492,7 +513,7 @@ void CloseAimingCursor(void){extern void **gCurrentMap;CloseAllActiveSpriteSlots
 void UpdateUnitSelectCursor(void) {
 extern void **gCurrentMap;
 s32 IsSelectableUnitAt(s32,s32);
-s32 func_020bcaf0(void);
+s32 GetUnitSelectKeyAction(void);
 s32 GetAimCursorTouchAction(void);
 s32 valid, keys;
 u32 unitId;
@@ -503,7 +524,7 @@ func_0207a7a4(1,4);
 valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 if(valid) MapCursor_StepTowardTarget(4); else MapCursor_StepTowardTarget(5);
 if(!IsMapCursorIdle()) return;
-keys |= func_020bcaf0();
+keys |= GetUnitSelectKeyAction();
 keys |= GetAimCursorTouchAction();
 if(keys&0x20) {CloseAimingCursor();return;}
 if(keys&0x100) {CreateMapMenu();return;}

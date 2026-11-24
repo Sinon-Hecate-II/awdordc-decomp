@@ -36,12 +36,12 @@ s32 GetSceneSlideOffset(void) {
 /* Reset the shared battle-scene state for entry, store the animation direction
  * and neighbour flags (c, d, e), then start the scene type picked by kind. */
 void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
-    void func_ov003_021f1a70(void);
+    void ClearSceneLayerOverrides(void);
     void func_ov003_021f1bc0(void);
     func_ov003_021f1bc0();
     func_ov003_021f14d8(c,d,e);
     SetOv003SceneClass(0);
-    func_ov003_021f1a70();
+    ClearSceneLayerOverrides();
     func_ov003_021f14b4();
     switch(kind){
     case 0: func_ov003_021fd488(entry); return;
@@ -63,7 +63,7 @@ void Ov003_StartBattleScene(void *entry,u32 kind,M2C_UNK c,M2C_UNK d,u8 e) {
     case 16:
     case 17:
         ApplyBgLayerVisibility();
-        func_02086330();
+        DeleteVoiceChatWidgets();
         CreateMatchNameLabel(0,0x6e0,entry);
         return;
     case 18: func_ov003_021fe3b4(entry); return;
@@ -97,7 +97,7 @@ u8 func_ov003_021f17fc(void) {
     return var_r0;
 }
 
-void func_ov003_021f182c(void) {
+void Ov003_CreateScreenTransition(void) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     if (func_ov003_021f13c8() == 0) {
         return;
@@ -134,7 +134,7 @@ void ApplySceneLayers(u8 *layers) {
     void func_020af144(u8, u8, u8, u8);
     void func_020af178(u8, u8);
     void func_020af19c(u8, u8);
-    extern M2C_UNK gSceneLayerConfig;
+    extern M2C_UNK gSceneConfig;
     u8 mainOn;
     u8 subOn;
 
@@ -147,7 +147,7 @@ void ApplySceneLayers(u8 *layers) {
     } else if (subOn != 0) {
         func_020af19c(layers[SCENE_LAYER_SUB_LAYER], layers[SCENE_LAYER_SUB_PALETTE]);
     }
-    M2C_FIELD(&gSceneLayerConfig, u8 **, 4) = layers;
+    M2C_FIELD(&gSceneConfig, u8 **, 4) = layers;
 }
 
 void func_ov003_021f1920(void) {
@@ -162,7 +162,7 @@ void func_ov003_021f1920(void) {
 void CreateScene3DSprite(void *definition) {
     extern s32 gCur3DSpriteEngine, g3DSpriteEngineMain, g3DSpriteEngineSub;
     extern u8 gOv003SceneState;
-    extern M2C_UNK gSceneLayerConfig;
+    extern M2C_UNK gSceneConfig;
     void *Create3DSprite(s32);
     s32 func_020aaf74(void *);
     void LoadSpriteResource(s32, s32, s32, void *);
@@ -201,7 +201,7 @@ void CreateScene3DSprite(void *definition) {
     } while (++engineIndex < 2);
 
     gCur3DSpriteEngine = savedEngine;
-    M2C_FIELD(&gSceneLayerConfig, void **, 0) = definition;
+    M2C_FIELD(&gSceneConfig, void **, 0) = definition;
 }
 
 void DeleteOv003SceneSprite(void) {
@@ -210,63 +210,83 @@ void DeleteOv003SceneSprite(void) {
     DeleteSpriteObject(M2C_FIELD(&gOv003SceneState, s32 *, 0x10));
 }
 
-void func_ov003_021f1a70(void) {
- extern s32 gSceneLayerOverrides[2][4];
- u8 i=0,j;
- do { j=0; do { gSceneLayerOverrides[i][j]=0; j++; }while(j<4); i++; }while(i<2);
+/* Clear gSceneLayerOverrides, the scene's per-engine BG-layer override table:
+ * zero every layer slot on the main and sub engines. */
+void ClearSceneLayerOverrides(void) {
+    extern s32 gSceneLayerOverrides[SCENE_ENGINE_COUNT][SCENE_LAYER_COUNT];
+    u8 engine = 0;
+    u8 layer;
+
+    do {
+        layer = 0;
+        do {
+            gSceneLayerOverrides[engine][layer] = 0;
+            layer++;
+        } while (layer < SCENE_LAYER_COUNT);
+        engine++;
+    } while (engine < SCENE_ENGINE_COUNT);
 }
 
-void func_ov003_021f1ab8(s32 arg0) {
-    M2C_UNK Apply3DSpriteLayout();
+/* Apply a 3D sprite layout preset on the main 2D engine and remember it as the
+ * scene's main-screen layout. */
+void SetSceneLayoutMain(void *layout) {
+    M2C_UNK Apply3DSpriteLayout(void *);
+    extern M2C_UNK gSceneConfig;
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK gSceneLayerConfig;
-    s32 temp_r4;
+    s32 savedEngine;
 
-    temp_r4 = gCur3DSpriteEngine;
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
-    Apply3DSpriteLayout();
-    gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&gSceneLayerConfig, s32 *, 8) = arg0;
+    Apply3DSpriteLayout(layout);
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(&gSceneConfig, void **, SCENE_CONFIG_MAIN_LAYOUT) = layout;
 }
 
-void func_ov003_021f1af8(s32 arg0) {
+void SetSceneLayoutSub(s32 arg0) {
     M2C_UNK Apply3DSpriteLayout();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK gSceneLayerConfig;
+    extern M2C_UNK gSceneConfig;
     s32 temp_r4;
     temp_r4 = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Apply3DSpriteLayout();
     gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&gSceneLayerConfig, s32 *, 12) = arg0;
+    M2C_FIELD(&gSceneConfig, s32 *, 12) = arg0;
 }
 
-void func_ov003_021f1b38(s32 arg0, s32 arg1) {
+/* Set one BG-layer override on the main 2D engine: apply the override with the
+ * main engine made current, then store the value in the main engine's override
+ * row. */
+void SetSceneLayerOverrideMain(s32 layer, s32 value) {
     M2C_UNK Configure3DSpriteLayer();
     extern s32 g3DSpriteEngineMain;
     extern s32 gCur3DSpriteEngine;
-    extern s32 gSceneLayerOverrides[2][4];
-    s32 temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    extern s32 gSceneLayerOverrides[SCENE_ENGINE_COUNT][SCENE_LAYER_COUNT];
+    s32 savedEngine;
+
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     Configure3DSpriteLayer();
-    gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&gSceneLayerOverrides, s32 *, arg0 * 4) = arg1;
+    gCur3DSpriteEngine = savedEngine;
+    gSceneLayerOverrides[SCENE_ENGINE_MAIN][layer] = value;
 }
 
-void func_ov003_021f1b7c(s32 arg0, s32 arg1) {
+/* Set one BG-layer override on the sub 2D engine: apply the override with the sub
+ * engine made current, then store the value in the sub engine's override row. */
+void SetSceneLayerOverrideSub(s32 layer, s32 value) {
     M2C_UNK Configure3DSpriteLayer();
     extern s32 g3DSpriteEngineSub;
     extern s32 gCur3DSpriteEngine;
-    extern M2C_UNK data_ov003_0220fc98;
-    s32 temp_r4;
-    temp_r4 = gCur3DSpriteEngine;
+    extern M2C_UNK gSceneLayerOverridesSub;
+    s32 savedEngine;
+
+    savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     Configure3DSpriteLayer();
-    gCur3DSpriteEngine = temp_r4;
-    M2C_FIELD(&data_ov003_0220fc98, s32 *, arg0 * 4) = arg1;
+    gCur3DSpriteEngine = savedEngine;
+    M2C_FIELD(&gSceneLayerOverridesSub, s32 *, layer * 4) = value;
 }
 
 void func_ov003_021f1bc0(void) {
@@ -295,7 +315,7 @@ u8 GetMapConfirmState(void) {
 M2C_UNK ApplyBgLayerVisibility(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
-    extern M2C_UNK gSceneLayerConfig;
+    extern M2C_UNK gSceneConfig;
     extern M2C_UNK g3DSpriteEngineSub;
     u8 *layers;
     s32 savedEngine;
@@ -304,7 +324,7 @@ M2C_UNK ApplyBgLayerVisibility(void) {
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     for (layer = 0; layer < 4; layer++) {
-        layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4);
+        layers = M2C_FIELD(&gSceneConfig, u8 **, 4);
         if (layers[0] != 0 && layers[1] == layer) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
@@ -325,7 +345,7 @@ M2C_UNK ApplyBgLayerVisibility(void) {
     }
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     for (layer = 0; layer < 4; layer++) {
-        layers = M2C_FIELD(&gSceneLayerConfig, u8 **, 4);
+        layers = M2C_FIELD(&gSceneConfig, u8 **, 4);
         if (layers[3] != 0 && layers[4] == layer) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
@@ -351,11 +371,11 @@ M2C_UNK ApplyBgLayerVisibility(void) {
 /* Show on the main 2D engine, then on the sub engine, the four BG layers the
  * current scene uses and hide the rest.  A layer is used when the scene set an
  * override pointer for it (gSceneLayerOverrides) or when the shared layer
- * descriptor (gSceneLayerConfig[4]: [0]/[1] main, [3]/[4] sub) names it. */
+ * descriptor (gSceneConfig[4]: [0]/[1] main, [3]/[4] sub) names it. */
 void ApplySceneLayerVisibility(void) {
     extern M2C_UNK gCur3DSpriteEngine;
     extern M2C_UNK g3DSpriteEngineMain;
-    extern M2C_UNK gSceneLayerConfig;
+    extern M2C_UNK gSceneConfig;
     extern s32 gSceneLayerOverrides[2][4];
     extern M2C_UNK g3DSpriteEngineSub;
     u8 *descriptor;
@@ -365,7 +385,7 @@ void ApplySceneLayerVisibility(void) {
     savedEngine = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     for (layer = 0; layer < 4; layer++) {
-        if (gSceneLayerOverrides[0][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[0] != 0 && descriptor[1] == layer)) {
+        if (gSceneLayerOverrides[0][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneConfig, u8 **, 4))[0] != 0 && descriptor[1] == layer)) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
             case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
@@ -385,7 +405,7 @@ void ApplySceneLayerVisibility(void) {
     }
     gCur3DSpriteEngine = g3DSpriteEngineSub;
     for (layer = 0; layer < 4; layer++) {
-        if (gSceneLayerOverrides[1][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneLayerConfig, u8 **, 4))[3] != 0 && descriptor[4] == layer)) {
+        if (gSceneLayerOverrides[1][layer] != 0 || ((descriptor = M2C_FIELD(&gSceneConfig, u8 **, 4))[3] != 0 && descriptor[4] == layer)) {
             switch (layer) {
             case 0: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x10; break; }
             case 1: { u16 *volatile reg = *(u16 **)gCur3DSpriteEngine; *reg = *reg | 0x20; break; }
@@ -468,11 +488,12 @@ void func_ov003_021f2574(void) {
     func_ov003_021f2524(&gDownloadedMapIds);
 }
 
-void RemoveDownloadedMapId(u32 arg0) {
+/* Remove a downloaded map ID from the five-slot list, then keep the remaining IDs sorted. */
+void RemoveDownloadedMapId(u32 mapId) {
 extern M2C_UNK gDownloadedMapIds;
-u16 *base=(u16 *)&gDownloadedMapIds;
-u8 i=0;
-do { if(arg0==base[i]) base[i]=0xffff; i++; } while(i<5);
+u16 *mapIds=(u16 *)&gDownloadedMapIds;
+u8 slot=0;
+do { if(mapId==mapIds[slot]) mapIds[slot]=MAP_PICK_EMPTY; slot++; } while(slot<MAP_PICK_SLOTS);
 SortMapIdList((u16 *)&gDownloadedMapIds);
 }
 

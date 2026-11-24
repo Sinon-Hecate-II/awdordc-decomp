@@ -58,7 +58,7 @@ M2C_UNK CreateBattleSaveSprite(s32 saveBlock, s32 owner) {
     }
 }
 
-void func_020c4dd0(M2C_UNK arg0) {
+void CreateLocalBattleSaveSprite(M2C_UNK arg0) {
     M2C_UNK CreateBattleSaveSprite(M2C_UNK, M2C_UNK);
     CreateBattleSaveSprite(0, arg0);
 }
@@ -274,27 +274,33 @@ s32 GetBattleSlotSummary(s32 arg0) {
 }
 
 #pragma optimize_for_size off
-s32 func_020c5328(s32 arg0) {
-s32 p=GetBattleSaveBlock();
-if(p==0) return 0;
-if(!IsPlayerRecordPresent(arg0*12+(p+4))) { p=0; return p; }
-return arg0*40+(p+0x2d4);
+/* Return the 40-byte battle-save slot record for `slot` (SAVE_SLOT_RECORD_SIZE
+ * bytes at SAVE_RECORDS_OFFSET), or NULL when there is no battle save block or
+ * the slot holds no player record. */
+s32 GetBattleSlotRecord(s32 slot) {
+s32 block=GetBattleSaveBlock();
+if(block==0) return 0;
+if(!IsPlayerRecordPresent(slot*SAVE_SLOT_SUMMARY_SIZE+(block+SAVE_SUMMARIES_OFFSET))) { block=0; return block; }
+return slot*SAVE_SLOT_RECORD_SIZE+(block+SAVE_RECORDS_OFFSET);
 }
 #pragma optimize_for_size reset
-s32 func_020c536c(s32 arg0, M2C_UNK arg1) {
+/* Copy the 0x18-byte player record at `record` into battle-save slot `slot`'s
+ * record (SAVE_SLOT_RECORD_SIZE bytes at SAVE_RECORDS_OFFSET) and return that
+ * slot record, or NULL when there is no battle save block. */
+s32 SetBattleSlotRecord(s32 slot, M2C_UNK record) {
     M2C_UNK CopyU16(M2C_UNK, s32, M2C_UNK);
-    s32 temp_r0;
-    s32 temp_r4;
-    s32 temp_r5;
+    s32 block;
+    s32 offset;
+    s32 recordBase;
 
-    temp_r0 = GetBattleSaveBlock();
-    if (temp_r0 == 0) {
+    block = GetBattleSaveBlock();
+    if (block == 0) {
         return 0;
     }
-    temp_r4 = arg0 * 0x28;
-    temp_r5 = temp_r0 + 0x2D4;
-    CopyU16(arg1, temp_r5 + temp_r4, 0x18);
-    return temp_r5 + temp_r4;
+    offset = slot * SAVE_SLOT_RECORD_SIZE;
+    recordBase = block + SAVE_RECORDS_OFFSET;
+    CopyU16(record, recordBase + offset, 0x18);
+    return recordBase + offset;
 }
 
 s32 func_020c53ac(s32 arg0) {
@@ -438,11 +444,11 @@ CreateBattleSaveSlot(arg0,(s32)sp0);
 }
 
 s32 func_020c5640(M2C_UNK arg0) {
-    s32 func_020c4798();
+    s32 FindFreeBattleSaveSlot();
     s32 CreateBattleSaveSlot(s32, M2C_UNK);
     s32 temp_r0;
 
-    temp_r0 = func_020c4798();
+    temp_r0 = FindFreeBattleSaveSlot();
     if (temp_r0 < 0) {
         return -1;
     }
@@ -618,7 +624,7 @@ M2C_FIELD(*gCurrentMap,s16 *,0x52da)=M2C_FIELD(&gBattleHelpPanel,s16 *,4);
 
 #pragma opt_common_subs off
 M2C_UNK func_020c5b98(s32 a) {
- void DrawWindowFrame(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void func_0209b26c(s32,s32,s32,s32,s32,u16);
+ void DrawWindowFrame(s32,s32,s32,s32,s32);void func_0209bfa8(void);void ClearTileRect(void*,s32,s32);void DrawLocalizedText(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK gBattleHelpPanel;
  s32 tile; s16 index;
  DrawWindowFrame(7,18,18,6,1);
@@ -627,7 +633,7 @@ M2C_UNK func_020c5b98(s32 a) {
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=0;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x42)=0;
  M2C_FIELD(gCur3DSpriteEngine,u8*,0x46)|=2;
- if(a) { index=M2C_FIELD(&gBattleHelpPanel,u8*,0); tile=index*(s16)56+0x124; func_0209b26c(8,19,1,a,0,(u16)tile); }
+ if(a) { index=M2C_FIELD(&gBattleHelpPanel,u8*,0); tile=index*(s16)56+0x124; DrawLocalizedText(8,19,1,a,0,(u16)tile); }
  M2C_FIELD(&gBattleHelpPanel,u8*,0)=(M2C_FIELD(&gBattleHelpPanel,u8*,0)+1)&1;
 }
 #pragma opt_common_subs reset

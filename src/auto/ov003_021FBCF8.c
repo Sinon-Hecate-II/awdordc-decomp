@@ -33,7 +33,7 @@ static inline s32 PanelCategory(u32 kind) {
 void Ov003_ScrollMapList(void *panel, s32 delta, s32 force) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK ListWidgetScrollBy(void *, M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov003_021f92f4(void *, M2C_UNK);
+    M2C_UNK Ov003_RefreshMapPreview(void *, M2C_UNK);
     s16 oldScroll;
     void *list;
 
@@ -43,7 +43,7 @@ void Ov003_ScrollMapList(void *panel, s32 delta, s32 force) {
     if (oldScroll == (s16) M2C_FIELD(M2C_FIELD(panel, void **, 0x4C), s32 *, LIST_WIDGET_SCROLL)) {
         return;
     }
-    func_ov003_021f92f4(panel, 0);
+    Ov003_RefreshMapPreview(panel, 0);
     PlaySoundEffect(0x10019);
 }
 
@@ -252,7 +252,7 @@ void func_ov003_021fc26c(void *arg0) {
  void SetMenuPanelState(void *,u32);
  M2C_UNK PlaySoundEffect(s32);
  u32 GetMapCategory(void);
- M2C_UNK func_ov003_021f92f4(void *,s32);
+ M2C_UNK Ov003_RefreshMapPreview(void *,s32);
  void Ov003_SetMapConfirmEnabled(void);
  void func_020d8ccc(u16);
  void EnableMapConfirm(void);
@@ -326,7 +326,7 @@ void func_ov003_021fc26c(void *arg0) {
  default:category=4;break;
 }
  M2C_FIELD(M2C_FIELD(arg0,void **,0x48),u8 *,category)=value;
- func_ov003_021f92f4(arg0,1);
+ Ov003_RefreshMapPreview(arg0,1);
  if(PanelModeIs(arg0,0)||PanelModeIs(arg0,2)||PanelModeIs(arg0,3)||PanelModeIs(arg0,4)||PanelModeIs(arg0,6)||PanelModeIs(arg0,7)||PanelModeIs(arg0,8)) {
   index=(s16)M2C_FIELD(M2C_FIELD(arg0,void **,0x4c),s32 *,0x14);
   row=M2C_FIELD(M2C_FIELD(arg0,void **,0x5c),s32 *,4);
@@ -472,7 +472,7 @@ void func_ov003_021fca84(void *arg0) {
  if(!flags->pending)return;
  flags->pending=0;
  switch(flags->mode) {
- case 0: if(!IsMapConfirmEnabled())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); func_ov003_021f92f4(arg0,0); return;
+ case 0: if(!IsMapConfirmEnabled())return; Clear3DSpriteLayer(0); M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1; MI_CpuFill8(M2C_FIELD(arg0,s32 *,0x44)+0x186c,0,13); func_020c8e40(); Ov003_RefreshMapPreview(arg0,0); return;
  case 1: case 2: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[7](self); }; return;
  case 3: if(!IsMapConfirmEnabled())return; { register void *self = arg0; ((void (**)(void *))*(void **)self)[8](self); }; return;
  case 4: case 5: case 6: default: return;

@@ -4,9 +4,18 @@
 
 s32 FifoUploadWfcProfile(void *arg0,u8 *a) { void *func_020467b8(void *); void BuildCrc16Table(void *,s32); u16 func_02076838(void *,void *,s32); void func_02046654(s32,s32,s32); void func_02007958(void); M2C_UNK func_02008048(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK data_0213db28,data_0213db34; register s32 b=M2C_FIELD(&data_0213db28,s32 *,8); register s32 i;func_020467b8(arg0);BuildCrc16Table(a+512,0xa001);i=0;do {if(!FifoReadBlock(b,256,(s32)a)){func_02007958();return 0;}func_02008048((s32)&data_0213db34,(M2C_UNK *)(a+240),14);*(u16 *)(a+254)=func_02076838(a+512,a,254);do{func_02046654(b,256,(s32)a);}while(!func_020466d0((s32)a,b,256,(s32)(a+256)));i++;b+=256;}while(i<2);return func_0204671c()!=0; }
 
-s32 func_02045e70(u16 *a) {  extern M2C_UNK gFifoBlockTransfer; if(!FifoReadBlock(32,32,(s32)a))return 0; M2C_FIELD(&gFifoBlockTransfer,s32 *,8)=(*a<<3)-1024;return 1; }
+/* Read the 32-byte save header from the ARM7 into `header`, then point the block
+ * transfer at the save area: the header's first word gives its address in
+ * 8-byte units, biased down by 1024 bytes. */
+s32 FifoReadSaveHeader(u16 *header) {
+    extern M2C_UNK gFifoBlockTransfer;
 
-s32 func_02045eb4(M2C_UNK arg0) {
+    if (!FifoReadBlock(32, 32, (s32)header)) return 0;
+    M2C_FIELD(&gFifoBlockTransfer, s32 *, FIFO_XFER_ADDRESS) = (*header << 3) - 1024;
+    return 1;
+}
+
+s32 FifoReadSaveSlots(M2C_UNK arg0) {
 
     extern M2C_UNK gFifoBlockTransfer;
     if (FifoReadBlock(M2C_FIELD(&gFifoBlockTransfer, s32 *, 8), 0x400, arg0) != 0) {
@@ -46,7 +55,24 @@ s32 FifoUploadVerifiedBlocks(u8 *data) {
 #pragma opt_strength_reduction reset
 void func_02045ffc(M2C_UNK a) { M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); extern M2C_UNK gWfcProfileCode; MI_CpuCopy8(a,&gWfcProfileCode,14); }
 
-u8 CountSetBits(u8 *a) { s32 c,i,j,x; i=0; c=0; do {x=a[i];j=i-i;do{if((x>>j)&1)c++;j++;}while(j<8);i++;}while(i<4);return c; }
+/* Count the set bits of the four bytes at `bytes` (a player code's bit count,
+ * used as the WFC code mask's width). */
+u8 CountSetBits(u8 *bytes) {
+    s32 count, i, j, byte;
+
+    i = 0;
+    count = 0;
+    do {
+        byte = bytes[i];
+        j = 0;
+        do {
+            if ((byte >> j) & 1) count++;
+            j++;
+        } while (j < 8);
+        i++;
+    } while (i < 4);
+    return count;
+}
 
 #pragma opt_common_subs off
 void func_02046058(u8 arg0, M2C_UNK *arg1) {
@@ -282,11 +308,11 @@ s32 VerifySaveBlock(void *arg0) {
     s32 tmp;
 
     MI_CpuFill8(r8, 0, 0x700);
-    if (func_02045e70(r8) == 0) {
+    if (FifoReadSaveHeader(r8) == 0) {
         return 0xffffd8ef;
     }
     BuildCrc16Table((u8 *)r8 + 0x500, 0xA001);
-    if (func_02045eb4(r8) == 0) {
+    if (FifoReadSaveSlots(r8) == 0) {
         return 0xffffd8ef;
     }
 

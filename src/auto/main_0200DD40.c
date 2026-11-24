@@ -691,44 +691,51 @@ s32 IsLcdEnabled(void) {
     return 0;
 }
 
-s32 func_0200ec60(s32 arg0, void (*arg1)(s32, s32 *), s32 *arg2) {
- s32 Arm7CommandAcquire();
- void Arm7SendCommand(s32);
- extern M2C_UNK gArm7CommandState;
- if (Arm7CommandAcquire() == 0) return 1;
- M2C_FIELD(&gArm7CommandState, void (**)(s32,s32 *), 0x1C) = arg1;
- M2C_FIELD(&gArm7CommandState, s32 **, 0x20) = arg2;
- Arm7SendCommand((u8)arg0 | 0x03006600);
- return 0;
+/* Send the ARM7 the value command (0x66) with `value` as its argument, remembering
+ * `callback` and its user pointer for the reply.  Returns 1 when a command is
+ * already outstanding, 0 once it has been sent. */
+s32 Arm7SetValue(s32 value, void (*callback)(s32, s32 *), s32 *user) {
+    s32 Arm7CommandAcquire();
+    void Arm7SendCommand(s32);
+    extern M2C_UNK gArm7CommandState;
+    if (Arm7CommandAcquire() == 0) return 1;
+    M2C_FIELD(&gArm7CommandState, void (**)(s32, s32 *), ARM7_CMD_CALLBACK) = callback;
+    M2C_FIELD(&gArm7CommandState, s32 **, ARM7_CMD_USER) = user;
+    Arm7SendCommand((u8)value | 0x03006600);
+    return 0;
 }
 
 s32 func_0200eca8(s32 arg0) {
     void func_0200e270(void);
     s32 sp0;
     s32 result;
-    result = func_0200ec60(arg0, func_0200e2b0, &sp0);
+    result = Arm7SetValue(arg0, func_0200e2b0, &sp0);
     if (result != 0) return result;
     func_0200e270();
     return sp0;
 }
 
-s32 func_0200ecd0(s32 arg0, s32 arg1, s32 arg2) {
+/* Take the ARM7 command service and ask the ARM7 for its system value (command
+ * 0x67): the reply is stored through `valuePtr`, after which `callback` is called
+ * with it and `user`.  Returns 1 when a command is already outstanding, 0 once
+ * this one has been sent. */
+s32 Arm7ReadValue(s32 valuePtr, s32 callback, s32 user) {
     s32 Arm7CommandAcquire();
     extern M2C_UNK gArm7CommandState;
     if (Arm7CommandAcquire() == 0) {
         return 1;
     }
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x1C) = arg1;
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x20) = arg2;
-    M2C_FIELD(&gArm7CommandState, s32 *, 0x24) = arg0;
-    Arm7SendCommand(0x03006700);
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_CALLBACK) = callback;
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_USER) = user;
+    M2C_FIELD(&gArm7CommandState, s32 *, ARM7_CMD_VALUE_PTR) = valuePtr;
+    Arm7SendCommand(0x03000000 | (ARM7_CMD_GET_VALUE << 8));
     return 0;
 }
 
-s32 func_0200ed18(s32 arg0) {
+s32 Arm7ReadValueWait(s32 arg0) {
     s32 sp0;
     s32 result;
-    result = func_0200ecd0(arg0, (s32)func_0200e2b0, (s32)&sp0);
+    result = Arm7ReadValue(arg0, (s32)func_0200e2b0, (s32)&sp0);
     if (result != 0) return result;
     func_0200e270();
     return sp0;

@@ -443,13 +443,16 @@ M2C_UNK BuildMoveRangeFromPathEnd(void) {
     FloodFillUnitRangeForPlayer((u16)((map[MAP_CURSOR_UNIT_ID] >> 6) + 1), lastStep[UNIT_PATH_X], lastStep[UNIT_PATH_Y], (u32)(M2C_FIELD(M2C_FIELD(map, u8 **, MAP_CURSOR_UNIT), u8 *, 0) << 26) >> 26, lastStep[UNIT_PATH_STEP_COST], 1);
 }
 
-void func_020a05d8(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_01ffc4b8(M2C_UNK, M2C_UNK, s32);
+/* Rebuild the unit's pending move path so it ends at tile (x, y): trim the path to
+ * its first step, rebuild the movement range from there, retrace the cursor path
+ * to the tile and replay it into the path. */
+void RebuildMovePathToTile(s32 x, s32 y) {
+    M2C_UNK BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
     M2C_UNK BuildMoveRangeFromPathEnd();
-extern s32 *gCurrentMap;
+    extern s32 *gCurrentMap;
     func_020a0068(1);
     BuildMoveRangeFromPathEnd();
-    func_01ffc4b8(arg0, arg1, *gCurrentMap + 0x5388);
+    BuildMovePathForTile(x, y, *gCurrentMap + MAP_CURSOR_PATH);
     ReplayCursorPathSteps();
 }
 

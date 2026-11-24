@@ -139,21 +139,25 @@ void SetEffectNodeResourceCore(void *node,s32 resource,s16 shape,s8 kind,u8 scri
     M2C_FIELD(node,u8 *,FX_NODE_FLASH_CHILD)=0;
 }
 
-void func_ov002_021e173c(void *arg0, s8 arg1) {
-    s32 temp_ip;
-    s32 temp_r3;
+/* Point an effect node at script `script` of the resource it already holds: take
+ * the script's first command from the resource's offset table, make it the node's
+ * current and next command, and reset its timers, polygon slot and flags.  A node
+ * with no resource, or a script index of 0xFF, is left alone. */
+void SetEffectNodeScript(void *node, s8 script) {
+    s32 resourceBase;
+    s32 command;
 
-    temp_ip = M2C_FIELD(arg0, s32 *, 4);
-    if ((temp_ip != 0) && (arg1 != 0xFF)) {
-        temp_r3 = temp_ip + M2C_FIELD((temp_ip + (arg1 * 4)), s32 *, 4);
-        M2C_FIELD(arg0, s32 *, 0x18) = temp_r3;
-        M2C_FIELD(arg0, s32 *, 0x1C) = temp_r3;
-        M2C_FIELD(arg0, s8 *, 0x46) = arg1;
-        M2C_FIELD(arg0, s32 *, 0x30) = 0;
-        M2C_FIELD(arg0, s32 *, 0x34) = 0;
-        M2C_FIELD(arg0, s8 *, 0x4D) = 0;
-        M2C_FIELD(arg0, s8 *, 0x4F) = 0;
-        M2C_FIELD(arg0, s8 *, 0x51) = 0;
+    resourceBase = M2C_FIELD(node, s32 *, FX_NODE_ID);
+    if ((resourceBase != 0) && (script != 0xFF)) {
+        command = resourceBase + M2C_FIELD((resourceBase + (script * 4)), s32 *, 4);
+        M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_START) = command;
+        M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_NEXT) = command;
+        M2C_FIELD(node, s8 *, FX_NODE_SCRIPT_INDEX) = script;
+        M2C_FIELD(node, s32 *, FX_NODE_FRAME_TICKS) = 0;
+        M2C_FIELD(node, s32 *, FX_NODE_SCRIPT_TICKS) = 0;
+        M2C_FIELD(node, s8 *, FX_NODE_POLYGON_SLOT) = 0;
+        M2C_FIELD(node, s8 *, 0x4F) = 0;
+        M2C_FIELD(node, s8 *, FX_NODE_FLAG_51) = 0;
     }
 }
 

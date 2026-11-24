@@ -17,7 +17,7 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK GX_SetBankForOBJExtPlttSub(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     s32 Divide(s32, M2C_UNK);
-    M2C_UNK func_02081384(M2C_UNK *, M2C_UNK);
+    M2C_UNK LoadFileToTextureBank(M2C_UNK *, M2C_UNK);
     M2C_UNK func_02081400(M2C_UNK *, M2C_UNK, M2C_UNK);
     M2C_UNK OpenNarcArchive(M2C_UNK *);
     M2C_UNK CloseNarcArchive();
@@ -37,14 +37,14 @@ void func_ov004_02217f5c(void *arg0) {
     M2C_UNK func_020aad18(void *);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    M2C_UNK func_020ab150(void *, M2C_UNK);
+    M2C_UNK CreateUnitSpriteButtonTask(void *, M2C_UNK);
     void *func_020ab1c4(void *);
     M2C_UNK ResetBattleMap();
     M2C_UNK LoadBattleMap(s32);
     M2C_UNK PreloadMapTileset(s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     M2C_UNK func_ov003_021fef58(void *);
-    M2C_UNK func_ov003_021ff36c();
+    M2C_UNK Ov003_SyncMapMenuMap();
     extern void **g3DSpriteEngineSub;
     extern void **g3DSpriteEngineMain;
     extern void **gCur3DSpriteEngine;
@@ -166,11 +166,11 @@ void func_ov004_02217f5c(void *arg0) {
     func_020994e0();
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     SetFileDirectory(&data_ov004_0223c5a8);
-    func_02081384(&data_ov004_0223c5f4, 0);
+    LoadFileToTextureBank(&data_ov004_0223c5f4, 0);
     func_02081400(&data_ov004_0223c5b8, 0, 0x200);
-    func_02081384(&data_ov004_0223c5d0, 0x28000);
+    LoadFileToTextureBank(&data_ov004_0223c5d0, 0x28000);
     func_02081400(&data_ov004_0223c5c0, 0x200, 0x20);
-    func_02081384(&data_ov004_0223c660, 0x30000);
+    LoadFileToTextureBank(&data_ov004_0223c660, 0x30000);
     func_02081400(&data_ov004_0223c630, 0x220, 0x20);
     OpenNarcArchive(&data_ov004_0223c624);
     func_0208168c(GetLocalizedFileName(&data_ov004_0223c5e8), 0x38000);
@@ -178,7 +178,7 @@ void func_ov004_02217f5c(void *arg0) {
     CloseNarcArchive();
     func_02081400(&data_ov004_0223c5c8, 0x240, 0xA0);
     func_02081400(&data_ov004_0223c5b0, 0x2E0, 0x20);
-    func_02081384(&data_ov004_0223c60c, 0x3A000);
+    LoadFileToTextureBank(&data_ov004_0223c60c, 0x3A000);
     func_02081400(&data_ov004_0223c600, 0x300, 0x20);
     OpenNarcArchive(&data_ov004_0223c66c);
     LoadNarcFileDecompressed(&data_ov004_0223c654, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18) + 0x20);
@@ -190,7 +190,7 @@ void func_ov004_02217f5c(void *arg0) {
     LoadSpriteResource(0, 2, 0x47, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x30) + 0x260);
     temp_r0_3 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_3, 2, 0x140, 3, 0);
-    func_020ab150(temp_r0_3, 2);
+    CreateUnitSpriteButtonTask(temp_r0_3, 2);
     M2C_FIELD(temp_r0_3, s16 *, 0x3C) = 0x800;
     Set3DSpriteSlideTargetAndStart(temp_r0_3, 0xE0, 0x9C, 0xE0, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_3, void **, 0x64), u8 *, 0x12) != 0) {
@@ -208,7 +208,7 @@ void func_ov004_02217f5c(void *arg0) {
     func_020aad18(temp_r0_3);
     temp_r0_4 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_4, 6, 0x150, 3, 0);
-    func_020ab150(temp_r0_4, 0x100);
+    CreateUnitSpriteButtonTask(temp_r0_4, 0x100);
     M2C_FIELD(temp_r0_4, s16 *, 0x3C) = 0x800;
     Set3DSpriteSlideTargetAndStart(temp_r0_4, 0xC0, 0x9C, 0xC0, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_4, void **, 0x64), u8 *, 0x12) != 0) {
@@ -227,7 +227,7 @@ void func_ov004_02217f5c(void *arg0) {
     temp_r0_5 = func_020ab1c4(arg0);
     InitUnitSprite(temp_r0_5, 0x12, 0x160, 3, 0);
     M2C_FIELD(temp_r0_5, s16 *, 0x3C) = 0x800;
-    func_020ab150(temp_r0_5, 8);
+    CreateUnitSpriteButtonTask(temp_r0_5, 8);
     Set3DSpriteSlideTargetAndStart(temp_r0_5, 0x80, 0x9C, 0x80, 0xBC);
     if (M2C_FIELD(M2C_FIELD(temp_r0_5, void **, 0x64), u8 *, 0x12) != 0) {
         var_r0_3 = 1;
@@ -320,7 +320,7 @@ loop_46:
         ResetBattleMap();
         PreloadMapTileset(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
         LoadBattleMap(M2C_FIELD(var_r5, u8 *, 7) + 0xA1);
-        func_ov003_021ff36c();
+        Ov003_SyncMapMenuMap();
     }
     M2C_FIELD(arg0, s16 *, 0x4C) = 0;
     M2C_FIELD(arg0, s16 *, 0x4E) = 0;

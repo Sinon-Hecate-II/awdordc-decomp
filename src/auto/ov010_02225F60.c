@@ -66,8 +66,8 @@ s32 func_ov010_02225f60(void) {
 }
 
 void TickVoiceStream(void) {
-    M2C_UNK func_ov010_022257a0();
-    func_ov010_022257a0();
+    M2C_UNK VoiceChat_Tick();
+    VoiceChat_Tick();
 }
 
 /* Open the voice-chat link's exchange with `peerId`: when no context is

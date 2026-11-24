@@ -215,53 +215,63 @@ s32 WFC_OpenLink(s32 commandHandler) {
     return result;
 }
 
-s32 func_02012158(M2C_UNK arg0) {
+/* Queue WFC command 4: once the command channel is idle, install `callback` as
+ * the command's parameter and post it with no extra arguments.  Returns 0 on
+ * success (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_SendCommand4(M2C_UNK callback) {
     s32 WFC_CheckChannelState(M2C_UNK, M2C_UNK);
-    s32 temp_r0;
-    s32 var_r0;
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 1);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 1);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(4, arg0);
-    var_r0 = WFC_SendCommand(4, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(4, callback);
+    result = WFC_SendCommand(4, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
-s32 func_02012198(M2C_UNK arg0) {
-    s32 temp_r0;
-    s32 var_r0;
+/* Queue WFC command 5: once the command channel is idle, install `callback` as
+ * the command's parameter and post it with no extra arguments.  Returns 0 on
+ * success (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_SendCommand5(M2C_UNK callback) {
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 1);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 1);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(5, arg0);
-    var_r0 = WFC_SendCommand(5, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(5, callback);
+    result = WFC_SendCommand(5, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
-s32 func_020121d8(M2C_UNK arg0) {
-    s32 temp_r0;
-    s32 var_r0;
+/* Begin the WFC wireless link (command 6): once the command channel is idle,
+ * install `callback` as the command's parameter and post it with no extra
+ * arguments.  Returns 0 on success (WFC_CMD_OK once queued) or a Wi-Fi error
+ * code. */
+s32 WFC_StartWireless(M2C_UNK callback) {
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 2);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 2);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(6, arg0);
-    var_r0 = WFC_SendCommand(6, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(6, callback);
+    result = WFC_SendCommand(6, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* Start the WFC command channel: initialize its work area at `work` for `mode`,
@@ -307,20 +317,23 @@ s32 func_02012274(M2C_UNK arg0) {
     return var_r0;
 }
 
-s32 WFC_EndLink(M2C_UNK arg0) {
-    s32 temp_r0;
-    s32 var_r0;
+/* End the WFC link (command 2, WFC_CMD_SHUTDOWN): once the command channel is in
+ * state 2, install `callback` as the command's parameter and post the shutdown
+ * command.  Returns 0 on success (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_EndLink(M2C_UNK callback) {
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 2);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 2);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(2, arg0);
-    var_r0 = WFC_SendCommand(2, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(2, callback);
+    result = WFC_SendCommand(2, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* Starts a download-play (multiboot) session on the ARM7: checks the parameters,
@@ -391,20 +404,23 @@ void func_02012474(M2C_UNK arg0) {
     WFC_StartChildIndication(arg0, 1);
 }
 
-s32 func_02012484(M2C_UNK arg0) {
-    s32 temp_r0;
-    s32 var_r0;
+/* Queue WFC command 9: once the command channel is in state 7, install `callback`
+ * as the command's parameter and post it with no extra arguments.  Returns 0 on
+ * success (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_SendCommand9(M2C_UNK callback) {
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 7);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 7);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(9, arg0);
-    var_r0 = WFC_SendCommand(9, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(9, callback);
+    result = WFC_SendCommand(9, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* Sends this player's multiboot match profile (command 10): validates the
@@ -471,20 +487,23 @@ if (!r) r = 2;
 return r;
 }
 
-s32 func_02012700(M2C_UNK arg0) {
-    s32 temp_r0;
-    s32 var_r0;
+/* Queue WFC command 11: once the command channel is in state 5, install
+ * `callback` as the command's parameter and post it with no extra arguments.
+ * Returns 0 on success (WFC_CMD_OK once queued) or a Wi-Fi error code. */
+s32 WFC_SendCommand11(M2C_UNK callback) {
+    s32 checkResult;
+    s32 result;
 
-    temp_r0 = WFC_CheckChannelState(1, 5);
-    if (temp_r0 != 0) {
-        return temp_r0;
+    checkResult = WFC_CheckChannelState(1, 5);
+    if (checkResult != 0) {
+        return checkResult;
     }
-    WFC_SetChannelParam(0xB, arg0);
-    var_r0 = WFC_SendCommand(0xB, 0);
-    if (var_r0 == 0) {
-        var_r0 = 2;
+    WFC_SetChannelParam(0xB, callback);
+    result = WFC_SendCommand(0xB, 0);
+    if (result == 0) {
+        result = WFC_CMD_OK;
     }
-    return var_r0;
+    return result;
 }
 
 /* Sends this player's connection data to the ARM7 as WFC command 12: cleans

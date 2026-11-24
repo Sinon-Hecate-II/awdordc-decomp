@@ -229,7 +229,7 @@ void func_ov007_0221e85c(void *arg0) {
  * and the glyph pattern, then restore the engine that was current on entry. */
 void MapEditorInitScreen(void *arg0) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
-    M2C_UNK func_01ff9dd8(M2C_UNK);
+    M2C_UNK Clear3DSpriteLayerVram(M2C_UNK);
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK SetTileRectPalette(s32, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK LoadDecompressedFileTo(s32, s32);
@@ -316,9 +316,9 @@ void MapEditorInitScreen(void *arg0) {
     Clear3DSpriteLayer(1);
     Clear3DSpriteLayer(0);
     Clear3DSpriteLayer(3);
-    func_01ff9dd8(1);
-    func_01ff9dd8(0);
-    func_01ff9dd8(3);
+    Clear3DSpriteLayerVram(1);
+    Clear3DSpriteLayerVram(0);
+    Clear3DSpriteLayerVram(3);
     SetFileDirectory(&gMapEditScreenPath);
     LoadDecompressedFileTo(GetLocalizedFileNameDefault(&gMapEditSoftKeyCgName), M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x10));
     GetLocalizedFileNameDefault(&gMapEditSoftKeyNarcName);

@@ -30,6 +30,7 @@ typedef struct Ov003HelpPanel {
 #define MENU_FLAG_PENDING  0x02 /* an action is queued for the next update */
 #define MENU_FLAG_ANIM     0x08 /* a row animation is running */
 #define MENU_FLAG_MODE     0x10 /* the mode byte in MENU_MODE has been set */
+#define MENU_FLAG_SPLIT_SELECT 0x80 /* set while the split-row unit selection is active (mode 0) */
 
 #define MENU_MODE          0x36 /* u8: MENU_MODE_FIRST/SECOND, the idle value 0xFF, or MENU_MODE_SHIFTed modes */
 #define MENU_MODE_SHIFT    4    /* RequestMenuMode stores the mode shifted left by this (bytes 0x36..0x37) */
@@ -54,6 +55,17 @@ typedef struct Ov003HelpPanel {
 
 #define MENU_SELECTION_MODE 0x0F /* u8 current selection mode, indexes MENU_SELECTION_SLOTS */
 #define MENU_SELECTION_SLOTS 0x00 /* u8[] row index selected in each mode */
+
+/* MENU_SELECTION_MODE values: the layout the selection context is in.  Mode 8 is
+ * the unit list whose rows 2, 3 and 4 are the three split option rows (rows 0/1
+ * form a pair); the drawing code (ov003_0220856C.c) and the split-row predicate
+ * pick those rows out. */
+#define MENU_SELECT_MODE_SPLIT_ROWS 8
+
+/* The three split option rows (2, 3 and 4) of the split-row unit list, the rows
+ * the split-option-row predicate picks out. */
+#define MENU_SPLIT_ROW_FIRST 2
+#define MENU_SPLIT_ROW_LAST  4
 
 /* Row descriptor header (the rest points at the row's text/unit data). */
 #define MENU_DESC_TYPE   0x01 /* u8 MENU_ENTRY_* */

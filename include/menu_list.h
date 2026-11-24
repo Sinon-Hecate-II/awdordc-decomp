@@ -15,5 +15,8 @@
 #define MENU_LIST_ROW_COUNT     0x42 /* s16 number of rows in the list */
 #define MENU_LIST_REPEAT_DELAY  0x46 /* s16 frames left before a held key repeats */
 #define MENU_LIST_ROW_MARK      0x34 /* u8 nonzero when the row's unit is unavailable (drawn greyed) */
+#define MENU_LIST_ROW_SLOT_X    4    /* s32 x of the row sprite slots */
+#define MENU_LIST_ROW_SLOT_Y    0x27 /* s32 y of the first row's sprite slot */
+#define MENU_LIST_ROW_SLOT_STEP 0x10 /* s32 y distance between row slots */
 
 #endif

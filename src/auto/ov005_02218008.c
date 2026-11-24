@@ -30,7 +30,7 @@ void LoadFileToSpriteBuffer();
 void SetFileDirectory();
 void LoadGraphicsBlock();
 M2C_UNK HeapFreeBlock();
-void func_02098b94();
+void LoadFaceTextureAndPaletteAt();
 void CreateMenuTextSprite();
 void Load3DSpritePattern();
 void CreateMainWallpaperSprite();
@@ -98,7 +98,7 @@ LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpri
 LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;SetFileDirectory(data_ov005_02220958);
 p=LoadFileToBuffer(data_ov005_02220960,1);LoadGraphicsBlock((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
-for(i=0,j=0;i<12;i++,j+=12)func_02098b94((s16)(i+1),0,0x9380+(j<<6),(u16)i);
+for(i=0,j=0;i<12;i++,j+=12)LoadFaceTextureAndPaletteAt((s16)(i+1),0,0x9380+(j<<6),(u16)i);
 SetOv005FileDirectory();
 CreateMenuTextSprite((char*)gOv005MenuState+36,192,160,1,0x35c,3,1,arg0,1);
 CreateMenuTextSprite((char*)gOv005MenuState+40,224,160,2,0x36c,3,2,arg0,0);
@@ -234,11 +234,16 @@ HideAllSpriteSlots();PlaySoundEffect(0x10016);
 }
 }
 
-void func_ov005_02218db4(M2C_UNK arg0) {
-   
- extern void *gOv005MenuState;
- Ov005SyncMenuState(arg0);
- switch(M2C_FIELD(gOv005MenuState,s16 *,4)) {case 0: Ov005ListMenuInput(arg0); return; case 1: Ov005DetailMenuInput(arg0); return;}
+/* Sync the menu state and run the input handler of the page the menu is on: the
+ * main list page or the detail page. */
+void Ov005MenuInput(M2C_UNK owner) {
+    extern void *gOv005MenuState;
+
+    Ov005SyncMenuState(owner);
+    switch (M2C_FIELD(gOv005MenuState, s16 *, OV005_MENU_PAGE)) {
+    case OV005_PAGE_LIST: Ov005ListMenuInput(owner); return;
+    case OV005_PAGE_DETAIL: Ov005DetailMenuInput(owner); return;
+    }
 }
 
 void func_ov005_02218dfc(void) {

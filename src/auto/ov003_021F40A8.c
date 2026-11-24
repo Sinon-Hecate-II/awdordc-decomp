@@ -5,8 +5,8 @@
 #pragma push
 #pragma inline_depth(0)
 void func_ov003_021f40a8(void *arg0) {
-    void func_ov003_021f1b7c(s32, void *);
-    void func_ov003_021f1b38(s32, void *);
+    void SetSceneLayerOverrideSub(s32, void *);
+    void SetSceneLayerOverrideMain(s32, void *);
     void Apply3DSpriteBanks(void);
     void *CreateFrameBorderSprite(void *);
     void LoadFrameBorderSpritePattern(void *, void *, s32);
@@ -50,9 +50,9 @@ void func_ov003_021f40a8(void *arg0) {
     void *saved;
 
     list=(u8 *)M2C_FIELD(arg0,void **,0x44)+0x2e;
-    func_ov003_021f1b7c(0, &data_ov003_0220fde8);
-    func_ov003_021f1b7c(1, &data_ov003_0220fdf0);
-    func_ov003_021f1b7c(3, &data_ov003_0220fdea);
+    SetSceneLayerOverrideSub(0, &data_ov003_0220fde8);
+    SetSceneLayerOverrideSub(1, &data_ov003_0220fdf0);
+    SetSceneLayerOverrideSub(3, &data_ov003_0220fdea);
     Apply3DSpriteBanks();
     q = M2C_FIELD(arg0, void **, 0x6c);
     o = CreateFrameBorderSprite(arg0);
@@ -104,9 +104,9 @@ void func_ov003_021f40a8(void *arg0) {
     if ((u8)(OV3KIND(arg0) == 0) || (u8)(OV3KIND(arg0) == 2) || (u8)(OV3KIND(arg0) == 3) ||
         (u8)(OV3KIND(arg0) == 4) || (u8)(OV3KIND(arg0) == 6) || (u8)(OV3KIND(arg0) == 7) ||
         (u8)(OV3KIND(arg0) == 8)) {
-        func_ov003_021f1b38(0, &data_ov003_0220fdee);
-        func_ov003_021f1b38(1, &data_ov003_0220fdec);
-        func_ov003_021f1b38(3, &data_ov003_0220fde4);
+        SetSceneLayerOverrideMain(0, &data_ov003_0220fdee);
+        SetSceneLayerOverrideMain(1, &data_ov003_0220fdec);
+        SetSceneLayerOverrideMain(3, &data_ov003_0220fde4);
         Apply3DSpriteBanks();
         o = MemAlloc(0x68);
         if (o) {

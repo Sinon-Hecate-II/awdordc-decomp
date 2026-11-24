@@ -20,7 +20,7 @@ int SelectIndirectAttackAction(void *arg0) {
     void MarkAdjacentCells(int);
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
-    u8 *func_020a47e0(s32, s32);
+    u8 *FindDestructibleFeatureAtTile(s32, s32);
     s32 MapOrder_IsEnemyOwned(void);
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
@@ -69,7 +69,7 @@ int SelectIndirectAttackAction(void *arg0) {
             if (dx <= 0) dx = x - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[1];
             if (dy <= 0) dy = y - M2C_FIELD(*gCurrentMap, u8 **, 0x52d0)[2];
             if (i+dy < gUnitKindStats[((Unit0218C4 *)M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))->kind*112+12] || i+dy > GetUnitAttackRangeMax(M2C_FIELD(*gCurrentMap, u8 **, 0x52d0))) continue;
-            unit = func_020a47e0(x, y);
+            unit = FindDestructibleFeatureAtTile(x, y);
             if (unit != 0 && MapOrder_IsEnemyOwned() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;
@@ -148,7 +148,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     void MarkAdjacentCells(int);
     s32 IsUnitSelected(void *);
     s32 GetUnitAttackRangeMax(void *);
-    u8 *func_020a47e0(s32, s32);
+    u8 *FindDestructibleFeatureAtTile(s32, s32);
     s32 MapOrder_IsEnemyOwned(void);
     s32 GetUnitMaxWeaponDamagePercent(void *, s32);
     s32 Divide(s32, s32);
@@ -180,7 +180,7 @@ s32 SelectMovingIndirectAttackAction(s32 arg0) {
     for (y = 0; y < M2C_FIELD(*gCurrentMap, u16 *, 0x5146); y++) {
         for (x = 0; x < M2C_FIELD(*gCurrentMap, u16 *, 0x5144); x++) {
             if (M2C_FIELD((u8 *)*gCurrentMap + y * 4, s8 **, 0x52e8)[x] < 0) continue;
-            unit = func_020a47e0(x, y);
+            unit = FindDestructibleFeatureAtTile(x, y);
             if (unit != 0 && MapOrder_IsEnemyOwned() != 0) {
                 health = unit[4];
                 kind = ((u32)M2C_FIELD(unit, u16 *, 2) << 0x16) >> 0x1c;

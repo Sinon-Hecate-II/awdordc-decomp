@@ -10,7 +10,7 @@ extern u8 gWfcSignalSamples[16];
 #pragma push
 #pragma optimization_level 3
 void func_02028ef4(void *arg0) {
-    s32 func_020121d8(M2C_UNK *);
+    s32 WFC_StartWireless(M2C_UNK *);
     s32 WFC_SendConnectionData(M2C_UNK *, void *, M2C_UNK, M2C_UNK, s32);
     void WFC_DispatchEvent(M2C_UNK, void *, u32, s32);
     M2C_UNK WFC_SetState(M2C_UNK);
@@ -89,7 +89,7 @@ void func_02028ef4(void *arg0) {
             WFC_DispatchEvent(0, gWfcSession + 0x2140, 0U, 0x93C);
             return;
         case 13:
-            temp_r0_2 = func_020121d8(&WFC_OperationCallback);
+            temp_r0_2 = WFC_StartWireless(&WFC_OperationCallback);
             switch (temp_r0_2) {
             case 2:
                 return;
@@ -484,22 +484,25 @@ void WFC_SendConnDataRequest(void) {
     WFC_UnlockSend(&gWfcSendLock);
 }
 #pragma opt_common_subs reset
-void *func_02029784(void) {
+/* Pointer to the local connection record's alternate code inside the session
+ * (WFC_RECORD_CODE_ALT), usable only while the session is linking and has not
+ * failed; NULL otherwise. */
+void *WFC_GetConnectionAltCode(void) {
     s32 GetSession(void);
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
-    void *temp_r4;
-    void *var_r5;
+    void *session;
+    void *code;
     s32 state;
 
-    var_r5 = NULL;
-    temp_r4 = (void *)GetSession();
+    code = NULL;
+    session = (void *)GetSession();
     state = OS_DisableInterrupts();
-    if ((temp_r4 != NULL) && (M2C_FIELD(temp_r4, s32 *, 0x2260) == 9) && (M2C_FIELD(temp_r4, u8 *, 0x226B) == 0)) {
-        var_r5 = (void *)((char *)temp_r4 + 0x2144);
+    if ((session != NULL) && (M2C_FIELD(session, s32 *, WFC_SESSION_STATE) == WFC_SESSION_STATE_LINKING) && (M2C_FIELD(session, u8 *, WFC_SESSION_ABORT) == 0)) {
+        code = (void *)((char *)session + WFC_SESSION_CONN_DATA + WFC_RECORD_CODE_ALT);
     }
     OS_RestoreInterrupts(state);
-    return var_r5;
+    return code;
 }
 
 /* When the session is linking a friend and has not aborted, return the friend
@@ -688,25 +691,28 @@ s32 WFC_PlayerIdEqual(s32 a, s32 b) {
     return 1;
 }
 
-s32 func_02029ad8(void) {
+/* The link's signal grade (0..3) while the session is establishing its link, or 0
+ * otherwise: read with interrupts disabled and only reported in
+ * WFC_SESSION_STATE_LINKING. */
+s32 WFC_GetLinkSignalLevel(void) {
     s32 OS_DisableInterrupts(void);
     void OS_RestoreInterrupts(s32);
     s32 GetSession(void);
-    s32 func_02029b9c(void);
-    s32 temp_r4;
-    s32 var_r5;
-    s32 temp_r0;
+    s32 WFC_GetSignalGrade(void);
+    s32 interruptState;
+    s32 grade;
+    s32 session;
 
-    temp_r4 = OS_DisableInterrupts();
-    temp_r0 = GetSession();
-    var_r5 = 0;
-    if (temp_r0 != 0) {
-        if (M2C_FIELD(temp_r0, s32 *, 0x2260) == 9) {
-            var_r5 = func_02029b9c();
+    interruptState = OS_DisableInterrupts();
+    session = GetSession();
+    grade = 0;
+    if (session != 0) {
+        if (M2C_FIELD(session, s32 *, WFC_SESSION_STATE) == WFC_SESSION_STATE_LINKING) {
+            grade = WFC_GetSignalGrade();
         }
     }
-    OS_RestoreInterrupts(temp_r4);
-    return var_r5;
+    OS_RestoreInterrupts(interruptState);
+    return grade;
 }
 
 /* Average the signal samples taken so far: 0 before the first sample, the
@@ -740,7 +746,7 @@ u8 WFC_GetAverageSignal(void) {
     return (u8)average;
 }
 
-s32 func_02029b9c(void) {
+s32 WFC_GetSignalGrade(void) {
     u8 WFC_GetAverageSignal();
     s32 var_r1;
     u32 temp_r0;

@@ -26,7 +26,20 @@ loop_1:
     goto loop_1;
 }
 
-s32 func_020c8d0c(s32 a) { void func_02086844(s32,s32);void func_02086878(s32,s32);void SetCampaignMapSaved(s32,s32);s32 IsLastCampaignMap(s32);void StartBattleRecord(s32);func_02086844(a,0);func_02086878(a,0);SetCampaignMapSaved(a-225,0);if(!IsLastCampaignMap(a))return;StartBattleRecord(8);}
+/* Clear a campaign map's played, cleared and saved progress flags; when it is the
+ * map held by the versus battle record, start a fresh battle record. */
+s32 ClearCampaignMapProgress(s32 mapId) {
+    void SetCampaignMapPlayed(s32,s32);
+    void SetCampaignMapCleared(s32,s32);
+    void SetCampaignMapSaved(s32,s32);
+    s32 IsLastCampaignMap(s32);
+    void StartBattleRecord(s32);
+    SetCampaignMapPlayed(mapId,0);
+    SetCampaignMapCleared(mapId,0);
+    SetCampaignMapSaved(mapId-MAP_ID_CAMPAIGN_FIRST,0);
+    if(!IsLastCampaignMap(mapId))return;
+    StartBattleRecord(8);
+}
 
 void func_020c8d50(M2C_UNK arg0) {
     s32 GetMapRecordBuffer();
@@ -36,7 +49,7 @@ void func_020c8d50(M2C_UNK arg0) {
 
     temp_r4 = GetMapRecordBuffer();
     func_020c879c();
-    func_020c8d0c(arg0);
+    ClearCampaignMapProgress(arg0);
     StoreCampaignMapRecord(arg0, temp_r4);
 }
 
@@ -175,40 +188,42 @@ void LoadNextCampaignMapRecord(void *loader) {
     if (count < MAP_RECORD_STAMP_COUNT_MAX) {
         M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) = (s32) ((M2C_FIELD(record, s32 *, MAP_RECORD_STAMP_WORD) & 0xF003FFFF) | ((u32) ((count + 1) << 0x16) >> 4));
     }
-    func_020c8d0c(mapId);
+    ClearCampaignMapProgress(mapId);
     StoreCampaignMapRecord(mapId, record);
     M2C_FIELD(loader, u8 *, 0x35) = (u8) (M2C_FIELD(loader, u8 *, 0x35) + 1);
 }
 
 void func_020c9100(s32 a) {
 void *CreateSpriteForOwner();
-extern M2C_UNK data_0212b0ac;
-M2C_FIELD(CreateSpriteForOwner(&data_0212b0ac,a),u8 *,0x34)=0;
+extern M2C_UNK gCampaignMapLoadQueueClass;
+M2C_FIELD(CreateSpriteForOwner(&gCampaignMapLoadQueueClass,a),u8 *,0x34)=0;
 }
 
-void func_020c9120(s16 arg0, s32 arg1) {
-    extern M2C_UNK data_0212b0ac;
-    void *temp_r0;
+/* Append a map id and its runtime record to the campaign map load queue; the
+ * queue's per-frame step expands them into the campaign map headers. */
+void AppendCampaignMapLoadEntry(s16 mapId, s32 record) {
+    extern M2C_UNK gCampaignMapLoadQueueClass;
+    void *queue;
 
-    temp_r0 = FindObjectByClass(&data_0212b0ac);
-    if (temp_r0 == NULL) {
+    queue = FindObjectByClass(&gCampaignMapLoadQueueClass);
+    if (queue == NULL) {
         return;
     }
-    M2C_FIELD((temp_r0 + (M2C_FIELD(temp_r0, u8 *, 0x34) * 2)), s16 *, 0x36) = arg0;
-    M2C_FIELD((temp_r0 + (M2C_FIELD(temp_r0, u8 *, 0x34) * 4)), s32 *, 0x4C) = arg1;
-    M2C_FIELD(temp_r0, u8 *, 0x34) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x34) + 1);
+    M2C_FIELD((queue + (M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) * 2)), s16 *, CAMPAIGN_LOAD_QUEUE_IDS) = mapId;
+    M2C_FIELD((queue + (M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) * 4)), s32 *, CAMPAIGN_LOAD_QUEUE_RECORDS) = record;
+    M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) = (u8) (M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) + 1);
 }
 
 void func_020c9168(void *arg0) {
     M2C_UNK func_020be488(s32);
     s32 GetCampaignMapSaveType(s32);
-    M2C_UNK func_020c8d0c(s32);
+    M2C_UNK ClearCampaignMapProgress(s32);
     s32 temp_r4;
     s32 temp_r5;
 
     temp_r5 = M2C_FIELD(arg0, s32 *, 0x34);
     temp_r4 = GetCampaignMapSaveType(temp_r5);
-    func_020c8d0c(temp_r5);
+    ClearCampaignMapProgress(temp_r5);
     func_020be488(temp_r4);
 }
 
@@ -339,13 +354,15 @@ p[i]=0;
 DeleteDirectionMarkerSprites();
 }
 
-void func_020c960c(s32 a,s32 b,s32 c,void *d) {
-void MapTileToScreen(s32,s32,s32 *);
-void SetSpriteAnimFrame(void *,s32);
-s32 v[3];
-MapTileToScreen(a,b,v);
-if(v[0]<128) {SetSpriteAnimFrame(d,c);return;}
-SetSpriteAnimFrame(d,c+1);
+/* Face the map action popup sprite at tile (tileX, tileY): use animation frame
+ * `baseFrame` when the tile's screen x is in the left half, else the next frame. */
+void OrientMapActionPopup(s32 tileX, s32 tileY, s32 baseFrame, void *sprite) {
+    void MapTileToScreen(s32, s32, s32 *);
+    void SetSpriteAnimFrame(void *, s32);
+    s32 screenPos[3];
+    MapTileToScreen(tileX, tileY, screenPos);
+    if (screenPos[0] < 128) { SetSpriteAnimFrame(sprite, baseFrame); return; }
+    SetSpriteAnimFrame(sprite, baseFrame + 1);
 }
 
 /* Plays the map action sound effect belonging to an action mode at tile (x, y):
@@ -374,7 +391,7 @@ void *p=CreateSpriteAnim(&data_02120920,14,6);
 M2C_FIELD(arg0,void **,0x54)=p;
 M2C_FIELD(p,s32 *,0x28)=0x329a0;
 M2C_FIELD(M2C_FIELD(arg0,void **,0x54),s32 *,0x2c)=0x1560;
-func_020c960c(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FIELD(arg0,s32 *,0x48),M2C_FIELD(arg0,void **,0x54));
+OrientMapActionPopup(M2C_FIELD(arg0,s32 *,0x34)/16,M2C_FIELD(arg0,s32 *,0x38)/16,M2C_FIELD(arg0,s32 *,0x48),M2C_FIELD(arg0,void **,0x54));
 M2C_FIELD(arg0,s32 *,0x50)=0x200;
 M2C_FIELD(arg0,s32 *,0x4c)=-1;
 PlayMapActionSound(M2C_FIELD(arg0,s32 *,0x3c),M2C_FIELD(arg0,s32 *,0x40),M2C_FIELD(arg0,s32 *,0x44));

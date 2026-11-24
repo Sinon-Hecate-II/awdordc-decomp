@@ -8,18 +8,18 @@ static inline u32 PanelHeight(void *p) { return (u32)(M2C_FIELD(p,s32 *,0x40)<<1
 #pragma opt_common_subs off
 #pragma opt_strength_reduction off
 void func_02089d30(void *arg0) {
-    void func_02089cec(void *);
+    void TextLayer_FreeChildSprites(void *);
     void *Text_FindLineBreakEnd(void *);
     void *Text_GetLineStart(void *,s32);
     s32 RenderTextToTiles(s32,void *);
-    s32 func_0209c690(void *);
+    s32 GetTextLineAlignment(void *);
     void *func_020ab1c4(s32);
     void InitUnitSprite(void *,s32,s32,s32,s32);
     void Set3DSpriteSlideTargetAndStart(void *,s16,s32,s16,s32);
     void func_02087d84(void *,s32,s16,s16,u16,u16);
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
-    void func_020ab150(void *,s32);
+    void CreateUnitSpriteButtonTask(void *,s32);
     void func_020aad18(void *);
     void LoadSpriteResource(s32,s32,s32,s32);
     extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
@@ -38,7 +38,7 @@ void func_02089d30(void *arg0) {
     s16 x1,y1;
     s16 sx1,sy1,sx2,sy2,sx3,sy3,sx4,sy4,sx5,sy5,sx6,sy6,sx7,sy7,sx8,sy8;
     s32 boolean1,boolean2,boolean3,boolean4,boolean5,boolean6,boolean7,boolean8;
-    func_02089cec(arg0);
+    TextLayer_FreeChildSprites(arg0);
     previousEngine=gCur3DSpriteEngine;
     for(engineIndex=0;engineIndex<2;engineIndex++){
         gCur3DSpriteEngine=engineIndex==0?g3DSpriteEngineMain:g3DSpriteEngineSub;
@@ -54,7 +54,7 @@ void func_02089d30(void *arg0) {
             entry=Text_GetLineStart(M2C_FIELD(arg0,void **,0x70),index);
             if(!entry||entry==end||index==8)break;
             length=RenderTextToTiles(M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+offset,entry);
-            measuredKind=func_0209c690(entry);
+            measuredKind=GetTextLineAlignment(entry);
             M2C_FIELD(arg0,u8 **,0x68)[index]=length;
             M2C_FIELD(arg0,u8 **,0x6c)[index]=measuredKind;
             rows=(length+7)>>3;
@@ -112,7 +112,7 @@ case 1:
                 w2=GetUnitSpriteWidth(sprite1);
                 func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx2,sy2,(u16)w2,(u16)GetUnitSpriteHeight(sprite1));
             }
-            func_020ab150(sprite1,3);
+            CreateUnitSpriteButtonTask(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
             
             func_020aad18(sprite1);
@@ -136,7 +136,7 @@ case 2:
                 w4=GetUnitSpriteWidth(sprite1);
                 func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx4,sy4,(u16)w4,(u16)GetUnitSpriteHeight(sprite1));
             }
-            func_020ab150(sprite1,3);
+            CreateUnitSpriteButtonTask(sprite1,3);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
             
             func_020aad18(sprite1);
@@ -160,7 +160,7 @@ case 3:
                 w6=GetUnitSpriteWidth(sprite1);
                 func_02087d84(M2C_FIELD(sprite1,void **,0x64),1,sx6,sy6,(u16)w6,(u16)GetUnitSpriteHeight(sprite1));
             }
-            func_020ab150(sprite1,1);
+            CreateUnitSpriteButtonTask(sprite1,1);
             M2C_FIELD(sprite1,s8 *,0x49)=-100;
             M2C_FIELD(sprite1,s8 *,0x5a)=0;
             func_020aad18(sprite1);
@@ -184,7 +184,7 @@ case 3:
                 func_02087d84(M2C_FIELD(sprite4,void **,0x64),1,sx8,sy8,(u16)w8,(u16)GetUnitSpriteHeight(sprite4));
             }
             M2C_FIELD(sprite4,s8 *,0x49)=-100;
-            func_020ab150(sprite4,2);
+            CreateUnitSpriteButtonTask(sprite4,2);
             M2C_FIELD(sprite4,s8 *,0x5a)=-1;
             
             func_020aad18(sprite4);
