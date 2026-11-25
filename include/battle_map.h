@@ -345,7 +345,7 @@ enum {
 #define MAP_TILE_WOODS         0x20 /* woods/forest, terrain kind 4 */
 
 /* Tiles of a missile silo: the ready silo and the empty shell a launch leaves
- * behind (SetMissileSiloFired swaps one for the other). */
+ * behind. */
 #define MAP_TILE_SILO          0x180
 #define MAP_TILE_SILO_FIRED    0x1A0
 #define MAP_TILE_ROCK          0x21 /* rock/mountain, terrain kind 3 */
@@ -1020,6 +1020,8 @@ typedef struct PlayerRecordSprite {
                                       * weather (MAP_WEATHER) and tileset (MAP_TILESET) to the view */
 #define MAPVIEW_INIT_PRESENTATION 0x40 /* void (*)(void): prepare the map view before creating its sprites */
 #define MAPVIEW_FRAME_CB        0x30 /* void (*)(void): run once per frame by the battle-map state dispatcher */
+#define MAPVIEW_FRAME_TICK      0x2C /* void (*)(s32 frame): run once per frame with the frame counter
+                                      * (the default view fades its palette with it) */
 #define MAPVIEW_SETUP_CB        0x4c /* void (*)(void): set up the view's own data once a battle map has been loaded */
 #define MAPVIEW_EMPTY_TILE_CB   0x44 /* void (*)(void): run when the cursor is aimed at an empty tile (no unit there);
                                       * StartEmptyTileSettle calls it before entering the settling mode */
@@ -1171,6 +1173,11 @@ enum {
  * map id falls in, (id - MAP_ID_CAMPAIGN_FIRST) / MAP_ID_CAMPAIGN_PER_PLAYER,
  * is the slot of the player who owns it. */
 #define MAP_ID_CAMPAIGN_PER_PLAYER 50
+
+/* The campaign map list's erase dialog (class data_0212b114): a modal panel
+ * opened for the map chosen in the list; it clears that map's progress flags and
+ * deletes its saved record. */
+#define CAMPAIGN_ERASE_PANEL_MAP_ID 0x34 /* s32 campaign map id to erase */
 
 /* A saved map record. The 0x54-byte header is shared by the compact saved form
  * (0x2AC bytes: a 20x20 terrain area with the packed unit entries after it at

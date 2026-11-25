@@ -157,10 +157,13 @@ callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(cal
 UploadMapViewOverlayTiles();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();func_020b17dc();
 }
 
-void func_020b19a8(s32 arg0, s32 arg1) {
+/* Copy colour `colorIndex` of the shared 16-entry grey ramp (data_020f3c20)
+ * into colour 15 of OBJ palette slot `paletteSlot + 11`, then mark the palette
+ * dirty; callers step `colorIndex` to pulse that palette's highlight colour. */
+void SetObjPaletteRampColor(s32 paletteSlot, s32 colorIndex) {
     M2C_UNK CopyBytesToObjPaletteShadow(void *, s32, M2C_UNK);
     extern u8 data_020f3c20[];
-    CopyBytesToObjPaletteShadow(data_020f3c20 + arg1 * 2, ((arg0 + 0xB) << 5) + 0x1E, 2);
+    CopyBytesToObjPaletteShadow(data_020f3c20 + colorIndex * 2, ((paletteSlot + 0xB) << 5) + 0x1E, 2);
 }
 
 /* Upload the caller's entry of the army colour table - and the table's first
@@ -206,10 +209,10 @@ void UploadPaletteFadeColor(s32 phase) {
 }
 
 void func_020b1abc(void) {
-    M2C_UNK func_0207a77c(s32);
+    M2C_UNK MapView_UpdateFrame(s32);
     M2C_UNK func_0207ad30(s32);
     extern s32 gFrameCounter;
-    func_0207a77c(gFrameCounter);
+    MapView_UpdateFrame(gFrameCounter);
     func_0207ad30(gFrameCounter);
 }
 

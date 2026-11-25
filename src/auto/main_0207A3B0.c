@@ -116,12 +116,14 @@ void func_0207a768(void) {
     DeleteSpriteObjectsOfClass(&data_02100bb0);
 }
 
-void func_0207a77c(s32 arg0) {
- extern void *gCurrentMap;
- void (*temp_r1)(s32);
- temp_r1 = M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(s32),0x2c);
- if (temp_r1 == 0) return;
- temp_r1(arg0);
+/* Run the map-view controller's per-frame callback (its +0x2C slot) with the
+ * frame counter; the default view uses it to advance its palette fade ramp. */
+void MapView_UpdateFrame(s32 frame) {
+    extern void *gCurrentMap;
+    void (*callback)(s32);
+    callback = M2C_FIELD(M2C_FIELD(gCurrentMap, void **, MAP_VIEW_PTR), void (**)(s32), MAPVIEW_FRAME_TICK);
+    if (callback == NULL) return;
+    callback(frame);
 }
 
 #pragma push

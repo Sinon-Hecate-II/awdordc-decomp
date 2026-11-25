@@ -66,7 +66,7 @@ void MarkRecordsMusicEntryHeard(s32 arg0) {
     SetRecordsMusicHeard(arg0, 1);
 }
 
-s32 func_020ad658(s32 arg0) {
+s32 IsRecordsMusicEntryHeard(s32 arg0) {
     s32 func_020869e0();
     if ((arg0 >= 0) && (func_020869e0() != 0)) {
         return 1;

@@ -65,9 +65,12 @@ s32 GetPlayerAttackPropertyBonus(s32 player) {
     return M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, u8 *, PLAYER_ATTACK_PROPERTIES_OFF) * 5;
 }
 
-s32 func_020a8844(s32 arg0) {
+/* Attack-property bonus, in damage percent, that player `player` gets from the
+ * attack-boosting properties it owns (5 percent each).  A byte-identical copy of
+ * GetPlayerAttackPropertyBonus, used by GetUnitAttackPowerBonus. */
+s32 GetPlayerAttackPropertyBonusAlt(s32 player) {
     extern s32 *gCurrentMap;
-    return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67B8) * 5;
+    return M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, u8 *, PLAYER_ATTACK_PROPERTIES_OFF) * 5;
 }
 
 s32 func_020a886c(void) {

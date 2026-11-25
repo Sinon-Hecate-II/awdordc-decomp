@@ -1,6 +1,7 @@
 /* 42 functions from 0x020C6CF8 to 0x020C7CD0 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "map_effect.h"
 #include "ov000_ai.h"
 typedef struct { u32 value:8; u32 rest:24; } Bits020a8c10;
 
@@ -365,7 +366,7 @@ GotoSpriteAnimationLabel(a,0);Sprite_ResumeAnimation(a);return;}
 if(flags&256){CreateMapMenu();return;}
 if(flags&64){HandleUiCancel();return;}
 }
-func_020cf828(0x1001a);func_0207a7a4(1,4);StepMapCursorAndNotify(2,10);
+StepMapCursorTargetFromInput(0x1001a);func_0207a7a4(1,4);StepMapCursorAndNotify(2,10);
 }
 
 void func_020c77d4(void *arg0) {
@@ -378,11 +379,15 @@ void func_020c77ec(void *arg0) {
     PanMapViewToTile(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
-void func_020c7804(void *arg0) {
+/* Missile-launch step of an attack-target effect: spawn the missile effect on
+ * the tile the attack is aimed at and turn that tile's silo into its fired
+ * shell. */
+void LaunchMissileAtTargetTile(AttackTargetEffect *effect) {
     M2C_UNK CreateMissileEffect(s16, s16, void *);
-    M2C_UNK func_020b5f74(s16, s16);
-    CreateMissileEffect(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E), arg0);
-    func_020b5f74(M2C_FIELD(arg0, s16 *, 0x6C), M2C_FIELD(arg0, s16 *, 0x6E));
+    M2C_UNK SetMissileSiloFired(s16, s16);
+
+    CreateMissileEffect(effect->targetX, effect->targetY, effect);
+    SetMissileSiloFired(effect->targetX, effect->targetY);
 }
 
 void func_020c782c(void *arg0) {
@@ -463,14 +468,17 @@ void DropFlareOnCursorUnitIfVisible(void *parent) {
 
 void func_020c79ac(void *arg0) { void CreateFallingFlareStrike(s32,s32,void *); CreateFallingFlareStrike(M2C_FIELD(arg0,s32 *,0x34),M2C_FIELD(arg0,s32 *,0x38),arg0); }
 
-void CreateFlareShotSprite(s32 arg0, s32 arg1, M2C_UNK arg2) {
+/* Create the flare-shot sprite (class data_0212ae9c) at tile (x, y) owned by
+ * `owner`: it holds the map view, fades the music down and drops a flare on the
+ * unit under the cursor. */
+void CreateFlareShotSprite(s32 x, s32 y, M2C_UNK owner) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212ae9c;
-    void *temp_r0;
+    void *sprite;
 
-    temp_r0 = CreateSpriteForOwner(&data_0212ae9c, arg2);
-    M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg1;
+    sprite = CreateSpriteForOwner(&data_0212ae9c, owner);
+    M2C_FIELD(sprite, s32 *, 0x34) = x;
+    M2C_FIELD(sprite, s32 *, 0x38) = y;
 }
 
 s32 GetMapRecordBuffer(void) {

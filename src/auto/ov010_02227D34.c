@@ -48,20 +48,23 @@ void func_ov010_02227d34(s32 slot, void *data, char *text, s32 size) {
     }
 }
 
-void func_ov010_02227df8(void) {
+/* Start callback of the ov010 online session's WFC match query: raise the
+ * matchmaking flag once matchmaking has begun, unless a net error is pending
+ * (then the session is already failing and must not look live). */
+void Ov010Online_OnMatchmakingStarted(void) {
     void SetOnlineSessionFlag(M2C_UNK);
     s32 GetNetErrorCode();
-    s32 var_r0;
+    s32 netError;
 
     if (GetNetErrorCode() != 0) {
-        var_r0 = 1;
+        netError = 1;
     } else {
-        var_r0 = 0;
+        netError = 0;
     }
-    if (var_r0 != 0) {
+    if (netError != 0) {
         return;
     }
-    SetOnlineSessionFlag(2);
+    SetOnlineSessionFlag(OV010_FLAG_MATCHMAKING);
 }
 
 /* Starts the ov010 online session: does nothing if it is already running,
@@ -82,7 +85,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     void Ov010Online_OnPeerConnectionLost(void);
     void func_ov010_02227c3c(void);
     void func_ov010_02227c5c(void);
-    void func_ov010_02227df8(void);
+    void Ov010Online_OnMatchmakingStarted(void);
     void func_ov010_02227d34(s32, void *, char *, s32);
     extern M2C_UNK gOv010OnlineSession;
     extern M2C_UNK gLocalPlayerStatus;
@@ -109,7 +112,7 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     SetNetPeerCallback((s32)Ov010Online_OnPeerConnectionLost, 0);
     SetMatchSessionSlotCallback((s32)func_ov010_02227c3c, 0);
 
-    StartMatchMaking(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
+    StartMatchMaking(0, (s32)Ov010Online_OnMatchmakingStarted, 0, (s32)func_ov010_02227d34, 0,
                    (s32)func_ov010_02227c5c, 0);
 
     if (GetLastNasError() != 2) {
@@ -525,14 +528,16 @@ void func_ov010_02228714(void) {
     Wfc_PollSessionEnd();
 }
 
-s32 func_ov010_02228720(void) {
-    s32 temp_r0;
+/* Poll the WFC session for its end: once it has ended, clear the session's
+ * connected flag.  Returns 1 while the session is still up, 0 once it ended. */
+s32 Ov010Online_PollSessionEnd(void) {
+    s32 ended;
 
-    temp_r0 = Wfc_PollSessionEnd();
-    if (temp_r0 != 0) {
-        Ov010Online_ClearStepFlag(1);
+    ended = Wfc_PollSessionEnd();
+    if (ended != 0) {
+        Ov010Online_ClearStepFlag(OV010_FLAG_CONNECTED);
     }
-    if (temp_r0 == 0) {
+    if (ended == 0) {
         return 1;
     }
     return 0;
@@ -670,13 +675,16 @@ void func_ov010_02228a38(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
 }
 
-void *FreePacketAssemblySlot(void *arg0) {
-    M2C_UNK Ov010Online_FreePacket();
-    if (M2C_FIELD(arg0, s32 *, 4) != 0) {
-        Ov010Online_FreePacket();
-        M2C_FIELD(arg0, s32 *, 4) = 0;
+/* Clear one per-peer packet-assembly slot: free the packet it was assembling
+ * (OV010_ASSEMBLY_SLOT_PACKET) and clear the slot.  Returns the slot. */
+void *FreePacketAssemblySlot(void *slot) {
+    void Ov010Online_FreePacket(void *);
+
+    if (M2C_FIELD(slot, void **, OV010_ASSEMBLY_SLOT_PACKET) != NULL) {
+        Ov010Online_FreePacket(M2C_FIELD(slot, void **, OV010_ASSEMBLY_SLOT_PACKET));
+        M2C_FIELD(slot, void **, OV010_ASSEMBLY_SLOT_PACKET) = NULL;
     }
-    return arg0;
+    return slot;
 }
 
 /* Tear down the ov010 online session: delete its state, connection and packet

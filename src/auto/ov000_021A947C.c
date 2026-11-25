@@ -426,10 +426,10 @@ s32 GetCoPowerUnitId(void) {
    7 and 8 as well when it has two, and only 11, 20 and 26 when the row cannot hit
    kind 9 or 14. */
 s32 AiSettings_DefaultUnitFilter(s32 commander,s32 unitKind) {
- s32 func_020a27a0(s32,s32); s32 func_020a25bc(s32,s32);
+ s32 func_020a27a0(s32,s32); s32 GetCommanderMoveRange(s32,s32);
  if(!func_020a27a0(commander,unitKind))return 0;
  if(func_020a27a0(commander,9)||func_020a27a0(commander,14)){
- if(func_020a25bc(commander,0)<=1){if(unitKind!=9 && unitKind!=14 && unitKind!=16)return 0;}
+ if(GetCommanderMoveRange(commander,0)<=1){if(unitKind!=9 && unitKind!=14 && unitKind!=16)return 0;}
  else {if(unitKind!=9 && unitKind!=8 && unitKind!=7 && unitKind!=14 && unitKind!=16)return 0;}
  }else {if(unitKind!=26 && unitKind!=11 && unitKind!=20)return 0;}
  return 1;

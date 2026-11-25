@@ -10,7 +10,7 @@ typedef struct { u32 words[3]; } Unk032Record;
 void InitNasLoginKey(void *record) {
     void GetConsoleEntropy(u32 *);
     void GetWfcProfileIds(void *);
-    void func_02031dd4(void *, u32, u32);
+    void SetNasPlayerCode(void *, u32, u32);
     void func_02031dfc(void *, u32);
     void SetPlayerRecordKind(void *, s32);
     u32 profile[5];
@@ -22,8 +22,8 @@ void InitNasLoginKey(void *record) {
     for (i = 1; i < 8; i++) entropy[i] ^= entropy[i - 1];
     seed = entropy[7];
     GetWfcProfileIds(profile);
-    if (profile[4]) func_02031dd4(record, profile[0], profile[1]);
-    else func_02031dd4(record, profile[2], profile[3]);
+    if (profile[4]) SetNasPlayerCode(record, profile[0], profile[1]);
+    else SetNasPlayerCode(record, profile[2], profile[3]);
     func_02031dfc(record, (u32)((seed * NAS_KEY_SEED_MULT + NAS_KEY_SEED_ADD) >> 32));
     SetPlayerRecordKind(record, 1);
 }

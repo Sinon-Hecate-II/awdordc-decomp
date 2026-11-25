@@ -829,7 +829,7 @@ s32 SpriteState_CloseTextLayerWindow(void *sprite) {
 }
 
 s32 func_0209da68(void *arg0) {
-    if (func_0208b5c4() != 0) {
+    if (IsTextLayerAnimating() != 0) {
         return 0;
     }
     M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 8);

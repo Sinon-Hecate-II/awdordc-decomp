@@ -14,18 +14,18 @@ static inline u8 E9638Value(void *p) { return M2C_FIELD(p,s32*,0x18); }
    all allocated on the sub engine. */
 void CreateWaypointPanelSprites(SpriteGroup9638 *group,void *panel) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub,*g3DSpriteEngineMain;extern u8 data_ov003_0220f896[];
-void *CreateFaceSprite(void *);void *Create3DSprite(void *);void func_020990d4(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void SetFaceSpritePose(void *,s32,s32,s32);
+void *CreateFaceSprite(void *);void *Create3DSprite(void *);void SetFaceSpriteTextureRow(void *,s32,u16);void SetFaceSpriteActive(void *,s32);void Hide3DSprite(void *);s32 GetFaceLayoutSize(s32);void SetFaceSpritePose(void *,s32,s32,s32);
 void *savedEngine=gCur3DSpriteEngine;s32 slot;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 group->main=CreateFaceSprite(panel);
-func_020990d4(group->main,0x4400,1);
+SetFaceSpriteTextureRow(group->main,0x4400,1);
 SetFaceSpriteActive(group->main,1);
 M2C_FIELD(group->main,u16 *,0x3c)=0x400;
 Hide3DSprite(group->main);
 gCur3DSpriteEngine=g3DSpriteEngineMain;
 for(slot=0;slot<12;slot++){
 group->sprites[slot]=CreateFaceSprite(panel);
-func_020990d4(group->sprites[slot],0x5c00+slot*2*GetFaceLayoutSize(0),(u16)slot);
+SetFaceSpriteTextureRow(group->sprites[slot],0x5c00+slot*2*GetFaceLayoutSize(0),(u16)slot);
 SetFaceSpritePose(group->sprites[slot],slot+1,0,0);
 SetFaceSpriteActive(group->sprites[slot],1);
 M2C_FIELD(group->sprites[slot],u16 *,0x3c)=0x400;

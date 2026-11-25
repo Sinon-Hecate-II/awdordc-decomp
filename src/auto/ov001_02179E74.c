@@ -187,18 +187,20 @@ void MapSelectList_FadeInDone(void) {
     Ov001_SetStepCallback(&MapSelectList_WaitIconRow);
 }
 
+/* Step that waits for the map-select list's icon row to finish sliding in,
+ * then unlocks it and hands over to the list's input-update step. */
 void MapSelectList_WaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_0217a3a8;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK MapSelectList_Update;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_0217a3a8);
+    Ov001_SetStepCallback(&MapSelectList_Update);
 }
 
-void func_ov001_0217a3a8(void) {
+void MapSelectList_Update(void) {
 void MapSelectList_PollInput();void MapSelectList_HandleInput(void);
 MapSelectList_PollInput();MapSelectList_HandleInput();(func_ov001_0217a880)();
 }

@@ -713,66 +713,66 @@ void func_ov001_021846f8(u8 *arg0) {
 /* Format the first saved player-code value (SAVE_PLAYER_CODES) as four decimal
  * groups for the UI. */
 void Ov001_FormatSavePlayerCode1(s32 output) {
-    void func_0200563c(s32, s32, ...);
+    void StringFormatAlt(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
     u8 *saveData = (u8 *)gSaveData;
     u8 *playerCode = saveData + SAVE_PLAYER_CODES;
     u8 group2 = playerCode[2];
     u8 group3 = playerCode[3];
-    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES], playerCode[1], group2, group3);
+    StringFormatAlt(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES], playerCode[1], group2, group3);
 }
 
 /* Format the working save copy's 4-byte verification code (SAVE_CODE) as four
  * decimal groups for the UI. */
 void Ov001_FormatSaveCode(s32 output) {
-    void func_0200563c(s32, s32, ...);
+    void StringFormatAlt(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
     u8 *saveData = (u8 *)gSaveData;
     u8 group2 = saveData[SAVE_CODE + 2];
     u8 group3 = saveData[SAVE_CODE + 3];
-    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_CODE], saveData[SAVE_CODE + 1], group2, group3);
+    StringFormatAlt(output, (s32)gOv001CodeFormat, saveData[SAVE_CODE], saveData[SAVE_CODE + 1], group2, group3);
 }
 
 #pragma opt_peephole off
 /* Format the second saved player-code value (SAVE_PLAYER_CODES + 4) as four
  * decimal groups for the UI. */
 void Ov001_FormatSavePlayerCode2(s32 output) {
-    void func_0200563c(s32, s32, ...);
+    void StringFormatAlt(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
     u8 *saveData = (u8 *)gSaveData;
     u8 *playerCode = saveData + SAVE_PLAYER_CODES + 4;
     u8 group2 = playerCode[2];
     u8 group3 = playerCode[3];
-    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 4], playerCode[1], group2, group3);
+    StringFormatAlt(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 4], playerCode[1], group2, group3);
 }
 #pragma opt_peephole reset
 /* Format the fourth saved player-code value as four decimal groups for the UI. */
 void Ov001_FormatSavePlayerCode3(s32 output) {
-    void func_0200563c(s32, s32, ...);
+    void StringFormatAlt(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
     u8 *saveData = (u8 *)gSaveData;
     u8 *playerCode = saveData + SAVE_PLAYER_CODES + 8;
     u8 group2 = playerCode[2];
     u8 group3 = playerCode[3];
-    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 8], playerCode[1], group2, group3);
+    StringFormatAlt(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 8], playerCode[1], group2, group3);
 }
 
 #pragma opt_strength_reduction off
 /* Format the fourth saved player-code value (SAVE_PLAYER_CODES + 12) as four
  * decimal groups for the UI. */
 void Ov001_FormatSavePlayerCode4(s32 output) {
-    void func_0200563c(s32, s32, ...);
+    void StringFormatAlt(s32, s32, ...);
     extern s32 gSaveData;
     extern char gOv001CodeFormat[];
     u8 *saveData = (u8 *)gSaveData;
     u8 *playerCode = saveData + SAVE_PLAYER_CODES + 12;
     u8 group2 = playerCode[2];
     u8 group3 = playerCode[3];
-    func_0200563c(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 12], playerCode[1], group2, group3);
+    StringFormatAlt(output, (s32)gOv001CodeFormat, saveData[SAVE_PLAYER_CODES + 12], playerCode[1], group2, group3);
 }
 #pragma opt_strength_reduction reset
 u8 Ov001_GetSaveSlotStatus(s32 arg0) {

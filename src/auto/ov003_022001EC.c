@@ -109,16 +109,18 @@ void func_ov003_022003e4(void) {
 
 }
 
-s16 GetWaypointSlotX(M2C_UNK arg0) {
-    s16 func_ov003_022004d0();
+/* X of waypoint slot `index` for the current map's player count: the row's base X
+ * plus the slot's offset within it. */
+s16 GetWaypointSlotX(M2C_UNK index) {
+    s16 GetWaypointSlotBaseX();
     s16 GetWaypointSlotOffsetX(M2C_UNK);
-    s32 temp_r4;
+    s32 base;
 
-    temp_r4 = func_ov003_022004d0();
-    return (s16) (temp_r4 + GetWaypointSlotOffsetX(arg0));
+    base = GetWaypointSlotBaseX();
+    return (s16) (base + GetWaypointSlotOffsetX(index));
 }
 
-s16 func_ov003_022004d0(void) {
+s16 GetWaypointSlotBaseX(void) {
     s32 func_020cfb94(void);
     return sWaypointSlotBaseX[func_020cfb94() - 1];
 }

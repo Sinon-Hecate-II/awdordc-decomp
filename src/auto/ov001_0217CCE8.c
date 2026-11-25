@@ -1,6 +1,7 @@
 /* 23 functions from 0x0217CCE8 to 0x0217DC7C (ov001), found by ds-decomp. */
 #include "common.h"
 #include "gx.h"
+#include "ov001_wh.h"
 extern M2C_UNK gMapListState;
 extern const u8 gMapListChoiceRow[];
 void MapList_DismissMessage(void);
@@ -103,24 +104,27 @@ void Ov001_WfcErrorFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcErrorWaitIconRow);
 }
 
+/* Step that waits for the Wi-Fi error screen's icon row to finish sliding in:
+ * once the row takes input, unlock it and hand over to the screen's update
+ * step. */
 void Ov001_WfcErrorWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_0217d0dc;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateWfcErrorScreen;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_0217d0dc);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcErrorScreen);
 }
 
-void func_ov001_0217d0dc(void) {
+void Ov001_UpdateWfcErrorScreen(void) {
     void func_ov001_0217d0f0(void);
     void func_ov001_0217d110(void);
-    void func_ov001_0217d114(void);
+    void Ov001_ConfirmWfcErrorChoice(void);
     func_ov001_0217d0f0();
     func_ov001_0217d110();
-    func_ov001_0217d114();
+    Ov001_ConfirmWfcErrorChoice();
 }
 
 void func_ov001_0217d0f0(void) {
@@ -136,16 +140,18 @@ void func_ov001_0217d110(void) {
 
 }
 
-void func_ov001_0217d114(void) {
+/* The Wi-Fi error screen's icon row was accepted (its only icon is "OK"): play
+ * the confirm sound and hand over to the step that closes the screen. */
+void Ov001_ConfirmWfcErrorChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_0217d13c(void);
+    void Ov001_PrepareCloseWfcErrorScreen(void);
     if (Ov001_GetIconRowSelection() != 0) return;
-    Ov001_PlaySound(6);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217d13c);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseWfcErrorScreen);
 }
 
-void func_ov001_0217d13c(void) {
+void Ov001_PrepareCloseWfcErrorScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);

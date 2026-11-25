@@ -512,21 +512,26 @@ void UnitMove_FreeGraphics(void *move) {
     HeapFreeBlock(M2C_FIELD(move, s32 *, UNIT_MOVE_GFX));
 }
 
-s32 LoadUnitMoveGfx(M2C_UNK arg0) {
+/* Load the moving unit's tile graphics: switch to the unit-move graphics
+ * directory ("/mu") and decompress the file of the move controller's variant. */
+s32 LoadUnitMoveGfx(M2C_UNK move) {
     M2C_UNK SetFileDirectory(M2C_UNK *);
     M2C_UNK LoadDecompressedFile(s32, M2C_UNK);
     s32 GetUnitMoveGfxFileId(M2C_UNK);
-    extern M2C_UNK data_ov000_021aeee0;
-    SetFileDirectory(&data_ov000_021aeee0);
-    LoadDecompressedFile(GetUnitMoveGfxFileId(arg0), 1);
+    extern M2C_UNK gOv000UnitMoveGfxDir;
+
+    SetFileDirectory(&gOv000UnitMoveGfxDir);
+    LoadDecompressedFile(GetUnitMoveGfxFileId(move), 1);
 }
 
-s32 LoadUnitMoveAnim(void *arg0) {
+/* Load the move-animation data of the unit the move controller walks (its kind
+   is at UNIT_MOVE_KIND) and return the buffer. */
+s32 LoadUnitMoveAnim(void *move) {
     M2C_UNK LoadFileToBuffer(s32, M2C_UNK);
-    s32 func_ov000_02169f64(u8);
-    extern M2C_UNK data_ov000_021aeee4;
-    SetFileDirectory(&data_ov000_021aeee4);
-    LoadFileToBuffer(func_ov000_02169f64(M2C_FIELD(arg0, u8 *, 0x42)), 1);
+    s32 GetUnitMoveAnimFileId(u8);
+    extern M2C_UNK sUnitMoveAnimDir;
+    SetFileDirectory(&sUnitMoveAnimDir);
+    LoadFileToBuffer(GetUnitMoveAnimFileId(M2C_FIELD(move, u8 *, UNIT_MOVE_KIND)), 1);
 }
 
 s32 UnitMoveTileOffset(void *arg0) {
@@ -588,10 +593,10 @@ s32 GetUnitMoveSpeed(void *move) {
  return (s16)value;
 }
 
-s32 func_ov000_02169f64(u8 arg0) {
+s32 GetUnitMoveAnimFileId(u8 arg0) {
  s32 GetUnitVariantIndex(s32,s32);
- extern M2C_UNK data_ov000_021aec8c;
- return M2C_FIELD(&data_ov000_021aec8c,s32 *,GetUnitVariantIndex(arg0,1)*20);
+ extern M2C_UNK gUnitMoveAnimFileIds;
+ return M2C_FIELD(&gUnitMoveAnimFileIds,s32 *,GetUnitVariantIndex(arg0,1)*20);
 }
 
 void StepUnitMove(void) {

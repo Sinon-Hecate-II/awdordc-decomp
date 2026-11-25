@@ -472,10 +472,13 @@ s32 IsTransferSending(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTrans
 
 s32 GetTransferState(s32 a){extern s32 gTransferManager;return M2C_FIELD(gTransferManager+0x30*a,u8 *,0x1d);}
 
-void SendConnectionData(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 FindPlayerConnection(M2C_UNK);
- void gt2Send(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- gt2Send(FindPlayerConnection(arg0), arg1, arg2, arg3);
+/* Send `size` bytes of `data` to player `playerId`'s GameSpy connection,
+ * reliable or not (falls through gt2Send with a null connection when the player
+ * has no connection). */
+void SendConnectionData(s32 playerId, s32 data, s32 size, s32 reliable) {
+    s32 FindPlayerConnection(s32);
+    void gt2Send(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    gt2Send(FindPlayerConnection(playerId), data, size, reliable);
 }
 
 /* Handle an inbound transfer request for slot `a`: dispatch by the slot's state. */

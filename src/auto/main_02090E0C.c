@@ -749,15 +749,16 @@ if(script[0]){do{frame-=*(volatile u16 *)script;if(frame<=0)break;script+=2;}whi
 return (s32)((u8 *)dataOffsets+(dataOffsets[script[1]]&~1));
 }
 
+/* Clear every accumulated record-value counter in gRecordValues. */
 void ClearRecordValues(void) {
     M2C_UNK SetRecordValue(s32, s32);
-    s32 var_r5;
+    s32 index;
 
-    var_r5 = 0;
+    index = 0;
     do {
-        SetRecordValue(var_r5, 0);
-        var_r5 += 1;
-    } while (var_r5 < 0x5E);
+        SetRecordValue(index, 0);
+        index += 1;
+    } while (index < RECORD_VALUE_COUNT);
 }
 
 /* Tick the total play-time record (gRecordValues[0], the word at

@@ -295,7 +295,7 @@ return 0;
 void func_020cd544(s32);
 void func_020cd480(s32 a){
 extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 gSaveSlotSummary[];u32 v;
-func_02088634();if(CampaignSaveSlotInUse(a)){func_020cd544(a);return;}
+EnsureResource4Loaded();if(CampaignSaveSlotInUse(a)){func_020cd544(a);return;}
 ResetCampaignProgress();gSaveSlotSummary[0]=(gSaveSlotSummary[0]&~15)|(a&15);
 v=gSaveSlotSummary[0]&~240;*(volatile u32 *)gSaveSlotSummary=v;
 gMapConfig &= ~7;
@@ -315,7 +315,7 @@ void func_020cd544(s32 mapKind) {
     s32 GetSaveType(s32, s32);
     s32 IsUnitAvailable(s32);
     u8 kind;
-    func_02088634();
+    EnsureResource4Loaded();
     kind = GetSaveType(0, mapKind);
     gMapConfig &= ~7;
     LoadSaveSlotProgress(mapKind);
@@ -385,16 +385,18 @@ u8 func_020cd6b0(void) {
     return var_r0;
 }
 
+/* Whether the battle uses the campaign's rules: the map's battle-mode bits
+ * (the low bits of MAPDATA_RULES) are MAPDATA_MODE_CAMPAIGN, which is 0. */
 u8 IsCampaignBattleRules(void) {
     extern M2C_UNK gMapData;
-    u8 var_r0;
+    u8 value;
 
-    if (!(((u32) (M2C_FIELD(&gMapData, u16 *, 0xC) << 0x1D) >> 0x1D) & 0xFF)) {
-        var_r0 = 1;
+    if (!(((u32) (M2C_FIELD(&gMapData, u16 *, MAPDATA_RULES) << 0x1D) >> 0x1D) & 0xFF)) {
+        value = 1;
     } else {
-        var_r0 = 0;
+        value = 0;
     }
-    return var_r0;
+    return value;
 }
 
 /* Whether the battle is a free-play (non-campaign) battle: the map's rules

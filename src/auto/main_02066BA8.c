@@ -220,11 +220,13 @@ u32 StringFormatBounded(char *buffer, u32 size, s32 format, void *args) {
     return result;
 }
 
-void StringFormatBuffer(s32 arg0, s32 arg1, s32 arg2, ...) {
+/* Format the printf-style `format` and its arguments into `buffer`, which holds
+ * at most `size` bytes including the terminator (the bounded string formatter
+ * does the work). */
+void StringFormatBuffer(char *buffer, u32 size, s32 format, ...) {
     char *args;
-    args = (char *)(((u32)&arg2 & ~3U) + 4);
-    StringFormatBounded(arg0, arg1, arg2, args);
-
+    args = (char *)(((u32)&format & ~3U) + 4);
+    StringFormatBounded(buffer, size, format, args);
 }
 
 /* Format `format` with the variable argument list into the string `buffer`,

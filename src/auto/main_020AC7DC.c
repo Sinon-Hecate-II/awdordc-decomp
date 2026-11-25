@@ -40,7 +40,7 @@ gCur3DSpriteEngine=savedEngine;
 if(M2C_FIELD(fade,s32 *,0x18)==1)Apply3DSpriteBanksForScreen(M2C_FIELD(fade,u8 *,TRANSITION_SPRITE_SCREEN));
 }
 
-s32 func_020ac924(M2C_UNK parent, s32 type) {
+s32 FindTransitionSpriteByType(M2C_UNK parent, s32 type) {
     s32 Find3DSpriteByClassAndZ(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gScreenTransitionClass, gScreenFadeClass;
     switch (type) {
@@ -53,11 +53,12 @@ s32 func_020ac924(M2C_UNK parent, s32 type) {
     }
 }
 
+/* Delete both transition sprites (screen transition and fade) attached to a parent. */
 void DeleteScreenTransitionSprites(M2C_UNK parent) {
     void DeleteSpriteObject(M2C_UNK);
-    s32 func_020ac924(M2C_UNK, s32);
-    DeleteSpriteObject(func_020ac924(parent, 0));
-    DeleteSpriteObject(func_020ac924(parent, 1));
+    s32 FindTransitionSpriteByType(M2C_UNK, s32);
+    DeleteSpriteObject(FindTransitionSpriteByType(parent, 0));
+    DeleteSpriteObject(FindTransitionSpriteByType(parent, 1));
 }
 
 void SetScreenMode(s32 mode) {

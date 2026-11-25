@@ -123,7 +123,7 @@ if(func_ov003_02209258(a)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2
 }
 if(active&&pos>=3&&pos<=M2C_FIELD(M2C_FIELD(a,void **,0x58),u8 *,8)+2){
 Ov003_SetRowAnimation(a,M2C_FIELD(M2C_FIELD(M2C_FIELD(a,void **,0x58)+(pos-3)*4,void **,12),u8 *,4));
-M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);func_ov003_0220bf70(a);PlaySoundEffect(0x1000f);active=0;
+M2C_FIELD(a,u8 *,0x34)=30;Ov003_RefreshListRowAnimations(a,5,255);Ov003_ClearSubSpriteLayer1(a);PlaySoundEffect(0x1000f);active=0;
 }
 if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4))){
 PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,4));

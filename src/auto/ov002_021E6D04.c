@@ -97,7 +97,7 @@ void InitBattleScene(void *state) {
     void PlayerPanels_Setup(void *);
     void PlayerPanels_Init(void *);
     void InitBattleUnitView(void *);
-    void func_ov002_021e6cdc(void *);
+    void LoadBattleCountryGraphics(void *);
     void func_020af7ac(void);
     void LoadEffectSoundGroups(void);
     void func_ov002_021e8738(void *);
@@ -124,7 +124,7 @@ void InitBattleScene(void *state) {
         } while (side < 2);
     }
 
-    func_ov002_021e6cdc(&gOv002EffectResources);
+    LoadBattleCountryGraphics(&gOv002EffectResources);
     func_020af7ac();
     LoadEffectSoundGroups();
 
@@ -187,7 +187,7 @@ void InitBattleScene(void *state) {
 #pragma opt_common_subs reset
 void EndBattleScene(void *);
 void func_ov002_021e7120(void *);
-void func_ov002_021e7474(void *);
+void StepBattleSceneHoldPhase(void *);
 /* Per-frame update of the battle scene: steps the scene animation once (twice
    while R is held, every other frame while L is held) and, once the scene is
    ready, ends it on A/B/START or a touch. */
@@ -222,7 +222,7 @@ extern u8 gDemoBattle;
 switch(M2C_FIELD(state,u8 *,BATTLE_SCENE_PHASE)) {
 case BATTLE_SCENE_PHASE_SETUP: func_ov002_021e7120(state); break;
 case BATTLE_SCENE_PHASE_SLIDE_IN: func_ov002_021e712c(state); break;
-case BATTLE_SCENE_PHASE_HOLD: func_ov002_021e7474(state); break;
+case BATTLE_SCENE_PHASE_HOLD: StepBattleSceneHoldPhase(state); break;
 case BATTLE_SCENE_PHASE_EFFECTS: func_ov002_021e749c(state); break;
 }
 StepUnitView(&gUnitViews);
@@ -301,16 +301,18 @@ void func_ov002_021e712c(void *arg0) {
     M2C_FIELD(arg0, u8 *, 8) = 2;
     M2C_FIELD(arg0, s32 *, 0) = 0;
 }
-void func_ov002_021e7474(void *arg0) {
-    s32 temp_r1;
+/* Battle-scene hold phase: count off the 32 frames the posed scene is held, then
+ * move on to the effect-script phase. */
+void StepBattleSceneHoldPhase(void *state) {
+    s32 frame;
 
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0) + 1;
-    M2C_FIELD(arg0, s32 *, 0) = temp_r1;
-    if (temp_r1 != 0x20) {
+    frame = M2C_FIELD(state, s32 *, BATTLE_SCENE_FRAME) + 1;
+    M2C_FIELD(state, s32 *, BATTLE_SCENE_FRAME) = frame;
+    if (frame != 32) {
         return;
     }
-    M2C_FIELD(arg0, s8 *, 8) = 3;
-    M2C_FIELD(arg0, s32 *, 0) = 0;
+    M2C_FIELD(state, s8 *, BATTLE_SCENE_PHASE) = BATTLE_SCENE_PHASE_EFFECTS;
+    M2C_FIELD(state, s32 *, BATTLE_SCENE_FRAME) = 0;
 }
 
 #pragma opt_common_subs off

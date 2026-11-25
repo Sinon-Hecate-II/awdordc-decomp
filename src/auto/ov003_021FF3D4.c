@@ -13,7 +13,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
     extern void **data_027e0058;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
-    extern M2C_UNK data_ov003_0220fe64;
+    extern M2C_UNK gOv003MapPanelClass;
     extern M2C_UNK data_ov003_022100d4;
     extern M2C_UNK data_ov003_02210104;
     extern M2C_UNK data_ov003_02210130;
@@ -33,7 +33,7 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
     void *temp_r5_2;
     void *temp_r5_3;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov003_0220fe64, arg0);
+    temp_r0 = CreateSpriteFromClass(&gOv003MapPanelClass, arg0);
     if (temp_r0 != NULL) {
         M2C_FIELD(temp_r0, M2C_UNK **, 0) = &gSceneBaseVTable;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x34) = &gSceneBaseIfaceVTable;
@@ -153,14 +153,18 @@ void func_ov003_021ff3d4(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) | 5);
 }
 
-void func_ov003_021ff7ac(void) {
-    extern M2C_UNK data_ov003_0220fe64;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&data_ov003_0220fe64);
-    if (temp_r0 == NULL) {
+/* Find the ov003 map-panel object of class gOv003MapPanelClass and run its
+ * virtual animation-resume step (vtable slot 0x10), which unfreezes the panel's
+ * sprite animation once its appearance delay has passed.  Does nothing when the
+ * panel is not loaded. */
+void Ov003_ResumeMapPanelAnimation(void) {
+    extern M2C_UNK gOv003MapPanelClass;
+    void *panel;
+    panel = FindObjectByClass(&gOv003MapPanelClass);
+    if (panel == NULL) {
         return;
     }
-    M2C_FIELD(*(void **)temp_r0, void (**)(void *), 0x10)(temp_r0);
+    M2C_FIELD(*(void **)panel, void (**)(void *), 0x10)(panel);
 }
 
 /* Destructor: releases all owned sub-objects and frees this object. */

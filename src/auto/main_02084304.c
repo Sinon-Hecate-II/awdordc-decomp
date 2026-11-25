@@ -1001,7 +1001,7 @@ void CreateSubScreenLinkIndicator(void) {
     gCur3DSpriteEngine = savedEngine;
 }
 
-void func_020852e0(void) {
+void DeleteSubScreenLinkIndicator(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gLinkStatusSpriteClass;
     DeleteSpriteObjectsOfClass(&gLinkStatusSpriteClass);

@@ -127,10 +127,13 @@ s32 func_020815bc(void *arg0, void *arg1) {
     return LoadFileToNewBuffer(BuildNarcPath(arg0), arg1);
 }
 
-void func_020815d4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 BuildNarcPath(M2C_UNK);
- void ReadFileSection(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- ReadFileSection(BuildNarcPath(arg0), arg1, arg2, arg3);
+/* Copy `size` bytes at `offset` of the NARC member `memberPath` into `dest`.
+ * Returns what ReadFileSection returns: 0 after halting the system when the
+ * member cannot be read, 1 on success. */
+void LoadNarcFileSection(M2C_UNK memberPath, M2C_UNK dest, M2C_UNK offset, M2C_UNK size) {
+    s32 BuildNarcPath(M2C_UNK);
+    void ReadFileSection(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    ReadFileSection(BuildNarcPath(memberPath), dest, offset, size);
 }
 
 void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -139,16 +142,21 @@ void LoadNarcFileToSpriteBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     LoadFileToSpriteBuffer(BuildNarcPath(arg0), arg1, arg2);
 }
 
-void func_0208161c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 BuildNarcPath(M2C_UNK);
- void LoadFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- LoadFileToBGExtPltt(BuildNarcPath(arg0), arg1, arg2, arg3);
+/* Load the NARC member at `memberPath` into the main or sub engine's BG extended
+ * palette (`paletteSlot`), at byte `offset`, `size` bytes long. */
+void LoadNarcFileToBGExtPltt(M2C_UNK memberPath, M2C_UNK paletteSlot, M2C_UNK offset, M2C_UNK size) {
+    s32 BuildNarcPath(M2C_UNK);
+    void LoadFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadFileToBGExtPltt(BuildNarcPath(memberPath), paletteSlot, offset, size);
 }
 
-void LoadNarcLayerPalette(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 BuildNarcPath(M2C_UNK);
- void QueueFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- QueueFileToBGExtPltt(BuildNarcPath(arg0), arg1, arg2, arg3);
+/* Queue a copy of the NARC member at `memberPath` into the main or sub engine's
+ * BG extended palette (`paletteSlot`) at byte `offset`, `size` bytes long; the copy
+ * runs on the next palette upload. */
+void QueueNarcFileToBGExtPltt(M2C_UNK memberPath, M2C_UNK paletteSlot, M2C_UNK offset, M2C_UNK size) {
+    s32 BuildNarcPath(M2C_UNK);
+    void QueueFileToBGExtPltt(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    QueueFileToBGExtPltt(BuildNarcPath(memberPath), paletteSlot, offset, size);
 }
 
 void func_0208166c(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
@@ -161,16 +169,20 @@ s32 func_0208168c(void *arg0, void *arg1) {
     return LoadFileToTextureBank(BuildNarcPath(arg0), arg1);
 }
 
-void func_020816a4(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 BuildNarcPath(M2C_UNK);
- void LoadFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- LoadFileAndDrawTilemapBlock(BuildNarcPath(arg0), arg1, arg2, arg3);
+/* Load the NARC member at `memberPath` and draw it as a tile block into
+ * `tilemap` at tile `tileOffset` with `palette`. */
+void LoadNarcFileAndDrawTilemapBlock(M2C_UNK memberPath, M2C_UNK tilemap, M2C_UNK tileOffset, M2C_UNK palette) {
+    s32 BuildNarcPath(M2C_UNK);
+    void LoadFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadFileAndDrawTilemapBlock(BuildNarcPath(memberPath), tilemap, tileOffset, palette);
 }
 
-void LoadNarcFileToBuffer(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
- s32 BuildNarcPath(M2C_UNK);
- void LoadDecompressedFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
- LoadDecompressedFileAndDrawTilemapBlock(BuildNarcPath(arg0), arg1, arg2, arg3);
+/* Load the decompressed NARC member at `memberPath` and draw it as a tilemap
+ * block into `tilemap`, using `tileBase` and `palette`. */
+void LoadNarcFileDecompressedAndDrawTilemapBlock(M2C_UNK memberPath, M2C_UNK tilemap, M2C_UNK tileBase, M2C_UNK palette) {
+    s32 BuildNarcPath(M2C_UNK);
+    void LoadDecompressedFileAndDrawTilemapBlock(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    LoadDecompressedFileAndDrawTilemapBlock(BuildNarcPath(memberPath), tilemap, tileBase, palette);
 }
 
 /* Build a NARC member path in the shared 64-byte path buffer: the "ARC:/" archive

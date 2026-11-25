@@ -272,7 +272,7 @@ u8 IsSaveArchiveUnusable(void) {
     return M2C_FIELD(&data_02140a18, u8 *, 0x52);
 }
 
-u8 func_02076218(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,u8*,0x53);}
+u8 IsSaveListDirty(void){extern M2C_UNK data_02140a18;return M2C_FIELD(&data_02140a18,u8*,0x53);}
 
 M2C_UNK *GetSaveRecordList(void) {
     extern M2C_UNK data_0213f664;

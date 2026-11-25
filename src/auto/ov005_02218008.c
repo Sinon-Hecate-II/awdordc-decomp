@@ -24,7 +24,7 @@ void GX_SetBankForOBJExtPlttSub();
 void Apply3DSpriteLayout();
 void OpenNarcArchive();
 void LoadNarcFileDecompressed();
-void LoadNarcFileToBuffer();
+void LoadNarcFileDecompressedAndDrawTilemapBlock();
 void CloseNarcArchive();
 void LoadFileToSpriteBuffer();
 void SetFileDirectory();
@@ -94,7 +94,7 @@ v5=(u16*)((char*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18); *v5 = *v5 &~192;M2
 SetOv005FileDirectory();
 OpenNarcArchive(GetLocalizedFileName(data_ov005_02220908));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_0222091c),M2C_FIELD(g3DSpriteEngineMain,void * *,20));
-LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
+LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(data_ov005_0222092c),M2C_FIELD(g3DSpriteEngineMain,void * *,40),0,0);CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov005_02220944,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;SetFileDirectory(data_ov005_02220958);
 p=LoadFileToBuffer(data_ov005_02220960,1);LoadGraphicsBlock((char*)p+0x460,(char*)M2C_FIELD(g3DSpriteEngineMain,void * *,28)+0x8180);HeapFreeBlock(p);
 LoadFileToSpriteBuffer(data_ov005_02220978,0x2e0,32);
@@ -120,7 +120,7 @@ v11=(u16*)((char*)M2C_FIELD(gCur3DSpriteEngine,void **,0)+18); *v11 = *v11 &~192
 SetOv005FileDirectory();
 OpenNarcArchive(GetLocalizedFileName(data_ov005_0222098c));
 LoadNarcFileDecompressed(GetLocalizedFileName(data_ov005_022209a0),M2C_FIELD(g3DSpriteEngineSub,void * *,20));
-LoadNarcFileToBuffer(GetLocalizedFileName(data_ov005_022209b0),M2C_FIELD(g3DSpriteEngineSub,void * *,40),0,0);CloseNarcArchive();
+LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(data_ov005_022209b0),M2C_FIELD(g3DSpriteEngineSub,void * *,40),0,0);CloseNarcArchive();
 LoadFileToSpriteBuffer(data_ov005_022209c4,0,32);M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=4;
 M2C_FIELD(gOv005MenuState,void * *,32)=Create3DSprite(arg0);sprite=M2C_FIELD(gOv005MenuState,void * *,32);M2C_FIELD(sprite,u8 *,88)=8;
 LoadSpriteResource(2,0,8,(char*)M2C_FIELD(gCur3DSpriteEngine,void * *,28)+0x3000);
@@ -148,7 +148,7 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
     void LoadSpriteResource(s32,s32,u8,void *);
     void *GetLocalizedFileName(void *);
     void OpenNarcArchive(void *);
-    void LoadNarcFileToBuffer(void *,void *,s32,s32);
+    void LoadNarcFileDecompressedAndDrawTilemapBlock(void *,void *,s32,s32);
     void CloseNarcArchive(void);
     void SetOv005FileDirectory(void);
     void Ov005RefreshEntryLabel(void);
@@ -169,8 +169,8 @@ void Ov005SyncMenuState(M2C_UNK arg0) {
         savedEngine=gCur3DSpriteEngine;
         gCur3DSpriteEngine=g3DSpriteEngineMain;
         OpenNarcArchive(GetLocalizedFileName(sSyogunColorArchive));
-        if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)==OV005_PAGE_LIST) LoadNarcFileToBuffer(GetLocalizedFileName(sSyogunColorDown00),M2C_FIELD(gCur3DSpriteEngine,void **,0x28),0,0);
-        else LoadNarcFileToBuffer(GetLocalizedFileName(sSyogunColorDown01),M2C_FIELD(gCur3DSpriteEngine,void **,0x28),0,0);
+        if(M2C_FIELD(gOv005MenuState,s16 *,OV005_MENU_PAGE)==OV005_PAGE_LIST) LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(sSyogunColorDown00),M2C_FIELD(gCur3DSpriteEngine,void **,0x28),0,0);
+        else LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(sSyogunColorDown01),M2C_FIELD(gCur3DSpriteEngine,void **,0x28),0,0);
         CloseNarcArchive();
         M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
         gCur3DSpriteEngine=savedEngine;

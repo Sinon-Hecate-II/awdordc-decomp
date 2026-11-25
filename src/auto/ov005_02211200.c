@@ -19,7 +19,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     extern u8 data_ov005_022201b0[];
     extern u8 data_ov005_022201c0[];
     extern u8 data_ov005_022201d0[];
-    void func_020885fc(void);
+    void LoadUnitGraphics(void);
     void Set3DSpriteVramBanks(void);
     void Apply3DSpriteDisplayConfig(void);
     void Reset3DSpriteBankState(void);
@@ -46,7 +46,7 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
     void Sync3DSpriteToTarget(void *);
     void LoadUiGraphicsBank(s32);
 
-    func_020885fc();
+    LoadUnitGraphics();
     Set3DSpriteVramBanks();
     savedEngine = gCur3DSpriteEngine;
     i=0;do {
@@ -164,8 +164,8 @@ M2C_UNK func_ov005_02211200(M2C_UNK arg0) {
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
 s32 func_ov005_0221174c(void) {
-s32 FreeUiGraphicsBank(s32); s32 DeleteWallpaperSpritesOnAllEngines(); s32 func_ov003_021ff7ac(); s32 func_02088624();
-FreeUiGraphicsBank(4); DeleteWallpaperSpritesOnAllEngines(); func_ov003_021ff7ac(); func_02088624();
+s32 FreeUiGraphicsBank(s32); s32 DeleteWallpaperSpritesOnAllEngines(); s32 Ov003_ResumeMapPanelAnimation(); s32 func_02088624();
+FreeUiGraphicsBank(4); DeleteWallpaperSpritesOnAllEngines(); Ov003_ResumeMapPanelAnimation(); func_02088624();
 }
 
 #pragma opt_strength_reduction off

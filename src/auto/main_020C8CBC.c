@@ -221,17 +221,19 @@ void AppendCampaignMapLoadEntry(s16 mapId, s32 record) {
     M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) = (u8) (M2C_FIELD(queue, u8 *, CAMPAIGN_LOAD_QUEUE_COUNT) + 1);
 }
 
-void func_020c9168(void *arg0) {
+/* Erase the campaign map chosen in the map list: clear its progress flags and
+ * delete its saved record, rewriting the shared settings record. */
+void EraseCampaignMapSave(void *panel) {
     M2C_UNK DeleteSaveRecordAndSaveSettings(s32);
     s32 GetCampaignMapSaveType(s32);
     M2C_UNK ClearCampaignMapProgress(s32);
-    s32 temp_r4;
-    s32 temp_r5;
+    s32 saveType;
+    s32 mapId;
 
-    temp_r5 = M2C_FIELD(arg0, s32 *, 0x34);
-    temp_r4 = GetCampaignMapSaveType(temp_r5);
-    ClearCampaignMapProgress(temp_r5);
-    DeleteSaveRecordAndSaveSettings(temp_r4);
+    mapId = M2C_FIELD(panel, s32 *, CAMPAIGN_ERASE_PANEL_MAP_ID);
+    saveType = GetCampaignMapSaveType(mapId);
+    ClearCampaignMapProgress(mapId);
+    DeleteSaveRecordAndSaveSettings(saveType);
 }
 
 void func_020c9190(s32 arg0) {

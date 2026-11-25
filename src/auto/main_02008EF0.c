@@ -460,9 +460,13 @@ s32 Sound_GetActiveChannels(void) {
     return gSoundCommandBufferPtr[1];
 }
 
+/* Read the command-batch count the ARM7 sound driver has taken so far from the
+ * first word of the shared command buffer, after dropping the ARM9's cached copy
+ * of that word so the driver's latest update is read. */
 s32 Sound_GetProcessedCommandCount(void) {
     M2C_UNK DC_InvalidateRange(s32 *, M2C_UNK);
     extern s32 *gSoundCommandBufferPtr;
+
     DC_InvalidateRange(gSoundCommandBufferPtr, 4);
     return *gSoundCommandBufferPtr;
 }

@@ -29,7 +29,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
     s32 GetSessionPlayerMask();
     void Hide3DSprite(void *);
     void *Create3DSprite(void *);
-    void func_02098e04(void *, s32, s32);
+    void SetFaceChildTextureRow(void *, s32, s32);
     void SetFaceSpriteFace(void *, s32);
     void *CreateFaceChildSprite(void *);
     M2C_UNK GetPlayerCoId(s32);
@@ -92,7 +92,7 @@ void func_ov003_02201e88(void *spriteSlots, void *allocationGroup) {
         team = (u8) GetPlayerArmyId(player + 1);
         sprite = CreateFaceChildSprite(allocationGroup);
         ((void **) spriteSlots)[player + 1] = sprite;
-        func_02098e04(sprite, (0x1D0 + (player << 4)) << 5, 7);
+        SetFaceChildTextureRow(sprite, (0x1D0 + (player << 4)) << 5, 7);
         sprite = ((void **) spriteSlots)[player + 1];
         SetFaceSpriteFace(sprite, appearance);
         sprite = ((void **) spriteSlots)[player + 1];
@@ -281,7 +281,7 @@ void func_ov003_022024a8(void *arg0) {
     void UpdateSpriteAnimation(void *);
     s16 GetSpriteAnimValue(void *);
     s32 GetWaypointSlotX(u8);
-    s32 func_ov003_022004d0();
+    s32 GetWaypointSlotBaseX();
     s32 GetWaypointSlotOffsetX(M2C_UNK);
     s32 Ov003_IsLinkSessionGuest();
     M2C_UNK func_ov003_0220501c(void *, s16, M2C_UNK);
@@ -344,9 +344,9 @@ void func_ov003_022024a8(void *arg0) {
     temp_r4_2 = temp_r6 - 8;
     M2C_FIELD(*(void **)g3DSpriteEngineSub, s16 *, 0x3E) = temp_r5;
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x46) = 0xFFD0;
-    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x38) = (s16) (0 - (temp_r4_2 + func_ov003_022004d0()));
+    M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x38) = (s16) (0 - (temp_r4_2 + GetWaypointSlotBaseX()));
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x40) = 0xFFC0;
-    temp_r5_2 = func_ov003_022004d0();
+    temp_r5_2 = GetWaypointSlotBaseX();
     M2C_FIELD(*(void **)gCur3DSpriteEngine, s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + GetWaypointSlotOffsetX(1)));
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, 0x42) = 0xFFC0;
     temp_r10 = func_020cfb94();

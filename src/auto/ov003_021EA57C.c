@@ -28,7 +28,7 @@ void func_ov003_021ea57c(void *arg0) {
     M2C_UNK GetWaypointOptionTextId(s8);
     M2C_UNK func_ov003_021ef210(void *, s32, s32, M2C_UNK);
     M2C_UNK func_ov003_021ef758(void *, s32);
-    s32 func_ov003_022004d0();
+    s32 GetWaypointSlotBaseX();
     s32 GetWaypointSlotOffsetX(M2C_UNK);
     s32 GetWaypointOptionCoId(u8);
     extern M2C_UNK gSpriteDesc64x32;
@@ -210,9 +210,9 @@ after_56:
     temp_r4_2 = var_r9 - 8;
     M2C_FIELD(*g3DSpriteEngineMain, s16 *, 0x3E) = temp_r3;
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x46) = 0;
-    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = (s16) (0 - (temp_r4_2 + func_ov003_022004d0()));
+    M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = (s16) (0 - (temp_r4_2 + GetWaypointSlotBaseX()));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x40) = 0xFFF0;
-    temp_r5_2 = func_ov003_022004d0();
+    temp_r5_2 = GetWaypointSlotBaseX();
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x3A) = (s16) (0 - (temp_r4_2 + temp_r5_2 + GetWaypointSlotOffsetX(1)));
     M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x42) = 0xFFF0;
     temp_r8_2 = GetSpriteAnimValue(M2C_FIELD(arg0, s32 *, 0x48));

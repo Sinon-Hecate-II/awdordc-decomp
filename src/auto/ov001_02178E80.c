@@ -644,9 +644,9 @@ void Ov001_WirelessSetupFrameTask(void) {
     void Ov001_HandleWirelessSetupInput(void);
     void Ov001_CancelWirelessSetupTask(void);
     M2C_UNK Ov001_UpdateInput();
-    M2C_UNK func_ov001_0218c7d4(M2C_UNK);
+    M2C_UNK Ov001_UpdateTaskGroup(M2C_UNK);
     Ov001_UpdateInput();
-    func_ov001_0218c7d4(0);
+    Ov001_UpdateTaskGroup(0);
     Ov001_HandleWirelessSetupInput();
     Ov001_CancelWirelessSetupTask();
 }

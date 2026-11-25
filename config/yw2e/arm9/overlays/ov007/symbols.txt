@@ -63,9 +63,9 @@ func_ov007_02213428 kind:function(arm,size=0x18) addr:0x02213428
 func_ov007_02213440 kind:function(arm,size=0x18) addr:0x02213440
 OpenMapEditorFillMenu kind:function(arm,size=0x5c) addr:0x02213458
 MapEditor_ApplyMapSize kind:function(arm,size=0x78) addr:0x022134b4
-func_ov007_0221352c kind:function(arm,size=0x28) addr:0x0221352c
+MapEditor_StartMapResize kind:function(arm,size=0x28) addr:0x0221352c
 func_ov007_02213554 kind:function(arm,size=0x7a0) addr:0x02213554
-func_ov007_02213cf4 kind:function(arm,size=0x28) addr:0x02213cf4
+MapEditor_ClearSpriteLayer1 kind:function(arm,size=0x28) addr:0x02213cf4
 func_ov007_02213d1c kind:function(arm,size=0x16c) addr:0x02213d1c
 func_ov007_02213e88 kind:function(arm,size=0x434) addr:0x02213e88
 func_ov007_022142bc kind:function(arm,size=0x18) addr:0x022142bc
@@ -264,7 +264,7 @@ data_ov007_0221f690 kind:data(any) addr:0x0221f690
 data_ov007_0221f6a0 kind:data(any) addr:0x0221f6a0
 data_ov007_0221f6b0 kind:data(any) addr:0x0221f6b0
 data_ov007_0221f6e8 kind:data(any) addr:0x0221f6e8
-data_ov007_0221f740 kind:data(any) addr:0x0221f740
+gMapResizeSpriteClass kind:data(any) addr:0x0221f740
 gMapEditorMenuClass kind:data(any) addr:0x0221f780
 data_ov007_0221f7c0 kind:data(any) addr:0x0221f7c0
 gMapEditListMenuClass kind:data(any) addr:0x0221f820

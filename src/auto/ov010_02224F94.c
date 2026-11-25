@@ -263,10 +263,10 @@ v=a[i+3]+b[i+3];if(v>32767)v=32767;else if(v< -32768)v=-32768;out[i+3]=v;
 s32 func_ov010_02225640(void *arg) {
     void func_02000b9c(s32);
     s32 VoiceLink_InitPacketPool(void *, u32);
-    M2C_UNK func_ov010_02224ea0();
+    M2C_UNK VoiceLink_ResetPacketPool();
     s32 VoiceLink_Init(void *);
     s32 func_ov010_022224b4(void);
-    M2C_UNK func_ov010_02224270();
+    M2C_UNK VoiceLink_ResetContextLists();
     void MI_CpuFill8(void *, u32, u32);
     extern M2C_UNK gVoiceChatSession;
     extern M2C_UNK gLinkConfig;
@@ -292,11 +292,11 @@ s32 func_ov010_02225640(void *arg) {
     M2C_FIELD(&gVoiceChatSession, u8 *, 0xC) = b;
     {
         s32 r = VoiceLink_InitPacketPool(M2C_FIELD(arg, void **, 0x10), M2C_FIELD(arg, u32 *, 0x14));
-        if (!r) { func_ov010_02224ea0(); return 0; }
+        if (!r) { VoiceLink_ResetPacketPool(); return 0; }
     }
     {
         s32 r = VoiceLink_Init(arg);
-        if (!r) { func_ov010_02224ea0(); return 0; }
+        if (!r) { VoiceLink_ResetPacketPool(); return 0; }
     }
     {
         s32 r = func_ov010_022224b4();
@@ -305,21 +305,22 @@ s32 func_ov010_02225640(void *arg) {
             return 1;
         }
     }
-    func_ov010_02224270();
-    func_ov010_02224ea0();
+    VoiceLink_ResetContextLists();
+    VoiceLink_ResetPacketPool();
     return 0;
 }
 
+/* Tear down the voice-chat session: clear the attached-context count and the
+ * link's context lists and packet pool, then mark the session inactive and its
+ * connection kind unknown. */
 void VoiceChat_ResetSession(void) {
-    M2C_UNK func_ov010_022225b0();
-    M2C_UNK func_ov010_02224270();
-    M2C_UNK func_ov010_02224ea0();
-    extern M2C_UNK gVoiceChatSession;
-    func_ov010_022225b0();
-    func_ov010_02224270();
-    func_ov010_02224ea0();
-    M2C_FIELD(&gVoiceChatSession, s32 *, 0x1C) = 0;
-    M2C_FIELD(&gVoiceChatSession, s32 *, 8) = 0;
+    extern s32 gVoiceChatSession;
+
+    VoiceChat_ClearContextCount();
+    VoiceLink_ResetContextLists();
+    VoiceLink_ResetPacketPool();
+    M2C_FIELD(&gVoiceChatSession, s32 *, VOICE_CHAT_SESSION_KIND) = 0;
+    M2C_FIELD(&gVoiceChatSession, s32 *, VOICE_CHAT_SESSION_ACTIVE) = 0;
 }
 
 /* Per-frame update of a running voice-chat session: count the frames, check the

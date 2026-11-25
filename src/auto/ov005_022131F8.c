@@ -136,7 +136,7 @@ InitTextTiles(1,0,0);
 SetFileDirectory(&data_ov005_02220348);
 OpenNarcArchive(GetLocalizedFileName(&data_ov005_02220358));
 LoadNarcFileDecompressed(GetLocalizedFileName(&data_ov005_02220368),M2C_FIELD(g3DSpriteEngineMain,void **,0x14));
-LoadNarcFileToBuffer(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
+LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(&data_ov005_02220374),M2C_FIELD(g3DSpriteEngineMain,void **,0x28),0,0);
 CloseNarcArchive();LoadFileToSpriteBuffer(&data_ov005_02220388,0,0x20);
 M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=2;M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=4;
 Load3DSpritePattern(0x1000,1,GetUiColor(9),2);
@@ -378,18 +378,23 @@ void func_ov005_022140e4(void) {
     SetFileDirectory(&data_ov005_02220644);
 }
 
-s32 RecordsMenu_IsRecordAvailable(s32 arg0) {
-    s32 func_020ad658(s32);
+/* A record counts as available once the records menu is unlocked, or else when
+ * its music entry has been heard. */
+s32 RecordsMenu_IsRecordAvailable(s32 recordId) {
+    s32 IsRecordsMusicEntryHeard(s32);
     extern M2C_UNK gRecordsMenuState;
     if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;
-    return func_020ad658(arg0);
+    return IsRecordsMusicEntryHeard(recordId);
 }
 
-s32 func_ov005_02214120(s32 arg0) {
+/* Records menu: a sub record (background) counts as available as soon as the
+ * record menu is marked unlocked; otherwise its map's "background seen" flag
+ * decides. */
+s32 RecordsMenu_IsSubRecordAvailable(s32 recordId) {
     s32 IsMapBackgroundSeen(s32);
     extern M2C_UNK gRecordsMenuState;
     if (*M2C_FIELD(&gRecordsMenuState, u16 **, 8) & 2) return 1;
-    return IsMapBackgroundSeen(arg0);
+    return IsMapBackgroundSeen(recordId);
 }
 
 /* Move the records list's top visible row up one, stopping at the start of the

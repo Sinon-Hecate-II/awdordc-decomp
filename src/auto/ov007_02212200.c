@@ -238,8 +238,8 @@ void func_ov007_02212200(M2C_UNK arg0) {
 }
 #pragma opt_strength_reduction on
 void func_ov007_02212cbc(void) {
-    M2C_UNK func_020ab200();
-    func_020ab200();
+    M2C_UNK DeleteUnitSprites();
+    DeleteUnitSprites();
 }
 
 void func_ov007_02212cc8(M2C_UNK arg0) {

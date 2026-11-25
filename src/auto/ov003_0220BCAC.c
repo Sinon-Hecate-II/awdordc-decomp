@@ -1,5 +1,6 @@
 /* 13 functions from 0x0220BCAC to 0x0220C6C8 (ov003), found by ds-decomp. */
 #include "common.h"
+#include "ds3dsprite.h"
 #include "ov003_menu.h"
 
 #pragma push
@@ -93,11 +94,13 @@ s8 func_ov003_0220bf68(void *arg0) {
     return M2C_FIELD(arg0, s8 *, 0xB);
 }
 
-void func_ov003_0220bf70(void) {
+/* Clear sprite layer 1 of the top-screen 3D sprite engine and mark that layer
+ * dirty so the engine re-uploads it; used when a unit-list row is selected. */
+void Ov003_ClearSubSpriteLayer1(void) {
     M2C_UNK Clear3DSpriteLayerSub(M2C_UNK);
     extern void *g3DSpriteEngineSub;
     Clear3DSpriteLayerSub(1);
-    M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, 0x46) | 2);
+    M2C_FIELD(g3DSpriteEngineSub, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(g3DSpriteEngineSub, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
 void func_ov003_0220bf98(void *a) {

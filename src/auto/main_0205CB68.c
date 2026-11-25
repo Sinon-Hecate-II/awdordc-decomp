@@ -300,7 +300,7 @@ void gti2RemoveConnection(s32 conn)
 #pragma scheduling reset
 s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
     void gti2NormalizeMessage(M2C_UNK **, s32 *);
-    s32 func_0204955c(s32);
+    s32 ghiSocketCanSend(s32);
     s32 ghiSendTo(s32, s32, s32, s32, void *, s32);
     s32 ghiGetLastSocketError(s32);
     s32 func_0205c244(void *, s32, s32);
@@ -313,7 +313,7 @@ s32 gti2SocketSend(void *p, s32 arg1, s32 arg2, void *arg3, s32 arg4) {
 
     gti2NormalizeMessage((M2C_UNK **)&arg3, &arg4);
 
-    if (func_0204955c(*(s32 *)p) == 0) {
+    if (ghiSocketCanSend(*(s32 *)p) == 0) {
         return 1;
     }
 

@@ -476,11 +476,13 @@ void Ov001_RemoveVBlankHandler(void) {
     OS_SetIrqHandler(IRQ_VBLANK, gOv001SavedVBlankIrq[0]);
 }
 
+/* Every VBlank: run the overlay's per-frame task group (group 1) and set the
+ * VBlank event flag so the front-end loop's frame wait returns. */
 void Ov001_VBlankHandler(void) {
-    M2C_UNK func_ov001_0218c7d4(M2C_UNK);
+    M2C_UNK Ov001_UpdateTaskGroup(M2C_UNK);
     extern M2C_UNK gOsArea;
-    func_ov001_0218c7d4(1);
-    M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (s32) (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
+    Ov001_UpdateTaskGroup(1);
+    M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) = (s32) (M2C_FIELD(&gOsArea, s32 *, OS_AREA_EVENT_FLAGS) | OS_EVENT_VBLANK);
 }
 
 /* Allocate and initialise an empty ov001 list: a 16-byte block whose back

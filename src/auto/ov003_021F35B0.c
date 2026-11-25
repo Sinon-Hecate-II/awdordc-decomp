@@ -69,8 +69,8 @@ void Ov003_EnterMatchScene(Ov003BattleSetup *setup) {
 void func_ov003_021f3688(M2C_UNK arg0) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK **MemAlloc(M2C_UNK);
-    M2C_UNK func_020886d4();
-    M2C_UNK func_020886fc();
+    M2C_UNK LoadLinkOverlay();
+    M2C_UNK LoadOnlineOverlay();
     M2C_UNK PlayMusicTrack(M2C_UNK);
     M2C_UNK MapSettings_SetDefaults(M2C_UNK);
     M2C_UNK MapSettings_CopyToGameSettings(M2C_UNK);
@@ -168,7 +168,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
-        func_020886d4();
+        LoadLinkOverlay();
         return;
     case 22:
     case 23:
@@ -184,7 +184,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
-        func_020886fc();
+        LoadOnlineOverlay();
         return;
     case 12:
         temp_lr_4 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
@@ -199,7 +199,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
             MapSettings_CopyToGameSettings(0);
             MapSettings_SetDefaults(0);
         }
-        func_020886fc();
+        LoadOnlineOverlay();
         return;
     case 5:
     case 7:
@@ -218,7 +218,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 24:
-        func_020886d4();
+        LoadLinkOverlay();
         temp_lr_5 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_5, u8 *, 4) = 2U;
         M2C_FIELD(temp_lr_5, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x1D) - 1);
@@ -234,7 +234,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 8:
-        func_020886fc();
+        LoadOnlineOverlay();
         temp_lr_6 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_6, u8 *, 4) = 6U;
         M2C_FIELD(temp_lr_6, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x25) - 1);
@@ -250,7 +250,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 14:
-        func_020886fc();
+        LoadOnlineOverlay();
         temp_lr_7 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_7, u8 *, 4) = 9U;
         M2C_FIELD(temp_lr_7, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x2B) - 1);
@@ -266,7 +266,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 15:
-        func_020886fc();
+        LoadOnlineOverlay();
         temp_lr_8 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_8, u8 *, 4) = 0xAU;
         M2C_FIELD(temp_lr_8, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x2D) - 1);
@@ -282,7 +282,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 16:
-        func_020886fc();
+        LoadOnlineOverlay();
         temp_lr_9 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_9, u8 *, 4) = 0xBU;
         M2C_FIELD(temp_lr_9, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x2F) - 1);
@@ -298,7 +298,7 @@ void func_ov003_021f3688(M2C_UNK arg0) {
         MapSettings_SetDefaults(0);
         return;
     case 17:
-        func_020886fc();
+        LoadOnlineOverlay();
         temp_lr_10 = M2C_FIELD(temp_r0, M2C_UNK ***, 0x40);
         M2C_FIELD(temp_lr_10, u8 *, 4) = 0xCU;
         M2C_FIELD(temp_lr_10, s8 *, 6) = (s8) (M2C_FIELD(&data_ov003_0220fca8, u8 *, 0x31) - 1);
@@ -502,16 +502,19 @@ void WrapValueToRange(s32 value, s32 min, s32 max) {
     } while (!belowMax);
 }
 
-s16 func_ov003_021f3fe4(s32 arg0, s32 arg1, s32 arg2) {
-    s32 var_r0;
+/* Wrap `value` into the range [min, max) in a single step: add the period
+ * (max - min) when it is below the range, subtract it when at or above max, and
+ * truncate the result to 16 bits. */
+s16 WrapValueToRangeOnce(s32 value, s32 min, s32 max) {
+    s32 wrapped;
 
-    var_r0 = arg0;
-    if (var_r0 < arg1) {
-        var_r0 += arg2 - arg1;
-    } else if (var_r0 >= arg2) {
-        var_r0 -= arg2 - arg1;
+    wrapped = value;
+    if (wrapped < min) {
+        wrapped += max - min;
+    } else if (wrapped >= max) {
+        wrapped -= max - min;
     }
-    return (s16) var_r0;
+    return (s16) wrapped;
 }
 
 /* Whether a link session is running but has at most one player: the battle setup

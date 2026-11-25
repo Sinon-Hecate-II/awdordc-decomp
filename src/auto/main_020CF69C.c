@@ -57,24 +57,30 @@ void UpdateMapCursorInput(void) {
     UpdateMapCursorFromTouch();
 }
 
-void func_020cf828(M2C_UNK arg0) {
+/* One input step of the battle map cursor: move the cursor's target tile by the
+ * held D-pad direction and onto the touch position, playing `sound` each time
+ * the target moves.  Does nothing while the cursor is not idle. */
+void StepMapCursorTargetFromInput(s32 sound) {
     M2C_UNK func_020bc610(M2C_UNK);
     M2C_UNK func_020bd220(M2C_UNK);
     if (IsMapCursorIdle() == 0) {
         return;
     }
-    func_020bc610(arg0);
-    func_020bd220(arg0);
+    func_020bc610(sound);
+    func_020bd220(sound);
 }
 
-void func_020cf850(M2C_UNK arg0) {
+/* Per-frame map cursor movement for the map modes that drive it by hand: step the
+   aimed tile along the held D-pad direction (auto-repeat) and update it from the
+   stylus, playing moveSound for each move. */
+void UpdateMapCursorByDirectionAndTouch(s32 moveSound) {
     M2C_UNK MoveMapCursorByDirection(M2C_UNK);
     M2C_UNK func_020bd3c0(M2C_UNK);
     if (IsMapCursorIdle() == 0) {
         return;
     }
-    MoveMapCursorByDirection(arg0);
-    func_020bd3c0(arg0);
+    MoveMapCursorByDirection(moveSound);
+    func_020bd3c0(moveSound);
 }
 
 /* Whether (x, y) is a production property the current player owns: the cell must
@@ -355,14 +361,14 @@ void func_020d0164(M2C_UNK arg0, M2C_UNK arg1) {
 /* For each active player, flood-fill and mark the tiles reachable by its current unit's movement range. */
 M2C_UNK func_020d0178(void) {
 void InitAreaScan(void *,s32,s32,s32,s32,s32); void SetPlayerMoveRangeCell(s32,s32,s32,s32); s32 func_020d03c4(s32);
-s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 func_020d2cf0(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
+s32 IsPlayerActive(s32); void *GetPlayerSelectedUnit(s32); s32 func_020a7d20(void); s32 GetPlayerCoZoneMoveRange(s32); s32 GetPlayerArmyVariantIfSet(s32); s32 NextAreaTile(void *); void BuildMoveRangeFlags(void);
 s32 player; s32 pathState[8]; void *unit; s32 moveRange;
 for(player=1;player<5;player++){
 if(!IsPlayerActive(player))continue;
 func_020d0164(func_020d03c4(player),0);
 unit=GetPlayerSelectedUnit(player); if(!unit)continue;
 if(func_020a7d20() && !(M2C_FIELD(unit,u16 *,4)&4))continue;
-moveRange=func_020d2cf0(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
+moveRange=GetPlayerCoZoneMoveRange(player); if(GetPlayerArmyVariantIfSet(player))moveRange=6;
 InitAreaScan(pathState,moveRange,M2C_FIELD(unit,u8 *,1),M2C_FIELD(unit,u8 *,2),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5144),M2C_FIELD((void *)*gCurrentMap,u16 *,0x5146));
 for(;;){if(!NextAreaTile(pathState))break;SetPlayerMoveRangeCell(player,pathState[4],pathState[5],1);}
 }

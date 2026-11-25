@@ -326,24 +326,26 @@ result+=n;*p=*p & ~(0x80000000U>>n);return result;
 }
 void OS_ReleaseLockID(s32 a){u32 *p=(u32 *)0x027fffb0;u32 mask;if(a>=96)p++;if(a>=96)a-=96;else a-=64;mask=0x80000000U>>a;*p|=mask;}
 #pragma optimization_level reset
-void func_0200563c(s32 arg0, s32 arg1, ...) {
-    void func_02005664();
+void StringFormatAlt(s32 arg0, s32 arg1, ...) {
+    void StringFormatAltArgs();
     char *args;
     args = (char *)(((u32)&arg1 & ~3U) + 4);
-    func_02005664(arg0, arg1, args);
+    StringFormatAltArgs(arg0, arg1, args);
 }
 
-void func_02005664(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
+void StringFormatAltArgs(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     void func_020056a4(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     func_020056a4(arg0, (M2C_UNK)0x7fffffff, arg1, arg2);
 }
 
-void StringFormatN(s32 arg0, s32 arg1, s32 arg2, ...) {
+/* Format the printf-style `format` and its arguments into `buffer`, which holds
+ * at most `capacity` bytes including the terminator (the bounded narrow string
+ * formatter does the work). */
+void StringFormatN(char *buffer, s32 capacity, s32 format, ...) {
     void func_020056a4();
     char *args;
-    args = (char *)(((u32)&arg2 & ~3U) + 4);
-    func_020056a4(arg0, arg1, arg2, args);
-
+    args = (char *)(((u32)&format & ~3U) + 4);
+    func_020056a4(buffer, capacity, format, args);
 }
 
 void func_020056a4() {

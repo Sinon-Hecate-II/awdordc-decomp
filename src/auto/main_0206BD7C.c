@@ -335,10 +335,13 @@ s32 StringFormatWideWrite(WideFormatBuffer *state, const u16 *text, s32 count) {
     return result;
 }
 
-void StringFormatWide(s32 arg0, s32 arg1, s32 arg2, ...) {
+/* Format a printf-style argument list into the wide (UTF-16) buffer `buffer`
+ * (holding `capacity` characters) using the wide format string `format`.
+ * Gathers the variadic arguments and hands them to StringFormatWideToBuffer,
+ * which returns the characters written, or -1 when the text did not fit. */
+s32 StringFormatWide(u16 *buffer, s32 capacity, void *format, ...) {
     void StringFormatWideToBuffer();
     char *args;
-    args = (char *)(((u32)&arg2 & ~3U) + 4);
-    StringFormatWideToBuffer(arg0, arg1, arg2, args);
-
+    args = (char *)(((u32)&format & ~3U) + 4);
+    StringFormatWideToBuffer(buffer, capacity, format, args);
 }

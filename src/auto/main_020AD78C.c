@@ -25,7 +25,7 @@ void DrawScreenTransition(void) {
     u8 OpenNarcArchive(M2C_UNK);
     void LoadNarcFileToSpriteBuffer(M2C_UNK, M2C_UNK, M2C_UNK);
     s32 LoadNarcFileDecompressed(void *, void *);
-    void LoadNarcFileToBuffer(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
+    void LoadNarcFileDecompressedAndDrawTilemapBlock(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     void CloseNarcArchive(void);
 
     extern s32 gScreenTransition;
@@ -77,11 +77,11 @@ void DrawScreenTransition(void) {
 
     if (GetScreenTransitionSide() == 0) {
         resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
-        LoadNarcFileToBuffer(resolvedPath, GetScreenTransitionScTarget(), 1, 0);
+        LoadNarcFileDecompressedAndDrawTilemapBlock(resolvedPath, GetScreenTransitionScTarget(), 1, 0);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x1;
     } else {
         resolvedPath = GetLocalizedFileName((M2C_UNK)pathBuffer);
-        LoadNarcFileToBuffer(resolvedPath, GetScreenTransitionScTarget(), 1, 8);
+        LoadNarcFileDecompressedAndDrawTilemapBlock(resolvedPath, GetScreenTransitionScTarget(), 1, 8);
         *(volatile u8 *)((char *)gCur3DSpriteEngine + 0x46) |= 0x2;
     }
 

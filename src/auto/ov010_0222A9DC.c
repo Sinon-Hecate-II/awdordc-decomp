@@ -215,8 +215,8 @@ void func_ov010_0222b080(void) {
 }
 
 void func_ov010_0222b08c(M2C_UNK arg0) {
-    s32 func_ov010_02228720();
-    if (func_ov010_02228720() != 0) {
+    s32 Ov010Online_PollSessionEnd();
+    if (Ov010Online_PollSessionEnd() != 0) {
         return;
     }
     GotoSpriteAnimationLabel(arg0, 0x12);
@@ -546,15 +546,18 @@ void func_ov010_0222b998(void) {
     CreateSubScreenLinkIndicator();
 }
 
-void func_ov010_0222b9b4(void) {
-    M2C_UNK func_020852e0();
+/* Sync the online screen's map-confirm prompt and the sub-screen status
+ * indicator with matchmaking: once matchmaking has started, allow the player to
+ * confirm the map; otherwise disable confirmation and remove the indicator. */
+void Ov010_SyncSubScreenLinkIndicator(void) {
+    M2C_UNK DeleteSubScreenLinkIndicator();
     M2C_UNK EnableMapConfirm();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    if (IsOnlineSessionFlagSet(2) != 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_MATCHMAKING) != 0) {
         EnableMapConfirm();
         return;
     }
     DisableMapConfirm();
-    func_020852e0();
+    DeleteSubScreenLinkIndicator();
 }
 

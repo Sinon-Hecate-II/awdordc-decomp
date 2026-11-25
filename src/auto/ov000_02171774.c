@@ -260,12 +260,15 @@ void func_ov000_02172654(void *entry) {
     }
 }
 
-void Ov000_InfoPanel_SetTerrain(void *arg0, s32 arg1) {
+/* Show `terrainId` in the info panel: store it as the terrain of the panel's
+ * record block, refresh the panel's data and, when the panel is idle, queue its
+ * redraw (draw mode 1). */
+void Ov000_InfoPanel_SetTerrain(void *panel, s32 terrainId) {
     M2C_UNK Ov000_InfoPanel_UpdateData(void *);
-    *M2C_FIELD(arg0, s32 **, 0x18) = arg1;
-    Ov000_InfoPanel_UpdateData(arg0);
-    if (M2C_FIELD(arg0, s32 *, 4) == 0) {
-        M2C_FIELD(arg0, s32 *, 4) = 1;
+    *M2C_FIELD(panel, s32 **, OV000_INFO_PANEL_RECORDS) = terrainId;
+    Ov000_InfoPanel_UpdateData(panel);
+    if (M2C_FIELD(panel, s32 *, OV000_INFO_PANEL_DRAW_MODE) == 0) {
+        M2C_FIELD(panel, s32 *, OV000_INFO_PANEL_DRAW_MODE) = 1;
     }
 }
 

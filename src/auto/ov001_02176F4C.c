@@ -37,11 +37,14 @@ void Ov001_WaitWfcSettingsFadeIn(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_EnableWfcSettingsMenuInput);
 }
 
+/* Wi-Fi settings screen step after its icon row opened: wait for the row's
+ * selection to become available, unlock it and hand over to the row's per-frame
+ * input update. */
 void Ov001_EnableWfcSettingsMenuInput(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     void Ov001_UpdateWfcSettingsMenu(void);
-    if (Ov001_GetIconRowSelection() == -2) return;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) return;
     Ov001_UnlockIconRow();
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_UpdateWfcSettingsMenu);
 }
@@ -225,22 +228,26 @@ void Ov001_ResetProfileFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitResetProfileMenu);
 }
 
+/* Step that runs once the WFC-profile reset screen's icon row is up: wait for
+ * the row's selection to become available, unlock it and hand over to the row's
+ * per-frame input update. */
 void Ov001_WaitResetProfileMenu(void) {
-    extern M2C_UNK func_ov001_02177340;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateResetProfileMenu;
+
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02177340);
+    Ov001_SetStepCallback(&Ov001_UpdateResetProfileMenu);
 }
 
-void func_ov001_02177340(void) {
+void Ov001_UpdateResetProfileMenu(void) {
     void func_ov001_02177354(void);
     void func_ov001_02177374(void);
-    void func_ov001_02177378(void);
+    void Ov001_HandleResetProfileMenuChoice(void);
     func_ov001_02177354();
     func_ov001_02177374();
-    func_ov001_02177378();
+    Ov001_HandleResetProfileMenuChoice();
 }
 
 void func_ov001_02177354(void) {
@@ -256,16 +263,19 @@ void func_ov001_02177374(void) {
 
 }
 
-void func_ov001_02177378(void) {
+/* WFC-profile reset screen: its single icon-row choice (0) is the confirm
+ * action, so play the confirm sound and move on to the step that locks the row
+ * and fades to white. */
+void Ov001_HandleResetProfileMenuChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_021773a0(void);
+    void Ov001_CloseResetProfileMenu(void);
     if (Ov001_GetIconRowSelection() != 0) return;
-    Ov001_PlaySound(6);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021773a0);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseResetProfileMenu);
 }
 
-void func_ov001_021773a0(void) {
+void Ov001_CloseResetProfileMenu(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -377,22 +387,25 @@ void Ov001_MacAddressFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_MacAddressWaitIconRow);
 }
 
+/* Wait for the MAC-address screen's icon row to finish sliding in (selection -2
+ * while it is not ready): unlock the row and hand over to the menu's per-frame
+ * update step. */
 void Ov001_MacAddressWaitIconRow(void) {
-    extern M2C_UNK func_ov001_02177780;
+    extern M2C_UNK Ov001_UpdateMacAddressMenu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02177780);
+    Ov001_SetStepCallback(&Ov001_UpdateMacAddressMenu);
 }
 
-void func_ov001_02177780(void) {
+void Ov001_UpdateMacAddressMenu(void) {
     void func_ov001_02177794(void);
     void func_ov001_021777b4(void);
-    void func_ov001_021777b8(void);
+    void Ov001_CancelMacAddressMenu(void);
     func_ov001_02177794();
     func_ov001_021777b4();
-    func_ov001_021777b8();
+    Ov001_CancelMacAddressMenu();
 }
 
 void func_ov001_02177794(void) {
@@ -406,14 +419,16 @@ void func_ov001_021777b4(void) {
 
 }
 
-void func_ov001_021777b8(void) {
-    void func_ov001_021777e0(void);
+/* The MAC-address screen's icon row had its cancel icon chosen: play the cancel
+ * sound and hand over to the step that closes the screen. */
+void Ov001_CancelMacAddressMenu(void) {
+    void Ov001_PrepareCloseMacAddressScreen(void);
     if (Ov001_GetIconRowSelection() != 0) return;
-    Ov001_PlaySound(7);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021777e0);
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_PrepareCloseMacAddressScreen);
 }
 
-void func_ov001_021777e0(void) {
+void Ov001_PrepareCloseMacAddressScreen(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -561,16 +576,20 @@ void Ov001_OptionMenuFadeDone(void) {
     Ov001_SetStepCallback(&Ov001_OptionMenuWaitIconRow);
 }
 
+/* Step that runs once the ov001 option menu's icon row is up: wait for the row's
+ * selection to become available, unlock it and hand over to the row's per-frame
+ * input update. */
 void Ov001_OptionMenuWaitIconRow(void) {
-    extern M2C_UNK func_ov001_02177bdc;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateOptionMenu;
+
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02177bdc);
+    Ov001_SetStepCallback(&Ov001_UpdateOptionMenu);
 }
 
-void func_ov001_02177bdc(void) {
+void Ov001_UpdateOptionMenu(void) {
     void Ov001_HandleOptionMenuInput(void);
     void func_ov001_02177ce4(void);
     void Ov001_OptionMenuConfirm(void);

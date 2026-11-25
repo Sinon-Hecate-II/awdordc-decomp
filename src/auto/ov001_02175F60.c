@@ -492,18 +492,20 @@ void Ov001_OpenWifiMenuAfterFade(void) {
     Ov001_SetStepCallback(&Ov001_WaitWifiMenuIconRow);
 }
 
+/* Wait for the Wi-Fi menu's icon row to slide in, then unlock it and hand over to
+ * the menu's input step. */
 void Ov001_WaitWifiMenuIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_02176ad8;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateWifiMenu;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02176ad8);
+    Ov001_SetStepCallback(&Ov001_UpdateWifiMenu);
 }
 
-void func_ov001_02176ad8(void) {
+void Ov001_UpdateWifiMenu(void) {
     void Ov001_HandleChoiceInput(void);
     void func_ov001_02176c18(void);
     void Ov001_HandleWifiMenuChoice(void);

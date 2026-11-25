@@ -298,7 +298,11 @@ u8 IsTextLayerActive(void) {
     return var_r0;
 }
 
-s32 func_0208b5c4(void) {
+/* True when a text-layer panel is on screen and still animating: FindTextLayer's
+ * layer pointer stays in the argument register and doubles as the sprite that
+ * Is3DSpriteAnimating inspects (it reports fading or sliding in progress, so
+ * input should wait). */
+s32 IsTextLayerAnimating(void) {
     s32 Is3DSpriteAnimating(void);
     if ((FindTextLayer() != 0) && (Is3DSpriteAnimating() != 0)) return 1;
     return 0;

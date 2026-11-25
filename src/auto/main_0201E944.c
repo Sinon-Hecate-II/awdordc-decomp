@@ -345,11 +345,14 @@ s32 NetworkFreeTaskPool(void) {
     return 0;
 }
 
-s32 ReceiveSocketTaskSlot(s32 arg0) {
+/* Take a free socket task slot from the task pool's queue: wait for one when
+ * `flags` asks (OS_MESSAGE_BLOCK) or return 0 when none is idle.  The received
+ * message is the slot's address. */
+s32 ReceiveSocketTaskSlot(s32 flags) {
     s32 OS_ReceiveMessage(M2C_UNK *, s32 *, s32);
     extern M2C_UNK gSocketTaskQueue;
-    s32 result;
-    if (OS_ReceiveMessage(&gSocketTaskQueue, &result, arg0) != 0) return result;
+    s32 slot;
+    if (OS_ReceiveMessage(&gSocketTaskQueue, &slot, flags) != 0) return slot;
     return 0;
 }
 
@@ -563,11 +566,15 @@ s32 GetSocketConfigSize(SocketConfigTemplate *config) {
     return size;
 }
 
+/* Bytes a socket worker's block takes: its message queue (messageCount
+ * four-byte messages) and its thread stack, each rounded up to 4 bytes. */
 s32 GetSocketTaskBlockSize(void *arg0) {
-    s32 temp_r4;
+    s32 AlignSize4(s32);
+    SocketConfigTask *task = (SocketConfigTask *)arg0;
+    s32 queueBytes;
 
-    temp_r4 = AlignSize4(M2C_FIELD(arg0, u8 *, 3) * 4);
-    return temp_r4 + AlignSize4(M2C_FIELD(arg0, u16 *, 0));
+    queueBytes = AlignSize4(task->messageCount * 4);
+    return queueBytes + AlignSize4(task->stackBytes);
 }
 
 /* Duplicate the sprite/frame data referenced by `src` into `dst`, advancing the cursor. */

@@ -158,7 +158,7 @@ void func_020d4960(void *arg0){extern M2C_UNK gBattleEndState; void *CreateSessi
  * otherwise the standard one; in free-play mode (mode 1) choose the ending from
  * the recorded battle-end conditions and then clear that record. */
 void FinishBattle(void) {
-    M2C_UNK func_02088634();
+    M2C_UNK EnsureResource4Loaded();
     M2C_UNK ResetBattleEndState();
     s32 DidPlayerWin();
     M2C_UNK OpenCampaignMapScreen();
@@ -179,7 +179,7 @@ void FinishBattle(void) {
             func_020d88ac();
             return;
         }
-        func_02088634();
+        EnsureResource4Loaded();
         OpenCampaignMapScreen();
         return;
     case 1:
@@ -480,7 +480,7 @@ hadSelection=IsUiCancelAvailable();
 cancelled=0; playSound=0;
 key=func_020bd13c();
 switch(key) { case 0x1000: playSound=1; break; case 0: cancelled=1; playSound=1; break; }
-if(playSound) { func_020cf828(0x1001a); func_0207a7a4(1,4); }
+if(playSound) { StepMapCursorTargetFromInput(0x1001a); func_0207a7a4(1,4); }
 MapCursor_StepTowardTarget(0);
 if(IsMapCursorIdle()) {
 if(RunCursorIdleEvent(1)) return;
@@ -533,7 +533,7 @@ void UpdateAimingCursor(void) {
  u32 GetTouchReleaseKeyAction(void);
  void *map;
  u32 keys;
- func_020cf850(0x1001a);
+ UpdateMapCursorByDirectionAndTouch(0x1001a);
  func_0207a7a4(1,4);
  map=*gCurrentMap;
  if (M2C_FIELD(M2C_FIELD((u8*)map+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_Y)*4, s8 **,MAP_GRID)+M2C_FIELD(map,s16*,MAP_CURSOR_TARGET_X),s8*,0)>110) {
@@ -597,7 +597,7 @@ s32 valid, keys;
 u32 unitId;
 void *map;
 keys=0;
-func_020cf828(0x1001a);
+StepMapCursorTargetFromInput(0x1001a);
 func_0207a7a4(1,4);
 valid=IsSelectableUnitAt(M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_X),M2C_FIELD(*gCurrentMap,s16 *,MAP_CURSOR_TARGET_Y));
 if(valid) MapCursor_StepTowardTarget(4); else MapCursor_StepTowardTarget(5);

@@ -196,22 +196,24 @@ void func_ov011_022250ac(M2C_UNK arg0) {
     LoadOpeningAssetSet(arg0, 0x16, 0, 0);
 }
 
-void func_ov011_022250c4(M2C_UNK arg0) {
+/* Create the intro's opening presentation object as a child of `parent`: a sprite
+ * of the intro class data_ov011_02227fa4 initialised with INTRO_MODE 0. */
+void CreateIntroOpening(M2C_UNK parent) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    M2C_UNK func_ov011_02221320(s32, M2C_UNK);
+    M2C_UNK InitIntroObject(s32, M2C_UNK);
     extern M2C_UNK data_ov011_02227fa4;
-    s32 temp_r0;
+    s32 sprite;
 
-    temp_r0 = CreateSpriteObject(&data_ov011_02227fa4, arg0);
-    if (temp_r0 == 0) {
+    sprite = CreateSpriteObject(&data_ov011_02227fa4, parent);
+    if (sprite == 0) {
         return;
     }
-    func_ov011_02221320(temp_r0, 0);
+    InitIntroObject(sprite, 0);
 }
 
-void func_ov011_022250ec(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,1); }
+void CreateIntroTitle(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK InitIntroObject(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; InitIntroObject(t,1); }
 
-void func_ov011_02225114(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK func_ov011_02221320(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; func_ov011_02221320(t,2); }
+void CreateIntroSequence(M2C_UNK arg0) { s32 CreateSpriteObject(M2C_UNK *,M2C_UNK); M2C_UNK InitIntroObject(s32,M2C_UNK); extern M2C_UNK data_ov011_02227fa4; s32 t=CreateSpriteObject(&data_ov011_02227fa4,arg0); if(t==0)return; InitIntroObject(t,2); }
 
 /* Initialize the DS 3D graphics hardware: reset the geometry engine, configure the LCD display control mode,
    program the viewport/projection matrix blocks, and set up the 3D command and capture registers. */

@@ -155,9 +155,12 @@ s32 Ov010_IsWfcMatchRunning(void) {
     return running;
 }
 
-void func_ov010_02229f98(void *arg0) {
+/* Start the WFC match query of the online match-request node: forward the
+ * name table, its count, the game type, the timeout and the caller's flags
+ * buffer stored in the node to Ov010_RequestWfcMatch. */
+void OnlineMatchRequest_StartQuery(void *request) {
     M2C_UNK Ov010_RequestWfcMatch(s32, s32, s32, s32, s32);
-    Ov010_RequestWfcMatch(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), M2C_FIELD(arg0, s32 *, 0x44));
+    Ov010_RequestWfcMatch(M2C_FIELD(request, s32 *, MATCH_REQUEST_NAMES), M2C_FIELD(request, s32 *, MATCH_REQUEST_NAME_COUNT), M2C_FIELD(request, s32 *, MATCH_REQUEST_TYPE), M2C_FIELD(request, s32 *, MATCH_REQUEST_TIMEOUT), M2C_FIELD(request, s32 *, MATCH_REQUEST_FLAGS));
 }
 
 void func_ov010_02229fc0(void) {
@@ -203,13 +206,17 @@ s32 func_ov010_0222a03c(s32 arg0) {
     return arg0;
 }
 
-void *func_ov010_0222a050(void *arg0) {
-    M2C_UNK Ov010Online_FreePacket();
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        Ov010Online_FreePacket();
-        M2C_FIELD(arg0, s32 *, 0x38) = 0;
+/* Reset an ov010 online connection's stream: release the packet it was chunking
+ * out to the peers (OV010_CONNECTION_STREAM) and clear the slot.  Returns the
+ * connection. */
+void *Ov010Connection_ResetStream(void *connection) {
+    void Ov010Online_FreePacket(void *);
+
+    if (M2C_FIELD(connection, void **, OV010_CONNECTION_STREAM) != NULL) {
+        Ov010Online_FreePacket(M2C_FIELD(connection, void **, OV010_CONNECTION_STREAM));
+        M2C_FIELD(connection, void **, OV010_CONNECTION_STREAM) = NULL;
     }
-    return arg0;
+    return connection;
 }
 
 /* Destructor of an ov010 online connection object: release the stream packet it
@@ -224,11 +231,14 @@ void *Ov010Connection_Free(void *connection) {
     return connection;
 }
 
-s32 ResetPacketAssembly(s32 arg0) {
+/* Reset an ov010 packet-assembly object: destroy its four per-peer assembly
+ * slots (each frees the packet it was assembling, see FreePacketAssemblySlot)
+ * without freeing the object itself. */
+s32 ResetPacketAssembly(s32 assembly) {
     M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK FreePacketAssemblySlot;
-    DestroyArray(arg0 + 0x34, 4, 8, &FreePacketAssemblySlot);
-    return arg0;
+    DestroyArray(assembly + OV010_ASSEMBLY_SLOTS, OV010_ASSEMBLY_SLOT_COUNT, OV010_ASSEMBLY_SLOT_STRIDE, &FreePacketAssemblySlot);
+    return assembly;
 }
 
 /* Destructor of an ov010 packet-assembly object: destroy its four per-peer

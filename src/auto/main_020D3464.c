@@ -331,7 +331,7 @@ void StepBattleMap(void) {
     void TurnStartSetupStep();
     void func_020d447c();
     M2C_UNK TurnBannerStep();
-    void func_020d4280();
+    void TurnIntro1Step();
     void func_020d42a8();
     void func_020d42d0();
     void TurnIntroWaitStep();
@@ -393,7 +393,7 @@ void StepBattleMap(void) {
             TurnBannerStep();
             return;
         case MAP_STATE_TURN_INTRO1:
-            func_020d4280();
+            TurnIntro1Step();
             return;
         case MAP_STATE_TURN_INTRO2:
             func_020d42a8();
@@ -726,11 +726,14 @@ void func_020d427c(void) {
 
 }
 
-void func_020d4280(void) {
+/* Battle-map state MAP_STATE_TURN_INTRO1: create the turn-intro sprite, then
+ * move on to the intro's second step. */
+void TurnIntro1Step(void) {
     M2C_UNK func_020cbda4();
     extern void **gCurrentMap;
+
     func_020cbda4();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 9;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_TURN_INTRO2;
 }
 
 void func_020d42a8(void) {

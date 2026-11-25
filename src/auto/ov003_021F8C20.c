@@ -23,7 +23,7 @@ void func_ov003_021f8c20(void *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     s32 GetSpriteAnimValue(void *);
     u32 GetMapCategory();
-    s32 func_ov003_021f3fe4(s32, M2C_UNK, s16);
+    s32 WrapValueToRangeOnce(s32, M2C_UNK, s16);
     M2C_UNK func_ov003_021f9b30(void *);
     s32 temp_r7;
     void *temp_r0;
@@ -115,7 +115,7 @@ void func_ov003_021f8c20(void *arg0) {
         }
         M2C_FIELD(temp_r5, s32 *, 0xC) = var_r1_2;
     }
-    temp_r0_5 = func_ov003_021f3fe4(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
+    temp_r0_5 = WrapValueToRangeOnce(GetSpriteAnimValue(temp_r5 + 0x20), 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4)));
     temp_r3_2 = M2C_FIELD(temp_r5, s16 *, 4);
     temp_r1_3 = (s16)M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r3_2;
     if (temp_r0_5 <= (s32) temp_r1_3) {
@@ -135,7 +135,7 @@ void func_ov003_021f8c20(void *arg0) {
     temp_r0_6 = GetSpriteAnimValue(temp_r5 + 0x20);
     temp_r1_4 = M2C_FIELD(temp_r5, s16 *, 4);
     var_r7 = (s16)M2C_FIELD(temp_r5, s32 *, 0xC) * temp_r1_4;
-    temp_r0_6 = func_ov003_021f3fe4(temp_r0_6, 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
+    temp_r0_6 = WrapValueToRangeOnce(temp_r0_6, 0, (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * temp_r1_4));
     if ((s8)var_r8 == 0) {
         if (temp_r0_6 > (s32) var_r7) {
             var_r7 += (s16) ((s16)((s16) M2C_FIELD(temp_r5, s32 *, 0x10) + 1) * M2C_FIELD(temp_r5, s16 *, 4));

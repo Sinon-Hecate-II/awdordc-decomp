@@ -410,7 +410,7 @@ s32 func_ov000_0219f0d8(void) {
     void SurfaceUnit(void);
     void DestroyCursorUnit(void);
     void GiveUpCurrentPlayerAndScheduleBattleEnd(void);
-    void func_020cc028(void);
+    void AwardVictoryToCurrentPlayerForGiveUp(void);
     s32 EnterAiCommandDelay(void);
     s32 EnterAiCommandDelayAlt(void);
     void AiProduceCargoUnit(void);
@@ -499,7 +499,7 @@ s32 func_ov000_0219f0d8(void) {
         GiveUpCurrentPlayerAndScheduleBattleEnd();
         break;
     case 19:
-        func_020cc028();
+        AwardVictoryToCurrentPlayerForGiveUp();
         break;
     case 20:
         return EnterAiCommandDelay();

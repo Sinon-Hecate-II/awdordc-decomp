@@ -150,11 +150,15 @@ void AddFaceSprite(s32 x, s32 y, M2C_UNK tile, s32 priority) {
     AddSprite((u16)x, y, tile, faceTemplate, priority);
 }
 
-void func_02098e04(void *arg0, u32 arg1, s32 arg2) {
-    M2C_UNK Hide3DSprite();
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
-    Hide3DSprite();
+/* Set a linked face child's texture offset and face palette row: `textureOffset`
+ * is a byte offset into the face texture (stored in 32-byte blocks) and `tileRow`
+ * picks the row of the face's 16-colour palette; the child is left hidden until
+ * the face is drawn again. */
+void SetFaceChildTextureRow(void *child, u32 textureOffset, s32 tileRow) {
+    M2C_UNK Hide3DSprite(void *);
+    M2C_FIELD(child, s16 *, FACE_SPRITE_TEXTURE) = (s16) (textureOffset >> 5);
+    M2C_FIELD(child, s32 *, FACE_SPRITE_TILE) = (s32) ((M2C_FIELD(child, s32 *, FACE_SPRITE_TILE) & ~FACE_SPRITE_TILE_ROW_MASK) | ((u32) (tileRow << 0x18) >> 6));
+    Hide3DSprite(child);
 }
 
 u8 IsFaceSpriteLoaded(void *);
@@ -285,9 +289,13 @@ void DeleteAllFaceChildren(void) {
     DeleteSpriteObjectsOfClass(&gFaceChildSpriteClass);
 }
 
-void func_020990d4(void *arg0, u32 arg1, s32 arg2) {
-    M2C_FIELD(arg0, s16 *, 0x3E) = (s16) (arg1 >> 5);
-    M2C_FIELD(arg0, s32 *, 0x40) = (s32) ((M2C_FIELD(arg0, s32 *, 0x40) & ~0x03FC0000) | ((u32) (arg2 << 0x18) >> 6));
+/* Point a CO face sprite at graphics row `textureOffset` (in 32-unit steps) of
+ * its texture and at OBJ palette row `paletteRow`, then hide it so the change
+ * takes effect on the next draw. */
+void SetFaceSpriteTextureRow(void *face, u32 textureOffset, s32 paletteRow) {
+    M2C_UNK Hide3DSprite();
+    M2C_FIELD(face, s16 *, SPRITE_ACTOR_TILE_ROW) = (s16) (textureOffset >> 5);
+    M2C_FIELD(face, s32 *, SPRITE_ACTOR_PALETTE) = (s32) ((M2C_FIELD(face, s32 *, SPRITE_ACTOR_PALETTE) & ~SPRITE_ACTOR_PALETTE_MASK) | ((u32) (paletteRow << 0x18) >> 6));
     Hide3DSprite();
 }
 

@@ -17,6 +17,21 @@ typedef struct MapSprite {
     u32 flags;  /* +0x44 sprite control flags */
 } MapSprite;
 
+/* An attack-target effect: the marker sprite an attack creates (class
+ * data_0212b00c, see CreateAttackTargetEffect), aiming at a target tile from
+ * the tile the attack comes from.  Its animation script holds the map view on
+ * the target while the strike plays. */
+typedef struct AttackTargetEffect {
+    u8  pad00[0x34];
+    s32 sourceX;    /* +0x34 map tile x the attack comes from */
+    s32 sourceY;    /* +0x38 map tile y */
+    u8  pad3C[0x16]; /* +0x3C */
+    s16 power;      /* +0x52 power the marker shows */
+    u8  pad54[0x18]; /* +0x54 */
+    s16 targetX;    /* +0x6C map tile x the attack is aimed at */
+    s16 targetY;    /* +0x6E map tile y */
+} AttackTargetEffect;
+
 /* The missile effect's task.  Fields from +0x34 are per effect; these are the
  * ones the missile effect uses: the sprite sheet it loads, the map tile it is
  * fired from and the eased climb of the missile sprite it drives. */

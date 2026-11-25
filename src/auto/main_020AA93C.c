@@ -456,7 +456,7 @@ void *CreateUnitSprite(s32 layer) {
     return sprite;
 }
 
-void func_020ab200(void) {
+void DeleteUnitSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK gUnitSpriteClass;
     M2C_UNK (*fp)(M2C_UNK *) = (M2C_UNK (*)(M2C_UNK *))DeleteSpriteObjectsOfClass;

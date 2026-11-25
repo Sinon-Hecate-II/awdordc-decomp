@@ -100,6 +100,9 @@ typedef struct Ov003OptionValue {
 #define SCENE_DISPLAY_GROUP        0x50 /* s32 *: group sprite handles, 3 runs of 4 */
 #define SCENE_DISPLAY_TEXT         0x54 /* void *: text sprite */
 #define SCENE_DISPLAY_SPRITE       0x58 /* s32: sprite hidden together with the display */
+#define SCENE_DISPLAY_RESUME_DELAY 0x38 /* u8: updates since the display appeared; its sprite
+                                         * animation resumes once this reaches SCENE_DISPLAY_RESUME_FRAMES */
+#define SCENE_DISPLAY_RESUME_FRAMES 12  /* updates a new scene display keeps its sprite animation paused */
 
 /* The scene display's sprite group (the object SCENE_DISPLAY_GROUP points at,
  * class gSceneDisplayGroupVTable): three runs of four 3D-sprite handles. */
@@ -125,6 +128,25 @@ typedef struct Ov003MapTransferPanel {
 
 /* An empty entry of a map-pick list. */
 #define MAP_PICK_NONE 0xFFFF
+
+/* The +0x3B flag byte of an ov003 map-list menu entity: the low nibble is the
+ * menu kind (MENU_ENTITY_MODE), bit 4 is left alone by the constructors. */
+typedef struct MenuEntityFlags3B {
+    u8 kind:4;
+    u8 unk4:1;
+    u8 first:1;
+    u8 second:1;
+    u8 third:1;
+} MenuEntityFlags3B;
+
+/* The +0x3E flag byte of an ov003 map-list menu entity (first two bits of the
+ * low field set the menu kind's value). */
+typedef struct MenuEntityFlags3E {
+    u8 first:3;
+    u8 second:3;
+    u8 third:1;
+    u8 fourth:1;
+} MenuEntityFlags3E;
 
 /* The +0x20 flag byte of a scene-view label sprite. */
 typedef struct SceneViewLabelFlags {
@@ -230,5 +252,57 @@ typedef struct Ov003MapMenuScene {
     u8 pad38[4];
     u16 mapId;      /* +0x3C MAP_ID the preview shows */
 } Ov003MapMenuScene;
+
+/* The +0x39/+0x3A mode bytes of an ov003 map-list menu entity: the low seven
+ * bits are the value, the top bit a flag the constructors leave alone. */
+typedef struct MenuEntityFlags39 {
+    u8 low:7;
+    u8 high:1;
+} MenuEntityFlags39;
+
+/* The paged map list of an ov003 map-list menu entity: the five visible map
+ * ids (pending and current), the list's slide tween and the map pages. */
+typedef struct Ov003MapList {
+    void *vtable;            /* +0x00 data_ov003_022100d4 */
+    void *iface;             /* +0x04 gMapPickSelectionIfaceVTable */
+    u16 current[5];          /* +0x08 map id shown on each visible row */
+    u16 pending[5];          /* +0x12 map id picked for each visible row */
+    SpriteTween tween;       /* +0x1C slide tween of the list */
+    u8 pad2E[0x183E];
+    u8 drawn[MENU_MAP_LIST_DRAWN_SIZE]; /* +0x186C one bit per drawn row */
+    u8 pad1879[3];
+} Ov003MapList;              /* 0x187C bytes */
+
+/* The ov003 map-list menu entity (class gOv003MapListMenuClass): the scene
+ * object's vtables, the mode and flag bytes, the paged map list, the static
+ * text-label slots and the two number labels. */
+typedef struct Ov003MapListMenuScene {
+    void *vtable;                  /* +0x00 */
+    u8 pad04[0x30];
+    void *iface;                   /* +0x34 second vtable */
+    u8 state38;                    /* +0x38 */
+    MenuEntityFlags39 visible;     /* +0x39 */
+    MenuEntityFlags39 flags3A;     /* +0x3A */
+    MenuEntityFlags3B flags3B;     /* +0x3B menu kind in the low nibble */
+    u16 mapId;                     /* +0x3C selected map id */
+    union {
+        MenuEntityFlags3E flags;   /* +0x3E menu kind value */
+        u8 byte;                   /* +0x3E byte view, bit 7 set when redrawn */
+    } flags3E;
+    u8 pad3F;
+    s32 unk40;                     /* +0x40 */
+    Ov003MapList *mapList;         /* +0x44 paged map list */
+    void *labelSlots;              /* +0x48 &gTextLabelSlotState */
+    s32 unk4C;                     /* +0x4C */
+    SceneViewLabel *labelA;        /* +0x50 */
+    SceneViewLabel *labelB;        /* +0x54 */
+    s32 unk58;                     /* +0x58 */
+    s32 unk5C;                     /* +0x5C */
+    s32 unk60;                     /* +0x60 */
+    s32 unk64;                     /* +0x64 */
+    s32 unk68;                     /* +0x68 */
+    void *unk6C;                   /* +0x6C 8-byte heap block */
+    s32 unk70;                     /* +0x70 */
+} Ov003MapListMenuScene;           /* 0x74 bytes */
 
 #endif

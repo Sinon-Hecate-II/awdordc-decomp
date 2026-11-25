@@ -98,9 +98,12 @@ void HideLinkStatusSprite(void){
  if(p){M2C_FIELD(p,s8 *,0x40)=0;M2C_FIELD(p,s8 *,0x41)=0;}
 }
 
-void SendLinkCommand(M2C_UNK arg0,M2C_UNK arg1){
- s32 GetLocalPlayerSlot();
- Link_BroadcastMessage((u8)(GetLocalPlayerSlot()+0x81),arg0,arg1);
+/* Broadcast a link command packet of `size` bytes from `command`: the message
+ * type carries the local player's slot (LINK_MSG_COMMAND_BASE + slot), which the
+ * receiver turns back into the command source's queue index. */
+void SendLinkCommand(void *command, s32 size) {
+    s32 GetLocalPlayerSlot();
+    Link_BroadcastMessage((u8)(GetLocalPlayerSlot() + LINK_MSG_COMMAND_BASE), command, size);
 }
 
 /* Pop the oldest message of one link command queue into buf.  Returns 1 when a

@@ -184,11 +184,13 @@ void RecordsMenu_PickRow(u8 *row) {
     RecordsMenu_HandlePick((s16)(RECORDS_SCREEN->scroll + *row));
 }
 
-void func_ov005_022155c0(u8 *arg0) {
+/* Select the records-screen row named by `row`: store it as the cursor row and
+ * play the select sound. */
+void RecordsMenu_SelectRow(u8 *row) {
     M2C_UNK PlaySoundEffect(s32);
     extern M2C_UNK gRecordsMenuState;
-    M2C_FIELD(M2C_FIELD(&gRecordsMenuState, void **, 8), s16 *, 0x94) = (s16) *arg0;
-    PlaySoundEffect(0x10019);
+    RECORDS_SCREEN->cursorRow = (s16) *row;
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 /* Toggle the enabled flag of the record shown in the touched row and refresh the

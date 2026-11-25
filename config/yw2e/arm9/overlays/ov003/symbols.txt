@@ -180,7 +180,7 @@ func_ov003_021ed8cc kind:function(arm,size=0x1c) addr:0x021ed8cc
 func_ov003_021ed8e8 kind:function(arm,size=0x8) addr:0x021ed8e8
 func_ov003_021ed8f0 kind:function(arm,size=0xfc8) addr:0x021ed8f0
 func_ov003_021ee8b8 kind:function(arm,size=0x930) addr:0x021ee8b8
-func_ov003_021ef1e8 kind:function(arm,size=0x28) addr:0x021ef1e8
+Ov003_TickSpriteResumeDelay kind:function(arm,size=0x28) addr:0x021ef1e8
 func_ov003_021ef210 kind:function(arm,size=0x548) addr:0x021ef210
 func_ov003_021ef758 kind:function(arm,size=0x3e8) addr:0x021ef758
 func_ov003_021efb40 kind:function(arm,size=0x14) addr:0x021efb40
@@ -305,7 +305,7 @@ func_ov003_021f3f0c kind:function(arm,size=0x18) addr:0x021f3f0c
 IsOv003BoxOnScreen kind:function(arm,size=0x38) addr:0x021f3f24
 RectsOverlap kind:function(arm,size=0x44) addr:0x021f3f5c
 WrapValueToRange kind:function(arm,size=0x44) addr:0x021f3fa0
-func_ov003_021f3fe4 kind:function(arm,size=0x28) addr:0x021f3fe4
+WrapValueToRangeOnce kind:function(arm,size=0x28) addr:0x021f3fe4
 Ov003Battle_IsSoloLinkSession kind:function(arm,size=0x2c) addr:0x021f400c
 Ov003_IsLinkSessionHost kind:function(arm,size=0x2c) addr:0x021f4038
 Ov003Battle_IsLinkSessionGuest kind:function(arm,size=0x2c) addr:0x021f4064
@@ -369,9 +369,9 @@ func_ov003_021ff330 kind:function(arm,size=0x14) addr:0x021ff330
 func_ov003_021ff344 kind:function(arm,size=0x14) addr:0x021ff344
 func_ov003_021ff358 kind:function(arm,size=0x14) addr:0x021ff358
 Ov003_SyncMapMenuMap kind:function(arm,size=0x40) addr:0x021ff36c
-func_ov003_021ff3ac kind:function(arm,size=0x28) addr:0x021ff3ac
+Ov003_DestroyMapMenu kind:function(arm,size=0x28) addr:0x021ff3ac
 func_ov003_021ff3d4 kind:function(arm,size=0x3d8) addr:0x021ff3d4
-func_ov003_021ff7ac kind:function(arm,size=0x28) addr:0x021ff7ac
+Ov003_ResumeMapPanelAnimation kind:function(arm,size=0x28) addr:0x021ff7ac
 func_ov003_021ff7d4 kind:function(arm,size=0x208) addr:0x021ff7d4
 func_ov003_021ff9dc kind:function(arm,size=0x210) addr:0x021ff9dc
 func_ov003_021ffbec kind:function(arm,size=0x208) addr:0x021ffbec
@@ -394,7 +394,7 @@ func_ov003_02200478 kind:function(arm,size=0x10) addr:0x02200478
 func_ov003_02200488 kind:function(arm,size=0x10) addr:0x02200488
 func_ov003_02200498 kind:function(arm,size=0x10) addr:0x02200498
 GetWaypointSlotX kind:function(arm,size=0x28) addr:0x022004a8
-func_ov003_022004d0 kind:function(arm,size=0x20) addr:0x022004d0
+GetWaypointSlotBaseX kind:function(arm,size=0x20) addr:0x022004d0
 GetWaypointSlotOffsetX kind:function(arm,size=0x30) addr:0x022004f0
 GetShogunBgFileName kind:function(arm,size=0x14) addr:0x02200520
 GetPlayerBgFlagColor kind:function(arm,size=0x58) addr:0x02200534
@@ -462,7 +462,7 @@ func_ov003_022048c0 kind:function(arm,size=0x604) addr:0x022048c0
 func_ov003_02204ec4 kind:function(arm,size=0xe8) addr:0x02204ec4
 func_ov003_02204fac kind:function(arm,size=0x24) addr:0x02204fac
 func_ov003_02204fd0 kind:function(arm,size=0x24) addr:0x02204fd0
-func_ov003_02204ff4 kind:function(arm,size=0x28) addr:0x02204ff4
+SceneDisplay_TickSpriteResumeDelay kind:function(arm,size=0x28) addr:0x02204ff4
 func_ov003_0220501c kind:function(arm,size=0x3e4) addr:0x0220501c
 func_ov003_02205400 kind:function(arm,size=0x14) addr:0x02205400
 func_ov003_02205414 kind:function(arm,size=0xc) addr:0x02205414
@@ -604,7 +604,7 @@ MarkMenuSplitSelection kind:function(arm,size=0x44) addr:0x0220bb88
 func_ov003_0220bbcc kind:function(arm,size=0xe0) addr:0x0220bbcc
 func_ov003_0220bcac kind:function(arm,size=0x2bc) addr:0x0220bcac
 func_ov003_0220bf68 kind:function(arm,size=0x8) addr:0x0220bf68
-func_ov003_0220bf70 kind:function(arm,size=0x28) addr:0x0220bf70
+Ov003_ClearSubSpriteLayer1 kind:function(arm,size=0x28) addr:0x0220bf70
 func_ov003_0220bf98 kind:function(arm,size=0x150) addr:0x0220bf98
 func_ov003_0220c0e8 kind:function(arm,size=0x24) addr:0x0220c0e8
 func_ov003_0220c10c kind:function(arm,size=0x84) addr:0x0220c10c
@@ -741,7 +741,7 @@ data_ov003_0220fdf0 kind:data(any) addr:0x0220fdf0
 data_ov003_0220fdf2 kind:data(any) addr:0x0220fdf2
 data_ov003_0220fe00 kind:data(any) addr:0x0220fe00
 gOv003MapMenuClass kind:data(any) addr:0x0220fe1c
-data_ov003_0220fe64 kind:data(any) addr:0x0220fe64
+gOv003MapPanelClass kind:data(any) addr:0x0220fe64
 data_ov003_0220feac kind:data(any) addr:0x0220feac
 gOv003MapListMenuClass kind:data(any) addr:0x0220ff2c
 data_ov003_022100d4 kind:data(any) addr:0x022100d4

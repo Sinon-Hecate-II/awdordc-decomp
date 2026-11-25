@@ -125,30 +125,34 @@ void Ov001_ShowIconMenuAfterFade(void) {
     Ov001_SetStepCallback(&Ov001_WaitIconRowSelection);
 }
 
+/* Wait for the ov001 icon menu's icon row to slide into place: while its
+ * selection is OV001_ICON_ROW_NOT_READY the row takes no input; once it is,
+ * unlock the row and advance to the step that runs the icon menu. */
 void Ov001_WaitIconRowSelection(void) {
-    s32 Ov001_GetIconRowSelection();
-    M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_02181d4c;
-    if (Ov001_GetIconRowSelection() == -2) {
+    s32 Ov001_GetIconRowSelection(void);
+    void Ov001_UnlockIconRow(void);
+    extern void Ov001_IconMenuIconRowStep(void);
+
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02181d4c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_IconMenuIconRowStep);
 }
 
-extern void func_ov001_02181d60(void);
+extern void Ov001_HandleIconMenuInput(void);
 extern void func_ov001_02181ee4(void);
 extern void Ov001_ApplyIconMenuChoice(void);
-void func_ov001_02181d4c(void) {
-    void func_ov001_02181d60(void);
+void Ov001_IconMenuIconRowStep(void) {
+    void Ov001_HandleIconMenuInput(void);
     void func_ov001_02181ee4(void);
     void Ov001_ApplyIconMenuChoice(void);
-    func_ov001_02181d60();
+    Ov001_HandleIconMenuInput();
     func_ov001_02181ee4();
     Ov001_ApplyIconMenuChoice();
 }
 
-void func_ov001_02181d60(void) {
+void Ov001_HandleIconMenuInput(void) {
     M2C_UNK Ov001_LatchIconRowSelection(M2C_UNK);
     M2C_UNK Ov001_LayoutChoiceFrame(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_HasOptionFlag(M2C_UNK);
@@ -472,14 +476,17 @@ void func_ov001_021824c4(void) {
 
 }
 
+/* Fade the Wi-Fi connect screen out to white over the main engine's BG0/BG2/OBJ
+ * planes, then hand over to the step that waits for the fade to finish. */
 void Ov001_FadeOutWfcConnectScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_021824f0;
-    Ov001_StartFade(3, 0, 0x15, 8);
-    Ov001_SetStepCallback(&func_ov001_021824f0);
+    extern M2C_UNK Ov001_WaitCloseWfcConnectFade;
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN,
+                    OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
+    Ov001_SetStepCallback(&Ov001_WaitCloseWfcConnectFade);
 }
 
-void func_ov001_021824f0(void) {
+void Ov001_WaitCloseWfcConnectFade(void) {
     s32 Ov001_IsFadeActive(M2C_UNK);
     extern M2C_UNK Ov001_CloseWfcConnectScreen;
     if (Ov001_IsFadeActive(0) != 0) {

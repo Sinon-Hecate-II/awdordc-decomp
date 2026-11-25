@@ -127,24 +127,27 @@ s32 ManhattanDistance(s32 x1, s32 y1, s32 x2, s32 y2) {
     return total;
 }
 
-s32 func_ov000_021a8a38(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 var_ip;
-    s32 var_r0;
-    s32 var_r2;
+/* Difference between the x and y cell distances of two map cells (0 when they
+ * are diagonal to each other); the AI destination score adds it below the
+ * Manhattan distance, so a diagonal approach wins a distance tie. */
+s32 AxisDistanceDifference(s32 x1, s32 y1, s32 x2, s32 y2) {
+    s32 dx;
+    s32 dy;
+    s32 diff;
 
-    var_ip = arg0 - arg2;
-    if (var_ip <= 0) {
-        var_ip = arg2 - arg0;
+    dx = x1 - x2;
+    if (dx <= 0) {
+        dx = x2 - x1;
     }
-    var_r2 = arg1 - arg3;
-    if (var_r2 <= 0) {
-        var_r2 = arg3 - arg1;
+    dy = y1 - y2;
+    if (dy <= 0) {
+        dy = y2 - y1;
     }
-    var_r0 = var_ip - var_r2;
-    if (var_r0 <= 0) {
-        var_r0 = var_r2 - var_ip;
+    diff = dx - dy;
+    if (diff <= 0) {
+        diff = dy - dx;
     }
-    return var_r0;
+    return diff;
 }
 
 s32 GetUnitCaptureRateAtOwnTile(void *arg0) {

@@ -248,15 +248,19 @@ void GX_ReleaseBankGrantForSubOBJ(void) {
     GX_ReleaseBankGrant(&data_0212dbd8);
 }
 
+/* Release the sub engine's background extended-palette VRAM bank: switch the
+ * palette off in DISPCNT_SUB and give its bank back to the allocator. */
 void GX_ReleaseBankGrantForBGExtPlttSub(void) {
     extern M2C_UNK gVramBankGrantBGExtPlttSub;
-    *(s32 *)0x04001000 &= ~0x40000000;
+    REG_DISPCNT_SUB &= ~DISPCNT_BG_EXT_PALETTE;
     GX_ReleaseBankGrant(&gVramBankGrantBGExtPlttSub);
 }
 
+/* Release the sub engine's OBJ (sprite) extended-palette VRAM bank: switch the
+ * palette off in DISPCNT_SUB and give its bank back to the allocator. */
 void GX_ReleaseBankGrantForOBJExtPlttSub(void) {
     extern M2C_UNK gVramBankGrantOBJExtPlttSub;
-    *(s32 *)0x04001000 &= ~0x80000000;
+    REG_DISPCNT_SUB &= ~DISPCNT_OBJ_EXT_PALETTE;
     GX_ReleaseBankGrant(&gVramBankGrantOBJExtPlttSub);
 }
 

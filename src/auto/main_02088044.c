@@ -2,6 +2,7 @@
 #include "common.h"
 #include "fs.h"
 #include "ds3dsprite.h"
+#include "ov009_link.h"
 typedef struct { u32 words[2]; } Unk0200FilePair;
 
 void SpriteCellListUpdateTouch(void *arg0) {
@@ -243,15 +244,35 @@ s32 IsResourceLoaded(s32 arg0) {
     return M2C_FIELD(&gResourceLoaded, u8 *, arg0);
 }
 
-void func_0208859c(void){if(IsResourceLoaded(0)!=0)return;UnloadConflictingResources(0);LoadResource(0);}
+/* Ensure resource slot 0 (one of the two resources the game keeps loaded across
+ * game modes, with slot 4) is in memory: do nothing when it already is, otherwise
+ * free the resources sharing its memory group and load it. */
+void EnsureResource0Loaded(void) {
+    if (IsResourceLoaded(0) != 0) {
+        return;
+    }
+    UnloadConflictingResources(0);
+    LoadResource(0);
+}
 
-void func_020885c4(void){if(IsResourceLoaded(2)!=0)return;UnloadConflictingResources(2);LoadResource(2);}
+/* Make sure archive resource slot 2 is in memory: if it is already loaded, do
+ * nothing; otherwise free the resources that share its memory group and load it. */
+void EnsureResource2Loaded(void) {
+    if (IsResourceLoaded(2) != 0) {
+        return;
+    }
+    UnloadConflictingResources(2);
+    LoadResource(2);
+}
 
 void func_020885ec(void) {
     UnloadResource(2);
 }
 
-void func_020885fc(void) {
+/* Ensure the unit-graphics resource (slot 3) is in memory: do nothing when it is
+ * already loaded, otherwise free the resources sharing its memory group and load
+ * it. */
+void LoadUnitGraphics(void) {
     if (IsResourceLoaded(3) != 0) {
         return;
     }
@@ -263,7 +284,11 @@ void func_02088624(void) {
     UnloadResource(3);
 }
 
-void func_02088634(void) {
+/* Make sure resource slot 4 is in memory: if it already is, do nothing;
+ * otherwise drop the resources that share its memory group and load it.  Slot 4
+ * is one of the two resources the game keeps loaded across game modes (with
+ * slot 0), reloaded after the front end and when a battle starts or ends. */
+void EnsureResource4Loaded(void) {
     if (IsResourceLoaded(4) != 0) {
         return;
     }
@@ -271,7 +296,9 @@ void func_02088634(void) {
     LoadResource(4);
 }
 
-void func_0208865c(void) {
+/* Ensure archive resource slot 5 is in memory: if it is not loaded yet, unload
+ * the resources that share its memory group and read it in. */
+void EnsureResource5Loaded(void) {
     if (IsResourceLoaded(5) != 0) {
         return;
     }
@@ -279,7 +306,9 @@ void func_0208865c(void) {
     LoadResource(5);
 }
 
-void func_02088684(void) {
+/* Ensure archive resource slot 6 is in memory: if it is not loaded yet, unload
+ * the resources that share its memory group and read it in. */
+void EnsureResource6Loaded(void) {
     if (IsResourceLoaded(6) != 0) {
         return;
     }
@@ -287,7 +316,9 @@ void func_02088684(void) {
     LoadResource(6);
 }
 
-void func_020886ac(void) {
+/* Ensure archive resource slot 7 is in memory: if it is not loaded yet, unload
+ * the resources that share its memory group and read it in. */
+void EnsureResource7Loaded(void) {
     if (IsResourceLoaded(7) != 0) {
         return;
     }
@@ -295,31 +326,41 @@ void func_020886ac(void) {
     LoadResource(7);
 }
 
-void func_020886d4(void) {
-    if (IsResourceLoaded(9) != 0) {
+/* Ensure the ov009 single-card (Download Play) link overlay (resource slot 9,
+ * NET_RESOURCE_LINK) is in memory: do nothing when it is already loaded, otherwise
+ * free the resources sharing its memory group and load it. */
+void LoadLinkOverlay(void) {
+    if (IsResourceLoaded(NET_RESOURCE_LINK) != 0) {
         return;
     }
-    UnloadConflictingResources(9);
-    LoadResource(9);
+    UnloadConflictingResources(NET_RESOURCE_LINK);
+    LoadResource(NET_RESOURCE_LINK);
 }
 
-void func_020886fc(void) {
-    if (IsResourceLoaded(0xA) != 0) {
+/* Ensure the online (WFC) overlay resource (NET_RESOURCE_ONLINE) is in memory:
+ * if it is not loaded yet, unload the resources that share its memory group and
+ * read it in. */
+void LoadOnlineOverlay(void) {
+    if (IsResourceLoaded(NET_RESOURCE_ONLINE) != 0) {
         return;
     }
-    UnloadConflictingResources(0xA);
-    LoadResource(0xA);
+    UnloadConflictingResources(NET_RESOURCE_ONLINE);
+    LoadResource(NET_RESOURCE_ONLINE);
 }
 
-void func_02088724(void) {
-    if (IsResourceLoaded(1) != 0) {
+/* Make sure the ov001 front-end overlay is in memory before it is run: when it
+ * is not loaded yet, drop the resources that share its memory group and load it. */
+void EnsureFrontEndOverlayLoaded(void) {
+    if (IsResourceLoaded(RESOURCE_FRONT_END) != 0) {
         return;
     }
-    UnloadConflictingResources(1);
-    LoadResource(1);
+    UnloadConflictingResources(RESOURCE_FRONT_END);
+    LoadResource(RESOURCE_FRONT_END);
 }
 
-void func_0208874c(void) {
+/* Ensure the ending resource (archive slot 0xB) is in memory: if it is not
+ * loaded yet, unload the resources that share its memory group and read it in. */
+void EnsureEndingResourceLoaded(void) {
     if (IsResourceLoaded(0xB) != 0) {
         return;
     }

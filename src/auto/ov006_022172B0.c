@@ -466,14 +466,15 @@ void ShowMapTransferChosenName(void *transfer) {
     CreateQueuedSpriteTask(&Ov003_RedrawMapList, 6);
 }
 
-void func_ov006_02217b7c(M2C_UNK arg0) {
-    s32 IsSessionInError();
-    M2C_UNK DisableMapConfirm();
+/* Per-frame check of the ov006 map-transfer screen: cancel the transfer when
+ * the session is in error -- drop the map-confirm prompt and jump the sprite to
+ * its cancel animation (label 4). */
+void CancelMapTransferOnSessionError(void *transfer) {
     if (IsSessionInError() == 0) {
         return;
     }
     DisableMapConfirm();
-    GotoSpriteAnimationLabel(arg0, 4);
+    GotoSpriteAnimationLabel(transfer, 4);
 }
 
 /* Start the map-transfer screen's target-player id display: a nine-digit number

@@ -140,14 +140,16 @@ void RemoveDefeatedPlayerUnits(PlayerDefeatSprite *sprite) {
     Sprite_ResumeAnimation(sprite);
 }
 
-void CreatePlayerDefeatSprite(u16 arg0, u16 arg1) {
+/* Creates the player-defeat presentation sprite and stores on it the player
+   being defeated and the victory-rule flag that removed them. */
+void CreatePlayerDefeatSprite(u16 player, u16 reason) {
     void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gPlayerDefeatClass;
-    void *temp_r0;
+    PlayerDefeatSprite *sprite;
 
-    temp_r0 = CreateSpriteFromClass(&gPlayerDefeatClass, 7);
-    M2C_FIELD(temp_r0, s16 *, 0x6C) = arg0;
-    M2C_FIELD(temp_r0, s16 *, 0x6E) = arg1;
+    sprite = CreateSpriteFromClass(&gPlayerDefeatClass, 7);
+    sprite->player = player;
+    sprite->reason = reason;
 }
 
 /* Mark `player` as defeated from the current turn by `reason` (the victory-rule
@@ -378,7 +380,7 @@ void UpdateUnitSelectionMenu(void *dialog) {
     void PlaySoundEffect(s32);
     void MapCursor_StepTowardTarget(s32);
     void DrawUnitInfoPanel(s32);
-    M2C_UNK func_020cf828(M2C_UNK);
+    M2C_UNK StepMapCursorTargetFromInput(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
@@ -495,7 +497,7 @@ void func_020caa34(void *dialog) {
     M2C_UNK SetBattleCommand(s32, u8, u8, u8);
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK CreateMapMenu(void);
-    M2C_UNK func_020cf828(M2C_UNK);
+    M2C_UNK StepMapCursorTargetFromInput(M2C_UNK);
     M2C_UNK func_0207a7a4(s32, s32);
     M2C_UNK StepMapCursorAndNotify(s32, s32);
     extern void **gCurrentMap;
@@ -535,7 +537,7 @@ void func_020caa34(void *dialog) {
             return;
         }
     }
-    func_020cf828(0x1001a);
+    StepMapCursorTargetFromInput(0x1001a);
     func_0207a7a4(1, 4);
     StepMapCursorAndNotify(2, 10);
 }

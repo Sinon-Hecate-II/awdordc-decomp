@@ -9,7 +9,7 @@
  * mode. */
 void UpdateMapSelectionCursor(void) {
  extern void *gCurrentMap;
- func_020cf850(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
+ UpdateMapCursorByDirectionAndTouch(0x1001a);func_0207a7a4(1,4);MapCursor_StepTowardTarget(1);
  if(!GetMapSelectionKeyAction())return;
  if(!GetMapSelectionTouchAction())return;
  HideTouchCursor();DeleteAllUnitMoveObjects();RefreshMapView();func_0207a768();

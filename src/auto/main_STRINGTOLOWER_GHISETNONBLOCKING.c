@@ -100,23 +100,25 @@ s32 PollOneFd(s32 fd, s32 *readable, s32 pri, s32 err) {
     return r;
 }
 
-s32 ghiSocketCanRecv(M2C_UNK arg0) {
-    s32 PollOneFd(M2C_UNK, s32 *, M2C_UNK, M2C_UNK);
-    s32 sp0;
+/* GameSpy ghi: report whether socket `socket` has data waiting to be received. */
+s32 ghiSocketCanRecv(s32 socket) {
+    s32 canRecv;
 
-    sp0 = 0;
-    if (PollOneFd(arg0, &sp0, 0, 0) == 1) {
-        return sp0;
+    canRecv = 0;
+    if (PollOneFd(socket, &canRecv, 0, 0) == 1) {
+        return canRecv;
     }
     return 0;
 }
 
-s32 func_0204955c(M2C_UNK arg0) {
-    s32 sp0;
+/* GameSpy ghi: report whether socket `socket` can be written to (poll's
+ * write-ready event); 0 when it cannot. */
+s32 ghiSocketCanSend(s32 socket) {
+    s32 canSend;
 
-    sp0 = 0;
-    if (PollOneFd(arg0, 0, &sp0, 0) == 1) {
-        return sp0;
+    canSend = 0;
+    if (PollOneFd(socket, 0, &canSend, 0) == 1) {
+        return canSend;
     }
     return 0;
 }

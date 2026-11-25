@@ -314,11 +314,13 @@ void func_ov002_021e2cf0(void *arg0) {
     func_ov002_021e1ef8(arg0, (u8) M2C_FIELD(arg0, u16 *, 0x86));
 }
 
-void SetEffectNodePosition(void *arg0, s32 arg1, s32 arg2) {
+/* Set an effect node's position: its whole-pixel translation (SetEffectNodeTranslation
+ * reads the same node/x/y registers) and its 8.8 fixed-point position fields. */
+void SetEffectNodePosition(void *node, s32 x, s32 y) {
     M2C_UNK SetEffectNodeTranslation();
     SetEffectNodeTranslation();
-    M2C_FIELD(arg0, s32 *, 0x54) = (s32) (arg1 << 8);
-    M2C_FIELD(arg0, s32 *, 0x58) = (s32) (arg2 << 8);
+    M2C_FIELD(node, s32 *, FX_NODE_X_FIXED) = (s32) (x << 8);
+    M2C_FIELD(node, s32 *, FX_NODE_Y_FIXED) = (s32) (y << 8);
 }
 
 /* Fill an effect node's timed motion from an effect record: per-tick velocity

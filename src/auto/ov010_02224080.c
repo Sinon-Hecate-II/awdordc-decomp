@@ -78,7 +78,7 @@ M2C_FIELD(&gLinkConfig,s32*,0x14)=0;
 return 1;
 }
 #pragma opt_strength_reduction reset
-void func_ov010_02224270(void) {
+void VoiceLink_ResetContextLists(void) {
     extern M2C_UNK gVoiceLinkState;
     M2C_FIELD(&gVoiceLinkState, s32 *, 0x14) = 0;
     M2C_FIELD(&gVoiceLinkState, s32 *, 0x10) = 0;
@@ -553,7 +553,7 @@ M2C_FIELD(((LinkPacketPool *)&gLinkPacketPool)->base+count*LINK_PACKET_SIZE,void
 return 1;
 }
 
-void func_ov010_02224ea0(void) {
+void VoiceLink_ResetPacketPool(void) {
     extern M2C_UNK gLinkPacketPool;
     M2C_FIELD(&gLinkPacketPool, s32 *, 4) = 0;
     M2C_FIELD(&gLinkPacketPool, s32 *, 8) = 0;

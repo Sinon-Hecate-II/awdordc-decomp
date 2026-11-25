@@ -162,8 +162,8 @@ void func_ov007_02213e88(void *cursor) {
 }
 
 void func_ov007_022142bc(void *arg0) {
-    M2C_UNK func_ov007_0221352c(s32, s32);
-    func_ov007_0221352c(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
+    M2C_UNK MapEditor_StartMapResize(s32, s32);
+    MapEditor_StartMapResize(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38));
 }
 
 void MapEditor_CreateTileCursor(void) {
@@ -215,9 +215,9 @@ void OpenMapEditListMenu(void) {
 }
 
 void func_ov007_02214394(void) {
-    M2C_UNK func_020885fc();
+    M2C_UNK LoadUnitGraphics();
     M2C_UNK MapSettings_Apply(M2C_UNK);
-    func_020885fc();
+    LoadUnitGraphics();
     MapSettings_Apply(0);
 }
 

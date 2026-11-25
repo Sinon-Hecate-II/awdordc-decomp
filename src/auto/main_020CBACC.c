@@ -14,6 +14,14 @@ typedef struct { u8 kind:6; u8 flags:2; } UnkCBUnit;
 
 typedef struct { u8 unk_0 : 6; u8 unk_6 : 2; } Unk020cbc88;
 
+/* The target-cursor sprite (class gTargetCursorClass): the map tile it was
+   opened on, kept so its update can place the map-view cursor there. */
+typedef struct TargetCursor {
+    u8  pad00[0x38];
+    s32 tileX; /* +0x38 target map tile x */
+    s32 tileY; /* +0x3C target map tile y */
+} TargetCursor;
+
 /* Stepping overlay task, the supply-marking variant: scan the current player's units
    from the saved index and find the first one worth marking - a transport (kind 21/23)
    whose cargo has a cost or a value, or a unit a friendly supply unit can refill -
@@ -201,10 +209,12 @@ void GiveUpCurrentPlayerAndScheduleBattleEnd(void) {
  ScheduleBattleEndCheck();
 }
 
-void func_020cc028(void) {
+/* AI command 19's handler: award the battle to the current player because the
+ * opponent gave up. */
+void AwardVictoryToCurrentPlayerForGiveUp(void) {
     M2C_UNK AwardVictoryToPlayer(u16, M2C_UNK);
     extern void **gCurrentMap;
-    AwardVictoryToPlayer(M2C_FIELD(*gCurrentMap, u16 *, 0x52A4), 8);
+    AwardVictoryToPlayer(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER), PLAYER_DEFEAT_GAVE_UP);
 }
 
 /* Mark the current player as having given up, then queue battle command 17,
@@ -394,9 +404,11 @@ void func_020cc62c(void) {
     CreateSpriteFromClass(&data_0212b664, 7);
 }
 
-void func_020cc644(void *arg0) {
+/* Target-cursor update: place the map-view cursor on the tile the target cursor
+   sprite was opened on. */
+void TargetCursor_PlaceCursor(TargetCursor *cursor) {
     M2C_UNK MapView_SetCursorPosition(s16, s16, M2C_UNK);
-    MapView_SetCursorPosition((s16) (M2C_FIELD(arg0, s32 *, 0x38) * 0x10), (s16) (M2C_FIELD(arg0, s32 *, 0x3C) * 0x10), 2);
+    MapView_SetCursorPosition((s16)(cursor->tileX * 0x10), (s16)(cursor->tileY * 0x10), MAP_CURSOR_KIND_TARGET);
 }
 
 /* Create the target cursor sprite on the target tile (x, y), unless one is

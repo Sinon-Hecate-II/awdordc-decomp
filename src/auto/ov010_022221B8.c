@@ -97,7 +97,7 @@ i=0;goto test;loop:{gVoiceChatContexts[i]=0;func_ov010_02223654(i);Link_InitChan
 Link_InitPendingPackets();VoiceCodec_ResetState();return 1;
 }
 #pragma opt_strength_reduction reset
-void func_ov010_022225b0(s32 arg0) {
+void VoiceChat_ClearContextCount(s32 arg0) {
     extern M2C_UNK gVoiceChatState;
     M2C_FIELD(&gVoiceChatState, void **, 0x20) = NULL;
 }

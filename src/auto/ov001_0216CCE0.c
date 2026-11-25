@@ -127,8 +127,9 @@ u16 Ov001SwapEndian16Alt(s32 arg0) {
     return (u16) ((u8) (arg0 >> 8) | (0xFF00 & (arg0 << 8)));
 }
 
-s32 func_ov001_0216cec8(s32 arg0) {
-    u32 x = (u32) arg0;
+/* Reverse the byte order of a 32-bit value (big-endian to little-endian). */
+s32 Ov001SwapEndian32Alt(s32 value) {
+    u32 x = (u32) value;
     return ((x << 0x18) & 0xFF000000) | (((x << 8) & 0xFF0000) | ((u8) (x >> 0x18) | ((x >> 8) & 0xFF00)));
 }
 

@@ -1001,6 +1001,10 @@ typedef struct RecordRankEntry {
  * is at gRecordValues[RECORD_UNIT_KIND_BASE + kind]. */
 #define RECORD_UNIT_KIND_BASE 0x43
 
+/* Number of counters in gRecordValues (94 words, the SaveWords376 record the
+ * settings save copies whole). */
+#define RECORD_VALUE_COUNT 94
+
 /* Saturation caps of the gRecordValues counters: ordinary record values are
  * shown with six digits, the (larger) record-funds pool with eight. */
 #define RECORD_VALUE_MAX 999999u   /* AddRecordValue's cap, the six-digit display maximum */
@@ -2253,9 +2257,18 @@ typedef struct NetError {
 #define OV010_CONNECTION_PACKET_SIZE 0x40 /* u32: its total byte count */
 #define OV010_CONNECTION_RECIPIENTS 0x44 /* u16: one bit per peer the packet is addressed to */
 
+/* The ov010 packet-assembly object (gOv010PacketAssemblyClass): at +0x34 it keeps
+ * one receive-assembly slot per online peer (OV010_ASSEMBLY_*), each filled from
+ * that peer's incoming packet fragments and drained by FreePacketAssemblySlot. */
+#define OV010_ASSEMBLY_SLOTS       0x34 /* first of 4 per-peer assembly slots */
+#define OV010_ASSEMBLY_SLOT_COUNT  4    /* assembly slots (one per online peer) */
+#define OV010_ASSEMBLY_SLOT_STRIDE 0x08 /* bytes per peer slot */
+#define OV010_ASSEMBLY_SLOT_OFFSET 0x00 /* s32 bytes of the packet assembled so far */
+#define OV010_ASSEMBLY_SLOT_PACKET 0x04 /* void *packet being assembled, 0 when idle */
+
 /* A match-request node (a 3D sprite Link_CreateMatchRequest has the active link
  * overlay create): the arguments of the search it runs, read back when the node
- * is stepped (func_ov010_02229f98).  The online runner hands slots TYPE/TIMEOUT
+ * is stepped (OnlineMatchRequest_StartQuery).  The online runner hands slots TYPE/TIMEOUT
  * and TIMEOUT/FLAGS to Ov010_RequestWfcMatch as its timeout and flags-out. */
 #define MATCH_REQUEST_NAMES      0x34 /* s32: player-name text the query looks up */
 #define MATCH_REQUEST_NAME_COUNT 0x38 /* s32: number of names in the table */
@@ -2569,6 +2582,7 @@ typedef struct Ov001IconMenuState {
  * nonzero once the archive was initialised, 0x2052 becomes 1 once it failed. */
 #define SAVE_MANAGER_ACTIVE 0x2050 /* u8: the archive was initialised */
 #define SAVE_MANAGER_STATE  0x2052 /* u8: 1 = the archive is unusable */
+#define SAVE_MANAGER_DIRTY  0x2053 /* u8: set when the directory was repaired/changed and needs writing back */
 #define SAVE_MANAGER_QUEUE       0x2054 /* the request queue: SAVE_REQUEST_STRIDE-byte entries */
 #define SAVE_MANAGER_QUEUE_COUNT 0x2554 /* u32 number of requests queued */
 
@@ -4763,6 +4777,10 @@ typedef struct RtcDate {
 
 /* IPC FIFO tag and the ARM7 processor id of the RTC command channel. */
 #define RTC_FIFO_TAG 5
+
+/* An RTC command word carries its command index in bits 8..14 of the FIFO word. */
+#define RTC_COMMAND_SHIFT 8
+#define RTC_COMMAND_MASK  0x7F00
 
 /* Values of RTC_STATE_KIND. */
 #define RTC_KIND_DATE      0 /* read the date into RTC_STATE_OUT0 */

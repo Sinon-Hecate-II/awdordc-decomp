@@ -488,7 +488,7 @@ void CreateMissileEffect(s16 tileX, s16 tileY, M2C_UNK parent) {
 
 /* Switch the map cell at (x, y) to its other tile: a cell showing tile 0x180
  * becomes tile 0x1A0 with terrain 0x19, and the map is redrawn either way. */
-void func_020b5f74(s32 x, s32 y) {
+void SetMissileSiloFired(s32 x, s32 y) {
     extern s32 *gCurrentMap;
     s32 cell;
     s32 map;

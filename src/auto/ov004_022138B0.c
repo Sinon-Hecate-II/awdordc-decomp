@@ -596,66 +596,72 @@ void func_ov004_022146f8(void) {
     Create3DSpriteOffsetTrack(4, 2, 0, 0x32, 0);
 }
 
-u8 func_ov004_02214718(void) {
+/* ov004 battle-script condition: true when no active map order covers tile (6, 6). */
+u8 IsNoMapOrderActiveAt6_6(void) {
     M2C_UNK FindMapOrderAtTile(M2C_UNK, M2C_UNK);
     s32 IsMapOrderActive();
-    u8 var_r0;
+    u8 result;
 
     FindMapOrderAtTile(6, 6);
     if (IsMapOrderActive() == 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_ov004_02214740(void) {
-    u8 var_r0;
+/* ov004 battle-script condition: true when no active map order covers tile
+ * (11, 5). */
+u8 IsNoMapOrderAt11_5(void) {
+    u8 result;
 
-    FindMapOrderAtTile(0xB, 5);
-    if (IsMapOrderActive() == 0) {
-        var_r0 = 1;
+    if (IsMapOrderActive(FindMapOrderAtTile(11, 5)) == 0) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_ov004_02214768(void) {
-    u8 var_r0;
+/* Battle-script condition: true when no active map order covers tile (12,5). */
+u8 IsNoMapOrderActiveAt12_5(void) {
+    u8 inactive;
 
     FindMapOrderAtTile(0xC, 5);
     if (IsMapOrderActive() == 0) {
-        var_r0 = 1;
+        inactive = 1;
     } else {
-        var_r0 = 0;
+        inactive = 0;
     }
-    return var_r0;
+    return inactive;
 }
 
-u8 func_ov004_02214790(void) {
-    u8 var_r0;
+/* ov004 battle-script condition: true when tile (13, 5) holds no active map
+ * order (no queued attack or movement order there). */
+u8 IsNoActiveMapOrderAt13_5(void) {
+    u8 result;
 
     FindMapOrderAtTile(0xD, 5);
     if (IsMapOrderActive() == 0) {
-        var_r0 = 1;
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
-u8 func_ov004_022147b8(void) {
-    u8 var_r0;
+/* Battle-script condition: true when no active map order covers tile (18,6). */
+u8 IsNoMapOrderActiveAt18_6(void) {
+    u8 inactive;
 
     FindMapOrderAtTile(0x12, 6);
     if (IsMapOrderActive() == 0) {
-        var_r0 = 1;
+        inactive = 1;
     } else {
-        var_r0 = 0;
+        inactive = 0;
     }
-    return var_r0;
+    return inactive;
 }
 
 /* ov004 battle-script condition: true when no line attack is queued or active,

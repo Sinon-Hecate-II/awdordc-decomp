@@ -28,7 +28,7 @@ extern u8 sFrameCgFile[];   /* "frame.cg" */
 extern u8 sFrameScFile[];   /* "frame.sc" */
 extern u8 sFrameClFile[];   /* "frame.cl" */
 extern void *g3DSpriteEngineMain,*gCurrentMap;
-void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *LoadFileToBuffer(void *,s32);void LoadGraphicsBlock(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetOccupationBackgroundName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void func_020815d4(void *,void *,s32,s32);void CloseNarcArchive(void);void OffsetTileIndices(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void StepMapViewToTile(s32,s32);
+void SetFileDirectory(void *);void SetTextSpriteValue(void *,s32);void *GetLocalizedFileName(void *);void *LoadFileToBuffer(void *,s32);void LoadGraphicsBlock(void *,void *);void HeapFreeBlock(void *);void LoadDecompressedFileTo(void *,void *);void LoadFileToSpriteBuffer(void *,s32,s32);M2C_UNK Clear3DSpriteLayer(s32);void *GetOccupationBackgroundName(s32);void StringCopy(void *,void *);void StringAppend(void *,void *);void OpenNarcArchive(void *);void LoadNarcFileDecompressed(void *,void *);void LoadNarcFileSection(void *,void *,s32,s32);void CloseNarcArchive(void);void OffsetTileIndices(void *,s32,s32);void LoadNarcFileToSpriteBuffer(void *,s32,s32);void SetTileRectPalette(void *,s32,s32,s32);void StepMapViewToTile(s32,s32);
 u8 path[64];
 u8 *objectRes;
 void *savedEngine;
@@ -96,7 +96,7 @@ Clear3DSpriteLayer(2);
  LoadNarcFileDecompressed(path,M2C_FIELD(gCur3DSpriteEngine,void **,40));
 StringCopy(path,GetOccupationBackgroundName((*(u8 **)(screen+64))[1]));
 StringAppend(path,sClExt);
-func_020815d4(path,*(void **)(screen+76),0,128);
+LoadNarcFileSection(path,*(void **)(screen+76),0,128);
 CloseNarcArchive();
 OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,40),1024,8192);
 M2C_FIELD(gCur3DSpriteEngine,u8*,70)|=4;

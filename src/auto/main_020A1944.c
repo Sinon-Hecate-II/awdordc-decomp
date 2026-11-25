@@ -485,7 +485,7 @@ kind = kind >> 26;
     return 1;
 }
 #pragma opt_propagation reset
-s32 func_020a25bc(s32 arg0, s32 arg1) {
+s32 GetCommanderMoveRange(s32 arg0, s32 arg1) {
  extern M2C_UNK data_0211fbf8;
  return arg1 + M2C_FIELD(&data_0211fbf8, s8 *, arg0 * 0x48);
 }

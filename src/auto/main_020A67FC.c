@@ -356,7 +356,7 @@ return bonus+GetUnitStatDamageBonus(unit,x,y);
    stat block's valueA; 0 for the unit kinds the bonus does not apply to. */
 s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
     s32 IsUnitKindClass6(u32);
-    s32 func_020a8844(s32);
+    s32 GetPlayerAttackPropertyBonusAlt(s32);
     s32 func_020a8804(void *);
     s32 GetUnitAttackPowerStatBonus(void *, s32, s32);
     s32 bonus = 0, owner;
@@ -366,7 +366,7 @@ s32 GetUnitAttackPowerBonus(u8 *unit, s32 x, s32 y) {
         else owner = ((s32)unit - (s32)((u8 *)*gCurrentMap + MAP_UNIT_RECORDS)) / MAP_UNIT_STRIDE;
         owner = (owner >> 6) + 1;
     } else owner = 0;
-    bonus += func_020a8844(owner);
+    bonus += GetPlayerAttackPropertyBonusAlt(owner);
     bonus += func_020a8804(unit);
     return bonus + GetUnitAttackPowerStatBonus(unit, x, y);
 }

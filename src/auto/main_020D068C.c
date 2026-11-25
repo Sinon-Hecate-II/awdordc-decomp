@@ -321,7 +321,7 @@ void AwardBattleDamageValue(BattleUnit *participant) {
  * the other side still has HP and animations are on it counters, using the
  * merge/counter pose (7) against transports (kinds 1-3) and the plain counter
  * pose (6) otherwise. */
-void func_020d1094(s32 participant, s32 opponent) {
+void ApplyBattleParticipantResult(s32 participant, s32 opponent) {
     void ExplodeUnit(void *);
     s32 func_020cd614(void);
     s32 func_020cd5d8(void);
@@ -390,8 +390,8 @@ if(IsPlayerHuman(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)))==1)RecordDes
 }
 ((void (*)())AwardBattleDamageValue)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
 ((void (*)())AwardBattleDamageValue)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
-((void (*)())func_020d1094)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
-((void (*)())func_020d1094)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
+((void (*)())ApplyBattleParticipantResult)(*gCurrentMap+0x6eb8,*gCurrentMap+0x6ed8);
+((void (*)())ApplyBattleParticipantResult)(*gCurrentMap+0x6ed8,*gCurrentMap+0x6eb8);
 if(M2C_FIELD(*gCurrentMap,s16*,0x6ec4)!=M2C_FIELD(*gCurrentMap,s16*,0x6eca)){
 record=(void*)(*gCurrentMap+0x6eb8);
 if(M2C_FIELD(record,s16*,18)==GetCoPowerMeterCost(D068COwner(M2C_FIELD(*gCurrentMap,void**,0x6eb8)),2))goto sound;
@@ -402,9 +402,11 @@ if(M2C_FIELD(record,s16*,18)!=GetCoPowerMeterCost(D068COwner(M2C_FIELD(*gCurrent
 sound:PlaySoundEffect(0x115);
 }
 
-void func_020d1644(void) {
-
+/* Commit the attacker's side of the current battle: write its remaining HP and
+ * ammo back to its unit record and explode the unit when it was destroyed. */
+void ApplyAttackerBattleResult(void) {
     extern s32 *gCurrentMap;
-    func_020d1094(*gCurrentMap + 0x6EB8, 0);
+
+    ApplyBattleParticipantResult(*gCurrentMap + MAP_BATTLE_ATTACKER, 0);
 }
 

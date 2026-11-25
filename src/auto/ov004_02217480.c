@@ -214,14 +214,16 @@ void func_ov004_02217e50(void *state) {
     Sprite_ResumeAnimation(state);
 }
 
-void func_ov004_02217f34(void) {
+/* Leave the map view: destroy the map menu, delete the unit sprites, and remove
+ * the two frame callbacks that drive the map view's 3D rendering. */
+void EndMapView(void) {
     M2C_UNK DeleteFrameCallbackTask(M2C_UNK *);
-    M2C_UNK func_020ab200();
-    M2C_UNK func_ov003_021ff3ac();
+    M2C_UNK DeleteUnitSprites();
+    M2C_UNK Ov003_DestroyMapMenu();
     extern M2C_UNK InitMapView3DRendering;
     extern M2C_UNK func_ov004_02214904;
-    func_ov003_021ff3ac();
-    func_020ab200();
+    Ov003_DestroyMapMenu();
+    DeleteUnitSprites();
     DeleteFrameCallbackTask(&InitMapView3DRendering);
     DeleteFrameCallbackTask(&func_ov004_02214904);
 }

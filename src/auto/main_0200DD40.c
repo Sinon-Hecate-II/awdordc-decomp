@@ -242,7 +242,7 @@ void Arm7CommandWait(void) {
     } while (*busy != 0);
 }
 
-void func_0200e2b0(s32 arg0, s32 *arg1) {
+void Arm7CommandStoreResult(s32 arg0, s32 *arg1) {
     *arg1 = arg0;
 }
 
@@ -357,7 +357,7 @@ s32 Arm7SetPowerState(u32 powerArg, s32 callback, s32 user) {
 }
 
 #pragma scheduling off
-s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
+s32 Arm7GetValue(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     void Arm7SendCommand(s32);
     extern M2C_UNK gArm7CommandState;
     extern M2C_UNK gArm7CommandReplySlots;
@@ -371,15 +371,18 @@ s32 func_0200e558(s32 arg0, s32 arg1, void (*arg2)(s32, s32 *), s32 *arg3) {
     return 0;
 }
 #pragma scheduling reset
-s32 Arm7GetValueWait(M2C_UNK arg0, M2C_UNK arg1) {
+/* Read the ARM7's value register `index` into *value: start the read command
+ * and, once it has been accepted, wait for the ARM7's reply.  Returns the
+ * command service's start result (0 once the value has been read). */
+s32 Arm7GetValueWait(u32 index, u16 *value) {
     void Arm7CommandWait(void);
-    s32 func_0200e558(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
-    s32 sp0;
+    s32 Arm7GetValue(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
+    s32 reply;
     s32 result;
-    result = func_0200e558(arg0, arg1, func_0200e2b0, &sp0);
+    result = Arm7GetValue(index, (M2C_UNK)value, Arm7CommandStoreResult, &reply);
     if (result != 0) return result;
     Arm7CommandWait();
-    return sp0;
+    return reply;
 }
 
 /* Send the ARM7 a sound-amplifier parameter (command 0x64): the selector byte
@@ -397,15 +400,17 @@ s32 Arm7SetAmpParam(s32 param, M2C_UNK value, void (*callback)(s32, s32 *), s32 
     return 0;
 }
 
-s32 func_0200e64c(M2C_UNK arg0, M2C_UNK arg1) {
+/* Synchronous form of Arm7SetAmpParam: send the amplifier parameter `param`
+ * with `value` and wait for the ARM7 to answer; returns the command result. */
+s32 Arm7SetAmpParamWait(M2C_UNK param, M2C_UNK value) {
     void Arm7CommandWait(void);
     s32 Arm7SetAmpParam(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
-    s32 sp0;
+    s32 reply;
     s32 result;
-    result = Arm7SetAmpParam(arg0, arg1, func_0200e2b0, &sp0);
+    result = Arm7SetAmpParam(param, value, Arm7CommandStoreResult, &reply);
     if (result != 0) return result;
     Arm7CommandWait();
-    return sp0;
+    return reply;
 }
 
 /* Switch the ARM7 driver to the power state for `command` (1 -> state 1,
@@ -435,11 +440,15 @@ s32 SendPowerCommand(s32 command, void (*callback)(s32, s32 *), s32 *user) {
     return Arm7SetPowerState(state, (s32)callback, (s32)user);
 }
 
-s32 SendPowerCommandWait(s32 arg0) {
+/* Synchronous form of SendPowerCommand: switch the ARM7 driver to the power
+ * state for `command`, wait for the ARM7 to answer, and return the reply value.
+ * A non-zero SendPowerCommand result (ARM7_POWER_INVALID, or another command
+ * outstanding) is returned right away. */
+s32 SendPowerCommandWait(s32 command) {
     void Arm7CommandWait(void);
     s32 sp0;
     s32 result;
-    result = SendPowerCommand(arg0, func_0200e2b0, &sp0);
+    result = SendPowerCommand(command, Arm7CommandStoreResult, &sp0);
     if (result != 0) return result;
     Arm7CommandWait();
     return sp0;
@@ -468,12 +477,16 @@ s32 Arm7SetBacklight(M2C_UNK screen, M2C_UNK enabled, void (*callback)(s32, s32 
     return Arm7SetPowerState(powerState, (M2C_UNK)callback, (s32)user);
 }
 
-s32 Arm7SetBacklightWait(M2C_UNK arg0, M2C_UNK arg1) {
+/* Synchronous form of Arm7SetBacklight: turn `screen`'s backlight on (`enabled`
+ * 1) or off (0), wait for the ARM7 to acknowledge, and return the reply value.
+ * A non-zero Arm7SetBacklight result (another command outstanding) is returned
+ * right away. */
+s32 Arm7SetBacklightWait(M2C_UNK screen, M2C_UNK enabled) {
     void Arm7CommandWait(void);
     s32 Arm7SetBacklight(M2C_UNK, M2C_UNK, void (*)(s32, s32 *), s32 *);
     s32 sp0;
     s32 result;
-    result = Arm7SetBacklight(arg0, arg1, func_0200e2b0, &sp0);
+    result = Arm7SetBacklight(screen, enabled, Arm7CommandStoreResult, &sp0);
     if (result != 0) return result;
     Arm7CommandWait();
     return sp0;
@@ -512,17 +525,17 @@ void WakeDisplay(s32 callback, s32 user) {
 
 s32 WakeDisplayWait(void) {
 s32 sp0,result;
-result=((s32 (*)(s32,s32))WakeDisplay)((s32)func_0200e2b0,(s32)&sp0);
+result=((s32 (*)(s32,s32))WakeDisplay)((s32)Arm7CommandStoreResult,(s32)&sp0);
 if(result)return result;
 Arm7CommandWait();return sp0;
 }
 
 void Arm7SetAmpParam2(s32 a) {
-func_0200e64c(2,(u16)a);
+Arm7SetAmpParamWait(2,(u16)a);
 }
 
 void func_0200e880(s32 a) {
-func_0200e64c(3,(u16)a);
+Arm7SetAmpParamWait(3,(u16)a);
 }
 
 /* Reads the ARM7's power-flags word and reports the two backlight-off bits:
@@ -724,14 +737,16 @@ s32 Arm7SetValue(s32 value, void (*callback)(s32, s32 *), s32 *user) {
     return 0;
 }
 
-s32 Arm7SetValueWait(s32 arg0) {
+/* Synchronous form of Arm7SetValue: set the ARM7 system value to `value` and
+ * wait for it to answer; returns the command result. */
+s32 Arm7SetValueWait(s32 value) {
     void Arm7CommandWait(void);
-    s32 sp0;
+    s32 reply;
     s32 result;
-    result = Arm7SetValue(arg0, func_0200e2b0, &sp0);
+    result = Arm7SetValue(value, Arm7CommandStoreResult, &reply);
     if (result != 0) return result;
     Arm7CommandWait();
-    return sp0;
+    return reply;
 }
 
 /* Take the ARM7 command service and ask the ARM7 for its system value (command
@@ -751,12 +766,15 @@ s32 Arm7ReadValue(s32 valuePtr, s32 callback, s32 user) {
     return 0;
 }
 
-s32 Arm7ReadValueWait(s32 arg0) {
-    s32 sp0;
+/* Synchronous form of Arm7ReadValue: ask the ARM7 for its system value, store the
+ * answer through `valuePtr` and wait for the command to finish; returns the
+ * command result. */
+s32 Arm7ReadValueWait(s32 valuePtr) {
+    s32 value;
     s32 result;
-    result = Arm7ReadValue(arg0, (s32)func_0200e2b0, (s32)&sp0);
+    result = Arm7ReadValue(valuePtr, (s32)Arm7CommandStoreResult, (s32)&value);
     if (result != 0) return result;
     Arm7CommandWait();
-    return sp0;
+    return value;
 }
 

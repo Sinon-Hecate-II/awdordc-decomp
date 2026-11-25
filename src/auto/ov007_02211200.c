@@ -365,7 +365,7 @@ void MapEditor_Update(M2C_UNK editor) {
     extern void **gCurrentMap;
     s32 GetMapViewHoldCount(void);
     s32 IsAnyUnitSpritePressed(void);
-    void func_020cf828(s32);
+    void StepMapCursorTargetFromInput(s32);
     void func_0207a7a4(s32, s32);
     s32 MapEditor_GetCursorType(s32, s32);
     void MapCursor_StepTowardTarget(s32);
@@ -406,7 +406,7 @@ void MapEditor_Update(M2C_UNK editor) {
         if (keyPressed) M2C_FIELD(editor, u8 *, MAP_EDITOR_INPUT_LATCH) = 0;
     }
     if (!IsAnyUnitSpritePressed()) {
-        func_020cf828(0x1001b);
+        StepMapCursorTargetFromInput(0x1001b);
         func_0207a7a4(1, 4);
     }
     cursorX = M2C_FIELD(*gCurrentMap, s16 *, MAP_CURSOR_TARGET_X);

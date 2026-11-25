@@ -295,7 +295,7 @@ void FillOnlinePlayerListFirstEntry(void *list) {
    waiting animation when the request cannot be queued. */
 void RequestOnlinePlayerListIds(void *list) {
     void MIi_CpuCopy32(s32, void *, s32);
-    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequestAndCreateSprite(s32, s32, s32, void *, void *);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 request[68];
     s32 count;
@@ -307,7 +307,7 @@ void RequestOnlinePlayerListIds(void *list) {
     request[3] = 0;
     request[1] = 1;
     MIi_CpuCopy32(M2C_FIELD(list, s32 *, LIST_IDS), &request[4], 0x100);
-    if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
+    if (SubmitWebGetRequestAndCreateSprite(3, 0, 0xFF, request, list) != 0) {
         return;
     }
     GotoSpriteAnimationLabel(list, 1);
@@ -404,7 +404,7 @@ void func_020e39d8(void *list) {
  * request fills in. */
 void RequestOnlinePlayersUpToLimit(void *list) {
     s32 RandomIntRange(s32, s32);
-    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequestAndCreateSprite(s32, s32, s32, void *, void *);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
@@ -427,7 +427,7 @@ void RequestOnlinePlayersUpToLimit(void *list) {
     request[2] = start;
     request[3] = 0;
     request[4] = count;
-    if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
+    if (SubmitWebGetRequestAndCreateSprite(6, 0, 0xFF, request, list) != 0) {
         return;
     }
     GotoSpriteAnimationLabel(list, 1);
@@ -515,7 +515,7 @@ void func_020e3bf0(void *list) {
 void RequestRandomOnlinePlayers(void *list) {
     s32 NextRandomValue(void);
     s32 RandomIntRange(s32, s32);
-    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequestAndCreateSprite(s32, s32, s32, void *, void *);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
@@ -533,7 +533,7 @@ void RequestRandomOnlinePlayers(void *list) {
     request[2] = start;
     request[3] = 0;
     request[4] = count;
-    if (SubmitWebGetRequest(6, 0, 0xFF, request, list) != 0) {
+    if (SubmitWebGetRequestAndCreateSprite(6, 0, 0xFF, request, list) != 0) {
         return;
     }
     GotoSpriteAnimationLabel(list, 1);
@@ -614,7 +614,7 @@ void func_020e3e04(void *arg0) {
  * could not be queued starts the list's waiting animation. */
 void RequestOnlinePlayersByIds(void *list) {
     void MIi_CpuCopy32(s32, void *, s32);
-    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequestAndCreateSprite(s32, s32, s32, void *, void *);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 request[68];
     s32 count;
@@ -626,7 +626,7 @@ void RequestOnlinePlayersByIds(void *list) {
     request[3] = 0;
     request[1] = 1;
     MIi_CpuCopy32(M2C_FIELD(list, s32 *, LIST_IDS), &request[4], 0x100);
-    if (SubmitWebGetRequest(3, 0, 0xFF, request, list) != 0) {
+    if (SubmitWebGetRequestAndCreateSprite(3, 0, 0xFF, request, list) != 0) {
         return;
     }
     GotoSpriteAnimationLabel(list, 1);
@@ -783,7 +783,7 @@ void FinishOnlinePlayerCountRequest(void *list) {
  * kind 1, payload {byte length 12, flag 1, count 1, 0}) and animate the list when
  * the request cannot be queued.  A queued request leaves the list waiting. */
 void RequestOnlinePlayerCount(void *list) {
-    s32 SubmitWebGetRequest(s32, s32, s32, void *, void *);
+    s32 SubmitWebGetRequestAndCreateSprite(s32, s32, s32, void *, void *);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
     s32 request[68];
@@ -798,7 +798,7 @@ void RequestOnlinePlayerCount(void *list) {
     request[2] = 1;
     request[3] = 0;
 
-    if (SubmitWebGetRequest(1, 0, 0xFF, request, list) != 0) {
+    if (SubmitWebGetRequestAndCreateSprite(1, 0, 0xFF, request, list) != 0) {
         return;
     }
 

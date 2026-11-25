@@ -320,12 +320,14 @@ foundPlayer:
 #pragma opt_common_subs reset
 }
 #pragma opt_common_subs reset
-void func_ov003_021ef1e8(void *arg0) {
+/* Tick of the scene object's sprite-resume delay: once the object has held for
+ * 12 frames, resume its sprite animation, then keep counting the frames. */
+void Ov003_TickSpriteResumeDelay(void *object) {
     void Sprite_ResumeAnimation(void *);
-    if (M2C_FIELD(arg0, u8 *, 0x38) == 0xC) {
-        Sprite_ResumeAnimation(arg0);
+    if (M2C_FIELD(object, u8 *, 0x38) == 12) {
+        Sprite_ResumeAnimation(object);
     }
-    M2C_FIELD(arg0, u8 *, 0x38)++;
+    M2C_FIELD(object, u8 *, 0x38)++;
 }
 
 #pragma opt_strength_reduction off

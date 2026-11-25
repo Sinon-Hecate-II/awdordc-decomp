@@ -373,10 +373,13 @@ void SpawnLinkConnectRequest(M2C_UNK owner) {
     }
 }
 
-s32 func_ov009_022258d0(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Local counterpart of the online overlay's WFC match query: clear `nameCount`
+ * bytes of the search's result buffer and its count word, then report the query
+ * as running (1). */
+s32 RequestLocalWfcMatch(s32 names, s32 nameCount, s32 type, s32 flagsOut, s32 countOut) {
     M2C_UNK MI_CpuFill8(M2C_UNK, M2C_UNK, M2C_UNK);
-    MI_CpuFill8(arg3, 0, arg1);
-    *(s32 *)arg4 = 0;
+    MI_CpuFill8(flagsOut, 0, nameCount);
+    *(s32 *)countOut = 0;
     return 1;
 }
 
@@ -384,9 +387,11 @@ s32 func_ov009_022258f8(void) {
     return 0;
 }
 
-void func_ov009_02225900(void *arg0) {
-    M2C_UNK func_ov009_022258d0(s32, s32, s32, s32, s32);
-    func_ov009_022258d0(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40), M2C_FIELD(arg0, s32 *, 0x44));
+/* Step of the local match-request node: start the match query with the search
+ * parameters the node was created with. */
+void Ov009_RequestWfcMatch(void *request) {
+    M2C_UNK RequestLocalWfcMatch(s32, s32, s32, s32, s32);
+    RequestLocalWfcMatch(M2C_FIELD(request, s32 *, MATCH_REQUEST_NAMES), M2C_FIELD(request, s32 *, MATCH_REQUEST_NAME_COUNT), M2C_FIELD(request, s32 *, MATCH_REQUEST_TYPE), M2C_FIELD(request, s32 *, MATCH_REQUEST_TIMEOUT), M2C_FIELD(request, s32 *, MATCH_REQUEST_FLAGS));
 }
 
 void func_ov009_02225928(void) {
@@ -526,13 +531,16 @@ s32 func_ov009_02225b80(s32 arg0) {
     return arg0;
 }
 
-void *func_ov009_02225b94(void *arg0) {
-    M2C_UNK FreeLinkPacket();
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        FreeLinkPacket();
-        M2C_FIELD(arg0, s32 *, 0x38) = 0;
+/* Reset the link's packet sender: free the packet still queued for the transfer
+ * being split and clear the slot.  Returns the sender. */
+void *ResetLinkSender(void *sender) {
+    void FreeLinkPacket(void *packet);
+
+    if (M2C_FIELD(sender, void **, LINK_SENDER_PACKET) != NULL) {
+        FreeLinkPacket(M2C_FIELD(sender, void **, LINK_SENDER_PACKET));
+        M2C_FIELD(sender, s32 *, LINK_SENDER_PACKET) = 0;
     }
-    return arg0;
+    return sender;
 }
 
 /* Destructor of the link's packet sender: free the packet still queued for the
@@ -546,11 +554,13 @@ void *DestroyLinkSender(void *sender) {
     return sender;
 }
 
-s32 ResetLinkReceiver(s32 arg0) {
+/* Reset the link's packet receiver: destroy its four per-channel receive-assembly
+ * slots (each frees the packet it was piecing together), then return the object. */
+s32 ResetLinkReceiver(s32 receiver) {
     M2C_UNK DestroyArray(s32, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK FreeLinkReceiveSlot;
-    DestroyArray(arg0 + 0x34, 4, 8, &FreeLinkReceiveSlot);
-    return arg0;
+    DestroyArray(receiver + LINK_RECEIVER_CHANNELS, LINK_RECEIVER_COUNT, LINK_RECEIVER_STRIDE, &FreeLinkReceiveSlot);
+    return receiver;
 }
 
 /* Destructor of the link's packet receiver: destroy its four per-channel
@@ -855,18 +865,21 @@ void func_ov009_02226148(void) {
     DisableMapConfirm();
 }
 
-void func_ov009_02226154(void) {
+/* Link-status screen update: during the ready phase, allow the map-confirm prompt
+ * and show the sub-screen link indicator; in any other phase, disable the prompt and
+ * remove the indicator. */
+void SyncSubScreenLinkIndicator(void) {
     M2C_UNK CreateSubScreenLinkIndicator();
-    M2C_UNK func_020852e0();
+    M2C_UNK DeleteSubScreenLinkIndicator();
     M2C_UNK EnableMapConfirm();
     s32 GetLinkPhase();
-    if (GetLinkPhase() == 1) {
+    if (GetLinkPhase() == LINK_PHASE_READY) {
         EnableMapConfirm();
         CreateSubScreenLinkIndicator();
         return;
     }
     DisableMapConfirm();
-    func_020852e0();
+    DeleteSubScreenLinkIndicator();
 }
 
 /* Link-mode player name label: while the link is idle, announce the local player's

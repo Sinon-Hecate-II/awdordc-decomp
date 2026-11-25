@@ -147,7 +147,7 @@ void func_ov005_0221e1f4(M2C_UNK arg0) {
 void func_ov005_0221e214(void) {
     M2C_UNK ClearMessageBoxState();
     M2C_UNK RestoreVoiceChatWidgetPosition();
-    func_020ab200();
+    DeleteUnitSprites();
     DeleteTextSprites();
     ClearMessageBoxState();
     RestoreVoiceChatWidgetPosition();

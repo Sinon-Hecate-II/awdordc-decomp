@@ -7,7 +7,7 @@ void Reset3DSpriteBankState();void *CreateUnitSprite(void *);void *GetLocalizedF
 static inline u8 Visible149(void *p){return M2C_FIELD(M2C_FIELD(p,void **,100),u8 *,18)!=0;}
 
 extern s32 gSaveSlotSummary;extern u32 gMapProgressRecords[];
-void func_020885fc(void);void *MemAlloc(s32);s32 MapData_GetCategory(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
+void LoadUnitGraphics(void);void *MemAlloc(s32);s32 MapData_GetCategory(s32);u32 func_020a8a94(s32);s32 func_020a8a84(s32);s32 GetMapFollowupMapId(s32,s32);
 static inline void *Entry149(void *base,s32 i){if(i<0)return 0;if(i>=64)return 0;return (u8 *)base+i*32;}
 static inline void *Cell149(void *base,s32 x,s32 y){if(x<0)return 0;if(y<0)return 0;if(x>=8)return 0;if(y>=8)return 0;return Entry149(base,x+y*8);}
 static inline u8 Flag149(void *p,u32 bit){return (M2C_FIELD(p,u8 *,4)&bit)?1:0;}
@@ -36,7 +36,7 @@ void func_ov004_02214904(void) {
 #pragma opt_strength_reduction off
 void func_ov004_02214918(void *arg0){
 u8 *base,*p,*q,*end,*cursor; s32 i,j,id,state,n,y,x,old;s32 saved;u32 pos;u8 selected;volatile u8 coords[4];
-func_020885fc();
+LoadUnitGraphics();
 M2C_FIELD(arg0,u8 *,54)=0;M2C_FIELD(arg0,u16 *,68)=0;M2C_FIELD(arg0,u16 *,70)=0;M2C_FIELD(arg0,u16 *,76)=0;M2C_FIELD(arg0,u16 *,78)=0;M2C_FIELD(arg0,u16 *,72)=0;M2C_FIELD(arg0,u16 *,74)=0;M2C_FIELD(arg0,u16 *,80)=0;M2C_FIELD(arg0,u16 *,82)=0;M2C_FIELD(arg0,u8 *,57)=0;M2C_FIELD(arg0,u8 *,56)=1;M2C_FIELD(arg0,s32 *,64)=4096;
 M2C_FIELD(arg0,u16 *,60)=0;M2C_FIELD(arg0,void **,92)=0;M2C_FIELD(arg0,u8 *,52)=0;
 if((u32)gSaveSlotSummary>>24==0)M2C_FIELD(arg0,s32 *,64)=4096;
@@ -96,8 +96,8 @@ void MapView_Destroy(void *view) {
     gCur3DSpriteEngine = g3DSpriteEngineMain;
     Reset3DSpriteBankState(view);
     gCur3DSpriteEngine = oldEngine;
-    func_ov003_021ff3ac();
-    func_020ab200();
+    Ov003_DestroyMapMenu();
+    DeleteUnitSprites();
     DeleteFrameCallbackTask(InitMapView3DRendering);
     DeleteFrameCallbackTask(func_ov004_02214904);
     func_0209e9f4();

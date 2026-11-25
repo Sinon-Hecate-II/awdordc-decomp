@@ -52,13 +52,15 @@ void func_ov001_02169e3c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32
     } while (y0 < ye);
 }
 #pragma scheduling reset
-void func_ov001_0216a030(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
-    M2C_FIELD(arg0, s32 *, 4) = arg2;
-    M2C_FIELD(arg0, s32 *, 8) = arg3;
-    M2C_FIELD(arg0, s8 *, 0xC) = (s8) arg4;
-    M2C_FIELD(arg0, s32 *, 0) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x14) = arg5;
-    M2C_FIELD(arg0, s32 *, 0x10) = arg6;
+/* Initialise a text panel's surface: point it at its tile buffer with the given
+ * size in tiles, pixel depth, tile map and drawing-ops table. */
+void InitTextPanel(void *panel, void *tileBase, s32 width, s32 height, s32 depth, Ov001TextOps *ops, s32 tileMap) {
+    M2C_FIELD(panel, s32 *, 4) = width;
+    M2C_FIELD(panel, s32 *, 8) = height;
+    M2C_FIELD(panel, s8 *, 0xC) = (s8) depth;
+    M2C_FIELD(panel, void **, 0) = tileBase;
+    M2C_FIELD(panel, Ov001TextOps **, 0x14) = ops;
+    M2C_FIELD(panel, s32 *, 0x10) = tileMap;
 }
 
 /* Draw one glyph of `font` at (x, y) in `color` on the panel and return the
@@ -90,7 +92,7 @@ return glyph.metric->advance;
  * the linear ops table and the surface's tile row stride as its tile map. */
 void SetTextPanelSurface(void *panel, void *surface, s32 width, s32 height, s32 bpp) {
     extern M2C_UNK gTextOpsLinear;
-    func_ov001_0216a030(panel, surface, width, height, bpp, (s32)&gTextOpsLinear, width);
+    InitTextPanel(panel, surface, width, height, bpp, (s32)&gTextOpsLinear, width);
 }
 
 void func_ov001_0216a1a8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
@@ -102,7 +104,7 @@ x=3; if(arg2<8) {x=0; while ((u32)arg2>>(x+1)) ++x;}
 y=3; if(arg3<8) {y=0; while ((u32)arg3>>(y+1)) ++y;}
 p=data_ov001_0218c9e4+y*8+x*2;
 value.a=p[0]; value.b=p[1];
-func_ov001_0216a030(arg0,arg1,arg2,arg3,arg4,(s32)&gTextOpsPooled,*(s32*)&value);
+InitTextPanel(arg0,arg1,arg2,arg3,arg4,(s32)&gTextOpsPooled,*(s32*)&value);
 }
 void func_ov001_0216a230(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,u32 arg7) {
 M2C_UNK func_ov001_0216a2e0(s32,s32,s32,s32,s32,s32);

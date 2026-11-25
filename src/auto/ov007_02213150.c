@@ -219,13 +219,16 @@ void MapEditor_ApplyMapSize(void *request) {
     PlaySoundEffect(0x11D);
 }
 
-void func_ov007_0221352c(s32 arg0, s32 arg1) {
-    extern M2C_UNK data_ov007_0221f740;
-    void *temp_r0;
+/* Start a deferred map resize to width x height: create the resize sprite and
+ * store the requested size in it.  The sprite's script holds the map view,
+ * applies the new size and releases the view over its animation steps. */
+void MapEditor_StartMapResize(s32 width, s32 height) {
+    extern M2C_UNK gMapResizeSpriteClass;
+    void *resizeSprite;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov007_0221f740, 7);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
+    resizeSprite = CreateSpriteFromClass(&gMapResizeSpriteClass, 7);
+    M2C_FIELD(resizeSprite, s32 *, 0x38) = width;
+    M2C_FIELD(resizeSprite, s32 *, 0x3C) = height;
 }
 
 #pragma push
@@ -325,11 +328,13 @@ M2C_FIELD(r4,void**,64)=CreateUnitSprite(r4);InitUnitSprite(M2C_FIELD(r4,void**,
         SpriteCellListSetCellRect(M2C_FIELD(p,s32*,0x64),1,x,y,(u16)w,(u16)GetUnitSpriteHeight(p));
     }CreateUnitSpriteButtonTask(p,2);Show3DSpriteSlide(p);}}
 #pragma pop
-void func_ov007_02213cf4(void) {
+/* Clear sprite layer 1 of the current 3D sprite engine and mark that layer dirty
+ * so the engine re-uploads its tiles. */
+void MapEditor_ClearSpriteLayer1(void) {
     M2C_UNK Clear3DSpriteLayer(M2C_UNK);
     extern void *gCur3DSpriteEngine;
     Clear3DSpriteLayer(1);
-    M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 2);
+    M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) | DS3D_DIRTY_LAYER1);
 }
 
 /* Configures the 3D sprite engine for the requested unit selection mode (arg0->0x3c, 0 or 1), then draws a tile-selection panel sprite via DrawTextSprite. */

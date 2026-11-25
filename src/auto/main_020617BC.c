@@ -224,10 +224,13 @@ s32 SBServerListClearRemovedServers(void *serverList) {
     SBServerListFreeRemovedServers(serverList);
 }
 
-void func_02061c8c(void *arg0) {
+/* Create the list's server vector (4-byte entries, room for 100 servers) and
+ * empty its chain of removed servers.  Called by SBServerListInit. */
+void SBServerListInitVectors(void *list) {
     s32 Vector_New(M2C_UNK, M2C_UNK, M2C_UNK);
-    M2C_FIELD(arg0, s32 *, 4) = Vector_New(4, 0x64, 0);
-    M2C_FIELD(arg0, s32 *, 0x5D0) = 0;
+
+    M2C_FIELD(list, s32 *, SB_SLIST_SERVERS) = Vector_New(4, 100, 0);
+    M2C_FIELD(list, s32 *, SB_SLIST_FREE_SERVERS) = 0;
 }
 
 /* Intern `string` in `owner`'s string table: return the existing canonical copy,
@@ -286,7 +289,7 @@ extern u8 sSbAssertSlistNotNull[],sSbServerListInitName[],sSbAssertCallbackNotNu
 void AssertFailed(void*,void*,void*,s32);s32 GetStringInternTable(s32);void StringCopy(void*,void*);void SBServerListSetError(void*,void*);s32 GetSystemTickMilliseconds(void);void SetRandSeed(s32);void func_0204926c(void);
 if(!list)AssertFailed(sSbAssertSlistNotNull,sSbFileName,sSbServerListInitName,0x11c);
 if(!force && gDnsQueryState[0]!=1)return;
-M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;func_02061c8c(list);GetStringInternTable((s32)list);
+M2C_FIELD(list,s32*,SB_SLIST_STATE)=SB_SLIST_STATE_IDLE;SBServerListInitVectors(list);GetStringInternTable((s32)list);
 StringCopy((u8*)list+SB_SLIST_GAMENAME,gameName);StringCopy((u8*)list+SB_SLIST_SECRETKEY,secretKey);StringCopy((u8*)list+SB_SLIST_GAMEVERSION,gameVersion);
 M2C_FIELD(list,s32*,SB_SLIST_CALLBACK)=callback;M2C_FIELD(list,s32*,0x48c)=0;
 if(!callback)AssertFailed(sSbAssertCallbackNotNull,sSbFileName,sSbServerListInitName,0x132);

@@ -6,7 +6,7 @@ extern u8 gDemoBattle[],data_ov002_021f2d94[],data_ov002_021f2da0[],data_ov002_0
 void *GetLocalizedFileName(void *);u8 *LoadFileToBuffer(void *,s32);void *HeapAllocBlock(s32);
 
 
-M2C_UNK func_ov002_021e5d5c(M2C_UNK arg0){
+M2C_UNK LoadCountryBattleResources(M2C_UNK arg0){
 s32 side,mode;u8 *dest=(u8 *)arg0,*country,*settings; s32 res,i,j,shade;u8 *palette,*resource,*state;u16 tiles=0;u16 pal=tiles;u32 size;u8 *other;
 if(gDemoBattle[0]){LoadDemoBattleGraphics(0x6800000,0x6890000);tiles=(u16)(tiles+96);pal=(u16)(pal+1);}
 GX_BeginLoadTex();M2C_FIELD(dest,u16 *,200)=tiles;
@@ -72,12 +72,16 @@ GX_EndLoadTexPltt();resource=M2C_FIELD(M2C_FIELD(settings,void **,4)+settings[24
 country+=100;settings+=24;state+=44;side++;}while(side<2);
 }
 
-void func_ov002_021e6cdc(M2C_UNK arg0) {
-    M2C_UNK SetFileDirectory(M2C_UNK *);
-    M2C_UNK SetupCountryGraphics(M2C_UNK);
-    M2C_UNK func_ov002_021e5d5c(M2C_UNK);
-    extern M2C_UNK data_ov002_021f2e3c;
-    SetFileDirectory(&data_ov002_021f2e3c);
-    SetupCountryGraphics(arg0);
-    func_ov002_021e5d5c(arg0);
+/* Loads the battle scene's country graphics: makes "/battle" the current file
+ * directory, then draws both sides' countries and builds the per-country battle
+ * graphics resources for `state`. */
+void LoadBattleCountryGraphics(void *state) {
+    s32 SetFileDirectory(char *);
+    void SetupCountryGraphics(void *);
+    M2C_UNK LoadCountryBattleResources(M2C_UNK);
+    extern char sBattleDirectory[];
+
+    SetFileDirectory(sBattleDirectory);
+    SetupCountryGraphics(state);
+    LoadCountryBattleResources(state);
 }

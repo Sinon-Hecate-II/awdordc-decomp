@@ -115,10 +115,12 @@ void func_ov001_02178108(void) {
 
 }
 
+/* Fade the ov001 Wi-Fi profile screen out to white on the main engine's BG0,
+ * BG2 and OBJ layers, then hand over to the step that closes the screen. */
 void Ov001_FadeOutProfileScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     extern M2C_UNK Ov001_CloseWfcProfileScreen;
-    Ov001_StartFade(3, 0, 0x15, 8);
+    Ov001_StartFade(OV001_FADE_TO_WHITE, OV001_FADE_MAIN, OV001_BLEND_BG0 | OV001_BLEND_BG2 | OV001_BLEND_OBJ, 8);
     Ov001_SetStepCallback(&Ov001_CloseWfcProfileScreen);
 }
 
@@ -221,24 +223,27 @@ void Ov001_ProfileSavedFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_ProfileSavedWaitIconRow);
 }
 
+/* Wait for the WFC profile-saved popup's icon row: leave it alone while it is not
+ * ready (selection -2); once it is, unlock it and run the step that reads the
+ * chosen row. */
 void Ov001_ProfileSavedWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_02178360;
+    extern M2C_UNK Ov001_ProfileSavedIconRowStep;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02178360);
+    Ov001_SetStepCallback(&Ov001_ProfileSavedIconRowStep);
 }
 
-void func_ov001_02178360(void) {
+void Ov001_ProfileSavedIconRowStep(void) {
     void func_ov001_02178374(void);
     void func_ov001_02178394(void);
-    void func_ov001_02178398(void);
+    void Ov001_HandleProfileSavedChoice(void);
     func_ov001_02178374();
     func_ov001_02178394();
-    func_ov001_02178398();
+    Ov001_HandleProfileSavedChoice();
 }
 
 void func_ov001_02178374(void) {
@@ -254,16 +259,18 @@ void func_ov001_02178394(void) {
 
 }
 
-void func_ov001_02178398(void) {
+/* Choice hook of the WFC profile-saved popup: when its only button (selection
+ * 0) is picked, play the confirm sound and close the popup. */
+void Ov001_HandleProfileSavedChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_021783c0(void);
+    void Ov001_CloseProfileSavedPopup(void);
     if (Ov001_GetIconRowSelection() != 0) return;
-    Ov001_PlaySound(6);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021783c0);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_CloseProfileSavedPopup);
 }
 
-void func_ov001_021783c0(void) {
+void Ov001_CloseProfileSavedPopup(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -338,24 +345,27 @@ void Ov001_WfcEraseMessageFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseMessageWaitIconRow);
 }
 
+/* Step of the Wi-Fi erase-in-progress message that waits for its icon row to
+   slide in: while the row is not ready, wait; then unlock it and hand over to the
+   step that handles its input. */
 void Ov001_WfcEraseMessageWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_02178580;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateWfcEraseMessageIconRow;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02178580);
+    Ov001_SetStepCallback(&Ov001_UpdateWfcEraseMessageIconRow);
 }
 
-void func_ov001_02178580(void) {
+void Ov001_UpdateWfcEraseMessageIconRow(void) {
     void func_ov001_02178594(void);
     void func_ov001_021785b4(void);
-    void func_ov001_021785b8(void);
+    void Ov001_HandleWfcEraseMessageChoice(void);
     func_ov001_02178594();
     func_ov001_021785b4();
-    func_ov001_021785b8();
+    Ov001_HandleWfcEraseMessageChoice();
 }
 
 void func_ov001_02178594(void) {
@@ -369,16 +379,18 @@ void func_ov001_021785b4(void) {
 
 }
 
-void func_ov001_021785b8(void) {
+/* Step of the Wi-Fi erase-in-progress message: once its icon row reports the
+ * confirm choice, play the confirm sound and start closing the message. */
+void Ov001_HandleWfcEraseMessageChoice(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_PlaySound(M2C_UNK);
-    void func_ov001_021785e0(void);
+    void Ov001_StartWfcEraseMessageClose(void);
     if (Ov001_GetIconRowSelection() != 0) return;
-    Ov001_PlaySound(6);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021785e0);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_StartWfcEraseMessageClose);
 }
 
-void func_ov001_021785e0(void) {
+void Ov001_StartWfcEraseMessageClose(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -478,6 +490,9 @@ void Ov001_WfcEraseFadeDone(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseWaitIconRow);
 }
 
+/* Wait for the Wi-Fi data-erase screen's icon row to finish sliding in
+ * (selection -2 while it is not ready): unlock the row and hand over to the
+ * screen's per-frame menu step. */
 void Ov001_WfcEraseWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();

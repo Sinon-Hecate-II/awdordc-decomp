@@ -183,15 +183,17 @@ s32 func_020062bc(void) {
     return v;
 }
 
-void OS_InitMessageQueue(void *arg0, s32 arg1, s32 arg2) {
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    M2C_FIELD(arg0, s32 *, 0x10) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x14) = arg2;
-    M2C_FIELD(arg0, s32 *, 0x18) = 0;
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
+/* Initialise a NitroSDK message queue around the caller's `msgArray` of
+ * `msgCount` 32-bit message slots: empty both thread queues and the ring. */
+void OS_InitMessageQueue(OSMessageQueue *queue, s32 *msgArray, s32 msgCount) {
+    queue->sendQueue.tail = NULL;
+    queue->sendQueue.head = NULL;
+    queue->receiveQueue.tail = NULL;
+    queue->receiveQueue.head = NULL;
+    queue->msgArray = msgArray;
+    queue->msgCount = msgCount;
+    queue->firstIndex = 0;
+    queue->usedCount = 0;
 }
 
 /* Send a message to a thread message queue: with OS_MESSAGE_BLOCK it sleeps on

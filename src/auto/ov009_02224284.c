@@ -451,13 +451,16 @@ void InitLinkReceiveSlot(void *arg0) {
     M2C_FIELD(arg0, s32 *, 4) = 0;
 }
 
-void *FreeLinkReceiveSlot(void *arg0) {
-    void FreeLinkPacket(void *);
-    if (M2C_FIELD(arg0,void **,4) != NULL) {
-        FreeLinkPacket(M2C_FIELD(arg0,void **,4));
-        M2C_FIELD(arg0,s32 *,4) = 0;
+/* Reset a link receive-assembly slot: free the packet it was piecing together
+ * (LINK_RECEIVER_PACKET) and clear the slot.  Returns the slot. */
+void *FreeLinkReceiveSlot(void *slot) {
+    void FreeLinkPacket(void *packet);
+
+    if (M2C_FIELD(slot, void **, LINK_RECEIVER_PACKET) != NULL) {
+        FreeLinkPacket(M2C_FIELD(slot, void **, LINK_RECEIVER_PACKET));
+        M2C_FIELD(slot, s32 *, LINK_RECEIVER_PACKET) = 0;
     }
-    return arg0;
+    return slot;
 }
 
 #pragma opt_common_subs off

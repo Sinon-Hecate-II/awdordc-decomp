@@ -56,7 +56,7 @@ M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u8 *,0x52)=alpha;
 
 #pragma opt_common_subs off
 void func_ov011_02225d98(void *state){
-s32 Set3DSpriteVramBanks(void *);s32 Apply3DSpriteLayout(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 OffsetTileIndices(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 func_0208161c(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 CreateFrameCallbackTask(void *,s32);s32 PlayMusicTrack(s32);
+s32 Set3DSpriteVramBanks(void *);s32 Apply3DSpriteLayout(void *);s32 Clear3DSpriteLayer(u8);s32 SetFileDirectory(void *);s32 OpenNarcArchive(void *);s32 LoadNarcFileDecompressed(void *,s32);s32 LoadNarcFileToSpriteBuffer(void *,s32,s32);s32 CloseNarcArchive(void);s32 Get3DSpriteLayerSize(u8,s32);s32 OffsetTileIndices(s32,u16,s32);s32 LoadScenePanelPalette(s32);s32 func_02088774(s32);s32 CreateMainWallpaperSprite(s32,s32,s32);s32 FadePaletteTowardsBlack(s32,s32,s32,s32);s32 LoadNarcFileToBGExtPltt(void *,s32,s32,s32);s32 GetLocalizedFileName(void *);s32 LoadDecompressedFileTo(s32,s32);s32 LoadFileToSpriteBuffer(void *,s32,s32);s32 CreateFrameCallbackTask(void *,s32);s32 PlayMusicTrack(s32);
 extern M2C_UNK func_ov011_0222513c;extern M2C_UNK func_ov011_02225224;
 s32 saved;
 M2C_FIELD(state,u8 *,0x34)&=~1;Set3DSpriteVramBanks(state);
@@ -86,7 +86,7 @@ M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=1;
 Clear3DSpriteLayer(3);SetFileDirectory(data_ov011_02228bc4);OpenNarcArchive(data_ov011_02228bcc);
 LoadNarcFileDecompressed(data_ov011_02228bd8,M2C_FIELD(gCur3DSpriteEngine,s32 *,24));
 LoadNarcFileDecompressed(data_ov011_02228be4,M2C_FIELD(gCur3DSpriteEngine,s32 *,44));
-func_0208161c(data_ov011_02228bf0,3,0,512);CloseNarcArchive();
+LoadNarcFileToBGExtPltt(data_ov011_02228bf0,3,0,512);CloseNarcArchive();
 M2C_FIELD(gCur3DSpriteEngine,u8 *,70)|=8;
 SetFileDirectory(data_ov011_02228bfc);
 LoadDecompressedFileTo(GetLocalizedFileName(data_ov011_02228c04),M2C_FIELD(gCur3DSpriteEngine,s32 *,28));
@@ -127,7 +127,7 @@ void LoadOv011EffectLayer(s32 effectName, s32 layer) {
     s32 OpenNarcArchive(void *);
     s32 CloseNarcArchive(void);
     s32 LoadNarcFileDecompressed(void *, s32);
-    s32 LoadNarcLayerPalette(void *, s32, s32, s32);
+    s32 QueueNarcFileToBGExtPltt(void *, s32, s32, s32);
     extern s32 gCur3DSpriteEngine;
     extern M2C_UNK sOv011EffectArchiveExtension, sOv011EffectGraphicsExtension, sOv011EffectScreenExtension, sOv011EffectPaletteExtension, sOv011EffectDirectory;
     u32 archiveName[8], graphicsName[8], screenName[8], paletteName[8];
@@ -145,7 +145,7 @@ void LoadOv011EffectLayer(s32 effectName, s32 layer) {
     OpenNarcArchive(archiveName);
     LoadNarcFileDecompressed(graphicsName, DS3D_ENGINE(gCur3DSpriteEngine)->layerVram[layer]);
     LoadNarcFileDecompressed(screenName, (s32)DS3D_ENGINE(gCur3DSpriteEngine)->layerTiles[layer]);
-    LoadNarcLayerPalette(paletteName, layer, 0, DS3D_LAYER_PALETTE_BYTES);
+    QueueNarcFileToBGExtPltt(paletteName, layer, 0, DS3D_LAYER_PALETTE_BYTES);
     CloseNarcArchive();
     DS3D_ENGINE(gCur3DSpriteEngine)->layerDirty |= 1 << layer;
 }

@@ -172,6 +172,9 @@ void Ov001_BeginMatchSetupMenu(void) {
     Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitMatchSetupMenu);
 }
 
+/* Wait for the download-play match-setup popup's icon row to finish sliding in
+ * (selection -2 while it is not ready): unlock the row and hand over to the
+ * popup's per-frame menu step. */
 void Ov001_WaitMatchSetupMenu(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
@@ -510,18 +513,21 @@ Ov001_CreateMenuIconRow(1);
 Ov001_SetStepCallback((M2C_UNK *)&Ov001_UnlockOptionPage2IconRow);
 }
 
+/* Wait for the ov001 option page 2's icon row to finish sliding in (selection
+ * -2 while it is not ready): unlock the row and hand over to the page's
+ * per-frame menu step. */
 void Ov001_UnlockOptionPage2IconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_021805ac;
+    extern M2C_UNK Ov001_UpdateOptionPage2Menu;
     if (Ov001_GetIconRowSelection() == -2) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_021805ac);
+    Ov001_SetStepCallback(&Ov001_UpdateOptionPage2Menu);
 }
 
-void func_ov001_021805ac(void) {
+void Ov001_UpdateOptionPage2Menu(void) {
     M2C_UNK SleepMilliseconds(s32);
     void Ov001_HandleOptionPage2Choice();
     void Ov001_HandleOptionPage2MenuInput(void);
@@ -757,18 +763,21 @@ void Ov001_FriendListFadeDone(void) {
     Ov001_SetStepCallback(&Ov001_FriendListWaitIconRow);
 }
 
+/* Step of the ov001 Wi-Fi friend-list screen that waits for its icon row to slide
+   in: while the row is not ready, wait; then unlock it and hand over to the step
+   that handles the screen's input. */
 void Ov001_FriendListWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
-    extern M2C_UNK func_ov001_02180a28;
-    if (Ov001_GetIconRowSelection() == -2) {
+    extern M2C_UNK Ov001_UpdateFriendList;
+    if (Ov001_GetIconRowSelection() == OV001_ICON_ROW_NOT_READY) {
         return;
     }
     Ov001_UnlockIconRow();
-    Ov001_SetStepCallback(&func_ov001_02180a28);
+    Ov001_SetStepCallback(&Ov001_UpdateFriendList);
 }
 
-void func_ov001_02180a28(void) {
+void Ov001_UpdateFriendList(void) {
     M2C_UNK Ov001_HandleFriendListBack();
     void Ov001_CheckFriendList(void);
     func_ov001_02180b68();

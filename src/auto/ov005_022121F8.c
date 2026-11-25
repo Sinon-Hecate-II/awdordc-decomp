@@ -228,7 +228,7 @@ gCur3DSpriteEngine=g3DSpriteEngineSub;
 buffer=HeapAllocBlock(512);
 Clear3DSpriteLayerSub(0);
 OpenNarcArchive(data_ov005_0222028c);
-LoadNarcFileToBuffer(data_ov005_0222029c,buffer,0,0);
+LoadNarcFileDecompressedAndDrawTilemapBlock(data_ov005_0222029c,buffer,0,0);
 CloseNarcArchive();
 i=0;offset=0;
 do{
@@ -266,7 +266,7 @@ void LoadHistoryMenuPage0Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
- M2C_UNK LoadNarcFileToBuffer(s32,s32,s32,s32);
+ M2C_UNK LoadNarcFileDecompressedAndDrawTilemapBlock(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
@@ -274,7 +274,7 @@ void LoadHistoryMenuPage0Bg(void) {
  SetFileDirectory(&gHistoryMenuDir);
  GetLocalizedFileName(&gHistoryMenuArchive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage0Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(&gHistoryMenuPage0Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
@@ -286,7 +286,7 @@ void LoadHistoryMenuPage1Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
- M2C_UNK LoadNarcFileToBuffer(s32,s32,s32,s32);
+ M2C_UNK LoadNarcFileDecompressedAndDrawTilemapBlock(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
@@ -294,7 +294,7 @@ void LoadHistoryMenuPage1Bg(void) {
  SetFileDirectory(&gHistoryMenuPage1Dir);
  GetLocalizedFileName(&gHistoryMenuPage1Archive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage1Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(&gHistoryMenuPage1Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }
@@ -306,7 +306,7 @@ void LoadHistoryMenuPage2Bg(void) {
  M2C_UNK SetFileDirectory(M2C_UNK *);
  M2C_UNK OpenNarcArchive();
  M2C_UNK CloseNarcArchive();
- M2C_UNK LoadNarcFileToBuffer(s32,s32,s32,s32);
+ M2C_UNK LoadNarcFileDecompressedAndDrawTilemapBlock(s32,s32,s32,s32);
  s32 GetLocalizedFileName(M2C_UNK *);
  extern void *g3DSpriteEngineMain;
  extern void *gCur3DSpriteEngine;
@@ -314,7 +314,7 @@ void LoadHistoryMenuPage2Bg(void) {
  SetFileDirectory(&gHistoryMenuPage2Dir);
  GetLocalizedFileName(&gHistoryMenuPage2Archive);
  OpenNarcArchive();
- LoadNarcFileToBuffer(GetLocalizedFileName(&gHistoryMenuPage2Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
+ LoadNarcFileDecompressedAndDrawTilemapBlock(GetLocalizedFileName(&gHistoryMenuPage2Sc),M2C_FIELD(g3DSpriteEngineMain,s32 *,0x28),0,0);
  CloseNarcArchive();
  M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46) |= 4;
 }

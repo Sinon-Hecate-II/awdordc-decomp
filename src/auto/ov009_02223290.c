@@ -357,10 +357,13 @@ void HandleLinkHostTeardown(void *event) {
     CloseLinkChannel();
 }
 
+/* Queue the link's WFC reset command (WFC command 9), whose completion goes to
+ * HandleLinkResetResult; returns 1 once queued, or signals the link error and
+ * returns 0. */
 s32 SendLinkResetCommand(void) {
     s32 WFC_SendCommand9(void (*)(void *));
     void HandleLinkResetResult(void *);
-    if (WFC_SendCommand9(HandleLinkResetResult) == 2) return 1;
+    if (WFC_SendCommand9(HandleLinkResetResult) == LINK_TASK_QUEUED) return 1;
     SignalLinkError();
     return 0;
 }
@@ -422,12 +425,14 @@ void FinishLinkSetupCommand(void *arg0) {
     SetLinkPhase(1);
 }
 
-void HandleLinkEndTaskEvent(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SetLinkPhase(9);
+/* Completion callback of the link-end task: a failed status aborts the link,
+ * otherwise the link returns to idle. */
+void HandleLinkEndTaskEvent(void *event) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) != 0) {
+        SetLinkPhase(LINK_PHASE_ABORTED);
         return;
     }
-    SetLinkPhase(0);
+    SetLinkPhase(LINK_PHASE_IDLE);
 }
 
 /* Queue the WFC stop command that ends the link session: mark the link pending

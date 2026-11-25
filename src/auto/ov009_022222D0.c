@@ -604,7 +604,7 @@ void func_ov009_02223078(void *arg0) {
     void SignalLinkEvent(s32);
     M2C_UNK SetLinkPhase(M2C_UNK);
     s32 GetLinkPhase(void);
-    s32 func_ov009_02223244(void);
+    s32 SendLinkStepCommand(void);
     void DC_InvalidateRange(void *, s32);
     s32 IsConnectionDataValid(void *);
     s32 func_ov009_02222f84(void);
@@ -673,7 +673,7 @@ test:
     }
 
     if (GetLinkPhase() != 2) {
-        if (func_ov009_02223244() != 0) return;
+        if (SendLinkStepCommand() != 0) return;
         SetLinkPhase(8);
         return;
     }
@@ -713,15 +713,18 @@ done:
     SetLinkPhase(8);
 }
 #pragma scheduling reset
-s32 func_ov009_02223244(void) {
+/* Queue the link's WFC link-step command (command 11), whose completion
+ * HandleLinkStepResult takes; returns 1 once queued, or signals the link error
+ * and returns 0. */
+s32 SendLinkStepCommand(void) {
     s32 WFC_SendCommand11(void (*)(void *));
-    void func_ov009_0222326c(void *);
-    if (WFC_SendCommand11(func_ov009_0222326c) == 2) return 1;
+    void HandleLinkStepResult(void *);
+    if (WFC_SendCommand11(HandleLinkStepResult) == LINK_TASK_QUEUED) return 1;
     SignalLinkError();
     return 0;
 }
 
-void func_ov009_0222326c(void *arg0) {
+void HandleLinkStepResult(void *arg0) {
     M2C_UNK SetLinkPhase(M2C_UNK);
     void SignalLinkEvent();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {

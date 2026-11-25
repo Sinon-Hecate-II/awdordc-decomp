@@ -742,6 +742,7 @@ typedef ScenePanelWidget ToggleWidget;
 /* A CO face sprite (the portrait nodes built by InitFaceSprite): a 3D sprite
  * object extended with the face texture shown, its expression and palette
  * style, and a linked face object that is refreshed with it. */
+#define FACE_SPRITE_TEXTURE    0x3E /* u16 texture offset of the face into the texture area, in 32-byte blocks */
 #define FACE_SPRITE_TILE        0x40 /* u32: bits 18..25 are the face tile row */
 #define FACE_SPRITE_TILE_ROW_MASK 0x03FC0000 /* bits of FACE_SPRITE_TILE holding the row */
 #define FACE_SPRITE_SCREEN      0x48 /* u8: bits 1..3 pick the engine (0 main, 1 sub, 3 active) */

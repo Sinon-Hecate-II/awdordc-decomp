@@ -357,14 +357,14 @@ s32 GetCoPowerMeterLevel(s32 player) {
     return level;
 }
 
-void func_020d2cf0(M2C_UNK arg0) {
-    M2C_UNK func_020a25bc(s32, s32);
-    s32 GetPlayerCoZoneBonusIndex();
-    s32 GetCoPowerMeterLevel(M2C_UNK);
-    s32 temp_r4;
+/* The move range the player's CO zone grants their units: the base move range of
+   the player's commander plus the number of charged CO power meters. */
+s32 GetPlayerCoZoneMoveRange(s32 player) {
+    M2C_UNK GetCommanderMoveRange(s32, s32);
+    s32 commander;
 
-    temp_r4 = GetPlayerCoZoneBonusIndex();
-    func_020a25bc(temp_r4, GetCoPowerMeterLevel(arg0));
+    commander = GetPlayerCoZoneBonusIndex(player);
+    return GetCommanderMoveRange(commander, GetCoPowerMeterLevel(player));
 }
 
 s32 GetUnitBuildCost(arg0, arg1)

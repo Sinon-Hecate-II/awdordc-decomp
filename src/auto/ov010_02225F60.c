@@ -345,12 +345,15 @@ s32 IsWebGetRequestPending(void) {
     return pending;
 }
 
-s32 SubmitWebGetRequest(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Submit a web GET request of `kind` for `playerId` with `field2` and the
+ * `payload` buffer, then create the request's waiting sprite owned by `owner`.
+ * Returns 0 when the request could not be sent, else the new sprite's id. */
+s32 SubmitWebGetRequestAndCreateSprite(s32 kind, s32 playerId, s32 field2, s32 *payload, void *owner) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
-    s32 SendWebGetForKind();
-    extern M2C_UNK data_ov010_0222c0a0;
-    if (SendWebGetForKind() == 0) return 0;
-    return CreateSpriteObject(&data_ov010_0222c0a0, arg4);
+    s32 SendWebGetForKind(u32, s32, s32, s32 *);
+    extern M2C_UNK sOv010GetRequestSpriteClass;
+    if (SendWebGetForKind(kind, playerId, field2, payload) == 0) return 0;
+    return CreateSpriteObject(&sOv010GetRequestSpriteClass, owner);
 }
 
 /* Returns 1 once the server clock has run WEB_REQUEST_STALE_SECONDS past the
@@ -440,12 +443,15 @@ s32 CompleteWebSyncRequest(void) {
     return inFlight;
 }
 
-s32 SubmitWebSyncRequestAndCreateSprite(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+/* Submit a web sync request of `kind` for `playerId` over `recordCount`
+ * records with `payload`, then create its waiting sprite owned by `owner`.
+ * Returns 0 when the request could not be sent, else the new sprite's id. */
+s32 SubmitWebSyncRequestAndCreateSprite(s32 kind, s32 playerId, s32 recordCount, s32 payload, void *owner) {
     s32 CreateSpriteObject(M2C_UNK *, s32);
     s32 SubmitWebSyncRequest();
     extern M2C_UNK sOv010SyncRequestSpriteClass;
     if (SubmitWebSyncRequest() == 0) return 0;
-    return CreateSpriteObject(&sOv010SyncRequestSpriteClass, arg4);
+    return CreateSpriteObject(&sOv010SyncRequestSpriteClass, owner);
 }
 
 /* Copy of IsProfileSyncOverdue used by the record-sync wait state: whether the
@@ -770,10 +776,12 @@ void TickOnlinePeerKeepAlive(void *link) {
     TickNetSession();
 }
 
-void func_ov010_02226d74(void *arg0) {
+/* Release the packet an ov010 online connection is currently sending
+ * (OV010_CONNECTION_PACKET) and clear its slot and byte count. */
+void Ov010Connection_ResetPacket(void *connection) {
     M2C_UNK Ov010_FreeBlock(M2C_UNK, s32, s32);
-    Ov010_FreeBlock(0, M2C_FIELD(arg0, s32 *, 0x3C), M2C_FIELD(arg0, s32 *, 0x40));
-    M2C_FIELD(arg0, s32 *, 0x3C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x40) = 0;
+    Ov010_FreeBlock(0, M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET), M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET_SIZE));
+    M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET) = 0;
+    M2C_FIELD(connection, s32 *, OV010_CONNECTION_PACKET_SIZE) = 0;
 }
 

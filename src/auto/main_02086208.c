@@ -267,11 +267,13 @@ void LoadUiGraphicsBank(u8 bank) {
  ((s32 *)&gUiGraphicsBanks)[bank] = LoadDecompressedFile(path, 1);
 }
 
-void FreeUiGraphicsBank(u8 arg0) {
- void HeapFreeBlock(s32);
- extern M2C_UNK gUiGraphicsBanks[];
- HeapFreeBlock(((s32 *)&gUiGraphicsBanks)[arg0]);
- ((s32 *)&gUiGraphicsBanks)[arg0] = 0;
+/* Free loaded UI text bank `bank`: release its decompressed data and clear the
+ * bank's gUiGraphicsBanks slot. */
+void FreeUiGraphicsBank(u8 bank) {
+    void HeapFreeBlock(s32);
+    extern M2C_UNK gUiGraphicsBanks[];
+    HeapFreeBlock(((s32 *)&gUiGraphicsBanks)[bank]);
+    ((s32 *)&gUiGraphicsBanks)[bank] = 0;
 }
 
 /* GetLocalizedText: look up a UI string by its text id (-1 asks for the id of

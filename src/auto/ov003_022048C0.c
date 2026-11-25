@@ -42,12 +42,14 @@ void func_ov003_02204fd0(void *arg0) {
     Link_SendPacket(M2C_FIELD(arg0, void **, 0x44) + 0x110, 0x24);
 }
 
-void func_ov003_02204ff4(void *arg0) {
+/* Once the scene display has been up for 12 updates, let its sprite animation
+ * play; every update (including that one) advances the delay counter. */
+void SceneDisplay_TickSpriteResumeDelay(void *display) {
     void Sprite_ResumeAnimation(void *);
-    if (M2C_FIELD(arg0, u8 *, 0x38) == 0xC) {
-        Sprite_ResumeAnimation(arg0);
+    if (M2C_FIELD(display, u8 *, SCENE_DISPLAY_RESUME_DELAY) == SCENE_DISPLAY_RESUME_FRAMES) {
+        Sprite_ResumeAnimation(display);
     }
-    M2C_FIELD(arg0, u8 *, 0x38)++;
+    M2C_FIELD(display, u8 *, SCENE_DISPLAY_RESUME_DELAY)++;
 }
 
 #pragma push

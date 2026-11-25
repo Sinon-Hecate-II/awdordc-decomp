@@ -217,26 +217,29 @@ void Ov001_ConfirmMapSelectNotice(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK Ov001_ResumeMapSelectInput;
+    extern M2C_UNK MapSelectList_ResumeInput;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
     Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&Ov001_ResumeMapSelectInput);
+    Ov001_SetStepCallback(&MapSelectList_ResumeInput);
 }
 
-void Ov001_ResumeMapSelectInput(void) {
+/* Step that restores the map-select list after its region menu closes: re-enable
+ * the icon row and the scroll bar, then hand over to the list's update step.
+ * Does nothing while the region menu is still open. */
+void MapSelectList_ResumeInput(void) {
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_UnblockScrollBar();
     s32 Ov001_IsRegionMenuActive();
-    extern M2C_UNK func_ov001_0217a3a8;
+    void MapSelectList_Update(void);
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
     Ov001_UnlockIconRow();
     Ov001_UnblockScrollBar();
-    Ov001_SetStepCallback(&func_ov001_0217a3a8);
+    Ov001_SetStepCallback(&MapSelectList_Update);
 }
 
 /* Sets up the ov001 name-entry screen: gets its state block, loads the saved

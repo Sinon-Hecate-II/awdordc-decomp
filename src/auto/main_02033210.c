@@ -125,7 +125,7 @@ void func_020336c0(s32 arg0) {
 s32 BuildFriendProfile(s32 arg0, void *arg1) {
     M2C_UNK StringFormatN();
     void MI_CpuFill8(void *, s32, s32);
-    void func_0200563c(void *, void *, ...);
+    void StringFormatAlt(void *, void *, ...);
     void GetMacAddress(void *);
     void GetSystemUserProfile(void *);
     M2C_UNK MI_CpuCopy8(M2C_UNK, M2C_UNK, M2C_UNK);
@@ -174,7 +174,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
     *((u8 *)arg0 + 0x1d) = 0x30;
     GetMacAddress(macBytes);
     dst=(u8*)arg0+0x1f;src=macBytes;
-    for(i=0;i<6;i++,dst+=2,src++) func_0200563c(dst,gFmtHex02,*src);
+    for(i=0;i<6;i++,dst+=2,src++) StringFormatAlt(dst,gFmtHex02,*src);
     GetSystemUserProfile(userSettings);
     if (userSettings[0] >= 8) {
         userSettings[0] = 1;
@@ -195,7 +195,7 @@ s32 BuildFriendProfile(s32 arg0, void *arg1) {
         return 0;
     }
     dst=(u8*)arg0+0x41;
-    for(i=0;i<6;i++,dst+=2) func_0200563c(dst,gFmtHex02,((u8*)connInfo)[i]);
+    for(i=0;i<6;i++,dst+=2) StringFormatAlt(dst,gFmtHex02,((u8*)connInfo)[i]);
     {
         u8 language = GetWfcFriendSlot();
         StringFormatN((void *)((u8 *)arg0 + 0x6f), 0xe, gFmtSessionCode, language);

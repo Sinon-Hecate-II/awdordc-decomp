@@ -93,7 +93,7 @@ BuildMapTransferPlayerList kind:function(arm,size=0x6c) addr:0x02217948
 func_ov006_022179b4 kind:function(arm,size=0x154) addr:0x022179b4
 func_ov006_02217b08 kind:function(arm,size=0x1c) addr:0x02217b08
 ShowMapTransferChosenName kind:function(arm,size=0x58) addr:0x02217b24
-func_ov006_02217b7c kind:function(arm,size=0x28) addr:0x02217b7c
+CancelMapTransferOnSessionError kind:function(arm,size=0x28) addr:0x02217b7c
 CreateMapTransferTargetIdDisplay kind:function(arm,size=0x4c) addr:0x02217ba4
 func_ov006_02217bf0 kind:function(arm,size=0x1c) addr:0x02217bf0
 func_ov006_02217c0c kind:function(arm,size=0x24) addr:0x02217c0c
@@ -113,7 +113,7 @@ BuildJoinableMapList kind:function(arm,size=0x130) addr:0x02217ff8
 func_ov006_02218128 kind:function(arm,size=0x7c) addr:0x02218128
 ClearListedMapSavedFlags kind:function(arm,size=0x5c) addr:0x022181a4
 func_ov006_02218200 kind:function(arm,size=0x100) addr:0x02218200
-func_ov006_02218300 kind:function(arm,size=0x28) addr:0x02218300
+CancelMapReceiveOnSessionError kind:function(arm,size=0x28) addr:0x02218300
 func_ov006_02218328 kind:function(arm,size=0x18) addr:0x02218328
 data_ov006_02218340 kind:data(any) addr:0x02218340
 gFriendCodeKeyChars kind:data(any) addr:0x02218345

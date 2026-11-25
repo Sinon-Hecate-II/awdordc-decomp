@@ -414,9 +414,9 @@ void func_ov004_02218950(void *transition) {
 }
 
 void func_ov004_02218b7c(M2C_UNK arg0) {
-    M2C_UNK func_ov003_021ff3ac();
+    M2C_UNK Ov003_DestroyMapMenu();
     M2C_UNK func_ov004_02213124(M2C_UNK);
-    func_ov003_021ff3ac();
+    Ov003_DestroyMapMenu();
     func_ov004_02213124(arg0);
 }
 

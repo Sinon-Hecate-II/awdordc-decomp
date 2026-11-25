@@ -362,8 +362,8 @@ void Build3DSpriteScene(s32 spriteData) {
     s32 Get3DSpriteCount();
     s32 Get3DSpriteTarget();
     void SetMenuCursor(s32);
-    M2C_UNK func_02098e04(void *, s32, u16);
-    M2C_UNK func_020990d4(void *, s32, u16);
+    M2C_UNK SetFaceChildTextureRow(void *, s32, u16);
+    M2C_UNK SetFaceSpriteTextureRow(void *, s32, u16);
     M2C_UNK ConfigureScenePanelSprite(void *, M2C_UNK, M2C_UNK, u16);
     void *Alloc3DSprite(s32);
     extern void *g3DSpriteEngineSub;
@@ -425,8 +425,8 @@ void Build3DSpriteScene(s32 spriteData) {
 loop_17:
                     part = Get3DSpriteChild(sprite1, slot);
                     child = M2C_FIELD(part, void **, 0x60);
-                    func_02098e04(child, yOff, (u16) (row + 0xA));
-                    func_020990d4(part, tileOff, rowId);
+                    SetFaceChildTextureRow(child, yOff, (u16) (row + 0xA));
+                    SetFaceSpriteTextureRow(part, tileOff, rowId);
                     M2C_FIELD(child, s16 *, 0x3C) = 0x400;
                     slot += 1;
                     M2C_FIELD(part, s16 *, 0x3C) = 0x400;
@@ -450,8 +450,8 @@ loop_17:
                 do {
                     part2 = Get3DSpriteChild(sprite2, slot2);
                     child2 = M2C_FIELD(part2, void **, 0x60);
-                    func_02098e04(child2, yOff2, (u16) (slot2 + 0xA));
-                    func_020990d4(part2, tileOff2, slot2);
+                    SetFaceChildTextureRow(child2, yOff2, (u16) (slot2 + 0xA));
+                    SetFaceSpriteTextureRow(part2, tileOff2, slot2);
                     M2C_FIELD(child2, s16 *, 0x3C) = 0x400;
                     M2C_FIELD(part2, s16 *, 0x3C) = 0x400;
                     yOff2 += 0x200;

@@ -388,7 +388,7 @@ if(!IsCellOwnedByOtherArmy(m[0x52d4],x,y))return 0;
 }
 #pragma opt_propagation reset
 s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
-    s32 func_ov000_021a8a38(s32, s32, s32, s32);
+    s32 AxisDistanceDifference(s32, s32, s32, s32);
     s32 ManhattanDistance(s32, s32, s32, s32);
     extern void **gCurrentMap;
     extern u8 gUnitKindFlags[];
@@ -427,11 +427,11 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
                 u8 attr = info[0x13];
                 if ((savedAttr & attr) && !(entry->unk4 & 0x1)) {
                     d1 = ManhattanDistance(x, y, entry->unk1, entry->unk2);
-                    val = func_ov000_021a8a38(x, y, entry->unk1, entry->unk2) + (d1 << 8);
+                    val = AxisDistanceDifference(x, y, entry->unk1, entry->unk2) + (d1 << 8);
                     if (bestVisible >= val) { bestVisible = val; }
                 } else {
                     d1 = ManhattanDistance(x, y, entry->unk1, entry->unk2);
-                    val = func_ov000_021a8a38(x, y, entry->unk1, entry->unk2) + (d1 << 8);
+                    val = AxisDistanceDifference(x, y, entry->unk1, entry->unk2) + (d1 << 8);
                     if (bestOther >= val) { bestOther = val; }
                 }
             }
@@ -447,6 +447,6 @@ s32 DestinationScore(s32 arg0, s32 arg1, s32 arg2, s32 arg3) {
     if (bestOther != 0x7FFFFFFF) {
         return bestOther;
     }
-    return func_ov000_021a8a38((s16)arg0, (s16)arg1, (s16)arg2, (s16)arg3);
+    return AxisDistanceDifference((s16)arg0, (s16)arg1, (s16)arg2, (s16)arg3);
 }
 

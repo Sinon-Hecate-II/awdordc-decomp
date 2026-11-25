@@ -510,22 +510,25 @@ void DWCi_MOV_WH_StateInEndParent(void *event) {
         func_ov001_02188b04();
         return;
     }
-    if (func_ov001_02188184()) return;
+    if (Ov001_SendWhResetCommand()) return;
     if (M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)) {
         M2C_FIELD(&gWhWork, void (**)(s32, void *), WH_WORK_LOG)(WH_LOG_STATUS, &sWhLogEndParentFailed);
     }
     func_ov001_02188b04();
 }
 
-s32 func_ov001_02188184(void) {
+/* Queue the WH connection's WFC reset command (WFC command 9), whose completion
+ * goes to Ov001_HandleWhResetResult; returns 1 once queued, or records the WH
+ * error and returns 0. */
+s32 Ov001_SendWhResetCommand(void) {
     s32 WFC_SendCommand9(void (*)(void *));
-    void func_ov001_021881ac(void *);
-    if (WFC_SendCommand9(func_ov001_021881ac) == 2) return 1;
+    void Ov001_HandleWhResetResult(void *);
+    if (WFC_SendCommand9(Ov001_HandleWhResetResult) == 2) return 1;
     SetWhError();
     return 0;
 }
 
-void func_ov001_021881ac(void *arg0) {
+void Ov001_HandleWhResetResult(void *arg0) {
     void SetWhStatus(M2C_UNK);
     M2C_UNK SetWhError();
     if (M2C_FIELD(arg0, u16 *, 2) != 0) {
@@ -629,12 +632,14 @@ void FinishWhStopCommand(void *event) {
     SetWhStatus(WH_STATUS_IDLE);
 }
 
-void Ov001_HandleEndLinkResult(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
-        SetWhStatus(0xA);
+/* Completion callback of the ov001 WH end-link command: an event carrying a
+ * failed status leaves the connection in WH_STATUS_ERROR, a clean one stops it. */
+void Ov001_HandleEndLinkResult(void *event) {
+    if (M2C_FIELD(event, u16 *, WH_EVENT_STATUS) != 0) {
+        SetWhStatus(WH_STATUS_ERROR);
         return;
     }
-    SetWhStatus(0);
+    SetWhStatus(WH_STATUS_STOP);
 }
 
 void func_ov001_0218836c(s32 arg0) {

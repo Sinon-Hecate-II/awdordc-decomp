@@ -52,15 +52,15 @@ void func_ov006_02218200(void *entity) {
     EnableMapConfirm();
 }
 
-void func_ov006_02218300(M2C_UNK arg0) {
-    M2C_UNK GotoSpriteAnimationLabel(M2C_UNK, M2C_UNK);
-    s32 IsSessionInError();
-    M2C_UNK DisableMapConfirm();
+/* Per-frame check of the ov006 received-map screen: cancel it when the session is
+ * in error -- drop the map-confirm prompt and jump the sprite to its error
+ * animation (label 3). */
+void CancelMapReceiveOnSessionError(void *sprite) {
     if (IsSessionInError() == 0) {
         return;
     }
     DisableMapConfirm();
-    GotoSpriteAnimationLabel(arg0, 3);
+    GotoSpriteAnimationLabel(sprite, 3);
 }
 
 void func_ov006_02218328(M2C_UNK arg0) {

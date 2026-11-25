@@ -66,7 +66,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     void Ov001_InitSound(void);
     void Ov001_SetStepCallback(s32);
     void Ov001_UpdateInput(void);
-    void func_ov001_0218c7d4(s32);
+    void Ov001_UpdateTaskGroup(s32);
     void Ov001_UpdateLidState(void);
     void Ov001_UpdateArm7Value(void);
     void func_02007598(void);
@@ -83,7 +83,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     do {
         Ov001_UpdateInput();
         M2C_FIELD(&gOv001ScreenState, void (**)(void), OV001_SCREEN_STEP)();
-        func_ov001_0218c7d4(0);
+        Ov001_UpdateTaskGroup(0);
         Ov001_UpdateLidState();
         Ov001_UpdateArm7Value();
         func_02007598();

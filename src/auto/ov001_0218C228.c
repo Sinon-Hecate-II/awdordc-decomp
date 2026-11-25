@@ -266,7 +266,7 @@ void Ov001_FreeTasks(void) {
     Ov001_FreeAlloc(gVramBankGrants + 13);
 }
 
-void func_ov001_0218c7d4(s32 n) {
+void Ov001_UpdateTaskGroup(s32 n) {
 s32 Ov001_QueuePop(s32);
 M2C_UNK Ov001_ReturnTaskNode();
 extern s32 gOv001Tasks;

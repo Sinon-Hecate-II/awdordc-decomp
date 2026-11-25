@@ -100,14 +100,17 @@ void func_020c0374(void) {
     SaveList_StartFlush();
 }
 
-void func_020c0394(M2C_UNK arg0) {
+/* Create the save-progress sprite, owned by `owner`, when the save list has
+ * changes to write: the sprite flushes the queued saves, blocks input and shows
+ * the saving message until the save task has finished. */
+void CreateSaveProgressSprite(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    s32 func_02076218();
-    extern M2C_UNK data_021294c4;
-    if (func_02076218() == 0) {
+    s32 IsSaveListDirty();
+    extern M2C_UNK gSaveProgressSpriteClass;
+    if (IsSaveListDirty() == 0) {
         return;
     }
-    CreateSpriteObject(&data_021294c4, arg0);
+    CreateSpriteObject(&gSaveProgressSpriteClass, owner);
 }
 
 s32 GetCarriedUnitListEntry(void *arg0, s32 arg1) {

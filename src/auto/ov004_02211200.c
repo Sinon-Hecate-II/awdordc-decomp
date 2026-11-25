@@ -50,7 +50,7 @@ void func_ov004_02211260(void) {
  * reset the text state, then resume the event sprite's animation. */
 void Ov004_StartFinalMapEnding(M2C_UNK eventSprite) {
     M2C_UNK ResetTextState();
-    M2C_UNK func_0208874c();
+    M2C_UNK EnsureEndingResourceLoaded();
     s32 DidPlayerWin();
     s32 IsFinalCampaignMap();
     M2C_UNK func_ov004_02227ecc_unk(M2C_UNK);
@@ -58,7 +58,7 @@ void Ov004_StartFinalMapEnding(M2C_UNK eventSprite) {
         return;
     }
     if ((DidPlayerWin() != 0) && (IsFinalCampaignMap() != 0)) {
-        func_0208874c();
+        EnsureEndingResourceLoaded();
         func_ov004_02227ecc_unk(eventSprite);
         ResetTextState();
     }
@@ -296,13 +296,15 @@ void func_ov004_02211844(void *ctx) {
     gCur3DSpriteEngine = savedContext;
 }
 
-void Ov004_SetUraPlaneZoom(void *arg0, s16 arg1, s16 arg2, s16 arg3, s32 arg4, s32 arg5) {
-    M2C_FIELD(arg0, s16 *, 0x4A) = arg1;
-    M2C_FIELD(arg0, s16 *, 0x4C) = arg2;
-    M2C_FIELD(arg0, s16 *, 0x34) = arg3;
-    M2C_FIELD(arg0, s16 *, 0x36) = (s16) arg4;
-    M2C_FIELD(arg0, s16 *, 0x3A) = (s16) arg5;
-    M2C_FIELD(arg0, s16 *, 0x38) = 0;
+/* Aim the ura-plane effect's zoom at (`centerX`, `centerY`) and restart it:
+ * scale from `startScale` to `endScale` over `frames` frames. */
+void Ov004_SetUraPlaneZoom(Ov004UraPlaneEffect *effect, s16 centerX, s16 centerY, s16 startScale, s32 endScale, s32 frames) {
+    effect->centerX = centerX;
+    effect->centerY = centerY;
+    effect->scaleStart = startScale;
+    effect->scaleEnd = (s16) endScale;
+    effect->scaleFrames = (s16) frames;
+    effect->scaleFrame = 0;
 }
 
 void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
@@ -314,7 +316,7 @@ void func_ov004_0221194c(M2C_UNK arg0, M2C_UNK *arg1) {
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(M2C_UNK *, s32);
     M2C_UNK LoadNarcFileToSpriteBuffer(M2C_UNK *, M2C_UNK, M2C_UNK);
-    M2C_UNK func_0208161c(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
+    M2C_UNK LoadNarcFileToBGExtPltt(M2C_UNK *, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Apply3DSpriteLayout(u16 *);
     s32 Get3DSpriteTargetMode();
     extern s32 g3DSpriteEngineSub;
@@ -404,13 +406,13 @@ config[4]=e;config[5]=f;
             StringFormat(buffer, &data_ov004_02218d50, arg1);
             LoadNarcFileDecompressed(buffer, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28));
             StringFormat(buffer, &data_ov004_02218d58, arg1);
-            func_0208161c(buffer, 2, 0, 0x200);
+            LoadNarcFileToBGExtPltt(buffer, 2, 0, 0x200);
             OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x28), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 2), 0);
             CloseNarcArchive();
             OpenNarcArchive(&data_ov004_02218d60);
             LoadNarcFileDecompressed(&data_ov004_02218d6c, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x18));
             LoadNarcFileDecompressed(&data_ov004_02218d78, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C));
-            func_0208161c(&data_ov004_02218d84, 3, 0x200, 0x200);
+            LoadNarcFileToBGExtPltt(&data_ov004_02218d84, 3, 0x200, 0x200);
             OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine, s32 *, 0x2C), (u16)Get3DSpriteLayerSize((u8) ((u32) (*M2C_FIELD(gCur3DSpriteEngine, u16 **, 0) << 0x1D) >> 0x1D), 3), 0x1000);
             CloseNarcArchive();
             M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, u16 **, 0), s16 *, 0x38) = 0;

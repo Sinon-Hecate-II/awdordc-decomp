@@ -9,16 +9,19 @@ void func_ov010_0222b9dc(void) {
     DisableMapConfirm();
 }
 
-void func_ov010_0222b9e8(void) {
-    M2C_UNK func_020852e0();
+/* Exit handler of the online sub-screen: restore the map-confirm prompt when no
+ * online session has started (otherwise keep it off for the running session) and
+ * remove the sub-screen link indicator. */
+void Ov010_ExitSubScreenLinkIndicator(void) {
+    M2C_UNK DeleteSubScreenLinkIndicator();
     M2C_UNK EnableMapConfirm();
     s32 IsOnlineSessionFlagSet(M2C_UNK);
-    if (IsOnlineSessionFlagSet(0) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_STARTED) == 0) {
         EnableMapConfirm();
     } else {
         DisableMapConfirm();
     }
-    func_020852e0();
+    DeleteSubScreenLinkIndicator();
 }
 
 /* Create the online lobby's local-player name label at (x, y) for its owner,

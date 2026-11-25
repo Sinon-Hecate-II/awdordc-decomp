@@ -555,9 +555,11 @@ s32 GetProfileRecordId(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4);
 }
 
-void func_02031dd4(void *arg0, s32 arg1, M2C_UNK arg2) {
-    SetPlayerRecordTypeField((M2C_UNK)arg0, arg2, 0, 0x7FF);
-    M2C_FIELD(arg0, s32 *, 4) = arg1;
+/* Set a NAS player record's 43-bit player code: its high 11 bits go into the type
+ * word's low field (mask 0x7FF) and its low 32 bits into the code word at +0x04. */
+void SetNasPlayerCode(void *record, s32 codeLow, M2C_UNK codeHigh) {
+    SetPlayerRecordTypeField((M2C_UNK)record, codeHigh, 0, 0x7FF);
+    M2C_FIELD(record, s32 *, 4) = codeLow;
 }
 
 void func_02031dfc(void *arg0, s32 arg1) {
