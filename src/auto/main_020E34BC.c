@@ -209,14 +209,18 @@ void func_020e36f4(void) {
    func_020e4304();
 }
 
-void func_020e370c(void *arg0) {
-   M2C_UNK GotoSpriteAnimationLabel(void *, s32);
-   s32 func_ov010_02226738(void);
-   if (func_ov010_02226738() == 5) {
-     *M2C_FIELD(arg0, s32 **, 0x40) = 1;
-   } else {
-     GotoSpriteAnimationLabel(arg0, 1);
-   }
+/* Wait step of the counted online-player list: once the web transaction has
+ * completed (WEB_TXN_COMPLETE), report one collected player to the list's
+ * count-out slot; otherwise restart the list's waiting animation. */
+void FinishCountedOnlinePlayerListRequest(void *list) {
+    M2C_UNK GotoSpriteAnimationLabel(void *, s32);
+    s32 Ov010_GetWebTransactionStatus(void);
+
+    if (Ov010_GetWebTransactionStatus() == WEB_TXN_COMPLETE) {
+        *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 1;
+    } else {
+        GotoSpriteAnimationLabel(list, 1);
+    }
 }
 
 /* Online-player list upload node: clear the request's answer slot, send the
@@ -257,14 +261,14 @@ void CreateOnlinePlayerListCountedNode(void *records, s32 count, s32 *countOut, 
  * name length and name data - into the list's first record and report one record
  * filled to the owner's count; otherwise start the list's waiting animation. */
 void FillOnlinePlayerListFirstEntry(void *list) {
-    s32 func_ov010_02226738(void);
+    s32 Ov010_GetWebTransactionStatus(void);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
     void MI_CpuCopy8(s32, void *, s32);
     s32 entry[7];
     u8 *record;
 
-    if (func_ov010_02226738() != WEB_TXN_COMPLETE) {
+    if (Ov010_GetWebTransactionStatus() != WEB_TXN_COMPLETE) {
         GotoSpriteAnimationLabel(list, 1);
         return;
     }
@@ -351,7 +355,7 @@ void *CreateOnlinePlayerListNode(void *records, s32 unk34, s32 capacity) {
 
 /* Populates the list's node array from the ov010 source (mode 5 only), skipping entries whose id matches a sentinel value. */
 void func_020e39d8(void *list) {
-    s32 func_ov010_02226738(void);
+    s32 Ov010_GetWebTransactionStatus(void);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerCount(void);
     s32 GetOnlinePlayerTotal(void);
@@ -365,7 +369,7 @@ void func_020e39d8(void *list) {
     s32 i;
     u8 *node;
 
-    if (func_ov010_02226738() != 5) {
+    if (Ov010_GetWebTransactionStatus() != 5) {
         GotoSpriteAnimationLabel(list, 1);
         return;
     }
@@ -462,7 +466,7 @@ void CreateOnlinePlayerListUpToLimitNode(void *records, s32 limit, s32 *countPtr
 
 /* Builds the filtered list of entries from the overlay's state, skipping the excluded one. */
 void func_020e3bf0(void *list) {
-    s32 func_ov010_02226738(void);
+    s32 Ov010_GetWebTransactionStatus(void);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerCount(void);
     s32 GetOnlinePlayerTotal(void);
@@ -476,7 +480,7 @@ void func_020e3bf0(void *list) {
     s32 i;
     u8 *node;
 
-    if (func_ov010_02226738() != 5) {
+    if (Ov010_GetWebTransactionStatus() != 5) {
         GotoSpriteAnimationLabel(list, 1);
         return;
     }
@@ -567,7 +571,7 @@ void CreateOnlinePlayerListNoLimitNode(void *records, s32 *countPtr, s32 owner) 
 }
 
 void func_020e3e04(void *arg0) {
-    s32 func_ov010_02226738(void);
+    s32 Ov010_GetWebTransactionStatus(void);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     s32 GetOnlinePlayerTotal(void);
     s32 Ov010_GetWebPlayerEntry(s32, s32 *);
@@ -578,7 +582,7 @@ void func_020e3e04(void *arg0) {
     s32 i;
     u8 *node_ptr;
 
-    if (func_ov010_02226738() != 5) {
+    if (Ov010_GetWebTransactionStatus() != 5) {
         GotoSpriteAnimationLabel(arg0, 1);
         return;
     }
@@ -666,13 +670,16 @@ void *CreateOnlinePlayerListWithIdsNode(s32 ids, void *records, s32 *countPtr, s
     return node;
 }
 
-void func_020e4064(void *arg0) {
+/* Wait step of an online-player id-list request: once the web transaction has
+ * completed (WEB_TXN_COMPLETE), report one collected player id to the list's
+ * count-out slot; otherwise restart the list's waiting animation. */
+void FinishOnlinePlayerIdListRequest(void *list) {
  M2C_UNK GotoSpriteAnimationLabel(void *, s32);
- s32 func_ov010_02226738(void);
- if (func_ov010_02226738() == 5) {
-  *M2C_FIELD(arg0, s32 **, 0x40) = 1;
+ s32 Ov010_GetWebTransactionStatus(void);
+ if (Ov010_GetWebTransactionStatus() == WEB_TXN_COMPLETE) {
+  *M2C_FIELD(list, s32 **, LIST_CAPACITY) = 1;
  } else {
-  GotoSpriteAnimationLabel(arg0, 1);
+  GotoSpriteAnimationLabel(list, 1);
  }
 }
 
@@ -758,12 +765,12 @@ void *CreateOnlinePlayerIdListNode(s32 id, s32 flags, s32 result, s32 owner) {
  * completed (WEB_TXN_COMPLETE), store the server's online player total;
  * otherwise keep the list's waiting animation running. */
 void FinishOnlinePlayerCountRequest(void *list) {
-    s32 func_ov010_02226738(void);
+    s32 Ov010_GetWebTransactionStatus(void);
     s32 GetOnlinePlayerCount(void);
     M2C_UNK GotoSpriteAnimationLabel(void *, s32);
     extern s32 gOnlinePlayerCount;
 
-    if (func_ov010_02226738() != WEB_TXN_COMPLETE) {
+    if (Ov010_GetWebTransactionStatus() != WEB_TXN_COMPLETE) {
         GotoSpriteAnimationLabel(list, 1);
         return;
     }
@@ -839,14 +846,15 @@ void *OnlinePlayerList_DestroyAndFree(void *node) {
     return node;
 }
 
-void *OnlinePlayerList_Destroy(void *arg0) {
-    void HeapFreeBlock();
+/* Destroy a counted online-player list node: reset its type table to the plain
+ * list vtable and free the player id array it collected. */
+void *OnlinePlayerList_Destroy(void *list) {
     extern M2C_UNK gOnlinePlayerListVtable;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gOnlinePlayerListVtable;
-    if (M2C_FIELD(arg0, s32 *, 0x44) != 0) {
-        HeapFreeBlock();
+    M2C_FIELD(list, M2C_UNK **, LIST_VTABLE) = &gOnlinePlayerListVtable;
+    if (M2C_FIELD(list, s32 *, LIST_IDS) != 0) {
+        HeapFreeBlock(M2C_FIELD(list, s32 *, LIST_IDS));
     }
-    return arg0;
+    return list;
 }
 
 /* Initialize graphics: clear VRAM, OAM and palettes, then enable the caches. */

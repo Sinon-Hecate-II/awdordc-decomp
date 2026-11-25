@@ -116,15 +116,19 @@ void func_02095f90(void) {
 
 }
 
-void ShowTelopText(s32 arg0) {
-void DeleteTelopWindow(void);
-M2C_UNK CreateSpriteFromClass(M2C_UNK *,M2C_UNK);
-void StringCopy(void *,s32);
-extern M2C_UNK gTelopWindowClass;
-s32 p;
-DeleteTelopWindow();
-p=CreateSpriteFromClass(&gTelopWindowClass,7);
-StringCopy((u8 *)p+0x36,arg0);
+/* Show one line of caption text in the map screen's telop window: drop the
+ * window that is up, create the window's sprite from its class and copy the
+ * caption into the sprite's text buffer. */
+void ShowTelopText(u8 *text) {
+    void DeleteTelopWindow(void);
+    void *CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    void StringCopy(void *, u8 *);
+    extern M2C_UNK gTelopWindowClass;
+    u8 *sprite;
+
+    DeleteTelopWindow();
+    sprite = CreateSpriteFromClass(&gTelopWindowClass, 7);
+    StringCopy(sprite + TELOP_TEXT, text);
 }
 
 void DeleteTelopWindow(void) {

@@ -5,12 +5,15 @@
 extern M2C_UNK gWhConnTaskState;
 
 #pragma thumb on
-void Ov001_SwapHalves(s32 arg0, s32 arg1, s32 arg2) {
+/* Swap the two halves of the `size`-byte buffer `data` in place: stage the second
+ * half, then the first half, in the equally sized scratch buffer `swapBuffer`, and
+ * copy the staged buffer back over `data`. */
+void Ov001_SwapHalves(s32 data, s32 size, s32 swapBuffer) {
     void Ov001MemCopy(s32, s32, s32);
-    s32 half = arg1 / 2;
-    Ov001MemCopy(arg2, arg0 + half, half);
-    Ov001MemCopy(arg2 + half, arg0, half);
-    Ov001MemCopy(arg0, arg2, arg1);
+    s32 half = size / 2;
+    Ov001MemCopy(swapBuffer, data + half, half);
+    Ov001MemCopy(swapBuffer + half, data, half);
+    Ov001MemCopy(data, swapBuffer, size);
 }
 s32 func_ov001_0216cd10(s32 arg0, s32 arg1) {
     extern s32 (*data_ov001_021925e0)(s32);
@@ -100,8 +103,8 @@ void func_ov001_0216ce68(void) {
 
 #pragma thumb on
 void func_ov001_0216ce6c(void) {
-    void func_02021500(void);
-    func_02021500();
+    void SocketCreate(void);
+    SocketCreate();
 }
 
 void func_ov001_0216ce74(M2C_UNK arg0, void *arg1, u8 arg2) {

@@ -210,7 +210,7 @@ void func_ov003_02203280(void *arg0) {
     M2C_UNK EnableMapConfirm();
     M2C_UNK SetOv003SceneState(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmEnabled();
-    s32 func_ov003_02200c7c();
+    s32 IsSessionHostAlt();
     M2C_UNK func_ov003_02204fac(void *);
     extern u16 gMapConfig;
     void *self;
@@ -240,7 +240,7 @@ void func_ov003_02203280(void *arg0) {
     SetOv003SceneState(2);
     M2C_FIELD(self, s8 *, 0x38) = 0;
     Sprite_ResumeAnimation(self);
-    if (func_ov003_02200c7c() == 0) {
+    if (IsSessionHostAlt() == 0) {
         return;
     }
     func_ov003_02204fac(self);

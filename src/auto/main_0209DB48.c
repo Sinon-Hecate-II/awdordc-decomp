@@ -257,16 +257,18 @@ void CreateTaskSprite(s32 entry, s32 z, u32 stackSize, s32 priority, s32 cleanup
     TaskWake(M2C_FIELD(sprite, s32 *, TASK_SPRITE_THREAD));
 }
 
-u8 IsTaskSpriteRunning(M2C_UNK arg0) {
+/* True while the task sprite created by CreateTaskSprite is alive at sprite
+ * depth `z`; a sprite with no depth set is never found. */
+u8 IsTaskSpriteRunning(u16 z) {
     extern M2C_UNK gTaskSpriteClass;
-    u8 var_r0;
+    u8 running;
 
-    if (Find3DSpriteByClassAndZ(&gTaskSpriteClass, arg0) != 0) {
-        var_r0 = 1;
+    if (Find3DSpriteByClassAndZ(&gTaskSpriteClass, z) != 0) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 /* Load the dialogue window's graphics into `dest`: pick window_talk.cg or

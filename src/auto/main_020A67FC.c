@@ -114,11 +114,14 @@ void func_020a6b50(void *arg0) {
     M2C_FIELD(arg0, s32 *, 0x38) = (s32) M2C_FIELD(temp_r2, u8 *, 2);
 }
 
-void func_020a6b68(void *arg0) {
-    M2C_UNK func_020a7f48(M2C_UNK, s32, s32, M2C_UNK);
+/* Unit-sprite state handler: explode the unit the sprite draws (the BattleMapUnit
+ * pointer it holds at +0x54) and mark the units around the tile it sits on
+ * (+0x34/+0x38), scanning the range-2 area pattern with no reference unit. */
+void UnitSprite_ExplodeUnit(void *sprite) {
+    M2C_UNK MarkEnemyUnitsInArea(M2C_UNK, s32, s32, M2C_UNK);
     M2C_UNK ExplodeUnit(s32);
-    ExplodeUnit(M2C_FIELD(arg0, s32 *, 0x54));
-    func_020a7f48(0, M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(arg0, s32 *, 0x38), 2);
+    ExplodeUnit(M2C_FIELD(sprite, s32 *, 0x54));
+    MarkEnemyUnitsInArea(0, M2C_FIELD(sprite, s32 *, 0x34), M2C_FIELD(sprite, s32 *, 0x38), 2);
 }
 
 /* Unit-sprite class update: place the map cursor at the tile of the unit the

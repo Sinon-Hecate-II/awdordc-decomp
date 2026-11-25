@@ -347,13 +347,18 @@ void QueryQueue_Append(void *queuePtr, void *serverPtr) {
     queue->count = (s32)(queue->count + 1);
 }
 
-void QueryQueue_PushFront(void *arg0, void *arg1) {
-    M2C_FIELD(arg1, void **, 0x20) = (void *) M2C_FIELD(arg0, void **, 0);
-    M2C_FIELD(arg0, void **, 0) = arg1;
-    if (M2C_FIELD(arg0, void **, 4) == NULL) {
-        M2C_FIELD(arg0, void **, 4) = arg1;
+/* Insert a server record at the head of a query queue: link it in front of the
+ * old head, make it the tail too when the queue was empty, and bump the count. */
+void QueryQueue_PushFront(void *queuePtr, void *serverPtr) {
+    QueryQueue *queue = (QueryQueue *)queuePtr;
+    GpiPlayer *server = (GpiPlayer *)serverPtr;
+
+    server->next = queue->head;
+    queue->head = server;
+    if (queue->tail == NULL) {
+        queue->tail = server;
     }
-    M2C_FIELD(arg0, s32 *, 8) = (s32) (M2C_FIELD(arg0, s32 *, 8) + 1);
+    queue->count = (s32)(queue->count + 1);
 }
 
 /* Take the head server record off a query queue: advance the head to its link,

@@ -121,14 +121,18 @@ void Ov001_UpdateLinkState(void) {
     }
 }
 
-void func_ov001_0218959c(void) {
+/* Profile setup state 7: reset the profile-sharing buffers, install the
+ * child-indicate callback that collects the children's profile entries, and move
+ * on to the profile list states (8..10). */
+void Ov001_EnterProfileListSharing(void) {
     M2C_UNK Ov001_InitProfileSharing(void);
-    void func_ov001_02188a20(s32);
+    void Ov001_SetChildIndicateCallback(s32);
     extern s32 Ov001_StoreLinkPlayerRecord(s32);
     extern void *gOv001ProfileState;
+
     Ov001_InitProfileSharing();
-    func_ov001_02188a20((s32) &Ov001_StoreLinkPlayerRecord);
-    M2C_FIELD(gOv001ProfileState, u8 *, 0xA90) = 8;
+    Ov001_SetChildIndicateCallback((s32) &Ov001_StoreLinkPlayerRecord);
+    M2C_FIELD(gOv001ProfileState, u8 *, PROFILE_STATE) = 8;
 }
 
 /* Updates the profile / download-play setup screen while it is in one of its list states: it
@@ -398,13 +402,13 @@ extern void *data_ov001_021917b4[2];
 extern void *data_ov001_02193e2c;
 void func_0200bc5c(void *);
 void func_0200b510(void *);
-void func_0200b32c(void *);
+void CloseArchiveFile(void *);
 void func_0200b238(void *);
 void func_020055f4(u16);
 void func_ov001_0218b71c(void *);
 func_0200bc5c(data_ov001_021917b4);
 func_0200b510((u8 *)data_ov001_02193e2c+0x88);
-func_0200b32c((u8 *)data_ov001_02193e2c+0x88);
+CloseArchiveFile((u8 *)data_ov001_02193e2c+0x88);
 func_0200b238((u8 *)data_ov001_02193e2c+0x88);
 func_020055f4(M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4));
 M2C_FIELD(data_ov001_02193e2c,u16 *,0xe4)=0;

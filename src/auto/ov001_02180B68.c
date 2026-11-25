@@ -24,18 +24,21 @@ void func_ov001_02180b8c(void) {
 
 }
 
-void func_ov001_02180b90(void) {
+/* Back/cancel step of the ov001 Wi-Fi friend-list screen: while the icon row
+ * still holds a selection, keep waiting for it; once it has none, play the cancel
+ * sound and start backing the screen out. */
+void Ov001_HandleFriendListBack(void) {
     s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    void func_ov001_02180bbc(void);
+    void Ov001_BackOutFriendList(void);
     if (Ov001_GetIconRowSelection() != 0) return;
     Ov001_StopSound();
-    Ov001_PlaySound(7);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
+    Ov001_PlaySound(7); /* OV001_SOUND_CANCEL (ov001_wh.h) */
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_BackOutFriendList);
 }
 
-void func_ov001_02180bbc(void) {
+void Ov001_BackOutFriendList(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -109,25 +112,28 @@ void Ov001_LeaveFriendList(void) {
     Ov001_SetStepCallback(&MapSelectList_Init);
 }
 
-void func_ov001_02180cf8(void) {
+/* Friend-list close message: when the player confirms it (option 0), play the
+ * confirm sound and close the box; the step that follows waits for it to go and
+ * then fades the friend-list screen out. */
+void Ov001_ConfirmLeaveFriendList(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_02180d24;
+    extern M2C_UNK Ov001_CloseFriendListMessage;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(6); /* OV001_SOUND_CONFIRM (ov001_wh.h) */
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_02180d24);
+    Ov001_SetStepCallback(&Ov001_CloseFriendListMessage);
 }
 
-void func_ov001_02180d24(void) {
+void Ov001_CloseFriendListMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180bbc);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_BackOutFriendList);
 }
 
 /* Opens the ov001 Wi-Fi access-point (region) menu: allocate its sprite state,

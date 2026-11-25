@@ -8,7 +8,7 @@ typedef struct { SelectionKind kind; u8 pad[3]; u16 flags; u8 tail[8]; } Selecti
 #pragma optimization_level 3
 void func_020d2470(void) {
     extern s32 *gCurrentMap;
-    s32 func_020a86c4(s32, s32);
+    s32 GetPropertyIncome(s32, s32);
     u8 *p;
     u8 *rec;
     s32 i;
@@ -50,32 +50,32 @@ void func_020d2470(void) {
                     rec = (u8 *)(p + 0x67a4 + idx * 0x8c);
                     switch (byte & 0x1f) {
                     case 15:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x2b] = x;
                         rec[0x2c] = y;
                         break;
                     case 17:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x10]++;
                         break;
                     case 16:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x11]++;
                         break;
                     case 22:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x14]++;
                         break;
                     case 23:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x15]++;
                         break;
                     case 18:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x12]++;
                         break;
                     case 19:
-                        *(s32 *)(rec + 8) += func_020a86c4(idx, byte & 0x1f);
+                        *(s32 *)(rec + 8) += GetPropertyIncome(idx, byte & 0x1f);
                         rec[0x13]++;
                         break;
                     case 20:
@@ -123,10 +123,14 @@ void func_020d27a4(s32 arg0, s32 arg1) {
     IsSameTeam((arg0 >> 6) + 1, (arg1 >> 6) + 1);
 }
 
-u8 IsUnitOnCurrentTeam(s32 arg0) {
+/* Whether unit `unitId` belongs to the map's current player's team: the player
+ * its owner group names (1-based) is on the same side as the current player. */
+u8 IsUnitOnCurrentTeam(s32 unitId) {
     extern s32 *gCurrentMap;
     u8 IsSameTeam(s32, s32);
-    return IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, 0x52a4), (arg0 >> 6) + 1);
+
+    return IsSameTeam(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER),
+                      (unitId >> MAP_UNIT_OWNER_SHIFT) + 1);
 }
 
 s32 IsTerrainOnUnitTeam(s32 arg0, s32 arg1) {
@@ -493,7 +497,7 @@ return (u8 *)*gCurrentMap+0x59a4+offset;
 return 0;
 }
 #pragma opt_common_subs reset
-u8 func_020d2ff0(s32 arg0) {
+u8 GetPlayerUnitCount(s32 arg0) {
     extern s32 *gCurrentMap;
     return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67D5);
 }

@@ -26,7 +26,7 @@ int GetMapListIconKind(int);
 int func_020a8a84(int);
 void SetTextSpriteValue(void *,int);
 void DrawTextSprite(void *);
-int func_ov003_021f400c(void);
+int Ov003Battle_IsSoloLinkSession(void);
 int IsLinkSessionActive(void);
 void *GetMapRecordStamp(int);
 u8 GetLanguage(void);
@@ -58,7 +58,7 @@ AddSprite((u16)((b+192)&511),28,(u16)(((tile>>shift)&1023)|0x6000),data_ov003_02
 flag=0;
 if(id>=225 && id<425 &&IsCampaignMapRecordValid(id)==0)flag=1;
 if(((u8)flag && ((mode=(u32)(p[59]<<28)>>28),Unk021F9FE0Eq(mode,2)||Unk021F9FE0Eq(mode,4)||Unk021F9FE0Eq(mode,6)||Unk021F9FE0Eq(mode,7)||Unk021F9FE0Eq(mode,8))) ||
-(!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) ||
+(!Ov003Battle_IsSoloLinkSession() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) ||
 (IsCampaignMapHeaderCategory() && ((u32)(p[57]<<24)>>31))) {
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,56)=-b;
 M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,64)=-c;

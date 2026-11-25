@@ -215,14 +215,17 @@ void Ov001_FadeInResetProfileScreen(void) {
     Ov001_SetStepCallback(&Ov001_ResetProfileFadeDone);
 }
 
+/* Step that runs after the WFC-profile reset screen has faded in: show its
+ * popup icon row (row 5) and hand over to the step that waits for it. */
 void Ov001_ResetProfileFadeDone(void) {
-    void func_ov001_02177318(void);
+    void Ov001_WaitResetProfileMenu(void);
+
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(5);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02177318);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitResetProfileMenu);
 }
 
-void func_ov001_02177318(void) {
+void Ov001_WaitResetProfileMenu(void) {
     extern M2C_UNK func_ov001_02177340;
     if (Ov001_GetIconRowSelection() == -2) {
         return;

@@ -560,7 +560,7 @@ void gpiSetSocketBuffers(s32 socket) {
 s32 func_0205519c(void **manager) {
     M2C_UNK ghiSetNonBlocking(M2C_UNK, s32);
     s32 ghiSocketCanRecv(s32);
-    s32 func_020497a0(s32, M2C_UNK, M2C_UNK);
+    s32 ghiAccept(s32, M2C_UNK, M2C_UNK);
     s32 gpiGetTime(M2C_UNK);
     M2C_UNK ghiCloseSocket(s32);
     s32 gpiProcessPeerState(M2C_UNK, void *);
@@ -575,7 +575,7 @@ s32 func_0205519c(void **manager) {
 
     session = *manager;
     if ( -1 != M2C_FIELD(session, s32 *, 0x204) && (ghiSocketCanRecv(M2C_FIELD(session, s32 *, 0x204)) != 0)) {
-        socket = func_020497a0(M2C_FIELD(session, s32 *, 0x204), 0, 0);
+        socket = ghiAccept(M2C_FIELD(session, s32 *, 0x204), 0, 0);
         if (socket != -1) {
             peer = gpiCreatePeer(manager, -1, 0);
             if (peer != NULL) {

@@ -297,7 +297,10 @@ void func_02084824(void) {
     IsSoftResetAllowed();
 }
 
-s32 func_02084830(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,0x27)==0)return 1;return 0;}
+/* True when the online (WFC) overlay is running and this console hosted the
+ * match through matchmaking, rather than serving or joining one: the local
+ * player's record's host state byte (ONLINE_PLAYER_SLOT_HOST) is zero. */
+s32 IsOnlineMatchmakingHost(void){void *GetLocalPlayerStatus(void);if(GetActiveOverlay()==2 && M2C_FIELD(GetLocalPlayerStatus(),s8 *,ONLINE_PLAYER_SLOT_HOST)==0)return 1;return 0;}
 
 /* True when the local console hosts the active network session: the Download Play
  * link host, or player 0 of the online (WFC) session; 0 when there is no session. */

@@ -52,13 +52,13 @@ void DrawScreenTextLine(M2C_UNK x, M2C_UNK y, M2C_UNK palette, s32 layerVram, s3
     s32 CreateSpriteFromClass(M2C_UNK *, s32);
     M2C_UNK StopTextObject(s32);
     M2C_UNK InitTextObject(s32, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32, u16, u16);
-    extern M2C_UNK data_02103300;
+    extern M2C_UNK gScreenTextLineSpriteClass;
     extern s32 gCur3DSpriteEngine;
     s32 textObject;
     textObject = M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXT_STATE);
     InitTextObject(textObject, x, y, palette, layerVram, layerTiles, text, (s32)attr, (s32)tile);
     StopTextObject(textObject);
-    CreateSpriteFromClass(&data_02103300, 7);
+    CreateSpriteFromClass(&gScreenTextLineSpriteClass, 7);
 }
 
 /* Create a message sprite for the localized string `textId` drawn as one line at
@@ -161,17 +161,17 @@ M2C_FIELD(textObject,u8 *,0x4b)=(u8)lineY;
 u8 IsTextSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gMessageSpriteClass;
-    extern M2C_UNK data_021032d8;
-    extern M2C_UNK data_02103300;
+    extern M2C_UNK gTextLineSpriteClass;
+    extern M2C_UNK gScreenTextLineSpriteClass;
     u8 active;
 
     if (FindObjectByClass(&gMessageSpriteClass) != 0) {
         return 1U;
     }
-    if (FindObjectByClass(&data_021032d8) != 0) {
+    if (FindObjectByClass(&gTextLineSpriteClass) != 0) {
         return 1U;
     }
-    if (FindObjectByClass(&data_02103300) != 0) {
+    if (FindObjectByClass(&gScreenTextLineSpriteClass) != 0) {
         active = 1;
     } else {
         active = 0;
@@ -179,20 +179,22 @@ u8 IsTextSpriteActive(void) {
     return active;
 }
 
-void func_0209bf7c(void) {
-    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK gMessageSpriteClass, data_021032d8, data_02103300;
-    DeleteSpriteObjectsOfClass(&gMessageSpriteClass);
-    DeleteSpriteObjectsOfClass(&data_021032d8);
-    DeleteSpriteObjectsOfClass(&data_02103300);
-}
-
+/* Delete every text sprite still alive: the message sprites and the sprites of
+ * both text-line classes. */
 void DeleteTextSprites(void) {
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
-    extern M2C_UNK data_021032d8;
-    extern M2C_UNK data_02103300;
-    DeleteSpriteObjectsOfClass(&data_021032d8);
-    DeleteSpriteObjectsOfClass(&data_02103300);
+    extern M2C_UNK gMessageSpriteClass, gTextLineSpriteClass, gScreenTextLineSpriteClass;
+    DeleteSpriteObjectsOfClass(&gMessageSpriteClass);
+    DeleteSpriteObjectsOfClass(&gTextLineSpriteClass);
+    DeleteSpriteObjectsOfClass(&gScreenTextLineSpriteClass);
+}
+
+void DeleteTextLineSprites(void) {
+    M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
+    extern M2C_UNK gTextLineSpriteClass;
+    extern M2C_UNK gScreenTextLineSpriteClass;
+    DeleteSpriteObjectsOfClass(&gTextLineSpriteClass);
+    DeleteSpriteObjectsOfClass(&gScreenTextLineSpriteClass);
 }
 
 void func_0209bfc8(void) {
@@ -396,16 +398,19 @@ s32 MeasureMessageWidth(u8 *text) {
     return width;
 }
 
-void func_0209c418(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x34) = (s32) (M2C_FIELD(arg0, s32 *, 0x34) + 1);
+/* Advance a text object's script cursor (the byte pointer at +0x34) by one byte. */
+void Text_AdvanceScript(void *text) {
+    M2C_FIELD(text, s32 *, 0x34) = (s32) (M2C_FIELD(text, s32 *, 0x34) + 1);
 }
 
-void func_0209c428(void *arg0) {
-    void func_0209c418(void *);
-    func_0209c418(arg0);
-    if (*(u8 *) M2C_FIELD(arg0, void **, 0x34) == 0x0D ||
-        *(u8 *) M2C_FIELD(arg0, void **, 0x34) == 0x0A) {
-        func_0209c428(arg0);
+/* Advance the text object's script cursor one byte, then keep skipping while it
+ * sits on a line end (CR or LF), so the cursor lands on the next drawn byte. */
+void Text_SkipLineEnds(void *text) {
+    void Text_AdvanceScript(void *);
+    Text_AdvanceScript(text);
+    if (*(u8 *) M2C_FIELD(text, void **, 0x34) == TEXT_CODE_LINE_END ||
+        *(u8 *) M2C_FIELD(text, void **, 0x34) == TEXT_CODE_LINE_END_ALT) {
+        Text_SkipLineEnds(text);
     }
 }
 

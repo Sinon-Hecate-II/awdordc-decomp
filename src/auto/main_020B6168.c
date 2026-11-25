@@ -10,6 +10,19 @@ typedef struct { u8 pad[0x48]; u32 distance:10; u32 flags:22; } RangeEffect;
 #define AURORA_EFFECT_Y            0x3C /* s32: strike cell y, biased by 1 */
 #define AURORA_EFFECT_FIRST_TARGET 0x6C /* s16: selection-queue index of the first target */
 
+/* Fields of the strike sprite StageAuroraEffect builds from the staging object:
+ * where the target queue starts and the aim/smoke/damage sheets it loaded. */
+#define AURORA_STRIKE_FIRST_TARGET 0x58 /* s32: target-list index of the first target to damage */
+#define AURORA_STRIKE_AIM_GRAPHIC 0x5C /* s32: loaded "arura_aim" sheet offset */
+#define AURORA_STRIKE_SMOKE_GRAPHIC 0x60 /* s32: loaded smoke sheet offset, used as the smoke frame */
+#define AURORA_STRIKE_DAMAGE_GRAPHIC 0x64 /* s32: loaded "damage" sheet offset, 0 while not loaded */
+
+/* The gas order effect task (main_020B7138.c's CreateGasStormEffect): the target
+ * cell it gases and the target-list index where the order's targets start. */
+#define GAS_EFFECT_TARGET_X     0x3C /* s32: target cell x */
+#define GAS_EFFECT_TARGET_Y     0x40 /* s32: target cell y */
+#define GAS_EFFECT_FIRST_TARGET 0x44 /* s32: target-list index of the order's first target */
+
 void func_020b6168(void *arg0) {
     extern void **gCurrentMap;
     M2C_UNK PlaySoundAtTile(M2C_UNK, s32, s32);
@@ -314,12 +327,12 @@ void CreateFallingFlareStrike(s16 x, s16 y, M2C_UNK parent) {
 
 #pragma opt_propagation off
 void func_020b6814(void *p){
-s32 CreateExplosionEffect(s32,s32,s32);s32 func_020b5e00(s32,s32,void*,...);s32 CreateMapOrderEffectSprite(s32,void*);s32 func_020b5d94(s32,void*);
+s32 CreateExplosionEffect(s32,s32,s32);s32 CreateTerrainBlastEffect(s32,s32,void*,...);s32 CreateMapOrderEffectSprite(s32,void*);s32 CreateLineAttackEffectSprite(s32,void*);
 s32 a=M2C_FIELD(p,s32*,0x34);
 if(M2C_FIELD(p,s16*,0x6e)>0){CreateExplosionEffect(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),0);return;}
 switch(M2C_FIELD(p,s16*,0x6c)){
-case 0:break;case 1:func_020b5e00(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);return;
-case 2:break;case 3:break;case 4:CreateMapOrderEffectSprite(a,p);return;case 5:break;case 6:case 7:func_020b5d94(a,p);return;default:break;
+case 0:break;case 1:CreateTerrainBlastEffect(M2C_FIELD(p,s32*,0x38),M2C_FIELD(p,s32*,0x3c),p);return;
+case 2:break;case 3:break;case 4:CreateMapOrderEffectSprite(a,p);return;case 5:break;case 6:case 7:CreateLineAttackEffectSprite(a,p);return;default:break;
 }}
 #pragma opt_propagation reset
 /* Create the battle-preview sprite for the destructible feature `feature` under
@@ -407,12 +420,19 @@ void UpdateAuroraAimMarker(void *marker) {
     PlaySoundAtTile(0xfc, tileX, tileY);
 }
 
-s32 ApplyPendingDamage(void *p) {
-s32 ApplyPendingDamageToTargets(s32,s32,s32);
-s32 b=M2C_FIELD(p,s32 *,0x64);
-s32 a=M2C_FIELD(p,s32 *,0x58);
-if(!b)return a;
-ApplyPendingDamageToTargets(a,b,8);M2C_FIELD(p,s32 *,0x64)=0;return 0;
+/* Apply the Aurora strike's pending damage (called at the strike's frame 60):
+ * damage every battle target from the strike's first target on, then clear the
+ * damage sheet offset that marks the damage as applied.  While no damage sheet is
+ * loaded it does nothing and returns the first target index. */
+s32 ApplyPendingDamage(void *strike) {
+    s32 ApplyPendingDamageToTargets(s32, s32, s32);
+    s32 damageGraphic = M2C_FIELD(strike, s32 *, AURORA_STRIKE_DAMAGE_GRAPHIC);
+    s32 firstTarget = M2C_FIELD(strike, s32 *, AURORA_STRIKE_FIRST_TARGET);
+
+    if (!damageGraphic) return firstTarget;
+    ApplyPendingDamageToTargets(firstTarget, damageGraphic, 8);
+    M2C_FIELD(strike, s32 *, AURORA_STRIKE_DAMAGE_GRAPHIC) = 0;
+    return 0;
 }
 
 /* Aim the Aurora strike at the remaining targets: each target's unit cell gets
@@ -595,10 +615,13 @@ void CreateGasStormSprite(void *task) {
     PlaySoundAtTile(0x106, M2C_FIELD(task, s32 *, 0x3C), M2C_FIELD(task, s32 *, 0x40));
 }
 
-void func_020b710c(void *arg0) {
+/* Apply the gas storm order's pending damage: load the "damage" effect sheet
+ * into palette slot 8 and damage every queued target from the order's first
+ * target index on. */
+void ApplyGasStormDamage(void *task) {
     s32 LoadEffectSpriteSheet(M2C_UNK *, M2C_UNK);
     M2C_UNK ApplyPendingDamageToTargets(s32, s32, M2C_UNK);
-    extern M2C_UNK data_02128f8c;
-    ApplyPendingDamageToTargets(M2C_FIELD(arg0, s32 *, 0x44), LoadEffectSpriteSheet(&data_02128f8c, 8), 8);
+    extern M2C_UNK gGasStormDamageName;
+    ApplyPendingDamageToTargets(M2C_FIELD(task, s32 *, GAS_EFFECT_FIRST_TARGET), LoadEffectSpriteSheet(&gGasStormDamageName, 8), 8);
 }
 

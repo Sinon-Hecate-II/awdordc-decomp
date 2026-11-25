@@ -10,7 +10,7 @@ s32 LoadSoundSequenceArchiveFile(s32 fileId, s32 pool, s32 create) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
-    extern M2C_UNK func_0202d01c;
+    extern M2C_UNK FreeSequenceArchiveFile;
     s32 freeArg;
     s32 block;
 
@@ -21,7 +21,7 @@ s32 LoadSoundSequenceArchiveFile(s32 fileId, s32 pool, s32 create) {
         } else {
             freeArg = Sound_GetCurrentArchive();
         }
-        block = Sound_LoadArchiveFile(fileId, &func_0202d01c, freeArg, fileId, pool);
+        block = Sound_LoadArchiveFile(fileId, &FreeSequenceArchiveFile, freeArg, fileId, pool);
         if ((create != 0) && (block != 0)) {
             SetLoadedArchiveFile(fileId, block);
         }
@@ -159,11 +159,15 @@ s32 Sound_UntrackArchiveFile(s32 block, s32 owner, s32 fileId) {
     OS_RestoreInterrupts(saved);
 }
 
-void func_0202d01c(s32 arg0, s32 arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    M2C_UNK func_02008e90(s32, s32);
+/* Free a loaded sequence archive block (`size` bytes, file `fileId` of the
+ * `owner` archive): clear the block's cache slot in the owner's loaded-file
+ * table and tell the ARM7 to release its memory. */
+void FreeSequenceArchiveFile(s32 block, s32 size, s32 owner, s32 fileId) {
+    M2C_UNK Sound_FreeSequenceMemory(s32, s32);
     M2C_UNK Sound_UntrackArchiveFile(s32, M2C_UNK, M2C_UNK);
-    Sound_UntrackArchiveFile(arg0, arg2, arg3);
-    func_02008e90(arg0, arg0 + arg1);
+
+    Sound_UntrackArchiveFile(block, owner, fileId);
+    Sound_FreeSequenceMemory(block, block + size);
 }
 
 /* Free a loaded bank archive block: untrack it from `owner`'s loaded-file table
@@ -573,21 +577,30 @@ s32 InitSoundPlayerSlots(s32 heap)
  * not in the archive, else the result of Sound_StartPlayer. */
 s32 Sound_StartArchiveRecord(s32 handle,s32 soundId,s32 lengthMs){void *GetSoundRecord(s32);s32 Sound_StartPlayer(s32,void *,s32,s32,s32,s32,s32,s32,s32,s32);void *p=GetSoundRecord(soundId);if(!p)return 0;return Sound_StartPlayer(handle,p,M2C_FIELD(p,u8 *,SOUND_RECORD_SLOT),M2C_FIELD(p,u8 *,SOUND_RECORD_PRIORITY),soundId,lengthMs,0,0,0,0);}
 
-s32 func_0202d8fc(s32 arg) {
-void * volatile *arg0=(void * volatile *)arg;
-void *p;
-if (*arg0 == 0) return;
-p=*arg0;
-return M2C_FIELD(p,s32 *,0x110)|=4;
+/* Mark the sound player held by the handle variable at `handle` as waiting for
+ * its first segment (SOUND_HANDLE_BIT_PENDING); an empty handle is left alone.
+ * Returns the player's new flags. */
+s32 Sound_SetPlayerPending(s32 handle) {
+    void * volatile *handleVar = (void * volatile *)handle;
+    void *player;
+
+    if (*handleVar == 0) return;
+    player = *handleVar;
+    return M2C_FIELD(player, s32 *, SOUND_HANDLE_FLAGS) |= 1 << SOUND_HANDLE_BIT_PENDING;
 }
 
-s32 Sound_StartArchiveSound(M2C_UNK arg0) {
-    s32 Sound_StartArchiveRecord();
-    M2C_UNK func_0202d8fc(M2C_UNK);
-    if (Sound_StartArchiveRecord() == 0) {
+/* Start the sound `soundId` of the current sound archive on the player the
+ * handle variable at `handle` names, for `lengthMs` (0 = play to the end), then
+ * mark the player as waiting for its first segment.  Returns 0 when the sound is
+ * not in the archive, else 1. */
+s32 Sound_StartArchiveSound(s32 handle, s32 soundId, s32 lengthMs) {
+    s32 Sound_StartArchiveRecord(s32, s32, s32);
+    s32 Sound_SetPlayerPending(s32);
+
+    if (Sound_StartArchiveRecord(handle, soundId, lengthMs) == 0) {
         return 0;
     }
-    func_0202d8fc(arg0);
+    Sound_SetPlayerPending(handle);
     return 1;
 }
 
@@ -599,7 +612,14 @@ Sound_FadeOutPlayer(*arg0,arg1);
 
 void func_0202d960(void *volatile *a,s32 b){void Sound_StartFade(void *,s32);void *p;if(!*a)return;p=*a;if(((s32)(M2C_FIELD(p,u32 *,0x110)<<28)>>31)!=0)return;Sound_StartFade(p+0xe8,b<<8);}
 
-void Sound_SetVoiceVolumeFromLevel(volatile s32 *a,s32 b,s32 c){extern s16 gSoundVoiceVolumeTable[];void func_0202b7e8(s32,s32,s16);if(!*a)return;func_0202b7e8(*a,b,gSoundVoiceVolumeTable[c]);}
+/* Set the volume of a sound player's voice from a level index: map the level
+ * through gSoundVoiceVolumeTable and hand the note's channel its new level. */
+void Sound_SetVoiceVolumeFromLevel(volatile s32 *player,s32 note,s32 level){
+    extern s16 gSoundVoiceVolumeTable[];
+    void Sound_SetNoteVolumeLevel(s32,s32,s16);
+    if(!*player)return;
+    Sound_SetNoteVolumeLevel(*player,note,gSoundVoiceVolumeTable[level]);
+}
 
 void func_0202d9c0(s32 *arg0) {
     *arg0 = 0;
@@ -650,11 +670,18 @@ i++;p+=0x174;
  * records its new priority. Returns the slot, or 0 when it cannot be taken. */
 void *Sound_AcquirePlayer(void **handle,s32 slotIndex,s32 priority){extern u8 gSoundPlayerSlots[];void Sound_ClearPlayerHandle(void **);void Sound_StopPlayer(void *);void *player;if(*handle)Sound_ClearPlayerHandle(handle);player=gSoundPlayerSlots+slotIndex*SOUND_PLAYER_STRIDE;if(!M2C_FIELD(player,s32 *,SOUND_HANDLE_SAMPLE_DATA))return 0;if(((s32)(M2C_FIELD(player,u32 *,SOUND_HANDLE_FLAGS)<<31)>>31)!=0){if(priority<M2C_FIELD(player,s32 *,SOUND_HANDLE_PRIORITY))return 0;Sound_StopPlayer(player);}M2C_FIELD(player,s32 *,SOUND_HANDLE_PRIORITY)=priority;M2C_FIELD(player,u32 *,SOUND_HANDLE_FLAGS)=(M2C_FIELD(player,u32 *,SOUND_HANDLE_FLAGS)&~1)|1;M2C_FIELD(player,void ***,SOUND_HANDLE_OWNER)=handle;*handle=player;return player;}
 
-void Sound_ReleasePlayer(void *arg0) {
-s32 *p=M2C_FIELD(arg0,s32 **,0x14c);
-if(p){*p=0;M2C_FIELD(arg0,s32 **,0x14c)=0;}
-M2C_FIELD(arg0,u32 *,0x110)&=~1;
-M2C_FIELD(arg0,u32 *,0x110)&=~4;
-M2C_FIELD(arg0,u32 *,0x110)&=~2;
+/* Release the sound player `player`: detach the caller's handle variable it still
+ * owns, clear the player's active, playing and waiting (pending) flags, and leave
+ * the slot free for Sound_AcquirePlayer to hand out again. */
+void Sound_ReleasePlayer(void *player) {
+    s32 *owner = M2C_FIELD(player, s32 **, SOUND_HANDLE_OWNER);
+
+    if (owner != NULL) {
+        *owner = 0;
+        M2C_FIELD(player, s32 **, SOUND_HANDLE_OWNER) = 0;
+    }
+    M2C_FIELD(player, u32 *, SOUND_HANDLE_FLAGS) &= ~(1 << SOUND_HANDLE_BIT_ACTIVE);
+    M2C_FIELD(player, u32 *, SOUND_HANDLE_FLAGS) &= ~(1 << SOUND_HANDLE_BIT_PENDING);
+    M2C_FIELD(player, u32 *, SOUND_HANDLE_FLAGS) &= ~(1 << SOUND_HANDLE_BIT_PLAYING);
 }
 

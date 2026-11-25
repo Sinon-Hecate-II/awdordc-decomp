@@ -590,15 +590,20 @@ void Sprite_SetScriptData(M2C_UNK arg0, M2C_UNK arg1) {
     }
 }
 
-void Sprite_RestartAnimation(void *arg0) {
+/* Restart the sprite's animation from its current script position at normal
+ * speed: clear its pending frame delay, run one script step with SPRITE_SPEED
+ * forced to 1.0 (Sprite_UpdateAnimationScript then also picks the new frame),
+ * and put the sprite's own speed back afterwards. */
+void Sprite_RestartAnimation(void *sprite) {
     M2C_UNK Sprite_UpdateAnimationScript(M2C_UNK);
-    u16 temp_r4;
-    M2C_FIELD(arg0, s16 *, 0x1A) = 0;
-    temp_r4 = M2C_FIELD(arg0, u16 *, 0x1C);
-    M2C_FIELD(arg0, s16 *, 0x1A) = 0;
-    M2C_FIELD(arg0, u16 *, 0x1C) = 0x100;
-    Sprite_UpdateAnimationScript((M2C_UNK)arg0);
-    M2C_FIELD(arg0, u16 *, 0x1C) = temp_r4;
+    u16 speed;
+
+    M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = 0;
+    speed = M2C_FIELD(sprite, u16 *, SPRITE_SPEED);
+    M2C_FIELD(sprite, s16 *, SPRITE_DELAY) = 0;
+    M2C_FIELD(sprite, u16 *, SPRITE_SPEED) = SPRITE_SPEED_ONE;
+    Sprite_UpdateAnimationScript((M2C_UNK)sprite);
+    M2C_FIELD(sprite, u16 *, SPRITE_SPEED) = speed;
 }
 
 /* Initialise a script-driven sprite: install its animation data, then set its
@@ -744,25 +749,28 @@ if(script[0]){do{frame-=*(volatile u16 *)script;if(frame<=0)break;script+=2;}whi
 return (s32)((u8 *)dataOffsets+(dataOffsets[script[1]]&~1));
 }
 
-void func_02091bcc(void) {
-    M2C_UNK func_02091c88(s32, s32);
+void ClearRecordValues(void) {
+    M2C_UNK SetRecordValue(s32, s32);
     s32 var_r5;
 
     var_r5 = 0;
     do {
-        func_02091c88(var_r5, 0);
+        SetRecordValue(var_r5, 0);
         var_r5 += 1;
     } while (var_r5 < 0x5E);
 }
 
-void func_02091bf4(void) {
+/* Tick the total play-time record (gRecordValues[0], the word at
+ * gOptionBits+0x74) up one frame, saturating at its counter maximum. */
+void IncrementPlayTime(void) {
     M2C_UNK IncrementCounter(s32 *);
+    M2C_UNK SetRecordValue(s32, s32);
     extern M2C_UNK gOptionBits;
-    s32 sp0;
+    s32 playTime;
 
-    sp0 = M2C_FIELD(&gOptionBits, s32 *, 0x74);
-    IncrementCounter(&sp0);
-    func_02091c88(0, sp0);
+    playTime = M2C_FIELD(&gOptionBits, s32 *, GAME_SETTINGS_PLAY_TIME);
+    IncrementCounter(&playTime);
+    SetRecordValue(0, playTime);
 }
 
 #pragma peephole off
@@ -785,7 +793,7 @@ if(value+gRecordValues[index]<RECORD_FUNDS_MAX) { gRecordValues[index]=gRecordVa
 gRecordValues[index]=RECORD_FUNDS_MAX;
 }
 #pragma peephole reset
-M2C_UNK func_02091c88(M2C_UNK arg0, M2C_UNK arg1) {
+M2C_UNK SetRecordValue(M2C_UNK arg0, M2C_UNK arg1) {
     extern unsigned int gRecordValues[];
     gRecordValues[arg0] = (unsigned int)arg1;
 }
@@ -820,7 +828,15 @@ void LoadScenePanelGraphicsOnBothEngines(void) {
 }
 
 #pragma scheduling off
-void LoadScenePanelIconTiles(void) {M2C_UNK CopyU16(M2C_UNK*,s32,M2C_UNK);extern M2C_UNK gScenePanelIconTiles;extern void *gCur3DSpriteEngine;CopyU16(&gScenePanelIconTiles,M2C_FIELD(gCur3DSpriteEngine,s32*,0x1c)+0x800,0x800);}
+/* Upload the scene panel's 0x800-byte icon tile block from ROM to the current
+ * 3D engine's texture VRAM, right after the panel graphics (at VRAM +0x800). */
+void LoadScenePanelIconTiles(void) {
+    M2C_UNK CopyU16(M2C_UNK *, s32, M2C_UNK);
+    extern M2C_UNK gScenePanelIconTiles;
+    extern void *gCur3DSpriteEngine;
+
+    CopyU16(&gScenePanelIconTiles, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_TEXTURE) + 0x800, 0x800);
+}
 #pragma scheduling reset
 void LoadScenePanelPalette(s32 arg0) {
     M2C_UNK CopyToObjPaletteShadow(M2C_UNK *, s32, M2C_UNK);

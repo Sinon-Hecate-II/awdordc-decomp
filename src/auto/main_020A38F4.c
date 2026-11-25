@@ -417,11 +417,14 @@ M2C_FIELD(order,u8 *,0)=M2C_FIELD(order,u8 *,1)=order->width;
 order->type=0;order->value=0;order->mode=0;order->kind=0;order->timer=0;order->last=0;order++;i++;}while(i<MAP_ORDER_COUNT);
 }
 
-void func_020a45cc(void) {
- void ClearMapOrders(void);
- extern s32 *gCurrentMap;
- M2C_FIELD(*gCurrentMap,u16 *,0x58a6)&=~0x3c0;
- ClearMapOrders();
+/* Reset the map's order queue: clear the type of the order at the head of the
+ * queue, then clear every order record. */
+void ResetMapOrders(void) {
+    void ClearMapOrders(void);
+    extern s32 *gCurrentMap;
+
+    M2C_FIELD(*gCurrentMap, u16 *, MAP_ORDERS + MAP_ORDER_TYPE) &= ~MAP_ORDER_TYPE_BITS;
+    ClearMapOrders();
 }
 
 /* Returns the first map order whose tile rectangle covers (x, y), whatever its type, or NULL. */

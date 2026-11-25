@@ -311,11 +311,14 @@ clear:
     MI_CpuFill8(record, 0, MATCH_SESSION_PLAYER_SIZE);
 }
 
-s32 func_0203a9a4(s32 a,s32 b) {
+/* Set the match session's player-slot change callback and its data: the session
+ * runs the callback with the changed slot and this data (MATCH_SESSION_SLOT_CB).
+ * Returns 0 when no match session is up, 1 once they are recorded. */
+s32 SetMatchSessionSlotCallback(s32 slotCallback, s32 slotData) {
 extern M2C_UNK gMatchSessionMgr;
-if(!M2C_FIELD(&gMatchSessionMgr,void **,8))return 0;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x44)=a;
-M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x48)=b;
+if(!M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION))return 0;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION),s32 *,MATCH_SESSION_SLOT_CB)=slotCallback;
+M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,MATCH_SESSION_MGR_SESSION),s32 *,MATCH_SESSION_SLOT_DATA)=slotData;
 return 1;
 }
 

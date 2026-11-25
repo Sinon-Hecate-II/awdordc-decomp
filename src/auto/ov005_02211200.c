@@ -260,10 +260,12 @@ void UpdateTabMenu(void *menu) {
 }
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-s32 func_ov005_02211988(void *arg0) {
-s32 SetCampaignMapShareMode(s32,s32);
-extern void **gCurrentMap;
-return SetCampaignMapShareMode(M2C_FIELD(*gCurrentMap,u16 *,0x5142),M2C_FIELD(arg0,s32 *,0x34)+1);
+/* Confirm the map-rating screen's selection for the current campaign map: the
+ * selected star (0..4, created at 2) is stored as the map's 1..5 rating. */
+s32 ConfirmMapRating(void *menu) {
+    s32 SetCampaignMapRating(s32, s32);
+    extern void **gCurrentMap;
+    return SetCampaignMapRating(M2C_FIELD(*gCurrentMap, u16 *, MAP_ID), M2C_FIELD(menu, s32 *, 0x34) + 1);
 }
 
 void func_ov005_022119b4(void) {
@@ -281,8 +283,8 @@ void func_ov005_022119cc(void *arg0) {
 }
 
 void func_ov005_022119d8(void) {
-    M2C_UNK func_ov005_02211988();
-    func_ov005_02211988();
+    M2C_UNK ConfirmMapRating();
+    ConfirmMapRating();
 }
 
 /* Spawns the ov005 records/history menu page under `parent` while the battle

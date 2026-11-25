@@ -95,12 +95,15 @@ void Qr2_DestroyConnection(void *qr2) {
 
 #pragma optimization_level 2
 #pragma opt_cond_exec off
-void Qr2AppendKeyId(u8 *p, s32 a) {
-    s32 n = M2C_FIELD(p, s32 *, 0x100);
-    if (n >= 254) return;
-    if (a < 1 || a > 254) return;
-    M2C_FIELD(p, s32 *, 0x100) = n + 1;
-    p[n] = (u8)a;
+/* Append the key id `keyId` to a collected key-id list: a list takes at most
+ * QR2_KEY_LIST_MAX_IDS ids and only ids 1..QR2_KEY_LIST_MAX_IDS are kept, so a
+ * list that is full or an id out of range leaves the list unchanged. */
+void Qr2AppendKeyId(u8 *keyList, s32 keyId) {
+    s32 count = M2C_FIELD(keyList, s32 *, QR2_KEY_LIST_COUNT);
+    if (count >= QR2_KEY_LIST_MAX_IDS) return;
+    if (keyId < 1 || keyId > QR2_KEY_LIST_MAX_IDS) return;
+    M2C_FIELD(keyList, s32 *, QR2_KEY_LIST_COUNT) = count + 1;
+    keyList[count] = (u8)keyId;
 }
 #pragma opt_cond_exec reset
 #pragma optimization_level reset

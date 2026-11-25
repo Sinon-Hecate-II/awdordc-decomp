@@ -260,7 +260,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
     M2C_UNK GetWaypointGroupCount(u32);
     M2C_UNK HandleWaypointInput(void *, u32);
     s16 GetWaypointSlotX(u8);
-    M2C_UNK Ov003_SetPanelPlayerFlagTile(M2C_UNK, u8);
+    M2C_UNK Ov003_SetPanelPlayerFlagColor(M2C_UNK, u8);
     extern void *g3DSpriteEngineMain;
     extern void *gCur3DSpriteEngine;
     void *temp_r7;
@@ -384,7 +384,7 @@ void func_ov003_021ed27c(void *arg0, u32 arg1) {
         if (var_r0_3 & 0xFF) {
             temp_r5_4 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagColor(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_4;
         }
@@ -445,7 +445,7 @@ block_79:
         if (var_r0_6 & 0xFF) {
             temp_r5_5 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagColor(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_5;
         }
@@ -497,7 +497,7 @@ block_100:
         if (var_r0_9 & 0xFF) {
             temp_r5_6 = gCur3DSpriteEngine;
             gCur3DSpriteEngine = g3DSpriteEngineMain;
-            Ov003_SetPanelPlayerFlagTile(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
+            Ov003_SetPanelPlayerFlagColor(0x19, M2C_FIELD(M2C_FIELD(arg0, void **, 0x6C), u8 *, 7));
             M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
             gCur3DSpriteEngine = temp_r5_6;
         }

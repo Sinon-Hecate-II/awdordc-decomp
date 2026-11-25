@@ -95,17 +95,17 @@ void Ov001_SendRoomTransfer(int transfer,int length,int player,int context) {
  * tail, then encrypt src into dst.  Returns 0, or -1 when the cipher buffer
  * can't be allocated. */
 int Ov001_EncryptRoomData(int src,int dst,int length,signed char *checksum,void *seedOut,void *keyTail,int keyTailLength) {
- int func_ov001_0216ad54(int); void func_ov001_0216ad64(int);
+ int Ov001_AllocHook(int); void Ov001_FreeHook(int);
  void Ov001Rc4Init(); void func_ov001_0216cb08();
  int func_ov001_0216cb74(int,int); short Ov001GetRandomSeed(void); void Ov001MemCopy();
  int state; int cipher[4]; short seed;
- *checksum=func_ov001_0216cb74(src,length); state=func_ov001_0216ad54(length); cipher[2]=state;
+ *checksum=func_ov001_0216cb74(src,length); state=Ov001_AllocHook(length); cipher[2]=state;
  if(!state) return -1;
  seed=Ov001GetRandomSeed(); Ov001MemCopy(seedOut,&seed,2);
  Ov001MemCopy(&gOv001CryptSeed,seedOut,2);
  Ov001MemCopy(gOv001CryptKeyTail,keyTail,keyTailLength);
  Ov001Rc4Init(cipher,&gOv001CryptSeed,keyTailLength+2,length);
- func_ov001_0216cb08(cipher,dst,src,length); func_ov001_0216ad64(cipher[2]); return 0;
+ func_ov001_0216cb08(cipher,dst,src,length); Ov001_FreeHook(cipher[2]); return 0;
 }
 
 #pragma thumb on
@@ -113,18 +113,18 @@ int Ov001_EncryptRoomData(int src,int dst,int length,signed char *checksum,void 
  * seed plus the caller's key tail, decrypts src into dst and verifies the
  * plaintext checksum.  Returns 0, or -1 after setting a room error. */
 int Ov001_DecryptRoomData(int src,int dst,int length,unsigned int expectedChecksum,void *seed,void *keyTail,int keyTailLength) {
- int func_ov001_0216ad54(int); void func_ov001_0216ad64(int); void Ov001_SetRoomError(int);
+ int Ov001_AllocHook(int); void Ov001_FreeHook(int); void Ov001_SetRoomError(int);
  void Ov001Rc4Init(); void func_ov001_0216cb08(); int func_ov001_0216cb74(int,int); void Ov001MemCopy();
- int cipher[4]; int state=func_ov001_0216ad54(length); cipher[2]=state;
+ int cipher[4]; int state=Ov001_AllocHook(length); cipher[2]=state;
  if(!state) {Ov001_SetRoomError(2); return -1;}
  Ov001MemCopy(&gOv001CryptSeed,seed,2);
  Ov001MemCopy(gOv001CryptKeyTail,keyTail,keyTailLength);
  Ov001Rc4Init(cipher,&gOv001CryptSeed,keyTailLength+2,length);
  func_ov001_0216cb08(cipher,dst,src,length);
  if((int *)func_ov001_0216cb74(dst,length)!=(int *)expectedChecksum) {
- Ov001_SetRoomError(0x12); func_ov001_0216ad64(cipher[2]); return -1;
+ Ov001_SetRoomError(0x12); Ov001_FreeHook(cipher[2]); return -1;
  }
- func_ov001_0216ad64(cipher[2]); return 0;
+ Ov001_FreeHook(cipher[2]); return 0;
 }
 /* RC4 key schedule (the KSA permutation): fill the state's S-box with 0..n-1,
  * then shuffle it with the key bytes, wrapping the key index at `len`. */
@@ -185,22 +185,22 @@ unsigned int Ov001_Crc32Update(unsigned int crc, unsigned char *data, int length
  * key mask into the first scratch buffer, XORs it into the second half of `data`
  * and swaps the halves of `data`.  Returns 0, or -1 when an allocation fails. */
 int Ov001_ScrambleToken(void *data,int size,void *key,int keyLength) {
- int func_ov001_0216ad54(int);
- void func_ov001_0216ad64(int);
+ int Ov001_AllocHook(int);
+ void Ov001_FreeHook(int);
  void Ov001_SwapHalves();
  void Ov001_BuildKeyMask(int,signed char *,int,signed char *,int);
  void Ov001_XorSecondHalf(signed char *,unsigned char *,int);
  int keyMask; int swapBuffer; int round;
- keyMask=func_ov001_0216ad54(size/2);
+ keyMask=Ov001_AllocHook(size/2);
  if(!keyMask) return -1;
- swapBuffer=func_ov001_0216ad54(size);
- if(!swapBuffer) { func_ov001_0216ad64(keyMask); return -1; }
+ swapBuffer=Ov001_AllocHook(size);
+ if(!swapBuffer) { Ov001_FreeHook(keyMask); return -1; }
  for(round=0;round<2;round++) {
  Ov001_BuildKeyMask(round,(signed char *)keyMask,size,key,keyLength);
  Ov001_XorSecondHalf((signed char *)keyMask,data,size);
  Ov001_SwapHalves(data,size,swapBuffer);
  }
- func_ov001_0216ad64(keyMask); func_ov001_0216ad64(swapBuffer); return 0;
+ Ov001_FreeHook(keyMask); Ov001_FreeHook(swapBuffer); return 0;
 }
 
 #pragma thumb on

@@ -357,8 +357,8 @@ void func_0208c51c(void) {
 void CreateAnimatedSpriteObject(M2C_UNK arg0) {
     s32 CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
     M2C_UNK Init3DSpriteObject();
-    extern M2C_UNK data_02102790;
-    if (CreateSpriteFromClass(&data_02102790, arg0) == 0) {
+    extern M2C_UNK gAnimatedSpriteObjectClass;
+    if (CreateSpriteFromClass(&gAnimatedSpriteObjectClass, arg0) == 0) {
         return;
     }
     Init3DSpriteObject();
@@ -367,8 +367,8 @@ void CreateAnimatedSpriteObject(M2C_UNK arg0) {
 void CreateEffectSpriteObject(M2C_UNK arg0) {
     s32 CreateSpriteObject(M2C_UNK *, M2C_UNK);
     M2C_UNK Init3DSpriteObject();
-    extern M2C_UNK data_02102790;
-    if (CreateSpriteObject(&data_02102790, arg0) == 0) {
+    extern M2C_UNK gAnimatedSpriteObjectClass;
+    if (CreateSpriteObject(&gAnimatedSpriteObjectClass, arg0) == 0) {
         return;
     }
     Init3DSpriteObject();
@@ -471,12 +471,12 @@ void CloseEffectNarcArchive(void) {
     CloseNarcArchive();
 }
 
-u8 func_0208c724(void) {
+u8 IsAnimatedSpriteObjectActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102790;
+    extern M2C_UNK gAnimatedSpriteObjectClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02102790) != 0) {
+    if (FindObjectByClass(&gAnimatedSpriteObjectClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;
@@ -488,8 +488,8 @@ void func_0208c748(void)
 {
   M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
   M2C_UNK *new_var;
-  extern M2C_UNK data_02102790;
-  new_var = &data_02102790;
+  extern M2C_UNK gAnimatedSpriteObjectClass;
+  new_var = &gAnimatedSpriteObjectClass;
   DeleteSpriteObjectsOfClass(new_var);
 }
 

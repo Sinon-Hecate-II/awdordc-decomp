@@ -366,19 +366,21 @@ void CompactPlayerSlots(void) {
     } while (sourceSlot < 5);
 }
 
+/* Reset the player order to the identity: every slot keeps its own player id, and
+ * the players' battle state is then rebuilt from the map. */
 void ResetPlayerOrder(void) {
     M2C_UNK SetPlayerIdForSlot(s32, s32);
-    M2C_UNK func_020d1f2c();
+    M2C_UNK InitMapPlayers();
     M2C_UNK InitPlayerStates();
-    s32 var_r4;
+    s32 slot;
 
-    var_r4 = 0;
+    slot = 0;
     do {
-        SetPlayerIdForSlot(var_r4, var_r4);
-        var_r4 += 1;
-    } while (var_r4 < 5);
+        SetPlayerIdForSlot(slot, slot);
+        slot += 1;
+    } while (slot < MAX_PLAYERS);
     InitPlayerStates();
-    func_020d1f2c();
+    InitMapPlayers();
 }
 
 /* Return the player slot whose player id is `playerId`, or slot 0 when no slot
@@ -424,7 +426,7 @@ void StartNextMap(void *p) {
     s32 GetPlayerIdForSlot(s32);
     s32 GetSlotForPlayerId(s32);
     void Map_ReassignPropertyOwners(s32,s32,s32,s32);
-    void func_020c8d50(s32);
+    void StoreCurrentMapAsCampaignMap(s32);
     void ResetPlayerOrder(void);
     void AssignPlayerTeams(void);
     void MapEditor_SetMapModified(s32);
@@ -436,7 +438,7 @@ void StartNextMap(void *p) {
     RemapUnitGroups(id1,id2,id3,id4);
     id1=GetPlayerIdForSlot(1);id2=GetPlayerIdForSlot(2);id3=GetPlayerIdForSlot(3);id4=GetPlayerIdForSlot(4);
     Map_ReassignPropertyOwners(id1,id2,id3,id4);
-    if(M2C_FIELD(p,s16 *,0x6c)){s32 mapIndex=M2C_FIELD(p,s32 *,0x5c);M2C_FIELD(p,s32 *,0x5c)=mapIndex+1;func_020c8d50(mapIndex+0xe1);}else func_020c8d50(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID));
+    if(M2C_FIELD(p,s16 *,0x6c)){s32 mapIndex=M2C_FIELD(p,s32 *,0x5c);M2C_FIELD(p,s32 *,0x5c)=mapIndex+1;StoreCurrentMapAsCampaignMap(mapIndex+0xe1);}else StoreCurrentMapAsCampaignMap(M2C_FIELD(*gCurrentMap,u16 *,MAP_ID));
     id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);
     RemapUnitGroups(id1,id2,id3,id4);
     id1=GetSlotForPlayerId(1);id2=GetSlotForPlayerId(2);id3=GetSlotForPlayerId(3);id4=GetSlotForPlayerId(4);

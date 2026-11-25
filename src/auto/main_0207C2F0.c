@@ -428,18 +428,19 @@ s32 IntPow(s32 base, s32 exponent) {
     return base * IntPow(base, exponent - 1);
 }
 
-s32 GetDigitCount(s32 arg0) {
+/* Number of decimal digits needed to write the non-negative integer `value`. */
+s32 GetDigitCount(s32 value) {
     s32 Divide(s32, M2C_UNK);
-    s32 var_r0;
-    s32 var_r5;
+    s32 quotient;
+    s32 count;
 
-    var_r0 = arg0;
-    var_r5 = 0;
+    quotient = value;
+    count = 0;
     do {
-        var_r0 = Divide(var_r0, 0xA);
-        var_r5 += 1;
-    } while (var_r0 != 0);
-    return var_r5;
+        quotient = Divide(quotient, 0xA);
+        count += 1;
+    } while (quotient != 0);
+    return count;
 }
 
 void InitDefaultMapCamera(void) {

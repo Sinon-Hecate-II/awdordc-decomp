@@ -170,7 +170,7 @@ void Ov001_RegionMenuCloseFinish(s32 a) {
     for (i = 0; i < data_ov001_0218fcfc[((u8*)data_ov001_02193e18)[0x1c]]; i++) {
         if (((s32**)data_ov001_02193e18)[2 + i]) Ov001_DestroySprite(((s32**)data_ov001_02193e18)[2 + i]);
     }
-    func_ov001_0218ace0(((s32**)data_ov001_02193e18)[4]);
+    Ov001_ReleaseTextPanel(((s32**)data_ov001_02193e18)[4]);
     Ov001_PostTaskMessage(1, a);
     Ov001_FreeAlloc((void*)0x02193e18);
 }

@@ -37,7 +37,7 @@ void MapEditListInput(void *arg0) {
     M2C_UNK OpenNarcArchive();
     M2C_UNK CloseNarcArchive();
     M2C_UNK LoadNarcFileDecompressed(s32, s32);
-    M2C_UNK func_02088044(void *);
+    M2C_UNK SpriteCellListUpdateTouch(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK FocusSpriteSlotById(M2C_UNK);
     s32 GetLocalizedFileNameDefault(M2C_UNK *);
@@ -70,7 +70,7 @@ void MapEditListInput(void *arg0) {
     u16 keyRepeat;
     register s32 mode;
 
-    func_02088044(M2C_FIELD(arg0, void **, 0x38));
+    SpriteCellListUpdateTouch(M2C_FIELD(arg0, void **, 0x38));
     selectedIndex = M2C_FIELD(arg0, s8 *, 0x3C);
     keyPressed = M2C_FIELD(gKeyState, u16 *, 0);
     keyRepeat = M2C_FIELD(gKeyState, u16 *, 2);

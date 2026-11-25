@@ -45,7 +45,9 @@ s32 IsNameEntryValid(void) {
     return 0;
 }
 
-void func_ov001_0217bf14(void) {
+/* Name-entry region menu answer: when option 0 (retry) is picked, play the
+ * confirm sound, close the menu and return to the name-entry keyboard. */
+void Ov001_RetryNameEntry(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
@@ -53,7 +55,7 @@ void func_ov001_0217bf14(void) {
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(6); /* OV001_SOUND_CONFIRM (ov001_wh.h) */
     Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&Ov001_ReopenNameEntryKeyboard);
 }
@@ -429,12 +431,14 @@ if(entryMode==1){seenZero=0;for(groupIndex=0;groupIndex<4;groupIndex++){for(bit=
 return IsValidTextChar(code)!=0;
 }
 
+/* Code-entry retry answer: when the region menu's option 0 (retry) is picked,
+ * play the confirm sound, close the menu and reopen the code-entry keypad. */
 void Ov001_RetryCodeEntry(void) {
     extern M2C_UNK Ov001_OpenKeypadAfterRegionMenu;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(6); /* OV001_SOUND_CONFIRM (ov001_wh.h) */
     Ov001_CloseRegionMenu();
     Ov001_SetStepCallback(&Ov001_OpenKeypadAfterRegionMenu);
 }

@@ -652,11 +652,11 @@ void RestoreBattleCursorPosition(void) {
 
 #pragma opt_common_subs off
 M2C_UNK func_020c5b98(s32 a) {
- void DrawWindowFrame(s32,s32,s32,s32,s32);void DeleteTextSprites(void);void ClearTileRect(void*,s32,s32);void DrawLocalizedText(s32,s32,s32,s32,s32,u16);
+ void DrawWindowFrame(s32,s32,s32,s32,s32);void DeleteTextLineSprites(void);void ClearTileRect(void*,s32,s32);void DrawLocalizedText(s32,s32,s32,s32,s32,u16);
  extern M2C_UNK gBattleHelpPanel;
  s32 tile; s16 index;
  DrawWindowFrame(7,18,18,6,1);
- DeleteTextSprites();
+ DeleteTextLineSprites();
  ClearTileRect((u8*)M2C_FIELD(gCur3DSpriteEngine,void**,0x24)+0x48e,18,6);
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x3a)=0;
  M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void**,0),u16*,0x42)=0;
@@ -683,9 +683,13 @@ DeleteMapMenuSprites();
 func_020c7568();
 }
 
-s32 func_020c5cac(void) {
+/* Availability of a battle-menu entry that only free-play battles offer: 0
+ * (available) when gMapConfig's battle mode is free play, 2 (hidden) in any
+ * other mode. */
+s32 CanUseFreePlayOnlyCommand(void) {
     extern u16 gMapConfig;
-    if ((u8) ((u32) (gMapConfig << 0x1D) >> 0x1D) == 1) {
+
+    if ((u8) ((u32) (M2C_FIELD(&gMapConfig, u16 *, MAPCONFIG_MODE) << 0x1D) >> 0x1D) == MAPDATA_MODE_FREE_PLAY) {
         return 0;
     }
     return 2;

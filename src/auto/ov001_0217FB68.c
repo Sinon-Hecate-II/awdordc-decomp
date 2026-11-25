@@ -69,12 +69,12 @@ void Ov001_HandleOptionPage1Choice(void) {
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
     M2C_UNK Ov001_LockIconRow(void);
     extern u8 gOv001OptionExitToConnection;
-    extern M2C_UNK func_ov001_0217fb48;
-    void func_ov001_0217fd28(void);
+    extern M2C_UNK Ov001_PrepareOptionScreenExit;
+    void Ov001_ConfirmLeaveOptionMessage(void);
     switch (Ov001_GetOptionChoice()) {
     case 2:
         gOv001OptionExitToConnection = 1;
-        Ov001_SetStepCallback(&func_ov001_0217fb48);
+        Ov001_SetStepCallback(&Ov001_PrepareOptionScreenExit);
         return;
     case 4:
         gOv001OptionExitToConnection = 0;
@@ -82,31 +82,34 @@ void Ov001_HandleOptionPage1Choice(void) {
         Ov001_PlaySound(9);
         Ov001_ShowMessage(0xD, 1, 1, -1, 0);
         Ov001_LockIconRow();
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fd28);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConfirmLeaveOptionMessage);
         return;
     }
 }
 
-void func_ov001_0217fd28(void) {
+/* Option-screen cancel message: once the player confirms the message box
+ * (selection 0), play the confirm sound, close the box and wait for it to go
+ * before the option screen fades out. */
+void Ov001_ConfirmLeaveOptionMessage(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_0217fd54;
+    extern M2C_UNK Ov001_CloseLeaveOptionMessage;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_0217fd54);
+    Ov001_SetStepCallback(&Ov001_CloseLeaveOptionMessage);
 }
 
-void func_ov001_0217fd54(void) {
+void Ov001_CloseLeaveOptionMessage(void) {
     s32 Ov001_IsRegionMenuActive();
-    extern M2C_UNK func_ov001_0217fb48;
+    extern M2C_UNK Ov001_PrepareOptionScreenExit;
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback(&func_ov001_0217fb48);
+    Ov001_SetStepCallback(&Ov001_PrepareOptionScreenExit);
 }
 
 s32 func_ov001_0217fd74(void) {
@@ -159,14 +162,17 @@ void Ov001_FadeInMatchSetupScreen(void) {
     Ov001_SetStepCallback(&Ov001_BeginMatchSetupMenu);
 }
 
+/* Step that runs after the download-play match-setup screen has faded in: show
+ * the popup's icon row (row 1) and hand over to the step that waits for it. */
 void Ov001_BeginMatchSetupMenu(void) {
-    void func_ov001_0217feb0(void);
+    void Ov001_WaitMatchSetupMenu(void);
+
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217feb0);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitMatchSetupMenu);
 }
 
-void func_ov001_0217feb0(void) {
+void Ov001_WaitMatchSetupMenu(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK Ov001_UpdateMatchSetupMenu;
@@ -182,12 +188,12 @@ void Ov001_UpdateMatchSetupMenu(void) {
     void Ov001_HandleMatchSetupPage2Choice(void);
     void Ov001_HandleMatchSetupMenuInput(void);
     void func_ov001_0217ff30(void);
-    void func_ov001_0217ff34(void);
+    void Ov001_HandleMatchSetupBack(void);
     SleepMilliseconds(10);
     Ov001_HandleMatchSetupPage2Choice();
     Ov001_HandleMatchSetupMenuInput();
     func_ov001_0217ff30();
-    func_ov001_0217ff34();
+    Ov001_HandleMatchSetupBack();
 }
 
 /* Match-setup popup input: B latches the popup's only choice, the back icon,
@@ -211,19 +217,21 @@ void func_ov001_0217ff30(void) {
 
 }
 
-void func_ov001_0217ff34(void) {
+/* Match-setup menu step: once the icon row latched the back choice (0), play the
+ * cancel sound and leave the page; any other selection keeps the menu open. */
+void Ov001_HandleMatchSetupBack(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    extern M2C_UNK func_ov001_0217ff60;
+    extern M2C_UNK Ov001_BeginMatchSetupExit;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     Ov001_StopSound();
-    Ov001_PlaySound(7);
-    Ov001_SetStepCallback(&func_ov001_0217ff60);
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
+    Ov001_SetStepCallback(&Ov001_BeginMatchSetupExit);
 }
 
-void func_ov001_0217ff60(void) {
+void Ov001_BeginMatchSetupExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);
@@ -292,32 +300,35 @@ void Ov001_CloseMatchSetupScreen(void) {
  * that follows. */
 void Ov001_HandleMatchSetupPage2Choice(void) {
 s32 Ov001_GetOptionChoice(void); M2C_UNK Ov001_PlaySound(M2C_UNK); M2C_UNK Ov001_StopSound(void); M2C_UNK Ov001_StoreMatchSetup(void); M2C_UNK Ov001_ShowMessage(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32); M2C_UNK Ov001_LockIconRow(void);
-extern u8 gOv001MatchSetupStored; void func_ov001_0217ff60(void); void func_ov001_02180178(void);
+extern u8 gOv001MatchSetupStored; void Ov001_BeginMatchSetupExit(void); void Ov001_ConfirmMatchSetupMessage(void);
 switch(Ov001_GetOptionChoice()){
-case 3: gOv001MatchSetupStored=1;Ov001_StopSound();Ov001_StoreMatchSetup();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);return;
-case 4: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(9);Ov001_ShowMessage(13,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
-case 5: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMessage(14,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02180178);return;
+case 3: gOv001MatchSetupStored=1;Ov001_StopSound();Ov001_StoreMatchSetup();Ov001_SetStepCallback((M2C_UNK *)&Ov001_BeginMatchSetupExit);return;
+case 4: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(9);Ov001_ShowMessage(13,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConfirmMatchSetupMessage);return;
+case 5: gOv001MatchSetupStored=0;Ov001_StopSound();Ov001_PlaySound(18);Ov001_ShowMessage(14,1,1,-1,0);Ov001_LockIconRow();Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConfirmMatchSetupMessage);return;
 }}
 
-void func_ov001_02180178(void) {
+/* Match-setup cancel message: once the player confirms the message box (option
+ * 0), play the confirm sound, close the box and wait for it to go before the
+ * page fades out. */
+void Ov001_ConfirmMatchSetupMessage(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_021801a4;
+    extern M2C_UNK Ov001_LeaveMatchSetupMessage;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(6); /* OV001_SOUND_CONFIRM (ov001_wh.h) */
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_021801a4);
+    Ov001_SetStepCallback(&Ov001_LeaveMatchSetupMessage);
 }
 
-void func_ov001_021801a4(void) {
+void Ov001_LeaveMatchSetupMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217ff60);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_BeginMatchSetupExit);
 }
 
 /* Open the advance match-setup screen, reset its timer, show its background and message, then schedule the fade-in. */
@@ -515,12 +526,12 @@ void func_ov001_021805ac(void) {
     void Ov001_HandleOptionPage2Choice();
     void Ov001_HandleOptionPage2MenuInput(void);
     void func_ov001_02180604(void);
-    void func_ov001_02180608(void);
+    void Ov001_HandleOptionPage2Back(void);
     SleepMilliseconds(10);
     Ov001_HandleOptionPage2Choice();
     Ov001_HandleOptionPage2MenuInput();
     func_ov001_02180604();
-    func_ov001_02180608();
+    Ov001_HandleOptionPage2Back();
 }
 
 /* Option page 2's popup input: B latches the page's only choice, the back icon,
@@ -543,7 +554,9 @@ void func_ov001_02180604(void) {
 
 }
 
-void func_ov001_02180608(void) {
+/* Option page 2's step: once the icon row latched the back choice (0), play the
+ * cancel sound and leave the page; any other selection keeps the menu open. */
+void Ov001_HandleOptionPage2Back(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
     extern M2C_UNK Ov001_OptionPage2ConfirmStep;
@@ -551,7 +564,7 @@ void func_ov001_02180608(void) {
         return;
     }
     Ov001_StopSound();
-    Ov001_PlaySound(7);
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
     Ov001_SetStepCallback(&Ov001_OptionPage2ConfirmStep);
 }
 
@@ -649,17 +662,21 @@ void Ov001_HandleOptionPage2Choice(void) {
     }
 }
 
+/* Cancel step of the second option page: while the region menu reports a
+ * nonzero selection nothing happens; at zero it plays the confirm sound, closes
+ * the region menu and moves on to the step that waits for the close. */
 void Ov001_OptionPage2CancelStep(void) {
-    extern M2C_UNK func_ov001_02180840;
+    extern M2C_UNK Ov001_OptionPage2CancelDoneStep;
+
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_02180840);
+    Ov001_SetStepCallback(&Ov001_OptionPage2CancelDoneStep);
 }
 
-void func_ov001_02180840(void) {
+void Ov001_OptionPage2CancelDoneStep(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
@@ -752,18 +769,18 @@ void Ov001_FriendListWaitIconRow(void) {
 }
 
 void func_ov001_02180a28(void) {
-    M2C_UNK func_ov001_02180b90();
+    M2C_UNK Ov001_HandleFriendListBack();
     void Ov001_CheckFriendList(void);
     func_ov001_02180b68();
     func_ov001_02180b8c();
-    func_ov001_02180b90();
+    Ov001_HandleFriendListBack();
     Ov001_CheckFriendList();
 }
 
 /* Step callback of the Wi-Fi friend-list screen: after waiting for the roster
  * fetch, show the "no friends" message or the "friend unavailable" message when
  * no friend can be picked, otherwise continue to the friend selection.  Both
- * message paths lock the icon row and run the message step func_ov001_02180cf8. */
+ * message paths lock the icon row and run the message step Ov001_ConfirmLeaveFriendList. */
 void Ov001_CheckFriendList(void) {
     M2C_UNK Ov001_StopSound(void);
     s32 Ov001_GetFriendSlots(void **);
@@ -771,7 +788,7 @@ void Ov001_CheckFriendList(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_LockIconRow(void);
     extern u8 gOv001FriendListState;
-    extern M2C_UNK func_ov001_02180cf8, func_ov001_02180bbc;
+    extern M2C_UNK Ov001_ConfirmLeaveFriendList, Ov001_BackOutFriendList;
     void *slots;
     s32 friendCount;
     s32 busyCount;
@@ -788,7 +805,7 @@ void Ov001_CheckFriendList(void) {
         Ov001_ShowMessage(OV001_MSG_NO_FRIENDS, 1, 1, -1, 0);
         Ov001_PlaySound(18);
         Ov001_LockIconRow();
-        Ov001_SetStepCallback(&func_ov001_02180cf8);
+        Ov001_SetStepCallback(&Ov001_ConfirmLeaveFriendList);
         return;
     }
     busyCount = 0;
@@ -805,11 +822,11 @@ void Ov001_CheckFriendList(void) {
         Ov001_ShowMessage(OV001_MSG_FRIEND_UNAVAILABLE, 1, 1, -1, 0);
         Ov001_PlaySound(18);
         Ov001_LockIconRow();
-        Ov001_SetStepCallback(&func_ov001_02180cf8);
+        Ov001_SetStepCallback(&Ov001_ConfirmLeaveFriendList);
         return;
     }
     M2C_FIELD(&gOv001FriendListState, u8 *, OV001_FRIEND_LIST_STATE) = OV001_FRIEND_LIST_AVAILABLE;
     Ov001_PlaySound(15);
-    Ov001_SetStepCallback(&func_ov001_02180bbc);
+    Ov001_SetStepCallback(&Ov001_BackOutFriendList);
 }
 

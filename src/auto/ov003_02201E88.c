@@ -283,7 +283,7 @@ void func_ov003_022024a8(void *arg0) {
     s32 GetWaypointSlotX(u8);
     s32 func_ov003_022004d0();
     s32 GetWaypointSlotOffsetX(M2C_UNK);
-    s32 func_ov003_02200ca8();
+    s32 Ov003_IsLinkSessionGuest();
     M2C_UNK func_ov003_0220501c(void *, s16, M2C_UNK);
     extern M2C_UNK gSpriteDesc64x32;
     extern void *g3DSpriteEngineSub;
@@ -325,7 +325,7 @@ void func_ov003_022024a8(void *arg0) {
     M2C_FIELD(M2C_FIELD(arg0, void **, 0x4C), s16 *, 0x38) = temp_r6;
     AddSprite(0, (u8) GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x48)), (u16) ((0x3FF & (0x1C0 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7C00), &data_ov003_022104c8, 0xB);
     func_ov003_0220501c(arg0, temp_r6, 0);
-    if (func_ov003_02200ca8() != 0) {
+    if (Ov003_IsLinkSessionGuest() != 0) {
         temp_r2 = (s32)((u32)GetSpriteAnimValue(M2C_FIELD(arg0, void **, 0x48)) << 5);
         adjustedY = -(temp_r2 / 32);
         AddSprite(0xC0, (u8)(s16)(adjustedY + 0xA0), (u16) ((0x3FF & (0x320 >> ((u32) (**(u16 **)gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x7000), &gSpriteDesc64x32, 0xB);
@@ -398,7 +398,7 @@ void func_ov003_0220277c(void *arg0) {
     s8 func_ov003_02203708(void *);
     void func_ov003_02203710(void *, s32);
     s32 func_ov003_02200c64(s32, s32, s32);
-    M2C_UNK func_ov003_02200c7c();
+    M2C_UNK IsSessionHostAlt();
     M2C_UNK func_ov003_02204ec4(void *);
     M2C_UNK PlaySoundEffect(s32);
 
@@ -515,7 +515,7 @@ void func_ov003_0220277c(void *arg0) {
         }
     }
 
-    if (func_ov003_02200c7c() == 0) {
+    if (IsSessionHostAlt() == 0) {
         return;
     }
     func_ov003_02204ec4(arg0);
@@ -574,7 +574,7 @@ void func_ov003_02202cc4(void *arg0) {
     M2C_UNK func_020d47f0();
     M2C_UNK func_ov003_021f140c(M2C_UNK);
     M2C_UNK Ov003_SetMapConfirmDisabled();
-    s32 func_ov003_02200c7c();
+    s32 IsSessionHostAlt();
     M2C_UNK func_ov003_02204fd0(void *);
     extern u16 data_02168f14;
     s32 temp_r6;
@@ -610,7 +610,7 @@ void func_ov003_02202cc4(void *arg0) {
     func_ov003_021f140c(2);
     M2C_FIELD(arg0, s8 *, 0x38) = 0;
     func_01ffa6fc(arg0);
-    if (func_ov003_02200c7c() == 0) {
+    if (IsSessionHostAlt() == 0) {
         return;
     }
     func_ov003_02204fd0(arg0);

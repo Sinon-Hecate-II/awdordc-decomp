@@ -6,20 +6,21 @@ typedef struct { u8 kind:6; u8 rest:2; } UnitKindBits;
 extern u8 data_ov000_021b5c0d[];
 extern s32 *gCurrentMap;
 
+/* True while the battle effect object or any animated sprite object exists. */
 u8 IsBattleEffectActive(void) {
-    s32 func_0208c724();
-    s32 func_020c306c();
-    u8 var_r0;
+    s32 IsAnimatedSpriteObjectActive();
+    s32 IsBattleEffectObjectActive();
+    u8 active;
 
-    if (func_020c306c() != 0) {
+    if (IsBattleEffectObjectActive() != 0) {
         return 1U;
     }
-    if (func_0208c724() != 0) {
-        var_r0 = 1;
+    if (IsAnimatedSpriteObjectActive() != 0) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Name of the sprite resource an explosion effect of the given type plays:
@@ -273,12 +274,12 @@ void CreateMapOrderEffectSprite(MapOrder *order, s32 parent) {
     M2C_FIELD(effect, s32 *, 0x3c) = pos[1];
 }
 
-void func_020b59a0(void *arg0) {
+void LineAttackEffect_Trigger(void *arg0) {
     CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 9, 7);
 }
 
 #pragma scheduling off
-void func_020b59c0(void *arg0) {
+void LineAttackEffect_Update(void *arg0) {
     s32 x = M2C_FIELD(arg0, s32 *, 0x38);
     s32 y = M2C_FIELD(arg0, s32 *, 0x3C);
     void *u = (void *) M2C_FIELD(arg0, s32 *, 0x34);
@@ -395,17 +396,23 @@ void func_020b59c0(void *arg0) {
     func_020cfd28();
 }
 #pragma scheduling reset
-void func_020b5d94(u8 *arg0,s32 arg1) {
-void *CreateSpriteObject(M2C_UNK *,s32); extern M2C_UNK data_02128bc4;
-void *p=CreateSpriteObject(&data_02128bc4,arg1);
-M2C_FIELD(p,s32 *,0x38)=arg0[0]; M2C_FIELD(p,s32 *,0x3c)=arg0[1]; M2C_FIELD(p,void **,0x34)=arg0;
+/* Spawn the line-attack highlight effect for `order` under `parent`: an effect
+ * sprite on the order's own tile that keeps the order it highlights (its update
+ * dims the tiles along the attack line). */
+void CreateLineAttackEffectSprite(MapOrder *order, s32 parent) {
+    void *CreateSpriteObject(M2C_UNK *, s32);
+    extern M2C_UNK gLineAttackEffectClass;
+    void *effect = CreateSpriteObject(&gLineAttackEffectClass, parent);
+    M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_X) = order->x;
+    M2C_FIELD(effect, s32 *, BATTLE_PREVIEW_Y) = order->y;
+    M2C_FIELD(effect, void **, BATTLE_PREVIEW_UNIT) = order;
 }
 
-void func_020b5dc0(void *arg0) {
+void TerrainBlastEffect_Explode(void *arg0) {
     CreateExplosionEffect(M2C_FIELD(arg0, s32 *, 0x38), M2C_FIELD(arg0, s32 *, 0x3C), 8, 7);
 }
 
-void func_020b5de0(void *arg0) {
+void TerrainBlastEffect_DestroyTerrain(void *arg0) {
     M2C_UNK ApplyTerrainBlast(s32, s32);
     M2C_UNK RebuildMapPropertyCells();
     M2C_UNK RefreshMapView();
@@ -414,14 +421,16 @@ void func_020b5de0(void *arg0) {
     RebuildMapPropertyCells();
 }
 
-void func_020b5e00(s32 arg0, s32 arg1, M2C_UNK arg2) {
+/* Spawns the terrain-blast effect sprite at map tile (tileX, tileY) under
+ * `parent`: its script explodes on the tile and blasts the terrain away. */
+void CreateTerrainBlastEffect(s32 tileX, s32 tileY, M2C_UNK parent) {
     void *CreateSpriteObject(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02128bfc;
-    void *temp_r0;
+    extern M2C_UNK gTerrainBlastEffectClass;
+    void *effect;
 
-    temp_r0 = CreateSpriteObject(&data_02128bfc, arg2);
-    M2C_FIELD(temp_r0, s32 *, 0x38) = arg0;
-    M2C_FIELD(temp_r0, s32 *, 0x3C) = arg1;
+    effect = CreateSpriteObject(&gTerrainBlastEffectClass, parent);
+    M2C_FIELD(effect, s32 *, 0x38) = tileX;
+    M2C_FIELD(effect, s32 *, 0x3C) = tileY;
 }
 
 /* Runs the missile effect's start state: load its sprite sheet, show the launch

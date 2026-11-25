@@ -332,7 +332,7 @@ s32 MultiBoot_Init(s32 reason) {
     void func_02013e70(s32);
     void Mb_InitRecordReassembly(s32);
     void func_02018940(void *);
-    void func_02016200(void);
+    void DownloadResetSender(void);
     s32 func_02017cd8(void);
     s32 IsFifoMessageReady(s32, s32);
     void func_020140c4(void);
@@ -392,7 +392,7 @@ s32 MultiBoot_Init(s32 reason) {
     ((MbContext *)gMbState.ctx)->field51A =
         (((( ((MbContext *)gMbState.ctx)->field36 + 0xE) * 15) + 0x29) & ~0x1FU) << 1;
 
-    func_02016200();
+    DownloadResetSender();
     res = func_02017cd8();
     OS_RestoreInterrupts(state);
 

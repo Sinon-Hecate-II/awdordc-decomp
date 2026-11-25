@@ -1,5 +1,5 @@
 {
-  "src/auto/itcm_01FF8000.c": "2.0/base",
+  "src/auto/itcm_01FF8000.c": "2.0/sp1p7",
   "src/auto/itcm_01FF8F90.c": "2.0/sp1p7",
   "src/auto/itcm_01FF9E44.c": "2.0/sp2p4",
   "src/auto/itcm_01FF9ED0.c": "2.0/sp1p6",
@@ -65,6 +65,7 @@
   "src/auto/main_020A38F4.c": "2.0/base",
   "src/auto/main_020A67FC.c": "2.0/base",
   "src/auto/main_020A7738.c": "2.0/sp1p6",
+  "src/auto/main_020AC7DC.c": "2.0/sp1p7",
   "src/auto/main_020AD4A0.c": "1.2/sp4",
   "src/auto/main_020AD594.c": "1.2/sp4",
   "src/auto/main_020AE768.c": "2.0/sp2",

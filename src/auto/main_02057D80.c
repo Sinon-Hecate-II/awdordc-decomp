@@ -266,10 +266,17 @@ BucketSetValue(entry,value);TableEnter(M2C_FIELD(store,s32 *,0),entry);
 return BucketValue(BucketFind(store,key));
 }
 
-s32 func_020586f4(void *a,s32 b,void *c){
-void *BucketFind(void *,s32);s32 BucketSetValue(void *,void *);
-void *p=BucketFind(a,b);if(!p)return 0;
-M2C_FIELD(p,s32 *,8)=0;return BucketSetValue(p,c);
+/* gbucket.c BucketSet: replace the value of the entry for `key` in bucket
+ * `store`, resetting its sample count first so a later average starts from this
+ * value.  Returns the entry's new value, or 0 when the key is absent. */
+s32 BucketSet(void *store, s32 key, void *value) {
+    void *BucketFind(void *, s32);
+    s32 BucketSetValue(void *, void *);
+    void *entry = BucketFind(store, key);
+
+    if (!entry) return 0;
+    M2C_FIELD(entry, s32 *, GPI_BUCKET_COUNT) = 0;
+    return BucketSetValue(entry, value);
 }
 
 /* gbucket.c BucketAdd: add `value` to the entry for `key` in bucket `store` and

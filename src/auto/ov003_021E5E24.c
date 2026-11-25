@@ -147,23 +147,25 @@ void func_ov003_021e6430(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }
 
-u8 func_ov003_021e6444(void *arg0) {
-    s32 var_r0_2;
-    u8 var_r0;
-    void *temp_r0;
+/* Whether the map-info scene's top intro tween is still running (its frame
+ * counter has not reached its duration). */
+u8 Ov003_IsMapInfoSceneTweenRunning(void *scene) {
+    s32 finished;
+    u8 running;
+    SpriteTween *tween;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x3C);
-    if (M2C_FIELD(temp_r0, u16 *, 2) == M2C_FIELD(temp_r0, s16 *, 0xC)) {
-        var_r0_2 = 1;
+    tween = M2C_FIELD(scene, SpriteTween **, 0x3C);
+    if (tween->current == tween->duration) {
+        finished = 1;
     } else {
-        var_r0_2 = 0;
+        finished = 0;
     }
-    if (!(var_r0_2 & 0xFF)) {
-        var_r0 = 1;
+    if (!(finished & 0xFF)) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 void func_ov003_021e6470(void) {
@@ -171,11 +173,15 @@ void func_ov003_021e6470(void) {
     func_ov003_021e6204();
 }
 
-u8 func_ov003_021e647c(void *arg0) {
+/* Scene method of the map-info scene: cache in the scene's flag byte (+0x60)
+ * whether the battle map's A-button confirm prompt is currently disabled (the
+ * scene takes it away while it is up) and return that value. */
+u8 Ov003_UpdateMapConfirmFlag(void *scene) {
     s32 IsMapConfirmEnabled();
-    M2C_FIELD(arg0, u8 *, 0x60) = 0;
-    M2C_FIELD(arg0, u8 *, 0x60) = IsMapConfirmEnabled() == 0;
-    return M2C_FIELD(arg0, u8 *, 0x60);
+
+    M2C_FIELD(scene, u8 *, 0x60) = 0;
+    M2C_FIELD(scene, u8 *, 0x60) = IsMapConfirmEnabled() == 0;
+    return M2C_FIELD(scene, u8 *, 0x60);
 }
 
 /* Build an ov003 scene object (class gOv003SceneClass): install the base and
@@ -610,22 +616,28 @@ s32 IsRectOnScreen(s32 x, s32 y, s32 width, s32 height) {
     return 1;
 }
 
+/* True when the local console hosts an active network session (a session is up
+ * and this console is its host); 0 with no session, or when it is a guest. */
 u8 IsSessionHost(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
-    s32 result;
-    if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
-    else result = 0;
-    return result;
+    s32 isHost;
+
+    if (IsLinkSessionActive() && IsLocalSessionHost()) isHost = 1;
+    else isHost = 0;
+    return isHost;
 }
 
+/* Whether this console plays in a guest role: a link/online session is active and
+ * the local side joined it as a guest rather than hosting it. */
 u8 IsSessionGuest(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionGuest();
-    s32 result;
-    if (IsLinkSessionActive() && IsLocalSessionGuest()) result = 1;
-    else result = 0;
-    return result;
+    s32 guest;
+
+    if (IsLinkSessionActive() && IsLocalSessionGuest()) guest = 1;
+    else guest = 0;
+    return guest;
 }
 
 void func_ov003_021e6d54(M2C_UNK arg0) {

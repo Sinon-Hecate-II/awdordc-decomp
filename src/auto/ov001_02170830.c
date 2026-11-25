@@ -20,7 +20,19 @@ extern const u16 gOv001IconRowX[];
 void Ov001_MoveSpriteLayout(void *, s32, s32, void *);
 
 #pragma thumb on
-void Ov001_StoreWordsBigEndian(u8 *a,volatile u32 *b,u32 n){u32 i;for(i=0;i<n;i+=4){a[i]=*b;a[i+1]=*b>>8;a[i+2]=*b>>16;a[i+3]=*b>>24;b++;}}
+/* Write `bytes` bytes of `words` into `dest` in big-endian order: the MD5
+ * digest words (and the message length words) are stored most significant byte
+ * first. */
+void Ov001_StoreWordsBigEndian(u8 *dest,volatile u32 *words,u32 bytes){
+    u32 i;
+    for(i=0;i<bytes;i+=4){
+        dest[i]=*words;
+        dest[i+1]=*words>>8;
+        dest[i+2]=*words>>16;
+        dest[i+3]=*words>>24;
+        words++;
+    }
+}
 #pragma thumb on
 void func_ov001_021710a4(u32 *a,u8 *b,u32 n){u32 i;for(i=0;i<n;i+=4){*a++=b[i]|(b[i+1]<<8)|(b[i+2]<<16)|(b[i+3]<<24);}}
 
@@ -191,7 +203,13 @@ void Ov001_LatchIconRowSelection(s8 a){if(M2C_FIELD(gOv001IconRow,s8 *,0x16)==-1
 
 void Ov001_SetIconRowSelection(s8 a){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,s8 *,0x16)=a;}
 
-s32 Ov001_IsIconRowIdle(void){if(gOv001IconRow==NULL)return 1;if(M2C_FIELD(gOv001IconRow,u8 *,0x19)==0)return 1;return 0;}
+/* Is the shared icon row idle?  True while no row exists yet, or until the row
+ * has slid in and become active (it takes no input before then). */
+s32 Ov001_IsIconRowIdle(void){
+    if (gOv001IconRow == NULL) return 1;
+    if (((Ov001IconRow *)gOv001IconRow)->active == 0) return 1;
+    return 0;
+}
 
 #pragma thumb off
 void Ov001_UnlockIconRow(void){extern void *gOv001IconRow;M2C_FIELD(gOv001IconRow,u8 *,0x18)=0;}

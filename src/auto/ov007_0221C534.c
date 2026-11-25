@@ -3,7 +3,7 @@
 #include "mapedit.h"
 
 extern u32 gMapEditObjectList[];
-int func_020194e0(const void*,const void*);
+int Mb_StringCompare(const void*,const void*);
 static inline void SetTextIndex(void *p,s8 n) {
 if(n<0 || n>=17)return;
 if(n<17 && gMapEditObjectList[n]!=0) goto valid;
@@ -15,7 +15,7 @@ static inline int FindTextIndex(void *p) {
 s32 result,i;u32 *needle;u32 *table;
 if(M2C_FIELD(p,s8 *,0x3c)==0)return -1;
 table=M2C_FIELD(p,u32 **,0x34);needle=gMapEditObjectList+(M2C_FIELD(p,s8 *,0x3c)-1);result=-1;
-for(i=0;i<75;i++)if(func_020194e0(needle,(void*)table[i])==0){result=i;break;}
+for(i=0;i<75;i++)if(Mb_StringCompare(needle,(void*)table[i])==0){result=i;break;}
 return result;
 }
 
@@ -113,13 +113,13 @@ rect[0]=M2C_FIELD(self,s16 *,0x14);rect[1]=M2C_FIELD(self,s16 *,0x16);rect[2]=M2
 kind=M2C_FIELD(self,u8 *,0);if((s32)kind<0)kind=func_020b212c();
 if(kind<0||kind>99)ok=1;else{
 table=M2C_FIELD(state,u32 * *,0x34);text=table[kind];oldIndex=M2C_FIELD(state,s8 *,0x3c);
-if(func_020194e0(text,&data_ov007_0222076c)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
+if(Mb_StringCompare(text,&data_ov007_0222076c)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
 table=M2C_FIELD(state,u32 * *,0x34);
-if(func_020194e0(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+75])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
+if(Mb_StringCompare(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+75])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 text=table[index+75];}
-else if(func_020194e0(text,&data_ov007_02220ab8)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
+else if(Mb_StringCompare(text,&data_ov007_02220ab8)==0){index=FindTextIndex(state);if(index<0){ok=0;goto checked;}SetTextIndex(state,M2C_FIELD(state,s8 *,0x3c)-1);
 table=M2C_FIELD(state,u32 * *,0x34);
-if(func_020194e0(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+150])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
+if(Mb_StringCompare(gMapEditObjectList+M2C_FIELD(state,s8 *,0x3c),(void*)table[index+150])==0){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 text=table[index+150];}
 if(M2C_FIELD(state,s8 *,0x3c)>=16){SetTextIndex(state,oldIndex);ok=0;goto checked;}
 MI_CpuCopy32(gMapEditObjectList,copy,0x44);

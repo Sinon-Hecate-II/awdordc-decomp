@@ -101,10 +101,19 @@ void StoreConnectionCommand(s32 peerId, s32 *payload) {
     M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_STORED_COMMAND_PEER) = peerId;
 }
 
-void ReportConnectionCommandResult(s32 arg0) {
-void ReportConnectionStatusResult(s32); void ReportMatchmakingResult(s32); void *GetConnection(void);
-if(M2C_FIELD(GetConnection(),u8 *,0x15)==0) { ReportMatchmakingResult(arg0); return; }
-ReportConnectionStatusResult(arg0);
+/* Report the result of a connection command: in join/matchmaking mode it goes
+ * through the matchmaking reporter, in the serving modes through the
+ * connection-status reporter. */
+void ReportConnectionCommandResult(s32 result) {
+    void ReportConnectionStatusResult(s32);
+    void ReportMatchmakingResult(s32);
+    void *GetConnection(void);
+
+    if (M2C_FIELD(GetConnection(), u8 *, CONN_SESSION_MODE) == 0) {
+        ReportMatchmakingResult(result);
+        return;
+    }
+    ReportConnectionStatusResult(result);
 }
 
 /* Starts a connection to peer `peerId`.  When forced (or when no opponent is

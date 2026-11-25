@@ -586,7 +586,7 @@ s32 InitSocketFromConfig(void *dst, void *src) {
         M2C_FIELD(dst, void **, 0x64) = cur;
         M2C_FIELD(cur, u16 *, 0xFC) = M2C_FIELD(src, u16 *, 4);
         p = cur;
-        r0 = (void *)func_0201f6bc(func_0201f6bc(StartSocketWorker((s32)(cur + 0x114), (s32)cur, src + 0x10), dst + 0x3C, M2C_FIELD(src, u16 *, 2)), dst + 0x50, M2C_FIELD(src, u16 *, 8));
+        r0 = (void *)InitSocketBuffer(InitSocketBuffer(StartSocketWorker((s32)(cur + 0x114), (s32)cur, src + 0x10), dst + 0x3C, M2C_FIELD(src, u16 *, 2)), dst + 0x50, M2C_FIELD(src, u16 *, 8));
         cur = r0;
         M2C_FIELD(p + 0x100, u16 *, 0x0A) = M2C_FIELD(src, u16 *, 0x0E);
         M2C_FIELD(p, s32 *, 0x110) = 0;
@@ -597,7 +597,7 @@ s32 InitSocketFromConfig(void *dst, void *src) {
         M2C_FIELD(dst, void **, 0x68) = cur;
         q = cur;
         M2C_FIELD(cur, void **, 0x10C) = dst;
-        r0 = (void *)func_0201f6bc(func_0201f6bc(func_0201f6bc(StartSocketWorker((s32)(cur + 0x110), (s32)cur, src + 0x14), dst + 0x48, M2C_FIELD(src, u16 *, 6)), dst + 0x58, M2C_FIELD(src, u16 *, 0x0A)), cur + 0xF8, M2C_FIELD(src, u16 *, 0x0C));
+        r0 = (void *)InitSocketBuffer(InitSocketBuffer(InitSocketBuffer(StartSocketWorker((s32)(cur + 0x110), (s32)cur, src + 0x14), dst + 0x48, M2C_FIELD(src, u16 *, 6)), dst + 0x58, M2C_FIELD(src, u16 *, 0x0A)), cur + 0xF8, M2C_FIELD(src, u16 *, 0x0C));
         cur = r0;
         M2C_FIELD(q, s32 *, 0x108) = 0;
         M2C_FIELD(q, s32 *, 0x104) = 0;
@@ -608,18 +608,22 @@ s32 InitSocketFromConfig(void *dst, void *src) {
     return (s32)cur;
 }
 
-s32 func_0201f6bc(s32 arg0, void *arg1, s32 arg2) {
-    s32 temp_r4;
-    s32 var_r0;
+/* Point the buffer descriptor `desc` (size at +0x00, pointer at +0x04) at the
+ * socket block starting at `cursor`: a size of 0 leaves the pointer 0.  Returns
+ * `cursor` advanced past the size, rounded up to 4 bytes. */
+s32 InitSocketBuffer(s32 cursor, void *desc, s32 size) {
+    s32 AlignSize4(s32);
+    s32 next;
+    s32 start;
 
-    var_r0 = arg0;
-    temp_r4 = var_r0;
-    if (arg2 == 0) {
-        var_r0 = 0;
+    start = cursor;
+    next = start;
+    if (size == 0) {
+        start = 0;
     }
-    M2C_FIELD(arg1, s32 *, 4) = var_r0;
-    M2C_FIELD(arg1, s32 *, 0) = arg2;
-    return temp_r4 + AlignSize4(arg2);
+    M2C_FIELD(desc, s32 *, 4) = start;
+    M2C_FIELD(desc, s32 *, 0) = size;
+    return next + AlignSize4(size);
 }
 
 /* Start a socket worker and return the address after its queue storage and stack. */

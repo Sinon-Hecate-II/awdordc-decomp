@@ -376,7 +376,7 @@ s32 __cntlz(u32);
 s32 _CountLeadingZeros(u32);
 s32 __builtin_clz(u32);
 #pragma intrinsic(__builtin_clz)
-s16 func_ov009_02222a20(s32 arg0) {
+s16 PickRandomSetBit(s32 arg0) {
 u32 CountBits();u32 func_ov009_02222440();s32 __builtin_clz(u32);
 s16 result=0;u32 temp=CountBits();s32 n;u16 count;s32 i;
 if(temp==1){n=0x20-__builtin_clz(~arg0&(arg0-1));result=n+1;}

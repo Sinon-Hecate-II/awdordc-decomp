@@ -60,14 +60,14 @@ if(M2C_FIELD(sprite,s16 *,0x34)==M2C_FIELD(sprite,s16 *,0x5e)&&M2C_FIELD(sprite,
 extern void func_ov003_021fca84(void *);
 #pragma opt_propagation off
 void func_ov003_021f7164(void *arg0) {
-void MenuSpriteUpdate(void *);void func_02088044(void *);s32 Divide(s32,s32);
+void MenuSpriteUpdate(void *);void SpriteCellListUpdateTouch(void *);s32 Divide(s32,s32);
 void ListWidgetScrollUp(void *);void ListWidgetScrollDown(void *);void PlaySoundEffect(s32);void Ov003_RefreshMapPreview(void *,s32);
 s32 GetScrollLimit(void *);u8 func_ov003_021f3f0c(s16,s16,s16);
 void ConfirmMapSelection(void *);void ToggleFirstSideMapPick(void *,u16);void ToggleMapPick(void *,void *,u16);
 void SetTileRectPalette(void *,s32,s32,s32);void SetMenuPanelState(void *,s32);
 void SetTextById(void *,s32);
 void Hide3DSpriteSlide(void *);void Show3DSpriteSlide(void *);s32 GetUiColor(s32);void SetFrameBorderSpritePattern(void *,s32,s32,s32);
-void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void Ov003_ScrollMapList(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 func_ov003_021f4038(void);void Ov003_SendLocalMapSelectState(void *);
+void func_020c9190(u16,void *);void DrawMapCode(u16,s32,void *);void func_ov003_021fbd48(void *,s32);void Ov003_ScrollMapList(void *,s32,u8);s32 GetSpriteAnimValue(void *);void func_020ab3b0(void *,s16,s32);s32 Ov003_IsLinkSessionHost(void);void Ov003_SendLocalMapSelectState(void *);
 u8 *p=arg0;void **buttons;void *list,*button,*context;u16 held,down,selection;register u32 repeat;s32 active;u8 enable; s32 keyx,keyy,i,inputFlag;u32 mode; 
 if(ov003_menu_kind(p,1))return;
 if(ov003_menu_kind(p,5))return;
@@ -83,7 +83,7 @@ buttons=M2C_FIELD(p,void ***,0x68);
 active=1;
 if(!((u32)(p[0x3a]<<24)>>31)){down=0;held=down;}
 MenuSpriteUpdate(buttons[0]);MenuSpriteUpdate(buttons[1]);MenuSpriteUpdate(buttons[2]);MenuSpriteUpdate(buttons[3]);MenuSpriteUpdate(buttons[4]);MenuSpriteUpdate(buttons[5]);MenuSpriteUpdate(buttons[6]);MenuSpriteUpdate(buttons[7]);MenuSpriteUpdate(buttons[8]);MenuSpriteUpdate(buttons[9]);
-func_02088044(M2C_FIELD(p,void **,0x70));
+SpriteCellListUpdateTouch(M2C_FIELD(p,void **,0x70));
 button=M2C_FIELD(p,void **,0x70);keyy=M2C_FIELD(button,u8 *,12);keyx=M2C_FIELD(button,u8 *,11);
 list=M2C_FIELD(p,void **,0x4c);
 enable=0;
@@ -238,6 +238,6 @@ if(ov003_menu_kind(p,4))return;
 if(ov003_menu_kind(p,6))return;
 if(ov003_menu_kind(p,7))return;
 if(ov003_menu_kind(p,8))return;
-if(func_ov003_021f4038())Ov003_SendLocalMapSelectState(p);
+if(Ov003_IsLinkSessionHost())Ov003_SendLocalMapSelectState(p);
 }
 #pragma opt_propagation on

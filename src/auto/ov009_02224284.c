@@ -28,7 +28,7 @@ public:
 };
 #pragma cplusplus off
 
-s32 func_ov009_02224284(void) {
+s32 IsLinkAnnouncePending(void) {
     s32 GetLinkPhase();
     if (GetLinkPhase() != 6) {
         return 1;
@@ -36,13 +36,16 @@ s32 func_ov009_02224284(void) {
     return 0;
 }
 
-u16 func_ov009_0222429c(void) {
+/* Move the link into its ready phase and pick one of the announced players at
+ * random: the chosen slot (1-based, a random bit of LINK_STATE_PLAYER_MASK) is
+ * stored in LINK_STATE_SELECTED_PLAYER and returned. */
+u16 PickLinkPlayerSlot(void) {
     M2C_UNK SetLinkPhase(M2C_UNK);
-    u16 func_ov009_02222a20(u16);
+    u16 PickRandomSetBit(u16);
     extern M2C_UNK gLinkState;
-    SetLinkPhase(1);
-    M2C_FIELD(&gLinkState, u16 *, 2) = func_ov009_02222a20(M2C_FIELD(&gLinkState, u16 *, 4));
-    return M2C_FIELD(&gLinkState, u16 *, 2);
+    SetLinkPhase(LINK_PHASE_READY);
+    M2C_FIELD(&gLinkState, u16 *, LINK_STATE_SELECTED_PLAYER) = PickRandomSetBit(M2C_FIELD(&gLinkState, u16 *, LINK_STATE_PLAYER_MASK));
+    return M2C_FIELD(&gLinkState, u16 *, LINK_STATE_SELECTED_PLAYER);
 }
 
 #pragma scheduling off

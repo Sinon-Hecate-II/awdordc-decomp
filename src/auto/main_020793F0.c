@@ -208,17 +208,23 @@ void func_02079b88(void *arg0) {
     Sprite_ResumeAnimation(arg0);
 }
 
-void func_02079bb0(M2C_UNK arg0) {
-    M2C_UNK func_02079bc4(M2C_UNK, M2C_UNK);
-    func_02079bc4(0x10, arg0);
+/* Spawn the timed effect sprite for `owner` with the default 16-frame hold. */
+void SpawnTimedEffectSprite(M2C_UNK owner) {
+    M2C_UNK CreateTimedEffectSprite(M2C_UNK, M2C_UNK);
+
+    CreateTimedEffectSprite(0x10, owner);
 }
 
-M2C_UNK func_02079bc4(M2C_UNK arg0, M2C_UNK arg1) {
+/* Spawn a timed effect sprite under `owner`: play the effect sound (0x82), create
+ * a child sprite of the effect class at data_02100ab0 and give it a hold length
+ * of `holdFrames` (+0x6E, which its update counts at +0x6C before it resumes its
+ * animation). */
+M2C_UNK CreateTimedEffectSprite(M2C_UNK holdFrames, M2C_UNK owner) {
     M2C_UNK PlaySoundEffect(s32);
     void *CreateSpriteObject();
     extern M2C_UNK data_02100ab0;
     PlaySoundEffect(0x82);
-    M2C_FIELD(CreateSpriteObject(&data_02100ab0, arg1), s16 *, 0x6E) = arg0;
+    M2C_FIELD(CreateSpriteObject(&data_02100ab0, owner), s16 *, 0x6E) = holdFrames;
 }
 
 void func_02079bf0(void *arg0) {

@@ -33,7 +33,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     M2C_UNK ReadActivePlayerRecord(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
     M2C_UNK SetOv003SceneClass(M2C_UNK *);
-    s32 func_ov003_02200c7c();
+    s32 IsSessionHostAlt();
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
@@ -42,8 +42,8 @@ void func_ov003_022056bc(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_02210764;
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
-    extern M2C_UNK func_ov003_021f05cc;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK InitOv003OptionValue;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     void *temp_r0;
     M2C_UNK **temp_r2;
     M2C_UNK **temp_r0_2;
@@ -139,7 +139,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
         M2C_FIELD(temp_r0_6, s8 *, 4) = -1;
         M2C_FIELD(temp_r0_6, s8 *, 5) = -1;
         M2C_FIELD(temp_r0_6, s8 *, 6) = 0;
-        ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+        ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &InitOv003OptionValue, &Ov003OptionValue_Destructor);
         var_r2 = 0;
         M2C_FIELD(temp_r0_6, s32 *, 0x10C) = 0;
         do {
@@ -151,7 +151,7 @@ void func_ov003_022056bc(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_6 + var_r3_2, s32 *, 0xE8) = 0;
             var_r3_2 += 1;
         } while ((u32) var_r3_2 < 9U);
-        if (func_ov003_02200c7c() != 0) {
+        if (IsSessionHostAlt() != 0) {
             ReadActivePlayerRecord(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
             M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
             Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
@@ -187,7 +187,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     M2C_UNK Link_SendPacket(M2C_UNK **, M2C_UNK);
     M2C_UNK ReadActivePlayerRecord(M2C_UNK, M2C_UNK **, M2C_UNK);
     M2C_UNK Link_FlushSend();
-    s32 func_ov003_02200c7c();
+    s32 IsSessionHostAlt();
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
@@ -196,8 +196,8 @@ void func_ov003_022059d0(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_02210764;
     extern M2C_UNK data_ov003_022108b4;
     extern M2C_UNK data_ov003_022108e0;
-    extern M2C_UNK func_ov003_021f05cc;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK InitOv003OptionValue;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     void *temp_r0;
     M2C_UNK **temp_r0_2;
     M2C_UNK **temp_r0_3;
@@ -288,7 +288,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
             M2C_FIELD(temp_r0_6, s8 *, 4) = -1;
             M2C_FIELD(temp_r0_6, s8 *, 5) = -1;
             M2C_FIELD(temp_r0_6, s8 *, 6) = 0;
-            ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+            ConstructArray((M2C_UNK **) ((u8 *) temp_r0_6 + 8), 8, 0x18, &InitOv003OptionValue, &Ov003OptionValue_Destructor);
             var_r2 = 0;
             M2C_FIELD(temp_r0_6, s32 *, 0x10C) = 0;
             do {
@@ -300,7 +300,7 @@ void func_ov003_022059d0(M2C_UNK arg0) {
                 M2C_FIELD(temp_r0_6 + var_r3_2, s32 *, 0xE8) = 0;
                 var_r3_2 += 1;
             } while ((u32) var_r3_2 < 9U);
-            if (func_ov003_02200c7c() != 0) {
+            if (IsSessionHostAlt() != 0) {
                 ReadActivePlayerRecord(0, (M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
                 M2C_FIELD(temp_r0_6, s32 *, 0x110) = 0;
                 Link_SendPacket((M2C_UNK **) ((u8 *) temp_r0_6 + 0x110), 0x24);
@@ -444,7 +444,7 @@ Ov003OptionsObject *DestroyOv003OptionsObject(Ov003OptionsObject *options) {
     M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     M2C_UNK MemFree();
     extern M2C_UNK data_ov003_02210764;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     u8 i;
     M2C_UNK *row;
 
@@ -464,7 +464,7 @@ Ov003OptionsObject *DestroyOv003OptionsObject(Ov003OptionsObject *options) {
         }
         i += 1;
     } while (i < 9);
-    DestroyArray((u8 *)options + 8, 8, 0x18, &func_ov003_021f05f8);
+    DestroyArray((u8 *)options + 8, 8, 0x18, &Ov003OptionValue_Destructor);
     MemFree(options);
     return options;
 }
@@ -580,7 +580,7 @@ Ov003OptionsObject *Ov003OptionsObject_Destructor(Ov003OptionsObject *options) {
     M2C_UNK DeleteSpriteObject(void *);
     M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_02210764;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     u8 i;
     M2C_UNK *p;
 
@@ -597,7 +597,7 @@ Ov003OptionsObject *Ov003OptionsObject_Destructor(Ov003OptionsObject *options) {
         if (p) DeleteSpriteObject(p);
         i++;
     } while (i < 9);
-    DestroyArray((u8 *)options + 8, 8, 0x18, &func_ov003_021f05f8);
+    DestroyArray((u8 *)options + 8, 8, 0x18, &Ov003OptionValue_Destructor);
     return options;
 }
 

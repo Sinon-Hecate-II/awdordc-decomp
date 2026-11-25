@@ -483,8 +483,19 @@ void Ov001_VBlankHandler(void) {
     M2C_FIELD(&gOsArea, s32 *, 0x3FF8) = (s32) (M2C_FIELD(&gOsArea, s32 *, 0x3FF8) | 1);
 }
 
-s32 Ov001_ListCreate(void){s32 p=((s32 (*)(s32,s32))Ov001_Alloc)(16,4);
-M2C_FIELD(p,s32 *,0)=0;M2C_FIELD(p,s32 *,4)=p+8;M2C_FIELD(p,s32 *,8)=p;M2C_FIELD(p,s32 *,12)=0;return p;}
+/* Allocate and initialise an empty ov001 list: a 16-byte block whose back
+ * sentinel link (at +0) points forward at the front sentinel link (at +8),
+ * which points back at it, while both outer links are 0 to end a walk.  The
+ * block is the list. */
+s32 Ov001_ListCreate(void) {
+    s32 list = ((s32 (*)(s32, s32))Ov001_Alloc)(16, 4);
+
+    M2C_FIELD(list, s32 *, 0) = 0;
+    M2C_FIELD(list, s32 *, 4) = list + 8;
+    M2C_FIELD(list, s32 *, 8) = list;
+    M2C_FIELD(list, s32 *, 12) = 0;
+    return list;
+}
 
 void func_ov001_0218bf30(s32 arg0, ...) {
  M2C_UNK Ov001_FreeAlloc(M2C_UNK *);
@@ -566,14 +577,19 @@ void Ov001_FlushSpriteObjs(void) {
 }
 
 #pragma pool_constants off
-void func_ov001_0218c0b8(void) {
+/* Tear down the ov001 sprite-object arena: give back the task that flushes the
+ * arena to the hardware OAM, then free the arena block and clear its pointer.
+ * The arena pointer sits just before gOv001TilePools, so it is spelled through
+ * that neighbour: the literal pool must keep two separate address words, and
+ * naming the arena directly makes CodeWarrior pool an absolute address. */
+void Ov001_FreeSpriteObjs(void) {
     extern s32 gOv001SpriteArena;
     extern s32 gOv001TilePools;
-    Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(gOv001SpriteArena, s32 *, 0x808));
+    Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(gOv001SpriteArena, s32 *, OV001_SPRITE_OBJ_TASK));
     Ov001_FreeAlloc(&gOv001TilePools-1);
 }
 #pragma pool_constants reset
-void func_ov001_0218c0e4(s32 n){
+void Ov001_PopFreeSpriteObj(s32 n){
 extern s32 gOv001SpriteArena; void Ov001_QueuePop(s32);
 Ov001_QueuePop(M2C_FIELD(gOv001SpriteArena+(n<<2),s32 *,0x800));
 }

@@ -4,16 +4,23 @@
 #include "sound.h"
 typedef struct { u16 values[6]; } SetupParams12;
 
+/* A UI screen sprite object: it plays its own sprite animation once the slide
+ * tween it owns at +0x68 has run its course. */
+typedef struct UiScreenSprite {
+    u8 pad00[0x68];
+    SpriteTween *tween; /* +0x68: slide tween, finished when current == duration */
+} UiScreenSprite;
+
 void func_020d8bb4(void) {
 M2C_UNK SetTextMode(u32);
 s32 func_020bee64();
 s32 func_020bf054(s32,s32);
 M2C_UNK func_020ceec8();
 s32 CheckVersusSaveSlot(s32);
-s32 func_020e4b28(s32);
+s32 CampaignSaveSlotInUse(s32);
 extern M2C_UNK gOptionBits;
 extern u16 data_02168f14;
-extern s8 data_02168f2c;
+extern s8 gSaveRecordExists;
 s32 k,j,t,i; s8 *p;
 u16 flags; u32 mode;
 flags=data_02168f14;
@@ -21,7 +28,7 @@ mode=M2C_FIELD(&gOptionBits,u16 *,6)&15;
 data_02168f14=(flags&~7)|3;
 SetTextMode(mode);
 func_020ceec8();
-i=0;p=&data_02168f2c;
+i=0;p=&gSaveRecordExists;
 do {i++;*p=0;p+=1;}while(i<59);
 k=0;
 do {
@@ -29,12 +36,12 @@ switch(k){
 case 0:
 j=0;
 do {t=func_020bf054(k,j);
-if(func_020bee64()!=0 || func_020e4b28(j)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+if(func_020bee64()!=0 || CampaignSaveSlotInUse(j)!=0) (&gSaveRecordExists)[t]=1;else (&gSaveRecordExists)[t]=0;
 j++;}while(j<3);
 break;
 case 1:
 t=func_020bf054(k,0);
-if(func_020bee64()!=0 && CheckVersusSaveSlot(k)!=0) (&data_02168f2c)[t]=1;else (&data_02168f2c)[t]=0;
+if(func_020bee64()!=0 && CheckVersusSaveSlot(k)!=0) (&gSaveRecordExists)[t]=1;else (&gSaveRecordExists)[t]=0;
 break;
 }
 k++;
@@ -225,7 +232,10 @@ void func_020d900c(void) {
 
 }
 
-void func_020d9010(void *a){void GotoSpriteAnimationLabel(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;GotoSpriteAnimationLabel(a,2);}
+/* Sub-screen UI script step: while the requested UI mode has not become current
+ * yet, restart the sprite's animation at label 2 (the waiting state); once it
+ * has, the switch is done and the script carries on. */
+void WaitForUiModeSwitch(void *sprite){void GotoSpriteAnimationLabel(void *,s32);extern void *gUiMode;if(M2C_FIELD(gUiMode,s16 *,2)==M2C_FIELD(gUiMode,s16 *,4))return;GotoSpriteAnimationLabel(sprite,2);}
 
 void func_020d903c(M2C_UNK arg0) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
@@ -425,12 +435,17 @@ void func_020d93e0(void *entity) {
     gCur3DSpriteEngine = savedEntity;
 }
 
-void func_020d94dc(void *arg0) {
-M2C_UNK Sprite_ResumeAnimation(void *);
-void *p=M2C_FIELD(arg0,void **,0x68);
-u8 equal=M2C_FIELD(p,u16 *,2)==M2C_FIELD(p,s16 *,12);
-if(!equal)return;
-Sprite_ResumeAnimation(arg0);
+/* Resume a UI screen sprite's own animation once its slide tween has finished
+ * (the tween's frame counter has reached its duration). */
+void ResumeUiSpriteAnimationWhenTweenDone(void *object) {
+    void Sprite_ResumeAnimation(void *);
+    SpriteTween *tween;
+    u8 finished;
+
+    tween = ((UiScreenSprite *)object)->tween;
+    finished = tween->current == tween->duration;
+    if (!finished) return;
+    Sprite_ResumeAnimation(object);
 }
 
 void func_020d9508(void) {
@@ -571,12 +586,15 @@ void func_020d9640(void *arg0) {
     func_ov009_022241dc();
 }
 
-void func_020d9658(void *arg0) {
-    s32 func_ov009_02224284();
-    if ((M2C_FIELD(arg0, u16 *, 0x48) & 1) && (func_ov009_02224284() != 0)) {
+/* Resume the player-list panel's sprite animation, except while this is the
+ * local player's panel (flags bit 0) and the single-card link is still
+ * announcing the players. */
+void ResumePlayerListPanelAnimation(void *panel) {
+    s32 IsLinkAnnouncePending();
+    if ((M2C_FIELD(panel, u16 *, 0x48) & 1) && (IsLinkAnnouncePending() != 0)) {
         return;
     }
-    Sprite_ResumeAnimation(arg0);
+    Sprite_ResumeAnimation(panel);
 }
 
 void func_020d9684(void) {

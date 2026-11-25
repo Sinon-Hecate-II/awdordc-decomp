@@ -13,7 +13,7 @@ static inline void ButtonFlash12DFC(u8 *w) {if(M2C_FIELD(w,s8 *,0x5a)>=0)ButtonS
 
 void UpdateSpriteAnimation(void *);
 void MenuSpriteUpdate(void *);
-void func_020b3a58(void *);
+void UpdateSpriteGrid(void *);
 int func_020c5464(int);
 void PlaySoundEffect(int);
 void Sprite_ResumeAnimation(void *);
@@ -31,7 +31,7 @@ MenuSpriteUpdate(list[2]);
 MenuSpriteUpdate(list[3]);
 MenuSpriteUpdate(list[4]);
 MenuSpriteUpdate(list[5]);
-func_020b3a58(M2C_FIELD(p,void **,0x4c));
+UpdateSpriteGrid(M2C_FIELD(p,void **,0x4c));
 switch(func_020c5464(M2C_FIELD(M2C_FIELD(p,void **,0x4c),s16 *,8))) {
 case 0:
 ButtonEnable12DFC(M2C_FIELD(M2C_FIELD(p,u8 **,0x3c),u8 **,12));

@@ -101,22 +101,26 @@ s32 Crc32Update(s32 table, s32 *state, s32 data, s32 size) {
     *state = crc;
 }
 
-u8 Crc8Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK Crc8Update(M2C_UNK, u8 *, M2C_UNK, M2C_UNK);
-    u8 sp0;
+/* CRC-8 of `size` bytes at `data` through the lookup `table`, computed from a
+ * zero initial checksum. */
+u8 Crc8Block(s32 table, s32 data, s32 size) {
+    s32 Crc8Update(s32, u8 *, s32, s32);
+    u8 checksum;
 
-    sp0 = 0;
-    Crc8Update(arg0, &sp0, arg1, arg2);
-    return sp0;
+    checksum = 0;
+    Crc8Update(table, &checksum, data, size);
+    return checksum;
 }
 
-u16 Crc16Block(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
-    M2C_UNK Crc16Update(M2C_UNK, u16 *, M2C_UNK, M2C_UNK);
-    u16 sp0;
+/* Reflected CRC-16 of `size` bytes at `data` through the lookup `table`,
+ * computed from a zero initial checksum. */
+u16 Crc16Block(s32 table, s32 data, s32 size) {
+    s32 Crc16Update(s32, u16 *, s32, s32);
+    u16 checksum;
 
-    sp0 = 0;
-    Crc16Update(arg0, &sp0, arg1, arg2);
-    return sp0;
+    checksum = 0;
+    Crc16Update(table, &checksum, data, size);
+    return checksum;
 }
 
 /* CRC-32 of `size` bytes at `data` through `table`, preset to all ones and

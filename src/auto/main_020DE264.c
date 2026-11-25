@@ -407,7 +407,7 @@ void ClearOverlayEventFlags(void);
 int Is3DSpriteSliding(void*);
 int Is3DSpriteVisible(void*);
 void *GetActiveLinkPlayerSlot(int);
-void func_ov009_022258a8(void*);
+void SpawnLinkConnectRequest(void*);
 extern void *gKeyState;
 extern void *gCur3DSpriteEngine;
 extern void *g3DSpriteEngineSub;
@@ -539,7 +539,7 @@ if(!p||(M2C_FIELD(p,u8 *,0x16)&2))return;
 v=GetSessionPlayerMask();
 if(v!=GetActivePlayerMask())return;
 
-func_ov009_022258a8(self);
+SpawnLinkConnectRequest(self);
 
 }
 AnnounceLinkPlayer();

@@ -27,13 +27,18 @@ M2C_FIELD((s8 *)list+j,s8 *,SB_SLIST_CRYPT_KEY)^=value;
 GsCryptInit((u8 *)list+SB_SLIST_CRYPT,(u8 *)list+SB_SLIST_CRYPT_KEY,8);
 }
 
-s32 func_02062810(u8 a) {
-s32 n=5;
-if(a&2)n+=4;
-if(a&8)n+=4;
-if(a&16)n+=2;
-if(a&32)n+=2;
-return n;
+/* Length in bytes of a gpi record's header from its flags byte: the flags byte
+ * and the server's 4-byte address, then the optional 4-byte id and value and the
+ * two optional 2-byte ports.  The variable fields and keys its other flags name
+ * start right after this header. */
+s32 gpiGetRecordHeaderLength(u8 flags) {
+    s32 length = GPI_RECORD_HEADER_BASE;
+
+    if (flags & GPI_REC_FLAG_ID) length += 4;
+    if (flags & GPI_REC_FLAG_VALUE) length += 4;
+    if (flags & GPI_REC_FLAG_SKIP) length += 2;
+    if (flags & GPI_REC_FLAG_PORT) length += 2;
+    return length;
 }
 
 /* Check that the player record's key/value pairs fit and end with an empty key. */
@@ -140,7 +145,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
     s32 SBServerNew(M2C_UNK, s32, u16);
     s32 func_02061168();
     M2C_UNK SBServerListAddServer(M2C_UNK, s32);
-    s32 func_02062810(u8);
+    s32 gpiGetRecordHeaderLength(u8);
     s32 gpiCheckPlayerKeyValueList(void *, s32);
     s32 func_020628c0(M2C_UNK, void *, s32);
 
@@ -158,7 +163,7 @@ s32 func_02062cf8(M2C_UNK context, u8 *data, s32 size) {
         return 0;
     }
     flags = *data;
-    headerLen = func_02062810(flags);
+    headerLen = gpiGetRecordHeaderLength(flags);
     if (size < headerLen) {
         return 0;
     }

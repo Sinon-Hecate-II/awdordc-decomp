@@ -257,7 +257,7 @@ void func_ov003_021fc26c(void *arg0) {
  void func_020d8ccc(u16);
  void EnableMapConfirm(void);
  void func_ov003_021f2848(void *);
- s32 func_ov003_021f4038(void);
+ s32 Ov003_IsLinkSessionHost(void);
  void *GetMapRecord(u16);
  void MapSettings_Apply(void *);
  void Ov003_AcknowledgeMapSelection(void *);
@@ -345,7 +345,7 @@ void func_ov003_021fc26c(void *arg0) {
  if(PanelModeIs(arg0,4)||PanelModeIs(arg0,2)) PlaySoundEffect(0x1000e);
  else PlaySoundEffect(0x1000d);
  if(PanelModeIs(arg0,4)) func_ov003_021f2848((u8 *)M2C_FIELD(arg0,void **,0x44)+4);
- else if(func_ov003_021f4038()) Ov003_AcknowledgeMapSelection(arg0);
+ else if(Ov003_IsLinkSessionHost()) Ov003_AcknowledgeMapSelection(arg0);
  if(PanelModeIs(arg0,0) && selected>=0xe1 && selected<0x1a9) {
   if((u32)(M2C_FIELD(GetMapRecord(selected),u32 *,0x38)<<31)>>31)
    MapSettings_Apply((u8 *)GetMapRecord(selected)+0x30);

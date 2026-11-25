@@ -409,10 +409,10 @@ s32 func_ov000_0219f0d8(void) {
     void SubmergeUnit(void);
     void SurfaceUnit(void);
     void DestroyCursorUnit(void);
-    void func_020cbffc(void);
+    void GiveUpCurrentPlayerAndScheduleBattleEnd(void);
     void func_020cc028(void);
-    s32 func_ov000_0219f6d0(void);
-    s32 func_ov000_0219f6fc(void);
+    s32 EnterAiCommandDelay(void);
+    s32 EnterAiCommandDelayAlt(void);
     void AiProduceCargoUnit(void);
     void func_020bc0e0(void);
     void BeginUnitAction(void);
@@ -496,15 +496,15 @@ s32 func_ov000_0219f0d8(void) {
         DestroyCursorUnit();
         break;
     case 18:
-        func_020cbffc();
+        GiveUpCurrentPlayerAndScheduleBattleEnd();
         break;
     case 19:
         func_020cc028();
         break;
     case 20:
-        return func_ov000_0219f6d0();
+        return EnterAiCommandDelay();
     case 21:
-        return func_ov000_0219f6fc();
+        return EnterAiCommandDelayAlt();
     case 22:
         AiProduceCargoUnit();
         BattleUpdateUnitCursor();

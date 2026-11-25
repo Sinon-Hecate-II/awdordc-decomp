@@ -158,22 +158,24 @@ s32 TerrainByteToTileId(s32 id) {
     }
 }
 
-s32 TerrainAnimTotalFrames(u8 *arg0) {
-    s32 var_r1;
-    u8 *var_r0;
-    u8 var_r2;
+/* Total number of frames the terrain kind's TerrainAnimFrame list lasts: the sum
+ * of its entries' durations, ending at the zero-duration terminator. */
+s32 TerrainAnimTotalFrames(u8 *frameList) {
+    s32 total;
+    TerrainAnimFrame *frame;
+    u8 duration;
 
-    var_r0 = arg0;
-    var_r2 = *var_r0;
-    var_r1 = 0;
-    if (var_r2 != 0) {
+    frame = (TerrainAnimFrame *)frameList;
+    duration = frame->duration;
+    total = 0;
+    if (duration != 0) {
         do {
-            var_r1 += var_r2;
-            var_r0 += 3;
-            var_r2 = *var_r0;
-        } while (var_r2 != 0);
+            total += duration;
+            frame++;
+            duration = frame->duration;
+        } while (duration != 0);
     }
-    return var_r1;
+    return total;
 }
 
 /* Index of the frame the terrain kind's frame list shows on this game frame: walk
@@ -230,28 +232,30 @@ s32 GetTerrainAnimOffset(s32 arg0) {
     return gTerrainAnimOffsets[arg0];
 }
 
-void func_0207fa74(s32 arg0) {
+/* Install `handler` as the HBlank (scanline) interrupt handler, enable that
+ * interrupt, and queue the sprite task that turns the engine's HBlank IRQ on. */
+void InstallHBlankIrqHandler(s32 handler) {
     M2C_UNK OS_SetIrqHandler(s32, s32);
     M2C_UNK OS_EnableIrqMask(s32);
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
-    void func_0207fab8(void);
-    OS_SetIrqHandler(2, arg0);
-    OS_EnableIrqMask(2);
-    CreateQueuedSpriteTask((M2C_UNK *)func_0207fab8, 2);
+    void EnableHBlankIrqTask(void);
+    OS_SetIrqHandler(IRQ_HBLANK, handler);
+    OS_EnableIrqMask(IRQ_HBLANK);
+    CreateQueuedSpriteTask((M2C_UNK *)EnableHBlankIrqTask, 2);
 }
 
-void func_0207faa0(void) {
+void StopHBlankIrq(void) {
     M2C_UNK CreateQueuedSpriteTask(M2C_UNK *, M2C_UNK);
-    void func_0207fad4(void);
-    CreateQueuedSpriteTask((M2C_UNK *)func_0207fad4, 2);
+    void DisableHBlankIrqTask(void);
+    CreateQueuedSpriteTask((M2C_UNK *)DisableHBlankIrqTask, 2);
 }
 
-void func_0207fab8(void) {
+void EnableHBlankIrqTask(void) {
     extern void *g3DSpriteBankMain;
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) = (u16) (M2C_FIELD(g3DSpriteBankMain, u16 *, 4) | 2);
 }
 
-void func_0207fad4(void) {
+void DisableHBlankIrqTask(void) {
     void OS_DisableIrqMask(s32);
     extern void *g3DSpriteBankMain;
     M2C_FIELD(g3DSpriteBankMain, u16 *, 4) &= ~2;
@@ -320,12 +324,14 @@ void CreateScreenFlash(s16 fadeInFrames, s16 holdFrames, s16 fadeOutFrames, s32 
     M2C_FIELD(sprite, s16 *, DS3D_SPRITE_FLASH_OUT_FRAMES) = fadeOutFrames;
 }
 
-void func_020803a0(void *arg0) {
+/* Screen-flash callback: when the flash has a fade-out, reset the current sprite
+ * bank's brightness to normal (0). */
+void ResetScreenFlashBrightness(void *sprite) {
     extern void **gCur3DSpriteEngine;
-    if (M2C_FIELD(arg0, s16 *, 0x70) == 0) {
+    if (M2C_FIELD(sprite, s16 *, DS3D_SPRITE_FLASH_OUT_FRAMES) == 0) {
         return;
     }
-    M2C_FIELD(*gCur3DSpriteEngine, s8 *, 0x50) = 0;
+    M2C_FIELD(*gCur3DSpriteEngine, s8 *, DS3D_BANK_BRIGHTNESS) = 0;
 }
 
 #pragma push

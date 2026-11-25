@@ -7,11 +7,11 @@ extern u8 gTilesetDir[],sTilesetDoomPnl[],sTilesetCliffPnl[],sTilesetRuinPnl[],s
 /* Rebuild the danger-zone bitmaps: mark every unit's threat range and, for
  * each owned property tile, its (team-coloured) influence range. */
 void MarkThreatRanges(void) {
-s32 func_020cd728(void);void MarkUnitThreatRange(void *);s32 IsPlayerPresent(s32);
+s32 IsMapEditorMode(void);void MarkUnitThreatRange(void *);s32 IsPlayerPresent(s32);
 s32 GetTerrainThreatRadius(s32,s32);void MarkThreatBitmap(s16,s16,s16,u32,u8,u8);
 extern void **gCurrentMap;extern u16 gPlayerUnitIdBase[];extern s8 gTerrainPropertyFlags[];
 s32 tile;s32 owner,x,y,terrainKind; s32 unitId,player,playerUnitId,unitOffset,playerOffset;u8 *unit;void *map;s16 radius;
-if(func_020cd728()){
+if(IsMapEditorMode()){
 for(unitId=1,unitOffset=14;unitId<256;unitId++,unitOffset+=14){
 unit=(u8 *)*gCurrentMap+0x59A4+unitOffset;
 if(((u32)(unit[0]<<26)>>26)!=0)MarkUnitThreatRange(unit);
@@ -100,7 +100,7 @@ void ResetBattleMap(void) {
     void ResetMapViewHold(void);
     void func_020d47b0(void);
     void ResetMapUnits(void);
-    void func_020a45cc(void);
+    void ResetMapOrders(void);
     void MI_CpuFill32(s32, void *, s32);
     void ClearMapRenderBuffers(void);
     extern u16 gLinkAiCommandStage;
@@ -138,7 +138,7 @@ void ResetBattleMap(void) {
     *(u16 *)((u8 *)*gCurrentMap + 0x52a2) = 1;
 
     ResetMapUnits();
-    func_020a45cc();
+    ResetMapOrders();
 
     MI_CpuFill32(0, *gCurrentMap, 0x5120);
 
@@ -221,10 +221,10 @@ void func_020ceea8(void) {
     M2C_UNK func_020a4d58();
     void func_020ced08(void);
     M2C_UNK AdvancePlayerTurn();
-    M2C_UNK func_020d1f2c();
+    M2C_UNK InitMapPlayers();
     M2C_UNK InitPlayerStates();
     InitPlayerStates();
-    func_020d1f2c();
+    InitMapPlayers();
     AdvancePlayerTurn();
     func_020ced08();
     func_020a4d58();

@@ -266,13 +266,16 @@ void DownloadQueueFile(void *file) {
     M2C_FIELD(file, void **, DL_FILE_NEXT) = 0;
 }
 
-void func_02016200(void) {
+/* Reset the DS Download Play sender: drop the queued and current downloads,
+ * restart the send state machine at its first step, clear the progress callback
+ * and the packet progress of the file that was being sent. */
+void DownloadResetSender(void) {
 void DownloadResetProgress(void);
 extern M2C_UNK gDownloadSendState;
-M2C_FIELD(&gDownloadSendState,s32 *,0x18)=0;
-M2C_FIELD(&gDownloadSendState,s32 *,0x1c)=0;
-M2C_FIELD(&gDownloadSendState,u8 *,0x24)=1;
-M2C_FIELD(&gDownloadSendState,s32 *,0x14)=0;
+M2C_FIELD(&gDownloadSendState,s32 *,DL_QUEUE)=0;
+M2C_FIELD(&gDownloadSendState,s32 *,DL_CURRENT)=0;
+M2C_FIELD(&gDownloadSendState,u8 *,DL_STATE)=DL_STATE_START;
+M2C_FIELD(&gDownloadSendState,s32 *,DL_CALLBACK)=0;
 DownloadResetProgress();
 }
 

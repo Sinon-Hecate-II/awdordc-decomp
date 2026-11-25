@@ -29,11 +29,11 @@ void MapEditor_StartMap(void *editor) {
  text=GetMapName(M2C_FIELD(map,u16*,MAP_ID));
  StringCopy((u8*)map+MAP_NAME,text);
  }
- InitPlayerStates();func_020d1f2c();
+ InitPlayerStates();InitMapPlayers();
  M2C_FIELD(*gCurrentMap,u16*,MAP_CURRENT_PLAYER)=0;
  M2C_FIELD(*gCurrentMap,u8*,0x5155)=0;
  M2C_FIELD(*gCurrentMap,u16*,0x52b0)=0;
- LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();func_020a45cc();ResetPlayerTurnBonuses();BeginPlayerPhase();InitPlayerTurnState();
+ LoadMapTileset();LoadUiGraphicsBank(4);RefreshMapCursorCellCache();ResetMapUnits();ResetMapOrders();ResetPlayerTurnBonuses();BeginPlayerPhase();InitPlayerTurnState();
  MapEditor_LoadMapData(M2C_FIELD(*gCurrentMap,u16*,MAP_ID));SetDefaultMapView();
  callback=M2C_FIELD(gCurrentMap[1],void(**)(void),0x50);
  if(callback)callback();
@@ -67,7 +67,10 @@ void MapEditor_ShowIntroMessage(M2C_UNK owner) {
     M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) = (s32) ((M2C_FIELD(layer, s32 *, TEXT_LAYER_PANEL_STATE) & ~TEXT_LAYER_PANEL_REFRESH_TIMER) | 0x01000000);
 }
 
-void func_ov007_02211480(void) {
+/* Leave the map editor: free its graphics bank and sprite objects, shut the
+ * battle-map presentation and sub-screen UI down, and put the game settings
+ * back over the ones the map editor used while it was open. */
+void MapEditor_EndMap(void) {
     M2C_UNK FreeUiGraphicsBank(M2C_UNK);
     M2C_UNK func_0208c748();
     M2C_UNK HideAllSpriteSlots();
@@ -583,21 +586,23 @@ void SetMapEditorTerrainOwner(s32 arg0) {
     M2C_FIELD(&gMapEditorState, u8 *, 1) = arg0;
 }
 
+/* Snapshot every player's live unit count (PLAYER_REC_UNIT_COUNT) into the
+ * editor's per-player cache, so the editor can tell what the map holds. */
 void CachePlayerUnitCounts(void) {
-    s8 func_020d2ff0(s32);
+    u8 GetPlayerUnitCount(s32);
     extern M2C_UNK gPlayerUnitCounts;
-    s32 var_r4;
-    s8 *var_r5;
-    s8 temp_r0;
+    s32 player;
+    s8 *cachedCount;
+    s8 unitCount;
 
-    var_r5 = (s8 *)&gPlayerUnitCounts;
-    var_r4 = 0;
+    cachedCount = (s8 *)&gPlayerUnitCounts;
+    player = 0;
     do {
-        temp_r0 = func_020d2ff0(var_r4);
-        var_r4 += 1;
-        *var_r5 = temp_r0;
-        var_r5 += 1;
-    } while (var_r4 < 5);
+        unitCount = GetPlayerUnitCount(player);
+        player += 1;
+        *cachedCount = unitCount;
+        cachedCount += 1;
+    } while (player < MAX_PLAYERS);
 }
 
 s32 GetCachedPlayerUnitCount(s32 arg0) {

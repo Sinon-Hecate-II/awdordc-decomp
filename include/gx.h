@@ -143,6 +143,14 @@ typedef struct GxViewport {
 #define DISPCAPCNT_CAPTURE_2D 0x80320000
 #define DISPCAPCNT_CAPTURE_3D 0x80330000
 
+/* Master brightness of a display engine: the brightness factor in bits 0..4
+ * (0 = no blend, 16 = full) and the blend mode in bits 14..15.  The sub
+ * engine's register is 0x1000 higher. */
+#define REG_MASTER_BRIGHT      (*(volatile u16 *)0x0400006C)
+#define REG_MASTER_BRIGHT_SUB  (*(volatile u16 *)0x0400106C)
+#define MASTER_BRIGHT_UP   0x4000 /* mode 1: blend towards white (brighten) */
+#define MASTER_BRIGHT_DOWN 0x8000 /* mode 2: blend towards black (dim) */
+
 /* Geometry engine command ports.  Writing a command's parameters to these
  * FIFO ports queues the command; see GBATEK's GX command list. */
 #define REG_GX_MTX_MODE   (*(volatile u32 *)0x04000440)
@@ -309,9 +317,12 @@ extern u16 gVramBankOwners[VRAM_BANK_COUNT]; /* the owner of each bank */
 #define REG_BG2OFS           (*(volatile u32 *)0x04000018)
 #define REG_BG2OFS           (*(volatile u32 *)0x04000018)
 #define REG_BG0CNT           (*(volatile u16 *)0x04000008)
-#define REG_GX_CLEAR_COLOR   (*(volatile u32 *)0x04000350)
-#define REG_GX_CLEAR_DEPTH   (*(volatile u16 *)0x04000354)
+#define REG_GX_CLEAR_COLOR   (*(volatile u32 *)0x04000350) /* background colour, alpha and polygon id; see GX_CLEAR_COLOR_* */
+#define REG_GX_CLEAR_DEPTH   (*(volatile u16 *)0x04000354) /* depth written to the rear buffer: 0x7FFF is the farthest */
 #define REG_GX_CLEAR_OFFSET  (*(volatile u16 *)0x04000356)
+#define GX_CLEAR_COLOR_ALPHA_SHIFT     16 /* bits 16..20: alpha, 0..31 */
+#define GX_CLEAR_COLOR_POLYGON_SHIFT   24 /* bits 24..29: polygon id, 0..63 */
+#define GX_CLEAR_COLOR_FOG_ENABLE 0x8000 /* bit 15: also clear with the fog colour */
 #define REG_GX_FOG_COLOR     (*(volatile u32 *)0x04000358)
 #define REG_GX_FOG_OFFSET    (*(volatile u16 *)0x0400035C)
 #define REG_GX_POLYGON_ATTR  (*(volatile u32 *)0x040004A4)

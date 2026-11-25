@@ -5,16 +5,16 @@
 #include "ov000_unit_entry.h"
 #include "ov000_unit_entry.h"
 #pragma optimization_level 0
-static inline s32 AiWeightedCount(s32 value,s32 kind) { extern u16 data_ov000_021e14aa[]; return data_ov000_021e14aa[kind]*value; }
+static inline s32 AiWeightedCount(s32 value,s32 kind) { extern u16 gAiFriendlyKindHealth[]; return gAiFriendlyKindHealth[kind]*value; }
 #pragma optimization_level reset
 #pragma optimization_level 0
 static inline s32 AiProduct(s32 factor, s32 value) { return factor * value; }
 #pragma optimization_level reset
 #pragma optimization_level 0
 static inline s32 AiScale(s32 value,s32 kind) {
- extern u16 data_ov000_021e14aa[];
+ extern u16 gAiFriendlyKindHealth[];
  s32 ScaleAiDamageByRange(s32,s32,s32);
- value=AiProduct(data_ov000_021e14aa[kind],value);
+ value=AiProduct(gAiFriendlyKindHealth[kind],value);
  return ScaleAiDamageByRange(value,kind,0);
 }
 #pragma optimization_level reset
@@ -32,20 +32,20 @@ return d;
 #pragma pop
 typedef struct { s32 money; s32 unk4; s32 income; u8 pad[128]; } AiPlayer;
 
-void func_ov000_021a7d08(void) {
+void RecountAiUnitKindHealth(void) {
     s32 IsPlayerActive(s32);
     s32 IsSameTeam(u16, s32);
     extern void **gCurrentMap;
-    extern u16 data_ov000_021e1474[];
-    extern u16 data_ov000_021e14aa[];
+    extern u16 gAiEnemyKindHealth[];
+    extern u16 gAiFriendlyKindHealth[];
     extern u16 gPlayerUnitIdBase[];
     void func_ov000_021a7610(void);
 
     register s32 r5 asm("r5");
 
     for (r5 = 0; r5 < 0x1B; r5++) {
-        data_ov000_021e1474[r5] = 0;
-        data_ov000_021e14aa[r5] = data_ov000_021e1474[r5];
+        gAiEnemyKindHealth[r5] = 0;
+        gAiFriendlyKindHealth[r5] = gAiEnemyKindHealth[r5];
     }
 
     for (r5 = 1; r5 < 5; r5++) {
@@ -76,7 +76,7 @@ kind >>= 26;
                     continue;
                 }
                 value = (u32)*(u16 *)(p + 6) << 25;
-data_ov000_021e14aa[kind] += value >> 25;
+gAiFriendlyKindHealth[kind] += value >> 25;
             }
         } else {
             start = gPlayerUnitIdBase[r5] + 1;
@@ -90,7 +90,7 @@ kind >>= 26;
                     continue;
                 }
                 value = (u32)*(u16 *)(p + 6) << 25;
-data_ov000_021e1474[kind] += value >> 25;
+gAiEnemyKindHealth[kind] += value >> 25;
             }
         }
     }
@@ -126,7 +126,7 @@ s32 FindCarrierTargetCandidate(s32 reserveFunds) {
     return FindNearestTargetCandidate();
 }
 
-s32 func_ov000_021a7f1c(s32 arg0) {
+s32 SelectScoredUnitForTarget(s32 arg0) {
 s32 FindAiTargetOfType(s32);s32 EvaluateCaptureTargetCandidate(void);s32 IsFootUnitKind(u8);s32 GetUnitAttackClass(u8);
 s32 IsUnitKindRatioSatisfied(s32,s32);s32 FindAiTargetCandidate(u8);s32 IsGroupUnitRatioOk(s8,s32);
 void ResetRejectedAiTargetCandidates(void);s32 func_ov000_021a4e08(u32,u32,s32);s32 GetUnitBuildCost(u16,s32);
@@ -253,7 +253,7 @@ s32 GetSubmergedAttackDamage(s32,s32,s32); s32 GetAttackDamage(s32,s32,s32);
 s32 ScaleAiDamageByRange(s32,s32,s32); s32 Divide(s32,s32);
 s32 func_ov000_021a7084(u8,u8); s32 CountPlayerUnitsOfKindNotInAiState(s32,s32); s32 GetUnitBuildCost(u16,s32);
 extern u8 *gAiState; extern u32 gUnitKindScores[27];
-extern u16 data_ov000_021e1474[27],data_ov000_021e14aa[27]; extern u8 *gAiCommandState;
+extern u16 gAiEnemyKindHealth[27],gAiFriendlyKindHealth[27]; extern u8 *gAiCommandState;
 extern u8 data_ov000_021df598[]; extern u8 gUnitKindStats[]; extern void **gCurrentMap;
 s32 values[9]; s32 minimum;
 s32 b,a,i,j,k,t,v;
@@ -261,7 +261,7 @@ s32 kind;
 gAiState[6]=func_ov000_021a7348();
 for(a=0;a<27;a++)gUnitKindScores[a]=0;
 for(b=0;b<9;b++)values[b]=0;
-for(i=1;i<27;i++){j=GetUnitThreatClass((u8)i);if(j!=10)values[j]+=data_ov000_021e1474[i];}
+for(i=1;i<27;i++){j=GetUnitThreatClass((u8)i);if(j!=10)values[j]+=gAiEnemyKindHealth[i];}
 t=(u32)(M2C_FIELD(gAiCommandState,u16*,10)<<29)>>29;
 if((t&4) && !(t&2))values[7]*=2;
 for(kind=1;kind<27;kind++){
@@ -270,7 +270,7 @@ for(j=0;j<9;j++){
 if(values[j]==0)continue;
 if(data_ov000_021df598[j]==22)v=GetSubmergedAttackDamage(kind,data_ov000_021df598[j],0);
 else v=GetAttackDamage(kind,data_ov000_021df598[j],0);
-v=ScaleAiDamageByRange(AiProduct(v,data_ov000_021e14aa[kind]),kind,0);
+v=ScaleAiDamageByRange(AiProduct(v,gAiFriendlyKindHealth[kind]),kind,0);
 if(gUnitKindStats[data_ov000_021df598[j]*112+19]&16){
 if(kind==6 && (gAiState[6]==2 || gAiState[6]==4))v>>=1;
 if(kind==23 && (gAiState[6]==1 || gAiState[6]==3))v>>=1;
@@ -312,13 +312,13 @@ for(k=0;k<CountPlayerUnitsOfKindNotInAiState(i,5);k++)gUnitKindScores[i]-=(u32)g
 #pragma push
 #pragma opt_strength_reduction off
 void ScoreUnitKindsForTargetCandidate(s32 index) {
-extern u16 data_ov000_021e1474[],data_ov000_021e14aa[];
+extern u16 gAiEnemyKindHealth[],gAiFriendlyKindHealth[];
 extern u8 *gAiSettings;
 extern u8 gAiTargetCandidates[],gAiTargetCandidateYs[],gUnitKindStats[];
 extern void **gCurrentMap;
 void FloodFillUnitRange(s32,s32,s32,s32,s32); s32 IsUnitOnCurrentTeam(s32); void func_ov000_021a7610(void);
 s32 minx,maxy,r,cx,cy; s32 maxx,y,x,i,off,miny; u8 *unit,*map,*entry;
-for(i=0;i<27;i++) {data_ov000_021e1474[i]=0;data_ov000_021e14aa[i]=data_ov000_021e1474[i];}
+for(i=0;i<27;i++) {gAiEnemyKindHealth[i]=0;gAiFriendlyKindHealth[i]=gAiEnemyKindHealth[i];}
 off=index*12;
 FloodFillUnitRange(gAiTargetCandidates[off],gAiTargetCandidateYs[off],7,gAiSettings[16],0);
 cx=gAiTargetCandidates[off]; cy=gAiTargetCandidateYs[off]; r=gAiSettings[16];
@@ -335,8 +335,8 @@ map=*gCurrentMap;
 i=map[*(u16 *)(map+0x3758+y*2)+x]; if(!i)continue;
 unit=map+0x59a4+i*14;
 if((gUnitKindStats[(((u32)(unit[0]<<26)>>26))*112+19]&7)&&((s8 **)(map+0x52e8))[y][x]<0)continue;
-if(IsUnitOnCurrentTeam(i)==1)data_ov000_021e14aa[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
-else data_ov000_021e1474[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
+if(IsUnitOnCurrentTeam(i)==1)gAiFriendlyKindHealth[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
+else gAiEnemyKindHealth[((u32)(unit[0]<<26)>>26)]+=((u32)(*(u16 *)(unit+6)<<25)>>25);
 }
 func_ov000_021a7610();
 }

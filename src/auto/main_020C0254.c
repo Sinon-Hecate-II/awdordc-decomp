@@ -324,10 +324,10 @@ void CreateMenuAt(M2C_UNK entries, M2C_UNK x, M2C_UNK y, s32 width) {
 }
 
 void DeleteMapMenuSprites(void) {
-    M2C_UNK DeleteTextSprites();
+    M2C_UNK DeleteTextLineSprites();
     M2C_UNK DeleteSpriteObjectsOfClass(M2C_UNK *);
     extern M2C_UNK data_02129630;
-    DeleteTextSprites();
+    DeleteTextLineSprites();
     DeleteSpriteObjectsOfClass(&data_02129630);
 }
 
@@ -510,15 +510,17 @@ void HandleCarriedUnitListInput(void *arg0, u8 *selection) {
     }
 }
 
-void func_020c0d50(void *arg0) {
+/* Key callback of a carried-unit row slot: while the carried-unit list is open,
+ * run the list's D-pad input handler with the focused slot as the selection. */
+void HandleListMenuRowSlotInput(void *slot) {
     void HandleCarriedUnitListInput(void *, u8 *);
-    s32 temp_r4;
+    s32 list;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x10);
+    list = M2C_FIELD(slot, s32 *, SPRITE_SLOT_OWNER);
     if (IsCarriedUnitListOpen() == 0) {
         return;
     }
-    HandleCarriedUnitListInput(temp_r4, arg0);
+    HandleCarriedUnitListInput(list, slot);
 }
 
 /* Click handler for a carried-unit list row (a sprite slot whose id is the row
@@ -540,7 +542,7 @@ return 1;
 s32 CancelListMenuRow(void *slot) {
 u8 index=M2C_FIELD(slot,u8 *,SPRITE_SLOT_ID); void *menu=M2C_FIELD(slot,void **,SPRITE_SLOT_OWNER);
 if(!IsCarriedUnitListOpen())return 0;
-DeleteTextSprites();PlaySoundEffect(0x10018);RunListMenuRowCancelAction(menu,index);return 1;
+DeleteTextLineSprites();PlaySoundEffect(0x10018);RunListMenuRowCancelAction(menu,index);return 1;
 }
 
 /* Focus handler of a list-menu row: when the carried-unit list is still open,
@@ -627,21 +629,23 @@ SpriteCellListSetCellRect(M2C_FIELD(unit,void **,0x64),1,x,y,(u16)width,(u16)hei
 CreateUnitSpriteButtonTask(unit,2);func_020aad18(unit);Show3DSpriteSlide(unit);return unit;
 }
 
+/* Fill gPlayerColorIndex with every player slot's player (army) id: the colour
+ * index the map preview uses to pick a unit marker's tile row. */
 void RefreshPlayerColorIndices(void) {
-    s8 GetPlayerIdForSlot(s32);
+    u8 GetPlayerIdForSlot(s32);
     extern s8 gPlayerColorIndex;
-    s32 var_r4;
-    s8 *var_r5;
-    s8 temp_r0;
+    s32 slot;
+    s8 *colorIndex;
+    s8 playerId;
 
-    var_r5 = &gPlayerColorIndex;
-    var_r4 = 0;
+    colorIndex = &gPlayerColorIndex;
+    slot = 0;
     do {
-        temp_r0 = GetPlayerIdForSlot(var_r4);
-        var_r4 += 1;
-        *var_r5 = temp_r0;
-        var_r5 += 1;
-    } while (var_r4 < 5);
+        playerId = GetPlayerIdForSlot(slot);
+        slot += 1;
+        *colorIndex = playerId;
+        colorIndex += 1;
+    } while (slot < MAX_PLAYERS);
 }
 
 #pragma push

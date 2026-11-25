@@ -161,6 +161,11 @@ enum {
 };
 #define OV001_OPTION_COUNT 3
 
+/* Fields of the shared option-menu state gOv001OptionMenuState (spelled out by
+ * the local Ov001OptionMenuState in ov001_02176F4C.c). */
+#define OV001_OPTION_MENU_SELECTED 0x00 /* u8 selected option, an OV001_OPTION_* value */
+#define OV001_OPTION_MENU_GFX      0x04 /* void *loaded option-row graphics file (source of Ov001_LoadObjTile) */
+
 /* The ov001 wireless (multi-card) setup screen's state (gOv001WirelessState). */
 #define OV001_WIRELESS_CONNECTED 0x00 /* u8: set once the local player's connection was accepted */
 #define OV001_WIRELESS_TIMER     0x02 /* u16: counts up to OV001_WIRELESS_TIMEOUT before the screen moves on */

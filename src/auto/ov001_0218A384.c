@@ -95,14 +95,18 @@ CopyU16(src,sp,6);MIi_CpuCopy32(sp,dst,8);src+=6;dst+=8;
 }
 }
 
-s32 Ov001_CreateSpriteFromLayout(M2C_UNK arg0, M2C_UNK arg1) {
+/* Create a sprite object from layout `layoutIndex` of character bank `bank`:
+ * take a free OAM entry from that screen's pool and copy the layout's entries
+ * into it; returns the entry.  (The queue helper is called without arguments,
+ * so it picks its screen from the bank still in r0.) */
+s32 Ov001_CreateSpriteFromLayout(M2C_UNK bank, M2C_UNK layoutIndex) {
     void Ov001_LoadSpriteObjLayout(M2C_UNK, M2C_UNK, s32);
-    s32 func_ov001_0218c0e4();
-    s32 temp_r0;
+    s32 Ov001_PopFreeSpriteObj();
+    s32 entry;
 
-    temp_r0 = func_ov001_0218c0e4();
-    Ov001_LoadSpriteObjLayout(arg0, arg1, temp_r0);
-    return temp_r0;
+    entry = Ov001_PopFreeSpriteObj();
+    Ov001_LoadSpriteObjLayout(bank, layoutIndex, entry);
+    return entry;
 }
 
 /* Create a sprite object from one layout of a character bank (1 = top screen,
@@ -448,17 +452,21 @@ void *CreatePooledTextPanel(s32 screen, s32 width, s32 height, s32 forward, s32 
     return panel;
 }
 
-void func_ov001_0218ace0(M2C_UNK arg0) {
+/* Release a pooled text panel handed out by CreatePooledTextPanel: give its tile
+ * range back to its screen's tile pool, then put the panel back on the context's
+ * queue of free panels. */
+void Ov001_ReleaseTextPanel(M2C_UNK panel) {
     M2C_UNK Ov001_ReturnTileRangeNode(M2C_UNK);
     void Ov001_QueuePush(void *, s32);
     extern M2C_UNK gOv001TextContext;
-    Ov001_ReturnTileRangeNode(M2C_FIELD((void *)arg0, M2C_UNK *, 0x28));
-    Ov001_QueuePush((void *)M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, 0x670), arg0);
+
+    Ov001_ReturnTileRangeNode((M2C_UNK)((Ov001TextPanel *)panel)->tiles);
+    Ov001_QueuePush((void *)M2C_FIELD((void *)gOv001TextContext, M2C_UNK *, OV001_CTX_PANEL_QUEUE), panel);
 }
 
 #pragma optimization_level 3
 void *CreateTextPanel(s32 arg0,s32 arg1) {
-void *Ov001_Alloc(s32,s32); void func_ov001_0216a17c(void*,void*,s32,s32,s32);
+void *Ov001_Alloc(s32,s32); void SetTextPanelSurface(void*,void*,s32,s32,s32);
 s32 func_020036b8(void); s32 GX_GetBG0ScrPtr(void);
 void func_ov001_0216a230(s32,s32,s32,s32,s32,s32,s32,u32);
 void TextPanel_ClearText(void*,s32); void *Ov001_AddTask(s32,M2C_UNK,void*,s32); void Ov001_UploadTextPanelTiles(M2C_UNK,void*);
@@ -470,7 +478,7 @@ u32 b=*(u16*)(data_ov001_0218fd18+arg0*4); s32 v; u16 c; s32 zero, stride;
 *(void**)((u8*)p+0x28)=Ov001_Alloc((b*a)<<5,32);
 if(arg0==1) { *(volatile u16*)0x4001008 &= ~0x40; *(volatile u16*)0x4001008=(*(volatile u16*)0x4001008&0x43)|0xc00; }
 else { *(volatile u16*)0x4000008 &= ~0x40; *(volatile u16*)0x4000008=(*(volatile u16*)0x4000008&0x43)|0xc00; }
-func_ov001_0216a17c(p,*(void**)((u8*)p+0x28),b,a,4);
+SetTextPanelSurface(p,*(void**)((u8*)p+0x28),b,a,4);
 base=(void*)gOv001TextContext;
 *(void**)((u8*)p+0x18)=p;
 *(void**)((u8*)p+0x1c)=(u8*)base+arg1*8;

@@ -29,7 +29,7 @@ void StringCopy(void *,void *);void func_0206f8c4(u32 *,u32,Flag);
 void func_0207465c(void *,void *,void *);
 s32 func_020700a0(s32),func_02070068(s32);
 void MemCopy(void *,void *,u32),MemMove(void *,void *,u32);s32 MemFree(s32);
-void StringStorageAssignRange(void *,s32,s32);void *func_0206fa14(void *);
+void StringStorageAssignRange(void *,s32,s32);void *StringStorageFree(void *);
 extern u8 data_021008f0[],data_02100888[],data_02100860[],data_0210090c[],data_02100944[],data_02100874[],data_021008b8[],data_021007f4[];
 u32 exception1[3],exception2[3];StringStorage temp;
 u32 required,remaining,oldcap,oldsize,removed,newsize,capacity,inserted,tail,i;
@@ -69,7 +69,7 @@ if(tail)MemMove(data+pos+inserted,data+pos+removed,tail);
 MemMove(data+pos,first,inserted);
 data[newsize]=data_021007f4[0];
 if(large)self->large.length=newsize;else self->small.length=(u8)newsize;
-func_0206fa14(&temp);
+StringStorageFree(&temp);
 }
 return self;
 }
@@ -129,15 +129,18 @@ s32 func_020700b8(s32 arg0) {
 
 #pragma optimization_level 4
 void func_020700d8(void *a) {
-void func_02070108(void *);
+void ReleaseStringBuffer(void *);
 if (--M2C_FIELD(a,s32 *,4)!=0) return;
 M2C_FIELD(*(void **)a,void (**)(void *),12)(a);
-func_02070108(a);
+ReleaseStringBuffer(a);
 }
-void func_02070108(void *a) {
-if (--M2C_FIELD(a,s32 *,8)!=0) return;
-if (!a) return;
-M2C_FIELD(*(void **)a,void (**)(void *),4)(a);
+/* Drop one reference to a reference-counted string buffer: when the count at
+ * +0x08 reaches zero the buffer is destroyed through the deleting destructor
+ * in its vtable slot 1. */
+void ReleaseStringBuffer(void *buffer) {
+if (--M2C_FIELD(buffer,s32 *,8)!=0) return;
+if (!buffer) return;
+M2C_FIELD(*(void **)buffer,void (**)(void *),4)(buffer);
 }
 
 double func_02070134(double a, double b) {

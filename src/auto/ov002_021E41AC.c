@@ -229,9 +229,11 @@ AddSprite((u16)((x+8)&511),(u16)((y+8)&255),(u16)((0x3ff&((0x150+(tile<<4))>>((u
 }
 }
 #pragma scheduling reset
+/* True once both players' versus-screen HP gauges have finished filling: each
+ * view's gauge frame has reached its fill length. */
 s32 AreUnitViewGaugesDone(void) {
-    extern M2C_UNK gUnitViews;
-    if ((M2C_FIELD(&gUnitViews, u8 *, 0) == M2C_FIELD(&gUnitViews, u8 *, 1)) && (M2C_FIELD(&gUnitViews, u8 *, 0x2C) == M2C_FIELD(&gUnitViews, u8 *, 0x2D))) {
+    extern u8 gUnitViews[];
+    if ((gUnitViews[UNIT_VIEW_GAUGE_FRAME] == gUnitViews[UNIT_VIEW_GAUGE_LENGTH]) && (gUnitViews[UNIT_VIEW_SIZE + UNIT_VIEW_GAUGE_FRAME] == gUnitViews[UNIT_VIEW_SIZE + UNIT_VIEW_GAUGE_LENGTH])) {
         return 1;
     }
     return 0;

@@ -18,7 +18,7 @@ void func_ov007_0221a59c(void) {
 extern void *gCur3DSpriteEngine,*g3DSpriteEngineSub;extern void **gCurrentMap;
 extern u8 gHeapObjectVTable[],gSpriteDesc16x16[],gSpriteDesc16x32[],gSpriteDesc32x16[],gSpriteDesc64x32[];
 extern s32 gMapEditorMapNameTileWidth;extern u32 gFrameCounter;
-void AddSprite(u16,u8,u16,void*,s32);void func_020a9774(void*,s32,s32,s32,s32);
+void AddSprite(u16,u8,u16,void*,s32);void DrawNumberSprite(void*,s32,s32,s32,s32);
 s32 GetCachedPlayerUnitCount(s32);s32 GetMapEditorMode(void);s32 GetMapEditorUnitOwner(void);s32 MapEditor_GetPropertyCount(void);
 void DrawFrameRectBorder(s32,s32,s32,s32);void SetTextSpriteValue(void*,s32);void DrawTextSprite(void*);
 void DrawTileRow(u16,u8,u16,u16,s32);s32 MapEditor_PlayerHasTeam(s32);
@@ -33,7 +33,7 @@ sp[40]&=~224;
 gCur3DSpriteEngine=g3DSpriteEngineSub;
 for(i=0,x=0x85,tile=0x158;i<4;x+=0x1d,tile+=4,i++){
 AddSprite((u16)(x&0x1ff),0x9e,(u16)(((u16)((i+5)<<12)|0x400)|(tile&0x3ff)),gSpriteDesc16x16,0);
-func_020a9774(sp,x+0x18,0xa6,3,GetCachedPlayerUnitCount(i+1));
+DrawNumberSprite(sp,x+0x18,0xa6,3,GetCachedPlayerUnitCount(i+1));
 }
 width=M2C_FIELD(*gCurrentMap,u16 *,0x5144);height=M2C_FIELD(*gCurrentMap,u16 *,0x5146);
 DrawFrameRectBorder(64-((width*4)>>1),80-((height*4)>>1),0x80,1);
@@ -44,14 +44,14 @@ switch(mode){
 case 0:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
-func_020a9774(sp,0x78,0x92,3,99-MapEditor_GetPropertyCount());
+DrawNumberSprite(sp,0x38,0x92,4,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
+DrawNumberSprite(sp,0x78,0x92,3,99-MapEditor_GetPropertyCount());
 break;
 case 1:
 AddSprite(24,160,(u16)((0x3ff&(372>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(11<<12)),gSpriteDesc32x16,15);
 AddSprite(88,160,(u16)((0x3ff&(380>>((u32)(**(u16**)gCur3DSpriteEngine<<17)>>30)))|(12<<12)),gSpriteDesc32x16,15);
-func_020a9774(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
-func_020a9774(sp,0x78,0x92,4,99-MapEditor_GetPropertyCount());
+DrawNumberSprite(sp,0x38,0x92,3,50-GetCachedPlayerUnitCount(GetMapEditorUnitOwner()));
+DrawNumberSprite(sp,0x78,0x92,4,99-MapEditor_GetPropertyCount());
 break;
 }
 M2C_FIELD(sp,u16 *,18)=0x14c;sp[33]=3;

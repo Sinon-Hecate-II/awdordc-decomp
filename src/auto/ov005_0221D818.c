@@ -136,21 +136,21 @@ void func_ov005_0221e1e8(void) {
 }
 
 void func_ov005_0221e1f4(M2C_UNK arg0) {
-    M2C_UNK func_02086344();
+    M2C_UNK MoveVoiceChatWidgetForMessageBox();
     M2C_UNK SetMessageBoxState(M2C_UNK);
     M2C_UNK func_ov005_02218fd0(M2C_UNK);
     SetMessageBoxState(3);
-    func_02086344();
+    MoveVoiceChatWidgetForMessageBox();
     func_ov005_02218fd0(arg0);
 }
 
 void func_ov005_0221e214(void) {
     M2C_UNK ClearMessageBoxState();
-    M2C_UNK func_02086370();
+    M2C_UNK RestoreVoiceChatWidgetPosition();
     func_020ab200();
-    func_0209bf7c();
+    DeleteTextSprites();
     ClearMessageBoxState();
-    func_02086370();
+    RestoreVoiceChatWidgetPosition();
 }
 
 #pragma opt_strength_reduction off

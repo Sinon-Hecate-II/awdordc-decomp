@@ -39,7 +39,7 @@ Link_PeekPacket kind:function(arm,size=0x48) addr:0x02223878
 Link_PopPacket kind:function(arm,size=0x6c) addr:0x022238c0
 Link_GetQueueCount kind:function(arm,size=0x10) addr:0x0222392c
 Link_InitChannelState kind:function(arm,size=0x8c) addr:0x0222393c
-func_ov010_022239c8 kind:function(arm,size=0x2c) addr:0x022239c8
+Link_ReleaseChannelState kind:function(arm,size=0x2c) addr:0x022239c8
 Link_AdvancePacket kind:function(arm,size=0x2c) addr:0x022239f4
 Link_ResetChannelSequence kind:function(arm,size=0x20) addr:0x02223a20
 Link_AssignPacketSequence kind:function(arm,size=0xd8) addr:0x02223a40
@@ -130,7 +130,7 @@ SubmitWebSyncRequest kind:function(arm,size=0xc4) addr:0x022265ac
 CompleteWebSyncRequest kind:function(arm,size=0x54) addr:0x02226670
 SubmitWebSyncRequestAndCreateSprite kind:function(arm,size=0x28) addr:0x022266c4
 IsProfileSyncOverdueAlt kind:function(arm,size=0x4c) addr:0x022266ec
-func_ov010_02226738 kind:function(arm,size=0xc) addr:0x02226738
+Ov010_GetWebTransactionStatus kind:function(arm,size=0xc) addr:0x02226738
 GetOnlinePlayerTotal kind:function(arm,size=0x6c) addr:0x02226744
 Ov010_GetWebPlayerEntry kind:function(arm,size=0x6c) addr:0x022267b0
 GetOnlinePlayerCount kind:function(arm,size=0x6c) addr:0x0222681c
@@ -164,7 +164,7 @@ Ov010Online_StartSession kind:function(arm,size=0xf4) addr:0x02227e20
 Ov010Online_SetupPeerReceiveBuffers kind:function(arm,size=0x74) addr:0x02227f14
 SetOnlinePlayerRecord kind:function(arm,size=0x24) addr:0x02227f88
 Ov010Online_OnHostJoinEvent kind:function(arm,size=0xa4) addr:0x02227fac
-func_ov010_02228050 kind:function(arm,size=0x2c) addr:0x02228050
+Ov010Online_ScoreMatch kind:function(arm,size=0x2c) addr:0x02228050
 func_ov010_0222807c kind:function(arm,size=0xe0) addr:0x0222807c
 func_ov010_0222815c kind:function(arm,size=0x20) addr:0x0222815c
 Ov010Online_MatchStartNoop kind:function(arm,size=0x4) addr:0x0222817c
@@ -178,8 +178,8 @@ GetNetErrorCode kind:function(arm,size=0x1c) addr:0x022282f8
 func_ov010_02228314 kind:function(arm,size=0xc) addr:0x02228314
 func_ov010_02228320 kind:function(arm,size=0xc) addr:0x02228320
 func_ov010_0222832c kind:function(arm,size=0x2e8) addr:0x0222832c
-func_ov010_02228614 kind:function(arm,size=0x2c) addr:0x02228614
-func_ov010_02228640 kind:function(arm,size=0x2c) addr:0x02228640
+Ov010Online_StartWfcConnection kind:function(arm,size=0x2c) addr:0x02228614
+Ov010Online_WaitForConnection kind:function(arm,size=0x2c) addr:0x02228640
 func_ov010_0222866c kind:function(arm,size=0xc) addr:0x0222866c
 Ov010Online_PollMatchmaking kind:function(arm,size=0x54) addr:0x02228678
 func_ov010_022286cc kind:function(arm,size=0x24) addr:0x022286cc
@@ -205,7 +205,7 @@ func_ov010_02228cbc kind:function(arm,size=0xc) addr:0x02228cbc
 func_ov010_02228cc8 kind:function(arm,size=0xc) addr:0x02228cc8
 func_ov010_02228cd4 kind:function(arm,size=0x10) addr:0x02228cd4
 Ov010Online_FreeWorkBlock kind:function(arm,size=0x38) addr:0x02228ce4
-func_ov010_02228d1c kind:function(arm,size=0x2c) addr:0x02228d1c
+CreateOnlineSessionObject kind:function(arm,size=0x2c) addr:0x02228d1c
 func_ov010_02228d48 kind:function(arm,size=0x238) addr:0x02228d48
 func_ov010_02228f80 kind:function(arm,size=0x210) addr:0x02228f80
 func_ov010_02229190 kind:function(arm,size=0x154) addr:0x02229190
@@ -279,7 +279,7 @@ func_ov010_0222a130 kind:function(arm,size=0x4) addr:0x0222a130
 func_ov010_0222a134 kind:function(arm,size=0x14) addr:0x0222a134
 func_ov010_0222a148 kind:function(arm,size=0x14) addr:0x0222a148
 ReportNetErrorToCallback kind:function(arm,size=0xb0) addr:0x0222a15c
-func_ov010_0222a20c kind:function(arm,size=0x2c) addr:0x0222a20c
+CreateNetErrorReporter kind:function(arm,size=0x2c) addr:0x0222a20c
 func_ov010_0222a238 kind:function(arm,size=0x20) addr:0x0222a238
 Ov010Online_ReleaseTextLayer kind:function(arm,size=0x20) addr:0x0222a258
 func_ov010_0222a278 kind:function(arm,size=0x20) addr:0x0222a278
@@ -403,16 +403,16 @@ data_ov010_0222c4b8 kind:data(any) addr:0x0222c4b8
 data_ov010_0222c4c4 kind:data(any) addr:0x0222c4c4
 data_ov010_0222c4cc kind:data(any) addr:0x0222c4cc
 gOnlineAnnounceRefresherClass kind:data(any) addr:0x0222c4dc
-data_ov010_0222c544 kind:data(any) addr:0x0222c544
+gNetErrorReporterClass kind:data(any) addr:0x0222c544
 gNetErrorSpriteClass kind:data(any) addr:0x0222c58c
 gOnlineMatchNameLabelClass kind:data(any) addr:0x0222c5d4
 gOnlineLobbyNameLabelClass kind:data(any) addr:0x0222c6c4
 data_ov010_0222c8c4 kind:data(any) addr:0x0222c8c4 ambiguous
 data_ov010_0222c8f4 kind:data(any) addr:0x0222c8f4
-data_ov010_0222c900 kind:data(any) addr:0x0222c900
+gNetErrorReporterVTable kind:data(any) addr:0x0222c900
 gNetErrorSpriteVTable kind:data(any) addr:0x0222c914
 gOnlineNameLabelVTable kind:data(any) addr:0x0222c928
-data_ov010_0222c93c kind:data(any) addr:0x0222c93c
+gOnlineAnnounceRefresherVTable kind:data(any) addr:0x0222c93c
 gVoiceChatState kind:bss addr:0x0222c960
 gLinkCodecState kind:bss addr:0x0222c970
 gVoiceChatContexts kind:bss addr:0x0222c98c
@@ -452,7 +452,7 @@ data_ov010_0222ef08 kind:bss addr:0x0222ef08
 data_ov010_0222ef10 kind:bss addr:0x0222ef10
 data_ov010_0222ef28 kind:bss addr:0x0222ef28
 data_ov010_0222ef3c kind:bss addr:0x0222ef3c
-data_ov010_0222ef4c kind:bss addr:0x0222ef4c
+gOv010WfcConnection kind:bss addr:0x0222ef4c
 data_ov010_0222ef58 kind:bss addr:0x0222ef58
 data_ov010_0222ef88 kind:bss addr:0x0222ef88
 data_ov010_0222ef8c kind:bss addr:0x0222ef8c

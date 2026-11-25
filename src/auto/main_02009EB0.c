@@ -268,20 +268,33 @@ void StartDirectoryRead(void *requestArg, s32 index) {
     ExecuteFileCommand(request, 2);
 }
 
-void func_0200a380(void *p){
-s32 a,b,c;void *q;
-a=M2C_FIELD(p,s32 *,0x2c);b=M2C_FIELD(p,s32 *,0x38);
-q=M2C_FIELD(p,void **,8);c=M2C_FIELD(p,s32 *,0x30);
-M2C_FIELD(p,s32 *,0x2c)=a+b;
-M2C_FIELD(q,void (**)(void *,s32,s32,s32),0x48)(q,c,a,b);
+/* File command 0, read a block: hand the block at the request's stream position
+ * to the file's archive read procedure (FSArchive::readProc), which reads the
+ * request's clamped length into the request's buffer, then move the position
+ * past the block.  Returns what the read procedure returns (0, or 6 while the
+ * transfer is still in progress). */
+void ReadFileBlock(void *request) {
+    s32 position = M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS);
+    s32 length = M2C_FIELD(request, s32 *, FS_REQ_BLOCK_LENGTH);
+    void *file = M2C_FIELD(request, void **, FS_REQ_FILE);
+    void *buffer = M2C_FIELD(request, void **, FS_REQ_BLOCK_BUFFER);
+
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS) = position + length;
+    M2C_FIELD(file, void (**)(void *, s32, s32, s32), 0x48)(file, buffer, position, length);
 }
 
-void func_0200a3ac(void *p){
-s32 a,b,c;void *q;
-a=M2C_FIELD(p,s32 *,0x2c);b=M2C_FIELD(p,s32 *,0x38);
-q=M2C_FIELD(p,void **,8);c=M2C_FIELD(p,s32 *,0x30);
-M2C_FIELD(p,s32 *,0x2c)=a+b;
-M2C_FIELD(q,void (**)(void *,s32,s32,s32),0x4c)(q,c,a,b);
+/* File command 1, write a block: hand the block at the request's stream position
+ * to the file's archive write procedure (FSArchive::writeProc), which writes the
+ * request's clamped length from the request's buffer, then move the position
+ * past the block. */
+void WriteFileBlock(void *request) {
+    s32 position = M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS);
+    s32 length = M2C_FIELD(request, s32 *, FS_REQ_BLOCK_LENGTH);
+    void *file = M2C_FIELD(request, void **, FS_REQ_FILE);
+    void *buffer = M2C_FIELD(request, void **, FS_REQ_BLOCK_BUFFER);
+
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS) = position + length;
+    M2C_FIELD(file, void (**)(void *, s32, s32, s32), FS_FILE_WRITE_PROC)(file, buffer, position, length);
 }
 
 /* FS directory command (2): reads the FNT main-table record of the directory
@@ -563,11 +576,15 @@ s32 OpenFileById(void *request) {
     return ExecuteFileCommand(request, 7);
 }
 
-s32 func_0200abac(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0x24) = (s32) M2C_FIELD(arg0, s32 *, 0x30);
-    M2C_FIELD(arg0, s32 *, 0x2C) = (s32) M2C_FIELD(arg0, s32 *, 0x30);
-    M2C_FIELD(arg0, s32 *, 0x28) = (s32) M2C_FIELD(arg0, s32 *, 0x34);
-    M2C_FIELD(arg0, s32 *, 0x20) = (s32) M2C_FIELD(arg0, s32 *, 0x38);
+/* File command 7 (open range), the second half of OpenFileById: install the
+ * archive range the open-by-id command put in the request's scratch fields as the
+ * request's open read window (its current position starts at the window start),
+ * record the opened file's id and succeed. */
+s32 InstallFileRange(void *request) {
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_START) = (s32) M2C_FIELD(request, s32 *, FS_REQ_OPEN_START);
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_POS) = (s32) M2C_FIELD(request, s32 *, FS_REQ_OPEN_START);
+    M2C_FIELD(request, s32 *, FS_REQ_RANGE_END) = (s32) M2C_FIELD(request, s32 *, FS_REQ_OPEN_END);
+    M2C_FIELD(request, s32 *, FS_REQ_OPEN_FILE_ID) = (s32) M2C_FIELD(request, s32 *, FS_REQ_OPEN_ID);
     return 0;
 }
 

@@ -564,22 +564,25 @@ void Mb_InitBootState(void) {
     M2C_FIELD(&gMbBootConfig, s16 *, 6) = OS_GetLockID();
 }
 
+/* Returns 1 when the cartridge in the slot still holds the header recorded at
+ * boot (Mb_CheckCartridgeHeader) and no game-code comparison was requested
+ * (Mb_IsGameCodeCompared), 0 otherwise. */
 s32 Mb_IsCartridgeUnchanged(void) {
-    u32 func_02018c84(void);
-    s32 func_02018c9c();
-    if ((func_02018c9c() != 0) && (func_02018c84() == 0)) {
+    u32 Mb_IsGameCodeCompared(void);
+    s32 Mb_CheckCartridgeHeader();
+    if ((Mb_CheckCartridgeHeader() != 0) && (Mb_IsGameCodeCompared() == 0)) {
         return 1;
     }
     return 0;
 }
 
-u32 func_02018c84(void) {
+u32 Mb_IsGameCodeCompared(void) {
     extern M2C_UNK data_027ffc30;
     return (u32) (M2C_FIELD(&data_027ffc30, u8 *, 5) << 0x1F) >> 0x1F;
 }
 
 #pragma opt_strength_reduction off
-s32 func_02018c9c(void) {
+s32 Mb_CheckCartridgeHeader(void) {
     extern M2C_UNK gMbBootConfig;
     extern M2C_UNK data_027ffc30;
     void Mb_LockCartridgeAccess(M2C_UNK, void *);

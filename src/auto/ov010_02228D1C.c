@@ -42,14 +42,16 @@ typedef struct Ov010Member { s32 function; s32 delta; } Ov010Member;
 #pragma cplusplus off
 typedef struct QueueNode { struct QueueNode *next; u32 unk4; u8 kind; u8 low:4; u8 high:4; u16 value; s32 size; } QueueNode;
 
-void func_ov010_02228d1c(M2C_UNK arg0) {
+/* Create the online session's sprite object (owned by `owner`) once the session's
+ * work block has been allocated (OV010_FLAG_STARTED); do nothing before that. */
+void CreateOnlineSessionObject(M2C_UNK owner) {
     M2C_UNK CreateSpriteObject(M2C_UNK *, M2C_UNK);
     s32 IsOnlineSessionFlagSet(M2C_UNK);
     extern M2C_UNK data_ov010_0222c218;
-    if (IsOnlineSessionFlagSet(0) == 0) {
+    if (IsOnlineSessionFlagSet(OV010_FLAG_STARTED) == 0) {
         return;
     }
-    CreateSpriteObject(&data_ov010_0222c218, arg0);
+    CreateSpriteObject(&data_ov010_0222c218, owner);
 }
 
 #pragma cplusplus on
@@ -73,7 +75,7 @@ extern "C" void func_ov010_02228d48(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s8 func_0203be54(s8, s32, s32);
     M2C_UNK StartHostingMatch(s32, s32, s32, s32, s32, s32);
     M2C_UNK StringFormatBuffer(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov010_02228050(void);
+    void Ov010Online_ScoreMatch(void);
     void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
@@ -142,7 +144,7 @@ volatile Ov010CallbackFn d;
                    x,
                    y);
 
-    StartHostingMatch(arg1 & 0xff, (s32)buf, (s32)Ov010Online_OnHostJoinEvent, arg3, (s32)func_ov010_02228050, arg5);
+    StartHostingMatch(arg1 & 0xff, (s32)buf, (s32)Ov010Online_OnHostJoinEvent, arg3, (s32)Ov010Online_ScoreMatch, arg5);
 #pragma opt_dead_assignments reset
 }
 #pragma cplusplus off
@@ -168,7 +170,7 @@ extern "C" void func_ov010_02228f80(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 
     s8 func_0203be54(s8, s32, s32);
     M2C_UNK func_020388d8(s32,s32,s32,s32,...);
     M2C_UNK StringFormatBuffer(M2C_UNK, s32, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
-    void func_ov010_02228050(void);
+    void Ov010Online_ScoreMatch(void);
     void Ov010Online_OnHostJoinEvent(void);
 
     extern Ov010Member data_ov010_0222c128;
@@ -232,7 +234,7 @@ volatile Ov010CallbackFn d;
     func_0203be54(0, (s32)&data_ov010_0222c4cc, (s32)&data_ov010_0222ef08);
 
     arg3=arg6;
-    func_020388d8(0,60,(u8)arg1,arg2,(s32)Ov010Online_OnHostJoinEvent,arg4,(s32)func_ov010_02228050,arg3);
+    func_020388d8(0,60,(u8)arg1,arg2,(s32)Ov010Online_OnHostJoinEvent,arg4,(s32)Ov010Online_ScoreMatch,arg3);
 #pragma opt_dead_assignments reset
 }
 #pragma cplusplus on

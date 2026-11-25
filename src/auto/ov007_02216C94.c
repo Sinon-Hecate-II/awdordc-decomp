@@ -438,11 +438,15 @@ void func_ov007_02217a5c(void) {
     Map_ScatterWastelandDebris();
 }
 
-s8 *MapEditor_GetPaletteEntries(s32 arg0) {
- extern s8 *data_ov007_0221f500[2];
- s8 *arr[2];
- arr[0]=data_ov007_0221f500[0];arr[1]=data_ov007_0221f500[1];
- return arr[arg0];
+/* The map editor's palette entry table for `page` (MAP_EDITOR_PAGE_TERRAIN or
+ * MAP_EDITOR_PAGE_UNIT): MAP_EDITOR_PALETTE_ENTRY_SIZE-byte entry records that
+ * start with the kind and end with a negative kind. */
+s8 *MapEditor_GetPaletteEntries(s32 page) {
+    extern s8 *gMapEditorPaletteEntries[2];
+    s8 *tables[2];
+    tables[0] = gMapEditorPaletteEntries[0];
+    tables[1] = gMapEditorPaletteEntries[1];
+    return tables[page];
 }
 
 /* Index of `kind` in the map editor's palette entries for `page`

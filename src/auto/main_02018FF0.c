@@ -9,7 +9,7 @@ void Mb_SendBootParams(void) {
     extern s16 gMbBootSync;
     extern M2C_UNK data_02136cc0;
     extern M2C_UNK data_02136cc4;
-    extern s32 func_02018c9c(void);
+    extern s32 Mb_CheckCartridgeHeader(void);
     void Mb_LockCartridgeAccess(M2C_UNK, void *);
     void Mb_SaveCartridgeBusConfig(void *);
     void Mb_RestoreCartridgeBusConfig(void *);
@@ -69,7 +69,7 @@ void Mb_SendBootParams(void) {
         }
         *(u16 *)(dst + 6) = *(u16 *)((u8 *)&data_02136cc0 + 0xB0);
         *(u32 *)(dst + 8) = *(u32 *)((u8 *)&data_02136cc0 + 0xAC);
-        p[1] = (func_02018c9c() != 0) ? 1 : 0;
+        p[1] = (Mb_CheckCartridgeHeader() != 0) ? 1 : 0;
         p[0] = 1;
     }
 
@@ -87,10 +87,16 @@ void Mb_SendBootParams(void) {
     OS_SetIrqEnableMask(old);
 }
 
-void Mb_BootHandshakeHandler(s32 a,s32 b) {
-extern s16 gMbBootSync;
-if((b&63)==1){gMbBootSync=1;return;}
-SystemHalt();
+/* Multiboot boot-ready handler (FIFO tag MB_FIFO_TAG): the ARM7 reports that it
+ * is ready for the boot parameters, so raise the sync flag Mb_SendBootParams
+ * waits on; any other status halts this console. */
+void Mb_BootHandshakeHandler(s32 unused, s32 message) {
+    extern s16 gMbBootSync;
+    if ((message & MB_STATUS_MASK) == MB_STATUS_BOOT_READY) {
+        gMbBootSync = 1;
+        return;
+    }
+    SystemHalt();
 }
 
 /* ARM7 multiboot message handler: on the boot-complete status, run the boot
@@ -198,20 +204,23 @@ s32 Mb_StringCopyBounded(s8 *dst, s8 *src, s32 size) {
     return Mb_StringLength(src);
 }
 
-s32 Mb_StringLength(s8 *arg0) {
-    s32 var_r2;
+/* Return the length of the NUL-terminated string `string`. */
+s32 Mb_StringLength(s8 *string) {
+    s32 length;
 
-    var_r2 = 0;
-    if (*arg0 != 0) {
+    length = 0;
+    if (*string != 0) {
         do {
-            var_r2 += 1;
-        } while (*(arg0 + var_r2) != 0);
+            length += 1;
+        } while (*(string + length) != 0);
     }
-    return var_r2;
+    return length;
 }
 
 #pragma opt_propagation off
-s32 func_020194e0(s8 *a, s8 *b) {
+/* Compare the NUL-terminated strings `a` and `b` byte by byte and return the
+ * difference of the first pair that differs (0 when they are equal). */
+s32 Mb_StringCompare(s8 *a, s8 *b) {
  for (; *a == *b && *a != 0; a++, b++) {}
  return *a - *b;
 }

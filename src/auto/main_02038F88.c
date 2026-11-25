@@ -52,11 +52,13 @@ u8 GetCurrentConnectionIndex(void) {
     return M2C_FIELD(gt2GetConnectionData(), u8 *, 0);
 }
 
+/* Return the first of the session's 32 player-connection slots that is empty, or
+ * -1 when every slot is taken. */
 s32 FindFreePlayerSlot(void) {
     extern M2C_UNK gPlayerConnections;
-    s32 i;
-    for (i = 0; i < 32; i++) {
-        if ((&gPlayerConnections)[i] == 0) return i;
+    s32 slot;
+    for (slot = 0; slot < 32; slot++) {
+        if ((&gPlayerConnections)[slot] == 0) return slot;
     }
     return -1;
 }
@@ -362,7 +364,7 @@ void func_02039844(s32 arg0, s32 arg1) {
     M2C_UNK SetGpiStatus();
     M2C_UNK Qr2_StateChanged();
     M2C_UNK GetSessionPlayerSlot();
-    M2C_UNK func_0203bd0c();
+    M2C_UNK NatNeg_RequestShutdown();
     M2C_UNK ResetClientSession();
     void SetNetState(s32);
 
@@ -517,7 +519,7 @@ void func_02039844(s32 arg0, s32 arg1) {
             return;
         }
         if (M2C_FIELD(base, u8 *, 0x381) != 0) return;
-        func_0203bd0c();
+        NatNeg_RequestShutdown();
         ResetClientSession();
         SetNetState(3);
         return;

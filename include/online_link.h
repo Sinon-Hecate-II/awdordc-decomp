@@ -29,6 +29,7 @@
 #define OV010_SESSION_WORK_BLOCK 0x3C   /* void *: the session's work block */
 #define OV010_SESSION_WORK_SIZE  0x10E0 /* bytes of that block */
 #define OV010_SESSION_STEP_FLAGS 0x54   /* s32: OV010_FLAG_* bits (see common.h) */
+#define OV010_SESSION_SCORE_CALLBACK 0x20 /* s32 (*)(s32 index, s32 arg): the app's score for a browsed matchmaking session, added to a base score of 1 */
 
 /* The online session's outbound packet queue (gOv010OnlineSession): a singly
  * linked list of nodes {void *next; Ov010Packet packet;}, the packet's kind

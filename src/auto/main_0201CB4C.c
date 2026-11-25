@@ -234,17 +234,21 @@ void ClearCurrentRawConnection(void) {
     M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), s32 *, 0xA4) = 0;
 }
 
+/* Open the current socket as a raw, connectionless one for a plain
+ * request/response exchange (DHCP, DNS): mark it listening for a reply and drop
+ * any received data still buffered. */
 void OpenRawConnection(void) {
     extern M2C_UNK gSocketManager;
-    M2C_UNK *inner;
-    M2C_UNK *q;
-    inner = (M2C_UNK *)M2C_FIELD(&gSocketManager, void **, 4);
-    q = (M2C_UNK *)M2C_FIELD(inner, void **, 0xA4);
-    if (q == 0) {
+    void *socketObject;
+    void *socket;
+
+    socketObject = M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD);
+    socket = M2C_FIELD(socketObject, void **, SOCK_OBJECT_RAW);
+    if (socket == 0) {
         return;
     }
-    M2C_FIELD(q, u8 *, 8) = 0xA;
-    M2C_FIELD(q, s32 *, 0x44) = 0;
+    M2C_FIELD(socket, u8 *, SOCKET_STATE) = SOCKET_STATE_UDP_LISTEN;
+    M2C_FIELD(socket, s32 *, SOCKET_RX_LENGTH) = 0;
 }
 
 /* Point the current socket's connection at the given peer: stage the peer port

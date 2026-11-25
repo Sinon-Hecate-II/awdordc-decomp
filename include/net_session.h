@@ -26,6 +26,8 @@
 #define NET_SESSION_EVENT_DATA     0x84 /* s32 argument handed to that callback */
 #define NET_SESSION_EVENT_CALLBACK5 0x88 /* void (*)(s32,s32,s32,s32,s32,s32): wider event callback invoked instead of the +0x80 one while the byte at +0x389 is 2 or 3 */
 #define NET_SESSION_EVENT_DATA5    0x8c /* s32 argument handed to the wider callback */
+#define NET_SESSION_PEER_CALLBACK  0x90 /* void (*)(s32 error, s32 wasConnected, s32 pending, s32 playerId, s32 playerSlot, s32 data): peer connection event callback (installed by the ov010 session) */
+#define NET_SESSION_PEER_DATA      0x94 /* s32 argument handed to the peer connection callback */
 
 /* The session states whose online subsystem reports an operation's error. */
 enum {

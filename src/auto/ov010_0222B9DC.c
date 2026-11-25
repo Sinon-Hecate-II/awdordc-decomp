@@ -109,14 +109,16 @@ void RefreshOnlinePlayerAnnounce(M2C_UNK owner) {
     SpawnOnlinePlayerAnnounce(owner);
 }
 
-void SpawnOnlinePlayerAnnounceRefresher(M2C_UNK arg0) {
-    extern M2C_UNK data_ov010_0222c93c;
+/* Create the online player-announce refresher owned by `owner` and install its
+ * vtable at offset 0. */
+void SpawnOnlinePlayerAnnounceRefresher(M2C_UNK owner) {
+    extern M2C_UNK gOnlineAnnounceRefresherVTable;
     extern M2C_UNK gOnlineAnnounceRefresherClass;
-    M2C_UNK **temp_r0;
+    M2C_UNK **refresher;
 
-    temp_r0 = CreateSpriteFromClass(&gOnlineAnnounceRefresherClass, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov010_0222c93c;
+    refresher = CreateSpriteFromClass(&gOnlineAnnounceRefresherClass, owner);
+    if (refresher != NULL) {
+        *refresher = &gOnlineAnnounceRefresherVTable;
     }
 }
 
@@ -217,13 +219,13 @@ M2C_UNK StringStorageReplaceWithText(void *storage, M2C_UNK pos, u32 remove, M2C
 }
 
 s32 func_ov010_0222bd24(s32 arg0) {
-    M2C_UNK func_0206fa14(s32);
-    func_0206fa14(arg0 + 0x44);
+    M2C_UNK StringStorageFree(s32);
+    StringStorageFree(arg0 + 0x44);
     return arg0;
 }
 
 s32 func_ov010_0222bd3c(s32 arg0) {
-    func_0206fa14(arg0 + 0x44);
+    StringStorageFree(arg0 + 0x44);
     MemFree(arg0);
     return arg0;
 }

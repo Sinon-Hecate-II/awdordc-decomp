@@ -298,4 +298,11 @@ typedef struct SocketConfigTemplate {
     SocketConfigTask txTask; /* +0x14 */
 } SocketConfigTemplate;
 
+/* Arguments of SocketCreate, the BSD socket() equivalent: the stream type builds
+ * the socket from gTcpSocketConfig, every other type from gUdpSocketConfig.  The
+ * stack only speaks IPv4 and the templates fix the buffering, so the address
+ * family (2 = AF_INET) and protocol (0) arguments are ignored. */
+#define SOCK_TYPE_STREAM 1 /* stream (TCP) socket */
+#define SOCK_TYPE_DGRAM  2 /* datagram (UDP) socket */
+
 #endif

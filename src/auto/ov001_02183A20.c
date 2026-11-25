@@ -5,7 +5,7 @@
 #pragma opt_common_subs off
 void func_ov001_02183a20(void) {
     s32 Ov001_HitScrollbarPart(void);
-    void func_ov001_02183cec(s8);
+    void Ov001_PressScrollbarCap(s8);
     s32 Ov001_HitReleasedScrollbarCap(void);
     void Ov001_ScrollbarJumpToTouch(void);
     void Ov001_UpdateScrollbarDrag(void);
@@ -37,10 +37,10 @@ void func_ov001_02183a20(void) {
                     return;
                 }
                 case 2:
-                    func_ov001_02183cec(2);
+                    Ov001_PressScrollbarCap(2);
                     return;
                 case 3:
-                    func_ov001_02183cec(3);
+                    Ov001_PressScrollbarCap(3);
                     return;
                 case 4:
                     Ov001_ScrollbarJumpToTouch();
@@ -62,7 +62,7 @@ void func_ov001_02183a20(void) {
             if (r != 2) {
                 return;
             }
-            func_ov001_02183cec(2);
+            Ov001_PressScrollbarCap(2);
             return;
         }
         case 3: {
@@ -76,7 +76,7 @@ void func_ov001_02183a20(void) {
             if (r != 3) {
                 return;
             }
-            func_ov001_02183cec(3);
+            Ov001_PressScrollbarCap(3);
             return;
         }
         default:
@@ -152,17 +152,20 @@ void Ov001_PlayScrollDragSound(s32 handlePos) {
     Ov001_SetScrollDragSoundPitch(0xFFFF, pitch);
 }
 
-void func_ov001_02183cec(s8 arg0) {
+/* A scroll bar cap was pressed (`cap` is OV001_SCROLLBAR_PART_UP or _DOWN):
+ * hold the bar in cap-scroll state and report the matching press event so the
+ * owning list starts scrolling one page. */
+void Ov001_PressScrollbarCap(s8 cap) {
     extern void *gOv001Scrollbar;
-    s8 var_r1;
+    s8 event;
 
-    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1C) = arg0;
-    if (arg0 == 2) {
-        var_r1 = 4;
+    M2C_FIELD(gOv001Scrollbar, s8 *, OV001_SCROLLBAR_STATE) = cap;
+    if (cap == OV001_SCROLLBAR_PART_UP) {
+        event = OV001_SCROLLBAR_EVENT_UP_PRESS;
     } else {
-        var_r1 = 6;
+        event = OV001_SCROLLBAR_EVENT_DOWN_PRESS;
     }
-    M2C_FIELD(gOv001Scrollbar, s8 *, 0x1D) = var_r1;
+    M2C_FIELD(gOv001Scrollbar, s8 *, OV001_SCROLLBAR_EVENT) = event;
 }
 
 #pragma peephole off

@@ -351,21 +351,24 @@ u8 IsGroupIndirectUnitRatioOk(s32 groupIndex) {
     return ok;
 }
 
-u8 IsGroupSubmarineRatioOk(s32 arg0) {
+/* Army-composition gate for an AI target group building a kind-26 (submarine)
+ * unit: the group may build one only while its direct units do not outnumber
+ * its indirect units. */
+u8 IsGroupSubmarineRatioOk(s32 groupIndex) {
     extern u8 gAiGroupDirectUnits[];
     extern u8 gAiGroupIndirectUnits[];
-    s32 temp_r0;
-    s32 temp_r2;
-    u8 var_r0;
+    s32 indirect;
+    s32 direct;
+    u8 ok;
 
-    temp_r2 = gAiGroupDirectUnits[arg0 * 8];
-    temp_r0 = gAiGroupIndirectUnits[arg0 * 8];
-    if (temp_r2 <= temp_r0) {
-        var_r0 = 1;
+    direct = gAiGroupDirectUnits[groupIndex * AI_GROUP_STRIDE];
+    indirect = gAiGroupIndirectUnits[groupIndex * AI_GROUP_STRIDE];
+    if (direct <= indirect) {
+        ok = 1;
     } else {
-        var_r0 = 0;
+        ok = 0;
     }
-    return var_r0;
+    return ok;
 }
 
 /* Army-composition gate for an AI target group building a direct-attack unit:

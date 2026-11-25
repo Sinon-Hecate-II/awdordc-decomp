@@ -9,7 +9,7 @@ extern s32 gErrno;
 #pragma opt_common_subs off
 double func_0206ce00(double x,double y) {
 double func_02070134(double,double);double func_02070b70(double,double);double func_02070658(double,double);double RuntimeDoubleDivide(double,double);
-double func_020709bc(double);double fabs(double);double _f2d(float);double func_0206f818(double,s32);
+double func_020709bc(double);double fabs(double);double _f2d(float);double Ldexp(double,s32);
 s32 hx=POW_HI(x),hy=POW_HI(y),ix=hx&0x7fffffff,iy=hy&0x7fffffff;
 u32 lx=POW_LO(x),ly=POW_LO(y);s32 j; s32 yisint,k,n,i,signFlag;
 double z,ax,zh,zl,ph,pl,y1,t1,t2,r,s,t,u,v,w;
@@ -103,7 +103,7 @@ t1=func_02070b70(z,func_02070658(t,func_02070134(0.16666666666666602,func_020706
 r=func_02070b70(RuntimeDoubleDivide(func_02070658(z,t1),func_02070b70(t1,2.0)),func_02070134(w,func_02070658(z,w)));
 z=func_02070b70(1.0,func_02070b70(r,z));
 j=POW_HI(z);j+=n<<20;
-if(((s32)j>>20)<=0)z=func_0206f818(z,n);else POW_HI(z)+=n<<20;
+if(((s32)j>>20)<=0)z=Ldexp(z,n);else POW_HI(z)+=n<<20;
 return func_02070658(s,z);
 }
 #pragma opt_common_subs on

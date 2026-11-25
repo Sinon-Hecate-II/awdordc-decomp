@@ -342,26 +342,34 @@ void *ResultSlide_Delete(void *slide) {
     return slide;
 }
 
-void *func_ov005_0221ff6c(void *arg0) {
+/* Non-deleting destructor of the result slide object: restore its vtable and drop
+ * the child count of the owner sprite it was created for. */
+void *ResultSlide_Destroy(void *slide) {
     M2C_UNK DecrementSpriteChildCount();
     extern M2C_UNK gResultSlideSpriteVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultSlideSpriteVtbl;
-    if (M2C_FIELD(arg0, s32 *, 0x38) != 0) {
-        DecrementSpriteChildCount();
+    void *owner;
+
+    M2C_FIELD(slide, M2C_UNK **, DS3D_SPRITE_CLASS) = &gResultSlideSpriteVtbl;
+    owner = M2C_FIELD(slide, void **, RESULT_SLIDE_OWNER);
+    if (owner != 0) {
+        DecrementSpriteChildCount(owner);
     }
-    return arg0;
+    return slide;
 }
 
-void *func_ov005_0221ff98(void *arg0) {
+/* Deleting destructor of the results screen object: restore its vtable, free the
+ * bird.anm animation it loaded, then free the screen.  (ResultsScreen_Destroy is
+ * the non-freeing twin.) */
+void *ResultsScreen_Delete(void *screen) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK gResultsScreenVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultsScreenVtbl;
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));
-    MemFree(arg0);
-    return arg0;
+    M2C_FIELD(screen, M2C_UNK **, 0) = &gResultsScreenVtbl;
+    HeapFreeBlock(M2C_FIELD(screen, s32 *, RESULTS_SCREEN_BIRD));
+    MemFree(screen);
+    return screen;
 }
 
-void *func_ov005_0221ffc4(void *arg0) {
+void *ResultsScreen_Destroy(void *arg0) {
     extern M2C_UNK gResultsScreenVtbl;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &gResultsScreenVtbl;
     HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x34));

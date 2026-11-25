@@ -213,8 +213,12 @@ out[i]=value;
  * 3-bit exponent and a 4-bit mantissa, scaled around the 132 midpoint. */
 void VoiceCodec_DecodeMuLaw(const u8 *src,s16 *dst,u32 count) { u32 i; for(i=0;i<count;i++) { s32 v=~src[i]; s32 magnitude=(((v&15)<<3)+132)<<((v&0x70)>>4); if(v&0x80) magnitude=132-magnitude; else magnitude-=132; dst[i]=magnitude; } }
 
-void VoiceCodec_EncodePcm8(s8 *out,s16 *in,u32 n) {
-u32 i; for(i=0;i<n;i++) out[i]=in[i]>>8;
+/* Encode `count` signed 16-bit voice samples (the VOICE_CODEC_PCM8 codec) into
+ * 8-bit signed PCM: keep the high byte of each sample. */
+void VoiceCodec_EncodePcm8(s8 *out, s16 *in, u32 count) {
+    u32 i;
+
+    for (i = 0; i < count; i++) out[i] = in[i] >> 8;
 }
 
 #pragma opt_strength_reduction off
@@ -386,22 +390,27 @@ void Link_InitChannelState(void *state, s32 index, s32 channelId) {
     M2C_FIELD(state, s32 *, 0x30) = 0;
 }
 
-void func_ov010_022239c8(void *arg0) {
+/* Release a link voice-channel state: free the packet it is playing, clear that
+ * slot and mark the state unused (channel id -1). */
+void Link_ReleaseChannelState(LinkChannelState *channel) {
     M2C_UNK Link_FreePacket();
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
-        Link_FreePacket();
-        M2C_FIELD(arg0, s32 *, 0x3C) = 0;
+    if (channel->current != NULL) {
+        Link_FreePacket(channel->current);
+        channel->current = NULL;
     }
-    M2C_FIELD(arg0, s32 *, 0x38) = -1;
+    channel->id = -1;
 }
 
-void Link_AdvancePacket(void *arg0, s32 arg1) {
+/* Advance a link channel's packet playback: free the packet it is playing now,
+ * make `packet` the channel's current packet and pop the next queued packet of
+ * the channel's queue. */
+void Link_AdvancePacket(void *state, void *packet) {
     M2C_UNK Link_PopPacket(s32);
-    if (M2C_FIELD(arg0, s32 *, 0x3C) != 0) {
+    if (((LinkChannelState *)state)->current != 0) {
         Link_FreePacket();
     }
-    M2C_FIELD(arg0, s32 *, 0x3C) = arg1;
-    Link_PopPacket(M2C_FIELD(arg0, s32 *, 0x34));
+    ((LinkChannelState *)state)->current = packet;
+    Link_PopPacket(((LinkChannelState *)state)->index);
 }
 
 void Link_ResetChannelSequence(void *arg0, u32 arg1) {

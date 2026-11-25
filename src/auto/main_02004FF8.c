@@ -100,16 +100,20 @@ void OS_SetTimerHandler(s32 timer, s32 handler, s32 arg) {
     M2C_FIELD(&gTimerIrqMasks, s32 *, offset) = 1;
 }
 #pragma optimization_level reset
-s32 OS_SetIrqEnableMask(s32 arg0) {
-    s32 old;
+/* Replace the interrupt enable mask (REG_IE) with `irqMask`, with the master
+ * enable (REG_IME) saved and cleared for the update, then restored; returns the
+ * previous REG_IE value.  Callers save and later restore the whole mask with it. */
+s32 OS_SetIrqEnableMask(s32 irqMask) {
+    s32 oldMask;
     u16 ime;
-    ime = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    old = *(volatile s32 *)0x04000210;
-    *(volatile s32 *)0x04000210 = arg0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = ime;
-    return old;
+
+    ime = REG_IME;
+    REG_IME = 0;
+    oldMask = *(volatile s32 *)REG_IE;
+    *(volatile s32 *)REG_IE = irqMask;
+    (void)REG_IME;
+    REG_IME = ime;
+    return oldMask;
 }
 
 /* Set the IRQ bits in `mask` in REG_IE with the master enable (REG_IME) saved and
@@ -140,15 +144,18 @@ s32 OS_DisableIrqMask(s32 mask) {
     return old;
 }
 
-s32 OS_SetIrqMask(s32 arg0) {
+/* Write `mask` to REG_IF (the interrupt request flags it names are cleared) with
+ * the master enable (REG_IME) saved and cleared for the update, then restored;
+ * returns the previous REG_IF value. */
+s32 OS_SetIrqMask(s32 mask) {
     s32 old;
     u16 ime;
-    ime = *(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = 0;
-    old = *(volatile s32 *)0x04000214;
-    *(volatile s32 *)0x04000214 = arg0;
-    (void)*(volatile u16 *)0x04000208;
-    *(volatile u16 *)0x04000208 = ime;
+    ime = REG_IME;
+    REG_IME = 0;
+    old = *(volatile s32 *)REG_IF;
+    *(volatile s32 *)REG_IF = mask;
+    (void)REG_IME;
+    REG_IME = ime;
     return old;
 }
 
@@ -699,13 +706,15 @@ M2C_UNK OS_WakeupThread(void *a) {
     OS_RestoreInterrupts(irq);
 }
 
-void TaskWake(void *arg0) {
-    s32 temp_r4;
+/* Mark the task (a scheduler thread) ready to run: with interrupts masked, put it
+ * in the ready state so the reschedule can switch to it. */
+void TaskWake(Thread *task) {
+    s32 irqState;
 
-    temp_r4 = OS_DisableInterrupts();
-    M2C_FIELD(arg0, s32 *, 0x64) = 1;
+    irqState = OS_DisableInterrupts();
+    task->state = THREAD_STATE_READY;
     RescheduleThreads();
-    OS_RestoreInterrupts(temp_r4);
+    OS_RestoreInterrupts(irqState);
 }
 
 void *FindNextReadyThread(void) {

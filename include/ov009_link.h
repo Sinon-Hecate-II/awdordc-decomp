@@ -47,6 +47,10 @@ typedef struct LinkCompletionEvent {
 #define LINK_STATE_FLAG_LINKED  0x01  /* the link is up: set when a task reports its data step */
 #define LINK_STATE_LOCAL_PLAYER 0x157 /* u8: this console's player slot */
 
+/* gLinkState +0x02: u16 slot of the player picked for the link match; a random
+ * bit of LINK_STATE_PLAYER_MASK (PickLinkPlayerSlot picks and stores it). */
+#define LINK_STATE_SELECTED_PLAYER 0x02
+
 /* gLinkState +0x14 and +0x34: byte lengths of the two link transfer buffers. */
 #define LINK_STATE_EXTRA_LEN    0x14 /* s32: bytes of gLinkTransferExtra */
 #define LINK_STATE_TRANSFER_LEN 0x34 /* s32: bytes of gLinkTransferData */
@@ -258,5 +262,9 @@ typedef struct LinkRequestRecord {
  * text-layer fields at 0x34..0x36 are in ds3dsprite.h): it keeps the link status
  * code its status label reports, 0 while there is nothing to show. */
 #define LINK_LABEL_HOST_STATUS 0x38 /* s32: link status code of the label host */
+
+/* The link-result sprite (gLinkResultSpriteClass): it waits for the link to fail
+ * and then reports the outcome to the callback it was created with. */
+#define LINK_RESULT_CALLBACK 0x34 /* void (*)(s32 result, void *owner): told the link's outcome */
 
 #endif

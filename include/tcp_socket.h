@@ -142,6 +142,7 @@
  * transport senders share. */
 #define SOCK_TRANSPORT   0x08 /* u8 transport: SOCK_KIND_UDP (10), SOCK_KIND_ICMP (11), else a TCP stream */
 #define SOCK_TLS_ACTIVE  0x09 /* u8 nonzero once the socket's payload is wrapped in TLS records */
+#define SOCK_TLS_CONTEXT 0x0C /* void *TLS record context of the socket, 0 while it is not TLS-wrapped */
 #define SOCK_LOCAL_PORT  0x0A /* u16 local (source) port */
 #define SOCK_REMOTE_PORT 0x18 /* u16 remote (destination) port */
 #define SOCK_REMOTE_IP   0x1C /* u32 remote IPv4 address, host order */

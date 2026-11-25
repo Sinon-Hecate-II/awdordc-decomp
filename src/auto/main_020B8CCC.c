@@ -65,14 +65,17 @@ void ReturnToMapView(void) {
     gCur3DSpriteEngine = old;
 }
 
-void func_020b9140(s32 arg0) {
+/* Create the scrollable menu list (gMenuListClass) owned by `owner`; owner 0
+ * asks for the default owner, 7 (the screen the menus are created under). */
+void CreateMenuList(s32 owner) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, s32);
-    extern M2C_UNK data_021290dc;
-    if (arg0 == 0) {
-        CreateSpriteFromClass(&data_021290dc, 7);
+    extern M2C_UNK gMenuListClass;
+
+    if (owner == 0) {
+        CreateSpriteFromClass(&gMenuListClass, 7);
         return;
     }
-    CreateSpriteFromClass(&data_021290dc, arg0);
+    CreateSpriteFromClass(&gMenuListClass, owner);
 }
 
 #pragma optimization_level 2

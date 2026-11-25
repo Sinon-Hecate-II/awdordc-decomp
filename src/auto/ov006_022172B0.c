@@ -96,11 +96,13 @@ void func_ov006_02217414(void) {
     M2C_FIELD(&gMapOfferState, s8 *, 0) = 0;
 }
 
-void func_ov006_02217438(void) {extern M2C_UNK gMapOfferState;
-if(M2C_FIELD(&gMapOfferState,s32 *,4)) {
-MemFree(M2C_FIELD(&gMapOfferState,s32 *,4));
-}
-M2C_FIELD(&gMapOfferState,s32 *,4)=0;
+/* Release the player-record buffer the map-offer search receives into, so the
+ * next search allocates a fresh one (see the map offer state's init). */
+void FreeMapOfferState(void) {
+    if (M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD)) {
+        MemFree(M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD));
+    }
+    M2C_FIELD(&gMapOfferState, s32 *, MAP_OFFER_STATE_RECORD) = 0;
 }
 
 void func_ov006_02217464(M2C_UNK arg0) {
@@ -320,14 +322,17 @@ void InitMapTransferObject(void *object) {
     }
 }
 
-void func_ov006_0221791c(void *arg0) {
+/* Tear down the map-transfer object: finish its link request, free the received
+ * player-entry and map-record buffers InitMapTransferObject allocated, release
+ * UI graphics bank 4 and show the shared frame border again. */
+void FreeMapTransferObject(void *transfer) {
     M2C_UNK HeapFreeBlock(s32);
     M2C_UNK func_020e36f4();
     func_020e36f4();
     FreeUiGraphicsBank(4);
     ShowFrameBorderSprite();
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x4C));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
+    HeapFreeBlock(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_ENTRIES));
+    HeapFreeBlock(M2C_FIELD(transfer, s32 *, MAP_TRANSFER_RECORDS));
 }
 
 /* Rebuild the map-transfer object's received-player list for its transfer mode:

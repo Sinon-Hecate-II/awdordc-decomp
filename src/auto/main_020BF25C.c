@@ -1,7 +1,7 @@
 /* 35 functions from 0x020BF25C to 0x020C0254 (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
-extern char data_0215e5e4[], data_0215dba4[];
+extern char data_0215e5e4[], gCampaignSaveRecords[];
 extern char data_021295c4[], data_021295d0[], data_021295d8[], data_021295dc[], data_021295e4[], data_021295ec[], data_021295f4[], data_021295f8[], data_021295fc[], data_02129604[];
 static inline int SaveRangeA(s32 n) { int b=0; if(n>=0xa1) b=(n<0xbb); return b!=0; }
 static inline int SaveRangeB(s32 n) { int b=0; if(n>=0xbb) b=(n<0xe1); return b!=0; }
@@ -27,7 +27,7 @@ extern M2C_UNK gGameSettings, gGameSettingsSaveBuffer, gMovementCostTable;
 void *BuildSaveSlotText(s32 arg0,s32 arg1) {
 s32 GetSaveType(s32); void *GetBattleRecord(s32);
 s32 IsUnitAvailable(s32); s32 GetLocalizedText(s32); void StringAppend(char*,const char*); void StringFormat(char*,const char*,...);
-s32 func_020a8a84(s32); s32 GetMapName(s32); void FormatDateTime(char*,void*); s32 func_020e4b28(s32); void LoadCampaignMapHeader(s32);
+s32 func_020a8a84(s32); s32 GetMapName(s32); void FormatDateTime(char*,void*); s32 CampaignSaveSlotInUse(s32); void LoadCampaignMapHeader(s32);
 char *buf=data_0215e5e4; s32 n; s32 a=arg0; s32 b=arg1; u16 *p; s32 c1,c2,c3; SaveRankRecord *rec; s32 i;
 buf[0x100]=0; n=GetSaveType(a);
 p=GetBattleRecord(n);
@@ -41,8 +41,8 @@ n=func_020a8a84(p[0]);StringFormat(buf,data_021295c4,n,GetMapName(p[0]));StringA
 StringAppend(buf+256,GetLocalizedText(0x4800003f));StringAppend(buf+256,GetLocalizedText(0x4800003e));
 StringFormat(buf,data_021295d0,p[1]);StringAppend(buf+256,buf);StringAppend(buf+256,data_021295d8);
 StringAppend(buf+256,GetLocalizedText(0x4800003f));FormatDateTime(buf,p);StringAppend(buf+256,buf);
-} else if(func_020e4b28(b)) {
-rec=(SaveRankRecord *)data_0215dba4+b;c1=0;c2=0;c3=0;
+} else if(CampaignSaveSlotInUse(b)) {
+rec=(SaveRankRecord *)gCampaignSaveRecords+b;c1=0;c2=0;c3=0;
 i=0; goto check_entries;
 scan_entry: { if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].state>=3){s32 id=i+0xa1; if(SaveRangeA(id))c1++;if(SaveRangeB(id))c2++;if(M2C_FIELD(rec,SaveRankRecord*,i*4).entries[0].rank==4)c3++;} i++; }
 check_entries: if(i<64) goto scan_entry;
@@ -69,13 +69,15 @@ return buf+256;
 }
 #pragma opt_strength_reduction reset
 #pragma opt_common_subs reset
+/* Snapshot the live game settings into the shared snapshot buffer and queue
+ * that snapshot as the shared settings save record. */
 void SaveGameSettings(void) {
-    M2C_UNK func_020be718(M2C_UNK *);
-    M2C_UNK WriteSaveRecord(s32, M2C_UNK *, s32);
+    void SnapshotGameSettings(void *);
+    void WriteSaveRecord(s32, void *, s32);
     extern M2C_UNK gGameSettingsSaveBuffer;
-    s32 size = 0x5CC;
-    func_020be718(&gGameSettingsSaveBuffer);
-    WriteSaveRecord(4, &gGameSettingsSaveBuffer, size);
+    s32 size = SAVE_SETTINGS_RECORD_SIZE;
+    SnapshotGameSettings(&gGameSettingsSaveBuffer);
+    WriteSaveRecord(SAVE_TYPE_SETTINGS, &gGameSettingsSaveBuffer, size);
 }
 #pragma opt_propagation reset
 /* Load the saved game-settings snapshot, restore its values, and initialise defaults if its magic is invalid. */

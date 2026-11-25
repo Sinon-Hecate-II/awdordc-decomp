@@ -401,7 +401,7 @@ u32 GetUnitCapturePoints(void *arg0) {
 
 /* Mark enemy units in the scanned area, and mark the moving unit when
  * a scanned unit belongs to an opposing team. */
-void func_020a7f48(void *unit, s32 x, s32 y, s32 mode) {
+void MarkEnemyUnitsInArea(void *unit, s32 x, s32 y, s32 mode) {
     extern void **gCurrentMap;
     void InitAreaScan(void *, s32, s32, s32, s32, s32);
     s32 NextAreaTile(void *);
@@ -438,7 +438,7 @@ void func_020a7f48(void *unit, s32 x, s32 y, s32 mode) {
 
 #pragma push
 #pragma peephole on
-void MarkUnitMovePath(void *p,s16 *xy,s32 unused,s8 *dir){void func_020a7f48(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];func_020a7f48(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}func_020a7f48(p,x,y,1);}}
+void MarkUnitMovePath(void *p,s16 *xy,s32 unused,s8 *dir){void MarkEnemyUnitsInArea(void *,s32,s32,s32);s32 x=xy[0],y=xy[1];MarkEnemyUnitsInArea(p,x,y,1);for(;;){switch(*dir++){case 0:x--;break;case 1:x++;break;case 3:y--;break;case 2:y++;break;case -1:case 4:case 10:return;}MarkEnemyUnitsInArea(p,x,y,1);}}
 #pragma pop
 /* Whether `other` is a unit that `unit` may affect (an enemy): 0 when there is no
  * other unit, otherwise 1 when the two belong to different teams.  A null `unit`
@@ -698,7 +698,17 @@ s32 func_020a86bc(void) {
     return 0;
 }
 
-s32 func_020a86c4(s32 a,s32 b){extern s8 data_ov000_021b5520[];extern u8 gMapConfig[];s32 v=0;if(data_ov000_021b5520[b&31])v+=M2C_FIELD(gMapConfig,u16 *,6);return v;}
+/* Funds one property pays its owner per turn: the map's income setting when the
+ * property's terrain kind is one the income table marks (city, base, HQ, port and
+ * the other kinds that pay), otherwise nothing.  Every property kind pays the
+ * same, whatever the owner. */
+s32 GetPropertyIncome(s32 owner, s32 kind) {
+    extern s8 gPropertyIncomeKinds[];
+    extern u16 gMapConfig[];
+    s32 income = 0;
+    if (gPropertyIncomeKinds[kind & 0x1F]) income += M2C_FIELD(gMapConfig, u16 *, MAPCONFIG_INCOME);
+    return income;
+}
 
 s32 GetPlayerFuelRate(void) {
     return 1;

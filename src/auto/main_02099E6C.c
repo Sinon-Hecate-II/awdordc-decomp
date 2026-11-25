@@ -10,7 +10,12 @@ typedef struct TextState {
     u16  baseAttr;   /* +0x44 attribute OR-ed into every cell */
     u8   pad_46[6];
     u16  linePixel;  /* +0x4C pixel/tile offset of the current line */
+    u8   pad_4E[0x0D];
+    u8   messageBoxState; /* +0x5B message box state recorded while the text waits */
+    u8   flags;      /* +0x5C: TEXT_FLAG_* */
 } TextState;
+/* TEXT_FLAG_* bits of TextState.flags. */
+#define TEXT_FLAG_WAIT_MESSAGE_BOX 0x01 /* set: the text waits while a message box is active */
 /* Byte offset from a cell to the cell directly below it: the buffer is 32 u16
  * entries (0x40 bytes) wide. */
 #define TEXT_CELL_ROW_BYTES 0x40
@@ -24,20 +29,20 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     void *GetLocalizedText(s32);
     s32 Get3DSpriteScreenMode(M2C_UNK);
     s32 GetOther3DSpriteScreenMode(M2C_UNK);
-    M2C_UNK func_020943bc(s32);
+    M2C_UNK Set3DSpriteTargetMode(s32);
     M2C_UNK func_02094410(s32);
     M2C_UNK func_02094a74();
     M2C_UNK CloseScenePanel();
     M2C_UNK SetScenePanelFaceUnlessMessageBox(s32, s32, s32);
-    M2C_UNK func_02094b28(s32, u8);
-    M2C_UNK func_02094b50(s32, s32);
-    M2C_UNK func_02094b78(s32, M2C_UNK);
+    M2C_UNK SetScenePanelArmyUnlessMessageBox(s32, u8);
+    M2C_UNK SetScenePanelModeUnlessMessageBox(s32, s32);
+    M2C_UNK SetPanelFaceHiddenUnlessMessageBox(s32, M2C_UNK);
     M2C_UNK func_02094ba0();
     M2C_UNK func_02094bc0();
     M2C_UNK func_02094be0();
     M2C_UNK CallScenePanelFaceOp(s32, s32, s32, s32);
     M2C_UNK SetScenePanelFaceSlotUnlessMessageBox(s32, s32, s32);
-    M2C_UNK func_02094c68(s32, M2C_UNK);
+    M2C_UNK SetScenePanelFaceHiddenUnlessMessageBox(s32, M2C_UNK);
     M2C_UNK func_02094c90(s32, void *);
     M2C_UNK func_02094d8c();
     M2C_UNK ClearScenePanelHighlight();
@@ -45,7 +50,7 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     M2C_UNK RecordsMenu_PlayTrack(s32);
     M2C_UNK func_020952c8(s32);
     M2C_UNK StartScriptedScreenTransition(M2C_UNK, M2C_UNK, s32);
-    M2C_UNK func_020953d0();
+    M2C_UNK CreateScreenTransitionWaitSprite();
     M2C_UNK func_0209544c(s32);
     M2C_UNK CreateScreenSplitSprite(M2C_UNK, s32, void *);
     M2C_UNK ShowTelopText(u8 *);
@@ -57,8 +62,8 @@ s32 func_02099e6c(void *arg0, s32 arg1) {
     s32 IsLeadByte();
     s32 IsGlyphEscape(void *);
     M2C_UNK StopTextObject(void *);
-    M2C_UNK func_0209c418(void *);
-    M2C_UNK func_0209c428(void *);
+    M2C_UNK Text_AdvanceScript(void *);
+    M2C_UNK Text_SkipLineEnds(void *);
     extern M2C_UNK data_02102e74;
     extern M2C_UNK data_02102eac;
     extern M2C_UNK gMovementCostTable;
@@ -104,8 +109,8 @@ loop_1:
     temp_r0 = M2C_FIELD(temp_r1, u8 *, 0);
     if (temp_r0 == 0x16) {
         M2C_FIELD(arg0, s16 *, 0x46) = (s16) (M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
-        func_0209c418(arg0);
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
+        Text_AdvanceScript(arg0);
         goto loop_1;
     }
     switch (temp_r0) {
@@ -135,7 +140,7 @@ loop_1:
             }
             M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 8);
         }
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
         return 2;
     case 10:
     case 13:
@@ -147,7 +152,7 @@ loop_1:
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + 2);
             EndTextLine(arg0);
         }
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
         return 3;
     case 2:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
@@ -161,19 +166,19 @@ loop_1:
             M2C_FIELD(arg0, u8 *, 0x55) = 2U;
             func_02099ac4(arg0);
         }
-        func_0209c428(arg0);
+        Text_SkipLineEnds(arg0);
         return 2;
     case 4:
         if (IsTextWaitingForMessageBox(arg0) == 0) {
             M2C_FIELD(arg0, u16 *, 0x4C) = (u16) M2C_FIELD(arg0, u16 *, 0x4E);
             func_02099ac4(arg0);
         }
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
         return 2;
     case 3:
         temp_r4 = M2C_FIELD(temp_r1, u8 *, 1) & 0x7F;
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         if (IsTextWaitingForMessageBox(arg0) != 0) {
             return 3;
         }
@@ -184,8 +189,8 @@ loop_1:
             temp_r0_5 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 1);
             switch(temp_r0_5){case 0:StopTextObject(arg0);break;default:M2C_FIELD(arg0,u8 *,0x55)=temp_r0_5;M2C_FIELD(arg0,s8 *,0x54)=0;break;}
         }
-        func_0209c418(arg0);
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
+        Text_AdvanceScript(arg0);
         return 3;
     case 11:
         temp_r0_6 = M2C_FIELD(temp_r1, u8 *, 1) - 0x80;
@@ -203,8 +208,8 @@ loop_1:
                 func_0207a3b0(M2C_FIELD(arg0, s32 *, 0x40) + (M2C_FIELD(arg0, u8 *, 0x4A) * 2) + (M2C_FIELD(arg0, u8 *, 0x4B) << 6), (u32) (M2C_FIELD(temp_r4_2, u8 *, 0) << 0x1A) >> 0x1A, M2C_FIELD(*gCurrentMap, u16 *, 0x52A8), M2C_FIELD(temp_r4_2, u8 *, 0xC), 0, (s32) var_r0, 0, 0, 0, 0, 0);
                 M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 2);
             }
-            func_0209c418(arg0);
-            func_0209c418(arg0);
+            Text_AdvanceScript(arg0);
+            Text_AdvanceScript(arg0);
             return 3;
         case 1:
             if (IsTextWaitingForMessageBox(arg0) == 0) {
@@ -219,8 +224,8 @@ loop_1:
                 func_0207a3b0(M2C_FIELD(arg0, s32 *, 0x40) + (M2C_FIELD(arg0, u8 *, 0x4A) * 2) + (M2C_FIELD(arg0, u8 *, 0x4B) << 6), (u32) (M2C_FIELD(temp_r4_3, u8 *, 0) << 0x1A) >> 0x1A, M2C_FIELD(*gCurrentMap, u16 *, 0x52A8), M2C_FIELD(temp_r4_3, u8 *, 0xC), 0, (s32) var_r0_2, 0, 0, 0, 0, 0);
                 M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x4A) + 2);
             }
-            func_0209c418(arg0);
-            func_0209c418(arg0);
+            Text_AdvanceScript(arg0);
+            Text_AdvanceScript(arg0);
             return 3;
         case 2:
         case 3:
@@ -229,14 +234,14 @@ loop_1:
             M2C_FIELD(arg0, void **, 0x34) = GetLocalizedText(M2C_FIELD((u8 *)&gMovementCostTable + (((u32)(M2C_FIELD(((M2C_FIELD(temp_r6,u16 *,0x52A4)*0x8c)+(s32)temp_r6),s32 *,0x6810)<<24)>>24)*0x9c),s32 *,0));
             return func_02099e6c(arg0, arg1);
         default:
-            func_0209c418(arg0);
-            func_0209c418(arg0);
+            Text_AdvanceScript(arg0);
+            Text_AdvanceScript(arg0);
             return 3;
         }
         break;
     case 8:
-        func_0209c418(arg0);
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
+        Text_AdvanceScript(arg0);
         return 3;
     case 16:
         if (temp_r0 == 0x10) {
@@ -248,18 +253,18 @@ loop_1:
                     break;
                 case 0:
                     SetScenePanelFaceUnlessMessageBox(temp_r0_9, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 13:
-                    func_02094b50(temp_r0_9, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetScenePanelModeUnlessMessageBox(temp_r0_9, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 12:
                     var_r1 = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3);
@@ -267,47 +272,47 @@ loop_1:
                         temp_r3_3 = *gCurrentMap;
                         var_r1 = M2C_FIELD(((M2C_FIELD(temp_r3_3, u16 *, 0x52A4) * 0x8C) + (s32) temp_r3_3), u8 *, 0x67C1);
                     }
-                    func_02094b28(temp_r0_9, var_r1);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetScenePanelArmyUnlessMessageBox(temp_r0_9, var_r1);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 10:
                     func_02094a74();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 11:
                     CloseScenePanel();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 14:
                     func_02094ba0();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 6:
                     func_02094c90(temp_r0_9, arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 8:
-                    func_02094b78(temp_r0_9, 0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetPanelFaceHiddenUnlessMessageBox(temp_r0_9, 0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 9:
-                    func_02094b78(temp_r0_9, 1);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetPanelFaceHiddenUnlessMessageBox(temp_r0_9, 1);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 }
             } while (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) == 0x10);
@@ -323,68 +328,68 @@ loop_1:
                     break;
                 case 0:
                     SetScenePanelFaceSlotUnlessMessageBox(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 1:
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 2:
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 3:
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 4:
                     func_02094bc0();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 5:
                     func_02094be0();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 6:
                     func_02094d8c();
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 7:
                     CallScenePanelFaceOp(temp_r0_10, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 3) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 4) & 0x7F, M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 5) & 0x7F);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 8:
-                    func_02094c68(temp_r0_10, 0);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetScenePanelFaceHiddenUnlessMessageBox(temp_r0_10, 0);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 case 9:
-                    func_02094c68(temp_r0_10, 1);
-                    func_0209c418(arg0);
-                    func_0209c418(arg0);
-                    func_0209c428(arg0);
+                    SetScenePanelFaceHiddenUnlessMessageBox(temp_r0_10, 1);
+                    Text_AdvanceScript(arg0);
+                    Text_AdvanceScript(arg0);
+                    Text_SkipLineEnds(arg0);
                     break;
                 }
             } while (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) == 0x11);
@@ -392,14 +397,14 @@ loop_1:
         return 2;
     case 18:
         ClearScenePanelHighlight();
-        func_0209c428(arg0);
+        Text_SkipLineEnds(arg0);
         goto return_two;
     case 19:
         temp_r0_11 = M2C_FIELD(temp_r1, u8 *, 1);
         if (temp_r0_11 == 0x80) {
-            func_020953d0();
-            func_0209c418(arg0);
-            func_0209c428(arg0);
+            CreateScreenTransitionWaitSprite();
+            Text_AdvanceScript(arg0);
+            Text_SkipLineEnds(arg0);
             return 2;
         }
         param = M2C_FIELD(temp_r1,u8 *,2)&0x7f;
@@ -426,9 +431,9 @@ loop_1:
             StartScriptedScreenTransition(1, 1, param);
             break;
         }
-        func_0209c418(arg0);
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 3;
     case 20:
         if (temp_r0 == 0x14) {
@@ -457,33 +462,33 @@ loop_1:
                     CreateScreenSplitSprite(1, temp_r8, arg0);
                     break;
                 }
-                func_0209c418(arg0);
-                func_0209c418(arg0);
-                func_0209c428(arg0);
+                Text_AdvanceScript(arg0);
+                Text_AdvanceScript(arg0);
+                Text_SkipLineEnds(arg0);
             } while (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) == 0x14);
         }
         return 3;
     case 21:
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 3;
     case 23:
         func_02094410(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         goto return_two;
     case 25:
         func_020952c8(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 2;
     case 24:
         RecordsMenu_PlayTrack(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 2;
     case 26:
-        func_0209c418(arg0);
+        Text_AdvanceScript(arg0);
         var_r4 = sp1C;
         if (M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), u8 *, 0) != 0x1E) {
             do {
@@ -500,27 +505,27 @@ loop_1:
         *var_r4 = 0;
         ShowTelopText(sp1C);
         M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 8);
-        func_0209c428(arg0);
+        Text_SkipLineEnds(arg0);
         return 3;
     case 27:
-        func_020943bc(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Set3DSpriteTargetMode(M2C_FIELD(temp_r1, u8 *, 1) & 0x7F);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 3;
     case 28:
         temp_r3_4 = M2C_FIELD(temp_r1, u8 *, 1);
         M2C_FIELD(arg0, u8 *, 0x4A) = (u8) (M2C_FIELD(arg0, u8 *, 0x48) + (temp_r3_4 & 0x7F));
         M2C_FIELD(arg0, u16 *, 0x4C) = (u16) (M2C_FIELD(arg0, u16 *, 0x4C) + ((u32)(temp_r3_4<<25)>>24));
         M2C_FIELD(arg0, u8 *, 0x56) = 0U;
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 1;
     case 29:
-        func_0209c418(arg0);
-        func_0209c428(arg0);
+        Text_AdvanceScript(arg0);
+        Text_SkipLineEnds(arg0);
         return 1;
     case 30:
-        func_0209c428(arg0);
+        Text_SkipLineEnds(arg0);
         return 3;
     default:
     case 1:
@@ -548,10 +553,12 @@ void WriteTextCellTilePair(void *textObject, void *cell) {
     M2C_FIELD(cell, s16 *, TEXT_CELL_ROW_BYTES) = (s16) ((text->linePixel + 1) | text->baseAttr);
 }
 
-void func_0209ac9c(void *arg0) {
+/* Flag the text object to hold its script while the active message box is up:
+ * remember the box's state and rebuild the sprite scene. */
+void Text_StartWaitingForMessageBox(TextState *text) {
     s8 GetMessageBoxState();
     M2C_UNK Build3DSpriteScene(void *);
-    M2C_FIELD(arg0, u8 *, 0x5C) = (u8) (M2C_FIELD(arg0, u8 *, 0x5C) | 1);
-    M2C_FIELD(arg0, s8 *, 0x5B) = GetMessageBoxState();
-    Build3DSpriteScene(arg0);
+    text->flags |= TEXT_FLAG_WAIT_MESSAGE_BOX;
+    text->messageBoxState = GetMessageBoxState();
+    Build3DSpriteScene(text);
 }

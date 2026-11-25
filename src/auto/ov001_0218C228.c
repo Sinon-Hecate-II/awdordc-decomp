@@ -72,10 +72,14 @@ void Ov001_ReturnTileRangeNode(u32 range) {
     Ov001_QueuePush(M2C_FIELD(((pool * OV001_TILE_POOL_STRIDE) + gOv001TilePools), s32 *, OV001_TILE_POOL_FREE_NODES), range);
 }
 
-s32 StringLengthUpTo(u8 *p,s32 n) {
-s32 i;
-for(i=0;i<n;i++) if(!p[i]) break;
-return i;
+/* Length of the NUL-terminated string `text` without its terminator, capped at
+ * `maxLength` bytes (returns maxLength when the buffer is not terminated). */
+s32 StringLengthUpTo(u8 *text, s32 maxLength) {
+    s32 length;
+
+    for (length = 0; length < maxLength; length++)
+        if (!text[length]) break;
+    return length;
 }
 
 /* VRAM init pass 1: release the bank grant every VRAM allocator is holding and
@@ -190,21 +194,23 @@ void GxClearDisplayMemory(void) {
     MI_CpuFill32(0, GX_SUB_PALETTE_BASE, GX_PALETTE_SIZE);
 }
 
-void func_ov001_0218c63c(void) {
+/* Front-end per-frame: read the ARM7's system value and, when the read succeeds and
+ * the value is not already the front-end's, put the ARM7 back into front-end mode. */
+void Ov001_UpdateArm7Value(void) {
     s32 Arm7ReadValueWait(s32 *);
-    s32 sp0;
+    s32 value;
 
-    if (Arm7ReadValueWait(&sp0) != 0) {
+    if (Arm7ReadValueWait(&value) != 0) {
         return;
     }
-    if (sp0 == 0xF) {
+    if (value == ARM7_SYSTEM_VALUE_FRONTEND) {
         return;
     }
-    func_0200eca8(0xF);
+    Arm7SetValueWait(ARM7_SYSTEM_VALUE_FRONTEND);
 }
 
 void func_ov001_0218c668(void) {
-    func_0200eca8(1);
+    Arm7SetValueWait(1);
 }
 
 /* Task-group array behind the untyped gOv001Tasks slot; each access reloads

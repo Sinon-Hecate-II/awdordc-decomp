@@ -472,7 +472,7 @@ s32 IsProfileSyncOverdueAlt(void) {
     return overdue;
 }
 
-void func_ov010_02226738(void) {
+void Ov010_GetWebTransactionStatus(void) {
     M2C_UNK GetWebTransactionStatus();
     GetWebTransactionStatus();
 }

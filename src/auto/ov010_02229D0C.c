@@ -306,22 +306,24 @@ void ReportNetErrorToCallback(void *self) {
     }
 }
 
-void func_ov010_0222a20c(s32 arg0) {
+/* Create the online match's network-error reporter: an object whose per-frame
+ * check (ReportNetErrorToCallback) hands any network error to `callback`. */
+void CreateNetErrorReporter(s32 callback) {
     void *CreateSpriteFromClass(void *);
-    extern M2C_UNK data_ov010_0222c544, data_ov010_0222c900;
-    void *temp_r0;
-    temp_r0 = CreateSpriteFromClass(&data_ov010_0222c544);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, void **, 0) = &data_ov010_0222c900;
-        M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
+    extern M2C_UNK gNetErrorReporterClass, gNetErrorReporterVTable;
+    void *reporter;
+    reporter = CreateSpriteFromClass(&gNetErrorReporterClass);
+    if (reporter != NULL) {
+        M2C_FIELD(reporter, void **, 0) = &gNetErrorReporterVTable;
+        M2C_FIELD(reporter, s32 *, 0x34) = callback;
     }
 }
 
 void func_ov010_0222a238(void) {
     M2C_UNK IncrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov010_0222c544;
-    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
+    extern M2C_UNK gNetErrorReporterClass;
+    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
         return;
     }
     IncrementSpriteChildCount();
@@ -330,8 +332,8 @@ void func_ov010_0222a238(void) {
 void Ov010Online_ReleaseTextLayer(void) {
     M2C_UNK DecrementSpriteChildCount();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov010_0222c544;
-    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
+    extern M2C_UNK gNetErrorReporterClass;
+    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
         return;
     }
     DecrementSpriteChildCount();
@@ -340,8 +342,8 @@ void Ov010Online_ReleaseTextLayer(void) {
 void func_ov010_0222a278(void) {
     M2C_UNK DeleteSpriteObject();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov010_0222c544;
-    if (FindObjectByClass(&data_ov010_0222c544) == 0) {
+    extern M2C_UNK gNetErrorReporterClass;
+    if (FindObjectByClass(&gNetErrorReporterClass) == 0) {
         return;
     }
     DeleteSpriteObject();
@@ -381,14 +383,14 @@ void StartOnlineMatchSplitFades(void *sprite) {
 #pragma scheduling on
 void func_ov010_0222a320(void *a){
 extern u8 data_ov010_0222c8f4[];extern s32 gCur3DSpriteEngine,g3DSpriteEngineSub,g3DSpriteEngineMain;
-void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void StringStorageAssignText(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void func_0206fa14(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
+void *func_ov010_0222832c(void *,void *);void *GetLocalizedText(void *);void StringStorageAssignText(void *,void *);void func_0206f8b8(s32,void *,s32);void StringStorageConcat(void *,void *,void *);void StringStorageAssign(void *,void *);void StringStorageFree(void *);s32 FindTextLayer(void);void StartWindowClose(void);void *CreateTextLayer(void *);void RenderTextLayer(void *,s32,s32,void *);void func_ov010_0222a238(void);void func_ov010_0222a278(void);
 u8 sp[0x44];s32 v;
 StringStorageAssignText((u8 *)a+0x44,GetLocalizedText(func_ov010_0222832c(M2C_FIELD(a,void **,0x3c),M2C_FIELD(a,void **,0x40))));
 v=M2C_FIELD(a,s32 *,0x3c);if(v<0)v=-v;func_0206f8b8(v,sp+0x24,10);
 StringStorageConcat(sp+0x18,(u8 *)a+0x44,data_ov010_0222c8f4);
 StringStorageConcat(sp+0xc,sp+0x18,GetLocalizedText((void *)0x42000000));
 StringStorageConcat(sp,sp+0xc,sp+0x24);
-StringStorageAssign((u8 *)a+0x44,sp);func_0206fa14(sp);func_0206fa14(sp+0xc);func_0206fa14(sp+0x18);
+StringStorageAssign((u8 *)a+0x44,sp);StringStorageFree(sp);StringStorageFree(sp+0xc);StringStorageFree(sp+0x18);
 if(!M2C_FIELD(a,s32 *,0x38))return;
 switch(M2C_FIELD(a,s32 *,0x40)){
 case 0:case 1:func_ov010_0222a238();return;

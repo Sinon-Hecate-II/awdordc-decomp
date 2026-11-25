@@ -466,10 +466,10 @@ s32 Sound_CreateHeapSection(void *heap) {
 void Sound_FlushAndWait(void) {
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     s32 temp_r4;
 
-    temp_r4 = Sound_GetCommandCounter();
+    temp_r4 = Sound_GetQueueMark();
     Sound_FlushCommands(1);
     Sound_WaitForCommand(temp_r4);
 }
@@ -482,11 +482,23 @@ s32 Sound_LoadArchiveGroup(void) {
     return 0;
 }
 
-s32 func_0202c860(M2C_UNK arg0,M2C_UNK arg1){s32 LoadSoundSequenceArchive(M2C_UNK,M2C_UNK,M2C_UNK,M2C_UNK,s32);if(LoadSoundSequenceArchive(arg0,255,arg1,1,0)==0)return 1;return 0;}
+/* Load the sound sequence archive `archiveId` and its file into pool `pool`,
+ * creating the file when it isn't loaded yet (all four SOUND_LOAD_* flags);
+ * returns 1 when the archive loaded, 0 on failure. */
+s32 Sound_TryLoadSequenceArchive(M2C_UNK archiveId, M2C_UNK pool) {
+    s32 LoadSoundSequenceArchive(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
+    if (LoadSoundSequenceArchive(archiveId, 0xFF, pool, 1, 0) == 0) {
+        return 1;
+    }
+    return 0;
+}
 
-s32 func_0202c88c(M2C_UNK arg0, M2C_UNK arg1) {
+/* Load sound bank `bankId` and every archive it references into pool `pool`,
+ * creating the files when they are not loaded yet (all four SOUND_LOAD_* flags);
+ * returns 1 when the bank loaded, 0 on failure. */
+s32 Sound_TryLoadBank(M2C_UNK bankId, M2C_UNK pool) {
     s32 LoadSoundBank(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32);
-    if (LoadSoundBank(arg0, 0xFF, arg1, 1, 0) == 0) {
+    if (LoadSoundBank(bankId, 0xFF, pool, 1, 0) == 0) {
         return 1;
     }
     return 0;
@@ -609,7 +621,7 @@ s32 LoadSoundSequenceFile(s32 fileId, s32 pool, s32 create) {
     s32 GetLoadedArchiveFile();
     M2C_UNK SetLoadedArchiveFile(M2C_UNK, s32);
     s32 Sound_LoadArchiveFile(M2C_UNK, M2C_UNK *, s32, M2C_UNK, s32);
-    extern M2C_UNK func_0202d01c;
+    extern M2C_UNK FreeSequenceArchiveFile;
     s32 freeArg;
     s32 block;
 
@@ -620,7 +632,7 @@ s32 LoadSoundSequenceFile(s32 fileId, s32 pool, s32 create) {
         } else {
             freeArg = Sound_GetCurrentArchive();
         }
-        block = Sound_LoadArchiveFile(fileId, &func_0202d01c, freeArg, fileId, pool);
+        block = Sound_LoadArchiveFile(fileId, &FreeSequenceArchiveFile, freeArg, fileId, pool);
         if ((create != 0) && (block != 0)) {
             SetLoadedArchiveFile(fileId, block);
         }

@@ -25,16 +25,25 @@ void func_02008ef0(M2C_UNK arg0) {
     SendArm7Message(0x17, arg0, 0, 0, 0);
 }
 
-void func_02008f10(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
+/* Send ARM7 sound command 0x19 with its four arguments.  The streamed voice's
+ * teardown (StopStreamVoice) is its only caller: it sends the command with all
+ * zeros once the stream reached its end, to end the driver's side of the stream. */
+void Sound_EndStreamSound(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
     SendArm7Message(0x19, arg0, arg1, arg2, arg3);
 }
 
-void func_02008f38(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3) {
-    SendArm7Message(6, arg0, arg1, arg2, arg3);
+/* Send ARM7 sound command 6 for hardware `channel`: set channel parameter
+ * `parameter` (4 = pan, 6 = volume) to `value` with curve `mode`. */
+void Sound_SetChannelParameter(M2C_UNK channel, M2C_UNK parameter, M2C_UNK value, s32 mode) {
+    SendArm7Message(6, channel, parameter, value, mode);
 }
 
-void func_02008f60(s32 arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
-    SendArm7Message(7, arg0 | (arg4 << 0x18), arg1, arg2, arg3);
+/* Send ARM7 sound command 7 to set a sequence player's parameter: `player`
+ * (low 24 bits) with `mode` in the top byte of the same word, the value, the
+ * parameter id (9 = pan, 0xC = the other player parameter in use) and the
+ * duration the change runs over. */
+void Sound_SetPlayerParameter(s32 player, M2C_UNK value, M2C_UNK parameter, s32 duration, s32 mode) {
+    SendArm7Message(7, player | (mode << 0x18), value, parameter, duration);
 }
 
 /* Send one command to the ARM7 sound driver: take a command node, fill in its
@@ -107,21 +116,21 @@ EnqueueSoundCommand(command);Sound_FlushCommands(1);
 }
 #pragma peephole on
 s32 Sound_DequeueCommand(s32 flags){
-extern M2C_UNK gSoundCommandQueueState;extern QueueNode09298 *data_0212e044[];
-s32 OS_DisableInterrupts(void);s32 func_0200982c(void);
+extern M2C_UNK gSoundCommandQueueState;extern QueueNode09298 *gSoundCommandSentBatches[];
+s32 OS_DisableInterrupts(void);s32 Sound_GetProcessedCommandCount(void);
 s32 irq; QueueNode09298 *head,*oldTail,*tail;
 volatile State09100 *appendState;
 State09100 *state;
 irq=OS_DisableInterrupts();
 if(flags&1){
-while(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
+while(((State09100*)&gSoundCommandQueueState)->count==Sound_GetProcessedCommandCount()){
 OS_RestoreInterrupts(irq);WaitCycles(100);irq=OS_DisableInterrupts();
 }
-}else if(((State09100*)&gSoundCommandQueueState)->count==func_0200982c()){
+}else if(((State09100*)&gSoundCommandQueueState)->count==Sound_GetProcessedCommandCount()){
 OS_RestoreInterrupts(irq);return 0;
 }
 state=(State09100*)&gSoundCommandQueueState;
-head=data_0212e044[state->index++];
+head=gSoundCommandSentBatches[state->index++];
 if(state->index>8)state->index=0;
 tail=head;
 if(tail->next){do{tail=tail->next;}while(tail->next);}
@@ -181,7 +190,7 @@ s32 Sound_FlushCommands(s32 flags) {
 s32 OS_DisableInterrupts(void); s32 OS_RestoreInterrupts(s32);
 s32 Sound_DequeueCommand(s32); M2C_UNK DC_FlushRange(M2C_UNK,M2C_UNK);
 s32 SendFifoMessage(s32,M2C_UNK,s32); void Sound_SignalArm7(void);
-extern M2C_UNK gSoundCommandQueueState; extern u8 gSoundCommandNodes[]; extern QueueNode09298 *data_0212e044[];
+extern M2C_UNK gSoundCommandQueueState; extern u8 gSoundCommandNodes[]; extern QueueNode09298 *gSoundCommandSentBatches[];
 s32 irq=OS_DisableInterrupts();
 
 if(!((State09100*)&gSoundCommandQueueState)->unk8){OS_RestoreInterrupts(irq);return 1;}
@@ -210,7 +219,7 @@ if(SendFifoMessage(7,((State09100*)&gSoundCommandQueueState)->unk8,0)<0)goto aga
 {
 
 s32 idx=((State09100*)&gSoundCommandQueueState)->unk18;
-data_0212e044[idx]=(QueueNode09298*)((State09100*)&gSoundCommandQueueState)->unk8;
+gSoundCommandSentBatches[idx]=(QueueNode09298*)((State09100*)&gSoundCommandQueueState)->unk8;
 ((State09100*)&gSoundCommandQueueState)->unk18=idx+1;
 if(((State09100*)&gSoundCommandQueueState)->unk18>8)((State09100*)&gSoundCommandQueueState)->unk18=0;
 }
@@ -237,11 +246,22 @@ if(Sound_IsCommandReached(mark))return;
 do {Sound_DequeueCommand(1);}while(!Sound_IsCommandReached(mark));
 }
 
-s32 Sound_GetCommandCounter(void) {
-s32 OS_DisableInterrupts(void);extern M2C_UNK gSoundCommandQueueState;
-s32 s=OS_DisableInterrupts();s32 r;
-if(M2C_FIELD(&gSoundCommandQueueState,s32 *,8)==0)r=M2C_FIELD(&gSoundCommandQueueState,s32 *,4);else r=M2C_FIELD(&gSoundCommandQueueState,s32 *,32);
-OS_RestoreInterrupts(s);return r;
+/* Take a mark to wait on with Sound_WaitForCommand: with commands queued, the
+ * number the batch they are sent as will take once the ARM7 reports it; with
+ * nothing queued, the count of batches the ARM7 has already taken, which is
+ * reached at once. */
+s32 Sound_GetQueueMark(void) {
+    s32 OS_DisableInterrupts(void);
+    extern M2C_UNK gSoundCommandQueueState;
+    s32 irq = OS_DisableInterrupts();
+    s32 mark;
+
+    if (M2C_FIELD(&gSoundCommandQueueState, s32 *, SOUND_CMD_QUEUE_SEND_HEAD) == 0)
+        mark = M2C_FIELD(&gSoundCommandQueueState, s32 *, SOUND_CMD_QUEUE_COMPLETED);
+    else
+        mark = M2C_FIELD(&gSoundCommandQueueState, s32 *, SOUND_CMD_QUEUE_NEXT_MARK);
+    OS_RestoreInterrupts(irq);
+    return mark;
 }
 
 /* Test whether the driver's completed-command counter has reached a queue mark, accounting for wraparound. */
@@ -338,11 +358,13 @@ void InitSoundCommandLink(void) {
     } while (!IsFifoMessageReady(SND_CMD_FIFO_TAG, 1));
 }
 
+/* Nudge the ARM7's sound side: keep posting an empty message with the sound
+ * command FIFO tag until the IPC FIFO takes it (a failed send is retried). */
 void Sound_SignalArm7(void) {
     s32 SendFifoMessage(M2C_UNK, M2C_UNK, M2C_UNK);
     do {
 
-    } while (SendFifoMessage(7, 0, 0) < 0);
+    } while (SendFifoMessage(SND_CMD_FIFO_TAG, 0, 0) < 0);
 }
 
 /* Takes a free command node off the queue's free list, interrupts locked; returns
@@ -427,9 +449,18 @@ if(M2C_FIELD(p,u8 *,8)!=(u8)(a>>8))return;
 if(M2C_FIELD(p,void (**)(int),0))M2C_FIELD(p,void (**)(int),0)(M2C_FIELD(p,int *,4));
 }
 
-s32 func_02009800(void){M2C_UNK DC_InvalidateRange(s32 *,M2C_UNK);extern s32 *gSoundCommandBufferPtr;DC_InvalidateRange(gSoundCommandBufferPtr+1,4);return gSoundCommandBufferPtr[1];}
+/* Read the ARM7 sound driver's playing-channel mask (bit i set while hardware
+ * channel i plays) from the shared command buffer, after dropping the ARM9's
+ * cached copy of that word so the ARM7's latest update is read. */
+s32 Sound_GetActiveChannels(void) {
+    M2C_UNK DC_InvalidateRange(s32 *, M2C_UNK);
+    extern s32 *gSoundCommandBufferPtr;
 
-s32 func_0200982c(void) {
+    DC_InvalidateRange(gSoundCommandBufferPtr + 1, 4);
+    return gSoundCommandBufferPtr[1];
+}
+
+s32 Sound_GetProcessedCommandCount(void) {
     M2C_UNK DC_InvalidateRange(s32 *, M2C_UNK);
     extern s32 *gSoundCommandBufferPtr;
     DC_InvalidateRange(gSoundCommandBufferPtr, 4);
@@ -442,7 +473,7 @@ s32 func_0200982c(void) {
  * array, then flushes the buffer for the ARM7 to read. */
 void Sound_InitCommandBuffer(void *buffer){
 int entryIndex,paramIndex;void *entry=buffer;
-M2C_FIELD(buffer,int *,SND_CMD_BUFFER_COUNTER1)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK08)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK0A)=0;M2C_FIELD(buffer,int *,SND_CMD_BUFFER_COUNTER0)=0;
+M2C_FIELD(buffer,u32 *,SND_CMD_BUFFER_CHANNELS)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK08)=0;M2C_FIELD(buffer,s16 *,SND_CMD_BUFFER_UNK0A)=0;M2C_FIELD(buffer,int *,SND_CMD_BUFFER_PROCESSED)=0;
 for(entryIndex=0;entryIndex<SND_CMD_BUFFER_ENTRY_COUNT;entryIndex++,entry=(char *)entry+SND_CMD_BUFFER_ENTRY_STRIDE){M2C_FIELD(entry,int *,SND_CMD_BUFFER_ENTRY_VALUE)=0;for(paramIndex=0;paramIndex<SND_CMD_BUFFER_PARAM_COUNT;paramIndex++)((s16 *)entry+paramIndex)[SND_CMD_BUFFER_ENTRY_PARAMS/2]=-1;}
 for(paramIndex=0;paramIndex<SND_CMD_BUFFER_PARAM_COUNT;paramIndex++)((s16 *)buffer+paramIndex)[SND_CMD_BUFFER_TAIL_PARAMS/2]=-1;
 DC_FlushRange(buffer,SND_CMD_BUFFER_SIZE);

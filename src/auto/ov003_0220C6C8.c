@@ -5,7 +5,7 @@ typedef struct { u8 b0:1,b1:1,b2:1,b3:1,b4:1,b5:1,b6:1,b7:1; } Unk0220C6C8Bits;
 typedef struct { u8 kind, unk1; u16 unk2, unk4, unk6, unk8, unkA, unkC, unkE, unk10; } Unk0220C6C8Sprite;
 typedef struct { Unk0220C6C8Sprite *sprite; u32 *start, *current; u16 index; u8 unkE, unkF; } Unk0220C6C8Anim;
 extern u8 data_ov003_02210ac4[], data_ov003_02210b0c[], data_ov003_02210c44[];
-extern u8 data_ov003_02210a4c[], gScrollBarVTable[], data_ov003_02211018[], data_ov003_0220fb28[];
+extern u8 data_ov003_02210a4c[], gScrollBarVTable[], data_ov003_02211018[], gOv003OptionRowVTable[];
 extern u8 gOptionBits[];
 typedef struct { void *vtable; u8 unk4,unk5,unk6,unk7; s16 unk8,unkA; u8 unkC,unkD; s16 unkE,unk10,unk12,unk14,unk16; u8 unk18,pad[3]; void *child; } Unk0220C6C8Slider;
 void *MemAlloc(int);
@@ -253,9 +253,9 @@ q=MemAlloc(24);
 if(q) { M2C_FIELD(q,u32 *,0)=0;M2C_FIELD(q,u32 *,4)=0;M2C_FIELD(q,u32 *,8)=0;M2C_FIELD(q,u32 *,12)=0;M2C_FIELD(q,u32 *,16)=0;M2C_FIELD(q,u32 *,20)=0; }
 M2C_FIELD(p,u8 **,0x68)=q;
 q=MemAlloc(72);
-if(q) {M2C_FIELD(q,void **,0)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,4)=0;M2C_FIELD(q,s32 *,8)=2;M2C_FIELD(q,s32 *,12)=0;M2C_FIELD(q,s32 *,16)=1;q[20]=1;
-M2C_FIELD(q,void **,24)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,s32 *,32)=2;M2C_FIELD(q,s32 *,36)=0;M2C_FIELD(q,s32 *,40)=1;q[44]=1;
-M2C_FIELD(q,void **,48)=data_ov003_0220fb28;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;
+if(q) {M2C_FIELD(q,void **,0)=gOv003OptionRowVTable;M2C_FIELD(q,s32 *,4)=0;M2C_FIELD(q,s32 *,8)=2;M2C_FIELD(q,s32 *,12)=0;M2C_FIELD(q,s32 *,16)=1;q[20]=1;
+M2C_FIELD(q,void **,24)=gOv003OptionRowVTable;M2C_FIELD(q,s32 *,28)=0;M2C_FIELD(q,s32 *,32)=2;M2C_FIELD(q,s32 *,36)=0;M2C_FIELD(q,s32 *,40)=1;q[44]=1;
+M2C_FIELD(q,void **,48)=gOv003OptionRowVTable;M2C_FIELD(q,s32 *,52)=0;M2C_FIELD(q,s32 *,56)=1;M2C_FIELD(q,s32 *,60)=0;M2C_FIELD(q,s32 *,64)=1;q[68]=1;
 M2C_FIELD(q,s32 *,4)=((u32)M2C_FIELD(gOptionBits,u16 *,6)<<18)>>30;
 if(q[20]) { while(M2C_FIELD(q,s32 *,4)>M2C_FIELD(q,s32 *,8)) M2C_FIELD(q,s32 *,4)-=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; while(M2C_FIELD(q,s32 *,4)<M2C_FIELD(q,s32 *,12)) M2C_FIELD(q,s32 *,4)+=M2C_FIELD(q,s32 *,8)-M2C_FIELD(q,s32 *,12)+1; }
 else { s32 value=M2C_FIELD(q,s32 *,4), upper=M2C_FIELD(q,s32 *,8);

@@ -101,7 +101,7 @@ void MapView_Destroy(void *view) {
     DeleteFrameCallbackTask(InitMapView3DRendering);
     DeleteFrameCallbackTask(func_ov004_02214904);
     func_0209e9f4();
-    func_0209bf7c();
+    DeleteTextSprites();
     FadeOutMusicDefault();
     AcknowledgeMapProgress();
     if (M2C_FIELD(view, s32 *, 0x40) == 0x1000) gSaveSlotSummary &= 0xffffff;

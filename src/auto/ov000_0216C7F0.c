@@ -123,15 +123,17 @@ u32 GetUnitKind(u8 *arg0) {
     return (u32) (*arg0 << 0x1A) >> 0x1A;
 }
 
-s32 GetUnitHealthBarCount(void *arg0) {
+/* Number of ten-HP segments a unit's health bar shows: none at 0 HP, otherwise
+ * one per started group of ten (100 HP draws ten segments). */
+s32 GetUnitHealthBarCount(void *unit) {
     s32 Divide(s32, M2C_UNK);
-    u32 temp_r0;
+    u32 health;
 
-    temp_r0 = (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x19) >> 0x19;
-    if (temp_r0 == 0) {
+    health = (u32)(M2C_FIELD(unit, u16 *, MAP_UNIT_HEALTH) << 0x19) >> 0x19;
+    if (health == 0) {
         return 0;
     }
-    return Divide(temp_r0 - 1, 0xA) + 1;
+    return Divide(health - 1, 10) + 1;
 }
 
 u32 func_ov000_0216cd2c(void *arg0) {
@@ -142,9 +144,12 @@ u32 GetUnitAmmo(void *arg0) {
     return (u32) (M2C_FIELD(arg0, u16 *, 6) << 0x15) >> 0x1C;
 }
 
-s32 func_ov000_0216cd4c(s32 arg0) {
-s32 GetNameGraphicFile(s32);extern u8 data_ov000_021b5c69;
-return GetNameGraphicFile(1)+((&data_ov000_021b5c69)[arg0*0x70]<<8);
+/* Base address of the status-panel tiles for unit `kind`: the start of the name
+ * graphics file (block set 1) plus the kind's UNIT_KIND_STATS_STATUS_TILE block
+ * index times 0x100 bytes.  The caller copies 256 bytes of panel from here. */
+s32 GetUnitStatusTileBase(s32 kind) {
+s32 GetNameGraphicFile(s32);extern u8 gUnitKindStatusTile;
+return GetNameGraphicFile(1)+((&gUnitKindStatusTile)[kind*0x70]<<8);
 }
 
 void *GetUnitIconTiles(void) {

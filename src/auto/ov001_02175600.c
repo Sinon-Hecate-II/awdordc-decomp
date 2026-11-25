@@ -10,7 +10,7 @@ void Ov001_KeypadCloseDone(int arg0) {
 extern void *gOv001Keypad;
 int i; unsigned int *ptr;
 Ov001_PostTaskMessage(0,arg0);
-for(i=0;i<4;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_DestroySprite(((void **)ptr)[i+0x12]);ptr=(unsigned int *)gOv001Keypad;func_ov001_0218ace0(((void **)ptr)[i]);}
+for(i=0;i<4;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_DestroySprite(((void **)ptr)[i+0x12]);ptr=(unsigned int *)gOv001Keypad;Ov001_ReleaseTextPanel(((void **)ptr)[i]);}
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_DestroySprite(((void **)ptr)[i+0x10]);}
 for(i=0;i<2;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_ReleaseSprite(((void **)ptr)[i+0xe]);}
 for(i=0;i<10;i++){ptr=(unsigned int *)gOv001Keypad;Ov001_ReleaseSprite(((void **)ptr)[i+4]);}

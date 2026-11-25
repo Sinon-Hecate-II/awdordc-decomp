@@ -156,23 +156,25 @@ void func_ov003_021e4764(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }
 
-u8 func_ov003_021e4778(void *arg0) {
-    s32 var_r0_2;
-    u8 var_r0;
-    void *temp_r0;
+/* Whether the scene view's top intro tween is still running (its frame counter
+ * has not reached its duration); the iface method the state machine polls. */
+u8 Ov003_IsSceneViewTweenRunning(void *view) {
+    s32 finished;
+    u8 running;
+    SpriteTween *tween;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x3C);
-    if (M2C_FIELD(temp_r0, u16 *, 2) == M2C_FIELD(temp_r0, s16 *, 0xC)) {
-        var_r0_2 = 1;
+    tween = M2C_FIELD(view, SpriteTween **, 0x3C);
+    if (tween->current == tween->duration) {
+        finished = 1;
     } else {
-        var_r0_2 = 0;
+        finished = 0;
     }
-    if (!(var_r0_2 & 0xFF)) {
-        var_r0 = 1;
+    if (!(finished & 0xFF)) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 void func_ov003_021e47a4(void) {

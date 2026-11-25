@@ -20,7 +20,7 @@ s32 GetUnitKind(void *);
 s32 GetUnitHealthBarCount(void *);
 s32 func_ov000_0216cd2c(void *);
 s32 GetUnitAmmo(void *);
-s32 func_ov000_0216cd4c(s32);
+s32 GetUnitStatusTileBase(s32);
 s32 GetUnitIconTiles(s32,s32);
 s32 GetArmyPalette(s32);
 void QueueMemoryCopy(s32,s32,s32,s32);
@@ -51,7 +51,7 @@ AddSprite((u16)((x+79)&511),(u16)screenY,(u16)(((0x3ff & (0x150 >> ((u32)(M2C_FI
 }else{
 DrawDecimalNumber((x+79)&511,screenY,GetUnitAmmo(unit));
 }
-QueueMemoryCopy(func_ov000_0216cd4c(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4480,256,0);
+QueueMemoryCopy(GetUnitStatusTileBase(unitKind),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4480,256,0);
 AddSprite((u16)((x+20)&511),(u16)((y+2)&255),(u16)((0x3ff & (0x224 >> ((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void *volatile *,0),u16 *,0)<<17)>>30)))+0x9000),gSpriteDesc32x16,8);
 CopyToObjPaletteShadow(GetArmyPalette(colorIndex),0x300,32);
 QueueMemoryCopy(GetUnitIconTiles(unitKind,variantIndex),M2C_FIELD(gCur3DSpriteEngine,s32 *,0x1c)+0x4300,128,0);
@@ -124,7 +124,7 @@ void RefreshMapCursorCellCacheCoords(void) {
         ((u32)(M2C_FIELD(map, u16 *, MAP_CURSOR_TARGET_Y) << 25) >> 16);
 }
 
-void func_020d8594(void) {
+void StepCursorCellDisplayModeToLower(void) {
     /* Ease the camera height towards its target (168), using the hardware divider. */
     extern void **gCurrentMap;
     s32 Divide(s32, s32);
@@ -145,7 +145,7 @@ void func_020d8594(void) {
     if (M2C_FIELD(*gCurrentMap, s16 *, 0x52E4) == 168) RefreshMapCursorCellCacheCoords();
 }
 
-void func_020d867c(void) {
+void StepCursorCellDisplayModeToUpper(void) {
     /* Ease the camera height across the 0/268 wrap boundary, using the hardware divider. */
     extern void **gCurrentMap;
     s32 Divide(s32, s32);
@@ -182,19 +182,20 @@ s32 GetCursorCellDisplayMode(void) {
     return (u32)(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURSOR_CELL_CACHE) << 30) >> 30;
 }
 
-void func_020d87d8(void) {
-    void func_020d8594();
-    void func_020d867c(void);
-    s32 GetCursorCellDisplayMode();
-    s32 temp_r0;
+/* Ease the cursor cell's display mode toward the screen its target tile is on:
+ * down to the lower screen or up to the upper one. */
+void StepCursorCellDisplayMode(void) {
+    void StepCursorCellDisplayModeToLower();
+    void StepCursorCellDisplayModeToUpper(void);
+    s32 displayMode;
 
-    temp_r0 = GetCursorCellDisplayMode();
-    switch (temp_r0) {                              /* irregular */
+    displayMode = GetCursorCellDisplayMode();
+    switch (displayMode) {                              /* irregular */
     case 0:
-        func_020d867c();
+        StepCursorCellDisplayModeToUpper();
         return;
     case 1:
-        func_020d8594();
+        StepCursorCellDisplayModeToLower();
         return;
     }
 }
@@ -299,11 +300,14 @@ M2C_UNK SetMapConfigMode1(void) {
  CreateSpriteFromClass(&data_0212c1a0,7);
 }
 
-void func_020d898c(void) {
+/* Enter the versus battle: resume the saved versus battle when its save record
+ * exists, otherwise open the map mode 1 (free-play/versus) setup screen. */
+void EnterVersusBattle(void) {
     M2C_UNK func_020d4ac8(M2C_UNK);
-    extern M2C_UNK data_02168f2c;
-    if (M2C_FIELD(&data_02168f2c, s8 *, 8) != 0) {
-        func_020d4ac8(8);
+    extern M2C_UNK gSaveRecordExists;
+
+    if (M2C_FIELD(&gSaveRecordExists, s8 *, SAVE_RECORD_TYPE_VERSUS) != 0) {
+        func_020d4ac8(SAVE_RECORD_TYPE_VERSUS);
         return;
     }
     SetMapConfigMode1();
@@ -351,16 +355,18 @@ void func_020d8a48(void) {
     CreateSpriteFromClass(&data_0212bf58, 7);
 }
 
-u8 func_020d8a60(void) {
+/* Whether the battle mode in the low three bits of the map configuration is 7
+ * (the mode-7 map list that OpenMode7MapList selects). */
+u8 IsMapConfigMode7(void) {
     extern u16 gMapConfig;
-    u8 var_r0;
+    u8 result;
 
-    if ((u8) ((u32) (gMapConfig << 0x1D) >> 0x1D) == 7) {
-        var_r0 = 1;
+    if ((u8)((u32)(gMapConfig << 0x1D) >> 0x1D) == 7) {
+        result = 1;
     } else {
-        var_r0 = 0;
+        result = 0;
     }
-    return var_r0;
+    return result;
 }
 
 /* Set the map config's battle mode to 6 (the low bits of MAPCONFIG_FLAGS) and

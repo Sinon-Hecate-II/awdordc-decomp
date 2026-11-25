@@ -71,9 +71,12 @@ s32 Vector_SearchSorted(M2C_UNK item, s32 base, s32 count, s32 elemSize, s32 (*c
     return low * elemSize + base;
 }
 
-void TableNewDefault(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4) {
+/* GameSpy hashtable.c TableNew: make a table of nBuckets buckets with the default
+ * bucket capacity (4 elements) from the element size, hash, comparison and user-data
+ * arguments. */
+void TableNewDefault(M2C_UNK elemSize, M2C_UNK nBuckets, M2C_UNK hashFn, s32 compFn, s32 userData) {
     M2C_UNK TableNew2(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32);
-    TableNew2(arg0, arg1, 4, arg2, arg3, arg4);
+    TableNew2(elemSize, nBuckets, 4, hashFn, compFn, userData);
 }
 
 /* GameSpy hashtable.c TableNew2: allocates a table of nBuckets bucket vectors

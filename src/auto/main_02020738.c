@@ -687,14 +687,19 @@ s32 func_02021448(s32 *arg0, s32 arg1) {
 }
 
 void *SocketFindLink(void *arg0, s32 arg1);
-void *SocketFindLink(void *arg0, s32 arg1) {
- void *p = M2C_FIELD(arg0, void **, 0);
- while (p) {
-  if ((s32)p == arg1) return arg0;
-  arg0 = (u8 *)p + 0x7c;
-  p = M2C_FIELD(p, void **, 0x7c);
- }
- return NULL;
+/* Find a socket in one of the socket layer's lists and return the address of the
+ * pointer that refers to it -- the list head, or the previous socket's
+ * SOCK_LIST_NEXT field -- so the caller can unlink it; NULL when the socket is
+ * not in the list.  The handle is the socket object's own address. */
+void *SocketFindLink(void *link, s32 socket) {
+    void *p = M2C_FIELD(link, void **, 0);
+
+    while (p) {
+        if ((s32)p == socket) return link;
+        link = (u8 *)p + SOCK_LIST_NEXT;
+        p = M2C_FIELD(p, void **, SOCK_LIST_NEXT);
+    }
+    return NULL;
 }
 
 void func_02021490(M2C_UNK arg0) {
@@ -715,12 +720,15 @@ s32 SocketIsClosed(s32 arg0) {
  return SocketFindLink(&gClosedSocketList, arg0) != NULL;
 }
 
-void func_02021500(s32 unused, s32 arg1) {
- M2C_UNK SocketCreateFromConfig(M2C_UNK *);
- extern M2C_UNK gUdpSocketConfig;
- extern M2C_UNK gTcpSocketConfig;
- if(arg1 == 1) {SocketCreateFromConfig(&gTcpSocketConfig); return;}
- SocketCreateFromConfig(&gUdpSocketConfig);
+/* Create a socket from the default template: a stream (TCP) one when `type` is
+ * SOCK_TYPE_STREAM, a datagram (UDP) one otherwise.  The address family and the
+ * protocol are ignored; returns the socket, negative when none could be made. */
+s32 SocketCreate(s32 domain, s32 type, s32 protocol) {
+    s32 SocketCreateFromConfig(M2C_UNK *);
+    extern M2C_UNK gUdpSocketConfig;
+    extern M2C_UNK gTcpSocketConfig;
+    if (type == SOCK_TYPE_STREAM) { return SocketCreateFromConfig(&gTcpSocketConfig); }
+    return SocketCreateFromConfig(&gUdpSocketConfig);
 }
 
 /* Bind a socket to the port of a GhiSocketAddress, converting it from network

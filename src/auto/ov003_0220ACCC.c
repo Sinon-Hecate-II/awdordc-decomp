@@ -98,7 +98,7 @@ if(func_ov003_02207a70(a)&&func_ov003_02207a54(a))func_ov003_0220bbcc(a);active=
 if(active&&(M2C_FIELD(gKeyState,u16 *,0)&4)&&!M2C_FIELD(gTouchState,u8 *,0x12)){
 if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}
 if(func_ov003_02209258(a)){
-if(func_020e4b28(i)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(i,a);PlaySoundEffect(0x1000d);}
+if(CampaignSaveSlotInUse(i)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(i,a);PlaySoundEffect(0x1000d);}
 else PlaySoundEffect(0x1001d);
 } active=0;
 }
@@ -107,7 +107,7 @@ ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x60));
 if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60)))ScrollBar_HandleTouch(M2C_FIELD(a,void **,0x64));
 if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!IsMenuSplitPairRow0(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),11);
 if(func_ov003_02209cc8(M2C_FIELD(a,void **,0x64))&&!IsMenuSplitPairRow1(a,Ov003_GetSelectedRowIndex(a)))SpriteCellListSelectTile(M2C_FIELD(a,void **,0x5c),12);
-if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))func_02088044(M2C_FIELD(a,void **,0x5c));
+if(!func_ov003_02209cc8(M2C_FIELD(a,void **,0x60))&&!func_ov003_02209cc8(M2C_FIELD(a,void **,0x64)))SpriteCellListUpdateTouch(M2C_FIELD(a,void **,0x5c));
 old=Ov003_GetSelectedRowIndex(a);pos=func_ov003_0220bf68(M2C_FIELD(a,void **,0x5c));
 if((active&&(M2C_FIELD(gKeyState,u16 *,0)&9)&&!M2C_FIELD(gTouchState,u8 *,0x12))||old==pos-11){Ov003_ActivateUnitListEntry(a,(u16)old);active=0;}
 else if((active&&(M2C_FIELD(gKeyState,u16 *,0)&2)&&!M2C_FIELD(gTouchState,u8 *,0x12))||MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,0))){
@@ -117,7 +117,7 @@ if(func_ov003_02207a70(a))func_ov003_0220bbcc(a);active=0;
 }else if(active&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12))){
 if(func_ov003_02207a70(a)){PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,12));func_ov003_0220bcac(a);PlaySoundEffect(0x1000d);MarkMenuSplitSelection(a);}active=0;
 }
-if(func_ov003_02209258(a)){if(func_020e4b28(old))EnableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else DisableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
+if(func_ov003_02209258(a)){if(CampaignSaveSlotInUse(old))EnableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));else DisableMenuSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));}
 if(active&&IsMenuEnabled(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))&&MenuSpriteIsClicked(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16))){
 if(func_ov003_02209258(a)){RequestMenuMode(a,2);PressWaypointSprite(M2C_FIELD(M2C_FIELD(a,void **,0x68),void **,16));func_020b4df4(old,a);PlaySoundEffect(0x1000d);}active=0;
 }

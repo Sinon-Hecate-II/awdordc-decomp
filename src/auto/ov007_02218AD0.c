@@ -288,7 +288,7 @@ M2C_UNK func_ov007_02218e98(void *arg0) {
 }
 
 M2C_UNK func_ov007_02219230(void *arg) {
-void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void GotoSpriteAnimationLabel(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void func_02088044(void *);
+void MapEditor_ConfirmPaletteEntry(void *); s32 func_ov007_02217c80(void *); s32 func_ov007_02217ca8(void *); void func_ov007_02219bb4(void *,s32); void GotoSpriteAnimationLabel(void *,s32); s32 func_ov007_02217d30(void *); M2C_UNK PlaySoundEffect(s32); void SpriteCellListUpdateTouch(void *);
 extern u16 *gKeyState;
 u32 keys; void *p; void *q; s32 v; s32 selected;
 keys=*gKeyState;
@@ -298,7 +298,7 @@ if(keys&0x800) {func_ov007_02219bb4(arg,func_ov007_02217ca8(arg));return;}
 if(keys&0x304) {GotoSpriteAnimationLabel(arg,1);return;}
 if(keys&2) {GotoSpriteAnimationLabel(arg,2);return;}
 if(func_ov007_02217d30(arg)) {PlaySoundEffect(0x10019);return;}
-func_02088044(M2C_FIELD(arg,void **,0x58));
+SpriteCellListUpdateTouch(M2C_FIELD(arg,void **,0x58));
 p=M2C_FIELD(arg,void **,0x58);
 if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
 q=M2C_FIELD(p,void **,0);
@@ -307,7 +307,7 @@ PlaySoundEffect(0x10019);
 M2C_FIELD((u8 *)arg+M2C_FIELD(arg,u8 *,0x37),u8 *,0x3a)=v;
 }
 if((u8)(M2C_FIELD(M2C_FIELD(arg,void **,0x58),s8 *,11)>=0)) {MapEditor_ConfirmPaletteEntry(arg);return;}
-func_02088044(M2C_FIELD(arg,void **,0x5c));
+SpriteCellListUpdateTouch(M2C_FIELD(arg,void **,0x5c));
 p=M2C_FIELD(arg,void **,0x5c);
 if((u8)(M2C_FIELD(p,s8 *,9)>=0)) {
 q=M2C_FIELD(p,void **,0);
@@ -334,8 +334,8 @@ void func_ov007_022193b0(void) {
 }
 
 void func_ov007_022193bc(void) {
-    M2C_UNK func_ov007_0221863c();
-    func_ov007_0221863c();
+    M2C_UNK MapEditor_RebuildPaletteLists();
+    MapEditor_RebuildPaletteLists();
 }
 
 void func_ov007_022193c8(void) {

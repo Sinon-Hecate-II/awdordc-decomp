@@ -109,20 +109,24 @@ u8 Ov003SceneObjectHasChildren(void) {
     return hasChildren;
 }
 
+/* Start the ov003 scene transition on the current scene object: split both
+ * screens over 8 frames, drawn with the scene's 3D sprite. */
 void Ov003_CreateScreenTransition(void) {
     M2C_UNK CreateScreenTransitionChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
     if (GetOv003SceneObject() == 0) {
         return;
     }
-    CreateScreenTransitionChildren(2, 8, 2, GetOv003SceneObject());
+    CreateScreenTransitionChildren(TRANSITION_MODE_SPLIT, 8, DS3D_TARGET_BOTH, GetOv003SceneObject());
 }
 
-void func_ov003_021f1858(void) {
-    M2C_UNK StartScreenFadeChildren(M2C_UNK, M2C_UNK, M2C_UNK, s32);
+/* Start a split fade transition on the current ov003 scene object, as a child of
+ * that object, so the screen fades while the battle scene is set up. */
+void Ov003_StartScreenFade(void) {
+    void StartScreenFadeChildren(s32, s16, s32, s32);
     if (GetOv003SceneObject() == 0) {
         return;
     }
-    StartScreenFadeChildren(2, 8, 2, GetOv003SceneObject());
+    StartScreenFadeChildren(TRANSITION_MODE_SPLIT, 8, DS3D_TARGET_BOTH, GetOv003SceneObject());
 }
 
 void func_ov003_021f1884(s16 arg0) {

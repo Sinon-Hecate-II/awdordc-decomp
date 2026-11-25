@@ -422,8 +422,13 @@ CreateFrameCallbackTask((s32)UpdateBattleSpriteLayers,7);
 CreateFrameCallbackTask((s32)DrawBattleSpriteGrid,9);
 }
 
+/* Remove the battle sprite overlay's three per-frame callbacks that
+ * InitBattleSpriteScene installed (the screen swap, the layer update and the
+ * sprite-grid draw).  Callers hand it the battle sprite state, which the
+ * original does not use. */
 void TeardownBattleSpriteScene(void) {
     M2C_UNK DeleteFrameCallbackTask(void (*)(void));
+
     DeleteFrameCallbackTask(SwapBattleScreen);
     DeleteFrameCallbackTask(UpdateBattleSpriteLayers);
     DeleteFrameCallbackTask(DrawBattleSpriteGrid);

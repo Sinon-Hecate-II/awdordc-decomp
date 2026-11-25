@@ -151,9 +151,9 @@ s32 IsPrivateIpAddress(u32 *addr) {
 s32 ghiRecordSocketError(s32 a, s32 b) { extern M2C_UNK data_0213dc60; if(a<0){M2C_FIELD(&data_0213dc60,s32 *,4)=a;a=b;} return a; }
 
 void ghiSocket(void) {
-    s32 func_02021500();
+    s32 SocketCreate();
     M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    ghiRecordSocketError(func_02021500(), -1);
+    ghiRecordSocketError(SocketCreate(), -1);
 }
 
 void ghiCloseSocket(void) {
@@ -193,15 +193,19 @@ void ghiListen(void) {
     ghiRecordSocketError(func_02021960(), -1);
 }
 
-void func_020497a0(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
+/* GameSpy ghi accept: accept a connection on `socket` and report the peer in
+ * `address`; the caller's address length (in `*addressLength`) is copied into the
+ * address's length byte before the call and read back into it afterwards, as the
+ * SDK's accept does.  A failed accept is recorded as the socket error. */
+void ghiAccept(M2C_UNK socket, u8 *address, s32 *addressLength) {
     s32 SocketAccept(M2C_UNK);
     M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    s32 temp_r0;
+    s32 acceptedSocket;
 
-    *arg1 = (u8) *arg2;
-    temp_r0 = SocketAccept(arg0);
-    *arg2 = (s32) *arg1;
-    ghiRecordSocketError(temp_r0, -1);
+    *address = (u8) *addressLength;
+    acceptedSocket = SocketAccept(socket);
+    *addressLength = (s32) *address;
+    ghiRecordSocketError(acceptedSocket, -1);
 }
 
 void ghiRecv(void) {
@@ -245,15 +249,18 @@ void ghiSetSockOpt(void) {
     ghiRecordSocketError(0, -1);
 }
 
-void ghiGetSockName(M2C_UNK arg0, u8 *arg1, s32 *arg2) {
-    s32 SocketGetSockName(M2C_UNK);
+/* ghi getsockname: fill `address` with `socket`'s local address. As the SDK
+ * does, the caller's address length is copied into the address's length byte
+ * before the call and read back into `*addressLength` afterwards. */
+void ghiGetSockName(s32 socket, UnkSocketAddress *address, s32 *addressLength) {
+    s32 SocketGetSockName(s32);
     M2C_UNK ghiRecordSocketError(s32, M2C_UNK);
-    s32 temp_r0;
+    s32 result;
 
-    *arg1 = (u8) *arg2;
-    temp_r0 = SocketGetSockName(arg0);
-    *arg2 = (s32) *arg1;
-    ghiRecordSocketError(temp_r0, -1);
+    address->bytes[0] = (u8) *addressLength;
+    result = SocketGetSockName(socket);
+    *addressLength = (s32) address->bytes[0];
+    ghiRecordSocketError(result, -1);
 }
 
 s32 ghiInetAddr(M2C_UNK arg0) {

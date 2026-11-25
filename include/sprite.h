@@ -18,6 +18,7 @@
 #define SPRITE_TIMER         0x18 /* s16 animation timer */
 #define SPRITE_DELAY         0x1A /* s16 frames left before advancing the script */
 #define SPRITE_SPEED         0x1C /* u16 script speed multiplier */
+#define SPRITE_SPEED_ONE     0x100 /* SPRITE_SPEED value of 1.0 (8.8 fixed point): each script step lands a whole frame */
 #define SPRITE_FRACTION      0x1E /* u16 fractional delay accumulator */
 #define SPRITE_PALETTE       0x21 /* u8 palette index */
 #define SPRITE_FLAGS         0x22 /* u8 animation flags */

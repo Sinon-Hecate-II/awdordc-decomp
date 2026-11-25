@@ -72,8 +72,8 @@ void func_ov003_021f676c(UnkUnitOv003 *arg0) {
     s32 GetUnitSpriteHeight(void *);
     void SpriteCellListSetCellRect(void *, s32, s32, s32, u16, u16);
     void AddSprite(s32, s32, u16, void *, s32);
-    s32 func_ov003_021f400c(void);
-    s32 func_ov003_021f4064(void);
+    s32 Ov003Battle_IsSoloLinkSession(void);
+    s32 Ov003Battle_IsLinkSessionGuest(void);
     u16 func_ov003_021fbcd8(void *, s32);
     s32 IsOv003BoxOnScreen(s32, s32, s32, s32);
     s16 WrapValueToRange(s32, s32, s32);
@@ -315,7 +315,7 @@ L3:
             var_r0 = (s16) temp_r5;
             AddSprite(0, (u8) var_r0, (u16) (0xB800 | ((0x48C >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), data_ov003_0220fe00, 0xB);
         }
-        if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
+        if ((Ov003Battle_IsSoloLinkSession() == 0) && (Ov003Battle_IsLinkSessionGuest() != 0)) {
             var_r0 = 0xA0 - temp_r5;
             AddSprite(0xC0, (u8) var_r0, (u16) (0xB000 | ((0x4CC >> ((u32) (M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine, void **, 0), u16 *, 0) << 0x11) >> 0x1E)) & 0x3FF)), gSpriteDesc64x32, 0xB);
         }

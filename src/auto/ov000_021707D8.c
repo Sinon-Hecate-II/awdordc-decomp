@@ -2,6 +2,7 @@
 #include "common.h"
 #include "battle_map.h"
 #include "ds3dsprite.h"
+#include "sound.h"
 
 
 #pragma opt_strength_reduction off
@@ -68,15 +69,17 @@ DrawTilemapNumber(16,17,dst,a,0,0);
 }else DrawTextToTilemap(16,17,dst,func_020a8bcc(),0,0);
 gCur3DSpriteEngine=old;
 }
-void func_ov000_02170ca0(void) {
+/* Situation screen's cancel (B) action: play the menu back sound and resume
+ * the situation panel object's animation. */
+void ResumeSituationScreenAnimation(void) {
     M2C_UNK Sprite_ResumeAnimation(s32);
     s32 FindObjectByClass(M2C_UNK *);
     M2C_UNK PlaySoundEffect(s32);
-    extern M2C_UNK data_ov000_021b8b88;
-    s32 temp_r4;
-    temp_r4 = FindObjectByClass(&data_ov000_021b8b88);
-    PlaySoundEffect(0x10018);
-    Sprite_ResumeAnimation(temp_r4);
+    extern M2C_UNK gSituationScreenClass;
+    s32 panel;
+    panel = FindObjectByClass(&gSituationScreenClass);
+    PlaySoundEffect(SOUND_MENU_BACK);
+    Sprite_ResumeAnimation(panel);
 }
 
 #pragma opt_strength_reduction off
@@ -116,7 +119,7 @@ void func_ov000_02170ea4(void) {
     u8 *p;
 
     if (*gKeyState & 2) {
-        func_ov000_02170ca0();
+        ResumeSituationScreenAnimation();
         return;
     }
     old = gCur3DSpriteEngine;
@@ -166,8 +169,8 @@ void UnloadSituationScreen(void) {
 
 void func_ov000_02171028(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_ov000_021b8b88;
-    CreateSpriteFromClass(&data_ov000_021b8b88, 7);
+    extern M2C_UNK gSituationScreenClass;
+    CreateSpriteFromClass(&gSituationScreenClass, 7);
 }
 
 #pragma optimization_level 2
@@ -207,7 +210,7 @@ void UnloadWinRuleWindow(void) {
     Clear3DSpriteLayer(2);
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER1;
     M2C_FIELD(gCur3DSpriteEngine, u8 *, DS3D_ENGINE_DIRTY) |= DS3D_DIRTY_LAYER2;
-    PlaySoundEffect(0x10018);
+    PlaySoundEffect(SOUND_MENU_BACK);
 }
 
 void func_ov000_021711f0(s32 arg0) {
@@ -316,7 +319,7 @@ void UnloadUsernameScreen(void) {
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_X(1)) = 0;
     M2C_FIELD(*(void **)gCur3DSpriteEngine, u16 *, DS3D_CORNER_Y(1)) = 0;
     ReleaseUsernameFont();
-    PlaySoundEffect(0x10018);
+    PlaySoundEffect(SOUND_MENU_BACK);
 }
 
 void func_ov000_0217172c(s32 arg0) {

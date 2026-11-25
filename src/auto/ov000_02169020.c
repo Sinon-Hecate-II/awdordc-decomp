@@ -404,7 +404,7 @@ s32 MovePathEndsInAttack(s8 *path) {
 }
 
 #pragma opt_dead_code on
-void func_ov000_02169998(u8 *p,s8 *q) {
+void MoveUnitRecordAlongPath(u8 *p,s8 *q) {
  loop: switch(*q++) {
  case 9: q++; goto loop;
  case -1: case 4: return;
@@ -500,13 +500,16 @@ paletteOffset=UnitMovePaletteOffset(move);
 QueueMainOBJExtPaletteCopy(gArmyPalettes+(M2C_FIELD(player,u8 *,PLAYER_REC_ARMY_INDEX)-1)*32,paletteOffset,32,0);
 }
 
-void UnitMove_FreeGraphics(void *arg0) {
+/* Release the controller's two unit sprites and the tile-graphics and animation
+ * buffers they were loaded from. */
+void UnitMove_FreeGraphics(void *move) {
     void Sprite_ClearHandle(s32 *);
     M2C_UNK HeapFreeBlock(s32);
-    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x34));
-    Sprite_ClearHandle(M2C_FIELD(arg0, s32 *, 0x38));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x54));
-    HeapFreeBlock(M2C_FIELD(arg0, s32 *, 0x50));
+
+    Sprite_ClearHandle(M2C_FIELD(move, s32 *, UNIT_MOVE_SPRITE));
+    Sprite_ClearHandle(M2C_FIELD(move, s32 *, UNIT_MOVE_SPRITE2));
+    HeapFreeBlock(M2C_FIELD(move, s32 *, UNIT_MOVE_ANIM));
+    HeapFreeBlock(M2C_FIELD(move, s32 *, UNIT_MOVE_GFX));
 }
 
 s32 LoadUnitMoveGfx(M2C_UNK arg0) {

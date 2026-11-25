@@ -369,14 +369,14 @@ s32 AddPlayerUnitValue(u8 *entry, s32 amount) {
 extern s32 *gCurrentMap;
 s32 GetUnitBuildCost(s32,u32);
 s32 IsPlayerHuman(s32);
-s32 func_020cd728(void);
+s32 IsMapEditorMode(void);
 void AddRecordFunds(s32,s32);
 s32 id, income;
 if(entry){if(!entry)id=0;else id=((s32)entry-(s32)((u8 *)*gCurrentMap+0x1a4+0x5800))/14;id=(id>>6)+1;}else id=0;
 income=amount*GetUnitBuildCost(id,(u32)(entry[0]<<26)>>26);
 ((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money+=income;
 if(((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money>999999999)((UnkStruct_020A6328 *)((u8 *)*gCurrentMap+0x3a4+0x6400))[id].money=999999999;
-if(IsPlayerHuman(id)&&!func_020cd728())AddRecordFunds(12,income);
+if(IsPlayerHuman(id)&&!IsMapEditorMode())AddRecordFunds(12,income);
 }
 
 /* The fuel a unit spends for a move of `cost` steps: the cost scaled by the owning

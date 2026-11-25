@@ -1,6 +1,7 @@
 /* 58 functions from 0x02029E98 to 0x0202AE00 (main), found by ds-decomp. */
 #include "common.h"
 #include "exp_heap.h"
+#include "fs.h"
 #include "sound.h"
 typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 
@@ -10,7 +11,7 @@ typedef struct HeapRange { u8 *start; u8 *end; } HeapRange;
 M2C_UNK InitHeapHead(void *heap, s32 signature, s32 start, M2C_UNK end, s32 attribute) {
     M2C_UNK ListInit(void *, s32);
     M2C_UNK ListAppend(M2C_UNK, void *);
-    M2C_UNK GetHeapListForAddress(void *);
+    M2C_UNK GetHeapParentList(void *);
     extern s32 gHeapListInitialized;
     extern u8 gHeapList[];
     struct HeapAttribute { u32 value:8; u32 rest:24; };
@@ -25,38 +26,44 @@ M2C_UNK InitHeapHead(void *heap, s32 signature, s32 start, M2C_UNK end, s32 attr
         ListInit(gHeapList, 4);
         gHeapListInitialized = 1;
     }
-    ListAppend(GetHeapListForAddress(heap), heap);
+    ListAppend(GetHeapParentList(heap), heap);
 }
 
 M2C_UNK func_02029f14(void *arg0) {
-    M2C_UNK GetHeapListForAddress(void *);
+    M2C_UNK GetHeapParentList(void *);
     M2C_UNK ListRemove(M2C_UNK, void *);
-    ListRemove(GetHeapListForAddress(arg0), arg0);
+    ListRemove(GetHeapParentList(arg0), arg0);
 }
 
-void GetBlockRange(void *arg0, void *arg1) {
-    s32 temp_r3 = (s32)(arg1 + 0x10);
-    M2C_FIELD(arg0, s32 *, 0) = (s32) (arg1 - (u16) (((s32) M2C_FIELD(arg1, u16 *, 2) >> 8) & 0x7F));
-    M2C_FIELD(arg0, s32 *, 4) = M2C_FIELD(arg1, s32 *, 4) + temp_r3;
+/* Fill `range` with the payload range of heap block `block`: the payload starts
+ * back from the block header by the offset encoded in its attribute word (bits
+ * 8..14), and ends after the header plus the block's payload size. */
+void GetBlockRange(void *range, void *block) {
+    s32 payloadEnd = (s32)(block + HEAP_BLOCK_HEADER_SIZE);
+    M2C_FIELD(range, s32 *, 0) = (s32)(block - (u16)(((s32)M2C_FIELD(block, u16 *, 2) >> 8) & 0x7F));
+    M2C_FIELD(range, s32 *, 4) = M2C_FIELD(block, s32 *, 4) + payloadEnd;
 }
 
-void *UnlinkBlock(void *arg0, void *arg1) {
-    void *temp_r1;
-    void *temp_r2;
+/* Remove `block` from the doubly-linked block list anchored at `list` (head at
+ * HEAP_LIST_HEAD, tail at HEAP_LIST_TAIL) and return its previous neighbour,
+ * the position where a merged block is put back. */
+void *UnlinkBlock(void *list, void *block) {
+    void *next;
+    void *prev;
 
-    temp_r2 = M2C_FIELD(arg1, void **, 8);
-    temp_r1 = M2C_FIELD(arg1, void **, 0xC);
-    if (temp_r2 != NULL) {
-        M2C_FIELD(temp_r2, void **, 0xC) = temp_r1;
+    prev = M2C_FIELD(block, void **, HEAP_BLOCK_LINK_PREV);
+    next = M2C_FIELD(block, void **, HEAP_BLOCK_LINK_NEXT);
+    if (prev != NULL) {
+        M2C_FIELD(prev, void **, HEAP_BLOCK_LINK_NEXT) = next;
     } else {
-        M2C_FIELD(arg0, void **, 0) = temp_r1;
+        M2C_FIELD(list, void **, HEAP_LIST_HEAD) = next;
     }
-    if (temp_r1 != NULL) {
-        M2C_FIELD(temp_r1, void **, 8) = temp_r2;
+    if (next != NULL) {
+        M2C_FIELD(next, void **, HEAP_BLOCK_LINK_PREV) = prev;
     } else {
-        M2C_FIELD(arg0, void **, 4) = temp_r2;
+        M2C_FIELD(list, void **, HEAP_LIST_TAIL) = prev;
     }
-    return temp_r2;
+    return prev;
 }
 
 /* Insert `block` into the free/used block list anchored at `list` (head at
@@ -82,14 +89,17 @@ void *InsertBlock(void *list, void *block, void *after) {
     return block;
 }
 
-void *InitBlock(void *arg0, s16 arg1) {
-    void *p = M2C_FIELD(arg0, void **, 0);
-    M2C_FIELD(p, s16 *, 0) = arg1;
-    M2C_FIELD(p, s16 *, 2) = 0;
-    M2C_FIELD(p, s32 *, 4) = M2C_FIELD(arg0, s32 *, 4) - (s32)(p + 16);
-    M2C_FIELD(p, s32 *, 8) = 0;
-    M2C_FIELD(p, s32 *, 12) = 0;
-    return p;
+/* Initialise the heap block whose header starts at area->start: set its signature,
+ * clear its attribute word and list links, and store the payload size from the end
+ * of the header up to area->end.  Returns the block. */
+void *InitBlock(void *area, s16 signature) {
+    void *block = M2C_FIELD(area, void **, 0);
+    M2C_FIELD(block, s16 *, 0) = signature;
+    M2C_FIELD(block, s16 *, 2) = 0;
+    M2C_FIELD(block, s32 *, 4) = M2C_FIELD(area, s32 *, 4) - (s32)(block + 16);
+    M2C_FIELD(block, void **, HEAP_BLOCK_LINK_PREV) = NULL;
+    M2C_FIELD(block, void **, HEAP_BLOCK_LINK_NEXT) = NULL;
+    return block;
 }
 
 /* Creates an expanded heap ('EXPH') over the memory from `heap` up to
@@ -430,14 +440,17 @@ void Sound_HeapAlloc(void *heap, s32 size, s32 alignment) {
     }
 }
 
-void FreeToFrameHeap(void *arg0, s32 arg1) {
+/* Free what has been allocated from the frame heap `heap`: from the frame's head,
+ * from its tail, or both, by the FRAME_HEAP_FREE_TO_* bits of `mode`. */
+void FreeToFrameHeap(void *heap, s32 mode) {
     void FreeFrameHeapToHead(void *);
     void FreeFrameHeapToTail(void *);
-    if (arg1 & 1) {
-        FreeFrameHeapToHead(arg0);
+
+    if (mode & FRAME_HEAP_FREE_TO_HEAD) {
+        FreeFrameHeapToHead(heap);
     }
-    if (arg1 & 2) {
-        FreeFrameHeapToTail(arg0);
+    if (mode & FRAME_HEAP_FREE_TO_TAIL) {
+        FreeFrameHeapToTail(heap);
     }
 }
 
@@ -581,13 +594,15 @@ s32 InitNarcArchive(void *archive, M2C_UNK name, void *data) {
     return 0;
 }
 
-s32 CloseArchive(M2C_UNK arg0) {
-    M2C_UNK ReleaseArchiveName(M2C_UNK);
-    s32 func_0200b32c();
-    if (func_0200b32c() == 0) {
+/* Close the archive handle `archive`: shut the archive's file down and, when
+ * that succeeded, release the archive's registered name.  Returns 0 when the
+ * archive's file could not be closed. */
+s32 CloseArchive(FSArchive *archive) {
+    s32 CloseArchiveFile(FSArchive *);
+    if (CloseArchiveFile(archive) == 0) {
         return 0;
     }
-    ReleaseArchiveName(arg0);
+    ReleaseArchiveName(archive);
     return 1;
 }
 
@@ -646,14 +661,14 @@ void Sound_UpdateDriver(void) {
 void Sound_StopAllChannels(void) {
     M2C_UNK Sound_StopChannels(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     M2C_UNK StopStreamChannels();
     s32 commandMark;
 
     /* Stop streamed playback and all remaining channels, then wait for the ARM7 to apply the stop. */
     StopStreamChannels();
     Sound_StopChannels(0, 0, 0, 0);
-    commandMark = Sound_GetCommandCounter();
+    commandMark = Sound_GetQueueMark();
     Sound_FlushCommands(1);
     Sound_WaitForCommand(commandMark);
 }
@@ -823,10 +838,14 @@ void Sound_SetVoiceVolume(void **arg0, s8 arg1) {
 #pragma push
 #pragma optimizewithasm off
 #pragma peephole off
-void Sound_StartPlayerVolumeFade(void * volatile *arg0, s32 arg1, s32 arg2) {
+/* Fade the volume of the sound held by the `player` handle to `volume` (0..0x7F)
+ * over `frames` frames.  A detached handle, or a voice that is already fading
+ * out, is left alone; the fade envelope works in Q8.8, so the volume is scaled
+ * up by 8 bits before it is handed over. */
+void Sound_StartPlayerVolumeFade(void * volatile *player, s32 volume, s32 frames) {
  M2C_UNK Sound_StartFade(void *, s32, s32);
- void *p;
- if (*arg0 != 0) { p=*arg0; if (M2C_FIELD(p,u8 *,0x2C)!=2) Sound_StartFade((u8 *)p+0x1C,arg1<<8,arg2); }
+ void *voice;
+ if (*player != 0) { voice=*player; if (M2C_FIELD(voice,u8 *,SOUND_VOICE_STATE)!=SOUND_VOICE_PLAYING) Sound_StartFade((u8 *)voice+SOUND_VOICE_ENVELOPE,volume<<8,frames); }
 }
 #pragma pop
 void Sound_SetChannelPan(void * volatile *arg0, s32 arg1) {
@@ -862,12 +881,15 @@ void Sound_SetSequenceSource(void **arg0, s32 arg1) {
     M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
 }
 #pragma opt_common_subs reset
-void Sound_SetSoundSource(void **arg0, s16 arg1, s16 arg2) {
-    if (*(void * volatile *)arg0 == NULL) {
+/* Record on the player that it plays sound entry `entryIndex` of sound archive
+ * `archiveId`, so the player's restart callback can find the sound again.  A
+ * detached player (a NULL handle) is left alone. */
+void Sound_SetSoundSource(void **owner, s16 archiveId, s16 entryIndex) {
+    if (*(void * volatile *)owner == NULL) {
         return;
     }
-    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x34) = 2;
-    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x38) = arg1;
-    M2C_FIELD(*(void * volatile *)arg0, s16 *, 0x3A) = arg2;
+    M2C_FIELD(*(void * volatile *)owner, s16 *, SOUND_HANDLE_SOURCE_TYPE) = 2;
+    M2C_FIELD(*(void * volatile *)owner, s16 *, SOUND_HANDLE_SOURCE_ARCHIVE) = archiveId;
+    M2C_FIELD(*(void * volatile *)owner, s16 *, SOUND_HANDLE_SOURCE_ENTRY) = entryIndex;
 }
 

@@ -24,14 +24,16 @@ void RefreshLinkPlayerAnnounce(M2C_UNK owner) {
     SpawnLinkPlayerAnnounce(owner);
 }
 
-void SpawnLinkPlayerAnnounceRefresher(M2C_UNK arg0) {
-    extern M2C_UNK data_ov009_02226728;
+/* Create a link announce refresher sprite object for `owner` and install the
+ * refresher's vtable (its destroy method and draw callback) on it. */
+void SpawnLinkPlayerAnnounceRefresher(M2C_UNK owner) {
+    extern M2C_UNK gLinkAnnounceRefresherVtable;
     extern M2C_UNK gLinkAnnounceRefresherClass;
-    M2C_UNK **temp_r0;
+    M2C_UNK **object;
 
-    temp_r0 = CreateSpriteFromClass(&gLinkAnnounceRefresherClass, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov009_02226728;
+    object = CreateSpriteFromClass(&gLinkAnnounceRefresherClass, owner);
+    if (object != NULL) {
+        *object = &gLinkAnnounceRefresherVtable;
     }
 }
 
@@ -41,13 +43,13 @@ void DeleteLinkAnnounceRefreshers(void) {
     DeleteSpriteObjectsOfClass(&gLinkAnnounceRefresherClass);
 }
 
-s32 func_ov009_022262a4(s32 arg0) {
+s32 DeleteLinkAnnounceRefresher(s32 arg0) {
     M2C_UNK MemFree();
     MemFree();
     return arg0;
 }
 
-void func_ov009_022262b8(void) {
+void LinkAnnounceRefresherDestructor(void) {
 
 }
 

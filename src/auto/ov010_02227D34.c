@@ -1,6 +1,7 @@
 /* 47 functions from 0x02227D34 to 0x02228D1C (ov010), found by ds-decomp. */
 #include "common.h"
 #include "online_link.h"
+#include "wfc.h"
 M2C_UNK func_ov010_02226a88();
 M2C_UNK ClearOnlineEventFlags();
 #pragma cplusplus on
@@ -72,8 +73,8 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
     s32 PublishPlayerStatusLocation(void *, s32);
     s32 Transfer_SetStartCallback(s32);
     s32 Transfer_SetEndCallback(s32);
-    s32 func_02038d14(s32, s32);
-    s32 func_0203a9a4(s32, s32);
+    s32 SetNetPeerCallback(s32, s32);
+    s32 SetMatchSessionSlotCallback(s32, s32);
     s32 StartMatchMaking(s32, s32, s32, s32, s32, s32, s32);
     s32 GetLastNasError(void);
     void func_ov010_02227934(void);
@@ -105,8 +106,8 @@ void Ov010Online_StartSession(s32 owner, s32 arg1) {
 
     Transfer_SetStartCallback((s32)func_ov010_02227934);
     Transfer_SetEndCallback((s32)func_ov010_02227954);
-    func_02038d14((s32)Ov010Online_OnPeerConnectionLost, 0);
-    func_0203a9a4((s32)func_ov010_02227c3c, 0);
+    SetNetPeerCallback((s32)Ov010Online_OnPeerConnectionLost, 0);
+    SetMatchSessionSlotCallback((s32)func_ov010_02227c3c, 0);
 
     StartMatchMaking(0, (s32)func_ov010_02227df8, 0, (s32)func_ov010_02227d34, 0,
                    (s32)func_ov010_02227c5c, 0);
@@ -197,7 +198,19 @@ void Ov010Online_OnHostJoinEvent(s32 error, s32 aborted, s32 data) {
     cb(error, aborted, data);
 }
 
-s32 func_ov010_02228050(s32 a,s32 b) { extern M2C_UNK gOv010OnlineSession; s32 result=1; s32 (*fp)(s32,s32)=M2C_FIELD(&gOv010OnlineSession,s32 (**)(s32,s32),0x20); if(fp) result+=fp(a,b); return result; }
+/* Score a browsed matchmaking session: 1 plus the score the online session's
+ * own score callback gives for session `index` (0 when none is installed), so
+ * the connection layer's session filter keeps it unless the app scores it -1. */
+s32 Ov010Online_ScoreMatch(s32 index, s32 callbackArg) {
+    extern M2C_UNK gOv010OnlineSession;
+    s32 score = 1;
+    s32 (*scoreCallback)(s32, s32) = M2C_FIELD(&gOv010OnlineSession, s32 (**)(s32, s32), OV010_SESSION_SCORE_CALLBACK);
+
+    if (scoreCallback) {
+        score += scoreCallback(index, callbackArg);
+    }
+    return score;
+}
 
 /* Handles the online session's start of a battle: lets the installed start
  * callback run the setup (waiting for the other player, or recording the local
@@ -423,24 +436,31 @@ s32 func_ov010_0222832c(s32 arg0, s32 arg1) {
     return 0x42000012;
 }
 #pragma optimize_ifs reset
-void func_ov010_02228614(void) {
+/* Start the ov010 online session's WFC connection: the session is no longer
+ * connected, so clear the connected flag, tear the old session blocks down, create
+ * the 12-byte connection object and start WFC on the production NAS server. */
+void Ov010Online_StartWfcConnection(void) {
     M2C_UNK func_0203783c(M2C_UNK *);
     M2C_UNK SetNasServerEnvironment(M2C_UNK);
     M2C_UNK Wfc_StartConnection();
     M2C_UNK func_ov010_02226a88();
-    extern M2C_UNK data_ov010_0222ef4c;
-    Ov010Online_ClearStepFlag(1);
+    extern M2C_UNK gOv010WfcConnection;
+
+    Ov010Online_ClearStepFlag(OV010_FLAG_CONNECTED);
     func_ov010_02226a88();
-    func_0203783c(&data_ov010_0222ef4c);
-    SetNasServerEnvironment(2);
+    func_0203783c(&gOv010WfcConnection);
+    SetNasServerEnvironment(NAS_SERVER_PROD);
     Wfc_StartConnection();
 }
 
-s32 func_ov010_02228640(void) {
+/* WFC connection start step: while there is no connection object to poll yet,
+ * drive the connection update and keep waiting (return 1); once polling can
+ * start, mark the online session connected and return 0. */
+s32 Ov010Online_WaitForConnection(void) {
     s32 Wfc_PollConnecting();
     M2C_UNK Wfc_UpdateConnection();
     if (Wfc_PollConnecting() != 0) {
-        SetOnlineSessionFlag(1);
+        SetOnlineSessionFlag(OV010_FLAG_CONNECTED);
         return 0;
     }
     Wfc_UpdateConnection();

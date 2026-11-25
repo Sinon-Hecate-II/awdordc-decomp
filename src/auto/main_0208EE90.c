@@ -285,14 +285,16 @@ GX_TurnOnDisplay();
 *(volatile u32 *)0x4001000 |= 0x10000;
 }
 
-void func_0208f730(M2C_UNK arg0) {
-    extern M2C_UNK data_021028c4;
-    extern M2C_UNK data_021028d0;
-    M2C_UNK **temp_r0;
+/* Create a sprite object of the front-end sequence's state class for `owner` and
+ * install the sequence's vtable (its destroy method and draw callback) on it. */
+void CreateFrontEndSequenceSprite(M2C_UNK owner) {
+    extern M2C_UNK gFrontEndSequenceVtable;
+    extern M2C_UNK gFrontEndSequenceStateClass;
+    M2C_UNK **object;
 
-    temp_r0 = CreateSpriteObject(&data_021028d0, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_021028c4;
+    object = CreateSpriteObject(&gFrontEndSequenceStateClass, owner);
+    if (object != NULL) {
+        *object = &gFrontEndSequenceVtable;
     }
 }
 

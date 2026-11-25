@@ -59,28 +59,35 @@ void DeleteVoiceChatWidgets(void) {
     DeleteSpriteObjectsOfClass(&gVoiceChatWidgetClass);
 }
 
-void func_02086344(void) {
+/* Move the voice-chat widget aside while a full-screen message box covers the
+ * screen: from its home position to the box's upper-right corner
+ * (RestoreVoiceChatWidgetPosition puts it back). */
+void MoveVoiceChatWidgetForMessageBox(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
-    if (temp_r0 == 0) {
+    VoiceChatWidget *widget;
+
+    widget = FindObjectByClass(&gVoiceChatWidgetClass);
+    if (widget == 0) {
         return;
     }
-    M2C_FIELD(temp_r0, s16 *, 0x34) = 0xEF;
-    M2C_FIELD(temp_r0, s16 *, 0x36) = 0x12;
+    widget->x = 0xEF;
+    widget->y = 0x12;
 }
 
-void func_02086370(void) {
+/* Put the push-to-talk voice-chat widget back at its default spot on the sub
+ * engine, undoing MoveVoiceChatWidgetForMessageBox; nothing to do without one. */
+void RestoreVoiceChatWidgetPosition(void) {
     void *FindObjectByClass(M2C_UNK *);
     extern M2C_UNK gVoiceChatWidgetClass;
-    void *temp_r0;
-    temp_r0 = FindObjectByClass(&gVoiceChatWidgetClass);
-    if (temp_r0 == 0) {
+    VoiceChatWidget *widget;
+
+    widget = FindObjectByClass(&gVoiceChatWidgetClass);
+    if (widget == 0) {
         return;
     }
-    M2C_FIELD(temp_r0, s16 *, 0x34) = 0xDE;
-    M2C_FIELD(temp_r0, s16 *, 0x36) = 1;
+    widget->x = 0xDE;
+    widget->y = 1;
 }
 
 /* Switch the push-to-talk voice-chat widget to the main engine (it is created on
@@ -208,7 +215,9 @@ s32 IsUiGraphicsBankInUse(s32 bank) {
     }
 }
 
-void func_02086574(void) {
+/* Clear the loaded UI text bank table (at boot nothing is loaded yet) and then
+ * load the banks the boot UI keeps for the whole game. */
+void InitUiGraphicsBanks(void) {
     void ReloadUiGraphicsBanks(void);
     extern M2C_UNK gUiGraphicsBanks[];
     s32 i;
@@ -216,7 +225,7 @@ void func_02086574(void) {
     do {
         gUiGraphicsBanks[i] = 0;
         i = i + 1;
-    } while (i < 0x28);
+    } while (i < TEXT_BANK_COUNT);
     ReloadUiGraphicsBanks();
 }
 

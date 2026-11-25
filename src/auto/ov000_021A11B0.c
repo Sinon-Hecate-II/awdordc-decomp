@@ -334,14 +334,20 @@ else M2C_FIELD(&gAiCommand,u8 *,AI_COMMAND_UNIT)=1;
 CommitAiAction(candidate);return 1;
 }
 
-s32 func_ov000_021a20d4(void) {
+/* Final build step of the AI turn plan: recount the per-kind health of both
+ * armies, then pick the best scored unit kind and target candidate and commit
+ * the build.  Returns 0 when no candidate could be chosen. */
+s32 BuildAiScoredUnit(void) {
     M2C_UNK CommitAiAction();
-    M2C_UNK func_ov000_021a7d08();
-    s32 func_ov000_021a7f1c(M2C_UNK);
-    func_ov000_021a7d08();
-    if (func_ov000_021a7f1c(1) == -1) {
+    void RecountAiUnitKindHealth();
+    s32 SelectScoredUnitForTarget(M2C_UNK);
+    s32 candidate;
+
+    RecountAiUnitKindHealth();
+    candidate = SelectScoredUnitForTarget(1);
+    if (candidate == -1) {
         return 0;
     }
-    CommitAiAction();
+    CommitAiAction(candidate);
     return 1;
 }

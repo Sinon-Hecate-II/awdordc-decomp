@@ -51,13 +51,13 @@ typedef struct SaveSettingsSnapshot {
 
 #pragma opt_strength_reduction off
 #pragma opt_common_subs off
-void func_020be718(SaveSettingsSnapshot *save) {
+void SnapshotGameSettings(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
-    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
+    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, gCampaignSaveRecords;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
-    SaveRecordBlock *records = (SaveRecordBlock *)&data_0215dba4;
+    SaveRecordBlock *records = (SaveRecordBlock *)&gCampaignSaveRecords;
     s32 i;
 
     save->settingsWord = M2C_FIELD(&gGameSettings, u32 *, 0x128);
@@ -98,7 +98,7 @@ void func_020e4b24(void);
 void func_020beabc(SaveSettingsSnapshot *save) {
     extern M2C_UNK gGameSettings, data_0215d990, data_0215d9c0;
     extern M2C_UNK data_0215d9d0, data_0215d9e0, data_0215d9ec;
-    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, data_0215dba4;
+    extern M2C_UNK gMapSettings, gCoUnlocked, gRecordValues, gCampaignSaveRecords;
     extern M2C_UNK gEventFlagsMid, gSeenMapBackgroundFlags, gRecordsMusicHeard, gListRowFlags;
     extern M2C_UNK gMapListFlags, gCampaignMapPlayed, gCampaignMapCleared, gCampaignMapSaved;
     s32 i;
@@ -115,11 +115,11 @@ void func_020beabc(SaveSettingsSnapshot *save) {
     *(SaveBytes15 *)&gCoUnlocked = save->coUnlocked;
     *(SaveWords376 *)&gRecordValues = save->recordValues;
     for (i = 0; i < 3; i++) {
-        ((SaveRecordBlock *)&data_0215dba4)[i].header[0] = save->records[i].header[0];
-        ((SaveRecordBlock *)&data_0215dba4)[i].header[1] = save->records[i].header[1];
-        ((SaveRecordBlock *)&data_0215dba4)[i].payload = save->records[i].payload;
-        ((SaveRecordBlock *)&data_0215dba4)[i].metadata = save->records[i].metadata;
-        ((SaveRecordBlock *)&data_0215dba4)[i].stamp = save->records[i].stamp;
+        ((SaveRecordBlock *)&gCampaignSaveRecords)[i].header[0] = save->records[i].header[0];
+        ((SaveRecordBlock *)&gCampaignSaveRecords)[i].header[1] = save->records[i].header[1];
+        ((SaveRecordBlock *)&gCampaignSaveRecords)[i].payload = save->records[i].payload;
+        ((SaveRecordBlock *)&gCampaignSaveRecords)[i].metadata = save->records[i].metadata;
+        ((SaveRecordBlock *)&gCampaignSaveRecords)[i].stamp = save->records[i].stamp;
     }
     *(SaveBytes8 *)&gEventFlagsMid = save->listHeader;
     *(SaveBytes16 *)&gSeenMapBackgroundFlags = save->listSelection;
@@ -134,13 +134,16 @@ void func_020beabc(SaveSettingsSnapshot *save) {
 #pragma opt_loop_invariants reset
 #pragma opt_common_subs reset
 #pragma opt_strength_reduction reset
-s32 IsUnitAvailable(M2C_UNK arg0) {
-    s32 SaveRecordExistsForType(M2C_UNK);
+/* Whether a save record of type `saveType` is available: the battle record for
+ * that type must first have been stamped with a non-zero day count, and the save
+ * record itself must exist. */
+s32 IsUnitAvailable(s32 saveType) {
+    s32 SaveRecordExistsForType(s32);
     void *GetBattleRecord();
-    if (M2C_FIELD(GetBattleRecord(), u16 *, 2) == 0) {
+    if (M2C_FIELD(GetBattleRecord(), u16 *, BATTLE_RECORD_DAYS) == 0) {
         return 0;
     }
-    return SaveRecordExistsForType(arg0);
+    return SaveRecordExistsForType(saveType);
 }
 
 /* Record the battle that just ended in its save slot: the map it was fought on,

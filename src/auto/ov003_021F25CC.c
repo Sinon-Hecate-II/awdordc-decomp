@@ -47,10 +47,12 @@ s32 IsCampaignMapHeaderCategory(void) {
  }
 }
 
-u8 FindMapPick(s32 unused,u16 *array,s32 value) {
- u8 i=0;
- do { if(value==array[i]) return i; ++i;}while(i<5);
- return 255;
+/* Return the slot `mapId` holds in a side's five-slot map-pick list, or
+ * MAP_PICK_NOT_FOUND when that side has not picked the map. */
+u8 FindMapPick(s32 unused, u16 *picks, s32 mapId) {
+    u8 i = 0;
+    do { if (mapId == picks[i]) return i; ++i; } while (i < MAP_PICK_SLOTS);
+    return MAP_PICK_NOT_FOUND;
 }
 
 /* Pick one map for a side of the ov003 link map-select screen.  `block` holds
@@ -384,7 +386,7 @@ void func_ov003_021f2e98(s32 entry) {
  s32 GetMapConfirmState(void); void EnableMapConfirm(void); void DisableMapConfirm(void);
  void DeleteVoiceChatWidgets(void); void CreateMatchNameLabel(s32,s32,s32);
  void SetOv003SceneState(s32); s32 GetSceneSlideOffset(void);
- void func_ov003_021f1858(void); void func_ov003_021f18a4(void);
+ void Ov003_StartScreenFade(void); void func_ov003_021f18a4(void);
  s32 func_ov003_021f142c(void); void Ov003_StartBattleScene(s32,s32,s32,s32,s32);
  s32 direction; u8 next; s32 prev; void *p;
  func_ov003_021f2878(entry);
@@ -411,14 +413,14 @@ void func_ov003_021f2e98(s32 entry) {
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
- else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)++;return;
  case 2:
  if(AtStart2e98(M2C_FIELD(entry,void **,0x40))) {DisableMapConfirm();DeleteVoiceChatWidgets();CreateMatchNameLabel(0,0x6e0,entry);Sprite_ResumeAnimation(entry);return;}
  M2C_FIELD(entry,u8 *,0x34)=3;
  p=M2C_FIELD(entry,void **,0x40);
  if(IsSpecial2e98(M2C_FIELD(p,u8 **,8)[M2C_FIELD(p,s8 *,5)])) SetOv003SceneState(4);
- else {if(!GetSceneSlideOffset()){func_ov003_021f1858();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
+ else {if(!GetSceneSlideOffset()){Ov003_StartScreenFade();M2C_FIELD(entry,u8 *,0x44)=0;}func_ov003_021f18a4();}
  p=M2C_FIELD(entry,void **,0x40);M2C_FIELD(p,s8 *,5)--;return;
  }
  case 3:

@@ -136,10 +136,10 @@ s32 GetShogunBgFileName(s32 arg0) {
     return sShogunBgFileNames[arg0 - 1];
 }
 
-/* Tile index of the colour flag drawn on the select-screen background for player
- * id 1..4, or 0 when there is no such player (the panel counterpart is
- * GetPlayerPanelFlagTile). */
-s32 GetPlayerBgFlagTile(u32 playerId) {
+/* BGR555 colour of the flag drawn on the select-screen background for player id
+ * 1..4, or 0 when there is no such player (the panel counterpart is
+ * GetPlayerPanelFlagColor). */
+s32 GetPlayerBgFlagColor(u32 playerId) {
     switch (playerId) {
     case 1:
         return 0x2937;
@@ -154,10 +154,10 @@ s32 GetPlayerBgFlagTile(u32 playerId) {
     }
 }
 
-/* Tile index of the colour flag drawn on a player's panel for player id 1..4,
- * or 0 when there is no such player (the select-screen counterpart is
- * GetPlayerBgFlagTile). */
-s32 GetPlayerPanelFlagTile(u32 playerId) {
+/* BGR555 colour of the flag drawn on a player's panel for player id 1..4, or 0
+ * when there is no such player (the select-screen counterpart is
+ * GetPlayerBgFlagColor). */
+s32 GetPlayerPanelFlagColor(u32 playerId) {
     switch (playerId) {
     case 1:
         return 0x4E5B;
@@ -172,20 +172,22 @@ s32 GetPlayerPanelFlagTile(u32 playerId) {
     }
 }
 
-/* Load the select-screen background for `playerCount` players into sprite layer
- * `layer` (the per-count CG, its tile data and the shared palette in OBJ palette
- * `palette`), then set each joined player's colour flag tile. */
+/* Load the select-screen background for `playerCount` players: the per-count CG
+ * into sprite layer `layer`, its tile data (engine +0x0C and +0x20 per layer),
+ * and the shared background palette into OBJ palette row `palette`; then give
+ * each joined player slot's flag its player's background flag colour and mark
+ * the palette dirty. */
 void Ov003_LoadPlayerSelectBg(s32 layer, s32 palette, u32 playerCount) {
     M2C_UNK LoadDecompressedFileTo(s32, s32);
     M2C_UNK LoadFileToSpriteBuffer(M2C_UNK *, s32, M2C_UNK);
     M2C_UNK LoadDecompressedFileAndDrawTilemapBlock(s32, s32, M2C_UNK, s32);
     s32 GetPlayerIdForSlot(s32);
-    s32 func_020ae7a4(s32, s32, s32);
+    s32 Set3DSpritePaletteColor(s32, s32, s32);
     s32 GetLocalizedFileName(M2C_UNK *);
     extern void *gCur3DSpriteEngine;
     extern M2C_UNK sShogunSelectCgName;
     extern M2C_UNK sSelectCommonBgPaletteName;
-    u8 i;
+    u8 slot;
 
     LoadDecompressedFileTo(GetLocalizedFileName(&sShogunSelectCgName), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (layer * 4)), s32 *, 0xC));
     LoadDecompressedFileAndDrawTilemapBlock(GetShogunBgFileName(playerCount), M2C_FIELD((void *)((u8 *)gCur3DSpriteEngine + (layer * 4)), s32 *, 0x20), 0, palette);
@@ -193,17 +195,20 @@ void Ov003_LoadPlayerSelectBg(s32 layer, s32 palette, u32 playerCount) {
     if (playerCount <= 1U) {
         return;
     }
-    for (i = 0; i < playerCount; i++) {
-        func_020ae7a4(palette, (u8)(i + 1), GetPlayerBgFlagTile((u8)GetPlayerIdForSlot(i + 1)));
+    for (slot = 0; slot < playerCount; slot++) {
+        Set3DSpritePaletteColor(palette, (u8)(slot + 1), GetPlayerBgFlagColor((u8)GetPlayerIdForSlot(slot + 1)));
     }
     M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) = (u8) (M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x46) | 0x10);
 }
 
-void Ov003_SetPanelPlayerFlagTile(s32 a, s32 b) {
-s32 GetPlayerIdForSlot(s32);
-s32 func_020ae7a4(s32,s32,s32);
-s32 GetPlayerPanelFlagTile(u32);
-func_020ae7a4(a,1,GetPlayerPanelFlagTile((u8)GetPlayerIdForSlot(b+1)));
+/* Set the flag colour of the player in player slot `slot` (0-based): look the
+ * slot's player id up, then write that player's flag colour as entry 1 of the
+ * 3D sprite OBJ palette row `palette` the panel's flag sprite draws with. */
+void Ov003_SetPanelPlayerFlagColor(s32 palette, s32 slot) {
+    s32 GetPlayerIdForSlot(s32);
+    s32 Set3DSpritePaletteColor(s32, s32, s32);
+    s32 GetPlayerPanelFlagColor(u32);
+    Set3DSpritePaletteColor(palette, 1, GetPlayerPanelFlagColor((u8)GetPlayerIdForSlot(slot + 1)));
 }
 
 /* Apply the map's player settings (unless `keepSettings` is set, randomizing the
@@ -409,16 +414,22 @@ u8 func_ov003_02200c64(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
-u8 func_ov003_02200c7c(void) {
+/* True when the local console hosts an active network session (the twin of
+ * IsSessionHost used by the map-selection screens): a session is up and this
+ * console is its host, otherwise 0. */
+u8 IsSessionHostAlt(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
     s32 result;
+
     if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
 }
 
-u8 func_ov003_02200ca8(void) {
+/* Whether this console is a guest of an active link session: the scenes skip
+ * their local-only setup (the host's own display and slide-in sprites) then. */
+u8 Ov003_IsLinkSessionGuest(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionGuest();
     s32 result;

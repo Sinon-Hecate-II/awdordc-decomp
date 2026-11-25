@@ -66,6 +66,12 @@
 #define SOUND_HANDLE_CLOSE_CB      0x170 /* void (*)(void *player): close the sound's data source */
 #define SOUND_HANDLE_FILE_REQUEST  0x5C  /* the slot's file request, used to load its sample data */
 
+/* What the player handle plays, recorded so its restart callback can find the
+ * sound again: a sequence, or a sound entry of a loaded sound archive. */
+#define SOUND_HANDLE_SOURCE_TYPE   0x34 /* s16 kind: 1 a sequence, 2 a sound entry */
+#define SOUND_HANDLE_SOURCE_ARCHIVE 0x38 /* s16 sequence id, or the archive id of the sound entry */
+#define SOUND_HANDLE_SOURCE_ENTRY  0x3A /* s16 entry index of the sound in its archive */
+
 #define SOUND_HANDLE_SOURCE_BASE   0xA4 /* sample file offset or memory base address */
 #define SOUND_HANDLE_SOURCE_HEADER 0xA8 /* cached sample file header */
 #define SOUND_SOURCE_HEADER_SIZE   0x40

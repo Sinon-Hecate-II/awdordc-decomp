@@ -16,4 +16,15 @@
 #define REG_DIV_RESULT64 (*(volatile u64 *)0x040002A0)
 #define DIVCNT_BUSY     0x8000
 
+/* The divider register block's base and the offsets the matrix code writes
+ * through one base register to start a 64-by-32 divide (numeratorHigh << 32 over
+ * the denominator).  DIVCNT's low bit selects the 64-bit numerator mode; the
+ * denominator's second word is unused there and is cleared. */
+#define DIV_REG_BASE     0x04000280 /* DIVCNT, the block's first register */
+#define DIV_CNT_64BIT    1          /* DIVCNT: bit 0, 64-bit numerator mode */
+#define DIV_NUMER_LOW    0x10       /* s32 low word of the 64-bit numerator */
+#define DIV_NUMER_HIGH   0x14       /* s32 high word of the 64-bit numerator */
+#define DIV_DENOM_LOW    0x18       /* s32 the 32-bit denominator */
+#define DIV_DENOM_HIGH   0x1C       /* s32 second denominator word, unused in 64-by-32 mode */
+
 #endif

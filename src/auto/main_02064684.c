@@ -445,17 +445,31 @@ s32 MemSet(s32 arg0) {
     return arg0;
 }
 
-u8 *func_02065224(u8 *p,s32 value,u32 n) {
- u32 c=(u8)value;
- if(n) { do { if(*p++==c) return p-1; } while(--n); }
- return NULL;
+/* Find the first byte `value` (its low 8 bits) among the first `count` bytes
+ * at `p` and return its address, or NULL when none of them matches (memchr). */
+u8 *FindFirstByte(u8 *p, s32 value, u32 count) {
+    u32 c = (u8) value;
+
+    if (count) {
+        do {
+            if (*p++ == c) return p - 1;
+        } while (--count);
+    }
+    return NULL;
 }
 
-u8 *FindLastByte(u8 *p,s32 value,u32 n) {
- u32 c=(u8)value;
- p+=n;
- if(n) { do { if(*--p==c) return p; } while(--n); }
- return NULL;
+/* Find the last byte `value` (its low 8 bits) among the `count` bytes from `p`
+ * and return its address, or NULL when none of them matches (memrchr). */
+u8 *FindLastByte(u8 *p, s32 value, u32 count) {
+    u32 c = (u8) value;
+
+    p += count;
+    if (count) {
+        do {
+            if (*--p == c) return p;
+        } while (--count);
+    }
+    return NULL;
 }
 
 /* Compare the first n bytes of two buffers like memcmp: return -1, 0 or 1

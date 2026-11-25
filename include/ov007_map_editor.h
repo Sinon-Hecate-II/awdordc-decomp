@@ -50,7 +50,7 @@ enum {
 #define MAP_EDITOR_PALETTE_ENTRY_SIZE 5 /* bytes per palette entry record (kind, x, y, and two sprite fields) */
 
 /* The palette panel's two list objects (each a MenuList007 built by
- * func_ov007_0221863c): the page's entry grid and the page markers row. */
+ * MapEditor_RebuildPaletteLists): the page's entry grid and the page markers row. */
 #define MAP_EDITOR_PANEL_ENTRY_LIST  0x58 /* MenuList007 *the palette page's entry grid */
 #define MAP_EDITOR_PANEL_MARKER_LIST 0x5C /* MenuList007 *the page markers row */
 

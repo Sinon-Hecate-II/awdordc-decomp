@@ -6,7 +6,7 @@ void MapEditTextDeleteAccentAction(u8 *arg0) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK MI_CpuCopy32(s32 *, s8 *, M2C_UNK);
     M2C_UNK Mb_StringCopy(s32 *, M2C_UNK);
-    s32 func_020194e0(s32 *, M2C_UNK *);
+    s32 Mb_StringCompare(s32 *, M2C_UNK *);
     s32 IsLeadByte(s32 *);
     s32 MeasureStringWidth(s32 *);
     M2C_UNK GotoSpriteAnimationLabel(s32, M2C_UNK);
@@ -63,16 +63,16 @@ void MapEditTextDeleteAccentAction(u8 *arg0) {
 case 0x68: if((s32)&gSoftKeyLayoutJp[0]==*(s32 *)((u8 *)ctx+0x34)){
 s32 old=*phase;
 s32 *value=&data_ov007_02220960;
-if(func_020194e0(value,&gGlyphDakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(Mb_StringCompare(value,&gGlyphDakuten)==0) {
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(func_020194e0(value,&gGlyphHandakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+} else if(Mb_StringCompare(value,&gGlyphHandakuten)==0) {
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 }else {PlaySoundEffect(0x1001d);return;}
 }
@@ -89,16 +89,16 @@ PlaySoundEffect(0x1000d);return;
 }else {
 s32 old=*phase;
 s32 *value=&data_ov007_022205c0;
-if(func_020194e0(value,&gGlyphDakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+if(Mb_StringCompare(value,&gGlyphDakuten)==0) {
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x12c);
 }else {PlaySoundEffect(0x1001d);return;}
-} else if(func_020194e0(value,&gGlyphHandakuten)==0) {
-s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(func_020194e0(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
+} else if(Mb_StringCompare(value,&gGlyphHandakuten)==0) {
+s32 found; if(*phase==0) found=-1; else{s32 *items=*(s32 **)((u8 *)ctx+0x34); s32 i; s32 *entry=&((s32 *)&gMapEditObjectList)[*phase-1]; found=-1; for(i=0;i<75;i++){if(Mb_StringCompare(entry,(M2C_UNK *)items[i])==0){found=i;break;}}}
 if(found>=0){s8 next=(s8)(*phase-1);if (next >= 0 && next < 17 && ((next < 17 && ((s32 *)&gMapEditObjectList)[next] != 0) || (next > 0 && ((s32 *)&gMapEditObjectList)[next-1] != 0))) *phase = next;
-if(func_020194e0(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
+if(Mb_StringCompare(&((s32 *)&gMapEditObjectList)[*phase],(M2C_UNK *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258))==0){if ((s8)old >= 0 && (s8)old < 17 && (((s8)old < 17 && ((s32 *)&gMapEditObjectList)[(s8)old] != 0) || ((s8)old > 0 && ((s32 *)&gMapEditObjectList)[(s8)old-1] != 0))) *phase = (s8)old;PlaySoundEffect(0x1001d);return;}
 value=(s32 *)M2C_FIELD(*(s32 **)((u8 *)ctx+0x34)+found,s32 *,0x258);
 }else {PlaySoundEffect(0x1001d);return;}
 }
@@ -174,7 +174,7 @@ void func_ov007_0221dcd4(void) {
 void MapEditTextActionInput(void *arg0) {
     M2C_UNK GotoSpriteAnimationLabel(s32, M2C_UNK);
     M2C_UNK MI_CpuCopy8(s32 *, s8 *, M2C_UNK);
-    s32 func_020194e0(s32 *, M2C_UNK *);
+    s32 Mb_StringCompare(s32 *, M2C_UNK *);
     M2C_UNK RenderTextLayerMessage(void *, M2C_UNK, M2C_UNK, s32);
     void *CreateTextLayer(s32);
     s32 IsLeadByte(s32 *);
@@ -222,7 +222,7 @@ void MapEditTextActionInput(void *arg0) {
             glyphSlot = &gMapEditObjectList;
             if (M2C_FIELD(&gMapEditRecords, s32 *, 4) != 0) {
 loop_9:
-                if ((func_020194e0(glyphSlot, &gGlyphSpace) != 0) && (func_020194e0(glyphSlot, &gGlyphWideSpace) != 0)) {
+                if ((Mb_StringCompare(glyphSlot, &gGlyphSpace) != 0) && (Mb_StringCompare(glyphSlot, &gGlyphWideSpace) != 0)) {
                     allBlank = 0;
                 } else {
                     glyphSlot += 1;

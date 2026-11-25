@@ -3,7 +3,7 @@
 #include "mapedit.h"
 #include "ds3dsprite.h"
 extern M2C_UNK gMapEditObjectList;
-int func_020194e0(const void *, const void *);
+int Mb_StringCompare(const void *, const void *);
 static inline void SetTextIndex(void *p, s8 n) {
     if (n < 0 || n >= 17) return;
     if (n < 17 && ((u32 *)&gMapEditObjectList)[n] != 0) goto valid;
@@ -17,7 +17,7 @@ static inline int FindTextIndex(void *p) {
     table=M2C_FIELD(p,u32 **,0x34);
     needle=(u32 *)&gMapEditObjectList + (M2C_FIELD(p,s8 *,0x3c)-1);
     result=-1;
-    for(i=0;i<75;i++) if(func_020194e0(needle,(void *)table[i])==0){result=i;break;}
+    for(i=0;i<75;i++) if(Mb_StringCompare(needle,(void *)table[i])==0){result=i;break;}
     return result;
 }
 
@@ -45,18 +45,18 @@ void *editor; s32 oldIndex; u32 glyph,line[17],*glyphPtr; s32 found; u32 width; 
 editor=M2C_FIELD(arg0,void **,0x10);
 glyph=M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)[M2C_FIELD(arg0,u8 *,0)];
 oldIndex=M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX);
-if(func_020194e0((void*)glyph,&gGlyphDakuten)==0){
+if(Mb_StringCompare((void*)glyph,&gGlyphDakuten)==0){
 found=FindTextIndex(editor);
 if(found>=0){
 SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)-1);
-if(func_020194e0((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_DAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
+if(Mb_StringCompare((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_DAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
 glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_DAKUTEN_VARIANTS);
 }else{return PlaySoundEffect(0x1001d);}
-}else if(func_020194e0((void*)glyph,&gGlyphHandakuten)==0){
+}else if(Mb_StringCompare((void*)glyph,&gGlyphHandakuten)==0){
 found=FindTextIndex(editor);
 if(found>=0){
 SetTextIndex(editor,M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX)-1);
-if(func_020194e0((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_HANDAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
+if(Mb_StringCompare((u32*)&gMapEditObjectList+M2C_FIELD(editor,s8 *,MAPEDIT_TEXT_INDEX),(void*)M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_HANDAKUTEN_VARIANTS))==0){SetTextIndex(editor,oldIndex);return PlaySoundEffect(0x1001d);}
 glyph=M2C_FIELD(M2C_FIELD(editor,u32 **,MAPEDIT_TEXT_LAYOUT)+found,u32 *,MAPEDIT_HANDAKUTEN_VARIANTS);
 }else{return PlaySoundEffect(0x1001d);}
 }

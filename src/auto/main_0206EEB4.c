@@ -1,6 +1,7 @@
 /* 24 functions from 0x0206EEB4 to 0x0206FC18 (main), found by ds-decomp. */
 #include "common.h"
 #include "string_storage.h"
+#include "cpp_exception.h"
 extern u8 data_02100894[],data_02100888[],data_02100874[],data_021008b8[];
 typedef union {double d;u64 u;} DoubleBits;
 typedef struct Decimal38 { s8 sign;u8 pad;s16 exponent;u8 length;u8 digits[33]; } Decimal38;
@@ -136,7 +137,9 @@ s32 ClassifyDouble(double x, ...) {
     return DOUBLE_CLASS_NORMAL;
 }
 
-double func_0206f818(double x, s32 n) {
+/* Scale the double `x` by 2^n: split off its exponent with Frexp, add `n` to
+ * that exponent, then rebuild the value with ScaleDoubleByExp. */
+double Ldexp(double x, s32 n) {
  double Frexp(double, s32 *);
  double ScaleDoubleByExp(double, s32);
  s32 exponent;
@@ -197,11 +200,13 @@ void func_0206f958(void) {
 
 }
 
-s32 func_0206f95c(s32 arg0, M2C_UNK arg1) {
-    s32 TypeInfoEquals(M2C_UNK, M2C_UNK *);
-    extern M2C_UNK data_02100708;
-    if (TypeInfoEquals(arg1, &data_02100708) != 0) {
-        return arg0 + 0xC;
+/* CodeWarrior dynamic_cast helper for std::detail::default_delete<char[]>: when
+ * the object's type_info matches that class, return its subobject at +0xC, else 0. */
+s32 DynamicCastDefaultDeleteCharArray(s32 object, TypeInfo *typeInfo) {
+    s32 TypeInfoEquals(TypeInfo *, TypeInfo *);
+    extern TypeInfo gTypeInfoDefaultDeleteCharArray;
+    if (TypeInfoEquals(typeInfo, &gTypeInfoDefaultDeleteCharArray) != 0) {
+        return object + 0xC;
     }
     return 0;
 }
@@ -245,11 +250,14 @@ s32 func_0206fa0c(void *arg0) {
     return M2C_FIELD(arg0, s32 *, 4);
 }
 
-void *func_0206fa14(void *arg0) {
-    if (((u32) (M2C_FIELD(arg0, s32 *, 0) << 0x1F) >> 0x1F) != 0) {
-        MemFree(M2C_FIELD(arg0, s32 *, 8));
+/* Release a StringStorage's heap buffer when the string has outgrown its small
+ * inline storage; returns the storage so it can be used as an expression. */
+void *StringStorageFree(void *storage) {
+    StringStorage *self = (StringStorage *)storage;
+    if (self->large.flag != 0) {
+        MemFree(self->large.data);
     }
-    return arg0;
+    return storage;
 }
 
 #pragma use_frame_pointer on
@@ -270,7 +278,7 @@ if(capacity<size)capacity=size;
 if(capacity+1<=11)capacity=11;else capacity=(capacity+16)&~15;
 if(capacity==oldcap)return;
 if(capacity==11){buffer=self->small.data;old=self->large.data;allocated=0;}
-else {if(capacity>oldcap)buffer=MemAlloc(capacity);else {buffer=MemAlloc(capacity);if(!buffer){func_02074000(context);return;}}old=large?self->large.data:self->small.data;allocated=1;}
+else {if(capacity>oldcap)buffer=MemAlloc(capacity);else {buffer=MemAlloc(capacity);if(!buffer){DeleteScopedObject(context);return;}}old=large?self->large.data:self->small.data;allocated=1;}
 MemMove(buffer,old,size);buffer[size]=0;
 if(large)MemFree(old);
 self->large.flag=allocated & 1;

@@ -51,6 +51,19 @@ typedef struct Ov003BattleSetupMenu {
     u8 *items;
 } Ov003BattleSetupMenu;
 
+/* A bounded option-value record (vtable gOv003OptionRowVTable, 0x18 bytes):
+ * a current choice with its inclusive bounds, the increment per change and a
+ * flag saying whether a change past a bound wraps around or clamps. */
+typedef struct Ov003OptionValue {
+    void *vtable;  /* +0x00 gOv003OptionRowVTable */
+    s32 value;     /* +0x04 current choice */
+    s32 upper;     /* +0x08 highest choice */
+    s32 lower;     /* +0x0C lowest choice */
+    s32 unk10;     /* +0x10 always initialised to 1 */
+    u8 wrap;       /* +0x14 nonzero: wrap around at the bounds, else clamp */
+    u8 pad15[3];
+} Ov003OptionValue;
+
 /* The ov003 battle scene object (vtable data_ov003_0220fb38, built by
  * func_ov003_021f05fc): SpriteTween slots that slide the map and player panels
  * into place, the CO panel record and the sprite handles it owns. */

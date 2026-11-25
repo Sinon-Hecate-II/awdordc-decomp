@@ -152,16 +152,20 @@ void func_020033f4(void) {
     GX_ReleaseBankForPurpose(&data_0212dbd8);
 }
 
-void func_02003408(void) {
-    extern M2C_UNK data_0212dbda;
-    *(s32 *)0x04001000 &= ~0x40000000;
-    GX_ReleaseBankForPurpose(&data_0212dbda);
+/* Release the sub engine's background extended-palette VRAM bank: switch the
+ * palette off in DISPCNT_SUB and give its bank back to the allocator. */
+void GX_ReleaseBankForBGExtPlttSub(void) {
+    extern M2C_UNK gVramBankGrantBGExtPlttSub;
+    REG_DISPCNT_SUB &= ~DISPCNT_BG_EXT_PALETTE;
+    GX_ReleaseBankForPurpose(&gVramBankGrantBGExtPlttSub);
 }
 
-void func_02003430(void) {
-    extern M2C_UNK data_0212dbdc;
-    *(s32 *)0x04001000 &= ~0x80000000;
-    GX_ReleaseBankForPurpose(&data_0212dbdc);
+/* Release the sub engine's OBJ (sprite) extended-palette VRAM bank: switch the
+ * palette off in DISPCNT_SUB and give its bank back to the allocator. */
+void GX_ReleaseBankForOBJExtPlttSub(void) {
+    extern M2C_UNK gVramBankGrantOBJExtPlttSub;
+    REG_DISPCNT_SUB &= ~DISPCNT_OBJ_EXT_PALETTE;
+    GX_ReleaseBankForPurpose(&gVramBankGrantOBJExtPlttSub);
 }
 
 /* Release the VRAM grant kept in *grant: clear the grant and set each bank's
@@ -245,15 +249,15 @@ void GX_ReleaseBankGrantForSubOBJ(void) {
 }
 
 void GX_ReleaseBankGrantForBGExtPlttSub(void) {
-    extern M2C_UNK data_0212dbda;
+    extern M2C_UNK gVramBankGrantBGExtPlttSub;
     *(s32 *)0x04001000 &= ~0x40000000;
-    GX_ReleaseBankGrant(&data_0212dbda);
+    GX_ReleaseBankGrant(&gVramBankGrantBGExtPlttSub);
 }
 
 void GX_ReleaseBankGrantForOBJExtPlttSub(void) {
-    extern M2C_UNK data_0212dbdc;
+    extern M2C_UNK gVramBankGrantOBJExtPlttSub;
     *(s32 *)0x04001000 &= ~0x80000000;
-    GX_ReleaseBankGrant(&data_0212dbdc);
+    GX_ReleaseBankGrant(&gVramBankGrantOBJExtPlttSub);
 }
 
 /* Address of BG0's map data in the main engine's background VRAM: the display's
@@ -540,15 +544,18 @@ void GX_LoadToonTable(M2C_UNK arg0) {
     CopyU16(arg0, 0x04000380, 0x40);
 }
 
-void GX_SetClearColor(s32 arg0, s32 arg1, s16 arg2, s32 arg3, s32 arg4) {
-    s32 var_r1;
+/* Set what the 3D engine clears the rear buffer to: the background colour with
+ * its alpha and polygon id packed into CLEAR_COLOR (and the fog-enable bit when
+ * `fogEnable` is set), plus the depth written to the buffer. */
+void GX_SetClearColor(s32 color, s32 alpha, s16 depth, s32 polygonId, s32 fogEnable) {
+    s32 value;
 
-    var_r1 = arg0 | (arg1 << 0x10) | (arg3 << 0x18);
-    if (arg4 != 0) {
-        var_r1 |= 0x8000;
+    value = color | (alpha << GX_CLEAR_COLOR_ALPHA_SHIFT) | (polygonId << GX_CLEAR_COLOR_POLYGON_SHIFT);
+    if (fogEnable != 0) {
+        value |= GX_CLEAR_COLOR_FOG_ENABLE;
     }
-    M2C_FIELD((void *)0x04000350, s32 *, 0) = var_r1;
-    M2C_FIELD((void *)0x04000350, s16 *, 4) = arg2;
+    REG_GX_CLEAR_COLOR = value;
+    REG_GX_CLEAR_DEPTH = depth;
 }
 
 /* Zero the geometry engine's lookup tables at start-up: the edge-colour table,

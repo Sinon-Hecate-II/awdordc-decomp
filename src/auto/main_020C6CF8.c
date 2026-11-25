@@ -463,7 +463,7 @@ void DropFlareOnCursorUnitIfVisible(void *parent) {
 
 void func_020c79ac(void *arg0) { void CreateFallingFlareStrike(s32,s32,void *); CreateFallingFlareStrike(M2C_FIELD(arg0,s32 *,0x34),M2C_FIELD(arg0,s32 *,0x38),arg0); }
 
-void func_020c79c4(s32 arg0, s32 arg1, M2C_UNK arg2) {
+void CreateFlareShotSprite(s32 arg0, s32 arg1, M2C_UNK arg2) {
     void *CreateSpriteForOwner(M2C_UNK *, M2C_UNK);
     extern M2C_UNK data_0212ae9c;
     void *temp_r0;

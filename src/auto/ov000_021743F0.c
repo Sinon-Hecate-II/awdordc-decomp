@@ -296,9 +296,13 @@ s32 Ov000_InfoWindow_CanCancel(void) {
     return result;
 }
 
+/* X-key handler of the map info window: with the window open, toggle its panel
+ * between the terrain description and the unit statistics and report the key as
+ * handled; with no window open, do nothing and report 0. */
 s32 Ov000_InfoWindow_Cancel(void) {
     void Ov000_InfoWindow_TogglePanel(void *);
     extern Ov000MenuState *gOv000InfoWindow;
+
     if (Ov000_InfoWindow_Exists() == 0) return 0;
     Ov000_InfoWindow_TogglePanel(gOv000InfoWindow);
     return 1;

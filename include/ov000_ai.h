@@ -59,6 +59,9 @@
 /* Fields of the AI command state used while a unit's action is chosen. */
 #define AI_COMMAND_STATE_PHASE      0x00 /* u8 AI command phase (*gAiCommandState, dispatched by the AI state machine) */
 #define AI_COMMAND_STATE_STEP       0x01 /* u8 step within the current phase */
+/* AI_COMMAND_STATE_STEP value that holds the command for a few frames while the
+ * view catches up, then carries the action out (ProcessAiCommandDelay). */
+#define AI_COMMAND_STEP_DELAY       7
 #define AI_COMMAND_STATE_TIEBREAK   0x03 /* u8 random 0..99 chosen when an action starts, breaks score ties */
 #define AI_COMMAND_STATE_MOVE_RANGE 0x05 /* u8 movement range of the acting unit */
 #define AI_COMMAND_STATE_FLAGS      0x07 /* u8 AI action flags */
@@ -131,6 +134,7 @@ enum AiCargoDropDirection {
 /* Layout of one unit-kind record in gUnitKindStats. */
 #define UNIT_KIND_STATS_SIZE   112 /* bytes per unit kind */
 #define UNIT_KIND_STATS_COST   0x00 /* u16 the kind's build cost (GetUnitKindBuildCost; 0 = the kind cannot be built) */
+#define UNIT_KIND_STATS_STATUS_TILE 0x02 /* u8 index of the kind's status-panel tile block (0x100 bytes each) in the name graphics file */
 #define UNIT_KIND_STATS_CARGO_COUNT 0x60 /* u8 number of units the kind can carry (its cargo slots) */
 #define UNIT_KIND_STATS_LOAD_CLASS  0x61 /* u8 the kind's carry class, a column in the load mask below */
 #define UNIT_KIND_STATS_LOAD_MASK   0x62 /* u8 per load class: nonzero when the kind may be carried by a kind of that class */

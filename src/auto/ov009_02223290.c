@@ -444,13 +444,16 @@ s32 SendLinkStopCommand(void) {
     return 0;
 }
 
-void FinishLinkStopCommand(void *arg0) {
-    if (M2C_FIELD(arg0, u16 *, 2) != 0) {
+/* Completion of the WFC stop command queued by SendLinkStopCommand: a failed
+ * stop signals the link event and moves the link to the error phase; a successful
+ * one makes the link ready for the next setup step. */
+void FinishLinkStopCommand(void *event) {
+    if (M2C_FIELD(event, u16 *, LINK_EVENT_STATE) != 0) {
         SignalLinkEvent();
-        SetLinkPhase(8);
+        SetLinkPhase(LINK_PHASE_ERROR);
         return;
     }
-    SetLinkPhase(1);
+    SetLinkPhase(LINK_PHASE_READY);
 }
 
 #pragma opt_common_subs off

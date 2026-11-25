@@ -207,7 +207,7 @@ void SetupSceneObjectDisplay(void *entity) {
 M2C_UNK Show3DSprite(s32);
 M2C_UNK Show3DSpriteSlide(s32);
 s16 GetSceneEntryOffset();
-s32 func_ov003_02200ca8();
+s32 Ov003_IsLinkSessionGuest();
 s16 offset;
 void *group;
 s32 i;
@@ -236,7 +236,7 @@ M2C_FIELD(second,s16 *,0x10)=0;
 M2C_FIELD(second,s16 *,0xc)=12;
 M2C_FIELD(second,u16 *,2)=M2C_FIELD(second,u16 *,4);
 M2C_FIELD(entity,u8 *,0x3a)|=0x40;
-if(func_ov003_02200ca8())return;
+if(Ov003_IsLinkSessionGuest())return;
 Show3DSprite(M2C_FIELD(entity,s32 *,0x4c));
 parts=M2C_FIELD(entity,void **,0x40);
 Show3DSpriteSlide(((s32 *)parts)[0]);
@@ -299,23 +299,25 @@ void func_ov003_02205638(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }
 
-u8 func_ov003_0220564c(void *arg0) {
-    s32 var_r0_2;
-    u8 var_r0;
-    void *temp_r0;
+/* True while the ov003 scene display's upper tween sprite is still sliding:
+ * its elapsed-frame counter has not reached the tween's duration. */
+u8 IsSceneDisplayTopTweenRunning(void *arg0) {
+    SpriteTween *tween;
+    s32 settled;
+    u8 running;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x3C);
-    if (M2C_FIELD(temp_r0, u16 *, 2) == M2C_FIELD(temp_r0, s16 *, 0xC)) {
-        var_r0_2 = 1;
+    tween = M2C_FIELD(arg0, SpriteTween **, SCENE_DISPLAY_TWEEN_TOP);
+    if (tween->current == tween->duration) {
+        settled = 1;
     } else {
-        var_r0_2 = 0;
+        settled = 0;
     }
-    if (!(var_r0_2 & 0xFF)) {
-        var_r0 = 1;
+    if (!(settled & 0xFF)) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 u8 func_ov003_02205678(void *arg0) {

@@ -642,5 +642,16 @@ v=data_0213d1e0[0]>>32;
 return (v*(u64)max)>>32;
 }
 
-s32 Utf16StringLength(u16 *a){s32 i=0;if(*a){do{i++;}while(a[i]);}return i;}
+/* Length of the UTF-16 string `text` without its terminator: the number of u16
+ * units before the first NUL. */
+s32 Utf16StringLength(u16 *text) {
+    s32 length = 0;
+
+    if (*text) {
+        do {
+            length++;
+        } while (text[length]);
+    }
+    return length;
+}
 

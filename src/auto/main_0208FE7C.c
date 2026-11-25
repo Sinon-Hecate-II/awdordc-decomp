@@ -346,15 +346,15 @@ void func_020903d4(void) {
 void LoadSoundSequenceArchiveAndBank(s32 archiveId, s32 bankId) {
     extern M2C_UNK gSoundDriverState;
     s32 Sound_GetPlayerFreeHeap(M2C_UNK *);
-    s32 func_0202c860(M2C_UNK, M2C_UNK);
-    s32 func_0202c88c(M2C_UNK, M2C_UNK);
+    s32 Sound_TryLoadSequenceArchive(M2C_UNK, M2C_UNK);
+    s32 Sound_TryLoadBank(M2C_UNK, M2C_UNK);
 
     if (M2C_FIELD(&gSoundDriverState, u8 *, SOUND_STATE_ENABLED) == 0) {
         return;
     }
     Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
-    func_0202c860(archiveId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
-    func_0202c88c(bankId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_TryLoadSequenceArchive(archiveId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
+    Sound_TryLoadBank(bankId, M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
     Sound_GetPlayerFreeHeap(M2C_FIELD(&gSoundDriverState, M2C_UNK *, SOUND_STATE_PLAYER));
 }
 
@@ -500,31 +500,36 @@ void Sound_InitVolumes(void) {
     Sound_ApplyEffectVolume();
 }
 
-void SetMusicVolumeLevel(s32 arg0, s32 arg1) {
+/* Set one of the music volume levels (0 = master, 1 = the player's music
+ * setting, 2 = the fade/duck level) to `volume`, clamped to 0..SOUND_VOLUME_MAX,
+ * and re-apply the resulting music volume to the mixer. */
+void SetMusicVolumeLevel(s32 level, s32 volume) {
     extern M2C_UNK gMusicVolumeLevels;
-    s32 var_r1;
+    s32 clampedVolume;
 
-    var_r1 = arg1;
-    if (var_r1 > 0x7F) {
-        var_r1 = 0x7F;
-    } else if (var_r1 < 0) {
-        var_r1 = 0;
+    clampedVolume = volume;
+    if (clampedVolume > SOUND_VOLUME_MAX) {
+        clampedVolume = SOUND_VOLUME_MAX;
+    } else if (clampedVolume < 0) {
+        clampedVolume = 0;
     }
-    M2C_FIELD(&gMusicVolumeLevels, u8 *, arg0) = var_r1;
+    M2C_FIELD(&gMusicVolumeLevels, u8 *, level) = clampedVolume;
     Sound_ApplyMusicVolume();
 }
 
-void SetSoundEffectVolumeLevel(s32 arg0, s32 arg1) {
+/* Set sound-effect channel `channel`'s volume in the gSoundEffectVolumeLevels
+ * table, clamped to 0..SOUND_VOLUME_MAX, then recompute the effect volumes. */
+void SetSoundEffectVolumeLevel(s32 channel, s32 volume) {
     extern M2C_UNK gSoundEffectVolumeLevels;
-    s32 var_r1;
+    s32 clamped;
 
-    var_r1 = arg1;
-    if (var_r1 > 0x7F) {
-        var_r1 = 0x7F;
-    } else if (var_r1 < 0) {
-        var_r1 = 0;
+    clamped = volume;
+    if (clamped > SOUND_VOLUME_MAX) {
+        clamped = SOUND_VOLUME_MAX;
+    } else if (clamped < 0) {
+        clamped = 0;
     }
-    M2C_FIELD(&gSoundEffectVolumeLevels, u8 *, arg0) = var_r1;
+    M2C_FIELD(&gSoundEffectVolumeLevels, u8 *, channel) = clamped;
     Sound_ApplyEffectVolume();
 }
 

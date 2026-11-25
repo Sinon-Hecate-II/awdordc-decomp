@@ -339,10 +339,13 @@ void ShowFrameBorderSprite(void) {
  Show3DSprite();
 }
 
-u8 func_02089758(void *arg0) {
+/* Draw callback of a text-layer panel proxy sprite: the sprite keeps a pointer
+ * to the panel it stands for at +0x34, and drawing the proxy redraws that panel
+ * on the current engine, passing the engine's sprite count.  Returns that count. */
+u8 DrawTextLayerPanelProxy(void *proxy) {
     M2C_UNK func_0208af98(s32, u8);
     extern void *gCur3DSpriteEngine;
-    func_0208af98(M2C_FIELD(arg0, s32 *, 0x34), M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49));
+    func_0208af98(M2C_FIELD(proxy, s32 *, 0x34), M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49));
     return M2C_FIELD(gCur3DSpriteEngine, u8 *, 0x49);
 }
 
@@ -429,13 +432,15 @@ void *InitTextLayer(void *layer) {
     return layer;
 }
 
-M2C_UNK **func_02089944(M2C_UNK **arg0) {
+/* Destructor for a text layer: switch it to the class vtable, free its text and
+ * its icon child sprites, then return the layer without freeing it. */
+M2C_UNK **TextLayer_Destroy(M2C_UNK **layer) {
     M2C_UNK TextLayer_FreeChildSprites(M2C_UNK **);
     extern M2C_UNK gTextLayerVtable;
-    *arg0 = &gTextLayerVtable;
+    *layer = &gTextLayerVtable;
     TextLayer_FreeText();
-    TextLayer_FreeChildSprites(arg0);
-    return arg0;
+    TextLayer_FreeChildSprites(layer);
+    return layer;
 }
 
 /* Destroy a text layer: switch it to the class vtable, release its text and its

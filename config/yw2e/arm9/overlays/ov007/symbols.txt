@@ -1,6 +1,6 @@
 MapEditor_StartMap kind:function(arm,size=0x22c) addr:0x02211200
 MapEditor_ShowIntroMessage kind:function(arm,size=0x54) addr:0x0221142c
-func_ov007_02211480 kind:function(arm,size=0x2c) addr:0x02211480
+MapEditor_EndMap kind:function(arm,size=0x2c) addr:0x02211480
 MapEditor_SpawnCursorSprite kind:function(arm,size=0x18) addr:0x022114ac
 MapEditor_PlaceSelectedUnit kind:function(arm,size=0x9c) addr:0x022114c4
 MapEditor_PickUnit kind:function(arm,size=0x9c) addr:0x02211560
@@ -142,7 +142,7 @@ MapEditor_ConfirmPaletteEntry kind:function(arm,size=0x60) addr:0x02217cd0
 func_ov007_02217d30 kind:function(arm,size=0x25c) addr:0x02217d30
 func_ov007_02217f8c kind:function(arm,size=0x5e4) addr:0x02217f8c
 MapEditor_ApplyPaletteSelection kind:function(arm,size=0xcc) addr:0x02218570
-func_ov007_0221863c kind:function(arm,size=0x424) addr:0x0221863c
+MapEditor_RebuildPaletteLists kind:function(arm,size=0x424) addr:0x0221863c
 MapEditor_FreePaletteLists kind:function(arm,size=0x70) addr:0x02218a60
 func_ov007_02218ad0 kind:function(arm,size=0x2bc) addr:0x02218ad0
 func_ov007_02218d8c kind:function(arm,size=0x10c) addr:0x02218d8c
@@ -167,7 +167,7 @@ UpdatePanelDisplay kind:function(arm,size=0x1b8) addr:0x022198fc
 func_ov007_02219ab4 kind:function(arm,size=0x18) addr:0x02219ab4
 func_ov007_02219acc kind:function(arm,size=0x1c) addr:0x02219acc
 UpdatePanelRowCollapse kind:function(arm,size=0x50) addr:0x02219ae8
-func_ov007_02219b38 kind:function(arm,size=0x2c) addr:0x02219b38
+MapEditor_ApplyPaletteColorStep kind:function(arm,size=0x2c) addr:0x02219b38
 MapEditor_PaletteOpenStep kind:function(arm,size=0x50) addr:0x02219b64
 func_ov007_02219bb4 kind:function(arm,size=0x24) addr:0x02219bb4
 MapEditor_LoadPlayerPalettes kind:function(arm,size=0x80) addr:0x02219bd8
@@ -249,7 +249,7 @@ func_ov007_0221f264 kind:function(arm,size=0xc) addr:0x0221f264
 CreateMapEditList kind:function(arm,size=0x1e8) addr:0x0221f270
 FreeMapEditList kind:function(arm,size=0x58) addr:0x0221f458
 DestroyMapEditList kind:function(arm,size=0x50) addr:0x0221f4b0
-data_ov007_0221f500 kind:data(any) addr:0x0221f500
+gMapEditorPaletteEntries kind:data(any) addr:0x0221f500
 data_ov007_0221f508 kind:data(any) addr:0x0221f508
 data_ov007_0221f514 kind:data(any) addr:0x0221f514
 data_ov007_0221f52c kind:data(any) addr:0x0221f52c

@@ -172,7 +172,7 @@ found:
 #pragma optimization_level reset
 void VoiceChat_RemoveChannel(void *arg0) {
 extern void *gVoiceChatContexts[]; extern u8 gLinkChannelStates[]; extern M2C_UNK gVoiceChatState;
-void func_ov010_022239c8(void *); void Link_FreeChannelQueuedPackets(u32); void Link_FreeChannelPendingPackets(u32); void func_ov010_02224f28(void);
+void Link_ReleaseChannelState(void *); void Link_FreeChannelQueuedPackets(u32); void Link_FreeChannelPendingPackets(u32); void func_ov010_02224f28(void);
 u32 i;
 for(i=0;i<3;i++) {
 if(gVoiceChatContexts[i]==arg0) {
@@ -181,7 +181,7 @@ s32 count=M2C_FIELD(&gVoiceChatState,s32 *,0x20);
 void *empty = 0;
 gVoiceChatContexts[i]=empty;
 M2C_FIELD(&gVoiceChatState,s32 *,0x20)=count-1;
-func_ov010_022239c8(channel);
+Link_ReleaseChannelState(channel);
 Link_FreeChannelQueuedPackets(i);
 Link_FreeChannelPendingPackets(i);
 {

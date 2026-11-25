@@ -68,7 +68,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
     void Ov001_UpdateInput(void);
     void func_ov001_0218c7d4(s32);
     void Ov001_UpdateLidState(void);
-    void func_ov001_0218c63c(void);
+    void Ov001_UpdateArm7Value(void);
     void func_02007598(void);
     void Ov001_ShutdownCore(void);
     extern u8 gOv001ScreenState;
@@ -85,7 +85,7 @@ s32 Ov001_RunFrontEnd(M2C_UNK work, s32 mode, s32 options) {
         M2C_FIELD(&gOv001ScreenState, void (**)(void), OV001_SCREEN_STEP)();
         func_ov001_0218c7d4(0);
         Ov001_UpdateLidState();
-        func_ov001_0218c63c();
+        Ov001_UpdateArm7Value();
         func_02007598();
     } while (!M2C_FIELD(&gOv001ScreenState, u8 *, OV001_SCREEN_EXIT));
     Ov001_ShutdownCore();
@@ -224,7 +224,7 @@ void Ov001_ShutdownCore(void) {
     M2C_UNK func_ov001_0218b688();
     M2C_UNK Ov001_StopInput();
     M2C_UNK Ov001_RemoveVBlankHandler();
-    M2C_UNK func_ov001_0218c0b8();
+    M2C_UNK Ov001_FreeSpriteObjs();
     M2C_UNK func_ov001_0218c4c0();
     M2C_UNK func_ov001_0218c668();
     M2C_UNK Ov001_FreeTasks();
@@ -235,7 +235,7 @@ void Ov001_ShutdownCore(void) {
     Ov001_RemoveVBlankHandler();
     func_ov001_02184ff8();
     func_ov001_0218a01c();
-    func_ov001_0218c0b8();
+    Ov001_FreeSpriteObjs();
     Ov001_FreeTextContext();
     Ov001_FreeFades();
     func_ov001_02189c80();
@@ -367,12 +367,16 @@ M2C_UNK Ov001_LoadMessageArchive(M2C_UNK path) {
     return archive;
 }
 
-void Ov001_ReleaseMessageArchive(M2C_UNK arg0) {
+/* Release the message archive record `archive` handed out by
+ * Ov001_LoadMessageArchive: free its loaded file image and push the record back
+ * onto the pool's free queue so the next load can hand it out again. */
+void Ov001_ReleaseMessageArchive(M2C_UNK archive) {
     M2C_UNK Ov001_FreeFile(M2C_UNK);
     M2C_UNK Ov001_QueuePush(M2C_UNK, M2C_UNK);
     extern M2C_UNK gOv001MessageArchiveFreeList;
-    Ov001_FreeFile(M2C_FIELD((void *)arg0, M2C_UNK *, 0x8));
-    Ov001_QueuePush(M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, 0x60), arg0);
+
+    Ov001_FreeFile(M2C_FIELD((void *)archive, M2C_UNK *, MESSAGE_ARCHIVE_FILE));
+    Ov001_QueuePush(M2C_FIELD((void *)gOv001MessageArchiveFreeList, M2C_UNK *, MESSAGE_POOL_QUEUE), archive);
 }
 
 s32 Ov001_GetMessageText(M2C_UNK arg0, u32 arg1) {

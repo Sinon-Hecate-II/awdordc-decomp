@@ -122,7 +122,7 @@ void func_020d482c(void) {
             MI_CpuCopy32(GetMapRecord(M2C_FIELD(*gCurrentMap, u16 *, 0x5142)), dst, 84);
             M2C_FIELD(*gCurrentMap, u16 *, 0x5142) = 225;
         }
-        if (func_02084830())
+        if (IsOnlineMatchmakingHost())
             M2C_FIELD(&gMapConfig, u16 *, 4) = func_020a89a4(M2C_FIELD(*gCurrentMap, u16 *, 0x5142));
     }
     ResetDialogUI();
@@ -161,7 +161,7 @@ void FinishBattle(void) {
     M2C_UNK func_02088634();
     M2C_UNK ResetBattleEndState();
     s32 DidPlayerWin();
-    M2C_UNK func_020cd5ac();
+    M2C_UNK OpenCampaignMapScreen();
     M2C_UNK func_020d887c();
     M2C_UNK func_020d88ac();
     M2C_UNK SetMapConfigMode1();
@@ -180,7 +180,7 @@ void FinishBattle(void) {
             return;
         }
         func_02088634();
-        func_020cd5ac();
+        OpenCampaignMapScreen();
         return;
     case 1:
         if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) != 0) {
@@ -421,7 +421,12 @@ u8 func_020d4dac(void) {
     return var_r0;
 }
 
-u8 IsMapCursorIdle(void){extern void **gCurrentMap;return (M2C_FIELD(*gCurrentMap,u8*,0x5154)&15)==0;}
+/* Whether the map cursor is idle: no map-view scroll is running (the low nibble
+ * of the map's scroll flags is clear). */
+u8 IsMapCursorIdle(void) {
+    extern void **gCurrentMap;
+    return (M2C_FIELD(*gCurrentMap, u8 *, MAP_VIEW_SCROLL_STATE) & 15) == 0;
+}
 
 void func_020d5068(void);
 /* Runs the per-frame update handler of the battle map's current input mode

@@ -374,11 +374,13 @@ if(((u32)((message&0x7F00)<<8)>>16)==ARM7_BOOT_SYNC_REPLY) {M2C_FIELD(&gArm7Boot
 SystemHalt();
 }
 
-void func_0200763c(s32 arg0) {
+/* Post `command` to the ARM7 boot-sync FIFO, its command bits 8..14, retrying
+ * until the IPC queue accepts the message; the console reboot path sends one. */
+void Arm7BootSync_SendCommand(s32 command) {
     s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
     do {
 
-    } while (SendFifoMessage(0xC, arg0 << 8, 0) != 0);
+    } while (SendFifoMessage(ARM7_BOOT_SYNC_FIFO_TAG, command << 8, 0) != 0);
 }
 
 void ResetSystem(s32 arg0) {
@@ -386,7 +388,7 @@ void ResetSystem(s32 arg0) {
     void OS_SetIrqEnableMask(s32);
     void OS_SetIrqMask(s32);
     s32 OS_GetLockID(void);
-    void func_0200763c(s32);
+    void Arm7BootSync_SendCommand(s32);
     M2C_UNK SystemHalt();
     void DmaStopChannel(s32);
     u16 CARD_LockRom(u16);
@@ -405,7 +407,7 @@ void ResetSystem(s32 arg0) {
         OS_SetIrqMask(0xFFFFFFFF);
     }
     *(s32 *)0x027FFC20 = arg0;
-    func_0200763c(0x10);
+    Arm7BootSync_SendCommand(0x10);
     RebootFromCardImage();
 }
 

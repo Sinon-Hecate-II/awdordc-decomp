@@ -15,16 +15,18 @@ s32 GetKeyActionFlags(void) {
     return 0;
 }
 
+/* The cursor-cycle direction the auto-repeating keys ask for this frame: right or
+ * down cycles to the next directional-cursor option, left or up to the previous. */
 s32 GetCursorCycleKey(void) {
     extern void *gKeyState;
-    u16 temp_r0;
+    u16 repeat;
 
-    temp_r0 = M2C_FIELD(gKeyState, u16 *, 2);
-    if (temp_r0 & 0x90) {
-        return 8;
+    repeat = ((KeyState *)gKeyState)->repeat;
+    if (repeat & (KEY_DOWN | KEY_RIGHT)) {
+        return MAP_CURSOR_CYCLE_NEXT;
     }
-    if (temp_r0 & 0x60) {
-        return 4;
+    if (repeat & (KEY_UP | KEY_LEFT)) {
+        return MAP_CURSOR_CYCLE_PREV;
     }
     return 0;
 }
@@ -267,12 +269,12 @@ u8 func_020bd118(void) {
  * on-screen direction buttons (up 0x70..0x90, down 0xA0..0xC0, left 0x40..0x60
  * when enabled) give their key, or 4096 when the touch just started on them;
  * 0 when touch input is off. */
-s32 func_020bd13c(s32 enableLeftButton){extern void *gTouchState;s32 IsTouchInputDisabled(void);s32 func_020bdecc(s32,s32);s32 func_020bdf7c(s32,s32);s32 func_020bdf50(s32,s32);
+s32 func_020bd13c(s32 enableLeftButton){extern void *gTouchState;s32 IsTouchInputDisabled(void);s32 IsTouchOnMiddleButton(s32,s32);s32 IsTouchOnMapMenuButton(s32,s32);s32 IsTouchOnLeftButton(s32,s32);
 u16 x=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_X),y=M2C_FIELD(gTouchState,u16 *,TOUCH_CUR_Y);
 if(IsTouchInputDisabled())return 0;if(!M2C_FIELD(gTouchState,u8 *,TOUCH_ACTIVE))return 0;
-if(func_020bdecc(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 16;return 4096;}
-if(func_020bdf7c(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 256;return 4096;}
-if(enableLeftButton&&func_020bdf50(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 64;return 32;}return 4096;
+if(IsTouchOnMiddleButton(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 16;return 4096;}
+if(IsTouchOnMapMenuButton(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 256;return 4096;}
+if(enableLeftButton&&IsTouchOnLeftButton(x,y)){if(M2C_FIELD(gTouchState,u8 *,TOUCH_STARTED))return 64;return 32;}return 4096;
 }
 
 /* Updates the map cursor target from the current stylus position. */

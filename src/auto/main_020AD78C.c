@@ -1,5 +1,6 @@
 /* 29 functions from 0x020AD78C to 0x020AE768 (main), found by ds-decomp. */
 #include "common.h"
+#include "battle_map.h"
 #include "ds3dsprite.h"
 #include "gx.h"
 #pragma push
@@ -174,29 +175,33 @@ void InitScreenTransition(M2C_UNK a0) {
     gCur3DSpriteEngine = saved;
 }
 #pragma pop
-void func_020adc20(void) {
- void HeapFreeBlock(s32);
- extern s32 gScreenTransition;
- if(gScreenTransition!=0) {
- HeapFreeBlock(gScreenTransition);
- gScreenTransition=0;
- }
+/* Release the screen-transition state InitScreenTransition allocated. */
+void FreeScreenTransition(void) {
+    void HeapFreeBlock(s32);
+    extern s32 gScreenTransition;
+
+    if (gScreenTransition != 0) {
+        HeapFreeBlock(gScreenTransition);
+        gScreenTransition = 0;
+    }
 }
 #pragma opt_common_subs reset
-u8 func_020adc4c(void) {
+/* Whether the local human player's map cursor is live: nothing holds the map
+   view and map input is in cursor mode (no menu up, no dialog blocking it). */
+u8 IsMapCursorInputActive(void) {
     s32 GetMapViewHoldCount();
     s32 GetMapInputState();
-    u8 var_r0;
+    u8 active;
 
     if (GetMapViewHoldCount() != 0) {
         return 0U;
     }
-    if (GetMapInputState() == 0) {
-        var_r0 = 1;
+    if (GetMapInputState() == MAP_INPUT_CURSOR) {
+        active = 1;
     } else {
-        var_r0 = 0;
+        active = 0;
     }
-    return var_r0;
+    return active;
 }
 
 /* Swaps in the primary display list, emits four corner sprites whose tile depends on the
@@ -210,7 +215,7 @@ void func_020adc78(void) {
 
     saved_list = gCur3DSpriteEngine;
     gCur3DSpriteEngine = g3DSpriteEngineSub;
-    if (func_020adc4c() != 0) {
+    if (IsMapCursorInputActive() != 0) {
         AddSprite(0x7C, 0xB0, (u16) ((0x3FF & (0x140 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         AddSprite(0xBC, 0xB0, (u16) ((0x3FF & (0x148 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);
         AddSprite(0x7C, 0xB8, (u16) ((0x3FF & (0x150 >> ((u32) (**gCur3DSpriteEngine << 0x11) >> 0x1E))) | 0x6000), &data_02101f0c, 0);

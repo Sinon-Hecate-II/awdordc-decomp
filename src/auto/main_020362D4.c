@@ -14,14 +14,14 @@ extern u8 sWfcMatchPath[], sWfcProfilePath[], sWfcParamRegion[], sWfcParamEncodi
  * give-up timeout in ms (0 or less uses the default). Returns 0 if the socket
  * could not be set up, 1 once the connection attempt is under way. */
 s32 OpenWfcHttpConnection(s32 timeout){
-M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 func_02021500(s32,s32,s32);s32 SocketFcntl(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
+M2C_UNK HeapAlloc();void MI_CpuFill8(void *,s32,s32);s32 SocketCreate(s32,s32,s32);s32 SocketFcntl(s32,s32,s32);s32 SocketConnectAddress(s32,void *);s32 func_02021750(s32,s32);s32 func_0202175c(s32);M2C_UNK HeapFree();u64 GetSystemTick(void);extern M2C_UNK gWfcNet;
 s32 r;u32 ip;
 if(M2C_FIELD(&gWfcNet,void **,16)||!M2C_FIELD(&gWfcNet,u32 *,8))return 0;
 M2C_FIELD(&gWfcNet,void **,16)=HeapAlloc(0,72);
 if(!M2C_FIELD(&gWfcNet,void **,16))return 0;
 MI_CpuFill8(M2C_FIELD(&gWfcNet,void **,16),0,72);
 ((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=-1;
-((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=func_02021500(2,1,0);
+((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket=SocketCreate(2,1,0);
 if(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket<0){HeapFree(0,M2C_FIELD(&gWfcNet,void **,16),0);M2C_FIELD(&gWfcNet,void **,16)=0;return 0;}
 r=SocketFcntl(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,3,0);
 SocketFcntl(((WfcHttpConnection *)M2C_FIELD(&gWfcNet,void **,16))->socket,4,r|4);

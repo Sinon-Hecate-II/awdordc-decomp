@@ -343,6 +343,11 @@ enum {
 /* Tiles the random-map generator (overlay 7) seeds on plain ground and grows
  * into patches with Map_GrowTerrain; their cells end up the given terrain kind. */
 #define MAP_TILE_WOODS         0x20 /* woods/forest, terrain kind 4 */
+
+/* Tiles of a missile silo: the ready silo and the empty shell a launch leaves
+ * behind (SetMissileSiloFired swaps one for the other). */
+#define MAP_TILE_SILO          0x180
+#define MAP_TILE_SILO_FIRED    0x1A0
 #define MAP_TILE_ROCK          0x21 /* rock/mountain, terrain kind 3 */
 #define MAP_TILE_REEF          0x168 /* reef, terrain kind 0x0C */
 #define MAP_TILE_PLAIN         1
@@ -379,6 +384,7 @@ enum {
 #define MAP_ORDER_COUNT  32     /* MapOrder records the queue holds */
 #define MAP_ORDER_TIMER  0x06   /* s8 frames left before the order's targets are played */
 #define MAP_ORDER_TYPE   0x02   /* u16 bits 6..9: the order's type (0 ends the queue) */
+#define MAP_ORDER_TYPE_BITS 0x3c0 /* the MAP_ORDER_TYPE field's bits in the record's u16 */
 #define MAP_ORDER_VALUE  0x04   /* u8 the order's value (health, amount...) */
 
 /* Values of MapOrder.type (the field at MAP_ORDER_TYPE). */
@@ -445,6 +451,12 @@ typedef struct MapOrder {
 #define MAP_CURSOR_OPTION_LEFT  3
 #define MAP_CURSOR_OPTION_COUNT 4
 
+/* The direction keys that cycle the directional cursor, as returned by
+ * GetCursorCycleKey from the auto-repeating keys: right/down steps to the next
+ * option, left/up to the previous one. */
+#define MAP_CURSOR_CYCLE_NEXT 8 /* right or down held */
+#define MAP_CURSOR_CYCLE_PREV 4 /* left or up held */
+
 /* Columns of the gMapCursorDirs table. */
 #define MAP_CURSOR_DIR_MASK 0
 #define MAP_CURSOR_DIR_DX   2
@@ -460,6 +472,12 @@ typedef struct MapOrder {
 #define MAP_OPTION_DIR_MASK    0x6C /* s16 MAP_DIR_* bits of the directions that can be picked */
 #define MAP_OPTION_SELECTED    0x6E /* s16 chosen option, MAP_CURSOR_OPTION_* */
 #define MAP_OPTION_CARGO_SLOT  0x70 /* s16 carried-unit slot a cargo drop acts on (0 = first, 1 = next) */
+
+/* Scratch fields of the supply overlay's sprite object (the sprite the task
+ * FindSupplyTargetDirections in main_020CAB8C.c walks): the direction being
+ * scanned, and whether finishing the overlay also completes the supply action. */
+#define SUPPLY_OVERLAY_DIR     0x34 /* s16 direction being scanned; the overlay finishes once it reaches MAP_CURSOR_OPTION_COUNT */
+#define SUPPLY_OVERLAY_COMPLETE 0x36 /* s16 0 when finishing also completes the supply action: the cursor snaps to MAP_CURSOR_TARGET_X/Y and the unit ends its action with AI_COMMAND_WAIT; 1 leaves both alone */
 
 /* The map's property-cell list, rebuilt by RebuildMapPropertyCells: one 6-byte record per
  * property (or kind 0x18 special) cell, ended by a 0xff terrain kind. */
@@ -514,6 +532,7 @@ typedef struct MapSettingsPlayer {
 #define MAPCONFIG_ARMY_MODE 0x2000 /* bit 13 of MAPCONFIG_FLAGS: army mode — the map uses per-army movement costs and the CO-zone bonus tables */
 #define MAPCONFIG_LIMIT_FLAG 0x0040 /* bit 6 of MAPCONFIG_FLAGS: the second value limit applies (MAP_SETTINGS_VALUE_FLAG) */
 #define MAPCONFIG_UNBUILDABLE_KINDS 0x0C /* u32 per unit kind: a set bit means the map forbids building that kind (a map script sets and clears the bits) */
+#define MAPCONFIG_INCOME    0x06 /* u16 funds each income-paying property adds to its owner's income per turn; the second value limit, MAP_SETTINGS_VALUE_HIGH */
 
 /* Packed per-map settings, saved with a slot and copied into the battle map and
  * gMapConfig by ApplyMapSettings. */
@@ -681,6 +700,7 @@ typedef struct MapTargetList {
 #define MAP_CORNER_COLOR_RESERVED 7  /* corner code the overlay pass skips */
 #define MAP_MODE            0x52b4 /* s16 current battle-map input state */
 #define MAP_MODE_CURSOR     0      /* MAP_MODE value of the normal cursor handler (UpdateMapMode case 0) */
+#define MAP_MODE_UNIT_SELECT 3     /* MAP_MODE value of the unit-selection handler (UpdateUnitSelectCursor) */
 #define MAP_MODE_TARGET_CURSOR 5   /* MAP_MODE value of the map-target handler (UpdateMapTargetCursor): the action menu is open at the cursor tile */
 #define MAP_MODE_CURSOR_SETTLE 10  /* MAP_MODE value of the cursor-settling handler (UpdateMapMode case 10): the cursor tracks its target, unit status icons stay hidden (RenderUnitAt mode 1) and the handler falls back to MAP_MODE_CURSOR once the cursor is idle. The map editor leaves it set on its terrain page. */
 #define MAP_STATE           0x52b0 /* u16 battle-map state-machine step the per-frame dispatcher switches on */
@@ -754,6 +774,15 @@ enum {
 #define MAP_HELP_SAVED_Y    4 /* s16 cursor old y */
 #define MAP_TILE_SUBPIXEL   0x300  /* map-position units per tile, from ScreenToMapPosition */
 
+/* The battle map's top-row touch buttons: three 32x16 buttons at y 0..0x10,
+ * whose hit tests accept x in [start, start + MAP_TOP_BUTTON_SPAN]. */
+#define MAP_TOP_BUTTON_Y_MIN  0
+#define MAP_TOP_BUTTON_Y_MAX  0x10
+#define MAP_TOP_BUTTON_LEFT    0x40 /* X/cancel button */
+#define MAP_TOP_BUTTON_CENTER  0x70 /* A/confirm (next target) button */
+#define MAP_TOP_BUTTON_RIGHT   0xA0 /* R/map-menu button */
+#define MAP_TOP_BUTTON_SPAN    0x20
+
 /* Action flags shared by map keyboard and stylus input. */
 enum {
     MAP_ACTION_CONFIRM = 0x10,
@@ -761,6 +790,18 @@ enum {
     MAP_ACTION_CLOSE = 0x40,  /* X: close the aiming cursor */
     MAP_ACTION_MENU = 0x100   /* R: open the map menu */
 };
+
+/* The three 32x16 touch buttons along the top of the lower screen, all at
+ * y 0..0x10: left (cancel/back) at x 0x40..0x60, middle (confirm, or "next
+ * target" while picking a target) at 0x70..0x90, right (map menu) at 0xA0..0xC0. */
+#define MAP_BUTTON_ROW_Y0    0
+#define MAP_BUTTON_ROW_Y1    0x10
+#define MAP_BUTTON_LEFT_X0   0x40
+#define MAP_BUTTON_LEFT_X1   0x60
+#define MAP_BUTTON_MIDDLE_X0 0x70
+#define MAP_BUTTON_MIDDLE_X1 0x90
+#define MAP_BUTTON_RIGHT_X0  0xA0
+#define MAP_BUTTON_RIGHT_X1  0xC0
 #define MAP_PREVIEW_UNIT_TILE_BASE 19 /* gTileGfxRowOffset index of the first unit-marker tile row */
 
 /* gMapPreviewPalettes: staging data for the map preview, three 16-colour
@@ -857,6 +898,7 @@ typedef struct PlayerRecordSprite {
 #define CO_POWER_LEVEL_DUAL 2
 #define PLAYER_REC_SELECTED_UNIT 0x70 /* u8 id of the player's selected unit, 0 = none */
 #define PLAYER_REC_SELECTION_ENABLED 0x71 /* u8 nonzero while the player may pick a unit; set at the start of its turn while it has none selected, cleared with its selection state */
+#define PLAYER_SELECTION_ENABLED_OFF (MAP_PLAYER_STATES + PLAYER_REC_SELECTION_ENABLED) /* u8 nonzero while the player may pick a unit */
 #define PLAYER_REC_PROPERTIES 0x18 /* u8 properties (cities/bases/HQ) the player owns, recounted when the map loads */
 #define PLAYER_REC_SKIP_TURN 0x19 /* u8 nonzero: the turn-start step skips this player's turn */
 /* Per-kind property counters of a player record, recounted with
@@ -1046,6 +1088,12 @@ enum {
 #define BATTLE_RESULTS_TOTAL_LIMIT 0x3E8 /* the sum reaches this value: it is stored as BATTLE_RESULTS_TOTAL_MAX */
 #define BATTLE_RESULTS_FLAGS      0x18 /* s32 flag word; its low 15 bits are cleared when the ratings are recomputed */
 
+/* Grade boundaries of the winning player's total rating (GetRatingRank): the first
+ * total that earns each grade; below BATTLE_RATING_GRADE2_MIN the grade is 1. */
+#define BATTLE_RATING_GRADE2_MIN 200 /* 0xC8 */
+#define BATTLE_RATING_GRADE3_MIN 250 /* 0xFA */
+#define BATTLE_RATING_GRADE4_MIN 300 /* 0x12C */
+
 /* Battle-end state (gBattleEndState): byte 0 is non-zero once the battle has
  * finished, bytes 1 and 2 are the end conditions, byte 3 qualifies byte 2. */
 #define BATTLE_END_ENDED 0
@@ -1100,6 +1148,12 @@ enum {
 #define MAPDATA_MATCH_RESULT 0x07 /* u8 online matchmaking outcome written by the overlay poll: 1 = opponent found, 0 = failed */
 #define MAPDATA_TURN_TIMER 0x08 /* u32 nonzero while the battle's per-frame time accumulation runs (EnableBattleTurnTimer) */
 #define MAPDATA_RULES   0x0C /* u16 packed battle rule flags; bit 12 (0x1000) is CO powers enabled, cleared when the map forbids them, bit 13 (0x2000) selects army-specific movement costs instead of army 0's */
+/* Bits 0..2 of MAPDATA_RULES: the kind of battle the map is played in, read
+ * by IsCampaignBattleRules / IsFreePlayBattleMode / IsMapEditorMode. */
+#define MAPDATA_MODE_MASK     0x0007 /* the low three MAPDATA_RULES bits */
+#define MAPDATA_MODE_CAMPAIGN 0      /* a campaign (story) battle */
+#define MAPDATA_MODE_FREE_PLAY 1     /* a free-play battle */
+#define MAPDATA_MODE_MAP_EDITOR 2    /* the map editor's map view (EnterMapEditorScreen sets it) */
 #define MAPDATA_DAY_LIMIT 0x0F /* u8 day limit: when a new day starts on this day (MAP_TURN) the battle ends, 0 = unlimited */
 #define MAPDATA_TURN_TIME 0x10 /* u16 configured per-turn time limit in frames, 0 = untimed */
 
@@ -1152,7 +1206,10 @@ typedef struct MapRecordStamp {
 #define MAP_RECORD_SAVE_SIZE   0x2AC /* compact saved record */
 #define MAP_RECORD_SIZE        0x6F8 /* expanded runtime record */
 #define MAP_RECORD_STAMP       0x40  /* u8[0x14] date, checksum and console id stamp */
-#define MAP_RECORD_STAMP_WORD  0x4C  /* u32 stamp word: a ten-bit counter in bits 18..27, flags in bits 28..31 */
+#define MAP_RECORD_STAMP_WORD  0x4C  /* u32 stamp word: a ten-bit counter in bits 18..27, the map's
+                                      * 1..5 star rating in bits 29..31 (SetCampaignMapRating), bit 28 unused */
+#define MAP_RECORD_RATING_SHIFT 29   /* the rating's first bit in MAP_RECORD_STAMP_WORD */
+#define MAP_RECORD_RATING_UNRATED 0  /* no rating yet: the map has not come in over a link */
 #define MAP_RECORD_STAMP_COUNT_MAX 1000 /* the counter is not bumped past this */
 #define MAP_RECORD_SAVE_UNITS  0x1E4 /* packed unit entries in the saved record */
 #define MAP_RECORD_UNITS       0x3D8 /* packed unit entries in the runtime record */
@@ -1162,6 +1219,8 @@ typedef struct MapRecordStamp {
 /* Fields of a per-map data record (0x50 bytes, MapData_GetRecord), the table the
  * map-selection code reads a map's settings from. */
 #define MAP_DATA_TILESET       0x06 /* u8 the map's tileset index (MapData_GetTileset) */
+#define MAP_DATA_PLAYER_COUNT  0x09 /* u8 the number of armies the map is set up for */
+#define MAP_DATA_CATEGORY      0x0A /* u8 the map-data category (MapData_GetCategory) */
 #define MAP_DATA_FOLLOWUP_MAPS 0x14 /* u16[4] map ids a cleared battle on this map unlocks, per player count slot */
 #define MAP_DATA_EVENT_SCRIPT  0x44 /* void *the map's event-script block (GetMapEventScript) */
 

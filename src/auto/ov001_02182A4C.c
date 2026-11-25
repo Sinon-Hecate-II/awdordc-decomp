@@ -421,17 +421,21 @@ void Ov001_FadeInUsbConnectScreen(void) {
     Ov001_SetStepCallback(&Ov001_UsbConnectFadeDone);
 }
 
+/* Step that runs once the USB-connector Wi-Fi connect screen has faded in: put
+ * up the screen's icon row (id 2, the single-icon row holding only the back
+ * icon) and hand over to the step that waits for the row to slide in. */
 void Ov001_UsbConnectFadeDone(void) {
     M2C_UNK Ov001_CreateMenuIconRow(M2C_UNK);
-    extern M2C_UNK func_ov001_02183254;
+    extern M2C_UNK Ov001_UsbConnectWaitIconRow;
+
     if (Ov001_IsFadeActive(0) != 0) {
         return;
     }
     Ov001_CreateMenuIconRow(2);
-    Ov001_SetStepCallback(&func_ov001_02183254);
+    Ov001_SetStepCallback(&Ov001_UsbConnectWaitIconRow);
 }
 
-void func_ov001_02183254(void) {
+void Ov001_UsbConnectWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
@@ -575,7 +579,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     void Ov001_SetConnectionStatusCallback(s32);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     extern u8 gOv001WfcScreenState;
-    void func_ov001_02183584(void);
+    void Ov001_ConfirmNoPlayersMessage(void);
     void Ov001_StartConnectionClose(void);
     void Ov001_ConnectionChoiceStep(void);
 
@@ -589,7 +593,7 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
         Ov001_PlaySound(0x12);
         Ov001_ShowMessage(0x10, 1, 1, -1, 0);
         Ov001_LockIconRow();
-        return Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02183584);
+        return Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConfirmNoPlayersMessage);
     case 1:
         gOv001WfcScreenState = 1;
         Ov001_StopSound();
@@ -609,20 +613,23 @@ M2C_UNK Ov001_HandleConnectionStatus(M2C_UNK status) {
     return status;
 }
 
-void func_ov001_02183584(void) {
+/* "No players joined" message on the Wi-Fi connection screen: when the player
+ * confirms it (option 0), play the confirm sound, close the box and hand over to
+ * the step that waits for it to go and then closes the connection. */
+void Ov001_ConfirmNoPlayersMessage(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_021835b0;
+    extern M2C_UNK Ov001_CloseNoPlayersMessage;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_021835b0);
+    Ov001_SetStepCallback(&Ov001_CloseNoPlayersMessage);
 }
 
-void func_ov001_021835b0(void) {
+void Ov001_CloseNoPlayersMessage(void) {
     s32 Ov001_IsRegionMenuActive();
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
@@ -693,7 +700,18 @@ void InitMapPreview(void *tilemap) {
 }
 
 #pragma opt_propagation off
-void FreeMapPreview(void){extern void *gOv001MapPreview;extern void *gOv001Scrollbar;void Ov001_ReturnTaskNodeVeneer(s32,s32);void Ov001_FreeAlloc(void *);Ov001_ReturnTaskNodeVeneer(1,*(s32 *)*(s32 *)&gOv001MapPreview);Ov001_FreeAlloc(&gOv001Scrollbar-3);}
+/* Free the map preview: give back the task that flushes its tilemap to BG2, then
+ * free the preview object and clear its pointer.  The object is spelled through
+ * gOv001Scrollbar, three pointer slots after it, so the literal pool keeps two
+ * equal address words the way the original does. */
+void FreeMapPreview(void) {
+    extern void *gOv001MapPreview;
+    extern void *gOv001Scrollbar;
+    void Ov001_ReturnTaskNodeVeneer(s32, s32);
+    void Ov001_FreeAlloc(void *);
+    Ov001_ReturnTaskNodeVeneer(1, *(s32 *)*(s32 *)&gOv001MapPreview);
+    Ov001_FreeAlloc(&gOv001Scrollbar - 3);
+}
 #pragma opt_propagation reset
 void RequestMapPreviewUpdate(void) {
     extern void *gOv001MapPreview;
@@ -739,16 +757,28 @@ void Ov001_LoadObjTile(s32 sourceAddress, s32 sourceTile, s32 destinationTile) {
     Ov001_AddTask(1, Ov001_CopyObjTileTask, 0, 0x78);
 }
 
-void Ov001_CopyObjTileTask(s32 a){
-extern void *gOv001MapPreview;
-CopyU16(M2C_FIELD(&gOv001MapPreview,s32 *,4),M2C_FIELD(&gOv001MapPreview,s32 *,8),32);
-Ov001_PostTaskMessage(1,a);
+/* Task that copies the OBJ tile staged in gOv001MapPreview (its source and
+ * destination VRAM addresses) and posts the finished task back to task group 1. */
+void Ov001_CopyObjTileTask(s32 task) {
+    extern void *gOv001MapPreview;
+    M2C_UNK CopyU16(void *, void *, s32);
+    void Ov001_PostTaskMessage(s32, s32);
+
+    CopyU16(M2C_FIELD(&gOv001MapPreview, s32 *, OV001_MAP_PREVIEW_COPY_SOURCE),
+            M2C_FIELD(&gOv001MapPreview, s32 *, OV001_MAP_PREVIEW_COPY_DEST),
+            OV001_MAP_PREVIEW_COPY_WORDS);
+    Ov001_PostTaskMessage(1, task);
 }
 
-void Ov001_LoadMainPalette(s32 a){
-extern void *gOv001MapPreview;void Ov001_LoadMainPaletteTask();s32 Ov001_AddTask(s32,void (*)(),s32,s32);
-M2C_FIELD(&gOv001MapPreview,s32 *,4)=a;
-Ov001_AddTask(1,Ov001_LoadMainPaletteTask,0,0x78);
+/* Queue a copy of the main-screen palette set at `paletteSource` into main
+ * palette RAM: stage the source address in the map-preview buffer and start the
+ * task that copies it there. */
+void Ov001_LoadMainPalette(s32 paletteSource) {
+    extern void *gOv001MapPreview;
+    void Ov001_LoadMainPaletteTask();
+    s32 Ov001_AddTask(s32, void (*)(), s32, s32);
+    M2C_FIELD(&gOv001MapPreview, s32 *, 4) = paletteSource;
+    Ov001_AddTask(1, Ov001_LoadMainPaletteTask, 0, 0x78);
 }
 
 /* Task that copies the main palette set staged at gOv001MapPreview+4 into the

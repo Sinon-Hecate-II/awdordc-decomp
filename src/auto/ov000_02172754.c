@@ -17,7 +17,7 @@ extern M2C_UNK data_ov000_021d841c, data_ov000_021b8f5c;
 #pragma opt_strength_reduction off
 s32 Ov000_InfoPanel_UpdateData(void *arg0) {
     s32 GetTerrainKindFromInfoId(s32);
-    s32 func_020a86c4(s32, s32);
+    s32 GetPropertyIncome(s32, s32);
     s32 Divide(s32, s32);
     void LoadFacePalette(s32, s32, s32, s32, u8);
     s32 GetPlayerArmyVariantIfSet(s32);
@@ -53,7 +53,7 @@ s32 Ov000_InfoPanel_UpdateData(void *arg0) {
     p18 = *(s32 **)((u8 *)arg0 + 0x18);
     changed = 0;
     val = GetTerrainKindFromInfoId(*p18);
-    val = func_020a86c4(0, val);
+    val = GetPropertyIncome(0, val);
     p18 = *(s32 **)((u8 *)context + 0x18);
     if (val >= 0 && val <= 0x270f && val != p18[2]) {
         s32 q,rem;

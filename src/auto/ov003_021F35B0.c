@@ -326,7 +326,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
     void DoesMapRecordMatchBuffer(u16, s32);
     void SetOv003SceneState(s32);
     s32 GetSceneSlideOffset(void);
-    void func_ov003_021f1858(void);
+    void Ov003_StartScreenFade(void);
     void func_ov003_021f18a4(void);
     void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
@@ -361,7 +361,7 @@ void *DestroyOv003BattleSetup(Ov003BattleSetup *setup) {
         SetOv003SceneState(4);
     } else {
         if (!GetSceneSlideOffset()) {
-            func_ov003_021f1858();
+            Ov003_StartScreenFade();
             setup->pending = 0;
         }
         func_ov003_021f18a4();
@@ -392,7 +392,7 @@ void *func_ov003_021f3e08(void *obj) {
     void DoesMapRecordMatchBuffer(u16, s32);
     void SetOv003SceneState(s32);
     s32 GetSceneSlideOffset(void);
-    void func_ov003_021f1858(void);
+    void Ov003_StartScreenFade(void);
     void func_ov003_021f18a4(void);
     void DeleteWallpaperSpritesOnAllEngines(void);
     void DeleteOv003SceneSprite(void);
@@ -427,7 +427,7 @@ void *func_ov003_021f3e08(void *obj) {
         SetOv003SceneState(4);
     } else {
         if (!GetSceneSlideOffset()) {
-            func_ov003_021f1858();
+            Ov003_StartScreenFade();
             M2C_FIELD(obj, u8 *, 0x44) = 0;
         }
         func_ov003_021f18a4();
@@ -514,16 +514,22 @@ s16 func_ov003_021f3fe4(s32 arg0, s32 arg1, s32 arg2) {
     return (s16) var_r0;
 }
 
-u8 func_ov003_021f400c(void) {
+/* Whether a link session is running but has at most one player: the battle setup
+ * treats that as the solo variant of a link battle. */
+u8 Ov003Battle_IsSoloLinkSession(void) {
     s32 IsLinkSessionActive();
     u32 GetSessionPlayerCount();
-    s32 result;
-    if (IsLinkSessionActive() && GetSessionPlayerCount() <= 1U) result = 1;
-    else result = 0;
-    return result;
+    s32 isSolo;
+
+    if (IsLinkSessionActive() && GetSessionPlayerCount() <= 1U) isSolo = 1;
+    else isSolo = 0;
+    return isSolo;
 }
 
-u8 func_ov003_021f4038(void) {
+/* Whether this console is the host of an active link session: used at the
+ * map-select confirm so that only the host acknowledges the selection back to
+ * the peers. */
+u8 Ov003_IsLinkSessionHost(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
     s32 result;
@@ -532,13 +538,17 @@ u8 func_ov003_021f4038(void) {
     return result;
 }
 
-u8 func_ov003_021f4064(void) {
+/* True when the local console is a guest (not the host) in an active link
+ * session; the battle draw code uses it with Ov003Battle_IsSoloLinkSession to
+ * decide whether to show the opponent's status art. */
+u8 Ov003Battle_IsLinkSessionGuest(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionGuest();
-    s32 result;
-    if (IsLinkSessionActive() && IsLocalSessionGuest()) result = 1;
-    else result = 0;
-    return result;
+    s32 isGuest;
+
+    if (IsLinkSessionActive() && IsLocalSessionGuest()) isGuest = 1;
+    else isGuest = 0;
+    return isGuest;
 }
 
 void func_ov003_021f4090(M2C_UNK arg0) {

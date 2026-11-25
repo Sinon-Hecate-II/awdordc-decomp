@@ -512,6 +512,7 @@ enum {
 #define MENU_ENTITY_MAP_LIST  0x44 /* paged table of u16 map ids */
 #define MENU_ENTITY_CURSOR    0x4c /* list cursor object, +0x14 selected row */
 #define MENU_ENTITY_PAGER     0x5c /* paging object, +4 page index */
+#define MENU_ENTITY_TWEEN_TOP 0x58 /* SpriteTween *: first row's slide tween */
 #define MENU_MAP_PAGE_SIZE    0x200 /* bytes per map-list page */
 #define MENU_MAP_ENTRY_OFFSET 0x2e /* u16 map id per row within a page */
 #define MENU_MAP_LIST_DRAWN   0x186C /* u8[13]: one bit per row, set while the row is drawn */
@@ -789,6 +790,11 @@ typedef struct WaypointSlotGroup {
 #define GAME_OPTION_ANIMATION_MASK 0x0C00 /* bits 10-11: battle animation speed */
 #define GAME_OPTION_ANIMATION_FAST 1
 #define GAME_OPTION_ANIMATION_FASTEST 2
+
+/* Total play time in frames: it is the first record value (gRecordValues[0]),
+ * which also lies at gOptionBits + 0x74, and the records screen shows it as a
+ * clock (IncrementPlayTime ticks it once per frame). */
+#define GAME_SETTINGS_PLAY_TIME 0x74
 
 /* NitroSDK NARC archive header and block tags. A block holds its tag at +0 and
  * its byte size at +4; the header's u16 at +0x0C is the offset of the block
@@ -1324,6 +1330,11 @@ enum {
     GPI_REC_FLAG_KEYS   = 0x80  /* raw zero-terminated key/value pairs follow */
 };
 
+/* Length of a gpi record's header before the variable sections its flags name:
+ * the flags byte itself and the server's 4-byte address, which head every
+ * record (gpiRecordHeaderLength adds the optional parts to it). */
+#define GPI_RECORD_HEADER_BASE 5
+
 /* Type of a field in a gpi record schema (entry[1]). */
 enum {
     GPI_FIELD_STRING = 0, /* zero-terminated string */
@@ -1720,6 +1731,8 @@ enum {
  * cannot free the browser, so it asks the think loop to (BROWSER_FREE). */
 #define CONN_MGR_BROWSER_FREE  0x14 /* s32 nonzero to have the think loop free the server browser */
 #define CONN_MGR_BROWSER_DEPTH 0x18 /* s32 server-browser callback nesting depth */
+#define CONN_MGR_NATNEG_SHUTDOWN 0x0C /* s32 nonzero requests NAT negotiation be shut down once Think returns */
+#define CONN_MGR_NATNEG_THINKING 0x10 /* s32 nonzero while NatNeg_Think runs */
 #define CONN_MGR_PLAYER_LIST   0x00 /* void *heap copy of the player list of the match being joined */
 #define CONN_MGR_MATCH_MESSAGE 0x08 /* void *heap copy of the matchmaking message a host sends */
 #define CONN_MGR_MATCH_STARTED 0x1C /* u8 nonzero once a match session has been started */
@@ -1818,6 +1831,12 @@ typedef struct PeerAddress {
  * (boot-ready, boot-complete) arrive and are handled by Mb_BootHandshakeHandler
  * and Mb_BootCompleteHandler. */
 #define MB_FIFO_TAG 0xD
+
+/* An ARM7 boot message's status: the low six bits of the message the FIFO
+ * handlers receive say which boot stage the ARM7 reports. */
+#define MB_STATUS_MASK          0x3F /* bits of a boot message that hold MB_STATUS_* */
+#define MB_STATUS_BOOT_READY    1    /* the ARM7 is ready for the boot parameters (Mb_BootHandshakeHandler) */
+#define MB_STATUS_BOOT_COMPLETE 17   /* the ARM7 finished booting (Mb_BootCompleteHandler) */
 
 /* Multiboot (DS Download Play) boot state (gMbBootState, 0x20 bytes). */
 typedef struct MbBootState {
@@ -1952,6 +1971,8 @@ typedef struct MbLockState {
 #define DL_CURRENT    0x1C /* DownloadFile *file currently being sent */
 #define DL_STATE      0x24 /* u8 send state machine step (0 = idle, 2 = sending a file) */
 #define DL_FILE_INDEX 0x26 /* u8 the current file's step counter, copied from DL_FILE_STEP */
+#define DL_SEND_PHASE 0x10 /* s32 which of a file's roster packets runs DL_CALLBACK (0 = before it is submitted, 1 = after) */
+#define DL_CALLBACK   0x14 /* void (*)(u32 fileId) progress callback, run with the current file's id */
 #define DL_PACKET     0x40 /* 0x70-byte packet WFC_SubmitDownloadData sends (gDownloadPacket) */
 /* Fields of a DownloadFile (one queued 0x4C0-byte file record). */
 #define DL_FILE_PLAYER_COUNT 0x358 /* u8 players in the roster the file is sent to */
@@ -2193,6 +2214,7 @@ typedef struct NetError {
 #define ONLINE_PLAYER_SLOT_RANK       0x24 /* s8: rank index used to load the player's rank icon, -1 when unset */
 #define ONLINE_PLAYER_SLOT_FAV_GROUP  0x25 /* s8: favourite CO/group index, -2 when unset */
 #define ONLINE_PLAYER_SLOT_FAV_RECORD 0x26 /* s8: favourite CO record index, -2 when unset */
+#define ONLINE_PLAYER_SLOT_HOST       0x27 /* s8: 0 when this console hosted the match through matchmaking, 1 when it served or joined one */
 #define ONLINE_PLAYER_PANEL     0x2c /* network panel record that follows the slot states */
 #define ONLINE_PLAYER_PANEL_SIZE 0x40 /* bytes of the network panel record (NET_PLAYER_*) */
 
@@ -2485,6 +2507,7 @@ typedef struct Ov001IconMenuState {
 #define SAVE_TYPE_PLAYER        2          /* player/profile save */
 #define SAVE_TYPE_BATTLE        3          /* battle save */
 #define SAVE_TYPE_SETTINGS      4          /* the shared game-settings snapshot (gGameSettingsSaveBuffer) */
+#define SAVE_SETTINGS_RECORD_SIZE 0x5CC    /* bytes of the shared game-settings snapshot */
 #define SAVE_TYPE_CAMPAIGN_MAP  9          /* campaign map index 0; record type = 9 + map index */
 /* The save block a save/load screen sprite reads or writes, at its +0x34.  The
  * main save/load screen holds both: the profile block at +0x34 and the battle
@@ -2715,7 +2738,7 @@ typedef struct RsaCrtKey {
 /* Length of the decrypted RSA block (the TLS premaster secret). */
 #define RSA_PREMASTER_LEN 0x30
 
-/* Named RSA public key from the TLS handshake's key list (see func_02022128): the peer's
+/* Named RSA public key from the TLS handshake's key list (see SetTlsKeyList): the peer's
  * ServerKeyExchange carries the name that selects one, and a signature is verified by
  * exponentiating it with exponent modulo modulus. */
 typedef struct NamedRsaKey {
@@ -2726,7 +2749,7 @@ typedef struct NamedRsaKey {
     u8 *exponent;       /* +0x10 e, big-endian */
 } NamedRsaKey;
 
-/* The TLS context's list of known public keys (filled by func_02022128): an
+/* The TLS context's list of known public keys (filled by SetTlsKeyList): an
  * array of NamedRsaKey pointers and the number of entries. */
 #define TLS_KEY_LIST  0x814 /* NamedRsaKey ** */
 #define TLS_KEY_COUNT 0x818 /* s32 */
@@ -3001,12 +3024,12 @@ enum {
 /* A menu sprite object, as animated by MenuSpriteUpdate.  The current frame is
  * held in bits 18..25 of the word at +0x40, the base frame in the low nibble at
  * +0x59 and +0x5a is the press timer (negative while the press animation is
- * done). +0x64 points at the object that owns the sprite. */
+ * done). +0x64 points at the sprite-cell list the sprite draws its cells from. */
 #define MENU_SPRITE_FRAME 0x40 /* u32 frame bits */
 #define MENU_SPRITE_FRAME_MASK 0x03FC0000 /* bits 18..25 of MENU_SPRITE_FRAME: the current frame */
 #define MENU_SPRITE_BASE  0x59 /* u8 low nibble: base frame; bit 4 enables the alternate (pressed) frame */
 #define MENU_SPRITE_TIMER 0x5a /* s8 press timer, -1 = idle */
-#define MENU_SPRITE_OWNER 0x64 /* owner/controller object */
+#define MENU_SPRITE_OWNER 0x64 /* SpriteCellList *the sprite's cell list */
 
 /* A menu object is such a sprite plus the state word and child sprites of its
  * options; a menu entry points at it through +0x10 (the entry's +0x00 is the
@@ -3106,7 +3129,8 @@ enum {
 #define SCENE_PANEL_LAYOUT     0x5a /* u8 face layout index */
 #define SCENE_PANEL_LAYOUT_TALK 1 /* SCENE_PANEL_LAYOUT: plain talk window, drawn with window_talk.cg */
 #define SCENE_PANEL_LAYOUT_BODY 2 /* SCENE_PANEL_LAYOUT: body window with the two face sprites, drawn with window_body.cg */
-#define SCENE_PANEL_MOTION     0x5b /* u8 motion variant: 1 offsets x, 2 offsets y */
+#define SCENE_PANEL_MOTION     0x5b /* u8 motion variant: 1 offsets x, 2 offsets y, 0 draws no cursor */
+#define SCENE_PANEL_MOTION_HIDDEN 0 /* the panel shows no cursor (HideMenuCursor) */
 #define SCENE_PANEL_MOTION_X   0x5c /* s16 x the motion offset applies to */
 #define SCENE_PANEL_MOTION_Y   0x5e /* s16 y the motion offset applies to */
 #define SCENE_PANEL_HALF0      0x60 /* void *sprite source of the first half */
@@ -3799,18 +3823,28 @@ typedef struct Ov001Glyph {
     u8 *bitmap;               /* +0x04 */
 } Ov001Glyph;
 
-/* The drawing operations a text panel points at with Ov001TextPanel::ops. */
+/* The drawing operations a text panel points at with Ov001TextPanel::ops.  Two
+ * tables of them exist: the fixed full-screen panels use gTextOpsLinear (their
+ * tile map is a plain row stride), the queued panels gTextOpsPooled (their tile
+ * map wraps the surface's tiles). */
 typedef struct Ov001TextOps {
     s32 (*drawGlyph)(void *panel, Ov001Font *font, s32 x, s32 y, s32 color, Ov001Glyph *glyph); /* +0x00 */
-    void (*unk04)(void *panel, s32 arg); /* +0x04 second operation (TextPanel_ClearText) */
+    void (*clear)(void *panel, s32 arg); /* +0x04 clear the text (TextPanel_ClearText) */
+    void (*fillRect)(void *panel, s32 color, s32 x, s32 y, s32 width, s32 height); /* +0x08 fill a rectangle of the surface */
 } Ov001TextOps;
 
 /* A text panel: the bitmap surface (CreateTextPanel) text is drawn into.
  * CreatePooledTextPanel hands out 0x30-byte panels from the context's queue and
  * fills in the size and tile fields; the fixed full-screen panels reuse +0x2C
- * as their refresh task handle and leave width/height unused. */
+ * as their refresh task handle and keep their surface size in surfaceWidth and
+ * surfaceHeight instead. */
 typedef struct Ov001TextPanel {
-    u8 pad00[0x14];
+    void *tileBase;    /* +0x00 tile buffer the drawing ops write into */
+    s32 surfaceWidth;  /* +0x04 width of the bitmap surface in tiles */
+    s32 surfaceHeight; /* +0x08 height of the bitmap surface in tiles */
+    u8  depth;         /* +0x0C bits per pixel (4 or 8) */
+    u8  pad0D[3];
+    s32 tileMap;       /* +0x10 tile map of the surface: tiles per row (linear ops) or the packed x/y wrap shifts (pooled ops) */
     Ov001TextOps *ops; /* +0x14 drawing operations */
     void *self;        /* +0x18 the panel object itself, target of text drawing */
     Ov001Font *font;   /* +0x1C font/glyph set decoding the panel's text */
@@ -3964,6 +3998,7 @@ enum {
 #define OV007_PANEL_ANIM1     0x3e /* u16: second eased value, 0..256 */
 #define OV007_PANEL_ANIM2     0x40 /* u16: split-region eased value, 0..256 */
 #define OV007_PANEL_ANIM_FRAME 0x54 /* s16: frame counter of a panel animation driver object */
+#define OV007_PANEL_ANIM_VALUE 0x5c /* s32: value a panel animation step applies (the colour the panel cursor picked) */
 #define OV007_PANEL_ROW0      0x44 /* void *first of the panel's three row sprite actors */
 #define OV007_PANEL_ROW1      0x48 /* void *second row sprite actor */
 #define OV007_PANEL_ROW2      0x4c /* void *third row sprite actor */
@@ -3973,7 +4008,9 @@ enum {
 /* A number/text sprite. DrawTextSprite (main_020A94FC) draws it as a row of glyph
  * sprites and SetTextSpriteValue (main_020A86F8) fills in its numeric form. */
 #define TEXT_SPRITE_TYPE    0x04 /* u8: 0 = number sprite, 1 = text sprite */
-#define TEXT_SPRITE_X       0x08 /* s16: screen x of the first glyph */
+#define TEXT_SPRITE_ANCHOR_X 0x06 /* s16: x the glyph run is aligned on; the +0x20 layout bits pick left/centre/right */
+#define TEXT_SPRITE_Y       0x08 /* s16: screen y of the glyph run */
+#define TEXT_SPRITE_PALETTE 0x21 /* u8: OBJ palette row of the glyphs, low nibble */
 #define TEXT_SPRITE_COUNT   0x0A /* u8: number of digit glyphs to draw */
 #define TEXT_SPRITE_DIGITS  0x0B /* u8[6]: digit glyph indices, least significant first */
 #define TEXT_SPRITE_W       0x14 /* u8: glyph cell width in pixels */
@@ -4062,6 +4099,7 @@ enum {
 #define REG_IE       0x04000210 /* u32 interrupt enable mask */
 #define REG_IF       0x04000214 /* u32 interrupt flags */
 #define IRQ_VBLANK   0x0001     /* REG_IE/REG_IF bit 0: VBlank */
+#define IRQ_HBLANK   0x0002     /* REG_IE/REG_IF bit 1: HBlank */
 #define IRQ_TIMER0   0x0008     /* REG_IF bit set when TIMER0 overflows */
 #define IRQ_TIMER1   0x0010     /* REG_IF bit set when TIMER1 overflows (the OS timer) */
 #define IRQ_VCOUNT   0x0004     /* REG_IE/REG_IF bit 2: VCount (scanline) match */
@@ -4226,6 +4264,7 @@ typedef struct FifoMessage {
 #define ARM7_XFER_FIFO_TAG 9   /* IPC FIFO handler tag of the ARM7 transfer service */
 #define ARM7_XFER_WORD(n)  ((u32)(n) << 16) /* command index of a request word */
 #define ARM7_XFER_LAST_WORD 0x01000000      /* set on the last word of a request */
+#define ARM7_XFER_STOP_WORD 0x03004200      /* the one-word stop request: command index 48, the last-word bit */
 
 /* The ARM7 transfer service's state object (gArm7TransferState).  One request is
  * in flight at a time; Arm7TransferStart keeps the descriptor's user words and the
@@ -4245,6 +4284,7 @@ typedef struct FifoMessage {
  * ARM7's boot-ready reply (payload 0x10) sets ARM7_BOOT_SYNC_READY; the
  * console-reboot path sends that request and the card-image loader waits for
  * the ready flag before it loads. */
+#define ARM7_BOOT_SYNC_FIFO_TAG    0xC /* IPC FIFO tag of the ARM7 boot-sync service */
 #define ARM7_BOOT_SYNC_READY       0x00 /* s16 set to 1 by the ARM7's channel-12 boot-ready message */
 #define ARM7_BOOT_SYNC_INITIALISED 0x02 /* u16 nonzero once the channel-12 handler was installed */
 #define ARM7_BOOT_SYNC_REPLY       0x10 /* command of the ARM7's channel-12 boot-ready message (bits 8..14 of its word) */
@@ -4264,7 +4304,9 @@ typedef struct FifoMessage {
 #define ARM7_CMD_DONE_SLEEP  0x08 /* s32: nonzero once the ARM7 answered command 0x62 */
 #define ARM7_CMD_SET_POWER   0x63 /* Arm7SetPowerState: switch the ARM7 power state */
 #define ARM7_CMD_SET_AMP     0x64 /* command 0x64: set a sound-amplifier parameter */
+#define ARM7_CMD_SET_VALUE   0x66 /* command 0x66: set the ARM7's system value (its argument byte) */
 #define ARM7_CMD_GET_VALUE   0x67 /* command 0x67: read the ARM7's system value, answered through ARM7_CMD_VALUE_PTR */
+#define ARM7_SYSTEM_VALUE_FRONTEND 0xF /* system value overlay 001 keeps the ARM7 at while a front-end screen runs */
 
 /* An ARM7 command is sent as one or two FIFO words: the command word names the
  * command byte and carries an extra argument byte, a command with a 16-bit
@@ -4378,14 +4420,20 @@ typedef struct MicTestScreen {
 #define OV001_MAP_LIST_ROW_HIGHLIGHT 0x04 /* object: u8[4] custom-map highlight countdown, one per visible row */
 #define OV001_MAP_LIST_ROW_HEIGHT 29   /* pixels of one list row; five are visible */
 
-/* The ov001 map-preview buffer (gOv001MapPreview): the allocated object holding
- * the 32x24 BG2 tilemap the map preview is drawn into.  A task flushes it to
- * BG2 whenever its dirty flag is set. */
+/* The ov001 map-preview buffer: gOv001MapPreview is itself a 12-byte block
+ * holding the pointer to the allocated preview object, then the source and
+ * destination VRAM addresses of the OBJ-tile copy a task is asked to make.  The
+ * object holds the 32x24 BG2 tilemap the map preview is drawn into; a task
+ * flushes it to BG2 whenever its dirty flag is set. */
 typedef struct Ov001MapPreview {
     s32 task;          /* +0x00 id of the task that flushes the tilemap */
     u16 tiles[0x300];  /* +0x04 the 32x24 BG2 tilemap, 0x600 bytes */
     u8  dirty;         /* +0x604 nonzero: the tilemap must be flushed */
 } Ov001MapPreview;     /* 0x608 bytes */
+#define OV001_MAP_PREVIEW_POINTER     0x00 /* s32 pointer to the allocated Ov001MapPreview object */
+#define OV001_MAP_PREVIEW_COPY_SOURCE 0x04 /* s32 VRAM address the staged OBJ-tile copy reads from */
+#define OV001_MAP_PREVIEW_COPY_DEST   0x08 /* s32 VRAM address that copy writes to */
+#define OV001_MAP_PREVIEW_COPY_WORDS  32   /* 16-bit words the staged OBJ-tile copy moves */
 #define OV001_MAP_LIST_BG_TILEMAP 0x08 /* object: s32 loaded list-background tilemap */
 #define OV001_MAP_LIST_PALETTE    0x0C /* object: s32 loaded map-list background palette (the step-2 palette file) */
 #define OV001_MAP_LIST_TEXT_PANEL 0x14 /* object: s32 text panel for the info rows */
@@ -4426,6 +4474,21 @@ enum {
     OV001_SCROLLBAR_PART_UP     = 2, /* the cap just above the track */
     OV001_SCROLLBAR_PART_DOWN   = 3, /* the cap just below the track */
     OV001_SCROLLBAR_PART_TRACK  = 4  /* the track itself, page by a touch */
+};
+
+/* The event code the scroll bar's task reports each frame in
+ * OV001_SCROLLBAR_EVENT (0 when nothing happened).  GetMenuState returns it and
+ * the owning list's state machine switches on it: 4/6 start a cap scroll, 5/7
+ * are their releases. */
+enum {
+    OV001_SCROLLBAR_EVENT_NONE           = 0,
+    OV001_SCROLLBAR_EVENT_HANDLE_DOWN    = 1, /* the handle was grabbed */
+    OV001_SCROLLBAR_EVENT_HANDLE_DRAG    = 2, /* the handle is being dragged */
+    OV001_SCROLLBAR_EVENT_HANDLE_UP      = 3, /* the handle was released */
+    OV001_SCROLLBAR_EVENT_UP_PRESS       = 4, /* the up cap was pressed */
+    OV001_SCROLLBAR_EVENT_UP_RELEASE     = 5, /* ... and released */
+    OV001_SCROLLBAR_EVENT_DOWN_PRESS     = 6, /* the down cap was pressed */
+    OV001_SCROLLBAR_EVENT_DOWN_RELEASE   = 7  /* ... and released */
 };
 
 /* The generic scroll bar (ScrollBar_*, main_020A94FC): the touchable track, the
@@ -4733,12 +4796,13 @@ typedef struct DialogSequence {
 #define SND_CMD_CHANNEL_PROBE      0x10
 
 /* The ARM7 sound driver's shared command-argument buffer (gSoundCommandBuffer,
- * 640 bytes): two handshake counters the ARM9 polls, then 16 argument entries —
- * each a 16-value s16 parameter array and a value word — and a final 16-value
- * parameter array.  InitSoundCommandBuffer resets it. */
+ * 640 bytes): two handshake words the ARM9 polls (the number of command batches
+ * the ARM7 has taken and the mask of channels it is playing), then 16 argument
+ * entries — each a 16-value s16 parameter array and a value word — and a final
+ * 16-value parameter array.  InitSoundCommandBuffer resets it. */
 #define SND_CMD_BUFFER_SIZE         640
-#define SND_CMD_BUFFER_COUNTER0     0x000 /* s32 handshake counter read by func_0200982c */
-#define SND_CMD_BUFFER_COUNTER1     0x004 /* s32 handshake counter read by func_02009800 */
+#define SND_CMD_BUFFER_PROCESSED    0x000 /* s32 command batches the ARM7 has taken */
+#define SND_CMD_BUFFER_CHANNELS     0x004 /* u32 channels the ARM7 sound driver is playing */
 #define SND_CMD_BUFFER_UNK08        0x008 /* s16 */
 #define SND_CMD_BUFFER_UNK0A        0x00A /* s16 */
 #define SND_CMD_BUFFER_ENTRY_COUNT  16   /* argument entries */
@@ -4759,6 +4823,26 @@ typedef struct DialogSequence {
 #define SOUND_CMD_NODE_ARG2 0x10 /* s32 third command argument */
 #define SOUND_CMD_NODE_ARG3 0x14 /* s32 fourth command argument */
 #define SOUND_CMD_NODE_SIZE 0x18
+
+/* The ARM9-side ARM7 sound command queue state (gSoundCommandQueueState,
+ * 36 bytes), always read and written with interrupts locked: the free command
+ * nodes are chained on the free list, and the commands waiting to be sent to
+ * the ARM7 on the send list.  Each batch of queued commands is sent as the head
+ * of its node chain and remembered in gSoundCommandSentBatches (nine slots in
+ * use), so that once the ARM7 reports taking a batch the queue can free its
+ * nodes again (Sound_DequeueCommand) and raise SOUND_CMD_QUEUE_COMPLETED.  A
+ * command mark (Sound_GetCommandMark) is a batch number compared against that
+ * completed count by Sound_IsCommandReached. */
+#define SOUND_CMD_QUEUE_FREE_HEAD     0x00 /* SOUND_CMD_NODE *first free command node */
+#define SOUND_CMD_QUEUE_COMPLETED     0x04 /* s32 command batches the ARM7 has taken */
+#define SOUND_CMD_QUEUE_SEND_HEAD     0x08 /* SOUND_CMD_NODE *first command waiting to be sent */
+#define SOUND_CMD_QUEUE_SEND_TAIL     0x0C /* SOUND_CMD_NODE *last command waiting to be sent */
+#define SOUND_CMD_QUEUE_FREE_TAIL     0x10 /* SOUND_CMD_NODE *last free command node */
+#define SOUND_CMD_QUEUE_RECLAIM_INDEX 0x14 /* s32 ring slot the next taken batch is freed from */
+#define SOUND_CMD_QUEUE_SEND_INDEX    0x18 /* s32 ring slot the next sent batch is remembered in */
+#define SOUND_CMD_QUEUE_PENDING       0x1C /* s32 batches sent and not taken yet */
+#define SOUND_CMD_QUEUE_NEXT_MARK     0x20 /* s32 mark the next sent batch takes */
+#define SOUND_CMD_SEND_RING_SLOTS     9    /* gSoundCommandSentBatches slots the queue uses */
 
 /* Intrusive doubly-linked list header shared by the List* helpers (ListInit,
  * ListAddFirst, ListAppend/Prepend, ListInsertBefore, ListRemove, ListNext/Prev

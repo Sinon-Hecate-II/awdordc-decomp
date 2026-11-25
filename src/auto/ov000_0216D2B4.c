@@ -102,7 +102,7 @@ void ArmyInfo_RedrawContents(void) {
  extern void *gCur3DSpriteEngine,*g3DSpriteEngineMain,*g3DSpriteEngineSub;
  extern u8 data_ov000_021b8860[],data_ov000_021b8874[],data_ov000_021b888c[],data_ov000_021b88a4[],data_ov000_021b88b8[],data_ov000_021b88d0[];
  M2C_UNK SetArmyInfoFileDirectory(void);
- void DeleteTextSprites(void);
+ void DeleteTextLineSprites(void);
  void *GetLocalizedFileName(void *);
  void OpenNarcArchive(void *);void CloseNarcArchive(void);
  void LoadNarcFileDecompressed(void *,void *);
@@ -112,7 +112,7 @@ void ArmyInfo_RedrawContents(void) {
  u8 *state=gArmyInfoState;
  void *record=gMovementCostTable+M2C_FIELD(state+state[13],u8 *,4)*0x9c;
  void *saved,*engine;
- SetArmyInfoFileDirectory();DeleteTextSprites();
+ SetArmyInfoFileDirectory();DeleteTextLineSprites();
  if(M2C_FIELD(gArmyInfoState,u8 *,16)==0) {
  OpenNarcArchive(GetLocalizedFileName(data_ov000_021b8860));
  saved=gCur3DSpriteEngine;engine=g3DSpriteEngineMain;gCur3DSpriteEngine=engine;

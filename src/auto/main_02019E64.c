@@ -403,7 +403,17 @@ s32 IsLocalDestinationAddress(s32 addr) {
     return accepted;
 }
 
-s32 MacAddressesDiffer(u16 *a,u16 *b){s32 i=0;do{if(*a++!=*b++)return 1;i++;}while(i<3);return 0;}
+/* Compare two six-byte MAC addresses a 16-bit word at a time: returns nonzero
+ * when they differ, 0 when they are the same. */
+s32 MacAddressesDiffer(u16 *macA, u16 *macB) {
+    s32 i = 0;
+
+    do {
+        if (*macA++ != *macB++) return 1;
+        i++;
+    } while (i < 3);
+    return 0;
+}
 
 /* Send one link-layer frame: rebuild its SNAP header from the shared template and
  * hand the frame to the WFC session, recording in the network stack whether the

@@ -71,14 +71,16 @@ s32 RecordsMenu_FindTrackIndex(s32 trackId)
     return -1;
 }
 
+/* Returns how many entries the records screen's music list (gRecordTracks) has:
+ * the index of its first zeroed entry, which terminates the table. */
 s32 RecordsMenu_GetTrackCount(void) {
-    s32 var_r4;
+    s32 count;
 
-    var_r4 = 0;
+    count = 0;
 loop_1:
-    if (M2C_FIELD(RecordsMenu_GetRecord(var_r4), s32 *, 8) != 0) {
-        var_r4 += 1;
+    if (((RecordTrack *) RecordsMenu_GetRecord(count))->length != 0) {
+        count += 1;
         goto loop_1;
     }
-    return var_r4;
+    return count;
 }

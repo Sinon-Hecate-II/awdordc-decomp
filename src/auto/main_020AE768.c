@@ -21,7 +21,7 @@ void ApplyFacePaletteStyle(u8 style, M2C_UNK palette, s32 length) {
 }
 
 #pragma opt_lifetimes off
-void func_020ae7a4(u32 a,u32 b,u16 c) {
+void Set3DSpritePaletteColor(u32 a,u32 b,u16 c) {
 extern void *gCur3DSpriteEngine;
 u32 offset=a<<5;
 u8 *tiles=M2C_FIELD(gCur3DSpriteEngine,u8 **,0x30);

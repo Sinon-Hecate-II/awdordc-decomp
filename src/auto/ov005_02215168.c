@@ -175,10 +175,13 @@ done:
     RECORDS_SCREEN->cursorRow = row;
 }
 
-void func_ov005_02215594(u8 *arg0) {
- void RecordsMenu_HandlePick(s16);
- extern M2C_UNK gRecordsMenuState;
- RecordsMenu_HandlePick((s16)(M2C_FIELD(M2C_FIELD(&gRecordsMenuState,void **,8),s16 *,0x98)+*arg0));
+/* Records row pick: select the record shown in touched row `row` (the list's
+ * top visible row plus the row index). */
+void RecordsMenu_PickRow(u8 *row) {
+    void RecordsMenu_HandlePick(s16);
+    extern M2C_UNK gRecordsMenuState;
+
+    RecordsMenu_HandlePick((s16)(RECORDS_SCREEN->scroll + *row));
 }
 
 void func_ov005_022155c0(u8 *arg0) {

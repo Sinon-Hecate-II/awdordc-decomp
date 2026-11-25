@@ -29,7 +29,7 @@ s32 Wfc_StepMatch(void) {
             state = Wfc_StepFriendConnect(ctx);
             break;
         case 3:                                 /* switch 1 */
-            state = func_02031480();
+            state = Wfc_StepHttpStartup();
             break;
         case 4:                                 /* switch 1 */
             state = Wfc_StepHttp(ctx);
@@ -108,13 +108,16 @@ s32 Wfc_StepFriendConnect(void *state) {
     return 0xB;
 }
 
-s32 func_02031480(void) {
-    M2C_UNK Wfc_GetWorkBlock(M2C_UNK);
+/* Session step 0xD: start the DWC HTTP matchmaking session on the WFC callback
+ * block.  On success move on to the HTTP step (WFC_SESSION_STATE_HTTP); on
+ * failure record result code 3 and go to the state that waits for the network
+ * to come down (0x11). */
+s32 Wfc_StepHttpStartup(void) {
     M2C_UNK Wfc_SetResultCode(M2C_UNK);
-    s32 Dwc_HttpStartup();
-    Wfc_GetWorkBlock(8);
-    if (Dwc_HttpStartup() == 0) {
-        return 0xE;
+    s32 Dwc_HttpStartup(void *);
+
+    if (Dwc_HttpStartup((void *)Wfc_GetWorkBlock(WFC_WORK_CALLBACKS)) == 0) {
+        return WFC_SESSION_STATE_HTTP;
     }
     Wfc_SetResultCode(3);
     return 0x11;
@@ -518,11 +521,14 @@ s32 CheckSaveAndWfcProfile(M2C_UNK arg0)
   return 0;
 }
 
-s32 func_02031d64(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, M2C_UNK arg3) {
-    if (((u32) arg1 & ~(u32) arg3) != 0U) {
+/* Write `value` into the `mask`-wide field at bit `shift` of the u32 type word
+ * at *word (a player record's PLAYER_RECORD_TYPE).  Returns 0 without writing
+ * anything when `value` has bits outside the field, 1 once it is written. */
+s32 SetPlayerRecordTypeField(M2C_UNK word, M2C_UNK value, M2C_UNK shift, M2C_UNK mask) {
+    if (((u32) value & ~(u32) mask) != 0U) {
         return 0;
     }
-    *(u32 *) arg0 = (*(u32 *) arg0 & ~((u32) arg3 << (u32) arg2)) | ((u32) arg1 << (u32) arg2);
+    *(u32 *) word = (*(u32 *) word & ~((u32) mask << (u32) shift)) | ((u32) value << (u32) shift);
     return 1;
 }
 
@@ -550,7 +556,7 @@ s32 GetProfileRecordId(void *arg0) {
 }
 
 void func_02031dd4(void *arg0, s32 arg1, M2C_UNK arg2) {
-    func_02031d64((M2C_UNK)arg0, arg2, 0, 0x7FF);
+    SetPlayerRecordTypeField((M2C_UNK)arg0, arg2, 0, 0x7FF);
     M2C_FIELD(arg0, s32 *, 4) = arg1;
 }
 
@@ -594,28 +600,32 @@ void GetPlayerRecordType(void) {
 }
 
 #pragma optimization_level 2
-void func_02031e7c(M2C_UNK a,M2C_UNK b) { M2C_UNK func_02031d64(M2C_UNK,M2C_UNK,M2C_UNK,s32); func_02031d64(a,b,11,0x1fffff); }
+void SetPlayerRecordTypeWord(M2C_UNK a,M2C_UNK b) { M2C_UNK SetPlayerRecordTypeField(M2C_UNK,M2C_UNK,M2C_UNK,s32); SetPlayerRecordTypeField(a,b,11,0x1fffff); }
 void SetPlayerRecordKind(M2C_UNK arg0, M2C_UNK arg1) {
     s32 GetPlayerRecordTypeWord(u32 *);
-    void func_02031e7c(M2C_UNK, M2C_UNK);
+    void SetPlayerRecordTypeWord(M2C_UNK, M2C_UNK);
     s32 temp_r0;
 
     temp_r0 = GetPlayerRecordTypeWord((u32 *) arg0);
     temp_r0 = temp_r0 & ~3;
-    func_02031e7c(arg0, temp_r0 | arg1);
+    SetPlayerRecordTypeWord(arg0, temp_r0 | arg1);
 }
 
-void MarkPlayerRecordJoined(M2C_UNK arg0) {
-    s32 GetPlayerRecordKind();
+/* Mark the player record at `record` as joined when it is a profile record
+ * (PLAYER_RECORD_KIND_PROFILE): set its type word's PLAYER_RECORD_JOINED bit.
+ * A record of any other kind is left alone. */
+void MarkPlayerRecordJoined(M2C_UNK record) {
     s32 GetPlayerRecordTypeWord(u32 *);
-    void func_02031e7c(M2C_UNK, M2C_UNK);
-    s32 res;
+    void SetPlayerRecordTypeWord(M2C_UNK, M2C_UNK);
+    s32 typeWord;
 
-    if (GetPlayerRecordKind() != 3) {
+    /* GetPlayerRecordKind (above) takes no declared argument, so `record` is
+     * still in r0 from the call: it reads this record's kind. */
+    if (GetPlayerRecordKind() != PLAYER_RECORD_KIND_PROFILE) {
         return;
     }
-    res = GetPlayerRecordTypeWord((u32 *) arg0) | 4;
-    func_02031e7c(arg0, res);
+    typeWord = GetPlayerRecordTypeWord((u32 *) record) | PLAYER_RECORD_JOINED;
+    SetPlayerRecordTypeWord(record, typeWord);
 }
 
 /* Clear the joined mark of a profile-type player record: the inverse of
@@ -624,7 +634,7 @@ void ClearPlayerRecordJoined(M2C_UNK record) {
     if (GetPlayerRecordKind() != PLAYER_RECORD_KIND_PROFILE) {
         return;
     }
-    func_02031e7c(record, GetPlayerRecordTypeWord((u32 *)record) & ~PLAYER_RECORD_JOINED);
+    SetPlayerRecordTypeWord(record, GetPlayerRecordTypeWord((u32 *)record) & ~PLAYER_RECORD_JOINED);
 }
 
 /* Build a 64-bit player code from a GameSpy profile id and the game id: the low

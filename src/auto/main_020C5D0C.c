@@ -76,20 +76,25 @@ void func_020c5db4(void) {
 }
 
 void func_020c5dc4(void) {
-    M2C_UNK func_020b9140(M2C_UNK);
+    M2C_UNK CreateMenuList(M2C_UNK);
     PushCarriedUnitMenuState();
     DeleteMapMenuSprites();
     func_020d464c();
-    func_020b9140(0);
+    CreateMenuList(0);
 }
 
-void func_020c5de0(void) {
+/* Map-menu command: close the menu's sprites and switch the battle map to the
+ * unit-selection cursor, which lets the player pick one of their units. */
+void MapMenu_SelectUnit(void) {
     extern void **gCurrentMap;
     DeleteMapMenuSprites();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B4) = 3;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_MODE) = MAP_MODE_UNIT_SELECT;
 }
 
-s32 func_020c5e08(void) {
+/* Availability of the map-menu command that runs the map's MAP_EVENT_MAP_MENU
+ * script: available (0) in a campaign battle whose event conditions are met,
+ * hidden (2) otherwise. */
+s32 CanUseMapMenuEventCommand(void) {
     s32 IsCampaignBattleRules();
     s32 IsMapEventConditionMet();
     if ((IsCampaignBattleRules() != 0) && (IsMapEventConditionMet() != 0)) {
@@ -596,13 +601,15 @@ void func_020c69f8(void) {
     func_ov000_021707c0();
 }
 
-void func_020c6a10(void) {
+/* End Turn menu command: close the map menu and end the current player's turn;
+ * once the battle has finished, tell the other players the turn is over. */
+void ConfirmEndTurnCommand(void) {
     M2C_UNK SendTurnEndPacket();
     M2C_UNK EndPlayerTurn();
     extern u8 gBattleEndState;
     DeleteMapMenuSprites();
     EndPlayerTurn();
-    if (gBattleEndState == 0) {
+    if (M2C_FIELD(&gBattleEndState, u8 *, BATTLE_END_ENDED) == 0) {
         return;
     }
     SendTurnEndPacket();

@@ -24,8 +24,8 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_0220fb18;
     extern M2C_UNK data_ov003_0220fb38;
     extern M2C_UNK data_ov003_0220fb64;
-    extern M2C_UNK func_ov003_021f05cc;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK InitOv003OptionValue;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     M2C_UNK **temp_r0_10;
     M2C_UNK **temp_r0_2;
     M2C_UNK **temp_r0_3;
@@ -196,7 +196,7 @@ void func_ov003_021f05fc(M2C_UNK arg0) {
         temp_r0_10 = MemAlloc(0xE8);
         if (temp_r0_10 != NULL) {
             *temp_r0_10 = &data_ov003_0220fb18;
-            ConstructArray(temp_r0_10 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+            ConstructArray(temp_r0_10 + 0x14, 4, 0x18, &InitOv003OptionValue, &Ov003OptionValue_Destructor);
             var_r3_2 = 0;
             do {
                 temp_r1_2 = &temp_r0_10[var_r3_2];
@@ -406,7 +406,7 @@ M2C_UNK **DestroyBattleSetup(M2C_UNK **setup) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_0220fb18;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     u8 i;
     *setup = &data_ov003_0220fb18;
     i = 0;
@@ -416,7 +416,7 @@ M2C_UNK **DestroyBattleSetup(M2C_UNK **setup) {
         }
         i += 1;
     } while ((u32)i < BATTLE_SETUP_SPRITE_COUNT);
-    DestroyArray((u8 *)setup + BATTLE_SETUP_PLAYERS, BATTLE_SETUP_PLAYER_COUNT, BATTLE_SETUP_PLAYER_LEN, &func_ov003_021f05f8);
+    DestroyArray((u8 *)setup + BATTLE_SETUP_PLAYERS, BATTLE_SETUP_PLAYER_COUNT, BATTLE_SETUP_PLAYER_LEN, &Ov003OptionValue_Destructor);
     MemFree(setup);
     return setup;
 }
@@ -619,7 +619,7 @@ M2C_UNK **ShutdownBattleSetup(M2C_UNK **setup) {
     M2C_UNK DeleteSpriteObject();
     M2C_UNK DestroyArray(void *, M2C_UNK, M2C_UNK, M2C_UNK *);
     extern M2C_UNK data_ov003_0220fb18;
-    extern M2C_UNK func_ov003_021f05f8;
+    extern M2C_UNK Ov003OptionValue_Destructor;
     u8 i;
     *setup = &data_ov003_0220fb18;
     i = 0;
@@ -629,7 +629,7 @@ M2C_UNK **ShutdownBattleSetup(M2C_UNK **setup) {
         }
         i += 1;
     } while ((u32)i < BATTLE_SETUP_SPRITE_COUNT);
-    DestroyArray((u8 *)setup + BATTLE_SETUP_PLAYERS, BATTLE_SETUP_PLAYER_COUNT, BATTLE_SETUP_PLAYER_LEN, &func_ov003_021f05f8);
+    DestroyArray((u8 *)setup + BATTLE_SETUP_PLAYERS, BATTLE_SETUP_PLAYER_COUNT, BATTLE_SETUP_PLAYER_LEN, &Ov003OptionValue_Destructor);
     return setup;
 }
 
@@ -637,7 +637,7 @@ void func_ov003_021f1330(void) {
 
 }
 
-s32 func_ov003_021f1334(s32 arg0) {
+s32 DestroyOv003OptionValue(s32 arg0) {
     M2C_UNK MemFree();
     MemFree();
     return arg0;

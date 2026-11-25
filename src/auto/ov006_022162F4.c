@@ -2,6 +2,7 @@
 #include "common.h"
 #include "ov006_map_transfer.h"
 #include "battle_map.h"
+#include "map_selection.h"
 
 static inline u16 NegativePanelScroll(s32 value) { return -value; }
 typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
@@ -10,7 +11,7 @@ typedef struct { u8 active:1; u8 mode:4; u8 kind:3; } Ov006C24Flags;
 void func_ov006_022162f4(void *arg0) {
     s32 Divide(s32, M2C_UNK);
     s32 Modulo(u8, M2C_UNK);
-    M2C_UNK func_02088044(void *);
+    M2C_UNK SpriteCellListUpdateTouch(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK UpdateSpriteAnimation(void *);
     M2C_UNK FocusSpriteSlotById(M2C_UNK);
@@ -35,7 +36,7 @@ void func_ov006_022162f4(void *arg0) {
     s8 *var_r2;
 
     UpdateSpriteAnimation(M2C_FIELD(p, void **, 0x48));
-    func_02088044(M2C_FIELD(p, void **, 0x40));
+    SpriteCellListUpdateTouch(M2C_FIELD(p, void **, 0x40));
     var_r4 = M2C_FIELD(p, s8 *, 0x38);
     temp_r0 = gKeyState[0];
     temp_r1 = gKeyState[1];
@@ -390,10 +391,14 @@ u8 IsValueInRange(s32 arg0, s32 arg1, s32 arg2) {
  return result;
 }
 
+/* Whether this console hosts an active link session (a session is running and
+ * the local side is its host, not a guest); the map-record exchange of the
+ * transfer panel sends on the host and receives on the guests. */
 u8 IsLinkSessionHost(void) {
     s32 IsLinkSessionActive();
     s32 IsLocalSessionHost();
     s32 result;
+
     if (IsLinkSessionActive() && IsLocalSessionHost()) result = 1;
     else result = 0;
     return result;
@@ -419,10 +424,11 @@ u8 func_ov006_02216f10(void) {
  return M2C_FIELD(func_ov006_02217164(),u8 *,0x34)==4;
 }
 
-void func_ov006_02216f30(void) {
+/* True when the battle map in play is a custom map (id in the custom range). */
+void Ov006_IsCurrentMapCustom(void) {
     u8 IsValueInRange(s32, s32, s32);
     extern void **gCurrentMap;
-    IsValueInRange(M2C_FIELD(*gCurrentMap, s16 *, 0x5142), 0xE1, 0x1A9);
+    IsValueInRange(M2C_FIELD(*gCurrentMap, s16 *, MAP_ID), MAP_CUSTOM_FIRST, MAP_CUSTOM_LINK_END);
 }
 
 /* Rebuild the campaign map headers, clear the other players' pages in the

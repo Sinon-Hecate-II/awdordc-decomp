@@ -223,14 +223,17 @@ void InitUnitSprite(void *arg0, s32 arg1, s32 arg2, s32 arg3, u8 arg4) {
     M2C_FIELD(arg0, void **, 0x64) = temp_r0;
     func_020aad18(arg0);
 }
-void MenuSpriteUpdate(void *arg0) {
-    M2C_UNK func_02088044(s32);
-    s32 Is3DSpriteVisible();
+/* Update a menu sprite: while the sprite is visible, pass the frame's touch
+ * state on to the sprite-cell list it draws its cells from, then bring the
+ * sprite's displayed frame in step with its base frame and press timer. */
+void MenuSpriteUpdate(void *sprite) {
+    void SpriteCellListUpdateTouch(void *);
+    u8 Is3DSpriteVisible(void *);
     void UpdateUnitSpriteFrame(void *);
-    if (Is3DSpriteVisible() != 0) {
-        func_02088044(M2C_FIELD(arg0, s32 *, 0x64));
+    if (Is3DSpriteVisible(sprite) != 0) {
+        SpriteCellListUpdateTouch(M2C_FIELD(sprite, void **, MENU_SPRITE_OWNER));
     }
-    UpdateUnitSpriteFrame(arg0);
+    UpdateUnitSpriteFrame(sprite);
 }
 
 /* Updates the sprite entry for a unit: updates an existing slot when one is present, otherwise allocates a new one. */
@@ -461,10 +464,12 @@ void func_020ab200(void) {
     fp(p);
 }
 
-void MarkUnitSpritePressed(void *arg0) {
- extern u8 gUnitSpriteInput;
- register unsigned test = M2C_FIELD(M2C_FIELD(arg0,void **,0x64),s8 *,12)==1;
- if ((u8)test) *(&gUnitSpriteInput+1)=1;
+/* Whether this unit sprite shows its pressed frame: its touch-hit cell is cell 1,
+ * in which case the shared pressed flag is raised. */
+void MarkUnitSpritePressed(void *unitSprite) {
+    extern u8 gUnitSpriteInput;
+    register unsigned pressed = M2C_FIELD(M2C_FIELD(unitSprite, void **, UNIT_SPRITE_CELLS), s8 *, SPRITE_CELL_LIST_HIT_ID) == 1;
+    if ((u8)pressed) *(&gUnitSpriteInput + UNIT_SPRITE_PRESSED) = 1;
 }
 
 /* Whether any unit sprite is currently pressed: clear the shared pressed flag,

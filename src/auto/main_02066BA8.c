@@ -85,7 +85,7 @@ u32 FormatString(s32 (*writer)(void *,const char *,s32), void *state, char *p, c
             }else if(f.c){
                 char *end;
                 len=f.precision;
-                end=(char *)func_02065224(text,0,len);
+                end=(char *)FindFirstByte(text,0,len);
                 if(end)len=end-text;
             }else len=StringLength(text);
             break;
@@ -227,10 +227,13 @@ void StringFormatBuffer(s32 arg0, s32 arg1, s32 arg2, ...) {
 
 }
 
-void StringFormat(s32 arg0, s32 arg1, ...) {
+/* Format `format` with the variable argument list into the string `buffer`,
+ * which the caller has sized large enough for the result plus its NUL. */
+void StringFormat(char *buffer, s32 format, ...) {
     char *args;
-    args = (char *)(((u32)&arg1 & ~3U) + 4);
-    StringFormatBounded((char *)arg0, -1, arg1, args);
+
+    args = (char *)(((u32)&format & ~3U) + 4);
+    StringFormatBounded(buffer, -1, format, args);
 }
 
 void func_02067610(s8 *base,u32 count,u32 size,s32 (*compare)(const void*,const void*)) {

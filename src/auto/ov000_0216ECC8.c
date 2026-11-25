@@ -363,17 +363,18 @@ void ScrollListConfirm(u8 *selectedRow) {
     CloseAllActiveSpriteSlots();
 }
 
+/* Cancel out of the unit list: play the back sound, resume the list's sprite
+ * animation and hide the sprite slots the list had enabled. */
 void ScrollListCancel(void) {
-    M2C_UNK Sprite_ResumeAnimation(s32);
+    M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK HideEnabledSpriteSlots();
     M2C_UNK CloseAllActiveSpriteSlots();
-    s32 GetScrollList();
-    s32 temp_r4;
+    ScrollList *list;
 
-    temp_r4 = GetScrollList();
-    PlaySoundEffect(0x10018);
-    Sprite_ResumeAnimation(temp_r4);
+    list = (ScrollList *)GetScrollList();
+    PlaySoundEffect(SOUND_MENU_BACK);
+    Sprite_ResumeAnimation(list);
     HideEnabledSpriteSlots();
     CloseAllActiveSpriteSlots();
 }

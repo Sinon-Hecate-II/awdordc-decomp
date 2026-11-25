@@ -171,14 +171,16 @@ u8 func_020cfb94(void) {
  return M2C_FIELD((void *)*gCurrentMap,u8 *,0x5141);
 }
 
-void GetMapPlayerCount(u32 arg0) {
-    M2C_UNK func_020a8948();
-    M2C_UNK GetCampaignMapPlayerCount();
-    if ((arg0 >= 0xE1U) && (arg0 < 0x1A9U)) {
-        GetCampaignMapPlayerCount();
-        return;
+/* The number of armies the map `mapId` is played with: campaign maps take it
+ * from their campaign record, every other map from its map-data record. */
+s32 GetMapPlayerCount(u32 mapId) {
+    u8 MapData_GetPlayerCount(s32);
+    s32 GetCampaignMapPlayerCount(s32);
+
+    if ((mapId >= MAP_ID_CAMPAIGN_FIRST) && (mapId < MAP_ID_CAMPAIGN_END)) {
+        return GetCampaignMapPlayerCount(mapId);
     }
-    func_020a8948();
+    return MapData_GetPlayerCount(mapId);
 }
 
 /* The localized display name of the map with the given id: campaign maps
@@ -372,13 +374,17 @@ M2C_UNK func_020d0270(void) {
  RefreshTeamVisibility(); RefreshMapCellUnits(); func_020d0178(); func_ov000_02174ce8();
 }
 
-void InitAreaScan(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5) {
-    M2C_FIELD(arg0, s32 *, 0) = arg4;
-    M2C_FIELD(arg0, s32 *, 4) = arg5;
-    M2C_FIELD(arg0, s32 *, 8) = arg2;
-    M2C_FIELD(arg0, s32 *, 0xC) = arg3;
-    M2C_FIELD(arg0, s32 *, 0x18) = arg1;
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
+/* Initialise an area scan: the map size, the scan's origin and mode, and reset
+ * its index to the first tile. */
+void InitAreaScan(void *scanState, s32 mode, s32 originX, s32 originY, s32 width, s32 height) {
+    AreaScan *scan = (AreaScan *)scanState;
+
+    scan->width = width;
+    scan->height = height;
+    scan->originX = originX;
+    scan->originY = originY;
+    scan->mode = mode;
+    scan->index = 0;
 }
 
 /* Advance to the next in-bounds area offset, or the next tile of a full-map scan. */

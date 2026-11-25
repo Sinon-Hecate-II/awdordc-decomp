@@ -316,7 +316,7 @@ void func_ov001_0217a880(void) {
     void Ov001_BlockScrollBar(void);
     M2C_UNK Ov001_ShowMessage(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    void func_ov001_0217b3f0(void);
+    void Ov001_ConfirmMapSelectNotice(void);
     void func_ov001_0217a98c(void);
     extern M2C_UNK gMapSelectState;
     void *map;
@@ -345,7 +345,7 @@ void func_ov001_0217a880(void) {
                 Ov001_BlockScrollBar();
                 Ov001_LockIconRow();
                 Ov001_ShowMessage(0xe, 1, 1, -1, 0);
-                Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217b3f0);
+                Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConfirmMapSelectNotice);
                 goto done;
             } else {
                 void *map2 = M2C_FIELD(&gMapSelectState, void **, 4);

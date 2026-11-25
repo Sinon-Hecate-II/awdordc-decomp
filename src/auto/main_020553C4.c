@@ -11,6 +11,13 @@ typedef struct GpiConnectionHead {
     s32 buddyCount;        /* +0x430 buddies handed out, the index bound in gpGetBuddyStatus */
 } GpiConnectionHead;
 typedef struct { u8 bytes[8]; } UnkSocketAddress;
+
+/* The search key gpiGetBuddyStatusByIndex hands to its buddy-table walk: the
+ * buddy-list index looked for and the record that carries it. */
+typedef struct BuddyIndexSearch {
+    s32 index;    /* +0x00 buddy-list index looked for */
+    void *buddy;  /* +0x04 the matching GpiBuddyStatus, NULL when none */
+} BuddyIndexSearch;
 static inline void InitSocketAddress(s32 *p) { s32 addr=(s32)p; M2C_FIELD(addr,s32 *,0)=0; M2C_FIELD(addr,s32 *,4)=0; }
 
 /* Starts the TCP connection to a gpi peer: looks the peer's address record up
@@ -314,10 +321,20 @@ data[1]=(s32)callback;data[2]=(s32)userData;data[0]=(s32)connection;
 return TableMapSafe2((s32)gpi->buddyTable,gpiWalkBuddyTableCallback,data)==0;
 }
 
-s32 gpiMatchBuddyIndex(s32 arg0,void *arg1,void *arg2) {
-s32 *p=M2C_FIELD(arg1,s32 **,8);
-if(p && M2C_FIELD(arg2,s32 *,0)==*p){M2C_FIELD(arg2,void **,4)=arg1;return 0;}
-return 1;
+/* Table-walk predicate of gpiGetBuddyStatusByIndex: accept the buddy record
+ * whose presence details carry the searched list index (store the record in the
+ * search key and stop the walk with 0); every other record is skipped (1). */
+s32 gpiMatchBuddyIndex(s32 connection, void *entry, void *key) {
+    GpiBuddyStatus *buddy = (GpiBuddyStatus *) entry;
+    BuddyIndexSearch *search = (BuddyIndexSearch *) key;
+    GpiBuddyStatusDetails *details;
+
+    details = buddy->details;
+    if (details != NULL && search->index == details->index) {
+        search->buddy = buddy;
+        return 0;
+    }
+    return 1;
 }
 
 /* Return the record of the connection's buddy whose list index is `index`,

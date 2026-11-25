@@ -193,9 +193,11 @@ void func_020cbfe4(void) {
     CreateSpriteFromClass(&data_0212b5f4, 7);
 }
 
-void func_020cbffc(void) {
+/* Mark the battle's current player as having given up, then schedule the check
+ * that ends the battle once only one player is left (AI command 18's handler). */
+void GiveUpCurrentPlayerAndScheduleBattleEnd(void) {
  extern void **gCurrentMap;
- SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,0x52A4),1);
+ SetPlayerGaveUp(M2C_FIELD(*gCurrentMap,u16 *,MAP_CURRENT_PLAYER),1);
  ScheduleBattleEndCheck();
 }
 

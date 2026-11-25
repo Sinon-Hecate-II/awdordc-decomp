@@ -326,7 +326,7 @@ void func_ov003_021fef58(M2C_UNK arg0) {
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK gHeapObjectVTable;
     extern M2C_UNK gTextLabelSlotState;
-    extern void **data_027e0058;
+    extern void **gCurrentMap;
     extern M2C_UNK gMapPickSelectionIfaceVTable;
     extern M2C_UNK gSceneBaseIfaceVTable;
     extern M2C_UNK gOv003MapMenuClass;
@@ -335,8 +335,6 @@ void func_ov003_021fef58(M2C_UNK arg0) {
     extern M2C_UNK data_ov003_02210130;
     extern M2C_UNK data_ov003_022101ac;
     extern M2C_UNK data_ov003_022101d8;
-    u8 temp_ip;
-    u8 temp_r5;
     u8 var_r0;
     void *temp_r0;
     void *temp_r0_2;
@@ -358,13 +356,11 @@ void func_ov003_021fef58(M2C_UNK arg0) {
         M2C_FIELD(temp_r0, s8 *, 0x38) = 0;
         M2C_FIELD(temp_r0, u8 *, 0x39) = (u8) ((M2C_FIELD(temp_r0, u8 *, 0x39) & ~0x7F) | 0xA);
         M2C_FIELD(temp_r0, u8 *, 0x3A) = (u8) ((u8) (M2C_FIELD(temp_r0, u8 *, 0x3A) & ~0x7F) | 0x80);
-        temp_ip = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) & ~0x20;
-        M2C_FIELD(temp_r0, u8 *, 0x3B) = temp_ip;
-        M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) ((u8) (temp_ip & ~0x40) & ~0x80);
-        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*data_027e0058, u16 *, 0x5142);
-        temp_r5 = ((u8) ((M2C_FIELD(temp_r0, u8 *, 0x3E) & ~7) | 2) & ~0x38) | 0x38;
-        M2C_FIELD(temp_r0, u8 *, 0x3E) = temp_r5;
-        M2C_FIELD(temp_r0, u8 *, 0x3E) = (u8) ((u8) (temp_r5 & ~0x40) & ~0x80);
+        M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0xF) & ~0x20;
+        M2C_FIELD(temp_r0, u8 *, 0x3B) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3B) & ~0x40) & ~0x80;
+        M2C_FIELD(temp_r0, u16 *, 0x3C) = (u16) M2C_FIELD(*gCurrentMap, u16 *, 0x5142);
+        M2C_FIELD(temp_r0, u8 *, 0x3E) = ((u8) ((M2C_FIELD(temp_r0, u8 *, 0x3E) & ~7) | 2) & ~0x38) | 0x38;
+        M2C_FIELD(temp_r0, u8 *, 0x3E) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x3E) & ~0x40) & ~0x80;
         M2C_FIELD(temp_r0, void **, 0x44) = NULL;
         M2C_FIELD(temp_r0, M2C_UNK **, 0x48) = &gTextLabelSlotState;
         M2C_FIELD(temp_r0, s32 *, 0x4C) = 0;
@@ -384,8 +380,8 @@ void func_ov003_021fef58(M2C_UNK arg0) {
             do {
                 temp_r2 = temp_r0_2 + (var_r0 * 2);
                 M2C_FIELD(temp_r2, u16 *, 0x12) = 0xFFFFU;
-                var_r0 += 1;
                 M2C_FIELD(temp_r2, u16 *, 8) = (u16) M2C_FIELD(temp_r2, u16 *, 0x12);
+                var_r0 += 1;
             } while ((u32) var_r0 < 5U);
             M2C_FIELD(temp_r0_2, s8 *, 0x1C) = 0;
             M2C_FIELD(temp_r0_2, s8 *, 0x1D) = 0;

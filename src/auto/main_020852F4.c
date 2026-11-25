@@ -586,14 +586,21 @@ s32 GetGetRequestServerTime(void) {
     return GetProfileSaveBlock() + 0x74;
 }
 
+/* Empty every link command queue (one FIFO of incoming commands per command
+ * source). */
 void ClearLinkCommandQueues(void) {
     void ClearLinkCommandQueue(void *);
     extern M2C_UNK gLinkCommandQueues;
     s32 i;
-    u8 *p;
-    p=(u8 *)&gLinkCommandQueues;
-    i=0;
-    do { ClearLinkCommandQueue(p); ++i; p+=12; } while(i<4);
+    u8 *queue;
+
+    queue = (u8 *)&gLinkCommandQueues;
+    i = 0;
+    do {
+        ClearLinkCommandQueue(queue);
+        ++i;
+        queue += LINK_COMMAND_QUEUE_STRIDE;
+    } while (i < LINK_COMMAND_QUEUE_COUNT);
 }
 
 /* Queue a received command message on the queue of its source, skipping the
@@ -608,29 +615,36 @@ void func_02085ca8(void) {
 
 }
 
-void *func_02085cac(void *arg0) {
+/* Deleting destructor of the link player-data listener: restore the link layer's
+ * previous message handler and free the listener.  (LinkPlayerData_Destroy is the
+ * non-freeing twin.) */
+void *LinkPlayerData_Delete(void *listener) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK gLinkPlayerDataVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
-    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
-    MemFree(arg0);
-    return arg0;
+    M2C_FIELD(listener, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
+    Link_SetMessageHandler(M2C_FIELD(listener, s32 *, LINK_PLAYER_DATA_PREV_HANDLER));
+    MemFree(listener);
+    return listener;
 }
 
-void *func_02085cd8(void *arg0) {
+void *LinkPlayerData_Destroy(void *arg0) {
     extern M2C_UNK gLinkPlayerDataVtbl;
     M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkPlayerDataVtbl;
     Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
     return arg0;
 }
 
-void *func_02085cfc(void *arg0) {
+/* Deleting destructor of the link block receiver: restore the base vtable,
+ * uninstall its link message handler (putting back the one it replaced) and free
+ * the receiver.  (func_02085d28 is the non-deleting twin.) */
+void *LinkBlockReceiver_Delete(void *receiver) {
     M2C_UNK MemFree(void *);
     extern M2C_UNK gLinkBlockReceiverVtbl;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
-    Link_SetMessageHandler(M2C_FIELD(arg0, s32 *, 0x34));
-    MemFree(arg0);
-    return arg0;
+
+    M2C_FIELD(receiver, M2C_UNK **, 0) = &gLinkBlockReceiverVtbl;
+    Link_SetMessageHandler(M2C_FIELD(receiver, s32 *, 0x34));
+    MemFree(receiver);
+    return receiver;
 }
 
 void *func_02085d28(void *arg0) {

@@ -1,4 +1,4 @@
-func_ov002_021e1500 kind:function(arm,size=0x2c) addr:0x021e1500
+SetBattleSceneVramBanks kind:function(arm,size=0x2c) addr:0x021e1500
 SetupBattleScene kind:function(arm,size=0x50) addr:0x021e152c
 func_ov002_021e157c kind:function(arm,size=0x1c) addr:0x021e157c
 func_ov002_021e1598 kind:function(arm,size=0x14) addr:0x021e1598

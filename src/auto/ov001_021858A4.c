@@ -84,12 +84,15 @@ for(i=0;i<OV001_MENU_ROWS;i++)Ov001_DestroySprite(((s32 *)M2C_FIELD(&gOv001MenuL
 Ov001_FreeAlloc(&data_ov001_02193e10);
 }
 #pragma opt_strength_reduction reset
+/* Whether the ov001 option menu has finished closing, or was never built: ready
+ * when the menu has no sprite handles yet or their closing flag has cleared. */
 s32 Ov001_IsMenuLayoutReady(void) {
     extern M2C_UNK gOv001MenuLayout;
-    if (M2C_FIELD(&gOv001MenuLayout, void **, 4) == NULL) {
+
+    if (M2C_FIELD(&gOv001MenuLayout, void **, OV001_MENU_SPRITES) == NULL) {
         return 1;
     }
-    if (M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, 4), u8 *, 0x18) == 0) {
+    if (M2C_FIELD(M2C_FIELD(&gOv001MenuLayout, void **, OV001_MENU_SPRITES), u8 *, OV001_MENU_CLOSING) == 0) {
         return 1;
     }
     return 0;

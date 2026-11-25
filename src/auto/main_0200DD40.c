@@ -186,9 +186,11 @@ s32 Arm7TransferSubmit(u32 src, u32 dst, u32 size, u32 flags) {
     return 0;
 }
 
+/* Post the ARM7 transfer service's one-word stop request (command index 48):
+ * returns 1 when the FIFO took it, 0 when it was rejected. */
 s32 Arm7TransferSendStopCommand(void) {
     s32 SendFifoMessage(M2C_UNK, s32, M2C_UNK);
-    if (SendFifoMessage(9, 0x03004200, 0) >= 0) {
+    if (SendFifoMessage(ARM7_XFER_FIFO_TAG, ARM7_XFER_STOP_WORD, 0) >= 0) {
         return 1;
     }
     return 0;
@@ -550,8 +552,8 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     void OS_RestoreInterrupts(M2C_UNK);
     M2C_UNK OS_DisableIrqMask(M2C_UNK);
     M2C_UNK OS_SetIrqEnableMask(M2C_UNK);
-    void func_0200ede8(M2C_UNK);
-    M2C_UNK func_02018c9c(void);
+    void CallbackList_Call(M2C_UNK);
+    M2C_UNK Mb_CheckCartridgeHeader(void);
     M2C_UNK IsLcdEnabled(void);
     s32 ReadPowerFlags(s32 *, s32 *);
     s32 Arm7SetBacklightWait(M2C_UNK, M2C_UNK);
@@ -581,7 +583,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     volatile s32 sp12,sp8,sp4,sp0;
     M2C_UNK r4 = 0;
 
-    func_0200ede8(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0xC));
+    CallbackList_Call(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0xC));
 
     r8 = *hw208;
     *hw208 = 0;
@@ -603,7 +605,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
         if (v == 0x2) r10 &= ~0x8;
     }
     if (r10 & 0x10) {
-        if (func_02018c9c() == 0) r10 &= ~0x10;
+        if (Mb_CheckCartridgeHeader() == 0) r10 &= ~0x10;
     }
 
     p4m = (volatile u32 *)0x4000000;
@@ -654,7 +656,7 @@ void func_0200e920(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     {u16 tmp=*hw208; *hw208=r8;}
     if(r4 != 0) WakeDisplayWait();
 
-    func_0200ede8(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0x14));
+    CallbackList_Call(M2C_FIELD(&gArm7CommandState, M2C_UNK *, 0x14));
 
     (void)r8;
     (void)hw208;
@@ -722,7 +724,7 @@ s32 Arm7SetValue(s32 value, void (*callback)(s32, s32 *), s32 *user) {
     return 0;
 }
 
-s32 func_0200eca8(s32 arg0) {
+s32 Arm7SetValueWait(s32 arg0) {
     void Arm7CommandWait(void);
     s32 sp0;
     s32 result;

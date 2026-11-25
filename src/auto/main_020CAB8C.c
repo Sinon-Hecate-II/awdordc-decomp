@@ -394,11 +394,19 @@ M2C_FIELD(arg0,s16 *,0x34)++;
 }else{M2C_FIELD(arg0,s16 *,0x34)++;}goto loop;
 }
 
-void CreateSupplyOverlay(s32 a) {
-extern M2C_UNK data_0212b3ac;
-void *p=CreateSpriteFromClass(&data_0212b3ac,7);
-if(a) M2C_FIELD(p,s16 *,0x36)=0;
-else M2C_FIELD(p,s16 *,0x36)=1;
+/* Open the supply overlay: create its animated sprite from the overlay script
+ * (which takes the map-view hold, scans the tiles around the cursor for units
+ * that can be resupplied, refills them, then releases the hold).  `complete`
+ * says whether finishing the overlay also completes the supply action. */
+void CreateSupplyOverlay(s32 complete) {
+    extern M2C_UNK gSupplyOverlayScript;
+    void *overlay = CreateSpriteFromClass(&gSupplyOverlayScript, 7);
+
+    if (complete) {
+        M2C_FIELD(overlay, s16 *, SUPPLY_OVERLAY_COMPLETE) = 0;
+    } else {
+        M2C_FIELD(overlay, s16 *, SUPPLY_OVERLAY_COMPLETE) = 1;
+    }
 }
 
 void func_020cb8f8(void *arg0) {

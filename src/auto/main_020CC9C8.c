@@ -102,17 +102,20 @@ map=*gCurrentMap;
 if(hidden>=99)return 0;return 1;
 }
 #pragma opt_strength_reduction reset
-void func_020ccdc0(M2C_UNK arg0) {
+void SendBattleEndStartRequest(M2C_UNK arg0) {
     M2C_UNK Link_CreateStartRequest(s32, M2C_UNK);
     Link_CreateStartRequest(0x474D4544, arg0);
 }
 
-void func_020ccdd8(s32 arg0) {
+/* Once the battle has ended, spawn the battle-end request object under `owner`:
+ * its script sends the link start request that tells the peers the battle is
+ * over.  Does nothing while the battle is still running. */
+void SpawnBattleEndRequest(s32 owner) {
     void CreateSpriteObject(void *, s32);
     extern u8 gBattleEndState;
-    extern M2C_UNK data_0212b7ec;
+    extern M2C_UNK gBattleEndRequestClass;
     if (gBattleEndState == 0) return;
-    CreateSpriteObject(&data_0212b7ec, arg0);
+    CreateSpriteObject(&gBattleEndRequestClass, owner);
 }
 
 /* Battle-results screen entry for results sprite `sprite`: compute the battle's
@@ -227,20 +230,22 @@ loop_11:
     goto loop_1;
 }
 
+/* Whether the player's side lost the battle: the battle is not a draw and was
+ * not won. */
 u8 DidPlayerLose(void) {
     s32 IsBattleDraw();
     s32 DidPlayerWin();
-    u8 var_r0;
+    u8 lost;
 
     if (IsBattleDraw() != 0) {
         return 0U;
     }
     if (DidPlayerWin() == 0) {
-        var_r0 = 1;
+        lost = 1;
     } else {
-        var_r0 = 0;
+        lost = 0;
     }
-    return var_r0;
+    return lost;
 }
 
 /* Whether the battle ended in a draw: true as soon as any player 1..4 is
@@ -290,8 +295,8 @@ return 0;
 void func_020cd544(s32);
 void func_020cd480(s32 a){
 extern u16 gMapConfig;extern s32 *data_027e0058;extern M2C_UNK data_0212b804;extern u32 gSaveSlotSummary[];u32 v;
-func_02088634();if(func_020e4b28(a)){func_020cd544(a);return;}
-func_020e49ec();gSaveSlotSummary[0]=(gSaveSlotSummary[0]&~15)|(a&15);
+func_02088634();if(CampaignSaveSlotInUse(a)){func_020cd544(a);return;}
+ResetCampaignProgress();gSaveSlotSummary[0]=(gSaveSlotSummary[0]&~15)|(a&15);
 v=gSaveSlotSummary[0]&~240;*(volatile u32 *)gSaveSlotSummary=v;
 gMapConfig &= ~7;
 v&=~0xff0000;
@@ -306,7 +311,7 @@ M2C_FIELD(*data_027e0058,u16 *,0x5142)=161;SetMapListFlag(161,1);CreateSpriteFro
  * unit data) spawns the placeholder menu object. */
 void func_020cd544(s32 mapKind) {
     extern u16 gMapConfig;
-    extern M2C_UNK data_0212b844;
+    extern M2C_UNK gCampaignMapScreenClass;
     s32 GetSaveType(s32, s32);
     s32 IsUnitAvailable(s32);
     u8 kind;
@@ -317,15 +322,19 @@ void func_020cd544(s32 mapKind) {
     if (IsUnitAvailable(kind)) {
         func_020d4ac8(kind);
     } else {
-        CreateSpriteFromClass(&data_0212b844, 7);
+        CreateSpriteFromClass(&gCampaignMapScreenClass, 7);
     }
 }
 
-void func_020cd5ac(void) {
-    extern M2C_UNK data_0212b844;
+/* Leave the battle and open the campaign-map screen: reset the map config's
+ * mode bits to the campaign mode and create the campaign-map scene object. */
+void OpenCampaignMapScreen(void) {
+    M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
+    extern M2C_UNK gCampaignMapScreenClass;
     extern u16 gMapConfig;
-    gMapConfig &= ~7;
-    CreateSpriteFromClass(&data_0212b844, 7);
+
+    gMapConfig &= ~MAPCONFIG_MODE_MASK;
+    CreateSpriteFromClass(&gCampaignMapScreenClass, 7);
 }
 
 /* True unless the options turn battle animations off. */
@@ -388,18 +397,24 @@ u8 IsCampaignBattleRules(void) {
     return var_r0;
 }
 
+/* Whether the battle is a free-play (non-campaign) battle: the map's rules
+ * carry free play in their battle-mode bits. */
 u8 IsFreePlayBattleMode(void) {
     extern M2C_UNK gMapData;
     u8 value;
-    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, 0xC) << 29) >> 29) == 1) value = 1;
+
+    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, MAPDATA_RULES) << 29) >> 29) == MAPDATA_MODE_FREE_PLAY) value = 1;
     else value = 0;
     return value;
 }
 
-u8 func_020cd728(void) {
+/* Whether the map configuration is in mode 2, the map editor's mode (the mode
+ * bits of the map configuration word, which EnterMapEditorScreen sets to 2). */
+u8 IsMapEditorMode(void) {
     extern M2C_UNK gMapData;
     u8 value;
-    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, 12) << 29) >> 29) == 2) value = 1;
+
+    if ((u8)((u32)(M2C_FIELD(&gMapData, u16 *, MAPDATA_RULES) << 29) >> 29) == MAPDATA_MODE_MAP_EDITOR) value = 1;
     else value = 0;
     return value;
 }

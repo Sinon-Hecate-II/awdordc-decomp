@@ -659,6 +659,7 @@ typedef struct ScenePanelState {
 #define DS3D_MANAGER_DIALOG_QUEUE 0x24 /* s32[DS3D_DIALOG_QUEUE_COUNT] */
 #define DS3D_DIALOG_QUEUE_COUNT 8
 #define DS3D_MANAGER_PANEL_ROW_PAIRS 0x4A /* u8: text row pairs of the message panels */
+#define DS3D_MANAGER_TARGET_MODE 0x49 /* u8 DS3D_TARGET_* the 3D sprites are created on (Get3DSpriteTargetMode / Set3DSpriteTargetMode) */
 
 /* The full-screen message box's state, at g3DSpriteManager+0x46.  Clear/Get/Set
  * and the two predicates (IsMessageBoxIdle, IsMessageBoxActive) all read or write
@@ -691,6 +692,12 @@ enum {
 /* TEXT_LAYER_FLAGS bits. */
 #define TEXT_LAYER_FLAG_CONFIRMED 0x01 /* the screen choice was confirmed */
 
+/* The telop (one-line caption) window of the map screen: a gTelopWindowClass
+ * sprite made by ShowTelopText, which copies the caption into the sprite's own
+ * text buffer at +0x36; InitTelopWindow measures that buffer's width and draws
+ * it into the window's tiles. */
+#define TELOP_TEXT 0x36 /* u8[] the caption line, NUL-terminated */
+
 /* TEXT_LAYER_FLAGS bits of the online-match label sprites: the confirmed bit
  * above is theirs too, so their split transitions use the next two bits. */
 #define ONLINE_LABEL_FLAG_SPLIT_MAIN 0x02 /* main screen's split transition started */
@@ -702,6 +709,9 @@ enum {
 #define TEXT_BITMAP_ROW_BYTES   32
 #define TEXT_BITMAP_BLOCK_ROWS  8
 #define TEXT_BITMAP_BLOCK_BYTES 256
+/* Blocks (of TEXT_BITMAP_BLOCK_BYTES bytes) a text bitmap for a line `width`
+ * pixels wide needs: its pixel width in bytes, rounded up to 4-byte units. */
+#define TEXT_BITMAP_BLOCKS(width) (((((width) + 7) >> 3) + 3) >> 2)
 
 /* The text bitmap splitter sprite (class gTextBitmapSplitterClass, created by
  * CreateTextBitmapSplitter, stepped by UpdateTextBitmapSplitter): the source bitmap it

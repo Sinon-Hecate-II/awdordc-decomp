@@ -41,7 +41,7 @@ void Sound_InitVoices(void) {
  * channel the ARM7 no longer reports, fold the channel, voice and envelope levels
  * into each voice's channel volume and release the voices whose fade-out ended. */
 void Sound_UpdateVoices(void) {
-    s32 func_02009800(void);
+    s32 Sound_GetActiveChannels(void);
     void *ListNext(void *, s32);
     s32 Sound_IsCommandReached(void *);
     M2C_UNK func_02008c38(u8, s32);
@@ -57,7 +57,7 @@ void Sound_UpdateVoices(void) {
     void *voice;
     void *nextVoice;
     s32 volumeFloor;
-    channelStatus = func_02009800();
+    channelStatus = Sound_GetActiveChannels();
     voice = ListNext(&gActiveVoices, 0);
     if (voice == 0) {
         return;
@@ -157,14 +157,14 @@ void Sound_StartSequence(void *voice) {
     void Sound_ResetVoice(void *);
     void func_02008bf0();
     void func_02008ca0();
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     void *channel = M2C_FIELD(voice, void **, SOUND_VOICE_CHANNEL_BASE);
 
     func_02008bf0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL));
     if (M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C))
         func_02008ca0(M2C_FIELD(voice, u8 *, SOUND_VOICE_CHANNEL), 0xFFFF, M2C_FIELD(channel, s32 *, SOUND_CHANNEL_UNK_1C));
     Sound_ResetVoice(voice);
-    M2C_FIELD(voice, s32 *, SOUND_VOICE_START_MARK) = Sound_GetCommandCounter();
+    M2C_FIELD(voice, s32 *, SOUND_VOICE_START_MARK) = Sound_GetQueueMark();
     M2C_FIELD(voice, u8 *, SOUND_VOICE_STOP_PENDING) = 1;
     M2C_FIELD(voice, u8 *, SOUND_VOICE_STATE) = SOUND_VOICE_KEYED_ON;
 }
@@ -389,14 +389,19 @@ s32 Sound_AssignPlayerChannels(void *player, s32 count, u8 *channels) {
     return 1;
 }
 
-void Sound_StopVoices(void *arg0) {
-    M2C_UNK Sound_ReleaseChannels();
-    if (M2C_FIELD(arg0, s32 *, 0x44) == 0) {
+/* Stop the voices of `player`: release the hardware channels the player has
+ * reserved, then clear its channel mask and note count.  A player that holds no
+ * channels is left alone. */
+void Sound_StopVoices(void *player) {
+    s32 Sound_ReleaseChannels(s32);
+    s32 channelMask = M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK);
+
+    if (channelMask == 0) {
         return;
     }
-    Sound_ReleaseChannels();
-    M2C_FIELD(arg0, s32 *, 0x44) = 0;
-    M2C_FIELD(arg0, s32 *, 0x48) = 0;
+    Sound_ReleaseChannels(channelMask);
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK) = 0;
+    M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT) = 0;
 }
 
 #pragma opt_strength_reduction off
@@ -520,19 +525,19 @@ void Sound_SetPlayerVolume(void *player, s32 volume) {
     do {
         channel = M2C_FIELD(player + i, u8 *, SOUND_PLAYER_NOTES);
         value = SND_CalcVolume(M2C_FIELD(player, s32 *, SOUND_PLAYER_VOLUME) + gSoundChannelSampleState[channel * 2 + 1]);
-        func_02008dfc(1 << channel, value & 255, value >> 8);
+        Sound_SetHwChannelVolumes(1 << channel, value & 255, value >> 8);
         i++;
     } while (i < M2C_FIELD(player, s32 *, SOUND_PLAYER_NOTE_COUNT));
 }
 
 #pragma opt_common_subs off
-void func_0202b7e8(void *a,register s32 b,s32 c){
-M2C_UNK func_02008dfc(s32,s32,s32);s32 SND_CalcVolume(s32);extern M2C_UNK data_0213bbd8;
+void Sound_SetNoteVolumeLevel(void *a,register s32 b,s32 c){
+M2C_UNK Sound_SetHwChannelVolumes(s32,s32,s32);s32 SND_CalcVolume(s32);extern M2C_UNK data_0213bbd8;
 s32 r,lo,mask;
 if(b>M2C_FIELD(a,s32 *,72)-1)return;
 b=M2C_FIELD(a+b,u8 *,76);M2C_FIELD(&data_0213bbd8,s32 *,b*8)=c;
 r=SND_CalcVolume(M2C_FIELD(a,s32 *,60)+c);
-func_02008dfc(1<<b,(u8)r,(s32)r>>8);
+Sound_SetHwChannelVolumes(1<<b,(u8)r,(s32)r>>8);
 }
 #pragma opt_common_subs on
 /* Set the volume of the hardware channel that the sound player maps note `note`
@@ -553,7 +558,7 @@ void Sound_StopVoice(void *player) {
     M2C_UNK PM_DeletePostSleepCallback(void *);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     s32 commandTag;
 
     if (((s32)(M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) << 30) >> 31) != 0) {
@@ -562,7 +567,7 @@ void Sound_StopVoice(void *player) {
         PM_DeletePreSleepCallback(player + SOUND_PLAYER_STOP_CB);
         PM_DeletePostSleepCallback(player + SOUND_PLAYER_RELEASE_CB);
         M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) &= ~SOUND_PLAYER_FLAG_CHANNELS;
-        commandTag = Sound_GetCommandCounter();
+        commandTag = Sound_GetQueueMark();
         Sound_FlushCommands(SOUND_FLUSH_BLOCK);
         Sound_WaitForCommand(commandTag);
     }
@@ -618,14 +623,14 @@ void Sound_StopPlayerChannels(void *player) {
     M2C_UNK Sound_StopChannels(s32, M2C_UNK, s32, M2C_UNK);
     M2C_UNK Sound_FlushCommands(M2C_UNK);
     M2C_UNK Sound_WaitForCommand(s32);
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     s32 commandMark;
 
     if (((s32) (M2C_FIELD(player, s32 *, SOUND_PLAYER_FLAGS) << 0x1E) >> 0x1F) == 0) {
         return;
     }
     Sound_StopChannels(M2C_FIELD(player, s32 *, SOUND_PLAYER_CHANNEL_MASK), 0, 1 << M2C_FIELD(player, s32 *, SOUND_PLAYER_HW_CHANNEL), 0);
-    commandMark = Sound_GetCommandCounter();
+    commandMark = Sound_GetQueueMark();
     Sound_FlushCommands(1);
     Sound_WaitForCommand(commandMark);
 }
@@ -663,7 +668,7 @@ void func_0202ba8c(void) {
  * otherwise it writes the fade's volume to the stream's channels as soon as it
  * changes. */
 void UpdateStreamVoiceVolume(void){
-    void AdvanceFade(void *);s32 IsFadeDone(void *);s32 GetFadeValue(void *);void StopStreamVoice(void);M2C_UNK func_02008dfc();
+    void AdvanceFade(void *);s32 IsFadeDone(void *);s32 GetFadeValue(void *);void StopStreamVoice(void);M2C_UNK Sound_SetHwChannelVolumes();
     extern M2C_UNK gStreamSoundState,gStreamVoice;
     void *voice=&gStreamVoice;
     s32 volume;
@@ -673,7 +678,7 @@ void UpdateStreamVoiceVolume(void){
     if(M2C_FIELD(voice,s32 *,STREAM_VOICE_REFILL)&&IsFadeDone((u8 *)voice+STREAM_VOICE_ENVELOPE)){StopStreamVoice();return;}
     volume=GetFadeValue((u8 *)voice+STREAM_VOICE_ENVELOPE)>>8;
     if(volume==M2C_FIELD(voice,s32 *,STREAM_VOICE_VOLUME))return;
-    func_02008dfc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),volume,0);
+    Sound_SetHwChannelVolumes(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),volume,0);
     M2C_FIELD(voice,s32 *,STREAM_VOICE_VOLUME)=volume;
 }
 
@@ -682,17 +687,17 @@ void UpdateStreamVoiceVolume(void){
  * voice. */
 void StopStreamVoice(void) {
 extern M2C_UNK gStreamSoundState,gStreamVoice,gSoundCommandQueue;
-s32 OS_ReceiveMessage(); M2C_UNK func_0202aadc(); M2C_UNK Sound_ReleaseChannels(); M2C_UNK Sound_FreeChannel(s32); M2C_UNK func_02008f10();
-s32 Sound_GetCommandCounter(); M2C_UNK Sound_FlushCommands(M2C_UNK); M2C_UNK Sound_WaitForCommand(s32);
+s32 OS_ReceiveMessage(); M2C_UNK func_0202aadc(); M2C_UNK Sound_ReleaseChannels(); M2C_UNK Sound_FreeChannel(s32); M2C_UNK Sound_EndStreamSound();
+s32 Sound_GetQueueMark(); M2C_UNK Sound_FlushCommands(M2C_UNK); M2C_UNK Sound_WaitForCommand(s32);
 void *voice=&gStreamVoice; s32 channelUsed,mark;
 if(!M2C_FIELD(&gStreamSoundState,s32 *,STREAM_STATE_VOICE))return;
 channelUsed=M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL)>=0;
 Sound_StopChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_A),M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B),channelUsed?1<<M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL):0,0);
-if(channelUsed){mark=Sound_GetCommandCounter();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(OS_ReceiveMessage(&gSoundCommandQueue,0,0)){}}
+if(channelUsed){mark=Sound_GetQueueMark();Sound_FlushCommands(1);Sound_WaitForCommand(mark);while(OS_ReceiveMessage(&gSoundCommandQueue,0,0)){}}
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B))func_0202aadc(M2C_FIELD(voice,s32 *,STREAM_VOICE_MASK_B));
 if(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED))Sound_ReleaseChannels(M2C_FIELD(voice,s32 *,STREAM_VOICE_RESERVED));
 if(channelUsed)Sound_FreeChannel(M2C_FIELD(voice,s32 *,STREAM_VOICE_CHANNEL));
-if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED)==1)func_02008f10(0,0,0,0);
+if(M2C_FIELD(voice,s32 *,STREAM_VOICE_ENDED)==1)Sound_EndStreamSound(0,0,0,0);
 M2C_FIELD(voice,s32 *,STREAM_VOICE_ACTIVE)=0;
 }
 
@@ -700,7 +705,7 @@ M2C_FIELD(voice,s32 *,STREAM_VOICE_ACTIVE)=0;
  * apply the stop; the voice itself stays open. */
 void StopStreamChannels(void) {
     M2C_UNK Sound_StopChannels(s32, s32, s32, s32);
-    s32 Sound_GetCommandCounter();
+    s32 Sound_GetQueueMark();
     M2C_UNK Sound_FlushCommands(s32);
     M2C_UNK Sound_WaitForCommand(s32);
     extern M2C_UNK gStreamSoundState, gStreamVoice;
@@ -710,7 +715,7 @@ void StopStreamChannels(void) {
     if (!M2C_FIELD(&gStreamSoundState, s32 *, STREAM_STATE_VOICE)) return;
     channel = M2C_FIELD(voice, s32 *, STREAM_VOICE_CHANNEL);
     Sound_StopChannels(M2C_FIELD(voice, s32 *, STREAM_VOICE_MASK_A), M2C_FIELD(voice, s32 *, STREAM_VOICE_MASK_B), channel >= 0 ? 1 << channel : 0, 0);
-    mark = Sound_GetCommandCounter();
+    mark = Sound_GetQueueMark();
     Sound_FlushCommands(SOUND_FLUSH_BLOCK);
     Sound_WaitForCommand(mark);
 }

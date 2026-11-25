@@ -259,10 +259,12 @@ s32 MapScriptPlayMusic(void *state) {
     return (s16)result;
 }
 
-s32 func_02093348(void *arg0) {
+/* Map-script command: fade the music out over the number of frames the command's
+ * wide operand names, then advance to the next command. */
+s32 MapScriptFadeOutMusic(void *state) {
     M2C_UNK FadeOutMusicOverFrames(s32);
-    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 0;
 }
 
@@ -343,10 +345,10 @@ M2C_FIELD(state,s32 *,MAP_SCRIPT_STATE_IP)+=MAP_SCRIPT_COMMAND_SIZE;return 0;
 
 /* Map-script command: skip the next OPERAND2 commands when the army id of the
  * player named by operand 0 differs from operand 1.  The resolved player index is
- * left in r0 for func_020a8c10 (the map player record's army id) to consume.
+ * left in r0 for GetPlayerRecordArmyId (the map player record's army id) to consume.
  * Always advances one command and keeps running. */
 s32 MapScriptSkipIfArmyDiffers(void *script) {
-    s32 func_020a8c10();
+    s32 GetPlayerRecordArmyId();
     s16 army;
     s32 skipCount;
     void *command;
@@ -355,7 +357,7 @@ s32 MapScriptSkipIfArmyDiffers(void *script) {
     army = M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1);
     skipCount = M2C_FIELD(command, s32 *, MAP_SCRIPT_OPERAND2);
     MapScriptResolvePlayer((s16) M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) >> 1);
-    if ((army != func_020a8c10()) && (skipCount > 0)) {
+    if ((army != GetPlayerRecordArmyId()) && (skipCount > 0)) {
         do {
             skipCount -= 1;
             M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
@@ -395,12 +397,15 @@ s32 MapScriptLoadDeployment(void *script) {
     return 1;
 }
 
-void func_020935ec(M2C_UNK arg0, M2C_UNK arg1) {
+/* Start moving the unit record `unit` along the movement command stream `path`,
+ * then set the record to the path's last step so it already stands on the
+ * destination tile while the unit walks there. */
+void StartUnitMoveAlongPath(M2C_UNK unit, M2C_UNK path) {
     s32 CreateUnitMoveForUnit();
     M2C_UNK StartUnitMove(s32, M2C_UNK);
-    M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
-    StartUnitMove(CreateUnitMoveForUnit(), arg1);
-    func_ov000_02169998(arg0, arg1);
+    M2C_UNK MoveUnitRecordAlongPath(M2C_UNK, M2C_UNK);
+    StartUnitMove(CreateUnitMoveForUnit(), path);
+    MoveUnitRecordAlongPath(unit, path);
 }
 
 /* Send a unit along the path to tile (x, y): build the unit's movement range
@@ -412,7 +417,7 @@ void MoveUnitToTile(void *unit, u8 x, u8 y) {
     M2C_UNK BuildMovePathForTile(M2C_UNK, M2C_UNK, s32);
     s32 CreateUnitMoveForUnit();
     M2C_UNK StartUnitMove(M2C_UNK, M2C_UNK);
-    M2C_UNK func_ov000_02169998(M2C_UNK, M2C_UNK);
+    M2C_UNK MoveUnitRecordAlongPath(M2C_UNK, M2C_UNK);
     extern void **gCurrentMap;
     u8 *u = unit;
     signed char *ptr;
@@ -427,7 +432,7 @@ void MoveUnitToTile(void *unit, u8 x, u8 y) {
     *ptr = (signed char) -1;
     move = (void *) CreateUnitMoveForUnit(u);
     StartUnitMove(move, (s32) *gCurrentMap + MAP_CURSOR_PATH);
-    func_ov000_02169998(u, (s32) *gCurrentMap + MAP_CURSOR_PATH);
+    MoveUnitRecordAlongPath(u, (s32) *gCurrentMap + MAP_CURSOR_PATH);
 }
 
 /* Map-script command: find the unit standing on the command's tile (operand 0
@@ -440,7 +445,7 @@ s32 StartUnitMoveAtCell(void *script) {
     u32 unitIndex = M2C_FIELD((u8 *)map + (M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND0) + M2C_FIELD((u8 *)map + M2C_FIELD(command, s16 *, MAP_SCRIPT_OPERAND1) * 2, u16 *, MAP_ROW_OFFSETS)), u8 *, MAP_CELL_UNIT_ID);
 
     if (unitIndex)
-        func_020935ec((u8 *)map + MAP_UNIT_RECORDS + unitIndex * MAP_UNIT_STRIDE, M2C_FIELD(command, s32 *, 4));
+        StartUnitMoveAlongPath((u8 *)map + MAP_UNIT_RECORDS + unitIndex * MAP_UNIT_STRIDE, M2C_FIELD(command, s32 *, 4));
     M2C_FIELD(script, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
     return 1;
 }
@@ -456,7 +461,7 @@ entry=entries[i];
 kind=(u32)(M2C_FIELD(entry,u8 *,0)<<26)>>26;
 if(kind && (!M2C_FIELD(p,s16 *,10)||kind==M2C_FIELD(p,s16 *,10))){found=(u8 *)*gCurrentMap+0x59a4+i*14;break;}
 }
-if(found)func_020935ec(found,M2C_FIELD(p,s32 *,4));
+if(found)StartUnitMoveAlongPath(found,M2C_FIELD(p,s32 *,4));
 M2C_FIELD(arg0,s32 *,4)+=16;return 1;
 }
 
@@ -633,19 +638,32 @@ s32 MapScriptStartScreenTransition(void *script) {
     return 1;
 }
 
-void func_02093c9c(void *arg0) {
-    s32 func_020953e8();
-    if (func_020953e8() == 0) {
+void WaitForScreenTransitionSpriteGone(void *arg0) {
+    s32 IsScreenTransitionWaitSpriteActive();
+    if (IsScreenTransitionWaitSpriteActive() == 0) {
         M2C_FIELD(arg0, s32 *, 8) = 0;
     }
 }
 
-s32 func_02093cb8(void *arg0){func_020953d0();M2C_FIELD(arg0,void (**)(void *),8)=func_02093c9c;M2C_FIELD(arg0,s32 *,4)+=16;return 0;}
+/* Map-script command: put up the sprite that waits for the screen transition to
+ * finish and keep the script waiting on it (WaitForScreenTransitionSpriteGone
+ * clears the wait once the sprite has gone), then step to the next command. */
+s32 MapScriptWaitForScreenTransition(void *state) {
+    void CreateScreenTransitionWaitSprite(void);
+    void WaitForScreenTransitionSpriteGone(void *);
 
-s32 func_02093ce4(void *arg0) {
-    M2C_UNK func_020943bc(s32);
-    func_020943bc(M2C_FIELD(M2C_FIELD(arg0, void **, 4), s32 *, 0xC));
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    CreateScreenTransitionWaitSprite();
+    M2C_FIELD(state, void (**)(void *), MAP_SCRIPT_STATE_WAIT) = WaitForScreenTransitionSpriteGone;
+    M2C_FIELD(state, s32 *, MAP_SCRIPT_STATE_IP) += MAP_SCRIPT_COMMAND_SIZE;
+    return 0;
+}
+
+/* Map-script command: set the 3D sprite manager's target mode (DS3D_TARGET_*) to
+ * the command's wide operand, then advance to the next command. */
+s32 MapScriptSet3DSpriteTarget(void *state) {
+    M2C_UNK Set3DSpriteTargetMode(s32);
+    Set3DSpriteTargetMode(M2C_FIELD(M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP), s32 *, MAP_SCRIPT_OPERAND2));
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

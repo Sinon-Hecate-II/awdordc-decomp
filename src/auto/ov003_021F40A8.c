@@ -26,7 +26,7 @@ void func_ov003_021f40a8(void *arg0) {
     extern u16 data_ov003_0220fdec;
     extern u16 data_ov003_0220fde4;
     extern u8 data_ov003_022100e4[16];
-    extern u8 data_ov003_0220fb28[16];
+    extern u8 gOv003OptionRowVTable[16];
     extern void *gCur3DSpriteEngine;
     extern void *g3DSpriteEngineSub;
     extern u8 data_ov003_022100f4[16];
@@ -116,7 +116,7 @@ void func_ov003_021f40a8(void *arg0) {
             M2C_FIELD(o, u16 *, 0x8) = 2;
             M2C_FIELD(o, u8 *, 0xa) = 0x10;
             M2C_FIELD(o, u8 *, 0xb) = 0x78;
-            M2C_FIELD(o, void **, 0x10) = &data_ov003_0220fb28;
+            M2C_FIELD(o, void **, 0x10) = &gOv003OptionRowVTable;
             M2C_FIELD(o, u32 *, 0x14) = 0;
             M2C_FIELD(o, u32 *, 0x18) = 0;
             M2C_FIELD(o, u32 *, 0x1c) = 0;
@@ -183,7 +183,7 @@ void func_ov003_021f40a8(void *arg0) {
             ScrollListTo(M2C_FIELD(arg0, void **, 0x4c), 0, 1);
         }
 o=MemAlloc(0x18); if(o){
-M2C_FIELD(o, void * *, 0) = &data_ov003_0220fb28;
+M2C_FIELD(o, void * *, 0) = &gOv003OptionRowVTable;
 M2C_FIELD(o, u32 *, 4) = 0;
 M2C_FIELD(o, u32 *, 8) = 0;
 M2C_FIELD(o, u32 *, 12) = 0;
@@ -194,7 +194,7 @@ M2C_FIELD(arg0, void **, 0x5c)=o;
 o=MemAlloc(0x34); if(o){
 M2C_FIELD(o, void * *, 0) = &data_ov003_022100f4;
 M2C_FIELD(o, u16 *, 4) = 0;
-M2C_FIELD(o, void * *, 8) = &data_ov003_0220fb28;
+M2C_FIELD(o, void * *, 8) = &gOv003OptionRowVTable;
 M2C_FIELD(o, u32 *, 12) = 0;
 M2C_FIELD(o, u32 *, 16) = 0;
 M2C_FIELD(o, u32 *, 20) = 0;

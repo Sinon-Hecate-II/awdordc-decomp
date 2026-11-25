@@ -303,14 +303,16 @@ void func_ov009_0222579c(s32 arg0) {
     func_ov009_02225768(arg0 + 0x34);
 }
 
-void SpawnLinkPlayerAnnounce(M2C_UNK arg0) {
-    extern M2C_UNK data_ov009_022266ec;
-    extern M2C_UNK data_ov009_02226588;
-    M2C_UNK **temp_r0;
+/* Create the link player-announce object owned by `owner` and install its
+ * vtable at offset 0. */
+void SpawnLinkPlayerAnnounce(M2C_UNK owner) {
+    extern M2C_UNK gLinkPlayerAnnounceVtbl;
+    extern M2C_UNK gLinkPlayerAnnounceClass;
+    M2C_UNK **announce;
 
-    temp_r0 = CreateSpriteObject(&data_ov009_02226588, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov009_022266ec;
+    announce = CreateSpriteObject(&gLinkPlayerAnnounceClass, owner);
+    if (announce != NULL) {
+        *announce = &gLinkPlayerAnnounceVtbl;
     }
 }
 
@@ -358,14 +360,16 @@ void func_ov009_02225898(s32 arg0) {
     func_ov009_02225864(arg0 + 0x34);
 }
 
-void func_ov009_022258a8(M2C_UNK arg0) {
-    extern M2C_UNK data_ov009_022266d8;
-    extern M2C_UNK data_ov009_022265c0;
-    M2C_UNK **temp_r0;
+/* Create the link connect-request node owned by `owner` and install its vtable at
+ * offset 0. */
+void SpawnLinkConnectRequest(M2C_UNK owner) {
+    extern M2C_UNK gLinkConnectRequestVtbl;
+    extern M2C_UNK gLinkConnectRequestClass;
+    M2C_UNK **request;
 
-    temp_r0 = CreateSpriteObject(&data_ov009_022265c0, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov009_022266d8;
+    request = CreateSpriteObject(&gLinkConnectRequestClass, owner);
+    if (request != NULL) {
+        *request = &gLinkConnectRequestVtbl;
     }
 }
 
@@ -499,14 +503,16 @@ void func_ov009_02225b44(void *arg0) {
     CreateLocalBattleSaveSprite(M2C_FIELD(arg0, s32 *, 0x18));
 }
 
-void func_ov009_02225b54(M2C_UNK arg0) {
-    extern M2C_UNK data_ov009_0222669c;
-    extern M2C_UNK data_ov009_022265f8;
-    M2C_UNK **temp_r0;
+/* Create the in-game player-info announcer owned by `owner` and install its vtable
+ * at offset 0. */
+void SpawnLinkPlayerInfoAnnounce(M2C_UNK owner) {
+    extern M2C_UNK gLinkPlayerInfoAnnounceVtbl;
+    extern M2C_UNK gLinkPlayerInfoAnnounceClass;
+    M2C_UNK **announce;
 
-    temp_r0 = CreateSpriteObject(&data_ov009_022265f8, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov009_0222669c;
+    announce = CreateSpriteObject(&gLinkPlayerInfoAnnounceClass, owner);
+    if (announce != NULL) {
+        *announce = &gLinkPlayerInfoAnnounceVtbl;
     }
 }
 
@@ -666,22 +672,26 @@ void HandleLinkErrorResult(void *object) {
     callback(resultCode, M2C_FIELD(object, s32 *, 0x18));
 }
 
-void func_ov009_02225d88(s32 arg0) {
-    void *CreateSpriteFromClass(void *);
-    extern M2C_UNK data_ov009_02226874, data_ov009_02226750;
-    void *temp_r0;
-    temp_r0 = CreateSpriteFromClass(&data_ov009_02226874);
-    if (temp_r0 != NULL) {
-        M2C_FIELD(temp_r0, void **, 0) = &data_ov009_02226750;
-        M2C_FIELD(temp_r0, s32 *, 0x34) = arg0;
+/* Create the overlay's link-result sprite: a sprite of gLinkResultSpriteClass
+ * owned by `owner` whose class step reports the link's outcome to `callback`
+ * (HandleLinkResult) with the owner handed back. */
+void CreateLinkResultSprite(s32 callback, s32 owner) {
+    void *CreateSpriteFromClass(void *, s32);
+    extern M2C_UNK gLinkResultSpriteClass, gLinkResultSpriteVtbl;
+    void *sprite;
+
+    sprite = CreateSpriteFromClass(&gLinkResultSpriteClass, owner);
+    if (sprite != NULL) {
+        M2C_FIELD(sprite, void **, DS3D_SPRITE_CLASS) = &gLinkResultSpriteVtbl;
+        M2C_FIELD(sprite, s32 *, LINK_RESULT_CALLBACK) = callback;
     }
 }
 
-void func_ov009_02225db4(void) {
+void DeleteLinkResultSprite(void) {
     M2C_UNK DeleteSpriteObject();
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_ov009_02226874;
-    if (FindObjectByClass(&data_ov009_02226874) == 0) {
+    extern M2C_UNK gLinkResultSpriteClass;
+    if (FindObjectByClass(&gLinkResultSpriteClass) == 0) {
         return;
     }
     DeleteSpriteObject();
@@ -741,7 +751,7 @@ void RefreshLinkMessageText(void *layer) {
         if (style == 0) M2C_FIELD(created, s32 *, 0x58) |= 0x800;
     } while (++i < 2);
     gCur3DSpriteEngine = savedBank;
-    func_ov009_02225db4();
+    DeleteLinkResultSprite();
 }
 
 void func_ov009_02225f44(void) {

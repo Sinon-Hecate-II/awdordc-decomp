@@ -3,14 +3,17 @@
 #include "battle_map.h"
 typedef struct { u16 id:8; u16 index:4; u16 mode:4; } SaveInitEntry;
 
-s32 GetRatingRank(s32 arg0) {
-    if (arg0 < 0xC8) {
+/* The grade (1..4) for a winning player's total battle rating: 1 below 200, then
+ * from BATTLE_RATING_GRADE2_MIN, 3 from BATTLE_RATING_GRADE3_MIN and 4 from
+ * BATTLE_RATING_GRADE4_MIN up. */
+s32 GetRatingRank(s32 totalRating) {
+    if (totalRating < BATTLE_RATING_GRADE2_MIN) {
         return 1;
     }
-    if (arg0 < 0xFA) {
+    if (totalRating < BATTLE_RATING_GRADE3_MIN) {
         return 2;
     }
-    if (arg0 < 0x12C) {
+    if (totalRating < BATTLE_RATING_GRADE4_MIN) {
         return 3;
     }
     return 4;

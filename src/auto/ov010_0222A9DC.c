@@ -6,7 +6,7 @@
    the entity asks for (0 = main engine, 1 = sub engine, 3 = the engine that is active), and
    then moves the entity on to the matching next state. */
 void UpdateEntityCursor(void *arg0){
-M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK func_ov010_0222a20c(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
+M2C_UNK func_ov010_02228180(void *);M2C_UNK GotoSpriteAnimationLabel(void *,s32);M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayer(void *);M2C_UNK SetPanelChoice(void *,s32);s32 func_020c4ba4(s32);s32 func_020c4b88(s32);M2C_UNK CreateNetErrorReporter(M2C_UNK *,M2C_UNK);void func_ov010_0222ad50(M2C_UNK,M2C_UNK,M2C_UNK,void *);
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 if(func_ov010_02228180(arg0)==3){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
@@ -21,7 +21,7 @@ created=CreateTextLayer(arg0);RenderTextLayerMessage(created,2,M2C_FIELD(arg0,u1
 M2C_FIELD(created,u32 *,0x58)|=0x1000;
 
 }while(++i<2);gCur3DSpriteEngine=savedBank;}GotoSpriteAnimationLabel(arg0,8);return;}
-func_ov010_0222a20c((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
+CreateNetErrorReporter((M2C_UNK *)func_ov010_0222ad50,(M2C_UNK)arg0);
 if(!func_020c4ba4(0)){if(M2C_FIELD(arg0,s8 *,0x35)>=0){
 s32 savedBank;u32 bank;s32 i;s8 mode;void *created;
 savedBank=gCur3DSpriteEngine;i=0;do{
@@ -100,9 +100,9 @@ void func_ov010_0222ad50(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, void *arg3) {
 }
 
 void func_ov010_0222ae08(M2C_UNK arg0) {
-    M2C_UNK func_ov010_0222a20c(M2C_UNK *, M2C_UNK);
+    M2C_UNK CreateNetErrorReporter(M2C_UNK *, M2C_UNK);
     void func_ov010_0222ad50(M2C_UNK, M2C_UNK, M2C_UNK, void *);
-    func_ov010_0222a20c((M2C_UNK *) &func_ov010_0222ad50, arg0);
+    CreateNetErrorReporter((M2C_UNK *) &func_ov010_0222ad50, arg0);
 }
 
 /* Put the entity's label away: on every display bank the entity asks for
@@ -110,7 +110,7 @@ void func_ov010_0222ae08(M2C_UNK arg0) {
    label layer with the blank label (text id 0x4200001b) and keep that layer
    hidden, then move the flow on to the session step that follows. */
 void Ov010_HideEntityLabel(void *entity) {
-M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK func_ov010_02228614();
+M2C_UNK RenderTextLayerMessage(void *,M2C_UNK,s32,s32);void *CreateTextLayerChild(void *);M2C_UNK Ov010Online_StartWfcConnection();
 extern s32 g3DSpriteEngineSub,g3DSpriteEngineMain,gCur3DSpriteEngine;
 s32 savedEngine;u32 bank;s32 slot;s8 engineMode;void *label;
 if(M2C_FIELD(entity,s8 *,TEXT_LAYER_ENGINE)>=0){
@@ -127,13 +127,13 @@ M2C_FIELD(label,s32 *,0x58)=((M2C_FIELD(label,s32 *,0x58)|0x1000)&~0x400)|0x800;
 }while(++slot<2);
 gCur3DSpriteEngine=savedEngine;
 }
-func_ov010_02228614();
+Ov010Online_StartWfcConnection();
 }
 
 void func_ov010_0222aef8(M2C_UNK arg0) {
-    s32 func_ov010_02228640();
+    s32 Ov010Online_WaitForConnection();
     M2C_UNK Sprite_ResumeAnimation(M2C_UNK);
-    if (func_ov010_02228640() != 0) {
+    if (Ov010Online_WaitForConnection() != 0) {
         return;
     }
     Sprite_ResumeAnimation(arg0);

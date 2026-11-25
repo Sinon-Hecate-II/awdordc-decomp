@@ -295,16 +295,19 @@ void ChangeToRandomAdverseWeather(s32 player) {
     RefreshPlayerArmyDisplay(player);
 }
 
-u8 func_020a3060(u8 *arg0) {
+/* Whether the unit record `unit` is of a kind other than unit-kind class 6.
+ * The kind is the low six bits of the record's first byte; class 6 kinds are
+ * exempt from the attack/damage bonuses and from scripted damage. */
+u8 IsUnitKindNotClass6(u8 *unit) {
     s32 IsUnitKindClass6(u32);
-    u8 var_r0;
+    u8 notClass6;
 
-    if (IsUnitKindClass6((u32) (*arg0 << 0x1A) >> 0x1A) == 0) {
-        var_r0 = 1;
+    if (IsUnitKindClass6((u32) (*unit << 0x1A) >> 0x1A) == 0) {
+        notClass6 = 1;
     } else {
-        var_r0 = 0;
+        notClass6 = 0;
     }
-    return var_r0;
+    return notClass6;
 }
 
 void func_020a3088(M2C_UNK arg0) {
@@ -331,9 +334,10 @@ s32 NextRandomValue(void);
 return ((s32 *)(gArmyQuoteTextIds+armyId*ARMY_DATA_SIZE))[NextRandomValue()%ARMY_DATA_QUOTE_COUNT];
 }
 
-void EnablePlayerSelection(s32 arg0) {
+/* Let `player` pick a unit again: set its selection-enabled flag. */
+void EnablePlayerSelection(s32 player) {
     extern s32 *gCurrentMap;
-    M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), s8 *, 0x6815) = 1;
+    M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, s8 *, PLAYER_SELECTION_ENABLED_OFF) = 1;
 }
 
 void DisablePlayerSelection(s32 arg0){
@@ -426,9 +430,11 @@ s32 record=*gCurrentMap+MAP_PLAYER_STATES+MAP_PLAYER_STRIDE*player;
 M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)=(M2C_FIELD(record,u32 *,PLAYER_REC_SPRITE)&~PLAYER_ARMY_VARIANT_MASK)|((u32)(variant<<30)>>20);
 }
 
-s32 GetPlayerArmyVariant(s32 a){
-extern s32 *gCurrentMap;
-return (u32)(M2C_FIELD(*gCurrentMap+a*0x8c,s32 *,0x6810)<<20)>>30;
+/* Player `player`'s army variant: bits 10..11 of its sprite state, which double
+ * as the level of the army's CO power being shown. */
+s32 GetPlayerArmyVariant(s32 player) {
+    extern s32 *gCurrentMap;
+    return (u32)(M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE, s32 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE) << 20) >> 30;
 }
 
 /* Write the two auxiliary bits (8..9) of player `player`'s PLAYER_REC_SPRITE
@@ -452,7 +458,14 @@ void SetPlayerSpriteSet(s32 player, u32 spriteSet) {
         (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~PLAYER_SPRITE_SET_MASK) | ((spriteSet << 30) >> 18);
 }
 
-s32 GetPlayerSpriteSet(s32 a){extern s32 *gCurrentMap;return (u32)(M2C_FIELD(*gCurrentMap+140*a,u32 *,0x6810)<<18)>>30;}
+/* Player `player`'s sprite set (bits 12..13 of its PLAYER_REC_SPRITE word): which
+ * variant its on-map unit views draw, as SetPlayerSpriteSet stores it. */
+s32 GetPlayerSpriteSet(s32 player) {
+    extern s32 *gCurrentMap;
+
+    return (u32)(M2C_FIELD((u8 *)*gCurrentMap + MAP_PLAYER_STATES + player * MAP_PLAYER_STRIDE,
+                           u32 *, PLAYER_REC_SPRITE) << 18) >> 30;
+}
 
 void func_020a348c(void) {
     M2C_UNK CreatePlayerUnitView();

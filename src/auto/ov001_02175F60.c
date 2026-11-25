@@ -219,12 +219,15 @@ s32 Ov001_GetOptionChoice(s32 defaultChoice) {
     return defaultChoice;
 }
 
+/* Read the received link-match setup out of the Wi-Fi receive buffer and store
+ * it as the saved battle's setup; a malformed setup halts the system. */
 void Ov001_StoreMatchSetup(void) {
- s32 Ov001_CopyLinkMatchSetup(void *);
- M2C_UNK StoreLinkMatchSetup(void *);
- s32 state[58];
- if(Ov001_CopyLinkMatchSetup(state) != 1) SystemHalt();
- StoreLinkMatchSetup(state);
+    s32 Ov001_CopyLinkMatchSetup(void *);
+    M2C_UNK StoreLinkMatchSetup(void *);
+    s32 matchSetup[58];
+
+    if (Ov001_CopyLinkMatchSetup(matchSetup) != 1) SystemHalt();
+    StoreLinkMatchSetup(matchSetup);
 }
 
 void Ov001_StoreOptionPageState(void *arg0) {

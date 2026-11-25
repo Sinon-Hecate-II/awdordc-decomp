@@ -307,7 +307,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
     M2C_UNK SetTextById(s32, s32);
     s16 GetSpriteAnimValue(void *);
     s32 GetLocalizedFileName(M2C_UNK *);
-    s32 func_ov009_0222429c();
+    s32 PickLinkPlayerSlot();
     s32 GetLinkPlayerUnit(s32);
     M2C_UNK func_ov009_02224730(M2C_UNK, M2C_UNK, s32, s32, s32);
     M2C_UNK func_ov009_022249a4(M2C_UNK, M2C_UNK, s32);
@@ -389,7 +389,7 @@ void SetupUnitPreviewScene(UnitMenu *menu, M2C_UNK side) {
             break;
         }
         id = WM_GetNextTgid();
-        func_ov009_02224730(0, side, id, func_ov009_0222429c(), (u8)layout2);
+        func_ov009_02224730(0, side, id, PickLinkPlayerSlot(), (u8)layout2);
         return;
     }
     unitId = GetLinkPlayerUnit(*(&gUnitSlotIds + menu->slot));

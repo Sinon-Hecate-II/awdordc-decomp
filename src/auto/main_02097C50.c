@@ -23,7 +23,16 @@ void SetScenePanelCursorHorizontal(u32 panelId, M2C_UNK x, M2C_UNK y) {
  s32 t=FindScenePanel((u16)panelId); if(!t)return; SetScenePanelMotion(t,1,x,y);
 }
 
-void HideMenuCursor(u32 arg0) { s32 FindScenePanel(u16); M2C_UNK SetScenePanelMotion(s32,M2C_UNK,M2C_UNK,M2C_UNK); s32 t=FindScenePanel((u16)arg0); if(!t)return; SetScenePanelMotion(t,0,0,0); }
+/* Hide the cursor of the scene panel with the given id: a panel with the hidden
+ * motion variant is drawn without its bobbing cursor (UpdateScenePanel's motion
+ * switch has no case for it). */
+void HideMenuCursor(u32 cursorPanel) {
+    s32 FindScenePanel(u16);
+    M2C_UNK SetScenePanelMotion(s32, M2C_UNK, M2C_UNK, M2C_UNK);
+    s32 panel = FindScenePanel((u16) cursorPanel);
+    if (!panel) return;
+    SetScenePanelMotion(panel, SCENE_PANEL_MOTION_HIDDEN, 0, 0);
+}
 
 /* Returns the tile row (5 or 6) at which the given character's face graphics
  * start in the 32-tile-wide face tile buffer. */
@@ -264,18 +273,21 @@ s32 GetFaceLayoutHeight(s32 layout) {
     }
 }
 
-s32 GetFaceLayoutSize(s32 arg0) {
+/* Size in bytes of the graphics for face layout `layout` (0 for an unknown
+ * layout): its texture's width times its height, plus one extra row of width for
+ * the select layout (FACE_LAYOUT_SELECT). */
+s32 GetFaceLayoutSize(s32 layout) {
     s32 GetFaceLayoutWidth();
     s32 GetFaceLayoutHeight(s32);
-    s32 temp_r4;
-    s32 var_r0;
+    s32 width;
+    s32 size;
 
-    temp_r4 = GetFaceLayoutWidth(arg0);
-    var_r0 = temp_r4 * GetFaceLayoutHeight(arg0);
-    if (arg0 == 1) {
-        var_r0 += temp_r4;
+    width = GetFaceLayoutWidth(layout);
+    size = width * GetFaceLayoutHeight(layout);
+    if (layout == FACE_LAYOUT_SELECT) {
+        size += width;
     }
-    return var_r0;
+    return size;
 }
 
 /* Load the graphics file for a face in the given layout into `dst`: look up the

@@ -265,11 +265,14 @@ void InitPlayerTurnState(void) {
     LoadPlayerPalettes();
 }
 
+/* Load the palettes a player's turn draws with: UI palette row 3 and the current
+ * player's army colour palette. */
 void LoadPlayerPalettes(void) {
- void LoadUiSpritePalette(s32); void LoadPlayerArmyPalette(s32);
- extern void **gCurrentMap;
- LoadUiSpritePalette(3);
- LoadPlayerArmyPalette(M2C_FIELD(*gCurrentMap,u16 *,0x52a4));
+    void LoadUiSpritePalette(s32);
+    void LoadPlayerArmyPalette(s32);
+    extern void **gCurrentMap;
+    LoadUiSpritePalette(3);
+    LoadPlayerArmyPalette(M2C_FIELD(*gCurrentMap, u16 *, MAP_CURRENT_PLAYER));
 }
 
 /* Updates, for each of the four playable slots (i = 1..4), the cached display state (idle/busy flags etc.) that drives sprite selection for that slot. */
@@ -278,7 +281,7 @@ void func_020d1dc8(void) {
     extern u8 gMovementCostTable[];
     s32 IsCampaignBattleRules(void);
     s32 func_020a8ae0(u16, s32);
-    s32 func_020cd728(void);
+    s32 IsMapEditorMode(void);
     s32 i;
     s32 state, flag, other;
     i = 1;
@@ -288,7 +291,7 @@ void func_020d1dc8(void) {
         other = state;
         if (IsCampaignBattleRules()) state = func_020a8ae0(M2C_FIELD(*gCurrentMap, u16 *, 0x5142), i);
         if (state == 0) state = gMovementCostTable[((u32)(M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, s32 *, 0x6810) << 24) >> 24) * 0x9c + 0x23];
-        if (func_020cd728()) state = i;
+        if (IsMapEditorMode()) state = i;
         switch (state) {
         case 1:
         case 3:
@@ -313,7 +316,7 @@ void func_020d1dc8(void) {
         M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67cb) = state;
         M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67cd) = flag;
         M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67cc) = other;
-        if (func_020cd728()) M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67c3) = 2;
+        if (IsMapEditorMode()) M2C_FIELD((u8 *)*gCurrentMap + i * 0x8c, u8 *, 0x67c3) = 2;
         i++;
     } while (i < 5);
 }
@@ -321,7 +324,7 @@ void func_020d1dc8(void) {
 #pragma push
 #pragma opt_common_subs off
 #pragma scheduling off
-void func_020d1f2c(void) {
+void InitMapPlayers(void) {
     extern void **gCurrentMap;
     extern M2C_UNK gMapData;
     s32 func_020cfb94(void);

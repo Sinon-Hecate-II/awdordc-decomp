@@ -41,16 +41,18 @@ s32 ClearCampaignMapProgress(s32 mapId) {
     StartBattleRecord(8);
 }
 
-void func_020c8d50(M2C_UNK arg0) {
+/* Rebuild the live battle map's save record, clear the target campaign map's
+ * progress flags and write that record to the map's save slot. */
+void StoreCurrentMapAsCampaignMap(s32 mapId) {
     s32 GetMapRecordBuffer();
     M2C_UNK StoreCampaignMapRecord(M2C_UNK, s32);
-    M2C_UNK func_020c879c();
-    s32 temp_r4;
+    M2C_UNK PackCurrentMapRecord(); /* packs the record buffer still in r0 */
+    s32 record;
 
-    temp_r4 = GetMapRecordBuffer();
-    func_020c879c();
-    ClearCampaignMapProgress(arg0);
-    StoreCampaignMapRecord(arg0, temp_r4);
+    record = GetMapRecordBuffer();
+    PackCurrentMapRecord();
+    ClearCampaignMapProgress(mapId);
+    StoreCampaignMapRecord(mapId, record);
 }
 
 /* Refresh one campaign map's cached header from its save record: accept only
@@ -89,17 +91,19 @@ void func_020c8e64(void *arg0) {
     ClearCampaignMapHeaders();
 }
 
-void func_020c8e78(void *arg0) {
-    s32 var_r4;
+/* Load the campaign map headers of every map left in the list, starting at the
+ * loader's current index (0-based within the campaign's map slots). */
+void LoadCampaignMapHeadersFrom(void *loader) {
+    s32 index;
 
-    var_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    if (var_r4 >= 0x32) {
+    index = M2C_FIELD(loader, s32 *, 0x5C);
+    if (index >= MAP_ID_CAMPAIGN_PER_PLAYER) {
         return;
     }
     do {
-        LoadCampaignMapHeader(var_r4 + 0xE1);
-        var_r4 += 1;
-    } while (var_r4 < 0x32);
+        LoadCampaignMapHeader(index + MAP_ID_CAMPAIGN_FIRST);
+        index += 1;
+    } while (index < MAP_ID_CAMPAIGN_PER_PLAYER);
 }
 
 /* Per-frame step of a campaign-map header loader: load the header for the map at
@@ -557,12 +561,14 @@ second_path:
     return 1;
 }
 
+/* Enter the end-of-battle state: restore the active armies' players, run the
+ * battle-end event and switch the map state machine to the battle-finish step. */
 void EnterBattleEnd(void) {
     M2C_UNK RestorePlayersOfActiveArmies();
     M2C_UNK RunBattleEndEvent();
     extern void **gCurrentMap;
     RestorePlayersOfActiveArmies();
     RunBattleEndEvent();
-    M2C_FIELD(*gCurrentMap, s16 *, 0x52B0) = 0x12;
+    M2C_FIELD(*gCurrentMap, s16 *, MAP_STATE) = MAP_STATE_BATTLE_FINISH;
 }
 

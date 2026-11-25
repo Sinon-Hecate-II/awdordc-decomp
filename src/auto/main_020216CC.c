@@ -2,6 +2,7 @@
 #include "common.h"
 #include "net_socket.h"
 #include "ghttp.h"
+#include "tcp_socket.h"
 extern M2C_UNK gHostName, gHostRecord, gHostAddressList, gHostEntry;
 
 #pragma scheduling off
@@ -141,12 +142,20 @@ s32 SocketFcntl(void *socket, s32 command, s32 flags) {
     }
 }
 
-s32 *NetworkMalloc(s32 a){
-extern M2C_UNK gHostRecord;
-s32 *p; s32 size=a+4;
-p=M2C_FIELD(&gHostRecord,s32 *(**)(M2C_UNK,s32),12)(0,size);
-if(p){*p=size;p++;}
-return p;
+/* Allocate `size` bytes with the host context's allocator, prefixing the block
+ * with a 4-byte header holding the allocated size (read back by NetworkFree), and
+ * return the usable part. */
+s32 *NetworkMalloc(s32 size) {
+    extern M2C_UNK gHostRecord;
+    s32 *block;
+    s32 total = size + 4;
+
+    block = M2C_FIELD(&gHostRecord, s32 *(**)(M2C_UNK, s32), 12)(0, total);
+    if (block) {
+        *block = total;
+        block++;
+    }
+    return block;
 }
 
 /* Free a block from NetworkMalloc: its 4-byte header holds the size, so hand the
@@ -389,17 +398,20 @@ if(a>=32)return;
 SetThreadPriority(M2C_FIELD(&gSocketManager,s32 *,4),a);
 }
 
-void func_02022128(s32 arg0, s32 arg1) {
+/* Give the current connection's TLS context the list of known RSA public keys:
+ * `keys` (an array of NamedRsaKey pointers) and `count` entries.  The
+ * certificate check then finds the key named by the peer's issuer. */
+void SetTlsKeyList(s32 keys, s32 count) {
     extern M2C_UNK gSocketManager;
-    void *temp_r2;
-    void *temp_r2_2;
+    void *connection;
+    void *tls;
 
-    temp_r2 = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, 4), void **, 0xA4);
-    if (temp_r2 != NULL) {
-        temp_r2_2 = M2C_FIELD(temp_r2, void **, 0xC);
-        if (temp_r2_2 != NULL) {
-            M2C_FIELD(temp_r2_2, s32 *, 0x814) = arg0;
-            M2C_FIELD(temp_r2_2, s32 *, 0x818) = arg1;
+    connection = M2C_FIELD(M2C_FIELD(&gSocketManager, void **, SOCKMGR_RUNNING_THREAD), void **, SOCK_OBJECT_RAW);
+    if (connection != NULL) {
+        tls = M2C_FIELD(connection, void **, SOCK_TLS_CONTEXT);
+        if (tls != NULL) {
+            M2C_FIELD(tls, s32 *, TLS_KEY_LIST) = keys;
+            M2C_FIELD(tls, s32 *, TLS_KEY_COUNT) = count;
         }
     }
 }

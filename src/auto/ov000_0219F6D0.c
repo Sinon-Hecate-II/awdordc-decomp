@@ -4,19 +4,24 @@
 #include "ov000_ai.h"
 typedef struct { u8 id:6; } UnitId6;
 
-s32 func_ov000_0219f6d0(void) {
+/* Command kinds 20 and 21 begin with the command-delay step: reset its hold
+ * timer and let the dispatcher run the step at once. */
+s32 EnterAiCommandDelay(void) {
     extern void *gAiCommandState;
     extern s32 gAiCommandTimer;
     gAiCommandTimer = 0;
-    M2C_FIELD(gAiCommandState, s8 *, 1) = 7;
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = AI_COMMAND_STEP_DELAY;
     return 1;
 }
 
-s32 func_ov000_0219f6fc(void) {
+/* Begin the command-delay step for the other command kind that starts with it (the
+ * twin of EnterAiCommandDelay): reset the hold timer and let the dispatcher run the
+ * step at once. */
+s32 EnterAiCommandDelayAlt(void) {
     extern void *gAiCommandState;
     extern s32 gAiCommandTimer;
     gAiCommandTimer = 0;
-    M2C_FIELD(gAiCommandState, s8 *, 1) = 7;
+    M2C_FIELD(gAiCommandState, s8 *, AI_COMMAND_STATE_STEP) = AI_COMMAND_STEP_DELAY;
     return 1;
 }
 
@@ -276,7 +281,7 @@ void ProcessAiTurnPlan(void) {
     s32 TryBuildSpecialistUnits(void);
     s32 BuildAiSubmarine(void);
     s32 func_ov000_021a2db8(void);
-    s32 func_ov000_021a20d4(void);
+    s32 BuildAiScoredUnit(void);
     void CommitAiAction(s32);
     void ReleaseAiTargets(void);
     extern u8 *gAiState;
@@ -391,7 +396,7 @@ void ProcessAiTurnPlan(void) {
             ReleaseAiTargets();
             break;
         case 13:
-            if (func_ov000_021a20d4()) return;
+            if (BuildAiScoredUnit()) return;
             gAiState[AI_STATE_PHASE]++;
             ReleaseAiTargets();
             break;

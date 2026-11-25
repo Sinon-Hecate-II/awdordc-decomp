@@ -694,16 +694,17 @@ s32 WFC_UnlockSend(M2C_UNK *lock) {
     return;
 }
 
+/* Whether two WFC player ids (the consoles' 6-byte MAC addresses) are equal. */
 s32 WFC_PlayerIdEqual(s32 a, s32 b) {
-    u8 *p0 = (u8 *)a;
-    u8 *p1 = (u8 *)b;
+    u8 *id0 = (u8 *)a;
+    u8 *id1 = (u8 *)b;
     s32 i = 0;
     do {
-        if (p0[i] != p1[i]) {
+        if (id0[i] != id1[i]) {
             return 0;
         }
         i++;
-    } while (i < 6);
+    } while (i < WFC_PLAYER_ID_SIZE);
     return 1;
 }
 
@@ -801,14 +802,18 @@ void ListInit(void *arg0, s16 arg1) {
     M2C_FIELD(arg0, s16 *, 0xA) = arg1;
 }
 
-void ListAddFirst(void *arg0, void *arg1) {
-    u16 off = M2C_FIELD(arg0, u16 *, 0xA);
-    void *p = (void *)((s8 *)arg1 + off);
-    M2C_FIELD(p, s32 *, 4) = 0;
-    M2C_FIELD(p, s32 *, 0) = 0;
-    M2C_FIELD(arg0, void **, 0) = arg1;
-    M2C_FIELD(arg0, void **, 4) = arg1;
-    M2C_FIELD(arg0, u16 *, 8) += 1;
+/* Make `node` the only node of the doubly-linked list `list`: clear its link
+ * pair, point the list's head and tail at it and count it.  The DLIST_* macros
+ * name the header and link fields. */
+void ListAddFirst(void *list, void *node) {
+    u16 nodeOffset = M2C_FIELD(list, u16 *, DLIST_NODE_OFFSET);
+    void *link = (void *)((s8 *)node + nodeOffset);
+
+    M2C_FIELD(link, s32 *, DLIST_LINK_NEXT) = 0;
+    M2C_FIELD(link, s32 *, DLIST_LINK_PREV) = 0;
+    M2C_FIELD(list, void **, DLIST_HEAD) = node;
+    M2C_FIELD(list, void **, DLIST_TAIL) = node;
+    M2C_FIELD(list, u16 *, DLIST_COUNT) += 1;
 }
 
 /* Append `node` at the tail of the doubly-linked list `list`: an empty list goes
@@ -942,17 +947,20 @@ M2C_UNK FindHeapForAddress(M2C_UNK *list, M2C_UNK address) {
     return 0;
 }
 
-M2C_UNK *GetHeapListForAddress(M2C_UNK arg0) {
+/* Return the list a heap at `address` belongs in: the child-list header
+ * (HEAP_CHILD_LIST) of the heap whose memory area contains the address, or the
+ * global heap list when no heap contains it. */
+M2C_UNK *GetHeapParentList(M2C_UNK address) {
     s32 FindHeapForAddress(M2C_UNK *, M2C_UNK);
     extern M2C_UNK gHeapList;
-    M2C_UNK *var_r4;
-    s32 temp_r0;
+    M2C_UNK *parentList;
+    s32 heap;
 
-    var_r4 = &gHeapList;
-    temp_r0 = FindHeapForAddress(&gHeapList, arg0);
-    if (temp_r0 != 0) {
-        var_r4 = temp_r0 + 0xC;
+    parentList = &gHeapList;
+    heap = FindHeapForAddress(&gHeapList, address);
+    if (heap != 0) {
+        parentList = (M2C_UNK *)(heap + HEAP_CHILD_LIST);
     }
-    return var_r4;
+    return parentList;
 }
 

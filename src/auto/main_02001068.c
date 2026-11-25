@@ -386,8 +386,8 @@ void GX_BuildOrthoMatrix(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f, s32 g, s32 *p
 #pragma pop
 void FX_Div(void) {
     M2C_UNK Div_GetResultRounded();
-    M2C_UNK func_02002060();
-    func_02002060();
+    M2C_UNK Div_Start64By32();
+    Div_Start64By32();
     Div_GetResultRounded();
 }
 

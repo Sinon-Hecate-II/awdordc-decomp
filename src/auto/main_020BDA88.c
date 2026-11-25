@@ -125,7 +125,7 @@ s32 GetAimCursorTouchAction(void) {
 /* Update the selection cursor from the current stylus position and return any resulting action code. */
 s32 GetMapCursorTouchAction(void) {
     s32 IsTouchInputDisabled(void);
-    s32 func_020bdef8(s32, s32);
+    s32 IsTouchOnCenterMapButton(s32, s32);
     void DeleteTouchCursor(void);
     void HideTouchCursor(void);
     extern void *gTouchState;
@@ -136,7 +136,7 @@ s32 GetMapCursorTouchAction(void) {
     touchY = M2C_FIELD(gTouchState, u16 *, 2);
     if (IsTouchInputDisabled()) return 0;
     if (M2C_FIELD(gTouchState, u8 *, 0x14)) {
-        if (func_020bdef8(touchX, touchY)) return 32;
+        if (IsTouchOnCenterMapButton(touchX, touchY)) return 32;
     }
     if (M2C_FIELD(gTouchState, u8 *, 0x12) && M2C_FIELD(gTouchState, u8 *, 0x10) == 20) {
         DeleteTouchCursor();
@@ -152,36 +152,50 @@ s32 GetMapCursorTouchAction(void) {
     return 0;
 }
 
-s32 func_020bdecc(s32 arg0, s32 arg1) {
-    if ((arg0 >= 0x70) && (arg0 <= 0x90) && (arg1 >= 0) && (arg1 <= 0x10)) {
+/* Whether (x, y) is on the top middle touch button: confirm in cursor mode,
+ * "next target" while picking a target. */
+s32 IsTouchOnMiddleButton(s32 x, s32 y) {
+    if ((x >= MAP_BUTTON_MIDDLE_X0) && (x <= MAP_BUTTON_MIDDLE_X1) &&
+        (y >= MAP_BUTTON_ROW_Y0) && (y <= MAP_BUTTON_ROW_Y1)) {
         return 1;
     }
     return 0;
 }
 
-s32 func_020bdef8(s32 arg0, s32 arg1) {
-    if ((arg0 >= 0x70) && (arg0 <= 0x90) && (arg1 >= 0) && (arg1 <= 0x10)) {
+/* Whether a stylus position lies on the battle map's top-centre 32x16 touch
+ * button (the A/confirm button, which also steps to the next target). */
+s32 IsTouchOnCenterMapButton(s32 x, s32 y) {
+    if ((x >= MAP_TOP_BUTTON_CENTER) && (x <= MAP_TOP_BUTTON_CENTER + MAP_TOP_BUTTON_SPAN) &&
+        (y >= MAP_TOP_BUTTON_Y_MIN) && (y <= MAP_TOP_BUTTON_Y_MAX)) {
         return 1;
     }
     return 0;
 }
 
-s32 IsTouchOnNextButton(s32 arg0, s32 arg1) {
-    if ((arg0 >= 0x70) && (arg0 <= 0x90) && (arg1 >= 0) && (arg1 <= 0x10)) {
+/* Whether a stylus position lies on the top-centre "next target" button that
+ * cycles the selected target in the map's target-selection screens. */
+s32 IsTouchOnNextButton(s32 x, s32 y) {
+    if ((x >= MAP_TOP_BUTTON_CENTER) && (x <= MAP_TOP_BUTTON_CENTER + MAP_TOP_BUTTON_SPAN) &&
+        (y >= MAP_TOP_BUTTON_Y_MIN) && (y <= MAP_TOP_BUTTON_Y_MAX)) {
         return 1;
     }
     return 0;
 }
 
-s32 func_020bdf50(s32 arg0, s32 arg1) {
-    if ((arg0 >= 0x40) && (arg0 <= 0x60) && (arg1 >= 0) && (arg1 <= 0x10)) {
+/* Whether (x, y) is on the top left touch button (cancel/back). */
+s32 IsTouchOnLeftButton(s32 x, s32 y) {
+    if ((x >= MAP_BUTTON_LEFT_X0) && (x <= MAP_BUTTON_LEFT_X1) &&
+        (y >= MAP_BUTTON_ROW_Y0) && (y <= MAP_BUTTON_ROW_Y1)) {
         return 1;
     }
     return 0;
 }
 
-s32 func_020bdf7c(s32 arg0, s32 arg1) {
-    if ((arg0 >= 0xA0) && (arg0 <= 0xC0) && (arg1 >= 0) && (arg1 <= 0x10)) {
+/* Whether a stylus position lies on the battle map's top-right 32x16 touch
+ * button, which opens the map menu (the R key's action). */
+s32 IsTouchOnMapMenuButton(s32 x, s32 y) {
+    if ((x >= MAP_TOP_BUTTON_RIGHT) && (x <= MAP_TOP_BUTTON_RIGHT + MAP_TOP_BUTTON_SPAN) &&
+        (y >= MAP_TOP_BUTTON_Y_MIN) && (y <= MAP_TOP_BUTTON_Y_MAX)) {
         return 1;
     }
     return 0;
@@ -316,11 +330,14 @@ void QueueSaveRecord(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2) {
     SaveList_QueueUpdate(arg0, 0, arg1, arg2);
 }
 
-void QueueSettingsRecord(M2C_UNK arg0) {
-    M2C_UNK func_020be718();
-    func_020be718();
-    func_020be1dc(4);
-    QueueSaveRecord(arg0, 0x5CC, 4);
+/* Snapshot the live game settings into `buffer`, drop the old shared settings
+ * record, and queue the snapshot as save record type 4. */
+void QueueSettingsRecord(void *buffer) {
+    M2C_UNK SnapshotGameSettings(void *);
+
+    SnapshotGameSettings(buffer);
+    func_020be1dc(SAVE_TYPE_SETTINGS);
+    QueueSaveRecord(buffer, SAVE_SETTINGS_RECORD_SIZE, SAVE_TYPE_SETTINGS);
 }
 
 /* Load the newest save-directory record of type `type`: walk the save directory,
@@ -407,7 +424,7 @@ void EraseAllSaveData(void) {
  * and the save records, set the default slot words and clear the per-slot
  * setting words. Runs at startup and whenever the settings magic is missing. */
 void InitDefaultGameSettings(void) {
-M2C_UNK func_02086b9c();M2C_UNK func_02091bcc();M2C_UNK UnlockCosForMap(M2C_UNK);M2C_UNK SetCoUnlocked(s32,s32);M2C_UNK SetCoSavedMode(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK func_020e49ec();
+M2C_UNK func_02086b9c();M2C_UNK ClearRecordValues();M2C_UNK UnlockCosForMap(M2C_UNK);M2C_UNK SetCoUnlocked(s32,s32);M2C_UNK SetCoSavedMode(s32,s32);M2C_UNK func_020bf9f0(M2C_UNK);M2C_UNK func_020bfa30(M2C_UNK);M2C_UNK MapSettings_SetDefaults(M2C_UNK);M2C_UNK func_020e47f8();M2C_UNK ResetCampaignProgress();
 s32 i,slot,entry; s32 flagOff,modeOff;
 M2C_FIELD(&gGameSettings,s32 *,0x128)=GAME_SETTINGS_MAGIC;
 M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~15;
@@ -419,7 +436,7 @@ M2C_FIELD(&data_0215d990,u16 *,0x2e)&=~0x8000;
 MapSettings_SetDefaults(0);
 i=0;flagOff=0;modeOff=0;
 do{SetCoUnlocked(i,flagOff);SetCoSavedMode(i,modeOff);++i;}while(i<15);
-UnlockCosForMap(0);func_020e47f8();func_020e49ec();func_02086b9c();func_02091bcc();
+UnlockCosForMap(0);func_020e47f8();ResetCampaignProgress();func_02086b9c();ClearRecordValues();
 M2C_FIELD(&data_0215d990,u16 *,0x2e)=(M2C_FIELD(&data_0215d990,u16 *,0x2e)&~0x380)|0x80;
 func_020bf9f0(95);func_020bfa30(95);
 slot=0;

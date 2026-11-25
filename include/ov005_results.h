@@ -18,8 +18,9 @@
 #define RESULT_ROW_SLIDE_START  (-0x100) /* x offset of a row still off screen (left) */
 #define RESULT_ROW_SLIDE_END    0x100 /* x offset of a row that has slid all the way out */
 
-/* The results screen object (gResultsScreenClass): the page sprite and the two
- * marker sprites it owns. */
+/* The results screen object (gResultsScreenClass): the bird.anm animation it
+ * loads, the page sprite and the two marker sprites it owns. */
+#define RESULTS_SCREEN_BIRD  0x34 /* void *bird.anm animation data, freed on delete */
 #define RESULTS_SCREEN_PAGE  0x38 /* void *page sprite of the results screen */
 #define RESULTS_SCREEN_LEFT  0x3c /* void *left marker sprite */
 #define RESULTS_SCREEN_RIGHT 0x40 /* void *right marker sprite */

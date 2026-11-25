@@ -23,7 +23,7 @@ void DrawTextSprite(void *arg0) {
         s32 saved = *(s32 *)(p + TEXT_SPRITE_VALUE);
         SetTextSpriteValue(p, 0);
         x = GetTextSpriteGlyphX(p, 0);
-        AddSprite((u16)(x & 0x1ff), *(s16 *)(p + TEXT_SPRITE_X) & 0xff,
+        AddSprite((u16)(x & 0x1ff), *(s16 *)(p + TEXT_SPRITE_Y) & 0xff,
             (u16)((0x3ff & (((s32)((u32)(p[0x20]<<27)>>28)*p[0x16]+*(u16 *)(p+0x12)) >> ((u32)(**(u16 **)gCur3DSpriteEngine << 17)>>30))) |
             ((u32)(p[0x21]<<28)>>16) | ((u32)(((u32)(p[0x28]<<24)>>29)<<30)>>20)),
             (s32)gSpriteDesc16x16, (u32)(p[0x28]<<27)>>27);
@@ -33,7 +33,7 @@ void DrawTextSprite(void *arg0) {
     if (p[0x29]) p[TEXT_SPRITE_COUNT] = p[0x29];
     for (i=0; i<p[TEXT_SPRITE_COUNT]; i++) {
         x=GetTextSpriteGlyphX(p,(u8)i);
-        y=*(s16 *)(p + TEXT_SPRITE_X);
+        y=*(s16 *)(p + TEXT_SPRITE_Y);
         if (IsBoxOnScreen(x,y,p[0x14],p[0x15])) {
             descriptor = *(s32 *)(p + 0x24);
             if (descriptor) {
@@ -52,14 +52,16 @@ void DrawTextSprite(void *arg0) {
 }
 #pragma opt_propagation reset
 #pragma opt_common_subs reset
-void func_020a9774(void *arg0, s16 arg1, s16 arg2, s8 arg3, s32 arg4) {
+/* Place a number sprite at (x, y) with glyph palette `palette`, set it to draw
+ * `value` and draw it. */
+void DrawNumberSprite(void *sprite, s16 x, s16 y, s8 palette, s32 value) {
     M2C_UNK SetTextSpriteValue(void *, s32);
     void DrawTextSprite(void *);
-    M2C_FIELD(arg0, s16 *, 6) = arg1;
-    M2C_FIELD(arg0, s16 *, 8) = arg2;
-    M2C_FIELD(arg0, s8 *, 0x21) = arg3;
-    SetTextSpriteValue(arg0, arg4);
-    DrawTextSprite(arg0);
+    M2C_FIELD(sprite, s16 *, TEXT_SPRITE_ANCHOR_X) = x;
+    M2C_FIELD(sprite, s16 *, TEXT_SPRITE_Y) = y;
+    M2C_FIELD(sprite, s8 *, TEXT_SPRITE_PALETTE) = palette;
+    SetTextSpriteValue(sprite, value);
+    DrawTextSprite(sprite);
 }
 
 /* Clamp a requested thumb position into the thumb's travel range, store it as the

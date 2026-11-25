@@ -311,7 +311,7 @@ M2C_UNK *GetWfcProfileCode(void) {
 }
 
 s32 VerifySaveBlock(void *arg0) {
-    void func_02046d0c(s32, s32);
+    void EraseSaveSlot(s32, s32);
     void FillU16(s32, s32, s32);
     s32 MI_CpuCopy8(M2C_UNK, M2C_UNK *, M2C_UNK);
 
@@ -395,7 +395,7 @@ s32 VerifySaveBlock(void *arg0) {
     }
 
     if (stk[0] == 0) {
-        func_02046d0c((s32)r8, 0);
+        EraseSaveSlot((s32)r8, 0);
         MI_CpuCopy8((u8 *)r8 + 0x1F0, (u8 *)r8 + 0xF0, 0xE);
         {
             u8 b = *((u8 *)r8 + 0x1EF);
@@ -403,7 +403,7 @@ s32 VerifySaveBlock(void *arg0) {
         }
     } else {
         if (stk[1] == 0) {
-            func_02046d0c((s32)r8, 1);
+            EraseSaveSlot((s32)r8, 1);
             MI_CpuCopy8((u8 *)r8 + 0xF0, (u8 *)r8 + 0x1F0, 0xE);
             {
                 u8 b = *((u8 *)r8 + 0xEF);
@@ -413,7 +413,7 @@ s32 VerifySaveBlock(void *arg0) {
     }
     func_02045ffc((u8 *)r8 + 0xF0);
     if (stk[2] == 0) {
-        func_02046d0c((s32)r8, 2);
+        EraseSaveSlot((s32)r8, 2);
     }
     if (stk[3] == 0) {
         FillU16((s32)((u8 *)r8 + 0x300), 0, 0x100);
@@ -489,5 +489,13 @@ block_13:
 s32 InitSaveSlotsWithWfcProfile(s32 saveData) { void FillU16(s32,s32,s32); void BuildWfcProfile(void *); M2C_UNK MI_CpuCopy8(M2C_UNK,M2C_UNK *,M2C_UNK); u8 profile[WFC_PROFILE_SIZE];s32 i;void *code;register u8 *slot;register u32 erased=255;FillU16(0,saveData,1024);i=0;do{slot=(u8 *)(saveData+((u32)i<<8));M2C_FIELD(slot,u8 *,SAVE_SLOT_STATUS_REL)=erased;i++;}while(i<3);BuildWfcProfile(profile);code=EncodeWfcProfileBlob(profile);i=0;do{MI_CpuCopy8((s32)code,(M2C_UNK *)(saveData+SAVE_SLOT_CODE),SAVE_SLOT_PROFILE_CODE_SIZE);i++;saveData+=SAVE_SLOT_SIZE;}while(i<2);return 0;}
 
 #pragma opt_common_subs off
-void func_02046d0c(s32 a,s32 b) { void FillU16(s32,s32,s32); FillU16(0,a+(b<<8),256); M2C_FIELD(a+(b<<8),u8 *,0xe7)=255; }
+/* Erase save slot `slot` of the save data block at `saveData`: clear its
+ * 0x100-byte image and mark it erased (SAVE_SLOT_STATUS 0xFF), so the slot
+ * verification treats the slot as empty. */
+void EraseSaveSlot(s32 saveData, s32 slot) {
+    void FillU16(s32, s32, s32);
+
+    FillU16(0, saveData + slot * SAVE_SLOT_SIZE, SAVE_SLOT_SIZE);
+    M2C_FIELD(saveData + slot * SAVE_SLOT_SIZE, u8 *, SAVE_SLOT_STATUS_REL) = SAVE_SLOT_STATUS_ERASED;
+}
 #pragma opt_common_subs reset

@@ -463,9 +463,9 @@ void GX_EndLoadOBJExtPltt(void) {
 }
 
 void GX_BeginLoadBGExtPlttSub(void) {
-    s32 func_02003408();
+    s32 GX_ReleaseBankForBGExtPlttSub();
     extern s32 gGxExtPlttLoad;
-    gGxExtPlttLoad = func_02003408();
+    gGxExtPlttLoad = GX_ReleaseBankForBGExtPlttSub();
 }
 
 /* Copy `size` bytes of extended background-palette data from `src` into the
@@ -497,9 +497,9 @@ void GX_EndLoadBGExtPlttSub(void) {
 }
 
 void GX_BeginLoadOBJExtPlttSub(void) {
-    s32 func_02003430();
+    s32 GX_ReleaseBankForOBJExtPlttSub();
     extern M2C_UNK gGxExtPlttLoad;
-    M2C_FIELD(&gGxExtPlttLoad, s32 *, 0x18) = func_02003430();
+    M2C_FIELD(&gGxExtPlttLoad, s32 *, 0x18) = GX_ReleaseBankForOBJExtPlttSub();
 }
 
 /* Copy `size` bytes of extended OBJ-palette data from `src` into the sub-engine

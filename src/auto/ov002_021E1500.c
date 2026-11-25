@@ -3,17 +3,21 @@
 #include "ov002_panel.h"
 #include "gx.h"
 
-void func_ov002_021e1500(void) {
-    M2C_UNK GX_SetBankForBG(M2C_UNK);
-    M2C_UNK GX_SetBankForOBJ(M2C_UNK);
-    M2C_UNK GX_SetBankForTex(M2C_UNK);
-    M2C_UNK GX_SetBankForOBJExtPltt(M2C_UNK);
-    M2C_UNK GX_ReleaseBankGrants();
+/* Give the battle scene its VRAM: hand back every bank, then map banks A+B to
+ * the 3D textures, bank E to the background, bank G to the 3D sprites and bank F
+ * to their extended palette. */
+void SetBattleSceneVramBanks(void) {
+    void GX_SetBankForBG(s32);
+    void GX_SetBankForOBJ(s32);
+    void GX_SetBankForTex(s32);
+    void GX_SetBankForOBJExtPltt(s32);
+    void GX_ReleaseBankGrants(void);
+
     GX_ReleaseBankGrants();
-    GX_SetBankForTex(3);
-    GX_SetBankForBG(0x10);
-    GX_SetBankForOBJ(0x40);
-    GX_SetBankForOBJExtPltt(0x20);
+    GX_SetBankForTex(VRAM_BANK_A | VRAM_BANK_B);
+    GX_SetBankForBG(VRAM_BANK_E);
+    GX_SetBankForOBJ(VRAM_BANK_G);
+    GX_SetBankForOBJExtPltt(VRAM_BANK_F);
 }
 
 /* Set up the battle scene's graphics: select the GX banks, apply the scene's
@@ -26,7 +30,7 @@ void SetupBattleScene(void) {
     void InitBattleSpriteScene(void *);
     extern M2C_UNK gBattleSceneLayout, gPlayerSettings, gBattleSceneState, gBattleSpriteState;
     extern u8 gDemoBattle;
-    func_ov002_021e1500();
+    SetBattleSceneVramBanks();
     Apply3DSpriteLayout(&gBattleSceneLayout);
     if (gDemoBattle) SetDemoBattleDefaults(&gPlayerSettings);
     InitBattleScene(&gBattleSceneState);

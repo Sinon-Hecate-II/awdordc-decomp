@@ -490,17 +490,20 @@ void func_020b4db0(s32 arg0) {
     M2C_FIELD(CreateSpriteForOwner(&data_0212895c), s32 *, 0x5C) = arg0;
 }
 
-void func_020b4dcc(void *arg0) {
+/* Start a new battle of the save type held in the panel state's +0x5C field:
+ * begin its battle record, clear that save slot's record header so no earlier
+ * progress can be resumed, then save the game settings. */
+void StartNewBattle(void *state) {
     M2C_UNK StartBattleRecord();
-    M2C_UNK GetSaveType(M2C_UNK, s32);
+    s32 GetSaveType(s32, s32);
     M2C_UNK SaveGameSettings();
-    M2C_UNK ClearSaveRecordHeader(s32);
-    s32 temp_r4;
+    void ClearSaveRecordHeader(s32);
+    s32 saveType;
 
-    temp_r4 = M2C_FIELD(arg0, s32 *, 0x5C);
-    GetSaveType(0, temp_r4);
+    saveType = M2C_FIELD(state, s32 *, 0x5C);
+    GetSaveType(0, saveType);
     StartBattleRecord();
-    ClearSaveRecordHeader(temp_r4);
+    ClearSaveRecordHeader(saveType);
     SaveGameSettings();
 }
 

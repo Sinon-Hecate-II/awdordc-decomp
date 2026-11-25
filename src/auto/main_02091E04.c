@@ -76,14 +76,16 @@ s32 func_02091f08(void) {
     return func_02091ef0() * 8;
 }
 
-s32 GetScenePanelState(s32 arg0) {
-    s32 var_r4;
+/* Pointer to the ScenePanelState of panel `panelIndex` among the 3D sprite
+ * manager's panels; panel index DS3D_MANAGER_PANEL_COUNT means the panel the menu
+ * cursor is on. */
+s32 GetScenePanelState(s32 panelIndex) {
+    s32 panel = panelIndex;
 
-    var_r4 = arg0;
-    if (var_r4 == 3) {
-        var_r4 = GetMenuCursor();
+    if (panel == DS3D_MANAGER_PANEL_COUNT) {
+        panel = GetMenuCursor();
     }
-    return (var_r4 * 0xC) + Get3DSpriteManager();
+    return (panel * (s32) sizeof(ScenePanelState)) + Get3DSpriteManager();
 }
 
 void Mark3DSpriteLayer0Dirty(void) {
@@ -234,7 +236,7 @@ s32 func_020921c4(void) {
     return 0;
 }
 
-s32 func_020921cc(void *arg0) {
+s32 MapScriptSetVariableByte(void *arg0) {
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
@@ -243,7 +245,7 @@ s32 func_020921cc(void *arg0) {
     return 1;
 }
 
-s32 func_020921f0(void *arg0) {
+s32 MapScriptSetVariableHalfword(void *arg0) {
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
@@ -252,7 +254,7 @@ s32 func_020921f0(void *arg0) {
     return 1;
 }
 
-s32 func_02092214(void *arg0) {
+s32 MapScriptSetVariableWord(void *arg0) {
     void *temp_r1;
 
     temp_r1 = M2C_FIELD(arg0, void **, 4);
@@ -261,30 +263,39 @@ s32 func_02092214(void *arg0) {
     return 1;
 }
 
-s32 func_02092238(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: copy the byte that the command's wide operand points at
+ * (MAP_SCRIPT_OPERAND2) into the variable whose address is in MAP_SCRIPT_PARAM,
+ * then advance to the next command. */
+s32 MapScriptCopyVariableByte(void *script) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, u8 **, 4) = *M2C_FIELD(temp_r1, u8 **, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, u8 **, MAP_SCRIPT_PARAM) = *M2C_FIELD(command, u8 **, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(script, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02092260(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: copy the u16 that the command's MAP_SCRIPT_OPERAND2 points
+ * at into the location the command's MAP_SCRIPT_PARAM points at, then advance to
+ * the next command. */
+s32 MapScriptCopyWordIndirect(void *state) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, u16 **, 4) = *M2C_FIELD(temp_r1, u16 **, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, u16 **, MAP_SCRIPT_PARAM) = *M2C_FIELD(command, u16 **, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 
-s32 func_02092288(void *arg0) {
-    void *temp_r1;
+/* Map-script opcode: copy the s32 that the command's MAP_SCRIPT_OPERAND2 points
+ * at into the location the command's MAP_SCRIPT_PARAM points at, then advance to
+ * the next command. */
+s32 MapScriptCopyDwordIndirect(void *state) {
+    void *command;
 
-    temp_r1 = M2C_FIELD(arg0, void **, 4);
-    *M2C_FIELD(temp_r1, s32 **, 4) = *M2C_FIELD(temp_r1, s32 **, 0xC);
-    M2C_FIELD(arg0, void **, 4) = (void *) (M2C_FIELD(arg0, void **, 4) + 0x10);
+    command = M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP);
+    *M2C_FIELD(command, s32 **, MAP_SCRIPT_PARAM) = *M2C_FIELD(command, s32 **, MAP_SCRIPT_OPERAND2);
+    M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) = (void *) (M2C_FIELD(state, void **, MAP_SCRIPT_STATE_IP) + MAP_SCRIPT_COMMAND_SIZE);
     return 1;
 }
 

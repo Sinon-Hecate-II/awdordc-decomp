@@ -182,18 +182,18 @@ void WaitForScreenFadeOrSkip(void *scriptSprite) {
     Sprite_ResumeAnimation(scriptSprite);
 }
 
-void func_020953d0(void) {
+void CreateScreenTransitionWaitSprite(void) {
     M2C_UNK CreateSpriteFromClass(M2C_UNK *, M2C_UNK);
-    extern M2C_UNK data_02102ac8;
-    CreateSpriteFromClass(&data_02102ac8, 7);
+    extern M2C_UNK gScreenTransitionWaitSpriteClass;
+    CreateSpriteFromClass(&gScreenTransitionWaitSpriteClass, 7);
 }
 
-u8 func_020953e8(void) {
+u8 IsScreenTransitionWaitSpriteActive(void) {
     s32 FindObjectByClass(M2C_UNK *);
-    extern M2C_UNK data_02102ac8;
+    extern M2C_UNK gScreenTransitionWaitSpriteClass;
     u8 var_r0;
 
-    if (FindObjectByClass(&data_02102ac8) != 0) {
+    if (FindObjectByClass(&gScreenTransitionWaitSpriteClass) != 0) {
         var_r0 = 1;
     } else {
         var_r0 = 0;

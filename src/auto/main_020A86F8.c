@@ -1,6 +1,7 @@
 /* 69 functions from 0x020A86F8 to 0x020A94FC (main), found by ds-decomp. */
 #include "common.h"
 #include "battle_map.h"
+#include "map_selection.h"
 
 /* Six encoded localized text ids, one per army state; see sArmyStateMessageIds. */
 typedef struct { s32 values[6]; } Table020a8b3c;
@@ -57,9 +58,11 @@ void func_020a8804(u8 *arg0) {
     GetOwnerGroupDefenseBonus((u32) (*arg0 << 0x18) >> 0x1E);
 }
 
-s32 GetPlayerAttackPropertyBonus(s32 arg0) {
+/* Attack bonus, in damage percent, that player `player` gets from the
+ * attack-boosting properties it owns (5 percent each). */
+s32 GetPlayerAttackPropertyBonus(s32 player) {
     extern s32 *gCurrentMap;
-    return M2C_FIELD(((arg0 * 0x8C) + *gCurrentMap), u8 *, 0x67B8) * 5;
+    return M2C_FIELD((player * MAP_PLAYER_STRIDE) + *gCurrentMap, u8 *, PLAYER_ATTACK_PROPERTIES_OFF) * 5;
 }
 
 s32 func_020a8844(s32 arg0) {
@@ -115,15 +118,17 @@ u8 GetMapAiCategory(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 8);
 }
 
-u8 func_020a8948(void) {
+u8 MapData_GetPlayerCount(void) {
     return M2C_FIELD(MapData_GetRecord(), u8 *, 9);
 }
 
-u8 MapData_GetCategory(s32 arg0) {
-    if ((arg0 >= 0xE1) && (arg0 < 0x1A9)) {
-        return 6U;
+/* The map-data category of map `mapId`: every custom map id belongs to the
+ * custom category; otherwise the map record's own category byte is used. */
+u8 MapData_GetCategory(s32 mapId) {
+    if ((mapId >= MAP_CUSTOM_FIRST) && (mapId < MAP_CUSTOM_LINK_END)) {
+        return MAP_DATA_CATEGORY_CUSTOM;
     }
-    return M2C_FIELD(MapData_GetRecord(), u8 *, 0xA);
+    return M2C_FIELD(MapData_GetRecord(), u8 *, MAP_DATA_CATEGORY);
 }
 
 u8 MapData_GetTurnLimit(void) {
@@ -245,7 +250,14 @@ void SetPlayerRecordArmyId(s32 player, s32 armyId) {
         (M2C_FIELD(record, u32 *, PLAYER_REC_SPRITE) & ~0xFF) | (armyId & 0xFF);
 }
 
-u32 func_020a8c10(s32 a){extern s32 *gCurrentMap;return M2C_FIELD(*gCurrentMap+140*a,Bits020a8c10 *,0x6810).value;}
+/* Army (CO) id of player `player` in the live map: the low byte of its player
+ * record's PLAYER_REC_SPRITE word. */
+u32 GetPlayerRecordArmyId(s32 player) {
+    extern s32 *gCurrentMap;
+
+    return M2C_FIELD(*gCurrentMap + player * MAP_PLAYER_STRIDE,
+                     Bits020a8c10 *, MAP_PLAYER_STATES + PLAYER_REC_SPRITE).value;
+}
 
 u8 IsIndexInRange(s32 arg0, s32 arg1, s32 arg2) {
  s32 result;
@@ -535,7 +547,7 @@ void SetTextSpriteValue(void *sprite,s32 number) {
 /* X screen coordinate of glyph `index` of a text sprite; glyph 0 is the
  * rightmost one (the digits are stored least significant first).  The top three
  * bits of the sprite's +0x20 flags byte pick the layout: 0 = left aligned at
- * TEXT_SPRITE_X, 1 = centred on it, 2 = right aligned; each glyph advances
+ * TEXT_SPRITE_ANCHOR_X, 1 = centred on it, 2 = right aligned; each glyph advances
  * +0x17 pixels and the run's width is at +0x14. */
 s16 GetTextSpriteGlyphX(void *sprite, s32 index) {
     s32 x = 0;

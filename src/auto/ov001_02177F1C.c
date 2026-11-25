@@ -27,13 +27,17 @@ void Ov001_MoveOptionSelection(s32 direction) {
     Ov001_LayoutChoiceFrame(M2C_FIELD(&gOv001OptionFrameLeft,u16 *,offset), M2C_FIELD(&gOv001OptionFrameRight,u16 *,offset), M2C_FIELD(&gOv001OptionFrameTop,u16 *,offset), M2C_FIELD(&gOv001OptionFrameBottom,u16 *,offset));
 }
 
+/* Copy the OBJ tile of the ov001 option menu's selected row: gOv001OptionIconTiles
+ * maps the selected option to its tile index, used as both the source tile in the
+ * loaded option graphics and its OBJ destination. */
 void Ov001_LoadSelectedOptionTile(void) {
-    void Ov001_LoadObjTile(s32,u8,u8);
+    void Ov001_LoadObjTile(s32, u8, u8);
     extern M2C_UNK gOv001OptionIconTiles;
     extern M2C_UNK gOv001OptionMenuState;
-    u8 value;
-    value = M2C_FIELD(&gOv001OptionIconTiles, u8 *, M2C_FIELD(&gOv001OptionMenuState,u8 *,0));
-    Ov001_LoadObjTile(M2C_FIELD(&gOv001OptionMenuState,s32 *,4),value,value);
+    u8 tile;
+
+    tile = M2C_FIELD(&gOv001OptionIconTiles, u8 *, M2C_FIELD(&gOv001OptionMenuState, u8 *, OV001_OPTION_MENU_SELECTED));
+    Ov001_LoadObjTile(M2C_FIELD(&gOv001OptionMenuState, s32 *, OV001_OPTION_MENU_GFX), tile, tile);
 }
 
 /* Open the ov001 WFC profile-setup screen: load the shared Multi background, put
@@ -201,20 +205,23 @@ void Ov001_LowerBackgroundPriorities(void) {
 
 void func_ov001_021782d8(void) {
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
-    extern M2C_UNK func_ov001_0217830c;
+    extern M2C_UNK Ov001_ProfileSavedFadeDone;
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_0217830c);
+    Ov001_SetStepCallback(&Ov001_ProfileSavedFadeDone);
 }
 
-void func_ov001_0217830c(void) {
-    void func_ov001_02178338(void);
+/* Step that runs once the WFC profile-saved popup (message box 0x1F) has faded
+ * in: show its icon row (row 5) and hand over to the step that waits for it. */
+void Ov001_ProfileSavedFadeDone(void) {
+    void Ov001_ProfileSavedWaitIconRow(void);
+
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(5);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02178338);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_ProfileSavedWaitIconRow);
 }
 
-void func_ov001_02178338(void) {
+void Ov001_ProfileSavedWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_02178360;
@@ -452,22 +459,26 @@ void Ov001_FadeInWfcEraseScreen(void) {
     M2C_UNK Ov001_StartFade(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_EnableVisiblePlanes(M2C_UNK, M2C_UNK);
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
-    extern M2C_UNK func_ov001_021787a8;
+    extern M2C_UNK Ov001_WfcEraseFadeDone;
     Ov001_StartFade(2, 1, 1, 8);
     Ov001_StartFade(2, 0, 0x15, 8);
     Ov001_EnableVisiblePlanes(1, 1);
     Ov001_EnableVisiblePlanes(0, 0x15);
-    Ov001_SetStepCallback(&func_ov001_021787a8);
+    Ov001_SetStepCallback(&Ov001_WfcEraseFadeDone);
 }
 
-void func_ov001_021787a8(void) {
-    void func_ov001_021787d4(void);
+/* Step that runs once the Wi-Fi data-erase screen has faded in: put up the
+ * screen's icon row (id 3, the back/confirm row) and hand over to the step that
+ * waits for the row to slide in. */
+void Ov001_WfcEraseFadeDone(void) {
+    void Ov001_WfcEraseWaitIconRow(void);
+
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(3);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_021787d4);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WfcEraseWaitIconRow);
 }
 
-void func_ov001_021787d4(void) {
+void Ov001_WfcEraseWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK Ov001_UpdateWfcEraseMenu;

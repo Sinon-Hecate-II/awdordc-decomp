@@ -91,13 +91,15 @@ done:
     HistoryMenu_SetRecordText();
 }
 
-void func_ov005_0221339c(u8 *arg0) {
+/* Select the history menu's row named by `row`: store it as the selected row,
+ * refresh the record text that describes it and play the select sound. */
+void HistoryMenu_SelectRow(u8 *row) {
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK HistoryMenu_SetRecordText();
     extern void *gHistoryMenu;
-    M2C_FIELD(gHistoryMenu, u8 *, 2) = (u8) *arg0;
+    M2C_FIELD(gHistoryMenu, u8 *, 2) = (u8) *row;
     HistoryMenu_SetRecordText();
-    PlaySoundEffect(0x10019);
+    PlaySoundEffect(SOUND_MENU_SELECT);
 }
 
 #pragma opt_strength_reduction on

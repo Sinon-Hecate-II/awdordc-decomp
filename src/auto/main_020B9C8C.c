@@ -407,7 +407,7 @@ void SyncCursorOldPosition(void) {
     M2C_FIELD(map, s16 *, MAP_CURSOR_OLD_Y) = M2C_FIELD(map, s16 *, MAP_CURSOR_Y);
 }
 
-void func_020baae0(s16 x,s16 y) {
+void RevealUnitsNextToTile(s16 x,s16 y) {
 extern void **gCurrentMap;
 MapBAAE0 *p; s32 d; s32 xx; s32 right; s32 yy; s32 bottom; s32 left=x-1; s32 top; u8 *unit;
 if(left<0)left=0;
@@ -423,12 +423,14 @@ if(((u32)(unit[0]<<26)>>26) && (M2C_FIELD(unit,u16 *,4)&32))M2C_FIELD(unit,u16 *
 }
 }
 
+/* Reveal the units on the four tiles next to the map cursor, so a unit the
+ * cursor reaches becomes known. */
 void RevealUnitsAroundCursor(void) {
-    void func_020baae0(s16, s16);
+    void RevealUnitsNextToTile(s16, s16);
     extern void **gCurrentMap;
-    void *temp_r0;
+    void *map;
 
-    temp_r0 = *gCurrentMap;
-    func_020baae0(M2C_FIELD(temp_r0, s16 *, 0x52DC), M2C_FIELD(temp_r0, s16 *, 0x52DE));
+    map = *gCurrentMap;
+    RevealUnitsNextToTile(M2C_FIELD(map, s16 *, MAP_CURSOR_X), M2C_FIELD(map, s16 *, MAP_CURSOR_Y));
 }
 

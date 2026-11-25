@@ -264,15 +264,18 @@ Js_BuildHandlerEntry(a,operands[3],operands[0]);
 func_0207462c(a,frame,frame[0]+operands[2]);
 }
 
-void func_02074000(void *arg0) {
-    M2C_UNK (*temp_r2)(s32, M2C_UNK);
-    s32 temp_r1;
+/* Run the deleting destructor of the object described by `record`: when the record
+ * holds an object pointer (+0x00) and a destructor (+0x08), call destructor(object, -1)
+ * to destroy and free it. */
+void DeleteScopedObject(void *record) {
+    M2C_UNK (*destructor)(s32, M2C_UNK);
+    s32 object;
 
-    temp_r1 = M2C_FIELD(arg0, s32 *, 0);
-    if (temp_r1 != 0) {
-        temp_r2 = M2C_FIELD(arg0, M2C_UNK (**)(s32, M2C_UNK), 8);
-        if (temp_r2 != NULL) {
-            temp_r2(temp_r1, -1);
+    object = M2C_FIELD(record, s32 *, 0);
+    if (object != 0) {
+        destructor = M2C_FIELD(record, M2C_UNK (**)(s32, M2C_UNK), 8);
+        if (destructor != NULL) {
+            destructor(object, -1);
         }
     }
 }
@@ -288,12 +291,16 @@ M2C_UNK *func_0207403c(void) {
     return &data_0210096c;
 }
 
-void func_02074048(void) {
+/* Run the C++ static constructors the linker collected in the ARM9 program's
+ * .ctor table (ARM9_CTOR_START): the table is a null-terminated array of
+ * function pointers, called in order. */
+void RunStaticInitializers(void) {
     extern void (*ARM9_CTOR_START[])(void);
-    void (**p)(void) = ARM9_CTOR_START;
-    while (p != NULL && *p != NULL) {
-        (*p)();
-        p++;
+    void (**ctor)(void) = ARM9_CTOR_START;
+
+    while (ctor != NULL && *ctor != NULL) {
+        (*ctor)();
+        ctor++;
     }
 }
 

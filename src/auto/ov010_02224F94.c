@@ -490,7 +490,7 @@ void FreeBuffer(s32,s32);
 void Sound_InitPlayer(void *);
 void Sound_AssignPlayerChannels(void *,s32,u8 *);
 void Sound_SetPlayerVolume(void *,s32);
-void func_0202b7e8(void *,s32,s32);
+void Sound_SetNoteVolumeLevel(void *,s32,s32);
 s32 Sound_StartVoice(void *,s32,s32,s32,s32,s32,void *,s32);
 u8 channelList[1];
 u8 *channelCursor;
@@ -521,7 +521,7 @@ Sound_InitPlayer(&gStreamSoundPlayer);
 Sound_AssignPlayerChannels(&gStreamSoundPlayer,1,channelList);
 Sound_SetPlayerVolume(&gStreamSoundPlayer,127);
 channelCursor=channelList;
-channelIndex=0;do {func_0202b7e8(&gStreamSoundPlayer,*channelCursor++,0);channelIndex++;}while(channelIndex<1);
+channelIndex=0;do {Sound_SetNoteVolumeLevel(&gStreamSoundPlayer,*channelCursor++,0);channelIndex++;}while(channelIndex<1);
 result=Sound_StartVoice(&gStreamSoundPlayer,1,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),bufferSize,0x41,2,refillCallback,M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2));
 if(result==0){FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER1)=0;FreeBuffer(M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2),M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2_SIZE));M2C_FIELD(&gStreamVoiceState,s32 *,STREAM_VOICE_BUFFER2)=0;}
 return result;

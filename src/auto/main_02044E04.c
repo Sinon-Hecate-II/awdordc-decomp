@@ -145,9 +145,11 @@ s32 HttpRequestStart(s32 url, s32 bufferSize, s32 reuseConnection, s32 post,
     return result;
 }
 
-void HttpGetStart(M2C_UNK arg0, M2C_UNK arg1, M2C_UNK arg2, s32 arg3, s32 arg4, s32 arg5) {
-    M2C_UNK HttpRequestStart(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, s32, s32, s32);
-    HttpRequestStart(arg0, arg1, arg2, 0, arg3, arg4, arg5);
+/* Start an asynchronous HTTP GET: HttpRequestStart with the POST source forced to 0
+ * (the URL, buffer size, connection reuse and callbacks pass straight through). */
+s32 HttpGetStart(s32 url, s32 bufferSize, s32 reuseConnection, s32 onProgress, s32 onComplete, s32 userData) {
+    s32 HttpRequestStart(s32, s32, s32, s32, s32, s32, s32);
+    HttpRequestStart(url, bufferSize, reuseConnection, 0, onProgress, onComplete, userData);
 }
 
 /* Maps a ghttp result code (0 = success) to the game's network error pair

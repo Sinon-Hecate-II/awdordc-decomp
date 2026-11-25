@@ -376,14 +376,18 @@ void Sound_CloseFileSource(s32 arg0) {
     CancelFileRequest(arg0 + 0x5C);
 }
 
-s32 Sound_OpenMemorySource(void *arg0, M2C_UNK arg1) {
+/* Open a sound player's sample data straight from the loaded archive memory of
+ * sound `soundId`: remember the loaded block as the player's sample base and
+ * copy the file's 0x40-byte sample header in front of the data.  Always
+ * returns 1. */
+s32 Sound_OpenMemorySource(void *player, s32 soundId) {
     M2C_UNK MI_CpuCopy8(s32, s32, M2C_UNK);
-    s32 GetLoadedArchiveFile(M2C_UNK);
-    s32 temp_r0;
+    s32 GetLoadedArchiveFile(s32);
+    s32 block;
 
-    temp_r0 = GetLoadedArchiveFile(arg1);
-    M2C_FIELD(arg0, s32 *, 0xA4) = temp_r0;
-    MI_CpuCopy8(temp_r0, arg0 + 0xA8, 0x40);
+    block = GetLoadedArchiveFile(soundId);
+    M2C_FIELD(player, s32 *, SOUND_HANDLE_SOURCE_BASE) = block;
+    MI_CpuCopy8(block, player + SOUND_HANDLE_SOURCE_HEADER, SOUND_SOURCE_HEADER_SIZE);
     return 1;
 }
 
@@ -432,12 +436,16 @@ void Sound_ResetFade(void *arg0) {
     M2C_FIELD(arg0, s32 *, 8) = 0;
 }
 
-void Sound_StartFade(void *arg0, s32 arg1, s32 arg2) {
-    s32 GetFadeValue();
-    M2C_FIELD(arg0, s32 *, 0) = GetFadeValue();
-    M2C_FIELD(arg0, s32 *, 4) = arg1;
-    M2C_FIELD(arg0, s32 *, 0xC) = arg2;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
+/* Start the fade at `fade`: keep the envelope's current value as the new
+ * starting point, ramp it to `target` over `length` ticks and reset the elapsed
+ * count. */
+void Sound_StartFade(FadeEnvelope *fade, s32 target, s32 length) {
+    s32 GetFadeValue(FadeEnvelope *);
+
+    fade->start = GetFadeValue(fade);
+    fade->target = target;
+    fade->length = length;
+    fade->elapsed = 0;
 }
 
 /* The fade envelope's current value: `start` plus the elapsed fraction of the

@@ -193,12 +193,18 @@ void SendFifoMessageWait(M2C_UNK payload, M2C_UNK loopCount) {
     } while (SendFifoMessage(SYSTEM_FIFO_TAG, payload, 0) != 0);
 }
 
-s32 WFC_InitCommandChannel(s32 a,s32 b) {
-s32 func_02011060(s32,s32,s32);extern M2C_UNK gWfcChannelState;
-s32 result=func_02011060(a,b,0xF00);
-if(result!=0)return result;
-M2C_FIELD(M2C_FIELD(&gWfcChannelState,void **,4),u16 *,0x16)=0;
-return result;
+/* Set up the WFC command channel on the 0xF00-byte work buffer `work` for
+ * `mode`, then clear the flag saying the firmware's connection data has been
+ * read, so the new channel fetches it again.  Returns the setup result, 0 on
+ * success. */
+s32 WFC_InitCommandChannel(s32 work, s32 mode) {
+    s32 func_02011060(s32, s32, s32);
+    extern M2C_UNK gWfcChannelState;
+    s32 result = func_02011060(work, mode, 0xF00);
+
+    if (result != 0) return result;
+    M2C_FIELD(M2C_FIELD(&gWfcChannelState, void **, WFC_CMD_STATE_INFO), u16 *, WFC_CMD_INFO_DATA_CACHED) = 0;
+    return result;
 }
 
 #pragma push

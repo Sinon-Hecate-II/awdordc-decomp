@@ -227,7 +227,7 @@ s32 ConfigureArchiveLayout(FSArchive *archive, void *image, s32 fatPos, s32 fatS
     return 1;
 }
 
-s32 func_0200b32c(void *a) {
+s32 CloseArchiveFile(void *a) {
  s32 OS_DisableInterrupts(void);
  s32 OS_RestoreInterrupts(s32);
  s32 BeginFileOperation(void *);
@@ -397,14 +397,16 @@ M2C_UNK FileOperationCompleted(M2C_UNK file, s32 result) {
 
 void InitCardArchiveOnce(s32 a){void InitCardArchive(s32);extern s32 data_0212fbf8;if(data_0212fbf8)return;data_0212fbf8=1;InitCardArchive(a);}
 
-void InitFileRequest(void *arg0) {
-    M2C_FIELD(arg0, s32 *, 0) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 0x1C) = 0;
-    M2C_FIELD(arg0, s32 *, 0x18) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    M2C_FIELD(arg0, s32 *, 0x10) = 0xE;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
+/* Clear a file request to its starting state: no FIFO links, file or flags, an
+ * empty wait queue, and no command (FS_COMMAND_NONE) until one is submitted. */
+void InitFileRequest(void *request) {
+    M2C_FIELD(request, s32 *, 0) = 0;
+    M2C_FIELD(request, s32 *, 4) = 0;
+    M2C_FIELD(request, s32 *, FS_REQ_QUEUE + 4) = 0;
+    M2C_FIELD(request, s32 *, FS_REQ_QUEUE) = 0;
+    M2C_FIELD(request, s32 *, FS_REQ_FILE) = 0;
+    M2C_FIELD(request, s32 *, FS_REQ_COMMAND) = FS_COMMAND_NONE;
+    M2C_FIELD(request, s32 *, FS_REQ_FLAGS) = 0;
 }
 
 /* Submits a path-resolution request (file command 4): fills in the directory

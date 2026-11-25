@@ -40,7 +40,7 @@ void BeginMatchmakingSession(u8 mode, u8 capacity, s32 eventCallback, s32 eventD
  * the session closed. */
 void TeardownConnectionSession(void) {
     M2C_UNK HeapFree(M2C_UNK, s32, M2C_UNK);
-    M2C_UNK func_0203bd0c();
+    M2C_UNK NatNeg_RequestShutdown();
     M2C_UNK ClearSessionPlayers();
     void *GetConnection();
     M2C_UNK SetConnectionState(M2C_UNK);
@@ -57,7 +57,7 @@ void TeardownConnectionSession(void) {
             M2C_FIELD(GetConnection(), s32 *, CONN_SESSION_SERVER_BROWSER) = 0;
         }
     }
-    func_0203bd0c();
+    NatNeg_RequestShutdown();
     SetConnectionState(0);
     if (M2C_FIELD(&gConnectionMgr, s32 *, 8) != 0) {
         HeapFree(4, M2C_FIELD(&gConnectionMgr, s32 *, 8), 0);

@@ -318,7 +318,18 @@ void *func_0208ee1c(void *arg0) {
     return arg0;
 }
 #pragma opt_propagation reset
-void *func_0208ee34(void *arg0) { void *p=M2C_FIELD(arg0,void **,0x68); if(p) *(u64 *)p=M2C_FIELD(arg0,u64 *,0x60); MemFree(arg0); return arg0; }
+/* Deleting destructor of a number-display sprite: write the value it displays
+ * back through its NUMBER_DISPLAY_SOURCE pointer, then free the sprite. */
+void *DeleteNumberDisplay(void *display) {
+    void *source;
+
+    source = M2C_FIELD(display, void **, NUMBER_DISPLAY_SOURCE);
+    if (source != 0) {
+        *(u64 *)source = M2C_FIELD(display, u64 *, NUMBER_DISPLAY_VALUE);
+    }
+    MemFree(display);
+    return display;
+}
 
 #pragma opt_propagation reset
 /* Point a number display at another digit graphics set: make its texture row

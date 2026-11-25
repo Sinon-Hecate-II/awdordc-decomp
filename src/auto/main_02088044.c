@@ -4,7 +4,7 @@
 #include "ds3dsprite.h"
 typedef struct { u32 words[2]; } Unk0200FilePair;
 
-void func_02088044(void *arg0) {
+void SpriteCellListUpdateTouch(void *arg0) {
     void *SpriteCellListFindCell();
     M2C_UNK SpriteCellListSelectCell(void *, void *);
     s32 WidgetRectContainsPoint(void *, void *, u16, u16);

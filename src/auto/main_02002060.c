@@ -3,12 +3,17 @@
 #include "gx.h"
 #include "hw_div.h"
 
-void func_02002060(s32 arg0, s32 arg1) {
-    M2C_FIELD((void *)0x04000280, s16 *, 0) = 1;
-    M2C_FIELD((void *)0x04000280, s32 *, 0x10) = 0;
-    M2C_FIELD((void *)0x04000280, s32 *, 0x14) = arg0;
-    M2C_FIELD((void *)0x04000280, s32 *, 0x18) = arg1;
-    M2C_FIELD((void *)0x04000280, s32 *, 0x1C) = 0;
+/* Start the ARM9 hardware divider on the fixed-point quotient
+ * (numeratorHigh << 32) / denominator that the matrix code reads back through
+ * Div_GetResultRounded: select the 64-bit numerator mode, load the numerator
+ * (low word 0, high word numeratorHigh), the denominator, and clear the
+ * unused second denominator word. */
+void Div_Start64By32(s32 numeratorHigh, s32 denominator) {
+    M2C_FIELD((void *)DIV_REG_BASE, s16 *, 0) = DIV_CNT_64BIT;
+    M2C_FIELD((void *)DIV_REG_BASE, s32 *, DIV_NUMER_LOW) = 0;
+    M2C_FIELD((void *)DIV_REG_BASE, s32 *, DIV_NUMER_HIGH) = numeratorHigh;
+    M2C_FIELD((void *)DIV_REG_BASE, s32 *, DIV_DENOM_LOW) = denominator;
+    M2C_FIELD((void *)DIV_REG_BASE, s32 *, DIV_DENOM_HIGH) = 0;
 }
 
 /* Signed 32-bit quotient from the ARM9's hardware divider. */
@@ -165,16 +170,19 @@ void GX_SetSubBgMode(s32 arg0) {
     *(s32 *)0x04001000 = (*(s32 *)0x04001000 & ~7) | arg0;
 }
 
-void GX_SetMasterBrightness(s16 *arg0, s32 arg1) {
-    if (arg1 == 0) {
-        *arg0 = 0;
+/* Write master brightness `level` to the master-brightness register of a display
+ * engine: 0 switches the effect off, a positive level brightens towards white
+ * and a negative one dims towards black, by its magnitude. */
+void GX_SetMasterBrightness(s16 *reg, s32 level) {
+    if (level == 0) {
+        *reg = 0;
         return;
     }
-    if (arg1 > 0) {
-        *arg0 = arg1 | 0x4000;
+    if (level > 0) {
+        *reg = level | MASTER_BRIGHT_UP;
         return;
     }
-    *arg0 = (0 - arg1) | 0x8000;
+    *reg = (0 - level) | MASTER_BRIGHT_DOWN;
 }
 
 /* Reset the VRAM bank allocator: clear every bank-assignment field of

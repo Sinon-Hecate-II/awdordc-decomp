@@ -94,14 +94,14 @@ void func_020bbd8c(void) {
     func_020cab8c();
 }
 
-/* AI ammo action: create the action's effect sprite (func_020c79c4 takes the
+/* AI ammo action: create the action's effect sprite (CreateFlareShotSprite takes the
  * caller's target x/y from its registers), then spend one point of the cursor
  * unit's ammo, counting a record entry when a human player is acting. */
 void AiDecrementUnitAmmo(void) {
     extern s32 *gCurrentMap;
     BattleMapUnit *unit;
     u16 ammo,left;
-    func_020c79c4();
+    CreateFlareShotSprite();
     unit=M2C_FIELD(*gCurrentMap,BattleMapUnit **,MAP_CURSOR_UNIT);
     ammo=M2C_FIELD(unit,u16 *,MAP_UNIT_AMMO);
     left=(u16)(((u32)(ammo<<21)>>28)+65535);

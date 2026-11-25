@@ -80,7 +80,7 @@ s32 DrawTextStep(void *arg0) {
     u32 func_02099e6c(void *, s32);
     M2C_UNK WriteTextCellTilePair(void *, s32);
     s32 AdvanceTextColumn(void *, s32);
-    M2C_UNK func_0209c418(void *);
+    M2C_UNK Text_AdvanceScript(void *);
     TextState *st = arg0;
     s32 var_r6;
     s32 temp_r7;
@@ -140,9 +140,9 @@ main_loop:
                 }
             }
             if (!(temp_r7 == 0 && temp_r8 == 0)) {
-                func_0209c418(st);
+                Text_AdvanceScript(st);
             }
-            func_0209c418(st);
+            Text_AdvanceScript(st);
 end_block:
             if ((s8) st->delay < 0) {
                 goto main_loop;
@@ -156,7 +156,7 @@ end_block:
  * runs the redraw callback and advances the text script on the mapped screen. */
 void UpdateTextObject(TextState *st) {
     s32 func_020952a4(void);
-    s32 func_020953e8(void);
+    s32 IsScreenTransitionWaitSpriteActive(void);
     s32 func_0209546c(void);
     void SetMessageBoxState(s8);
     s32 IsMessageBoxIdle(void);
@@ -189,7 +189,7 @@ void UpdateTextObject(TextState *st) {
         if (FindObjectByClass(&data_02102e74) != 0) return;
         if (IsAnyScenePanelAnimating() != 0) return;
         if (func_020952a4() != 0) return;
-        if (func_020953e8() != 0) return;
+        if (IsScreenTransitionWaitSpriteActive() != 0) return;
         if (func_0209546c() != 0) return;
     }
 
@@ -363,11 +363,11 @@ void DrawTextLineCore(M2C_UNK x, M2C_UNK y, M2C_UNK palette, M2C_UNK text, u16 a
 M2C_UNK func_0209b370(M2C_UNK a,M2C_UNK b,M2C_UNK c,s32 d,s32 e,s32 f,u16 g,u16 h,u16 i) {
 M2C_UNK InitTextStateEx(s32,M2C_UNK,M2C_UNK,M2C_UNK,s32,s32,s32,u16,u16,u16);
 M2C_UNK StopTextObject(s32);void *CreateSpriteFromClass(M2C_UNK *,s32);
-extern s32 gCur3DSpriteEngine;extern M2C_UNK data_021032d8;
+extern s32 gCur3DSpriteEngine;extern M2C_UNK gTextLineSpriteClass;
 s32 p=gCur3DSpriteEngine;
 p=M2C_FIELD(p,s32 *,0x54);
 InitTextStateEx(p,a,b,c,d,e,f,g,h,i);
-StopTextObject(p);CreateSpriteFromClass(&data_021032d8,7);
+StopTextObject(p);CreateSpriteFromClass(&gTextLineSpriteClass,7);
 }
 #pragma opt_propagation reset
 /* Draws a decimal number into text-line cells: one digit per column, starting
@@ -405,9 +405,11 @@ block++;}while(block<blockCount);
 HeapFreeBlock((s32)temp);
 }
 
-void ClearTextBitmap(M2C_UNK arg0, s32 arg1) {
-    M2C_UNK MI_CpuFill32(M2C_UNK, M2C_UNK, s32);
-    MI_CpuFill32(0, arg0, ((s32) (((s32) (arg1 + 7) >> 3) + 3) >> 2) << 8);
+/* Zero the text bitmap buffer that will hold a line `width` pixels wide: one
+ * fill of TEXT_BITMAP_BLOCKS(width) 256-byte blocks. */
+void ClearTextBitmap(void *bitmap, s32 width) {
+    void MI_CpuFill32(u32, void *, u32);
+    MI_CpuFill32(0, bitmap, TEXT_BITMAP_BLOCKS(width) << 8);
 }
 
 void RenderLocalizedTextToTiles(M2C_UNK arg0, M2C_UNK arg1) {
@@ -421,7 +423,6 @@ void RenderLocalizedTextToTiles(M2C_UNK arg0, M2C_UNK arg1) {
 s32 RenderTextToTiles(s32 destination, s32 text) {
     s32 MeasureMessageLinesWidth(s32, M2C_UNK);
     s32 HeapAllocBlock(s32);
-    void ClearTextBitmap(M2C_UNK, s32);
     void SplitTextBitmapHalves(s32, s32, u16);
     M2C_UNK HeapFreeBlock(s32);
     s32 width, bitmap;

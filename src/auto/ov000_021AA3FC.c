@@ -188,13 +188,17 @@ else if(bestScore!=0)return 1;
 return 0;
 }
 
-void SelectAreaEffectTargetOnAllCells(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+/* Pick the best area-effect target for a player, scanning every map cell:
+ * SelectAreaEffectTarget with its impassable-tile grid filter off. */
+void SelectAreaEffectTargetOnAllCells(s32 outPos, s32 player, s32 targetableOnly, s32 mode, s32 range, s32 power) {
     typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
-    ((Fn)SelectAreaEffectTarget)(a, b, c, d, e, f, 0);
+    ((Fn)SelectAreaEffectTarget)(outPos, player, targetableOnly, mode, range, power, 0);
 }
 
-void SelectAreaEffectTargetOnGrid(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+/* Pick the best area-effect target for a player, scanning only the map cells the
+ * tile grid marks as passable (SelectAreaEffectTarget's grid filter on). */
+void SelectAreaEffectTargetOnGrid(s32 outPos, s32 player, s32 targetableOnly, s32 mode, s32 range, s32 power) {
     typedef void (*Fn)(s32, s32, s32, s32, s32, s32, s32);
-    ((Fn)SelectAreaEffectTarget)(a, b, c, d, e, f, 1);
+    ((Fn)SelectAreaEffectTarget)(outPos, player, targetableOnly, mode, range, power, 1);
 }
 

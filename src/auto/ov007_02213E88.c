@@ -435,14 +435,14 @@ s32 MapEditor_OpenUnitAiMenu(s32 x, s32 y) {
 void ResizeMap(s32 width, s32 height) {
     M2C_UNK ResetMapUnits();
     M2C_UNK InitPlayerStates();
-    M2C_UNK func_020d1f2c();
+    M2C_UNK InitMapPlayers();
     M2C_UNK BuildMapRowOffsets();
     M2C_UNK func_ov007_02217a5c();
     M2C_UNK RebuildMapPropertyCells();
     extern s32 *gCurrentMap;
     ResetMapUnits();
     InitPlayerStates();
-    func_020d1f2c();
+    InitMapPlayers();
     M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_WIDTH) = (u16) width;
     M2C_FIELD((void *) *gCurrentMap, u16 *, MAP_HEIGHT) = (u16) height;
     BuildMapRowOffsets();
@@ -458,7 +458,7 @@ void ResizeMap(s32 width, s32 height) {
 void FillMapTerrain(s32 preset) {
     M2C_UNK ResetMapUnits();
     M2C_UNK InitPlayerStates();
-    M2C_UNK func_020d1f2c();
+    M2C_UNK InitMapPlayers();
     M2C_UNK BuildMapRowOffsets();
     M2C_UNK RebuildMapPropertyCells();
     void ResizeMap(s32, s32);
@@ -470,7 +470,7 @@ void FillMapTerrain(s32 preset) {
     }
     ResetMapUnits();
     InitPlayerStates();
-    func_020d1f2c();
+    InitMapPlayers();
     BuildMapRowOffsets();
     {
         s32 x;
@@ -511,10 +511,10 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     M2C_UNK GetMapRecordBuffer(void);
     M2C_UNK GetMapRecordTerrain(void);
     M2C_UNK GetMapRecordHeader(void);
-    M2C_UNK func_020c879c(M2C_UNK);
+    M2C_UNK PackCurrentMapRecord(M2C_UNK);
     M2C_UNK ResetMapUnits(void);
     M2C_UNK InitPlayerStates(void);
-    M2C_UNK func_020d1f2c(void);
+    M2C_UNK InitMapPlayers(void);
     M2C_UNK BuildMapRowOffsets(void);
     s32 TerrainByteToTileId(u8);
     void *CreateMapUnit(s16, s16, s16, s32);
@@ -538,13 +538,13 @@ void LoadMapFromExport(s32 arg0, s32 arg1) {
     exportBlock = GetMapRecordBuffer();
     blockData = (void *)GetMapRecordTerrain();
     blockHeader = (void *)GetMapRecordHeader();
-    func_020c879c(exportBlock);
+    PackCurrentMapRecord(exportBlock);
 
     M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH)=width;
     M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT)=height;
     ResetMapUnits();
     InitPlayerStates();
-    func_020d1f2c();
+    InitMapPlayers();
     BuildMapRowOffsets();
     for(mapY=0;mapY<M2C_FIELD(*gCurrentMap,u16 *,MAP_HEIGHT);mapY++) {
         for(mapX=0;mapX<M2C_FIELD(*gCurrentMap,u16 *,MAP_WIDTH);mapX++) {

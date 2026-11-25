@@ -325,11 +325,11 @@ void Ov003_RefreshMapPreview(void *obj) {
         if((u32)id>=225 && (u32)id<425 && IsCampaignMapCategory()) {
             value=0;
             if(IsMapKind92(obj)) value=id;
-            if(!func_ov003_021f400c() && IsCampaignMapHeaderCategory() && IsCampaignMapForLocalPlayer(id)) value=GetCampaignMapBaseId(id);
+            if(!Ov003Battle_IsSoloLinkSession() && IsCampaignMapHeaderCategory() && IsCampaignMapForLocalPlayer(id)) value=GetCampaignMapBaseId(id);
             if(value) { LoadMapRecord(value,GetMapRecordBuffer()); ResetMapUnits(); }
         }
         PreloadMapTileset(id);
-        if((u32)id>=225 && (u32)id<425 && IsCampaignMapHeaderCategory() && !func_ov003_021f400c() && !IsCampaignMapForLocalPlayer(id)) {
+        if((u32)id>=225 && (u32)id<425 && IsCampaignMapHeaderCategory() && !Ov003Battle_IsSoloLinkSession() && !IsCampaignMapForLocalPlayer(id)) {
             M2C_FIELD(obj,u8 *,0x39)|=0x80;
             ApplyMapHeader(GetCampaignMapHeader(id-225));
         } else LoadBattleMap(id);
@@ -347,7 +347,7 @@ void Ov003_RefreshMapPreview(void *obj) {
         SetFileDirectory(data_ov003_02210398);
         LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103a0),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
         OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
-    } else if(!func_ov003_021f400c() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) {
+    } else if(!Ov003Battle_IsSoloLinkSession() && IsLinkSessionActive() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)) {
         SetFileDirectory(data_ov003_022103b0);
         LoadDecompressedFileTo(GetLocalizedFileName(data_ov003_022103b8),M2C_FIELD(gCur3DSpriteEngine,void **,0x20));
         OffsetTileIndices(M2C_FIELD(gCur3DSpriteEngine,void **,0x20),(u16)Get3DSpriteLayerSize((u8)((u32)(M2C_FIELD(M2C_FIELD(gCur3DSpriteEngine,void **,0),u16 *,0)<<29)>>29),0),0);
@@ -357,7 +357,7 @@ void Ov003_RefreshMapPreview(void *obj) {
     }
     M2C_FIELD(gCur3DSpriteEngine,u8 *,0x46)|=1;
     gCur3DSpriteEngine=saved;
-    if((!IsLinkSessionActive() && (u8)IsUnavailable92(id)) || (IsLinkSessionActive() && !func_ov003_021f400c() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)))
+    if((!IsLinkSessionActive() && (u8)IsUnavailable92(id)) || (IsLinkSessionActive() && !Ov003Battle_IsSoloLinkSession() && (u32)id>=225 && (u32)id<425 && !IsCampaignMapForLocalPlayer(id)))
         MI_CpuFill8((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830,0,60);
     else CountMapProperties((u8 *)M2C_FIELD(obj,void **,0x44)+0x1830);
     kind=(u32)(M2C_FIELD(obj,u8 *,0x3b)<<28)>>28;

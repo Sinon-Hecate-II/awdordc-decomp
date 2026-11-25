@@ -69,7 +69,7 @@ func_ov011_02226658 kind:function(arm,size=0x9f0) addr:0x02226658
 func_ov011_02227048 kind:function(arm,size=0x380) addr:0x02227048
 func_ov011_022273c8 kind:function(arm,size=0xac0) addr:0x022273c8
 func_ov011_02227e88 kind:function(arm,size=0x1c) addr:0x02227e88
-func_ov011_02227ea4 kind:function(arm,size=0x28) addr:0x02227ea4
+SpawnIntroMenuEntry kind:function(arm,size=0x28) addr:0x02227ea4
 func_ov011_02227ecc kind:function(arm,size=0x24) addr:0x02227ecc
 func_ov011_02227ef0 kind:function(arm,size=0x4) addr:0x02227ef0
 func_ov011_02227ef4 kind:function(arm,size=0x14) addr:0x02227ef4
@@ -190,10 +190,10 @@ gTitleNoaCgPath kind:data(any) addr:0x02228a10
 gTitleNoaClPath kind:data(any) addr:0x02228a20
 data_ov011_02228a30 kind:data(any) addr:0x02228a30
 data_ov011_02228a3c kind:data(any) addr:0x02228a3c
-data_ov011_02228a48 kind:data(any) addr:0x02228a48
+gIntroMenuEntryClass kind:data(any) addr:0x02228a48
 data_ov011_02228a78 kind:data(any) addr:0x02228a78
 gIntroMenuVTable kind:data(any) addr:0x02228b08
-data_ov011_02228b1c kind:data(any) addr:0x02228b1c
+gIntroMenuEntryVTable kind:data(any) addr:0x02228b1c
 sIntroMenuTextureFormat kind:data(any) addr:0x02228b28
 sIntroMenuContextFormat kind:data(any) addr:0x02228b30
 sIntroMenuDirectory kind:data(any) addr:0x02228b38

@@ -137,7 +137,7 @@ extern void *g3DSpriteEngineMain;
 extern void *g3DSpriteEngineSub;
 extern void **gCurrentMap;
 extern u8 data_ov005_02220f1c[],data_ov005_02220e5c[],data_ov005_02220eec[],gResultsScreenClass[];
-void func_02088044(void *);
+void SpriteCellListUpdateTouch(void *);
 void SpriteCellListSelectTile(void *,s16);
 void CopyToObjPaletteShadow(s32,s32,s32);
 s32 func_020a72e8(u8);
@@ -161,7 +161,7 @@ void func_ov005_0221d160(void *arg0){
     s32 mode;
     if (gTouchState[0x12] || gTouchState[0x16]) {
         s32 value;
-        func_02088044(M2C_FIELD(arg0, void **, 0x34));
+        SpriteCellListUpdateTouch(M2C_FIELD(arg0, void **, 0x34));
         value = M2C_FIELD(M2C_FIELD(arg0, void **, 0x34), s8 *, 9);
         if ((u8)(value >= 0)) {
             M2C_FIELD(arg0, s32 *, 0x50) = value - 3;

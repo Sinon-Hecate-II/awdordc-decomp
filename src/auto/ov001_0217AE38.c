@@ -210,20 +210,23 @@ void MapSelectList_LoadObjTile(void) {
     Ov001_LoadObjTile(M2C_FIELD(M2C_FIELD(&gMapSelectState, void **, MAPSELECT_STATE_OBJ), s32 *, MAPSELECT_OBJ_STEP31_BG), value, value);
 }
 
-void func_ov001_0217b3f0(void) {
+/* Step while the map-select notice is up: once the choice is confirmed
+ * (Ov001_GetRegionMenuSelection returns 0) play the confirm sound, close the
+ * message menu and install the step that restores the map-select input. */
+void Ov001_ConfirmMapSelectNotice(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_0217b41c;
+    extern M2C_UNK Ov001_ResumeMapSelectInput;
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_0217b41c);
+    Ov001_SetStepCallback(&Ov001_ResumeMapSelectInput);
 }
 
-void func_ov001_0217b41c(void) {
+void Ov001_ResumeMapSelectInput(void) {
     M2C_UNK Ov001_UnlockIconRow();
     M2C_UNK Ov001_UnblockScrollBar();
     s32 Ov001_IsRegionMenuActive();
@@ -416,7 +419,7 @@ void Ov001_HandleNameEntryResult(void) {
     extern void *gNameEntryState;
     extern M2C_UNK Ov001_CloseNameEntryScreen;
     extern M2C_UNK Ov001_HandleNameEntryRegionChoice;
-    extern M2C_UNK func_ov001_0217bf14;
+    extern M2C_UNK Ov001_RetryNameEntry;
     s32 modeMessages[2];
     s32 mode;
     u8 result;
@@ -431,7 +434,7 @@ void Ov001_HandleNameEntryResult(void) {
     }
     if (result == 2) {
         Ov001_ShowMessage(6, 3, 1, -1, 0);
-        Ov001_SetStepCallback(&func_ov001_0217bf14);
+        Ov001_SetStepCallback(&Ov001_RetryNameEntry);
         return;
     }
     Ov001_GetNameEntryMode(0, &mode);

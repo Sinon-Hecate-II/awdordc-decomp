@@ -324,23 +324,25 @@ void func_ov003_021effb8(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }
 
-u8 func_ov003_021effcc(void *arg0) {
-    s32 var_r0_2;
-    u8 var_r0;
-    void *temp_r0;
+/* Whether the battle scene's map slide tween is still running (its frame
+ * counter has not reached its duration); the iface method the state machine polls. */
+u8 Ov003_IsBattleSceneSlideRunning(void *scene) {
+    s32 finished;
+    u8 running;
+    SpriteTween *tween;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x3C);
-    if (M2C_FIELD(temp_r0, u16 *, 2) == M2C_FIELD(temp_r0, s16 *, 0xC)) {
-        var_r0_2 = 1;
+    tween = M2C_FIELD(scene, SpriteTween **, BATTLE_SCENE_SLIDE_MAP);
+    if (tween->current == tween->duration) {
+        finished = 1;
     } else {
-        var_r0_2 = 0;
+        finished = 0;
     }
-    if (!(var_r0_2 & 0xFF)) {
-        var_r0 = 1;
+    if (!(finished & 0xFF)) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 void func_ov003_021efff8(void) {
@@ -442,8 +444,8 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     void *MemAlloc(s32);
     M2C_UNK ConstructArray(M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK, M2C_UNK);
     M2C_UNK SetOv003SceneClass(M2C_UNK *);
-    void func_ov003_021f05cc(void *);
-    void func_ov003_021f05f8(void);
+    void InitOv003OptionValue(void *);
+    void Ov003OptionValue_Destructor(void);
     extern M2C_UNK gSceneBaseVTable;
     extern M2C_UNK data_ov003_0220f8e0;
     extern M2C_UNK gSceneBaseIfaceVTable;
@@ -623,7 +625,7 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     temp_r0_3 = MemAlloc(0xE8);
     if (temp_r0_3 != NULL) {
         * (M2C_UNK **)temp_r0_3 = &data_ov003_0220fb18;
-        ConstructArray(temp_r0_3 + 0x14, 4, 0x18, &func_ov003_021f05cc, &func_ov003_021f05f8);
+        ConstructArray(temp_r0_3 + 0x14, 4, 0x18, &InitOv003OptionValue, &Ov003OptionValue_Destructor);
         i = 0;
         do {
             base = &((M2C_UNK *)temp_r0_3)[i];
@@ -635,17 +637,21 @@ void func_ov003_021f01f0(M2C_UNK arg0) {
     M2C_FIELD(temp_r0, u8 *, 0x39) = (u8) (M2C_FIELD(temp_r0, u8 *, 0x39) & ~1);
 }
 
-void func_ov003_021f05cc(void *arg0) {
-    extern M2C_UNK data_ov003_0220fb28;
-    M2C_FIELD(arg0, M2C_UNK **, 0) = &data_ov003_0220fb28;
-    M2C_FIELD(arg0, s8 *, 0x14) = 0;
-    M2C_FIELD(arg0, s32 *, 8) = 0;
-    M2C_FIELD(arg0, s32 *, 0xC) = 0;
-    M2C_FIELD(arg0, s32 *, 4) = 0;
-    M2C_FIELD(arg0, s32 *, 0x10) = 1;
+/* Construct an option-value record: install its vtable, clear the value and the
+ * bounds, and start with wrapping off.  (The unk10 field is always 1.) */
+void InitOv003OptionValue(void *option) {
+    extern M2C_UNK gOv003OptionRowVTable;
+    Ov003OptionValue *row = option;
+
+    row->vtable = &gOv003OptionRowVTable;
+    row->wrap = 0;
+    row->upper = 0;
+    row->lower = 0;
+    row->value = 0;
+    row->unk10 = 1;
 }
 
-void func_ov003_021f05f8(void) {
+void Ov003OptionValue_Destructor(void) {
 
 }
 

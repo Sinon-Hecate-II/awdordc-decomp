@@ -5,11 +5,20 @@
 #pragma thumb on
 u32 func_ov001_0216b87c(u32 a,u32 b) {u32 t=a&b; b=~b; a=((a&b)+1)|t; if(a>=(b|t)) a=1|t; return a;}
 
-void func_ov001_0216b894(void) {
-extern u32 gRoomState[];
-void func_ov001_0216ad64(u32);
-if(gRoomState[3]) {func_ov001_0216ad64(gRoomState[3]);gRoomState[3]=0;}
-if(gRoomState[1]) {func_ov001_0216ad64(gRoomState[1]);gRoomState[1]=0;}
+/* Release the two heap buffers the room session keeps in gRoomState (the one at
+ * +0x0C first, then the one at +0x04) and forget them. */
+void Ov001_FreeRoomBuffers(void) {
+    extern u32 gRoomState[];
+    void Ov001_FreeHook(u32);
+
+    if (gRoomState[3]) {
+        Ov001_FreeHook(gRoomState[3]);
+        gRoomState[3] = 0;
+    }
+    if (gRoomState[1]) {
+        Ov001_FreeHook(gRoomState[1]);
+        gRoomState[1] = 0;
+    }
 }
 
 #pragma thumb on

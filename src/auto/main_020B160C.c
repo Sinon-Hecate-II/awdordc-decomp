@@ -46,11 +46,13 @@ void ApplyMapViewTilesetWeather(void) {
     setTerrain(M2C_FIELD(map, u8 *, MAP_WEATHER), M2C_FIELD(map, u8 *, MAP_TILESET));
 }
 
-void func_020b1770(void) {
+/* Upload the map view's fixed five-tile block into layer 0's VRAM at +0x2480,
+ * the tile slot the screen-brighten effect animates. */
+void UploadMapViewOverlayTiles(void) {
     M2C_UNK MI_CpuCopy32(M2C_UNK *, s32, M2C_UNK);
     extern M2C_UNK data_020f3ca0;
     extern void *gCur3DSpriteEngine;
-    MI_CpuCopy32(&data_020f3ca0, M2C_FIELD(gCur3DSpriteEngine, s32 *, 0xC) + 0x2480, 0xA0);
+    MI_CpuCopy32(&data_020f3ca0, M2C_FIELD(gCur3DSpriteEngine, s32 *, DS3D_ENGINE_LAYER_VRAM) + 0x2480, 0xA0);
 }
 
 /* Copy the two 0x800-byte tile blocks of the lower 3D sprite layers from their
@@ -152,7 +154,7 @@ Reset3DSpriteCorners();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x1c);if(callback)callback();
 Apply3DSpriteBanks();LoadScenePanelGraphicsOnBothEngines();
 callback=M2C_FIELD(M2C_FIELD(gCurrentMap,void **,4),void (**)(void),0x54);if(callback)callback();
-func_020b1770();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();func_020b17dc();
+UploadMapViewOverlayTiles();ApplyMapViewTilesetWeather();Upload3DSpriteLayerTiles();func_020b17dc();
 }
 
 void func_020b19a8(s32 arg0, s32 arg1) {

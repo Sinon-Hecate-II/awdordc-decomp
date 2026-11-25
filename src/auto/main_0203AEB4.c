@@ -519,14 +519,16 @@ s32 func_0203bcf8(void) {
  return M2C_FIELD(M2C_FIELD(&gMatchSessionMgr,void **,8),s32 *,0x20);
 }
 
-void func_0203bd0c(void) {
-    M2C_UNK func_0205d8f4();
+/* Shut the NAT negotiation session down, or, while NatNeg_Think is running,
+ * ask it to shut the session down once it returns. */
+void NatNeg_RequestShutdown(void) {
+    void NatNeg_Shutdown(void);
     extern M2C_UNK gConnectionMgr;
-    if (M2C_FIELD(&gConnectionMgr, s32 *, 0x10) != 0) {
-        M2C_FIELD(&gConnectionMgr, s32 *, 0xC) = 1;
+    if (M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_NATNEG_THINKING) != 0) {
+        M2C_FIELD(&gConnectionMgr, s32 *, CONN_MGR_NATNEG_SHUTDOWN) = 1;
         return;
     }
-    func_0205d8f4();
+    NatNeg_Shutdown();
 }
 
 s32 LeaveOnlineSession(void) {

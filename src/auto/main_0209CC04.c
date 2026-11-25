@@ -102,17 +102,21 @@ s32 func_0209cd6c(void *arg0) {
     return 1;
 }
 
-s32 func_0209cd80(void *arg0) {
+/* 3D-sprite state handler: install the state entry's data as the sprite's delete
+ * callback, then move on to the next entry. */
+s32 SpriteState_SetDeleteCallback(void *sprite) {
     M2C_UNK func_01ffa918(void *, s32);
-    func_01ffa918(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    func_01ffa918(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209cda8(void *arg0) {
+/* 3D-sprite state handler: install the state entry's data as the sprite's draw
+ * callback, then move on to the next entry. */
+s32 SpriteState_SetDrawCallback(void *sprite) {
     M2C_UNK func_01ffa920(void *, s32);
-    func_01ffa920(arg0, M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    func_01ffa920(sprite, M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -585,17 +589,21 @@ s32 SpriteState_StartSubScreenFade(void *sprite) {
     return 1;
 }
 
-s32 func_0209d67c(void *arg0) {
+/* 3D-sprite state handler: play the music track named by the state entry's data,
+ * then move on to the next entry. */
+s32 SpriteState_PlayMusicTrack(void *sprite) {
     M2C_UNK PlayMusicTrack(s32);
-    PlayMusicTrack(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    PlayMusicTrack(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
-s32 func_0209d6a4(void *arg0) {
+/* 3D-sprite state handler: play the sound effect named by the state entry's data
+ * word, then move on to the next entry. */
+s32 SpriteState_PlaySoundEffect(void *sprite) {
     M2C_UNK PlaySoundEffect(s32);
-    PlaySoundEffect(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s32 *, 4));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    PlaySoundEffect(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s32 *, DS3D_STATE_DATA));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 
@@ -619,10 +627,13 @@ s32 SpriteState_StopSlotSound(void *sprite) {
     return 1;
 }
 
-s32 func_0209d728(void *arg0) {
+/* 3D-sprite state handler: fade the music out over the number of frames held in
+ * the state entry's parameter, then continue with the next entry in the same
+ * frame. */
+s32 SpriteState_FadeOutMusicOverFrames(void *sprite) {
     M2C_UNK FadeOutMusicOverFrames(s16);
-    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(arg0, void **, 8), s16 *, 2));
-    M2C_FIELD(arg0, void **, 8) = (void *) (M2C_FIELD(arg0, void **, 8) + 8);
+    FadeOutMusicOverFrames(M2C_FIELD(M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM), s16 *, DS3D_STATE_PARAM));
+    M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) = (void *) (M2C_FIELD(sprite, void **, DS3D_SPRITE_ANIM) + DS3D_STATE_SIZE);
     return 1;
 }
 

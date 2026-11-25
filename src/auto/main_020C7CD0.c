@@ -220,7 +220,7 @@ s32 IsLocalCampaignMapRecord(s32 mapId) {
 
 /* Whether the current campaign map is one received over a link that is not stored
  * here yet: a valid campaign-map record that is not local, whose slot does not
- * already hold a saved user map, with no share mode in its stamp and a nonzero
+ * already hold a saved user map, with no rating yet in its stamp and a nonzero
  * map code. */
 u8 IsReceivedCampaignMap(s32 mapId) {
     s32 IsCampaignMapSaved(s32);
@@ -237,11 +237,11 @@ u8 IsReceivedCampaignMap(s32 mapId) {
     return 0;
 }
 
-/* Sets a campaign map's share mode: reloads the map's saved record into the
- * map-record buffer, writes `mode` into the top three bits of its stamp word (a
- * nonzero value is what marks a record as shared rather than received), flags the
- * map in the campaign map bitmap, then saves the record back to its slot. */
-s32 SetCampaignMapShareMode(s32 mapId, s32 mode) {
+/* Set a campaign map's star rating: reloads the map's saved record into the
+ * map-record buffer, writes `mode` into the top three bits of its stamp word
+ * (1..5, set by the map-rating screen), flags the map in the campaign map
+ * bitmap, then saves the record back to its slot. */
+s32 SetCampaignMapRating(s32 mapId, s32 mode) {
     s32 GetMapRecordBuffer();
     s32 GetMapRecordBufferStamp();
     s32 LoadMapRecord(s32, s32);
@@ -471,7 +471,7 @@ void func_020c86a8(void *p) {
     M2C_FIELD(p, u32 *, 80) = 0;
 }
 
-void func_020c879c(void *arg0){
+void PackCurrentMapRecord(void *arg0){
 extern void **gCurrentMap;extern s8 gTerrainPropertyFlags[];
 void MI_CpuFill32(s32,s32,s32);void StringCopy(void *,void *);s32 GetPlayerTeam(s32);s32 GetPlayerIdForSlot(s32);void MI_CpuCopy32(void *,void *,s32);void func_020c86a8(void *);void *GetMapSettings(void);
 u8 counts[6];u8 *out=arg0;

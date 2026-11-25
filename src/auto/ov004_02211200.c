@@ -11,6 +11,10 @@ struct ScreenConfigFields1194 { u16 a,b,c,d,e,f; };
 #define MUSIC_STAGE_BATTLE_3 0x10015
 #define MUSIC_STAGE_BATTLE_4 0x10016
 
+/* High event-flag index that records the ov004 ending already ran: the first
+ * entry claims it, later entries see it set. */
+#define OV004_ENDING_SEEN_FLAG 0x60
+
 void func_ov004_02211200(void) {
     M2C_UNK func_ov000_0216a7fc();
     func_ov000_0216a7fc();
@@ -566,13 +570,15 @@ void func_ov004_02212048(void) {
     DeleteSpriteObjectsOfClass(&gUraPlaneEffectClass);
 }
 
-s32 func_ov004_0221205c(void) {
+/* Claim the ov004 ending for its first run: returns 1 and marks the ending-seen
+ * high event flag the first time, then returns 0 since it is already marked. */
+s32 Ov004_ClaimEndingOnce(void) {
     M2C_UNK SetEventFlagHigh(M2C_UNK, M2C_UNK);
     s32 IsEventFlagHighSet(M2C_UNK);
-    if (IsEventFlagHighSet(0x60) != 0) {
+    if (IsEventFlagHighSet(OV004_ENDING_SEEN_FLAG) != 0) {
         return 0;
     }
-    SetEventFlagHigh(0x60, 1);
+    SetEventFlagHigh(OV004_ENDING_SEEN_FLAG, 1);
     return 1;
 }
 

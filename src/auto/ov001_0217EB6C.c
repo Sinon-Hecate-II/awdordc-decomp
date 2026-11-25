@@ -574,14 +574,17 @@ void Ov001_FadeInConnectionScreen(void) {
     Ov001_SetStepCallback(&Ov001_ConnectionScreenFadeDone);
 }
 
+/* Connection-screen step once the fade-in has finished: wait for the main engine's
+ * fade, put up the shared back/confirm icon row and install the step that waits for
+ * the player's choice. */
 void Ov001_ConnectionScreenFadeDone(void) {
-    void func_ov001_0217fa98(void);
-    if (Ov001_IsFadeActive(0) != 0) return;
+    void Ov001_ConnectionScreenWaitIconRow(void);
+    if (Ov001_IsFadeActive(OV001_FADE_MAIN) != 0) return;
     Ov001_CreateMenuIconRow(1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217fa98);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_ConnectionScreenWaitIconRow);
 }
 
-void func_ov001_0217fa98(void) {
+void Ov001_ConnectionScreenWaitIconRow(void) {
     s32 Ov001_GetIconRowSelection();
     M2C_UNK Ov001_UnlockIconRow();
     extern M2C_UNK func_ov001_0217fac0;
@@ -597,12 +600,12 @@ void func_ov001_0217fac0(void) {
     M2C_UNK Ov001_HandleOptionPage1Choice();
     void Ov001_CancelOptionSelection(void);
     void func_ov001_0217fb18(void);
-    void func_ov001_0217fb1c(void);
+    void Ov001_HandleOptionPage1Back(void);
     SleepMilliseconds(10);
     Ov001_HandleOptionPage1Choice();
     Ov001_CancelOptionSelection();
     func_ov001_0217fb18();
-    func_ov001_0217fb1c();
+    Ov001_HandleOptionPage1Back();
 }
 
 /* Cancel the option-screen selection, latching the back choice: either the
@@ -625,19 +628,21 @@ void func_ov001_0217fb18(void) {
 
 }
 
-void func_ov001_0217fb1c(void) {
+/* Option-menu step that runs after the page-1 input pass: when the player chose
+ * back (selection 0), play the cancel sound and prepare to leave the screen. */
+void Ov001_HandleOptionPage1Back(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
-    extern M2C_UNK func_ov001_0217fb48;
+    extern M2C_UNK Ov001_PrepareOptionScreenExit;
     if (Ov001_GetIconRowSelection() != 0) {
         return;
     }
     Ov001_StopSound();
-    Ov001_PlaySound(7);
-    Ov001_SetStepCallback(&func_ov001_0217fb48);
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
+    Ov001_SetStepCallback(&Ov001_PrepareOptionScreenExit);
 }
 
-void func_ov001_0217fb48(void) {
+void Ov001_PrepareOptionScreenExit(void) {
     M2C_UNK Ov001_LockIconRow();
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     M2C_UNK Ov001_StartDelay(M2C_UNK);

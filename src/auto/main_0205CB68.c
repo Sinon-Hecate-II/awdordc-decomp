@@ -597,14 +597,18 @@ Vector_RemoveAt(M2C_FIELD(&gNatNegManager,s32 *,NATNEG_PEERS),index);return;
 }
 }
 
-void func_0205d8f4(void) {
+/* Shut the NAT-negotiation manager down: free the vector holding the peer
+ * records and clear the manager's peer handle.  Nothing happens while no peer
+ * vector exists. */
+void NatNeg_Shutdown(void) {
     M2C_UNK Vector_Free();
     extern M2C_UNK gNatNegManager;
-    if (M2C_FIELD(&gNatNegManager, s32 *, 0x10) == 0) {
+
+    if (M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS) == 0) {
         return;
     }
     Vector_Free();
-    M2C_FIELD(&gNatNegManager, s32 *, 0x10) = 0;
+    M2C_FIELD(&gNatNegManager, s32 *, NATNEG_PEERS) = 0;
 }
 
 s32 IsNatNegPacket(M2C_UNK arg0) {

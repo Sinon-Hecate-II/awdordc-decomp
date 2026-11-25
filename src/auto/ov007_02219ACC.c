@@ -32,12 +32,16 @@ void UpdatePanelRowCollapse(void *driver) {
     Sprite_ResumeAnimation(driver);
 }
 
-void func_ov007_02219b38(void *arg0) {
-M2C_UNK func_ov007_0221863c(void *);
-void *p=GetPanelObject();
-M2C_FIELD(p+M2C_FIELD(p,u8 *,0x37),u8 *,0x38)=M2C_FIELD(arg0,s32 *,0x5c);
-func_ov007_0221863c(p);
-M2C_FIELD(arg0,s16 *,0x54)=0;
+/* Palette-panel animation step: store the colour the panel cursor picked
+ * (the driver's +0x5C value) as the current page's owner/colour, rebuild the
+ * panel's palette lists, and reset the driver's animation frame. */
+void MapEditor_ApplyPaletteColorStep(void *driver) {
+    void MapEditor_RebuildPaletteLists(void *);
+    void *panel = GetPanelObject();
+
+    M2C_FIELD((u8 *)panel + M2C_FIELD(panel, u8 *, MAP_EDITOR_PANEL_PAGE), u8 *, MAP_EDITOR_PANEL_OWNER) = M2C_FIELD(driver, s32 *, OV007_PANEL_ANIM_VALUE);
+    MapEditor_RebuildPaletteLists(panel);
+    M2C_FIELD(driver, s16 *, OV007_PANEL_ANIM_FRAME) = 0;
 }
 
 /* Step of the map editor palette panel's open animation: advance the driver's
@@ -181,7 +185,7 @@ void func_ov007_0221a018(void) {
     /* Prepare the tile graphics and schedule DMA transfers into the back buffer bank. */
     u8 GetMapEditorUnitKind(void);
     u8 GetMapEditorUnitOwner(void);
-    s32 func_ov000_0216cd4c(s32);
+    s32 GetUnitStatusTileBase(s32);
     void *GetUnitIconTiles(s32, s32);
     void *GetArmyPalette(s32);
     void QueueMemoryCopy(s32, s32, s32, s32);
@@ -202,7 +206,7 @@ void func_ov007_0221a018(void) {
     tileGroup = GetMapEditorUnitKind();
     slot = GetMapEditorUnitOwner();
     tileAttr = (u8) M2C_FIELD((M2C_FIELD(gCurrentMap, s32 *, 0) + slot * 0x8C + 0x6000), u8 *, 0x7CD);
-    baseAddr = func_ov000_0216cd4c(tileGroup);
+    baseAddr = GetUnitStatusTileBase(tileGroup);
     srcPtr = GetUnitIconTiles(tileGroup, tileAttr);
     dstPtr = GetArmyPalette(slot);
     savedBank = gCur3DSpriteEngine;

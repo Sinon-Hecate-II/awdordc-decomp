@@ -211,14 +211,16 @@ void func_ov011_02227e88(void *arg0) {
     GotoSpriteAnimationLabel(arg0, 1);
 }
 
-void func_ov011_02227ea4(M2C_UNK arg0) {
-    extern M2C_UNK data_ov011_02228b1c;
-    extern M2C_UNK data_ov011_02228a48;
-    M2C_UNK **temp_r0;
+/* Create one intro-menu entry sprite (a MenuEntry011) owned by `owner` and install
+ * its vtable at offset 0. */
+void SpawnIntroMenuEntry(M2C_UNK owner) {
+    extern M2C_UNK gIntroMenuEntryVTable;
+    extern M2C_UNK gIntroMenuEntryClass;
+    M2C_UNK **entry;
 
-    temp_r0 = CreateSpriteFromClass(&data_ov011_02228a48, arg0);
-    if (temp_r0 != NULL) {
-        *temp_r0 = &data_ov011_02228b1c;
+    entry = CreateSpriteFromClass(&gIntroMenuEntryClass, owner);
+    if (entry != NULL) {
+        *entry = &gIntroMenuEntryVTable;
     }
 }
 

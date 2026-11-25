@@ -39,6 +39,12 @@ struct FSFileRequest {
 #define FS_REQ_PATH_DIR       0x3a /* u16 directory the file was found in */
 #define FS_NO_ENTRY_ID        0x10000 /* no file/directory id */
 
+/* The stream read command (0) and write command (1) reuse the path-request
+ * fields for their transfer: the caller's buffer and the byte count the file
+ * window allows (FileRead clamps the caller's length to it). */
+#define FS_REQ_BLOCK_BUFFER 0x30 /* void *buffer the block is read into or written from */
+#define FS_REQ_BLOCK_LENGTH 0x38 /* s32 bytes the command transfers */
+
 /* The byte window of an open file a request reads from: the first and one-past-
  * the-last byte positions, set when the file is opened, and the current stream
  * position.  Until then +0x24/+0x28 hold the directory-command scratch fields
@@ -60,10 +66,13 @@ struct FSFileRequest {
 #define FS_REQ_DIR_SKIP   0x34 /* s32 nonzero to skip the entry's name */
 
 /* Scratch fields of the open-by-id command (6) and the open-range command (7) it
- * chains to: the data range the file's FAT record gives. */
+ * chains to: the data range the file's FAT record gives.  Command 7 copies the
+ * range into the request's read window and stores the opened file's id at
+ * FS_REQ_OPEN_FILE_ID. */
 #define FS_REQ_OPEN_START 0x30 /* u32 archive offset of the file's first byte */
 #define FS_REQ_OPEN_END   0x34 /* u32 offset one past its last byte, or the file id for command 6 */
 #define FS_REQ_OPEN_ID    0x38 /* u32 entry id of the opened file */
+#define FS_REQ_OPEN_FILE_ID 0x20 /* u32 id of the file the open-range command installed */
 
 /* Request flags at FSFileRequest::flags. */
 #define FS_REQ_ACTIVE    0x00000001 /* submitted and not yet finished by the worker */
@@ -90,6 +99,8 @@ struct FSFileRequest {
 #define FS_FILE_STATE      0x1C /* u32 state bits FS_FILE_STATE_* */
 #define FS_FILE_REQUESTS   0x24 /* FSFileRequest *head of the pending FIFO */
 #define FS_FILE_CALLBACK   0x54 /* void (*callback)(void *context, s32 event) */
+#define FS_FILE_READ_PROC  0x48 /* s32 (*)(void *file, void *buffer, s32 offset, s32 length): default read callback */
+#define FS_FILE_WRITE_PROC 0x4C /* s32 (*)(void *file, void *buffer, s32 offset, s32 length): default write callback */
 #define FS_FILE_EVENTS     0x58 /* u32 events the callback is armed for */
 
 /* File state bits at FS_FILE_STATE. */

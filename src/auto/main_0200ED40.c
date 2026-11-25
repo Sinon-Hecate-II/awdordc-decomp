@@ -68,17 +68,20 @@ void CallbackList_Remove(M2C_UNK *list, M2C_UNK node) {
     }
 }
 
-void func_0200ede8(void *arg0) {
-    void *var_r4;
+/* Call every callback in the power-callback list starting at `head`: each node
+ * holds its callback at +0x00 (called with the node's own argument at +0x04) and
+ * the next node at +0x08. */
+void CallbackList_Call(void *head) {
+    void *node;
 
-    var_r4 = arg0;
-    if (var_r4 == NULL) {
+    node = head;
+    if (node == NULL) {
         return;
     }
     do {
-        M2C_FIELD(var_r4, M2C_UNK (**)(s32), 0)(M2C_FIELD(var_r4, s32 *, 4));
-        var_r4 = M2C_FIELD(var_r4, void **, 8);
-    } while (var_r4 != NULL);
+        M2C_FIELD(node, M2C_UNK (**)(s32), 0)(M2C_FIELD(node, s32 *, 4));
+        node = M2C_FIELD(node, void **, 8);
+    } while (node != NULL);
 }
 
 void PM_AddPreSleepCallback(void *arg0) { extern M2C_UNK data_0212fcd8; void (*f)(void **,void *)=func_0200ed40; f((void **)&data_0212fcd8,arg0); }

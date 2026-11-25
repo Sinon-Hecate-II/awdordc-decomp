@@ -57,7 +57,7 @@ void TeardownNetSession(void) {
     extern void *gNetSession;
     void Qr2_DestroyConnection(void *resource);
     void DestroyServerBrowser(void *resource);
-    void func_0203bd0c(void);
+    void NatNeg_RequestShutdown(void);
     void gpiInfoCloseSocket(void);
     s32 gpiSetPeerCallback(void *channel, s32 a, s32 b, s32 c);
     void gpiThinkConnection(void *channel);
@@ -78,7 +78,7 @@ void TeardownNetSession(void) {
         DestroyServerBrowser(M2C_FIELD(gNetSession, void **, 0x458));
         M2C_FIELD(gNetSession, void **, 0x458) = 0;
     }
-    func_0203bd0c();
+    NatNeg_RequestShutdown();
     gpiInfoCloseSocket();
     if (M2C_FIELD(gNetSession, s32 *, 0x1C)) {
         gpiSetPeerCallback(gNetSession + 0x1C, 0, 0, 0);
@@ -367,7 +367,9 @@ tail:
     return 1;
 }
 
-s32 func_02038d14(s32 a,s32 b){extern void *gNetSession;if(!gNetSession)return 0;M2C_FIELD(gNetSession,s32 *,144)=a;M2C_FIELD(gNetSession,s32 *,148)=b;return 1;}
+/* Install the callback `callback` and its `data` argument as the current
+ * online session's peer connection event handler; returns 0 with no session. */
+s32 SetNetPeerCallback(s32 callback,s32 data){extern void *gNetSession;if(!gNetSession)return 0;M2C_FIELD(gNetSession,s32 *,NET_SESSION_PEER_CALLBACK)=callback;M2C_FIELD(gNetSession,s32 *,NET_SESSION_PEER_DATA)=data;return 1;}
 
 /* Leaves the online match and returns the session to the lobby.  With no other
    player left in the session, reset the GameSpy status and close the connection
@@ -380,7 +382,7 @@ s32 LeaveNetMatch(void) {
     extern M2C_UNK gEmptyString;
     s32 HasNetError(void);
     void SetGpiStatus(s32, void *, s32);
-    void func_0203bd0c(void);
+    void NatNeg_RequestShutdown(void);
     void SetNetState(s32);
     void GT2NotifyConnectionClosed(void *);
     s32 state;
@@ -390,7 +392,7 @@ s32 LeaveNetMatch(void) {
         return -1;
     if (M2C_FIELD(gNetSession, u8 *, NET_SESSION_LAST_PLAYER) == 0) {
         SetGpiStatus(1, &gEmptyString, 0);
-        func_0203bd0c();
+        NatNeg_RequestShutdown();
         SetNetState(NET_STATE_READY);
         return 1;
     }

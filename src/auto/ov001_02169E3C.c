@@ -85,21 +85,24 @@ panel->ops->drawGlyph(panel,font,x,y,color,&glyph);
 return glyph.metric->advance;
 }
 
-void func_ov001_0216a17c(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    extern s32 data_ov001_0218c9cc;
-    func_ov001_0216a030(arg0, arg1, arg2, arg3, arg4, (s32)&data_ov001_0218c9cc, arg2);
+/* Bind a text panel to the bitmap surface it draws text into with the linear
+ * operations: the surface's tile buffer, its size in tiles, 4 bits per pixel,
+ * the linear ops table and the surface's tile row stride as its tile map. */
+void SetTextPanelSurface(void *panel, void *surface, s32 width, s32 height, s32 bpp) {
+    extern M2C_UNK gTextOpsLinear;
+    func_ov001_0216a030(panel, surface, width, height, bpp, (s32)&gTextOpsLinear, width);
 }
 
 void func_ov001_0216a1a8(void *arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
 extern u8 data_ov001_0218c9e4[];
-extern s32 data_ov001_0218c9d8;
+extern s32 gTextOpsPooled;
 struct { u32 a:8; u32 b:8; u32 c:16; } value;
 s32 x,y; u8 *p;
 x=3; if(arg2<8) {x=0; while ((u32)arg2>>(x+1)) ++x;}
 y=3; if(arg3<8) {y=0; while ((u32)arg3>>(y+1)) ++y;}
 p=data_ov001_0218c9e4+y*8+x*2;
 value.a=p[0]; value.b=p[1];
-func_ov001_0216a030(arg0,arg1,arg2,arg3,arg4,(s32)&data_ov001_0218c9d8,*(s32*)&value);
+func_ov001_0216a030(arg0,arg1,arg2,arg3,arg4,(s32)&gTextOpsPooled,*(s32*)&value);
 }
 void func_ov001_0216a230(s32 arg0,s32 arg1,s32 arg2,s32 arg3,s32 arg4,s32 arg5,s32 arg6,u32 arg7) {
 M2C_UNK func_ov001_0216a2e0(s32,s32,s32,s32,s32,s32);
@@ -402,12 +405,12 @@ return v;
 }
 
 #pragma thumb on
-void func_ov001_0216ad54(s32 arg0) {
+void Ov001_AllocHook(s32 arg0) {
     extern void (*data_ov001_021925e0)(s32);
     data_ov001_021925e0(arg0);
 }
 
-void func_ov001_0216ad64(s32 arg0) {
+void Ov001_FreeHook(s32 arg0) {
     extern void (*data_ov001_021925ec)(s32);
     data_ov001_021925ec(arg0);
 }

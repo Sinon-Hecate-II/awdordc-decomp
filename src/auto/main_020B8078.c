@@ -280,30 +280,33 @@ s16 PageListDown(void *list) {
     return M2C_FIELD(list, s16 *, MENU_LIST_FIRST_ROW) - old;
 }
 
-M2C_UNK func_020b8740(void) {
+/* Dismiss the scrollable menu list: play the menu back sound, resume the list's
+ * sprite animation, hide the sprite slots it had enabled and close them. */
+M2C_UNK CloseMenuList(void) {
     void *GetMenuList(void);
     M2C_UNK Sprite_ResumeAnimation(void *);
     M2C_UNK PlaySoundEffect(s32);
     M2C_UNK HideEnabledSpriteSlots();
     M2C_UNK CloseAllActiveSpriteSlots();
-    void *temp_r4;
-    temp_r4 = GetMenuList();
+    void *list;
+
+    list = GetMenuList();
     PlaySoundEffect(0x10018);
-    Sprite_ResumeAnimation(temp_r4);
+    Sprite_ResumeAnimation(list);
     HideEnabledSpriteSlots();
     CloseAllActiveSpriteSlots();
 }
 
 void func_020b876c(void) {
-    M2C_UNK func_020b8740();
-    func_020b8740();
+    M2C_UNK CloseMenuList();
+    CloseMenuList();
 }
 
 void func_020b8778(void) {
-    M2C_UNK func_020b8740();
+    M2C_UNK CloseMenuList();
     M2C_UNK CancelScreenTransition();
     CancelScreenTransition();
-    func_020b8740();
+    CloseMenuList();
 }
 
 /* Key handler for the scrollable menu list: up/down move the selected row and
@@ -344,11 +347,11 @@ void CreateMenuListRowSlots(void) {
 }
 
 #pragma optimization_level 2
-/* Returns the active instance registered under data_021290dc. */
+/* Returns the active instance registered under gMenuListClass. */
 void *GetMenuList(void) {
     void *FindObjectByClass();
-    extern M2C_UNK data_021290dc;
-    return FindObjectByClass(&data_021290dc);
+    extern M2C_UNK gMenuListClass;
+    return FindObjectByClass(&gMenuListClass);
 }
 
 /* Initializes the shop menu and its UI elements */

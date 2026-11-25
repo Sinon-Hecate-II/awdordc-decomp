@@ -102,7 +102,7 @@ u16 *FormatInteger(s32,u16 *,FormatBD);
 u16 *func_0206b5c0(u64,u16 *,FormatBD);
 u16 *func_0206b8c0(double,u16 *,FormatBD);
 u16 *func_0206add0(u16 *,s32,s32);
-char *func_02065224(char *,s32,s32);
+char *FindFirstByte(char *,s32,s32);
 s32 StringLength(char *);
 s32 StringToWideString(void *,void *,s32);
 s32 func_02065020(void *,void *,s32);
@@ -238,7 +238,7 @@ if(f.b && n>f.precision)n=f.precision;
 }
 else if(f.b){char *e;
 n=f.precision;
-e=func_02065224(str,0,n);
+e=FindFirstByte(str,0,n);
 if(e)n=e-str;
 }
 else n=StringLength(str);

@@ -102,7 +102,7 @@ s32 func_ov001_021888a8(s32 mode, s32 option, s32 channel) {
     return 0;
 }
 #pragma peephole reset
-void func_ov001_02188a20(s32 arg0) {
+void Ov001_SetChildIndicateCallback(s32 arg0) {
     extern M2C_UNK gWhWork;
     M2C_FIELD(M2C_FIELD(&gWhWork, void **, 4), s32 *, 0x4C) = arg0;
 }
@@ -279,7 +279,7 @@ void Ov001_UpdateProfileSetup(void) {
     void Ov001_UpdateChildSearch(void);
     void func_ov001_021893c0(void);
     void Ov001_UpdateLinkState(void);
-    void func_ov001_0218959c(void);
+    void Ov001_EnterProfileListSharing(void);
     void Ov001_UpdateProfileTask(void);
     void func_ov001_021897a4(void);
     s32 Ov001_FinishLinkTeardown(void);
@@ -315,7 +315,7 @@ void Ov001_UpdateProfileSetup(void) {
         Ov001_UpdateLinkState();
         return;
     case 7:
-        func_ov001_0218959c();
+        Ov001_EnterProfileListSharing();
         return;
     case 8:
     case 9:

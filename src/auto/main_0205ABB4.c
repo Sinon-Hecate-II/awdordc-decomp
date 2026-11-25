@@ -497,12 +497,14 @@ restart:
     return 1;
 }
 
-void Gt2NoteDataReceived(void *arg0) {
+/* Note that the connection has received data: set its pending-acknowledgement
+ * flag and record when, unless that has already been done. */
+void Gt2NoteDataReceived(void *connection) {
     s32 GetSystemTickMilliseconds();
-    if (M2C_FIELD(arg0, s32 *, 0x90) != 0) {
+    if (M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_PENDING) != 0) {
         return;
     }
-    M2C_FIELD(arg0, s32 *, 0x90) = 1;
-    M2C_FIELD(arg0, s32 *, 0x94) = GetSystemTickMilliseconds();
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_PENDING) = 1;
+    M2C_FIELD(connection, s32 *, GT2_CONNECTION_ACK_TIME) = GetSystemTickMilliseconds();
 }
 

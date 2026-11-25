@@ -301,7 +301,7 @@ Ov001_PostTaskMessage(0,arg0);
 for(i=0;i<3;i++){
 for(j=0;j<4;j++){
 ptr=(unsigned int *)gOv001MenuState;
-func_ov001_0218ace0(((unsigned int (*)[4])ptr)[i][j]);
+Ov001_ReleaseTextPanel(((unsigned int (*)[4])ptr)[i][j]);
 if(i==0)Ov001_DestroySprite(M2C_FIELD(gOv001MenuState+j*4,void **,0x104));
 }}
 for(i=0;i<2;i++)Ov001_DestroySprite(M2C_FIELD(gOv001MenuState+i*4,void **,0xfc));

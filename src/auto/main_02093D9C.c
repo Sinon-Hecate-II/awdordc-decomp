@@ -353,13 +353,13 @@ void SetMenuCursor(s8 arg0) {
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x4D) = arg0;
 }
 
-void func_020943bc(s8 arg0) {
+void Set3DSpriteTargetMode(s8 arg0) {
     void *Get3DSpriteManager(void);
     M2C_FIELD(Get3DSpriteManager(), s8 *, 0x49) = arg0;
 }
 
 void func_020943d0(void) {
-    func_020943bc(1);
+    Set3DSpriteTargetMode(1);
 }
 
 void func_020943e0(s8 arg0) {
@@ -459,7 +459,7 @@ void ResetDialogUI(void) {
  ClearEventFlagsLow();EnableTouchInput();ClearMessageBoxState();
  for(i=0;i<3;i++)M2C_FIELD(GetScenePanelState(i),s16*,8)=0;
  for(i=0;i<2;i++)func_020943f4(i,2);
- SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
+ SetMenuCursor(-1);Set3DSpriteTargetMode(3);func_020943e0(0);func_02094410(0);Reset3DSpriteEngines();
 }
 
 /* Whether one of the game's dialog sequences (gDialogSequences) is running. */
@@ -594,13 +594,13 @@ void StartNextQueuedDialog(void) {
 #pragma optimization_level 2
 void *StartDialogSequence(s32 arg0) {
 s32 FindDialogSequence(s32);
-void SetMenuCursor(s8); void func_020943bc(s8);void func_020943e0(s8);void func_02094410(s8);
+void SetMenuCursor(s8); void Set3DSpriteTargetMode(s8);void func_020943e0(s8);void func_02094410(s8);
 M2C_UNK ClearMessageBoxState(void);void DisableTouchInput(void);void AcquireMapViewHold(void);
 extern M2C_UNK gDialogSequences,data_02157fec,data_02157ff0,data_02157ff4;
 s16 index; s32 offset; u8 *base;
 index=FindDialogSequence(0);
 if(index==-1)return NULL;
-SetMenuCursor(-1);func_020943bc(3);func_020943e0(0);func_02094410(0);
+SetMenuCursor(-1);Set3DSpriteTargetMode(3);func_020943e0(0);func_02094410(0);
 ClearMessageBoxState();DisableTouchInput();AcquireMapViewHold();
 offset=index*24;
 base=(u8 *)&gDialogSequences;
@@ -716,28 +716,35 @@ void SetScenePanelFaceUnlessMessageBox(s32 panelIndex, s32 faceId, s32 expressio
     SetScenePanelFace(panelIndex, faceId, expression);
 }
 
-void func_02094b28(M2C_UNK arg0, M2C_UNK arg1) {
-    M2C_UNK func_02097aa8(M2C_UNK, M2C_UNK);
+/* Scene-panel operation: give scene panel `panelIndex` the army (colour) `army`,
+ * unless a message box is up: a dialog owns the panels, so the change is dropped.
+ * Forwards to func_02097aa8, a no-op stub in this build, so it changes nothing. */
+void SetScenePanelArmyUnlessMessageBox(s32 panelIndex, s32 army) {
+    M2C_UNK func_02097aa8(s32, s32);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    func_02097aa8(arg0, arg1);
+    func_02097aa8(panelIndex, army);
 }
 
-void func_02094b50(M2C_UNK arg0, M2C_UNK arg1) {
+/* Set scene panel `panelIndex` to `mode`, unless a message box is up: while one
+ * is shown the panels belong to it. */
+void SetScenePanelModeUnlessMessageBox(s32 panelIndex, s32 mode) {
     M2C_UNK SetScenePanelMode(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    SetScenePanelMode(arg0, arg1);
+    SetScenePanelMode(panelIndex, mode);
 }
 
-void func_02094b78(M2C_UNK arg0, M2C_UNK arg1) {
+/* Hide or show the face of scene panel `panelIndex` according to `hidden`, unless
+ * a message box is up: while one is shown the panels belong to it. */
+void SetPanelFaceHiddenUnlessMessageBox(s32 panelIndex, s32 hidden) {
     M2C_UNK SetPanelFaceHidden(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    SetPanelFaceHidden(arg0, arg1);
+    SetPanelFaceHidden(panelIndex, hidden);
 }
 
 void func_02094ba0(M2C_UNK arg0) {
@@ -786,12 +793,14 @@ void SetScenePanelFaceSlotUnlessMessageBox(M2C_UNK faceSlot, M2C_UNK faceId, M2C
     SetScenePanelFaceSlot(faceSlot, faceId, expression);
 }
 
-void func_02094c68(M2C_UNK arg0, M2C_UNK arg1) {
+/* Hide or show the face in slot `faceSlot` of the bottom scene panel according to
+ * `hidden`, unless a message box is up: while one is shown the panels belong to it. */
+void SetScenePanelFaceHiddenUnlessMessageBox(s32 faceSlot, s32 hidden) {
     M2C_UNK SetScenePanelFaceHidden(M2C_UNK, M2C_UNK);
     if (IsMessageBoxActive() != 0) {
         return;
     }
-    SetScenePanelFaceHidden(arg0, arg1);
+    SetScenePanelFaceHidden(faceSlot, hidden);
 }
 
 /* Builds a battle action entry for the given slot and submits it. */

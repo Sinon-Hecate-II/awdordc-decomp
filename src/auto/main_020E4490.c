@@ -34,7 +34,7 @@ void func_020e4490(void) {
     M2C_UNK InitGameHeap();
     M2C_UNK LoadCardArchiveIndexToHeap();
     M2C_UNK InitResourceSystem();
-    M2C_UNK func_02086574();
+    M2C_UNK InitUiGraphicsBanks();
     M2C_UNK InitSound();
     M2C_UNK Init3DSpritePool();
     M2C_UNK InstallVBlankHandler();
@@ -83,7 +83,7 @@ void func_020e4490(void) {
     InitGameHeap();
     LoadCardArchiveIndexToHeap();
     InitResourceSystem();
-    func_02086574();
+    InitUiGraphicsBanks();
     InitSound();
     Init3DSpritePool();
     InstallVBlankHandler();
@@ -114,7 +114,7 @@ void func_0208184c(void);
 void UpdateTouchInput(void);
 void func_02090390(void);
 void func_02081ee4(void);
-void func_02091bf4(void);
+void IncrementPlayTime(void);
 void UpdateSpriteSlots(void);
 void DrawSpriteSlots(void);
 void func_0209db48(void);
@@ -133,7 +133,7 @@ GetSpriteLayerHead(5);Update3DSpriteObject();
 GetSpriteLayerHead(6);Update3DSpriteObject();
 GetSpriteLayerHead(7);Update3DSpriteObject();
 GetSpriteLayerHead(8);Update3DSpriteObject();
-func_02091bf4();UpdateSpriteSlots();DrawSpriteSlots();
+IncrementPlayTime();UpdateSpriteSlots();DrawSpriteSlots();
 GetSpriteLayerHead(9);Update3DSpriteObject();
 GetSpriteLayerHead(10);Update3DSpriteObject();
 func_0209db48();
@@ -260,8 +260,8 @@ void func_020e47f8(void) {
 
 /* Clear the 8-byte header (the save-slot summary) of save record `record`. */
 void ClearSaveRecordHeader(s32 record) {
-extern u8 data_0215dba4[];
-u32 *header=(u32 *)(data_0215dba4+record*0x118);
+extern u8 gCampaignSaveRecords[];
+u32 *header=(u32 *)(gCampaignSaveRecords+record*0x118);
 header[0]&=~15;
 header[0]&=~240;
 header[1]&=0xffff0000;
@@ -276,7 +276,7 @@ void StoreSaveSlotProgress(s32 arg0) {
     extern M2C_UNK gOptionBits;
     extern M2C_UNK gSaveSlotSummary;
     extern void **gCurrentMap;
-    extern u8 data_0215dba4[];
+    extern u8 gCampaignSaveRecords[];
     extern u8 data_0215dbac[];
     extern M2C_UNK gMapProgressRecords;
     extern u8 data_0215dcac[];
@@ -315,7 +315,7 @@ void StoreSaveSlotProgress(s32 arg0) {
     word = (word & ~0xff00) | (((u32)count << 24) >> 16);
     summary[0] = word;
     offset = arg0 * 0x118;
-    dest = (u32 *)(data_0215dba4 + offset);
+    dest = (u32 *)(gCampaignSaveRecords + offset);
     dest[0] = word;
     dest[1] = summary[1];
     *(SaveProgressWords *)(data_0215dbac + offset) = *(SaveProgressWords *)&gMapProgressRecords;
@@ -323,17 +323,19 @@ void StoreSaveSlotProgress(s32 arg0) {
     *(SaveProgressFlags *)(data_0215dcb4 + offset) = *(SaveProgressFlags *)&gEventValues;
 }
 #pragma peephole reset
-void func_020e49ec(void) {
+/* Start a fresh campaign: reset the map progress records and clear every high
+ * event flag (0x60..0x9F), which is where the campaign's story flags live. */
+void ResetCampaignProgress(void) {
     M2C_UNK SetEventFlag(s32, M2C_UNK);
     M2C_UNK ResetMapProgress();
-    s32 var_r5;
+    s32 flag;
 
     ResetMapProgress();
-    var_r5 = 0x60;
+    flag = EVENT_FLAG_HIGH_BASE;
     do {
-        SetEventFlag(var_r5, 0);
-        var_r5 += 1;
-    } while (var_r5 < 0xA0);
+        SetEventFlag(flag, 0);
+        flag += 1;
+    } while (flag < EVENT_FLAG_COUNT);
 }
 
 #pragma push
@@ -385,7 +387,12 @@ void func_020e4b24(void) {
 
 }
 
-u8 func_020e4b28(s32 a){extern u8 data_0215dba4[];return ((u32)(M2C_FIELD(data_0215dba4,u32 *,a*0x118)<<16)>>24)!=0;}
+/* True when campaign save slot `slot` holds a record: the count byte at +0x02
+ * of the slot's 0x118-byte record in gCampaignSaveRecords is nonzero. */
+u8 CampaignSaveSlotInUse(s32 slot){
+extern u8 gCampaignSaveRecords[];
+return ((u32)(M2C_FIELD(gCampaignSaveRecords,u32 *,slot*0x118)<<16)>>24)!=0;
+}
 
 /* True on the campaign's final battle (story map MAP_ID_STORY_FINAL) while the
  * battle runs in the default mode (the low three bits of gMapConfig clear). */

@@ -49,8 +49,8 @@ void SetupEntityDisplay(void *entity) {
     s32 GetUnitSpriteWidth(void *);
     s32 GetUnitSpriteHeight(void *);
     M2C_UNK ApplySceneLayerVisibility();
-    s32 func_ov003_021f400c();
-    s32 func_ov003_021f4064();
+    s32 Ov003Battle_IsSoloLinkSession();
+    s32 Ov003Battle_IsLinkSessionGuest();
     void *part0;
     s16 posY;
     s16 posX;
@@ -88,7 +88,7 @@ void SetupEntityDisplay(void *entity) {
     M2C_FIELD(second, s16 *, 0xC) = 0xC;
     M2C_FIELD(second, u16 *, 2) = (u16) M2C_FIELD(second, u16 *, 4);
     parts = M2C_FIELD(entity, void **, 0x68);
-    if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
+    if ((Ov003Battle_IsSoloLinkSession() == 0) && (Ov003Battle_IsLinkSessionGuest() != 0)) {
         Hide3DSprite(M2C_FIELD(parts, void **, 0));
         Hide3DSprite(M2C_FIELD(parts, void **, 0xC));
         Hide3DSprite(M2C_FIELD(parts, void **, 0x10));
@@ -151,7 +151,7 @@ void SetupEntityDisplay(void *entity) {
     }
     partsC = M2C_FIELD(entity, void **, 0x6C);
     Show3DSprite(M2C_FIELD(partsC, void **, 0));
-    if ((func_ov003_021f400c() == 0) && (func_ov003_021f4064() != 0)) {
+    if ((Ov003Battle_IsSoloLinkSession() == 0) && (Ov003Battle_IsLinkSessionGuest() != 0)) {
         M2C_FIELD(M2C_FIELD(partsC, void **, 0), s8 *, 0x59) = 0;
     }
     Show3DSprite(M2C_FIELD(partsC, void **, 4));
@@ -275,23 +275,25 @@ void func_ov003_021fd18c(void **arg0) {
     M2C_FIELD(*arg0, void (**)(void *), 0x10)(arg0);
 }
 
-u8 func_ov003_021fd1a0(void *arg0) {
-    s32 var_r0_2;
-    u8 var_r0;
-    void *temp_r0;
+/* True while the map-list menu entity's first row is still sliding into
+ * place (its slide tween has not reached its duration). */
+u8 Ov003_IsMapListMenuTweenRunning(void *entity) {
+    SpriteTween *tween;
+    s32 finished;
+    u8 running;
 
-    temp_r0 = M2C_FIELD(arg0, void **, 0x58);
-    if (M2C_FIELD(temp_r0, u16 *, 2) == M2C_FIELD(temp_r0, s16 *, 0xC)) {
-        var_r0_2 = 1;
+    tween = M2C_FIELD(entity, SpriteTween **, MENU_ENTITY_TWEEN_TOP);
+    if (tween->current == tween->duration) {
+        finished = 1;
     } else {
-        var_r0_2 = 0;
+        finished = 0;
     }
-    if (!(var_r0_2 & 0xFF)) {
-        var_r0 = 1;
+    if (!(finished & 0xFF)) {
+        running = 1;
     } else {
-        var_r0 = 0;
+        running = 0;
     }
-    return var_r0;
+    return running;
 }
 
 void func_ov003_021fd1cc(void) {

@@ -410,7 +410,7 @@ void MapEditor_ApplyPaletteSelection(void *editor) {
 }
 
 #pragma opt_propagation off
-void func_ov007_0221863c(void *arg0) {
+void MapEditor_RebuildPaletteLists(void *arg0) {
     s8 *MapEditor_GetPaletteEntries(u8);
     M2C_UNK MapEditor_GetPaletteOwner(M2C_UNK, s32, u8);
     s32 MapEditor_GetPageOwnerColorCount(void *);
@@ -425,7 +425,7 @@ void func_ov007_0221863c(void *arg0) {
     s32 GetTerrainTileBase(s32);
     void *GetTerrainTileData(s32);
     void *GetTerrainPalette(s32, s32);
-    s32 func_ov000_0216cd4c(s32);
+    s32 GetUnitStatusTileBase(s32);
     void *GetUnitIconTiles(s32, s32);
     void *GetArmyPalette(s32);
     extern void *gCur3DSpriteEngine;
@@ -497,7 +497,7 @@ void func_ov007_0221863c(void *arg0) {
         do {
             i=MapEditor_GetPaletteOwner(M2C_FIELD(arg0,u8 *,0x37),j,M2C_FIELD((u8 *)arg0+M2C_FIELD(arg0,u8 *,0x37),u8 *,0x38));
             variant=M2C_FIELD((u8 *)*gCurrentMap+i*140+0x6000,u8 *,0x7cd);
-            v0=func_ov000_0216cd4c(table[0]);
+            v0=GetUnitStatusTileBase(table[0]);
             v1=GetUnitIconTiles(table[0],variant);
             MI_CpuCopy32(v1,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+offset,0x80);
             MI_CpuCopy32((void *)v0,(u8 *)M2C_FIELD(gCur3DSpriteEngine,void **,0x1c)+(tile+4)*32,0x100);

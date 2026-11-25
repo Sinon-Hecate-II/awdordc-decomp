@@ -67,7 +67,12 @@ u8 ScrollSpriteGridPageUp(void *grid) {
 }
 
 #pragma opt_propagation off
-void func_020b35d4(void *p) {
+/* Keyboard handler of a sprite grid: with several columns, left/right move the
+ * cursor one item (wrapping to the row's end when held), otherwise they page the
+ * grid a screenful; up/down move it a row (paging to the ends when held) and
+ * scroll the grid to keep the cursor visible, setting the animation offset.
+ * Plays the cursor-move sound when the selection or the scroll position moved. */
+void HandleSpriteGridKeyInput(void *grid) {
 s32 Divide(s32,s32);
 s32 Modulo(s32,s32);
 u8 ScrollSpriteGridPageDown(void *);
@@ -75,75 +80,75 @@ M2C_UNK PlaySoundEffect(s32);
 extern u16 *gKeyState;
 
 s32 held,pressed;
-s32 cols;
-s16 col,row,oldselected;
-s16 oldscroll,pages,total;
-s32 visible;
-s32 n,active,delta,factor;
-cols=M2C_FIELD(p,u8 *,5);
-total=M2C_FIELD(p,s16 *,10);
-visible=M2C_FIELD(p,u8 *,4);
-pages=Divide(total+cols-1,cols);
-if(visible>=pages)visible=pages;
-visible=(s16)visible;
-col=Modulo(M2C_FIELD(p,s16 *,8),cols);
-row=Divide(M2C_FIELD(p,s16 *,8),cols);
+s32 columns;
+s16 column,row,oldSelected;
+s16 oldScroll,pages,itemCount;
+s32 visibleRows;
+s32 rowItems,active,delta,cellHeight;
+columns=M2C_FIELD(grid,u8 *,SPRITE_GRID_COLUMNS);
+itemCount=M2C_FIELD(grid,s16 *,SPRITE_GRID_ITEM_COUNT);
+visibleRows=M2C_FIELD(grid,u8 *,SPRITE_GRID_ROWS);
+pages=Divide(itemCount+columns-1,columns);
+if(visibleRows>=pages)visibleRows=pages;
+visibleRows=(s16)visibleRows;
+column=Modulo(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),columns);
+row=Divide(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),columns);
 held=gKeyState[0];pressed=gKeyState[1];
-oldscroll=M2C_FIELD(p,s16 *,12);
-oldselected=M2C_FIELD(p,s16 *,8);
-if(cols>1){
-n=total-row*cols;if(n>cols)n=cols;
-if(pressed&32){
-if(col>0)M2C_FIELD(p,s16 *,8)--;
-else if(pressed==held)M2C_FIELD(p,s16 *,8)+=n-1;
-}else if(pressed&16){
-if(col<n-1)M2C_FIELD(p,s16 *,8)++;
-else if(pressed==held)M2C_FIELD(p,s16 *,8)-=n-1;
+oldScroll=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);
+oldSelected=M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED);
+if(columns>1){
+rowItems=itemCount-row*columns;if(rowItems>columns)rowItems=columns;
+if(pressed&KEY_LEFT){
+if(column>0)M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)--;
+else if(pressed==held)M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)+=rowItems-1;
+}else if(pressed&KEY_RIGHT){
+if(column<rowItems-1)M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)++;
+else if(pressed==held)M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)-=rowItems-1;
 }
 }else{
-if(pressed&32){if(ScrollSpriteGridPageUp(p))return;}
-else if(pressed&16){if(ScrollSpriteGridPageDown(p))return;}
+if(pressed&KEY_LEFT){if(ScrollSpriteGridPageUp(grid))return;}
+else if(pressed&KEY_RIGHT){if(ScrollSpriteGridPageDown(grid))return;}
 }
-active=M2C_FIELD(p,s16 *,18)!=0;
+active=M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)!=0;
 if(!(active&255)){
-if(pressed&64){
+if(pressed&KEY_UP){
 if(row==0){
 if(pressed==held){
-M2C_FIELD(p,s16 *,8)+=(pages-1)*cols;
-n=pages-visible;if(n<=0)n=0;
-M2C_FIELD(p,s16 *,12)=n;
-n=M2C_FIELD(p,s16 *,8);
-if(n>total-1)n=total-1;
-M2C_FIELD(p,s16 *,8)=n;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)+=(pages-1)*columns;
+rowItems=pages-visibleRows;if(rowItems<=0)rowItems=0;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=rowItems;
+rowItems=M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED);
+if(rowItems>itemCount-1)rowItems=itemCount-1;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)=rowItems;
 }
 }else{
-M2C_FIELD(p,s16 *,8)-=cols;
-n=M2C_FIELD(p,s16 *,12);
-if((s16)Divide(M2C_FIELD(p,s16 *,8),cols)-n<=0){
-if(n>0)M2C_FIELD(p,s16 *,12)--;
-delta=M2C_FIELD(p,s16 *,12);factor=M2C_FIELD(p,u8 *,7);delta-=oldscroll;
-M2C_FIELD(p,s16 *,18)=delta*factor;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)-=columns;
+rowItems=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);
+if((s16)Divide(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),columns)-rowItems<=0){
+if(rowItems>0)M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)--;
+delta=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);cellHeight=M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_HEIGHT);delta-=oldScroll;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)=delta*cellHeight;
 }
 }
-}else if(pressed&128){
+}else if(pressed&KEY_DOWN){
 if(row==pages-1){
-if(pressed==held){M2C_FIELD(p,s16 *,8)-=(pages-1)*cols;M2C_FIELD(p,s16 *,12)=0;}
+if(pressed==held){M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)-=(pages-1)*columns;M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=0;}
 }else{
-M2C_FIELD(p,s16 *,8)+=cols;
-n=M2C_FIELD(p,s16 *,8);
-if(n>total-1)n=total-1;
-M2C_FIELD(p,s16 *,8)=n;
-row=Divide(M2C_FIELD(p,s16 *,8),cols);
-n=M2C_FIELD(p,s16 *,12);
-if(row-n>=visible-1){
-if(n<pages-visible)M2C_FIELD(p,s16 *,12)=n+1;
-delta=M2C_FIELD(p,s16 *,12);factor=M2C_FIELD(p,u8 *,7);delta-=oldscroll;
-M2C_FIELD(p,s16 *,18)=delta*factor;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)+=columns;
+rowItems=M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED);
+if(rowItems>itemCount-1)rowItems=itemCount-1;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED)=rowItems;
+row=Divide(M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED),columns);
+rowItems=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);
+if(row-rowItems>=visibleRows-1){
+if(rowItems<pages-visibleRows)M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)=rowItems+1;
+delta=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL);cellHeight=M2C_FIELD(grid,u8 *,SPRITE_GRID_CELL_HEIGHT);delta-=oldScroll;
+M2C_FIELD(grid,s16 *,SPRITE_GRID_PIXEL_OFFSET)=delta*cellHeight;
 }
 }
 }
 }
-if(oldscroll!=M2C_FIELD(p,s16 *,12)||oldselected!=M2C_FIELD(p,s16 *,8))PlaySoundEffect(0x10019);
+if(oldScroll!=M2C_FIELD(grid,s16 *,SPRITE_GRID_SCROLL)||oldSelected!=M2C_FIELD(grid,s16 *,SPRITE_GRID_SELECTED))PlaySoundEffect(0x10019);
 }
 #pragma opt_propagation off
 /* Touch handler of the sprite grid: when no scroll animation is running and the
@@ -185,14 +190,17 @@ else if(M2C_FIELD(camera,s16*,18)<0) {scroll-=(s16)Divide(M2C_FIELD(camera,s16*,
 return scroll<=tile && tile<scroll+total;
 }
 
-void func_020b3a58(M2C_UNK arg0) {
-    M2C_UNK func_02088044(M2C_UNK);
+/* Per-frame update of a sprite grid widget: eases its animated scroll offset
+ * back to zero, updates the touch state of its embedded cell list (at +0x18),
+ * then applies the keys and the touch to the grid's cursor. */
+void UpdateSpriteGrid(void *grid) {
+    M2C_UNK SpriteCellListUpdateTouch(M2C_UNK);
     M2C_UNK UpdateSpriteGridPixelOffset();
 
     UpdateSpriteGridPixelOffset();
-    func_02088044(arg0 + 0x18);
-    func_020b35d4(arg0);
-    HandleSpriteGridTouch(arg0);
+    SpriteCellListUpdateTouch((u8 *) grid + SPRITE_GRID_CELLS);
+    HandleSpriteGridKeyInput(grid);
+    HandleSpriteGridTouch(grid);
 }
 
 /* Eases the sprite grid's cursor toward the selected cell: the cell's screen

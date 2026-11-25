@@ -492,6 +492,7 @@ typedef struct WfcMeasureChannelRequest {
 #define WFC_CONN_SLOT_COUNT   16     /* slots in WFC_CONN_SLOTS */
 #define WFC_CONN_SLOT_STRIDE  7      /* bytes per slot */
 #define WFC_CONN_SLOT_ID      0x00   /* 6-byte player id, all zero when the slot is free */
+#define WFC_PLAYER_ID_SIZE     6      /* bytes in a WFC player id (the console's MAC address) */
 #define WFC_CONN_SLOT_ONLINE  0x06   /* u8 nonzero while the player is online */
 #define WFC_CONN_STATUS_CB    0x1370 /* void (*)(s32 status): WFC_CONN_STATUS_* */
 #define WFC_CONN_WATCH_START  0x1B88 /* u64 tick the connection watch began at */

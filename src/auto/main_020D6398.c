@@ -101,7 +101,7 @@ void LoadUnderInfoGraphics(void) {
  * or terrain panel and its frame. */
 void DrawUnitInfoPanel(s32 mode) {
  extern void **gCurrentMap;
- void func_020d87d8(void); s32 GetUnitPanelKind(void *);
+ void StepCursorCellDisplayMode(void); s32 GetUnitPanelKind(void *);
  void DrawTurnCounter(s32,s32,u32,u32); void func_020d759c(s32,s32,s32);
  void DrawCarriedUnits(s32,s32,s32,void *);void DrawUnitStatus(s32,s32,s32,void *);
  void DrawTerrainStatus(s32,s32,u32,u32,s32, void *);void DrawUnitInfoFrame(s32,s32,s32,s32);
@@ -109,7 +109,7 @@ void DrawUnitInfoPanel(s32 mode) {
  MenuBounds bounds=data_020f4e88;
  u8 *unit=0; u8 *map; s16 panelY; s32 side; u32 cursorRow; s16 panelX,panelKind; u32 cursorCol,unitId;
  if(!panelVisible)return;
- func_020d87d8();map=*gCurrentMap;
+ StepCursorCellDisplayMode();map=*gCurrentMap;
  cursorRow=(u32)(*(u16 *)(map+0x52e6)<<16)>>25;
  cursorCol=(u32)(*(u16 *)(map+0x52e6)<<23)>>25;
  unitId=map[*(u16 *)(map+MAP_ROW_OFFSETS+cursorRow*2)+cursorCol];

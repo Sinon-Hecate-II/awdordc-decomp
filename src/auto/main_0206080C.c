@@ -78,13 +78,16 @@ void AddServerListField(void *arg0, u8 arg1) {
     M2C_FIELD((arg0 + temp_r3), s8 *, 0x2C) = arg1;
 }
 
-void func_0206095c(void *arg0, M2C_UNK arg1) {
-    s32 Qr2Query_RemoveRequest(void *, M2C_UNK);
+/* Take a server record off the browser's query queues: drop it from the
+ * in-flight list when a reply was still awaited, otherwise from the list of
+ * queries that had not been sent yet. */
+void Qr2Query_UnlinkServer(void *list, void *server) {
+    M2C_UNK Qr2Query_RemoveRequest(void *, void *);
 
-    if (Qr2Query_RemoveRequest(arg0 + 8, arg1) != 0) {
+    if (Qr2Query_RemoveRequest((u8 *)list + SB_LIST_REQUESTS, server) != 0) {
         return;
     }
-    Qr2Query_RemoveRequest(arg0 + 0x14, arg1);
+    Qr2Query_RemoveRequest((u8 *)list + SB_LIST_WAITING, server);
 }
 
 void HashInternedString(s8 **arg0, s32 arg1) {
@@ -433,7 +436,7 @@ M2C_FIELD(self,void (**)(void *,s32,void *,s32),0x630)(self,2,server,M2C_FIELD(s
 else M2C_FIELD(self,void (**)(void *,s32,void *,s32),0x630)(self,1,server,M2C_FIELD(self,s32 *,0x634));
 break;
 case 2:
-if(M2C_FIELD(server,u8 *,0x14)&0x2c)func_0206095c(self,server);
+if(M2C_FIELD(server,u8 *,0x14)&0x2c)Qr2Query_UnlinkServer(self,server);
 M2C_FIELD(self,void (**)(void *,s32,void *,s32),0x630)(self,3,server,M2C_FIELD(self,s32 *,0x634));break;
 case 3:
 if(M2C_FIELD(self,s32 *,0x620))SBServerListDisconnect(serverList);
@@ -549,11 +552,14 @@ void SBServerListSendNATNegotiation(s32 browser, char *host, s32 port, s32 cooki
     func_02063bd0(browser + SB_LIST_QUERY, ghiInetAddr(host), (u16) ((u8) (port >> 8) | ((port << 8) & 0xFF00)), cookie);
 }
 
-void SBServerListRemoveServer(s32 arg0){
- s32 SBServerListFindByServer(s32); M2C_UNK SBServerListRemoveServerAt(s32,s32);
- s32 n=SBServerListFindByServer(arg0+0x4c);
- if(n==-1)return;
- SBServerListRemoveServerAt(arg0+0x4c,n);
+/* Remove a server from a server-browser list: find it in the QR2 query's server
+ * vector and drop it there, which reports the removal to the application. */
+void SBServerListRemoveServer(s32 list, s32 server) {
+    s32 SBServerListFindByServer(s32, s32);
+    M2C_UNK SBServerListRemoveServerAt(s32, s32);
+    s32 index = SBServerListFindByServer(list + SB_LIST_QUERY, server);
+    if (index == -1) return;
+    SBServerListRemoveServerAt(list + SB_LIST_QUERY, index);
 }
 
 s32 SBServerListThink(s32 arg0) {

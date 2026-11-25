@@ -264,14 +264,17 @@ void Ov001_FadeInWfcEraseResultScreen(void) {
     Ov001_SetStepCallback(&Ov001_WfcEraseResultFadeDone);
 }
 
+/* Step that runs after the Wi-Fi data-erase result screen has faded in: show the
+ * popup's icon row (row 1) and hand over to the step that waits for it. */
 void Ov001_WfcEraseResultFadeDone(void) {
-    void func_ov001_0217944c(void);
+    void Ov001_WaitWfcEraseResultMenu(void);
+
     if (Ov001_IsFadeActive(0) != 0) return;
     Ov001_CreateMenuIconRow(1);
-    Ov001_SetStepCallback((M2C_UNK *)&func_ov001_0217944c);
+    Ov001_SetStepCallback((M2C_UNK *)&Ov001_WaitWfcEraseResultMenu);
 }
 
-void func_ov001_0217944c(void) {
+void Ov001_WaitWfcEraseResultMenu(void) {
     s32 Ov001_GetIconRowSelection();
     extern M2C_UNK Ov001_UpdateWfcEraseResultMenu;
     if (Ov001_GetIconRowSelection() == -2) {
@@ -283,10 +286,10 @@ void func_ov001_0217944c(void) {
 void Ov001_UpdateWfcEraseResultMenu(void) {
  void Ov001_HandleWfcEraseResultMenuInput(void);
  void func_ov001_021794bc(void);
- void func_ov001_021794c0(void);
+ void Ov001_HandleWfcEraseResultChoice(void);
  Ov001_HandleWfcEraseResultMenuInput();
  func_ov001_021794bc();
- func_ov001_021794c0();
+ Ov001_HandleWfcEraseResultChoice();
 }
 
 /* Wi-Fi data-erase result popup input: B latches the popup's only choice, the
@@ -309,15 +312,18 @@ void func_ov001_021794bc(void) {
 
 }
 
-void func_ov001_021794c0(void) {
+/* Wi-Fi data-erase result popup: once the player latches the back choice, stop
+ * the popup's sound, play the cancel sound and hand the step to the leave screen. */
+void Ov001_HandleWfcEraseResultChoice(void) {
+    s32 Ov001_GetIconRowSelection(void);
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_StopSound();
     extern M2C_UNK Ov001_LeaveWfcEraseScreen;
-    if (Ov001_GetIconRowSelection() != 0) {
+    if (Ov001_GetIconRowSelection() != OV001_CHOICE_BACK) {
         return;
     }
     Ov001_StopSound();
-    Ov001_PlaySound(7);
+    Ov001_PlaySound(OV001_SOUND_CANCEL);
     Ov001_SetStepCallback(&Ov001_LeaveWfcEraseScreen);
 }
 
@@ -500,7 +506,7 @@ void Ov001_PollWirelessSetup(void) {
     void Ov001_CancelWirelessSetupTask(void);
     s32 Ov001_UpdateWirelessSetup(void);
     void Ov001_WaitForWirelessConnection(void);
-    void func_ov001_02179bec(void);
+    void Ov001_AcknowledgeWirelessError(void);
     M2C_UNK Ov001_ReturnTaskNodeVeneer(s32, s32);
     M2C_UNK Ov001_StopSound(void);
     M2C_UNK Ov001_ShowMessage(s32, s32, s32, s32, s32);
@@ -531,7 +537,7 @@ void Ov001_PollWirelessSetup(void) {
         Ov001_LockIconRow();
         Ov001_ReturnTaskNodeVeneer(1, M2C_FIELD(&gOv001WirelessState, s32 *, 4));
         M2C_FIELD(&gOv001WirelessState, s32 *, 4) = 0;
-        Ov001_SetStepCallback((M2C_UNK *)&func_ov001_02179bec);
+        Ov001_SetStepCallback((M2C_UNK *)&Ov001_AcknowledgeWirelessError);
         return;
     }
 }
@@ -645,23 +651,30 @@ void Ov001_WirelessSetupFrameTask(void) {
     Ov001_CancelWirelessSetupTask();
 }
 
-void func_ov001_02179bec(void) {
+/* Wireless setup step after its error message appeared: when the player takes the
+ * popup's confirm choice, play the confirm sound, close the popup and hand the
+ * step to the one that waits for it to close. */
+void Ov001_AcknowledgeWirelessError(void) {
     M2C_UNK Ov001_PlaySound(M2C_UNK);
     M2C_UNK Ov001_CloseRegionMenu();
     s32 Ov001_GetRegionMenuSelection();
-    extern M2C_UNK func_ov001_02179c18;
+    extern M2C_UNK Ov001_WaitWirelessMessageClose;
+
     if (Ov001_GetRegionMenuSelection() != 0) {
         return;
     }
-    Ov001_PlaySound(6);
+    Ov001_PlaySound(OV001_SOUND_CONFIRM);
     Ov001_CloseRegionMenu();
-    Ov001_SetStepCallback(&func_ov001_02179c18);
+    Ov001_SetStepCallback(&Ov001_WaitWirelessMessageClose);
 }
 
-void func_ov001_02179c18(void) {
+/* Wait for the wireless setup's message popup to finish closing, then abandon the
+ * connection attempt. */
+void Ov001_WaitWirelessMessageClose(void) {
     M2C_UNK Ov001_SetStepCallback(M2C_UNK *);
     s32 Ov001_IsRegionMenuActive();
     void Ov001_AbandonWirelessConnection(void);
+
     if (Ov001_IsRegionMenuActive() != 0) {
         return;
     }
